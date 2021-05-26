@@ -302,6 +302,7 @@ Public Sub InicializarNuevoClan(ByRef Fundador As String)
 122     Call WriteVar(GUILDINFOFILE, "GUILD" & NewQ, "Date", Date)
 124     Call WriteVar(GUILDINFOFILE, "GUILD" & NewQ, "Antifaccion", "0")
 126     Call WriteVar(GUILDINFOFILE, "GUILD" & NewQ, "Alineacion", Alineacion2String(p_Alineacion))
+127     Call WriteVar(GUILDINFOFILE, "GUILD" & NewQ, "UltimasElecciones", Now)
 
         
         Exit Sub
@@ -1081,6 +1082,7 @@ Public Sub AbrirElecciones()
         
 100     Call WriteVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "EleccionesAbiertas", "1")
 102     Call WriteVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "EleccionesFinalizan", DateAdd("d", 1, Now))
+103     Call WriteVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "UltimasElecciones", Now)
 104     Call WriteVar(VOTACIONESFILE, "INIT", "NumVotos", "0")
 
         
@@ -1206,66 +1208,74 @@ errh:
 
 End Function
 
-Public Function RevisarElecciones() As Boolean
+Public Function RevisarElecciones() As Byte
         
         On Error GoTo RevisarElecciones_Err
-        
 
         Dim FechaSufragio As Date
-
-        Dim Temps         As String
-
+        Dim EleccionesAbiertas As Boolean
         Dim Ganador       As String
-
         Dim CantGanadores As Integer
-
         Dim list()        As String
-
         Dim i             As Long
+        
+100     RevisarElecciones = 0
 
-100     RevisarElecciones = False
-102     Temps = Trim$(GetVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "EleccionesFinalizan"))
+        EleccionesAbiertas = val(GetVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "EleccionesAbiertas"))
+        
+        If EleccionesAbiertas Then 'HarThaoS: Me fijo si hay elecciones abiertas
+        
+            Dim Temps         As String
+            
+104         If LenB(Temps) = 0 Then Exit Function
+
+            'Si están abiertas Me fijo cuando finalizan
+102         Temps = Trim$(GetVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "EleccionesFinalizan"))
+106         If IsDate(Temps) Then
+108             FechaSufragio = CDate(Temps)
     
-104     If LenB(Temps) = 0 Then Exit Function
+110             If FechaSufragio < Now Then     'Si es ahora el sufragio
+112                 Ganador = ContarVotos(CantGanadores)
+                    If CantGanadores > 1 Then 'Si hay mas de un ganador(empate)
+116                     Call SetGuildNews("*Empate en la votacion. " & Ganador & " con " & CantGanadores & " votos ganaron las elecciones del clan.")
+                        RevisarElecciones = e_elecciones.HuboEmpate
+118                 ElseIf CantGanadores = 1 Then 'Si tenemos un solo ganador
+120                     list = Me.GetMemberList()
+122                     For i = 0 To UBound(list())
+124                         If Ganador = list(i) Then Exit For ' Si el ganador está en el clan
+126                     Next i
 
-106     If IsDate(Temps) Then
-108         FechaSufragio = CDate(Temps)
-
-110         If FechaSufragio < Now Then     'toca!
-112             Ganador = ContarVotos(CantGanadores)
-
-114             If CantGanadores > 1 Then
-                    'empate en la votacion
-116                 Call SetGuildNews("*Empate en la votacion. " & Ganador & " con " & CantGanadores & " votos ganaron las elecciones del clan.")
-118             ElseIf CantGanadores = 1 Then
-120                 list = Me.GetMemberList()
-                
-122                 For i = 0 To UBound(list())
-
-124                     If Ganador = list(i) Then Exit For
-126                 Next i
-                
-128                 If i <= UBound(list()) Then
-130                     Call SetGuildNews("*" & Ganador & " gano la eleccion del clan*")
-132                     Call Me.SetLeader(Ganador)
-134                     RevisarElecciones = True
-                    Else
-136                     Call SetGuildNews("*" & Ganador & " gano la eleccion del clan pero abandono las filas por lo que la votacion queda desierta*")
-
+128                     If i <= UBound(list()) Then 'Aviso que ganó y salgo de aca
+130                         Call SetGuildNews("*" & Ganador & " gano la eleccion del clan*")
+132                         Call Me.SetLeader(Ganador)
+134                         RevisarElecciones = e_elecciones.HayGanador
+                        Else 'Se fue del clan
+136                         Call SetGuildNews("*" & Ganador & " gano la eleccion del clan pero abandono las filas por lo que la votacion queda desierta.*")
+                            RevisarElecciones = e_elecciones.HayGanadorPeroAbandono
+                        End If
+                    Else 'Si no hubo ganadores quiere decir que no hubo votos. Vuelvo a abrir las elecciones.
+138                     Call SetGuildNews("*El periodo de votacion se cerro sin votos*")
+                        RevisarElecciones = e_elecciones.NoVotos
                     End If
-
-                Else
-138                 Call SetGuildNews("*El periodo de votacion se cerro sin votos*")
-
+                    Call CerrarElecciones
                 End If
-            
-140             Call CerrarElecciones
-            
+            Else
+142             Call LogError("clsClan.RevisarElecciones: tempS is not Date")
             End If
-
-        Else
-142         Call LogError("clsClan.RevisarElecciones: tempS is not Date")
-
+        Else 'Si las elecciones no están abiertas me fijo cuando fue la última vez que se abrieron y si la fecha es anterior a 45 dias la
+            Dim UltimasElecciones As String
+            
+            UltimasElecciones = Trim$(GetVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "EleccionesFinalizan"))
+            
+107         If IsDate(UltimasElecciones) Then
+                If (UltimasElecciones + DateAdd("d", 45, UltimasElecciones)) >= Now Then
+                    Call AbrirElecciones
+                    RevisarElecciones = e_elecciones.AbroElecciones
+                End If
+            Else
+                Call LogError("clsClan.RevisarElecciones: UltimasElecciones is not Date")
+            End If
+                
         End If
 
         
