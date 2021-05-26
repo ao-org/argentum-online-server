@@ -33,6 +33,15 @@ Option Explicit
 ' Modulo de declaraciones. Aca hay de todo.
 '
 
+Public Enum e_elecciones
+    HayGanador = 1
+    HayGanadorPeroAbandono = 2
+    HuboEmpate = 3
+    NoVotos = 4
+    AbroElecciones = 5
+End Enum
+
+
 Public Enum e_Facciones
     Criminal = 0
     Ciudadano = 1

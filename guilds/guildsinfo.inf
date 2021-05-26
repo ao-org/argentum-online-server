@@ -1,5 +1,6 @@
 [INIT]
-NroGuilds=1
+NroGuilds=2
+
 
 [GUILD1]
 GuildName=PEPE EL SORETE
@@ -12,3 +13,16 @@ Leader=Clero Clero
 NivelDeClan=1
 ExpActual=0
 ExpNecesaria=500
+[GUILD2]
+GuildName=Probando
+Founder=Clantesteo
+Date=24/5/2021
+Antifaccion=0
+Alineacion=Neutral
+Desc=
+GuildNews=*CLANTESTEO gano la eleccion del clan*
+Leader=CLANTESTEO
+NivelDeClan=1
+ExpActual=0
+ExpNecesaria=500
+EleccionesAbiertas=0
