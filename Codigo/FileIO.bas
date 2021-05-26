@@ -2099,6 +2099,7 @@ CargarBackUp_Err:
 End Sub
 
 Sub LoadMapData()
+        On Error GoTo man
 
 100     If frmMain.Visible Then frmMain.txStatus.Caption = "Cargando mapas..."
 
@@ -2106,13 +2107,7 @@ Sub LoadMapData()
         Dim TempInt   As Integer
         Dim npcfile   As String
 
-        On Error GoTo man
-    
-102     If RunningInVB() Then
-104         NumMaps = 700
-        Else
-106         NumMaps = CountFiles(MapPath, "*.csm") - 1
-        End If
+106     NumMaps = CountFiles(MapPath, "*.csm") - 1
 
 108     Call InitAreas
     
