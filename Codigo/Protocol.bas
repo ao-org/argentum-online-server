@@ -184,9 +184,7 @@ Public Enum ServerPacketID
     UpdateUserKey
     UpdateRM
     UpdateDM
-    RequestProcesses
     RequestScreenShot
-    ShowProcesses
     ShowScreenShot
     ScreenShotData
     Tolerancia0
@@ -530,9 +528,7 @@ Private Enum NewPacksID
     Home                    '/HOGAR
     Consulta                '/CONSULTA
     RequestScreenShot       '/SS
-    RequestProcesses        '/VERPROCESOS
     SendScreenShot
-    SendProcesses
     Tolerancia0             '/T0
     GetMapInfo              '/MAPINFO
     FinEvento
@@ -1730,9 +1726,6 @@ Public Sub HandleIncomingDataNewPacks(ByVal UserIndex As Integer)
         Case NewPacksID.RequestScreenShot       '/SS
             Call HandleRequestScreenShot(UserIndex)
                 
-        Case NewPacksID.RequestProcesses        '/VERPROCESOS
-            Call HandleRequestProcesses(UserIndex)
-                
         Case NewPacksID.Tolerancia0             '/T0
             Call HandleTolerancia0(UserIndex)
 
@@ -1744,9 +1737,6 @@ Public Sub HandleIncomingDataNewPacks(ByVal UserIndex As Integer)
                 
         Case NewPacksID.SendScreenShot
             Call HandleScreenShot(UserIndex)
-                
-        Case NewPacksID.SendProcesses
-            Call HandleProcesses(UserIndex)
 
         Case NewPacksID.SeguroResu
             Call HandleSeguroResu(UserIndex)
@@ -4425,7 +4415,7 @@ Private Sub HandleCreateNewGuild(ByVal UserIndex As Integer)
             
             
                 
-126             Call SendData(SendTarget.ToAll, UserIndex, PrepareMessageConsoleMsg(.Name & " ha fundado el clan <" & GuildName & "> de alineación " & GuildAlignment(.guildIndex) & ".", FontTypeNames.FONTTYPE_GUILD))
+126             Call SendData(SendTarget.ToAll, UserIndex, PrepareMessageConsoleMsg(.Name & " ha fundado el clan <" & GuildName & "> de alineación " & GuildAlignment(.GuildIndex) & ".", FontTypeNames.FONTTYPE_GUILD))
 128             Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(44, NO_3D_SOUND, NO_3D_SOUND))
                 'Update tag
 130             Call RefreshCharStatus(UserIndex)
@@ -5945,7 +5935,7 @@ Private Sub HandleGuildOpenElections(ByVal UserIndex As Integer)
         If Not modGuilds.v_AbrirElecciones(UserIndex, Error) Then
             Call WriteConsoleMsg(UserIndex, Error, FontTypeNames.FONTTYPE_GUILD)
         Else
-            Call SendData(SendTarget.ToGuildMembers, .guildIndex, PrepareMessageConsoleMsg("¡Han comenzado las elecciones del clan! Puedes votar escribiendo /VOTO seguido del nombre del personaje, por ejemplo: /VOTO " & .Name, FontTypeNames.FONTTYPE_GUILD))
+            Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageConsoleMsg("¡Han comenzado las elecciones del clan! Puedes votar escribiendo /VOTO seguido del nombre del personaje, por ejemplo: /VOTO " & .Name, FontTypeNames.FONTTYPE_GUILD))
 
         End If
 
@@ -17147,7 +17137,7 @@ Private Sub HandleLlamadadeClan(ByVal UserIndex As Integer)
             clan_nivel = modGuilds.NivelDeClan(.GuildIndex)
 
             If clan_nivel > 1 Then
-                Call SendData(SendTarget.ToGuildMembers, .guildIndex, PrepareMessageConsoleMsg("Clan> [" & .Name & "] solicita apoyo de su clan en " & DarNameMapa(.Pos.Map) & " (" & .Pos.Map & "-" & .Pos.X & "-" & .Pos.Y & "). Puedes ver su ubicación en el mapa del mundo.", FontTypeNames.FONTTYPE_GUILD))
+                Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageConsoleMsg("Clan> [" & .Name & "] solicita apoyo de su clan en " & DarNameMapa(.Pos.Map) & " (" & .Pos.Map & "-" & .Pos.X & "-" & .Pos.Y & "). Puedes ver su ubicación en el mapa del mundo.", FontTypeNames.FONTTYPE_GUILD))
                 Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessagePlayWave("43", NO_3D_SOUND, NO_3D_SOUND))
                 Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageUbicacionLlamada(.Pos.Map, .Pos.X, .Pos.Y))
             
@@ -19344,67 +19334,6 @@ ErrHandler:
 
 End Sub
 
-Private Sub HandleRequestProcesses(ByVal UserIndex As Integer)
-
-    With UserList(UserIndex)
-
-        Dim Nick As String
-        Nick = .incomingData.ReadASCIIString
-
-        ' Comando exclusivo para gms
-        If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) Then
-            Dim tUser As Integer
-    
-            If Len(Nick) <> 0 Then
-                tUser = NameIndex(Nick)
-                
-                'Se asegura que el target exista
-                If tUser <= 0 Then
-                    Call WriteConsoleMsg(UserIndex, "El usuario se encuentra offline.", FontTypeNames.FONTTYPE_INFO)
-                    Exit Sub
-
-                End If
-                
-            Else
-            
-                tUser = .flags.TargetUser
-                
-                'Se asegura que el target exista
-                If tUser <= 0 Then
-                    Call WriteConsoleMsg(UserIndex, "Primero tienes que seleccionar un usuario, haz click izquierdo sobre el.", FontTypeNames.FONTTYPE_INFO)
-                    Exit Sub
-
-                End If
-    
-            End If
-    
-            If tUser <> UserIndex Then
-                If AdministratorAccounts.Exists(UCase$(UserList(tUser).Name)) Then
-                    Call WriteConsoleMsg(UserIndex, "No podés invadir la privacidad de otro administrador.", FontTypeNames.FONTTYPE_INFO)
-                    Exit Sub
-
-                End If
-
-            End If
-            
-            If LenB(UserList(tUser).flags.ProcesosPara) = 0 Then
-                Call WriteRequestProcesses(tUser)
-
-            End If
-    
-            UserList(tUser).flags.ProcesosPara = UserList(tUser).flags.ProcesosPara & ":" & .Name
-    
-        End If
-
-    End With
-
-    Exit Sub
-    
-ErrHandler:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleRequestProcesses", Erl)
-    Call UserList(UserIndex).incomingData.SafeClearPacket
-
-End Sub
 
 Private Sub HandleRequestScreenShot(ByVal UserIndex As Integer)
 
@@ -19576,57 +19505,6 @@ Private Sub HandleScreenShot(ByVal UserIndex As Integer)
 ErrHandler:
 
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleScreenShot", Erl)
-    Call UserList(UserIndex).incomingData.SafeClearPacket
-
-End Sub
-
-Private Sub HandleProcesses(ByVal UserIndex As Integer)
-
-    With UserList(UserIndex)
-
-        On Error GoTo ErrHandler
-
-        Dim data As String
-        data = .incomingData.ReadASCIIString
-        
-        ' Por seguridad, limito a 10kb de datos (con margen para el nombre)
-        If Len(data) > 10000 Then
-            data = Left$(data, 10000) & vbNewLine & "[...Demasiado largo]"
-        End If
-
-        ' Si nadie requirió esto, salimos
-        If LenB(.flags.ProcesosPara) = 0 Then Exit Sub
-        
-        ' Prevengo avivadas
-        data = Replace$(data, "*:*", vbNullString)
-        
-        ' Anteponemos el nombre del user
-        data = .Name & "*:*" & data
-
-        Dim ListaGMs() As String
-        ListaGMs = Split(.flags.ProcesosPara, ":")
-        
-        Dim i As Integer, tGM As Integer
-
-        For i = LBound(ListaGMs) To UBound(ListaGMs)
-            tGM = NameIndex(ListaGMs(i))
-            
-            If tGM > 0 Then
-                Call WriteShowProcesses(tGM, data)
-
-            End If
-
-        Next
-        
-        .flags.ProcesosPara = vbNullString
-
-    End With
-    
-    Exit Sub
-    
-ErrHandler:
-
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleProcesses", Erl)
     Call UserList(UserIndex).incomingData.SafeClearPacket
 
 End Sub

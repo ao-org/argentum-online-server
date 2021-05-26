@@ -5942,28 +5942,6 @@ ErrHandler:
 
 End Sub
 
-Public Sub WriteRequestProcesses(ByVal UserIndex As Integer)
-
-    On Error GoTo ErrHandler
-    
-    With UserList(UserIndex).outgoingData
-    
-        Call .WriteID(ServerPacketID.RequestProcesses)
-        Call .EndPacket
-    
-    End With
-    
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
-End Sub
 
 Public Sub WriteShowScreenShot(ByVal UserIndex As Integer, name As String)
 
@@ -5989,30 +5967,6 @@ ErrHandler:
 
 End Sub
 
-Public Sub WriteShowProcesses(ByVal UserIndex As Integer, data As String)
-
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-
-        Call .WriteID(ServerPacketID.ShowProcesses)
-
-        Call .WriteASCIIString(data)
-        
-        Call .EndPacket
-    End With
- 
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
-End Sub
 
 Public Sub WriteScreenShotData(ByVal UserIndex As Integer, Buffer As clsByteQueue, ByVal Offset As Long, ByVal Size As Long)
 

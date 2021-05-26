@@ -320,7 +320,6 @@ Public Sub ProcesarFundacionDeOtroClan()
 100     ReDim Preserve p_Relaciones(1 To CANTIDADDECLANES) As RELACIONES_GUILD
 102     p_Relaciones(CANTIDADDECLANES) = PAZ
 
-        
         Exit Sub
 
 ProcesarFundacionDeOtroClan_Err:
