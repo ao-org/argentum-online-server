@@ -178,7 +178,7 @@ Sub RellenarInventario(ByVal UserIndex As String)
     
             ' Todos reciben pociones rojas
 104         .Invent.Object(NumItems).ObjIndex = 1616 'Pocion Roja
-106         .Invent.Object(NumItems).amount = 100
+106         .Invent.Object(NumItems).amount = 200
 108         NumItems = NumItems + 1
         
             ' Magicas puras reciben más azules
@@ -186,7 +186,7 @@ Sub RellenarInventario(ByVal UserIndex As String)
 
                 Case eClass.Mage, eClass.Druid
 112                 .Invent.Object(NumItems).ObjIndex = 1617 ' Pocion Azul
-114                 .Invent.Object(NumItems).amount = 100
+114                 .Invent.Object(NumItems).amount = 300
 116                 NumItems = NumItems + 1
 
             End Select
@@ -196,7 +196,7 @@ Sub RellenarInventario(ByVal UserIndex As String)
 
                 Case eClass.Bard, eClass.Cleric, eClass.Paladin, eClass.Assasin, eClass.Bandit
 120                 .Invent.Object(NumItems).ObjIndex = 1617 ' Pocion Azul
-122                 .Invent.Object(NumItems).amount = 50
+122                 .Invent.Object(NumItems).amount = 100
 124                 NumItems = NumItems + 1
 
             End Select
@@ -206,6 +206,8 @@ Sub RellenarInventario(ByVal UserIndex As String)
 
                 Case eClass.Mage, eClass.Cleric, eClass.Druid, eClass.Bard
 128                 .Stats.UserHechizos(1) = 1 ' Dardo mágico
+                    .Stats.UserHechizos(2) = 11 ' Curar Veneno
+                    .Stats.UserHechizos(3) = 12 ' Curar Heridas Leves
 
             End Select
         
@@ -214,7 +216,7 @@ Sub RellenarInventario(ByVal UserIndex As String)
 
                 Case eClass.Assasin, eClass.Bard, eClass.Cleric, eClass.Hunter, eClass.Paladin, eClass.Trabajador, eClass.Warrior, eClass.Bandit, eClass.Pirat, eClass.Thief
 132                 .Invent.Object(NumItems).ObjIndex = 1618 ' Pocion Amarilla
-134                 .Invent.Object(NumItems).amount = 25
+134                 .Invent.Object(NumItems).amount = 50
 136                 NumItems = NumItems + 1
 
 138                 .Invent.Object(NumItems).ObjIndex = 1619 ' Pocion Verde
@@ -225,17 +227,48 @@ Sub RellenarInventario(ByVal UserIndex As String)
             
             ' Poción violeta
 144         .Invent.Object(NumItems).ObjIndex = 2332 ' Pocion violeta
-146         .Invent.Object(NumItems).amount = 10
+146         .Invent.Object(NumItems).amount = 20
 148         NumItems = NumItems + 1
         
-            ' Equipo el arma
-150         .Invent.Object(NumItems).ObjIndex = 460 ' Daga (Newbies)
-152         .Invent.Object(NumItems).amount = 1
-154         .Invent.Object(NumItems).Equipped = 1
-156         .Invent.WeaponEqpSlot = NumItems
-158         .Invent.WeaponEqpObjIndex = .Invent.Object(NumItems).ObjIndex
-160         .Char.WeaponAnim = ObjData(.Invent.WeaponEqpObjIndex).WeaponAnim
-162         NumItems = NumItems + 1
+            ' Armas
+            Select Case .clase
+
+                Case eClass.Cleric, eClass.Paladin, eClass.Trabajador, eClass.Warrior, eClass.Pirat
+                    .Invent.Object(NumItems).ObjIndex = 460 ' Daga (Newbies)
+                    .Invent.Object(NumItems).amount = 1
+                    NumItems = NumItems + 1
+                    .Invent.Object(NumItems).ObjIndex = 2085 ' Espada larga (newbies)
+                    .Invent.Object(NumItems).amount = 1
+                    NumItems = NumItems + 1
+
+                Case eClass.Hunter
+                    .Invent.Object(NumItems).ObjIndex = 460 ' Daga (Newbies)
+                    .Invent.Object(NumItems).amount = 1
+                    NumItems = NumItems + 1
+                    
+                    .Invent.Object(NumItems).ObjIndex = 1355 ' Arco simple (newbies)
+                    .Invent.Object(NumItems).amount = 1
+                    NumItems = NumItems + 1
+
+                    .Invent.Object(NumItems).ObjIndex = 1357 ' Flechas
+                    .Invent.Object(NumItems).amount = 300
+                    NumItems = NumItems + 1
+
+                Case eClass.Thief, eClass.Bandit
+                    .Invent.Object(NumItems).ObjIndex = 460 ' Daga (Newbies)
+                    .Invent.Object(NumItems).amount = 1
+                    NumItems = NumItems + 1
+                    
+                    .Invent.Object(NumItems).ObjIndex = 1354 ' Nudillos (newbies)
+                    .Invent.Object(NumItems).amount = 1
+                    NumItems = NumItems + 1
+
+                Case eClass.Mage
+                    .Invent.Object(NumItems).ObjIndex = 1356 ' Baston (newbies)
+                    .Invent.Object(NumItems).amount = 1
+                    NumItems = NumItems + 1
+
+            End Select
         
             
 164         If .genero = eGenero.Hombre Then
@@ -260,7 +293,6 @@ Sub RellenarInventario(ByVal UserIndex As String)
 186          NumItems = NumItems + 1
 
             ' Animación según raza
-
 188          .Char.Body = ObjData(.Invent.ArmourEqpObjIndex).Ropaje
         
             ' Comida y bebida
@@ -272,7 +304,7 @@ Sub RellenarInventario(ByVal UserIndex As String)
 198         .Invent.Object(NumItems).amount = 100
 200         NumItems = NumItems + 1
 
-202         .Invent.Object(NumItems).ObjIndex = 200 ' Cofre Inicial - TODO: Remover
+202         .Invent.Object(NumItems).ObjIndex = 200 ' Cofre Inicial
 204         .Invent.Object(NumItems).amount = 1
 206         NumItems = NumItems + 1
 
