@@ -566,7 +566,6 @@ End Function
 Public Sub CargarForbidenWords()
         
         On Error GoTo CargarForbidenWords_Err
-        
 
         Dim Size As Integer
 
@@ -3798,6 +3797,7 @@ Public Sub RegistrarError(ByVal Numero As Long, ByVal Descripcion As String, ByV
             'x lo que no hace falta registrar el error.
 102         If HistorialError.Contador = 10 Then
 104             Debug.Print "Mismo error"
+                Debug.Assert False
                 Exit Sub
             End If
         
