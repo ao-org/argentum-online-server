@@ -26,7 +26,18 @@ Public Sub InvitarMiembro(ByVal UserIndex As Integer, ByVal InvitadoIndex As Int
 106     If Remitente.Stats.UserSkills(eSkill.liderazgo) < skillsNecesarios Then
 108         Call WriteConsoleMsg(UserIndex, "Te faltan " & (skillsNecesarios - Remitente.Stats.UserSkills(eSkill.liderazgo)) & " puntos en Liderazgo para liderar un grupo.", FontTypeNames.FONTTYPE_New_GRUPO)
             Exit Sub
-
+        End If
+        
+        'HarThaoS: Si invita a un gm no lo dejo
+        If EsGM(InvitadoIndex) Then
+            Call WriteConsoleMsg(UserIndex, "No puedes invitar a un grupo a un GM.", FontTypeNames.fonttype_new_grupo)
+            Exit Sub
+        End If
+        
+        'Si es gm tampoco lo dejo
+        If EsGM(UserIndex) Then
+            Call WriteConsoleMsg(UserIndex, "Los GMs no pueden formar parte de un grupo.", FontTypeNames.fonttype_new_grupo)
+            Exit Sub
         End If
 
 110     If Invitado.flags.SeguroParty Then
@@ -35,7 +46,7 @@ Public Sub InvitarMiembro(ByVal UserIndex As Integer, ByVal InvitadoIndex As Int
         End If
         
 114     If Remitente.Grupo.CantidadMiembros >= UBound(Remitente.Grupo.Miembros) Then
-116         Call WriteConsoleMsg(UserIndex, "No puedes invitar a mas personas. (Límite: " & CStr(UBound(Remitente.Grupo.Miembros)) & ")", FontTypeNames.FONTTYPE_New_GRUPO)
+116         Call WriteConsoleMsg(UserIndex, "No puedes invitar a mas personas. (Límite: " & CStr(UBound(Remitente.Grupo.Miembros)) & ")", FontTypeNames.fonttype_new_grupo)
             Exit Sub
         End If
             
@@ -51,7 +62,7 @@ Public Sub InvitarMiembro(ByVal UserIndex As Integer, ByVal InvitadoIndex As Int
         End If
 
 122     If Abs(CInt(Invitado.Stats.ELV) - CInt(Remitente.Stats.ELV)) > 10 Then
-124         Call WriteConsoleMsg(UserIndex, "No podes crear un grupo con personajes con diferencia de más de 10 niveles.", FontTypeNames.FONTTYPE_New_GRUPO)
+124         Call WriteConsoleMsg(UserIndex, "No podes crear un grupo con personajes con diferencia de más de 10 niveles.", FontTypeNames.fonttype_new_grupo)
             Exit Sub
             
         End If
@@ -65,7 +76,7 @@ Public Sub InvitarMiembro(ByVal UserIndex As Integer, ByVal InvitadoIndex As Int
         
 130     Call WriteLocaleMsg(UserIndex, "42", FontTypeNames.FONTTYPE_New_GRUPO)
         'Call WriteConsoleMsg(userindex, "Se envio la invitacion a " & UserList(Invitado).name & ", ahora solo resta aguardar su respuesta.", FontTypeNames.FONTTYPE_INFOIAO)
-132     Call WriteConsoleMsg(InvitadoIndex, Remitente.name & " te invitó a unirse a su grupo.", FontTypeNames.FONTTYPE_New_GRUPO)
+132     Call WriteConsoleMsg(InvitadoIndex, Remitente.Name & " te invitó a unirse a su grupo.", FontTypeNames.fonttype_new_grupo)
                 
 134     With UserList(InvitadoIndex)
                 
@@ -75,7 +86,7 @@ Public Sub InvitarMiembro(ByVal UserIndex As Integer, ByVal InvitadoIndex As Int
                 
         End With
 
-142     Call WritePreguntaBox(InvitadoIndex, Remitente.name & " te invito a unirse a su grupo. ¿Deseas unirte?")
+142     Call WritePreguntaBox(InvitadoIndex, Remitente.Name & " te invito a unirse a su grupo. ¿Deseas unirte?")
 
         Exit Sub
 
@@ -103,7 +114,7 @@ Public Sub EcharMiembro(ByVal UserIndex As Integer, ByVal Indice As Byte)
             End If
     
 106         If .Lider = UserIndex Then
-108             Call WriteConsoleMsg(UserIndex, "Tu no podés hechar usuarios del grupo.", FontTypeNames.FONTTYPE_New_GRUPO)
+108             Call WriteConsoleMsg(UserIndex, "Tu no podés hechar usuarios del grupo.", FontTypeNames.fonttype_new_grupo)
                 Exit Sub
             
             End If
@@ -111,7 +122,7 @@ Public Sub EcharMiembro(ByVal UserIndex As Integer, ByVal Indice As Byte)
 110         UserIndexEchar = UserList(.Lider).Grupo.Miembros(Indice + 1)
 
 112         If UserIndexEchar <> UserIndex Then
-114             Call WriteConsoleMsg(UserIndex, "No podés expulsarte a ti mismo.", FontTypeNames.FONTTYPE_New_GRUPO)
+114             Call WriteConsoleMsg(UserIndex, "No podés expulsarte a ti mismo.", FontTypeNames.fonttype_new_grupo)
                 Exit Sub
             End If
 
