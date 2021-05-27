@@ -103,7 +103,6 @@ Module=Protocol_Prepares; Codigo\Protocol_Prepares.bas
 Class=clsIniManager; Codigo\clsIniManager.cls
 Module=Penas; Codigo\Penas.bas
 Class=clsByteQueue; Codigo\clsNewByteQueue.cls
-Module=Protocol_Packets; Codigo\Protocol_Packets.bas
 IconForm="frmMain"
 Startup="Sub Main"
 HelpFile=""
