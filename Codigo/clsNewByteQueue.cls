@@ -1650,7 +1650,7 @@ Public Function WriteID(ByVal Value As Byte) As Long
     Call WriteInteger(Value)
     Call WriteInteger(0)
 
-    WriteID = 3
+    WriteID = 4
 
 End Function
 
