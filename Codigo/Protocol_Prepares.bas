@@ -565,7 +565,7 @@ Public Function PrepareMessageNpcUpdateHP(ByVal NpcIndex As Integer) As t_DataBu
         
         Call .EndPacket
         
-        PrepareMessageCharUpdateHP = ConvertDataBuffer(.Length, .ReadAll)
+        PrepareMessageNpcUpdateHP = ConvertDataBuffer(.Length, .ReadAll)
 
     End With
 
