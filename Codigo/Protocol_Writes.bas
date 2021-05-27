@@ -5638,7 +5638,7 @@ End Sub
 Public Sub WriteQuestDetails(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, Optional QuestSlot As Byte = 0)
 
     '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-    'Envía el paquete QuestDetails y la informaciín correspondiente.
+    'Envía el paquete QuestDetails y la información correspondiente.
     'Last modified: 30/01/2010 by Amraphen
     '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     Dim i As Integer
@@ -5653,7 +5653,7 @@ Public Sub WriteQuestDetails(ByVal UserIndex As Integer, ByVal QuestIndex As Int
         'Se usa la variable QuestSlot para saber si enviamos la info de una quest ya empezada o la info de una quest que no se aceptí todavía (1 para el primer caso y 0 para el segundo)
         Call .WriteByte(IIf(QuestSlot, 1, 0))
         
-        'Enviamos nombre, descripciín y nivel requerido de la quest
+        'Enviamos nombre, descripción y nivel requerido de la quest
         'Call .WriteASCIIString(QuestList(QuestIndex).Nombre)
         'Call .WriteASCIIString(QuestList(QuestIndex).Desc)
         Call .WriteInteger(QuestIndex)
@@ -5734,7 +5734,7 @@ End Sub
 Public Sub WriteQuestListSend(ByVal UserIndex As Integer)
 
     '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-    'Envía el paquete QuestList y la informaciín correspondiente.
+    'Envía el paquete QuestList y la información correspondiente.
     'Last modified: 30/01/2010 by Amraphen
     '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     Dim i       As Integer
@@ -5782,7 +5782,7 @@ End Sub
 Public Sub WriteNpcQuestListSend(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
 
     '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-    'Envía el paquete QuestList y la informaciín correspondiente.
+    'Envía el paquete QuestList y la información correspondiente.
     'Last modified: 30/01/2010 by Amraphen
     '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     Dim i       As Integer
