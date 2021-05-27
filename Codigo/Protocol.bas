@@ -7119,7 +7119,7 @@ Private Sub HandleInformation(ByVal UserIndex As Integer)
         Else
 
             If .Faccion.FuerzasCaos = 0 Then
-                Call WriteChatOverHead(UserIndex, "No perteneces a la legiín oscura!!!", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
+                Call WriteChatOverHead(UserIndex, "No perteneces a la legión oscura!!!", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
                 Exit Sub
 
             End If
@@ -7183,7 +7183,7 @@ Private Sub HandleReward(ByVal UserIndex As Integer)
         Else
 
             If .Faccion.FuerzasCaos = 0 Then
-                Call WriteChatOverHead(UserIndex, "No perteneces a la legiín oscura!!!", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
+                Call WriteChatOverHead(UserIndex, "No perteneces a la legión oscura!!!", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
                 Exit Sub
 
             End If
@@ -8614,7 +8614,7 @@ Private Sub HandleCreaturesInMap(ByVal UserIndex As Integer)
     '***************************************************
     'Author: Juan Martín Sotuyo Dodero (Maraxus)
     'Last Modification: 30/07/06
-    'Pablo (ToxicWaste): modificaciones generales para simplificar la visualizaciín.
+    'Pablo (ToxicWaste): modificaciones generales para simplificar la visualización.
     '***************************************************
 
     With UserList(UserIndex)
@@ -12777,7 +12777,7 @@ Private Sub HandleCouncilKick(ByVal UserIndex As Integer)
                     End If
                     
                     If .flags.Privilegios And PlayerType.ChaosCouncil Then
-                        Call WriteConsoleMsg(tUser, "Has sido echado del consejo de la Legiín Oscura", FontTypeNames.FONTTYPE_TALK)
+                        Call WriteConsoleMsg(tUser, "Has sido echado del consejo de la Legión Oscura", FontTypeNames.FONTTYPE_TALK)
                         .flags.Privilegios = .flags.Privilegios - PlayerType.ChaosCouncil
                         
                         Call WarpUserChar(tUser, .Pos.Map, .Pos.X, .Pos.Y)
@@ -13547,7 +13547,7 @@ Private Sub HandleRemovePunishment(ByVal UserIndex As Integer)
                 End If
                 
                 If PersonajeExiste(UserName) Then
-                    Call LogGM(.Name, "Borro la pena " & punishment & " de " & UserName & " y la cambií por: " & NewText)
+                    Call LogGM(.Name, "Borro la pena " & punishment & " de " & UserName & " y la cambió por: " & NewText)
                     
                     If Database_Enabled Then
                         Call CambiarPenaDatabase(UserName, punishment, .Name & ": <" & NewText & "> " & Date & " " & Time)
@@ -14637,7 +14637,7 @@ Public Sub HandleChangeMapInfoBackup(ByVal UserIndex As Integer)
         
         If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios Or PlayerType.RoleMaster)) Then Exit Sub
         
-        Call LogGM(.Name, .Name & " ha cambiado la informaciín sobre el BackUp")
+        Call LogGM(.Name, .Name & " ha cambiado la información sobre el BackUp")
         
         'Change the boolean to byte in a fast way
         If doTheBackUp Then
@@ -16206,11 +16206,11 @@ Private Sub HandleOfertaDeSubasta(ByVal UserIndex As Integer)
             Call WriteUpdateGold(UserIndex)
             
             If Subasta.TiempoRestanteSubasta < 60 Then
-                Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Oferta mejorada por: " & .Name & " (Ofrece " & PonerPuntos(Oferta) & " monedas de oro) - Tiempo Extendido. Escribe /SUBASTA para mas informaciín.", FontTypeNames.FONTTYPE_SUBASTA))
+                Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Oferta mejorada por: " & .Name & " (Ofrece " & PonerPuntos(Oferta) & " monedas de oro) - Tiempo Extendido. Escribe /SUBASTA para mas información.", FontTypeNames.FONTTYPE_SUBASTA))
                 Call LogearEventoDeSubasta(.Name & ": Mejoro la oferta en el ultimo minuto ofreciendo " & PonerPuntos(Oferta) & " monedas.")
                 Subasta.TiempoRestanteSubasta = Subasta.TiempoRestanteSubasta + 30
             Else
-                Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Oferta mejorada por: " & .Name & " (Ofrece " & PonerPuntos(Oferta) & " monedas de oro). Escribe /SUBASTA para mas informaciín.", FontTypeNames.FONTTYPE_SUBASTA))
+                Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Oferta mejorada por: " & .Name & " (Ofrece " & PonerPuntos(Oferta) & " monedas de oro). Escribe /SUBASTA para mas información.", FontTypeNames.FONTTYPE_SUBASTA))
                 Call LogearEventoDeSubasta(.Name & ": Mejoro la oferta ofreciendo " & PonerPuntos(Oferta) & " monedas.")
                 Subasta.HuboOferta = True
                 Subasta.PosibleCancelo = False
@@ -16845,7 +16845,7 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
 
                     End If
                         
-                    'Cambiamos si alguno es municiín
+                    'Cambiamos si alguno es munición
                     If .Invent.MunicionEqpSlot = SlotViejo Then
                         .Invent.MunicionEqpSlot = SlotNuevo
 
@@ -16974,7 +16974,7 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
     
                 End If
                     
-                'Cambiamos si alguno es municiín
+                'Cambiamos si alguno es munición
                 If .Invent.MunicionEqpSlot = SlotViejo Then
                     .Invent.MunicionEqpSlot = SlotNuevo
                 ElseIf .Invent.MunicionEqpSlot = SlotNuevo Then
