@@ -1339,6 +1339,9 @@ Sub UserDie(ByVal UserIndex As Integer)
         Dim aN As Integer
     
 100     With UserList(UserIndex)
+            .Counters.Mimetismo = 0
+            .flags.Mimetizado = e_EstadoMimetismo.Desactivado
+            Call RefreshCharStatus(UserIndex)
     
             'Sonido
 102         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(IIf(.genero = eGenero.Hombre, e_SoundIndex.MUERTE_HOMBRE, e_SoundIndex.MUERTE_MUJER), .Pos.X, .Pos.Y))
