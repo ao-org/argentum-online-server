@@ -16423,7 +16423,7 @@ Private Sub HandleBorrarPJ(ByVal UserIndex As Integer)
                 
         'HarThaoS: Si teine clan y es leader no lo puedo eliminar
         If PersonajeEsLeader(UserDelete) Then
-            Call WriteShowMessageBox(UserIndex, "No puedes eliminar el personaje por ser lider de un clan.")
+            Call WriteShowMessageBox(UserIndex, "No puedes eliminar el personaje por ser líder de un clan.")
             Exit Sub
         End If
         
