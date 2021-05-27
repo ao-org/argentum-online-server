@@ -17959,10 +17959,10 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
                                 Next Index
                                 
                                 Log = "Repuesta Afirmativa 1-6 "
-                                'Call WriteConsoleMsg(UserList(UserIndex).Grupo.PropuestaDe, "í" & UserList(UserIndex).name & " a sido aíadido al grupo!", FontTypeNames.FONTTYPE_INFOIAO)
+                                'Call WriteConsoleMsg(UserList(UserIndex).Grupo.PropuestaDe, "í" & UserList(UserIndex).name & " a sido añadido al grupo!", FontTypeNames.FONTTYPE_INFOIAO)
                                 Call WriteLocaleMsg(UserList(UserIndex).Grupo.PropuestaDe, "40", FontTypeNames.FONTTYPE_INFOIAO, UserList(UserIndex).Name)
                                 
-                                Call WriteConsoleMsg(UserIndex, "¡Has sido aíadido al grupo!", FontTypeNames.FONTTYPE_INFOIAO)
+                                Call WriteConsoleMsg(UserIndex, "¡Has sido añadido al grupo!", FontTypeNames.FONTTYPE_INFOIAO)
                                 
                                 Log = "Repuesta Afirmativa 1-7 "
                                 
