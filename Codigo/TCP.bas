@@ -689,7 +689,7 @@ Sub CloseSocket(ByVal UserIndex As Integer)
             End If
     
             'Empty buffer for reuse
-126         Call .incomingData.ReadASCIIStringFixed(.incomingData.Length)
+126         Call .incomingData.Clean
     
 128         If .flags.UserLogged Then
 130             Call CloseUser(UserIndex)
@@ -1043,7 +1043,7 @@ Sub ConnectUser(ByVal UserIndex As Integer, _
         
 172         If EsGM(UserIndex) Then
 174             Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » " & Name & " se conecto al juego.", FontTypeNames.FONTTYPE_INFOBOLD))
-176             Call LogGM(.Name, "Se conectó con IP: " & .IP)
+176             Call LogGM(.Name, "Se conectó con IP: " & .ip)
 
             Else
 

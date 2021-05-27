@@ -422,6 +422,11 @@ Public Sub HandleHome(ByVal UserIndex As Integer)
                 Exit Sub
 
             End If
+            
+            If .flags.EnReto Then
+                Call WriteConsoleMsg(UserIndex, "No podés regresar desde un reto. Usa /ABANDONAR para admitir la derrota y volver a la ciudad.", FontTypeNames.FONTTYPE_FIGHT)
+                Exit Sub
+            End If
 
 116         If .flags.Traveling = 0 Then
             
