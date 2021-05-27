@@ -548,6 +548,29 @@ Public Function PrepareMessageCharUpdateHP(ByVal UserIndex As Integer) As t_Data
 
 End Function
 
+Public Function PrepareMessageNpcUpdateHP(ByVal NpcIndex As Integer) As t_DataBuffer
+
+    '***************************************************
+    'Author: Juan Martín Sotuyo Dodero (Maraxus)
+    'Last Modification: 08/08/07
+    'Last Modified by: Rapsodius
+    'Added X and Y positions for 3D Sounds
+    '***************************************************
+    With auxiliarBuffer
+        Call .WriteID(ServerPacketID.CharUpdateHP)
+        
+        Call .WriteInteger(NpcList(NpcIndex).Char.CharIndex)
+        Call .WriteInteger(NpcList(NpcIndex).Stats.MinHp)
+        Call .WriteInteger(NpcList(NpcIndex).Stats.MaxHp)
+        
+        Call .EndPacket
+        
+        PrepareMessageCharUpdateHP = ConvertDataBuffer(.Length, .ReadAll)
+
+    End With
+
+End Function
+
 Public Function PrepareMessageArmaMov(ByVal CharIndex As Integer) As t_DataBuffer
 
     '***************************************************
