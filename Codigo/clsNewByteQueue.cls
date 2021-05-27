@@ -1640,13 +1640,14 @@ Public Function WriteID(ByVal Value As Byte) As Long
     End If
 
     Call EndPacket
+    
     #If BYTE_QUEUE_DEBUG = 1 Then
         'Debug.Print "WriteID: " & value
     #End If
 
     PacketStartPosition = queueLength
 
-    Call WriteByte(Value)
+    Call WriteInteger(Value)
     Call WriteInteger(0)
 
     WriteID = 3
@@ -1703,18 +1704,14 @@ Public Function ReadID() As Byte
 
     If GetHeaderSize > queueLength Then
         Call ErrRaise(NOT_ENOUGH_DATA)
-
         Exit Function
 
     End If
 
-    'Call ReadNewPacket
-
     Dim PacketID As Byte
 
-    PacketID = ReadByte()
+    PacketID = ReadInteger()
     LastLength = ReadInteger()
-    'Call RemoveData(ReadData(buf, 3))
 
     ReadID = PacketID
 
