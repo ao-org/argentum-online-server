@@ -932,15 +932,15 @@ Public Sub v_RutinaElecciones()
 
 104         If Not guilds(i) Is Nothing Then
 106             If guilds(i).RevisarElecciones = e_elecciones.HayGanador Then
-108                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor » " & guilds(i).GetLeader & " es el nuevo lider de " & guilds(i).GuildName & "!", FontTypeNames.FONTTYPE_SERVER))
+108                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor » " & guilds(i).GetLeader & " es el nuevo líder de " & guilds(i).GuildName & "!", FontTypeNames.FONTTYPE_SERVER))
                 ElseIf guilds(i).RevisarElecciones = e_elecciones.AbroElecciones Then
-                    Call SendData(SendTarget.ToGuildMembers, guildIndex(guilds(i).GuildName), PrepareMessageConsoleMsg("Elecciones > ¡Han comenzado las elecciones del clan! Puedes votar escribiendo /VOTO seguido del nombre del personaje, por ejemplo: /VOTO Pepito", FontTypeNames.FONTTYPE_GUILD))
+                    Call SendData(SendTarget.ToGuildMembers, GuildIndex(guilds(i).GuildName), PrepareMessageConsoleMsg("Elecciones > ¡Han comenzado las elecciones del clan! Puedes votar escribiendo /VOTO seguido del nombre del personaje, por ejemplo: /VOTO Pepito", FontTypeNames.FONTTYPE_GUILD))
                 ElseIf guilds(i).RevisarElecciones = e_elecciones.HuboEmpate Then
-                    Call SendData(SendTarget.ToGuildMembers, guildIndex(guilds(i).GuildName), PrepareMessageConsoleMsg("Elecciones > ¡Se ha declarado un empate en las votaciones del clan!", FontTypeNames.FONTTYPE_GUILD))
+                    Call SendData(SendTarget.ToGuildMembers, GuildIndex(guilds(i).GuildName), PrepareMessageConsoleMsg("Elecciones > ¡Se ha declarado un empate en las votaciones del clan!", FontTypeNames.FONTTYPE_GUILD))
                 ElseIf guilds(i).RevisarElecciones = e_elecciones.NoVotos Then
-                    Call SendData(SendTarget.ToGuildMembers, guildIndex(guilds(i).GuildName), PrepareMessageConsoleMsg("Elecciones > ¡No se ha registrado ningún ganador. Se han cerrado las elecciones", FontTypeNames.FONTTYPE_GUILD))
+                    Call SendData(SendTarget.ToGuildMembers, GuildIndex(guilds(i).GuildName), PrepareMessageConsoleMsg("Elecciones > ¡No se ha registrado ningún ganador. Se han cerrado las elecciones", FontTypeNames.FONTTYPE_GUILD))
                 ElseIf guilds(i).RevisarElecciones = e_elecciones.HayGanadorPeroAbandono Then
-                    Call SendData(SendTarget.ToGuildMembers, guildIndex(guilds(i).GuildName), PrepareMessageConsoleMsg("Elecciones > ¡Se ha registrador un ganador pero ya no forma parte del clan!", FontTypeNames.FONTTYPE_GUILD))
+                    Call SendData(SendTarget.ToGuildMembers, GuildIndex(guilds(i).GuildName), PrepareMessageConsoleMsg("Elecciones > ¡Se ha registrador un ganador pero ya no forma parte del clan!", FontTypeNames.FONTTYPE_GUILD))
                 End If
                 
             End If

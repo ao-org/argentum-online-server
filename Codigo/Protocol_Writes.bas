@@ -5387,7 +5387,7 @@ Public Sub WriteDatosGrupo(ByVal UserIndex As Integer)
                 For i = 1 To UserList(.Grupo.Lider).Grupo.CantidadMiembros
 
                     If i = 1 Then
-                        Call .outgoingData.WriteASCIIString(UserList(.Grupo.Miembros(i)).name & "(Lider)")
+                        Call .outgoingData.WriteASCIIString(UserList(.Grupo.Miembros(i)).Name & "(Líder)")
                     Else
                         Call .outgoingData.WriteASCIIString(UserList(.Grupo.Miembros(i)).name)
 
@@ -5400,7 +5400,7 @@ Public Sub WriteDatosGrupo(ByVal UserIndex As Integer)
                 For i = 1 To UserList(.Grupo.Lider).Grupo.CantidadMiembros
                 
                     If i = 1 Then
-                        Call .outgoingData.WriteASCIIString(UserList(UserList(.Grupo.Lider).Grupo.Miembros(i)).name & "(Lider)")
+                        Call .outgoingData.WriteASCIIString(UserList(UserList(.Grupo.Lider).Grupo.Miembros(i)).Name & "(Líder)")
                     Else
                         Call .outgoingData.WriteASCIIString(UserList(UserList(.Grupo.Lider).Grupo.Miembros(i)).name)
 
