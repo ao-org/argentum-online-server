@@ -3074,20 +3074,24 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
                 If EsNewbie(UserIndex) And ObjData(.Invent.Object(slot).ObjIndex).Newbie = 1 Then
                     Call WriteConsoleMsg(UserIndex, "No se pueden tirar los objetos Newbies.", FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
-
                 End If
             
+                If ObjData(.Invent.Object(slot).ObjIndex).Intirable = 1 And Not EsGM(UserIndex) Then
+                    Call WriteConsoleMsg(UserIndex, "Acción no permitida.", FontTypeNames.FONTTYPE_INFO)
+                    Exit Sub
+                ElseIf ObjData(.Invent.Object(slot).ObjIndex).Intirable = 1 And EsGM(UserIndex) Then
+                    If slot <= UserList(UserIndex).CurrentInventorySlots And slot > 0 Then
+                        If .Invent.Object(slot).ObjIndex = 0 Then Exit Sub
+                        Call DropObj(UserIndex, slot, amount, .Pos.Map, .Pos.X, .Pos.Y)
+                    End If
+                    Exit Sub
+                End If
+                
                 If ObjData(.Invent.Object(slot).ObjIndex).Instransferible = 1 Then
                     Call WriteConsoleMsg(UserIndex, "Acción no permitida.", FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
-
                 End If
             
-                If ObjData(.Invent.Object(slot).ObjIndex).Intirable = 1 Then
-                    Call WriteConsoleMsg(UserIndex, "Acción no permitida.", FontTypeNames.FONTTYPE_INFO)
-                    Exit Sub
-
-                End If
 
             End If
         
