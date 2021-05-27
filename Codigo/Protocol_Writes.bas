@@ -4892,6 +4892,9 @@ Public Sub WriteShowGMPanelForm(ByVal UserIndex As Integer)
         
         Call .WriteInteger(UserList(UserIndex).Char.Head)
         Call .WriteInteger(UserList(UserIndex).Char.Body)
+        Call .WriteInteger(UserList(UserIndex).Char.CascoAnim)
+        Call .WriteInteger(UserList(UserIndex).Char.WeaponAnim)
+        Call .WriteInteger(UserList(UserIndex).Char.ShieldAnim)
         
         Call .EndPacket
     End With
