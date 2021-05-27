@@ -1340,6 +1340,15 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
                 Exit Sub
             End If
             
+            If UserList(UserIndex).flags.Navegando = 1 Then
+                Call WriteConsoleMsg(UserIndex, "No podés lanzar el hechizo mientras estás navegando.", FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
+            
+            If UserList(tU).flags.Navegando = 1 Then
+                Call WriteConsoleMsg(UserIndex, "No podés lanzarle el hechizo mientras está navegando.", FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
 116         If UserList(UserIndex).flags.Montado Then
 118             Call WriteConsoleMsg(UserIndex, "No podés lanzar invisibilidad mientras usas una montura.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub

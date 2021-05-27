@@ -228,6 +228,13 @@ Public Sub DoNavega(ByVal UserIndex As Integer, _
 142                 .Counters.Mimetismo = 0
 144                 .flags.Mimetizado = e_EstadoMimetismo.Desactivado
                 End If
+                
+                If .flags.invisible = 1 Then
+                    Call WriteConsoleMsg(UserIndex, "Pierdes el efecto de la invisibilidad.", FontTypeNames.FONTTYPE_INFO)
+                    .flags.invisible = 0
+                    .Counters.Invisibilidad = 0
+                    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(UserList(UserIndex).Char.CharIndex, False))
+                End If
     
 146             Call EquiparBarco(UserIndex)
             
@@ -1439,7 +1446,7 @@ Public Sub DoPescar(ByVal UserIndex As Integer, Optional ByVal RedDePesca As Boo
 146                     If Not MeterItemEnInventario(UserIndex, MiObj) Then Call TirarItemAlPiso(.Pos, MiObj)
                     
                         ' Le mandamos un mensaje
-148                     Call WriteConsoleMsg(UserIndex, "¡Has conseguido " & ObjData(EspecialesPesca(i).ObjIndex).name & "!", FontTypeNames.FONTTYPE_INFO)
+148                     Call WriteConsoleMsg(UserIndex, "¡Has conseguido " & ObjData(EspecialesPesca(i).ObjIndex).Name & "!", FontTypeNames.FONTTYPE_INFO)
                     End If
 
                 Next
@@ -1688,7 +1695,7 @@ Public Sub DoRobar(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
             
                 Else
 272                 Call WriteConsoleMsg(LadronIndex, "¡No has logrado robar nada!", FontTypeNames.FONTTYPE_INFO)
-274                 Call WriteConsoleMsg(VictimaIndex, "¡" & .name & " ha intentado robarte!", FontTypeNames.FONTTYPE_INFO)
+274                 Call WriteConsoleMsg(VictimaIndex, "¡" & .Name & " ha intentado robarte!", FontTypeNames.FONTTYPE_INFO)
                 
 276                 Call SubirSkill(LadronIndex, eSkill.Robar)
 
@@ -2154,7 +2161,7 @@ Public Sub DoMineria(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byt
 154                     If Not MeterItemEnInventario(UserIndex, MiObj) Then Call TirarItemAlPiso(.Pos, MiObj)
 
                         ' Le mandamos un mensaje
-156                     Call WriteConsoleMsg(UserIndex, "¡Has conseguido " & ObjData(Yacimiento.Item(i).ObjIndex).name & "!", FontTypeNames.FONTTYPE_INFO)
+156                     Call WriteConsoleMsg(UserIndex, "¡Has conseguido " & ObjData(Yacimiento.Item(i).ObjIndex).Name & "!", FontTypeNames.FONTTYPE_INFO)
                     End If
     
                 Next
