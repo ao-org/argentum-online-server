@@ -7396,7 +7396,7 @@ Private Sub HandleGuildOnline(ByVal UserIndex As Integer)
             onlineList = modGuilds.m_ListaDeMiembrosOnline(UserIndex, .GuildIndex)
         
         If .GuildIndex <> 0 Then
-            Call WriteConsoleMsg(UserIndex, "Compaíeros de tu clan conectados: " & onlineList, FontTypeNames.FONTTYPE_GUILDMSG)
+            Call WriteConsoleMsg(UserIndex, "Compañeros de tu clan conectados: " & onlineList, FontTypeNames.FONTTYPE_GUILDMSG)
             
         Else
             Call WriteConsoleMsg(UserIndex, "No pertences a ningún clan.", FontTypeNames.FONTTYPE_GUILDMSG)
@@ -16466,7 +16466,7 @@ Private Sub HandleCuentaRegresiva(ByVal UserIndex As Integer)
 
         If Not .flags.Privilegios And PlayerType.user Then
             CuentaRegresivaTimer = Seconds
-            Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("íEmpezando cuenta regresiva desde: " & Seconds & " segundos...!", FontTypeNames.FONTTYPE_GUILD))
+            Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("¡Empezando cuenta regresiva desde: " & Seconds & " segundos...!", FontTypeNames.FONTTYPE_GUILD))
         
             
         End If
@@ -17925,13 +17925,13 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
                     If UserList(UserIndex).Grupo.PropuestaDe <> 0 Then
                 
                         If UserList(UserList(UserIndex).Grupo.PropuestaDe).Grupo.Lider <> UserList(UserIndex).Grupo.PropuestaDe Then
-                            Call WriteConsoleMsg(UserIndex, "íEl lider del grupo a cambiado, imposible unirse!", FontTypeNames.FONTTYPE_INFOIAO)
+                            Call WriteConsoleMsg(UserIndex, "¡El lider del grupo a cambiado, imposible unirse!", FontTypeNames.FONTTYPE_INFOIAO)
                         Else
                         
                             Log = "Repuesta Afirmativa 1-1 "
                         
                             If UserList(UserList(UserIndex).Grupo.PropuestaDe).Grupo.Lider = 0 Then
-                                Call WriteConsoleMsg(UserIndex, "íEl grupo ya no existe!", FontTypeNames.FONTTYPE_INFOIAO)
+                                Call WriteConsoleMsg(UserIndex, "¡El grupo ya no existe!", FontTypeNames.FONTTYPE_INFOIAO)
                             Else
                             
                                 Log = "Repuesta Afirmativa 1-2 "
