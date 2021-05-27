@@ -661,6 +661,16 @@ Sub HechizoInvocacion(ByVal UserIndex As Integer, ByRef b As Boolean)
 120                 Call WriteConsoleMsg(UserIndex, "Para invocar el fuego fatuo no debes tener otras criaturas.", FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
+                
+119             If Hechizos(h).NumNpc = ELEMENTAL_VIENTO And .NroMascotas >= 1 Then
+121                 Call WriteConsoleMsg(UserIndex, "Para invocar elemental de viento no debes tener otras criaturas.", FontTypeNames.FONTTYPE_INFO)
+                    Exit Sub
+                End If
+                
+123             If Hechizos(h).NumNpc = ELEMENTAL_FUEGO And .NroMascotas >= 1 Then
+125                 Call WriteConsoleMsg(UserIndex, "Para invocar el elemental de fuego no debes tener otras criaturas.", FontTypeNames.FONTTYPE_INFO)
+                    Exit Sub
+                End If
         
                 'No permitimos se invoquen criaturas en zonas seguras
 122             If MapInfo(.Pos.Map).Seguro = 1 Or MapData(.Pos.Map, .Pos.X, .Pos.Y).trigger = eTrigger.ZONASEGURA Then

@@ -3,6 +3,8 @@ Option Explicit
 
 ' WyroX: Hardcodeada de la vida...
 Public Const FUEGOFATUO      As Integer = 964
+Public Const ELEMENTAL_VIENTO      As Integer = 963
+Public Const ELEMENTAL_FUEGO      As Integer = 962
 
 'Damos a los NPCs el mismo rango de visión que un PJ
 Public Const RANGO_VISION_X  As Byte = 11
