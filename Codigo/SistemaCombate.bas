@@ -977,6 +977,7 @@ Public Sub UsuarioAtacaNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer
             Else
 110             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_IMPACTO2, NpcList(NpcIndex).Pos.X, NpcList(NpcIndex).Pos.Y))
             End If
+            
         
             ' Golpe Paralizador
 112         If UserList(UserIndex).flags.Paraliza = 1 And NpcList(NpcIndex).flags.Paralizado = 0 Then
@@ -1880,14 +1881,28 @@ Public Function PuedeAtacarNPC(ByVal AttackerIndex As Integer, ByVal NpcIndex As
             End If
         End If
         
+        
 150     If Status(AttackerIndex) = Ciudadano Then
 152         If NpcList(NpcIndex).MaestroUser > 0 And NpcList(NpcIndex).MaestroUser = AttackerIndex Then
 154             Call WriteConsoleMsg(AttackerIndex, "No puedes atacar a tus mascotas siendo un ciudadano.", FontTypeNames.FONTTYPE_INFO)
 156             PuedeAtacarNPC = False
                 Exit Function
             End If
+
         End If
         
+        If NpcList(NpcIndex).NPCtype = eNPCType.GuardiaReal Then
+            If UserList(AttackerIndex).flags.Seguro Then
+                Call WriteConsoleMsg(AttackerIndex, "No puedes atacar un guardial real teniendo el seguro activado.", FontTypeNames.FONTTYPE_INFO)
+                PuedeAtacarNPC = False
+                Exit Function
+            Else
+                Call WriteConsoleMsg(AttackerIndex, "Has atacado un guardia real, te has convertido en un criminal.", FontTypeNames.FONTTYPE_INFO)
+                Call VolverCriminal(AttackerIndex)
+                PuedeAtacarNPC = True
+                Exit Function
+            End If
+        End If
         
         ' El seguro es SOLO para ciudadanos. La armada debe desenlistarse antes de querer atacar y se checkea arriba.
         ' Los criminales o Caos, ya estan mas alla del seguro.
