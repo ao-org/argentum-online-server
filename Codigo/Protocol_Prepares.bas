@@ -537,8 +537,8 @@ Public Function PrepareMessageCharUpdateHP(ByVal UserIndex As Integer) As t_Data
         Call .WriteID(ServerPacketID.CharUpdateHP)
         
         Call .WriteInteger(UserList(UserIndex).Char.CharIndex)
-        Call .WriteInteger(UserList(UserIndex).Stats.MinHp)
-        Call .WriteInteger(UserList(UserIndex).Stats.MaxHp)
+        Call .WriteLong(UserList(UserIndex).Stats.MinHp)
+        Call .WriteLong(UserList(UserIndex).Stats.MaxHp)
         
         Call .EndPacket
         
@@ -560,8 +560,8 @@ Public Function PrepareMessageNpcUpdateHP(ByVal NpcIndex As Integer) As t_DataBu
         Call .WriteID(ServerPacketID.CharUpdateHP)
         
         Call .WriteInteger(NpcList(NpcIndex).Char.CharIndex)
-        Call .WriteInteger(NpcList(NpcIndex).Stats.MinHp)
-        Call .WriteInteger(NpcList(NpcIndex).Stats.MaxHp)
+        Call .WriteLong(NpcList(NpcIndex).Stats.MinHp)
+        Call .WriteLong(NpcList(NpcIndex).Stats.MaxHp)
         
         Call .EndPacket
         
