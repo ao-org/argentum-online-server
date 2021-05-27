@@ -566,7 +566,7 @@ Function PuedeUsarObjeto(UserIndex As Integer, ByVal ObjIndex As Integer, Option
 
 PuedeUsarObjeto_Err:
 162     Call RegistrarError(Err.Number, Err.Description, "ModLadder.PuedeUsarObjeto", Erl)
-164     Resume Next
+164     'Resume Next ' WyroX: Si hay error que salga directamente
 
 End Function
 

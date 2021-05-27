@@ -2828,7 +2828,7 @@ Public Sub WriteChangeBankSlot(ByVal UserIndex As Integer, ByVal slot As Byte)
     On Error GoTo ErrHandler
         
     Dim ObjIndex    As Integer
-    Dim obData      As ObjData
+    Dim Valor       As Long
     Dim PodraUsarlo As Byte
 
     With UserList(UserIndex).outgoingData
@@ -2841,13 +2841,13 @@ Public Sub WriteChangeBankSlot(ByVal UserIndex As Integer, ByVal slot As Byte)
         Call .WriteInteger(ObjIndex)
         
         If ObjIndex > 0 Then
-            obData = ObjData(ObjIndex)
+            Valor = ObjData(ObjIndex).Valor
             PodraUsarlo = PuedeUsarObjeto(UserIndex, ObjIndex)
 
         End If
 
         Call .WriteInteger(UserList(UserIndex).BancoInvent.Object(slot).amount)
-        Call .WriteLong(obData.Valor)
+        Call .WriteLong(Valor)
         Call .WriteByte(PodraUsarlo)
         
         Call .EndPacket
