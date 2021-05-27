@@ -5372,7 +5372,7 @@ Public Sub WriteDatosGrupo(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
 
     With UserList(UserIndex)
-        Call .outgoingData.WriteByte(ServerPacketID.DatosGrupo)
+        Call .outgoingData.WriteID(ServerPacketID.DatosGrupo)
         Call .outgoingData.WriteBoolean(.Grupo.EnGrupo)
         
         If .Grupo.EnGrupo = True Then
