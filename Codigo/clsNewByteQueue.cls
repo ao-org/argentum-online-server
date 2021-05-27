@@ -1700,7 +1700,7 @@ Public Function ValidCRC() As Boolean
 
 End Function
 
-Public Function ReadID() As Byte
+Public Function ReadID() As Integer
 
     If GetHeaderSize > queueLength Then
         Call ErrRaise(NOT_ENOUGH_DATA)
@@ -1708,7 +1708,7 @@ Public Function ReadID() As Byte
 
     End If
 
-    Dim PacketID As Byte
+    Dim PacketID As Integer
 
     PacketID = ReadInteger()
     LastLength = ReadInteger()
