@@ -292,6 +292,7 @@ Sub NpcLanzaSpellSobreNpc(ByVal NpcIndex As Integer, ByVal TargetNPC As Integer,
 116       .Stats.MinHp = .Stats.MinHp + Daño
 
 118       If .Stats.MinHp > .Stats.MaxHp Then .Stats.MinHp = .Stats.MaxHp
+            Call SendData(SendTarget.ToNPCArea, TargetNPC, PrepareMessageNpcUpdateHP(TargetNPC))
 
 120     ElseIf Hechizos(Spell).SubeHP = 2 Then
 
@@ -320,6 +321,8 @@ Sub NpcLanzaSpellSobreNpc(ByVal NpcIndex As Integer, ByVal TargetNPC As Integer,
 144       If .Stats.MinHp < 1 Then
 146         .Stats.MinHp = 0
 148         Call MuereNpc(TargetNPC, 0)
+          Else
+            Call SendData(SendTarget.ToNPCArea, TargetNPC, PrepareMessageNpcUpdateHP(TargetNPC))
           End If
 
 
@@ -2281,6 +2284,7 @@ Sub HechizoPropNPC(ByVal hIndex As Integer, ByVal NpcIndex As Integer, ByVal Use
 114             Call WriteLocaleMsg(UserIndex, "388", FontTypeNames.FONTTYPE_FIGHT, "la criatura¬" & DañoStr)
 
 116             Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageTextOverChar(DañoStr, NpcList(NpcIndex).Char.CharIndex, vbGreen))
+                Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageNpcUpdateHP(NpcIndex))
 118             b = True
             Else
 120             Call WriteConsoleMsg(UserIndex, "La criatura no tiene heridas que curar, el hechizo no tiene efecto.", FontTypeNames.FONTTYPE_INFOIAO)
@@ -2362,6 +2366,8 @@ Sub HechizoPropNPC(ByVal hIndex As Integer, ByVal NpcIndex As Integer, ByVal Use
 190         If NpcList(NpcIndex).Stats.MinHp < 1 Then
 192             NpcList(NpcIndex).Stats.MinHp = 0
 194             Call MuereNpc(NpcIndex, UserIndex)
+            Else
+                Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageNpcUpdateHP(NpcIndex))
             End If
 
         End If
@@ -4059,6 +4065,8 @@ Private Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, X As Byte, Y 
                     'UserList(UserIndex).Stats.Exp = UserList(UserIndex).Stats.Exp + NpcList(NpcIndex).GiveEXP
                     'UserList(UserIndex).Stats.GLD = UserList(UserIndex).Stats.GLD + NpcList(NpcIndex).GiveGLD
 150                 Call MuereNpc(NpcIndex, UserIndex)
+                Else
+                    Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageNpcUpdateHP(NpcIndex))
                 End If
 
             End If

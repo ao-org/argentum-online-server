@@ -661,6 +661,8 @@ Private Sub UserDañoNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
 174         If NpcList(NpcIndex).Stats.MinHp <= 0 Then
                 ' Drop items, respawn, etc.
 176             Call MuereNpc(NpcIndex, UserIndex)
+            Else
+                Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageNpcUpdateHP(NpcIndex))
             End If
 
         End With
@@ -902,6 +904,8 @@ Private Sub NpcDañoNpc(ByVal Atacante As Integer, ByVal Victima As Integer)
                 
 124                 Call MuereNpc(Victima, .MaestroUser)
 
+                Else
+                    Call SendData(SendTarget.ToNPCArea, Victima, PrepareMessageNpcUpdateHP(Victima))
                 End If
                 
             End With
