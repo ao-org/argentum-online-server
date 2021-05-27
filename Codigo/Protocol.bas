@@ -1462,7 +1462,7 @@ Public Function HandleIncomingData(ByVal UserIndex As Integer) As Boolean
             Call HandleIncomingDataNewPacks(UserIndex)
 
         Case Else
-            Call RegistrarError(-1, "Paquete inválido: " & PacketID & " UserIndex: " & UserIndex & " (IP: " & UserList(UserIndex).IP & ") Último paquete: " & UserList(UserIndex).LastPacketID & IIf(UserList(UserIndex).LastPacketID = ClientPacketID.NewPacketID, " (New: " & UserList(UserIndex).LastNewPacketID & ")", ""), "Protocol.HandleIncomingData", Erl)
+            Call RegistrarError(-1, "Paquete inválido: " & PacketID & " UserIndex: " & UserIndex & " (IP: " & UserList(UserIndex).ip & ") Último paquete: " & UserList(UserIndex).LastPacketID & IIf(UserList(UserIndex).LastPacketID = ClientPacketID.NewPacketID, " (New: " & UserList(UserIndex).LastNewPacketID & ")", ""), "Protocol.HandleIncomingData", Erl)
             Call CloseSocket(UserIndex)
 
     End Select
@@ -1757,7 +1757,7 @@ Public Sub HandleIncomingDataNewPacks(ByVal UserIndex As Integer)
             Call HandleLogMacroClickHechizo(UserIndex)
             
         Case Else
-            Call RegistrarError(-1, "New paquete inválido: " & PacketID & " UserIndex: " & UserIndex & " (IP: " & UserList(UserIndex).IP & ")", "Protocol.HandleIncomingDataNewPacks", Erl)
+            Call RegistrarError(-1, "New paquete inválido: " & PacketID & " UserIndex: " & UserIndex & " (IP: " & UserList(UserIndex).ip & ")", "Protocol.HandleIncomingDataNewPacks", Erl)
             Call CloseSocket(UserIndex)
             
     End Select
@@ -4600,7 +4600,7 @@ Private Sub HandleModifySkills(ByVal UserIndex As Integer)
             points(i) = .incomingData.ReadByte()
             
             If points(i) < 0 Then
-                Call LogHackAttemp(.Name & " IP:" & .IP & " trató de hackear los skills.")
+                Call LogHackAttemp(.Name & " IP:" & .ip & " trató de hackear los skills.")
                 .Stats.SkillPts = 0
                 Call CloseSocket(UserIndex)
                 Exit Sub
@@ -4611,7 +4611,7 @@ Private Sub HandleModifySkills(ByVal UserIndex As Integer)
         Next i
         
         If Count > .Stats.SkillPts Then
-            Call LogHackAttemp(.Name & " IP:" & .IP & " trató de hackear los skills.")
+            Call LogHackAttemp(.Name & " IP:" & .ip & " trató de hackear los skills.")
             Call CloseSocket(UserIndex)
             Exit Sub
 
@@ -8433,23 +8433,26 @@ Private Sub HandleGoNearby(ByVal UserIndex As Integer)
         'Check the user has enough powers
         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) Or Ayuda.Existe(UserName) Then
             tIndex = NameIndex(UserName)
-
-            'Si es dios o Admins no podemos salvo que nosotros tambiín lo seamos
-            If CompararPrivilegiosUser(UserIndex, tIndex) >= 0 Then
-                If tIndex <= 0 Then 'existe el usuario destino?
+            
+            If tIndex <= 0 Then
+                ' Si está offline, comparamos privilegios offline, para no revelar si está el gm conectado
+                If CompararPrivilegios(.flags.Privilegios, UserDarPrivilegioLevel(UserName)) >= 0 Then
                     Call WriteConsoleMsg(UserIndex, "Usuario offline.", FontTypeNames.FONTTYPE_INFO)
                 Else
-
+                    Call WriteConsoleMsg(UserIndex, "No podés ir cerca de un GM de mayor jerarquía.", FontTypeNames.FONTTYPE_INFO)
+                End If
+            Else
+                If CompararPrivilegiosUser(UserIndex, tIndex) >= 0 Then
                     For i = 2 To 5 'esto for sirve ir cambiando la distancia destino
                         For X = UserList(tIndex).Pos.X - i To UserList(tIndex).Pos.X + i
                             For Y = UserList(tIndex).Pos.Y - i To UserList(tIndex).Pos.Y + i
 
                                 If MapData(UserList(tIndex).Pos.Map, X, Y).UserIndex = 0 Then
                                     If LegalPos(UserList(tIndex).Pos.Map, X, Y, True, True) Then
+                                        Call WriteConsoleMsg(UserIndex, "Te teletransportaste cerca de " & UserList(tIndex).Name & ".", FontTypeNames.FONTTYPE_INFO)
                                         Call WarpUserChar(UserIndex, UserList(tIndex).Pos.Map, X, Y, True)
                                         Found = True
                                         Exit For
-
                                     End If
 
                                 End If
@@ -8464,14 +8467,12 @@ Private Sub HandleGoNearby(ByVal UserIndex As Integer)
                     
                     'No space found??
                     If Not Found Then
-                        Call WriteConsoleMsg(UserIndex, "Todos los lugares estín ocupados.", FontTypeNames.FONTTYPE_INFO)
-
+                        Call WriteConsoleMsg(UserIndex, "Todos los lugares están ocupados.", FontTypeNames.FONTTYPE_INFO)
                     End If
-
+                Else
+                    Call WriteConsoleMsg(UserIndex, "No podés ir cerca de un GM de mayor jerarquía.", FontTypeNames.FONTTYPE_INFO)
                 End If
-
             End If
-
         End If
 
     End With
@@ -16410,7 +16411,7 @@ Private Sub HandleBorrarPJ(ByVal UserIndex As Integer)
         End If
         
         If Not CheckUserAccount(UserDelete, UserList(UserIndex).AccountId) Then
-            Call LogHackAttemp(CuentaEmail & "[" & UserList(UserIndex).IP & "] intentó borrar el pj " & UserDelete)
+            Call LogHackAttemp(CuentaEmail & "[" & UserList(UserIndex).ip & "] intentó borrar el pj " & UserDelete)
             Call CloseSocket(UserIndex)
             Exit Sub
         End If
@@ -16435,7 +16436,7 @@ Private Sub HandleBorrarPJ(ByVal UserIndex As Integer)
         
         
         If targetUserIndex > 0 Then
-            Call LogHackAttemp("Se trató de eliminar al personaje " & UserDelete & " cuando este estaba conectado desde la IP " & UserList(UserIndex).IP)
+            Call LogHackAttemp("Se trató de eliminar al personaje " & UserDelete & " cuando este estaba conectado desde la IP " & UserList(UserIndex).ip)
             Call CloseSocket(targetUserIndex)
     
         End If
