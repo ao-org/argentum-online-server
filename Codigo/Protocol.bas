@@ -639,7 +639,7 @@ Public Type t_DataBuffer
 End Type
 
 Private PacketList(0 To ClientPacketID.[LastPacketID]) As Long
-Private Declare Function CallWindowProc Lib "user32.dll" Alias "CallWindowProcA" (ByVal lpPrevWndFunc As Long, ByVal hwnd As Long, ByVal msg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
+Private Declare Sub CallHandle Lib "ao20.dll" (ByVal Address As Long, ByVal UserIndex As Integer)
 
 Public Sub InitializePacketList()
 
@@ -654,7 +654,7 @@ Public Sub InitializePacketList()
     PacketList(ClientPacketID.Attack) = GetAddress(AddressOf HandleAttack)
     PacketList(ClientPacketID.PickUp) = GetAddress(AddressOf HandlePickUp)
     PacketList(ClientPacketID.SafeToggle) = GetAddress(AddressOf HandleSafeToggle)
-    'PacketList(ClientPacketID.PartySafeToggle) = GetAddress(AddressOf HandlePartySafeToggle)
+    PacketList(ClientPacketID.PartySafeToggle) = GetAddress(AddressOf HandlePartyToggle)
     PacketList(ClientPacketID.RequestGuildLeaderInfo) = GetAddress(AddressOf HandleRequestGuildLeaderInfo)
     PacketList(ClientPacketID.RequestAtributes) = GetAddress(AddressOf HandleRequestAtributes)
     PacketList(ClientPacketID.RequestSkills) = GetAddress(AddressOf HandleRequestSkills)
@@ -803,7 +803,7 @@ Public Sub InitializePacketList()
     PacketList(ClientPacketID.TeleportDestroy) = GetAddress(AddressOf HandleTeleportDestroy)
     PacketList(ClientPacketID.RainToggle) = GetAddress(AddressOf HandleRainToggle)
     PacketList(ClientPacketID.SetCharDescription) = GetAddress(AddressOf HandleSetCharDescription)
-    'PacketList(ClientPacketID.ForceMIDIToMap) = GetAddress(AddressOf HandleForceMIDIToMap)
+    PacketList(ClientPacketID.ForceMIDIToMap) = GetAddress(AddressOf HanldeForceMIDIToMap)
     PacketList(ClientPacketID.ForceWAVEToMap) = GetAddress(AddressOf HandleForceWAVEToMap)
     PacketList(ClientPacketID.RoyalArmyMessage) = GetAddress(AddressOf HandleRoyalArmyMessage)
     PacketList(ClientPacketID.ChaosLegionMessage) = GetAddress(AddressOf HandleChaosLegionMessage)
@@ -911,8 +911,8 @@ Public Sub InitializePacketList()
     PacketList(ClientPacketID.TransFerGold) = GetAddress(AddressOf HandleTransFerGold)
     PacketList(ClientPacketID.Moveitem) = GetAddress(AddressOf HandleMoveItem)
     PacketList(ClientPacketID.Genio) = GetAddress(AddressOf HandleGenio)
-    'PacketList(ClientPacketID.Casarse) = GetAddress(AddressOf HandleCasarse)
-    'PacketList(ClientPacketID.CraftAlquimista) = GetAddress(AddressOf HandleCraftAlquimista)
+    PacketList(ClientPacketID.Casarse) = GetAddress(AddressOf HandleCasamiento)
+    PacketList(ClientPacketID.CraftAlquimista) = GetAddress(AddressOf HandleCraftAlquimia)
     PacketList(ClientPacketID.RequestFamiliar) = GetAddress(AddressOf HandleRequestFamiliar)
     PacketList(ClientPacketID.FlagTrabajar) = GetAddress(AddressOf HandleFlagTrabajar)
     PacketList(ClientPacketID.CraftSastre) = GetAddress(AddressOf HandleCraftSastre)
@@ -931,7 +931,7 @@ Public Sub InitializePacketList()
     PacketList(ClientPacketID.RequestGrupo) = GetAddress(AddressOf HandleRequestGrupo)
     PacketList(ClientPacketID.AbandonarGrupo) = GetAddress(AddressOf HandleAbandonarGrupo)
     PacketList(ClientPacketID.HecharDeGrupo) = GetAddress(AddressOf HandleHecharDeGrupo)
-    'PacketList(ClientPacketID.MacroPossent) = GetAddress(AddressOf HandleMacroPossent)
+    PacketList(ClientPacketID.MacroPossent) = GetAddress(AddressOf HandleMacroPos)
     PacketList(ClientPacketID.SubastaInfo) = GetAddress(AddressOf HandleSubastaInfo)
     PacketList(ClientPacketID.bancuenta) = GetAddress(AddressOf HandleBanCuenta)
     PacketList(ClientPacketID.unBanCuenta) = GetAddress(AddressOf HandleUnBanCuenta)
@@ -954,8 +954,8 @@ Public Sub InitializePacketList()
     PacketList(ClientPacketID.BovedaMoveItem) = GetAddress(AddressOf HandleBovedaMoveItem)
     PacketList(ClientPacketID.QuieroFundarClan) = GetAddress(AddressOf HandleQuieroFundarClan)
     PacketList(ClientPacketID.LlamadadeClan) = GetAddress(AddressOf HandleLlamadadeClan)
-    'PacketList(ClientPacketID.MarcaDeClanPack) = GetAddress(AddressOf HandleMarcaDeClan)
-    'PacketList(ClientPacketID.MarcaDeGMPack) = GetAddress(AddressOf HandleMarcaDeGM)
+    PacketList(ClientPacketID.MarcaDeClanPack) = GetAddress(AddressOf HandleMarcaDeClan)
+    PacketList(ClientPacketID.MarcaDeGMPack) = GetAddress(AddressOf HandleMarcaDeGM)
     PacketList(ClientPacketID.TraerRanking) = GetAddress(AddressOf HandleTraerRanking)
     'PacketList(ClientPacketID.Pareja) = GetAddress(AddressOf HandlePareja)
     PacketList(ClientPacketID.Quest) = GetAddress(AddressOf HandleQuest)
@@ -989,15 +989,9 @@ Private Sub ParsePacket(ByVal packetIndex As Long, ByVal UserIndex As Integer)
     If packetIndex > UBound(PacketList()) Then Exit Sub
     
     If PacketList(packetIndex) = 0 Then Exit Sub
-    
-    'TODO: me parece que los handles no podrían
-    'tener más de 4 argumentos (cada 0& es un argumento),
-    'igual esto se puede obviar utilizando un poco el protocolo
-    'binario, le pasamos como paramétro el userindex y de
-    'ahí obtenemos todos los datos o lo que sea
- 
+
     'llamamos al sub mediante su dirección en memoria
-    Call CallWindowProc(PacketList(packetIndex), UserIndex, 0&, 0&, 0&)
+    Call CallHandle(PacketList(packetIndex), UserIndex)
  
 End Sub
 
