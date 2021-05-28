@@ -2085,7 +2085,7 @@ Sub CargarBackUp()
 132         DoEvents
 134     Next Map
 
-136     Call generateMatrix(MATRIX_INITIAL_MAP)
+136     'Call generateMatrix(MATRIX_INITIAL_MAP)
 
 138     frmCargando.ToMapLbl.Visible = False
 
@@ -2131,7 +2131,7 @@ Sub LoadMapData()
         
 132     Next Map
     
-134     Call generateMatrix(MATRIX_INITIAL_MAP)
+134     'Call generateMatrix(MATRIX_INITIAL_MAP)
 
 136     frmCargando.ToMapLbl.Visible = False
     

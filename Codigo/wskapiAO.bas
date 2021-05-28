@@ -102,6 +102,8 @@ Public Sub IniciaWsApi(ByVal hWndParent As Long)
 
 112     Call StartWinsock(Desc)
         
+        Call Protocol.InitializePacketList
+        
         Exit Sub
 
 IniciaWsApi_Err:

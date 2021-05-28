@@ -1,0 +1,1 @@
+cl.exe /LD ao20.cpp /DEF ao20.def

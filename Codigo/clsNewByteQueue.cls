@@ -1082,13 +1082,17 @@ End Function
 ' @remarks  Peek methods, unlike Read methods, don't remove the data from the queue.
 ' @see ReadByte
 ' @see WriteByte
-Public Sub PeekID(ByVal ID As Byte, ByVal NumID As Byte)
+Public Function PeekID() As Integer
 
-    If ID <> NumID Then
+    If GetHeaderSize > queueLength Then
+        Call ErrRaise(NOT_ENOUGH_DATA)
+        Exit Function
 
     End If
+    
+    PeekID = PeekInteger()
 
-End Sub
+End Function
 
 Public Function PeekByte() As Byte
     '***************************************************
@@ -1102,7 +1106,6 @@ Public Function PeekByte() As Byte
 
     If 1 > queueLength Then
         Call ErrRaise(NOT_ENOUGH_DATA)
-
         Exit Function
 
     End If
@@ -1149,9 +1152,9 @@ End Function
 Public Function PeekLength() As Integer
     #If BYTE_QUEUE_DEBUG = 1 Then
         ' En Debug escribimos 1byte antes del PacketID y otro Byte antes del PacketLength
-        CopyMemory PeekLength, data(queuePos + 3), 2
+        CopyMemory PeekLength, data(queuePos + 4), 2
     #Else
-        CopyMemory PeekLength, data(queuePos + 1), 2
+        CopyMemory PeekLength, data(queuePos + 2), 2
     #End If
 
 End Function
@@ -1640,16 +1643,17 @@ Public Function WriteID(ByVal Value As Byte) As Long
     End If
 
     Call EndPacket
+    
     #If BYTE_QUEUE_DEBUG = 1 Then
         'Debug.Print "WriteID: " & value
     #End If
 
     PacketStartPosition = queueLength
 
-    Call WriteByte(Value)
+    Call WriteInteger(Value)
     Call WriteInteger(0)
 
-    WriteID = 3
+    WriteID = 4
 
 End Function
 
@@ -1668,9 +1672,9 @@ End Function
 
 Public Function GetHeaderSize() As Byte
     #If BYTE_QUEUE_DEBUG = 1 Then
-        GetHeaderSize = 5
+        GetHeaderSize = 6
     #Else
-        GetHeaderSize = 3
+        GetHeaderSize = 4
     #End If
 
 End Function
@@ -1699,22 +1703,18 @@ Public Function ValidCRC() As Boolean
 
 End Function
 
-Public Function ReadID() As Byte
+Public Function ReadID() As Integer
 
     If GetHeaderSize > queueLength Then
         Call ErrRaise(NOT_ENOUGH_DATA)
-
         Exit Function
 
     End If
 
-    'Call ReadNewPacket
+    Dim PacketID As Integer
 
-    Dim PacketID As Byte
-
-    PacketID = ReadByte()
+    PacketID = ReadInteger()
     LastLength = ReadInteger()
-    'Call RemoveData(ReadData(buf, 3))
 
     ReadID = PacketID
 
@@ -1784,15 +1784,14 @@ Public Sub EndPacket()
         packetLength = queueLength - PacketStartPosition + GetCRCSize
 
         #If BYTE_QUEUE_DEBUG = 1 Then
-            CopyMemory data(PacketStartPosition + 3), packetLength, 2
+            CopyMemory data(PacketStartPosition + 4), packetLength, 2
         #Else
-            CopyMemory data(PacketStartPosition + 1), packetLength, 2
+            CopyMemory data(PacketStartPosition + 2), packetLength, 2
         #End If
 
         #If NO_CRC = 0 Then
 
             Dim i   As Long
-
             Dim crc As Byte
 
             crc = 47
