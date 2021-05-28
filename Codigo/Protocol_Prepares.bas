@@ -310,7 +310,7 @@ Public Function PrepareMessageMeditateToggle(ByVal CharIndex As Integer, ByVal F
 
 End Function
 
-Public Function PrepareMessageParticleFX(ByVal CharIndex As Integer, ByVal Particula As Integer, ByVal Time As Long, ByVal Remove As Boolean) As t_DataBuffer
+Public Function PrepareMessageParticleFX(ByVal CharIndex As Integer, ByVal Particula As Integer, ByVal Time As Long, ByVal Remove As Boolean, Optional ByVal grh As Long = 0) As t_DataBuffer
 
     '***************************************************
     'Author: Juan Martín Sotuyo Dodero (Maraxus)
@@ -324,6 +324,7 @@ Public Function PrepareMessageParticleFX(ByVal CharIndex As Integer, ByVal Parti
         Call .WriteInteger(Particula)
         Call .WriteLong(Time)
         Call .WriteBoolean(Remove)
+        Call .WriteLong(grh)
         
         Call .EndPacket
         
