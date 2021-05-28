@@ -1090,12 +1090,7 @@ Public Function PeekID() As Integer
 
     End If
 
-    Dim PacketID As Integer
-
-    PacketID = PeekInteger()
-    LastLength = PeekInteger()
-
-    ReadID = PacketID
+    ReadID = PeekInteger()
 
 End Function
 
