@@ -1082,13 +1082,22 @@ End Function
 ' @remarks  Peek methods, unlike Read methods, don't remove the data from the queue.
 ' @see ReadByte
 ' @see WriteByte
-Public Sub PeekID(ByVal ID As Byte, ByVal NumID As Byte)
+Public Function PeekID() As Integer
 
-    If ID <> NumID Then
+    If GetHeaderSize > queueLength Then
+        Call ErrRaise(NOT_ENOUGH_DATA)
+        Exit Function
 
     End If
 
-End Sub
+    Dim PacketID As Integer
+
+    PacketID = PeekInteger()
+    LastLength = PeekInteger()
+
+    ReadID = PacketID
+
+End Function
 
 Public Function PeekByte() As Byte
     '***************************************************

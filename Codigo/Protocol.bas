@@ -1020,7 +1020,7 @@ Public Function HandleIncomingData(ByVal UserIndex As Integer) As Boolean
         
         ' [2020-5-23 Mateo] Esto es normal que suceda, puede existir un paquete INCOMPLETO y esto hace que no lo procese y deje acumulado el buffer para el proximo dato
         If Not .incomingData.CheckLength Then
-            Debug.Print "Not .IncomingData.CheckLength! Último paquete: " & .LastPacketID & IIf(.LastPacketID = ClientPacketID.NewPacketID, " (New: " & .LastNewPacketID & ") -", " - ") & Date$ & " - " & Time$; ""
+            Debug.Print "Not .IncomingData.CheckLength! Último paquete: " & .LastPacketID & " - " & Date$ & " - " & Time$
             HandleIncomingData = False
             Exit Function
         End If
@@ -1029,10 +1029,20 @@ Public Function HandleIncomingData(ByVal UserIndex As Integer) As Boolean
             Debug.Print "UserIndex: " & UserIndex & " El paquete es invalido, posible hack, echarlo!"
             HandleIncomingData = False
             Call CloseSocket(UserIndex)
-            'Stop
             Exit Function
         End If
-    
+        
+        If .incomingData.PeekID > ClientPacketID.[LastPacketID] Then
+            ' Limpiamos la cola
+            Call .incomingData.SafeClearPacket
+            
+            ' Lo kickeamos
+            Call CloseSocket(UserIndex)
+            
+            HandleIncomingData = False
+            Exit Function
+        End If
+        
         Dim PacketID As Long
             PacketID = CLng(.incomingData.ReadID())
     
