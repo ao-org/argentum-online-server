@@ -728,7 +728,7 @@ Public Sub HerreroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As I
 108         UserList(UserIndex).Stats.MinSta = UserList(UserIndex).Stats.MinSta - 2
 110         Call WriteUpdateSta(UserIndex)
             ' AGREGAR FX
-            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, 253, 25, False, ObjData(ItemIndex).GrhIndex))
+            Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, 253, 25, False, ObjData(ItemIndex).GrhIndex))
 112         If ObjData(ItemIndex).OBJType = eOBJType.otWeapon Then
                 ' Call WriteConsoleMsg(UserIndex, "Has construido el arma!", FontTypeNames.FONTTYPE_INFO)
 114             Call WriteTextCharDrop(UserIndex, "+1", UserList(UserIndex).Char.CharIndex, vbWhite)
@@ -899,7 +899,7 @@ Public Sub CarpinteroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
 120         MiObj.amount = 1
 122         MiObj.ObjIndex = ItemIndex
              ' AGREGAR FX
-            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, 253, 25, False, ObjData(MiObj.ObjIndex).GrhIndex))
+            Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, 253, 25, False, ObjData(MiObj.ObjIndex).GrhIndex))
 124         If Not MeterItemEnInventario(UserIndex, MiObj) Then
 126             Call TirarItemAlPiso(UserList(UserIndex).Pos, MiObj)
 
