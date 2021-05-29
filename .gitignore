@@ -2,6 +2,7 @@ Account/*
 Charfile/*
 Logs/*
 Foros/*
+build/**
 WorldBackup/*
 Codigo/*.log
 Guilds/*
