@@ -1,5 +1,0 @@
-LIBRARY "ao20"
-
-EXPORTS
-
-CallHandle	@1
