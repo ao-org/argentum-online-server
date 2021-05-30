@@ -13,7 +13,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS True)
 
 # set compiler flags
-set(CMAKE_CXX_FLAGS "/W4")
+string(APPEND CMAKE_CXX_FLAGS "/W4 -m32")
+string(APPEND CMAKE_SHARED_LINKER_FLAGS "-m32")
 
 # Get a list of all *.cpp and files to pass to the compiler
 file(GLOB SOURCE_CODE CONFIGURE_DEPENDS "src/*.cpp")
