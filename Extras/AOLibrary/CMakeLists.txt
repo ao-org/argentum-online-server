@@ -1,20 +1,21 @@
-cmake_minimum_required(VERSION 3.10)
+﻿cmake_minimum_required(VERSION 3.20.2)
 
-# set the project name
+# Set the project name
 project(AOLibrary VERSION 1.0)
 
 if (NOT MSVC)
 	message(FATAL_ERROR "¡Necesitas un compilador de Visual Studio!")
 endif()
 
-# specify the C++ standard
+# Specify the C++ standard
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
+
+# Tell CMake to create export file for all symbols
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS True)
 
-# set compiler flags
-string(APPEND CMAKE_CXX_FLAGS "/W4 -m32")
-string(APPEND CMAKE_SHARED_LINKER_FLAGS "-m32")
+# Set compiler flags
+string(APPEND CMAKE_CXX_FLAGS "/W4")
 
 # Get a list of all *.cpp and files to pass to the compiler
 file(GLOB SOURCE_CODE CONFIGURE_DEPENDS "src/*.cpp")
