@@ -178,6 +178,8 @@ Public Const iRopaBuceoMuerto = 772
 
 Public MapasInterdimensionales() As Integer
 
+Public MapasIgnoranLimpieza() As Integer
+
 Public Enum iMinerales
 
     HierroCrudo = 192
