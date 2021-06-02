@@ -222,7 +222,6 @@ Private Sub ConstruirQuery_GuardarPersonaje()
 126     QueryBuilder.Append "pos_map = ?, "
 128     QueryBuilder.Append "pos_x = ?, "
 130     QueryBuilder.Append "pos_y = ?, "
-132     QueryBuilder.Append "last_map = ?, "
 134     QueryBuilder.Append "message_info = ?, "
 136     QueryBuilder.Append "body_id = ?, "
 138     QueryBuilder.Append "head_id = ?, "

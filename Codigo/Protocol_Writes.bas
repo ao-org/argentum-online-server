@@ -280,6 +280,9 @@ Public Sub WriteDisconnect(ByVal UserIndex As Integer)
     'Writes the "Disconnect" message to the given user's outgoing data buffer
     '***************************************************
     On Error GoTo ErrHandler
+    
+    Call SaveUser(UserIndex, True)
+    UserList(UserIndex).flags.YaGuardo = True
 
     Call WritePersonajesDeCuenta(UserIndex)
     Call WriteMostrarCuenta(UserIndex)

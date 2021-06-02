@@ -315,6 +315,12 @@ Sub RefreshCharStatus(ByVal UserIndex As Integer)
 112             name = UserList(UserIndex).NameMimetizado
             End If
             
+            If UserList(UserIndex).clase = eClass.Pirat Then
+                If UserList(UserIndex).flags.Oculto = 1 Then
+                    Name = vbNullString
+                End If
+            End If
+            
         End If
     
 114     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageUpdateTagAndStatus(UserIndex, UserList(UserIndex).Faccion.Status, name))
@@ -1720,26 +1726,6 @@ Sub WarpUserChar(ByVal UserIndex As Integer, _
 
 158             If MapInfo(OldMap).NumUsers < 0 Then
 160                 MapInfo(OldMap).NumUsers = 0
-
-                End If
-            
-                'Si el mapa al que entro NO ES superficial AND en el que estaba TAMPOCO ES superficial, ENTONCES
-                Dim nextMap, previousMap As Boolean
-            
-162             nextMap = distanceToCities(Map).distanceToCity(.Hogar) >= 0
-164             previousMap = distanceToCities(.Pos.Map).distanceToCity(.Hogar) >= 0
-
-166             If previousMap And nextMap Then '138 => 139 (Ambos superficiales, no tiene que pasar nada)
-                    'NO PASA NADA PORQUE NO ENTRO A UN DUNGEON.
-            
-168             ElseIf previousMap And Not nextMap Then '139 => 140 (139 es superficial, 140 no. Por lo tanto 139 es el ultimo mapa superficial)
-170                 .flags.lastMap = .Pos.Map
-            
-172             ElseIf Not previousMap And nextMap Then '140 => 139 (140 es no es superficial, 139 si. Por lo tanto, el ultimo mapa es 0 ya que no esta en un dungeon)
-174                 .flags.lastMap = 0
-            
-176             ElseIf Not previousMap And Not nextMap Then '140 => 141 (Ninguno es superficial, el ultimo mapa es el mismo de antes)
-178                 .flags.lastMap = .flags.lastMap
 
                 End If
 
