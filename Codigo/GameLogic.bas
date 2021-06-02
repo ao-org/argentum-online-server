@@ -1670,10 +1670,11 @@ Public Sub CargarMapasEspeciales()
     Dim Cantidad As Integer
     Cantidad = val(File.GetValue("MapasInterdimensionales", "Cantidad"))
     
+    Dim i As Integer
+    
     If Cantidad > 0 Then
         ReDim MapasInterdimensionales(1 To Cantidad)
         
-        Dim i As Integer
         For i = 1 To Cantidad
             MapasInterdimensionales(i) = val(File.GetValue("MapasInterdimensionales", "Mapa" & i))
         Next
@@ -1686,7 +1687,6 @@ Public Sub CargarMapasEspeciales()
     If Cantidad > 0 Then
         ReDim MapasIgnoranLimpieza(1 To Cantidad)
         
-        Dim i As Integer
         For i = 1 To Cantidad
             MapasIgnoranLimpieza(i) = val(File.GetValue("MapasIgnoranLimpieza", "Mapa" & i))
         Next
