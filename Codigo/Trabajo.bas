@@ -55,13 +55,8 @@ Public Sub DoPermanecerOculto(ByVal UserIndex As Integer)
             
 114                 If .clase = eClass.Pirat Then
                         ' Pierde la apariencia de fragata fantasmal
-116                     .Char.Body = ObjData(.Invent.BarcoObjIndex).Ropaje
-
-118                     .Char.ShieldAnim = NingunEscudo
-120                     .Char.WeaponAnim = NingunArma
-122                     .Char.CascoAnim = NingunCasco
-
-124                     Call WriteConsoleMsg(UserIndex, "Has recuperado tu apariencia normal!", FontTypeNames.FONTTYPE_INFO)
+116                     Call EquiparBarco(UserIndex)
+124                     Call WriteConsoleMsg(UserIndex, "¡Has recuperado tu apariencia normal!", FontTypeNames.FONTTYPE_INFO)
 126                     Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, NingunArma, NingunEscudo, NingunCasco)
 
                     End If

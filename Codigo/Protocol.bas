@@ -1517,12 +1517,7 @@ Private Sub HandleYell(ByVal UserIndex As Integer)
                     If .clase = eClass.Pirat Then
                     
                         ' Pierde la apariencia de fragata fantasmal
-                        .Char.Body = ObjData(.Invent.BarcoObjIndex).Ropaje
-    
-                        .Char.ShieldAnim = NingunEscudo
-                        .Char.WeaponAnim = NingunArma
-                        .Char.CascoAnim = NingunCasco
-    
+                        Call EquiparBarco(UserIndex)
                         Call WriteConsoleMsg(UserIndex, "Has recuperado tu apariencia normal!", FontTypeNames.FONTTYPE_INFO)
                         Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, NingunArma, NingunEscudo, NingunCasco)
     
@@ -1782,13 +1777,8 @@ Private Sub HandleWalk(ByVal UserIndex As Integer)
                         
                     If .clase = eClass.Pirat Then
                         ' Pierde la apariencia de fragata fantasmal
-                        .Char.Body = ObjData(.Invent.BarcoObjIndex).Ropaje
-        
-                        .Char.ShieldAnim = NingunEscudo
-                        .Char.WeaponAnim = NingunArma
-                        .Char.CascoAnim = NingunCasco
-        
-                        Call WriteConsoleMsg(UserIndex, "Has recuperado tu apariencia normal!", FontTypeNames.FONTTYPE_INFO)
+                        Call EquiparBarco(UserIndex)
+                        Call WriteConsoleMsg(UserIndex, "¡Has recuperado tu apariencia normal!", FontTypeNames.FONTTYPE_INFO)
                         Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, NingunArma, NingunEscudo, NingunCasco)
     
                     End If
@@ -1909,13 +1899,8 @@ Private Sub HandleAttack(ByVal UserIndex As Integer)
 
                 If .clase = eClass.Pirat Then
                     ' Pierde la apariencia de fragata fantasmal
-                    .Char.Body = ObjData(.Invent.BarcoObjIndex).Ropaje
-    
-                    .Char.ShieldAnim = NingunEscudo
-                    .Char.WeaponAnim = NingunArma
-                    .Char.CascoAnim = NingunCasco
-    
-                    Call WriteConsoleMsg(UserIndex, "Has recuperado tu apariencia normal!", FontTypeNames.FONTTYPE_INFO)
+                    Call EquiparBarco(UserIndex)
+                    Call WriteConsoleMsg(UserIndex, "¡Has recuperado tu apariencia normal!", FontTypeNames.FONTTYPE_INFO)
                     Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, NingunArma, NingunEscudo, NingunCasco)
 
                 End If
