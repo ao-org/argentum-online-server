@@ -140,10 +140,13 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
 178                             If QuestList(.QuestIndex).RequiredNPC(j).NpcIndex = MiNPC.Numero Then
 180                                 If QuestList(.QuestIndex).RequiredNPC(j).amount > .NPCsKilled(j) Then
 182                                     .NPCsKilled(j) = .NPCsKilled(j) + 1
-        
+
+                                        Call WriteConsoleMsg(UserIndex, MiNPC.Name & " matados/as: " & .NPCsKilled(j) & " de " & QuestList(.QuestIndex).RequiredNPC(j).amount, FontTypeNames.FONTTYPE_INFOIAO)
+                                        Call WriteChatOverHead(UserIndex, .NPCsKilled(j) & "/" & QuestList(.QuestIndex).RequiredNPC(j).amount & " " & MiNPC.Name, UserList(UserIndex).Char.CharIndex, RGB(180, 180, 180))
+
                                     Else
-186                                     Call WriteConsoleMsg(UserIndex, "Ya has matado todos los " & MiNPC.name & " que la misión " & QuestList(.QuestIndex).nombre & " requería. Revisa si ya estás listo para recibir la recompensa.", FontTypeNames.FONTTYPE_INFOIAO)
-                                    
+186                                     Call WriteConsoleMsg(UserIndex, "Ya has matado todos los " & MiNPC.Name & " que la misión " & QuestList(.QuestIndex).nombre & " requería. Revisa si ya estás listo para recibir la recompensa.", FontTypeNames.FONTTYPE_INFOIAO)
+                                        Call WriteChatOverHead(UserIndex, QuestList(.QuestIndex).RequiredNPC(j).amount & "/" & QuestList(.QuestIndex).RequiredNPC(j).amount & " " & MiNPC.Name, UserList(UserIndex).Char.CharIndex, RGB(180, 180, 180))
                                     End If
         
                                 End If
@@ -942,7 +945,7 @@ Function SpawnNpc(ByVal NpcIndex As Integer, Pos As WorldPos, ByVal FX As Boolea
         End If
 
 144     If Avisar Then
-146         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(NpcList(nIndex).name & " ha aparecido en " & DarNameMapa(Map) & " , todo indica que puede tener una gran recompensa para el que logre sobrevivir a él.", FontTypeNames.FONTTYPE_CITIZEN))
+146         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(NpcList(nIndex).Name & " ha aparecido en " & DarNameMapa(Map) & " , todo indica que puede tener una gran recompensa para el que logre sobrevivir a él.", FontTypeNames.FONTTYPE_CITIZEN))
         End If
 
 148     SpawnNpc = nIndex
