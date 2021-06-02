@@ -41,6 +41,12 @@ End Sub
 Public Sub AgregarItemLimpieza(ByVal Map As Integer, ByVal X As Byte, ByVal Y As Byte, Optional ByVal ResetTimer As Boolean = False)
 
         On Error GoTo hErr
+        
+        ' Mapas que ignoran limpieza
+        Dim i As Integer
+        For i = 1 To UBound(MapasIgnoranLimpieza)
+            If Map = MapasIgnoranLimpieza(i) Then Exit Sub
+        Next
     
         Dim Item As TLimpiezaItem
 
