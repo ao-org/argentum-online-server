@@ -109,55 +109,56 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
     
 102     With UserList(UserIndex)
         
+            Dim i As Integer
 104         ReDim Params(45)
-        
+
             '  ************ Basic user data *******************
-106         Params(0) = .name
-108         Params(1) = .AccountId
-110         Params(2) = .Stats.ELV
-112         Params(3) = .Stats.Exp
-114         Params(4) = .genero
-116         Params(5) = .raza
-118         Params(6) = .clase
-120         Params(7) = .Hogar
-122         Params(8) = .Desc
-124         Params(9) = .Stats.GLD
-126         Params(10) = .Stats.SkillPts
-128         Params(11) = .Pos.Map
-130         Params(12) = .Pos.X
-132         Params(13) = .Pos.Y
-134         Params(14) = .Char.Body
-136         Params(15) = .Char.Head
-138         Params(16) = .Char.WeaponAnim
-140         Params(17) = .Char.CascoAnim
-142         Params(18) = .Char.ShieldAnim
-144         Params(19) = .Invent.NroItems
-146         Params(20) = .Invent.ArmourEqpSlot
-148         Params(21) = .Invent.WeaponEqpSlot
-150         Params(22) = .Invent.EscudoEqpSlot
-152         Params(23) = .Invent.CascoEqpSlot
-154         Params(24) = .Invent.MunicionEqpSlot
-156         Params(25) = .Invent.DañoMagicoEqpSlot
-158         Params(26) = .Invent.ResistenciaEqpSlot
-160         Params(27) = .Invent.HerramientaEqpSlot
-162         Params(28) = .Invent.MagicoSlot
-164         Params(29) = .Invent.NudilloSlot
-166         Params(30) = .Invent.BarcoSlot
-168         Params(31) = .Invent.MonturaSlot
-170         Params(32) = .Stats.MinHp
-172         Params(33) = .Stats.MaxHp
-174         Params(34) = .Stats.MinMAN
-176         Params(35) = .Stats.MaxMAN
-178         Params(36) = .Stats.MinSta
-180         Params(37) = .Stats.MaxSta
-182         Params(38) = .Stats.MinHam
-184         Params(39) = .Stats.MaxHam
-186         Params(40) = .Stats.MinAGU
-188         Params(41) = .Stats.MaxAGU
-190         Params(42) = .Stats.MinHIT
-192         Params(43) = .Stats.MaxHit
-194         Params(44) = .flags.Desnudo
-196         Params(45) = .Faccion.Status
+106         Params(PostInc(i)) = .Name
+108         Params(PostInc(i)) = .AccountID
+110         Params(PostInc(i)) = .Stats.ELV
+112         Params(PostInc(i)) = .Stats.Exp
+114         Params(PostInc(i)) = .genero
+116         Params(PostInc(i)) = .raza
+118         Params(PostInc(i)) = .clase
+120         Params(PostInc(i)) = .Hogar
+122         Params(PostInc(i)) = .Desc
+124         Params(PostInc(i)) = .Stats.GLD
+126         Params(PostInc(i)) = .Stats.SkillPts
+128         Params(PostInc(i)) = .Pos.Map
+130         Params(PostInc(i)) = .Pos.X
+132         Params(PostInc(i)) = .Pos.Y
+134         Params(PostInc(i)) = .Char.Body
+136         Params(PostInc(i)) = .Char.Head
+138         Params(PostInc(i)) = .Char.WeaponAnim
+140         Params(PostInc(i)) = .Char.CascoAnim
+142         Params(PostInc(i)) = .Char.ShieldAnim
+144         Params(PostInc(i)) = .Invent.NroItems
+146         Params(PostInc(i)) = .Invent.ArmourEqpSlot
+148         Params(PostInc(i)) = .Invent.WeaponEqpSlot
+150         Params(PostInc(i)) = .Invent.EscudoEqpSlot
+152         Params(PostInc(i)) = .Invent.CascoEqpSlot
+154         Params(PostInc(i)) = .Invent.MunicionEqpSlot
+156         Params(PostInc(i)) = .Invent.DañoMagicoEqpSlot
+158         Params(PostInc(i)) = .Invent.ResistenciaEqpSlot
+160         Params(PostInc(i)) = .Invent.HerramientaEqpSlot
+162         Params(PostInc(i)) = .Invent.MagicoSlot
+164         Params(PostInc(i)) = .Invent.NudilloSlot
+166         Params(PostInc(i)) = .Invent.BarcoSlot
+168         Params(PostInc(i)) = .Invent.MonturaSlot
+170         Params(PostInc(i)) = .Stats.MinHp
+172         Params(PostInc(i)) = .Stats.MaxHp
+174         Params(PostInc(i)) = .Stats.MinMAN
+176         Params(PostInc(i)) = .Stats.MaxMAN
+178         Params(PostInc(i)) = .Stats.MinSta
+180         Params(PostInc(i)) = .Stats.MaxSta
+182         Params(PostInc(i)) = .Stats.MinHam
+184         Params(PostInc(i)) = .Stats.MaxHam
+186         Params(PostInc(i)) = .Stats.MinAGU
+188         Params(PostInc(i)) = .Stats.MaxAGU
+190         Params(PostInc(i)) = .Stats.MinHIT
+192         Params(PostInc(i)) = .Stats.MaxHit
+194         Params(PostInc(i)) = .flags.Desnudo
+196         Params(PostInc(i)) = .Faccion.Status
         
 198         Call MakeQuery(QUERY_SAVE_MAINPJ, True, Params)
 
@@ -284,102 +285,103 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
         'Basic user data
 102     With UserList(UserIndex)
         
-104         ReDim Params(91)
+104         ReDim Params(90)
+
+            Dim i As Integer
         
-106         Params(0) = .name
-108         Params(1) = .Stats.ELV
-110         Params(2) = CLng(.Stats.Exp)
-112         Params(3) = .genero
-114         Params(4) = .raza
-116         Params(5) = .clase
-118         Params(6) = .Hogar
-120         Params(7) = .Desc
-122         Params(8) = .Stats.GLD
-124         Params(9) = .Stats.Banco
-126         Params(10) = .Stats.SkillPts
-128         Params(11) = .flags.MascotasGuardadas
-130         Params(12) = .Pos.Map
-132         Params(13) = .Pos.X
-134         Params(14) = .Pos.Y
-136         Params(15) = .flags.lastMap
-138         Params(16) = .MENSAJEINFORMACION
-140         Params(17) = .Char.Body
-142         Params(18) = .OrigChar.Head
-144         Params(19) = .Char.WeaponAnim
-146         Params(20) = .Char.CascoAnim
-148         Params(21) = .Char.ShieldAnim
-150         Params(22) = .Char.Heading
-152         Params(23) = .Invent.NroItems
-154         Params(24) = .Invent.ArmourEqpSlot
-156         Params(25) = .Invent.WeaponEqpSlot
-158         Params(26) = .Invent.EscudoEqpSlot
-160         Params(27) = .Invent.CascoEqpSlot
-162         Params(28) = .Invent.MunicionEqpSlot
-164         Params(29) = .Invent.DañoMagicoEqpSlot
-166         Params(30) = .Invent.ResistenciaEqpSlot
-168         Params(31) = .Invent.HerramientaEqpSlot
-170         Params(32) = .Invent.MagicoSlot
-172         Params(33) = .Invent.NudilloSlot
-174         Params(34) = .Invent.BarcoSlot
-176         Params(35) = .Invent.MonturaSlot
-178         Params(36) = .Stats.MinHp
-180         Params(37) = .Stats.MaxHp
-182         Params(38) = .Stats.MinMAN
-184         Params(39) = .Stats.MaxMAN
-186         Params(40) = .Stats.MinSta
-188         Params(41) = .Stats.MaxSta
-190         Params(42) = .Stats.MinHam
-192         Params(43) = .Stats.MaxHam
-194         Params(44) = .Stats.MinAGU
-196         Params(45) = .Stats.MaxAGU
-198         Params(46) = .Stats.MinHIT
-200         Params(47) = .Stats.MaxHit
-202         Params(48) = .Stats.NPCsMuertos
-204         Params(49) = .Stats.UsuariosMatados
-206         Params(50) = .Stats.InventLevel
-208         Params(51) = .flags.Desnudo
-210         Params(52) = .flags.Envenenado
-212         Params(53) = .flags.Escondido
-214         Params(54) = .flags.Hambre
-216         Params(55) = .flags.Sed
-218         Params(56) = .flags.Muerto
-220         Params(57) = .flags.Navegando
-222         Params(58) = .flags.Paralizado
-224         Params(59) = .flags.Montado
-226         Params(60) = .flags.Silenciado
-228         Params(61) = .flags.MinutosRestantes
-230         Params(62) = .flags.SegundosPasados
-232         Params(63) = .flags.Pareja
-234         Params(64) = .Counters.Pena
-236         Params(65) = .flags.VecesQueMoriste
-238         Params(66) = (.flags.Privilegios And PlayerType.RoyalCouncil)
-240         Params(67) = (.flags.Privilegios And PlayerType.ChaosCouncil)
-242         Params(68) = .Faccion.ArmadaReal
-244         Params(69) = .Faccion.FuerzasCaos
-246         Params(70) = .Faccion.ciudadanosMatados
-248         Params(71) = .Faccion.CriminalesMatados
-250         Params(72) = .Faccion.RecibioArmaduraReal
-252         Params(73) = .Faccion.RecibioArmaduraCaos
-254         Params(74) = .Faccion.RecibioExpInicialReal
-256         Params(75) = .Faccion.RecibioExpInicialCaos
-258         Params(76) = .Faccion.RecompensasReal
-260         Params(77) = .Faccion.RecompensasCaos
-262         Params(78) = .Faccion.Reenlistadas
-264         Params(79) = .Faccion.NivelIngreso
-266         Params(80) = .Faccion.MatadosIngreso
-268         Params(81) = .Faccion.NextRecompensa
-270         Params(82) = .Faccion.Status
-272         Params(83) = .GuildIndex
-274         Params(84) = .ChatCombate
-276         Params(85) = .ChatGlobal
-278         Params(86) = IIf(Logout, 0, 1)
-280         Params(87) = .Stats.Advertencias
-            Params(88) = .flags.ReturnPos.Map
-            Params(89) = .flags.ReturnPos.X
-            Params(90) = .flags.ReturnPos.Y
-        
+106         Params(PostInc(i)) = .Name
+108         Params(PostInc(i)) = .Stats.ELV
+110         Params(PostInc(i)) = CLng(.Stats.Exp)
+112         Params(PostInc(i)) = .genero
+114         Params(PostInc(i)) = .raza
+116         Params(PostInc(i)) = .clase
+118         Params(PostInc(i)) = .Hogar
+120         Params(PostInc(i)) = .Desc
+122         Params(PostInc(i)) = .Stats.GLD
+124         Params(PostInc(i)) = .Stats.Banco
+126         Params(PostInc(i)) = .Stats.SkillPts
+128         Params(PostInc(i)) = .flags.MascotasGuardadas
+130         Params(PostInc(i)) = .Pos.Map
+132         Params(PostInc(i)) = .Pos.X
+134         Params(PostInc(i)) = .Pos.Y
+138         Params(PostInc(i)) = .MENSAJEINFORMACION
+140         Params(PostInc(i)) = .Char.Body
+142         Params(PostInc(i)) = .OrigChar.Head
+144         Params(PostInc(i)) = .Char.WeaponAnim
+146         Params(PostInc(i)) = .Char.CascoAnim
+148         Params(PostInc(i)) = .Char.ShieldAnim
+150         Params(PostInc(i)) = .Char.Heading
+152         Params(PostInc(i)) = .Invent.NroItems
+154         Params(PostInc(i)) = .Invent.ArmourEqpSlot
+156         Params(PostInc(i)) = .Invent.WeaponEqpSlot
+158         Params(PostInc(i)) = .Invent.EscudoEqpSlot
+160         Params(PostInc(i)) = .Invent.CascoEqpSlot
+162         Params(PostInc(i)) = .Invent.MunicionEqpSlot
+164         Params(PostInc(i)) = .Invent.DañoMagicoEqpSlot
+166         Params(PostInc(i)) = .Invent.ResistenciaEqpSlot
+168         Params(PostInc(i)) = .Invent.HerramientaEqpSlot
+170         Params(PostInc(i)) = .Invent.MagicoSlot
+172         Params(PostInc(i)) = .Invent.NudilloSlot
+174         Params(PostInc(i)) = .Invent.BarcoSlot
+176         Params(PostInc(i)) = .Invent.MonturaSlot
+178         Params(PostInc(i)) = .Stats.MinHp
+180         Params(PostInc(i)) = .Stats.MaxHp
+182         Params(PostInc(i)) = .Stats.MinMAN
+184         Params(PostInc(i)) = .Stats.MaxMAN
+186         Params(PostInc(i)) = .Stats.MinSta
+188         Params(PostInc(i)) = .Stats.MaxSta
+190         Params(PostInc(i)) = .Stats.MinHam
+192         Params(PostInc(i)) = .Stats.MaxHam
+194         Params(PostInc(i)) = .Stats.MinAGU
+196         Params(PostInc(i)) = .Stats.MaxAGU
+198         Params(PostInc(i)) = .Stats.MinHIT
+200         Params(PostInc(i)) = .Stats.MaxHit
+202         Params(PostInc(i)) = .Stats.NPCsMuertos
+204         Params(PostInc(i)) = .Stats.UsuariosMatados
+206         Params(PostInc(i)) = .Stats.InventLevel
+208         Params(PostInc(i)) = .flags.Desnudo
+210         Params(PostInc(i)) = .flags.Envenenado
+212         Params(PostInc(i)) = .flags.Escondido
+214         Params(PostInc(i)) = .flags.Hambre
+216         Params(PostInc(i)) = .flags.Sed
+218         Params(PostInc(i)) = .flags.Muerto
+220         Params(PostInc(i)) = .flags.Navegando
+222         Params(PostInc(i)) = .flags.Paralizado
+224         Params(PostInc(i)) = .flags.Montado
+226         Params(PostInc(i)) = .flags.Silenciado
+228         Params(PostInc(i)) = .flags.MinutosRestantes
+230         Params(PostInc(i)) = .flags.SegundosPasados
+232         Params(PostInc(i)) = .flags.Pareja
+234         Params(PostInc(i)) = .Counters.Pena
+236         Params(PostInc(i)) = .flags.VecesQueMoriste
+238         Params(PostInc(i)) = (.flags.Privilegios And PlayerType.RoyalCouncil)
+240         Params(PostInc(i)) = (.flags.Privilegios And PlayerType.ChaosCouncil)
+242         Params(PostInc(i)) = .Faccion.ArmadaReal
+244         Params(PostInc(i)) = .Faccion.FuerzasCaos
+246         Params(PostInc(i)) = .Faccion.ciudadanosMatados
+248         Params(PostInc(i)) = .Faccion.CriminalesMatados
+250         Params(PostInc(i)) = .Faccion.RecibioArmaduraReal
+252         Params(PostInc(i)) = .Faccion.RecibioArmaduraCaos
+254         Params(PostInc(i)) = .Faccion.RecibioExpInicialReal
+256         Params(PostInc(i)) = .Faccion.RecibioExpInicialCaos
+258         Params(PostInc(i)) = .Faccion.RecompensasReal
+260         Params(PostInc(i)) = .Faccion.RecompensasCaos
+262         Params(PostInc(i)) = .Faccion.Reenlistadas
+264         Params(PostInc(i)) = .Faccion.NivelIngreso
+266         Params(PostInc(i)) = .Faccion.MatadosIngreso
+268         Params(PostInc(i)) = .Faccion.NextRecompensa
+270         Params(PostInc(i)) = .Faccion.Status
+272         Params(PostInc(i)) = .GuildIndex
+274         Params(PostInc(i)) = .ChatCombate
+276         Params(PostInc(i)) = .ChatGlobal
+278         Params(PostInc(i)) = IIf(Logout, 0, 1)
+280         Params(PostInc(i)) = .Stats.Advertencias
+            Params(PostInc(i)) = .flags.ReturnPos.Map
+            Params(PostInc(i)) = .flags.ReturnPos.X
+            Params(PostInc(i)) = .flags.ReturnPos.Y
+
             ' WHERE block
-282         Params(91) = .Id
+282         Params(PostInc(i)) = .ID
         
 284         Call MakeQuery(QUERY_UPDATE_MAINPJ, True, Params)
         
@@ -639,7 +641,6 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
 130         .Pos.Map = QueryData!pos_map
 132         .Pos.X = QueryData!pos_x
 134         .Pos.Y = QueryData!pos_y
-136         .flags.lastMap = QueryData!last_map
 138         .MENSAJEINFORMACION = QueryData!message_info
 140         .OrigChar.Body = QueryData!body_id
 142         .OrigChar.Head = QueryData!head_id
@@ -975,7 +976,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
         Exit Sub
 
 ErrorHandler:
-468     Call LogDatabaseError("Error en LoadUserDatabase: " & UserList(UserIndex).name & ". " & Err.Number & " - " & Err.Description & ". Línea: " & Erl)
+468     Call LogDatabaseError("Error en LoadUserDatabase: " & UserList(UserIndex).Name & ". " & Err.Number & " - " & Err.Description & ". Línea: " & Erl)
 
 470     Resume Next
 
@@ -2647,4 +2648,10 @@ Function adoIsConnected(adoCn As ADODB.Connection) As Boolean
 112         adoIsConnected = False
         End If
 
+End Function
+
+' Función auxiliar equivalente a la expresión "i++"
+Private Function PostInc(Value As Integer) As Integer
+    PostInc = Value
+    Value = Value + 1
 End Function

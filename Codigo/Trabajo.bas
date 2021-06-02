@@ -58,7 +58,7 @@ Public Sub DoPermanecerOculto(ByVal UserIndex As Integer)
 116                     Call EquiparBarco(UserIndex)
 124                     Call WriteConsoleMsg(UserIndex, "¡Has recuperado tu apariencia normal!", FontTypeNames.FONTTYPE_INFO)
 126                     Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, NingunArma, NingunEscudo, NingunCasco)
-
+                        Call RefreshCharStatus(UserIndex)
                     End If
 
                 Else
@@ -134,6 +134,7 @@ Public Sub DoOcultarse(ByVal UserIndex As Integer)
                          
 148                     Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, NingunArma, NingunEscudo, NingunCasco)
 150                     Call WriteConsoleMsg(UserIndex, "¡Te has camuflado como barco fantasma!", FontTypeNames.FONTTYPE_INFO)
+                        Call RefreshCharStatus(UserIndex)
                     End If
                 Else
 152                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(.Char.CharIndex, True))

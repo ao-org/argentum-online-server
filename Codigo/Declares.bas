@@ -1614,7 +1614,6 @@ Public Type UserFlags
     CentinelaOK As Boolean
     
     Traveling As Byte
-    lastMap As Integer
     
     EnConsulta As Boolean
     
@@ -1633,7 +1632,9 @@ Public Type UserFlags
     LastPos As WorldPos
     
     ReturnPos As WorldPos
-    
+
+    YaGuardo As Boolean
+
 End Type
 
 Public Enum e_EstadoMimetismo
@@ -1894,8 +1895,7 @@ Public Type user
     ' Solo se usa si la variable de compilación AntiExternos = 1
     Redundance As Byte
 
-    LastPacketID As Byte
-    LastNewPacketID As Byte
+    LastPacketID As Integer
 
 End Type
 

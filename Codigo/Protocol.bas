@@ -437,7 +437,6 @@ Private Enum ClientPacketID
     GlobalOnOff
     IngresarConCuenta
     BorrarPJ
-    NewPacketID
     Desbuggear
     DarLlaveAUsuario
     SacarLlave
@@ -886,7 +885,6 @@ Public Sub InitializePacketList()
     PacketList(ClientPacketID.GlobalOnOff) = GetAddress(AddressOf HandleGlobalOnOff)
     PacketList(ClientPacketID.IngresarConCuenta) = GetAddress(AddressOf HandleIngresarConCuenta)
     PacketList(ClientPacketID.BorrarPJ) = GetAddress(AddressOf HandleBorrarPJ)
-    'PacketList(ClientPacketID.NewPacketID) = GetAddress(AddressOf HandleNewPacketID)
     PacketList(ClientPacketID.Desbuggear) = GetAddress(AddressOf HandleDesbuggear)
     PacketList(ClientPacketID.DarLlaveAUsuario) = GetAddress(AddressOf HandleDarLlaveAUsuario)
     PacketList(ClientPacketID.SacarLlave) = GetAddress(AddressOf HandleSacarLlave)
@@ -1412,10 +1410,9 @@ Private Sub HandleTalk(ByVal UserIndex As Integer)
                 If .clase = eClass.Pirat Then
                     ' Pierde la apariencia de fragata fantasmal
                     Call EquiparBarco(UserIndex)
-
-                    Call WriteConsoleMsg(UserIndex, "Has recuperado tu apariencia normal!", FontTypeNames.FONTTYPE_INFO)
+                    Call WriteConsoleMsg(UserIndex, "¡Has recuperado tu apariencia normal!", FontTypeNames.FONTTYPE_INFO)
                     Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, NingunArma, NingunEscudo, NingunCasco)
-
+                    Call RefreshCharStatus(UserIndex)
                 End If
 
             Else
@@ -1518,9 +1515,9 @@ Private Sub HandleYell(ByVal UserIndex As Integer)
                     
                         ' Pierde la apariencia de fragata fantasmal
                         Call EquiparBarco(UserIndex)
-                        Call WriteConsoleMsg(UserIndex, "Has recuperado tu apariencia normal!", FontTypeNames.FONTTYPE_INFO)
+                        Call WriteConsoleMsg(UserIndex, "¡Has recuperado tu apariencia normal!", FontTypeNames.FONTTYPE_INFO)
                         Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, NingunArma, NingunEscudo, NingunCasco)
-    
+                        Call RefreshCharStatus(UserIndex)
                     End If
     
                 Else
@@ -1780,7 +1777,7 @@ Private Sub HandleWalk(ByVal UserIndex As Integer)
                         Call EquiparBarco(UserIndex)
                         Call WriteConsoleMsg(UserIndex, "¡Has recuperado tu apariencia normal!", FontTypeNames.FONTTYPE_INFO)
                         Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, NingunArma, NingunEscudo, NingunCasco)
-    
+                        Call RefreshCharStatus(UserIndex)
                     End If
     
                 Else
@@ -1902,7 +1899,7 @@ Private Sub HandleAttack(ByVal UserIndex As Integer)
                     Call EquiparBarco(UserIndex)
                     Call WriteConsoleMsg(UserIndex, "¡Has recuperado tu apariencia normal!", FontTypeNames.FONTTYPE_INFO)
                     Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, NingunArma, NingunEscudo, NingunCasco)
-
+                    Call RefreshCharStatus(UserIndex)
                 End If
     
             Else
@@ -19144,6 +19141,78 @@ Private Sub HandleCreateEvent(ByVal UserIndex As Integer)
 ErrHandler:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleCreateEvent", Erl)
     Call UserList(UserIndex).incomingData.SafeClearPacket
+        
+End Sub
+
+Private Sub HandleHome(ByVal UserIndex As Integer)
+        
+        On Error GoTo HandleHome_Err
+    
+        
+
+        '***************************************************
+        'Author: Budi
+        'Creation Date: 06/01/2010
+        'Last Modification: 05/06/10
+        'Pato - 05/06/10: Add the UCase$ to prevent problems.
+        '***************************************************
+    
+100     With UserList(UserIndex)
+        
+102         Call .incomingData.ReadInteger
+
+104         If .flags.Muerto = 0 Then
+106             Call WriteConsoleMsg(UserIndex, "Debes estar muerto para utilizar este comando.", FontTypeNames.FONTTYPE_FIGHT)
+                Exit Sub
+
+            End If
+                
+            'Si el mapa tiene alguna restriccion (newbie, dungeon, etc...), no lo dejamos viajar.
+108         If MapInfo(.Pos.Map).zone = "NEWBIE" Or MapData(.Pos.Map, .Pos.X, .Pos.Y).trigger = CARCEL Then
+110             Call WriteConsoleMsg(UserIndex, "No pueder viajar a tu hogar desde este mapa.", FontTypeNames.FONTTYPE_FIGHT)
+                Exit Sub
+            
+            End If
+        
+            'Si es un mapa comun y no esta en cana
+112         If .Counters.Pena <> 0 Then
+114             Call WriteConsoleMsg(UserIndex, "No puedes usar este comando en prisión.", FontTypeNames.FONTTYPE_FIGHT)
+                Exit Sub
+
+            End If
+            
+            If .flags.EnReto Then
+                Call WriteConsoleMsg(UserIndex, "No podés regresar desde un reto. Usa /ABANDONAR para admitir la derrota y volver a la ciudad.", FontTypeNames.FONTTYPE_FIGHT)
+                Exit Sub
+            End If
+
+116         If .flags.Traveling = 0 Then
+            
+118             If .Pos.Map <> Ciudades(.Hogar).Map Then
+120                 Call goHome(UserIndex)
+                
+                Else
+122                 Call WriteConsoleMsg(UserIndex, "Ya te encuentras en tu hogar.", FontTypeNames.FONTTYPE_INFO)
+
+                End If
+
+            Else
+
+124             .flags.Traveling = 0
+126             .Counters.goHome = 0
+            
+128             Call WriteConsoleMsg(UserIndex, "Ya hay un viaje en curso.", FontTypeNames.FONTTYPE_INFO)
+            
+            End If
+        
+        End With
+
+        
+        Exit Sub
+
+HandleHome_Err:
+130     Call RegistrarError(Err.Number, Err.Description, "Hogar.HandleHome", Erl)
+
         
 End Sub
 

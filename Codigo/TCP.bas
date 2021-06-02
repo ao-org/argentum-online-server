@@ -1829,6 +1829,7 @@ Sub ResetUserFlags(ByVal UserIndex As Integer)
 254         .MascotasGuardadas = 0
 
 256         .EnConsulta = False
+            .YaGuardo = False
             
 258         .ProcesosPara = vbNullString
 260         .ScreenShotPara = vbNullString
@@ -2156,7 +2157,7 @@ Sub CloseUser(ByVal UserIndex As Integer)
         
 180         .flags.UserLogged = False
 182         .Counters.Saliendo = False
-        
+
 184         errordesc = "ERROR AL ENVIAR INVI"
         
             'Le devolvemos el body y head originales
@@ -2183,7 +2184,10 @@ Sub CloseUser(ByVal UserIndex As Integer)
             ' Grabamos el personaje del usuario
         
 202         errordesc = "ERROR AL GRABAR PJ"
-204         Call SaveUser(UserIndex, True)
+            
+            If Not .flags.YaGuardo Then
+204             Call SaveUser(UserIndex, True)
+            End If
 
 206         errordesc = "ERROR AL DESCONTAR USER DE MAPA"
     
