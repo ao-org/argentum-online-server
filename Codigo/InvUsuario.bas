@@ -294,7 +294,7 @@ Sub TirarOro(ByVal Cantidad As Long, ByVal UserIndex As Integer)
         
             ' GM's (excepto Dioses y Admins) no pueden tirar oro
 102         If (.flags.Privilegios And (PlayerType.user Or PlayerType.Admin Or PlayerType.Dios)) = 0 Then
-104             Call LogGM(.name, " trató de tirar " & PonerPuntos(Cantidad) & " de oro en " & .Pos.Map & "-" & .Pos.X & "-" & .Pos.Y)
+104             Call LogGM(.Name, " trató de tirar " & PonerPuntos(Cantidad) & " de oro en " & .Pos.Map & "-" & .Pos.X & "-" & .Pos.Y)
                 Exit Sub
 
             End If
@@ -744,7 +744,7 @@ Sub GetObj(ByVal UserIndex As Integer)
 124                 If BusquedaTesoroActiva Then
 126                     If UserList(UserIndex).Pos.Map = TesoroNumMapa And UserList(UserIndex).Pos.X = TesoroX And UserList(UserIndex).Pos.Y = TesoroY Then
     
-128                         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos> " & UserList(UserIndex).name & " encontro el tesoro ¡Felicitaciones!", FontTypeNames.FONTTYPE_TALK))
+128                         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos> " & UserList(UserIndex).Name & " encontro el tesoro ¡Felicitaciones!", FontTypeNames.FONTTYPE_TALK))
 130                         BusquedaTesoroActiva = False
 
                         End If
@@ -753,7 +753,7 @@ Sub GetObj(ByVal UserIndex As Integer)
                 
 132                 If BusquedaRegaloActiva Then
 134                     If UserList(UserIndex).Pos.Map = RegaloNumMapa And UserList(UserIndex).Pos.X = RegaloX And UserList(UserIndex).Pos.Y = RegaloY Then
-136                         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos> " & UserList(UserIndex).name & " fue el valiente que encontro el gran item magico ¡Felicitaciones!", FontTypeNames.FONTTYPE_TALK))
+136                         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos> " & UserList(UserIndex).Name & " fue el valiente que encontro el gran item magico ¡Felicitaciones!", FontTypeNames.FONTTYPE_TALK))
 138                         BusquedaRegaloActiva = False
 
                         End If
@@ -763,7 +763,7 @@ Sub GetObj(ByVal UserIndex As Integer)
                     'Log de Objetos que se agarran del piso. Pablo (ToxicWaste) 07/09/07
                     'Es un Objeto que tenemos que loguear?
 140                 If ObjData(MiObj.ObjIndex).Log = 1 Then
-142                     Call LogDesarrollo(UserList(UserIndex).name & " juntó del piso " & MiObj.amount & " " & ObjData(MiObj.ObjIndex).name)
+142                     Call LogDesarrollo(UserList(UserIndex).Name & " juntó del piso " & MiObj.amount & " " & ObjData(MiObj.ObjIndex).Name)
 
                         ' ElseIf MiObj.Amount = 1000 Then 'Es mucha cantidad?
                         '  'Si no es de los prohibidos de loguear, lo logueamos.
@@ -2323,6 +2323,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
     
                             End If
     
+                        ' Poción que limpia todo
 626                     Case 13
                     
 628                         Call QuitarUserInvItem(UserIndex, slot, 1)
@@ -2377,6 +2378,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
     
                             End If
     
+                        ' Poción runa
 684                     Case 14
                                        
 686                         If MapData(.Pos.Map, .Pos.X, .Pos.Y).trigger = CARCEL Then
@@ -2671,6 +2673,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
 940                         Call WriteConsoleMsg(UserIndex, "Tus skills han sido reseteados.", FontTypeNames.FONTTYPE_INFOIAO)
 942                         Call QuitarUserInvItem(UserIndex, slot, 1)
     
+                        ' Mochila
 944                     Case 20
                     
 946                         If .Stats.InventLevel < INVENTORY_EXTRA_ROWS Then
@@ -2683,6 +2686,21 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
 958                             Call WriteConsoleMsg(UserIndex, "Ya has desbloqueado todos los casilleros disponibles.", FontTypeNames.FONTTYPE_INFO)
                                 Exit Sub
     
+                            End If
+                            
+                        ' Poción negra (suicidio)
+                        Case 21
+
+                            Call WriteConsoleMsg("Te has suicidado.", FontTypeNames.FONTTYPE_EJECUCION)
+                            Call UserDie(UserIndex)
+
+                            'Quitamos del inv el item
+                            Call QuitarUserInvItem(UserIndex, slot, 1)
+                            
+                            If obj.Snd1 <> 0 Then
+                                Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .Pos.X, .Pos.Y))
+                            Else
+                                Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, .Pos.X, .Pos.Y))
                             End If
                     
                     End Select
