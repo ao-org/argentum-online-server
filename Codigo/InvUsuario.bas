@@ -2691,7 +2691,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
                         ' Poción negra (suicidio)
                         Case 21
 
-                            Call WriteConsoleMsg("Te has suicidado.", FontTypeNames.FONTTYPE_EJECUCION)
+                            Call WriteConsoleMsg(UserIndex, "Te has suicidado.", FontTypeNames.FONTTYPE_EJECUCION)
                             Call UserDie(UserIndex)
 
                             'Quitamos del inv el item
