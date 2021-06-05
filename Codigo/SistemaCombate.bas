@@ -575,7 +575,7 @@ Private Sub UserDañoNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
 
                 ' NPC de pruebas
 110             If NpcList(NpcIndex).NPCtype = DummyTarget Then
-112                 NpcList(NpcIndex).Contadores.UltimoAtaque = 30
+112                 Call DummyTargetAttacked(NpcIndex)
                 End If
             End If
             

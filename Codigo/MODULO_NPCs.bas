@@ -48,6 +48,11 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
         ' Objetivo de pruebas nunca muere
 100     If NpcList(NpcIndex).NPCtype = DummyTarget Then
 102         Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageChatOverHead("¡¡Auch!!", NpcList(NpcIndex).Char.CharIndex, vbRed, "Barrin"))
+
+            If UBound(NpcList(NpcIndex).Char.Animation) > 0 Then
+                Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageDoAnimation(NpcList(NpcIndex).Char.CharIndex, NpcList(NpcIndex).Char.Animation(1)))
+            End If
+
 104         NpcList(NpcIndex).Stats.MinHp = NpcList(NpcIndex).Stats.MaxHp
             Exit Sub
         End If
@@ -1123,6 +1128,19 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
 136         .Char.Head = val(Leer.GetValue("NPC" & NpcNumber, "Head"))
 138         .Char.Heading = val(Leer.GetValue("NPC" & NpcNumber, "Heading"))
 140         .Char.BodyIdle = val(Leer.GetValue("NPC" & NpcNumber, "BodyIdle"))
+
+            Dim CantidadAnimaciones As Integer
+            CantidadAnimaciones = val(Leer.GetValue("NPC" & NpcNumber, "Animaciones"))
+            
+            If CantidadAnimaciones > 0 Then
+                ReDim .Char.Animation(1 To CantidadAnimaciones)
+                
+                For LoopC = 1 To CantidadAnimaciones
+                    .Char.Animation(LoopC) = val(Leer.GetValue("NPC" & NpcNumber, "Anim" & LoopC))
+                Next
+            Else
+                ReDim .Char.Animation(0)
+            End If
     
 142         .Char.WeaponAnim = val(Leer.GetValue("NPC" & NpcNumber, "Arma"))
 144         .Char.ShieldAnim = val(Leer.GetValue("NPC" & NpcNumber, "Escudo"))
@@ -1636,4 +1654,18 @@ Sub MoveNpcToSide(ByVal NpcIndex As Integer, ByVal Heading As eHeading)
 Handler:
 116     Call RegistrarError(Err.Number, Err.Description, "NPCs.MoveNpcToSide", Erl)
 118     Resume Next
+End Sub
+
+Public Sub DummyTargetAttacked(ByVal NpcIndex As Integer)
+
+    With NpcList(NpcIndex)
+        .Contadores.UltimoAtaque = 30
+
+        If RandomNumber(1, 5) = 1 Then
+            If UBound(.Char.Animation) > 0 Then
+                Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageDoAnimation(.Char.CharIndex, .Char.Animation(1)))
+            End If
+        End If
+
+    End With
 End Sub

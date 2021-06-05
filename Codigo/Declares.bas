@@ -1003,6 +1003,7 @@ Public Type Char
     Otra_Aura As String
     speeding As Single
     BodyIdle As Integer
+    Animation() As Integer
 
 End Type
 

@@ -189,7 +189,9 @@ Public Enum ServerPacketID
     Stopped
     InvasionInfo
     CommerceRecieveChatMessage
+    DoAnimation
 
+    [PacketCount]
 End Enum
 
 Private Enum ClientPacketID
@@ -530,7 +532,7 @@ Private Enum ClientPacketID
     CommerceSendChatMessage
     LogMacroClickHechizo
     
-    [LastPacketID] = 333
+    [PacketCount]
 End Enum
 
 Public Enum eEditOptions
@@ -637,7 +639,7 @@ Public Type t_DataBuffer
     Length As Integer
 End Type
 
-Private PacketList(0 To ClientPacketID.[LastPacketID]) As Long
+Private PacketList(0 To ClientPacketID.[PacketCount] - 1) As Long
 Private Declare Sub CallHandle Lib "ao20.dll" (ByVal Address As Long, ByVal UserIndex As Integer)
 
 Public Sub InitializePacketList()
@@ -1024,7 +1026,7 @@ Public Function HandleIncomingData(ByVal UserIndex As Integer) As Boolean
             Exit Function
         End If
         
-        If .incomingData.PeekID > ClientPacketID.[LastPacketID] Then
+        If .incomingData.PeekID >= ClientPacketID.[PacketCount] Then
             ' Limpiamos la cola
             Call .incomingData.SafeClearPacket
             
@@ -1051,7 +1053,7 @@ Public Function HandleIncomingData(ByVal UserIndex As Integer) As Boolean
                 Exit Function
             
                 'He is logged. Reset idle counter if id is valid.
-            ElseIf PacketID <= ClientPacketID.[LastPacketID] Then
+            ElseIf PacketID < ClientPacketID.[PacketCount] Then
                 .Counters.IdleCount = 0
     
             End If
