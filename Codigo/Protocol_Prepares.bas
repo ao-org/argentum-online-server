@@ -1291,3 +1291,15 @@ Public Function PrepareMessageNevarToggle() As t_DataBuffer
     End With
 
 End Function
+
+Public Function PrepareMessageDoAnimation(ByVal CharIndex As Integer, ByVal Animation As Integer) As t_DataBuffer
+
+    With auxiliarBuffer
+        Call .WriteID(ServerPacketID.DoAnimation)
+        Call .WriteInteger(CharIndex)
+        Call .WriteInteger(Animation)
+        Call .EndPacket
+        PrepareMessageDoAnimation = ConvertDataBuffer(.Length, .ReadAll)
+    End With
+
+End Function

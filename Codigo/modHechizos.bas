@@ -304,7 +304,7 @@ Sub NpcLanzaSpellSobreNpc(ByVal NpcIndex As Integer, ByVal TargetNPC As Integer,
 130       .Stats.MinHp = .Stats.MinHp - Daño
 
 132       If .NPCtype = DummyTarget Then
-134         .Contadores.UltimoAtaque = 30
+134         Call DummyTargetAttacked(TargetNPC)
           End If
 
           ' Mascotas dan experiencia al amo
@@ -2347,7 +2347,7 @@ Sub HechizoPropNPC(ByVal hIndex As Integer, ByVal NpcIndex As Integer, ByVal Use
             End If
 
 174         If NpcList(NpcIndex).NPCtype = DummyTarget Then
-176             NpcList(NpcIndex).Contadores.UltimoAtaque = 30
+176             Call DummyTargetAttacked(NpcIndex)
             End If
             
 178         DañoStr = PonerPuntos(Daño)
