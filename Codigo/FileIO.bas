@@ -1385,29 +1385,17 @@ Sub LoadOBJData()
 168                 Case eOBJType.otArmadura
 170                     .Real = val(Leer.GetValue(ObjKey, "Real"))
 172                     .Caos = val(Leer.GetValue(ObjKey, "Caos"))
-174                     .LingH = val(Leer.GetValue(ObjKey, "LingH"))
-176                     .LingP = val(Leer.GetValue(ObjKey, "LingP"))
-178                     .LingO = val(Leer.GetValue(ObjKey, "LingO"))
-180                     .SkHerreria = val(Leer.GetValue(ObjKey, "SkHerreria"))
 182                     .ResistenciaMagica = val(Leer.GetValue(ObjKey, "ResistenciaMagica"))
 184                     .Invernal = val(Leer.GetValue(ObjKey, "Invernal")) > 0
         
 186                 Case eOBJType.otEscudo
 188                     .ShieldAnim = val(Leer.GetValue(ObjKey, "Anim"))
-190                     .LingH = val(Leer.GetValue(ObjKey, "LingH"))
-192                     .LingP = val(Leer.GetValue(ObjKey, "LingP"))
-194                     .LingO = val(Leer.GetValue(ObjKey, "LingO"))
-196                     .SkHerreria = val(Leer.GetValue(ObjKey, "SkHerreria"))
 198                     .Real = val(Leer.GetValue(ObjKey, "Real"))
 200                     .Caos = val(Leer.GetValue(ObjKey, "Caos"))
 202                     .ResistenciaMagica = val(Leer.GetValue(ObjKey, "ResistenciaMagica"))
         
 204                 Case eOBJType.otCasco
 206                     .CascoAnim = val(Leer.GetValue(ObjKey, "Anim"))
-208                     .LingH = val(Leer.GetValue(ObjKey, "LingH"))
-210                     .LingP = val(Leer.GetValue(ObjKey, "LingP"))
-212                     .LingO = val(Leer.GetValue(ObjKey, "LingO"))
-214                     .SkHerreria = val(Leer.GetValue(ObjKey, "SkHerreria"))
 216                     .Real = val(Leer.GetValue(ObjKey, "Real"))
 218                     .Caos = val(Leer.GetValue(ObjKey, "Caos"))
 220                     .ResistenciaMagica = val(Leer.GetValue(ObjKey, "ResistenciaMagica"))
@@ -1427,11 +1415,6 @@ Sub LoadOBJData()
 244                     .Power = val(Leer.GetValue(ObjKey, "StaffPower"))
 246                     .MagicDamageBonus = val(Leer.GetValue(ObjKey, "MagicDamageBonus"))
 248                     .Refuerzo = val(Leer.GetValue(ObjKey, "Refuerzo"))
-            
-250                     .LingH = val(Leer.GetValue(ObjKey, "LingH"))
-252                     .LingP = val(Leer.GetValue(ObjKey, "LingP"))
-254                     .LingO = val(Leer.GetValue(ObjKey, "LingO"))
-256                     .SkHerreria = val(Leer.GetValue(ObjKey, "SkHerreria"))
 258                     .Real = val(Leer.GetValue(ObjKey, "Real"))
 260                     .Caos = val(Leer.GetValue(ObjKey, "Caos"))
 262                     .EfectoMagico = val(Leer.GetValue(ObjKey, "efectomagico"))
@@ -1481,19 +1464,12 @@ Sub LoadOBJData()
 330                     .Paraliza = val(Leer.GetValue(ObjKey, "Paraliza"))
 332                     .Estupidiza = val(Leer.GetValue(ObjKey, "Estupidiza"))
 334                     .incinera = val(Leer.GetValue(ObjKey, "Incinera"))
-        
+    
 336                     .Refuerzo = val(Leer.GetValue(ObjKey, "Refuerzo"))
-338                     .SkCarpinteria = val(Leer.GetValue(ObjKey, "SkCarpinteria"))
 340                     .EfectoMagico = val(Leer.GetValue(ObjKey, "efectomagico"))
             
 342                     .Snd1 = val(Leer.GetValue(ObjKey, "SND1"))
 344                     .Snd2 = val(Leer.GetValue(ObjKey, "SND2"))
-            
-                        'Case eOBJType.otAnillos 'Pablo (ToxicWaste)
-                        '  .LingH = val(Leer.GetValue(ObjKey, "LingH"))
-                        '  .LingP = val(Leer.GetValue(ObjKey, "LingP"))
-                        '  .LingO = val(Leer.GetValue(ObjKey, "LingO"))
-                        '  .SkHerreria = val(Leer.GetValue(ObjKey, "SkHerreria"))
             
                         'Pasajes Ladder 05-05-08
 346                 Case eOBJType.otpasajes
@@ -1561,6 +1537,7 @@ Sub LoadOBJData()
                         End If
             
 434                 Case eOBJType.otYacimiento
+                        .MineralIndex = val(Leer.GetValue(ObjKey, "MineralIndex"))
                         ' Drop gemas yacimientos
 436                     .CantItem = val(Leer.GetValue(ObjKey, "Gemas"))
             
@@ -1582,6 +1559,9 @@ Sub LoadOBJData()
 
 460                 Case eOBJType.otResistencia
 462                     .ResistenciaMagica = val(Leer.GetValue(ObjKey, "ResistenciaMagica"))
+
+                    Case eOBJType.otMinerales
+                        .LingoteIndex = val(Leer.GetValue(ObjKey, "LingoteIndex"))
             
                 End Select
     
@@ -1606,10 +1586,6 @@ Sub LoadOBJData()
 486             .Ropaje = val(Leer.GetValue(ObjKey, "NumRopaje"))
 488             .HechizoIndex = val(Leer.GetValue(ObjKey, "HechizoIndex"))
     
-490             .LingoteIndex = val(Leer.GetValue(ObjKey, "LingoteIndex"))
-    
-492             .MineralIndex = val(Leer.GetValue(ObjKey, "MineralIndex"))
-    
 494             .MaxHp = val(Leer.GetValue(ObjKey, "MaxHP"))
 496             .MinHp = val(Leer.GetValue(ObjKey, "MinHP"))
     
@@ -1620,6 +1596,11 @@ Sub LoadOBJData()
 504             .PielOsoPardo = val(Leer.GetValue(ObjKey, "PielOsoPardo"))
 506             .PielOsoPolaR = val(Leer.GetValue(ObjKey, "PielOsoPolaR"))
 508             .SkMAGOria = val(Leer.GetValue(ObjKey, "SKSastreria"))
+
+                .LingH = val(Leer.GetValue(ObjKey, "LingH"))
+                .LingP = val(Leer.GetValue(ObjKey, "LingP"))
+                .LingO = val(Leer.GetValue(ObjKey, "LingO"))
+                .SkHerreria = val(Leer.GetValue(ObjKey, "SkHerreria"))
     
 510             .CreaParticula = Leer.GetValue(ObjKey, "CreaParticula")
 512             .CreaFX = val(Leer.GetValue(ObjKey, "CreaFX"))
