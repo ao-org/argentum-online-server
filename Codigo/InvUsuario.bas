@@ -1464,6 +1464,8 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
 380                     If .flags.Navegando = 0 And .flags.Montado = 0 Then
 382                         Call DarCuerpoDesnudo(UserIndex)
 384                         Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
+                        Else
+                            .flags.Desnudo = 1
                         End If
 
                         Exit Sub
@@ -1493,9 +1495,9 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal slot As Byte)
 408                     .Char.Body = obj.Ropaje
 
 410                     Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
-412                     .flags.Desnudo = 0
-
                     End If
+                    
+                    .flags.Desnudo = 0
 
 414                 If obj.ResistenciaMagica > 0 Then
 416                     Call WriteUpdateRM(UserIndex)
