@@ -340,7 +340,7 @@ Private Sub UpdateNpcInv(ByVal UpdateAll As Boolean, ByVal UserIndex As Integer,
 108                 obj.amount = .amount
                 
 110                 If .ObjIndex > 0 Then
-112                     val = (ObjData(.ObjIndex).Valor) / Desc
+112                     val = Ceil(ObjData(.ObjIndex).Valor / Desc)
                     End If
                 
 114                 Call WriteChangeNPCInventorySlot(UserIndex, slot, obj, val)
@@ -358,7 +358,7 @@ Private Sub UpdateNpcInv(ByVal UpdateAll As Boolean, ByVal UserIndex As Integer,
 122                     obj.amount = .amount
     
 124                     If .ObjIndex > 0 Then
-126                         val = (ObjData(.ObjIndex).Valor) / Desc
+126                         val = Ceil(ObjData(.ObjIndex).Valor / Desc)
                         End If
     
 128                     Call WriteChangeNPCInventorySlot(UserIndex, LoopC, obj, val)
