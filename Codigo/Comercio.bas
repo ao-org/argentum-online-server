@@ -87,7 +87,7 @@ Public Sub Comercio(ByVal Modo As eModoComercio, ByVal UserIndex As Integer, ByV
         
             'El precio, cuando nos venden algo, lo tenemos que redondear para arriba.
             'Es decir, 1.1 = 2, por lo cual se hace de la siguiente forma Precio = Clng(PrecioFinal + 0.5) Siempre va a darte el proximo numero. O el "Techo" (MarKoxX)
-126         Precio = CLng((ObjData(NpcList(NpcIndex).Invent.Object(slot).ObjIndex).Valor / Descuento(UserIndex) * Cantidad) + 0.5)
+126         Precio = Ceil(ObjData(NpcList(NpcIndex).Invent.Object(slot).ObjIndex).Valor / Descuento(UserIndex) * Cantidad)
         
 128         If UserList(UserIndex).Stats.GLD < Precio Then
 130             Call WriteConsoleMsg(UserIndex, "No tienes suficiente dinero.", FontTypeNames.FONTTYPE_INFO)
@@ -125,13 +125,9 @@ Public Sub Comercio(ByVal Modo As eModoComercio, ByVal UserIndex As Integer, ByV
                 
 148         objquedo.amount = NpcList(NpcIndex).Invent.Object(CByte(slot)).amount
 150         objquedo.ObjIndex = NpcList(NpcIndex).Invent.Object(CByte(slot)).ObjIndex
-152         precioenvio = CLng((ObjData(Objeto.ObjIndex).Valor / Descuento(UserIndex) * 1))
+152         precioenvio = Ceil(ObjData(NpcList(NpcIndex).Invent.Object(slot).ObjIndex).Valor / Descuento(UserIndex))
     
 154         Call WriteChangeNPCInventorySlot(UserIndex, CByte(slot), objquedo, precioenvio)
-            
-            Rem    precioenvio = CLng((ObjData(Objeto.ObjIndex).Valor / Descuento(UserIndex) * 1))
-    
-            Rem Call WriteChangeNPCInventorySlot(UserIndex, NpcSlot, objquedo, precioenvio)
         
 156     ElseIf Modo = eModoComercio.Venta Then
         
@@ -207,7 +203,7 @@ Public Sub Comercio(ByVal Modo As eModoComercio, ByVal UserIndex As Integer, ByV
     
 222             objquedo.ObjIndex = NpcList(NpcIndex).Invent.Object(NpcSlot).ObjIndex
     
-224             precioenvio = CLng((ObjData(Objeto.ObjIndex).Valor / Descuento(UserIndex) * 1))
+224             precioenvio = Ceil(ObjData(Objeto.ObjIndex).Valor / Descuento(UserIndex))
   
 226             Call WriteChangeNPCInventorySlot(UserIndex, NpcSlot, objquedo, precioenvio)
                 

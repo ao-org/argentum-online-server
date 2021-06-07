@@ -3048,3 +3048,18 @@ Public Function IsValidIPAddress(ByVal IP As String) As Boolean
 Handler:
 
 End Function
+
+Function Ceil(x As Variant) As Variant
+        
+        On Error GoTo Ceil_Err
+        
+100     Ceil = IIf(Fix(x) = x, x, Fix(x) + 1)
+        
+        Exit Function
+
+Ceil_Err:
+105     Call RegistrarError(Err.Number, Err.Description & "Ceil_Err", Erl)
+
+110     Resume Next
+        
+End Function
