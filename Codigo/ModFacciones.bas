@@ -427,6 +427,11 @@ Private Sub DarRecompensas(ByVal UserIndex As Integer)
             Dim i As Integer
 
 100         With UserList(UserIndex)
+                ' Si es semidios o consejero, no le damos nada
+                If .flags.Privilegios And (PlayerType.Consejero Or PlayerType.SemiDios) Then
+                    Exit Sub
+                End If
+
 102             If .Faccion.ArmadaReal = 1 Then
 104                 rank = .Faccion.RecompensasReal
 106                 ultimaRecompensa = .Faccion.RecibioArmaduraReal
