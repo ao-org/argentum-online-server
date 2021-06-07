@@ -339,7 +339,7 @@ Sub NpcLanzaSpellSobreNpc(ByVal NpcIndex As Integer, ByVal TargetNPC As Integer,
 
 162     ElseIf Hechizos(Spell).Inmoviliza = 1 Then
 
-164       If .flags.Inmovilizado = 0 Then
+164       If .flags.Inmovilizado = 0 And .flags.Paralizado = 0 Then
 166         Call SendData(SendTarget.ToNPCArea, TargetNPC, PrepareMessagePlayWave(Hechizos(Spell).wav, .Pos.X, .Pos.Y))
 168         Call SendData(SendTarget.ToNPCArea, TargetNPC, PrepareMessageCreateFX(.Char.CharIndex, Hechizos(Spell).FXgrh, Hechizos(Spell).loops))
 
@@ -2171,6 +2171,11 @@ Sub HechizoEstadoNPC(ByVal NpcIndex As Integer, ByVal hIndex As Integer, ByRef b
  
 208     If Hechizos(hIndex).Inmoviliza = 1 Then
 210         If NpcList(NpcIndex).flags.AfectaParalisis = 0 Then
+                If NpcList(NpcIndex).flags.Paralizado <> 0 Then
+                    Call WriteConsoleMsg(UserIndex, "El NPC se encuentra paralizado.", FontTypeNames.FONTTYPE_INFO)
+                    Exit Sub
+                End If
+
 212             If Not PuedeAtacarNPC(UserIndex, NpcIndex) Then
 214                 b = False
                     Exit Sub
