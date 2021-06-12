@@ -392,7 +392,7 @@ Public Sub WriteCommerceInit(ByVal UserIndex As Integer)
     With UserList(UserIndex).outgoingData
     
         Call .WriteID(ServerPacketID.CommerceInit)
-        Call .WriteASCIIString(NpcList(UserList(UserIndex).flags.TargetNPC).name)
+        Call .WriteASCIIString(NpcList(UserList(UserIndex).flags.TargetNPC).Name)
         Call .EndPacket
     
     End With
@@ -1615,7 +1615,7 @@ End Sub
 ' @param    Chat Text to be displayed over the char's head.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 
-Public Sub WriteGuildChat(ByVal UserIndex As Integer, ByVal chat As String, ByVal status As Byte)
+Public Sub WriteGuildChat(ByVal UserIndex As Integer, ByVal chat As String, ByVal Status As Byte)
 
     '***************************************************
     'Author: Juan Martín Sotuyo Dodero (Maraxus)
@@ -1626,7 +1626,7 @@ Public Sub WriteGuildChat(ByVal UserIndex As Integer, ByVal chat As String, ByVa
 
     With UserList(UserIndex).outgoingData
     
-        Call .WritePrepared(PrepareMessageGuildChat(chat, status))
+        Call .WritePrepared(PrepareMessageGuildChat(chat, Status))
         Call .EndPacket
     
     End With
@@ -1790,7 +1790,7 @@ End Sub
 ' @param    privileges Sets if the character is a normal one or any kind of administrative character.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 
-Public Sub WriteCharacterCreate(ByVal UserIndex As Integer, ByVal Body As Integer, ByVal Head As Integer, ByVal Heading As eHeading, ByVal CharIndex As Integer, ByVal X As Byte, ByVal Y As Byte, ByVal weapon As Integer, ByVal shield As Integer, ByVal FX As Integer, ByVal FXLoops As Integer, ByVal helmet As Integer, ByVal name As String, ByVal Status As Byte, ByVal privileges As Byte, ByVal ParticulaFx As Byte, ByVal Head_Aura As String, ByVal Arma_Aura As String, ByVal Body_Aura As String, ByVal DM_Aura As String, ByVal RM_Aura As String, ByVal Otra_Aura As String, ByVal Escudo_Aura As String, ByVal speeding As Single, ByVal EsNPC As Byte, ByVal donador As Byte, ByVal appear As Byte, ByVal group_index As Integer, ByVal clan_index As Integer, ByVal clan_nivel As Byte, ByVal UserMinHp As Long, ByVal UserMaxHp As Long, ByVal Simbolo As Byte, Optional ByVal Idle As Boolean = False, Optional ByVal Navegando As Boolean = False)
+Public Sub WriteCharacterCreate(ByVal UserIndex As Integer, ByVal Body As Integer, ByVal Head As Integer, ByVal Heading As eHeading, ByVal CharIndex As Integer, ByVal X As Byte, ByVal Y As Byte, ByVal weapon As Integer, ByVal shield As Integer, ByVal FX As Integer, ByVal FXLoops As Integer, ByVal helmet As Integer, ByVal Name As String, ByVal Status As Byte, ByVal privileges As Byte, ByVal ParticulaFx As Byte, ByVal Head_Aura As String, ByVal Arma_Aura As String, ByVal Body_Aura As String, ByVal DM_Aura As String, ByVal RM_Aura As String, ByVal Otra_Aura As String, ByVal Escudo_Aura As String, ByVal speeding As Single, ByVal EsNPC As Byte, ByVal donador As Byte, ByVal appear As Byte, ByVal group_index As Integer, ByVal clan_index As Integer, ByVal clan_nivel As Byte, ByVal UserMinHp As Long, ByVal UserMaxHp As Long, ByVal Simbolo As Byte, Optional ByVal Idle As Boolean = False, Optional ByVal Navegando As Boolean = False)
 
     '***************************************************
     'Author: Juan Martín Sotuyo Dodero (Maraxus)
@@ -1801,7 +1801,7 @@ Public Sub WriteCharacterCreate(ByVal UserIndex As Integer, ByVal Body As Intege
     
     With UserList(UserIndex).outgoingData
     
-        Call .WritePrepared(PrepareMessageCharacterCreate(Body, Head, Heading, CharIndex, X, Y, weapon, shield, FX, FXLoops, helmet, name, Status, privileges, ParticulaFx, Head_Aura, Arma_Aura, Body_Aura, DM_Aura, RM_Aura, Otra_Aura, Escudo_Aura, speeding, EsNPC, donador, appear, group_index, clan_index, clan_nivel, UserMinHp, UserMaxHp, Simbolo, Idle, Navegando))
+        Call .WritePrepared(PrepareMessageCharacterCreate(Body, Head, Heading, CharIndex, X, Y, weapon, shield, FX, FXLoops, helmet, Name, Status, privileges, ParticulaFx, Head_Aura, Arma_Aura, Body_Aura, DM_Aura, RM_Aura, Otra_Aura, Escudo_Aura, speeding, EsNPC, donador, appear, group_index, clan_index, clan_nivel, UserMinHp, UserMaxHp, Simbolo, Idle, Navegando))
         Call .EndPacket
     
     End With
@@ -2542,14 +2542,14 @@ ErrHandler:
 
 End Sub
 
-Public Sub WriteUpdateUserKey(ByVal UserIndex As Integer, ByVal slot As Integer, ByVal Llave As Integer)
+Public Sub WriteUpdateUserKey(ByVal UserIndex As Integer, ByVal Slot As Integer, ByVal Llave As Integer)
 
     On Error GoTo ErrHandler
 
     With UserList(UserIndex).outgoingData
         Call .WriteID(ServerPacketID.UpdateUserKey)
         
-        Call .WriteInteger(slot)
+        Call .WriteInteger(Slot)
         Call .WriteInteger(Llave)
         
         Call .EndPacket
@@ -2768,7 +2768,7 @@ ErrHandler:
 
 End Sub
 
-Public Sub WriteChangeInventorySlot(ByVal UserIndex As Integer, ByVal slot As Byte)
+Public Sub WriteChangeInventorySlot(ByVal UserIndex As Integer, ByVal Slot As Byte)
     '***************************************************
     'Author: Juan Martín Sotuyo Dodero (Maraxus)
     'Last Modification: 3/12/09
@@ -2784,9 +2784,9 @@ Public Sub WriteChangeInventorySlot(ByVal UserIndex As Integer, ByVal slot As By
     With UserList(UserIndex).outgoingData
         Call .WriteID(ServerPacketID.ChangeInventorySlot)
         
-        Call .WriteByte(slot)
+        Call .WriteByte(Slot)
                 
-        ObjIndex = UserList(UserIndex).Invent.Object(slot).ObjIndex
+        ObjIndex = UserList(UserIndex).Invent.Object(Slot).ObjIndex
 
         If ObjIndex > 0 Then
             PodraUsarlo = PuedeUsarObjeto(UserIndex, ObjIndex)
@@ -2794,8 +2794,8 @@ Public Sub WriteChangeInventorySlot(ByVal UserIndex As Integer, ByVal slot As By
         End If
     
         Call .WriteInteger(ObjIndex)
-        Call .WriteInteger(UserList(UserIndex).Invent.Object(slot).amount)
-        Call .WriteBoolean(UserList(UserIndex).Invent.Object(slot).Equipped)
+        Call .WriteInteger(UserList(UserIndex).Invent.Object(Slot).amount)
+        Call .WriteBoolean(UserList(UserIndex).Invent.Object(Slot).Equipped)
         Call .WriteSingle(SalePrice(ObjIndex))
         Call .WriteByte(PodraUsarlo)
         
@@ -2821,7 +2821,7 @@ End Sub
 ' @param    slot Inventory slot which needs to be updated.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 
-Public Sub WriteChangeBankSlot(ByVal UserIndex As Integer, ByVal slot As Byte)
+Public Sub WriteChangeBankSlot(ByVal UserIndex As Integer, ByVal Slot As Byte)
 
     '***************************************************
     'Author: Juan Martín Sotuyo Dodero (Maraxus)
@@ -2837,9 +2837,9 @@ Public Sub WriteChangeBankSlot(ByVal UserIndex As Integer, ByVal slot As Byte)
     With UserList(UserIndex).outgoingData
         Call .WriteID(ServerPacketID.ChangeBankSlot)
         
-        Call .WriteByte(slot)
+        Call .WriteByte(Slot)
 
-        ObjIndex = UserList(UserIndex).BancoInvent.Object(slot).ObjIndex
+        ObjIndex = UserList(UserIndex).BancoInvent.Object(Slot).ObjIndex
         
         Call .WriteInteger(ObjIndex)
         
@@ -2849,7 +2849,7 @@ Public Sub WriteChangeBankSlot(ByVal UserIndex As Integer, ByVal slot As Byte)
 
         End If
 
-        Call .WriteInteger(UserList(UserIndex).BancoInvent.Object(slot).amount)
+        Call .WriteInteger(UserList(UserIndex).BancoInvent.Object(Slot).amount)
         Call .WriteLong(Valor)
         Call .WriteByte(PodraUsarlo)
         
@@ -2875,7 +2875,7 @@ End Sub
 ' @param    slot Spell slot to update.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 
-Public Sub WriteChangeSpellSlot(ByVal UserIndex As Integer, ByVal slot As Integer)
+Public Sub WriteChangeSpellSlot(ByVal UserIndex As Integer, ByVal Slot As Integer)
 
     '***************************************************
     'Author: Juan Martín Sotuyo Dodero (Maraxus)
@@ -2887,11 +2887,11 @@ Public Sub WriteChangeSpellSlot(ByVal UserIndex As Integer, ByVal slot As Intege
     With UserList(UserIndex).outgoingData
         Call .WriteID(ServerPacketID.ChangeSpellSlot)
         
-        Call .WriteByte(slot)
-        Call .WriteInteger(UserList(UserIndex).Stats.UserHechizos(slot))
+        Call .WriteByte(Slot)
+        Call .WriteInteger(UserList(UserIndex).Stats.UserHechizos(Slot))
         
-        If UserList(UserIndex).Stats.UserHechizos(slot) > 0 Then
-            Call .WriteByte(UserList(UserIndex).Stats.UserHechizos(slot))
+        If UserList(UserIndex).Stats.UserHechizos(Slot) > 0 Then
+            Call .WriteByte(UserList(UserIndex).Stats.UserHechizos(Slot))
         Else
             Call .WriteByte("255")
         End If
@@ -3052,7 +3052,7 @@ Public Sub WriteBlacksmithArmors(ByVal UserIndex As Integer)
         ' Write the needed data of each object
         For i = 1 To Count
             obj = ObjData(ArmadurasHerrero(validIndexes(i)))
-            Call .WriteASCIIString(obj.name)
+            Call .WriteASCIIString(obj.Name)
             Call .WriteInteger(obj.LingH)
             Call .WriteInteger(obj.LingP)
             Call .WriteInteger(obj.LingO)
@@ -3413,7 +3413,7 @@ End Sub
 ' @param    price       The value the NPC asks for the object.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 
-Public Sub WriteChangeNPCInventorySlot(ByVal UserIndex As Integer, ByVal slot As Byte, ByRef obj As obj, ByVal price As Single)
+Public Sub WriteChangeNPCInventorySlot(ByVal UserIndex As Integer, ByVal Slot As Byte, ByRef obj As obj, ByVal price As Single)
 
     '***************************************************
     'Author: Juan Martín Sotuyo Dodero (Maraxus)
@@ -3434,7 +3434,7 @@ Public Sub WriteChangeNPCInventorySlot(ByVal UserIndex As Integer, ByVal slot As
     With UserList(UserIndex).outgoingData
         Call .WriteID(ServerPacketID.ChangeNPCInventorySlot)
         
-        Call .WriteByte(slot)
+        Call .WriteByte(Slot)
         Call .WriteInteger(obj.ObjIndex)
         Call .WriteInteger(obj.amount)
         Call .WriteSingle(price)
@@ -4719,7 +4719,7 @@ Public Sub WriteChangeUserTradeSlot(ByVal UserIndex As Integer, ByRef itemsAenvi
             If itemsAenviar(i).ObjIndex = 0 Then
                 Call .WriteASCIIString("")
             Else
-                Call .WriteASCIIString(ObjData(itemsAenviar(i).ObjIndex).name)
+                Call .WriteASCIIString(ObjData(itemsAenviar(i).ObjIndex).Name)
 
             End If
                 
@@ -5039,7 +5039,7 @@ Public Sub WritePersonajesDeCuenta(ByVal UserIndex As Integer)
     donador = DonadorCheck(UserCuenta)
 
     If Database_Enabled Then
-        CantPersonajes = GetPersonajesCuentaDatabase(UserList(UserIndex).AccountId, Personaje)
+        CantPersonajes = GetPersonajesCuentaDatabase(UserList(UserIndex).AccountID, Personaje)
     
     Else
         CantPersonajes = ObtenerCantidadDePersonajes(UserCuenta)
@@ -5392,7 +5392,7 @@ Public Sub WriteDatosGrupo(ByVal UserIndex As Integer)
                     If i = 1 Then
                         Call .outgoingData.WriteASCIIString(UserList(.Grupo.Miembros(i)).Name & "(Líder)")
                     Else
-                        Call .outgoingData.WriteASCIIString(UserList(.Grupo.Miembros(i)).name)
+                        Call .outgoingData.WriteASCIIString(UserList(.Grupo.Miembros(i)).Name)
 
                     End If
 
@@ -5405,7 +5405,7 @@ Public Sub WriteDatosGrupo(ByVal UserIndex As Integer)
                     If i = 1 Then
                         Call .outgoingData.WriteASCIIString(UserList(UserList(.Grupo.Lider).Grupo.Miembros(i)).Name & "(Líder)")
                     Else
-                        Call .outgoingData.WriteASCIIString(UserList(UserList(.Grupo.Lider).Grupo.Miembros(i)).name)
+                        Call .outgoingData.WriteASCIIString(UserList(UserList(.Grupo.Lider).Grupo.Miembros(i)).Name)
 
                     End If
 
@@ -5949,14 +5949,14 @@ ErrHandler:
 End Sub
 
 
-Public Sub WriteShowScreenShot(ByVal UserIndex As Integer, name As String)
+Public Sub WriteShowScreenShot(ByVal UserIndex As Integer, Name As String)
 
     On Error GoTo ErrHandler
 
     With UserList(UserIndex).outgoingData
         Call .WriteID(ServerPacketID.ShowScreenShot)
         
-        Call .WriteASCIIString(name)
+        Call .WriteASCIIString(Name)
         
         Call .EndPacket
     End With
@@ -6095,3 +6095,102 @@ ErrHandler:
     
 End Sub
 
+Sub WriteOpenCrafting(ByVal UserIndex As Integer, ByVal Tipo As Byte)
+    
+    On Error GoTo ErrHandler
+
+    With UserList(UserIndex).outgoingData
+
+        Call .WriteID(ServerPacketID.OpenCrafting)
+        Call .WriteByte(Tipo)
+
+        Call .EndPacket
+    End With
+    
+    Exit Sub
+    
+ErrHandler:
+
+    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
+        Call FlushBuffer(UserIndex)
+        Resume
+    End If
+    
+End Sub
+
+Sub WriteCraftingItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ObjIndex As Integer)
+
+    On Error GoTo ErrHandler
+
+    With UserList(UserIndex).outgoingData
+
+        Call .WriteID(ServerPacketID.CraftingItem)
+        Call .WriteByte(Slot)
+        Call .WriteInteger(ObjIndex)
+
+        Call .EndPacket
+    End With
+    
+    Exit Sub
+    
+ErrHandler:
+
+    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
+        Call FlushBuffer(UserIndex)
+        Resume
+    End If
+    
+End Sub
+
+Sub WriteCraftingCatalyst(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, ByVal amount As Integer, ByVal Porcentaje As Byte)
+
+    On Error GoTo ErrHandler
+
+    With UserList(UserIndex).outgoingData
+
+        Call .WriteID(ServerPacketID.CraftingCatalyst)
+        Call .WriteInteger(ObjIndex)
+        Call .WriteInteger(amount)
+        Call .WriteByte(Porcentaje)
+
+        Call .EndPacket
+    End With
+    
+    Exit Sub
+    
+ErrHandler:
+
+    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
+        Call FlushBuffer(UserIndex)
+        Resume
+    End If
+    
+End Sub
+
+Sub WriteCraftingResult(ByVal UserIndex As Integer, ByVal Result As Integer, Optional ByVal Porcentaje As Byte, Optional ByVal Precio As Long)
+    
+    On Error GoTo ErrHandler
+
+    With UserList(UserIndex).outgoingData
+
+        Call .WriteID(ServerPacketID.CraftingResult)
+        Call .WriteInteger(Result)
+        
+        If Result <> 0 Then
+            Call .WriteByte(Porcentaje)
+            Call .WriteLong(Precio)
+        End If
+
+        Call .EndPacket
+    End With
+    
+    Exit Sub
+    
+ErrHandler:
+
+    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
+        Call FlushBuffer(UserIndex)
+        Resume
+    End If
+    
+End Sub

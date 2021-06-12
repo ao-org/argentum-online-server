@@ -497,7 +497,7 @@ Function ConnectNewUser(ByVal UserIndex As Integer, ByRef Name As String, ByVal 
             Dim LoopC As Long
         
 102         If .flags.UserLogged Then
-104             Call LogCheating("El usuario " & .Name & " ha intentado crear a " & Name & " desde la IP " & .IP)
+104             Call LogCheating("El usuario " & .Name & " ha intentado crear a " & Name & " desde la IP " & .ip)
 106             Call CloseSocketSL(UserIndex)
 108             Call Cerrar_Usuario(UserIndex)
                 Exit Function
@@ -624,7 +624,7 @@ Function ConnectNewUser(ByVal UserIndex As Integer, ByRef Name As String, ByVal 
             'Resetamos CORREO
         
 234         .Pos.Map = 37
-236         .Pos.X = 76
+236         .Pos.x = 76
 238         .Pos.Y = 82
         
 240         UltimoChar = UCase$(Name)
@@ -778,18 +778,18 @@ Function EstaPCarea(Index As Integer, Index2 As Integer) As Boolean
         On Error GoTo EstaPCarea_Err
         
 
-        Dim X As Integer, Y As Integer
+        Dim x As Integer, Y As Integer
 
 100     For Y = UserList(Index).Pos.Y - MinYBorder + 1 To UserList(Index).Pos.Y + MinYBorder - 1
-102         For X = UserList(Index).Pos.X - MinXBorder + 1 To UserList(Index).Pos.X + MinXBorder - 1
+102         For x = UserList(Index).Pos.x - MinXBorder + 1 To UserList(Index).Pos.x + MinXBorder - 1
 
-104             If MapData(UserList(Index).Pos.Map, X, Y).UserIndex = Index2 Then
+104             If MapData(UserList(Index).Pos.Map, x, Y).UserIndex = Index2 Then
 106                 EstaPCarea = True
                     Exit Function
 
                 End If
         
-108         Next X
+108         Next x
 110     Next Y
 
 112     EstaPCarea = False
@@ -803,7 +803,7 @@ EstaPCarea_Err:
         
 End Function
 
-Function HayPCarea(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer) As Boolean
+Function HayPCarea(ByVal Map As Integer, ByVal x As Integer, ByVal Y As Integer) As Boolean
         
         On Error GoTo HayPCarea_Err
         
@@ -811,7 +811,7 @@ Function HayPCarea(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer)
         Dim tX As Integer, tY As Integer
 
 100     For tY = Y - MinYBorder + 1 To Y + MinYBorder - 1
-102         For tX = X - MinXBorder + 1 To X + MinXBorder - 1
+102         For tX = x - MinXBorder + 1 To x + MinXBorder - 1
 
 104             If InMapBounds(Map, tX, tY) Then
 106                 If MapData(Map, tX, tY).UserIndex > 0 Then
@@ -841,18 +841,18 @@ Function HayOBJarea(Pos As WorldPos, ObjIndex As Integer) As Boolean
         On Error GoTo HayOBJarea_Err
         
 
-        Dim X As Integer, Y As Integer
+        Dim x As Integer, Y As Integer
 
 100     For Y = Pos.Y - MinYBorder + 1 To Pos.Y + MinYBorder - 1
-102         For X = Pos.X - MinXBorder + 1 To Pos.X + MinXBorder - 1
+102         For x = Pos.x - MinXBorder + 1 To Pos.x + MinXBorder - 1
 
-104             If MapData(Pos.Map, X, Y).ObjInfo.ObjIndex = ObjIndex Then
+104             If MapData(Pos.Map, x, Y).ObjInfo.ObjIndex = ObjIndex Then
 106                 HayOBJarea = True
                     Exit Function
 
                 End If
         
-108         Next X
+108         Next x
 110     Next Y
 
 112     HayOBJarea = False
@@ -929,7 +929,7 @@ Function EntrarCuenta(ByVal UserIndex As Integer, CuentaEmail As String, CuentaP
             Exit Function
         End If
     
-132     EntrarCuenta = EnterAccountDatabase(UserIndex, CuentaEmail, SDesencriptar(CuentaPassword), MacAddress, HDSerial, UserList(UserIndex).IP)
+132     EntrarCuenta = EnterAccountDatabase(UserIndex, CuentaEmail, SDesencriptar(CuentaPassword), MacAddress, HDSerial, UserList(UserIndex).ip)
         
         Exit Function
 
@@ -952,7 +952,7 @@ Sub ConnectUser(ByVal UserIndex As Integer, _
 
             Dim tStr As String
 102         If .flags.UserLogged Then
-104             Call LogCheating("El usuario " & .Name & " ha intentado loguear a " & Name & " desde la IP " & .IP)
+104             Call LogCheating("El usuario " & .Name & " ha intentado loguear a " & Name & " desde la IP " & .ip)
             
                 'Kick player ( and leave character inside :D )!
 106                 Call CloseSocketSL(UserIndex)
@@ -988,7 +988,7 @@ Sub ConnectUser(ByVal UserIndex As Integer, _
         
             '¿Supera el máximo de usuarios por cuenta?
 126         If MaxUsersPorCuenta > 0 Then
-128             If ContarUsuariosMismaCuenta(.AccountId) >= MaxUsersPorCuenta Then
+128             If ContarUsuariosMismaCuenta(.AccountID) >= MaxUsersPorCuenta Then
 130                 If MaxUsersPorCuenta = 1 Then
 132                     Call WriteShowMessageBox(UserIndex, "Ya hay un usuario conectado con esta cuenta.")
                     Else
@@ -1024,7 +1024,7 @@ Sub ConnectUser(ByVal UserIndex As Integer, _
         
             '¿Este IP ya esta conectado?
 158         If MaxConexionesIP > 0 Then
-160             If ContarMismaIP(UserIndex, .IP) >= MaxConexionesIP Then
+160             If ContarMismaIP(UserIndex, .ip) >= MaxConexionesIP Then
 162                 Call WriteShowMessageBox(UserIndex, "Has alcanzado el límite de conexiones por IP.")
 
 165                     Call CloseSocket(UserIndex)
@@ -1045,7 +1045,7 @@ Sub ConnectUser(ByVal UserIndex As Integer, _
         
 172         If EsGM(UserIndex) Then
 174             Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » " & Name & " se conecto al juego.", FontTypeNames.FONTTYPE_INFOBOLD))
-176             Call LogGM(.Name, "Se conectó con IP: " & .ip)
+176             Call LogGM(.Name, "Se conectó con IP: " & .IP)
 
             Else
 
@@ -1168,7 +1168,7 @@ Sub ConnectUser(ByVal UserIndex As Integer, _
         
             'Tratamos de evitar en lo posible el "Telefrag". Solo 1 intento de loguear en pos adjacentes.
             'Codigo por Pablo (ToxicWaste) y revisado por Nacho (Integer), corregido para que realmetne ande y no tire el server por Juan Martin Sotuyo Dodero (Maraxus)
-276         If MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex <> 0 Or MapData(.Pos.Map, .Pos.X, .Pos.Y).NpcIndex <> 0 Then
+276         If MapData(.Pos.Map, .Pos.x, .Pos.Y).UserIndex <> 0 Or MapData(.Pos.Map, .Pos.x, .Pos.Y).NpcIndex <> 0 Then
 
                 Dim FoundPlace As Boolean
 
@@ -1179,9 +1179,9 @@ Sub ConnectUser(ByVal UserIndex As Integer, _
                 Dim tY         As Long
         
 278             FoundPlace = False
-280             esAgua = (MapData(.Pos.Map, .Pos.X, .Pos.Y).Blocked And FLAG_AGUA) <> 0
+280             esAgua = (MapData(.Pos.Map, .Pos.x, .Pos.Y).Blocked And FLAG_AGUA) <> 0
 285                 For tY = .Pos.Y - 1 To .Pos.Y + 1
-286                     For tX = .Pos.X - 1 To .Pos.X + 1
+286                     For tX = .Pos.x - 1 To .Pos.x + 1
 287                     If esAgua Then
 
                             'reviso que sea pos legal en agua, que no haya User ni NPC para poder loguear.
@@ -1208,33 +1208,33 @@ Sub ConnectUser(ByVal UserIndex As Integer, _
 300             Next tY
         
 302             If FoundPlace Then 'Si encontramos un lugar, listo, nos quedamos ahi
-304                 .Pos.X = tX
+304                 .Pos.x = tX
 306                 .Pos.Y = tY
                 Else
 
                     'Si no encontramos un lugar, sacamos al usuario que tenemos abajo, y si es un NPC, lo pisamos.
-308                 If MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex <> 0 Then
+308                 If MapData(.Pos.Map, .Pos.x, .Pos.Y).UserIndex <> 0 Then
 
                         'Si no encontramos lugar, y abajo teniamos a un usuario, lo pisamos y cerramos su comercio seguro
-310                     If UserList(MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex).ComUsu.DestUsu > 0 Then
+310                     If UserList(MapData(.Pos.Map, .Pos.x, .Pos.Y).UserIndex).ComUsu.DestUsu > 0 Then
 
                             'Le avisamos al que estaba comerciando que se tuvo que ir.
-312                         If UserList(UserList(MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex).ComUsu.DestUsu).flags.UserLogged Then
-314                             Call FinComerciarUsu(UserList(MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex).ComUsu.DestUsu)
-316                             Call WriteConsoleMsg(UserList(MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex).ComUsu.DestUsu, "Comercio cancelado. El otro usuario se ha desconectado.", FontTypeNames.FONTTYPE_WARNING)
+312                         If UserList(UserList(MapData(.Pos.Map, .Pos.x, .Pos.Y).UserIndex).ComUsu.DestUsu).flags.UserLogged Then
+314                             Call FinComerciarUsu(UserList(MapData(.Pos.Map, .Pos.x, .Pos.Y).UserIndex).ComUsu.DestUsu)
+316                             Call WriteConsoleMsg(UserList(MapData(.Pos.Map, .Pos.x, .Pos.Y).UserIndex).ComUsu.DestUsu, "Comercio cancelado. El otro usuario se ha desconectado.", FontTypeNames.FONTTYPE_WARNING)
 
                             End If
 
                             'Lo sacamos.
-318                         If UserList(MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex).flags.UserLogged Then
-320                             Call FinComerciarUsu(MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex)
-322                             Call WriteErrorMsg(MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex, "Alguien se ha conectado donde te encontrabas, por favor reconectate...")
+318                         If UserList(MapData(.Pos.Map, .Pos.x, .Pos.Y).UserIndex).flags.UserLogged Then
+320                             Call FinComerciarUsu(MapData(.Pos.Map, .Pos.x, .Pos.Y).UserIndex)
+322                             Call WriteErrorMsg(MapData(.Pos.Map, .Pos.x, .Pos.Y).UserIndex, "Alguien se ha conectado donde te encontrabas, por favor reconectate...")
 
                             End If
 
                         End If
                 
-324                     Call CloseSocket(MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex)
+324                     Call CloseSocket(MapData(.Pos.Map, .Pos.x, .Pos.Y).UserIndex)
 
                     End If
 
@@ -1243,7 +1243,7 @@ Sub ConnectUser(ByVal UserIndex As Integer, _
             End If
         
             'If in the water, and has a boat, equip it!
-326         If .Invent.BarcoObjIndex > 0 And (MapData(.Pos.Map, .Pos.X, .Pos.Y).Blocked And FLAG_AGUA) <> 0 Then
+326         If .Invent.BarcoObjIndex > 0 And (MapData(.Pos.Map, .Pos.x, .Pos.Y).Blocked And FLAG_AGUA) <> 0 Then
 328             .flags.Navegando = 1
 330             Call EquiparBarco(UserIndex)
 
@@ -1278,7 +1278,7 @@ Sub ConnectUser(ByVal UserIndex As Integer, _
             #End If
         
             'Crea  el personaje del usuario
-364         Call MakeUserChar(True, .Pos.Map, UserIndex, .Pos.Map, .Pos.X, .Pos.Y, 1)
+364         Call MakeUserChar(True, .Pos.Map, UserIndex, .Pos.Map, .Pos.x, .Pos.Y, 1)
 
 366         Call WriteUserCharIndexInServer(UserIndex)
 
@@ -1637,13 +1637,13 @@ Sub ResetBasicUserInfo(ByVal UserIndex As Integer)
 102         .Name = vbNullString
 104         .Cuenta = vbNullString
 106         .ID = -1
-108         .AccountId = -1
+108         .AccountID = -1
 110         .Desc = vbNullString
 112         .DescRM = vbNullString
 114         .Pos.Map = 0
-116         .Pos.X = 0
+116         .Pos.x = 0
 118         .Pos.Y = 0
-120         .IP = vbNullString
+120         .ip = vbNullString
 122         .clase = 0
 124         .email = vbNullString
 126         .genero = 0
@@ -1847,6 +1847,8 @@ Sub ResetUserFlags(ByVal UserIndex As Integer)
 272         .AceptoReto = 0
 274         .LastPos.Map = 0
             .ReturnPos.Map = 0
+            
+            .Crafteando = 0
 
         End With
 
@@ -2148,6 +2150,11 @@ Sub CloseUser(ByVal UserIndex As Integer)
 166             .flags.Mimetizado = e_EstadoMimetismo.Desactivado
 
             End If
+            
+            errordesc = "ERROR AL LIMPIAR INVENTARIO DE CRAFTEO"
+            If .flags.Crafteando <> 0 Then
+                Call ReturnCraftingItems(UserIndex)
+            End If
         
 168         errordesc = "ERROR AL ENVIAR PARTICULA"
         
@@ -2349,12 +2356,12 @@ Function ValidarNombre(nombre As String) As Boolean
     
 100     If Len(nombre) < 1 Or Len(nombre) > 18 Then Exit Function
     
-        Dim temp As String
-102     temp = UCase$(nombre)
+        Dim Temp As String
+102     Temp = UCase$(nombre)
     
         Dim i As Long, Char As Integer, LastChar As Integer
-104     For i = 1 To Len(temp)
-106         Char = Asc(mid$(temp, i, 1))
+104     For i = 1 To Len(Temp)
+106         Char = Asc(mid$(Temp, i, 1))
         
 108         If (Char < 65 Or Char > 90) And Char <> 32 Then
                 Exit Function
@@ -2366,7 +2373,7 @@ Function ValidarNombre(nombre As String) As Boolean
 112         LastChar = Char
         Next
 
-114     If Asc(mid$(temp, 1, 1)) = 32 Or Asc(mid$(temp, Len(temp), 1)) = 32 Then
+114     If Asc(mid$(Temp, 1, 1)) = 32 Or Asc(mid$(Temp, Len(Temp), 1)) = 32 Then
             Exit Function
         End If
     
@@ -2374,13 +2381,13 @@ Function ValidarNombre(nombre As String) As Boolean
 
 End Function
 
-Function ContarUsuariosMismaCuenta(ByVal AccountId As Long) As Integer
+Function ContarUsuariosMismaCuenta(ByVal AccountID As Long) As Integer
 
         Dim i As Integer
     
 100     For i = 1 To LastUser
         
-102         If UserList(i).flags.UserLogged And UserList(i).AccountId = AccountId Then
+102         If UserList(i).flags.UserLogged And UserList(i).AccountID = AccountID Then
 104             ContarUsuariosMismaCuenta = ContarUsuariosMismaCuenta + 1
             End If
         

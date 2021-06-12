@@ -1011,7 +1011,7 @@ Public Type obj
 
     ObjIndex As Integer
     amount As Long
-    data As Long
+    Data As Long
 
 End Type
 
@@ -1315,6 +1315,9 @@ Public Type ObjData
     Refuerzo As Byte
 
     Invernal As Boolean
+    
+    CatalizadorTipo As Byte
+    CatalizadorAumento As Single
 
     Log As Byte 'es un objeto que queremos loguear? Pablo (ToxicWaste) 07/09/07
     NoLog As Byte 'es un objeto que esta prohibido loguear?
@@ -1533,6 +1536,7 @@ Public Type UserFlags
     FirstPacket As Boolean ' ¿El socket envió algun paquete válido?
     Meditando As Boolean
     Escribiendo As Boolean
+    Crafteando As Byte
 
     Descuento As String
     Hambre As Byte
@@ -1867,7 +1871,7 @@ Public Type user
         UpTime As Long
     #End If
 
-    ip As String
+    IP As String
     
     '[Alejo]
     ComUsu As tComercioUsuario
@@ -1899,6 +1903,10 @@ Public Type user
     Redundance As Byte
 
     LastPacketID As Integer
+
+    CraftInventory(1 To MAX_SLOTS_CRAFTEO) As Integer
+    CraftCatalyst As obj
+    CraftResult As clsCrafteo
 
 End Type
 
@@ -2053,7 +2061,7 @@ Public Type npc
     DropQuest() As tQuestObj
     
     InformarRespawn As Byte
-    name As String
+    Name As String
     SubName As String
     Char As Char 'Define como se vera
     Desc As String
@@ -2069,6 +2077,8 @@ Public Type npc
     InvReSpawn As Byte
 
     Comercia As Integer
+    Craftea As Byte
+    
     Target As Long
     TargetNPC As Long
     TipoItems As Integer
@@ -2364,6 +2374,8 @@ Public ObjDonador()                       As tObjDonador
 Public ModClase(1 To NUMCLASES)           As ModClase
 
 Public ModRaza(1 To NUMRAZAS)             As ModRaza
+
+Public Crafteos                           As New Dictionary
 '*********************************************************
 
 Public Nix                                As WorldPos

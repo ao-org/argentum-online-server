@@ -52,7 +52,7 @@ Private Type tWorldPos
 
 End Type
 
-Private Type Grh
+Private Type grh
 
     GrhIndex As Long
     FrameCounter As Single
@@ -1312,9 +1312,9 @@ Sub LoadOBJData()
         '*****************************************************************
         Dim Object As Integer
 
-    Dim Leer   As clsIniManager
-    Set Leer = New clsIniManager
-    Call Leer.Initialize(DatPath & "Obj.dat")
+        Dim Leer   As clsIniManager
+        Set Leer = New clsIniManager
+        Call Leer.Initialize(DatPath & "Obj.dat")
 
         'obtiene el numero de obj
 106     NumObjDatas = val(Leer.GetValue("INIT", "NumObjs"))
@@ -1329,6 +1329,7 @@ Sub LoadOBJData()
     
         Dim ObjKey As String
         Dim str As String, Field() As String
+        Dim Crafteo As clsCrafteo
   
         'Llena la lista
 118     For Object = 1 To NumObjDatas
@@ -1701,6 +1702,44 @@ Sub LoadOBJData()
 614             .MinSta = val(Leer.GetValue(ObjKey, "MinST"))
     
 616             .NoSeCae = val(Leer.GetValue(ObjKey, "NoSeCae"))
+
+                ' Crafteos
+                If val(Leer.GetValue(ObjKey, "Crafteable")) = 1 Then
+                    str = Leer.GetValue(ObjKey, "Materiales")
+
+                    If LenB(str) Then
+                        Field = Split(str, "-", MAX_SLOTS_CRAFTEO)
+                    
+                        Dim Items() As Integer
+                        ReDim Items(1 To UBound(Field) + 1)
+
+                        For i = 0 To UBound(Field)
+                            Items(i + 1) = val(Field(i))
+                            If Items(i + 1) > UBound(ObjData) Then Items(i + 1) = 0
+                        Next
+
+                        Call SortIntegerArray(Items, 1, UBound(Items))
+                        
+                        Set Crafteo = New clsCrafteo
+                        Call Crafteo.SetItems(Items)
+                        Crafteo.Tipo = val(Leer.GetValue(ObjKey, "TipoCrafteo"))
+                        Crafteo.Probabilidad = Clamp(val(Leer.GetValue(ObjKey, "ProbCrafteo")), 0, 100)
+                        Crafteo.Precio = val(Leer.GetValue(ObjKey, "CostoCrafteo"))
+                        Crafteo.Resultado = Object
+
+                        If Not Crafteos.Exists(Crafteo.Tipo) Then
+                            Call Crafteos.Add(Crafteo.Tipo, New Dictionary)
+                        End If
+
+                        Call Crafteos.Item(Crafteo.Tipo).Add(GetRecipeKey(Items), Crafteo)
+                    End If
+                End If
+
+                ' Catalizadores
+                .CatalizadorTipo = val(Leer.GetValue(ObjKey, "CatalizadorTipo"))
+                If .CatalizadorTipo Then
+                    .CatalizadorAumento = val(Leer.GetValue(ObjKey, "CatalizadorAumento"))
+                End If
     
 618             frmCargando.cargar.Value = frmCargando.cargar.Value + 1
         
@@ -2314,7 +2353,7 @@ Public Sub CargarMapaFormatoCSM(ByVal Map As Long, ByVal MAPFl As String)
 
                         Case eOBJType.otYacimiento, eOBJType.otArboles
 266                         MapData(Map, Objetos(i).X, Objetos(i).Y).ObjInfo.amount = ObjData(Objetos(i).ObjIndex).VidaUtil
-268                         MapData(Map, Objetos(i).X, Objetos(i).Y).ObjInfo.data = &H7FFFFFFF ' Ultimo uso = Max Long
+268                         MapData(Map, Objetos(i).X, Objetos(i).Y).ObjInfo.Data = &H7FFFFFFF ' Ultimo uso = Max Long
 
 270                     Case Else
 272                         MapData(Map, Objetos(i).X, Objetos(i).Y).ObjInfo.amount = Objetos(i).ObjAmmount
@@ -3124,7 +3163,7 @@ Sub SetUserLogged(ByVal UserIndex As Integer)
         
 
 100     If Database_Enabled Then
-102         Call SetUserLoggedDatabase(UserList(UserIndex).ID, UserList(UserIndex).AccountId)
+102         Call SetUserLoggedDatabase(UserList(UserIndex).ID, UserList(UserIndex).AccountID)
         Else
 104         Call WriteVar(CharPath & UCase$(UserList(UserIndex).Name) & ".chr", "INIT", "Logged", 1)
 106         Call WriteVar(CuentasPath & UCase$(UserList(UserIndex).Cuenta) & ".act", "INIT", "LOGEADA", 1)
@@ -3184,6 +3223,7 @@ Sub BackUPnPc(NpcIndex As Integer)
 114     Call WriteVar(npcfile, "NPC" & NpcNumero, "Movement", val(NpcList(NpcIndex).Movement))
 116     Call WriteVar(npcfile, "NPC" & NpcNumero, "Attackable", val(NpcList(NpcIndex).Attackable))
 118     Call WriteVar(npcfile, "NPC" & NpcNumero, "Comercia", val(NpcList(NpcIndex).Comercia))
+119     Call WriteVar(npcfile, "NPC" & NpcNumero, "Craftea", val(NpcList(NpcIndex).Craftea))
 120     Call WriteVar(npcfile, "NPC" & NpcNumero, "TipoItems", val(NpcList(NpcIndex).TipoItems))
 122     Call WriteVar(npcfile, "NPC" & NpcNumero, "Hostil", val(NpcList(NpcIndex).Hostile))
 124     Call WriteVar(npcfile, "NPC" & NpcNumero, "GiveEXP", val(NpcList(NpcIndex).GiveEXP))
@@ -3254,6 +3294,7 @@ Sub CargarNpcBackUp(NpcIndex As Integer, ByVal NpcNumber As Integer)
 
 120     NpcList(NpcIndex).Attackable = val(GetVar(npcfile, "NPC" & NpcNumber, "Attackable"))
 122     NpcList(NpcIndex).Comercia = val(GetVar(npcfile, "NPC" & NpcNumber, "Comercia"))
+        NpcList(NpcIndex).Craftea = val(GetVar(npcfile, "NPC" & NpcNumber, "Craftea"))
 124     NpcList(NpcIndex).Hostile = val(GetVar(npcfile, "NPC" & NpcNumber, "Hostile"))
 126     NpcList(NpcIndex).GiveEXP = val(GetVar(npcfile, "NPC" & NpcNumber, "GiveEXP"))
 
@@ -3434,7 +3475,7 @@ Public Sub LoadRecursosEspeciales()
 120             Field = Split(str, "-")
             
 122             EspecialesTala(i).ObjIndex = val(Field(0))
-124             EspecialesTala(i).data = val(Field(1))      ' Probabilidad
+124             EspecialesTala(i).Data = val(Field(1))      ' Probabilidad
             Next
         Else
 126         ReDim EspecialesTala(0) As obj
@@ -3452,7 +3493,7 @@ Public Sub LoadRecursosEspeciales()
 138             Field = Split(str, "-")
             
 140             EspecialesPesca(i).ObjIndex = val(Field(0))
-142             EspecialesPesca(i).data = val(Field(1))     ' Probabilidad
+142             EspecialesPesca(i).Data = val(Field(1))     ' Probabilidad
             Next
         Else
 144         ReDim EspecialesPesca(0) As obj
@@ -3504,7 +3545,7 @@ Public Sub LoadPesca()
 124             Field = Split(str, "-")
             
 126             Peces(i).ObjIndex = val(Field(0))
-128             Peces(i).data = val(Field(1))       ' Peso
+128             Peces(i).Data = val(Field(1))       ' Peso
 
 130             nivel = val(Field(2))               ' Nivel de caña
 
@@ -3518,10 +3559,10 @@ Public Sub LoadPesca()
             ' Sumo los pesos
 138         For i = 1 To Count
 140             For j = Peces(i).amount To MaxLvlCania
-142                 PesoPeces(j) = PesoPeces(j) + Peces(i).data
+142                 PesoPeces(j) = PesoPeces(j) + Peces(i).Data
 144             Next j
 
-146             Peces(i).data = PesoPeces(Peces(i).amount)
+146             Peces(i).Data = PesoPeces(Peces(i).amount)
 148         Next i
         Else
 150         ReDim Peces(0) As obj
@@ -3545,41 +3586,41 @@ Private Sub QuickSortPeces(ByVal first As Long, ByVal last As Long)
         On Error GoTo QuickSortPeces_Err
         
 
-        Dim low      As Long, high As Long
+        Dim Low      As Long, High As Long
 
-        Dim MidValue As String
+        Dim MidValue As Long
 
         Dim aux      As obj
     
-100     low = first
-102     high = last
+100     Low = first
+102     High = last
 104     MidValue = Peces((first + last) \ 2).amount
     
         Do
 
-106         While Peces(low).amount < MidValue
+106         While Peces(Low).amount < MidValue
 
-108             low = low + 1
+108             Low = Low + 1
             Wend
 
-110         While Peces(high).amount > MidValue
+110         While Peces(High).amount > MidValue
 
-112             high = high - 1
+112             High = High - 1
             Wend
 
-114         If low <= high Then
-116             aux = Peces(low)
-118             Peces(low) = Peces(high)
-120             Peces(high) = aux
-122             low = low + 1
-124             high = high - 1
+114         If Low <= High Then
+116             aux = Peces(Low)
+118             Peces(Low) = Peces(High)
+120             Peces(High) = aux
+122             Low = Low + 1
+124             High = High - 1
 
             End If
 
-126     Loop While low <= high
+126     Loop While Low <= High
     
-128     If first < high Then QuickSortPeces first, high
-130     If low < last Then QuickSortPeces low, last
+128     If first < High Then QuickSortPeces first, High
+130     If Low < last Then QuickSortPeces Low, last
 
         
         Exit Sub
@@ -3596,35 +3637,35 @@ Public Function BinarySearchPeces(ByVal Value As Long) As Long
         On Error GoTo BinarySearchPeces_Err
         
 
-        Dim low  As Long
+        Dim Low  As Long
 
-        Dim high As Long
+        Dim High As Long
 
-100     low = 1
-102     high = UBound(Peces)
+100     Low = 1
+102     High = UBound(Peces)
 
         Dim i              As Long
 
         Dim valor_anterior As Long
     
-104     Do While low <= high
-106         i = (low + high) \ 2
+104     Do While Low <= High
+106         i = (Low + High) \ 2
 
 108         If i > 1 Then
-110             valor_anterior = Peces(i - 1).data
+110             valor_anterior = Peces(i - 1).Data
             Else
 112             valor_anterior = 0
             End If
 
-114         If Value >= valor_anterior And Value < Peces(i).data Then
+114         If Value >= valor_anterior And Value < Peces(i).Data Then
 116             BinarySearchPeces = i
                 Exit Do
             
 118         ElseIf Value < valor_anterior Then
-120             high = (i - 1)
+120             High = (i - 1)
             
             Else
-122             low = (i + 1)
+122             Low = (i + 1)
 
             End If
 

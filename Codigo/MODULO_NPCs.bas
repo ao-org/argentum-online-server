@@ -1148,6 +1148,7 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
     
 148         .Attackable = val(Leer.GetValue("NPC" & NpcNumber, "Attackable"))
 150         .Comercia = val(Leer.GetValue("NPC" & NpcNumber, "Comercia"))
+            .Craftea = val(Leer.GetValue("NPC" & NpcNumber, "Craftea"))
 152         .Hostile = val(Leer.GetValue("NPC" & NpcNumber, "Hostile"))
 154         .flags.OldHostil = .Hostile
     
