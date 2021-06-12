@@ -839,3 +839,10 @@ ErrHandler:
         
 End Sub
 
+Public Function GetNode(ByVal i As Long) As String
+    GetNode = fileData(i).Name
+End Function
+
+Public Property Get NodesCount() As Long
+    NodesCount = MainNodes
+End Property

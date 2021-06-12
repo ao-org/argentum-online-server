@@ -66,11 +66,13 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
             Dim TempCharIndex  As Integer
        
 104         If MapData(Map, X, Y).NpcIndex > 0 Then     'Acciones NPCs
+                TempCharIndex = MapData(Map, X, Y).NpcIndex
+
                 'Set the target NPC
-106             UserList(UserIndex).flags.TargetNPC = MapData(Map, X, Y).NpcIndex
-108             UserList(UserIndex).flags.TargetNpcTipo = NpcList(MapData(Map, X, Y).NpcIndex).NPCtype
+106             UserList(UserIndex).flags.TargetNPC = TempCharIndex
+108             UserList(UserIndex).flags.TargetNpcTipo = NpcList(TempCharIndex).NPCtype
         
-110             If NpcList(MapData(Map, X, Y).NpcIndex).Comercia = 1 Then
+110             If NpcList(TempCharIndex).Comercia = 1 Then
 
                     '¿Esta el user muerto? Si es asi no puede comerciar
 112                 If UserList(UserIndex).flags.Muerto = 1 Then
@@ -93,14 +95,14 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
                     End If
                     
                     ' WyroX: Hacemos que se detenga a hablar un momento :P
-122                 If NpcList(MapData(Map, X, Y).NpcIndex).Movement = TipoAI.Caminata Then
-124                     NpcList(MapData(Map, X, Y).NpcIndex).Contadores.IntervaloMovimiento = GetTickCount + 15000 - NpcList(MapData(Map, X, Y).NpcIndex).IntervaloMovimiento ' 15 segundos
+122                 If NpcList(TempCharIndex).Movement = TipoAI.Caminata Then
+124                     NpcList(TempCharIndex).Contadores.IntervaloMovimiento = GetTickCount + 15000 - NpcList(TempCharIndex).IntervaloMovimiento ' 15 segundos
                     End If
             
                     'Iniciamos la rutina pa' comerciar.
 126                 Call IniciarComercioNPC(UserIndex)
         
-128             ElseIf NpcList(MapData(Map, X, Y).NpcIndex).NPCtype = eNPCType.Banquero Then
+128             ElseIf NpcList(TempCharIndex).NPCtype = eNPCType.Banquero Then
 
                     '¿Esta el user muerto? Si es asi no puede comerciar
 130                 If UserList(UserIndex).flags.Muerto = 1 Then
@@ -115,7 +117,7 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
 
                     End If
             
-136                 If Distancia(NpcList(MapData(Map, X, Y).NpcIndex).Pos, UserList(UserIndex).Pos) > 6 Then
+136                 If Distancia(NpcList(TempCharIndex).Pos, UserList(UserIndex).Pos) > 6 Then
 138                     Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
                         'Call WriteConsoleMsg(UserIndex, "Estas demasiado lejos del banquero.", FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
@@ -125,7 +127,7 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
                     'A depositar de una
 140                 Call IniciarBanco(UserIndex)
             
-142             ElseIf NpcList(MapData(Map, X, Y).NpcIndex).NPCtype = eNPCType.Pirata Then  'VIAJES
+142             ElseIf NpcList(TempCharIndex).NPCtype = eNPCType.Pirata Then  'VIAJES
 
                     '¿Esta el user muerto? Si es asi no puede comerciar
 144                 If UserList(UserIndex).flags.Muerto = 1 Then
@@ -140,25 +142,25 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
 
                     End If
             
-150                 If Distancia(NpcList(MapData(Map, X, Y).NpcIndex).Pos, UserList(UserIndex).Pos) > 5 Then
+150                 If Distancia(NpcList(TempCharIndex).Pos, UserList(UserIndex).Pos) > 5 Then
 152                     Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
 154                     Call WriteConsoleMsg(UserIndex, "Estas demasiado lejos del banquero.", FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
 
                     End If
             
-156                 If NpcList(MapData(Map, X, Y).NpcIndex).SoundOpen <> 0 Then
-158                     Call WritePlayWave(UserIndex, NpcList(MapData(Map, X, Y).NpcIndex).SoundOpen, NO_3D_SOUND, NO_3D_SOUND)
+156                 If NpcList(TempCharIndex).SoundOpen <> 0 Then
+158                     Call WritePlayWave(UserIndex, NpcList(TempCharIndex).SoundOpen, NO_3D_SOUND, NO_3D_SOUND)
 
                     End If
 
                     'A depositar de unaIniciarTransporte
-160                 Call WriteViajarForm(UserIndex, MapData(Map, X, Y).NpcIndex)
+160                 Call WriteViajarForm(UserIndex, TempCharIndex)
                     Exit Sub
             
-162             ElseIf NpcList(MapData(Map, X, Y).NpcIndex).NPCtype = eNPCType.Revividor Or NpcList(MapData(Map, X, Y).NpcIndex).NPCtype = eNPCType.ResucitadorNewbie Then
+162             ElseIf NpcList(TempCharIndex).NPCtype = eNPCType.Revividor Or NpcList(TempCharIndex).NPCtype = eNPCType.ResucitadorNewbie Then
 
-164                 If Distancia(UserList(UserIndex).Pos, NpcList(MapData(Map, X, Y).NpcIndex).Pos) > 5 Then
+164                 If Distancia(UserList(UserIndex).Pos, NpcList(TempCharIndex).Pos) > 5 Then
                         'Call WriteConsoleMsg(UserIndex, "El sacerdote no puede curarte debido a que estas demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
 166                     Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
@@ -166,15 +168,15 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
                     End If
                     
                     ' WyroX: Hacemos que se detenga a hablar un momento :P
-168                 If NpcList(MapData(Map, X, Y).NpcIndex).Movement = Caminata Then
-170                     NpcList(MapData(Map, X, Y).NpcIndex).Contadores.IntervaloMovimiento = GetTickCount + 5000 - NpcList(MapData(Map, X, Y).NpcIndex).IntervaloMovimiento ' 5 segundos
+168                 If NpcList(TempCharIndex).Movement = Caminata Then
+170                     NpcList(TempCharIndex).Contadores.IntervaloMovimiento = GetTickCount + 5000 - NpcList(TempCharIndex).IntervaloMovimiento ' 5 segundos
                     End If
             
 172                 UserList(UserIndex).flags.Envenenado = 0
 174                 UserList(UserIndex).flags.Incinerado = 0
       
                     'Revivimos si es necesario
-176                 If UserList(UserIndex).flags.Muerto = 1 And (NpcList(MapData(Map, X, Y).NpcIndex).NPCtype = eNPCType.Revividor Or EsNewbie(UserIndex)) Then
+176                 If UserList(UserIndex).flags.Muerto = 1 And (NpcList(TempCharIndex).NPCtype = eNPCType.Revividor Or EsNewbie(UserIndex)) Then
 178                     Call WriteConsoleMsg(UserIndex, "¡Has sido resucitado!", FontTypeNames.FONTTYPE_INFO)
 180                     Call RevivirUsuario(UserIndex)
 182                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, ParticulasIndex.Resucitar, 30, False))
@@ -203,7 +205,7 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
 
                     End If
          
-202             ElseIf NpcList(MapData(Map, X, Y).NpcIndex).NPCtype = eNPCType.Subastador Then
+202             ElseIf NpcList(TempCharIndex).NPCtype = eNPCType.Subastador Then
 
 204                 If UserList(UserIndex).flags.Muerto = 1 Then
 206                     Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
@@ -219,13 +221,13 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
                     End If
                     
                     ' WyroX: Hacemos que se detenga a hablar un momento :P
-212                 If NpcList(MapData(Map, X, Y).NpcIndex).Movement = Caminata Then
-214                     NpcList(MapData(Map, X, Y).NpcIndex).Contadores.IntervaloMovimiento = GetTickCount + 20000 - NpcList(MapData(Map, X, Y).NpcIndex).IntervaloMovimiento ' 20 segundos
+212                 If NpcList(TempCharIndex).Movement = Caminata Then
+214                     NpcList(TempCharIndex).Contadores.IntervaloMovimiento = GetTickCount + 20000 - NpcList(TempCharIndex).IntervaloMovimiento ' 20 segundos
                     End If
 
 216                 Call IniciarSubasta(UserIndex)
             
-218             ElseIf NpcList(MapData(Map, X, Y).NpcIndex).NPCtype = eNPCType.Quest Then
+218             ElseIf NpcList(TempCharIndex).NPCtype = eNPCType.Quest Then
 
 220                 If UserList(UserIndex).flags.Muerto = 1 Then
 222                     Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
@@ -233,13 +235,13 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
                     End If
                     
                     ' WyroX: Hacemos que se detenga a hablar un momento :P
-224                 If NpcList(MapData(Map, X, Y).NpcIndex).Movement = Caminata Then
-226                     NpcList(MapData(Map, X, Y).NpcIndex).Contadores.IntervaloMovimiento = GetTickCount + 15000 - NpcList(MapData(Map, X, Y).NpcIndex).IntervaloMovimiento ' 15 segundos
+224                 If NpcList(TempCharIndex).Movement = Caminata Then
+226                     NpcList(TempCharIndex).Contadores.IntervaloMovimiento = GetTickCount + 15000 - NpcList(TempCharIndex).IntervaloMovimiento ' 15 segundos
                     End If
             
 228                 Call EnviarQuest(UserIndex)
             
-230             ElseIf NpcList(MapData(Map, X, Y).NpcIndex).NPCtype = eNPCType.Enlistador Then
+230             ElseIf NpcList(TempCharIndex).NPCtype = eNPCType.Enlistador Then
 
 232                 If UserList(UserIndex).flags.Muerto = 1 Then
 234                     Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
@@ -268,7 +270,7 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
                         End If
                     End If
 
-254             ElseIf NpcList(MapData(Map, X, Y).NpcIndex).NPCtype = eNPCType.Gobernador Then
+254             ElseIf NpcList(TempCharIndex).NPCtype = eNPCType.Gobernador Then
 
 256                 If UserList(UserIndex).flags.Muerto = 1 Then
 258                     Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFOIAO)
@@ -344,7 +346,20 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
 316                     Call WritePreguntaBox(UserIndex, "¿Te gustaria ser ciudadano de " & DeDonde & "?")
                 
                     End If
-
+                    
+                ElseIf NpcList(TempCharIndex).Craftea > 0 Then
+                    If UserList(UserIndex).flags.Muerto = 1 Then
+                        Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFOIAO)
+                        Exit Sub
+                    End If
+            
+                    If Distancia(NpcList(UserList(UserIndex).flags.TargetNPC).Pos, UserList(UserIndex).Pos) > 3 Then
+                        Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
+                        Exit Sub
+                    End If
+                
+                    UserList(UserIndex).flags.Crafteando = NpcList(TempCharIndex).Craftea
+                    Call WriteOpenCrafting(UserIndex, NpcList(TempCharIndex).Craftea)
                 End If
         
                 '¿Es un obj?
