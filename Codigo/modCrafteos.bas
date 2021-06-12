@@ -116,6 +116,9 @@ Public Sub DoCraftItem(ByVal UserIndex As Integer)
                     ' TODO: Mensaje en la ventana de crafteo
                     Exit Sub
                 End If
+                
+                Call WriteConsoleMsg(UserIndex, "La combinación ha sido exitosa.", FontTypeNames.FONTTYPE_INFO)
+                ' TODO: Mensaje en la ventana de crafteo y sonido (?
             Else
                 Call WriteConsoleMsg(UserIndex, "La combinación ha fallado.", FontTypeNames.FONTTYPE_FIGHT)
                 ' TODO: Mensaje en la ventana de crafteo y sonido (?
@@ -137,9 +140,6 @@ Public Sub DoCraftItem(ByVal UserIndex As Integer)
             
             Set .CraftResult = Nothing
             Call WriteCraftingResult(UserIndex, 0)
-
-            Call WriteConsoleMsg(UserIndex, "La combinación ha sido exitosa.", FontTypeNames.FONTTYPE_INFO)
-            ' TODO: Mensaje en la ventana de crafteo y sonido (?
         End If
 
     End With
