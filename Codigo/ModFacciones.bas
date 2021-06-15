@@ -63,7 +63,7 @@ Public Sub EnlistarArmadaReal(ByVal UserIndex As Integer)
 136                 primerRango = RangosFaccion(1)
 
 138             If .Faccion.CriminalesMatados < primerRango.AsesinatosRequeridos Then
-140                 Call WriteChatOverHead(UserIndex, "Ya has desertado el Ejército Real. No serás aceptado otra vez. " & .Faccion.CriminalesMatados, charIndexStr, vbWhite)
+140                 Call WriteChatOverHead(UserIndex, "Para unirte a nuestras fuerzas debes matar al menos " & primerRango.AsesinatosRequeridos & " criminales, solo has matado " & .Faccion.CriminalesMatados, charIndexStr, vbWhite)
                     Exit Sub
 
                 End If
@@ -126,7 +126,7 @@ Public Sub RecompensaArmadaReal(ByVal UserIndex As Integer)
 104             npcCharIndex = str(NpcList(.flags.TargetNPC).Char.CharIndex)
 
 106             If .Faccion.RecompensasReal >= MaxRangoFaccion Then
-108                 Call WriteChatOverHead(UserIndex, "Eres uno de mis mejores Soldados. Mataste " & Crimis & ", sigue asi. Ya no tengo más recompensa para darte que mi agradescimiento. ¡Felicidades!", npcCharIndex, vbWhite)
+108                 Call WriteChatOverHead(UserIndex, "Has alcanzado el máximo rango dentro de mis soldados. Demuestra tu bondad y liderazgo en el campo de batalla para algún día pertenecer al Consejo de Banderbill.", npcCharIndex, vbWhite)
                     Exit Sub
                 End If
                 
