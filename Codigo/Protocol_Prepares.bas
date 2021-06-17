@@ -1058,6 +1058,8 @@ Public Function PrepareMessageCharacterCreate(ByVal Body As Integer, ByVal Head 
         Call .WriteByte(clan_nivel)
         Call .WriteLong(UserMinHp)
         Call .WriteLong(UserMaxHp)
+        Call .WriteLong(UserMinMAN)
+        Call .WriteLong(UserMaxMAN)
         Call .WriteByte(Simbolo)
         Call .WriteBoolean(Idle)
         Call .WriteBoolean(Navegando)
