@@ -169,6 +169,7 @@ Public Enum ServerPacketID
     NadarToggle
     ShowFundarClanForm
     CharUpdateHP
+    CharUpdateMAN
     Ranking
     PosLLamadaDeClan
     QuestDetails
@@ -1741,7 +1742,7 @@ Private Sub HandleWalk(ByVal UserIndex As Integer)
                 ' Save current step for anti-sh
                 .Counters.LastStep = CurrentTick
                 
-                If UserList(UserIndex).Grupo.EnGrupo = True Then
+                If UserList(UserIndex).Grupo.EnGrupo Then
                     Call CompartirUbicacion(UserIndex)
 
                 End If

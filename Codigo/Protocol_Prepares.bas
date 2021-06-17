@@ -528,12 +528,6 @@ End Function
 
 Public Function PrepareMessageCharUpdateHP(ByVal UserIndex As Integer) As t_DataBuffer
 
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 08/08/07
-    'Last Modified by: Rapsodius
-    'Added X and Y positions for 3D Sounds
-    '***************************************************
     With auxiliarBuffer
         Call .WriteID(ServerPacketID.CharUpdateHP)
         
@@ -549,14 +543,25 @@ Public Function PrepareMessageCharUpdateHP(ByVal UserIndex As Integer) As t_Data
 
 End Function
 
+Public Function PrepareMessageCharUpdateMAN(ByVal UserIndex As Integer) As t_DataBuffer
+
+    With auxiliarBuffer
+        Call .WriteID(ServerPacketID.CharUpdateMAN)
+        
+        Call .WriteInteger(UserList(UserIndex).Char.CharIndex)
+        Call .WriteLong(UserList(UserIndex).Stats.MinMAN)
+        Call .WriteLong(UserList(UserIndex).Stats.MaxMAN)
+        
+        Call .EndPacket
+        
+        PrepareMessageCharUpdateMAN = ConvertDataBuffer(.Length, .ReadAll)
+
+    End With
+
+End Function
+
 Public Function PrepareMessageNpcUpdateHP(ByVal NpcIndex As Integer) As t_DataBuffer
 
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 08/08/07
-    'Last Modified by: Rapsodius
-    'Added X and Y positions for 3D Sounds
-    '***************************************************
     With auxiliarBuffer
         Call .WriteID(ServerPacketID.CharUpdateHP)
         
@@ -1012,7 +1017,7 @@ End Function
 ' @return   The formated message ready to be writen as is on outgoing buffers.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 
-Public Function PrepareMessageCharacterCreate(ByVal Body As Integer, ByVal Head As Integer, ByVal Heading As eHeading, ByVal CharIndex As Integer, ByVal X As Byte, ByVal Y As Byte, ByVal weapon As Integer, ByVal shield As Integer, ByVal FX As Integer, ByVal FXLoops As Integer, ByVal helmet As Integer, ByVal name As String, ByVal Status As Byte, ByVal privileges As Byte, ByVal ParticulaFx As Byte, ByVal Head_Aura As String, ByVal Arma_Aura As String, ByVal Body_Aura As String, ByVal DM_Aura As String, ByVal RM_Aura As String, ByVal Otra_Aura As String, ByVal Escudo_Aura As String, ByVal speeding As Single, ByVal EsNPC As Byte, ByVal donador As Byte, ByVal appear As Byte, ByVal group_index As Integer, ByVal clan_index As Integer, ByVal clan_nivel As Byte, ByVal UserMinHp As Long, ByVal UserMaxHp As Long, ByVal Simbolo As Byte, ByVal Idle As Boolean, ByVal Navegando As Boolean) As t_DataBuffer
+Public Function PrepareMessageCharacterCreate(ByVal Body As Integer, ByVal Head As Integer, ByVal Heading As eHeading, ByVal CharIndex As Integer, ByVal X As Byte, ByVal Y As Byte, ByVal weapon As Integer, ByVal shield As Integer, ByVal FX As Integer, ByVal FXLoops As Integer, ByVal helmet As Integer, ByVal Name As String, ByVal Status As Byte, ByVal privileges As Byte, ByVal ParticulaFx As Byte, ByVal Head_Aura As String, ByVal Arma_Aura As String, ByVal Body_Aura As String, ByVal DM_Aura As String, ByVal RM_Aura As String, ByVal Otra_Aura As String, ByVal Escudo_Aura As String, ByVal speeding As Single, ByVal EsNPC As Byte, ByVal donador As Byte, ByVal appear As Byte, ByVal group_index As Integer, ByVal clan_index As Integer, ByVal clan_nivel As Byte, ByVal UserMinHp As Long, ByVal UserMaxHp As Long, ByVal UserMinMAN As Long, ByVal UserMaxMAN As Long, ByVal Simbolo As Byte, ByVal Idle As Boolean, ByVal Navegando As Boolean) As t_DataBuffer
     '***************************************************
     'Author: Juan Martín Sotuyo Dodero (Maraxus)
     'Last Modification: 05/17/06
