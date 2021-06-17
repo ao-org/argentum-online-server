@@ -1965,7 +1965,7 @@ Public Sub SendDetallesPersonaje(ByVal UserIndex As Integer, ByVal Personaje As 
 102     Personaje = UCase$(Personaje)
     
 104     If GI <= 0 Or GI > CANTIDADDECLANES Then
-106         Call WriteConsoleMsg(UserIndex, "No perteneces a ningun clan.", FontTypeNames.FONTTYPE_INFO)
+106         Call WriteConsoleMsg(UserIndex, "No perteneces a ningún clan.", FontTypeNames.FONTTYPE_INFO)
             Exit Sub
 
         End If

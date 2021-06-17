@@ -3645,15 +3645,15 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                 Dim clan_nivel As Byte
                 
                 If UserList(UserIndex).GuildIndex = 0 Then
-                    Call WriteConsoleMsg(UserIndex, "Servidor » No Perteneces a ningun clan.", FontTypeNames.FONTTYPE_INFOIAO)
+                    Call WriteConsoleMsg(UserIndex, "Servidor » No perteneces a ningún clan.", FontTypeNames.FONTTYPE_INFOIAO)
                     Exit Sub
 
                 End If
                 
                 clan_nivel = modGuilds.NivelDeClan(UserList(UserIndex).GuildIndex)
 
-                If clan_nivel < 4 Then
-                    Call WriteConsoleMsg(UserIndex, "Servidor » El nivel de tu clan debe ser 4 para utilizar esta opción.", FontTypeNames.FONTTYPE_INFOIAO)
+                If clan_nivel < 3 Then
+                    Call WriteConsoleMsg(UserIndex, "Servidor » El nivel de tu clan debe ser 3 para utilizar esta opción.", FontTypeNames.FONTTYPE_INFOIAO)
                     Exit Sub
 
                 End If
@@ -16470,24 +16470,19 @@ Private Sub HandleLlamadadeClan(ByVal UserIndex As Integer)
 
         Dim refError   As String
         Dim clan_nivel As Byte
-                        
+
         If .GuildIndex <> 0 Then
             clan_nivel = modGuilds.NivelDeClan(.GuildIndex)
 
-            If clan_nivel > 1 Then
+            If clan_nivel >= 2 Then
                 Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageConsoleMsg("Clan> [" & .Name & "] solicita apoyo de su clan en " & DarNameMapa(.Pos.Map) & " (" & .Pos.Map & "-" & .Pos.X & "-" & .Pos.Y & "). Puedes ver su ubicación en el mapa del mundo.", FontTypeNames.FONTTYPE_GUILD))
                 Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessagePlayWave("43", NO_3D_SOUND, NO_3D_SOUND))
                 Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageUbicacionLlamada(.Pos.Map, .Pos.x, .Pos.Y))
-            
+
             Else
                 Call WriteConsoleMsg(UserIndex, "Servidor » El nivel de tu clan debe ser 2 para utilizar esta opción.", FontTypeNames.FONTTYPE_INFOIAO)
 
             End If
-
-        Else
-        
-            Call WriteConsoleMsg(UserIndex, "Servidor » No Perteneces a ningun clan.", FontTypeNames.FONTTYPE_INFOIAO)
-
         End If
 
     End With
@@ -17197,16 +17192,28 @@ Private Sub HandleMarcaDeClan(ByVal UserIndex As Integer)
     On Error GoTo HandleMarcaDeClan_Err
 
     With UserList(UserIndex)
+    
+        If UserList(UserIndex).GuildIndex = 0 Then
+            Exit Sub
+        End If
 
         If .flags.Muerto = 1 Then
             'Call WriteConsoleMsg(UserIndex, "¡¡Estás muerto!!.", FontTypeNames.FONTTYPE_INFO)
             Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
             Exit Sub
+        End If
+        
+        Dim clan_nivel As Byte
 
+        clan_nivel = modGuilds.NivelDeClan(UserList(UserIndex).GuildIndex)
+
+        If clan_nivel < 3 Then
+            Call WriteConsoleMsg(UserIndex, "Servidor » El nivel de tu clan debe ser 3 para utilizar esta opción.", FontTypeNames.FONTTYPE_INFOIAO)
+            Exit Sub
         End If
        
         Call WriteWorkRequestTarget(UserIndex, eSkill.MarcaDeClan)
-
+        
     End With
         
     Exit Sub
