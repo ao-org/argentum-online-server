@@ -11,38 +11,38 @@ Public Sub EnlistarArmadaReal(ByVal UserIndex As Integer)
 102             charIndexStr = str(NpcList(.flags.TargetNPC).Char.CharIndex)
 
 104             If .Faccion.ArmadaReal = 1 Then
-106                 Call WriteChatOverHead(UserIndex, "¡¡¡Ya perteneces a las tropas reales!!! Ve a combatir criminales", charIndexStr, vbWhite)
+106                 Call WriteChatOverHead(UserIndex, "Ya perteneces a mi ejército jóven soldado. Ve a combatir el caos en mis tierras para subir de rango en el Ejército Real.", charIndexStr, vbWhite)
                     Exit Sub
 
                 End If
 
 108             If .Faccion.FuerzasCaos = 1 Then
-110                 Call WriteChatOverHead(UserIndex, "¡¡¡Maldito insolente!!! vete de aqui seguidor de las sombras", charIndexStr, vbWhite)
+110                 Call WriteChatOverHead(UserIndex, "¡Has llegado al lugar equivocado maldita escoria! Vete de aquí antes de ser encarcelado e interrogado.", charIndexStr, vbWhite)
                     Exit Sub
 
                 End If
 
 112             If Status(UserIndex) = 2 Then
-114                 Call WriteChatOverHead(UserIndex, "¡¡¡No se permiten criminales en el ejercito imperial!!!", charIndexStr, vbWhite)
+114                 Call WriteChatOverHead(UserIndex, "No se permiten criminales en el Ejército Real.", charIndexStr, vbWhite)
                     Exit Sub
                 End If
                 
 
 116             If Status(UserIndex) = 0 Then
-118                 Call WriteChatOverHead(UserIndex, "¡¡¡No se permiten neutrales en el ejercito imperial, antes debes solicitar el perdón con un sacerdote!!!", charIndexStr, vbWhite)
+118                 Call WriteChatOverHead(UserIndex, "No se permiten criminales en el Ejército Real. Si no has derramado sangre inocente ve a inclinarte y pedir perdón ante un sacerdote.", charIndexStr, vbWhite)
                     Exit Sub
 
                 End If
 
 120             If .clase = eClass.Thief Then
-122                 Call WriteChatOverHead(UserIndex, "¡Los ladrones no son dignos para pertenecer al ejercito imperial!!!", charIndexStr, vbWhite)
+122                 Call WriteChatOverHead(UserIndex, "No hay lugar para escoria en el Ejército Real.", charIndexStr, vbWhite)
                     Exit Sub
 
                 End If
 
                 'Si fue miembro de la Legión del Caos no se puede enlistar
 124             If .Faccion.ciudadanosMatados > 0 Then
-126                 Call WriteChatOverHead(UserIndex, "¡Has asesinado gente inocente, no aceptamos asesinos en las tropas reales!", charIndexStr, vbWhite)
+126                 Call WriteChatOverHead(UserIndex, "Has derramado sangre inocente. Solo aceptamos almas nobles en el Ejército Real.", charIndexStr, vbWhite)
                     Exit Sub
 
                 End If
@@ -54,7 +54,7 @@ Public Sub EnlistarArmadaReal(ByVal UserIndex As Integer)
                 
 
 132             If .Faccion.Reenlistadas > 0 Then
-134                 Call WriteChatOverHead(UserIndex, "¡Has traicionado al ejercito imperial una vez, no aceptamos traidores!", charIndexStr, vbWhite)
+134                 Call WriteChatOverHead(UserIndex, "Ya has desertado el Ejército Real. No serás aceptado otra vez.", charIndexStr, vbWhite)
                     Exit Sub
 
                 End If
@@ -77,7 +77,7 @@ Public Sub EnlistarArmadaReal(ByVal UserIndex As Integer)
                 'HarThaoS: Lo pongo al final para que lo expulse del clan solamente si cumple todos los requisitos.
                 If .GuildIndex > 0 Then
                     If PersonajeEsLeader(.Name) Then
-                        Call WriteChatOverHead(UserIndex, "¡¡Para unirte a nuestras fuerzas deberás dejar el clan!!", charIndexStr, vbWhite)
+                        Call WriteChatOverHead(UserIndex, "No puedes integrar nuestras fuerzas si perteneces a un clan neutral, deberás abandonarlo si tu deseo es integrar el Ejército Real.", charIndexStr, vbWhite)
                         Exit Sub
                     Else
                         Call m_EcharMiembroDeClan(UserIndex, .Name)
@@ -126,7 +126,7 @@ Public Sub RecompensaArmadaReal(ByVal UserIndex As Integer)
 104             npcCharIndex = str(NpcList(.flags.TargetNPC).Char.CharIndex)
 
 106             If .Faccion.RecompensasReal >= MaxRangoFaccion Then
-108                 Call WriteChatOverHead(UserIndex, "Eres uno de mis mejores Soldados. Mataste " & Crimis & ", sigue asi. Ya no tengo más recompensa para darte que mi agradescimiento. ¡Felicidades!", npcCharIndex, vbWhite)
+108                 Call WriteChatOverHead(UserIndex, "Has alcanzado el máximo rango dentro de mis soldados. Demuestra tu bondad y liderazgo en el campo de batalla para algún día pertenecer al Consejo de Banderbill.", npcCharIndex, vbWhite)
                     Exit Sub
                 End If
                 
@@ -144,7 +144,7 @@ Public Sub RecompensaArmadaReal(ByVal UserIndex As Integer)
                 End If
 
 120             If proxRango.NivelRequerido > .Stats.ELV Then
-122               Call WriteChatOverHead(UserIndex, "Mataste Suficientes Criminales, pero te faltan " & (proxRango.NivelRequerido - .Stats.ELV) & " Niveles para poder recibir la próxima Recompensa", npcCharIndex, vbWhite)
+122               Call WriteChatOverHead(UserIndex, "Has matado suficientes criminales pero, te faltan & (proxRango.NivelRequerido - .Stats.ELV) & para poder recibir la próxima recompensa.", npcCharIndex, vbWhite)
 
                 Else ' El usuario cumple con los requerimientos de nivel, se le asigna la recomenza.
 124               .Faccion.RecompensasReal = proxRango.rank
@@ -229,13 +229,13 @@ Public Sub EnlistarCaos(ByVal UserIndex As Integer)
 102             charIndexStr = str(NpcList(.flags.TargetNPC).Char.CharIndex)
 
 104             If .Faccion.FuerzasCaos = 1 Then
-106                 Call WriteChatOverHead(UserIndex, "¡¡¡Ya perteneces a la legión oscura!!!", charIndexStr, vbWhite)
+106                 Call WriteChatOverHead(UserIndex, "Ya perteneces a la Legión Oscura.", charIndexStr, vbWhite)
                     Exit Sub
 
                 End If
 
 108             If .Faccion.ArmadaReal = 1 Then
-110                 Call WriteChatOverHead(UserIndex, "Las sombras reinarán en Argentum. ¡¡¡Fuera de aqui insecto Real!!!", charIndexStr, vbWhite)
+110                 Call WriteChatOverHead(UserIndex, "El caos y el poder de las sombras reinará en este mundo y tu sufrirás maldito súbdito de Tancredo.", charIndexStr, vbWhite)
                     Exit Sub
 
                 End If
@@ -289,7 +289,7 @@ Public Sub EnlistarCaos(ByVal UserIndex As Integer)
                 'HarThaoS: Lo pongo al final para que lo expulse del clan solamente si cumple todos los requisitos.
                 If .GuildIndex > 0 Then
                     If PersonajeEsLeader(.Name) Then
-                        Call WriteChatOverHead(UserIndex, "¡¡Para unirte a nuestras fuerzas deberás dejar el clan!!", charIndexStr, vbWhite)
+                        Call WriteChatOverHead(UserIndex, "Si quieres unirte a nuestras tropas deberás abandonar tu clan neutral.", charIndexStr, vbWhite)
                         Exit Sub
                     Else
                         Call m_EcharMiembroDeClan(UserIndex, .Name)
@@ -303,11 +303,11 @@ Public Sub EnlistarCaos(ByVal UserIndex As Integer)
 148             .Faccion.Status = 2
 
 150             If .Faccion.RecibioArmaduraCaos = 0 Then
-152                 Call WriteChatOverHead(UserIndex, "¡¡¡Bienvenido al lado oscuro!!! Aqui tienes tus armaduras. Derrama sangre Ciudadana y Real y serás recompensado, lo prometo.", charIndexStr, vbWhite)
+152                 Call WriteChatOverHead(UserIndex, "Aquí tienes tu armadura legionario, ve a derramar sangre de los súbditos de Tancredo. Esta guerra será larga y cruel.", charIndexStr, vbWhite)
 154                 .Faccion.NivelIngreso = .Stats.ELV
                 End If
 
-156             Call WriteConsoleMsg(UserIndex, "¡Ahora perteneces al caos!", FontTypeNames.FONTTYPE_INFOIAO)
+156             Call WriteConsoleMsg(UserIndex, "¡Ahora perteneces a la Legión Oscura.!", FontTypeNames.FONTTYPE_INFOIAO)
 158             Call DarRecompensas(UserIndex)
 160             Call RefreshCharStatus(UserIndex)
 
@@ -335,7 +335,7 @@ Public Sub RecompensaCaos(ByVal UserIndex As Integer)
 104             npcCharIndex = str(NpcList(.flags.TargetNPC).Char.CharIndex)
 
 106             If .Faccion.RecompensasCaos >= MaxRangoFaccion Then
-108                 Call WriteChatOverHead(UserIndex, "¡Felicitaciones, eres de mis mejores guerreros, estas en lo más alto!", npcCharIndex, vbWhite)
+108                 Call WriteChatOverHead(UserIndex, "¡Has alcanzado uno de los mejores lugares en mis filas. Mantén firme tu liderazgo y crueldad para algún día formar parte del Concilio de las Sombras.", npcCharIndex, vbWhite)
                     Exit Sub
                 End If
                 
@@ -352,12 +352,12 @@ Public Sub RecompensaCaos(ByVal UserIndex As Integer)
                 End If
 
 120             If proxRango.NivelRequerido > .Stats.ELV Then
-122               Call WriteChatOverHead(UserIndex, "Mataste Suficientes Ciudadanos, pero te faltan " & (proxRango.NivelRequerido - .Stats.ELV) & " Niveles para poder recibir la próxima Recompensa", npcCharIndex, vbWhite)
+122               Call WriteChatOverHead(UserIndex, "Has acabado con la vida de suficientes enemigos pero aún te faltan " & (proxRango.NivelRequerido - .Stats.ELV) & " niveles para alcanzar el siguiente rango.", npcCharIndex, vbWhite)
 
                 Else ' El usuario cumple con los requerimientos de nivel, se le asigna la recomenza.
 124               .Faccion.RecompensasCaos = proxRango.rank
 
-126               Call WriteChatOverHead(UserIndex, "¡¡¡Bien hecho " + proxRango.Titulo + ", aquí tienes tu recompensa!!!", npcCharIndex, vbWhite)
+126               Call WriteChatOverHead(UserIndex, "¡¡¡Bien hecho " + proxRango.Titulo + ", aquí tienes tu recompensa, sigue pregonando el caos a lo largo de estas tierras.!!! ", npcCharIndex, vbWhite)
 128               Call DarRecompensas(UserIndex)
                   '.Stats.Exp = .Stats.Exp + ExpX100
                 End If

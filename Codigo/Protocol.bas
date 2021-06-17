@@ -1613,51 +1613,46 @@ Private Sub HandleWhisper(ByVal UserIndex As Integer)
 
         targetCharIndex = .incomingData.ReadASCIIString()
         chat = .incomingData.ReadASCIIString()
- 
+    
+        If CompararPrivilegios(.flags.Privilegios, UserDarPrivilegioLevel(targetCharIndex)) < 0 Then Exit Sub
+        
         targetUserIndex = NameIndex(targetCharIndex)
 
         If targetUserIndex <= 0 Then 'existe el usuario destino?
             Call WriteConsoleMsg(UserIndex, "Usuario offline o inexistente.", FontTypeNames.FONTTYPE_INFO)
 
         Else
-        
-            If Not EsGM(UserIndex) And EsGM(targetUserIndex) Then
+
+            If EstaPCarea(UserIndex, targetUserIndex) Then
+
+                If LenB(chat) <> 0 Then
+                    
+                    'Analize chat...
+                    Call Statistics.ParseChat(chat)
+
+                    ' WyroX: Foto-denuncias - Push message
+                    Dim i As Long
+
+                    For i = 1 To UBound(.flags.ChatHistory) - 1
+                        .flags.ChatHistory(i) = .flags.ChatHistory(i + 1)
+                    Next
+                        
+                    .flags.ChatHistory(UBound(.flags.ChatHistory)) = chat
             
-                Call WriteConsoleMsg(UserIndex, "No podes hablar por privado con Game Masters.", FontTypeNames.FONTTYPE_WARNING)
+                    Call SendData(SendTarget.ToSuperioresArea, UserIndex, PrepareMessageChatOverHead(chat, .Char.CharIndex, RGB(157, 226, 20)))
+                        
+                    Call WriteChatOverHead(UserIndex, chat, .Char.CharIndex, RGB(157, 226, 20))
+                    Call WriteChatOverHead(targetUserIndex, chat, .Char.CharIndex, RGB(157, 226, 20))
+                    'Call WriteConsoleMsg(UserIndex, "[" & .Name & "] " & chat, FontTypeNames.FONTTYPE_MP)
+                    'Call WriteConsoleMsg(targetUserIndex, "[" & .Name & "] " & chat, FontTypeNames.FONTTYPE_MP)
+                    Call WritePlayWave(targetUserIndex, FXSound.MP_SOUND, NO_3D_SOUND, NO_3D_SOUND)
+
+                End If
 
             Else
-
-                If EstaPCarea(UserIndex, targetUserIndex) Then
-
-                    If LenB(chat) <> 0 Then
-                    
-                        'Analize chat...
-                        Call Statistics.ParseChat(chat)
-
-                        ' WyroX: Foto-denuncias - Push message
-                        Dim i As Long
-                        For i = 1 To UBound(.flags.ChatHistory) - 1
-                            .flags.ChatHistory(i) = .flags.ChatHistory(i + 1)
-                        Next
-                        
-                        .flags.ChatHistory(UBound(.flags.ChatHistory)) = chat
-            
-                        Call SendData(SendTarget.ToSuperioresArea, UserIndex, PrepareMessageChatOverHead(chat, .Char.CharIndex, RGB(157, 226, 20)))
-                        
-                        Call WriteChatOverHead(UserIndex, chat, .Char.CharIndex, RGB(157, 226, 20))
-                        Call WriteChatOverHead(targetUserIndex, chat, .Char.CharIndex, RGB(157, 226, 20))
-                        'Call WriteConsoleMsg(UserIndex, "[" & .Name & "] " & chat, FontTypeNames.FONTTYPE_MP)
-                        'Call WriteConsoleMsg(targetUserIndex, "[" & .Name & "] " & chat, FontTypeNames.FONTTYPE_MP)
-                        Call WritePlayWave(targetUserIndex, FXSound.MP_SOUND, NO_3D_SOUND, NO_3D_SOUND)
-
-                    End If
-
-                Else
-                    Call WriteConsoleMsg(UserIndex, "[" & .Name & "] " & chat, FontTypeNames.FONTTYPE_MP)
-                    Call WriteConsoleMsg(targetUserIndex, "[" & .Name & "] " & chat, FontTypeNames.FONTTYPE_MP)
-                    Call WritePlayWave(targetUserIndex, FXSound.MP_SOUND, NO_3D_SOUND, NO_3D_SOUND)
-                    
-                End If
+                Call WriteConsoleMsg(UserIndex, "[" & .Name & "] " & chat, FontTypeNames.FONTTYPE_MP)
+                Call WriteConsoleMsg(targetUserIndex, "[" & .Name & "] " & chat, FontTypeNames.FONTTYPE_MP)
+                Call WritePlayWave(targetUserIndex, FXSound.MP_SOUND, NO_3D_SOUND, NO_3D_SOUND)
 
             End If
 
@@ -15836,10 +15831,9 @@ Private Sub HandlePossUser(ByVal UserIndex As Integer)
         Dim UserName As String
         
         UserName = .incomingData.ReadASCIIString()
-            
-        If NameIndex(UserName) <= 0 Then
-        
-            If Not .flags.Privilegios And PlayerType.user Then
+
+        If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero)) = 0 Then
+            If NameIndex(UserName) <= 0 Then
             
                 If Database_Enabled Then
                     If Not SetPositionDatabase(UserName, UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y) Then
@@ -15851,21 +15845,14 @@ Private Sub HandlePossUser(ByVal UserIndex As Integer)
                     Call WriteVar(CharPath & UCase$(UserName) & ".chr", "INIT", "Position", UserList(UserIndex).Pos.Map & "-" & UserList(UserIndex).Pos.x & "-" & UserList(UserIndex).Pos.Y)
 
                 End If
-                    
-                If Not .flags.Privilegios And PlayerType.Consejero Then
-                    Call WriteConsoleMsg(UserIndex, "Servidor » Acción realizada con exito! La nueva posicion de " & UserName & " es: " & UserList(UserIndex).Pos.Map & "-" & UserList(UserIndex).Pos.X & "-" & UserList(UserIndex).Pos.Y & "...", FontTypeNames.FONTTYPE_INFO)
-                Else
-                    Call WriteConsoleMsg(UserIndex, "Servidor » Acción realizada con exito!", FontTypeNames.FONTTYPE_INFO)
+    
+                Call WriteConsoleMsg(UserIndex, "Servidor » Acción realizada con exito! La nueva posicion de " & UserName & " es: " & UserList(UserIndex).Pos.Map & "-" & UserList(UserIndex).Pos.X & "-" & UserList(UserIndex).Pos.Y & "...", FontTypeNames.FONTTYPE_INFO)
 
-                End If
+            Else
+                Call WriteConsoleMsg(UserIndex, "Servidor » El usuario debe estar deslogueado para dicha solicitud!", FontTypeNames.FONTTYPE_INFO)
 
             End If
-
-        Else
-            Call WriteConsoleMsg(UserIndex, "Servidor » El usuario debe estar deslogueado para dicha solicitud!", FontTypeNames.FONTTYPE_INFO)
-
         End If
-
     End With
     
     Exit Sub
