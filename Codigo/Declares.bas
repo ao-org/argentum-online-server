@@ -1629,7 +1629,7 @@ Public Type UserFlags
     
     ScreenShot As clsByteQueue
     
-    ChatHistory(1 To 5) As String
+    ChatHistory(1 To 15) As String
     
     EnReto As Boolean
     SalaReto As Integer
