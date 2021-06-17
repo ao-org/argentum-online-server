@@ -126,7 +126,7 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
 166                 Call modGuilds.CheckClanExp(UserIndex, MiNPC.GiveEXPClan)
 
                     ' Else
-                    ' Call WriteConsoleMsg(UserIndex, "No perteneces a ningun clan, experiencia perdida.", FontTypeNames.FONTTYPE_INFOIAO)
+                    ' Call WriteConsoleMsg(UserIndex, "No perteneces a ningún clan, experiencia perdida.", FontTypeNames.FONTTYPE_INFOIAO)
                 End If
 
             End If

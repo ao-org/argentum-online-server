@@ -2511,6 +2511,7 @@ Public Sub WriteUpdateUserStats(ByVal UserIndex As Integer)
     'Writes the "UpdateUserStats" message to the given user's outgoing data buffer
     '***************************************************
     Call SendData(SendTarget.ToDiosesYclan, UserList(UserIndex).GuildIndex, PrepareMessageCharUpdateHP(UserIndex))
+    Call SendData(SendTarget.ToDiosesYclan, UserList(UserIndex).GuildIndex, PrepareMessageCharUpdateMAN(UserIndex))
 
     On Error GoTo ErrHandler
 
