@@ -125,13 +125,13 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
 
         Dim obj  As ObjData
 
-        Dim slot As Byte
+        Dim Slot As Byte
 
 100     Select Case UserList(UserIndex).Accion.TipoAccion
 
             Case Accion_Barra.Runa
 102             obj = ObjData(UserList(UserIndex).Accion.RunaObj)
-104             slot = UserList(UserIndex).Accion.ObjSlot
+104             Slot = UserList(UserIndex).Accion.ObjSlot
 
 106             Select Case obj.TipoRuna
 
@@ -294,15 +294,15 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
 268                         Call FindLegalPos(UserIndex, Map, X, Y)
 270                         Call WarpUserChar(UserIndex, Map, X, Y, True)
 272                         Call WriteConsoleMsg(UserIndex, "Te has teletransportado por el mundo.", FontTypeNames.FONTTYPE_WARNING)
-274                         Call QuitarUserInvItem(UserIndex, slot, 1)
-276                         Call UpdateUserInv(False, UserIndex, slot)
+274                         Call QuitarUserInvItem(UserIndex, Slot, 1)
+276                         Call UpdateUserInv(False, UserIndex, Slot)
                         Else
 
 278                         If UserList(UserIndex).Pos.Map <> obj.DesdeMap Then
 280                             Call WriteConsoleMsg(UserIndex, "Esta runa no puede ser usada desde aquí.", FontTypeNames.FONTTYPE_INFO)
                             Else
-282                             Call QuitarUserInvItem(UserIndex, slot, 1)
-284                             Call UpdateUserInv(False, UserIndex, slot)
+282                             Call QuitarUserInvItem(UserIndex, Slot, 1)
+284                             Call UpdateUserInv(False, UserIndex, Slot)
 286                             Call FindLegalPos(UserIndex, Map, X, Y)
 288                             Call WarpUserChar(UserIndex, Map, X, Y, True)
 290                             Call WriteConsoleMsg(UserIndex, "Te has teletransportado por el mundo.", FontTypeNames.FONTTYPE_WARNING)
@@ -573,9 +573,9 @@ End Function
 Public Function RequiereOxigeno(ByVal UserMap) As Boolean
         On Error GoTo RequiereOxigeno_Err
         
-100     RequiereOxigeno = (UserMap = 331) Or _
-                          (UserMap = 332) Or _
-                          (UserMap = 333)
+100     RequiereOxigeno = (UserMap = 265) Or _
+                          (UserMap = 266) Or _
+                          (UserMap = 267)
         
         Exit Function
 
