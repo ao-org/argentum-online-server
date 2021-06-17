@@ -2196,7 +2196,7 @@ Public Function a_AceptarAspirante(ByVal UserIndex As Integer, ByRef Aspirante A
 
         End If
     
-152     If guilds(GI).CantidadDeMiembros + 1 > MiembrosPermite(GI) Then
+152     If guilds(GI).CantidadDeMiembros >= MiembrosPermite(GI) Then
 154         refError = "La capacidad del clan esta completa."
             Exit Function
 
@@ -2418,11 +2418,8 @@ Public Function MiembrosPermite(ByVal GI As Integer) As Byte
 110         Case 3
 112             MiembrosPermite = 25
 
-114         Case 4
+114         Case Else
 116             MiembrosPermite = 30
-
-118         Case Else
-120             MiembrosPermite = 30
 
         End Select
 
