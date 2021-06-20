@@ -9183,14 +9183,10 @@ Private Sub HandleMensajeUser(ByVal UserIndex As Integer)
 
         Dim UserName As String
         Dim Mensaje  As String
-        Dim privs    As PlayerType
-        Dim Count    As Byte
         Dim tUser    As Integer
         
         UserName = .incomingData.ReadASCIIString()
         Mensaje = .incomingData.ReadASCIIString()
-        
-        tUser = NameIndex(UserName)
         
         If EsGM(UserIndex) Then
         
@@ -9198,19 +9194,19 @@ Private Sub HandleMensajeUser(ByVal UserIndex As Integer)
                 Call WriteConsoleMsg(UserIndex, "Utilice /MENSAJEINFORMACION nick@mensaje", FontTypeNames.FONTTYPE_INFO)
                 
             Else
-                privs = UserDarPrivilegioLevel(UserName)
+                tUser = NameIndex(UserName)
                 
-                If (InStrB(UserName, "\") <> 0) Then
-                    UserName = Replace(UserName, "\", "")
-
+                If tUser Then
+                    Call WriteConsoleMsg(tUser, "Mensaje recibido de " & .Name & " [Game Master]:", FontTypeNames.FONTTYPE_New_DONADOR)
+                    Call WriteConsoleMsg(tUser, Mensaje, FontTypeNames.FONTTYPE_New_DONADOR)
+                Else
+                    If PersonajeExiste(UserName) Then
+                        Call SetMessageInfoDatabase(UserName, "Mensaje recibido de " & .Name & " [Game Master]: " & vbNewLine & Mensaje & vbNewLine)
+                    End If
                 End If
 
-                If (InStrB(UserName, "/") <> 0) Then
-                    UserName = Replace(UserName, "/", "")
-
-                End If
-                    
-                AddCorreo UserIndex, UserName, LCase$(Mensaje), 0, 0
+                Call WriteConsoleMsg(UserIndex, "Mensaje enviado a " & UserName & ": " & Mensaje, FontTypeNames.FONTTYPE_INFO)
+                Call LogGM(.Name, "Envió mensaje como GM a " & UserName & ": " & Mensaje)
 
             End If
 

@@ -1414,10 +1414,17 @@ Sub ConnectUser(ByVal UserIndex As Integer, _
         
             'Call modGuilds.SendGuildNews(UserIndex)
         
-488         If .MENSAJEINFORMACION <> vbNullString Then
-490             Call WriteConsoleMsg(UserIndex, .MENSAJEINFORMACION, FontTypeNames.FONTTYPE_CENTINELA)
-492             .MENSAJEINFORMACION = vbNullString
+488         If LenB(.MENSAJEINFORMACION) > 0 Then
+                Dim Lines() As String
+                Lines = Split(.MENSAJEINFORMACION, vbNewLine)
 
+                For i = 0 To UBound(Lines)
+                    If LenB(Lines(i)) > 0 Then
+490                     Call WriteConsoleMsg(UserIndex, Lines(i), FontTypeNames.FONTTYPE_New_DONADOR)
+                    End If
+                Next
+
+492             .MENSAJEINFORMACION = vbNullString
             End If
 
 494         tStr = modGuilds.a_ObtenerRechazoDeChar(.Name)

@@ -2601,6 +2601,7 @@ SanitizeNullValue_Err:
 104     Resume Next
         
 End Function
+
 Public Function GetUserLevelDatabase(ByVal name As String) As Byte
         On Error GoTo GetUserLevelDatabase_Err
 
@@ -2612,6 +2613,11 @@ GetUserLevelDatabase_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.GetUserLevelDatabase", Erl)
 104     Resume Next
 End Function
+
+Public Sub SetMessageInfoDatabase(ByVal Name As String, ByVal Message As String)
+    Call MakeQuery("update user set message_info = concat(message_info, ?) where upper(name) = ?;", True, Message, UCase$(Name))
+End Sub
+
 Function adoIsConnected(adoCn As ADODB.Connection) As Boolean
 
         '----------------------------------------------------------------
