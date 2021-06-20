@@ -4,7 +4,7 @@ Begin VB.Form frmMain
    BackColor       =   &H00E0E0E0&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   "Servidor Argentum 20"
-   ClientHeight    =   6315
+   ClientHeight    =   6225
    ClientLeft      =   1950
    ClientTop       =   1695
    ClientWidth     =   6930
@@ -24,9 +24,21 @@ Begin VB.Form frmMain
    MaxButton       =   0   'False
    MinButton       =   0   'False
    PaletteMode     =   1  'UseZOrder
-   ScaleHeight     =   6315
+   ScaleHeight     =   6225
    ScaleWidth      =   6930
    StartUpPosition =   2  'CenterScreen
+   Begin VB.CommandButton CerrarYForzarActualizar 
+      Appearance      =   0  'Flat
+      BackColor       =   &H00C0E0FF&
+      Caption         =   "Cerrar y forzar actualización"
+      Height          =   495
+      Left            =   5160
+      MaskColor       =   &H000040C0&
+      Style           =   1  'Graphical
+      TabIndex        =   36
+      Top             =   4920
+      Width           =   1575
+   End
    Begin VB.Timer Invasion 
       Enabled         =   0   'False
       Interval        =   60000
@@ -45,11 +57,13 @@ Begin VB.Form frmMain
       Top             =   3120
    End
    Begin VB.CommandButton Command4 
+      BackColor       =   &H00C0FFC0&
       Caption         =   "Guardar y cerrar"
-      Height          =   975
+      Height          =   615
       Left            =   5160
+      Style           =   1  'Graphical
       TabIndex        =   33
-      Top             =   5040
+      Top             =   5520
       Width           =   1575
    End
    Begin VB.CommandButton Command6 
@@ -57,7 +71,7 @@ Begin VB.Form frmMain
       Height          =   495
       Left            =   5160
       TabIndex        =   32
-      Top             =   4440
+      Top             =   4320
       Width           =   1575
    End
    Begin VB.CommandButton Command13 
@@ -65,7 +79,7 @@ Begin VB.Form frmMain
       Height          =   495
       Left            =   5160
       TabIndex        =   31
-      Top             =   3840
+      Top             =   3720
       Width           =   1575
    End
    Begin VB.CommandButton Command12 
@@ -73,7 +87,7 @@ Begin VB.Form frmMain
       Height          =   495
       Left            =   5160
       TabIndex        =   30
-      Top             =   1440
+      Top             =   1320
       Width           =   1575
    End
    Begin VB.CommandButton Command11 
@@ -81,7 +95,7 @@ Begin VB.Form frmMain
       Height          =   495
       Left            =   5160
       TabIndex        =   29
-      Top             =   840
+      Top             =   720
       Width           =   1575
    End
    Begin VB.CommandButton Command10 
@@ -89,7 +103,7 @@ Begin VB.Form frmMain
       Height          =   495
       Left            =   5160
       TabIndex        =   28
-      Top             =   3240
+      Top             =   3120
       Width           =   1575
    End
    Begin VB.CommandButton Command9 
@@ -97,7 +111,7 @@ Begin VB.Form frmMain
       Height          =   495
       Left            =   5160
       TabIndex        =   27
-      Top             =   2640
+      Top             =   2520
       Width           =   1575
    End
    Begin VB.CommandButton Command8 
@@ -105,7 +119,7 @@ Begin VB.Form frmMain
       Height          =   495
       Left            =   5160
       TabIndex        =   26
-      Top             =   2040
+      Top             =   1920
       Width           =   1575
    End
    Begin VB.CommandButton Command7 
@@ -113,7 +127,7 @@ Begin VB.Form frmMain
       Height          =   495
       Left            =   5160
       TabIndex        =   25
-      Top             =   240
+      Top             =   120
       Width           =   1575
    End
    Begin VB.Frame Frame5 
@@ -461,11 +475,11 @@ Begin VB.Form frmMain
    End
    Begin VB.Label Label9 
       Caption         =   "Basado en rao"
-      Height          =   735
-      Left            =   5640
+      Height          =   495
+      Left            =   5280
       TabIndex        =   35
-      Top             =   5280
-      Width           =   855
+      Top             =   5640
+      Width           =   1335
    End
    Begin VB.Label Label8 
       Caption         =   "Label8"
@@ -771,6 +785,27 @@ auxSocket_DataArrival_Err:
 110     Call RegistrarError(Err.Number, Err.Description, "frmMain.auxSocket_DataArrival", Erl)
 
         
+End Sub
+
+Private Sub CerrarYForzarActualizar_Click()
+    On Error GoTo Command4_Click_Err
+
+        If MsgBox("¿Está seguro que desea guardar, forzar actualización a los usuarios y cerrar?", vbYesNo, "Confirmación") = vbNo Then Exit Sub
+        
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor » Cerrando servidor y lanzando nuevo parche.", FontTypeNames.FONTTYPE_PROMEDIO_MENOR))
+
+        Call ForzarActualizar
+100     Call GuardarUsuarios
+102     Call EcharPjsNoPrivilegiados
+
+104     GuardarYCerrar = True
+106     Unload frmMain
+        
+        Exit Sub
+
+Command4_Click_Err:
+108     Call RegistrarError(Err.Number, Err.Description, "frmMain.CerrarYForzarActualizar", Erl)
+110     Resume Next
 End Sub
 
 Private Sub Invasion_Timer()
@@ -1110,7 +1145,11 @@ End Sub
 Private Sub Command4_Click()
         
         On Error GoTo Command4_Click_Err
+
+        If MsgBox("¿Está seguro que desea guardar y cerrar?", vbYesNo, "Confirmación") = vbNo Then Exit Sub
         
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor » Cerrando servidor.", FontTypeNames.FONTTYPE_PROMEDIO_MENOR))
+
 100     Call GuardarUsuarios
 102     Call EcharPjsNoPrivilegiados
 

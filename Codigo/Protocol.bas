@@ -195,6 +195,7 @@ Public Enum ServerPacketID
     CraftingItem
     CraftingCatalyst
     CraftingResult
+    ForceUpdate
 
     [PacketCount]
 End Enum
