@@ -790,6 +790,10 @@ Sub Main()
         'Configuracion de los sockets
     
 296     Call SecurityIp.InitIpTables(1000)
+
+        #If AntiExternos = 1 Then
+            Call Security.Initialize
+        #End If
         
         'Cierra el socket de escucha
 298     If LastSockListen >= 0 Then Call apiclosesocket(LastSockListen)

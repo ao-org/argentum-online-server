@@ -185,7 +185,6 @@ Public Enum ServerPacketID
     ShowScreenShot
     ScreenShotData
     Tolerancia0
-    Redundancia
     SeguroResu
     Stopped
     InvasionInfo
@@ -1048,19 +1047,19 @@ Public Function HandleIncomingData(ByVal UserIndex As Integer) As Boolean
             Exit Function
         End If
         
-        If .incomingData.PeekID >= ClientPacketID.[PacketCount] Then
+        Dim PacketID As Long
+            PacketID = CLng(.incomingData.ReadID())
+        
+        If PacketID >= ClientPacketID.[PacketCount] Then
             ' Limpiamos la cola
             Call .incomingData.SafeClearPacket
-            
+
             ' Lo kickeamos
             Call CloseSocket(UserIndex)
-            
+
             HandleIncomingData = False
             Exit Function
         End If
-        
-        Dim PacketID As Long
-            PacketID = CLng(.incomingData.ReadID())
     
         'Does the packet requires a logged user??
         If Not (PacketID = ClientPacketID.LoginExistingChar Or _
@@ -1086,12 +1085,7 @@ Public Function HandleIncomingData(ByVal UserIndex As Integer) As Boolean
             
             ' Envió el primer paquete
             .flags.FirstPacket = True
-                
-            #If AntiExternos = 1 Then
-                .Redundance = RandomNumber(2, 255)
-                Call WriteRedundancia(UserIndex)
-            #End If
-    
+
         End If
 
     End With
@@ -15352,13 +15346,18 @@ Public Sub FlushBuffer(ByVal UserIndex As Integer)
     'Sends all data existing in the buffer
     '***************************************************
     
-    With UserList(UserIndex).outgoingData
+    With UserList(UserIndex)
 
-        If .Length = 0 Then Exit Sub
+        If .outgoingData.Length = 0 Then Exit Sub
         
         ' Tratamos de enviar los datos.
         Dim ret As Long
-            ret = WsApiEnviar(UserIndex, .ReadAll)
+        Dim Data() As Byte
+        Data = .outgoingData.ReadAll
+
+        Call Security.XorData(Data, UBound(Data), .XorIndexOut)
+
+        ret = WsApiEnviar(UserIndex, Data)
     
         ' Si recibimos un error como respuesta de la API, cerramos el socket.
         If ret <> 0 And ret <> WSAEWOULDBLOCK Then
@@ -15369,7 +15368,7 @@ Public Sub FlushBuffer(ByVal UserIndex As Integer)
 
         End If
         
-        Call .Clean
+        Call .outgoingData.Clean
         
     End With
         

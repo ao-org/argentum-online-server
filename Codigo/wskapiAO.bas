@@ -570,15 +570,9 @@ Public Sub EventoSockRead(ByVal slot As Integer, ByRef Datos() As Byte, ByVal Le
 102     With UserList(slot)
  
             #If AntiExternos = 1 Then
-                
-                ' HOTFIX: Cuando recién abrís el servidor, se inicializan todas las variables en 0
-104             If UserList(slot).Redundance = 0 Then UserList(slot).Redundance = Security.DefaultRedundance
-                
-                ' Aca seteamos la Redundancia REAL.
-106             UserList(slot).Redundance = CLng(UserList(slot).Redundance * Security.MultiplicationFactor) Mod 255
-                
+
                 ' Acá aplicamos la encriptacion Xor al paquete
-108             Call Security.NAC_D_Byte(Datos, UserList(slot).Redundance)
+108             Call Security.XorData(Datos, Length - 1, UserList(slot).XorIndexIn)
 
             #End If
 

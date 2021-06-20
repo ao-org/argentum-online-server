@@ -122,7 +122,7 @@ AutoIncrementVer=0
 ServerSupportFiles=0
 VersionCompanyName="Argentum20 Staff"
 VersionProductName="Argentum20 Server"
-CondComp="DEBUGGING = 1 : AntiExternos = 0 : ConUpTime = 1"
+CondComp="DEBUGGING = 1 : AntiExternos = 1 : ConUpTime = 1"
 CompilationType=0
 OptimizationType=0
 FavorPentiumPro(tm)=0

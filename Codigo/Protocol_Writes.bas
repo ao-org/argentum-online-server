@@ -6025,30 +6025,6 @@ ErrHandler:
 
 End Sub
 
-Public Sub WriteRedundancia(ByVal UserIndex As Integer)
-
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-        Call .WriteID(ServerPacketID.Redundancia)
-        
-        Call .WriteByte(UserList(UserIndex).Redundance)
-        
-        Call .EndPacket
-    End With
-
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
-End Sub
-
 Sub WriteCommerceRecieveChatMessage(ByVal UserIndex As Integer, ByVal message As String)
 
     On Error GoTo ErrHandler
