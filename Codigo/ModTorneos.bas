@@ -35,12 +35,12 @@ Public Torneo        As tTorneo
 Public MensajeTorneo As String
 
 Public Sub IniciarTorneo()
-        
         On Error GoTo IniciarTorneo_Err
         
-
-100     ReDim Torneo.IndexParticipantes(1 To Torneo.cupos)
-
+        Dim i As Long
+        Dim inscriptos As Byte
+        inscriptos = 0
+        
 102     If Torneo.mago > 0 Then Torneo.ClasesTexto = "Mago,"
 104     If Torneo.clerico > 0 Then Torneo.ClasesTexto = Torneo.ClasesTexto & "Clerigo,"
 106     If Torneo.guerrero > 0 Then Torneo.ClasesTexto = Torneo.ClasesTexto & "Guerrero,"
@@ -54,10 +54,19 @@ Public Sub IniciarTorneo()
         If Torneo.Ladron > 0 Then Torneo.ClasesTexto = Torneo.ClasesTexto & "Ladron,"
         If Torneo.Bandido > 0 Then Torneo.ClasesTexto = Torneo.ClasesTexto & "Bandido"
 
-120     Torneo.HayTorneoaActivo = True
+        If Not Torneo.HayTorneoaActivo Then
+119         ReDim Torneo.IndexParticipantes(1 To Torneo.cupos)
+120         Torneo.HayTorneoaActivo = True
+        Else
+            For i = 1 To Torneo.cupos
+                If Torneo.IndexParticipantes(i) > 0 Then
+                    inscriptos = inscriptos + 1
+                End If
+            Next i
+        End If
 
-122     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Evento> Se abren las inscripciones para: " & Torneo.nombre & ": características: Nivel entre: " & Torneo.NivelMinimo & "/" & Torneo.nivelmaximo & ". Cupos disponibles: " & Torneo.cupos & " personajes. Precio de inscripción: " & PonerPuntos(Torneo.costo) & " monedas de oro. Reglas: " & Torneo.reglas & ".", FontTypeNames.FONTTYPE_CITIZEN))
-124     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Clases participantes: " & Torneo.ClasesTexto & ". Escribí /PARTICIPAR para ingresar al evento. ", FontTypeNames.FONTTYPE_CITIZEN))
+122     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Evento> Están abiretas las inscripciones para: " & Torneo.nombre & ": características: Nivel entre: " & Torneo.NivelMinimo & "/" & Torneo.nivelmaximo & ". Inscriptos: " & inscriptos & "/" & Torneo.cupos & ". Precio de inscripción: " & PonerPuntos(Torneo.costo) & " monedas de oro. Reglas: " & Torneo.reglas & ".", FontTypeNames.FONTTYPE_CITIZEN))
+124     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Evento> Clases participantes: " & Torneo.ClasesTexto & ". Escribí /PARTICIPAR para ingresar al evento. ", FontTypeNames.FONTTYPE_CITIZEN))
 
         
         Exit Sub
