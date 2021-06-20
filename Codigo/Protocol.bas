@@ -544,6 +544,7 @@ Private Enum ClientPacketID
     CraftItem
     CloseCrafting
     MoveCraftItem
+    PetLeaveAll
     
     [PacketCount]
 End Enum
@@ -1001,6 +1002,7 @@ Public Sub InitializePacketList()
     PacketList(ClientPacketID.CraftItem) = GetAddress(AddressOf HandleCraftItem)
     PacketList(ClientPacketID.CloseCrafting) = GetAddress(AddressOf HandleCloseCrafting)
     PacketList(ClientPacketID.MoveCraftItem) = GetAddress(AddressOf HandleMoveCraftItem)
+    PacketList(ClientPacketID.PetLeaveAll) = GetAddress(AddressOf HandlePetLeaveAll)
 
 End Sub
 
@@ -19497,3 +19499,34 @@ ErrHandler:
     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleMoveCraftItem", Erl)
     Call UserList(UserIndex).incomingData.SafeClearPacket
 End Sub
+
+Sub HandlePetLeaveAll(ByVal UserIndex As Integer)
+
+    On Error GoTo ErrHandler
+    
+    With UserList(UserIndex)
+    
+        Dim AlmenosUna As Boolean, i As Integer
+    
+        For i = 1 To MAXMASCOTAS
+            If .MascotasIndex(i) > 0 Then
+                If NpcList(.MascotasIndex(i)).flags.NPCActive Then
+                    Call QuitarNPC(.MascotasIndex(i))
+                    AlmenosUna = True
+                End If
+            End If
+        Next i
+        
+        If AlmenosUna Then
+            Call WriteConsoleMsg(UserIndex, "Liberaste a tus mascotas.", FontTypeNames.FONTTYPE_INFO)
+        End If
+
+    End With
+    
+    Exit Sub
+    
+ErrHandler:
+    Call RegistrarError(Err.Number, Err.Description, "Protocol.HandlePetLeaveAll", Erl)
+    Call UserList(UserIndex).incomingData.SafeClearPacket
+End Sub
+
