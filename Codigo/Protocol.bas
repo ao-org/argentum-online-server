@@ -14868,25 +14868,17 @@ HandleServerOpenToUsersToggle_Err:
 End Sub
 
 ''
-' Handle the "TurnOffServer" message
+' Handle the "Participar" message
 '
 ' @param UserIndex The index of the user sending the message
 
 Public Sub HandleParticipar(ByVal UserIndex As Integer)
-        
     On Error GoTo HandleParticipar_Err
 
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 12/24/06
-    'Turns off the server
-    '***************************************************
     Dim handle As Integer
     
     With UserList(UserIndex)
-        
-        
-        
+
         If Torneo.HayTorneoaActivo = False Then
             Call WriteConsoleMsg(UserIndex, "No hay ningún evento disponible.", FontTypeNames.FONTTYPE_INFO)
             Exit Sub
@@ -14900,7 +14892,7 @@ Public Sub HandleParticipar(ByVal UserIndex As Integer)
         End If
     
         If .Stats.ELV > Torneo.nivelmaximo Then
-            Call WriteConsoleMsg(UserIndex, "El nivel míximo para participar es " & Torneo.nivelmaximo & ".", FontTypeNames.FONTTYPE_INFO)
+            Call WriteConsoleMsg(UserIndex, "El nivel máximo para participar es " & Torneo.nivelmaximo & ".", FontTypeNames.FONTTYPE_INFO)
             Exit Sub
 
         End If
@@ -14965,7 +14957,25 @@ Public Sub HandleParticipar(ByVal UserIndex As Integer)
 
         End If
         
-        If .clase = Trabajador And Torneo.cazador = 0 Then
+        If .clase = Trabajador And Torneo.Trabajador = 0 Then
+            Call WriteConsoleMsg(UserIndex, "Tu clase no participa de este evento.", FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+
+        End If
+        
+        If .clase = eClass.Thief And Torneo.Ladron = 0 Then
+            Call WriteConsoleMsg(UserIndex, "Tu clase no participa de este evento.", FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+
+        End If
+   
+        If .clase = eClass.Bandit And Torneo.Bandido = 0 Then
+            Call WriteConsoleMsg(UserIndex, "Tu clase no participa de este evento.", FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+
+        End If
+        
+        If .clase = eClass.Pirat And Torneo.Pirata = 0 Then
             Call WriteConsoleMsg(UserIndex, "Tu clase no participa de este evento.", FontTypeNames.FONTTYPE_INFO)
             Exit Sub
 
