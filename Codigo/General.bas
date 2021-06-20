@@ -2585,6 +2585,24 @@ ReiniciarServidor_Err:
 110     Resume Next
         
 End Sub
+
+Sub ForzarActualizar()
+    
+    On Error Resume Next
+    
+    Dim i As Long
+
+    For i = 1 To LastUser
+
+        If UserList(i).ConnID <> -1 Then
+        
+            Call WriteForceUpdate(i)
+    
+        End If
+    
+    Next i
+    
+End Sub
  
 Sub GuardarUsuarios()
         

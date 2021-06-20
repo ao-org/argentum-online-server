@@ -6197,3 +6197,24 @@ ErrHandler:
     End If
     
 End Sub
+
+Sub WriteForceUpdate(ByVal UserIndex As Integer)
+    
+    On Error GoTo ErrHandler
+
+    With UserList(UserIndex).outgoingData
+        Call .WriteID(ServerPacketID.ForceUpdate)
+        Call .EndPacket
+    End With
+    
+    Exit Sub
+    
+ErrHandler:
+
+    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
+        Call FlushBuffer(UserIndex)
+        Resume
+    End If
+    
+End Sub
+
