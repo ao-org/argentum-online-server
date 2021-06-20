@@ -9024,11 +9024,8 @@ Private Sub HandleKillNPC(ByVal UserIndex As Integer)
     '
     '***************************************************
     With UserList(UserIndex)
-    
-        
-        
-        
-        If .flags.Privilegios And PlayerType.user Then Exit Sub
+
+        If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero) Then Exit Sub
 
         'Si estamos en el mapa pretoriano...
         If .Pos.Map = MAPA_PRETORIANO Then
