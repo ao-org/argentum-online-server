@@ -1899,8 +1899,10 @@ Public Type user
 
     Keys(1 To MAXKEYS) As Integer
     
-    ' Solo se usa si la variable de compilación AntiExternos = 1
-    Redundance As Byte
+    #If AntiExternos = 1 Then
+        XorIndexIn As Integer
+        XorIndexOut As Integer
+    #End If
 
     LastPacketID As Integer
 
@@ -2426,8 +2428,7 @@ Public Enum e_ObjetosCriticos
 
 End Enum
 
-#If AntiExternos Then
-
+#If AntiExternos = 1 Then
     Public Security As New clsSecurity
 #End If
 
