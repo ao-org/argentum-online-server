@@ -3156,7 +3156,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                         If (MapData(.Pos.Map, x, Y).Blocked And FLAG_AGUA) <> 0 Then
                             If (MapData(.Pos.Map, .Pos.x, .Pos.Y).Blocked And FLAG_AGUA) <> 0 Or (MapData(.Pos.Map, .Pos.x + 1, .Pos.Y).Blocked And FLAG_AGUA) <> 0 Or (MapData(.Pos.Map, .Pos.x, .Pos.Y + 1).Blocked And FLAG_AGUA) <> 0 Or (MapData(.Pos.Map, .Pos.x - 1, .Pos.Y).Blocked And FLAG_AGUA) <> 0 Or (MapData(.Pos.Map, .Pos.x, .Pos.Y - 1).Blocked And FLAG_AGUA) <> 0 Then
 
-                                Call DoPescar(UserIndex, False, ObjData(.Invent.HerramientaEqpObjIndex).Dorada = 1)
+                                Call DoPescar(UserIndex, False)
                                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_PESCAR, .Pos.x, .Pos.Y))
                             Else
                                 Call WriteConsoleMsg(UserIndex, "Acércate a la costa para pescar.", FontTypeNames.FONTTYPE_INFO)
@@ -3203,7 +3203,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
     
                             End If
                                     
-                            Call DoPescar(UserIndex, True, True)
+                            Call DoPescar(UserIndex, True)
                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_PESCAR, .Pos.x, .Pos.Y))
                         
                         Else
