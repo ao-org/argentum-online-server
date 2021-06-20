@@ -15351,11 +15351,15 @@ Public Sub FlushBuffer(ByVal UserIndex As Integer)
         If .outgoingData.Length = 0 Then Exit Sub
         
         ' Tratamos de enviar los datos.
-        Dim ret As Long
+        Dim ret    As Long
         Dim Data() As Byte
         Data = .outgoingData.ReadAll
 
-        Call Security.XorData(Data, UBound(Data), .XorIndexOut)
+        #If AntiExternos = 1 Then
+
+            Call Security.XorData(Data, UBound(Data), .XorIndexOut)
+
+        #End If
 
         ret = WsApiEnviar(UserIndex, Data)
     
