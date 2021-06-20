@@ -16662,6 +16662,12 @@ Private Sub HandleCrearTorneo(ByVal UserIndex As Integer)
         Dim cazador     As Byte
 
         Dim Trabajador  As Byte
+        
+        Dim Pirata      As Byte
+        
+        Dim Ladron      As Byte
+        
+        Dim Bandido     As Byte
 
         Dim Mapa        As Integer
 
@@ -16685,8 +16691,10 @@ Private Sub HandleCrearTorneo(ByVal UserIndex As Integer)
         druido = .incomingData.ReadByte
         Paladin = .incomingData.ReadByte
         cazador = .incomingData.ReadByte
- 
         Trabajador = .incomingData.ReadByte
+        Pirata = .incomingData.ReadByte
+        Ladron = .incomingData.ReadByte
+        Bandido = .incomingData.ReadByte
 
         Mapa = .incomingData.ReadInteger
         x = .incomingData.ReadByte
@@ -16708,6 +16716,9 @@ Private Sub HandleCrearTorneo(ByVal UserIndex As Integer)
             Torneo.Paladin = Paladin
             Torneo.cazador = cazador
             Torneo.Trabajador = Trabajador
+            Torneo.Pirata = Pirata
+            Torneo.Ladron = Ladron
+            Torneo.Bandido = Bandido
         
             Torneo.Mapa = Mapa
             Torneo.x = x

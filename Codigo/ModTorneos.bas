@@ -16,6 +16,9 @@ Public Type tTorneo
     Paladin As Byte
     cazador As Byte
     Trabajador As Byte
+    Pirata As Byte
+    Ladron As Byte
+    Bandido As Byte
     ClasesTexto As String
     Participantes As Byte
     IndexParticipantes() As Integer
@@ -46,7 +49,10 @@ Public Sub IniciarTorneo()
 112     If Torneo.druido > 0 Then Torneo.ClasesTexto = Torneo.ClasesTexto & "Druida,"
 114     If Torneo.Paladin > 0 Then Torneo.ClasesTexto = Torneo.ClasesTexto & "Paladin,"
 116     If Torneo.cazador > 0 Then Torneo.ClasesTexto = Torneo.ClasesTexto & "Cazador,"
-118     If Torneo.Trabajador > 0 Then Torneo.ClasesTexto = Torneo.ClasesTexto & "Trabajador"
+118     If Torneo.Trabajador > 0 Then Torneo.ClasesTexto = Torneo.ClasesTexto & "Trabajador,"
+        If Torneo.Pirata > 0 Then Torneo.ClasesTexto = Torneo.ClasesTexto & "Pirata,"
+        If Torneo.Ladron > 0 Then Torneo.ClasesTexto = Torneo.ClasesTexto & "Ladron,"
+        If Torneo.Bandido > 0 Then Torneo.ClasesTexto = Torneo.ClasesTexto & "Bandido"
 
 120     Torneo.HayTorneoaActivo = True
 
@@ -192,11 +198,15 @@ Public Sub ResetearTorneo()
 120     Torneo.druido = 0
 122     Torneo.Paladin = 0
 124     Torneo.cazador = 0
+        Torneo.Trabajador = 0
+        Torneo.Pirata = 0
+        Torneo.Ladron = 0
+        Torneo.Bandido = 0
 126     Torneo.ClasesTexto = ""
 128     Torneo.Mapa = 0
 130     Torneo.X = 0
 132     Torneo.Y = 0
-134     Torneo.Trabajador = 0
+134
 136     Torneo.nombre = ""
 138     Torneo.reglas = 0
     
