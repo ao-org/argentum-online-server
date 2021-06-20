@@ -1372,7 +1372,7 @@ TratarDeHacerFogata_Err:
         
 End Sub
 
-Public Sub DoPescar(ByVal UserIndex As Integer, Optional ByVal RedDePesca As Boolean = False, Optional ByVal ObjetoDorado As Boolean = False)
+Public Sub DoPescar(ByVal UserIndex As Integer, Optional ByVal RedDePesca As Boolean = False)
 
         On Error GoTo ErrHandler
 
@@ -1419,7 +1419,7 @@ Public Sub DoPescar(ByVal UserIndex As Integer, Optional ByVal RedDePesca As Boo
                 Dim MiObj As obj
 
 124             MiObj.amount = IIf(.clase = Trabajador, RandomNumber(1, 3), 1) * RecoleccionMult
-126             MiObj.ObjIndex = ObtenerPezRandom(IIf(RedDePesca, 5, 2))
+126             MiObj.ObjIndex = ObtenerPezRandom(ObjData(.Invent.HerramientaEqpObjIndex).Power)
                  ' AGREGAR FX
                 Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, 253, 25, False, ObjData(MiObj.ObjIndex).GrhIndex))
 128             If MiObj.ObjIndex = 0 Then Exit Sub
