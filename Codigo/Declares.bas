@@ -2139,7 +2139,7 @@ Public Type npc
     
     NumQuiza As Byte
     QuizaDropea() As String
-    QuizaProb As Byte
+    QuizaProb As Integer
     
     SubeSupervivencia As Byte
     
