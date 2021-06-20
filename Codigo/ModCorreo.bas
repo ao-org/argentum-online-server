@@ -55,6 +55,8 @@ End Sub
 Public Function AddCorreo(ByVal UserIndex As Integer, ByRef UserName As String, ByRef message As String, ByVal ObjArray As String, ByVal FinalCount As Byte) As Boolean
 
         On Error GoTo ErrHandler
+        
+        ' WyroX: por favor no usar, esto hay que reverlo
 
         Dim ReceptIndex As Integer
 
