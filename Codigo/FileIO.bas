@@ -1381,7 +1381,7 @@ Sub LoadOBJData()
 
                     Case eOBJType.otHerramientas
 164                     .WeaponAnim = val(Leer.GetValue(ObjKey, "Anim"))
-166                     .Power = val(Leer.GetValue(ObjKey, "Poder"))
+166                     .Power = val(Leer.GetValue(ObjKey, "Power"))
             
 168                 Case eOBJType.otArmadura
 170                     .Real = val(Leer.GetValue(ObjKey, "Real"))
