@@ -7477,7 +7477,10 @@ Private Sub HandleFinEvento(ByVal UserIndex As Integer)
     '***************************************************
     With UserList(UserIndex)
 
-        If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.RoleMaster)) Then Exit Sub
+        If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.RoleMaster)) Then
+            Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+        End If
 
         If EventoActivo Then
             Call FinalizarEvento
@@ -7811,6 +7814,8 @@ Private Sub HandleGoNearby(ByVal UserIndex As Integer)
                     Call WriteConsoleMsg(UserIndex, "No podés ir cerca de un GM de mayor jerarquía.", FontTypeNames.FONTTYPE_INFO)
                 End If
             End If
+        Else
+                    Call WriteConsoleMsg(UserIndex, "Servidor » No podés ir cerca de ningun Usuario si no pidio SOS.", FontTypeNames.FONTTYPE_INFO)
         End If
 
     End With
@@ -10028,7 +10033,8 @@ Private Sub HandleRequestCharStats(ByVal UserIndex As Integer)
                 Call SendUserMiniStatsTxt(UserIndex, tUser)
 
             End If
-
+        Else
+            Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
         End If
 
     End With
@@ -10944,7 +10950,11 @@ Private Sub HandleResetNPCInventory(ByVal UserIndex As Integer)
     '***************************************************
     With UserList(UserIndex)
         
-        If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.RoleMaster)) Then Exit Sub
+        If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.RoleMaster)) Then
+            Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+        End If
+        
         If .flags.TargetNPC = 0 Then Exit Sub
         
         Call ResetNpcInv(.flags.TargetNPC)
@@ -10976,8 +10986,10 @@ Private Sub HandleCleanWorld(ByVal UserIndex As Integer)
     '***************************************************
     With UserList(UserIndex)
 
-        If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.RoleMaster)) Then Exit Sub
-
+        If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.RoleMaster)) Then
+            Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+        End If
         Call LimpiezaForzada
             
         Call WriteConsoleMsg(UserIndex, "Se han limpiado los items del suelo.", FontTypeNames.FONTTYPE_INFO)
@@ -11147,7 +11159,10 @@ Private Sub HandleIPToNick(ByVal UserIndex As Integer)
         ip = ip & .incomingData.ReadByte() & "."
         ip = ip & .incomingData.ReadByte()
         
-        If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.RoleMaster)) Then Exit Sub
+        If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.RoleMaster)) Then
+            Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+        End If
         
         Call LogGM(.Name, "IP2NICK Solicito los Nicks de IP " & ip)
         
@@ -13971,7 +13986,10 @@ Public Sub HandleSaveChars(ByVal UserIndex As Integer)
         
         
         
-        If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.RoleMaster)) Then Exit Sub
+        If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.RoleMaster)) Then
+            Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+        End If
         
         Call LogGM(.Name, .Name & " ha guardado todos los chars")
         
@@ -14058,7 +14076,10 @@ Public Sub HandleChangeMapInfoPK(ByVal UserIndex As Integer)
         
         isMapPk = .incomingData.ReadBoolean()
         
-        If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios Or PlayerType.RoleMaster)) Then Exit Sub
+        If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios Or PlayerType.RoleMaster)) Then
+            Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+        End If
         
         Call LogGM(.Name, .Name & " ha cambiado la informacion sobre si es seguro el mapa.")
         
@@ -16914,7 +16935,8 @@ Private Sub HandleBusquedaTesoro(ByVal UserIndex As Integer)
                     End If
 
             End Select
-
+        Else
+            Call WriteConsoleMsg(UserIndex, "Servidor » No estas habilitado para hacer Eventos.", FontTypeNames.FONTTYPE_INFO)
         End If
 
     End With
