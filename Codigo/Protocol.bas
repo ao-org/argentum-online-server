@@ -8421,7 +8421,8 @@ Private Sub HandleGoToChar(ByVal UserIndex As Integer)
             Call WriteConsoleMsg(UserIndex, "Te has transportado hacia " & UserList(tUser).Name & ".", FontTypeNames.FONTTYPE_INFO)
                     
             Call LogGM(.Name, "/IRA " & UserName & " Mapa:" & UserList(tUser).Pos.Map & " X:" & UserList(tUser).Pos.x & " Y:" & UserList(tUser).Pos.Y)
-
+        Else
+            Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo. solo puedes ir a Usuarios que piden SOS.", FontTypeNames.FONTTYPE_INFO)
         End If
 
     End With
@@ -8993,7 +8994,8 @@ Private Sub HandleJail(ByVal UserIndex As Integer)
                 End If
 
             End If
-
+        Else
+            Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
         End If
 
     End With
@@ -9977,7 +9979,8 @@ Private Sub HandleRequestCharInfo(ByVal UserIndex As Integer)
                 End If
 
             End If
-
+        Else
+            Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
         End If
 
     End With
@@ -10071,9 +10074,10 @@ Private Sub HandleRequestCharGold(ByVal UserIndex As Integer)
                 Call WriteConsoleMsg(UserIndex, "El usuario " & UserName & " tiene " & UserList(tUser).Stats.Banco & " en el banco", FontTypeNames.FONTTYPE_TALK)
 
             End If
-
+        Else
+            Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
         End If
-
+        
     End With
 
     Exit Sub
@@ -10117,7 +10121,8 @@ Private Sub HandleRequestCharInventory(ByVal UserIndex As Integer)
                 Call SendUserInvTxt(UserIndex, tUser)
 
             End If
-
+        Else
+            Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
         End If
 
     End With
@@ -10163,7 +10168,8 @@ Private Sub HandleRequestCharBank(ByVal UserIndex As Integer)
                 Call SendUserBovedaTxt(UserIndex, tUser)
 
             End If
-
+        Else
+            Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
         End If
 
     End With
@@ -10225,7 +10231,8 @@ Private Sub HandleRequestCharSkills(ByVal UserIndex As Integer)
                 Call SendUserSkillsTxt(UserIndex, tUser)
 
             End If
-
+        Else
+            Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
         End If
 
     End With
@@ -10299,7 +10306,8 @@ Private Sub HandleReviveChar(ByVal UserIndex As Integer)
                 Call LogGM(.Name, "Resucito a " & UserName)
 
             End If
-
+        Else
+            Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
         End If
 
     End With
@@ -10332,7 +10340,10 @@ Private Sub HandleOnlineGM(ByVal UserIndex As Integer)
     
     With UserList(UserIndex)
          
-        If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero)) Then Exit Sub
+        If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero)) Then
+            Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
+        End If
+        Exit Sub
 
         priv = PlayerType.Consejero Or PlayerType.SemiDios
 
@@ -10381,7 +10392,10 @@ Private Sub HandleOnlineMap(ByVal UserIndex As Integer)
     '***************************************************
     With UserList(UserIndex)
     
-        If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero)) Then Exit Sub
+        If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero)) Then
+            Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
+        End If
+        Exit Sub
         
         Dim LoopC As Long
         Dim list  As String
@@ -10542,7 +10556,8 @@ Private Sub HandleKick(ByVal UserIndex As Integer)
                 End If
 
             End If
-
+        Else
+            Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
         End If
 
     End With
@@ -10591,7 +10606,8 @@ Private Sub HandleExecute(ByVal UserIndex As Integer)
                 Call WriteConsoleMsg(UserIndex, "No está online", FontTypeNames.FONTTYPE_INFO)
 
             End If
-
+        Else
+            Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
         End If
 
     End With
@@ -10629,6 +10645,8 @@ Private Sub HandleBanChar(ByVal UserIndex As Integer)
         
         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) Then
             Call BanPJ(UserIndex, UserName, Reason)
+        Else
+            Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
         End If
 
     End With
@@ -10679,7 +10697,8 @@ Private Sub HandleUnbanChar(ByVal UserIndex As Integer)
                 End If
 
             End If
-
+        Else
+            Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
         End If
 
     End With
@@ -10708,7 +10727,10 @@ Private Sub HandleNPCFollow(ByVal UserIndex As Integer)
     '***************************************************
     With UserList(UserIndex)
 
-        If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero)) Then Exit Sub
+        If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero)) Then
+            Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
+        End If
+        Exit Sub
         
         If .flags.TargetNPC > 0 Then
         
@@ -10817,7 +10839,8 @@ Private Sub HandleSummonChar(ByVal UserIndex As Integer)
                 Call LogGM(.Name, "/SUM " & UserName & " Map:" & .Pos.Map & " X:" & .Pos.x & " Y:" & .Pos.Y)
                 
             End If
-            
+        Else
+            Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
         End If
 
     End With
@@ -10847,7 +10870,10 @@ Private Sub HandleSpawnListRequest(ByVal UserIndex As Integer)
     '***************************************************
     With UserList(UserIndex)
 
-        If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero)) Then Exit Sub
+        If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero)) Then
+            Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
+        End If
+        Exit Sub
         
         Call EnviarSpawnList(UserIndex)
 
@@ -10888,7 +10914,8 @@ Private Sub HandleSpawnCreature(ByVal UserIndex As Integer)
             End If
             
             Call LogGM(.Name, "Sumoneo " & Declaraciones.SpawnList(npc).NpcName)
-
+        Else
+            Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
         End If
 
     End With
@@ -10992,7 +11019,8 @@ Private Sub HandleServerMessage(ByVal UserIndex As Integer)
                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(.Name & "> " & message, FontTypeNames.FONTTYPE_SERVER))
 
             End If
-
+        Else
+            Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
         End If
 
     End With
@@ -11078,7 +11106,8 @@ Private Sub HandleNickToIP(ByVal UserIndex As Integer)
                 Call WriteConsoleMsg(UserIndex, "No hay ningun personaje con ese nick", FontTypeNames.FONTTYPE_INFO)
 
             End If
-
+        Else
+            Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
         End If
 
     End With
@@ -11192,7 +11221,8 @@ Private Sub HandleGuildOnlineMembers(ByVal UserIndex As Integer)
             If tGuild > 0 Then
                 Call WriteConsoleMsg(UserIndex, "Clan " & UCase(GuildName) & ": " & modGuilds.m_ListaDeMiembrosOnline(UserIndex, tGuild), FontTypeNames.FONTTYPE_GUILDMSG)
             End If
-
+        Else
+            Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
         End If
 
     End With
@@ -11362,7 +11392,10 @@ Private Sub HandleRainToggle(ByVal UserIndex As Integer)
     '***************************************************
     With UserList(UserIndex)
         
-        If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero)) Then Exit Sub
+        If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero)) Then
+            Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
+        End If
+        Exit Sub
         
         Call LogGM(.Name, "/LLUVIA")
         
@@ -12921,7 +12954,10 @@ Private Sub HandleTileBlockedToggle(ByVal UserIndex As Integer)
     '***************************************************
     With UserList(UserIndex)
         
-        If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero)) Then Exit Sub
+        If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero)) Then
+            Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
+        End If
+        Exit Sub
 
         Call LogGM(.Name, "/BLOQ")
         
@@ -12961,7 +12997,10 @@ Private Sub HandleKillNPCNoRespawn(ByVal UserIndex As Integer)
     '***************************************************
     With UserList(UserIndex)
 
-        If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero)) Then Exit Sub
+        If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero)) Then
+            Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
+        End If
+        Exit Sub
         
         If .flags.TargetNPC = 0 Then Exit Sub
         
@@ -12995,7 +13034,10 @@ Private Sub HandleKillAllNearbyNPCs(ByVal UserIndex As Integer)
     '***************************************************
     With UserList(UserIndex)
         
-        If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero)) Then Exit Sub
+        If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero)) Then
+            Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
+        End If
+        Exit Sub
             
         'Si está en el mapa pretoriano, me aseguro de que los saque correctamente antes que nada.
         If .Pos.Map = MAPA_PRETORIANO Then Call EliminarPretorianos(MAPA_PRETORIANO)
@@ -13830,7 +13872,8 @@ Public Sub HandleGiveItem(ByVal UserIndex As Integer)
             ' Lo registro en los logs.
             Call LogGM(.Name, "/DAR " & UserName & " - Item: " & ObjData(ObjIndex).Name & "(" & ObjIndex & ") Cantidad : " & Cantidad)
             Call LogPremios(.Name, UserName, ObjIndex, Cantidad, Motivo)
-            
+        Else
+            Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
         End If
 
     End With
@@ -14804,7 +14847,10 @@ Public Sub HandleNavigateToggle(ByVal UserIndex As Integer)
     '***************************************************
     With UserList(UserIndex)
         
-        If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero)) Then Exit Sub
+        If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero)) Then
+            Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
+        End If
+        Exit Sub
         
         If .flags.Navegando = 1 Then
             .flags.Navegando = 0
@@ -15861,6 +15907,8 @@ Private Sub HandlePossUser(ByVal UserIndex As Integer)
                 Call WriteConsoleMsg(UserIndex, "Servidor » El usuario debe estar deslogueado para dicha solicitud!", FontTypeNames.FONTTYPE_INFO)
 
             End If
+        Else
+            Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
         End If
     End With
     
@@ -15961,7 +16009,10 @@ Private Sub HandleNieveToggle(ByVal UserIndex As Integer)
     'Author: Pablo Mercavides
     With UserList(UserIndex)
 
-        If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero)) Then Exit Sub
+        If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero)) Then
+            Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
+        End If
+        Exit Sub
         
         Call LogGM(.Name, "/NIEVE")
         
@@ -15986,7 +16037,10 @@ Private Sub HandleNieblaToggle(ByVal UserIndex As Integer)
     'Author: Pablo Mercavides
     With UserList(UserIndex)
 
-        If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero)) Then Exit Sub
+        If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero)) Then
+            Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
+        End If
+        Exit Sub
         
         Call LogGM(.Name, "/NIEBLA")
         Call ResetMeteo
@@ -17751,6 +17805,8 @@ Private Sub HandleBanCuenta(ByVal UserIndex As Integer)
         
         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) Then
             Call BanearCuenta(UserIndex, UserName, Reason)
+        Else
+            Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
         End If
 
     End With
@@ -17795,6 +17851,9 @@ Private Sub HandleUnBanCuenta(ByVal UserIndex As Integer)
             If DesbanearCuenta(UserIndex, AccountID) Then
                 Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » " & .Name & " ha desbaneado la cuenta de " & UserNameOEmail & ".", FontTypeNames.FONTTYPE_SERVER))
             End If
+        
+        Else
+            Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
         End If
 
     End With
@@ -17856,6 +17915,8 @@ Private Sub HandleUnBanSerial(ByVal UserIndex As Integer)
         
         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) Then
             Call DesbanearHDMAC(UserName)
+        Else
+            Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
         End If
 
     End With
@@ -18049,6 +18110,8 @@ Private Sub HandleBanTemporal(ByVal UserIndex As Integer)
         
         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) Then
             Call Admin.BanTemporal(UserName, dias, Reason, UserList(UserIndex).Name)
+        Else
+            Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
         End If
 
     End With
@@ -18860,7 +18923,8 @@ Private Sub HandleScreenShot(ByVal UserIndex As Integer)
                 Set .flags.ScreenShot = Nothing
 
             End If
-
+        Else
+            Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
         End If
 
     End With
