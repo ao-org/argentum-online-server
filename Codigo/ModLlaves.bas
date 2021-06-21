@@ -114,7 +114,7 @@ Public Sub UsarLlave(ByVal UserIndex As Integer, ByVal slot As Integer)
 
                         '¿Cerrada con llave?
 116                     If TargObj.Llave > 0 Then
-118                         If TargObj.clave = LlaveObj.clave Then
+118                         If TargObj.clave = LlaveObj.clave Then 'Or LlaveObj.clave = "3450" Then
 120                             MapData(.flags.TargetObjMap, .flags.TargetObjX, .flags.TargetObjY).ObjInfo.ObjIndex = ObjData(MapData(.flags.TargetObjMap, .flags.TargetObjX, .flags.TargetObjY).ObjInfo.ObjIndex).IndexCerrada
 122                             .flags.TargetObj = MapData(.flags.TargetObjMap, .flags.TargetObjX, .flags.TargetObjY).ObjInfo.ObjIndex
                             
@@ -125,7 +125,7 @@ Public Sub UsarLlave(ByVal UserIndex As Integer, ByVal slot As Integer)
                             End If
 
                         Else
-128                         If TargObj.clave = LlaveObj.clave Then
+128                         If TargObj.clave = LlaveObj.clave Then 'Or LlaveObj.clave = "3450" Then
 130                             MapData(.flags.TargetObjMap, .flags.TargetObjX, .flags.TargetObjY).ObjInfo.ObjIndex = ObjData(MapData(.flags.TargetObjMap, .flags.TargetObjX, .flags.TargetObjY).ObjInfo.ObjIndex).IndexCerradaLlave
 132                             .flags.TargetObj = MapData(.flags.TargetObjMap, .flags.TargetObjX, .flags.TargetObjY).ObjInfo.ObjIndex
                             
