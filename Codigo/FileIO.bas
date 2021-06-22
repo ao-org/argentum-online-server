@@ -2559,7 +2559,12 @@ Public Sub LoadDatabaseIniFile()
         Dim Lector As clsIniManager
     
 100     If frmMain.Visible Then frmMain.txStatus.Caption = "Leyendo credenciales de la DB."
-    
+                
+        If Not FileExist(IniPath & "Database.ini", vbNormal) Then
+            Call MsgBox("No existe el archivo de configuración de la base de datos - Database.ini.", vbCritical)
+            End
+        End If
+                
 102     Set Lector = New clsIniManager
 104     Call Lector.Initialize(IniPath & "Database.ini")
 
