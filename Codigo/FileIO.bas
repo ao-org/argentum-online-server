@@ -3814,8 +3814,6 @@ Public Sub RegistrarError(ByVal Numero As Long, ByVal Descripcion As String, ByV
         
         On Error GoTo RegistrarError_Err
     
-        
-        
         'Si lo del parametro Componente es ES IGUAL, al Componente del anterior error...
 100     If Componente = HistorialError.Componente And _
            Numero = HistorialError.ErrorCode Then
@@ -3823,7 +3821,6 @@ Public Sub RegistrarError(ByVal Numero As Long, ByVal Descripcion As String, ByV
            'Si ya recibimos error en el mismo componente 10 veces, es bastante probable que estemos en un bucle
             'x lo que no hace falta registrar el error.
 102         If HistorialError.Contador = 10 Then
-104             Debug.Print "Mismo error"
                 'Debug.Assert False
                 Exit Sub
             End If
@@ -3868,8 +3865,7 @@ Public Sub RegistrarError(ByVal Numero As Long, ByVal Descripcion As String, ByV
         Exit Sub
 
 RegistrarError_Err:
-136     Call RegistrarError(Err.Number, Err.Description, "ES.RegistrarError", Erl)
-
+        Close #File
         
 End Sub
 
