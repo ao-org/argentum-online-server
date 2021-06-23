@@ -1577,8 +1577,8 @@ Sub UsuarioAtacadoPorUsuario(ByVal AttackerIndex As Integer, ByVal VictimIndex A
     
         Dim EraCriminal As Byte
     
-112     UserList(VictimIndex).Counters.TiempoDeMapeo = 3
-114     UserList(AttackerIndex).Counters.TiempoDeMapeo = 3
+112     UserList(VictimIndex).Counters.EnCombate = IntervaloEnCombate
+114     UserList(AttackerIndex).Counters.EnCombate = IntervaloEnCombate
     
 116     If Status(AttackerIndex) = 1 And Status(VictimIndex) = 1 Or Status(VictimIndex) = 3 Then
 118         Call VolverCriminal(AttackerIndex)
@@ -1830,6 +1830,12 @@ Public Function PuedeAtacarNPC(ByVal AttackerIndex As Integer, ByVal NpcIndex As
 110         PuedeAtacarNPC = False
             Exit Function
 
+        End If
+        
+        If UserList(AttackerIndex).flags.Inmunidad = 1 Then
+            Call WriteConsoleMsg(AttackerIndex, "Espera un momento antes de atacar a la criatura.", FontTypeNames.FONTTYPE_INFO)
+            PuedeAtacarNPC = False
+            Exit Function
         End If
 
         'Solo administradores pueden atacar a usuarios (PARA TESTING)
