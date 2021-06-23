@@ -9301,7 +9301,7 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
         Arg2 = .incomingData.ReadASCIIString()
 
         ' Si no es GM, no hacemos nada.
-        If Not EsGM(UserIndex) Then Exit Sub
+        If Not EsGM(UserIndex) Or (.flags.Privilegios And PlayerType.Consejero) Then Exit Sub
         
         ' Si NO sos Dios o Admin,
         If (.flags.Privilegios And PlayerType.Admin) = 0 Then
@@ -12587,7 +12587,7 @@ Private Sub HandleCreateItem(ByVal UserIndex As Integer)
         Cuantos = .incomingData.ReadInteger()
     
         ' Si es usuario, lo sacamos cagando.
-        If Not EsGM(UserIndex) Then Exit Sub
+        If Not EsGM(UserIndex) Or (.flags.Privilegios And PlayerType.Consejero) Then Exit Sub
         
         ' Si es Semi-Dios, dejamos crear un item siempre y cuando pueda estar en el inventario.
         If (.flags.Privilegios And PlayerType.SemiDios) <> 0 And ObjData(tObj).Agarrable = 1 Then Exit Sub
@@ -16783,51 +16783,37 @@ Private Sub HandleCrearTorneo(ByVal UserIndex As Integer)
     With UserList(UserIndex)
  
         Dim NivelMinimo As Byte
-
         Dim nivelmaximo As Byte
-
+        
         Dim cupos       As Byte
-
         Dim costo       As Long
-
+        
         Dim mago        As Byte
-
         Dim clerico     As Byte
-
         Dim guerrero    As Byte
-
         Dim asesino     As Byte
-
         Dim bardo       As Byte
-
         Dim druido      As Byte
-
         Dim Paladin     As Byte
-
         Dim cazador     As Byte
-
         Dim Trabajador  As Byte
-        
         Dim Pirata      As Byte
-        
         Dim Ladron      As Byte
-        
         Dim Bandido     As Byte
 
         Dim Mapa        As Integer
-
         Dim x           As Byte
-
         Dim Y           As Byte
 
         Dim nombre      As String
-
         Dim reglas      As String
 
         NivelMinimo = .incomingData.ReadByte
         nivelmaximo = .incomingData.ReadByte
+        
         cupos = .incomingData.ReadByte
         costo = .incomingData.ReadLong
+        
         mago = .incomingData.ReadByte
         clerico = .incomingData.ReadByte
         guerrero = .incomingData.ReadByte
@@ -16844,14 +16830,17 @@ Private Sub HandleCrearTorneo(ByVal UserIndex As Integer)
         Mapa = .incomingData.ReadInteger
         x = .incomingData.ReadByte
         Y = .incomingData.ReadByte
+        
         nombre = .incomingData.ReadASCIIString
         reglas = .incomingData.ReadASCIIString
   
-        If EsGM(UserIndex) Then
+        If EsGM(UserIndex) And ((.flags.Privilegios And PlayerType.Consejero) = 0) Then
             Torneo.NivelMinimo = NivelMinimo
             Torneo.nivelmaximo = nivelmaximo
+            
             Torneo.cupos = cupos
             Torneo.costo = costo
+            
             Torneo.mago = mago
             Torneo.clerico = clerico
             Torneo.guerrero = guerrero
@@ -16868,6 +16857,7 @@ Private Sub HandleCrearTorneo(ByVal UserIndex As Integer)
             Torneo.Mapa = Mapa
             Torneo.x = x
             Torneo.Y = Y
+            
             Torneo.nombre = nombre
             Torneo.reglas = reglas
 
