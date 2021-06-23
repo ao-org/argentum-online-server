@@ -2464,8 +2464,8 @@ Sub PasarSegundo()
 
             End If
         
-218         If UserList(i).Counters.TiempoDeMapeo > 0 Then
-220             UserList(i).Counters.TiempoDeMapeo = UserList(i).Counters.TiempoDeMapeo - 1
+218         If UserList(i).Counters.EnCombate > 0 Then
+220             UserList(i).Counters.EnCombate = UserList(i).Counters.EnCombate - 1
             End If
         
         

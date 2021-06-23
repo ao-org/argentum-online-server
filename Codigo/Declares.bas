@@ -1654,7 +1654,7 @@ End Enum
 Public Type UserCounters
 
     TiempoDeInmunidad As Byte
-    TiempoDeMapeo As Byte
+    EnCombate As Byte
 
     TiempoParaSubastar As Byte
     UserHechizosInterval(1 To MAXUSERHECHIZOS) As Long
