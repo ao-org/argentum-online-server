@@ -2795,7 +2795,8 @@ Sub LoadIntervalos()
     
 180     IntervaloCaminar = val(Lector.GetValue("INTERVALOS", "IntervaloCaminar"))
 182     FrmInterv.txtintervalocaminar.Text = IntervaloCaminar
-        'Ladder
+        
+        IntervaloEnCombate = val(Lector.GetValue("INTERVALOS", "IntervaloEnCombate"))
     
         '&&&&&&&&&&&&&&&&&&&&& TIMERS &&&&&&&&&&&&&&&&&&&&&&&
     

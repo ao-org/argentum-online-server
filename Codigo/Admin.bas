@@ -122,6 +122,8 @@ Public IntervaloMeditar             As Long
 
 Public IntervaloCaminar             As Long
 
+Public IntervaloEnCombate           As Long
+
 Public IntervaloPuedeSerAtacado     As Long
 
 Public IntervaloGuardarUsuarios     As Long
