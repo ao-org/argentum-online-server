@@ -745,48 +745,6 @@ errhand:
 
 End Sub
 
-Private Sub auxSocket_Connect()
-
-    'auxSocket.SendData "{""header"":{""action"":""LoadUser""},""data"":{""accountId"":1}}"
-    
-End Sub
-
-Private Sub auxSocket_DataArrival(ByVal bytesTotal As Long)
-        
-        On Error GoTo auxSocket_DataArrival_Err
-    
-        
-    
-        Dim strData As String
-    
-        ' Recibimos la info.
-100     Call auxSocket.GetData(strData)
-    
-        ' Si no llegó nada, nos vamos alv.
-102     If Len(strData) = 0 Then Exit Sub
-    
-        ' Parseamos el JSON que recibimo.
-        Dim response As Object
-104     Set response = mod_JSON.parse(strData)
-    
-106     Select Case response.Item("header").Item("action")
-    
-            Case "LoadUser"
-                'Call MsgBox(response!data)
-            
-        End Select
-    
-108     End
-    
-        
-        Exit Sub
-
-auxSocket_DataArrival_Err:
-110     Call RegistrarError(Err.Number, Err.Description, "frmMain.auxSocket_DataArrival", Erl)
-
-        
-End Sub
-
 Private Sub CerrarYForzarActualizar_Click()
     On Error GoTo Command4_Click_Err
 
