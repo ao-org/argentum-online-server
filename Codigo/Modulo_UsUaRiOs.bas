@@ -642,12 +642,12 @@ Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As eHeading) As
 126             .Accion.AccionPendiente = False
             End If
 
-128         If .flags.Muerto = 0 Then
-130             If MapData(nPos.Map, nPos.X, nPos.Y).TileExit.Map <> 0 And .Counters.TiempoDeMapeo > 0 Then
-132                 Call WriteConsoleMsg(UserIndex, "Estás en combate, debes aguardar " & .Counters.TiempoDeMapeo & " segundo(s) para escapar...", FontTypeNames.FONTTYPE_INFOBOLD)
-                    Exit Function
-                End If
-            End If
+128         'If .flags.Muerto = 0 Then
+130         '    If MapData(nPos.Map, nPos.X, nPos.Y).TileExit.Map <> 0 And .Counters.EnCombate > 0 Then
+132         '        Call WriteConsoleMsg(UserIndex, "Estás en combate, debes aguardar " & .Counters.EnCombate & " segundo(s) para escapar...", FontTypeNames.FONTTYPE_INFOBOLD)
+            '        Exit Function
+            '    End If
+            'End If
 
             'Si no estoy solo en el mapa...
 134         If MapInfo(.Pos.Map).NumUsers > 1 Then
@@ -1710,8 +1710,10 @@ Sub WarpUserChar(ByVal UserIndex As Integer, _
 
                 End If
             
-144             .Counters.TiempoDeInmunidad = IntervaloPuedeSerAtacado
-146             .flags.Inmunidad = 1
+                If IntervaloPuedeSerAtacado > 0 Then
+144                 .Counters.TiempoDeInmunidad = IntervaloPuedeSerAtacado
+146                 .flags.Inmunidad = 1
+                End If
 
 148             If RequiereOxigeno(OldMap) = True And .flags.NecesitaOxigeno = False Then  'And .Stats.ELV < 35 Then
         
