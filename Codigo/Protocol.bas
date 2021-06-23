@@ -8660,8 +8660,7 @@ Private Sub HandleVerLlaves(ByVal UserIndex As Integer)
     With UserList(UserIndex)
 
         ' Sólo GMs
-        If Not (.flags.Privilegios And PlayerType.user) Then
-
+        If (.flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin)) Then
             ' Me aseguro que esté activada la db
             If Not Database_Enabled Then
                 Call WriteConsoleMsg(UserIndex, "Es necesario que el juego esté corriendo con base de datos.", FontTypeNames.FONTTYPE_INFO)
@@ -8671,7 +8670,8 @@ Private Sub HandleVerLlaves(ByVal UserIndex As Integer)
             
             ' Leo y muestro todas las llaves usadas
             Call VerLlavesDatabase(UserIndex)
-
+        Else
+            Call WriteConsoleMsg(UserIndex, "Solo Dios y Administrador pueden ver llaves.", FontTypeNames.FONTTYPE_INFO)
         End If
                 
     End With
