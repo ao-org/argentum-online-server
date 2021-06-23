@@ -2249,8 +2249,8 @@ Public Sub DoMontar(ByVal UserIndex As Integer, ByRef Montura As ObjData, ByVal 
                 Exit Sub
             End If
 
-104         If .flags.Montado = 0 And .Counters.TiempoDeMapeo > 0 Then
-106             Call WriteConsoleMsg(UserIndex, "Estás en combate, debes aguardar " & .Counters.TiempoDeMapeo & " segundo(s) para escapar...", FontTypeNames.FONTTYPE_INFOBOLD)
+104         If .flags.Montado = 0 And .Counters.EnCombate > 0 Then
+106             Call WriteConsoleMsg(UserIndex, "Estás en combate, debes aguardar " & .Counters.EnCombate & " segundo(s) para montar...", FontTypeNames.FONTTYPE_INFOBOLD)
                 Exit Sub
             End If
 
