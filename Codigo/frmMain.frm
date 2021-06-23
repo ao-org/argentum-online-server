@@ -30,7 +30,7 @@ Begin VB.Form frmMain
    Begin VB.CommandButton CerrarYForzarActualizar 
       Appearance      =   0  'Flat
       BackColor       =   &H00C0E0FF&
-      Caption         =   "Cerrar y forzar actualización"
+      Caption         =   "Cerrar y forzar actualizaciï¿½n"
       Height          =   495
       Left            =   5160
       MaskColor       =   &H000040C0&
@@ -211,7 +211,7 @@ Begin VB.Form frmMain
    End
    Begin VB.Frame Frame2 
       BackColor       =   &H00E0E0E0&
-      Caption         =   "Información general"
+      Caption         =   "Informaciï¿½n general"
       Height          =   1815
       Left            =   120
       TabIndex        =   7
@@ -537,7 +537,7 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 'Argentum Online 0.11.6
-'Copyright (C) 2002 Márquez Pablo Ignacio
+'Copyright (C) 2002 Mï¿½rquez Pablo Ignacio
 '
 'This program is free software; you can redistribute it and/or modify
 'it under the terms of the Affero General Public License;
@@ -559,10 +559,10 @@ Attribute VB_Exposed = False
 'You can contact me at:
 'morgolock@speedy.com.ar
 'www.geocities.com/gmorgolock
-'Calle 3 número 983 piso 7 dto A
+'Calle 3 nï¿½mero 983 piso 7 dto A
 'La Plata - Pcia, Buenos Aires - Republica Argentina
-'Código Postal 1900
-'Pablo Ignacio Márquez
+'Cï¿½digo Postal 1900
+'Pablo Ignacio Mï¿½rquez
 
 Option Explicit
 
@@ -574,7 +574,7 @@ Public ESCUCHADAS As Long
 Private Type NOTIFYICONDATA
 
     cbSize As Long
-    hwnd As Long
+    hWnd As Long
     uID As Long
     uFlags As Long
     uCallbackMessage As Long
@@ -597,7 +597,7 @@ Private GuardarYCerrar As Boolean
 Private Declare Function GetWindowThreadProcessId Lib "user32" (ByVal hwnd As Long, lpdwProcessId As Long) As Long
 Private Declare Function Shell_NotifyIconA Lib "SHELL32" (ByVal dwMessage As Long, lpData As NOTIFYICONDATA) As Integer
 
-Private Function setNOTIFYICONDATA(hwnd As Long, Id As Long, flags As Long, CallbackMessage As Long, Icon As Long, Tip As String) As NOTIFYICONDATA
+Private Function setNOTIFYICONDATA(hWnd As Long, ID As Long, flags As Long, CallbackMessage As Long, Icon As Long, Tip As String) As NOTIFYICONDATA
         
         On Error GoTo setNOTIFYICONDATA_Err
         
@@ -605,8 +605,8 @@ Private Function setNOTIFYICONDATA(hwnd As Long, Id As Long, flags As Long, Call
         Dim nidTemp As NOTIFYICONDATA
 
 100     nidTemp.cbSize = Len(nidTemp)
-102     nidTemp.hwnd = hwnd
-104     nidTemp.uID = Id
+102     nidTemp.hWnd = hWnd
+104     nidTemp.uID = ID
 106     nidTemp.uFlags = flags
 108     nidTemp.uCallbackMessage = CallbackMessage
 110     nidTemp.hIcon = Icon
@@ -685,7 +685,7 @@ Private Sub addtimeDonador_Click()
 100     Tmp = InputBox("Cuenta?", "Ingrese la cuenta")
 
 102     If FileExist(CuentasPath & Tmp & ".act", vbNormal) Then
-104         tmp2 = InputBox("¿Dias?", "Ingrese cantidad de días")
+104         tmp2 = InputBox("ï¿½Dias?", "Ingrese cantidad de dï¿½as")
 
 106         If IsNumeric(tmp2) Then
 108             Call DonadorTiempo(Tmp, tmp2)
@@ -743,9 +743,9 @@ End Sub
 Private Sub CerrarYForzarActualizar_Click()
     On Error GoTo Command4_Click_Err
 
-        If MsgBox("¿Está seguro que desea guardar, forzar actualización a los usuarios y cerrar?", vbYesNo, "Confirmación") = vbNo Then Exit Sub
+        If MsgBox("ï¿½Estï¿½ seguro que desea guardar, forzar actualizaciï¿½n a los usuarios y cerrar?", vbYesNo, "Confirmaciï¿½n") = vbNo Then Exit Sub
         
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor » Cerrando servidor y lanzando nuevo parche.", FontTypeNames.FONTTYPE_PROMEDIO_MENOR))
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor ï¿½ Cerrando servidor y lanzando nuevo parche.", FontTypeNames.FONTTYPE_PROMEDIO_MENOR))
 
         Call ForzarActualizar
 100     Call GuardarUsuarios
@@ -773,7 +773,7 @@ Private Sub Invasion_Timer()
 100     For i = 1 To UBound(Invasiones)
 102         With Invasiones(i)
                 ' Aumentamos el contador para controlar cuando
-                ' inicia la invasión o cuando debe terminar
+                ' inicia la invasiï¿½n o cuando debe terminar
 104             .TimerInvasion = .TimerInvasion + 1
         
 106             If .Activa Then
@@ -782,7 +782,7 @@ Private Sub Invasion_Timer()
 110                     Call FinalizarInvasion(i)
                 
                     Else
-                        ' Descripción del evento
+                        ' Descripciï¿½n del evento
 112                     .TimerRepetirDesc = .TimerRepetirDesc + 1
     
 114                     If .TimerRepetirDesc >= .RepetirDesc Then
@@ -791,12 +791,12 @@ Private Sub Invasion_Timer()
                         End If
                     End If
             
-                ' Si no está activa, chequeamos si debemos iniciarla
+                ' Si no estï¿½ activa, chequeamos si debemos iniciarla
 120             ElseIf .Intervalo > 0 Then
 122                 If .TimerInvasion >= .Intervalo Then
 124                     Call IniciarInvasion(i)
     
-                    ' Si no está activa ni hay que iniciar, chequeamos si hay que avisar que se acerca el evento
+                    ' Si no estï¿½ activa ni hay que iniciar, chequeamos si hay que avisar que se acerca el evento
 126                 ElseIf .TimerInvasion >= .Intervalo - .AvisarTiempo Then
 128                     .TimerRepetirAviso = .TimerRepetirAviso - 1
     
@@ -818,7 +818,7 @@ Handler:
         ' **********************************
 End Sub
 
-' WyroX: Comprobamos cada 10 segundos, porque no es necesaria tanta precisión
+' WyroX: Comprobamos cada 10 segundos, porque no es necesaria tanta precisiï¿½n
 Private Sub TiempoRetos_Timer()
 
     On Error GoTo Handler
@@ -857,7 +857,7 @@ Private Sub TimerGuardarUsuarios_Timer()
 
     On Error GoTo Handler
     
-        ' Guardar usuarios (solo si pasó el tiempo mínimo para guardar)
+        ' Guardar usuarios (solo si pasï¿½ el tiempo mï¿½nimo para guardar)
         Dim UserIndex As Integer, UserGuardados As Integer
 
 100     For UserIndex = 1 To LastUser
@@ -923,9 +923,9 @@ Private Sub Minuto_Timer()
     
 120     minutos = minutos + 1
 
-        '¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
+        'ï¿½?ï¿½?ï¿½?ï¿½?ï¿½?ï¿½?ï¿½?ï¿½?ï¿½?ï¿½?ï¿½
 122     Call ModAreas.AreasOptimizacion
-        '¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
+        'ï¿½?ï¿½?ï¿½?ï¿½?ï¿½?ï¿½?ï¿½?ï¿½?ï¿½?ï¿½?ï¿½
 
         'Actualizamos el centinela
 124     Call modCentinela.PasarMinutoCentinela
@@ -971,7 +971,7 @@ Private Sub CMDDUMP_Click()
         Dim i As Integer
 
 100     For i = 1 To MaxUsers
-102         Call LogCriticEvent(i & ") ConnID: " & UserList(i).ConnID & ". ConnidValida: " & UserList(i).ConnIDValida & " Name: " & UserList(i).name & " UserLogged: " & UserList(i).flags.UserLogged)
+102         Call LogCriticEvent(i & ") ConnID: " & UserList(i).ConnID & ". ConnidValida: " & UserList(i).ConnIDValida & " Name: " & UserList(i).Name & " UserLogged: " & UserList(i).flags.UserLogged)
 104     Next i
 
 106     Call LogCriticEvent("Lastuser: " & LastUser & " NextOpenUser: " & NextOpenUser)
@@ -1084,7 +1084,7 @@ Private Sub Command2_Click()
         
         On Error GoTo Command2_Click_Err
         
-100     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor » " & BroadMsg.Text, FontTypeNames.FONTTYPE_SERVER))
+100     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor ï¿½ " & BroadMsg.Text, FontTypeNames.FONTTYPE_SERVER))
 
         
         Exit Sub
@@ -1099,9 +1099,9 @@ Private Sub Command4_Click()
         
         On Error GoTo Command4_Click_Err
 
-        If MsgBox("¿Está seguro que desea guardar y cerrar?", vbYesNo, "Confirmación") = vbNo Then Exit Sub
+        If MsgBox("ï¿½Estï¿½ seguro que desea guardar y cerrar?", vbYesNo, "Confirmaciï¿½n") = vbNo Then Exit Sub
         
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor » Cerrando servidor.", FontTypeNames.FONTTYPE_PROMEDIO_MENOR))
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor ï¿½ Cerrando servidor.", FontTypeNames.FONTTYPE_PROMEDIO_MENOR))
 
 100     Call GuardarUsuarios
 102     Call EcharPjsNoPrivilegiados
@@ -1216,8 +1216,8 @@ Private Sub EstadoTimer_Timer()
 102     For i = 1 To Baneos.Count
 
 104         If Baneos(i).FechaLiberacion <= Now Then
-106             Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » Se ha concluido la sentencia de ban para " & Baneos(i).Name & ".", FontTypeNames.FONTTYPE_SERVER))
-108             Call ChangeBan(Baneos(i).name, 0)
+106             Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor ï¿½ Se ha concluido la sentencia de ban para " & Baneos(i).Name & ".", FontTypeNames.FONTTYPE_SERVER))
+108             Call ChangeBan(Baneos(i).Name, 0)
 110             Call Baneos.Remove(i)
 112             Call SaveBans
 
@@ -1228,8 +1228,8 @@ Private Sub EstadoTimer_Timer()
 114     For i = 1 To Donadores.Count
 
 116         If Donadores(i).FechaExpiracion <= Now Then
-118             Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » Se ha concluido el tiempo de donador para " & Donadores(i).Name & ".", FontTypeNames.FONTTYPE_SERVER))
-120             Call ChangeDonador(Donadores(i).name, 0)
+118             Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor ï¿½ Se ha concluido el tiempo de donador para " & Donadores(i).Name & ".", FontTypeNames.FONTTYPE_SERVER))
+120             Call ChangeDonador(Donadores(i).Name, 0)
 122             Call Donadores.Remove(i)
 124             Call SaveDonadores
 
@@ -1361,7 +1361,7 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, X As Single, Y A
 
                     Dim hProcess As Long
 
-108                 GetWindowThreadProcessId hwnd, hProcess
+108                 GetWindowThreadProcessId hWnd, hProcess
 110                 AppActivate hProcess
 
 112             Case WM_RBUTTONUP
@@ -1399,7 +1399,7 @@ Public Sub QuitarIconoSystray()
         Dim i   As Integer
         Dim nid As NOTIFYICONDATA
 
-100     nid = setNOTIFYICONDATA(frmMain.hwnd, vbNull, NIF_MESSAGE Or NIF_ICON Or NIF_TIP, vbNull, frmMain.Icon, "")
+100     nid = setNOTIFYICONDATA(frmMain.hWnd, vbNull, NIF_MESSAGE Or NIF_ICON Or NIF_TIP, vbNull, frmMain.Icon, "")
 
 102     i = Shell_NotifyIconA(NIM_DELETE, nid)
 
@@ -1418,7 +1418,7 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
     
         
 100     If GuardarYCerrar Then Exit Sub
-102     If MsgBox("¿Deseas FORZAR el CIERRE del servidor?" & vbNewLine & vbNewLine & "Ten en cuenta que ES POSIBLE PIERDAS DATOS!", vbYesNo, "¡FORZAR CIERRE!") = vbNo Then
+102     If MsgBox("ï¿½Deseas FORZAR el CIERRE del servidor?" & vbNewLine & vbNewLine & "Ten en cuenta que ES POSIBLE PIERDAS DATOS!", vbYesNo, "ï¿½FORZAR CIERRE!") = vbNo Then
 104         Cancel = True
         End If
     
@@ -1462,7 +1462,7 @@ Private Sub GameTimer_Timer()
 
                 'Conexion activa?
 104             If .ConnID <> -1 Then
-                    '¿User valido?
+                    'ï¿½User valido?
                     
 106                 If .ConnIDValida And .flags.UserLogged Then
                     
@@ -1507,7 +1507,7 @@ Private Sub GameTimer_Timer()
                         'Inactive players will be removed!
 260                     .Counters.IdleCount = .Counters.IdleCount + 1
                     
-                        'El intervalo cambia según si envió el primer paquete
+                        'El intervalo cambia segï¿½n si enviï¿½ el primer paquete
 262                     If .Counters.IdleCount > IIf(.flags.FirstPacket, TimeoutEsperandoLoggear, TimeoutPrimerPaquete) Then
 264                         Call CloseSocket(iUserIndex)
                         End If
@@ -1582,10 +1582,10 @@ Private Sub loadcredit_Click()
 
         Dim tmp2 As String
 
-100     Tmp = InputBox("¿Cuenta?", "Ingrese la cuenta")
+100     Tmp = InputBox("ï¿½Cuenta?", "Ingrese la cuenta")
 
 102     If FileExist(CuentasPath & Tmp & ".act", vbNormal) Then
-104         tmp2 = InputBox("¿Cantidad?", "Ingrese cantidad de creditos a agregar")
+104         tmp2 = InputBox("ï¿½Cantidad?", "Ingrese cantidad de creditos a agregar")
 
 106         If IsNumeric(tmp2) Then
 108             Call AgregarCreditosDonador(Tmp, CLng(tmp2))
@@ -1613,7 +1613,7 @@ Private Sub mnuCerrar_Click()
         On Error GoTo mnuCerrar_Click_Err
         
 
-100     If MsgBox("¡¡Atencion!! Si cierra el servidor puede provocar la perdida de datos. ¿Desea hacerlo de todas maneras?", vbYesNo) = vbYes Then
+100     If MsgBox("ï¿½ï¿½Atencion!! Si cierra el servidor puede provocar la perdida de datos. ï¿½Desea hacerlo de todas maneras?", vbYesNo) = vbYes Then
 
             Dim f
 102         For Each f In Forms
@@ -1717,7 +1717,7 @@ Private Sub mnuSystray_Click()
         Dim nid As NOTIFYICONDATA
 
 100     S = "ARGENTUM-ONLINE"
-102     nid = setNOTIFYICONDATA(frmMain.hwnd, vbNull, NIF_MESSAGE Or NIF_ICON Or NIF_TIP, WM_MOUSEMOVE, frmMain.Icon, S)
+102     nid = setNOTIFYICONDATA(frmMain.hWnd, vbNull, NIF_MESSAGE Or NIF_ICON Or NIF_TIP, WM_MOUSEMOVE, frmMain.Icon, S)
 104     i = Shell_NotifyIconA(NIM_ADD, nid)
     
 106     If WindowState <> vbMinimized Then WindowState = vbMinimized
@@ -1760,7 +1760,7 @@ Private Sub SubastaTimer_Timer()
 
         'Si ya paso un minuto y todavia no hubo oferta, avisamos que se cancela en un minuto
 100     If Subasta.TiempoRestanteSubasta = 240 And Subasta.HuboOferta = False Then
-102         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("¡Quedan 4 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas información. La subasta será cancelada si no hay ofertas en el próximo minuto.", FontTypeNames.FONTTYPE_SUBASTA))
+102         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("ï¿½Quedan 4 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas informaciï¿½n. La subasta serï¿½ cancelada si no hay ofertas en el prï¿½ximo minuto.", FontTypeNames.FONTTYPE_SUBASTA))
 104         Subasta.MinutosDeSubasta = 4
 106         Subasta.PosibleCancelo = True
 
@@ -1783,26 +1783,26 @@ Private Sub SubastaTimer_Timer()
     
 120     If Subasta.TiempoRestanteSubasta > 0 And Subasta.PosibleCancelo = False Then
 122         If Subasta.TiempoRestanteSubasta = 240 Then
-124             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("¡Quedan 4 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas información.", FontTypeNames.FONTTYPE_SUBASTA))
+124             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("ï¿½Quedan 4 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas informaciï¿½n.", FontTypeNames.FONTTYPE_SUBASTA))
 126             Subasta.MinutosDeSubasta = "4"
 
             End If
         
 128         If Subasta.TiempoRestanteSubasta = 180 Then
-130             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("¡Quedan 3 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas información.", FontTypeNames.FONTTYPE_SUBASTA))
+130             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("ï¿½Quedan 3 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas informaciï¿½n.", FontTypeNames.FONTTYPE_SUBASTA))
 132             Subasta.MinutosDeSubasta = "3"
 
             End If
 
 134         If Subasta.TiempoRestanteSubasta = 120 Then
-136             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("¡Quedan 2 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas información.", FontTypeNames.FONTTYPE_SUBASTA))
+136             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("ï¿½Quedan 2 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas informaciï¿½n.", FontTypeNames.FONTTYPE_SUBASTA))
 138             Subasta.MinutosDeSubasta = "2"
 
             End If
 
 140         If Subasta.TiempoRestanteSubasta = 60 Then
 142             Subasta.MinutosDeSubasta = "1"
-144             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("¡Quedan 1 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas información.", FontTypeNames.FONTTYPE_SUBASTA))
+144             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("ï¿½Quedan 1 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas informaciï¿½n.", FontTypeNames.FONTTYPE_SUBASTA))
 
             End If
 
@@ -1811,7 +1811,7 @@ Private Sub SubastaTimer_Timer()
         End If
     
 148     If Subasta.TiempoRestanteSubasta = 1 Then
-150         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("¡La subasta a terminado! El ganador fue: " & Subasta.Comprador, FontTypeNames.FONTTYPE_SUBASTA))
+150         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("ï¿½La subasta a terminado! El ganador fue: " & Subasta.Comprador, FontTypeNames.FONTTYPE_SUBASTA))
 152         Call FinalizarSubasta
 
         End If
@@ -1846,7 +1846,7 @@ Private Sub TIMER_AI_Timer()
 106                 If .flags.NPCActive Then 'Nos aseguramos que sea INTELIGENTE!
                 
 108                     If .NPCtype = DummyTarget Then
-                            ' Regenera vida después de X tiempo sin atacarlo
+                            ' Regenera vida despuï¿½s de X tiempo sin atacarlo
 110                         If .Stats.MinHp < .Stats.MaxHp Then
 112                             .Contadores.UltimoAtaque = .Contadores.UltimoAtaque - 1
                             
@@ -1898,7 +1898,7 @@ Private Sub TIMER_AI_Timer()
         Exit Sub
 
 ErrorHandler:
-140     Call LogError("Error en TIMER_AI_Timer " & NpcList(NpcIndex).name & " mapa:" & NpcList(NpcIndex).Pos.Map)
+140     Call LogError("Error en TIMER_AI_Timer " & NpcList(NpcIndex).Name & " mapa:" & NpcList(NpcIndex).Pos.Map)
 142     Call MuereNpc(NpcIndex, 0)
 
 End Sub
@@ -1994,7 +1994,7 @@ Private Sub TimerMeteorologia_Timer()
 184         Call SendData(SendTarget.ToAll, 0, PrepareMessageRainToggle())
         
 186         Call SendData(SendTarget.ToAll, 0, PrepareMessageNevarToggle())
-            ' Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor > Se acabo la lluvia señores.", FontTypeNames.FONTTYPE_SERVER))
+            ' Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor > Se acabo la lluvia seï¿½ores.", FontTypeNames.FONTTYPE_SERVER))
 188         Call AgregarAConsola("Servidor >Lluvia desactivada.")
 190         Lloviendo = False
 192         Truenos.Enabled = False
@@ -2031,7 +2031,7 @@ Private Sub TimerRespawn_Timer()
 108                 RespawnList(NpcIndex).flags.NPCActive = False
 
 110                 If RespawnList(NpcIndex).InformarRespawn = 1 Then
-112                     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(RespawnList(NpcIndex).name & " ha vuelto a este mundo.", FontTypeNames.FONTTYPE_EXP))
+112                     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(RespawnList(NpcIndex).Name & " ha vuelto a este mundo.", FontTypeNames.FONTTYPE_EXP))
 114                     Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(257, NO_3D_SOUND, NO_3D_SOUND)) 'Para evento de respwan
                         
                         'Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(246, NO_3D_SOUND, NO_3D_SOUND)) 'Para evento de respwan
@@ -2048,7 +2048,7 @@ Private Sub TimerRespawn_Timer()
         Exit Sub
 
 ErrorHandler:
-120     Call LogError("Error en TIMER_RESPAWN " & NpcList(NpcIndex).name & " mapa:" & NpcList(NpcIndex).Pos.Map)
+120     Call LogError("Error en TIMER_RESPAWN " & NpcList(NpcIndex).Name & " mapa:" & NpcList(NpcIndex).Pos.Map)
 122     Call MuereNpc(NpcIndex, 0)
 
 End Sub
@@ -2074,7 +2074,7 @@ Private Sub tPiqueteC_Timer()
 104         If UserList(i).flags.UserLogged Then
 106             If MapData(UserList(i).Pos.Map, UserList(i).Pos.X, UserList(i).Pos.Y).trigger = eTrigger.ANTIPIQUETE Then
 108                 UserList(i).Counters.PiqueteC = UserList(i).Counters.PiqueteC + 1
-                    'Call WriteConsoleMsg(i, "Estás obstruyendo la via pública, muévete o serás encarcelado!!!", FontTypeNames.FONTTYPE_INFO)
+                    'Call WriteConsoleMsg(i, "Estï¿½s obstruyendo la via pï¿½blica, muï¿½vete o serï¿½s encarcelado!!!", FontTypeNames.FONTTYPE_INFO)
                 
                     'WyroX: Le empiezo a avisar a partir de los 18 segundos, para no spamear
 110                 If UserList(i).Counters.PiqueteC > 3 Then
@@ -2085,7 +2085,7 @@ Private Sub tPiqueteC_Timer()
 116                     UserList(i).Counters.PiqueteC = 0
                         'Call Encarcelar(i, TIEMPO_CARCEL_PIQUETE)
                         'WyroX: En vez de encarcelarlo, lo sacamos del juego.
-                        'Ojo! No sé si se puede abusar de esto para evitar los 10 segundos al salir
+                        'Ojo! No sï¿½ si se puede abusar de esto para evitar los 10 segundos al salir
 118                     Call WriteDisconnect(i)
 120                     Call CloseSocket(i)
                     End If
@@ -2162,7 +2162,7 @@ UptimeTimer_Timer_Err:
 End Sub
 
 Private Sub Winsock_Accept(ByVal SocketID As Long, ByVal UserIP As Long)
-    ' Aceptamos la conexión entrante
+    ' Aceptamos la conexiï¿½n entrante
     Call wskapiAO.EventoSockAccept(SocketID, UserIP)
 End Sub
 
