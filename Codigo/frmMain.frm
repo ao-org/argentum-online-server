@@ -574,7 +574,7 @@ Public ESCUCHADAS As Long
 Private Type NOTIFYICONDATA
 
     cbSize As Long
-    hwnd As Long
+    hWnd As Long
     uID As Long
     uFlags As Long
     uCallbackMessage As Long
@@ -594,10 +594,10 @@ Const WM_RBUTTONUP = &H205
 
 Private GuardarYCerrar As Boolean
 
-Private Declare Function GetWindowThreadProcessId Lib "user32" (ByVal hwnd As Long, lpdwProcessId As Long) As Long
+Private Declare Function GetWindowThreadProcessId Lib "user32" (ByVal hWnd As Long, lpdwProcessId As Long) As Long
 Private Declare Function Shell_NotifyIconA Lib "SHELL32" (ByVal dwMessage As Long, lpData As NOTIFYICONDATA) As Integer
 
-Private Function setNOTIFYICONDATA(hwnd As Long, Id As Long, flags As Long, CallbackMessage As Long, Icon As Long, Tip As String) As NOTIFYICONDATA
+Private Function setNOTIFYICONDATA(hWnd As Long, ID As Long, flags As Long, CallbackMessage As Long, Icon As Long, Tip As String) As NOTIFYICONDATA
         
         On Error GoTo setNOTIFYICONDATA_Err
         
@@ -605,8 +605,8 @@ Private Function setNOTIFYICONDATA(hwnd As Long, Id As Long, flags As Long, Call
         Dim nidTemp As NOTIFYICONDATA
 
 100     nidTemp.cbSize = Len(nidTemp)
-102     nidTemp.hwnd = hwnd
-104     nidTemp.uID = Id
+102     nidTemp.hWnd = hWnd
+104     nidTemp.uID = ID
 106     nidTemp.uFlags = flags
 108     nidTemp.uCallbackMessage = CallbackMessage
 110     nidTemp.hIcon = Icon
@@ -971,7 +971,7 @@ Private Sub CMDDUMP_Click()
         Dim i As Integer
 
 100     For i = 1 To MaxUsers
-102         Call LogCriticEvent(i & ") ConnID: " & UserList(i).ConnID & ". ConnidValida: " & UserList(i).ConnIDValida & " Name: " & UserList(i).name & " UserLogged: " & UserList(i).flags.UserLogged)
+102         Call LogCriticEvent(i & ") ConnID: " & UserList(i).ConnID & ". ConnidValida: " & UserList(i).ConnIDValida & " Name: " & UserList(i).Name & " UserLogged: " & UserList(i).flags.UserLogged)
 104     Next i
 
 106     Call LogCriticEvent("Lastuser: " & LastUser & " NextOpenUser: " & NextOpenUser)
@@ -1217,7 +1217,7 @@ Private Sub EstadoTimer_Timer()
 
 104         If Baneos(i).FechaLiberacion <= Now Then
 106             Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » Se ha concluido la sentencia de ban para " & Baneos(i).Name & ".", FontTypeNames.FONTTYPE_SERVER))
-108             Call ChangeBan(Baneos(i).name, 0)
+108             Call ChangeBan(Baneos(i).Name, 0)
 110             Call Baneos.Remove(i)
 112             Call SaveBans
 
@@ -1229,7 +1229,7 @@ Private Sub EstadoTimer_Timer()
 
 116         If Donadores(i).FechaExpiracion <= Now Then
 118             Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » Se ha concluido el tiempo de donador para " & Donadores(i).Name & ".", FontTypeNames.FONTTYPE_SERVER))
-120             Call ChangeDonador(Donadores(i).name, 0)
+120             Call ChangeDonador(Donadores(i).Name, 0)
 122             Call Donadores.Remove(i)
 124             Call SaveDonadores
 
@@ -1361,7 +1361,7 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, X As Single, Y A
 
                     Dim hProcess As Long
 
-108                 GetWindowThreadProcessId hwnd, hProcess
+108                 GetWindowThreadProcessId hWnd, hProcess
 110                 AppActivate hProcess
 
 112             Case WM_RBUTTONUP
@@ -1399,7 +1399,7 @@ Public Sub QuitarIconoSystray()
         Dim i   As Integer
         Dim nid As NOTIFYICONDATA
 
-100     nid = setNOTIFYICONDATA(frmMain.hwnd, vbNull, NIF_MESSAGE Or NIF_ICON Or NIF_TIP, vbNull, frmMain.Icon, "")
+100     nid = setNOTIFYICONDATA(frmMain.hWnd, vbNull, NIF_MESSAGE Or NIF_ICON Or NIF_TIP, vbNull, frmMain.Icon, "")
 
 102     i = Shell_NotifyIconA(NIM_DELETE, nid)
 
@@ -1717,7 +1717,7 @@ Private Sub mnuSystray_Click()
         Dim nid As NOTIFYICONDATA
 
 100     S = "ARGENTUM-ONLINE"
-102     nid = setNOTIFYICONDATA(frmMain.hwnd, vbNull, NIF_MESSAGE Or NIF_ICON Or NIF_TIP, WM_MOUSEMOVE, frmMain.Icon, S)
+102     nid = setNOTIFYICONDATA(frmMain.hWnd, vbNull, NIF_MESSAGE Or NIF_ICON Or NIF_TIP, WM_MOUSEMOVE, frmMain.Icon, S)
 104     i = Shell_NotifyIconA(NIM_ADD, nid)
     
 106     If WindowState <> vbMinimized Then WindowState = vbMinimized
@@ -1898,7 +1898,7 @@ Private Sub TIMER_AI_Timer()
         Exit Sub
 
 ErrorHandler:
-140     Call LogError("Error en TIMER_AI_Timer " & NpcList(NpcIndex).name & " mapa:" & NpcList(NpcIndex).Pos.Map)
+140     Call LogError("Error en TIMER_AI_Timer " & NpcList(NpcIndex).Name & " mapa:" & NpcList(NpcIndex).Pos.Map)
 142     Call MuereNpc(NpcIndex, 0)
 
 End Sub
@@ -2031,7 +2031,7 @@ Private Sub TimerRespawn_Timer()
 108                 RespawnList(NpcIndex).flags.NPCActive = False
 
 110                 If RespawnList(NpcIndex).InformarRespawn = 1 Then
-112                     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(RespawnList(NpcIndex).name & " ha vuelto a este mundo.", FontTypeNames.FONTTYPE_EXP))
+112                     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(RespawnList(NpcIndex).Name & " ha vuelto a este mundo.", FontTypeNames.FONTTYPE_EXP))
 114                     Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(257, NO_3D_SOUND, NO_3D_SOUND)) 'Para evento de respwan
                         
                         'Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(246, NO_3D_SOUND, NO_3D_SOUND)) 'Para evento de respwan
@@ -2048,7 +2048,7 @@ Private Sub TimerRespawn_Timer()
         Exit Sub
 
 ErrorHandler:
-120     Call LogError("Error en TIMER_RESPAWN " & NpcList(NpcIndex).name & " mapa:" & NpcList(NpcIndex).Pos.Map)
+120     Call LogError("Error en TIMER_RESPAWN " & NpcList(NpcIndex).Name & " mapa:" & NpcList(NpcIndex).Pos.Map)
 122     Call MuereNpc(NpcIndex, 0)
 
 End Sub
@@ -2192,7 +2192,7 @@ Private Sub Winsock_Read(ByVal Slot As Integer, ByRef Datos() As Byte, ByVal Len
     ElseIf Length = 0 Then
         Call CloseSocketSL(Slot)
         Call Cerrar_Usuario(Slot)
-
+        Exit Sub
     End If
     
     Call wskapiAO.EventoSockRead(Slot, Datos, Length)
