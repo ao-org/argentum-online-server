@@ -2192,7 +2192,7 @@ Private Sub Winsock_Read(ByVal Slot As Integer, ByRef Datos() As Byte, ByVal Len
     ElseIf Length = 0 Then
         Call CloseSocketSL(Slot)
         Call Cerrar_Usuario(Slot)
-
+        Exit Sub
     End If
     
     Call wskapiAO.EventoSockRead(Slot, Datos, Length)
