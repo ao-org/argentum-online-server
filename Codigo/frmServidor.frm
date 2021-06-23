@@ -857,7 +857,7 @@ Private Sub Command19_Click()
 104         n = IP_Blacklist.Count
 
 106         For i = 1 To n
-108             IP_Blacklist.Remove(0)
+108             IP_Blacklist.Remove (0)
 110         Next i
     
 112         MsgBox "Se han habilitado " & n & " ipes"
@@ -997,10 +997,7 @@ Private Sub Command26_Click()
         On Error GoTo Command26_Click_Err
 
         'Cierra el socket de escucha
-100     If SockListen >= 0 Then Call apiclosesocket(SockListen)
-    
-        'Inicia el socket de escucha
-102     SockListen = ListenForConnect(Puerto, hWndMsg, "")
+        Call frmMain.Winsock.ResetListenerSocket
 
         
         Exit Sub
@@ -1096,11 +1093,7 @@ Private Sub Command5_Click()
 112     If FileExist(App.Path & "\logs\Resurrecciones.log", vbNormal) Then Kill App.Path & "\logs\Resurrecciones.log"
 114     If FileExist(App.Path & "\logs\Teleports.Log", vbNormal) Then Kill App.Path & "\logs\Teleports.Log"
 
-
-116     Call apiclosesocket(SockListen)
-
         Dim LoopC As Integer
-
 118     For LoopC = 1 To MaxUsers
 120         Call CloseSocket(LoopC)
         Next
@@ -1118,8 +1111,7 @@ Private Sub Command5_Click()
 138     Call LoadPesca
 140     Call LoadRecursosEspeciales
 
-142     SockListen = ListenForConnect(Puerto, hWndMsg, "")
-
+        Call frmMain.Winsock.ResetListenerSocket
 
 144     If frmMain.Visible Then frmMain.txStatus.Caption = "Escuchando conexiones entrantes ..."
 

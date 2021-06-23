@@ -786,9 +786,9 @@ Sub Main()
 292     Subasta.HaySubastaActiva = False
 294     Call ResetMeteo
     
-        '¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
-        'Configuracion de los sockets
-    
+        ' ----------------------------------------------------
+        '           Configuracion de los sockets
+        ' ----------------------------------------------------
 296     Call SecurityIp.InitIpTables(1000)
 
         #If AntiExternos = 1 Then
@@ -796,13 +796,13 @@ Sub Main()
         #End If
         
         'Cierra el socket de escucha
-298     If LastSockListen >= 0 Then Call apiclosesocket(LastSockListen)
-
-300     Call IniciaWsApi(frmMain.hwnd)
-302     SockListen = ListenForConnect(Puerto, hWndMsg, "")
-
-304     If SockListen <> -1 Then
-306         Call WriteVar(IniPath & "Server.ini", "INIT", "LastSockListen", SockListen) _
+298     If LastSockListen >= 0 Then _
+            Call API_closesocket(LastSockListen)
+        
+        Set frmMain.Winsock = New clsWinsock
+        
+304     If frmMain.Winsock.ListenerSocket <> -1 Then
+306         Call WriteVar(IniPath & "Server.ini", "INIT", "LastSockListen", frmMain.Winsock.ListenerSocket) _
                     ' Guarda el socket escuchando
         Else
 308         Call MsgBox("Ha ocurrido un error al iniciar el socket del Servidor.", vbCritical + vbOKOnly)
@@ -810,7 +810,9 @@ Sub Main()
         End If
     
 310     If frmMain.Visible Then frmMain.txStatus.Caption = "Escuchando conexiones entrantes ..."
-        '¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
+        ' ----------------------------------------------------
+        '           Configuracion de los sockets
+        ' ----------------------------------------------------
     
 312     Call GetHoraActual
     
@@ -1387,11 +1389,7 @@ Sub Restart()
 
         Dim LoopC As Long
 
-        'Cierra el socket de escucha
-102     If SockListen >= 0 Then Call apiclosesocket(SockListen)
-    
-        'Inicia el socket de escucha
-104     SockListen = ListenForConnect(Puerto, hWndMsg, "")
+       Set frmMain.Winsock = New clsWinsock
 
 106     For LoopC = 1 To MaxUsers
 108         Call CloseSocket(LoopC)
@@ -2846,7 +2844,7 @@ Public Sub CerrarServidor()
 102     Call frmMain.QuitarIconoSystray
     
         ' Limpieza del socket del servidor.
-104     Call LimpiaWsApi
+104     Set frmMain.Winsock = Nothing
     
         Dim LoopC As Long
 106     For LoopC = 1 To MaxUsers

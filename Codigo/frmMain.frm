@@ -566,6 +566,9 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
+Public WithEvents Winsock As clsWinsock
+Attribute Winsock.VB_VarHelpID = -1
+
 Public ESCUCHADAS As Long
 
 Private Type NOTIFYICONDATA
@@ -581,25 +584,17 @@ Private Type NOTIFYICONDATA
 End Type
    
 Const NIM_ADD = 0
-
 Const NIM_DELETE = 2
-
 Const NIF_MESSAGE = 1
-
 Const NIF_ICON = 2
-
 Const NIF_TIP = 4
-
 Const WM_MOUSEMOVE = &H200
-
 Const WM_LBUTTONDBLCLK = &H203
-
 Const WM_RBUTTONUP = &H205
 
 Private GuardarYCerrar As Boolean
 
 Private Declare Function GetWindowThreadProcessId Lib "user32" (ByVal hwnd As Long, lpdwProcessId As Long) As Long
-
 Private Declare Function Shell_NotifyIconA Lib "SHELL32" (ByVal dwMessage As Long, lpData As NOTIFYICONDATA) As Integer
 
 Private Function setNOTIFYICONDATA(hwnd As Long, Id As Long, flags As Long, CallbackMessage As Long, Icon As Long, Tip As String) As NOTIFYICONDATA
@@ -1355,10 +1350,6 @@ End Sub
 Private Sub Form_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
         
         On Error GoTo Form_MouseMove_Err
-    
-        
-
-        
    
 100     If Not Visible Then
 
@@ -2168,4 +2159,54 @@ UptimeTimer_Timer_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "frmMain.UptimeTimer_Timer", Erl)
 104     Resume Next
         
+End Sub
+
+Private Sub Winsock_Accept(ByVal SocketID As Long, ByVal UserIP As Long)
+    ' Aceptamos la conexión entrante
+    Call wskapiAO.EventoSockAccept(SocketID, UserIP)
+End Sub
+
+Private Sub Winsock_BeforeRead(ByVal Slot As Integer, ByRef BytesToRead As Long)
+    BytesToRead = UserList(Slot).incomingData.Capacity - UserList(Slot).incomingData.Length
+End Sub
+
+Private Sub Winsock_Read(ByVal Slot As Integer, ByRef Datos() As Byte, ByVal Length As Long)
+    
+    Dim UltError As Long
+    
+    ' Comparo por = 0 ya que esto es cuando se cierra "gracefully". (mas abajo)
+    If Length < 0 Then
+        UltError = Err.LastDllError
+                        
+        Debug.Print "Error en Recv: " & Winsock.WSA_GetErrorString(UltError)
+                            
+        Call LogApiSock("Error en Recv: Slot = " & Slot & " Str = " & Winsock.WSA_GetErrorString(UltError))
+                
+        ' NO hay q llamar a CloseSocket() directamente, ya q pueden abusar de algun error para desconectarse sin los 10segs. CREEME.
+        'Call CloseSocket(Slot)
+            
+        Call CloseSocketSL(Slot)
+        Call Cerrar_Usuario(Slot)
+        Exit Sub
+
+    ElseIf Length = 0 Then
+        Call CloseSocketSL(Slot)
+        Call Cerrar_Usuario(Slot)
+
+    End If
+    
+    Call wskapiAO.EventoSockRead(Slot, Datos, Length)
+    
+End Sub
+
+Private Sub Winsock_Disconnect(ByVal SocketID As Integer, ByVal Slot As Integer)
+    If Slot <= 0 Then Exit Sub
+    
+    Call BorraSlotSock(SocketID)
+                        
+    UserList(Slot).ConnID = -1
+    UserList(Slot).ConnIDValida = False
+                        
+    Call EventoSockClose(Slot)
+
 End Sub
