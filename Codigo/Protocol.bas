@@ -7547,7 +7547,7 @@ Private Sub HandleGuildMemberList(ByVal UserIndex As Integer)
                 Next i
 
             End If
-
+        
         End If
             
     End With
@@ -9107,7 +9107,10 @@ Private Sub HandleWarnUser(ByVal UserIndex As Integer)
         Reason = .incomingData.ReadASCIIString()
         
         ' Tenes que ser Admin, Dios o Semi-Dios
-        If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) = 0 Then Exit Sub
+        If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) = 0 Then
+            Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+        End If
         
         ' Me fijo que esten todos los parametros.
         If Len(UserName) = 0 Or Len(Trim$(Reason)) = 0 Then
@@ -12489,7 +12492,11 @@ Private Sub HandleBanIP(ByVal UserIndex As Integer)
          
         If LenB(bannedIP) = 0 Then Exit Sub
         
-        If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) = 0 Then Exit Sub
+        If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) = 0 Then
+            Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+        End If
+        
       
         If IP_Blacklist.Exists(bannedIP) Then
             Call WriteConsoleMsg(UserIndex, "La IP " & bannedIP & " ya se encuentra en la lista negra de IPs.", FontTypeNames.FONTTYPE_INFO)
@@ -18626,7 +18633,10 @@ Public Sub HandleCreatePretorianClan(ByVal UserIndex As Integer)
         Y = .incomingData.ReadByte()
         
         ' User Admin?
-        If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) = 0 Then Exit Sub
+        If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) = 0 Then
+            Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+        End If
         
         ' Valid pos?
         If Not InMapBounds(Map, x, Y) Then
@@ -18688,7 +18698,10 @@ Public Sub HandleDeletePretorianClan(ByVal UserIndex As Integer)
         Map = .incomingData.ReadInteger()
         
         ' User Admin?
-        If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) = 0 Then Exit Sub
+        If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) = 0 Then
+            Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+        End If
         
         ' Valid map?
         If Map < 1 Or Map > NumMaps Then
@@ -19292,7 +19305,10 @@ Private Sub HandleCreateEvent(ByVal UserIndex As Integer)
 
         If LenB(Name) = 0 Then Exit Sub
     
-        If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) = 0 Then Exit Sub
+        If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) = 0 Then
+            Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+        End If
     
         Select Case UCase$(Name)
 
