@@ -651,14 +651,16 @@ Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As eHeading) As
 
             'Si no estoy solo en el mapa...
 134         If MapInfo(.Pos.Map).NumUsers > 1 Then
+
                 ' Intercambia posición si hay un casper o gm invisible
 136             IndexMover = MapData(nPos.Map, nPos.X, nPos.Y).UserIndex
             
 138             If IndexMover <> 0 Then
                     ' Sólo puedo patear caspers/gms invisibles si no es él un gm invisible
-140                 If .flags.AdminInvisible <> 0 Then Exit Function
+140                 If UserList(IndexMover).flags.AdminInvisible = 0 Then Exit Function
 
 142                 Call WritePosUpdate(IndexMover)
+
 144                 OppositeHeading = InvertHeading(nHeading)
 146                 Call HeadtoPos(OppositeHeading, UserList(IndexMover).Pos)
                 
@@ -668,6 +670,7 @@ Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As eHeading) As
                     Else
 152                     Call SendData(SendTarget.ToAdminAreaButIndex, IndexMover, PrepareMessageCharacterMove(UserList(IndexMover).Char.CharIndex, UserList(IndexMover).Pos.X, UserList(IndexMover).Pos.Y))
                     End If
+                    
 154                 Call WriteForceCharMove(IndexMover, OppositeHeading)
                 
                     'Update map and char
