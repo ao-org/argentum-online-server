@@ -8599,6 +8599,8 @@ Private Sub HandleDarLlaveAUsuario(ByVal UserIndex As Integer)
 
             End If
 
+        Else
+            Call WriteConsoleMsg(UserIndex, "Servidor » Solo Dios y Administrador pueden dar llaves.", FontTypeNames.FONTTYPE_INFO)
         End If
 
     End With
@@ -8640,7 +8642,8 @@ Private Sub HandleSacarLlave(ByVal UserIndex As Integer)
                 Call LogGM(.Name, "/SACARLLAVE " & Llave)
 
             End If
-                
+        Else
+            Call WriteConsoleMsg(UserIndex, "Servidor » Solo Dios y Administrador pueden Sacar llaves.", FontTypeNames.FONTTYPE_INFO)
         End If
 
     End With
@@ -8671,7 +8674,7 @@ Private Sub HandleVerLlaves(ByVal UserIndex As Integer)
             ' Leo y muestro todas las llaves usadas
             Call VerLlavesDatabase(UserIndex)
         Else
-            Call WriteConsoleMsg(UserIndex, "Solo Dios y Administrador pueden ver llaves.", FontTypeNames.FONTTYPE_INFO)
+            Call WriteConsoleMsg(UserIndex, "Servidor » Solo Dios y Administrador pueden ver llaves.", FontTypeNames.FONTTYPE_INFO)
         End If
                 
     End With
