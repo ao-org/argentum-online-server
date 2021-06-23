@@ -15489,8 +15489,7 @@ Public Sub FlushBuffer(ByVal UserIndex As Integer)
         
         ' Tratamos de enviar los datos.
         Dim ret    As Long
-        Dim Data() As Byte
-        Data = .outgoingData.ReadAll
+        Dim Data() As Byte: Data = .outgoingData.ReadAll
 
         #If AntiExternos = 1 Then
 
@@ -15498,7 +15497,7 @@ Public Sub FlushBuffer(ByVal UserIndex As Integer)
 
         #End If
 
-        ret = WsApiEnviar(UserIndex, Data)
+        ret = frmMain.Winsock.SendData(UserIndex, Data)
     
         ' Si recibimos un error como respuesta de la API, cerramos el socket.
         If ret <> 0 And ret <> WSAEWOULDBLOCK Then

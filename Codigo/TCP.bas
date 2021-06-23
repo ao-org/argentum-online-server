@@ -655,7 +655,6 @@ Sub CloseSocket(ByVal UserIndex As Integer)
 
 104         Do Until UserList(LastUser).flags.UserLogged
 106             LastUser = LastUser - 1
-
 108             If LastUser < 1 Then Exit Do
             Loop
 
@@ -663,7 +662,7 @@ Sub CloseSocket(ByVal UserIndex As Integer)
     
 110     With UserList(UserIndex)
     
-            'Call SecurityIp.IpRestarConexion(GetLongIp(.ip))
+            'Call SecurityIp.IpRestarConexion(api_inetaddr(.ip))
 
 112         If .ConnID <> -1 Then Call CloseSocketSL(UserIndex)
     
@@ -730,7 +729,7 @@ Sub CloseSocketSL(ByVal UserIndex As Integer)
 
 100     If UserList(UserIndex).ConnID <> -1 And UserList(UserIndex).ConnIDValida Then
 102         Call BorraSlotSock(UserList(UserIndex).ConnID)
-104         Call WSApiCloseSocket(UserList(UserIndex).ConnID)
+104         Call frmMain.Winsock.WSA_CloseSocket(UserList(UserIndex).ConnID)
 106         UserList(UserIndex).ConnIDValida = False
 
         End If
