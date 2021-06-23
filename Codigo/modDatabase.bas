@@ -82,9 +82,11 @@ Public Sub Database_Close()
         On Error GoTo ErrorHandler
     
 100     Set Command = Nothing
-     
-102     Call Database_Connection.Close
-    
+        
+        If Database_Connection.State <> adStateClosed Then
+102         Call Database_Connection.Close
+        End If
+        
 104     Set Database_Connection = Nothing
      
         Exit Sub
