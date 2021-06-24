@@ -258,7 +258,7 @@ Public Sub ForzarEvento(ByVal Tipo As Byte, ByVal Duracion As Byte, ByVal multi 
         On Error GoTo ForzarEvento_Err
         
 
-100     If Tipo > 7 Or Tipo < 1 Then
+100     If Tipo > 3 Or Tipo < 1 Then
 102         Call WriteConsoleMsg(NameIndex(Quien), "Tipo de evento invalido.", FontTypeNames.FONTTYPE_New_Eventos)
             Exit Sub
 
@@ -270,8 +270,20 @@ Public Sub ForzarEvento(ByVal Tipo As Byte, ByVal Duracion As Byte, ByVal multi 
 
         End If
 
-108     If multi > 3 Then
-110         Call WriteConsoleMsg(NameIndex(Quien), "Multiplicacion invalida, maxima x3.", FontTypeNames.FONTTYPE_New_Eventos)
+         If (Tipo = 1 And multi > 2) Then
+            Call WriteConsoleMsg(NameIndex(Quien), "Multiplicacion invalida, maxima x2.", FontTypeNames.FONTTYPE_New_Eventos)
+            Exit Sub
+
+        End If
+        
+        If (Tipo = 2 And multi > 2) Then
+            Call WriteConsoleMsg(NameIndex(Quien), "Multiplicacion invalida, maxima x2.", FontTypeNames.FONTTYPE_New_Eventos)
+            Exit Sub
+
+        End If
+        
+108     If (Tipo = 3 And multi > 5) Then
+110         Call WriteConsoleMsg(NameIndex(Quien), "Multiplicacion invalida, maxima x5.", FontTypeNames.FONTTYPE_New_Eventos)
             Exit Sub
 
         End If
