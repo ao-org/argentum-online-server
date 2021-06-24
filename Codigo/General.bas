@@ -750,7 +750,7 @@ Sub Main()
 250     Call LoadObjDonador
 252     Call LoadQuests
 
-254     EstadoGlobal = True
+254     EstadoGlobal = False
     
 256     Call InicializarLimpieza
 
