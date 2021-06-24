@@ -15788,8 +15788,9 @@ Public Sub HandleGlobalOnOff(ByVal UserIndex As Integer)
     'Author: Pablo Mercavides
     With UserList(UserIndex)
 
-        If Not EsGM(UserIndex) Then Exit Sub
-        Call LogGM(.Name, "/GLOBAL")
+        If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) = 0 Then Exit Sub
+        
+        Call LogGM(.Name, " activo al Chat Global a las " & Now)
         
         If EstadoGlobal = False Then
             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor » Chat general habilitado. Escribe" & Chr(34) & "/CONSOLA" & Chr(34) & " o " & Chr(34) & ";" & Chr(34) & " y su mensaje para utilizarlo.", FontTypeNames.FONTTYPE_SERVER))
