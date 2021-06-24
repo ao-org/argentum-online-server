@@ -30,7 +30,7 @@ Begin VB.Form frmMain
    Begin VB.CommandButton CerrarYForzarActualizar 
       Appearance      =   0  'Flat
       BackColor       =   &H00C0E0FF&
-      Caption         =   "Cerrar y forzar actualizaciï¿½n"
+      Caption         =   "Cerrar y forzar actualizacion"
       Height          =   495
       Left            =   5160
       MaskColor       =   &H000040C0&
@@ -211,7 +211,7 @@ Begin VB.Form frmMain
    End
    Begin VB.Frame Frame2 
       BackColor       =   &H00E0E0E0&
-      Caption         =   "Informaciï¿½n general"
+      Caption         =   "Informacion general"
       Height          =   1815
       Left            =   120
       TabIndex        =   7
