@@ -18139,8 +18139,8 @@ Private Sub HandleCrearEvento(ByVal UserIndex As Integer)
         Duracion = .incomingData.ReadByte()
         multiplicacion = .incomingData.ReadByte()
 
-        If multiplicacion > 3 Then 'no superar este multiplicador
-            multiplicacion = 3
+        If multiplicacion > 5 Then 'no superar este multiplicador
+            multiplicacion = 2
         End If
         
         '/ dejar solo Administradores
@@ -18158,7 +18158,8 @@ Private Sub HandleCrearEvento(ByVal UserIndex As Integer)
                 Call WriteConsoleMsg(UserIndex, "Ya hay un evento en curso. Finalicelo con /FINEVENTO primero.", FontTypeNames.FONTTYPE_New_Eventos)
 
             End If
-
+        Else
+            Call WriteConsoleMsg(UserIndex, "Servidor » Solo Administradores pueder crear estos eventos.", FontTypeNames.FONTTYPE_INFO)
         End If
 
     End With
