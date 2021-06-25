@@ -98,8 +98,6 @@ Public Function Hook(ByVal hWnd As Long) As Boolean
     
     If CreateAsm Then
         
-        Debug.Print Hex(lpAsm)
-        
         mIsSubclassed = SetWindowSubclass(hWnd, lpAsm, ObjPtr(Me), 0)
         
         If mIsSubclassed Then

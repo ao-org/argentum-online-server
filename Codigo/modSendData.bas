@@ -63,6 +63,8 @@ Public Enum SendTarget
     ToSuperiores
     ToSuperioresArea
     
+    ToUsuariosMuertos
+    
 End Enum
 
 Public Sub SendData(ByVal sndRoute As SendTarget, ByVal sndIndex As Integer, sndData As t_DataBuffer)
@@ -90,6 +92,10 @@ Public Sub SendData(ByVal sndRoute As SendTarget, ByVal sndIndex As Integer, snd
             
 108         Case SendTarget.ToPCAreaButGMs
 110             Call SendToUserAreaButGMs(sndIndex, sndData)
+                Exit Sub
+            
+            Case SendTarget.ToUsuariosMuertos
+                Call SendToUsersMuertosArea(sndIndex, sndData)
                 Exit Sub
         
 112         Case SendTarget.ToAdmins
@@ -408,7 +414,7 @@ Public Sub SendData(ByVal sndRoute As SendTarget, ByVal sndIndex As Integer, snd
 360             Next LoopC
 
                 Exit Sub
-
+                
         End Select
 
         
@@ -449,7 +455,9 @@ Private Sub SendToUserArea(ByVal UserIndex As Integer, sndData As t_DataBuffer)
 
 114         If UserList(tempIndex).AreasInfo.AreaReciveX And AreaX Then  'Esta en el area?
 116             If UserList(tempIndex).AreasInfo.AreaReciveY And AreaY Then
+
 118                 If UserList(tempIndex).ConnIDValida Then
+
 120                     Call EnviarDatosASlot(tempIndex, sndData)
 
                     End If
@@ -465,6 +473,58 @@ Private Sub SendToUserArea(ByVal UserIndex As Integer, sndData As t_DataBuffer)
 
 SendToUserArea_Err:
 124     Call RegistrarError(Err.Number, Err.Description, "modSendData.SendToUserArea", Erl)
+126     Resume Next
+        
+End Sub
+
+Private Sub SendToUsersMuertosArea(ByVal UserIndex As Integer, sndData As t_DataBuffer)
+        
+        On Error GoTo SendToUserArea_Err
+        
+
+        '**************************************************************
+        'Author: Jopi
+        'Last Modify Date: 23/06/2021
+        'Envio la data a los que estan muertos y a los GMs en el area.
+        '**************************************************************
+        Dim LoopC     As Long
+        Dim tempIndex As Integer
+        Dim Map       As Integer
+        Dim AreaX     As Integer
+        Dim AreaY     As Integer
+        
+100     If UserIndex = 0 Then Exit Sub
+        
+102     Map = UserList(UserIndex).Pos.Map
+104     AreaX = UserList(UserIndex).AreasInfo.AreaPerteneceX
+106     AreaY = UserList(UserIndex).AreasInfo.AreaPerteneceY
+        
+108     If Not MapaValido(Map) Then Exit Sub
+    
+110     For LoopC = 1 To ConnGroups(Map).CountEntrys
+112         tempIndex = ConnGroups(Map).UserEntrys(LoopC)
+
+114         If UserList(tempIndex).AreasInfo.AreaReciveX And AreaX Then  'Esta en el area?
+116             If UserList(tempIndex).AreasInfo.AreaReciveY And AreaY Then
+118                 If UserList(tempIndex).ConnIDValida Then
+                        
+                        ' Envio a los que estan MUERTOS y a los GMs cercanos.
+                        If UserList(tempIndex).flags.Muerto = 1 Or EsGM(tempIndex) Then
+                        
+120                         Call EnviarDatosASlot(tempIndex, sndData)
+                            
+                        End If
+
+                    End If
+                End If
+            End If
+
+122     Next LoopC
+        
+        Exit Sub
+
+SendToUserArea_Err:
+124     Call RegistrarError(Err.Number, Err.Description, "modSendData.SendToUsersMuertosArea", Erl)
 126     Resume Next
         
 End Sub
