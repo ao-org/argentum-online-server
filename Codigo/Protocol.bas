@@ -1467,7 +1467,8 @@ Private Sub HandleTalk(ByVal UserIndex As Integer)
                 .flags.ChatHistory(UBound(.flags.ChatHistory)) = chat
                 
                 If .flags.Muerto = 1 Then
-                    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageChatOverHead(chat, .Char.CharIndex, CHAT_COLOR_DEAD_CHAR, UserList(UserIndex).Name))
+                    'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageChatOverHead(chat, .Char.CharIndex, CHAT_COLOR_DEAD_CHAR, UserList(UserIndex).Name))
+                    Call SendData(SendTarget.ToUsuariosMuertos, UserIndex, PrepareMessageChatOverHead(chat, .Char.CharIndex, CHAT_COLOR_DEAD_CHAR, UserList(UserIndex).Name))
                     
                 Else
                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageChatOverHead(chat, .Char.CharIndex, .flags.ChatColor, UserList(UserIndex).Name))
