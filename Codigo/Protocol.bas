@@ -3645,7 +3645,6 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                 If UserList(UserIndex).GuildIndex = 0 Then
                     Call WriteConsoleMsg(UserIndex, "Servidor » No perteneces a ningún clan.", FontTypeNames.FONTTYPE_INFOIAO)
                     Exit Sub
-
                 End If
                 
                 clan_nivel = modGuilds.NivelDeClan(UserList(UserIndex).GuildIndex)
@@ -3653,7 +3652,6 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                 If clan_nivel < 3 Then
                     Call WriteConsoleMsg(UserIndex, "Servidor » El nivel de tu clan debe ser 3 para utilizar esta opción.", FontTypeNames.FONTTYPE_INFOIAO)
                     Exit Sub
-
                 End If
                                 
                 Call LookatTile(UserIndex, UserList(UserIndex).Pos.Map, x, Y)
@@ -8792,7 +8790,7 @@ Private Sub HandleRequestUserList(ByVal UserIndex As Integer)
         
         If (.flags.Privilegios And (PlayerType.user Or PlayerType.RoleMaster)) Then
             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
-        Exit Sub
+            Exit Sub
         End If
         
         ReDim names(1 To LastUser) As String
@@ -8842,7 +8840,7 @@ Private Sub HandleWorking(ByVal UserIndex As Integer)
 
         If (.flags.Privilegios And (PlayerType.user Or PlayerType.RoleMaster)) Then
             Call WriteConsoleMsg(UserIndex, "Servidor » /TRABAJANDO es un comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
-        Exit Sub
+            Exit Sub
         End If
         
         For i = 1 To LastUser
@@ -8899,7 +8897,7 @@ Private Sub HandleHiding(ByVal UserIndex As Integer)
         
         If (.flags.Privilegios And (PlayerType.user Or PlayerType.RoleMaster)) Then
             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
-        Exit Sub
+            Exit Sub
         End If
         
         For i = 1 To LastUser
@@ -10368,8 +10366,9 @@ Private Sub HandleOnlineGM(ByVal UserIndex As Integer)
          
         If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero)) Then
             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
         End If
-        Exit Sub
+        
 
         priv = PlayerType.Consejero Or PlayerType.SemiDios
 
@@ -10420,8 +10419,9 @@ Private Sub HandleOnlineMap(ByVal UserIndex As Integer)
     
         If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero)) Then
             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
         End If
-        Exit Sub
+        
         
         Dim LoopC As Long
         Dim list  As String
@@ -10755,8 +10755,9 @@ Private Sub HandleNPCFollow(ByVal UserIndex As Integer)
 
         If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero)) Then
             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
         End If
-        Exit Sub
+        
         
         If .flags.TargetNPC > 0 Then
         
@@ -10898,8 +10899,9 @@ Private Sub HandleSpawnListRequest(ByVal UserIndex As Integer)
 
         If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero)) Then
             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
         End If
-        Exit Sub
+        
         
         Call EnviarSpawnList(UserIndex)
 
@@ -11297,7 +11299,7 @@ Private Sub HandleTeleportCreate(ByVal UserIndex As Integer)
         
         If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios)) Then
             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
-        Exit Sub
+            Exit Sub
         End If
         
         Call LogGM(.Name, "/CT " & Mapa & "," & x & "," & Y)
@@ -11366,7 +11368,7 @@ Private Sub HandleTeleportDestroy(ByVal UserIndex As Integer)
         '/dt
         If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios)) Then
             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
-        Exit Sub
+            Exit Sub
         End If
                 
         Mapa = .flags.TargetMap
@@ -11435,8 +11437,9 @@ Private Sub HandleRainToggle(ByVal UserIndex As Integer)
         
         If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero)) Then
             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
         End If
-        Exit Sub
+        
         
         Call LogGM(.Name, "/LLUVIA")
         
@@ -11814,7 +11817,7 @@ Private Sub HandleDestroyAllItemsInArea(ByVal UserIndex As Integer)
   
         If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios)) Then
             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
-        Exit Sub
+            Exit Sub
         End If
         
         Dim x As Long
@@ -13020,8 +13023,9 @@ Private Sub HandleTileBlockedToggle(ByVal UserIndex As Integer)
         
         If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero)) Then
             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
         End If
-        Exit Sub
+        
 
         Call LogGM(.Name, "/BLOQ")
         
@@ -13063,8 +13067,9 @@ Private Sub HandleKillNPCNoRespawn(ByVal UserIndex As Integer)
 
         If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero)) Then
             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
         End If
-        Exit Sub
+        
         
         If .flags.TargetNPC = 0 Then Exit Sub
         
@@ -13100,8 +13105,9 @@ Private Sub HandleKillAllNearbyNPCs(ByVal UserIndex As Integer)
         
         If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero)) Then
             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
         End If
-        Exit Sub
+        
             
         'Si está en el mapa pretoriano, me aseguro de que los saque correctamente antes que nada.
         If .Pos.Map = MAPA_PRETORIANO Then Call EliminarPretorianos(MAPA_PRETORIANO)
@@ -14941,8 +14947,9 @@ Public Sub HandleNavigateToggle(ByVal UserIndex As Integer)
         
         If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero)) Then
             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
         End If
-        Exit Sub
+        
         
         If .flags.Navegando = 1 Then
             .flags.Navegando = 0
@@ -16103,8 +16110,8 @@ Private Sub HandleNieveToggle(ByVal UserIndex As Integer)
 
         If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero)) Then
             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
         End If
-        Exit Sub
         
         Call LogGM(.Name, "/NIEVE")
         
@@ -16131,8 +16138,9 @@ Private Sub HandleNieblaToggle(ByVal UserIndex As Integer)
 
         If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero)) Then
             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
         End If
-        Exit Sub
+        
         
         Call LogGM(.Name, "/NIEBLA")
         Call ResetMeteo
