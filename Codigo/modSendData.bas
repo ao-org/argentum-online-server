@@ -3,7 +3,7 @@ Attribute VB_Name = "modSendData"
 ' SendData.bas - Has all methods to send data to different user groups.
 ' Makes use of the modAreas module.
 '
-' Implemented by Juan Martín Sotuyo Dodero (Maraxus) (juansotuyo@gmail.com)
+' Implemented by Juan Martï¿½n Sotuyo Dodero (Maraxus) (juansotuyo@gmail.com)
 '**************************************************************
 
 '**************************************************************************
@@ -24,7 +24,7 @@ Attribute VB_Name = "modSendData"
 ' Contains all methods to send data to different user groups.
 ' Makes use of the modAreas module.
 '
-' @author Juan Martín Sotuyo Dodero (Maraxus) juansotuyo@gmail.com
+' @author Juan Martï¿½n Sotuyo Dodero (Maraxus) juansotuyo@gmail.com
 ' @version 1.0.0
 ' @date 20070107
 
@@ -72,7 +72,7 @@ Public Sub SendData(ByVal sndRoute As SendTarget, ByVal sndIndex As Integer, snd
         On Error GoTo SendData_Err
     
         '**************************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus) - Rewrite of original
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus) - Rewrite of original
         'Last Modify Date: 01/08/2007
         'Last modified by: (liquid)
         '**************************************************************
@@ -509,7 +509,8 @@ Private Sub SendToUsersMuertosArea(ByVal UserIndex As Integer, sndData As t_Data
 118                 If UserList(tempIndex).ConnIDValida Then
                         
                         ' Envio a los que estan MUERTOS y a los GMs cercanos.
-                        If UserList(tempIndex).flags.Muerto = 1 Or CompararPrivilegiosUser(UserIndex, tempIndex) < 0 Then
+
+                        If UserList(tempIndex).flags.Muerto = 1 Or EsGM(tempIndex) Then
                         
 120                         Call EnviarDatosASlot(tempIndex, sndData)
                             
@@ -771,7 +772,7 @@ Private Sub SendToDeadUserArea(ByVal UserIndex As Integer, sndData As t_DataBuff
         On Error GoTo SendToDeadUserArea_Err
         
         '**************************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modify Date: Unknow
         '
         '**************************************************************
@@ -822,7 +823,7 @@ Private Sub SendToUserGuildArea(ByVal UserIndex As Integer, sndData As t_DataBuf
         
 
         '**************************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modify Date: Unknow
         '
         '**************************************************************
@@ -873,7 +874,7 @@ Private Sub SendToAdminsButConsejerosArea(ByVal UserIndex As Integer, sndData As
         
 
         '**************************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modify Date: Unknow
         '
         '**************************************************************
@@ -1017,7 +1018,7 @@ Public Sub SendToMap(ByVal Map As Integer, sndData As t_DataBuffer)
         On Error GoTo SendToMap_Err
         
         '**************************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modify Date: 5/24/2007
         '
         '**************************************************************
@@ -1052,7 +1053,7 @@ Public Sub SendToMapButIndex(ByVal UserIndex As Integer, sndData As t_DataBuffer
         
 
         '**************************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
         'Last Modify Date: 5/24/2007
         '
         '**************************************************************
