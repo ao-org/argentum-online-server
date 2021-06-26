@@ -1703,8 +1703,9 @@ Private Sub HandleWalk(ByVal UserIndex As Integer)
             Dim CurrentTick As Long
                 CurrentTick = GetTickCount
             
-            'Prevent SpeedHack (refactored by WyroX)
-            If Not EsGM(UserIndex) Then
+            'Prevent SpeedHack (refactored by WyroX) Wyrox paso las pruebas de Speed a los administradores mientras lo ajustas ReyarB
+            '* If Not EsGM(UserIndex) Then
+            If EsGM(UserIndex) Then
                 Dim ElapsedTimeStep As Long, MinTimeStep As Long, DeltaStep As Single
                 ElapsedTimeStep = CurrentTick - .Counters.LastStep
                 MinTimeStep = .Intervals.Caminar / .Char.speeding
@@ -1715,7 +1716,7 @@ Private Sub HandleWalk(ByVal UserIndex As Integer)
                     .Counters.SpeedHackCounter = .Counters.SpeedHackCounter + DeltaStep
                 
                     If .Counters.SpeedHackCounter > MaximoSpeedHack Then
-                        'Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Administración » Posible uso de SpeedHack del usuario " & .name & ".", FontTypeNames.FONTTYPE_SERVER))
+                        Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Administración » Posible uso de SpeedHack del usuario " & .Name & ".", FontTypeNames.FONTTYPE_SERVER))
                         Call WritePosUpdate(UserIndex)
                         Exit Sub
 
