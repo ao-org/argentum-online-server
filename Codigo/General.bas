@@ -1556,40 +1556,42 @@ EfectoFrio_Err:
 142     Resume Next
         
 End Sub
+
 Public Sub EfectoStamina(ByVal UserIndex As Integer)
 
+    Dim HambreOSed As Boolean
     Dim bEnviarStats_HP As Boolean
     Dim bEnviarStats_STA As Boolean
     
     With UserList(UserIndex)
-        If .flags.Hambre = 0 And .flags.Sed = 0 Then 'Si no tiene hambre ni sed
+        HambreOSed = .flags.Hambre = 1 Or .flags.Sed = 1
+    
+        If Not HambreOSed Then 'Si no tiene hambre ni sed
             If .Stats.MinHp < .Stats.MaxHp Then
 170             Call Sanar(UserIndex, bEnviarStats_HP, IIf(.flags.Descansar, SanaIntervaloDescansar, SanaIntervaloSinDescansar))
             End If
+        End If
                                 
-178         If .flags.Desnudo = 0 Then
-180             Call RecStamina(UserIndex, bEnviarStats_STA, IIf(.flags.Descansar, StaminaIntervaloDescansar, StaminaIntervaloSinDescansar))
+178     If .flags.Desnudo = 0 And Not HambreOSed Then
+            If Not Lloviendo Or Not Intemperie(UserIndex) Then
+                Call RecStamina(UserIndex, bEnviarStats_STA, IIf(.flags.Descansar, StaminaIntervaloDescansar, StaminaIntervaloSinDescansar))
+            End If
+        Else
+            If Lloviendo And Intemperie(UserIndex) Then
+181             Call PierdeEnergia(UserIndex, bEnviarStats_STA, IntervaloPerderStamina * 0.5)
             Else
-                If Lloviendo Then
-                    If Intemperie(UserIndex) Then
-181                     Call PierdeEnergia(UserIndex, bEnviarStats_STA, IntervaloPerderStamina * 0.5)
-                    Else
-182                     Call PierdeEnergia(UserIndex, bEnviarStats_STA, IIf(.flags.Descansar, IntervaloPerderStamina * 2, IntervaloPerderStamina))
-                    End If
-                Else
-183                 Call PierdeEnergia(UserIndex, bEnviarStats_STA, IIf(.flags.Descansar, IntervaloPerderStamina * 2, IntervaloPerderStamina))
-                End If
+183             Call PierdeEnergia(UserIndex, bEnviarStats_STA, IIf(.flags.Descansar, IntervaloPerderStamina * 2, IntervaloPerderStamina))
             End If
-            
-            If .flags.Descansar Then
-                'termina de descansar automaticamente
-190             If .Stats.MaxHp = .Stats.MinHp And .Stats.MaxSta = .Stats.MinSta Then
-192                 Call WriteRestOK(UserIndex)
-194                 Call WriteConsoleMsg(UserIndex, "Has terminado de descansar.", FontTypeNames.FONTTYPE_INFO)
-196                 .flags.Descansar = False
-                End If
-            
+        End If
+        
+        If .flags.Descansar Then
+            'termina de descansar automaticamente
+190         If .Stats.MaxHp = .Stats.MinHp And .Stats.MaxSta = .Stats.MinSta Then
+192             Call WriteRestOK(UserIndex)
+194             Call WriteConsoleMsg(UserIndex, "Has terminado de descansar.", FontTypeNames.FONTTYPE_INFO)
+196             .flags.Descansar = False
             End If
+        
         End If
         
         If bEnviarStats_STA Then
@@ -1601,7 +1603,6 @@ Public Sub EfectoStamina(ByVal UserIndex As Integer)
         End If
     End With
 End Sub
-
 
 Public Sub EfectoLava(ByVal UserIndex As Integer)
         
