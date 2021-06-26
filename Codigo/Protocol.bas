@@ -1709,10 +1709,10 @@ Private Sub HandleWalk(ByVal UserIndex As Integer)
                 ElapsedTimeStep = CurrentTick - .Counters.LastStep
                 MinTimeStep = .Intervals.Caminar / .Char.speeding
                 DeltaStep = (MinTimeStep - ElapsedTimeStep) / MinTimeStep
-                    
-                .Counters.SpeedHackCounter = .Counters.SpeedHackCounter + DeltaStep
 
                 If DeltaStep > 0 Then
+                
+                    .Counters.SpeedHackCounter = .Counters.SpeedHackCounter + DeltaStep
                 
                     If .Counters.SpeedHackCounter > MaximoSpeedHack Then
                         'Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Administración » Posible uso de SpeedHack del usuario " & .name & ".", FontTypeNames.FONTTYPE_SERVER))
@@ -1722,6 +1722,8 @@ Private Sub HandleWalk(ByVal UserIndex As Integer)
                     End If
 
                 Else
+                
+                    .Counters.SpeedHackCounter = .Counters.SpeedHackCounter - DeltaStep * 5
 
                     If .Counters.SpeedHackCounter < 0 Then .Counters.SpeedHackCounter = 0
 
