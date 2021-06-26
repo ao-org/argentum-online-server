@@ -1724,7 +1724,7 @@ Private Sub HandleWalk(ByVal UserIndex As Integer)
 
                 Else
                 
-                    .Counters.SpeedHackCounter = .Counters.SpeedHackCounter - DeltaStep * 5
+                    .Counters.SpeedHackCounter = .Counters.SpeedHackCounter + DeltaStep * 5
 
                     If .Counters.SpeedHackCounter < 0 Then .Counters.SpeedHackCounter = 0
 
