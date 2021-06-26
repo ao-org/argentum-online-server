@@ -15797,10 +15797,7 @@ Public Sub HandleGlobalOnOff(ByVal UserIndex As Integer)
     'Author: Pablo Mercavides
     With UserList(UserIndex)
 
-        If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) = 0 Then
-            Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
-            Exit Sub
-        End If
+        If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) = 0 Then Exit Sub
         
         Call LogGM(.Name, " activo al Chat Global a las " & Now)
         
@@ -18877,11 +18874,8 @@ Private Sub HandleRequestScreenShot(ByVal UserIndex As Integer)
             
         Dim tUser As Integer
             
-        If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) = 0 Then
-            Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo", FontTypeNames.FONTTYPE_INFO)
-            Exit Sub
-        End If
-        
+        If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) = 0 Then Exit Sub
+
         If Len(Nick) <> 0 Then
             tUser = NameIndex(Nick)
             
