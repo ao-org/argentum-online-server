@@ -267,6 +267,12 @@ Sub RellenarInventario(ByVal UserIndex As String)
                     .Invent.Object(NumItems).ObjIndex = 1356 ' Baston (newbies)
                     .Invent.Object(NumItems).amount = 1
                     NumItems = NumItems + 1
+                
+                Case eClass.Assasin
+                    .Invent.Object(NumItems).ObjIndex = 460 ' Daga (Newbies)
+                    .Invent.Object(NumItems).amount = 1
+                    NumItems = NumItems + 1
+                    
 
             End Select
         
