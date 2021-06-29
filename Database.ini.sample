@@ -6,7 +6,13 @@
  
 ' El servidor usara estas credenciales
 [DATABASE]
+Host=ao20-test.duckdns.org:3306
+Name=ao_server_test
+Username=
+Password=
+
+[DATABASE_LOCAL]
 Host=localhost
-Name=ao_server_prod
+Name=ao_server_test
 Username=root
-Password=s3cr3tP@s5w0RD
+Password=

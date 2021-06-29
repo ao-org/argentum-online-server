@@ -132,6 +132,8 @@ Sub SendEmail(ByVal Email As String, ByVal Codigo As String)
 
     On Error Resume Next
     
+    If Not SMTP_HOST Or Not SMTP_PORT Or Not LenB(SMTP_USER) Or Not LenB(SMTP_PASS) Then Exit Sub
+    
     Dim Schema As String
     
     Dim cdoMsg As Object
