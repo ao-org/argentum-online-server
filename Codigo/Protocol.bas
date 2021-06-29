@@ -195,7 +195,8 @@ Public Enum ServerPacketID
     CraftingCatalyst
     CraftingResult
     ForceUpdate
-
+    GuardNotice
+    
     [PacketCount]
 End Enum
 
@@ -15870,7 +15871,7 @@ Private Sub HandleIngresarConCuenta(ByVal UserIndex As Integer)
             
             If AOGuard.AOG_STATUS = 1 Then
             
-                If AOGuard.VerificarOrigen(CuentaEmail, HDSerial) Then
+                If AOGuard.VerificarOrigen(CuentaEmail, HDSerial) And False Then
                     Call WritePersonajesDeCuenta(UserIndex)
                     Call WriteMostrarCuenta(UserIndex)
                     

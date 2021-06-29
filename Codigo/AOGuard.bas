@@ -12,8 +12,8 @@ Private SMTP_PASS As String
 
 Public Sub LoadAOGuardConfiguration()
 
-    Dim ConfigFile As clsIniManager
-    Call ConfigFile.Initialize(App.Path & "AOGuard.ini")
+    Dim ConfigFile As New clsIniManager
+    Call ConfigFile.Initialize(IniPath & "AOGuard.ini")
         
     AOG_STATUS = val(ConfigFile.GetValue("INIT", "Enabled"))
         
@@ -35,7 +35,7 @@ End Sub
 Public Function VerificarOrigen(ByVal Email As String, ByVal HDActual As String)
     
     Dim UltimoHD As String
-        UltimoHD = GetCuentaValue(Email, hd_serial)
+        UltimoHD = GetCuentaValue(Email, "hd_serial")
     
     VerificarOrigen = (HDActual = UltimoHD)
     
@@ -59,7 +59,7 @@ Public Sub WriteGuardNotice(ByVal UserIndex As Integer, ByVal Email As String)
         
         Debug.Print "Codigo de Verificacion:" & Codigo
         
-        Call SendVerificationEmail(Email)
+        Call SendEmail(Email, Codigo)
     
     End With
 
@@ -74,7 +74,7 @@ Public Sub HandleGuardNoticeResponse(ByVal UserIndex As Integer)
 
         Dim CodigoDB As String: CodigoDB = GetDBValue("account", "guard_code", "email", Email)
         
-        If UCase$(Codigo) = UCase$(CodigoDB) Then
+        If Codigo = CodigoDB Then
             Call WritePersonajesDeCuenta(UserIndex)
             Call WriteMostrarCuenta(UserIndex)
             
@@ -98,6 +98,10 @@ Sub SendEmail(ByVal Email As String, ByVal Codigo As String)
     
     Dim Schema As String
     
+    Dim cdoMsg As Object
+    Dim cdoConf As Object
+    Dim cdoFields As Object
+    
     Set cdoMsg = CreateObject("CDO.Message")
     Set cdoConf = CreateObject("CDO.Configuration")
     Set cdoFields = cdoConf.Fields
@@ -111,7 +115,7 @@ Sub SendEmail(ByVal Email As String, ByVal Codigo As String)
     cdoFields.Item(Schema & "smtpauthenticate") = SMTP_AUTH
     cdoFields.Item(Schema & "sendusername") = SMTP_USER
     cdoFields.Item(Schema & "sendpassword") = SMTP_PASS
-    cdoFields.Item(Schema & "smtpusessl") = 1
+    cdoFields.Item(Schema & "smtpusessl") = SMTP_SECURE
     
     Call cdoFields.Update
 
