@@ -15513,46 +15513,48 @@ End Sub
 
 Public Sub FlushBuffer(ByVal UserIndex As Integer)
         
-    On Error GoTo FlushBuffer_Err
+        On Error GoTo FlushBuffer_Err
 
-    '***************************************************
-    'Sends all data existing in the buffer
-    '***************************************************
+        '***************************************************
+        'Sends all data existing in the buffer
+        '***************************************************
+        
+        If UserIndex = 0 Then Exit Sub
+        
+100     With UserList(UserIndex)
+
+102         If .outgoingData.Length = 0 Then Exit Sub
+        
+            ' Tratamos de enviar los datos.
+            Dim Ret    As Long
+104         Dim data() As Byte: data = .outgoingData.ReadAll
+
+            #If AntiExternos = 1 Then
+
+106             Call Security.XorData(data, UBound(data), .XorIndexOut)
+
+            #End If
+
+108         Ret = frmMain.Winsock.SendData(UserIndex, data)
     
-    With UserList(UserIndex)
-
-        If .outgoingData.Length = 0 Then Exit Sub
+            ' Si recibimos un error como respuesta de la API, cerramos el socket.
+110         If Ret <> 0 And Ret <> WSAEWOULDBLOCK Then
         
-        ' Tratamos de enviar los datos.
-        Dim ret    As Long
-        Dim Data() As Byte: Data = .outgoingData.ReadAll
+                ' Close the socket avoiding any critical error
+112             Call CloseSocketSL(UserIndex)
+114             Call Cerrar_Usuario(UserIndex)
 
-        #If AntiExternos = 1 Then
-
-            Call Security.XorData(Data, UBound(Data), .XorIndexOut)
-
-        #End If
-
-        ret = frmMain.Winsock.SendData(UserIndex, Data)
-    
-        ' Si recibimos un error como respuesta de la API, cerramos el socket.
-        If ret <> 0 And ret <> WSAEWOULDBLOCK Then
+            End If
         
-            ' Close the socket avoiding any critical error
-            Call CloseSocketSL(UserIndex)
-            Call Cerrar_Usuario(UserIndex)
-
-        End If
+116         Call .outgoingData.Clean
         
-        Call .outgoingData.Clean
+        End With
         
-    End With
-        
-    Exit Sub
+        Exit Sub
 
 FlushBuffer_Err:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.FlushBuffer", Erl)
-    Call UserList(UserIndex).incomingData.SafeClearPacket
+118     Call RegistrarError(Err.Number, Err.Description, "Protocol.FlushBuffer", Erl)
+120     Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 
@@ -15856,7 +15858,7 @@ Private Sub HandleIngresarConCuenta(ByVal UserIndex As Integer)
         MacAddress = .incomingData.ReadASCIIString()
         HDSerial = .incomingData.ReadLong()
         MD5 = .incomingData.ReadASCIIString()
-            
+        
         #If DEBUGGING = False Then
     
             If Not VersionOK(Version) Then
@@ -15872,12 +15874,12 @@ Private Sub HandleIngresarConCuenta(ByVal UserIndex As Integer)
             
             If AOGuard.AOG_STATUS = 1 Then
             
-                If AOGuard.VerificarOrigen(CuentaEmail, HDSerial) And False Then
+                If AOGuard.VerificarOrigen(.AccountID, HDSerial, .IP) And False Then
                     Call WritePersonajesDeCuenta(UserIndex)
                     Call WriteMostrarCuenta(UserIndex)
                     
                 Else
-                    Call AOGuard.WriteGuardNotice(UserIndex, CuentaEmail)
+                    Call AOGuard.WriteGuardNotice(UserIndex)
                     
                 End If
             

@@ -28,26 +28,37 @@ Public Sub LoadAOGuardConfiguration()
     
 End Sub
 
-'-------------------------------------------------------------------------
-' Esto se va a encargar de comparar el HDSerial del que se esta conectando
-' con el ultimo valido registrado en la base de datos
-'-------------------------------------------------------------------------
-Public Function VerificarOrigen(ByVal Email As String, ByVal HDActual As String)
+'------------------------------------------------------------------------------------------------
+' Esto se va a encargar de chequear que el usuario se haya conectado desde una ubicacion segura.
+'
+' Se le dara acceso a la cuenta si:
+'   - El HDSerial o la IP de la PC donde esta accediendo es igual a el que tenemos en la BD
+'------------------------------------------------------------------------------------------------
+Public Function VerificarOrigen(ByVal AccountID As Long, ByVal HD As Long, ByVal IP As String) As Boolean
     
-    Dim UltimoHD As String
-        UltimoHD = GetCuentaValue(Email, "hd_serial")
+    If Not IsNull(GetDBValue("account_guard", "code", "account_id", AccountID)) Then
+        VerificarOrigen = False
+        Exit Function
+    End If
     
-    VerificarOrigen = (HDActual = UltimoHD)
+    Call MakeQuery("SELECT hd_serial, last_ip FROM account WHERE account_id = ?", False, AccountID)
+    
+    If QueryData Is Nothing Then
+        VerificarOrigen = True
+        Exit Function
+    End If
+    
+    VerificarOrigen = (HD = QueryData!hd_serial Or IP = QueryData!last_ip)
     
     ' Mas adelante, si pinta ser mas exhaustivos podemos agregar chequeos de yokese...
-    ' IP, MAC, DNI, Numero de Tramite, lo que sea :)
+    ' MAC, DNI, Numero de Tramite, lo que sea :)
     
 End Function
 
 '---------------------------------------------------------------------------------------------------
 ' Si VerificarOrigen = False, le notificamos al usuario que ponga el codigo que le mandamos al mail.
 '---------------------------------------------------------------------------------------------------
-Public Sub WriteGuardNotice(ByVal UserIndex As Integer, ByVal Email As String)
+Public Sub WriteGuardNotice(ByVal UserIndex As Integer)
 
     On Error GoTo ErrHandler
 
@@ -57,11 +68,13 @@ Public Sub WriteGuardNotice(ByVal UserIndex As Integer, ByVal Email As String)
         Call .EndPacket
         
         Dim Codigo As String: Codigo = RandomString(5)
-        Call SetDBValue("account", "guard_code", Codigo, "email", Email)
         
-        Debug.Print "Codigo de Verificacion:" & Codigo
+        ' Guardamos los valores en la base de datos
+        Call MakeQuery("UPDATE account_guard SET code = ?, timestamp = ? WHERE account_id = ?", True, Codigo, Now(), UserList(UserIndex).AccountID)
         
-        Call SendEmail(Email, Codigo)
+        Debug.Print vbNewLine & "Codigo de Verificacion:" & Codigo & vbNewLine
+        
+        Call SendEmail(UserList(UserIndex).Cuenta, Codigo)
     
     End With
     
@@ -81,20 +94,18 @@ Public Sub HandleGuardNoticeResponse(ByVal UserIndex As Integer)
     With UserList(UserIndex)
         
         Dim Codigo As String: Codigo = .incomingData.ReadASCIIString
-        Dim Email As String: Email = .incomingData.ReadASCIIString
-
-        Dim CodigoDB As String: CodigoDB = GetCuentaValue(Email, "guard_code")
         
-        If Codigo = CodigoDB Then
+        If Codigo = GetDBValue("account_guard", "code", "account_id", .AccountID) Then
             Call WritePersonajesDeCuenta(UserIndex)
             Call WriteMostrarCuenta(UserIndex)
             
-            ' Borro el codigo que acabo de usar
-            Call SetCuentaValue(Email, "guard_code", vbNullString)
+            ' Guardamos los valores en la base de datos
+            Call MakeQuery("UPDATE account_guard SET code = ?, timestamp = ? WHERE account_id = ?", True, Null, Null, UserList(UserIndex).AccountID)
         
         Else
             
             Call WriteErrorMsg(UserIndex, "Codigo de verificación erroneo.")
+            Call CloseSocket(UserIndex)
             
         End If
     
