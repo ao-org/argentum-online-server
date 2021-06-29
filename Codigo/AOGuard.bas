@@ -103,6 +103,7 @@ Public Sub HandleGuardNoticeResponse(ByVal UserIndex As Integer)
         
             ' Le avisamos que expiro
             Call WriteErrorMsg(UserIndex, "El código de verificación ha expirado.")
+            Call WriteDisconnect(UserIndex, True)
         
         Else ' El codigo NO expiro...
             
@@ -121,10 +122,6 @@ Public Sub HandleGuardNoticeResponse(ByVal UserIndex As Integer)
 
         ' Invalidamos el codigo
         Call MakeQuery("UPDATE account_guard SET code = ?, timestamp = ? WHERE account_id = ?", True, Null, Null, UserList(UserIndex).AccountID)
-        
-        ' Cerramos la conexion
-        Call CloseSocket(UserIndex)
-        Exit Sub
         
     End With
     
