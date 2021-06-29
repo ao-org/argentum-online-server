@@ -54,8 +54,8 @@ Public Sub WriteGuardNotice(ByVal UserIndex As Integer, ByVal Email As String)
         Call .WriteID(ServerPacketID.GuardNotice)
         Call .EndPacket
         
-        Dim Codigo As String: Codigo = RandomString(32)
-        Call SetDBValue("account", "guard_code", RandomString(32), "email", Email)
+        Dim Codigo As String: Codigo = RandomString(5)
+        Call SetDBValue("account", "guard_code", Codigo, "email", Email)
         
         Debug.Print "Codigo de Verificacion:" & Codigo
         
@@ -80,6 +80,11 @@ Public Sub HandleGuardNoticeResponse(ByVal UserIndex As Integer)
             
             ' Borro el codigo que acabo de usar
             Call SetDBValue("account", "guard_code", vbNullString, "email", Email)
+        
+        Else
+            
+            Call WriteErrorMsg(UserIndex, "Codigo de verificación erroneo.")
+            
         End If
     
     End With
