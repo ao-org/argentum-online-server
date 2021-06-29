@@ -95,20 +95,37 @@ Public Sub HandleGuardNoticeResponse(ByVal UserIndex As Integer)
         
         Dim Codigo As String: Codigo = .incomingData.ReadASCIIString
         
-        If Codigo = GetDBValue("account_guard", "code", "account_id", .AccountID) Then
-            Call WritePersonajesDeCuenta(UserIndex)
-            Call WriteMostrarCuenta(UserIndex)
-            
-            ' Guardamos los valores en la base de datos
-            Call MakeQuery("UPDATE account_guard SET code = ?, timestamp = ? WHERE account_id = ?", True, Null, Null, UserList(UserIndex).AccountID)
+        Dim DB_Codigo As String:    DB_Codigo = GetDBValue("account_guard", "code", "account_id", .AccountID)
+        Dim DB_Timestamp As String: DB_Timestamp = GetDBValue("account_guard", "timestamp", "account_id", .AccountID)
         
-        Else
+        ' El codigo expira despues de 1 minuto.
+        If DateDiff("s", Now(), DB_Timestamp) < 60 Then
+        
+            ' Le avisamos que expiro
+            Call WriteErrorMsg(UserIndex, "El código de verificación ha expirado.")
+        
+        Else ' El codigo NO expiro...
             
-            Call WriteErrorMsg(UserIndex, "Codigo de verificación erroneo.")
-            Call CloseSocket(UserIndex)
+            ' Lo comparamos con lo que tenemos en la BD
+            If Codigo = DB_Codigo Then
+                Call WritePersonajesDeCuenta(UserIndex)
+                Call WriteMostrarCuenta(UserIndex)
+            
+            Else
+                Call WriteErrorMsg(UserIndex, "Codigo de verificación erroneo.")
+                Call CloseSocket(UserIndex)
+                
+            End If
             
         End If
-    
+
+        ' Invalidamos el codigo
+        Call MakeQuery("UPDATE account_guard SET code = ?, timestamp = ? WHERE account_id = ?", True, Null, Null, UserList(UserIndex).AccountID)
+        
+        ' Cerramos la conexion
+        Call CloseSocket(UserIndex)
+        Exit Sub
+        
     End With
     
 End Sub
