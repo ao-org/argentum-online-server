@@ -1054,7 +1054,7 @@ ErrorHandler:
 
 End Function
 
-Private Function GetDBValue(Tabla As String, ColumnaGet As String, ColumnaTest As String, ValueTest As Variant) As Variant
+Public Function GetDBValue(Tabla As String, ColumnaGet As String, ColumnaTest As String, ValueTest As Variant) As Variant
         ' 17/10/2020 Autor: Alexis Caraballo (WyroX)
         ' Para leer un unico valor de una unica fila
 

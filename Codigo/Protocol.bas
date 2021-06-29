@@ -544,6 +544,7 @@ Private Enum ClientPacketID
     CloseCrafting
     MoveCraftItem
     PetLeaveAll
+    GuardNoticeResponse
     
     [PacketCount]
 End Enum
@@ -1002,6 +1003,7 @@ Public Sub InitializePacketList()
     PacketList(ClientPacketID.CloseCrafting) = GetAddress(AddressOf HandleCloseCrafting)
     PacketList(ClientPacketID.MoveCraftItem) = GetAddress(AddressOf HandleMoveCraftItem)
     PacketList(ClientPacketID.PetLeaveAll) = GetAddress(AddressOf HandlePetLeaveAll)
+    PacketList(ClientPacketID.GuardNoticeResponse) = GetAddress(AddressOf AOGuard.HandleGuardNoticeResponse)
 
 End Sub
 
@@ -15865,8 +15867,25 @@ Private Sub HandleIngresarConCuenta(ByVal UserIndex As Integer)
         #End If
     
         If EntrarCuenta(UserIndex, CuentaEmail, CuentaPassword, MacAddress, HDSerial, MD5) Then
-            Call WritePersonajesDeCuenta(UserIndex)
-            Call WriteMostrarCuenta(UserIndex)
+            
+            If AOGuard.AOG_STATUS = 1 Then
+            
+                If AOGuard.VerificarOrigen(CuentaEmail, HDSerial) Then
+                    Call WritePersonajesDeCuenta(UserIndex)
+                    Call WriteMostrarCuenta(UserIndex)
+                    
+                Else
+                    Call AOGuard.WriteGuardNotice(UserIndex, CuentaEmail)
+                    
+                End If
+            
+            Else
+                
+                Call WritePersonajesDeCuenta(UserIndex)
+                Call WriteMostrarCuenta(UserIndex)
+                
+            End If
+            
         Else
             
             Call CloseSocket(UserIndex)
@@ -15879,7 +15898,7 @@ Private Sub HandleIngresarConCuenta(ByVal UserIndex As Integer)
     Exit Sub
 
 ErrHandler:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.?", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleIngresarConCuenta", Erl)
     Call UserList(UserIndex).incomingData.SafeClearPacket
 
 End Sub

@@ -1420,6 +1420,7 @@ Sub Restart()
 138     Call FreeCharIndexes
 
 140     Call LoadSini
+        Call LoadAOGuardConfiguration
 142     Call LoadIntervalos
 144     Call LoadOBJData
 146     Call LoadPesca

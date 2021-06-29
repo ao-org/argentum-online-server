@@ -107,6 +107,7 @@ Module=modCrafteos; Codigo\modCrafteos.bas
 Class=clsSubclass; Codigo\clsSubClass.cls
 Class=clsWinsock; Codigo\clsWinsock.cls
 Module=modWinsock; Codigo\wsksock.bas
+Module=AOGuard; Codigo\AOGuard.bas
 IconForm="frmMain"
 Startup="Sub Main"
 HelpFile=""
