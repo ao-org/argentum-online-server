@@ -9308,7 +9308,7 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
         Arg2 = .incomingData.ReadASCIIString()
 
         ' Si no es GM, no hacemos nada.
-        If Not EsGM(UserIndex) Or (.flags.Privilegios And PlayerType.Consejero) Then Exit Sub
+        If Not EsGM(UserIndex) Then Exit Sub
         
         ' Si NO sos Dios o Admin,
         If (.flags.Privilegios And PlayerType.Admin) = 0 Then
@@ -9321,6 +9321,7 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
         Select Case opcion
 
             Case eEditOptions.eo_Gold
+                If (.flags.Privilegios And PlayerType.Consejero) = 0 Then Exit Sub
 
                 If tUser <= 0 Then
                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
@@ -9417,6 +9418,7 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
                 End If
                        
             Case eEditOptions.eo_Particula
+                If (.flags.Privilegios And PlayerType.Consejero) = 0 Then Exit Sub
                 
                 If Not .flags.Privilegios = Consejero Then
                     If tUser <= 0 Then
@@ -9457,7 +9459,9 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
                 End If
                 
             Case eEditOptions.eo_CriminalsKilled
-
+                
+                If (.flags.Privilegios And PlayerType.Consejero) = 0 Then Exit Sub
+                
                 If tUser <= 0 Then
                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
                 Else
@@ -9473,6 +9477,8 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
                 
             Case eEditOptions.eo_CiticensKilled
 
+                If (.flags.Privilegios And PlayerType.Consejero) = 0 Then Exit Sub
+                
                 If tUser <= 0 Then
                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
                 Else
@@ -9553,7 +9559,9 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
                 End If
                 
             Case eEditOptions.eo_SkillPointsLeft
-
+                
+                If (.flags.Privilegios And PlayerType.Consejero) = 0 Then Exit Sub
+                
                 If tUser <= 0 Then
                     
                     If Database_Enabled Then
@@ -9766,6 +9774,8 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
                 End If
                     
             Case eEditOptions.eo_Intervalo
+
+                If (.flags.Privilegios And PlayerType.Consejero) = 0 Then Exit Sub
 
                 If tUser <= 0 Then
                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
