@@ -256,7 +256,7 @@ Public Sub BanearIP(ByVal BannerIndex As Integer, ByVal UserName As String, ByVa
         'Call Shell("netsh.exe advfirewall firewall set rule name=""Lista Negra IPs"" dir=in remoteip=" & NewIPs) ' Turbio esto
 
         ' Registramos el des-baneo en los logs.
-104     Call LogGM(UserList(BannerIndex).Name, "Baneó la IP: " & ip & " de " & UserName)
+104     Call LogGM(UserList(BannerIndex).Name, "Baneó la IP: " & IP & " de " & UserName)
 
         Exit Sub
 

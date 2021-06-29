@@ -281,7 +281,7 @@ Public Sub WriteDisconnect(ByVal UserIndex As Integer)
     '***************************************************
     On Error GoTo ErrHandler
     
-    Call SaveUser(UserIndex, True)
+    Call ClearAndSaveUser(UserIndex)
     UserList(UserIndex).flags.YaGuardo = True
 
     Call WritePersonajesDeCuenta(UserIndex)

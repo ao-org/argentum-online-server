@@ -1069,7 +1069,8 @@ Public Function HandleIncomingData(ByVal UserIndex As Integer) As Boolean
                 PacketID = ClientPacketID.LoginNewChar Or _
                 PacketID = ClientPacketID.IngresarConCuenta Or _
                 PacketID = ClientPacketID.BorrarPJ Or _
-                PacketID = ClientPacketID.ThrowDice) Then
+                PacketID = ClientPacketID.ThrowDice Or _
+                PacketID = ClientPacketID.GuardNoticeResponse) Then
             
             'Is the user actually logged?
             If Not .flags.UserLogged Then

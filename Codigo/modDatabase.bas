@@ -1125,7 +1125,7 @@ ErrorHandler:
 
 End Sub
 
-Private Sub SetCuentaValue(CuentaEmail As String, Columna As String, Value As Variant)
+Public Sub SetCuentaValue(CuentaEmail As String, Columna As String, Value As Variant)
         ' 18/10/2020 Autor: Alexis Caraballo (WyroX)
         ' Para cuando hay que escribir un unico valor de la cuenta
         
@@ -1142,7 +1142,7 @@ SetCuentaValue_Err:
         
 End Sub
 
-Private Sub SetUserValue(CharName As String, Columna As String, Value As Variant)
+Public Sub SetUserValue(CharName As String, Columna As String, Value As Variant)
         ' 18/10/2020 Autor: Alexis Caraballo (WyroX)
         ' Para cuando hay que escribir un unico valor del char
         

@@ -49,6 +49,8 @@ End Function
 '---------------------------------------------------------------------------------------------------
 Public Sub WriteGuardNotice(ByVal UserIndex As Integer, ByVal Email As String)
 
+    On Error GoTo ErrHandler
+
     With UserList(UserIndex).outgoingData
 
         Call .WriteID(ServerPacketID.GuardNotice)
@@ -62,6 +64,15 @@ Public Sub WriteGuardNotice(ByVal UserIndex As Integer, ByVal Email As String)
         Call SendEmail(Email, Codigo)
     
     End With
+    
+    Exit Sub
+    
+ErrHandler:
+
+    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
+        Call FlushBuffer(UserIndex)
+        Resume
+    End If
 
 End Sub
 
@@ -72,14 +83,14 @@ Public Sub HandleGuardNoticeResponse(ByVal UserIndex As Integer)
         Dim Codigo As String: Codigo = .incomingData.ReadASCIIString
         Dim Email As String: Email = .incomingData.ReadASCIIString
 
-        Dim CodigoDB As String: CodigoDB = GetDBValue("account", "guard_code", "email", Email)
+        Dim CodigoDB As String: CodigoDB = GetCuentaValue(Email, "guard_code")
         
         If Codigo = CodigoDB Then
             Call WritePersonajesDeCuenta(UserIndex)
             Call WriteMostrarCuenta(UserIndex)
             
             ' Borro el codigo que acabo de usar
-            Call SetDBValue("account", "guard_code", vbNullString, "email", Email)
+            Call SetCuentaValue(Email, "guard_code", vbNullString)
         
         Else
             
