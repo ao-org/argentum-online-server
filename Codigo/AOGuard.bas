@@ -90,7 +90,7 @@ Private Sub GenerarCodigo(ByVal UserIndex As Integer)
         
             ' Generamos un nuevo codigo
             Codigo = RandomString(5)
-            Debug.Print "Codigo de Verificacion: " & Codigo & vbNewLine
+            
             
             ' Lo guardamos en la BD
             Call MakeQuery("REPLACE INTO account_guard (account_id, code) VALUES (?, ?)", True, .AccountID, Codigo)
@@ -101,6 +101,8 @@ Private Sub GenerarCodigo(ByVal UserIndex As Integer)
             Codigo = QueryData!code
             
         End If
+        
+        Debug.Print "Codigo de Verificacion: " & Codigo & vbNewLine
         
         ' Enviamos el mail con el codigo
         Call SendEmail(.Cuenta, Codigo, .IP)
