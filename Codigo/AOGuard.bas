@@ -1,10 +1,19 @@
 Attribute VB_Name = "AOGuard"
 Option Explicit
 
+' Configuracion - Argentum Guard
 Public AOG_STATUS As Byte
 Private AOG_EXPIRE As Byte
 Private AOG_RESEND As Long
 
+Private TRANSPORT_METHOD As String
+
+' Configuracion API
+Private API_ENDPOINT As String
+Private API_KEY As String
+
+' Configuracion SMTP interno
+' (no me gusta xq bloquea el hilo pero bueh, puede servir para salir del paso)
 Private SMTP_HOST As String
 Private SMTP_PORT As Integer
 Private SMTP_AUTH As Byte
@@ -23,12 +32,25 @@ Public Sub LoadAOGuardConfiguration()
     AOG_RESEND = val(ConfigFile.GetValue("INIT", "CodeResendInterval")) * 10000
     If AOG_RESEND = 0 Then AOG_RESEND = 50000
     
-    SMTP_HOST = ConfigFile.GetValue("SMTP", "HOST")
-    SMTP_PORT = val(ConfigFile.GetValue("SMTP", "PORT"))
-    SMTP_AUTH = val(ConfigFile.GetValue("SMTP", "AUTH"))
-    SMTP_SECURE = val(ConfigFile.GetValue("SMTP", "SECURE"))
-    SMTP_USER = ConfigFile.GetValue("SMTP", "USER")
-    SMTP_PASS = ConfigFile.GetValue("SMTP", "PASS")
+    TRANSPORT_METHOD = UCase$(ConfigFile.GetValue("INIT", "TransportMethod"))
+    Select Case TRANSPORT_METHOD
+    
+        Case "API"
+            ' Configuracion API
+            API_ENDPOINT = ConfigFile.GetValue("API", "Endpoint")
+            API_KEY = ConfigFile.GetValue("API", "Key")
+            
+        Case "SMTP"
+            ' Configuracion SMTP interno
+            ' (no me gusta xq bloquea el hilo pero bueh, puede servir para salir del paso)
+            SMTP_HOST = ConfigFile.GetValue("SMTP", "HOST")
+            SMTP_PORT = val(ConfigFile.GetValue("SMTP", "PORT"))
+            SMTP_AUTH = val(ConfigFile.GetValue("SMTP", "AUTH"))
+            SMTP_SECURE = val(ConfigFile.GetValue("SMTP", "SECURE"))
+            SMTP_USER = ConfigFile.GetValue("SMTP", "USER")
+            SMTP_PASS = ConfigFile.GetValue("SMTP", "PASS")
+            
+    End Select
     
     Set ConfigFile = Nothing
     
@@ -61,54 +83,6 @@ Public Function VerificarOrigen(ByVal AccountID As Long, ByVal HD As Long, ByVal
     
 End Function
 
-Private Sub GenerarCodigo(ByVal UserIndex As Integer)
-    
-    Dim Codigo As String
-    Dim NuevoCodigo As Boolean
-    
-    With UserList(UserIndex)
-        
-        Call MakeQuery("SELECT TIMESTAMPDIFF(SECOND, `timestamp`, CURRENT_TIMESTAMP) AS time_diff, code FROM account_guard WHERE account_id = ?", False, .AccountID)
-     
-        ' NO tiene codigo
-        If QueryData Is Nothing Then
-
-            NuevoCodigo = True
-        
-        ' Tiene codigo, pero ya expiro...
-        ElseIf AOG_EXPIRE <> 0 And QueryData!time_diff > AOG_EXPIRE Then
-            
-            NuevoCodigo = True
-            
-        Else ' Si ya tiene codigo y NO expiro...
-            
-            NuevoCodigo = False
-
-        End If
-        
-        If NuevoCodigo Then
-        
-            ' Generamos un nuevo codigo
-            Codigo = RandomString(5)
-                  
-            ' Lo guardamos en la BD
-            Call MakeQuery("REPLACE INTO account_guard (account_id, code) VALUES (?, ?)", True, .AccountID, Codigo)
-        
-        Else
-            
-            ' Usamos el codigo vigente
-            Codigo = QueryData!code
-            
-        End If
-        
-        Debug.Print "Codigo de Verificacion: " & Codigo & vbNewLine
-        
-        ' Enviamos el mail con el codigo
-        
-    End With
-    
-End Sub
-
 '---------------------------------------------------------------------------------------------------
 ' Si VerificarOrigen = False, le notificamos al usuario que ponga el codigo que le mandamos al mail.
 '---------------------------------------------------------------------------------------------------
@@ -121,7 +95,11 @@ Public Sub WriteGuardNotice(ByVal UserIndex As Integer)
         Call .WriteID(ServerPacketID.GuardNotice)
         Call .EndPacket
         
-        Call GenerarCodigo(UserIndex)
+        If TRANSPORT_METHOD = "API" Then
+            Call GenerarCodigoAPI(UserIndex)
+        Else
+            Call GenerarCodigo(UserIndex)
+        End If
     
     End With
     
@@ -191,6 +169,87 @@ HandleGuardNoticeResponse_Err:
     
 End Sub
 
+Private Sub GenerarCodigoAPI(ByVal UserIndex As Integer)
+    
+    '------------------------------------------------------
+    ' Preparamos las cosas para hacer la peticion
+    '------------------------------------------------------
+    Dim client As New MSXML2.ServerXMLHTTP60
+    
+    Dim request As New clsRequestHandler
+    Call request.Initialize(client)
+    
+    ' Seteamos un objeto para manejar la peticion async
+    client.OnReadyStateChange = request
+    
+    Dim Codigo As String
+        Codigo = RandomString(5)
+        
+    Debug.Print Codigo
+    '------------------------------------------------------
+    ' Hacemos la peticion
+    '------------------------------------------------------
+    client.Open "POST", API_ENDPOINT, True
+    
+    client.SetRequestHeader "x-api-key", API_KEY
+    client.SetRequestHeader "Content-Type", "application/x-www-form-urlencoded"
+            
+    client.Send "account_id=" & UserList(UserIndex).AccountID & _
+                "&email=" & UserList(UserIndex).Cuenta & _
+                "&ip_address=" & UserList(UserIndex).IP & _
+                "&code=" & Codigo
+    
+End Sub
+
+Private Sub GenerarCodigo(ByVal UserIndex As Integer)
+    
+    Dim Codigo As String
+    Dim NuevoCodigo As Boolean
+    
+    With UserList(UserIndex)
+        
+        Call MakeQuery("SELECT TIMESTAMPDIFF(SECOND, `timestamp`, CURRENT_TIMESTAMP) AS time_diff, code FROM account_guard WHERE account_id = ?", False, .AccountID)
+     
+        ' NO tiene codigo
+        If QueryData Is Nothing Then
+
+            NuevoCodigo = True
+        
+        ' Tiene codigo, pero ya expiro...
+        ElseIf AOG_EXPIRE <> 0 And QueryData!time_diff > AOG_EXPIRE Then
+            
+            NuevoCodigo = True
+            
+        Else ' Si ya tiene codigo y NO expiro...
+            
+            NuevoCodigo = False
+
+        End If
+        
+        If NuevoCodigo Then
+        
+            ' Generamos un nuevo codigo
+            Codigo = RandomString(5)
+                  
+            ' Lo guardamos en la BD
+            Call MakeQuery("REPLACE INTO account_guard (account_id, code) VALUES (?, ?)", True, .AccountID, Codigo)
+        
+        Else
+            
+            ' Usamos el codigo vigente
+            Codigo = QueryData!code
+            
+        End If
+        
+        Debug.Print "Codigo de Verificacion: " & Codigo & vbNewLine
+        
+        ' Enviamos el mail con el codigo
+        Call SendEmail(UserList(UserIndex).Cuenta, Codigo, UserList(UserIndex).IP)
+    End With
+    
+End Sub
+
+
 ' Source: https://accautomation.ca/how-to-send-email-to-smtp-server/
 Sub SendEmail(ByVal Email As String, ByVal Codigo As String, ByVal IP As String)
 
@@ -235,7 +294,7 @@ Sub SendEmail(ByVal Email As String, ByVal Codigo As String, ByVal IP As String)
                     "IP: " & IP & "<br /><br />" & _
                     "Si fuiste tu, te aparecerá un dialogo donde tendrás que ingresar el siguiente código: <strong>" & Codigo & "</strong>" & "<br />" & _
                     "<strong>Si NO fuiste tu, ignora este mensaje y considera cambiar tu contraseña</strong>" & "<br /><br />" & _
-                    "Atentamente, el Staff de Argentum20"
+                    "El equipo de Noland Studios"
                     
         Set .Configuration = cdoConf
         
