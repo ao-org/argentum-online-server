@@ -1067,7 +1067,7 @@ Private Sub Command12_Click()
         On Error GoTo Command12_Click_Err
         
 100     Call LoadConfiguraciones
-
+        Call AOGuard.LoadAOGuardConfiguration
         
         Exit Sub
 

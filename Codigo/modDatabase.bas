@@ -1687,7 +1687,8 @@ Public Sub LogoutAllUsersAndAccounts()
         
         On Error GoTo LogoutAllUsersAndAccounts_Err
 
-100     Call MakeQuery("UPDATE user SET is_logged = FALSE; UPDATE account SET logged = 0;", True)
+100     Call MakeQuery("UPDATE user SET is_logged = 0;", True)
+101     Call MakeQuery("UPDATE account SET logged = 0;", True)
         
         Exit Sub
 

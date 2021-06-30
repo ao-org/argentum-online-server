@@ -1723,6 +1723,7 @@ Public Type UserCounters
     goHome As Long
 
     LastSave As Long
+
     CuentaRegresiva As Integer
     TimerBarra As Integer
 

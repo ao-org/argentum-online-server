@@ -2,6 +2,8 @@ Attribute VB_Name = "AOGuard"
 Option Explicit
 
 Public AOG_STATUS As Byte
+Private AOG_EXPIRE As Byte
+Private AOG_RESEND As Long
 
 Private SMTP_HOST As String
 Private SMTP_PORT As Integer
@@ -16,13 +18,17 @@ Public Sub LoadAOGuardConfiguration()
     Call ConfigFile.Initialize(IniPath & "AOGuard.ini")
         
     AOG_STATUS = val(ConfigFile.GetValue("INIT", "Enabled"))
-        
-    SMTP_HOST = ConfigFile.GetValue("INIT", "SMTP_HOST")
-    SMTP_PORT = val(ConfigFile.GetValue("INIT", "SMTP_PORT"))
-    SMTP_AUTH = val(ConfigFile.GetValue("INIT", "SMTP_AUTH"))
-    SMTP_SECURE = val(ConfigFile.GetValue("INIT", "SMTP_AUTH"))
-    SMTP_USER = ConfigFile.GetValue("INIT", "SMTP_USER")
-    SMTP_PASS = ConfigFile.GetValue("INIT", "SMTP_PASS")
+    AOG_EXPIRE = val(ConfigFile.GetValue("INIT", "CodeExpiresInSeconds"))
+    
+    AOG_RESEND = val(ConfigFile.GetValue("INIT", "CodeResendInterval")) * 10000
+    If AOG_RESEND = 0 Then AOG_RESEND = 50000
+    
+    SMTP_HOST = ConfigFile.GetValue("SMTP", "HOST")
+    SMTP_PORT = val(ConfigFile.GetValue("SMTP", "PORT"))
+    SMTP_AUTH = val(ConfigFile.GetValue("SMTP", "AUTH"))
+    SMTP_SECURE = val(ConfigFile.GetValue("SMTP", "SECURE"))
+    SMTP_USER = ConfigFile.GetValue("SMTP", "USER")
+    SMTP_PASS = ConfigFile.GetValue("SMTP", "PASS")
     
     Set ConfigFile = Nothing
     
@@ -55,6 +61,54 @@ Public Function VerificarOrigen(ByVal AccountID As Long, ByVal HD As Long, ByVal
     
 End Function
 
+Private Sub GenerarCodigo(ByVal UserIndex As Integer)
+    
+    Dim Codigo As String
+    Dim NuevoCodigo As Boolean
+    
+    With UserList(UserIndex)
+        
+        Call MakeQuery("SELECT * FROM account_guard WHERE account_id = ?", False, .AccountID)
+     
+        ' NO tiene codigo
+        If QueryData Is Nothing Then
+
+            NuevoCodigo = True
+        
+        ' Tiene codigo, pero ya expiro...
+        ElseIf AOG_EXPIRE <> 0 And DateDiff("s", Now(), QueryData!TimeStamp) > AOG_EXPIRE Then
+            
+            NuevoCodigo = True
+            
+        Else ' Si ya tiene codigo y NO expiro...
+            
+            NuevoCodigo = False
+
+        End If
+        
+        If NuevoCodigo Then
+        
+            ' Generamos un nuevo codigo
+            Codigo = RandomString(5)
+            Debug.Print "Codigo de Verificacion: " & Codigo & vbNewLine
+            
+            ' Lo guardamos en la BD
+            Call MakeQuery("REPLACE INTO account_guard (account_id, code) VALUES (?, ?)", True, .AccountID, Codigo)
+        
+        Else
+            
+            ' Usamos el codigo vigente
+            Codigo = QueryData!code
+            
+        End If
+        
+        ' Enviamos el mail con el codigo
+        Call SendEmail(.Cuenta, Codigo, .IP)
+        
+    End With
+    
+End Sub
+
 '---------------------------------------------------------------------------------------------------
 ' Si VerificarOrigen = False, le notificamos al usuario que ponga el codigo que le mandamos al mail.
 '---------------------------------------------------------------------------------------------------
@@ -67,14 +121,7 @@ Public Sub WriteGuardNotice(ByVal UserIndex As Integer)
         Call .WriteID(ServerPacketID.GuardNotice)
         Call .EndPacket
         
-        Dim Codigo As String: Codigo = RandomString(5)
-        
-        ' Guardamos los valores en la base de datos
-        Call MakeQuery("UPDATE account_guard SET code = ?, timestamp = ? WHERE account_id = ?", True, Codigo, Now(), UserList(UserIndex).AccountID)
-        
-        Debug.Print vbNewLine & "Codigo de Verificacion:" & Codigo & vbNewLine
-        
-        Call SendEmail(UserList(UserIndex).Cuenta, Codigo)
+        Call GenerarCodigo(UserIndex)
     
     End With
     
@@ -91,7 +138,11 @@ End Sub
 
 Public Sub HandleGuardNoticeResponse(ByVal UserIndex As Integer)
     
+    On Error GoTo HandleGuardNoticeResponse_Err:
+    
     With UserList(UserIndex)
+        
+        Dim Exito As Boolean
         
         Dim Codigo As String: Codigo = .incomingData.ReadASCIIString
         
@@ -99,40 +150,56 @@ Public Sub HandleGuardNoticeResponse(ByVal UserIndex As Integer)
         Dim DB_Timestamp As String: DB_Timestamp = GetDBValue("account_guard", "timestamp", "account_id", .AccountID)
         
         ' El codigo expira despues de 1 minuto.
-        If DateDiff("s", Now(), DB_Timestamp) < 60 Then
+        If AOG_EXPIRE <> 0 And DateDiff("s", Now(), DB_Timestamp) < AOG_EXPIRE Then
         
             ' Le avisamos que expiro
             Call WriteErrorMsg(UserIndex, "El código de verificación ha expirado.")
-            Call WriteDisconnect(UserIndex, True)
-        
+            
+            ' Invalidamos el codigo
+            Call MakeQuery("DELETE FROM account_guard WHERE account_id = ?", True, UserList(UserIndex).AccountID)
+            
+            ' Lo kickeamos.
+             Call CloseSocket(UserIndex)
+            
         Else ' El codigo NO expiro...
             
             ' Lo comparamos con lo que tenemos en la BD
             If Codigo = DB_Codigo Then
                 Call WritePersonajesDeCuenta(UserIndex)
                 Call WriteMostrarCuenta(UserIndex)
-            
-            Else
-                Call WriteErrorMsg(UserIndex, "Codigo de verificación erroneo.")
-                Call CloseSocket(UserIndex)
                 
+                ' Invalidamos el codigo
+                Call MakeQuery("DELETE FROM account_guard WHERE account_id = ?", True, UserList(UserIndex).AccountID)
+                
+            Else
+                ' Le avisamos
+                Call WriteErrorMsg(UserIndex, "Codigo de verificación erroneo.")
+                
+                ' Lo kickeamos.
+                Call CloseSocket(UserIndex)
             End If
             
         End If
-
-        ' Invalidamos el codigo
-        Call MakeQuery("UPDATE account_guard SET code = ?, timestamp = ? WHERE account_id = ?", True, Null, Null, UserList(UserIndex).AccountID)
-        
+ 
     End With
+    
+    Exit Sub
+
+HandleGuardNoticeResponse_Err:
+    Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleGuardNoticeResponse", Erl)
+    Call UserList(UserIndex).incomingData.SafeClearPacket
     
 End Sub
 
 ' Source: https://accautomation.ca/how-to-send-email-to-smtp-server/
-Sub SendEmail(ByVal Email As String, ByVal Codigo As String)
+Sub SendEmail(ByVal Email As String, ByVal Codigo As String, ByVal IP As String)
 
     On Error Resume Next
     
-    If Not SMTP_HOST Or Not SMTP_PORT Or Not LenB(SMTP_USER) Or Not LenB(SMTP_PASS) Then Exit Sub
+    If LenB(SMTP_HOST) = 0 Or _
+        LenB(SMTP_PORT) = 0 Or _
+        LenB(SMTP_USER) = 0 Or _
+        LenB(SMTP_PASS) = 0 Then Exit Sub
     
     Dim Schema As String
     
@@ -160,12 +227,16 @@ Sub SendEmail(ByVal Email As String, ByVal Codigo As String)
     With cdoMsg
     
         .To = Email
-        .From = "argentum20@ao20.com.ar"
+        .From = "guardian@ao20.com.ar"
         .Subject = "Argentum Guard - Acceso desde un nuevo dispositivo"
         
         ' Body of message can be any HTML code
-        .HTMLBody = "Codigo: " & Codigo
-        
+        .HTMLBody = "Hemos detectado un intento de acceso a tu cuenta desde un dispositivo desconocido <br /><br />" & _
+                    "IP: " & IP & "<br /><br />" & _
+                    "Si fuiste tu, te aparecerá un dialogo donde tendrás que ingresar el siguiente código: <strong>" & Codigo & "</strong>" & "<br />" & _
+                    "<strong>Si NO fuiste tu, ignora este mensaje y considera cambiar tu contraseña</strong>" & "<br /><br />" & _
+                    "Atentamente, el Staff de Argentum20"
+                    
         Set .Configuration = cdoConf
         
         ' Send the message
