@@ -153,7 +153,7 @@ Public Sub HandleGuardNoticeResponse(ByVal UserIndex As Integer)
         If AOG_EXPIRE <> 0 And DateDiff("s", Now(), DB_Timestamp) < AOG_EXPIRE Then
         
             ' Le avisamos que expiro
-            Call WriteErrorMsg(UserIndex, "El código de verificación ha expirado.")
+            Call WriteShowMessageBox(UserIndex, "El código de verificación ha expirado.")
             
             ' Invalidamos el codigo
             Call MakeQuery("DELETE FROM account_guard WHERE account_id = ?", True, UserList(UserIndex).AccountID)
@@ -173,7 +173,7 @@ Public Sub HandleGuardNoticeResponse(ByVal UserIndex As Integer)
                 
             Else
                 ' Le avisamos
-                Call WriteErrorMsg(UserIndex, "Codigo de verificación erroneo.")
+                Call WriteShowMessageBox(UserIndex, "El código de verificación ha expirado.")
                 
                 ' Lo kickeamos.
                 Call CloseSocket(UserIndex)

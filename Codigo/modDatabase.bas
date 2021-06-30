@@ -66,7 +66,7 @@ ErrorHandler:
     
 118     If Not ConnectedOnce Then
 120         Call MsgBox("No se pudo conectar a la base de datos. Mas información en logs/Database.log", vbCritical, "OBDC - Error")
-122         Call CerrarServidor
+122         End
         End If
 
 End Sub
