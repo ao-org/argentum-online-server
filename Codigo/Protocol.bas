@@ -15874,7 +15874,7 @@ Private Sub HandleIngresarConCuenta(ByVal UserIndex As Integer)
             
             If AOGuard.AOG_STATUS = 1 Then
             
-                If AOGuard.VerificarOrigen(.AccountID, HDSerial, .IP) And False Then
+                If AOGuard.VerificarOrigen(.AccountID, HDSerial, .IP) Then
                     Call WritePersonajesDeCuenta(UserIndex)
                     Call WriteMostrarCuenta(UserIndex)
                     
