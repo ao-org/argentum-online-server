@@ -21,7 +21,6 @@ End Sub
  
 Sub OnReadyStateChange()
 Attribute OnReadyStateChange.VB_UserMemId = 0
-   Debug.Print m_xmlHttp.readyState
    
    If m_xmlHttp.readyState = 4 Then
     
