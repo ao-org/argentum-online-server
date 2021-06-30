@@ -68,7 +68,7 @@ Private Sub GenerarCodigo(ByVal UserIndex As Integer)
     
     With UserList(UserIndex)
         
-        Call MakeQuery("SELECT * FROM account_guard WHERE account_id = ?", False, .AccountID)
+        Call MakeQuery("SELECT TIMESTAMPDIFF(SECOND, `timestamp`, CURRENT_TIMESTAMP) AS time_diff, code FROM account_guard WHERE account_id = ?", False, .AccountID)
      
         ' NO tiene codigo
         If QueryData Is Nothing Then
@@ -76,7 +76,7 @@ Private Sub GenerarCodigo(ByVal UserIndex As Integer)
             NuevoCodigo = True
         
         ' Tiene codigo, pero ya expiro...
-        ElseIf AOG_EXPIRE <> 0 And DateDiff("s", Now(), QueryData!TimeStamp) > AOG_EXPIRE Then
+        ElseIf AOG_EXPIRE <> 0 And QueryData!time_diff > AOG_EXPIRE Then
             
             NuevoCodigo = True
             
@@ -90,8 +90,7 @@ Private Sub GenerarCodigo(ByVal UserIndex As Integer)
         
             ' Generamos un nuevo codigo
             Codigo = RandomString(5)
-            
-            
+                  
             ' Lo guardamos en la BD
             Call MakeQuery("REPLACE INTO account_guard (account_id, code) VALUES (?, ?)", True, .AccountID, Codigo)
         
@@ -105,7 +104,6 @@ Private Sub GenerarCodigo(ByVal UserIndex As Integer)
         Debug.Print "Codigo de Verificacion: " & Codigo & vbNewLine
         
         ' Enviamos el mail con el codigo
-        Call SendEmail(.Cuenta, Codigo, .IP)
         
     End With
     
@@ -144,16 +142,13 @@ Public Sub HandleGuardNoticeResponse(ByVal UserIndex As Integer)
     
     With UserList(UserIndex)
         
-        Dim Exito As Boolean
-        
         Dim Codigo As String: Codigo = .incomingData.ReadASCIIString
-        
-        Dim DB_Codigo As String:    DB_Codigo = GetDBValue("account_guard", "code", "account_id", .AccountID)
-        Dim DB_Timestamp As String: DB_Timestamp = GetDBValue("account_guard", "timestamp", "account_id", .AccountID)
+
+        Call MakeQuery("SELECT TIMESTAMPDIFF(SECOND, `timestamp`, CURRENT_TIMESTAMP) AS time_diff, code FROM account_guard WHERE account_id = ?", False, .AccountID)
         
         ' El codigo expira despues de 1 minuto.
-        If AOG_EXPIRE <> 0 And DateDiff("s", Now(), DB_Timestamp) < AOG_EXPIRE Then
-        
+        If AOG_EXPIRE <> 0 And QueryData!time_diff > AOG_EXPIRE Then
+            
             ' Le avisamos que expiro
             Call WriteShowMessageBox(UserIndex, "El código de verificación ha expirado.")
             
@@ -162,11 +157,12 @@ Public Sub HandleGuardNoticeResponse(ByVal UserIndex As Integer)
             
             ' Lo kickeamos.
              Call CloseSocket(UserIndex)
-            
+                 
         Else ' El codigo NO expiro...
             
             ' Lo comparamos con lo que tenemos en la BD
-            If Codigo = DB_Codigo Then
+            If Codigo = QueryData!code Then
+            
                 Call WritePersonajesDeCuenta(UserIndex)
                 Call WriteMostrarCuenta(UserIndex)
                 
@@ -174,11 +170,13 @@ Public Sub HandleGuardNoticeResponse(ByVal UserIndex As Integer)
                 Call MakeQuery("DELETE FROM account_guard WHERE account_id = ?", True, UserList(UserIndex).AccountID)
                 
             Else
+            
                 ' Le avisamos
-                Call WriteShowMessageBox(UserIndex, "El código de verificación ha expirado.")
+                Call WriteShowMessageBox(UserIndex, "El código de verificación ha incorrecto.")
                 
                 ' Lo kickeamos.
                 Call CloseSocket(UserIndex)
+                
             End If
             
         End If
