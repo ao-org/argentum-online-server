@@ -57,8 +57,8 @@ Importante usar semantic versioning (https://semver.org/) (ejemplo: v1.0.0)
 ### 5- Ejecutar pipelines de jenkins para actualizar recursos de servidor y servidor.
 Importante: Ejectuar uno solo a la vez y esperar a que termine y hacerlo en este orden.
 
--http://ao20-test.duckdns.org:9090/view/Produccion/job/Recursos-tag-release/
--http://ao20-test.duckdns.org:9090/view/Produccion/job/re20-server-tag-release/
+- http://ao20-test.duckdns.org:9090/view/Produccion/job/Recursos-tag-release/
+- http://ao20-test.duckdns.org:9090/view/Produccion/job/re20-server-tag-release/
 
 
 Listo parche completado.
