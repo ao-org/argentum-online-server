@@ -316,7 +316,7 @@ Private Function IsValidSpawnArea() As Boolean
 
 IsValidSpawnArea_Err:
 114     Call RegistrarError(Err.Number, Err.Description, "clsClanPretoriano.IsValidSpawnArea", Erl)
-116     Resume Next
+116
         
 End Function
 
@@ -343,7 +343,7 @@ Private Sub InitializePretoriansVars()
 
 InitializePretoriansVars_Err:
 112     Call RegistrarError(Err.Number, Err.Description, "clsClanPretoriano.InitializePretoriansVars", Erl)
-114     Resume Next
+114
         
 End Sub
 
@@ -430,7 +430,7 @@ Private Sub SpawnPretorian(ByRef SpawnPos As WorldPos, _
 
 SpawnPretorian_Err:
 138     Call RegistrarError(Err.Number, Err.Description, "clsClanPretoriano.SpawnPretorian", Erl)
-140     Resume Next
+140
         
 End Sub
 
@@ -486,7 +486,7 @@ Private Function RandomTallHead()
 
 RandomTallHead_Err:
 112     Call RegistrarError(Err.Number, Err.Description, "clsClanPretoriano.RandomTallHead", Erl)
-114     Resume Next
+114
         
 End Function
 
@@ -536,7 +536,7 @@ Private Function RandomShortHead()
 
 RandomShortHead_Err:
 108     Call RegistrarError(Err.Number, Err.Description, "clsClanPretoriano.RandomShortHead", Erl)
-110     Resume Next
+110
         
 End Function
 
@@ -580,7 +580,7 @@ Public Sub PerformPretorianAI(ByVal NpcIndex As Integer)
 
 PerformPretorianAI_Err:
 126     Call RegistrarError(Err.Number, Err.Description, "clsClanPretoriano.PerformPretorianAI", Erl)
-128     Resume Next
+128
         
 End Sub
 
@@ -611,7 +611,7 @@ Private Function GetPretorianAI(ByVal NpcIndex As Integer) As Byte
 
 GetPretorianAI_Err:
 108     Call RegistrarError(Err.Number, Err.Description, "clsClanPretoriano.GetPretorianAI", Erl)
-110     Resume Next
+110
         
 End Function
 
@@ -968,7 +968,7 @@ Private Sub KingReviveAlly(ByVal NpcIndex As Integer)
 
 KingReviveAlly_Err:
 120     Call RegistrarError(Err.Number, Err.Description, "clsClanPretoriano.KingReviveAlly", Erl)
-122     Resume Next
+122
         
 End Sub
 
@@ -1204,7 +1204,7 @@ Private Sub HealerPerformAction(ByVal NpcIndex As Integer, _
 
 HealerPerformAction_Err:
 142     Call RegistrarError(Err.Number, Err.Description, "clsClanPretoriano.HealerPerformAction", Erl)
-144     Resume Next
+144
         
 End Sub
 
@@ -1242,7 +1242,7 @@ Private Sub HealerMove(ByVal NpcIndex As Integer)
 
 HealerMove_Err:
 112     Call RegistrarError(Err.Number, Err.Description, "clsClanPretoriano.HealerMove", Erl)
-114     Resume Next
+114
         
 End Sub
 
@@ -1326,7 +1326,7 @@ Private Function SpellCasterSacrifice(ByVal NpcIndex As Integer) As Boolean
 
 SpellCasterSacrifice_Err:
 122     Call RegistrarError(Err.Number, Err.Description, "clsClanPretoriano.SpellCasterSacrifice", Erl)
-124     Resume Next
+124
         
 End Function
 
@@ -1473,7 +1473,7 @@ Private Sub SpellCasterPerformAction(ByVal NpcIndex As Integer, _
 
 SpellCasterPerformAction_Err:
 110     Call RegistrarError(Err.Number, Err.Description, "clsClanPretoriano.SpellCasterPerformAction", Erl)
-112     Resume Next
+112
         
 End Sub
 
@@ -1511,7 +1511,7 @@ Private Sub SpellCasterMove(ByVal NpcIndex As Integer, ByVal BestTarget As Integ
 
 SpellCasterMove_Err:
 112     Call RegistrarError(Err.Number, Err.Description, "clsClanPretoriano.SpellCasterMove", Erl)
-114     Resume Next
+114
         
 End Sub
 
@@ -1609,7 +1609,7 @@ Private Sub DealWandDamage(ByVal NpcIndex As Integer, ByVal SpellIndex As Intege
                         
 120                         .Stats.MinHp = .Stats.MinHp - Danio
                         
-122                         Call WriteConsoleMsg(UserIndex, NpcList(NpcIndex).name & " te ha quitado " & Danio & " puntos de vida al romper su vara.", FontTypeNames.FONTTYPE_FIGHT)
+122                         Call WriteConsoleMsg(UserIndex, NpcList(NpcIndex).Name & " te ha quitado " & Danio & " puntos de vida al romper su vara.", FontTypeNames.FONTTYPE_FIGHT)
 124                         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(Hechizos(SpellIndex).wav, .Pos.X, .Pos.Y))
 126                         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(.Char.CharIndex, Hechizos(SpellIndex).FXgrh, Hechizos(SpellIndex).loops))
                         
@@ -1946,7 +1946,7 @@ Public Sub AI_Shooter(ByVal NpcIndex As Integer)
 
 AI_Shooter_Err:
 108     Call RegistrarError(Err.Number, Err.Description, "clsClanPretoriano.AI_Shooter", Erl)
-110     Resume Next
+110
         
 End Sub
 
@@ -2307,7 +2307,7 @@ Private Sub ThiefPerfomAction(ByVal NpcIndex As Integer, _
                             ' Can paralize
 110                         If RandomNumber(1, 100) < 10 Then
 112                             Call NpcLanzaSpellSobreUser(NpcIndex, BestTarget, .Spells(eThiefSpells.Paralisis), True)
-114                             Call WriteConsoleMsg(BestTarget, "" & .name & " te ha paralizado con su golpe!!", FontTypeNames.FONTTYPE_VENENO)
+114                             Call WriteConsoleMsg(BestTarget, "" & .Name & " te ha paralizado con su golpe!!", FontTypeNames.FONTTYPE_VENENO)
                         
                                 ' Can unequip weapon
 116                         ElseIf RandomNumber(1, 100) < 22 Then
@@ -2329,7 +2329,7 @@ Private Sub ThiefPerfomAction(ByVal NpcIndex As Integer, _
 128                             If WeaponEqpSlot <> 0 Then
                                 
 130                                 If SnatchItem(NpcIndex, BestTarget, WeaponEqpSlot) Then
-132                                     Call WriteConsoleMsg(BestTarget, "" & .name & " te ha arrebatado tu arma!!", FontTypeNames.FONTTYPE_VENENO)
+132                                     Call WriteConsoleMsg(BestTarget, "" & .Name & " te ha arrebatado tu arma!!", FontTypeNames.FONTTYPE_VENENO)
 
                                     End If
                                 
@@ -2339,7 +2339,7 @@ Private Sub ThiefPerfomAction(ByVal NpcIndex As Integer, _
 136                                 If MunicionEqpSlot <> 0 Then
                                 
 138                                     If SnatchItem(NpcIndex, BestTarget, MunicionEqpSlot) Then
-140                                         Call WriteConsoleMsg(BestTarget, "" & .name & " te ha arrebatado tus municiones!!", FontTypeNames.FONTTYPE_VENENO)
+140                                         Call WriteConsoleMsg(BestTarget, "" & .Name & " te ha arrebatado tus municiones!!", FontTypeNames.FONTTYPE_VENENO)
 
                                         End If
                                     
@@ -2350,12 +2350,12 @@ Private Sub ThiefPerfomAction(ByVal NpcIndex As Integer, _
                                 ' Can steal the items of a slot
 142                         ElseIf RandomNumber(1, 100) < 16 Then
                         
-                                Dim slot As Byte
+                                Dim Slot As Byte
 
-144                             slot = RandomNumber(1, UserList(BestTarget).CurrentInventorySlots)
+144                             Slot = RandomNumber(1, UserList(BestTarget).CurrentInventorySlots)
                             
-146                             If ThiefStealITem(NpcIndex, BestTarget, slot) Then
-148                                 Call WriteConsoleMsg(BestTarget, "" & .name & " te esta robando!!", FontTypeNames.FONTTYPE_VENENO)
+146                             If ThiefStealITem(NpcIndex, BestTarget, Slot) Then
+148                                 Call WriteConsoleMsg(BestTarget, "" & .Name & " te esta robando!!", FontTypeNames.FONTTYPE_VENENO)
 
                                 End If
                             
@@ -2399,8 +2399,8 @@ ErrHandler:
 End Sub
 
 Private Function SnatchItem(ByVal NpcIndex As Integer, _
-                            ByVal targetIndex As Integer, _
-                            ByVal slot As Byte) As Boolean
+                            ByVal TargetIndex As Integer, _
+                            ByVal Slot As Byte) As Boolean
 
         '***************************************************
         'Author: ZaMa
@@ -2413,9 +2413,9 @@ Private Function SnatchItem(ByVal NpcIndex As Integer, _
 
         Dim nPos    As WorldPos
     
-100     With UserList(targetIndex)
-102         DropObj.amount = .Invent.Object(slot).amount
-104         DropObj.ObjIndex = .Invent.Object(slot).ObjIndex
+100     With UserList(TargetIndex)
+102         DropObj.amount = .Invent.Object(Slot).amount
+104         DropObj.ObjIndex = .Invent.Object(Slot).ObjIndex
     
             ' Search for suitable place to drop item
 106         Call Tilelibre(.Pos, nPos, DropObj, False, True)
@@ -2424,8 +2424,8 @@ Private Function SnatchItem(ByVal NpcIndex As Integer, _
 108         If nPos.X <> 0 And nPos.Y <> 0 Then
                 ' Drop it
 110             Call MakeObj(DropObj, nPos.Map, nPos.X, nPos.Y)
-112             Call QuitarUserInvItem(targetIndex, slot, DropObj.amount)
-114             Call UpdateUserInv(False, targetIndex, slot)
+112             Call QuitarUserInvItem(TargetIndex, Slot, DropObj.amount)
+114             Call UpdateUserInv(False, TargetIndex, Slot)
             
                 ' Suceed
 116             SnatchItem = True
@@ -2442,8 +2442,8 @@ ErrHandler:
 End Function
 
 Private Function ThiefStealITem(ByVal NpcIndex As Integer, _
-                                ByVal targetIndex As Integer, _
-                                ByVal slot As Byte) As Boolean
+                                ByVal TargetIndex As Integer, _
+                                ByVal Slot As Byte) As Boolean
         
         On Error GoTo ThiefStealITem_Err
         
@@ -2459,23 +2459,23 @@ Private Function ThiefStealITem(ByVal NpcIndex As Integer, _
         Dim NroItems  As Integer
     
         ' If doesn't have any item, the doesn't do anything
-100     If UserList(targetIndex).Invent.Object(slot).ObjIndex = 0 Then Exit Function
+100     If UserList(TargetIndex).Invent.Object(Slot).ObjIndex = 0 Then Exit Function
     
         ' If not stealable, then don't do anything
-102     If Not ObjEsRobable(targetIndex, slot) Then Exit Function
+102     If Not ObjEsRobable(TargetIndex, Slot) Then Exit Function
 
         ' If thief's inventory is full, then snatch it
 104     NroItems = NpcList(NpcIndex).Invent.NroItems
 
 106     If NroItems = 20 Then
         
-108         ThiefStealITem = SnatchItem(NpcIndex, targetIndex, slot)
+108         ThiefStealITem = SnatchItem(NpcIndex, TargetIndex, Slot)
              
             ' Steal it
         Else
         
-110         StolenObj.amount = UserList(targetIndex).Invent.Object(slot).amount
-112         StolenObj.ObjIndex = UserList(targetIndex).Invent.Object(slot).ObjIndex
+110         StolenObj.amount = UserList(TargetIndex).Invent.Object(Slot).amount
+112         StolenObj.ObjIndex = UserList(TargetIndex).Invent.Object(Slot).ObjIndex
         
             ' Add it to Thief inventory
 114         With NpcList(NpcIndex)
@@ -2487,8 +2487,8 @@ Private Function ThiefStealITem(ByVal NpcIndex As Integer, _
             End With
         
             ' Take it from user inventory
-124         Call QuitarUserInvItem(targetIndex, slot, StolenObj.amount)
-126         Call UpdateUserInv(False, targetIndex, slot)
+124         Call QuitarUserInvItem(TargetIndex, Slot, StolenObj.amount)
+126         Call UpdateUserInv(False, TargetIndex, Slot)
         
 128         ThiefStealITem = True
         
@@ -2499,7 +2499,7 @@ Private Function ThiefStealITem(ByVal NpcIndex As Integer, _
 
 ThiefStealITem_Err:
 130     Call RegistrarError(Err.Number, Err.Description, "clsClanPretoriano.ThiefStealITem", Erl)
-132     Resume Next
+132
         
 End Function
 
@@ -2531,7 +2531,7 @@ Private Sub ThiefTurnInvisible(ByVal NpcIndex As Integer, ByVal TurnVisible As B
 
 ThiefTurnInvisible_Err:
 110     Call RegistrarError(Err.Number, Err.Description, "clsClanPretoriano.ThiefTurnInvisible", Erl)
-112     Resume Next
+112
         
 End Sub
 
@@ -2574,7 +2574,7 @@ Private Function TargetClose(ByRef Pos As WorldPos) As Boolean
 
 TargetClose_Err:
 116     Call RegistrarError(Err.Number, Err.Description, "clsClanPretoriano.TargetClose", Erl)
-118     Resume Next
+118
         
 End Function
 
@@ -2630,7 +2630,7 @@ Private Function CheckNearUserPets(ByVal NpcIndex As Integer, _
 
 CheckNearUserPets_Err:
 120     Call RegistrarError(Err.Number, Err.Description, "clsClanPretoriano.CheckNearUserPets", Erl)
-122     Resume Next
+122
         
 End Function
 
@@ -2936,7 +2936,7 @@ Private Sub MoveFailed(ByVal NpcIndex As Integer)
 
 MoveFailed_Err:
 108     Call RegistrarError(Err.Number, Err.Description, "clsClanPretoriano.MoveFailed", Erl)
-110     Resume Next
+110
         
 End Sub
 
@@ -2957,7 +2957,7 @@ Private Sub ReturnToCenter(ByVal NpcIndex As Integer)
 
 ReturnToCenter_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "clsClanPretoriano.ReturnToCenter", Erl)
-104     Resume Next
+104
         
 End Sub
 
@@ -2985,7 +2985,7 @@ ErrHandler:
 
 FarFromTeam_Err:
 106     Call RegistrarError(Err.Number, Err.Description, "clsClanPretoriano.FarFromTeam", Erl)
-108     Resume Next
+108
         
 End Function
 
@@ -3037,7 +3037,7 @@ Private Function InVisionRange(ByVal UserIndex As Integer, _
 
 InVisionRange_Err:
 106     Call RegistrarError(Err.Number, Err.Description, "clsClanPretoriano.InVisionRange", Erl)
-108     Resume Next
+108
         
 End Function
 
@@ -3067,7 +3067,7 @@ Private Function InVisionRangeNpc(ByVal NpcIndex As Integer, _
 
 InVisionRangeNpc_Err:
 106     Call RegistrarError(Err.Number, Err.Description, "clsClanPretoriano.InVisionRangeNpc", Erl)
-108     Resume Next
+108
         
 End Function
 
@@ -3104,7 +3104,7 @@ Private Function UserAtacable(ByVal UserIndex As Integer, _
 
 UserAtacable_Err:
 112     Call RegistrarError(Err.Number, Err.Description, "clsClanPretoriano.UserAtacable", Erl)
-114     Resume Next
+114
         
 End Function
 
@@ -3130,7 +3130,7 @@ Private Function UserDistance(ByVal UserIndex As Integer, _
 
 UserDistance_Err:
 104     Call RegistrarError(Err.Number, Err.Description, "clsClanPretoriano.UserDistance", Erl)
-106     Resume Next
+106
         
 End Function
 
@@ -3156,7 +3156,7 @@ Private Function NpcDistance(ByVal NpcIndex As Integer, _
 
 NpcDistance_Err:
 104     Call RegistrarError(Err.Number, Err.Description, "clsClanPretoriano.NpcDistance", Erl)
-106     Resume Next
+106
         
 End Function
 
@@ -3215,7 +3215,7 @@ Public Sub MuerePretoriano(ByVal NpcIndex As Integer)
 
 MuerePretoriano_Err:
 124     Call RegistrarError(Err.Number, Err.Description, "clsClanPretoriano.MuerePretoriano", Erl)
-126     Resume Next
+126
         
 End Sub
 
@@ -3257,7 +3257,7 @@ Private Function AllyParalyzed(ByVal NpcIndex As Integer, _
 
 AllyParalyzed_Err:
 114     Call RegistrarError(Err.Number, Err.Description, "clsClanPretoriano.AllyParalyzed", Erl)
-116     Resume Next
+116
         
 End Function
 
@@ -3303,7 +3303,7 @@ Private Function AllyInjured(ByVal NpcIndex As Integer) As Integer
 
 AllyInjured_Err:
 116     Call RegistrarError(Err.Number, Err.Description, "clsClanPretoriano.AllyInjured", Erl)
-118     Resume Next
+118
         
 End Function
 
@@ -3344,7 +3344,7 @@ Private Function AllyPoisoned(ByVal NpcIndex As Integer) As Integer
 
 AllyPoisoned_Err:
 114     Call RegistrarError(Err.Number, Err.Description, "clsClanPretoriano.AllyPoisoned", Erl)
-116     Resume Next
+116
         
 End Function
 
@@ -3377,7 +3377,7 @@ Private Function AllyDead() As Integer
 
 AllyDead_Err:
 108     Call RegistrarError(Err.Number, Err.Description, "clsClanPretoriano.AllyDead", Erl)
-110     Resume Next
+110
         
 End Function
 
@@ -3406,7 +3406,7 @@ Public Function CanAtackMember(ByVal NpcIndex As Integer) As Boolean
 
 CanAtackMember_Err:
 106     Call RegistrarError(Err.Number, Err.Description, "clsClanPretoriano.CanAtackMember", Erl)
-108     Resume Next
+108
         
 End Function
 
@@ -3426,7 +3426,7 @@ Public Property Get ClanMap() As Integer
 
 ClanMap_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "clsClanPretoriano.ClanMap", Erl)
-104     Resume Next
+104
         
 End Property
 
@@ -3446,7 +3446,7 @@ Public Property Get Active() As Boolean
 
 Active_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "clsClanPretoriano.Active", Erl)
-104     Resume Next
+104
         
 End Property
 
@@ -3481,7 +3481,7 @@ Public Sub DeleteClan()
 
 DeleteClan_Err:
 112     Call RegistrarError(Err.Number, Err.Description, "clsClanPretoriano.DeleteClan", Erl)
-114     Resume Next
+114
         
 End Sub
 

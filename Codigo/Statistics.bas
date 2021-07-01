@@ -131,7 +131,7 @@ Public Sub StoreFrag(ByVal killer As Integer, ByVal victim As Integer)
 
 StoreFrag_Err:
 178     Call RegistrarError(Err.Number, Err.Description, "Statistics.StoreFrag", Erl)
-180     Resume Next
+180
         
 End Sub
 
@@ -472,7 +472,7 @@ Public Sub DumpStatistics()
 
 DumpStatistics_Err:
 568     Call RegistrarError(Err.Number, Err.Description, "Statistics.DumpStatistics", Erl)
-570     Resume Next
+570
         
 End Sub
 
@@ -499,6 +499,6 @@ Public Sub ParseChat(ByRef S As String)
 
 ParseChat_Err:
 110     Call RegistrarError(Err.Number, Err.Description, "Statistics.ParseChat", Erl)
-112     Resume Next
+112
         
 End Sub

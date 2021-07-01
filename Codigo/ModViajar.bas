@@ -14,6 +14,6 @@ Public Sub IniciarTransporte(ByVal UserIndex As Integer)
 
 IniciarTransporte_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "ModViajar.IniciarTransporte", Erl)
-104     Resume Next
+104
         
 End Sub

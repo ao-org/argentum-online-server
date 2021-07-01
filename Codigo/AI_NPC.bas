@@ -54,7 +54,7 @@ Public Sub NpcAI(ByVal NpcIndex As Integer)
 
 ErrorHandler:
     
-136     Call LogError("NPC.AI " & NpcList(NpcIndex).name & " " & NpcList(NpcIndex).MaestroNPC & " mapa:" & NpcList(NpcIndex).Pos.Map & " x:" & NpcList(NpcIndex).Pos.X & " y:" & NpcList(NpcIndex).Pos.Y & " Mov:" & NpcList(NpcIndex).Movement & " TargU:" & NpcList(NpcIndex).Target & " TargN:" & NpcList(NpcIndex).TargetNPC)
+136     Call LogError("NPC.AI " & NpcList(NpcIndex).Name & " " & NpcList(NpcIndex).MaestroNPC & " mapa:" & NpcList(NpcIndex).Pos.Map & " x:" & NpcList(NpcIndex).Pos.X & " y:" & NpcList(NpcIndex).Pos.Y & " Mov:" & NpcList(NpcIndex).Movement & " TargU:" & NpcList(NpcIndex).Target & " TargN:" & NpcList(NpcIndex).TargetNPC)
 
 138     Dim MiNPC As npc: MiNPC = NpcList(NpcIndex)
     
@@ -180,7 +180,7 @@ Private Sub AI_CaminarSinRumboCercaDeOrigen(ByVal NpcIndex As Integer)
 
 AI_CaminarSinRumboCercaDeOrigen_Err:
 110     Call RegistrarError(Err.Number, Err.Description, "AI.AI_CaminarSinRumboCercaDeOrigen_Err", Erl)
-112     Resume Next
+112
         
 End Sub
 
@@ -204,7 +204,7 @@ Private Sub AI_CaminarSinRumbo(ByVal NpcIndex As Integer)
 
 AI_CaminarSinRumbo_Err:
 108     Call RegistrarError(Err.Number, Err.Description, "AI.AI_CaminarSinRumbo", Erl)
-110     Resume Next
+110
         
 End Sub
 
@@ -283,7 +283,7 @@ Private Sub AI_AtacarUsuarioObjetivo(ByVal AtackerNpcIndex As Integer)
 
 ErrorHandler:
 130     Call RegistrarError(Err.Number, Err.Description, "AIv2.AI_AtacarUsuarioObjetivo", Erl)
-132      Resume Next
+132
 End Sub
 
 Public Sub AI_GuardiaPersigueNpc(ByVal NpcIndex As Integer)
@@ -330,7 +330,7 @@ Public Sub AI_GuardiaPersigueNpc(ByVal NpcIndex As Integer)
         
 ErrorHandler:
 126     Call RegistrarError(Err.Number, Err.Description, "AIv2.AI_GuardiaAtacaNpc", Erl)
-128     Resume Next
+128
 
 End Sub
 
@@ -378,7 +378,7 @@ Private Function BuscarNpcEnArea(ByVal NpcIndex As Integer) As Integer
 
 BuscarNpcEnArea:
 120     Call RegistrarError(Err.Number, Err.Description, "Extra.BuscarNpcEnArea", Erl)
-122     Resume Next
+122
         
 End Function
 
@@ -437,7 +437,7 @@ Private Sub SeguirAgresor(ByVal NpcIndex As Integer)
 
 SeguirAgresor_Err:
 106     Call RegistrarError(Err.Number, Err.Description, "AI.SeguirAgresor", Erl)
-108     Resume Next
+108
 
 End Sub
 
@@ -501,7 +501,7 @@ Private Sub RestoreOldMovement(ByVal NpcIndex As Integer)
 
 RestoreOldMovement_Err:
 116     Call RegistrarError(Err.Number, Err.Description, "AI.RestoreOldMovement", Erl)
-118     Resume Next
+118
 
 End Sub
 
@@ -658,7 +658,7 @@ Private Sub MovimientoInvasion(ByVal NpcIndex As Integer)
     
 Handler:
 144     Call RegistrarError(Err.Number, Err.Description, "AI.MovimientoInvasion", Erl)
-146     Resume Next
+146
 End Sub
 
 ' El NPC elige un hechizo al azar dentro de su listado, con un potencial Target.
@@ -731,7 +731,7 @@ Private Sub NpcLanzaUnSpell(ByVal NpcIndex As Integer)
 NpcLanzaUnSpell_Err:
 150     Call RegistrarError(Err.Number, Err.Description, "AI.NpcLanzaUnSpell", Erl)
 
-152     Resume Next
+152
 
 End Sub
 
@@ -754,7 +754,7 @@ Private Sub NpcLanzaUnSpellSobreNpc(ByVal NpcIndex As Integer, ByVal TargetNPC A
 
 NpcLanzaUnSpellSobreNpc_Err:
 110     Call RegistrarError(Err.Number, Err.Description, "AI.NpcLanzaUnSpellSobreNpc", Erl)
-112     Resume Next
+112
 
 End Sub
 
@@ -809,7 +809,7 @@ Private Function EsEnemigo(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
 
 EsEnemigo_Err:
 122     Call RegistrarError(Err.Number, Err.Description, "AI.EsEnemigo", Erl)
-124     Resume Next
+124
 
 End Function
 
@@ -841,7 +841,7 @@ Private Function EnRangoVision(ByVal NpcIndex As Integer, ByVal UserIndex As Int
 
 EnRangoVision_Err:
 112     Call RegistrarError(Err.Number, Err.Description, "AI.EnRangoVision", Erl)
-114     Resume Next
+114
 
 End Function
 
@@ -867,7 +867,7 @@ Private Function UsuarioAtacableConMagia(ByVal targetUserIndex As Integer) As Bo
 
 UsuarioAtacableConMagia_Err:
 106     Call RegistrarError(Err.Number, Err.Description, "AI.UsuarioAtacableConMagia", Erl)
-108     Resume Next
+108
 
 End Function
 
@@ -896,7 +896,7 @@ Private Function UsuarioAtacableConMelee(ByVal NpcIndex As Integer, ByVal target
 
 UsuarioAtacableConMelee_Err:
 108     Call RegistrarError(Err.Number, Err.Description, "AI.UsuarioAtacableConMelee", Erl)
-110     Resume Next
+110
 
 End Function
 

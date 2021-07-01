@@ -40,7 +40,7 @@ Public Function Porcentaje(ByVal Total As Double, ByVal Porc As Double) As Doubl
 
 Porcentaje_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "Matematicas.Porcentaje", Erl)
-104     Resume Next
+104
         
 End Function
 
@@ -56,7 +56,7 @@ Function Distancia(ByRef wp1 As WorldPos, ByRef wp2 As WorldPos) As Long
 
 Distancia_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "Matematicas.Distancia", Erl)
-104     Resume Next
+104
         
 End Function
 
@@ -74,7 +74,7 @@ Function Distance(X1 As Variant, Y1 As Variant, X2 As Variant, Y2 As Variant) As
 
 Distance_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "Matematicas.Distance", Erl)
-104     Resume Next
+104
         
 End Function
 
@@ -94,6 +94,6 @@ Public Function RandomNumber(ByVal LowerBound As Long, ByVal UpperBound As Long)
 
 RandomNumber_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "Matematicas.RandomNumber", Erl)
-104     Resume Next
+104
         
 End Function

@@ -39,11 +39,11 @@ Private totalProcessCount As Long
 Private Const SD_BOTH As Long = &H2
 
 Public Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
-Public Declare Function GetWindowLong Lib "user32" Alias "GetWindowLongA" (ByVal hwnd As Long, ByVal nIndex As Long) As Long
-Public Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVal hwnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
-Public Declare Function CallWindowProc Lib "user32" Alias "CallWindowProcA" (ByVal lpPrevWndFunc As Long, ByVal hwnd As Long, ByVal msg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
+Public Declare Function GetWindowLong Lib "user32" Alias "GetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long) As Long
+Public Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
+Public Declare Function CallWindowProc Lib "user32" Alias "CallWindowProcA" (ByVal lpPrevWndFunc As Long, ByVal hWnd As Long, ByVal Msg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
 Private Declare Function CreateWindowEx Lib "user32" Alias "CreateWindowExA" (ByVal dwExStyle As Long, ByVal lpClassName As String, ByVal lpWindowName As String, ByVal dwStyle As Long, ByVal X As Long, ByVal Y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hWndParent As Long, ByVal hMenu As Long, ByVal hInstance As Long, lpParam As Any) As Long
-Private Declare Function DestroyWindow Lib "user32" (ByVal hwnd As Long) As Long
+Private Declare Function DestroyWindow Lib "user32" (ByVal hWnd As Long) As Long
 
 Private Const WS_CHILD = &H40000000
 Public Const GWL_WNDPROC = (-4)
@@ -62,7 +62,7 @@ Private Const MAX_ITERATIONS_HID As Long = 200
 Public Type tSockCache
 
     Sock As Long
-    slot As Long
+    Slot As Long
 
 End Type
 
@@ -100,29 +100,29 @@ HayError:
 BuscaSlotSock_Err:
 106     Call RegistrarError(Err.Number, Err.Description, "wskapiAO.BuscaSlotSock", Erl)
 
-108     Resume Next
+108
 
 End Function
 
-Public Sub AgregaSlotSock(ByVal Sock As Long, ByVal slot As Long)
+Public Sub AgregaSlotSock(ByVal Sock As Long, ByVal Slot As Long)
         
         On Error GoTo AgregaSlotSock_Err
         
 100     Debug.Print "AgregaSockSlot"
 
 102     If WSAPISock2Usr.Count > MaxUsers Then
-104         Call CloseSocket(slot)
+104         Call CloseSocket(Slot)
             Exit Sub
         End If
 
-106     Call WSAPISock2Usr.Add(Sock, slot)
+106     Call WSAPISock2Usr.Add(Sock, Slot)
         
         Exit Sub
 
 AgregaSlotSock_Err:
 108     Call RegistrarError(Err.Number, Err.Description, "wskapiAO.AgregaSlotSock", Erl)
 
-110     Resume Next
+110
         
 End Sub
 
@@ -201,7 +201,7 @@ Public Sub EventoSockAccept(ByVal UserSocketID As Long, UserIP As Long)
     '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
     '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
-    Dim Data() As Byte
+    Dim data() As Byte
     
     'Mariano: Baje la busqueda de slot abajo de CondicionSocket y limite x ip
     NewIndex = NextOpenUser ' Nuevo indice
@@ -218,9 +218,9 @@ Public Sub EventoSockAccept(ByVal UserSocketID As Long, UserIP As Long)
         If IP_Blacklist.Exists(UserList(NewIndex).IP) <> 0 Then
             Call WriteShowMessageBox(NewIndex, "Se te ha prohibido la entrada al servidor. Cod: #0003")
                     
-            Data = UserList(NewIndex).outgoingData.ReadAll
+            data = UserList(NewIndex).outgoingData.ReadAll
 
-            Call API_send(UserSocketID, Data(0), ByVal UBound(Data()) + 1, ByVal 0)
+            Call API_send(UserSocketID, data(0), ByVal UBound(data()) + 1, ByVal 0)
 
             Call frmMain.Winsock.WSA_CloseSocket(UserSocketID)
             Exit Sub
@@ -239,9 +239,9 @@ Public Sub EventoSockAccept(ByVal UserSocketID As Long, UserIP As Long)
         Dim TempBuffer As t_DataBuffer
             TempBuffer = PrepareMessageErrorMsg("El server se encuentra lleno en este momento. Disculpe las molestias ocasionadas.")
 
-        Data = TempBuffer.Data
+        data = TempBuffer.data
         
-        Call API_send(ByVal UserSocketID, Data(0), ByVal TempBuffer.Length, ByVal 0)
+        Call API_send(ByVal UserSocketID, data(0), ByVal TempBuffer.Length, ByVal 0)
         Call frmMain.Winsock.WSA_CloseSocket(UserSocketID)
 
     End If
@@ -251,11 +251,11 @@ Public Sub EventoSockAccept(ByVal UserSocketID As Long, UserIP As Long)
 EventoSockAccept_Err:
     Call RegistrarError(Err.Number, Err.Description, "wskapiAO.EventoSockAccept", Erl)
 
-    Resume Next
+    
         
 End Sub
  
-Public Sub EventoSockRead(ByVal slot As Integer, ByRef Datos() As Byte, ByVal Length As Long)
+Public Sub EventoSockRead(ByVal Slot As Integer, ByRef Datos() As Byte, ByVal Length As Long)
         
         On Error GoTo EventoSockRead_Err
 
@@ -264,12 +264,12 @@ Public Sub EventoSockRead(ByVal slot As Integer, ByRef Datos() As Byte, ByVal Le
 
 100     Call QueryPerformanceCounter(a)
 
-102     With UserList(slot)
+102     With UserList(Slot)
  
             #If AntiExternos = 1 Then
 
                 ' Acá aplicamos la encriptacion Xor al paquete
-108             Call Security.XorData(Datos, Length - 1, UserList(slot).XorIndexIn)
+108             Call Security.XorData(Datos, Length - 1, UserList(Slot).XorIndexIn)
 
             #End If
 
@@ -282,8 +282,8 @@ Public Sub EventoSockRead(ByVal slot As Integer, ByRef Datos() As Byte, ByVal Le
                 Dim PacketID   As Byte
                 Dim LastPacket As Byte
 
-114             Do While HandleIncomingData(slot)
-116                 PacketID = UserList(slot).incomingData.PeekByte
+114             Do While HandleIncomingData(Slot)
+116                 PacketID = UserList(Slot).incomingData.PeekByte
 
 118                 If PacketID = LastPacket Then
 
@@ -291,7 +291,7 @@ Public Sub EventoSockRead(ByVal slot As Integer, ByRef Datos() As Byte, ByVal Le
 
 122                     If Iterations >= MAX_ITERATIONS_HID Then
 124                         Call RegistrarError(-1, "Se supero el maximo de iteraciones de HandleIncomingData. Paquete: " & PacketID, "wskapiAO.EventoSockRead", Erl)
-126                         Call CloseSocket(slot)
+126                         Call CloseSocket(Slot)
                             Exit Do
 
                         End If
@@ -321,23 +321,23 @@ Public Sub EventoSockRead(ByVal slot As Integer, ByRef Datos() As Byte, ByVal Le
 EventoSockRead_Err:
 138     Call RegistrarError(Err.Number, Err.Description, "wskapiAO.EventoSockRead", Erl)
 
-140     Resume Next
+140
         
 End Sub
 
-Public Sub EventoSockClose(ByVal slot As Integer)
+Public Sub EventoSockClose(ByVal Slot As Integer)
         
         On Error GoTo EventoSockClose_Err
 
         'Es el mismo user al que está revisando el centinela??
         'Si estamos acá es porque se cerró la conexión, no es un /salir, y no queremos banearlo....
-100     If Centinela.RevisandoUserIndex = slot Then Call modCentinela.CentinelaUserLogout
+100     If Centinela.RevisandoUserIndex = Slot Then Call modCentinela.CentinelaUserLogout
     
-102     If UserList(slot).flags.UserLogged Then
-104         Call CloseSocketSL(slot)
-106         Call Cerrar_Usuario(slot)
+102     If UserList(Slot).flags.UserLogged Then
+104         Call CloseSocketSL(Slot)
+106         Call Cerrar_Usuario(Slot)
         Else
-108         Call CloseSocket(slot)
+108         Call CloseSocket(Slot)
 
         End If
 
@@ -346,7 +346,7 @@ Public Sub EventoSockClose(ByVal slot As Integer)
 EventoSockClose_Err:
 110     Call RegistrarError(Err.Number, Err.Description, "wskapiAO.EventoSockClose", Erl)
 
-112     Resume Next
+112
         
 End Sub
 
@@ -397,7 +397,7 @@ Public Sub WSApiReiniciarSockets()
 WSApiReiniciarSockets_Err:
 144     Call RegistrarError(Err.Number, Err.Description, "wskapiAO.WSApiReiniciarSockets", Erl)
 
-146     Resume Next
+146
         
 End Sub
 
@@ -432,6 +432,6 @@ Public Function CondicionSocket(ByRef lpCallerId As WSABUF, ByRef lpCallerData A
 CondicionSocket_Err:
 112     Call RegistrarError(Err.Number, Err.Description, "wskapiAO.CondicionSocket", Erl)
 
-114     Resume Next
+114
         
 End Function
