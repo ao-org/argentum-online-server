@@ -85,7 +85,7 @@ Public Sub CallUserAttention()
         Exit Sub
 
 CallUserAttention_Err:
-112     Call RegistrarError(Err.Number, Err.Description, "modCentinela.CallUserAttention", Erl)
+112     Call TraceError(Err.Number, Err.Description, "modCentinela.CallUserAttention", Erl)
 114
         
 End Sub
@@ -143,7 +143,7 @@ Private Sub GoToNextWorkingChar()
         Exit Sub
 
 GoToNextWorkingChar_Err:
-132     Call RegistrarError(Err.Number, Err.Description, "modCentinela.GoToNextWorkingChar", Erl)
+132     Call TraceError(Err.Number, Err.Description, "modCentinela.GoToNextWorkingChar", Erl)
 134
         
 End Sub
@@ -259,7 +259,7 @@ Public Sub CentinelaCheckClave(ByVal UserIndex As Integer, ByVal clave As Intege
         Exit Sub
 
 CentinelaCheckClave_Err:
-118     Call RegistrarError(Err.Number, Err.Description, "modCentinela.CentinelaCheckClave", Erl)
+118     Call TraceError(Err.Number, Err.Description, "modCentinela.CentinelaCheckClave", Erl)
 120
         
 End Sub
@@ -287,7 +287,7 @@ Public Sub ResetCentinelaInfo()
         Exit Sub
 
 ResetCentinelaInfo_Err:
-108     Call RegistrarError(Err.Number, Err.Description, "modCentinela.ResetCentinelaInfo", Erl)
+108     Call TraceError(Err.Number, Err.Description, "modCentinela.ResetCentinelaInfo", Erl)
 110
         
 End Sub
@@ -322,7 +322,7 @@ Public Sub CentinelaSendClave(ByVal UserIndex As Integer)
         Exit Sub
 
 CentinelaSendClave_Err:
-116     Call RegistrarError(Err.Number, Err.Description, "modCentinela.CentinelaSendClave", Erl)
+116     Call TraceError(Err.Number, Err.Description, "modCentinela.CentinelaSendClave", Erl)
 118
         
 End Sub
@@ -366,7 +366,7 @@ Public Sub PasarMinutoCentinela()
         Exit Sub
 
 PasarMinutoCentinela_Err:
-122     Call RegistrarError(Err.Number, Err.Description, "modCentinela.PasarMinutoCentinela", Erl)
+122     Call TraceError(Err.Number, Err.Description, "modCentinela.PasarMinutoCentinela", Erl)
 124
         
 End Sub
@@ -400,7 +400,7 @@ Private Sub WarpCentinela(ByVal UserIndex As Integer)
         Exit Sub
 
 WarpCentinela_Err:
-114     Call RegistrarError(Err.Number, Err.Description, "modCentinela.WarpCentinela", Erl)
+114     Call TraceError(Err.Number, Err.Description, "modCentinela.WarpCentinela", Erl)
 116
         
 End Sub
@@ -434,7 +434,7 @@ Public Sub CentinelaUserLogout()
         Exit Sub
 
 CentinelaUserLogout_Err:
-116     Call RegistrarError(Err.Number, Err.Description, "modCentinela.CentinelaUserLogout", Erl)
+116     Call TraceError(Err.Number, Err.Description, "modCentinela.CentinelaUserLogout", Erl)
 118
         
 End Sub

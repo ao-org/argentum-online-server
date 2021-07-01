@@ -46,7 +46,7 @@ Public Sub SortCorreos(ByVal UserIndex As Integer)
         Exit Sub
 
 SortCorreos_Err:
-130     Call RegistrarError(Err.Number, Err.Description, "ModCorreo.SortCorreos", Erl)
+130     Call TraceError(Err.Number, Err.Description, "ModCorreo.SortCorreos", Erl)
 132
         
 End Sub
@@ -171,7 +171,7 @@ Public Sub BorrarCorreoMail(ByVal UserIndex As Integer, ByVal Index As Byte)
         Exit Sub
 
 BorrarCorreoMail_Err:
-104     Call RegistrarError(Err.Number, Err.Description, "ModCorreo.BorrarCorreoMail", Erl)
+104     Call TraceError(Err.Number, Err.Description, "ModCorreo.BorrarCorreoMail", Erl)
 106
         
 End Sub
@@ -224,7 +224,7 @@ Public Sub ExtractItemCorreo(ByVal UserIndex As Integer, ByVal Index As Byte)
         Exit Sub
 
 ExtractItemCorreo_Err:
-132     Call RegistrarError(Err.Number, Err.Description, "ModCorreo.ExtractItemCorreo", Erl)
+132     Call TraceError(Err.Number, Err.Description, "ModCorreo.ExtractItemCorreo", Erl)
 134
         
 End Sub
@@ -241,7 +241,7 @@ Public Sub ReadMessageCorreo(ByVal UserIndex As Integer, ByVal Index As Byte)
         Exit Sub
 
 ReadMessageCorreo_Err:
-104     Call RegistrarError(Err.Number, Err.Description, "ModCorreo.ReadMessageCorreo", Erl)
+104     Call TraceError(Err.Number, Err.Description, "ModCorreo.ReadMessageCorreo", Erl)
 106
         
 End Sub
@@ -269,7 +269,7 @@ Private Function SearchIndexFreeCorreo(ByVal UserIndex As Integer) As Byte
         Exit Function
 
 SearchIndexFreeCorreo_Err:
-110     Call RegistrarError(Err.Number, Err.Description, "ModCorreo.SearchIndexFreeCorreo", Erl)
+110     Call TraceError(Err.Number, Err.Description, "ModCorreo.SearchIndexFreeCorreo", Erl)
 112
         
 End Function
@@ -317,7 +317,7 @@ Private Function GrabarNuevoCorreoInChar(ByRef UserName As String, ByVal EmisorI
         Exit Function
 
 GrabarNuevoCorreoInChar_Err:
-130     Call RegistrarError(Err.Number, Err.Description, "ModCorreo.GrabarNuevoCorreoInChar", Erl)
+130     Call TraceError(Err.Number, Err.Description, "ModCorreo.GrabarNuevoCorreoInChar", Erl)
 132
         
 End Function
@@ -365,7 +365,7 @@ Private Function GrabarNuevoCorreoInCharBySubasta(ByRef Comprador As String, ByV
         Exit Function
 
 GrabarNuevoCorreoInCharBySubasta_Err:
-130     Call RegistrarError(Err.Number, Err.Description, "ModCorreo.GrabarNuevoCorreoInCharBySubasta", Erl)
+130     Call TraceError(Err.Number, Err.Description, "ModCorreo.GrabarNuevoCorreoInCharBySubasta", Erl)
 132
         
 End Function

@@ -78,7 +78,7 @@ Public Sub DoPermanecerOculto(ByVal UserIndex As Integer)
         Exit Sub
 
 DoPermanecerOculto_Err:
-134     Call RegistrarError(Err.Number, Err.Description, "Trabajo.DoPermanecerOculto", Erl)
+134     Call TraceError(Err.Number, Err.Description, "Trabajo.DoPermanecerOculto", Erl)
 
 136
         
@@ -294,7 +294,7 @@ Public Sub DoNavega(ByVal UserIndex As Integer, _
         Exit Sub
 
 DoNavega_Err:
-204     Call RegistrarError(Err.Number, Err.Description, "Trabajo.DoNavega", Erl)
+204     Call TraceError(Err.Number, Err.Description, "Trabajo.DoNavega", Erl)
 
 206
         
@@ -337,7 +337,7 @@ Public Sub FundirMineral(ByVal UserIndex As Integer)
         Exit Sub
 
 FundirMineral_Err:
-120     Call RegistrarError(Err.Number, Err.Description, "Trabajo.FundirMineral", Erl)
+120     Call TraceError(Err.Number, Err.Description, "Trabajo.FundirMineral", Erl)
 122
         
 End Sub
@@ -371,7 +371,7 @@ Function TieneObjetos(ByVal ItemIndex As Integer, ByVal cant As Integer, ByVal U
         Exit Function
 
 TieneObjetos_Err:
-112     Call RegistrarError(Err.Number, Err.Description, "Trabajo.TieneObjetos", Erl)
+112     Call TraceError(Err.Number, Err.Description, "Trabajo.TieneObjetos", Erl)
 114
         
 End Function
@@ -420,7 +420,7 @@ Function QuitarObjetos(ByVal ItemIndex As Integer, ByVal cant As Integer, ByVal 
         Exit Function
 
 QuitarObjetos_Err:
-130     Call RegistrarError(Err.Number, Err.Description, "Trabajo.QuitarObjetos", Erl)
+130     Call TraceError(Err.Number, Err.Description, "Trabajo.QuitarObjetos", Erl)
 132
         
 End Function
@@ -438,7 +438,7 @@ Sub HerreroQuitarMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As Integ
         Exit Sub
 
 HerreroQuitarMateriales_Err:
-106     Call RegistrarError(Err.Number, Err.Description, "Trabajo.HerreroQuitarMateriales", Erl)
+106     Call TraceError(Err.Number, Err.Description, "Trabajo.HerreroQuitarMateriales", Erl)
 108
         
 End Sub
@@ -456,7 +456,7 @@ Sub CarpinteroQuitarMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As In
         Exit Sub
 
 CarpinteroQuitarMateriales_Err:
-104     Call RegistrarError(Err.Number, Err.Description, "Trabajo.CarpinteroQuitarMateriales", Erl)
+104     Call TraceError(Err.Number, Err.Description, "Trabajo.CarpinteroQuitarMateriales", Erl)
 106
         
 End Sub
@@ -472,7 +472,7 @@ Sub AlquimistaQuitarMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As In
         Exit Sub
 
 AlquimistaQuitarMateriales_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "Trabajo.AlquimistaQuitarMateriales", Erl)
+102     Call TraceError(Err.Number, Err.Description, "Trabajo.AlquimistaQuitarMateriales", Erl)
 104
         
 End Sub
@@ -490,7 +490,7 @@ Sub SastreQuitarMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As Intege
         Exit Sub
 
 SastreQuitarMateriales_Err:
-106     Call RegistrarError(Err.Number, Err.Description, "Trabajo.SastreQuitarMateriales", Erl)
+106     Call TraceError(Err.Number, Err.Description, "Trabajo.SastreQuitarMateriales", Erl)
 108
         
 End Sub
@@ -527,7 +527,7 @@ Function CarpinteroTieneMateriales(ByVal UserIndex As Integer, ByVal ItemIndex A
         Exit Function
 
 CarpinteroTieneMateriales_Err:
-122     Call RegistrarError(Err.Number, Err.Description, "Trabajo.CarpinteroTieneMateriales", Erl)
+122     Call TraceError(Err.Number, Err.Description, "Trabajo.CarpinteroTieneMateriales", Erl)
 124
         
 End Function
@@ -554,7 +554,7 @@ Function AlquimistaTieneMateriales(ByVal UserIndex As Integer, ByVal ItemIndex A
         Exit Function
 
 AlquimistaTieneMateriales_Err:
-112     Call RegistrarError(Err.Number, Err.Description, "Trabajo.AlquimistaTieneMateriales", Erl)
+112     Call TraceError(Err.Number, Err.Description, "Trabajo.AlquimistaTieneMateriales", Erl)
 114
         
 End Function
@@ -603,7 +603,7 @@ Function SastreTieneMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As In
         Exit Function
 
 SastreTieneMateriales_Err:
-132     Call RegistrarError(Err.Number, Err.Description, "Trabajo.SastreTieneMateriales", Erl)
+132     Call TraceError(Err.Number, Err.Description, "Trabajo.SastreTieneMateriales", Erl)
 134
         
 End Function
@@ -652,7 +652,7 @@ Function HerreroTieneMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As I
         Exit Function
 
 HerreroTieneMateriales_Err:
-132     Call RegistrarError(Err.Number, Err.Description, "Trabajo.HerreroTieneMateriales", Erl)
+132     Call TraceError(Err.Number, Err.Description, "Trabajo.HerreroTieneMateriales", Erl)
 134
         
 End Function
@@ -667,7 +667,7 @@ Public Function PuedeConstruir(ByVal UserIndex As Integer, ByVal ItemIndex As In
         Exit Function
 
 PuedeConstruir_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "Trabajo.PuedeConstruir", Erl)
+102     Call TraceError(Err.Number, Err.Description, "Trabajo.PuedeConstruir", Erl)
 104
         
 End Function
@@ -705,7 +705,7 @@ Public Function PuedeConstruirHerreria(ByVal ItemIndex As Integer) As Boolean
         Exit Function
 
 PuedeConstruirHerreria_Err:
-118     Call RegistrarError(Err.Number, Err.Description, "Trabajo.PuedeConstruirHerreria", Erl)
+118     Call TraceError(Err.Number, Err.Description, "Trabajo.PuedeConstruirHerreria", Erl)
 120
         
 End Function
@@ -768,7 +768,7 @@ Public Sub HerreroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As I
         Exit Sub
 
 HerreroConstruirItem_Err:
-144     Call RegistrarError(Err.Number, Err.Description, "Trabajo.HerreroConstruirItem", Erl)
+144     Call TraceError(Err.Number, Err.Description, "Trabajo.HerreroConstruirItem", Erl)
 146
         
 End Sub
@@ -796,7 +796,7 @@ Public Function PuedeConstruirCarpintero(ByVal ItemIndex As Integer) As Boolean
         Exit Function
 
 PuedeConstruirCarpintero_Err:
-110     Call RegistrarError(Err.Number, Err.Description, "Trabajo.PuedeConstruirCarpintero", Erl)
+110     Call TraceError(Err.Number, Err.Description, "Trabajo.PuedeConstruirCarpintero", Erl)
 112
         
 End Function
@@ -824,7 +824,7 @@ Public Function PuedeConstruirAlquimista(ByVal ItemIndex As Integer) As Boolean
         Exit Function
 
 PuedeConstruirAlquimista_Err:
-110     Call RegistrarError(Err.Number, Err.Description, "Trabajo.PuedeConstruirAlquimista", Erl)
+110     Call TraceError(Err.Number, Err.Description, "Trabajo.PuedeConstruirAlquimista", Erl)
 112
         
 End Function
@@ -852,7 +852,7 @@ Public Function PuedeConstruirSastre(ByVal ItemIndex As Integer) As Boolean
         Exit Function
 
 PuedeConstruirSastre_Err:
-110     Call RegistrarError(Err.Number, Err.Description, "Trabajo.PuedeConstruirSastre", Erl)
+110     Call TraceError(Err.Number, Err.Description, "Trabajo.PuedeConstruirSastre", Erl)
 112
         
 End Function
@@ -919,7 +919,7 @@ Public Sub CarpinteroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
         Exit Sub
 
 CarpinteroConstruirItem_Err:
-134     Call RegistrarError(Err.Number, Err.Description, "Trabajo.CarpinteroConstruirItem", Erl)
+134     Call TraceError(Err.Number, Err.Description, "Trabajo.CarpinteroConstruirItem", Erl)
 136
         
 End Sub
@@ -979,7 +979,7 @@ Public Sub AlquimistaConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
         Exit Sub
 
 AlquimistaConstruirItem_Err:
-128     Call RegistrarError(Err.Number, Err.Description, "Trabajo.AlquimistaConstruirItem", Erl)
+128     Call TraceError(Err.Number, Err.Description, "Trabajo.AlquimistaConstruirItem", Erl)
 130
         
 End Sub
@@ -1038,7 +1038,7 @@ Public Sub SastreConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As In
         Exit Sub
 
 SastreConstruirItem_Err:
-132     Call RegistrarError(Err.Number, Err.Description, "Trabajo.SastreConstruirItem", Erl)
+132     Call TraceError(Err.Number, Err.Description, "Trabajo.SastreConstruirItem", Erl)
 134
         
 End Sub
@@ -1068,7 +1068,7 @@ Private Function MineralesParaLingote(ByVal Lingote As iMinerales, ByVal cant As
         Exit Function
 
 MineralesParaLingote_Err:
-116     Call RegistrarError(Err.Number, Err.Description, "Trabajo.MineralesParaLingote", Erl)
+116     Call TraceError(Err.Number, Err.Description, "Trabajo.MineralesParaLingote", Erl)
 118
         
 End Function
@@ -1140,7 +1140,7 @@ Public Sub DoLingotes(ByVal UserIndex As Integer)
             Exit Sub
 
 DoLingotes_Err:
-152         Call RegistrarError(Err.Number, Err.Description, "Trabajo.DoLingotes", Erl)
+152         Call TraceError(Err.Number, Err.Description, "Trabajo.DoLingotes", Erl)
 154
 
 End Sub
@@ -1164,7 +1164,7 @@ Function ModAlquimia(ByVal clase As eClass) As Integer
         Exit Function
 
 ModAlquimia_Err:
-112     Call RegistrarError(Err.Number, Err.Description, "Trabajo.ModAlquimia", Erl)
+112     Call TraceError(Err.Number, Err.Description, "Trabajo.ModAlquimia", Erl)
 114
 
 End Function
@@ -1188,7 +1188,7 @@ Function ModSastre(ByVal clase As eClass) As Integer
         Exit Function
 
 ModSastre_Err:
-108     Call RegistrarError(Err.Number, Err.Description, "Trabajo.ModSastre", Erl)
+108     Call TraceError(Err.Number, Err.Description, "Trabajo.ModSastre", Erl)
 110
         
 End Function
@@ -1212,7 +1212,7 @@ Function ModCarpinteria(ByVal clase As eClass) As Integer
         Exit Function
 
 ModCarpinteria_Err:
-108     Call RegistrarError(Err.Number, Err.Description, "Trabajo.ModCarpinteria", Erl)
+108     Call TraceError(Err.Number, Err.Description, "Trabajo.ModCarpinteria", Erl)
 110
         
 End Function
@@ -1236,7 +1236,7 @@ Function ModHerreria(ByVal clase As eClass) As Single
         Exit Function
 
 ModHerreriA_Err:
-108     Call RegistrarError(Err.Number, Err.Description, "Trabajo.ModHerreriA", Erl)
+108     Call TraceError(Err.Number, Err.Description, "Trabajo.ModHerreriA", Erl)
 110
         
 End Function
@@ -1285,7 +1285,7 @@ Sub DoAdminInvisible(ByVal UserIndex As Integer)
         Exit Sub
 
 DoAdminInvisible_Err:
-126     Call RegistrarError(Err.Number, Err.Description, "Trabajo.DoAdminInvisible", Erl)
+126     Call TraceError(Err.Number, Err.Description, "Trabajo.DoAdminInvisible", Erl)
 
 128
         
@@ -1368,7 +1368,7 @@ Sub TratarDeHacerFogata(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Int
         Exit Sub
 
 TratarDeHacerFogata_Err:
-154     Call RegistrarError(Err.Number, Err.Description, "Trabajo.TratarDeHacerFogata", Erl)
+154     Call TraceError(Err.Number, Err.Description, "Trabajo.TratarDeHacerFogata", Erl)
 156
         
 End Sub
@@ -1747,7 +1747,7 @@ Public Function ObjEsRobable(ByVal VictimaIndex As Integer, ByVal Slot As Intege
         Exit Function
 
 ObjEsRobable_Err:
-104     Call RegistrarError(Err.Number, Err.Description, "Trabajo.ObjEsRobable", Erl)
+104     Call TraceError(Err.Number, Err.Description, "Trabajo.ObjEsRobable", Erl)
 106
         
 End Function
@@ -1865,7 +1865,7 @@ Private Sub RobarObjeto(ByVal LadronIndex As Integer, ByVal VictimaIndex As Inte
         Exit Sub
 
 RobarObjeto_Err:
-164     Call RegistrarError(Err.Number, Err.Description, "Trabajo.RobarObjeto", Erl)
+164     Call TraceError(Err.Number, Err.Description, "Trabajo.RobarObjeto", Erl)
 
         
 End Sub
@@ -1883,7 +1883,7 @@ Public Sub QuitarSta(ByVal UserIndex As Integer, ByVal Cantidad As Integer)
         Exit Sub
 
 QuitarSta_Err:
-108     Call RegistrarError(Err.Number, Err.Description, "Trabajo.QuitarSta", Erl)
+108     Call TraceError(Err.Number, Err.Description, "Trabajo.QuitarSta", Erl)
 110
         
 End Sub
@@ -2197,7 +2197,7 @@ Public Sub DoMeditar(ByVal UserIndex As Integer)
         On Error GoTo DoMeditar_Err
 
         Dim Mana As Long
-        
+
 100     With UserList(UserIndex)
 
 102         .Counters.TimerMeditar = .Counters.TimerMeditar + 1
@@ -2237,7 +2237,7 @@ Public Sub DoMeditar(ByVal UserIndex As Integer)
         Exit Sub
 
 DoMeditar_Err:
-132     Call RegistrarError(Err.Number, Err.Description, "Trabajo.DoMeditar", Erl)
+132     Call TraceError(Err.Number, Err.Description, "Trabajo.DoMeditar", Erl)
 134
         
 End Sub
@@ -2331,7 +2331,7 @@ Public Sub DoMontar(ByVal UserIndex As Integer, ByRef Montura As ObjData, ByVal 
         Exit Sub
 
 DoMontar_Err:
-176     Call RegistrarError(Err.Number, Err.Description, "Trabajo.DoMontar", Erl)
+176     Call TraceError(Err.Number, Err.Description, "Trabajo.DoMontar", Erl)
 178
 
 End Sub
@@ -2360,7 +2360,7 @@ Public Sub ActualizarRecurso(ByVal Map As Integer, ByVal X As Integer, ByVal Y A
         Exit Sub
 
 ActualizarRecurso_Err:
-110     Call RegistrarError(Err.Number, Err.Description, "Trabajo.ActualizarRecurso", Erl)
+110     Call TraceError(Err.Number, Err.Description, "Trabajo.ActualizarRecurso", Erl)
 112
         
 End Sub
@@ -2382,7 +2382,7 @@ Public Function ObtenerPezRandom(ByVal PoderCania As Integer) As Long
         Exit Function
 
 ObtenerPezRandom_Err:
-108     Call RegistrarError(Err.Number, Err.Description, "Trabajo.ObtenerPezRandom", Erl)
+108     Call TraceError(Err.Number, Err.Description, "Trabajo.ObtenerPezRandom", Erl)
 110
         
 End Function
@@ -2418,7 +2418,7 @@ Function ModDomar(ByVal clase As eClass) As Integer
         Exit Function
 
 ModDomar_Err:
-116     Call RegistrarError(Err.Number, Err.Description, "Trabajo.ModDomar", Erl)
+116     Call TraceError(Err.Number, Err.Description, "Trabajo.ModDomar", Erl)
 
         
 End Function
@@ -2450,7 +2450,7 @@ Function FreeMascotaIndex(ByVal UserIndex As Integer) As Integer
         Exit Function
 
 FreeMascotaIndex_Err:
-108     Call RegistrarError(Err.Number, Err.Description, "Trabajo.FreeMascotaIndex", Erl)
+108     Call TraceError(Err.Number, Err.Description, "Trabajo.FreeMascotaIndex", Erl)
 
         
 End Function
@@ -2595,7 +2595,7 @@ Private Function PuedeDomarMascota(ByVal UserIndex As Integer, _
         Exit Function
 
 PuedeDomarMascota_Err:
-110     Call RegistrarError(Err.Number, Err.Description, "Trabajo.PuedeDomarMascota", Erl)
+110     Call TraceError(Err.Number, Err.Description, "Trabajo.PuedeDomarMascota", Erl)
 
         
 End Function
