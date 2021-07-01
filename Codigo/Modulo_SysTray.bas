@@ -59,7 +59,7 @@ Public Function AppHook(ByVal idHook As Long, ByVal wParam As Long, ByVal lParam
         Exit Function
 
 AppHook_Err:
-114     Call RegistrarError(Err.Number, Err.Description, "SysTray.AppHook", Erl)
+114     Call TraceError(Err.Number, Err.Description, "SysTray.AppHook", Erl)
 116
         
 End Function

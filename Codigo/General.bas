@@ -117,7 +117,7 @@ Sub DarCuerpoDesnudo(ByVal UserIndex As Integer)
         Exit Sub
 
 DarCuerpoDesnudo_Err:
-156     Call RegistrarError(Err.Number, Err.Description, "General.DarCuerpoDesnudo", Erl)
+156     Call TraceError(Err.Number, Err.Description, "General.DarCuerpoDesnudo", Erl)
 158
         
 End Sub
@@ -147,7 +147,7 @@ Sub Bloquear(ByVal toMap As Boolean, ByVal sndIndex As Integer, ByVal X As Integ
         Exit Sub
 
 Bloquear_Err:
-108     Call RegistrarError(Err.Number, Err.Description, "General.Bloquear", Erl)
+108     Call TraceError(Err.Number, Err.Description, "General.Bloquear", Erl)
 110
         
 End Sub
@@ -234,7 +234,7 @@ Sub MostrarBloqueosPuerta(ByVal toMap As Boolean, _
         Exit Sub
 
 MostrarBloqueosPuerta_Err:
-174     Call RegistrarError(Err.Number, Err.Description, "General.MostrarBloqueosPuerta", Erl)
+174     Call TraceError(Err.Number, Err.Description, "General.MostrarBloqueosPuerta", Erl)
         
 End Sub
 
@@ -318,7 +318,7 @@ Sub BloquearPuerta(ByVal Map As Integer, _
         Exit Sub
 
 BloquearPuerta_Err:
-170     Call RegistrarError(Err.Number, Err.Description, "General.BloquearPuerta", Erl)
+170     Call TraceError(Err.Number, Err.Description, "General.BloquearPuerta", Erl)
         
 End Sub
 
@@ -346,7 +346,7 @@ Function HayCosta(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer) 
         Exit Function
 
 HayCosta_Err:
-110     Call RegistrarError(Err.Number, Err.Description, "General.HayCosta", Erl)
+110     Call TraceError(Err.Number, Err.Description, "General.HayCosta", Erl)
 112
         
 End Function
@@ -377,7 +377,7 @@ Function HayAgua(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer) A
         Exit Function
 
 HayAgua_Err:
-108     Call RegistrarError(Err.Number, Err.Description, "General.HayAgua", Erl)
+108     Call TraceError(Err.Number, Err.Description, "General.HayAgua", Erl)
 110
         
 End Function
@@ -401,7 +401,7 @@ Function EsArbol(ByVal GrhIndex As Long) As Boolean
         Exit Function
 
 EsArbol_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "General.EsArbol", Erl)
+102     Call TraceError(Err.Number, Err.Description, "General.EsArbol", Erl)
 
         
 End Function
@@ -432,7 +432,7 @@ Private Function HayLava(ByVal Map As Integer, ByVal X As Integer, ByVal Y As In
         Exit Function
 
 HayLava_Err:
-110     Call RegistrarError(Err.Number, Err.Description, "General.HayLava", Erl)
+110     Call TraceError(Err.Number, Err.Description, "General.HayLava", Erl)
 112
         
 End Function
@@ -497,7 +497,7 @@ Sub EnviarSpawnList(ByVal UserIndex As Integer)
         Exit Sub
 
 EnviarSpawnList_Err:
-110     Call RegistrarError(Err.Number, Err.Description, "General.EnviarSpawnList", Erl)
+110     Call TraceError(Err.Number, Err.Description, "General.EnviarSpawnList", Erl)
 112
         
 End Sub
@@ -517,7 +517,7 @@ Public Sub LeerLineaComandos()
         Exit Sub
 
 LeerLineaComandos_Err:
-106     Call RegistrarError(Err.Number, Err.Description, "General.LeerLineaComandos", Erl)
+106     Call TraceError(Err.Number, Err.Description, "General.LeerLineaComandos", Erl)
 108
         
 End Sub
@@ -598,7 +598,7 @@ Private Sub InicializarConstantes()
         Exit Sub
 
 InicializarConstantes_Err:
-210     Call RegistrarError(Err.Number, Err.Description, "General.InicializarConstantes", Erl)
+210     Call TraceError(Err.Number, Err.Description, "General.InicializarConstantes", Erl)
 
         
 End Sub
@@ -857,7 +857,7 @@ Function FileExist(ByVal File As String, Optional FileType As VbFileAttribute = 
         Exit Function
 
 FileExist_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "General.FileExist", Erl)
+102     Call TraceError(Err.Number, Err.Description, "General.FileExist", Erl)
 104
         
 End Function
@@ -899,7 +899,7 @@ Function ReadField(ByVal Pos As Integer, ByRef Text As String, ByVal SepASCII As
         Exit Function
 
 ReadField_Err:
-116     Call RegistrarError(Err.Number, Err.Description, "General.ReadField", Erl)
+116     Call TraceError(Err.Number, Err.Description, "General.ReadField", Erl)
 118
         
 End Function
@@ -914,7 +914,7 @@ Function MapaValido(ByVal Map As Integer) As Boolean
         Exit Function
 
 MapaValido_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "General.MapaValido", Erl)
+102     Call TraceError(Err.Number, Err.Description, "General.MapaValido", Erl)
 104
         
 End Function
@@ -933,7 +933,7 @@ Sub MostrarNumUsers()
         Exit Sub
 
 MostrarNumUsers_Err:
-106     Call RegistrarError(Err.Number, Err.Description, "General.MostrarNumUsers", Erl)
+106     Call TraceError(Err.Number, Err.Description, "General.MostrarNumUsers", Erl)
 108
         
 End Sub
@@ -1097,7 +1097,7 @@ Public Sub LogClanes(ByVal str As String)
         Exit Sub
 
 LogClanes_Err:
-108     Call RegistrarError(Err.Number, Err.Description, "General.LogClanes", Erl)
+108     Call TraceError(Err.Number, Err.Description, "General.LogClanes", Erl)
 110
         
 End Sub
@@ -1118,7 +1118,7 @@ Public Sub LogIP(ByVal str As String)
         Exit Sub
 
 LogIP_Err:
-108     Call RegistrarError(Err.Number, Err.Description, "General.LogIP", Erl)
+108     Call TraceError(Err.Number, Err.Description, "General.LogIP", Erl)
 110
         
 End Sub
@@ -1139,7 +1139,7 @@ Public Sub LogDesarrollo(ByVal str As String)
         Exit Sub
 
 LogDesarrollo_Err:
-108     Call RegistrarError(Err.Number, Err.Description, "General.LogDesarrollo", Erl)
+108     Call TraceError(Err.Number, Err.Description, "General.LogDesarrollo", Erl)
 110
         
 End Sub
@@ -1237,7 +1237,7 @@ ErrHandler:
         Exit Sub
 
 SaveDayStats_Err:
-100     Call RegistrarError(Err.Number, Err.Description, "General.SaveDayStats", Erl)
+100     Call TraceError(Err.Number, Err.Description, "General.SaveDayStats", Erl)
 102
     
 End Sub
@@ -1376,7 +1376,7 @@ Function ValidInputNP(ByVal cad As String) As Boolean
         Exit Function
 
 ValidInputNP_Err:
-110     Call RegistrarError(Err.Number, Err.Description, "General.ValidInputNP", Erl)
+110     Call TraceError(Err.Number, Err.Description, "General.ValidInputNP", Erl)
 112
         
 End Function
@@ -1446,7 +1446,7 @@ Sub Restart()
         Exit Sub
 
 Restart_Err:
-166     Call RegistrarError(Err.Number, Err.Description, "General.Restart", Erl)
+166     Call TraceError(Err.Number, Err.Description, "General.Restart", Erl)
 
         
 End Sub
@@ -1467,7 +1467,7 @@ Public Function Intemperie(ByVal UserIndex As Integer) As Boolean
         Exit Function
 
 Intemperie_Err:
-106     Call RegistrarError(Err.Number, Err.Description, "General.Intemperie", Erl)
+106     Call TraceError(Err.Number, Err.Description, "General.Intemperie", Erl)
 108
         
 End Function
@@ -1491,7 +1491,7 @@ Public Sub TiempoInvocacion(ByVal UserIndex As Integer)
         Exit Sub
 
 TiempoInvocacion_Err:
-112     Call RegistrarError(Err.Number, Err.Description, "General.TiempoInvocacion", Erl)
+112     Call TraceError(Err.Number, Err.Description, "General.TiempoInvocacion", Erl)
 
         
 End Sub
@@ -1552,7 +1552,7 @@ Public Sub EfectoFrio(ByVal UserIndex As Integer)
         Exit Sub
 
 EfectoFrio_Err:
-140     Call RegistrarError(Err.Number, Err.Description, "General.EfectoFrio", Erl)
+140     Call TraceError(Err.Number, Err.Description, "General.EfectoFrio", Erl)
 
 142
         
@@ -1645,7 +1645,7 @@ Public Sub EfectoLava(ByVal UserIndex As Integer)
         Exit Sub
 
 EfectoLava_Err:
-122     Call RegistrarError(Err.Number, Err.Description, "General.EfectoLava", Erl)
+122     Call TraceError(Err.Number, Err.Description, "General.EfectoLava", Erl)
 
 124
         
@@ -1702,7 +1702,7 @@ Public Sub EfectoMimetismo(ByVal UserIndex As Integer)
         Exit Sub
 
 EfectoMimetismo_Err:
-132     Call RegistrarError(Err.Number, Err.Description, "General.EfectoMimetismo", Erl)
+132     Call TraceError(Err.Number, Err.Description, "General.EfectoMimetismo", Erl)
 
         
 End Sub
@@ -1732,7 +1732,7 @@ Public Sub EfectoInvisibilidad(ByVal UserIndex As Integer)
         Exit Sub
 
 EfectoInvisibilidad_Err:
-116     Call RegistrarError(Err.Number, Err.Description, "General.EfectoInvisibilidad", Erl)
+116     Call TraceError(Err.Number, Err.Description, "General.EfectoInvisibilidad", Erl)
 118
         
 End Sub
@@ -1751,7 +1751,7 @@ Public Sub EfectoParalisisNpc(ByVal NpcIndex As Integer)
         Exit Sub
 
 EfectoParalisisNpc_Err:
-106     Call RegistrarError(Err.Number, Err.Description, "General.EfectoParalisisNpc", Erl)
+106     Call TraceError(Err.Number, Err.Description, "General.EfectoParalisisNpc", Erl)
 108
         
 End Sub
@@ -1769,7 +1769,7 @@ Public Sub EfectoInmovilizadoNpc(ByVal NpcIndex As Integer)
         Exit Sub
 
 EfectoInmovilizadoNpc_Err:
-106     Call RegistrarError(Err.Number, Err.Description, "General.EfectoInmovilizadoNpc", Erl)
+106     Call TraceError(Err.Number, Err.Description, "General.EfectoInmovilizadoNpc", Erl)
 108
         
 End Sub
@@ -1796,7 +1796,7 @@ Public Sub EfectoCeguera(ByVal UserIndex As Integer)
         Exit Sub
 
 EfectoCeguera_Err:
-110     Call RegistrarError(Err.Number, Err.Description, "General.EfectoCeguera", Erl)
+110     Call TraceError(Err.Number, Err.Description, "General.EfectoCeguera", Erl)
 112
         
 End Sub
@@ -1823,7 +1823,7 @@ Public Sub EfectoEstupidez(ByVal UserIndex As Integer)
         Exit Sub
 
 EfectoEstupidez_Err:
-110     Call RegistrarError(Err.Number, Err.Description, "General.EfectoEstupidez", Erl)
+110     Call TraceError(Err.Number, Err.Description, "General.EfectoEstupidez", Erl)
 112
         
 End Sub
@@ -1846,7 +1846,7 @@ Public Sub EfectoParalisisUser(ByVal UserIndex As Integer)
         Exit Sub
 
 EfectoParalisisUser_Err:
-108     Call RegistrarError(Err.Number, Err.Description, "General.EfectoParalisisUser", Erl)
+108     Call TraceError(Err.Number, Err.Description, "General.EfectoParalisisUser", Erl)
 110
         
 End Sub
@@ -1866,7 +1866,7 @@ Public Sub EfectoVelocidadUser(ByVal UserIndex As Integer)
         Exit Sub
 
 EfectoVelocidadUser_Err:
-108     Call RegistrarError(Err.Number, Err.Description, "General.EfectoVelocidadUser", Erl)
+108     Call TraceError(Err.Number, Err.Description, "General.EfectoVelocidadUser", Erl)
 110
         
 End Sub
@@ -1888,7 +1888,7 @@ Public Sub EfectoMaldicionUser(ByVal UserIndex As Integer)
         Exit Sub
 
 EfectoMaldicionUser_Err:
-108     Call RegistrarError(Err.Number, Err.Description, "General.EfectoMaldicionUser", Erl)
+108     Call TraceError(Err.Number, Err.Description, "General.EfectoMaldicionUser", Erl)
 110
         
 End Sub
@@ -1911,7 +1911,7 @@ Public Sub EfectoInmoUser(ByVal UserIndex As Integer)
         Exit Sub
 
 EfectoInmoUser_Err:
-108     Call RegistrarError(Err.Number, Err.Description, "General.EfectoInmoUser", Erl)
+108     Call TraceError(Err.Number, Err.Description, "General.EfectoInmoUser", Erl)
 110
         
 End Sub
@@ -1989,7 +1989,7 @@ Public Sub RecStamina(ByVal UserIndex As Integer, ByRef EnviarStats As Boolean, 
             Exit Sub
 
 RecStamina_Err:
-172         Call RegistrarError(Err.Number, Err.Description, "General.RecStamina", Erl)
+172         Call TraceError(Err.Number, Err.Description, "General.RecStamina", Erl)
 174
 
 End Sub
@@ -2028,7 +2028,7 @@ Public Sub PierdeEnergia(ByVal UserIndex As Integer, ByRef EnviarStats As Boolea
         Exit Sub
 
 RecStamina_Err:
-120     Call RegistrarError(Err.Number, Err.Description, "General.PierdeEnergia", Erl)
+120     Call TraceError(Err.Number, Err.Description, "General.PierdeEnergia", Erl)
 122
         
 End Sub
@@ -2072,7 +2072,7 @@ Public Sub EfectoVeneno(ByVal UserIndex As Integer)
         Exit Sub
 
 EfectoVeneno_Err:
-130     Call RegistrarError(Err.Number, Err.Description, "General.EfectoVeneno", Erl)
+130     Call TraceError(Err.Number, Err.Description, "General.EfectoVeneno", Erl)
 132
 
 End Sub
@@ -2112,7 +2112,7 @@ Public Sub EfectoAhogo(ByVal UserIndex As Integer)
         Exit Sub
 
 EfectoAhogo_Err:
-124     Call RegistrarError(Err.Number, Err.Description, "General.EfectoAhogo", Erl)
+124     Call TraceError(Err.Number, Err.Description, "General.EfectoAhogo", Erl)
 126
         
 End Sub
@@ -2161,7 +2161,7 @@ Public Sub EfectoIncineramiento(ByVal UserIndex As Integer)
             Exit Sub
 
 EfectoIncineramiento_Err:
-130         Call RegistrarError(Err.Number, Err.Description, "General.EfectoIncineramiento", Erl)
+130         Call TraceError(Err.Number, Err.Description, "General.EfectoIncineramiento", Erl)
 132
 
 End Sub
@@ -2195,7 +2195,7 @@ Public Sub DuracionPociones(ByVal UserIndex As Integer)
         Exit Sub
 
 DuracionPociones_Err:
-116     Call RegistrarError(Err.Number, Err.Description, "General.DuracionPociones", Erl)
+116     Call TraceError(Err.Number, Err.Description, "General.DuracionPociones", Erl)
 118
         
 End Sub
@@ -2251,7 +2251,7 @@ Public Function HambreYSed(ByVal UserIndex As Integer) As Boolean
         Exit Function
 
 HambreYSed_Err:
-138     Call RegistrarError(Err.Number, Err.Description, "General.HambreYSed", Erl)
+138     Call TraceError(Err.Number, Err.Description, "General.HambreYSed", Erl)
 140
         
 End Function
@@ -2289,7 +2289,7 @@ Public Sub Sanar(ByVal UserIndex As Integer, ByRef EnviarStats As Boolean, ByVal
         Exit Sub
 
 Sanar_Err:
-126     Call RegistrarError(Err.Number, Err.Description, "General.Sanar", Erl)
+126     Call TraceError(Err.Number, Err.Description, "General.Sanar", Erl)
 128
         
 End Sub
@@ -2324,7 +2324,7 @@ Public Sub CargaNpcsDat(Optional ByVal ActualizarNPCsExistentes As Boolean = Fal
             Exit Sub
 
 CargaNpcsDat_Err:
-118         Call RegistrarError(Err.Number, Err.Description, "General.CargaNpcsDat", Erl)
+118         Call TraceError(Err.Number, Err.Description, "General.CargaNpcsDat", Erl)
 120
         
 End Sub
@@ -2576,7 +2576,7 @@ Public Function ReiniciarAutoUpdate() As Double
         Exit Function
 
 ReiniciarAutoUpdate_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "General.ReiniciarAutoUpdate", Erl)
+102     Call TraceError(Err.Number, Err.Description, "General.ReiniciarAutoUpdate", Erl)
 104
         
 End Function
@@ -2600,14 +2600,14 @@ Public Sub ReiniciarServidor(Optional ByVal EjecutarLauncher As Boolean = True)
         Exit Sub
 
 ReiniciarServidor_Err:
-108     Call RegistrarError(Err.Number, Err.Description, "General.ReiniciarServidor", Erl)
+108     Call TraceError(Err.Number, Err.Description, "General.ReiniciarServidor", Erl)
 110
         
 End Sub
 
 Sub ForzarActualizar()
     
-    On Error
+    On Error Resume Next
     
     Dim i As Long
 
@@ -2661,7 +2661,7 @@ Sub GuardarUsuarios()
         Exit Sub
 
 GuardarUsuarios_Err:
-128     Call RegistrarError(Err.Number, Err.Description, "General.GuardarUsuarios", Erl)
+128     Call TraceError(Err.Number, Err.Description, "General.GuardarUsuarios", Erl)
 130
         
 End Sub
@@ -2685,7 +2685,7 @@ Sub InicializaEstadisticas()
         Exit Sub
 
 InicializaEstadisticas_Err:
-112     Call RegistrarError(Err.Number, Err.Description, "General.InicializaEstadisticas", Erl)
+112     Call TraceError(Err.Number, Err.Description, "General.InicializaEstadisticas", Erl)
 114
         
 End Sub
@@ -2711,7 +2711,7 @@ Public Sub FreeNPCs()
         Exit Sub
 
 FreeNPCs_Err:
-106     Call RegistrarError(Err.Number, Err.Description, "General.FreeNPCs", Erl)
+106     Call TraceError(Err.Number, Err.Description, "General.FreeNPCs", Erl)
 108
         
 End Sub
@@ -2732,7 +2732,7 @@ Public Sub FreeCharIndexes()
         Exit Sub
 
 FreeCharIndexes_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "General.FreeCharIndexes", Erl)
+102     Call TraceError(Err.Number, Err.Description, "General.FreeCharIndexes", Erl)
 104
         
 End Sub
@@ -2767,7 +2767,7 @@ Function RandomString(cb As Integer, Optional ByVal OnlyUpper As Boolean = False
         Exit Function
 
 RandomString_Err:
-116     Call RegistrarError(Err.Number, Err.Description, "General.RandomString", Erl)
+116     Call TraceError(Err.Number, Err.Description, "General.RandomString", Erl)
 118
         
 End Function
@@ -2827,7 +2827,7 @@ Private Function CMSValidateChar_(ByVal iAsc As Integer) As Boolean
         Exit Function
 
 CMSValidateChar__Err:
-102     Call RegistrarError(Err.Number, Err.Description, "General.CMSValidateChar_", Erl)
+102     Call TraceError(Err.Number, Err.Description, "General.CMSValidateChar_", Erl)
 104
         
 End Function
@@ -2849,7 +2849,7 @@ Public Function Tilde(ByRef data As String) As String
         Exit Function
 
 Tilde_Err:
-112     Call RegistrarError(Err.Number, Err.Description, "Mod_General.Tilde", Erl)
+112     Call TraceError(Err.Number, Err.Description, "Mod_General.Tilde", Erl)
 114
     
 End Function
@@ -2900,7 +2900,7 @@ Function max(ByVal a As Double, ByVal b As Double) As Double
         Exit Function
 
 max_Err:
-106     Call RegistrarError(Err.Number, Err.Description, "General.max", Erl)
+106     Call TraceError(Err.Number, Err.Description, "General.max", Erl)
 
         
 End Function
@@ -2921,7 +2921,7 @@ Function Min(ByVal a As Double, ByVal b As Double) As Double
         Exit Function
 
 min_Err:
-106     Call RegistrarError(Err.Number, Err.Description, "General.min", Erl)
+106     Call TraceError(Err.Number, Err.Description, "General.min", Erl)
 
         
 End Function
@@ -2965,7 +2965,7 @@ Public Function PonerPuntos(ByVal Numero As Long) As String
         Exit Function
 
 PonerPuntos_Err:
-118     Call RegistrarError(Err.Number, Err.Description, "ModLadder.PonerPuntos", Erl)
+118     Call TraceError(Err.Number, Err.Description, "ModLadder.PonerPuntos", Erl)
 120
     
 End Function
@@ -3000,7 +3000,7 @@ Function RandomIntBiased(ByVal Min As Double, ByVal max As Double, ByVal Bias As
         Exit Function
     
 handle:
-106     Call RegistrarError(Err.Number, Err.Description, "General.RandomIntBiased")
+106     Call TraceError(Err.Number, Err.Description, "General.RandomIntBiased")
 108     RandomIntBiased = Bias
 
 End Function
@@ -3095,7 +3095,7 @@ Function Ceil(X As Variant) As Variant
         Exit Function
 
 Ceil_Err:
-105     Call RegistrarError(Err.Number, Err.Description & "Ceil_Err", Erl)
+105     Call TraceError(Err.Number, Err.Description & "Ceil_Err", Erl)
 
 110
         
@@ -3110,7 +3110,7 @@ Function Clamp(X As Variant, a As Variant, b As Variant) As Variant
         Exit Function
 
 Clamp_Err:
-105     Call RegistrarError(Err.Number, Err.Description & "Clamp_Err", Erl)
+105     Call TraceError(Err.Number, Err.Description & "Clamp_Err", Erl)
 
 110
         

@@ -60,7 +60,7 @@ Public Sub CargarListaNegraUsuarios(ByVal LoadFlags As e_LoadBlacklistFlags)
 
 CargarListaNegraUsuarios_Err:
         Set File = Nothing
-        Call RegistrarError(Err.Number, Err.Description, "Penas.CargarListaNegraUsuarios", Erl)
+        Call TraceError(Err.Number, Err.Description, "Penas.CargarListaNegraUsuarios", Erl)
 
         
         
@@ -112,7 +112,7 @@ Private Function GlobalChecks(ByVal BannerIndex, ByRef UserName As String) As In
         Exit Function
 
 GlobalChecks_Err:
-    Call RegistrarError(Err.Number, Err.Description, "Penas.GlobalChecks", Erl)
+    Call TraceError(Err.Number, Err.Description, "Penas.GlobalChecks", Erl)
     
     
 End Function
@@ -152,7 +152,7 @@ Public Sub BanPJ(ByVal BannerIndex As Integer, ByVal UserName As String, ByRef R
         Exit Sub
 
 BanPJ_Err:
-120     Call RegistrarError(Err.Number, Err.Description, "Mod_Baneo.BanPJ")
+120     Call TraceError(Err.Number, Err.Description, "Mod_Baneo.BanPJ")
 122
 
 End Sub
@@ -208,7 +208,7 @@ Public Sub BanearCuenta(ByVal BannerIndex As Integer, _
         Exit Sub
 
 BanearCuenta_Err:
-        Call RegistrarError(Err.Number, Err.Description, "Penas.BanearCuenta", Erl)
+        Call TraceError(Err.Number, Err.Description, "Penas.BanearCuenta", Erl)
         
         
 End Sub
@@ -230,7 +230,7 @@ Public Function DesbanearCuenta(ByVal BannerIndex As Integer, ByVal AccountID As
         Exit Function
 
 DesbanearCuenta_Err:
-        Call RegistrarError(Err.Number, Err.Description, "Penas.DesbanearCuenta", Erl)
+        Call TraceError(Err.Number, Err.Description, "Penas.DesbanearCuenta", Erl)
         
         
 End Function
@@ -261,7 +261,7 @@ Public Sub BanearIP(ByVal BannerIndex As Integer, ByVal UserName As String, ByVa
         Exit Sub
 
 BanearIP_Err:
-        Call RegistrarError(Err.Number, Err.Description, "Penas.BanearIP", Erl)
+        Call TraceError(Err.Number, Err.Description, "Penas.BanearIP", Erl)
         
         
 End Sub
@@ -294,7 +294,7 @@ Public Sub DesbanearIP(ByVal IP As String, ByVal UnbannerIndex As Integer)
         Exit Sub
 
 DesbanearIP_Err:
-        Call RegistrarError(Err.Number, Err.Description, "Penas.DesbanearIP", Erl)
+        Call TraceError(Err.Number, Err.Description, "Penas.DesbanearIP", Erl)
         
         
 End Sub
@@ -338,7 +338,7 @@ Public Sub BanearHDMAC(ByVal BannerIndex As Integer, ByVal UserName As String)
         Exit Sub
 
 BanearHDMAC_Err:
-        Call RegistrarError(Err.Number, Err.Description, "Penas.BanearHDMAC", Erl)
+        Call TraceError(Err.Number, Err.Description, "Penas.BanearHDMAC", Erl)
         
 
 End Sub
@@ -373,7 +373,7 @@ Public Sub DesbanearHDMAC(ByVal UserName As String)
         Exit Sub
 
 DesbanearHDMAC_Err:
-        Call RegistrarError(Err.Number, Err.Description, "Penas.DesbanearHDMAC", Erl)
+        Call TraceError(Err.Number, Err.Description, "Penas.DesbanearHDMAC", Erl)
         
 
 End Sub

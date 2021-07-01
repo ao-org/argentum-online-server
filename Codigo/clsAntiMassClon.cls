@@ -71,7 +71,7 @@ Public Function MaxPersonajes(sIp As String) As Boolean
         Exit Function
 
 MaxPersonajes_Err:
-114     Call RegistrarError(Err.Number, Err.Description, "clsAntiMassClon.MaxPersonajes", Erl)
+114     Call TraceError(Err.Number, Err.Description, "clsAntiMassClon.MaxPersonajes", Erl)
 116
         
 End Function

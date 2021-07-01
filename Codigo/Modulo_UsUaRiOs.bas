@@ -86,7 +86,7 @@ Sub ActStats(ByVal VictimIndex As Integer, ByVal AttackerIndex As Integer)
         Exit Sub
 
 ActStats_Err:
-136     Call RegistrarError(Err.Number, Err.Description, "UsUaRiOs.ActStats", Erl)
+136     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.ActStats", Erl)
 138
         
 End Sub
@@ -214,7 +214,7 @@ Sub RevivirUsuario(ByVal UserIndex As Integer, Optional ByVal MedianteHechizo As
         Exit Sub
 
 RevivirUsuario_Err:
-210     Call RegistrarError(Err.Number, Err.Description, "UsUaRiOs.RevivirUsuario", Erl)
+210     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.RevivirUsuario", Erl)
 212
         
 End Sub
@@ -240,7 +240,7 @@ Sub ChangeUserChar(ByVal UserIndex As Integer, ByVal Body As Integer, ByVal Head
         Exit Sub
 
 ChangeUserChar_Err:
-116     Call RegistrarError(Err.Number, Err.Description, "UsUaRiOs.ChangeUserChar", Erl)
+116     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.ChangeUserChar", Erl)
 118
         
 End Sub
@@ -329,7 +329,7 @@ Sub RefreshCharStatus(ByVal UserIndex As Integer)
         Exit Sub
 
 RefreshCharStatus_Err:
-116     Call RegistrarError(Err.Number, Err.Description, "UsUaRiOs.RefreshCharStatus", Erl)
+116     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.RefreshCharStatus", Erl)
 118
         
 End Sub
@@ -419,7 +419,7 @@ HayError:
                     " Usuario: " & UserList(UserIndex).Name & vbNewLine & _
                     "Pos: " & Map & "-" & X & "-" & Y
             
-146     Call RegistrarError(Err.Number, Err.Description, "Usuarios.MakeUserChar", Erl())
+146     Call TraceError(Err.Number, Err.Description, "Usuarios.MakeUserChar", Erl())
         
 148     Call CloseSocket(UserIndex)
 
@@ -713,7 +713,7 @@ Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As eHeading) As
         Exit Function
     
 MoveUserChar_Err:
-188     Call RegistrarError(Err.Number, Err.Description, "UsUaRiOs.MoveUserChar", Erl)
+188     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.MoveUserChar", Erl)
 190
         
 End Function
@@ -749,7 +749,7 @@ Public Function InvertHeading(ByVal nHeading As eHeading) As eHeading
         Exit Function
 
 InvertHeading_Err:
-116     Call RegistrarError(Err.Number, Err.Description, "UsUaRiOs.InvertHeading", Erl)
+116     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.InvertHeading", Erl)
 
         
 End Function
@@ -765,7 +765,7 @@ Sub ChangeUserInv(ByVal UserIndex As Integer, ByVal Slot As Byte, ByRef Object A
         Exit Sub
 
 ChangeUserInv_Err:
-104     Call RegistrarError(Err.Number, Err.Description, "UsUaRiOs.ChangeUserInv", Erl)
+104     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.ChangeUserInv", Erl)
 106
         
 End Sub
@@ -795,7 +795,7 @@ Function NextOpenCharIndex() As Integer
         Exit Function
 
 NextOpenCharIndex_Err:
-112     Call RegistrarError(Err.Number, Err.Description, "UsUaRiOs.NextOpenCharIndex", Erl)
+112     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.NextOpenCharIndex", Erl)
 114
         
 End Function
@@ -819,7 +819,7 @@ Function NextOpenUser() As Integer
         Exit Function
 
 NextOpenUser_Err:
-110     Call RegistrarError(Err.Number, Err.Description, "UsUaRiOs.NextOpenUser", Erl)
+110     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.NextOpenUser", Erl)
 112
         
 End Function
@@ -897,7 +897,7 @@ Sub SendUserStatsTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
         Exit Sub
 
 SendUserStatsTxt_Err:
-154     Call RegistrarError(Err.Number, Err.Description, "UsUaRiOs.SendUserStatsTxt", Erl)
+154     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.SendUserStatsTxt", Erl)
 156
         
 End Sub
@@ -938,7 +938,7 @@ Sub SendUserMiniStatsTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
         Exit Sub
 
 SendUserMiniStatsTxt_Err:
-126     Call RegistrarError(Err.Number, Err.Description, "UsUaRiOs.SendUserMiniStatsTxt", Erl)
+126     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.SendUserMiniStatsTxt", Erl)
 128
         
 End Sub
@@ -995,7 +995,7 @@ Sub SendUserMiniStatsTxtFromChar(ByVal sendIndex As Integer, ByVal CharName As S
         Exit Sub
 
 SendUserMiniStatsTxtFromChar_Err:
-136     Call RegistrarError(Err.Number, Err.Description, "UsUaRiOs.SendUserMiniStatsTxtFromChar", Erl)
+136     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.SendUserMiniStatsTxtFromChar", Erl)
 138
         
 End Sub
@@ -1026,7 +1026,7 @@ Sub SendUserInvTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
         Exit Sub
 
 SendUserInvTxt_Err:
-112     Call RegistrarError(Err.Number, Err.Description, "UsUaRiOs.SendUserInvTxt", Erl)
+112     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.SendUserInvTxt", Erl)
 
         
 End Sub
@@ -1072,7 +1072,7 @@ Sub SendUserInvTxtFromChar(ByVal sendIndex As Integer, ByVal CharName As String)
         Exit Sub
 
 SendUserInvTxtFromChar_Err:
-124     Call RegistrarError(Err.Number, Err.Description, "UsUaRiOs.SendUserInvTxtFromChar", Erl)
+124     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.SendUserInvTxtFromChar", Erl)
 
         
 End Sub
@@ -1098,7 +1098,7 @@ Sub SendUserSkillsTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
         Exit Sub
 
 SendUserSkillsTxt_Err:
-108     Call RegistrarError(Err.Number, Err.Description, "UsUaRiOs.SendUserSkillsTxt", Erl)
+108     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.SendUserSkillsTxt", Erl)
 
         
 End Sub
@@ -1130,7 +1130,7 @@ Function DameUserIndex(SocketID As Integer) As Integer
         Exit Function
 
 DameUserIndex_Err:
-112     Call RegistrarError(Err.Number, Err.Description, "UsUaRiOs.DameUserIndex", Erl)
+112     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.DameUserIndex", Erl)
 114
         
 End Function
@@ -1164,7 +1164,7 @@ Function DameUserIndexConNombre(ByVal nombre As String) As Integer
         Exit Function
 
 DameUserIndexConNombre_Err:
-114     Call RegistrarError(Err.Number, Err.Description, "UsUaRiOs.DameUserIndexConNombre", Erl)
+114     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.DameUserIndexConNombre", Erl)
 116
         
 End Function
@@ -1203,7 +1203,7 @@ Sub NPCAtacado(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
         Exit Sub
 
 NPCAtacado_Err:
-126     Call RegistrarError(Err.Number, Err.Description, "UsUaRiOs.NPCAtacado", Erl)
+126     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.NPCAtacado", Erl)
 128
         
 End Sub
@@ -1293,7 +1293,7 @@ Sub SubirSkill(ByVal UserIndex As Integer, ByVal Skill As Integer)
         Exit Sub
 
 SubirSkill_Err:
-166     Call RegistrarError(Err.Number, Err.Description, "UsUaRiOs.SubirSkill", Erl)
+166     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.SubirSkill", Erl)
 168
         
 End Sub
@@ -1323,7 +1323,7 @@ Public Sub SubirSkillDeArmaActual(ByVal UserIndex As Integer)
         Exit Sub
 
 SubirSkillDeArmaActual_Err:
-112         Call RegistrarError(Err.Number, Err.Description, "UsUaRiOs.SubirSkillDeArmaActual", Erl)
+112         Call TraceError(Err.Number, Err.Description, "UsUaRiOs.SubirSkillDeArmaActual", Erl)
 114
 
 End Sub
@@ -1517,7 +1517,7 @@ Sub ContarMuerte(ByVal Muerto As Integer, ByVal Atacante As Integer)
             Exit Sub
 
 ContarMuerte_Err:
-126         Call RegistrarError(Err.Number, Err.Description, "UsUaRiOs.ContarMuerte", Erl)
+126         Call TraceError(Err.Number, Err.Description, "UsUaRiOs.ContarMuerte", Erl)
 128
 
 End Sub
@@ -1590,7 +1590,7 @@ Sub Tilelibre(ByRef Pos As WorldPos, ByRef nPos As WorldPos, ByRef obj As obj, B
         Exit Sub
 
 Tilelibre_Err:
-142     Call RegistrarError(Err.Number, Err.Description, "UsUaRiOs.Tilelibre", Erl)
+142     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.Tilelibre", Erl)
 144
         
 End Sub
@@ -1645,7 +1645,7 @@ Sub WarpToLegalPos(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As 
         Exit Sub
 
 WarpToLegalPos_Err:
-132     Call RegistrarError(Err.Number, Err.Description, "UsUaRiOs.WarpToLegalPos", Erl)
+132     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.WarpToLegalPos", Erl)
 134
         
 End Sub
@@ -1806,7 +1806,7 @@ Sub WarpUserChar(ByVal UserIndex As Integer, _
         Exit Sub
 
 WarpUserChar_Err:
-238     Call RegistrarError(Err.Number, Err.Description, "UsUaRiOs.WarpUserChar", Erl)
+238     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.WarpUserChar", Erl)
 
 240
         
@@ -1843,7 +1843,7 @@ Sub WarpFamiliar(ByVal UserIndex As Integer)
         Exit Sub
 
 WarpFamiliar_Err:
-114     Call RegistrarError(Err.Number, Err.Description, "UsUaRiOs.WarpFamiliar", Erl)
+114     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.WarpFamiliar", Erl)
 116
         
 End Sub
@@ -1878,7 +1878,7 @@ Sub Cerrar_Usuario(ByVal UserIndex As Integer)
         Exit Sub
 
 Cerrar_Usuario_Err:
-124     Call RegistrarError(Err.Number, Err.Description, "UsUaRiOs.Cerrar_Usuario", Erl)
+124     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.Cerrar_Usuario", Erl)
 126
 
 End Sub
@@ -1927,7 +1927,7 @@ Public Sub CancelExit(ByVal UserIndex As Integer)
         Exit Sub
 
 CancelExit_Err:
-120     Call RegistrarError(Err.Number, Err.Description, "UsUaRiOs.CancelExit", Erl)
+120     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.CancelExit", Erl)
 122
         
 End Sub
@@ -1960,7 +1960,7 @@ Public Sub CambiarNick(ByVal UserIndex As Integer, ByVal UserIndexDestino As Int
         Exit Sub
 
 CambiarNick_Err:
-110     Call RegistrarError(Err.Number, Err.Description, "UsUaRiOs.CambiarNick", Erl)
+110     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.CambiarNick", Erl)
 112
         
 End Sub
@@ -1999,7 +1999,7 @@ Sub SendUserStatsTxtOFF(ByVal sendIndex As Integer, ByVal nombre As String)
         Exit Sub
 
 SendUserStatsTxtOFF_Err:
-124     Call RegistrarError(Err.Number, Err.Description, "UsUaRiOs.SendUserStatsTxtOFF", Erl)
+124     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.SendUserStatsTxtOFF", Erl)
 126
         
 End Sub
@@ -2032,7 +2032,7 @@ Sub SendUserOROTxtFromChar(ByVal sendIndex As Integer, ByVal CharName As String)
         Exit Sub
 
 SendUserOROTxtFromChar_Err:
-110     Call RegistrarError(Err.Number, Err.Description, "UsUaRiOs.SendUserOROTxtFromChar", Erl)
+110     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.SendUserOROTxtFromChar", Erl)
 
         
 End Sub
@@ -2074,7 +2074,7 @@ Sub VolverCriminal(ByVal UserIndex As Integer)
     Exit Sub
 
 VolverCriminal_Err:
-120     Call RegistrarError(Err.Number, Err.Description, "UsUaRiOs.VolverCriminal", Erl)
+120     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.VolverCriminal", Erl)
 122
         
 End Sub
@@ -2106,7 +2106,7 @@ Sub VolverCiudadano(ByVal UserIndex As Integer)
     Exit Sub
 
 VolverCiudadano_Err:
-114     Call RegistrarError(Err.Number, Err.Description, "UsUaRiOs.VolverCiudadano", Erl)
+114     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.VolverCiudadano", Erl)
 116
         
 End Sub
@@ -2132,7 +2132,7 @@ Public Function getMaxInventorySlots(ByVal UserIndex As Integer) As Byte
         Exit Function
 
 getMaxInventorySlots_Err:
-106     Call RegistrarError(Err.Number, Err.Description, "UsUaRiOs.getMaxInventorySlots", Erl)
+106     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.getMaxInventorySlots", Erl)
 108
         
 End Function
@@ -2238,7 +2238,7 @@ Private Sub WarpMascotas(ByVal UserIndex As Integer)
         Exit Sub
 
 WarpMascotas_Err:
-168     Call RegistrarError(Err.Number, Err.Description, "UsUaRiOs.WarpMascotas", Erl)
+168     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.WarpMascotas", Erl)
 
         
 End Sub
@@ -2261,7 +2261,7 @@ Function TieneArmaduraCazador(ByVal UserIndex As Integer) As Boolean
         Exit Function
 
 TieneArmaduraCazador_Err:
-106     Call RegistrarError(Err.Number, Err.Description, "UsUaRiOs.TieneArmaduraCazador", Erl)
+106     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.TieneArmaduraCazador", Erl)
 
         
 End Function
@@ -2336,7 +2336,7 @@ Sub MoveUserToSide(ByVal UserIndex As Integer, ByVal Heading As eHeading)
         Exit Sub
     
 Handler:
-120     Call RegistrarError(Err.Number, Err.Description, "UsUaRiOs.MoveUserToSide", Erl)
+120     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.MoveUserToSide", Erl)
 122
 End Sub
 
@@ -2429,7 +2429,7 @@ Public Sub LimpiarEstadosAlterados(ByVal UserIndex As Integer)
         Exit Sub
     
 Handler:
-182     Call RegistrarError(Err.Number, Err.Description, "UsUaRiOs.LimpiarEstadosAlterados", Erl)
+182     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.LimpiarEstadosAlterados", Erl)
 184
 
 End Sub
@@ -2484,7 +2484,7 @@ UpdateSpeed:
         Exit Function
     
 ActualizarVelocidadDeUsuario_Err:
-134     Call RegistrarError(Err.Number, Err.Description, "UsUaRiOs.CalcularVelocidad_Err", Erl)
+134     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.CalcularVelocidad_Err", Erl)
 136
 End Function
 

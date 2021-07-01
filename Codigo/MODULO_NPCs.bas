@@ -29,7 +29,7 @@ Sub QuitarMascotaNpc(ByVal Maestro As Integer)
         Exit Sub
 
 QuitarMascotaNpc_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "NPCs.QuitarMascotaNpc", Erl)
+102     Call TraceError(Err.Number, Err.Description, "NPCs.QuitarMascotaNpc", Erl)
 104
         
 End Sub
@@ -205,7 +205,7 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
         Exit Sub
 
 ErrHandler:
-218     Call RegistrarError(Err.Number, Err.Description, "NPCs.MuereNpc", Erl())
+218     Call TraceError(Err.Number, Err.Description, "NPCs.MuereNpc", Erl())
 
 End Sub
 
@@ -250,7 +250,7 @@ Sub ResetNpcFlags(ByVal NpcIndex As Integer)
         Exit Sub
 
 ResetNpcFlags_Err:
-158     Call RegistrarError(Err.Number, Err.Description, "NPCs.ResetNpcFlags", Erl)
+158     Call TraceError(Err.Number, Err.Description, "NPCs.ResetNpcFlags", Erl)
 160
         
 End Sub
@@ -271,7 +271,7 @@ Sub ResetNpcCounters(ByVal NpcIndex As Integer)
         Exit Sub
 
 ResetNpcCounters_Err:
-112     Call RegistrarError(Err.Number, Err.Description, "NPCs.ResetNpcCounters", Erl)
+112     Call TraceError(Err.Number, Err.Description, "NPCs.ResetNpcCounters", Erl)
 114
         
 End Sub
@@ -295,7 +295,7 @@ Sub ResetNpcCharInfo(ByVal NpcIndex As Integer)
         Exit Sub
 
 ResetNpcCharInfo_Err:
-118     Call RegistrarError(Err.Number, Err.Description, "NPCs.ResetNpcCharInfo", Erl)
+118     Call TraceError(Err.Number, Err.Description, "NPCs.ResetNpcCharInfo", Erl)
 120
         
 End Sub
@@ -318,7 +318,7 @@ Sub ResetNpcCriatures(ByVal NpcIndex As Integer)
         Exit Sub
 
 ResetNpcCriatures_Err:
-110     Call RegistrarError(Err.Number, Err.Description, "NPCs.ResetNpcCriatures", Erl)
+110     Call TraceError(Err.Number, Err.Description, "NPCs.ResetNpcCriatures", Erl)
 112
         
 End Sub
@@ -340,7 +340,7 @@ Sub ResetExpresiones(ByVal NpcIndex As Integer)
         Exit Sub
 
 ResetExpresiones_Err:
-108     Call RegistrarError(Err.Number, Err.Description, "NPCs.ResetExpresiones", Erl)
+108     Call TraceError(Err.Number, Err.Description, "NPCs.ResetExpresiones", Erl)
 110
         
 End Sub
@@ -362,7 +362,7 @@ Sub ResetDrop(ByVal NpcIndex As Integer)
         Exit Sub
 
 ResetDrop_Err:
-108     Call RegistrarError(Err.Number, Err.Description, "NPCs.ResetDrop", Erl)
+108     Call TraceError(Err.Number, Err.Description, "NPCs.ResetDrop", Erl)
 110
         
 End Sub
@@ -427,7 +427,7 @@ Sub ResetNpcMainInfo(ByVal NpcIndex As Integer)
         Exit Sub
 
 ResetNpcMainInfo_Err:
-180     Call RegistrarError(Err.Number, Err.Description, "NPCs.ResetNpcMainInfo", Erl)
+180     Call TraceError(Err.Number, Err.Description, "NPCs.ResetNpcMainInfo", Erl)
 182
         
 End Sub
@@ -487,7 +487,7 @@ Function TestSpawnTrigger(ByVal Map As Integer, ByVal X As Integer, ByVal Y As I
         Exit Function
 
 TestSpawnTrigger_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "NPCs.TestSpawnTrigger", Erl)
+102     Call TraceError(Err.Number, Err.Description, "NPCs.TestSpawnTrigger", Erl)
 104
         
 End Function
@@ -590,7 +590,7 @@ Public Function CrearNPC(NroNPC As Integer, Mapa As Integer, OrigPos As WorldPos
         Exit Function
 
 CrearNPC_Err:
-170     Call RegistrarError(Err.Number, Err.Description, "NPCs.CrearNPC", Erl)
+170     Call TraceError(Err.Number, Err.Description, "NPCs.CrearNPC", Erl)
 
 End Function
 
@@ -684,7 +684,7 @@ Sub MakeNPCChar(ByVal toMap As Boolean, sndIndex As Integer, NpcIndex As Integer
         Exit Sub
 
 MakeNPCChar_Err:
-164     Call RegistrarError(Err.Number, Err.Description, "NPCs.MakeNPCChar", Erl)
+164     Call TraceError(Err.Number, Err.Description, "NPCs.MakeNPCChar", Erl)
 166
         
 End Sub
@@ -712,7 +712,7 @@ Sub ChangeNPCChar(ByVal NpcIndex As Integer, ByVal Body As Integer, ByVal Head A
         Exit Sub
 
 ChangeNPCChar_Err:
-114     Call RegistrarError(Err.Number, Err.Description, "NPCs.ChangeNPCChar", Erl)
+114     Call TraceError(Err.Number, Err.Description, "NPCs.ChangeNPCChar", Erl)
 116
         
 End Sub
@@ -750,7 +750,7 @@ Sub EraseNPCChar(ByVal NpcIndex As Integer)
         Exit Sub
 
 EraseNPCChar_Err:
-118     Call RegistrarError(Err.Number, Err.Description, "NPCs.EraseNPCChar", Erl)
+118     Call TraceError(Err.Number, Err.Description, "NPCs.EraseNPCChar", Erl)
 120
         
 End Sub
@@ -874,7 +874,7 @@ Sub NpcEnvenenarUser(ByVal UserIndex As Integer, ByVal VenenoNivel As Byte)
         Exit Sub
 
 NpcEnvenenarUser_Err:
-110     Call RegistrarError(Err.Number, Err.Description, "NPCs.NpcEnvenenarUser", Erl)
+110     Call TraceError(Err.Number, Err.Description, "NPCs.NpcEnvenenarUser", Erl)
 112
         
 End Sub
@@ -959,7 +959,7 @@ Function SpawnNpc(ByVal NpcIndex As Integer, Pos As WorldPos, ByVal FX As Boolea
         Exit Function
 
 SpawnNpc_Err:
-150     Call RegistrarError(Err.Number, Err.Description, "NPCs.SpawnNpc", Erl)
+150     Call TraceError(Err.Number, Err.Description, "NPCs.SpawnNpc", Erl)
 152
         
 End Function
@@ -975,7 +975,7 @@ Sub ReSpawnNpc(MiNPC As npc)
         Exit Sub
 
 ReSpawnNpc_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "NPCs.ReSpawnNpc", Erl)
+102     Call TraceError(Err.Number, Err.Description, "NPCs.ReSpawnNpc", Erl)
 104
         
 End Sub
@@ -1009,7 +1009,7 @@ Function NPCHostiles(ByVal Map As Integer) As Integer
         Exit Function
 
 NPCHostiles_Err:
-112     Call RegistrarError(Err.Number, Err.Description, "NPCs.NPCHostiles", Erl)
+112     Call TraceError(Err.Number, Err.Description, "NPCs.NPCHostiles", Erl)
 114
         
 End Function
@@ -1059,7 +1059,7 @@ Sub NPCTirarOro(MiNPC As npc, ByVal UserIndex As Integer)
             Exit Sub
 
 NPCTirarOro_Err:
-136         Call RegistrarError(Err.Number, Err.Description, "NPCs.NPCTirarOro", Erl)
+136         Call TraceError(Err.Number, Err.Description, "NPCs.NPCTirarOro", Erl)
 138
         
 End Sub
@@ -1443,7 +1443,7 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
         Exit Function
 
 OpenNPC_Err:
-440     Call RegistrarError(Err.Number, Err.Description, "NPCs.OpenNPC", Erl)
+440     Call TraceError(Err.Number, Err.Description, "NPCs.OpenNPC", Erl)
 442
         
 End Function
@@ -1477,7 +1477,7 @@ Sub DoFollow(ByVal NpcIndex As Integer, ByVal UserName As String)
         Exit Sub
 
 DoFollow_Err:
-124     Call RegistrarError(Err.Number, Err.Description, "NPCs.DoFollow", Erl)
+124     Call TraceError(Err.Number, Err.Description, "NPCs.DoFollow", Erl)
 126
         
 End Sub
@@ -1496,7 +1496,7 @@ Public Sub FollowAmo(ByVal NpcIndex As Integer)
         Exit Sub
 
 FollowAmo_Err:
-112     Call RegistrarError(Err.Number, Err.Description, "NPCs.FollowAmo", Erl)
+112     Call TraceError(Err.Number, Err.Description, "NPCs.FollowAmo", Erl)
 End Sub
 
 Public Sub AllFollowAmo(ByVal UserIndex As Integer)
@@ -1513,7 +1513,7 @@ Public Sub AllFollowAmo(ByVal UserIndex As Integer)
             Exit Sub
 
 AllFollowAmo_Err:
-108         Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.AllFollowAmo", Erl)
+108         Call TraceError(Err.Number, Err.Description, "SistemaCombate.AllFollowAmo", Erl)
 
 End Sub
 
@@ -1566,7 +1566,7 @@ Sub QuitarMascota(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
         Exit Sub
 
 QuitarMascota_Err:
-112     Call RegistrarError(Err.Number, Err.Description, "NPCs.QuitarMascota", Erl)
+112     Call TraceError(Err.Number, Err.Description, "NPCs.QuitarMascota", Erl)
 
         
 End Sub
@@ -1589,7 +1589,7 @@ Sub AnimacionIdle(ByVal NpcIndex As Integer, ByVal Show As Boolean)
     
         Exit Sub
 Handler:
-110     Call RegistrarError(Err.Number, Err.Description, "NPCs.AnimacionIdle", Erl)
+110     Call TraceError(Err.Number, Err.Description, "NPCs.AnimacionIdle", Erl)
 112
 End Sub
 
@@ -1654,7 +1654,7 @@ Sub MoveNpcToSide(ByVal NpcIndex As Integer, ByVal Heading As eHeading)
         Exit Sub
     
 Handler:
-116     Call RegistrarError(Err.Number, Err.Description, "NPCs.MoveNpcToSide", Erl)
+116     Call TraceError(Err.Number, Err.Description, "NPCs.MoveNpcToSide", Erl)
 118
 End Sub
 

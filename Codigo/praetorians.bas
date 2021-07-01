@@ -201,7 +201,7 @@ LoadPretorianData_Err:
         
 228     Set FileReader = Nothing
         
-230     Call RegistrarError(Err.Number, Err.Description, "PraetoriansCoopNPC.LoadPretorianData", Erl)
+230     Call TraceError(Err.Number, Err.Description, "PraetoriansCoopNPC.LoadPretorianData", Erl)
         
 232
         
@@ -226,7 +226,7 @@ Public Sub EliminarPretorianos(ByVal Mapa As Integer)
         Exit Sub
 
 EliminarPretorianos_Err:
-106     Call RegistrarError(Err.Number, Err.Description, "PraetoriansCoopNPC.EliminarPretorianos", Erl)
+106     Call TraceError(Err.Number, Err.Description, "PraetoriansCoopNPC.EliminarPretorianos", Erl)
 108
         
 End Sub

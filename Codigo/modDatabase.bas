@@ -1087,7 +1087,7 @@ Public Function GetCuentaValue(CuentaEmail As String, Columna As String) As Vari
         Exit Function
 
 GetCuentaValue_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.GetCuentaValue", Erl)
+102     Call TraceError(Err.Number, Err.Description, "modDatabase.GetCuentaValue", Erl)
 104
         
 End Function
@@ -1104,7 +1104,7 @@ Public Function GetUserValue(CharName As String, Columna As String) As Variant
         Exit Function
 
 GetUserValue_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.GetUserValue", Erl)
+102     Call TraceError(Err.Number, Err.Description, "modDatabase.GetUserValue", Erl)
 104
         
 End Function
@@ -1137,7 +1137,7 @@ Private Sub SetCuentaValue(CuentaEmail As String, Columna As String, Value As Va
         Exit Sub
 
 SetCuentaValue_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.SetCuentaValue", Erl)
+102     Call TraceError(Err.Number, Err.Description, "modDatabase.SetCuentaValue", Erl)
 104
         
 End Sub
@@ -1154,7 +1154,7 @@ Private Sub SetUserValue(CharName As String, Columna As String, Value As Variant
         Exit Sub
 
 SetUserValue_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.SetUserValue", Erl)
+102     Call TraceError(Err.Number, Err.Description, "modDatabase.SetUserValue", Erl)
 104
         
 End Sub
@@ -1172,7 +1172,7 @@ Private Sub SetCuentaValueByID(ByVal AccountID As Long, Columna As String, Value
         Exit Sub
 
 SetCuentaValueByID_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.SetCuentaValueByID", Erl)
+102     Call TraceError(Err.Number, Err.Description, "modDatabase.SetCuentaValueByID", Erl)
 104
         
 End Sub
@@ -1190,7 +1190,7 @@ Private Sub SetUserValueByID(ByVal ID As Long, Columna As String, Value As Varia
         Exit Sub
 
 SetUserValueByID_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.SetUserValueByID", Erl)
+102     Call TraceError(Err.Number, Err.Description, "modDatabase.SetUserValueByID", Erl)
 104
         
 End Sub
@@ -1205,7 +1205,7 @@ Public Function CheckUserDonatorDatabase(CuentaEmail As String) As Boolean
         Exit Function
 
 CheckUserDonatorDatabase_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.CheckUserDonatorDatabase", Erl)
+102     Call TraceError(Err.Number, Err.Description, "modDatabase.CheckUserDonatorDatabase", Erl)
 104
         
 End Function
@@ -1220,7 +1220,7 @@ Public Function GetUserCreditosDatabase(CuentaEmail As String) As Long
         Exit Function
 
 GetUserCreditosDatabase_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.GetUserCreditosDatabase", Erl)
+102     Call TraceError(Err.Number, Err.Description, "modDatabase.GetUserCreditosDatabase", Erl)
 104
         
 End Function
@@ -1235,7 +1235,7 @@ Public Function GetUserCreditosCanjeadosDatabase(CuentaEmail As String) As Long
         Exit Function
 
 GetUserCreditosCanjeadosDatabase_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.GetUserCreditosCanjeadosDatabase", Erl)
+102     Call TraceError(Err.Number, Err.Description, "modDatabase.GetUserCreditosCanjeadosDatabase", Erl)
 104
         
 End Function
@@ -1256,7 +1256,7 @@ Public Function GetUserDiasDonadorDatabase(CuentaEmail As String) As Long
         Exit Function
 
 GetUserDiasDonadorDatabase_Err:
-106     Call RegistrarError(Err.Number, Err.Description, "modDatabase.GetUserDiasDonadorDatabase", Erl)
+106     Call TraceError(Err.Number, Err.Description, "modDatabase.GetUserDiasDonadorDatabase", Erl)
 108
         
 End Function
@@ -1270,7 +1270,7 @@ Public Function GetUserComprasDonadorDatabase(CuentaEmail As String) As Long
         Exit Function
 
 GetUserComprasDonadorDatabase_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.GetUserComprasDonadorDatabase", Erl)
+102     Call TraceError(Err.Number, Err.Description, "modDatabase.GetUserComprasDonadorDatabase", Erl)
 104
         
 End Function
@@ -1285,7 +1285,7 @@ Public Function CheckUserExists(Name As String) As Boolean
         Exit Function
 
 CheckUserExists_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.CheckUserExists", Erl)
+102     Call TraceError(Err.Number, Err.Description, "modDatabase.CheckUserExists", Erl)
 104
         
 End Function
@@ -1300,7 +1300,7 @@ Public Function CheckCuentaExiste(CuentaEmail As String) As Boolean
         Exit Function
 
 CheckCuentaExiste_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.CheckCuentaExiste", Erl)
+102     Call TraceError(Err.Number, Err.Description, "modDatabase.CheckCuentaExiste", Erl)
 104
         
 End Function
@@ -1315,7 +1315,7 @@ Public Function BANCheckDatabase(Name As String) As Boolean
         Exit Function
 
 BANCheckDatabase_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.BANCheckDatabase", Erl)
+102     Call TraceError(Err.Number, Err.Description, "modDatabase.BANCheckDatabase", Erl)
 104
         
 End Function
@@ -1330,7 +1330,7 @@ Public Function GetCodigoActivacionDatabase(Name As String) As String
         Exit Function
 
 GetCodigoActivacionDatabase_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.GetCodigoActivacionDatabase", Erl)
+102     Call TraceError(Err.Number, Err.Description, "modDatabase.GetCodigoActivacionDatabase", Erl)
 104
         
 End Function
@@ -1345,7 +1345,7 @@ Public Function CheckCuentaActivadaDatabase(Name As String) As Boolean
         Exit Function
 
 CheckCuentaActivadaDatabase_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.CheckCuentaActivadaDatabase", Erl)
+102     Call TraceError(Err.Number, Err.Description, "modDatabase.CheckCuentaActivadaDatabase", Erl)
 104
         
 End Function
@@ -1360,7 +1360,7 @@ Public Function GetEmailDatabase(Name As String) As String
         Exit Function
 
 GetEmailDatabase_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.GetEmailDatabase", Erl)
+102     Call TraceError(Err.Number, Err.Description, "modDatabase.GetEmailDatabase", Erl)
 104
         
 End Function
@@ -1375,7 +1375,7 @@ Public Function GetMacAddressDatabase(CuentaEmail As String) As String
         Exit Function
 
 GetMacAddressDatabase_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.GetMacAddressDatabase", Erl)
+102     Call TraceError(Err.Number, Err.Description, "modDatabase.GetMacAddressDatabase", Erl)
 104
         
 End Function
@@ -1390,7 +1390,7 @@ Public Function GetHDSerialDatabase(CuentaEmail As String) As Long
         Exit Function
 
 GetHDSerialDatabase_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.GetHDSerialDatabase", Erl)
+102     Call TraceError(Err.Number, Err.Description, "modDatabase.GetHDSerialDatabase", Erl)
 104
         
 End Function
@@ -1405,7 +1405,7 @@ Public Function CheckBanCuentaDatabase(CuentaEmail As String) As Boolean
         Exit Function
 
 CheckBanCuentaDatabase_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.CheckBanCuentaDatabase", Erl)
+102     Call TraceError(Err.Number, Err.Description, "modDatabase.CheckBanCuentaDatabase", Erl)
 104
         
 End Function
@@ -1420,7 +1420,7 @@ Public Function GetMotivoBanCuentaDatabase(CuentaEmail As String) As String
         Exit Function
 
 GetMotivoBanCuentaDatabase_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.GetMotivoBanCuentaDatabase", Erl)
+102     Call TraceError(Err.Number, Err.Description, "modDatabase.GetMotivoBanCuentaDatabase", Erl)
 104
         
 End Function
@@ -1435,7 +1435,7 @@ Public Function GetQuienBanCuentaDatabase(CuentaEmail As String) As String
         Exit Function
 
 GetQuienBanCuentaDatabase_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.GetQuienBanCuentaDatabase", Erl)
+102     Call TraceError(Err.Number, Err.Description, "modDatabase.GetQuienBanCuentaDatabase", Erl)
 104
         
 End Function
@@ -1450,7 +1450,7 @@ Public Function GetCuentaLogeadaDatabase(CuentaEmail As String) As Boolean
         Exit Function
 
 GetCuentaLogeadaDatabase_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.GetCuentaLogeadaDatabase", Erl)
+102     Call TraceError(Err.Number, Err.Description, "modDatabase.GetCuentaLogeadaDatabase", Erl)
 104
         
 End Function
@@ -1465,7 +1465,7 @@ Public Function GetUserStatusDatabase(Name As String) As Integer
         Exit Function
 
 GetUserStatusDatabase_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.GetUserStatusDatabase", Erl)
+102     Call TraceError(Err.Number, Err.Description, "modDatabase.GetUserStatusDatabase", Erl)
 104
         
 End Function
@@ -1490,7 +1490,7 @@ Public Function GetAccountIDDatabase(Name As String) As Long
         Exit Function
 
 GetAccountIDDatabase_Err:
-108     Call RegistrarError(Err.Number, Err.Description, "modDatabase.GetAccountIDDatabase", Erl)
+108     Call TraceError(Err.Number, Err.Description, "modDatabase.GetAccountIDDatabase", Erl)
 110
         
 End Function
@@ -1601,7 +1601,7 @@ Public Function GetPersonajesCuentaDatabase(ByVal AccountID As Long, Personaje()
         Exit Function
 
 GetPersonajesCuentaDatabase_Err:
-162     Call RegistrarError(Err.Number, Err.Description, "modDatabase.GetPersonajesCuentaDatabase", Erl)
+162     Call TraceError(Err.Number, Err.Description, "modDatabase.GetPersonajesCuentaDatabase", Erl)
 164
         
 End Function
@@ -1617,7 +1617,7 @@ Public Sub SetUserLoggedDatabase(ByVal ID As Long, ByVal AccountID As Long)
         Exit Sub
 
 SetUserLoggedDatabase_Err:
-104     Call RegistrarError(Err.Number, Err.Description, "modDatabase.SetUserLoggedDatabase", Erl)
+104     Call TraceError(Err.Number, Err.Description, "modDatabase.SetUserLoggedDatabase", Erl)
 106
         
 End Sub
@@ -1632,7 +1632,7 @@ Public Sub ResetLoggedDatabase(ByVal AccountID As Long)
         Exit Sub
 
 ResetLoggedDatabase_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.ResetLoggedDatabase", Erl)
+102     Call TraceError(Err.Number, Err.Description, "modDatabase.ResetLoggedDatabase", Erl)
 104
         
 End Sub
@@ -1646,7 +1646,7 @@ Public Sub SetUsersLoggedDatabase(ByVal NumUsers As Long)
         Exit Sub
 
 SetUsersLoggedDatabase_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.SetUsersLoggedDatabase", Erl)
+102     Call TraceError(Err.Number, Err.Description, "modDatabase.SetUsersLoggedDatabase", Erl)
 104
         
 End Sub
@@ -1664,7 +1664,7 @@ Public Function LeerRecordUsuariosDatabase() As Long
         Exit Function
 
 LeerRecordUsuariosDatabase_Err:
-106     Call RegistrarError(Err.Number, Err.Description, "modDatabase.LeerRecordUsuariosDatabase", Erl)
+106     Call TraceError(Err.Number, Err.Description, "modDatabase.LeerRecordUsuariosDatabase", Erl)
 108
         
 End Function
@@ -1678,7 +1678,7 @@ Public Sub SetRecordUsersDatabase(ByVal Record As Long)
         Exit Sub
 
 SetRecordUsersDatabase_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.SetRecordUsersDatabase", Erl)
+102     Call TraceError(Err.Number, Err.Description, "modDatabase.SetRecordUsersDatabase", Erl)
 104
         
 End Sub
@@ -1693,7 +1693,7 @@ Public Sub LogoutAllUsersAndAccounts()
         Exit Sub
 
 LogoutAllUsersAndAccounts_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.LogoutAllUsersAndAccounts", Erl)
+102     Call TraceError(Err.Number, Err.Description, "modDatabase.LogoutAllUsersAndAccounts", Erl)
 104
         
 End Sub
@@ -1708,7 +1708,7 @@ Public Sub SaveVotoDatabase(ByVal ID As Long, ByVal Encuestas As Integer)
         Exit Sub
 
 SaveVotoDatabase_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.SaveVotoDatabase", Erl)
+102     Call TraceError(Err.Number, Err.Description, "modDatabase.SaveVotoDatabase", Erl)
 104
         
 End Sub
@@ -1723,7 +1723,7 @@ Public Sub SaveUserBodyDatabase(UserName As String, ByVal Body As Integer)
         Exit Sub
 
 SaveUserBodyDatabase_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.SaveUserBodyDatabase", Erl)
+102     Call TraceError(Err.Number, Err.Description, "modDatabase.SaveUserBodyDatabase", Erl)
 104
         
 End Sub
@@ -1738,7 +1738,7 @@ Public Sub SaveUserHeadDatabase(UserName As String, ByVal Head As Integer)
         Exit Sub
 
 SaveUserHeadDatabase_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.SaveUserHeadDatabase", Erl)
+102     Call TraceError(Err.Number, Err.Description, "modDatabase.SaveUserHeadDatabase", Erl)
 104
         
 End Sub
@@ -1752,7 +1752,7 @@ Public Sub SaveUserSkillDatabase(UserName As String, ByVal Skill As Integer, ByV
         Exit Sub
 
 SaveUserSkillDatabase_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.SaveUserSkillDatabase", Erl)
+102     Call TraceError(Err.Number, Err.Description, "modDatabase.SaveUserSkillDatabase", Erl)
 104
         
 End Sub
@@ -1766,7 +1766,7 @@ Public Sub SaveUserSkillsLibres(UserName As String, ByVal SkillsLibres As Intege
         Exit Sub
 
 SaveUserHeadDatabase_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.SaveUserHeadDatabase", Erl)
+102     Call TraceError(Err.Number, Err.Description, "modDatabase.SaveUserHeadDatabase", Erl)
 104
         
 End Sub
@@ -1793,7 +1793,7 @@ Public Sub ValidarCuentaDatabase(UserCuenta As String)
         Exit Sub
 
 ValidarCuentaDatabase_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.ValidarCuentaDatabase", Erl)
+102     Call TraceError(Err.Number, Err.Description, "modDatabase.ValidarCuentaDatabase", Erl)
 104
         
 End Sub
@@ -1953,7 +1953,7 @@ Public Sub EcharConsejoDatabase(UserName As String)
         Exit Sub
 
 EcharConsejoDatabase_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.EcharConsejoDatabase", Erl)
+102     Call TraceError(Err.Number, Err.Description, "modDatabase.EcharConsejoDatabase", Erl)
 104
         
 End Sub
@@ -1968,7 +1968,7 @@ Public Sub EcharLegionDatabase(UserName As String)
         Exit Sub
 
 EcharLegionDatabase_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.EcharLegionDatabase", Erl)
+102     Call TraceError(Err.Number, Err.Description, "modDatabase.EcharLegionDatabase", Erl)
 104
         
 End Sub
@@ -1983,7 +1983,7 @@ Public Sub EcharArmadaDatabase(UserName As String)
         Exit Sub
 
 EcharArmadaDatabase_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.EcharArmadaDatabase", Erl)
+102     Call TraceError(Err.Number, Err.Description, "modDatabase.EcharArmadaDatabase", Erl)
 104
         
 End Sub
@@ -1998,7 +1998,7 @@ Public Sub CambiarPenaDatabase(UserName As String, ByVal Numero As Integer, Pena
         Exit Sub
 
 CambiarPenaDatabase_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.CambiarPenaDatabase", Erl)
+102     Call TraceError(Err.Number, Err.Description, "modDatabase.CambiarPenaDatabase", Erl)
 104
         
 End Sub
@@ -2600,7 +2600,7 @@ Public Function SanitizeNullValue(ByVal Value As Variant, ByVal defaultValue As 
         Exit Function
 
 SanitizeNullValue_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.SanitizeNullValue", Erl)
+102     Call TraceError(Err.Number, Err.Description, "modDatabase.SanitizeNullValue", Erl)
 104
         
 End Function
@@ -2613,7 +2613,7 @@ Public Function GetUserLevelDatabase(ByVal Name As String) As Byte
         Exit Function
         
 GetUserLevelDatabase_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.GetUserLevelDatabase", Erl)
+102     Call TraceError(Err.Number, Err.Description, "modDatabase.GetUserLevelDatabase", Erl)
 104
 End Function
 

@@ -47,7 +47,7 @@ Public Function GetTickCount() As Long
         Exit Function
 
 GetTickCount_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "ModLadder.GetTickCount", Erl)
+102     Call TraceError(Err.Number, Err.Description, "ModLadder.GetTickCount", Erl)
 
         
 End Function
@@ -75,7 +75,7 @@ Function GetTimeFormated() As String
         Exit Function
 
 GetTimeFormated_Err:
-110     Call RegistrarError(Err.Number, Err.Description, "ModLadder.GetTimeFormated", Erl)
+110     Call TraceError(Err.Number, Err.Description, "ModLadder.GetTimeFormated", Erl)
 112
         
 End Function
@@ -98,7 +98,7 @@ Public Sub GetHoraActual()
         Exit Sub
 
 GetHoraActual_Err:
-114     Call RegistrarError(Err.Number, Err.Description, "ModLadder.GetHoraActual", Erl)
+114     Call TraceError(Err.Number, Err.Description, "ModLadder.GetHoraActual", Erl)
 116
         
 End Sub
@@ -113,7 +113,7 @@ Public Function DarNameMapa(ByVal Map As Long) As String
         Exit Function
 
 DarNameMapa_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "ModLadder.DarNameMapa", Erl)
+102     Call TraceError(Err.Number, Err.Description, "ModLadder.DarNameMapa", Erl)
 104
         
 End Function
@@ -394,7 +394,7 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
         Exit Sub
 
 CompletarAccionFin_Err:
-394     Call RegistrarError(Err.Number, Err.Description, "ModLadder.CompletarAccionFin", Erl)
+394     Call TraceError(Err.Number, Err.Description, "ModLadder.CompletarAccionFin", Erl)
 396
         
 End Sub
@@ -431,7 +431,7 @@ Public Function TieneObjEnInv(ByVal UserIndex As Integer, ByVal ObjIndex As Inte
         Exit Function
 
 TieneObjEnInv_Err:
-116     Call RegistrarError(Err.Number, Err.Description, "ModLadder.TieneObjEnInv", Erl)
+116     Call TraceError(Err.Number, Err.Description, "ModLadder.TieneObjEnInv", Erl)
 118
         
 End Function
@@ -461,7 +461,7 @@ Public Function CantidadObjEnInv(ByVal UserIndex As Integer, ByVal ObjIndex As I
         Exit Function
 
 CantidadObjEnInv_Err:
-110     Call RegistrarError(Err.Number, Err.Description, "ModLadder.CantidadObjEnInv", Erl)
+110     Call TraceError(Err.Number, Err.Description, "ModLadder.CantidadObjEnInv", Erl)
 112
         
 End Function
@@ -491,7 +491,7 @@ Public Function SumarTiempo(segundos As Integer) As String
         Exit Function
 
 SumarTiempo_Err:
-114     Call RegistrarError(Err.Number, Err.Description, "ModLadder.SumarTiempo", Erl)
+114     Call TraceError(Err.Number, Err.Description, "ModLadder.SumarTiempo", Erl)
 116
         
 End Function
@@ -507,7 +507,7 @@ Public Sub AgregarAConsola(ByVal Text As String)
         Exit Sub
 
 AgregarAConsola_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "ModLadder.AgregarAConsola", Erl)
+102     Call TraceError(Err.Number, Err.Description, "ModLadder.AgregarAConsola", Erl)
 104
         
 End Sub
@@ -565,7 +565,7 @@ Function PuedeUsarObjeto(UserIndex As Integer, ByVal ObjIndex As Integer, Option
         Exit Function
 
 PuedeUsarObjeto_Err:
-162     Call RegistrarError(Err.Number, Err.Description, "ModLadder.PuedeUsarObjeto", Erl)
+162     Call TraceError(Err.Number, Err.Description, "ModLadder.PuedeUsarObjeto", Erl)
 164     ' ' WyroX: Si hay error que salga directamente
 
 End Function
@@ -580,7 +580,7 @@ Public Function RequiereOxigeno(ByVal UserMap) As Boolean
         Exit Function
 
 RequiereOxigeno_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "ModLadder.RequiereOxigeno", Erl)
+102     Call TraceError(Err.Number, Err.Description, "ModLadder.RequiereOxigeno", Erl)
 104
         
 End Function

@@ -97,7 +97,7 @@ Public Sub CheckRanking(ByVal Tipo As eRankings, ByVal UserIndex As Integer, ByV
         Exit Sub
 
 CheckRanking_Err:
-152     Call RegistrarError(Err.Number, Err.Description, "ModRanking.CheckRanking", Erl)
+152     Call TraceError(Err.Number, Err.Description, "ModRanking.CheckRanking", Erl)
 154
         
 End Sub
@@ -129,7 +129,7 @@ Private Function isRank(ByVal Nick As String, ByVal Tipo As eRankings) As Byte
         Exit Function
 
 isRank_Err:
-110     Call RegistrarError(Err.Number, Err.Description, "ModRanking.isRank", Erl)
+110     Call TraceError(Err.Number, Err.Description, "ModRanking.isRank", Erl)
 112
         
 End Function
@@ -163,7 +163,7 @@ Public Sub GuardarRanking()
         Exit Sub
 
 GuardarRanking_Err:
-114     Call RegistrarError(Err.Number, Err.Description, "ModRanking.GuardarRanking", Erl)
+114     Call TraceError(Err.Number, Err.Description, "ModRanking.GuardarRanking", Erl)
 116
         
 End Sub
@@ -201,7 +201,7 @@ Public Sub CargarRanking()
         Exit Sub
 
 CargarRanking_Err:
-118     Call RegistrarError(Err.Number, Err.Description, "ModRanking.CargarRanking", Erl)
+118     Call TraceError(Err.Number, Err.Description, "ModRanking.CargarRanking", Erl)
 120
         
 End Sub
