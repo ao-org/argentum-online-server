@@ -107,7 +107,7 @@ Private Sub cboPjs_Change()
 
 cboPjs_Change_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "frmAdmin.cboPjs_Change", Erl)
-104     Resume Next
+104
         
 End Sub
 
@@ -122,7 +122,7 @@ Private Sub cboPjs_Click()
 
 cboPjs_Click_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "frmAdmin.cboPjs_Click", Erl)
-104     Resume Next
+104
         
 End Sub
 
@@ -146,7 +146,7 @@ Private Sub Command1_Click()
 
 Command1_Click_Err:
 108     Call RegistrarError(Err.Number, Err.Description, "frmAdmin.Command1_Click", Erl)
-110     Resume Next
+110
         
 End Sub
 
@@ -164,7 +164,7 @@ Public Sub ActualizaListaPjs()
 
 106             If UserList(LoopC).flags.UserLogged And UserList(LoopC).ConnID >= 0 And UserList(LoopC).ConnIDValida Then
 108                 If UserList(LoopC).flags.Privilegios And PlayerType.user Then
-110                     .AddItem UserList(LoopC).name
+110                     .AddItem UserList(LoopC).Name
 112                     .ItemData(.NewIndex) = LoopC
 
                     End If
@@ -180,7 +180,7 @@ Public Sub ActualizaListaPjs()
 
 ActualizaListaPjs_Err:
 116     Call RegistrarError(Err.Number, Err.Description, "frmAdmin.ActualizaListaPjs", Erl)
-118     Resume Next
+118
         
 End Sub
 
@@ -195,7 +195,7 @@ Private Sub Command3_Click()
 
 Command3_Click_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "frmAdmin.Command3_Click", Erl)
-104     Resume Next
+104
         
 End Sub
 
@@ -222,7 +222,7 @@ Private Sub ActualizaPjInfo()
 
 ActualizaPjInfo_Err:
 108     Call RegistrarError(Err.Number, Err.Description, "frmAdmin.ActualizaPjInfo", Erl)
-110     Resume Next
+110
         
 End Sub
 

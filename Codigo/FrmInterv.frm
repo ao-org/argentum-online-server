@@ -849,7 +849,7 @@ Public Sub AplicarIntervalos()
 
 AplicarIntervalos_Err:
 148     Call RegistrarError(Err.Number, Err.Description, "FrmInterv.AplicarIntervalos", Erl)
-150     Resume Next
+150
         
 End Sub
 
@@ -923,6 +923,6 @@ Private Sub ok_Click()
 
 ok_Click_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "FrmInterv.ok_Click", Erl)
-104     Resume Next
+104
         
 End Sub

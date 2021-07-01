@@ -95,7 +95,7 @@ Public Property Get Longitud() As Integer
 
 Longitud_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "cCola.Longitud", Erl)
-104     Resume Next
+104
         
 End Property
 
@@ -110,7 +110,7 @@ Private Function IndexValido(ByVal i As Integer) As Boolean
 
 IndexValido_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "cCola.IndexValido", Erl)
-104     Resume Next
+104
         
 End Function
 
@@ -125,11 +125,11 @@ Private Sub Class_Initialize()
 
 Class_Initialize_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "cCola.Class_Initialize", Erl)
-104     Resume Next
+104
         
 End Sub
 
-Public Function VerElemento(ByVal index As Integer) As String
+Public Function VerElemento(ByVal Index As Integer) As String
         
         On Error GoTo VerElemento_Err
     
@@ -137,11 +137,11 @@ Public Function VerElemento(ByVal index As Integer) As String
 
         
 
-100     If IndexValido(index) Then
+100     If IndexValido(Index) Then
             'Pablo
             'VerElemento = UCase$(Cola.Item(index))
             '/Pablo
-102         VerElemento = Cola(index)
+102         VerElemento = Cola(Index)
         Else
 104         VerElemento = 0
 
@@ -308,7 +308,7 @@ Quitar_Err:
         
 End Sub
 
-Public Sub QuitarIndex(ByVal index As Integer)
+Public Sub QuitarIndex(ByVal Index As Integer)
         
         On Error GoTo QuitarIndex_Err
     
@@ -316,7 +316,7 @@ Public Sub QuitarIndex(ByVal index As Integer)
 
         
 
-100     If IndexValido(index) Then Call Cola.Remove(index)
+100     If IndexValido(Index) Then Call Cola.Remove(Index)
 
         
         Exit Sub
@@ -339,6 +339,6 @@ Private Sub Class_Terminate()
 
 Class_Terminate_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "cCola.Class_Terminate", Erl)
-104     Resume Next
+104
         
 End Sub

@@ -34,15 +34,15 @@ Option Explicit
 
 Private Declare Function RegisterWindowMessage Lib "user32" Alias "RegisterWindowMessageA" (ByVal lpString As String) As Long
 
-Private Declare Function SendMessageLong Lib "user32" Alias "SendMessageA" (ByVal hwnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
+Private Declare Function SendMessageLong Lib "user32" Alias "SendMessageA" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
 
 Private sMensaje As Long, hVentana As Long, hVentanaMia As Long
 
-Private Declare Function GetWindowText Lib "user32" Alias "GetWindowTextA" (ByVal hwnd As Long, ByVal lpString As String, ByVal cch As Long) As Long
+Private Declare Function GetWindowText Lib "user32" Alias "GetWindowTextA" (ByVal hWnd As Long, ByVal lpString As String, ByVal cch As Long) As Long
 
-Private Declare Function GetWindowTextLength Lib "user32" Alias "GetWindowTextLengthA" (ByVal hwnd As Long) As Long
+Private Declare Function GetWindowTextLength Lib "user32" Alias "GetWindowTextLengthA" (ByVal hWnd As Long) As Long
 
-Private Declare Function GetWindow Lib "user32" (ByVal hwnd As Long, ByVal wCmd As Long) As Long
+Private Declare Function GetWindow Lib "user32" (ByVal hWnd As Long, ByVal wCmd As Long) As Long
 
 Private Const GW_HWNDFIRST = 0
 
@@ -102,7 +102,7 @@ Private Function BuscaVentana(Wnd As Long, str As String) As Long
 
 BuscaVentana_Err:
 120     Call RegistrarError(Err.Number, Err.Description, "clsEstadisticasIPC.BuscaVentana", Erl)
-122     Resume Next
+122
         
 End Function
 
@@ -122,7 +122,7 @@ Public Function Informar(ByVal QueCosa As EstaNotificaciones, ByVal Parametro As
 
 Informar_Err:
 106     Call RegistrarError(Err.Number, Err.Description, "clsEstadisticasIPC.Informar", Erl)
-108     Resume Next
+108
         
 End Function
 
@@ -140,15 +140,15 @@ Public Function EstadisticasAndando() As Boolean
 
 EstadisticasAndando_Err:
 104     Call RegistrarError(Err.Number, Err.Description, "clsEstadisticasIPC.EstadisticasAndando", Erl)
-106     Resume Next
+106
         
 End Function
 
-Public Sub Inicializa(ByVal hwnd As Long)
+Public Sub Inicializa(ByVal hWnd As Long)
         
         On Error GoTo Inicializa_Err
         
-100     hVentanaMia = hwnd
+100     hVentanaMia = hWnd
 102     sMensaje = RegisterWindowMessage("EstadisticasAO")
 
         
@@ -156,7 +156,7 @@ Public Sub Inicializa(ByVal hwnd As Long)
 
 Inicializa_Err:
 104     Call RegistrarError(Err.Number, Err.Description, "clsEstadisticasIPC.Inicializa", Erl)
-106     Resume Next
+106
         
 End Sub
 
@@ -171,6 +171,6 @@ Private Sub BuscaWndEstadisticas()
 
 BuscaWndEstadisticas_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "clsEstadisticasIPC.BuscaWndEstadisticas", Erl)
-104     Resume Next
+104
         
 End Sub

@@ -63,7 +63,7 @@ Public Sub Class_Initialize()
 
 Class_Initialize_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "diccionario.Class_Initialize", Erl)
-104     Resume Next
+104
         
 End Sub
 
@@ -84,7 +84,7 @@ Public Property Get CantElem() As Integer
 
 CantElem_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "diccionario.CantElem", Erl)
-104     Resume Next
+104
         
 End Property
 
@@ -132,7 +132,7 @@ Public Function AtPut(ByVal clave As String, ByRef elem As Variant) As Boolean
 
 AtPut_Err:
 130     Call RegistrarError(Err.Number, Err.Description, "diccionario.AtPut", Erl)
-132     Resume Next
+132
         
 End Function
 
@@ -162,7 +162,7 @@ Public Function At(ByVal clave As String) As Variant
 
 At_Err:
 112     Call RegistrarError(Err.Number, Err.Description, "diccionario.At", Erl)
-114     Resume Next
+114
         
 End Function
 
@@ -177,7 +177,7 @@ Public Function AtIndex(ByVal i As Integer) As String
 
 AtIndex_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "diccionario.AtIndex", Erl)
-104     Resume Next
+104
         
 End Function
 
@@ -216,7 +216,7 @@ Public Function MayorValor(ByRef cant As Integer) As String
 
 MayorValor_Err:
 120     Call RegistrarError(Err.Number, Err.Description, "diccionario.MayorValor", Erl)
-122     Resume Next
+122
         
 End Function
 
@@ -239,6 +239,6 @@ Public Sub DumpAll()
 
 DumpAll_Err:
 110     Call RegistrarError(Err.Number, Err.Description, "diccionario.DumpAll", Erl)
-112     Resume Next
+112
         
 End Sub

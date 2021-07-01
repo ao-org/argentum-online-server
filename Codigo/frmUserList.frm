@@ -94,7 +94,7 @@ Private Sub Command1_Click()
 106     List1.Clear
 
 108     For LoopC = 1 To MaxUsers
-110         List1.AddItem Format(LoopC, "000") & " " & IIf(UserList(LoopC).flags.UserLogged, UserList(LoopC).name, "")
+110         List1.AddItem Format(LoopC, "000") & " " & IIf(UserList(LoopC).flags.UserLogged, UserList(LoopC).Name, "")
 112         List1.ItemData(List1.NewIndex) = LoopC
 114     Next LoopC
 
@@ -103,7 +103,7 @@ Private Sub Command1_Click()
 
 Command1_Click_Err:
 116     Call RegistrarError(Err.Number, Err.Description, "frmUserList.Command1_Click", Erl)
-118     Resume Next
+118
         
 End Sub
 
@@ -128,7 +128,7 @@ Private Sub Command2_Click()
 
 Command2_Click_Err:
 108     Call RegistrarError(Err.Number, Err.Description, "frmUserList.Command2_Click", Erl)
-110     Resume Next
+110
         
 End Sub
 
@@ -161,6 +161,6 @@ Private Sub List1_Click()
 
 List1_Click_Err:
 116     Call RegistrarError(Err.Number, Err.Description, "frmUserList.List1_Click", Erl)
-118     Resume Next
+118
         
 End Sub

@@ -30,13 +30,13 @@ Public Sub InvitarMiembro(ByVal UserIndex As Integer, ByVal InvitadoIndex As Int
         
         'HarThaoS: Si invita a un gm no lo dejo
         If EsGM(InvitadoIndex) Then
-            Call WriteConsoleMsg(UserIndex, "No puedes invitar a un grupo a un GM.", FontTypeNames.fonttype_new_grupo)
+            Call WriteConsoleMsg(UserIndex, "No puedes invitar a un grupo a un GM.", FontTypeNames.FONTTYPE_New_GRUPO)
             Exit Sub
         End If
         
         'Si es gm tampoco lo dejo
         If EsGM(UserIndex) Then
-            Call WriteConsoleMsg(UserIndex, "Los GMs no pueden formar parte de un grupo.", FontTypeNames.fonttype_new_grupo)
+            Call WriteConsoleMsg(UserIndex, "Los GMs no pueden formar parte de un grupo.", FontTypeNames.FONTTYPE_New_GRUPO)
             Exit Sub
         End If
 
@@ -92,7 +92,7 @@ Public Sub InvitarMiembro(ByVal UserIndex As Integer, ByVal InvitadoIndex As Int
 
 InvitarMiembro_Err:
 144     Call RegistrarError(Err.Number, Err.Description, "ModGrupos.InvitarMiembro", Erl)
-146     Resume Next
+146
         
 End Sub
 
@@ -154,7 +154,7 @@ Public Sub EcharMiembro(ByVal UserIndex As Integer, ByVal Indice As Byte)
     
 140     With UserList(UserIndexEchar)
     
-142         Call WriteConsoleMsg(UserIndex, .name & " fue expulsado del grupo.", FontTypeNames.FONTTYPE_New_GRUPO)
+142         Call WriteConsoleMsg(UserIndex, .Name & " fue expulsado del grupo.", FontTypeNames.FONTTYPE_New_GRUPO)
             'Call WriteConsoleMsg(UserIndexEchar, "Fuiste eliminado del grupo.", FontTypeNames.FONTTYPE_INFOIAO)
 144         Call WriteLocaleMsg(UserIndexEchar, "37", FontTypeNames.FONTTYPE_New_GRUPO)
         
@@ -192,7 +192,7 @@ Public Sub EcharMiembro(ByVal UserIndex As Integer, ByVal Indice As Byte)
 
 EcharMiembro_Err:
 176     Call RegistrarError(Err.Number, Err.Description, "ModGrupos.EcharMiembro", Erl)
-178     Resume Next
+178
         
 End Sub
 
@@ -216,7 +216,7 @@ Public Sub SalirDeGrupo(ByVal UserIndex As Integer)
     
 108         For i = 1 To 6
 
-110             If .name = UserList(UserList(.Grupo.Lider).Grupo.Miembros(i)).name Then
+110             If .Name = UserList(UserList(.Grupo.Lider).Grupo.Miembros(i)).Name Then
 112                 UserList(.Grupo.Lider).Grupo.Miembros(i) = 0
 114                 indexviejo = i
 
@@ -240,7 +240,7 @@ Public Sub SalirDeGrupo(ByVal UserIndex As Integer)
             'Call WriteConsoleMsg(userindex, "Has salido del grupo.", FontTypeNames.FONTTYPE_INFOIAO)
             'Call WriteConsoleMsg(.Grupo.Lider, .name & " a salido del grupo.", FontTypeNames.FONTTYPE_INFOIAO)
 132         Call WriteLocaleMsg(UserIndex, "37", FontTypeNames.FONTTYPE_New_GRUPO)
-134         Call WriteLocaleMsg(.Grupo.Lider, "202", FontTypeNames.FONTTYPE_New_GRUPO, .name)
+134         Call WriteLocaleMsg(.Grupo.Lider, "202", FontTypeNames.FONTTYPE_New_GRUPO, .Name)
         
 136         If UserList(.Grupo.Lider).Grupo.CantidadMiembros = 1 Then
         
@@ -271,7 +271,7 @@ Public Sub SalirDeGrupo(ByVal UserIndex As Integer)
 
 SalirDeGrupo_Err:
 160     Call RegistrarError(Err.Number, Err.Description, "ModGrupos.SalirDeGrupo", Erl)
-162     Resume Next
+162
         
 End Sub
 
@@ -289,7 +289,7 @@ Public Sub SalirDeGrupoForzado(ByVal UserIndex As Integer)
     
 104         For i = 1 To 6
 
-106             If .name = UserList(UserList(.Grupo.Lider).Grupo.Miembros(i)).name Then
+106             If .Name = UserList(UserList(.Grupo.Lider).Grupo.Miembros(i)).Name Then
 108                 UserList(.Grupo.Lider).Grupo.Miembros(i) = 0
 110                 indexviejo = i
 
@@ -311,7 +311,7 @@ Public Sub SalirDeGrupoForzado(ByVal UserIndex As Integer)
 126         Next a
 
             'Call WriteConsoleMsg(.Grupo.Lider, .name & " a salido del grupo.", FontTypeNames.FONTTYPE_INFOIAO)
-128         Call WriteLocaleMsg(.Grupo.Lider, "202", FontTypeNames.FONTTYPE_New_GRUPO, .name)
+128         Call WriteLocaleMsg(.Grupo.Lider, "202", FontTypeNames.FONTTYPE_New_GRUPO, .Name)
         
 130         If UserList(.Grupo.Lider).Grupo.CantidadMiembros = 1 Then
         
@@ -336,7 +336,7 @@ Public Sub SalirDeGrupoForzado(ByVal UserIndex As Integer)
 
 SalirDeGrupoForzado_Err:
 148     Call RegistrarError(Err.Number, Err.Description, "ModGrupos.SalirDeGrupoForzado", Erl)
-150     Resume Next
+150
         
 End Sub
 
@@ -372,7 +372,7 @@ Public Sub FinalizarGrupo(ByVal UserIndex As Integer)
 
 FinalizarGrupo_Err:
 122     Call RegistrarError(Err.Number, Err.Description, "ModGrupos.FinalizarGrupo", Erl)
-124     Resume Next
+124
         
 End Sub
 
@@ -428,7 +428,7 @@ Public Sub CompartirUbicacion(ByVal UserIndex As Integer)
 
 CompartirUbicacion_Err:
 128     Call RegistrarError(Err.Number, Err.Description, "ModGrupos.CompartirUbicacion", Erl)
-130     Resume Next
+130
         
 End Sub
 
