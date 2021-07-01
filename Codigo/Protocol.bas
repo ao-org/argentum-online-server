@@ -7772,6 +7772,8 @@ Private Sub HandleGoNearby(ByVal UserIndex As Integer)
             
         Dim Found  As Boolean
         
+        If Not EsGM(UserIndex) Then Exit Sub
+        
         'Check the user has enough powers
         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) Or Ayuda.Existe(UserName) Then
             tIndex = NameIndex(UserName)
@@ -7816,7 +7818,7 @@ Private Sub HandleGoNearby(ByVal UserIndex As Integer)
                 End If
             End If
         Else
-                    Call WriteConsoleMsg(UserIndex, "Servidor » No podés ir cerca de ningun Usuario si no pidio SOS.", FontTypeNames.FONTTYPE_INFO)
+            Call WriteConsoleMsg(UserIndex, "Servidor » No podés ir cerca de ningun Usuario si no pidio SOS.", FontTypeNames.FONTTYPE_INFO)
         End If
 
     End With
@@ -7919,7 +7921,7 @@ Private Sub HandleWhere(ByVal UserIndex As Integer)
         
         UserName = .incomingData.ReadASCIIString()
         
-        If (.flags.Privilegios And Not (PlayerType.Consejero Or PlayerType.user)) Then
+        If (.flags.Privilegios And (PlayerType.Consejero Or PlayerType.user)) = 0 Then
             tUser = NameIndex(UserName)
 
             If tUser <= 0 Then
