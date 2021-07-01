@@ -2752,10 +2752,10 @@ Sub LoadIntervalos()
 122     FrmInterv.txtIntervaloPerderStamina.Text = IntervaloPerderStamina
     
 124     IntervaloSed = val(Lector.GetValue("INTERVALOS", "IntervaloSed"))
-126     FrmInterv.txtIntervaloSed.Text = IntervaloSed
+126     FrmInterv.txtIntervaloSed.Text = IntervaloSed / 25
     
 128     IntervaloHambre = val(Lector.GetValue("INTERVALOS", "IntervaloHambre"))
-130     FrmInterv.txtIntervaloHambre.Text = IntervaloHambre
+130     FrmInterv.txtIntervaloHambre.Text = IntervaloHambre / 25
     
 132     IntervaloVeneno = val(Lector.GetValue("INTERVALOS", "IntervaloVeneno"))
 134     FrmInterv.txtIntervaloVeneno.Text = IntervaloVeneno
@@ -2779,10 +2779,10 @@ Sub LoadIntervalos()
 158     FrmInterv.txtInvocacion.Text = IntervaloInvocacion
     
 160     TimeoutPrimerPaquete = val(Lector.GetValue("INTERVALOS", "TimeoutPrimerPaquete"))
-162     FrmInterv.txtTimeoutPrimerPaquete.Text = TimeoutPrimerPaquete
+162     FrmInterv.txtTimeoutPrimerPaquete.Text = TimeoutPrimerPaquete / 25
     
 164     TimeoutEsperandoLoggear = val(Lector.GetValue("INTERVALOS", "TimeoutEsperandoLoggear"))
-166     FrmInterv.txtTimeoutEsperandoLoggear.Text = TimeoutEsperandoLoggear
+166     FrmInterv.txtTimeoutEsperandoLoggear.Text = TimeoutEsperandoLoggear / 25
     
 168     IntervaloIncineracion = val(Lector.GetValue("INTERVALOS", "IntervaloFuego"))
 170     FrmInterv.txtintervalofuego.Text = IntervaloIncineracion

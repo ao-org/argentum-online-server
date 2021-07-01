@@ -705,7 +705,6 @@ Sub CloseSocket(ByVal UserIndex As Integer)
     
 138         .ConnID = -1
 140         .ConnIDValida = False
-142         .NumeroPaquetesPorMiliSec = 0
     
         End With
     
@@ -715,7 +714,6 @@ Sub CloseSocket(ByVal UserIndex As Integer)
 ErrHandler:
 144     UserList(UserIndex).ConnID = -1
 146     UserList(UserIndex).ConnIDValida = False
-148     UserList(UserIndex).NumeroPaquetesPorMiliSec = 0
 
 150     Call ResetUserSlot(UserIndex)
 
