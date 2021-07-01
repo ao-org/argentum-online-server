@@ -30,7 +30,7 @@ a- Actualizar Recursos
 
 - http://ao20-test.duckdns.org:9090/view/Produccion/job/Recursos/
 
-b- Actualizar codigo del cliente
+b- Actualizar codigo del cliente (ESTE PIPELINE SE EJECUTA AUTOMATICAMENTE AL CREAR EL TAG)
 
 - http://ao20-test.duckdns.org:9090/view/Produccion/job/re20-cliente-tag-release/
 
