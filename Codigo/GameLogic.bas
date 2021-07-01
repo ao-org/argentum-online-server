@@ -814,7 +814,7 @@ Function LegalPos(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer, 
 122             If (.Blocked And FLAG_AGUA) = 0 Then Exit Function
             End If
             
-124         If (.Blocked And eBlock.ALL_SIDES) = eBlock.ALL_SIDES Then Exit Function
+124         If (.Blocked And eBlock.ALL_SIDES) > 0 Then Exit Function
         
         End With
         
