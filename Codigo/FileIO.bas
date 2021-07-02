@@ -2751,11 +2751,11 @@ Sub LoadIntervalos()
 120     IntervaloPerderStamina = val(Lector.GetValue("INTERVALOS", "IntervaloPerderStamina"))
 122     FrmInterv.txtIntervaloPerderStamina.Text = IntervaloPerderStamina
     
-124     IntervaloSed = val(Lector.GetValue("INTERVALOS", "IntervaloSed"))
-126     FrmInterv.txtIntervaloSed.Text = IntervaloSed / 25
+124     IntervaloSed = val(Lector.GetValue("INTERVALOS", "IntervaloSed")) / 25
+126     FrmInterv.txtIntervaloSed.Text = IntervaloSed
     
-128     IntervaloHambre = val(Lector.GetValue("INTERVALOS", "IntervaloHambre"))
-130     FrmInterv.txtIntervaloHambre.Text = IntervaloHambre / 25
+128     IntervaloHambre = val(Lector.GetValue("INTERVALOS", "IntervaloHambre")) / 25
+130     FrmInterv.txtIntervaloHambre.Text = IntervaloHambre
     
 132     IntervaloVeneno = val(Lector.GetValue("INTERVALOS", "IntervaloVeneno"))
 134     FrmInterv.txtIntervaloVeneno.Text = IntervaloVeneno
