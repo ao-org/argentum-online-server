@@ -1006,7 +1006,7 @@ Public Sub InitializePacketList()
     PacketList(ClientPacketID.MoveCraftItem) = GetAddress(AddressOf HandleMoveCraftItem)
     PacketList(ClientPacketID.PetLeaveAll) = GetAddress(AddressOf HandlePetLeaveAll)
     PacketList(ClientPacketID.GuardNoticeResponse) = GetAddress(AddressOf AOGuard.HandleGuardNoticeResponse)
-    PacketList(ClientPacketID.GuardNoticeResponse) = GetAddress(AddressOf AOGuard.HandleGuardResendVerificationCode)
+    PacketList(ClientPacketID.GuardResendVerificationCode) = GetAddress(AddressOf AOGuard.HandleGuardResendVerificationCode)
     
 End Sub
 
