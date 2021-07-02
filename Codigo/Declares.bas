@@ -1664,7 +1664,7 @@ Public Type UserCounters
     
     Ahogo As Long
     
-    IdleCount As Long
+    IdleCount As Integer
     AttackCounter As Integer
     HPCounter As Integer
     STACounter As Integer
@@ -1853,10 +1853,6 @@ Public Type user
     flags As UserFlags
     donador As TDonador
     Accion As AccionPendiente
-    
-    NumeroPaquetesPorMiliSec As Long
-    BytesTransmitidosUser As Long
-    BytesTransmitidosSvr As Long
 
     Correo As UserCorreo
     Faccion As tFacciones
