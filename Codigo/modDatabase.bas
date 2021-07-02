@@ -66,7 +66,7 @@ ErrorHandler:
     
 118     If Not ConnectedOnce Then
 120         Call MsgBox("No se pudo conectar a la base de datos. Mas información en logs/Database.log", vbCritical, "OBDC - Error")
-122         Call CerrarServidor
+122         End
         End If
 
 End Sub
@@ -1054,7 +1054,7 @@ ErrorHandler:
 
 End Function
 
-Private Function GetDBValue(Tabla As String, ColumnaGet As String, ColumnaTest As String, ValueTest As Variant) As Variant
+Public Function GetDBValue(Tabla As String, ColumnaGet As String, ColumnaTest As String, ValueTest As Variant) As Variant
         ' 17/10/2020 Autor: Alexis Caraballo (WyroX)
         ' Para leer un unico valor de una unica fila
 
@@ -1687,7 +1687,8 @@ Public Sub LogoutAllUsersAndAccounts()
         
         On Error GoTo LogoutAllUsersAndAccounts_Err
 
-100     Call MakeQuery("UPDATE user SET is_logged = FALSE; UPDATE account SET logged = 0;", True)
+100     Call MakeQuery("UPDATE user SET is_logged = 0;", True)
+101     Call MakeQuery("UPDATE account SET logged = 0;", True)
         
         Exit Sub
 

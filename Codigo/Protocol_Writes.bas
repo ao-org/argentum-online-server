@@ -272,7 +272,7 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 
-Public Sub WriteDisconnect(ByVal UserIndex As Integer)
+Public Sub WriteDisconnect(ByVal UserIndex As Integer, Optional ByVal FullLogout As Boolean = False)
 
     '***************************************************
     'Author: Juan Martín Sotuyo Dodero (Maraxus)
@@ -281,11 +281,13 @@ Public Sub WriteDisconnect(ByVal UserIndex As Integer)
     '***************************************************
     On Error GoTo ErrHandler
     
-    Call SaveUser(UserIndex, True)
+    Call ClearAndSaveUser(UserIndex)
     UserList(UserIndex).flags.YaGuardo = True
-
-    Call WritePersonajesDeCuenta(UserIndex)
-    Call WriteMostrarCuenta(UserIndex)
+    
+    If Not FullLogout Then
+        Call WritePersonajesDeCuenta(UserIndex)
+        Call WriteMostrarCuenta(UserIndex)
+    End If
     
     With UserList(UserIndex).outgoingData
     
@@ -4506,7 +4508,7 @@ Public Sub WriteGuildDetails(ByVal UserIndex As Integer, ByVal GuildName As Stri
     On Error GoTo ErrHandler
 
     Dim i    As Long
-    Dim temp As String
+    Dim Temp As String
     
     With UserList(UserIndex).outgoingData
         Call .WriteID(ServerPacketID.GuildDetails)

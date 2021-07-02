@@ -549,7 +549,7 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 'Argentum Online 0.11.6
-'Copyright (C) 2002 Mï¿½rquez Pablo Ignacio
+'Copyright (C) 2002 Márquez Pablo Ignacio
 '
 'This program is free software; you can redistribute it and/or modify
 'it under the terms of the Affero General Public License;
@@ -571,10 +571,10 @@ Attribute VB_Exposed = False
 'You can contact me at:
 'morgolock@speedy.com.ar
 'www.geocities.com/gmorgolock
-'Calle 3 nï¿½mero 983 piso 7 dto A
+'Calle 3 número 983 piso 7 dto A
 'La Plata - Pcia, Buenos Aires - Republica Argentina
-'Cï¿½digo Postal 1900
-'Pablo Ignacio Mï¿½rquez
+'Código Postal 1900
+'Pablo Ignacio Márquez
 
 Option Explicit
 
@@ -702,7 +702,7 @@ Private Sub addtimeDonador_Click()
 106         If IsNumeric(tmp2) Then
 108             Call DonadorTiempo(Tmp, tmp2)
             Else
-110             MsgBox ("Cantidad invalida")
+110             MsgBox ("Cantidad inválida")
 
             End If
 
@@ -830,7 +830,7 @@ Handler:
         ' **********************************
 End Sub
 
-' WyroX: Comprobamos cada 10 segundos, porque no es necesaria tanta precisiï¿½n
+' WyroX: Comprobamos cada 10 segundos, porque no es necesaria tanta precisión
 Private Sub TiempoRetos_Timer()
 
     On Error GoTo Handler
@@ -935,9 +935,9 @@ Private Sub Minuto_Timer()
     
 120     minutos = minutos + 1
 
-        'ï¿½?ï¿½?ï¿½?ï¿½?ï¿½?ï¿½?ï¿½?ï¿½?ï¿½?ï¿½?ï¿½
+        '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 122     Call ModAreas.AreasOptimizacion
-        'ï¿½?ï¿½?ï¿½?ï¿½?ï¿½?ï¿½?ï¿½?ï¿½?ï¿½?ï¿½?ï¿½
+        '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
         'Actualizamos el centinela
 124     Call modCentinela.PasarMinutoCentinela
@@ -1067,7 +1067,7 @@ Private Sub Command12_Click()
         On Error GoTo Command12_Click_Err
         
 100     Call LoadConfiguraciones
-
+        Call AOGuard.LoadAOGuardConfiguration
         
         Exit Sub
 
@@ -1832,7 +1832,7 @@ Private Sub TIMER_AI_Timer()
 106                 If .flags.NPCActive Then 'Nos aseguramos que sea INTELIGENTE!
                 
 108                     If .NPCtype = DummyTarget Then
-                            ' Regenera vida despuï¿½s de X tiempo sin atacarlo
+                            ' Regenera vida después de X tiempo sin atacarlo
 110                         If .Stats.MinHp < .Stats.MaxHp Then
 112                             .Contadores.UltimoAtaque = .Contadores.UltimoAtaque - 1
                             
@@ -1980,7 +1980,7 @@ Private Sub TimerMeteorologia_Timer()
 184         Call SendData(SendTarget.ToAll, 0, PrepareMessageRainToggle())
         
 186         Call SendData(SendTarget.ToAll, 0, PrepareMessageNevarToggle())
-            ' Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor > Se acabo la lluvia seï¿½ores.", FontTypeNames.FONTTYPE_SERVER))
+            ' Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor > Se acabo la lluvia señores.", FontTypeNames.FONTTYPE_SERVER))
 188         Call AgregarAConsola("Servidor >Lluvia desactivada.")
 190         Lloviendo = False
 192         Truenos.Enabled = False
