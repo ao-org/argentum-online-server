@@ -2091,20 +2091,17 @@ ResetUserSlot_Err:
         
 End Sub
 
-Sub CloseUser(ByVal UserIndex As Integer)
+Sub ClearAndSaveUser(ByVal UserIndex As Integer)
 
-        On Error GoTo ErrHandler
+    On Error GoTo ErrHandler
     
-        Dim errordesc As String
-        Dim Map As Integer
-        Dim aN  As Integer
-        Dim i   As Integer
-        
-100     With UserList(UserIndex)
-            
-102         Map = .Pos.Map
-        
-104         errordesc = "ERROR AL SETEAR NPC"
+    Dim errordesc As String
+    Dim Map As Integer
+    Dim aN  As Integer
+    Dim i   As Integer
+
+    With UserList(UserIndex)
+            errordesc = "ERROR AL SETEAR NPC"
         
 106         aN = .flags.AtacadoPorNpc
     
@@ -2200,9 +2197,35 @@ Sub CloseUser(ByVal UserIndex As Integer)
             ' Grabamos el personaje del usuario
         
 202         errordesc = "ERROR AL GRABAR PJ"
+
+204         Call SaveUser(UserIndex, True)
+
+    End With
+    
+    Exit Sub
+    
+ErrHandler:
+        'Call LogError("Error en CloseUser. Número " & Err.Number & ". Descripción: " & Err.Description & ". Detalle:" & errordesc)
+240     Call RegistrarError(Err.Number, Err.Description & ". Detalle:" & errordesc, Erl)
+242     Resume Next ' TODO: Provisional hasta solucionar bugs graves
+
+End Sub
+
+Sub CloseUser(ByVal UserIndex As Integer)
+
+        On Error GoTo ErrHandler
+    
+        Dim errordesc As String
+        Dim Map As Integer
+        Dim aN  As Integer
+        Dim i   As Integer
+        
+100     With UserList(UserIndex)
             
+102         Map = .Pos.Map
+        
             If Not .flags.YaGuardo Then
-204             Call SaveUser(UserIndex, True)
+104             Call ClearAndSaveUser(UserIndex)
             End If
 
 206         errordesc = "ERROR AL DESCONTAR USER DE MAPA"

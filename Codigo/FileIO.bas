@@ -194,12 +194,6 @@ End Type
 Private MapSize As tMapSize
 Private MapDat  As tMapDat
 
-Private Type UltimoError
-    Componente As String
-    Contador As Byte
-    ErrorCode As Long
-End Type: Private HistorialError As UltimoError
-
 Public Sub CargarSpawnList()
         
         On Error GoTo CargarSpawnList_Err
@@ -3804,69 +3798,6 @@ Public Sub LoadUserIntervals(ByVal UserIndex As Integer)
 LoadUserIntervals_Err:
 124     Call RegistrarError(Err.Number, Err.Description, "ES.LoadUserIntervals", Erl)
 126     Resume Next
-        
-End Sub
-
-Public Sub RegistrarError(ByVal Numero As Long, ByVal Descripcion As String, ByVal Componente As String, Optional ByVal Linea As Integer)
-    '**********************************************************
-    'Author: Jopi
-    'Guarda una descripcion detallada del error en Errores.log
-    '**********************************************************
-        
-        On Error GoTo RegistrarError_Err
-    
-        'Si lo del parametro Componente es ES IGUAL, al Componente del anterior error...
-100     If Componente = HistorialError.Componente And _
-           Numero = HistorialError.ErrorCode Then
-       
-           'Si ya recibimos error en el mismo componente 10 veces, es bastante probable que estemos en un bucle
-            'x lo que no hace falta registrar el error.
-102         If HistorialError.Contador = 10 Then
-                'Debug.Assert False
-                Exit Sub
-            End If
-        
-            'Agregamos el error al historial.
-106         HistorialError.Contador = HistorialError.Contador + 1
-        
-        Else 'Si NO es igual, reestablecemos el contador.
-
-108         HistorialError.Contador = 0
-110         HistorialError.ErrorCode = Numero
-112         HistorialError.Componente = Componente
-            
-        End If
-    
-        'Registramos el error en Errores.log
-114     Dim File As Integer: File = FreeFile
-        
-116     Open App.Path & "\logs\Errores.log" For Append As #File
-    
-118         Print #File, "Error: " & Numero
-120         Print #File, "Descripcion: " & Descripcion
-        
-122         Print #File, "Componente: " & Componente
-
-124         If LenB(Linea) <> 0 Then
-126             Print #File, "Linea: " & Linea
-            End If
-
-128         Print #File, "Fecha y Hora: " & Date$ & "-" & Time$
-        
-130         Print #File, vbNullString
-        
-132     Close #File
-    
-134     Debug.Print "Error: " & Numero & vbNewLine & _
-                    "Descripcion: " & Descripcion & vbNewLine & _
-                    "Componente: " & Componente & vbNewLine & _
-                    "Linea: " & Linea & vbNewLine & _
-                    "Fecha y Hora: " & Date$ & "-" & Time$ & vbNewLine
-        
-        Exit Sub
-
-RegistrarError_Err:
-        Close #File
         
 End Sub
 

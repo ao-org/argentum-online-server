@@ -138,7 +138,7 @@ Public Sub BorraSlotSock(ByVal Sock As Long)
 
 104     WSAPISock2Usr.Remove Sock
 
-106     Debug.Print "BorraSockSlot " & cant & " -> " & WSAPISock2Usr.Count
+106     Debug.Print vbNewLine & "BorraSockSlot " & cant & " -> " & WSAPISock2Usr.Count
 
         Exit Sub
 
