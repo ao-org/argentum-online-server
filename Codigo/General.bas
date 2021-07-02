@@ -2204,7 +2204,7 @@ Public Function HambreYSed(ByVal UserIndex As Integer) As Boolean
         On Error GoTo HambreYSed_Err
         
 
-100     If Not UserList(UserIndex).flags.Privilegios And PlayerType.user Then Exit Function
+100     If (UserList(UserIndex).flags.Privilegios And PlayerType.user) = 0 Then Exit Function
 
         'Sed
 102     If UserList(UserIndex).Stats.MinAGU > 0 Then
