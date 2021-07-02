@@ -379,7 +379,7 @@ Sub ResetNpcMainInfo(ByVal NpcIndex As Integer)
 108     NpcList(NpcIndex).GiveGLD = 0
 110     NpcList(NpcIndex).Hostile = 0
 112     NpcList(NpcIndex).InvReSpawn = 0
-114     NpcList(NpcIndex).level = 0
+114     NpcList(NpcIndex).Nivel = 0
 
     
 116     NpcList(NpcIndex).MaestroNPC = 0
@@ -1114,6 +1114,7 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
 116         .name = Leer.GetValue("NPC" & NpcNumber, "Name")
 118         .SubName = Leer.GetValue("NPC" & NpcNumber, "SubName")
 120         .Desc = Leer.GetValue("NPC" & NpcNumber, "Desc")
+            .Nivel = val(Leer.GetValue("NPC" & NpcNumber, "Nivel"))
     
 122         .Movement = val(Leer.GetValue("NPC" & NpcNumber, "Movement"))
 124         .flags.OldMovement = .Movement

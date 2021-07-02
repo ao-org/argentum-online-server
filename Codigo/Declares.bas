@@ -2070,7 +2070,7 @@ Public Type npc
     NPCtype As eNPCType
     Numero As Integer
 
-    level As Integer
+    Nivel As Integer
 
     InvReSpawn As Byte
 
