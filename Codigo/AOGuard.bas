@@ -111,7 +111,7 @@ Private Sub EnviarCodigo(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
     
             ' Ya te dije X veces que esperes un toque! Si no lo haces, sos alto bot!
-102         If .Counters.EmailVerificationSendCount > MAX_CODE_RESEND_COUNT Then
+102         If .Counters.EmailVerificationSendRequests > MAX_CODE_RESEND_COUNT Then
 104             Call CloseSocket(UserIndex)
                 Exit Sub
                 
@@ -130,15 +130,15 @@ Private Sub EnviarCodigo(ByVal UserIndex As Integer)
 114             .Counters.LastSentVerificationEmail = GetTickCount()
 116             .Counters.EmailVerificationSendRequests = 0
                     
-118             Call WriteShowMessageBox(UserIndex, "Te hemos enviado un correo con el código de verificacion a tu correo." & vbNewLine & _
-                   "Si no lo encuentras, revisa la carpeta de SPAM." & vbNewLine & _
+118             Call WriteShowMessageBox(UserIndex, "Te hemos enviado un correo con el código de verificacion a tu correo. " & _
+                   "Si no lo encuentras, revisa la carpeta de SPAM. " & _
                    "Si no te ha llegado, intenta nuevamente en " & AOG_RESEND_INTERVAL \ 10000 & " segundos")
                     
             Else
                 
 120             .Counters.EmailVerificationSendRequests = .Counters.EmailVerificationSendRequests + 1
                 
-122             Call WriteShowMessageBox(UserIndex, "Ya te hemos enviado un correo con el código de verificacion." & vbNewLine & _
+122             Call WriteShowMessageBox(UserIndex, "Ya te hemos enviado un correo con el código de verificacion. " & _
                    "Si no te ha llegado, intenta nuevamente en " & AOG_RESEND_INTERVAL \ 10000 & " segundos")
                     
             End If
@@ -187,6 +187,8 @@ Public Sub HandleGuardNoticeResponse(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
         
 102         Dim Codigo As String: Codigo = .incomingData.ReadASCIIString
+
+            If .AccountID = 0 Then Exit Sub
 
 104         Call MakeQuery("SELECT TIMESTAMPDIFF(SECOND, `timestamp`, CURRENT_TIMESTAMP) AS time_diff, code FROM account_guard WHERE account_id = ?", False, .AccountID)
         
