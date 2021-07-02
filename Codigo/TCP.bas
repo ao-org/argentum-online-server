@@ -310,10 +310,6 @@ Sub RellenarInventario(ByVal UserIndex As String)
 198         .Invent.Object(NumItems).amount = 100
 200         NumItems = NumItems + 1
 
-202         .Invent.Object(NumItems).ObjIndex = 200 ' Cofre Inicial
-204         .Invent.Object(NumItems).amount = 1
-206         NumItems = NumItems + 1
-
             ' Seteo la cantidad de items
 208         .Invent.NroItems = NumItems
 
@@ -709,7 +705,6 @@ Sub CloseSocket(ByVal UserIndex As Integer)
     
 138         .ConnID = -1
 140         .ConnIDValida = False
-142         .NumeroPaquetesPorMiliSec = 0
     
         End With
     
@@ -719,7 +714,6 @@ Sub CloseSocket(ByVal UserIndex As Integer)
 ErrHandler:
 144     UserList(UserIndex).ConnID = -1
 146     UserList(UserIndex).ConnIDValida = False
-148     UserList(UserIndex).NumeroPaquetesPorMiliSec = 0
 
 150     Call ResetUserSlot(UserIndex)
 

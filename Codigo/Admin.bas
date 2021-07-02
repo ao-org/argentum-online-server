@@ -379,46 +379,36 @@ PurgarScroll_Err:
         
 End Sub
 
-Public Sub PurgarOxigeno()
+Public Sub EfectoOxigeno(ByVal UserIndex As Integer)
         
-        On Error GoTo PurgarOxigeno_Err
+    On Error GoTo EfectoOxigeno_Err
         
+    With UserList(UserIndex)
 
-        Dim i As Long
-    
-100     For i = 1 To LastUser
+        If .flags.NecesitaOxigeno Then
 
-102         If UserList(i).flags.UserLogged Then
-104             If Not EsGM(i) Then
-106                 If UserList(i).flags.NecesitaOxigeno Then
-108                     If UserList(i).Counters.Oxigeno > 0 Then
-110                         UserList(i).Counters.Oxigeno = UserList(i).Counters.Oxigeno - 1
+            If .Counters.Oxigeno > 0 Then
 
-112                         If UserList(i).Counters.Oxigeno < 1 Then
-114                             UserList(i).Counters.Oxigeno = 0
-116                             Call WriteOxigeno(i)
-118                             Call WriteConsoleMsg(i, "Te has quedado sin oxigeno.", FontTypeNames.FONTTYPE_EJECUCION)
-120                             UserList(i).flags.Ahogandose = 1
-122                             Call WriteContadores(i)
-                            
-
-                            End If
-
-                        End If
-
-                    End If
-
+                .Counters.Oxigeno = .Counters.Oxigeno - 1
+                
+                If .Counters.Oxigeno < 1 Then
+                    .Counters.Oxigeno = 0
+                    Call WriteOxigeno(UserIndex)
+                    Call WriteConsoleMsg(UserIndex, "Te has quedado sin oxigeno.", FontTypeNames.FONTTYPE_EJECUCION)
+                    .flags.Ahogandose = 1
+                    Call WriteContadores(UserIndex)
                 End If
-
+            
             End If
             
-124     Next i
-
+        End If
         
-        Exit Sub
+    End With
 
-PurgarOxigeno_Err:
-126     Call RegistrarError(Err.Number, Err.Description, "Admin.PurgarOxigeno", Erl)
+    Exit Sub
+
+EfectoOxigeno_Err:
+126     Call RegistrarError(Err.Number, Err.Description, "Admin.EfectoOxigeno", Erl)
 128     Resume Next
         
 End Sub

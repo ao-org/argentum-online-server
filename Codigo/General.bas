@@ -776,7 +776,7 @@ Sub Main()
 276         .TimerGuardarUsuarios.Interval = IntervaloTimerGuardarUsuarios
 278         .tPiqueteC.Enabled = True
 280         .GameTimer.Enabled = True
-282         .Auditoria.Enabled = True
+282         .Segundo.Enabled = True
 284         .KillLog.Enabled = True
 286         .TIMER_AI.Enabled = True
 288         .Invasion.Enabled = True
@@ -2199,12 +2199,12 @@ DuracionPociones_Err:
         
 End Sub
 
-Public Sub HambreYSed(ByVal UserIndex As Integer, ByRef fenviarAyS As Boolean)
+Public Function HambreYSed(ByVal UserIndex As Integer) As Boolean
          
         On Error GoTo HambreYSed_Err
         
 
-100     If Not UserList(UserIndex).flags.Privilegios And PlayerType.user Then Exit Sub
+100     If Not UserList(UserIndex).flags.Privilegios And PlayerType.user Then Exit Function
 
         'Sed
 102     If UserList(UserIndex).Stats.MinAGU > 0 Then
@@ -2220,7 +2220,7 @@ Public Sub HambreYSed(ByVal UserIndex As Integer, ByRef fenviarAyS As Boolean)
 
                 End If
         
-118             fenviarAyS = True
+118             HambreYSed = True
 
             End If
 
@@ -2240,20 +2240,20 @@ Public Sub HambreYSed(ByVal UserIndex As Integer, ByRef fenviarAyS As Boolean)
 
                 End If
 
-136             fenviarAyS = True
+136             HambreYSed = True
 
             End If
 
         End If
 
         
-        Exit Sub
+        Exit Function
 
 HambreYSed_Err:
 138     Call RegistrarError(Err.Number, Err.Description, "General.HambreYSed", Erl)
 140     Resume Next
         
-End Sub
+End Function
 
 Public Sub Sanar(ByVal UserIndex As Integer, ByRef EnviarStats As Boolean, ByVal Intervalo As Integer)
         
@@ -2358,162 +2358,176 @@ Sub PasarSegundo()
 
 111         With UserList(i)
 
-112         If .flags.Silenciado = 1 Then
-114             .flags.SegundosPasados = .flags.SegundosPasados + 1
-
-116             If .flags.SegundosPasados = 60 Then
-118                 .flags.MinutosRestantes = .flags.MinutosRestantes - 1
-120                 .flags.SegundosPasados = 0
-
-                End If
-            
-122             If .flags.MinutosRestantes = 0 Then
-124                 .flags.SegundosPasados = 0
-126                 .flags.Silenciado = 0
-128                 .flags.MinutosRestantes = 0
-130                 Call WriteConsoleMsg(i, "Has sido liberado del silencio.", FontTypeNames.FONTTYPE_SERVER)
-
-                End If
-
-            End If
-            
-134         Call DuracionPociones(i)
-136         If .flags.invisible = 1 Then Call EfectoInvisibilidad(i)
-138         If .flags.Paralizado = 1 Then Call EfectoParalisisUser(i)
-140         If .flags.Inmovilizado = 1 Then Call EfectoInmoUser(i)
-142         If .flags.Ceguera = 1 Then Call EfectoCeguera(i)
-144         If .flags.Estupidez = 1 Then Call EfectoEstupidez(i)
-146         If .flags.Maldicion = 1 Then Call EfectoMaldicionUser(i)
-148         If .flags.VelocidadHechizada > 0 Then Call EfectoVelocidadUser(i)
-
-            If .Counters.TimerBarra > 0 Then
-                .Counters.TimerBarra = .Counters.TimerBarra - 1
-                
-                If .Counters.TimerBarra = 0 Then
-
-                    Select Case .Accion.TipoAccion
-                        Case Accion_Barra.Hogar
-                            Call HomeArrival(i)
-                        Case Accion_Barra.Resucitar
-                            Call WriteConsoleMsg(i, "¡Has sido resucitado!", FontTypeNames.FONTTYPE_INFO)
-                            Call SendData(SendTarget.ToPCArea, i, PrepareMessageParticleFX(.Char.CharIndex, ParticulasIndex.Resucitar, 250, True))
-                            Call SendData(SendTarget.ToPCArea, i, PrepareMessagePlayWave("117", .Pos.X, .Pos.Y))
-                            Call RevivirUsuario(i, True)
-                    End Select
+                If .flags.UserLogged Then
+112                 If .flags.Silenciado = 1 Then
+114                     .flags.SegundosPasados = .flags.SegundosPasados + 1
+        
+116                     If .flags.SegundosPasados = 60 Then
+118                         .flags.MinutosRestantes = .flags.MinutosRestantes - 1
+120                         .flags.SegundosPasados = 0
+        
+                        End If
                     
-                    .Accion.Particula = 0
-                    .Accion.TipoAccion = Accion_Barra.CancelarAccion
-                    .Accion.HechizoPendiente = 0
-                    .Accion.RunaObj = 0
-                    .Accion.ObjSlot = 0
-                    .Accion.AccionPendiente = False
-                    
-                End If
-            End If
-
-150         If .flags.UltimoMensaje > 0 Then
-152             .Counters.RepetirMensaje = .Counters.RepetirMensaje + 1
-154             If .Counters.RepetirMensaje >= 3 Then
-156                 .flags.UltimoMensaje = 0
-158                 .Counters.RepetirMensaje = 0
-                End If
-            End If
-                
-160             If .Counters.CuentaRegresiva >= 0 Then
-162                 If .Counters.CuentaRegresiva > 0 Then
-164                     Call WriteConsoleMsg(i, ">>>  " & .Counters.CuentaRegresiva & "  <<<", FontTypeNames.FONTTYPE_New_Gris)
-                    Else
-166                     Call WriteConsoleMsg(i, ">>> YA! <<<", FontTypeNames.FONTTYPE_FIGHT)
-168                     Call WriteStopped(i, False)
+122                     If .flags.MinutosRestantes = 0 Then
+124                         .flags.SegundosPasados = 0
+126                         .flags.Silenciado = 0
+128                         .flags.MinutosRestantes = 0
+130                         Call WriteConsoleMsg(i, "Has sido liberado del silencio.", FontTypeNames.FONTTYPE_SERVER)
+        
+                        End If
+        
                     End If
                     
-170                 .Counters.CuentaRegresiva = .Counters.CuentaRegresiva - 1
+                    If .flags.Muerto = 0 Then
+134                     Call DuracionPociones(i)
+                        Call EfectoOxigeno(i)
+136                     If .flags.invisible = 1 Then Call EfectoInvisibilidad(i)
+138                     If .flags.Paralizado = 1 Then Call EfectoParalisisUser(i)
+140                     If .flags.Inmovilizado = 1 Then Call EfectoInmoUser(i)
+142                     If .flags.Ceguera = 1 Then Call EfectoCeguera(i)
+144                     If .flags.Estupidez = 1 Then Call EfectoEstupidez(i)
+146                     If .flags.Maldicion = 1 Then Call EfectoMaldicionUser(i)
+148                     If .flags.VelocidadHechizada > 0 Then Call EfectoVelocidadUser(i)
+    
+                        If HambreYSed(i) Then
+                            Call WriteUpdateHungerAndThirst(i)
+                        End If
+                    
+                    Else
+                        If .flags.Traveling <> 0 Then Call TravelingEffect(i)
+                    End If
+        
+                    If .Counters.TimerBarra > 0 Then
+                        .Counters.TimerBarra = .Counters.TimerBarra - 1
+                        
+                        If .Counters.TimerBarra = 0 Then
+        
+                            Select Case .Accion.TipoAccion
+                                Case Accion_Barra.Hogar
+                                    Call HomeArrival(i)
+                                Case Accion_Barra.Resucitar
+                                    Call WriteConsoleMsg(i, "¡Has sido resucitado!", FontTypeNames.FONTTYPE_INFO)
+                                    Call SendData(SendTarget.ToPCArea, i, PrepareMessageParticleFX(.Char.CharIndex, ParticulasIndex.Resucitar, 250, True))
+                                    Call SendData(SendTarget.ToPCArea, i, PrepareMessagePlayWave("117", .Pos.X, .Pos.Y))
+                                    Call RevivirUsuario(i, True)
+                            End Select
+                            
+                            .Accion.Particula = 0
+                            .Accion.TipoAccion = Accion_Barra.CancelarAccion
+                            .Accion.HechizoPendiente = 0
+                            .Accion.RunaObj = 0
+                            .Accion.ObjSlot = 0
+                            .Accion.AccionPendiente = False
+                            
+                        End If
+                    End If
+        
+150                 If .flags.UltimoMensaje > 0 Then
+152                     .Counters.RepetirMensaje = .Counters.RepetirMensaje + 1
+154                     If .Counters.RepetirMensaje >= 3 Then
+156                         .flags.UltimoMensaje = 0
+158                         .Counters.RepetirMensaje = 0
+                        End If
+                    End If
+                    
+160                 If .Counters.CuentaRegresiva >= 0 Then
+162                     If .Counters.CuentaRegresiva > 0 Then
+164                         Call WriteConsoleMsg(i, ">>>  " & .Counters.CuentaRegresiva & "  <<<", FontTypeNames.FONTTYPE_New_Gris)
+                        Else
+166                         Call WriteConsoleMsg(i, ">>> YA! <<<", FontTypeNames.FONTTYPE_FIGHT)
+168                         Call WriteStopped(i, False)
+                        End If
+                        
+170                     .Counters.CuentaRegresiva = .Counters.CuentaRegresiva - 1
+                    End If
+    
+172                 If .flags.Portal > 1 Then
+174                     .flags.Portal = .flags.Portal - 1
+                
+176                     If .flags.Portal = 1 Then
+178                         Mapa = .flags.PortalM
+180                         X = .flags.PortalX
+182                         Y = .flags.PortalY
+184                         Call SendData(SendTarget.toMap, .flags.PortalM, PrepareMessageParticleFXToFloor(X, Y, ParticulasIndex.TpVerde, 0))
+186                         Call SendData(SendTarget.toMap, .flags.PortalM, PrepareMessageLightFXToFloor(X, Y, 0, 105))
+        
+188                         If MapData(Mapa, X, Y).TileExit.Map > 0 Then
+190                             MapData(Mapa, X, Y).TileExit.Map = 0
+192                             MapData(Mapa, X, Y).TileExit.X = 0
+194                             MapData(Mapa, X, Y).TileExit.Y = 0
+        
+                            End If
+        
+196                         MapData(Mapa, X, Y).Particula = 0
+198                         MapData(Mapa, X, Y).TimeParticula = 0
+200                         MapData(Mapa, X, Y).Particula = 0
+202                         MapData(Mapa, X, Y).TimeParticula = 0
+204                         .flags.Portal = 0
+206                         .flags.PortalM = 0
+208                         .flags.PortalY = 0
+210                         .flags.PortalX = 0
+212                         .flags.PortalMDestino = 0
+214                         .flags.PortalYDestino = 0
+216                         .flags.PortalXDestino = 0
+        
+                        End If
+        
+                    End If
+                
+218                 If .Counters.EnCombate > 0 Then
+220                     .Counters.EnCombate = .Counters.EnCombate - 1
+                    End If
+                
+                
+222                 If .Counters.TiempoDeInmunidad > 0 Then
+224                     .Counters.TiempoDeInmunidad = .Counters.TiempoDeInmunidad - 1
+226                     If .Counters.TiempoDeInmunidad = 0 Then
+228                         .flags.Inmunidad = 0
+                        End If
+                    End If
+                
+230                 If .flags.Subastando Then
+232                     .Counters.TiempoParaSubastar = .Counters.TiempoParaSubastar - 1
+        
+234                     If .Counters.TiempoParaSubastar = 0 Then
+236                         Call CancelarSubasta
+                        End If
+                    End If
+        
+                    'Cerrar usuario
+240                 If .Counters.Saliendo Then
+                        '  If .flags.Muerto = 1 Then .Counters.Salir = 0
+242                     .Counters.Salir = .Counters.Salir - 1
+                        ' Call WriteConsoleMsg(i, "Se saldrá del juego en " & .Counters.Salir & " segundos...", FontTypeNames.FONTTYPE_INFO)
+244                     Call WriteLocaleMsg(i, "203", FontTypeNames.FONTTYPE_INFO, .Counters.Salir)
+        
+246                     If .Counters.Salir <= 0 Then
+248                         Call WriteConsoleMsg(i, "Gracias por jugar Argentum 20.", FontTypeNames.FONTTYPE_INFO)
+250                         Call WriteDisconnect(i)
+                            
+252                         Call CloseSocket(i)
+        
+                        End If
+        
+                    End If
+
+                End If ' If UserLogged
+
+                'Inactive players will be removed!
+253             .Counters.IdleCount = .Counters.IdleCount + 1
+
+                'El intervalo cambia según si envió el primer paquete
+254             If .Counters.IdleCount > IIf(.flags.FirstPacket, TimeoutEsperandoLoggear, TimeoutPrimerPaquete) Then
+255                 Call CloseSocket(i)
                 End If
         
             End With
-        
-172         If UserList(i).flags.Portal > 1 Then
-174             UserList(i).flags.Portal = UserList(i).flags.Portal - 1
-        
-176             If UserList(i).flags.Portal = 1 Then
-178                 Mapa = UserList(i).flags.PortalM
-180                 X = UserList(i).flags.PortalX
-182                 Y = UserList(i).flags.PortalY
-184                 Call SendData(SendTarget.toMap, UserList(i).flags.PortalM, PrepareMessageParticleFXToFloor(X, Y, ParticulasIndex.TpVerde, 0))
-186                 Call SendData(SendTarget.toMap, UserList(i).flags.PortalM, PrepareMessageLightFXToFloor(X, Y, 0, 105))
-
-188                 If MapData(Mapa, X, Y).TileExit.Map > 0 Then
-190                     MapData(Mapa, X, Y).TileExit.Map = 0
-192                     MapData(Mapa, X, Y).TileExit.X = 0
-194                     MapData(Mapa, X, Y).TileExit.Y = 0
-
-                    End If
-
-196                 MapData(Mapa, X, Y).Particula = 0
-198                 MapData(Mapa, X, Y).TimeParticula = 0
-200                 MapData(Mapa, X, Y).Particula = 0
-202                 MapData(Mapa, X, Y).TimeParticula = 0
-204                 UserList(i).flags.Portal = 0
-206                 UserList(i).flags.PortalM = 0
-208                 UserList(i).flags.PortalY = 0
-210                 UserList(i).flags.PortalX = 0
-212                 UserList(i).flags.PortalMDestino = 0
-214                 UserList(i).flags.PortalYDestino = 0
-216                 UserList(i).flags.PortalXDestino = 0
-
-                End If
-
-            End If
-        
-218         If UserList(i).Counters.EnCombate > 0 Then
-220             UserList(i).Counters.EnCombate = UserList(i).Counters.EnCombate - 1
-            End If
-        
-        
-222         If UserList(i).Counters.TiempoDeInmunidad > 0 Then
-224             UserList(i).Counters.TiempoDeInmunidad = UserList(i).Counters.TiempoDeInmunidad - 1
-226             If UserList(i).Counters.TiempoDeInmunidad = 0 Then
-228                 UserList(i).flags.Inmunidad = 0
-                End If
-            End If
-        
-230         If UserList(i).flags.Subastando Then
-232             UserList(i).Counters.TiempoParaSubastar = UserList(i).Counters.TiempoParaSubastar - 1
-
-234             If UserList(i).Counters.TiempoParaSubastar = 0 Then
-236                 Call CancelarSubasta
-
-                End If
-
-            End If
-
-238         If UserList(i).flags.UserLogged Then
-
-                'Cerrar usuario
-240             If UserList(i).Counters.Saliendo Then
-                    '  If UserList(i).flags.Muerto = 1 Then UserList(i).Counters.Salir = 0
-242                 UserList(i).Counters.Salir = UserList(i).Counters.Salir - 1
-                    ' Call WriteConsoleMsg(i, "Se saldrá del juego en " & UserList(i).Counters.Salir & " segundos...", FontTypeNames.FONTTYPE_INFO)
-244                 Call WriteLocaleMsg(i, "203", FontTypeNames.FONTTYPE_INFO, UserList(i).Counters.Salir)
-
-246                 If UserList(i).Counters.Salir <= 0 Then
-248                     Call WriteConsoleMsg(i, "Gracias por jugar Argentum 20.", FontTypeNames.FONTTYPE_INFO)
-250                     Call WriteDisconnect(i)
-                    
-252                     Call CloseSocket(i)
-
-                    End If
-
-                End If
-
-            End If
-
-254     Next i
+256     Next i
 
         ' **********************************
         ' **********  Invasiones  **********
         ' **********************************
-256     For i = 1 To UBound(Invasiones)
+257     For i = 1 To UBound(Invasiones)
 258         With Invasiones(i)
 
                 ' Si la invasión está activa
@@ -2660,7 +2674,7 @@ Sub InicializaEstadisticas()
 
 100     Ta = GetTickCount()
 
-102     Call EstadisticasWeb.Inicializa(frmMain.hWnd)
+102     Call EstadisticasWeb.Inicializa(frmMain.hwnd)
 104     Call EstadisticasWeb.Informar(CANTIDAD_MAPAS, NumMaps)
 106     Call EstadisticasWeb.Informar(CANTIDAD_ONLINE, NumUsers)
 108     Call EstadisticasWeb.Informar(UPTIME_SERVER, (Ta - tInicioServer) / 1000)
@@ -2817,12 +2831,12 @@ CMSValidateChar__Err:
         
 End Function
 
-Public Function Tilde(ByRef data As String) As String
+Public Function Tilde(ByRef Data As String) As String
     
         On Error GoTo Tilde_Err
     
 
-100     Tilde = UCase$(data)
+100     Tilde = UCase$(Data)
  
 102     Tilde = Replace$(Tilde, "Á", "A")
 104     Tilde = Replace$(Tilde, "É", "E")
@@ -3049,12 +3063,12 @@ Public Function EsMapaInterdimensional(ByVal Map As Integer) As Boolean
     Next
 End Function
 
-Public Function IsValidIPAddress(ByVal IP As String) As Boolean
+Public Function IsValidIPAddress(ByVal ip As String) As Boolean
 
     On Error GoTo Handler
 
     Dim varAddress As Variant, n As Long, lCount As Long
-    varAddress = Split(IP, ".", 4, vbTextCompare)
+    varAddress = Split(ip, ".", 4, vbTextCompare)
 
     If IsArray(varAddress) Then
 

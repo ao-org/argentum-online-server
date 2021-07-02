@@ -1,5 +1,4 @@
 VERSION 5.00
-Object = "{248DD890-BB45-11CF-9ABC-0080C7E7B78D}#1.0#0"; "MSWINSCK.ocx"
 Begin VB.Form frmMain 
    BackColor       =   &H00E0E0E0&
    BorderStyle     =   4  'Fixed ToolWindow
@@ -217,12 +216,25 @@ Begin VB.Form frmMain
       TabIndex        =   7
       Top             =   120
       Width           =   4935
-      Begin MSWinsockLib.Winsock auxSocket 
-         Left            =   3960
-         Top             =   960
-         _ExtentX        =   741
-         _ExtentY        =   741
-         _Version        =   393216
+      Begin VB.Label Label10 
+         BackStyle       =   0  'Transparent
+         Caption         =   "Estabilidad:"
+         Height          =   255
+         Left            =   3360
+         TabIndex        =   38
+         Top             =   240
+         Width           =   975
+      End
+      Begin VB.Label Estabilidad 
+         Alignment       =   1  'Right Justify
+         AutoSize        =   -1  'True
+         BackStyle       =   0  'Transparent
+         Caption         =   "0%"
+         Height          =   210
+         Left            =   4560
+         TabIndex        =   37
+         Top             =   240
+         Width           =   225
       End
       Begin VB.Label Label7 
          BackColor       =   &H00E0E0E0&
@@ -344,7 +356,7 @@ Begin VB.Form frmMain
       Visible         =   0   'False
       Width           =   1215
    End
-   Begin VB.Timer Auditoria 
+   Begin VB.Timer Segundo 
       Enabled         =   0   'False
       Interval        =   1000
       Left            =   720
@@ -685,7 +697,7 @@ Private Sub addtimeDonador_Click()
 100     Tmp = InputBox("Cuenta?", "Ingrese la cuenta")
 
 102     If FileExist(CuentasPath & Tmp & ".act", vbNormal) Then
-104         tmp2 = InputBox("ï¿½Dias?", "Ingrese cantidad de dï¿½as")
+104         tmp2 = InputBox("¿Días?", "Ingrese cantidad de días")
 
 106         If IsNumeric(tmp2) Then
 108             Call DonadorTiempo(Tmp, tmp2)
@@ -708,25 +720,25 @@ addtimeDonador_Click_Err:
         
 End Sub
 
-Private Sub Auditoria_Timer()
+Private Sub Segundo_Timer()
 
         On Error GoTo errhand
 
-        'Static centinelSecs As Byte
+        ' WyroX - Control de estabilidad del servidor
+        Static LastTime As Currency
+        Dim CurTime As Currency
 
-        'centinelSecs = centinelSecs + 1
+        Call QueryPerformanceCounter(CurTime)
 
-        'If centinelSecs = 5 Then
-        'Every 5 seconds, we try to call the player's attention so it will report the code.
-        ' Call modCentinela.CallUserAttention
-    
-        ' centinelSecs = 0
-        'End If
+        If LastTime <> 0 Then
+            Estabilidad.Caption = Round(Clamp((2000 - CurTime + LastTime) * 0.1, 0, 100), 1) & "%"
+        End If
+
+        LastTime = CurTime
+        ' -----------------------------------
 
 100     Call PasarSegundo 'sistema de desconexion de 10 segs
-102     Call PurgarScroll
-
-104     Call PurgarOxigeno
+102     'Call PurgarScroll
 
 106     Call ActualizaStatsES
 
@@ -743,9 +755,9 @@ End Sub
 Private Sub CerrarYForzarActualizar_Click()
     On Error GoTo Command4_Click_Err
 
-        If MsgBox("ï¿½Estï¿½ seguro que desea guardar, forzar actualizaciï¿½n a los usuarios y cerrar?", vbYesNo, "Confirmaciï¿½n") = vbNo Then Exit Sub
+        If MsgBox("¿Está seguro que desea guardar, forzar actualización a los usuarios y cerrar?", vbYesNo, "Confirmación") = vbNo Then Exit Sub
         
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor ï¿½ Cerrando servidor y lanzando nuevo parche.", FontTypeNames.FONTTYPE_PROMEDIO_MENOR))
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor » Cerrando servidor y lanzando nuevo parche.", FontTypeNames.FONTTYPE_PROMEDIO_MENOR))
 
         Call ForzarActualizar
 100     Call GuardarUsuarios
@@ -773,16 +785,16 @@ Private Sub Invasion_Timer()
 100     For i = 1 To UBound(Invasiones)
 102         With Invasiones(i)
                 ' Aumentamos el contador para controlar cuando
-                ' inicia la invasiï¿½n o cuando debe terminar
+                ' inicia la invasión o cuando debe terminar
 104             .TimerInvasion = .TimerInvasion + 1
-        
+
 106             If .Activa Then
                     ' Chequeamos si el evento debe terminar
 108                 If .TimerInvasion >= .Duracion Then
 110                     Call FinalizarInvasion(i)
                 
                     Else
-                        ' Descripciï¿½n del evento
+                        ' Descripción del evento
 112                     .TimerRepetirDesc = .TimerRepetirDesc + 1
     
 114                     If .TimerRepetirDesc >= .RepetirDesc Then
@@ -791,12 +803,12 @@ Private Sub Invasion_Timer()
                         End If
                     End If
             
-                ' Si no estï¿½ activa, chequeamos si debemos iniciarla
+                ' Si no está activa, chequeamos si debemos iniciarla
 120             ElseIf .Intervalo > 0 Then
 122                 If .TimerInvasion >= .Intervalo Then
 124                     Call IniciarInvasion(i)
     
-                    ' Si no estï¿½ activa ni hay que iniciar, chequeamos si hay que avisar que se acerca el evento
+                    ' Si no está activa ni hay que iniciar, chequeamos si hay que avisar que se acerca el evento
 126                 ElseIf .TimerInvasion >= .Intervalo - .AvisarTiempo Then
 128                     .TimerRepetirAviso = .TimerRepetirAviso - 1
     
@@ -857,7 +869,7 @@ Private Sub TimerGuardarUsuarios_Timer()
 
     On Error GoTo Handler
     
-        ' Guardar usuarios (solo si pasï¿½ el tiempo mï¿½nimo para guardar)
+        ' Guardar usuarios (solo si pasó el tiempo mínimo para guardar)
         Dim UserIndex As Integer, UserGuardados As Integer
 
 100     For UserIndex = 1 To LastUser
@@ -1084,7 +1096,7 @@ Private Sub Command2_Click()
         
         On Error GoTo Command2_Click_Err
         
-100     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor ï¿½ " & BroadMsg.Text, FontTypeNames.FONTTYPE_SERVER))
+100     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor » " & BroadMsg.Text, FontTypeNames.FONTTYPE_SERVER))
 
         
         Exit Sub
@@ -1099,9 +1111,9 @@ Private Sub Command4_Click()
         
         On Error GoTo Command4_Click_Err
 
-        If MsgBox("ï¿½Estï¿½ seguro que desea guardar y cerrar?", vbYesNo, "Confirmaciï¿½n") = vbNo Then Exit Sub
+        If MsgBox("¿Está seguro que desea guardar y cerrar?", vbYesNo, "Confirmación") = vbNo Then Exit Sub
         
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor ï¿½ Cerrando servidor.", FontTypeNames.FONTTYPE_PROMEDIO_MENOR))
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor » Cerrando servidor.", FontTypeNames.FONTTYPE_PROMEDIO_MENOR))
 
 100     Call GuardarUsuarios
 102     Call EcharPjsNoPrivilegiados
@@ -1216,7 +1228,7 @@ Private Sub EstadoTimer_Timer()
 102     For i = 1 To Baneos.Count
 
 104         If Baneos(i).FechaLiberacion <= Now Then
-106             Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor ï¿½ Se ha concluido la sentencia de ban para " & Baneos(i).Name & ".", FontTypeNames.FONTTYPE_SERVER))
+106             Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » Se ha concluido la sentencia de ban para " & Baneos(i).Name & ".", FontTypeNames.FONTTYPE_SERVER))
 108             Call ChangeBan(Baneos(i).Name, 0)
 110             Call Baneos.Remove(i)
 112             Call SaveBans
@@ -1228,7 +1240,7 @@ Private Sub EstadoTimer_Timer()
 114     For i = 1 To Donadores.Count
 
 116         If Donadores(i).FechaExpiracion <= Now Then
-118             Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor ï¿½ Se ha concluido el tiempo de donador para " & Donadores(i).Name & ".", FontTypeNames.FONTTYPE_SERVER))
+118             Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » Se ha concluido el tiempo de donador para " & Donadores(i).Name & ".", FontTypeNames.FONTTYPE_SERVER))
 120             Call ChangeDonador(Donadores(i).Name, 0)
 122             Call Donadores.Remove(i)
 124             Call SaveDonadores
@@ -1418,7 +1430,7 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
     
         
 100     If GuardarYCerrar Then Exit Sub
-102     If MsgBox("ï¿½Deseas FORZAR el CIERRE del servidor?" & vbNewLine & vbNewLine & "Ten en cuenta que ES POSIBLE PIERDAS DATOS!", vbYesNo, "ï¿½FORZAR CIERRE!") = vbNo Then
+102     If MsgBox("¿Deseas FORZAR el CIERRE del servidor?" & vbNewLine & vbNewLine & "Ten en cuenta que ES POSIBLE PIERDAS DATOS!", vbYesNo, "¡FORZAR CIERRE!") = vbNo Then
 104         Cancel = True
         End If
     
@@ -1451,70 +1463,44 @@ End Sub
 Private Sub GameTimer_Timer()
 
         Dim iUserIndex   As Long
-        Dim bEnviarAyS   As Boolean
-    
+
         On Error GoTo HayError
-    
+
         '<<<<<< Procesa eventos de los usuarios >>>>>>
-100     For iUserIndex = 1 To MaxUsers 'LastUser
+100     For iUserIndex = 1 To LastUser
 
 102         With UserList(iUserIndex)
 
-                'Conexion activa?
-104             If .ConnID <> -1 Then
-                    'ï¿½User valido?
-                    
-106                 If .ConnIDValida And .flags.UserLogged Then
-                    
-                        '[Alejo-18-5]
-110                     bEnviarAyS = False
-                    
-112                     .NumeroPaquetesPorMiliSec = 0
-                    
-114                     Call DoTileEvents(iUserIndex, .Pos.Map, .Pos.X, .Pos.Y)
+106             If .flags.UserLogged Then
+                
+114                 Call DoTileEvents(iUserIndex, .Pos.Map, .Pos.X, .Pos.Y)
 
-116                     If .flags.Muerto = 0 Then
-                        
-                            'Efectos en mapas
-118                         If (.flags.Privilegios And PlayerType.user) <> 0 Then
-120                             Call EfectoLava(iUserIndex)
-122                             Call EfectoFrio(iUserIndex)
-                            End If
-
-124                         If .flags.Meditando Then Call DoMeditar(iUserIndex)
-126                         If .flags.Envenenado <> 0 Then Call EfectoVeneno(iUserIndex)
-128                         If .flags.Ahogandose <> 0 Then Call EfectoAhogo(iUserIndex)
-130                         If .flags.Incinerado <> 0 Then Call EfectoIncineramiento(iUserIndex)
-132                         If .flags.Mimetizado <> 0 Then Call EfectoMimetismo(iUserIndex)
-                        
-134                         If .flags.AdminInvisible <> 1 Then
-136                             If .flags.Oculto = 1 Then Call DoPermanecerOculto(iUserIndex)
-                            End If
-                        
-138                         If .NroMascotas > 0 Then Call TiempoInvocacion(iUserIndex)
-                        
-140                         Call HambreYSed(iUserIndex, bEnviarAyS)
-                            Call EfectoStamina(iUserIndex)
-                                    
-256                         If bEnviarAyS Then Call WriteUpdateHungerAndThirst(iUserIndex)
-                        
-                        Else
-258                         If .flags.Traveling <> 0 Then Call TravelingEffect(iUserIndex)
-                                                
-                        End If 'Muerto
-
-                    Else 'no esta logeado?
-                        'Inactive players will be removed!
-260                     .Counters.IdleCount = .Counters.IdleCount + 1
+116                 If .flags.Muerto = 0 Then
                     
-                        'El intervalo cambia segï¿½n si enviï¿½ el primer paquete
-262                     If .Counters.IdleCount > IIf(.flags.FirstPacket, TimeoutEsperandoLoggear, TimeoutPrimerPaquete) Then
-264                         Call CloseSocket(iUserIndex)
+                        'Efectos en mapas
+118                     If (.flags.Privilegios And PlayerType.user) <> 0 Then
+120                         Call EfectoLava(iUserIndex)
+122                         Call EfectoFrio(iUserIndex)
+124                         If .flags.Envenenado <> 0 Then Call EfectoVeneno(iUserIndex)
+126                         If .flags.Ahogandose <> 0 Then Call EfectoAhogo(iUserIndex)
+128                         If .flags.Incinerado <> 0 Then Call EfectoIncineramiento(iUserIndex)
                         End If
 
-                    End If 'UserLogged
+130                     If .flags.Meditando Then Call DoMeditar(iUserIndex)
 
-                End If
+132                     If .flags.Mimetizado <> 0 Then Call EfectoMimetismo(iUserIndex)
+
+134                     If .flags.AdminInvisible <> 1 Then
+136                         If .flags.Oculto = 1 Then Call DoPermanecerOculto(iUserIndex)
+                        End If
+
+138                     If .NroMascotas > 0 Then Call TiempoInvocacion(iUserIndex)
+
+                        Call EfectoStamina(iUserIndex)
+
+                    End If 'Muerto
+
+                End If 'UserLogged
 
             End With
 
@@ -1582,10 +1568,10 @@ Private Sub loadcredit_Click()
 
         Dim tmp2 As String
 
-100     Tmp = InputBox("ï¿½Cuenta?", "Ingrese la cuenta")
+100     Tmp = InputBox("¿Cuenta?", "Ingrese la cuenta")
 
 102     If FileExist(CuentasPath & Tmp & ".act", vbNormal) Then
-104         tmp2 = InputBox("ï¿½Cantidad?", "Ingrese cantidad de creditos a agregar")
+104         tmp2 = InputBox("¿Cantidad?", "Ingrese cantidad de creditos a agregar")
 
 106         If IsNumeric(tmp2) Then
 108             Call AgregarCreditosDonador(Tmp, CLng(tmp2))
@@ -1613,7 +1599,7 @@ Private Sub mnuCerrar_Click()
         On Error GoTo mnuCerrar_Click_Err
         
 
-100     If MsgBox("ï¿½ï¿½Atencion!! Si cierra el servidor puede provocar la perdida de datos. ï¿½Desea hacerlo de todas maneras?", vbYesNo) = vbYes Then
+100     If MsgBox("¡¡Atencion!! Si cierra el servidor puede provocar la perdida de datos. ¿Desea hacerlo de todas maneras?", vbYesNo) = vbYes Then
 
             Dim f
 102         For Each f In Forms
@@ -1760,7 +1746,7 @@ Private Sub SubastaTimer_Timer()
 
         'Si ya paso un minuto y todavia no hubo oferta, avisamos que se cancela en un minuto
 100     If Subasta.TiempoRestanteSubasta = 240 And Subasta.HuboOferta = False Then
-102         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("ï¿½Quedan 4 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas informaciï¿½n. La subasta serï¿½ cancelada si no hay ofertas en el prï¿½ximo minuto.", FontTypeNames.FONTTYPE_SUBASTA))
+102         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("¡Quedan 4 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas información. La subasta será cancelada si no hay ofertas en el próximo minuto.", FontTypeNames.FONTTYPE_SUBASTA))
 104         Subasta.MinutosDeSubasta = 4
 106         Subasta.PosibleCancelo = True
 
@@ -1783,26 +1769,26 @@ Private Sub SubastaTimer_Timer()
     
 120     If Subasta.TiempoRestanteSubasta > 0 And Subasta.PosibleCancelo = False Then
 122         If Subasta.TiempoRestanteSubasta = 240 Then
-124             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("ï¿½Quedan 4 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas informaciï¿½n.", FontTypeNames.FONTTYPE_SUBASTA))
+124             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("¡Quedan 4 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas información.", FontTypeNames.FONTTYPE_SUBASTA))
 126             Subasta.MinutosDeSubasta = "4"
 
             End If
         
 128         If Subasta.TiempoRestanteSubasta = 180 Then
-130             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("ï¿½Quedan 3 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas informaciï¿½n.", FontTypeNames.FONTTYPE_SUBASTA))
+130             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("¡Quedan 3 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas información.", FontTypeNames.FONTTYPE_SUBASTA))
 132             Subasta.MinutosDeSubasta = "3"
 
             End If
 
 134         If Subasta.TiempoRestanteSubasta = 120 Then
-136             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("ï¿½Quedan 2 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas informaciï¿½n.", FontTypeNames.FONTTYPE_SUBASTA))
+136             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("¡Quedan 2 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas información.", FontTypeNames.FONTTYPE_SUBASTA))
 138             Subasta.MinutosDeSubasta = "2"
 
             End If
 
 140         If Subasta.TiempoRestanteSubasta = 60 Then
 142             Subasta.MinutosDeSubasta = "1"
-144             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("ï¿½Quedan 1 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas informaciï¿½n.", FontTypeNames.FONTTYPE_SUBASTA))
+144             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("¡Quedan 1 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas información.", FontTypeNames.FONTTYPE_SUBASTA))
 
             End If
 
@@ -1811,7 +1797,7 @@ Private Sub SubastaTimer_Timer()
         End If
     
 148     If Subasta.TiempoRestanteSubasta = 1 Then
-150         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("ï¿½La subasta a terminado! El ganador fue: " & Subasta.Comprador, FontTypeNames.FONTTYPE_SUBASTA))
+150         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("¡La subasta a terminado! El ganador fue: " & Subasta.Comprador, FontTypeNames.FONTTYPE_SUBASTA))
 152         Call FinalizarSubasta
 
         End If
@@ -1926,13 +1912,13 @@ Private Sub TimerMeteorologia_Timer()
 116             ServidorNublado = True
 118             Call SendData(SendTarget.ToAll, 0, PrepareMessageNieblandoToggle(IntensidadDeNubes))
                 ' Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor > Empezaron las nubes con intensidad: " & IntensidadDeNubes & "%.", FontTypeNames.FONTTYPE_SERVER))
-120             Call AgregarAConsola("Servidor > Empezaron las nubes")
+120             Call AgregarAConsola("Servidor » Empezaron las nubes")
             
 122             TimerMeteorologico = TimerMeteorologico - 1
             Else
 124             ServidorNublado = False
                 ' Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor > Tranquilo, no hay nubes ni va a llover.", FontTypeNames.FONTTYPE_SERVER))
-126             Call AgregarAConsola("Servidor >Tranquilo, no hay nubes ni va a llover.")
+126             Call AgregarAConsola("Servidor » Tranquilo, no hay nubes ni va a llover.")
 128             Call ResetMeteo
                 Exit Sub
 
@@ -1945,7 +1931,7 @@ Private Sub TimerMeteorologia_Timer()
             'Enviar Truenos y rayos
 134         Truenos.Enabled = True
             'Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor > Envio un truenito para que te asustes.", FontTypeNames.FONTTYPE_SERVER))
-136         Call AgregarAConsola("Servidor >Truenos y nubes activados.")
+136         Call AgregarAConsola("Servidor » Truenos y nubes activados.")
             Exit Sub
 
         End If
@@ -1962,13 +1948,13 @@ Private Sub TimerMeteorologia_Timer()
         
 152             Call SendData(SendTarget.ToAll, 0, PrepareMessageNevarToggle())
                 '  Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor > LLuvia lluvia y mas lluvia!", FontTypeNames.FONTTYPE_SERVER))
-154             Call AgregarAConsola("Servidor >Lloviendo.")
+154             Call AgregarAConsola("Servidor » Lloviendo.")
 156             Lloviendo = True
 158             TimerMeteorologico = TimerMeteorologico - 1
             Else
 160             Nieblando = False
 162             Call SendData(SendTarget.ToAll, 0, PrepareMessageNieblandoToggle(IntensidadDeNubes))
-164             Call AgregarAConsola("Servidor >Truenos y nubes desactivados.")
+164             Call AgregarAConsola("Servidor » Truenos y nubes desactivados.")
                 ' Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor > Tranquilo, las nubes se fueron.", FontTypeNames.FONTTYPE_SERVER))
 166             Lloviendo = False
 168             ServidorNublado = False
