@@ -2023,6 +2023,16 @@ Sub CalcularDarExp(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal 
             End If
 
 130         If ExpaDar > 0 Then
+                If NpcList(NpcIndex).nivel Then
+                    Dim DeltaLevel As Integer
+                    DeltaLevel = UserList(UserIndex).Stats.ELV - NpcList(NpcIndex).nivel
+                    If Abs(DeltaLevel) > 5 Then ' Qué pereza da desharcodear
+                        ExpaDar = Math.Exp(15 - Abs(3 * DeltaLevel))
+                        
+                        Call WriteConsoleMsg(UserIndex, "La criatura es demasiado " & IIf(DeltaLevel < 0, "poderosa", "débil") & " y obtienes experiencia reducida al luchar contra ella", FontTypeNames.FONTTYPE_WARNING)
+                    End If
+                End If
+
 132             If UserList(UserIndex).Stats.ELV < STAT_MAXELV Then
 134                 UserList(UserIndex).Stats.Exp = UserList(UserIndex).Stats.Exp + ExpaDar
 
@@ -2111,7 +2121,7 @@ Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As I
 
 144     ExpaDar = ExpaDar / CantidadMiembrosValidos
 
-        Dim ExpUser As Long
+        Dim ExpUser As Long, DeltaLevel As Integer
 
 146     If ExpaDar > 0 Then
 148         For i = 1 To UserList(UserList(UserIndex).Grupo.Lider).Grupo.CantidadMiembros
@@ -2130,8 +2140,17 @@ Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As I
                     
 164                     ExpUser = ExpUser * UserList(index).flags.ScrollExp
                 
-166                     If UserList(index).Stats.ELV < STAT_MAXELV Then
-168                         UserList(index).Stats.Exp = UserList(index).Stats.Exp + ExpUser
+166                     If UserList(Index).Stats.ELV < STAT_MAXELV Then
+                            If NpcList(NpcIndex).nivel Then
+                                DeltaLevel = UserList(Index).Stats.ELV - NpcList(NpcIndex).nivel
+                                If Abs(DeltaLevel) > 5 Then ' Qué pereza da desharcodear
+                                    ExpaDar = Math.Exp(15 - Abs(3 * DeltaLevel))
+                                    
+                                    Call WriteConsoleMsg(Index, "La criatura es demasiado " & IIf(DeltaLevel < 0, "poderosa", "débil") & " y obtienes experiencia reducida al luchar contra ella", FontTypeNames.FONTTYPE_WARNING)
+                                End If
+                            End If
+
+168                         UserList(Index).Stats.Exp = UserList(Index).Stats.Exp + ExpUser
 
 170                         If UserList(index).Stats.Exp > MAXEXP Then UserList(index).Stats.Exp = MAXEXP
 
