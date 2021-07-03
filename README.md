@@ -24,19 +24,19 @@ https://ao20-web-staging.herokuapp.com/
 Importante usar semantic versioning (https://semver.org/) (ejemplo: v1.0.0)
 
 ### 2- Ejecutar pipelines de jenkins para generar parche de cliente. 
-Importante: Ejectuar uno solo a la vez y esperar a que termine y hacerlo en este orden.
+Importante: Ejecutar uno solo a la vez y esperar a que termine y hacerlo en este orden.
 
 a- Actualizar Recursos
 
-- http://ao20-test.duckdns.org:9090/view/Produccion/job/Recursos/
+- http://ao20-testing-secreto.duckdns.org:9090/view/Produccion/job/Recursos/
 
 b- Actualizar codigo del cliente (ESTE PIPELINE SE EJECUTA AUTOMATICAMENTE AL CREAR EL TAG)
 
-- http://ao20-test.duckdns.org:9090/view/Produccion/job/re20-cliente-tag-release/
+- http://ao20-testing-secreto.duckdns.org:9090/view/Produccion/job/re20-cliente-tag-release/
 
 c- Crear parche e instalador y subirlo al ftp.
 
-- http://ao20-test.duckdns.org:9090/view/Produccion/job/CREAR%20PARCHE%20CLIENTE%20E%20INSTALADOR%20NUEVO%20PARA%20LA%20WEB/
+- http://ao20-testing-secreto.duckdns.org:9090/view/Produccion/job/CREAR%20PARCHE%20CLIENTE%20E%20INSTALADOR%20NUEVO%20PARA%20LA%20WEB/
 
 Esperar a que termine.
 PRO TIP: Se puede continuar el proceso cuando se esta generando/subiendo el instalador, ya que el parche estaria completo, si no sabes bien cuando esto sucede, simplemente esperar a que termine el proceso.
@@ -55,10 +55,10 @@ y pegarlo en el Server.ini.Produccion (https://github.com/ao-org/re20-server/blo
 Importante usar semantic versioning (https://semver.org/) (ejemplo: v1.0.0)
 
 ### 5- Ejecutar pipelines de jenkins para actualizar recursos de servidor y servidor.
-Importante: Ejectuar uno solo a la vez y esperar a que termine y hacerlo en este orden.
+Importante: Ejecutar uno solo a la vez y esperar a que termine y hacerlo en este orden.
 
-- http://ao20-test.duckdns.org:9090/view/Produccion/job/Recursos-tag-release/
-- http://ao20-test.duckdns.org:9090/view/Produccion/job/re20-server-tag-release/
+- http://ao20-testing-secreto.duckdns.org:9090/view/Produccion/job/Recursos-tag-release/
+- http://ao20-testing-secreto.duckdns.org:9090/view/Produccion/job/re20-server-tag-release/
 
 
 Listo parche completado.
