@@ -38,18 +38,11 @@ Option Explicit
 '
 ' ======================================================================================
 
-Private Declare Sub CopyMemory _
-                Lib "kernel32" _
-                Alias "RtlMoveMemory" (pDst As Any, _
-                                       pSrc As Any, _
-                                       ByVal ByteLen As Long)
+Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (pDst As Any, pSrc As Any, ByVal ByteLen As Long)
       
 Private m_sString    As String
-
 Private m_iChunkSize As Long
-
 Private m_iPos       As Long
-
 Private m_iLen       As Long
 
 Public Property Get Length() As Long
@@ -66,6 +59,10 @@ Length_Err:
 102     Call TraceError(Err.Number, Err.Description, "cStringBuilder.Length", Erl)
 
         
+End Property
+
+Public Property Get ByteLength() As Long
+    ByteLength = m_iPos
 End Property
 
 Public Property Get Capacity() As Long

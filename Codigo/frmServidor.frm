@@ -26,7 +26,7 @@ Begin VB.Form frmServidor
       Height          =   1575
       Left            =   3840
       TabIndex        =   26
-      Top             =   2400
+      Top             =   2520
       Width           =   3615
       Begin VB.CommandButton Command4 
          Caption         =   "Hacer un Backup del mundo"
@@ -108,11 +108,28 @@ Begin VB.Form frmServidor
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      Height          =   2415
+      Height          =   2535
       Left            =   3840
       TabIndex        =   18
       Top             =   0
       Width           =   3615
+      Begin VB.CommandButton cmdDumpLogs 
+         Caption         =   "Dump Logs"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   700
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   255
+         Left            =   120
+         TabIndex        =   31
+         Top             =   2170
+         Width           =   3255
+      End
       Begin VB.CommandButton Command6 
          Caption         =   "ReSpawn Guardias en pos. originales"
          BeginProperty Font 
@@ -230,7 +247,7 @@ Begin VB.Form frmServidor
          Height          =   255
          Left            =   120
          TabIndex        =   19
-         Top             =   1940
+         Top             =   1920
          Width           =   3255
       End
    End
@@ -538,83 +555,8 @@ Begin VB.Form frmServidor
       Height          =   255
       Left            =   6480
       TabIndex        =   0
-      Top             =   4200
-      Width           =   945
-   End
-   Begin VB.Label Label4 
-      BackStyle       =   0  'Transparent
-      Caption         =   "pablito_3_15@hotmail.com"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   700
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H000000FF&
-      Height          =   255
-      Left            =   3960
-      TabIndex        =   34
       Top             =   4560
-      Width           =   2295
-   End
-   Begin VB.Label Label3 
-      BackStyle       =   0  'Transparent
-      Caption         =   "2008"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   700
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   255
-      Left            =   5520
-      TabIndex        =   33
-      Top             =   4080
-      Width           =   495
-   End
-   Begin VB.Label Label2 
-      BackStyle       =   0  'Transparent
-      Caption         =   "Pablo Daniel Mercavides"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   700
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H000000FF&
-      Height          =   255
-      Left            =   3960
-      TabIndex        =   32
-      Top             =   4320
-      Width           =   2295
-   End
-   Begin VB.Label Label1 
-      BackStyle       =   0  'Transparent
-      Caption         =   "RevolucionAo 1.1"
-      BeginProperty Font 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   700
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      ForeColor       =   &H0000C000&
-      Height          =   255
-      Left            =   3960
-      TabIndex        =   31
-      Top             =   4080
-      Width           =   2295
+      Width           =   945
    End
 End
 Attribute VB_Name = "frmServidor"
@@ -651,6 +593,27 @@ Attribute VB_Exposed = False
 'Pablo Ignacio Márquez
 
 Option Explicit
+
+Private Sub cmdDumpLogs_Click()
+    On Error GoTo cmdDumpLogs_Err:
+    
+    Dim File As Integer: File = FreeFile
+        
+    ' Metemos todo en el archivo .log
+    Open App.Path & "\logs\Errores\General.log" For Append As #File
+        Print #File, LogsBuffer.ToString
+    Close #File
+    
+    ' Limpiamos el buffer
+    Call LogsBuffer.Clear
+    
+    Exit Sub
+    
+cmdDumpLogs_Err:
+    Close #File
+    Call TraceError(Err.Number, Err.Description, "frmServidor.cmdDumpLogs_Click", Erl)
+    
+End Sub
 
 Private Sub Command1_Click()
         
