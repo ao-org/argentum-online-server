@@ -9974,7 +9974,7 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
     Exit Sub
 
 ErrHandler:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.?", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleEditChar", Erl)
     Call UserList(UserIndex).incomingData.SafeClearPacket
 
 End Sub
@@ -10031,7 +10031,7 @@ Private Sub HandleRequestCharInfo(ByVal UserIndex As Integer)
     Exit Sub
 
 ErrHandler:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.?", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleRequestCharInfo", Erl)
     Call UserList(UserIndex).incomingData.SafeClearPacket
 
 End Sub
@@ -10080,7 +10080,7 @@ Private Sub HandleRequestCharStats(ByVal UserIndex As Integer)
     Exit Sub
 
 ErrHandler:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.?", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleRequestCharStats", Erl)
     Call UserList(UserIndex).incomingData.SafeClearPacket
 
 End Sub
@@ -10127,7 +10127,7 @@ Private Sub HandleRequestCharGold(ByVal UserIndex As Integer)
     Exit Sub
 
 ErrHandler:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.?", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleRequestCharGold", Erl)
     Call UserList(UserIndex).incomingData.SafeClearPacket
 
 End Sub
@@ -10174,7 +10174,7 @@ Private Sub HandleRequestCharInventory(ByVal UserIndex As Integer)
     Exit Sub
 
 ErrHandler:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.?", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleRequestCharInventory", Erl)
     Call UserList(UserIndex).incomingData.SafeClearPacket
 
 End Sub
@@ -10221,7 +10221,7 @@ Private Sub HandleRequestCharBank(ByVal UserIndex As Integer)
     Exit Sub
 
 ErrHandler:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.?", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleRequestCharBank", Erl)
     Call UserList(UserIndex).incomingData.SafeClearPacket
 
 End Sub
@@ -10284,7 +10284,7 @@ Private Sub HandleRequestCharSkills(ByVal UserIndex As Integer)
     Exit Sub
 
 ErrHandler:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.?", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleRequestCharSkills", Erl)
     Call UserList(UserIndex).incomingData.SafeClearPacket
 
 End Sub
@@ -10359,7 +10359,7 @@ Private Sub HandleReviveChar(ByVal UserIndex As Integer)
     Exit Sub
 
 ErrHandler:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.?", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleReviveChar", Erl)
     Call UserList(UserIndex).incomingData.SafeClearPacket
 
 End Sub
@@ -10611,7 +10611,7 @@ Private Sub HandleKick(ByVal UserIndex As Integer)
     Exit Sub
 
 ErrHandler:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.?", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleKick", Erl)
     Call UserList(UserIndex).incomingData.SafeClearPacket
 
 End Sub
@@ -10661,7 +10661,7 @@ Private Sub HandleExecute(ByVal UserIndex As Integer)
     Exit Sub
 
 ErrHandler:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.?", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleExecute", Erl)
     Call UserList(UserIndex).incomingData.SafeClearPacket
 
 End Sub
@@ -10700,7 +10700,7 @@ Private Sub HandleBanChar(ByVal UserIndex As Integer)
     Exit Sub
 
 ErrHandler:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.?", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleBanChar", Erl)
     Call UserList(UserIndex).incomingData.SafeClearPacket
 
 End Sub
@@ -11169,7 +11169,7 @@ Private Sub HandleNickToIP(ByVal UserIndex As Integer)
     Exit Sub
 
 ErrHandler:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.?", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleNickToIP", Erl)
     Call UserList(UserIndex).incomingData.SafeClearPacket
 
 End Sub
@@ -11287,7 +11287,7 @@ Private Sub HandleGuildOnlineMembers(ByVal UserIndex As Integer)
     Exit Sub
 
 ErrHandler:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.?", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleGuildOnlineMembers", Erl)
     Call UserList(UserIndex).incomingData.SafeClearPacket
 
 End Sub
@@ -11526,7 +11526,7 @@ Private Sub HandleSetCharDescription(ByVal UserIndex As Integer)
     Exit Sub
 
 ErrHandler:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.?", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleSetCharDescription", Erl)
     Call UserList(UserIndex).incomingData.SafeClearPacket
 
 End Sub
@@ -11667,7 +11667,7 @@ Private Sub HandleRoyalArmyMessage(ByVal UserIndex As Integer)
     Exit Sub
 
 ErrHandler:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.?", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleRoyalArmyMessage", Erl)
     Call UserList(UserIndex).incomingData.SafeClearPacket
 
 End Sub
@@ -11702,7 +11702,7 @@ Private Sub HandleChaosLegionMessage(ByVal UserIndex As Integer)
     Exit Sub
 
 ErrHandler:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.?", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleChaosLegionMessage", Erl)
     Call UserList(UserIndex).incomingData.SafeClearPacket
 
 End Sub
@@ -11737,7 +11737,7 @@ Private Sub HandleCitizenMessage(ByVal UserIndex As Integer)
     Exit Sub
 
 ErrHandler:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.?", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleCitizenMessage", Erl)
     Call UserList(UserIndex).incomingData.SafeClearPacket
 
 End Sub
@@ -11771,7 +11771,7 @@ Private Sub HandleCriminalMessage(ByVal UserIndex As Integer)
     Exit Sub
 
 ErrHandler:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.?", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleCriminalMessage", Erl)
     Call UserList(UserIndex).incomingData.SafeClearPacket
 
 End Sub
@@ -11814,7 +11814,7 @@ Private Sub HandleTalkAsNPC(ByVal UserIndex As Integer)
     Exit Sub
 
 ErrHandler:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.?", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleTalkAsNPC", Erl)
     Call UserList(UserIndex).incomingData.SafeClearPacket
 
 End Sub
@@ -11923,7 +11923,7 @@ Private Sub HandleAcceptRoyalCouncilMember(ByVal UserIndex As Integer)
     Exit Sub
 
 ErrHandler:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.?", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleAcceptRoyalCouncilMember", Erl)
     Call UserList(UserIndex).incomingData.SafeClearPacket
 
 End Sub
@@ -11979,7 +11979,7 @@ Private Sub HandleAcceptChaosCouncilMember(ByVal UserIndex As Integer)
     Exit Sub
 
 ErrHandler:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.?", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleAcceptChaosCouncilMember", Erl)
     Call UserList(UserIndex).incomingData.SafeClearPacket
 
 End Sub
@@ -12468,7 +12468,7 @@ Private Sub HandleGuildBan(ByVal UserIndex As Integer)
     Exit Sub
 
 ErrHandler:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.?", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleGuildBan", Erl)
     Call UserList(UserIndex).incomingData.SafeClearPacket
 
 End Sub
@@ -12555,7 +12555,7 @@ Private Sub HandleBanIP(ByVal UserIndex As Integer)
     Exit Sub
 
 ErrHandler:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.?", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleBanIP", Erl)
     Call UserList(UserIndex).incomingData.SafeClearPacket
 
 End Sub
@@ -12797,7 +12797,7 @@ Private Sub HandleChaosLegionKick(ByVal UserIndex As Integer)
     Exit Sub
 
 ErrHandler:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.?", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleChaosLegionKick", Erl)
     Call UserList(UserIndex).incomingData.SafeClearPacket
 
 End Sub
@@ -12875,7 +12875,7 @@ Private Sub HandleRoyalArmyKick(ByVal UserIndex As Integer)
     Exit Sub
 
 ErrHandler:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.?", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleRoyalArmyKick", Erl)
     Call UserList(UserIndex).incomingData.SafeClearPacket
 
 End Sub
@@ -13020,7 +13020,7 @@ Private Sub HandleRemovePunishment(ByVal UserIndex As Integer)
     Exit Sub
 
 ErrHandler:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.?", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleRemovePunishment", Erl)
     Call UserList(UserIndex).incomingData.SafeClearPacket
 
 End Sub
@@ -13368,7 +13368,7 @@ Public Sub HandleCheckSlot(ByVal UserIndex As Integer)
     Exit Sub
 
 ErrHandler:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.?", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleCheckSlot", Erl)
     Call UserList(UserIndex).incomingData.SafeClearPacket
 
 End Sub
@@ -13987,7 +13987,7 @@ Public Sub HandleGiveItem(ByVal UserIndex As Integer)
     Exit Sub
 
 ErrHandler:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.?", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleGiveItem", Erl)
     Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
@@ -14249,7 +14249,7 @@ Public Sub HandleChangeMapInfoRestricted(ByVal UserIndex As Integer)
     Exit Sub
 
 ErrHandler:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.?", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleChangeMapInfoRestricted", Erl)
     Call UserList(UserIndex).incomingData.SafeClearPacket
 
 End Sub

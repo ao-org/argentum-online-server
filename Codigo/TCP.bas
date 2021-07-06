@@ -712,13 +712,12 @@ Sub CloseSocket(ByVal UserIndex As Integer)
         Exit Sub
 
 ErrHandler:
-144     UserList(UserIndex).ConnID = -1
-146     UserList(UserIndex).ConnIDValida = False
+142     UserList(UserIndex).ConnID = -1
+144     UserList(UserIndex).ConnIDValida = False
+146     Call ResetUserSlot(UserIndex)
 
-150     Call ResetUserSlot(UserIndex)
-
-152     Call LogError("CloseSocket - Error = " & Err.Number & " - Descripción = " & Err.Description & " - UserIndex = " & UserIndex)
-154     Resume Next
+148     Call RegistrarError(Err.Number, Err.Description, "TCP.CloseSocket", Erl)
+150     Resume Next
 
 End Sub
 
@@ -738,7 +737,6 @@ Sub CloseSocketSL(ByVal UserIndex As Integer)
 
 CloseSocketSL_Err:
 108     Call RegistrarError(Err.Number, Err.Description, "TCP.CloseSocketSL", Erl)
-
 110     Resume Next
         
 End Sub
