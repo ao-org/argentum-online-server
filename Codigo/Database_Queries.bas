@@ -257,6 +257,7 @@ Private Sub ConstruirQuery_GuardarPersonaje()
 198     QueryBuilder.Append "killed_npcs = ?, "
 200     QueryBuilder.Append "killed_users = ?, "
 202     QueryBuilder.Append "invent_level = ?, "
+203     QueryBuilder.Append "elo = ?, "
 204     QueryBuilder.Append "is_naked = ?, "
 206     QueryBuilder.Append "is_poisoned = ?, "
 208     QueryBuilder.Append "is_hidden = ?, "

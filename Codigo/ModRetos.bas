@@ -584,9 +584,9 @@ Public Sub FinalizarReto(ByVal Sala As Integer, Optional ByVal TiempoAgotado As 
 
               If tIndex <> 0 Then
                 If i Mod 2 = 0 Then
-                  eloIzquierda = eloIzquierda + UserList(tIndex).Stats.ELO
+                  eloTotalIzquierda = eloTotalIzquierda + UserList(tIndex).Stats.ELO
                 Else
-                  eloDerecha = eloDerecha + UserList(tIndex).Stats.ELO
+                  eloTotalDerecha = eloTotalDerecha + UserList(tIndex).Stats.ELO
                 End If
               End If
 
@@ -650,10 +650,10 @@ Public Sub FinalizarReto(ByVal Sala As Integer, Optional ByVal TiempoAgotado As 
 150             If .Puntaje < 0 Then
 152                 Ganador = EquipoReto.Izquierda
                     winsIzquierda = .TamañoEquipoDer
-                    winsDerecha = - .TamañoEquipoIzq
+                    winsDerecha = -.TamañoEquipoIzq
                 Else
 154                 Ganador = EquipoReto.Derecha
-                    winsIzquierda = - .TamañoEquipoDer
+                    winsIzquierda = -.TamañoEquipoDer
                     winsDerecha = .TamañoEquipoIzq
                 End If
 
@@ -752,9 +752,9 @@ Public Sub FinalizarReto(ByVal Sala As Integer, Optional ByVal TiempoAgotado As 
 
               If tIndex <> 0 Then
                 If i Mod 2 = 0 Then ' Jugadores en el equipo Izquierdo
-                  UserList(tIndex).Stats.ELO = (eloDerecha + 400 * winsIzquierda)
+                  UserList(tIndex).Stats.ELO = (eloTotalDerecha + 400 * winsIzquierda)
                 Else
-                  UserList(tIndex).Stats.ELO = (eloIzquierda + 400 * winsDerecha)
+                  UserList(tIndex).Stats.ELO = (eloTotalIzquierda + 400 * winsDerecha)
                 End If
 
                 If UserList(tIndex).Stats.ELO < 0 Then
