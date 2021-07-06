@@ -1155,8 +1155,6 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
 218         If FoundChar = 1 Then '  ¿Encontro un Usuario?
             
 220             If UserList(TempCharIndex).flags.AdminInvisible = 0 Or CompararPrivilegiosUser(UserIndex, TempCharIndex) >= 0 Then
-            
-                    'If LenB(UserList(TempCharIndex).DescRM) = 0 Then 'No tiene descRM y quiere que se vea su nombre.
                     
 222                 If UserList(TempCharIndex).showName Or CompararPrivilegiosUser(UserIndex, TempCharIndex) >= 0 Then
                 
@@ -1167,8 +1165,9 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
 226                         If EsGM(UserIndex) Then
 228                             Stat = Stat & " <" & ListaClases(UserList(TempCharIndex).clase) & " " & ListaRazas(UserList(TempCharIndex).raza) & " Nivel: " & UserList(TempCharIndex).Stats.ELV & ">"
                             End If
-    
-                            'End If
+                   
+                            Stat = Stat & " (ELO " & UserList(TempCharIndex).Stats.ELO & ")"
+
 230                         If EsNewbie(TempCharIndex) Then
 232                             Stat = Stat & " <Newbie>"
                             End If
@@ -1302,11 +1301,6 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
 366                         Stat = "Ves a " & UserList(TempCharIndex).Name & Stat
     
                         End If
-                     
-                        ' Else  'Si tiene descRM la muestro siempre.
-                        '   Stat = UserList(TempCharIndex).DescRM
-                        '   ft = FontTypeNames.FONTTYPE_INFOBOLD
-                        ' End If
                 
 368                     If LenB(Stat) > 0 Then
 370                         If UserList(TempCharIndex).flags.Muerto Then
