@@ -479,7 +479,8 @@ Private Sub IniciarRonda(ByVal Sala As Integer)
 End Sub
 
 Public Sub MuereEnReto(ByVal UserIndex As Integer)
-
+        On Error GoTo ErrorHandler
+        
         Dim Sala As Integer, Equipo As EquipoReto
 
 100     With UserList(UserIndex)
@@ -507,7 +508,10 @@ Public Sub MuereEnReto(ByVal UserIndex As Integer)
 116         Call ProcesarRondaGanada(Sala, EquipoContrario(Equipo))
     
         End With
-
+        
+        Exit Sub
+ErrorHandler:
+        Call RegistrarError(Err.Number, Err.Description, "ModRetos.MuereEnReto", Erl)
 End Sub
 
 Private Sub ProcesarRondaGanada(ByVal Sala As Integer, ByVal Equipo As EquipoReto)
@@ -561,11 +565,15 @@ Private Sub ProcesarRondaGanada(ByVal Sala As Integer, ByVal Equipo As EquipoRet
 136         Call IniciarRonda(Sala)
     
         End With
-
+        
+        Exit Sub
+ErrorHandler:
+        Call RegistrarError(Err.Number, Err.Description, "ModRetos.ProcesarRondaGanada", Erl)
 End Sub
 
 Public Sub FinalizarReto(ByVal Sala As Integer, Optional ByVal TiempoAgotado As Boolean)
-    
+        On Error GoTo ErrorHandler
+        
 100     With Retos.Salas(Sala)
     
             ' Calculamos el oro total del premio
@@ -769,7 +777,10 @@ Public Sub FinalizarReto(ByVal Sala As Integer, Optional ByVal TiempoAgotado As 
             Next i
     
         End With
-    
+        
+        Exit Sub
+ErrorHandler:
+        Call RegistrarError(Err.Number, Err.Description, "ModRetos.FinalizarReto", Erl)
 End Sub
 Public Sub TirarItemsEnPos(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte)
             

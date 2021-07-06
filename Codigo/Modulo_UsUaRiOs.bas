@@ -1481,7 +1481,7 @@ Sub UserDie(ByVal UserIndex As Integer)
         Exit Sub
 
 ErrorHandler:
-232     Call LogError("Error en SUB USERDIE. Error: " & Err.Number & " Descripción: " & Err.Description)
+232        Call RegistrarError(Err.Number, Err.Description, "UsUaRiOs.UserDie", Erl)
 
 End Sub
 
