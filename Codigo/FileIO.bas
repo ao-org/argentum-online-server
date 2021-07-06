@@ -1725,7 +1725,11 @@ Sub LoadOBJData()
                             Call Crafteos.Add(Crafteo.Tipo, New Dictionary)
                         End If
 
-                        Call Crafteos.Item(Crafteo.Tipo).Add(GetRecipeKey(Items), Crafteo)
+                        Dim ItemKey As String
+                        ItemKey = GetRecipeKey(Items)
+                        If Not Crafteos.Item(Crafteo.Tipo).Exists(ItemKey) Then
+                            Call Crafteos.Item(Crafteo.Tipo).Add(ItemKey, Crafteo)
+                        End If
                     End If
                 End If
 
@@ -2347,7 +2351,7 @@ Public Sub CargarMapaFormatoCSM(ByVal Map As Long, ByVal MAPFl As String)
 
                         Case eOBJType.otYacimiento, eOBJType.otArboles
 266                         MapData(Map, Objetos(i).X, Objetos(i).Y).ObjInfo.amount = ObjData(Objetos(i).ObjIndex).VidaUtil
-268                         MapData(Map, Objetos(i).X, Objetos(i).Y).ObjInfo.Data = &H7FFFFFFF ' Ultimo uso = Max Long
+268                         MapData(Map, Objetos(i).X, Objetos(i).Y).ObjInfo.data = &H7FFFFFFF ' Ultimo uso = Max Long
 
 270                     Case Else
 272                         MapData(Map, Objetos(i).X, Objetos(i).Y).ObjInfo.amount = Objetos(i).ObjAmmount
@@ -3163,7 +3167,7 @@ Sub SetUserLogged(ByVal UserIndex As Integer)
         
 
 100     If Database_Enabled Then
-102         Call SetUserLoggedDatabase(UserList(UserIndex).ID, UserList(UserIndex).AccountID)
+102         Call SetUserLoggedDatabase(UserList(UserIndex).Id, UserList(UserIndex).AccountID)
         Else
 104         Call WriteVar(CharPath & UCase$(UserList(UserIndex).Name) & ".chr", "INIT", "Logged", 1)
 106         Call WriteVar(CuentasPath & UCase$(UserList(UserIndex).Cuenta) & ".act", "INIT", "LOGEADA", 1)
@@ -3475,7 +3479,7 @@ Public Sub LoadRecursosEspeciales()
 120             Field = Split(str, "-")
             
 122             EspecialesTala(i).ObjIndex = val(Field(0))
-124             EspecialesTala(i).Data = val(Field(1))      ' Probabilidad
+124             EspecialesTala(i).data = val(Field(1))      ' Probabilidad
             Next
         Else
 126         ReDim EspecialesTala(0) As obj
@@ -3493,7 +3497,7 @@ Public Sub LoadRecursosEspeciales()
 138             Field = Split(str, "-")
             
 140             EspecialesPesca(i).ObjIndex = val(Field(0))
-142             EspecialesPesca(i).Data = val(Field(1))     ' Probabilidad
+142             EspecialesPesca(i).data = val(Field(1))     ' Probabilidad
             Next
         Else
 144         ReDim EspecialesPesca(0) As obj
@@ -3545,7 +3549,7 @@ Public Sub LoadPesca()
 124             Field = Split(str, "-")
             
 126             Peces(i).ObjIndex = val(Field(0))
-128             Peces(i).Data = val(Field(1))       ' Peso
+128             Peces(i).data = val(Field(1))       ' Peso
 
 130             nivel = val(Field(2))               ' Nivel de caña
 
@@ -3559,10 +3563,10 @@ Public Sub LoadPesca()
             ' Sumo los pesos
 138         For i = 1 To Count
 140             For j = Peces(i).amount To MaxLvlCania
-142                 PesoPeces(j) = PesoPeces(j) + Peces(i).Data
+142                 PesoPeces(j) = PesoPeces(j) + Peces(i).data
 144             Next j
 
-146             Peces(i).Data = PesoPeces(Peces(i).amount)
+146             Peces(i).data = PesoPeces(Peces(i).amount)
 148         Next i
         Else
 150         ReDim Peces(0) As obj
@@ -3581,7 +3585,7 @@ LoadPesca_Err:
 End Sub
 
 ' Adaptado de https://www.vbforums.com/showthread.php?231925-VB-Quick-Sort-algorithm-(very-fast-sorting-algorithm)
-Private Sub QuickSortPeces(ByVal first As Long, ByVal last As Long)
+Private Sub QuickSortPeces(ByVal First As Long, ByVal Last As Long)
         
         On Error GoTo QuickSortPeces_Err
         
@@ -3592,9 +3596,9 @@ Private Sub QuickSortPeces(ByVal first As Long, ByVal last As Long)
 
         Dim aux      As obj
     
-100     Low = first
-102     High = last
-104     MidValue = Peces((first + last) \ 2).amount
+100     Low = First
+102     High = Last
+104     MidValue = Peces((First + Last) \ 2).amount
     
         Do
 
@@ -3619,8 +3623,8 @@ Private Sub QuickSortPeces(ByVal first As Long, ByVal last As Long)
 
 126     Loop While Low <= High
     
-128     If first < High Then QuickSortPeces first, High
-130     If Low < last Then QuickSortPeces Low, last
+128     If First < High Then QuickSortPeces First, High
+130     If Low < Last Then QuickSortPeces Low, Last
 
         
         Exit Sub
@@ -3652,12 +3656,12 @@ Public Function BinarySearchPeces(ByVal Value As Long) As Long
 106         i = (Low + High) \ 2
 
 108         If i > 1 Then
-110             valor_anterior = Peces(i - 1).Data
+110             valor_anterior = Peces(i - 1).data
             Else
 112             valor_anterior = 0
             End If
 
-114         If Value >= valor_anterior And Value < Peces(i).Data Then
+114         If Value >= valor_anterior And Value < Peces(i).data Then
 116             BinarySearchPeces = i
                 Exit Do
             
