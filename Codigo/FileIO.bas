@@ -219,7 +219,7 @@ Public Sub CargarSpawnList()
         Exit Sub
 
 CargarSpawnList_Err:
-116     Call RegistrarError(Err.Number, Err.Description, "ES.CargarSpawnList", Erl)
+116     Call TraceError(Err.Number, Err.Description, "ES.CargarSpawnList", Erl)
 118
         
 End Sub
@@ -239,7 +239,7 @@ Function EsAdmin(ByRef Name As String) As Boolean
         Exit Function
 
 EsAdmin_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "ES.EsAdmin", Erl)
+102     Call TraceError(Err.Number, Err.Description, "ES.EsAdmin", Erl)
 104
         
 End Function
@@ -259,7 +259,7 @@ Function EsDios(ByRef Name As String) As Boolean
         Exit Function
 
 EsDios_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "ES.EsDios", Erl)
+102     Call TraceError(Err.Number, Err.Description, "ES.EsDios", Erl)
 104
         
 End Function
@@ -279,7 +279,7 @@ Function EsSemiDios(ByRef Name As String) As Boolean
         Exit Function
 
 EsSemiDios_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "ES.EsSemiDios", Erl)
+102     Call TraceError(Err.Number, Err.Description, "ES.EsSemiDios", Erl)
 104
         
 End Function
@@ -299,7 +299,7 @@ Function EsConsejero(ByRef Name As String) As Boolean
         Exit Function
 
 EsConsejero_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "ES.EsConsejero", Erl)
+102     Call TraceError(Err.Number, Err.Description, "ES.EsConsejero", Erl)
 104
         
 End Function
@@ -319,7 +319,7 @@ Function EsRolesMaster(ByRef Name As String) As Boolean
         Exit Function
 
 EsRolesMaster_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "ES.EsRolesMaster", Erl)
+102     Call TraceError(Err.Number, Err.Description, "ES.EsRolesMaster", Erl)
 104
         
 End Function
@@ -354,7 +354,7 @@ Public Function EsGmChar(ByRef Name As String) As Boolean
         Exit Function
 
 EsGmChar_Err:
-110     Call RegistrarError(Err.Number, Err.Description, "ES.EsGmChar", Erl)
+110     Call TraceError(Err.Number, Err.Description, "ES.EsGmChar", Erl)
 112
         
 End Function
@@ -485,7 +485,7 @@ Public Sub loadAdministrativeUsers()
         Exit Sub
 
 loadAdministrativeUsers_Err:
-190     Call RegistrarError(Err.Number, Err.Description, "ES.loadAdministrativeUsers", Erl)
+190     Call TraceError(Err.Number, Err.Description, "ES.loadAdministrativeUsers", Erl)
 192
         
 End Sub
@@ -525,7 +525,7 @@ Public Function GetCharPrivs(ByRef UserName As String) As PlayerType
         Exit Function
 
 GetCharPrivs_Err:
-120     Call RegistrarError(Err.Number, Err.Description, "ES.GetCharPrivs", Erl)
+120     Call TraceError(Err.Number, Err.Description, "ES.GetCharPrivs", Erl)
 122
         
 End Function
@@ -552,7 +552,7 @@ Public Function TxtDimension(ByVal Name As String) As Long
         Exit Function
 
 TxtDimension_Err:
-116     Call RegistrarError(Err.Number, Err.Description, "ES.TxtDimension", Erl)
+116     Call TraceError(Err.Number, Err.Description, "ES.TxtDimension", Erl)
 118
         
 End Function
@@ -588,7 +588,7 @@ Public Sub CargarForbidenWords()
         Exit Sub
 
 CargarForbidenWords_Err:
-120     Call RegistrarError(Err.Number, Err.Description, "ES.CargarForbidenWords", Erl)
+120     Call TraceError(Err.Number, Err.Description, "ES.CargarForbidenWords", Erl)
 122
         
 End Sub
@@ -788,7 +788,7 @@ Sub LoadMotd()
         Exit Sub
 
 LoadMotd_Err:
-112     Call RegistrarError(Err.Number, Err.Description, "ES.LoadMotd", Erl)
+112     Call TraceError(Err.Number, Err.Description, "ES.LoadMotd", Erl)
 114
         
 End Sub
@@ -829,7 +829,7 @@ Public Sub DoBackUp()
         Exit Sub
 
 DoBackUp_Err:
-118     Call RegistrarError(Err.Number, Err.Description, "ES.DoBackUp", Erl)
+118     Call TraceError(Err.Number, Err.Description, "ES.DoBackUp", Erl)
 
         
 End Sub
@@ -1048,7 +1048,7 @@ Sub LoadArmasHerreria()
         Exit Sub
 
 LoadArmasHerreria_Err:
-114     Call RegistrarError(Err.Number, Err.Description, "ES.LoadArmasHerreria", Erl)
+114     Call TraceError(Err.Number, Err.Description, "ES.LoadArmasHerreria", Erl)
 116
         
 End Sub
@@ -1078,7 +1078,7 @@ Sub LoadArmadurasHerreria()
         Exit Sub
 
 LoadArmadurasHerreria_Err:
-114     Call RegistrarError(Err.Number, Err.Description, "ES.LoadArmadurasHerreria", Erl)
+114     Call TraceError(Err.Number, Err.Description, "ES.LoadArmadurasHerreria", Erl)
 116
         
 End Sub
@@ -1158,7 +1158,7 @@ Sub LoadBalance()
         Exit Sub
 
 LoadBalance_Err:
-180     Call RegistrarError(Err.Number, Err.Description, "ES.LoadBalance", Erl)
+180     Call TraceError(Err.Number, Err.Description, "ES.LoadBalance", Erl)
 182
         
 End Sub
@@ -1188,7 +1188,7 @@ Sub LoadObjCarpintero()
         Exit Sub
 
 LoadObjCarpintero_Err:
-114     Call RegistrarError(Err.Number, Err.Description, "ES.LoadObjCarpintero", Erl)
+114     Call TraceError(Err.Number, Err.Description, "ES.LoadObjCarpintero", Erl)
 116
         
 End Sub
@@ -1218,7 +1218,7 @@ Sub LoadObjAlquimista()
         Exit Sub
 
 LoadObjAlquimista_Err:
-114     Call RegistrarError(Err.Number, Err.Description, "ES.LoadObjAlquimista", Erl)
+114     Call TraceError(Err.Number, Err.Description, "ES.LoadObjAlquimista", Erl)
 116
         
 End Sub
@@ -1248,7 +1248,7 @@ Sub LoadObjSastre()
         Exit Sub
 
 LoadObjSastre_Err:
-114     Call RegistrarError(Err.Number, Err.Description, "ES.LoadObjSastre", Erl)
+114     Call TraceError(Err.Number, Err.Description, "ES.LoadObjSastre", Erl)
 116
         
 End Sub
@@ -1274,7 +1274,7 @@ Sub LoadObjDonador()
         Exit Sub
 
 LoadObjDonador_Err:
-114     Call RegistrarError(Err.Number, Err.Description, "ES.LoadObjDonador", Erl)
+114     Call TraceError(Err.Number, Err.Description, "ES.LoadObjDonador", Erl)
 116
         
 End Sub
@@ -1844,7 +1844,7 @@ Sub LoadUserStats(ByVal UserIndex As Integer, ByRef UserFile As clsIniManager)
         Exit Sub
 
 LoadUserStats_Err:
-194     Call RegistrarError(Err.Number, Err.Description, "ES.LoadUserStats", Erl)
+194     Call TraceError(Err.Number, Err.Description, "ES.LoadUserStats", Erl)
 196
         
 End Sub
@@ -2033,7 +2033,7 @@ Sub LoadUserInit(ByVal UserIndex As Integer, ByRef UserFile As clsIniManager)
         Exit Sub
 
 LoadUserInit_Err:
-322     Call RegistrarError(Err.Number, Err.Description, "ES.LoadUserInit", Erl)
+322     Call TraceError(Err.Number, Err.Description, "ES.LoadUserInit", Erl)
 324
         
 End Sub
@@ -2060,7 +2060,7 @@ Function GetVar(ByVal File As String, ByVal Main As String, ByVal Var As String,
         Exit Function
 
 GetVar_Err:
-110     Call RegistrarError(Err.Number, Err.Description, "ES.GetVar", Erl)
+110     Call TraceError(Err.Number, Err.Description, "ES.GetVar", Erl)
 112
         
 End Function
@@ -2110,7 +2110,7 @@ Sub CargarBackUp()
         Exit Sub
 
 CargarBackUp_Err:
-140     Call RegistrarError(Err.Number, Err.Description, "ES.CargarBackUp", Erl)
+140     Call TraceError(Err.Number, Err.Description, "ES.CargarBackUp", Erl)
 142
         
 End Sub
@@ -2195,12 +2195,12 @@ Public Sub CargarMapaFormatoCSM(ByVal Map As Long, ByVal MAPFl As String)
         Dim X As Integer, Y As Integer
         
 100     If Not FileExist(MAPFl, vbNormal) Then
-102         Call RegistrarError(404, "Estas tratando de cargar un MAPA que NO EXISTE" & vbNewLine & "Mapa: " & MAPFl, "ES.CargarMapaFormatoCSM")
+102         Call TraceError(404, "Estas tratando de cargar un MAPA que NO EXISTE" & vbNewLine & "Mapa: " & MAPFl, "ES.CargarMapaFormatoCSM")
             Exit Sub
         End If
         
 104     If FileLen(MAPFl) = 0 Then
-106         Call RegistrarError(500, "Se trato de cargar un mapa corrupto o mal generado" & vbNewLine & "Mapa: " & MAPFl, "ES.CargarMapaFormatoCSM")
+106         Call TraceError(500, "Se trato de cargar un mapa corrupto o mal generado" & vbNewLine & "Mapa: " & MAPFl, "ES.CargarMapaFormatoCSM")
             Exit Sub
         End If
     
@@ -2400,7 +2400,7 @@ Public Sub CargarMapaFormatoCSM(ByVal Map As Long, ByVal MAPFl As String)
                         Else
                             
                             ' Lo guardo en los logs + aparece en el Debug.Print
-                            Call RegistrarError(404, "NPC no existe en los .DAT's o está mal dateado. Posicion: " & Map & "-" & NPCs(i).X & "-" & NPCs(i).Y, "ES.CargarMapaFormatoCSM")
+                            Call TraceError(404, "NPC no existe en los .DAT's o está mal dateado. Posicion: " & Map & "-" & NPCs(i).X & "-" & NPCs(i).Y, "ES.CargarMapaFormatoCSM")
                             
                         End If
                     End If
@@ -2472,7 +2472,7 @@ Public Sub CargarMapaFormatoCSM(ByVal Map As Long, ByVal MAPFl As String)
 
 ErrorHandler:
 390     Close fh
-392     Call RegistrarError(Err.Number, Err.Description, "ES.CargarMapaFormatoCSM", Erl)
+392     Call TraceError(Err.Number, Err.Description, "ES.CargarMapaFormatoCSM", Erl)
     
 End Sub
 
@@ -2546,7 +2546,7 @@ Sub LoadSini()
 
 LoadSini_Err:
 170     Set Lector = Nothing
-172     Call RegistrarError(Err.Number, Err.Description, "ES.LoadSini", Erl)
+172     Call TraceError(Err.Number, Err.Description, "ES.LoadSini", Erl)
 174
         
 End Sub
@@ -2577,7 +2577,7 @@ Public Sub LoadDatabaseIniFile()
 
 LoadDatabaseIniFile_Err:
 118     Set Lector = Nothing
-120     Call RegistrarError(Err.Number, Err.Description, "ES.LoadDatabaseIniFile", Erl)
+120     Call TraceError(Err.Number, Err.Description, "ES.LoadDatabaseIniFile", Erl)
 122
 End Sub
 
@@ -2719,7 +2719,7 @@ Sub CargarCiudades()
         Exit Sub
 
 CargarCiudades_Err:
-302     Call RegistrarError(Err.Number, Err.Description, "ES.CargarCiudades", Erl)
+302     Call TraceError(Err.Number, Err.Description, "ES.CargarCiudades", Erl)
 
         
 End Sub
@@ -2852,7 +2852,7 @@ Sub LoadIntervalos()
         Exit Sub
 
 LoadIntervalos_Err:
-238     Call RegistrarError(Err.Number, Err.Description, "ES.LoadIntervalos", Erl)
+238     Call TraceError(Err.Number, Err.Description, "ES.LoadIntervalos", Erl)
 240
         
 End Sub
@@ -2893,7 +2893,7 @@ Sub LoadConfiguraciones()
         Exit Sub
 
 LoadConfiguraciones_Err:
-134     Call RegistrarError(Err.Number, Err.Description, "ES.LoadConfiguraciones", Erl)
+134     Call TraceError(Err.Number, Err.Description, "ES.LoadConfiguraciones", Erl)
 136
         
 End Sub
@@ -2912,7 +2912,7 @@ Sub WriteVar(ByVal File As String, ByVal Main As String, ByVal Var As String, By
         Exit Sub
 
 WriteVar_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "ES.WriteVar", Erl)
+102     Call TraceError(Err.Number, Err.Description, "ES.WriteVar", Erl)
 104
         
 End Sub
@@ -3089,7 +3089,7 @@ Sub LoadUser(ByVal UserIndex As Integer)
         Exit Sub
 
 ErrorHandler:
-268     Call RegistrarError(Err.Number, Err.Description & " UserName: " & UserList(UserIndex).Name, "ES.LoadUser", Erl)
+268     Call TraceError(Err.Number, Err.Description & " UserName: " & UserList(UserIndex).Name, "ES.LoadUser", Erl)
 270
     
 End Sub
@@ -3113,7 +3113,7 @@ Sub SaveUser(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = Fals
         Exit Sub
 
 SaveUser_Err:
-108     Call RegistrarError(Err.Number, Err.Description, "ES.SaveUser", Erl)
+108     Call TraceError(Err.Number, Err.Description, "ES.SaveUser", Erl)
 
 110
 
@@ -3142,7 +3142,7 @@ Sub LoadUserBinary(ByVal UserIndex As Integer)
         Exit Sub
 
 LoadUserBinary_Err:
-110     Call RegistrarError(Err.Number, Err.Description, "ES.LoadUserBinary", Erl)
+110     Call TraceError(Err.Number, Err.Description, "ES.LoadUserBinary", Erl)
 112
         
 End Sub
@@ -3156,7 +3156,7 @@ Sub SaveNewUser(ByVal UserIndex As Integer)
     Exit Sub
 
 SaveNewUser_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "ES.SaveNewUser", Erl)
+102     Call TraceError(Err.Number, Err.Description, "ES.SaveNewUser", Erl)
 104
         
 End Sub
@@ -3178,7 +3178,7 @@ Sub SetUserLogged(ByVal UserIndex As Integer)
         Exit Sub
 
 SetUserLogged_Err:
-108     Call RegistrarError(Err.Number, Err.Description, "ES.SetUserLogged", Erl)
+108     Call TraceError(Err.Number, Err.Description, "ES.SetUserLogged", Erl)
 110
         
 End Sub
@@ -3194,7 +3194,7 @@ Function Status(ByVal UserIndex As Integer) As e_Facciones
         Exit Function
 
 Status_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "ES.Status", Erl)
+102     Call TraceError(Err.Number, Err.Description, "ES.Status", Erl)
 104
         
 End Function
@@ -3265,7 +3265,7 @@ Sub BackUPnPc(NpcIndex As Integer)
         Exit Sub
 
 BackUPnPc_Err:
-162     Call RegistrarError(Err.Number, Err.Description, "ES.BackUPnPc", Erl)
+162     Call TraceError(Err.Number, Err.Description, "ES.BackUPnPc", Erl)
 164
         
 End Sub
@@ -3350,7 +3350,7 @@ Sub CargarNpcBackUp(NpcIndex As Integer, ByVal NpcNumber As Integer)
         Exit Sub
 
 CargarNpcBackUp_Err:
-178     Call RegistrarError(Err.Number, Err.Description, "ES.CargarNpcBackUp", Erl)
+178     Call TraceError(Err.Number, Err.Description, "ES.CargarNpcBackUp", Erl)
 180
         
 End Sub
@@ -3375,7 +3375,7 @@ Sub LogBan(ByVal BannedIndex As Integer, ByVal UserIndex As Integer, ByVal Motiv
         Exit Sub
 
 LogBan_Err:
-112     Call RegistrarError(Err.Number, Err.Description, "ES.LogBan", Erl)
+112     Call TraceError(Err.Number, Err.Description, "ES.LogBan", Erl)
 114
         
 End Sub
@@ -3400,7 +3400,7 @@ Sub LogBanFromName(ByVal BannedName As String, ByVal UserIndex As Integer, ByVal
         Exit Sub
 
 LogBanFromName_Err:
-112     Call RegistrarError(Err.Number, Err.Description, "ES.LogBanFromName", Erl)
+112     Call TraceError(Err.Number, Err.Description, "ES.LogBanFromName", Erl)
 114
         
 End Sub
@@ -3425,7 +3425,7 @@ Sub Ban(ByVal BannedName As String, ByVal Baneador As String, ByVal Motivo As St
         Exit Sub
 
 Ban_Err:
-112     Call RegistrarError(Err.Number, Err.Description, "ES.Ban", Erl)
+112     Call TraceError(Err.Number, Err.Description, "ES.Ban", Erl)
 114
         
 End Sub
@@ -3443,7 +3443,7 @@ Public Sub CargaApuestas()
         Exit Sub
 
 CargaApuestas_Err:
-106     Call RegistrarError(Err.Number, Err.Description, "ES.CargaApuestas", Erl)
+106     Call TraceError(Err.Number, Err.Description, "ES.CargaApuestas", Erl)
 108
         
 End Sub
@@ -3510,7 +3510,7 @@ Public Sub LoadRecursosEspeciales()
         Exit Sub
 
 LoadRecursosEspeciales_Err:
-148     Call RegistrarError(Err.Number, Err.Description, "ES.LoadRecursosEspeciales", Erl)
+148     Call TraceError(Err.Number, Err.Description, "ES.LoadRecursosEspeciales", Erl)
 150
         
 End Sub
@@ -3579,7 +3579,7 @@ Public Sub LoadPesca()
         Exit Sub
 
 LoadPesca_Err:
-154     Call RegistrarError(Err.Number, Err.Description, "ES.LoadPesca", Erl)
+154     Call TraceError(Err.Number, Err.Description, "ES.LoadPesca", Erl)
 156
         
 End Sub
@@ -3630,7 +3630,7 @@ Private Sub QuickSortPeces(ByVal First As Long, ByVal Last As Long)
         Exit Sub
 
 QuickSortPeces_Err:
-132     Call RegistrarError(Err.Number, Err.Description, "ES.QuickSortPeces", Erl)
+132     Call TraceError(Err.Number, Err.Description, "ES.QuickSortPeces", Erl)
 134
         
 End Sub
@@ -3679,7 +3679,7 @@ Public Function BinarySearchPeces(ByVal Value As Long) As Long
         Exit Function
 
 BinarySearchPeces_Err:
-124     Call RegistrarError(Err.Number, Err.Description, "ES.BinarySearchPeces", Erl)
+124     Call TraceError(Err.Number, Err.Description, "ES.BinarySearchPeces", Erl)
 126
         
 End Function
@@ -3729,7 +3729,7 @@ Public Sub LoadRangosFaccion()
             Exit Sub
 
 LoadRangosFaccion_Err:
-140         Call RegistrarError(Err.Number, Err.Description, "ES.LoadRangosFaccion", Erl)
+140         Call TraceError(Err.Number, Err.Description, "ES.LoadRangosFaccion", Erl)
 142
 
 End Sub
@@ -3770,7 +3770,7 @@ Public Sub LoadRecompensasFaccion()
             Exit Sub
 
 LoadRecompensasFaccion_Err:
-126         Call RegistrarError(Err.Number, Err.Description, "ES.LoadRecompensasFaccion", Erl)
+126         Call TraceError(Err.Number, Err.Description, "ES.LoadRecompensasFaccion", Erl)
 128
 
 End Sub
@@ -3800,7 +3800,7 @@ Public Sub LoadUserIntervals(ByVal UserIndex As Integer)
         Exit Sub
 
 LoadUserIntervals_Err:
-124     Call RegistrarError(Err.Number, Err.Description, "ES.LoadUserIntervals", Erl)
+124     Call TraceError(Err.Number, Err.Description, "ES.LoadUserIntervals", Erl)
 126
         
 End Sub
@@ -3825,7 +3825,7 @@ Function CountFiles(strFolder As String, strPattern As String) As Integer
         Exit Function
 
 CountFiles_Err:
-110     Call RegistrarError(Err.Number, Err.Description, "ES.CountFiles", Erl)
+110     Call TraceError(Err.Number, Err.Description, "ES.CountFiles", Erl)
 
         
 End Function

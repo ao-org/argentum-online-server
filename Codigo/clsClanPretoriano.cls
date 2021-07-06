@@ -315,7 +315,7 @@ Private Function IsValidSpawnArea() As Boolean
         Exit Function
 
 IsValidSpawnArea_Err:
-114     Call RegistrarError(Err.Number, Err.Description, "clsClanPretoriano.IsValidSpawnArea", Erl)
+114     Call TraceError(Err.Number, Err.Description, "clsClanPretoriano.IsValidSpawnArea", Erl)
 116
         
 End Function
@@ -342,7 +342,7 @@ Private Sub InitializePretoriansVars()
         Exit Sub
 
 InitializePretoriansVars_Err:
-112     Call RegistrarError(Err.Number, Err.Description, "clsClanPretoriano.InitializePretoriansVars", Erl)
+112     Call TraceError(Err.Number, Err.Description, "clsClanPretoriano.InitializePretoriansVars", Erl)
 114
         
 End Sub
@@ -429,7 +429,7 @@ Private Sub SpawnPretorian(ByRef SpawnPos As WorldPos, _
         Exit Sub
 
 SpawnPretorian_Err:
-138     Call RegistrarError(Err.Number, Err.Description, "clsClanPretoriano.SpawnPretorian", Erl)
+138     Call TraceError(Err.Number, Err.Description, "clsClanPretoriano.SpawnPretorian", Erl)
 140
         
 End Sub
@@ -485,7 +485,7 @@ Private Function RandomTallHead()
         Exit Function
 
 RandomTallHead_Err:
-112     Call RegistrarError(Err.Number, Err.Description, "clsClanPretoriano.RandomTallHead", Erl)
+112     Call TraceError(Err.Number, Err.Description, "clsClanPretoriano.RandomTallHead", Erl)
 114
         
 End Function
@@ -535,7 +535,7 @@ Private Function RandomShortHead()
         Exit Function
 
 RandomShortHead_Err:
-108     Call RegistrarError(Err.Number, Err.Description, "clsClanPretoriano.RandomShortHead", Erl)
+108     Call TraceError(Err.Number, Err.Description, "clsClanPretoriano.RandomShortHead", Erl)
 110
         
 End Function
@@ -579,7 +579,7 @@ Public Sub PerformPretorianAI(ByVal NpcIndex As Integer)
         Exit Sub
 
 PerformPretorianAI_Err:
-126     Call RegistrarError(Err.Number, Err.Description, "clsClanPretoriano.PerformPretorianAI", Erl)
+126     Call TraceError(Err.Number, Err.Description, "clsClanPretoriano.PerformPretorianAI", Erl)
 128
         
 End Sub
@@ -610,7 +610,7 @@ Private Function GetPretorianAI(ByVal NpcIndex As Integer) As Byte
         Exit Function
 
 GetPretorianAI_Err:
-108     Call RegistrarError(Err.Number, Err.Description, "clsClanPretoriano.GetPretorianAI", Erl)
+108     Call TraceError(Err.Number, Err.Description, "clsClanPretoriano.GetPretorianAI", Erl)
 110
         
 End Function
@@ -967,7 +967,7 @@ Private Sub KingReviveAlly(ByVal NpcIndex As Integer)
         Exit Sub
 
 KingReviveAlly_Err:
-120     Call RegistrarError(Err.Number, Err.Description, "clsClanPretoriano.KingReviveAlly", Erl)
+120     Call TraceError(Err.Number, Err.Description, "clsClanPretoriano.KingReviveAlly", Erl)
 122
         
 End Sub
@@ -1203,7 +1203,7 @@ Private Sub HealerPerformAction(ByVal NpcIndex As Integer, _
         Exit Sub
 
 HealerPerformAction_Err:
-142     Call RegistrarError(Err.Number, Err.Description, "clsClanPretoriano.HealerPerformAction", Erl)
+142     Call TraceError(Err.Number, Err.Description, "clsClanPretoriano.HealerPerformAction", Erl)
 144
         
 End Sub
@@ -1241,7 +1241,7 @@ Private Sub HealerMove(ByVal NpcIndex As Integer)
         Exit Sub
 
 HealerMove_Err:
-112     Call RegistrarError(Err.Number, Err.Description, "clsClanPretoriano.HealerMove", Erl)
+112     Call TraceError(Err.Number, Err.Description, "clsClanPretoriano.HealerMove", Erl)
 114
         
 End Sub
@@ -1325,7 +1325,7 @@ Private Function SpellCasterSacrifice(ByVal NpcIndex As Integer) As Boolean
         Exit Function
 
 SpellCasterSacrifice_Err:
-122     Call RegistrarError(Err.Number, Err.Description, "clsClanPretoriano.SpellCasterSacrifice", Erl)
+122     Call TraceError(Err.Number, Err.Description, "clsClanPretoriano.SpellCasterSacrifice", Erl)
 124
         
 End Function
@@ -1472,7 +1472,7 @@ Private Sub SpellCasterPerformAction(ByVal NpcIndex As Integer, _
         Exit Sub
 
 SpellCasterPerformAction_Err:
-110     Call RegistrarError(Err.Number, Err.Description, "clsClanPretoriano.SpellCasterPerformAction", Erl)
+110     Call TraceError(Err.Number, Err.Description, "clsClanPretoriano.SpellCasterPerformAction", Erl)
 112
         
 End Sub
@@ -1510,7 +1510,7 @@ Private Sub SpellCasterMove(ByVal NpcIndex As Integer, ByVal BestTarget As Integ
         Exit Sub
 
 SpellCasterMove_Err:
-112     Call RegistrarError(Err.Number, Err.Description, "clsClanPretoriano.SpellCasterMove", Erl)
+112     Call TraceError(Err.Number, Err.Description, "clsClanPretoriano.SpellCasterMove", Erl)
 114
         
 End Sub
@@ -1945,7 +1945,7 @@ Public Sub AI_Shooter(ByVal NpcIndex As Integer)
         Exit Sub
 
 AI_Shooter_Err:
-108     Call RegistrarError(Err.Number, Err.Description, "clsClanPretoriano.AI_Shooter", Erl)
+108     Call TraceError(Err.Number, Err.Description, "clsClanPretoriano.AI_Shooter", Erl)
 110
         
 End Sub
@@ -2498,7 +2498,7 @@ Private Function ThiefStealITem(ByVal NpcIndex As Integer, _
         Exit Function
 
 ThiefStealITem_Err:
-130     Call RegistrarError(Err.Number, Err.Description, "clsClanPretoriano.ThiefStealITem", Erl)
+130     Call TraceError(Err.Number, Err.Description, "clsClanPretoriano.ThiefStealITem", Erl)
 132
         
 End Function
@@ -2530,7 +2530,7 @@ Private Sub ThiefTurnInvisible(ByVal NpcIndex As Integer, ByVal TurnVisible As B
         Exit Sub
 
 ThiefTurnInvisible_Err:
-110     Call RegistrarError(Err.Number, Err.Description, "clsClanPretoriano.ThiefTurnInvisible", Erl)
+110     Call TraceError(Err.Number, Err.Description, "clsClanPretoriano.ThiefTurnInvisible", Erl)
 112
         
 End Sub
@@ -2573,7 +2573,7 @@ Private Function TargetClose(ByRef Pos As WorldPos) As Boolean
         Exit Function
 
 TargetClose_Err:
-116     Call RegistrarError(Err.Number, Err.Description, "clsClanPretoriano.TargetClose", Erl)
+116     Call TraceError(Err.Number, Err.Description, "clsClanPretoriano.TargetClose", Erl)
 118
         
 End Function
@@ -2629,7 +2629,7 @@ Private Function CheckNearUserPets(ByVal NpcIndex As Integer, _
         Exit Function
 
 CheckNearUserPets_Err:
-120     Call RegistrarError(Err.Number, Err.Description, "clsClanPretoriano.CheckNearUserPets", Erl)
+120     Call TraceError(Err.Number, Err.Description, "clsClanPretoriano.CheckNearUserPets", Erl)
 122
         
 End Function
@@ -2935,7 +2935,7 @@ Private Sub MoveFailed(ByVal NpcIndex As Integer)
         Exit Sub
 
 MoveFailed_Err:
-108     Call RegistrarError(Err.Number, Err.Description, "clsClanPretoriano.MoveFailed", Erl)
+108     Call TraceError(Err.Number, Err.Description, "clsClanPretoriano.MoveFailed", Erl)
 110
         
 End Sub
@@ -2956,7 +2956,7 @@ Private Sub ReturnToCenter(ByVal NpcIndex As Integer)
         Exit Sub
 
 ReturnToCenter_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "clsClanPretoriano.ReturnToCenter", Erl)
+102     Call TraceError(Err.Number, Err.Description, "clsClanPretoriano.ReturnToCenter", Erl)
 104
         
 End Sub
@@ -2984,7 +2984,7 @@ ErrHandler:
         Exit Function
 
 FarFromTeam_Err:
-106     Call RegistrarError(Err.Number, Err.Description, "clsClanPretoriano.FarFromTeam", Erl)
+106     Call TraceError(Err.Number, Err.Description, "clsClanPretoriano.FarFromTeam", Erl)
 108
         
 End Function
@@ -3036,7 +3036,7 @@ Private Function InVisionRange(ByVal UserIndex As Integer, _
         Exit Function
 
 InVisionRange_Err:
-106     Call RegistrarError(Err.Number, Err.Description, "clsClanPretoriano.InVisionRange", Erl)
+106     Call TraceError(Err.Number, Err.Description, "clsClanPretoriano.InVisionRange", Erl)
 108
         
 End Function
@@ -3066,7 +3066,7 @@ Private Function InVisionRangeNpc(ByVal NpcIndex As Integer, _
         Exit Function
 
 InVisionRangeNpc_Err:
-106     Call RegistrarError(Err.Number, Err.Description, "clsClanPretoriano.InVisionRangeNpc", Erl)
+106     Call TraceError(Err.Number, Err.Description, "clsClanPretoriano.InVisionRangeNpc", Erl)
 108
         
 End Function
@@ -3103,7 +3103,7 @@ Private Function UserAtacable(ByVal UserIndex As Integer, _
         Exit Function
 
 UserAtacable_Err:
-112     Call RegistrarError(Err.Number, Err.Description, "clsClanPretoriano.UserAtacable", Erl)
+112     Call TraceError(Err.Number, Err.Description, "clsClanPretoriano.UserAtacable", Erl)
 114
         
 End Function
@@ -3129,7 +3129,7 @@ Private Function UserDistance(ByVal UserIndex As Integer, _
         Exit Function
 
 UserDistance_Err:
-104     Call RegistrarError(Err.Number, Err.Description, "clsClanPretoriano.UserDistance", Erl)
+104     Call TraceError(Err.Number, Err.Description, "clsClanPretoriano.UserDistance", Erl)
 106
         
 End Function
@@ -3155,7 +3155,7 @@ Private Function NpcDistance(ByVal NpcIndex As Integer, _
         Exit Function
 
 NpcDistance_Err:
-104     Call RegistrarError(Err.Number, Err.Description, "clsClanPretoriano.NpcDistance", Erl)
+104     Call TraceError(Err.Number, Err.Description, "clsClanPretoriano.NpcDistance", Erl)
 106
         
 End Function
@@ -3214,7 +3214,7 @@ Public Sub MuerePretoriano(ByVal NpcIndex As Integer)
         Exit Sub
 
 MuerePretoriano_Err:
-124     Call RegistrarError(Err.Number, Err.Description, "clsClanPretoriano.MuerePretoriano", Erl)
+124     Call TraceError(Err.Number, Err.Description, "clsClanPretoriano.MuerePretoriano", Erl)
 126
         
 End Sub
@@ -3256,7 +3256,7 @@ Private Function AllyParalyzed(ByVal NpcIndex As Integer, _
         Exit Function
 
 AllyParalyzed_Err:
-114     Call RegistrarError(Err.Number, Err.Description, "clsClanPretoriano.AllyParalyzed", Erl)
+114     Call TraceError(Err.Number, Err.Description, "clsClanPretoriano.AllyParalyzed", Erl)
 116
         
 End Function
@@ -3302,7 +3302,7 @@ Private Function AllyInjured(ByVal NpcIndex As Integer) As Integer
         Exit Function
 
 AllyInjured_Err:
-116     Call RegistrarError(Err.Number, Err.Description, "clsClanPretoriano.AllyInjured", Erl)
+116     Call TraceError(Err.Number, Err.Description, "clsClanPretoriano.AllyInjured", Erl)
 118
         
 End Function
@@ -3343,7 +3343,7 @@ Private Function AllyPoisoned(ByVal NpcIndex As Integer) As Integer
         Exit Function
 
 AllyPoisoned_Err:
-114     Call RegistrarError(Err.Number, Err.Description, "clsClanPretoriano.AllyPoisoned", Erl)
+114     Call TraceError(Err.Number, Err.Description, "clsClanPretoriano.AllyPoisoned", Erl)
 116
         
 End Function
@@ -3376,7 +3376,7 @@ Private Function AllyDead() As Integer
         Exit Function
 
 AllyDead_Err:
-108     Call RegistrarError(Err.Number, Err.Description, "clsClanPretoriano.AllyDead", Erl)
+108     Call TraceError(Err.Number, Err.Description, "clsClanPretoriano.AllyDead", Erl)
 110
         
 End Function
@@ -3405,7 +3405,7 @@ Public Function CanAtackMember(ByVal NpcIndex As Integer) As Boolean
         Exit Function
 
 CanAtackMember_Err:
-106     Call RegistrarError(Err.Number, Err.Description, "clsClanPretoriano.CanAtackMember", Erl)
+106     Call TraceError(Err.Number, Err.Description, "clsClanPretoriano.CanAtackMember", Erl)
 108
         
 End Function
@@ -3425,7 +3425,7 @@ Public Property Get ClanMap() As Integer
         Exit Property
 
 ClanMap_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "clsClanPretoriano.ClanMap", Erl)
+102     Call TraceError(Err.Number, Err.Description, "clsClanPretoriano.ClanMap", Erl)
 104
         
 End Property
@@ -3445,7 +3445,7 @@ Public Property Get Active() As Boolean
         Exit Property
 
 Active_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "clsClanPretoriano.Active", Erl)
+102     Call TraceError(Err.Number, Err.Description, "clsClanPretoriano.Active", Erl)
 104
         
 End Property
@@ -3480,7 +3480,7 @@ Public Sub DeleteClan()
         Exit Sub
 
 DeleteClan_Err:
-112     Call RegistrarError(Err.Number, Err.Description, "clsClanPretoriano.DeleteClan", Erl)
+112     Call TraceError(Err.Number, Err.Description, "clsClanPretoriano.DeleteClan", Erl)
 114
         
 End Sub

@@ -26,7 +26,7 @@ Attribute OnReadyStateChange.VB_UserMemId = 0
     
         If m_xmlHttp.Status <> 200 Then
         
-            Call RegistrarErrorAPI(m_xmlHttp.Status, m_xmlHttp.StatusText, m_xmlHttp.ResponseText)
+            Call TraceErrorAPI(m_xmlHttp.Status, m_xmlHttp.statusText, m_xmlHttp.ResponseText)
         
         End If
      

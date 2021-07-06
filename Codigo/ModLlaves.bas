@@ -32,7 +32,7 @@ Public Function MeterLlaveEnLLavero(ByVal UserIndex As Integer, ByVal Llave As I
         Exit Function
 
 ErrHandler:
-114     Call RegistrarError(Err.Number, Err.Description, "ModLlaves.MeterLlaveEnLLavero")
+114     Call TraceError(Err.Number, Err.Description, "ModLlaves.MeterLlaveEnLLavero")
 
 End Function
 
@@ -57,7 +57,7 @@ Public Sub SacarLlaveDeLLavero(ByVal UserIndex As Integer, ByVal Llave As Intege
         Exit Sub
 
 ErrHandler:
-110     Call RegistrarError(Err.Number, Err.Description, "ModLlaves.SacarLlaveDeLLavero")
+110     Call TraceError(Err.Number, Err.Description, "ModLlaves.SacarLlaveDeLLavero")
 
 End Sub
 
@@ -82,12 +82,12 @@ Public Sub EnviarLlaves(ByVal UserIndex As Integer)
         Exit Sub
 
 EnviarLlaves_Err:
-108     Call RegistrarError(Err.Number, Err.Description, "ModLlaves.EnviarLlaves", Erl)
+108     Call TraceError(Err.Number, Err.Description, "ModLlaves.EnviarLlaves", Erl)
 
         
 End Sub
 
-Public Sub UsarLlave(ByVal UserIndex As Integer, ByVal slot As Integer)
+Public Sub UsarLlave(ByVal UserIndex As Integer, ByVal Slot As Integer)
         
         On Error GoTo UsarLlave_Err
     
@@ -100,11 +100,11 @@ Public Sub UsarLlave(ByVal UserIndex As Integer, ByVal slot As Integer)
     
 102     With UserList(UserIndex)
 
-104         If .Keys(slot) <> 0 Then
+104         If .Keys(Slot) <> 0 Then
 106             If .flags.TargetObj = 0 Then Exit Sub
             
 108             TargObj = ObjData(.flags.TargetObj)
-110             LlaveObj = ObjData(.Keys(slot))
+110             LlaveObj = ObjData(.Keys(Slot))
 
                 '¿El objeto clickeado es una puerta?
 112             If TargObj.OBJType = eOBJType.otPuertas Then
@@ -150,7 +150,7 @@ Public Sub UsarLlave(ByVal UserIndex As Integer, ByVal slot As Integer)
         Exit Sub
 
 UsarLlave_Err:
-140     Call RegistrarError(Err.Number, Err.Description, "ModLlaves.UsarLlave", Erl)
+140     Call TraceError(Err.Number, Err.Description, "ModLlaves.UsarLlave", Erl)
 
         
 End Sub

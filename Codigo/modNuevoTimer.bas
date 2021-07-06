@@ -63,7 +63,7 @@ Public Function IntervaloPermiteLanzarSpell(ByVal UserIndex As Integer, Optional
         Exit Function
 
 IntervaloPermiteLanzarSpell_Err:
-114     Call RegistrarError(Err.Number, Err.Description, "modNuevoTimer.IntervaloPermiteLanzarSpell", Erl)
+114     Call TraceError(Err.Number, Err.Description, "modNuevoTimer.IntervaloPermiteLanzarSpell", Erl)
 116
         
 End Function
@@ -97,7 +97,7 @@ Public Function IntervaloPermiteAtacar(ByVal UserIndex As Integer, Optional ByVa
         Exit Function
 
 IntervaloPermiteAtacar_Err:
-116     Call RegistrarError(Err.Number, Err.Description, "modNuevoTimer.IntervaloPermiteAtacar", Erl)
+116     Call TraceError(Err.Number, Err.Description, "modNuevoTimer.IntervaloPermiteAtacar", Erl)
 118
         
 End Function
@@ -127,7 +127,7 @@ Public Function IntervaloPermiteTirar(ByVal UserIndex As Integer, Optional ByVal
         Exit Function
 
 IntervaloPermiteTirar_Err:
-112     Call RegistrarError(Err.Number, Err.Description, "modNuevoTimer.IntervaloPermiteTirar", Erl)
+112     Call TraceError(Err.Number, Err.Description, "modNuevoTimer.IntervaloPermiteTirar", Erl)
 114
         
 End Function
@@ -157,7 +157,7 @@ Public Function IntervaloPermiteMagiaGolpe(ByVal UserIndex As Integer, Optional 
         Exit Function
 
 IntervaloPermiteMagiaGolpe_Err:
-112     Call RegistrarError(Err.Number, Err.Description, "modNuevoTimer.IntervaloPermiteMagiaGolpe", Erl)
+112     Call TraceError(Err.Number, Err.Description, "modNuevoTimer.IntervaloPermiteMagiaGolpe", Erl)
 114
         
 End Function
@@ -187,7 +187,7 @@ Public Function IntervaloPermiteGolpeMagia(ByVal UserIndex As Integer, Optional 
         Exit Function
 
 IntervaloPermiteGolpeMagia_Err:
-112     Call RegistrarError(Err.Number, Err.Description, "modNuevoTimer.IntervaloPermiteGolpeMagia", Erl)
+112     Call TraceError(Err.Number, Err.Description, "modNuevoTimer.IntervaloPermiteGolpeMagia", Erl)
 114
         
 End Function
@@ -217,7 +217,7 @@ Public Function IntervaloPermiteGolpeUsar(ByVal UserIndex As Integer, Optional B
         Exit Function
 
 IntervaloPermiteGolpeUsar_Err:
-112     Call RegistrarError(Err.Number, Err.Description, "modNuevoTimer.IntervaloPermiteGolpeUsar", Erl)
+112     Call TraceError(Err.Number, Err.Description, "modNuevoTimer.IntervaloPermiteGolpeUsar", Erl)
 114
         
 End Function
@@ -258,7 +258,7 @@ Public Function IntervaloPermiteTrabajarExtraer(ByVal UserIndex As Integer, Opti
         Exit Function
 
 IntervaloPermiteTrabajar_Err:
-110     Call RegistrarError(Err.Number, Err.Description, "modNuevoTimer.IntervaloPermiteTrabajar", Erl)
+110     Call TraceError(Err.Number, Err.Description, "modNuevoTimer.IntervaloPermiteTrabajar", Erl)
 112
         
 End Function
@@ -284,7 +284,7 @@ Public Function IntervaloPermiteTrabajarConstruir(ByVal UserIndex As Integer, Op
         Exit Function
 
 IntervaloPermiteTrabajar_Err:
-110     Call RegistrarError(Err.Number, Err.Description, "modNuevoTimer.IntervaloPermiteTrabajar", Erl)
+110     Call TraceError(Err.Number, Err.Description, "modNuevoTimer.IntervaloPermiteTrabajar", Erl)
 112
         
 End Function
@@ -311,7 +311,7 @@ Public Function IntervaloPermiteUsar(ByVal UserIndex As Integer, Optional ByVal 
         Exit Function
 
 IntervaloPermiteUsar_Err:
-110     Call RegistrarError(Err.Number, Err.Description, "modNuevoTimer.IntervaloPermiteUsar", Erl)
+110     Call TraceError(Err.Number, Err.Description, "modNuevoTimer.IntervaloPermiteUsar", Erl)
 112
         
 End Function
@@ -344,7 +344,7 @@ Public Function IntervaloPermiteUsarArcos(ByVal UserIndex As Integer, Optional B
         Exit Function
 
 IntervaloPermiteUsarArcos_Err:
-116     Call RegistrarError(Err.Number, Err.Description, "modNuevoTimer.IntervaloPermiteUsarArcos", Erl)
+116     Call TraceError(Err.Number, Err.Description, "modNuevoTimer.IntervaloPermiteUsarArcos", Erl)
 118
         
 End Function
@@ -372,7 +372,7 @@ Public Function IntervaloPermiteCaminar(ByVal UserIndex As Integer) As Boolean
         Exit Function
 
 IntervaloPermiteCaminar_Err:
-110     Call RegistrarError(Err.Number, Err.Description, "modNuevoTimer.IntervaloPermiteCaminar", Erl)
+110     Call TraceError(Err.Number, Err.Description, "modNuevoTimer.IntervaloPermiteCaminar", Erl)
 112
         
 End Function
@@ -400,7 +400,7 @@ Public Function IntervaloPermiteMoverse(ByVal NpcIndex As Integer) As Boolean
         Exit Function
 
 IntervaloPermiteMoverse_Err:
-110     Call RegistrarError(Err.Number, Err.Description, "modNuevoTimer.IntervaloPermiteMoverse", Erl)
+110     Call TraceError(Err.Number, Err.Description, "modNuevoTimer.IntervaloPermiteMoverse", Erl)
 112
         
 End Function
@@ -415,7 +415,7 @@ Public Function IntervaloPermiteLanzarHechizo(ByVal NpcIndex As Integer) As Bool
     Exit Function
 
 IntervaloPermiteLanzarHechizo_Err:
-104 Call RegistrarError(Err.Number, Err.Description, "modNuevoTimer.IntervaloPermiteLanzarHechizo", Erl)
+104 Call TraceError(Err.Number, Err.Description, "modNuevoTimer.IntervaloPermiteLanzarHechizo", Erl)
 106
         
 End Function
@@ -443,7 +443,7 @@ Public Function IntervaloPermiteAtacarNPC(ByVal NpcIndex As Integer) As Boolean
         Exit Function
 
 IntervaloPermiteAtacarNPC_Err:
-110     Call RegistrarError(Err.Number, Err.Description, "modNuevoTimer.IntervaloPermiteAtacarNPC", Erl)
+110     Call TraceError(Err.Number, Err.Description, "modNuevoTimer.IntervaloPermiteAtacarNPC", Erl)
 112
         
 End Function

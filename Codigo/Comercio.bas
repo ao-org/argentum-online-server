@@ -217,7 +217,7 @@ Public Sub Comercio(ByVal Modo As eModoComercio, ByVal UserIndex As Integer, ByV
 
 Comercio_Err:
 
-230     Call RegistrarError(Err.Number, Err.Description, "modSistemaComercio.Comercio", Erl)
+230     Call TraceError(Err.Number, Err.Description, "modSistemaComercio.Comercio", Erl)
 232
         
 End Sub
@@ -245,7 +245,7 @@ Public Sub IniciarComercioNPC(ByVal UserIndex As Integer)
 
 IniciarComercioNPC_Err:
 
-110     Call RegistrarError(Err.Number, Err.Description, "modSistemaComercio.IniciarComercioNPC", Erl)
+110     Call TraceError(Err.Number, Err.Description, "modSistemaComercio.IniciarComercioNPC", Erl)
 112
         
 End Sub
@@ -291,7 +291,7 @@ Private Function SlotEnNPCInv(ByVal NpcIndex As Integer, ByVal Objeto As Integer
         End With
         
 SlotEnNPCInv_Err:
-130     Call RegistrarError(Err.Number, Err.Description, "modSistemaComercio.SlotEnNPCInv", Erl)
+130     Call TraceError(Err.Number, Err.Description, "modSistemaComercio.SlotEnNPCInv", Erl)
 132
         
 End Function
@@ -310,7 +310,7 @@ Private Function Descuento(ByVal UserIndex As Integer) As Single
         Exit Function
 
 Descuento_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "modSistemaComercio.Descuento", Erl)
+102     Call TraceError(Err.Number, Err.Description, "modSistemaComercio.Descuento", Erl)
 104
         
 End Function
@@ -372,7 +372,7 @@ Private Sub UpdateNpcInv(ByVal UpdateAll As Boolean, ByVal UserIndex As Integer,
             Exit Sub
 
 EnviarNpcInv_Err:
-132         Call RegistrarError(Err.Number, Err.Description, "modSistemaComercio.UpdateNpcInv", Erl)
+132         Call TraceError(Err.Number, Err.Description, "modSistemaComercio.UpdateNpcInv", Erl)
 134
         
 End Sub
@@ -414,7 +414,7 @@ Public Sub UpdateNpcInvToAll(ByVal UpdateAll As Boolean, ByVal NpcIndex As Integ
     
 ErrHandler:
     
-110     Call RegistrarError(Err.Number, Err.Description, "modSistemaComercio.UpdateNpcInvToAll")
+110     Call TraceError(Err.Number, Err.Description, "modSistemaComercio.UpdateNpcInvToAll")
 112
     
 End Sub
@@ -442,7 +442,7 @@ Public Function SalePrice(ByVal ObjIndex As Integer) As Single
         Exit Function
 
 SalePrice_Err:
-106     Call RegistrarError(Err.Number, Err.Description, "modSistemaComercio.SalePrice", Erl)
+106     Call TraceError(Err.Number, Err.Description, "modSistemaComercio.SalePrice", Erl)
 108
         
 End Function

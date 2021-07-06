@@ -267,7 +267,7 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
       Exit Sub
 
 NpcLanzaSpellSobreUser_Err:
-352   Call RegistrarError(Err.Number, Err.Description & " Hechizo: " & Spell, "modHechizos.NpcLanzaSpellSobreUser", Erl)
+352   Call TraceError(Err.Number, Err.Description & " Hechizo: " & Spell, "modHechizos.NpcLanzaSpellSobreUser", Erl)
 354
 
 End Sub
@@ -377,7 +377,7 @@ Sub NpcLanzaSpellSobreNpc(ByVal NpcIndex As Integer, ByVal TargetNPC As Integer,
       Exit Sub
 
 NpcLanzaSpellSobreNpc_Err:
-202   Call RegistrarError(Err.Number, Err.Description, "modHechizos.NpcLanzaSpellSobreNpc", Erl)
+202   Call TraceError(Err.Number, Err.Description, "modHechizos.NpcLanzaSpellSobreNpc", Erl)
 204
 
 End Sub
@@ -444,7 +444,7 @@ Public Sub NpcLanzaSpellSobreArea(ByVal NpcIndex As Integer, ByVal SpellIndex As
         Exit Sub
 
 NpcLanzaSpellSobreArea_Err:
-142     Call RegistrarError(Err.Number, Err.Description, "modHechizos.NpcLanzaSpellSobreArea", Erl)
+142     Call TraceError(Err.Number, Err.Description, "modHechizos.NpcLanzaSpellSobreArea", Erl)
 144
         
 End Sub
@@ -509,7 +509,7 @@ Sub AgregarHechizo(ByVal UserIndex As Integer, ByVal Slot As Integer)
         Exit Sub
 
 AgregarHechizo_Err:
-122     Call RegistrarError(Err.Number, Err.Description, "modHechizos.AgregarHechizo", Erl)
+122     Call TraceError(Err.Number, Err.Description, "modHechizos.AgregarHechizo", Erl)
 124
         
 End Sub
@@ -522,7 +522,7 @@ Sub DecirPalabrasMagicas(ByVal Hechizo As Byte, ByVal UserIndex As Integer)
         Exit Sub
 
 DecirPalabrasMagicas_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "modHechizos.DecirPalabrasMagicas", Erl)
+102     Call TraceError(Err.Number, Err.Description, "modHechizos.DecirPalabrasMagicas", Erl)
 
         
 End Sub
@@ -618,7 +618,7 @@ Private Function PuedeLanzar(ByVal UserIndex As Integer, ByVal HechizoIndex As I
         Exit Function
 
 PuedeLanzar_Err:
-168     Call RegistrarError(Err.Number, Err.Description, "modHechizos.PuedeLanzar", Erl)
+168     Call TraceError(Err.Number, Err.Description, "modHechizos.PuedeLanzar", Erl)
 170
         
 End Function
@@ -776,7 +776,7 @@ Sub HechizoInvocacion(ByVal UserIndex As Integer, ByRef b As Boolean)
         Exit Sub
     
 HechizoInvocacion_Err:
-200     Call RegistrarError(Err.Number, Err.Description, "modHechizos.HechizoTerrenoEstado")
+200     Call TraceError(Err.Number, Err.Description, "modHechizos.HechizoTerrenoEstado")
 202
 
 End Sub
@@ -837,7 +837,7 @@ Sub HechizoTerrenoEstado(ByVal UserIndex As Integer, ByRef b As Boolean)
         Exit Sub
 
 HechizoTerrenoEstado_Err:
-134     Call RegistrarError(Err.Number, Err.Description, "modHechizos.HechizoTerrenoEstado", Erl)
+134     Call TraceError(Err.Number, Err.Description, "modHechizos.HechizoTerrenoEstado", Erl)
 136
         
 End Sub
@@ -917,7 +917,7 @@ Private Sub HechizoSobreArea(ByVal UserIndex As Integer, ByRef b As Boolean)
         Exit Sub
 
 HechizoSobreArea_Err:
-154     Call RegistrarError(Err.Number, Err.Description, "modHechizos.HechizoSobreArea", Erl)
+154     Call TraceError(Err.Number, Err.Description, "modHechizos.HechizoSobreArea", Erl)
 156
         
 End Sub
@@ -989,7 +989,7 @@ Sub HechizoPortal(ByVal UserIndex As Integer, ByRef b As Boolean)
         Exit Sub
 
 HechizoPortal_Err:
-146     Call RegistrarError(Err.Number, Err.Description, "modHechizos.HechizoPortal", Erl)
+146     Call TraceError(Err.Number, Err.Description, "modHechizos.HechizoPortal", Erl)
 148
         
 End Sub
@@ -1023,7 +1023,7 @@ Sub HechizoMaterializacion(ByVal UserIndex As Integer, ByRef b As Boolean)
         Exit Sub
 
 HechizoMaterializacion_Err:
-118     Call RegistrarError(Err.Number, Err.Description, "modHechizos.HechizoMaterializacion", Erl)
+118     Call TraceError(Err.Number, Err.Description, "modHechizos.HechizoMaterializacion", Erl)
 120
         
 End Sub
@@ -1082,7 +1082,7 @@ Sub HandleHechizoTerreno(ByVal UserIndex As Integer, ByVal uh As Integer)
         Exit Sub
 
 HandleHechizoTerreno_Err:
-140     Call RegistrarError(Err.Number, Err.Description, "modHechizos.HandleHechizoTerreno", Erl)
+140     Call TraceError(Err.Number, Err.Description, "modHechizos.HandleHechizoTerreno", Erl)
 142
         
 End Sub
@@ -1139,7 +1139,7 @@ Sub HandleHechizoUsuario(ByVal UserIndex As Integer, ByVal uh As Integer)
         Exit Sub
 
 HandleHechizoUsuario_Err:
-138     Call RegistrarError(Err.Number, Err.Description, "modHechizos.HandleHechizoUsuario", Erl)
+138     Call TraceError(Err.Number, Err.Description, "modHechizos.HandleHechizoUsuario", Erl)
 140
         
 End Sub
@@ -1192,7 +1192,7 @@ Sub HandleHechizoNPC(ByVal UserIndex As Integer, ByVal uh As Integer)
         Exit Sub
 
 HandleHechizoNPC_Err:
-134     Call RegistrarError(Err.Number, Err.Description, "modHechizos.HandleHechizoNPC", Erl)
+134     Call TraceError(Err.Number, Err.Description, "modHechizos.HandleHechizoNPC", Erl)
 136
         
 End Sub
@@ -1314,7 +1314,7 @@ Sub LanzarHechizo(Index As Integer, UserIndex As Integer)
         Exit Sub
 
 LanzarHechizo_Err:
-178     Call RegistrarError(Err.Number, Err.Description, "modHechizos.LanzarHechizo", Erl)
+178     Call TraceError(Err.Number, Err.Description, "modHechizos.LanzarHechizo", Erl)
 180
         
 End Sub
@@ -2061,7 +2061,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
         Exit Sub
 
 HechizoEstadoUsuario_Err:
-700     Call RegistrarError(Err.Number, Err.Description, "modHechizos.HechizoEstadoUsuario", Erl)
+700     Call TraceError(Err.Number, Err.Description, "modHechizos.HechizoEstadoUsuario", Erl)
 702
         
 End Sub
@@ -2252,7 +2252,7 @@ Sub HechizoEstadoNPC(ByVal NpcIndex As Integer, ByVal hIndex As Integer, ByRef b
         Exit Sub
 
 HechizoEstadoNPC_Err:
-284     Call RegistrarError(Err.Number, Err.Description, "modHechizos.HechizoEstadoNPC", Erl)
+284     Call TraceError(Err.Number, Err.Description, "modHechizos.HechizoEstadoNPC", Erl)
 286
         
 End Sub
@@ -2381,7 +2381,7 @@ Sub HechizoPropNPC(ByVal hIndex As Integer, ByVal NpcIndex As Integer, ByVal Use
         Exit Sub
 
 HechizoPropNPC_Err:
-196     Call RegistrarError(Err.Number, Err.Description, "modHechizos.HechizoPropNPC", Erl)
+196     Call TraceError(Err.Number, Err.Description, "modHechizos.HechizoPropNPC", Erl)
 198
         
 End Sub
@@ -2419,7 +2419,7 @@ Private Sub InfoHechizoDeNpcSobreUser(ByVal NpcIndex As Integer, ByVal TargetUse
       Exit Sub
 
 InfoHechizoDeNpcSobreUser_Err:
-126   Call RegistrarError(Err.Number, Err.Description, "modHechizos.InfoHechizoDeNpcSobreUser", Erl)
+126   Call TraceError(Err.Number, Err.Description, "modHechizos.InfoHechizoDeNpcSobreUser", Erl)
 128
 End Sub
 
@@ -2565,7 +2565,7 @@ Private Sub InfoHechizo(ByVal UserIndex As Integer)
         Exit Sub
 
 InfoHechizo_Err:
-200     Call RegistrarError(Err.Number, Err.Description, "modHechizos.InfoHechizo", Erl)
+200     Call TraceError(Err.Number, Err.Description, "modHechizos.InfoHechizo", Erl)
 202
         
 End Sub
@@ -3112,7 +3112,7 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
         Exit Sub
 
 HechizoPropUsuario_Err:
-562     Call RegistrarError(Err.Number, Err.Description, "modHechizos.HechizoPropUsuario", Erl)
+562     Call TraceError(Err.Number, Err.Description, "modHechizos.HechizoPropUsuario", Erl)
 564
         
 End Sub
@@ -3868,7 +3868,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean)
         Exit Sub
 
 HechizoCombinados_Err:
-728     Call RegistrarError(Err.Number, Err.Description, "modHechizos.HechizoCombinados", Erl)
+728     Call TraceError(Err.Number, Err.Description, "modHechizos.HechizoCombinados", Erl)
 730
         
 End Sub
@@ -3914,7 +3914,7 @@ Sub UpdateUserHechizos(ByVal UpdateAll As Boolean, ByVal UserIndex As Integer, B
         Exit Sub
 
 UpdateUserHechizos_Err:
-118     Call RegistrarError(Err.Number, Err.Description, "modHechizos.UpdateUserHechizos", Erl)
+118     Call TraceError(Err.Number, Err.Description, "modHechizos.UpdateUserHechizos", Erl)
 120
         
 End Sub
@@ -3939,7 +3939,7 @@ Sub ChangeUserHechizo(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal Hech
         Exit Sub
 
 ChangeUserHechizo_Err:
-108     Call RegistrarError(Err.Number, Err.Description, "modHechizos.ChangeUserHechizo", Erl)
+108     Call TraceError(Err.Number, Err.Description, "modHechizos.ChangeUserHechizo", Erl)
 110
         
 End Sub
@@ -3998,7 +3998,7 @@ Public Sub DesplazarHechizo(ByVal UserIndex As Integer, ByVal Dire As Integer, B
         Exit Sub
 
 DesplazarHechizo_Err:
-142     Call RegistrarError(Err.Number, Err.Description, "modHechizos.DesplazarHechizo", Erl)
+142     Call TraceError(Err.Number, Err.Description, "modHechizos.DesplazarHechizo", Erl)
 144
         
 End Sub
@@ -4447,6 +4447,6 @@ Private Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, X As Byte, Y 
         Exit Sub
 
 AreaHechizo_Err:
-480     Call RegistrarError(Err.Number, Err.Description, "modHechizos.AreaHechizo", Erl)
+480     Call TraceError(Err.Number, Err.Description, "modHechizos.AreaHechizo", Erl)
 482
 End Sub
