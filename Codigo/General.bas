@@ -838,7 +838,7 @@ Sub Main()
         Exit Sub
         
 Handler:
-332     Call TraceError(Err.Number, Err.Description, "General.Main", Erl)
+332     Call RegistrarError(Err.Number, Err.Description, "General.Main", Erl)
 
 334
 

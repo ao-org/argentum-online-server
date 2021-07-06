@@ -745,7 +745,8 @@ Private Sub Segundo_Timer()
         Exit Sub
 
 errhand:
-        Call TraceError(Err.Number, Err.Description, "frmMain.Auditoria", Erl)
+        Call RegistrarError(Err.Number, Err.Description, "frmMain.Auditoria", Erl)
+        
 End Sub
 
 Private Sub CerrarYForzarActualizar_Click()
@@ -820,7 +821,7 @@ Private Sub Invasion_Timer()
         Exit Sub
     
 Handler:
-136     Call TraceError(Err.Number, Err.Description, "frmMain.Invasion_Timer")
+136     Call RegistrarError(Err.Number, Err.Description, "frmMain.Invasion_Timer")
 138
     
         ' **********************************
@@ -856,7 +857,7 @@ Private Sub TiempoRetos_Timer()
         Exit Sub
     
 Handler:
-120     Call TraceError(Err.Number, Err.Description, "frmMain.TiempoRetos_Timer")
+120     Call RegistrarError(Err.Number, Err.Description, "frmMain.TiempoRetos_Timer")
 122
     
 End Sub
@@ -892,7 +893,7 @@ Private Sub TimerGuardarUsuarios_Timer()
         Exit Sub
     
 Handler:
-114     Call TraceError(Err.Number, Err.Description, "frmMain.TimreGuardarUsuarios_Timer")
+114     Call RegistrarError(Err.Number, Err.Description, "frmMain.TimreGuardarUsuarios_Timer")
 116
     
 End Sub
@@ -961,8 +962,10 @@ Private Sub Minuto_Timer()
         '<<<<<-------- Log the number of users online ------>>>
 
         Exit Sub
+        
 ErrHandler:
-        Call TraceError(Err.Number, Err.Description, "General.Minuto_Timer", Erl)
+        Call RegistrarError(Err.Number, Err.Description, "General.Minuto_Timer", Erl)
+        
 End Sub
 
 Private Sub CMDDUMP_Click()
@@ -1327,7 +1330,7 @@ Private Sub EstadoTimer_Timer()
         Exit Sub
 
 EstadoTimer_Timer_Err:
-226     Call TraceError(Err.Number, Err.Description, "frmMain.EstadoTimer_Timer", Erl)
+226     Call RegistrarError(Err.Number, Err.Description, "frmMain.EstadoTimer_Timer", Erl)
 
         
 End Sub
@@ -1347,7 +1350,7 @@ Private Sub Evento_Timer()
         Exit Sub
 
 Evento_Timer_Err:
-106     Call TraceError(Err.Number, Err.Description, "frmMain.Evento_Timer", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "frmMain.Evento_Timer", Erl)
 108
         
 End Sub
@@ -1502,7 +1505,7 @@ Private Sub GameTimer_Timer()
         Exit Sub
 
 HayError:
-268     LogError ("Error en GameTimer: " & Err.Description & " UserIndex = " & iUserIndex)
+268     Call RegistrarError(Err.Number, Err.Description & vbNewLine & "UserIndex:" & iUserIndex, "frmMain.GameTimer", Erl)
 
 End Sub
 
@@ -1530,7 +1533,7 @@ Private Sub HoraFantasia_Timer()
         Exit Sub
 
 HoraFantasia_Timer_Err:
-114     Call TraceError(Err.Number, Err.Description, "frmMain.HoraFantasia_Timer", Erl)
+114     Call RegistrarError(Err.Number, Err.Description, "frmMain.HoraFantasia_Timer", Erl)
 116
         
 End Sub
@@ -1547,7 +1550,7 @@ Private Sub LimpiezaTimer_Timer()
         Exit Sub
 
 LimpiezaTimer_Timer_Err:
-102     Call TraceError(Err.Number, Err.Description, "frmMain.LimpiezaTimer_Timer", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "frmMain.LimpiezaTimer_Timer", Erl)
 
         
 End Sub
@@ -1666,7 +1669,7 @@ Private Sub KillLog_Timer()
         Exit Sub
 
 KillLog_Timer_Err:
-114     Call TraceError(Err.Number, Err.Description, "frmMain.KillLog_Timer", Erl)
+114     Call RegistrarError(Err.Number, Err.Description, "frmMain.KillLog_Timer", Erl)
 
         
 End Sub
@@ -1727,7 +1730,7 @@ Private Sub packetResend_Timer()
         Exit Sub
     
 Handler:
-106     Call TraceError(Err.Number, Err.Description, "frmMain.packetResend_Timer")
+106     Call RegistrarError(Err.Number, Err.Description, "frmMain.packetResend_Timer")
 108
     
 End Sub
@@ -1799,7 +1802,7 @@ Private Sub SubastaTimer_Timer()
         Exit Sub
 
 SubastaTimer_Timer_Err:
-154     Call TraceError(Err.Number, Err.Description, "frmMain.SubastaTimer_Timer", Erl)
+154     Call RegistrarError(Err.Number, Err.Description, "frmMain.SubastaTimer_Timer", Erl)
 156
         
 End Sub
@@ -1877,7 +1880,9 @@ Private Sub TIMER_AI_Timer()
         Exit Sub
 
 ErrorHandler:
-140     Call LogError("Error en TIMER_AI_Timer " & NpcList(NpcIndex).Name & " mapa:" & NpcList(NpcIndex).Pos.Map)
+        Call RegistrarError(Err.Number, Err.Description & vbNewLine & _
+                                        "NPC: " & NpcList(NpcIndex).Name & _
+                                        " en la posicion: " & NpcList(NpcIndex).Pos.Map & "-" & NpcList(NpcIndex).Pos.X & "-" & NpcList(NpcIndex).Pos.Y, "frmMain.Timer_AI", Erl)
 142     Call MuereNpc(NpcIndex, 0)
 
 End Sub
@@ -1989,7 +1994,7 @@ Private Sub TimerMeteorologia_Timer()
         Exit Sub
 
 TimerMeteorologia_Timer_Err:
-198     Call TraceError(Err.Number, Err.Description, "frmMain.TimerMeteorologia_Timer", Erl)
+198     Call RegistrarError(Err.Number, Err.Description, "frmMain.TimerMeteorologia_Timer", Erl)
 200
         
 End Sub
@@ -2027,7 +2032,9 @@ Private Sub TimerRespawn_Timer()
         Exit Sub
 
 ErrorHandler:
-120     Call LogError("Error en TIMER_RESPAWN " & NpcList(NpcIndex).Name & " mapa:" & NpcList(NpcIndex).Pos.Map)
+120     Call RegistrarError(Err.Number, Err.Description & vbNewLine & _
+                                        "NPC: " & NpcList(NpcIndex).Name & _
+                                        " en la posicion: " & NpcList(NpcIndex).Pos.Map & "-" & NpcList(NpcIndex).Pos.X & "-" & NpcList(NpcIndex).Pos.Y, "frmMain.TimerRespawn_Timer", Erl)
 122     Call MuereNpc(NpcIndex, 0)
 
 End Sub
@@ -2089,7 +2096,7 @@ Private Sub tPiqueteC_Timer()
         Exit Sub
 
 ErrHandler:
-132     Call LogError("Error en tPiqueteC_Timer " & Err.Number & ": " & Err.Description)
+132     Call RegistrarError(Err.Number, Err.Description, "frmMain.tPiqueteC_Timer", Erl)
 
 End Sub
 
@@ -2120,7 +2127,7 @@ Private Sub Truenos_Timer()
         Exit Sub
 
 Truenos_Timer_Err:
-114     Call TraceError(Err.Number, Err.Description, "frmMain.Truenos_Timer", Erl)
+114     Call RegistrarError(Err.Number, Err.Description, "frmMain.Truenos_Timer", Erl)
 116
         
 End Sub
@@ -2135,13 +2142,13 @@ Private Sub UptimeTimer_Timer()
         Exit Sub
 
 UptimeTimer_Timer_Err:
-102     Call TraceError(Err.Number, Err.Description, "frmMain.UptimeTimer_Timer", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "frmMain.UptimeTimer_Timer", Erl)
 104
         
 End Sub
 
 Private Sub Winsock_Accept(ByVal SocketID As Long, ByVal UserIP As Long)
-    ' Aceptamos la conexiï¿½n entrante
+    ' Aceptamos la conexion entrante
     Call wskapiAO.EventoSockAccept(SocketID, UserIP)
 End Sub
 
