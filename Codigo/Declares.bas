@@ -1725,9 +1725,6 @@ Public Type UserCounters
 
     LastSave As Long
     
-    LastSentVerificationEmail As Long
-    EmailVerificationSendRequests As Byte
-    
     CuentaRegresiva As Integer
     TimerBarra As Integer
 

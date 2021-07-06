@@ -5,7 +5,7 @@ Private Const MAX_CODE_RESEND_COUNT As Byte = 10
 
 ' Configuracion - Argentum Guard
 Public AOG_STATUS                   As Byte
-Private AOG_EXPIRE                  As Byte
+Private AOG_EXPIRE                  As Long
 Private AOG_RESEND_INTERVAL         As Long
 Private TRANSPORT_METHOD            As String
 
@@ -36,7 +36,7 @@ Public Sub LoadAOGuardConfiguration()
     AOG_STATUS = val(ConfigFile.GetValue("INIT", "Enabled"))
     AOG_EXPIRE = val(ConfigFile.GetValue("INIT", "CodeExpiresInSeconds"))
     
-    AOG_RESEND_INTERVAL = val(ConfigFile.GetValue("INIT", "CodeResendInterval")) * 10000
+    AOG_RESEND_INTERVAL = val(ConfigFile.GetValue("INIT", "CodeResendInterval"))
 
     If AOG_RESEND_INTERVAL = 0 Then AOG_RESEND_INTERVAL = 50000
     
@@ -106,49 +106,70 @@ End Function
 '---------------------------------------------------------------------------------------------------
 Private Sub EnviarCodigo(ByVal UserIndex As Integer)
 
-        On Error GoTo EnviarCodigo_Err
+    On Error GoTo EnviarCodigo_Err
     
-100     With UserList(UserIndex)
+    Dim EnviarCode As Boolean
     
-            ' Ya te dije X veces que esperes un toque! Si no lo haces, sos alto bot!
-102         If .Counters.EmailVerificationSendRequests > MAX_CODE_RESEND_COUNT Then
-104             Call CloseSocket(UserIndex)
-                Exit Sub
-                
-            End If
+    With UserList(UserIndex)
             
+        Call MakeQuery("SELECT TIMESTAMPDIFF(SECOND, `code_last_sent`, CURRENT_TIMESTAMP) AS delta_time, code_resend_attempts FROM account_guard WHERE account_id = ?", False, .AccountID)
+        
+        ' Hay registros en `account_guard` = tiene codigo = me fijo si le mando o no
+        If Not QueryData Is Nothing Then
+            
+            ' Ya te dije X veces que esperes un toque! Si no lo haces, sos alto bot!
+            If val(QueryData!code_resend_attempts) > MAX_CODE_RESEND_COUNT Then
+                EnviarCode = False
+                Call CloseSocket(UserIndex)
+                Exit Sub
+                    
+            End If
+                
             ' Establecemos un intervalo de tiempo para volver a mandarle el codigo al usuario
-106         If (GetTickCount() - .Counters.LastSentVerificationEmail) > AOG_RESEND_INTERVAL Then
-                
-108             If TRANSPORT_METHOD = "API" Then
-110                 Call GenerarCodigoAPI(UserIndex)
-                Else
-112                 Call GenerarCodigo(UserIndex)
-    
-                End If
-                
-114             .Counters.LastSentVerificationEmail = GetTickCount()
-116             .Counters.EmailVerificationSendRequests = 0
+            If QueryData!delta_time > AOG_RESEND_INTERVAL Then
                     
-118             Call WriteShowMessageBox(UserIndex, "Te hemos enviado un correo con el código de verificacion a tu correo. " & _
-                   "Si no lo encuentras, revisa la carpeta de SPAM. " & _
-                   "Si no te ha llegado, intenta nuevamente en " & AOG_RESEND_INTERVAL \ 10000 & " segundos")
+                EnviarCode = True
                     
+                Call MakeQuery("UPDATE account_guard SET code_last_sent = CURRENT_TIMESTAMP, code_resend_attempts = 0 WHERE account_id = ?", True, .AccountID)
+                        
+                Call WriteShowMessageBox(UserIndex, "Te hemos enviado un correo con el código de verificacion a tu correo. " & _
+                                                    "Si no lo encuentras, revisa la carpeta de SPAM. " & _
+                                                    "Si no te ha llegado, intenta nuevamente en " & AOG_RESEND_INTERVAL \ 10000 & " segundos")
+                        
             Else
                 
-120             .Counters.EmailVerificationSendRequests = .Counters.EmailVerificationSendRequests + 1
+                EnviarCode = False
                 
-122             Call WriteShowMessageBox(UserIndex, "Ya te hemos enviado un correo con el código de verificacion. " & _
-                   "Si no te ha llegado, intenta nuevamente en " & AOG_RESEND_INTERVAL \ 10000 & " segundos")
+                Call MakeQuery("UPDATE account_guard SET code_resend_attempts = code_resend_attempts + 1 WHERE account_id = ?", True, .AccountID)
                     
+                Call WriteShowMessageBox(UserIndex, "Ya te hemos enviado un correo con el código de verificacion. " & _
+                                                    "Si no te ha llegado, intenta nuevamente en " & AOG_RESEND_INTERVAL \ 10000 & " segundos")
+                        
+            End If
+        
+        Else
+            
+            ' No hay registros en `account_guard` = no tiene codigo = le mando uno
+            EnviarCode = True
+            
+        End If
+        
+        If EnviarCode Then
+        
+            If TRANSPORT_METHOD = "API" Then
+                Call GenerarCodigoAPI(UserIndex)
+            Else
+                Call GenerarCodigo(UserIndex)
             End If
     
-        End With
+        End If
+        
+    End With
 
-        Exit Sub
+    Exit Sub
 
 EnviarCodigo_Err:
-        Call RegistrarError(Err.Number, Err.Description, "Protocol.EnviarCodigo", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "Protocol.EnviarCodigo", Erl)
     
 End Sub
 
@@ -190,10 +211,10 @@ Public Sub HandleGuardNoticeResponse(ByVal UserIndex As Integer)
 
             If .AccountID = 0 Then Exit Sub
 
-104         Call MakeQuery("SELECT TIMESTAMPDIFF(SECOND, `timestamp`, CURRENT_TIMESTAMP) AS time_diff, code FROM account_guard WHERE account_id = ?", False, .AccountID)
+104         Call MakeQuery("SELECT TIMESTAMPDIFF(SECOND, `created_at`, CURRENT_TIMESTAMP) AS delta_time, code FROM account_guard WHERE account_id = ?", False, .AccountID)
         
             ' El codigo expira despues de 1 minuto.
-106         If AOG_EXPIRE <> 0 And QueryData!time_diff > AOG_EXPIRE Then
+106         If AOG_EXPIRE <> 0 And QueryData!delta_time > AOG_EXPIRE Then
             
                 ' Le avisamos que expiro
 108             Call WriteShowMessageBox(UserIndex, "El código de verificación ha expirado.")
@@ -300,7 +321,7 @@ Private Sub GenerarCodigo(ByVal UserIndex As Integer)
     
 100     With UserList(UserIndex)
         
-102         Call MakeQuery("SELECT TIMESTAMPDIFF(SECOND, `timestamp`, CURRENT_TIMESTAMP) AS time_diff, code FROM account_guard WHERE account_id = ?", False, .AccountID)
+102         Call MakeQuery("SELECT TIMESTAMPDIFF(SECOND, `created_at`, CURRENT_TIMESTAMP) AS time_diff, code FROM account_guard WHERE account_id = ?", False, .AccountID)
      
             ' NO tiene codigo
 104         If QueryData Is Nothing Then
