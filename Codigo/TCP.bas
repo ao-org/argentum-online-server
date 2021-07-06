@@ -2166,7 +2166,6 @@ Sub ClearAndSaveUser(ByVal UserIndex As Integer)
 176         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, 0, 0, True))
 178         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(.Char.CharIndex, 0, 0))
         
-180         .flags.UserLogged = False
 182         .Counters.Saliendo = False
 
 184         errordesc = "ERROR AL ENVIAR INVI"
@@ -2263,6 +2262,8 @@ Sub CloseUser(ByVal UserIndex As Integer)
 234         Call m_NameIndex.Remove(UCase$(.Name))
         
 236         errordesc = "ERROR AL RESETSLOT Name:" & .Name & " cuenta:" & .Cuenta
+
+            .flags.UserLogged = False
         
 238         Call ResetUserSlot(UserIndex)
 
