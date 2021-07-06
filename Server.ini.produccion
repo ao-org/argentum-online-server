@@ -30,8 +30,8 @@ MaxUsers=1000
 
 Admines=3
 Dioses=2
-SemiDioses=8
-Consejeros=13
+SemiDioses=10
+Consejeros=11
 RolesMasters=0
 
 [Admines]
@@ -52,10 +52,12 @@ SemiDios5=Jopi|jopiodz00@gmail.com
 SemiDios6=Baliam|loganfenix2000@yahoo.com.mx
 SemiDios7=emancu|emiliano.mancuso@gmail.com
 SemiDios8=HarThaoS|martintrionfetti@gmail.com
+SemiDios9=Vodnik|ricardo_r_jc@hotmail.com
+SemiDios10=arandor|pedrosalvadorgugliotta@gmail.com
 
 [Consejeros]
 Consejero1=Dash|raffozelada@hotmail.com
-Consejero2=Vodnik|ricardo_r_jc@hotmail.com
+Consejero2=Skills|reyarb@fibertel.com.ar
 Consejero3=Ulder|tomycapalbo@hotmail.com
 Consejero4=Okruzhkov|schick.ivan@gmail.com
 Consejero5=RoTTTeN|darioguitarras@gmail.com
@@ -65,8 +67,7 @@ Consejero8=Bwise|Joacovas@hotmail.com
 Consejero9=Bonyo|argentumo@hotmail.com
 Consejero10=Ronin|erikeleusippi@gmail.com
 Consejero11=DobleF|luciano_rizzi@hotmail.com
-Consejero12=arandor|pedrosalvadorgugliotta@gmail.com
-Consejero13=Skills|reyarb@fibertel.com.ar
+
 
 [RolesMasters]
 RM1=
