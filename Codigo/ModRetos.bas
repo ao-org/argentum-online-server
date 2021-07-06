@@ -744,29 +744,31 @@ Public Sub FinalizarReto(ByVal Sala As Integer, Optional ByVal TiempoAgotado As 
             
             End If
 
-            ' Actualizamos el ELO de cada jugador, utilizando el `Algoritmo de 400`
+            ' Actualizamos el ELO de cada jugador, inspirados en `Algoritmo de 400`
             ' https://en.wikipedia.org/wiki/Elo_rating_system
-            ' Aclaracion: No dividimos por que siempre contamos de a un juego.
+            Dim eloTmp As Long
             For i = 0 To UBound(.Jugadores)
               tIndex = .Jugadores(i)
 
               If tIndex <> 0 Then
+                eloTmp = UserList(tIndex).Stats.ELO
+                
                 If i Mod 2 = 0 Then ' Jugadores en el equipo Izquierdo
-                  UserList(tIndex).Stats.ELO = (eloTotalDerecha + 400 * winsIzquierda)
+                  eloTmp = eloTmp + winsIzquierda * (eloTotalDerecha * 0.1)
                 Else
-                  UserList(tIndex).Stats.ELO = (eloTotalIzquierda + 400 * winsDerecha)
+                  eloTmp = eloTmp + winsDerecha * (eloTotalIzquierda * 0.1)
                 End If
 
-                If UserList(tIndex).Stats.ELO < 0 Then
-                  UserList(tIndex).Stats.ELO = 0
+                If eloTmp < 0 Then
+                  eloTmp = 0
                 End If
-
+                
+                UserList(tIndex).Stats.ELO = eloTmp
               End If
 
             Next i
     
         End With
-    
     
 End Sub
 Public Sub TirarItemsEnPos(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte)
