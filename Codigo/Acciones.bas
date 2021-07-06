@@ -441,7 +441,7 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
         Exit Sub
 
 Accion_Err:
-374     Call TraceError(Err.Number, Err.Description, "Acciones.Accion", Erl)
+374     Call RegistrarError(Err.Number, Err.Description, "Acciones.Accion", Erl)
 
         
 End Sub
@@ -508,7 +508,7 @@ Sub AccionParaForo(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer,
         Exit Sub
 
 AccionParaForo_Err:
-144     Call TraceError(Err.Number, Err.Description, "Acciones.AccionParaForo", Erl)
+144     Call RegistrarError(Err.Number, Err.Description, "Acciones.AccionParaForo", Erl)
 
         
 End Sub
@@ -577,7 +577,7 @@ Sub AccionParaPozos(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer
         Exit Sub
 
 AccionParaPozos_Err:
-148     Call TraceError(Err.Number, Err.Description, "Acciones.AccionParaPozos", Erl)
+148     Call RegistrarError(Err.Number, Err.Description, "Acciones.AccionParaPozos", Erl)
 
         
 End Sub
@@ -647,7 +647,7 @@ Sub AccionParaArboles(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integ
         Exit Sub
 
 AccionParaArboles_Err:
-146     Call TraceError(Err.Number, Err.Description, "Acciones.AccionParaArboles", Erl)
+146     Call RegistrarError(Err.Number, Err.Description, "Acciones.AccionParaArboles", Erl)
 
         
 End Sub
@@ -708,7 +708,7 @@ Sub AccionParaAgua(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer,
         Exit Sub
 
 AccionParaAgua_Err:
-138     Call TraceError(Err.Number, Err.Description, "Acciones.AccionParaAgua", Erl)
+138     Call RegistrarError(Err.Number, Err.Description, "Acciones.AccionParaAgua", Erl)
 
         
 End Sub
@@ -755,7 +755,7 @@ Sub AccionParaYunque(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Intege
         Exit Sub
 
 AccionParaYunque_Err:
-124     Call TraceError(Err.Number, Err.Description, "Acciones.AccionParaYunque", Erl)
+124     Call RegistrarError(Err.Number, Err.Description, "Acciones.AccionParaYunque", Erl)
 
         
 End Sub
@@ -808,7 +808,7 @@ Sub AccionParaPuerta(ByVal Map As Integer, ByVal X As Byte, ByVal Y As Byte, ByV
         Exit Sub
 
 Handler:
-136 Call TraceError(Err.Number, Err.Description, "Acciones.AccionParaPuerta", Erl)
+136 Call RegistrarError(Err.Number, Err.Description, "Acciones.AccionParaPuerta", Erl)
 138
 
 End Sub
@@ -839,7 +839,7 @@ Sub AccionParaPuertaNpc(ByVal Map As Integer, ByVal X As Byte, ByVal Y As Byte, 
         Exit Sub
 
 Handler:
-116 Call TraceError(Err.Number, Err.Description, "Acciones.AccionParaPuertaNpc", Erl)
+116 Call RegistrarError(Err.Number, Err.Description, "Acciones.AccionParaPuertaNpc", Erl)
 118
 
 End Sub
@@ -862,7 +862,7 @@ Sub AccionParaCartel(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Intege
         Exit Sub
         
 Handler:
-106 Call TraceError(Err.Number, Err.Description, "Acciones.AccionParaCartel", Erl)
+106 Call RegistrarError(Err.Number, Err.Description, "Acciones.AccionParaCartel", Erl)
 108
 
 End Sub
@@ -901,7 +901,7 @@ Sub AccionParaCorreo(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Intege
         Exit Sub
 
 AccionParaCorreo_Err:
-118     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Acciones.AccionParaCorreo", Erl)
+118     Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Acciones.AccionParaCorreo", Erl)
 120
         
 End Sub
@@ -997,7 +997,7 @@ Sub AccionParaRamita(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Intege
         Exit Sub
         
 Handler:
-156 Call TraceError(Err.Number, Err.Description, "Acciones.AccionParaRamita", Erl)
+156 Call RegistrarError(Err.Number, Err.Description, "Acciones.AccionParaRamita", Erl)
 158
 
 End Sub

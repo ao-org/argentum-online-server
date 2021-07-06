@@ -106,7 +106,7 @@ Sub DarCuerpo(ByVal UserIndex As Integer)
         Exit Sub
 
 DarCuerpo_Err:
-158     Call TraceError(Err.Number, Err.Description, "TCP.DarCuerpo", Erl)
+158     Call RegistrarError(Err.Number, Err.Description, "TCP.DarCuerpo", Erl)
 160
         
 End Sub
@@ -160,7 +160,7 @@ Sub AsignarAtributos(ByVal UserIndex As String)
         Exit Sub
 
 AsignarAtributos_Err:
-160     Call TraceError(Err.Number, Err.Description, "TCP.AsignarAtributos", Erl)
+160     Call RegistrarError(Err.Number, Err.Description, "TCP.AsignarAtributos", Erl)
 162
         
 End Sub
@@ -319,7 +319,7 @@ Sub RellenarInventario(ByVal UserIndex As String)
         Exit Sub
 
 RellenarInventario_Err:
-210     Call TraceError(Err.Number, Err.Description, "TCP.RellenarInventario", Erl)
+210     Call RegistrarError(Err.Number, Err.Description, "TCP.RellenarInventario", Erl)
 212
         
 End Sub
@@ -352,7 +352,7 @@ Function AsciiValidos(ByVal cad As String) As Boolean
         Exit Function
 
 AsciiValidos_Err:
-114     Call TraceError(Err.Number, Err.Description, "TCP.AsciiValidos", Erl)
+114     Call RegistrarError(Err.Number, Err.Description, "TCP.AsciiValidos", Erl)
 116
         
 End Function
@@ -385,7 +385,7 @@ Function DescripcionValida(ByVal cad As String) As Boolean
         Exit Function
 
 AsciiValidos_Err:
-114     Call TraceError(Err.Number, Err.Description, "TCP.DescripcionValida", Erl)
+114     Call RegistrarError(Err.Number, Err.Description, "TCP.DescripcionValida", Erl)
 116
         
 End Function
@@ -418,7 +418,7 @@ Function Numeric(ByVal cad As String) As Boolean
         Exit Function
 
 Numeric_Err:
-114     Call TraceError(Err.Number, Err.Description, "TCP.Numeric", Erl)
+114     Call RegistrarError(Err.Number, Err.Description, "TCP.Numeric", Erl)
 116
         
 End Function
@@ -446,7 +446,7 @@ Function NombrePermitido(ByVal nombre As String) As Boolean
         Exit Function
 
 NombrePermitido_Err:
-110     Call TraceError(Err.Number, Err.Description, "TCP.NombrePermitido", Erl)
+110     Call RegistrarError(Err.Number, Err.Description, "TCP.NombrePermitido", Erl)
 112
         
 End Function
@@ -475,7 +475,7 @@ Function ValidateSkills(ByVal UserIndex As Integer) As Boolean
         Exit Function
 
 ValidateSkills_Err:
-110     Call TraceError(Err.Number, Err.Description, "TCP.ValidateSkills", Erl)
+110     Call RegistrarError(Err.Number, Err.Description, "TCP.ValidateSkills", Erl)
 112
         
 End Function
@@ -642,7 +642,7 @@ Function ConnectNewUser(ByVal UserIndex As Integer, ByRef Name As String, ByVal 
         Exit Function
 
 ConnectNewUser_Err:
-248     Call TraceError(Err.Number, Err.Description, "TCP.ConnectNewUser", Erl)
+248     Call RegistrarError(Err.Number, Err.Description, "TCP.ConnectNewUser", Erl)
 250
         
 End Function
@@ -737,7 +737,7 @@ Sub CloseSocketSL(ByVal UserIndex As Integer)
         Exit Sub
 
 CloseSocketSL_Err:
-108     Call TraceError(Err.Number, Err.Description, "TCP.CloseSocketSL", Erl)
+108     Call RegistrarError(Err.Number, Err.Description, "TCP.CloseSocketSL", Erl)
 
 110
         
@@ -797,7 +797,7 @@ Function EstaPCarea(Index As Integer, Index2 As Integer) As Boolean
         Exit Function
 
 EstaPCarea_Err:
-114     Call TraceError(Err.Number, Err.Description, "TCP.EstaPCarea", Erl)
+114     Call RegistrarError(Err.Number, Err.Description, "TCP.EstaPCarea", Erl)
 116
         
 End Function
@@ -830,7 +830,7 @@ Function HayPCarea(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer)
         Exit Function
 
 HayPCarea_Err:
-112     Call TraceError(Err.Number, Err.Description, "TCP.HayPCarea", Erl)
+112     Call RegistrarError(Err.Number, Err.Description, "TCP.HayPCarea", Erl)
 114
         
 End Function
@@ -860,7 +860,7 @@ Function HayOBJarea(Pos As WorldPos, ObjIndex As Integer) As Boolean
         Exit Function
 
 HayOBJarea_Err:
-114     Call TraceError(Err.Number, Err.Description, "TCP.HayOBJarea", Erl)
+114     Call RegistrarError(Err.Number, Err.Description, "TCP.HayOBJarea", Erl)
 116
         
 End Function
@@ -876,7 +876,7 @@ Function ValidateChr(ByVal UserIndex As Integer) As Boolean
         Exit Function
 
 ValidateChr_Err:
-102     Call TraceError(Err.Number, Err.Description, "TCP.ValidateChr", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "TCP.ValidateChr", Erl)
 104
         
 End Function
@@ -933,7 +933,7 @@ Function EntrarCuenta(ByVal UserIndex As Integer, CuentaEmail As String, CuentaP
         Exit Function
 
 EntrarCuenta_Err:
-134     Call TraceError(Err.Number, Err.Description, "TCP.EntrarCuenta", Erl)
+134     Call RegistrarError(Err.Number, Err.Description, "TCP.EntrarCuenta", Erl)
 
 136
         
@@ -1446,7 +1446,7 @@ Sub ConnectUser(ByVal UserIndex As Integer, _
         Exit Sub
     
 ErrHandler:
-510     Call TraceError(Err.Number, Err.Description, "TCP.ConnectUser", Erl)
+510     Call RegistrarError(Err.Number, Err.Description, "TCP.ConnectUser", Erl)
 512     Call WriteShowMessageBox(UserIndex, "El personaje contiene un error. Comuníquese con un miembro del staff.")
 514     Call CloseSocket(UserIndex)
 
@@ -1467,7 +1467,7 @@ Sub SendMOTD(ByVal UserIndex As Integer)
         Exit Sub
 
 SendMOTD_Err:
-106     Call TraceError(Err.Number, Err.Description, "TCP.SendMOTD", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "TCP.SendMOTD", Erl)
 108
         
 End Sub
@@ -1507,7 +1507,7 @@ Sub ResetFacciones(ByVal UserIndex As Integer)
         Exit Sub
 
 ResetFacciones_Err:
-132     Call TraceError(Err.Number, Err.Description, "TCP.ResetFacciones", Erl)
+132     Call RegistrarError(Err.Number, Err.Description, "TCP.ResetFacciones", Erl)
 134
         
 End Sub
@@ -1577,7 +1577,7 @@ Sub ResetContadores(ByVal UserIndex As Integer)
         Exit Sub
 
 ResetContadores_Err:
-188     Call TraceError(Err.Number, Err.Description, "TCP.ResetContadores", Erl)
+188     Call RegistrarError(Err.Number, Err.Description, "TCP.ResetContadores", Erl)
 190
         
 End Sub
@@ -1620,7 +1620,7 @@ Sub ResetCharInfo(ByVal UserIndex As Integer)
         Exit Sub
 
 ResetCharInfo_Err:
-140     Call TraceError(Err.Number, Err.Description, "TCP.ResetCharInfo", Erl)
+140     Call RegistrarError(Err.Number, Err.Description, "TCP.ResetCharInfo", Erl)
 142
         
 End Sub
@@ -1709,7 +1709,7 @@ Sub ResetBasicUserInfo(ByVal UserIndex As Integer)
         Exit Sub
 
 ResetBasicUserInfo_Err:
-198     Call TraceError(Err.Number, Err.Description, "TCP.ResetBasicUserInfo", Erl)
+198     Call RegistrarError(Err.Number, Err.Description, "TCP.ResetBasicUserInfo", Erl)
 200
         
 End Sub
@@ -1736,7 +1736,7 @@ Sub ResetGuildInfo(ByVal UserIndex As Integer)
         Exit Sub
 
 ResetGuildInfo_Err:
-112     Call TraceError(Err.Number, Err.Description, "TCP.ResetGuildInfo", Erl)
+112     Call RegistrarError(Err.Number, Err.Description, "TCP.ResetGuildInfo", Erl)
 114
         
 End Sub
@@ -1863,7 +1863,7 @@ Sub ResetUserFlags(ByVal UserIndex As Integer)
         Exit Sub
 
 ResetUserFlags_Err:
-276     Call TraceError(Err.Number, Err.Description, "TCP.ResetUserFlags", Erl)
+276     Call RegistrarError(Err.Number, Err.Description, "TCP.ResetUserFlags", Erl)
 278
         
 End Sub
@@ -1889,7 +1889,7 @@ Sub ResetAccionesPendientes(ByVal UserIndex As Integer)
         Exit Sub
 
 ResetAccionesPendientes_Err:
-114     Call TraceError(Err.Number, Err.Description, "TCP.ResetAccionesPendientes", Erl)
+114     Call RegistrarError(Err.Number, Err.Description, "TCP.ResetAccionesPendientes", Erl)
 116
         
 End Sub
@@ -1912,7 +1912,7 @@ Sub ResetDonadorFlag(ByVal UserIndex As Integer)
         Exit Sub
 
 ResetDonadorFlag_Err:
-108     Call TraceError(Err.Number, Err.Description, "TCP.ResetDonadorFlag", Erl)
+108     Call RegistrarError(Err.Number, Err.Description, "TCP.ResetDonadorFlag", Erl)
 110
         
 End Sub
@@ -1933,7 +1933,7 @@ Sub ResetUserSpells(ByVal UserIndex As Integer)
         Exit Sub
 
 ResetUserSpells_Err:
-106     Call TraceError(Err.Number, Err.Description, "TCP.ResetUserSpells", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "TCP.ResetUserSpells", Erl)
 108
         
 End Sub
@@ -1953,7 +1953,7 @@ Sub ResetUserSkills(ByVal UserIndex As Integer)
         Exit Sub
 
 ResetUserSkills_Err:
-106     Call TraceError(Err.Number, Err.Description, "TCP.ResetUserSkills", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "TCP.ResetUserSkills", Erl)
 108
         
 End Sub
@@ -1977,7 +1977,7 @@ Sub ResetUserBanco(ByVal UserIndex As Integer)
         Exit Sub
 
 ResetUserBanco_Err:
-112     Call TraceError(Err.Number, Err.Description, "TCP.ResetUserBanco", Erl)
+112     Call RegistrarError(Err.Number, Err.Description, "TCP.ResetUserBanco", Erl)
 114
         
 End Sub
@@ -1998,7 +1998,7 @@ Sub ResetUserKeys(ByVal UserIndex As Integer)
         Exit Sub
 
 ResetUserKeys_Err:
-106     Call TraceError(Err.Number, Err.Description, "TCP.ResetUserKeys", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "TCP.ResetUserKeys", Erl)
 
         
 End Sub
@@ -2022,7 +2022,7 @@ Public Sub LimpiarComercioSeguro(ByVal UserIndex As Integer)
         Exit Sub
 
 LimpiarComercioSeguro_Err:
-108     Call TraceError(Err.Number, Err.Description, "TCP.LimpiarComercioSeguro", Erl)
+108     Call RegistrarError(Err.Number, Err.Description, "TCP.LimpiarComercioSeguro", Erl)
 110
         
 End Sub
@@ -2086,7 +2086,7 @@ Sub ResetUserSlot(ByVal UserIndex As Integer)
         Exit Sub
 
 ResetUserSlot_Err:
-174     Call TraceError(Err.Number, Err.Description, "TCP.ResetUserSlot", Erl)
+174     Call RegistrarError(Err.Number, Err.Description, "TCP.ResetUserSlot", Erl)
 176
         
 End Sub
@@ -2274,7 +2274,7 @@ Sub CloseUser(ByVal UserIndex As Integer)
     
 ErrHandler:
         'Call LogError("Error en CloseUser. Número " & Err.Number & ". Descripción: " & Err.Description & ". Detalle:" & errordesc)
-240     Call TraceError(Err.Number, Err.Description & ". Detalle:" & errordesc, Erl)
+240     Call RegistrarError(Err.Number, Err.Description & ". Detalle:" & errordesc, Erl)
 242      ' TODO: Provisional hasta solucionar bugs graves
 
 End Sub
@@ -2321,7 +2321,7 @@ Public Sub EcharPjsNoPrivilegiados()
         Exit Sub
 
 EcharPjsNoPrivilegiados_Err:
-110     Call TraceError(Err.Number, Err.Description, "TCP.EcharPjsNoPrivilegiados", Erl)
+110     Call RegistrarError(Err.Number, Err.Description, "TCP.EcharPjsNoPrivilegiados", Erl)
 112
         
 End Sub

@@ -91,7 +91,7 @@ Public Sub InvitarMiembro(ByVal UserIndex As Integer, ByVal InvitadoIndex As Int
         Exit Sub
 
 InvitarMiembro_Err:
-144     Call TraceError(Err.Number, Err.Description, "ModGrupos.InvitarMiembro", Erl)
+144     Call RegistrarError(Err.Number, Err.Description, "ModGrupos.InvitarMiembro", Erl)
 146
         
 End Sub
@@ -191,7 +191,7 @@ Public Sub EcharMiembro(ByVal UserIndex As Integer, ByVal Indice As Byte)
         Exit Sub
 
 EcharMiembro_Err:
-176     Call TraceError(Err.Number, Err.Description, "ModGrupos.EcharMiembro", Erl)
+176     Call RegistrarError(Err.Number, Err.Description, "ModGrupos.EcharMiembro", Erl)
 178
         
 End Sub
@@ -270,7 +270,7 @@ Public Sub SalirDeGrupo(ByVal UserIndex As Integer)
         Exit Sub
 
 SalirDeGrupo_Err:
-160     Call TraceError(Err.Number, Err.Description, "ModGrupos.SalirDeGrupo", Erl)
+160     Call RegistrarError(Err.Number, Err.Description, "ModGrupos.SalirDeGrupo", Erl)
 162
         
 End Sub
@@ -335,7 +335,7 @@ Public Sub SalirDeGrupoForzado(ByVal UserIndex As Integer)
         Exit Sub
 
 SalirDeGrupoForzado_Err:
-148     Call TraceError(Err.Number, Err.Description, "ModGrupos.SalirDeGrupoForzado", Erl)
+148     Call RegistrarError(Err.Number, Err.Description, "ModGrupos.SalirDeGrupoForzado", Erl)
 150
         
 End Sub
@@ -371,7 +371,7 @@ Public Sub FinalizarGrupo(ByVal UserIndex As Integer)
         Exit Sub
 
 FinalizarGrupo_Err:
-122     Call TraceError(Err.Number, Err.Description, "ModGrupos.FinalizarGrupo", Erl)
+122     Call RegistrarError(Err.Number, Err.Description, "ModGrupos.FinalizarGrupo", Erl)
 124
         
 End Sub
@@ -427,7 +427,7 @@ Public Sub CompartirUbicacion(ByVal UserIndex As Integer)
         Exit Sub
 
 CompartirUbicacion_Err:
-128     Call TraceError(Err.Number, Err.Description, "ModGrupos.CompartirUbicacion", Erl)
+128     Call RegistrarError(Err.Number, Err.Description, "ModGrupos.CompartirUbicacion", Erl)
 130
         
 End Sub

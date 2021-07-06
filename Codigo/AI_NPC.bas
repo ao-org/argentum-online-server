@@ -153,7 +153,7 @@ Private Sub PerseguirUsuarioCercano(ByVal NpcIndex As Integer)
         Exit Sub
 
 ErrorHandler:
-166     Call TraceError(Err.Number, Err.Description, "AI_NPC.PerseguirUsuarioCercano", Erl)
+166     Call RegistrarError(Err.Number, Err.Description, "AI_NPC.PerseguirUsuarioCercano", Erl)
 
 End Sub
 
@@ -179,7 +179,7 @@ Private Sub AI_CaminarSinRumboCercaDeOrigen(ByVal NpcIndex As Integer)
         Exit Sub
 
 AI_CaminarSinRumboCercaDeOrigen_Err:
-110     Call TraceError(Err.Number, Err.Description, "AI.AI_CaminarSinRumboCercaDeOrigen_Err", Erl)
+110     Call RegistrarError(Err.Number, Err.Description, "AI.AI_CaminarSinRumboCercaDeOrigen_Err", Erl)
 112
         
 End Sub
@@ -203,7 +203,7 @@ Private Sub AI_CaminarSinRumbo(ByVal NpcIndex As Integer)
         Exit Sub
 
 AI_CaminarSinRumbo_Err:
-108     Call TraceError(Err.Number, Err.Description, "AI.AI_CaminarSinRumbo", Erl)
+108     Call RegistrarError(Err.Number, Err.Description, "AI.AI_CaminarSinRumbo", Erl)
 110
         
 End Sub
@@ -236,7 +236,7 @@ Private Sub AI_CaminarConRumbo(ByVal NpcIndex As Integer, ByRef rumbo As WorldPo
         Exit Sub
 
 AI_CaminarConRumbo_Err:
-118     Call TraceError(Err.Number, Err.Description, "AI.AI_CaminarConRumbo", Erl)
+118     Call RegistrarError(Err.Number, Err.Description, "AI.AI_CaminarConRumbo", Erl)
 
 End Sub
 
@@ -282,7 +282,7 @@ Private Sub AI_AtacarUsuarioObjetivo(ByVal AtackerNpcIndex As Integer)
         Exit Sub
 
 ErrorHandler:
-130     Call TraceError(Err.Number, Err.Description, "AIv2.AI_AtacarUsuarioObjetivo", Erl)
+130     Call RegistrarError(Err.Number, Err.Description, "AIv2.AI_AtacarUsuarioObjetivo", Erl)
 132
 End Sub
 
@@ -329,7 +329,7 @@ Public Sub AI_GuardiaPersigueNpc(ByVal NpcIndex As Integer)
         
         
 ErrorHandler:
-126     Call TraceError(Err.Number, Err.Description, "AIv2.AI_GuardiaAtacaNpc", Erl)
+126     Call RegistrarError(Err.Number, Err.Description, "AIv2.AI_GuardiaAtacaNpc", Erl)
 128
 
 End Sub
@@ -377,7 +377,7 @@ Private Function BuscarNpcEnArea(ByVal NpcIndex As Integer) As Integer
         Exit Function
 
 BuscarNpcEnArea:
-120     Call TraceError(Err.Number, Err.Description, "Extra.BuscarNpcEnArea", Erl)
+120     Call RegistrarError(Err.Number, Err.Description, "Extra.BuscarNpcEnArea", Erl)
 122
         
 End Function
@@ -413,7 +413,7 @@ Public Sub AI_NpcAtacaNpc(ByVal NpcIndex As Integer)
         Exit Sub
                 
 ErrorHandler:
-118     Call TraceError(Err.Number, Err.Description, "AIv2.AI_NpcAtacaNpc", Erl)
+118     Call RegistrarError(Err.Number, Err.Description, "AIv2.AI_NpcAtacaNpc", Erl)
 
 End Sub
 
@@ -436,7 +436,7 @@ Private Sub SeguirAgresor(ByVal NpcIndex As Integer)
         Exit Sub
 
 SeguirAgresor_Err:
-106     Call TraceError(Err.Number, Err.Description, "AI.SeguirAgresor", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "AI.SeguirAgresor", Erl)
 108
 
 End Sub
@@ -471,7 +471,7 @@ Public Sub SeguirAmo(ByVal NpcIndex As Integer)
         Exit Sub
 
 ErrorHandler:
-114     Call TraceError(Err.Number, Err.Description, "AIv2.SeguirAmo", Erl)
+114     Call RegistrarError(Err.Number, Err.Description, "AIv2.SeguirAmo", Erl)
 
 End Sub
 
@@ -500,7 +500,7 @@ Private Sub RestoreOldMovement(ByVal NpcIndex As Integer)
         Exit Sub
 
 RestoreOldMovement_Err:
-116     Call TraceError(Err.Number, Err.Description, "AI.RestoreOldMovement", Erl)
+116     Call RegistrarError(Err.Number, Err.Description, "AI.RestoreOldMovement", Erl)
 118
 
 End Sub
@@ -582,7 +582,7 @@ Private Sub HacerCaminata(ByVal NpcIndex As Integer)
         Exit Sub
     
 Handler:
-148     Call TraceError(Err.Number, Err.Description, "AI.HacerCaminata", Erl)
+148     Call RegistrarError(Err.Number, Err.Description, "AI.HacerCaminata", Erl)
 
 End Sub
 
@@ -657,7 +657,7 @@ Private Sub MovimientoInvasion(ByVal NpcIndex As Integer)
         Exit Sub
     
 Handler:
-144     Call TraceError(Err.Number, Err.Description, "AI.MovimientoInvasion", Erl)
+144     Call RegistrarError(Err.Number, Err.Description, "AI.MovimientoInvasion", Erl)
 146
 End Sub
 
@@ -729,7 +729,7 @@ Private Sub NpcLanzaUnSpell(ByVal NpcIndex As Integer)
         Exit Sub
 
 NpcLanzaUnSpell_Err:
-150     Call TraceError(Err.Number, Err.Description, "AI.NpcLanzaUnSpell", Erl)
+150     Call RegistrarError(Err.Number, Err.Description, "AI.NpcLanzaUnSpell", Erl)
 
 152
 
@@ -753,7 +753,7 @@ Private Sub NpcLanzaUnSpellSobreNpc(ByVal NpcIndex As Integer, ByVal TargetNPC A
         Exit Sub
 
 NpcLanzaUnSpellSobreNpc_Err:
-110     Call TraceError(Err.Number, Err.Description, "AI.NpcLanzaUnSpellSobreNpc", Erl)
+110     Call RegistrarError(Err.Number, Err.Description, "AI.NpcLanzaUnSpellSobreNpc", Erl)
 112
 
 End Sub
@@ -808,7 +808,7 @@ Private Function EsEnemigo(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
         Exit Function
 
 EsEnemigo_Err:
-122     Call TraceError(Err.Number, Err.Description, "AI.EsEnemigo", Erl)
+122     Call RegistrarError(Err.Number, Err.Description, "AI.EsEnemigo", Erl)
 124
 
 End Function
@@ -840,7 +840,7 @@ Private Function EnRangoVision(ByVal NpcIndex As Integer, ByVal UserIndex As Int
         Exit Function
 
 EnRangoVision_Err:
-112     Call TraceError(Err.Number, Err.Description, "AI.EnRangoVision", Erl)
+112     Call RegistrarError(Err.Number, Err.Description, "AI.EnRangoVision", Erl)
 114
 
 End Function
@@ -866,7 +866,7 @@ Private Function UsuarioAtacableConMagia(ByVal targetUserIndex As Integer) As Bo
         Exit Function
 
 UsuarioAtacableConMagia_Err:
-106     Call TraceError(Err.Number, Err.Description, "AI.UsuarioAtacableConMagia", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "AI.UsuarioAtacableConMagia", Erl)
 108
 
 End Function
@@ -895,7 +895,7 @@ Private Function UsuarioAtacableConMelee(ByVal NpcIndex As Integer, ByVal target
         Exit Function
 
 UsuarioAtacableConMelee_Err:
-108     Call TraceError(Err.Number, Err.Description, "AI.UsuarioAtacableConMelee", Erl)
+108     Call RegistrarError(Err.Number, Err.Description, "AI.UsuarioAtacableConMelee", Erl)
 110
 
 End Function

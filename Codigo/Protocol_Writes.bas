@@ -5341,7 +5341,7 @@ Public Sub WriteRecompensas(ByVal UserIndex As Integer)
     Exit Sub
 
 WriteRecompensas_Err:
-    Call TraceError(Err.Number, Err.Description, "Protocol.WriteRecompensas", Erl)
+    Call RegistrarError(Err.Number, Err.Description, "Protocol.WriteRecompensas", Erl)
     Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub

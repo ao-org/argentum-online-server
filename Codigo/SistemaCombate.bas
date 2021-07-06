@@ -51,7 +51,7 @@ Private Function ModificadorPoderAtaqueArmas(ByVal clase As eClass) As Single
         Exit Function
 
 ModificadorPoderAtaqueArmas_Err:
-102     Call TraceError(Err.Number, Err.Description, "SistemaCombate.ModificadorPoderAtaqueArmas", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.ModificadorPoderAtaqueArmas", Erl)
 104
         
 End Function
@@ -67,7 +67,7 @@ Private Function ModificadorPoderAtaqueProyectiles(ByVal clase As eClass) As Sin
         Exit Function
 
 ModificadorPoderAtaqueProyectiles_Err:
-102     Call TraceError(Err.Number, Err.Description, "SistemaCombate.ModificadorPoderAtaqueProyectiles", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.ModificadorPoderAtaqueProyectiles", Erl)
 104
         
 End Function
@@ -83,7 +83,7 @@ Private Function ModicadorDañoClaseArmas(ByVal clase As eClass) As Single
         Exit Function
 
 ModicadorDañoClaseArmas_Err:
-102     Call TraceError(Err.Number, Err.Description, "SistemaCombate.ModicadorDañoClaseArmas", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.ModicadorDañoClaseArmas", Erl)
 104
         
 End Function
@@ -99,7 +99,7 @@ Private Function ModicadorApuñalarClase(ByVal clase As eClass) As Single
         Exit Function
 
 ModicadorApuñalarClase_Err:
-102     Call TraceError(Err.Number, Err.Description, "SistemaCombate.ModicadorApuñalarClase", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.ModicadorApuñalarClase", Erl)
 104
         
 End Function
@@ -115,7 +115,7 @@ Private Function ModicadorDañoClaseProyectiles(ByVal clase As eClass) As Single
         Exit Function
 
 ModicadorDañoClaseProyectiles_Err:
-102     Call TraceError(Err.Number, Err.Description, "SistemaCombate.ModicadorDañoClaseProyectiles", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.ModicadorDañoClaseProyectiles", Erl)
 104
         
 End Function
@@ -131,7 +131,7 @@ Private Function ModEvasionDeEscudoClase(ByVal clase As eClass) As Single
         Exit Function
 
 ModEvasionDeEscudoClase_Err:
-102     Call TraceError(Err.Number, Err.Description, "SistemaCombate.ModEvasionDeEscudoClase", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.ModEvasionDeEscudoClase", Erl)
 104
         
 End Function
@@ -152,7 +152,7 @@ Private Function Minimo(ByVal a As Single, ByVal b As Single) As Single
         Exit Function
 
 Minimo_Err:
-106     Call TraceError(Err.Number, Err.Description, "SistemaCombate.Minimo", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.Minimo", Erl)
 108
         
 End Function
@@ -173,7 +173,7 @@ Function MinimoInt(ByVal a As Integer, ByVal b As Integer) As Integer
         Exit Function
 
 MinimoInt_Err:
-106     Call TraceError(Err.Number, Err.Description, "SistemaCombate.MinimoInt", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.MinimoInt", Erl)
 108
         
 End Function
@@ -194,7 +194,7 @@ Private Function Maximo(ByVal a As Single, ByVal b As Single) As Single
         Exit Function
 
 Maximo_Err:
-106     Call TraceError(Err.Number, Err.Description, "SistemaCombate.Maximo", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.Maximo", Erl)
 108
         
 End Function
@@ -215,7 +215,7 @@ Function MaximoInt(ByVal a As Integer, ByVal b As Integer) As Integer
         Exit Function
 
 MaximoInt_Err:
-106     Call TraceError(Err.Number, Err.Description, "SistemaCombate.MaximoInt", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.MaximoInt", Erl)
 108
         
 End Function
@@ -231,7 +231,7 @@ Private Function PoderEvasionEscudo(ByVal UserIndex As Integer) As Long
         Exit Function
 
 PoderEvasionEscudo_Err:
-102     Call TraceError(Err.Number, Err.Description, "SistemaCombate.PoderEvasionEscudo", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.PoderEvasionEscudo", Erl)
 104
         
 End Function
@@ -254,7 +254,7 @@ Private Function PoderEvasion(ByVal UserIndex As Integer) As Long
         Exit Function
 
 PoderEvasion_Err:
-106     Call TraceError(Err.Number, Err.Description, "SistemaCombate.PoderEvasion", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.PoderEvasion", Erl)
 108
         
 End Function
@@ -283,7 +283,7 @@ Private Function PoderAtaqueArma(ByVal UserIndex As Integer) As Long
         Exit Function
 
 PoderAtaqueArma_Err:
-116     Call TraceError(Err.Number, Err.Description, "SistemaCombate.PoderAtaqueArma", Erl)
+116     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.PoderAtaqueArma", Erl)
 118
         
 End Function
@@ -312,7 +312,7 @@ Private Function PoderAtaqueProyectil(ByVal UserIndex As Integer) As Long
         Exit Function
 
 PoderAtaqueProyectil_Err:
-116     Call TraceError(Err.Number, Err.Description, "SistemaCombate.PoderAtaqueProyectil", Erl)
+116     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.PoderAtaqueProyectil", Erl)
 118
         
 End Function
@@ -341,7 +341,7 @@ Private Function PoderAtaqueWrestling(ByVal UserIndex As Integer) As Long
         Exit Function
 
 PoderAtaqueWrestling_Err:
-116     Call TraceError(Err.Number, Err.Description, "SistemaCombate.PoderAtaqueWrestling", Erl)
+116     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.PoderAtaqueWrestling", Erl)
 118
         
 End Function
@@ -386,7 +386,7 @@ Private Function UserImpactoNpc(ByVal UserIndex As Integer, ByVal NpcIndex As In
         Exit Function
 
 UserImpactoNpc_Err:
-122     Call TraceError(Err.Number, Err.Description, "SistemaCombate.UserImpactoNpc", Erl)
+122     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.UserImpactoNpc", Erl)
 124
         
 End Function
@@ -463,7 +463,7 @@ Private Function NpcImpacto(ByVal NpcIndex As Integer, ByVal UserIndex As Intege
         Exit Function
 
 NpcImpacto_Err:
-136     Call TraceError(Err.Number, Err.Description, "SistemaCombate.NpcImpacto", Erl)
+136     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.NpcImpacto", Erl)
 138
         
 End Function
@@ -549,7 +549,7 @@ Private Function CalcularDaño(ByVal UserIndex As Integer) As Long
             Exit Function
 
 CalcularDaño_Err:
-150      Call TraceError(Err.Number, Err.Description, "SistemaCombate.CalcularDaño", Erl)
+150      Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.CalcularDaño", Erl)
 152
         
 End Function
@@ -670,7 +670,7 @@ Private Sub UserDañoNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
         Exit Sub
 
 UserDañoNpc_Err:
-178     Call TraceError(Err.Number, Err.Description, "SistemaCombate.UserDañoNpc", Erl)
+178     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.UserDañoNpc", Erl)
 180
         
 End Sub
@@ -779,7 +779,7 @@ Private Sub NpcDaño(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
         Exit Sub
 
 NpcDaño_Err:
-182     Call TraceError(Err.Number, Err.Description, "SistemaCombate.NpcDaño", Erl)
+182     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.NpcDaño", Erl)
 184
         
 End Sub
@@ -846,7 +846,7 @@ Public Function NpcAtacaUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integ
         Exit Function
 
 NpcAtacaUser_Err:
-144     Call TraceError(Err.Number, Err.Description, "SistemaCombate.NpcAtacaUser", Erl)
+144     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.NpcAtacaUser", Erl)
 146
         
 End Function
@@ -869,7 +869,7 @@ Private Function NpcImpactoNpc(ByVal Atacante As Integer, ByVal Victima As Integ
         Exit Function
 
 NpcImpactoNpc_Err:
-108     Call TraceError(Err.Number, Err.Description, "SistemaCombate.NpcImpactoNpc", Erl)
+108     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.NpcImpactoNpc", Erl)
 110
         
 End Function
@@ -914,7 +914,7 @@ Private Sub NpcDañoNpc(ByVal Atacante As Integer, ByVal Victima As Integer)
             Exit Sub
 
 NpcDañoNpc_Err:
-126         Call TraceError(Err.Number, Err.Description, "SistemaCombate.NpcDañoNpc")
+126         Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.NpcDañoNpc")
 128
         
 End Sub
@@ -960,7 +960,7 @@ Public Sub NpcAtacaNpc(ByVal Atacante As Integer, ByVal Victima As Integer, Opti
         Exit Sub
 
 NpcAtacaNpc_Err:
-130     Call TraceError(Err.Number, Err.Description, "SistemaCombate.NpcAtacaNpc", Erl)
+130     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.NpcAtacaNpc", Erl)
 132
         
 End Sub
@@ -1064,7 +1064,7 @@ Public Sub UsuarioAtacaNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer
         Exit Sub
 
 UsuarioAtacaNpc_Err:
-170     Call TraceError(Err.Number, Err.Description, "SistemaCombate.UsuarioAtacaNpc", Erl)
+170     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.UsuarioAtacaNpc", Erl)
 172
         
 End Sub
@@ -1156,7 +1156,7 @@ Public Sub UsuarioAtaca(ByVal UserIndex As Integer)
         Exit Sub
 
 UsuarioAtaca_Err:
-156     Call TraceError(Err.Number, Err.Description, "SistemaCombate.UsuarioAtaca", Erl)
+156     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.UsuarioAtaca", Erl)
 158
         
 End Sub
@@ -1246,7 +1246,7 @@ Private Function UsuarioImpacto(ByVal AtacanteIndex As Integer, ByVal VictimaInd
         Exit Function
 
 UsuarioImpacto_Err:
-168     Call TraceError(Err.Number, Err.Description, "SistemaCombate.UsuarioImpacto", Erl)
+168     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.UsuarioImpacto", Erl)
 170
 
 End Function
@@ -1296,7 +1296,7 @@ Public Sub UsuarioAtacaUsuario(ByVal AtacanteIndex As Integer, ByVal VictimaInde
         Exit Sub
 
 UsuarioAtacaUsuario_Err:
-128     Call TraceError(Err.Number, Err.Description, "SistemaCombate.UsuarioAtacaUsuario", Erl)
+128     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.UsuarioAtacaUsuario", Erl)
 130
 
 End Sub
@@ -1491,7 +1491,7 @@ Private Sub UserDañoUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As 
         Exit Sub
 
 UserDañoUser_Err:
-246     Call TraceError(Err.Number, Err.Description, "SistemaCombate.UserDañoUser", Erl)
+246     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.UserDañoUser", Erl)
 248
         
 End Sub
@@ -1550,7 +1550,7 @@ Private Sub DesequiparObjetoDeUnGolpe(ByVal AttackerIndex As Integer, ByVal Vict
         Exit Sub
 
 DesequiparObjetoDeUnGolpe_Err:
-152     Call TraceError(Err.Number, Err.Description, "SistemaCombate.DesequiparObjetoDeUnGolpe", Erl)
+152     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.DesequiparObjetoDeUnGolpe", Erl)
  
 End Sub
 
@@ -1602,7 +1602,7 @@ Sub UsuarioAtacadoPorUsuario(ByVal AttackerIndex As Integer, ByVal VictimIndex A
         Exit Sub
 
 UsuarioAtacadoPorUsuario_Err:
-136     Call TraceError(Err.Number, Err.Description, "SistemaCombate.UsuarioAtacadoPorUsuario", Erl)
+136     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.UsuarioAtacadoPorUsuario", Erl)
 138
         
 End Sub
@@ -1798,7 +1798,7 @@ Public Function PuedeAtacar(ByVal AttackerIndex As Integer, ByVal VictimIndex As
         Exit Function
 
 PuedeAtacar_Err:
-230     Call TraceError(Err.Number, Err.Description, "SistemaCombate.PuedeAtacar", Erl)
+230     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.PuedeAtacar", Erl)
 232
         
 End Function
@@ -1966,7 +1966,7 @@ Public Function PuedeAtacarNPC(ByVal AttackerIndex As Integer, ByVal NpcIndex As
         Exit Function
 
 PuedeAtacarNPC_Err:
-216     Call TraceError(Err.Number, Err.Description, "SistemaCombate.PuedeAtacarNPC", Erl)
+216     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.PuedeAtacarNPC", Erl)
 218
         
 End Function
@@ -2053,7 +2053,7 @@ Sub CalcularDarExp(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal 
         Exit Sub
 
 CalcularDarExp_Err:
-144     Call TraceError(Err.Number, Err.Description, "SistemaCombate.CalcularDarExp", Erl)
+144     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.CalcularDarExp", Erl)
 146
         
 End Sub
@@ -2194,7 +2194,7 @@ Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As I
         Exit Sub
 
 CalcularDarExpGrupal_Err:
-190     Call TraceError(Err.Number, Err.Description, "SistemaCombate.CalcularDarExpGrupal", Erl)
+190     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.CalcularDarExpGrupal", Erl)
 192
         
 End Sub
@@ -2263,7 +2263,7 @@ Private Sub CalcularDarOroGrupal(ByVal UserIndex As Integer, ByVal GiveGold As L
         Exit Sub
 
 CalcularDarOroGrupal_Err:
-126     Call TraceError(Err.Number, Err.Description, "SistemaCombate.CalcularDarOroGrupal", Erl)
+126     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.CalcularDarOroGrupal", Erl)
 128
         
 End Sub
@@ -2380,7 +2380,7 @@ Private Sub UserDañoEspecial(ByVal AtacanteIndex As Integer, ByVal VictimaIndex
         Exit Sub
 
 UserDañoEspecial_Err:
-178     Call TraceError(Err.Number, Err.Description, "SistemaCombate.UserDañoEspecial", Erl)
+178     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.UserDañoEspecial", Erl)
 180
 
 End Sub
@@ -2415,7 +2415,7 @@ Sub AllMascotasAtacanUser(ByVal victim As Integer, ByVal Maestro As Integer)
         Exit Sub
 
 AllMascotasAtacanUser_Err:
-120     Call TraceError(Err.Number, Err.Description, "SistemaCombate.AllMascotasAtacanUser", Erl)
+120     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.AllMascotasAtacanUser", Erl)
         
 End Sub
 
@@ -2443,7 +2443,7 @@ Public Sub AllMascotasAtacanNPC(ByVal NpcIndex As Integer, ByVal UserIndex As In
         Exit Sub
 
 AllMascotasAtacanNPC_Err:
-116     Call TraceError(Err.Number, Err.Description, "SistemaCombate.AllMascotasAtacanNPC", Erl)
+116     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.AllMascotasAtacanNPC", Erl)
         
 End Sub
 
@@ -2466,7 +2466,7 @@ Private Function PuedeDesequiparDeUnGolpe(ByVal UserIndex As Integer) As Boolean
         Exit Function
 
 PuedeDesequiparDeUnGolpe_Err:
-110     Call TraceError(Err.Number, Err.Description, "SistemaCombate.PuedeDesequiparDeUnGolpe", Erl)
+110     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.PuedeDesequiparDeUnGolpe", Erl)
 112
         
 End Function
@@ -2486,7 +2486,7 @@ Private Function PuedeApuñalar(ByVal UserIndex As Integer) As Boolean
         Exit Function
 
 PuedeApuñalar_Err:
-106     Call TraceError(Err.Number, Err.Description, "SistemaCombate.PuedeApuñalar", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.PuedeApuñalar", Erl)
 108
         
 End Function
@@ -2508,7 +2508,7 @@ Private Function PuedeGolpeCritico(ByVal UserIndex As Integer) As Boolean
         Exit Function
 
 PuedeGolpeCritico_Err:
-106     Call TraceError(Err.Number, Err.Description, "SistemaCombate.PuedeGolpeCritico", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.PuedeGolpeCritico", Erl)
 108
         
 End Function
@@ -2547,7 +2547,7 @@ Private Function ProbabilidadApuñalar(ByVal UserIndex As Integer) As Integer
         Exit Function
 
 ProbabilidadApuñalar_Err:
-120     Call TraceError(Err.Number, Err.Description, "SistemaCombate.ProbabilidadApuñalar", Erl)
+120     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.ProbabilidadApuñalar", Erl)
 122
         
 End Function
@@ -2560,7 +2560,7 @@ Private Function ProbabilidadGolpeCritico(ByVal UserIndex As Integer) As Integer
         Exit Function
 
 ProbabilidadGolpeCritico_Err:
-102     Call TraceError(Err.Number, Err.Description, "SistemaCombate.ProbabilidadGolpeCritico", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.ProbabilidadGolpeCritico", Erl)
 104
 
 End Function
@@ -2588,7 +2588,7 @@ Private Function ProbabilidadDesequipar(ByVal UserIndex As Integer) As Integer
         Exit Function
 
 ProbabilidadDesequipar_Err:
-114     Call TraceError(Err.Number, Err.Description, "SistemaCombate.ProbabilidadDesequipar", Erl)
+114     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.ProbabilidadDesequipar", Erl)
 116
         
 End Function
@@ -2605,7 +2605,7 @@ Private Sub WriteCombatConsoleMsg(ByVal UserIndex As Integer, ByVal message As S
             Exit Sub
 
 WriteCombatConsoleMsg_Err:
-104         Call TraceError(Err.Number, Err.Description, "SistemaCombate.WriteCombatConsoleMsg", Erl)
+104         Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.WriteCombatConsoleMsg", Erl)
 106
 
 End Sub
