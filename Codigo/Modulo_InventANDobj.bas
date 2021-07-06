@@ -94,7 +94,7 @@ Public Sub NPC_TIRAR_ITEMS(ByRef npc As npc)
         Exit Sub
 
 NPC_TIRAR_ITEMS_Err:
-114     Call TraceError(Err.Number, Err.Description, "InvNpc.NPC_TIRAR_ITEMS", Erl)
+114     Call RegistrarError(Err.Number, Err.Description, "InvNpc.NPC_TIRAR_ITEMS", Erl)
 
         
 End Sub
@@ -131,7 +131,7 @@ Function QuedanItems(ByVal NpcIndex As Integer, ByVal ObjIndex As Integer) As Bo
         Exit Function
 
 QuedanItems_Err:
-110     Call TraceError(Err.Number, Err.Description, "InvNpc.QuedanItems", Erl)
+110     Call RegistrarError(Err.Number, Err.Description, "InvNpc.QuedanItems", Erl)
 
         
 End Function
@@ -173,7 +173,7 @@ Function EncontrarCant(ByVal NpcIndex As Integer, ByVal ObjIndex As Integer) As 
         Exit Function
 
 EncontrarCant_Err:
-112     Call TraceError(Err.Number, Err.Description, "InvNpc.EncontrarCant", Erl)
+112     Call RegistrarError(Err.Number, Err.Description, "InvNpc.EncontrarCant", Erl)
 
         
 End Function
@@ -201,7 +201,7 @@ Sub ResetNpcInv(ByVal NpcIndex As Integer)
         Exit Sub
 
 ResetNpcInv_Err:
-112     Call TraceError(Err.Number, Err.Description, "InvNpc.ResetNpcInv", Erl)
+112     Call RegistrarError(Err.Number, Err.Description, "InvNpc.ResetNpcInv", Erl)
 
         
 End Sub
@@ -267,7 +267,7 @@ Sub QuitarNpcInvItem(ByVal NpcIndex As Integer, ByVal Slot As Byte, ByVal Cantid
         Exit Sub
 
 QuitarNpcInvItem_Err:
-144     Call TraceError(Err.Number, Err.Description, "InvNpc.QuitarNpcInvItem", Erl)
+144     Call RegistrarError(Err.Number, Err.Description, "InvNpc.QuitarNpcInvItem", Erl)
 146
         
 End Sub
@@ -303,7 +303,7 @@ Sub CargarInvent(ByVal NpcIndex As Integer)
         Exit Sub
 
 CargarInvent_Err:
-114     Call TraceError(Err.Number, Err.Description, "InvNpc.CargarInvent", Erl)
+114     Call RegistrarError(Err.Number, Err.Description, "InvNpc.CargarInvent", Erl)
 116
         
 End Sub

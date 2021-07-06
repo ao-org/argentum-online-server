@@ -848,7 +848,7 @@ Public Sub AplicarIntervalos()
         Exit Sub
 
 AplicarIntervalos_Err:
-148     Call TraceError(Err.Number, Err.Description, "FrmInterv.AplicarIntervalos", Erl)
+148     Call RegistrarError(Err.Number, Err.Description, "FrmInterv.AplicarIntervalos", Erl)
 150
         
 End Sub
@@ -867,7 +867,7 @@ Private Sub Command1_Click()
         Exit Sub
 
 Command1_Click_Err:
-102     Call TraceError(Err.Number, Err.Description, "FrmInterv.Command1_Click", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "FrmInterv.Command1_Click", Erl)
 
         
 End Sub
@@ -922,7 +922,7 @@ Private Sub ok_Click()
         Exit Sub
 
 ok_Click_Err:
-102     Call TraceError(Err.Number, Err.Description, "FrmInterv.ok_Click", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "FrmInterv.ok_Click", Erl)
 104
         
 End Sub

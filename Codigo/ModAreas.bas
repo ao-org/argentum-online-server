@@ -85,7 +85,7 @@ Public Sub InitAreas()
         Exit Sub
 
 InitAreas_Err:
-132     Call TraceError(Err.Number, Err.Description, "ModAreas.InitAreas", Erl)
+132     Call RegistrarError(Err.Number, Err.Description, "ModAreas.InitAreas", Erl)
 134
         
 End Sub
@@ -132,7 +132,7 @@ Public Sub AreasOptimizacion()
         Exit Sub
 
 AreasOptimizacion_Err:
-124     Call TraceError(Err.Number, Err.Description, "ModAreas.AreasOptimizacion", Erl)
+124     Call RegistrarError(Err.Number, Err.Description, "ModAreas.AreasOptimizacion", Erl)
 126
         
 End Sub
@@ -298,7 +298,7 @@ Public Sub CheckUpdateNeededUser(ByVal UserIndex As Integer, ByVal Head As Byte,
         Exit Sub
 
 CheckUpdateNeededUser_Err:
-250     Call TraceError(Err.Number, Err.Description, "ModAreas.CheckUpdateNeededUser", Erl)
+250     Call RegistrarError(Err.Number, Err.Description, "ModAreas.CheckUpdateNeededUser", Erl)
 252
         
 End Sub
@@ -405,7 +405,7 @@ Public Sub CheckUpdateNeededNpc(ByVal NpcIndex As Integer, ByVal Head As Byte)
         Exit Sub
 
 CheckUpdateNeededNpc_Err:
-208     Call TraceError(Err.Number, Err.Description, "ModAreas.CheckUpdateNeededNpc", Erl)
+208     Call RegistrarError(Err.Number, Err.Description, "ModAreas.CheckUpdateNeededNpc", Erl)
 210
         
 End Sub
@@ -451,7 +451,7 @@ Public Sub QuitarUser(ByVal UserIndex As Integer, ByVal Map As Integer)
         Exit Sub
 
 QuitarUser_Err:
-122     Call TraceError(Err.Number, Err.Description, "ModAreas.QuitarUser", Erl)
+122     Call RegistrarError(Err.Number, Err.Description, "ModAreas.QuitarUser", Erl)
 124
         
 End Sub
@@ -517,7 +517,7 @@ Public Sub AgregarUser(ByVal UserIndex As Integer, ByVal Map As Integer, Optiona
         Exit Sub
 
 AgregarUser_Err:
-136     Call TraceError(Err.Number, Err.Description, "ModAreas.AgregarUser", Erl)
+136     Call RegistrarError(Err.Number, Err.Description, "ModAreas.AgregarUser", Erl)
 138
         
 End Sub
@@ -544,7 +544,7 @@ Public Sub AgregarNpc(ByVal NpcIndex As Integer)
         Exit Sub
 
 AgregarNpc_Err:
-112     Call TraceError(Err.Number, Err.Description, "ModAreas.AgregarNpc", Erl)
+112     Call RegistrarError(Err.Number, Err.Description, "ModAreas.AgregarNpc", Erl)
 114
         
 End Sub

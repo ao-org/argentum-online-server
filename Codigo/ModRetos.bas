@@ -167,7 +167,7 @@ Public Sub CrearReto(ByVal UserIndex As Integer, JugadoresStr As String, ByVal A
         Exit Sub
     
 ErrHandler:
-210     Call TraceError(Err.Number, Err.Description, "ModRetos.CrearReto", Erl)
+210     Call RegistrarError(Err.Number, Err.Description, "ModRetos.CrearReto", Erl)
 
 End Sub
 
@@ -255,7 +255,7 @@ Public Sub AceptarReto(ByVal UserIndex As Integer, OferenteName As String)
         Exit Sub
     
 ErrHandler:
-166     Call TraceError(Err.Number, Err.Description, "ModRetos.AceptarReto", Erl)
+166     Call RegistrarError(Err.Number, Err.Description, "ModRetos.AceptarReto", Erl)
 End Sub
 
 Public Sub CancelarSolicitudReto(ByVal Oferente As Integer, Mensaje As String)
@@ -297,7 +297,7 @@ Public Sub CancelarSolicitudReto(ByVal Oferente As Integer, Mensaje As String)
         Exit Sub
     
 ErrHandler:
-126     Call TraceError(Err.Number, Err.Description, "ModRetos.CancelarSolicitudReto", Erl)
+126     Call RegistrarError(Err.Number, Err.Description, "ModRetos.CancelarSolicitudReto", Erl)
     
 End Sub
 
@@ -330,7 +330,7 @@ Private Sub BuscarSala(ByVal Oferente As Integer)
         Exit Sub
     
 ErrHandler:
-120     Call TraceError(Err.Number, Err.Description, "ModRetos.BuscarSala", Erl)
+120     Call RegistrarError(Err.Number, Err.Description, "ModRetos.BuscarSala", Erl)
 End Sub
 
 Private Sub IniciarReto(ByVal Oferente As Integer, ByVal Sala As Integer)
@@ -434,7 +434,7 @@ Private Sub IniciarReto(ByVal Oferente As Integer, ByVal Sala As Integer)
         Exit Sub
     
 ErrHandler:
-186     Call TraceError(Err.Number, Err.Description, "ModRetos.IniciarReto", Erl)
+186     Call RegistrarError(Err.Number, Err.Description, "ModRetos.IniciarReto", Erl)
     
 End Sub
 
@@ -771,7 +771,7 @@ Public Sub TirarItemsEnPos(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y 
         Exit Sub
 
 TirarItemsEnPos_Err:
-136     Call TraceError(Err.Number, Err.Description, "InvUsuario.TirarItemsEnPos", Erl)
+136     Call RegistrarError(Err.Number, Err.Description, "InvUsuario.TirarItemsEnPos", Erl)
 
 138
             
@@ -946,7 +946,7 @@ Private Sub SalaLiberada(ByVal Sala As Integer)
         Exit Sub
     
 ErrHandler:
-110     Call TraceError(Err.Number, Err.Description, "ModRetos.SalaLiberada", Erl)
+110     Call RegistrarError(Err.Number, Err.Description, "ModRetos.SalaLiberada", Erl)
     
 End Sub
 
@@ -1091,7 +1091,7 @@ Private Function TodosPuedenReto(ByVal Oferente As Integer) As Boolean
         Exit Function
     
 ErrHandler:
-134     Call TraceError(Err.Number, Err.Description, "ModRetos.TodosPuedenReto", Erl)
+134     Call RegistrarError(Err.Number, Err.Description, "ModRetos.TodosPuedenReto", Erl)
     
 End Function
 

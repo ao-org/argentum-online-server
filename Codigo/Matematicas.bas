@@ -39,7 +39,7 @@ Public Function Porcentaje(ByVal Total As Double, ByVal Porc As Double) As Doubl
         Exit Function
 
 Porcentaje_Err:
-102     Call TraceError(Err.Number, Err.Description, "Matematicas.Porcentaje", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "Matematicas.Porcentaje", Erl)
 104
         
 End Function
@@ -55,7 +55,7 @@ Function Distancia(ByRef wp1 As WorldPos, ByRef wp2 As WorldPos) As Long
         Exit Function
 
 Distancia_Err:
-102     Call TraceError(Err.Number, Err.Description, "Matematicas.Distancia", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "Matematicas.Distancia", Erl)
 104
         
 End Function
@@ -73,7 +73,7 @@ Function Distance(X1 As Variant, Y1 As Variant, X2 As Variant, Y2 As Variant) As
         Exit Function
 
 Distance_Err:
-102     Call TraceError(Err.Number, Err.Description, "Matematicas.Distance", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "Matematicas.Distance", Erl)
 104
         
 End Function
@@ -93,7 +93,7 @@ Public Function RandomNumber(ByVal LowerBound As Long, ByVal UpperBound As Long)
         Exit Function
 
 RandomNumber_Err:
-102     Call TraceError(Err.Number, Err.Description, "Matematicas.RandomNumber", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "Matematicas.RandomNumber", Erl)
 104
         
 End Function

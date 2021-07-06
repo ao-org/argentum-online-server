@@ -212,7 +212,7 @@ Private Sub Class_Initialize()
         Exit Sub
 
 Class_Initialize_Err:
-352     Call TraceError(Err.Number, Err.Description, "CSHA256.Class_Initialize", Erl)
+352     Call RegistrarError(Err.Number, Err.Description, "CSHA256.Class_Initialize", Erl)
 354
         
 End Sub
@@ -291,7 +291,7 @@ Private Function LShift(ByVal lValue As Long, ByVal iShiftBits As Integer) As Lo
         Exit Function
 
 LShift_Err:
-122     Call TraceError(Err.Number, Err.Description, "CSHA256.LShift", Erl)
+122     Call RegistrarError(Err.Number, Err.Description, "CSHA256.LShift", Erl)
 124
         
 End Function
@@ -369,7 +369,7 @@ Private Function RShift(ByVal lValue As Long, ByVal iShiftBits As Integer) As Lo
         Exit Function
 
 RShift_Err:
-122     Call TraceError(Err.Number, Err.Description, "CSHA256.RShift", Erl)
+122     Call RegistrarError(Err.Number, Err.Description, "CSHA256.RShift", Erl)
 124
         
 End Function
@@ -431,7 +431,7 @@ Private Function AddUnsigned(ByVal lX As Long, ByVal lY As Long) As Long
         Exit Function
 
 AddUnsigned_Err:
-126     Call TraceError(Err.Number, Err.Description, "CSHA256.AddUnsigned", Erl)
+126     Call RegistrarError(Err.Number, Err.Description, "CSHA256.AddUnsigned", Erl)
 128
         
 End Function
@@ -452,7 +452,7 @@ Private Function Ch(ByVal X As Long, ByVal Y As Long, ByVal z As Long) As Long
         Exit Function
 
 Ch_Err:
-102     Call TraceError(Err.Number, Err.Description, "CSHA256.Ch", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "CSHA256.Ch", Erl)
 104
         
 End Function
@@ -473,7 +473,7 @@ Private Function Maj(ByVal X As Long, ByVal Y As Long, ByVal z As Long) As Long
         Exit Function
 
 Maj_Err:
-102     Call TraceError(Err.Number, Err.Description, "CSHA256.Maj", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "CSHA256.Maj", Erl)
 104
         
 End Function
@@ -494,7 +494,7 @@ Private Function S(ByVal X As Long, ByVal n As Long) As Long
         Exit Function
 
 S_Err:
-102     Call TraceError(Err.Number, Err.Description, "CSHA256.S", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "CSHA256.S", Erl)
 104
         
 End Function
@@ -515,7 +515,7 @@ Private Function R(ByVal X As Long, ByVal n As Long) As Long
         Exit Function
 
 R_Err:
-102     Call TraceError(Err.Number, Err.Description, "CSHA256.R", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "CSHA256.R", Erl)
 104
         
 End Function
@@ -536,7 +536,7 @@ Private Function Sigma0(ByVal X As Long) As Long
         Exit Function
 
 Sigma0_Err:
-102     Call TraceError(Err.Number, Err.Description, "CSHA256.Sigma0", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "CSHA256.Sigma0", Erl)
 104
         
 End Function
@@ -557,7 +557,7 @@ Private Function Sigma1(ByVal X As Long) As Long
         Exit Function
 
 Sigma1_Err:
-102     Call TraceError(Err.Number, Err.Description, "CSHA256.Sigma1", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "CSHA256.Sigma1", Erl)
 104
         
 End Function
@@ -578,7 +578,7 @@ Private Function Gamma0(ByVal X As Long) As Long
         Exit Function
 
 Gamma0_Err:
-102     Call TraceError(Err.Number, Err.Description, "CSHA256.Gamma0", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "CSHA256.Gamma0", Erl)
 104
         
 End Function
@@ -599,7 +599,7 @@ Private Function Gamma1(ByVal X As Long) As Long
         Exit Function
 
 Gamma1_Err:
-102     Call TraceError(Err.Number, Err.Description, "CSHA256.Gamma1", Erl)
+102     Call RegistrarError(Err.Number, Err.Description, "CSHA256.Gamma1", Erl)
 104
         
 End Function
@@ -695,7 +695,7 @@ Private Function ConvertToWordArray(sMessage As String) As Long()
         Exit Function
 
 ConvertToWordArray_Err:
-134     Call TraceError(Err.Number, Err.Description, "CSHA256.ConvertToWordArray", Erl)
+134     Call RegistrarError(Err.Number, Err.Description, "CSHA256.ConvertToWordArray", Erl)
 136
         
 End Function
@@ -818,7 +818,7 @@ Public Function SHA256(sMessage As String) As String
         Exit Function
 
 SHA256_Err:
-182     Call TraceError(Err.Number, Err.Description, "CSHA256.SHA256", Erl)
+182     Call RegistrarError(Err.Number, Err.Description, "CSHA256.SHA256", Erl)
 184
         
 End Function
