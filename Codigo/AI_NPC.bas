@@ -236,7 +236,9 @@ Private Sub AI_CaminarConRumbo(ByVal NpcIndex As Integer, ByRef rumbo As WorldPo
         Exit Sub
 
 AI_CaminarConRumbo_Err:
-118     Call RegistrarError(Err.Number, Err.Description, "AI.AI_CaminarConRumbo", Erl)
+        Dim errorDescription As String
+        errorDescription = Err.Description & vbNewLine & " NpcIndex: " & NpcIndex & " NPCList.size= " & UBound(NpcList)
+118     Call RegistrarError(Err.Number, errorDescription, "AI.AI_CaminarConRumbo", Erl)
 
 End Sub
 
@@ -657,7 +659,10 @@ Private Sub MovimientoInvasion(ByVal NpcIndex As Integer)
         Exit Sub
     
 Handler:
-144     Call RegistrarError(Err.Number, Err.Description, "AI.MovimientoInvasion", Erl)
+        Dim errorDescription As String
+        errorDescription = Err.Description & vbNewLine & "NpcId=" & NpcList(NpcIndex).Numero & " InvasionIndex:" & NpcList(NpcIndex).flags.InvasionIndex & " SpawnBox:" & NpcList(NpcIndex).flags.SpawnBox & vbNewLine
+        
+144     Call RegistrarError(Err.Number, errorDescription, "AI.MovimientoInvasion", Erl)
 146     Resume Next
 End Sub
 
