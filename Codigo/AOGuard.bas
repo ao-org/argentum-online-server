@@ -6,7 +6,7 @@ Private Const MAX_CODE_RESEND_COUNT As Byte = 10
 ' Configuracion - Argentum Guard
 Public AOG_STATUS                   As Byte
 Private AOG_EXPIRE                  As Long
-Private AOG_RESEND_INTERVAL         As Long
+Private AOG_RESEND_INTERVAL         As Integer
 Private TRANSPORT_METHOD            As String
 
 ' Configuracion API
@@ -134,7 +134,7 @@ Private Sub EnviarCodigo(ByVal UserIndex As Integer)
                         
                 Call WriteShowMessageBox(UserIndex, "Te hemos enviado un correo con el código de verificacion a tu correo. " & _
                                                     "Si no lo encuentras, revisa la carpeta de SPAM. " & _
-                                                    "Si no te ha llegado, intenta nuevamente en " & AOG_RESEND_INTERVAL \ 10000 & " segundos")
+                                                    "Si no te ha llegado, intenta nuevamente en " & val(QueryData!delta_time) & " segundos")
                         
             Else
                 
@@ -143,7 +143,7 @@ Private Sub EnviarCodigo(ByVal UserIndex As Integer)
                 Call MakeQuery("UPDATE account_guard SET code_resend_attempts = code_resend_attempts + 1 WHERE account_id = ?", True, .AccountID)
                     
                 Call WriteShowMessageBox(UserIndex, "Ya te hemos enviado un correo con el código de verificacion. " & _
-                                                    "Si no te ha llegado, intenta nuevamente en " & AOG_RESEND_INTERVAL \ 10000 & " segundos")
+                                                    "Si no te ha llegado, intenta nuevamente en " & val(QueryData!delta_time) & " segundos")
                         
             End If
         
