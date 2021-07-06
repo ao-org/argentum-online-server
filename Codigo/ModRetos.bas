@@ -577,13 +577,31 @@ Public Sub FinalizarReto(ByVal Sala As Integer, Optional ByVal TiempoAgotado As 
     
             ' Decidimos el resultado del reto según el puntaje:
             Dim i As Integer, tIndex As Integer, Equipo1 As String, Equipo2 As String
-        
+            Dim eloTotalIzquierda As Long, eloTotalDerecha As Long, winsIzquierda As Long, winsDerecha As Long
+
+            For i = 0 To UBound(.Jugadores)
+              tIndex = .Jugadores(i)
+
+              If tIndex <> 0 Then
+                If i Mod 2 = 0 Then
+                  eloIzquierda = eloIzquierda + UserList(tIndex).Stats.ELO
+                Else
+                  eloDerecha = eloDerecha + UserList(tIndex).Stats.ELO
+                End If
+              End If
+
+            Next i
+
             ' Empate
 106         If .Puntaje = 0 Then
                 ' Pagamos a todos los que no abandonaron
 108             Oro = OroTotal \ (UBound(.Jugadores) + 1)
 110             OroStr = PonerPuntos(Oro)
 
+                ' No hubo ganadores, entonces el ELO no les da el bonus.
+                winsIzquierda = 0
+                winsDerecha = 0
+    
 112             For i = 0 To UBound(.Jugadores)
 114                 tIndex = .Jugadores(i)
 
@@ -631,8 +649,12 @@ Public Sub FinalizarReto(ByVal Sala As Integer, Optional ByVal TiempoAgotado As 
             
 150             If .Puntaje < 0 Then
 152                 Ganador = EquipoReto.Izquierda
+                    winsIzquierda = .TamañoEquipoDer
+                    winsDerecha = - .TamañoEquipoIzq
                 Else
 154                 Ganador = EquipoReto.Derecha
+                    winsIzquierda = - .TamañoEquipoDer
+                    winsDerecha = .TamañoEquipoIzq
                 End If
 
                 ' Pagamos a los ganadores que no abandonaron
@@ -648,6 +670,8 @@ Public Sub FinalizarReto(ByVal Sala As Integer, Optional ByVal TiempoAgotado As 
 170                         UserList(tIndex).Stats.GLD = UserList(tIndex).Stats.GLD + Oro
 172                         Call WriteUpdateGold(tIndex)
 174                         Call WriteLocaleMsg(tIndex, "29", FontTypeNames.FONTTYPE_MP, OroStr) ' Has ganado X monedas de oro
+
+
 176                         If .CaenItems Then
 178                             If (tIndex \ 2) Mod 2 Then
                                        ' Lado izquierdo
@@ -719,6 +743,27 @@ Public Sub FinalizarReto(ByVal Sala As Integer, Optional ByVal TiempoAgotado As 
                 End If
             
             End If
+
+            ' Actualizamos el ELO de cada jugador, utilizando el `Algoritmo de 400`
+            ' https://en.wikipedia.org/wiki/Elo_rating_system
+            ' Aclaracion: No dividimos por que siempre contamos de a un juego.
+            For i = 0 To UBound(.Jugadores)
+              tIndex = .Jugadores(i)
+
+              If tIndex <> 0 Then
+                If i Mod 2 = 0 Then ' Jugadores en el equipo Izquierdo
+                  UserList(tIndex).Stats.ELO = (eloDerecha + 400 * winsIzquierda)
+                Else
+                  UserList(tIndex).Stats.ELO = (eloIzquierda + 400 * winsDerecha)
+                End If
+
+                If UserList(tIndex).Stats.ELO < 0 Then
+                  UserList(tIndex).Stats.ELO = 0
+                End If
+
+              End If
+
+            Next i
     
         End With
     
