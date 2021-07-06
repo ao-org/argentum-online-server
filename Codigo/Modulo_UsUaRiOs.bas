@@ -284,7 +284,7 @@ Sub EraseUserChar(ByVal UserIndex As Integer, ByVal Desvanecer As Boolean)
         Exit Sub
     
 ErrorHandler:
-134     Call LogError("Error en EraseUserchar " & Error & " - " & Err.Number & ": " & Err.Description)
+134     Call RegistrarError(Err.Number, Err.Description, "UsUaRiOs.EraseUserChar", Erl)
 
 End Sub
 
