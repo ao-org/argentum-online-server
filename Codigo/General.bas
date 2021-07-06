@@ -2559,7 +2559,7 @@ Sub PasarSegundo()
         Exit Sub
 
 ErrHandler:
-278     Call TraceError(Err.Number, Err.Description & vbNewLine & "UserIndex: " & UserIndex, "General.PasarSegundo", Erl)
+278     Call TraceError(Err.Number, Err.Description, "General.PasarSegundo", Erl)
 
 End Sub
  
