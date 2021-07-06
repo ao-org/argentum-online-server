@@ -360,7 +360,7 @@ Public Function SendData(ByVal Slot As Integer, ByRef data() As Byte) As Long
     Exit Function
 
 WsApiEnviar_Err:
-    Call RegistrarError(Err.Number, Err.Description, "wskapiAO.WsApiEnviar", Erl)
+    Call TraceError(Err.Number, Err.Description, "wskapiAO.WsApiEnviar", Erl)
     Resume Next
         
 End Function

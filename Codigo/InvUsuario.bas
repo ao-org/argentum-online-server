@@ -54,7 +54,7 @@ Public Function TieneObjetosRobables(ByVal UserIndex As Integer) As Boolean
         Exit Function
 
 TieneObjetosRobables_Err:
-112     Call RegistrarError(Err.Number, Err.Description, "InvUsuario.TieneObjetosRobables", Erl)
+112     Call TraceError(Err.Number, Err.Description, "InvUsuario.TieneObjetosRobables", Erl)
 
         
 End Function
@@ -215,7 +215,7 @@ Sub QuitarNewbieObj(ByVal UserIndex As Integer)
         Exit Sub
 
 QuitarNewbieObj_Err:
-144     Call RegistrarError(Err.Number, Err.Description, "InvUsuario.QuitarNewbieObj", Erl)
+144     Call TraceError(Err.Number, Err.Description, "InvUsuario.QuitarNewbieObj", Erl)
 146
         
 End Sub
@@ -276,7 +276,7 @@ Sub LimpiarInventario(ByVal UserIndex As Integer)
         Exit Sub
 
 LimpiarInventario_Err:
-158     Call RegistrarError(Err.Number, Err.Description, "InvUsuario.LimpiarInventario", Erl)
+158     Call TraceError(Err.Number, Err.Description, "InvUsuario.LimpiarInventario", Erl)
 160
         
 End Sub
@@ -382,7 +382,7 @@ Sub TirarOro(ByVal Cantidad As Long, ByVal UserIndex As Integer)
         Exit Sub
 
 ErrHandler:
-162 Call RegistrarError(Err.Number, Err.Description, "InvUsuario.TirarOro", Erl())
+162 Call TraceError(Err.Number, Err.Description, "InvUsuario.TirarOro", Erl())
     
 End Sub
 
@@ -417,7 +417,7 @@ Sub QuitarUserInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal Cant
         Exit Sub
 
 QuitarUserInvItem_Err:
-118     Call RegistrarError(Err.Number, Err.Description, "InvUsuario.QuitarUserInvItem", Erl)
+118     Call TraceError(Err.Number, Err.Description, "InvUsuario.QuitarUserInvItem", Erl)
 120
         
 End Sub
@@ -463,7 +463,7 @@ Sub UpdateUserInv(ByVal UpdateAll As Boolean, ByVal UserIndex As Integer, ByVal 
         Exit Sub
 
 UpdateUserInv_Err:
-118     Call RegistrarError(Err.Number, Err.Description, "InvUsuario.UpdateUserInv", Erl)
+118     Call TraceError(Err.Number, Err.Description, "InvUsuario.UpdateUserInv", Erl)
 120
         
 End Sub
@@ -534,7 +534,7 @@ Sub DropObj(ByVal UserIndex As Integer, _
         Exit Sub
 
 DropObj_Err:
-138     Call RegistrarError(Err.Number, Err.Description, "InvUsuario.DropObj", Erl)
+138     Call TraceError(Err.Number, Err.Description, "InvUsuario.DropObj", Erl)
 
 140
         
@@ -567,7 +567,7 @@ Sub EraseObj(ByVal num As Integer, ByVal Map As Integer, ByVal X As Integer, ByV
         Exit Sub
 
 EraseObj_Err:
-114     Call RegistrarError(Err.Number, Err.Description, "InvUsuario.EraseObj", Erl)
+114     Call TraceError(Err.Number, Err.Description, "InvUsuario.EraseObj", Erl)
 116
         
 End Sub
@@ -608,7 +608,7 @@ Sub MakeObj(ByRef obj As obj, ByVal Map As Integer, ByVal X As Integer, ByVal Y 
         Exit Sub
 
 MakeObj_Err:
-120     Call RegistrarError(Err.Number, Err.Description, "InvUsuario.MakeObj", Erl)
+120     Call TraceError(Err.Number, Err.Description, "InvUsuario.MakeObj", Erl)
 
 122
         
@@ -791,7 +791,7 @@ Sub GetObj(ByVal UserIndex As Integer)
         Exit Sub
 
 GetObj_Err:
-150     Call RegistrarError(Err.Number, Err.Description, "InvUsuario.GetObj", Erl)
+150     Call TraceError(Err.Number, Err.Description, "InvUsuario.GetObj", Erl)
 152
         
 End Sub
@@ -1016,7 +1016,7 @@ Sub Desequipar(ByVal UserIndex As Integer, ByVal Slot As Byte)
         Exit Sub
 
 Desequipar_Err:
-352     Call RegistrarError(Err.Number, Err.Description, "InvUsuario.Desequipar", Erl)
+352     Call TraceError(Err.Number, Err.Description, "InvUsuario.Desequipar", Erl)
 354
         
 End Sub
@@ -1083,7 +1083,7 @@ Function FaccionPuedeUsarItem(ByVal UserIndex As Integer, ByVal ObjIndex As Inte
         Exit Function
 
 FaccionPuedeUsarItem_Err:
-124     Call RegistrarError(Err.Number, Err.Description, "InvUsuario.FaccionPuedeUsarItem", Erl)
+124     Call TraceError(Err.Number, Err.Description, "InvUsuario.FaccionPuedeUsarItem", Erl)
 126
         
 End Function
@@ -1147,7 +1147,7 @@ Sub EquiparBarco(ByVal UserIndex As Integer)
       Exit Sub
 
 EquiparBarco_Err:
-158   Call RegistrarError(Err.Number, Err.Description, "InvUsuario.EquiparBarco", Erl)
+158   Call TraceError(Err.Number, Err.Description, "InvUsuario.EquiparBarco", Erl)
 160
 
 End Sub
@@ -3180,7 +3180,7 @@ Sub EnivarArmasConstruibles(ByVal UserIndex As Integer)
         Exit Sub
 
 EnivarArmasConstruibles_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "InvUsuario.EnivarArmasConstruibles", Erl)
+102     Call TraceError(Err.Number, Err.Description, "InvUsuario.EnivarArmasConstruibles", Erl)
 104
         
 End Sub
@@ -3196,7 +3196,7 @@ Sub EnivarObjConstruibles(ByVal UserIndex As Integer)
         Exit Sub
 
 EnivarObjConstruibles_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "InvUsuario.EnivarObjConstruibles", Erl)
+102     Call TraceError(Err.Number, Err.Description, "InvUsuario.EnivarObjConstruibles", Erl)
 104
         
 End Sub
@@ -3212,7 +3212,7 @@ Sub EnivarObjConstruiblesAlquimia(ByVal UserIndex As Integer)
         Exit Sub
 
 EnivarObjConstruiblesAlquimia_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "InvUsuario.EnivarObjConstruiblesAlquimia", Erl)
+102     Call TraceError(Err.Number, Err.Description, "InvUsuario.EnivarObjConstruiblesAlquimia", Erl)
 104
         
 End Sub
@@ -3228,7 +3228,7 @@ Sub EnivarObjConstruiblesSastre(ByVal UserIndex As Integer)
         Exit Sub
 
 EnivarObjConstruiblesSastre_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "InvUsuario.EnivarObjConstruiblesSastre", Erl)
+102     Call TraceError(Err.Number, Err.Description, "InvUsuario.EnivarObjConstruiblesSastre", Erl)
 104
         
 End Sub
@@ -3244,7 +3244,7 @@ Sub EnivarArmadurasConstruibles(ByVal UserIndex As Integer)
         Exit Sub
 
 EnivarArmadurasConstruibles_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "InvUsuario.EnivarArmadurasConstruibles", Erl)
+102     Call TraceError(Err.Number, Err.Description, "InvUsuario.EnivarArmadurasConstruibles", Erl)
 104
         
 End Sub
@@ -3260,7 +3260,7 @@ Public Function ItemSeCae(ByVal Index As Integer) As Boolean
         Exit Function
 
 ItemSeCae_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "InvUsuario.ItemSeCae", Erl)
+102     Call TraceError(Err.Number, Err.Description, "InvUsuario.ItemSeCae", Erl)
 104
         
 End Function
@@ -3296,7 +3296,7 @@ Public Function PirataCaeItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
         Exit Function
 
 PirataCaeItem_Err:
-112     Call RegistrarError(Err.Number, Err.Description, "InvUsuario.PirataCaeItem", Erl)
+112     Call TraceError(Err.Number, Err.Description, "InvUsuario.PirataCaeItem", Erl)
 
 
 End Function
@@ -3357,7 +3357,7 @@ Sub TirarTodosLosItems(ByVal UserIndex As Integer)
         Exit Sub
 
 TirarTodosLosItems_Err:
-140     Call RegistrarError(Err.Number, Err.Description, "InvUsuario.TirarTodosLosItems", Erl)
+140     Call TraceError(Err.Number, Err.Description, "InvUsuario.TirarTodosLosItems", Erl)
 
 142
         
@@ -3374,7 +3374,7 @@ Function ItemNewbie(ByVal ItemIndex As Integer) As Boolean
         Exit Function
 
 ItemNewbie_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "InvUsuario.ItemNewbie", Erl)
+102     Call TraceError(Err.Number, Err.Description, "InvUsuario.ItemNewbie", Erl)
 104
         
 End Function

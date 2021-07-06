@@ -109,7 +109,7 @@ Public Sub EnlistarArmadaReal(ByVal UserIndex As Integer)
             Exit Sub
 
 EnlistarArmadaReal_Err:
-168         Call RegistrarError(Err.Number, Err.Description, "ModFacciones.EnlistarArmadaReal", Erl)
+168         Call TraceError(Err.Number, Err.Description, "ModFacciones.EnlistarArmadaReal", Erl)
 170
 
 End Sub
@@ -158,7 +158,7 @@ Public Sub RecompensaArmadaReal(ByVal UserIndex As Integer)
             Exit Sub
 
 RecompensaArmadaReal_Err:
-130         Call RegistrarError(Err.Number, Err.Description, "ModFacciones.RecompensaArmadaReal", Erl)
+130         Call TraceError(Err.Number, Err.Description, "ModFacciones.RecompensaArmadaReal", Erl)
 132
 
 End Sub
@@ -177,7 +177,7 @@ Public Sub ExpulsarFaccionReal(ByVal UserIndex As Integer)
             Exit Sub
 
 ExpulsarFaccionReal_Err:
-110         Call RegistrarError(Err.Number, Err.Description, "ModFacciones.ExpulsarFaccionReal", Erl)
+110         Call TraceError(Err.Number, Err.Description, "ModFacciones.ExpulsarFaccionReal", Erl)
 112
 
 End Sub
@@ -196,7 +196,7 @@ Public Sub ExpulsarFaccionCaos(ByVal UserIndex As Integer)
             Exit Sub
 
 ExpulsarFaccionCaos_Err:
-110         Call RegistrarError(Err.Number, Err.Description, "ModFacciones.ExpulsarFaccionCaos", Erl)
+110         Call TraceError(Err.Number, Err.Description, "ModFacciones.ExpulsarFaccionCaos", Erl)
 112
 
 End Sub
@@ -215,7 +215,7 @@ Public Function TituloReal(ByVal UserIndex As Integer) As String
             Exit Function
 
 TituloReal_Err:
-106         Call RegistrarError(Err.Number, Err.Description, "ModFacciones.TituloReal", Erl)
+106         Call TraceError(Err.Number, Err.Description, "ModFacciones.TituloReal", Erl)
 108
 
 End Function
@@ -318,7 +318,7 @@ Public Sub EnlistarCaos(ByVal UserIndex As Integer)
             Exit Sub
 
 EnlistarCaos_Err:
-162         Call RegistrarError(Err.Number, Err.Description, "ModFacciones.EnlistarCaos", Erl)
+162         Call TraceError(Err.Number, Err.Description, "ModFacciones.EnlistarCaos", Erl)
 164
 
 End Sub
@@ -366,7 +366,7 @@ Public Sub RecompensaCaos(ByVal UserIndex As Integer)
             Exit Sub
 
 RecompensaCaos_Err:
-130         Call RegistrarError(Err.Number, Err.Description, "ModFacciones.RecompensaCaos", Erl)
+130         Call TraceError(Err.Number, Err.Description, "ModFacciones.RecompensaCaos", Erl)
 132
 
 End Sub
@@ -385,7 +385,7 @@ Public Function TituloCaos(ByVal UserIndex As Integer) As String
             Exit Function
 
 TituloCaos_Err:
-106         Call RegistrarError(Err.Number, Err.Description, "ModFacciones.TituloCaos", Erl)
+106         Call TraceError(Err.Number, Err.Description, "ModFacciones.TituloCaos", Erl)
 108
 
 End Function
@@ -408,7 +408,7 @@ Private Function ProximoRango(ByVal UserIndex As Integer) As tRangoFaccion
             Exit Function
 
 ProximoRango_Err:
-110         Call RegistrarError(Err.Number, Err.Description, "ModFacciones.TituloCaos", Erl)
+110         Call TraceError(Err.Number, Err.Description, "ModFacciones.TituloCaos", Erl)
 112
 
 End Function
@@ -484,7 +484,7 @@ Private Sub DarRecompensas(ByVal UserIndex As Integer)
             Exit Sub
 
 DarRecompensas_Err:
-142         Call RegistrarError(Err.Number, Err.Description, "ModFacciones.DarRecompensas", Erl)
+142         Call TraceError(Err.Number, Err.Description, "ModFacciones.DarRecompensas", Erl)
 144
 
 End Sub
@@ -515,7 +515,7 @@ Private Sub PerderItemsFaccionarios(ByVal UserIndex As Integer)
             Exit Sub
 
 PerderItemsFaccionarios_Err:
-116         Call RegistrarError(Err.Number, Err.Description, "ModFacciones.PerderItemsFaccionarios", Erl)
+116         Call TraceError(Err.Number, Err.Description, "ModFacciones.PerderItemsFaccionarios", Erl)
 118
 
 End Sub

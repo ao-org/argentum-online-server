@@ -195,7 +195,7 @@ Function VersionOK(ByVal Ver As String) As Boolean
         Exit Function
 
 VersionOK_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "Admin.VersionOK", Erl)
+102     Call TraceError(Err.Number, Err.Description, "Admin.VersionOK", Erl)
 104
         
 End Function
@@ -231,7 +231,7 @@ Sub ReSpawnOrigPosNpcs()
         Exit Sub
         
 Handler:
-114 Call RegistrarError(Err.Number, Err.Description, "Admin.ReSpawnOrigPosNpcs", Erl)
+114 Call TraceError(Err.Number, Err.Description, "Admin.ReSpawnOrigPosNpcs", Erl)
 116
 
 End Sub
@@ -289,7 +289,7 @@ Sub WorldSave()
         Exit Sub
         
 Handler:
-128 Call RegistrarError(Err.Number, Err.Description, "Admin.WorldSave", Erl)
+128 Call TraceError(Err.Number, Err.Description, "Admin.WorldSave", Erl)
 130
 
 End Sub
@@ -323,7 +323,7 @@ Public Sub PurgarPenas()
         Exit Sub
 
 PurgarPenas_Err:
-118     Call RegistrarError(Err.Number, Err.Description, "Admin.PurgarPenas", Erl)
+118     Call TraceError(Err.Number, Err.Description, "Admin.PurgarPenas", Erl)
 120
         
 End Sub
@@ -374,7 +374,7 @@ Public Sub PurgarScroll()
         Exit Sub
 
 PurgarScroll_Err:
-134     Call RegistrarError(Err.Number, Err.Description, "Admin.PurgarScroll", Erl)
+134     Call TraceError(Err.Number, Err.Description, "Admin.PurgarScroll", Erl)
 136
         
 End Sub
@@ -408,7 +408,7 @@ Public Sub EfectoOxigeno(ByVal UserIndex As Integer)
     Exit Sub
 
 EfectoOxigeno_Err:
-126     Call RegistrarError(Err.Number, Err.Description, "Admin.EfectoOxigeno", Erl)
+126     Call TraceError(Err.Number, Err.Description, "Admin.EfectoOxigeno", Erl)
 128
         
 End Sub
@@ -434,7 +434,7 @@ Public Sub Encarcelar(ByVal UserIndex As Integer, ByVal minutos As Long, Optiona
         Exit Sub
 
 Encarcelar_Err:
-112     Call RegistrarError(Err.Number, Err.Description, "Admin.Encarcelar", Erl)
+112     Call TraceError(Err.Number, Err.Description, "Admin.Encarcelar", Erl)
 114
         
 End Sub
@@ -463,7 +463,7 @@ Public Sub BorrarUsuario(ByVal UserName As String)
         Exit Sub
 
 BorrarUsuario_Err:
-108     Call RegistrarError(Err.Number, Err.Description, "Admin.BorrarUsuario", Erl)
+108     Call TraceError(Err.Number, Err.Description, "Admin.BorrarUsuario", Erl)
 
         
 End Sub
@@ -484,7 +484,7 @@ Public Function BANCheck(ByVal Name As String) As Boolean
         Exit Function
 
 BANCheck_Err:
-106     Call RegistrarError(Err.Number, Err.Description, "Admin.BANCheck", Erl)
+106     Call TraceError(Err.Number, Err.Description, "Admin.BANCheck", Erl)
 108
         
 End Function
@@ -505,7 +505,7 @@ Public Function DonadorCheck(ByVal Name As String) As Boolean
         Exit Function
 
 DonadorCheck_Err:
-106     Call RegistrarError(Err.Number, Err.Description, "Admin.DonadorCheck", Erl)
+106     Call TraceError(Err.Number, Err.Description, "Admin.DonadorCheck", Erl)
 108
         
 End Function
@@ -526,7 +526,7 @@ Public Function CreditosDonadorCheck(ByVal Name As String) As Long
         Exit Function
 
 CreditosDonadorCheck_Err:
-106     Call RegistrarError(Err.Number, Err.Description, "Admin.CreditosDonadorCheck", Erl)
+106     Call TraceError(Err.Number, Err.Description, "Admin.CreditosDonadorCheck", Erl)
 108
         
 End Function
@@ -547,7 +547,7 @@ Public Function CreditosCanjeadosCheck(ByVal Name As String) As Long
         Exit Function
 
 CreditosCanjeadosCheck_Err:
-106     Call RegistrarError(Err.Number, Err.Description, "Admin.CreditosCanjeadosCheck", Erl)
+106     Call TraceError(Err.Number, Err.Description, "Admin.CreditosCanjeadosCheck", Erl)
 108
         
 End Function
@@ -579,7 +579,7 @@ Public Function DiasDonadorCheck(ByVal Name As String) As Integer
         Exit Function
 
 DiasDonadorCheck_Err:
-110     Call RegistrarError(Err.Number, Err.Description, "Admin.DiasDonadorCheck", Erl)
+110     Call TraceError(Err.Number, Err.Description, "Admin.DiasDonadorCheck", Erl)
 112
         
 End Function
@@ -600,7 +600,7 @@ Public Function ComprasDonadorCheck(ByVal Name As String) As Long
         Exit Function
 
 ComprasDonadorCheck_Err:
-106     Call RegistrarError(Err.Number, Err.Description, "Admin.ComprasDonadorCheck", Erl)
+106     Call TraceError(Err.Number, Err.Description, "Admin.ComprasDonadorCheck", Erl)
 108
         
 End Function
@@ -621,7 +621,7 @@ Public Function PersonajeExiste(ByVal Name As String) As Boolean
         Exit Function
 
 PersonajeExiste_Err:
-106     Call RegistrarError(Err.Number, Err.Description, "Admin.PersonajeExiste", Erl)
+106     Call TraceError(Err.Number, Err.Description, "Admin.PersonajeExiste", Erl)
 108
         
 End Function
@@ -648,7 +648,7 @@ Public Function UnBan(ByVal Name As String) As Boolean
         Exit Function
 
 UnBan_Err:
-114     Call RegistrarError(Err.Number, Err.Description, "Admin.UnBan", Erl)
+114     Call TraceError(Err.Number, Err.Description, "Admin.UnBan", Erl)
 116
         
 End Function
@@ -684,7 +684,7 @@ Public Sub ActualizaEstadisticasWeb()
         Exit Sub
 
 ActualizaEstadisticasWeb_Err:
-114     Call RegistrarError(Err.Number, Err.Description, "Admin.ActualizaEstadisticasWeb", Erl)
+114     Call TraceError(Err.Number, Err.Description, "Admin.ActualizaEstadisticasWeb", Erl)
 116
         
 End Sub
@@ -734,7 +734,7 @@ Public Sub ActualizaStatsES()
         Exit Sub
 
 ActualizaStatsES_Err:
-132     Call RegistrarError(Err.Number, Err.Description, "Admin.ActualizaStatsES", Erl)
+132     Call TraceError(Err.Number, Err.Description, "Admin.ActualizaStatsES", Erl)
 134
         
 End Sub
@@ -766,7 +766,7 @@ Public Function UserDarPrivilegioLevel(ByVal Name As String) As PlayerType
         Exit Function
 
 UserDarPrivilegioLevel_Err:
-118     Call RegistrarError(Err.Number, Err.Description, "Admin.UserDarPrivilegioLevel", Erl)
+118     Call TraceError(Err.Number, Err.Description, "Admin.UserDarPrivilegioLevel", Erl)
 120
         
 End Function
@@ -792,7 +792,7 @@ Public Sub BanTemporal(ByVal nombre As String, ByVal dias As Integer, Causa As S
         Exit Sub
 
 BanTemporal_Err:
-116     Call RegistrarError(Err.Number, Err.Description, "Admin.BanTemporal", Erl)
+116     Call TraceError(Err.Number, Err.Description, "Admin.BanTemporal", Erl)
 118
         
 End Sub
@@ -817,7 +817,7 @@ Sub SaveBans()
         Exit Sub
 
 SaveBans_Err:
-112     Call RegistrarError(Err.Number, Err.Description, "Admin.SaveBans", Erl)
+112     Call TraceError(Err.Number, Err.Description, "Admin.SaveBans", Erl)
 114
         
 End Sub
@@ -846,7 +846,7 @@ Sub SaveBan(num As Integer)
         Exit Sub
 
 SaveBan_Err:
-120     Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Admin.SaveBan", Erl)
+120     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Admin.SaveBan", Erl)
 122
         
 End Sub
@@ -883,7 +883,7 @@ Sub LoadBans()
         Exit Sub
 
 LoadBans_Err:
-120     Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Admin.LoadBans", Erl)
+120     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Admin.LoadBans", Erl)
 122
         
 End Sub
@@ -905,7 +905,7 @@ Public Function ChangeBan(ByVal Name As String, ByVal Baneado As Byte) As Boolea
         Exit Function
 
 ChangeBan_Err:
-106     Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Admin.ChangeBan", Erl)
+106     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Admin.ChangeBan", Erl)
 108
         
 End Function
@@ -924,7 +924,7 @@ Public Function CompararPrivilegiosUser(ByVal Personaje_1 As Integer, ByVal Pers
         Exit Function
 
 CompararPrivilegiosUser_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "Admin.CompararPrivilegiosUser", Erl)
+102     Call TraceError(Err.Number, Err.Description, "Admin.CompararPrivilegiosUser", Erl)
 104
         
 End Function
@@ -966,7 +966,7 @@ Public Function CompararPrivilegios(ByVal Izquierda As PlayerType, ByVal Derecha
         Exit Function
 
 CompararPrivilegios_Err:
-118     Call RegistrarError(Err.Number, Err.Description, "Admin.CompararPrivilegios", Erl)
+118     Call TraceError(Err.Number, Err.Description, "Admin.CompararPrivilegios", Erl)
 120
         
 End Function

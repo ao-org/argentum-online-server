@@ -74,7 +74,7 @@ Private Sub Command1_Click()
         Exit Sub
 
 Command1_Click_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "frmTrafic.Command1_Click", Erl)
+102     Call TraceError(Err.Number, Err.Description, "frmTrafic.Command1_Click", Erl)
 104
         
 End Sub

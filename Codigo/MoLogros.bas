@@ -102,7 +102,7 @@ Public Sub CargarLogros()
         Exit Sub
 
 CargarLogros_Err:
-182     Call RegistrarError(Err.Number, Err.Description, "MoLogros.CargarLogros", Erl)
+182     Call TraceError(Err.Number, Err.Description, "MoLogros.CargarLogros", Erl)
 184
         
 End Sub
@@ -118,7 +118,7 @@ Public Sub EnviarRecompensaStat(ByVal UserIndex As Integer)
         Exit Sub
 
 EnviarRecompensaStat_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "MoLogros.EnviarRecompensaStat", Erl)
+102     Call TraceError(Err.Number, Err.Description, "MoLogros.EnviarRecompensaStat", Erl)
 104
         
 End Sub
@@ -159,7 +159,7 @@ Public Sub CheckearRecompesas(ByVal UserIndex As Integer, ByVal Index As Byte)
         Exit Sub
 
 CheckearRecompesas_Err:
-118     Call RegistrarError(Err.Number, Err.Description, "MoLogros.CheckearRecompesas", Erl)
+118     Call TraceError(Err.Number, Err.Description, "MoLogros.CheckearRecompesas", Erl)
 120
         
 End Sub
@@ -222,7 +222,7 @@ Public Sub EntregarRecompensas(ByVal UserIndex As Integer, ByVal Index As Byte)
         Exit Sub
 
 EntregarRecompensas_Err:
-142     Call RegistrarError(Err.Number, Err.Description, "MoLogros.EntregarRecompensas", Erl)
+142     Call TraceError(Err.Number, Err.Description, "MoLogros.EntregarRecompensas", Erl)
 144
         
 End Sub

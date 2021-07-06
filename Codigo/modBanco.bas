@@ -53,7 +53,7 @@ Sub IniciarBanco(ByVal UserIndex As Integer)
         Exit Sub
 
 IniciarBanco_Err:
-106     Call RegistrarError(Err.Number, Err.Description, "modBanco.IniciarBanco", Erl)
+106     Call TraceError(Err.Number, Err.Description, "modBanco.IniciarBanco", Erl)
 108
         
 End Sub
@@ -71,7 +71,7 @@ Sub SendBanObj(UserIndex As Integer, Slot As Byte, Object As UserOBJ)
         Exit Sub
 
 SendBanObj_Err:
-104     Call RegistrarError(Err.Number, Err.Description, "modBanco.SendBanObj", Erl)
+104     Call TraceError(Err.Number, Err.Description, "modBanco.SendBanObj", Erl)
 106
         
 End Sub
@@ -118,7 +118,7 @@ Sub UpdateBanUserInv(ByVal UpdateAll As Boolean, ByVal UserIndex As Integer, ByV
         Exit Sub
 
 UpdateBanUserInv_Err:
-118     Call RegistrarError(Err.Number, Err.Description, "modBanco.UpdateBanUserInv", Erl)
+118     Call TraceError(Err.Number, Err.Description, "modBanco.UpdateBanUserInv", Erl)
 120
         
 End Sub
@@ -146,7 +146,7 @@ Sub UserRetiraItem(ByVal UserIndex As Integer, ByVal i As Integer, ByVal Cantida
         Exit Sub
     
 ErrHandler:
-112     Call RegistrarError(Err.Number, Err.Description, "modBanco.UsaRetiraItem")
+112     Call TraceError(Err.Number, Err.Description, "modBanco.UsaRetiraItem")
 114
     
 End Sub
@@ -244,7 +244,7 @@ Sub UserReciveObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, ByVal C
         Exit Sub
 
 UserReciveObj_Err:
-156     Call RegistrarError(Err.Number, Err.Description, "modBanco.UserReciveObj", Erl)
+156     Call TraceError(Err.Number, Err.Description, "modBanco.UserReciveObj", Erl)
 158
         
 End Sub
@@ -273,7 +273,7 @@ Sub QuitarBancoInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal Can
         Exit Sub
 
 QuitarBancoInvItem_Err:
-112     Call RegistrarError(Err.Number, Err.Description, "modBanco.QuitarBancoInvItem", Erl)
+112     Call TraceError(Err.Number, Err.Description, "modBanco.QuitarBancoInvItem", Erl)
 114
         
 End Sub
@@ -299,7 +299,7 @@ Sub UserDepositaItem(ByVal UserIndex As Integer, ByVal Item As Integer, ByVal Ca
         Exit Sub
     
 ErrHandler:
-110     Call RegistrarError(Err.Number, Err.Description, "modBanco.UserDepositaItem")
+110     Call TraceError(Err.Number, Err.Description, "modBanco.UserDepositaItem")
 112
     
 End Sub
@@ -321,7 +321,7 @@ Sub UserDepositaItemDrop(ByVal UserIndex As Integer, ByVal Item As Integer, ByVa
         Exit Sub
 
 ErrHandler:
-108     Call RegistrarError(Err.Number, Err.Description, "modBanco.UserDepositaItemDrop")
+108     Call TraceError(Err.Number, Err.Description, "modBanco.UserDepositaItemDrop")
 110
 
 End Sub
@@ -417,7 +417,7 @@ Sub UserDejaObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, ByVal Can
         Exit Sub
 
 UserDejaObj_Err:
-158     Call RegistrarError(Err.Number, Err.Description, "modBanco.UserDejaObj", Erl)
+158     Call TraceError(Err.Number, Err.Description, "modBanco.UserDejaObj", Erl)
 160
         
 End Sub
@@ -448,7 +448,7 @@ Sub SendUserBovedaTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
         Exit Sub
 
 SendUserBovedaTxt_Err:
-110     Call RegistrarError(Err.Number, Err.Description, "modBanco.SendUserBovedaTxt", Erl)
+110     Call TraceError(Err.Number, Err.Description, "modBanco.SendUserBovedaTxt", Erl)
 
         
 End Sub
@@ -493,7 +493,7 @@ Sub SendUserBovedaTxtFromChar(ByVal sendIndex As Integer, ByVal CharName As Stri
         Exit Sub
 
 SendUserBovedaTxtFromChar_Err:
-122     Call RegistrarError(Err.Number, Err.Description, "modBanco.SendUserBovedaTxtFromChar", Erl)
+122     Call TraceError(Err.Number, Err.Description, "modBanco.SendUserBovedaTxtFromChar", Erl)
 
         
 End Sub

@@ -15,7 +15,7 @@ Public Function ComputerName() As String
         Exit Function
 
 ComputerName_Err:
-106     Call RegistrarError(Err.Number, Err.Description, "ObtenerComputerName.ComputerName", Erl)
+106     Call TraceError(Err.Number, Err.Description, "ObtenerComputerName.ComputerName", Erl)
 108
         
 End Function

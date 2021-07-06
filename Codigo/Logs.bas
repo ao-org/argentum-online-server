@@ -17,7 +17,7 @@ Public Sub RegistrarError(ByVal Numero As Long, ByVal Descripcion As String, ByV
 'Guarda una descripcion detallada del error en Errores.log
 '**********************************************************
         
-    On Error GoTo RegistrarError_Err
+    On Error GoTo TraceError_Err
     
     'Si lo del parametro Componente es ES IGUAL, al Componente del anterior error...
     If Componente = HistorialError.Componente And _
@@ -69,17 +69,17 @@ Public Sub RegistrarError(ByVal Numero As Long, ByVal Descripcion As String, ByV
         
     Exit Sub
 
-RegistrarError_Err:
+TraceError_Err:
     Close #File
         
 End Sub
 
-Public Sub RegistrarErrorAPI(ByVal ResponseCode As Long, ByVal ResponseErrorDesc As String, ByVal ResponseText As String)
+Public Sub TraceErrorAPI(ByVal ResponseCode As Long, ByVal ResponseErrorDesc As String, ByVal ResponseText As String)
 '**********************************************************
 'Author: Jopi
 '**********************************************************
         
-    On Error GoTo RegistrarError_Err
+    On Error GoTo TraceError_Err
     
     'Registramos el error en Errores.log
     Dim File As Integer: File = FreeFile
@@ -102,7 +102,7 @@ Public Sub RegistrarErrorAPI(ByVal ResponseCode As Long, ByVal ResponseErrorDesc
         
     Exit Sub
 
-RegistrarError_Err:
+TraceError_Err:
     Close #File
         
 End Sub

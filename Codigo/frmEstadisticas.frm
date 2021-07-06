@@ -189,7 +189,7 @@ Private Sub Command1_Click()
         Exit Sub
 
 Command1_Click_Err:
-124     Call RegistrarError(Err.Number, Err.Description, "frmEstadisticas.Command1_Click", Erl)
+124     Call TraceError(Err.Number, Err.Description, "frmEstadisticas.Command1_Click", Erl)
 126
         
 End Sub
@@ -205,7 +205,7 @@ Private Sub Command2_Click()
         Exit Sub
 
 Command2_Click_Err:
-104     Call RegistrarError(Err.Number, Err.Description, "frmEstadisticas.Command2_Click", Erl)
+104     Call TraceError(Err.Number, Err.Description, "frmEstadisticas.Command2_Click", Erl)
 106
         
 End Sub
@@ -220,7 +220,7 @@ Private Sub Form_Activate()
         Exit Sub
 
 Form_Activate_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "frmEstadisticas.Form_Activate", Erl)
+102     Call TraceError(Err.Number, Err.Description, "frmEstadisticas.Form_Activate", Erl)
 104
         
 End Sub
@@ -238,7 +238,7 @@ Public Sub ActualizaStats()
         Exit Sub
 
 ActualizaStats_Err:
-108     Call RegistrarError(Err.Number, Err.Description, "frmEstadisticas.ActualizaStats", Erl)
+108     Call TraceError(Err.Number, Err.Description, "frmEstadisticas.ActualizaStats", Erl)
 110
         
 End Sub
@@ -253,7 +253,7 @@ Private Sub Form_Click()
         Exit Sub
 
 Form_Click_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "frmEstadisticas.Form_Click", Erl)
+102     Call TraceError(Err.Number, Err.Description, "frmEstadisticas.Form_Click", Erl)
 104
         
 End Sub
@@ -268,7 +268,7 @@ Private Sub Frame1_Click()
         Exit Sub
 
 Frame1_Click_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "frmEstadisticas.Frame1_Click", Erl)
+102     Call TraceError(Err.Number, Err.Description, "frmEstadisticas.Frame1_Click", Erl)
 104
         
 End Sub
@@ -283,7 +283,7 @@ Private Sub lblStat_Click(Index As Integer)
         Exit Sub
 
 lblStat_Click_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "frmEstadisticas.lblStat_Click", Erl)
+102     Call TraceError(Err.Number, Err.Description, "frmEstadisticas.lblStat_Click", Erl)
 104
         
 End Sub

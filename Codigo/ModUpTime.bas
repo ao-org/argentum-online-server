@@ -23,7 +23,7 @@ Public Sub ObtenerUpTime()
         Exit Sub
 
 ObtenerUpTime_Err:
-108     Call RegistrarError(Err.Number, Err.Description, "ModUpTime.ObtenerUpTime", Erl)
+108     Call TraceError(Err.Number, Err.Description, "ModUpTime.ObtenerUpTime", Erl)
 110
         
 End Sub
