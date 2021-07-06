@@ -287,7 +287,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
         'Basic user data
 102     With UserList(UserIndex)
         
-104         ReDim Params(90)
+104         ReDim Params(91)
 
             Dim i As Integer
         
@@ -341,6 +341,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
 202         Params(PostInc(i)) = .Stats.NPCsMuertos
 204         Params(PostInc(i)) = .Stats.UsuariosMatados
 206         Params(PostInc(i)) = .Stats.InventLevel
+207         Params(PostInc(i)) = .Stats.ELO
 208         Params(PostInc(i)) = .flags.Desnudo
 210         Params(PostInc(i)) = .flags.Envenenado
 212         Params(PostInc(i)) = .flags.Escondido
@@ -678,6 +679,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
 202         .Stats.NPCsMuertos = QueryData!killed_npcs
 204         .Stats.UsuariosMatados = QueryData!killed_users
 206         .Stats.InventLevel = QueryData!invent_level
+            .Stats.ELO = QueryData!ELO
             '.Reputacion.AsesinoRep = QueryData!rep_asesino
             '.Reputacion.BandidoRep = QueryData!rep_bandido
             '.Reputacion.BurguesRep = QueryData!rep_burgues
