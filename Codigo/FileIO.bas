@@ -220,7 +220,7 @@ Public Sub CargarSpawnList()
 
 CargarSpawnList_Err:
 116     Call RegistrarError(Err.Number, Err.Description, "ES.CargarSpawnList", Erl)
-118     Resume Next
+118
         
 End Sub
 
@@ -240,7 +240,7 @@ Function EsAdmin(ByRef Name As String) As Boolean
 
 EsAdmin_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "ES.EsAdmin", Erl)
-104     Resume Next
+104
         
 End Function
 
@@ -260,7 +260,7 @@ Function EsDios(ByRef Name As String) As Boolean
 
 EsDios_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "ES.EsDios", Erl)
-104     Resume Next
+104
         
 End Function
 
@@ -280,7 +280,7 @@ Function EsSemiDios(ByRef Name As String) As Boolean
 
 EsSemiDios_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "ES.EsSemiDios", Erl)
-104     Resume Next
+104
         
 End Function
 
@@ -300,7 +300,7 @@ Function EsConsejero(ByRef Name As String) As Boolean
 
 EsConsejero_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "ES.EsConsejero", Erl)
-104     Resume Next
+104
         
 End Function
 
@@ -320,7 +320,7 @@ Function EsRolesMaster(ByRef Name As String) As Boolean
 
 EsRolesMaster_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "ES.EsRolesMaster", Erl)
-104     Resume Next
+104
         
 End Function
 
@@ -355,7 +355,7 @@ Public Function EsGmChar(ByRef Name As String) As Boolean
 
 EsGmChar_Err:
 110     Call RegistrarError(Err.Number, Err.Description, "ES.EsGmChar", Erl)
-112     Resume Next
+112
         
 End Function
 
@@ -486,7 +486,7 @@ Public Sub loadAdministrativeUsers()
 
 loadAdministrativeUsers_Err:
 190     Call RegistrarError(Err.Number, Err.Description, "ES.loadAdministrativeUsers", Erl)
-192     Resume Next
+192
         
 End Sub
 
@@ -526,7 +526,7 @@ Public Function GetCharPrivs(ByRef UserName As String) As PlayerType
 
 GetCharPrivs_Err:
 120     Call RegistrarError(Err.Number, Err.Description, "ES.GetCharPrivs", Erl)
-122     Resume Next
+122
         
 End Function
 
@@ -553,7 +553,7 @@ Public Function TxtDimension(ByVal Name As String) As Long
 
 TxtDimension_Err:
 116     Call RegistrarError(Err.Number, Err.Description, "ES.TxtDimension", Erl)
-118     Resume Next
+118
         
 End Function
 
@@ -589,7 +589,7 @@ Public Sub CargarForbidenWords()
 
 CargarForbidenWords_Err:
 120     Call RegistrarError(Err.Number, Err.Description, "ES.CargarForbidenWords", Erl)
-122     Resume Next
+122
         
 End Sub
 
@@ -624,7 +624,7 @@ Public Sub CargarHechizos()
 
 106     ReDim Hechizos(1 To NumeroHechizos) As tHechizo
 
-108     frmCargando.cargar.min = 0
+108     frmCargando.cargar.Min = 0
 110     frmCargando.cargar.max = NumeroHechizos
 112     frmCargando.cargar.Value = 0
 
@@ -789,7 +789,7 @@ Sub LoadMotd()
 
 LoadMotd_Err:
 112     Call RegistrarError(Err.Number, Err.Description, "ES.LoadMotd", Erl)
-114     Resume Next
+114
         
 End Sub
 
@@ -1049,7 +1049,7 @@ Sub LoadArmasHerreria()
 
 LoadArmasHerreria_Err:
 114     Call RegistrarError(Err.Number, Err.Description, "ES.LoadArmasHerreria", Erl)
-116     Resume Next
+116
         
 End Sub
 
@@ -1079,7 +1079,7 @@ Sub LoadArmadurasHerreria()
 
 LoadArmadurasHerreria_Err:
 114     Call RegistrarError(Err.Number, Err.Description, "ES.LoadArmadurasHerreria", Erl)
-116     Resume Next
+116
         
 End Sub
 
@@ -1159,7 +1159,7 @@ Sub LoadBalance()
 
 LoadBalance_Err:
 180     Call RegistrarError(Err.Number, Err.Description, "ES.LoadBalance", Erl)
-182     Resume Next
+182
         
 End Sub
 
@@ -1189,7 +1189,7 @@ Sub LoadObjCarpintero()
 
 LoadObjCarpintero_Err:
 114     Call RegistrarError(Err.Number, Err.Description, "ES.LoadObjCarpintero", Erl)
-116     Resume Next
+116
         
 End Sub
 
@@ -1219,7 +1219,7 @@ Sub LoadObjAlquimista()
 
 LoadObjAlquimista_Err:
 114     Call RegistrarError(Err.Number, Err.Description, "ES.LoadObjAlquimista", Erl)
-116     Resume Next
+116
         
 End Sub
 
@@ -1249,7 +1249,7 @@ Sub LoadObjSastre()
 
 LoadObjSastre_Err:
 114     Call RegistrarError(Err.Number, Err.Description, "ES.LoadObjSastre", Erl)
-116     Resume Next
+116
         
 End Sub
 
@@ -1275,7 +1275,7 @@ Sub LoadObjDonador()
 
 LoadObjDonador_Err:
 114     Call RegistrarError(Err.Number, Err.Description, "ES.LoadObjDonador", Erl)
-116     Resume Next
+116
         
 End Sub
 
@@ -1314,7 +1314,7 @@ Sub LoadOBJData()
 106     NumObjDatas = val(Leer.GetValue("INIT", "NumObjs"))
     
 108     With frmCargando.cargar
-110         .min = 0
+110         .Min = 0
 112         .max = NumObjDatas
 114         .Value = 0
         End With
@@ -1845,7 +1845,7 @@ Sub LoadUserStats(ByVal UserIndex As Integer, ByRef UserFile As clsIniManager)
 
 LoadUserStats_Err:
 194     Call RegistrarError(Err.Number, Err.Description, "ES.LoadUserStats", Erl)
-196     Resume Next
+196
         
 End Sub
 
@@ -2034,7 +2034,7 @@ Sub LoadUserInit(ByVal UserIndex As Integer, ByRef UserFile As clsIniManager)
 
 LoadUserInit_Err:
 322     Call RegistrarError(Err.Number, Err.Description, "ES.LoadUserInit", Erl)
-324     Resume Next
+324
         
 End Sub
 
@@ -2061,7 +2061,7 @@ Function GetVar(ByVal File As String, ByVal Main As String, ByVal Var As String,
 
 GetVar_Err:
 110     Call RegistrarError(Err.Number, Err.Description, "ES.GetVar", Erl)
-112     Resume Next
+112
         
 End Function
 
@@ -2084,7 +2084,7 @@ Sub CargarBackUp()
         End If
 110     Call InitAreas
     
-112     frmCargando.cargar.min = 0
+112     frmCargando.cargar.Min = 0
 114     frmCargando.cargar.max = NumMaps
 116     frmCargando.cargar.Value = 0
 118     frmCargando.ToMapLbl.Visible = True
@@ -2111,7 +2111,7 @@ Sub CargarBackUp()
 
 CargarBackUp_Err:
 140     Call RegistrarError(Err.Number, Err.Description, "ES.CargarBackUp", Erl)
-142     Resume Next
+142
         
 End Sub
 
@@ -2128,7 +2128,7 @@ Sub LoadMapData()
 
 108     Call InitAreas
     
-110     frmCargando.cargar.min = 0
+110     frmCargando.cargar.Min = 0
 112     frmCargando.cargar.max = NumMaps
 114     frmCargando.cargar.Value = 0
 116     frmCargando.ToMapLbl.Visible = True
@@ -2547,7 +2547,7 @@ Sub LoadSini()
 LoadSini_Err:
 170     Set Lector = Nothing
 172     Call RegistrarError(Err.Number, Err.Description, "ES.LoadSini", Erl)
-174     Resume Next
+174
         
 End Sub
 
@@ -2578,7 +2578,7 @@ Public Sub LoadDatabaseIniFile()
 LoadDatabaseIniFile_Err:
 118     Set Lector = Nothing
 120     Call RegistrarError(Err.Number, Err.Description, "ES.LoadDatabaseIniFile", Erl)
-122     Resume Next
+122
 End Sub
 
 Sub CargarCiudades()
@@ -2853,7 +2853,7 @@ Sub LoadIntervalos()
 
 LoadIntervalos_Err:
 238     Call RegistrarError(Err.Number, Err.Description, "ES.LoadIntervalos", Erl)
-240     Resume Next
+240
         
 End Sub
 
@@ -2894,7 +2894,7 @@ Sub LoadConfiguraciones()
 
 LoadConfiguraciones_Err:
 134     Call RegistrarError(Err.Number, Err.Description, "ES.LoadConfiguraciones", Erl)
-136     Resume Next
+136
         
 End Sub
 
@@ -2913,7 +2913,7 @@ Sub WriteVar(ByVal File As String, ByVal Main As String, ByVal Var As String, By
 
 WriteVar_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "ES.WriteVar", Erl)
-104     Resume Next
+104
         
 End Sub
 
@@ -3090,7 +3090,7 @@ Sub LoadUser(ByVal UserIndex As Integer)
 
 ErrorHandler:
 268     Call RegistrarError(Err.Number, Err.Description & " UserName: " & UserList(UserIndex).Name, "ES.LoadUser", Erl)
-270     Resume Next
+270
     
 End Sub
 
@@ -3115,7 +3115,7 @@ Sub SaveUser(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = Fals
 SaveUser_Err:
 108     Call RegistrarError(Err.Number, Err.Description, "ES.SaveUser", Erl)
 
-110     Resume Next
+110
 
 End Sub
 
@@ -3143,7 +3143,7 @@ Sub LoadUserBinary(ByVal UserIndex As Integer)
 
 LoadUserBinary_Err:
 110     Call RegistrarError(Err.Number, Err.Description, "ES.LoadUserBinary", Erl)
-112     Resume Next
+112
         
 End Sub
 
@@ -3157,7 +3157,7 @@ Sub SaveNewUser(ByVal UserIndex As Integer)
 
 SaveNewUser_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "ES.SaveNewUser", Erl)
-104     Resume Next
+104
         
 End Sub
 
@@ -3167,7 +3167,7 @@ Sub SetUserLogged(ByVal UserIndex As Integer)
         
 
 100     If Database_Enabled Then
-102         Call SetUserLoggedDatabase(UserList(UserIndex).Id, UserList(UserIndex).AccountID)
+102         Call SetUserLoggedDatabase(UserList(UserIndex).ID, UserList(UserIndex).AccountID)
         Else
 104         Call WriteVar(CharPath & UCase$(UserList(UserIndex).Name) & ".chr", "INIT", "Logged", 1)
 106         Call WriteVar(CuentasPath & UCase$(UserList(UserIndex).Cuenta) & ".act", "INIT", "LOGEADA", 1)
@@ -3179,7 +3179,7 @@ Sub SetUserLogged(ByVal UserIndex As Integer)
 
 SetUserLogged_Err:
 108     Call RegistrarError(Err.Number, Err.Description, "ES.SetUserLogged", Erl)
-110     Resume Next
+110
         
 End Sub
 
@@ -3195,7 +3195,7 @@ Function Status(ByVal UserIndex As Integer) As e_Facciones
 
 Status_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "ES.Status", Erl)
-104     Resume Next
+104
         
 End Function
 
@@ -3266,7 +3266,7 @@ Sub BackUPnPc(NpcIndex As Integer)
 
 BackUPnPc_Err:
 162     Call RegistrarError(Err.Number, Err.Description, "ES.BackUPnPc", Erl)
-164     Resume Next
+164
         
 End Sub
 
@@ -3351,7 +3351,7 @@ Sub CargarNpcBackUp(NpcIndex As Integer, ByVal NpcNumber As Integer)
 
 CargarNpcBackUp_Err:
 178     Call RegistrarError(Err.Number, Err.Description, "ES.CargarNpcBackUp", Erl)
-180     Resume Next
+180
         
 End Sub
 
@@ -3376,7 +3376,7 @@ Sub LogBan(ByVal BannedIndex As Integer, ByVal UserIndex As Integer, ByVal Motiv
 
 LogBan_Err:
 112     Call RegistrarError(Err.Number, Err.Description, "ES.LogBan", Erl)
-114     Resume Next
+114
         
 End Sub
 
@@ -3401,7 +3401,7 @@ Sub LogBanFromName(ByVal BannedName As String, ByVal UserIndex As Integer, ByVal
 
 LogBanFromName_Err:
 112     Call RegistrarError(Err.Number, Err.Description, "ES.LogBanFromName", Erl)
-114     Resume Next
+114
         
 End Sub
 
@@ -3426,7 +3426,7 @@ Sub Ban(ByVal BannedName As String, ByVal Baneador As String, ByVal Motivo As St
 
 Ban_Err:
 112     Call RegistrarError(Err.Number, Err.Description, "ES.Ban", Erl)
-114     Resume Next
+114
         
 End Sub
 
@@ -3444,7 +3444,7 @@ Public Sub CargaApuestas()
 
 CargaApuestas_Err:
 106     Call RegistrarError(Err.Number, Err.Description, "ES.CargaApuestas", Erl)
-108     Resume Next
+108
         
 End Sub
 
@@ -3511,7 +3511,7 @@ Public Sub LoadRecursosEspeciales()
 
 LoadRecursosEspeciales_Err:
 148     Call RegistrarError(Err.Number, Err.Description, "ES.LoadRecursosEspeciales", Erl)
-150     Resume Next
+150
         
 End Sub
 
@@ -3580,7 +3580,7 @@ Public Sub LoadPesca()
 
 LoadPesca_Err:
 154     Call RegistrarError(Err.Number, Err.Description, "ES.LoadPesca", Erl)
-156     Resume Next
+156
         
 End Sub
 
@@ -3631,7 +3631,7 @@ Private Sub QuickSortPeces(ByVal First As Long, ByVal Last As Long)
 
 QuickSortPeces_Err:
 132     Call RegistrarError(Err.Number, Err.Description, "ES.QuickSortPeces", Erl)
-134     Resume Next
+134
         
 End Sub
 
@@ -3680,7 +3680,7 @@ Public Function BinarySearchPeces(ByVal Value As Long) As Long
 
 BinarySearchPeces_Err:
 124     Call RegistrarError(Err.Number, Err.Description, "ES.BinarySearchPeces", Erl)
-126     Resume Next
+126
         
 End Function
 
@@ -3730,7 +3730,7 @@ Public Sub LoadRangosFaccion()
 
 LoadRangosFaccion_Err:
 140         Call RegistrarError(Err.Number, Err.Description, "ES.LoadRangosFaccion", Erl)
-142         Resume Next
+142
 
 End Sub
 
@@ -3771,7 +3771,7 @@ Public Sub LoadRecompensasFaccion()
 
 LoadRecompensasFaccion_Err:
 126         Call RegistrarError(Err.Number, Err.Description, "ES.LoadRecompensasFaccion", Erl)
-128         Resume Next
+128
 
 End Sub
 
@@ -3801,7 +3801,7 @@ Public Sub LoadUserIntervals(ByVal UserIndex As Integer)
 
 LoadUserIntervals_Err:
 124     Call RegistrarError(Err.Number, Err.Description, "ES.LoadUserIntervals", Erl)
-126     Resume Next
+126
         
 End Sub
 

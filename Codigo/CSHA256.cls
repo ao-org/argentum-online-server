@@ -213,7 +213,7 @@ Private Sub Class_Initialize()
 
 Class_Initialize_Err:
 352     Call RegistrarError(Err.Number, Err.Description, "CSHA256.Class_Initialize", Erl)
-354     Resume Next
+354
         
 End Sub
 
@@ -292,7 +292,7 @@ Private Function LShift(ByVal lValue As Long, ByVal iShiftBits As Integer) As Lo
 
 LShift_Err:
 122     Call RegistrarError(Err.Number, Err.Description, "CSHA256.LShift", Erl)
-124     Resume Next
+124
         
 End Function
 
@@ -370,7 +370,7 @@ Private Function RShift(ByVal lValue As Long, ByVal iShiftBits As Integer) As Lo
 
 RShift_Err:
 122     Call RegistrarError(Err.Number, Err.Description, "CSHA256.RShift", Erl)
-124     Resume Next
+124
         
 End Function
 
@@ -432,7 +432,7 @@ Private Function AddUnsigned(ByVal lX As Long, ByVal lY As Long) As Long
 
 AddUnsigned_Err:
 126     Call RegistrarError(Err.Number, Err.Description, "CSHA256.AddUnsigned", Erl)
-128     Resume Next
+128
         
 End Function
 
@@ -453,7 +453,7 @@ Private Function Ch(ByVal X As Long, ByVal Y As Long, ByVal z As Long) As Long
 
 Ch_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "CSHA256.Ch", Erl)
-104     Resume Next
+104
         
 End Function
 
@@ -474,7 +474,7 @@ Private Function Maj(ByVal X As Long, ByVal Y As Long, ByVal z As Long) As Long
 
 Maj_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "CSHA256.Maj", Erl)
-104     Resume Next
+104
         
 End Function
 
@@ -495,7 +495,7 @@ Private Function S(ByVal X As Long, ByVal n As Long) As Long
 
 S_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "CSHA256.S", Erl)
-104     Resume Next
+104
         
 End Function
 
@@ -516,7 +516,7 @@ Private Function R(ByVal X As Long, ByVal n As Long) As Long
 
 R_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "CSHA256.R", Erl)
-104     Resume Next
+104
         
 End Function
 
@@ -537,7 +537,7 @@ Private Function Sigma0(ByVal X As Long) As Long
 
 Sigma0_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "CSHA256.Sigma0", Erl)
-104     Resume Next
+104
         
 End Function
 
@@ -558,7 +558,7 @@ Private Function Sigma1(ByVal X As Long) As Long
 
 Sigma1_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "CSHA256.Sigma1", Erl)
-104     Resume Next
+104
         
 End Function
 
@@ -579,7 +579,7 @@ Private Function Gamma0(ByVal X As Long) As Long
 
 Gamma0_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "CSHA256.Gamma0", Erl)
-104     Resume Next
+104
         
 End Function
 
@@ -600,7 +600,7 @@ Private Function Gamma1(ByVal X As Long) As Long
 
 Gamma1_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "CSHA256.Gamma1", Erl)
-104     Resume Next
+104
         
 End Function
 
@@ -696,7 +696,7 @@ Private Function ConvertToWordArray(sMessage As String) As Long()
 
 ConvertToWordArray_Err:
 134     Call RegistrarError(Err.Number, Err.Description, "CSHA256.ConvertToWordArray", Erl)
-136     Resume Next
+136
         
 End Function
 
@@ -819,6 +819,6 @@ Public Function SHA256(sMessage As String) As String
 
 SHA256_Err:
 182     Call RegistrarError(Err.Number, Err.Description, "CSHA256.SHA256", Erl)
-184     Resume Next
+184
         
 End Function

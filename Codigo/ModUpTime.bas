@@ -24,6 +24,6 @@ Public Sub ObtenerUpTime()
 
 ObtenerUpTime_Err:
 108     Call RegistrarError(Err.Number, Err.Description, "ModUpTime.ObtenerUpTime", Erl)
-110     Resume Next
+110
         
 End Sub

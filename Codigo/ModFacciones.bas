@@ -110,7 +110,7 @@ Public Sub EnlistarArmadaReal(ByVal UserIndex As Integer)
 
 EnlistarArmadaReal_Err:
 168         Call RegistrarError(Err.Number, Err.Description, "ModFacciones.EnlistarArmadaReal", Erl)
-170         Resume Next
+170
 
 End Sub
 
@@ -159,7 +159,7 @@ Public Sub RecompensaArmadaReal(ByVal UserIndex As Integer)
 
 RecompensaArmadaReal_Err:
 130         Call RegistrarError(Err.Number, Err.Description, "ModFacciones.RecompensaArmadaReal", Erl)
-132         Resume Next
+132
 
 End Sub
 
@@ -178,7 +178,7 @@ Public Sub ExpulsarFaccionReal(ByVal UserIndex As Integer)
 
 ExpulsarFaccionReal_Err:
 110         Call RegistrarError(Err.Number, Err.Description, "ModFacciones.ExpulsarFaccionReal", Erl)
-112         Resume Next
+112
 
 End Sub
 
@@ -197,7 +197,7 @@ Public Sub ExpulsarFaccionCaos(ByVal UserIndex As Integer)
 
 ExpulsarFaccionCaos_Err:
 110         Call RegistrarError(Err.Number, Err.Description, "ModFacciones.ExpulsarFaccionCaos", Erl)
-112         Resume Next
+112
 
 End Sub
 
@@ -216,7 +216,7 @@ Public Function TituloReal(ByVal UserIndex As Integer) As String
 
 TituloReal_Err:
 106         Call RegistrarError(Err.Number, Err.Description, "ModFacciones.TituloReal", Erl)
-108         Resume Next
+108
 
 End Function
 
@@ -319,7 +319,7 @@ Public Sub EnlistarCaos(ByVal UserIndex As Integer)
 
 EnlistarCaos_Err:
 162         Call RegistrarError(Err.Number, Err.Description, "ModFacciones.EnlistarCaos", Erl)
-164         Resume Next
+164
 
 End Sub
 
@@ -367,7 +367,7 @@ Public Sub RecompensaCaos(ByVal UserIndex As Integer)
 
 RecompensaCaos_Err:
 130         Call RegistrarError(Err.Number, Err.Description, "ModFacciones.RecompensaCaos", Erl)
-132         Resume Next
+132
 
 End Sub
 
@@ -386,7 +386,7 @@ Public Function TituloCaos(ByVal UserIndex As Integer) As String
 
 TituloCaos_Err:
 106         Call RegistrarError(Err.Number, Err.Description, "ModFacciones.TituloCaos", Erl)
-108         Resume Next
+108
 
 End Function
 
@@ -409,7 +409,7 @@ Private Function ProximoRango(ByVal UserIndex As Integer) As tRangoFaccion
 
 ProximoRango_Err:
 110         Call RegistrarError(Err.Number, Err.Description, "ModFacciones.TituloCaos", Erl)
-112         Resume Next
+112
 
 End Function
 
@@ -485,7 +485,7 @@ Private Sub DarRecompensas(ByVal UserIndex As Integer)
 
 DarRecompensas_Err:
 142         Call RegistrarError(Err.Number, Err.Description, "ModFacciones.DarRecompensas", Erl)
-144         Resume Next
+144
 
 End Sub
 
@@ -516,6 +516,6 @@ Private Sub PerderItemsFaccionarios(ByVal UserIndex As Integer)
 
 PerderItemsFaccionarios_Err:
 116         Call RegistrarError(Err.Number, Err.Description, "ModFacciones.PerderItemsFaccionarios", Erl)
-118         Resume Next
+118
 
 End Sub

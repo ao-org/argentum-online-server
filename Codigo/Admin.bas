@@ -196,7 +196,7 @@ Function VersionOK(ByVal Ver As String) As Boolean
 
 VersionOK_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "Admin.VersionOK", Erl)
-104     Resume Next
+104
         
 End Function
 
@@ -232,7 +232,7 @@ Sub ReSpawnOrigPosNpcs()
         
 Handler:
 114 Call RegistrarError(Err.Number, Err.Description, "Admin.ReSpawnOrigPosNpcs", Erl)
-116 Resume Next
+116
 
 End Sub
 
@@ -257,7 +257,7 @@ Sub WorldSave()
 106         If MapInfo(j).backup_mode = 1 Then K = K + 1
 108     Next j
 
-110     FrmStat.ProgressBar1.min = 0
+110     FrmStat.ProgressBar1.Min = 0
 112     FrmStat.ProgressBar1.max = K
 114     FrmStat.ProgressBar1.Value = 0
 
@@ -290,7 +290,7 @@ Sub WorldSave()
         
 Handler:
 128 Call RegistrarError(Err.Number, Err.Description, "Admin.WorldSave", Erl)
-130 Resume Next
+130
 
 End Sub
 
@@ -324,7 +324,7 @@ Public Sub PurgarPenas()
 
 PurgarPenas_Err:
 118     Call RegistrarError(Err.Number, Err.Description, "Admin.PurgarPenas", Erl)
-120     Resume Next
+120
         
 End Sub
 
@@ -375,7 +375,7 @@ Public Sub PurgarScroll()
 
 PurgarScroll_Err:
 134     Call RegistrarError(Err.Number, Err.Description, "Admin.PurgarScroll", Erl)
-136     Resume Next
+136
         
 End Sub
 
@@ -409,7 +409,7 @@ Public Sub EfectoOxigeno(ByVal UserIndex As Integer)
 
 EfectoOxigeno_Err:
 126     Call RegistrarError(Err.Number, Err.Description, "Admin.EfectoOxigeno", Erl)
-128     Resume Next
+128
         
 End Sub
 
@@ -435,7 +435,7 @@ Public Sub Encarcelar(ByVal UserIndex As Integer, ByVal minutos As Long, Optiona
 
 Encarcelar_Err:
 112     Call RegistrarError(Err.Number, Err.Description, "Admin.Encarcelar", Erl)
-114     Resume Next
+114
         
 End Sub
 
@@ -468,15 +468,15 @@ BorrarUsuario_Err:
         
 End Sub
 
-Public Function BANCheck(ByVal name As String) As Boolean
+Public Function BANCheck(ByVal Name As String) As Boolean
         
         On Error GoTo BANCheck_Err
         
 
 100     If Database_Enabled Then
-102         BANCheck = BANCheckDatabase(name)
+102         BANCheck = BANCheckDatabase(Name)
         Else
-104         BANCheck = (val(GetVar(CharPath & name & ".chr", "BAN", "Baneado")) = 1)
+104         BANCheck = (val(GetVar(CharPath & Name & ".chr", "BAN", "Baneado")) = 1)
 
         End If
 
@@ -485,19 +485,19 @@ Public Function BANCheck(ByVal name As String) As Boolean
 
 BANCheck_Err:
 106     Call RegistrarError(Err.Number, Err.Description, "Admin.BANCheck", Erl)
-108     Resume Next
+108
         
 End Function
 
-Public Function DonadorCheck(ByVal name As String) As Boolean
+Public Function DonadorCheck(ByVal Name As String) As Boolean
         
         On Error GoTo DonadorCheck_Err
         
 
 100     If Database_Enabled Then
-102         DonadorCheck = CheckUserDonatorDatabase(name)
+102         DonadorCheck = CheckUserDonatorDatabase(Name)
         Else
-104         DonadorCheck = val(GetVar(CuentasPath & name & ".act", "DONADOR", "DONADOR"))
+104         DonadorCheck = val(GetVar(CuentasPath & Name & ".act", "DONADOR", "DONADOR"))
 
         End If
 
@@ -506,19 +506,19 @@ Public Function DonadorCheck(ByVal name As String) As Boolean
 
 DonadorCheck_Err:
 106     Call RegistrarError(Err.Number, Err.Description, "Admin.DonadorCheck", Erl)
-108     Resume Next
+108
         
 End Function
 
-Public Function CreditosDonadorCheck(ByVal name As String) As Long
+Public Function CreditosDonadorCheck(ByVal Name As String) As Long
         
         On Error GoTo CreditosDonadorCheck_Err
         
 
 100     If Database_Enabled Then
-102         CreditosDonadorCheck = GetUserCreditosDatabase(name)
+102         CreditosDonadorCheck = GetUserCreditosDatabase(Name)
         Else
-104         CreditosDonadorCheck = val(GetVar(CuentasPath & name & ".act", "DONADOR", "CREDITOS"))
+104         CreditosDonadorCheck = val(GetVar(CuentasPath & Name & ".act", "DONADOR", "CREDITOS"))
 
         End If
 
@@ -527,19 +527,19 @@ Public Function CreditosDonadorCheck(ByVal name As String) As Long
 
 CreditosDonadorCheck_Err:
 106     Call RegistrarError(Err.Number, Err.Description, "Admin.CreditosDonadorCheck", Erl)
-108     Resume Next
+108
         
 End Function
 
-Public Function CreditosCanjeadosCheck(ByVal name As String) As Long
+Public Function CreditosCanjeadosCheck(ByVal Name As String) As Long
         
         On Error GoTo CreditosCanjeadosCheck_Err
         
 
 100     If Database_Enabled Then
-102         CreditosCanjeadosCheck = GetUserCreditosCanjeadosDatabase(name)
+102         CreditosCanjeadosCheck = GetUserCreditosCanjeadosDatabase(Name)
         Else
-104         CreditosCanjeadosCheck = val(GetVar(CuentasPath & name & ".act", "DONADOR", "CREDITOSCANJEADOS"))
+104         CreditosCanjeadosCheck = val(GetVar(CuentasPath & Name & ".act", "DONADOR", "CREDITOSCANJEADOS"))
 
         End If
 
@@ -548,27 +548,27 @@ Public Function CreditosCanjeadosCheck(ByVal name As String) As Long
 
 CreditosCanjeadosCheck_Err:
 106     Call RegistrarError(Err.Number, Err.Description, "Admin.CreditosCanjeadosCheck", Erl)
-108     Resume Next
+108
         
 End Function
 
-Public Function DiasDonadorCheck(ByVal name As String) As Integer
+Public Function DiasDonadorCheck(ByVal Name As String) As Integer
         
         On Error GoTo DiasDonadorCheck_Err
         
 
 100     If Database_Enabled Then
             ' Uso una funcion que hace ambas queries a la vez para optimizar
-102         DiasDonadorCheck = GetUserDiasDonadorDatabase(name)
+102         DiasDonadorCheck = GetUserDiasDonadorDatabase(Name)
         Else
 
-104         If DonadorCheck(name) Then
+104         If DonadorCheck(Name) Then
 
                 Dim Diasrestantes As Integer
 
                 Dim fechadonador  As Date
 
-106             fechadonador = GetVar(CuentasPath & name & ".act", "DONADOR", "FECHAEXPIRACION")
+106             fechadonador = GetVar(CuentasPath & Name & ".act", "DONADOR", "FECHAEXPIRACION")
 108             DiasDonadorCheck = DateDiff("d", Date, fechadonador)
 
             End If
@@ -580,19 +580,19 @@ Public Function DiasDonadorCheck(ByVal name As String) As Integer
 
 DiasDonadorCheck_Err:
 110     Call RegistrarError(Err.Number, Err.Description, "Admin.DiasDonadorCheck", Erl)
-112     Resume Next
+112
         
 End Function
 
-Public Function ComprasDonadorCheck(ByVal name As String) As Long
+Public Function ComprasDonadorCheck(ByVal Name As String) As Long
         
         On Error GoTo ComprasDonadorCheck_Err
         
 
 100     If Database_Enabled Then
-102         ComprasDonadorCheck = GetUserComprasDonadorDatabase(name)
+102         ComprasDonadorCheck = GetUserComprasDonadorDatabase(Name)
         Else
-104         ComprasDonadorCheck = val(GetVar(CuentasPath & name & ".act", "COMPRAS", "CANTIDAD"))
+104         ComprasDonadorCheck = val(GetVar(CuentasPath & Name & ".act", "COMPRAS", "CANTIDAD"))
 
         End If
 
@@ -601,19 +601,19 @@ Public Function ComprasDonadorCheck(ByVal name As String) As Long
 
 ComprasDonadorCheck_Err:
 106     Call RegistrarError(Err.Number, Err.Description, "Admin.ComprasDonadorCheck", Erl)
-108     Resume Next
+108
         
 End Function
 
-Public Function PersonajeExiste(ByVal name As String) As Boolean
+Public Function PersonajeExiste(ByVal Name As String) As Boolean
         
         On Error GoTo PersonajeExiste_Err
         
 
 100     If Database_Enabled Then
-102         PersonajeExiste = CheckUserExists(name)
+102         PersonajeExiste = CheckUserExists(Name)
         Else
-104         PersonajeExiste = FileExist(CharPath & name & ".chr", vbNormal)
+104         PersonajeExiste = FileExist(CharPath & Name & ".chr", vbNormal)
 
         End If
 
@@ -622,34 +622,34 @@ Public Function PersonajeExiste(ByVal name As String) As Boolean
 
 PersonajeExiste_Err:
 106     Call RegistrarError(Err.Number, Err.Description, "Admin.PersonajeExiste", Erl)
-108     Resume Next
+108
         
 End Function
 
-Public Function UnBan(ByVal name As String) As Boolean
+Public Function UnBan(ByVal Name As String) As Boolean
         
         On Error GoTo UnBan_Err
         
 
 100     If Database_Enabled Then
-102         Call UnBanDatabase(name)
+102         Call UnBanDatabase(Name)
         Else
-104         Call WriteVar(CharPath & name & ".chr", "BAN", "Baneado", "0")
-106         Call WriteVar(CharPath & name & ".chr", "BAN", "BannedBy", "")
-108         Call WriteVar(CharPath & name & ".chr", "BAN", "BanMotivo", "")
+104         Call WriteVar(CharPath & Name & ".chr", "BAN", "Baneado", "0")
+106         Call WriteVar(CharPath & Name & ".chr", "BAN", "BannedBy", "")
+108         Call WriteVar(CharPath & Name & ".chr", "BAN", "BanMotivo", "")
 
         End If
     
         'Remove it from the banned people database
-110     Call WriteVar(App.Path & "\logs\" & "BanDetail.dat", name, "BannedBy", "")
-112     Call WriteVar(App.Path & "\logs\" & "BanDetail.dat", name, "Reason", "")
+110     Call WriteVar(App.Path & "\logs\" & "BanDetail.dat", Name, "BannedBy", "")
+112     Call WriteVar(App.Path & "\logs\" & "BanDetail.dat", Name, "Reason", "")
 
         
         Exit Function
 
 UnBan_Err:
 114     Call RegistrarError(Err.Number, Err.Description, "Admin.UnBan", Erl)
-116     Resume Next
+116
         
 End Function
 
@@ -685,7 +685,7 @@ Public Sub ActualizaEstadisticasWeb()
 
 ActualizaEstadisticasWeb_Err:
 114     Call RegistrarError(Err.Number, Err.Description, "Admin.ActualizaEstadisticasWeb", Erl)
-116     Resume Next
+116
         
 End Sub
 
@@ -735,11 +735,11 @@ Public Sub ActualizaStatsES()
 
 ActualizaStatsES_Err:
 132     Call RegistrarError(Err.Number, Err.Description, "Admin.ActualizaStatsES", Erl)
-134     Resume Next
+134
         
 End Sub
 
-Public Function UserDarPrivilegioLevel(ByVal name As String) As PlayerType
+Public Function UserDarPrivilegioLevel(ByVal Name As String) As PlayerType
         
         On Error GoTo UserDarPrivilegioLevel_Err
         
@@ -749,13 +749,13 @@ Public Function UserDarPrivilegioLevel(ByVal name As String) As PlayerType
         'Last Modification: 03/02/07
         'Last Modified By: Juan Martín Sotuyo Dodero (Maraxus)
         '***************************************************
-100     If EsAdmin(name) Then
+100     If EsAdmin(Name) Then
 102         UserDarPrivilegioLevel = PlayerType.Admin
-104     ElseIf EsDios(name) Then
+104     ElseIf EsDios(Name) Then
 106         UserDarPrivilegioLevel = PlayerType.Dios
-108     ElseIf EsSemiDios(name) Then
+108     ElseIf EsSemiDios(Name) Then
 110         UserDarPrivilegioLevel = PlayerType.SemiDios
-112     ElseIf EsConsejero(name) Then
+112     ElseIf EsConsejero(Name) Then
 114         UserDarPrivilegioLevel = PlayerType.Consejero
         Else
 116         UserDarPrivilegioLevel = PlayerType.user
@@ -767,7 +767,7 @@ Public Function UserDarPrivilegioLevel(ByVal name As String) As PlayerType
 
 UserDarPrivilegioLevel_Err:
 118     Call RegistrarError(Err.Number, Err.Description, "Admin.UserDarPrivilegioLevel", Erl)
-120     Resume Next
+120
         
 End Function
 
@@ -793,7 +793,7 @@ Public Sub BanTemporal(ByVal nombre As String, ByVal dias As Integer, Causa As S
 
 BanTemporal_Err:
 116     Call RegistrarError(Err.Number, Err.Description, "Admin.BanTemporal", Erl)
-118     Resume Next
+118
         
 End Sub
 
@@ -807,7 +807,7 @@ Sub SaveBans()
 100     Call WriteVar(DatPath & "baneos.dat", "INIT", "NumeroBans", Baneos.Count)
 
 102     For num = 1 To Baneos.Count
-104         Call WriteVar(DatPath & "baneos.dat", "BANEO" & num, "USER", Baneos(num).name)
+104         Call WriteVar(DatPath & "baneos.dat", "BANEO" & num, "USER", Baneos(num).Name)
 106         Call WriteVar(DatPath & "baneos.dat", "BANEO" & num, "FECHA", Baneos(num).FechaLiberacion)
 108         Call WriteVar(DatPath & "baneos.dat", "BANEO" & num, "BANEADOR", Baneos(num).Baneador)
 110         Call WriteVar(DatPath & "baneos.dat", "BANEO" & num, "CAUSA", Baneos(num).Causa)
@@ -818,7 +818,7 @@ Sub SaveBans()
 
 SaveBans_Err:
 112     Call RegistrarError(Err.Number, Err.Description, "Admin.SaveBans", Erl)
-114     Resume Next
+114
         
 End Sub
 
@@ -828,17 +828,17 @@ Sub SaveBan(num As Integer)
         
 
 100     Call WriteVar(DatPath & "baneos.dat", "INIT", "NumeroBans", Baneos.Count)
-102     Call WriteVar(DatPath & "baneos.dat", "BANEO" & num, "USER", Baneos(num).name)
+102     Call WriteVar(DatPath & "baneos.dat", "BANEO" & num, "USER", Baneos(num).Name)
 104     Call WriteVar(DatPath & "baneos.dat", "BANEO" & num, "FECHA", Baneos(num).FechaLiberacion)
 106     Call WriteVar(DatPath & "baneos.dat", "BANEO" & num, "BANEADOR", Baneos(num).Baneador)
 108     Call WriteVar(DatPath & "baneos.dat", "BANEO" & num, "CAUSA", Baneos(num).Causa)
     
 110     If Database_Enabled Then
-112         Call SaveBanDatabase(Baneos(num).name, Baneos(num).Causa, Baneos(num).Baneador)
+112         Call SaveBanDatabase(Baneos(num).Name, Baneos(num).Causa, Baneos(num).Baneador)
         Else
-114         Call WriteVar(CharPath & Baneos(num).name & ".chr", "BAN", "Baneado", "1")
-116         Call WriteVar(CharPath & Baneos(num).name & ".chr", "BAN", "BanMotivo", Baneos(num).Causa)
-118         Call WriteVar(CharPath & Baneos(num).name & ".chr", "BAN", "BannedBy", Baneos(num).Baneador)
+114         Call WriteVar(CharPath & Baneos(num).Name & ".chr", "BAN", "Baneado", "1")
+116         Call WriteVar(CharPath & Baneos(num).Name & ".chr", "BAN", "BanMotivo", Baneos(num).Causa)
+118         Call WriteVar(CharPath & Baneos(num).Name & ".chr", "BAN", "BannedBy", Baneos(num).Baneador)
 
         End If
 
@@ -847,7 +847,7 @@ Sub SaveBan(num As Integer)
 
 SaveBan_Err:
 120     Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Admin.SaveBan", Erl)
-122     Resume Next
+122
         
 End Sub
 
@@ -868,7 +868,7 @@ Sub LoadBans()
 106         Set tBan = New tBaneo
 
 108         With tBan
-110             .name = GetVar(DatPath & "baneos.dat", "BANEO" & i, "USER")
+110             .Name = GetVar(DatPath & "baneos.dat", "BANEO" & i, "USER")
 112             .FechaLiberacion = GetVar(DatPath & "baneos.dat", "BANEO" & i, "FECHA")
 114             .Causa = GetVar(DatPath & "baneos.dat", "BANEO" & i, "CAUSA")
 116             .Baneador = GetVar(DatPath & "baneos.dat", "BANEO" & i, "BANEADOR")
@@ -884,18 +884,18 @@ Sub LoadBans()
 
 LoadBans_Err:
 120     Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Admin.LoadBans", Erl)
-122     Resume Next
+122
         
 End Sub
 
-Public Function ChangeBan(ByVal name As String, ByVal Baneado As Byte) As Boolean
+Public Function ChangeBan(ByVal Name As String, ByVal Baneado As Byte) As Boolean
         
         On Error GoTo ChangeBan_Err
         
 
-100     If FileExist(CharPath & name & ".chr", vbNormal) Then
-102         If (val(GetVar(CharPath & name & ".chr", "BAN", "BANEADO")) = 1) Then
-104             Call UnBan(name)
+100     If FileExist(CharPath & Name & ".chr", vbNormal) Then
+102         If (val(GetVar(CharPath & Name & ".chr", "BAN", "BANEADO")) = 1) Then
+104             Call UnBan(Name)
 
             End If
 
@@ -906,7 +906,7 @@ Public Function ChangeBan(ByVal name As String, ByVal Baneado As Byte) As Boolea
 
 ChangeBan_Err:
 106     Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Admin.ChangeBan", Erl)
-108     Resume Next
+108
         
 End Function
 
@@ -925,7 +925,7 @@ Public Function CompararPrivilegiosUser(ByVal Personaje_1 As Integer, ByVal Pers
 
 CompararPrivilegiosUser_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "Admin.CompararPrivilegiosUser", Erl)
-104     Resume Next
+104
         
 End Function
 
@@ -967,6 +967,6 @@ Public Function CompararPrivilegios(ByVal Izquierda As PlayerType, ByVal Derecha
 
 CompararPrivilegios_Err:
 118     Call RegistrarError(Err.Number, Err.Description, "Admin.CompararPrivilegios", Erl)
-120     Resume Next
+120
         
 End Function
