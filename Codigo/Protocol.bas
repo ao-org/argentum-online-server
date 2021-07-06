@@ -1035,9 +1035,7 @@ End Function
 ' @param    UserIndex The index of the user sending the message.
 
 Public Function HandleIncomingData(ByVal UserIndex As Integer) As Boolean
-    
-    On Error Resume Next
-    
+
     With UserList(UserIndex)
         
         ' [2020-5-23 Mateo] Esto es normal que suceda, puede existir un paquete INCOMPLETO y esto hace que no lo procese y deje acumulado el buffer para el proximo dato

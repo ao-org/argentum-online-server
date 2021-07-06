@@ -168,9 +168,9 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
 200         Call MakeQuery("SELECT LAST_INSERT_ID();", False)
 
 202         If QueryData Is Nothing Then
-204             .ID = 1
+204             .Id = 1
             Else
-206             .ID = val(QueryData.Fields(0).Value)
+206             .Id = val(QueryData.Fields(0).Value)
             End If
         
             ' ******************* ATRIBUTOS *******************
@@ -178,7 +178,7 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
 210         ParamC = 0
         
 212         For LoopC = 1 To NUMATRIBUTOS
-214             Params(ParamC) = .ID
+214             Params(ParamC) = .Id
 216             Params(ParamC + 1) = LoopC
 218             Params(ParamC + 2) = .Stats.UserAtributos(LoopC)
             
@@ -192,7 +192,7 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
 228         ParamC = 0
         
 230         For LoopC = 1 To MAXUSERHECHIZOS
-232             Params(ParamC) = .ID
+232             Params(ParamC) = .Id
 234             Params(ParamC + 1) = LoopC
 236             Params(ParamC + 2) = .Stats.UserHechizos(LoopC)
             
@@ -206,7 +206,7 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
 246         ParamC = 0
         
 248         For LoopC = 1 To MAX_INVENTORY_SLOTS
-250             Params(ParamC) = .ID
+250             Params(ParamC) = .Id
 252             Params(ParamC + 1) = LoopC
 254             Params(ParamC + 2) = .Invent.Object(LoopC).ObjIndex
 256             Params(ParamC + 3) = .Invent.Object(LoopC).amount
@@ -222,7 +222,7 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
 268         ParamC = 0
         
 270         For LoopC = 1 To NUMSKILLS
-272             Params(ParamC) = .ID
+272             Params(ParamC) = .Id
 274             Params(ParamC + 1) = LoopC
 276             Params(ParamC + 2) = .Stats.UserSkills(LoopC)
             
@@ -236,7 +236,7 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
 286         ParamC = 0
         
 288         For LoopC = 1 To MAXUSERQUESTS
-290             Params(ParamC) = .ID
+290             Params(ParamC) = .Id
 292             Params(ParamC + 1) = LoopC
             
 294             ParamC = ParamC + 2
@@ -249,7 +249,7 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
 302         ParamC = 0
         
 304         For LoopC = 1 To MAXMASCOTAS
-306             Params(ParamC) = .ID
+306             Params(ParamC) = .Id
 308             Params(ParamC + 1) = LoopC
 310             Params(ParamC + 2) = 0
             
@@ -268,7 +268,7 @@ ErrorHandler:
     
 320     Set QueryBuilder = Nothing
     
-322     Call LogDatabaseError("Error en SaveNewUserDatabase. UserName: " & UserList(UserIndex).Name & ". " & Err.Number & " - " & Err.Description)
+322     Call LogDatabaseError("Error en SaveNewUserDatabase. UserName: " & UserList(UserIndex).name & ". " & Err.Number & " - " & Err.Description)
 
 End Sub
 
@@ -394,7 +394,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
 290         ParamC = 0
         
 292         For LoopC = 1 To NUMATRIBUTOS
-294             Params(ParamC) = .ID
+294             Params(ParamC) = .Id
 296             Params(ParamC + 1) = LoopC
 298             Params(ParamC + 2) = .Stats.UserAtributosBackUP(LoopC)
             
@@ -408,7 +408,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
 308         ParamC = 0
         
 310         For LoopC = 1 To MAXUSERHECHIZOS
-312             Params(ParamC) = .ID
+312             Params(ParamC) = .Id
 314             Params(ParamC + 1) = LoopC
 316             Params(ParamC + 2) = .Stats.UserHechizos(LoopC)
             
@@ -422,7 +422,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
 326         ParamC = 0
         
 328         For LoopC = 1 To MAX_INVENTORY_SLOTS
-330             Params(ParamC) = .ID
+330             Params(ParamC) = .Id
 332             Params(ParamC + 1) = LoopC
 334             Params(ParamC + 2) = .Invent.Object(LoopC).ObjIndex
 336             Params(ParamC + 3) = .Invent.Object(LoopC).amount
@@ -438,7 +438,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
 348         ParamC = 0
         
 350         For LoopC = 1 To MAX_BANCOINVENTORY_SLOTS
-352             Params(ParamC) = .ID
+352             Params(ParamC) = .Id
 354             Params(ParamC + 1) = LoopC
 356             Params(ParamC + 2) = .BancoInvent.Object(LoopC).ObjIndex
 358             Params(ParamC + 3) = .BancoInvent.Object(LoopC).amount
@@ -453,7 +453,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
 368         ParamC = 0
         
 370         For LoopC = 1 To NUMSKILLS
-372             Params(ParamC) = .ID
+372             Params(ParamC) = .Id
 374             Params(ParamC + 1) = LoopC
 376             Params(ParamC + 2) = .Stats.UserSkills(LoopC)
             
@@ -468,7 +468,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
             Dim petType As Integer
 
 388         For LoopC = 1 To MAXMASCOTAS
-390             Params(ParamC) = .ID
+390             Params(ParamC) = .Id
 392             Params(ParamC + 1) = LoopC
 
                 'CHOTS | I got this logic from SaveUserToCharfile
@@ -495,10 +495,10 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
             ' ************************** User connection logs *********************************
         
             'Agrego ip del user
-412         Call MakeQuery(QUERY_SAVE_CONNECTION, True, .ID, .IP)
+412         Call MakeQuery(QUERY_SAVE_CONNECTION, True, .Id, .ip)
         
             'Borro la mas vieja si hay mas de 5 (WyroX: si alguien sabe una forma mejor de hacerlo me avisa)
-414         Call MakeQuery(QUERY_DELETE_LAST_CONNECTIONS, True, .ID, .ID)
+414         Call MakeQuery(QUERY_DELETE_LAST_CONNECTIONS, True, .Id, .Id)
         
             ' ************************** User quests *********************************
 416         QueryBuilder.Append "INSERT INTO quest (user_id, number, quest_id, npcs, npcstarget) VALUES "
@@ -507,7 +507,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
 
 418         For LoopC = 1 To MAXUSERQUESTS
 420             QueryBuilder.Append "("
-422             QueryBuilder.Append .ID & ", "
+422             QueryBuilder.Append .Id & ", "
 424             QueryBuilder.Append LoopC & ", "
 426             QueryBuilder.Append .QuestStats.Quests(LoopC).QuestIndex & ", '"
             
@@ -584,7 +584,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
 492             ParamC = 0
             
 494             For LoopC = 1 To .QuestStats.NumQuestsDone
-496                 Params(ParamC) = .ID
+496                 Params(ParamC) = .Id
 498                 Params(ParamC + 1) = .QuestStats.QuestsDone(LoopC)
                 
 500                 ParamC = ParamC + 2
@@ -598,7 +598,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
             ' ************************** User logout *********************************
             ' Si deslogueó, actualizo la cuenta
 506         If Logout Then
-508             Call MakeQuery("UPDATE account SET logged = logged - 1 WHERE id = ?", True, .AccountID)
+508             Call MakeQuery("UPDATE account SET logged = logged - 1 WHERE id = ?", True, .AccountId)
             End If
 
         End With
@@ -611,7 +611,7 @@ ErrorHandler:
 
 512     Set QueryBuilder = Nothing
     
-514     Call LogDatabaseError("Error en SaveUserDatabase. UserName: " & UserList(UserIndex).Name & ". " & Err.Number & " - " & Err.Description)
+514     Call LogDatabaseError("Error en SaveUserDatabase. UserName: " & UserList(UserIndex).name & ". " & Err.Number & " - " & Err.Description)
 
 End Sub
 
@@ -622,13 +622,13 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
         'Basic user data
 100     With UserList(UserIndex)
 
-102         Call MakeQuery("SELECT *, DATE_FORMAT(fecha_ingreso, '%Y-%m-%d') as 'fecha_ingreso_format' FROM user WHERE name = ?;", False, .Name)
+102         Call MakeQuery("SELECT *, DATE_FORMAT(fecha_ingreso, '%Y-%m-%d') as 'fecha_ingreso_format' FROM user WHERE name = ?;", False, .name)
 
 104         If QueryData Is Nothing Then Exit Sub
 
             'Start setting data
-106         .ID = QueryData!ID
-108         .Name = QueryData!Name
+106         .Id = QueryData!Id
+108         .name = QueryData!name
 110         .Stats.ELV = QueryData!level
 112         .Stats.Exp = QueryData!Exp
 114         .genero = QueryData!genre_id
@@ -745,7 +745,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
 292         .Stats.Advertencias = QueryData!warnings
         
             'User attributes
-294         Call MakeQuery("SELECT * FROM attribute WHERE user_id = ?;", False, .ID)
+294         Call MakeQuery("SELECT * FROM attribute WHERE user_id = ?;", False, .Id)
     
 296         If Not QueryData Is Nothing Then
 298             QueryData.MoveFirst
@@ -761,7 +761,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
             End If
 
             'User spells
-308         Call MakeQuery("SELECT * FROM spell WHERE user_id = ?;", False, .ID)
+308         Call MakeQuery("SELECT * FROM spell WHERE user_id = ?;", False, .Id)
 
 310         If Not QueryData Is Nothing Then
 312             QueryData.MoveFirst
@@ -776,7 +776,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
             End If
 
             'User pets
-320         Call MakeQuery("SELECT * FROM pet WHERE user_id = ?;", False, .ID)
+320         Call MakeQuery("SELECT * FROM pet WHERE user_id = ?;", False, .Id)
 
 322         If Not QueryData Is Nothing Then
 324             QueryData.MoveFirst
@@ -796,7 +796,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
             End If
 
             'User inventory
-336         Call MakeQuery("SELECT * FROM inventory_item WHERE user_id = ?;", False, .ID)
+336         Call MakeQuery("SELECT * FROM inventory_item WHERE user_id = ?;", False, .Id)
 
 338         If Not QueryData Is Nothing Then
 340             QueryData.MoveFirst
@@ -807,7 +807,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
 346                     .ObjIndex = QueryData!item_id
                 
 348                     If .ObjIndex <> 0 Then
-350                         If LenB(ObjData(.ObjIndex).Name) Then
+350                         If LenB(ObjData(.ObjIndex).name) Then
 352                             .amount = QueryData!amount
 354                             .Equipped = QueryData!is_equipped
                             Else
@@ -825,7 +825,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
             End If
 
             'User bank inventory
-360         Call MakeQuery("SELECT * FROM bank_item WHERE user_id = ?;", False, .ID)
+360         Call MakeQuery("SELECT * FROM bank_item WHERE user_id = ?;", False, .Id)
 
 362         If Not QueryData Is Nothing Then
 364             QueryData.MoveFirst
@@ -836,7 +836,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
 370                     .ObjIndex = QueryData!item_id
                 
 372                     If .ObjIndex <> 0 Then
-374                         If LenB(ObjData(.ObjIndex).Name) Then
+374                         If LenB(ObjData(.ObjIndex).name) Then
 376                             .amount = QueryData!amount
                             Else
 378                             .ObjIndex = 0
@@ -853,7 +853,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
             End If
 
             'User skills
-382         Call MakeQuery("SELECT * FROM skillpoint WHERE user_id = ?;", False, .ID)
+382         Call MakeQuery("SELECT * FROM skillpoint WHERE user_id = ?;", False, .Id)
 
 384         If Not QueryData Is Nothing Then
 386             QueryData.MoveFirst
@@ -887,7 +887,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
             Dim LoopC As Byte
         
             'User quests
-394         Call MakeQuery("SELECT * FROM quest WHERE user_id = ?;", False, .ID)
+394         Call MakeQuery("SELECT * FROM quest WHERE user_id = ?;", False, .Id)
 
 396         If Not QueryData Is Nothing Then
 398             QueryData.MoveFirst
@@ -931,7 +931,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
             End If
         
             'User quests done
-432         Call MakeQuery("SELECT * FROM quest_done WHERE user_id = ?;", False, .ID)
+432         Call MakeQuery("SELECT * FROM quest_done WHERE user_id = ?;", False, .Id)
 
 434         If Not QueryData Is Nothing Then
 436             .QuestStats.NumQuestsDone = QueryData.RecordCount
@@ -956,7 +956,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
             'TODO:
         
             ' Llaves
-452         Call MakeQuery("SELECT key_obj FROM house_key WHERE account_id = ?", False, .AccountID)
+452         Call MakeQuery("SELECT key_obj FROM house_key WHERE account_id = ?", False, .AccountId)
 
 454         If Not QueryData Is Nothing Then
 456             QueryData.MoveFirst
@@ -980,7 +980,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
 ErrorHandler:
 468     Call LogDatabaseError("Error en LoadUserDatabase: " & UserList(UserIndex).Name & ". " & Err.Number & " - " & Err.Description & ". Línea: " & Erl)
 
-470
+470     Resume Next
 
 End Sub
 
@@ -1034,8 +1034,8 @@ Public Function MakeQuery(query As String, ByVal NoResult As Boolean, ParamArray
     
 ErrorHandler:
 
-        Dim errNumber As Long, ErrDesc As String
-134     errNumber = Err.Number
+        Dim ErrNumber As Long, ErrDesc As String
+134     ErrNumber = Err.Number
 136     ErrDesc = Err.Description
 
 138     If Not adoIsConnected(Database_Connection) Then
@@ -1044,11 +1044,11 @@ ErrorHandler:
 144         Resume
         
         Else
-146         Call LogDatabaseError("Error en MakeQuery: query = '" & query & "'. " & errNumber & " - " & ErrDesc)
+146         Call LogDatabaseError("Error en MakeQuery: query = '" & query & "'. " & ErrNumber & " - " & ErrDesc)
         
             On Error GoTo 0
 
-148         Err.raise errNumber, "MakeQuery", ErrDesc
+148         Err.raise ErrNumber, "MakeQuery", ErrDesc
 
         End If
 
@@ -1088,7 +1088,7 @@ Public Function GetCuentaValue(CuentaEmail As String, Columna As String) As Vari
 
 GetCuentaValue_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.GetCuentaValue", Erl)
-104
+104     Resume Next
         
 End Function
 
@@ -1105,7 +1105,7 @@ Public Function GetUserValue(CharName As String, Columna As String) As Variant
 
 GetUserValue_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.GetUserValue", Erl)
-104
+104     Resume Next
         
 End Function
 
@@ -1138,7 +1138,7 @@ Private Sub SetCuentaValue(CuentaEmail As String, Columna As String, Value As Va
 
 SetCuentaValue_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.SetCuentaValue", Erl)
-104
+104     Resume Next
         
 End Sub
 
@@ -1155,43 +1155,43 @@ Private Sub SetUserValue(CharName As String, Columna As String, Value As Variant
 
 SetUserValue_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.SetUserValue", Erl)
-104
+104     Resume Next
         
 End Sub
 
-Private Sub SetCuentaValueByID(ByVal AccountID As Long, Columna As String, Value As Variant)
+Private Sub SetCuentaValueByID(ByVal AccountId As Long, Columna As String, Value As Variant)
         ' 18/10/2020 Autor: Alexis Caraballo (WyroX)
         ' Para cuando hay que escribir un unico valor de la cuenta
         ' Por ID
         
         On Error GoTo SetCuentaValueByID_Err
         
-100     Call SetDBValue("account", Columna, Value, "id", AccountID)
+100     Call SetDBValue("account", Columna, Value, "id", AccountId)
 
         
         Exit Sub
 
 SetCuentaValueByID_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.SetCuentaValueByID", Erl)
-104
+104     Resume Next
         
 End Sub
 
-Private Sub SetUserValueByID(ByVal ID As Long, Columna As String, Value As Variant)
+Private Sub SetUserValueByID(ByVal Id As Long, Columna As String, Value As Variant)
         ' 18/10/2020 Autor: Alexis Caraballo (WyroX)
         ' Para cuando hay que escribir un unico valor del char
         ' Por ID
         
         On Error GoTo SetUserValueByID_Err
         
-100     Call SetDBValue("user", Columna, Value, "id", ID)
+100     Call SetDBValue("user", Columna, Value, "id", Id)
 
         
         Exit Sub
 
 SetUserValueByID_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.SetUserValueByID", Erl)
-104
+104     Resume Next
         
 End Sub
 
@@ -1206,7 +1206,7 @@ Public Function CheckUserDonatorDatabase(CuentaEmail As String) As Boolean
 
 CheckUserDonatorDatabase_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.CheckUserDonatorDatabase", Erl)
-104
+104     Resume Next
         
 End Function
 
@@ -1221,7 +1221,7 @@ Public Function GetUserCreditosDatabase(CuentaEmail As String) As Long
 
 GetUserCreditosDatabase_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.GetUserCreditosDatabase", Erl)
-104
+104     Resume Next
         
 End Function
 
@@ -1236,7 +1236,7 @@ Public Function GetUserCreditosCanjeadosDatabase(CuentaEmail As String) As Long
 
 GetUserCreditosCanjeadosDatabase_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.GetUserCreditosCanjeadosDatabase", Erl)
-104
+104     Resume Next
         
 End Function
 
@@ -1257,7 +1257,7 @@ Public Function GetUserDiasDonadorDatabase(CuentaEmail As String) As Long
 
 GetUserDiasDonadorDatabase_Err:
 106     Call RegistrarError(Err.Number, Err.Description, "modDatabase.GetUserDiasDonadorDatabase", Erl)
-108
+108     Resume Next
         
 End Function
 Public Function GetUserComprasDonadorDatabase(CuentaEmail As String) As Long
@@ -1271,22 +1271,22 @@ Public Function GetUserComprasDonadorDatabase(CuentaEmail As String) As Long
 
 GetUserComprasDonadorDatabase_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.GetUserComprasDonadorDatabase", Erl)
-104
+104     Resume Next
         
 End Function
 
-Public Function CheckUserExists(Name As String) As Boolean
+Public Function CheckUserExists(name As String) As Boolean
         
         On Error GoTo CheckUserExists_Err
         
-100     CheckUserExists = GetUserValue(Name, "COUNT(*)") > 0
+100     CheckUserExists = GetUserValue(name, "COUNT(*)") > 0
 
         
         Exit Function
 
 CheckUserExists_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.CheckUserExists", Erl)
-104
+104     Resume Next
         
 End Function
 
@@ -1301,67 +1301,67 @@ Public Function CheckCuentaExiste(CuentaEmail As String) As Boolean
 
 CheckCuentaExiste_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.CheckCuentaExiste", Erl)
-104
+104     Resume Next
         
 End Function
 
-Public Function BANCheckDatabase(Name As String) As Boolean
+Public Function BANCheckDatabase(name As String) As Boolean
         
         On Error GoTo BANCheckDatabase_Err
         
-100     BANCheckDatabase = CBool(GetUserValue(Name, "is_banned"))
+100     BANCheckDatabase = CBool(GetUserValue(name, "is_banned"))
 
         
         Exit Function
 
 BANCheckDatabase_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.BANCheckDatabase", Erl)
-104
+104     Resume Next
         
 End Function
 
-Public Function GetCodigoActivacionDatabase(Name As String) As String
+Public Function GetCodigoActivacionDatabase(name As String) As String
         
         On Error GoTo GetCodigoActivacionDatabase_Err
         
-100     GetCodigoActivacionDatabase = GetCuentaValue(Name, "validate_code")
+100     GetCodigoActivacionDatabase = GetCuentaValue(name, "validate_code")
 
         
         Exit Function
 
 GetCodigoActivacionDatabase_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.GetCodigoActivacionDatabase", Erl)
-104
+104     Resume Next
         
 End Function
 
-Public Function CheckCuentaActivadaDatabase(Name As String) As Boolean
+Public Function CheckCuentaActivadaDatabase(name As String) As Boolean
         
         On Error GoTo CheckCuentaActivadaDatabase_Err
         
-100     CheckCuentaActivadaDatabase = GetCuentaValue(Name, "validated")
+100     CheckCuentaActivadaDatabase = GetCuentaValue(name, "validated")
 
         
         Exit Function
 
 CheckCuentaActivadaDatabase_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.CheckCuentaActivadaDatabase", Erl)
-104
+104     Resume Next
         
 End Function
 
-Public Function GetEmailDatabase(Name As String) As String
+Public Function GetEmailDatabase(name As String) As String
         
         On Error GoTo GetEmailDatabase_Err
         
-100     GetEmailDatabase = GetCuentaValue(Name, "email")
+100     GetEmailDatabase = GetCuentaValue(name, "email")
 
         
         Exit Function
 
 GetEmailDatabase_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.GetEmailDatabase", Erl)
-104
+104     Resume Next
         
 End Function
 
@@ -1376,7 +1376,7 @@ Public Function GetMacAddressDatabase(CuentaEmail As String) As String
 
 GetMacAddressDatabase_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.GetMacAddressDatabase", Erl)
-104
+104     Resume Next
         
 End Function
 
@@ -1391,7 +1391,7 @@ Public Function GetHDSerialDatabase(CuentaEmail As String) As Long
 
 GetHDSerialDatabase_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.GetHDSerialDatabase", Erl)
-104
+104     Resume Next
         
 End Function
 
@@ -1406,7 +1406,7 @@ Public Function CheckBanCuentaDatabase(CuentaEmail As String) As Boolean
 
 CheckBanCuentaDatabase_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.CheckBanCuentaDatabase", Erl)
-104
+104     Resume Next
         
 End Function
 
@@ -1421,7 +1421,7 @@ Public Function GetMotivoBanCuentaDatabase(CuentaEmail As String) As String
 
 GetMotivoBanCuentaDatabase_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.GetMotivoBanCuentaDatabase", Erl)
-104
+104     Resume Next
         
 End Function
 
@@ -1436,7 +1436,7 @@ Public Function GetQuienBanCuentaDatabase(CuentaEmail As String) As String
 
 GetQuienBanCuentaDatabase_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.GetQuienBanCuentaDatabase", Erl)
-104
+104     Resume Next
         
 End Function
 
@@ -1451,38 +1451,38 @@ Public Function GetCuentaLogeadaDatabase(CuentaEmail As String) As Boolean
 
 GetCuentaLogeadaDatabase_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.GetCuentaLogeadaDatabase", Erl)
-104
+104     Resume Next
         
 End Function
 
-Public Function GetUserStatusDatabase(Name As String) As Integer
+Public Function GetUserStatusDatabase(name As String) As Integer
         
         On Error GoTo GetUserStatusDatabase_Err
         
-100     GetUserStatusDatabase = GetUserValue(Name, "status")
+100     GetUserStatusDatabase = GetUserValue(name, "status")
 
         
         Exit Function
 
 GetUserStatusDatabase_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.GetUserStatusDatabase", Erl)
-104
+104     Resume Next
         
 End Function
 
-Public Function GetAccountIDDatabase(Name As String) As Long
+Public Function GetAccountIDDatabase(name As String) As Long
         
         On Error GoTo GetAccountIDDatabase_Err
         
 
-        Dim Temp As Variant
+        Dim temp As Variant
 
-100     Temp = GetUserValue(Name, "account_id")
+100     temp = GetUserValue(name, "account_id")
     
-102     If VBA.IsEmpty(Temp) Then
+102     If VBA.IsEmpty(temp) Then
 104         GetAccountIDDatabase = -1
         Else
-106         GetAccountIDDatabase = val(Temp)
+106         GetAccountIDDatabase = val(temp)
 
         End If
 
@@ -1491,7 +1491,7 @@ Public Function GetAccountIDDatabase(Name As String) As Long
 
 GetAccountIDDatabase_Err:
 108     Call RegistrarError(Err.Number, Err.Description, "modDatabase.GetAccountIDDatabase", Erl)
-110
+110     Resume Next
         
 End Function
 
@@ -1517,11 +1517,11 @@ Public Function GetPersonajesCountDatabase(CuentaEmail As String) As Byte
 
         On Error GoTo ErrorHandler
 
-        Dim ID As Long
+        Dim Id As Long
 
-100     ID = GetDBValue("account", "id", "email", LCase$(CuentaEmail))
+100     Id = GetDBValue("account", "id", "email", LCase$(CuentaEmail))
     
-102     GetPersonajesCountDatabase = GetPersonajesCountByIDDatabase(ID)
+102     GetPersonajesCountDatabase = GetPersonajesCountByIDDatabase(Id)
     
         Exit Function
     
@@ -1530,11 +1530,11 @@ ErrorHandler:
     
 End Function
 
-Public Function GetPersonajesCountByIDDatabase(ByVal AccountID As Long) As Byte
+Public Function GetPersonajesCountByIDDatabase(ByVal AccountId As Long) As Byte
 
         On Error GoTo ErrorHandler
     
-100     Call MakeQuery("SELECT COUNT(*) FROM user WHERE deleted = FALSE AND account_id = ?;", False, AccountID)
+100     Call MakeQuery("SELECT COUNT(*) FROM user WHERE deleted = FALSE AND account_id = ?;", False, AccountId)
     
 102     If QueryData Is Nothing Then Exit Function
     
@@ -1543,16 +1543,16 @@ Public Function GetPersonajesCountByIDDatabase(ByVal AccountID As Long) As Byte
         Exit Function
     
 ErrorHandler:
-106     Call LogDatabaseError("Error in GetPersonajesCountByIDDatabase. AccountID: " & AccountID & ". " & Err.Number & " - " & Err.Description)
+106     Call LogDatabaseError("Error in GetPersonajesCountByIDDatabase. AccountID: " & AccountId & ". " & Err.Number & " - " & Err.Description)
     
 End Function
 
-Public Function GetPersonajesCuentaDatabase(ByVal AccountID As Long, Personaje() As PersonajeCuenta) As Byte
+Public Function GetPersonajesCuentaDatabase(ByVal AccountId As Long, Personaje() As PersonajeCuenta) As Byte
         
         On Error GoTo GetPersonajesCuentaDatabase_Err
         
 
-100     Call MakeQuery("SELECT name, head_id, class_id, body_id, pos_map, pos_x, pos_y, level, status, helmet_id, shield_id, weapon_id, guild_index, is_dead, is_sailing FROM user WHERE deleted = FALSE AND account_id = ?;", False, AccountID)
+100     Call MakeQuery("SELECT name, head_id, class_id, body_id, pos_map, pos_x, pos_y, level, status, helmet_id, shield_id, weapon_id, guild_index, is_dead, is_sailing FROM user WHERE deleted = FALSE AND account_id = ?;", False, AccountId)
 
 102     If QueryData Is Nothing Then Exit Function
     
@@ -1563,7 +1563,7 @@ Public Function GetPersonajesCuentaDatabase(ByVal AccountID As Long, Personaje()
         Dim i As Integer
 
 108     For i = 1 To GetPersonajesCuentaDatabase
-110         Personaje(i).nombre = QueryData!Name
+110         Personaje(i).nombre = QueryData!name
 112         Personaje(i).Cabeza = QueryData!head_id
 114         Personaje(i).clase = QueryData!class_id
 116         Personaje(i).cuerpo = QueryData!body_id
@@ -1602,38 +1602,38 @@ Public Function GetPersonajesCuentaDatabase(ByVal AccountID As Long, Personaje()
 
 GetPersonajesCuentaDatabase_Err:
 162     Call RegistrarError(Err.Number, Err.Description, "modDatabase.GetPersonajesCuentaDatabase", Erl)
-164
+164     Resume Next
         
 End Function
 
-Public Sub SetUserLoggedDatabase(ByVal ID As Long, ByVal AccountID As Long)
+Public Sub SetUserLoggedDatabase(ByVal Id As Long, ByVal AccountId As Long)
         
         On Error GoTo SetUserLoggedDatabase_Err
         
-100     Call SetDBValue("user", "is_logged", 1, "id", ID)
-102     Call MakeQuery("UPDATE account SET logged = logged + 1 WHERE id = ?;", True, AccountID)
+100     Call SetDBValue("user", "is_logged", 1, "id", Id)
+102     Call MakeQuery("UPDATE account SET logged = logged + 1 WHERE id = ?;", True, AccountId)
 
         
         Exit Sub
 
 SetUserLoggedDatabase_Err:
 104     Call RegistrarError(Err.Number, Err.Description, "modDatabase.SetUserLoggedDatabase", Erl)
-106
+106     Resume Next
         
 End Sub
 
-Public Sub ResetLoggedDatabase(ByVal AccountID As Long)
+Public Sub ResetLoggedDatabase(ByVal AccountId As Long)
         
         On Error GoTo ResetLoggedDatabase_Err
         
-100     Call MakeQuery("UPDATE account SET logged = 0 WHERE id = ?;", True, AccountID)
+100     Call MakeQuery("UPDATE account SET logged = 0 WHERE id = ?;", True, AccountId)
 
         
         Exit Sub
 
 ResetLoggedDatabase_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.ResetLoggedDatabase", Erl)
-104
+104     Resume Next
         
 End Sub
 
@@ -1647,7 +1647,7 @@ Public Sub SetUsersLoggedDatabase(ByVal NumUsers As Long)
 
 SetUsersLoggedDatabase_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.SetUsersLoggedDatabase", Erl)
-104
+104     Resume Next
         
 End Sub
 
@@ -1665,7 +1665,7 @@ Public Function LeerRecordUsuariosDatabase() As Long
 
 LeerRecordUsuariosDatabase_Err:
 106     Call RegistrarError(Err.Number, Err.Description, "modDatabase.LeerRecordUsuariosDatabase", Erl)
-108
+108     Resume Next
         
 End Function
 
@@ -1679,7 +1679,7 @@ Public Sub SetRecordUsersDatabase(ByVal Record As Long)
 
 SetRecordUsersDatabase_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.SetRecordUsersDatabase", Erl)
-104
+104     Resume Next
         
 End Sub
 
@@ -1694,22 +1694,22 @@ Public Sub LogoutAllUsersAndAccounts()
 
 LogoutAllUsersAndAccounts_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.LogoutAllUsersAndAccounts", Erl)
-104
+104     Resume Next
         
 End Sub
 
-Public Sub SaveVotoDatabase(ByVal ID As Long, ByVal Encuestas As Integer)
+Public Sub SaveVotoDatabase(ByVal Id As Long, ByVal Encuestas As Integer)
         
         On Error GoTo SaveVotoDatabase_Err
         
-100     Call SetUserValueByID(ID, "votes_amount", Encuestas)
+100     Call SetUserValueByID(Id, "votes_amount", Encuestas)
 
         
         Exit Sub
 
 SaveVotoDatabase_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.SaveVotoDatabase", Erl)
-104
+104     Resume Next
         
 End Sub
 
@@ -1724,7 +1724,7 @@ Public Sub SaveUserBodyDatabase(UserName As String, ByVal Body As Integer)
 
 SaveUserBodyDatabase_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.SaveUserBodyDatabase", Erl)
-104
+104     Resume Next
         
 End Sub
 
@@ -1739,7 +1739,7 @@ Public Sub SaveUserHeadDatabase(UserName As String, ByVal Head As Integer)
 
 SaveUserHeadDatabase_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.SaveUserHeadDatabase", Erl)
-104
+104     Resume Next
         
 End Sub
 
@@ -1753,7 +1753,7 @@ Public Sub SaveUserSkillDatabase(UserName As String, ByVal Skill As Integer, ByV
 
 SaveUserSkillDatabase_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.SaveUserSkillDatabase", Erl)
-104
+104     Resume Next
         
 End Sub
 
@@ -1767,7 +1767,7 @@ Public Sub SaveUserSkillsLibres(UserName As String, ByVal SkillsLibres As Intege
 
 SaveUserHeadDatabase_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.SaveUserHeadDatabase", Erl)
-104
+104     Resume Next
         
 End Sub
 
@@ -1794,26 +1794,26 @@ Public Sub ValidarCuentaDatabase(UserCuenta As String)
 
 ValidarCuentaDatabase_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.ValidarCuentaDatabase", Erl)
-104
+104     Resume Next
         
 End Sub
 
-Public Function CheckUserAccount(Name As String, ByVal AccountID As Long) As Boolean
+Public Function CheckUserAccount(name As String, ByVal AccountId As Long) As Boolean
 
-100     CheckUserAccount = (val(GetUserValue(Name, "account_id")) = AccountID)
+100     CheckUserAccount = (val(GetUserValue(name, "account_id")) = AccountId)
 
 End Function
 
-Public Sub BorrarUsuarioDatabase(Name As String)
+Public Sub BorrarUsuarioDatabase(name As String)
 
         On Error GoTo ErrorHandler
     
-100     Call MakeQuery("UPDATE user SET name = CONCAT('DELETED_', name), deleted = TRUE WHERE UPPER(name) = ?;", True, UCase$(Name))
+100     Call MakeQuery("UPDATE user SET name = CONCAT('DELETED_', name), deleted = TRUE WHERE UPPER(name) = ?;", True, UCase$(name))
 
         Exit Sub
     
 ErrorHandler:
-102     Call LogDatabaseError("Error en BorrarUsuarioDatabase borrando user de la Mysql Database: " & Name & ". " & Err.Number & " - " & Err.Description)
+102     Call LogDatabaseError("Error en BorrarUsuarioDatabase borrando user de la Mysql Database: " & name & ". " & Err.Number & " - " & Err.Description)
 
 End Sub
 
@@ -1821,13 +1821,13 @@ Public Sub BorrarCuentaDatabase(CuentaEmail As String)
 
         On Error GoTo ErrorHandler
 
-        Dim ID As Long
+        Dim Id As Long
 
-100     ID = GetDBValue("account", "id", "email", LCase$(CuentaEmail))
+100     Id = GetDBValue("account", "id", "email", LCase$(CuentaEmail))
 
 102     Call MakeQuery("UPDATE account SET email = CONCAT('DELETED_', email), deleted = TRUE WHERE email = ?;", True, LCase$(CuentaEmail))
 
-104     Call MakeQuery("UPDATE user SET name = CONCAT('DELETED_', name), deleted = TRUE WHERE account_id = ?;", True, ID)
+104     Call MakeQuery("UPDATE user SET name = CONCAT('DELETED_', name), deleted = TRUE WHERE account_id = ?;", True, Id)
 
         Exit Sub
     
@@ -1930,16 +1930,16 @@ ErrorHandler:
 
 End Sub
 
-Public Sub SaveBanCuentaDatabase(ByVal AccountID As Long, Reason As String, BannedBy As String)
+Public Sub SaveBanCuentaDatabase(ByVal AccountId As Long, Reason As String, BannedBy As String)
 
         On Error GoTo ErrorHandler
 
-100     Call MakeQuery("UPDATE account SET is_banned = TRUE, banned_by = ?, ban_reason = ? WHERE id = ?;", True, BannedBy, Reason, AccountID)
+100     Call MakeQuery("UPDATE account SET is_banned = TRUE, banned_by = ?, ban_reason = ? WHERE id = ?;", True, BannedBy, Reason, AccountId)
 
         Exit Sub
 
 ErrorHandler:
-102     Call LogDatabaseError("Error in SaveBanCuentaDatabase: AccountId=" & AccountID & ". " & Err.Number & " - " & Err.Description)
+102     Call LogDatabaseError("Error in SaveBanCuentaDatabase: AccountId=" & AccountId & ". " & Err.Number & " - " & Err.Description)
 
 End Sub
 
@@ -1954,7 +1954,7 @@ Public Sub EcharConsejoDatabase(UserName As String)
 
 EcharConsejoDatabase_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.EcharConsejoDatabase", Erl)
-104
+104     Resume Next
         
 End Sub
 
@@ -1969,7 +1969,7 @@ Public Sub EcharLegionDatabase(UserName As String)
 
 EcharLegionDatabase_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.EcharLegionDatabase", Erl)
-104
+104     Resume Next
         
 End Sub
 
@@ -1984,7 +1984,7 @@ Public Sub EcharArmadaDatabase(UserName As String)
 
 EcharArmadaDatabase_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.EcharArmadaDatabase", Erl)
-104
+104     Resume Next
         
 End Sub
 
@@ -1999,7 +1999,7 @@ Public Sub CambiarPenaDatabase(UserName As String, ByVal Numero As Integer, Pena
 
 CambiarPenaDatabase_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.CambiarPenaDatabase", Erl)
-104
+104     Resume Next
         
 End Sub
 
@@ -2053,23 +2053,23 @@ ErrorHandler:
 End Sub
 
 
-Public Function GetNombreCuentaDatabase(Name As String) As String
+Public Function GetNombreCuentaDatabase(name As String) As String
 
         On Error GoTo ErrorHandler
 
         'Hacemos la query.
-100     Call MakeQuery("SELECT email FROM `account` INNER JOIN `user` ON user.account_id = account.id WHERE UPPER(user.name) = ?;", False, UCase$(Name))
+100     Call MakeQuery("SELECT email FROM `account` INNER JOIN `user` ON user.account_id = account.id WHERE UPPER(user.name) = ?;", False, UCase$(name))
     
         'Verificamos que la query no devuelva un resultado vacio.
 102     If QueryData Is Nothing Then Exit Function
     
         'Obtenemos el nombre de la cuenta
-104     GetNombreCuentaDatabase = QueryData!Email
+104     GetNombreCuentaDatabase = QueryData!email
 
         Exit Function
     
 ErrorHandler:
-106     Call LogDatabaseError("Error en GetNombreCuentaDatabase leyendo user de la Mysql Database: " & Name & ". " & Err.Number & " - " & Err.Description)
+106     Call LogDatabaseError("Error en GetNombreCuentaDatabase leyendo user de la Mysql Database: " & name & ". " & Err.Number & " - " & Err.Description)
 
 End Function
 
@@ -2286,7 +2286,7 @@ ErrorHandler:
 
 End Sub
 
-Public Function EnterAccountDatabase(ByVal UserIndex As Integer, CuentaEmail As String, Password As String, MacAddress As String, ByVal HDSerial As Long, IP As String) As Boolean
+Public Function EnterAccountDatabase(ByVal UserIndex As Integer, CuentaEmail As String, Password As String, MacAddress As String, ByVal HDserial As Long, ip As String) As Boolean
 
         On Error GoTo ErrorHandler
     
@@ -2317,10 +2317,10 @@ Public Function EnterAccountDatabase(ByVal UserIndex As Integer, CuentaEmail As 
             Exit Function
         End If
     
-122     UserList(UserIndex).AccountID = QueryData!ID
+122     UserList(UserIndex).AccountId = QueryData!Id
 124     UserList(UserIndex).Cuenta = CuentaEmail
     
-126     Call MakeQuery("UPDATE account SET mac_address = ?, hd_serial = ?, last_ip = ?, last_access = NOW() WHERE id = ?;", True, MacAddress, HDSerial, IP, QueryData!ID)
+126     Call MakeQuery("UPDATE account SET mac_address = ?, hd_serial = ?, last_ip = ?, last_access = NOW() WHERE id = ?;", True, MacAddress, HDserial, ip, QueryData!Id)
     
 128     EnterAccountDatabase = True
     
@@ -2344,9 +2344,9 @@ Public Function PersonajePerteneceEmail(ByVal UserName As String, ByVal AccountE
     
 End Function
 
-Public Function PersonajePerteneceID(ByVal UserName As String, ByVal AccountID As Long) As Boolean
+Public Function PersonajePerteneceID(ByVal UserName As String, ByVal AccountId As Long) As Boolean
     
-100     Call MakeQuery("SELECT id FROM user WHERE name = ? AND account_id = ?;", False, UserName, AccountID)
+100     Call MakeQuery("SELECT id FROM user WHERE name = ? AND account_id = ?;", False, UserName, AccountId)
     
 102     If QueryData Is Nothing Then
 104         PersonajePerteneceID = False
@@ -2367,7 +2367,7 @@ Public Sub ChangePasswordDatabase(ByVal UserIndex As Integer, OldPassword As Str
 
         End If
     
-104     Call MakeQuery("SELECT password, salt FROM account WHERE id = ?;", False, UserList(UserIndex).AccountID)
+104     Call MakeQuery("SELECT password, salt FROM account WHERE id = ?;", False, UserList(UserIndex).AccountId)
     
 106     If QueryData Is Nothing Then
 108         Call WriteConsoleMsg(UserIndex, "No se ha podido cambiar la contraseña por un error interno. Avise a un administrador.", FontTypeNames.FONTTYPE_INFO)
@@ -2392,22 +2392,22 @@ Public Sub ChangePasswordDatabase(ByVal UserIndex As Integer, OldPassword As Str
     
 120     Set oSHA256 = Nothing
     
-122     Call MakeQuery("UPDATE account SET password = ?, salt = ? WHERE id = ?;", True, PasswordHash, Salt, UserList(UserIndex).AccountID)
+122     Call MakeQuery("UPDATE account SET password = ?, salt = ? WHERE id = ?;", True, PasswordHash, Salt, UserList(UserIndex).AccountId)
     
 124     Call WriteConsoleMsg(UserIndex, "La contraseña de su cuenta fue cambiada con éxito.", FontTypeNames.FONTTYPE_INFO)
     
         Exit Sub
 
 ErrorHandler:
-126     Call LogDatabaseError("Error in ChangePasswordDatabase. Username: " & UserList(UserIndex).Name & ". " & Err.Number & " - " & Err.Description)
+126     Call LogDatabaseError("Error in ChangePasswordDatabase. Username: " & UserList(UserIndex).name & ". " & Err.Number & " - " & Err.Description)
 
 End Sub
 
-Public Function GetUsersLoggedAccountDatabase(ByVal AccountID As Long) As Byte
+Public Function GetUsersLoggedAccountDatabase(ByVal AccountId As Long) As Byte
 
         On Error GoTo ErrorHandler
 
-100     Call GetDBValue("account", "logged", "id", AccountID)
+100     Call GetDBValue("account", "logged", "id", AccountId)
     
 102     If QueryData Is Nothing Then Exit Function
     
@@ -2416,7 +2416,7 @@ Public Function GetUsersLoggedAccountDatabase(ByVal AccountID As Long) As Byte
         Exit Function
 
 ErrorHandler:
-106     Call LogDatabaseError("Error in GetUsersLoggedAccountDatabase. AccountID: " & AccountID & ". " & Err.Number & " - " & Err.Description)
+106     Call LogDatabaseError("Error in GetUsersLoggedAccountDatabase. AccountID: " & AccountId & ". " & Err.Number & " - " & Err.Description)
 
 End Function
 
@@ -2474,16 +2474,16 @@ ErrorHandler:
 
 End Function
 
-Public Function DarLlaveACuentaDatabase(Email As String, ByVal LlaveObj As Integer) As Boolean
+Public Function DarLlaveACuentaDatabase(email As String, ByVal LlaveObj As Integer) As Boolean
         On Error GoTo ErrorHandler
 
-100     Call MakeQuery("INSERT INTO house_key SET key_obj = ?, account_id = (SELECT id FROM account WHERE UPPER(email) = ?);", True, LlaveObj, UCase$(Email))
+100     Call MakeQuery("INSERT INTO house_key SET key_obj = ?, account_id = (SELECT id FROM account WHERE UPPER(email) = ?);", True, LlaveObj, UCase$(email))
     
 102     DarLlaveACuentaDatabase = RecordsAffected > 0
         Exit Function
 
 ErrorHandler:
-104     Call LogDatabaseError("Error in DarLlaveACuentaDatabase. Email: " & Email & ", LlaveObj: " & LlaveObj & ". " & Err.Number & " - " & Err.Description)
+104     Call LogDatabaseError("Error in DarLlaveACuentaDatabase. Email: " & email & ", LlaveObj: " & LlaveObj & ". " & Err.Number & " - " & Err.Description)
 
 End Function
 
@@ -2510,7 +2510,7 @@ Public Function SacarLlaveDatabase(ByVal LlaveObj As Integer) As Boolean
 
 112     While Not QueryData.EOF
     
-114         Users(i) = QueryData!Name
+114         Users(i) = QueryData!name
 116         i = i + 1
 
 118         QueryData.MoveNext
@@ -2558,7 +2558,7 @@ Public Sub VerLlavesDatabase(ByVal UserIndex As Integer)
 112         QueryData.MoveFirst
 
 114         While Not QueryData.EOF
-116             message = message & "Llave: " & QueryData!key_obj & " - Cuenta: " & QueryData!Email & vbNewLine
+116             message = message & "Llave: " & QueryData!key_obj & " - Cuenta: " & QueryData!email & vbNewLine
 
 118             QueryData.MoveNext
             Wend
@@ -2571,7 +2571,7 @@ Public Sub VerLlavesDatabase(ByVal UserIndex As Integer)
         Exit Sub
 
 ErrorHandler:
-124     Call LogDatabaseError("Error in VerLlavesDatabase. UserName: " & UserList(UserIndex).Name & ". " & Err.Number & " - " & Err.Description)
+124     Call LogDatabaseError("Error in VerLlavesDatabase. UserName: " & UserList(UserIndex).name & ". " & Err.Number & " - " & Err.Description)
 
 End Sub
 
@@ -2601,24 +2601,24 @@ Public Function SanitizeNullValue(ByVal Value As Variant, ByVal defaultValue As 
 
 SanitizeNullValue_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.SanitizeNullValue", Erl)
-104
+104     Resume Next
         
 End Function
 
-Public Function GetUserLevelDatabase(ByVal Name As String) As Byte
+Public Function GetUserLevelDatabase(ByVal name As String) As Byte
         On Error GoTo GetUserLevelDatabase_Err
 
-        GetUserLevelDatabase = val(GetUserValue(Name, "level"))
+        GetUserLevelDatabase = val(GetUserValue(name, "level"))
         
         Exit Function
         
 GetUserLevelDatabase_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "modDatabase.GetUserLevelDatabase", Erl)
-104
+104     Resume Next
 End Function
 
-Public Sub SetMessageInfoDatabase(ByVal Name As String, ByVal message As String)
-    Call MakeQuery("update user set message_info = concat(message_info, ?) where upper(name) = ?;", True, message, UCase$(Name))
+Public Sub SetMessageInfoDatabase(ByVal Name As String, ByVal Message As String)
+    Call MakeQuery("update user set message_info = concat(message_info, ?) where upper(name) = ?;", True, Message, UCase$(Name))
 End Sub
 
 Function adoIsConnected(adoCn As ADODB.Connection) As Boolean

@@ -20,7 +20,7 @@ Public Sub InicializarLimpieza()
     
 ErrHandler:
 104     Call RegistrarError(Err.Number, Err.Description, "ModLimpieza.InicializarLimpieza")
-106
+106     Resume Next
 
 End Sub
 
@@ -34,7 +34,7 @@ Public Sub LimpiarModuloLimpieza() ' Valga la redundancia
 
 Class_Terminate_Err:
 102 Call RegistrarError(Err.Number, Err.Description, "ModLimpieza.LimpiarModuloLimpieza", Erl)
-104
+104 Resume Next
         
 End Sub
 
@@ -74,7 +74,7 @@ Public Sub AgregarItemLimpieza(ByVal Map As Integer, ByVal X As Byte, ByVal Y As
     
 hErr:
 122     Call RegistrarError(Err.Number, Err.Description, "ModLimpieza.AgregarItemLimpiza")
-124
+124     Resume Next
 
 End Sub
 
@@ -119,7 +119,7 @@ Public Sub LimpiarItemsViejos()
 
 hErr:
 116     Call RegistrarError(Err.Number, Err.Description, "ModLimpieza.LimpiarItemsViejos")
-118
+118     Resume Next
 
 End Sub
 
@@ -144,7 +144,7 @@ Public Sub LimpiezaForzada() ' Limpio todo, no importa el tiempo
     
 hErr:
 110     Call RegistrarError(Err.Number, Err.Description, "ModLimpieza.LimpiezaForzada")
-112
+112     Resume Next
 
 End Sub
 

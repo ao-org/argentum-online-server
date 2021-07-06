@@ -112,7 +112,7 @@ Public Sub CheckEvento(ByVal Hora As Byte)
 
 CheckEvento_Err:
 196     Call RegistrarError(Err.Number, Err.Description, "ModEventos.CheckEvento", Erl)
-198
+198     Resume Next
         
 End Sub
 
@@ -166,7 +166,7 @@ Public Sub FinalizarEvento()
 
 FinalizarEvento_Err:
 152     Call RegistrarError(Err.Number, Err.Description, "ModEventos.FinalizarEvento", Erl)
-154
+154     Resume Next
         
 End Sub
 
@@ -219,7 +219,7 @@ Public Function DescribirEvento(ByVal Hora As Byte) As String
 
 DescribirEvento_Err:
 138     Call RegistrarError(Err.Number, Err.Description, "ModEventos.DescribirEvento", Erl)
-140
+140     Resume Next
         
 End Function
 
@@ -249,7 +249,7 @@ Public Sub CargarEventos()
 
 CargarEventos_Err:
 120     Call RegistrarError(Err.Number, Err.Description, "ModEventos.CargarEventos", Erl)
-122
+122     Resume Next
         
 End Sub
 
@@ -360,7 +360,7 @@ Public Sub ForzarEvento(ByVal Tipo As Byte, ByVal Duracion As Byte, ByVal multi 
 
 ForzarEvento_Err:
 206     Call RegistrarError(Err.Number, Err.Description, "ModEventos.ForzarEvento", Erl)
-208
+208     Resume Next
         
 End Sub
 

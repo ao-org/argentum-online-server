@@ -103,7 +103,7 @@ Public Sub CargarLogros()
 
 CargarLogros_Err:
 182     Call RegistrarError(Err.Number, Err.Description, "MoLogros.CargarLogros", Erl)
-184
+184     Resume Next
         
 End Sub
     
@@ -119,15 +119,15 @@ Public Sub EnviarRecompensaStat(ByVal UserIndex As Integer)
 
 EnviarRecompensaStat_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "MoLogros.EnviarRecompensaStat", Erl)
-104
+104     Resume Next
         
 End Sub
 
-Public Sub CheckearRecompesas(ByVal UserIndex As Integer, ByVal Index As Byte)
+Public Sub CheckearRecompesas(ByVal UserIndex As Integer, ByVal index As Byte)
         
         On Error GoTo CheckearRecompesas_Err
         
-100     Select Case Index
+100     Select Case index
 
             Case 1
 
@@ -160,16 +160,16 @@ Public Sub CheckearRecompesas(ByVal UserIndex As Integer, ByVal Index As Byte)
 
 CheckearRecompesas_Err:
 118     Call RegistrarError(Err.Number, Err.Description, "MoLogros.CheckearRecompesas", Erl)
-120
+120     Resume Next
         
 End Sub
 
-Public Sub EntregarRecompensas(ByVal UserIndex As Integer, ByVal Index As Byte)
+Public Sub EntregarRecompensas(ByVal UserIndex As Integer, ByVal index As Byte)
         
         On Error GoTo EntregarRecompensas_Err
 
 
-100     Select Case Index
+100     Select Case index
 
             Case 1
 
@@ -223,6 +223,6 @@ Public Sub EntregarRecompensas(ByVal UserIndex As Integer, ByVal Index As Byte)
 
 EntregarRecompensas_Err:
 142     Call RegistrarError(Err.Number, Err.Description, "MoLogros.EntregarRecompensas", Erl)
-144
+144     Resume Next
         
 End Sub

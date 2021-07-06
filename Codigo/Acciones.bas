@@ -809,7 +809,7 @@ Sub AccionParaPuerta(ByVal Map As Integer, ByVal X As Byte, ByVal Y As Byte, ByV
 
 Handler:
 136 Call RegistrarError(Err.Number, Err.Description, "Acciones.AccionParaPuerta", Erl)
-138
+138 Resume Next
 
 End Sub
 
@@ -840,7 +840,7 @@ Sub AccionParaPuertaNpc(ByVal Map As Integer, ByVal X As Byte, ByVal Y As Byte, 
 
 Handler:
 116 Call RegistrarError(Err.Number, Err.Description, "Acciones.AccionParaPuertaNpc", Erl)
-118
+118 Resume Next
 
 End Sub
 
@@ -863,7 +863,7 @@ Sub AccionParaCartel(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Intege
         
 Handler:
 106 Call RegistrarError(Err.Number, Err.Description, "Acciones.AccionParaCartel", Erl)
-108
+108 Resume Next
 
 End Sub
 
@@ -902,7 +902,7 @@ Sub AccionParaCorreo(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Intege
 
 AccionParaCorreo_Err:
 118     Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Acciones.AccionParaCorreo", Erl)
-120
+120     Resume Next
         
 End Sub
 
@@ -998,6 +998,6 @@ Sub AccionParaRamita(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Intege
         
 Handler:
 156 Call RegistrarError(Err.Number, Err.Description, "Acciones.AccionParaRamita", Erl)
-158
+158 Resume Next
 
 End Sub

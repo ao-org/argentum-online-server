@@ -61,7 +61,7 @@ Public Sub InitIpTables(ByVal OptCountersValue As Long)
 
 InitIpTables_Err:
 112     Call RegistrarError(Err.Number, Err.Description, "SecurityIp.InitIpTables", Erl)
-114
+114     Resume Next
         
 End Sub
 
@@ -91,11 +91,11 @@ Public Sub IpSecurityMantenimientoLista()
 
 IpSecurityMantenimientoLista_Err:
 108     Call RegistrarError(Err.Number, Err.Description, "SecurityIp.IpSecurityMantenimientoLista", Erl)
-110
+110     Resume Next
         
 End Sub
 
-Public Function IpSecurityAceptarNuevaConexion(ByVal IP As Long) As Boolean
+Public Function IpSecurityAceptarNuevaConexion(ByVal ip As Long) As Boolean
         
         On Error GoTo IpSecurityAceptarNuevaConexion_Err
         
@@ -107,7 +107,7 @@ Public Function IpSecurityAceptarNuevaConexion(ByVal IP As Long) As Boolean
         '*************************************************  *************
         Dim IpTableIndex As Long
 
-100     IpTableIndex = FindTableIp(IP, IP_INTERVALOS)
+100     IpTableIndex = FindTableIp(ip, IP_INTERVALOS)
     
 
 102         If IpTableIndex >= 0 Then
@@ -126,7 +126,7 @@ Public Function IpSecurityAceptarNuevaConexion(ByVal IP As Long) As Boolean
 
             Else
 116             IpTableIndex = Not IpTableIndex
-118             AddNewIpIntervalo IP, IpTableIndex
+118             AddNewIpIntervalo ip, IpTableIndex
 120             IpTables(IpTableIndex + 1) = GetTickCount()
 122             IpSecurityAceptarNuevaConexion = True
                 Exit Function
@@ -135,11 +135,11 @@ Public Function IpSecurityAceptarNuevaConexion(ByVal IP As Long) As Boolean
 
 IpSecurityAceptarNuevaConexion_Err:
 124     Call RegistrarError(Err.Number, Err.Description, "SecurityIp.IpSecurityAceptarNuevaConexion", Erl)
-126
+126     Resume Next
         
 End Function
 
-Private Sub AddNewIpIntervalo(ByVal IP As Long, ByVal Index As Long)
+Private Sub AddNewIpIntervalo(ByVal ip As Long, ByVal index As Long)
         
         On Error GoTo AddNewIpIntervalo_Err
         
@@ -160,8 +160,8 @@ Private Sub AddNewIpIntervalo(ByVal IP As Long, ByVal Index As Long)
         End If
     
         '4) Corro todo el array para arriba
-110     Call CopyMemory(IpTables(Index + 2), IpTables(Index), (MaxValue - Index \ 2) * 8)   '*4 (peso del long) * 2(cantidad de elementos por c/u)
-112     IpTables(Index) = IP
+110     Call CopyMemory(IpTables(index + 2), IpTables(index), (MaxValue - index \ 2) * 8)   '*4 (peso del long) * 2(cantidad de elementos por c/u)
+112     IpTables(index) = ip
     
         '3) Subo el indicador de el maximo valor almacenado y listo :)
 114     MaxValue = MaxValue + 1
@@ -171,7 +171,7 @@ Private Sub AddNewIpIntervalo(ByVal IP As Long, ByVal Index As Long)
 
 AddNewIpIntervalo_Err:
 116     Call RegistrarError(Err.Number, Err.Description, "SecurityIp.AddNewIpIntervalo", Erl)
-118
+118     Resume Next
         
 End Sub
 
@@ -181,25 +181,25 @@ End Sub
 ' '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 ' '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
-Public Function IPSecuritySuperaLimiteConexiones(ByVal IP As Long) As Boolean
+Public Function IPSecuritySuperaLimiteConexiones(ByVal ip As Long) As Boolean
         
         On Error GoTo IPSecuritySuperaLimiteConexiones_Err
         
 
         Dim IpTableIndex As Long
 
-100     IpTableIndex = FindTableIp(IP, IP_LIMITECONEXIONES)
+100     IpTableIndex = FindTableIp(ip, IP_LIMITECONEXIONES)
     
 102     If IpTableIndex >= 0 Then
         
 104         If MaxConTables(IpTableIndex + 1) < LIMITECONEXIONESxIP Then
-106             LogIP ("Agregamos conexion a " & IP & " iptableindex=" & IpTableIndex & ". Conexiones: " & MaxConTables(IpTableIndex + 1))
-108             Debug.Print "suma conexion a " & IP & " total " & MaxConTables(IpTableIndex + 1) + 1
+106             LogIP ("Agregamos conexion a " & ip & " iptableindex=" & IpTableIndex & ". Conexiones: " & MaxConTables(IpTableIndex + 1))
+108             Debug.Print "suma conexion a " & ip & " total " & MaxConTables(IpTableIndex + 1) + 1
 110             MaxConTables(IpTableIndex + 1) = MaxConTables(IpTableIndex + 1) + 1
 112             IPSecuritySuperaLimiteConexiones = False
             Else
-114             LogIP ("rechazamos conexion de " & IP & " iptableindex=" & IpTableIndex & ". Conexiones: " & MaxConTables(IpTableIndex + 1))
-116             Debug.Print "rechaza conexion a " & IP
+114             LogIP ("rechazamos conexion de " & ip & " iptableindex=" & IpTableIndex & ". Conexiones: " & MaxConTables(IpTableIndex + 1))
+116             Debug.Print "rechaza conexion a " & ip
 118             IPSecuritySuperaLimiteConexiones = True
 
             End If
@@ -209,7 +209,7 @@ Public Function IPSecuritySuperaLimiteConexiones(ByVal IP As Long) As Boolean
 
 122         If MaxConTablesEntry < Declaraciones.MaxUsers Then  'si hay espacio..
 124             IpTableIndex = Not IpTableIndex
-126             AddNewIpLimiteConexiones IP, IpTableIndex    'iptableindex es donde lo agrego
+126             AddNewIpLimiteConexiones ip, IpTableIndex    'iptableindex es donde lo agrego
 128             MaxConTables(IpTableIndex + 1) = 1
             Else
 130             Call LogCriticEvent("SecurityIP.IPSecuritySuperaLimiteConexiones: Se supero la disponibilidad de slots.")
@@ -223,11 +223,11 @@ Public Function IPSecuritySuperaLimiteConexiones(ByVal IP As Long) As Boolean
 
 IPSecuritySuperaLimiteConexiones_Err:
 132     Call RegistrarError(Err.Number, Err.Description, "SecurityIp.IPSecuritySuperaLimiteConexiones", Erl)
-134
+134     Resume Next
         
 End Function
 
-Private Sub AddNewIpLimiteConexiones(ByVal IP As Long, ByVal Index As Long)
+Private Sub AddNewIpLimiteConexiones(ByVal ip As Long, ByVal index As Long)
         '*************************************************  *************
         'Author: (EL OSO)
         'Last Modify Date: Unknow
@@ -250,17 +250,17 @@ Private Sub AddNewIpLimiteConexiones(ByVal IP As Long, ByVal Index As Long)
         'Last Modify Date: 16/2/2006
         'Modified by Juan Martín Sotuyo Dodero (Maraxus)
         '*************************************************    *************
-100     Debug.Print "agrega conexion a " & IP
-102     Debug.Print "(Declaraciones.MaxUsers - index) = " & (Declaraciones.MaxUsers - Index)
-104     Debug.Print "Agrega conexion a nueva IP " & IP
+100     Debug.Print "agrega conexion a " & ip
+102     Debug.Print "(Declaraciones.MaxUsers - index) = " & (Declaraciones.MaxUsers - index)
+104     Debug.Print "Agrega conexion a nueva IP " & ip
 
         '4) Corro todo el array para arriba
-        Dim Temp() As Long
+        Dim temp() As Long
 
-106     ReDim Temp((MaxConTablesEntry - Index \ 2) * 2) As Long  'VB no deja inicializar con rangos variables...
-108     Call CopyMemory(Temp(0), MaxConTables(Index), (MaxConTablesEntry - Index \ 2) * 8)    '*4 (peso del long) * 2(cantidad de elementos por c/u)
-110     Call CopyMemory(MaxConTables(Index + 2), Temp(0), (MaxConTablesEntry - Index \ 2) * 8)    '*4 (peso del long) * 2(cantidad de elementos por c/u)
-112     MaxConTables(Index) = IP
+106     ReDim temp((MaxConTablesEntry - index \ 2) * 2) As Long  'VB no deja inicializar con rangos variables...
+108     Call CopyMemory(temp(0), MaxConTables(index), (MaxConTablesEntry - index \ 2) * 8)    '*4 (peso del long) * 2(cantidad de elementos por c/u)
+110     Call CopyMemory(MaxConTables(index + 2), temp(0), (MaxConTablesEntry - index \ 2) * 8)    '*4 (peso del long) * 2(cantidad de elementos por c/u)
+112     MaxConTables(index) = ip
 
         '3) Subo el indicador de el maximo valor almacenado y listo :)
 114     MaxConTablesEntry = MaxConTablesEntry + 1
@@ -270,20 +270,20 @@ Private Sub AddNewIpLimiteConexiones(ByVal IP As Long, ByVal Index As Long)
 
 AddNewIpLimiteConexiones_Err:
 116     Call RegistrarError(Err.Number, Err.Description, "SecurityIp.AddNewIpLimiteConexiones", Erl)
-118
+118     Resume Next
         
 End Sub
 
-Public Sub IpRestarConexion(ByVal IP As Long)
+Public Sub IpRestarConexion(ByVal ip As Long)
         
         On Error GoTo IpRestarConexion_Err
         
 
         Dim Key As Long
 
-100     Debug.Print "resta conexion a " & IP
+100     Debug.Print "resta conexion a " & ip
     
-102     Key = FindTableIp(IP, IP_LIMITECONEXIONES)
+102     Key = FindTableIp(ip, IP_LIMITECONEXIONES)
     
 104     If Key >= 0 Then
 106         If MaxConTables(Key + 1) > 0 Then
@@ -291,7 +291,7 @@ Public Sub IpRestarConexion(ByVal IP As Long)
 
             End If
 
-110         Call LogIP("restamos conexion a " & IP & " key=" & Key & ". Conexiones: " & MaxConTables(Key + 1))
+110         Call LogIP("restamos conexion a " & ip & " key=" & Key & ". Conexiones: " & MaxConTables(Key + 1))
 
 112         If MaxConTables(Key + 1) <= 0 Then
                 'la limpiamos
@@ -301,7 +301,7 @@ Public Sub IpRestarConexion(ByVal IP As Long)
             End If
 
         Else 'Key <= 0
-118         Call LogIP("restamos conexion a " & IP & " key=" & Key & ". NEGATIVO!!")
+118         Call LogIP("restamos conexion a " & ip & " key=" & Key & ". NEGATIVO!!")
 
             'LogCriticEvent "SecurityIp.IpRestarconexion obtuvo un valor negativo en key"
         End If
@@ -311,7 +311,7 @@ Public Sub IpRestarConexion(ByVal IP As Long)
 
 IpRestarConexion_Err:
 120     Call RegistrarError(Err.Number, Err.Description, "SecurityIp.IpRestarConexion", Erl)
-122
+122     Resume Next
         
 End Sub
 
@@ -321,7 +321,7 @@ End Sub
 ' '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 ' '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
-Private Function FindTableIp(ByVal IP As Long, ByVal Tabla As e_SecurityIpTabla) As Long
+Private Function FindTableIp(ByVal ip As Long, ByVal Tabla As e_SecurityIpTabla) As Long
         
         On Error GoTo FindTableIp_Err
         
@@ -346,9 +346,9 @@ Private Function FindTableIp(ByVal IP As Long, ByVal Tabla As e_SecurityIpTabla)
 106             Do While First <= Last
 108                 Middle = (First + Last) \ 2
                 
-110                 If (IpTables(Middle * 2) < IP) Then
+110                 If (IpTables(Middle * 2) < ip) Then
 112                     First = Middle + 1
-114                 ElseIf (IpTables(Middle * 2) > IP) Then
+114                 ElseIf (IpTables(Middle * 2) > ip) Then
 116                     Last = Middle - 1
                     Else
 118                     FindTableIp = Middle * 2
@@ -367,9 +367,9 @@ Private Function FindTableIp(ByVal IP As Long, ByVal Tabla As e_SecurityIpTabla)
 128             Do While First <= Last
 130                 Middle = (First + Last) \ 2
 
-132                 If MaxConTables(Middle * 2) < IP Then
+132                 If MaxConTables(Middle * 2) < ip Then
 134                     First = Middle + 1
-136                 ElseIf MaxConTables(Middle * 2) > IP Then
+136                 ElseIf MaxConTables(Middle * 2) > ip Then
 138                     Last = Middle - 1
                     Else
 140                     FindTableIp = Middle * 2
@@ -387,7 +387,7 @@ Private Function FindTableIp(ByVal IP As Long, ByVal Tabla As e_SecurityIpTabla)
 
 FindTableIp_Err:
 144     Call RegistrarError(Err.Number, Err.Description, "SecurityIp.FindTableIp", Erl)
-146
+146     Resume Next
         
 End Function
 
@@ -407,6 +407,6 @@ Public Function DumpTables()
 
 DumpTables_Err:
 106     Call RegistrarError(Err.Number, Err.Description, "SecurityIp.DumpTables", Erl)
-108
+108     Resume Next
         
 End Function

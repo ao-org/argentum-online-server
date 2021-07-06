@@ -209,7 +209,7 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
 286         .flags.Incinerado = 1
 288         .Counters.Incineracion = Hechizos(Spell).Duration
 
-290         Call WriteConsoleMsg(UserIndex, "Has sido incinerado por " & NpcList(NpcIndex).Name & ".", FontTypeNames.FONTTYPE_FIGHT)
+290         Call WriteConsoleMsg(UserIndex, "Has sido incinerado por " & NpcList(NpcIndex).name & ".", FontTypeNames.FONTTYPE_FIGHT)
           End If
         End If
 
@@ -218,7 +218,7 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
 296         .flags.Envenenado = Hechizos(Spell).Envenena
 298         .Counters.Veneno = Hechizos(Spell).Duration
 
-300         Call WriteConsoleMsg(UserIndex, "Has sido incinerado por " & NpcList(NpcIndex).Name & ".", FontTypeNames.FONTTYPE_FIGHT)
+300         Call WriteConsoleMsg(UserIndex, "Has sido incinerado por " & NpcList(NpcIndex).name & ".", FontTypeNames.FONTTYPE_FIGHT)
           End If
         End If
 
@@ -239,7 +239,7 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
 322         .flags.Estupidez = Hechizos(Spell).Estupidez
 324         .Counters.Estupidez = Hechizos(Spell).Duration
 
-326         Call WriteConsoleMsg(UserIndex, "Has sido estupidizado por " & NpcList(NpcIndex).Name & ".", FontTypeNames.FONTTYPE_FIGHT)
+326         Call WriteConsoleMsg(UserIndex, "Has sido estupidizado por " & NpcList(NpcIndex).name & ".", FontTypeNames.FONTTYPE_FIGHT)
 328         Call WriteDumb(UserIndex)
           End If
 330     ElseIf Hechizos(Spell).RemoverEstupidez > 0 Then
@@ -247,7 +247,7 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
 334         .flags.Estupidez = 0
 336         .Counters.Estupidez = 0
 
-338         Call WriteConsoleMsg(UserIndex, NpcList(NpcIndex).Name & " te removio la estupidez.", FontTypeNames.FONTTYPE_FIGHT)
+338         Call WriteConsoleMsg(UserIndex, NpcList(NpcIndex).name & " te removio la estupidez.", FontTypeNames.FONTTYPE_FIGHT)
 340         Call WriteDumbNoMore(UserIndex)
           End If
 
@@ -268,7 +268,7 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
 
 NpcLanzaSpellSobreUser_Err:
 352   Call RegistrarError(Err.Number, Err.Description & " Hechizo: " & Spell, "modHechizos.NpcLanzaSpellSobreUser", Erl)
-354
+354   Resume Next
 
 End Sub
 
@@ -378,7 +378,7 @@ Sub NpcLanzaSpellSobreNpc(ByVal NpcIndex As Integer, ByVal TargetNPC As Integer,
 
 NpcLanzaSpellSobreNpc_Err:
 202   Call RegistrarError(Err.Number, Err.Description, "modHechizos.NpcLanzaSpellSobreNpc", Erl)
-204
+204   Resume Next
 
 End Sub
 
@@ -445,7 +445,7 @@ Public Sub NpcLanzaSpellSobreArea(ByVal NpcIndex As Integer, ByVal SpellIndex As
 
 NpcLanzaSpellSobreArea_Err:
 142     Call RegistrarError(Err.Number, Err.Description, "modHechizos.NpcLanzaSpellSobreArea", Erl)
-144
+144     Resume Next
         
 End Sub
 
@@ -471,7 +471,7 @@ ErrHandler:
 
 End Function
 
-Sub AgregarHechizo(ByVal UserIndex As Integer, ByVal Slot As Integer)
+Sub AgregarHechizo(ByVal UserIndex As Integer, ByVal slot As Integer)
         
         On Error GoTo AgregarHechizo_Err
         
@@ -480,7 +480,7 @@ Sub AgregarHechizo(ByVal UserIndex As Integer, ByVal Slot As Integer)
 
         Dim j      As Integer
 
-100     hIndex = ObjData(UserList(UserIndex).Invent.Object(Slot).ObjIndex).HechizoIndex
+100     hIndex = ObjData(UserList(UserIndex).Invent.Object(slot).ObjIndex).HechizoIndex
 
 102     If Not TieneHechizo(hIndex, UserIndex) Then
 
@@ -496,7 +496,7 @@ Sub AgregarHechizo(ByVal UserIndex As Integer, ByVal Slot As Integer)
 114             UserList(UserIndex).Stats.UserHechizos(j) = hIndex
 116             Call UpdateUserHechizos(False, UserIndex, CByte(j))
                 'Quitamos del inv el item
-118             Call QuitarUserInvItem(UserIndex, CByte(Slot), 1)
+118             Call QuitarUserInvItem(UserIndex, CByte(slot), 1)
 
             End If
 
@@ -510,7 +510,7 @@ Sub AgregarHechizo(ByVal UserIndex As Integer, ByVal Slot As Integer)
 
 AgregarHechizo_Err:
 122     Call RegistrarError(Err.Number, Err.Description, "modHechizos.AgregarHechizo", Erl)
-124
+124     Resume Next
         
 End Sub
             
@@ -527,7 +527,7 @@ DecirPalabrasMagicas_Err:
         
 End Sub
 
-Private Function PuedeLanzar(ByVal UserIndex As Integer, ByVal HechizoIndex As Integer, Optional ByVal Slot As Integer = 0) As Boolean
+Private Function PuedeLanzar(ByVal UserIndex As Integer, ByVal HechizoIndex As Integer, Optional ByVal slot As Integer = 0) As Boolean
         On Error GoTo PuedeLanzar_Err
 
 100     PuedeLanzar = False
@@ -560,7 +560,7 @@ Private Function PuedeLanzar(ByVal UserIndex As Integer, ByVal HechizoIndex As I
 
 122         If Hechizos(HechizoIndex).NecesitaObj > 0 Then
 124             If Not TieneObjEnInv(UserIndex, Hechizos(HechizoIndex).NecesitaObj, Hechizos(HechizoIndex).NecesitaObj2) Then
-126                 Call WriteConsoleMsg(UserIndex, "Necesitas un " & ObjData(Hechizos(HechizoIndex).NecesitaObj).Name & " para lanzar el hechizo.", FontTypeNames.FONTTYPE_INFO)
+126                 Call WriteConsoleMsg(UserIndex, "Necesitas un " & ObjData(Hechizos(HechizoIndex).NecesitaObj).name & " para lanzar el hechizo.", FontTypeNames.FONTTYPE_INFO)
                     Exit Function
                 End If
             End If
@@ -570,8 +570,8 @@ Private Function PuedeLanzar(ByVal UserIndex As Integer, ByVal HechizoIndex As I
                 Dim SegundosFaltantes As Long
 130             Actual = GetTickCount()
 
-132             If .Counters.UserHechizosInterval(Slot) + (Hechizos(HechizoIndex).CoolDown * 1000) < Actual Then
-134                 SegundosFaltantes = Int((.Counters.UserHechizosInterval(Slot) + (Hechizos(HechizoIndex).CoolDown * 1000) - Actual) / 1000)
+132             If .Counters.UserHechizosInterval(slot) + (Hechizos(HechizoIndex).CoolDown * 1000) < Actual Then
+134                 SegundosFaltantes = Int((.Counters.UserHechizosInterval(slot) + (Hechizos(HechizoIndex).CoolDown * 1000) - Actual) / 1000)
 136                 Call WriteConsoleMsg(UserIndex, "Debes esperar " & SegundosFaltantes & " segundos para volver a tirar este hechizo.", FontTypeNames.FONTTYPE_WARNING)
                     Exit Function
                 End If
@@ -619,7 +619,7 @@ Private Function PuedeLanzar(ByVal UserIndex As Integer, ByVal HechizoIndex As I
 
 PuedeLanzar_Err:
 168     Call RegistrarError(Err.Number, Err.Description, "modHechizos.PuedeLanzar", Erl)
-170
+170     Resume Next
         
 End Function
 
@@ -646,7 +646,7 @@ Sub HechizoInvocacion(ByVal UserIndex As Integer, ByRef b As Boolean)
                 Exit Sub
             End If
     
-            Dim h As Integer, j As Integer, ind As Integer, Index As Integer
+            Dim h As Integer, j As Integer, ind As Integer, index As Integer
             Dim targetPos As WorldPos
     
 106         targetPos.Map = .flags.TargetMap
@@ -688,10 +688,10 @@ Sub HechizoInvocacion(ByVal UserIndex As Integer, ByRef b As Boolean)
 132                     If ind > 0 Then
 134                         .NroMascotas = .NroMascotas + 1
                         
-136                         Index = FreeMascotaIndex(UserIndex)
+136                         index = FreeMascotaIndex(UserIndex)
                         
-138                         .MascotasIndex(Index) = ind
-140                         .MascotasType(Index) = NpcList(ind).Numero
+138                         .MascotasIndex(index) = ind
+140                         .MascotasType(index) = NpcList(ind).Numero
                         
 142                         NpcList(ind).MaestroUser = UserIndex
 144                         NpcList(ind).Contadores.TiempoExistencia = IntervaloInvocacion
@@ -777,7 +777,7 @@ Sub HechizoInvocacion(ByVal UserIndex As Integer, ByRef b As Boolean)
     
 HechizoInvocacion_Err:
 200     Call RegistrarError(Err.Number, Err.Description, "modHechizos.HechizoTerrenoEstado")
-202
+202     Resume Next
 
 End Sub
 
@@ -838,7 +838,7 @@ Sub HechizoTerrenoEstado(ByVal UserIndex As Integer, ByRef b As Boolean)
 
 HechizoTerrenoEstado_Err:
 134     Call RegistrarError(Err.Number, Err.Description, "modHechizos.HechizoTerrenoEstado", Erl)
-136
+136     Resume Next
         
 End Sub
 
@@ -918,7 +918,7 @@ Private Sub HechizoSobreArea(ByVal UserIndex As Integer, ByRef b As Boolean)
 
 HechizoSobreArea_Err:
 154     Call RegistrarError(Err.Number, Err.Description, "modHechizos.HechizoSobreArea", Erl)
-156
+156     Resume Next
         
 End Sub
 
@@ -990,7 +990,7 @@ Sub HechizoPortal(ByVal UserIndex As Integer, ByRef b As Boolean)
 
 HechizoPortal_Err:
 146     Call RegistrarError(Err.Number, Err.Description, "modHechizos.HechizoPortal", Erl)
-148
+148     Resume Next
         
 End Sub
 
@@ -1024,7 +1024,7 @@ Sub HechizoMaterializacion(ByVal UserIndex As Integer, ByRef b As Boolean)
 
 HechizoMaterializacion_Err:
 118     Call RegistrarError(Err.Number, Err.Description, "modHechizos.HechizoMaterializacion", Erl)
-120
+120     Resume Next
         
 End Sub
 
@@ -1083,7 +1083,7 @@ Sub HandleHechizoTerreno(ByVal UserIndex As Integer, ByVal uh As Integer)
 
 HandleHechizoTerreno_Err:
 140     Call RegistrarError(Err.Number, Err.Description, "modHechizos.HandleHechizoTerreno", Erl)
-142
+142     Resume Next
         
 End Sub
 
@@ -1140,7 +1140,7 @@ Sub HandleHechizoUsuario(ByVal UserIndex As Integer, ByVal uh As Integer)
 
 HandleHechizoUsuario_Err:
 138     Call RegistrarError(Err.Number, Err.Description, "modHechizos.HandleHechizoUsuario", Erl)
-140
+140     Resume Next
         
 End Sub
 
@@ -1193,19 +1193,19 @@ Sub HandleHechizoNPC(ByVal UserIndex As Integer, ByVal uh As Integer)
 
 HandleHechizoNPC_Err:
 134     Call RegistrarError(Err.Number, Err.Description, "modHechizos.HandleHechizoNPC", Erl)
-136
+136     Resume Next
         
 End Sub
 
-Sub LanzarHechizo(Index As Integer, UserIndex As Integer)
+Sub LanzarHechizo(index As Integer, UserIndex As Integer)
         
         On Error GoTo LanzarHechizo_Err
 
         Dim uh As Integer
         
-100     uh = UserList(UserIndex).Stats.UserHechizos(Index)
+100     uh = UserList(UserIndex).Stats.UserHechizos(index)
 
-102     If PuedeLanzar(UserIndex, uh, Index) Then
+102     If PuedeLanzar(UserIndex, uh, index) Then
 
 104         Select Case Hechizos(uh).Target
 
@@ -1216,7 +1216,7 @@ Sub LanzarHechizo(Index As Integer, UserIndex As Integer)
 110                         Call HandleHechizoUsuario(UserIndex, uh)
                     
 112                         If Hechizos(uh).CoolDown > 0 Then
-114                             UserList(UserIndex).Counters.UserHechizosInterval(Index) = GetTickCount()
+114                             UserList(UserIndex).Counters.UserHechizosInterval(index) = GetTickCount()
 
                             End If
 
@@ -1238,7 +1238,7 @@ Sub LanzarHechizo(Index As Integer, UserIndex As Integer)
 126                         Call HandleHechizoNPC(UserIndex, uh)
 
 128                         If Hechizos(uh).CoolDown > 0 Then
-130                             UserList(UserIndex).Counters.UserHechizosInterval(Index) = GetTickCount()
+130                             UserList(UserIndex).Counters.UserHechizosInterval(index) = GetTickCount()
                     
                             End If
                     
@@ -1260,7 +1260,7 @@ Sub LanzarHechizo(Index As Integer, UserIndex As Integer)
 142                         Call HandleHechizoUsuario(UserIndex, uh)
                     
 144                         If Hechizos(uh).CoolDown > 0 Then
-146                             UserList(UserIndex).Counters.UserHechizosInterval(Index) = GetTickCount()
+146                             UserList(UserIndex).Counters.UserHechizosInterval(index) = GetTickCount()
 
                             End If
 
@@ -1274,7 +1274,7 @@ Sub LanzarHechizo(Index As Integer, UserIndex As Integer)
 
 152                     If Abs(NpcList(UserList(UserIndex).flags.TargetNPC).Pos.Y - UserList(UserIndex).Pos.Y) <= RANGO_VISION_Y Then
 154                         If Hechizos(uh).CoolDown > 0 Then
-156                             UserList(UserIndex).Counters.UserHechizosInterval(Index) = GetTickCount()
+156                             UserList(UserIndex).Counters.UserHechizosInterval(index) = GetTickCount()
 
                             End If
 
@@ -1293,7 +1293,7 @@ Sub LanzarHechizo(Index As Integer, UserIndex As Integer)
 164             Case TargetType.uTerreno
 
 166                 If Hechizos(uh).CoolDown > 0 Then
-168                     UserList(UserIndex).Counters.UserHechizosInterval(Index) = GetTickCount()
+168                     UserList(UserIndex).Counters.UserHechizosInterval(index) = GetTickCount()
 
                     End If
 
@@ -1315,7 +1315,7 @@ Sub LanzarHechizo(Index As Integer, UserIndex As Integer)
 
 LanzarHechizo_Err:
 178     Call RegistrarError(Err.Number, Err.Description, "modHechizos.LanzarHechizo", Erl)
-180
+180     Resume Next
         
 End Sub
 
@@ -1493,7 +1493,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 218             .Char.CascoAnim = UserList(tU).Char.CascoAnim
 220             .Char.ShieldAnim = UserList(tU).Char.ShieldAnim
 222             .Char.WeaponAnim = UserList(tU).Char.WeaponAnim
-224             .NameMimetizado = UserList(tU).Name
+224             .NameMimetizado = UserList(tU).name
 
 226             If UserList(tU).GuildIndex > 0 Then .NameMimetizado = .NameMimetizado & " <" & modGuilds.GuildName(UserList(tU).GuildIndex) & ">"
             
@@ -1518,7 +1518,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 250             Call InfoHechizo(UserIndex)
 252             b = True
             Else
-254             Call WriteConsoleMsg(UserIndex, UserList(tU).Name & " ya esta envenenado. El hechizo no tuvo efecto.", FontTypeNames.FONTTYPE_INFO)
+254             Call WriteConsoleMsg(UserIndex, UserList(tU).name & " ya esta envenenado. El hechizo no tuvo efecto.", FontTypeNames.FONTTYPE_INFO)
 256             b = False
             End If
         End If
@@ -2062,7 +2062,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 
 HechizoEstadoUsuario_Err:
 700     Call RegistrarError(Err.Number, Err.Description, "modHechizos.HechizoEstadoUsuario", Erl)
-702
+702     Resume Next
         
 End Sub
 
@@ -2232,7 +2232,7 @@ Sub HechizoEstadoNPC(ByVal NpcIndex As Integer, ByVal hIndex As Integer, ByRef b
 266                 .Char.CascoAnim = NingunCasco
 268                 .Char.ShieldAnim = NingunEscudo
 270                 .Char.WeaponAnim = NingunArma
-272                 .NameMimetizado = IIf(NpcList(NpcIndex).showName = 1, NpcList(NpcIndex).Name, vbNullString)
+272                 .NameMimetizado = IIf(NpcList(NpcIndex).showName = 1, NpcList(NpcIndex).name, vbNullString)
 
 274                 Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
 276                 Call RefreshCharStatus(UserIndex)
@@ -2253,7 +2253,7 @@ Sub HechizoEstadoNPC(ByVal NpcIndex As Integer, ByVal hIndex As Integer, ByRef b
 
 HechizoEstadoNPC_Err:
 284     Call RegistrarError(Err.Number, Err.Description, "modHechizos.HechizoEstadoNPC", Erl)
-286
+286     Resume Next
         
 End Sub
 
@@ -2382,7 +2382,7 @@ Sub HechizoPropNPC(ByVal hIndex As Integer, ByVal NpcIndex As Integer, ByVal Use
 
 HechizoPropNPC_Err:
 196     Call RegistrarError(Err.Number, Err.Description, "modHechizos.HechizoPropNPC", Erl)
-198
+198     Resume Next
         
 End Sub
 
@@ -2420,7 +2420,7 @@ Private Sub InfoHechizoDeNpcSobreUser(ByVal NpcIndex As Integer, ByVal TargetUse
 
 InfoHechizoDeNpcSobreUser_Err:
 126   Call RegistrarError(Err.Number, Err.Description, "modHechizos.InfoHechizoDeNpcSobreUser", Erl)
-128
+128   Resume Next
 End Sub
 
 Private Sub InfoHechizo(ByVal UserIndex As Integer)
@@ -2543,8 +2543,8 @@ Private Sub InfoHechizo(ByVal UserIndex As Integer)
 
                 'Optimizacion de protocolo por Ladder
 186             If UserIndex <> UserList(UserIndex).flags.TargetUser Then
-188                 Call WriteConsoleMsg(UserIndex, "HecMSGU*" & h & "*" & UserList(UserList(UserIndex).flags.TargetUser).Name, FontTypeNames.FONTTYPE_FIGHT)
-190                 Call WriteConsoleMsg(UserList(UserIndex).flags.TargetUser, "HecMSGA*" & h & "*" & UserList(UserIndex).Name, FontTypeNames.FONTTYPE_FIGHT)
+188                 Call WriteConsoleMsg(UserIndex, "HecMSGU*" & h & "*" & UserList(UserList(UserIndex).flags.TargetUser).name, FontTypeNames.FONTTYPE_FIGHT)
+190                 Call WriteConsoleMsg(UserList(UserIndex).flags.TargetUser, "HecMSGA*" & h & "*" & UserList(UserIndex).name, FontTypeNames.FONTTYPE_FIGHT)
     
                 Else
 192                 Call WriteConsoleMsg(UserIndex, "ProMSG*" & h, FontTypeNames.FONTTYPE_FIGHT)
@@ -2566,7 +2566,7 @@ Private Sub InfoHechizo(ByVal UserIndex As Integer)
 
 InfoHechizo_Err:
 200     Call RegistrarError(Err.Number, Err.Description, "modHechizos.InfoHechizo", Erl)
-202
+202     Resume Next
         
 End Sub
 
@@ -2848,7 +2848,7 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
             End If
             
 340         If UserList(tempChr).Stats.MinHp = UserList(tempChr).Stats.MaxHp Then
-342             Call WriteConsoleMsg(UserIndex, UserList(tempChr).Name & " no tiene heridas para curar.", FontTypeNames.FONTTYPE_INFOIAO)
+342             Call WriteConsoleMsg(UserIndex, UserList(tempChr).name & " no tiene heridas para curar.", FontTypeNames.FONTTYPE_INFOIAO)
 344             b = False
                 Exit Sub
             End If
@@ -3113,7 +3113,7 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 
 HechizoPropUsuario_Err:
 562     Call RegistrarError(Err.Number, Err.Description, "modHechizos.HechizoPropUsuario", Erl)
-564
+564     Resume Next
         
 End Sub
 
@@ -3869,11 +3869,11 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean)
 
 HechizoCombinados_Err:
 728     Call RegistrarError(Err.Number, Err.Description, "modHechizos.HechizoCombinados", Erl)
-730
+730     Resume Next
         
 End Sub
 
-Sub UpdateUserHechizos(ByVal UpdateAll As Boolean, ByVal UserIndex As Integer, ByVal Slot As Byte)
+Sub UpdateUserHechizos(ByVal UpdateAll As Boolean, ByVal UserIndex As Integer, ByVal slot As Byte)
         
         On Error GoTo UpdateUserHechizos_Err
         
@@ -3886,10 +3886,10 @@ Sub UpdateUserHechizos(ByVal UpdateAll As Boolean, ByVal UserIndex As Integer, B
 100     If Not UpdateAll Then
 
             'Actualiza el inventario
-102         If UserList(UserIndex).Stats.UserHechizos(Slot) > 0 Then
-104             Call ChangeUserHechizo(UserIndex, Slot, UserList(UserIndex).Stats.UserHechizos(Slot))
+102         If UserList(UserIndex).Stats.UserHechizos(slot) > 0 Then
+104             Call ChangeUserHechizo(UserIndex, slot, UserList(UserIndex).Stats.UserHechizos(slot))
             Else
-106             Call ChangeUserHechizo(UserIndex, Slot, 0)
+106             Call ChangeUserHechizo(UserIndex, slot, 0)
 
             End If
 
@@ -3915,23 +3915,23 @@ Sub UpdateUserHechizos(ByVal UpdateAll As Boolean, ByVal UserIndex As Integer, B
 
 UpdateUserHechizos_Err:
 118     Call RegistrarError(Err.Number, Err.Description, "modHechizos.UpdateUserHechizos", Erl)
-120
+120     Resume Next
         
 End Sub
 
-Sub ChangeUserHechizo(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal Hechizo As Integer)
+Sub ChangeUserHechizo(ByVal UserIndex As Integer, ByVal slot As Byte, ByVal Hechizo As Integer)
         
         On Error GoTo ChangeUserHechizo_Err
         
 
         'Call LogTarea("ChangeUserHechizo")
     
-100     UserList(UserIndex).Stats.UserHechizos(Slot) = Hechizo
+100     UserList(UserIndex).Stats.UserHechizos(slot) = Hechizo
     
 102     If Hechizo > 0 And Hechizo < NumeroHechizos + 1 Then
-104         Call WriteChangeSpellSlot(UserIndex, Slot)
+104         Call WriteChangeSpellSlot(UserIndex, slot)
         Else
-106         Call WriteChangeSpellSlot(UserIndex, Slot)
+106         Call WriteChangeSpellSlot(UserIndex, slot)
 
         End If
 
@@ -3940,7 +3940,7 @@ Sub ChangeUserHechizo(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal Hech
 
 ChangeUserHechizo_Err:
 108     Call RegistrarError(Err.Number, Err.Description, "modHechizos.ChangeUserHechizo", Erl)
-110
+110     Resume Next
         
 End Sub
 
@@ -3999,7 +3999,7 @@ Public Sub DesplazarHechizo(ByVal UserIndex As Integer, ByVal Dire As Integer, B
 
 DesplazarHechizo_Err:
 142     Call RegistrarError(Err.Number, Err.Description, "modHechizos.DesplazarHechizo", Erl)
-144
+144     Resume Next
         
 End Sub
 
@@ -4215,7 +4215,7 @@ Private Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, X As Byte, Y 
             End If
                     
 270         UserList(NpcIndex).flags.Envenenado = Hechizos(h2).Envenena
-272         Call WriteConsoleMsg(NpcIndex, UserList(UserIndex).Name & " te ha envenenado.", FontTypeNames.FONTTYPE_FIGHT)
+272         Call WriteConsoleMsg(NpcIndex, UserList(UserIndex).name & " te ha envenenado.", FontTypeNames.FONTTYPE_FIGHT)
 
         End If
                 
@@ -4448,5 +4448,5 @@ Private Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, X As Byte, Y 
 
 AreaHechizo_Err:
 480     Call RegistrarError(Err.Number, Err.Description, "modHechizos.AreaHechizo", Erl)
-482
+482     Resume Next
 End Sub

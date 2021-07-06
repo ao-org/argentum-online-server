@@ -52,7 +52,7 @@ Private Function ModificadorPoderAtaqueArmas(ByVal clase As eClass) As Single
 
 ModificadorPoderAtaqueArmas_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.ModificadorPoderAtaqueArmas", Erl)
-104
+104     Resume Next
         
 End Function
 
@@ -68,7 +68,7 @@ Private Function ModificadorPoderAtaqueProyectiles(ByVal clase As eClass) As Sin
 
 ModificadorPoderAtaqueProyectiles_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.ModificadorPoderAtaqueProyectiles", Erl)
-104
+104     Resume Next
         
 End Function
 
@@ -84,7 +84,7 @@ Private Function ModicadorDañoClaseArmas(ByVal clase As eClass) As Single
 
 ModicadorDañoClaseArmas_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.ModicadorDañoClaseArmas", Erl)
-104
+104     Resume Next
         
 End Function
 
@@ -100,7 +100,7 @@ Private Function ModicadorApuñalarClase(ByVal clase As eClass) As Single
 
 ModicadorApuñalarClase_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.ModicadorApuñalarClase", Erl)
-104
+104     Resume Next
         
 End Function
 
@@ -116,7 +116,7 @@ Private Function ModicadorDañoClaseProyectiles(ByVal clase As eClass) As Single
 
 ModicadorDañoClaseProyectiles_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.ModicadorDañoClaseProyectiles", Erl)
-104
+104     Resume Next
         
 End Function
 
@@ -132,7 +132,7 @@ Private Function ModEvasionDeEscudoClase(ByVal clase As eClass) As Single
 
 ModEvasionDeEscudoClase_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.ModEvasionDeEscudoClase", Erl)
-104
+104     Resume Next
         
 End Function
 
@@ -153,7 +153,7 @@ Private Function Minimo(ByVal a As Single, ByVal b As Single) As Single
 
 Minimo_Err:
 106     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.Minimo", Erl)
-108
+108     Resume Next
         
 End Function
 
@@ -174,7 +174,7 @@ Function MinimoInt(ByVal a As Integer, ByVal b As Integer) As Integer
 
 MinimoInt_Err:
 106     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.MinimoInt", Erl)
-108
+108     Resume Next
         
 End Function
 
@@ -195,7 +195,7 @@ Private Function Maximo(ByVal a As Single, ByVal b As Single) As Single
 
 Maximo_Err:
 106     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.Maximo", Erl)
-108
+108     Resume Next
         
 End Function
 
@@ -216,7 +216,7 @@ Function MaximoInt(ByVal a As Integer, ByVal b As Integer) As Integer
 
 MaximoInt_Err:
 106     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.MaximoInt", Erl)
-108
+108     Resume Next
         
 End Function
 
@@ -232,7 +232,7 @@ Private Function PoderEvasionEscudo(ByVal UserIndex As Integer) As Long
 
 PoderEvasionEscudo_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.PoderEvasionEscudo", Erl)
-104
+104     Resume Next
         
 End Function
 
@@ -255,7 +255,7 @@ Private Function PoderEvasion(ByVal UserIndex As Integer) As Long
 
 PoderEvasion_Err:
 106     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.PoderEvasion", Erl)
-108
+108     Resume Next
         
 End Function
 
@@ -284,7 +284,7 @@ Private Function PoderAtaqueArma(ByVal UserIndex As Integer) As Long
 
 PoderAtaqueArma_Err:
 116     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.PoderAtaqueArma", Erl)
-118
+118     Resume Next
         
 End Function
 
@@ -313,7 +313,7 @@ Private Function PoderAtaqueProyectil(ByVal UserIndex As Integer) As Long
 
 PoderAtaqueProyectil_Err:
 116     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.PoderAtaqueProyectil", Erl)
-118
+118     Resume Next
         
 End Function
 
@@ -342,7 +342,7 @@ Private Function PoderAtaqueWrestling(ByVal UserIndex As Integer) As Long
 
 PoderAtaqueWrestling_Err:
 116     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.PoderAtaqueWrestling", Erl)
-118
+118     Resume Next
         
 End Function
 
@@ -387,7 +387,7 @@ Private Function UserImpactoNpc(ByVal UserIndex As Integer, ByVal NpcIndex As In
 
 UserImpactoNpc_Err:
 122     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.UserImpactoNpc", Erl)
-124
+124     Resume Next
         
 End Function
 
@@ -464,7 +464,7 @@ Private Function NpcImpacto(ByVal NpcIndex As Integer, ByVal UserIndex As Intege
 
 NpcImpacto_Err:
 136     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.NpcImpacto", Erl)
-138
+138     Resume Next
         
 End Function
 
@@ -550,7 +550,7 @@ Private Function CalcularDaño(ByVal UserIndex As Integer) As Long
 
 CalcularDaño_Err:
 150      Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.CalcularDaño", Erl)
-152
+152      Resume Next
         
 End Function
 
@@ -671,7 +671,7 @@ Private Sub UserDañoNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
 
 UserDañoNpc_Err:
 178     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.UserDañoNpc", Erl)
-180
+180     Resume Next
         
 End Sub
 
@@ -780,7 +780,7 @@ Private Sub NpcDaño(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
 
 NpcDaño_Err:
 182     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.NpcDaño", Erl)
-184
+184     Resume Next
         
 End Sub
 
@@ -847,7 +847,7 @@ Public Function NpcAtacaUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integ
 
 NpcAtacaUser_Err:
 144     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.NpcAtacaUser", Erl)
-146
+146     Resume Next
         
 End Function
 
@@ -870,7 +870,7 @@ Private Function NpcImpactoNpc(ByVal Atacante As Integer, ByVal Victima As Integ
 
 NpcImpactoNpc_Err:
 108     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.NpcImpactoNpc", Erl)
-110
+110     Resume Next
         
 End Function
 
@@ -915,7 +915,7 @@ Private Sub NpcDañoNpc(ByVal Atacante As Integer, ByVal Victima As Integer)
 
 NpcDañoNpc_Err:
 126         Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.NpcDañoNpc")
-128
+128         Resume Next
         
 End Sub
 
@@ -961,7 +961,7 @@ Public Sub NpcAtacaNpc(ByVal Atacante As Integer, ByVal Victima As Integer, Opti
 
 NpcAtacaNpc_Err:
 130     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.NpcAtacaNpc", Erl)
-132
+132     Resume Next
         
 End Sub
 
@@ -1065,7 +1065,7 @@ Public Sub UsuarioAtacaNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer
 
 UsuarioAtacaNpc_Err:
 170     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.UsuarioAtacaNpc", Erl)
-172
+172     Resume Next
         
 End Sub
 
@@ -1118,26 +1118,26 @@ Public Sub UsuarioAtaca(ByVal UserIndex As Integer)
                 Exit Sub
             End If
 
-            Dim Index As Integer
+            Dim index As Integer
 
-132         Index = MapData(AttackPos.Map, AttackPos.X, AttackPos.Y).UserIndex
+132         index = MapData(AttackPos.Map, AttackPos.X, AttackPos.Y).UserIndex
 
             'Look for user
-134         If Index > 0 Then
-136             Call UsuarioAtacaUsuario(UserIndex, Index)
+134         If index > 0 Then
+136             Call UsuarioAtacaUsuario(UserIndex, index)
 
             'Look for NPC
 138         ElseIf MapData(AttackPos.Map, AttackPos.X, AttackPos.Y).NpcIndex > 0 Then
 
-140             Index = MapData(AttackPos.Map, AttackPos.X, AttackPos.Y).NpcIndex
+140             index = MapData(AttackPos.Map, AttackPos.X, AttackPos.Y).NpcIndex
 
-142             If NpcList(Index).Attackable Then
-144                 If NpcList(Index).MaestroUser > 0 And MapInfo(NpcList(Index).Pos.Map).Seguro = 1 Then
+142             If NpcList(index).Attackable Then
+144                 If NpcList(index).MaestroUser > 0 And MapInfo(NpcList(index).Pos.Map).Seguro = 1 Then
 146                     Call WriteConsoleMsg(UserIndex, "No podés atacar mascotas en zonas seguras", FontTypeNames.FONTTYPE_FIGHT)
                         Exit Sub
                     End If
 
-148                 Call UsuarioAtacaNpc(UserIndex, Index)
+148                 Call UsuarioAtacaNpc(UserIndex, index)
 
                 Else
 150                 Call WriteConsoleMsg(UserIndex, "No podés atacar a este NPC", FontTypeNames.FONTTYPE_FIGHT)
@@ -1157,7 +1157,7 @@ Public Sub UsuarioAtaca(ByVal UserIndex As Integer)
 
 UsuarioAtaca_Err:
 156     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.UsuarioAtaca", Erl)
-158
+158     Resume Next
         
 End Sub
 
@@ -1247,7 +1247,7 @@ Private Function UsuarioImpacto(ByVal AtacanteIndex As Integer, ByVal VictimaInd
 
 UsuarioImpacto_Err:
 168     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.UsuarioImpacto", Erl)
-170
+170     Resume Next
 
 End Function
 
@@ -1297,7 +1297,7 @@ Public Sub UsuarioAtacaUsuario(ByVal AtacanteIndex As Integer, ByVal VictimaInde
 
 UsuarioAtacaUsuario_Err:
 128     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.UsuarioAtacaUsuario", Erl)
-130
+130     Resume Next
 
 End Sub
 
@@ -1315,7 +1315,7 @@ Private Sub UserDañoUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As 
 104         Color = vbRed
 
             ' Elegimos al azar una parte del cuerpo
-106         Lugar = Min(RandomNumber(1, 8), 6)
+106         Lugar = min(RandomNumber(1, 8), 6)
 
 108         Select Case Lugar
                 ' 1/6 de chances de que sea a la cabeza
@@ -1492,7 +1492,7 @@ Private Sub UserDañoUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As 
 
 UserDañoUser_Err:
 246     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.UserDañoUser", Erl)
-248
+248     Resume Next
         
 End Sub
 
@@ -1528,19 +1528,19 @@ Private Sub DesequiparObjetoDeUnGolpe(ByVal AttackerIndex As Integer, ByVal Vict
 128             Call Desequipar(VictimIndex, .Invent.CascoEqpSlot)
             
 130             Call WriteCombatConsoleMsg(AttackerIndex, "Has logrado desequipar el casco de tu oponente!")
-132             Call WriteCombatConsoleMsg(VictimIndex, UserList(AttackerIndex).Name & " te ha desequipado el casco.")
+132             Call WriteCombatConsoleMsg(VictimIndex, UserList(AttackerIndex).name & " te ha desequipado el casco.")
             
 134         ElseIf desequiparArma Then
 136             Call Desequipar(VictimIndex, .Invent.WeaponEqpSlot)
                 
 138             Call WriteCombatConsoleMsg(AttackerIndex, "Has logrado desarmar a tu oponente!")
-140             Call WriteCombatConsoleMsg(VictimIndex, UserList(AttackerIndex).Name & " te ha desarmado.")
+140             Call WriteCombatConsoleMsg(VictimIndex, UserList(AttackerIndex).name & " te ha desarmado.")
 
 142         ElseIf desequiparEscudo Then
 144             Call Desequipar(VictimIndex, .Invent.EscudoEqpSlot)
                 
-146             Call WriteCombatConsoleMsg(AttackerIndex, "Has logrado desequipar el escudo de " & .Name & ".")
-148             Call WriteCombatConsoleMsg(VictimIndex, UserList(AttackerIndex).Name & " te ha desequipado el escudo.")
+146             Call WriteCombatConsoleMsg(AttackerIndex, "Has logrado desequipar el escudo de " & .name & ".")
+148             Call WriteCombatConsoleMsg(VictimIndex, UserList(AttackerIndex).name & " te ha desequipado el escudo.")
             Else
 150             Call WriteCombatConsoleMsg(AttackerIndex, "No has logrado desequipar ningun item a tu oponente!")
             End If
@@ -1603,7 +1603,7 @@ Sub UsuarioAtacadoPorUsuario(ByVal AttackerIndex As Integer, ByVal VictimIndex A
 
 UsuarioAtacadoPorUsuario_Err:
 136     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.UsuarioAtacadoPorUsuario", Erl)
-138
+138     Resume Next
         
 End Sub
 
@@ -1799,7 +1799,7 @@ Public Function PuedeAtacar(ByVal AttackerIndex As Integer, ByVal VictimIndex As
 
 PuedeAtacar_Err:
 230     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.PuedeAtacar", Erl)
-232
+232     Resume Next
         
 End Function
 
@@ -1967,7 +1967,7 @@ Public Function PuedeAtacarNPC(ByVal AttackerIndex As Integer, ByVal NpcIndex As
 
 PuedeAtacarNPC_Err:
 216     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.PuedeAtacarNPC", Erl)
-218
+218     Resume Next
         
 End Function
 
@@ -2054,7 +2054,7 @@ Sub CalcularDarExp(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal 
 
 CalcularDarExp_Err:
 144     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.CalcularDarExp", Erl)
-146
+146     Resume Next
         
 End Sub
 
@@ -2073,7 +2073,7 @@ Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As I
         Dim BonificacionGrupo       As Single
         Dim CantidadMiembrosValidos As Integer
         Dim i                       As Long
-        Dim Index                   As Integer
+        Dim index                   As Integer
 
         'If UserList(UserIndex).Grupo.EnGrupo Then
         '[Nacho] Chekeamos que las variables sean validas para las operaciones
@@ -2099,11 +2099,11 @@ Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As I
         End If
         
 122     For i = 1 To UserList(UserList(UserIndex).Grupo.Lider).Grupo.CantidadMiembros
-124         Index = UserList(UserList(UserIndex).Grupo.Lider).Grupo.Miembros(i)
-126         If UserList(Index).flags.Muerto = 0 Then
-128             If UserList(UserIndex).Pos.Map = UserList(Index).Pos.Map Then
-130                 If Abs(UserList(UserIndex).Pos.X - UserList(Index).Pos.X) < 20 Then
-132                     If Abs(UserList(UserIndex).Pos.Y - UserList(Index).Pos.Y) < 20 Then
+124         index = UserList(UserList(UserIndex).Grupo.Lider).Grupo.Miembros(i)
+126         If UserList(index).flags.Muerto = 0 Then
+128             If UserList(UserIndex).Pos.Map = UserList(index).Pos.Map Then
+130                 If Abs(UserList(UserIndex).Pos.X - UserList(index).Pos.X) < 20 Then
+132                     If Abs(UserList(UserIndex).Pos.Y - UserList(index).Pos.Y) < 20 Then
 134                         If UserList(UserIndex).Stats.ELV < STAT_MAXELV Then 'hay una var del lvl max?
 136                             CantidadMiembrosValidos = CantidadMiembrosValidos + 1
                             End If
@@ -2125,20 +2125,20 @@ Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As I
 
 146     If ExpaDar > 0 Then
 148         For i = 1 To UserList(UserList(UserIndex).Grupo.Lider).Grupo.CantidadMiembros
-150             Index = UserList(UserList(UserIndex).Grupo.Lider).Grupo.Miembros(i)
+150             index = UserList(UserList(UserIndex).Grupo.Lider).Grupo.Miembros(i)
     
-152             If UserList(Index).flags.Muerto = 0 Then
-154                 If Distancia(UserList(UserIndex).Pos, UserList(Index).Pos) < 20 Then
+152             If UserList(index).flags.Muerto = 0 Then
+154                 If Distancia(UserList(UserIndex).Pos, UserList(index).Pos) < 20 Then
 
 156                     ExpUser = 0
 
-158                     If UserList(Index).donador.activo = 1 Then
+158                     If UserList(index).donador.activo = 1 Then
 160                         ExpUser = ExpaDar * 1.1
                         Else
 162                         ExpUser = ExpaDar
                         End If
                     
-164                     ExpUser = ExpUser * UserList(Index).flags.ScrollExp
+164                     ExpUser = ExpUser * UserList(index).flags.ScrollExp
                 
 166                     If UserList(Index).Stats.ELV < STAT_MAXELV Then
                             If NpcList(NpcIndex).nivel Then
@@ -2152,23 +2152,23 @@ Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As I
 
 168                         UserList(Index).Stats.Exp = UserList(Index).Stats.Exp + ExpUser
 
-170                         If UserList(Index).Stats.Exp > MAXEXP Then UserList(Index).Stats.Exp = MAXEXP
+170                         If UserList(index).Stats.Exp > MAXEXP Then UserList(index).Stats.Exp = MAXEXP
 
-172                         If UserList(Index).ChatCombate = 1 Then
-174                             Call WriteLocaleMsg(Index, "141", FontTypeNames.FONTTYPE_EXP, ExpUser)
+172                         If UserList(index).ChatCombate = 1 Then
+174                             Call WriteLocaleMsg(index, "141", FontTypeNames.FONTTYPE_EXP, ExpUser)
 
                             End If
 
-176                         Call WriteUpdateExp(Index)
-178                         Call CheckUserLevel(Index)
+176                         Call WriteUpdateExp(index)
+178                         Call CheckUserLevel(index)
 
                         End If
     
                     Else
     
                         'Call WriteConsoleMsg(Index, "Estas demasiado lejos del grupo, no has ganado experiencia.", FontTypeNames.FONTTYPE_INFOIAO)
-180                     If UserList(Index).ChatCombate = 1 Then
-182                         Call WriteLocaleMsg(Index, "69", FontTypeNames.FONTTYPE_New_GRUPO)
+180                     If UserList(index).ChatCombate = 1 Then
+182                         Call WriteLocaleMsg(index, "69", FontTypeNames.FONTTYPE_New_GRUPO)
     
                         End If
     
@@ -2176,7 +2176,7 @@ Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As I
     
                 Else
     
-184                 If UserList(Index).ChatCombate = 1 Then
+184                 If UserList(index).ChatCombate = 1 Then
 186                     Call WriteConsoleMsg(Index, "Estás muerto, no has ganado experencia del grupo.", FontTypeNames.FONTTYPE_New_GRUPO)
     
                     End If
@@ -2195,7 +2195,7 @@ Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As I
 
 CalcularDarExpGrupal_Err:
 190     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.CalcularDarExpGrupal", Erl)
-192
+192     Resume Next
         
 End Sub
 
@@ -2220,25 +2220,25 @@ Private Sub CalcularDarOroGrupal(ByVal UserIndex As Integer, ByVal GiveGold As L
 
         Dim i     As Byte
 
-        Dim Index As Byte
+        Dim index As Byte
 
 104     OroDar = OroDar / UserList(UserList(UserIndex).Grupo.Lider).Grupo.CantidadMiembros
 
 106     For i = 1 To UserList(UserList(UserIndex).Grupo.Lider).Grupo.CantidadMiembros
-108         Index = UserList(UserList(UserIndex).Grupo.Lider).Grupo.Miembros(i)
+108         index = UserList(UserList(UserIndex).Grupo.Lider).Grupo.Miembros(i)
 
-110         If UserList(Index).flags.Muerto = 0 Then
-112             If UserList(UserIndex).Pos.Map = UserList(Index).Pos.Map Then
+110         If UserList(index).flags.Muerto = 0 Then
+112             If UserList(UserIndex).Pos.Map = UserList(index).Pos.Map Then
 114                 If OroDar > 0 Then
 
-116                     UserList(Index).Stats.GLD = UserList(Index).Stats.GLD + OroDar
+116                     UserList(index).Stats.GLD = UserList(index).Stats.GLD + OroDar
 
-118                     If UserList(Index).ChatCombate = 1 Then
+118                     If UserList(index).ChatCombate = 1 Then
 120                         Call WriteConsoleMsg(Index, "¡El grupo ha ganado " & PonerPuntos(OroDar) & " monedas de oro!", FontTypeNames.FONTTYPE_New_GRUPO)
 
                         End If
 
-122                     Call WriteUpdateGold(Index)
+122                     Call WriteUpdateGold(index)
 
                     End If
 
@@ -2264,7 +2264,7 @@ Private Sub CalcularDarOroGrupal(ByVal UserIndex As Integer, ByVal GiveGold As L
 
 CalcularDarOroGrupal_Err:
 126     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.CalcularDarOroGrupal", Erl)
-128
+128     Resume Next
         
 End Sub
 
@@ -2381,7 +2381,7 @@ Private Sub UserDañoEspecial(ByVal AtacanteIndex As Integer, ByVal VictimaIndex
 
 UserDañoEspecial_Err:
 178     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.UserDañoEspecial", Erl)
-180
+180     Resume Next
 
 End Sub
 
@@ -2400,7 +2400,7 @@ Sub AllMascotasAtacanUser(ByVal victim As Integer, ByVal Maestro As Integer)
             
 106             If mascotaIndex > 0 Then
 108                 If NpcList(mascotaIndex).flags.AtacaUsuarios Then
-110                     NpcList(mascotaIndex).flags.AttackedBy = UserList(victim).Name
+110                     NpcList(mascotaIndex).flags.AttackedBy = UserList(victim).name
 112                     NpcList(mascotaIndex).Target = victim
 114                     NpcList(mascotaIndex).Movement = TipoAI.NpcDefensa
 116                     NpcList(mascotaIndex).Hostile = 1
@@ -2467,7 +2467,7 @@ Private Function PuedeDesequiparDeUnGolpe(ByVal UserIndex As Integer) As Boolean
 
 PuedeDesequiparDeUnGolpe_Err:
 110     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.PuedeDesequiparDeUnGolpe", Erl)
-112
+112     Resume Next
         
 End Function
 
@@ -2487,7 +2487,7 @@ Private Function PuedeApuñalar(ByVal UserIndex As Integer) As Boolean
 
 PuedeApuñalar_Err:
 106     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.PuedeApuñalar", Erl)
-108
+108     Resume Next
         
 End Function
 
@@ -2509,7 +2509,7 @@ Private Function PuedeGolpeCritico(ByVal UserIndex As Integer) As Boolean
 
 PuedeGolpeCritico_Err:
 106     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.PuedeGolpeCritico", Erl)
-108
+108     Resume Next
         
 End Function
 
@@ -2548,7 +2548,7 @@ Private Function ProbabilidadApuñalar(ByVal UserIndex As Integer) As Integer
 
 ProbabilidadApuñalar_Err:
 120     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.ProbabilidadApuñalar", Erl)
-122
+122     Resume Next
         
 End Function
 
@@ -2561,7 +2561,7 @@ Private Function ProbabilidadGolpeCritico(ByVal UserIndex As Integer) As Integer
 
 ProbabilidadGolpeCritico_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.ProbabilidadGolpeCritico", Erl)
-104
+104     Resume Next
 
 End Function
 
@@ -2589,7 +2589,7 @@ Private Function ProbabilidadDesequipar(ByVal UserIndex As Integer) As Integer
 
 ProbabilidadDesequipar_Err:
 114     Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.ProbabilidadDesequipar", Erl)
-116
+116     Resume Next
         
 End Function
 
@@ -2606,6 +2606,6 @@ Private Sub WriteCombatConsoleMsg(ByVal UserIndex As Integer, ByVal message As S
 
 WriteCombatConsoleMsg_Err:
 104         Call RegistrarError(Err.Number, Err.Description, "SistemaCombate.WriteCombatConsoleMsg", Erl)
-106
+106         Resume Next
 
 End Sub
