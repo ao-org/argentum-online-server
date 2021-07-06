@@ -665,7 +665,7 @@ Private Sub Command1_Click()
 
 Command1_Click_Err:
 106     Call RegistrarError(Err.Number, Err.Description, "frmServidor.Command1_Click", Erl)
-108
+108     Resume Next
         
 End Sub
 
@@ -680,7 +680,7 @@ Private Sub Command10_Click()
 
 Command10_Click_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "frmServidor.Command10_Click", Erl)
-104
+104     Resume Next
         
 End Sub
 
@@ -695,7 +695,7 @@ Private Sub Command11_Click()
 
 Command11_Click_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "frmServidor.Command11_Click", Erl)
-104
+104     Resume Next
         
 End Sub
 
@@ -710,7 +710,7 @@ Private Sub Command12_Click()
 
 Command12_Click_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "frmServidor.Command12_Click", Erl)
-104
+104     Resume Next
         
 End Sub
 
@@ -725,7 +725,7 @@ Private Sub Command13_Click()
 
 Command13_Click_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "frmServidor.Command13_Click", Erl)
-104
+104     Resume Next
         
 End Sub
 
@@ -740,7 +740,7 @@ Private Sub Command14_Click()
 
 Command14_Click_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "frmServidor.Command14_Click", Erl)
-104
+104     Resume Next
         
 End Sub
 
@@ -804,7 +804,7 @@ Private Sub Command16_Click()
 
 Command16_Click_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "frmServidor.Command16_Click", Erl)
-104
+104     Resume Next
         
 End Sub
 
@@ -819,7 +819,7 @@ Private Sub Command17_Click()
 
 Command17_Click_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "frmServidor.Command17_Click", Erl)
-104
+104     Resume Next
         
 End Sub
 
@@ -837,7 +837,7 @@ Private Sub Command18_Click()
 
 Command18_Click_Err:
 108     Call RegistrarError(Err.Number, Err.Description, "frmServidor.Command18_Click", Erl)
-110
+110     Resume Next
         
 End Sub
 
@@ -869,7 +869,7 @@ Private Sub Command19_Click()
 
 Command19_Click_Err:
 114     Call RegistrarError(Err.Number, Err.Description, "frmServidor.Command19_Click", Erl)
-116
+116     Resume Next
         
 End Sub
 
@@ -884,7 +884,7 @@ Private Sub Command2_Click()
 
 Command2_Click_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "frmServidor.Command2_Click", Erl)
-104
+104     Resume Next
         
 End Sub
 
@@ -901,7 +901,7 @@ Private Sub Command20_Click()
 
 Command20_Click_Err:
 104     Call RegistrarError(Err.Number, Err.Description, "frmServidor.Command20_Click", Erl)
-106
+106     Resume Next
         
 End Sub
 
@@ -927,7 +927,7 @@ Private Sub Command21_Click()
 
 Command21_Click_Err:
 114     Call RegistrarError(Err.Number, Err.Description, "frmServidor.Command21_Click", Erl)
-116
+116     Resume Next
         
 End Sub
 
@@ -943,7 +943,7 @@ Private Sub Command22_Click()
 
 Command22_Click_Err:
 104     Call RegistrarError(Err.Number, Err.Description, "frmServidor.Command22_Click", Erl)
-106
+106     Resume Next
         
 End Sub
 
@@ -973,7 +973,7 @@ Private Sub Command23_Click()
 
 Command23_Click_Err:
 110     Call RegistrarError(Err.Number, Err.Description, "frmServidor.Command23_Click", Erl)
-112
+112     Resume Next
         
 End Sub
 
@@ -988,7 +988,7 @@ Private Sub Command24_Click()
 
 Command24_Click_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "frmServidor.Command24_Click", Erl)
-104
+104     Resume Next
         
 End Sub
 
@@ -1004,7 +1004,7 @@ Private Sub Command26_Click()
 
 Command26_Click_Err:
 104     Call RegistrarError(Err.Number, Err.Description, "frmServidor.Command26_Click", Erl)
-106
+106     Resume Next
         
 End Sub
 
@@ -1019,7 +1019,7 @@ Private Sub Command27_Click()
 
 Command27_Click_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "frmServidor.Command27_Click", Erl)
-104
+104     Resume Next
         
 End Sub
 
@@ -1034,7 +1034,7 @@ Private Sub Command28_Click()
 
 Command28_Click_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "frmServidor.Command28_Click", Erl)
-104
+104     Resume Next
         
 End Sub
 
@@ -1054,7 +1054,7 @@ Private Sub Command3_Click()
 
 Command3_Click_Err:
 106     Call RegistrarError(Err.Number, Err.Description, "frmServidor.Command3_Click", Erl)
-108
+108     Resume Next
         
 End Sub
 
@@ -1135,7 +1135,7 @@ Private Sub Command6_Click()
 
 Command6_Click_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "frmServidor.Command6_Click", Erl)
-104
+104     Resume Next
         
 End Sub
 
@@ -1150,7 +1150,7 @@ Private Sub Command7_Click()
 
 Command7_Click_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "frmServidor.Command7_Click", Erl)
-104
+104     Resume Next
         
 End Sub
 
@@ -1165,7 +1165,7 @@ Private Sub Command8_Click()
 
 Command8_Click_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "frmServidor.Command8_Click", Erl)
-104
+104     Resume Next
         
 End Sub
 
@@ -1180,7 +1180,7 @@ Private Sub Command9_Click()
 
 Command9_Click_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "frmServidor.Command9_Click", Erl)
-104
+104     Resume Next
         
 End Sub
 
@@ -1195,7 +1195,7 @@ Private Sub Form_Deactivate()
 
 Form_Deactivate_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "frmServidor.Form_Deactivate", Erl)
-104
+104     Resume Next
         
 End Sub
 
@@ -1210,6 +1210,6 @@ Private Sub Form_Load()
 
 Form_Load_Err:
 104     Call RegistrarError(Err.Number, Err.Description, "frmServidor.Form_Load", Erl)
-106
+106     Resume Next
         
 End Sub

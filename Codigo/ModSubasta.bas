@@ -61,7 +61,7 @@ Public Sub IniciarSubasta(UserIndex)
 124     If MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).ObjInfo.ObjIndex > 0 Then
 126         Subasta.ObjSubastado = MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).ObjInfo.ObjIndex
 128         Subasta.ObjSubastadoCantidad = MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).ObjInfo.amount
-130         Subasta.Subastador = UserList(UserIndex).Name
+130         Subasta.Subastador = UserList(UserIndex).name
 132         UserList(UserIndex).Counters.TiempoParaSubastar = 15
 134         Call WriteChatOverHead(UserIndex, "Escribe /OFERTAINICIAL (cantidad) para comenzar la subasta. ¡Tienes 15 segundos!", NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, vbWhite)
 136         Call EraseObj(Subasta.ObjSubastadoCantidad, UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y)
@@ -75,7 +75,7 @@ Public Sub IniciarSubasta(UserIndex)
 
 IniciarSubasta_Err:
 140     Call RegistrarError(Err.Number, Err.Description, "ModSubasta.IniciarSubasta", Erl)
-142
+142     Resume Next
         
 End Sub
 
@@ -149,7 +149,7 @@ Public Sub FinalizarSubasta()
 
 144                 If Subasta.ObjSubastado < 1 Or Subasta.ObjSubastado > NumObjDatas Then Exit Sub
 
-146                 If LenB(ObjData(Subasta.ObjSubastado).Name) = 0 Then Exit Sub
+146                 If LenB(ObjData(Subasta.ObjSubastado).name) = 0 Then Exit Sub
 148                 Call MakeObj(ObjVendido, PosMap, posX, posY)
 150                 Call LogearEventoDeSubasta("La boveda del usuario estaba llena, se tiro en la posicion:" & PosMap & "-" & posX & "-" & posY)
 152                 Call WriteVar(FileUser, "INIT", "MENSAJEINFORMACION", "Subastador te ha dejado un mensaje: ¡Has ganado la subasta! Como no tenias espacio ni en tu boveda ni en el correo, tuve que tirarlo en tu ultima posicion.")
@@ -198,7 +198,7 @@ Public Sub FinalizarSubasta()
 
 FinalizarSubasta_Err:
 188     Call RegistrarError(Err.Number, Err.Description, "ModSubasta.FinalizarSubasta", Erl)
-190
+190     Resume Next
         
 End Sub
 
@@ -219,7 +219,7 @@ Public Sub LogearEventoDeSubasta(Logeo As String)
 
 LogearEventoDeSubasta_Err:
 108     Call RegistrarError(Err.Number, Err.Description, "ModSubasta.LogearEventoDeSubasta", Erl)
-110
+110     Resume Next
         
 End Sub
 
@@ -246,7 +246,7 @@ Public Sub ResetearSubasta()
 
 ResetearSubasta_Err:
 126     Call RegistrarError(Err.Number, Err.Description, "ModSubasta.ResetearSubasta", Erl)
-128
+128     Resume Next
         
 End Sub
 
@@ -308,7 +308,7 @@ Public Sub DevolverItem()
 
 142                 If Subasta.ObjSubastado < 1 Or Subasta.ObjSubastado > NumObjDatas Then Exit Sub
 
-144                 If LenB(ObjData(Subasta.ObjSubastado).Name) = 0 Then Exit Sub
+144                 If LenB(ObjData(Subasta.ObjSubastado).name) = 0 Then Exit Sub
 146                 Call MakeObj(ObjVendido, PosMap, posX, posY)
 148                 Call LogearEventoDeSubasta("El correo del usuario estaba lleno, se tiro en la posicion:" & PosMap & "-" & posX & "-" & posY)
 150                 Call WriteVar(FileUser, "INIT", "MENSAJEINFORMACION", "Subastador te ha dejado un mensaje: Tu subasta fue cancelada por falta de ofertas, como no tenias lugar ni en tu correo ni boveda, tuve que tirarlo en tu ultimo posicion.")
@@ -342,7 +342,7 @@ Public Sub DevolverItem()
 
 DevolverItem_Err:
 166     Call RegistrarError(Err.Number, Err.Description, "ModSubasta.DevolverItem", Erl)
-168
+168     Resume Next
         
 End Sub
 
@@ -403,7 +403,7 @@ Public Sub CancelarSubasta()
 
 144                 If Subasta.ObjSubastado < 1 Or Subasta.ObjSubastado > NumObjDatas Then Exit Sub
 
-146                 If LenB(ObjData(Subasta.ObjSubastado).Name) = 0 Then Exit Sub
+146                 If LenB(ObjData(Subasta.ObjSubastado).name) = 0 Then Exit Sub
 148                 Call MakeObj(ObjVendido, PosMap, posX, posY)
 150                 Call LogearEventoDeSubasta("El correo del usuario estaba lleno, se tiro en la posicion:" & PosMap & "-" & posX & "-" & posY)
 152                 Call WriteVar(FileUser, "INIT", "MENSAJEINFORMACION", "Subastador te ha dejado un mensaje: Tu subasta fue cancelada, como no tenias lugar ni en tu correo ni boveda, tuve que tirarlo en tu ultimo posicion.")
@@ -438,6 +438,6 @@ Public Sub CancelarSubasta()
 
 CancelarSubasta_Err:
 170     Call RegistrarError(Err.Number, Err.Description, "ModSubasta.CancelarSubasta", Erl)
-172
+172     Resume Next
         
 End Sub

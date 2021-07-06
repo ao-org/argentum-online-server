@@ -86,7 +86,7 @@ Public Sub CallUserAttention()
 
 CallUserAttention_Err:
 112     Call RegistrarError(Err.Number, Err.Description, "modCentinela.CallUserAttention", Erl)
-114
+114     Resume Next
         
 End Sub
 
@@ -144,7 +144,7 @@ Private Sub GoToNextWorkingChar()
 
 GoToNextWorkingChar_Err:
 132     Call RegistrarError(Err.Number, Err.Description, "modCentinela.GoToNextWorkingChar", Erl)
-134
+134     Resume Next
         
 End Sub
 
@@ -156,7 +156,7 @@ Private Sub CentinelaFinalCheck()
         '############################################################
         On Error GoTo ERROR_HANDLER
 
-        Dim Name     As String
+        Dim name     As String
 
         Dim numPenas As Integer
     
@@ -167,7 +167,7 @@ Private Sub CentinelaFinalCheck()
             'Ponemos el ban
             'UserList(Centinela.RevisandoUserIndex).flags.Ban = 1
         
-102         Name = UserList(Centinela.RevisandoUserIndex).Name
+102         name = UserList(Centinela.RevisandoUserIndex).name
         
             'Avisamos a los admins
             ' Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » El centinela ha baneado a " & name, FontTypeNames.FONTTYPE_SERVER))
@@ -179,22 +179,22 @@ Private Sub CentinelaFinalCheck()
             ' Call WriteVar(CharPath & name & ".chr", "BAN", "BANMOTIVO", "utilizar macro inasistido")
         
 104         If Database_Enabled Then
-106             Call SavePenaDatabase(Name, "CENTINELA : Encarcelado por no responder. " & Date & " " & Time)
+106             Call SavePenaDatabase(name, "CENTINELA : Encarcelado por no responder. " & Date & " " & Time)
             Else
                 'ponemos la pena
-108             numPenas = val(GetVar(CharPath & Name & ".chr", "PENAS", "Cant"))
-110             Call WriteVar(CharPath & Name & ".chr", "PENAS", "Cant", numPenas + 1)
+108             numPenas = val(GetVar(CharPath & name & ".chr", "PENAS", "Cant"))
+110             Call WriteVar(CharPath & name & ".chr", "PENAS", "Cant", numPenas + 1)
                 'Call WriteVar(CharPath & name & ".chr", "PENAS", "P" & numPenas + 1, "CENTINELA : BAN POR MACRO INASISTIDO " & Date & " " & Time)
-112             Call WriteVar(CharPath & Name & ".chr", "PENAS", "P" & numPenas + 1, "CENTINELA : Encarcelado por no responder. " & Date & " " & Time)
+112             Call WriteVar(CharPath & name & ".chr", "PENAS", "P" & numPenas + 1, "CENTINELA : Encarcelado por no responder. " & Date & " " & Time)
 
             End If
         
 114         Call Encarcelar(Centinela.RevisandoUserIndex, 20, "Centinela")
         
             'Evitamos loguear el logout
-            Dim Index As Integer
+            Dim index As Integer
 
-116         Index = Centinela.RevisandoUserIndex
+116         index = Centinela.RevisandoUserIndex
 118         Centinela.RevisandoUserIndex = 0
         
             'Call CloseSocket(Index)
@@ -260,7 +260,7 @@ Public Sub CentinelaCheckClave(ByVal UserIndex As Integer, ByVal clave As Intege
 
 CentinelaCheckClave_Err:
 118     Call RegistrarError(Err.Number, Err.Description, "modCentinela.CentinelaCheckClave", Erl)
-120
+120     Resume Next
         
 End Sub
 
@@ -276,7 +276,7 @@ Public Sub ResetCentinelaInfo()
     
 100     For LoopC = 1 To LastUser
 
-102         If (LenB(UserList(LoopC).Name) <> 0 And LoopC <> Centinela.RevisandoUserIndex) Then
+102         If (LenB(UserList(LoopC).name) <> 0 And LoopC <> Centinela.RevisandoUserIndex) Then
 104             UserList(LoopC).flags.CentinelaOK = False
 
             End If
@@ -288,7 +288,7 @@ Public Sub ResetCentinelaInfo()
 
 ResetCentinelaInfo_Err:
 108     Call RegistrarError(Err.Number, Err.Description, "modCentinela.ResetCentinelaInfo", Erl)
-110
+110     Resume Next
         
 End Sub
 
@@ -323,7 +323,7 @@ Public Sub CentinelaSendClave(ByVal UserIndex As Integer)
 
 CentinelaSendClave_Err:
 116     Call RegistrarError(Err.Number, Err.Description, "modCentinela.CentinelaSendClave", Erl)
-118
+118     Resume Next
         
 End Sub
 
@@ -367,7 +367,7 @@ Public Sub PasarMinutoCentinela()
 
 PasarMinutoCentinela_Err:
 122     Call RegistrarError(Err.Number, Err.Description, "modCentinela.PasarMinutoCentinela", Erl)
-124
+124     Resume Next
         
 End Sub
 
@@ -401,7 +401,7 @@ Private Sub WarpCentinela(ByVal UserIndex As Integer)
 
 WarpCentinela_Err:
 114     Call RegistrarError(Err.Number, Err.Description, "modCentinela.WarpCentinela", Erl)
-116
+116     Resume Next
         
 End Sub
 
@@ -435,7 +435,7 @@ Public Sub CentinelaUserLogout()
 
 CentinelaUserLogout_Err:
 116     Call RegistrarError(Err.Number, Err.Description, "modCentinela.CentinelaUserLogout", Erl)
-118
+118     Resume Next
         
 End Sub
 

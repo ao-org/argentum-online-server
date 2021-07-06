@@ -139,7 +139,7 @@ Private Sub Command1_Click()
 
 Command1_Click_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "frmDebugSocket.Command1_Click", Erl)
-104
+104     Resume Next
         
 End Sub
 
@@ -154,7 +154,7 @@ Private Sub Command2_Click()
 
 Command2_Click_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "frmDebugSocket.Command2_Click", Erl)
-104
+104     Resume Next
         
 End Sub
 
@@ -169,7 +169,7 @@ Private Sub Command3_Click()
 
 Command3_Click_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "frmDebugSocket.Command3_Click", Erl)
-104
+104     Resume Next
         
 End Sub
 
@@ -184,7 +184,7 @@ Private Sub Command4_Click()
 
 Command4_Click_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "frmDebugSocket.Command4_Click", Erl)
-104
+104     Resume Next
         
 End Sub
 

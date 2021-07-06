@@ -80,7 +80,7 @@ Public Sub DoPermanecerOculto(ByVal UserIndex As Integer)
 DoPermanecerOculto_Err:
 134     Call RegistrarError(Err.Number, Err.Description, "Trabajo.DoPermanecerOculto", Erl)
 
-136
+136     Resume Next
         
 End Sub
 
@@ -168,13 +168,13 @@ End Sub
 
 Public Sub DoNavega(ByVal UserIndex As Integer, _
                     ByRef Barco As ObjData, _
-                    ByVal Slot As Integer)
+                    ByVal slot As Integer)
         
         On Error GoTo DoNavega_Err
 
 100     With UserList(UserIndex)
 
-102         If .Invent.BarcoObjIndex <> .Invent.Object(Slot).ObjIndex Then
+102         If .Invent.BarcoObjIndex <> .Invent.Object(slot).ObjIndex Then
 
 104             If Not EsGM(UserIndex) Then
             
@@ -212,8 +212,8 @@ Public Sub DoNavega(ByVal UserIndex As Integer, _
 128                 .flags.Navegando = 1
                 End If
     
-130             .Invent.BarcoObjIndex = .Invent.Object(Slot).ObjIndex
-132             .Invent.BarcoSlot = Slot
+130             .Invent.BarcoObjIndex = .Invent.Object(slot).ObjIndex
+132             .Invent.BarcoSlot = slot
     
 134             If .flags.Montado > 0 Then
 136                 Call DoMontar(UserIndex, ObjData(.Invent.MonturaObjIndex), .Invent.MonturaSlot)
@@ -296,7 +296,7 @@ Public Sub DoNavega(ByVal UserIndex As Integer, _
 DoNavega_Err:
 204     Call RegistrarError(Err.Number, Err.Description, "Trabajo.DoNavega", Erl)
 
-206
+206     Resume Next
         
 End Sub
 
@@ -338,7 +338,7 @@ Public Sub FundirMineral(ByVal UserIndex As Integer)
 
 FundirMineral_Err:
 120     Call RegistrarError(Err.Number, Err.Description, "Trabajo.FundirMineral", Erl)
-122
+122     Resume Next
         
 End Sub
 
@@ -372,7 +372,7 @@ Function TieneObjetos(ByVal ItemIndex As Integer, ByVal cant As Integer, ByVal U
 
 TieneObjetos_Err:
 112     Call RegistrarError(Err.Number, Err.Description, "Trabajo.TieneObjetos", Erl)
-114
+114     Resume Next
         
 End Function
 
@@ -421,7 +421,7 @@ Function QuitarObjetos(ByVal ItemIndex As Integer, ByVal cant As Integer, ByVal 
 
 QuitarObjetos_Err:
 130     Call RegistrarError(Err.Number, Err.Description, "Trabajo.QuitarObjetos", Erl)
-132
+132     Resume Next
         
 End Function
 
@@ -439,7 +439,7 @@ Sub HerreroQuitarMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As Integ
 
 HerreroQuitarMateriales_Err:
 106     Call RegistrarError(Err.Number, Err.Description, "Trabajo.HerreroQuitarMateriales", Erl)
-108
+108     Resume Next
         
 End Sub
 
@@ -457,7 +457,7 @@ Sub CarpinteroQuitarMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As In
 
 CarpinteroQuitarMateriales_Err:
 104     Call RegistrarError(Err.Number, Err.Description, "Trabajo.CarpinteroQuitarMateriales", Erl)
-106
+106     Resume Next
         
 End Sub
 
@@ -473,7 +473,7 @@ Sub AlquimistaQuitarMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As In
 
 AlquimistaQuitarMateriales_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "Trabajo.AlquimistaQuitarMateriales", Erl)
-104
+104     Resume Next
         
 End Sub
 
@@ -491,7 +491,7 @@ Sub SastreQuitarMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As Intege
 
 SastreQuitarMateriales_Err:
 106     Call RegistrarError(Err.Number, Err.Description, "Trabajo.SastreQuitarMateriales", Erl)
-108
+108     Resume Next
         
 End Sub
 
@@ -528,7 +528,7 @@ Function CarpinteroTieneMateriales(ByVal UserIndex As Integer, ByVal ItemIndex A
 
 CarpinteroTieneMateriales_Err:
 122     Call RegistrarError(Err.Number, Err.Description, "Trabajo.CarpinteroTieneMateriales", Erl)
-124
+124     Resume Next
         
 End Function
 
@@ -555,7 +555,7 @@ Function AlquimistaTieneMateriales(ByVal UserIndex As Integer, ByVal ItemIndex A
 
 AlquimistaTieneMateriales_Err:
 112     Call RegistrarError(Err.Number, Err.Description, "Trabajo.AlquimistaTieneMateriales", Erl)
-114
+114     Resume Next
         
 End Function
 
@@ -604,7 +604,7 @@ Function SastreTieneMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As In
 
 SastreTieneMateriales_Err:
 132     Call RegistrarError(Err.Number, Err.Description, "Trabajo.SastreTieneMateriales", Erl)
-134
+134     Resume Next
         
 End Function
 
@@ -653,7 +653,7 @@ Function HerreroTieneMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As I
 
 HerreroTieneMateriales_Err:
 132     Call RegistrarError(Err.Number, Err.Description, "Trabajo.HerreroTieneMateriales", Erl)
-134
+134     Resume Next
         
 End Function
 
@@ -668,7 +668,7 @@ Public Function PuedeConstruir(ByVal UserIndex As Integer, ByVal ItemIndex As In
 
 PuedeConstruir_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "Trabajo.PuedeConstruir", Erl)
-104
+104     Resume Next
         
 End Function
 
@@ -706,7 +706,7 @@ Public Function PuedeConstruirHerreria(ByVal ItemIndex As Integer) As Boolean
 
 PuedeConstruirHerreria_Err:
 118     Call RegistrarError(Err.Number, Err.Description, "Trabajo.PuedeConstruirHerreria", Erl)
-120
+120     Resume Next
         
 End Function
 
@@ -769,7 +769,7 @@ Public Sub HerreroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As I
 
 HerreroConstruirItem_Err:
 144     Call RegistrarError(Err.Number, Err.Description, "Trabajo.HerreroConstruirItem", Erl)
-146
+146     Resume Next
         
 End Sub
 
@@ -797,7 +797,7 @@ Public Function PuedeConstruirCarpintero(ByVal ItemIndex As Integer) As Boolean
 
 PuedeConstruirCarpintero_Err:
 110     Call RegistrarError(Err.Number, Err.Description, "Trabajo.PuedeConstruirCarpintero", Erl)
-112
+112     Resume Next
         
 End Function
 
@@ -825,7 +825,7 @@ Public Function PuedeConstruirAlquimista(ByVal ItemIndex As Integer) As Boolean
 
 PuedeConstruirAlquimista_Err:
 110     Call RegistrarError(Err.Number, Err.Description, "Trabajo.PuedeConstruirAlquimista", Erl)
-112
+112     Resume Next
         
 End Function
 
@@ -853,7 +853,7 @@ Public Function PuedeConstruirSastre(ByVal ItemIndex As Integer) As Boolean
 
 PuedeConstruirSastre_Err:
 110     Call RegistrarError(Err.Number, Err.Description, "Trabajo.PuedeConstruirSastre", Erl)
-112
+112     Resume Next
         
 End Function
 
@@ -920,7 +920,7 @@ Public Sub CarpinteroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
 
 CarpinteroConstruirItem_Err:
 134     Call RegistrarError(Err.Number, Err.Description, "Trabajo.CarpinteroConstruirItem", Erl)
-136
+136     Resume Next
         
 End Sub
 
@@ -980,7 +980,7 @@ Public Sub AlquimistaConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
 
 AlquimistaConstruirItem_Err:
 128     Call RegistrarError(Err.Number, Err.Description, "Trabajo.AlquimistaConstruirItem", Erl)
-130
+130     Resume Next
         
 End Sub
 
@@ -1039,7 +1039,7 @@ Public Sub SastreConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As In
 
 SastreConstruirItem_Err:
 132     Call RegistrarError(Err.Number, Err.Description, "Trabajo.SastreConstruirItem", Erl)
-134
+134     Resume Next
         
 End Sub
 
@@ -1069,14 +1069,14 @@ Private Function MineralesParaLingote(ByVal Lingote As iMinerales, ByVal cant As
 
 MineralesParaLingote_Err:
 116     Call RegistrarError(Err.Number, Err.Description, "Trabajo.MineralesParaLingote", Erl)
-118
+118     Resume Next
         
 End Function
 
 Public Sub DoLingotes(ByVal UserIndex As Integer)
             On Error GoTo DoLingotes_Err
 
-            Dim Slot As Integer
+            Dim slot As Integer
             Dim obji As Integer
             Dim cant As Byte
             Dim necesarios As Integer
@@ -1092,24 +1092,24 @@ Public Sub DoLingotes(ByVal UserIndex As Integer)
 
             End If
 
-108         Slot = UserList(UserIndex).flags.TargetObjInvSlot
-110         obji = UserList(UserIndex).Invent.Object(Slot).ObjIndex
+108         slot = UserList(UserIndex).flags.TargetObjInvSlot
+110         obji = UserList(UserIndex).Invent.Object(slot).ObjIndex
 
 112         cant = RandomNumber(10, 20)
 114         necesarios = MineralesParaLingote(obji, cant)
 
-116         If UserList(UserIndex).Invent.Object(Slot).amount < MineralesParaLingote(obji, cant) Or ObjData(obji).OBJType <> eOBJType.otMinerales Then
+116         If UserList(UserIndex).Invent.Object(slot).amount < MineralesParaLingote(obji, cant) Or ObjData(obji).OBJType <> eOBJType.otMinerales Then
 118             Call WriteConsoleMsg(UserIndex, "No tienes suficientes minerales para hacer un lingote.", FontTypeNames.FONTTYPE_INFO)
 120             Call WriteMacroTrabajoToggle(UserIndex, False)
                 Exit Sub
 
             End If
 
-122         UserList(UserIndex).Invent.Object(Slot).amount = UserList(UserIndex).Invent.Object(Slot).amount - MineralesParaLingote(obji, cant)
+122         UserList(UserIndex).Invent.Object(slot).amount = UserList(UserIndex).Invent.Object(slot).amount - MineralesParaLingote(obji, cant)
 
-124         If UserList(UserIndex).Invent.Object(Slot).amount < 1 Then
-126             UserList(UserIndex).Invent.Object(Slot).amount = 0
-128             UserList(UserIndex).Invent.Object(Slot).ObjIndex = 0
+124         If UserList(UserIndex).Invent.Object(slot).amount < 1 Then
+126             UserList(UserIndex).Invent.Object(slot).amount = 0
+128             UserList(UserIndex).Invent.Object(slot).ObjIndex = 0
 
             End If
 
@@ -1125,7 +1125,7 @@ Public Sub DoLingotes(ByVal UserIndex As Integer)
 
             End If
 
-138         Call UpdateUserInv(False, UserIndex, Slot)
+138         Call UpdateUserInv(False, UserIndex, slot)
 140         Call WriteTextCharDrop(UserIndex, "+" & cant, UserList(UserIndex).Char.CharIndex, vbWhite)
 142         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(41, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
 144         Call SubirSkill(UserIndex, eSkill.Mineria)
@@ -1141,7 +1141,7 @@ Public Sub DoLingotes(ByVal UserIndex As Integer)
 
 DoLingotes_Err:
 152         Call RegistrarError(Err.Number, Err.Description, "Trabajo.DoLingotes", Erl)
-154
+154         Resume Next
 
 End Sub
 
@@ -1165,7 +1165,7 @@ Function ModAlquimia(ByVal clase As eClass) As Integer
 
 ModAlquimia_Err:
 112     Call RegistrarError(Err.Number, Err.Description, "Trabajo.ModAlquimia", Erl)
-114
+114     Resume Next
 
 End Function
 
@@ -1189,7 +1189,7 @@ Function ModSastre(ByVal clase As eClass) As Integer
 
 ModSastre_Err:
 108     Call RegistrarError(Err.Number, Err.Description, "Trabajo.ModSastre", Erl)
-110
+110     Resume Next
         
 End Function
 
@@ -1213,7 +1213,7 @@ Function ModCarpinteria(ByVal clase As eClass) As Integer
 
 ModCarpinteria_Err:
 108     Call RegistrarError(Err.Number, Err.Description, "Trabajo.ModCarpinteria", Erl)
-110
+110     Resume Next
         
 End Function
 
@@ -1237,7 +1237,7 @@ Function ModHerreria(ByVal clase As eClass) As Single
 
 ModHerreriA_Err:
 108     Call RegistrarError(Err.Number, Err.Description, "Trabajo.ModHerreriA", Erl)
-110
+110     Resume Next
         
 End Function
 
@@ -1287,7 +1287,7 @@ Sub DoAdminInvisible(ByVal UserIndex As Integer)
 DoAdminInvisible_Err:
 126     Call RegistrarError(Err.Number, Err.Description, "Trabajo.DoAdminInvisible", Erl)
 
-128
+128     Resume Next
         
 End Sub
 
@@ -1369,7 +1369,7 @@ Sub TratarDeHacerFogata(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Int
 
 TratarDeHacerFogata_Err:
 154     Call RegistrarError(Err.Number, Err.Description, "Trabajo.TratarDeHacerFogata", Erl)
-156
+156     Resume Next
         
 End Sub
 
@@ -1437,7 +1437,7 @@ Public Sub DoPescar(ByVal UserIndex As Integer, Optional ByVal RedDePesca As Boo
                 ' Por cada drop posible
 136             For i = 1 To UBound(EspecialesPesca)
                     ' Tiramos al azar entre 1 y la probabilidad
-138                 res = RandomNumber(1, IIf(RedDePesca, EspecialesPesca(i).data * 2, EspecialesPesca(i).data)) ' Red de pesca chance x2 (revisar)
+138                 res = RandomNumber(1, IIf(RedDePesca, EspecialesPesca(i).Data * 2, EspecialesPesca(i).Data)) ' Red de pesca chance x2 (revisar)
             
                     ' Si tiene suerte y le pega
 140                 If res = 1 Then
@@ -1729,7 +1729,7 @@ ErrHandler:
 
 End Sub
 
-Public Function ObjEsRobable(ByVal VictimaIndex As Integer, ByVal Slot As Integer) As Boolean
+Public Function ObjEsRobable(ByVal VictimaIndex As Integer, ByVal slot As Integer) As Boolean
         ' Agregué los barcos
         ' Agrego poción negra
         ' Esta funcion determina qué objetos son robables.
@@ -1739,16 +1739,16 @@ Public Function ObjEsRobable(ByVal VictimaIndex As Integer, ByVal Slot As Intege
 
         Dim OI As Integer
 
-100     OI = UserList(VictimaIndex).Invent.Object(Slot).ObjIndex
+100     OI = UserList(VictimaIndex).Invent.Object(slot).ObjIndex
 
-102     ObjEsRobable = ObjData(OI).OBJType <> eOBJType.otLlaves And UserList(VictimaIndex).Invent.Object(Slot).Equipped = 0 And ObjData(OI).Real = 0 And ObjData(OI).Caos = 0 And ObjData(OI).donador = 0 And ObjData(OI).OBJType <> eOBJType.otBarcos And ObjData(OI).OBJType <> eOBJType.otRunas And ObjData(OI).Instransferible = 0 And ObjData(OI).OBJType <> eOBJType.otMonturas And Not (ObjData(OI).OBJType = eOBJType.otPociones And ObjData(OI).TipoPocion = 21)
+102     ObjEsRobable = ObjData(OI).OBJType <> eOBJType.otLlaves And UserList(VictimaIndex).Invent.Object(slot).Equipped = 0 And ObjData(OI).Real = 0 And ObjData(OI).Caos = 0 And ObjData(OI).donador = 0 And ObjData(OI).OBJType <> eOBJType.otBarcos And ObjData(OI).OBJType <> eOBJType.otRunas And ObjData(OI).Instransferible = 0 And ObjData(OI).OBJType <> eOBJType.otMonturas And Not (ObjData(OI).OBJType = eOBJType.otPociones And ObjData(OI).TipoPocion = 21)
 
         
         Exit Function
 
 ObjEsRobable_Err:
 104     Call RegistrarError(Err.Number, Err.Description, "Trabajo.ObjEsRobable", Erl)
-106
+106     Resume Next
         
 End Function
 
@@ -1884,7 +1884,7 @@ Public Sub QuitarSta(ByVal UserIndex As Integer, ByVal Cantidad As Integer)
 
 QuitarSta_Err:
 108     Call RegistrarError(Err.Number, Err.Description, "Trabajo.QuitarSta", Erl)
-110
+110     Resume Next
         
 End Sub
 
@@ -2020,7 +2020,7 @@ Public Sub DoTalar(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte,
                 Dim MiObj As obj
 
 122             Call ActualizarRecurso(.Pos.Map, X, Y)
-124             MapData(.Pos.Map, X, Y).ObjInfo.data = GetTickCount() ' Ultimo uso
+124             MapData(.Pos.Map, X, Y).ObjInfo.Data = GetTickCount() ' Ultimo uso
     
 126             MiObj.amount = IIf(.clase = Trabajador, 5, RandomNumber(1, 2)) * RecoleccionMult
 
@@ -2051,7 +2051,7 @@ Public Sub DoTalar(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte,
                 ' Por cada drop posible
 148             For i = 1 To UBound(EspecialesTala)
                     ' Tiramos al azar entre 1 y la probabilidad
-150                 res = RandomNumber(1, EspecialesTala(i).data)
+150                 res = RandomNumber(1, EspecialesTala(i).Data)
 
                     ' Si tiene suerte y le pega
 152                 If res = 1 Then
@@ -2129,7 +2129,7 @@ Public Sub DoMineria(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byt
                 Dim nPos  As WorldPos
             
 122             Call ActualizarRecurso(.Pos.Map, X, Y)
-124             MapData(.Pos.Map, X, Y).ObjInfo.data = GetTickCount() ' Ultimo uso
+124             MapData(.Pos.Map, X, Y).ObjInfo.Data = GetTickCount() ' Ultimo uso
 
 126             Yacimiento = ObjData(MapData(.Pos.Map, X, Y).ObjInfo.ObjIndex)
             
@@ -2238,15 +2238,15 @@ Public Sub DoMeditar(ByVal UserIndex As Integer)
 
 DoMeditar_Err:
 132     Call RegistrarError(Err.Number, Err.Description, "Trabajo.DoMeditar", Erl)
-134
+134     Resume Next
         
 End Sub
 
-Public Sub DoMontar(ByVal UserIndex As Integer, ByRef Montura As ObjData, ByVal Slot As Integer)
+Public Sub DoMontar(ByVal UserIndex As Integer, ByRef Montura As ObjData, ByVal slot As Integer)
         On Error GoTo DoMontar_Err
 
 100     With UserList(UserIndex)
-102         If PuedeUsarObjeto(UserIndex, .Invent.Object(Slot).ObjIndex, True) > 0 Then
+102         If PuedeUsarObjeto(UserIndex, .Invent.Object(slot).ObjIndex, True) > 0 Then
                 Exit Sub
             End If
 
@@ -2291,8 +2291,8 @@ Public Sub DoMontar(ByVal UserIndex As Integer, ByRef Montura As ObjData, ByVal 
 
             End If
 
-134         .Invent.MonturaObjIndex = .Invent.Object(Slot).ObjIndex
-136         .Invent.MonturaSlot = Slot
+134         .Invent.MonturaObjIndex = .Invent.Object(slot).ObjIndex
+136         .Invent.MonturaSlot = slot
 
 138         If .flags.Montado = 0 Then
 140             .Char.Body = Montura.Ropaje
@@ -2324,7 +2324,7 @@ Public Sub DoMontar(ByVal UserIndex As Integer, ByRef Montura As ObjData, ByVal 
 168         Call ActualizarVelocidadDeUsuario(UserIndex)
 170         Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
 
-172         Call UpdateUserInv(False, UserIndex, Slot)
+172         Call UpdateUserInv(False, UserIndex, slot)
 174         Call WriteEquiteToggle(UserIndex)
         End With
 
@@ -2332,7 +2332,7 @@ Public Sub DoMontar(ByVal UserIndex As Integer, ByRef Montura As ObjData, ByVal 
 
 DoMontar_Err:
 176     Call RegistrarError(Err.Number, Err.Description, "Trabajo.DoMontar", Erl)
-178
+178     Resume Next
 
 End Sub
 
@@ -2350,9 +2350,9 @@ Public Sub ActualizarRecurso(ByVal Map As Integer, ByVal X As Integer, ByVal Y A
 102     TiempoActual = GetTickCount()
 
         ' Data = Ultimo uso
-104     If (TiempoActual - MapData(Map, X, Y).ObjInfo.data) * 0.001 > ObjData(ObjIndex).TiempoRegenerar Then
+104     If (TiempoActual - MapData(Map, X, Y).ObjInfo.Data) * 0.001 > ObjData(ObjIndex).TiempoRegenerar Then
 106         MapData(Map, X, Y).ObjInfo.amount = ObjData(ObjIndex).VidaUtil
-108         MapData(Map, X, Y).ObjInfo.data = &H7FFFFFFF   ' Ultimo uso = Max Long
+108         MapData(Map, X, Y).ObjInfo.Data = &H7FFFFFFF   ' Ultimo uso = Max Long
 
         End If
 
@@ -2361,7 +2361,7 @@ Public Sub ActualizarRecurso(ByVal Map As Integer, ByVal X As Integer, ByVal Y A
 
 ActualizarRecurso_Err:
 110     Call RegistrarError(Err.Number, Err.Description, "Trabajo.ActualizarRecurso", Erl)
-112
+112     Resume Next
         
 End Sub
 
@@ -2383,7 +2383,7 @@ Public Function ObtenerPezRandom(ByVal PoderCania As Integer) As Long
 
 ObtenerPezRandom_Err:
 108     Call RegistrarError(Err.Number, Err.Description, "Trabajo.ObtenerPezRandom", Erl)
-110
+110     Resume Next
         
 End Function
 

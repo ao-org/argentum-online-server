@@ -105,7 +105,7 @@ Public Sub InitTesoro()
 
 InitTesoro_Err:
 158     Call RegistrarError(Err.Number, Err.Description, "ModTesoros.InitTesoro", Erl)
-160
+160     Resume Next
         
 End Sub
 
@@ -165,7 +165,7 @@ Public Sub InitRegalo()
 
 InitRegalo_Err:
 142     Call RegistrarError(Err.Number, Err.Description, "ModTesoros.InitRegalo", Erl)
-144
+144     Resume Next
         
 End Sub
 
@@ -216,7 +216,7 @@ Public Sub PerderTesoro()
 
 PerderTesoro_Err:
 142     Call RegistrarError(Err.Number, Err.Description, "ModTesoros.PerderTesoro", Erl)
-144
+144     Resume Next
         
 End Sub
 
@@ -268,7 +268,7 @@ Public Sub PerderRegalo()
 
 PerderRegalo_Err:
 142     Call RegistrarError(Err.Number, Err.Description, "ModTesoros.PerderRegalo", Erl)
-144
+144     Resume Next
         
 End Sub
 

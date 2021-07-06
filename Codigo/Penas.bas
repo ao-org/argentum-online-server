@@ -62,7 +62,7 @@ CargarListaNegraUsuarios_Err:
         Set File = Nothing
         Call RegistrarError(Err.Number, Err.Description, "Penas.CargarListaNegraUsuarios", Erl)
 
-        
+        Resume Next
         
 End Sub
 
@@ -113,7 +113,7 @@ Private Function GlobalChecks(ByVal BannerIndex, ByRef UserName As String) As In
 
 GlobalChecks_Err:
     Call RegistrarError(Err.Number, Err.Description, "Penas.GlobalChecks", Erl)
-    
+    Resume Next
     
 End Function
 
@@ -153,7 +153,7 @@ Public Sub BanPJ(ByVal BannerIndex As Integer, ByVal UserName As String, ByRef R
 
 BanPJ_Err:
 120     Call RegistrarError(Err.Number, Err.Description, "Mod_Baneo.BanPJ")
-122
+122     Resume Next
 
 End Sub
 
@@ -196,7 +196,7 @@ Public Sub BanearCuenta(ByVal BannerIndex As Integer, _
         Dim i As Long
 118     For i = 1 To LastUser
 
-120         If UserList(i).AccountID = CuentaID Then
+120         If UserList(i).AccountId = CuentaID Then
 122             Call WriteShowMessageBox(i, "Has sido baneado del servidor. Motivo: " & Reason)
                 Call WriteDisconnect(i)
 124             Call CloseSocket(i)
@@ -209,7 +209,7 @@ Public Sub BanearCuenta(ByVal BannerIndex As Integer, _
 
 BanearCuenta_Err:
         Call RegistrarError(Err.Number, Err.Description, "Penas.BanearCuenta", Erl)
-        
+        Resume Next
         
 End Sub
 
@@ -231,7 +231,7 @@ Public Function DesbanearCuenta(ByVal BannerIndex As Integer, ByVal AccountID As
 
 DesbanearCuenta_Err:
         Call RegistrarError(Err.Number, Err.Description, "Penas.DesbanearCuenta", Erl)
-        
+        Resume Next
         
 End Function
 
@@ -241,7 +241,7 @@ Public Sub BanearIP(ByVal BannerIndex As Integer, ByVal UserName As String, ByVa
         On Error GoTo BanearIP_Err
         
         ' Lo guardo en Baneos.dat
-100     Call WriteVar(DatPath & "Baneos.dat", "IP", IP, UserName)
+100     Call WriteVar(DatPath & "Baneos.dat", "IP", ip, UserName)
 
         ' Lo guardo en memoria.
 102     Call IP_Blacklist.Add(IP, UserName)
@@ -262,7 +262,7 @@ Public Sub BanearIP(ByVal BannerIndex As Integer, ByVal UserName As String, ByVa
 
 BanearIP_Err:
         Call RegistrarError(Err.Number, Err.Description, "Penas.BanearIP", Erl)
-        
+        Resume Next
         
 End Sub
 
@@ -274,7 +274,7 @@ Public Sub DesbanearIP(ByVal IP As String, ByVal UnbannerIndex As Integer)
 100     If IP_Blacklist.Exists(IP) Then Call IP_Blacklist.Remove(IP)
 
         ' Lo saco del archivo.
-102     Call WriteVar(DatPath & "Baneos.dat", "IP", IP, vbNullString)
+102     Call WriteVar(DatPath & "Baneos.dat", "IP", ip, vbNullString)
         
         ' Modificar en la regla de firewall
         'Dim i As Long
@@ -295,7 +295,7 @@ Public Sub DesbanearIP(ByVal IP As String, ByVal UnbannerIndex As Integer)
 
 DesbanearIP_Err:
         Call RegistrarError(Err.Number, Err.Description, "Penas.DesbanearIP", Erl)
-        
+        Resume Next
         
 End Sub
 
@@ -339,7 +339,7 @@ Public Sub BanearHDMAC(ByVal BannerIndex As Integer, ByVal UserName As String)
 
 BanearHDMAC_Err:
         Call RegistrarError(Err.Number, Err.Description, "Penas.BanearHDMAC", Erl)
-        
+        Resume Next
 
 End Sub
 
@@ -374,7 +374,7 @@ Public Sub DesbanearHDMAC(ByVal UserName As String)
 
 DesbanearHDMAC_Err:
         Call RegistrarError(Err.Number, Err.Description, "Penas.DesbanearHDMAC", Erl)
-        
+        Resume Next
 
 End Sub
 

@@ -61,6 +61,6 @@ Public Function CharIndexToUserIndex(ByVal CharIndex As Integer) As Integer
 
 CharIndexToUserIndex_Err:
 110     Call RegistrarError(Err.Number, Err.Description, "Characters.CharIndexToUserIndex", Erl)
-112
+112     Resume Next
         
 End Function

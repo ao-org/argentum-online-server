@@ -233,7 +233,7 @@ End Function
 
 Private Function ReadData(ByRef buf() As Byte, ByVal DataLength As Long) As Long
 
-    ''A on error
+    ''A on error resume next
     '***************************************************
     'Autor: Juan Martín Sotuyo Dodero (Maraxus)
     'Last Modification: 04/27/06

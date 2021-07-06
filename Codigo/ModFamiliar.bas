@@ -14,7 +14,7 @@ Public Type Family
     MinHp As Long
     MaxHp As Long
     Existe As Byte
-    ID As Integer
+    Id As Integer
     MinHIT As Long
     MaxHit As Long
 
@@ -24,11 +24,11 @@ Public Sub LimpiarMascota(UserIndex)
         
         On Error GoTo LimpiarMascota_Err
         
-100     NpcList(UserList(UserIndex).Familiar.ID).EsFamiliar = 0
+100     NpcList(UserList(UserIndex).Familiar.Id).EsFamiliar = 0
 102     UserList(UserIndex).Familiar.Muerto = 1
 104     UserList(UserIndex).Familiar.MinHp = 0
 106     UserList(UserIndex).Familiar.Invocado = 0
-108     UserList(UserIndex).Familiar.ID = 0
+108     UserList(UserIndex).Familiar.Id = 0
 110     UserList(UserIndex).Familiar.Paralizado = 0
 112     UserList(UserIndex).Familiar.Inmovilizado = 0
         'Call WriteConsoleMsg(UserIndex, "Tu familiar ha muerto, acercate al templo mas cercano para que sea resucitado.", FontTypeNames.FONTTYPE_WARNING)
@@ -39,7 +39,7 @@ Public Sub LimpiarMascota(UserIndex)
 
 LimpiarMascota_Err:
 116     Call RegistrarError(Err.Number, Err.Description, "ModFamiliar.LimpiarMascota", Erl)
-118
+118     Resume Next
         
 End Sub
 
@@ -102,10 +102,10 @@ Public Sub InvocarFamiliar(ByVal UserIndex As Integer, ByVal b As Boolean)
 128         With UserList(UserIndex)
 
 130             If .Familiar.Invocado = 0 Then
-132                 .Familiar.ID = SpawnNpc(.Familiar.NpcIndex, Pos, False, True)
+132                 .Familiar.Id = SpawnNpc(.Familiar.NpcIndex, Pos, False, True)
 
                     'Controlamos que se sumoneo OK
-134                 If .Familiar.ID = 0 Then
+134                 If .Familiar.Id = 0 Then
                         'Call WriteConsoleMsg(UserIndex, "No hay espacio aquí para tu mascota. Se provoco un ERROR.", FontTypeNames.FONTTYPE_INFO)
 136                     Call WriteLocaleMsg(UserIndex, "262", FontTypeNames.FONTTYPE_INFOIAO)
                         Exit Sub
@@ -126,9 +126,9 @@ Public Sub InvocarFamiliar(ByVal UserIndex As Integer, ByVal b As Boolean)
                     End If
 
                 Else
-148                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageFxPiso(Hechizos(h).FXgrh, NpcList(.Familiar.ID).Pos.X, NpcList(.Familiar.ID).Pos.Y))
+148                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageFxPiso(Hechizos(h).FXgrh, NpcList(.Familiar.Id).Pos.X, NpcList(.Familiar.Id).Pos.Y))
 150                 .Familiar.Invocado = 0
-152                 Call QuitarNPC(.Familiar.ID)
+152                 Call QuitarNPC(.Familiar.Id)
 
                 End If
 
@@ -144,7 +144,7 @@ Public Sub InvocarFamiliar(ByVal UserIndex As Integer, ByVal b As Boolean)
 
 InvocarFamiliar_Err:
 156     Call RegistrarError(Err.Number, Err.Description, "ModFamiliar.InvocarFamiliar", Erl)
-158
+158     Resume Next
         
 End Sub
 
@@ -167,7 +167,7 @@ Public Sub RevivirFamiliar(ByVal UserIndex As Integer)
 
 RevivirFamiliar_Err:
 108     Call RegistrarError(Err.Number, Err.Description, "ModFamiliar.RevivirFamiliar", Erl)
-110
+110     Resume Next
         
 End Sub
 
@@ -177,16 +177,16 @@ Public Sub CargarFamiliar(ByVal UserIndex As Integer)
         
 
 100     With UserList(UserIndex)
-102         NpcList(.Familiar.ID).Name = .Familiar.nombre
-104         NpcList(.Familiar.ID).Stats.MinHp = .Familiar.MinHp
-106         NpcList(.Familiar.ID).Stats.MaxHp = .Familiar.MaxHp
-108         NpcList(.Familiar.ID).Stats.MinHIT = .Familiar.MinHIT
-110         NpcList(.Familiar.ID).Stats.MaxHit = .Familiar.MaxHit
-112         NpcList(.Familiar.ID).EsFamiliar = 1
+102         NpcList(.Familiar.Id).name = .Familiar.nombre
+104         NpcList(.Familiar.Id).Stats.MinHp = .Familiar.MinHp
+106         NpcList(.Familiar.Id).Stats.MaxHp = .Familiar.MaxHp
+108         NpcList(.Familiar.Id).Stats.MinHIT = .Familiar.MinHIT
+110         NpcList(.Familiar.Id).Stats.MaxHit = .Familiar.MaxHit
+112         NpcList(.Familiar.Id).EsFamiliar = 1
 
-114         NpcList(.Familiar.ID).Movement = TipoAI.SigueAmo
-116         NpcList(.Familiar.ID).Target = 0
-118         NpcList(.Familiar.ID).TargetNPC = 0
+114         NpcList(.Familiar.Id).Movement = TipoAI.SigueAmo
+116         NpcList(.Familiar.Id).Target = 0
+118         NpcList(.Familiar.Id).TargetNPC = 0
 120         .Familiar.Invocado = 1
         
         End With
@@ -196,7 +196,7 @@ Public Sub CargarFamiliar(ByVal UserIndex As Integer)
 
 CargarFamiliar_Err:
 122     Call RegistrarError(Err.Number, Err.Description, "ModFamiliar.CargarFamiliar", Erl)
-124
+124     Resume Next
         
 End Sub
 
@@ -244,7 +244,7 @@ Public Function IndexDeFamiliar(ByVal Tipo As Byte) As Byte
 
 IndexDeFamiliar_Err:
 136     Call RegistrarError(Err.Number, Err.Description, "ModFamiliar.IndexDeFamiliar", Erl)
-138
+138     Resume Next
         
 End Function
 
@@ -324,7 +324,7 @@ Sub CalcularDarExpCompartida(ByVal UserIndex As Integer, ByVal NpcIndex As Integ
 
 CalcularDarExpCompartida_Err:
 146     Call RegistrarError(Err.Number, Err.Description, "ModFamiliar.CalcularDarExpCompartida", Erl)
-148
+148     Resume Next
         
 End Sub
 
@@ -379,11 +379,11 @@ Sub CheckFamiliarLevel(ByVal UserIndex As Integer)
 142         UserList(UserIndex).Familiar.MinHIT = UserList(UserIndex).Familiar.MinHIT + 5
 144         UserList(UserIndex).Familiar.MaxHit = UserList(UserIndex).Familiar.MaxHit + 5
     
-146         NpcList(UserList(UserIndex).Familiar.ID).Stats.MaxHit = UserList(UserIndex).Familiar.MaxHit
-148         NpcList(UserList(UserIndex).Familiar.ID).Stats.MinHIT = UserList(UserIndex).Familiar.MinHIT
+146         NpcList(UserList(UserIndex).Familiar.Id).Stats.MaxHit = UserList(UserIndex).Familiar.MaxHit
+148         NpcList(UserList(UserIndex).Familiar.Id).Stats.MinHIT = UserList(UserIndex).Familiar.MinHIT
      
-150         NpcList(UserList(UserIndex).Familiar.ID).Stats.MaxHp = UserList(UserIndex).Familiar.MaxHp
-152         NpcList(UserList(UserIndex).Familiar.ID).Stats.MinHp = UserList(UserIndex).Familiar.MaxHp
+150         NpcList(UserList(UserIndex).Familiar.Id).Stats.MaxHp = UserList(UserIndex).Familiar.MaxHp
+152         NpcList(UserList(UserIndex).Familiar.Id).Stats.MinHp = UserList(UserIndex).Familiar.MaxHp
 
             '    Select Case UserList(UserIndex).clase
             '        Case eClass.Warrior

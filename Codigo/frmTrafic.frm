@@ -75,6 +75,6 @@ Private Sub Command1_Click()
 
 Command1_Click_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "frmTrafic.Command1_Click", Erl)
-104
+104     Resume Next
         
 End Sub

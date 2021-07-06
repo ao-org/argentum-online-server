@@ -94,7 +94,7 @@ Private Sub Command1_Click()
 
 Command1_Click_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "frmConID.Command1_Click", Erl)
-104
+104     Resume Next
         
 End Sub
 
@@ -127,7 +127,7 @@ Private Sub Command2_Click()
 
 Command2_Click_Err:
 116     Call RegistrarError(Err.Number, Err.Description, "frmConID.Command2_Click", Erl)
-118
+118     Resume Next
         
 End Sub
 
@@ -148,7 +148,7 @@ Private Sub Command3_Click()
 
 Command3_Click_Err:
 106     Call RegistrarError(Err.Number, Err.Description, "frmConID.Command3_Click", Erl)
-108
+108     Resume Next
         
 End Sub
 
