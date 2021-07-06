@@ -1,6 +1,6 @@
 Attribute VB_Name = "ObtenerComputerName"
 
-Public Declare Function GetComputerName Lib "kernel32" Alias "GetComputerNameA" (ByVal LpBuffer As String, nsize As Long) As Long
+Public Declare Function GetComputerName Lib "kernel32" Alias "GetComputerNameA" (ByVal LpBuffer As String, nSize As Long) As Long
  
 Public Function ComputerName() As String
         '-- Funcion auxiliar que devuelve el nombre del equipo llamando al API
@@ -16,6 +16,6 @@ Public Function ComputerName() As String
 
 ComputerName_Err:
 106     Call RegistrarError(Err.Number, Err.Description, "ObtenerComputerName.ComputerName", Erl)
-108     Resume Next
+108
         
 End Function

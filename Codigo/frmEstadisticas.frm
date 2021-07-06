@@ -173,7 +173,7 @@ Private Sub Command1_Click()
 110             If UserList(LoopC).outgoingData.Length > 0 Then
 112                 n = n + 1
 114                 M = M + UserList(LoopC).outgoingData.Length
-116                 cboUsusColas.AddItem UserList(LoopC).name
+116                 cboUsusColas.AddItem UserList(LoopC).Name
 
                 End If
 
@@ -190,7 +190,7 @@ Private Sub Command1_Click()
 
 Command1_Click_Err:
 124     Call RegistrarError(Err.Number, Err.Description, "frmEstadisticas.Command1_Click", Erl)
-126     Resume Next
+126
         
 End Sub
 
@@ -206,7 +206,7 @@ Private Sub Command2_Click()
 
 Command2_Click_Err:
 104     Call RegistrarError(Err.Number, Err.Description, "frmEstadisticas.Command2_Click", Erl)
-106     Resume Next
+106
         
 End Sub
 
@@ -221,7 +221,7 @@ Private Sub Form_Activate()
 
 Form_Activate_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "frmEstadisticas.Form_Activate", Erl)
-104     Resume Next
+104
         
 End Sub
 
@@ -239,7 +239,7 @@ Public Sub ActualizaStats()
 
 ActualizaStats_Err:
 108     Call RegistrarError(Err.Number, Err.Description, "frmEstadisticas.ActualizaStats", Erl)
-110     Resume Next
+110
         
 End Sub
 
@@ -254,7 +254,7 @@ Private Sub Form_Click()
 
 Form_Click_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "frmEstadisticas.Form_Click", Erl)
-104     Resume Next
+104
         
 End Sub
 
@@ -269,11 +269,11 @@ Private Sub Frame1_Click()
 
 Frame1_Click_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "frmEstadisticas.Frame1_Click", Erl)
-104     Resume Next
+104
         
 End Sub
 
-Private Sub lblStat_Click(index As Integer)
+Private Sub lblStat_Click(Index As Integer)
         
         On Error GoTo lblStat_Click_Err
         
@@ -284,6 +284,6 @@ Private Sub lblStat_Click(index As Integer)
 
 lblStat_Click_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "frmEstadisticas.lblStat_Click", Erl)
-104     Resume Next
+104
         
 End Sub

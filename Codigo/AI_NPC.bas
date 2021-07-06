@@ -6,7 +6,7 @@ Public Const FUEGOFATUO      As Integer = 964
 Public Const ELEMENTAL_VIENTO      As Integer = 963
 Public Const ELEMENTAL_FUEGO      As Integer = 962
 
-'Damos a los NPCs el mismo rango de visión que un PJ
+'Damos a los NPCs el mismo rango de visiÃ³n que un PJ
 Public Const RANGO_VISION_X  As Byte = 11
 Public Const RANGO_VISION_Y  As Byte = 9
 
@@ -54,7 +54,7 @@ Public Sub NpcAI(ByVal NpcIndex As Integer)
 
 ErrorHandler:
     
-136     Call LogError("NPC.AI " & NpcList(NpcIndex).name & " " & NpcList(NpcIndex).MaestroNPC & " mapa:" & NpcList(NpcIndex).Pos.Map & " x:" & NpcList(NpcIndex).Pos.X & " y:" & NpcList(NpcIndex).Pos.Y & " Mov:" & NpcList(NpcIndex).Movement & " TargU:" & NpcList(NpcIndex).Target & " TargN:" & NpcList(NpcIndex).TargetNPC)
+136     Call LogError("NPC.AI " & NpcList(NpcIndex).Name & " " & NpcList(NpcIndex).MaestroNPC & " mapa:" & NpcList(NpcIndex).Pos.Map & " x:" & NpcList(NpcIndex).Pos.X & " y:" & NpcList(NpcIndex).Pos.Y & " Mov:" & NpcList(NpcIndex).Movement & " TargU:" & NpcList(NpcIndex).Target & " TargN:" & NpcList(NpcIndex).TargetNPC)
 
 138     Dim MiNPC As npc: MiNPC = NpcList(NpcIndex)
     
@@ -75,7 +75,7 @@ Private Sub PerseguirUsuarioCercano(ByVal NpcIndex As Integer)
         Dim enemigoCercano As Integer
         Dim enemigoAtacableMasCercano As Integer
     
-        ' Numero muy grande para que siempre haya un mínimo
+        ' Numero muy grande para que siempre haya un mÃ­nimo
 100     minDistancia = 32000
 102     minDistanciaAtacable = 32000
 
@@ -180,7 +180,7 @@ Private Sub AI_CaminarSinRumboCercaDeOrigen(ByVal NpcIndex As Integer)
 
 AI_CaminarSinRumboCercaDeOrigen_Err:
 110     Call RegistrarError(Err.Number, Err.Description, "AI.AI_CaminarSinRumboCercaDeOrigen_Err", Erl)
-112     Resume Next
+112
         
 End Sub
 
@@ -204,7 +204,7 @@ Private Sub AI_CaminarSinRumbo(ByVal NpcIndex As Integer)
 
 AI_CaminarSinRumbo_Err:
 108     Call RegistrarError(Err.Number, Err.Description, "AI.AI_CaminarSinRumbo", Erl)
-110     Resume Next
+110
         
 End Sub
 
@@ -224,7 +224,7 @@ Private Sub AI_CaminarConRumbo(ByVal NpcIndex As Integer, ByRef rumbo As WorldPo
 
                 ' Recalculamos el camino
 112             If SeekPath(NpcIndex, True) Then
-                    ' Si consiguió un camino
+                    ' Si consiguiÃ³ un camino
 114                 Call FollowPath(NpcIndex)
                 End If
             Else ' Avanzamos en el camino
@@ -285,7 +285,7 @@ Private Sub AI_AtacarUsuarioObjetivo(ByVal AtackerNpcIndex As Integer)
 
 ErrorHandler:
 130     Call RegistrarError(Err.Number, Err.Description, "AIv2.AI_AtacarUsuarioObjetivo", Erl)
-132      Resume Next
+132
 End Sub
 
 Public Sub AI_GuardiaPersigueNpc(ByVal NpcIndex As Integer)
@@ -332,7 +332,7 @@ Public Sub AI_GuardiaPersigueNpc(ByVal NpcIndex As Integer)
         
 ErrorHandler:
 126     Call RegistrarError(Err.Number, Err.Description, "AIv2.AI_GuardiaAtacaNpc", Erl)
-128     Resume Next
+128
 
 End Sub
 
@@ -380,7 +380,7 @@ Private Function BuscarNpcEnArea(ByVal NpcIndex As Integer) As Integer
 
 BuscarNpcEnArea:
 120     Call RegistrarError(Err.Number, Err.Description, "Extra.BuscarNpcEnArea", Erl)
-122     Resume Next
+122
         
 End Function
 
@@ -439,7 +439,7 @@ Private Sub SeguirAgresor(ByVal NpcIndex As Integer)
 
 SeguirAgresor_Err:
 106     Call RegistrarError(Err.Number, Err.Description, "AI.SeguirAgresor", Erl)
-108     Resume Next
+108
 
 End Sub
 
@@ -503,7 +503,7 @@ Private Sub RestoreOldMovement(ByVal NpcIndex As Integer)
 
 RestoreOldMovement_Err:
 116     Call RegistrarError(Err.Number, Err.Description, "AI.RestoreOldMovement", Erl)
-118     Resume Next
+118
 
 End Sub
 
@@ -522,12 +522,12 @@ Private Sub HacerCaminata(ByVal NpcIndex As Integer)
 104         Destino.X = .Orig.X + .Caminata(.CaminataActual).Offset.X
 106         Destino.Y = .Orig.Y + .Caminata(.CaminataActual).Offset.Y
 
-            ' Si todavía no llegó al destino
+            ' Si todavÃ­a no llegÃ³ al destino
 108         If .Pos.X <> Destino.X Or .Pos.Y <> Destino.Y Then
         
                 ' Tratamos de acercarnos (podemos pisar npcs, usuarios o triggers)
 110             Heading = GetHeadingFromWorldPos(.Pos, Destino)
-                ' Obtengo la posición según el heading
+                ' Obtengo la posiciÃ³n segÃºn el heading
 112             NextTile = .Pos
 114             Call HeadtoPos(Heading, NextTile)
             
@@ -541,7 +541,7 @@ Private Sub HacerCaminata(ByVal NpcIndex As Integer)
                 ' Si hay un user
 122             MoveChar = MapData(NextTile.Map, NextTile.X, NextTile.Y).UserIndex
 124             If MoveChar Then
-                    ' Si no está muerto o es admin invisible (porque a esos los atraviesa)
+                    ' Si no estÃ¡ muerto o es admin invisible (porque a esos los atraviesa)
 126                 If UserList(MoveChar).flags.AdminInvisible = 0 Or UserList(MoveChar).flags.Muerto = 0 Then
                         ' Lo movemos hacia un lado
 128                     Call MoveUserToSide(MoveChar, Heading)
@@ -560,19 +560,19 @@ Private Sub HacerCaminata(ByVal NpcIndex As Integer)
                     ' Pasamos a la siguiente caminata
 136                 .CaminataActual = .CaminataActual + 1
                 
-                    ' Si pasamos el último, volvemos al primero
+                    ' Si pasamos el Ãºltimo, volvemos al primero
 138                 If .CaminataActual > UBound(.Caminata) Then
 140                     .CaminataActual = 1
                     End If
                 
                 End If
             
-            ' Si por alguna razón estamos en el destino, seguimos con la siguiente caminata
+            ' Si por alguna razÃ³n estamos en el destino, seguimos con la siguiente caminata
             Else
         
 142             .CaminataActual = .CaminataActual + 1
             
-                ' Si pasamos el último, volvemos al primero
+                ' Si pasamos el Ãºltimo, volvemos al primero
 144             If .CaminataActual > UBound(.Caminata) Then
 146                 .CaminataActual = 1
                 End If
@@ -595,7 +595,7 @@ Private Sub MovimientoInvasion(ByVal NpcIndex As Integer)
             Dim SpawnBox As tSpawnBox
 102         SpawnBox = Invasiones(.flags.InvasionIndex).SpawnBoxes(.flags.SpawnBox)
     
-            ' Calculamos la distancia a la muralla y generamos una posición de destino
+            ' Calculamos la distancia a la muralla y generamos una posiciÃ³n de destino
             Dim DistanciaMuralla As Integer, Destino As WorldPos
 104         Destino = .Pos
         
@@ -607,28 +607,28 @@ Private Sub MovimientoInvasion(ByVal NpcIndex As Integer)
 114             Destino.Y = SpawnBox.CoordMuralla
             End If
 
-            ' Si todavía está lejos de la muralla
+            ' Si todavÃ­a estÃ¡ lejos de la muralla
 116         If DistanciaMuralla > 1 Then
         
                 ' Tratamos de acercarnos (sin pisar)
                 Dim Heading As eHeading
 118             Heading = GetHeadingFromWorldPos(.Pos, Destino)
             
-                ' Nos aseguramos que la posición nueva está dentro del rectángulo válido
+                ' Nos aseguramos que la posiciÃ³n nueva estÃ¡ dentro del rectÃ¡ngulo vÃ¡lido
                 Dim NextTile As WorldPos
 120             NextTile = .Pos
 122             Call HeadtoPos(Heading, NextTile)
             
-                ' Si la posición nueva queda fuera del rectángulo válido
+                ' Si la posiciÃ³n nueva queda fuera del rectÃ¡ngulo vÃ¡lido
 124             If Not InsideRectangle(SpawnBox.LegalBox, NextTile.X, NextTile.Y) Then
-                    ' Invertimos la dirección de movimiento
+                    ' Invertimos la direcciÃ³n de movimiento
 126                 Heading = InvertHeading(Heading)
                 End If
             
                 ' Movemos el NPC
 128             Call MoveNPCChar(NpcIndex, Heading)
         
-            ' Si está pegado a la muralla
+            ' Si estÃ¡ pegado a la muralla
             Else
         
                 ' Chequeamos el intervalo de ataque
@@ -649,8 +649,8 @@ Private Sub MovimientoInvasion(ByVal NpcIndex As Integer)
                 ' Sonido de impacto
 140             Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessagePlayWave(SND_IMPACTO, .Pos.X, .Pos.Y))
             
-                ' Dañamos la muralla
-142             Call HacerDañoMuralla(.flags.InvasionIndex, RandomNumber(.Stats.MinHIT, .Stats.MaxHit))  ' TODO: Defensa de la muralla? No hace falta creo...
+                ' DaÃ±amos la muralla
+142             Call HacerDaÃ±oMuralla(.flags.InvasionIndex, RandomNumber(.Stats.MinHIT, .Stats.MaxHit))  ' TODO: Defensa de la muralla? No hace falta creo...
 
             End If
     
@@ -676,19 +676,19 @@ Private Sub NpcLanzaUnSpell(ByVal NpcIndex As Integer)
         ' Elegir hechizo, dependiendo del hechizo lo tiro sobre NPC, sobre Target o Sobre area (cerca de user o NPC si no tiene)
         Dim SpellIndex As Integer
         Dim Target     As Integer
-        Dim PuedeDañarAlUsuario As Boolean
+        Dim PuedeDaÃ±arAlUsuario As Boolean
 
 100     If Not IntervaloPermiteLanzarHechizo(NpcIndex) Then Exit Sub
 
 102     Target = NpcList(NpcIndex).Target
 104     SpellIndex = NpcList(NpcIndex).Spells(RandomNumber(1, NpcList(NpcIndex).flags.LanzaSpells))
-106     PuedeDañarAlUsuario = UserList(Target).flags.NoMagiaEfecto = 0 And NpcList(NpcIndex).flags.Paralizado = 0
+106     PuedeDaÃ±arAlUsuario = UserList(Target).flags.NoMagiaEfecto = 0 And NpcList(NpcIndex).flags.Paralizado = 0
     
 108     Select Case Hechizos(SpellIndex).Target
 
             Case TargetType.uUsuarios
 
-110             If UsuarioAtacableConMagia(Target) And PuedeDañarAlUsuario Then
+110             If UsuarioAtacableConMagia(Target) And PuedeDaÃ±arAlUsuario Then
 112                 Call NpcLanzaSpellSobreUser(NpcIndex, Target, SpellIndex)
 
 114                 If UserList(Target).flags.AtacadoPorNpc = 0 Then
@@ -713,7 +713,7 @@ Private Sub NpcLanzaUnSpell(ByVal NpcIndex As Integer)
 130             If Hechizos(SpellIndex).AutoLanzar = 1 Then
 132                 Call NpcLanzaSpellSobreNpc(NpcIndex, NpcIndex, SpellIndex)
 
-134             ElseIf UsuarioAtacableConMagia(Target) And PuedeDañarAlUsuario Then
+134             ElseIf UsuarioAtacableConMagia(Target) And PuedeDaÃ±arAlUsuario Then
 136                 Call NpcLanzaSpellSobreUser(NpcIndex, Target, SpellIndex)
 
 138                 If UserList(Target).flags.AtacadoPorNpc = 0 Then
@@ -736,7 +736,7 @@ Private Sub NpcLanzaUnSpell(ByVal NpcIndex As Integer)
 NpcLanzaUnSpell_Err:
 150     Call RegistrarError(Err.Number, Err.Description, "AI.NpcLanzaUnSpell", Erl)
 
-152     Resume Next
+152
 
 End Sub
 
@@ -759,7 +759,7 @@ Private Sub NpcLanzaUnSpellSobreNpc(ByVal NpcIndex As Integer, ByVal TargetNPC A
 
 NpcLanzaUnSpellSobreNpc_Err:
 110     Call RegistrarError(Err.Number, Err.Description, "AI.NpcLanzaUnSpellSobreNpc", Erl)
-112     Resume Next
+112
 
 End Sub
 
@@ -814,7 +814,7 @@ Private Function EsEnemigo(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
 
 EsEnemigo_Err:
 122     Call RegistrarError(Err.Number, Err.Description, "AI.EsEnemigo", Erl)
-124     Resume Next
+124
 
 End Function
 
@@ -846,7 +846,7 @@ Private Function EnRangoVision(ByVal NpcIndex As Integer, ByVal UserIndex As Int
 
 EnRangoVision_Err:
 112     Call RegistrarError(Err.Number, Err.Description, "AI.EnRangoVision", Erl)
-114     Resume Next
+114
 
 End Function
 
@@ -872,7 +872,7 @@ Private Function UsuarioAtacableConMagia(ByVal targetUserIndex As Integer) As Bo
 
 UsuarioAtacableConMagia_Err:
 106     Call RegistrarError(Err.Number, Err.Description, "AI.UsuarioAtacableConMagia", Erl)
-108     Resume Next
+108
 
 End Function
 
@@ -901,7 +901,7 @@ Private Function UsuarioAtacableConMelee(ByVal NpcIndex As Integer, ByVal target
 
 UsuarioAtacableConMelee_Err:
 108     Call RegistrarError(Err.Number, Err.Description, "AI.UsuarioAtacableConMelee", Erl)
-110     Resume Next
+110
 
 End Function
 

@@ -107,7 +107,7 @@ Sub DarCuerpo(ByVal UserIndex As Integer)
 
 DarCuerpo_Err:
 158     Call RegistrarError(Err.Number, Err.Description, "TCP.DarCuerpo", Erl)
-160     Resume Next
+160
         
 End Sub
 
@@ -161,7 +161,7 @@ Sub AsignarAtributos(ByVal UserIndex As String)
 
 AsignarAtributos_Err:
 160     Call RegistrarError(Err.Number, Err.Description, "TCP.AsignarAtributos", Erl)
-162     Resume Next
+162
         
 End Sub
 
@@ -320,7 +320,7 @@ Sub RellenarInventario(ByVal UserIndex As String)
 
 RellenarInventario_Err:
 210     Call RegistrarError(Err.Number, Err.Description, "TCP.RellenarInventario", Erl)
-212     Resume Next
+212
         
 End Sub
 
@@ -353,7 +353,7 @@ Function AsciiValidos(ByVal cad As String) As Boolean
 
 AsciiValidos_Err:
 114     Call RegistrarError(Err.Number, Err.Description, "TCP.AsciiValidos", Erl)
-116     Resume Next
+116
         
 End Function
 
@@ -386,7 +386,7 @@ Function DescripcionValida(ByVal cad As String) As Boolean
 
 AsciiValidos_Err:
 114     Call RegistrarError(Err.Number, Err.Description, "TCP.DescripcionValida", Erl)
-116     Resume Next
+116
         
 End Function
 
@@ -419,7 +419,7 @@ Function Numeric(ByVal cad As String) As Boolean
 
 Numeric_Err:
 114     Call RegistrarError(Err.Number, Err.Description, "TCP.Numeric", Erl)
-116     Resume Next
+116
         
 End Function
 
@@ -447,7 +447,7 @@ Function NombrePermitido(ByVal nombre As String) As Boolean
 
 NombrePermitido_Err:
 110     Call RegistrarError(Err.Number, Err.Description, "TCP.NombrePermitido", Erl)
-112     Resume Next
+112
         
 End Function
 
@@ -476,7 +476,7 @@ Function ValidateSkills(ByVal UserIndex As Integer) As Boolean
 
 ValidateSkills_Err:
 110     Call RegistrarError(Err.Number, Err.Description, "TCP.ValidateSkills", Erl)
-112     Resume Next
+112
         
 End Function
 
@@ -499,7 +499,7 @@ Function ConnectNewUser(ByVal UserIndex As Integer, ByRef Name As String, ByVal 
             Dim LoopC As Long
         
 102         If .flags.UserLogged Then
-104             Call LogCheating("El usuario " & .Name & " ha intentado crear a " & Name & " desde la IP " & .ip)
+104             Call LogCheating("El usuario " & .Name & " ha intentado crear a " & Name & " desde la IP " & .IP)
 106             Call CloseSocketSL(UserIndex)
 108             Call Cerrar_Usuario(UserIndex)
                 Exit Function
@@ -626,7 +626,7 @@ Function ConnectNewUser(ByVal UserIndex As Integer, ByRef Name As String, ByVal 
             'Resetamos CORREO
         
 234         .Pos.Map = 37
-236         .Pos.x = 76
+236         .Pos.X = 76
 238         .Pos.Y = 82
         
 240         UltimoChar = UCase$(Name)
@@ -643,7 +643,7 @@ Function ConnectNewUser(ByVal UserIndex As Integer, ByRef Name As String, ByVal 
 
 ConnectNewUser_Err:
 248     Call RegistrarError(Err.Number, Err.Description, "TCP.ConnectNewUser", Erl)
-250     Resume Next
+250
         
 End Function
 
@@ -717,7 +717,7 @@ ErrHandler:
 146     Call ResetUserSlot(UserIndex)
 
 148     Call RegistrarError(Err.Number, Err.Description, "TCP.CloseSocket", Erl)
-150     Resume Next
+150
 
 End Sub
 
@@ -737,7 +737,7 @@ Sub CloseSocketSL(ByVal UserIndex As Integer)
 
 CloseSocketSL_Err:
 108     Call RegistrarError(Err.Number, Err.Description, "TCP.CloseSocketSL", Erl)
-110     Resume Next
+110
         
 End Sub
 
@@ -775,18 +775,18 @@ Function EstaPCarea(Index As Integer, Index2 As Integer) As Boolean
         On Error GoTo EstaPCarea_Err
         
 
-        Dim x As Integer, Y As Integer
+        Dim X As Integer, Y As Integer
 
 100     For Y = UserList(Index).Pos.Y - MinYBorder + 1 To UserList(Index).Pos.Y + MinYBorder - 1
-102         For x = UserList(Index).Pos.x - MinXBorder + 1 To UserList(Index).Pos.x + MinXBorder - 1
+102         For X = UserList(Index).Pos.X - MinXBorder + 1 To UserList(Index).Pos.X + MinXBorder - 1
 
-104             If MapData(UserList(Index).Pos.Map, x, Y).UserIndex = Index2 Then
+104             If MapData(UserList(Index).Pos.Map, X, Y).UserIndex = Index2 Then
 106                 EstaPCarea = True
                     Exit Function
 
                 End If
         
-108         Next x
+108         Next X
 110     Next Y
 
 112     EstaPCarea = False
@@ -796,11 +796,11 @@ Function EstaPCarea(Index As Integer, Index2 As Integer) As Boolean
 
 EstaPCarea_Err:
 114     Call RegistrarError(Err.Number, Err.Description, "TCP.EstaPCarea", Erl)
-116     Resume Next
+116
         
 End Function
 
-Function HayPCarea(ByVal Map As Integer, ByVal x As Integer, ByVal Y As Integer) As Boolean
+Function HayPCarea(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer) As Boolean
         
         On Error GoTo HayPCarea_Err
         
@@ -808,7 +808,7 @@ Function HayPCarea(ByVal Map As Integer, ByVal x As Integer, ByVal Y As Integer)
         Dim tX As Integer, tY As Integer
 
 100     For tY = Y - MinYBorder + 1 To Y + MinYBorder - 1
-102         For tX = x - MinXBorder + 1 To x + MinXBorder - 1
+102         For tX = X - MinXBorder + 1 To X + MinXBorder - 1
 
 104             If InMapBounds(Map, tX, tY) Then
 106                 If MapData(Map, tX, tY).UserIndex > 0 Then
@@ -829,7 +829,7 @@ Function HayPCarea(ByVal Map As Integer, ByVal x As Integer, ByVal Y As Integer)
 
 HayPCarea_Err:
 112     Call RegistrarError(Err.Number, Err.Description, "TCP.HayPCarea", Erl)
-114     Resume Next
+114
         
 End Function
 
@@ -838,18 +838,18 @@ Function HayOBJarea(Pos As WorldPos, ObjIndex As Integer) As Boolean
         On Error GoTo HayOBJarea_Err
         
 
-        Dim x As Integer, Y As Integer
+        Dim X As Integer, Y As Integer
 
 100     For Y = Pos.Y - MinYBorder + 1 To Pos.Y + MinYBorder - 1
-102         For x = Pos.x - MinXBorder + 1 To Pos.x + MinXBorder - 1
+102         For X = Pos.X - MinXBorder + 1 To Pos.X + MinXBorder - 1
 
-104             If MapData(Pos.Map, x, Y).ObjInfo.ObjIndex = ObjIndex Then
+104             If MapData(Pos.Map, X, Y).ObjInfo.ObjIndex = ObjIndex Then
 106                 HayOBJarea = True
                     Exit Function
 
                 End If
         
-108         Next x
+108         Next X
 110     Next Y
 
 112     HayOBJarea = False
@@ -859,7 +859,7 @@ Function HayOBJarea(Pos As WorldPos, ObjIndex As Integer) As Boolean
 
 HayOBJarea_Err:
 114     Call RegistrarError(Err.Number, Err.Description, "TCP.HayOBJarea", Erl)
-116     Resume Next
+116
         
 End Function
 
@@ -875,7 +875,7 @@ Function ValidateChr(ByVal UserIndex As Integer) As Boolean
 
 ValidateChr_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "TCP.ValidateChr", Erl)
-104     Resume Next
+104
         
 End Function
 
@@ -926,14 +926,14 @@ Function EntrarCuenta(ByVal UserIndex As Integer, CuentaEmail As String, CuentaP
             Exit Function
         End If
     
-132     EntrarCuenta = EnterAccountDatabase(UserIndex, CuentaEmail, SDesencriptar(CuentaPassword), MacAddress, HDSerial, UserList(UserIndex).ip)
+132     EntrarCuenta = EnterAccountDatabase(UserIndex, CuentaEmail, SDesencriptar(CuentaPassword), MacAddress, HDSerial, UserList(UserIndex).IP)
         
         Exit Function
 
 EntrarCuenta_Err:
 134     Call RegistrarError(Err.Number, Err.Description, "TCP.EntrarCuenta", Erl)
 
-136     Resume Next
+136
         
 End Function
 
@@ -949,7 +949,7 @@ Sub ConnectUser(ByVal UserIndex As Integer, _
 
             Dim tStr As String
 102         If .flags.UserLogged Then
-104             Call LogCheating("El usuario " & .Name & " ha intentado loguear a " & Name & " desde la IP " & .ip)
+104             Call LogCheating("El usuario " & .Name & " ha intentado loguear a " & Name & " desde la IP " & .IP)
             
                 'Kick player ( and leave character inside :D )!
 106                 Call CloseSocketSL(UserIndex)
@@ -1021,7 +1021,7 @@ Sub ConnectUser(ByVal UserIndex As Integer, _
         
             '¿Este IP ya esta conectado?
 158         If MaxConexionesIP > 0 Then
-160             If ContarMismaIP(UserIndex, .ip) >= MaxConexionesIP Then
+160             If ContarMismaIP(UserIndex, .IP) >= MaxConexionesIP Then
 162                 Call WriteShowMessageBox(UserIndex, "Has alcanzado el límite de conexiones por IP.")
 
 165                     Call CloseSocket(UserIndex)
@@ -1165,7 +1165,7 @@ Sub ConnectUser(ByVal UserIndex As Integer, _
         
             'Tratamos de evitar en lo posible el "Telefrag". Solo 1 intento de loguear en pos adjacentes.
             'Codigo por Pablo (ToxicWaste) y revisado por Nacho (Integer), corregido para que realmetne ande y no tire el server por Juan Martin Sotuyo Dodero (Maraxus)
-276         If MapData(.Pos.Map, .Pos.x, .Pos.Y).UserIndex <> 0 Or MapData(.Pos.Map, .Pos.x, .Pos.Y).NpcIndex <> 0 Then
+276         If MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex <> 0 Or MapData(.Pos.Map, .Pos.X, .Pos.Y).NpcIndex <> 0 Then
 
                 Dim FoundPlace As Boolean
 
@@ -1176,9 +1176,9 @@ Sub ConnectUser(ByVal UserIndex As Integer, _
                 Dim tY         As Long
         
 278             FoundPlace = False
-280             esAgua = (MapData(.Pos.Map, .Pos.x, .Pos.Y).Blocked And FLAG_AGUA) <> 0
+280             esAgua = (MapData(.Pos.Map, .Pos.X, .Pos.Y).Blocked And FLAG_AGUA) <> 0
 285                 For tY = .Pos.Y - 1 To .Pos.Y + 1
-286                     For tX = .Pos.x - 1 To .Pos.x + 1
+286                     For tX = .Pos.X - 1 To .Pos.X + 1
 287                     If esAgua Then
 
                             'reviso que sea pos legal en agua, que no haya User ni NPC para poder loguear.
@@ -1205,33 +1205,33 @@ Sub ConnectUser(ByVal UserIndex As Integer, _
 300             Next tY
         
 302             If FoundPlace Then 'Si encontramos un lugar, listo, nos quedamos ahi
-304                 .Pos.x = tX
+304                 .Pos.X = tX
 306                 .Pos.Y = tY
                 Else
 
                     'Si no encontramos un lugar, sacamos al usuario que tenemos abajo, y si es un NPC, lo pisamos.
-308                 If MapData(.Pos.Map, .Pos.x, .Pos.Y).UserIndex <> 0 Then
+308                 If MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex <> 0 Then
 
                         'Si no encontramos lugar, y abajo teniamos a un usuario, lo pisamos y cerramos su comercio seguro
-310                     If UserList(MapData(.Pos.Map, .Pos.x, .Pos.Y).UserIndex).ComUsu.DestUsu > 0 Then
+310                     If UserList(MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex).ComUsu.DestUsu > 0 Then
 
                             'Le avisamos al que estaba comerciando que se tuvo que ir.
-312                         If UserList(UserList(MapData(.Pos.Map, .Pos.x, .Pos.Y).UserIndex).ComUsu.DestUsu).flags.UserLogged Then
-314                             Call FinComerciarUsu(UserList(MapData(.Pos.Map, .Pos.x, .Pos.Y).UserIndex).ComUsu.DestUsu)
-316                             Call WriteConsoleMsg(UserList(MapData(.Pos.Map, .Pos.x, .Pos.Y).UserIndex).ComUsu.DestUsu, "Comercio cancelado. El otro usuario se ha desconectado.", FontTypeNames.FONTTYPE_WARNING)
+312                         If UserList(UserList(MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex).ComUsu.DestUsu).flags.UserLogged Then
+314                             Call FinComerciarUsu(UserList(MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex).ComUsu.DestUsu)
+316                             Call WriteConsoleMsg(UserList(MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex).ComUsu.DestUsu, "Comercio cancelado. El otro usuario se ha desconectado.", FontTypeNames.FONTTYPE_WARNING)
 
                             End If
 
                             'Lo sacamos.
-318                         If UserList(MapData(.Pos.Map, .Pos.x, .Pos.Y).UserIndex).flags.UserLogged Then
-320                             Call FinComerciarUsu(MapData(.Pos.Map, .Pos.x, .Pos.Y).UserIndex)
-322                             Call WriteErrorMsg(MapData(.Pos.Map, .Pos.x, .Pos.Y).UserIndex, "Alguien se ha conectado donde te encontrabas, por favor reconectate...")
+318                         If UserList(MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex).flags.UserLogged Then
+320                             Call FinComerciarUsu(MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex)
+322                             Call WriteErrorMsg(MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex, "Alguien se ha conectado donde te encontrabas, por favor reconectate...")
 
                             End If
 
                         End If
                 
-324                     Call CloseSocket(MapData(.Pos.Map, .Pos.x, .Pos.Y).UserIndex)
+324                     Call CloseSocket(MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex)
 
                     End If
 
@@ -1240,7 +1240,7 @@ Sub ConnectUser(ByVal UserIndex As Integer, _
             End If
         
             'If in the water, and has a boat, equip it!
-326         If .Invent.BarcoObjIndex > 0 And (MapData(.Pos.Map, .Pos.x, .Pos.Y).Blocked And FLAG_AGUA) <> 0 Then
+326         If .Invent.BarcoObjIndex > 0 And (MapData(.Pos.Map, .Pos.X, .Pos.Y).Blocked And FLAG_AGUA) <> 0 Then
 328             .flags.Navegando = 1
 330             Call EquiparBarco(UserIndex)
 
@@ -1275,7 +1275,7 @@ Sub ConnectUser(ByVal UserIndex As Integer, _
             #End If
         
             'Crea  el personaje del usuario
-364         Call MakeUserChar(True, .Pos.Map, UserIndex, .Pos.Map, .Pos.x, .Pos.Y, 1)
+364         Call MakeUserChar(True, .Pos.Map, UserIndex, .Pos.Map, .Pos.X, .Pos.Y, 1)
 
 366         Call WriteUserCharIndexInServer(UserIndex)
 
@@ -1466,7 +1466,7 @@ Sub SendMOTD(ByVal UserIndex As Integer)
 
 SendMOTD_Err:
 106     Call RegistrarError(Err.Number, Err.Description, "TCP.SendMOTD", Erl)
-108     Resume Next
+108
         
 End Sub
 
@@ -1506,7 +1506,7 @@ Sub ResetFacciones(ByVal UserIndex As Integer)
 
 ResetFacciones_Err:
 132     Call RegistrarError(Err.Number, Err.Description, "TCP.ResetFacciones", Erl)
-134     Resume Next
+134
         
 End Sub
 
@@ -1576,7 +1576,7 @@ Sub ResetContadores(ByVal UserIndex As Integer)
 
 ResetContadores_Err:
 188     Call RegistrarError(Err.Number, Err.Description, "TCP.ResetContadores", Erl)
-190     Resume Next
+190
         
 End Sub
 
@@ -1619,7 +1619,7 @@ Sub ResetCharInfo(ByVal UserIndex As Integer)
 
 ResetCharInfo_Err:
 140     Call RegistrarError(Err.Number, Err.Description, "TCP.ResetCharInfo", Erl)
-142     Resume Next
+142
         
 End Sub
 
@@ -1645,11 +1645,11 @@ Sub ResetBasicUserInfo(ByVal UserIndex As Integer)
 110         .Desc = vbNullString
 112         .DescRM = vbNullString
 114         .Pos.Map = 0
-116         .Pos.x = 0
+116         .Pos.X = 0
 118         .Pos.Y = 0
-120         .ip = vbNullString
+120         .IP = vbNullString
 122         .clase = 0
-124         .email = vbNullString
+124         .Email = vbNullString
 126         .genero = 0
 128         .Hogar = 0
 130         .raza = 0
@@ -1708,7 +1708,7 @@ Sub ResetBasicUserInfo(ByVal UserIndex As Integer)
 
 ResetBasicUserInfo_Err:
 198     Call RegistrarError(Err.Number, Err.Description, "TCP.ResetBasicUserInfo", Erl)
-200     Resume Next
+200
         
 End Sub
 
@@ -1735,7 +1735,7 @@ Sub ResetGuildInfo(ByVal UserIndex As Integer)
 
 ResetGuildInfo_Err:
 112     Call RegistrarError(Err.Number, Err.Description, "TCP.ResetGuildInfo", Erl)
-114     Resume Next
+114
         
 End Sub
 
@@ -1862,7 +1862,7 @@ Sub ResetUserFlags(ByVal UserIndex As Integer)
 
 ResetUserFlags_Err:
 276     Call RegistrarError(Err.Number, Err.Description, "TCP.ResetUserFlags", Erl)
-278     Resume Next
+278
         
 End Sub
 
@@ -1888,7 +1888,7 @@ Sub ResetAccionesPendientes(ByVal UserIndex As Integer)
 
 ResetAccionesPendientes_Err:
 114     Call RegistrarError(Err.Number, Err.Description, "TCP.ResetAccionesPendientes", Erl)
-116     Resume Next
+116
         
 End Sub
 
@@ -1911,7 +1911,7 @@ Sub ResetDonadorFlag(ByVal UserIndex As Integer)
 
 ResetDonadorFlag_Err:
 108     Call RegistrarError(Err.Number, Err.Description, "TCP.ResetDonadorFlag", Erl)
-110     Resume Next
+110
         
 End Sub
 
@@ -1932,7 +1932,7 @@ Sub ResetUserSpells(ByVal UserIndex As Integer)
 
 ResetUserSpells_Err:
 106     Call RegistrarError(Err.Number, Err.Description, "TCP.ResetUserSpells", Erl)
-108     Resume Next
+108
         
 End Sub
 
@@ -1952,7 +1952,7 @@ Sub ResetUserSkills(ByVal UserIndex As Integer)
 
 ResetUserSkills_Err:
 106     Call RegistrarError(Err.Number, Err.Description, "TCP.ResetUserSkills", Erl)
-108     Resume Next
+108
         
 End Sub
 
@@ -1976,7 +1976,7 @@ Sub ResetUserBanco(ByVal UserIndex As Integer)
 
 ResetUserBanco_Err:
 112     Call RegistrarError(Err.Number, Err.Description, "TCP.ResetUserBanco", Erl)
-114     Resume Next
+114
         
 End Sub
 
@@ -2021,7 +2021,7 @@ Public Sub LimpiarComercioSeguro(ByVal UserIndex As Integer)
 
 LimpiarComercioSeguro_Err:
 108     Call RegistrarError(Err.Number, Err.Description, "TCP.LimpiarComercioSeguro", Erl)
-110     Resume Next
+110
         
 End Sub
 
@@ -2085,7 +2085,7 @@ Sub ResetUserSlot(ByVal UserIndex As Integer)
 
 ResetUserSlot_Err:
 174     Call RegistrarError(Err.Number, Err.Description, "TCP.ResetUserSlot", Erl)
-176     Resume Next
+176
         
 End Sub
 
@@ -2321,7 +2321,7 @@ Public Sub EcharPjsNoPrivilegiados()
 
 EcharPjsNoPrivilegiados_Err:
 110     Call RegistrarError(Err.Number, Err.Description, "TCP.EcharPjsNoPrivilegiados", Erl)
-112     Resume Next
+112
         
 End Sub
 

@@ -53,7 +53,7 @@ Public Function MaxPersonajes(sIp As String) As Boolean
 
 100     For i = 1 To m_coleccion.Count
 
-102         If m_coleccion.Item(i).ip = sIp Then
+102         If m_coleccion.Item(i).IP = sIp Then
 104             m_coleccion.Item(i).PersonajesCreados = m_coleccion.Item(i).PersonajesCreados + 1
 106             MaxPersonajes = (m_coleccion.Item(i).PersonajesCreados > MaximoPersonajesPorIP)
 
@@ -72,7 +72,7 @@ Public Function MaxPersonajes(sIp As String) As Boolean
 
 MaxPersonajes_Err:
 114     Call RegistrarError(Err.Number, Err.Description, "clsAntiMassClon.MaxPersonajes", Erl)
-116     Resume Next
+116
         
 End Function
 
