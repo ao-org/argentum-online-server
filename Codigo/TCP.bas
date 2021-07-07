@@ -201,7 +201,7 @@ Sub RellenarInventario(ByVal UserIndex As String)
 
             End Select
 
-            ' Arma y hechizos
+            ' Hechizos
 126         Select Case .clase
 
                 Case eClass.Mage, eClass.Cleric, eClass.Druid, eClass.Bard
@@ -268,7 +268,7 @@ Sub RellenarInventario(ByVal UserIndex As String)
                     .Invent.Object(NumItems).amount = 1
                     NumItems = NumItems + 1
                 
-                Case eClass.Assasin, eClass.Druid
+                Case eClass.Assasin, eClass.Druid, eClass.Bard
                     .Invent.Object(NumItems).ObjIndex = 460 ' Daga (Newbies)
                     .Invent.Object(NumItems).amount = 1
                     NumItems = NumItems + 1
