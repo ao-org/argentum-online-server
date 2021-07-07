@@ -13118,12 +13118,12 @@ Private Sub HandleKillAllNearbyNPCs(ByVal UserIndex As Integer)
 
     '***************************************************
     'Author: Nicolas Matias Gonzalez (NIGO)
-    'Last Modification: 12/30/06
-    '
+    'Last Modification: 07/07/2021
+    'ReyarB
     '***************************************************
     With UserList(UserIndex)
         
-        If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero)) Then
+        If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.semidios)) Then
             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
@@ -13942,7 +13942,7 @@ Public Sub HandleGiveItem(ByVal UserIndex As Integer)
         Cantidad = .incomingData.ReadInteger()
         Motivo = .incomingData.ReadASCIIString()
         
-        If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) Then
+        If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) Then
 
             If ObjData(ObjIndex).Agarrable = 1 Then Exit Sub
 
@@ -13979,7 +13979,7 @@ Public Sub HandleGiveItem(ByVal UserIndex As Integer)
             Call LogGM(.Name, "/DAR " & UserName & " - Item: " & ObjData(ObjIndex).Name & "(" & ObjIndex & ") Cantidad : " & Cantidad)
             Call LogPremios(.Name, UserName, ObjIndex, Cantidad, Motivo)
         Else
-            Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
+            Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo, debes pedir a un Dios que lo de.", FontTypeNames.FONTTYPE_INFO)
         End If
 
     End With
