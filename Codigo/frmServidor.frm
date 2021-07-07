@@ -597,6 +597,8 @@ Option Explicit
 Private Sub cmdDumpLogs_Click()
     On Error GoTo cmdDumpLogs_Err:
     
+    If LogsBuffer.ByteLength = 0 Then Exit Sub
+    
     Dim File As Integer: File = FreeFile
         
     ' Metemos todo en el archivo .log
