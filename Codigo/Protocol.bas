@@ -16036,7 +16036,7 @@ Private Sub HandlePossUser(ByVal UserIndex As Integer)
         
         UserName = .incomingData.ReadASCIIString()
 
-        If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero)) = 0 Then
+        If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.semidios)) = 0 Then
             If NameIndex(UserName) <= 0 Then
             
                 If Database_Enabled Then
