@@ -651,7 +651,7 @@ Public Type PersonajeCuenta
 End Type
 
 Public Type t_DataBuffer
-    data() As Byte
+    Data() As Byte
     Length As Integer
 End Type
 
@@ -1130,9 +1130,9 @@ Public Function HandleIncomingData(ByVal UserIndex As Integer) As Boolean
 End Function
 
 Public Function ConvertDataBuffer(ByVal Length As Integer, _
-                                  ByRef data() As Byte) As t_DataBuffer
+                                  ByRef Data() As Byte) As t_DataBuffer
     
-    ConvertDataBuffer.data = data
+    ConvertDataBuffer.Data = Data
     ConvertDataBuffer.Length = Length
     
 End Function
@@ -4493,10 +4493,15 @@ Private Sub HandleUserCommerceOffer(ByVal UserIndex As Integer)
                 End If
                 
                 If .Invent.Object(Slot).ObjIndex > 0 Then
-                    If ObjData(.Invent.Object(Slot).ObjIndex).Instransferible Then
+                    If ObjData(.Invent.Object(Slot).ObjIndex).Instransferible = 1 Then
                         Call WriteConsoleMsg(UserIndex, "Este objeto es intransferible, no podés venderlo.", FontTypeNames.FONTTYPE_TALK)
                         Exit Sub
     
+                    End If
+                    
+                    If ObjData(.Invent.Object(Slot).ObjIndex).Newbie = 1 Then
+                        Call WriteConsoleMsg(UserIndex, "No puedes comerciar objetos newbie.", FontTypeNames.FONTTYPE_TALK)
+                        Exit Sub
                     End If
     
                 End If
@@ -8460,7 +8465,7 @@ Private Sub HandleDesbuggear(ByVal UserIndex As Integer)
         
         UserName = .incomingData.ReadASCIIString()
         
-        If EsGM(UserIndex) Then
+        If EsGM(UserIndex) And (.flags.Privilegios And PlayerType.user) = 0 Then
             If Len(UserName) > 0 Then
                 tUser = NameIndex(UserName)
                 
@@ -13123,7 +13128,7 @@ Private Sub HandleKillAllNearbyNPCs(ByVal UserIndex As Integer)
     '***************************************************
     With UserList(UserIndex)
         
-        If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.semidios)) Then
+        If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios)) Then
             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
@@ -15529,15 +15534,15 @@ Public Sub FlushBuffer(ByVal UserIndex As Integer)
         
             ' Tratamos de enviar los datos.
             Dim Ret    As Long
-104         Dim data() As Byte: data = .outgoingData.ReadAll
+104         Dim Data() As Byte: Data = .outgoingData.ReadAll
 
             #If AntiExternos = 1 Then
 
-106             Call Security.XorData(data, UBound(data), .XorIndexOut)
+106             Call Security.XorData(Data, UBound(Data), .XorIndexOut)
 
             #End If
 
-108         Ret = frmMain.Winsock.SendData(UserIndex, data)
+108         Ret = frmMain.Winsock.SendData(UserIndex, Data)
     
             ' Si recibimos un error como respuesta de la API, cerramos el socket.
 110         If Ret <> 0 And Ret <> WSAEWOULDBLOCK Then
@@ -16036,7 +16041,7 @@ Private Sub HandlePossUser(ByVal UserIndex As Integer)
         
         UserName = .incomingData.ReadASCIIString()
 
-        If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.semidios)) = 0 Then
+        If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios)) = 0 Then
             If NameIndex(UserName) <= 0 Then
             
                 If Database_Enabled Then
@@ -19021,8 +19026,8 @@ Private Sub HandleScreenShot(ByVal UserIndex As Integer)
 
         On Error GoTo ErrHandler
         
-        Dim data As String
-        data = .incomingData.ReadASCIIString
+        Dim Data As String
+        Data = .incomingData.ReadASCIIString
            
         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) Then
             
@@ -19032,19 +19037,19 @@ Private Sub HandleScreenShot(ByVal UserIndex As Integer)
             Dim Finished As Boolean
         
             ' Por seguridad, limito a 10Kb de datos (dejo margen para el nombre y el resto del paquete)
-            If LenB(data) = 0 Or Len(data) > 10000 Then
-                data = "ERROR"
+            If LenB(Data) = 0 Or Len(Data) > 10000 Then
+                Data = "ERROR"
                 Finished = True
         
                 ' Si envió menos de 10Kb y termina con ~~~
-            ElseIf Len(data) <= 10000 And Right$(data, 3) = "~~~" Then
+            ElseIf Len(Data) <= 10000 And Right$(Data, 3) = "~~~" Then
                 ' Damos la screenshot por terminada
                 Finished = True
 
             End If
 
             ' Lo guardo en la cola
-            Call .flags.ScreenShot.WriteASCIIStringFixed(data)
+            Call .flags.ScreenShot.WriteASCIIStringFixed(Data)
         
             If Finished Then
                 Dim ListaGMs() As String
