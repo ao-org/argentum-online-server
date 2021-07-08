@@ -8,7 +8,7 @@ Private ListaDeEspera As New Dictionary
 
 Public Sub CargarInfoRetos()
     Dim File As clsIniManager
-    Set File = New clsIniManager
+100 Set File = New clsIniManager
 
 102     Call File.Initialize(DatPath & "Retos.dat")
     
@@ -204,10 +204,10 @@ Public Sub AceptarReto(ByVal UserIndex As Integer, OferenteName As String)
 122     With UserList(Oferente).flags.SolicitudReto
 
         Dim JugadorIndex As Integer
-        JugadorIndex = IndiceJugadorEnSolicitud(UserIndex, Oferente)
+124     JugadorIndex = IndiceJugadorEnSolicitud(UserIndex, Oferente)
 
-        If JugadorIndex < 0 Then
-            Call WriteConsoleMsg(UserIndex, UserList(Oferente).Name & " no te ha invitado a ningún reto o ha sido cancelado.", FontTypeNames.FONTTYPE_INFO)
+126     If JugadorIndex < 0 Then
+128         Call WriteConsoleMsg(UserIndex, UserList(Oferente).Name & " no te ha invitado a ningún reto o ha sido cancelado.", FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
 
@@ -511,7 +511,7 @@ Public Sub MuereEnReto(ByVal UserIndex As Integer)
         
         Exit Sub
 ErrorHandler:
-        Call RegistrarError(Err.Number, Err.Description, "ModRetos.MuereEnReto", Erl)
+118     Call RegistrarError(Err.Number, Err.Description, "ModRetos.MuereEnReto", Erl)
 End Sub
 
 Private Sub ProcesarRondaGanada(ByVal Sala As Integer, ByVal Equipo As EquipoReto)
@@ -568,7 +568,7 @@ Private Sub ProcesarRondaGanada(ByVal Sala As Integer, ByVal Equipo As EquipoRet
         
         Exit Sub
 ErrorHandler:
-        Call RegistrarError(Err.Number, Err.Description, "ModRetos.ProcesarRondaGanada", Erl)
+138     Call RegistrarError(Err.Number, Err.Description, "ModRetos.ProcesarRondaGanada", Erl)
 End Sub
 
 Public Sub FinalizarReto(ByVal Sala As Integer, Optional ByVal TiempoAgotado As Boolean)
@@ -587,59 +587,59 @@ Public Sub FinalizarReto(ByVal Sala As Integer, Optional ByVal TiempoAgotado As 
             Dim i As Integer, tIndex As Integer, Equipo1 As String, Equipo2 As String
             Dim eloTotalIzquierda As Long, eloTotalDerecha As Long, winsIzquierda As Long, winsDerecha As Long
 
-            For i = 0 To UBound(.Jugadores)
-              tIndex = .Jugadores(i)
+106         For i = 0 To UBound(.Jugadores)
+108           tIndex = .Jugadores(i)
 
-              If tIndex <> 0 Then
-                If i Mod 2 = 0 Then
-                  eloTotalIzquierda = eloTotalIzquierda + UserList(tIndex).Stats.ELO
+110           If tIndex <> 0 Then
+112             If i Mod 2 = 0 Then
+114               eloTotalIzquierda = eloTotalIzquierda + UserList(tIndex).Stats.ELO
                 Else
-                  eloTotalDerecha = eloTotalDerecha + UserList(tIndex).Stats.ELO
+116               eloTotalDerecha = eloTotalDerecha + UserList(tIndex).Stats.ELO
                 End If
               End If
 
-            Next i
+118         Next i
 
             ' Empate
-106         If .Puntaje = 0 Then
+120         If .Puntaje = 0 Then
                 ' Pagamos a todos los que no abandonaron
-108             Oro = OroTotal \ (UBound(.Jugadores) + 1)
-110             OroStr = PonerPuntos(Oro)
+122             Oro = OroTotal \ (UBound(.Jugadores) + 1)
+124             OroStr = PonerPuntos(Oro)
 
                 ' No hubo ganadores, entonces el ELO no les da el bonus.
-                winsIzquierda = 0
-                winsDerecha = 0
+126             winsIzquierda = 0
+128             winsDerecha = 0
     
-112             For i = 0 To UBound(.Jugadores)
-114                 tIndex = .Jugadores(i)
+130             For i = 0 To UBound(.Jugadores)
+132                 tIndex = .Jugadores(i)
 
-116                 If tIndex <> 0 Then
-118                     UserList(tIndex).Stats.GLD = UserList(tIndex).Stats.GLD + Oro
-120                     Call WriteUpdateGold(tIndex)
-122                     Call WriteLocaleMsg(tIndex, "29", FontTypeNames.FONTTYPE_MP, OroStr) ' Has ganado X monedas de oro
+134                 If tIndex <> 0 Then
+136                     UserList(tIndex).Stats.GLD = UserList(tIndex).Stats.GLD + Oro
+138                     Call WriteUpdateGold(tIndex)
+140                     Call WriteLocaleMsg(tIndex, "29", FontTypeNames.FONTTYPE_MP, OroStr) ' Has ganado X monedas de oro
                     
-124                     Call RevivirYLimpiar(tIndex)
+142                     Call RevivirYLimpiar(tIndex)
 
-126                     Call DevolverPosAnterior(tIndex)
+144                     Call DevolverPosAnterior(tIndex)
                     
                         ' Reset flags
-128                     UserList(tIndex).Counters.CuentaRegresiva = -1
-130                     UserList(tIndex).flags.EnReto = False
+146                     UserList(tIndex).Counters.CuentaRegresiva = -1
+148                     UserList(tIndex).flags.EnReto = False
                     
                         ' Nombres
-132                     If i Mod 2 Then
+150                     If i Mod 2 Then
                     
-134                         If LenB(Equipo2) > 0 Then
-136                             Equipo2 = Equipo2 & IIf((i + 1) \ 2 < .TamañoEquipoDer - 2, ", ", " y ") & UserList(tIndex).Name
+152                         If LenB(Equipo2) > 0 Then
+154                             Equipo2 = Equipo2 & IIf((i + 1) \ 2 < .TamañoEquipoDer - 2, ", ", " y ") & UserList(tIndex).Name
                             Else
-138                             Equipo2 = UserList(tIndex).Name
+156                             Equipo2 = UserList(tIndex).Name
                             End If
                         Else
 
-140                         If LenB(Equipo1) > 0 Then
-142                             Equipo1 = Equipo2 & IIf(i \ 2 < .TamañoEquipoIzq - 2, ", ", " y ") & UserList(tIndex).Name
+158                         If LenB(Equipo1) > 0 Then
+160                             Equipo1 = Equipo2 & IIf(i \ 2 < .TamañoEquipoIzq - 2, ", ", " y ") & UserList(tIndex).Name
                             Else
-144                             Equipo1 = UserList(tIndex).Name
+162                             Equipo1 = UserList(tIndex).Name
                             End If
                         
                         End If
@@ -649,81 +649,81 @@ Public Sub FinalizarReto(ByVal Sala As Integer, Optional ByVal TiempoAgotado As 
                 Next
             
                 ' Anuncio global
-146             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Retos » " & Equipo1 & " vs " & Equipo2 & ". Ninguno pudo vencer a su rival.", FontTypeNames.FONTTYPE_INFO))
-148             Call SalaLiberada(Sala)
+164             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Retos » " & Equipo1 & " vs " & Equipo2 & ". Ninguno pudo vencer a su rival.", FontTypeNames.FONTTYPE_INFO))
+166             Call SalaLiberada(Sala)
             ' Hubo un ganador
             Else
                 Dim Ganador As EquipoReto
             
-150             If .Puntaje < 0 Then
-152                 Ganador = EquipoReto.Izquierda
-                    winsIzquierda = .TamañoEquipoDer
-                    winsDerecha = -.TamañoEquipoIzq
+168             If .Puntaje < 0 Then
+170                 Ganador = EquipoReto.Izquierda
+172                 winsIzquierda = .TamañoEquipoDer
+174                 winsDerecha = -.TamañoEquipoIzq
                 Else
-154                 Ganador = EquipoReto.Derecha
-                    winsIzquierda = -.TamañoEquipoDer
-                    winsDerecha = .TamañoEquipoIzq
+176                 Ganador = EquipoReto.Derecha
+178                 winsIzquierda = -.TamañoEquipoDer
+180                 winsDerecha = .TamañoEquipoIzq
                 End If
 
                 ' Pagamos a los ganadores que no abandonaron
-156             Oro = OroTotal \ ObtenerTamañoEquipo(Sala, Ganador)
-158             OroStr = PonerPuntos(Oro)
+182             Oro = OroTotal \ ObtenerTamañoEquipo(Sala, Ganador)
+184             OroStr = PonerPuntos(Oro)
 
-160             For i = 0 To UBound(.Jugadores)
-162                 tIndex = .Jugadores(i)
+186             For i = 0 To UBound(.Jugadores)
+188                 tIndex = .Jugadores(i)
 
-164                 If tIndex <> 0 Then
-166                     Call RevivirYLimpiar(tIndex)
-168                     If UserList(tIndex).flags.EquipoReto = Ganador Then
-170                         UserList(tIndex).Stats.GLD = UserList(tIndex).Stats.GLD + Oro
-172                         Call WriteUpdateGold(tIndex)
-174                         Call WriteLocaleMsg(tIndex, "29", FontTypeNames.FONTTYPE_MP, OroStr) ' Has ganado X monedas de oro
+190                 If tIndex <> 0 Then
+192                     Call RevivirYLimpiar(tIndex)
+194                     If UserList(tIndex).flags.EquipoReto = Ganador Then
+196                         UserList(tIndex).Stats.GLD = UserList(tIndex).Stats.GLD + Oro
+198                         Call WriteUpdateGold(tIndex)
+200                         Call WriteLocaleMsg(tIndex, "29", FontTypeNames.FONTTYPE_MP, OroStr) ' Has ganado X monedas de oro
 
 
-176                         If .CaenItems Then
-178                             If (tIndex \ 2) Mod 2 Then
+202                         If .CaenItems Then
+204                             If (tIndex \ 2) Mod 2 Then
                                        ' Lado izquierdo
-180                                Call WarpToLegalPos(tIndex, .PosIzquierda.Map, .PosIzquierda.X, .PosIzquierda.Y, True)
+206                                Call WarpToLegalPos(tIndex, .PosIzquierda.Map, .PosIzquierda.X, .PosIzquierda.Y, True)
                                 Else
                                        ' Lado derecho
-182                                Call WarpToLegalPos(tIndex, .PosDerecha.Map, .PosDerecha.X, .PosDerecha.Y, True)
+208                                Call WarpToLegalPos(tIndex, .PosDerecha.Map, .PosDerecha.X, .PosDerecha.Y, True)
                                 End If
                             Else
-184                             UserList(tIndex).flags.EnReto = False
-186                             Call DevolverPosAnterior(tIndex)
+210                             UserList(tIndex).flags.EnReto = False
+212                             Call DevolverPosAnterior(tIndex)
                             End If
                         Else
-188                         If .CaenItems Then
-190                             Call TirarItemsEnPos(tIndex, ((.PosDerecha.X - .PosIzquierda.X) \ 2) + .PosIzquierda.X, ((.PosDerecha.Y - .PosIzquierda.Y) \ 2) + .PosIzquierda.Y)
+214                         If .CaenItems Then
+216                             Call TirarItemsEnPos(tIndex, ((.PosDerecha.X - .PosIzquierda.X) \ 2) + .PosIzquierda.X, ((.PosDerecha.Y - .PosIzquierda.Y) \ 2) + .PosIzquierda.Y)
                             End If
-192                             UserList(tIndex).flags.EnReto = False
-194                             Call DevolverPosAnterior(tIndex)
+218                             UserList(tIndex).flags.EnReto = False
+220                             Call DevolverPosAnterior(tIndex)
                         End If
                     
                     
                     
                         ' Reset flags
-196                     UserList(tIndex).Counters.CuentaRegresiva = -1
+222                     UserList(tIndex).Counters.CuentaRegresiva = -1
                     
-198                     If TiempoAgotado Then
-200                         Call WriteConsoleMsg(tIndex, "Se ha agotado el tiempo del reto.", FontTypeNames.FONTTYPE_New_Gris)
+224                     If TiempoAgotado Then
+226                         Call WriteConsoleMsg(tIndex, "Se ha agotado el tiempo del reto.", FontTypeNames.FONTTYPE_New_Gris)
                         End If
 
                         ' Nombres
-202                     If i Mod 2 Then
+228                     If i Mod 2 Then
                     
-204                         If LenB(Equipo2) > 0 Then
-206                             Equipo2 = Equipo2 & IIf((i + 1) \ 2 < .TamañoEquipoDer - 2, ", ", " y ") & UserList(tIndex).Name
+230                         If LenB(Equipo2) > 0 Then
+232                             Equipo2 = Equipo2 & IIf((i + 1) \ 2 < .TamañoEquipoDer - 2, ", ", " y ") & UserList(tIndex).Name
                             Else
-208                             Equipo2 = UserList(tIndex).Name
+234                             Equipo2 = UserList(tIndex).Name
                             End If
                         
                         Else
                     
-210                         If LenB(Equipo1) > 0 Then
-212                             Equipo1 = Equipo1 & IIf(i \ 2 < .TamañoEquipoIzq - 2, ", ", " y ") & UserList(tIndex).Name
+236                         If LenB(Equipo1) > 0 Then
+238                             Equipo1 = Equipo1 & IIf(i \ 2 < .TamañoEquipoIzq - 2, ", ", " y ") & UserList(tIndex).Name
                             Else
-214                             Equipo1 = UserList(tIndex).Name
+240                             Equipo1 = UserList(tIndex).Name
                             End If
                         
                         End If
@@ -732,22 +732,22 @@ Public Sub FinalizarReto(ByVal Sala As Integer, Optional ByVal TiempoAgotado As 
                 Next
 
                 Dim equipoGanador As String, equipoPerdedor As String
-216             equipoGanador = IIf(Ganador = EquipoReto.Izquierda, Equipo1, Equipo2)
-218             equipoPerdedor = IIf(Ganador = EquipoReto.Izquierda, Equipo2, Equipo1)
+242             equipoGanador = IIf(Ganador = EquipoReto.Izquierda, Equipo1, Equipo2)
+244             equipoPerdedor = IIf(Ganador = EquipoReto.Izquierda, Equipo2, Equipo1)
 
                 ' Anuncio global
-220             If UBound(.Jugadores) > 1 Then
-222                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Retos » El equipo " & equipoGanador & " venció al equipo " & equipoPerdedor & " y se quedo con el botín de: " & PonerPuntos(.Apuesta) & " monedas de oro. ", FontTypeNames.FONTTYPE_INFO))
+246             If UBound(.Jugadores) > 1 Then
+248                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Retos » El equipo " & equipoGanador & " venció al equipo " & equipoPerdedor & " y se quedo con el botín de: " & PonerPuntos(.Apuesta) & " monedas de oro. ", FontTypeNames.FONTTYPE_INFO))
         
                 Else ' 1 vs 1
-224                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Retos » " & equipoGanador & " venció a " & equipoPerdedor & " y se quedo con el botín de: " & PonerPuntos(.Apuesta) & " monedas de oro. ", FontTypeNames.FONTTYPE_INFO))
+250                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Retos » " & equipoGanador & " venció a " & equipoPerdedor & " y se quedo con el botín de: " & PonerPuntos(.Apuesta) & " monedas de oro. ", FontTypeNames.FONTTYPE_INFO))
 
                 End If
             
-226             If .CaenItems Then
-228                 Call IniciarDepositoItems(Sala)
+252             If .CaenItems Then
+254                 Call IniciarDepositoItems(Sala)
                 Else
-230                 Call SalaLiberada(Sala)
+256                 Call SalaLiberada(Sala)
                 End If
             
             End If
@@ -755,32 +755,32 @@ Public Sub FinalizarReto(ByVal Sala As Integer, Optional ByVal TiempoAgotado As 
             ' Actualizamos el ELO de cada jugador, inspirados en `Algoritmo de 400`
             ' https://en.wikipedia.org/wiki/Elo_rating_system
             Dim eloTmp As Long
-            For i = 0 To UBound(.Jugadores)
-              tIndex = .Jugadores(i)
+258         For i = 0 To UBound(.Jugadores)
+260           tIndex = .Jugadores(i)
 
-              If tIndex <> 0 Then
-                eloTmp = UserList(tIndex).Stats.ELO
+262           If tIndex <> 0 Then
+264             eloTmp = UserList(tIndex).Stats.ELO
                 
-                If i Mod 2 = 0 Then ' Jugadores en el equipo Izquierdo
-                  eloTmp = eloTmp + winsIzquierda * (eloTotalDerecha * 0.1)
+266             If i Mod 2 = 0 Then ' Jugadores en el equipo Izquierdo
+268               eloTmp = eloTmp + winsIzquierda * (eloTotalDerecha * 0.1)
                 Else
-                  eloTmp = eloTmp + winsDerecha * (eloTotalIzquierda * 0.1)
+270               eloTmp = eloTmp + winsDerecha * (eloTotalIzquierda * 0.1)
                 End If
 
-                If eloTmp < 0 Then
-                  eloTmp = 0
+272             If eloTmp < 0 Then
+274               eloTmp = 0
                 End If
                 
-                UserList(tIndex).Stats.ELO = eloTmp
+276             UserList(tIndex).Stats.ELO = eloTmp
               End If
 
-            Next i
+278         Next i
     
         End With
         
         Exit Sub
 ErrorHandler:
-        Call RegistrarError(Err.Number, Err.Description, "ModRetos.FinalizarReto", Erl)
+280     Call RegistrarError(Err.Number, Err.Description, "ModRetos.FinalizarReto", Erl)
 End Sub
 Public Sub TirarItemsEnPos(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte)
             
@@ -831,7 +831,7 @@ Public Sub TirarItemsEnPos(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y 
 TirarItemsEnPos_Err:
 136     Call TraceError(Err.Number, Err.Description, "InvUsuario.TirarItemsEnPos", Erl)
 
-138
+
             
 End Sub
 
@@ -990,21 +990,21 @@ Private Sub SalaLiberada(ByVal Sala As Integer)
         On Error GoTo ErrHandler
     
 100     Retos.Salas(Sala).EnUso = False
-        Retos.SalasLibres = Retos.SalasLibres + 1
-102     If ListaDeEspera.Count > 0 Then
+102     Retos.SalasLibres = Retos.SalasLibres + 1
+104     If ListaDeEspera.Count > 0 Then
     
             Dim Oferente As Integer
-104         Oferente = ListaDeEspera.Keys(0)
-106         Call ListaDeEspera.Remove(Oferente)
+106         Oferente = ListaDeEspera.Keys(0)
+108         Call ListaDeEspera.Remove(Oferente)
             
-108         Call IniciarReto(Oferente, Sala)
+110         Call IniciarReto(Oferente, Sala)
 
         End If
     
         Exit Sub
     
 ErrHandler:
-110     Call TraceError(Err.Number, Err.Description, "ModRetos.SalaLiberada", Erl)
+112     Call TraceError(Err.Number, Err.Description, "ModRetos.SalaLiberada", Erl)
     
 End Sub
 

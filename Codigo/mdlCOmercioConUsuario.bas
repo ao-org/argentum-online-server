@@ -168,7 +168,7 @@ Public Sub EnviarObjetoTransaccion(ByVal AQuien As Integer, ByVal UserIndex As I
 
 EnviarObjetoTransaccion_Err:
 172         Call TraceError(Err.Number, Err.Description, "mdlCOmercioConUsuario.EnviarObjetoTransaccion", Erl)
-174
+
         
 End Sub
 
@@ -200,7 +200,7 @@ Public Sub FinComerciarUsu(ByVal UserIndex As Integer)
 
 FinComerciarUsu_Err:
 120     Call TraceError(Err.Number, Err.Description, "mdlCOmercioConUsuario.FinComerciarUsu", Erl)
-122
+
         
 End Sub
 
@@ -314,6 +314,6 @@ FinalizarComercio:
 
 AceptarComercioUsu_Err:
 208     Call TraceError(Err.Number, Err.Description, "mdlCOmercioConUsuario.AceptarComercioUsu", Erl)
-210
+
         
 End Sub

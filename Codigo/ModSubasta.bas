@@ -75,7 +75,7 @@ Public Sub IniciarSubasta(UserIndex)
 
 IniciarSubasta_Err:
 140     Call TraceError(Err.Number, Err.Description, "ModSubasta.IniciarSubasta", Erl)
-142
+
         
 End Sub
 
@@ -198,7 +198,7 @@ Public Sub FinalizarSubasta()
 
 FinalizarSubasta_Err:
 188     Call TraceError(Err.Number, Err.Description, "ModSubasta.FinalizarSubasta", Erl)
-190
+
         
 End Sub
 
@@ -219,7 +219,7 @@ Public Sub LogearEventoDeSubasta(Logeo As String)
 
 LogearEventoDeSubasta_Err:
 108     Call TraceError(Err.Number, Err.Description, "ModSubasta.LogearEventoDeSubasta", Erl)
-110
+
         
 End Sub
 
@@ -246,7 +246,7 @@ Public Sub ResetearSubasta()
 
 ResetearSubasta_Err:
 126     Call TraceError(Err.Number, Err.Description, "ModSubasta.ResetearSubasta", Erl)
-128
+
         
 End Sub
 
@@ -342,7 +342,7 @@ Public Sub DevolverItem()
 
 DevolverItem_Err:
 166     Call TraceError(Err.Number, Err.Description, "ModSubasta.DevolverItem", Erl)
-168
+
         
 End Sub
 
@@ -438,6 +438,6 @@ Public Sub CancelarSubasta()
 
 CancelarSubasta_Err:
 170     Call TraceError(Err.Number, Err.Description, "ModSubasta.CancelarSubasta", Erl)
-172
+
         
 End Sub

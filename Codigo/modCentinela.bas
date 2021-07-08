@@ -86,7 +86,7 @@ Public Sub CallUserAttention()
 
 CallUserAttention_Err:
 112     Call TraceError(Err.Number, Err.Description, "modCentinela.CallUserAttention", Erl)
-114
+
         
 End Sub
 
@@ -144,7 +144,7 @@ Private Sub GoToNextWorkingChar()
 
 GoToNextWorkingChar_Err:
 132     Call TraceError(Err.Number, Err.Description, "modCentinela.GoToNextWorkingChar", Erl)
-134
+
         
 End Sub
 
@@ -260,7 +260,7 @@ Public Sub CentinelaCheckClave(ByVal UserIndex As Integer, ByVal clave As Intege
 
 CentinelaCheckClave_Err:
 118     Call TraceError(Err.Number, Err.Description, "modCentinela.CentinelaCheckClave", Erl)
-120
+
         
 End Sub
 
@@ -288,7 +288,7 @@ Public Sub ResetCentinelaInfo()
 
 ResetCentinelaInfo_Err:
 108     Call TraceError(Err.Number, Err.Description, "modCentinela.ResetCentinelaInfo", Erl)
-110
+
         
 End Sub
 
@@ -323,7 +323,7 @@ Public Sub CentinelaSendClave(ByVal UserIndex As Integer)
 
 CentinelaSendClave_Err:
 116     Call TraceError(Err.Number, Err.Description, "modCentinela.CentinelaSendClave", Erl)
-118
+
         
 End Sub
 
@@ -367,7 +367,7 @@ Public Sub PasarMinutoCentinela()
 
 PasarMinutoCentinela_Err:
 122     Call TraceError(Err.Number, Err.Description, "modCentinela.PasarMinutoCentinela", Erl)
-124
+
         
 End Sub
 
@@ -401,7 +401,7 @@ Private Sub WarpCentinela(ByVal UserIndex As Integer)
 
 WarpCentinela_Err:
 114     Call TraceError(Err.Number, Err.Description, "modCentinela.WarpCentinela", Erl)
-116
+
         
 End Sub
 
@@ -435,7 +435,7 @@ Public Sub CentinelaUserLogout()
 
 CentinelaUserLogout_Err:
 116     Call TraceError(Err.Number, Err.Description, "modCentinela.CentinelaUserLogout", Erl)
-118
+
         
 End Sub
 

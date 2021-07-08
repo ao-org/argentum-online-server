@@ -114,6 +114,7 @@ Module=Logs; Codigo\Logs.bas
 IconForm="frmMain"
 Startup="Sub Main"
 HelpFile=""
+NoControlUpgrade=1
 Title="Argentum Online 20 Server"
 ExeName32="server.exe"
 Command32=""

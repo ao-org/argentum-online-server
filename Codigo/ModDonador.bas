@@ -59,7 +59,7 @@ Public Sub DonadorTiempo(ByVal nombre As String, ByVal dias As Integer)
 
 DonadorTiempo_Err:
 126     Call TraceError(Err.Number, Err.Description, "ModDonador.DonadorTiempo", Erl)
-128
+
         
 End Sub
 
@@ -82,7 +82,7 @@ Sub SaveDonadores()
 
 SaveDonadores_Err:
 108     Call TraceError(Err.Number, Err.Description, "ModDonador.SaveDonadores", Erl)
-110
+
         
 End Sub
 
@@ -103,7 +103,7 @@ Sub SaveDonador(num As Integer)
 
 SaveDonador_Err:
 110     Call TraceError(Err.Number, Err.Description, "ModDonador.SaveDonador", Erl)
-112
+
         
 End Sub
 
@@ -125,7 +125,7 @@ Sub AgregarCreditosDonador(Name As String, Cantidad As Long)
 
 AgregarCreditosDonador_Err:
 104     Call TraceError(Err.Number, Err.Description, "ModDonador.AgregarCreditosDonador", Erl)
-106
+
         
 End Sub
 
@@ -146,7 +146,7 @@ Sub AgregarCompra(ByVal Name As String, ByVal Desc As String)
 
 AgregarCompra_Err:
 106     Call TraceError(Err.Number, Err.Description, "ModDonador.AgregarCompra", Erl)
-108
+
         
 End Sub
 
@@ -168,7 +168,7 @@ Sub RestarCreditosDonador(Name As String, Cantidad As Long)
 
 RestarCreditosDonador_Err:
 106     Call TraceError(Err.Number, Err.Description, "ModDonador.RestarCreditosDonador", Erl)
-108
+
         
 End Sub
 
@@ -188,7 +188,7 @@ Sub AgregarCreditosCanjeados(Name As String, Cantidad As Long)
 
 AgregarCreditosCanjeados_Err:
 104     Call TraceError(Err.Number, Err.Description, "ModDonador.AgregarCreditosCanjeados", Erl)
-106
+
         
 End Sub
 
@@ -222,7 +222,7 @@ Sub LoadDonadores()
 
 LoadDonadores_Err:
 116     Call TraceError(Err.Number, Err.Description, "ModDonador.LoadDonadores", Erl)
-118
+
         
 End Sub
 
@@ -241,7 +241,7 @@ Public Function ChangeDonador(ByVal Name As String, ByVal Baneado As Byte) As Bo
 
 ChangeDonador_Err:
 104     Call TraceError(Err.Number, Err.Description, "ModDonador.ChangeDonador", Erl)
-106
+
         
 End Function
 
@@ -260,7 +260,7 @@ Public Function FinDonador(ByVal Name As String) As Boolean
 
 FinDonador_Err:
 106     Call TraceError(Err.Number, Err.Description, "ModDonador.FinDonador", Erl)
-108
+
         
 End Function
 
@@ -281,7 +281,7 @@ Public Sub LogearEventoDeDonador(Logeo As String)
 
 LogearEventoDeDonador_Err:
 108     Call TraceError(Err.Number, Err.Description, "ModDonador.LogearEventoDeDonador", Erl)
-110
+
         
 End Sub
 
@@ -317,7 +317,7 @@ Public Sub CargarCodigosDonador()
 
 CargarCodigosDonador_Err:
 118     Call TraceError(Err.Number, Err.Description, "ModDonador.CargarCodigosDonador", Erl)
-120
+
         
 End Sub
 
@@ -397,7 +397,7 @@ Public Sub CheckearCodigo(ByVal UserIndex As Integer, ByVal CodigoKey As String)
 
 CheckearCodigo_Err:
 162     Call TraceError(Err.Number, Err.Description, "ModDonador.CheckearCodigo", Erl)
-164
+
         
 End Sub
     

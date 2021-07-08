@@ -20,7 +20,7 @@ Public Sub InicializarLimpieza()
     
 ErrHandler:
 104     Call TraceError(Err.Number, Err.Description, "ModLimpieza.InicializarLimpieza", Erl)
-106
+
 
 End Sub
 
@@ -34,7 +34,7 @@ Public Sub LimpiarModuloLimpieza() ' Valga la redundancia
 
 Class_Terminate_Err:
 102 Call TraceError(Err.Number, Err.Description, "ModLimpieza.LimpiarModuloLimpieza", Erl)
-104
+
         
 End Sub
 
@@ -44,37 +44,37 @@ Public Sub AgregarItemLimpieza(ByVal Map As Integer, ByVal X As Byte, ByVal Y As
         
         ' Mapas que ignoran limpieza
         Dim i As Integer
-        For i = 1 To UBound(MapasIgnoranLimpieza)
-            If Map = MapasIgnoranLimpieza(i) Then Exit Sub
+100     For i = 1 To UBound(MapasIgnoranLimpieza)
+102         If Map = MapasIgnoranLimpieza(i) Then Exit Sub
         Next
     
         Dim Item As TLimpiezaItem
 
-100     If ResetTimer Then
-102         Set Item = Item_List.Item(GetIndiceByPos(Map, X, Y))
+104     If ResetTimer Then
+106         Set Item = Item_List.Item(GetIndiceByPos(Map, X, Y))
     
-104         Item.Time = GetTickCount()
+108         Item.Time = GetTickCount()
     
         Else
-106         Set Item = New TLimpiezaItem
+110         Set Item = New TLimpiezaItem
        
-108         With Item
-110             .Time = GetTickCount()
-112             .Map = Map
-114             .X = X
-116             .Y = Y
+112         With Item
+114             .Time = GetTickCount()
+116             .Map = Map
+118             .X = X
+120             .Y = Y
             End With
 
-118         Call Item_List.Add(Item, Item.Indice)
+122         Call Item_List.Add(Item, Item.Indice)
         End If
     
-120     Set Item = Nothing
+124     Set Item = Nothing
     
         Exit Sub
     
 hErr:
-122     Call TraceError(Err.Number, Err.Description, "ModLimpieza.AgregarItemLimpiza", Erl)
-124
+126     Call TraceError(Err.Number, Err.Description, "ModLimpieza.AgregarItemLimpiza", Erl)
+
 
 End Sub
 
@@ -119,7 +119,7 @@ Public Sub LimpiarItemsViejos()
 
 hErr:
 116     Call TraceError(Err.Number, Err.Description, "ModLimpieza.LimpiarItemsViejos", Erl)
-118
+
 
 End Sub
 
@@ -144,7 +144,7 @@ Public Sub LimpiezaForzada() ' Limpio todo, no importa el tiempo
     
 hErr:
 110     Call TraceError(Err.Number, Err.Description, "ModLimpieza.LimpiezaForzada", Erl)
-112
+
 
 End Sub
 

@@ -94,324 +94,324 @@ Public Sub SendData(ByVal sndRoute As SendTarget, ByVal sndIndex As Integer, snd
 110             Call SendToUserAreaButGMs(sndIndex, sndData)
                 Exit Sub
             
-            Case SendTarget.ToUsuariosMuertos
-                Call SendToUsersMuertosArea(sndIndex, sndData)
+112         Case SendTarget.ToUsuariosMuertos
+114             Call SendToUsersMuertosArea(sndIndex, sndData)
                 Exit Sub
         
-112         Case SendTarget.ToAdmins
+116         Case SendTarget.ToAdmins
 
-114             For LoopC = 1 To LastUser
+118             For LoopC = 1 To LastUser
 
-116                 If UserList(LoopC).ConnID <> -1 Then
-118                     If UserList(LoopC).flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios Or PlayerType.Consejero) Then
-120                         Call EnviarDatosASlot(LoopC, sndData)
+120                 If UserList(LoopC).ConnID <> -1 Then
+122                     If UserList(LoopC).flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios Or PlayerType.Consejero) Then
+124                         Call EnviarDatosASlot(LoopC, sndData)
 
                         End If
 
                     End If
 
-122             Next LoopC
+126             Next LoopC
 
                 Exit Sub
             
-124         Case SendTarget.ToSuperiores
+128         Case SendTarget.ToSuperiores
 
-126             For LoopC = 1 To LastUser
+130             For LoopC = 1 To LastUser
 
-128                 If UserList(LoopC).ConnID <> -1 Then
+132                 If UserList(LoopC).ConnID <> -1 Then
 
-130                     If CompararPrivilegiosUser(LoopC, sndIndex) > 0 Then
-132                         Call EnviarDatosASlot(LoopC, sndData)
+134                     If CompararPrivilegiosUser(LoopC, sndIndex) > 0 Then
+136                         Call EnviarDatosASlot(LoopC, sndData)
                         End If
                     
                     End If
 
-134             Next LoopC
+138             Next LoopC
 
                 Exit Sub
             
-136         Case SendTarget.ToSuperioresArea
-138             Call SendToSuperioresArea(sndIndex, sndData)
+140         Case SendTarget.ToSuperioresArea
+142             Call SendToSuperioresArea(sndIndex, sndData)
                 Exit Sub
             
-140         Case SendTarget.ToAll
+144         Case SendTarget.ToAll
 
-142             For LoopC = 1 To LastUser
+146             For LoopC = 1 To LastUser
 
-144                 If UserList(LoopC).ConnID <> -1 Then
-146                     If UserList(LoopC).flags.UserLogged Then 'Esta logeado como usuario?
-148                         Call EnviarDatosASlot(LoopC, sndData)
+148                 If UserList(LoopC).ConnID <> -1 Then
+150                     If UserList(LoopC).flags.UserLogged Then 'Esta logeado como usuario?
+152                         Call EnviarDatosASlot(LoopC, sndData)
 
                         End If
 
                     End If
 
-150             Next LoopC
+154             Next LoopC
 
                 Exit Sub
         
-152         Case SendTarget.ToAllButIndex
+156         Case SendTarget.ToAllButIndex
 
-154             For LoopC = 1 To LastUser
+158             For LoopC = 1 To LastUser
 
-156                 If (UserList(LoopC).ConnID <> -1) And (LoopC <> sndIndex) Then
-158                     If UserList(LoopC).flags.UserLogged Then 'Esta logeado como usuario?
-160                         Call EnviarDatosASlot(LoopC, sndData)
+160                 If (UserList(LoopC).ConnID <> -1) And (LoopC <> sndIndex) Then
+162                     If UserList(LoopC).flags.UserLogged Then 'Esta logeado como usuario?
+164                         Call EnviarDatosASlot(LoopC, sndData)
 
                         End If
 
                     End If
 
-162             Next LoopC
+166             Next LoopC
 
                 Exit Sub
         
-164         Case SendTarget.toMap
-166             Call SendToMap(sndIndex, sndData)
+168         Case SendTarget.toMap
+170             Call SendToMap(sndIndex, sndData)
                 Exit Sub
           
-168         Case SendTarget.ToMapButIndex
-170             Call SendToMapButIndex(sndIndex, sndData)
+172         Case SendTarget.ToMapButIndex
+174             Call SendToMapButIndex(sndIndex, sndData)
                 Exit Sub
         
-172         Case SendTarget.ToGuildMembers
-174             LoopC = modGuilds.m_Iterador_ProximoUserIndex(sndIndex)
+176         Case SendTarget.ToGuildMembers
+178             LoopC = modGuilds.m_Iterador_ProximoUserIndex(sndIndex)
 
-176             While LoopC > 0
+180             While LoopC > 0
 
-178                 If (UserList(LoopC).ConnID <> -1) Then
-180                     Call UserList(LoopC).outgoingData.WritePrepared(sndData)
+182                 If (UserList(LoopC).ConnID <> -1) Then
+184                     Call UserList(LoopC).outgoingData.WritePrepared(sndData)
 
                     End If
 
-182                 LoopC = modGuilds.m_Iterador_ProximoUserIndex(sndIndex)
+186                 LoopC = modGuilds.m_Iterador_ProximoUserIndex(sndIndex)
                 Wend
                 Exit Sub
         
-184         Case SendTarget.ToDeadArea
-186             Call SendToDeadUserArea(sndIndex, sndData)
+188         Case SendTarget.ToDeadArea
+190             Call SendToDeadUserArea(sndIndex, sndData)
                 Exit Sub
         
-188         Case SendTarget.ToPCAreaButIndex
-190             Call SendToUserAreaButindex(sndIndex, sndData)
+192         Case SendTarget.ToPCAreaButIndex
+194             Call SendToUserAreaButindex(sndIndex, sndData)
                 Exit Sub
             
-192         Case SendTarget.ToAdminAreaButIndex
-194             Call SendToAdminAreaButIndex(sndIndex, sndData)
+196         Case SendTarget.ToAdminAreaButIndex
+198             Call SendToAdminAreaButIndex(sndIndex, sndData)
                 Exit Sub
         
-196         Case SendTarget.ToClanArea
-198             Call SendToUserGuildArea(sndIndex, sndData)
+200         Case SendTarget.ToClanArea
+202             Call SendToUserGuildArea(sndIndex, sndData)
                 Exit Sub
         
-200         Case SendTarget.ToAdminsAreaButConsejeros
-202             Call SendToAdminsButConsejerosArea(sndIndex, sndData)
+204         Case SendTarget.ToAdminsAreaButConsejeros
+206             Call SendToAdminsButConsejerosArea(sndIndex, sndData)
                 Exit Sub
         
-204         Case SendTarget.ToNPCArea
-206             Call SendToNpcArea(sndIndex, sndData)
+208         Case SendTarget.ToNPCArea
+210             Call SendToNpcArea(sndIndex, sndData)
                 Exit Sub
         
-208         Case SendTarget.ToDiosesYclan
-210             LoopC = modGuilds.m_Iterador_ProximoUserIndex(sndIndex)
+212         Case SendTarget.ToDiosesYclan
+214             LoopC = modGuilds.m_Iterador_ProximoUserIndex(sndIndex)
 
-212             While LoopC > 0
+216             While LoopC > 0
 
-214                 If (UserList(LoopC).ConnID <> -1) Then
-216                     Call EnviarDatosASlot(LoopC, sndData)
+218                 If (UserList(LoopC).ConnID <> -1) Then
+220                     Call EnviarDatosASlot(LoopC, sndData)
 
                     End If
 
-218                 LoopC = modGuilds.m_Iterador_ProximoUserIndex(sndIndex)
+222                 LoopC = modGuilds.m_Iterador_ProximoUserIndex(sndIndex)
                 Wend
             
-220             LoopC = modGuilds.Iterador_ProximoGM(sndIndex)
+224             LoopC = modGuilds.Iterador_ProximoGM(sndIndex)
 
-222             While LoopC > 0
+226             While LoopC > 0
 
-224                 If (UserList(LoopC).ConnID <> -1) Then
-226                     Call EnviarDatosASlot(LoopC, sndData)
+228                 If (UserList(LoopC).ConnID <> -1) Then
+230                     Call EnviarDatosASlot(LoopC, sndData)
 
                     End If
 
-228                 LoopC = modGuilds.Iterador_ProximoGM(sndIndex)
+232                 LoopC = modGuilds.Iterador_ProximoGM(sndIndex)
                 Wend
             
                 Exit Sub
         
-230         Case SendTarget.ToConsejo
+234         Case SendTarget.ToConsejo
 
-232             For LoopC = 1 To LastUser
+236             For LoopC = 1 To LastUser
 
-234                 If (UserList(LoopC).ConnID <> -1) Then
-236                     If UserList(LoopC).flags.Privilegios And PlayerType.RoyalCouncil Then
-238                         Call EnviarDatosASlot(LoopC, sndData)
+238                 If (UserList(LoopC).ConnID <> -1) Then
+240                     If UserList(LoopC).flags.Privilegios And PlayerType.RoyalCouncil Then
+242                         Call EnviarDatosASlot(LoopC, sndData)
 
                         End If
 
                     End If
 
-240             Next LoopC
+244             Next LoopC
 
                 Exit Sub
         
-242         Case SendTarget.ToConsejoCaos
+246         Case SendTarget.ToConsejoCaos
 
-244             For LoopC = 1 To LastUser
+248             For LoopC = 1 To LastUser
 
-246                 If (UserList(LoopC).ConnID <> -1) Then
-248                     If UserList(LoopC).flags.Privilegios And PlayerType.ChaosCouncil Then
-250                         Call EnviarDatosASlot(LoopC, sndData)
+250                 If (UserList(LoopC).ConnID <> -1) Then
+252                     If UserList(LoopC).flags.Privilegios And PlayerType.ChaosCouncil Then
+254                         Call EnviarDatosASlot(LoopC, sndData)
 
                         End If
 
                     End If
 
-252             Next LoopC
+256             Next LoopC
 
                 Exit Sub
         
-254         Case SendTarget.ToRolesMasters
+258         Case SendTarget.ToRolesMasters
 
-256             For LoopC = 1 To LastUser
+260             For LoopC = 1 To LastUser
 
-258                 If (UserList(LoopC).ConnID <> -1) Then
-260                     If UserList(LoopC).flags.Privilegios And PlayerType.RoleMaster Then
-262                         Call EnviarDatosASlot(LoopC, sndData)
+262                 If (UserList(LoopC).ConnID <> -1) Then
+264                     If UserList(LoopC).flags.Privilegios And PlayerType.RoleMaster Then
+266                         Call EnviarDatosASlot(LoopC, sndData)
 
                         End If
 
                     End If
 
-264             Next LoopC
+268             Next LoopC
 
                 Exit Sub
         
-266         Case SendTarget.ToCiudadanos
+270         Case SendTarget.ToCiudadanos
 
-268             For LoopC = 1 To LastUser
+272             For LoopC = 1 To LastUser
 
-270                 If (UserList(LoopC).ConnID <> -1) Then
-272                     If Status(LoopC) < 2 Then
-274                         Call EnviarDatosASlot(LoopC, sndData)
+274                 If (UserList(LoopC).ConnID <> -1) Then
+276                     If Status(LoopC) < 2 Then
+278                         Call EnviarDatosASlot(LoopC, sndData)
 
                         End If
 
                     End If
 
-276             Next LoopC
+280             Next LoopC
 
                 Exit Sub
         
-278         Case SendTarget.ToCriminales
+282         Case SendTarget.ToCriminales
 
-280             For LoopC = 1 To LastUser
+284             For LoopC = 1 To LastUser
 
-282                 If (UserList(LoopC).ConnID <> -1) Then
-284                     If Status(LoopC) = 2 Then
-286                         Call EnviarDatosASlot(LoopC, sndData)
+286                 If (UserList(LoopC).ConnID <> -1) Then
+288                     If Status(LoopC) = 2 Then
+290                         Call EnviarDatosASlot(LoopC, sndData)
 
                         End If
 
                     End If
 
-288             Next LoopC
+292             Next LoopC
 
                 Exit Sub
         
-290         Case SendTarget.ToReal
+294         Case SendTarget.ToReal
 
-292             For LoopC = 1 To LastUser
+296             For LoopC = 1 To LastUser
 
-294                 If (UserList(LoopC).ConnID <> -1) Then
-296                     If UserList(LoopC).Faccion.ArmadaReal = 1 Then
-298                         Call EnviarDatosASlot(LoopC, sndData)
+298                 If (UserList(LoopC).ConnID <> -1) Then
+300                     If UserList(LoopC).Faccion.ArmadaReal = 1 Then
+302                         Call EnviarDatosASlot(LoopC, sndData)
 
                         End If
 
                     End If
 
-300             Next LoopC
+304             Next LoopC
 
                 Exit Sub
         
-302         Case SendTarget.ToCaos
+306         Case SendTarget.ToCaos
 
-304             For LoopC = 1 To LastUser
+308             For LoopC = 1 To LastUser
 
-306                 If (UserList(LoopC).ConnID <> -1) Then
-308                     If UserList(LoopC).Faccion.FuerzasCaos = 1 Then
-310                         Call EnviarDatosASlot(LoopC, sndData)
+310                 If (UserList(LoopC).ConnID <> -1) Then
+312                     If UserList(LoopC).Faccion.FuerzasCaos = 1 Then
+314                         Call EnviarDatosASlot(LoopC, sndData)
 
                         End If
 
                     End If
 
-312             Next LoopC
+316             Next LoopC
 
                 Exit Sub
         
-314         Case SendTarget.ToCiudadanosYRMs
+318         Case SendTarget.ToCiudadanosYRMs
 
-316             For LoopC = 1 To LastUser
+320             For LoopC = 1 To LastUser
 
-318                 If (UserList(LoopC).ConnID <> -1) Then
-320                     If Status(LoopC) < 2 Or (UserList(LoopC).flags.Privilegios And PlayerType.RoleMaster) <> 0 Then
-322                         Call EnviarDatosASlot(LoopC, sndData)
+322                 If (UserList(LoopC).ConnID <> -1) Then
+324                     If Status(LoopC) < 2 Or (UserList(LoopC).flags.Privilegios And PlayerType.RoleMaster) <> 0 Then
+326                         Call EnviarDatosASlot(LoopC, sndData)
 
                         End If
 
                     End If
 
-324             Next LoopC
+328             Next LoopC
 
                 Exit Sub
         
-326         Case SendTarget.ToCriminalesYRMs
+330         Case SendTarget.ToCriminalesYRMs
 
-328             For LoopC = 1 To LastUser
+332             For LoopC = 1 To LastUser
 
-330                 If (UserList(LoopC).ConnID <> -1) Then
-332                     If Status(LoopC) = 2 Or (UserList(LoopC).flags.Privilegios And PlayerType.RoleMaster) <> 0 Then
-334                         Call EnviarDatosASlot(LoopC, sndData)
+334                 If (UserList(LoopC).ConnID <> -1) Then
+336                     If Status(LoopC) = 2 Or (UserList(LoopC).flags.Privilegios And PlayerType.RoleMaster) <> 0 Then
+338                         Call EnviarDatosASlot(LoopC, sndData)
 
                         End If
 
                     End If
 
-336             Next LoopC
+340             Next LoopC
 
                 Exit Sub
         
-338         Case SendTarget.ToRealYRMs
+342         Case SendTarget.ToRealYRMs
 
-340             For LoopC = 1 To LastUser
+344             For LoopC = 1 To LastUser
 
-342                 If (UserList(LoopC).ConnID <> -1) Then
-344                     If UserList(LoopC).Faccion.ArmadaReal = 1 Or (UserList(LoopC).flags.Privilegios And PlayerType.RoleMaster) <> 0 Then
-346                         Call EnviarDatosASlot(LoopC, sndData)
+346                 If (UserList(LoopC).ConnID <> -1) Then
+348                     If UserList(LoopC).Faccion.ArmadaReal = 1 Or (UserList(LoopC).flags.Privilegios And PlayerType.RoleMaster) <> 0 Then
+350                         Call EnviarDatosASlot(LoopC, sndData)
 
                         End If
 
                     End If
 
-348             Next LoopC
+352             Next LoopC
 
                 Exit Sub
         
-350         Case SendTarget.ToCaosYRMs
+354         Case SendTarget.ToCaosYRMs
 
-352             For LoopC = 1 To LastUser
+356             For LoopC = 1 To LastUser
 
-354                 If (UserList(LoopC).ConnID <> -1) Then
-356                     If UserList(LoopC).Faccion.FuerzasCaos = 1 Or (UserList(LoopC).flags.Privilegios And PlayerType.RoleMaster) <> 0 Then
-358                         Call EnviarDatosASlot(LoopC, sndData)
+358                 If (UserList(LoopC).ConnID <> -1) Then
+360                     If UserList(LoopC).Faccion.FuerzasCaos = 1 Or (UserList(LoopC).flags.Privilegios And PlayerType.RoleMaster) <> 0 Then
+362                         Call EnviarDatosASlot(LoopC, sndData)
 
                         End If
 
                     End If
 
-360             Next LoopC
+364             Next LoopC
 
                 Exit Sub
                 
@@ -421,7 +421,7 @@ Public Sub SendData(ByVal sndRoute As SendTarget, ByVal sndIndex As Integer, snd
         Exit Sub
 
 SendData_Err:
-362     Call TraceError(Err.Number, Err.Description, "modSendData.SendData", Erl)
+366     Call TraceError(Err.Number, Err.Description, "modSendData.SendData", Erl)
 
         
 End Sub
@@ -473,7 +473,7 @@ Private Sub SendToUserArea(ByVal UserIndex As Integer, sndData As t_DataBuffer)
 
 SendToUserArea_Err:
 124     Call TraceError(Err.Number, Err.Description, "modSendData.SendToUserArea", Erl)
-126
+
         
 End Sub
 
@@ -510,9 +510,9 @@ Private Sub SendToUsersMuertosArea(ByVal UserIndex As Integer, sndData As t_Data
                         
                         ' Envio a los que estan MUERTOS y a los GMs cercanos.
 
-                        If UserList(tempIndex).flags.Muerto = 1 Or EsGM(tempIndex) Then
+120                     If UserList(tempIndex).flags.Muerto = 1 Or EsGM(tempIndex) Then
                         
-120                         Call EnviarDatosASlot(tempIndex, sndData)
+122                         Call EnviarDatosASlot(tempIndex, sndData)
                             
                         End If
 
@@ -520,13 +520,13 @@ Private Sub SendToUsersMuertosArea(ByVal UserIndex As Integer, sndData As t_Data
                 End If
             End If
 
-122     Next LoopC
+124     Next LoopC
         
         Exit Sub
 
 SendToUserArea_Err:
-124     Call TraceError(Err.Number, Err.Description, "modSendData.SendToUsersMuertosArea", Erl)
-126
+126     Call TraceError(Err.Number, Err.Description, "modSendData.SendToUsersMuertosArea", Erl)
+
         
 End Sub
 
@@ -583,7 +583,7 @@ Private Sub SendToSuperioresArea(ByVal UserIndex As Integer, sndData As t_DataBu
 SendToUserAreaButindex_Err:
 130     Call TraceError(Err.Number, Err.Description, "modSendData.SendToUserAreaButindex", Erl)
 
-132
+
         
 End Sub
 
@@ -641,7 +641,7 @@ Private Sub SendToUserAreaButindex(ByVal UserIndex As Integer, sndData As t_Data
 
 SendToUserAreaButindex_Err:
 130     Call TraceError(Err.Number, Err.Description, "modSendData.SendToUserAreaButindex", Erl)
-132
+
         
 End Sub
 
@@ -701,7 +701,7 @@ Private Sub SendToAdminAreaButIndex(ByVal UserIndex As Integer, sndData As t_Dat
 
 SendToUserAreaButindex_Err:
 130     Call TraceError(Err.Number, Err.Description, "modSendData.SendToAdminAreaButIndex", Erl)
-132
+
         
 End Sub
 
@@ -763,7 +763,7 @@ Private Sub SendToUserAreaButGMs(ByVal UserIndex As Integer, sndData As t_DataBu
 
 SendToUserAreaButindex_Err:
 130     Call TraceError(Err.Number, Err.Description, "modSendData.SendToUserAreaButindex", Erl)
-132
+
         
 End Sub
 
@@ -813,7 +813,7 @@ Private Sub SendToDeadUserArea(ByVal UserIndex As Integer, sndData As t_DataBuff
 
 SendToDeadUserArea_Err:
 124     Call TraceError(Err.Number, Err.Description, "modSendData.SendToDeadUserArea", Erl)
-126
+
         
 End Sub
 
@@ -864,7 +864,7 @@ Private Sub SendToUserGuildArea(ByVal UserIndex As Integer, sndData As t_DataBuf
 
 SendToUserGuildArea_Err:
 126     Call TraceError(Err.Number, Err.Description, "modSendData.SendToUserGuildArea", Erl)
-128
+
         
 End Sub
 
@@ -913,7 +913,7 @@ Private Sub SendToAdminsButConsejerosArea(ByVal UserIndex As Integer, sndData As
 
 SendToAdminsButConsejerosArea_Err:
 124     Call TraceError(Err.Number, Err.Description, "modSendData.SendToAdminsButConsejerosArea", Erl)
-126
+
         
 End Sub
 
@@ -967,7 +967,7 @@ Private Sub SendToNpcArea(ByVal NpcIndex As Long, sndData As t_DataBuffer)
 
 SendToNpcArea_Err:
 128     Call TraceError(Err.Number, Err.Description, "modSendData.SendToNpcArea", Erl)
-130
+
         
 End Sub
 
@@ -1009,7 +1009,7 @@ Public Sub SendToAreaByPos(ByVal Map As Integer, ByVal AreaX As Integer, ByVal A
 
 SendToAreaByPos_Err:
 124     Call TraceError(Err.Number, Err.Description, "modSendData.SendToAreaByPos", Erl)
-126
+
         
 End Sub
 
@@ -1043,7 +1043,7 @@ Public Sub SendToMap(ByVal Map As Integer, sndData As t_DataBuffer)
 
 SendToMap_Err:
 112     Call TraceError(Err.Number, Err.Description, "modSendData.SendToMap", Erl)
-114
+
         
 End Sub
 
@@ -1082,7 +1082,7 @@ Public Sub SendToMapButIndex(ByVal UserIndex As Integer, sndData As t_DataBuffer
 
 SendToMapButIndex_Err:
 116     Call TraceError(Err.Number, Err.Description, "modSendData.SendToMapButIndex", Erl)
-118
+
         
 End Sub
 

@@ -87,7 +87,7 @@ Sub ActStats(ByVal VictimIndex As Integer, ByVal AttackerIndex As Integer)
 
 ActStats_Err:
 136     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.ActStats", Erl)
-138
+
         
 End Sub
 
@@ -215,7 +215,7 @@ Sub RevivirUsuario(ByVal UserIndex As Integer, Optional ByVal MedianteHechizo As
 
 RevivirUsuario_Err:
 210     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.RevivirUsuario", Erl)
-212
+
         
 End Sub
 
@@ -241,7 +241,7 @@ Sub ChangeUserChar(ByVal UserIndex As Integer, ByVal Body As Integer, ByVal Head
 
 ChangeUserChar_Err:
 116     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.ChangeUserChar", Erl)
-118
+
         
 End Sub
 
@@ -315,22 +315,22 @@ Sub RefreshCharStatus(ByVal UserIndex As Integer)
 112             Name = UserList(UserIndex).NameMimetizado
             End If
             
-            If UserList(UserIndex).clase = eClass.Pirat Then
-                If UserList(UserIndex).flags.Oculto = 1 Then
-                    Name = vbNullString
+114         If UserList(UserIndex).clase = eClass.Pirat Then
+116             If UserList(UserIndex).flags.Oculto = 1 Then
+118                 Name = vbNullString
                 End If
             End If
             
         End If
     
-114     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageUpdateTagAndStatus(UserIndex, UserList(UserIndex).Faccion.Status, Name))
+120     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageUpdateTagAndStatus(UserIndex, UserList(UserIndex).Faccion.Status, Name))
 
         
         Exit Sub
 
 RefreshCharStatus_Err:
-116     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.RefreshCharStatus", Erl)
-118
+122     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.RefreshCharStatus", Erl)
+
         
 End Sub
 
@@ -630,91 +630,91 @@ Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As eHeading) As
             End If
 
 108         If .Accion.AccionPendiente = True Then
-                .Counters.TimerBarra = 0
-110             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, .Accion.Particula, .Counters.TimerBarra, True))
-112             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageBarFx(.Char.CharIndex, .Counters.TimerBarra, Accion_Barra.CancelarAccion))
-114             .Accion.AccionPendiente = False
-116             .Accion.Particula = 0
-118             .Accion.TipoAccion = Accion_Barra.CancelarAccion
-120             .Accion.HechizoPendiente = 0
-122             .Accion.RunaObj = 0
-124             .Accion.ObjSlot = 0
-126             .Accion.AccionPendiente = False
+110             .Counters.TimerBarra = 0
+112             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, .Accion.Particula, .Counters.TimerBarra, True))
+114             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageBarFx(.Char.CharIndex, .Counters.TimerBarra, Accion_Barra.CancelarAccion))
+116             .Accion.AccionPendiente = False
+118             .Accion.Particula = 0
+120             .Accion.TipoAccion = Accion_Barra.CancelarAccion
+122             .Accion.HechizoPendiente = 0
+124             .Accion.RunaObj = 0
+126             .Accion.ObjSlot = 0
+128             .Accion.AccionPendiente = False
             End If
 
-128         'If .flags.Muerto = 0 Then
-130         '    If MapData(nPos.Map, nPos.X, nPos.Y).TileExit.Map <> 0 And .Counters.EnCombate > 0 Then
-132         '        Call WriteConsoleMsg(UserIndex, "Estás en combate, debes aguardar " & .Counters.EnCombate & " segundo(s) para escapar...", FontTypeNames.FONTTYPE_INFOBOLD)
+            'If .flags.Muerto = 0 Then
+            '    If MapData(nPos.Map, nPos.X, nPos.Y).TileExit.Map <> 0 And .Counters.EnCombate > 0 Then
+            '        Call WriteConsoleMsg(UserIndex, "Estás en combate, debes aguardar " & .Counters.EnCombate & " segundo(s) para escapar...", FontTypeNames.FONTTYPE_INFOBOLD)
             '        Exit Function
             '    End If
             'End If
 
             'Si no estoy solo en el mapa...
-134         If MapInfo(.Pos.Map).NumUsers > 1 Then
+130         If MapInfo(.Pos.Map).NumUsers > 1 Then
 
                 ' Intercambia posición si hay un casper o gm invisible
-136             IndexMover = MapData(nPos.Map, nPos.X, nPos.Y).UserIndex
+132             IndexMover = MapData(nPos.Map, nPos.X, nPos.Y).UserIndex
             
-138             If IndexMover <> 0 Then
+134             If IndexMover <> 0 Then
                     ' Sólo puedo patear caspers/gms invisibles si no es él un gm invisible
-140                 If UserList(UserIndex).flags.AdminInvisible <> 0 Then Exit Function
+136                 If UserList(UserIndex).flags.AdminInvisible <> 0 Then Exit Function
 
-142                 Call WritePosUpdate(IndexMover)
+138                 Call WritePosUpdate(IndexMover)
 
-144                 OppositeHeading = InvertHeading(nHeading)
-146                 Call HeadtoPos(OppositeHeading, UserList(IndexMover).Pos)
+140                 OppositeHeading = InvertHeading(nHeading)
+142                 Call HeadtoPos(OppositeHeading, UserList(IndexMover).Pos)
                 
                     ' Si es un admin invisible, no se avisa a los demas clientes
-148                 If UserList(IndexMover).flags.AdminInvisible = 0 Then
-150                     Call SendData(SendTarget.ToPCAreaButIndex, IndexMover, PrepareMessageCharacterMove(UserList(IndexMover).Char.CharIndex, UserList(IndexMover).Pos.X, UserList(IndexMover).Pos.Y))
+144                 If UserList(IndexMover).flags.AdminInvisible = 0 Then
+146                     Call SendData(SendTarget.ToPCAreaButIndex, IndexMover, PrepareMessageCharacterMove(UserList(IndexMover).Char.CharIndex, UserList(IndexMover).Pos.X, UserList(IndexMover).Pos.Y))
                     Else
-152                     Call SendData(SendTarget.ToAdminAreaButIndex, IndexMover, PrepareMessageCharacterMove(UserList(IndexMover).Char.CharIndex, UserList(IndexMover).Pos.X, UserList(IndexMover).Pos.Y))
+148                     Call SendData(SendTarget.ToAdminAreaButIndex, IndexMover, PrepareMessageCharacterMove(UserList(IndexMover).Char.CharIndex, UserList(IndexMover).Pos.X, UserList(IndexMover).Pos.Y))
                     End If
                     
-154                 Call WriteForceCharMove(IndexMover, OppositeHeading)
+150                 Call WriteForceCharMove(IndexMover, OppositeHeading)
                 
                     'Update map and char
-156                 UserList(IndexMover).Char.Heading = OppositeHeading
-158                 MapData(UserList(IndexMover).Pos.Map, UserList(IndexMover).Pos.X, UserList(IndexMover).Pos.Y).UserIndex = IndexMover
+152                 UserList(IndexMover).Char.Heading = OppositeHeading
+154                 MapData(UserList(IndexMover).Pos.Map, UserList(IndexMover).Pos.X, UserList(IndexMover).Pos.Y).UserIndex = IndexMover
                 
                     'Actualizamos las areas de ser necesario
-160                 Call ModAreas.CheckUpdateNeededUser(IndexMover, OppositeHeading, 0)
+156                 Call ModAreas.CheckUpdateNeededUser(IndexMover, OppositeHeading, 0)
                 End If
 
-162             If .flags.AdminInvisible = 0 Then
-164                 Call SendData(SendTarget.ToPCAreaButIndex, UserIndex, PrepareMessageCharacterMove(.Char.CharIndex, nPos.X, nPos.Y))
+158             If .flags.AdminInvisible = 0 Then
+160                 Call SendData(SendTarget.ToPCAreaButIndex, UserIndex, PrepareMessageCharacterMove(.Char.CharIndex, nPos.X, nPos.Y))
                 Else
-166                 Call SendData(SendTarget.ToAdminAreaButIndex, UserIndex, PrepareMessageCharacterMove(.Char.CharIndex, nPos.X, nPos.Y))
+162                 Call SendData(SendTarget.ToAdminAreaButIndex, UserIndex, PrepareMessageCharacterMove(.Char.CharIndex, nPos.X, nPos.Y))
                 End If
             End If
         
             'Update map and user pos
-168         If MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex = UserIndex Then
-170             MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex = 0
+164         If MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex = UserIndex Then
+166             MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex = 0
             End If
 
-172         .Pos = nPos
-174         .Char.Heading = nHeading
-176         MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex = UserIndex
+168         .Pos = nPos
+170         .Char.Heading = nHeading
+172         MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex = UserIndex
         
             'Actualizamos las áreas de ser necesario
-178         Call ModAreas.CheckUpdateNeededUser(UserIndex, nHeading, 0)
+174         Call ModAreas.CheckUpdateNeededUser(UserIndex, nHeading, 0)
 
-180         If .Counters.Trabajando Then
-182             Call WriteMacroTrabajoToggle(UserIndex, False)
+176         If .Counters.Trabajando Then
+178             Call WriteMacroTrabajoToggle(UserIndex, False)
             End If
 
-184         If .Counters.Ocultando Then .Counters.Ocultando = .Counters.Ocultando - 1
+180         If .Counters.Ocultando Then .Counters.Ocultando = .Counters.Ocultando - 1
     
         End With
     
-186     MoveUserChar = True
+182     MoveUserChar = True
     
         Exit Function
     
 MoveUserChar_Err:
-188     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.MoveUserChar", Erl)
-190
+184     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.MoveUserChar", Erl)
+
         
 End Function
 
@@ -766,7 +766,7 @@ Sub ChangeUserInv(ByVal UserIndex As Integer, ByVal Slot As Byte, ByRef Object A
 
 ChangeUserInv_Err:
 104     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.ChangeUserInv", Erl)
-106
+
         
 End Sub
 
@@ -796,7 +796,7 @@ Function NextOpenCharIndex() As Integer
 
 NextOpenCharIndex_Err:
 112     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.NextOpenCharIndex", Erl)
-114
+
         
 End Function
 
@@ -820,7 +820,7 @@ Function NextOpenUser() As Integer
 
 NextOpenUser_Err:
 110     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.NextOpenUser", Erl)
-112
+
         
 End Function
 
@@ -898,7 +898,7 @@ Sub SendUserStatsTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
 
 SendUserStatsTxt_Err:
 154     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.SendUserStatsTxt", Erl)
-156
+
         
 End Sub
 
@@ -939,7 +939,7 @@ Sub SendUserMiniStatsTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
 
 SendUserMiniStatsTxt_Err:
 126     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.SendUserMiniStatsTxt", Erl)
-128
+
         
 End Sub
 
@@ -996,7 +996,7 @@ Sub SendUserMiniStatsTxtFromChar(ByVal sendIndex As Integer, ByVal CharName As S
 
 SendUserMiniStatsTxtFromChar_Err:
 136     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.SendUserMiniStatsTxtFromChar", Erl)
-138
+
         
 End Sub
 
@@ -1131,7 +1131,7 @@ Function DameUserIndex(SocketID As Integer) As Integer
 
 DameUserIndex_Err:
 112     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.DameUserIndex", Erl)
-114
+
         
 End Function
 
@@ -1165,7 +1165,7 @@ Function DameUserIndexConNombre(ByVal nombre As String) As Integer
 
 DameUserIndexConNombre_Err:
 114     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.DameUserIndexConNombre", Erl)
-116
+
         
 End Function
 
@@ -1204,7 +1204,7 @@ Sub NPCAtacado(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
 
 NPCAtacado_Err:
 126     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.NPCAtacado", Erl)
-128
+
         
 End Sub
 
@@ -1294,7 +1294,7 @@ Sub SubirSkill(ByVal UserIndex As Integer, ByVal Skill As Integer)
 
 SubirSkill_Err:
 166     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.SubirSkill", Erl)
-168
+
         
 End Sub
 
@@ -1324,7 +1324,7 @@ Public Sub SubirSkillDeArmaActual(ByVal UserIndex As Integer)
 
 SubirSkillDeArmaActual_Err:
 112         Call TraceError(Err.Number, Err.Description, "UsUaRiOs.SubirSkillDeArmaActual", Erl)
-114
+
 
 End Sub
 
@@ -1348,67 +1348,67 @@ Sub UserDie(ByVal UserIndex As Integer)
         Dim aN As Integer
     
 100     With UserList(UserIndex)
-            .Counters.Mimetismo = 0
-            .flags.Mimetizado = e_EstadoMimetismo.Desactivado
-            Call RefreshCharStatus(UserIndex)
+102         .Counters.Mimetismo = 0
+104         .flags.Mimetizado = e_EstadoMimetismo.Desactivado
+106         Call RefreshCharStatus(UserIndex)
     
             'Sonido
-102         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(IIf(.genero = eGenero.Hombre, e_SoundIndex.MUERTE_HOMBRE, e_SoundIndex.MUERTE_MUJER), .Pos.X, .Pos.Y))
+108         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(IIf(.genero = eGenero.Hombre, e_SoundIndex.MUERTE_HOMBRE, e_SoundIndex.MUERTE_MUJER), .Pos.X, .Pos.Y))
         
             'Quitar el dialogo del user muerto
-104         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageRemoveCharDialog(.Char.CharIndex))
+110         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageRemoveCharDialog(.Char.CharIndex))
         
-106         .Stats.MinHp = 0
-108         .Stats.MinSta = 0
-110         .flags.AtacadoPorUser = 0
+112         .Stats.MinHp = 0
+114         .Stats.MinSta = 0
+116         .flags.AtacadoPorUser = 0
 
-112         .flags.incinera = 0
-114         .flags.Paraliza = 0
-116         .flags.Envenena = 0
-118         .flags.Estupidiza = 0
-120         .flags.Muerto = 1
-122         .flags.Ahogandose = 0
+118         .flags.incinera = 0
+120         .flags.Paraliza = 0
+122         .flags.Envenena = 0
+124         .flags.Estupidiza = 0
+126         .flags.Muerto = 1
+128         .flags.Ahogandose = 0
             
-124         Call WriteUpdateHP(UserIndex)
-126         Call WriteUpdateSta(UserIndex)
+130         Call WriteUpdateHP(UserIndex)
+132         Call WriteUpdateSta(UserIndex)
         
-128         aN = .flags.AtacadoPorNpc
+134         aN = .flags.AtacadoPorNpc
     
-130         If aN > 0 Then
-132             NpcList(aN).Movement = NpcList(aN).flags.OldMovement
-134             NpcList(aN).Hostile = NpcList(aN).flags.OldHostil
-136             NpcList(aN).flags.AttackedBy = vbNullString
-138             NpcList(aN).Target = 0
+136         If aN > 0 Then
+138             NpcList(aN).Movement = NpcList(aN).flags.OldMovement
+140             NpcList(aN).Hostile = NpcList(aN).flags.OldHostil
+142             NpcList(aN).flags.AttackedBy = vbNullString
+144             NpcList(aN).Target = 0
             End If
         
-140         aN = .flags.NPCAtacado
+146         aN = .flags.NPCAtacado
     
-142         If aN > 0 Then
-144             If NpcList(aN).flags.AttackedFirstBy = .Name Then
-146                 NpcList(aN).flags.AttackedFirstBy = vbNullString
+148         If aN > 0 Then
+150             If NpcList(aN).flags.AttackedFirstBy = .Name Then
+152                 NpcList(aN).flags.AttackedFirstBy = vbNullString
                 End If
             End If
     
-148         .flags.AtacadoPorNpc = 0
-150         .flags.NPCAtacado = 0
+154         .flags.AtacadoPorNpc = 0
+156         .flags.NPCAtacado = 0
     
-152         If MapData(.Pos.Map, .Pos.X, .Pos.Y).trigger <> eTrigger.ZONAPELEA Then
+158         If MapData(.Pos.Map, .Pos.X, .Pos.Y).trigger <> eTrigger.ZONAPELEA Then
 
-154             If (.flags.Privilegios And PlayerType.user) <> 0 Then
+160             If (.flags.Privilegios And PlayerType.user) <> 0 Then
 
-156                 If .flags.PendienteDelSacrificio = 0 Then
+162                 If .flags.PendienteDelSacrificio = 0 Then
                 
-158                     Call TirarTodosLosItems(UserIndex)
+164                     Call TirarTodosLosItems(UserIndex)
     
                     Else
                 
                         Dim MiObj As obj
 
-160                     MiObj.amount = 1
-162                     MiObj.ObjIndex = PENDIENTE
-164                     Call QuitarObjetos(PENDIENTE, 1, UserIndex)
-166                     Call MakeObj(MiObj, .Pos.Map, .Pos.X, .Pos.Y)
-168                     Call WriteConsoleMsg(UserIndex, "Has perdido tu pendiente del sacrificio.", FontTypeNames.FONTTYPE_INFO)
+166                     MiObj.amount = 1
+168                     MiObj.ObjIndex = PENDIENTE
+170                     Call QuitarObjetos(PENDIENTE, 1, UserIndex)
+172                     Call MakeObj(MiObj, .Pos.Map, .Pos.X, .Pos.Y)
+174                     Call WriteConsoleMsg(UserIndex, "Has perdido tu pendiente del sacrificio.", FontTypeNames.FONTTYPE_INFO)
 
                     End If
     
@@ -1416,64 +1416,64 @@ Sub UserDie(ByVal UserIndex As Integer)
     
             End If
         
-170         .flags.CarroMineria = 0
+176         .flags.CarroMineria = 0
    
             'desequipar montura
-172         If .flags.Montado > 0 Then
-174             Call DoMontar(UserIndex, ObjData(.Invent.MonturaObjIndex), .Invent.MonturaSlot)
+178         If .flags.Montado > 0 Then
+180             Call DoMontar(UserIndex, ObjData(.Invent.MonturaObjIndex), .Invent.MonturaSlot)
             End If
         
             ' << Reseteamos los posibles FX sobre el personaje >>
-176         If .Char.loops = INFINITE_LOOPS Then
-178             .Char.FX = 0
-180             .Char.loops = 0
+182         If .Char.loops = INFINITE_LOOPS Then
+184             .Char.FX = 0
+186             .Char.loops = 0
     
             End If
         
-182         .flags.VecesQueMoriste = .flags.VecesQueMoriste + 1
+188         .flags.VecesQueMoriste = .flags.VecesQueMoriste + 1
         
             ' << Restauramos los atributos >>
-184         If .flags.TomoPocion Then
+190         If .flags.TomoPocion Then
     
-186             For i = 1 To 4
-188                 .Stats.UserAtributos(i) = .Stats.UserAtributosBackUP(i)
-190             Next i
+192             For i = 1 To 4
+194                 .Stats.UserAtributos(i) = .Stats.UserAtributosBackUP(i)
+196             Next i
     
-192             Call WriteFYA(UserIndex)
+198             Call WriteFYA(UserIndex)
     
             End If
         
             '<< Cambiamos la apariencia del char >>
-194         If .flags.Navegando = 0 Then
-196             .Char.Body = iCuerpoMuerto
-198             .Char.Head = 0
-200             .Char.ShieldAnim = NingunEscudo
-202             .Char.WeaponAnim = NingunArma
-204             .Char.CascoAnim = NingunCasco
+200         If .flags.Navegando = 0 Then
+202             .Char.Body = iCuerpoMuerto
+204             .Char.Head = 0
+206             .Char.ShieldAnim = NingunEscudo
+208             .Char.WeaponAnim = NingunArma
+210             .Char.CascoAnim = NingunCasco
             Else
-206             Call EquiparBarco(UserIndex)
+212             Call EquiparBarco(UserIndex)
             End If
             
-208         Call ActualizarVelocidadDeUsuario(UserIndex)
-210         Call LimpiarEstadosAlterados(UserIndex)
+214         Call ActualizarVelocidadDeUsuario(UserIndex)
+216         Call LimpiarEstadosAlterados(UserIndex)
         
-212         For i = 1 To MAXMASCOTAS
-214             If .MascotasIndex(i) > 0 Then
-216                 Call MuereNpc(.MascotasIndex(i), 0)
+218         For i = 1 To MAXMASCOTAS
+220             If .MascotasIndex(i) > 0 Then
+222                 Call MuereNpc(.MascotasIndex(i), 0)
                 End If
-218         Next i
+224         Next i
         
-220         .NroMascotas = 0
+226         .NroMascotas = 0
         
             '<< Actualizamos clientes >>
-222         Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, NingunArma, NingunEscudo, NingunCasco)
+228         Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, NingunArma, NingunEscudo, NingunCasco)
 
-224         If MapInfo(.Pos.Map).Seguro = 0 Then
-226             Call WriteConsoleMsg(UserIndex, "Escribe /HOGAR si deseas regresar rápido a tu hogar.", FontTypeNames.FONTTYPE_New_Naranja)
+230         If MapInfo(.Pos.Map).Seguro = 0 Then
+232             Call WriteConsoleMsg(UserIndex, "Escribe /HOGAR si deseas regresar rápido a tu hogar.", FontTypeNames.FONTTYPE_New_Naranja)
             End If
             
-228         If .flags.EnReto Then
-230             Call MuereEnReto(UserIndex)
+234         If .flags.EnReto Then
+236             Call MuereEnReto(UserIndex)
             End If
 
         End With
@@ -1481,7 +1481,7 @@ Sub UserDie(ByVal UserIndex As Integer)
         Exit Sub
 
 ErrorHandler:
-232        Call RegistrarError(Err.Number, Err.Description, "UsUaRiOs.UserDie", Erl)
+238        Call RegistrarError(Err.Number, Err.Description, "UsUaRiOs.UserDie", Erl)
 
 End Sub
 
@@ -1518,7 +1518,7 @@ Sub ContarMuerte(ByVal Muerto As Integer, ByVal Atacante As Integer)
 
 ContarMuerte_Err:
 126         Call TraceError(Err.Number, Err.Description, "UsUaRiOs.ContarMuerte", Erl)
-128
+
 
 End Sub
 
@@ -1591,7 +1591,7 @@ Sub Tilelibre(ByRef Pos As WorldPos, ByRef nPos As WorldPos, ByRef obj As obj, B
 
 Tilelibre_Err:
 142     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.Tilelibre", Erl)
-144
+
         
 End Sub
 
@@ -1646,7 +1646,7 @@ Sub WarpToLegalPos(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As 
 
 WarpToLegalPos_Err:
 132     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.WarpToLegalPos", Erl)
-134
+
         
 End Sub
 
@@ -1710,93 +1710,93 @@ Sub WarpUserChar(ByVal UserIndex As Integer, _
 
                 End If
             
-                If IntervaloPuedeSerAtacado > 0 Then
-144                 .Counters.TiempoDeInmunidad = IntervaloPuedeSerAtacado
-146                 .flags.Inmunidad = 1
+144             If IntervaloPuedeSerAtacado > 0 Then
+146                 .Counters.TiempoDeInmunidad = IntervaloPuedeSerAtacado
+148                 .flags.Inmunidad = 1
                 End If
 
-148             If RequiereOxigeno(OldMap) = True And .flags.NecesitaOxigeno = False Then  'And .Stats.ELV < 35 Then
+150             If RequiereOxigeno(OldMap) = True And .flags.NecesitaOxigeno = False Then  'And .Stats.ELV < 35 Then
         
                     'Call WriteConsoleMsg(UserIndex, "Ya no necesitas oxigeno.", FontTypeNames.FONTTYPE_WARNING)
-150                 Call WriteContadores(UserIndex)
-152                 Call WriteOxigeno(UserIndex)
+152                 Call WriteContadores(UserIndex)
+154                 Call WriteOxigeno(UserIndex)
 
                 End If
         
                 'Update new Map Users
-154             MapInfo(Map).NumUsers = MapInfo(Map).NumUsers + 1
+156             MapInfo(Map).NumUsers = MapInfo(Map).NumUsers + 1
         
                 'Update old Map Users
-156             MapInfo(OldMap).NumUsers = MapInfo(OldMap).NumUsers - 1
+158             MapInfo(OldMap).NumUsers = MapInfo(OldMap).NumUsers - 1
 
-158             If MapInfo(OldMap).NumUsers < 0 Then
-160                 MapInfo(OldMap).NumUsers = 0
+160             If MapInfo(OldMap).NumUsers < 0 Then
+162                 MapInfo(OldMap).NumUsers = 0
 
                 End If
 
-180             If .flags.Traveling = 1 Then
-182                 .flags.Traveling = 0
-184                 .Counters.goHome = 0
-186                 Call WriteConsoleMsg(UserIndex, "El viaje ha terminado.", FontTypeNames.FONTTYPE_INFOBOLD)
+164             If .flags.Traveling = 1 Then
+166                 .flags.Traveling = 0
+168                 .Counters.goHome = 0
+170                 Call WriteConsoleMsg(UserIndex, "El viaje ha terminado.", FontTypeNames.FONTTYPE_INFOBOLD)
 
                 End If
    
             End If
     
-188         .Pos.X = X
-190         .Pos.Y = Y
-192         .Pos.Map = Map
+172         .Pos.X = X
+174         .Pos.Y = Y
+176         .Pos.Map = Map
 
-194         If .Grupo.EnGrupo = True Then
-196             Call CompartirUbicacion(UserIndex)
+178         If .Grupo.EnGrupo = True Then
+180             Call CompartirUbicacion(UserIndex)
             End If
     
-198         If FX Then
-200             Call MakeUserChar(True, Map, UserIndex, Map, X, Y, 1)
+182         If FX Then
+184             Call MakeUserChar(True, Map, UserIndex, Map, X, Y, 1)
             Else
-202             Call MakeUserChar(True, Map, UserIndex, Map, X, Y, 0)
+186             Call MakeUserChar(True, Map, UserIndex, Map, X, Y, 0)
             End If
     
-204         Call WriteUserCharIndexInServer(UserIndex)
+188         Call WriteUserCharIndexInServer(UserIndex)
     
             'Seguis invisible al pasar de mapa
-206         If (.flags.invisible = 1 Or .flags.Oculto = 1) And (Not .flags.AdminInvisible = 1) Then
+190         If (.flags.invisible = 1 Or .flags.Oculto = 1) And (Not .flags.AdminInvisible = 1) Then
 
                 ' Si el mapa lo permite
-208             If MapInfo(Map).SinInviOcul Then
+192             If MapInfo(Map).SinInviOcul Then
             
-210                 .flags.invisible = 0
-212                 .flags.Oculto = 0
-214                 .Counters.TiempoOculto = 0
+194                 .flags.invisible = 0
+196                 .flags.Oculto = 0
+198                 .Counters.TiempoOculto = 0
                 
-216                 Call WriteConsoleMsg(UserIndex, "Una fuerza divina que vigila esta zona te ha vuelto visible.", FontTypeNames.FONTTYPE_INFO)
+200                 Call WriteConsoleMsg(UserIndex, "Una fuerza divina que vigila esta zona te ha vuelto visible.", FontTypeNames.FONTTYPE_INFO)
                 
                 Else
-218                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(.Char.CharIndex, True))
+202                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(.Char.CharIndex, True))
 
                 End If
 
             End If
     
             'Reparacion temporal del bug de particulas. 08/07/09 LADDER
-220         If .flags.AdminInvisible = 0 Then
+204         If .flags.AdminInvisible = 0 Then
         
-222             If FX Then 'FX
-224                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_WARP, X, Y))
-226                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(.Char.CharIndex, FXIDs.FXWARP, 0))
+206             If FX Then 'FX
+208                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_WARP, X, Y))
+210                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(.Char.CharIndex, FXIDs.FXWARP, 0))
                 End If
 
             Else
-228             Call EnviarDatosASlot(UserIndex, PrepareMessageSetInvisible(.Char.CharIndex, True))
+212             Call EnviarDatosASlot(UserIndex, PrepareMessageSetInvisible(.Char.CharIndex, True))
 
             End If
         
-230         If .NroMascotas > 0 Then Call WarpMascotas(UserIndex)
+214         If .NroMascotas > 0 Then Call WarpMascotas(UserIndex)
     
-232         If MapInfo(Map).zone = "DUNGEON" Or MapData(Map, X, Y).trigger >= 9 Then
+216         If MapInfo(Map).zone = "DUNGEON" Or MapData(Map, X, Y).trigger >= 9 Then
 
-234             If .flags.Montado > 0 Then
-236                 Call DoMontar(UserIndex, ObjData(.Invent.MonturaObjIndex), .Invent.MonturaSlot)
+218             If .flags.Montado > 0 Then
+220                 Call DoMontar(UserIndex, ObjData(.Invent.MonturaObjIndex), .Invent.MonturaSlot)
                 End If
 
             End If
@@ -1806,9 +1806,9 @@ Sub WarpUserChar(ByVal UserIndex As Integer, _
         Exit Sub
 
 WarpUserChar_Err:
-238     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.WarpUserChar", Erl)
+222     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.WarpUserChar", Erl)
 
-240
+
         
 End Sub
 
@@ -1844,7 +1844,7 @@ Sub WarpFamiliar(ByVal UserIndex As Integer)
 
 WarpFamiliar_Err:
 114     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.WarpFamiliar", Erl)
-116
+
         
 End Sub
 
@@ -1879,7 +1879,7 @@ Sub Cerrar_Usuario(ByVal UserIndex As Integer)
 
 Cerrar_Usuario_Err:
 124     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.Cerrar_Usuario", Erl)
-126
+
 
 End Sub
 
@@ -1928,7 +1928,7 @@ Public Sub CancelExit(ByVal UserIndex As Integer)
 
 CancelExit_Err:
 120     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.CancelExit", Erl)
-122
+
         
 End Sub
 
@@ -1961,7 +1961,7 @@ Public Sub CambiarNick(ByVal UserIndex As Integer, ByVal UserIndexDestino As Int
 
 CambiarNick_Err:
 110     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.CambiarNick", Erl)
-112
+
         
 End Sub
 
@@ -2000,7 +2000,7 @@ Sub SendUserStatsTxtOFF(ByVal sendIndex As Integer, ByVal nombre As String)
 
 SendUserStatsTxtOFF_Err:
 124     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.SendUserStatsTxtOFF", Erl)
-126
+
         
 End Sub
 
@@ -2075,7 +2075,7 @@ Sub VolverCriminal(ByVal UserIndex As Integer)
 
 VolverCriminal_Err:
 120     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.VolverCriminal", Erl)
-122
+
         
 End Sub
 
@@ -2107,7 +2107,7 @@ Sub VolverCiudadano(ByVal UserIndex As Integer)
 
 VolverCiudadano_Err:
 114     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.VolverCiudadano", Erl)
-116
+
         
 End Sub
 
@@ -2133,7 +2133,7 @@ Public Function getMaxInventorySlots(ByVal UserIndex As Integer) As Byte
 
 getMaxInventorySlots_Err:
 106     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.getMaxInventorySlots", Erl)
-108
+
         
 End Function
 
@@ -2337,7 +2337,7 @@ Sub MoveUserToSide(ByVal UserIndex As Integer, ByVal Heading As eHeading)
     
 Handler:
 120     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.MoveUserToSide", Erl)
-122
+
 End Sub
 
 ' Autor: WyroX - 02/03/2021
@@ -2430,7 +2430,7 @@ Public Sub LimpiarEstadosAlterados(ByVal UserIndex As Integer)
     
 Handler:
 182     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.LimpiarEstadosAlterados", Erl)
-184
+
 
 End Sub
 
@@ -2485,6 +2485,6 @@ UpdateSpeed:
     
 ActualizarVelocidadDeUsuario_Err:
 134     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.CalcularVelocidad_Err", Erl)
-136
+
 End Function
 

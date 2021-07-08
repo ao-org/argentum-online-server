@@ -86,7 +86,7 @@ Public Sub InitAreas()
 
 InitAreas_Err:
 132     Call TraceError(Err.Number, Err.Description, "ModAreas.InitAreas", Erl)
-134
+
         
 End Sub
  
@@ -133,7 +133,7 @@ Public Sub AreasOptimizacion()
 
 AreasOptimizacion_Err:
 124     Call TraceError(Err.Number, Err.Description, "ModAreas.AreasOptimizacion", Erl)
-126
+
         
 End Sub
  
@@ -299,7 +299,7 @@ Public Sub CheckUpdateNeededUser(ByVal UserIndex As Integer, ByVal Head As Byte,
 
 CheckUpdateNeededUser_Err:
 250     Call TraceError(Err.Number, Err.Description, "ModAreas.CheckUpdateNeededUser", Erl)
-252
+
         
 End Sub
 
@@ -406,7 +406,7 @@ Public Sub CheckUpdateNeededNpc(ByVal NpcIndex As Integer, ByVal Head As Byte)
 
 CheckUpdateNeededNpc_Err:
 208     Call TraceError(Err.Number, Err.Description, "ModAreas.CheckUpdateNeededNpc", Erl)
-210
+
         
 End Sub
  
@@ -452,7 +452,7 @@ Public Sub QuitarUser(ByVal UserIndex As Integer, ByVal Map As Integer)
 
 QuitarUser_Err:
 122     Call TraceError(Err.Number, Err.Description, "ModAreas.QuitarUser", Erl)
-124
+
         
 End Sub
  
@@ -518,7 +518,7 @@ Public Sub AgregarUser(ByVal UserIndex As Integer, ByVal Map As Integer, Optiona
 
 AgregarUser_Err:
 136     Call TraceError(Err.Number, Err.Description, "ModAreas.AgregarUser", Erl)
-138
+
         
 End Sub
  
@@ -545,7 +545,7 @@ Public Sub AgregarNpc(ByVal NpcIndex As Integer)
 
 AgregarNpc_Err:
 112     Call TraceError(Err.Number, Err.Description, "ModAreas.AgregarNpc", Erl)
-114
+
         
 End Sub
 

@@ -47,7 +47,7 @@ Public Function TieneQuest(ByVal UserIndex As Integer, ByVal QuestNumber As Inte
 
 TieneQuest_Err:
 110     Call TraceError(Err.Number, Err.Description, "ModQuest.TieneQuest", Erl)
-112
+
         
 End Function
  
@@ -79,7 +79,7 @@ Public Function FreeQuestSlot(ByVal UserIndex As Integer) As Byte
 
 FreeQuestSlot_Err:
 110     Call TraceError(Err.Number, Err.Description, "ModQuest.FreeQuestSlot", Erl)
-112
+
         
 End Function
  
@@ -240,7 +240,7 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
 
 FinishQuest_Err:
 202     Call TraceError(Err.Number, Err.Description, "ModQuest.FinishQuest", Erl)
-204
+
         
 End Sub
  
@@ -265,7 +265,7 @@ Public Sub AddDoneQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer)
 
 AddDoneQuest_Err:
 108     Call TraceError(Err.Number, Err.Description, "ModQuest.AddDoneQuest", Erl)
-110
+
         
 End Sub
  
@@ -311,7 +311,7 @@ Public Function UserDoneQuest(ByVal UserIndex As Integer, ByVal QuestIndex As In
 
 UserDoneQuest_Err:
 118     Call TraceError(Err.Number, Err.Description, "ModQuest.UserDoneQuest", Erl)
-120
+
         
 End Function
  
@@ -331,39 +331,39 @@ Public Sub CleanQuestSlot(ByVal UserIndex As Integer, ByVal QuestSlot As Integer
 102         If .QuestIndex Then
 
                 ' Le quitamos los objetos de quest que no puede tirar
-                If QuestList(.QuestIndex).RequiredOBJs Then
+104             If QuestList(.QuestIndex).RequiredOBJs Then
 
                     Dim ObjIndex As Integer
                     
-                    For i = 1 To QuestList(.QuestIndex).RequiredOBJs
-                        ObjIndex = QuestList(.QuestIndex).RequiredOBJ(i).ObjIndex
+106                 For i = 1 To QuestList(.QuestIndex).RequiredOBJs
+108                     ObjIndex = QuestList(.QuestIndex).RequiredOBJ(i).ObjIndex
                         
-                        If ObjData(ObjIndex).Intirable = 1 And ObjData(ObjIndex).Instransferible Then
-                            Call QuitarObjetos(ObjIndex, MAX_INVENTORY_OBJS, UserIndex)
+110                     If ObjData(ObjIndex).Intirable = 1 And ObjData(ObjIndex).Instransferible Then
+112                         Call QuitarObjetos(ObjIndex, MAX_INVENTORY_OBJS, UserIndex)
                         End If
-                    Next i
+114                 Next i
 
                 End If
 
-104             If QuestList(.QuestIndex).RequiredNPCs Then
+116             If QuestList(.QuestIndex).RequiredNPCs Then
 
-106                 For i = 1 To QuestList(.QuestIndex).RequiredNPCs
-108                     .NPCsKilled(i) = 0
-110                 Next i
+118                 For i = 1 To QuestList(.QuestIndex).RequiredNPCs
+120                     .NPCsKilled(i) = 0
+122                 Next i
 
                 End If
                 
-112           If QuestList(.QuestIndex).RequiredTargetNPCs Then
+124           If QuestList(.QuestIndex).RequiredTargetNPCs Then
 
-114              For i = 1 To QuestList(.QuestIndex).RequiredTargetNPCs
-116                  .NPCsTarget(i) = 0
-118              Next i
+126              For i = 1 To QuestList(.QuestIndex).RequiredTargetNPCs
+128                  .NPCsTarget(i) = 0
+130              Next i
 
                 End If
 
             End If
 
-120         .QuestIndex = 0
+132         .QuestIndex = 0
 
         End With
 
@@ -371,8 +371,8 @@ Public Sub CleanQuestSlot(ByVal UserIndex As Integer, ByVal QuestSlot As Integer
         Exit Sub
 
 CleanQuestSlot_Err:
-122     Call TraceError(Err.Number, Err.Description, "ModQuest.CleanQuestSlot", Erl)
-124
+134     Call TraceError(Err.Number, Err.Description, "ModQuest.CleanQuestSlot", Erl)
+
         
 End Sub
  
@@ -402,7 +402,7 @@ Public Sub ResetQuestStats(ByVal UserIndex As Integer)
 
 ResetQuestStats_Err:
 112     Call TraceError(Err.Number, Err.Description, "ModQuest.ResetQuestStats", Erl)
-114
+
         
 End Sub
  
@@ -609,7 +609,7 @@ Public Sub LoadQuestStats(ByVal UserIndex As Integer, ByRef UserFile As clsIniMa
 
 LoadQuestStats_Err:
 150     Call TraceError(Err.Number, Err.Description, "ModQuest.LoadQuestStats", Erl)
-152
+
         
 End Sub
  
@@ -675,7 +675,7 @@ Public Sub SaveQuestStats(ByVal UserIndex As Integer, ByRef UserFile As String)
 
 SaveQuestStats_Err:
 134     Call TraceError(Err.Number, Err.Description, "ModQuest.SaveQuestStats", Erl)
-136
+
         
 End Sub
   
@@ -720,7 +720,7 @@ Public Sub ArrangeUserQuests(ByVal UserIndex As Integer)
 
 ArrangeUserQuests_Err:
 118     Call TraceError(Err.Number, Err.Description, "ModQuest.ArrangeUserQuests", Erl)
-120
+
         
 End Sub
  
@@ -796,7 +796,7 @@ Public Sub EnviarQuest(ByVal UserIndex As Integer)
 
 EnviarQuest_Err:
 126     Call TraceError(Err.Number, Err.Description, "ModQuest.EnviarQuest", Erl)
-128
+
         
 End Sub
 
@@ -910,6 +910,6 @@ Function FaltanItemsQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Intege
             
 Handler:
 112     Call TraceError(Err.Number, Err.Description, "ModQuest.FaltanItemsQuest", Erl)
-114
+
 
 End Function

@@ -66,138 +66,138 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
             Dim TempCharIndex  As Integer
        
 104         If MapData(Map, X, Y).NpcIndex > 0 Then     'Acciones NPCs
-                TempCharIndex = MapData(Map, X, Y).NpcIndex
+106             TempCharIndex = MapData(Map, X, Y).NpcIndex
 
                 'Set the target NPC
-106             UserList(UserIndex).flags.TargetNPC = TempCharIndex
-108             UserList(UserIndex).flags.TargetNpcTipo = NpcList(TempCharIndex).NPCtype
+108             UserList(UserIndex).flags.TargetNPC = TempCharIndex
+110             UserList(UserIndex).flags.TargetNpcTipo = NpcList(TempCharIndex).NPCtype
         
-110             If NpcList(TempCharIndex).Comercia = 1 Then
+112             If NpcList(TempCharIndex).Comercia = 1 Then
 
                     '¿Esta el user muerto? Si es asi no puede comerciar
-112                 If UserList(UserIndex).flags.Muerto = 1 Then
-114                     Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
+114                 If UserList(UserIndex).flags.Muerto = 1 Then
+116                     Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
 
                     End If
             
                     'Is it already in commerce mode??
-116                 If UserList(UserIndex).flags.Comerciando Then
+118                 If UserList(UserIndex).flags.Comerciando Then
                         Exit Sub
 
                     End If
             
-118                 If Distancia(NpcList(UserList(UserIndex).flags.TargetNPC).Pos, UserList(UserIndex).Pos) > 6 Then
-120                     Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
+120                 If Distancia(NpcList(UserList(UserIndex).flags.TargetNPC).Pos, UserList(UserIndex).Pos) > 6 Then
+122                     Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
                         'Call WriteConsoleMsg(UserIndex, "Estas demasiado lejos del vendedor.", FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
 
                     End If
                     
                     ' WyroX: Hacemos que se detenga a hablar un momento :P
-122                 If NpcList(TempCharIndex).Movement = TipoAI.Caminata Then
-124                     NpcList(TempCharIndex).Contadores.IntervaloMovimiento = GetTickCount + 15000 - NpcList(TempCharIndex).IntervaloMovimiento ' 15 segundos
+124                 If NpcList(TempCharIndex).Movement = TipoAI.Caminata Then
+126                     NpcList(TempCharIndex).Contadores.IntervaloMovimiento = GetTickCount + 15000 - NpcList(TempCharIndex).IntervaloMovimiento ' 15 segundos
                     End If
             
                     'Iniciamos la rutina pa' comerciar.
-126                 Call IniciarComercioNPC(UserIndex)
+128                 Call IniciarComercioNPC(UserIndex)
         
-128             ElseIf NpcList(TempCharIndex).NPCtype = eNPCType.Banquero Then
+130             ElseIf NpcList(TempCharIndex).NPCtype = eNPCType.Banquero Then
 
                     '¿Esta el user muerto? Si es asi no puede comerciar
-130                 If UserList(UserIndex).flags.Muerto = 1 Then
-132                     Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
+132                 If UserList(UserIndex).flags.Muerto = 1 Then
+134                     Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
 
                     End If
             
                     'Is it already in commerce mode??
-134                 If UserList(UserIndex).flags.Comerciando Then
+136                 If UserList(UserIndex).flags.Comerciando Then
                         Exit Sub
 
                     End If
             
-136                 If Distancia(NpcList(TempCharIndex).Pos, UserList(UserIndex).Pos) > 6 Then
-138                     Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
+138                 If Distancia(NpcList(TempCharIndex).Pos, UserList(UserIndex).Pos) > 6 Then
+140                     Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
                         'Call WriteConsoleMsg(UserIndex, "Estas demasiado lejos del banquero.", FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
 
                     End If
             
                     'A depositar de una
-140                 Call IniciarBanco(UserIndex)
+142                 Call IniciarBanco(UserIndex)
             
-142             ElseIf NpcList(TempCharIndex).NPCtype = eNPCType.Pirata Then  'VIAJES
+144             ElseIf NpcList(TempCharIndex).NPCtype = eNPCType.Pirata Then  'VIAJES
 
                     '¿Esta el user muerto? Si es asi no puede comerciar
-144                 If UserList(UserIndex).flags.Muerto = 1 Then
-146                     Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
+146                 If UserList(UserIndex).flags.Muerto = 1 Then
+148                     Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
 
                     End If
             
                     'Is it already in commerce mode??
-148                 If UserList(UserIndex).flags.Comerciando Then
+150                 If UserList(UserIndex).flags.Comerciando Then
                         Exit Sub
 
                     End If
             
-150                 If Distancia(NpcList(TempCharIndex).Pos, UserList(UserIndex).Pos) > 5 Then
-152                     Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
-154                     Call WriteConsoleMsg(UserIndex, "Estas demasiado lejos del banquero.", FontTypeNames.FONTTYPE_INFO)
+152                 If Distancia(NpcList(TempCharIndex).Pos, UserList(UserIndex).Pos) > 5 Then
+154                     Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
+156                     Call WriteConsoleMsg(UserIndex, "Estas demasiado lejos del banquero.", FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
 
                     End If
             
-156                 If NpcList(TempCharIndex).SoundOpen <> 0 Then
-158                     Call WritePlayWave(UserIndex, NpcList(TempCharIndex).SoundOpen, NO_3D_SOUND, NO_3D_SOUND)
+158                 If NpcList(TempCharIndex).SoundOpen <> 0 Then
+160                     Call WritePlayWave(UserIndex, NpcList(TempCharIndex).SoundOpen, NO_3D_SOUND, NO_3D_SOUND)
 
                     End If
 
                     'A depositar de unaIniciarTransporte
-160                 Call WriteViajarForm(UserIndex, TempCharIndex)
+162                 Call WriteViajarForm(UserIndex, TempCharIndex)
                     Exit Sub
             
-162             ElseIf NpcList(TempCharIndex).NPCtype = eNPCType.Revividor Or NpcList(TempCharIndex).NPCtype = eNPCType.ResucitadorNewbie Then
+164             ElseIf NpcList(TempCharIndex).NPCtype = eNPCType.Revividor Or NpcList(TempCharIndex).NPCtype = eNPCType.ResucitadorNewbie Then
 
-164                 If Distancia(UserList(UserIndex).Pos, NpcList(TempCharIndex).Pos) > 5 Then
+166                 If Distancia(UserList(UserIndex).Pos, NpcList(TempCharIndex).Pos) > 5 Then
                         'Call WriteConsoleMsg(UserIndex, "El sacerdote no puede curarte debido a que estas demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
-166                     Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
+168                     Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
 
                     End If
                     
                     ' WyroX: Hacemos que se detenga a hablar un momento :P
-168                 If NpcList(TempCharIndex).Movement = Caminata Then
-170                     NpcList(TempCharIndex).Contadores.IntervaloMovimiento = GetTickCount + 5000 - NpcList(TempCharIndex).IntervaloMovimiento ' 5 segundos
+170                 If NpcList(TempCharIndex).Movement = Caminata Then
+172                     NpcList(TempCharIndex).Contadores.IntervaloMovimiento = GetTickCount + 5000 - NpcList(TempCharIndex).IntervaloMovimiento ' 5 segundos
                     End If
             
-172                 UserList(UserIndex).flags.Envenenado = 0
-174                 UserList(UserIndex).flags.Incinerado = 0
+174                 UserList(UserIndex).flags.Envenenado = 0
+176                 UserList(UserIndex).flags.Incinerado = 0
       
                     'Revivimos si es necesario
-176                 If UserList(UserIndex).flags.Muerto = 1 And (NpcList(TempCharIndex).NPCtype = eNPCType.Revividor Or EsNewbie(UserIndex)) Then
-178                     Call WriteConsoleMsg(UserIndex, "¡Has sido resucitado!", FontTypeNames.FONTTYPE_INFO)
-180                     Call RevivirUsuario(UserIndex)
-182                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, ParticulasIndex.Resucitar, 30, False))
-184                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("117", UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+178                 If UserList(UserIndex).flags.Muerto = 1 And (NpcList(TempCharIndex).NPCtype = eNPCType.Revividor Or EsNewbie(UserIndex)) Then
+180                     Call WriteConsoleMsg(UserIndex, "¡Has sido resucitado!", FontTypeNames.FONTTYPE_INFO)
+182                     Call RevivirUsuario(UserIndex)
+184                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, ParticulasIndex.Resucitar, 30, False))
+186                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("117", UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
                 
                     Else
 
                         'curamos totalmente
-186                     If UserList(UserIndex).Stats.MinHp <> UserList(UserIndex).Stats.MaxHp Then
-188                         UserList(UserIndex).Stats.MinHp = UserList(UserIndex).Stats.MaxHp
-190                         Call WritePlayWave(UserIndex, "117", UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y)
+188                     If UserList(UserIndex).Stats.MinHp <> UserList(UserIndex).Stats.MaxHp Then
+190                         UserList(UserIndex).Stats.MinHp = UserList(UserIndex).Stats.MaxHp
+192                         Call WritePlayWave(UserIndex, "117", UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y)
                             'Call WriteConsoleMsg(UserIndex, "El Cura lanza unas palabras al aire. Comienzas a sentir como tu cuerpo se vuelve a formar...¡Has sido curado!", FontTypeNames.FONTTYPE_INFO)
-192                         Call WriteLocaleMsg(UserIndex, "83", FontTypeNames.FONTTYPE_INFOIAO)
+194                         Call WriteLocaleMsg(UserIndex, "83", FontTypeNames.FONTTYPE_INFOIAO)
                     
-194                         Call WriteUpdateUserStats(UserIndex)
+196                         Call WriteUpdateUserStats(UserIndex)
 
-196                         If Status(UserIndex) = 2 Or Status(UserIndex) = 0 Then
-198                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, ParticulasIndex.CurarCrimi, 100, False))
+198                         If Status(UserIndex) = 2 Or Status(UserIndex) = 0 Then
+200                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, ParticulasIndex.CurarCrimi, 100, False))
                             Else
            
-200                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, ParticulasIndex.Curar, 100, False))
+202                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, ParticulasIndex.Curar, 100, False))
 
                             End If
 
@@ -205,81 +205,81 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
 
                     End If
          
-202             ElseIf NpcList(TempCharIndex).NPCtype = eNPCType.Subastador Then
+204             ElseIf NpcList(TempCharIndex).NPCtype = eNPCType.Subastador Then
 
-204                 If UserList(UserIndex).flags.Muerto = 1 Then
-206                     Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
+206                 If UserList(UserIndex).flags.Muerto = 1 Then
+208                     Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
 
                     End If
             
-208                 If Distancia(NpcList(UserList(UserIndex).flags.TargetNPC).Pos, UserList(UserIndex).Pos) > 1 Then
+210                 If Distancia(NpcList(UserList(UserIndex).flags.TargetNPC).Pos, UserList(UserIndex).Pos) > 1 Then
                         ' Call WriteConsoleMsg(UserIndex, "Estas demasiado lejos del subastador.", FontTypeNames.FONTTYPE_INFO)
-210                     Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
+212                     Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
 
                     End If
                     
                     ' WyroX: Hacemos que se detenga a hablar un momento :P
-212                 If NpcList(TempCharIndex).Movement = Caminata Then
-214                     NpcList(TempCharIndex).Contadores.IntervaloMovimiento = GetTickCount + 20000 - NpcList(TempCharIndex).IntervaloMovimiento ' 20 segundos
+214                 If NpcList(TempCharIndex).Movement = Caminata Then
+216                     NpcList(TempCharIndex).Contadores.IntervaloMovimiento = GetTickCount + 20000 - NpcList(TempCharIndex).IntervaloMovimiento ' 20 segundos
                     End If
 
-216                 Call IniciarSubasta(UserIndex)
+218                 Call IniciarSubasta(UserIndex)
             
-218             ElseIf NpcList(TempCharIndex).NPCtype = eNPCType.Quest Then
+220             ElseIf NpcList(TempCharIndex).NPCtype = eNPCType.Quest Then
 
-220                 If UserList(UserIndex).flags.Muerto = 1 Then
-222                     Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
+222                 If UserList(UserIndex).flags.Muerto = 1 Then
+224                     Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
                     End If
                     
                     ' WyroX: Hacemos que se detenga a hablar un momento :P
-224                 If NpcList(TempCharIndex).Movement = Caminata Then
-226                     NpcList(TempCharIndex).Contadores.IntervaloMovimiento = GetTickCount + 15000 - NpcList(TempCharIndex).IntervaloMovimiento ' 15 segundos
+226                 If NpcList(TempCharIndex).Movement = Caminata Then
+228                     NpcList(TempCharIndex).Contadores.IntervaloMovimiento = GetTickCount + 15000 - NpcList(TempCharIndex).IntervaloMovimiento ' 15 segundos
                     End If
             
-228                 Call EnviarQuest(UserIndex)
+230                 Call EnviarQuest(UserIndex)
             
-230             ElseIf NpcList(TempCharIndex).NPCtype = eNPCType.Enlistador Then
+232             ElseIf NpcList(TempCharIndex).NPCtype = eNPCType.Enlistador Then
 
-232                 If UserList(UserIndex).flags.Muerto = 1 Then
-234                     Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
+234                 If UserList(UserIndex).flags.Muerto = 1 Then
+236                     Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
 
                     End If
             
-236                 If Distancia(NpcList(UserList(UserIndex).flags.TargetNPC).Pos, UserList(UserIndex).Pos) > 4 Then
-238                     Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
+238                 If Distancia(NpcList(UserList(UserIndex).flags.TargetNPC).Pos, UserList(UserIndex).Pos) > 4 Then
+240                     Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
 
                     End If
         
-240                 If NpcList(UserList(UserIndex).flags.TargetNPC).flags.Faccion = 0 Then
-242                     If UserList(UserIndex).Faccion.ArmadaReal = 0 Then
-244                         Call EnlistarArmadaReal(UserIndex)
+242                 If NpcList(UserList(UserIndex).flags.TargetNPC).flags.Faccion = 0 Then
+244                     If UserList(UserIndex).Faccion.ArmadaReal = 0 Then
+246                         Call EnlistarArmadaReal(UserIndex)
                         Else
-246                         Call RecompensaArmadaReal(UserIndex)
+248                         Call RecompensaArmadaReal(UserIndex)
 
                         End If
                     Else
-248                     If UserList(UserIndex).Faccion.FuerzasCaos = 0 Then
-250                         Call EnlistarCaos(UserIndex)
+250                     If UserList(UserIndex).Faccion.FuerzasCaos = 0 Then
+252                         Call EnlistarCaos(UserIndex)
                         Else
-252                         Call RecompensaCaos(UserIndex)
+254                         Call RecompensaCaos(UserIndex)
                         End If
                     End If
 
-254             ElseIf NpcList(TempCharIndex).NPCtype = eNPCType.Gobernador Then
+256             ElseIf NpcList(TempCharIndex).NPCtype = eNPCType.Gobernador Then
 
-256                 If UserList(UserIndex).flags.Muerto = 1 Then
-258                     Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFOIAO)
+258                 If UserList(UserIndex).flags.Muerto = 1 Then
+260                     Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFOIAO)
                         Exit Sub
 
                     End If
             
-260                 If Distancia(NpcList(UserList(UserIndex).flags.TargetNPC).Pos, UserList(UserIndex).Pos) > 3 Then
-262                     Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
+262                 If Distancia(NpcList(UserList(UserIndex).flags.TargetNPC).Pos, UserList(UserIndex).Pos) > 3 Then
+264                     Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
                         'Call WriteConsoleMsg(UserIndex, "Estas demasiado lejos del gobernador.", FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
 
@@ -287,146 +287,146 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
 
                     Dim DeDonde As String
                     Dim Gobernador As npc
-264                     Gobernador = NpcList(UserList(UserIndex).flags.TargetNPC)
+266                     Gobernador = NpcList(UserList(UserIndex).flags.TargetNPC)
             
-266                 If UserList(UserIndex).Hogar = Gobernador.GobernadorDe Then
-268                     Call WriteChatOverHead(UserIndex, "Ya perteneces a esta ciudad. Gracias por ser uno más de nosotros.", Gobernador.Char.CharIndex, vbWhite)
+268                 If UserList(UserIndex).Hogar = Gobernador.GobernadorDe Then
+270                     Call WriteChatOverHead(UserIndex, "Ya perteneces a esta ciudad. Gracias por ser uno más de nosotros.", Gobernador.Char.CharIndex, vbWhite)
                         Exit Sub
 
                     End If
             
-270                 If UserList(UserIndex).Faccion.Status = 0 Or UserList(UserIndex).Faccion.Status = 2 Then
-272                     If Gobernador.GobernadorDe = eCiudad.cBanderbill Then
-274                         Call WriteChatOverHead(UserIndex, "Aquí no aceptamos criminales.", Gobernador.Char.CharIndex, vbWhite)
+272                 If UserList(UserIndex).Faccion.Status = 0 Or UserList(UserIndex).Faccion.Status = 2 Then
+274                     If Gobernador.GobernadorDe = eCiudad.cBanderbill Then
+276                         Call WriteChatOverHead(UserIndex, "Aquí no aceptamos criminales.", Gobernador.Char.CharIndex, vbWhite)
                             Exit Sub
 
                         End If
 
                     End If
             
-276                 If UserList(UserIndex).Faccion.Status = 3 Or UserList(UserIndex).Faccion.Status = 1 Then
-278                     If Gobernador.GobernadorDe = eCiudad.cArkhein Then
-280                         Call WriteChatOverHead(UserIndex, "¡¡Sal de aquí ciudadano asqueroso!!", Gobernador.Char.CharIndex, vbWhite)
+278                 If UserList(UserIndex).Faccion.Status = 3 Or UserList(UserIndex).Faccion.Status = 1 Then
+280                     If Gobernador.GobernadorDe = eCiudad.cArkhein Then
+282                         Call WriteChatOverHead(UserIndex, "¡¡Sal de aquí ciudadano asqueroso!!", Gobernador.Char.CharIndex, vbWhite)
                             Exit Sub
 
                         End If
 
                     End If
             
-282                 If UserList(UserIndex).Hogar <> Gobernador.GobernadorDe Then
+284                 If UserList(UserIndex).Hogar <> Gobernador.GobernadorDe Then
             
-284                     UserList(UserIndex).PosibleHogar = Gobernador.GobernadorDe
+286                     UserList(UserIndex).PosibleHogar = Gobernador.GobernadorDe
                 
-286                     Select Case UserList(UserIndex).PosibleHogar
+288                     Select Case UserList(UserIndex).PosibleHogar
 
                             Case eCiudad.cUllathorpe
-288                             DeDonde = "Ullathorpe"
+290                             DeDonde = "Ullathorpe"
                             
-290                         Case eCiudad.cNix
-292                             DeDonde = "Nix"
+292                         Case eCiudad.cNix
+294                             DeDonde = "Nix"
                 
-294                         Case eCiudad.cBanderbill
-296                             DeDonde = "Banderbill"
+296                         Case eCiudad.cBanderbill
+298                             DeDonde = "Banderbill"
                         
-298                         Case eCiudad.cLindos
-300                             DeDonde = "Lindos"
+300                         Case eCiudad.cLindos
+302                             DeDonde = "Lindos"
                             
-302                         Case eCiudad.cArghal
-304                             DeDonde = " Arghal"
+304                         Case eCiudad.cArghal
+306                             DeDonde = " Arghal"
                             
-306                         Case eCiudad.cArkhein
-308                             DeDonde = " Arkhein"
+308                         Case eCiudad.cArkhein
+310                             DeDonde = " Arkhein"
 
-310                         Case Else
-312                             DeDonde = "Ullathorpe"
+312                         Case Else
+314                             DeDonde = "Ullathorpe"
 
                         End Select
                     
-314                     UserList(UserIndex).flags.pregunta = 3
-316                     Call WritePreguntaBox(UserIndex, "¿Te gustaria ser ciudadano de " & DeDonde & "?")
+316                     UserList(UserIndex).flags.pregunta = 3
+318                     Call WritePreguntaBox(UserIndex, "¿Te gustaria ser ciudadano de " & DeDonde & "?")
                 
                     End If
                     
-                ElseIf NpcList(TempCharIndex).Craftea > 0 Then
-                    If UserList(UserIndex).flags.Muerto = 1 Then
-                        Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFOIAO)
+320             ElseIf NpcList(TempCharIndex).Craftea > 0 Then
+322                 If UserList(UserIndex).flags.Muerto = 1 Then
+324                     Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFOIAO)
                         Exit Sub
                     End If
             
-                    If Distancia(NpcList(UserList(UserIndex).flags.TargetNPC).Pos, UserList(UserIndex).Pos) > 3 Then
-                        Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
+326                 If Distancia(NpcList(UserList(UserIndex).flags.TargetNPC).Pos, UserList(UserIndex).Pos) > 3 Then
+328                     Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
                     End If
                 
-                    UserList(UserIndex).flags.Crafteando = NpcList(TempCharIndex).Craftea
-                    Call WriteOpenCrafting(UserIndex, NpcList(TempCharIndex).Craftea)
+330                 UserList(UserIndex).flags.Crafteando = NpcList(TempCharIndex).Craftea
+332                 Call WriteOpenCrafting(UserIndex, NpcList(TempCharIndex).Craftea)
                 End If
         
                 '¿Es un obj?
-318         ElseIf MapData(Map, X, Y).ObjInfo.ObjIndex > 0 Then
-320             UserList(UserIndex).flags.TargetObj = MapData(Map, X, Y).ObjInfo.ObjIndex
+334         ElseIf MapData(Map, X, Y).ObjInfo.ObjIndex > 0 Then
+336             UserList(UserIndex).flags.TargetObj = MapData(Map, X, Y).ObjInfo.ObjIndex
         
-322             Select Case ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex).OBJType
+338             Select Case ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex).OBJType
             
                     Case eOBJType.otPuertas 'Es una puerta
-324                     Call AccionParaPuerta(Map, X, Y, UserIndex)
+340                     Call AccionParaPuerta(Map, X, Y, UserIndex)
 
-326                 Case eOBJType.otCarteles 'Es un cartel
-328                     Call AccionParaCartel(Map, X, Y, UserIndex)
+342                 Case eOBJType.otCarteles 'Es un cartel
+344                     Call AccionParaCartel(Map, X, Y, UserIndex)
 
-330                 Case eOBJType.OtCorreo 'Es un cartel
+346                 Case eOBJType.OtCorreo 'Es un cartel
                         'Call AccionParaCorreo(Map, x, Y, UserIndex)
 
-332                 Case eOBJType.otForos 'Foro
+348                 Case eOBJType.otForos 'Foro
                         'Call AccionParaForo(Map, X, Y, UserIndex)
-334                     Call WriteConsoleMsg(UserIndex, "El foro está temporalmente deshabilitado.", FontTypeNames.FONTTYPE_EJECUCION)
+350                     Call WriteConsoleMsg(UserIndex, "El foro está temporalmente deshabilitado.", FontTypeNames.FONTTYPE_EJECUCION)
 
-336                 Case eOBJType.OtPozos 'Pozos
+352                 Case eOBJType.OtPozos 'Pozos
                         'Call AccionParaPozos(Map, x, Y, UserIndex)
 
-338                 Case eOBJType.otArboles 'Pozos
+354                 Case eOBJType.otArboles 'Pozos
                         'Call AccionParaArboles(Map, x, Y, UserIndex)
 
-340                 Case eOBJType.otYunque 'Pozos
-342                     Call AccionParaYunque(Map, X, Y, UserIndex)
+356                 Case eOBJType.otYunque 'Pozos
+358                     Call AccionParaYunque(Map, X, Y, UserIndex)
 
-344                 Case eOBJType.otLeña    'Leña
+360                 Case eOBJType.otLeña    'Leña
 
-346                     If MapData(Map, X, Y).ObjInfo.ObjIndex = FOGATA_APAG And UserList(UserIndex).flags.Muerto = 0 Then
-348                         Call AccionParaRamita(Map, X, Y, UserIndex)
+362                     If MapData(Map, X, Y).ObjInfo.ObjIndex = FOGATA_APAG And UserList(UserIndex).flags.Muerto = 0 Then
+364                         Call AccionParaRamita(Map, X, Y, UserIndex)
 
                         End If
 
                 End Select
 
                 '>>>>>>>>>>>OBJETOS QUE OCUPAM MAS DE UN TILE<<<<<<<<<<<<<
-350         ElseIf MapData(Map, X + 1, Y).ObjInfo.ObjIndex > 0 Then
-352             UserList(UserIndex).flags.TargetObj = MapData(Map, X + 1, Y).ObjInfo.ObjIndex
+366         ElseIf MapData(Map, X + 1, Y).ObjInfo.ObjIndex > 0 Then
+368             UserList(UserIndex).flags.TargetObj = MapData(Map, X + 1, Y).ObjInfo.ObjIndex
         
-354             Select Case ObjData(MapData(Map, X + 1, Y).ObjInfo.ObjIndex).OBJType
+370             Select Case ObjData(MapData(Map, X + 1, Y).ObjInfo.ObjIndex).OBJType
             
                     Case eOBJType.otPuertas 'Es una puerta
-356                     Call AccionParaPuerta(Map, X + 1, Y, UserIndex)
+372                     Call AccionParaPuerta(Map, X + 1, Y, UserIndex)
             
                 End Select
 
-358         ElseIf MapData(Map, X + 1, Y + 1).ObjInfo.ObjIndex > 0 Then
-360             UserList(UserIndex).flags.TargetObj = MapData(Map, X + 1, Y + 1).ObjInfo.ObjIndex
+374         ElseIf MapData(Map, X + 1, Y + 1).ObjInfo.ObjIndex > 0 Then
+376             UserList(UserIndex).flags.TargetObj = MapData(Map, X + 1, Y + 1).ObjInfo.ObjIndex
 
-362             Select Case ObjData(MapData(Map, X + 1, Y + 1).ObjInfo.ObjIndex).OBJType
+378             Select Case ObjData(MapData(Map, X + 1, Y + 1).ObjInfo.ObjIndex).OBJType
             
                     Case eOBJType.otPuertas 'Es una puerta
-364                     Call AccionParaPuerta(Map, X + 1, Y + 1, UserIndex)
+380                     Call AccionParaPuerta(Map, X + 1, Y + 1, UserIndex)
             
                 End Select
 
-366         ElseIf MapData(Map, X, Y + 1).ObjInfo.ObjIndex > 0 Then
-368             UserList(UserIndex).flags.TargetObj = MapData(Map, X, Y + 1).ObjInfo.ObjIndex
+382         ElseIf MapData(Map, X, Y + 1).ObjInfo.ObjIndex > 0 Then
+384             UserList(UserIndex).flags.TargetObj = MapData(Map, X, Y + 1).ObjInfo.ObjIndex
 
-370             Select Case ObjData(MapData(Map, X, Y + 1).ObjInfo.ObjIndex).OBJType
+386             Select Case ObjData(MapData(Map, X, Y + 1).ObjInfo.ObjIndex).OBJType
             
                     Case eOBJType.otPuertas 'Es una puerta
-372                     Call AccionParaPuerta(Map, X, Y + 1, UserIndex)
+388                     Call AccionParaPuerta(Map, X, Y + 1, UserIndex)
 
                 End Select
 
@@ -441,7 +441,7 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
         Exit Sub
 
 Accion_Err:
-374     Call TraceError(Err.Number, Err.Description, "Acciones.Accion", Erl)
+390     Call TraceError(Err.Number, Err.Description, "Acciones.Accion", Erl)
 
         
 End Sub
@@ -809,7 +809,7 @@ Sub AccionParaPuerta(ByVal Map As Integer, ByVal X As Byte, ByVal Y As Byte, ByV
 
 Handler:
 136 Call TraceError(Err.Number, Err.Description, "Acciones.AccionParaPuerta", Erl)
-138
+
 
 End Sub
 
@@ -840,7 +840,7 @@ Sub AccionParaPuertaNpc(ByVal Map As Integer, ByVal X As Byte, ByVal Y As Byte, 
 
 Handler:
 116 Call TraceError(Err.Number, Err.Description, "Acciones.AccionParaPuertaNpc", Erl)
-118
+
 
 End Sub
 
@@ -863,7 +863,7 @@ Sub AccionParaCartel(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Intege
         
 Handler:
 106 Call TraceError(Err.Number, Err.Description, "Acciones.AccionParaCartel", Erl)
-108
+
 
 End Sub
 
@@ -902,7 +902,7 @@ Sub AccionParaCorreo(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Intege
 
 AccionParaCorreo_Err:
 118     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Acciones.AccionParaCorreo", Erl)
-120
+
         
 End Sub
 
@@ -998,6 +998,6 @@ Sub AccionParaRamita(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Intege
         
 Handler:
 156 Call TraceError(Err.Number, Err.Description, "Acciones.AccionParaRamita", Erl)
-158
+
 
 End Sub

@@ -36,7 +36,7 @@ Public Sub InitTesoro()
         On Error GoTo InitTesoro_Err
 
         Dim Lector As clsIniManager
-        Set Lector = New clsIniManager
+100     Set Lector = New clsIniManager
         
 102     Call Lector.Initialize(DatPath & "Tesoros.dat")
         
@@ -105,7 +105,7 @@ Public Sub InitTesoro()
 
 InitTesoro_Err:
 158     Call TraceError(Err.Number, Err.Description, "ModTesoros.InitTesoro", Erl)
-160
+
         
 End Sub
 
@@ -114,7 +114,7 @@ Public Sub InitRegalo()
         On Error GoTo InitRegalo_Err
         
         Dim Lector As clsIniManager
-        Set Lector = New clsIniManager
+100     Set Lector = New clsIniManager
         
 102     Call Lector.Initialize(DatPath & "Tesoros.dat")
         
@@ -165,7 +165,7 @@ Public Sub InitRegalo()
 
 InitRegalo_Err:
 142     Call TraceError(Err.Number, Err.Description, "ModTesoros.InitRegalo", Erl)
-144
+
         
 End Sub
 
@@ -216,7 +216,7 @@ Public Sub PerderTesoro()
 
 PerderTesoro_Err:
 142     Call TraceError(Err.Number, Err.Description, "ModTesoros.PerderTesoro", Erl)
-144
+
         
 End Sub
 
@@ -268,7 +268,7 @@ Public Sub PerderRegalo()
 
 PerderRegalo_Err:
 142     Call TraceError(Err.Number, Err.Description, "ModTesoros.PerderRegalo", Erl)
-144
+
         
 End Sub
 

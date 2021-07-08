@@ -29,70 +29,70 @@ Public Sub InvitarMiembro(ByVal UserIndex As Integer, ByVal InvitadoIndex As Int
         End If
         
         'HarThaoS: Si invita a un gm no lo dejo
-        If EsGM(InvitadoIndex) Then
-            Call WriteConsoleMsg(UserIndex, "No puedes invitar a un grupo a un GM.", FontTypeNames.FONTTYPE_New_GRUPO)
+110     If EsGM(InvitadoIndex) Then
+112         Call WriteConsoleMsg(UserIndex, "No puedes invitar a un grupo a un GM.", FontTypeNames.FONTTYPE_New_GRUPO)
             Exit Sub
         End If
         
         'Si es gm tampoco lo dejo
-        If EsGM(UserIndex) Then
-            Call WriteConsoleMsg(UserIndex, "Los GMs no pueden formar parte de un grupo.", FontTypeNames.FONTTYPE_New_GRUPO)
+114     If EsGM(UserIndex) Then
+116         Call WriteConsoleMsg(UserIndex, "Los GMs no pueden formar parte de un grupo.", FontTypeNames.FONTTYPE_New_GRUPO)
             Exit Sub
         End If
 
-110     If Invitado.flags.SeguroParty Then
-112         Call WriteConsoleMsg(UserIndex, "El usuario debe desactivar el seguro de grupos para poder invitarlo.", FontTypeNames.FONTTYPE_New_GRUPO)
+118     If Invitado.flags.SeguroParty Then
+120         Call WriteConsoleMsg(UserIndex, "El usuario debe desactivar el seguro de grupos para poder invitarlo.", FontTypeNames.FONTTYPE_New_GRUPO)
             Exit Sub
         End If
         
-114     If Remitente.Grupo.CantidadMiembros >= UBound(Remitente.Grupo.Miembros) Then
-116         Call WriteConsoleMsg(UserIndex, "No puedes invitar a mas personas. (Límite: " & CStr(UBound(Remitente.Grupo.Miembros)) & ")", FontTypeNames.FONTTYPE_New_GRUPO)
+122     If Remitente.Grupo.CantidadMiembros >= UBound(Remitente.Grupo.Miembros) Then
+124         Call WriteConsoleMsg(UserIndex, "No puedes invitar a mas personas. (Límite: " & CStr(UBound(Remitente.Grupo.Miembros)) & ")", FontTypeNames.FONTTYPE_New_GRUPO)
             Exit Sub
         End If
             
-118     If Status(UserIndex) <> Status(InvitadoIndex) Or _
+126     If Status(UserIndex) <> Status(InvitadoIndex) Or _
             (Status(UserIndex) = 1 And Status(InvitadoIndex) = 3) Or _
             (Status(UserIndex) = 3 And Status(InvitadoIndex) = 1) Or _
             (Status(UserIndex) = 0 And Status(InvitadoIndex) = 2) Or _
             (Status(UserIndex) = 2 And Status(InvitadoIndex) = 0) Then
         
-120         Call WriteConsoleMsg(UserIndex, "No podes crear un grupo con personajes de diferentes facciones.", FontTypeNames.FONTTYPE_New_GRUPO)
+128         Call WriteConsoleMsg(UserIndex, "No podes crear un grupo con personajes de diferentes facciones.", FontTypeNames.FONTTYPE_New_GRUPO)
             Exit Sub
             
         End If
 
-122     If Abs(CInt(Invitado.Stats.ELV) - CInt(Remitente.Stats.ELV)) > 10 Then
-124         Call WriteConsoleMsg(UserIndex, "No podes crear un grupo con personajes con diferencia de más de 10 niveles.", FontTypeNames.FONTTYPE_New_GRUPO)
+130     If Abs(CInt(Invitado.Stats.ELV) - CInt(Remitente.Stats.ELV)) > 10 Then
+132         Call WriteConsoleMsg(UserIndex, "No podes crear un grupo con personajes con diferencia de más de 10 niveles.", FontTypeNames.FONTTYPE_New_GRUPO)
             Exit Sub
             
         End If
 
-126     If Invitado.Grupo.EnGrupo Then
+134     If Invitado.Grupo.EnGrupo Then
             'Call WriteConsoleMsg(userindex, "El usuario ya se encuentra en un grupo.", FontTypeNames.FONTTYPE_INFOIAO)
-128         Call WriteLocaleMsg(UserIndex, "41", FontTypeNames.FONTTYPE_New_GRUPO)
+136         Call WriteLocaleMsg(UserIndex, "41", FontTypeNames.FONTTYPE_New_GRUPO)
             Exit Sub
             
         End If
         
-130     Call WriteLocaleMsg(UserIndex, "42", FontTypeNames.FONTTYPE_New_GRUPO)
+138     Call WriteLocaleMsg(UserIndex, "42", FontTypeNames.FONTTYPE_New_GRUPO)
         'Call WriteConsoleMsg(userindex, "Se envio la invitacion a " & UserList(Invitado).name & ", ahora solo resta aguardar su respuesta.", FontTypeNames.FONTTYPE_INFOIAO)
-132     Call WriteConsoleMsg(InvitadoIndex, Remitente.Name & " te invitó a unirse a su grupo.", FontTypeNames.FONTTYPE_New_GRUPO)
+140     Call WriteConsoleMsg(InvitadoIndex, Remitente.Name & " te invitó a unirse a su grupo.", FontTypeNames.FONTTYPE_New_GRUPO)
                 
-134     With UserList(InvitadoIndex)
+142     With UserList(InvitadoIndex)
                 
-136         .Grupo.PropuestaDe = UserIndex
-138         .flags.pregunta = 1
-140         .Grupo.Lider = UserIndex
+144         .Grupo.PropuestaDe = UserIndex
+146         .flags.pregunta = 1
+148         .Grupo.Lider = UserIndex
                 
         End With
 
-142     Call WritePreguntaBox(InvitadoIndex, Remitente.Name & " te invito a unirse a su grupo. ¿Deseas unirte?")
+150     Call WritePreguntaBox(InvitadoIndex, Remitente.Name & " te invito a unirse a su grupo. ¿Deseas unirte?")
 
         Exit Sub
 
 InvitarMiembro_Err:
-144     Call TraceError(Err.Number, Err.Description, "ModGrupos.InvitarMiembro", Erl)
-146
+152     Call TraceError(Err.Number, Err.Description, "ModGrupos.InvitarMiembro", Erl)
+
         
 End Sub
 
@@ -192,7 +192,7 @@ Public Sub EcharMiembro(ByVal UserIndex As Integer, ByVal Indice As Byte)
 
 EcharMiembro_Err:
 176     Call TraceError(Err.Number, Err.Description, "ModGrupos.EcharMiembro", Erl)
-178
+
         
 End Sub
 
@@ -271,7 +271,7 @@ Public Sub SalirDeGrupo(ByVal UserIndex As Integer)
 
 SalirDeGrupo_Err:
 160     Call TraceError(Err.Number, Err.Description, "ModGrupos.SalirDeGrupo", Erl)
-162
+
         
 End Sub
 
@@ -336,7 +336,7 @@ Public Sub SalirDeGrupoForzado(ByVal UserIndex As Integer)
 
 SalirDeGrupoForzado_Err:
 148     Call TraceError(Err.Number, Err.Description, "ModGrupos.SalirDeGrupoForzado", Erl)
-150
+
         
 End Sub
 
@@ -372,7 +372,7 @@ Public Sub FinalizarGrupo(ByVal UserIndex As Integer)
 
 FinalizarGrupo_Err:
 122     Call TraceError(Err.Number, Err.Description, "ModGrupos.FinalizarGrupo", Erl)
-124
+
         
 End Sub
 
@@ -428,7 +428,7 @@ Public Sub CompartirUbicacion(ByVal UserIndex As Integer)
 
 CompartirUbicacion_Err:
 128     Call TraceError(Err.Number, Err.Description, "ModGrupos.CompartirUbicacion", Erl)
-130
+
         
 End Sub
 
