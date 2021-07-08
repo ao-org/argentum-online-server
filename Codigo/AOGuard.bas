@@ -97,7 +97,7 @@ Public Function VerificarOrigen(ByVal AccountID As Long, ByVal HD As Long, ByVal
         Exit Function
 
 VerificarOrigen_Err:
-        Call RegistrarError(Err.Number, Err.Description, "Protocol.VerificarOrigen", Erl)
+        Call TraceError(Err.Number, Err.Description, "Protocol.VerificarOrigen", Erl)
 
 End Function
 
@@ -169,7 +169,7 @@ Private Sub EnviarCodigo(ByVal UserIndex As Integer)
     Exit Sub
 
 EnviarCodigo_Err:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.EnviarCodigo", Erl)
+    Call TraceError(Err.Number, Err.Description, "Protocol.EnviarCodigo", Erl)
     
 End Sub
 
@@ -254,7 +254,7 @@ Public Sub HandleGuardNoticeResponse(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleGuardNoticeResponse_Err:
-128     Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleGuardNoticeResponse", Erl)
+128     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuardNoticeResponse", Erl)
 130     Call UserList(UserIndex).incomingData.SafeClearPacket
 
 End Sub
@@ -268,7 +268,7 @@ Public Sub HandleGuardResendVerificationCode(ByVal UserIndex As Integer)
     Exit Sub
 
 HandleResendVerificationCode_Err:
-    Call RegistrarError(Err.Number, Err.Description, "Protocol.HandleGuardResendVerificationCode", Erl)
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuardResendVerificationCode", Erl)
     Call UserList(UserIndex).incomingData.SafeClearPacket
     
 End Sub
@@ -308,7 +308,7 @@ Private Sub GenerarCodigoAPI(ByVal UserIndex As Integer)
         Exit Sub
 
 GenerarCodigoAPI_Err:
-        Call RegistrarError(Err.Number, Err.Description, "Protocol.GenerarCodigoAPI", Erl)
+        Call TraceError(Err.Number, Err.Description, "Protocol.GenerarCodigoAPI", Erl)
         
 End Sub
 
@@ -365,7 +365,7 @@ Private Sub GenerarCodigo(ByVal UserIndex As Integer)
         Exit Sub
 
 GenerarCodigo_Err:
-        Call RegistrarError(Err.Number, Err.Description, "Protocol.GenerarCodigo", Erl)
+        Call TraceError(Err.Number, Err.Description, "Protocol.GenerarCodigo", Erl)
 
 End Sub
 
@@ -424,7 +424,7 @@ Sub SendEmail(ByVal Email As String, ByVal Codigo As String, ByVal IP As String)
 
     'Check for errors and display message
     If Err.Number <> 0 Then
-        Call RegistrarError(Err.Number, "Error al enviar correo a " & Email & vbNewLine & Err.Description, "AOGuard.SendMail")
+        Call TraceError(Err.Number, "Error al enviar correo a " & Email & vbNewLine & Err.Description, "AOGuard.SendMail")
 
     End If
 

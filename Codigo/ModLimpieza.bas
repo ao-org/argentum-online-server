@@ -19,8 +19,8 @@ Public Sub InicializarLimpieza()
         Exit Sub
     
 ErrHandler:
-104     Call RegistrarError(Err.Number, Err.Description, "ModLimpieza.InicializarLimpieza")
-106     Resume Next
+104     Call TraceError(Err.Number, Err.Description, "ModLimpieza.InicializarLimpieza", Erl)
+106
 
 End Sub
 
@@ -33,8 +33,8 @@ Public Sub LimpiarModuloLimpieza() ' Valga la redundancia
     Exit Sub
 
 Class_Terminate_Err:
-102 Call RegistrarError(Err.Number, Err.Description, "ModLimpieza.LimpiarModuloLimpieza", Erl)
-104 Resume Next
+102 Call TraceError(Err.Number, Err.Description, "ModLimpieza.LimpiarModuloLimpieza", Erl)
+104
         
 End Sub
 
@@ -73,8 +73,8 @@ Public Sub AgregarItemLimpieza(ByVal Map As Integer, ByVal X As Byte, ByVal Y As
         Exit Sub
     
 hErr:
-122     Call RegistrarError(Err.Number, Err.Description, "ModLimpieza.AgregarItemLimpiza")
-124     Resume Next
+122     Call TraceError(Err.Number, Err.Description, "ModLimpieza.AgregarItemLimpiza", Erl)
+124
 
 End Sub
 
@@ -118,8 +118,8 @@ Public Sub LimpiarItemsViejos()
         Exit Sub
 
 hErr:
-116     Call RegistrarError(Err.Number, Err.Description, "ModLimpieza.LimpiarItemsViejos")
-118     Resume Next
+116     Call TraceError(Err.Number, Err.Description, "ModLimpieza.LimpiarItemsViejos", Erl)
+118
 
 End Sub
 
@@ -143,8 +143,8 @@ Public Sub LimpiezaForzada() ' Limpio todo, no importa el tiempo
         Exit Sub
     
 hErr:
-110     Call RegistrarError(Err.Number, Err.Description, "ModLimpieza.LimpiezaForzada")
-112     Resume Next
+110     Call TraceError(Err.Number, Err.Description, "ModLimpieza.LimpiezaForzada", Erl)
+112
 
 End Sub
 
@@ -158,7 +158,7 @@ Public Function GetIndiceByPos(ByVal Map As Integer, ByVal X As Integer, ByVal Y
         Exit Function
 
 GetIndiceByPos_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "ModLimpieza.GetIndiceByPos", Erl)
+102     Call TraceError(Err.Number, Err.Description, "ModLimpieza.GetIndiceByPos", Erl)
 
         
 End Function

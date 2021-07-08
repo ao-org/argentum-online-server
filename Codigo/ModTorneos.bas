@@ -72,8 +72,8 @@ Public Sub IniciarTorneo()
         Exit Sub
 
 IniciarTorneo_Err:
-126     Call RegistrarError(Err.Number, Err.Description, "ModTorneos.IniciarTorneo", Erl)
-128     Resume Next
+126     Call TraceError(Err.Number, Err.Description, "ModTorneos.IniciarTorneo", Erl)
+128
         
 End Sub
 
@@ -96,8 +96,8 @@ Public Sub ParticiparTorneo(ByVal UserIndex As Integer)
         Exit Sub
 
 ParticiparTorneo_Err:
-110     Call RegistrarError(Err.Number, Err.Description, "ModTorneos.ParticiparTorneo", Erl)
-112     Resume Next
+110     Call TraceError(Err.Number, Err.Description, "ModTorneos.ParticiparTorneo", Erl)
+112
         
 End Sub
 
@@ -122,12 +122,12 @@ Public Function BuscarIndexFreeTorneo() As Byte
         Exit Function
 
 BuscarIndexFreeTorneo_Err:
-108     Call RegistrarError(Err.Number, Err.Description, "ModTorneos.BuscarIndexFreeTorneo", Erl)
-110     Resume Next
+108     Call TraceError(Err.Number, Err.Description, "ModTorneos.BuscarIndexFreeTorneo", Erl)
+110
         
 End Function
 
-Public Sub BorrarIndexInTorneo(ByVal index As Integer)
+Public Sub BorrarIndexInTorneo(ByVal Index As Integer)
         
         On Error GoTo BorrarIndexInTorneo_Err
         
@@ -136,7 +136,7 @@ Public Sub BorrarIndexInTorneo(ByVal index As Integer)
 
 100     For i = 1 To Torneo.cupos
 
-102         If Torneo.IndexParticipantes(i) = index Then
+102         If Torneo.IndexParticipantes(i) = Index Then
 104             Torneo.IndexParticipantes(i) = 0
                 Exit For
 
@@ -150,8 +150,8 @@ Public Sub BorrarIndexInTorneo(ByVal index As Integer)
         Exit Sub
 
 BorrarIndexInTorneo_Err:
-110     Call RegistrarError(Err.Number, Err.Description, "ModTorneos.BorrarIndexInTorneo", Erl)
-112     Resume Next
+110     Call TraceError(Err.Number, Err.Description, "ModTorneos.BorrarIndexInTorneo", Erl)
+112
         
 End Sub
 
@@ -168,7 +168,7 @@ Public Sub ComenzarTorneoOk()
 
 100     For i = 1 To Torneo.Participantes
     
-102         nombres = nombres & UserList(Torneo.IndexParticipantes(i)).name & ", "
+102         nombres = nombres & UserList(Torneo.IndexParticipantes(i)).Name & ", "
 104         X = Torneo.X
 106         Y = Torneo.Y
 108         Call FindLegalPos(Torneo.IndexParticipantes(i), Torneo.Mapa, X, Y)
@@ -182,8 +182,8 @@ Public Sub ComenzarTorneoOk()
         Exit Sub
 
 ComenzarTorneoOk_Err:
-116     Call RegistrarError(Err.Number, Err.Description, "ModTorneos.ComenzarTorneoOk", Erl)
-118     Resume Next
+116     Call TraceError(Err.Number, Err.Description, "ModTorneos.ComenzarTorneoOk", Erl)
+118
         
 End Sub
 
@@ -231,7 +231,7 @@ Public Sub ResetearTorneo()
         Exit Sub
 
 ResetearTorneo_Err:
-152     Call RegistrarError(Err.Number, Err.Description, "ModTorneos.ResetearTorneo", Erl)
-154     Resume Next
+152     Call TraceError(Err.Number, Err.Description, "ModTorneos.ResetearTorneo", Erl)
+154
         
 End Sub

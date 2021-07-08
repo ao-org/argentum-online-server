@@ -66,7 +66,7 @@ Public Sub IniciarComercioConUsuario(ByVal Origen As Integer, ByVal Destino As I
 128         UserList(Destino).flags.TargetUser = Origen
     
 130         UserList(Destino).flags.pregunta = 4
-132         Call WritePreguntaBox(Destino, UserList(Origen).name & " desea comerciar contigo. ¿Aceptás?")
+132         Call WritePreguntaBox(Destino, UserList(Origen).Name & " desea comerciar contigo. ¿Aceptás?")
     
         End If
 
@@ -167,8 +167,8 @@ Public Sub EnviarObjetoTransaccion(ByVal AQuien As Integer, ByVal UserIndex As I
             Exit Sub
 
 EnviarObjetoTransaccion_Err:
-172         Call RegistrarError(Err.Number, Err.Description, "mdlCOmercioConUsuario.EnviarObjetoTransaccion", Erl)
-174         Resume Next
+172         Call TraceError(Err.Number, Err.Description, "mdlCOmercioConUsuario.EnviarObjetoTransaccion", Erl)
+174
         
 End Sub
 
@@ -199,8 +199,8 @@ Public Sub FinComerciarUsu(ByVal UserIndex As Integer)
         Exit Sub
 
 FinComerciarUsu_Err:
-120     Call RegistrarError(Err.Number, Err.Description, "mdlCOmercioConUsuario.FinComerciarUsu", Erl)
-122     Resume Next
+120     Call TraceError(Err.Number, Err.Description, "mdlCOmercioConUsuario.FinComerciarUsu", Erl)
+122
         
 End Sub
 
@@ -313,7 +313,7 @@ FinalizarComercio:
         Exit Sub
 
 AceptarComercioUsu_Err:
-208     Call RegistrarError(Err.Number, Err.Description, "mdlCOmercioConUsuario.AceptarComercioUsu", Erl)
-210     Resume Next
+208     Call TraceError(Err.Number, Err.Description, "mdlCOmercioConUsuario.AceptarComercioUsu", Erl)
+210
         
 End Sub

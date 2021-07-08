@@ -1,11 +1,18 @@
 Attribute VB_Name = "Logs"
 Option Explicit
 
+Public LogsBuffer As New cStringBuilder
+Private Const MAX_LOG_SIZE As Long = 1000000 ' 1MB en el buffer antes de volcarlo al .log
+
 Private Type UltimoError
     Componente As String
     Contador As Byte
     ErrorCode As Long
 End Type: Private HistorialError As UltimoError
+
+Public Sub TraceError(ByVal Numero As Long, ByVal Descripcion As String, ByVal Componente As String, Optional ByVal Linea As Integer)
+    Call Err.raise(Numero, Componente & " - (Linea: " & Erl & ")", Componente & " - (Linea: " & Erl & ") - " & Descripcion & vbNewLine)
+End Sub
 
 Public Sub RegistrarError(ByVal Numero As Long, ByVal Descripcion As String, ByVal Componente As String, Optional ByVal Linea As Integer)
 '**********************************************************
@@ -37,25 +44,35 @@ Public Sub RegistrarError(ByVal Numero As Long, ByVal Descripcion As String, ByV
             
     End If
     
-    'Registramos el error en Errores.log
-    Dim File As Integer: File = FreeFile
-        
-    Open App.Path & "\logs\Errores\General.log" For Append As #File
+    ' ----------------------------------------------------------------------------------
+    ' Jopi: Guardamos los errores en un String Buffer
+    '  para no andar haciendo operaciones I/O (costosas) cada vez que entra un error
+    ' ----------------------------------------------------------------------------------
+    LogsBuffer.AppendNL "Error: " & Numero
+    LogsBuffer.AppendNL "Descripcion: " & Descripcion
+    LogsBuffer.AppendNL "Componente: " & Componente
     
-        Print #File, "Error: " & Numero
-        Print #File, "Descripcion: " & Descripcion
+    If LenB(Linea) <> 0 Then
+        LogsBuffer.AppendNL "Linea: " & Linea
+    End If
+    
+    LogsBuffer.AppendNL "Fecha y Hora: " & Date$ & "-" & Time$
+    
+    LogsBuffer.AppendNL vbNullString
+    
+    ' ----------------------------------------------------------------------------------------------
+    ' Jopi: Una vez que el buffer llega a cierta capacidad, volcamos los contenidos al archivo .log
+    ' ----------------------------------------------------------------------------------------------
+    If LogsBuffer.ByteLength > MAX_LOG_SIZE Then
+        Dim File As Integer: File = FreeFile
         
-        Print #File, "Componente: " & Componente
-
-        If LenB(Linea) <> 0 Then
-            Print #File, "Linea: " & Linea
-        End If
-
-        Print #File, "Fecha y Hora: " & Date$ & "-" & Time$
+        Open App.Path & "\logs\Errores\General.log" For Append As #File
+            Print #File, LogsBuffer.ToString
+        Close #File
         
-        Print #File, vbNullString
-        
-    Close #File
+        ' Limpiamos el buffer
+        Call LogsBuffer.Clear
+    End If
     
     Debug.Print "Error: " & Numero & vbNewLine & _
                 "Descripcion: " & Descripcion & vbNewLine & _
@@ -64,18 +81,18 @@ Public Sub RegistrarError(ByVal Numero As Long, ByVal Descripcion As String, ByV
                 "Fecha y Hora: " & Date$ & "-" & Time$ & vbNewLine
         
     Exit Sub
-
+    
 RegistrarError_Err:
     Close #File
         
 End Sub
 
-Public Sub RegistrarErrorAPI(ByVal ResponseCode As Long, ByVal ResponseErrorDesc As String, ByVal ResponseText As String)
+Public Sub TraceErrorAPI(ByVal ResponseCode As Long, ByVal ResponseErrorDesc As String, ByVal ResponseText As String)
 '**********************************************************
 'Author: Jopi
 '**********************************************************
         
-    On Error GoTo RegistrarError_Err
+    On Error GoTo TraceError_Err
     
     'Registramos el error en Errores.log
     Dim File As Integer: File = FreeFile
@@ -98,7 +115,7 @@ Public Sub RegistrarErrorAPI(ByVal ResponseCode As Long, ByVal ResponseErrorDesc
         
     Exit Sub
 
-RegistrarError_Err:
+TraceError_Err:
     Close #File
         
 End Sub
