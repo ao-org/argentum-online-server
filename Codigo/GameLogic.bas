@@ -126,7 +126,7 @@ Public Sub FindLegalPos(ByVal UserIndex As Integer, ByVal Map As Integer, ByRef 
 
 FindLegalPos_Err:
 150     Call TraceError(Err.Number, Err.Description, "Extra.FindLegalPos", Erl)
-152
+
         
 End Sub
 
@@ -139,7 +139,7 @@ Public Function EsNewbie(ByVal UserIndex As Integer) As Boolean
 
 EsNewbie_Err:
 102     Call TraceError(Err.Number, Err.Description, "Extra.EsNewbie", Erl)
-104
+
         
 End Function
 
@@ -152,7 +152,7 @@ Public Function esArmada(ByVal UserIndex As Integer) As Boolean
 
 esArmada_Err:
 102     Call TraceError(Err.Number, Err.Description, "Extra.esArmada", Erl)
-104
+
         
 End Function
 
@@ -165,7 +165,7 @@ Public Function esCaos(ByVal UserIndex As Integer) As Boolean
 
 esCaos_Err:
 102     Call TraceError(Err.Number, Err.Description, "Extra.esCaos", Erl)
-104
+
         
 End Function
 
@@ -189,7 +189,7 @@ Public Function EsGM(ByVal UserIndex As Integer) As Boolean
 
 EsGM_Err:
 106     Call TraceError(Err.Number, Err.Description, "Extra.EsGM", Erl)
-108
+
         
 End Function
 
@@ -274,102 +274,102 @@ Public Sub DoTileEvents(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal 
         
         Dim aN As Integer
         
-        With UserList(UserIndex)
+100     With UserList(UserIndex)
 
             'Controla las salidas
-100         If InMapBounds(Map, X, Y) Then
+102         If InMapBounds(Map, X, Y) Then
         
-102             If MapData(Map, X, Y).ObjInfo.ObjIndex > 0 Then
-104                 EsTeleport = ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex).OBJType = eOBJType.otTeleport
+104             If MapData(Map, X, Y).ObjInfo.ObjIndex > 0 Then
+106                 EsTeleport = ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex).OBJType = eOBJType.otTeleport
                 End If
     
-106             If (MapData(Map, X, Y).TileExit.Map > 0) And (MapData(Map, X, Y).TileExit.Map <= NumMaps) Then
+108             If (MapData(Map, X, Y).TileExit.Map > 0) And (MapData(Map, X, Y).TileExit.Map <= NumMaps) Then
     
                     ' WyroX: Restricciones de mapas
-108                 If CheckMapRestrictions(UserIndex, MapData(Map, X, Y).TileExit.Map) Then
-                        If EsMapaInterdimensional(MapData(Map, X, Y).TileExit.Map) And Not EsMapaInterdimensional(.Pos.Map) Then
-                            .flags.ReturnPos = .Pos
+110                 If CheckMapRestrictions(UserIndex, MapData(Map, X, Y).TileExit.Map) Then
+112                     If EsMapaInterdimensional(MapData(Map, X, Y).TileExit.Map) And Not EsMapaInterdimensional(.Pos.Map) Then
+114                         .flags.ReturnPos = .Pos
                         End If
 
-110                     If LegalPos(MapData(Map, X, Y).TileExit.Map, MapData(Map, X, Y).TileExit.X, MapData(Map, X, Y).TileExit.Y, .flags.Navegando = 1, , , False) Then
-112                         Call WarpUserChar(UserIndex, MapData(Map, X, Y).TileExit.Map, MapData(Map, X, Y).TileExit.X, MapData(Map, X, Y).TileExit.Y, EsTeleport)
+116                     If LegalPos(MapData(Map, X, Y).TileExit.Map, MapData(Map, X, Y).TileExit.X, MapData(Map, X, Y).TileExit.Y, .flags.Navegando = 1, , , False) Then
+118                         Call WarpUserChar(UserIndex, MapData(Map, X, Y).TileExit.Map, MapData(Map, X, Y).TileExit.X, MapData(Map, X, Y).TileExit.Y, EsTeleport)
                 
                         Else
-114                         Call ClosestLegalPos(MapData(Map, X, Y).TileExit, nPos)
+120                         Call ClosestLegalPos(MapData(Map, X, Y).TileExit, nPos)
     
-116                         If nPos.X <> 0 And nPos.Y <> 0 Then
-118                             Call WarpUserChar(UserIndex, nPos.Map, nPos.X, nPos.Y, EsTeleport)
+122                         If nPos.X <> 0 And nPos.Y <> 0 Then
+124                             Call WarpUserChar(UserIndex, nPos.Map, nPos.X, nPos.Y, EsTeleport)
                             End If
     
                         End If
                 
                     ' Si hay un teleport: movemos al usuario para que no se quede bloqueándolo
-120                 ElseIf EsTeleport Then
-122                     Call ClosestLegalPos(.Pos, nPos)
+126                 ElseIf EsTeleport Then
+128                     Call ClosestLegalPos(.Pos, nPos)
     
-124                      If nPos.X <> 0 And nPos.Y <> 0 Then
-126                          Call WarpUserChar(UserIndex, nPos.Map, nPos.X, nPos.Y, EsTeleport)
+130                      If nPos.X <> 0 And nPos.Y <> 0 Then
+132                          Call WarpUserChar(UserIndex, nPos.Map, nPos.X, nPos.Y, EsTeleport)
                         End If
                     End If
     
                     'Te fusite del mapa. La criatura ya no es más tuya ni te reconoce como que vos la atacaste.
-128                 aN = .flags.AtacadoPorNpc
+134                 aN = .flags.AtacadoPorNpc
     
-130                 If aN > 0 Then
-132                     NpcList(aN).Movement = NpcList(aN).flags.OldMovement
-134                     NpcList(aN).Hostile = NpcList(aN).flags.OldHostil
-136                     NpcList(aN).flags.AttackedBy = vbNullString
-138                     NpcList(aN).Target = 0
+136                 If aN > 0 Then
+138                     NpcList(aN).Movement = NpcList(aN).flags.OldMovement
+140                     NpcList(aN).Hostile = NpcList(aN).flags.OldHostil
+142                     NpcList(aN).flags.AttackedBy = vbNullString
+144                     NpcList(aN).Target = 0
                     End If
         
-140                 aN = .flags.NPCAtacado
+146                 aN = .flags.NPCAtacado
     
-142                 If aN > 0 Then
-144                     If NpcList(aN).flags.AttackedFirstBy = .Name Then
-146                         NpcList(aN).flags.AttackedFirstBy = vbNullString
+148                 If aN > 0 Then
+150                     If NpcList(aN).flags.AttackedFirstBy = .Name Then
+152                         NpcList(aN).flags.AttackedFirstBy = vbNullString
     
                         End If
     
                     End If
     
-148                 .flags.AtacadoPorNpc = 0
-150                 .flags.NPCAtacado = 0
+154                 .flags.AtacadoPorNpc = 0
+156                 .flags.NPCAtacado = 0
     
-                ElseIf MapData(Map, X, Y).TileExit.Map < 0 Then
-                    If .flags.ReturnPos.Map <> 0 Then
-                        If LegalPos(.flags.ReturnPos.Map, .flags.ReturnPos.X, .flags.ReturnPos.Y, .flags.Navegando = 1, , , False) Then
-                            Call WarpUserChar(UserIndex, .flags.ReturnPos.Map, .flags.ReturnPos.X, .flags.ReturnPos.Y, False)
+158             ElseIf MapData(Map, X, Y).TileExit.Map < 0 Then
+160                 If .flags.ReturnPos.Map <> 0 Then
+162                     If LegalPos(.flags.ReturnPos.Map, .flags.ReturnPos.X, .flags.ReturnPos.Y, .flags.Navegando = 1, , , False) Then
+164                         Call WarpUserChar(UserIndex, .flags.ReturnPos.Map, .flags.ReturnPos.X, .flags.ReturnPos.Y, False)
                         
                         Else
-                            Call ClosestLegalPos(.flags.ReturnPos, nPos)
+166                         Call ClosestLegalPos(.flags.ReturnPos, nPos)
                         
-                            If nPos.X <> 0 And nPos.Y <> 0 Then
-                                Call WarpUserChar(UserIndex, nPos.Map, nPos.X, nPos.Y, EsTeleport)
+168                         If nPos.X <> 0 And nPos.Y <> 0 Then
+170                             Call WarpUserChar(UserIndex, nPos.Map, nPos.X, nPos.Y, EsTeleport)
                             End If
                         End If
                         
                         'Te fusite del mapa. La criatura ya no es más tuya ni te reconoce como que vos la atacaste.
-                        aN = .flags.AtacadoPorNpc
+172                     aN = .flags.AtacadoPorNpc
         
-                        If aN > 0 Then
-                            NpcList(aN).Movement = NpcList(aN).flags.OldMovement
-                            NpcList(aN).Hostile = NpcList(aN).flags.OldHostil
-                            NpcList(aN).flags.AttackedBy = vbNullString
-                            NpcList(aN).Target = 0
+174                     If aN > 0 Then
+176                         NpcList(aN).Movement = NpcList(aN).flags.OldMovement
+178                         NpcList(aN).Hostile = NpcList(aN).flags.OldHostil
+180                         NpcList(aN).flags.AttackedBy = vbNullString
+182                         NpcList(aN).Target = 0
                         End If
             
-                        aN = .flags.NPCAtacado
+184                     aN = .flags.NPCAtacado
         
-                        If aN > 0 Then
-                            If NpcList(aN).flags.AttackedFirstBy = .Name Then
-                                NpcList(aN).flags.AttackedFirstBy = vbNullString
+186                     If aN > 0 Then
+188                         If NpcList(aN).flags.AttackedFirstBy = .Name Then
+190                             NpcList(aN).flags.AttackedFirstBy = vbNullString
         
                             End If
         
                         End If
         
-                        .flags.AtacadoPorNpc = 0
-                        .flags.NPCAtacado = 0
+192                     .flags.AtacadoPorNpc = 0
+194                     .flags.NPCAtacado = 0
                     End If
                 End If
             End If
@@ -379,7 +379,7 @@ Public Sub DoTileEvents(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal 
         Exit Sub
 
 ErrHandler:
-152     Call LogError("Error en DotileEvents. Error: " & Err.Number & " - Desc: " & Err.Description)
+196     Call LogError("Error en DotileEvents. Error: " & Err.Number & " - Desc: " & Err.Description)
 
 End Sub
 
@@ -404,7 +404,7 @@ Function InRangoVision(ByVal UserIndex As Integer, ByVal X As Integer, ByVal Y A
 
 InRangoVision_Err:
 108     Call TraceError(Err.Number, Err.Description, "Extra.InRangoVision", Erl)
-110
+
         
 End Function
 
@@ -429,7 +429,7 @@ Function InRangoVisionNPC(ByVal NpcIndex As Integer, X As Integer, Y As Integer)
 
 InRangoVisionNPC_Err:
 108     Call TraceError(Err.Number, Err.Description, "Extra.InRangoVisionNPC", Erl)
-110
+
         
 End Function
 
@@ -450,7 +450,7 @@ Function InMapBounds(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Intege
 
 InMapBounds_Err:
 106     Call TraceError(Err.Number, Err.Description, "Extra.InMapBounds", Erl)
-108
+
         
 End Function
 
@@ -503,7 +503,7 @@ Function ClosestLegalPosNPC(ByVal NpcIndex As Integer, ByVal MaxRange As Integer
 
 ErrHandler:
 130     Call TraceError(Err.Number, Err.Description, "Extra.ClosestLegalPosNPC")
-132
+
         
 End Function
 
@@ -582,7 +582,7 @@ Sub ClosestLegalPos(Pos As WorldPos, ByRef nPos As WorldPos, Optional ByVal Pued
 
 ClosestLegalPos_Err:
 134     Call TraceError(Err.Number, Err.Description, "Extra.ClosestLegalPos", Erl)
-136
+
         
 End Sub
 
@@ -643,7 +643,7 @@ Sub ClosestStablePos(Pos As WorldPos, ByRef nPos As WorldPos)
 
 ClosestStablePos_Err:
 134     Call TraceError(Err.Number, Err.Description, "Extra.ClosestStablePos", Erl)
-136
+
         
 End Sub
 
@@ -684,7 +684,7 @@ Function IP_Index(ByVal inIP As String) As Integer
 
 IP_Index_Err:
 116     Call TraceError(Err.Number, Err.Description, "Extra.IP_Index", Erl)
-118
+
         
 End Function
 
@@ -711,7 +711,7 @@ Function ContarMismaIP(ByVal UserIndex As Integer, ByVal UserIP As String) As In
 
 CheckForSameIP_Err:
 110     Call TraceError(Err.Number, Err.Description, "Extra.MaxConexionesIP", Erl)
-112
+
         
 End Function
 
@@ -767,7 +767,7 @@ Sub HeadtoPos(ByVal Head As eHeading, ByRef Pos As WorldPos)
 
 HeadtoPos_Err:
 132     Call TraceError(Err.Number, Err.Description, "Extra.HeadtoPos", Erl)
-134
+
         
 End Sub
 
@@ -870,7 +870,7 @@ Function LegalWalk(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer,
 
 LegalWalk_Err:
 130     Call TraceError(Err.Number, Err.Description, "Extra.LegalWalk", Erl)
-132
+
         
 End Function
 
@@ -900,7 +900,7 @@ Function LegalPosNPC(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Intege
 
 LegalPosNPC_Err:
 114     Call TraceError(Err.Number, Err.Description, "Extra.LegalPosNPC", Erl)
-116
+
         
 End Function
 
@@ -962,7 +962,7 @@ Function LegalWalkNPC(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integ
 
 LegalWalkNPC_Err:
 134     Call TraceError(Err.Number, Err.Description, "Extra.LegalWalkNPC", Erl)
-136
+
         
 End Function
 
@@ -986,7 +986,7 @@ Sub SendHelp(ByVal Index As Integer)
 
 SendHelp_Err:
 108     Call TraceError(Err.Number, Err.Description, "Extra.SendHelp", Erl)
-110
+
         
 End Sub
 
@@ -1009,7 +1009,7 @@ Public Sub Expresar(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
 
 Expresar_Err:
 106     Call TraceError(Err.Number, Err.Description, "Extra.Expresar", Erl)
-108
+
         
 End Sub
 
@@ -1166,249 +1166,249 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
 228                             Stat = Stat & " <" & ListaClases(UserList(TempCharIndex).clase) & " " & ListaRazas(UserList(TempCharIndex).raza) & " Nivel: " & UserList(TempCharIndex).Stats.ELV & ">"
                             End If
                    
-                            Stat = Stat & " (ELO " & UserList(TempCharIndex).Stats.ELO & ")"
+230                         Stat = Stat & " (ELO " & UserList(TempCharIndex).Stats.ELO & ")"
 
-230                         If EsNewbie(TempCharIndex) Then
-232                             Stat = Stat & " <Newbie>"
+232                         If EsNewbie(TempCharIndex) Then
+234                             Stat = Stat & " <Newbie>"
                             End If
     
-234                         If UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) > 49 Then
-236                             If UserList(TempCharIndex).flags.Envenenado > 0 Then
-238                                 Fragsnick = " | Envenenado"
+236                         If UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) > 49 Then
+238                             If UserList(TempCharIndex).flags.Envenenado > 0 Then
+240                                 Fragsnick = " | Envenenado"
                                 End If
     
-240                             If UserList(TempCharIndex).flags.Ceguera = 1 Then
-242                                 Fragsnick = Fragsnick & " | Ciego"
+242                             If UserList(TempCharIndex).flags.Ceguera = 1 Then
+244                                 Fragsnick = Fragsnick & " | Ciego"
                                 End If
     
-244                             If UserList(TempCharIndex).flags.Incinerado = 1 Then
-246                                 Fragsnick = Fragsnick & " | Incinerado"
+246                             If UserList(TempCharIndex).flags.Incinerado = 1 Then
+248                                 Fragsnick = Fragsnick & " | Incinerado"
                                 End If
     
-248                             If UserList(TempCharIndex).flags.Paralizado = 1 Then
-250                                 Fragsnick = Fragsnick & " | Paralizado"
+250                             If UserList(TempCharIndex).flags.Paralizado = 1 Then
+252                                 Fragsnick = Fragsnick & " | Paralizado"
                                 End If
     
-252                             If UserList(TempCharIndex).flags.Inmovilizado = 1 Then
-254                                 Fragsnick = Fragsnick & " | Inmovilizado"
+254                             If UserList(TempCharIndex).flags.Inmovilizado = 1 Then
+256                                 Fragsnick = Fragsnick & " | Inmovilizado"
                                 End If
     
-256                             If UserList(TempCharIndex).Counters.Trabajando > 0 Then
-258                                 Fragsnick = Fragsnick & " | Trabajando"
+258                             If UserList(TempCharIndex).Counters.Trabajando > 0 Then
+260                                 Fragsnick = Fragsnick & " | Trabajando"
                                 End If
     
-260                             If UserList(TempCharIndex).flags.invisible = 1 Then
-262                                 Fragsnick = Fragsnick & " | Invisible"
+262                             If UserList(TempCharIndex).flags.invisible = 1 Then
+264                                 Fragsnick = Fragsnick & " | Invisible"
                                 End If
     
-264                             If UserList(TempCharIndex).flags.Oculto = 1 Then
-266                                 Fragsnick = Fragsnick & " | Oculto"
+266                             If UserList(TempCharIndex).flags.Oculto = 1 Then
+268                                 Fragsnick = Fragsnick & " | Oculto"
                                 End If
     
-268                             If UserList(TempCharIndex).flags.Estupidez = 1 Then
-270                                 Fragsnick = Fragsnick & " | Estupido"
+270                             If UserList(TempCharIndex).flags.Estupidez = 1 Then
+272                                 Fragsnick = Fragsnick & " | Estupido"
                                 End If
     
-272                             If UserList(TempCharIndex).flags.Maldicion = 1 Then
-274                                 Fragsnick = Fragsnick & " | Maldito"
+274                             If UserList(TempCharIndex).flags.Maldicion = 1 Then
+276                                 Fragsnick = Fragsnick & " | Maldito"
                                 End If
     
-276                             If UserList(TempCharIndex).flags.Silenciado = 1 Then
-278                                 Fragsnick = Fragsnick & " | Silenciado"
+278                             If UserList(TempCharIndex).flags.Silenciado = 1 Then
+280                                 Fragsnick = Fragsnick & " | Silenciado"
                                 End If
     
-280                             If UserList(TempCharIndex).flags.Comerciando = True Then
-282                                 Fragsnick = Fragsnick & " | Comerciando"
+282                             If UserList(TempCharIndex).flags.Comerciando = True Then
+284                                 Fragsnick = Fragsnick & " | Comerciando"
                                 End If
     
-284                             If UserList(TempCharIndex).flags.Descansar = 1 Then
-286                                 Fragsnick = Fragsnick & " | Descansando"
+286                             If UserList(TempCharIndex).flags.Descansar = 1 Then
+288                                 Fragsnick = Fragsnick & " | Descansando"
                                 End If
     
-288                             If UserList(TempCharIndex).flags.Meditando Then
-290                                 Fragsnick = Fragsnick & " | Concentrado"
+290                             If UserList(TempCharIndex).flags.Meditando Then
+292                                 Fragsnick = Fragsnick & " | Concentrado"
                                 End If
                                 
-292                             If UserList(TempCharIndex).Stats.MinHp = 0 Then
-294                                 Stat = Stat & " <Muerto>"
-296                             ElseIf UserList(TempCharIndex).Stats.MinHp < (UserList(TempCharIndex).Stats.MaxHp * 0.1) Then
-298                                 Stat = Stat & " <Casi muerto" & Fragsnick & ">"
-300                             ElseIf UserList(TempCharIndex).Stats.MinHp < (UserList(TempCharIndex).Stats.MaxHp * 0.5) Then
-302                                 Stat = Stat & " <Malherido" & Fragsnick & ">"
-304                             ElseIf UserList(TempCharIndex).Stats.MinHp < (UserList(TempCharIndex).Stats.MaxHp * 0.75) Then
-306                                 Stat = Stat & " <Herido" & Fragsnick & ">"
-308                             ElseIf UserList(TempCharIndex).Stats.MinHp < (UserList(TempCharIndex).Stats.MaxHp * 0.99) Then
-310                                 Stat = Stat & " <Levemente herido" & Fragsnick & ">"
+294                             If UserList(TempCharIndex).Stats.MinHp = 0 Then
+296                                 Stat = Stat & " <Muerto>"
+298                             ElseIf UserList(TempCharIndex).Stats.MinHp < (UserList(TempCharIndex).Stats.MaxHp * 0.1) Then
+300                                 Stat = Stat & " <Casi muerto" & Fragsnick & ">"
+302                             ElseIf UserList(TempCharIndex).Stats.MinHp < (UserList(TempCharIndex).Stats.MaxHp * 0.5) Then
+304                                 Stat = Stat & " <Malherido" & Fragsnick & ">"
+306                             ElseIf UserList(TempCharIndex).Stats.MinHp < (UserList(TempCharIndex).Stats.MaxHp * 0.75) Then
+308                                 Stat = Stat & " <Herido" & Fragsnick & ">"
+310                             ElseIf UserList(TempCharIndex).Stats.MinHp < (UserList(TempCharIndex).Stats.MaxHp * 0.99) Then
+312                                 Stat = Stat & " <Levemente herido" & Fragsnick & ">"
                                 Else
-312                                 Stat = Stat & " <Intacto" & Fragsnick & ">"
+314                                 Stat = Stat & " <Intacto" & Fragsnick & ">"
                                 End If
     
                             End If
                     
-314                         If UserList(TempCharIndex).Faccion.ArmadaReal = 1 Then
-316                             Stat = Stat & " <" & TituloReal(TempCharIndex) & ">"
+316                         If UserList(TempCharIndex).Faccion.ArmadaReal = 1 Then
+318                             Stat = Stat & " <" & TituloReal(TempCharIndex) & ">"
 
-318                             ft = FontTypeNames.FONTTYPE_CONSEJOVesA
-320                         ElseIf UserList(TempCharIndex).Faccion.FuerzasCaos = 1 Then
-322                             Stat = Stat & " <" & TituloCaos(TempCharIndex) & ">"
-324                             ft = FontTypeNames.FONTTYPE_CONSEJOCAOSVesA
+320                             ft = FontTypeNames.FONTTYPE_CONSEJOVesA
+322                         ElseIf UserList(TempCharIndex).Faccion.FuerzasCaos = 1 Then
+324                             Stat = Stat & " <" & TituloCaos(TempCharIndex) & ">"
+326                             ft = FontTypeNames.FONTTYPE_CONSEJOCAOSVesA
                             End If
                     
-326                         If UserList(TempCharIndex).GuildIndex > 0 Then
-328                             Stat = Stat & " <" & modGuilds.GuildName(UserList(TempCharIndex).GuildIndex) & ">"
+328                         If UserList(TempCharIndex).GuildIndex > 0 Then
+330                             Stat = Stat & " <" & modGuilds.GuildName(UserList(TempCharIndex).GuildIndex) & ">"
                             End If
     
                         End If ' If user > 0 then
                                 
-330                     If EsGM(TempCharIndex) Then
-332                         ft = FontTypeNames.FONTTYPE_GM
+332                     If EsGM(TempCharIndex) Then
+334                         ft = FontTypeNames.FONTTYPE_GM
                         
-334                         If UserList(TempCharIndex).flags.Privilegios = PlayerType.Consejero Then
-336                             Stat = Stat & " <Consejero>"
+336                         If UserList(TempCharIndex).flags.Privilegios = PlayerType.Consejero Then
+338                             Stat = Stat & " <Consejero>"
                             End If
     
-338                         If UserList(TempCharIndex).flags.Privilegios = PlayerType.SemiDios Then
-340                             Stat = Stat & " <Semi-Dios>"
+340                         If UserList(TempCharIndex).flags.Privilegios = PlayerType.SemiDios Then
+342                             Stat = Stat & " <Semi-Dios>"
     
                             End If
     
-342                         If UserList(TempCharIndex).flags.Privilegios = PlayerType.Dios Then
-344                             Stat = Stat & " <Dios>"
+344                         If UserList(TempCharIndex).flags.Privilegios = PlayerType.Dios Then
+346                             Stat = Stat & " <Dios>"
     
                             End If
                             
-346                         If UserList(TempCharIndex).flags.Privilegios = PlayerType.Admin Then
-348                             Stat = Stat & " <Administrador>"
+348                         If UserList(TempCharIndex).flags.Privilegios = PlayerType.Admin Then
+350                             Stat = Stat & " <Administrador>"
     
                             End If
                         
-350                     ElseIf UserList(TempCharIndex).Faccion.Status = 0 Then
-352                         ft = FontTypeNames.FONTTYPE_CRIMINAL
+352                     ElseIf UserList(TempCharIndex).Faccion.Status = 0 Then
+354                         ft = FontTypeNames.FONTTYPE_CRIMINAL
                         
-354                     ElseIf UserList(TempCharIndex).Faccion.Status = 1 Then
-356                         ft = FontTypeNames.FONTTYPE_CITIZEN
+356                     ElseIf UserList(TempCharIndex).Faccion.Status = 1 Then
+358                         ft = FontTypeNames.FONTTYPE_CITIZEN
                         
                         End If
                         
-358                     If UserList(TempCharIndex).flags.Casado = 1 Then
-360                         Stat = Stat & " <Pareja de " & UserList(TempCharIndex).flags.Pareja & ">"
+360                     If UserList(TempCharIndex).flags.Casado = 1 Then
+362                         Stat = Stat & " <Pareja de " & UserList(TempCharIndex).flags.Pareja & ">"
     
                         End If
                         
-362                     If Len(UserList(TempCharIndex).Desc) > 0 Then
-364                         Stat = "Ves a " & UserList(TempCharIndex).Name & Stat & " - " & UserList(TempCharIndex).Desc
+364                     If Len(UserList(TempCharIndex).Desc) > 0 Then
+366                         Stat = "Ves a " & UserList(TempCharIndex).Name & Stat & " - " & UserList(TempCharIndex).Desc
                         Else
-366                         Stat = "Ves a " & UserList(TempCharIndex).Name & Stat
+368                         Stat = "Ves a " & UserList(TempCharIndex).Name & Stat
     
                         End If
                 
-368                     If LenB(Stat) > 0 Then
-370                         If UserList(TempCharIndex).flags.Muerto Then
-372                             Call WriteConsoleMsg(UserIndex, Stat, FontTypeNames.FONTTYPE_New_Gris)
+370                     If LenB(Stat) > 0 Then
+372                         If UserList(TempCharIndex).flags.Muerto Then
+374                             Call WriteConsoleMsg(UserIndex, Stat, FontTypeNames.FONTTYPE_New_Gris)
                             Else
-374                             Call WriteConsoleMsg(UserIndex, Stat, ft)
+376                             Call WriteConsoleMsg(UserIndex, Stat, ft)
                             End If
                         
                         
                         End If
                 
-376                     FoundSomething = 1
-378                     UserList(UserIndex).flags.TargetUser = TempCharIndex
-380                     UserList(UserIndex).flags.TargetNPC = 0
-382                     UserList(UserIndex).flags.TargetNpcTipo = eNPCType.Comun
+378                     FoundSomething = 1
+380                     UserList(UserIndex).flags.TargetUser = TempCharIndex
+382                     UserList(UserIndex).flags.TargetNPC = 0
+384                     UserList(UserIndex).flags.TargetNpcTipo = eNPCType.Comun
 
                     Else
-384                     Call WriteConsoleMsg(UserIndex, "Ves a ??? <Game Master>", FontTypeNames.FONTTYPE_GM)
+386                     Call WriteConsoleMsg(UserIndex, "Ves a ??? <Game Master>", FontTypeNames.FONTTYPE_GM)
     
-386                     UserList(UserIndex).flags.TargetUser = TempCharIndex
-388                     UserList(UserIndex).flags.TargetNPC = 0
-390                     UserList(UserIndex).flags.TargetNpcTipo = eNPCType.Comun
+388                     UserList(UserIndex).flags.TargetUser = TempCharIndex
+390                     UserList(UserIndex).flags.TargetNPC = 0
+392                     UserList(UserIndex).flags.TargetNpcTipo = eNPCType.Comun
     
                     End If
                 End If
             End If
 
-392         If FoundChar = 2 Then '¿Encontro un NPC?
+394         If FoundChar = 2 Then '¿Encontro un NPC?
 
                 Dim estatus As String
 
-394             If EsGM(UserIndex) Or UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) >= 75 Then
-396                 estatus = "<" & NpcList(TempCharIndex).Stats.MinHp & "/" & NpcList(TempCharIndex).Stats.MaxHp
+396             If EsGM(UserIndex) Or UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) >= 75 Then
+398                 estatus = "<" & NpcList(TempCharIndex).Stats.MinHp & "/" & NpcList(TempCharIndex).Stats.MaxHp
                     
-398             ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) >= 50 Then
-400                 If NpcList(TempCharIndex).Stats.MaxHp <> 0 Then
-402                     estatus = "<" & Round((NpcList(TempCharIndex).Stats.MinHp / NpcList(TempCharIndex).Stats.MaxHp) * 100#, 0) & "%"
+400             ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) >= 50 Then
+402                 If NpcList(TempCharIndex).Stats.MaxHp <> 0 Then
+404                     estatus = "<" & Round((NpcList(TempCharIndex).Stats.MinHp / NpcList(TempCharIndex).Stats.MaxHp) * 100#, 0) & "%"
                     End If
  
-404             ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) >= 25 Then
+406             ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) >= 25 Then
                 
-406                 If NpcList(TempCharIndex).Stats.MinHp < (NpcList(TempCharIndex).Stats.MaxHp * 0.1) Then
-408                     estatus = "<Agonizando"
-410                 ElseIf NpcList(TempCharIndex).Stats.MinHp < (NpcList(TempCharIndex).Stats.MaxHp * 0.2) Then
-412                     estatus = "<Casi muerto"
-414                 ElseIf NpcList(TempCharIndex).Stats.MinHp < (NpcList(TempCharIndex).Stats.MaxHp * 0.5) Then
-416                     estatus = "<Malherido"
-418                 ElseIf NpcList(TempCharIndex).Stats.MinHp < (NpcList(TempCharIndex).Stats.MaxHp * 0.7) Then
-420                     estatus = "<Herido"
-422                 ElseIf NpcList(TempCharIndex).Stats.MinHp < (NpcList(TempCharIndex).Stats.MaxHp * 0.95) Then
-424                     estatus = "<Levemente herido"
+408                 If NpcList(TempCharIndex).Stats.MinHp < (NpcList(TempCharIndex).Stats.MaxHp * 0.1) Then
+410                     estatus = "<Agonizando"
+412                 ElseIf NpcList(TempCharIndex).Stats.MinHp < (NpcList(TempCharIndex).Stats.MaxHp * 0.2) Then
+414                     estatus = "<Casi muerto"
+416                 ElseIf NpcList(TempCharIndex).Stats.MinHp < (NpcList(TempCharIndex).Stats.MaxHp * 0.5) Then
+418                     estatus = "<Malherido"
+420                 ElseIf NpcList(TempCharIndex).Stats.MinHp < (NpcList(TempCharIndex).Stats.MaxHp * 0.7) Then
+422                     estatus = "<Herido"
+424                 ElseIf NpcList(TempCharIndex).Stats.MinHp < (NpcList(TempCharIndex).Stats.MaxHp * 0.95) Then
+426                     estatus = "<Levemente herido"
                     Else
-426                     estatus = "<Intacto"
+428                     estatus = "<Intacto"
                     End If
                     
                 Else
-428                 If NpcList(TempCharIndex).Stats.MinHp < NpcList(TempCharIndex).Stats.MaxHp Then
-430                     estatus = "<Herido"
+430                 If NpcList(TempCharIndex).Stats.MinHp < NpcList(TempCharIndex).Stats.MaxHp Then
+432                     estatus = "<Herido"
                     Else
-432                     estatus = "<Intacto"
+434                     estatus = "<Intacto"
                     End If
                         
                 End If
                         
-434             If NpcList(TempCharIndex).flags.Envenenado > 0 Then
-436                 estatus = estatus & " | Envenenado"
+436             If NpcList(TempCharIndex).flags.Envenenado > 0 Then
+438                 estatus = estatus & " | Envenenado"
                 End If
                         
-438             If NpcList(TempCharIndex).flags.Paralizado = 1 Then
-440                 If UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) >= 100 Then
-442                     estatus = estatus & " | Paralizado (" & CInt(NpcList(TempCharIndex).Contadores.Paralisis / 6.5) & "s)"
+440             If NpcList(TempCharIndex).flags.Paralizado = 1 Then
+442                 If UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) >= 100 Then
+444                     estatus = estatus & " | Paralizado (" & CInt(NpcList(TempCharIndex).Contadores.Paralisis / 6.5) & "s)"
                     Else
-444                     estatus = estatus & " | Paralizado"
+446                     estatus = estatus & " | Paralizado"
                     End If
                 End If
                         
-446             If NpcList(TempCharIndex).flags.Inmovilizado = 1 Then
-448                 If UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) >= 100 Then
-450                     estatus = estatus & " | Inmovilizado (" & CInt(NpcList(TempCharIndex).Contadores.Inmovilizado / 6.5) & "s)"
+448             If NpcList(TempCharIndex).flags.Inmovilizado = 1 Then
+450                 If UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) >= 100 Then
+452                     estatus = estatus & " | Inmovilizado (" & CInt(NpcList(TempCharIndex).Contadores.Inmovilizado / 6.5) & "s)"
                     Else
-452                     estatus = estatus & " | Inmovilizado"
+454                     estatus = estatus & " | Inmovilizado"
 
                     End If
 
                 End If
                         
-454             estatus = estatus & ">"
+456             estatus = estatus & ">"
     
                 'End If
             
-456             If Len(NpcList(TempCharIndex).Desc) > 1 Then
+458             If Len(NpcList(TempCharIndex).Desc) > 1 Then
                     ' WyroX: Hacemos que se detenga a hablar un momento :P
-458                 If NpcList(TempCharIndex).Movement = Caminata Then
-460                     NpcList(TempCharIndex).Contadores.IntervaloMovimiento = GetTickCount + 5000 + Len(NpcList(TempCharIndex).Desc) * 50 - NpcList(TempCharIndex).IntervaloMovimiento ' 5 segundos + 1 segundo cada 20 caracteres
+460                 If NpcList(TempCharIndex).Movement = Caminata Then
+462                     NpcList(TempCharIndex).Contadores.IntervaloMovimiento = GetTickCount + 5000 + Len(NpcList(TempCharIndex).Desc) * 50 - NpcList(TempCharIndex).IntervaloMovimiento ' 5 segundos + 1 segundo cada 20 caracteres
                     End If
 
                     'Optimizacion de protocolo por Ladder
-462                 Call WriteChatOverHead(UserIndex, "NPCDESC*" & NpcList(TempCharIndex).Numero, NpcList(TempCharIndex).Char.CharIndex, vbWhite)
-464             ElseIf TempCharIndex = CentinelaNPCIndex Then
+464                 Call WriteChatOverHead(UserIndex, "NPCDESC*" & NpcList(TempCharIndex).Numero, NpcList(TempCharIndex).Char.CharIndex, vbWhite)
+466             ElseIf TempCharIndex = CentinelaNPCIndex Then
                     'Enviamos nuevamente el texto del centinela según quien pregunta
-466                 Call modCentinela.CentinelaSendClave(UserIndex)
+468                 Call modCentinela.CentinelaSendClave(UserIndex)
                 
-468             ElseIf NpcList(TempCharIndex).MaestroUser > 0 Then
-470                 Call WriteConsoleMsg(UserIndex, "NPCNAME*" & NpcList(TempCharIndex).Numero & "* es mascota de " & UserList(NpcList(TempCharIndex).MaestroUser).Name & " " & estatus, FontTypeNames.FONTTYPE_INFO)
+470             ElseIf NpcList(TempCharIndex).MaestroUser > 0 Then
+472                 Call WriteConsoleMsg(UserIndex, "NPCNAME*" & NpcList(TempCharIndex).Numero & "* es mascota de " & UserList(NpcList(TempCharIndex).MaestroUser).Name & " " & estatus, FontTypeNames.FONTTYPE_INFO)
                 
                 Else
                 
-472                 Call WriteConsoleMsg(UserIndex, "NPCNAME*" & NpcList(TempCharIndex).Numero & "*" & " " & estatus, FontTypeNames.FONTTYPE_INFO)
+474                 Call WriteConsoleMsg(UserIndex, "NPCNAME*" & NpcList(TempCharIndex).Numero & "*" & " " & estatus, FontTypeNames.FONTTYPE_INFO)
                     ' If UserList(UserIndex).flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin) Then
                     ' Call WriteConsoleMsg(UserIndex, "Le pegó primero: " & NpcList(TempCharIndex).flags.AttackedFirstBy & ".", FontTypeNames.FONTTYPE_INFO)
                     ' Call WriteConsoleMsg(UserIndex, NpcList(TempCharIndex).Char.CharIndex, FontTypeNames.FONTTYPE_INFO)
@@ -1416,41 +1416,41 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
                 
                 End If
 
-474             FoundSomething = 1
-476             UserList(UserIndex).flags.TargetNpcTipo = NpcList(TempCharIndex).NPCtype
-478             UserList(UserIndex).flags.TargetNPC = TempCharIndex
-480             UserList(UserIndex).flags.TargetUser = 0
-482             UserList(UserIndex).flags.TargetObj = 0
+476             FoundSomething = 1
+478             UserList(UserIndex).flags.TargetNpcTipo = NpcList(TempCharIndex).NPCtype
+480             UserList(UserIndex).flags.TargetNPC = TempCharIndex
+482             UserList(UserIndex).flags.TargetUser = 0
+484             UserList(UserIndex).flags.TargetObj = 0
 
 
             
             Dim i As Long, j As Long
                     
-484                 For i = 1 To MAXUSERQUESTS
+486                 For i = 1 To MAXUSERQUESTS
                     
-486                     With UserList(UserIndex).QuestStats.Quests(i)
+488                     With UserList(UserIndex).QuestStats.Quests(i)
                     
-488                         If .QuestIndex Then
-490                             If QuestList(.QuestIndex).RequiredTargetNPCs Then
+490                         If .QuestIndex Then
+492                             If QuestList(.QuestIndex).RequiredTargetNPCs Then
                     
-492                                 For j = 1 To QuestList(.QuestIndex).RequiredTargetNPCs
+494                                 For j = 1 To QuestList(.QuestIndex).RequiredTargetNPCs
                     
-494                                     If QuestList(.QuestIndex).RequiredTargetNPC(j).NpcIndex = NpcList(TempCharIndex).Numero Then
-496                                         If QuestList(.QuestIndex).RequiredTargetNPC(j).amount > .NPCsTarget(j) Then
-498                                             .NPCsTarget(j) = .NPCsTarget(j) + 1
+496                                     If QuestList(.QuestIndex).RequiredTargetNPC(j).NpcIndex = NpcList(TempCharIndex).Numero Then
+498                                         If QuestList(.QuestIndex).RequiredTargetNPC(j).amount > .NPCsTarget(j) Then
+500                                             .NPCsTarget(j) = .NPCsTarget(j) + 1
                     
                                             End If
                                                 
-500                                         If QuestList(.QuestIndex).RequiredTargetNPC(j).amount = .NPCsTarget(j) Then
-502                                             Call FinishQuest(UserIndex, .QuestIndex, i)
-504                                             Call WriteUpdateNPCSimbolo(UserIndex, TempCharIndex, 1)
-506                                             Call WriteChatOverHead(UserIndex, "¡Quest Finalizada!", NpcList(TempCharIndex).Char.CharIndex, vbYellow)
-508                                             Call WriteConsoleMsg(UserIndex, "Quest Finalizada!", FontTypeNames.FONTTYPE_INFOIAO)
+502                                         If QuestList(.QuestIndex).RequiredTargetNPC(j).amount = .NPCsTarget(j) Then
+504                                             Call FinishQuest(UserIndex, .QuestIndex, i)
+506                                             Call WriteUpdateNPCSimbolo(UserIndex, TempCharIndex, 1)
+508                                             Call WriteChatOverHead(UserIndex, "¡Quest Finalizada!", NpcList(TempCharIndex).Char.CharIndex, vbYellow)
+510                                             Call WriteConsoleMsg(UserIndex, "Quest Finalizada!", FontTypeNames.FONTTYPE_INFOIAO)
                                             End If
                     
                                         End If
                     
-510                                 Next j
+512                                 Next j
                     
                                 End If
                     
@@ -1458,40 +1458,40 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
                     
                         End With
                     
-512                 Next i
+514                 Next i
         
             End If
     
-514         If FoundChar = 0 Then
-516             UserList(UserIndex).flags.TargetNPC = 0
-518             UserList(UserIndex).flags.TargetNpcTipo = eNPCType.Comun
-520             UserList(UserIndex).flags.TargetUser = 0
+516         If FoundChar = 0 Then
+518             UserList(UserIndex).flags.TargetNPC = 0
+520             UserList(UserIndex).flags.TargetNpcTipo = eNPCType.Comun
+522             UserList(UserIndex).flags.TargetUser = 0
 
             End If
     
             '*** NO ENCOTRO NADA ***
-522         If FoundSomething = 0 Then
-524             UserList(UserIndex).flags.TargetNPC = 0
-526             UserList(UserIndex).flags.TargetNpcTipo = eNPCType.Comun
-528             UserList(UserIndex).flags.TargetUser = 0
-530             UserList(UserIndex).flags.TargetObj = 0
-532             UserList(UserIndex).flags.TargetObjMap = 0
-534             UserList(UserIndex).flags.TargetObjX = 0
-536             UserList(UserIndex).flags.TargetObjY = 0
+524         If FoundSomething = 0 Then
+526             UserList(UserIndex).flags.TargetNPC = 0
+528             UserList(UserIndex).flags.TargetNpcTipo = eNPCType.Comun
+530             UserList(UserIndex).flags.TargetUser = 0
+532             UserList(UserIndex).flags.TargetObj = 0
+534             UserList(UserIndex).flags.TargetObjMap = 0
+536             UserList(UserIndex).flags.TargetObjX = 0
+538             UserList(UserIndex).flags.TargetObjY = 0
 
                 ' Call WriteConsoleMsg(UserIndex, "No ves nada interesante.", FontTypeNames.FONTTYPE_INFO)
             End If
 
         Else
 
-538         If FoundSomething = 0 Then
-540             UserList(UserIndex).flags.TargetNPC = 0
-542             UserList(UserIndex).flags.TargetNpcTipo = eNPCType.Comun
-544             UserList(UserIndex).flags.TargetUser = 0
-546             UserList(UserIndex).flags.TargetObj = 0
-548             UserList(UserIndex).flags.TargetObjMap = 0
-550             UserList(UserIndex).flags.TargetObjX = 0
-552             UserList(UserIndex).flags.TargetObjY = 0
+540         If FoundSomething = 0 Then
+542             UserList(UserIndex).flags.TargetNPC = 0
+544             UserList(UserIndex).flags.TargetNpcTipo = eNPCType.Comun
+546             UserList(UserIndex).flags.TargetUser = 0
+548             UserList(UserIndex).flags.TargetObj = 0
+550             UserList(UserIndex).flags.TargetObjMap = 0
+552             UserList(UserIndex).flags.TargetObjX = 0
+554             UserList(UserIndex).flags.TargetObjY = 0
 
                 '  Call WriteConsoleMsg(UserIndex, "No ves nada interesante.", FontTypeNames.FONTTYPE_INFO)
             End If
@@ -1502,11 +1502,11 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
         Exit Sub
 
 LookatTile_Err:
-554         Call TraceError(Err.Number, Err.Description & " Pos: " & Map & "-" & X & "-" & Y & " Usuario: " & UserList(UserIndex).Name & " Extra.LookatTile", Erl)
-556     If FoundChar = 2 Then
-558         Call TraceError(Err.Number, Err.Description & " Pos: " & Map & "-" & X & "-" & Y & "Npc: " & NpcList(TempCharIndex).Numero & " Usuario: " & UserList(UserIndex).Name & "Extra.LookatTile X LADDER", Erl)
+556         Call TraceError(Err.Number, Err.Description & " Pos: " & Map & "-" & X & "-" & Y & " Usuario: " & UserList(UserIndex).Name & " Extra.LookatTile", Erl)
+558     If FoundChar = 2 Then
+560         Call TraceError(Err.Number, Err.Description & " Pos: " & Map & "-" & X & "-" & Y & "Npc: " & NpcList(TempCharIndex).Numero & " Usuario: " & UserList(UserIndex).Name & "Extra.LookatTile X LADDER", Erl)
         End If
-560
+
         
 End Sub
 
@@ -1594,7 +1594,7 @@ Function FindDirection(Pos As WorldPos, Target As WorldPos) As eHeading
 
 FindDirection_Err:
 140     Call TraceError(Err.Number, Err.Description, "Extra.FindDirection", Erl)
-142
+
         
 End Function
 
@@ -1611,7 +1611,7 @@ Public Function ItemNoEsDeMapa(ByVal Index As Integer) As Boolean
 
 ItemNoEsDeMapa_Err:
 102     Call TraceError(Err.Number, Err.Description, "Extra.ItemNoEsDeMapa", Erl)
-104
+
         
 End Function
 
@@ -1628,7 +1628,7 @@ Public Function MostrarCantidad(ByVal Index As Integer) As Boolean
 
 MostrarCantidad_Err:
 102     Call TraceError(Err.Number, Err.Description, "Extra.MostrarCantidad", Erl)
-104
+
         
 End Function
 
@@ -1644,7 +1644,7 @@ Public Function EsObjetoFijo(ByVal OBJType As eOBJType) As Boolean
 
 EsObjetoFijo_Err:
 102     Call TraceError(Err.Number, Err.Description, "Extra.EsObjetoFijo", Erl)
-104
+
         
 End Function
 
@@ -1656,38 +1656,38 @@ End Function
 
 Public Sub CargarMapasEspeciales()
 
-    Dim File As clsIniManager
-    Set File = New clsIniManager
+        Dim File As clsIniManager
+100     Set File = New clsIniManager
     
-    Call File.Initialize(DatPath & "MapasEspeciales.dat")
+102     Call File.Initialize(DatPath & "MapasEspeciales.dat")
     
-    Dim Cantidad As Integer
-    Cantidad = val(File.GetValue("MapasInterdimensionales", "Cantidad"))
+        Dim Cantidad As Integer
+104     Cantidad = val(File.GetValue("MapasInterdimensionales", "Cantidad"))
     
-    Dim i As Integer
+        Dim i As Integer
     
-    If Cantidad > 0 Then
-        ReDim MapasInterdimensionales(1 To Cantidad)
+106     If Cantidad > 0 Then
+108         ReDim MapasInterdimensionales(1 To Cantidad)
         
-        For i = 1 To Cantidad
-            MapasInterdimensionales(i) = val(File.GetValue("MapasInterdimensionales", "Mapa" & i))
-        Next
-    Else
-        ReDim MapasInterdimensionales(0)
-    End If
+110         For i = 1 To Cantidad
+112             MapasInterdimensionales(i) = val(File.GetValue("MapasInterdimensionales", "Mapa" & i))
+            Next
+        Else
+114         ReDim MapasInterdimensionales(0)
+        End If
     
-    Cantidad = val(File.GetValue("MapasIgnoranLimpieza", "Cantidad"))
+116     Cantidad = val(File.GetValue("MapasIgnoranLimpieza", "Cantidad"))
     
-    If Cantidad > 0 Then
-        ReDim MapasIgnoranLimpieza(1 To Cantidad)
+118     If Cantidad > 0 Then
+120         ReDim MapasIgnoranLimpieza(1 To Cantidad)
         
-        For i = 1 To Cantidad
-            MapasIgnoranLimpieza(i) = val(File.GetValue("MapasIgnoranLimpieza", "Mapa" & i))
-        Next
-    Else
-        ReDim MapasIgnoranLimpieza(0)
-    End If
+122         For i = 1 To Cantidad
+124             MapasIgnoranLimpieza(i) = val(File.GetValue("MapasIgnoranLimpieza", "Mapa" & i))
+            Next
+        Else
+126         ReDim MapasIgnoranLimpieza(0)
+        End If
     
-    Set File = Nothing
+128     Set File = Nothing
 
 End Sub

@@ -268,7 +268,7 @@ Sub QuitarNpcInvItem(ByVal NpcIndex As Integer, ByVal Slot As Byte, ByVal Cantid
 
 QuitarNpcInvItem_Err:
 144     Call TraceError(Err.Number, Err.Description, "InvNpc.QuitarNpcInvItem", Erl)
-146
+
         
 End Sub
 
@@ -304,7 +304,7 @@ Sub CargarInvent(ByVal NpcIndex As Integer)
 
 CargarInvent_Err:
 114     Call TraceError(Err.Number, Err.Description, "InvNpc.CargarInvent", Erl)
-116
+
         
 End Sub
 

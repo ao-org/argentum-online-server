@@ -55,7 +55,7 @@ Public Invasiones() As tInvasion
 
 Sub CargarInfoEventos()
     Dim File As clsIniManager
-    Set File = New clsIniManager
+100 Set File = New clsIniManager
 
 102     Call File.Initialize(DatPath & "Eventos.dat")
     
@@ -358,7 +358,7 @@ Public Sub EnviarInfoInvasion(ByVal index As Integer)
 
 End Sub
 
-Public Sub HacerDañoMuralla(ByVal index As Integer, ByVal Daño As Long)
+Public Sub HacerDañoMuralla(ByVal Index As Integer, ByVal Daño As Long)
     
 100     With Invasiones(index)
     

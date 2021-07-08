@@ -32,7 +32,7 @@ Public Function MeterLlaveEnLLavero(ByVal UserIndex As Integer, ByVal Llave As I
         Exit Function
 
 ErrHandler:
-114     Call TraceError(Err.Number, Err.Description, "ModLlaves.MeterLlaveEnLLavero")
+114     Call TraceError(Err.Number, Err.Description, "ModLlaves.MeterLlaveEnLLavero", Erl)
 
 End Function
 
@@ -57,7 +57,7 @@ Public Sub SacarLlaveDeLLavero(ByVal UserIndex As Integer, ByVal Llave As Intege
         Exit Sub
 
 ErrHandler:
-110     Call TraceError(Err.Number, Err.Description, "ModLlaves.SacarLlaveDeLLavero")
+110     Call TraceError(Err.Number, Err.Description, "ModLlaves.SacarLlaveDeLLavero", Erl)
 
 End Sub
 
