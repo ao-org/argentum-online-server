@@ -1832,7 +1832,7 @@ Public Type user
     clase As eClass
     raza As eRaza
     genero As eGenero
-    email As String
+    Email As String
     Hogar As eCiudad
     PosibleHogar As eCiudad
     MENSAJEINFORMACION As String
@@ -2072,7 +2072,7 @@ Public Type npc
     NPCtype As eNPCType
     Numero As Integer
 
-    Nivel As Integer
+    nivel As Integer
 
     InvReSpawn As Byte
 
@@ -2150,6 +2150,8 @@ Public Type npc
     
     Caminata() As tCaminata
     CaminataActual As Byte
+    
+    PuedeInvocar As Byte
     
 End Type
 
@@ -2412,7 +2414,7 @@ Public ConsultaPopular                    As New ConsultasPopulares
 
 Public Declare Function writeprivateprofilestring Lib "kernel32" Alias "WritePrivateProfileStringA" (ByVal lpApplicationname As String, ByVal lpKeyname As Any, ByVal lpString As String, ByVal lpfilename As String) As Long
 
-Public Declare Function GetPrivateProfileString Lib "kernel32" Alias "GetPrivateProfileStringA" (ByVal lpApplicationname As String, ByVal lpKeyname As Any, ByVal lpdefault As String, ByVal lpreturnedstring As String, ByVal nsize As Long, ByVal lpfilename As String) As Long
+Public Declare Function GetPrivateProfileString Lib "kernel32" Alias "GetPrivateProfileStringA" (ByVal lpApplicationname As String, ByVal lpKeyname As Any, ByVal lpdefault As String, ByVal lpreturnedstring As String, ByVal nSize As Long, ByVal lpfilename As String) As Long
 
 Public Declare Sub ZeroMemory Lib "kernel32.dll" Alias "RtlZeroMemory" (ByRef destination As Any, ByVal Length As Long)
 

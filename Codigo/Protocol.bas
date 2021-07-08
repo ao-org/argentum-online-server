@@ -10922,14 +10922,19 @@ Private Sub HandleSpawnListRequest(ByVal UserIndex As Integer)
     '***************************************************
     With UserList(UserIndex)
 
-        If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero)) Then
+        If .flags.Privilegios And PlayerType.user Then
+            Exit Sub
+
+        ElseIf .flags.Privilegios And PlayerType.Consejero Then
             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
             Exit Sub
+            
+        ElseIf .flags.Privilegios And PlayerType.SemiDios Then
+            Call WriteConsoleMsg(UserIndex, "Servidor » La cantidad de NPCs disponible para tu rango está limitada.", FontTypeNames.FONTTYPE_INFO)
         End If
-        
-        
-        Call EnviarSpawnList(UserIndex)
 
+        Call WriteSpawnList(UserIndex, UserList(UserIndex).flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin))
+    
     End With
         
     Exit Sub

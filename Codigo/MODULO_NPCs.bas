@@ -1397,7 +1397,9 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
     
             'Tipo de items con los que comercia
 406         .TipoItems = val(Leer.GetValue("NPC" & NpcNumber, "TipoItems"))
-    
+
+            'PuedeInvocar -> NPCs que solo ven los SemiDioses
+            .PuedeInvocar = val(Leer.GetValue("NPC" & NpcNumber, "PuedeInvocar"))
     
             '<<<<<<<<<<<<<< Animaciones >>>>>>>>>>>>>>>>
     
