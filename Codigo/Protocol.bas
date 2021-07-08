@@ -296,7 +296,6 @@ Private Enum ClientPacketID
     GuildOnline             '/ONLINECLAN
     CouncilMessage          '/BMSG
     RoleMasterRequest       '/ROL
-    GMRequest               '/GM
     ChangeDescription       '/DESC
     GuildVote               '/VOTO
     punishments             '/PENAS
@@ -754,7 +753,6 @@ Public Sub InitializePacketList()
     PacketList(ClientPacketID.GuildOnline) = GetAddress(AddressOf HandleGuildOnline)
     PacketList(ClientPacketID.CouncilMessage) = GetAddress(AddressOf HandleCouncilMessage)
     PacketList(ClientPacketID.RoleMasterRequest) = GetAddress(AddressOf HandleRoleMasterRequest)
-    PacketList(ClientPacketID.GMRequest) = GetAddress(AddressOf HandleGMRequest)
     PacketList(ClientPacketID.ChangeDescription) = GetAddress(AddressOf HandleChangeDescription)
     PacketList(ClientPacketID.GuildVote) = GetAddress(AddressOf HandleGuildVote)
     PacketList(ClientPacketID.punishments) = GetAddress(AddressOf HandlePunishments)
@@ -6859,41 +6857,6 @@ ErrHandler:
 End Sub
 
 ''
-' Handles the "GMRequest" message.
-'
-' @param    UserIndex The index of the user sending the message.
-
-Private Sub HandleGMRequest(ByVal UserIndex As Integer)
-        
-    On Error GoTo HandleGMRequest_Err
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    '
-    '***************************************************
-        
-    With UserList(UserIndex)
-
-        If Not Ayuda.Existe(.Name) Then
-            Call WriteConsoleMsg(UserIndex, "El mensaje ha sido entregado, ahora sílo debes esperar que se desocupe algín GM.", FontTypeNames.FONTTYPE_INFO)
-                
-        Else
-            Call WriteConsoleMsg(UserIndex, "Ya habías mandado un mensaje, tu mensaje ha sido movido al final de la cola de mensajes.", FontTypeNames.FONTTYPE_INFO)
-
-        End If
-
-    End With
-        
-    Exit Sub
-
-HandleGMRequest_Err:
-    Call TraceError(Err.Number, Err.Description, "Protocol.HandleGMRequest", Erl)
-    Call UserList(UserIndex).incomingData.SafeClearPacket
-        
-End Sub
-
-''
 ' Handles the "ChangeDescription" message.
 '
 ' @param    UserIndex The index of the user sending the message.
@@ -7597,21 +7560,23 @@ Private Sub HandleGMMessage(ByVal UserIndex As Integer)
         
         Dim message As String
             message = .incomingData.ReadASCIIString()
-        
-        If Not .flags.Privilegios And PlayerType.user Then
-            Call LogGM(.Name, "Mensaje a Gms:" & message)
+
+        If EsGM(UserIndex) Then
+            Call LogGM(.Name, "Mensaje a Gms: " & message)
         
             If LenB(message) <> 0 Then
                 'Analize chat...
                 Call Statistics.ParseChat(message)
             
-                Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(.Name & "> " & message, FontTypeNames.FONTTYPE_GMMSG))
+                Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(.Name & " » " & message, FontTypeNames.FONTTYPE_GMMSG))
 
             End If
 
         End If
 
     End With
+
+    Exit Sub
     
 ErrHandler:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGMMessage", Erl)
