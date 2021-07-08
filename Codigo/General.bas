@@ -780,7 +780,6 @@ Sub Main()
 282         .Segundo.Enabled = True
 284         .KillLog.Enabled = True
 286         .TIMER_AI.Enabled = True
-288         .Invasion.Enabled = True
         End With
     
 290     Subasta.SubastaHabilitada = True
