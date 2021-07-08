@@ -402,8 +402,6 @@ Public Function CondicionSocket(ByRef lpCallerId As WSABUF, ByRef lpCallerData A
         
         On Error GoTo CondicionSocket_Err
 
-        Dim sa As sockaddr
-    
         'Check if we were requested to force reject
 100     If dwCallbackData = 1 Then
 102         CondicionSocket = CF_REJECT
@@ -412,9 +410,9 @@ Public Function CondicionSocket(ByRef lpCallerId As WSABUF, ByRef lpCallerData A
         End If
     
         'Get the address
+        Dim sa As sockaddr
 104     Call CopyMemory(sa, ByVal lpCallerId.LpBuffer, lpCallerId.dwBufferLen)
 
-        
         ' Si esta en la lista de IPs prohibidas, rechazamos la conexion
         If IP_Blacklist.Exists(GetAscIP(sa.sin_addr)) Then
             Debug.Print "La IP " & GetAscIP(sa.sin_addr) & " esta baneada, CONEXION RECHAZADA"
