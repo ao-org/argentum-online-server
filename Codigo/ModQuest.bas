@@ -209,7 +209,7 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
 
 182                 If .RewardOBJ(i).amount Then
 184                     Call MeterItemEnInventario(UserIndex, .RewardOBJ(i))
-186                     Call WriteConsoleMsg(UserIndex, "Has recibido " & QuestList(QuestIndex).RewardOBJ(i).amount & " " & ObjData(QuestList(QuestIndex).RewardOBJ(i).ObjIndex).name & " como recompensa.", FontTypeNames.FONTTYPE_INFOIAO)
+186                     Call WriteConsoleMsg(UserIndex, "Has recibido " & QuestList(QuestIndex).RewardOBJ(i).amount & " " & ObjData(QuestList(QuestIndex).RewardOBJ(i).ObjIndex).Name & " como recompensa.", FontTypeNames.FONTTYPE_INFOIAO)
 
                     End If
 
@@ -329,6 +329,22 @@ Public Sub CleanQuestSlot(ByVal UserIndex As Integer, ByVal QuestSlot As Integer
 100     With UserList(UserIndex).QuestStats.Quests(QuestSlot)
 
 102         If .QuestIndex Then
+
+                ' Le quitamos los objetos de quest que no puede tirar
+                If QuestList(.QuestIndex).RequiredOBJs Then
+
+                    Dim ObjIndex As Integer
+                    
+                    For i = 1 To QuestList(.QuestIndex).RequiredOBJs
+                        ObjIndex = QuestList(.QuestIndex).RequiredOBJ(i).ObjIndex
+                        
+                        If ObjData(ObjIndex).Intirable = 1 And ObjData(ObjIndex).Instransferible Then
+                            Call QuitarObjetos(ObjIndex, MAX_INVENTORY_OBJS, UserIndex)
+                        End If
+                    Next i
+
+                End If
+
 104             If QuestList(.QuestIndex).RequiredNPCs Then
 
 106                 For i = 1 To QuestList(.QuestIndex).RequiredNPCs
