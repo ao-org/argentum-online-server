@@ -39,7 +39,7 @@ Public Sub LimpiarMascota(UserIndex)
 
 LimpiarMascota_Err:
 116     Call TraceError(Err.Number, Err.Description, "ModFamiliar.LimpiarMascota", Erl)
-118
+
         
 End Sub
 
@@ -144,7 +144,7 @@ Public Sub InvocarFamiliar(ByVal UserIndex As Integer, ByVal b As Boolean)
 
 InvocarFamiliar_Err:
 156     Call TraceError(Err.Number, Err.Description, "ModFamiliar.InvocarFamiliar", Erl)
-158
+
         
 End Sub
 
@@ -167,7 +167,7 @@ Public Sub RevivirFamiliar(ByVal UserIndex As Integer)
 
 RevivirFamiliar_Err:
 108     Call TraceError(Err.Number, Err.Description, "ModFamiliar.RevivirFamiliar", Erl)
-110
+
         
 End Sub
 
@@ -196,7 +196,7 @@ Public Sub CargarFamiliar(ByVal UserIndex As Integer)
 
 CargarFamiliar_Err:
 122     Call TraceError(Err.Number, Err.Description, "ModFamiliar.CargarFamiliar", Erl)
-124
+
         
 End Sub
 
@@ -244,7 +244,7 @@ Public Function IndexDeFamiliar(ByVal Tipo As Byte) As Byte
 
 IndexDeFamiliar_Err:
 136     Call TraceError(Err.Number, Err.Description, "ModFamiliar.IndexDeFamiliar", Erl)
-138
+
         
 End Function
 
@@ -324,7 +324,7 @@ Sub CalcularDarExpCompartida(ByVal UserIndex As Integer, ByVal NpcIndex As Integ
 
 CalcularDarExpCompartida_Err:
 146     Call TraceError(Err.Number, Err.Description, "ModFamiliar.CalcularDarExpCompartida", Erl)
-148
+
         
 End Sub
 

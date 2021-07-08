@@ -75,32 +75,32 @@ Public Sub EnlistarArmadaReal(ByVal UserIndex As Integer)
                 End If
                 
                 'HarThaoS: Lo pongo al final para que lo expulse del clan solamente si cumple todos los requisitos.
-                If .GuildIndex > 0 Then
-                    If PersonajeEsLeader(.Name) Then
-                        Call WriteChatOverHead(UserIndex, "No puedes integrar nuestras fuerzas si perteneces a un clan neutral, deberás abandonarlo si tu deseo es integrar el Ejército Real.", charIndexStr, vbWhite)
+146             If .GuildIndex > 0 Then
+148                 If PersonajeEsLeader(.Name) Then
+150                     Call WriteChatOverHead(UserIndex, "No puedes integrar nuestras fuerzas si perteneces a un clan neutral, deberás abandonarlo si tu deseo es integrar el Ejército Real.", charIndexStr, vbWhite)
                         Exit Sub
                     Else
-                        Call m_EcharMiembroDeClan(UserIndex, .Name)
+152                     Call m_EcharMiembroDeClan(UserIndex, .Name)
                     End If
                 End If
 
                 ' Cumple con los requisitos para enlistarse
-146             .Faccion.ArmadaReal = 1
-148             .Faccion.RecompensasReal = primerRango.rank ' Asigna primer rango
-150             .Faccion.Reenlistadas = .Faccion.Reenlistadas + 1
-152             .Faccion.Status = 3
+154             .Faccion.ArmadaReal = 1
+156             .Faccion.RecompensasReal = primerRango.rank ' Asigna primer rango
+158             .Faccion.Reenlistadas = .Faccion.Reenlistadas + 1
+160             .Faccion.Status = 3
 
-154             If .Faccion.RecibioArmaduraReal = 0 Then
-156                 Call WriteChatOverHead(UserIndex, "¡¡¡Bienvenido al Ejercito Imperial!!!, aqui tienes tus vestimentas. Cumple bien tu labor exterminando Criminales y me encargaré de recompensarte.", charIndexStr, vbWhite)
+162             If .Faccion.RecibioArmaduraReal = 0 Then
+164                 Call WriteChatOverHead(UserIndex, "¡¡¡Bienvenido al Ejercito Imperial!!!, aqui tienes tus vestimentas. Cumple bien tu labor exterminando Criminales y me encargaré de recompensarte.", charIndexStr, vbWhite)
 
-158                 .Faccion.NivelIngreso = .Stats.ELV
-160                 .Faccion.MatadosIngreso = .Faccion.ciudadanosMatados
+166                 .Faccion.NivelIngreso = .Stats.ELV
+168                 .Faccion.MatadosIngreso = .Faccion.ciudadanosMatados
 
                 End If
 
-162             Call WriteConsoleMsg(UserIndex, "¡Ahora perteneces al Ejercito Real!", FontTypeNames.FONTTYPE_INFOIAO)
-164             Call DarRecompensas(UserIndex)
-166             Call RefreshCharStatus(UserIndex)
+170             Call WriteConsoleMsg(UserIndex, "¡Ahora perteneces al Ejercito Real!", FontTypeNames.FONTTYPE_INFOIAO)
+172             Call DarRecompensas(UserIndex)
+174             Call RefreshCharStatus(UserIndex)
 
             End With
 
@@ -109,8 +109,8 @@ Public Sub EnlistarArmadaReal(ByVal UserIndex As Integer)
             Exit Sub
 
 EnlistarArmadaReal_Err:
-168         Call TraceError(Err.Number, Err.Description, "ModFacciones.EnlistarArmadaReal", Erl)
-170
+176         Call TraceError(Err.Number, Err.Description, "ModFacciones.EnlistarArmadaReal", Erl)
+
 
 End Sub
 
@@ -159,7 +159,7 @@ Public Sub RecompensaArmadaReal(ByVal UserIndex As Integer)
 
 RecompensaArmadaReal_Err:
 130         Call TraceError(Err.Number, Err.Description, "ModFacciones.RecompensaArmadaReal", Erl)
-132
+
 
 End Sub
 
@@ -178,7 +178,7 @@ Public Sub ExpulsarFaccionReal(ByVal UserIndex As Integer)
 
 ExpulsarFaccionReal_Err:
 110         Call TraceError(Err.Number, Err.Description, "ModFacciones.ExpulsarFaccionReal", Erl)
-112
+
 
 End Sub
 
@@ -197,7 +197,7 @@ Public Sub ExpulsarFaccionCaos(ByVal UserIndex As Integer)
 
 ExpulsarFaccionCaos_Err:
 110         Call TraceError(Err.Number, Err.Description, "ModFacciones.ExpulsarFaccionCaos", Erl)
-112
+
 
 End Sub
 
@@ -216,7 +216,7 @@ Public Function TituloReal(ByVal UserIndex As Integer) As String
 
 TituloReal_Err:
 106         Call TraceError(Err.Number, Err.Description, "ModFacciones.TituloReal", Erl)
-108
+
 
 End Function
 
@@ -287,29 +287,29 @@ Public Sub EnlistarCaos(ByVal UserIndex As Integer)
                 
                 
                 'HarThaoS: Lo pongo al final para que lo expulse del clan solamente si cumple todos los requisitos.
-                If .GuildIndex > 0 Then
-                    If PersonajeEsLeader(.Name) Then
-                        Call WriteChatOverHead(UserIndex, "Si quieres unirte a nuestras tropas deberás abandonar tu clan neutral.", charIndexStr, vbWhite)
+142             If .GuildIndex > 0 Then
+144                 If PersonajeEsLeader(.Name) Then
+146                     Call WriteChatOverHead(UserIndex, "Si quieres unirte a nuestras tropas deberás abandonar tu clan neutral.", charIndexStr, vbWhite)
                         Exit Sub
                     Else
-                        Call m_EcharMiembroDeClan(UserIndex, .Name)
+148                     Call m_EcharMiembroDeClan(UserIndex, .Name)
                     End If
                 End If
 
                 ' Cumple con los requisitos para enlistarse
-142             .Faccion.FuerzasCaos = 1
-144             .Faccion.RecompensasCaos = primerRango.rank ' Asigna primer rango
-146             .Faccion.Reenlistadas = .Faccion.Reenlistadas + 1
-148             .Faccion.Status = 2
+150             .Faccion.FuerzasCaos = 1
+152             .Faccion.RecompensasCaos = primerRango.rank ' Asigna primer rango
+154             .Faccion.Reenlistadas = .Faccion.Reenlistadas + 1
+156             .Faccion.Status = 2
 
-150             If .Faccion.RecibioArmaduraCaos = 0 Then
-152                 Call WriteChatOverHead(UserIndex, "Aquí tienes tu armadura legionario, ve a derramar sangre de los súbditos de Tancredo. Esta guerra será larga y cruel.", charIndexStr, vbWhite)
-154                 .Faccion.NivelIngreso = .Stats.ELV
+158             If .Faccion.RecibioArmaduraCaos = 0 Then
+160                 Call WriteChatOverHead(UserIndex, "Aquí tienes tu armadura legionario, ve a derramar sangre de los súbditos de Tancredo. Esta guerra será larga y cruel.", charIndexStr, vbWhite)
+162                 .Faccion.NivelIngreso = .Stats.ELV
                 End If
 
-156             Call WriteConsoleMsg(UserIndex, "¡Ahora perteneces a la Legión Oscura.!", FontTypeNames.FONTTYPE_INFOIAO)
-158             Call DarRecompensas(UserIndex)
-160             Call RefreshCharStatus(UserIndex)
+164             Call WriteConsoleMsg(UserIndex, "¡Ahora perteneces a la Legión Oscura.!", FontTypeNames.FONTTYPE_INFOIAO)
+166             Call DarRecompensas(UserIndex)
+168             Call RefreshCharStatus(UserIndex)
 
             End With
 
@@ -318,8 +318,8 @@ Public Sub EnlistarCaos(ByVal UserIndex As Integer)
             Exit Sub
 
 EnlistarCaos_Err:
-162         Call TraceError(Err.Number, Err.Description, "ModFacciones.EnlistarCaos", Erl)
-164
+170         Call TraceError(Err.Number, Err.Description, "ModFacciones.EnlistarCaos", Erl)
+
 
 End Sub
 
@@ -367,7 +367,7 @@ Public Sub RecompensaCaos(ByVal UserIndex As Integer)
 
 RecompensaCaos_Err:
 130         Call TraceError(Err.Number, Err.Description, "ModFacciones.RecompensaCaos", Erl)
-132
+
 
 End Sub
 
@@ -386,7 +386,7 @@ Public Function TituloCaos(ByVal UserIndex As Integer) As String
 
 TituloCaos_Err:
 106         Call TraceError(Err.Number, Err.Description, "ModFacciones.TituloCaos", Erl)
-108
+
 
 End Function
 
@@ -409,7 +409,7 @@ Private Function ProximoRango(ByVal UserIndex As Integer) As tRangoFaccion
 
 ProximoRango_Err:
 110         Call TraceError(Err.Number, Err.Description, "ModFacciones.TituloCaos", Erl)
-112
+
 
 End Function
 
@@ -428,21 +428,21 @@ Private Sub DarRecompensas(ByVal UserIndex As Integer)
 
 100         With UserList(UserIndex)
                 ' Si es semidios o consejero, no le damos nada
-                If .flags.Privilegios And (PlayerType.Consejero Or PlayerType.SemiDios) Then
+102             If .flags.Privilegios And (PlayerType.Consejero Or PlayerType.SemiDios) Then
                     Exit Sub
                 End If
 
-102             If .Faccion.ArmadaReal = 1 Then
-104                 rank = .Faccion.RecompensasReal
-106                 ultimaRecompensa = .Faccion.RecibioArmaduraReal
-108             ElseIf .Faccion.FuerzasCaos = 1 Then
-110                 rank = .Faccion.RecompensasCaos
-112                 ultimaRecompensa = .Faccion.RecibioArmaduraCaos
+104             If .Faccion.ArmadaReal = 1 Then
+106                 rank = .Faccion.RecompensasReal
+108                 ultimaRecompensa = .Faccion.RecibioArmaduraReal
+110             ElseIf .Faccion.FuerzasCaos = 1 Then
+112                 rank = .Faccion.RecompensasCaos
+114                 ultimaRecompensa = .Faccion.RecibioArmaduraCaos
                 Else ' No pertenece a ninguna faccion.
                     Exit Sub
                 End If
 
-114             If ultimaRecompensa >= rank Then
+116             If ultimaRecompensa >= rank Then
                     Exit Sub
                 End If
 
@@ -451,41 +451,41 @@ Private Sub DarRecompensas(ByVal UserIndex As Integer)
                 ' complicada (como diccionarios). El total de recompensas se puede aproximar como: `C * R * F * nR`
                 ' C = 12 (clases distintas); R = 6 (max rango por faccion); F = 2 (facciones distintas);
                 ' nR = 1 (numero de recompensas por rango)
-116             For i = 1 To UBound(RecompensasFaccion)
-118                 recompensa = RecompensasFaccion(i)
+118             For i = 1 To UBound(RecompensasFaccion)
+120                 recompensa = RecompensasFaccion(i)
 
                     ' Como puede subir varios rangos todos juntos, nos aseguramos que
                     ' entregamos TODAS las recompensas hasta el rango actual desde la ultima recompensa.
-120                 If recompensa.rank <= rank And recompensa.rank > ultimaRecompensa Then
+122                 If recompensa.rank <= rank And recompensa.rank > ultimaRecompensa Then
                         ' Por alguna razon, PuedeUsarObjeto devuelve 0 cuando el usuario SI puede usarlo.
-122                     If PuedeUsarObjeto(UserIndex, recompensa.ObjIndex, False) = 0 Then
-124                         objetoRecompensa.amount = 1
-126                         objetoRecompensa.ObjIndex = recompensa.ObjIndex
+124                     If PuedeUsarObjeto(UserIndex, recompensa.ObjIndex, False) = 0 Then
+126                         objetoRecompensa.amount = 1
+128                         objetoRecompensa.ObjIndex = recompensa.ObjIndex
 
-128                         If Not MeterItemEnInventario(UserIndex, objetoRecompensa) Then
-130                             Call TirarItemAlPiso(.Pos, objetoRecompensa)
+130                         If Not MeterItemEnInventario(UserIndex, objetoRecompensa) Then
+132                             Call TirarItemAlPiso(.Pos, objetoRecompensa)
 
                             End If
                         End If
                     End If
 
-132             Next i
+134             Next i
 
                 ' Guardamos que el usuario recibio las recompensas de su rank.
-134             If .Faccion.ArmadaReal = 1 Then
-136               .Faccion.RecibioArmaduraReal = rank
+136             If .Faccion.ArmadaReal = 1 Then
+138               .Faccion.RecibioArmaduraReal = rank
                 Else
-138               .Faccion.RecibioArmaduraCaos = rank
+140               .Faccion.RecibioArmaduraCaos = rank
                 End If
 
-140             Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessagePlayWave(48, NO_3D_SOUND, NO_3D_SOUND))
+142             Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessagePlayWave(48, NO_3D_SOUND, NO_3D_SOUND))
             End With
 
             Exit Sub
 
 DarRecompensas_Err:
-142         Call TraceError(Err.Number, Err.Description, "ModFacciones.DarRecompensas", Erl)
-144
+144         Call TraceError(Err.Number, Err.Description, "ModFacciones.DarRecompensas", Erl)
+
 
 End Sub
 
@@ -516,6 +516,6 @@ Private Sub PerderItemsFaccionarios(ByVal UserIndex As Integer)
 
 PerderItemsFaccionarios_Err:
 116         Call TraceError(Err.Number, Err.Description, "ModFacciones.PerderItemsFaccionarios", Erl)
-118
+
 
 End Sub

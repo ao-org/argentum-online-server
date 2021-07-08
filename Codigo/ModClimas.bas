@@ -32,7 +32,7 @@ Public Sub ResetMeteo()
 
 ResetMeteo_Err:
 112     Call TraceError(Err.Number, Err.Description, "ModClimas.ResetMeteo", Erl)
-114
+
         
 End Sub
 
@@ -64,6 +64,6 @@ Public Sub Nublar()
 
 Nublar_Err:
 100     Call TraceError(Err.Number, Err.Description, "ModClimas.Nublar", Erl)
-102
+
     
 End Sub

@@ -20,9 +20,9 @@ Public Sub goHome(ByVal UserIndex As Integer)
 102         If .flags.Muerto = 1 Then
 
 104             If EsGM(UserIndex) Then
-                    .Counters.TimerBarra = 5
+106                 .Counters.TimerBarra = 5
                 Else
-                    .Counters.TimerBarra = 5
+108                 .Counters.TimerBarra = 5
                 End If
 110                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, ParticulasIndex.Runa, .Counters.TimerBarra, False))
 112                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageBarFx(.Char.CharIndex, .Counters.TimerBarra, Accion_Barra.Hogar))
