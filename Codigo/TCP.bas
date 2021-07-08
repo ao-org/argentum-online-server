@@ -201,7 +201,7 @@ Sub RellenarInventario(ByVal UserIndex As String)
 
             End Select
 
-            ' Arma y hechizos
+            ' Hechizos
 126         Select Case .clase
 
                 Case eClass.Mage, eClass.Cleric, eClass.Druid, eClass.Bard
@@ -268,7 +268,7 @@ Sub RellenarInventario(ByVal UserIndex As String)
                     .Invent.Object(NumItems).amount = 1
                     NumItems = NumItems + 1
                 
-                Case eClass.Assasin
+                Case eClass.Assasin, eClass.Druid, eClass.Bard
                     .Invent.Object(NumItems).ObjIndex = 460 ' Daga (Newbies)
                     .Invent.Object(NumItems).amount = 1
                     NumItems = NumItems + 1
@@ -624,10 +624,27 @@ Function ConnectNewUser(ByVal UserIndex As Integer, ByRef Name As String, ByVal 
 230         .Correo.CantCorreo = 0
 232         .Correo.NoLeidos = 0
             'Resetamos CORREO
-        
-234         .Pos.Map = 37
-236         .Pos.X = 76
-238         .Pos.Y = 82
+            
+            Dim DungeonNewbieCoords(1 To 3) As WorldPos
+            
+            With DungeonNewbieCoords(1)
+                .Map = 37: .X = 76: .Y = 82
+            End With
+            
+            With DungeonNewbieCoords(2)
+                .Map = 264: .X = 54: .Y = 70
+            End With
+            
+            With DungeonNewbieCoords(3)
+                .Map = 168: .X = 50: .Y = 70
+            End With
+            
+            Dim RandomPosIndex As Byte
+            RandomPosIndex = RandomNumber(LBound(DungeonNewbieCoords), UBound(DungeonNewbieCoords))
+
+234         .Pos.Map = DungeonNewbieCoords(RandomPosIndex).Map
+236         .Pos.X = DungeonNewbieCoords(RandomPosIndex).X
+238         .Pos.Y = DungeonNewbieCoords(RandomPosIndex).Y
         
 240         UltimoChar = UCase$(Name)
         
@@ -1640,7 +1657,7 @@ Sub ResetBasicUserInfo(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 102         .Name = vbNullString
 104         .Cuenta = vbNullString
-106         .ID = -1
+106         .Id = -1
 108         .AccountID = -1
 110         .Desc = vbNullString
 112         .DescRM = vbNullString
@@ -2385,12 +2402,12 @@ Function ValidarNombre(nombre As String) As Boolean
     
 100     If Len(nombre) < 1 Or Len(nombre) > 18 Then Exit Function
     
-        Dim Temp As String
-102     Temp = UCase$(nombre)
+        Dim temp As String
+102     temp = UCase$(nombre)
     
         Dim i As Long, Char As Integer, LastChar As Integer
-104     For i = 1 To Len(Temp)
-106         Char = Asc(mid$(Temp, i, 1))
+104     For i = 1 To Len(temp)
+106         Char = Asc(mid$(temp, i, 1))
         
 108         If (Char < 65 Or Char > 90) And Char <> 32 Then
                 Exit Function
@@ -2402,7 +2419,7 @@ Function ValidarNombre(nombre As String) As Boolean
 112         LastChar = Char
         Next
 
-114     If Asc(mid$(Temp, 1, 1)) = 32 Or Asc(mid$(Temp, Len(Temp), 1)) = 32 Then
+114     If Asc(mid$(temp, 1, 1)) = 32 Or Asc(mid$(temp, Len(temp), 1)) = 32 Then
             Exit Function
         End If
     

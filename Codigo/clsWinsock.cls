@@ -294,11 +294,14 @@ Private Sub Thread_WndProc(ByVal hWnd As Long, ByVal Msg As Long, ByVal wParam A
                     ' WyroX: Leo hasta llenar el buffer, ni un byte más!!
                     Dim BytesToRead As Long
                     RaiseEvent BeforeRead(Slot, BytesToRead)
-                    ReDim Tmp(BytesToRead - 1) As Byte
-        
-                    api_return_value = API_recv(SocketID, Tmp(0), BytesToRead, 0)
-
-                    RaiseEvent Read(Slot, Tmp, api_return_value)
+                    
+                    If BytesToRead > 0 Then
+                        ReDim Tmp(BytesToRead - 1) As Byte
+            
+                        api_return_value = API_recv(SocketID, Tmp(0), BytesToRead, 0)
+    
+                        RaiseEvent Read(Slot, Tmp, api_return_value)
+                    End If
         
                 Case FD_CLOSE
                     Slot = BuscaSlotSock(SocketID)
