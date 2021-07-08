@@ -201,9 +201,9 @@ LoadPretorianData_Err:
         
 228     Set FileReader = Nothing
         
-230     Call RegistrarError(Err.Number, Err.Description, "PraetoriansCoopNPC.LoadPretorianData", Erl)
+230     Call TraceError(Err.Number, Err.Description, "PraetoriansCoopNPC.LoadPretorianData", Erl)
         
-232     Resume Next
+232
         
 End Sub
 
@@ -211,12 +211,12 @@ Public Sub EliminarPretorianos(ByVal Mapa As Integer)
 
         On Error GoTo EliminarPretorianos_Err
         
-        Dim index As Byte
-100     For index = 1 To UBound(ClanPretoriano)
+        Dim Index As Byte
+100     For Index = 1 To UBound(ClanPretoriano)
                  
             ' Search for the clan to be deleted
-102         If ClanPretoriano(index).ClanMap = Mapa Then
-104             Call ClanPretoriano(index).DeleteClan
+102         If ClanPretoriano(Index).ClanMap = Mapa Then
+104             Call ClanPretoriano(Index).DeleteClan
                 Exit For
         
             End If
@@ -226,7 +226,7 @@ Public Sub EliminarPretorianos(ByVal Mapa As Integer)
         Exit Sub
 
 EliminarPretorianos_Err:
-106     Call RegistrarError(Err.Number, Err.Description, "PraetoriansCoopNPC.EliminarPretorianos", Erl)
-108     Resume Next
+106     Call TraceError(Err.Number, Err.Description, "PraetoriansCoopNPC.EliminarPretorianos", Erl)
+108
         
 End Sub

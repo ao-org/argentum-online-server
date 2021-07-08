@@ -39,7 +39,7 @@ Public Sub CheckRanking(ByVal Tipo As eRankings, ByVal UserIndex As Integer, ByV
                                                    
         Dim FindPos As Byte, LoopC As Long, InRank As Byte, backup As tUserRanking
 
-100     InRank = isRank(UserList(UserIndex).name, Tipo) ''Verificamos si esta en el ranking y si esta, en que posicion.
+100     InRank = isRank(UserList(UserIndex).Name, Tipo) ''Verificamos si esta en el ranking y si esta, en que posicion.
 
 102     With Rankings(Tipo)
 
@@ -82,7 +82,7 @@ Public Sub CheckRanking(ByVal Tipo As eRankings, ByVal UserIndex As Integer, ByV
 
                     End If
 
-146                 .user(FindPos).Nick = UCase$(UserList(UserIndex).name) ''Ingresa el pj al ranking en el puesto que encontramos.
+146                 .user(FindPos).Nick = UCase$(UserList(UserIndex).Name) ''Ingresa el pj al ranking en el puesto que encontramos.
 148                 .user(FindPos).Value = Value
 
                 End If
@@ -97,8 +97,8 @@ Public Sub CheckRanking(ByVal Tipo As eRankings, ByVal UserIndex As Integer, ByV
         Exit Sub
 
 CheckRanking_Err:
-152     Call RegistrarError(Err.Number, Err.Description, "ModRanking.CheckRanking", Erl)
-154     Resume Next
+152     Call TraceError(Err.Number, Err.Description, "ModRanking.CheckRanking", Erl)
+154
         
 End Sub
 
@@ -129,8 +129,8 @@ Private Function isRank(ByVal Nick As String, ByVal Tipo As eRankings) As Byte
         Exit Function
 
 isRank_Err:
-110     Call RegistrarError(Err.Number, Err.Description, "ModRanking.isRank", Erl)
-112     Resume Next
+110     Call TraceError(Err.Number, Err.Description, "ModRanking.isRank", Erl)
+112
         
 End Function
 
@@ -163,8 +163,8 @@ Public Sub GuardarRanking()
         Exit Sub
 
 GuardarRanking_Err:
-114     Call RegistrarError(Err.Number, Err.Description, "ModRanking.GuardarRanking", Erl)
-116     Resume Next
+114     Call TraceError(Err.Number, Err.Description, "ModRanking.GuardarRanking", Erl)
+116
         
 End Sub
 
@@ -201,7 +201,7 @@ Public Sub CargarRanking()
         Exit Sub
 
 CargarRanking_Err:
-118     Call RegistrarError(Err.Number, Err.Description, "ModRanking.CargarRanking", Erl)
-120     Resume Next
+118     Call TraceError(Err.Number, Err.Description, "ModRanking.CargarRanking", Erl)
+120
         
 End Sub

@@ -47,7 +47,7 @@ Public Function GetTickCount() As Long
         Exit Function
 
 GetTickCount_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "ModLadder.GetTickCount", Erl)
+102     Call TraceError(Err.Number, Err.Description, "ModLadder.GetTickCount", Erl)
 
         
 End Function
@@ -75,8 +75,8 @@ Function GetTimeFormated() As String
         Exit Function
 
 GetTimeFormated_Err:
-110     Call RegistrarError(Err.Number, Err.Description, "ModLadder.GetTimeFormated", Erl)
-112     Resume Next
+110     Call TraceError(Err.Number, Err.Description, "ModLadder.GetTimeFormated", Erl)
+112
         
 End Function
 
@@ -98,8 +98,8 @@ Public Sub GetHoraActual()
         Exit Sub
 
 GetHoraActual_Err:
-114     Call RegistrarError(Err.Number, Err.Description, "ModLadder.GetHoraActual", Erl)
-116     Resume Next
+114     Call TraceError(Err.Number, Err.Description, "ModLadder.GetHoraActual", Erl)
+116
         
 End Sub
 
@@ -113,8 +113,8 @@ Public Function DarNameMapa(ByVal Map As Long) As String
         Exit Function
 
 DarNameMapa_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "ModLadder.DarNameMapa", Erl)
-104     Resume Next
+102     Call TraceError(Err.Number, Err.Description, "ModLadder.DarNameMapa", Erl)
+104
         
 End Function
 
@@ -394,8 +394,8 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
         Exit Sub
 
 CompletarAccionFin_Err:
-394     Call RegistrarError(Err.Number, Err.Description, "ModLadder.CompletarAccionFin", Erl)
-396     Resume Next
+394     Call TraceError(Err.Number, Err.Description, "ModLadder.CompletarAccionFin", Erl)
+396
         
 End Sub
 
@@ -431,8 +431,8 @@ Public Function TieneObjEnInv(ByVal UserIndex As Integer, ByVal ObjIndex As Inte
         Exit Function
 
 TieneObjEnInv_Err:
-116     Call RegistrarError(Err.Number, Err.Description, "ModLadder.TieneObjEnInv", Erl)
-118     Resume Next
+116     Call TraceError(Err.Number, Err.Description, "ModLadder.TieneObjEnInv", Erl)
+118
         
 End Function
 
@@ -461,8 +461,8 @@ Public Function CantidadObjEnInv(ByVal UserIndex As Integer, ByVal ObjIndex As I
         Exit Function
 
 CantidadObjEnInv_Err:
-110     Call RegistrarError(Err.Number, Err.Description, "ModLadder.CantidadObjEnInv", Erl)
-112     Resume Next
+110     Call TraceError(Err.Number, Err.Description, "ModLadder.CantidadObjEnInv", Erl)
+112
         
 End Function
 
@@ -491,8 +491,8 @@ Public Function SumarTiempo(segundos As Integer) As String
         Exit Function
 
 SumarTiempo_Err:
-114     Call RegistrarError(Err.Number, Err.Description, "ModLadder.SumarTiempo", Erl)
-116     Resume Next
+114     Call TraceError(Err.Number, Err.Description, "ModLadder.SumarTiempo", Erl)
+116
         
 End Function
 
@@ -507,8 +507,8 @@ Public Sub AgregarAConsola(ByVal Text As String)
         Exit Sub
 
 AgregarAConsola_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "ModLadder.AgregarAConsola", Erl)
-104     Resume Next
+102     Call TraceError(Err.Number, Err.Description, "ModLadder.AgregarAConsola", Erl)
+104
         
 End Sub
 
@@ -517,55 +517,55 @@ Function PuedeUsarObjeto(UserIndex As Integer, ByVal ObjIndex As Integer, Option
         On Error GoTo PuedeUsarObjeto_Err
 
         Dim Objeto As ObjData
-        Dim msg As String, i As Long
+        Dim Msg As String, i As Long
 100     Objeto = ObjData(ObjIndex)
                 
 102     If EsGM(UserIndex) Then
 104         PuedeUsarObjeto = 0
-106         msg = ""
+106         Msg = ""
 
 108     ElseIf Objeto.Newbie = 1 And Not EsNewbie(UserIndex) Then
 110         PuedeUsarObjeto = 7
-112         msg = "Solo los newbies pueden usar este objeto."
+112         Msg = "Solo los newbies pueden usar este objeto."
             
 114     ElseIf UserList(UserIndex).Stats.ELV < Objeto.MinELV Then
 116         PuedeUsarObjeto = 6
-118         msg = "Necesitas ser nivel " & Objeto.MinELV & " para usar este objeto."
+118         Msg = "Necesitas ser nivel " & Objeto.MinELV & " para usar este objeto."
 
 120     ElseIf Not FaccionPuedeUsarItem(UserIndex, ObjIndex) Then
 122         PuedeUsarObjeto = 3
-124         msg = "Tu facción no te permite utilizarlo."
+124         Msg = "Tu facción no te permite utilizarlo."
 
 126     ElseIf Not ClasePuedeUsarItem(UserIndex, ObjIndex) Then
 128         PuedeUsarObjeto = 2
-130         msg = "Tu clase no puede utilizar este objeto."
+130         Msg = "Tu clase no puede utilizar este objeto."
 
 132     ElseIf Not SexoPuedeUsarItem(UserIndex, ObjIndex) Then
 134         PuedeUsarObjeto = 1
-136         msg = "Tu sexo no puede utilizar este objeto."
+136         Msg = "Tu sexo no puede utilizar este objeto."
 
 138     ElseIf Not RazaPuedeUsarItem(UserIndex, ObjIndex) Then
 140         PuedeUsarObjeto = 5
-142         msg = "Tu raza no puede utilizar este objeto."
+142         Msg = "Tu raza no puede utilizar este objeto."
 144     ElseIf (Objeto.SkillIndex > 0) Then
 146         If (UserList(UserIndex).Stats.UserSkills(Objeto.SkillIndex) < Objeto.SkillRequerido) Then
 148             PuedeUsarObjeto = 4
-150             msg = "Necesitas " & Objeto.SkillRequerido & " puntos en " & SkillsNames(Objeto.SkillIndex) & " para usar este item."
+150             Msg = "Necesitas " & Objeto.SkillRequerido & " puntos en " & SkillsNames(Objeto.SkillIndex) & " para usar este item."
             Else
 152             PuedeUsarObjeto = 0
-154             msg = ""
+154             Msg = ""
             End If
         Else
 156         PuedeUsarObjeto = 0
-158         msg = ""
+158         Msg = ""
         End If
 
-160     If writeInConsole And msg <> "" Then Call WriteConsoleMsg(UserIndex, msg, FontTypeNames.FONTTYPE_INFO)
+160     If writeInConsole And Msg <> "" Then Call WriteConsoleMsg(UserIndex, Msg, FontTypeNames.FONTTYPE_INFO)
 
         Exit Function
 
 PuedeUsarObjeto_Err:
-162     Call RegistrarError(Err.Number, Err.Description, "ModLadder.PuedeUsarObjeto", Erl)
+162     Call TraceError(Err.Number, Err.Description, "ModLadder.PuedeUsarObjeto", Erl)
 164     'Resume Next ' WyroX: Si hay error que salga directamente
 
 End Function
@@ -580,7 +580,7 @@ Public Function RequiereOxigeno(ByVal UserMap) As Boolean
         Exit Function
 
 RequiereOxigeno_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "ModLadder.RequiereOxigeno", Erl)
-104     Resume Next
+102     Call TraceError(Err.Number, Err.Description, "ModLadder.RequiereOxigeno", Erl)
+104
         
 End Function

@@ -143,8 +143,8 @@ Private Sub Class_Terminate()
     Exit Sub
 
 Class_Terminate_Err:
-    Call RegistrarError(Err.Number, Err.Description, "clsIniManager.Class_Terminate", Erl)
-    Resume Next
+    Call TraceError(Err.Number, Err.Description, "clsIniManager.Class_Terminate", Erl)
+    
     
 End Sub
 
@@ -249,8 +249,8 @@ Public Sub Initialize(ByVal File As String)
 
 Initialize_Err:
     Close handle
-    Call RegistrarError(Err.Number, Err.Description & vbNewLine & "Archivo: " & File, "clsIniManager.Initialize", Erl)
-    Resume Next
+    Call TraceError(Err.Number, Err.Description & vbNewLine & "Archivo: " & File, "clsIniManager.Initialize", Erl)
+    
     
 End Sub
 
@@ -262,8 +262,8 @@ End Sub
 ' @param    last The last index to be considered when sorting.
 
 Private Sub SortChildNodes(ByRef Node As MainNode, _
-                           ByVal first As Integer, _
-                           ByVal last As Integer)
+                           ByVal First As Integer, _
+                           ByVal Last As Integer)
     
     On Error GoTo SortChildNodes_Err
     
@@ -274,34 +274,34 @@ Private Sub SortChildNodes(ByRef Node As MainNode, _
     'Sorts the list of values in a given MainNode using quicksort,
     'this allows the use of Binary Search for faster searches
     '**************************************************************
-    Dim min  As Integer      'First item in the list
+    Dim Min  As Integer      'First item in the list
 
     Dim max  As Integer      'Last item in the list
 
     Dim comp As String      'Item used to compare
 
-    Dim temp As ChildNode
+    Dim Temp As ChildNode
     
-    min = first
-    max = last
+    Min = First
+    max = Last
     
     With Node
-        comp = .values((min + max) \ 2).Key
+        comp = .values((Min + max) \ 2).Key
     
-        Do While min <= max
-            Do While .values(min).Key < comp And min < last
-                min = min + 1
+        Do While Min <= max
+            Do While .values(Min).Key < comp And Min < Last
+                Min = Min + 1
             Loop
 
-            Do While .values(max).Key > comp And max > first
+            Do While .values(max).Key > comp And max > First
                 max = max - 1
             Loop
 
-            If min <= max Then
-                temp = .values(min)
-                .values(min) = .values(max)
-                .values(max) = temp
-                min = min + 1
+            If Min <= max Then
+                Temp = .values(Min)
+                .values(Min) = .values(max)
+                .values(max) = Temp
+                Min = Min + 1
                 max = max - 1
 
             End If
@@ -310,15 +310,15 @@ Private Sub SortChildNodes(ByRef Node As MainNode, _
 
     End With
     
-    If first < max Then SortChildNodes Node, first, max
-    If min < last Then SortChildNodes Node, min, last
+    If First < max Then SortChildNodes Node, First, max
+    If Min < Last Then SortChildNodes Node, Min, Last
 
     
     Exit Sub
 
 SortChildNodes_Err:
-    Call RegistrarError(Err.Number, Err.Description, "clsIniManager.SortChildNodes", Erl)
-    Resume Next
+    Call TraceError(Err.Number, Err.Description, "clsIniManager.SortChildNodes", Erl)
+    
     
 End Sub
 
@@ -328,7 +328,7 @@ End Sub
 ' @param    first The first index to consider when sorting.
 ' @param    last The last index to be considered when sorting.
 
-Private Sub SortMainNodes(ByVal first As Integer, ByVal last As Integer)
+Private Sub SortMainNodes(ByVal First As Integer, ByVal Last As Integer)
     
     On Error GoTo SortMainNodes_Err
     
@@ -339,48 +339,48 @@ Private Sub SortMainNodes(ByVal first As Integer, ByVal last As Integer)
     'Sorts the MainNodes list using quicksort,
     'this allows the use of Binary Search for faster searches
     '**************************************************************
-    Dim min  As Integer      'First item in the list
+    Dim Min  As Integer      'First item in the list
 
     Dim max  As Integer      'Last item in the list
 
     Dim comp As String      'Item used to compare
 
-    Dim temp As MainNode
+    Dim Temp As MainNode
     
-    min = first
-    max = last
+    Min = First
+    max = Last
     
-    comp = fileData((min + max) \ 2).Name
+    comp = fileData((Min + max) \ 2).Name
     
-    Do While min <= max
-        Do While fileData(min).Name < comp And min < last
-            min = min + 1
+    Do While Min <= max
+        Do While fileData(Min).Name < comp And Min < Last
+            Min = Min + 1
         Loop
 
-        Do While fileData(max).Name > comp And max > first
+        Do While fileData(max).Name > comp And max > First
             max = max - 1
         Loop
 
-        If min <= max Then
-            temp = fileData(min)
-            fileData(min) = fileData(max)
-            fileData(max) = temp
-            min = min + 1
+        If Min <= max Then
+            Temp = fileData(Min)
+            fileData(Min) = fileData(max)
+            fileData(max) = Temp
+            Min = Min + 1
             max = max - 1
 
         End If
 
     Loop
     
-    If first < max Then SortMainNodes first, max
-    If min < last Then SortMainNodes min, last
+    If First < max Then SortMainNodes First, max
+    If Min < Last Then SortMainNodes Min, Last
 
     
     Exit Sub
 
 SortMainNodes_Err:
-    Call RegistrarError(Err.Number, Err.Description, "clsIniManager.SortMainNodes", Erl)
-    Resume Next
+    Call TraceError(Err.Number, Err.Description, "clsIniManager.SortMainNodes", Erl)
+    
     
 End Sub
 
@@ -424,8 +424,8 @@ Public Function GetValue(ByVal Main As String, ByVal Key As String)
     Exit Function
 
 GetValue_Err:
-    Call RegistrarError(Err.Number, Err.Description, "clsIniManager.GetValue", Erl)
-    Resume Next
+    Call TraceError(Err.Number, Err.Description, "clsIniManager.GetValue", Erl)
+    
     
 End Function
 
@@ -470,8 +470,8 @@ Public Sub ChangeValue(ByVal Main As String, ByVal Key As String, ByVal Value As
     Exit Sub
 
 ChangeValue_Err:
-    Call RegistrarError(Err.Number, Err.Description, "clsIniManager.ChangeValue", Erl)
-    Resume Next
+    Call TraceError(Err.Number, Err.Description, "clsIniManager.ChangeValue", Erl)
+    
     
 End Sub
 
@@ -493,20 +493,20 @@ Private Function FindKey(ByRef Node As MainNode, ByVal Key As String) As Long
     'Returns the index of the value which key matches the requested one,
     'or the negation of the position were it should be if not found
     '**************************************************************
-    Dim min As Long
+    Dim Min As Long
 
     Dim max As Long
 
     Dim mid As Long
     
-    min = 0
+    Min = 0
     max = Node.numValues - 1
     
-    Do While min <= max
-        mid = (min + max) \ 2
+    Do While Min <= max
+        mid = (Min + max) \ 2
         
         If Node.values(mid).Key < Key Then
-            min = mid + 1
+            Min = mid + 1
         ElseIf Node.values(mid).Key > Key Then
             max = mid - 1
         Else
@@ -520,14 +520,14 @@ Private Function FindKey(ByRef Node As MainNode, ByVal Key As String) As Long
     
     'Not found, return the negation of the position where it should be
     '(all higher values are to the right of the list and lower values are to the left)
-    FindKey = Not min
+    FindKey = Not Min
 
     
     Exit Function
 
 FindKey_Err:
-    Call RegistrarError(Err.Number, Err.Description, "clsIniManager.FindKey", Erl)
-    Resume Next
+    Call TraceError(Err.Number, Err.Description, "clsIniManager.FindKey", Erl)
+    
     
 End Function
 
@@ -548,20 +548,20 @@ Private Function FindMain(ByVal Name As String) As Long
     'Returns the index of the MainNode which name matches the requested one,
     'or the negation of the position were it should be if not found
     '**************************************************************
-    Dim min As Long
+    Dim Min As Long
 
     Dim max As Long
 
     Dim mid As Long
     
-    min = 0
+    Min = 0
     max = MainNodes - 1
     
-    Do While min <= max
-        mid = (min + max) \ 2
+    Do While Min <= max
+        mid = (Min + max) \ 2
         
         If fileData(mid).Name < Name Then
-            min = mid + 1
+            Min = mid + 1
         ElseIf fileData(mid).Name > Name Then
             max = mid - 1
         Else
@@ -575,14 +575,14 @@ Private Function FindMain(ByVal Name As String) As Long
     
     'Not found, return the negation of the position where it should be
     '(all higher values are to the right of the list and lower values are to the left)
-    FindMain = Not min
+    FindMain = Not Min
 
     
     Exit Function
 
 FindMain_Err:
-    Call RegistrarError(Err.Number, Err.Description, "clsIniManager.FindMain", Erl)
-    Resume Next
+    Call TraceError(Err.Number, Err.Description, "clsIniManager.FindMain", Erl)
+    
     
 End Function
 
@@ -607,8 +607,8 @@ Public Function KeyExists(ByVal Name As String) As Boolean
     Exit Function
 
 KeyExists_Err:
-    Call RegistrarError(Err.Number, Err.Description, "clsIniManager.KeyExists", Erl)
-    Resume Next
+    Call TraceError(Err.Number, Err.Description, "clsIniManager.KeyExists", Erl)
+    
     
 End Function
 
@@ -655,8 +655,8 @@ Private Function AddNode(ByRef Name As String) As Long
     Exit Function
 
 AddNode_Err:
-    Call RegistrarError(Err.Number, Err.Description, "clsIniManager.AddNode", Erl)
-    Resume Next
+    Call TraceError(Err.Number, Err.Description, "clsIniManager.AddNode", Erl)
+    
     
 End Function
 
@@ -713,8 +713,8 @@ Private Function AddKey(ByRef Main As String, _
     Exit Function
 
 AddKey_Err:
-    Call RegistrarError(Err.Number, Err.Description, "clsIniManager.AddKey", Erl)
-    Resume Next
+    Call TraceError(Err.Number, Err.Description, "clsIniManager.AddKey", Erl)
+    
     
 End Function
 
@@ -759,8 +759,8 @@ Public Sub DumpFile(ByRef File As String)
     Exit Sub
 
 DumpFile_Err:
-    Call RegistrarError(Err.Number, Err.Description, "clsIniManager.DumpFile", Erl)
-    Resume Next
+    Call TraceError(Err.Number, Err.Description, "clsIniManager.DumpFile", Erl)
+    
     
 End Sub
 
@@ -783,8 +783,8 @@ Public Function GetKey(ByVal Main As String, ByVal Index As Long) As String
         Exit Function
 
 ErrHandler:
-     Call RegistrarError(Err.Number, Err.Description, "clsIniManager.GetKey", Erl)
-     Resume Next
+     Call TraceError(Err.Number, Err.Description, "clsIniManager.GetKey", Erl)
+     
         
 End Function
 
@@ -807,8 +807,8 @@ Public Property Get EntriesCount(ByVal Main As String) As Long
         Exit Function
 
 ErrHandler:
-108     Call RegistrarError(Err.Number, Err.Description, "clsIniManager.GetKey", Erl)
-110     Resume Next
+108     Call TraceError(Err.Number, Err.Description, "clsIniManager.GetKey", Erl)
+110
 
 End Property
 
@@ -834,8 +834,8 @@ Public Sub GetPair(ByVal Main As String, ByVal Index As Long, ByRef Key As Strin
         Exit Sub
 
 ErrHandler:
-108     Call RegistrarError(Err.Number, Err.Description, "clsIniManager.GetPair", Erl)
-110     Resume Next
+108     Call TraceError(Err.Number, Err.Description, "clsIniManager.GetPair", Erl)
+110
         
 End Sub
 

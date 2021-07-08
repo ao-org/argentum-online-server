@@ -93,8 +93,8 @@ Private Sub Command1_Click()
         Exit Sub
 
 Command1_Click_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "frmConID.Command1_Click", Erl)
-104     Resume Next
+102     Call TraceError(Err.Number, Err.Description, "frmConID.Command1_Click", Erl)
+104
         
 End Sub
 
@@ -126,8 +126,8 @@ Private Sub Command2_Click()
         Exit Sub
 
 Command2_Click_Err:
-116     Call RegistrarError(Err.Number, Err.Description, "frmConID.Command2_Click", Erl)
-118     Resume Next
+116     Call TraceError(Err.Number, Err.Description, "frmConID.Command2_Click", Erl)
+118
         
 End Sub
 
@@ -147,8 +147,8 @@ Private Sub Command3_Click()
         Exit Sub
 
 Command3_Click_Err:
-106     Call RegistrarError(Err.Number, Err.Description, "frmConID.Command3_Click", Erl)
-108     Resume Next
+106     Call TraceError(Err.Number, Err.Description, "frmConID.Command3_Click", Erl)
+108
         
 End Sub
 

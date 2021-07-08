@@ -46,8 +46,8 @@ Public Function TieneQuest(ByVal UserIndex As Integer, ByVal QuestNumber As Inte
         Exit Function
 
 TieneQuest_Err:
-110     Call RegistrarError(Err.Number, Err.Description, "ModQuest.TieneQuest", Erl)
-112     Resume Next
+110     Call TraceError(Err.Number, Err.Description, "ModQuest.TieneQuest", Erl)
+112
         
 End Function
  
@@ -78,8 +78,8 @@ Public Function FreeQuestSlot(ByVal UserIndex As Integer) As Byte
         Exit Function
 
 FreeQuestSlot_Err:
-110     Call RegistrarError(Err.Number, Err.Description, "ModQuest.FreeQuestSlot", Erl)
-112     Resume Next
+110     Call TraceError(Err.Number, Err.Description, "ModQuest.FreeQuestSlot", Erl)
+112
         
 End Function
  
@@ -209,7 +209,7 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
 
 182                 If .RewardOBJ(i).amount Then
 184                     Call MeterItemEnInventario(UserIndex, .RewardOBJ(i))
-186                     Call WriteConsoleMsg(UserIndex, "Has recibido " & QuestList(QuestIndex).RewardOBJ(i).amount & " " & ObjData(QuestList(QuestIndex).RewardOBJ(i).ObjIndex).name & " como recompensa.", FontTypeNames.FONTTYPE_INFOIAO)
+186                     Call WriteConsoleMsg(UserIndex, "Has recibido " & QuestList(QuestIndex).RewardOBJ(i).amount & " " & ObjData(QuestList(QuestIndex).RewardOBJ(i).ObjIndex).Name & " como recompensa.", FontTypeNames.FONTTYPE_INFOIAO)
 
                     End If
 
@@ -239,8 +239,8 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
         Exit Sub
 
 FinishQuest_Err:
-202     Call RegistrarError(Err.Number, Err.Description, "ModQuest.FinishQuest", Erl)
-204     Resume Next
+202     Call TraceError(Err.Number, Err.Description, "ModQuest.FinishQuest", Erl)
+204
         
 End Sub
  
@@ -264,8 +264,8 @@ Public Sub AddDoneQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer)
         Exit Sub
 
 AddDoneQuest_Err:
-108     Call RegistrarError(Err.Number, Err.Description, "ModQuest.AddDoneQuest", Erl)
-110     Resume Next
+108     Call TraceError(Err.Number, Err.Description, "ModQuest.AddDoneQuest", Erl)
+110
         
 End Sub
  
@@ -310,8 +310,8 @@ Public Function UserDoneQuest(ByVal UserIndex As Integer, ByVal QuestIndex As In
         Exit Function
 
 UserDoneQuest_Err:
-118     Call RegistrarError(Err.Number, Err.Description, "ModQuest.UserDoneQuest", Erl)
-120     Resume Next
+118     Call TraceError(Err.Number, Err.Description, "ModQuest.UserDoneQuest", Erl)
+120
         
 End Function
  
@@ -355,8 +355,8 @@ Public Sub CleanQuestSlot(ByVal UserIndex As Integer, ByVal QuestSlot As Integer
         Exit Sub
 
 CleanQuestSlot_Err:
-122     Call RegistrarError(Err.Number, Err.Description, "ModQuest.CleanQuestSlot", Erl)
-124     Resume Next
+122     Call TraceError(Err.Number, Err.Description, "ModQuest.CleanQuestSlot", Erl)
+124
         
 End Sub
  
@@ -385,8 +385,8 @@ Public Sub ResetQuestStats(ByVal UserIndex As Integer)
         Exit Sub
 
 ResetQuestStats_Err:
-112     Call RegistrarError(Err.Number, Err.Description, "ModQuest.ResetQuestStats", Erl)
-114     Resume Next
+112     Call TraceError(Err.Number, Err.Description, "ModQuest.ResetQuestStats", Erl)
+114
         
 End Sub
  
@@ -592,8 +592,8 @@ Public Sub LoadQuestStats(ByVal UserIndex As Integer, ByRef UserFile As clsIniMa
         Exit Sub
 
 LoadQuestStats_Err:
-150     Call RegistrarError(Err.Number, Err.Description, "ModQuest.LoadQuestStats", Erl)
-152     Resume Next
+150     Call TraceError(Err.Number, Err.Description, "ModQuest.LoadQuestStats", Erl)
+152
         
 End Sub
  
@@ -658,8 +658,8 @@ Public Sub SaveQuestStats(ByVal UserIndex As Integer, ByRef UserFile As String)
         Exit Sub
 
 SaveQuestStats_Err:
-134     Call RegistrarError(Err.Number, Err.Description, "ModQuest.SaveQuestStats", Erl)
-136     Resume Next
+134     Call TraceError(Err.Number, Err.Description, "ModQuest.SaveQuestStats", Erl)
+136
         
 End Sub
   
@@ -703,8 +703,8 @@ Public Sub ArrangeUserQuests(ByVal UserIndex As Integer)
         Exit Sub
 
 ArrangeUserQuests_Err:
-118     Call RegistrarError(Err.Number, Err.Description, "ModQuest.ArrangeUserQuests", Erl)
-120     Resume Next
+118     Call TraceError(Err.Number, Err.Description, "ModQuest.ArrangeUserQuests", Erl)
+120
         
 End Sub
  
@@ -779,8 +779,8 @@ Public Sub EnviarQuest(ByVal UserIndex As Integer)
         Exit Sub
 
 EnviarQuest_Err:
-126     Call RegistrarError(Err.Number, Err.Description, "ModQuest.EnviarQuest", Erl)
-128     Resume Next
+126     Call TraceError(Err.Number, Err.Description, "ModQuest.EnviarQuest", Erl)
+128
         
 End Sub
 
@@ -858,7 +858,7 @@ Public Function FinishQuestCheck(ByVal UserIndex As Integer, ByVal QuestIndex As
         Exit Function
 
 FinishQuestCheck_Err:
-136     Call RegistrarError(Err.Number, Err.Description, "ModQuest.FinishQuestCheck", Erl)
+136     Call TraceError(Err.Number, Err.Description, "ModQuest.FinishQuestCheck", Erl)
 
 End Function
 
@@ -893,7 +893,7 @@ Function FaltanItemsQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Intege
         Exit Function
             
 Handler:
-112     Call RegistrarError(Err.Number, Err.Description, "ModQuest.FaltanItemsQuest", Erl)
-114     Resume Next
+112     Call TraceError(Err.Number, Err.Description, "ModQuest.FaltanItemsQuest", Erl)
+114
 
 End Function
