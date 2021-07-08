@@ -4760,7 +4760,7 @@ End Sub
 ' @param    npcNames The names of the creatures that can be spawned.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 
-Public Sub WriteSpawnList(ByVal UserIndex As Integer, ByRef npcNames() As String)
+Public Sub WriteSpawnList(ByVal UserIndex As Integer, ByVal ListaCompleta As Boolean)
 
     '***************************************************
     'Author: Juan Martín Sotuyo Dodero (Maraxus)
@@ -4769,22 +4769,11 @@ Public Sub WriteSpawnList(ByVal UserIndex As Integer, ByRef npcNames() As String
     '***************************************************
     On Error GoTo ErrHandler
 
-    Dim i   As Long
-
-    Dim Tmp As String
-    
     With UserList(UserIndex).outgoingData
         Call .WriteID(ServerPacketID.SpawnListt)
-        
-        For i = LBound(npcNames()) To UBound(npcNames())
-            Tmp = Tmp & i & SEPARATOR
-            
-        Next i
-     
-        If Len(Tmp) Then Tmp = Left$(Tmp, Len(Tmp) - 1)
-        
-        Call .WriteASCIIString(Tmp)
-        
+
+        Call .WriteBoolean(ListaCompleta)
+
         Call .EndPacket
     End With
     

@@ -476,32 +476,6 @@ ErrHandler:
 
 End Sub
 
-Sub EnviarSpawnList(ByVal UserIndex As Integer)
-        
-        On Error GoTo EnviarSpawnList_Err
-        
-
-        Dim K          As Long
-        Dim npcNames() As String
-
-        'Debug.Print UBound(SpawnList)
-100     ReDim npcNames(1 To UBound(SpawnList)) As String
-
-102     For K = 1 To UBound(SpawnList)
-104         npcNames(K) = SpawnList(K).NpcName
-106     Next K
-
-108     Call WriteSpawnList(UserIndex, npcNames())
-
-        
-        Exit Sub
-
-EnviarSpawnList_Err:
-110     Call TraceError(Err.Number, Err.Description, "General.EnviarSpawnList", Erl)
-112
-        
-End Sub
-
 Public Sub LeerLineaComandos()
         
         On Error GoTo LeerLineaComandos_Err
@@ -2830,12 +2804,12 @@ CMSValidateChar__Err:
         
 End Function
 
-Public Function Tilde(ByRef data As String) As String
+Public Function Tilde(ByRef Data As String) As String
     
         On Error GoTo Tilde_Err
     
 
-100     Tilde = UCase$(data)
+100     Tilde = UCase$(Data)
  
 102     Tilde = Replace$(Tilde, "Á", "A")
 104     Tilde = Replace$(Tilde, "É", "E")
