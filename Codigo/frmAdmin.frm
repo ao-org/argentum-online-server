@@ -226,6 +226,3 @@ ActualizaPjInfo_Err:
         
 End Sub
 
-Private Sub Form_Load()
-
-End Sub
