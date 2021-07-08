@@ -84,29 +84,18 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private Sub Command1_Click()
-        
-        On Error GoTo Command1_Click_Err
-        
-100     Unload Me
 
-        
-        Exit Sub
+    Unload Me
 
-Command1_Click_Err:
-102     Call TraceError(Err.Number, Err.Description, "frmConID.Command1_Click", Erl)
-104
-        
 End Sub
 
 Private Sub Command2_Click()
         
         On Error GoTo Command2_Click_Err
         
-
 100     List1.Clear
 
         Dim c As Integer
-
         Dim i As Integer
 
 102     For i = 1 To MaxUsers
@@ -126,7 +115,7 @@ Private Sub Command2_Click()
         Exit Sub
 
 Command2_Click_Err:
-116     Call TraceError(Err.Number, Err.Description, "frmConID.Command2_Click", Erl)
+116     Call RegistrarError(Err.Number, Err.Description, "frmConID.Command2_Click", Erl)
 118
         
 End Sub
@@ -147,8 +136,7 @@ Private Sub Command3_Click()
         Exit Sub
 
 Command3_Click_Err:
-106     Call TraceError(Err.Number, Err.Description, "frmConID.Command3_Click", Erl)
+106     Call RegistrarError(Err.Number, Err.Description, "frmConID.Command3_Click", Erl)
 108
         
 End Sub
-

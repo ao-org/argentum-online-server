@@ -64,6 +64,7 @@ Sub CargarInfoEventos()
 
 106     If CantInvasiones <= 0 Then
 108         ReDim Invasiones(0)
+            frmMain.Invasion.Enabled = False
             Exit Sub
         End If
 

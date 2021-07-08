@@ -2310,7 +2310,7 @@ Sub ReloadSokcet()
 
         Exit Sub
 ErrHandler:
-106     Call LogError("Error en CheckSocketState " & Err.Number & ": " & Err.Description)
+106     Call TraceError(Err.Number, Err.Description, "TCP.ReloadSokcet", Erl)
 
 End Sub
 
