@@ -2827,6 +2827,9 @@ End Function
 
 Public Sub CerrarServidor()
         
+        ' Force-dump logs
+        Call frmServidor.cmdDumpLogs_Click
+        
         'Save stats!!!
 100     Call Statistics.DumpStatistics
 102     Call frmMain.QuitarIconoSystray
