@@ -1054,7 +1054,7 @@ Public Function HandleIncomingData(ByVal UserIndex As Integer) As Boolean
         
             Dim PacketID As Long
 116             PacketID = CLng(.incomingData.ReadID())
-        
+
 118         If PacketID >= ClientPacketID.[PacketCount] Then
                 ' Limpiamos la cola
 120             Call .incomingData.SafeClearPacket
