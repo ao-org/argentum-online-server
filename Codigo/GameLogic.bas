@@ -1164,9 +1164,8 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
     
 226                         If EsGM(UserIndex) Then
 228                             Stat = Stat & " <" & ListaClases(UserList(TempCharIndex).clase) & " " & ListaRazas(UserList(TempCharIndex).raza) & " Nivel: " & UserList(TempCharIndex).Stats.ELV & ">"
+                                Stat = Stat & " (ELO " & UserList(TempCharIndex).Stats.ELO & ")"
                             End If
-                   
-230                         Stat = Stat & " (ELO " & UserList(TempCharIndex).Stats.ELO & ")"
 
 232                         If EsNewbie(TempCharIndex) Then
 234                             Stat = Stat & " <Newbie>"
