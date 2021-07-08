@@ -4491,6 +4491,15 @@ Private Sub HandleUserCommerceOffer(ByVal UserIndex As Integer)
                     Exit Sub
 
                 End If
+                
+                If .Invent.Object(Slot).ObjIndex > 0 Then
+                    If ObjData(.Invent.Object(Slot).ObjIndex).Instransferible Then
+                        Call WriteConsoleMsg(UserIndex, "Este objeto es intransferible, no podés venderlo.", FontTypeNames.FONTTYPE_TALK)
+                        Exit Sub
+    
+                    End If
+    
+                End If
 
             End If
             
@@ -4519,21 +4528,12 @@ Private Sub HandleUserCommerceOffer(ByVal UserIndex As Integer)
                 End If
 
             End If
-                
-            If .Invent.Object(Slot).ObjIndex > 0 Then
-                If ObjData(.Invent.Object(Slot).ObjIndex).Instransferible Then
-                    Call WriteConsoleMsg(UserIndex, "Este objeto es intransferible, no podés venderlo.", FontTypeNames.FONTTYPE_TALK)
-                    Exit Sub
-
-                End If
-
-            End If
             
             .ComUsu.Objeto = Slot
             .ComUsu.cant = amount
             
             'If the other one had accepted, we turn that back and inform of the new offer (just to be cautious).
-            If UserList(tUser).ComUsu.Acepto = True Then
+            If UserList(tUser).ComUsu.Acepto Then
                 UserList(tUser).ComUsu.Acepto = False
                 Call WriteConsoleMsg(tUser, .Name & " ha cambiado su oferta.", FontTypeNames.FONTTYPE_TALK)
 
@@ -4544,7 +4544,7 @@ Private Sub HandleUserCommerceOffer(ByVal UserIndex As Integer)
             ObjAEnviar.amount = amount
 
             'Si no es oro tmb le agrego el objInex
-            If Slot <> 200 Then ObjAEnviar.ObjIndex = UserList(UserIndex).Invent.Object(Slot).ObjIndex
+            If Slot <> FLAGORO Then ObjAEnviar.ObjIndex = UserList(UserIndex).Invent.Object(Slot).ObjIndex
             'Llamos a la funcion
             Call EnviarObjetoTransaccion(tUser, UserIndex, ObjAEnviar)
 
