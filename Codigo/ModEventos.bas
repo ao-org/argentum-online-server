@@ -364,7 +364,7 @@ ForzarEvento_Err:
         
 End Sub
 
-Public Sub IniciarEvento(Tipo As TipoEvento, data As Variant)
+Public Sub IniciarEvento(ByVal Tipo As TipoEvento, ByVal data As Variant)
 100     Select Case Tipo
             Case TipoEvento.Invasion
 102             Call IniciarInvasion(data)

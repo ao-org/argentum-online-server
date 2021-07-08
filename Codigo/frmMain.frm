@@ -1441,17 +1441,8 @@ End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
         
-        On Error GoTo Form_Unload_Err
-    
-        
 
-100     Call CerrarServidor
-
-        
-        Exit Sub
-
-Form_Unload_Err:
-102     Call TraceError(Err.Number, Err.Description, "frmMain.Form_Unload", Erl)
+  Call CerrarServidor
 
         
 End Sub
