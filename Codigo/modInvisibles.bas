@@ -45,8 +45,8 @@ Public Sub PonerInvisible(ByVal UserIndex As Integer, ByVal estado As Boolean)
         Exit Sub
 
 PonerInvisible_Err:
-116     Call RegistrarError(Err.Number, Err.Description, "modInvisibles.PonerInvisible", Erl)
-118     Resume Next
+116     Call TraceError(Err.Number, Err.Description, "modInvisibles.PonerInvisible", Erl)
+118
         
 End Sub
 

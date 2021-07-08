@@ -31,8 +31,8 @@ Public Sub ResetMeteo()
         Exit Sub
 
 ResetMeteo_Err:
-112     Call RegistrarError(Err.Number, Err.Description, "ModClimas.ResetMeteo", Erl)
-114     Resume Next
+112     Call TraceError(Err.Number, Err.Description, "ModClimas.ResetMeteo", Erl)
+114
         
 End Sub
 
@@ -63,7 +63,7 @@ Public Sub Nublar()
         Exit Sub
 
 Nublar_Err:
-100     Call RegistrarError(Err.Number, Err.Description, "ModClimas.Nublar", Erl)
-102     Resume Next
+100     Call TraceError(Err.Number, Err.Description, "ModClimas.Nublar", Erl)
+102
     
 End Sub
