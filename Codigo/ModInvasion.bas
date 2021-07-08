@@ -55,7 +55,7 @@ Public Invasiones() As tInvasion
 
 Sub CargarInfoEventos()
     Dim File As clsIniManager
-    Set File = New clsIniManager
+100 Set File = New clsIniManager
 
 102     Call File.Initialize(DatPath & "Eventos.dat")
     
@@ -155,13 +155,17 @@ Sub CargarInfoEventos()
             
             End With
         Next
-    
+        
+        frmMain.Invasion.Enabled = True
+        
 212     Set File = Nothing
 End Sub
 
-Sub IniciarInvasion(ByVal index As Integer)
-    
-100     With Invasiones(index)
+Sub IniciarInvasion(ByVal Index As Integer)
+        
+        If UBound(Invasiones) = 0 Then Exit Sub
+        
+100     With Invasiones(Index)
     
 102         .Activa = True
         
@@ -170,7 +174,7 @@ Sub IniciarInvasion(ByVal index As Integer)
 106         .TiempoDeInicio = GetTickCount
 
             ' Enviamos info sobre la invasión a los usuarios en estos mapas
-108         Call EnviarInfoInvasion(index)
+108         Call EnviarInfoInvasion(Index)
         
 110         Call MensajeGlobal(.Desc, FontTypeNames.FONTTYPE_New_Eventos)
 112         Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(150, NO_3D_SOUND, NO_3D_SOUND))
@@ -179,9 +183,9 @@ Sub IniciarInvasion(ByVal index As Integer)
     
 End Sub
 
-Sub FinalizarInvasion(ByVal index As Integer)
+Sub FinalizarInvasion(ByVal Index As Integer)
 
-100     With Invasiones(index)
+100     With Invasiones(Index)
     
             Dim Ganaron As Boolean
         
@@ -358,7 +362,7 @@ Public Sub EnviarInfoInvasion(ByVal index As Integer)
 
 End Sub
 
-Public Sub HacerDañoMuralla(ByVal index As Integer, ByVal Daño As Long)
+Public Sub HacerDañoMuralla(ByVal Index As Integer, ByVal Daño As Long)
     
 100     With Invasiones(index)
     

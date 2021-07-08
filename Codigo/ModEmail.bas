@@ -14,7 +14,7 @@ Public Function EnviarCorreo(ByVal UserMail As String) As Boolean
 
 EnviarCorreo_Err:
 102     Call TraceError(Err.Number, Err.Description, "ModCuentas.EnviarCorreo", Erl)
-104
+
         
 End Function
 
@@ -45,7 +45,7 @@ Public Function EnviarCorreoRecuperacion(ByVal UserNick As String, ByVal UserMai
 
 EnviarCorreoRecuperacion_Err:
 110     Call TraceError(Err.Number, Err.Description, "ModCuentas.EnviarCorreoRecuperacion", Erl)
-112
+
         
 End Function
 
@@ -66,7 +66,7 @@ Public Function ObtenerCodigo(ByVal Name As String) As String
 
 ObtenerCodigo_Err:
 106     Call TraceError(Err.Number, Err.Description, "ModCuentas.ObtenerCodigo", Erl)
-108
+
         
 End Function
 
@@ -87,7 +87,7 @@ Public Function ObtenerValidacion(ByVal Name As String) As Boolean
 
 ObtenerValidacion_Err:
 106     Call TraceError(Err.Number, Err.Description, "ModCuentas.ObtenerValidacion", Erl)
-108
+
         
 End Function
 
@@ -108,7 +108,7 @@ Public Function ObtenerEmail(ByVal Name As String) As String
 
 ObtenerEmail_Err:
 106     Call TraceError(Err.Number, Err.Description, "ModCuentas.ObtenerEmail", Erl)
-108
+
         
 End Function
 
@@ -129,7 +129,7 @@ Public Function ObtenerMacAdress(ByVal Name As String) As String
 
 ObtenerMacAdress_Err:
 106     Call TraceError(Err.Number, Err.Description, "ModCuentas.ObtenerMacAdress", Erl)
-108
+
         
 End Function
 
@@ -150,7 +150,7 @@ Public Function ObtenerHDserial(ByVal Name As String) As Long
 
 ObtenerHDserial_Err:
 106     Call TraceError(Err.Number, Err.Description, "ModCuentas.ObtenerHDserial", Erl)
-108
+
         
 End Function
 
@@ -171,7 +171,7 @@ Public Function CuentaExiste(ByVal CuentaEmail As String) As Boolean
 
 CuentaExiste_Err:
 106     Call TraceError(Err.Number, Err.Description, "ModCuentas.CuentaExiste", Erl)
-108
+
         
 End Function
 
@@ -210,7 +210,7 @@ Public Sub SaveNewAccount(ByVal UserIndex As Integer, ByVal CuentaEmail As Strin
 
 SaveNewAccount_Err:
 116     Call TraceError(Err.Number, Err.Description, "ModCuentas.SaveNewAccount", Erl)
-118
+
         
 End Sub
 
@@ -278,7 +278,7 @@ Public Function ObtenerCuenta(ByVal Name As String) As String
 
 ObtenerCuenta_Err:
 106     Call TraceError(Err.Number, Err.Description, "ModCuentas.ObtenerCuenta", Erl)
-108
+
         
 End Function
 
@@ -300,7 +300,7 @@ Public Function PasswordValida(Password As String, PasswordHash As String, Salt 
 
 PasswordValida_Err:
 106     Call TraceError(Err.Number, Err.Description, "ModCuentas.PasswordValida", Erl)
-108
+
         
 End Function
 
@@ -321,7 +321,7 @@ Public Function ObtenerBaneo(ByVal Name As String) As Boolean
 
 ObtenerBaneo_Err:
 106     Call TraceError(Err.Number, Err.Description, "ModCuentas.ObtenerBaneo", Erl)
-108
+
         
 End Function
 
@@ -342,7 +342,7 @@ Public Function ObtenerMotivoBaneo(ByVal Name As String) As String
 
 ObtenerMotivoBaneo_Err:
 106     Call TraceError(Err.Number, Err.Description, "ModCuentas.ObtenerMotivoBaneo", Erl)
-108
+
         
 End Function
 
@@ -363,7 +363,7 @@ Public Function ObtenerQuienBaneo(ByVal Name As String) As String
 
 ObtenerQuienBaneo_Err:
 106     Call TraceError(Err.Number, Err.Description, "ModCuentas.ObtenerQuienBaneo", Erl)
-108
+
         
 End Function
 
@@ -384,7 +384,7 @@ Public Function ObtenerCantidadDePersonajes(ByVal Name As String) As String
 
 ObtenerCantidadDePersonajes_Err:
 106     Call TraceError(Err.Number, Err.Description, "ModCuentas.ObtenerCantidadDePersonajes", Erl)
-108
+
         
 End Function
 
@@ -405,7 +405,7 @@ Public Function ObtenerCantidadDePersonajesByUserIndex(ByVal UserIndex As Intege
 
 ObtenerCantidadDePersonajesByUserIndex_Err:
 106     Call TraceError(Err.Number, Err.Description, "ModCuentas.ObtenerCantidadDePersonajesByUserIndex", Erl)
-108
+
         
 End Function
 
@@ -426,7 +426,7 @@ Public Function ObtenerLogeada(ByVal Name As String) As Byte
 
 ObtenerLogeada_Err:
 106     Call TraceError(Err.Number, Err.Description, "ModCuentas.ObtenerLogeada", Erl)
-108
+
         
 End Function
 
@@ -441,7 +441,7 @@ Public Function ObtenerNombrePJ(ByVal Cuenta As String, ByVal i As Byte) As Stri
 
 ObtenerNombrePJ_Err:
 102     Call TraceError(Err.Number, Err.Description, "ModCuentas.ObtenerNombrePJ", Erl)
-104
+
         
 End Function
 
@@ -505,7 +505,7 @@ Sub BorrarPJdeCuenta(ByVal Name As String)
 
 BorrarPJdeCuenta_Err:
 142     Call TraceError(Err.Number, Err.Description, "ModCuentas.BorrarPJdeCuenta", Erl)
-144
+
         
 End Sub
 
@@ -553,7 +553,7 @@ Sub BorrarCuenta(ByVal CuentaName As String)
 
 BorrarCuenta_Err:
 124     Call TraceError(Err.Number, Err.Description, "ModCuentas.BorrarCuenta", Erl)
-126
+
         
 End Sub
 
@@ -687,7 +687,7 @@ Public Function GetUserGuildIndex(ByVal UserName As String) As Integer
 
 GetUserGuildIndex_Err:
 118     Call TraceError(Err.Number, Err.Description, "ModCuentas.GetUserGuildIndex", Erl)
-120
+
         
 End Function
 
@@ -717,7 +717,7 @@ Public Function GetUserGuildIndexCharfile(ByRef UserName As String) As Integer
 
 GetUserGuildIndexCharfile_Err:
 108     Call TraceError(Err.Number, Err.Description, "ModCuentas.GetUserGuildIndexCharfile", Erl)
-110
+
         
 End Function
 
@@ -737,7 +737,7 @@ Public Function GetUserGuildPedidosCharfile(ByVal UserName As String) As String
 
 GetUserGuildPedidosCharfile_Err:
 102     Call TraceError(Err.Number, Err.Description, "ModCuentas.GetUserGuildPedidosCharfile", Erl)
-104
+
         
 End Function
 
@@ -757,7 +757,7 @@ Sub SaveUserGuildPedidosCharfile(ByVal UserName As String, ByVal Pedidos As Stri
 
 SaveUserGuildPedidosCharfile_Err:
 102     Call TraceError(Err.Number, Err.Description, "ModCuentas.SaveUserGuildPedidosCharfile", Erl)
-104
+
         
 End Sub
 
@@ -777,7 +777,7 @@ Sub SaveUserGuildMemberCharfile(ByVal UserName As String, ByVal guilds As String
 
 SaveUserGuildMemberCharfile_Err:
 102     Call TraceError(Err.Number, Err.Description, "ModCuentas.SaveUserGuildMemberCharfile", Erl)
-104
+
         
 End Sub
 
@@ -797,7 +797,7 @@ Sub SaveUserGuildIndexCharfile(ByVal UserName As String, ByVal GuildIndex As Int
 
 SaveUserGuildIndexCharfile_Err:
 102     Call TraceError(Err.Number, Err.Description, "ModCuentas.SaveUserGuildIndexCharfile", Erl)
-104
+
         
 End Sub
 
@@ -817,7 +817,7 @@ Sub SaveUserGuildAspirantCharfile(ByVal UserName As String, ByVal AspirantIndex 
 
 SaveUserGuildAspirantCharfile_Err:
 102     Call TraceError(Err.Number, Err.Description, "ModCuentas.SaveUserGuildAspirantCharfile", Erl)
-104
+
         
 End Sub
 
@@ -872,7 +872,7 @@ Sub SendCharacterInfoCharfile(ByVal UserIndex As Integer, ByVal UserName As Stri
 
 SendCharacterInfoCharfile_Err:
 124     Call TraceError(Err.Number, Err.Description, "ModCuentas.SendCharacterInfoCharfile", Erl)
-126
+
         
 End Sub
 
@@ -892,7 +892,7 @@ Public Function GetUserGuildMemberCharfile(ByVal UserName As String) As String
 
 GetUserGuildMemberCharfile_Err:
 102     Call TraceError(Err.Number, Err.Description, "ModCuentas.GetUserGuildMemberCharfile", Erl)
-104
+
         
 End Function
 
@@ -912,7 +912,7 @@ Public Function GetUserGuildAspirantCharfile(ByVal UserName As String) As Intege
 
 GetUserGuildAspirantCharfile_Err:
 102     Call TraceError(Err.Number, Err.Description, "ModCuentas.GetUserGuildAspirantCharfile", Erl)
-104
+
         
 End Function
 
@@ -932,7 +932,7 @@ Public Function GetUserGuildRejectionReasonCharfile(ByVal UserName As String) As
 
 GetUserGuildRejectionReasonCharfile_Err:
 102     Call TraceError(Err.Number, Err.Description, "ModCuentas.GetUserGuildRejectionReasonCharfile", Erl)
-104
+
         
 End Function
 
@@ -952,7 +952,7 @@ Sub SaveUserGuildRejectionReasonCharfile(ByVal UserName As String, ByVal Reason 
 
 SaveUserGuildRejectionReasonCharfile_Err:
 102     Call TraceError(Err.Number, Err.Description, "ModCuentas.SaveUserGuildRejectionReasonCharfile", Erl)
-104
+
         
 End Sub
 

@@ -595,25 +595,25 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private Sub cmdDumpLogs_Click()
-    On Error GoTo cmdDumpLogs_Err:
+        On Error GoTo cmdDumpLogs_Err:
     
-    If LogsBuffer.ByteLength = 0 Then Exit Sub
+100     If LogsBuffer.ByteLength = 0 Then Exit Sub
     
-    Dim File As Integer: File = FreeFile
+102     Dim File As Integer: File = FreeFile
         
-    ' Metemos todo en el archivo .log
-    Open App.Path & "\logs\Errores\General.log" For Append As #File
-        Print #File, LogsBuffer.ToString
-    Close #File
+        ' Metemos todo en el archivo .log
+104     Open App.Path & "\logs\Errores\General.log" For Append As #File
+106         Print #File, LogsBuffer.ToString
+108     Close #File
     
-    ' Limpiamos el buffer
-    Call LogsBuffer.Clear
+        ' Limpiamos el buffer
+110     Call LogsBuffer.Clear
     
-    Exit Sub
+        Exit Sub
     
 cmdDumpLogs_Err:
-    Close #File
-    Call TraceError(Err.Number, Err.Description, "frmServidor.cmdDumpLogs_Click", Erl)
+112     Close #File
+114     Call TraceError(Err.Number, Err.Description, "frmServidor.cmdDumpLogs_Click", Erl)
     
 End Sub
 
@@ -630,7 +630,7 @@ Private Sub Command1_Click()
 
 Command1_Click_Err:
 106     Call TraceError(Err.Number, Err.Description, "frmServidor.Command1_Click", Erl)
-108
+
         
 End Sub
 
@@ -645,7 +645,7 @@ Private Sub Command10_Click()
 
 Command10_Click_Err:
 102     Call TraceError(Err.Number, Err.Description, "frmServidor.Command10_Click", Erl)
-104
+
         
 End Sub
 
@@ -660,7 +660,7 @@ Private Sub Command11_Click()
 
 Command11_Click_Err:
 102     Call TraceError(Err.Number, Err.Description, "frmServidor.Command11_Click", Erl)
-104
+
         
 End Sub
 
@@ -675,7 +675,7 @@ Private Sub Command12_Click()
 
 Command12_Click_Err:
 102     Call TraceError(Err.Number, Err.Description, "frmServidor.Command12_Click", Erl)
-104
+
         
 End Sub
 
@@ -690,7 +690,7 @@ Private Sub Command13_Click()
 
 Command13_Click_Err:
 102     Call TraceError(Err.Number, Err.Description, "frmServidor.Command13_Click", Erl)
-104
+
         
 End Sub
 
@@ -705,7 +705,7 @@ Private Sub Command14_Click()
 
 Command14_Click_Err:
 102     Call TraceError(Err.Number, Err.Description, "frmServidor.Command14_Click", Erl)
-104
+
         
 End Sub
 
@@ -769,7 +769,7 @@ Private Sub Command16_Click()
 
 Command16_Click_Err:
 102     Call TraceError(Err.Number, Err.Description, "frmServidor.Command16_Click", Erl)
-104
+
         
 End Sub
 
@@ -784,7 +784,7 @@ Private Sub Command17_Click()
 
 Command17_Click_Err:
 102     Call TraceError(Err.Number, Err.Description, "frmServidor.Command17_Click", Erl)
-104
+
         
 End Sub
 
@@ -802,7 +802,7 @@ Private Sub Command18_Click()
 
 Command18_Click_Err:
 108     Call TraceError(Err.Number, Err.Description, "frmServidor.Command18_Click", Erl)
-110
+
         
 End Sub
 
@@ -834,7 +834,7 @@ Private Sub Command19_Click()
 
 Command19_Click_Err:
 114     Call TraceError(Err.Number, Err.Description, "frmServidor.Command19_Click", Erl)
-116
+
         
 End Sub
 
@@ -849,7 +849,7 @@ Private Sub Command2_Click()
 
 Command2_Click_Err:
 102     Call TraceError(Err.Number, Err.Description, "frmServidor.Command2_Click", Erl)
-104
+
         
 End Sub
 
@@ -866,7 +866,7 @@ Private Sub Command20_Click()
 
 Command20_Click_Err:
 104     Call TraceError(Err.Number, Err.Description, "frmServidor.Command20_Click", Erl)
-106
+
         
 End Sub
 
@@ -892,7 +892,7 @@ Private Sub Command21_Click()
 
 Command21_Click_Err:
 114     Call TraceError(Err.Number, Err.Description, "frmServidor.Command21_Click", Erl)
-116
+
         
 End Sub
 
@@ -908,7 +908,7 @@ Private Sub Command22_Click()
 
 Command22_Click_Err:
 104     Call TraceError(Err.Number, Err.Description, "frmServidor.Command22_Click", Erl)
-106
+
         
 End Sub
 
@@ -938,7 +938,7 @@ Private Sub Command23_Click()
 
 Command23_Click_Err:
 110     Call TraceError(Err.Number, Err.Description, "frmServidor.Command23_Click", Erl)
-112
+
         
 End Sub
 
@@ -953,7 +953,7 @@ Private Sub Command24_Click()
 
 Command24_Click_Err:
 102     Call TraceError(Err.Number, Err.Description, "frmServidor.Command24_Click", Erl)
-104
+
         
 End Sub
 
@@ -962,14 +962,14 @@ Private Sub Command26_Click()
         On Error GoTo Command26_Click_Err
 
         'Cierra el socket de escucha
-        Call frmMain.Winsock.ResetListenerSocket
+100     Call frmMain.Winsock.ResetListenerSocket
 
         
         Exit Sub
 
 Command26_Click_Err:
-104     Call TraceError(Err.Number, Err.Description, "frmServidor.Command26_Click", Erl)
-106
+102     Call TraceError(Err.Number, Err.Description, "frmServidor.Command26_Click", Erl)
+
         
 End Sub
 
@@ -984,7 +984,7 @@ Private Sub Command27_Click()
 
 Command27_Click_Err:
 102     Call TraceError(Err.Number, Err.Description, "frmServidor.Command27_Click", Erl)
-104
+
         
 End Sub
 
@@ -999,7 +999,7 @@ Private Sub Command28_Click()
 
 Command28_Click_Err:
 102     Call TraceError(Err.Number, Err.Description, "frmServidor.Command28_Click", Erl)
-104
+
         
 End Sub
 
@@ -1019,7 +1019,7 @@ Private Sub Command3_Click()
 
 Command3_Click_Err:
 106     Call TraceError(Err.Number, Err.Description, "frmServidor.Command3_Click", Erl)
-108
+
         
 End Sub
 
@@ -1059,32 +1059,32 @@ Private Sub Command5_Click()
 114     If FileExist(App.Path & "\logs\Teleports.Log", vbNormal) Then Kill App.Path & "\logs\Teleports.Log"
 
         Dim LoopC As Integer
-118     For LoopC = 1 To MaxUsers
-120         Call CloseSocket(LoopC)
+116     For LoopC = 1 To MaxUsers
+118         Call CloseSocket(LoopC)
         Next
 
-122     LastUser = 0
-124     NumUsers = 0
+120     LastUser = 0
+122     NumUsers = 0
 
-126     Call FreeNPCs
-128     Call FreeCharIndexes
+124     Call FreeNPCs
+126     Call FreeCharIndexes
 
-130     Call LoadSini
-132     Call LoadIntervalos
-134     Call CargarBackUp
-136     Call LoadOBJData
-138     Call LoadPesca
-140     Call LoadRecursosEspeciales
+128     Call LoadSini
+130     Call LoadIntervalos
+132     Call CargarBackUp
+134     Call LoadOBJData
+136     Call LoadPesca
+138     Call LoadRecursosEspeciales
 
-        Call frmMain.Winsock.ResetListenerSocket
+140     Call frmMain.Winsock.ResetListenerSocket
 
-144     If frmMain.Visible Then frmMain.txStatus.Caption = "Escuchando conexiones entrantes ..."
+142     If frmMain.Visible Then frmMain.txStatus.Caption = "Escuchando conexiones entrantes ..."
 
         
         Exit Sub
 
 Command5_Click_Err:
-146     Call TraceError(Err.Number, Err.Description, "frmServidor.Command5_Click", Erl)
+144     Call TraceError(Err.Number, Err.Description, "frmServidor.Command5_Click", Erl)
 
         
 End Sub
@@ -1100,7 +1100,7 @@ Private Sub Command6_Click()
 
 Command6_Click_Err:
 102     Call TraceError(Err.Number, Err.Description, "frmServidor.Command6_Click", Erl)
-104
+
         
 End Sub
 
@@ -1115,7 +1115,7 @@ Private Sub Command7_Click()
 
 Command7_Click_Err:
 102     Call TraceError(Err.Number, Err.Description, "frmServidor.Command7_Click", Erl)
-104
+
         
 End Sub
 
@@ -1130,7 +1130,7 @@ Private Sub Command8_Click()
 
 Command8_Click_Err:
 102     Call TraceError(Err.Number, Err.Description, "frmServidor.Command8_Click", Erl)
-104
+
         
 End Sub
 
@@ -1145,7 +1145,7 @@ Private Sub Command9_Click()
 
 Command9_Click_Err:
 102     Call TraceError(Err.Number, Err.Description, "frmServidor.Command9_Click", Erl)
-104
+
         
 End Sub
 
@@ -1160,7 +1160,7 @@ Private Sub Form_Deactivate()
 
 Form_Deactivate_Err:
 102     Call TraceError(Err.Number, Err.Description, "frmServidor.Form_Deactivate", Erl)
-104
+
         
 End Sub
 
@@ -1175,6 +1175,6 @@ Private Sub Form_Load()
 
 Form_Load_Err:
 104     Call TraceError(Err.Number, Err.Description, "frmServidor.Form_Load", Erl)
-106
+
         
 End Sub

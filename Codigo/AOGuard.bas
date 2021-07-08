@@ -23,46 +23,53 @@ Private SMTP_USER                   As String
 Private SMTP_PASS                   As String
 
 Public Sub LoadAOGuardConfiguration()
+        
+        On Error GoTo LoadAOGuardConfiguration_Err
+        
+100     If Not FileExist(IniPath & "AOGuard.ini", vbNormal) Then
+102         AOG_STATUS = 0
+            Exit Sub
+
+        End If
     
-    If Not FileExist(IniPath & "AOGuard.ini", vbNormal) Then
-        AOG_STATUS = 0
+        Dim ConfigFile As New clsIniManager
+104     Call ConfigFile.Initialize(IniPath & "AOGuard.ini")
+        
+106     AOG_STATUS = val(ConfigFile.GetValue("INIT", "Enabled"))
+108     AOG_EXPIRE = val(ConfigFile.GetValue("INIT", "CodeExpiresInSeconds"))
+    
+110     AOG_RESEND_INTERVAL = val(ConfigFile.GetValue("INIT", "CodeResendInterval"))
+
+112     If AOG_RESEND_INTERVAL = 0 Then AOG_RESEND_INTERVAL = 50000
+    
+114     TRANSPORT_METHOD = UCase$(ConfigFile.GetValue("INIT", "TransportMethod"))
+
+116     Select Case TRANSPORT_METHOD
+    
+            Case "API"
+                ' Configuracion API
+118             API_ENDPOINT = ConfigFile.GetValue("API", "Endpoint")
+120             API_KEY = ConfigFile.GetValue("API", "Key")
+            
+122         Case "SMTP"
+                ' Configuracion SMTP interno
+                ' (no me gusta xq bloquea el hilo pero bueh, puede servir para salir del paso)
+124             SMTP_HOST = ConfigFile.GetValue("SMTP", "HOST")
+126             SMTP_PORT = val(ConfigFile.GetValue("SMTP", "PORT"))
+128             SMTP_AUTH = val(ConfigFile.GetValue("SMTP", "AUTH"))
+130             SMTP_SECURE = val(ConfigFile.GetValue("SMTP", "SECURE"))
+132             SMTP_USER = ConfigFile.GetValue("SMTP", "USER")
+134             SMTP_PASS = ConfigFile.GetValue("SMTP", "PASS")
+            
+        End Select
+    
+136     Set ConfigFile = Nothing
+
         Exit Sub
 
-    End If
-    
-    Dim ConfigFile As New clsIniManager
-    Call ConfigFile.Initialize(IniPath & "AOGuard.ini")
-        
-    AOG_STATUS = val(ConfigFile.GetValue("INIT", "Enabled"))
-    AOG_EXPIRE = val(ConfigFile.GetValue("INIT", "CodeExpiresInSeconds"))
-    
-    AOG_RESEND_INTERVAL = val(ConfigFile.GetValue("INIT", "CodeResendInterval"))
+LoadAOGuardConfiguration_Err:
+     Call TraceError(Err.Number, Err.Description, "AOGuard.LoadAOGuardConfiguration", Erl)
 
-    If AOG_RESEND_INTERVAL = 0 Then AOG_RESEND_INTERVAL = 50000
-    
-    TRANSPORT_METHOD = UCase$(ConfigFile.GetValue("INIT", "TransportMethod"))
-
-    Select Case TRANSPORT_METHOD
-    
-        Case "API"
-            ' Configuracion API
-            API_ENDPOINT = ConfigFile.GetValue("API", "Endpoint")
-            API_KEY = ConfigFile.GetValue("API", "Key")
-            
-        Case "SMTP"
-            ' Configuracion SMTP interno
-            ' (no me gusta xq bloquea el hilo pero bueh, puede servir para salir del paso)
-            SMTP_HOST = ConfigFile.GetValue("SMTP", "HOST")
-            SMTP_PORT = val(ConfigFile.GetValue("SMTP", "PORT"))
-            SMTP_AUTH = val(ConfigFile.GetValue("SMTP", "AUTH"))
-            SMTP_SECURE = val(ConfigFile.GetValue("SMTP", "SECURE"))
-            SMTP_USER = ConfigFile.GetValue("SMTP", "USER")
-            SMTP_PASS = ConfigFile.GetValue("SMTP", "PASS")
-            
-    End Select
-    
-    Set ConfigFile = Nothing
-    
 End Sub
 
 '------------------------------------------------------------------------------------------------
@@ -97,7 +104,7 @@ Public Function VerificarOrigen(ByVal AccountID As Long, ByVal HD As Long, ByVal
         Exit Function
 
 VerificarOrigen_Err:
-        Call TraceError(Err.Number, Err.Description, "Protocol.VerificarOrigen", Erl)
+112     Call TraceError(Err.Number, Err.Description, "AOGuard.VerificarOrigen", Erl)
 
 End Function
 
@@ -106,70 +113,70 @@ End Function
 '---------------------------------------------------------------------------------------------------
 Private Sub EnviarCodigo(ByVal UserIndex As Integer)
 
-    On Error GoTo EnviarCodigo_Err
+        On Error GoTo EnviarCodigo_Err
     
-    Dim EnviarCode As Boolean
+        Dim EnviarCode As Boolean
     
-    With UserList(UserIndex)
+100     With UserList(UserIndex)
             
-        Call MakeQuery("SELECT TIMESTAMPDIFF(SECOND, `code_last_sent`, CURRENT_TIMESTAMP) AS delta_time, code_resend_attempts FROM account_guard WHERE account_id = ?", False, .AccountID)
+102         Call MakeQuery("SELECT TIMESTAMPDIFF(SECOND, `code_last_sent`, CURRENT_TIMESTAMP) AS delta_time, code_resend_attempts FROM account_guard WHERE account_id = ?", False, .AccountID)
         
-        ' Hay registros en `account_guard` = tiene codigo = me fijo si le mando o no
-        If Not QueryData Is Nothing Then
+            ' Hay registros en `account_guard` = tiene codigo = me fijo si le mando o no
+104         If Not QueryData Is Nothing Then
             
-            ' Ya te dije X veces que esperes un toque! Si no lo haces, sos alto bot!
-            If val(QueryData!code_resend_attempts) > MAX_CODE_RESEND_COUNT Then
-                EnviarCode = False
-                Call CloseSocket(UserIndex)
-                Exit Sub
+                ' Ya te dije X veces que esperes un toque! Si no lo haces, sos alto bot!
+106             If val(QueryData!code_resend_attempts) > MAX_CODE_RESEND_COUNT Then
+108                 EnviarCode = False
+110                 Call CloseSocket(UserIndex)
+                    Exit Sub
                     
-            End If
+                End If
                 
-            ' Establecemos un intervalo de tiempo para volver a mandarle el codigo al usuario
-            If QueryData!delta_time > AOG_RESEND_INTERVAL Then
+                ' Establecemos un intervalo de tiempo para volver a mandarle el codigo al usuario
+112             If QueryData!delta_time > AOG_RESEND_INTERVAL Then
                     
-                EnviarCode = True
+114                 EnviarCode = True
                     
-                Call MakeQuery("UPDATE account_guard SET code_last_sent = CURRENT_TIMESTAMP, code_resend_attempts = 0 WHERE account_id = ?", True, .AccountID)
+116                 Call MakeQuery("UPDATE account_guard SET code_last_sent = CURRENT_TIMESTAMP, code_resend_attempts = 0 WHERE account_id = ?", True, .AccountID)
                         
-                Call WriteShowMessageBox(UserIndex, "Te hemos enviado un correo con el código de verificacion a tu correo. " & _
-                                                    "Si no lo encuentras, revisa la carpeta de SPAM. " & _
-                                                    "Si no te ha llegado, intenta nuevamente en " & val(QueryData!delta_time) & " segundos")
+118                 Call WriteShowMessageBox(UserIndex, "Te hemos enviado un correo con el código de verificacion a tu correo. " & _
+                                                        "Si no lo encuentras, revisa la carpeta de SPAM. " & _
+                                                        "Si no te ha llegado, intenta nuevamente en " & val(QueryData!delta_time) & " segundos")
                         
+                Else
+                
+120                 EnviarCode = False
+                
+122                 Call MakeQuery("UPDATE account_guard SET code_resend_attempts = code_resend_attempts + 1 WHERE account_id = ?", True, .AccountID)
+                    
+124                 Call WriteShowMessageBox(UserIndex, "Ya te hemos enviado un correo con el código de verificacion. " & _
+                                                        "Si no te ha llegado, intenta nuevamente en " & val(QueryData!delta_time) & " segundos")
+                        
+                End If
+        
             Else
-                
-                EnviarCode = False
-                
-                Call MakeQuery("UPDATE account_guard SET code_resend_attempts = code_resend_attempts + 1 WHERE account_id = ?", True, .AccountID)
-                    
-                Call WriteShowMessageBox(UserIndex, "Ya te hemos enviado un correo con el código de verificacion. " & _
-                                                    "Si no te ha llegado, intenta nuevamente en " & val(QueryData!delta_time) & " segundos")
-                        
+            
+                ' No hay registros en `account_guard` = no tiene codigo = le mando uno
+126             EnviarCode = True
+            
             End If
         
-        Else
-            
-            ' No hay registros en `account_guard` = no tiene codigo = le mando uno
-            EnviarCode = True
-            
-        End If
+128         If EnviarCode Then
         
-        If EnviarCode Then
-        
-            If TRANSPORT_METHOD = "API" Then
-                Call GenerarCodigoAPI(UserIndex)
-            Else
-                Call GenerarCodigo(UserIndex)
-            End If
+130             If TRANSPORT_METHOD = "API" Then
+132                 Call GenerarCodigoAPI(UserIndex)
+                Else
+134                 Call GenerarCodigo(UserIndex)
+                End If
     
-        End If
+            End If
         
-    End With
+        End With
 
-    Exit Sub
+        Exit Sub
 
 EnviarCodigo_Err:
-    Call TraceError(Err.Number, Err.Description, "Protocol.EnviarCodigo", Erl)
+136     Call TraceError(Err.Number, Err.Description, "AOGuard.EnviarCodigo", Erl)
     
 End Sub
 
@@ -178,26 +185,26 @@ End Sub
 '---------------------------------------------------------------------------------------------------
 Public Sub WriteGuardNotice(ByVal UserIndex As Integer)
 
-    On Error GoTo ErrHandler
+        On Error GoTo ErrHandler
 
-    With UserList(UserIndex).outgoingData
+100     With UserList(UserIndex).outgoingData
 
-        Call .WriteID(ServerPacketID.GuardNotice)
-        Call .EndPacket
+102         Call .WriteID(ServerPacketID.GuardNotice)
+104         Call .EndPacket
         
-        Call EnviarCodigo(UserIndex)
+106         Call EnviarCodigo(UserIndex)
         
-    End With
+        End With
     
-    Exit Sub
+        Exit Sub
     
 ErrHandler:
 
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
+108     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
+110         Call FlushBuffer(UserIndex)
+112         Resume
 
-    End If
+        End If
 
 End Sub
 
@@ -209,41 +216,41 @@ Public Sub HandleGuardNoticeResponse(ByVal UserIndex As Integer)
         
 102         Dim Codigo As String: Codigo = .incomingData.ReadASCIIString
 
-            If .AccountID = 0 Then Exit Sub
+104         If .AccountID = 0 Then Exit Sub
 
-104         Call MakeQuery("SELECT TIMESTAMPDIFF(SECOND, `created_at`, CURRENT_TIMESTAMP) AS delta_time, code FROM account_guard WHERE account_id = ?", False, .AccountID)
+106         Call MakeQuery("SELECT TIMESTAMPDIFF(SECOND, `created_at`, CURRENT_TIMESTAMP) AS delta_time, code FROM account_guard WHERE account_id = ?", False, .AccountID)
         
             ' El codigo expira despues de 1 minuto.
-106         If AOG_EXPIRE <> 0 And QueryData!delta_time > AOG_EXPIRE Then
+108         If AOG_EXPIRE <> 0 And QueryData!delta_time > AOG_EXPIRE Then
             
                 ' Le avisamos que expiro
-108             Call WriteShowMessageBox(UserIndex, "El código de verificación ha expirado.")
-110             Debug.Print "El codigo expiro. Se generara uno nuevo!"
+110             Call WriteShowMessageBox(UserIndex, "El código de verificación ha expirado.")
+112             Debug.Print "El codigo expiro. Se generara uno nuevo!"
             
                 ' Invalidamos el codigo
-112             Call MakeQuery("DELETE FROM account_guard WHERE account_id = ?", True, UserList(UserIndex).AccountID)
+114             Call MakeQuery("DELETE FROM account_guard WHERE account_id = ?", True, UserList(UserIndex).AccountID)
             
                 ' Lo kickeamos.
-114             Call CloseSocket(UserIndex)
+116             Call CloseSocket(UserIndex)
                  
             Else ' El codigo NO expiro...
             
                 ' Lo comparamos con lo que tenemos en la BD
-116             If Codigo = QueryData!code Then
+118             If Codigo = QueryData!code Then
             
-118                 Call WritePersonajesDeCuenta(UserIndex)
-120                 Call WriteMostrarCuenta(UserIndex)
+120                 Call WritePersonajesDeCuenta(UserIndex)
+122                 Call WriteMostrarCuenta(UserIndex)
                 
                     ' Invalidamos el codigo
-122                 Call MakeQuery("DELETE FROM account_guard WHERE account_id = ?", True, UserList(UserIndex).AccountID)
+124                 Call MakeQuery("DELETE FROM account_guard WHERE account_id = ?", True, UserList(UserIndex).AccountID)
                 
                 Else
             
                     ' Le avisamos
-124                 Call WriteShowMessageBox(UserIndex, "El código de verificación ha incorrecto.")
+126                 Call WriteShowMessageBox(UserIndex, "El código de verificación ha incorrecto.")
                 
                     ' Lo kickeamos.
-126                 Call CloseSocket(UserIndex)
+128                 Call CloseSocket(UserIndex)
                 
                 End If
             
@@ -254,22 +261,22 @@ Public Sub HandleGuardNoticeResponse(ByVal UserIndex As Integer)
         Exit Sub
 
 HandleGuardNoticeResponse_Err:
-128     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuardNoticeResponse", Erl)
-130     Call UserList(UserIndex).incomingData.SafeClearPacket
+130     Call TraceError(Err.Number, Err.Description, "AOGuard.HandleGuardNoticeResponse", Erl)
+132     Call UserList(UserIndex).incomingData.SafeClearPacket
 
 End Sub
 
 Public Sub HandleGuardResendVerificationCode(ByVal UserIndex As Integer)
         
-    On Error GoTo HandleResendVerificationCode_Err:
+        On Error GoTo HandleResendVerificationCode_Err:
         
-    Call EnviarCodigo(UserIndex)
+100     Call EnviarCodigo(UserIndex)
         
-    Exit Sub
+        Exit Sub
 
 HandleResendVerificationCode_Err:
-    Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuardResendVerificationCode", Erl)
-    Call UserList(UserIndex).incomingData.SafeClearPacket
+102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuardResendVerificationCode", Erl)
+104     Call UserList(UserIndex).incomingData.SafeClearPacket
     
 End Sub
 
@@ -308,7 +315,7 @@ Private Sub GenerarCodigoAPI(ByVal UserIndex As Integer)
         Exit Sub
 
 GenerarCodigoAPI_Err:
-        Call TraceError(Err.Number, Err.Description, "Protocol.GenerarCodigoAPI", Erl)
+116     Call TraceError(Err.Number, Err.Description, "AOGuard.GenerarCodigoAPI", Erl)
         
 End Sub
 
@@ -365,71 +372,71 @@ Private Sub GenerarCodigo(ByVal UserIndex As Integer)
         Exit Sub
 
 GenerarCodigo_Err:
-        Call TraceError(Err.Number, Err.Description, "Protocol.GenerarCodigo", Erl)
+        Call TraceError(Err.Number, Err.Description, "AOGuard.GenerarCodigo", Erl)
 
 End Sub
 
 ' Source: https://accautomation.ca/how-to-send-email-to-smtp-server/
 Sub SendEmail(ByVal Email As String, ByVal Codigo As String, ByVal IP As String)
 
-    On Error Resume Next
+        On Error Resume Next
     
-    If LenB(SMTP_HOST) = 0 Or _
-       LenB(SMTP_PORT) = 0 Or _
-       LenB(SMTP_USER) = 0 Or _
-       LenB(SMTP_PASS) = 0 Then Exit Sub
+100     If LenB(SMTP_HOST) = 0 Or _
+           LenB(SMTP_PORT) = 0 Or _
+           LenB(SMTP_USER) = 0 Or _
+           LenB(SMTP_PASS) = 0 Then Exit Sub
     
-    Dim Schema    As String
+        Dim Schema    As String
     
-    Dim cdoMsg    As Object
-    Dim cdoConf   As Object
-    Dim cdoFields As Object
+        Dim cdoMsg    As Object
+        Dim cdoConf   As Object
+        Dim cdoFields As Object
     
-    Set cdoMsg = CreateObject("CDO.Message")
-    Set cdoConf = CreateObject("CDO.Configuration")
-    Set cdoFields = cdoConf.Fields
+102     Set cdoMsg = CreateObject("CDO.Message")
+104     Set cdoConf = CreateObject("CDO.Configuration")
+106     Set cdoFields = cdoConf.Fields
     
-    ' Send one copy with Google SMTP server (with autentication)
-    Schema = "http://schemas.microsoft.com/cdo/configuration/"
+        ' Send one copy with Google SMTP server (with autentication)
+108     Schema = "http://schemas.microsoft.com/cdo/configuration/"
     
-    cdoFields.Item(Schema & "sendusing") = 2
-    cdoFields.Item(Schema & "smtpserver") = SMTP_HOST
-    cdoFields.Item(Schema & "smtpserverport") = SMTP_PORT
-    cdoFields.Item(Schema & "smtpauthenticate") = SMTP_AUTH
-    cdoFields.Item(Schema & "sendusername") = SMTP_USER
-    cdoFields.Item(Schema & "sendpassword") = SMTP_PASS
-    cdoFields.Item(Schema & "smtpusessl") = SMTP_SECURE
+110     cdoFields.Item(Schema & "sendusing") = 2
+112     cdoFields.Item(Schema & "smtpserver") = SMTP_HOST
+114     cdoFields.Item(Schema & "smtpserverport") = SMTP_PORT
+116     cdoFields.Item(Schema & "smtpauthenticate") = SMTP_AUTH
+118     cdoFields.Item(Schema & "sendusername") = SMTP_USER
+120     cdoFields.Item(Schema & "sendpassword") = SMTP_PASS
+122     cdoFields.Item(Schema & "smtpusessl") = SMTP_SECURE
     
-    Call cdoFields.Update
+124     Call cdoFields.Update
 
-    With cdoMsg
+126     With cdoMsg
     
-        .To = Email
-        .From = "guardian@ao20.com.ar"
-        .Subject = "Argentum Guard - Acceso desde un nuevo dispositivo"
+128         .To = Email
+130         .From = "guardian@ao20.com.ar"
+132         .Subject = "Argentum Guard - Acceso desde un nuevo dispositivo"
         
-        ' Body of message can be any HTML code
-        .HTMLBody = "Hemos detectado un intento de acceso a tu cuenta desde un dispositivo desconocido <br /><br />" & _
-           "IP: " & IP & "<br /><br />" & _
-           "Si fuiste tu, te aparecerá un dialogo donde tendrás que ingresar el siguiente código: <strong>" & Codigo & "</strong>" & "<br />" & _
-           "<strong>Si NO fuiste tu, ignora este mensaje y considera cambiar tu contraseña</strong>" & "<br /><br />" & _
-           "El equipo de Noland Studios"
+            ' Body of message can be any HTML code
+134         .HTMLBody = "Hemos detectado un intento de acceso a tu cuenta desde un dispositivo desconocido <br /><br />" & _
+               "IP: " & IP & "<br /><br />" & _
+               "Si fuiste tu, te aparecerá un dialogo donde tendrás que ingresar el siguiente código: <strong>" & Codigo & "</strong>" & "<br />" & _
+               "<strong>Si NO fuiste tu, ignora este mensaje y considera cambiar tu contraseña</strong>" & "<br /><br />" & _
+               "El equipo de Noland Studios"
                     
-        Set .Configuration = cdoConf
+136         Set .Configuration = cdoConf
         
-        ' Send the message
-        Call .send
+            ' Send the message
+138         Call .send
 
-    End With
+        End With
 
-    'Check for errors and display message
-    If Err.Number <> 0 Then
-        Call TraceError(Err.Number, "Error al enviar correo a " & Email & vbNewLine & Err.Description, "AOGuard.SendMail")
+        'Check for errors and display message
+140     If Err.Number <> 0 Then
+142         Call TraceError(Err.Number, "Error al enviar correo a " & Email & vbNewLine & Err.Description, "AOGuard.SendMail")
 
-    End If
+        End If
 
-    Set cdoMsg = Nothing
-    Set cdoConf = Nothing
-    Set cdoFields = Nothing
+144     Set cdoMsg = Nothing
+146     Set cdoConf = Nothing
+148     Set cdoFields = Nothing
 
 End Sub

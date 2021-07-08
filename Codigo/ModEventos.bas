@@ -112,7 +112,7 @@ Public Sub CheckEvento(ByVal Hora As Byte)
 
 CheckEvento_Err:
 196     Call TraceError(Err.Number, Err.Description, "ModEventos.CheckEvento", Erl)
-198
+
         
 End Sub
 
@@ -166,7 +166,7 @@ Public Sub FinalizarEvento()
 
 FinalizarEvento_Err:
 152     Call TraceError(Err.Number, Err.Description, "ModEventos.FinalizarEvento", Erl)
-154
+
         
 End Sub
 
@@ -219,7 +219,7 @@ Public Function DescribirEvento(ByVal Hora As Byte) As String
 
 DescribirEvento_Err:
 138     Call TraceError(Err.Number, Err.Description, "ModEventos.DescribirEvento", Erl)
-140
+
         
 End Function
 
@@ -249,7 +249,7 @@ Public Sub CargarEventos()
 
 CargarEventos_Err:
 120     Call TraceError(Err.Number, Err.Description, "ModEventos.CargarEventos", Erl)
-122
+
         
 End Sub
 
@@ -270,101 +270,101 @@ Public Sub ForzarEvento(ByVal Tipo As Byte, ByVal Duracion As Byte, ByVal multi 
 
         End If
 
-         If (Tipo = 1 And multi > 2) Then
-            Call WriteConsoleMsg(NameIndex(Quien), "Multiplicacion invalida, maxima x2.", FontTypeNames.FONTTYPE_New_Eventos)
+108      If (Tipo = 1 And multi > 2) Then
+110         Call WriteConsoleMsg(NameIndex(Quien), "Multiplicacion invalida, maxima x2.", FontTypeNames.FONTTYPE_New_Eventos)
             Exit Sub
 
         End If
         
-        If (Tipo = 2 And multi > 2) Then
-            Call WriteConsoleMsg(NameIndex(Quien), "Multiplicacion invalida, maxima x2.", FontTypeNames.FONTTYPE_New_Eventos)
+112     If (Tipo = 2 And multi > 2) Then
+114         Call WriteConsoleMsg(NameIndex(Quien), "Multiplicacion invalida, maxima x2.", FontTypeNames.FONTTYPE_New_Eventos)
             Exit Sub
 
         End If
         
-108     If (Tipo = 3 And multi > 5) Then
-110         Call WriteConsoleMsg(NameIndex(Quien), "Multiplicacion invalida, maxima x5.", FontTypeNames.FONTTYPE_New_Eventos)
+116     If (Tipo = 3 And multi > 5) Then
+118         Call WriteConsoleMsg(NameIndex(Quien), "Multiplicacion invalida, maxima x5.", FontTypeNames.FONTTYPE_New_Eventos)
             Exit Sub
 
         End If
 
         Dim aviso As String
 
-112     aviso = "Eventos> " & Quien & " inicio un nuevo evento: "
-114     PublicidadEvento = "Evento en curso>"
+120     aviso = "Eventos> " & Quien & " inicio un nuevo evento: "
+122     PublicidadEvento = "Evento en curso>"
 
-116     Select Case Tipo
+124     Select Case Tipo
 
             Case 1
-118             OroMult = OroMult * multi
-120             aviso = aviso & " Oro multiplicado por " & multi & " - Duración del evento: " & Duracion & " minutos."
-122             PublicidadEvento = PublicidadEvento & " Oro multiplicado por " & multi
+126             OroMult = OroMult * multi
+128             aviso = aviso & " Oro multiplicado por " & multi & " - Duración del evento: " & Duracion & " minutos."
+130             PublicidadEvento = PublicidadEvento & " Oro multiplicado por " & multi
 
-124         Case 2
-126             ExpMult = ExpMult * multi
-128             aviso = aviso & " Experiencia multiplicada por " & multi & " - Duración del evento: " & Duracion & " minutos."
-130             PublicidadEvento = PublicidadEvento & " Experiencia multiplicada por " & multi
+132         Case 2
+134             ExpMult = ExpMult * multi
+136             aviso = aviso & " Experiencia multiplicada por " & multi & " - Duración del evento: " & Duracion & " minutos."
+138             PublicidadEvento = PublicidadEvento & " Experiencia multiplicada por " & multi
 
-132         Case 3
-134             RecoleccionMult = RecoleccionMult * multi
-136             aviso = aviso & " Recoleccion multiplicada por " & multi & " - Duración del evento: " & Duracion & " minutos."
-138             PublicidadEvento = PublicidadEvento & " Recoleccion multiplicada por " & multi
+140         Case 3
+142             RecoleccionMult = RecoleccionMult * multi
+144             aviso = aviso & " Recoleccion multiplicada por " & multi & " - Duración del evento: " & Duracion & " minutos."
+146             PublicidadEvento = PublicidadEvento & " Recoleccion multiplicada por " & multi
 
-140         Case 4
-142             DropMult = DropMult / multi
-144             aviso = aviso & " Dropeo multiplicado por " & multi & " - Duración del evento: " & Duracion & " minutos."
-146             PublicidadEvento = PublicidadEvento & " Dropeo multiplicado por " & multi
+148         Case 4
+150             DropMult = DropMult / multi
+152             aviso = aviso & " Dropeo multiplicado por " & multi & " - Duración del evento: " & Duracion & " minutos."
+154             PublicidadEvento = PublicidadEvento & " Dropeo multiplicado por " & multi
 
-148         Case 5
-150             ExpMult = ExpMult * multi
-152             OroMult = OroMult * multi
-154             aviso = aviso & " Oro y experiencia multiplicados por " & multi & " - Duración del evento: " & Duracion & " minutos."
-156             PublicidadEvento = PublicidadEvento & " Oro y experiencia multiplicados por " & multi
+156         Case 5
+158             ExpMult = ExpMult * multi
+160             OroMult = OroMult * multi
+162             aviso = aviso & " Oro y experiencia multiplicados por " & multi & " - Duración del evento: " & Duracion & " minutos."
+164             PublicidadEvento = PublicidadEvento & " Oro y experiencia multiplicados por " & multi
 
-158         Case 6
-160             ExpMult = ExpMult * multi
-162             OroMult = OroMult * multi
-164             RecoleccionMult = RecoleccionMult * multi
-166             aviso = aviso & " Oro, experiencia y recoleccion multiplicados por " & multi & " - Duración del evento: " & Duracion & " minutos."
-168             PublicidadEvento = PublicidadEvento & " Oro, experiencia y recoleccion multiplicados por " & multi
+166         Case 6
+168             ExpMult = ExpMult * multi
+170             OroMult = OroMult * multi
+172             RecoleccionMult = RecoleccionMult * multi
+174             aviso = aviso & " Oro, experiencia y recoleccion multiplicados por " & multi & " - Duración del evento: " & Duracion & " minutos."
+176             PublicidadEvento = PublicidadEvento & " Oro, experiencia y recoleccion multiplicados por " & multi
 
-170         Case 7
-172             ExpMult = ExpMult * multi
-174             OroMult = OroMult * multi
-176             DropMult = DropMult / multi
-178             RecoleccionMult = RecoleccionMult * multi
-180             aviso = aviso & " Oro, experiencia, recoleccion y dropeo multiplicados por " & multi & " - Duración del evento: " & Duracion & " minutos."
-182             PublicidadEvento = PublicidadEvento & " Oro, experiencia, recoleccion y dropeo multiplicados por " & multi
+178         Case 7
+180             ExpMult = ExpMult * multi
+182             OroMult = OroMult * multi
+184             DropMult = DropMult / multi
+186             RecoleccionMult = RecoleccionMult * multi
+188             aviso = aviso & " Oro, experiencia, recoleccion y dropeo multiplicados por " & multi & " - Duración del evento: " & Duracion & " minutos."
+190             PublicidadEvento = PublicidadEvento & " Oro, experiencia, recoleccion y dropeo multiplicados por " & multi
 
-184         Case Else
+192         Case Else
 
-186             EventoActivo = False
+194             EventoActivo = False
                 Exit Sub
         
         End Select
 
-188     Call AgregarAConsola(aviso)
+196     Call AgregarAConsola(aviso)
 
-190     EventoAcutal.Duracion = Duracion
-192     EventoAcutal.multiplicacion = multi
-194     EventoAcutal.Tipo = Tipo
+198     EventoAcutal.Duracion = Duracion
+200     EventoAcutal.multiplicacion = multi
+202     EventoAcutal.Tipo = Tipo
 
-196     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(aviso, FontTypeNames.FONTTYPE_New_Eventos))
-198     Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(553, NO_3D_SOUND, NO_3D_SOUND)) ' Explota un trueno
-200     TiempoRestanteEvento = Duracion
-202     frmMain.Evento.Enabled = True
-204     EventoActivo = True
+204     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(aviso, FontTypeNames.FONTTYPE_New_Eventos))
+206     Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(553, NO_3D_SOUND, NO_3D_SOUND)) ' Explota un trueno
+208     TiempoRestanteEvento = Duracion
+210     frmMain.Evento.Enabled = True
+212     EventoActivo = True
 
         
         Exit Sub
 
 ForzarEvento_Err:
-206     Call TraceError(Err.Number, Err.Description, "ModEventos.ForzarEvento", Erl)
-208
+214     Call TraceError(Err.Number, Err.Description, "ModEventos.ForzarEvento", Erl)
+
         
 End Sub
 
-Public Sub IniciarEvento(Tipo As TipoEvento, data As Variant)
+Public Sub IniciarEvento(ByVal Tipo As TipoEvento, ByVal data As Variant)
 100     Select Case Tipo
             Case TipoEvento.Invasion
 102             Call IniciarInvasion(data)

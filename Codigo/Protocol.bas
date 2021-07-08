@@ -1035,7 +1035,9 @@ End Function
 ' @param    UserIndex The index of the user sending the message.
 
 Public Function HandleIncomingData(ByVal UserIndex As Integer) As Boolean
-
+    
+    On Error GoTo HandleIncomingData_Err:
+    
     With UserList(UserIndex)
         
         ' [2020-5-23 Mateo] Esto es normal que suceda, puede existir un paquete INCOMPLETO y esto hace que no lo procese y deje acumulado el buffer para el proximo dato
@@ -1097,7 +1099,7 @@ Public Function HandleIncomingData(ByVal UserIndex As Integer) As Boolean
     End With
     
     Call ParsePacket(PacketID, UserIndex)
-    
+
     With UserList(UserIndex).incomingData
     
         Call .ReadNewPacket
@@ -1109,8 +1111,7 @@ Public Function HandleIncomingData(ByVal UserIndex As Integer) As Boolean
       
         ElseIf .errNumber <> 0 And .errNumber <> .NotEnoughDataErrCode Then
             'An error ocurred, log it and kick player.
-            Call TraceError(Err.Number, Err.Description & vbNewLine & "PackedId: " & PacketID & vbNewLine & IIf(UserList(UserIndex).flags.UserLogged, "UserName: " & UserList(UserIndex).Name, "UserIndex: " & UserIndex), "Protocol.HandleIncomingData", Erl)
-    
+            Call RegistrarError(Err.Number, Err.Description & vbNewLine & "PackedId: " & PacketID & vbNewLine & IIf(UserList(UserIndex).flags.UserLogged, "UserName: " & UserList(UserIndex).Name, "UserIndex: " & UserIndex), "Protocol.HandleIncomingData", Erl)
             Call CloseSocket(UserIndex)
       
             HandleIncomingData = False
@@ -1126,7 +1127,12 @@ Public Function HandleIncomingData(ByVal UserIndex As Integer) As Boolean
     
     End With
     
+    Exit Function
 
+HandleIncomingData_Err:
+    Call RegistrarError(Err.Number, Err.Description & vbNewLine & "PackedID: " & PacketID & vbNewLine & IIf(UserList(UserIndex).flags.UserLogged, "UserName: " & UserList(UserIndex).Name, "UserIndex: " & UserIndex), "Protocol.HandleIncomingData", Erl)
+    Resume Next
+    
 End Function
 
 Public Function ConvertDataBuffer(ByVal Length As Integer, _
@@ -19367,42 +19373,42 @@ End Sub
 
 Private Sub HandleCreateEvent(ByVal UserIndex As Integer)
 
-    On Error GoTo ErrHandler
+        On Error GoTo ErrHandler
 
-    With UserList(UserIndex)
+100     With UserList(UserIndex)
 
-        Dim Name As String
-        Name = .incomingData.ReadASCIIString()
+            Dim Name As String
+102         Name = .incomingData.ReadASCIIString()
 
-        If LenB(Name) = 0 Then Exit Sub
+104         If LenB(Name) = 0 Then Exit Sub
     
-        If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) = 0 Then
-            Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
-            Exit Sub
-        End If
+106         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) = 0 Then
+108             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
     
-        Select Case UCase$(Name)
+110         Select Case UCase$(Name)
 
-            Case "INVASION BANDER"
-                Call IniciarEvento(TipoEvento.Invasion, 1)
-                Call LogGM(.Name, "Forzó el evento Invasión en Banderbille.")
+                Case "INVASION BANDER"
+112                 Call IniciarEvento(TipoEvento.Invasion, 1)
+114                 Call LogGM(.Name, "Forzó el evento Invasión en Banderbille.")
                 
-            Case "INVASION CARCEL"
-                Call IniciarEvento(TipoEvento.Invasion, 2)
-                Call LogGM(.Name, "Forzó el evento Invasión en Carcel.")
+116             Case "INVASION CARCEL"
+118                 Call IniciarEvento(TipoEvento.Invasion, 2)
+120                 Call LogGM(.Name, "Forzó el evento Invasión en Carcel.")
 
-            Case Else
-                Call WriteConsoleMsg(UserIndex, "No existe el evento """ & Name & """.", FontTypeNames.FONTTYPE_INFO)
+122             Case Else
+124                 Call WriteConsoleMsg(UserIndex, "No existe el evento """ & Name & """.", FontTypeNames.FONTTYPE_INFO)
 
-        End Select
+            End Select
 
-    End With
+        End With
     
-    Exit Sub
+        Exit Sub
 
 ErrHandler:
-    Call TraceError(Err.Number, Err.Description, "Protocol.HandleCreateEvent", Erl)
-    Call UserList(UserIndex).incomingData.SafeClearPacket
+126     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCreateEvent", Erl)
+128     Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
 

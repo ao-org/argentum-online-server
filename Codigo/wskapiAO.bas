@@ -249,10 +249,9 @@ Public Sub EventoSockAccept(ByVal UserSocketID As Long, UserIP As Long)
     Exit Sub
 
 EventoSockAccept_Err:
-    Call TraceError(Err.Number, Err.Description, "wskapiAO.EventoSockAccept", Erl)
-
+    Call RegistrarError(Err.Number, Err.Description, "wskapiAO.EventoSockAccept", Erl)
+    Resume Next
     
-        
 End Sub
  
 Public Sub EventoSockRead(ByVal Slot As Integer, ByRef Datos() As Byte, ByVal Length As Long)
@@ -290,7 +289,7 @@ Public Sub EventoSockRead(ByVal Slot As Integer, ByRef Datos() As Byte, ByVal Le
 120                     Iterations = Iterations + 1
 
 122                     If Iterations >= MAX_ITERATIONS_HID Then
-124                         Call TraceError(-1, "Se supero el maximo de iteraciones de HandleIncomingData. Paquete: " & PacketID, "wskapiAO.EventoSockRead", Erl)
+124                         Call RegistrarError(-1, "Se supero el maximo de iteraciones de HandleIncomingData. Paquete: " & PacketID, "wskapiAO.EventoSockRead", Erl)
 126                         Call CloseSocket(Slot)
                             Exit Do
 
@@ -319,9 +318,8 @@ Public Sub EventoSockRead(ByVal Slot As Integer, ByRef Datos() As Byte, ByVal Le
         Exit Sub
 
 EventoSockRead_Err:
-138     Call TraceError(Err.Number, Err.Description, "wskapiAO.EventoSockRead", Erl)
-
-140
+138     Call RegistrarError(Err.Number, Err.Description, "wskapiAO.EventoSockRead", Erl)
+        Resume Next
         
 End Sub
 
@@ -344,9 +342,8 @@ Public Sub EventoSockClose(ByVal Slot As Integer)
         Exit Sub
 
 EventoSockClose_Err:
-110     Call TraceError(Err.Number, Err.Description, "wskapiAO.EventoSockClose", Erl)
-
-112
+110     Call RegistrarError(Err.Number, Err.Description, "wskapiAO.EventoSockClose", Erl)
+        Resume Next
         
 End Sub
 
@@ -430,8 +427,7 @@ Public Function CondicionSocket(ByRef lpCallerId As WSABUF, ByRef lpCallerData A
         Exit Function
 
 CondicionSocket_Err:
-112     Call TraceError(Err.Number, Err.Description, "wskapiAO.CondicionSocket", Erl)
-
-114
-        
+112     Call RegistrarError(Err.Number, Err.Description, "wskapiAO.CondicionSocket", Erl)
+        Resume Next
+ 
 End Function

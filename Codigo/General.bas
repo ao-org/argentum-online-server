@@ -118,7 +118,7 @@ Sub DarCuerpoDesnudo(ByVal UserIndex As Integer)
 
 DarCuerpoDesnudo_Err:
 156     Call TraceError(Err.Number, Err.Description, "General.DarCuerpoDesnudo", Erl)
-158
+
         
 End Sub
 
@@ -148,7 +148,7 @@ Sub Bloquear(ByVal toMap As Boolean, ByVal sndIndex As Integer, ByVal X As Integ
 
 Bloquear_Err:
 108     Call TraceError(Err.Number, Err.Description, "General.Bloquear", Erl)
-110
+
         
 End Sub
 
@@ -347,7 +347,7 @@ Function HayCosta(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer) 
 
 HayCosta_Err:
 110     Call TraceError(Err.Number, Err.Description, "General.HayCosta", Erl)
-112
+
         
 End Function
 
@@ -378,7 +378,7 @@ Function HayAgua(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer) A
 
 HayAgua_Err:
 108     Call TraceError(Err.Number, Err.Description, "General.HayAgua", Erl)
-110
+
         
 End Function
 
@@ -433,7 +433,7 @@ Private Function HayLava(ByVal Map As Integer, ByVal X As Integer, ByVal Y As In
 
 HayLava_Err:
 110     Call TraceError(Err.Number, Err.Description, "General.HayLava", Erl)
-112
+
         
 End Function
 
@@ -492,7 +492,7 @@ Public Sub LeerLineaComandos()
 
 LeerLineaComandos_Err:
 106     Call TraceError(Err.Number, Err.Description, "General.LeerLineaComandos", Erl)
-108
+
         
 End Sub
 
@@ -623,96 +623,96 @@ Sub Main()
     
 130     MaxUsers = 0
 132     Call LoadSini
-        Call AOGuard.LoadAOGuardConfiguration
-134     Call LoadDatabaseIniFile
-136     Call LoadConfiguraciones
-138     Call LoadIntervalos
-140     Call CargarForbidenWords
-142     Call CargaApuestas
-144     Call CargarSpawnList
-146     Call LoadMotd
-148     Call CargarListaNegraUsuarios(LoadAll)
+134     Call AOGuard.LoadAOGuardConfiguration
+136     Call LoadDatabaseIniFile
+138     Call LoadConfiguraciones
+140     Call LoadIntervalos
+142     Call CargarForbidenWords
+144     Call CargaApuestas
+146     Call CargarSpawnList
+148     Call LoadMotd
+150     Call CargarListaNegraUsuarios(LoadAll)
     
-150     frmCargando.Label1(2).Caption = "Conectando base de datos y limpiando usuarios logueados"
+152     frmCargando.Label1(2).Caption = "Conectando base de datos y limpiando usuarios logueados"
     
         ' ************************* Base de Datos ********************
         'Conecto base de datos
-152     Call Database_Connect
+154     Call Database_Connect
     
         ' Construimos las querys grandes
-154     Call Contruir_Querys
+156     Call Contruir_Querys
     
         'Reinicio los users online
-156     Call SetUsersLoggedDatabase(0)
+158     Call SetUsersLoggedDatabase(0)
         
         'Leo el record de usuarios
-158     RecordUsuarios = LeerRecordUsuariosDatabase()
+160     RecordUsuarios = LeerRecordUsuariosDatabase()
         
         'Tarea pesada
-160     Call LogoutAllUsersAndAccounts
+162     Call LogoutAllUsersAndAccounts
     
         ' ******************* FIN - Base de Datos ********************
 
         '*************************************************
-162     frmCargando.Label1(2).Caption = "Cargando NPCs.Dat"
-164     Call CargaNpcsDat
+164     frmCargando.Label1(2).Caption = "Cargando NPCs.Dat"
+166     Call CargaNpcsDat
         '*************************************************
     
-166     frmCargando.Label1(2).Caption = "Cargando Obj.Dat"
+168     frmCargando.Label1(2).Caption = "Cargando Obj.Dat"
 
-168     Call LoadOBJData
+170     Call LoadOBJData
         
-170     frmCargando.Label1(2).Caption = "Cargando Hechizos.Dat"
-172     Call CargarHechizos
+172     frmCargando.Label1(2).Caption = "Cargando Hechizos.Dat"
+174     Call CargarHechizos
         
-174     frmCargando.Label1(2).Caption = "Cargando Objetos de Herrería"
-176     Call LoadArmasHerreria
-178     Call LoadArmadurasHerreria
+176     frmCargando.Label1(2).Caption = "Cargando Objetos de Herrería"
+178     Call LoadArmasHerreria
+180     Call LoadArmadurasHerreria
     
-180     frmCargando.Label1(2).Caption = "Cargando Objetos de Carpintería"
-182     Call LoadObjCarpintero
+182     frmCargando.Label1(2).Caption = "Cargando Objetos de Carpintería"
+184     Call LoadObjCarpintero
     
-184     frmCargando.Label1(2).Caption = "Cargando Objetos de Alquimista"
-186     Call LoadObjAlquimista
+186     frmCargando.Label1(2).Caption = "Cargando Objetos de Alquimista"
+188     Call LoadObjAlquimista
     
-188     frmCargando.Label1(2).Caption = "Cargando Objetos de Sastre"
-190     Call LoadObjSastre
+190     frmCargando.Label1(2).Caption = "Cargando Objetos de Sastre"
+192     Call LoadObjSastre
     
-192     frmCargando.Label1(2).Caption = "Cargando Pesca"
-194     Call LoadPesca
+194     frmCargando.Label1(2).Caption = "Cargando Pesca"
+196     Call LoadPesca
     
-196     frmCargando.Label1(2).Caption = "Cargando Recursos Especiales"
-198     Call LoadRecursosEspeciales
+198     frmCargando.Label1(2).Caption = "Cargando Recursos Especiales"
+200     Call LoadRecursosEspeciales
 
-200     frmCargando.Label1(2).Caption = "Cargando Rangos de Faccion"
-202     Call LoadRangosFaccion
+202     frmCargando.Label1(2).Caption = "Cargando Rangos de Faccion"
+204     Call LoadRangosFaccion
 
-204     frmCargando.Label1(2).Caption = "Cargando Recompensas de Faccion"
-206     Call LoadRecompensasFaccion
+206     frmCargando.Label1(2).Caption = "Cargando Recompensas de Faccion"
+208     Call LoadRecompensasFaccion
     
-208     frmCargando.Label1(2).Caption = "Cargando Balance.dat"
-210     Call LoadBalance    '4/01/08 Pablo ToxicWaste
+210     frmCargando.Label1(2).Caption = "Cargando Balance.dat"
+212     Call LoadBalance    '4/01/08 Pablo ToxicWaste
     
-212     frmCargando.Label1(2).Caption = "Cargando Ciudades.dat"
-214     Call CargarCiudades
+214     frmCargando.Label1(2).Caption = "Cargando Ciudades.dat"
+216     Call CargarCiudades
     
-216     If BootDelBackUp Then
-218         frmCargando.Label1(2).Caption = "Cargando WorldBackup"
-220         Call CargarBackUp
+218     If BootDelBackUp Then
+220         frmCargando.Label1(2).Caption = "Cargando WorldBackup"
+222         Call CargarBackUp
         Else
-222         frmCargando.Label1(2).Caption = "Cargando Mapas"
-224         Call LoadMapData
+224         frmCargando.Label1(2).Caption = "Cargando Mapas"
+226         Call LoadMapData
         End If
         
-226     Call InitPathFinding
+228     Call InitPathFinding
 
-228     frmCargando.Label1(2).Caption = "Cargando informacion de eventos"
-230     Call CargarInfoRetos
-232     Call CargarInfoEventos
+230     frmCargando.Label1(2).Caption = "Cargando informacion de eventos"
+232     Call CargarInfoRetos
+234     Call CargarInfoEventos
     
         ' Pretorianos
-234     frmCargando.Label1(2).Caption = "Cargando Pretorianos.dat"
-236     'Call LoadPretorianData
+236     frmCargando.Label1(2).Caption = "Cargando Pretorianos.dat"
+        'Call LoadPretorianData
     
 238     frmCargando.Label1(2).Caption = "Cargando Logros.ini"
 240     Call CargarLogros ' Ladder 22/04/2015
@@ -754,7 +754,6 @@ Sub Main()
 282         .Segundo.Enabled = True
 284         .KillLog.Enabled = True
 286         .TIMER_AI.Enabled = True
-288         .Invasion.Enabled = True
         End With
     
 290     Subasta.SubastaHabilitada = True
@@ -764,57 +763,57 @@ Sub Main()
         ' ----------------------------------------------------
         '           Configuracion de los sockets
         ' ----------------------------------------------------
-        Call InitializePacketList
-296     Call SecurityIp.InitIpTables(1000)
+296     Call InitializePacketList
+298     Call SecurityIp.InitIpTables(1000)
 
         #If AntiExternos = 1 Then
-            Call Security.Initialize
+300         Call Security.Initialize
         #End If
         
         'Cierra el socket de escucha
-298     If LastSockListen >= 0 Then _
+302     If LastSockListen >= 0 Then _
             Call API_closesocket(LastSockListen)
         
-        Set frmMain.Winsock = New clsWinsock
+304     Set frmMain.Winsock = New clsWinsock
         
-304     If frmMain.Winsock.ListenerSocket <> -1 Then
-306         Call WriteVar(IniPath & "Server.ini", "INIT", "LastSockListen", frmMain.Winsock.ListenerSocket) _
+306     If frmMain.Winsock.ListenerSocket <> -1 Then
+308         Call WriteVar(IniPath & "Server.ini", "INIT", "LastSockListen", frmMain.Winsock.ListenerSocket) _
                     ' Guarda el socket escuchando
         Else
-308         Call MsgBox("Ha ocurrido un error al iniciar el socket del Servidor.", vbCritical + vbOKOnly)
+310         Call MsgBox("Ha ocurrido un error al iniciar el socket del Servidor.", vbCritical + vbOKOnly)
 
         End If
     
-310     If frmMain.Visible Then frmMain.txStatus.Caption = "Escuchando conexiones entrantes ..."
+312     If frmMain.Visible Then frmMain.txStatus.Caption = "Escuchando conexiones entrantes ..."
         ' ----------------------------------------------------
         '           Configuracion de los sockets
         ' ----------------------------------------------------
     
-312     Call GetHoraActual
+314     Call GetHoraActual
     
-314     HoraMundo = GetTickCount() - DuracionDia \ 2
+316     HoraMundo = GetTickCount() - DuracionDia \ 2
 
-316     frmCargando.Visible = False
-318     Unload frmCargando
+318     frmCargando.Visible = False
+320     Unload frmCargando
 
         'Log
         Dim n As Integer
-320     n = FreeFile
-322     Open App.Path & "\logs\Main.log" For Append Shared As #n
-324     Print #n, Date & " " & Time & " server iniciado " & App.Major & "." & App.Minor & "." & App.Revision
-326     Close #n
+322     n = FreeFile
+324     Open App.Path & "\logs\Main.log" For Append Shared As #n
+326     Print #n, Date & " " & Time & " server iniciado " & App.Major & "." & App.Minor & "." & App.Revision
+328     Close #n
     
         'Ocultar
-328     Call frmMain.InitMain(HideMe)
+330     Call frmMain.InitMain(HideMe)
     
-330     tInicioServer = GetTickCount()
+332     tInicioServer = GetTickCount()
 
         Exit Sub
         
 Handler:
-332     Call RegistrarError(Err.Number, Err.Description, "General.Main", Erl)
+334     Call RegistrarError(Err.Number, Err.Description, "General.Main", Erl)
 
-334
+
 
 End Sub
 
@@ -832,7 +831,7 @@ Function FileExist(ByVal File As String, Optional FileType As VbFileAttribute = 
 
 FileExist_Err:
 102     Call TraceError(Err.Number, Err.Description, "General.FileExist", Erl)
-104
+
         
 End Function
 
@@ -874,7 +873,7 @@ Function ReadField(ByVal Pos As Integer, ByRef Text As String, ByVal SepASCII As
 
 ReadField_Err:
 116     Call TraceError(Err.Number, Err.Description, "General.ReadField", Erl)
-118
+
         
 End Function
 
@@ -889,7 +888,7 @@ Function MapaValido(ByVal Map As Integer) As Boolean
 
 MapaValido_Err:
 102     Call TraceError(Err.Number, Err.Description, "General.MapaValido", Erl)
-104
+
         
 End Function
 
@@ -908,7 +907,7 @@ Sub MostrarNumUsers()
 
 MostrarNumUsers_Err:
 106     Call TraceError(Err.Number, Err.Description, "General.MostrarNumUsers", Erl)
-108
+
         
 End Sub
 
@@ -1072,7 +1071,7 @@ Public Sub LogClanes(ByVal str As String)
 
 LogClanes_Err:
 108     Call TraceError(Err.Number, Err.Description, "General.LogClanes", Erl)
-110
+
         
 End Sub
 
@@ -1093,7 +1092,7 @@ Public Sub LogIP(ByVal str As String)
 
 LogIP_Err:
 108     Call TraceError(Err.Number, Err.Description, "General.LogIP", Erl)
-110
+
         
 End Sub
 
@@ -1114,7 +1113,7 @@ Public Sub LogDesarrollo(ByVal str As String)
 
 LogDesarrollo_Err:
 108     Call TraceError(Err.Number, Err.Description, "General.LogDesarrollo", Erl)
-110
+
         
 End Sub
 
@@ -1212,7 +1211,7 @@ ErrHandler:
 
 SaveDayStats_Err:
 100     Call TraceError(Err.Number, Err.Description, "General.SaveDayStats", Erl)
-102
+
     
 End Sub
 
@@ -1351,7 +1350,7 @@ Function ValidInputNP(ByVal cad As String) As Boolean
 
 ValidInputNP_Err:
 110     Call TraceError(Err.Number, Err.Description, "General.ValidInputNP", Erl)
-112
+
         
 End Function
 
@@ -1365,62 +1364,62 @@ Sub Restart()
 
         Dim LoopC As Long
 
-       Set frmMain.Winsock = New clsWinsock
+102    Set frmMain.Winsock = New clsWinsock
 
-106     For LoopC = 1 To MaxUsers
-108         Call CloseSocket(LoopC)
+104     For LoopC = 1 To MaxUsers
+106         Call CloseSocket(LoopC)
         Next
 
         'Initialize statistics!!
         'Call Statistics.Initialize
 
-110     For LoopC = 1 To UBound(UserList())
-112         Set UserList(LoopC).incomingData = Nothing
-114         Set UserList(LoopC).outgoingData = Nothing
-116     Next LoopC
+108     For LoopC = 1 To UBound(UserList())
+110         Set UserList(LoopC).incomingData = Nothing
+112         Set UserList(LoopC).outgoingData = Nothing
+114     Next LoopC
 
-118     ReDim UserList(1 To MaxUsers) As user
+116     ReDim UserList(1 To MaxUsers) As user
 
-120     For LoopC = 1 To MaxUsers
-122         UserList(LoopC).ConnID = -1
-124         UserList(LoopC).ConnIDValida = False
-126         Set UserList(LoopC).incomingData = New clsByteQueue
-128         Set UserList(LoopC).outgoingData = New clsByteQueue
-130     Next LoopC
+118     For LoopC = 1 To MaxUsers
+120         UserList(LoopC).ConnID = -1
+122         UserList(LoopC).ConnIDValida = False
+124         Set UserList(LoopC).incomingData = New clsByteQueue
+126         Set UserList(LoopC).outgoingData = New clsByteQueue
+128     Next LoopC
 
-132     LastUser = 0
-134     NumUsers = 0
+130     LastUser = 0
+132     NumUsers = 0
 
-136     Call FreeNPCs
-138     Call FreeCharIndexes
+134     Call FreeNPCs
+136     Call FreeCharIndexes
 
-140     Call LoadSini
-142     Call LoadIntervalos
-144     Call LoadOBJData
-146     Call LoadPesca
-148     Call LoadRecursosEspeciales
+138     Call LoadSini
+140     Call LoadIntervalos
+142     Call LoadOBJData
+144     Call LoadPesca
+146     Call LoadRecursosEspeciales
 
-150     Call LoadMapData
+148     Call LoadMapData
 
-152     Call CargarHechizos
+150     Call CargarHechizos
 
-154     If frmMain.Visible Then frmMain.txStatus.Caption = "Escuchando conexiones entrantes ..."
+152     If frmMain.Visible Then frmMain.txStatus.Caption = "Escuchando conexiones entrantes ..."
 
         'Log it
         Dim n As Integer
 
-156     n = FreeFile
-158     Open App.Path & "\logs\Main.log" For Append Shared As #n
-160     Print #n, Date & " " & Time & " servidor reiniciado."
-162     Close #n
+154     n = FreeFile
+156     Open App.Path & "\logs\Main.log" For Append Shared As #n
+158     Print #n, Date & " " & Time & " servidor reiniciado."
+160     Close #n
 
         'Ocultar
-164     Call frmMain.InitMain(HideMe)
+162     Call frmMain.InitMain(HideMe)
     
         Exit Sub
 
 Restart_Err:
-166     Call TraceError(Err.Number, Err.Description, "General.Restart", Erl)
+164     Call TraceError(Err.Number, Err.Description, "General.Restart", Erl)
 
         
 End Sub
@@ -1442,7 +1441,7 @@ Public Function Intemperie(ByVal UserIndex As Integer) As Boolean
 
 Intemperie_Err:
 106     Call TraceError(Err.Number, Err.Description, "General.Intemperie", Erl)
-108
+
         
 End Function
 
@@ -1528,7 +1527,7 @@ Public Sub EfectoFrio(ByVal UserIndex As Integer)
 EfectoFrio_Err:
 140     Call TraceError(Err.Number, Err.Description, "General.EfectoFrio", Erl)
 
-142
+
         
 End Sub
 
@@ -1538,43 +1537,43 @@ Public Sub EfectoStamina(ByVal UserIndex As Integer)
     Dim bEnviarStats_HP As Boolean
     Dim bEnviarStats_STA As Boolean
     
-    With UserList(UserIndex)
-        HambreOSed = .flags.Hambre = 1 Or .flags.Sed = 1
+100 With UserList(UserIndex)
+102     HambreOSed = .flags.Hambre = 1 Or .flags.Sed = 1
     
-        If Not HambreOSed Then 'Si no tiene hambre ni sed
-            If .Stats.MinHp < .Stats.MaxHp Then
-170             Call Sanar(UserIndex, bEnviarStats_HP, IIf(.flags.Descansar, SanaIntervaloDescansar, SanaIntervaloSinDescansar))
+104     If Not HambreOSed Then 'Si no tiene hambre ni sed
+106         If .Stats.MinHp < .Stats.MaxHp Then
+108             Call Sanar(UserIndex, bEnviarStats_HP, IIf(.flags.Descansar, SanaIntervaloDescansar, SanaIntervaloSinDescansar))
             End If
         End If
                                 
-178     If .flags.Desnudo = 0 And Not HambreOSed Then
-            If Not Lloviendo Or Not Intemperie(UserIndex) Then
-                Call RecStamina(UserIndex, bEnviarStats_STA, IIf(.flags.Descansar, StaminaIntervaloDescansar, StaminaIntervaloSinDescansar))
+110     If .flags.Desnudo = 0 And Not HambreOSed Then
+112         If Not Lloviendo Or Not Intemperie(UserIndex) Then
+114             Call RecStamina(UserIndex, bEnviarStats_STA, IIf(.flags.Descansar, StaminaIntervaloDescansar, StaminaIntervaloSinDescansar))
             End If
         Else
-            If Lloviendo And Intemperie(UserIndex) Then
-181             Call PierdeEnergia(UserIndex, bEnviarStats_STA, IntervaloPerderStamina * 0.5)
+116         If Lloviendo And Intemperie(UserIndex) Then
+118             Call PierdeEnergia(UserIndex, bEnviarStats_STA, IntervaloPerderStamina * 0.5)
             Else
-183             Call PierdeEnergia(UserIndex, bEnviarStats_STA, IIf(.flags.Descansar, IntervaloPerderStamina * 2, IntervaloPerderStamina))
+120             Call PierdeEnergia(UserIndex, bEnviarStats_STA, IIf(.flags.Descansar, IntervaloPerderStamina * 2, IntervaloPerderStamina))
             End If
         End If
         
-        If .flags.Descansar Then
+122     If .flags.Descansar Then
             'termina de descansar automaticamente
-190         If .Stats.MaxHp = .Stats.MinHp And .Stats.MaxSta = .Stats.MinSta Then
-192             Call WriteRestOK(UserIndex)
-194             Call WriteConsoleMsg(UserIndex, "Has terminado de descansar.", FontTypeNames.FONTTYPE_INFO)
-196             .flags.Descansar = False
+124         If .Stats.MaxHp = .Stats.MinHp And .Stats.MaxSta = .Stats.MinSta Then
+126             Call WriteRestOK(UserIndex)
+128             Call WriteConsoleMsg(UserIndex, "Has terminado de descansar.", FontTypeNames.FONTTYPE_INFO)
+130             .flags.Descansar = False
             End If
         
         End If
         
-        If bEnviarStats_STA Then
-197         Call WriteUpdateSta(UserIndex)
+132     If bEnviarStats_STA Then
+134         Call WriteUpdateSta(UserIndex)
         End If
         
-        If bEnviarStats_HP Then
-198         Call WriteUpdateHP(UserIndex)
+136     If bEnviarStats_HP Then
+138         Call WriteUpdateHP(UserIndex)
         End If
     End With
 End Sub
@@ -1621,7 +1620,7 @@ Public Sub EfectoLava(ByVal UserIndex As Integer)
 EfectoLava_Err:
 122     Call TraceError(Err.Number, Err.Description, "General.EfectoLava", Erl)
 
-124
+
         
 End Sub
 
@@ -1707,7 +1706,7 @@ Public Sub EfectoInvisibilidad(ByVal UserIndex As Integer)
 
 EfectoInvisibilidad_Err:
 116     Call TraceError(Err.Number, Err.Description, "General.EfectoInvisibilidad", Erl)
-118
+
         
 End Sub
 
@@ -1726,7 +1725,7 @@ Public Sub EfectoParalisisNpc(ByVal NpcIndex As Integer)
 
 EfectoParalisisNpc_Err:
 106     Call TraceError(Err.Number, Err.Description, "General.EfectoParalisisNpc", Erl)
-108
+
         
 End Sub
 
@@ -1744,7 +1743,7 @@ Public Sub EfectoInmovilizadoNpc(ByVal NpcIndex As Integer)
 
 EfectoInmovilizadoNpc_Err:
 106     Call TraceError(Err.Number, Err.Description, "General.EfectoInmovilizadoNpc", Erl)
-108
+
         
 End Sub
 
@@ -1771,7 +1770,7 @@ Public Sub EfectoCeguera(ByVal UserIndex As Integer)
 
 EfectoCeguera_Err:
 110     Call TraceError(Err.Number, Err.Description, "General.EfectoCeguera", Erl)
-112
+
         
 End Sub
 
@@ -1798,7 +1797,7 @@ Public Sub EfectoEstupidez(ByVal UserIndex As Integer)
 
 EfectoEstupidez_Err:
 110     Call TraceError(Err.Number, Err.Description, "General.EfectoEstupidez", Erl)
-112
+
         
 End Sub
 
@@ -1821,7 +1820,7 @@ Public Sub EfectoParalisisUser(ByVal UserIndex As Integer)
 
 EfectoParalisisUser_Err:
 108     Call TraceError(Err.Number, Err.Description, "General.EfectoParalisisUser", Erl)
-110
+
         
 End Sub
 
@@ -1841,7 +1840,7 @@ Public Sub EfectoVelocidadUser(ByVal UserIndex As Integer)
 
 EfectoVelocidadUser_Err:
 108     Call TraceError(Err.Number, Err.Description, "General.EfectoVelocidadUser", Erl)
-110
+
         
 End Sub
 
@@ -1863,7 +1862,7 @@ Public Sub EfectoMaldicionUser(ByVal UserIndex As Integer)
 
 EfectoMaldicionUser_Err:
 108     Call TraceError(Err.Number, Err.Description, "General.EfectoMaldicionUser", Erl)
-110
+
         
 End Sub
 
@@ -1886,7 +1885,7 @@ Public Sub EfectoInmoUser(ByVal UserIndex As Integer)
 
 EfectoInmoUser_Err:
 108     Call TraceError(Err.Number, Err.Description, "General.EfectoInmoUser", Erl)
-110
+
         
 End Sub
 
@@ -1947,14 +1946,14 @@ Public Sub RecStamina(ByVal UserIndex As Integer, ByRef EnviarStats As Boolean, 
                     
                     ' Jopi: Prevenimos overflow al acotar la stamina que se puede recuperar en cualquier caso.
                     ' Cuando te editabas la energia con el GM causaba este error.
-                    If NuevaStamina < 32000 Then
-                        .Stats.MinSta = NuevaStamina
+166                 If NuevaStamina < 32000 Then
+168                     .Stats.MinSta = NuevaStamina
                     Else
-                        .Stats.MinSta = 32000
+170                     .Stats.MinSta = 32000
                     End If
 
-168                 If .Stats.MinSta > .Stats.MaxSta Then
-170                     .Stats.MinSta = .Stats.MaxSta
+172                 If .Stats.MinSta > .Stats.MaxSta Then
+174                     .Stats.MinSta = .Stats.MaxSta
                     End If
 
                 End If
@@ -1963,8 +1962,8 @@ Public Sub RecStamina(ByVal UserIndex As Integer, ByRef EnviarStats As Boolean, 
             Exit Sub
 
 RecStamina_Err:
-172         Call TraceError(Err.Number, Err.Description, "General.RecStamina", Erl)
-174
+176         Call TraceError(Err.Number, Err.Description, "General.RecStamina", Erl)
+
 
 End Sub
 
@@ -2003,7 +2002,7 @@ Public Sub PierdeEnergia(ByVal UserIndex As Integer, ByRef EnviarStats As Boolea
 
 RecStamina_Err:
 120     Call TraceError(Err.Number, Err.Description, "General.PierdeEnergia", Erl)
-122
+
         
 End Sub
 
@@ -2047,7 +2046,7 @@ Public Sub EfectoVeneno(ByVal UserIndex As Integer)
 
 EfectoVeneno_Err:
 130     Call TraceError(Err.Number, Err.Description, "General.EfectoVeneno", Erl)
-132
+
 
 End Sub
 
@@ -2087,7 +2086,7 @@ Public Sub EfectoAhogo(ByVal UserIndex As Integer)
 
 EfectoAhogo_Err:
 124     Call TraceError(Err.Number, Err.Description, "General.EfectoAhogo", Erl)
-126
+
         
 End Sub
 
@@ -2136,7 +2135,7 @@ Public Sub EfectoIncineramiento(ByVal UserIndex As Integer)
 
 EfectoIncineramiento_Err:
 130         Call TraceError(Err.Number, Err.Description, "General.EfectoIncineramiento", Erl)
-132
+
 
 End Sub
 
@@ -2170,7 +2169,7 @@ Public Sub DuracionPociones(ByVal UserIndex As Integer)
 
 DuracionPociones_Err:
 116     Call TraceError(Err.Number, Err.Description, "General.DuracionPociones", Erl)
-118
+
         
 End Sub
 
@@ -2226,7 +2225,7 @@ Public Function HambreYSed(ByVal UserIndex As Integer) As Boolean
 
 HambreYSed_Err:
 138     Call TraceError(Err.Number, Err.Description, "General.HambreYSed", Erl)
-140
+
         
 End Function
 
@@ -2242,29 +2241,29 @@ Public Sub Sanar(ByVal UserIndex As Integer, ByRef EnviarStats As Boolean, ByVal
         Dim mashit As Integer
 
         'con el paso del tiempo va sanando....pero muy lentamente ;-)
-106         If UserList(UserIndex).flags.RegeneracionHP = 1 Then
-108             Intervalo = 400
+104         If UserList(UserIndex).flags.RegeneracionHP = 1 Then
+106             Intervalo = 400
 
             End If
     
-110         If UserList(UserIndex).Counters.HPCounter < Intervalo Then
-112             UserList(UserIndex).Counters.HPCounter = UserList(UserIndex).Counters.HPCounter + 1
+108         If UserList(UserIndex).Counters.HPCounter < Intervalo Then
+110             UserList(UserIndex).Counters.HPCounter = UserList(UserIndex).Counters.HPCounter + 1
             Else
-114             mashit = RandomNumber(2, Porcentaje(UserList(UserIndex).Stats.MaxSta, 5))
+112             mashit = RandomNumber(2, Porcentaje(UserList(UserIndex).Stats.MaxSta, 5))
         
-116             UserList(UserIndex).Counters.HPCounter = 0
-118             UserList(UserIndex).Stats.MinHp = UserList(UserIndex).Stats.MinHp + mashit
+114             UserList(UserIndex).Counters.HPCounter = 0
+116             UserList(UserIndex).Stats.MinHp = UserList(UserIndex).Stats.MinHp + mashit
 
-120             If UserList(UserIndex).Stats.MinHp > UserList(UserIndex).Stats.MaxHp Then UserList(UserIndex).Stats.MinHp = UserList(UserIndex).Stats.MaxHp
-122             Call WriteConsoleMsg(UserIndex, "Has sanado.", FontTypeNames.FONTTYPE_INFO)
-124             EnviarStats = True
+118             If UserList(UserIndex).Stats.MinHp > UserList(UserIndex).Stats.MaxHp Then UserList(UserIndex).Stats.MinHp = UserList(UserIndex).Stats.MaxHp
+120             Call WriteConsoleMsg(UserIndex, "Has sanado.", FontTypeNames.FONTTYPE_INFO)
+122             EnviarStats = True
 
             End If
         Exit Sub
 
 Sanar_Err:
-126     Call TraceError(Err.Number, Err.Description, "General.Sanar", Erl)
-128
+124     Call TraceError(Err.Number, Err.Description, "General.Sanar", Erl)
+
         
 End Sub
 
@@ -2299,7 +2298,7 @@ Public Sub CargaNpcsDat(Optional ByVal ActualizarNPCsExistentes As Boolean = Fal
 
 CargaNpcsDat_Err:
 118         Call TraceError(Err.Number, Err.Description, "General.CargaNpcsDat", Erl)
-120
+
         
 End Sub
 
@@ -2331,156 +2330,156 @@ Sub PasarSegundo()
     
 110     For i = 1 To LastUser
 
-111         With UserList(i)
+112         With UserList(i)
 
-                If .flags.UserLogged Then
-112                 If .flags.Silenciado = 1 Then
-114                     .flags.SegundosPasados = .flags.SegundosPasados + 1
+114             If .flags.UserLogged Then
+116                 If .flags.Silenciado = 1 Then
+118                     .flags.SegundosPasados = .flags.SegundosPasados + 1
         
-116                     If .flags.SegundosPasados = 60 Then
-118                         .flags.MinutosRestantes = .flags.MinutosRestantes - 1
-120                         .flags.SegundosPasados = 0
+120                     If .flags.SegundosPasados = 60 Then
+122                         .flags.MinutosRestantes = .flags.MinutosRestantes - 1
+124                         .flags.SegundosPasados = 0
         
                         End If
                     
-122                     If .flags.MinutosRestantes = 0 Then
-124                         .flags.SegundosPasados = 0
-126                         .flags.Silenciado = 0
-128                         .flags.MinutosRestantes = 0
-130                         Call WriteConsoleMsg(i, "Has sido liberado del silencio.", FontTypeNames.FONTTYPE_SERVER)
+126                     If .flags.MinutosRestantes = 0 Then
+128                         .flags.SegundosPasados = 0
+130                         .flags.Silenciado = 0
+132                         .flags.MinutosRestantes = 0
+134                         Call WriteConsoleMsg(i, "Has sido liberado del silencio.", FontTypeNames.FONTTYPE_SERVER)
         
                         End If
         
                     End If
                     
-                    If .flags.Muerto = 0 Then
-134                     Call DuracionPociones(i)
-                        Call EfectoOxigeno(i)
-136                     If .flags.invisible = 1 Then Call EfectoInvisibilidad(i)
-138                     If .flags.Paralizado = 1 Then Call EfectoParalisisUser(i)
-140                     If .flags.Inmovilizado = 1 Then Call EfectoInmoUser(i)
-142                     If .flags.Ceguera = 1 Then Call EfectoCeguera(i)
-144                     If .flags.Estupidez = 1 Then Call EfectoEstupidez(i)
-146                     If .flags.Maldicion = 1 Then Call EfectoMaldicionUser(i)
-148                     If .flags.VelocidadHechizada > 0 Then Call EfectoVelocidadUser(i)
+136                 If .flags.Muerto = 0 Then
+138                     Call DuracionPociones(i)
+140                     Call EfectoOxigeno(i)
+142                     If .flags.invisible = 1 Then Call EfectoInvisibilidad(i)
+144                     If .flags.Paralizado = 1 Then Call EfectoParalisisUser(i)
+146                     If .flags.Inmovilizado = 1 Then Call EfectoInmoUser(i)
+148                     If .flags.Ceguera = 1 Then Call EfectoCeguera(i)
+150                     If .flags.Estupidez = 1 Then Call EfectoEstupidez(i)
+152                     If .flags.Maldicion = 1 Then Call EfectoMaldicionUser(i)
+154                     If .flags.VelocidadHechizada > 0 Then Call EfectoVelocidadUser(i)
     
-                        If HambreYSed(i) Then
-                            Call WriteUpdateHungerAndThirst(i)
+156                     If HambreYSed(i) Then
+158                         Call WriteUpdateHungerAndThirst(i)
                         End If
                     
                     Else
-                        If .flags.Traveling <> 0 Then Call TravelingEffect(i)
+160                     If .flags.Traveling <> 0 Then Call TravelingEffect(i)
                     End If
         
-                    If .Counters.TimerBarra > 0 Then
-                        .Counters.TimerBarra = .Counters.TimerBarra - 1
+162                 If .Counters.TimerBarra > 0 Then
+164                     .Counters.TimerBarra = .Counters.TimerBarra - 1
                         
-                        If .Counters.TimerBarra = 0 Then
+166                     If .Counters.TimerBarra = 0 Then
         
-                            Select Case .Accion.TipoAccion
+168                         Select Case .Accion.TipoAccion
                                 Case Accion_Barra.Hogar
-                                    Call HomeArrival(i)
-                                Case Accion_Barra.Resucitar
-                                    Call WriteConsoleMsg(i, "¡Has sido resucitado!", FontTypeNames.FONTTYPE_INFO)
-                                    Call SendData(SendTarget.ToPCArea, i, PrepareMessageParticleFX(.Char.CharIndex, ParticulasIndex.Resucitar, 250, True))
-                                    Call SendData(SendTarget.ToPCArea, i, PrepareMessagePlayWave("117", .Pos.X, .Pos.Y))
-                                    Call RevivirUsuario(i, True)
+170                                 Call HomeArrival(i)
+172                             Case Accion_Barra.Resucitar
+174                                 Call WriteConsoleMsg(i, "¡Has sido resucitado!", FontTypeNames.FONTTYPE_INFO)
+176                                 Call SendData(SendTarget.ToPCArea, i, PrepareMessageParticleFX(.Char.CharIndex, ParticulasIndex.Resucitar, 250, True))
+178                                 Call SendData(SendTarget.ToPCArea, i, PrepareMessagePlayWave("117", .Pos.X, .Pos.Y))
+180                                 Call RevivirUsuario(i, True)
                             End Select
                             
-                            .Accion.Particula = 0
-                            .Accion.TipoAccion = Accion_Barra.CancelarAccion
-                            .Accion.HechizoPendiente = 0
-                            .Accion.RunaObj = 0
-                            .Accion.ObjSlot = 0
-                            .Accion.AccionPendiente = False
+182                         .Accion.Particula = 0
+184                         .Accion.TipoAccion = Accion_Barra.CancelarAccion
+186                         .Accion.HechizoPendiente = 0
+188                         .Accion.RunaObj = 0
+190                         .Accion.ObjSlot = 0
+192                         .Accion.AccionPendiente = False
                             
                         End If
                     End If
         
-150                 If .flags.UltimoMensaje > 0 Then
-152                     .Counters.RepetirMensaje = .Counters.RepetirMensaje + 1
-154                     If .Counters.RepetirMensaje >= 3 Then
-156                         .flags.UltimoMensaje = 0
-158                         .Counters.RepetirMensaje = 0
+194                 If .flags.UltimoMensaje > 0 Then
+196                     .Counters.RepetirMensaje = .Counters.RepetirMensaje + 1
+198                     If .Counters.RepetirMensaje >= 3 Then
+200                         .flags.UltimoMensaje = 0
+202                         .Counters.RepetirMensaje = 0
                         End If
                     End If
                     
-160                 If .Counters.CuentaRegresiva >= 0 Then
-162                     If .Counters.CuentaRegresiva > 0 Then
-164                         Call WriteConsoleMsg(i, ">>>  " & .Counters.CuentaRegresiva & "  <<<", FontTypeNames.FONTTYPE_New_Gris)
+204                 If .Counters.CuentaRegresiva >= 0 Then
+206                     If .Counters.CuentaRegresiva > 0 Then
+208                         Call WriteConsoleMsg(i, ">>>  " & .Counters.CuentaRegresiva & "  <<<", FontTypeNames.FONTTYPE_New_Gris)
                         Else
-166                         Call WriteConsoleMsg(i, ">>> YA! <<<", FontTypeNames.FONTTYPE_FIGHT)
-168                         Call WriteStopped(i, False)
+210                         Call WriteConsoleMsg(i, ">>> YA! <<<", FontTypeNames.FONTTYPE_FIGHT)
+212                         Call WriteStopped(i, False)
                         End If
                         
-170                     .Counters.CuentaRegresiva = .Counters.CuentaRegresiva - 1
+214                     .Counters.CuentaRegresiva = .Counters.CuentaRegresiva - 1
                     End If
     
-172                 If .flags.Portal > 1 Then
-174                     .flags.Portal = .flags.Portal - 1
+216                 If .flags.Portal > 1 Then
+218                     .flags.Portal = .flags.Portal - 1
                 
-176                     If .flags.Portal = 1 Then
-178                         Mapa = .flags.PortalM
-180                         X = .flags.PortalX
-182                         Y = .flags.PortalY
-184                         Call SendData(SendTarget.toMap, .flags.PortalM, PrepareMessageParticleFXToFloor(X, Y, ParticulasIndex.TpVerde, 0))
-186                         Call SendData(SendTarget.toMap, .flags.PortalM, PrepareMessageLightFXToFloor(X, Y, 0, 105))
+220                     If .flags.Portal = 1 Then
+222                         Mapa = .flags.PortalM
+224                         X = .flags.PortalX
+226                         Y = .flags.PortalY
+228                         Call SendData(SendTarget.toMap, .flags.PortalM, PrepareMessageParticleFXToFloor(X, Y, ParticulasIndex.TpVerde, 0))
+230                         Call SendData(SendTarget.toMap, .flags.PortalM, PrepareMessageLightFXToFloor(X, Y, 0, 105))
         
-188                         If MapData(Mapa, X, Y).TileExit.Map > 0 Then
-190                             MapData(Mapa, X, Y).TileExit.Map = 0
-192                             MapData(Mapa, X, Y).TileExit.X = 0
-194                             MapData(Mapa, X, Y).TileExit.Y = 0
+232                         If MapData(Mapa, X, Y).TileExit.Map > 0 Then
+234                             MapData(Mapa, X, Y).TileExit.Map = 0
+236                             MapData(Mapa, X, Y).TileExit.X = 0
+238                             MapData(Mapa, X, Y).TileExit.Y = 0
         
                             End If
         
-196                         MapData(Mapa, X, Y).Particula = 0
-198                         MapData(Mapa, X, Y).TimeParticula = 0
-200                         MapData(Mapa, X, Y).Particula = 0
-202                         MapData(Mapa, X, Y).TimeParticula = 0
-204                         .flags.Portal = 0
-206                         .flags.PortalM = 0
-208                         .flags.PortalY = 0
-210                         .flags.PortalX = 0
-212                         .flags.PortalMDestino = 0
-214                         .flags.PortalYDestino = 0
-216                         .flags.PortalXDestino = 0
+240                         MapData(Mapa, X, Y).Particula = 0
+242                         MapData(Mapa, X, Y).TimeParticula = 0
+244                         MapData(Mapa, X, Y).Particula = 0
+246                         MapData(Mapa, X, Y).TimeParticula = 0
+248                         .flags.Portal = 0
+250                         .flags.PortalM = 0
+252                         .flags.PortalY = 0
+254                         .flags.PortalX = 0
+256                         .flags.PortalMDestino = 0
+258                         .flags.PortalYDestino = 0
+260                         .flags.PortalXDestino = 0
         
                         End If
         
                     End If
                 
-218                 If .Counters.EnCombate > 0 Then
-220                     .Counters.EnCombate = .Counters.EnCombate - 1
+262                 If .Counters.EnCombate > 0 Then
+264                     .Counters.EnCombate = .Counters.EnCombate - 1
                     End If
                 
                 
-222                 If .Counters.TiempoDeInmunidad > 0 Then
-224                     .Counters.TiempoDeInmunidad = .Counters.TiempoDeInmunidad - 1
-226                     If .Counters.TiempoDeInmunidad = 0 Then
-228                         .flags.Inmunidad = 0
+266                 If .Counters.TiempoDeInmunidad > 0 Then
+268                     .Counters.TiempoDeInmunidad = .Counters.TiempoDeInmunidad - 1
+270                     If .Counters.TiempoDeInmunidad = 0 Then
+272                         .flags.Inmunidad = 0
                         End If
                     End If
                 
-230                 If .flags.Subastando Then
-232                     .Counters.TiempoParaSubastar = .Counters.TiempoParaSubastar - 1
+274                 If .flags.Subastando Then
+276                     .Counters.TiempoParaSubastar = .Counters.TiempoParaSubastar - 1
         
-234                     If .Counters.TiempoParaSubastar = 0 Then
-236                         Call CancelarSubasta
+278                     If .Counters.TiempoParaSubastar = 0 Then
+280                         Call CancelarSubasta
                         End If
                     End If
         
                     'Cerrar usuario
-240                 If .Counters.Saliendo Then
+282                 If .Counters.Saliendo Then
                         '  If .flags.Muerto = 1 Then .Counters.Salir = 0
-242                     .Counters.Salir = .Counters.Salir - 1
+284                     .Counters.Salir = .Counters.Salir - 1
                         ' Call WriteConsoleMsg(i, "Se saldrá del juego en " & .Counters.Salir & " segundos...", FontTypeNames.FONTTYPE_INFO)
-244                     Call WriteLocaleMsg(i, "203", FontTypeNames.FONTTYPE_INFO, .Counters.Salir)
+286                     Call WriteLocaleMsg(i, "203", FontTypeNames.FONTTYPE_INFO, .Counters.Salir)
         
-246                     If .Counters.Salir <= 0 Then
-248                         Call WriteConsoleMsg(i, "Gracias por jugar Argentum 20.", FontTypeNames.FONTTYPE_INFO)
-250                         Call WriteDisconnect(i)
+288                     If .Counters.Salir <= 0 Then
+290                         Call WriteConsoleMsg(i, "Gracias por jugar Argentum 20.", FontTypeNames.FONTTYPE_INFO)
+292                         Call WriteDisconnect(i)
                             
-252                         Call CloseSocket(i)
+294                         Call CloseSocket(i)
         
                         End If
         
@@ -2489,40 +2488,40 @@ Sub PasarSegundo()
                 End If ' If UserLogged
 
                 'Inactive players will be removed!
-253             .Counters.IdleCount = .Counters.IdleCount + 1
+296             .Counters.IdleCount = .Counters.IdleCount + 1
 
                 'El intervalo cambia según si envió el primer paquete
-254             If .Counters.IdleCount > IIf(.flags.FirstPacket, TimeoutEsperandoLoggear, TimeoutPrimerPaquete) Then
-255                 Call CloseSocket(i)
+298             If .Counters.IdleCount > IIf(.flags.FirstPacket, TimeoutEsperandoLoggear, TimeoutPrimerPaquete) Then
+300                 Call CloseSocket(i)
                 End If
         
             End With
-256     Next i
+302     Next i
 
         ' **********************************
         ' **********  Invasiones  **********
         ' **********************************
-257     For i = 1 To UBound(Invasiones)
-258         With Invasiones(i)
+304     For i = 1 To UBound(Invasiones)
+306         With Invasiones(i)
 
                 ' Si la invasión está activa
-260             If .Activa Then
-262                 .TimerSpawn = .TimerSpawn + 1
+308             If .Activa Then
+310                 .TimerSpawn = .TimerSpawn + 1
 
                     ' Comprobamos si hay que spawnear NPCs
-264                 If .TimerSpawn >= .IntervaloSpawn Then
-266                     Call InvasionSpawnNPC(i)
-268                     .TimerSpawn = 0
+312                 If .TimerSpawn >= .IntervaloSpawn Then
+314                     Call InvasionSpawnNPC(i)
+316                     .TimerSpawn = 0
                     End If
                     
                     ' ------------------------------------
                     
-270                 .TimerMostrarInfo = .TimerMostrarInfo + 1
+318                 .TimerMostrarInfo = .TimerMostrarInfo + 1
                     
                     ' Comprobamos si hay que mostrar la info
-272                 If .TimerMostrarInfo >= 5 Then
-274                     Call EnviarInfoInvasion(i)
-276                     .TimerMostrarInfo = 0
+320                 If .TimerMostrarInfo >= 5 Then
+322                     Call EnviarInfoInvasion(i)
+324                     .TimerMostrarInfo = 0
                     End If
                 End If
             
@@ -2533,7 +2532,7 @@ Sub PasarSegundo()
         Exit Sub
 
 ErrHandler:
-278     Call TraceError(Err.Number, Err.Description, "General.PasarSegundo", Erl)
+326     Call TraceError(Err.Number, Err.Description, "General.PasarSegundo", Erl)
 
 End Sub
  
@@ -2549,7 +2548,7 @@ Public Function ReiniciarAutoUpdate() As Double
 
 ReiniciarAutoUpdate_Err:
 102     Call TraceError(Err.Number, Err.Description, "General.ReiniciarAutoUpdate", Erl)
-104
+
         
 End Function
  
@@ -2573,25 +2572,25 @@ Public Sub ReiniciarServidor(Optional ByVal EjecutarLauncher As Boolean = True)
 
 ReiniciarServidor_Err:
 108     Call TraceError(Err.Number, Err.Description, "General.ReiniciarServidor", Erl)
-110
+
         
 End Sub
 
 Sub ForzarActualizar()
     
-    On Error Resume Next
+        On Error Resume Next
     
-    Dim i As Long
+        Dim i As Long
 
-    For i = 1 To LastUser
+100     For i = 1 To LastUser
 
-        If UserList(i).ConnID <> -1 Then
+102         If UserList(i).ConnID <> -1 Then
         
-            Call WriteForceUpdate(i)
+104             Call WriteForceUpdate(i)
     
-        End If
+            End If
     
-    Next i
+106     Next i
     
 End Sub
  
@@ -2618,7 +2617,7 @@ Sub GuardarUsuarios()
 
 116         If UserList(i).flags.UserLogged Then
 
-117              Call SaveUser(i)
+118              Call SaveUser(i)
 
             End If
 
@@ -2634,7 +2633,7 @@ Sub GuardarUsuarios()
 
 GuardarUsuarios_Err:
 128     Call TraceError(Err.Number, Err.Description, "General.GuardarUsuarios", Erl)
-130
+
         
 End Sub
 
@@ -2658,7 +2657,7 @@ Sub InicializaEstadisticas()
 
 InicializaEstadisticas_Err:
 112     Call TraceError(Err.Number, Err.Description, "General.InicializaEstadisticas", Erl)
-114
+
         
 End Sub
 
@@ -2684,7 +2683,7 @@ Public Sub FreeNPCs()
 
 FreeNPCs_Err:
 106     Call TraceError(Err.Number, Err.Description, "General.FreeNPCs", Erl)
-108
+
         
 End Sub
 
@@ -2705,7 +2704,7 @@ Public Sub FreeCharIndexes()
 
 FreeCharIndexes_Err:
 102     Call TraceError(Err.Number, Err.Description, "General.FreeCharIndexes", Erl)
-104
+
         
 End Sub
 
@@ -2740,7 +2739,7 @@ Function RandomString(cb As Integer, Optional ByVal OnlyUpper As Boolean = False
 
 RandomString_Err:
 116     Call TraceError(Err.Number, Err.Description, "General.RandomString", Erl)
-118
+
         
 End Function
 
@@ -2800,7 +2799,7 @@ Private Function CMSValidateChar_(ByVal iAsc As Integer) As Boolean
 
 CMSValidateChar__Err:
 102     Call TraceError(Err.Number, Err.Description, "General.CMSValidateChar_", Erl)
-104
+
         
 End Function
 
@@ -2822,7 +2821,7 @@ Public Function Tilde(ByRef Data As String) As String
 
 Tilde_Err:
 112     Call TraceError(Err.Number, Err.Description, "Mod_General.Tilde", Erl)
-114
+
     
 End Function
 
@@ -2938,7 +2937,7 @@ Public Function PonerPuntos(ByVal Numero As Long) As String
 
 PonerPuntos_Err:
 118     Call TraceError(Err.Number, Err.Description, "ModLadder.PonerPuntos", Erl)
-120
+
     
 End Function
 
@@ -3027,32 +3026,32 @@ Public Function GetProcess(ByVal processName As String) As Byte
 End Function
 
 Public Function EsMapaInterdimensional(ByVal Map As Integer) As Boolean
-    Dim i As Integer
-    For i = 1 To UBound(MapasInterdimensionales)
-        If Map = MapasInterdimensionales(i) Then
-            EsMapaInterdimensional = True
-            Exit Function
-        End If
-    Next
+        Dim i As Integer
+100     For i = 1 To UBound(MapasInterdimensionales)
+102         If Map = MapasInterdimensionales(i) Then
+104             EsMapaInterdimensional = True
+                Exit Function
+            End If
+        Next
 End Function
 
 Public Function IsValidIPAddress(ByVal IP As String) As Boolean
 
-    On Error GoTo Handler
+        On Error GoTo Handler
 
-    Dim varAddress As Variant, n As Long, lCount As Long
-    varAddress = Split(IP, ".", 4, vbTextCompare)
+        Dim varAddress As Variant, n As Long, lCount As Long
+100     varAddress = Split(IP, ".", 4, vbTextCompare)
 
-    If IsArray(varAddress) Then
+102     If IsArray(varAddress) Then
 
-        For n = LBound(varAddress) To UBound(varAddress)
-            lCount = lCount + 1
-            varAddress(n) = CByte(varAddress(n))
-        Next
+104         For n = LBound(varAddress) To UBound(varAddress)
+106             lCount = lCount + 1
+108             varAddress(n) = CByte(varAddress(n))
+            Next
         
-        IsValidIPAddress = (lCount = 4)
+110         IsValidIPAddress = (lCount = 4)
 
-    End If
+        End If
 
 Handler:
 
@@ -3067,9 +3066,9 @@ Function Ceil(X As Variant) As Variant
         Exit Function
 
 Ceil_Err:
-105     Call TraceError(Err.Number, Err.Description & "Ceil_Err", Erl)
+102     Call TraceError(Err.Number, Err.Description & "Ceil_Err", Erl)
 
-110
+
         
 End Function
 
@@ -3082,8 +3081,8 @@ Function Clamp(X As Variant, a As Variant, b As Variant) As Variant
         Exit Function
 
 Clamp_Err:
-105     Call TraceError(Err.Number, Err.Description & "Clamp_Err", Erl)
+102     Call TraceError(Err.Number, Err.Description & "Clamp_Err", Erl)
 
-110
+
         
 End Function

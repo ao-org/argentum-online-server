@@ -196,7 +196,7 @@ Function VersionOK(ByVal Ver As String) As Boolean
 
 VersionOK_Err:
 102     Call TraceError(Err.Number, Err.Description, "Admin.VersionOK", Erl)
-104
+
         
 End Function
 
@@ -232,7 +232,7 @@ Sub ReSpawnOrigPosNpcs()
         
 Handler:
 114 Call TraceError(Err.Number, Err.Description, "Admin.ReSpawnOrigPosNpcs", Erl)
-116
+
 
 End Sub
 
@@ -290,7 +290,7 @@ Sub WorldSave()
         
 Handler:
 128 Call TraceError(Err.Number, Err.Description, "Admin.WorldSave", Erl)
-130
+
 
 End Sub
 
@@ -324,7 +324,7 @@ Public Sub PurgarPenas()
 
 PurgarPenas_Err:
 118     Call TraceError(Err.Number, Err.Description, "Admin.PurgarPenas", Erl)
-120
+
         
 End Sub
 
@@ -375,7 +375,7 @@ Public Sub PurgarScroll()
 
 PurgarScroll_Err:
 134     Call TraceError(Err.Number, Err.Description, "Admin.PurgarScroll", Erl)
-136
+
         
 End Sub
 
@@ -383,20 +383,20 @@ Public Sub EfectoOxigeno(ByVal UserIndex As Integer)
         
     On Error GoTo EfectoOxigeno_Err
         
-    With UserList(UserIndex)
+100 With UserList(UserIndex)
 
-        If .flags.NecesitaOxigeno Then
+102     If .flags.NecesitaOxigeno Then
 
-            If .Counters.Oxigeno > 0 Then
+104         If .Counters.Oxigeno > 0 Then
 
-                .Counters.Oxigeno = .Counters.Oxigeno - 1
+106             .Counters.Oxigeno = .Counters.Oxigeno - 1
                 
-                If .Counters.Oxigeno < 1 Then
-                    .Counters.Oxigeno = 0
-                    Call WriteOxigeno(UserIndex)
-                    Call WriteConsoleMsg(UserIndex, "Te has quedado sin oxigeno.", FontTypeNames.FONTTYPE_EJECUCION)
-                    .flags.Ahogandose = 1
-                    Call WriteContadores(UserIndex)
+108             If .Counters.Oxigeno < 1 Then
+110                 .Counters.Oxigeno = 0
+112                 Call WriteOxigeno(UserIndex)
+114                 Call WriteConsoleMsg(UserIndex, "Te has quedado sin oxigeno.", FontTypeNames.FONTTYPE_EJECUCION)
+116                 .flags.Ahogandose = 1
+118                 Call WriteContadores(UserIndex)
                 End If
             
             End If
@@ -408,8 +408,8 @@ Public Sub EfectoOxigeno(ByVal UserIndex As Integer)
     Exit Sub
 
 EfectoOxigeno_Err:
-126     Call TraceError(Err.Number, Err.Description, "Admin.EfectoOxigeno", Erl)
-128
+120     Call TraceError(Err.Number, Err.Description, "Admin.EfectoOxigeno", Erl)
+
         
 End Sub
 
@@ -435,7 +435,7 @@ Public Sub Encarcelar(ByVal UserIndex As Integer, ByVal minutos As Long, Optiona
 
 Encarcelar_Err:
 112     Call TraceError(Err.Number, Err.Description, "Admin.Encarcelar", Erl)
-114
+
         
 End Sub
 
@@ -485,7 +485,7 @@ Public Function BANCheck(ByVal Name As String) As Boolean
 
 BANCheck_Err:
 106     Call TraceError(Err.Number, Err.Description, "Admin.BANCheck", Erl)
-108
+
         
 End Function
 
@@ -506,7 +506,7 @@ Public Function DonadorCheck(ByVal Name As String) As Boolean
 
 DonadorCheck_Err:
 106     Call TraceError(Err.Number, Err.Description, "Admin.DonadorCheck", Erl)
-108
+
         
 End Function
 
@@ -527,7 +527,7 @@ Public Function CreditosDonadorCheck(ByVal Name As String) As Long
 
 CreditosDonadorCheck_Err:
 106     Call TraceError(Err.Number, Err.Description, "Admin.CreditosDonadorCheck", Erl)
-108
+
         
 End Function
 
@@ -548,7 +548,7 @@ Public Function CreditosCanjeadosCheck(ByVal Name As String) As Long
 
 CreditosCanjeadosCheck_Err:
 106     Call TraceError(Err.Number, Err.Description, "Admin.CreditosCanjeadosCheck", Erl)
-108
+
         
 End Function
 
@@ -580,7 +580,7 @@ Public Function DiasDonadorCheck(ByVal Name As String) As Integer
 
 DiasDonadorCheck_Err:
 110     Call TraceError(Err.Number, Err.Description, "Admin.DiasDonadorCheck", Erl)
-112
+
         
 End Function
 
@@ -601,7 +601,7 @@ Public Function ComprasDonadorCheck(ByVal Name As String) As Long
 
 ComprasDonadorCheck_Err:
 106     Call TraceError(Err.Number, Err.Description, "Admin.ComprasDonadorCheck", Erl)
-108
+
         
 End Function
 
@@ -622,7 +622,7 @@ Public Function PersonajeExiste(ByVal Name As String) As Boolean
 
 PersonajeExiste_Err:
 106     Call TraceError(Err.Number, Err.Description, "Admin.PersonajeExiste", Erl)
-108
+
         
 End Function
 
@@ -649,7 +649,7 @@ Public Function UnBan(ByVal Name As String) As Boolean
 
 UnBan_Err:
 114     Call TraceError(Err.Number, Err.Description, "Admin.UnBan", Erl)
-116
+
         
 End Function
 
@@ -685,7 +685,7 @@ Public Sub ActualizaEstadisticasWeb()
 
 ActualizaEstadisticasWeb_Err:
 114     Call TraceError(Err.Number, Err.Description, "Admin.ActualizaEstadisticasWeb", Erl)
-116
+
         
 End Sub
 
@@ -735,7 +735,7 @@ Public Sub ActualizaStatsES()
 
 ActualizaStatsES_Err:
 132     Call TraceError(Err.Number, Err.Description, "Admin.ActualizaStatsES", Erl)
-134
+
         
 End Sub
 
@@ -767,7 +767,7 @@ Public Function UserDarPrivilegioLevel(ByVal Name As String) As PlayerType
 
 UserDarPrivilegioLevel_Err:
 118     Call TraceError(Err.Number, Err.Description, "Admin.UserDarPrivilegioLevel", Erl)
-120
+
         
 End Function
 
@@ -793,7 +793,7 @@ Public Sub BanTemporal(ByVal nombre As String, ByVal dias As Integer, Causa As S
 
 BanTemporal_Err:
 116     Call TraceError(Err.Number, Err.Description, "Admin.BanTemporal", Erl)
-118
+
         
 End Sub
 
@@ -818,7 +818,7 @@ Sub SaveBans()
 
 SaveBans_Err:
 112     Call TraceError(Err.Number, Err.Description, "Admin.SaveBans", Erl)
-114
+
         
 End Sub
 
@@ -847,7 +847,7 @@ Sub SaveBan(num As Integer)
 
 SaveBan_Err:
 120     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Admin.SaveBan", Erl)
-122
+
         
 End Sub
 
@@ -884,7 +884,7 @@ Sub LoadBans()
 
 LoadBans_Err:
 120     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Admin.LoadBans", Erl)
-122
+
         
 End Sub
 
@@ -906,13 +906,13 @@ Public Function ChangeBan(ByVal Name As String, ByVal Baneado As Byte) As Boolea
 
 ChangeBan_Err:
 106     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Admin.ChangeBan", Erl)
-108
+
         
 End Function
 
 Public Function CompararUserPrivilegios(ByVal Personaje_1 As Integer, ByVal Personaje_2 As Integer) As Integer
     
-    CompararUserPrivilegios = CompararPrivilegios(UserList(Personaje_1).flags.Privilegios, UserList(Personaje_2).flags.Privilegios)
+100     CompararUserPrivilegios = CompararPrivilegios(UserList(Personaje_1).flags.Privilegios, UserList(Personaje_2).flags.Privilegios)
         
 End Function
 
@@ -925,7 +925,7 @@ Public Function CompararPrivilegiosUser(ByVal Personaje_1 As Integer, ByVal Pers
 
 CompararPrivilegiosUser_Err:
 102     Call TraceError(Err.Number, Err.Description, "Admin.CompararPrivilegiosUser", Erl)
-104
+
         
 End Function
 
@@ -967,6 +967,6 @@ Public Function CompararPrivilegios(ByVal Izquierda As PlayerType, ByVal Derecha
 
 CompararPrivilegios_Err:
 118     Call TraceError(Err.Number, Err.Description, "Admin.CompararPrivilegios", Erl)
-120
+
         
 End Function
