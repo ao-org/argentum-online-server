@@ -43,7 +43,7 @@ Public Sub goHome(ByVal UserIndex As Integer)
         Exit Sub
 
 goHome_Err:
-122     Call RegistrarError(Err.Number, Err.Description, "Hogar.goHome", Erl)
+122     Call TraceError(Err.Number, Err.Description, "Hogar.goHome", Erl)
 
         
 End Sub
@@ -73,7 +73,7 @@ Public Sub TravelingEffect(ByVal UserIndex As Integer)
         Exit Sub
 
 TravelingEffect_Err:
-104     Call RegistrarError(Err.Number, Err.Description, "Hogar.TravelingEffect", Erl)
+104     Call TraceError(Err.Number, Err.Description, "Hogar.TravelingEffect", Erl)
 
         
 End Sub
@@ -130,7 +130,7 @@ Public Sub HomeArrival(ByVal UserIndex As Integer)
         Exit Sub
 
 HomeArrival_Err:
-134     Call RegistrarError(Err.Number, Err.Description, "Hogar.HomeArrival", Erl)
+134     Call TraceError(Err.Number, Err.Description, "Hogar.HomeArrival", Erl)
 
         
 End Sub
@@ -175,7 +175,7 @@ Public Function IntervaloGoHome(ByVal UserIndex As Integer, _
         Exit Function
 
 IntervaloGoHome_Err:
-114     Call RegistrarError(Err.Number, Err.Description, "Hogar.IntervaloGoHome", Erl)
+114     Call TraceError(Err.Number, Err.Description, "Hogar.IntervaloGoHome", Erl)
 
         
 End Function

@@ -64,8 +64,8 @@ Public Property Let Numero(ByVal NumEncuesta As Integer)
         Exit Property
 
 Numero_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "ConsultasPopulares.Numero", Erl)
-104     Resume Next
+102     Call TraceError(Err.Number, Err.Description, "ConsultasPopulares.Numero", Erl)
+104
         
 End Property
 
@@ -79,8 +79,8 @@ Public Property Get Numero() As Integer
         Exit Property
 
 Numero_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "ConsultasPopulares.Numero", Erl)
-104     Resume Next
+102     Call TraceError(Err.Number, Err.Description, "ConsultasPopulares.Numero", Erl)
+104
         
 End Property
 
@@ -94,8 +94,8 @@ Public Property Let texto(ByVal Descripcion As String)
         Exit Property
 
 texto_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "ConsultasPopulares.texto", Erl)
-104     Resume Next
+102     Call TraceError(Err.Number, Err.Description, "ConsultasPopulares.texto", Erl)
+104
         
 End Property
 
@@ -109,8 +109,8 @@ Public Property Get texto() As String
         Exit Property
 
 texto_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "ConsultasPopulares.texto", Erl)
-104     Resume Next
+102     Call TraceError(Err.Number, Err.Description, "ConsultasPopulares.texto", Erl)
+104
         
 End Property
 
@@ -142,8 +142,8 @@ Public Sub LoadData()
         Exit Sub
 
 LoadData_Err:
-118     Call RegistrarError(Err.Number, Err.Description, "ConsultasPopulares.LoadData", Erl)
-120     Resume Next
+118     Call TraceError(Err.Number, Err.Description, "ConsultasPopulares.LoadData", Erl)
+120
         
 End Sub
 
@@ -166,21 +166,21 @@ Public Function doVotar(ByVal UserIndex As Integer, ByVal opcion As Integer) As 
 
         End If
 
-104     CharFile = CharPath & UserList(UserIndex).name & ".chr"
+104     CharFile = CharPath & UserList(UserIndex).Name & ".chr"
     
 106     If (UserList(UserIndex).Stats.ELV >= pNivelRequerido) Then
 108         If (OpcionValida(opcion)) Then
 110             YaVoto = val(GetVar(CharFile, "CONSULTAS", "Voto")) >= pEncuestaActualNum
 
 112             If Not YaVoto Then
-114                 If Not MailYaVoto(UserList(UserIndex).email) Then
+114                 If Not MailYaVoto(UserList(UserIndex).Email) Then
                         'pj apto para votar
 116                     sufragio = CLng(val(GetVar(DatPath & ARCHIVOCONFIG, "RESULTADOS" & pEncuestaActualNum, "V" & opcion)))
 118                     sufragio = sufragio + 1
 120                     Call WriteVar(DatPath & ARCHIVOCONFIG, "RESULTADOS" & pEncuestaActualNum, "V" & opcion, str(sufragio))
 122                     doVotar = "Tu voto ha sido computado. Opcion: " & opcion
 124                     Call MarcarPjComoQueYaVoto(UserIndex)
-126                     Call MarcarMailComoQueYaVoto(UserList(UserIndex).email)
+126                     Call MarcarMailComoQueYaVoto(UserList(UserIndex).Email)
                     Else
 128                     Call MarcarPjComoQueYaVoto(UserIndex)
 130                     doVotar = "Este email ya voto en la consulta: " & pEncuestaActualTex
@@ -229,8 +229,8 @@ Public Function SendInfoEncuesta(ByVal UserIndex As Integer) As String
         Exit Function
 
 SendInfoEncuesta_Err:
-114     Call RegistrarError(Err.Number, Err.Description, "ConsultasPopulares.SendInfoEncuesta", Erl)
-116     Resume Next
+114     Call TraceError(Err.Number, Err.Description, "ConsultasPopulares.SendInfoEncuesta", Erl)
+116
         
 End Function
 
@@ -240,9 +240,9 @@ Private Sub MarcarPjComoQueYaVoto(ByVal UserIndex As Integer)
         
 
 100     If Database_Enabled Then
-102         Call SaveVotoDatabase(UserList(UserIndex).Id, pEncuestaActualNum)
+102         Call SaveVotoDatabase(UserList(UserIndex).ID, pEncuestaActualNum)
         Else
-104         Call WriteVar(CharPath & UserList(UserIndex).name & ".chr", "CONSULTAS", "Voto", str(pEncuestaActualNum))
+104         Call WriteVar(CharPath & UserList(UserIndex).Name & ".chr", "CONSULTAS", "Voto", str(pEncuestaActualNum))
 
         End If
 
@@ -250,12 +250,12 @@ Private Sub MarcarPjComoQueYaVoto(ByVal UserIndex As Integer)
         Exit Sub
 
 MarcarPjComoQueYaVoto_Err:
-106     Call RegistrarError(Err.Number, Err.Description, "ConsultasPopulares.MarcarPjComoQueYaVoto", Erl)
-108     Resume Next
+106     Call TraceError(Err.Number, Err.Description, "ConsultasPopulares.MarcarPjComoQueYaVoto", Erl)
+108
         
 End Sub
 
-Private Function MailYaVoto(ByVal email As String) As Boolean
+Private Function MailYaVoto(ByVal Email As String) As Boolean
         
         On Error GoTo MailYaVoto_Err
         
@@ -274,7 +274,7 @@ Private Function MailYaVoto(ByVal email As String) As Boolean
 106     Do While Not EOF(ArchN)
 108         Line Input #ArchN, Tmp
 
-110         If email = Tmp Then
+110         If Email = Tmp Then
 112             MailYaVoto = True
 114             Close #ArchN
                 Exit Function
@@ -289,12 +289,12 @@ Private Function MailYaVoto(ByVal email As String) As Boolean
         Exit Function
 
 MailYaVoto_Err:
-118     Call RegistrarError(Err.Number, Err.Description, "ConsultasPopulares.MailYaVoto", Erl)
-120     Resume Next
+118     Call TraceError(Err.Number, Err.Description, "ConsultasPopulares.MailYaVoto", Erl)
+120
         
 End Function
 
-Private Sub MarcarMailComoQueYaVoto(ByVal email As String)
+Private Sub MarcarMailComoQueYaVoto(ByVal Email As String)
         
         On Error GoTo MarcarMailComoQueYaVoto_Err
         
@@ -304,7 +304,7 @@ Private Sub MarcarMailComoQueYaVoto(ByVal email As String)
 100     ArchN = FreeFile()
 
 102     Open DatPath & ARCHIVOMAILS For Append As #ArchN
-104     Print #ArchN, email
+104     Print #ArchN, Email
 
 106     Close #ArchN
 
@@ -312,8 +312,8 @@ Private Sub MarcarMailComoQueYaVoto(ByVal email As String)
         Exit Sub
 
 MarcarMailComoQueYaVoto_Err:
-108     Call RegistrarError(Err.Number, Err.Description, "ConsultasPopulares.MarcarMailComoQueYaVoto", Erl)
-110     Resume Next
+108     Call TraceError(Err.Number, Err.Description, "ConsultasPopulares.MarcarMailComoQueYaVoto", Erl)
+110
         
 End Sub
 
@@ -327,8 +327,8 @@ Private Function OpcionValida(ByVal opcion As Integer) As Boolean
         Exit Function
 
 OpcionValida_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "ConsultasPopulares.OpcionValida", Erl)
-104     Resume Next
+102     Call TraceError(Err.Number, Err.Description, "ConsultasPopulares.OpcionValida", Erl)
+104
         
 End Function
 

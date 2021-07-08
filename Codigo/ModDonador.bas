@@ -28,7 +28,7 @@ Public Sub DonadorTiempo(ByVal nombre As String, ByVal dias As Integer)
     
 102         Set tDon = New TDonador
     
-104         tDon.name = nombre
+104         tDon.Name = nombre
 106         tDon.FechaExpiracion = (Now + dias)
     
 108         Call Donadores.Add(tDon)
@@ -43,7 +43,7 @@ Public Sub DonadorTiempo(ByVal nombre As String, ByVal dias As Integer)
 
 116         For LoopC = 1 To Donadores.Count
 
-118             If UCase$(Donadores(LoopC).name) = UCase$(nombre) Then
+118             If UCase$(Donadores(LoopC).Name) = UCase$(nombre) Then
 120                 Donadores(LoopC).FechaExpiracion = Donadores(LoopC).FechaExpiracion + dias
 122                 Call SaveDonador(LoopC)
                     Exit For
@@ -58,8 +58,8 @@ Public Sub DonadorTiempo(ByVal nombre As String, ByVal dias As Integer)
         Exit Sub
 
 DonadorTiempo_Err:
-126     Call RegistrarError(Err.Number, Err.Description, "ModDonador.DonadorTiempo", Erl)
-128     Resume Next
+126     Call TraceError(Err.Number, Err.Description, "ModDonador.DonadorTiempo", Erl)
+128
         
 End Sub
 
@@ -73,7 +73,7 @@ Sub SaveDonadores()
 100     Call WriteVar(DatPath & "Donadores.dat", "INIT", "NumeroDonadores", val(Donadores.Count))
 
 102     For num = 1 To Donadores.Count
-104         Call WriteVar(DatPath & "Donadores.dat", "DONADOR" & num, "USER", Donadores(num).name)
+104         Call WriteVar(DatPath & "Donadores.dat", "DONADOR" & num, "USER", Donadores(num).Name)
 106         Call WriteVar(DatPath & "Donadores.dat", "DONADOR" & num, "FECHAEXPIRACION", Donadores(num).FechaExpiracion)
         Next
 
@@ -81,8 +81,8 @@ Sub SaveDonadores()
         Exit Sub
 
 SaveDonadores_Err:
-108     Call RegistrarError(Err.Number, Err.Description, "ModDonador.SaveDonadores", Erl)
-110     Resume Next
+108     Call TraceError(Err.Number, Err.Description, "ModDonador.SaveDonadores", Erl)
+110
         
 End Sub
 
@@ -92,103 +92,103 @@ Sub SaveDonador(num As Integer)
         
 
 100     Call WriteVar(DatPath & "Donadores.dat", "INIT", "NumeroDonadores", Donadores.Count)
-102     Call WriteVar(DatPath & "Donadores.dat", "DONADOR" & num, "USER", Donadores(num).name)
+102     Call WriteVar(DatPath & "Donadores.dat", "DONADOR" & num, "USER", Donadores(num).Name)
 104     Call WriteVar(DatPath & "Donadores.dat", "DONADOR" & num, "FECHAEXPIRACION", Donadores(num).FechaExpiracion)
 
-106     Call WriteVar(CuentasPath & Donadores(num).name & ".act", "DONADOR", "DONADOR", "1")
-108     Call WriteVar(CuentasPath & Donadores(num).name & ".act", "DONADOR", "FECHAEXPIRACION", Donadores(num).FechaExpiracion)
+106     Call WriteVar(CuentasPath & Donadores(num).Name & ".act", "DONADOR", "DONADOR", "1")
+108     Call WriteVar(CuentasPath & Donadores(num).Name & ".act", "DONADOR", "FECHAEXPIRACION", Donadores(num).FechaExpiracion)
 
         
         Exit Sub
 
 SaveDonador_Err:
-110     Call RegistrarError(Err.Number, Err.Description, "ModDonador.SaveDonador", Erl)
-112     Resume Next
+110     Call TraceError(Err.Number, Err.Description, "ModDonador.SaveDonador", Erl)
+112
         
 End Sub
 
-Sub AgregarCreditosDonador(name As String, Cantidad As Long)
+Sub AgregarCreditosDonador(Name As String, Cantidad As Long)
         
         On Error GoTo AgregarCreditosDonador_Err
         
 
         Dim creditos As Long
 
-100     creditos = CreditosDonadorCheck(name) + Cantidad
+100     creditos = CreditosDonadorCheck(Name) + Cantidad
 
         'Call LogearEventoDeDonador("Se agregaron " & Cantidad & " creditos a la cuenta " & Name & ".")
-102     Call WriteVar(CuentasPath & UCase$(name & ".act"), "DONADOR", "CREDITOS", creditos)
+102     Call WriteVar(CuentasPath & UCase$(Name & ".act"), "DONADOR", "CREDITOS", creditos)
 
         'Call AgregarCompra(Name, Date & " - Se agregaron " & Cantidad & " creditos a la cuenta " & Name & ".")
         
         Exit Sub
 
 AgregarCreditosDonador_Err:
-104     Call RegistrarError(Err.Number, Err.Description, "ModDonador.AgregarCreditosDonador", Erl)
-106     Resume Next
+104     Call TraceError(Err.Number, Err.Description, "ModDonador.AgregarCreditosDonador", Erl)
+106
         
 End Sub
 
-Sub AgregarCompra(ByVal name As String, ByVal Desc As String)
+Sub AgregarCompra(ByVal Name As String, ByVal Desc As String)
         
         On Error GoTo AgregarCompra_Err
         
 
         Dim num As Integer
 
-100     num = ComprasDonadorCheck(name)
+100     num = ComprasDonadorCheck(Name)
 
-102     Call WriteVar(CuentasPath & UCase$(name & ".act"), "COMPRAS", "CANTIDAD", num + 1)
-104     Call WriteVar(CuentasPath & UCase$(name & ".act"), "COMPRAS", num + 1, Desc)
+102     Call WriteVar(CuentasPath & UCase$(Name & ".act"), "COMPRAS", "CANTIDAD", num + 1)
+104     Call WriteVar(CuentasPath & UCase$(Name & ".act"), "COMPRAS", num + 1, Desc)
 
         
         Exit Sub
 
 AgregarCompra_Err:
-106     Call RegistrarError(Err.Number, Err.Description, "ModDonador.AgregarCompra", Erl)
-108     Resume Next
+106     Call TraceError(Err.Number, Err.Description, "ModDonador.AgregarCompra", Erl)
+108
         
 End Sub
 
-Sub RestarCreditosDonador(name As String, Cantidad As Long)
+Sub RestarCreditosDonador(Name As String, Cantidad As Long)
         
         On Error GoTo RestarCreditosDonador_Err
         
 
         Dim creditos As Long
 
-100     Call AgregarCreditosCanjeados(name, Cantidad)
+100     Call AgregarCreditosCanjeados(Name, Cantidad)
 
-102     creditos = CreditosDonadorCheck(name) - Cantidad
+102     creditos = CreditosDonadorCheck(Name) - Cantidad
 
-104     Call WriteVar(CuentasPath & UCase$(name & ".act"), "DONADOR", "CREDITOS", creditos)
+104     Call WriteVar(CuentasPath & UCase$(Name & ".act"), "DONADOR", "CREDITOS", creditos)
 
         
         Exit Sub
 
 RestarCreditosDonador_Err:
-106     Call RegistrarError(Err.Number, Err.Description, "ModDonador.RestarCreditosDonador", Erl)
-108     Resume Next
+106     Call TraceError(Err.Number, Err.Description, "ModDonador.RestarCreditosDonador", Erl)
+108
         
 End Sub
 
-Sub AgregarCreditosCanjeados(name As String, Cantidad As Long)
+Sub AgregarCreditosCanjeados(Name As String, Cantidad As Long)
         
         On Error GoTo AgregarCreditosCanjeados_Err
         
 
         Dim creditos As Long
 
-100     creditos = CreditosCanjeadosCheck(name) + Cantidad
+100     creditos = CreditosCanjeadosCheck(Name) + Cantidad
 
-102     Call WriteVar(CuentasPath & UCase$(name & ".act"), "DONADOR", "CREDITOSCANJEADOS", creditos)
+102     Call WriteVar(CuentasPath & UCase$(Name & ".act"), "DONADOR", "CREDITOSCANJEADOS", creditos)
 
         
         Exit Sub
 
 AgregarCreditosCanjeados_Err:
-104     Call RegistrarError(Err.Number, Err.Description, "ModDonador.AgregarCreditosCanjeados", Erl)
-106     Resume Next
+104     Call TraceError(Err.Number, Err.Description, "ModDonador.AgregarCreditosCanjeados", Erl)
+106
         
 End Sub
 
@@ -209,7 +209,7 @@ Sub LoadDonadores()
 106         Set tDon = New TDonador
 
 108         With tDon
-110             .name = GetVar(DatPath & "Donadores.dat", "DONADOR" & i, "USER")
+110             .Name = GetVar(DatPath & "Donadores.dat", "DONADOR" & i, "USER")
 112             .FechaExpiracion = GetVar(DatPath & "Donadores.dat", "DONADOR" & i, "FECHAEXPIRACION")
 114             Call Donadores.Add(tDon)
 
@@ -221,18 +221,18 @@ Sub LoadDonadores()
         Exit Sub
 
 LoadDonadores_Err:
-116     Call RegistrarError(Err.Number, Err.Description, "ModDonador.LoadDonadores", Erl)
-118     Resume Next
+116     Call TraceError(Err.Number, Err.Description, "ModDonador.LoadDonadores", Erl)
+118
         
 End Sub
 
-Public Function ChangeDonador(ByVal name As String, ByVal Baneado As Byte) As Boolean
+Public Function ChangeDonador(ByVal Name As String, ByVal Baneado As Byte) As Boolean
         
         On Error GoTo ChangeDonador_Err
         
 
-100     If FileExist(CuentasPath & name & ".act", vbNormal) Then
-102         Call FinDonador(name)
+100     If FileExist(CuentasPath & Name & ".act", vbNormal) Then
+102         Call FinDonador(Name)
 
         End If
 
@@ -240,27 +240,27 @@ Public Function ChangeDonador(ByVal name As String, ByVal Baneado As Byte) As Bo
         Exit Function
 
 ChangeDonador_Err:
-104     Call RegistrarError(Err.Number, Err.Description, "ModDonador.ChangeDonador", Erl)
-106     Resume Next
+104     Call TraceError(Err.Number, Err.Description, "ModDonador.ChangeDonador", Erl)
+106
         
 End Function
 
-Public Function FinDonador(ByVal name As String) As Boolean
+Public Function FinDonador(ByVal Name As String) As Boolean
         
         On Error GoTo FinDonador_Err
         
        
-100     Call LogearEventoDeDonador("Se finalizo suscripcion de la cuenta " & name & ".")
+100     Call LogearEventoDeDonador("Se finalizo suscripcion de la cuenta " & Name & ".")
         'Unban the character
-102     Call WriteVar(CuentasPath & name & ".act", "DONADOR", "DONADOR", "0")
-104     Call WriteVar(CuentasPath & name & ".act", "DONADOR", "FECHAEXPIRACION", "")
+102     Call WriteVar(CuentasPath & Name & ".act", "DONADOR", "DONADOR", "0")
+104     Call WriteVar(CuentasPath & Name & ".act", "DONADOR", "FECHAEXPIRACION", "")
 
         
         Exit Function
 
 FinDonador_Err:
-106     Call RegistrarError(Err.Number, Err.Description, "ModDonador.FinDonador", Erl)
-108     Resume Next
+106     Call TraceError(Err.Number, Err.Description, "ModDonador.FinDonador", Erl)
+108
         
 End Function
 
@@ -280,8 +280,8 @@ Public Sub LogearEventoDeDonador(Logeo As String)
         Exit Sub
 
 LogearEventoDeDonador_Err:
-108     Call RegistrarError(Err.Number, Err.Description, "ModDonador.LogearEventoDeDonador", Erl)
-110     Resume Next
+108     Call TraceError(Err.Number, Err.Description, "ModDonador.LogearEventoDeDonador", Erl)
+110
         
 End Sub
 
@@ -316,8 +316,8 @@ Public Sub CargarCodigosDonador()
         Exit Sub
 
 CargarCodigosDonador_Err:
-118     Call RegistrarError(Err.Number, Err.Description, "ModDonador.CargarCodigosDonador", Erl)
-120     Resume Next
+118     Call TraceError(Err.Number, Err.Description, "ModDonador.CargarCodigosDonador", Erl)
+120
         
 End Sub
 
@@ -365,7 +365,7 @@ Public Sub CheckearCodigo(ByVal UserIndex As Integer, ByVal CodigoKey As String)
 134                 Call WriteActShop(UserIndex)
                     '   Call WriteVar(App.Path & "\cuentas\" & name & ".act", "DONADOR", "CREDITOS", creditos)
                 
-136                 LogCheckCodigo = LogCheckCodigo & "El usuario " & UserList(UserIndex).name & " canjeo el codigo: " & CodigoKey & "." & vbCrLf
+136                 LogCheckCodigo = LogCheckCodigo & "El usuario " & UserList(UserIndex).Name & " canjeo el codigo: " & CodigoKey & "." & vbCrLf
                 
 138                 Codigo(i).Usado = 1
 140                 Call WriteVar(App.Path & "\codigosDonadores.ini", "CODIGOS", i, Codigo(i).Key & "-" & Codigo(i).Tipo & "-" & Codigo(i).Cantidad & "-" & Codigo(i).Usado)
@@ -396,8 +396,8 @@ Public Sub CheckearCodigo(ByVal UserIndex As Integer, ByVal CodigoKey As String)
         Exit Sub
 
 CheckearCodigo_Err:
-162     Call RegistrarError(Err.Number, Err.Description, "ModDonador.CheckearCodigo", Erl)
-164     Resume Next
+162     Call TraceError(Err.Number, Err.Description, "ModDonador.CheckearCodigo", Erl)
+164
         
 End Sub
     

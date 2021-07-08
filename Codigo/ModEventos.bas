@@ -111,8 +111,8 @@ Public Sub CheckEvento(ByVal Hora As Byte)
         Exit Sub
 
 CheckEvento_Err:
-196     Call RegistrarError(Err.Number, Err.Description, "ModEventos.CheckEvento", Erl)
-198     Resume Next
+196     Call TraceError(Err.Number, Err.Description, "ModEventos.CheckEvento", Erl)
+198
         
 End Sub
 
@@ -165,8 +165,8 @@ Public Sub FinalizarEvento()
         Exit Sub
 
 FinalizarEvento_Err:
-152     Call RegistrarError(Err.Number, Err.Description, "ModEventos.FinalizarEvento", Erl)
-154     Resume Next
+152     Call TraceError(Err.Number, Err.Description, "ModEventos.FinalizarEvento", Erl)
+154
         
 End Sub
 
@@ -218,8 +218,8 @@ Public Function DescribirEvento(ByVal Hora As Byte) As String
         Exit Function
 
 DescribirEvento_Err:
-138     Call RegistrarError(Err.Number, Err.Description, "ModEventos.DescribirEvento", Erl)
-140     Resume Next
+138     Call TraceError(Err.Number, Err.Description, "ModEventos.DescribirEvento", Erl)
+140
         
 End Function
 
@@ -248,8 +248,8 @@ Public Sub CargarEventos()
         Exit Sub
 
 CargarEventos_Err:
-120     Call RegistrarError(Err.Number, Err.Description, "ModEventos.CargarEventos", Erl)
-122     Resume Next
+120     Call TraceError(Err.Number, Err.Description, "ModEventos.CargarEventos", Erl)
+122
         
 End Sub
 
@@ -359,8 +359,8 @@ Public Sub ForzarEvento(ByVal Tipo As Byte, ByVal Duracion As Byte, ByVal multi 
         Exit Sub
 
 ForzarEvento_Err:
-206     Call RegistrarError(Err.Number, Err.Description, "ModEventos.ForzarEvento", Erl)
-208     Resume Next
+206     Call TraceError(Err.Number, Err.Description, "ModEventos.ForzarEvento", Erl)
+208
         
 End Sub
 

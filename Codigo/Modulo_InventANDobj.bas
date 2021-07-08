@@ -94,7 +94,7 @@ Public Sub NPC_TIRAR_ITEMS(ByRef npc As npc)
         Exit Sub
 
 NPC_TIRAR_ITEMS_Err:
-114     Call RegistrarError(Err.Number, Err.Description, "InvNpc.NPC_TIRAR_ITEMS", Erl)
+114     Call TraceError(Err.Number, Err.Description, "InvNpc.NPC_TIRAR_ITEMS", Erl)
 
         
 End Sub
@@ -131,7 +131,7 @@ Function QuedanItems(ByVal NpcIndex As Integer, ByVal ObjIndex As Integer) As Bo
         Exit Function
 
 QuedanItems_Err:
-110     Call RegistrarError(Err.Number, Err.Description, "InvNpc.QuedanItems", Erl)
+110     Call TraceError(Err.Number, Err.Description, "InvNpc.QuedanItems", Erl)
 
         
 End Function
@@ -173,7 +173,7 @@ Function EncontrarCant(ByVal NpcIndex As Integer, ByVal ObjIndex As Integer) As 
         Exit Function
 
 EncontrarCant_Err:
-112     Call RegistrarError(Err.Number, Err.Description, "InvNpc.EncontrarCant", Erl)
+112     Call TraceError(Err.Number, Err.Description, "InvNpc.EncontrarCant", Erl)
 
         
 End Function
@@ -201,28 +201,28 @@ Sub ResetNpcInv(ByVal NpcIndex As Integer)
         Exit Sub
 
 ResetNpcInv_Err:
-112     Call RegistrarError(Err.Number, Err.Description, "InvNpc.ResetNpcInv", Erl)
+112     Call TraceError(Err.Number, Err.Description, "InvNpc.ResetNpcInv", Erl)
 
         
 End Sub
 
-Sub QuitarNpcInvItem(ByVal NpcIndex As Integer, ByVal slot As Byte, ByVal Cantidad As Integer)
+Sub QuitarNpcInvItem(ByVal NpcIndex As Integer, ByVal Slot As Byte, ByVal Cantidad As Integer)
         
         On Error GoTo QuitarNpcInvItem_Err
         
 
         Dim ObjIndex As Integer
 
-100     ObjIndex = NpcList(NpcIndex).Invent.Object(slot).ObjIndex
+100     ObjIndex = NpcList(NpcIndex).Invent.Object(Slot).ObjIndex
 
         'Quita un Obj
-102     If ObjData(NpcList(NpcIndex).Invent.Object(slot).ObjIndex).Crucial = 0 Then
-104         NpcList(NpcIndex).Invent.Object(slot).amount = NpcList(NpcIndex).Invent.Object(slot).amount - Cantidad
+102     If ObjData(NpcList(NpcIndex).Invent.Object(Slot).ObjIndex).Crucial = 0 Then
+104         NpcList(NpcIndex).Invent.Object(Slot).amount = NpcList(NpcIndex).Invent.Object(Slot).amount - Cantidad
         
-106         If NpcList(NpcIndex).Invent.Object(slot).amount <= 0 Then
+106         If NpcList(NpcIndex).Invent.Object(Slot).amount <= 0 Then
 108             NpcList(NpcIndex).Invent.NroItems = NpcList(NpcIndex).Invent.NroItems - 1
-110             NpcList(NpcIndex).Invent.Object(slot).ObjIndex = 0
-112             NpcList(NpcIndex).Invent.Object(slot).amount = 0
+110             NpcList(NpcIndex).Invent.Object(Slot).ObjIndex = 0
+112             NpcList(NpcIndex).Invent.Object(Slot).amount = 0
 
 114             If NpcList(NpcIndex).Invent.NroItems = 0 And NpcList(NpcIndex).InvReSpawn <> 1 Then
 116                 Call CargarInvent(NpcIndex) 'Reponemos el inventario
@@ -232,12 +232,12 @@ Sub QuitarNpcInvItem(ByVal NpcIndex As Integer, ByVal slot As Byte, ByVal Cantid
             End If
 
         Else
-118         NpcList(NpcIndex).Invent.Object(slot).amount = NpcList(NpcIndex).Invent.Object(slot).amount - Cantidad
+118         NpcList(NpcIndex).Invent.Object(Slot).amount = NpcList(NpcIndex).Invent.Object(Slot).amount - Cantidad
         
-120         If NpcList(NpcIndex).Invent.Object(slot).amount <= 0 Then
+120         If NpcList(NpcIndex).Invent.Object(Slot).amount <= 0 Then
 122             NpcList(NpcIndex).Invent.NroItems = NpcList(NpcIndex).Invent.NroItems - 1
-124             NpcList(NpcIndex).Invent.Object(slot).ObjIndex = 0
-126             NpcList(NpcIndex).Invent.Object(slot).amount = 0
+124             NpcList(NpcIndex).Invent.Object(Slot).ObjIndex = 0
+126             NpcList(NpcIndex).Invent.Object(Slot).amount = 0
             
 128             If Not QuedanItems(NpcIndex, ObjIndex) Then
 
@@ -246,8 +246,8 @@ Sub QuitarNpcInvItem(ByVal NpcIndex As Integer, ByVal slot As Byte, ByVal Cantid
 130                 NoEsdeAca = EncontrarCant(NpcIndex, ObjIndex)
 
 132                 If NoEsdeAca <> 0 Then
-134                     NpcList(NpcIndex).Invent.Object(slot).ObjIndex = ObjIndex
-136                     NpcList(NpcIndex).Invent.Object(slot).amount = EncontrarCant(NpcIndex, ObjIndex)
+134                     NpcList(NpcIndex).Invent.Object(Slot).ObjIndex = ObjIndex
+136                     NpcList(NpcIndex).Invent.Object(Slot).amount = EncontrarCant(NpcIndex, ObjIndex)
 138                     NpcList(NpcIndex).Invent.NroItems = NpcList(NpcIndex).Invent.NroItems + 1
 
                     End If
@@ -267,8 +267,8 @@ Sub QuitarNpcInvItem(ByVal NpcIndex As Integer, ByVal slot As Byte, ByVal Cantid
         Exit Sub
 
 QuitarNpcInvItem_Err:
-144     Call RegistrarError(Err.Number, Err.Description, "InvNpc.QuitarNpcInvItem", Erl)
-146     Resume Next
+144     Call TraceError(Err.Number, Err.Description, "InvNpc.QuitarNpcInvItem", Erl)
+146
         
 End Sub
 
@@ -303,8 +303,8 @@ Sub CargarInvent(ByVal NpcIndex As Integer)
         Exit Sub
 
 CargarInvent_Err:
-114     Call RegistrarError(Err.Number, Err.Description, "InvNpc.CargarInvent", Erl)
-116     Resume Next
+114     Call TraceError(Err.Number, Err.Description, "InvNpc.CargarInvent", Erl)
+116
         
 End Sub
 
@@ -366,7 +366,7 @@ Public Sub NpcDropeo(ByRef npc As npc, ByRef UserIndex As Integer)
         Exit Sub
 
 ErrHandler:
-134     Call LogError("Error al dropear el item " & ObjData(npc.QuizaDropea(objRandom)).name & ", al usuario " & UserList(UserIndex).name & ". " & Err.Description & ".")
+134     Call LogError("Error al dropear el item " & ObjData(npc.QuizaDropea(objRandom)).Name & ", al usuario " & UserList(UserIndex).Name & ". " & Err.Description & ".")
 
 End Sub
 
@@ -417,7 +417,7 @@ Public Sub DropObjQuest(ByRef npc As npc, ByRef UserIndex As Integer)
         Exit Sub
 
 ErrHandler:
-126     Call LogError("Error DropObjQuest al dropear el item " & ObjData(npc.DropQuest(i).ObjIndex).name & ", al usuario " & UserList(UserIndex).name & ". " & Err.Description & ".")
+126     Call LogError("Error DropObjQuest al dropear el item " & ObjData(npc.DropQuest(i).ObjIndex).Name & ", al usuario " & UserList(UserIndex).Name & ". " & Err.Description & ".")
 
 End Sub
 
