@@ -9270,7 +9270,6 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
             
             Else
 108             tUser = NameIndex(UserName)
-
             End If
         
 110         opcion = .incomingData.ReadByte()
@@ -9291,7 +9290,8 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
 122         Select Case opcion
 
                 Case eEditOptions.eo_Gold
-124                 If (.flags.Privilegios And PlayerType.Consejero) = 0 Then Exit Sub
+124
+                    If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios)) Then Exit Sub
 
 126                 If tUser <= 0 Then
 128                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
@@ -9302,6 +9302,8 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
                     End If
                 
 134             Case eEditOptions.eo_Experience
+                    
+                    If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios)) Then Exit Sub
 
 136                 If tUser <= 0 Then
 138                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
@@ -9388,7 +9390,8 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
                     End If
                        
 194             Case eEditOptions.eo_Particula
-196                 If (.flags.Privilegios And PlayerType.Consejero) = 0 Then Exit Sub
+
+196                 If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios)) Then Exit Sub
                 
 198                 If Not .flags.Privilegios = Consejero Then
 200                     If tUser <= 0 Then
@@ -9430,7 +9433,7 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
                 
 226             Case eEditOptions.eo_CriminalsKilled
                 
-228                 If (.flags.Privilegios And PlayerType.Consejero) = 0 Then Exit Sub
+228                 If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios)) Then Exit Sub
                 
 230                 If tUser <= 0 Then
 232                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
@@ -9447,7 +9450,7 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
                 
 240             Case eEditOptions.eo_CiticensKilled
 
-242                 If (.flags.Privilegios And PlayerType.Consejero) = 0 Then Exit Sub
+242                 If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios)) Then Exit Sub
                 
 244                 If tUser <= 0 Then
 246                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
@@ -9463,6 +9466,8 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
                     End If
                 
 254             Case eEditOptions.eo_Level
+                    
+                    If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios)) Then Exit Sub
 
 256                 If tUser <= 0 Then
 258                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
@@ -9501,6 +9506,8 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
                     End If
                 
 288             Case eEditOptions.eo_Skills
+                    
+                    If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios)) Then Exit Sub
 
 290                 For LoopC = 1 To NUMSKILLS
 
@@ -9530,7 +9537,7 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
                 
 312             Case eEditOptions.eo_SkillPointsLeft
                 
-314                 If (.flags.Privilegios And PlayerType.Consejero) = 0 Then Exit Sub
+314                 If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios)) Then Exit Sub
                 
 316                 If tUser <= 0 Then
                     
@@ -9597,6 +9604,8 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
                     End If
                     
 376             Case eEditOptions.eo_Vida
+                    
+                    If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios)) Then Exit Sub
 
 378                 If tUser <= 0 Then
 380                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
@@ -9615,6 +9624,8 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
                     End If
                     
 392             Case eEditOptions.eo_Mana
+                    
+                    If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios)) Then Exit Sub
 
 394                 If tUser <= 0 Then
 396                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
@@ -9634,6 +9645,8 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
                     
 408             Case eEditOptions.eo_Energia
 
+                    If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios)) Then Exit Sub
+
 410                 If tUser <= 0 Then
 412                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
                     
@@ -9651,6 +9664,8 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
                     End If
                         
 424             Case eEditOptions.eo_MinHP
+                    
+                    If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios)) Then Exit Sub
 
 426                 If tUser <= 0 Then
 428                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
@@ -9668,7 +9683,9 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
                     End If
                     
 438             Case eEditOptions.eo_MinMP
-
+                    
+                    If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios)) Then Exit Sub
+                    
 440                 If tUser <= 0 Then
 442                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
                     
@@ -9685,6 +9702,8 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
                     End If
                     
 452             Case eEditOptions.eo_Hit
+                    
+                    If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios)) Then Exit Sub
 
 454                 If tUser <= 0 Then
 456                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
@@ -9702,7 +9721,9 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
                     
 466             Case eEditOptions.eo_MinHit
 
-468                 If tUser <= 0 Then
+468                 If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios)) Then Exit Sub
+
+                    If tUser <= 0 Then
 470                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
                     
                     Else
@@ -9716,6 +9737,8 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
                     End If
                     
 478             Case eEditOptions.eo_MaxHit
+                    
+                    If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios)) Then Exit Sub
 
 480                 If tUser <= 0 Then
 482                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
@@ -9745,7 +9768,7 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
                     
 502             Case eEditOptions.eo_Intervalo
 
-504                 If (.flags.Privilegios And PlayerType.Consejero) = 0 Then Exit Sub
+504                 If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios)) Then Exit Sub
 
 506                 If tUser <= 0 Then
 508                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
