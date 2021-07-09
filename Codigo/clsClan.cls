@@ -358,12 +358,8 @@ End Property
 Public Property Get CantidadDeMiembros() As Integer
         
         On Error GoTo CantidadDeMiembros_Err
-        
 
-        Dim OldQ As String
-
-100     OldQ = GetVar(MEMBERSFILE, "INIT", "NroMembers")
-102     CantidadDeMiembros = IIf(IsNumeric(OldQ), CInt(OldQ), 0)
+102     CantidadDeMiembros = val(GetVar(MEMBERSFILE, "INIT", "NroMembers"))
 
         
         Exit Property
