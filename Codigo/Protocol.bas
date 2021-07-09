@@ -1129,6 +1129,7 @@ Public Function HandleIncomingData(ByVal UserIndex As Integer) As Boolean
 
 HandleIncomingData_Err:
 166     Call RegistrarError(Err.Number, Err.Description & vbNewLine & "PackedID: " & PacketID & vbNewLine & IIf(UserList(UserIndex).flags.UserLogged, "UserName: " & UserList(UserIndex).Name, "UserIndex: " & UserIndex), "Protocol.HandleIncomingData", Erl)
+        UserList(UserIndex).incomingData.SafeClearPacket
 168     Resume Next
     
 End Function
