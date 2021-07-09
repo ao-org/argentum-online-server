@@ -18610,15 +18610,39 @@ Public Sub HandleQuestAbandon(ByVal UserIndex As Integer)
         '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
         On Error GoTo HandleQuestAbandon_Err
+        
+        With UserList(UserIndex)
+        
+            Dim Slot As Byte
+            Slot = .incomingData.ReadByte
+            
+            With .QuestStats.Quests(Slot)
+                ' Le quitamos los objetos de quest que no puede tirar
+                If QuestList(.QuestIndex).RequiredOBJs Then
+                
+                    Dim ObjIndex As Integer, i As Integer
+                    
+                    For i = 1 To QuestList(.QuestIndex).RequiredOBJs
+                        ObjIndex = QuestList(.QuestIndex).RequiredOBJ(i).ObjIndex
+                        
+                        If ObjData(ObjIndex).Intirable = 1 And ObjData(ObjIndex).Instransferible Then
+                            Call QuitarObjetos(ObjIndex, MAX_INVENTORY_OBJS, UserIndex)
+                        End If
+                    Next i
+                
+                End If
+            End With
+    
+            'Borramos la quest.
+100         Call CleanQuestSlot(UserIndex, Slot)
+        
+            'Ordenamos la lista de quests del usuario.
+102         Call ArrangeUserQuests(UserIndex)
+        
+            'Enviamos la lista de quests actualizada.
+104         Call WriteQuestListSend(UserIndex)
 
-        'Borramos la quest.
-100     Call CleanQuestSlot(UserIndex, UserList(UserIndex).incomingData.ReadByte)
-    
-        'Ordenamos la lista de quests del usuario.
-102     Call ArrangeUserQuests(UserIndex)
-    
-        'Enviamos la lista de quests actualizada.
-104     Call WriteQuestListSend(UserIndex)
+        End With
         
         Exit Sub
 

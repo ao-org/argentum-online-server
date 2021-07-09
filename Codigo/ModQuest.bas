@@ -330,21 +330,6 @@ Public Sub CleanQuestSlot(ByVal UserIndex As Integer, ByVal QuestSlot As Integer
 
 102         If .QuestIndex Then
 
-                ' Le quitamos los objetos de quest que no puede tirar
-104             If QuestList(.QuestIndex).RequiredOBJs Then
-
-                    Dim ObjIndex As Integer
-                    
-106                 For i = 1 To QuestList(.QuestIndex).RequiredOBJs
-108                     ObjIndex = QuestList(.QuestIndex).RequiredOBJ(i).ObjIndex
-                        
-110                     If ObjData(ObjIndex).Intirable = 1 And ObjData(ObjIndex).Instransferible Then
-112                         Call QuitarObjetos(ObjIndex, MAX_INVENTORY_OBJS, UserIndex)
-                        End If
-114                 Next i
-
-                End If
-
 116             If QuestList(.QuestIndex).RequiredNPCs Then
 
 118                 For i = 1 To QuestList(.QuestIndex).RequiredNPCs
