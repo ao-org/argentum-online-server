@@ -10924,7 +10924,9 @@ Private Sub HandleSpawnCreature(ByVal UserIndex As Integer)
 104         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) Then
         
 106             If npc > 0 And npc <= UBound(Declaraciones.SpawnList()) Then
-108                 Call SpawnNpc(Declaraciones.SpawnList(npc).NpcIndex, .Pos, True, False)
+                    If Declaraciones.SpawnList(npc).NpcName <> "Nada" And (Declaraciones.SpawnList(npc).PuedeInvocar Or (.flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin)) <> 0) Then
+108                     Call SpawnNpc(Declaraciones.SpawnList(npc).NpcIndex, .Pos, True, False)
+                    End If
                 End If
             
 110             Call LogGM(.Name, "Sumoneo " & Declaraciones.SpawnList(npc).NpcName)
@@ -13051,7 +13053,9 @@ Private Sub HandleKillNPCNoRespawn(ByVal UserIndex As Integer)
         '***************************************************
 100     With UserList(UserIndex)
 
-102         If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero)) Then
+            If Not EsGM(UserIndex) Then Exit Sub
+
+102         If .flags.Privilegios And PlayerType.Consejero Then
 104             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
@@ -13088,8 +13092,10 @@ Private Sub HandleKillAllNearbyNPCs(ByVal UserIndex As Integer)
         'ReyarB
         '***************************************************
 100     With UserList(UserIndex)
+
+            If Not EsGM(UserIndex) Then Exit Sub
         
-102         If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios)) Then
+102         If (.flags.Privilegios And (PlayerType.Consejero Or PlayerType.SemiDios)) Then
 104             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
@@ -14738,8 +14744,10 @@ Public Sub HandleCreateNPC(ByVal UserIndex As Integer)
 
             Dim NpcIndex As Integer
 102         NpcIndex = .incomingData.ReadInteger()
+
+            If Not EsGM(UserIndex) Then Exit Sub
         
-104         If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios)) Then
+104         If .flags.Privilegios And (PlayerType.Consejero Or PlayerType.SemiDios) Then
 106             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
@@ -14788,8 +14796,10 @@ Public Sub HandleCreateNPCWithRespawn(ByVal UserIndex As Integer)
             Dim NpcIndex As Integer
         
 102         NpcIndex = .incomingData.ReadInteger()
+
+            If Not EsGM(UserIndex) Then Exit Sub
         
-104         If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios)) Then
+104         If .flags.Privilegios And (PlayerType.Consejero Or PlayerType.SemiDios) Then
 106             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
