@@ -754,6 +754,7 @@ Sub Main()
 282         .Segundo.Enabled = True
 284         .KillLog.Enabled = True
 286         .TIMER_AI.Enabled = True
+            .tDumpLogs.Interval = 300000
         End With
     
 290     Subasta.SubastaHabilitada = True
