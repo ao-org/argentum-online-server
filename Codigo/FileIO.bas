@@ -208,6 +208,7 @@ Public Sub CargarSpawnList()
 
 106         SpawnList(LoopC).NpcIndex = LoopC
 108         SpawnList(LoopC).NpcName = GetVar(DatPath & "npcs.dat", "NPC" & LoopC, "Name")
+            SpawnList(LoopC).PuedeInvocar = val(GetVar(DatPath & "npcs.dat", "NPC" & LoopC, "PuedeInvocar")) = 1
 
 110         If Len(SpawnList(LoopC).NpcName) = 0 Then
 112             SpawnList(LoopC).NpcName = "Nada"

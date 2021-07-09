@@ -2001,6 +2001,7 @@ Public Type tCriaturasEntrenador
     NpcIndex As Integer
     NpcName As String
     tmpIndex As Integer
+    PuedeInvocar As Boolean
 
 End Type
 
