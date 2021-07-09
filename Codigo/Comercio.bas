@@ -106,33 +106,14 @@ Public Sub Comercio(ByVal Modo As eModoComercio, ByVal UserIndex As Integer, ByV
 136         Call WriteUpdateGold(UserIndex)
     
 138         Call QuitarNpcInvItem(NpcIndex, Slot, Cantidad)
-140         Call UpdateNpcInvToAll(False, NpcIndex, Slot)            'Bien, ahora logueo de ser necesario. Pablo (ToxicWaste) 07/09/07
-            
-            'Es un Objeto que tenemos que loguear?
-            'If ObjData(Objeto.ObjIndex).Log = 1 Then
-            '   Call LogDesarrollo(UserList(UserIndex).name & " compró del NPC " & Objeto.Amount & " " & ObjData(Objeto.ObjIndex).name)
-            'ElseIf Objeto.Amount = 1000 Then 'Es mucha cantidad?
-            'Si no es de los prohibidos de loguear, lo logueamos.
-            '   If ObjData(Objeto.ObjIndex).NoLog <> 1 Then
-            ''     Call LogDesarrollo(UserList(UserIndex).name & " compró del NPC " & Objeto.Amount & " " & ObjData(Objeto.ObjIndex).name)
-            '  End If
-            'End If
-        
+140         Call UpdateNpcInvToAll(False, NpcIndex, Slot)
+
             'Agregado para que no se vuelvan a vender las llaves si se recargan los .dat.
 142         If ObjData(Objeto.ObjIndex).OBJType = otLlaves Then
 144             Call WriteVar(DatPath & "NPCs.dat", "NPC" & NpcList(NpcIndex).Numero, "obj" & Slot, Objeto.ObjIndex & "-0")
 146             Call logVentaCasa(UserList(UserIndex).Name & " compro " & ObjData(Objeto.ObjIndex).Name)
 
             End If
-         
-            Rem    NpcSlot = SlotEnNPCInv(NpcIndex, Objeto.ObjIndex, Objeto.Amount)
-                
-148         objquedo.amount = NpcList(NpcIndex).Invent.Object(CByte(Slot)).amount
-150         objquedo.ObjIndex = NpcList(NpcIndex).Invent.Object(CByte(Slot)).ObjIndex
-
-152         precioenvio = Ceil(ObjData(NpcList(NpcIndex).Invent.Object(Slot).ObjIndex).Valor / Descuento(UserIndex))
-    
-154         Call WriteChangeNPCInventorySlot(UserIndex, CByte(Slot), objquedo, precioenvio)
         
 156     ElseIf Modo = eModoComercio.Venta Then
         
@@ -203,14 +184,6 @@ Public Sub Comercio(ByVal Modo As eModoComercio, ByVal UserIndex As Integer, ByV
                 End If
                 
 218             Call UpdateNpcInvToAll(False, NpcIndex, NpcSlot)
-
-220             objquedo.amount = NpcList(NpcIndex).Invent.Object(NpcSlot).amount
-    
-222             objquedo.ObjIndex = NpcList(NpcIndex).Invent.Object(NpcSlot).ObjIndex
-    
-224             precioenvio = Ceil(ObjData(Objeto.ObjIndex).Valor / Descuento(UserIndex))
-  
-226             Call WriteChangeNPCInventorySlot(UserIndex, NpcSlot, objquedo, precioenvio)
                 
             End If
 
