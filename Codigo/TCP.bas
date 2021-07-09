@@ -900,14 +900,13 @@ Function EntrarCuenta(ByVal UserIndex As Integer, CuentaEmail As String, CuentaP
         
         On Error GoTo EntrarCuenta_Err
         
-        Dim adminIdx As Long
+        Dim adminIdx As Integer
         Dim laCuentaEsDeAdmin As Boolean
-        
         
 100     If ServerSoloGMs > 0 Then
 102         laCuentaEsDeAdmin = False
-            
-104         For adminIdx = 1 To AdministratorAccounts.Count
+
+104         For adminIdx = 0 To AdministratorAccounts.Count - 1
                 ' Si el e-mail está declarado junto al nick de la cuenta donde esta el PJ GM en el Server.ini te dejo entrar.
 106             If UCase$(AdministratorAccounts.Items(adminIdx)) = UCase$(CuentaEmail) Then
 108                 laCuentaEsDeAdmin = True
