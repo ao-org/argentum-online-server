@@ -13241,7 +13241,7 @@ Public Sub HandleChatColor(ByVal UserIndex As Integer)
             Dim Color As Long
 102             Color = RGB(.incomingData.ReadByte(), .incomingData.ReadByte(), .incomingData.ReadByte())
         
-104         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.RoleMaster)) Then
+104         If EsGM(UserIndex) Then
 106             .flags.ChatColor = Color
             End If
 
