@@ -19386,8 +19386,6 @@ Private Sub HandleHome(ByVal UserIndex As Integer)
         '***************************************************
     
 100     With UserList(UserIndex)
-        
-102         Call .incomingData.ReadInteger
 
 104         If .flags.Muerto = 0 Then
 106             Call WriteConsoleMsg(UserIndex, "Debes estar muerto para utilizar este comando.", FontTypeNames.FONTTYPE_FIGHT)
