@@ -26,7 +26,7 @@ Testing=0
 MinDados=17
 MaxDados=18
 
-MaxUsers=1000
+MaxUsers=3000
 
 Admines=3
 Dioses=2
