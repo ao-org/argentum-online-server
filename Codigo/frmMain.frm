@@ -459,10 +459,6 @@ Begin VB.Form frmMain
       TabIndex        =   14
       Top             =   3000
       Width           =   4935
-      Begin VB.Timer tDumpLogs 
-         Left            =   1080
-         Top             =   480
-      End
       Begin VB.ListBox listaDePaquetes 
          Height          =   1110
          Left            =   120
@@ -830,10 +826,6 @@ Handler:
     ' **********************************
 End Sub
 
-Private Sub tDumpLogs_Timer()
-    Call frmServidor.cmdDumpLogs_Click
-End Sub
-
 ' WyroX: Comprobamos cada 10 segundos, porque no es necesaria tanta precisión
 Private Sub TiempoRetos_Timer()
 
@@ -913,6 +905,8 @@ Private Sub Minuto_Timer()
     Static minutos          As Long
 
     Static MinutosLatsClean As Long
+    
+    Static DumpErrorsTimer     As Long
 
     Dim i                   As Integer
 
@@ -938,6 +932,13 @@ Private Sub Minuto_Timer()
     End If
     
     minutos = minutos + 1
+    
+    DumpErrorsTimer = DumpErrorsTimer + 1
+    
+    If DumpErrorsTimer = 5 Then
+        Call frmServidor.cmdDumpLogs_Click
+        DumpErrorsTimer = 0
+    End If
 
     '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     Call ModAreas.AreasOptimizacion
