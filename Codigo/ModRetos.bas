@@ -762,7 +762,7 @@ Public Sub FinalizarReto(ByVal Sala As Integer, Optional ByVal TiempoAgotado As 
 258         For i = 0 To UBound(.Jugadores)
 260           tIndex = .Jugadores(i)
 
-262           If tIndex <> 0 Then               
+262           If tIndex <> 0 Then
                 If todosMayorA35 Then
 266               If i Mod 2 = 0 Then ' Jugadores en el equipo Izquierdo
 268                 eloDiff = winsIzquierda * (eloTotalDerecha * 0.1)
@@ -771,18 +771,18 @@ Public Sub FinalizarReto(ByVal Sala As Integer, Optional ByVal TiempoAgotado As 
                   End If
 
                   If eloDiff > 0 Then
-                    Call SendData(SendTarget.ToIndex, tIndex, "Has ganado " & eloDiff & " puntos de ELO!", FontTypeNames.FONTTYPE_INFO)
+                    Call SendData(SendTarget.ToIndex, tIndex, PrepareMessageConsoleMsg("Has ganado " & Abs(eloDiff) & " puntos de ELO!", FontTypeNames.FONTTYPE_ROSA))
                   Else
 272                 If UserList(tIndex).Stats.ELO < Abs(eloDiff) Then
-274                   eloDiff = - UserList(tIndex).Stats.ELO
+274                   eloDiff = -UserList(tIndex).Stats.ELO
                     End If
 
-                    Call SendData(SendTarget.ToIndex, tIndex, "Has perdido " & Abs(eloDiff) & " puntos de ELO!", FontTypeNames.FONTTYPE_INFO)
+                    Call SendData(SendTarget.ToIndex, tIndex, PrepareMessageConsoleMsg("Has perdido " & Abs(eloDiff) & " puntos de ELO!", FontTypeNames.FONTTYPE_ROSA))
                   End If
 
 276               UserList(tIndex).Stats.ELO = UserList(tIndex).Stats.ELO + eloDiff
                 Else ' Alguno es menor a level 35
-                  Call SendData(SendTarget.ToIndex, tIndex, "Al menos un participante del reto tiene nivel menor a 35, tu ELO permanece igual.", FontTypeNames.FONTTYPE_INFO)
+                  Call SendData(SendTarget.ToIndex, tIndex, PrepareMessageConsoleMsg("Al menos un participante del reto tiene nivel menor a 35, tu ELO permanece igual.", FontTypeNames.FONTTYPE_INFOIAO))
                 End If
               End If
 
