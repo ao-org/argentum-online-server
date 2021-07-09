@@ -532,6 +532,8 @@ Private Function PuedeLanzar(ByVal UserIndex As Integer, ByVal HechizoIndex As I
 
 100     PuedeLanzar = False
 
+        If HechizoIndex = 0 Then Exit Function
+        
 102     With UserList(UserIndex)
 
 104         If UserList(UserIndex).flags.EnConsulta Then
@@ -1204,8 +1206,6 @@ Sub LanzarHechizo(ByVal Index As Integer, ByVal UserIndex As Integer)
         Dim uh As Integer
         
 100     uh = UserList(UserIndex).Stats.UserHechizos(Index)
-
-        If uh Then Exit Sub
 
 102     If PuedeLanzar(UserIndex, uh, Index) Then
 
