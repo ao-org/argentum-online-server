@@ -17,13 +17,13 @@ Hide=0
 MaxConexionesIP=3
 MaxUsersPorCuenta=2
 IdleLimit=0
-Version=0.27.0
+Version=2.0.0
 IniciarDesdeBackUp=0
 PuedeCrearPersonajes=1
 ServerSoloGMs=0
 Testing=0
 
-MinDados=17
+MinDados=16
 MaxDados=18
 
 MaxUsers=3000
@@ -54,7 +54,7 @@ SemiDios7=emancu|emiliano.mancuso@gmail.com
 SemiDios8=HarThaoS|martintrionfetti@gmail.com
 SemiDios9=Vox|ricardo_r_jc@hotmail.com
 SemiDios10=arandor|pedrosalvadorgugliotta@gmail.com
-Consejero11=Vanderbilt|luciano_rizzi@hotmail.com
+SemiDios11=Vanderbilt|luciano_rizzi@hotmail.com
 
 [Consejeros]
 Consejero1=Dash|raffozelada@hotmail.com
@@ -66,8 +66,6 @@ Consejero6=Terrel|loganfenix2000@yahoo.com.mx
 Consejero7=Hainnor|Jere_estandar@hotmail.com.ar
 Consejero8=Bwise|Joacovas@hotmail.com
 Consejero9=Bonyo|argentumo@hotmail.com
-
-
 
 [RolesMasters]
 RM1=
