@@ -1294,7 +1294,7 @@ Sub ConnectUser(ByVal UserIndex As Integer, _
                 ' Si tiene una posicion a la que volver, lo mando ahi
                 If MapaValido(.flags.ReturnPos.Map) And _
                     .flags.ReturnPos.X > 0 And .flags.ReturnPos.X <= XMaxMapSize And _
-                    .flags.ReturnPos.Y > 0 And .flags.ReturnPos.X <= YMaxMapSize Then
+                    .flags.ReturnPos.Y > 0 And .flags.ReturnPos.Y <= YMaxMapSize Then
                     
                     Call WarpToLegalPos(UserIndex, .flags.ReturnPos.Map, .flags.ReturnPos.X, .flags.ReturnPos.Y, True)
                 
