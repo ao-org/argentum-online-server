@@ -586,11 +586,15 @@ Public Sub FinalizarReto(ByVal Sala As Integer, Optional ByVal TiempoAgotado As 
             ' Decidimos el resultado del reto según el puntaje:
             Dim i As Integer, tIndex As Integer, Equipo1 As String, Equipo2 As String
             Dim eloTotalIzquierda As Long, eloTotalDerecha As Long, winsIzquierda As Long, winsDerecha As Long
+            Dim todosMayorA35 As Boolean
+            todosMayorA35 = True
 
 106         For i = 0 To UBound(.Jugadores)
 108           tIndex = .Jugadores(i)
 
 110           If tIndex <> 0 Then
+                todosMayorA35 = todosMayorA35 And (UserList(tIndex).Stats.ELV >= 35)
+
 112             If i Mod 2 = 0 Then
 114               eloTotalIzquierda = eloTotalIzquierda + UserList(tIndex).Stats.ELO
                 Else
@@ -754,24 +758,32 @@ Public Sub FinalizarReto(ByVal Sala As Integer, Optional ByVal TiempoAgotado As 
 
             ' Actualizamos el ELO de cada jugador, inspirados en `Algoritmo de 400`
             ' https://en.wikipedia.org/wiki/Elo_rating_system
-            Dim eloTmp As Long
+            Dim eloDiff As Long
 258         For i = 0 To UBound(.Jugadores)
 260           tIndex = .Jugadores(i)
 
-262           If tIndex <> 0 Then
-264             eloTmp = UserList(tIndex).Stats.ELO
-                
-266             If i Mod 2 = 0 Then ' Jugadores en el equipo Izquierdo
-268               eloTmp = eloTmp + winsIzquierda * (eloTotalDerecha * 0.1)
-                Else
-270               eloTmp = eloTmp + winsDerecha * (eloTotalIzquierda * 0.1)
-                End If
+262           If tIndex <> 0 Then               
+                If todosMayorA35 Then
+266               If i Mod 2 = 0 Then ' Jugadores en el equipo Izquierdo
+268                 eloDiff = winsIzquierda * (eloTotalDerecha * 0.1)
+                  Else
+270                 eloDiff = winsDerecha * (eloTotalIzquierda * 0.1)
+                  End If
 
-272             If eloTmp < 0 Then
-274               eloTmp = 0
+                  If eloDiff > 0 Then
+                    Call SendData(SendTarget.ToIndex, tIndex, "Has ganado " & eloDiff & " puntos de ELO!", FontTypeNames.FONTTYPE_INFO)
+                  Else
+272                 If UserList(tIndex).Stats.ELO < Abs(eloDiff) Then
+274                   eloDiff = - UserList(tIndex).Stats.ELO
+                    End If
+
+                    Call SendData(SendTarget.ToIndex, tIndex, "Has perdido " & Abs(eloDiff) & " puntos de ELO!", FontTypeNames.FONTTYPE_INFO)
+                  End If
+
+276               UserList(tIndex).Stats.ELO = UserList(tIndex).Stats.ELO + eloDiff
+                Else ' Alguno es menor a level 35
+                  Call SendData(SendTarget.ToIndex, tIndex, "Al menos un participante del reto tiene nivel menor a 35, tu ELO permanece igual.", FontTypeNames.FONTTYPE_INFO)
                 End If
-                
-276             UserList(tIndex).Stats.ELO = eloTmp
               End If
 
 278         Next i
