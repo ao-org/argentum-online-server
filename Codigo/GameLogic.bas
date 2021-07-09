@@ -557,11 +557,7 @@ Sub ClosestLegalPos(Pos As WorldPos, ByRef nPos As WorldPos, Optional ByVal Pued
 112                 If LegalPos(nPos.Map, tX, tY, PuedeAgua, PuedeTierra, , False) Then
 114                     nPos.X = tX
 116                     nPos.Y = tY
-                        '¿Hay objeto?
-                
-118                     tX = Pos.X + LoopC
-120                     tY = Pos.Y + LoopC
-  
+                        Exit Sub
                     End If
         
 122             Next tX

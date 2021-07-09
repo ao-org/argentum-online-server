@@ -1596,52 +1596,38 @@ Tilelibre_Err:
 End Sub
 
 Sub WarpToLegalPos(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Byte, ByVal Y As Byte, Optional ByVal FX As Boolean = False, Optional ByVal AguaValida As Boolean = False)
-        'Santo: Sub para buscar la posición legal mas cercana al objetivo y warpearlo.
-        
+
         On Error GoTo WarpToLegalPos_Err
-        
 
-        Dim ALoop As Byte, Find As Boolean, lX As Long, lY As Long
+        Dim LoopC    As Integer
 
-100     Find = False
-102     ALoop = 0
+        Dim tX       As Integer
 
-104     Do Until Find = True
+        Dim tY       As Integer
 
-106         For lX = X - ALoop To X + ALoop
-108             For lY = Y - ALoop To Y + ALoop
+102     Do While True
 
-110                 With MapData(Map, lX, lY)
+104         If LoopC > 20 Then Exit Sub
 
-112                     If .UserIndex <= 0 Then
-                            ' No podemos transportarnos a bloqueos totales
-114                         If (.Blocked And eBlock.ALL_SIDES) <> eBlock.ALL_SIDES And ((.Blocked And FLAG_AGUA) = 0 Or AguaValida) Then
-
-116                             If .TileExit.Map = 0 Then
-118                                 If .NpcIndex <= 0 Then
-                                        ' A partir del 50 empiezan las casas privadas, ahí no se puede transportar
-120                                     If .trigger < 50 Then
-122                                         Call WarpUserChar(UserIndex, Map, lX, lY, FX)
-124                                         Find = True
-                                            Exit Sub
-                                        End If
-                                    End If
-
-                                End If
-
-                            End If
-
+108         For tY = Y - LoopC To Y + LoopC
+110             For tX = X - LoopC To X + LoopC
+            
+112                 If LegalPos(Map, tX, tY, AguaValida, True, UserList(UserIndex).flags.Montado = 1, False) Then
+                        If MapData(Map, tX, tY).trigger < 50 Then
+114                         Call WarpUserChar(UserIndex, Map, tX, tY, FX)
+                            Exit Sub
                         End If
-
-                    End With
-
-126             Next lY
-128         Next lX
-
-130         ALoop = ALoop + 1
+                    End If
+        
+122             Next tX
+124         Next tY
+    
+126         LoopC = LoopC + 1
+    
         Loop
 
-        
+        Call WarpUserChar(UserIndex, Map, X, Y, FX)
+
         Exit Sub
 
 WarpToLegalPos_Err:
