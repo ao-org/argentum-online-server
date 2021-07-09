@@ -65,8 +65,10 @@ Public Sub Comercio(ByVal Modo As eModoComercio, ByVal UserIndex As Integer, ByV
 100     If Cantidad < 1 Or Slot < 1 Then Exit Sub
     
 102     If Modo = eModoComercio.Compra Then
+
 104         If Slot > UserList(UserIndex).CurrentInventorySlots Then
                 Exit Sub
+                
 106         ElseIf Cantidad > MAX_INVENTORY_OBJS Then
 108             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(UserList(UserIndex).Name & " ha sido baneado por el sistema anti-cheats.", FontTypeNames.FONTTYPE_FIGHT))
 110             Call Ban(UserList(UserIndex).Name, "Sistema Anti Cheats", "Intentar hackear el sistema de comercio. Quiso comprar demasiados items:" & Cantidad)
@@ -75,11 +77,13 @@ Public Sub Comercio(ByVal Modo As eModoComercio, ByVal UserIndex As Integer, ByV
             
 116             Call CloseSocket(UserIndex)
                 Exit Sub
+                
 118         ElseIf Not NpcList(NpcIndex).Invent.Object(Slot).amount > 0 Then
                 Exit Sub
 
             End If
-        
+            
+            If NpcList(NpcIndex).Invent.Object(Slot).ObjIndex = 0 Then Exit Sub
 120         If Cantidad > NpcList(NpcIndex).Invent.Object(Slot).amount Then Cantidad = NpcList(NpcIndex).Invent.Object(Slot).amount
         
 122         Objeto.amount = Cantidad
@@ -125,6 +129,7 @@ Public Sub Comercio(ByVal Modo As eModoComercio, ByVal UserIndex As Integer, ByV
                 
 148         objquedo.amount = NpcList(NpcIndex).Invent.Object(CByte(Slot)).amount
 150         objquedo.ObjIndex = NpcList(NpcIndex).Invent.Object(CByte(Slot)).ObjIndex
+
 152         precioenvio = Ceil(ObjData(NpcList(NpcIndex).Invent.Object(Slot).ObjIndex).Valor / Descuento(UserIndex))
     
 154         Call WriteChangeNPCInventorySlot(UserIndex, CByte(Slot), objquedo, precioenvio)

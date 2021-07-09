@@ -864,15 +864,19 @@ Sub Desequipar(ByVal UserIndex As Integer, ByVal Slot As Byte)
 158                     UserList(UserIndex).flags.RegeneracionSta = 0
 
 160                 Case 2 'Modifica los Atributos
-162                     UserList(UserIndex).Stats.UserAtributos(obj.QueAtributo) = UserList(UserIndex).Stats.UserAtributos(obj.QueAtributo) - obj.CuantoAumento
-                
-164                     UserList(UserIndex).Stats.UserAtributosBackUP(obj.QueAtributo) = UserList(UserIndex).Stats.UserAtributosBackUP(obj.QueAtributo) - obj.CuantoAumento
-                        ' UserList(UserIndex).Stats.UserAtributos(obj.QueAtributo) = UserList(UserIndex).Stats.UserAtributos(obj.QueAtributo) - obj.CuantoAumento
-166                     Call WriteFYA(UserIndex)
+                        If obj.QueAtributo <> 0 Then
+162                         UserList(UserIndex).Stats.UserAtributos(obj.QueAtributo) = UserList(UserIndex).Stats.UserAtributos(obj.QueAtributo) - obj.CuantoAumento
+164                         UserList(UserIndex).Stats.UserAtributosBackUP(obj.QueAtributo) = UserList(UserIndex).Stats.UserAtributosBackUP(obj.QueAtributo) - obj.CuantoAumento
+                            ' UserList(UserIndex).Stats.UserAtributos(obj.QueAtributo) = UserList(UserIndex).Stats.UserAtributos(obj.QueAtributo) - obj.CuantoAumento
+                            
+166                         Call WriteFYA(UserIndex)
+                        End If
 
 168                 Case 3 'Modifica los skills
-170                     UserList(UserIndex).Stats.UserSkills(obj.QueSkill) = UserList(UserIndex).Stats.UserSkills(obj.QueSkill) - obj.CuantoAumento
-
+                        If obj.QueSkill <> 0 Then
+170                         UserList(UserIndex).Stats.UserSkills(obj.QueSkill) = UserList(UserIndex).Stats.UserSkills(obj.QueSkill) - obj.CuantoAumento
+                        End If
+                        
 172                 Case 4 ' Regeneracion Vida
 174                     UserList(UserIndex).flags.RegeneracionHP = 0
 

@@ -2508,17 +2508,14 @@ Private Sub HandleCastSpell(ByVal UserIndex As Integer)
 112             .flags.Hechizo = 0
             End If
         
-114         If .flags.Hechizo <> 0 Then
+114         If .flags.Hechizo <> 0 And .Stats.UserHechizos(Spell) <> 0 Then
 
 116             If (.flags.Privilegios And PlayerType.Consejero) = 0 Then
-
-                    Dim uh As Integer
-                
-118                 uh = .Stats.UserHechizos(Spell)
-    
-120                 If Hechizos(uh).AutoLanzar = 1 Then
+                    
+120                 If Hechizos(.Stats.UserHechizos(Spell)).AutoLanzar = 1 Then
 122                     UserList(UserIndex).flags.TargetUser = UserIndex
 124                     Call LanzarHechizo(.flags.Hechizo, UserIndex)
+
                     Else
 126                     Call WriteWorkRequestTarget(UserIndex, eSkill.Magia)
     
@@ -3094,28 +3091,32 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                 
 242                 With .Invent
 244                     DummyInt = .MunicionEqpSlot
-                    
-                        'Take 1 arrow away - we do it AFTER hitting, since if Ammo Slot is 0 it gives a rt9 and kicks players
-246                     If consumirMunicion Then
-248                         Call QuitarUserInvItem(UserIndex, DummyInt, 1)
+                        
+                        If DummyInt <> 0 Then
+                        
+                            'Take 1 arrow away - we do it AFTER hitting, since if Ammo Slot is 0 it gives a rt9 and kicks players
+246                         If consumirMunicion Then
+248                             Call QuitarUserInvItem(UserIndex, DummyInt, 1)
+                            End If
+                        
+250                         If .Object(DummyInt).amount > 0 Then
 
+                                'QuitarUserInvItem unequipps the ammo, so we equip it again
+252                             .MunicionEqpSlot = DummyInt
+254                             .MunicionEqpObjIndex = .Object(DummyInt).ObjIndex
+256                             .Object(DummyInt).Equipped = 1
+    
+                            Else
+258                             .MunicionEqpSlot = 0
+260                             .MunicionEqpObjIndex = 0
+    
+                            End If
+    
+262                         Call UpdateUserInv(False, UserIndex, DummyInt)
+                        
                         End If
-                    
-250                     If .Object(DummyInt).amount > 0 Then
-                            'QuitarUserInvItem unequipps the ammo, so we equip it again
-252                         .MunicionEqpSlot = DummyInt
-254                         .MunicionEqpObjIndex = .Object(DummyInt).ObjIndex
-256                         .Object(DummyInt).Equipped = 1
-                        Else
-258                         .MunicionEqpSlot = 0
-260                         .MunicionEqpObjIndex = 0
-
-                        End If
-
-262                     Call UpdateUserInv(False, UserIndex, DummyInt)
-
+                        
                     End With
-
                     '-----------------------------------
             
 264             Case eSkill.Magia
