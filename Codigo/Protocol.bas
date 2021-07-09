@@ -18515,7 +18515,7 @@ Public Sub HandleQuestAccept(ByVal UserIndex As Integer)
 102     NpcIndex = UserList(UserIndex).flags.TargetNPC
     
 104     If NpcIndex = 0 Then Exit Sub
-106     If Indice = 0 Then Exit Sub
+106     If Indice <= 0 Or Indice > UBound(NpcList(NpcIndex).QuestNumber) Then Exit Sub
     
         'Esta el personaje en la distancia correcta?
 108     If Distancia(UserList(UserIndex).Pos, NpcList(NpcIndex).Pos) > 5 Then
