@@ -1838,8 +1838,10 @@ Public Function PuedeAtacarNPC(ByVal AttackerIndex As Integer, ByVal NpcIndex As
             Exit Function
         End If
 
-        'Solo administradores pueden atacar a usuarios (PARA TESTING)
-118     If (UserList(AttackerIndex).flags.Privilegios And (PlayerType.user Or PlayerType.Dios Or PlayerType.Admin)) = 0 Then
+        'Solo administradores, dioses y usuarios pueden atacar a NPC's (PARA TESTING)
+118     If (UserList(AttackerIndex).flags.Privilegios And (PlayerType.user Or PlayerType.Dios Or PlayerType.Admin)) = 0 And _
+            NpcList(NpcIndex).NPCtype <> eNPCType.DummyTarget Then
+            
 120         PuedeAtacarNPC = False
             Exit Function
         End If
