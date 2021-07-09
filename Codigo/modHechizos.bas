@@ -1197,13 +1197,15 @@ HandleHechizoNPC_Err:
         
 End Sub
 
-Sub LanzarHechizo(Index As Integer, UserIndex As Integer)
+Sub LanzarHechizo(ByVal Index As Integer, ByVal UserIndex As Integer)
         
         On Error GoTo LanzarHechizo_Err
 
         Dim uh As Integer
         
 100     uh = UserList(UserIndex).Stats.UserHechizos(Index)
+
+        If uh Then Exit Sub
 
 102     If PuedeLanzar(UserIndex, uh, Index) Then
 
