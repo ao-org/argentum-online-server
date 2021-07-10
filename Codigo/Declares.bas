@@ -103,6 +103,8 @@ Public CostoPerdonPorCiudadano As Long
 
 Public MaximoSpeedHack      As Integer
 
+Public LastCountUsersOnline As Integer
+
 Type tEstadisticasDiarias
 
     segundos As Double

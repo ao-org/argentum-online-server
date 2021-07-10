@@ -8451,7 +8451,6 @@ Private Sub HandleDesbuggear(ByVal UserIndex As Integer)
 128                         Next i
                         
 130                         NumUsers = Count
-132                         Call MostrarNumUsers
                         
 134                         If AccountOnline Then
 136                             Call WriteConsoleMsg(UserIndex, "Hay un usuario de la cuenta conectado. Se actualizaron solo los usuarios online.", FontTypeNames.FONTTYPE_INFO)
@@ -8481,7 +8480,6 @@ Private Sub HandleDesbuggear(ByVal UserIndex As Integer)
 152                 Next i
                 
 154                 NumUsers = Count
-156                 Call MostrarNumUsers
                 
 158                 Call WriteConsoleMsg(UserIndex, "Se actualizaron los usuarios online.", FontTypeNames.FONTTYPE_INFO)
 
