@@ -404,7 +404,7 @@ Private Enum ClientPacketID
     ChaosArmour             '/AC1 - 4
     NavigateToggle          '/NAVE
     ServerOpenToUsersToggle '/HABILITAR
-    Participar           '/APAGAR
+    Participar              '/APAGAR
     TurnCriminal            '/CONDEN
     ResetFactions           '/RAJAR
     RemoveCharFromGuild     '/RAJARCLAN
@@ -9467,7 +9467,7 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
                 
 254             Case eEditOptions.eo_Level
                     
-                    If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios)) Then Exit Sub
+                    If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero)) Then Exit Sub
 
 256                 If tUser <= 0 Then
 258                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & UserName, FontTypeNames.FONTTYPE_INFO)
@@ -9507,7 +9507,7 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
                 
 288             Case eEditOptions.eo_Skills
                     
-                    If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios)) Then Exit Sub
+                    If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero)) Then Exit Sub
 
 290                 For LoopC = 1 To NUMSKILLS
 
@@ -9537,7 +9537,7 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
                 
 312             Case eEditOptions.eo_SkillPointsLeft
                 
-314                 If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios)) Then Exit Sub
+314                 If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero)) Then Exit Sub
                 
 316                 If tUser <= 0 Then
                     
