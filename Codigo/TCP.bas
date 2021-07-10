@@ -713,7 +713,6 @@ Sub CloseSocket(ByVal UserIndex As Integer)
 130             Call CloseUser(UserIndex)
         
 132             If NumUsers > 0 Then NumUsers = NumUsers - 1
-134             Call MostrarNumUsers
         
             Else
 136             Call ResetUserSlot(UserIndex)
@@ -1473,7 +1472,6 @@ Sub ConnectUser(ByVal UserIndex As Integer, _
         
 510         Call WriteContadores(UserIndex)
 512         Call WriteOxigeno(UserIndex)
-514         Call MostrarNumUsers
 
         End With
     

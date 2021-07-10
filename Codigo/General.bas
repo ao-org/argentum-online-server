@@ -606,7 +606,7 @@ Sub Main()
 114     Call InicializarConstantes
     
 116     frmCargando.Show
-    
+        LastCountUsersOnline = 100
         'Call PlayWaveAPI(App.Path & "\wav\harp3.wav")
     
 118     frmMain.Caption = frmMain.Caption & " V." & App.Major & "." & App.Minor & "." & App.Revision
@@ -898,10 +898,11 @@ Sub MostrarNumUsers()
         
 
 100     Call SendData(SendTarget.ToAll, 0, PrepareMessageOnlineUser(NumUsers))
+
 102     frmMain.CantUsuarios.Caption = "Numero de usuarios jugando: " & NumUsers
     
 104     Call SetUsersLoggedDatabase(NumUsers)
-
+        LastCountUsersOnline = NumUsers
         
         Exit Sub
 
