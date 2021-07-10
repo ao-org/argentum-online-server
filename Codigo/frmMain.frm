@@ -832,9 +832,18 @@ Handler:
 End Sub
 
 Private Sub T_UsersOnline_Timer()
+
+On Error GoTo T_UsersOnline_Err
+
     If LastCountUsersOnline <> NumUsers Then
         Call MostrarNumUsers
     End If
+    
+    Exit Sub
+
+T_UsersOnline_Err:
+106     Call RegistrarError(Err.Number, Err.Description, "General.T_UsersOnline", Erl)
+
 End Sub
 
 ' WyroX: Comprobamos cada 10 segundos, porque no es necesaria tanta precisión
@@ -1831,7 +1840,7 @@ Private Sub TIMER_AI_Timer()
 
     'Barrin 29/9/03
     If Not haciendoBK And Not EnPausa Then
-
+    
         'Update NPCs
         For NpcIndex = 1 To LastNPC
             
@@ -1858,8 +1867,8 @@ Private Sub TIMER_AI_Timer()
                         If .flags.Inmovilizado > 0 Then Call EfectoInmovilizadoNpc(NpcIndex)
                         
                         If Mapa > 0 Then
-                            'Emancu: Vamos a probar si el server se degrada moviendo TODOS los npc, con o sin users.
-                            'If MapInfo(Mapa).NumUsers > 0 Or NpcList(NpcIndex).NPCtype = eNPCType.GuardiaNpc Then
+                            'Emancu: Vamos a probar si el server se degrada moviendo TODOS los npc, con o sin users. HarThaoS / WyroX: Si, se degrada.
+                            If MapInfo(Mapa).NumUsers > 0 Or NpcList(NpcIndex).NPCtype = eNPCType.GuardiaNpc Then
     
                                 If IntervaloPermiteMoverse(NpcIndex) Then
                                         
@@ -1875,7 +1884,7 @@ Private Sub TIMER_AI_Timer()
                                         
                                 End If
     
-                            'End If
+                            End If
     
                         End If
 
