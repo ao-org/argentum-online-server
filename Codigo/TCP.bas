@@ -942,7 +942,7 @@ Function EntrarCuenta(ByVal UserIndex As Integer, CuentaEmail As String, CuentaP
             Exit Function
         End If
     
-132     EntrarCuenta = EnterAccountDatabase(UserIndex, CuentaEmail, SDesencriptar(CuentaPassword), MacAddress, HDSerial, UserList(UserIndex).IP)
+132     EntrarCuenta = EnterAccountDatabase(UserIndex, CuentaEmail, DecryptString(CuentaPassword), MacAddress, HDSerial, UserList(UserIndex).IP)
         
         Exit Function
 
