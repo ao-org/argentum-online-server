@@ -1171,8 +1171,6 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
         '166     .QuestNumber = val(Leer.GetValue("NPC" & NpcNumber, "QuestNumber"))
     
     
-    
-    
 186         .PoderAtaque = val(Leer.GetValue("NPC" & NpcNumber, "PoderAtaque"))
 188         .PoderEvasion = val(Leer.GetValue("NPC" & NpcNumber, "PoderEvasion"))
     
@@ -1187,6 +1185,7 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
     
 200         .IntervaloAtaque = val(Leer.GetValue("NPC" & NpcNumber, "IntervaloAtaque"))
 202         .IntervaloMovimiento = val(Leer.GetValue("NPC" & NpcNumber, "IntervaloMovimiento"))
+            
 204         .IntervaloLanzarHechizo = val(Leer.GetValue("NPC" & NpcNumber, "IntervaloLanzarHechizo"))
 
 206         .Contadores.IntervaloRespawn = val(Leer.GetValue("NPC" & NpcNumber, "IntervaloRespawn"))
@@ -1206,12 +1205,10 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
     
 222         If .IntervaloLanzarHechizo = 0 Then
 224             .IntervaloLanzarHechizo = 8000
-    
             End If
     
 226         If .IntervaloAtaque = 0 Then
 228             .IntervaloAtaque = 2000
-    
             End If
     
 230         .Stats.MaxHp = val(Leer.GetValue("NPC" & NpcNumber, "MaxHP"))
@@ -1370,7 +1367,7 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
 396         If .pathFindingInfo.RangoVision = 0 Then .pathFindingInfo.RangoVision = RANGO_VISION_X
         
 398         .pathFindingInfo.Inteligencia = val(Leer.GetValue("NPC" & NpcNumber, "Inteligencia"))
-400         If .pathFindingInfo.Inteligencia = 0 Then .pathFindingInfo.Inteligencia = 30
+400         If .pathFindingInfo.Inteligencia = 0 Then .pathFindingInfo.Inteligencia = 0
         
 402         ReDim .pathFindingInfo.Path(1 To .pathFindingInfo.Inteligencia + RANGO_VISION_X * 3)
     

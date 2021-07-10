@@ -606,7 +606,7 @@ Sub Main()
 114     Call InicializarConstantes
     
 116     frmCargando.Show
-        LastCountUsersOnline = 100
+        LastCountUsersOnline = -1
         'Call PlayWaveAPI(App.Path & "\wav\harp3.wav")
     
 118     frmMain.Caption = frmMain.Caption & " V." & App.Major & "." & App.Minor & "." & App.Revision
