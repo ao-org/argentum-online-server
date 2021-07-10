@@ -26,6 +26,11 @@ Begin VB.Form frmMain
    ScaleHeight     =   6225
    ScaleWidth      =   6930
    StartUpPosition =   2  'CenterScreen
+   Begin VB.Timer T_UsersOnline 
+      Interval        =   10000
+      Left            =   3600
+      Top             =   4200
+   End
    Begin VB.CommandButton CerrarYForzarActualizar 
       Appearance      =   0  'Flat
       BackColor       =   &H00C0E0FF&
@@ -826,6 +831,12 @@ Handler:
     ' **********************************
 End Sub
 
+Private Sub T_UsersOnline_Timer()
+    If LastCountUsersOnline <> NumUsers Then
+        Call MostrarNumUsers
+    End If
+End Sub
+
 ' WyroX: Comprobamos cada 10 segundos, porque no es necesaria tanta precisión
 Private Sub TiempoRetos_Timer()
 
@@ -860,6 +871,8 @@ Handler:
 
     
 End Sub
+
+
 
 Private Sub TimerGuardarUsuarios_Timer()
 
