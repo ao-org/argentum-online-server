@@ -1022,12 +1022,31 @@ Sub NPCTirarOro(MiNPC As npc, ByVal UserIndex As Integer)
             
 102         If MiNPC.GiveGLD > 0 Then
 
+
                 Dim Oro As Long
 104                 Oro = MiNPC.GiveGLD * OroMult * UserList(UserIndex).flags.ScrollOro
         
 106             If UserList(UserIndex).Grupo.EnGrupo Then
 
-108                 Select Case UserList(UserList(UserIndex).Grupo.Lider).Grupo.CantidadMiembros
+                    Dim CantidadMiembrosValidos As Byte
+                    Dim i As Integer, index As Integer
+                    
+                     For i = 1 To UserList(UserList(UserIndex).Grupo.Lider).Grupo.CantidadMiembros
+                         index = UserList(UserList(UserIndex).Grupo.Lider).Grupo.Miembros(i)
+                         If UserList(index).flags.Muerto = 0 Then
+                             If UserList(UserIndex).Pos.Map = UserList(index).Pos.Map Then
+                                 If Abs(UserList(UserIndex).Pos.X - UserList(index).Pos.X) < 20 Then
+                                     If Abs(UserList(UserIndex).Pos.Y - UserList(index).Pos.Y) < 20 Then
+                                         If UserList(UserIndex).Stats.ELV < STAT_MAXELV Then 'hay una var del lvl max?
+                                             CantidadMiembrosValidos = CantidadMiembrosValidos + 1
+                                        End If
+                                    End If
+                                End If
+                            End If
+                        End If
+                    Next
+
+108                 Select Case CantidadMiembrosValidos
                         Case 2: Oro = Oro * 1.2
 110                     Case 3: Oro = Oro * 1.4
 112                     Case 4: Oro = Oro * 1.6
