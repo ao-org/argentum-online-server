@@ -5902,11 +5902,11 @@ Public Sub WriteNpcQuestListSend(ByVal UserIndex As Integer, ByVal NpcIndex As I
                 End If
                 
             End If
+            
+            ' Enviamos si es repetible
+            Call .WriteBoolean(QuestList(QuestIndex).Repetible = 1)
 
         Next j
-        
-        ' Enviamos si es repetible
-        Call .WriteBoolean(QuestList(QuestIndex).Repetible = 1)
         
         Call .EndPacket
         

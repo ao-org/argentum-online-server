@@ -18650,7 +18650,28 @@ Public Sub HandleQuestAbandon(ByVal UserIndex As Integer)
                         ObjIndex = QuestList(.QuestIndex).RequiredOBJ(i).ObjIndex
                         
                         If ObjData(ObjIndex).Intirable = 1 And ObjData(ObjIndex).Instransferible Then
-                            Call QuitarObjetos(ObjIndex, MAX_INVENTORY_OBJS, UserIndex)
+                        
+                            ' Revisamos que ninguna otra quest que tenga activa le pida el mismo item
+                            Dim q As Integer, j As Byte, k As Byte, QuitarItem As Boolean
+
+                            QuitarItem = True
+                            
+                            For j = 1 To MAXUSERQUESTS
+                                q = UserList(UserIndex).QuestStats.Quests(j).QuestIndex
+                                If q <> 0 And q <> .QuestIndex Then
+                                    For k = 1 To QuestList(q).RequiredOBJs
+                                        If QuestList(q).RequiredOBJ(k).ObjIndex = ObjIndex Then
+                                            QuitarItem = False
+                                            Exit For
+                                        End If
+                                    Next
+                                End If
+                                If Not QuitarItem Then Exit For
+                            Next
+                            
+                            If QuitarItem Then
+                                Call QuitarObjetos(ObjIndex, MAX_INVENTORY_OBJS, UserIndex)
+                            End If
                         End If
                     Next i
                 
