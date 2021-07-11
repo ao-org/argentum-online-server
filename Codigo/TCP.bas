@@ -1356,7 +1356,9 @@ Sub ConnectUser(ByVal UserIndex As Integer, _
                 End If
 
             End If
-        
+
+            Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageOnlineUser(NumUsers))
+
 414         Call WriteFYA(UserIndex)
 416         Call WriteBindKeys(UserIndex)
         
