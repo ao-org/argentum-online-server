@@ -5785,7 +5785,8 @@ Public Sub WriteNpcQuestListSend(ByVal UserIndex As Integer, ByVal NpcIndex As I
 
     '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     'Envía el paquete QuestList y la información correspondiente.
-    'Last modified: 30/01/2010 by Amraphen
+    'Modified: 30/01/2010 by Amraphen
+    'Last modified: 11/07/2021 by WyroX: Envio si es repetible
     '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     Dim i       As Integer
     Dim j       As Integer
@@ -5903,6 +5904,9 @@ Public Sub WriteNpcQuestListSend(ByVal UserIndex As Integer, ByVal NpcIndex As I
             End If
 
         Next j
+        
+        ' Enviamos si es repetible
+        Call .WriteBoolean(QuestList(QuestIndex).Repetible = 1)
         
         Call .EndPacket
         
