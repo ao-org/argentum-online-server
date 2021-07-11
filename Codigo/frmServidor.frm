@@ -26,7 +26,7 @@ Begin VB.Form frmServidor
       Height          =   1575
       Left            =   3840
       TabIndex        =   26
-      Top             =   2520
+      Top             =   2880
       Width           =   3615
       Begin VB.CommandButton Command4 
          Caption         =   "Hacer un Backup del mundo"
@@ -108,11 +108,28 @@ Begin VB.Form frmServidor
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      Height          =   2535
+      Height          =   2775
       Left            =   3840
       TabIndex        =   18
       Top             =   0
       Width           =   3615
+      Begin VB.CommandButton cmdReloadGuilds 
+         Caption         =   "Recargar base de datos de clanes"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   8.25
+            Charset         =   0
+            Weight          =   700
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         Height          =   255
+         Left            =   120
+         TabIndex        =   32
+         Top             =   2430
+         Width           =   3255
+      End
       Begin VB.CommandButton cmdDumpLogs 
          Caption         =   "Dump Logs"
          BeginProperty Font 
@@ -616,6 +633,10 @@ cmdDumpLogs_Err:
 112     Close #File
 114     Call RegistrarError(Err.Number, Err.Description, "frmServidor.cmdDumpLogs_Click", Erl)
     
+End Sub
+
+Private Sub cmdReloadGuilds_Click()
+    Call modGuilds.LoadGuildsDB
 End Sub
 
 Private Sub Command1_Click()
