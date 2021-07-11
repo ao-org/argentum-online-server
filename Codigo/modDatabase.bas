@@ -2623,6 +2623,10 @@ Public Sub SetMessageInfoDatabase(ByVal Name As String, ByVal message As String)
 100     Call MakeQuery("update user set message_info = concat(message_info, ?) where upper(name) = ?;", True, message, UCase$(Name))
 End Sub
 
+Public Sub ChangeNameDatabase(ByVal CurName As String, ByVal NewName As String)
+    Call SetUserValue(CurName, "name", NewName)
+End Sub
+
 Function adoIsConnected(adoCn As ADODB.Connection) As Boolean
 
         '----------------------------------------------------------------

@@ -14556,81 +14556,73 @@ End Sub
 
 Public Sub HandleAlterName(ByVal UserIndex As Integer)
 
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 12/26/06
-        'Change user name
-        '***************************************************
-        On Error GoTo ErrHandler
+    '***************************************************
+    'Author: Juan Martín Sotuyo Dodero (Maraxus)
+    'Last Modification: WyroX  -  11/07/2021
+    'Change user name
+    '***************************************************
+    On Error GoTo ErrHandler
 
-100     With UserList(UserIndex)
+    With UserList(UserIndex)
 
-            'Reads the userName and newUser Packets
-            Dim UserName     As String
-            Dim newName      As String
-            Dim changeNameUI As Integer
-            Dim GuildIndex   As Integer
+        'Reads the userName and newUser Packets
+        Dim UserName     As String
+        Dim NewName      As String
+        Dim TargetUI     As Integer
+        Dim GuildIndex   As Integer
+
+        UserName = UCase$(.incomingData.ReadASCIIString())
+        NewName = .incomingData.ReadASCIIString()
+
+        If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) = 0 Then Exit Sub
+
+        If LenB(UserName) = 0 Or LenB(NewName) = 0 Then
+            Call WriteConsoleMsg(UserIndex, "Usar: /ANAME origen@destino", FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+        End If
+
+        TargetUI = NameIndex(UserName)
         
-102         UserName = .incomingData.ReadASCIIString()
-104         newName = .incomingData.ReadASCIIString()
-        
-106         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.RoleMaster)) Then
-        
-108             If LenB(UserName) = 0 Or LenB(newName) = 0 Then
-110                 Call WriteConsoleMsg(UserIndex, "Usar: /ANAME origen@destino", FontTypeNames.FONTTYPE_INFO)
-                
-                Else
-112                 changeNameUI = NameIndex(UserName)
-                
-114                 If changeNameUI > 0 Then
-116                     Call WriteConsoleMsg(UserIndex, "El Pj esta online, debe salir para el cambio", FontTypeNames.FONTTYPE_WARNING)
-                    Else
-
-118                     If Not FileExist(CharPath & UserName & ".chr") Then
-120                         Call WriteConsoleMsg(UserIndex, "El pj " & UserName & " es inexistente ", FontTypeNames.FONTTYPE_INFO)
-                        Else
-122                         GuildIndex = val(GetVar(CharPath & UserName & ".chr", "GUILD", "GUILDINDEX"))
-                        
-124                         If GuildIndex > 0 Then
-126                             Call WriteConsoleMsg(UserIndex, "El pj " & UserName & " pertenece a un clan, debe salir del mismo con /salirclan para ser transferido.", FontTypeNames.FONTTYPE_INFO)
-                            Else
-
-128                             If Not FileExist(CharPath & newName & ".chr") Then
-130                                 Call FileCopy(CharPath & UserName & ".chr", CharPath & UCase$(newName) & ".chr")
-                                
-132                                 Call WriteConsoleMsg(UserIndex, "Transferencia exitosa", FontTypeNames.FONTTYPE_INFO)
-                                
-134                                 Call WriteVar(CharPath & UserName & ".chr", "BAN", "Baneado", "1")
-136                                 Call WriteVar(CharPath & UserName & ".chr", "BAN", "BanMotivo", "BAN POR Cambio de nick a " & UCase$(newName) & " " & Date & " " & Time)
-138                                 Call WriteVar(CharPath & UserName & ".chr", "BAN", "BannedBy", .Name)
-
-                                    Dim cantPenas As Byte
-                                
-140                                 cantPenas = val(GetVar(CharPath & UserName & ".chr", "PENAS", "Cant"))
-                                
-142                                 Call WriteVar(CharPath & UserName & ".chr", "PENAS", "Cant", CStr(cantPenas + 1))
-                                
-144                                 Call WriteVar(CharPath & UserName & ".chr", "PENAS", "P" & CStr(cantPenas + 1), LCase$(.Name) & ": BAN POR Cambio de nick a " & UCase$(newName) & " " & Date & " " & Time)
-                                
-146                                 Call LogGM(.Name, "Ha cambiado de nombre al usuario " & UserName & ". Ahora se llama " & newName)
-                                Else
-148                                 Call WriteConsoleMsg(UserIndex, "El nick solicitado ya existe", FontTypeNames.FONTTYPE_INFO)
-
-                                End If
-
-                            End If
-
-                        End If
-
-                    End If
-
-                End If
-
+        If TargetUI > 0 Then
+            If UserList(TargetUI).GuildIndex > 0 Then
+                Call WriteConsoleMsg(UserIndex, "El personaje " & UserName & " pertenece a un clan, debe salir del mismo con /salirclan para ser transferido.", FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
+        Else
+            If Not PersonajeExiste(UserName) Then
+                Call WriteConsoleMsg(UserIndex, "El personaje " & UserName & " es inexistente.", FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
             End If
 
-        End With
+            GuildIndex = GetUserGuildIndexDatabase(UserName)
+            
+            If GuildIndex > 0 Then
+                Call WriteConsoleMsg(UserIndex, "El personaje " & UserName & " pertenece a un clan, debe salir del mismo con /salirclan para ser transferido.", FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
+        End If
+        
+        If PersonajeExiste(NewName) Then
+            Call WriteConsoleMsg(UserIndex, "El nick solicitado ya existe.", FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+        End If
 
-        Exit Sub
+        Call ChangeNameDatabase(UserName, NewName)
+
+        Call WriteConsoleMsg(UserIndex, "Transferencia exitosa", FontTypeNames.FONTTYPE_INFO)
+
+        Call SavePenaDatabase(UserName, .Name & ": nombre cambiado de """ & UserName & """ a """ & NewName & """. " & Date & " " & Time)
+        Call SendData(SendTarget.ToGM, 0, PrepareMessageConsoleMsg("Administración » " & .Name & " cambió el nombre del usuario """ & UserName & """ por """ & NewName & """.", FontTypeNames.FONTTYPE_GM))
+        Call LogGM(.Name, "Ha cambiado de nombre al usuario """ & UserName & """. Ahora se llama """ & NewName & """.")
+        
+        If TargetUI > 0 Then
+            UserList(TargetUI).Name = NewName
+            Call RefreshCharStatus(TargetUI)
+        End If
+
+    End With
+
+    Exit Sub
 
 ErrHandler:
 150     Call TraceError(Err.Number, Err.Description, "Protocol.HandleAlterName", Erl)
