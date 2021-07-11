@@ -24,7 +24,7 @@ Option Explicit
 
 Sub IniciarDeposito(ByVal UserIndex As Integer)
 
-        On Error GoTo ErrHandler
+    On Error GoTo ErrHandler
 
         'Hacemos un Update del inventario del usuario
 100     Call UpdateBanUserInv(True, UserIndex, 0)
@@ -34,7 +34,10 @@ Sub IniciarDeposito(ByVal UserIndex As Integer)
 104     Call WriteBankInit(UserIndex)
 106     UserList(UserIndex).flags.Comerciando = True
 
+    Exit Sub
+
 ErrHandler:
+    Call TraceError(Err.Number, Err.Description, "modBanco.IniciarDeposito", Erl)
 
 End Sub
 
