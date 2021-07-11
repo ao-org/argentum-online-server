@@ -1159,7 +1159,7 @@ End Sub
 Private Sub Command5_Click()
         'Dim tem As String
         'tem = InputBox("Ingreste clave")
-        'MsgBox SDesencriptar(tem)
+        'MsgBox DecryptString(tem)
         
         On Error GoTo Command5_Click_Err
         
