@@ -66,7 +66,7 @@ Public Sub Comercio(ByVal Modo As eModoComercio, ByVal UserIndex As Integer, ByV
     
 102     If Modo = eModoComercio.Compra Then
 
-104         If Slot > UserList(UserIndex).CurrentInventorySlots Then
+104         If Slot > MAX_INVENTORY_SLOTS Then
                 Exit Sub
                 
 106         ElseIf Cantidad > MAX_INVENTORY_OBJS Then
@@ -116,7 +116,8 @@ Public Sub Comercio(ByVal Modo As eModoComercio, ByVal UserIndex As Integer, ByV
             End If
         
 156     ElseIf Modo = eModoComercio.Venta Then
-        
+
+            If Slot > UserList(UserIndex).CurrentInventorySlots Then Exit Sub
 158         If Cantidad > UserList(UserIndex).Invent.Object(Slot).amount Then Cantidad = UserList(UserIndex).Invent.Object(Slot).amount
         
 160         Objeto.amount = Cantidad
