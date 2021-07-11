@@ -2509,17 +2509,21 @@ Private Sub HandleCastSpell(ByVal UserIndex As Integer)
 112             .flags.Hechizo = 0
             End If
         
-114         If .flags.Hechizo <> 0 And .Stats.UserHechizos(Spell) <> 0 Then
+114         If .flags.Hechizo <> 0 Then
 
 116             If (.flags.Privilegios And PlayerType.Consejero) = 0 Then
                     
-120                 If Hechizos(.Stats.UserHechizos(Spell)).AutoLanzar = 1 Then
-122                     UserList(UserIndex).flags.TargetUser = UserIndex
-124                     Call LanzarHechizo(.flags.Hechizo, UserIndex)
-
-                    Else
-126                     Call WriteWorkRequestTarget(UserIndex, eSkill.Magia)
+                    If .Stats.UserHechizos(Spell) <> 0 Then
+                    
+120                     If Hechizos(.Stats.UserHechizos(Spell)).AutoLanzar = 1 Then
+122                         UserList(UserIndex).flags.TargetUser = UserIndex
+124                         Call LanzarHechizo(.flags.Hechizo, UserIndex)
     
+                        Else
+126                         Call WriteWorkRequestTarget(UserIndex, eSkill.Magia)
+        
+                        End If
+                    
                     End If
                     
                 End If
