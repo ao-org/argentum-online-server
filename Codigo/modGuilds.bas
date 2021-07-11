@@ -90,26 +90,15 @@ End Enum
 Public Sub LoadGuildsDB()
         
         On Error GoTo LoadGuildsDB_Err
-        
 
         Dim CantClanes As String
-
         Dim i          As Integer
-
         Dim TempStr    As String
-
         Dim Alin       As ALINEACION_GUILD
     
 100     GUILDINFOFILE = App.Path & "\guilds\guildsinfo.inf"
 
-102     CantClanes = GetVar(GUILDINFOFILE, "INIT", "nroGuilds")
-    
-104     If IsNumeric(CantClanes) Then
-106         CANTIDADDECLANES = CInt(CantClanes)
-        Else
-108         CANTIDADDECLANES = 0
-
-        End If
+102     CANTIDADDECLANES = val(GetVar(GUILDINFOFILE, "INIT", "nroGuilds"))
     
 110     For i = 1 To CANTIDADDECLANES
 112         Set guilds(i) = New clsClan
