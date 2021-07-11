@@ -5408,8 +5408,10 @@ Public Sub WriteDatosGrupo(ByVal UserIndex As Integer)
             End If
 
         End If
-   
+        .outgoingData.EndPacket
     End With
+    
+    
     
     Exit Sub
     
