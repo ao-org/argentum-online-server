@@ -37,7 +37,7 @@ Public Function EnviarCorreoRecuperacion(ByVal UserNick As String, ByVal UserMai
     
         ' WyroX: Desactivo esto, porque ahora las contrasenias se hashean
         ' Hay que reveer el sistema
-        'Shell App.Path & "\RecuperarPass.exe" & " " & UserNick & "*" & UserMail & "*" & DecryptString(ObtenerPASSWORD(UserNick))
+        'Shell App.Path & "\RecuperarPass.exe" & " " & UserNick & "*" & UserMail & "*" & SDesencriptar(ObtenerPASSWORD(UserNick))
 108     EnviarCorreoRecuperacion = True
 
         

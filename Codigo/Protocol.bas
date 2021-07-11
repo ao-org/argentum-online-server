@@ -7061,7 +7061,7 @@ Private Sub HandleChangePassword(ByVal UserIndex As Integer)
 102         oldPass = .incomingData.ReadASCIIString()
 104         newPass = .incomingData.ReadASCIIString()
 
-106         Call ChangePasswordDatabase(UserIndex, DecryptString(oldPass), DecryptString(newPass))
+106         Call ChangePasswordDatabase(UserIndex, SDesencriptar(oldPass), SDesencriptar(newPass))
 
         End With
         
