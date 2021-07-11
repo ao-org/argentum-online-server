@@ -18568,11 +18568,14 @@ Public Sub HandleQuestAccept(ByVal UserIndex As Integer)
 
         End If
         
-        'El personaje ya hizo la quest?
-126     If UserDoneQuest(UserIndex, NpcList(NpcIndex).QuestNumber(Indice)) Then
-128         Call WriteChatOverHead(UserIndex, "QUESTNEXT*" & NpcList(NpcIndex).QuestNumber(Indice), NpcList(NpcIndex).Char.CharIndex, vbYellow)
-            Exit Sub
-
+        'La quest no es repetible?
+        If QuestList(NpcList(NpcIndex).QuestNumber(Indice)).Repetible = 0 Then
+            'El personaje ya hizo la quest?
+126         If UserDoneQuest(UserIndex, NpcList(NpcIndex).QuestNumber(Indice)) Then
+128             Call WriteChatOverHead(UserIndex, "QUESTNEXT*" & NpcList(NpcIndex).QuestNumber(Indice), NpcList(NpcIndex).Char.CharIndex, vbYellow)
+                Exit Sub
+    
+            End If
         End If
     
 130     QuestSlot = FreeQuestSlot(UserIndex)

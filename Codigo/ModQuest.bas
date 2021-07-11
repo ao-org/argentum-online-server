@@ -226,12 +226,11 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
         
             'Ordenamos las quests
 194         Call ArrangeUserQuests(UserIndex)
-        
-196         If .Repetible = 0 Then
-                'Se agrega que el usuario ya hizo esta quest.
-198             Call AddDoneQuest(UserIndex, QuestIndex)
-200             Call WriteUpdateNPCSimbolo(UserIndex, NpcIndex, 2)
-            End If
+
+            'Se agrega que el usuario ya hizo esta quest. - WyroX: La agrego aunque sea repetible, para llevar el control
+198         Call AddDoneQuest(UserIndex, QuestIndex)
+
+200         If .Repetible = 0 Then Call WriteUpdateNPCSimbolo(UserIndex, NpcIndex, 2)
         
         End With
 
