@@ -2827,7 +2827,7 @@ Private Sub HandleCraftCarpenter(ByVal UserIndex As Integer)
             Dim Item As Integer
 102             Item = .ReadInteger()
         
-104         If Item < 1 Then Exit Sub
+104         If Item = 0 Then Exit Sub
 
 106         Call CarpinteroConstruirItem(UserIndex, Item)
 
