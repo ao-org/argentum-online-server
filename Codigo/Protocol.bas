@@ -650,7 +650,7 @@ Public Type PersonajeCuenta
 End Type
 
 Public Type t_DataBuffer
-    data() As Byte
+    Data() As Byte
     Length As Integer
 End Type
 
@@ -1135,9 +1135,9 @@ HandleIncomingData_Err:
 End Function
 
 Public Function ConvertDataBuffer(ByVal Length As Integer, _
-                                  ByRef data() As Byte) As t_DataBuffer
+                                  ByRef Data() As Byte) As t_DataBuffer
     
-100     ConvertDataBuffer.data = data
+100     ConvertDataBuffer.Data = Data
 102     ConvertDataBuffer.Length = Length
     
 End Function
@@ -2930,9 +2930,9 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
             
 106         Skill = .incomingData.ReadByte()
 
-            .trabajo.Target_X = X
-            .trabajo.Target_Y = Y
-            .trabajo.TargetSkill = skill
+            .Trabajo.Target_X = X
+            .Trabajo.Target_Y = Y
+            .Trabajo.TargetSkill = Skill
             
 108         If .flags.Muerto = 1 Or .flags.Descansar Or Not InMapBounds(.Pos.Map, X, Y) Then Exit Sub
 
@@ -13694,7 +13694,7 @@ Public Sub HandlePromedio(ByVal UserIndex As Integer)
             Dim Promedio As Double, Vida As Long
         
 104         Promedio = ModClase(.clase).Vida - (21 - .Stats.UserAtributos(eAtributos.Constitucion)) * 0.5
-106         Vida = 18.5 + ModRaza(.raza).Constitucion / 6 + Promedio * (.Stats.ELV - 1)
+106         Vida = 18 + ModRaza(.raza).Constitucion + Promedio * (.Stats.ELV - 1)
 
 108         Call WriteConsoleMsg(UserIndex, "Vida esperada: " & Vida & ". Promedio: " & Promedio, FONTTYPE_INFOBOLD)
 
@@ -15330,15 +15330,15 @@ Public Sub FlushBuffer(ByVal UserIndex As Integer)
         
             ' Tratamos de enviar los datos.
             Dim Ret    As Long
-106         Dim data() As Byte: data = .outgoingData.ReadAll
+106         Dim Data() As Byte: Data = .outgoingData.ReadAll
 
             #If AntiExternos = 1 Then
 
-108             Call Security.XorData(data, UBound(data), .XorIndexOut)
+108             Call Security.XorData(Data, UBound(Data), .XorIndexOut)
 
             #End If
 
-110         Ret = frmMain.Winsock.SendData(UserIndex, data)
+110         Ret = frmMain.Winsock.SendData(UserIndex, Data)
     
             ' Si recibimos un error como respuesta de la API, cerramos el socket.
 112         If Ret <> 0 And Ret <> WSAEWOULDBLOCK Then
@@ -18455,15 +18455,15 @@ Public Sub HandleQuestAbandon(ByVal UserIndex As Integer)
                         If ObjData(ObjIndex).Intirable = 1 And ObjData(ObjIndex).Instransferible Then
                         
                             ' Revisamos que ninguna otra quest que tenga activa le pida el mismo item
-                            Dim q As Integer, j As Byte, k As Byte, QuitarItem As Boolean
+                            Dim q As Integer, j As Byte, K As Byte, QuitarItem As Boolean
 
                             QuitarItem = True
                             
                             For j = 1 To MAXUSERQUESTS
                                 q = UserList(UserIndex).QuestStats.Quests(j).QuestIndex
                                 If q <> 0 And q <> .QuestIndex Then
-                                    For k = 1 To QuestList(q).RequiredOBJs
-                                        If QuestList(q).RequiredOBJ(k).ObjIndex = ObjIndex Then
+                                    For K = 1 To QuestList(q).RequiredOBJs
+                                        If QuestList(q).RequiredOBJ(K).ObjIndex = ObjIndex Then
                                             QuitarItem = False
                                             Exit For
                                         End If
@@ -18870,8 +18870,8 @@ Private Sub HandleScreenShot(ByVal UserIndex As Integer)
 
             On Error GoTo ErrHandler
         
-            Dim data As String
-102         data = .incomingData.ReadASCIIString
+            Dim Data As String
+102         Data = .incomingData.ReadASCIIString
            
 104         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) Then
             
@@ -18881,19 +18881,19 @@ Private Sub HandleScreenShot(ByVal UserIndex As Integer)
                 Dim Finished As Boolean
         
                 ' Por seguridad, limito a 10Kb de datos (dejo margen para el nombre y el resto del paquete)
-108             If LenB(data) = 0 Or Len(data) > 10000 Then
-110                 data = "ERROR"
+108             If LenB(Data) = 0 Or Len(Data) > 10000 Then
+110                 Data = "ERROR"
 112                 Finished = True
         
                     ' Si envió menos de 10Kb y termina con ~~~
-114             ElseIf Len(data) <= 10000 And Right$(data, 3) = "~~~" Then
+114             ElseIf Len(Data) <= 10000 And Right$(Data, 3) = "~~~" Then
                     ' Damos la screenshot por terminada
 116                 Finished = True
 
                 End If
 
                 ' Lo guardo en la cola
-118             Call .flags.ScreenShot.WriteASCIIStringFixed(data)
+118             Call .flags.ScreenShot.WriteASCIIStringFixed(Data)
         
 120             If Finished Then
                     Dim ListaGMs() As String
