@@ -2900,7 +2900,6 @@ HandleCraftSastre_Err:
 110     Call UserList(UserIndex).incomingData.SafeClearPacket
         
 End Sub
-
 ''
 ' Handles the "WorkLeftClick" message.
 '
@@ -2909,7 +2908,6 @@ End Sub
 Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
         
         On Error GoTo HandleWorkLeftClick_Err
-
         '***************************************************
         'Author: Juan Martín Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
@@ -2929,8 +2927,12 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
         
 102         X = .incomingData.ReadByte()
 104         Y = .incomingData.ReadByte()
-        
+            
 106         Skill = .incomingData.ReadByte()
+
+            .trabajo.Target_X = X
+            .trabajo.Target_Y = Y
+            .trabajo.TargetSkill = skill
             
 108         If .flags.Muerto = 1 Or .flags.Descansar Or Not InMapBounds(.Pos.Map, X, Y) Then Exit Sub
 
@@ -2949,7 +2951,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
         
             'If exiting, cancel
 122         Call CancelExit(UserIndex)
-        
+            
 124         Select Case Skill
 
                     Dim consumirMunicion As Boolean
@@ -3002,13 +3004,6 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                     'Quitamos stamina
 172                 If .Stats.MinSta >= 10 Then
 174                     Call QuitarSta(UserIndex, RandomNumber(1, 10))
-                    
-                        'Si no es GM invisible, le envio el movimiento del arma.
-176                     If UserList(UserIndex).flags.AdminInvisible = 0 Then
-178                         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageArmaMov(UserList(UserIndex).Char.CharIndex))
-
-                        End If
-                    
                     Else
 180                     Call WriteLocaleMsg(UserIndex, "93", FontTypeNames.FONTTYPE_INFO)
                         ' Call WriteConsoleMsg(UserIndex, "Estís muy cansado para luchar.", FontTypeNames.FONTTYPE_INFO)
@@ -3058,6 +3053,11 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 212                         Call SendData(SendTarget.ToPCArea, tU, PrepareMessageCreateFX(UserList(tU).Char.CharIndex, ObjData(.Invent.MunicionEqpObjIndex).CreaFX, 0))
 
                         End If
+                        
+                        'Si no es GM invisible, le envio el movimiento del arma.
+                        If UserList(UserIndex).flags.AdminInvisible = 0 Then
+                            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageArmaMov(UserList(UserIndex).Char.CharIndex))
+                        End If
                     
 214                     If ObjData(.Invent.MunicionEqpObjIndex).CreaParticula <> "" Then
                     
@@ -3085,6 +3085,10 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 234                         If PuedeAtacarNPC(UserIndex, tN) Then
 236                             Call UsuarioAtacaNpc(UserIndex, tN)
 238                             consumirMunicion = True
+                                'Si no es GM invisible, le envio el movimiento del arma.
+                                If UserList(UserIndex).flags.AdminInvisible = 0 Then
+                                    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageArmaMov(UserList(UserIndex).Char.CharIndex))
+                                End If
                             Else
 240                             consumirMunicion = False
 
@@ -3160,152 +3164,14 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                     End If
             
 286             Case eSkill.Pescar
-                
-288                 If .Invent.HerramientaEqpObjIndex = 0 Then Exit Sub
-                    
-290                 If ObjData(.Invent.HerramientaEqpObjIndex).OBJType <> eOBJType.otHerramientas Then Exit Sub
-                    
-                    'Check interval
-292                 If Not IntervaloPermiteTrabajarExtraer(UserIndex) Then Exit Sub
-
-294                 Select Case ObjData(.Invent.HerramientaEqpObjIndex).Subtipo
-                
-                        Case 1      ' Subtipo: Caña de Pescar
-
-296                         If (MapData(.Pos.Map, X, Y).Blocked And FLAG_AGUA) <> 0 Then
-298                             If (MapData(.Pos.Map, .Pos.X, .Pos.Y).Blocked And FLAG_AGUA) <> 0 Or (MapData(.Pos.Map, .Pos.X + 1, .Pos.Y).Blocked And FLAG_AGUA) <> 0 Or (MapData(.Pos.Map, .Pos.X, .Pos.Y + 1).Blocked And FLAG_AGUA) <> 0 Or (MapData(.Pos.Map, .Pos.X - 1, .Pos.Y).Blocked And FLAG_AGUA) <> 0 Or (MapData(.Pos.Map, .Pos.X, .Pos.Y - 1).Blocked And FLAG_AGUA) <> 0 Then
-
-300                                 Call DoPescar(UserIndex, False)
-302                                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_PESCAR, .Pos.X, .Pos.Y))
-                                Else
-304                                 Call WriteConsoleMsg(UserIndex, "Acércate a la costa para pescar.", FontTypeNames.FONTTYPE_INFO)
-306                                 Call WriteMacroTrabajoToggle(UserIndex, False)
-
-                                End If
-                            
-                            Else
-308                             Call WriteConsoleMsg(UserIndex, "No hay agua donde pescar. Busca un lago, rio o mar.", FontTypeNames.FONTTYPE_INFO)
-310                             Call WriteMacroTrabajoToggle(UserIndex, False)
-    
-                            End If
-                    
-312                     Case 2      ' Subtipo: Red de Pesca
-    
-314                         If (MapData(.Pos.Map, X, Y).Blocked And FLAG_AGUA) <> 0 Then
-                            
-316                             If Abs(.Pos.X - X) + Abs(.Pos.Y - Y) > 8 Then
-318                                 Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
-                                    'Call WriteConsoleMsg(UserIndex, "Estás demasiado lejos para pescar.", FontTypeNames.FONTTYPE_INFO)
-320                                 Call WriteWorkRequestTarget(UserIndex, 0)
-                                    Exit Sub
-    
-                                End If
-                                
-322                             If UserList(UserIndex).Stats.UserSkills(eSkill.Pescar) < 80 Then
-324                                 Call WriteConsoleMsg(UserIndex, "Para utilizar la red de pesca debes tener 80 skills en recoleccion.", FontTypeNames.FONTTYPE_INFO)
-326                                 Call WriteWorkRequestTarget(UserIndex, 0)
-                                    Exit Sub
-    
-                                End If
-                                    
-328                             If MapInfo(UserList(UserIndex).Pos.Map).Seguro = 1 Then
-330                                 Call WriteConsoleMsg(UserIndex, "Esta prohibida la pesca masiva en las ciudades.", FontTypeNames.FONTTYPE_INFO)
-332                                 Call WriteWorkRequestTarget(UserIndex, 0)
-                                    Exit Sub
-    
-                                End If
-                                    
-334                             If UserList(UserIndex).flags.Navegando = 0 Then
-336                                 Call WriteConsoleMsg(UserIndex, "Necesitas estar sobre tu barca para utilizar la red de pesca.", FontTypeNames.FONTTYPE_INFO)
-338                                 Call WriteWorkRequestTarget(UserIndex, 0)
-                                    Exit Sub
-    
-                                End If
-                                    
-340                             Call DoPescar(UserIndex, True)
-342                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_PESCAR, .Pos.X, .Pos.Y))
-                        
-                            Else
-                        
-344                             Call WriteConsoleMsg(UserIndex, "No hay agua donde pescar. Busca un lago, rio o mar.", FontTypeNames.FONTTYPE_INFO)
-346                             Call WriteWorkRequestTarget(UserIndex, 0)
-    
-                            End If
-                
-                    End Select
-                    
+                    If .Counters.Trabajando = 0 Then
+                        Call Trabajar(UserIndex, eSkill.Pescar)
+                    End If
 348             Case eSkill.Talar
-            
-350                 If .Invent.HerramientaEqpObjIndex = 0 Then Exit Sub
-
-352                 If ObjData(.Invent.HerramientaEqpObjIndex).OBJType <> eOBJType.otHerramientas Then Exit Sub
-        
-                    'Check interval
-354                 If Not IntervaloPermiteTrabajarExtraer(UserIndex) Then Exit Sub
-
-356                 Select Case ObjData(.Invent.HerramientaEqpObjIndex).Subtipo
-                
-                        Case 6      ' Herramientas de Carpinteria - Hacha
-
-                            ' Ahora se puede talar en la ciudad
-                            'If MapInfo(UserList(UserIndex).Pos.Map).Seguro = 1 Then
-                            '    Call WriteConsoleMsg(UserIndex, "Esta prohibido talar arboles en las ciudades.", FontTypeNames.FONTTYPE_INFO)
-                            '    Call WriteWorkRequestTarget(UserIndex, 0)
-                            '    Exit Sub
-                            'End If
-                            
-358                         DummyInt = MapData(.Pos.Map, X, Y).ObjInfo.ObjIndex
-                            
-360                         If DummyInt > 0 Then
-362                             If Abs(.Pos.X - X) + Abs(.Pos.Y - Y) > 1 Then
-364                                 Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
-                                    'Call WriteConsoleMsg(UserIndex, "Estas demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
-366                                 Call WriteWorkRequestTarget(UserIndex, 0)
-                                    Exit Sub
-
-                                End If
-                                
-368                             If .Pos.X = X And .Pos.Y = Y Then
-370                                 Call WriteConsoleMsg(UserIndex, "No podés talar desde allí.", FontTypeNames.FONTTYPE_INFO)
-372                                 Call WriteWorkRequestTarget(UserIndex, 0)
-                                    Exit Sub
-
-                                End If
-
-374                             If ObjData(DummyInt).Elfico <> ObjData(.Invent.HerramientaEqpObjIndex).Elfico Then
-376                                 Call WriteConsoleMsg(UserIndex, "Sólo puedes talar árboles elficos con un hacha élfica.", FontTypeNames.FONTTYPE_INFO)
-378                                 Call WriteWorkRequestTarget(UserIndex, 0)
-                                    Exit Sub
-
-                                End If
-
-380                             If MapData(.Pos.Map, X, Y).ObjInfo.amount <= 0 Then
-382                                 Call WriteConsoleMsg(UserIndex, "El árbol ya no te puede entregar mas leña.", FontTypeNames.FONTTYPE_INFO)
-384                                 Call WriteWorkRequestTarget(UserIndex, 0)
-386                                 Call WriteMacroTrabajoToggle(UserIndex, False)
-                                    Exit Sub
-
-                                End If
-
-                                '¡Hay un arbol donde clickeo?
-388                             If ObjData(DummyInt).OBJType = eOBJType.otArboles Then
-390                                 Call DoTalar(UserIndex, X, Y, ObjData(.Invent.HerramientaEqpObjIndex).Dorada = 1)
-
-                                End If
-
-                            Else
-392                             Call WriteConsoleMsg(UserIndex, "No hay ningún árbol ahí.", FontTypeNames.FONTTYPE_INFO)
-394                             Call WriteWorkRequestTarget(UserIndex, 0)
-
-396                             If UserList(UserIndex).Counters.Trabajando > 1 Then
-398                                 Call WriteMacroTrabajoToggle(UserIndex, False)
-
-                                End If
-
-                            End If
-                
-                    End Select
-            
+                    If .Counters.Trabajando = 0 Then
+                        Call Trabajar(UserIndex, eSkill.Talar)
+                    End If
+                    
 400             Case eSkill.Alquimia
             
 402                 If .Invent.HerramientaEqpObjIndex = 0 Then Exit Sub
@@ -3370,70 +3236,9 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                     End Select
                 
 452             Case eSkill.Mineria
-            
-454                 If .Invent.HerramientaEqpObjIndex = 0 Then Exit Sub
-                    
-456                 If ObjData(.Invent.HerramientaEqpObjIndex).OBJType <> eOBJType.otHerramientas Then Exit Sub
-                    
-                    'Check interval
-458                 If Not IntervaloPermiteTrabajarExtraer(UserIndex) Then Exit Sub
-
-460                 Select Case ObjData(.Invent.HerramientaEqpObjIndex).Subtipo
-                
-                        Case 8  ' Herramientas de Mineria - Piquete
-                
-                            'Target whatever is in the tile
-462                         Call LookatTile(UserIndex, .Pos.Map, X, Y)
-                            
-464                         DummyInt = MapData(.Pos.Map, X, Y).ObjInfo.ObjIndex
-                            
-466                         If DummyInt > 0 Then
-
-                                'Check distance
-468                             If Abs(.Pos.X - X) + Abs(.Pos.Y - Y) > 2 Then
-470                                 Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
-                                    'Call WriteConsoleMsg(UserIndex, "Estís demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
-472                                 Call WriteWorkRequestTarget(UserIndex, 0)
-                                    Exit Sub
-
-                                End If
-
-                                '¡Hay un yacimiento donde clickeo?
-474                             If ObjData(DummyInt).OBJType = eOBJType.otYacimiento Then
-
-                                    ' Si el Yacimiento requiere herramienta `Dorada` y la herramienta no lo es, o vice versa.
-                                    ' Se usa para el yacimiento de Oro.
-476                                 If ObjData(DummyInt).Dorada <> ObjData(.Invent.HerramientaEqpObjIndex).Dorada Then
-478                                     Call WriteConsoleMsg(UserIndex, "El pico dorado solo puede extraer minerales del yacimiento de Oro.", FontTypeNames.FONTTYPE_INFO)
-480                                     Call WriteWorkRequestTarget(UserIndex, 0)
-                                        Exit Sub
-
-                                    End If
-
-482                                 If MapData(.Pos.Map, X, Y).ObjInfo.amount <= 0 Then
-484                                     Call WriteConsoleMsg(UserIndex, "Este yacimiento no tiene mas minerales para entregar.", FontTypeNames.FONTTYPE_INFO)
-486                                     Call WriteWorkRequestTarget(UserIndex, 0)
-488                                     Call WriteMacroTrabajoToggle(UserIndex, False)
-                                        Exit Sub
-
-                                    End If
-
-490                                 Call DoMineria(UserIndex, X, Y, ObjData(.Invent.HerramientaEqpObjIndex).Dorada = 1)
-
-                                Else
-492                                 Call WriteConsoleMsg(UserIndex, "Ahí no hay ningún yacimiento.", FontTypeNames.FONTTYPE_INFO)
-494                                 Call WriteWorkRequestTarget(UserIndex, 0)
-
-                                End If
-
-                            Else
-496                             Call WriteConsoleMsg(UserIndex, "Ahí no hay ningun yacimiento.", FontTypeNames.FONTTYPE_INFO)
-498                             Call WriteWorkRequestTarget(UserIndex, 0)
-
-                            End If
-
-                    End Select
-
+                    If .Counters.Trabajando = 0 Then
+                        Call Trabajar(UserIndex, eSkill.Mineria)
+                    End If
 500             Case eSkill.Robar
 
                     'Does the map allow us to steal here?
@@ -11306,17 +11111,19 @@ Private Sub HandleTeleportCreate(ByVal UserIndex As Integer)
             Dim Mapa As Integer
             Dim X    As Byte
             Dim Y    As Byte
+            Dim Motivo As String
         
 102         Mapa = .incomingData.ReadInteger()
 104         X = .incomingData.ReadByte()
 106         Y = .incomingData.ReadByte()
+            Motivo = .incomingData.ReadASCIIString()
         
 108         If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios)) Then
 110             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
         
-112         Call LogGM(.Name, "/CT " & Mapa & "," & X & "," & Y)
+112         Call LogGM(.Name, "/CT " & Mapa & "," & X & "," & Y & "," & Motivo)
         
 114         If Not MapaValido(Mapa) Or Not InMapBounds(Mapa, X, Y) Then Exit Sub
         
@@ -16283,7 +16090,7 @@ Private Sub HandleTransFerGold(ByVal UserIndex As Integer)
 150             UserList(UserIndex).Stats.Banco = UserList(UserIndex).Stats.Banco - val(Cantidad) 'Quitamos el oro al usuario
     
 152             Call WriteChatOverHead(UserIndex, "¡El envío se ha realizado con éxito! Gracias por utilizar los servicios de Finanzas Goliath", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
-154             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("173", UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+'154             Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessagePlayWave("173", UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
         
             Else
 156             Call WriteChatOverHead(UserIndex, "Los administradores no pueden transferir oro.", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
@@ -18500,12 +18307,12 @@ Public Sub HandleQuest(ByVal UserIndex As Integer)
     
         'El NPC hace quests?
 108     If NpcList(NpcIndex).NumQuest = 0 Then
-110         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageChatOverHead("No tengo ninguna mision para ti.", NpcList(NpcIndex).Char.CharIndex, vbWhite))
+110         Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageChatOverHead("No tengo ninguna mision para ti.", NpcList(NpcIndex).Char.CharIndex, vbWhite))
             Exit Sub
 
         End If
     
-112     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageChatOverHead("Estas haciendo demasiadas misiones. Vuelve cuando hayas completado alguna.", NpcList(NpcIndex).Char.CharIndex, vbWhite))
+112     Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageChatOverHead("Estas haciendo demasiadas misiones. Vuelve cuando hayas completado alguna.", NpcList(NpcIndex).Char.CharIndex, vbWhite))
 
         Exit Sub
 

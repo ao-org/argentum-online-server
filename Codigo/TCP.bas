@@ -1476,6 +1476,7 @@ Sub ConnectUser(ByVal UserIndex As Integer, _
 512         Call WriteOxigeno(UserIndex)
 
         End With
+        
     
         Exit Sub
     

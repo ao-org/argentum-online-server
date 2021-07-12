@@ -137,7 +137,7 @@ Public Function AddCorreo(ByVal UserIndex As Integer, ByRef UserName As String, 
 150             AddCorreo = GrabarNuevoCorreoInChar(UserName, UserIndex, message, ObjArray, FinalCount)
         
 152             If UserIndex <> 0 Then
-154                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("174", UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+'154                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("174", UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
 156                 Call WriteConsoleMsg(UserIndex, "Mensaje enviado.", FontTypeNames.FONTTYPE_INFOIAO) 'El mensaje fue enviado correctamente.
 158                 Call WriteUpdateUserStats(UserIndex)
 
