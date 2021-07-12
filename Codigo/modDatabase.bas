@@ -1033,7 +1033,7 @@ Public Function MakeQuery(query As String, ByVal NoResult As Boolean, ParamArray
         
         End With
         
-        Call LogPerformance("Guardado de Personaje - Tiempo transcurrido: " & Round(GetElapsedTime(), 1) & " ms")
+        Call LogPerformance("Query: " & query & vbNewLine & " - Tiempo transcurrido: " & Round(GetElapsedTime(), 1) & " ms" & vbNewLine)
     
         Exit Function
     
