@@ -26,6 +26,10 @@ Begin VB.Form frmMain
    ScaleHeight     =   6225
    ScaleWidth      =   6930
    StartUpPosition =   2  'CenterScreen
+   Begin VB.Timer t_Extraer 
+      Left            =   4440
+      Top             =   4200
+   End
    Begin VB.Timer T_UsersOnline 
       Interval        =   10000
       Left            =   3600
@@ -829,6 +833,16 @@ Handler:
 
     
     ' **********************************
+End Sub
+
+Private Sub t_Extraer_Timer()
+    Dim i As Long
+    
+    For i = 1 To LastUser
+        If UserList(i).Counters.Trabajando > 0 Then
+            Call Trabajar(i, UserList(i).trabajo.TargetSkill)
+        End If
+    Next i
 End Sub
 
 Private Sub T_UsersOnline_Timer()
