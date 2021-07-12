@@ -2029,7 +2029,7 @@ Sub CalcularDarExp(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal 
                     Dim DeltaLevel As Integer
 134                 DeltaLevel = UserList(UserIndex).Stats.ELV - NpcList(NpcIndex).nivel
 136                 If Abs(DeltaLevel) > 5 Then ' Qué pereza da desharcodear
-138                     ExpaDar = Math.Exp(15 - Abs(3 * DeltaLevel))
+138                     ExpaDar = ExpaDar * Math.Exp(15 - Abs(3 * DeltaLevel))
                         
 140                     Call WriteConsoleMsg(UserIndex, "La criatura es demasiado " & IIf(DeltaLevel < 0, "poderosa", "débil") & " y obtienes experiencia reducida al luchar contra ella", FontTypeNames.FONTTYPE_WARNING)
                     End If
@@ -2146,7 +2146,7 @@ Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As I
 168                         If NpcList(NpcIndex).nivel Then
 170                             DeltaLevel = UserList(Index).Stats.ELV - NpcList(NpcIndex).nivel
 172                             If Abs(DeltaLevel) > 5 Then ' Qué pereza da desharcodear
-174                                 ExpaDar = Math.Exp(15 - Abs(3 * DeltaLevel))
+174                                 ExpUser = ExpUser * Math.Exp(15 - Abs(3 * DeltaLevel))
                                     
 176                                 Call WriteConsoleMsg(Index, "La criatura es demasiado " & IIf(DeltaLevel < 0, "poderosa", "débil") & " y obtienes experiencia reducida al luchar contra ella", FontTypeNames.FONTTYPE_WARNING)
                                 End If
