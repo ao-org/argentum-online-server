@@ -234,14 +234,15 @@ End Sub
 Public Sub WriteMacroTrabajoToggle(ByVal UserIndex As Integer, ByVal Activar As Boolean)
 
     If Not Activar Then
-    
+        
         UserList(UserIndex).flags.TargetObj = 0 ' Sacamos el targer del objeto
         UserList(UserIndex).flags.UltimoMensaje = 0
         UserList(UserIndex).Counters.Trabajando = 0
         UserList(UserIndex).flags.UsandoMacro = False
-       
+        UserList(UserIndex).trabajo.Target_X = 0
+        UserList(UserIndex).trabajo.Target_Y = 0
+        UserList(UserIndex).trabajo.TargetSkill = 0
     Else
-    
         UserList(UserIndex).flags.UsandoMacro = True
 
     End If

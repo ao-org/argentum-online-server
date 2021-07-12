@@ -754,6 +754,8 @@ Sub Main()
 282         .Segundo.Enabled = True
 284         .KillLog.Enabled = True
 286         .TIMER_AI.Enabled = True
+            .t_Extraer.Enabled = True
+            .t_Extraer.Interval = IntervaloTrabajarExtraer
         End With
     
 290     Subasta.SubastaHabilitada = True
@@ -2021,7 +2023,7 @@ Public Sub EfectoVeneno(ByVal UserIndex As Integer)
 106         With UserList(UserIndex)
               'Call WriteConsoleMsg(UserIndex, "Estás envenenado, si no te curas morirás.", FontTypeNames.FONTTYPE_VENENO)
 108           Call WriteLocaleMsg(UserIndex, "47", FontTypeNames.FONTTYPE_VENENO)
-110           Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, ParticulasIndex.Envenena, 30, False))
+110           Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, ParticulasIndex.Envenena, 30, False))
 112           .Counters.Veneno = 0
 
               ' El veneno saca un porcentaje de vida random.
@@ -2104,7 +2106,7 @@ Public Sub EfectoIncineramiento(ByVal UserIndex As Integer)
                     ' "Te estás incinerando, si no te curas morirás.
 104                 Call WriteLocaleMsg(UserIndex, "392", FontTypeNames.FONTTYPE_FIGHT)
                     'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, ParticulasIndex.Incinerar, 30, False))
-106                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(.Char.CharIndex, 73, 0))
+106                 Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageCreateFX(.Char.CharIndex, 73, 0))
 
 108                 damage = RandomNumber(35, 45)
 110                 .Stats.MinHp = .Stats.MinHp - damage

@@ -356,7 +356,7 @@ Public Sub NpcDropeo(ByRef npc As npc, ByRef UserIndex As Integer)
 126     Dropeo.amount = Cantidad 'Cantidad
 128     Dropeo.ObjIndex = obj 'NUMERO DEL ITEM EN EL OBJ.DAT
 130     Call TirarItemAlPiso(npc.Pos, Dropeo, npc.flags.AguaValida = 1)
-132     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(FXSound.Dropeo_Sound, npc.Pos.X, npc.Pos.Y))
+132     Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessagePlayWave(FXSound.Dropeo_Sound, npc.Pos.X, npc.Pos.Y))
         
         'nfile = FreeFile ' obtenemos un canal
         'Open App.Path & "\logs\Dropeo de items.log" For Append Shared As #nfile

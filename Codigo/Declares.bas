@@ -1806,6 +1806,12 @@ Public Type tComercioUsuario
     Acepto As Boolean
 
 End Type
+
+Public Type UserTrabajo
+    TargetSkill As eSkill
+    Target_X As Integer
+    Target_Y As Integer
+End Type
 'Tipo de los Usuarios
 Public Type user
 
@@ -1813,8 +1819,8 @@ Public Type user
     Cuenta As String
     
     ID As Long
+    trabajo As UserTrabajo
     AccountID As Long
-    
     Grupo As Tgrupo
 
     NPcLogros As Byte
