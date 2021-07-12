@@ -29,6 +29,221 @@ Attribute VB_Name = "Trabajo"
 
 Option Explicit
 
+
+Public Sub Trabajar(ByVal UserIndex As Integer, ByVal skill As eSkill)
+    Dim DummyInt As Integer
+    With UserList(UserIndex)
+    Select Case skill
+        Case eSkill.Pescar
+288                 If .Invent.HerramientaEqpObjIndex = 0 Then Exit Sub
+                    
+290                 If ObjData(.Invent.HerramientaEqpObjIndex).OBJType <> eOBJType.otHerramientas Then Exit Sub
+                    
+                    'Check interval
+292                 If Not IntervaloPermiteTrabajarExtraer(UserIndex) Then Exit Sub
+
+294                 Select Case ObjData(.Invent.HerramientaEqpObjIndex).Subtipo
+                
+                        Case 1      ' Subtipo: Caña de Pescar
+
+296                         If (MapData(.Pos.Map, .trabajo.Target_X, .trabajo.Target_Y).Blocked And FLAG_AGUA) <> 0 Then
+298                             If (MapData(.Pos.Map, .Pos.X, .Pos.Y).Blocked And FLAG_AGUA) <> 0 Or (MapData(.Pos.Map, .Pos.X + 1, .Pos.Y).Blocked And FLAG_AGUA) <> 0 Or (MapData(.Pos.Map, .Pos.X, .Pos.Y + 1).Blocked And FLAG_AGUA) <> 0 Or (MapData(.Pos.Map, .Pos.X - 1, .Pos.Y).Blocked And FLAG_AGUA) <> 0 Or (MapData(.Pos.Map, .Pos.X, .Pos.Y - 1).Blocked And FLAG_AGUA) <> 0 Then
+
+300                                 Call DoPescar(UserIndex, False)
+                                   
+                                Else
+304                                 Call WriteConsoleMsg(UserIndex, "Acércate a la costa para pescar.", FontTypeNames.FONTTYPE_INFO)
+306                                 Call WriteMacroTrabajoToggle(UserIndex, False)
+
+                                End If
+                            
+                            Else
+308                             Call WriteConsoleMsg(UserIndex, "No hay agua donde pescar. Busca un lago, rio o mar.", FontTypeNames.FONTTYPE_INFO)
+310                             Call WriteMacroTrabajoToggle(UserIndex, False)
+    
+                            End If
+                    
+312                     Case 2      ' Subtipo: Red de Pesca
+    
+314                         If (MapData(.Pos.Map, .trabajo.Target_X, .trabajo.Target_Y).Blocked And FLAG_AGUA) <> 0 Then
+                            
+316                             If Abs(.Pos.X - .trabajo.Target_X) + Abs(.Pos.Y - .trabajo.Target_Y) > 8 Then
+318                                 Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
+                                    'Call WriteConsoleMsg(UserIndex, "Estás demasiado lejos para pescar.", FontTypeNames.FONTTYPE_INFO)
+320                                 Call WriteWorkRequestTarget(UserIndex, 0)
+                                    Exit Sub
+    
+                                End If
+                                
+322                             If UserList(UserIndex).Stats.UserSkills(eSkill.Pescar) < 80 Then
+324                                 Call WriteConsoleMsg(UserIndex, "Para utilizar la red de pesca debes tener 80 skills en recoleccion.", FontTypeNames.FONTTYPE_INFO)
+326                                 Call WriteWorkRequestTarget(UserIndex, 0)
+                                    Exit Sub
+    
+                                End If
+                                    
+328                             If MapInfo(UserList(UserIndex).Pos.Map).Seguro = 1 Then
+330                                 Call WriteConsoleMsg(UserIndex, "Esta prohibida la pesca masiva en las ciudades.", FontTypeNames.FONTTYPE_INFO)
+332                                 Call WriteWorkRequestTarget(UserIndex, 0)
+                                    Exit Sub
+    
+                                End If
+                                    
+334                             If UserList(UserIndex).flags.Navegando = 0 Then
+336                                 Call WriteConsoleMsg(UserIndex, "Necesitas estar sobre tu barca para utilizar la red de pesca.", FontTypeNames.FONTTYPE_INFO)
+338                                 Call WriteWorkRequestTarget(UserIndex, 0)
+                                    Exit Sub
+    
+                                End If
+                                    
+340                             Call DoPescar(UserIndex, True)
+342                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_PESCAR, .Pos.X, .Pos.Y))
+                        
+                            Else
+                        
+344                             Call WriteConsoleMsg(UserIndex, "No hay agua donde pescar. Busca un lago, rio o mar.", FontTypeNames.FONTTYPE_INFO)
+346                             Call WriteWorkRequestTarget(UserIndex, 0)
+    
+                            End If
+                        End Select
+        Case eSkill.Mineria
+            
+454                 If .Invent.HerramientaEqpObjIndex = 0 Then Exit Sub
+                    
+456                 If ObjData(.Invent.HerramientaEqpObjIndex).OBJType <> eOBJType.otHerramientas Then Exit Sub
+                    
+                    'Check interval
+458                 If Not IntervaloPermiteTrabajarExtraer(UserIndex) Then Exit Sub
+
+460                 Select Case ObjData(.Invent.HerramientaEqpObjIndex).Subtipo
+                
+                        Case 8  ' Herramientas de Mineria - Piquete
+                
+                            'Target whatever is in the tile
+462                         Call LookatTile(UserIndex, .Pos.Map, .trabajo.Target_X, .trabajo.Target_Y)
+                            
+464                         DummyInt = MapData(.Pos.Map, .trabajo.Target_X, .trabajo.Target_Y).ObjInfo.ObjIndex
+                            
+466                         If DummyInt > 0 Then
+
+                                'Check distance
+468                             If Abs(.Pos.X - .trabajo.Target_X) + Abs(.Pos.Y - .trabajo.Target_Y) > 2 Then
+470                                 Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
+                                    'Call WriteConsoleMsg(UserIndex, "Estís demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
+472                                 Call WriteWorkRequestTarget(UserIndex, 0)
+                                    Exit Sub
+
+                                End If
+
+                                '¡Hay un yacimiento donde clickeo?
+474                             If ObjData(DummyInt).OBJType = eOBJType.otYacimiento Then
+
+                                    ' Si el Yacimiento requiere herramienta `Dorada` y la herramienta no lo es, o vice versa.
+                                    ' Se usa para el yacimiento de Oro.
+476                                 If ObjData(DummyInt).Dorada <> ObjData(.Invent.HerramientaEqpObjIndex).Dorada Then
+478                                     Call WriteConsoleMsg(UserIndex, "El pico dorado solo puede extraer minerales del yacimiento de Oro.", FontTypeNames.FONTTYPE_INFO)
+480                                     Call WriteWorkRequestTarget(UserIndex, 0)
+                                        Exit Sub
+
+                                    End If
+
+482                                 If MapData(.Pos.Map, .trabajo.Target_X, .trabajo.Target_Y).ObjInfo.amount <= 0 Then
+484                                     Call WriteConsoleMsg(UserIndex, "Este yacimiento no tiene mas minerales para entregar.", FontTypeNames.FONTTYPE_INFO)
+486                                     Call WriteWorkRequestTarget(UserIndex, 0)
+488                                     Call WriteMacroTrabajoToggle(UserIndex, False)
+                                        Exit Sub
+
+                                    End If
+
+490                                 Call DoMineria(UserIndex, .trabajo.Target_X, .trabajo.Target_Y, ObjData(.Invent.HerramientaEqpObjIndex).Dorada = 1)
+
+                                Else
+492                                 Call WriteConsoleMsg(UserIndex, "Ahí no hay ningún yacimiento.", FontTypeNames.FONTTYPE_INFO)
+494                                 Call WriteWorkRequestTarget(UserIndex, 0)
+
+                                End If
+
+                            Else
+496                             Call WriteConsoleMsg(UserIndex, "Ahí no hay ningun yacimiento.", FontTypeNames.FONTTYPE_INFO)
+498                             Call WriteWorkRequestTarget(UserIndex, 0)
+
+                            End If
+
+                    End Select
+        Case eSkill.Talar
+350                 If .Invent.HerramientaEqpObjIndex = 0 Then Exit Sub
+
+352                 If ObjData(.Invent.HerramientaEqpObjIndex).OBJType <> eOBJType.otHerramientas Then Exit Sub
+        
+                    'Check interval
+354                 If Not IntervaloPermiteTrabajarExtraer(UserIndex) Then Exit Sub
+
+356                 Select Case ObjData(.Invent.HerramientaEqpObjIndex).Subtipo
+                
+                        Case 6      ' Herramientas de Carpinteria - Hacha
+
+                            ' Ahora se puede talar en la ciudad
+                            'If MapInfo(UserList(UserIndex).Pos.Map).Seguro = 1 Then
+                            '    Call WriteConsoleMsg(UserIndex, "Esta prohibido talar arboles en las ciudades.", FontTypeNames.FONTTYPE_INFO)
+                            '    Call WriteWorkRequestTarget(UserIndex, 0)
+                            '    Exit Sub
+                            'End If
+                            
+358                         DummyInt = MapData(.Pos.Map, .trabajo.Target_X, .trabajo.Target_Y).ObjInfo.ObjIndex
+                            
+360                         If DummyInt > 0 Then
+362                             If Abs(.Pos.X - .trabajo.Target_X) + Abs(.Pos.Y - .trabajo.Target_Y) > 1 Then
+364                                 Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
+                                    'Call WriteConsoleMsg(UserIndex, "Estas demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
+366                                 Call WriteWorkRequestTarget(UserIndex, 0)
+                                    Exit Sub
+
+                                End If
+                                
+368                             If .Pos.X = .trabajo.Target_X And .Pos.Y = .trabajo.Target_Y Then
+370                                 Call WriteConsoleMsg(UserIndex, "No podés talar desde allí.", FontTypeNames.FONTTYPE_INFO)
+372                                 Call WriteWorkRequestTarget(UserIndex, 0)
+                                    Exit Sub
+
+                                End If
+
+374                             If ObjData(DummyInt).Elfico <> ObjData(.Invent.HerramientaEqpObjIndex).Elfico Then
+376                                 Call WriteConsoleMsg(UserIndex, "Sólo puedes talar árboles elficos con un hacha élfica.", FontTypeNames.FONTTYPE_INFO)
+378                                 Call WriteWorkRequestTarget(UserIndex, 0)
+                                    Exit Sub
+
+                                End If
+
+380                             If MapData(.Pos.Map, .trabajo.Target_X, .trabajo.Target_Y).ObjInfo.amount <= 0 Then
+382                                 Call WriteConsoleMsg(UserIndex, "El árbol ya no te puede entregar mas leña.", FontTypeNames.FONTTYPE_INFO)
+384                                 Call WriteWorkRequestTarget(UserIndex, 0)
+386                                 Call WriteMacroTrabajoToggle(UserIndex, False)
+                                    Exit Sub
+
+                                End If
+
+                                '¡Hay un arbol donde clickeo?
+388                             If ObjData(DummyInt).OBJType = eOBJType.otArboles Then
+390                                 Call DoTalar(UserIndex, .trabajo.Target_X, .trabajo.Target_Y, ObjData(.Invent.HerramientaEqpObjIndex).Dorada = 1)
+
+                                End If
+
+                            Else
+392                             Call WriteConsoleMsg(UserIndex, "No hay ningún árbol ahí.", FontTypeNames.FONTTYPE_INFO)
+394                             Call WriteWorkRequestTarget(UserIndex, 0)
+
+396                             If UserList(UserIndex).Counters.Trabajando > 1 Then
+398                                 Call WriteMacroTrabajoToggle(UserIndex, False)
+
+                                End If
+
+                            End If
+                
+                    End Select
+    End Select
+    End With
+End Sub
+
 Public Sub DoPermanecerOculto(ByVal UserIndex As Integer)
         '********************************************************
         'Autor: Nacho (Integer)
@@ -1418,8 +1633,8 @@ Public Sub DoPescar(ByVal UserIndex As Integer, Optional ByVal RedDePesca As Boo
 116         Suerte = Int(-0.00125 * Skill * Skill - 0.3 * Skill + 49)
     
 118         res = RandomNumber(1, Suerte)
-    
-120         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageArmaMov(.Char.CharIndex))
+            'HarThaoS: Movimiento de caña, lo saco. Se hace exponencial la cantidad de paquetes dependiendo la cantida de usuarios
+'120         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageArmaMov(.Char.CharIndex))
 
 122         If res < 6 Then
 
@@ -1437,7 +1652,12 @@ Public Sub DoPescar(ByVal UserIndex As Integer, Optional ByVal RedDePesca As Boo
                 End If
 
 134             Call WriteTextCharDrop(UserIndex, "+" & MiObj.amount, .Char.CharIndex, vbWhite)
-        
+                 
+                 If MapInfo(.Pos.Map).Seguro = 1 Then
+302                 Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessagePlayWave(SND_PESCAR, .Pos.X, .Pos.Y))
+                Else
+301                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_PESCAR, .Pos.X, .Pos.Y))
+                End If
                 ' Al pescar también podés sacar cosas raras (se setean desde RecursosEspeciales.dat)
                 Dim i As Integer
 
@@ -1926,7 +2146,7 @@ Public Sub DoRaices(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte
 114         Suerte = Int(-0.00125 * Skill * Skill - 0.3 * Skill + 49)
 116         res = RandomNumber(1, Suerte)
     
-118         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageArmaMov(.Char.CharIndex))
+'118         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageArmaMov(.Char.CharIndex))
     
             Rem Ladder 06/08/14 Subo un poco la probabilidad de sacar raices... porque era muy lento
 120         If res < 7 Then
@@ -2018,7 +2238,7 @@ Public Sub DoTalar(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte,
 114         Suerte = Int(-0.00125 * Skill * Skill - 0.3 * Skill + 49)
 
 116         res = RandomNumber(1, Suerte)
-118         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageArmaMov(.Char.CharIndex))
+'118         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageArmaMov(.Char.CharIndex))
 
 120         If res < 6 Then
 
@@ -2050,7 +2270,12 @@ Public Sub DoTalar(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte,
                 End If
     
 144             Call WriteTextCharDrop(UserIndex, "+" & MiObj.amount, .Char.CharIndex, vbWhite)
-146             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_TALAR, .Pos.X, .Pos.Y))
+
+                If MapInfo(.Pos.Map).Seguro = 1 Then
+146                 Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessagePlayWave(SND_TALAR, .Pos.X, .Pos.Y))
+                Else
+145                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_TALAR, .Pos.X, .Pos.Y))
+                End If
 
                 ' Al talar también podés dropear cosas raras (se setean desde RecursosEspeciales.dat)
                 Dim i As Integer
@@ -2128,7 +2353,7 @@ Public Sub DoMineria(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byt
         
 116         res = RandomNumber(1, Suerte)
         
-118         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageArmaMov(.Char.CharIndex))
+'118         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageArmaMov(.Char.CharIndex))
         
 120         If res <= 5 Then
     
@@ -2152,8 +2377,15 @@ Public Sub DoMineria(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byt
 138             If Not MeterItemEnInventario(UserIndex, MiObj) Then Call TirarItemAlPiso(.Pos, MiObj)
                  ' AGREGAR FX
                 Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, 253, 25, False, ObjData(MiObj.ObjIndex).GrhIndex))
+                
+139             Call WriteTextCharDrop(UserIndex, "+" & MiObj.amount, .Char.CharIndex, vbWhite)
+
 140             Call WriteConsoleMsg(UserIndex, "¡Has extraido algunos minerales!", FontTypeNames.FONTTYPE_INFO)
-142             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(15, .Pos.X, .Pos.Y))
+                If MapInfo(.Pos.Map).Seguro = 1 Then
+141                 Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessagePlayWave(15, .Pos.X, .Pos.Y))
+                Else
+142                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(15, .Pos.X, .Pos.Y))
+                End If
             
                 ' Al minar también puede dropear una gema
                 Dim i As Integer

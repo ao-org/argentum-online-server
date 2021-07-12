@@ -995,6 +995,7 @@ Public Function MakeQuery(query As String, ByVal NoResult As Boolean, ParamArray
         On Error GoTo ErrorHandler
     
         Dim Params As Variant
+         Call GetElapsedTime
 
 100     Set Command = New ADODB.Command
     
@@ -1031,6 +1032,8 @@ Public Function MakeQuery(query As String, ByVal NoResult As Boolean, ParamArray
             End If
         
         End With
+        
+        Call LogPerformance("Guardado de Personaje - Tiempo transcurrido: " & Round(GetElapsedTime(), 1) & " ms")
     
         Exit Function
     

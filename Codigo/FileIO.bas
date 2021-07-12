@@ -3102,7 +3102,6 @@ Sub SaveUser(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = Fals
         #If DEBUGGING = 1 Then
 100         Call GetElapsedTime
         #End If
-    
 102     Call SaveUserDatabase(UserIndex, Logout)
     
 104     UserList(UserIndex).Counters.LastSave = GetTickCount

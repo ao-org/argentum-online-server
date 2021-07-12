@@ -1842,13 +1842,10 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
                         'liquid: muevo esto aca adentro, para que solo pida modo combate si estamos por usar el arco
 190                     Call WriteWorkRequestTarget(UserIndex, Proyectiles)
                     Else
-    
 192                     If .flags.TargetObj = Leña Then
 194                         If .Invent.Object(Slot).ObjIndex = DAGA Then
 196                             Call TratarDeHacerFogata(.flags.TargetObjMap, .flags.TargetObjX, .flags.TargetObjY, UserIndex)
-    
                             End If
-    
                         End If
     
                     End If
