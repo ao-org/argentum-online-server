@@ -11111,17 +11111,19 @@ Private Sub HandleTeleportCreate(ByVal UserIndex As Integer)
             Dim Mapa As Integer
             Dim X    As Byte
             Dim Y    As Byte
+            Dim Motivo As String
         
 102         Mapa = .incomingData.ReadInteger()
 104         X = .incomingData.ReadByte()
 106         Y = .incomingData.ReadByte()
+            Motivo = .incomingData.ReadASCIIString()
         
 108         If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios)) Then
 110             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
         
-112         Call LogGM(.Name, "/CT " & Mapa & "," & X & "," & Y)
+112         Call LogGM(.Name, "/CT " & Mapa & "," & X & "," & Y & "," & Motivo)
         
 114         If Not MapaValido(Mapa) Or Not InMapBounds(Mapa, X, Y) Then Exit Sub
         
