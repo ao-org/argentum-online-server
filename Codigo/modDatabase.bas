@@ -272,7 +272,7 @@ ErrorHandler:
 
 End Sub
 
-Public Sub SaveUserDatabase()
+Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = False)
 
         On Error GoTo ErrorHandler
     
