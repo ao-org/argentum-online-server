@@ -272,7 +272,7 @@ ErrorHandler:
 
 End Sub
 
-Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = False)
+Public Sub SaveUserDatabase()
 
         On Error GoTo ErrorHandler
     
@@ -615,6 +615,18 @@ ErrorHandler:
 520     Call LogDatabaseError("Error en SaveUserDatabase. UserName: " & UserList(UserIndex).Name & ". " & Err.Number & " - " & Err.Description)
 
 End Sub
+Public Function General_File_Exists(ByVal file_path As String, ByVal file_type As VbFileAttribute) As Boolean
+'*****************************************************************
+'Author: Aaron Perkins
+'Last Modify Date: 10/07/2002
+'Checks to see if a file exists
+'*****************************************************************
+    If dir(file_path, file_type) = "" Then
+        General_File_Exists = False
+    Else
+        General_File_Exists = True
+    End If
+End Function
 
 Sub LoadUserDatabase(ByVal UserIndex As Integer)
 
@@ -623,7 +635,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
         'Basic user data
 100     With UserList(UserIndex)
 
-102         Call MakeQuery("SELECT *, DATE_FORMAT(fecha_ingreso, '%Y-%m-%d') as 'fecha_ingreso_format' FROM user WHERE name = ?;", False, .Name)
+102         Call MakeQuery(QUERY_LOAD_MAINPJ, False, .Name)
 
 104         If QueryData Is Nothing Then Exit Sub
 
@@ -640,7 +652,6 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
 124         .Stats.GLD = QueryData!gold
 126         .Stats.Banco = QueryData!bank_gold
 128         .Stats.SkillPts = QueryData!free_skillpoints
-            '.Counters.AsignedSkills = QueryData!assigned_skillpoints
 130         .Pos.Map = QueryData!pos_map
 132         .Pos.X = QueryData!pos_x
 134         .Pos.Y = QueryData!pos_y
@@ -680,13 +691,6 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
 202         .Stats.UsuariosMatados = QueryData!killed_users
 204         .Stats.InventLevel = QueryData!invent_level
 206         .Stats.ELO = QueryData!ELO
-            '.Reputacion.AsesinoRep = QueryData!rep_asesino
-            '.Reputacion.BandidoRep = QueryData!rep_bandido
-            '.Reputacion.BurguesRep = QueryData!rep_burgues
-            '.Reputacion.LadronesRep = QueryData!rep_ladron
-            '.Reputacion.NobleRep = QueryData!rep_noble
-            '.Reputacion.PlebeRep = QueryData!rep_plebe
-            '.Reputacion.Promedio = QueryData!rep_average
 208         .flags.Desnudo = QueryData!is_naked
 210         .flags.Envenenado = QueryData!is_poisoned
 212         .flags.Escondido = QueryData!is_hidden
@@ -747,7 +751,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
 298         .Stats.Advertencias = QueryData!warnings
         
             'User attributes
-300         Call MakeQuery("SELECT * FROM attribute WHERE user_id = ?;", False, .ID)
+300         Call MakeQuery("SELECT value, number FROM attribute WHERE user_id = ?;", False, .ID)
     
 302         If Not QueryData Is Nothing Then
 304             QueryData.MoveFirst
@@ -763,7 +767,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
             End If
 
             'User spells
-314         Call MakeQuery("SELECT * FROM spell WHERE user_id = ?;", False, .ID)
+314         Call MakeQuery("SELECT number, spell_id FROM spell WHERE user_id = ?;", False, .ID)
 
 316         If Not QueryData Is Nothing Then
 318             QueryData.MoveFirst
@@ -778,7 +782,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
             End If
 
             'User pets
-326         Call MakeQuery("SELECT * FROM pet WHERE user_id = ?;", False, .ID)
+326         Call MakeQuery("SELECT number, pet_id FROM pet WHERE user_id = ?;", False, .ID)
 
 328         If Not QueryData Is Nothing Then
 330             QueryData.MoveFirst
@@ -798,7 +802,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
             End If
 
             'User inventory
-342         Call MakeQuery("SELECT * FROM inventory_item WHERE user_id = ?;", False, .ID)
+342         Call MakeQuery("SELECT number, item_id, is_equipped, amount FROM inventory_item WHERE user_id = ?;", False, .ID)
 
 344         If Not QueryData Is Nothing Then
 346             QueryData.MoveFirst
@@ -827,7 +831,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
             End If
 
             'User bank inventory
-366         Call MakeQuery("SELECT * FROM bank_item WHERE user_id = ?;", False, .ID)
+366         Call MakeQuery("SELECT number, item_id, amount FROM bank_item WHERE user_id = ?;", False, .ID)
 
 368         If Not QueryData Is Nothing Then
 370             QueryData.MoveFirst
@@ -855,7 +859,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
             End If
 
             'User skills
-388         Call MakeQuery("SELECT * FROM skillpoint WHERE user_id = ?;", False, .ID)
+388         Call MakeQuery("SELECT number, value FROM skillpoint WHERE user_id = ?;", False, .ID)
 
 390         If Not QueryData Is Nothing Then
 392             QueryData.MoveFirst
@@ -889,7 +893,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
             Dim LoopC As Byte
         
             'User quests
-400         Call MakeQuery("SELECT * FROM quest WHERE user_id = ?;", False, .ID)
+400         Call MakeQuery("SELECT number, quest_id, npcs, npcstarget FROM quest WHERE user_id = ?;", False, .ID)
 
 402         If Not QueryData Is Nothing Then
 404             QueryData.MoveFirst
@@ -933,7 +937,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
             End If
         
             'User quests done
-438         Call MakeQuery("SELECT * FROM quest_done WHERE user_id = ?;", False, .ID)
+438         Call MakeQuery("SELECT quest_id FROM quest_done WHERE user_id = ?;", False, .ID)
 
 440         If Not QueryData Is Nothing Then
 442             .QuestStats.NumQuestsDone = QueryData.RecordCount
