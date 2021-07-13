@@ -10,12 +10,12 @@ DeleteCuentasPath=..\re20-server\DeleteCuentas\
 Cliente=783046654ce7b46add8b75161ede506c
 
 [INIT]
-NumCuentas=5
+NumCuentas=1
 StartPort=7667
 LastSockListen=-1
 Hide=0
-MaxConexionesIP=10
-MaxUsersPorCuenta=2
+MaxConexionesIP=5
+MaxUsersPorCuenta=1
 IdleLimit=0
 Version=2.0.4
 IniciarDesdeBackUp=0
@@ -31,7 +31,7 @@ MaxUsers=3000
 Admines=3
 Dioses=2
 SemiDioses=11
-Consejeros=9
+Consejeros=10
 RolesMasters=0
 
 [Admines]
@@ -66,6 +66,7 @@ Consejero6=Terrel|loganfenix2000@yahoo.com.mx
 Consejero7=Hainnor|Jere_estandar@hotmail.com.ar
 Consejero8=Bwise|Joacovas@hotmail.com
 Consejero9=Bonyo|argentumo@hotmail.com
+Consejero10=Blair|mercuricecilia1@gmail.com
 
 [RolesMasters]
 RM1=
