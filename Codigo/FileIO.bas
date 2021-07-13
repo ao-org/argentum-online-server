@@ -3098,17 +3098,11 @@ End Sub
 Sub SaveUser(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = False)
 
         On Error GoTo SaveUser_Err
-    
-        #If DEBUGGING = 1 Then
-100         Call GetElapsedTime
-        #End If
+
 102     Call SaveUserDatabase(UserIndex, Logout)
     
 104     UserList(UserIndex).Counters.LastSave = GetTickCount
-    
-        #If DEBUGGING = 1 Then
-106         Call LogPerformance("Guardado de Personaje - Tiempo transcurrido: " & Round(GetElapsedTime(), 1) & " ms")
-        #End If
+
     
         Exit Sub
 

@@ -225,6 +225,15 @@ Begin VB.Form frmMain
       TabIndex        =   7
       Top             =   120
       Width           =   4935
+      Begin VB.CheckBox chkLogDbPerfomance 
+         BackColor       =   &H80000016&
+         Caption         =   "Log DB perfomance"
+         Height          =   375
+         Left            =   2640
+         TabIndex        =   39
+         Top             =   1320
+         Width           =   2055
+      End
       Begin VB.Label Label10 
          BackStyle       =   0  'Transparent
          Caption         =   "Estabilidad:"
