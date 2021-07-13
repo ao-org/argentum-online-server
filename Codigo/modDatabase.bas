@@ -998,8 +998,8 @@ Public Function MakeQuery(query As String, ByVal NoResult As Boolean, ParamArray
     
         On Error GoTo ErrorHandler
     
+        If frmMain.chkLogDbPerfomance.Value = 1 Then Call GetElapsedTime
         Dim Params As Variant
-         Call GetElapsedTime
 
 100     Set Command = New ADODB.Command
     
@@ -1025,7 +1025,6 @@ Public Function MakeQuery(query As String, ByVal NoResult As Boolean, ParamArray
 
 124         If NoResult Then
 126             Call .Execute(RecordsAffected, Params, adExecuteNoRecords)
-    
             Else
 128             Set QueryData = .Execute(RecordsAffected, Params)
     
@@ -1036,8 +1035,7 @@ Public Function MakeQuery(query As String, ByVal NoResult As Boolean, ParamArray
             End If
         
         End With
-        
-        Call LogPerformance("Query: " & query & vbNewLine & " - Tiempo transcurrido: " & Round(GetElapsedTime(), 1) & " ms" & vbNewLine)
+        If frmMain.chkLogDbPerfomance.Value = 1 Then Call LogPerformance("Query: " & query & vbNewLine & " - Tiempo transcurrido: " & Round(GetElapsedTime(), 1) & " ms" & vbNewLine)
     
         Exit Function
     
