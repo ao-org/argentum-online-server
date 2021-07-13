@@ -1102,11 +1102,15 @@ Sub EquiparBarco(ByVal UserIndex As Integer)
 102     Barco = ObjData(.Invent.BarcoObjIndex)
 
 104     If .flags.Muerto = 1 Then
-106       If Barco.Ropaje = iTraje Then
+106       If Barco.Ropaje = iTraje Or Barco.Ropaje = iTrajeAltoNw Or Barco.Ropaje = iTrajeBajoNw Then
               ' No tenemos la cabeza copada que va con iRopaBuceoMuerto,
               ' asique asignamos el casper directamente caminando sobre el agua.
 108           .Char.Body = iCuerpoMuerto 'iRopaBuceoMuerto
 110           .Char.Head = iCabezaMuerto
+          ElseIf Barco.Ropaje = iTrajeAltoNw Then
+          
+          ElseIf Barco.Ropaje = iTrajeBajoNw Then
+          
           Else
 112           .Char.Body = iFragataFantasmal
 114           .Char.Head = 0
@@ -1116,9 +1120,20 @@ Sub EquiparBarco(ByVal UserIndex As Integer)
 116       If Barco.Ropaje = iTraje Then
 118         .Char.Body = iTraje
 120         .Char.Head = .OrigChar.Head
-
 122         If .Invent.CascoEqpObjIndex > 0 Then
 124           .Char.CascoAnim = ObjData(.Invent.CascoEqpObjIndex).CascoAnim
+            End If
+          ElseIf Barco.Ropaje = iTrajeAltoNw Then
+            .Char.Body = iTrajeAltoNw
+            .Char.Head = .OrigChar.Head
+            If .Invent.CascoEqpObjIndex > 0 Then
+                .Char.CascoAnim = ObjData(.Invent.CascoEqpObjIndex).CascoAnim
+            End If
+          ElseIf Barco.Ropaje = iTrajeBajoNw Then
+            .Char.Body = iTrajeBajoNw
+            .Char.Head = .OrigChar.Head
+            If .Invent.CascoEqpObjIndex > 0 Then
+                .Char.CascoAnim = ObjData(.Invent.CascoEqpObjIndex).CascoAnim
             End If
           Else
 126         .Char.Head = 0
@@ -1145,7 +1160,7 @@ Sub EquiparBarco(ByVal UserIndex As Integer)
 152     .Char.ShieldAnim = NingunEscudo
 154     .Char.WeaponAnim = NingunArma
     
-156     Call WriteNadarToggle(UserIndex, Barco.Ropaje = iTraje)
+156     Call WriteNadarToggle(UserIndex, (Barco.Ropaje = iTraje Or Barco.Ropaje = iTrajeAltoNw Or Barco.Ropaje = iTrajeBajoNw))
       End With
   
       Exit Sub
@@ -2951,17 +2966,18 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
 1164             Case eOBJType.otBarcos
                 
                         ' Piratas y trabajadores navegan al nivel 23
-1166                 If .clase = eClass.Trabajador Or .clase = eClass.Pirat Then
-1168                     If .Stats.ELV < 23 Then
-1170                         Call WriteConsoleMsg(UserIndex, "Para recorrer los mares debes ser nivel 23 o superior.", FontTypeNames.FONTTYPE_INFO)
-                                Exit Sub
-                            End If
-                    
+                     If .Invent.Object(Slot).ObjIndex <> 199 And .Invent.Object(Slot).ObjIndex <> 200 Then
+1166                     If .clase = eClass.Trabajador Or .clase = eClass.Pirat Then
+1168                         If .Stats.ELV < 23 Then
+1170                             Call WriteConsoleMsg(UserIndex, "Para recorrer los mares debes ser nivel 23 o superior.", FontTypeNames.FONTTYPE_INFO)
+                                    Exit Sub
+                                End If
                         ' Nivel mínimo 25 para navegar, si no sos pirata ni trabajador
-1172                ElseIf .Stats.ELV < 25 Then
-1174                    Call WriteConsoleMsg(UserIndex, "Para recorrer los mares debes ser nivel 25 o superior.", FontTypeNames.FONTTYPE_INFO)
+1172                    ElseIf .Stats.ELV < 25 Then
+1174                        Call WriteConsoleMsg(UserIndex, "Para recorrer los mares debes ser nivel 25 o superior.", FontTypeNames.FONTTYPE_INFO)
                             Exit Sub
                         End If
+                    End If
 
 1176                If .flags.Navegando = 0 Then
 1178                    If LegalWalk(.Pos.Map, .Pos.X - 1, .Pos.Y, eHeading.WEST, True, False) Or LegalWalk(.Pos.Map, .Pos.X, .Pos.Y - 1, eHeading.NORTH, True, False) Or LegalWalk(.Pos.Map, .Pos.X + 1, .Pos.Y, eHeading.EAST, True, False) Or LegalWalk(.Pos.Map, .Pos.X, .Pos.Y + 1, eHeading.SOUTH, True, False) Then

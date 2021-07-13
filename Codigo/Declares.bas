@@ -144,7 +144,9 @@ Public Const NO_3D_SOUND          As Byte = 0
 
 Public Const iFragataFantasmal = 87 'ok
 
-Public Const iTraje = 694 'ok
+Public Const iTraje = 694 'Traje +25
+Public Const iTrajeAltoNw = 1295 'Traje -25 alto
+Public Const iTrajeBajoNw = 1296 'Traje -25 enano
 
 Public Const iBarca = 84
 

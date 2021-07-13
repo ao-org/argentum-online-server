@@ -2313,6 +2313,7 @@ Public Sub CargarMapaFormatoCSM(ByVal Map As Long, ByVal MAPFl As String)
                         ' Vuelvo a poner flag agua
 218                     MapData(Map, X, Y).Blocked = MapData(Map, X, Y).Blocked Or FLAG_AGUA
                     End If
+                    
 220             Next i
 
             End If
