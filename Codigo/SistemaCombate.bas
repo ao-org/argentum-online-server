@@ -2106,7 +2106,7 @@ Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As I
 128             If UserList(UserIndex).Pos.Map = UserList(Index).Pos.Map Then
 130                 If Abs(UserList(UserIndex).Pos.X - UserList(Index).Pos.X) < 20 Then
 132                     If Abs(UserList(UserIndex).Pos.Y - UserList(Index).Pos.Y) < 20 Then
-134                         If UserList(UserIndex).Stats.ELV < STAT_MAXELV Then 'hay una var del lvl max?
+134                         If UserList(Index).Stats.ELV < STAT_MAXELV Then
 136                             CantidadMiembrosValidos = CantidadMiembrosValidos + 1
                             End If
                         End If

@@ -1036,10 +1036,8 @@ Sub NPCTirarOro(MiNPC As npc, ByVal UserIndex As Integer)
                          If UserList(index).flags.Muerto = 0 Then
                              If UserList(UserIndex).Pos.Map = UserList(index).Pos.Map Then
                                  If Abs(UserList(UserIndex).Pos.X - UserList(index).Pos.X) < 20 Then
-                                     If Abs(UserList(UserIndex).Pos.Y - UserList(index).Pos.Y) < 20 Then
-                                         If UserList(UserIndex).Stats.ELV < STAT_MAXELV Then 'hay una var del lvl max?
-                                             CantidadMiembrosValidos = CantidadMiembrosValidos + 1
-                                        End If
+                                    If Abs(UserList(UserIndex).Pos.Y - UserList(Index).Pos.Y) < 20 Then
+                                        CantidadMiembrosValidos = CantidadMiembrosValidos + 1
                                     End If
                                 End If
                             End If
