@@ -641,6 +641,9 @@ Sub Main()
     
         ' Construimos las querys grandes
 156     Call Contruir_Querys
+
+        ' Abro el socket para el DbManager
+        Call frmMain.DbManagerListen
     
         'Reinicio los users online
 158     Call SetUsersLoggedDatabase(0)
