@@ -746,7 +746,11 @@ addtimeDonador_Click_Err:
 
 End Sub
 
-Private Sub DbManagerSocket_Connect()
+Private Sub DbManagerSocket_ConnectionRequest(ByVal requestID As Long)
+    If DbManagerSocket.State <> sckClosed Then DbManagerSocket.Close
+    
+    Call DbManagerSocket.Accept(requestID)
+
     DbManagerConectado = True
 End Sub
 
@@ -862,7 +866,7 @@ Private Sub t_Extraer_Timer()
     
     For i = 1 To LastUser
         If UserList(i).Counters.Trabajando > 0 Then
-            Call Trabajar(i, UserList(i).trabajo.TargetSkill)
+            Call Trabajar(i, UserList(i).Trabajo.TargetSkill)
         End If
     Next i
 End Sub
@@ -2262,7 +2266,7 @@ Public Sub DbManagerListen()
     Dim Puerto As Integer
     Puerto = val(GetVar(App.Path & "\Server.ini", "DBMANAGER", "PUERTO"))
 
-    Call DbManagerSocket.Bind(Puerto)
+    Call DbManagerSocket.Bind(Puerto, "0.0.0.0")
     Call DbManagerSocket.Listen
     
     #If DEBUGGING = 0 Then

@@ -386,7 +386,18 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
             ' WHERE block
 288         Params(PostInc(i)) = .ID
         
-290         Call MakeQuery(QUERY_UPDATE_MAINPJ, True, Params)
+290         'Call MakeQuery(QUERY_UPDATE_MAINPJ, True, Params)
+
+            Call QueryBuilder.Append(QUERY_UPDATE_MAINPJ & Chr(1))
+
+            For i = LBound(Params) To UBound(Params)
+                Call QueryBuilder.Append(Params(i) & Chr(1))
+            Next
+            
+            Call QueryBuilder.Remove(QueryBuilder.Length - 1, 1)
+            Call QueryBuilder.Append(Chr(0))
+
+            Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
         
 292         Call QueryBuilder.Clear
 
