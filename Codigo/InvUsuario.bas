@@ -2977,6 +2977,11 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
 1174                        Call WriteConsoleMsg(UserIndex, "Para recorrer los mares debes ser nivel 25 o superior.", FontTypeNames.FONTTYPE_INFO)
                             Exit Sub
                         End If
+                    Else
+                        If MapData(.Pos.Map, .Pos.X + 1, .Pos.Y).trigger <> 8 And MapData(.Pos.Map, .Pos.X - 1, .Pos.Y).trigger <> 8 And MapData(.Pos.Map, .Pos.X, .Pos.Y + 1).trigger <> 8 And MapData(.Pos.Map, .Pos.X, .Pos.Y - 1).trigger <> 8 Then
+                            Call WriteConsoleMsg(UserIndex, "Este traje es para aguas contaminadas.", FontTypeNames.FONTTYPE_INFO)
+                            Exit Sub
+                        End If
                     End If
 
 1176                If .flags.Navegando = 0 Then
