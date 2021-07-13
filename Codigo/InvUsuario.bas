@@ -1160,7 +1160,7 @@ Sub EquiparBarco(ByVal UserIndex As Integer)
 152     .Char.ShieldAnim = NingunEscudo
 154     .Char.WeaponAnim = NingunArma
     
-156     Call WriteNadarToggle(UserIndex, (Barco.Ropaje = iTraje Or Barco.Ropaje = iTrajeAltoNw Or Barco.Ropaje = iTrajeBajoNw))
+156     Call WriteNadarToggle(UserIndex, (Barco.Ropaje = iTraje Or Barco.Ropaje = iTrajeAltoNw Or Barco.Ropaje = iTrajeBajoNw), (Barco.Ropaje = iTrajeAltoNw Or Barco.Ropaje = iTrajeBajoNw))
       End With
   
       Exit Sub

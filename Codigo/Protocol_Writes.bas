@@ -156,7 +156,7 @@ ErrHandler:
 
 End Sub
 
-Public Sub WriteNadarToggle(ByVal UserIndex As Integer, ByVal Puede As Boolean)
+Public Sub WriteNadarToggle(ByVal UserIndex As Integer, ByVal Puede As Boolean, Optional ByVal esTrajeCaucho As Boolean = False)
 
     '***************************************************
     'Author: Juan Martín Sotuyo Dodero (Maraxus)
@@ -169,6 +169,7 @@ Public Sub WriteNadarToggle(ByVal UserIndex As Integer, ByVal Puede As Boolean)
     
         Call .WriteID(ServerPacketID.NadarToggle)
         Call .WriteBoolean(Puede)
+        Call .WriteBoolean(esTrajeCaucho)
         
         Call .EndPacket
         
