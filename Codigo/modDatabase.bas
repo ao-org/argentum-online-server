@@ -396,9 +396,9 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
             
             Call QueryBuilder.Remove(QueryBuilder.Length - 1, 1)
             Call QueryBuilder.Append(Chr(0))
-
+            
             Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
-        
+
 292         Call QueryBuilder.Clear
 
             ' ************************** User attributes ****************************
@@ -413,7 +413,19 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
 306             ParamC = ParamC + 3
 308         Next LoopC
         
-310         Call MakeQuery(QUERY_UPSERT_ATTRIBUTES, True, Params)
+            Call QueryBuilder.Append(QUERY_UPSERT_ATTRIBUTES & Chr(1))
+
+            For i = LBound(Params) To UBound(Params)
+                Call QueryBuilder.Append(Params(i) & Chr(1))
+            Next
+            
+            Call QueryBuilder.Remove(QueryBuilder.Length - 1, 1)
+            Call QueryBuilder.Append(Chr(0))
+            
+            Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
+            
+            Call QueryBuilder.Clear
+        
 
             ' ************************** User spells *********************************
 312         ReDim Params(MAXUSERHECHIZOS * 3 - 1)
@@ -426,8 +438,19 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
             
 324             ParamC = ParamC + 3
 326         Next LoopC
+
+            Call QueryBuilder.Append(QUERY_UPSERT_SPELLS & Chr(1))
+
+            For i = LBound(Params) To UBound(Params)
+                Call QueryBuilder.Append(Params(i) & Chr(1))
+            Next
+            
+            Call QueryBuilder.Remove(QueryBuilder.Length - 1, 1)
+            Call QueryBuilder.Append(Chr(0))
+            
+            Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
         
-328         Call MakeQuery(QUERY_UPSERT_SPELLS, True, Params)
+            Call QueryBuilder.Clear
 
             ' ************************** User inventory *********************************
 330         ReDim Params(MAX_INVENTORY_SLOTS * 5 - 1)
@@ -442,9 +465,19 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
             
 346             ParamC = ParamC + 5
 348         Next LoopC
-        
-350         Call MakeQuery(QUERY_UPSERT_INVENTORY, True, Params)
 
+            Call QueryBuilder.Append(QUERY_UPSERT_INVENTORY & Chr(1))
+
+            For i = LBound(Params) To UBound(Params)
+                Call QueryBuilder.Append(Params(i) & Chr(1))
+            Next
+            
+            Call QueryBuilder.Remove(QueryBuilder.Length - 1, 1)
+            Call QueryBuilder.Append(Chr(0))
+            
+            Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
+
+            Call QueryBuilder.Clear
             ' ************************** User bank inventory *********************************
 352         ReDim Params(MAX_BANCOINVENTORY_SLOTS * 4 - 1)
 354         ParamC = 0
@@ -457,8 +490,19 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
             
 366             ParamC = ParamC + 4
 368         Next LoopC
-        
-370         Call MakeQuery(QUERY_SAVE_BANCOINV, True, Params)
+
+            Call QueryBuilder.Append(QUERY_SAVE_BANCOINV & Chr(1))
+
+            For i = LBound(Params) To UBound(Params)
+                Call QueryBuilder.Append(Params(i) & Chr(1))
+            Next
+            
+            Call QueryBuilder.Remove(QueryBuilder.Length - 1, 1)
+            Call QueryBuilder.Append(Chr(0))
+            
+            Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
+
+            Call QueryBuilder.Clear
 
             ' ************************** User skills *********************************
 372         ReDim Params(NUMSKILLS * 3 - 1)
@@ -471,8 +515,19 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
             
 384             ParamC = ParamC + 3
 386         Next LoopC
-        
-388         Call MakeQuery(QUERY_UPSERT_SKILLS, True, Params)
+
+            Call QueryBuilder.Append(QUERY_UPSERT_SKILLS & Chr(1))
+
+            For i = LBound(Params) To UBound(Params)
+                Call QueryBuilder.Append(Params(i) & Chr(1))
+            Next
+            
+            Call QueryBuilder.Remove(QueryBuilder.Length - 1, 1)
+            Call QueryBuilder.Append(Chr(0))
+            
+            Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
+
+            Call QueryBuilder.Clear
 
             ' ************************** User pets *********************************
 390         ReDim Params(MAXMASCOTAS * 3 - 1)
@@ -501,16 +556,39 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
             
 412             ParamC = ParamC + 3
 414         Next LoopC
-        
-416         Call MakeQuery(QUERY_UPSERT_PETS, True, Params)
+
+            Call QueryBuilder.Append(QUERY_UPSERT_PETS & Chr(1))
+
+            For i = LBound(Params) To UBound(Params)
+                Call QueryBuilder.Append(Params(i) & Chr(1))
+            Next
+            
+            Call QueryBuilder.Remove(QueryBuilder.Length - 1, 1)
+            Call QueryBuilder.Append(Chr(0))
+            
+            Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
+
+            Call QueryBuilder.Clear
         
             ' ************************** User connection logs *********************************
         
             'Agrego ip del user
-418         Call MakeQuery(QUERY_SAVE_CONNECTION, True, .ID, .IP)
+            Call QueryBuilder.Append(QUERY_SAVE_CONNECTION & Chr(1))
+
+            Call QueryBuilder.Append(.ID & Chr(1) & .IP & Chr(0))
+            
+            Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
+
+            Call QueryBuilder.Clear
         
             'Borro la mas vieja si hay mas de 5 (WyroX: si alguien sabe una forma mejor de hacerlo me avisa)
-420         Call MakeQuery(QUERY_DELETE_LAST_CONNECTIONS, True, .ID, .ID)
+            Call QueryBuilder.Append(QUERY_DELETE_LAST_CONNECTIONS & Chr(1))
+
+            Call QueryBuilder.Append(.ID & Chr(1) & .ID & Chr(0))
+            
+            Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
+
+            Call QueryBuilder.Clear
         
             ' ************************** User quests *********************************
 422         QueryBuilder.Append "INSERT INTO quest (user_id, number, quest_id, npcs, npcstarget) VALUES "
@@ -568,11 +646,13 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
 
 472         Next LoopC
         
-474         QueryBuilder.Append " ON DUPLICATE KEY UPDATE quest_id=VALUES(quest_id), npcs=VALUES(npcs); "
-        
-476         Call MakeQuery(QueryBuilder.ToString, True)
-        
-478         Call QueryBuilder.Clear
+474         QueryBuilder.Append " ON DUPLICATE KEY UPDATE quest_id=VALUES(quest_id), npcs=VALUES(npcs);"
+
+            Call QueryBuilder.Append(Chr(0))
+            
+            Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
+
+            Call QueryBuilder.Clear
         
             ' ************************** User completed quests *********************************
 480         If .QuestStats.NumQuestsDone > 0 Then
@@ -601,9 +681,16 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
                 
 506                 ParamC = ParamC + 2
 508             Next LoopC
-            
-                ' Mandamos la query
-510             Call MakeQuery(QueryBuilder.ToString, True, Params)
+
+                For i = LBound(Params) To UBound(Params)
+                    Call QueryBuilder.Append(Chr(1) & Params(i))
+                Next
+
+                Call QueryBuilder.Append(Chr(0))
+                
+                Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
+    
+                Call QueryBuilder.Clear
         
             End If
 
@@ -626,6 +713,7 @@ ErrorHandler:
 520     Call LogDatabaseError("Error en SaveUserDatabase. UserName: " & UserList(UserIndex).Name & ". " & Err.Number & " - " & Err.Description)
 
 End Sub
+
 Public Function General_File_Exists(ByVal file_path As String, ByVal file_type As VbFileAttribute) As Boolean
 '*****************************************************************
 'Author: Aaron Perkins
