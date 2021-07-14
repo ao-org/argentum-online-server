@@ -697,7 +697,13 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
             ' ************************** User logout *********************************
             ' Si deslogueó, actualizo la cuenta
 512         If Logout Then
-514             Call MakeQuery("UPDATE account SET logged = logged - 1 WHERE id = ?", True, .AccountID)
+                Call QueryBuilder.Append("UPDATE account SET logged = logged - 1 WHERE id = ?; " & Chr(1) & .AccountID)
+                
+                Call QueryBuilder.Append(Chr(0))
+                
+                Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
+    
+                Call QueryBuilder.Clear
             End If
 
         End With
@@ -1222,8 +1228,14 @@ Public Sub SetDBValue(Tabla As String, ColumnaSet As String, ByVal ValueSet As V
         On Error GoTo ErrorHandler
     
         'Hacemos la query
-100     Call MakeQuery("UPDATE " & Tabla & " SET " & ColumnaSet & " = ? WHERE " & ColumnaTest & " = ?;", True, ValueSet, ValueTest)
-
+        Call QueryBuilder.Append("UPDATE " & Tabla & " SET " & ColumnaSet & " = ? WHERE " & ColumnaTest & " = ?; " & Chr(1) & ValueSet & Chr(1) & ValueTest)
+                
+        Call QueryBuilder.Append(Chr(0))
+                
+        Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
+    
+        Call QueryBuilder.Clear
+        
         Exit Sub
     
 ErrorHandler:
@@ -1717,7 +1729,15 @@ Public Sub SetUserLoggedDatabase(ByVal ID As Long, ByVal AccountID As Long)
         On Error GoTo SetUserLoggedDatabase_Err
         
 100     Call SetDBValue("user", "is_logged", 1, "id", ID)
-102     Call MakeQuery("UPDATE account SET logged = logged + 1 WHERE id = ?;", True, AccountID)
+        
+        Call QueryBuilder.Append("UPDATE account SET logged = logged + 1 WHERE id = ?; " & Chr(1) & AccountID)
+                
+        Call QueryBuilder.Append(Chr(0))
+                
+        Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
+    
+        Call QueryBuilder.Clear
+        
 
         
         Exit Sub
@@ -1731,9 +1751,14 @@ End Sub
 Public Sub ResetLoggedDatabase(ByVal AccountID As Long)
         
         On Error GoTo ResetLoggedDatabase_Err
-        
-100     Call MakeQuery("UPDATE account SET logged = 0 WHERE id = ?;", True, AccountID)
-
+                
+        Call QueryBuilder.Append("UPDATE account SET logged = 0 WHERE id = ?; " & Chr(1) & AccountID)
+                
+        Call QueryBuilder.Append(Chr(0))
+                
+        Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
+    
+        Call QueryBuilder.Clear
         
         Exit Sub
 
@@ -1747,8 +1772,13 @@ Public Sub SetUsersLoggedDatabase(ByVal NumUsers As Long)
         
         On Error GoTo SetUsersLoggedDatabase_Err
         
-100     Call MakeQuery("UPDATE statistics SET value = ? WHERE name = 'online';", True, NumUsers)
-        
+        Call QueryBuilder.Append("UPDATE statistics SET value = ? WHERE name = 'online'; " & Chr(1) & NumUsers)
+                
+        Call QueryBuilder.Append(Chr(0))
+                
+        Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
+    
+        Call QueryBuilder.Clear
         Exit Sub
 
 SetUsersLoggedDatabase_Err:
@@ -1778,9 +1808,14 @@ End Function
 Public Sub SetRecordUsersDatabase(ByVal Record As Long)
         
         On Error GoTo SetRecordUsersDatabase_Err
-        
-100     Call MakeQuery("UPDATE statistics SET value = ? WHERE name = 'record';", True, CStr(Record))
-        
+                
+100     Call QueryBuilder.Append("UPDATE statistics SET value = ? WHERE name = 'record'; " & Chr(1) & CStr(Record))
+                
+        Call QueryBuilder.Append(Chr(0))
+                
+        Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
+    
+        Call QueryBuilder.Clear
         Exit Sub
 
 SetRecordUsersDatabase_Err:
@@ -1852,9 +1887,14 @@ End Sub
 Public Sub SaveUserSkillDatabase(UserName As String, ByVal Skill As Integer, ByVal Value As Integer)
         
         On Error GoTo SaveUserSkillDatabase_Err
-        
-100     Call MakeQuery("UPDATE skillpoints SET value = ? WHERE number = ? AND user_id = (SELECT id FROM user WHERE UPPER(name) = ?);", True, Value, Skill, UCase$(UserName))
-        
+
+        Call QueryBuilder.Append("UPDATE skillpoints SET value = ? WHERE number = ? AND user_id = (SELECT id FROM user WHERE UPPER(name) = ?); " & Chr(1) & Value & Chr(1) & Skill & Chr(1) & UCase$(UserName))
+                
+        Call QueryBuilder.Append(Chr(0))
+                
+        Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
+    
+        Call QueryBuilder.Clear
         Exit Sub
 
 SaveUserSkillDatabase_Err:
@@ -1914,8 +1954,15 @@ Public Sub BorrarUsuarioDatabase(Name As String)
 
         On Error GoTo ErrorHandler
     
-100     Call MakeQuery("UPDATE user SET name = CONCAT('DELETED_', name), deleted = TRUE WHERE UPPER(name) = ?;", True, UCase$(Name))
-
+        Call QueryBuilder.Append("UPDATE user SET name = CONCAT('DELETED_', name), deleted = TRUE WHERE UPPER(name) = ?; " & Chr(1) & UCase$(Name))
+                
+        Call QueryBuilder.Append(Chr(0))
+                
+        Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
+    
+        Call QueryBuilder.Clear
+        
+        
         Exit Sub
     
 ErrorHandler:
@@ -1931,10 +1978,22 @@ Public Sub BorrarCuentaDatabase(CuentaEmail As String)
 
 100     ID = GetDBValue("account", "id", "email", LCase$(CuentaEmail))
 
-102     Call MakeQuery("UPDATE account SET email = CONCAT('DELETED_', email), deleted = TRUE WHERE email = ?;", True, LCase$(CuentaEmail))
+        Call QueryBuilder.Append("UPDATE account SET email = CONCAT('DELETED_', email), deleted = TRUE WHERE email = ?; " & Chr(1) & LCase$(CuentaEmail))
+                
+        Call QueryBuilder.Append(Chr(0))
+                
+        Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
+    
+        Call QueryBuilder.Clear
 
-104     Call MakeQuery("UPDATE user SET name = CONCAT('DELETED_', name), deleted = TRUE WHERE account_id = ?;", True, ID)
-
+        Call QueryBuilder.Append("UPDATE user SET name = CONCAT('DELETED_', name), deleted = TRUE WHERE account_id = ?; " & Chr(1) & ID)
+                
+        Call QueryBuilder.Append(Chr(0))
+                
+        Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
+    
+        Call QueryBuilder.Clear
+        
         Exit Sub
     
 ErrorHandler:
@@ -1950,7 +2009,13 @@ Public Sub SaveBanDatabase(UserName As String, Reason As String, BannedBy As Str
         '***************************************************
         On Error GoTo ErrorHandler
 
-100     Call MakeQuery("UPDATE user SET is_banned = TRUE, banned_by = ?, ban_reason = ? WHERE UPPER(name) = ?;", True, BannedBy, Reason, UCase$(UserName))
+        Call QueryBuilder.Append("UPDATE user SET is_banned = TRUE, banned_by = ?, ban_reason = ? WHERE UPPER(name) = ?; " & Chr(1) & BannedBy & Chr(1) & Reason & Chr(1) & UCase$(UserName))
+                
+        Call QueryBuilder.Append(Chr(0))
+                
+        Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
+    
+        Call QueryBuilder.Clear
 
 102     Call SavePenaDatabase(UserName, "Baneado por: " & BannedBy & " debido a " & Reason)
 
@@ -1988,7 +2053,13 @@ Public Sub SavePenaDatabase(UserName As String, Reason As String)
 100     query = "INSERT INTO punishment(user_id, NUMBER, reason)"
 102     query = query & " SELECT u.id, COUNT(p.number) + 1, ? FROM user u LEFT JOIN punishment p ON p.user_id = u.id WHERE UPPER(u.name) = ?"
 
-104     Call MakeQuery(query, True, Reason, UCase$(UserName))
+        Call QueryBuilder.Append(query & Chr(1) & Reason & Chr(1) & UCase$(UserName))
+                
+        Call QueryBuilder.Append(Chr(0))
+                
+        Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
+    
+        Call QueryBuilder.Clear
 
         Exit Sub
 
