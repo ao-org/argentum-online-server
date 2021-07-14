@@ -641,16 +641,10 @@ Sub Main()
     
         ' Construimos las querys grandes
 156     Call Contruir_Querys
-    
-        'Reinicio los users online
-158     Call SetUsersLoggedDatabase(0)
-        
-        'Leo el record de usuarios
-160     RecordUsuarios = LeerRecordUsuariosDatabase()
-        
-        'Tarea pesada
-162     Call LogoutAllUsersAndAccounts
-    
+
+        ' Abro el socket para el DbManager
+        Call frmMain.DbManagerListen
+
         ' ******************* FIN - Base de Datos ********************
 
         '*************************************************
@@ -754,6 +748,7 @@ Sub Main()
 282         .Segundo.Enabled = True
 284         .KillLog.Enabled = True
 286         .TIMER_AI.Enabled = True
+            .T_UsersOnline.Enabled = True
             .t_Extraer.Enabled = True
             .t_Extraer.Interval = IntervaloTrabajarExtraer
         End With

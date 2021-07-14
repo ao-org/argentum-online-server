@@ -57,6 +57,8 @@ Public Sub Database_Connect()
     
 112     Call Database_Connection.Open
 
+113     Set QueryBuilder = New cStringBuilder
+
 114     ConnectedOnce = True
 
         Exit Sub
@@ -104,11 +106,9 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
         Dim LoopC As Long
         Dim ParamC As Long
         Dim Params() As Variant
-    
-        'Constructor de queries.
-        'Me permite concatenar strings MUCHO MAS rapido
-100     Set QueryBuilder = New cStringBuilder
-    
+
+        Call QueryBuilder.Clear
+
 102     With UserList(UserIndex)
         
             Dim i As Integer
@@ -161,8 +161,8 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
 192         Params(PostInc(i)) = .Stats.MaxHit
 194         Params(PostInc(i)) = .flags.Desnudo
 196         Params(PostInc(i)) = .Faccion.Status
-        
-198         Call MakeQuery(QUERY_SAVE_MAINPJ, True, Params)
+
+            Call MakeQuery(QUERY_SAVE_MAINPJ, True, Params)
 
             ' Para recibir el ID del user
 200         Call MakeQuery("SELECT LAST_INSERT_ID();", False)
@@ -184,8 +184,18 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
             
 220             ParamC = ParamC + 3
 222         Next LoopC
-        
-224         Call MakeQuery(QUERY_SAVE_ATTRIBUTES, True, Params)
+
+            Call QueryBuilder.Append(QUERY_SAVE_ATTRIBUTES)
+
+            For i = LBound(Params) To UBound(Params)
+                Call QueryBuilder.Append(Chr(1) & Params(i))
+            Next
+
+            Call QueryBuilder.Append(Chr(0))
+            
+            Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
+
+            Call QueryBuilder.Clear
         
             ' ******************* SPELLS **********************
 226         ReDim Params(MAXUSERHECHIZOS * 3 - 1)
@@ -199,7 +209,17 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
 238             ParamC = ParamC + 3
 240         Next LoopC
 
-242         Call MakeQuery(QUERY_SAVE_SPELLS, True, Params)
+            Call QueryBuilder.Append(QUERY_SAVE_SPELLS)
+
+            For i = LBound(Params) To UBound(Params)
+                Call QueryBuilder.Append(Chr(1) & Params(i))
+            Next
+
+            Call QueryBuilder.Append(Chr(0))
+            
+            Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
+
+            Call QueryBuilder.Clear
         
             ' ******************* INVENTORY *******************
 244         ReDim Params(MAX_INVENTORY_SLOTS * 5 - 1)
@@ -214,8 +234,18 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
             
 260             ParamC = ParamC + 5
 262         Next LoopC
-        
-264         Call MakeQuery(QUERY_SAVE_INVENTORY, True, Params)
+
+            Call QueryBuilder.Append(QUERY_SAVE_INVENTORY)
+
+            For i = LBound(Params) To UBound(Params)
+                Call QueryBuilder.Append(Chr(1) & Params(i))
+            Next
+
+            Call QueryBuilder.Append(Chr(0))
+            
+            Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
+
+            Call QueryBuilder.Clear
         
             ' ******************* SKILLS *******************
 266         ReDim Params(NUMSKILLS * 3 - 1)
@@ -228,8 +258,18 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
             
 278             ParamC = ParamC + 3
 280         Next LoopC
-        
-282         Call MakeQuery(QUERY_SAVE_SKILLS, True, Params)
+
+            Call QueryBuilder.Append(QUERY_SAVE_SKILLS)
+
+            For i = LBound(Params) To UBound(Params)
+                Call QueryBuilder.Append(Chr(1) & Params(i))
+            Next
+
+            Call QueryBuilder.Append(Chr(0))
+            
+            Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
+
+            Call QueryBuilder.Clear
         
             ' ******************* QUESTS *******************
 284         ReDim Params(MAXUSERQUESTS * 2 - 1)
@@ -241,8 +281,18 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
             
 294             ParamC = ParamC + 2
 296         Next LoopC
-        
-298         Call MakeQuery(QUERY_SAVE_QUESTS, True, Params)
+
+            Call QueryBuilder.Append(QUERY_SAVE_QUESTS)
+
+            For i = LBound(Params) To UBound(Params)
+                Call QueryBuilder.Append(Chr(1) & Params(i))
+            Next
+
+            Call QueryBuilder.Append(Chr(0))
+            
+            Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
+
+            Call QueryBuilder.Clear
         
             ' ******************* PETS ********************
 300         ReDim Params(MAXMASCOTAS * 3 - 1)
@@ -255,19 +305,22 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
             
 312             ParamC = ParamC + 3
 314         Next LoopC
-    
-316         Call MakeQuery(QUERY_SAVE_PETS, True, Params)
-        
-318         Set QueryBuilder = Nothing
+
+            Call QueryBuilder.Append(QUERY_SAVE_PETS)
+
+            For i = LBound(Params) To UBound(Params)
+                Call QueryBuilder.Append(Chr(1) & Params(i))
+            Next
+
+            Call QueryBuilder.Append(Chr(0))
+            
+            Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
     
         End With
 
         Exit Sub
 
 ErrorHandler:
-    
-320     Set QueryBuilder = Nothing
-    
 322     Call LogDatabaseError("Error en SaveNewUserDatabase. UserName: " & UserList(UserIndex).Name & ". " & Err.Number & " - " & Err.Description)
 
 End Sub
@@ -280,9 +333,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
         Dim LoopC As Long
         Dim ParamC As Long
     
-        'Constructor de queries.
-        'Me permite concatenar strings MUCHO MAS rapido
-100     Set QueryBuilder = New cStringBuilder
+        Call QueryBuilder.Clear
 
         'Basic user data
 102     With UserList(UserIndex)
@@ -386,8 +437,19 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
             ' WHERE block
 288         Params(PostInc(i)) = .ID
         
-290         Call MakeQuery(QUERY_UPDATE_MAINPJ, True, Params)
-        
+290         'Call MakeQuery(QUERY_UPDATE_MAINPJ, True, Params)
+
+            Call QueryBuilder.Append(QUERY_UPDATE_MAINPJ & Chr(1))
+
+            For i = LBound(Params) To UBound(Params)
+                Call QueryBuilder.Append(Params(i) & Chr(1))
+            Next
+            
+            Call QueryBuilder.Remove(QueryBuilder.Length - 1, 1)
+            Call QueryBuilder.Append(Chr(0))
+            
+            Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
+
 292         Call QueryBuilder.Clear
 
             ' ************************** User attributes ****************************
@@ -402,7 +464,19 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
 306             ParamC = ParamC + 3
 308         Next LoopC
         
-310         Call MakeQuery(QUERY_UPSERT_ATTRIBUTES, True, Params)
+            Call QueryBuilder.Append(QUERY_UPSERT_ATTRIBUTES & Chr(1))
+
+            For i = LBound(Params) To UBound(Params)
+                Call QueryBuilder.Append(Params(i) & Chr(1))
+            Next
+            
+            Call QueryBuilder.Remove(QueryBuilder.Length - 1, 1)
+            Call QueryBuilder.Append(Chr(0))
+            
+            Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
+            
+            Call QueryBuilder.Clear
+        
 
             ' ************************** User spells *********************************
 312         ReDim Params(MAXUSERHECHIZOS * 3 - 1)
@@ -415,8 +489,19 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
             
 324             ParamC = ParamC + 3
 326         Next LoopC
+
+            Call QueryBuilder.Append(QUERY_UPSERT_SPELLS & Chr(1))
+
+            For i = LBound(Params) To UBound(Params)
+                Call QueryBuilder.Append(Params(i) & Chr(1))
+            Next
+            
+            Call QueryBuilder.Remove(QueryBuilder.Length - 1, 1)
+            Call QueryBuilder.Append(Chr(0))
+            
+            Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
         
-328         Call MakeQuery(QUERY_UPSERT_SPELLS, True, Params)
+            Call QueryBuilder.Clear
 
             ' ************************** User inventory *********************************
 330         ReDim Params(MAX_INVENTORY_SLOTS * 5 - 1)
@@ -431,9 +516,19 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
             
 346             ParamC = ParamC + 5
 348         Next LoopC
-        
-350         Call MakeQuery(QUERY_UPSERT_INVENTORY, True, Params)
 
+            Call QueryBuilder.Append(QUERY_UPSERT_INVENTORY & Chr(1))
+
+            For i = LBound(Params) To UBound(Params)
+                Call QueryBuilder.Append(Params(i) & Chr(1))
+            Next
+            
+            Call QueryBuilder.Remove(QueryBuilder.Length - 1, 1)
+            Call QueryBuilder.Append(Chr(0))
+            
+            Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
+
+            Call QueryBuilder.Clear
             ' ************************** User bank inventory *********************************
 352         ReDim Params(MAX_BANCOINVENTORY_SLOTS * 4 - 1)
 354         ParamC = 0
@@ -446,8 +541,19 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
             
 366             ParamC = ParamC + 4
 368         Next LoopC
-        
-370         Call MakeQuery(QUERY_SAVE_BANCOINV, True, Params)
+
+            Call QueryBuilder.Append(QUERY_SAVE_BANCOINV & Chr(1))
+
+            For i = LBound(Params) To UBound(Params)
+                Call QueryBuilder.Append(Params(i) & Chr(1))
+            Next
+            
+            Call QueryBuilder.Remove(QueryBuilder.Length - 1, 1)
+            Call QueryBuilder.Append(Chr(0))
+            
+            Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
+
+            Call QueryBuilder.Clear
 
             ' ************************** User skills *********************************
 372         ReDim Params(NUMSKILLS * 3 - 1)
@@ -460,8 +566,19 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
             
 384             ParamC = ParamC + 3
 386         Next LoopC
-        
-388         Call MakeQuery(QUERY_UPSERT_SKILLS, True, Params)
+
+            Call QueryBuilder.Append(QUERY_UPSERT_SKILLS & Chr(1))
+
+            For i = LBound(Params) To UBound(Params)
+                Call QueryBuilder.Append(Params(i) & Chr(1))
+            Next
+            
+            Call QueryBuilder.Remove(QueryBuilder.Length - 1, 1)
+            Call QueryBuilder.Append(Chr(0))
+            
+            Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
+
+            Call QueryBuilder.Clear
 
             ' ************************** User pets *********************************
 390         ReDim Params(MAXMASCOTAS * 3 - 1)
@@ -490,16 +607,39 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
             
 412             ParamC = ParamC + 3
 414         Next LoopC
-        
-416         Call MakeQuery(QUERY_UPSERT_PETS, True, Params)
+
+            Call QueryBuilder.Append(QUERY_UPSERT_PETS & Chr(1))
+
+            For i = LBound(Params) To UBound(Params)
+                Call QueryBuilder.Append(Params(i) & Chr(1))
+            Next
+            
+            Call QueryBuilder.Remove(QueryBuilder.Length - 1, 1)
+            Call QueryBuilder.Append(Chr(0))
+            
+            Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
+
+            Call QueryBuilder.Clear
         
             ' ************************** User connection logs *********************************
         
             'Agrego ip del user
-418         Call MakeQuery(QUERY_SAVE_CONNECTION, True, .ID, .IP)
+            Call QueryBuilder.Append(QUERY_SAVE_CONNECTION & Chr(1))
+
+            Call QueryBuilder.Append(.ID & Chr(1) & .IP & Chr(0))
+            
+            Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
+
+            Call QueryBuilder.Clear
         
             'Borro la mas vieja si hay mas de 5 (WyroX: si alguien sabe una forma mejor de hacerlo me avisa)
-420         Call MakeQuery(QUERY_DELETE_LAST_CONNECTIONS, True, .ID, .ID)
+            Call QueryBuilder.Append(QUERY_DELETE_LAST_CONNECTIONS & Chr(1))
+
+            Call QueryBuilder.Append(.ID & Chr(1) & .ID & Chr(0))
+            
+            Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
+
+            Call QueryBuilder.Clear
         
             ' ************************** User quests *********************************
 422         QueryBuilder.Append "INSERT INTO quest (user_id, number, quest_id, npcs, npcstarget) VALUES "
@@ -557,11 +697,13 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
 
 472         Next LoopC
         
-474         QueryBuilder.Append " ON DUPLICATE KEY UPDATE quest_id=VALUES(quest_id), npcs=VALUES(npcs); "
-        
-476         Call MakeQuery(QueryBuilder.ToString, True)
-        
-478         Call QueryBuilder.Clear
+474         QueryBuilder.Append " ON DUPLICATE KEY UPDATE quest_id=VALUES(quest_id), npcs=VALUES(npcs);"
+
+            Call QueryBuilder.Append(Chr(0))
+            
+            Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
+
+            Call QueryBuilder.Clear
         
             ' ************************** User completed quests *********************************
 480         If .QuestStats.NumQuestsDone > 0 Then
@@ -590,31 +732,38 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
                 
 506                 ParamC = ParamC + 2
 508             Next LoopC
-            
-                ' Mandamos la query
-510             Call MakeQuery(QueryBuilder.ToString, True, Params)
+
+                For i = LBound(Params) To UBound(Params)
+                    Call QueryBuilder.Append(Chr(1) & Params(i))
+                Next
+
+                Call QueryBuilder.Append(Chr(0))
+                
+                Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
+    
+                Call QueryBuilder.Clear
         
             End If
 
             ' ************************** User logout *********************************
             ' Si deslogueó, actualizo la cuenta
 512         If Logout Then
-514             Call MakeQuery("UPDATE account SET logged = logged - 1 WHERE id = ?", True, .AccountID)
+                Call QueryBuilder.Append("UPDATE account SET logged = logged - 1 WHERE id = ?; " & Chr(1) & .AccountID)
+                
+                Call QueryBuilder.Append(Chr(0))
+                
+                Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
             End If
 
         End With
     
-516     Set QueryBuilder = Nothing
-    
         Exit Sub
 
 ErrorHandler:
-
-518     Set QueryBuilder = Nothing
-    
 520     Call LogDatabaseError("Error en SaveUserDatabase. UserName: " & UserList(UserIndex).Name & ". " & Err.Number & " - " & Err.Description)
 
 End Sub
+
 Public Function General_File_Exists(ByVal file_path As String, ByVal file_type As VbFileAttribute) As Boolean
 '*****************************************************************
 'Author: Aaron Perkins
@@ -1122,9 +1271,15 @@ Public Sub SetDBValue(Tabla As String, ColumnaSet As String, ByVal ValueSet As V
 
         On Error GoTo ErrorHandler
     
+        
+        Call QueryBuilder.Clear
         'Hacemos la query
-100     Call MakeQuery("UPDATE " & Tabla & " SET " & ColumnaSet & " = ? WHERE " & ColumnaTest & " = ?;", True, ValueSet, ValueTest)
-
+        Call QueryBuilder.Append("UPDATE " & Tabla & " SET " & ColumnaSet & " = ? WHERE " & ColumnaTest & " = ?; " & Chr(1) & ValueSet & Chr(1) & ValueTest)
+                
+        Call QueryBuilder.Append(Chr(0))
+                
+        Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
+        
         Exit Sub
     
 ErrorHandler:
@@ -1618,9 +1773,15 @@ Public Sub SetUserLoggedDatabase(ByVal ID As Long, ByVal AccountID As Long)
         On Error GoTo SetUserLoggedDatabase_Err
         
 100     Call SetDBValue("user", "is_logged", 1, "id", ID)
-102     Call MakeQuery("UPDATE account SET logged = logged + 1 WHERE id = ?;", True, AccountID)
-
         
+        Call QueryBuilder.Clear
+
+        Call QueryBuilder.Append("UPDATE account SET logged = logged + 1 WHERE id = ?; " & Chr(1) & AccountID)
+                
+        Call QueryBuilder.Append(Chr(0))
+                
+        Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
+
         Exit Sub
 
 SetUserLoggedDatabase_Err:
@@ -1632,9 +1793,14 @@ End Sub
 Public Sub ResetLoggedDatabase(ByVal AccountID As Long)
         
         On Error GoTo ResetLoggedDatabase_Err
-        
-100     Call MakeQuery("UPDATE account SET logged = 0 WHERE id = ?;", True, AccountID)
 
+        Call QueryBuilder.Clear
+
+        Call QueryBuilder.Append("UPDATE account SET logged = 0 WHERE id = ?; " & Chr(1) & AccountID)
+                
+        Call QueryBuilder.Append(Chr(0))
+                
+        Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
         
         Exit Sub
 
@@ -1648,8 +1814,12 @@ Public Sub SetUsersLoggedDatabase(ByVal NumUsers As Long)
         
         On Error GoTo SetUsersLoggedDatabase_Err
         
-100     Call MakeQuery("UPDATE statistics SET value = ? WHERE name = 'online';", True, NumUsers)
-        
+        Call QueryBuilder.Clear
+
+        Call QueryBuilder.Append("UPDATE statistics SET value = ? WHERE name = 'online'; " & Chr(1) & NumUsers & Chr(0))
+
+        Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
+
         Exit Sub
 
 SetUsersLoggedDatabase_Err:
@@ -1679,9 +1849,14 @@ End Function
 Public Sub SetRecordUsersDatabase(ByVal Record As Long)
         
         On Error GoTo SetRecordUsersDatabase_Err
-        
-100     Call MakeQuery("UPDATE statistics SET value = ? WHERE name = 'record';", True, CStr(Record))
-        
+
+        Call QueryBuilder.Clear
+
+100     Call QueryBuilder.Append("UPDATE statistics SET value = ? WHERE name = 'record'; " & Chr(1) & CStr(Record))
+                
+        Call QueryBuilder.Append(Chr(0))
+                
+        Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
         Exit Sub
 
 SetRecordUsersDatabase_Err:
@@ -1753,9 +1928,14 @@ End Sub
 Public Sub SaveUserSkillDatabase(UserName As String, ByVal Skill As Integer, ByVal Value As Integer)
         
         On Error GoTo SaveUserSkillDatabase_Err
-        
-100     Call MakeQuery("UPDATE skillpoints SET value = ? WHERE number = ? AND user_id = (SELECT id FROM user WHERE UPPER(name) = ?);", True, Value, Skill, UCase$(UserName))
-        
+
+        Call QueryBuilder.Clear
+
+        Call QueryBuilder.Append("UPDATE skillpoints SET value = ? WHERE number = ? AND user_id = (SELECT id FROM user WHERE UPPER(name) = ?); " & Chr(1) & Value & Chr(1) & Skill & Chr(1) & UCase$(UserName))
+                
+        Call QueryBuilder.Append(Chr(0))
+                
+        Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
         Exit Sub
 
 SaveUserSkillDatabase_Err:
@@ -1815,8 +1995,15 @@ Public Sub BorrarUsuarioDatabase(Name As String)
 
         On Error GoTo ErrorHandler
     
-100     Call MakeQuery("UPDATE user SET name = CONCAT('DELETED_', name), deleted = TRUE WHERE UPPER(name) = ?;", True, UCase$(Name))
+        Call QueryBuilder.Clear
 
+        Call QueryBuilder.Append("UPDATE user SET name = CONCAT('DELETED_', name), deleted = TRUE WHERE UPPER(name) = ?; " & Chr(1) & UCase$(Name))
+                
+        Call QueryBuilder.Append(Chr(0))
+                
+        Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
+        
+        
         Exit Sub
     
 ErrorHandler:
@@ -1832,10 +2019,22 @@ Public Sub BorrarCuentaDatabase(CuentaEmail As String)
 
 100     ID = GetDBValue("account", "id", "email", LCase$(CuentaEmail))
 
-102     Call MakeQuery("UPDATE account SET email = CONCAT('DELETED_', email), deleted = TRUE WHERE email = ?;", True, LCase$(CuentaEmail))
+        Call QueryBuilder.Clear
 
-104     Call MakeQuery("UPDATE user SET name = CONCAT('DELETED_', name), deleted = TRUE WHERE account_id = ?;", True, ID)
+        Call QueryBuilder.Append("UPDATE account SET email = CONCAT('DELETED_', email), deleted = TRUE WHERE email = ?; " & Chr(1) & LCase$(CuentaEmail))
+                
+        Call QueryBuilder.Append(Chr(0))
+                
+        Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
 
+        Call QueryBuilder.Clear
+
+        Call QueryBuilder.Append("UPDATE user SET name = CONCAT('DELETED_', name), deleted = TRUE WHERE account_id = ?; " & Chr(1) & ID)
+                
+        Call QueryBuilder.Append(Chr(0))
+                
+        Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
+        
         Exit Sub
     
 ErrorHandler:
@@ -1851,7 +2050,13 @@ Public Sub SaveBanDatabase(UserName As String, Reason As String, BannedBy As Str
         '***************************************************
         On Error GoTo ErrorHandler
 
-100     Call MakeQuery("UPDATE user SET is_banned = TRUE, banned_by = ?, ban_reason = ? WHERE UPPER(name) = ?;", True, BannedBy, Reason, UCase$(UserName))
+        Call QueryBuilder.Clear
+
+        Call QueryBuilder.Append("UPDATE user SET is_banned = TRUE, banned_by = ?, ban_reason = ? WHERE UPPER(name) = ?; " & Chr(1) & BannedBy & Chr(1) & Reason & Chr(1) & UCase$(UserName))
+                
+        Call QueryBuilder.Append(Chr(0))
+                
+        Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
 
 102     Call SavePenaDatabase(UserName, "Baneado por: " & BannedBy & " debido a " & Reason)
 
@@ -1870,9 +2075,15 @@ Public Sub SaveWarnDatabase(UserName As String, Reason As String, WarnedBy As St
         '***************************************************
         On Error GoTo ErrorHandler
 
-100 Call MakeQuery("UPDATE user SET warnings = warnings + 1 WHERE UPPER(name) = ?;", True, UCase$(UserName))
-    
-102 Call SavePenaDatabase(UserName, "Advertencia de: " & WarnedBy & " debido a " & Reason)
+        Call QueryBuilder.Clear
+
+        Call QueryBuilder.Append("UPDATE user SET warnings = warnings + 1 WHERE UPPER(name) = ?;" & Chr(1) & UCase$(UserName))
+                
+        Call QueryBuilder.Append(Chr(0))
+                
+        Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
+        
+102     Call SavePenaDatabase(UserName, "Advertencia de: " & WarnedBy & " debido a " & Reason)
     
     Exit Sub
 
@@ -1885,11 +2096,17 @@ Public Sub SavePenaDatabase(UserName As String, Reason As String)
 
         On Error GoTo ErrorHandler
 
+        Call QueryBuilder.Clear
+
         Dim query As String
 100     query = "INSERT INTO punishment(user_id, NUMBER, reason)"
-102     query = query & " SELECT u.id, COUNT(p.number) + 1, ? FROM user u LEFT JOIN punishment p ON p.user_id = u.id WHERE UPPER(u.name) = ?"
+102     query = query & " SELECT u.id, COUNT(p.number) + 1, ? FROM user u LEFT JOIN punishment p ON p.user_id = u.id WHERE UPPER(u.name) = ? "
 
-104     Call MakeQuery(query, True, Reason, UCase$(UserName))
+        Call QueryBuilder.Append(query & Chr(1) & Reason & Chr(1) & UCase$(UserName))
+                
+        Call QueryBuilder.Append(Chr(0))
+                
+        Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
 
         Exit Sub
 
@@ -1902,8 +2119,14 @@ Public Sub SilenciarUserDatabase(UserName As String, ByVal Tiempo As Integer)
     
         On Error GoTo ErrorHandler
 
-100     Call MakeQuery("UPDATE user SET is_silenced = 1, silence_minutes_left = ?, silence_elapsed_seconds = 0 WHERE UPPER(name) = ?;", True, Tiempo, UCase$(UserName))
+        Call QueryBuilder.Clear
 
+        Call QueryBuilder.Append("UPDATE user SET is_silenced = 1, silence_minutes_left = ?, silence_elapsed_seconds = 0 WHERE UPPER(name) = ?;" & Chr(1) & Tiempo & Chr(1) & UCase$(UserName))
+                
+        Call QueryBuilder.Append(Chr(0))
+                
+        Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
+        
         Exit Sub
 
 ErrorHandler:
@@ -1927,9 +2150,15 @@ End Sub
 Public Sub UnBanDatabase(UserName As String)
 
         On Error GoTo ErrorHandler
+        
+        Call QueryBuilder.Clear
 
-100     Call MakeQuery("UPDATE user SET is_banned = FALSE, banned_by = '', ban_reason = '' WHERE UPPER(name) = ?;", True, UCase$(UserName))
-
+        Call QueryBuilder.Append("UPDATE user SET is_banned = FALSE, banned_by = '', ban_reason = '' WHERE UPPER(name) = ?; " & Chr(1) & UCase$(UserName))
+                
+        Call QueryBuilder.Append(Chr(0))
+                
+        Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
+        
         Exit Sub
 
 ErrorHandler:
@@ -1941,7 +2170,13 @@ Public Sub SaveBanCuentaDatabase(ByVal AccountID As Long, Reason As String, Bann
 
         On Error GoTo ErrorHandler
 
-100     Call MakeQuery("UPDATE account SET is_banned = TRUE, banned_by = ?, ban_reason = ? WHERE id = ?;", True, BannedBy, Reason, AccountID)
+        Call QueryBuilder.Clear
+
+        Call QueryBuilder.Append("UPDATE account SET is_banned = TRUE, banned_by = ?, ban_reason = ? WHERE id = ?;" & Chr(1) & BannedBy & Chr(1) & Reason & Chr(1) & AccountID)
+                
+        Call QueryBuilder.Append(Chr(0))
+                
+        Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
 
         Exit Sub
 
@@ -1954,8 +2189,13 @@ Public Sub EcharConsejoDatabase(UserName As String)
         
         On Error GoTo EcharConsejoDatabase_Err
         
-100     Call MakeQuery("UPDATE user SET pertenece_consejo_real = FALSE, pertenece_consejo_caos = FALSE WHERE UPPER(name) = ?;", True, UCase$(UserName))
+        Call QueryBuilder.Clear
 
+        Call QueryBuilder.Append("UPDATE user SET pertenece_consejo_real = FALSE, pertenece_consejo_caos = FALSE WHERE UPPER(name) = ?; " & Chr(1) & UCase$(UserName))
+                
+        Call QueryBuilder.Append(Chr(0))
+                
+        Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
         
         Exit Sub
 
@@ -1969,8 +2209,13 @@ Public Sub EcharLegionDatabase(UserName As String)
         
         On Error GoTo EcharLegionDatabase_Err
         
-100     Call MakeQuery("UPDATE user SET pertenece_caos = FALSE, reenlistadas = 200 WHERE UPPER(name) = ?;", True, UCase$(UserName))
+        Call QueryBuilder.Clear
 
+        Call QueryBuilder.Append("UPDATE user SET pertenece_caos = FALSE, reenlistadas = 200 WHERE UPPER(name) = ?; " & Chr(1) & UCase$(UserName))
+                
+        Call QueryBuilder.Append(Chr(0))
+                
+        Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
         
         Exit Sub
 
@@ -1984,8 +2229,14 @@ Public Sub EcharArmadaDatabase(UserName As String)
         
         On Error GoTo EcharArmadaDatabase_Err
         
-100     Call MakeQuery("UPDATE user SET pertenece_real = FALSE, reenlistadas = 200 WHERE UPPER(name) = ?;", True, UCase$(UserName))
 
+        Call QueryBuilder.Clear
+
+        Call QueryBuilder.Append("UPDATE user SET pertenece_real = FALSE, reenlistadas = 200 WHERE UPPER(name) = ?;" & Chr(1) & UCase$(UserName))
+                
+        Call QueryBuilder.Append(Chr(0))
+                
+        Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
         
         Exit Sub
 
@@ -1999,8 +2250,13 @@ Public Sub CambiarPenaDatabase(UserName As String, ByVal Numero As Integer, Pena
         
         On Error GoTo CambiarPenaDatabase_Err
         
-100     Call MakeQuery("UPDATE punishment SET reason = ? WHERE number = ? AND user_id = (SELECT id from user WHERE UPPER(name) = ?);", True, Pena, Numero, UCase$(UserName))
+        Call QueryBuilder.Clear
 
+        Call QueryBuilder.Append("UPDATE punishment SET reason = ? WHERE number = ? AND user_id = (SELECT id from user WHERE UPPER(name) = ?); " & Chr(1) & Pena & Chr(1) & Numero & Chr(1) & UCase$(UserName))
+                
+        Call QueryBuilder.Append(Chr(0))
+                
+        Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
         
         Exit Sub
 
@@ -2326,9 +2582,15 @@ Public Function EnterAccountDatabase(ByVal UserIndex As Integer, CuentaEmail As 
     
 122     UserList(UserIndex).AccountID = QueryData!ID
 124     UserList(UserIndex).Cuenta = CuentaEmail
-    
-126     Call MakeQuery("UPDATE account SET mac_address = ?, hd_serial = ?, last_ip = ?, last_access = NOW() WHERE id = ?;", True, MacAddress, HDSerial, IP, QueryData!ID)
-    
+
+        Call QueryBuilder.Clear
+
+        Call QueryBuilder.Append("UPDATE account SET mac_address = ?, hd_serial = ?, last_ip = ?, last_access = NOW() WHERE id = ?; " & Chr(1) & MacAddress & Chr(1) & HDSerial & Chr(1) & IP & Chr(1) & QueryData!ID)
+                
+        Call QueryBuilder.Append(Chr(0))
+                
+        Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
+        
 128     EnterAccountDatabase = True
     
         Exit Function
@@ -2398,8 +2660,14 @@ Public Sub ChangePasswordDatabase(ByVal UserIndex As Integer, OldPassword As Str
 118         PasswordHash = oSHA256.SHA256(NewPassword & Salt)
     
 120     Set oSHA256 = Nothing
-    
-122     Call MakeQuery("UPDATE account SET password = ?, salt = ? WHERE id = ?;", True, PasswordHash, Salt, UserList(UserIndex).AccountID)
+        
+        Call QueryBuilder.Clear
+
+        Call QueryBuilder.Append("UPDATE account SET password = ?, salt = ? WHERE id = ?; " & Chr(1) & PasswordHash & Chr(1) & Salt & Chr(1) & UserList(UserIndex).AccountID)
+                
+        Call QueryBuilder.Append(Chr(0))
+                
+        Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
     
 124     Call WriteConsoleMsg(UserIndex, "La contraseña de su cuenta fue cambiada con éxito.", FontTypeNames.FONTTYPE_INFO)
     

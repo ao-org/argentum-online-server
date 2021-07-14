@@ -1,4 +1,5 @@
 VERSION 5.00
+Object = "{248DD890-BB45-11CF-9ABC-0080C7E7B78D}#1.0#0"; "MSWINSCK.ocx"
 Begin VB.Form frmMain 
    BackColor       =   &H00E0E0E0&
    BorderStyle     =   4  'Fixed ToolWindow
@@ -26,11 +27,19 @@ Begin VB.Form frmMain
    ScaleHeight     =   6225
    ScaleWidth      =   6930
    StartUpPosition =   2  'CenterScreen
+   Begin MSWinsockLib.Winsock DbManagerSocket 
+      Left            =   2760
+      Top             =   120
+      _ExtentX        =   741
+      _ExtentY        =   741
+      _Version        =   393216
+   End
    Begin VB.Timer t_Extraer 
       Left            =   4440
       Top             =   4200
    End
    Begin VB.Timer T_UsersOnline 
+      Enabled         =   0   'False
       Interval        =   10000
       Left            =   3600
       Top             =   4200
@@ -623,6 +632,7 @@ Const WM_LBUTTONDBLCLK = &H203
 Const WM_RBUTTONUP = &H205
 
 Private GuardarYCerrar As Boolean
+Private DbManagerConectado As BookmarkEnum
 
 Private Declare Function GetWindowThreadProcessId Lib "user32" (ByVal hWnd As Long, lpdwProcessId As Long) As Long
 Private Declare Function Shell_NotifyIconA Lib "SHELL32" (ByVal dwMessage As Long, lpData As NOTIFYICONDATA) As Integer
@@ -737,6 +747,24 @@ addtimeDonador_Click_Err:
 
 End Sub
 
+Private Sub DbManagerSocket_ConnectionRequest(ByVal requestID As Long)
+    If DbManagerSocket.State <> sckClosed Then DbManagerSocket.Close
+    
+    Call DbManagerSocket.Accept(requestID)
+
+    DbManagerConectado = True
+    
+    'Reinicio los users online
+    Call SetUsersLoggedDatabase(0)
+    
+    'Leo el record de usuarios
+    RecordUsuarios = LeerRecordUsuariosDatabase()
+    
+    'Tarea pesada
+    Call LogoutAllUsersAndAccounts
+    
+End Sub
+
 Private Sub Segundo_Timer()
 
     On Error GoTo errhand
@@ -849,7 +877,7 @@ Private Sub t_Extraer_Timer()
     
     For i = 1 To LastUser
         If UserList(i).Counters.Trabajando > 0 Then
-            Call Trabajar(i, UserList(i).trabajo.TargetSkill)
+            Call Trabajar(i, UserList(i).Trabajo.TargetSkill)
         End If
     Next i
 End Sub
@@ -2239,4 +2267,46 @@ Private Sub Winsock_Disconnect(ByVal SocketID As Integer, ByVal Slot As Integer)
                         
 108     Call EventoSockClose(Slot)
 
+End Sub
+
+Public Sub DbManagerListen()
+    On Error GoTo Handler
+    
+    frmCargando.Label1(2).Caption = "Iniciando el DbManager"
+
+    Dim Puerto As Integer
+    Puerto = val(GetVar(App.Path & "\Server.ini", "DBMANAGER", "PUERTO"))
+
+    Call DbManagerSocket.Bind(Puerto, "0.0.0.0")
+    Call DbManagerSocket.Listen
+    
+    #If DEBUGGING = 0 Then
+        Call Shell(App.Path & "\..\re20-dbmanager\dbmanager.exe")
+    #End If
+    
+    frmCargando.Label1(2).Caption = "Esperando conexión con el DbManager"
+    
+    Dim StartTime As Long, WaitTime As Long
+    StartTime = GetTickCount
+
+    #If DEBUGGING = 0 Then
+        WaitTime = 3000
+    #Else
+        WaitTime = 10000
+    #End If
+    
+    Do While Not DbManagerConectado And GetTickCount - StartTime < WaitTime
+        DoEvents
+    Loop
+    
+    If Not DbManagerConectado Then
+        Call MsgBox("Tiempo de espera agotado: el DbManager no se pudo conectar.", vbOKOnly)
+        End
+    End If
+    
+    Exit Sub
+    
+Handler:
+    Call MsgBox("Error al abrir el DbManager." & vbNewLine & Err.Number & " - " & Err.Description, vbOKOnly)
+    End
 End Sub
