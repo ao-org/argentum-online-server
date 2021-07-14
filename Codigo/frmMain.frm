@@ -39,6 +39,7 @@ Begin VB.Form frmMain
       Top             =   4200
    End
    Begin VB.Timer T_UsersOnline 
+      Enabled         =   0   'False
       Interval        =   10000
       Left            =   3600
       Top             =   4200
@@ -752,6 +753,16 @@ Private Sub DbManagerSocket_ConnectionRequest(ByVal requestID As Long)
     Call DbManagerSocket.Accept(requestID)
 
     DbManagerConectado = True
+    
+    'Reinicio los users online
+    Call SetUsersLoggedDatabase(0)
+    
+    'Leo el record de usuarios
+    RecordUsuarios = LeerRecordUsuariosDatabase()
+    
+    'Tarea pesada
+    Call LogoutAllUsersAndAccounts
+    
 End Sub
 
 Private Sub Segundo_Timer()
