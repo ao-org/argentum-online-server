@@ -2279,17 +2279,17 @@ Public Sub DbManagerListen()
 
     Call DbManagerSocket.Bind(Puerto, "0.0.0.0")
     Call DbManagerSocket.Listen
-    
-    #If DEBUGGING = 0 Then
+
+    #If DEBUG_DBMANAGER = 0 Then
         Call Shell(App.Path & "\..\re20-dbmanager\dbmanager.exe")
     #End If
-    
+
     frmCargando.Label1(2).Caption = "Esperando conexión con el DbManager"
     
     Dim StartTime As Long, WaitTime As Long
     StartTime = GetTickCount
 
-    #If DEBUGGING = 0 Then
+    #If DEBUG_DBMANAGER = 1 Then
         WaitTime = 3000
     #Else
         WaitTime = 10000
