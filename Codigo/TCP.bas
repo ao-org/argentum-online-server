@@ -432,7 +432,7 @@ Function NombrePermitido(ByVal nombre As String) As Boolean
 
 100     For i = 1 To UBound(ForbidenNames)
 
-102         If InStr(nombre, ForbidenNames(i)) Then
+102         If LCase$(nombre) = ForbidenNames(i) Then
 104             NombrePermitido = False
                 Exit Function
 
@@ -1677,7 +1677,7 @@ Sub ResetBasicUserInfo(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 102         .Name = vbNullString
 104         .Cuenta = vbNullString
-106         .Id = -1
+106         .ID = -1
 108         .AccountID = -1
 110         .Desc = vbNullString
 112         .DescRM = vbNullString
@@ -2422,12 +2422,12 @@ Function ValidarNombre(nombre As String) As Boolean
     
 100     If Len(nombre) < 1 Or Len(nombre) > 18 Then Exit Function
     
-        Dim temp As String
-102     temp = UCase$(nombre)
+        Dim Temp As String
+102     Temp = UCase$(nombre)
     
         Dim i As Long, Char As Integer, LastChar As Integer
-104     For i = 1 To Len(temp)
-106         Char = Asc(mid$(temp, i, 1))
+104     For i = 1 To Len(Temp)
+106         Char = Asc(mid$(Temp, i, 1))
         
 108         If (Char < 65 Or Char > 90) And Char <> 32 Then
                 Exit Function
@@ -2439,7 +2439,7 @@ Function ValidarNombre(nombre As String) As Boolean
 112         LastChar = Char
         Next
 
-114     If Asc(mid$(temp, 1, 1)) = 32 Or Asc(mid$(temp, Len(temp), 1)) = 32 Then
+114     If Asc(mid$(Temp, 1, 1)) = 32 Or Asc(mid$(Temp, Len(Temp), 1)) = 32 Then
             Exit Function
         End If
     

@@ -581,6 +581,7 @@ Public Sub CargarForbidenWords()
     
 112     For i = 1 To UBound(ForbidenNames)
 114         Line Input #n, ForbidenNames(i)
+            ForbidenNames(i) = LCase$(ForbidenNames(i))
 116     Next i
     
 118     Close n
@@ -2353,7 +2354,7 @@ Public Sub CargarMapaFormatoCSM(ByVal Map As Long, ByVal MAPFl As String)
 
                         Case eOBJType.otYacimiento, eOBJType.otArboles
 266                         MapData(Map, Objetos(i).X, Objetos(i).Y).ObjInfo.amount = ObjData(Objetos(i).ObjIndex).VidaUtil
-268                         MapData(Map, Objetos(i).X, Objetos(i).Y).ObjInfo.data = &H7FFFFFFF ' Ultimo uso = Max Long
+268                         MapData(Map, Objetos(i).X, Objetos(i).Y).ObjInfo.Data = &H7FFFFFFF ' Ultimo uso = Max Long
 
 270                     Case Else
 272                         MapData(Map, Objetos(i).X, Objetos(i).Y).ObjInfo.amount = Objetos(i).ObjAmmount
@@ -3474,7 +3475,7 @@ Public Sub LoadRecursosEspeciales()
 120             Field = Split(str, "-")
             
 122             EspecialesTala(i).ObjIndex = val(Field(0))
-124             EspecialesTala(i).data = val(Field(1))      ' Probabilidad
+124             EspecialesTala(i).Data = val(Field(1))      ' Probabilidad
             Next
         Else
 126         ReDim EspecialesTala(0) As obj
@@ -3492,7 +3493,7 @@ Public Sub LoadRecursosEspeciales()
 138             Field = Split(str, "-")
             
 140             EspecialesPesca(i).ObjIndex = val(Field(0))
-142             EspecialesPesca(i).data = val(Field(1))     ' Probabilidad
+142             EspecialesPesca(i).Data = val(Field(1))     ' Probabilidad
             Next
         Else
 144         ReDim EspecialesPesca(0) As obj
@@ -3544,7 +3545,7 @@ Public Sub LoadPesca()
 124             Field = Split(str, "-")
             
 126             Peces(i).ObjIndex = val(Field(0))
-128             Peces(i).data = val(Field(1))       ' Peso
+128             Peces(i).Data = val(Field(1))       ' Peso
 
 130             nivel = val(Field(2))               ' Nivel de caña
 
@@ -3558,10 +3559,10 @@ Public Sub LoadPesca()
             ' Sumo los pesos
 138         For i = 1 To Count
 140             For j = Peces(i).amount To MaxLvlCania
-142                 PesoPeces(j) = PesoPeces(j) + Peces(i).data
+142                 PesoPeces(j) = PesoPeces(j) + Peces(i).Data
 144             Next j
 
-146             Peces(i).data = PesoPeces(Peces(i).amount)
+146             Peces(i).Data = PesoPeces(Peces(i).amount)
 148         Next i
         Else
 150         ReDim Peces(0) As obj
@@ -3651,12 +3652,12 @@ Public Function BinarySearchPeces(ByVal Value As Long) As Long
 106         i = (Low + High) \ 2
 
 108         If i > 1 Then
-110             valor_anterior = Peces(i - 1).data
+110             valor_anterior = Peces(i - 1).Data
             Else
 112             valor_anterior = 0
             End If
 
-114         If Value >= valor_anterior And Value < Peces(i).data Then
+114         If Value >= valor_anterior And Value < Peces(i).Data Then
 116             BinarySearchPeces = i
                 Exit Do
             
