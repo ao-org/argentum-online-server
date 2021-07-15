@@ -30,7 +30,7 @@ MaxUsers=3000
 
 Admines=3
 Dioses=2
-SemiDioses=11
+SemiDioses=12
 Consejeros=10
 RolesMasters=0
 
@@ -55,6 +55,7 @@ SemiDios8=HarThaoS|martintrionfetti@gmail.com
 SemiDios9=Vox|ricardo_r_jc@hotmail.com
 SemiDios10=arandor|pedrosalvadorgugliotta@gmail.com
 SemiDios11=Vanderbilt|luciano_rizzi@hotmail.com
+SemiDios12=SimP|brunordeangelis@gmail.com
 
 [Consejeros]
 Consejero1=Dash|raffozelada@hotmail.com
