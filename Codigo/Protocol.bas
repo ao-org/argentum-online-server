@@ -15762,41 +15762,45 @@ Private Sub HandleBorrarPJ(ByVal UserIndex As Integer)
                 Exit Sub
             End If
         
+
 132         If GetUserLevelDatabase(UserDelete) >= 25 Then
 134             Call WriteShowMessageBox(UserIndex, "No puedes eliminar un personaje mayor a nivel 25.")
                 Exit Sub
             End If
-                
-            'HarThaoS: Si teine clan y es leader no lo puedo eliminar
-136         If PersonajeEsLeader(UserDelete) Then
-138             Call WriteShowMessageBox(UserIndex, "No puedes eliminar el personaje por ser líder de un clan.")
+
+136         If BANCheckDatabase(UserDelete) Then
+138             Call WriteShowMessageBox(UserIndex, "No puedes eliminar un personaje banneado.")
                 Exit Sub
             End If
-        
+
+            'HarThaoS: Si teine clan y es leader no lo puedo eliminar
+140         If PersonajeEsLeader(UserDelete) Then
+142             Call WriteShowMessageBox(UserIndex, "No puedes eliminar el personaje por ser líder de un clan.")
+                Exit Sub
+            End If
+
             ' Si está online el personaje a borrar, lo kickeo para prevenir dupeos.
             Dim targetUserIndex As Integer
-140         targetUserIndex = NameIndex(UserDelete)
-    
-        
+144         targetUserIndex = NameIndex(UserDelete)
+
             'HarThaoS: Me fijo si tiene clan y me traigo el nombre del clan
-        
-        
-142         If targetUserIndex > 0 Then
-144             Call LogHackAttemp("Se trató de eliminar al personaje " & UserDelete & " cuando este estaba conectado desde la IP " & UserList(UserIndex).IP)
-146             Call CloseSocket(targetUserIndex)
-    
+
+146         If targetUserIndex > 0 Then
+148             Call LogHackAttemp("Se trató de eliminar al personaje " & UserDelete & " cuando este estaba conectado desde la IP " & UserList(UserIndex).IP)
+150             Call CloseSocket(targetUserIndex)
+
             End If
-    
-148         Call BorrarUsuarioDatabase(UserDelete)
-150         Call WritePersonajesDeCuenta(UserIndex)
+
+152         Call BorrarUsuarioDatabase(UserDelete)
+154         Call WritePersonajesDeCuenta(UserIndex)
   
         End With
     
         Exit Sub
 
 ErrHandler:
-152     Call TraceError(Err.Number, Err.Description, "Protocol.?", Erl)
-154     Call UserList(UserIndex).incomingData.SafeClearPacket
+156     Call TraceError(Err.Number, Err.Description, "Protocol.?", Erl)
+158     Call UserList(UserIndex).incomingData.SafeClearPacket
 
 End Sub
 
