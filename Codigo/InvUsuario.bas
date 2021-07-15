@@ -493,7 +493,7 @@ Sub DropObj(ByVal UserIndex As Integer, _
 112             If ObjData(obj.ObjIndex).Destruye = 0 Then
     
                     'Check objeto en el suelo
-114                 If MapData(.Pos.Map, X, Y).ObjInfo.ObjIndex = 0 Then
+114                 If MapData(.Pos.Map, X, Y).ObjInfo.ObjIndex = 0 Or num + MapData(.Pos.Map, X, Y).ObjInfo.amount <= MAX_INVENTORY_OBJS Then
                       
 116                     If num + MapData(.Pos.Map, X, Y).ObjInfo.amount > MAX_INVENTORY_OBJS Then
 118                         num = MAX_INVENTORY_OBJS - MapData(.Pos.Map, X, Y).ObjInfo.amount
@@ -598,10 +598,10 @@ Sub MakeObj(ByRef obj As obj, ByVal Map As Integer, ByVal X As Integer, ByVal Y 
 116                 MapData(Map, X, Y).ObjInfo.amount = obj.amount
 
                 End If
-            
-118             Call modSendData.SendToAreaByPos(Map, X, Y, PrepareMessageObjectCreate(obj.ObjIndex, obj.amount, X, Y))
                 
             End If
+            
+118         Call modSendData.SendToAreaByPos(Map, X, Y, PrepareMessageObjectCreate(obj.ObjIndex, MapData(Map, X, Y).ObjInfo.amount, X, Y))
     
         End If
         
