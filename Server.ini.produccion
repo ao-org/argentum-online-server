@@ -70,3 +70,6 @@ Consejero10=Blair|mercuricecilia1@gmail.com
 
 [RolesMasters]
 RM1=
+
+[DbManager]
+Puerto=6677
