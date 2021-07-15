@@ -106,9 +106,7 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
         Dim LoopC As Long
         Dim ParamC As Long
         Dim Params() As Variant
-
-        Call QueryBuilder.Clear
-
+    
 102     With UserList(UserIndex)
         
             Dim i As Integer
@@ -161,8 +159,8 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
 192         Params(PostInc(i)) = .Stats.MaxHit
 194         Params(PostInc(i)) = .flags.Desnudo
 196         Params(PostInc(i)) = .Faccion.Status
-
-            Call MakeQuery(QUERY_SAVE_MAINPJ, True, Params)
+        
+198         Call MakeQuery(QUERY_SAVE_MAINPJ, True, Params)
 
             ' Para recibir el ID del user
 200         Call MakeQuery("SELECT LAST_INSERT_ID();", False)
@@ -184,18 +182,8 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
             
 220             ParamC = ParamC + 3
 222         Next LoopC
-
-            Call QueryBuilder.Append(QUERY_SAVE_ATTRIBUTES)
-
-            For i = LBound(Params) To UBound(Params)
-                Call QueryBuilder.Append(Chr(1) & Params(i))
-            Next
-
-            Call QueryBuilder.Append(Chr(0))
-            
-            Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
-
-            Call QueryBuilder.Clear
+        
+224         Call MakeQuery(QUERY_SAVE_ATTRIBUTES, True, Params)
         
             ' ******************* SPELLS **********************
 226         ReDim Params(MAXUSERHECHIZOS * 3 - 1)
@@ -209,17 +197,7 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
 238             ParamC = ParamC + 3
 240         Next LoopC
 
-            Call QueryBuilder.Append(QUERY_SAVE_SPELLS)
-
-            For i = LBound(Params) To UBound(Params)
-                Call QueryBuilder.Append(Chr(1) & Params(i))
-            Next
-
-            Call QueryBuilder.Append(Chr(0))
-            
-            Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
-
-            Call QueryBuilder.Clear
+242         Call MakeQuery(QUERY_SAVE_SPELLS, True, Params)
         
             ' ******************* INVENTORY *******************
 244         ReDim Params(MAX_INVENTORY_SLOTS * 5 - 1)
@@ -234,18 +212,8 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
             
 260             ParamC = ParamC + 5
 262         Next LoopC
-
-            Call QueryBuilder.Append(QUERY_SAVE_INVENTORY)
-
-            For i = LBound(Params) To UBound(Params)
-                Call QueryBuilder.Append(Chr(1) & Params(i))
-            Next
-
-            Call QueryBuilder.Append(Chr(0))
-            
-            Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
-
-            Call QueryBuilder.Clear
+        
+264         Call MakeQuery(QUERY_SAVE_INVENTORY, True, Params)
         
             ' ******************* SKILLS *******************
 266         ReDim Params(NUMSKILLS * 3 - 1)
@@ -258,18 +226,8 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
             
 278             ParamC = ParamC + 3
 280         Next LoopC
-
-            Call QueryBuilder.Append(QUERY_SAVE_SKILLS)
-
-            For i = LBound(Params) To UBound(Params)
-                Call QueryBuilder.Append(Chr(1) & Params(i))
-            Next
-
-            Call QueryBuilder.Append(Chr(0))
-            
-            Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
-
-            Call QueryBuilder.Clear
+        
+282         Call MakeQuery(QUERY_SAVE_SKILLS, True, Params)
         
             ' ******************* QUESTS *******************
 284         ReDim Params(MAXUSERQUESTS * 2 - 1)
@@ -281,18 +239,8 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
             
 294             ParamC = ParamC + 2
 296         Next LoopC
-
-            Call QueryBuilder.Append(QUERY_SAVE_QUESTS)
-
-            For i = LBound(Params) To UBound(Params)
-                Call QueryBuilder.Append(Chr(1) & Params(i))
-            Next
-
-            Call QueryBuilder.Append(Chr(0))
-            
-            Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
-
-            Call QueryBuilder.Clear
+        
+298         Call MakeQuery(QUERY_SAVE_QUESTS, True, Params)
         
             ' ******************* PETS ********************
 300         ReDim Params(MAXMASCOTAS * 3 - 1)
@@ -305,22 +253,15 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
             
 312             ParamC = ParamC + 3
 314         Next LoopC
-
-            Call QueryBuilder.Append(QUERY_SAVE_PETS)
-
-            For i = LBound(Params) To UBound(Params)
-                Call QueryBuilder.Append(Chr(1) & Params(i))
-            Next
-
-            Call QueryBuilder.Append(Chr(0))
-            
-            Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
+    
+316         Call MakeQuery(QUERY_SAVE_PETS, True, Params)
     
         End With
 
         Exit Sub
 
 ErrorHandler:
+    
 322     Call LogDatabaseError("Error en SaveNewUserDatabase. UserName: " & UserList(UserIndex).Name & ". " & Err.Number & " - " & Err.Description)
 
 End Sub
@@ -439,15 +380,14 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
         
 290         'Call MakeQuery(QUERY_UPDATE_MAINPJ, True, Params)
 
-            Call QueryBuilder.Append(QUERY_UPDATE_MAINPJ & Chr(1))
+            Call QueryBuilder.Append(QUERY_UPDATE_MAINPJ)
 
             For i = LBound(Params) To UBound(Params)
-                Call QueryBuilder.Append(Params(i) & Chr(1))
+                Call QueryBuilder.Append(Chr(1) & Params(i))
             Next
-            
-            Call QueryBuilder.Remove(QueryBuilder.Length - 1, 1)
+
             Call QueryBuilder.Append(Chr(0))
-            
+
             Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
 
 292         Call QueryBuilder.Clear
@@ -464,13 +404,12 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
 306             ParamC = ParamC + 3
 308         Next LoopC
         
-            Call QueryBuilder.Append(QUERY_UPSERT_ATTRIBUTES & Chr(1))
+            Call QueryBuilder.Append(QUERY_UPSERT_ATTRIBUTES)
 
             For i = LBound(Params) To UBound(Params)
-                Call QueryBuilder.Append(Params(i) & Chr(1))
+                Call QueryBuilder.Append(Chr(1) & Params(i))
             Next
-            
-            Call QueryBuilder.Remove(QueryBuilder.Length - 1, 1)
+
             Call QueryBuilder.Append(Chr(0))
             
             Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
