@@ -701,8 +701,11 @@ Sub HechizoInvocacion(ByVal UserIndex As Integer, ByRef b As Boolean)
 150                         NpcList(ind).MaestroUser = UserIndex
 152                         NpcList(ind).Contadores.TiempoExistencia = IntervaloInvocacion
 154                         NpcList(ind).GiveGLD = 0
-                        
+                            
+                            .flags.ModificoMascotas = True
+                            
 156                         Call FollowAmo(ind)
+
                         Else
                             Exit Sub
                         End If

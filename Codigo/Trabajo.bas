@@ -2754,12 +2754,15 @@ Sub DoDomar(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
                     Dim Index As Integer
 
 124                 .NroMascotas = .NroMascotas + 1
+
 126                 Index = FreeMascotaIndex(UserIndex)
 128                 .MascotasIndex(Index) = NpcIndex
 130                 .MascotasType(Index) = NpcList(NpcIndex).Numero
 
 132                 NpcList(NpcIndex).MaestroUser = UserIndex
-
+                    
+                    .flags.ModificoMascotas = True
+                    
 134                 Call FollowAmo(NpcIndex)
 136                 Call ReSpawnNpc(NpcList(NpcIndex))
 

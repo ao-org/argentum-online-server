@@ -1542,8 +1542,11 @@ Sub QuitarMascota(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
 102         If UserList(UserIndex).MascotasIndex(i) = NpcIndex Then
 104             UserList(UserIndex).MascotasIndex(i) = 0
 106             UserList(UserIndex).MascotasType(i) = 0
-         
+
 108             UserList(UserIndex).NroMascotas = UserList(UserIndex).NroMascotas - 1
+                
+                UserList(UserIndex).flags.ModificoMascotas = True
+                
                 Exit For
 
             End If

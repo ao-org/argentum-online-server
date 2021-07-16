@@ -19614,6 +19614,7 @@ Sub HandlePetLeaveAll(ByVal UserIndex As Integer)
 112         Next i
         
 114         If AlmenosUna Then
+                .flags.ModificoMascotas = True
 116             Call WriteConsoleMsg(UserIndex, "Liberaste a tus mascotas.", FontTypeNames.FONTTYPE_INFO)
             End If
 
