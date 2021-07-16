@@ -18405,6 +18405,8 @@ Public Sub HandleQuestAccept(ByVal UserIndex As Integer)
         
 140         If QuestList(.QuestIndex).RequiredNPCs Then ReDim .NPCsKilled(1 To QuestList(.QuestIndex).RequiredNPCs)
 142         If QuestList(.QuestIndex).RequiredTargetNPCs Then ReDim .NPCsTarget(1 To QuestList(.QuestIndex).RequiredTargetNPCs)
+            UserList(UserIndex).flags.ModificoQuests = True
+            
 144         Call WriteConsoleMsg(UserIndex, "Has aceptado la mision " & Chr(34) & QuestList(.QuestIndex).nombre & Chr(34) & ".", FontTypeNames.FONTTYPE_INFOIAO)
 146         Call WriteUpdateNPCSimbolo(UserIndex, NpcIndex, 4)
         
