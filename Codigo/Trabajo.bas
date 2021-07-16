@@ -40,7 +40,7 @@ Public Sub Trabajar(ByVal UserIndex As Integer, ByVal skill As eSkill)
 290                 If ObjData(.Invent.HerramientaEqpObjIndex).OBJType <> eOBJType.otHerramientas Then Exit Sub
                     
                     'Check interval
-292                 If Not IntervaloPermiteTrabajarExtraer(UserIndex) Then Exit Sub
+292                 'If Not IntervaloPermiteTrabajarExtraer(UserIndex) Then Exit Sub
 
 294                 Select Case ObjData(.Invent.HerramientaEqpObjIndex).Subtipo
                 
@@ -1683,6 +1683,8 @@ Public Sub DoPescar(ByVal UserIndex As Integer, Optional ByVal RedDePesca As Boo
 
                 Next
 
+            Else
+                 Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, 253, 25, False, GRH_FALLO_PESCA))
             End If
     
 150         Call SubirSkill(UserIndex, eSkill.Pescar)
