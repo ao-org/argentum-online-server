@@ -693,6 +693,8 @@ Public Const LABUROCARPINTERO    As Byte = 42
 
 Public Const SND_BEBER           As Byte = 135
 
+Public Const GRH_FALLO_PESCA     As Long = 48974
+
 ''
 ' Cantidad maxima de objetos por slot de inventario
 Public Const MAX_INVENTORY_OBJS      As Integer = 10000
@@ -1015,7 +1017,7 @@ Public Type obj
 
     ObjIndex As Integer
     amount As Long
-    Data As Long
+    data As Double
 
 End Type
 
