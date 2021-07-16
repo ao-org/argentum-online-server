@@ -274,7 +274,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
         Dim LoopC As Long
         Dim ParamC As Long
     
-        Call QueryBuilder.Clear
+100     Call QueryBuilder.Clear
 
         'Basic user data
 102     With UserList(UserIndex)
@@ -378,325 +378,328 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
             ' WHERE block
 288         Params(PostInc(i)) = .ID
         
-290         'Call MakeQuery(QUERY_UPDATE_MAINPJ, True, Params)
+            'Call MakeQuery(QUERY_UPDATE_MAINPJ, True, Params)
 
-            Call QueryBuilder.Append(QUERY_UPDATE_MAINPJ)
+290         Call QueryBuilder.Append(QUERY_UPDATE_MAINPJ)
 
-            For i = LBound(Params) To UBound(Params)
-                Call QueryBuilder.Append(Chr(1) & Params(i))
+292         For i = LBound(Params) To UBound(Params)
+294             Call QueryBuilder.Append(Chr(1) & Params(i))
             Next
 
-            Call QueryBuilder.Append(Chr(0))
+296         Call QueryBuilder.Append(Chr(0))
 
-            Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
+298         Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
 
-292         Call QueryBuilder.Clear
+300         Call QueryBuilder.Clear
 
             ' ************************** User attributes ****************************
-            If .flags.ModificoAttributos Then
-294             ReDim Params(NUMATRIBUTOS * 3 - 1)
-296             ParamC = 0
+302         If .flags.ModificoAttributos Then
+304             ReDim Params(NUMATRIBUTOS * 3 - 1)
+306             ParamC = 0
             
-298             For LoopC = 1 To NUMATRIBUTOS
-300                 Params(ParamC) = .ID
-302                 Params(ParamC + 1) = LoopC
-304                 Params(ParamC + 2) = .Stats.UserAtributosBackUP(LoopC)
+308             For LoopC = 1 To NUMATRIBUTOS
+310                 Params(ParamC) = .ID
+312                 Params(ParamC + 1) = LoopC
+314                 Params(ParamC + 2) = .Stats.UserAtributosBackUP(LoopC)
                 
-306                 ParamC = ParamC + 3
-308             Next LoopC
+316                 ParamC = ParamC + 3
+318             Next LoopC
             
-                Call QueryBuilder.Append(QUERY_UPSERT_ATTRIBUTES)
+320             Call QueryBuilder.Append(QUERY_UPSERT_ATTRIBUTES)
     
-                For i = LBound(Params) To UBound(Params)
-                    Call QueryBuilder.Append(Chr(1) & Params(i))
+322             For i = LBound(Params) To UBound(Params)
+324                 Call QueryBuilder.Append(Chr(1) & Params(i))
                 Next
     
-                Call QueryBuilder.Append(Chr(0))
+326             Call QueryBuilder.Append(Chr(0))
                 
-                Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
+328             Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
                 
-                Call QueryBuilder.Clear
+330             Call QueryBuilder.Clear
             End If
 
             ' ************************** User spells *********************************
-            If .flags.ModificoHechizos Then
-312             ReDim Params(MAXUSERHECHIZOS * 3 - 1)
-314             ParamC = 0
+332         If .flags.ModificoHechizos Then
+334             ReDim Params(MAXUSERHECHIZOS * 3 - 1)
+336             ParamC = 0
             
-316             For LoopC = 1 To MAXUSERHECHIZOS
-318                 Params(ParamC) = .ID
-320                 Params(ParamC + 1) = LoopC
-322                 Params(ParamC + 2) = .Stats.UserHechizos(LoopC)
+338             For LoopC = 1 To MAXUSERHECHIZOS
+340                 Params(ParamC) = .ID
+342                 Params(ParamC + 1) = LoopC
+344                 Params(ParamC + 2) = .Stats.UserHechizos(LoopC)
                 
-324                 ParamC = ParamC + 3
-326             Next LoopC
+346                 ParamC = ParamC + 3
+348             Next LoopC
     
-                Call QueryBuilder.Append(QUERY_UPSERT_SPELLS & Chr(1))
+350             Call QueryBuilder.Append(QUERY_UPSERT_SPELLS & Chr(1))
     
-                For i = LBound(Params) To UBound(Params)
-                    Call QueryBuilder.Append(Params(i) & Chr(1))
+352             For i = LBound(Params) To UBound(Params)
+354                 Call QueryBuilder.Append(Params(i) & Chr(1))
                 Next
                 
-                Call QueryBuilder.Remove(QueryBuilder.Length - 1, 1)
-                Call QueryBuilder.Append(Chr(0))
+356             Call QueryBuilder.Remove(QueryBuilder.Length - 1, 1)
+358             Call QueryBuilder.Append(Chr(0))
                 
-                Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
+360             Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
             
-                Call QueryBuilder.Clear
+362             Call QueryBuilder.Clear
+                
+                ' Reseteamos el flag para no volver a guardar.
+                .flags.ModificoHechizos = False
             End If
             
             ' ************************** User inventory *********************************
-            If .flags.ModificoInventario Then
-330             ReDim Params(MAX_INVENTORY_SLOTS * 5 - 1)
-332             ParamC = 0
+364         If .flags.ModificoInventario Then
+366             ReDim Params(MAX_INVENTORY_SLOTS * 5 - 1)
+368             ParamC = 0
             
-334             For LoopC = 1 To MAX_INVENTORY_SLOTS
-336                 Params(ParamC) = .ID
-338                 Params(ParamC + 1) = LoopC
-340                 Params(ParamC + 2) = .Invent.Object(LoopC).ObjIndex
-342                 Params(ParamC + 3) = .Invent.Object(LoopC).amount
-344                 Params(ParamC + 4) = .Invent.Object(LoopC).Equipped
+370             For LoopC = 1 To MAX_INVENTORY_SLOTS
+372                 Params(ParamC) = .ID
+374                 Params(ParamC + 1) = LoopC
+376                 Params(ParamC + 2) = .Invent.Object(LoopC).ObjIndex
+378                 Params(ParamC + 3) = .Invent.Object(LoopC).amount
+380                 Params(ParamC + 4) = .Invent.Object(LoopC).Equipped
                 
-346                 ParamC = ParamC + 5
-348             Next LoopC
+382                 ParamC = ParamC + 5
+384             Next LoopC
     
-                Call QueryBuilder.Append(QUERY_UPSERT_INVENTORY & Chr(1))
+386             Call QueryBuilder.Append(QUERY_UPSERT_INVENTORY & Chr(1))
     
-                For i = LBound(Params) To UBound(Params)
-                    Call QueryBuilder.Append(Params(i) & Chr(1))
+388             For i = LBound(Params) To UBound(Params)
+390                 Call QueryBuilder.Append(Params(i) & Chr(1))
                 Next
                 
-                Call QueryBuilder.Remove(QueryBuilder.Length - 1, 1)
-                Call QueryBuilder.Append(Chr(0))
+392             Call QueryBuilder.Remove(QueryBuilder.Length - 1, 1)
+394             Call QueryBuilder.Append(Chr(0))
                 
-                Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
+396             Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
     
-                Call QueryBuilder.Clear
+398             Call QueryBuilder.Clear
             End If
             
             ' ************************** User bank inventory *********************************
-            If .flags.ModificoInventarioBanco Then
-352             ReDim Params(MAX_BANCOINVENTORY_SLOTS * 4 - 1)
-354             ParamC = 0
+400         If .flags.ModificoInventarioBanco Then
+402             ReDim Params(MAX_BANCOINVENTORY_SLOTS * 4 - 1)
+404             ParamC = 0
             
-356             For LoopC = 1 To MAX_BANCOINVENTORY_SLOTS
-358                 Params(ParamC) = .ID
-360                 Params(ParamC + 1) = LoopC
-362                 Params(ParamC + 2) = .BancoInvent.Object(LoopC).ObjIndex
-364                 Params(ParamC + 3) = .BancoInvent.Object(LoopC).amount
+406             For LoopC = 1 To MAX_BANCOINVENTORY_SLOTS
+408                 Params(ParamC) = .ID
+410                 Params(ParamC + 1) = LoopC
+412                 Params(ParamC + 2) = .BancoInvent.Object(LoopC).ObjIndex
+414                 Params(ParamC + 3) = .BancoInvent.Object(LoopC).amount
                 
-366                 ParamC = ParamC + 4
-368             Next LoopC
+416                 ParamC = ParamC + 4
+418             Next LoopC
     
-                Call QueryBuilder.Append(QUERY_SAVE_BANCOINV & Chr(1))
+420             Call QueryBuilder.Append(QUERY_SAVE_BANCOINV & Chr(1))
     
-                For i = LBound(Params) To UBound(Params)
-                    Call QueryBuilder.Append(Params(i) & Chr(1))
+422             For i = LBound(Params) To UBound(Params)
+424                 Call QueryBuilder.Append(Params(i) & Chr(1))
                 Next
                 
-                Call QueryBuilder.Remove(QueryBuilder.Length - 1, 1)
-                Call QueryBuilder.Append(Chr(0))
+426             Call QueryBuilder.Remove(QueryBuilder.Length - 1, 1)
+428             Call QueryBuilder.Append(Chr(0))
                 
-                Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
+430             Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
     
-                Call QueryBuilder.Clear
+432             Call QueryBuilder.Clear
             End If
 
             ' ************************** User skills *********************************
-            If .flags.ModificoSkills Then
-372             ReDim Params(NUMSKILLS * 3 - 1)
-374             ParamC = 0
+434         If .flags.ModificoSkills Then
+436             ReDim Params(NUMSKILLS * 3 - 1)
+438             ParamC = 0
             
-376             For LoopC = 1 To NUMSKILLS
-378                 Params(ParamC) = .ID
-380                 Params(ParamC + 1) = LoopC
-382                 Params(ParamC + 2) = .Stats.UserSkills(LoopC)
+440             For LoopC = 1 To NUMSKILLS
+442                 Params(ParamC) = .ID
+444                 Params(ParamC + 1) = LoopC
+446                 Params(ParamC + 2) = .Stats.UserSkills(LoopC)
                 
-384                 ParamC = ParamC + 3
-386             Next LoopC
+448                 ParamC = ParamC + 3
+450             Next LoopC
     
-                Call QueryBuilder.Append(QUERY_UPSERT_SKILLS & Chr(1))
+452             Call QueryBuilder.Append(QUERY_UPSERT_SKILLS & Chr(1))
     
-                For i = LBound(Params) To UBound(Params)
-                    Call QueryBuilder.Append(Params(i) & Chr(1))
+454             For i = LBound(Params) To UBound(Params)
+456                 Call QueryBuilder.Append(Params(i) & Chr(1))
                 Next
                 
-                Call QueryBuilder.Remove(QueryBuilder.Length - 1, 1)
-                Call QueryBuilder.Append(Chr(0))
+458             Call QueryBuilder.Remove(QueryBuilder.Length - 1, 1)
+460             Call QueryBuilder.Append(Chr(0))
                 
-                Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
+462             Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
     
-                Call QueryBuilder.Clear
+464             Call QueryBuilder.Clear
             End If
 
             ' ************************** User pets *********************************
-            If .flags.ModificoMascotas Then
-390             ReDim Params(MAXMASCOTAS * 3 - 1)
-392             ParamC = 0
+466         If .flags.ModificoMascotas Then
+468             ReDim Params(MAXMASCOTAS * 3 - 1)
+470             ParamC = 0
                 Dim petType As Integer
     
-394             For LoopC = 1 To MAXMASCOTAS
-396                 Params(ParamC) = .ID
-398                 Params(ParamC + 1) = LoopC
+472             For LoopC = 1 To MAXMASCOTAS
+474                 Params(ParamC) = .ID
+476                 Params(ParamC + 1) = LoopC
     
                     'CHOTS | I got this logic from SaveUserToCharfile
-400                 If .MascotasIndex(LoopC) > 0 Then
+478                 If .MascotasIndex(LoopC) > 0 Then
                 
-402                     If NpcList(.MascotasIndex(LoopC)).Contadores.TiempoExistencia = 0 Then
-404                         petType = .MascotasType(LoopC)
+480                     If NpcList(.MascotasIndex(LoopC)).Contadores.TiempoExistencia = 0 Then
+482                         petType = .MascotasType(LoopC)
                         Else
-406                         petType = 0
+484                         petType = 0
                         End If
     
                     Else
-408                     petType = .MascotasType(LoopC)
+486                     petType = .MascotasType(LoopC)
     
                     End If
     
-410                 Params(ParamC + 2) = petType
+488                 Params(ParamC + 2) = petType
                 
-412                 ParamC = ParamC + 3
-414             Next LoopC
+490                 ParamC = ParamC + 3
+492             Next LoopC
     
-                Call QueryBuilder.Append(QUERY_UPSERT_PETS & Chr(1))
+494             Call QueryBuilder.Append(QUERY_UPSERT_PETS & Chr(1))
     
-                For i = LBound(Params) To UBound(Params)
-                    Call QueryBuilder.Append(Params(i) & Chr(1))
+496             For i = LBound(Params) To UBound(Params)
+498                 Call QueryBuilder.Append(Params(i) & Chr(1))
                 Next
                 
-                Call QueryBuilder.Remove(QueryBuilder.Length - 1, 1)
-                Call QueryBuilder.Append(Chr(0))
+500             Call QueryBuilder.Remove(QueryBuilder.Length - 1, 1)
+502             Call QueryBuilder.Append(Chr(0))
                 
-                Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
+504             Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
     
-                Call QueryBuilder.Clear
+506             Call QueryBuilder.Clear
             End If
         
             ' ************************** User connection logs *********************************
         
             'Agrego ip del user
-            Call QueryBuilder.Append(QUERY_SAVE_CONNECTION & Chr(1))
+508         Call QueryBuilder.Append(QUERY_SAVE_CONNECTION & Chr(1))
 
-            Call QueryBuilder.Append(.ID & Chr(1) & .IP & Chr(0))
+510         Call QueryBuilder.Append(.ID & Chr(1) & .IP & Chr(0))
             
-            Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
+512         Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
 
-            Call QueryBuilder.Clear
+514         Call QueryBuilder.Clear
         
             'Borro la mas vieja si hay mas de 5 (WyroX: si alguien sabe una forma mejor de hacerlo me avisa)
-            Call QueryBuilder.Append(QUERY_DELETE_LAST_CONNECTIONS & Chr(1))
+516         Call QueryBuilder.Append(QUERY_DELETE_LAST_CONNECTIONS & Chr(1))
 
-            Call QueryBuilder.Append(.ID & Chr(1) & .ID & Chr(0))
+518         Call QueryBuilder.Append(.ID & Chr(1) & .ID & Chr(0))
             
-            Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
+520         Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
 
-            Call QueryBuilder.Clear
+522         Call QueryBuilder.Clear
         
             ' ************************** User quests *********************************
-            If .flags.ModificoQuests Then
-422             QueryBuilder.Append "INSERT INTO quest (user_id, number, quest_id, npcs, npcstarget) VALUES "
+524         If .flags.ModificoQuests Then
+526             QueryBuilder.Append "INSERT INTO quest (user_id, number, quest_id, npcs, npcstarget) VALUES "
             
                 Dim Tmp As Integer, LoopK As Long
     
-424             For LoopC = 1 To MAXUSERQUESTS
-426                 QueryBuilder.Append "("
-428                 QueryBuilder.Append .ID & ", "
-430                 QueryBuilder.Append LoopC & ", "
-432                 QueryBuilder.Append .QuestStats.Quests(LoopC).QuestIndex & ", '"
+528             For LoopC = 1 To MAXUSERQUESTS
+530                 QueryBuilder.Append "("
+532                 QueryBuilder.Append .ID & ", "
+534                 QueryBuilder.Append LoopC & ", "
+536                 QueryBuilder.Append .QuestStats.Quests(LoopC).QuestIndex & ", '"
                 
-434                 If .QuestStats.Quests(LoopC).QuestIndex > 0 Then
-436                     Tmp = QuestList(.QuestStats.Quests(LoopC).QuestIndex).RequiredNPCs
+538                 If .QuestStats.Quests(LoopC).QuestIndex > 0 Then
+540                     Tmp = QuestList(.QuestStats.Quests(LoopC).QuestIndex).RequiredNPCs
     
-438                     If Tmp Then
+542                     If Tmp Then
     
-440                         For LoopK = 1 To Tmp
-442                             QueryBuilder.Append CStr(.QuestStats.Quests(LoopC).NPCsKilled(LoopK))
+544                         For LoopK = 1 To Tmp
+546                             QueryBuilder.Append CStr(.QuestStats.Quests(LoopC).NPCsKilled(LoopK))
                             
-444                             If LoopK < Tmp Then
-446                                 QueryBuilder.Append "-"
+548                             If LoopK < Tmp Then
+550                                 QueryBuilder.Append "-"
                                 End If
     
-448                         Next LoopK
+552                         Next LoopK
                         
     
                         End If
     
                     End If
                 
-450                 QueryBuilder.Append "', '"
+554                 QueryBuilder.Append "', '"
                 
-452                 If .QuestStats.Quests(LoopC).QuestIndex > 0 Then
+556                 If .QuestStats.Quests(LoopC).QuestIndex > 0 Then
                     
-454                     Tmp = QuestList(.QuestStats.Quests(LoopC).QuestIndex).RequiredTargetNPCs
+558                     Tmp = QuestList(.QuestStats.Quests(LoopC).QuestIndex).RequiredTargetNPCs
                         
-456                     For LoopK = 1 To Tmp
+560                     For LoopK = 1 To Tmp
     
-458                         QueryBuilder.Append CStr(.QuestStats.Quests(LoopC).NPCsTarget(LoopK))
+562                         QueryBuilder.Append CStr(.QuestStats.Quests(LoopC).NPCsTarget(LoopK))
                         
-460                         If LoopK < Tmp Then
-462                             QueryBuilder.Append "-"
+564                         If LoopK < Tmp Then
+566                             QueryBuilder.Append "-"
                             End If
                     
-464                     Next LoopK
+568                     Next LoopK
                 
                     End If
                 
-466                 QueryBuilder.Append "')"
+570                 QueryBuilder.Append "')"
     
-468                 If LoopC < MAXUSERQUESTS Then
-470                     QueryBuilder.Append ", "
+572                 If LoopC < MAXUSERQUESTS Then
+574                     QueryBuilder.Append ", "
                     End If
     
-472             Next LoopC
+576             Next LoopC
             
-474             QueryBuilder.Append " ON DUPLICATE KEY UPDATE quest_id=VALUES(quest_id), npcs=VALUES(npcs);"
+578             QueryBuilder.Append " ON DUPLICATE KEY UPDATE quest_id=VALUES(quest_id), npcs=VALUES(npcs);"
     
-                Call QueryBuilder.Append(Chr(0))
+580             Call QueryBuilder.Append(Chr(0))
                 
-                Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
+582             Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
     
-                Call QueryBuilder.Clear
+584             Call QueryBuilder.Clear
             End If
         
             ' ************************** User completed quests *********************************
-480         If .QuestStats.NumQuestsDone > 0 Then
+586         If .QuestStats.NumQuestsDone > 0 Then
                 
-                If .flags.ModificoQuestsHechas Then
+588             If .flags.ModificoQuestsHechas Then
                 
                     ' Armamos la query con los placeholders
-482                 QueryBuilder.Append "INSERT INTO quest_done (user_id, quest_id) VALUES "
+590                 QueryBuilder.Append "INSERT INTO quest_done (user_id, quest_id) VALUES "
                 
-484                 For LoopC = 1 To .QuestStats.NumQuestsDone
-486                     QueryBuilder.Append "(?, ?)"
+592                 For LoopC = 1 To .QuestStats.NumQuestsDone
+594                     QueryBuilder.Append "(?, ?)"
                 
-488                     If LoopC < .QuestStats.NumQuestsDone Then
-490                         QueryBuilder.Append ", "
+596                     If LoopC < .QuestStats.NumQuestsDone Then
+598                         QueryBuilder.Append ", "
                         End If
                 
-492                 Next LoopC
+600                 Next LoopC
                         
-494                 QueryBuilder.Append " ON DUPLICATE KEY UPDATE quest_id=VALUES(quest_id); "
+602                 QueryBuilder.Append " ON DUPLICATE KEY UPDATE quest_id=VALUES(quest_id); "
                 
                     ' Metemos los parametros
-496                 ReDim Params(.QuestStats.NumQuestsDone * 2 - 1)
-498                 ParamC = 0
+604                 ReDim Params(.QuestStats.NumQuestsDone * 2 - 1)
+606                 ParamC = 0
                 
-500                 For LoopC = 1 To .QuestStats.NumQuestsDone
-502                     Params(ParamC) = .ID
-504                     Params(ParamC + 1) = .QuestStats.QuestsDone(LoopC)
+608                 For LoopC = 1 To .QuestStats.NumQuestsDone
+610                     Params(ParamC) = .ID
+612                     Params(ParamC + 1) = .QuestStats.QuestsDone(LoopC)
                     
-506                     ParamC = ParamC + 2
-508                 Next LoopC
+614                     ParamC = ParamC + 2
+616                 Next LoopC
     
-                    For i = LBound(Params) To UBound(Params)
-                        Call QueryBuilder.Append(Chr(1) & Params(i))
+618                 For i = LBound(Params) To UBound(Params)
+620                     Call QueryBuilder.Append(Chr(1) & Params(i))
                     Next
     
-                    Call QueryBuilder.Append(Chr(0))
+622                 Call QueryBuilder.Append(Chr(0))
                     
-                    Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
+624                 Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
         
-                    Call QueryBuilder.Clear
+626                 Call QueryBuilder.Clear
                 
                 End If
                 
@@ -704,12 +707,12 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
 
             ' ************************** User logout *********************************
             ' Si deslogueó, actualizo la cuenta
-512         If Logout Then
-                Call QueryBuilder.Append("UPDATE account SET logged = logged - 1 WHERE id = ?; " & Chr(1) & .AccountID)
+628         If Logout Then
+630             Call QueryBuilder.Append("UPDATE account SET logged = logged - 1 WHERE id = ?; " & Chr(1) & .AccountID)
                 
-                Call QueryBuilder.Append(Chr(0))
+632             Call QueryBuilder.Append(Chr(0))
                 
-                Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
+634             Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
             End If
 
         End With
@@ -717,7 +720,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
         Exit Sub
 
 ErrorHandler:
-520     Call LogDatabaseError("Error en SaveUserDatabase. UserName: " & UserList(UserIndex).Name & ". " & Err.Number & " - " & Err.Description)
+636     Call LogDatabaseError("Error en SaveUserDatabase. UserName: " & UserList(UserIndex).Name & ". " & Err.Number & " - " & Err.Description)
 
 End Sub
 
