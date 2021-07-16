@@ -9997,15 +9997,16 @@ Private Sub HandleRequestCharBank(ByVal UserIndex As Integer)
 108             Call LogGM(.Name, "/BOV " & UserName)
             
 110             If tUser <= 0 Then
-112                 Call WriteConsoleMsg(UserIndex, "Usuario offline. Leyendo charfile... ", FontTypeNames.FONTTYPE_TALK)
-                
-114                 Call SendUserBovedaTxtFromChar(UserIndex, UserName)
+112                 Call WriteConsoleMsg(UserIndex, "Usuario offline.", FontTypeNames.FONTTYPE_TALK)
+        
                 Else
 116                 Call SendUserBovedaTxt(UserIndex, tUser)
 
                 End If
+                
             Else
 118             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
+
             End If
 
         End With
