@@ -16378,6 +16378,8 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
                     
                 End If
                 
+                .flags.ModificoInventario = True
+                
 324             Call UpdateUserInv(False, UserIndex, SlotViejo)
 326             Call UpdateUserInv(False, UserIndex, SlotNuevo)
 

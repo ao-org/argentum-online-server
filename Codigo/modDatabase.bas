@@ -416,6 +416,10 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
 328             Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
                 
 330             Call QueryBuilder.Clear
+                
+                ' Reseteamos el flag para no volver a guardar.
+                Debug.Print "Se modificaron los atributos. WTF? Bueno, guardando..."
+                .flags.ModificoAttributos = False
             End If
 
             ' ************************** User spells *********************************
@@ -445,6 +449,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
 362             Call QueryBuilder.Clear
                 
                 ' Reseteamos el flag para no volver a guardar.
+                Debug.Print "Se modificaron los hechizos. Guardando..."
                 .flags.ModificoHechizos = False
             End If
             
@@ -475,6 +480,10 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
 396             Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
     
 398             Call QueryBuilder.Clear
+                
+                ' Reseteamos el flag para no volver a guardar.
+                Debug.Print "Se modifico el inventario. Guardando..."
+                .flags.ModificoInventario = False
             End If
             
             ' ************************** User bank inventory *********************************
@@ -503,6 +512,10 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
 430             Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
     
 432             Call QueryBuilder.Clear
+
+                ' Reseteamos el flag para no volver a guardar.
+                Debug.Print "Se modifico el inventario del banco. Guardando..."
+                .flags.ModificoInventarioBanco = False
             End If
 
             ' ************************** User skills *********************************
@@ -530,6 +543,10 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
 462             Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
     
 464             Call QueryBuilder.Clear
+                
+                ' Reseteamos el flag para no volver a guardar.
+                Debug.Print "Se modifico las habilidades. Guardando..."
+                .flags.ModificoSkills = False
             End If
 
             ' ************************** User pets *********************************
@@ -573,6 +590,10 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
 504             Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
     
 506             Call QueryBuilder.Clear
+                
+                ' Reseteamos el flag para no volver a guardar.
+                Debug.Print "Se modifico las mascotas. Guardando..."
+                .flags.ModificoMascotas = False
             End If
         
             ' ************************** User connection logs *********************************
@@ -659,6 +680,10 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
 582             Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
     
 584             Call QueryBuilder.Clear
+                
+                ' Reseteamos el flag para no volver a guardar.
+                Debug.Print "Se modifico las quests. Guardando..."
+                .flags.ModificoQuests = False
             End If
         
             ' ************************** User completed quests *********************************
@@ -700,7 +725,10 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
 624                 Call frmMain.DbManagerSocket.SendData(QueryBuilder.ToString)
         
 626                 Call QueryBuilder.Clear
-                
+                    
+                    ' Reseteamos el flag para no volver a guardar.
+                    Debug.Print "Se modifico las quests hechas. Guardando..."
+                    .flags.ModificoQuestsHechas = False
                 End If
                 
             End If
