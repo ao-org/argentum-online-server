@@ -3783,15 +3783,18 @@ Private Sub HandleModifySkills(ByVal UserIndex As Integer)
 
 126             For i = 1 To NUMSKILLS
 128                 .SkillPts = .SkillPts - points(i)
-130                 .UserSkills(i) = .UserSkills(i) + points(i)
-                
-                    'Client should prevent this, but just in case...
-132                 If .UserSkills(i) > 100 Then
-134                     .SkillPts = .SkillPts + .UserSkills(i) - 100
-136                     .UserSkills(i) = 100
-
+                    
+                    If .UserSkills(i) <> .UserSkills(i) + points(i) Then
+130                     .UserSkills(i) = .UserSkills(i) + points(i)
+                    
+                        'Client should prevent this, but just in case...
+132                     If .UserSkills(i) > 100 Then
+134                         .SkillPts = .SkillPts + .UserSkills(i) - 100
+136                         .UserSkills(i) = 100
+                        End If
+                        
+                        UserList(UserIndex).flags.ModificoSkills = True
                     End If
-
 138             Next i
 
             End With
