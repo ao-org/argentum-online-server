@@ -2787,46 +2787,68 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
             
                           Dim i As Byte
     
-1022                 If obj.Subtipo = 1 Then
-    
-1024                     For i = 1 To obj.CantItem
+1022                Select Case obj.Subtipo
 
-1026                        If Not MeterItemEnInventario(UserIndex, obj.Item(i)) Then
-                                
-1028                             If (.flags.Privilegios And (PlayerType.user Or PlayerType.Dios Or PlayerType.Admin)) Then
-1030                                 Call TirarItemAlPiso(.Pos, obj.Item(i))
+                        Case 1
+    
+1024                             For i = 1 To obj.CantItem
+    
+1026                                If Not MeterItemEnInventario(UserIndex, obj.Item(i)) Then
+                                    
+1028                                     If (.flags.Privilegios And (PlayerType.user Or PlayerType.Dios Or PlayerType.Admin)) Then
+1030                                         Call TirarItemAlPiso(.Pos, obj.Item(i))
+                                         End If
+                                    
                                      End If
                                 
-                                 End If
-                            
-1032                        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageConsoleMsg(ObjData(obj.Item(i).ObjIndex).Name & " (" & obj.Item(i).amount & ")", FontTypeNames.FONTTYPE_INFOBOLD))
-
-1034                     Next i
-            
-                          Else
-            
-1036                     For i = 1 To obj.CantEntrega
+1032                                Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageConsoleMsg(ObjData(obj.Item(i).ObjIndex).Name & " (" & obj.Item(i).amount & ")", FontTypeNames.FONTTYPE_INFOBOLD))
     
-                                  Dim indexobj As Byte
-1038                            indexobj = RandomNumber(1, obj.CantItem)
+1034                             Next i
                 
-                                  Dim Index As obj
+                        Case 2
+            
+1036                             For i = 1 To obj.CantEntrega
+        
+                                      Dim indexobj As Byte
+1038                                    indexobj = RandomNumber(1, obj.CantItem)
+                    
+                                      Dim Index As obj
+        
+1040                                 Index.ObjIndex = obj.Item(indexobj).ObjIndex
+1042                                 Index.amount = obj.Item(indexobj).amount
+        
+1044                                 If Not MeterItemEnInventario(UserIndex, Index) Then
     
-1040                         Index.ObjIndex = obj.Item(indexobj).ObjIndex
-1042                         Index.amount = obj.Item(indexobj).amount
+1046                                    If (.flags.Privilegios And (PlayerType.user Or PlayerType.Dios Or PlayerType.Admin)) Then
+1048                                         Call TirarItemAlPiso(.Pos, Index)
+                                         End If
+                                    
+                                      End If
     
-1044                         If Not MeterItemEnInventario(UserIndex, Index) Then
-
-1046                            If (.flags.Privilegios And (PlayerType.user Or PlayerType.Dios Or PlayerType.Admin)) Then
-1048                                 Call TirarItemAlPiso(.Pos, Index)
-                                     End If
-                                
-                                  End If
-
-1050                         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageConsoleMsg(ObjData(Index.ObjIndex).Name & " (" & Index.amount & ")", FontTypeNames.FONTTYPE_INFOBOLD))
-1052                     Next i
+1050                                 Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageConsoleMsg(ObjData(Index.ObjIndex).Name & " (" & Index.amount & ")", FontTypeNames.FONTTYPE_INFOBOLD))
+1052                             Next i
     
-                          End If
+                        Case 3
+                        
+                            For i = 1 To obj.CantItem
+                            
+                                If RandomNumber(1, obj.Item(i).Data) = 1 Then
+                            
+                                    If Not MeterItemEnInventario(UserIndex, obj.Item(i)) Then
+                                    
+                                        If (.flags.Privilegios And (PlayerType.user Or PlayerType.Dios Or PlayerType.Admin)) Then
+                                            Call TirarItemAlPiso(.Pos, obj.Item(i))
+                                        End If
+                                    
+                                    End If
+                                    
+                                    Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageConsoleMsg(ObjData(obj.Item(i).ObjIndex).Name & " (" & obj.Item(i).amount & ")", FontTypeNames.FONTTYPE_INFOBOLD))
+                                    
+                                End If
+                            
+                            Next i
+    
+                    End Select
         
 1054             Case eOBJType.otLlaves
 1056                 Call WriteConsoleMsg(UserIndex, "Las llaves en el inventario están desactivadas. Sólo se permiten en el llavero.", FontTypeNames.FONTTYPE_INFO)
