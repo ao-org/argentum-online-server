@@ -1356,7 +1356,7 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
 396         If .pathFindingInfo.RangoVision = 0 Then .pathFindingInfo.RangoVision = RANGO_VISION_X
         
 398         .pathFindingInfo.Inteligencia = val(Leer.GetValue("NPC" & NpcNumber, "Inteligencia"))
-400         If .pathFindingInfo.Inteligencia = 0 Then .pathFindingInfo.Inteligencia = 0
+400         If .pathFindingInfo.Inteligencia = 0 Then .pathFindingInfo.Inteligencia = 10
         
 402         ReDim .pathFindingInfo.Path(1 To .pathFindingInfo.Inteligencia + RANGO_VISION_X * 3)
     
