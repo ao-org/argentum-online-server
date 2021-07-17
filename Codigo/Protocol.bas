@@ -3783,15 +3783,18 @@ Private Sub HandleModifySkills(ByVal UserIndex As Integer)
 
 126             For i = 1 To NUMSKILLS
 128                 .SkillPts = .SkillPts - points(i)
-130                 .UserSkills(i) = .UserSkills(i) + points(i)
-                
-                    'Client should prevent this, but just in case...
-132                 If .UserSkills(i) > 100 Then
-134                     .SkillPts = .SkillPts + .UserSkills(i) - 100
-136                     .UserSkills(i) = 100
-
+                    
+                    If .UserSkills(i) <> .UserSkills(i) + points(i) Then
+130                     .UserSkills(i) = .UserSkills(i) + points(i)
+                    
+                        'Client should prevent this, but just in case...
+132                     If .UserSkills(i) > 100 Then
+134                         .SkillPts = .SkillPts + .UserSkills(i) - 100
+136                         .UserSkills(i) = 100
+                        End If
+                        
+                        UserList(UserIndex).flags.ModificoSkills = True
                     End If
-
 138             Next i
 
             End With
@@ -9997,15 +10000,16 @@ Private Sub HandleRequestCharBank(ByVal UserIndex As Integer)
 108             Call LogGM(.Name, "/BOV " & UserName)
             
 110             If tUser <= 0 Then
-112                 Call WriteConsoleMsg(UserIndex, "Usuario offline. Leyendo charfile... ", FontTypeNames.FONTTYPE_TALK)
-                
-114                 Call SendUserBovedaTxtFromChar(UserIndex, UserName)
+112                 Call WriteConsoleMsg(UserIndex, "Usuario offline.", FontTypeNames.FONTTYPE_TALK)
+        
                 Else
 116                 Call SendUserBovedaTxt(UserIndex, tUser)
 
                 End If
+                
             Else
 118             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
+
             End If
 
         End With
@@ -18399,6 +18403,8 @@ Public Sub HandleQuestAccept(ByVal UserIndex As Integer)
         
 140         If QuestList(.QuestIndex).RequiredNPCs Then ReDim .NPCsKilled(1 To QuestList(.QuestIndex).RequiredNPCs)
 142         If QuestList(.QuestIndex).RequiredTargetNPCs Then ReDim .NPCsTarget(1 To QuestList(.QuestIndex).RequiredTargetNPCs)
+            UserList(UserIndex).flags.ModificoQuests = True
+            
 144         Call WriteConsoleMsg(UserIndex, "Has aceptado la mision " & Chr(34) & QuestList(.QuestIndex).nombre & Chr(34) & ".", FontTypeNames.FONTTYPE_INFOIAO)
 146         Call WriteUpdateNPCSimbolo(UserIndex, NpcIndex, 4)
         
@@ -19608,6 +19614,7 @@ Sub HandlePetLeaveAll(ByVal UserIndex As Integer)
 112         Next i
         
 114         If AlmenosUna Then
+                .flags.ModificoMascotas = True
 116             Call WriteConsoleMsg(UserIndex, "Liberaste a tus mascotas.", FontTypeNames.FONTTYPE_INFO)
             End If
 

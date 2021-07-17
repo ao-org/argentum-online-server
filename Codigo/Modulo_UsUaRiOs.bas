@@ -1218,11 +1218,11 @@ Sub SubirSkill(ByVal UserIndex As Integer, ByVal Skill As Integer)
 
         ' Se suben 5 skills cada dos niveles como máximo.
 104     If (Lvl Mod 2 = 0) Then ' El level es numero par
-106       maxPermitido = (Lvl \ 2) * 5
+106         maxPermitido = (Lvl \ 2) * 5
         Else ' El level es numero impar
-          ' Esta cuenta signifca, que si el nivel anterior terminaba en 5 ahora
-          ' suma dos puntos mas, sino 3. Lo de siempre.
-108       maxPermitido = (Lvl \ 2) * 5 + 3 - (((((Lvl - 1) \ 2) * 5) Mod 10) \ 5)
+            ' Esta cuenta signifca, que si el nivel anterior terminaba en 5 ahora
+            ' suma dos puntos mas, sino 3. Lo de siempre.
+108         maxPermitido = (Lvl \ 2) * 5 + 3 - (((((Lvl - 1) \ 2) * 5) Mod 10) \ 5)
         End If
 
 110     If UserList(UserIndex).Stats.UserSkills(Skill) >= maxPermitido Then Exit Sub
@@ -1230,11 +1230,8 @@ Sub SubirSkill(ByVal UserIndex As Integer, ByVal Skill As Integer)
 112     If UserList(UserIndex).flags.Hambre = 0 And UserList(UserIndex).flags.Sed = 0 Then
 
             Dim Aumenta As Integer
-
             Dim Prob    As Integer
-
             Dim Menor   As Byte
-
 114         Menor = 10
              
 116         If Lvl <= 3 Then
@@ -1253,7 +1250,6 @@ Sub SubirSkill(ByVal UserIndex As Integer, ByVal Skill As Integer)
              
 136         If UserList(UserIndex).flags.PendienteDelExperto = 1 Then
 138             Menor = 15
-
             End If
         
 140         If Aumenta < Menor Then
@@ -1262,22 +1258,20 @@ Sub SubirSkill(ByVal UserIndex As Integer, ByVal Skill As Integer)
 144             Call WriteConsoleMsg(UserIndex, "¡Has mejorado tu skill " & SkillsNames(Skill) & " en un punto!. Ahora tienes " & UserList(UserIndex).Stats.UserSkills(Skill) & " pts.", FontTypeNames.FONTTYPE_INFO)
             
                 Dim BonusExp As Long
-
 146             BonusExp = 50& * ExpMult * UserList(UserIndex).flags.ScrollExp
         
 148             If UserList(UserIndex).donador.activo = 1 Then
 150                 BonusExp = BonusExp * 1.1
-
                 End If
         
 152             If UserList(UserIndex).Stats.ELV < STAT_MAXELV Then
 154                 UserList(UserIndex).Stats.Exp = UserList(UserIndex).Stats.Exp + BonusExp
-
 156                 If UserList(UserIndex).Stats.Exp > MAXEXP Then UserList(UserIndex).Stats.Exp = MAXEXP
-            
+                    
+                    UserList(UserIndex).flags.ModificoSkills = True
+                    
 158                 If UserList(UserIndex).ChatCombate = 1 Then
 160                     Call WriteLocaleMsg(UserIndex, "140", FontTypeNames.FONTTYPE_EXP, BonusExp)
-
                     End If
                 
 162                 Call WriteUpdateExp(UserIndex)

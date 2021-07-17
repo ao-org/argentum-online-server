@@ -312,7 +312,10 @@ Sub RellenarInventario(ByVal UserIndex As String)
 
             ' Seteo la cantidad de items
 256         .Invent.NroItems = NumItems
-
+            
+            .flags.ModificoInventario = True
+            .flags.ModificoHechizos = True
+            
         End With
    
         
@@ -1873,8 +1876,18 @@ Sub ResetUserFlags(ByVal UserIndex As Integer)
 254         .MascotasGuardadas = 0
 
 256         .EnConsulta = False
+
 258         .YaGuardo = False
-            
+                        
+            .ModificoAttributos = False
+            .ModificoHechizos = False
+            .ModificoInventario = False
+            .ModificoInventarioBanco = False
+            .ModificoSkills = False
+            .ModificoMascotas = False
+            .ModificoQuests = False
+            .ModificoQuestsHechas = False
+         
 260         .ProcesosPara = vbNullString
 262         .ScreenShotPara = vbNullString
 264         Set .ScreenShot = Nothing

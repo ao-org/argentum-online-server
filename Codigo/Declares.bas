@@ -1648,6 +1648,15 @@ Public Type UserFlags
     ReturnPos As WorldPos
 
     YaGuardo As Boolean
+    
+    ModificoAttributos As Boolean
+    ModificoHechizos As Boolean
+    ModificoInventario As Boolean
+    ModificoInventarioBanco As Boolean
+    ModificoSkills As Boolean
+    ModificoMascotas As Boolean
+    ModificoQuests As Boolean
+    ModificoQuestsHechas As Boolean
 
 End Type
 
