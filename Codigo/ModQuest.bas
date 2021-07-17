@@ -256,7 +256,8 @@ Public Sub AddDoneQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer)
 102         .NumQuestsDone = .NumQuestsDone + 1
 104         ReDim Preserve .QuestsDone(1 To .NumQuestsDone)
 106         .QuestsDone(.NumQuestsDone) = QuestIndex
-
+            
+            UserList(UserIndex).flags.ModificoQuestsHechas = True
         End With
 
         
@@ -348,7 +349,8 @@ Public Sub CleanQuestSlot(ByVal UserIndex As Integer, ByVal QuestSlot As Integer
             End If
 
 132         .QuestIndex = 0
-
+            
+            UserList(UserIndex).flags.ModificoQuests = True
         End With
 
         
@@ -632,10 +634,6 @@ Public Sub SaveQuestStats(ByVal UserIndex As Integer, ByRef UserFile As String)
 
 
            End With
-           
-           
-           
-        
 
 118     Next i
     

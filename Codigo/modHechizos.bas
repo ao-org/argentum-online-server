@@ -486,20 +486,23 @@ Sub AgregarHechizo(ByVal UserIndex As Integer, ByVal Slot As Integer)
 
             'Buscamos un slot vacio
 104         For j = 1 To MAXUSERHECHIZOS
-
 106             If UserList(UserIndex).Stats.UserHechizos(j) = 0 Then Exit For
 108         Next j
         
 110         If UserList(UserIndex).Stats.UserHechizos(j) <> 0 Then
 112             Call WriteConsoleMsg(UserIndex, "No tenes espacio para mas hechizos.", FontTypeNames.FONTTYPE_INFO)
+
             Else
 114             UserList(UserIndex).Stats.UserHechizos(j) = hIndex
+
 116             Call UpdateUserHechizos(False, UserIndex, CByte(j))
+
                 'Quitamos del inv el item
 118             Call QuitarUserInvItem(UserIndex, CByte(Slot), 1)
 
             End If
-
+            
+            UserList(UserIndex).flags.ModificoHechizos = True
         Else
 120         Call WriteConsoleMsg(UserIndex, "Ya tenes ese hechizo.", FontTypeNames.FONTTYPE_INFO)
 
@@ -698,8 +701,9 @@ Sub HechizoInvocacion(ByVal UserIndex As Integer, ByRef b As Boolean)
 150                         NpcList(ind).MaestroUser = UserIndex
 152                         NpcList(ind).Contadores.TiempoExistencia = IntervaloInvocacion
 154                         NpcList(ind).GiveGLD = 0
-                        
+                            
 156                         Call FollowAmo(ind)
+
                         Else
                             Exit Sub
                         End If
@@ -3949,59 +3953,70 @@ End Sub
 Public Sub DesplazarHechizo(ByVal UserIndex As Integer, ByVal Dire As Integer, ByVal CualHechizo As Integer)
         
         On Error GoTo DesplazarHechizo_Err
-        
 
 100     If (Dire <> 1 And Dire <> -1) Then Exit Sub
 102     If Not (CualHechizo >= 1 And CualHechizo <= MAXUSERHECHIZOS) Then Exit Sub
 
         Dim TempHechizo As Integer
+        
+        With UserList(UserIndex)
+        
+104         If Dire = 1 Then 'Mover arriba
 
-104     If Dire = 1 Then 'Mover arriba
-106         If CualHechizo = 1 Then
-108             Call WriteConsoleMsg(UserIndex, "No podés mover el hechizo en esa direccion.", FontTypeNames.FONTTYPE_INFO)
-                Exit Sub
-            Else
-110             TempHechizo = UserList(UserIndex).Stats.UserHechizos(CualHechizo)
-112             UserList(UserIndex).Stats.UserHechizos(CualHechizo) = UserList(UserIndex).Stats.UserHechizos(CualHechizo - 1)
-114             UserList(UserIndex).Stats.UserHechizos(CualHechizo - 1) = TempHechizo
-
-                'Prevent the user from casting other spells than the one he had selected when he hitted "cast".
-116             If UserList(UserIndex).flags.Hechizo = CualHechizo Then
-118                 UserList(UserIndex).flags.Hechizo = UserList(UserIndex).flags.Hechizo - 1
-120             ElseIf UserList(UserIndex).flags.Hechizo = CualHechizo - 1 Then
-122                 UserList(UserIndex).flags.Hechizo = UserList(UserIndex).flags.Hechizo + 1
-                End If
+106             If CualHechizo = 1 Then
+108                 Call WriteConsoleMsg(UserIndex, "No podés mover el hechizo en esa direccion.", FontTypeNames.FONTTYPE_INFO)
+                    Exit Sub
                 
+                Else
+            
+110                 TempHechizo = .Stats.UserHechizos(CualHechizo)
+112                 .Stats.UserHechizos(CualHechizo) = .Stats.UserHechizos(CualHechizo - 1)
+114                 .Stats.UserHechizos(CualHechizo - 1) = TempHechizo
 
-            End If
+                    'Prevent the user from casting other spells than the one he had selected when he hitted "cast".
+116                 If .flags.Hechizo = CualHechizo Then
+118                     .flags.Hechizo = .flags.Hechizo - 1
 
-        Else 'mover abajo
+120                 ElseIf .flags.Hechizo = CualHechizo - 1 Then
+122                     .flags.Hechizo = .flags.Hechizo + 1
 
-124         If CualHechizo = MAXUSERHECHIZOS Then
-126             Call WriteConsoleMsg(UserIndex, "No podés mover el hechizo en esa direccion.", FontTypeNames.FONTTYPE_INFO)
-                Exit Sub
-            Else
-128             TempHechizo = UserList(UserIndex).Stats.UserHechizos(CualHechizo)
-130             UserList(UserIndex).Stats.UserHechizos(CualHechizo) = UserList(UserIndex).Stats.UserHechizos(CualHechizo + 1)
-132             UserList(UserIndex).Stats.UserHechizos(CualHechizo + 1) = TempHechizo
+                    End If
+                
+                    .flags.ModificoHechizos = True
+                End If
 
-                'Prevent the user from casting other spells than the one he had selected when he hitted "cast".
-134             If UserList(UserIndex).flags.Hechizo = CualHechizo Then
-136                 UserList(UserIndex).flags.Hechizo = UserList(UserIndex).flags.Hechizo + 1
-138             ElseIf UserList(UserIndex).flags.Hechizo = CualHechizo + 1 Then
-140                 UserList(UserIndex).flags.Hechizo = UserList(UserIndex).flags.Hechizo - 1
+            Else 'mover abajo
+
+124             If CualHechizo = MAXUSERHECHIZOS Then
+126                 Call WriteConsoleMsg(UserIndex, "No podés mover el hechizo en esa direccion.", FontTypeNames.FONTTYPE_INFO)
+                    Exit Sub
+                
+                Else
+            
+128                 TempHechizo = .Stats.UserHechizos(CualHechizo)
+130                 .Stats.UserHechizos(CualHechizo) = .Stats.UserHechizos(CualHechizo + 1)
+132                 .Stats.UserHechizos(CualHechizo + 1) = TempHechizo
+
+                    'Prevent the user from casting other spells than the one he had selected when he hitted "cast".
+134                 If .flags.Hechizo = CualHechizo Then
+136                     .flags.Hechizo = .flags.Hechizo + 1
+
+138                 ElseIf .flags.Hechizo = CualHechizo + 1 Then
+140                     .flags.Hechizo = .flags.Hechizo - 1
+
+                    End If
+                
+                    .flags.ModificoHechizos = True
                 End If
 
             End If
-
-        End If
-
+        
+        End With
         
         Exit Sub
 
 DesplazarHechizo_Err:
 142     Call TraceError(Err.Number, Err.Description, "modHechizos.DesplazarHechizo", Erl)
-
         
 End Sub
 
