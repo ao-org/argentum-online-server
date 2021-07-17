@@ -976,14 +976,7 @@ Sub ConnectUser(ByVal UserIndex As Integer, _
                 Exit Sub
 
             End If
-    
-135         If UCase$(.Cuenta) <> UCase$(UserCuenta) Then
-140             Call WriteShowMessageBox(UserIndex, "El personaje no corresponde a su cuenta.")
-145             Call CloseSocket(UserIndex)
-                Exit Sub
 
-            End If
-        
 150         Call ConnectUser_Complete(UserIndex, Name, UserCuenta)
         End With
 
