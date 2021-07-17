@@ -397,7 +397,6 @@ Sub QuitarUserInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal Cant
 
 104         If .amount <= Cantidad And .Equipped = 1 Then
 106             Call Desequipar(UserIndex, Slot)
-
             End If
         
             'Quita un objeto
@@ -408,9 +407,10 @@ Sub QuitarUserInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal Cant
 112             UserList(UserIndex).Invent.NroItems = UserList(UserIndex).Invent.NroItems - 1
 114             .ObjIndex = 0
 116             .amount = 0
-
             End If
-
+            
+            UserList(UserIndex).flags.ModificoInventario = True
+            
         End With
 
         
@@ -802,7 +802,7 @@ End Sub
 Sub Desequipar(ByVal UserIndex As Integer, ByVal Slot As Byte)
         
         On Error GoTo Desequipar_Err
-
+    
         'Desequipa el item slot del inventario
         Dim obj As ObjData
 
@@ -810,7 +810,6 @@ Sub Desequipar(ByVal UserIndex As Integer, ByVal Slot As Byte)
             Exit Sub
 102     ElseIf UserList(UserIndex).Invent.Object(Slot).ObjIndex = 0 Then
             Exit Sub
-
         End If
 
 104     obj = ObjData(UserList(UserIndex).Invent.Object(Slot).ObjIndex)
@@ -1016,7 +1015,7 @@ Sub Desequipar(ByVal UserIndex As Integer, ByVal Slot As Byte)
 348             Call WriteUpdateRM(UserIndex)
         
         End Select
-
+        
 350     Call UpdateUserInv(False, UserIndex, Slot)
 
         
@@ -1097,80 +1096,85 @@ End Function
 
 'Equipa barco y hace el cambio de ropaje correspondiente
 Sub EquiparBarco(ByVal UserIndex As Integer)
-      On Error GoTo EquiparBarco_Err
+        On Error GoTo EquiparBarco_Err
 
-      Dim Barco As ObjData
+        Dim Barco As ObjData
 
-100   With UserList(UserIndex)
-102     Barco = ObjData(.Invent.BarcoObjIndex)
+100     With UserList(UserIndex)
+102         Barco = ObjData(.Invent.BarcoObjIndex)
 
-104     If .flags.Muerto = 1 Then
-106       If Barco.Ropaje = iTraje Or Barco.Ropaje = iTrajeAltoNw Or Barco.Ropaje = iTrajeBajoNw Then
-              ' No tenemos la cabeza copada que va con iRopaBuceoMuerto,
-              ' asique asignamos el casper directamente caminando sobre el agua.
-108           .Char.Body = iCuerpoMuerto 'iRopaBuceoMuerto
-110           .Char.Head = iCabezaMuerto
-          ElseIf Barco.Ropaje = iTrajeAltoNw Then
+104         If .flags.Muerto = 1 Then
+106             If Barco.Ropaje = iTraje Or Barco.Ropaje = iTrajeAltoNw Or Barco.Ropaje = iTrajeBajoNw Then
+                    ' No tenemos la cabeza copada que va con iRopaBuceoMuerto,
+                    ' asique asignamos el casper directamente caminando sobre el agua.
+108                 .Char.Body = iCuerpoMuerto 'iRopaBuceoMuerto
+110                 .Char.Head = iCabezaMuerto
+                ElseIf Barco.Ropaje = iTrajeAltoNw Then
           
-          ElseIf Barco.Ropaje = iTrajeBajoNw Then
+                ElseIf Barco.Ropaje = iTrajeBajoNw Then
           
-          Else
-112           .Char.Body = iFragataFantasmal
-114           .Char.Head = 0
-          End If
+                Else
+112                 .Char.Body = iFragataFantasmal
+114                 .Char.Head = 0
+                End If
       
-        Else ' Esta vivo
-116       If Barco.Ropaje = iTraje Then
-118         .Char.Body = iTraje
-120         .Char.Head = .OrigChar.Head
-122         If .Invent.CascoEqpObjIndex > 0 Then
-124           .Char.CascoAnim = ObjData(.Invent.CascoEqpObjIndex).CascoAnim
-            End If
-          ElseIf Barco.Ropaje = iTrajeAltoNw Then
-            .Char.Body = iTrajeAltoNw
-            .Char.Head = .OrigChar.Head
-            If .Invent.CascoEqpObjIndex > 0 Then
-                .Char.CascoAnim = ObjData(.Invent.CascoEqpObjIndex).CascoAnim
-            End If
-          ElseIf Barco.Ropaje = iTrajeBajoNw Then
-            .Char.Body = iTrajeBajoNw
-            .Char.Head = .OrigChar.Head
-            If .Invent.CascoEqpObjIndex > 0 Then
-                .Char.CascoAnim = ObjData(.Invent.CascoEqpObjIndex).CascoAnim
-            End If
-          Else
-126         .Char.Head = 0
-128         .Char.CascoAnim = NingunCasco
-          End If
+            Else ' Esta vivo
 
-130       If .Faccion.ArmadaReal = 1 Then
-132         If Barco.Ropaje = iBarca Then .Char.Body = iBarcaArmada
-134         If Barco.Ropaje = iGalera Then .Char.Body = iGaleraArmada
-136         If Barco.Ropaje = iGaleon Then .Char.Body = iGaleonArmada
+116             If Barco.Ropaje = iTraje Then
+118                 .Char.Body = iTraje
+120                 .Char.Head = .OrigChar.Head
 
-138       ElseIf .Faccion.FuerzasCaos = 1 Then
-140         If Barco.Ropaje = iBarca Then .Char.Body = iBarcaCaos
-142         If Barco.Ropaje = iGalera Then .Char.Body = iGaleraCaos
-144         If Barco.Ropaje = iGaleon Then .Char.Body = iGaleonCaos
+122                 If .Invent.CascoEqpObjIndex > 0 Then
+124                     .Char.CascoAnim = ObjData(.Invent.CascoEqpObjIndex).CascoAnim
+                    End If
+                ElseIf Barco.Ropaje = iTrajeAltoNw Then
+                    .Char.Body = iTrajeAltoNw
+                    .Char.Head = .OrigChar.Head
+
+                    If .Invent.CascoEqpObjIndex > 0 Then
+                        .Char.CascoAnim = ObjData(.Invent.CascoEqpObjIndex).CascoAnim
+                    End If
+                ElseIf Barco.Ropaje = iTrajeBajoNw Then
+                    .Char.Body = iTrajeBajoNw
+                    .Char.Head = .OrigChar.Head
+
+                    If .Invent.CascoEqpObjIndex > 0 Then
+                        .Char.CascoAnim = ObjData(.Invent.CascoEqpObjIndex).CascoAnim
+                    End If
+                Else
+126                 .Char.Head = 0
+128                 .Char.CascoAnim = NingunCasco
+                End If
+
+130             If .Faccion.ArmadaReal = 1 Then
+132                 If Barco.Ropaje = iBarca Then .Char.Body = iBarcaArmada
+134                 If Barco.Ropaje = iGalera Then .Char.Body = iGaleraArmada
+136                 If Barco.Ropaje = iGaleon Then .Char.Body = iGaleonArmada
+
+138             ElseIf .Faccion.FuerzasCaos = 1 Then
+
+140                 If Barco.Ropaje = iBarca Then .Char.Body = iBarcaCaos
+142                 If Barco.Ropaje = iGalera Then .Char.Body = iGaleraCaos
+144                 If Barco.Ropaje = iGaleon Then .Char.Body = iGaleonCaos
           
-          Else
-146         If Barco.Ropaje = iBarca Then .Char.Body = IIf(.Faccion.Status = 0, iBarcaCrimi, iBarcaCiuda)
-148         If Barco.Ropaje = iGalera Then .Char.Body = IIf(.Faccion.Status = 0, iGaleraCrimi, iGaleraCiuda)
-150         If Barco.Ropaje = iGaleon Then .Char.Body = IIf(.Faccion.Status = 0, iGaleonCrimi, iGaleonCiuda)
-          End If
-        End If
+                Else
 
-152     .Char.ShieldAnim = NingunEscudo
-154     .Char.WeaponAnim = NingunArma
+146                 If Barco.Ropaje = iBarca Then .Char.Body = IIf(.Faccion.Status = 0, iBarcaCrimi, iBarcaCiuda)
+148                 If Barco.Ropaje = iGalera Then .Char.Body = IIf(.Faccion.Status = 0, iGaleraCrimi, iGaleraCiuda)
+150                 If Barco.Ropaje = iGaleon Then .Char.Body = IIf(.Faccion.Status = 0, iGaleonCrimi, iGaleonCiuda)
+                End If
+            End If
+
+152         .Char.ShieldAnim = NingunEscudo
+154         .Char.WeaponAnim = NingunArma
     
-156     Call WriteNadarToggle(UserIndex, (Barco.Ropaje = iTraje Or Barco.Ropaje = iTrajeAltoNw Or Barco.Ropaje = iTrajeBajoNw), (Barco.Ropaje = iTrajeAltoNw Or Barco.Ropaje = iTrajeBajoNw))
-      End With
+156         Call WriteNadarToggle(UserIndex, (Barco.Ropaje = iTraje Or Barco.Ropaje = iTrajeAltoNw Or Barco.Ropaje = iTrajeBajoNw), (Barco.Ropaje = iTrajeAltoNw Or Barco.Ropaje = iTrajeBajoNw))
+        End With
   
-      Exit Sub
+        Exit Sub
 
 EquiparBarco_Err:
-158   Call TraceError(Err.Number, Err.Description, "InvUsuario.EquiparBarco", Erl)
-
+158     Call TraceError(Err.Number, Err.Description, "InvUsuario.EquiparBarco", Erl)
 
 End Sub
 
@@ -1190,6 +1194,7 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
         End If
 
 106     With UserList(UserIndex)
+
 108          If .flags.Muerto = 1 Then
                  'Call WriteConsoleMsg(UserIndex, "¡¡Estas muerto!! Solo podes usar items cuando estas vivo. ", FontTypeNames.FONTTYPE_INFO)
 110              Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
@@ -1291,6 +1296,7 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
 
                     'Si esta equipado lo quita
 188                 If .Invent.Object(Slot).Equipped Then
+
                         'Quitamos del inv el item
 190                     Call Desequipar(UserIndex, Slot)
                         Exit Sub
@@ -1339,7 +1345,6 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
 228                 .Invent.MagicoObjIndex = .Invent.Object(Slot).ObjIndex
 230                 .Invent.MagicoSlot = Slot
                 
-                    ' Debug.Print "magico" & obj.EfectoMagico
 232                 Select Case obj.EfectoMagico
                         Case 1 ' Regenera Stamina
 234                         .flags.RegeneracionSta = 1
@@ -1675,7 +1680,7 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
 562                 Call WriteUpdateRM(UserIndex)
 
             End Select
-
+            
         End With
 
         'Actualiza
@@ -1815,8 +1820,8 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
 148                 If .Stats.MinHam > .Stats.MaxHam Then .Stats.MinHam = .Stats.MaxHam
 150                 .flags.Hambre = 0
 152                 Call WriteUpdateHungerAndThirst(UserIndex)
-                    'Sonido
 
+                    'Sonido
 154                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(e_SoundIndex.SOUND_COMIDA, .Pos.X, .Pos.Y))
 
                     'Quitamos del inv el item
@@ -1832,12 +1837,12 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
                         Exit Sub
     
                     End If
-            
+
 166                 .Stats.GLD = .Stats.GLD + .Invent.Object(Slot).amount
 168                 .Invent.Object(Slot).amount = 0
 170                 .Invent.Object(Slot).ObjIndex = 0
 172                 .Invent.NroItems = .Invent.NroItems - 1
-            
+
 174                 Call UpdateUserInv(False, UserIndex, Slot)
 176                 Call WriteUpdateGold(UserIndex)
             
@@ -3296,17 +3301,17 @@ Public Function PirataCaeItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
 
 100     With UserList(UserIndex)
 
-102       If .clase = eClass.Pirat And .Stats.ELV >= 37 And .flags.Navegando = 1 Then
+102         If .clase = eClass.Pirat And .Stats.ELV >= 37 And .flags.Navegando = 1 Then
 
-            ' Si no está navegando, se caen los items
-104         If .Invent.BarcoObjIndex > 0 Then
+                ' Si no está navegando, se caen los items
+104             If .Invent.BarcoObjIndex > 0 Then
 
-                ' Con galeón cada item tiene una probabilidad de caerse del 67%
-106             If ObjData(.Invent.BarcoObjIndex).Ropaje = iGaleon Then
+                    ' Con galeón cada item tiene una probabilidad de caerse del 67%
+106                 If ObjData(.Invent.BarcoObjIndex).Ropaje = iGaleon Then
 
-108                 If RandomNumber(1, 100) <= 33 Then
-                        Exit Function
-                      End If
+108                     If RandomNumber(1, 100) <= 33 Then
+                            Exit Function
+                        End If
 
                     End If
 
@@ -3322,7 +3327,6 @@ Public Function PirataCaeItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
 
 PirataCaeItem_Err:
 112     Call TraceError(Err.Number, Err.Description, "InvUsuario.PirataCaeItem", Erl)
-
 
 End Function
 

@@ -67,7 +67,7 @@ Sub SendBanObj(UserIndex As Integer, Slot As Byte, Object As UserOBJ)
         
 
 100     UserList(UserIndex).BancoInvent.Object(Slot) = Object
-
+        
 102     Call WriteChangeBankSlot(UserIndex, Slot)
 
         
@@ -139,8 +139,10 @@ Sub UserRetiraItem(ByVal UserIndex As Integer, ByVal i As Integer, ByVal Cantida
             
             'Agregamos el obj que compro al inventario
 106         Call UserReciveObj(UserIndex, CInt(i), Cantidad, slotdestino)
+
             'Actualizamos el inventario del usuario
 108         Call UpdateUserInv(True, UserIndex, 0)
+
             'Actualizamos el banco
 110         Call UpdateBanUserInv(True, UserIndex, 0)
 
@@ -160,7 +162,6 @@ Sub UserReciveObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, ByVal C
         
 
         Dim Slot As Integer
-
         Dim obji As Integer
 
 100     If UserList(UserIndex).BancoInvent.Object(ObjIndex).amount <= 0 Then Exit Sub
@@ -236,6 +237,8 @@ Sub UserReciveObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, ByVal C
             'Menor que MAX_INV_OBJS
 148         UserList(UserIndex).Invent.Object(Slot).ObjIndex = obji
 150         UserList(UserIndex).Invent.Object(Slot).amount = UserList(UserIndex).Invent.Object(Slot).amount + Cantidad
+
+            UserList(UserIndex).flags.ModificoInventario = True
     
 152         Call QuitarBancoInvItem(UserIndex, CByte(ObjIndex), Cantidad)
         Else
@@ -256,13 +259,11 @@ Sub QuitarBancoInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal Can
         
         On Error GoTo QuitarBancoInvItem_Err
         
-
         Dim ObjIndex As Integer
 
 100     ObjIndex = UserList(UserIndex).BancoInvent.Object(Slot).ObjIndex
 
         'Quita un Obj
-
 102     UserList(UserIndex).BancoInvent.Object(Slot).amount = UserList(UserIndex).BancoInvent.Object(Slot).amount - Cantidad
         
 104     If UserList(UserIndex).BancoInvent.Object(Slot).amount <= 0 Then
@@ -271,7 +272,8 @@ Sub QuitarBancoInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal Can
 110         UserList(UserIndex).BancoInvent.Object(Slot).amount = 0
 
         End If
-    
+        
+        UserList(UserIndex).flags.ModificoInventarioBanco = True
         
         Exit Sub
 
@@ -333,43 +335,42 @@ Sub UserDejaObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, ByVal Can
         
         On Error GoTo UserDejaObj_Err
         
-
         Dim Slot As Integer
-
         Dim obji As Integer
     
 100     If Cantidad < 1 Then Exit Sub
 102     obji = UserList(UserIndex).Invent.Object(ObjIndex).ObjIndex
     
         Dim slotvalido As Boolean
-
 104     slotvalido = False
 
 106     If slotdestino <> 0 Then
+
 108         If UserList(UserIndex).BancoInvent.Object(slotdestino).ObjIndex = 0 Then
 110             slotvalido = True
-
             End If
 
-112         If UserList(UserIndex).BancoInvent.Object(slotdestino).ObjIndex = obji And UserList(UserIndex).BancoInvent.Object(slotdestino).amount + Cantidad <= MAX_INVENTORY_OBJS Then '¿Ya tiene un objeto de este tipo?
+112         If UserList(UserIndex).BancoInvent.Object(slotdestino).ObjIndex = obji And _
+                UserList(UserIndex).BancoInvent.Object(slotdestino).amount + Cantidad <= MAX_INVENTORY_OBJS Then '¿Ya tiene un objeto de este tipo?
+                
 114             slotvalido = True
-
             End If
 
         End If
 
 116     If slotvalido = False Then
+
             '¿Ya tiene un objeto de este tipo?
 118         Slot = 1
 
-120         Do Until UserList(UserIndex).BancoInvent.Object(Slot).ObjIndex = obji And UserList(UserIndex).BancoInvent.Object(Slot).amount + Cantidad <= MAX_INVENTORY_OBJS
+120         Do Until UserList(UserIndex).BancoInvent.Object(Slot).ObjIndex = obji And _
+                     UserList(UserIndex).BancoInvent.Object(Slot).amount + Cantidad <= MAX_INVENTORY_OBJS
+                     
 122             Slot = Slot + 1
         
 124             If Slot > MAX_BANCOINVENTORY_SLOTS Then
                     Exit Do
-
                 End If
-
             Loop
     
             'Sino se fija por un slot vacio antes del slot devuelto
@@ -388,7 +389,6 @@ Sub UserDejaObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, ByVal Can
                 Loop
         
 138             UserList(UserIndex).BancoInvent.NroItems = UserList(UserIndex).BancoInvent.NroItems + 1
-
             End If
 
         End If
@@ -397,25 +397,28 @@ Sub UserDejaObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, ByVal Can
 142         Slot = slotdestino
 144         UserList(UserIndex).BancoInvent.NroItems = UserList(UserIndex).BancoInvent.NroItems + 1
 
+            
         End If
+        
+        If Slot <= MAX_BANCOINVENTORY_SLOTS Then 'Slot valido
     
-146     If Slot <= MAX_BANCOINVENTORY_SLOTS Then 'Slot valido
-
             'Mete el obj en el slot
 148         If UserList(UserIndex).BancoInvent.Object(Slot).amount + Cantidad <= MAX_INVENTORY_OBJS Then
             
                 'Menor que MAX_INV_OBJS
 150             UserList(UserIndex).BancoInvent.Object(Slot).ObjIndex = obji
 152             UserList(UserIndex).BancoInvent.Object(Slot).amount = UserList(UserIndex).BancoInvent.Object(Slot).amount + Cantidad
-            
+                
+                UserList(UserIndex).flags.ModificoInventarioBanco = True
+                
 154             Call QuitarUserInvItem(UserIndex, CByte(ObjIndex), Cantidad)
+
             Else
 156             Call WriteConsoleMsg(UserIndex, "El banco no puede cargar tantos objetos.", FontTypeNames.FONTTYPE_INFO)
 
             End If
 
         End If
-
         
         Exit Sub
 
@@ -428,10 +431,6 @@ End Sub
 Sub SendUserBovedaTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
         
         On Error GoTo SendUserBovedaTxt_Err
-    
-        
-
-        
 
         Dim j As Integer
 
@@ -455,49 +454,3 @@ SendUserBovedaTxt_Err:
 
         
 End Sub
-
-Sub SendUserBovedaTxtFromChar(ByVal sendIndex As Integer, ByVal CharName As String)
-        
-        On Error GoTo SendUserBovedaTxtFromChar_Err
-    
-        
-
-        
-
-        Dim j        As Integer
-
-        Dim CharFile As String, Tmp As String
-
-        Dim ObjInd   As Long, ObjCant As Long
-
-100     CharFile = CharPath & CharName & ".chr"
-
-102     If FileExist(CharFile, vbNormal) Then
-104         Call WriteConsoleMsg(sendIndex, CharName, FontTypeNames.FONTTYPE_INFO)
-106         Call WriteConsoleMsg(sendIndex, " Tiene " & GetVar(CharFile, "BancoInventory", "CantidadItems") & " objetos.", FontTypeNames.FONTTYPE_INFO)
-
-108         For j = 1 To MAX_BANCOINVENTORY_SLOTS
-110             Tmp = GetVar(CharFile, "BancoInventory", "Obj" & j)
-112             ObjInd = ReadField(1, Tmp, Asc("-"))
-114             ObjCant = ReadField(2, Tmp, Asc("-"))
-
-116             If ObjInd > 0 Then
-118                 Call WriteConsoleMsg(sendIndex, " Objeto " & j & " " & ObjData(ObjInd).Name & " Cantidad:" & ObjCant, FontTypeNames.FONTTYPE_INFO)
-
-                End If
-
-            Next
-        Else
-120         Call WriteConsoleMsg(sendIndex, "Usuario inexistente: " & CharName, FontTypeNames.FONTTYPE_INFO)
-
-        End If
-
-        
-        Exit Sub
-
-SendUserBovedaTxtFromChar_Err:
-122     Call TraceError(Err.Number, Err.Description, "modBanco.SendUserBovedaTxtFromChar", Erl)
-
-        
-End Sub
-

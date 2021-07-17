@@ -2427,9 +2427,9 @@ Private Function SnatchItem(ByVal NpcIndex As Integer, _
 112             Call QuitarUserInvItem(TargetIndex, Slot, DropObj.amount)
 114             Call UpdateUserInv(False, TargetIndex, Slot)
             
-                ' Suceed
+                ' Suceeded
 116             SnatchItem = True
-
+                
             End If
 
         End With
