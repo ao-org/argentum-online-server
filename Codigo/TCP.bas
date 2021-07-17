@@ -970,22 +970,15 @@ Sub ConnectUser(ByVal UserIndex As Integer, _
             ' Cargamos el personaje
 115         Call LoadUser(UserIndex)
 
-120         If Not ValidateChr(UserIndex) Then
-125             Call WriteShowMessageBox(UserIndex, "Error en el personaje. Comuniquese con el staff.")
-130             Call CloseSocket(UserIndex)
-                Exit Sub
-
-            End If
-
-150         Call ConnectUser_Complete(UserIndex, Name, UserCuenta)
+120         Call ConnectUser_Complete(UserIndex, Name, UserCuenta)
         End With
 
         Exit Sub
     
 ErrHandler:
-155     Call TraceError(Err.Number, Err.Description, "TCP.ConnectUser", Erl)
-160     Call WriteShowMessageBox(UserIndex, "El personaje contiene un error. Comuníquese con un miembro del staff.")
-165     Call CloseSocket(UserIndex)
+125     Call TraceError(Err.Number, Err.Description, "TCP.ConnectUser", Erl)
+130     Call WriteShowMessageBox(UserIndex, "El personaje contiene un error. Comuníquese con un miembro del staff.")
+135     Call CloseSocket(UserIndex)
 
 End Sub
 

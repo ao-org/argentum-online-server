@@ -35,7 +35,9 @@ Option Explicit
 'Rutinas de los usuarios
 '?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
 
-Public Function ConnectUser_Check(ByVal UserIndex As Integer, ByRef Name As String, ByRef UserCuenta As String) As Boolean
+Public Function ConnectUser_Check(ByVal UserIndex As Integer, _
+                                  ByRef Name As String, _
+                                  ByRef UserCuenta As String) As Boolean
                            
     On Error GoTo Check_ConnectUser_Err
 
@@ -216,7 +218,9 @@ Prepare_ConnectUser_Err:
 
 End Sub
 
-Public Function ConnectUser_Complete(ByVal UserIndex As Integer, ByRef Name As String, ByRef UserCuenta As String)
+Public Function ConnectUser_Complete(ByVal UserIndex As Integer, _
+                                     ByRef Name As String, _
+                                     ByRef UserCuenta As String)
 
         On Error GoTo Complete_ConnectUser_Err
         
@@ -224,68 +228,248 @@ Public Function ConnectUser_Complete(ByVal UserIndex As Integer, ByRef Name As S
         Dim tStr As String
         
 100     With UserList(UserIndex)
-    
-105         .flags.SeguroParty = True
-110         .flags.SeguroClan = True
-115         .flags.SeguroResu = True
-        
-120         .CurrentInventorySlots = getMaxInventorySlots(UserIndex)
-        
-125         Call WriteInventoryUnlockSlots(UserIndex)
-        
-130         Call LoadUserIntervals(UserIndex)
-135         Call WriteIntervals(UserIndex)
-        
-140         Call UpdateUserInv(True, UserIndex, 0)
-145         Call UpdateUserHechizos(True, UserIndex, 0)
-        
-150         Call EnviarLlaves(UserIndex)
+            
+            ' -----------------------------------------------------------------------
+            '   INFORMACION INICIAL DEL PERSONAJE
+            ' -----------------------------------------------------------------------
 
-155         If .Correo.NoLeidos > 0 Then Call WriteCorreoPicOn(UserIndex)
+105         If .flags.Paralizado = 1 Then
+110             .Counters.Paralisis = IntervaloParalizado
+            End If
 
-160         If .flags.Paralizado Then Call WriteParalizeOK(UserIndex)
+115         If .flags.Muerto = 0 Then
+120             .Char = .OrigChar
+            
+125             If .Char.Body = 0 Then
+130                 Call DarCuerpoDesnudo(UserIndex)
+                End If
+            
+135             If .Char.Head = 0 Then
+140                 .Char.Head = 1
+                End If
+            Else
+145             .Char.Body = iCuerpoMuerto
+150             .Char.Head = iCabezaMuerto
+155             .Char.WeaponAnim = NingunArma
+160             .Char.ShieldAnim = NingunEscudo
+165             .Char.CascoAnim = NingunCasco
+170             .Char.Heading = eHeading.SOUTH
+            End If
         
-165         If .flags.Inmovilizado Then Call WriteInmovilizaOK(UserIndex)
+            'Obtiene el indice-objeto del arma
+175         If .Invent.WeaponEqpSlot > 0 Then
+180             If .Invent.Object(.Invent.WeaponEqpSlot).ObjIndex > 0 Then
+185                 .Invent.WeaponEqpObjIndex = .Invent.Object(.Invent.WeaponEqpSlot).ObjIndex
+
+190                 If .flags.Muerto = 0 Then
+195                     .Char.Arma_Aura = ObjData(.Invent.WeaponEqpObjIndex).CreaGRH
+                    End If
+                Else
+200                 .Invent.WeaponEqpSlot = 0
+                End If
+            End If
+
+            'Obtiene el indice-objeto del armadura
+205         If .Invent.ArmourEqpSlot > 0 Then
+210             If .Invent.Object(.Invent.ArmourEqpSlot).ObjIndex > 0 Then
+215                 .Invent.ArmourEqpObjIndex = .Invent.Object(.Invent.ArmourEqpSlot).ObjIndex
+
+220                 If .flags.Muerto = 0 Then
+225                     .Char.Body_Aura = ObjData(.Invent.ArmourEqpObjIndex).CreaGRH
+                    End If
+                Else
+230                 .Invent.ArmourEqpSlot = 0
+                End If
+235             .flags.Desnudo = 0
+            Else
+240             .flags.Desnudo = 1
+            End If
+
+            'Obtiene el indice-objeto del escudo
+245         If .Invent.EscudoEqpSlot > 0 Then
+250             If .Invent.Object(.Invent.EscudoEqpSlot).ObjIndex > 0 Then
+255                 .Invent.EscudoEqpObjIndex = .Invent.Object(.Invent.EscudoEqpSlot).ObjIndex
+
+260                 If .flags.Muerto = 0 Then
+265                     .Char.Escudo_Aura = ObjData(.Invent.EscudoEqpObjIndex).CreaGRH
+                    End If
+                Else
+270                 .Invent.EscudoEqpSlot = 0
+                End If
+            End If
+        
+            'Obtiene el indice-objeto del casco
+275         If .Invent.CascoEqpSlot > 0 Then
+280             If .Invent.Object(.Invent.CascoEqpSlot).ObjIndex > 0 Then
+285                 .Invent.CascoEqpObjIndex = .Invent.Object(.Invent.CascoEqpSlot).ObjIndex
+
+290                 If .flags.Muerto = 0 Then
+295                     .Char.Head_Aura = ObjData(.Invent.CascoEqpObjIndex).CreaGRH
+                    End If
+                Else
+300                 .Invent.CascoEqpSlot = 0
+                End If
+            End If
+
+            'Obtiene el indice-objeto barco
+305         If .Invent.BarcoSlot > 0 Then
+310             If .Invent.Object(.Invent.BarcoSlot).ObjIndex > 0 Then
+315                 .Invent.BarcoObjIndex = .Invent.Object(.Invent.BarcoSlot).ObjIndex
+                Else
+320                 .Invent.BarcoSlot = 0
+                End If
+            End If
+
+            'Obtiene el indice-objeto municion
+325         If .Invent.MunicionEqpSlot > 0 Then
+330             If .Invent.Object(.Invent.MunicionEqpSlot).ObjIndex > 0 Then
+335                 .Invent.MunicionEqpObjIndex = .Invent.Object(.Invent.MunicionEqpSlot).ObjIndex
+                Else
+340                 .Invent.MunicionEqpSlot = 0
+                End If
+            End If
+
+            ' DM
+345         If .Invent.DañoMagicoEqpSlot > 0 Then
+350             If .Invent.Object(.Invent.DañoMagicoEqpSlot).ObjIndex > 0 Then
+355                 .Invent.DañoMagicoEqpObjIndex = .Invent.Object(.Invent.DañoMagicoEqpSlot).ObjIndex
+
+360                 If .flags.Muerto = 0 Then
+365                     .Char.DM_Aura = ObjData(.Invent.DañoMagicoEqpObjIndex).CreaGRH
+                    End If
+                Else
+370                 .Invent.DañoMagicoEqpSlot = 0
+                End If
+            End If
+            
+            ' RM
+375         If .Invent.ResistenciaEqpSlot > 0 Then
+380             If .Invent.Object(.Invent.ResistenciaEqpSlot).ObjIndex > 0 Then
+385                 .Invent.ResistenciaEqpObjIndex = .Invent.Object(.Invent.ResistenciaEqpSlot).ObjIndex
+
+390                 If .flags.Muerto = 0 Then
+395                     .Char.RM_Aura = ObjData(.Invent.ResistenciaEqpObjIndex).CreaGRH
+                    End If
+                Else
+400                 .Invent.ResistenciaEqpSlot = 0
+                End If
+            End If
+
+405         If .Invent.MonturaSlot > 0 Then
+410             If .Invent.Object(.Invent.MonturaSlot).ObjIndex > 0 Then
+415                 .Invent.MonturaObjIndex = .Invent.Object(.Invent.MonturaSlot).ObjIndex
+                Else
+420                 .Invent.MonturaSlot = 0
+                End If
+            End If
+        
+425         If .Invent.HerramientaEqpSlot > 0 Then
+430             If .Invent.Object(.Invent.HerramientaEqpSlot).ObjIndex Then
+435                 .Invent.HerramientaEqpObjIndex = .Invent.Object(.Invent.HerramientaEqpSlot).ObjIndex
+                Else
+440                 .Invent.HerramientaEqpSlot = 0
+                End If
+            End If
+        
+445         If .Invent.NudilloSlot > 0 Then
+450             If .Invent.Object(.Invent.NudilloSlot).ObjIndex > 0 Then
+455                 .Invent.NudilloObjIndex = .Invent.Object(.Invent.NudilloSlot).ObjIndex
+
+460                 If .flags.Muerto = 0 Then
+465                     .Char.Arma_Aura = ObjData(.Invent.NudilloObjIndex).CreaGRH
+                    End If
+                Else
+470                 .Invent.NudilloSlot = 0
+                End If
+            End If
+        
+475         If .Invent.MagicoSlot > 0 Then
+480             If .Invent.Object(.Invent.MagicoSlot).ObjIndex Then
+485                 .Invent.MagicoObjIndex = .Invent.Object(.Invent.MagicoSlot).ObjIndex
+
+490                 If .flags.Muerto = 0 Then
+495                     .Char.Otra_Aura = ObjData(.Invent.MagicoObjIndex).CreaGRH
+                    End If
+                Else
+500                 .Invent.MagicoSlot = 0
+                End If
+            End If
+            
+505         If .Invent.EscudoEqpSlot = 0 Then .Char.ShieldAnim = NingunEscudo
+510         If .Invent.CascoEqpSlot = 0 Then .Char.CascoAnim = NingunCasco
+515         If .Invent.WeaponEqpSlot = 0 And .Invent.NudilloSlot = 0 And .Invent.HerramientaEqpSlot = 0 Then .Char.WeaponAnim = NingunArma
+            ' -----------------------------------------------------------------------
+            '   FIN - INFORMACION INICIAL DEL PERSONAJE
+            ' -----------------------------------------------------------------------
+            
+520         If Not ValidateChr(UserIndex) Then
+525             Call WriteShowMessageBox(UserIndex, "Error en el personaje. Comuniquese con el staff.")
+530             Call CloseSocket(UserIndex)
+                Exit Function
+
+            End If
+            
+535         .flags.SeguroParty = True
+540         .flags.SeguroClan = True
+545         .flags.SeguroResu = True
+        
+550         .CurrentInventorySlots = getMaxInventorySlots(UserIndex)
+        
+555         Call WriteInventoryUnlockSlots(UserIndex)
+        
+560         Call LoadUserIntervals(UserIndex)
+565         Call WriteIntervals(UserIndex)
+        
+570         Call UpdateUserInv(True, UserIndex, 0)
+575         Call UpdateUserHechizos(True, UserIndex, 0)
+        
+580         Call EnviarLlaves(UserIndex)
+
+585         If .Correo.NoLeidos > 0 Then Call WriteCorreoPicOn(UserIndex)
+
+590         If .flags.Paralizado Then Call WriteParalizeOK(UserIndex)
+        
+595         If .flags.Inmovilizado Then Call WriteInmovilizaOK(UserIndex)
 
             ''
             'TODO : Feo, esto tiene que ser parche cliente
-170         If .flags.Estupidez = 0 Then
-175             Call WriteDumbNoMore(UserIndex)
+600         If .flags.Estupidez = 0 Then
+605             Call WriteDumbNoMore(UserIndex)
             End If
         
             'Ladder Inmunidad
-180         .flags.Inmunidad = 1
-185         .Counters.TiempoDeInmunidad = IntervaloPuedeSerAtacado
+610         .flags.Inmunidad = 1
+615         .Counters.TiempoDeInmunidad = IntervaloPuedeSerAtacado
             'Ladder Inmunidad
         
             'Mapa válido
-190         If Not MapaValido(.Pos.Map) Then
-195             Call WriteErrorMsg(UserIndex, "EL PJ se encuenta en un mapa invalido.")
-200             Call CloseSocket(UserIndex)
+620         If Not MapaValido(.Pos.Map) Then
+625             Call WriteErrorMsg(UserIndex, "EL PJ se encuenta en un mapa invalido.")
+630             Call CloseSocket(UserIndex)
                 Exit Function
 
             End If
         
             'Tratamos de evitar en lo posible el "Telefrag". Solo 1 intento de loguear en pos adjacentes.
             'Codigo por Pablo (ToxicWaste) y revisado por Nacho (Integer), corregido para que realmetne ande y no tire el server por Juan Martin Sotuyo Dodero (Maraxus)
-205         If MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex <> 0 Or MapData(.Pos.Map, .Pos.X, .Pos.Y).NpcIndex <> 0 Then
+635         If MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex <> 0 Or MapData(.Pos.Map, .Pos.X, .Pos.Y).NpcIndex <> 0 Then
 
                 Dim FoundPlace As Boolean
                 Dim esAgua     As Boolean
                 Dim tX         As Long
                 Dim tY         As Long
         
-210             FoundPlace = False
-215             esAgua = (MapData(.Pos.Map, .Pos.X, .Pos.Y).Blocked And FLAG_AGUA) <> 0
+640             FoundPlace = False
+645             esAgua = (MapData(.Pos.Map, .Pos.X, .Pos.Y).Blocked And FLAG_AGUA) <> 0
 
-220             For tY = .Pos.Y - 1 To .Pos.Y + 1
-225                 For tX = .Pos.X - 1 To .Pos.X + 1
+650             For tY = .Pos.Y - 1 To .Pos.Y + 1
+655                 For tX = .Pos.X - 1 To .Pos.X + 1
 
-230                     If esAgua Then
+660                     If esAgua Then
 
                             'reviso que sea pos legal en agua, que no haya User ni NPC para poder loguear.
-235                         If LegalPos(.Pos.Map, tX, tY, True, False) Then
-240                             FoundPlace = True
+665                         If LegalPos(.Pos.Map, tX, tY, True, False) Then
+670                             FoundPlace = True
                                 Exit For
 
                             End If
@@ -293,49 +477,49 @@ Public Function ConnectUser_Complete(ByVal UserIndex As Integer, ByRef Name As S
                         Else
 
                             'reviso que sea pos legal en tierra, que no haya User ni NPC para poder loguear.
-245                         If LegalPos(.Pos.Map, tX, tY, False, True) Then
-250                             FoundPlace = True
+675                         If LegalPos(.Pos.Map, tX, tY, False, True) Then
+680                             FoundPlace = True
                                 Exit For
 
                             End If
 
                         End If
 
-255                 Next tX
+685                 Next tX
             
-260                 If FoundPlace Then Exit For
-265             Next tY
+690                 If FoundPlace Then Exit For
+695             Next tY
         
-270             If FoundPlace Then 'Si encontramos un lugar, listo, nos quedamos ahi
+700             If FoundPlace Then 'Si encontramos un lugar, listo, nos quedamos ahi
 
-275                 .Pos.X = tX
-280                 .Pos.Y = tY
+705                 .Pos.X = tX
+710                 .Pos.Y = tY
 
                 Else
 
                     'Si no encontramos un lugar, sacamos al usuario que tenemos abajo, y si es un NPC, lo pisamos.
-285                 If MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex <> 0 Then
+715                 If MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex <> 0 Then
 
                         'Si no encontramos lugar, y abajo teniamos a un usuario, lo pisamos y cerramos su comercio seguro
-290                     If UserList(MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex).ComUsu.DestUsu > 0 Then
+720                     If UserList(MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex).ComUsu.DestUsu > 0 Then
 
                             'Le avisamos al que estaba comerciando que se tuvo que ir.
-295                         If UserList(UserList(MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex).ComUsu.DestUsu).flags.UserLogged Then
-300                             Call FinComerciarUsu(UserList(MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex).ComUsu.DestUsu)
-305                             Call WriteConsoleMsg(UserList(MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex).ComUsu.DestUsu, "Comercio cancelado. El otro usuario se ha desconectado.", FontTypeNames.FONTTYPE_WARNING)
+725                         If UserList(UserList(MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex).ComUsu.DestUsu).flags.UserLogged Then
+730                             Call FinComerciarUsu(UserList(MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex).ComUsu.DestUsu)
+735                             Call WriteConsoleMsg(UserList(MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex).ComUsu.DestUsu, "Comercio cancelado. El otro usuario se ha desconectado.", FontTypeNames.FONTTYPE_WARNING)
 
                             End If
 
                             'Lo sacamos.
-310                         If UserList(MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex).flags.UserLogged Then
-315                             Call FinComerciarUsu(MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex)
-320                             Call WriteErrorMsg(MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex, "Alguien se ha conectado donde te encontrabas, por favor reconectate...")
+740                         If UserList(MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex).flags.UserLogged Then
+745                             Call FinComerciarUsu(MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex)
+750                             Call WriteErrorMsg(MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex, "Alguien se ha conectado donde te encontrabas, por favor reconectate...")
 
                             End If
 
                         End If
                 
-325                     Call CloseSocket(MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex)
+755                     Call CloseSocket(MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex)
 
                     End If
 
@@ -344,52 +528,52 @@ Public Function ConnectUser_Complete(ByVal UserIndex As Integer, ByRef Name As S
             End If
         
             'If in the water, and has a boat, equip it!
-330         If .Invent.BarcoObjIndex > 0 And (MapData(.Pos.Map, .Pos.X, .Pos.Y).Blocked And FLAG_AGUA) <> 0 Then
-335             .flags.Navegando = 1
-340             Call EquiparBarco(UserIndex)
+760         If .Invent.BarcoObjIndex > 0 And (MapData(.Pos.Map, .Pos.X, .Pos.Y).Blocked And FLAG_AGUA) <> 0 Then
+765             .flags.Navegando = 1
+770             Call EquiparBarco(UserIndex)
 
             End If
             
-345         If .Invent.MagicoObjIndex <> 0 Then
-350             If ObjData(.Invent.MagicoObjIndex).EfectoMagico = 11 Then .flags.Paraliza = 1
+775         If .Invent.MagicoObjIndex <> 0 Then
+780             If ObjData(.Invent.MagicoObjIndex).EfectoMagico = 11 Then .flags.Paraliza = 1
             End If
 
-355         Call WriteUserIndexInServer(UserIndex) 'Enviamos el User index
-360         .flags.NecesitaOxigeno = RequiereOxigeno(.Pos.Map)
+785         Call WriteUserIndexInServer(UserIndex) 'Enviamos el User index
+790         .flags.NecesitaOxigeno = RequiereOxigeno(.Pos.Map)
         
-365         Call WriteHora(UserIndex)
-370         Call WriteChangeMap(UserIndex, .Pos.Map) 'Carga el mapa
+795         Call WriteHora(UserIndex)
+800         Call WriteChangeMap(UserIndex, .Pos.Map) 'Carga el mapa
             
-375         Select Case .flags.Privilegios
+805         Select Case .flags.Privilegios
             
                 Case PlayerType.Admin
-380                 .flags.ChatColor = RGB(217, 164, 32)
+810                 .flags.ChatColor = RGB(217, 164, 32)
                 
-385             Case PlayerType.Dios
-390                 .flags.ChatColor = RGB(217, 164, 32)
+815             Case PlayerType.Dios
+820                 .flags.ChatColor = RGB(217, 164, 32)
                     
-395             Case PlayerType.SemiDios
-400                 .flags.ChatColor = RGB(2, 161, 38)
+825             Case PlayerType.SemiDios
+830                 .flags.ChatColor = RGB(2, 161, 38)
                     
-405             Case PlayerType.Consejero
-410                 .flags.ChatColor = RGB(2, 161, 38)
+835             Case PlayerType.Consejero
+840                 .flags.ChatColor = RGB(2, 161, 38)
                 
-415             Case Else
-420                 .flags.ChatColor = vbWhite
+845             Case Else
+850                 .flags.ChatColor = vbWhite
                 
             End Select
             
             ' Jopi: Te saco de los mapas de retos (si logueas ahi) 324 372 389 390
-425         If Not EsGM(UserIndex) And (.Pos.Map = 324 Or .Pos.Map = 372 Or .Pos.Map = 389 Or .Pos.Map = 390) Then
+855         If Not EsGM(UserIndex) And (.Pos.Map = 324 Or .Pos.Map = 372 Or .Pos.Map = 389 Or .Pos.Map = 390) Then
                 
                 ' Si tiene una posicion a la que volver, lo mando ahi
-430             If MapaValido(.flags.ReturnPos.Map) And .flags.ReturnPos.X > 0 And .flags.ReturnPos.X <= XMaxMapSize And .flags.ReturnPos.Y > 0 And .flags.ReturnPos.Y <= YMaxMapSize Then
+860             If MapaValido(.flags.ReturnPos.Map) And .flags.ReturnPos.X > 0 And .flags.ReturnPos.X <= XMaxMapSize And .flags.ReturnPos.Y > 0 And .flags.ReturnPos.Y <= YMaxMapSize Then
                     
-435                 Call WarpToLegalPos(UserIndex, .flags.ReturnPos.Map, .flags.ReturnPos.X, .flags.ReturnPos.Y, True)
+865                 Call WarpToLegalPos(UserIndex, .flags.ReturnPos.Map, .flags.ReturnPos.X, .flags.ReturnPos.Y, True)
                 
                 Else ' Lo mando a su hogar
                     
-440                 Call WarpToLegalPos(UserIndex, Ciudades(.Hogar).Map, Ciudades(.Hogar).X, Ciudades(.Hogar).Y, True)
+870                 Call WarpToLegalPos(UserIndex, Ciudades(.Hogar).Map, Ciudades(.Hogar).X, Ciudades(.Hogar).Y, True)
                     
                 End If
                 
@@ -397,157 +581,159 @@ Public Function ConnectUser_Complete(ByVal UserIndex As Integer, ByRef Name As S
             
             ''[EL OSO]: TRAIGO ESTO ACA ARRIBA PARA DARLE EL IP!
             #If ConUpTime Then
-445             .LogOnTime = Now
+875             .LogOnTime = Now
             #End If
         
             'Crea  el personaje del usuario
-450         Call MakeUserChar(True, .Pos.Map, UserIndex, .Pos.Map, .Pos.X, .Pos.Y, 1)
+880         Call MakeUserChar(True, .Pos.Map, UserIndex, .Pos.Map, .Pos.X, .Pos.Y, 1)
 
-455         Call WriteUserCharIndexInServer(UserIndex)
-460         Call ActualizarVelocidadDeUsuario(UserIndex)
+885         Call WriteUserCharIndexInServer(UserIndex)
+890         Call ActualizarVelocidadDeUsuario(UserIndex)
         
-465         If EsGM(UserIndex) Then Call DoAdminInvisible(UserIndex)
-470         Call WriteUpdateUserStats(UserIndex)
-475         Call WriteUpdateHungerAndThirst(UserIndex)
-480         Call WriteUpdateDM(UserIndex)
-485         Call WriteUpdateRM(UserIndex)
+895         If EsGM(UserIndex) Then Call DoAdminInvisible(UserIndex)
+900         Call WriteUpdateUserStats(UserIndex)
+905         Call WriteUpdateHungerAndThirst(UserIndex)
+910         Call WriteUpdateDM(UserIndex)
+915         Call WriteUpdateRM(UserIndex)
         
-490         Call SendMOTD(UserIndex)
-495         Call SetUserLogged(UserIndex)
+920         Call SendMOTD(UserIndex)
+925         Call SetUserLogged(UserIndex)
         
             'Actualiza el Num de usuarios
-500         NumUsers = NumUsers + 1
-505         .flags.UserLogged = True
-510         .Counters.LastSave = GetTickCount
+930         NumUsers = NumUsers + 1
+935         .flags.UserLogged = True
+940         .Counters.LastSave = GetTickCount
         
-515         MapInfo(.Pos.Map).NumUsers = MapInfo(.Pos.Map).NumUsers + 1
+945         MapInfo(.Pos.Map).NumUsers = MapInfo(.Pos.Map).NumUsers + 1
         
-520         If .Stats.SkillPts > 0 Then
-525             Call WriteSendSkills(UserIndex)
-530             Call WriteLevelUp(UserIndex, .Stats.SkillPts)
+950         If .Stats.SkillPts > 0 Then
+955             Call WriteSendSkills(UserIndex)
+960             Call WriteLevelUp(UserIndex, .Stats.SkillPts)
 
             End If
         
-535         If NumUsers > DayStats.MaxUsuarios Then DayStats.MaxUsuarios = NumUsers
+965         If NumUsers > DayStats.MaxUsuarios Then DayStats.MaxUsuarios = NumUsers
         
-540         If NumUsers > RecordUsuarios Then
-545             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Record de usuarios conectados simultáneamente: " & NumUsers & " usuarios.", FontTypeNames.FONTTYPE_INFO))
-550             RecordUsuarios = NumUsers
-555             Call SetRecordUsersDatabase(RecordUsuarios)
+970         If NumUsers > RecordUsuarios Then
+975             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Record de usuarios conectados simultáneamente: " & NumUsers & " usuarios.", FontTypeNames.FONTTYPE_INFO))
+980             RecordUsuarios = NumUsers
+985             Call SetRecordUsersDatabase(RecordUsuarios)
 
             End If
 
-560         Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageOnlineUser(NumUsers))
+990         Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageOnlineUser(NumUsers))
 
-565         Call WriteFYA(UserIndex)
-570         Call WriteBindKeys(UserIndex)
+995         Call WriteFYA(UserIndex)
+1000         Call WriteBindKeys(UserIndex)
         
-575         If .NroMascotas > 0 And MapInfo(.Pos.Map).Seguro = 0 And .flags.MascotasGuardadas = 0 Then
-                Dim i As Integer
-580             For i = 1 To MAXMASCOTAS
+1005         If .NroMascotas > 0 And MapInfo(.Pos.Map).Seguro = 0 And .flags.MascotasGuardadas = 0 Then
+                 Dim i As Integer
 
-585                 If .MascotasType(i) > 0 Then
-590                     .MascotasIndex(i) = SpawnNpc(.MascotasType(i), .Pos, False, False, False, UserIndex)
+1010             For i = 1 To MAXMASCOTAS
+
+1015                If .MascotasType(i) > 0 Then
+1020                    .MascotasIndex(i) = SpawnNpc(.MascotasType(i), .Pos, False, False, False, UserIndex)
                     
-595                     If .MascotasIndex(i) > 0 Then
-600                         NpcList(.MascotasIndex(i)).MaestroUser = UserIndex
-605                         Call FollowAmo(.MascotasIndex(i))
+1025                    If .MascotasIndex(i) > 0 Then
+1030                        NpcList(.MascotasIndex(i)).MaestroUser = UserIndex
+1035                        Call FollowAmo(.MascotasIndex(i))
                         
-                        Else
-610                         .MascotasIndex(i) = 0
+                         Else
+1040                        .MascotasIndex(i) = 0
 
-                        End If
-                    End If
+                         End If
+                     End If
 
-615             Next i
-            End If
+1045            Next i
+
+             End If
         
-620         If .flags.Navegando = 1 Then
-625             Call WriteNavigateToggle(UserIndex)
-630             Call EquiparBarco(UserIndex)
+1050        If .flags.Navegando = 1 Then
+1055            Call WriteNavigateToggle(UserIndex)
+1060            Call EquiparBarco(UserIndex)
 
-            End If
+             End If
         
-635         If .flags.Montado = 1 Then
-640             Call WriteEquiteToggle(UserIndex)
+1065        If .flags.Montado = 1 Then
+1070            Call WriteEquiteToggle(UserIndex)
 
-            End If
+             End If
 
-645         Call ActualizarVelocidadDeUsuario(UserIndex)
+1075        Call ActualizarVelocidadDeUsuario(UserIndex)
         
-650         If .GuildIndex > 0 Then
+1080        If .GuildIndex > 0 Then
 
-                'welcome to the show baby...
-655             If Not modGuilds.m_ConectarMiembroAClan(UserIndex, .GuildIndex) Then
-660                 Call WriteConsoleMsg(UserIndex, "Tu estado no te permite entrar al clan.", FontTypeNames.FONTTYPE_GUILD)
-                End If
+                 'welcome to the show baby...
+1085            If Not modGuilds.m_ConectarMiembroAClan(UserIndex, .GuildIndex) Then
+1090                Call WriteConsoleMsg(UserIndex, "Tu estado no te permite entrar al clan.", FontTypeNames.FONTTYPE_GUILD)
+                 End If
 
-            End If
+             End If
         
-665         tStr = modGuilds.a_ObtenerRechazoDeChar(.Name)
+1095        tStr = modGuilds.a_ObtenerRechazoDeChar(.Name)
     
-670         If LenB(tStr) <> 0 Then
-675             Call WriteShowMessageBox(UserIndex, "Tu solicitud de ingreso al clan ha sido rechazada. El clan te explica que: " & tStr)
-            End If
+1100        If LenB(tStr) <> 0 Then
+1105            Call WriteShowMessageBox(UserIndex, "Tu solicitud de ingreso al clan ha sido rechazada. El clan te explica que: " & tStr)
+             End If
 
-680         If Lloviendo Then Call WriteRainToggle(UserIndex)
+1110        If Lloviendo Then Call WriteRainToggle(UserIndex)
         
-685         If ServidorNublado Then Call WriteNubesToggle(UserIndex)
+1115        If ServidorNublado Then Call WriteNubesToggle(UserIndex)
 
-690         Call WriteLoggedMessage(UserIndex)
+1120        Call WriteLoggedMessage(UserIndex)
         
-695         If .Stats.ELV = 1 Then
-700             Call WriteConsoleMsg(UserIndex, "¡Bienvenido a las tierras de AO20! ¡" & .Name & " que tengas buen viaje y mucha suerte!", FontTypeNames.FONTTYPE_GUILD)
+1125        If .Stats.ELV = 1 Then
+1130            Call WriteConsoleMsg(UserIndex, "¡Bienvenido a las tierras de AO20! ¡" & .Name & " que tengas buen viaje y mucha suerte!", FontTypeNames.FONTTYPE_GUILD)
 
-705         ElseIf .Stats.ELV < 14 Then
-710             Call WriteConsoleMsg(UserIndex, "¡Bienvenido de nuevo " & .Name & "! Actualmente estas en el nivel " & .Stats.ELV & " en " & DarNameMapa(.Pos.Map) & ", ¡buen viaje y mucha suerte!", FontTypeNames.FONTTYPE_GUILD)
+1135        ElseIf .Stats.ELV < 14 Then
+1140            Call WriteConsoleMsg(UserIndex, "¡Bienvenido de nuevo " & .Name & "! Actualmente estas en el nivel " & .Stats.ELV & " en " & DarNameMapa(.Pos.Map) & ", ¡buen viaje y mucha suerte!", FontTypeNames.FONTTYPE_GUILD)
 
-            End If
+             End If
 
-715         If Status(UserIndex) = 2 Or Status(UserIndex) = 0 Then
-720             Call WriteSafeModeOff(UserIndex)
-725             .flags.Seguro = False
+1145        If Status(UserIndex) = 2 Or Status(UserIndex) = 0 Then
+1150            Call WriteSafeModeOff(UserIndex)
+1155            .flags.Seguro = False
 
-            Else
-730             .flags.Seguro = True
-735             Call WriteSafeModeOn(UserIndex)
+             Else
+1160            .flags.Seguro = True
+1165            Call WriteSafeModeOn(UserIndex)
 
-            End If
+             End If
         
-740         If LenB(.MENSAJEINFORMACION) > 0 Then
-                Dim Lines() As String
-745                 Lines = Split(.MENSAJEINFORMACION, vbNewLine)
+1170        If LenB(.MENSAJEINFORMACION) > 0 Then
+                 Dim Lines() As String
+1175            Lines = Split(.MENSAJEINFORMACION, vbNewLine)
 
-750             For i = 0 To UBound(Lines)
+1180            For i = 0 To UBound(Lines)
 
-755                 If LenB(Lines(i)) > 0 Then
-760                     Call WriteConsoleMsg(UserIndex, Lines(i), FontTypeNames.FONTTYPE_New_DONADOR)
-                    End If
+1185                If LenB(Lines(i)) > 0 Then
+1190                    Call WriteConsoleMsg(UserIndex, Lines(i), FontTypeNames.FONTTYPE_New_DONADOR)
+                     End If
 
-                Next
+                 Next
 
-765             .MENSAJEINFORMACION = vbNullString
-            End If
+1195            .MENSAJEINFORMACION = vbNullString
+             End If
 
-770         tStr = modGuilds.a_ObtenerRechazoDeChar(.Name)
+1200        tStr = modGuilds.a_ObtenerRechazoDeChar(.Name)
         
-775         If LenB(tStr) <> 0 Then
-780             Call WriteShowMessageBox(UserIndex, "Tu solicitud de ingreso al clan ha sido rechazada. El clan te explica que: " & tStr)
-            End If
+1205        If LenB(tStr) <> 0 Then
+1210            Call WriteShowMessageBox(UserIndex, "Tu solicitud de ingreso al clan ha sido rechazada. El clan te explica que: " & tStr)
+             End If
 
-785         If EventoActivo Then
-790             Call WriteConsoleMsg(UserIndex, PublicidadEvento & ". Tiempo restante: " & TiempoRestanteEvento & " minuto(s).", FontTypeNames.FONTTYPE_New_Eventos)
-            End If
+1215        If EventoActivo Then
+1220            Call WriteConsoleMsg(UserIndex, PublicidadEvento & ". Tiempo restante: " & TiempoRestanteEvento & " minuto(s).", FontTypeNames.FONTTYPE_New_Eventos)
+             End If
         
-795         Call WriteContadores(UserIndex)
-800         Call WriteOxigeno(UserIndex)
+1225        Call WriteContadores(UserIndex)
+1230        Call WriteOxigeno(UserIndex)
     
-        End With
+         End With
 
-        Exit Function
+         Exit Function
 
 Complete_ConnectUser_Err:
-        Call TraceError(Err.Number, Err.Description, "UsUaRiOs.ConnectUser_Complete", Erl)
+1235    Call TraceError(Err.Number, Err.Description, "UsUaRiOs.ConnectUser_Complete", Erl)
 
 End Function
 
