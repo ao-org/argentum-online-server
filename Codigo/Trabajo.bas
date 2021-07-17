@@ -30,10 +30,10 @@ Attribute VB_Name = "Trabajo"
 Option Explicit
 
 
-Public Sub Trabajar(ByVal UserIndex As Integer, ByVal skill As eSkill)
+Public Sub Trabajar(ByVal UserIndex As Integer, ByVal Skill As eSkill)
     Dim DummyInt As Integer
     With UserList(UserIndex)
-    Select Case skill
+    Select Case Skill
         Case eSkill.Pescar
 288                 If .Invent.HerramientaEqpObjIndex = 0 Then Exit Sub
                     
@@ -46,7 +46,7 @@ Public Sub Trabajar(ByVal UserIndex As Integer, ByVal skill As eSkill)
                 
                         Case 1      ' Subtipo: Caña de Pescar
 
-296                         If (MapData(.Pos.Map, .trabajo.Target_X, .trabajo.Target_Y).Blocked And FLAG_AGUA) <> 0 Then
+296                         If (MapData(.Pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).Blocked And FLAG_AGUA) <> 0 Then
 298                             If (MapData(.Pos.Map, .Pos.X, .Pos.Y).Blocked And FLAG_AGUA) <> 0 Or (MapData(.Pos.Map, .Pos.X + 1, .Pos.Y).Blocked And FLAG_AGUA) <> 0 Or (MapData(.Pos.Map, .Pos.X, .Pos.Y + 1).Blocked And FLAG_AGUA) <> 0 Or (MapData(.Pos.Map, .Pos.X - 1, .Pos.Y).Blocked And FLAG_AGUA) <> 0 Or (MapData(.Pos.Map, .Pos.X, .Pos.Y - 1).Blocked And FLAG_AGUA) <> 0 Then
 
 300                                 Call DoPescar(UserIndex, False)
@@ -65,9 +65,9 @@ Public Sub Trabajar(ByVal UserIndex As Integer, ByVal skill As eSkill)
                     
 312                     Case 2      ' Subtipo: Red de Pesca
     
-314                         If (MapData(.Pos.Map, .trabajo.Target_X, .trabajo.Target_Y).Blocked And FLAG_AGUA) <> 0 Then
+314                         If (MapData(.Pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).Blocked And FLAG_AGUA) <> 0 Then
                             
-316                             If Abs(.Pos.X - .trabajo.Target_X) + Abs(.Pos.Y - .trabajo.Target_Y) > 8 Then
+316                             If Abs(.Pos.X - .Trabajo.Target_X) + Abs(.Pos.Y - .Trabajo.Target_Y) > 8 Then
 318                                 Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
                                     'Call WriteConsoleMsg(UserIndex, "Estás demasiado lejos para pescar.", FontTypeNames.FONTTYPE_INFO)
 320                                 Call WriteWorkRequestTarget(UserIndex, 0)
@@ -120,14 +120,14 @@ Public Sub Trabajar(ByVal UserIndex As Integer, ByVal skill As eSkill)
                         Case 8  ' Herramientas de Mineria - Piquete
                 
                             'Target whatever is in the tile
-462                         Call LookatTile(UserIndex, .Pos.Map, .trabajo.Target_X, .trabajo.Target_Y)
+462                         Call LookatTile(UserIndex, .Pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y)
                             
-464                         DummyInt = MapData(.Pos.Map, .trabajo.Target_X, .trabajo.Target_Y).ObjInfo.ObjIndex
+464                         DummyInt = MapData(.Pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).ObjInfo.ObjIndex
                             
 466                         If DummyInt > 0 Then
 
                                 'Check distance
-468                             If Abs(.Pos.X - .trabajo.Target_X) + Abs(.Pos.Y - .trabajo.Target_Y) > 2 Then
+468                             If Abs(.Pos.X - .Trabajo.Target_X) + Abs(.Pos.Y - .Trabajo.Target_Y) > 2 Then
 470                                 Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
                                     'Call WriteConsoleMsg(UserIndex, "Estís demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
 472                                 Call WriteWorkRequestTarget(UserIndex, 0)
@@ -147,7 +147,7 @@ Public Sub Trabajar(ByVal UserIndex As Integer, ByVal skill As eSkill)
 
                                     End If
 
-482                                 If MapData(.Pos.Map, .trabajo.Target_X, .trabajo.Target_Y).ObjInfo.amount <= 0 Then
+482                                 If MapData(.Pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).ObjInfo.amount <= 0 Then
 484                                     Call WriteConsoleMsg(UserIndex, "Este yacimiento no tiene mas minerales para entregar.", FontTypeNames.FONTTYPE_INFO)
 486                                     Call WriteWorkRequestTarget(UserIndex, 0)
 488                                     Call WriteMacroTrabajoToggle(UserIndex, False)
@@ -155,7 +155,7 @@ Public Sub Trabajar(ByVal UserIndex As Integer, ByVal skill As eSkill)
 
                                     End If
 
-490                                 Call DoMineria(UserIndex, .trabajo.Target_X, .trabajo.Target_Y, ObjData(.Invent.HerramientaEqpObjIndex).Dorada = 1)
+490                                 Call DoMineria(UserIndex, .Trabajo.Target_X, .Trabajo.Target_Y, ObjData(.Invent.HerramientaEqpObjIndex).Dorada = 1)
 
                                 Else
 492                                 Call WriteConsoleMsg(UserIndex, "Ahí no hay ningún yacimiento.", FontTypeNames.FONTTYPE_INFO)
@@ -189,10 +189,10 @@ Public Sub Trabajar(ByVal UserIndex As Integer, ByVal skill As eSkill)
                             '    Exit Sub
                             'End If
                             
-358                         DummyInt = MapData(.Pos.Map, .trabajo.Target_X, .trabajo.Target_Y).ObjInfo.ObjIndex
+358                         DummyInt = MapData(.Pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).ObjInfo.ObjIndex
                             
 360                         If DummyInt > 0 Then
-362                             If Abs(.Pos.X - .trabajo.Target_X) + Abs(.Pos.Y - .trabajo.Target_Y) > 1 Then
+362                             If Abs(.Pos.X - .Trabajo.Target_X) + Abs(.Pos.Y - .Trabajo.Target_Y) > 1 Then
 364                                 Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
                                     'Call WriteConsoleMsg(UserIndex, "Estas demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
 366                                 Call WriteWorkRequestTarget(UserIndex, 0)
@@ -200,7 +200,7 @@ Public Sub Trabajar(ByVal UserIndex As Integer, ByVal skill As eSkill)
 
                                 End If
                                 
-368                             If .Pos.X = .trabajo.Target_X And .Pos.Y = .trabajo.Target_Y Then
+368                             If .Pos.X = .Trabajo.Target_X And .Pos.Y = .Trabajo.Target_Y Then
 370                                 Call WriteConsoleMsg(UserIndex, "No podés talar desde allí.", FontTypeNames.FONTTYPE_INFO)
 372                                 Call WriteWorkRequestTarget(UserIndex, 0)
                                     Exit Sub
@@ -214,7 +214,7 @@ Public Sub Trabajar(ByVal UserIndex As Integer, ByVal skill As eSkill)
 
                                 End If
 
-380                             If MapData(.Pos.Map, .trabajo.Target_X, .trabajo.Target_Y).ObjInfo.amount <= 0 Then
+380                             If MapData(.Pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).ObjInfo.amount <= 0 Then
 382                                 Call WriteConsoleMsg(UserIndex, "El árbol ya no te puede entregar mas leña.", FontTypeNames.FONTTYPE_INFO)
 384                                 Call WriteWorkRequestTarget(UserIndex, 0)
 386                                 Call WriteMacroTrabajoToggle(UserIndex, False)
@@ -224,7 +224,7 @@ Public Sub Trabajar(ByVal UserIndex As Integer, ByVal skill As eSkill)
 
                                 '¡Hay un arbol donde clickeo?
 388                             If ObjData(DummyInt).OBJType = eOBJType.otArboles Then
-390                                 Call DoTalar(UserIndex, .trabajo.Target_X, .trabajo.Target_Y, ObjData(.Invent.HerramientaEqpObjIndex).Dorada = 1)
+390                                 Call DoTalar(UserIndex, .Trabajo.Target_X, .Trabajo.Target_Y, ObjData(.Invent.HerramientaEqpObjIndex).Dorada = 1)
 
                                 End If
 
@@ -622,7 +622,7 @@ Function QuitarObjetos(ByVal ItemIndex As Integer, ByVal cant As Integer, ByVal 
 120                     cant = 0
     
                     End If
-            
+
 122                 Call UpdateUserInv(False, UserIndex, i)
             
 124                 If cant = 0 Then
@@ -1668,7 +1668,7 @@ Public Sub DoPescar(ByVal UserIndex As Integer, Optional ByVal RedDePesca As Boo
                 ' Por cada drop posible
 136             For i = 1 To UBound(EspecialesPesca)
                     ' Tiramos al azar entre 1 y la probabilidad
-138                 res = RandomNumber(1, IIf(RedDePesca, EspecialesPesca(i).data * 2, EspecialesPesca(i).data)) ' Red de pesca chance x2 (revisar)
+138                 res = RandomNumber(1, IIf(RedDePesca, EspecialesPesca(i).Data * 2, EspecialesPesca(i).Data)) ' Red de pesca chance x2 (revisar)
             
                     ' Si tiene suerte y le pega
 140                 If res = 1 Then
@@ -2253,7 +2253,7 @@ Public Sub DoTalar(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte,
                 Dim MiObj As obj
 
 122             Call ActualizarRecurso(.Pos.Map, X, Y)
-124             MapData(.Pos.Map, X, Y).ObjInfo.data = GetTickCount() ' Ultimo uso
+124             MapData(.Pos.Map, X, Y).ObjInfo.Data = GetTickCount() ' Ultimo uso
     
 126             MiObj.amount = IIf(.clase = Trabajador, 5, RandomNumber(1, 2)) * RecoleccionMult
 
@@ -2289,7 +2289,7 @@ Public Sub DoTalar(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte,
                 ' Por cada drop posible
 148             For i = 1 To UBound(EspecialesTala)
                     ' Tiramos al azar entre 1 y la probabilidad
-150                 res = RandomNumber(1, EspecialesTala(i).data)
+150                 res = RandomNumber(1, EspecialesTala(i).Data)
 
                     ' Si tiene suerte y le pega
 152                 If res = 1 Then
@@ -2367,7 +2367,7 @@ Public Sub DoMineria(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byt
                 Dim nPos  As WorldPos
             
 122             Call ActualizarRecurso(.Pos.Map, X, Y)
-124             MapData(.Pos.Map, X, Y).ObjInfo.data = GetTickCount() ' Ultimo uso
+124             MapData(.Pos.Map, X, Y).ObjInfo.Data = GetTickCount() ' Ultimo uso
 
 126             Yacimiento = ObjData(MapData(.Pos.Map, X, Y).ObjInfo.ObjIndex)
             
@@ -2595,9 +2595,9 @@ Public Sub ActualizarRecurso(ByVal Map As Integer, ByVal X As Integer, ByVal Y A
 102     TiempoActual = GetTickCount()
 
         ' Data = Ultimo uso
-104     If (TiempoActual - MapData(Map, X, Y).ObjInfo.data) * 0.001 > ObjData(ObjIndex).TiempoRegenerar Then
+104     If (TiempoActual - MapData(Map, X, Y).ObjInfo.Data) * 0.001 > ObjData(ObjIndex).TiempoRegenerar Then
 106         MapData(Map, X, Y).ObjInfo.amount = ObjData(ObjIndex).VidaUtil
-108         MapData(Map, X, Y).ObjInfo.data = &H7FFFFFFF   ' Ultimo uso = Max Long
+108         MapData(Map, X, Y).ObjInfo.Data = &H7FFFFFFF   ' Ultimo uso = Max Long
 
         End If
 
@@ -2754,12 +2754,15 @@ Sub DoDomar(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
                     Dim Index As Integer
 
 124                 .NroMascotas = .NroMascotas + 1
+
 126                 Index = FreeMascotaIndex(UserIndex)
 128                 .MascotasIndex(Index) = NpcIndex
 130                 .MascotasType(Index) = NpcList(NpcIndex).Numero
 
 132                 NpcList(NpcIndex).MaestroUser = UserIndex
-
+                    
+                    .flags.ModificoMascotas = True
+                    
 134                 Call FollowAmo(NpcIndex)
 136                 Call ReSpawnNpc(NpcList(NpcIndex))
 
