@@ -952,7 +952,7 @@ On Error GoTo Handler
                     
                     UserGuardados = UserGuardados + 1
                     
-                    If UserGuardados >= LimiteGuardarUsuarios Then Exit For
+                    If UserGuardados > NumUsers / IntervaloGuardarUsuarios * IntervaloTimerGuardarUsuarios Then Exit For
     
                 End If
     
