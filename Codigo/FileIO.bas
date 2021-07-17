@@ -1513,25 +1513,35 @@ Sub LoadOBJData()
 372                 Case eOBJType.OtCofre
 374                     .CantItem = val(Leer.GetValue(ObjKey, "CantItem"))
 
-376                     If .Subtipo = 1 Then
-378                         ReDim .Item(1 To .CantItem)
-                
-380                         For i = 1 To .CantItem
-382                             .Item(i).ObjIndex = val(Leer.GetValue(ObjKey, "Item" & i))
-384                             .Item(i).amount = val(Leer.GetValue(ObjKey, "Cantidad" & i))
-386                         Next i
+376                     Select Case .Subtipo
+                            Case 1
+378                             ReDim .Item(1 To .CantItem)
+                    
+380                             For i = 1 To .CantItem
+382                                 .Item(i).ObjIndex = val(Leer.GetValue(ObjKey, "Item" & i))
+384                                 .Item(i).amount = val(Leer.GetValue(ObjKey, "Cantidad" & i))
+386                             Next i
 
-                        Else
-388                         ReDim .Item(1 To .CantItem)
-                
-390                         .CantEntrega = val(Leer.GetValue(ObjKey, "CantEntrega"))
+                            Case 2
+388                             ReDim .Item(1 To .CantItem)
+                    
+390                             .CantEntrega = val(Leer.GetValue(ObjKey, "CantEntrega"))
+    
+392                             For i = 1 To .CantItem
+394                                 .Item(i).ObjIndex = val(Leer.GetValue(ObjKey, "Item" & i))
+396                                 .Item(i).amount = val(Leer.GetValue(ObjKey, "Cantidad" & i))
+398                             Next i
 
-392                         For i = 1 To .CantItem
-394                             .Item(i).ObjIndex = val(Leer.GetValue(ObjKey, "Item" & i))
-396                             .Item(i).amount = val(Leer.GetValue(ObjKey, "Cantidad" & i))
-398                         Next i
+                            Case 3
+                                ReDim .Item(1 To .CantItem)
+    
+                                For i = 1 To .CantItem
+                                    .Item(i).ObjIndex = val(Leer.GetValue(ObjKey, "Item" & i))
+                                    .Item(i).amount = val(Leer.GetValue(ObjKey, "Cantidad" & i))
+                                    .Item(i).Data = val(Leer.GetValue(ObjKey, "Drop" & i)) / 100#
+                                Next i
 
-                        End If
+                        End Select
             
 400                 Case eOBJType.otYacimiento
 402                     .MineralIndex = val(Leer.GetValue(ObjKey, "MineralIndex"))
