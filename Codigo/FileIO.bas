@@ -1538,7 +1538,7 @@ Sub LoadOBJData()
                                 For i = 1 To .CantItem
                                     .Item(i).ObjIndex = val(Leer.GetValue(ObjKey, "Item" & i))
                                     .Item(i).amount = val(Leer.GetValue(ObjKey, "Cantidad" & i))
-                                    .Item(i).Data = val(Leer.GetValue(ObjKey, "Drop" & i)) / 100#
+                                    .Item(i).Data = 101 - val(Leer.GetValue(ObjKey, "Drop" & i))
                                 Next i
 
                         End Select
