@@ -237,6 +237,8 @@ Sub UserReciveObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, ByVal C
             'Menor que MAX_INV_OBJS
 148         UserList(UserIndex).Invent.Object(Slot).ObjIndex = obji
 150         UserList(UserIndex).Invent.Object(Slot).amount = UserList(UserIndex).Invent.Object(Slot).amount + Cantidad
+
+            UserList(UserIndex).flags.ModificoInventario = True
     
 152         Call QuitarBancoInvItem(UserIndex, CByte(ObjIndex), Cantidad)
         Else

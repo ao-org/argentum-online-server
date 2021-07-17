@@ -1016,8 +1016,6 @@ Sub Desequipar(ByVal UserIndex As Integer, ByVal Slot As Byte)
         
         End Select
         
-        UserList(UserIndex).flags.ModificoInventario = True
-        
 350     Call UpdateUserInv(False, UserIndex, Slot)
 
         
@@ -1683,8 +1681,6 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
 
             End Select
             
-            .flags.ModificoInventario = True
-            
         End With
 
         'Actualiza
@@ -1841,12 +1837,12 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
                         Exit Sub
     
                     End If
-            
+
 166                 .Stats.GLD = .Stats.GLD + .Invent.Object(Slot).amount
 168                 .Invent.Object(Slot).amount = 0
 170                 .Invent.Object(Slot).ObjIndex = 0
 172                 .Invent.NroItems = .Invent.NroItems - 1
-            
+
 174                 Call UpdateUserInv(False, UserIndex, Slot)
 176                 Call WriteUpdateGold(UserIndex)
             
