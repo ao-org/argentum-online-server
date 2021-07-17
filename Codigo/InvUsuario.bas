@@ -675,6 +675,7 @@ Function MeterItemEnInventario(ByVal UserIndex As Integer, ByRef MiObj As obj) A
 132     Call UpdateUserInv(False, UserIndex, Slot)
 
 134     MeterItemEnInventario = True
+        UserList(UserIndex).flags.ModificoInventario = True
 
         Exit Function
 ErrHandler:
