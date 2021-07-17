@@ -35,6 +35,708 @@ Option Explicit
 'Rutinas de los usuarios
 '?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
 
+Public Function ConnectUser_Check(ByVal UserIndex As Integer, _
+                                  ByRef Name As String, _
+                                  ByRef UserCuenta As String) As Boolean
+                           
+    On Error GoTo Check_ConnectUser_Err
+
+    With UserList(UserIndex)
+        
+        ConnectUser_Check = False
+        
+        If .flags.UserLogged Then
+            Call LogCheating("El usuario " & .Name & " ha intentado loguear a " & Name & " desde la IP " & .IP)
+            
+            'Kick player ( and leave character inside :D )!
+            Call CloseSocketSL(UserIndex)
+            Call Cerrar_Usuario(UserIndex)
+            
+            Exit Function
+
+        End If
+            
+        '¿Ya esta conectado el personaje?
+        Dim tIndex As Integer: tIndex = NameIndex(Name)
+
+        If tIndex > 0 And tIndex <> UserIndex Then
+
+            If UserList(tIndex).Counters.Saliendo Then
+
+                Call WriteShowMessageBox(UserIndex, "El personaje está saliendo.")
+
+            Else
+                
+                Call WriteShowMessageBox(UserIndex, "El personaje ya está conectado. Espere mientras es desconectado.")
+
+                ' Le avisamos al usuario que está jugando, en caso de que haya uno
+                Call WriteShowMessageBox(tIndex, "Alguien está ingresando con tu personaje. Si no has sido tú, por favor cambia la contraseña de tu cuenta.")
+                Call Cerrar_Usuario(tIndex)
+
+            End If
+
+            Call CloseSocket(UserIndex)
+            Exit Function
+
+        End If
+        
+        '¿Supera el máximo de usuarios por cuenta?
+        If MaxUsersPorCuenta > 0 Then
+
+            If ContarUsuariosMismaCuenta(.AccountID) >= MaxUsersPorCuenta Then
+
+                If MaxUsersPorCuenta = 1 Then
+                    Call WriteShowMessageBox(UserIndex, "Ya hay un usuario conectado con esta cuenta.")
+                Else
+                    Call WriteShowMessageBox(UserIndex, "La cuenta ya alcanzó el máximo de " & MaxUsersPorCuenta & " usuarios conectados.")
+
+                End If
+
+                Call CloseSocket(UserIndex)
+                Exit Function
+
+            End If
+
+        End If
+        
+        'Controlamos no pasar el maximo de usuarios
+        If NumUsers >= MaxUsers Then
+            Call WriteShowMessageBox(UserIndex, "El servidor ha alcanzado el maximo de usuarios soportado, por favor vuelva a intertarlo mas tarde.")
+            Call CloseSocket(UserIndex)
+            Exit Function
+
+        End If
+        
+        '¿Este IP ya esta conectado?
+        If MaxConexionesIP > 0 Then
+
+            If ContarMismaIP(UserIndex, .IP) >= MaxConexionesIP Then
+                Call WriteShowMessageBox(UserIndex, "Has alcanzado el límite de conexiones por IP.")
+                Call CloseSocket(UserIndex)
+                Exit Function
+
+            End If
+
+        End If
+        
+        'Le damos los privilegios
+        .flags.Privilegios = UserDarPrivilegioLevel(Name)
+
+        'Add RM flag if needed
+        If EsRolesMaster(Name) Then
+            .flags.Privilegios = .flags.Privilegios Or PlayerType.RoleMaster
+        End If
+        
+        If EsGM(UserIndex) Then
+
+            Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » " & Name & " se conecto al juego.", FontTypeNames.FONTTYPE_INFOBOLD))
+            Call LogGM(.Name, "Se conectó con IP: " & .IP)
+
+        Else
+
+            If ServerSoloGMs > 0 Then
+                Call WriteShowMessageBox(UserIndex, "Servidor restringido a administradores. Por favor reintente en unos momentos.")
+                Call CloseSocket(UserIndex)
+                Exit Function
+
+            End If
+
+        End If
+        
+        If EnPausa Then
+
+            Call WritePauseToggle(UserIndex)
+            Call WriteConsoleMsg(UserIndex, "Servidor » Lo sentimos mucho pero el servidor se encuentra actualmente detenido. Intenta ingresar más tarde.", FontTypeNames.FONTTYPE_SERVER)
+            Call CloseSocket(UserIndex)
+            Exit Function
+
+        End If
+        
+        If UCase$(.Cuenta) <> UCase$(UserCuenta) Then
+            Call WriteShowMessageBox(UserIndex, "El personaje no corresponde a su cuenta.")
+            Call CloseSocket(UserIndex)
+            Exit Function
+
+        End If
+    
+    End With
+    
+    ConnectUser_Check = True
+
+    Exit Function
+
+Check_ConnectUser_Err:
+    Call TraceError(Err.Number, Err.Description, "UsUaRiOs.ConnectUser_Check", Erl)
+        
+End Function
+
+Public Sub ConnectUser_Prepare(ByVal UserIndex As Integer, ByRef Name As String, ByRef UserCuenta As String)
+
+        On Error GoTo Prepare_ConnectUser_Err
+
+100     With UserList(UserIndex)
+    
+            'Reseteamos los FLAGS
+105         .flags.Escondido = 0
+110         .flags.TargetNPC = 0
+115         .flags.TargetNpcTipo = eNPCType.Comun
+120         .flags.TargetObj = 0
+125         .flags.TargetUser = 0
+130         .Char.FX = 0
+135         .Counters.CuentaRegresiva = -1
+
+            'Donador
+140         If DonadorCheck(UserCuenta) Then
+
+                Dim LoopC As Integer
+145             For LoopC = 1 To Donadores.Count
+
+150                 If UCase$(Donadores(LoopC).Name) = UCase$(UserCuenta) Then
+155                     .donador.activo = 1
+160                     .donador.FechaExpiracion = Donadores(LoopC).FechaExpiracion
+                        Exit For
+                    End If
+
+165             Next LoopC
+
+            End If
+        
+            ' Seteamos el nombre
+170         .Name = Name
+        
+            ' Vinculamos el nombre con el UserIndex
+175         m_NameIndex(UCase$(Name)) = UserIndex
+
+180         .showName = True
+    
+        End With
+    
+        Exit Sub
+
+Prepare_ConnectUser_Err:
+        Call TraceError(Err.Number, Err.Description, "UsUaRiOs.ConnectUser_Prepare", Erl)
+
+End Sub
+
+Public Function ConnectUser_Complete(ByVal UserIndex As Integer, _
+                                     ByRef Name As String, _
+                                     ByRef UserCuenta As String)
+
+        On Error GoTo Complete_ConnectUser_Err
+        
+        Dim n    As Integer
+        Dim tStr As String
+        
+100     With UserList(UserIndex)
+            
+            ' -----------------------------------------------------------------------
+            '   INFORMACION INICIAL DEL PERSONAJE
+            ' -----------------------------------------------------------------------
+
+105         If .flags.Paralizado = 1 Then
+110             .Counters.Paralisis = IntervaloParalizado
+            End If
+
+115         If .flags.Muerto = 0 Then
+120             .Char = .OrigChar
+            
+125             If .Char.Body = 0 Then
+130                 Call DarCuerpoDesnudo(UserIndex)
+                End If
+            
+135             If .Char.Head = 0 Then
+140                 .Char.Head = 1
+                End If
+            Else
+145             .Char.Body = iCuerpoMuerto
+150             .Char.Head = iCabezaMuerto
+155             .Char.WeaponAnim = NingunArma
+160             .Char.ShieldAnim = NingunEscudo
+165             .Char.CascoAnim = NingunCasco
+170             .Char.Heading = eHeading.SOUTH
+            End If
+        
+            'Obtiene el indice-objeto del arma
+175         If .Invent.WeaponEqpSlot > 0 Then
+180             If .Invent.Object(.Invent.WeaponEqpSlot).ObjIndex > 0 Then
+185                 .Invent.WeaponEqpObjIndex = .Invent.Object(.Invent.WeaponEqpSlot).ObjIndex
+
+190                 If .flags.Muerto = 0 Then
+195                     .Char.Arma_Aura = ObjData(.Invent.WeaponEqpObjIndex).CreaGRH
+                    End If
+                Else
+200                 .Invent.WeaponEqpSlot = 0
+                End If
+            End If
+
+            'Obtiene el indice-objeto del armadura
+205         If .Invent.ArmourEqpSlot > 0 Then
+210             If .Invent.Object(.Invent.ArmourEqpSlot).ObjIndex > 0 Then
+215                 .Invent.ArmourEqpObjIndex = .Invent.Object(.Invent.ArmourEqpSlot).ObjIndex
+
+220                 If .flags.Muerto = 0 Then
+225                     .Char.Body_Aura = ObjData(.Invent.ArmourEqpObjIndex).CreaGRH
+                    End If
+                Else
+230                 .Invent.ArmourEqpSlot = 0
+                End If
+235             .flags.Desnudo = 0
+            Else
+240             .flags.Desnudo = 1
+            End If
+
+            'Obtiene el indice-objeto del escudo
+245         If .Invent.EscudoEqpSlot > 0 Then
+250             If .Invent.Object(.Invent.EscudoEqpSlot).ObjIndex > 0 Then
+255                 .Invent.EscudoEqpObjIndex = .Invent.Object(.Invent.EscudoEqpSlot).ObjIndex
+
+260                 If .flags.Muerto = 0 Then
+265                     .Char.Escudo_Aura = ObjData(.Invent.EscudoEqpObjIndex).CreaGRH
+                    End If
+                Else
+270                 .Invent.EscudoEqpSlot = 0
+                End If
+            End If
+        
+            'Obtiene el indice-objeto del casco
+275         If .Invent.CascoEqpSlot > 0 Then
+280             If .Invent.Object(.Invent.CascoEqpSlot).ObjIndex > 0 Then
+285                 .Invent.CascoEqpObjIndex = .Invent.Object(.Invent.CascoEqpSlot).ObjIndex
+
+290                 If .flags.Muerto = 0 Then
+295                     .Char.Head_Aura = ObjData(.Invent.CascoEqpObjIndex).CreaGRH
+                    End If
+                Else
+300                 .Invent.CascoEqpSlot = 0
+                End If
+            End If
+
+            'Obtiene el indice-objeto barco
+305         If .Invent.BarcoSlot > 0 Then
+310             If .Invent.Object(.Invent.BarcoSlot).ObjIndex > 0 Then
+315                 .Invent.BarcoObjIndex = .Invent.Object(.Invent.BarcoSlot).ObjIndex
+                Else
+320                 .Invent.BarcoSlot = 0
+                End If
+            End If
+
+            'Obtiene el indice-objeto municion
+325         If .Invent.MunicionEqpSlot > 0 Then
+330             If .Invent.Object(.Invent.MunicionEqpSlot).ObjIndex > 0 Then
+335                 .Invent.MunicionEqpObjIndex = .Invent.Object(.Invent.MunicionEqpSlot).ObjIndex
+                Else
+340                 .Invent.MunicionEqpSlot = 0
+                End If
+            End If
+
+            ' DM
+345         If .Invent.DañoMagicoEqpSlot > 0 Then
+350             If .Invent.Object(.Invent.DañoMagicoEqpSlot).ObjIndex > 0 Then
+355                 .Invent.DañoMagicoEqpObjIndex = .Invent.Object(.Invent.DañoMagicoEqpSlot).ObjIndex
+
+360                 If .flags.Muerto = 0 Then
+365                     .Char.DM_Aura = ObjData(.Invent.DañoMagicoEqpObjIndex).CreaGRH
+                    End If
+                Else
+370                 .Invent.DañoMagicoEqpSlot = 0
+                End If
+            End If
+            
+            ' RM
+375         If .Invent.ResistenciaEqpSlot > 0 Then
+380             If .Invent.Object(.Invent.ResistenciaEqpSlot).ObjIndex > 0 Then
+385                 .Invent.ResistenciaEqpObjIndex = .Invent.Object(.Invent.ResistenciaEqpSlot).ObjIndex
+
+390                 If .flags.Muerto = 0 Then
+395                     .Char.RM_Aura = ObjData(.Invent.ResistenciaEqpObjIndex).CreaGRH
+                    End If
+                Else
+400                 .Invent.ResistenciaEqpSlot = 0
+                End If
+            End If
+
+405         If .Invent.MonturaSlot > 0 Then
+410             If .Invent.Object(.Invent.MonturaSlot).ObjIndex > 0 Then
+415                 .Invent.MonturaObjIndex = .Invent.Object(.Invent.MonturaSlot).ObjIndex
+                Else
+420                 .Invent.MonturaSlot = 0
+                End If
+            End If
+        
+425         If .Invent.HerramientaEqpSlot > 0 Then
+430             If .Invent.Object(.Invent.HerramientaEqpSlot).ObjIndex Then
+435                 .Invent.HerramientaEqpObjIndex = .Invent.Object(.Invent.HerramientaEqpSlot).ObjIndex
+                Else
+440                 .Invent.HerramientaEqpSlot = 0
+                End If
+            End If
+        
+445         If .Invent.NudilloSlot > 0 Then
+450             If .Invent.Object(.Invent.NudilloSlot).ObjIndex > 0 Then
+455                 .Invent.NudilloObjIndex = .Invent.Object(.Invent.NudilloSlot).ObjIndex
+
+460                 If .flags.Muerto = 0 Then
+465                     .Char.Arma_Aura = ObjData(.Invent.NudilloObjIndex).CreaGRH
+                    End If
+                Else
+470                 .Invent.NudilloSlot = 0
+                End If
+            End If
+        
+475         If .Invent.MagicoSlot > 0 Then
+480             If .Invent.Object(.Invent.MagicoSlot).ObjIndex Then
+485                 .Invent.MagicoObjIndex = .Invent.Object(.Invent.MagicoSlot).ObjIndex
+
+490                 If .flags.Muerto = 0 Then
+495                     .Char.Otra_Aura = ObjData(.Invent.MagicoObjIndex).CreaGRH
+                    End If
+                Else
+500                 .Invent.MagicoSlot = 0
+                End If
+            End If
+            
+505         If .Invent.EscudoEqpSlot = 0 Then .Char.ShieldAnim = NingunEscudo
+510         If .Invent.CascoEqpSlot = 0 Then .Char.CascoAnim = NingunCasco
+515         If .Invent.WeaponEqpSlot = 0 And .Invent.NudilloSlot = 0 And .Invent.HerramientaEqpSlot = 0 Then .Char.WeaponAnim = NingunArma
+            ' -----------------------------------------------------------------------
+            '   FIN - INFORMACION INICIAL DEL PERSONAJE
+            ' -----------------------------------------------------------------------
+            
+520         If Not ValidateChr(UserIndex) Then
+525             Call WriteShowMessageBox(UserIndex, "Error en el personaje. Comuniquese con el staff.")
+530             Call CloseSocket(UserIndex)
+                Exit Function
+
+            End If
+            
+535         .flags.SeguroParty = True
+540         .flags.SeguroClan = True
+545         .flags.SeguroResu = True
+        
+550         .CurrentInventorySlots = getMaxInventorySlots(UserIndex)
+        
+555         Call WriteInventoryUnlockSlots(UserIndex)
+        
+560         Call LoadUserIntervals(UserIndex)
+565         Call WriteIntervals(UserIndex)
+        
+570         Call UpdateUserInv(True, UserIndex, 0)
+575         Call UpdateUserHechizos(True, UserIndex, 0)
+        
+580         Call EnviarLlaves(UserIndex)
+
+585         If .Correo.NoLeidos > 0 Then Call WriteCorreoPicOn(UserIndex)
+
+590         If .flags.Paralizado Then Call WriteParalizeOK(UserIndex)
+        
+595         If .flags.Inmovilizado Then Call WriteInmovilizaOK(UserIndex)
+
+            ''
+            'TODO : Feo, esto tiene que ser parche cliente
+600         If .flags.Estupidez = 0 Then
+605             Call WriteDumbNoMore(UserIndex)
+            End If
+        
+            'Ladder Inmunidad
+610         .flags.Inmunidad = 1
+615         .Counters.TiempoDeInmunidad = IntervaloPuedeSerAtacado
+            'Ladder Inmunidad
+        
+            'Mapa válido
+620         If Not MapaValido(.Pos.Map) Then
+625             Call WriteErrorMsg(UserIndex, "EL PJ se encuenta en un mapa invalido.")
+630             Call CloseSocket(UserIndex)
+                Exit Function
+
+            End If
+        
+            'Tratamos de evitar en lo posible el "Telefrag". Solo 1 intento de loguear en pos adjacentes.
+            'Codigo por Pablo (ToxicWaste) y revisado por Nacho (Integer), corregido para que realmetne ande y no tire el server por Juan Martin Sotuyo Dodero (Maraxus)
+635         If MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex <> 0 Or MapData(.Pos.Map, .Pos.X, .Pos.Y).NpcIndex <> 0 Then
+
+                Dim FoundPlace As Boolean
+                Dim esAgua     As Boolean
+                Dim tX         As Long
+                Dim tY         As Long
+        
+640             FoundPlace = False
+645             esAgua = (MapData(.Pos.Map, .Pos.X, .Pos.Y).Blocked And FLAG_AGUA) <> 0
+
+650             For tY = .Pos.Y - 1 To .Pos.Y + 1
+655                 For tX = .Pos.X - 1 To .Pos.X + 1
+
+660                     If esAgua Then
+
+                            'reviso que sea pos legal en agua, que no haya User ni NPC para poder loguear.
+665                         If LegalPos(.Pos.Map, tX, tY, True, False) Then
+670                             FoundPlace = True
+                                Exit For
+
+                            End If
+
+                        Else
+
+                            'reviso que sea pos legal en tierra, que no haya User ni NPC para poder loguear.
+675                         If LegalPos(.Pos.Map, tX, tY, False, True) Then
+680                             FoundPlace = True
+                                Exit For
+
+                            End If
+
+                        End If
+
+685                 Next tX
+            
+690                 If FoundPlace Then Exit For
+695             Next tY
+        
+700             If FoundPlace Then 'Si encontramos un lugar, listo, nos quedamos ahi
+
+705                 .Pos.X = tX
+710                 .Pos.Y = tY
+
+                Else
+
+                    'Si no encontramos un lugar, sacamos al usuario que tenemos abajo, y si es un NPC, lo pisamos.
+715                 If MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex <> 0 Then
+
+                        'Si no encontramos lugar, y abajo teniamos a un usuario, lo pisamos y cerramos su comercio seguro
+720                     If UserList(MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex).ComUsu.DestUsu > 0 Then
+
+                            'Le avisamos al que estaba comerciando que se tuvo que ir.
+725                         If UserList(UserList(MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex).ComUsu.DestUsu).flags.UserLogged Then
+730                             Call FinComerciarUsu(UserList(MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex).ComUsu.DestUsu)
+735                             Call WriteConsoleMsg(UserList(MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex).ComUsu.DestUsu, "Comercio cancelado. El otro usuario se ha desconectado.", FontTypeNames.FONTTYPE_WARNING)
+
+                            End If
+
+                            'Lo sacamos.
+740                         If UserList(MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex).flags.UserLogged Then
+745                             Call FinComerciarUsu(MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex)
+750                             Call WriteErrorMsg(MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex, "Alguien se ha conectado donde te encontrabas, por favor reconectate...")
+
+                            End If
+
+                        End If
+                
+755                     Call CloseSocket(MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex)
+
+                    End If
+
+                End If
+
+            End If
+        
+            'If in the water, and has a boat, equip it!
+760         If .Invent.BarcoObjIndex > 0 And (MapData(.Pos.Map, .Pos.X, .Pos.Y).Blocked And FLAG_AGUA) <> 0 Then
+765             .flags.Navegando = 1
+770             Call EquiparBarco(UserIndex)
+
+            End If
+            
+775         If .Invent.MagicoObjIndex <> 0 Then
+780             If ObjData(.Invent.MagicoObjIndex).EfectoMagico = 11 Then .flags.Paraliza = 1
+            End If
+
+785         Call WriteUserIndexInServer(UserIndex) 'Enviamos el User index
+790         .flags.NecesitaOxigeno = RequiereOxigeno(.Pos.Map)
+        
+795         Call WriteHora(UserIndex)
+800         Call WriteChangeMap(UserIndex, .Pos.Map) 'Carga el mapa
+            
+805         Select Case .flags.Privilegios
+            
+                Case PlayerType.Admin
+810                 .flags.ChatColor = RGB(217, 164, 32)
+                
+815             Case PlayerType.Dios
+820                 .flags.ChatColor = RGB(217, 164, 32)
+                    
+825             Case PlayerType.SemiDios
+830                 .flags.ChatColor = RGB(2, 161, 38)
+                    
+835             Case PlayerType.Consejero
+840                 .flags.ChatColor = RGB(2, 161, 38)
+                
+845             Case Else
+850                 .flags.ChatColor = vbWhite
+                
+            End Select
+            
+            ' Jopi: Te saco de los mapas de retos (si logueas ahi) 324 372 389 390
+855         If Not EsGM(UserIndex) And (.Pos.Map = 324 Or .Pos.Map = 372 Or .Pos.Map = 389 Or .Pos.Map = 390) Then
+                
+                ' Si tiene una posicion a la que volver, lo mando ahi
+860             If MapaValido(.flags.ReturnPos.Map) And .flags.ReturnPos.X > 0 And .flags.ReturnPos.X <= XMaxMapSize And .flags.ReturnPos.Y > 0 And .flags.ReturnPos.Y <= YMaxMapSize Then
+                    
+865                 Call WarpToLegalPos(UserIndex, .flags.ReturnPos.Map, .flags.ReturnPos.X, .flags.ReturnPos.Y, True)
+                
+                Else ' Lo mando a su hogar
+                    
+870                 Call WarpToLegalPos(UserIndex, Ciudades(.Hogar).Map, Ciudades(.Hogar).X, Ciudades(.Hogar).Y, True)
+                    
+                End If
+                
+            End If
+            
+            ''[EL OSO]: TRAIGO ESTO ACA ARRIBA PARA DARLE EL IP!
+            #If ConUpTime Then
+875             .LogOnTime = Now
+            #End If
+        
+            'Crea  el personaje del usuario
+880         Call MakeUserChar(True, .Pos.Map, UserIndex, .Pos.Map, .Pos.X, .Pos.Y, 1)
+
+885         Call WriteUserCharIndexInServer(UserIndex)
+890         Call ActualizarVelocidadDeUsuario(UserIndex)
+        
+895         If EsGM(UserIndex) Then Call DoAdminInvisible(UserIndex)
+900         Call WriteUpdateUserStats(UserIndex)
+905         Call WriteUpdateHungerAndThirst(UserIndex)
+910         Call WriteUpdateDM(UserIndex)
+915         Call WriteUpdateRM(UserIndex)
+        
+920         Call SendMOTD(UserIndex)
+925         Call SetUserLogged(UserIndex)
+        
+            'Actualiza el Num de usuarios
+930         NumUsers = NumUsers + 1
+935         .flags.UserLogged = True
+940         .Counters.LastSave = GetTickCount
+        
+945         MapInfo(.Pos.Map).NumUsers = MapInfo(.Pos.Map).NumUsers + 1
+        
+950         If .Stats.SkillPts > 0 Then
+955             Call WriteSendSkills(UserIndex)
+960             Call WriteLevelUp(UserIndex, .Stats.SkillPts)
+
+            End If
+        
+965         If NumUsers > DayStats.MaxUsuarios Then DayStats.MaxUsuarios = NumUsers
+        
+970         If NumUsers > RecordUsuarios Then
+975             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Record de usuarios conectados simultáneamente: " & NumUsers & " usuarios.", FontTypeNames.FONTTYPE_INFO))
+980             RecordUsuarios = NumUsers
+985             Call SetRecordUsersDatabase(RecordUsuarios)
+
+            End If
+
+990         Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageOnlineUser(NumUsers))
+
+995         Call WriteFYA(UserIndex)
+1000         Call WriteBindKeys(UserIndex)
+        
+1005         If .NroMascotas > 0 And MapInfo(.Pos.Map).Seguro = 0 And .flags.MascotasGuardadas = 0 Then
+                 Dim i As Integer
+
+1010             For i = 1 To MAXMASCOTAS
+
+1015                If .MascotasType(i) > 0 Then
+1020                    .MascotasIndex(i) = SpawnNpc(.MascotasType(i), .Pos, False, False, False, UserIndex)
+                    
+1025                    If .MascotasIndex(i) > 0 Then
+1030                        NpcList(.MascotasIndex(i)).MaestroUser = UserIndex
+1035                        Call FollowAmo(.MascotasIndex(i))
+                        
+                         Else
+1040                        .MascotasIndex(i) = 0
+
+                         End If
+                     End If
+
+1045            Next i
+
+             End If
+        
+1050        If .flags.Navegando = 1 Then
+1055            Call WriteNavigateToggle(UserIndex)
+1060            Call EquiparBarco(UserIndex)
+
+             End If
+        
+1065        If .flags.Montado = 1 Then
+1070            Call WriteEquiteToggle(UserIndex)
+
+             End If
+
+1075        Call ActualizarVelocidadDeUsuario(UserIndex)
+        
+1080        If .GuildIndex > 0 Then
+
+                 'welcome to the show baby...
+1085            If Not modGuilds.m_ConectarMiembroAClan(UserIndex, .GuildIndex) Then
+1090                Call WriteConsoleMsg(UserIndex, "Tu estado no te permite entrar al clan.", FontTypeNames.FONTTYPE_GUILD)
+                 End If
+
+             End If
+        
+1095        tStr = modGuilds.a_ObtenerRechazoDeChar(.Name)
+    
+1100        If LenB(tStr) <> 0 Then
+1105            Call WriteShowMessageBox(UserIndex, "Tu solicitud de ingreso al clan ha sido rechazada. El clan te explica que: " & tStr)
+             End If
+
+1110        If Lloviendo Then Call WriteRainToggle(UserIndex)
+        
+1115        If ServidorNublado Then Call WriteNubesToggle(UserIndex)
+
+1120        Call WriteLoggedMessage(UserIndex)
+        
+1125        If .Stats.ELV = 1 Then
+1130            Call WriteConsoleMsg(UserIndex, "¡Bienvenido a las tierras de AO20! ¡" & .Name & " que tengas buen viaje y mucha suerte!", FontTypeNames.FONTTYPE_GUILD)
+
+1135        ElseIf .Stats.ELV < 14 Then
+1140            Call WriteConsoleMsg(UserIndex, "¡Bienvenido de nuevo " & .Name & "! Actualmente estas en el nivel " & .Stats.ELV & " en " & DarNameMapa(.Pos.Map) & ", ¡buen viaje y mucha suerte!", FontTypeNames.FONTTYPE_GUILD)
+
+             End If
+
+1145        If Status(UserIndex) = 2 Or Status(UserIndex) = 0 Then
+1150            Call WriteSafeModeOff(UserIndex)
+1155            .flags.Seguro = False
+
+             Else
+1160            .flags.Seguro = True
+1165            Call WriteSafeModeOn(UserIndex)
+
+             End If
+        
+1170        If LenB(.MENSAJEINFORMACION) > 0 Then
+                 Dim Lines() As String
+1175            Lines = Split(.MENSAJEINFORMACION, vbNewLine)
+
+1180            For i = 0 To UBound(Lines)
+
+1185                If LenB(Lines(i)) > 0 Then
+1190                    Call WriteConsoleMsg(UserIndex, Lines(i), FontTypeNames.FONTTYPE_New_DONADOR)
+                     End If
+
+                 Next
+
+1195            .MENSAJEINFORMACION = vbNullString
+             End If
+
+1200        tStr = modGuilds.a_ObtenerRechazoDeChar(.Name)
+        
+1205        If LenB(tStr) <> 0 Then
+1210            Call WriteShowMessageBox(UserIndex, "Tu solicitud de ingreso al clan ha sido rechazada. El clan te explica que: " & tStr)
+             End If
+
+1215        If EventoActivo Then
+1220            Call WriteConsoleMsg(UserIndex, PublicidadEvento & ". Tiempo restante: " & TiempoRestanteEvento & " minuto(s).", FontTypeNames.FONTTYPE_New_Eventos)
+             End If
+        
+1225        Call WriteContadores(UserIndex)
+1230        Call WriteOxigeno(UserIndex)
+    
+         End With
+
+         Exit Function
+
+Complete_ConnectUser_Err:
+1235    Call TraceError(Err.Number, Err.Description, "UsUaRiOs.ConnectUser_Complete", Erl)
+
+End Function
+
 Sub ActStats(ByVal VictimIndex As Integer, ByVal AttackerIndex As Integer)
         
         On Error GoTo ActStats_Err
