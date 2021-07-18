@@ -3,10 +3,9 @@ Código fuente de el servidor de Argentum20, basado en RevolucionAO de Ladder
 
 # Requisitos
 
-ODBC DRIVERS
+- ODBC DRIVERS
 https://dev.mysql.com/get/Downloads/Connector-ODBC/8.0/mysql-connector-odbc-8.0.22-win32.msi
 
-Actualizar el archivo Server.ini.produccion con el md5 del cliente. Se obtiene de aqui https://parches.ao20.com.ar/files/Version.json
 
 #Development
 Website:
