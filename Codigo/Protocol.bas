@@ -2762,7 +2762,7 @@ Private Sub HandleUseItem(ByVal UserIndex As Integer)
 106             If .Invent.Object(Slot).ObjIndex = 0 Then Exit Sub
 
 108             Call UseInvItem(UserIndex, Slot)
-
+                
             End If
 
         End With

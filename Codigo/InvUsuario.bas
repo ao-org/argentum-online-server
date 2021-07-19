@@ -1829,7 +1829,9 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
 156                 Call QuitarUserInvItem(UserIndex, Slot, 1)
             
 158                 Call UpdateUserInv(False, UserIndex, Slot)
-    
+                    
+                    UserList(UserIndex).flags.ModificoInventario = True
+                    
 160             Case eOBJType.otGuita
     
 162                 If .flags.Muerto = 1 Then
