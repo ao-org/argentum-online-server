@@ -31,7 +31,7 @@ MaxUsers=3000
 Admines=3
 Dioses=2
 SemiDioses=12
-Consejeros=11
+Consejeros=13
 RolesMasters=0
 
 [Admines]
@@ -69,6 +69,8 @@ Consejero8=Bwise|Joacovas@hotmail.com
 Consejero9=Bonyo|argentumo@hotmail.com
 Consejero10=Blair|mercuricecilia1@gmail.com
 Consejero11=Artemis|jmmastroberti@gmail.com
+Consejero12=Themis|maxitup3@hotmail.com
+Consejero13=Dominique|marcojavierpiazza@hotmail.com
 
 [RolesMasters]
 RM1=
