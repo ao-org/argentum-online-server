@@ -14,7 +14,7 @@ Public Sub TraceError(ByVal Numero As Long, ByVal Descripcion As String, ByVal C
     'Call LogError("TraceError " & Numero & " - " & Componente & " - (Linea: " & Erl & ")" & " - " & Componente & " - (Linea: " & Erl & ") - " & Descripcion)
     'Call Err.raise(Numero, Componente & " - (Linea: " & Erl & ")", Componente & " - (Linea: " & Erl & ") - " & Descripcion & vbNewLine, "")
     'Call Err.raise(123, "GetRegionalSetting", "GetRegionalSetting: " & "asdasdasdasd")
-        Call LogError("TraceError " & Numero & " - " & Componente & " - (Linea: " & Erl & ")" & " - " & Componente & " - (Linea: " & Erl & ") - " & Descripcion)
+    'Call LogError("TraceError " & Numero & " - " & Componente & " - (Linea: " & Erl & ")" & " - " & Componente & " - (Linea: " & Erl & ") - " & Descripcion)
     'Call Err.raise(Numero, Componente & " - (Linea: " & Linea & ")" & Descripcion & vbNewLine)
 End Sub
 
