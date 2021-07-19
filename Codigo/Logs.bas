@@ -11,6 +11,7 @@ Private Type UltimoError
 End Type: Private HistorialError As UltimoError
 
 Public Sub TraceError(ByVal Numero As Long, ByVal Descripcion As String, ByVal Componente As String, Optional ByVal Linea As Integer)
+    Call LogError("TraceError " & Numero & " - " & Componente & " - (Linea: " & Erl & ")" & " - " & Componente & " - (Linea: " & Erl & ") - " & Descripcion)
     Call Err.raise(Numero, Componente & " - (Linea: " & Erl & ")", Componente & " - (Linea: " & Erl & ") - " & Descripcion & vbNewLine)
 End Sub
 
