@@ -810,9 +810,14 @@ Function LegalPos(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer, 
 122             If (.Blocked And FLAG_AGUA) = 0 Then Exit Function
             End If
             
-124         If (.Blocked And eBlock.ALL_SIDES) = eBlock.ALL_SIDES Then Exit Function
-        
+124         'If (.Blocked And eBlock.ALL_SIDES) = eBlock.ALL_SIDES Then Exit Function
+            ' Wyrox esto soluciona si es eBlock.ALL_SIDES pero permite saltas bloqueos de direccion
+            ' soluciono lo del drenaje pero ahora entran a casas y demas.
+            
+            If (.Blocked And eBlock.ALL_SIDES) > 0 Then Exit Function
+            
         End With
+        
         
 126     LegalPos = True
 
