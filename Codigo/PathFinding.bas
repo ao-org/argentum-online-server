@@ -167,45 +167,45 @@ Private Function IsWalkable(ByVal NpcIndex As Integer, ByVal X As Integer, ByVal
     On Error GoTo ErrHandler
     
     Dim Map As Integer
-    Map = NpcList(NpcIndex).Pos.Map
+1    Map = NpcList(NpcIndex).Pos.Map
     
     With MapData(Map, X, Y)
 
         ' Otro NPC
-        If .NpcIndex Then Exit Function
+2        If .NpcIndex Then Exit Function
         
         ' Usuario
-        If .UserIndex And .UserIndex <> NpcList(NpcIndex).Target Then Exit Function
+3        If .UserIndex And .UserIndex <> NpcList(NpcIndex).Target Then Exit Function
 
         ' Traslado
-        If .TileExit.Map Then Exit Function
+4        If .TileExit.Map Then Exit Function
 
         ' Agua
-        If .Blocked And FLAG_AGUA Then
+5        If .Blocked And FLAG_AGUA Then
             If NpcList(NpcIndex).flags.AguaValida = 0 Then Exit Function
         ' Tierra
         Else
-            If NpcList(NpcIndex).flags.TierraInvalida <> 0 Then Exit Function
+6            If NpcList(NpcIndex).flags.TierraInvalida <> 0 Then Exit Function
         End If
         
         ' Trigger inválido para NPCs
         If .trigger = eTrigger.POSINVALIDA Then
             ' Si no es mascota
-            If NpcList(NpcIndex).MaestroNPC = 0 Then Exit Function
+8            If NpcList(NpcIndex).MaestroNPC = 0 Then Exit Function
         End If
     
         ' Tile bloqueado
         If NpcList(NpcIndex).NPCtype <> eNPCType.GuardiaReal And NpcList(NpcIndex).NPCtype <> eNPCType.GuardiasCaos Then
-            If .Blocked And 2 ^ (Heading - 1) Then
+9            If .Blocked And 2 ^ (Heading - 1) Then
                 Exit Function
             End If
         Else
-            If (.Blocked And 2 ^ (Heading - 1)) And Not HayPuerta(Map, X + 1, Y) And Not HayPuerta(Map, X, Y) And Not HayPuerta(Map, X + 1, Y - 1) And Not HayPuerta(Map, X, Y - 1) Then Exit Function
+10            If (.Blocked And 2 ^ (Heading - 1)) And Not HayPuerta(Map, X + 1, Y) And Not HayPuerta(Map, X, Y) And Not HayPuerta(Map, X + 1, Y - 1) And Not HayPuerta(Map, X, Y - 1) Then Exit Function
         End If
             
     End With
     
-    IsWalkable = True
+11    IsWalkable = True
 
 ErrHandler:
     Call TraceError(Err.Number, Err.Description, "PathFinding.IsWalkable", Erl)
@@ -219,8 +219,8 @@ Private Sub ProcessAdjacent(ByVal NpcIndex As Integer, ByVal CurX As Integer, By
     Dim X As Integer, Y As Integer, DistanceFromStart As Integer, EstimatedDistance As Single
     
     With DirOffset(Heading)
-        X = CurX + .X
-        Y = CurY + .Y
+1        X = CurX + .X
+2        Y = CurY + .Y
     End With
     
     With Table(X, Y)
@@ -232,15 +232,15 @@ Private Sub ProcessAdjacent(ByVal NpcIndex As Integer, ByVal CurX As Integer, By
         If InsideLimits(X, Y) Then
         
             ' Si puede atravesar el tile al siguiente
-            If IsWalkable(NpcIndex, X, Y, Heading) Then
+3            If IsWalkable(NpcIndex, X, Y, Heading) Then
             
                 ' Calculamos la distancia hasta este vértice
-                DistanceFromStart = Table(CurX, CurY).Distance + 1
+4                DistanceFromStart = Table(CurX, CurY).Distance + 1
     
                 ' Si no habíamos visitado este vértice
                 If .Distance = MAXINT Then
                     ' Lo metemos en la cola
-                    Call OpenVertex(X, Y)
+5                    Call OpenVertex(X, Y)
                     
                 ' Si ya lo habíamos visitado, nos fijamos si este camino es más corto
                 ElseIf DistanceFromStart > .Distance Then
@@ -249,23 +249,23 @@ Private Sub ProcessAdjacent(ByVal NpcIndex As Integer, ByVal CurX As Integer, By
                 End If
     
                 ' Guardamos la distancia desde el inicio
-                .Distance = DistanceFromStart
+6                .Distance = DistanceFromStart
                 
                 ' La distancia estimada al objetivo
-                EstimatedDistance = EuclideanDistance(X, Y, EndPos)
+7                EstimatedDistance = EuclideanDistance(X, Y, EndPos)
                 
                 ' La distancia total estimada
-                .EstimatedTotalDistance = DistanceFromStart + EstimatedDistance
+8                .EstimatedTotalDistance = DistanceFromStart + EstimatedDistance
                 
                 ' Y la posición de la que viene
-                .Previous.X = CurX
-                .Previous.Y = CurY
+9                .Previous.X = CurX
+10                .Previous.Y = CurY
                 
                 ' Si la distancia total estimada es la menor hasta ahora
                 If EstimatedDistance < ClosestDistance Then
-                    ClosestDistance = EstimatedDistance
-                    ClosestVertex.X = X
-                    ClosestVertex.Y = Y
+11                    ClosestDistance = EstimatedDistance
+12                    ClosestVertex.X = X
+13                    ClosestVertex.Y = Y
                 End If
                 
             End If
