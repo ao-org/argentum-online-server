@@ -1845,7 +1845,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
 168                 .Invent.Object(Slot).amount = 0
 170                 .Invent.Object(Slot).ObjIndex = 0
 172                 .Invent.NroItems = .Invent.NroItems - 1
-
+                    .flags.ModificoInventario = True
 174                 Call UpdateUserInv(False, UserIndex, Slot)
 176                 Call WriteUpdateGold(UserIndex)
             
@@ -2834,7 +2834,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
                         
                             For i = 1 To obj.CantItem
                             
-                                If RandomNumber(1, obj.Item(i).Data) = 1 Then
+                                If RandomNumber(1, obj.Item(i).data) = 1 Then
                             
                                     If Not MeterItemEnInventario(UserIndex, obj.Item(i)) Then
                                     
