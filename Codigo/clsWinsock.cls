@@ -449,11 +449,11 @@ Private Function Internal_SocketAccept(ByRef NuevoSocketID As Long, ByRef Socket
     'algoritmo de nagle vb6
     'If setsockopt(NuevoSocketID, 6, 1, True, 4) <> 0 Then
                              
-    If API_setsockopt(NuevoSocketID, 6, TCP_NODELAY, True, 4) <> 0 Then
-        i = Err.LastDllError
-        Call LogCriticEvent("Error al setear el delay " & i & ": " & WSA_GetErrorString(i))
-                
-    End If
+   ' If API_setsockopt(NuevoSocketID, 6, TCP_NODELAY, True, 4) <> 0 Then
+   '     i = Err.LastDllError
+   '     Call LogCriticEvent("Error al setear el delay " & i & ": " & WSA_GetErrorString(i))
+   '
+   ' End If
   
     'Nuevo sin nagle
     If API_setsockopt(NuevoSocketID, SOL_SOCKET, SO_LINGER, 0, 4) <> 0 Then
