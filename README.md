@@ -1,8 +1,7 @@
 # re20-server
 Código fuente de el servidor de Argentum20, basado en RevolucionAO de Ladder
 
-![image](https://user-images.githubusercontent.com/5874806/126291792-3cb41fac-68f8-4853-9428-d679d256c2f5.png)
-
+![image](https://user-images.githubusercontent.com/5874806/126294178-00d50f6f-eec3-4478-8384-53a7691efe3a.png)
 
 # Requisitos
 
