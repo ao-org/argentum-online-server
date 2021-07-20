@@ -10,18 +10,13 @@ Código fuente de el servidor de Argentum20, basado en RevolucionAO de Ladder
 https://dev.mysql.com/get/Downloads/Connector-ODBC/8.0/mysql-connector-odbc-8.0.22-win32.msi
 
 
-#Development
+# Development (test branch ao-api/web)
+IMPORTANTE: Para hacer cuentas en el servidor de test, tienen que entrar aca.
 Website:
 https://ao20-web-testing.herokuapp.com/
 
-#Staging
 
-Website:
-https://ao20-web-staging.herokuapp.com/
-
-
-
-# Actualizacion
+# Creacion de Parches / Actualizacion
 
 ### 1- Crear tag del repositorio de Cliente y Recursos
 
