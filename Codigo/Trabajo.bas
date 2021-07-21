@@ -46,7 +46,7 @@ Public Sub Trabajar(ByVal UserIndex As Integer, ByVal Skill As eSkill)
                 
                         Case 1      ' Subtipo: Caña de Pescar
 
-296                         If (MapData(.Pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).Blocked And FLAG_AGUA) <> 0 Then
+296                         If (MapData(.Pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).Blocked And FLAG_AGUA) <> 0 Or MapData(.Pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).trigger = eTrigger.PESCAVALIDA Then
 298                             If (MapData(.Pos.Map, .Pos.X, .Pos.Y).Blocked And FLAG_AGUA) <> 0 Or (MapData(.Pos.Map, .Pos.X + 1, .Pos.Y).Blocked And FLAG_AGUA) <> 0 Or (MapData(.Pos.Map, .Pos.X, .Pos.Y + 1).Blocked And FLAG_AGUA) <> 0 Or (MapData(.Pos.Map, .Pos.X - 1, .Pos.Y).Blocked And FLAG_AGUA) <> 0 Or (MapData(.Pos.Map, .Pos.X, .Pos.Y - 1).Blocked And FLAG_AGUA) <> 0 Then
 
 300                                 Call DoPescar(UserIndex, False)
@@ -65,7 +65,7 @@ Public Sub Trabajar(ByVal UserIndex As Integer, ByVal Skill As eSkill)
                     
 312                     Case 2      ' Subtipo: Red de Pesca
     
-314                         If (MapData(.Pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).Blocked And FLAG_AGUA) <> 0 Then
+314                         If (MapData(.Pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).Blocked And FLAG_AGUA) <> 0 Or MapData(.Pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).trigger = eTrigger.PESCAVALIDA Then
                             
 316                             If Abs(.Pos.X - .Trabajo.Target_X) + Abs(.Pos.Y - .Trabajo.Target_Y) > 8 Then
 318                                 Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
