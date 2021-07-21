@@ -15160,8 +15160,7 @@ Public Sub HandlePing(ByVal UserIndex As Integer)
         
 102         Time = Reader.ReadInt32()
         
-104         Call WritePong(UserIndex, Time + TIME_RECV_FREQUENCY) ' We need to correct due to different handling time
-            Call modNetwork.Flush(UserIndex)
+104         Call WritePong(UserIndex, Time + modNetwork.GetTimeOfNextFlush()) ' Correct the time
         Exit Sub
 
 HandlePing_Err:
