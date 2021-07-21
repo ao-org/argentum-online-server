@@ -2528,6 +2528,8 @@ Sub LoadSini()
     
 140     DiceMinimum = val(Lector.GetValue("INIT", "MinDados"))
 142     DiceMaximum = val(Lector.GetValue("INIT", "MaxDados"))
+
+143     CentinelaActivado = val(Lector.GetValue("INIT", "CentinelaActivado"))
     
 144     EnTesting = val(Lector.GetValue("INIT", "Testing"))
         
