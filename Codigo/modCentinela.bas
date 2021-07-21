@@ -115,8 +115,11 @@ Private Sub GoToNextWorkingChar()
                 
 116                 If CentinelaNPCIndex Then
                         'Mandamos el mensaje (el centinela habla y aparece en consola para que no haya dudas)
-118                     Call WriteChatOverHead(LoopC, "Saludos " & UserList(LoopC).Name & ", soy el Centinela de estas tierras. Me gustaría que escribas /CENTINELA " & Centinela.clave & " en no más de dos minutos.", CStr(NpcList(CentinelaNPCIndex).Char.CharIndex), vbGreen)
-120                     Call WriteConsoleMsg(LoopC, "Saludos " & UserList(LoopC).Name & ", soy el Centinela de estas tierras. Me gustaría que escribas /CENTINELA " & Centinela.clave & " en no más de dos minutos.", FontTypeNames.FONTTYPE_CENTINELA)
+                        Dim Mensaje as String
+                        Mensaje = "Saludos " & UserList(LoopC).Name & ", soy el Centinela de estas tierras. Me gustaría que escribas /CENTINELA " & Centinela.clave & " en no más de dos minutos."
+                        
+118                     Call WriteChatOverHead(LoopC, Mensaje, CStr(NpcList(CentinelaNPCIndex).Char.CharIndex), vbGreen)
+120                     Call WriteConsoleMsg(LoopC, Mensaje, FontTypeNames.FONTTYPE_CENTINELA)
                     
 
                     End If
