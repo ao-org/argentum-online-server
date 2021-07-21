@@ -25,7 +25,7 @@ Begin VB.Form frmServidor
       EndProperty
       Height          =   1575
       Left            =   3840
-      TabIndex        =   26
+      TabIndex        =   23
       Top             =   2880
       Width           =   3615
       Begin VB.CommandButton Command4 
@@ -41,7 +41,7 @@ Begin VB.Form frmServidor
          EndProperty
          Height          =   255
          Left            =   120
-         TabIndex        =   30
+         TabIndex        =   27
          Top             =   240
          Width           =   3255
       End
@@ -58,7 +58,7 @@ Begin VB.Form frmServidor
          EndProperty
          Height          =   255
          Left            =   120
-         TabIndex        =   29
+         TabIndex        =   26
          Top             =   520
          Width           =   3255
       End
@@ -75,7 +75,7 @@ Begin VB.Form frmServidor
          EndProperty
          Height          =   255
          Left            =   120
-         TabIndex        =   28
+         TabIndex        =   25
          Top             =   820
          Width           =   3255
       End
@@ -92,7 +92,7 @@ Begin VB.Form frmServidor
          EndProperty
          Height          =   255
          Left            =   120
-         TabIndex        =   27
+         TabIndex        =   24
          Top             =   1120
          Width           =   3255
       End
@@ -110,7 +110,7 @@ Begin VB.Form frmServidor
       EndProperty
       Height          =   2775
       Left            =   3840
-      TabIndex        =   18
+      TabIndex        =   15
       Top             =   0
       Width           =   3615
       Begin VB.CommandButton cmdReloadGuilds 
@@ -126,7 +126,7 @@ Begin VB.Form frmServidor
          EndProperty
          Height          =   255
          Left            =   120
-         TabIndex        =   32
+         TabIndex        =   29
          Top             =   2430
          Width           =   3255
       End
@@ -143,7 +143,7 @@ Begin VB.Form frmServidor
          EndProperty
          Height          =   255
          Left            =   120
-         TabIndex        =   31
+         TabIndex        =   28
          Top             =   2170
          Width           =   3255
       End
@@ -160,7 +160,7 @@ Begin VB.Form frmServidor
          EndProperty
          Height          =   255
          Left            =   120
-         TabIndex        =   25
+         TabIndex        =   22
          Top             =   240
          Width           =   3255
       End
@@ -178,7 +178,7 @@ Begin VB.Form frmServidor
          EndProperty
          Height          =   255
          Left            =   120
-         TabIndex        =   24
+         TabIndex        =   21
          Top             =   510
          Width           =   3255
       End
@@ -195,7 +195,7 @@ Begin VB.Form frmServidor
          EndProperty
          Height          =   255
          Left            =   120
-         TabIndex        =   23
+         TabIndex        =   20
          Top             =   800
          Width           =   3255
       End
@@ -212,7 +212,7 @@ Begin VB.Form frmServidor
          EndProperty
          Height          =   255
          Left            =   120
-         TabIndex        =   22
+         TabIndex        =   19
          Top             =   1080
          Width           =   3255
       End
@@ -229,7 +229,7 @@ Begin VB.Form frmServidor
          EndProperty
          Height          =   255
          Left            =   120
-         TabIndex        =   21
+         TabIndex        =   18
          Top             =   1360
          Width           =   3255
       End
@@ -246,7 +246,7 @@ Begin VB.Form frmServidor
          EndProperty
          Height          =   255
          Left            =   120
-         TabIndex        =   20
+         TabIndex        =   17
          Top             =   1650
          Width           =   3255
       End
@@ -263,7 +263,7 @@ Begin VB.Form frmServidor
          EndProperty
          Height          =   255
          Left            =   120
-         TabIndex        =   19
+         TabIndex        =   16
          Top             =   1920
          Width           =   3255
       End
@@ -297,25 +297,8 @@ Begin VB.Form frmServidor
          EndProperty
          Height          =   255
          Left            =   240
-         TabIndex        =   17
+         TabIndex        =   14
          Top             =   1800
-         Width           =   3255
-      End
-      Begin VB.CommandButton Command26 
-         Caption         =   "Reset Listen"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   700
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   255
-         Left            =   240
-         TabIndex        =   16
-         Top             =   2040
          Width           =   3255
       End
       Begin VB.CommandButton Command10 
@@ -331,42 +314,8 @@ Begin VB.Form frmServidor
          EndProperty
          Height          =   255
          Left            =   240
-         TabIndex        =   15
-         Top             =   360
-         Width           =   3255
-      End
-      Begin VB.CommandButton Command11 
-         Caption         =   "Stats de los slots"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   700
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   255
-         Left            =   240
-         TabIndex        =   14
-         Top             =   600
-         Width           =   3255
-      End
-      Begin VB.CommandButton Command13 
-         Caption         =   "Debug listening socket"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   700
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   255
-         Left            =   240
          TabIndex        =   13
-         Top             =   840
+         Top             =   360
          Width           =   3255
       End
       Begin VB.CommandButton Command22 
@@ -671,21 +620,6 @@ Command10_Click_Err:
         
 End Sub
 
-Private Sub Command11_Click()
-        
-        On Error GoTo Command11_Click_Err
-        
-100     frmConID.Show
-
-        
-        Exit Sub
-
-Command11_Click_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "frmServidor.Command11_Click", Erl)
-
-        
-End Sub
-
 Private Sub Command12_Click()
         
         On Error GoTo Command12_Click_Err
@@ -697,21 +631,6 @@ Private Sub Command12_Click()
 
 Command12_Click_Err:
 102     Call RegistrarError(Err.Number, Err.Description, "frmServidor.Command12_Click", Erl)
-
-        
-End Sub
-
-Private Sub Command13_Click()
-        
-        On Error GoTo Command13_Click_Err
-        
-100     frmDebugSocket.Visible = True
-
-        
-        Exit Sub
-
-Command13_Click_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "frmServidor.Command13_Click", Erl)
 
         
 End Sub
@@ -880,7 +799,7 @@ Private Sub Command20_Click()
         On Error GoTo Command20_Click_Err
 
 100     If MsgBox("Esta seguro que desea reiniciar los sockets ? Se cerrarán todas las conexiones activas.", vbYesNo, "Reiniciar Sockets") = vbYes Then
-102         Call WSApiReiniciarSockets
+102         Call modNetwork.Disconnect
         End If
 
         
@@ -979,22 +898,6 @@ Command24_Click_Err:
         
 End Sub
 
-Private Sub Command26_Click()
-        
-        On Error GoTo Command26_Click_Err
-
-        'Cierra el socket de escucha
-100     Call frmMain.Winsock.ResetListenerSocket
-
-        
-        Exit Sub
-
-Command26_Click_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "frmServidor.Command26_Click", Erl)
-
-        
-End Sub
-
 Private Sub Command27_Click()
         
         On Error GoTo Command27_Click_Err
@@ -1085,6 +988,7 @@ Private Sub Command5_Click()
 116     For LoopC = 1 To MaxUsers
 118         Call CloseSocket(LoopC)
         Next
+        Call modNetwork.Disconnect
 
 120     LastUser = 0
 122     NumUsers = 0
@@ -1099,7 +1003,7 @@ Private Sub Command5_Click()
 136     Call LoadPesca
 138     Call LoadRecursosEspeciales
 
-140     Call frmMain.Winsock.ResetListenerSocket
+140     Call modNetwork.Listen(MaxUsers, "0.0.0.0", CStr(Puerto))
 
 142     If frmMain.Visible Then frmMain.txStatus.Caption = "Escuchando conexiones entrantes ..."
 
@@ -1192,7 +1096,6 @@ Private Sub Form_Load()
         On Error GoTo Form_Load_Err
 
 100     Command20.Visible = True
-102     Command26.Visible = True
       
         Exit Sub
 

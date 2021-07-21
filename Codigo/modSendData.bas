@@ -67,7 +67,7 @@ Public Enum SendTarget
     
 End Enum
 
-Public Sub SendData(ByVal sndRoute As SendTarget, ByVal sndIndex As Integer, sndData As t_DataBuffer)
+Public Sub SendData(ByVal sndRoute As SendTarget, ByVal sndIndex As Integer, ParamArray Args() As Variant)
         
         On Error GoTo SendData_Err
     
@@ -79,354 +79,229 @@ Public Sub SendData(ByVal sndRoute As SendTarget, ByVal sndIndex As Integer, snd
         
         Dim LoopC As Long
         Dim Map   As Integer
-
-100     Select Case sndRoute
-            
-            Case SendTarget.ToIndex
-102             Call EnviarDatosASlot(sndIndex, sndData)
-                Exit Sub
-            
-104         Case SendTarget.ToPCArea
-106             Call SendToUserArea(sndIndex, sndData)
-                Exit Sub
-            
-108         Case SendTarget.ToPCAreaButGMs
-110             Call SendToUserAreaButGMs(sndIndex, sndData)
-                Exit Sub
-            
-112         Case SendTarget.ToUsuariosMuertos
-114             Call SendToUsersMuertosArea(sndIndex, sndData)
-                Exit Sub
         
+        Dim Buffer As Network.Writer
+        Set Buffer = Protocol_Writes.GetWriterBuffer()
+    
+100     Select Case sndRoute
+            Case SendTarget.ToIndex
+                If (UserList(sndIndex).ConnIDValida) Then
+                    Call modNetwork.Send(sndIndex, Buffer)
+                End If
+
+104         Case SendTarget.ToPCArea
+106             Call SendToUserArea(sndIndex, Buffer)
+
+108         Case SendTarget.ToPCAreaButGMs
+110             Call SendToUserAreaButGMs(sndIndex, Buffer)
+
+112         Case SendTarget.ToUsuariosMuertos
+114             Call SendToUsersMuertosArea(sndIndex, Buffer)
+
 116         Case SendTarget.ToAdmins
-
 118             For LoopC = 1 To LastUser
-
-120                 If UserList(LoopC).ConnID <> -1 Then
+120                 If UserList(LoopC).ConnIDValida Then
 122                     If UserList(LoopC).flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios Or PlayerType.Consejero) Then
-124                         Call EnviarDatosASlot(LoopC, sndData)
-
+124                         Call modNetwork.Send(LoopC, Buffer)
                         End If
-
                     End If
-
 126             Next LoopC
 
-                Exit Sub
-            
 128         Case SendTarget.ToSuperiores
-
 130             For LoopC = 1 To LastUser
-
-132                 If UserList(LoopC).ConnID <> -1 Then
-
+132                 If UserList(LoopC).ConnIDValida Then
 134                     If CompararPrivilegiosUser(LoopC, sndIndex) > 0 Then
-136                         Call EnviarDatosASlot(LoopC, sndData)
+136                         Call modNetwork.Send(LoopC, Buffer)
                         End If
-                    
                     End If
-
 138             Next LoopC
 
-                Exit Sub
-            
 140         Case SendTarget.ToSuperioresArea
-142             Call SendToSuperioresArea(sndIndex, sndData)
-                Exit Sub
-            
+142             Call SendToSuperioresArea(sndIndex, Buffer)
+
 144         Case SendTarget.ToAll
-
 146             For LoopC = 1 To LastUser
-
-148                 If UserList(LoopC).ConnID <> -1 Then
+148                 If UserList(LoopC).ConnIDValida Then
 150                     If UserList(LoopC).flags.UserLogged Then 'Esta logeado como usuario?
-152                         Call EnviarDatosASlot(LoopC, sndData)
-
+152                         Call modNetwork.Send(LoopC, Buffer)
                         End If
-
                     End If
-
 154             Next LoopC
 
-                Exit Sub
-        
 156         Case SendTarget.ToAllButIndex
-
 158             For LoopC = 1 To LastUser
-
-160                 If (UserList(LoopC).ConnID <> -1) And (LoopC <> sndIndex) Then
+160                 If (UserList(LoopC).ConnIDValida) And (LoopC <> sndIndex) Then
 162                     If UserList(LoopC).flags.UserLogged Then 'Esta logeado como usuario?
-164                         Call EnviarDatosASlot(LoopC, sndData)
-
+164                         Call modNetwork.Send(LoopC, Buffer)
                         End If
-
                     End If
-
 166             Next LoopC
 
-                Exit Sub
-        
 168         Case SendTarget.toMap
-170             Call SendToMap(sndIndex, sndData)
-                Exit Sub
-          
+170             Call SendToMap(sndIndex, Buffer)
+
 172         Case SendTarget.ToMapButIndex
-174             Call SendToMapButIndex(sndIndex, sndData)
-                Exit Sub
+174             Call SendToMapButIndex(sndIndex, Buffer)
         
 176         Case SendTarget.ToGuildMembers
 178             LoopC = modGuilds.m_Iterador_ProximoUserIndex(sndIndex)
 
 180             While LoopC > 0
-
-182                 If (UserList(LoopC).ConnID <> -1) Then
-184                     Call UserList(LoopC).outgoingData.WritePrepared(sndData)
-
+182                 If (UserList(LoopC).ConnIDValida) Then
+                        Call modNetwork.Send(LoopC, Buffer)
                     End If
-
+                    
 186                 LoopC = modGuilds.m_Iterador_ProximoUserIndex(sndIndex)
                 Wend
-                Exit Sub
         
 188         Case SendTarget.ToDeadArea
-190             Call SendToDeadUserArea(sndIndex, sndData)
-                Exit Sub
+190             Call SendToDeadUserArea(sndIndex, Buffer)
         
 192         Case SendTarget.ToPCAreaButIndex
-194             Call SendToUserAreaButindex(sndIndex, sndData)
-                Exit Sub
+194             Call SendToUserAreaButindex(sndIndex, Buffer)
             
 196         Case SendTarget.ToAdminAreaButIndex
-198             Call SendToAdminAreaButIndex(sndIndex, sndData)
-                Exit Sub
+198             Call SendToAdminAreaButIndex(sndIndex, Buffer)
         
 200         Case SendTarget.ToClanArea
-202             Call SendToUserGuildArea(sndIndex, sndData)
-                Exit Sub
+202             Call SendToUserGuildArea(sndIndex, Buffer)
         
 204         Case SendTarget.ToAdminsAreaButConsejeros
-206             Call SendToAdminsButConsejerosArea(sndIndex, sndData)
-                Exit Sub
+206             Call SendToAdminsButConsejerosArea(sndIndex, Buffer)
         
 208         Case SendTarget.ToNPCArea
-210             Call SendToNpcArea(sndIndex, sndData)
-                Exit Sub
+210             Call SendToNpcArea(sndIndex, Buffer)
         
 212         Case SendTarget.ToDiosesYclan
 214             LoopC = modGuilds.m_Iterador_ProximoUserIndex(sndIndex)
 
 216             While LoopC > 0
-
-218                 If (UserList(LoopC).ConnID <> -1) Then
-220                     Call EnviarDatosASlot(LoopC, sndData)
-
+218                 If (UserList(LoopC).ConnIDValida) Then
+220                     Call modNetwork.Send(LoopC, Buffer)
                     End If
-
+                    
 222                 LoopC = modGuilds.m_Iterador_ProximoUserIndex(sndIndex)
                 Wend
             
 224             LoopC = modGuilds.Iterador_ProximoGM(sndIndex)
 
 226             While LoopC > 0
-
-228                 If (UserList(LoopC).ConnID <> -1) Then
-230                     Call EnviarDatosASlot(LoopC, sndData)
-
+228                 If (UserList(LoopC).ConnIDValida) Then
+230                     Call modNetwork.Send(LoopC, Buffer)
                     End If
 
 232                 LoopC = modGuilds.Iterador_ProximoGM(sndIndex)
                 Wend
-            
-                Exit Sub
-        
+
 234         Case SendTarget.ToConsejo
-
 236             For LoopC = 1 To LastUser
-
-238                 If (UserList(LoopC).ConnID <> -1) Then
+238                 If (UserList(LoopC).ConnIDValida) Then
 240                     If UserList(LoopC).flags.Privilegios And PlayerType.RoyalCouncil Then
-242                         Call EnviarDatosASlot(LoopC, sndData)
-
+242                         Call modNetwork.Send(LoopC, Buffer)
                         End If
-
                     End If
-
 244             Next LoopC
 
-                Exit Sub
-        
 246         Case SendTarget.ToConsejoCaos
-
 248             For LoopC = 1 To LastUser
-
-250                 If (UserList(LoopC).ConnID <> -1) Then
+250                 If (UserList(LoopC).ConnIDValida) Then
 252                     If UserList(LoopC).flags.Privilegios And PlayerType.ChaosCouncil Then
-254                         Call EnviarDatosASlot(LoopC, sndData)
-
+254                         Call modNetwork.Send(LoopC, Buffer)
                         End If
-
                     End If
-
 256             Next LoopC
 
-                Exit Sub
-        
 258         Case SendTarget.ToRolesMasters
-
 260             For LoopC = 1 To LastUser
-
-262                 If (UserList(LoopC).ConnID <> -1) Then
+262                 If (UserList(LoopC).ConnIDValida) Then
 264                     If UserList(LoopC).flags.Privilegios And PlayerType.RoleMaster Then
-266                         Call EnviarDatosASlot(LoopC, sndData)
-
+266                         Call modNetwork.Send(LoopC, Buffer)
                         End If
-
                     End If
-
 268             Next LoopC
 
-                Exit Sub
-        
 270         Case SendTarget.ToCiudadanos
-
 272             For LoopC = 1 To LastUser
-
-274                 If (UserList(LoopC).ConnID <> -1) Then
+274                 If (UserList(LoopC).ConnIDValida) Then
 276                     If Status(LoopC) < 2 Then
-278                         Call EnviarDatosASlot(LoopC, sndData)
-
+278                         Call modNetwork.Send(LoopC, Buffer)
                         End If
-
                     End If
-
 280             Next LoopC
 
-                Exit Sub
-        
 282         Case SendTarget.ToCriminales
-
 284             For LoopC = 1 To LastUser
-
-286                 If (UserList(LoopC).ConnID <> -1) Then
+286                 If (UserList(LoopC).ConnIDValida) Then
 288                     If Status(LoopC) = 2 Then
-290                         Call EnviarDatosASlot(LoopC, sndData)
-
+290                         Call modNetwork.Send(LoopC, Buffer)
                         End If
-
                     End If
-
 292             Next LoopC
 
-                Exit Sub
-        
 294         Case SendTarget.ToReal
-
 296             For LoopC = 1 To LastUser
-
-298                 If (UserList(LoopC).ConnID <> -1) Then
+298                 If (UserList(LoopC).ConnIDValida) Then
 300                     If UserList(LoopC).Faccion.ArmadaReal = 1 Then
-302                         Call EnviarDatosASlot(LoopC, sndData)
-
+302                         Call modNetwork.Send(LoopC, Buffer)
                         End If
-
                     End If
-
 304             Next LoopC
 
-                Exit Sub
-        
 306         Case SendTarget.ToCaos
-
 308             For LoopC = 1 To LastUser
-
-310                 If (UserList(LoopC).ConnID <> -1) Then
+310                 If (UserList(LoopC).ConnIDValida) Then
 312                     If UserList(LoopC).Faccion.FuerzasCaos = 1 Then
-314                         Call EnviarDatosASlot(LoopC, sndData)
-
+314                         Call modNetwork.Send(LoopC, Buffer)
                         End If
-
                     End If
-
 316             Next LoopC
 
-                Exit Sub
-        
 318         Case SendTarget.ToCiudadanosYRMs
-
 320             For LoopC = 1 To LastUser
-
-322                 If (UserList(LoopC).ConnID <> -1) Then
+322                 If (UserList(LoopC).ConnIDValida) Then
 324                     If Status(LoopC) < 2 Or (UserList(LoopC).flags.Privilegios And PlayerType.RoleMaster) <> 0 Then
-326                         Call EnviarDatosASlot(LoopC, sndData)
-
+326                         Call modNetwork.Send(LoopC, Buffer)
                         End If
-
                     End If
-
 328             Next LoopC
 
-                Exit Sub
-        
 330         Case SendTarget.ToCriminalesYRMs
-
 332             For LoopC = 1 To LastUser
-
-334                 If (UserList(LoopC).ConnID <> -1) Then
+334                 If (UserList(LoopC).ConnIDValida) Then
 336                     If Status(LoopC) = 2 Or (UserList(LoopC).flags.Privilegios And PlayerType.RoleMaster) <> 0 Then
-338                         Call EnviarDatosASlot(LoopC, sndData)
-
+338                         Call modNetwork.Send(LoopC, Buffer)
                         End If
-
                     End If
-
 340             Next LoopC
 
-                Exit Sub
-        
 342         Case SendTarget.ToRealYRMs
-
 344             For LoopC = 1 To LastUser
-
-346                 If (UserList(LoopC).ConnID <> -1) Then
+346                 If (UserList(LoopC).ConnIDValida) Then
 348                     If UserList(LoopC).Faccion.ArmadaReal = 1 Or (UserList(LoopC).flags.Privilegios And PlayerType.RoleMaster) <> 0 Then
-350                         Call EnviarDatosASlot(LoopC, sndData)
-
+350                         Call modNetwork.Send(LoopC, Buffer)
                         End If
-
                     End If
-
 352             Next LoopC
 
-                Exit Sub
-        
 354         Case SendTarget.ToCaosYRMs
-
 356             For LoopC = 1 To LastUser
-
-358                 If (UserList(LoopC).ConnID <> -1) Then
+358                 If (UserList(LoopC).ConnIDValida) Then
 360                     If UserList(LoopC).Faccion.FuerzasCaos = 1 Or (UserList(LoopC).flags.Privilegios And PlayerType.RoleMaster) <> 0 Then
-362                         Call EnviarDatosASlot(LoopC, sndData)
-
+362                         Call modNetwork.Send(LoopC, Buffer)
                         End If
-
                     End If
-
 364             Next LoopC
-
-                Exit Sub
-                
         End Select
 
-        
-        Exit Sub
-
 SendData_Err:
-366     Call TraceError(Err.Number, Err.Description, "modSendData.SendData", Erl)
-
+        Call Buffer.Clear
         
+        If (Err.Number <> 0) Then
+366         Call TraceError(Err.Number, Err.Description, "modSendData.SendData", Erl)
+        End If
 End Sub
 
-Private Sub SendToUserArea(ByVal UserIndex As Integer, sndData As t_DataBuffer)
+Private Sub SendToUserArea(ByVal UserIndex As Integer, ByVal Buffer As Network.Writer)
         
         On Error GoTo SendToUserArea_Err
         
@@ -458,7 +333,7 @@ Private Sub SendToUserArea(ByVal UserIndex As Integer, sndData As t_DataBuffer)
 
 118                 If UserList(tempIndex).ConnIDValida Then
 
-120                     Call EnviarDatosASlot(tempIndex, sndData)
+120                     Call modNetwork.Send(tempIndex, Buffer)
 
                     End If
 
@@ -477,7 +352,7 @@ SendToUserArea_Err:
         
 End Sub
 
-Private Sub SendToUsersMuertosArea(ByVal UserIndex As Integer, sndData As t_DataBuffer)
+Private Sub SendToUsersMuertosArea(ByVal UserIndex As Integer, ByVal Buffer As Network.Writer)
         
         On Error GoTo SendToUserArea_Err
         
@@ -512,7 +387,7 @@ Private Sub SendToUsersMuertosArea(ByVal UserIndex As Integer, sndData As t_Data
 
 120                     If UserList(tempIndex).flags.Muerto = 1 Or EsGM(tempIndex) Then
                         
-122                         Call EnviarDatosASlot(tempIndex, sndData)
+122                         Call modNetwork.Send(tempIndex, Buffer)
                             
                         End If
 
@@ -530,7 +405,7 @@ SendToUserArea_Err:
         
 End Sub
 
-Private Sub SendToSuperioresArea(ByVal UserIndex As Integer, sndData As t_DataBuffer)
+Private Sub SendToSuperioresArea(ByVal UserIndex As Integer, ByVal Buffer As Network.Writer)
         
         On Error GoTo SendToUserAreaButindex_Err
 
@@ -567,7 +442,7 @@ Private Sub SendToSuperioresArea(ByVal UserIndex As Integer, sndData As t_DataBu
 122                 If UserList(tempIndex).ConnIDValida Then
                 
 124                     If CompararPrivilegiosUser(UserIndex, tempIndex) < 0 Then
-126                         Call EnviarDatosASlot(tempIndex, sndData)
+126                         Call modNetwork.Send(tempIndex, Buffer)
                         End If
 
                     End If
@@ -587,7 +462,7 @@ SendToUserAreaButindex_Err:
         
 End Sub
 
-Private Sub SendToUserAreaButindex(ByVal UserIndex As Integer, sndData As t_DataBuffer)
+Private Sub SendToUserAreaButindex(ByVal UserIndex As Integer, ByVal Buffer As Network.Writer)
         
         On Error GoTo SendToUserAreaButindex_Err
         
@@ -624,7 +499,7 @@ Private Sub SendToUserAreaButindex(ByVal UserIndex As Integer, sndData As t_Data
 120             If TempInt Then
 122                 If tempIndex <> UserIndex Then
 124                     If UserList(tempIndex).ConnIDValida Then
-126                         Call EnviarDatosASlot(tempIndex, sndData)
+126                         Call modNetwork.Send(tempIndex, Buffer)
 
                         End If
 
@@ -645,7 +520,7 @@ SendToUserAreaButindex_Err:
         
 End Sub
 
-Private Sub SendToAdminAreaButIndex(ByVal UserIndex As Integer, sndData As t_DataBuffer)
+Private Sub SendToAdminAreaButIndex(ByVal UserIndex As Integer, ByVal Buffer As Network.Writer)
         
         On Error GoTo SendToUserAreaButindex_Err
         
@@ -684,7 +559,7 @@ Private Sub SendToAdminAreaButIndex(ByVal UserIndex As Integer, sndData As t_Dat
 122                 If tempIndex <> UserIndex And EsGM(tempIndex) Then
 
 124                     If UserList(tempIndex).ConnIDValida Then
-126                         Call EnviarDatosASlot(tempIndex, sndData)
+126                         Call modNetwork.Send(tempIndex, Buffer)
 
                         End If
 
@@ -705,7 +580,7 @@ SendToUserAreaButindex_Err:
         
 End Sub
 
-Private Sub SendToUserAreaButGMs(ByVal UserIndex As Integer, sndData As t_DataBuffer)
+Private Sub SendToUserAreaButGMs(ByVal UserIndex As Integer, ByVal Buffer As Network.Writer)
         
         On Error GoTo SendToUserAreaButindex_Err
         
@@ -746,7 +621,7 @@ Private Sub SendToUserAreaButGMs(ByVal UserIndex As Integer, sndData As t_DataBu
 
 124                     If UserList(tempIndex).ConnIDValida Then
 
-126                         Call EnviarDatosASlot(tempIndex, sndData)
+126                         Call modNetwork.Send(tempIndex, Buffer)
 
                         End If
 
@@ -767,7 +642,7 @@ SendToUserAreaButindex_Err:
         
 End Sub
 
-Private Sub SendToDeadUserArea(ByVal UserIndex As Integer, sndData As t_DataBuffer)
+Private Sub SendToDeadUserArea(ByVal UserIndex As Integer, ByVal Buffer As Network.Writer)
         
         On Error GoTo SendToDeadUserArea_Err
         
@@ -798,7 +673,7 @@ Private Sub SendToDeadUserArea(ByVal UserIndex As Integer, sndData As t_DataBuff
 
                     'Dead and admins read
 118                 If UserList(tempIndex).ConnIDValida = True And (UserList(tempIndex).flags.Muerto = 1 Or (UserList(tempIndex).flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios Or PlayerType.Consejero)) <> 0) Then
-120                     Call EnviarDatosASlot(tempIndex, sndData)
+120                     Call modNetwork.Send(tempIndex, Buffer)
 
                     End If
 
@@ -817,7 +692,7 @@ SendToDeadUserArea_Err:
         
 End Sub
 
-Private Sub SendToUserGuildArea(ByVal UserIndex As Integer, sndData As t_DataBuffer)
+Private Sub SendToUserGuildArea(ByVal UserIndex As Integer, ByVal Buffer As Network.Writer)
         
         On Error GoTo SendToUserGuildArea_Err
         
@@ -849,7 +724,7 @@ Private Sub SendToUserGuildArea(ByVal UserIndex As Integer, sndData As t_DataBuf
 116         If UserList(tempIndex).AreasInfo.AreaReciveX And AreaX Then  'Esta en el area?
 118             If UserList(tempIndex).AreasInfo.AreaReciveY And AreaY Then
 120                 If UserList(tempIndex).ConnIDValida And UserList(tempIndex).GuildIndex = UserList(UserIndex).GuildIndex Then
-122                     Call EnviarDatosASlot(tempIndex, sndData)
+122                     Call modNetwork.Send(tempIndex, Buffer)
 
                     End If
 
@@ -868,7 +743,7 @@ SendToUserGuildArea_Err:
         
 End Sub
 
-Private Sub SendToAdminsButConsejerosArea(ByVal UserIndex As Integer, sndData As t_DataBuffer)
+Private Sub SendToAdminsButConsejerosArea(ByVal UserIndex As Integer, ByVal Buffer As Network.Writer)
         
         On Error GoTo SendToAdminsButConsejerosArea_Err
         
@@ -898,7 +773,9 @@ Private Sub SendToAdminsButConsejerosArea(ByVal UserIndex As Integer, sndData As
 114         If UserList(tempIndex).AreasInfo.AreaReciveX And AreaX Then  'Esta en el area?
 116             If UserList(tempIndex).AreasInfo.AreaReciveY And AreaY Then
 118                 If UserList(tempIndex).ConnIDValida Then
-120                     If UserList(tempIndex).flags.Privilegios And (PlayerType.SemiDios Or PlayerType.Dios Or PlayerType.Admin) Then Call EnviarDatosASlot(tempIndex, sndData)
+120                     If UserList(tempIndex).flags.Privilegios And (PlayerType.SemiDios Or PlayerType.Dios Or PlayerType.Admin) Then
+                            Call modNetwork.Send(tempIndex, Buffer)
+                        End If
 
                     End If
 
@@ -917,7 +794,7 @@ SendToAdminsButConsejerosArea_Err:
         
 End Sub
 
-Private Sub SendToNpcArea(ByVal NpcIndex As Long, sndData As t_DataBuffer)
+Private Sub SendToNpcArea(ByVal NpcIndex As Long, ByVal Buffer As Network.Writer)
         
         On Error GoTo SendToNpcArea_Err
         
@@ -952,7 +829,7 @@ Private Sub SendToNpcArea(ByVal NpcIndex As Long, sndData As t_DataBuffer)
 
 120             If TempInt Then
 122                 If UserList(tempIndex).ConnIDValida Then
-124                     Call EnviarDatosASlot(tempIndex, sndData)
+124                     Call modNetwork.Send(tempIndex, Buffer)
 
                     End If
 
@@ -971,7 +848,7 @@ SendToNpcArea_Err:
         
 End Sub
 
-Public Sub SendToAreaByPos(ByVal Map As Integer, ByVal AreaX As Integer, ByVal AreaY As Integer, sndData As t_DataBuffer)
+Public Sub SendToAreaByPos(ByVal Map As Integer, ByVal AreaX As Integer, ByVal AreaY As Integer, ParamArray Args() As Variant)
         
         On Error GoTo SendToAreaByPos_Err
         
@@ -983,7 +860,10 @@ Public Sub SendToAreaByPos(ByVal Map As Integer, ByVal AreaX As Integer, ByVal A
 102     AreaY = 2 ^ (AreaY \ 12)
    
 104     If Not MapaValido(Map) Then Exit Sub
- 
+      
+        Dim Buffer As Network.Writer
+        Set Buffer = Protocol_Writes.GetWriterBuffer()
+        
 106     For LoopC = 1 To ConnGroups(Map).CountEntrys
 108         tempIndex = ConnGroups(Map).UserEntrys(LoopC)
            
@@ -994,7 +874,7 @@ Public Sub SendToAreaByPos(ByVal Map As Integer, ByVal AreaX As Integer, ByVal A
 
 116             If TempInt Then
 118                 If UserList(tempIndex).ConnIDValida Then
-120                     Call EnviarDatosASlot(tempIndex, sndData)
+120                     Call modNetwork.Send(tempIndex, Buffer)
 
                     End If
 
@@ -1004,16 +884,16 @@ Public Sub SendToAreaByPos(ByVal Map As Integer, ByVal AreaX As Integer, ByVal A
 
 122     Next LoopC
 
-        
-        Exit Sub
-
 SendToAreaByPos_Err:
-124     Call TraceError(Err.Number, Err.Description, "modSendData.SendToAreaByPos", Erl)
-
         
+        Call Buffer.Clear
+            
+        If (Err.Number <> 0) Then
+124         Call TraceError(Err.Number, Err.Description, "modSendData.SendToAreaByPos", Erl)
+        End If
 End Sub
 
-Public Sub SendToMap(ByVal Map As Integer, sndData As t_DataBuffer)
+Private Sub SendToMap(ByVal Map As Integer, ByVal Buffer As Network.Writer)
         
         On Error GoTo SendToMap_Err
         
@@ -1032,7 +912,7 @@ Public Sub SendToMap(ByVal Map As Integer, sndData As t_DataBuffer)
 104         tempIndex = ConnGroups(Map).UserEntrys(LoopC)
         
 106         If UserList(tempIndex).ConnIDValida Then
-108             Call EnviarDatosASlot(tempIndex, sndData)
+108             Call modNetwork.Send(tempIndex, Buffer)
 
             End If
 
@@ -1047,7 +927,7 @@ SendToMap_Err:
         
 End Sub
 
-Public Sub SendToMapButIndex(ByVal UserIndex As Integer, sndData As t_DataBuffer)
+Private Sub SendToMapButIndex(ByVal UserIndex As Integer, ByVal Buffer As Network.Writer)
         
         On Error GoTo SendToMapButIndex_Err
         
@@ -1071,7 +951,7 @@ Public Sub SendToMapButIndex(ByVal UserIndex As Integer, sndData As t_DataBuffer
 108         tempIndex = ConnGroups(Map).UserEntrys(LoopC)
         
 110         If tempIndex <> UserIndex And UserList(tempIndex).ConnIDValida Then
-112             Call EnviarDatosASlot(tempIndex, sndData)
+112             Call modNetwork.Send(tempIndex, Buffer)
 
             End If
 

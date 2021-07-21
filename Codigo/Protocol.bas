@@ -1,6 +1,7 @@
 Attribute VB_Name = "Protocol"
-
 Option Explicit
+
+Private Declare Sub CallHandle Lib "ao20.dll" (ByVal Address As Long, ByVal UserIndex As Integer)
 
 ''
 'When we have a list of strings, we use this to separate them and prevent
@@ -9,6 +10,7 @@ Public Const SEPARATOR             As String * 1 = vbNullChar
 
 Public Enum ServerPacketID
 
+    Connected
     logged                  ' LOGGED  0
     RemoveDialogs           ' QTDL
     RemoveCharDialog        ' QDL
@@ -49,11 +51,11 @@ Public Enum ServerPacketID
     GuildChat               ' |+   40
     ShowMessageBox          ' !!
     MostrarCuenta
-    UserIndexInServer       ' IU
-    UserCharIndexInServer   ' IP
     CharacterCreate         ' CC
     CharacterRemove         ' BP
     CharacterMove           ' MP, +, * and _ '
+    UserIndexInServer       ' IU
+    UserCharIndexInServer   ' IP
     ForceCharMove
     CharacterChange         ' CP
     ObjectCreate            ' HO
@@ -181,9 +183,6 @@ Public Enum ServerPacketID
     UpdateUserKey
     UpdateRM
     UpdateDM
-    RequestScreenShot
-    ShowScreenShot
-    ScreenShotData
     Tolerancia0
     SeguroResu
     Stopped
@@ -525,8 +524,6 @@ Private Enum ClientPacketID
     RemovePretorianClan     '/ELIMINARPRETORIANOS
     Home                    '/HOGAR
     Consulta                '/CONSULTA
-    RequestScreenShot       '/SS
-    SendScreenShot
     Tolerancia0             '/T0
     GetMapInfo              '/MAPINFO
     FinEvento
@@ -649,16 +646,17 @@ Public Type PersonajeCuenta
 
 End Type
 
-Public Type t_DataBuffer
-    Data() As Byte
-    Length As Integer
-End Type
-
 Private PacketList(0 To ClientPacketID.[PacketCount] - 1) As Long
-Private Declare Sub CallHandle Lib "ao20.dll" (ByVal address As Long, ByVal UserIndex As Integer)
+Private Reader  As Network.Reader
+
+'Devuelve el argumento que se le pasó (sirve para usar AddressOf en variables)
+Private Function GetAddress(ByVal Address As Long) As Long
+100     GetAddress = Address
+End Function
 
 Public Sub InitializePacketList()
-
+        Call Protocol_Writes.InitializeAuxiliaryBuffer
+        
 100     PacketList(ClientPacketID.LoginExistingChar) = GetAddress(AddressOf HandleLoginExistingChar)
 102     PacketList(ClientPacketID.LoginNewChar) = GetAddress(AddressOf HandleLoginNewChar)
 104     PacketList(ClientPacketID.ThrowDice) = GetAddress(AddressOf HandleThrowDice)
@@ -982,7 +980,7 @@ Public Sub InitializePacketList()
         'PacketList(ClientPacketID.RemovePretorianClan) = GetAddress(AddressOf HandleRemovePretorianClan)
 730     PacketList(ClientPacketID.Home) = GetAddress(AddressOf HandleHome)
 732     PacketList(ClientPacketID.Consulta) = GetAddress(AddressOf HandleConsulta)
-734     PacketList(ClientPacketID.RequestScreenShot) = GetAddress(AddressOf HandleRequestScreenShot)
+734     'PacketList(ClientPacketID.RequestScreenShot) = GetAddress(AddressOf HandleRequestScreenShot)
         'PacketList(ClientPacketID.RequestProcesses) = GetAddress(AddressOf HandleRequestProcesses)
         'PacketList(ClientPacketID.SendScreenShot) = GetAddress(AddressOf HandleSendScreenShot)
         'PacketList(ClientPacketID.SendProcesses) = GetAddress(AddressOf HandleSendProcesses)
@@ -1003,143 +1001,60 @@ Public Sub InitializePacketList()
 764     PacketList(ClientPacketID.CloseCrafting) = GetAddress(AddressOf HandleCloseCrafting)
 766     PacketList(ClientPacketID.MoveCraftItem) = GetAddress(AddressOf HandleMoveCraftItem)
 768     PacketList(ClientPacketID.PetLeaveAll) = GetAddress(AddressOf HandlePetLeaveAll)
-770     PacketList(ClientPacketID.GuardNoticeResponse) = GetAddress(AddressOf AOGuard.HandleGuardNoticeResponse)
-772     PacketList(ClientPacketID.GuardResendVerificationCode) = GetAddress(AddressOf AOGuard.HandleGuardResendVerificationCode)
+770     PacketList(ClientPacketID.GuardNoticeResponse) = GetAddress(AddressOf HandleGuardNoticeResponse)
+772     PacketList(ClientPacketID.GuardResendVerificationCode) = GetAddress(AddressOf HandleGuardResendVerificationCode)
     
 End Sub
-
-Private Sub ParsePacket(ByVal packetIndex As Long, ByVal UserIndex As Integer)
-        
-100     If packetIndex > UBound(PacketList()) Then Exit Sub
-    
-102     If PacketList(packetIndex) = 0 Then Exit Sub
-
-        'llamamos al sub mediante su dirección en memoria
-104     Call CallHandle(PacketList(packetIndex), UserIndex)
- 
-End Sub
-
-'Devuelve el argumento que se le pasó (sirve para usar AddressOf en variables)
-Private Function GetAddress(ByVal address As Long) As Long
- 
-100     GetAddress = address
- 
-End Function
-
 
 ''
 ' Handles incoming data.
 '
 ' @param    UserIndex The index of the user sending the message.
 
-Public Function HandleIncomingData(ByVal UserIndex As Integer) As Boolean
+Public Function HandleIncomingData(ByVal UserIndex As Integer, ByVal Message As Network.Reader) As Boolean
+
+On Error Resume Next
+
+    Set Reader = Message
     
-        On Error GoTo HandleIncomingData_Err:
-    
-100     With UserList(UserIndex)
+    Dim PacketID As Long:
+    PacketID = Reader.ReadInt
+
+    'Does the packet requires a logged user??
+    If Not (PacketID = ClientPacketID.LoginExistingChar Or _
+            PacketID = ClientPacketID.LoginNewChar Or _
+            PacketID = ClientPacketID.IngresarConCuenta Or _
+            PacketID = ClientPacketID.BorrarPJ Or _
+            PacketID = ClientPacketID.ThrowDice Or _
+            PacketID = ClientPacketID.GuardNoticeResponse) Then
+               
+        'Is the user actually logged?
+        If Not UserList(UserIndex).flags.UserLogged Then
+            Call CloseSocket(UserIndex)
+            Exit Function
         
-            ' [2020-5-23 Mateo] Esto es normal que suceda, puede existir un paquete INCOMPLETO y esto hace que no lo procese y deje acumulado el buffer para el proximo dato
-102         If Not .incomingData.CheckLength Then
-104             Debug.Print "Not .IncomingData.CheckLength! Último paquete: " & .LastPacketID & " - " & Date$ & " - " & Time$
-106             HandleIncomingData = False
-                Exit Function
-            End If
-    
-108         If Not .incomingData.ValidCRC Then
-110             Debug.Print "UserIndex: " & UserIndex & " El paquete es invalido, posible hack, echarlo!"
-112             HandleIncomingData = False
-114             Call CloseSocket(UserIndex)
-                Exit Function
-            End If
-        
-            Dim PacketID As Long
-116             PacketID = CLng(.incomingData.ReadID())
+        'He is logged. Reset idle counter if id is valid.
+        ElseIf PacketID <= ClientPacketID.[PacketCount] Then
+            UserList(UserIndex).Counters.IdleCount = 0
+        End If
+    ElseIf PacketID <= ClientPacketID.[PacketCount] Then
+        UserList(UserIndex).Counters.IdleCount = 0
+    End If
 
-118         If PacketID >= ClientPacketID.[PacketCount] Then
-                ' Limpiamos la cola
-120             Call .incomingData.SafeClearPacket
-
-                ' Lo kickeamos
-122             Call CloseSocket(UserIndex)
-
-124             HandleIncomingData = False
-                Exit Function
-            End If
-    
-            'Does the packet requires a logged user??
-126         If Not (PacketID = ClientPacketID.LoginExistingChar Or _
-                    PacketID = ClientPacketID.LoginNewChar Or _
-                    PacketID = ClientPacketID.IngresarConCuenta Or _
-                    PacketID = ClientPacketID.BorrarPJ Or _
-                    PacketID = ClientPacketID.ThrowDice Or _
-                    PacketID = ClientPacketID.GuardNoticeResponse) Then
-            
-                'Is the user actually logged?
-128             If Not .flags.UserLogged Then
-130                 Call CloseSocket(UserIndex)
-                    Exit Function
-            
-                    'He is logged. Reset idle counter if id is valid.
-132             ElseIf PacketID < ClientPacketID.[PacketCount] Then
-134                 .Counters.IdleCount = 0
-    
-                End If
-    
-            Else
-        
-136             .Counters.IdleCount = 0
-            
-                ' Envió el primer paquete
-138             .flags.FirstPacket = True
-
-            End If
-
-        End With
-    
-140     Call ParsePacket(PacketID, UserIndex)
-
-142     With UserList(UserIndex).incomingData
-    
-144         Call .ReadNewPacket
-
-            'Done with this packet, move on to next one or send everything if no more packets found
-146         If (Not .BufferOver Or .Length > 0) And .errNumber = 0 Then
-148             Call Err.Clear
-150             HandleIncomingData = True
-      
-152         ElseIf .errNumber <> 0 And .errNumber <> .NotEnoughDataErrCode Then
-                'An error ocurred, log it and kick player.
-154             Call RegistrarError(Err.Number, Err.Description & vbNewLine & "PackedId: " & PacketID & vbNewLine & IIf(UserList(UserIndex).flags.UserLogged, "UserName: " & UserList(UserIndex).Name, "UserIndex: " & UserIndex), "Protocol.HandleIncomingData", Erl)
-156             Call CloseSocket(UserIndex)
-      
-158             HandleIncomingData = False
-            
-            Else
-        
-160             HandleIncomingData = False
-    
-            End If
-        
-162         .errNumber = 0
-164         UserList(UserIndex).LastPacketID = PacketID
-    
-        End With
-    
-        Exit Function
+    If (PacketID >= 0 And PacketID < ClientPacketID.[PacketCount]) And (PacketList(PacketID) <> 0) Then
+        Call CallHandle(PacketList(PacketID), UserIndex) ' DLL call using VB Declare is a lot less eficient than a JUMP table generated by VB6
+    End If
 
 HandleIncomingData_Err:
-166     Call RegistrarError(Err.Number, Err.Description & vbNewLine & "PackedID: " & PacketID & vbNewLine & IIf(UserList(UserIndex).flags.UserLogged, "UserName: " & UserList(UserIndex).Name, "UserIndex: " & UserIndex), "Protocol.HandleIncomingData", Erl)
-        UserList(UserIndex).incomingData.SafeClearPacket
-168     Resume Next
     
-End Function
+    Set Reader = Nothing
 
-Public Function ConvertDataBuffer(ByVal Length As Integer, _
-                                  ByRef Data() As Byte) As t_DataBuffer
-    
-100     ConvertDataBuffer.Data = Data
-102     ConvertDataBuffer.Length = Length
-    
+    If Err.Number <> 0 Then
+        Call RegistrarError(Err.Number, Err.Description & vbNewLine & "PackedID: " & PacketID & vbNewLine & IIf(UserList(UserIndex).flags.UserLogged, "UserName: " & UserList(UserIndex).Name, "UserIndex: " & UserIndex), "Protocol.HandleIncomingData", Erl)
+        Call CloseSocket(UserIndex)
+        
+        HandleIncomingData = False
+    End If
 End Function
 
 ''
@@ -1163,18 +1078,14 @@ Private Sub HandleLoginExistingChar(ByVal UserIndex As Integer)
         Dim MacAddress  As String
         Dim HDSerial    As Long
         Dim MD5         As String
-        
-100     With UserList(UserIndex).incomingData
 
-102         CuentaEmail = .ReadASCIIString()
-104         Password = .ReadASCIIString()
-106         Version = CStr(.ReadByte()) & "." & CStr(.ReadByte()) & "." & CStr(.ReadByte())
-108         UserName = .ReadASCIIString()
-110         MacAddress = .ReadASCIIString()
-112         HDSerial = .ReadLong()
-114         MD5 = .ReadASCIIString()
-        
-        End With
+102         CuentaEmail = Reader.ReadString8()
+104         Password = Reader.ReadString8()
+106         Version = CStr(Reader.ReadInt8()) & "." & CStr(Reader.ReadInt8()) & "." & CStr(Reader.ReadInt8())
+108         UserName = Reader.ReadString8()
+110         MacAddress = Reader.ReadString8()
+112         HDSerial = Reader.ReadInt32()
+114         MD5 = Reader.ReadString8()
 
         #If DEBUGGING = False Then
 
@@ -1265,7 +1176,7 @@ Private Sub HandleLoginExistingChar(ByVal UserIndex As Integer)
 ErrHandler:
         
 182     Call TraceError(Err.Number, Err.Description, "Protocol.HandleLoginExistingChar", Erl)
-184     Call UserList(UserIndex).incomingData.SafeClearPacket
+184
 
 End Sub
 
@@ -1293,24 +1204,20 @@ Private Sub HandleLoginNewChar(ByVal UserIndex As Integer)
         Dim HDSerial    As Long
         Dim MD5         As String
         Dim Version     As String
-      
-100     With UserList(UserIndex).incomingData
 
-102         CuentaEmail = .ReadASCIIString()
-104         Password = .ReadASCIIString()
-106         Version = CStr(.ReadByte()) & "." & CStr(.ReadByte()) & "." & CStr(.ReadByte())
-108         UserName = .ReadASCIIString()
-110         race = .ReadByte()
-112         gender = .ReadByte()
-114         Class = .ReadByte()
-116         Head = .ReadInteger()
-118         Hogar = .ReadByte()
-120         MacAddress = .ReadASCIIString()
-122         HDSerial = .ReadLong()
-124         MD5 = .ReadASCIIString()
+102         CuentaEmail = Reader.ReadString8()
+104         Password = Reader.ReadString8()
+106         Version = CStr(Reader.ReadInt8()) & "." & CStr(Reader.ReadInt8()) & "." & CStr(Reader.ReadInt8())
+108         UserName = Reader.ReadString8()
+110         race = Reader.ReadInt8()
+112         gender = Reader.ReadInt8()
+114         Class = Reader.ReadInt8()
+116         Head = Reader.ReadInt16()
+118         Hogar = Reader.ReadInt8()
+120         MacAddress = Reader.ReadString8()
+122         HDSerial = Reader.ReadInt32()
+124         MD5 = Reader.ReadString8()
 
-        End With
-    
 126     If PuedeCrearPersonajes = 0 Then
 128         Call WriteShowMessageBox(UserIndex, "La creacion de personajes en este servidor se ha deshabilitado.")
 130         Call CloseSocket(UserIndex)
@@ -1376,7 +1283,7 @@ Private Sub HandleLoginNewChar(ByVal UserIndex As Integer)
 ErrHandler:
 
 168     Call TraceError(Err.Number, Err.Description, "Protocol.HandleLoginNewChar", Erl)
-170     Call UserList(UserIndex).incomingData.SafeClearPacket
+170
 
 End Sub
 
@@ -1399,7 +1306,7 @@ Private Sub HandleThrowDice(ByVal UserIndex As Integer)
 
 HandleThrowDice_Err:
 114     Call TraceError(Err.Number, Err.Description, "Protocol.HandleThrowDice", Erl)
-116     Call UserList(UserIndex).incomingData.SafeClearPacket
+116
         
 End Sub
 
@@ -1421,7 +1328,7 @@ Private Sub HandleTalk(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             Dim chat As String
-102             chat = .incomingData.ReadASCIIString()
+102             chat = Reader.ReadString8()
 
             '[Consejeros & GMs]
 104         If (.flags.Privilegios And (PlayerType.Consejero Or PlayerType.SemiDios)) Then
@@ -1496,7 +1403,7 @@ Private Sub HandleTalk(ByVal UserIndex As Integer)
         
 ErrHandler:
 152     Call TraceError(Err.Number, Err.Description, "Protocol.HandleTalk", Erl)
-154     Call UserList(UserIndex).incomingData.SafeClearPacket
+154
 
 End Sub
 
@@ -1518,7 +1425,7 @@ Private Sub HandleYell(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             Dim chat As String
-102             chat = .incomingData.ReadASCIIString()
+102             chat = Reader.ReadString8()
         
 104         If UserList(UserIndex).flags.Muerto = 1 Then
         
@@ -1595,7 +1502,7 @@ Private Sub HandleYell(ByVal UserIndex As Integer)
 ErrHandler:
 
 152     Call TraceError(Err.Number, Err.Description, "Protocol.HandleYell", Erl)
-154     Call UserList(UserIndex).incomingData.SafeClearPacket
+154
 
 End Sub
 
@@ -1620,8 +1527,8 @@ Private Sub HandleWhisper(ByVal UserIndex As Integer)
             Dim targetCharIndex As String
             Dim targetUserIndex As Integer
 
-102         targetCharIndex = .incomingData.ReadASCIIString()
-104         chat = .incomingData.ReadASCIIString()
+102         targetCharIndex = Reader.ReadString8()
+104         chat = Reader.ReadString8()
     
 106         If CompararPrivilegios(.flags.Privilegios, UserDarPrivilegioLevel(targetCharIndex)) < 0 Then Exit Sub
         
@@ -1674,7 +1581,7 @@ Private Sub HandleWhisper(ByVal UserIndex As Integer)
 ErrHandler:
 
 140     Call TraceError(Err.Number, Err.Description, "Protocol.HandleWhisper", Erl)
-142     Call UserList(UserIndex).incomingData.SafeClearPacket
+142
 
 End Sub
 
@@ -1696,7 +1603,7 @@ Private Sub HandleWalk(ByVal UserIndex As Integer)
     
 100     With UserList(UserIndex)
 
-102         Heading = .incomingData.ReadByte()
+102         Heading = Reader.ReadInt8()
         
 104         If .flags.Paralizado = 0 And .flags.Inmovilizado = 0 Then
         
@@ -1831,7 +1738,7 @@ Private Sub HandleWalk(ByVal UserIndex As Integer)
 
 HandleWalk_Err:
 200     Call TraceError(Err.Number, Err.Description, "Protocol.HandleWalk", Erl)
-202     Call UserList(UserIndex).incomingData.SafeClearPacket
+202
         
 End Sub
 
@@ -1855,7 +1762,7 @@ Private Sub HandleRequestPositionUpdate(ByVal UserIndex As Integer)
 
 HandleRequestPositionUpdate_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandlRequestPositionUpdate", Erl)
-104     Call UserList(UserIndex).incomingData.SafeClearPacket
+104
         
 End Sub
 
@@ -1950,7 +1857,7 @@ Private Sub HandleAttack(ByVal UserIndex As Integer)
 
 HandleAttack_Err:
 152     Call TraceError(Err.Number, Err.Description, "Protocol.HandleAttack", Erl)
-154     Call UserList(UserIndex).incomingData.SafeClearPacket
+154
         
 End Sub
 
@@ -1993,7 +1900,7 @@ Private Sub HandlePickUp(ByVal UserIndex As Integer)
 
 HandlePickUp_Err:
 112     Call TraceError(Err.Number, Err.Description, "Protocol.HandlePickUp", Erl)
-114     Call UserList(UserIndex).incomingData.SafeClearPacket
+114
         
 End Sub
 
@@ -2029,7 +1936,7 @@ Private Sub HandleSafeToggle(ByVal UserIndex As Integer)
 
 HandleSafeToggle_Err:
 110     Call TraceError(Err.Number, Err.Description, "Protocol.HandleSafeToggle", Erl)
-112     Call UserList(UserIndex).incomingData.SafeClearPacket
+112
         
 End Sub
 
@@ -2063,7 +1970,7 @@ Private Sub HandlePartyToggle(ByVal UserIndex As Integer)
 
 HandlePartyToggle_Err:
 110     Call TraceError(Err.Number, Err.Description, "Protocol.HandlePartyToggle", Erl)
-112     Call UserList(UserIndex).incomingData.SafeClearPacket
+112
         
 End Sub
 
@@ -2087,7 +1994,7 @@ Private Sub HandleSeguroClan(ByVal UserIndex As Integer)
 
 HandleSeguroClan_Err:
 106     Call TraceError(Err.Number, Err.Description, "Protocol.HandleSeguroClan", Erl)
-108     Call UserList(UserIndex).incomingData.SafeClearPacket
+108
         
 End Sub
 
@@ -2111,7 +2018,7 @@ Private Sub HandleRequestGuildLeaderInfo(ByVal UserIndex As Integer)
 
 HandleRequestGuildLeaderInfo_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRequestGuildLeaderInfo", Erl)
-104     Call UserList(UserIndex).incomingData.SafeClearPacket
+104
         
 End Sub
 
@@ -2136,7 +2043,7 @@ Private Sub HandleRequestAtributes(ByVal UserIndex As Integer)
 
 HandleRequestAtributes_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRequestAtributes", Erl)
-104     Call UserList(UserIndex).incomingData.SafeClearPacket
+104
         
 End Sub
 
@@ -2161,7 +2068,7 @@ Private Sub HandleRequestSkills(ByVal UserIndex As Integer)
 
 HandleRequestSkills_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRequestSkills", Erl)
-104     Call UserList(UserIndex).incomingData.SafeClearPacket
+104
         
 End Sub
 
@@ -2186,7 +2093,7 @@ Private Sub HandleRequestMiniStats(ByVal UserIndex As Integer)
 
 HandleRequestMiniStats_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRequestMiniStats", Erl)
-104     Call UserList(UserIndex).incomingData.SafeClearPacket
+104
         
 End Sub
 
@@ -2222,7 +2129,7 @@ Private Sub HandleCommerceEnd(ByVal UserIndex As Integer)
 
 HandleCommerceEnd_Err:
 110     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCommerceEnd", Erl)
-112     Call UserList(UserIndex).incomingData.SafeClearPacket
+112
         
 End Sub
 
@@ -2262,7 +2169,7 @@ Private Sub HandleUserCommerceEnd(ByVal UserIndex As Integer)
 
 HandleUserCommerceEnd_Err:
 110     Call TraceError(Err.Number, Err.Description, "Protocol.HandleUserCommerceEnd", Erl)
-112     Call UserList(UserIndex).incomingData.SafeClearPacket
+112
         
 End Sub
 
@@ -2294,7 +2201,7 @@ Private Sub HandleBankEnd(ByVal UserIndex As Integer)
 
 HandleBankEnd_Err:
 108     Call TraceError(Err.Number, Err.Description, "Protocol.HandleBankEnd", Erl)
-110     Call UserList(UserIndex).incomingData.SafeClearPacket
+110
         
 End Sub
 
@@ -2320,7 +2227,7 @@ Private Sub HandleUserCommerceOk(ByVal UserIndex As Integer)
 
 HandleUserCommerceOk_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleUserCommerceOk", Erl)
-104     Call UserList(UserIndex).incomingData.SafeClearPacket
+104
         
 End Sub
 
@@ -2365,7 +2272,7 @@ Private Sub HandleUserCommerceReject(ByVal UserIndex As Integer)
 
 HandleUserCommerceReject_Err:
 116     Call TraceError(Err.Number, Err.Description, "Protocol.HandleUserCommerceReject", Erl)
-118     Call UserList(UserIndex).incomingData.SafeClearPacket
+118
         
 End Sub
 
@@ -2389,8 +2296,8 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
     
 100     With UserList(UserIndex)
 
-102         Slot = .incomingData.ReadByte()
-104         amount = .incomingData.ReadLong()
+102         Slot = Reader.ReadInt8()
+104         amount = Reader.ReadInt32()
 
 106         If Not IntervaloPermiteTirar(UserIndex) Then Exit Sub
 
@@ -2472,7 +2379,7 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
 
 HandleDrop_Err:
 158     Call TraceError(Err.Number, Err.Description, "Protocol.HandleDrop", Erl)
-160     Call UserList(UserIndex).incomingData.SafeClearPacket
+160
         
 End Sub
 
@@ -2494,7 +2401,7 @@ Private Sub HandleCastSpell(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             Dim Spell As Byte
-102             Spell = .incomingData.ReadByte()
+102             Spell = Reader.ReadInt8()
         
 104         If .flags.Muerto = 1 Then
                 'Call WriteConsoleMsg(UserIndex, "¡¡Estás muerto!!.", FontTypeNames.FONTTYPE_INFO)
@@ -2536,7 +2443,7 @@ Private Sub HandleCastSpell(ByVal UserIndex As Integer)
 
 HandleCastSpell_Err:
 128     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCastSpell", Erl)
-130     Call UserList(UserIndex).incomingData.SafeClearPacket
+130
         
 End Sub
 
@@ -2560,8 +2467,8 @@ Private Sub HandleLeftClick(ByVal UserIndex As Integer)
             Dim X As Byte
             Dim Y As Byte
         
-102         X = .incomingData.ReadByte()
-104         Y = .incomingData.ReadByte()
+102         X = Reader.ReadInt8()
+104         Y = Reader.ReadInt8()
         
 106         Call LookatTile(UserIndex, .Pos.Map, X, Y)
 
@@ -2571,7 +2478,7 @@ Private Sub HandleLeftClick(ByVal UserIndex As Integer)
 
 HandleLeftClick_Err:
 108     Call TraceError(Err.Number, Err.Description, "Protocol.HandleLeftClick", Erl)
-110     Call UserList(UserIndex).incomingData.SafeClearPacket
+110
         
 End Sub
 
@@ -2595,8 +2502,8 @@ Private Sub HandleDoubleClick(ByVal UserIndex As Integer)
             Dim X As Byte
             Dim Y As Byte
         
-102         X = .incomingData.ReadByte()
-104         Y = .incomingData.ReadByte()
+102         X = Reader.ReadInt8()
+104         Y = Reader.ReadInt8()
         
 106         Call Accion(UserIndex, .Pos.Map, X, Y)
 
@@ -2606,7 +2513,7 @@ Private Sub HandleDoubleClick(ByVal UserIndex As Integer)
 
 HandleDoubleClick_Err:
 108     Call TraceError(Err.Number, Err.Description, "Protocol.HandleDoubleClick", Erl)
-110     Call UserList(UserIndex).incomingData.SafeClearPacket
+110
         
 End Sub
 
@@ -2628,7 +2535,7 @@ Private Sub HandleWork(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             Dim Skill As eSkill
-102             Skill = .incomingData.ReadByte()
+102             Skill = Reader.ReadInt8()
         
 104         If UserList(UserIndex).flags.Muerto = 1 Then
                 'Call WriteConsoleMsg(UserIndex, "¡¡Estás muerto!!.", FontTypeNames.FONTTYPE_INFO)
@@ -2704,7 +2611,7 @@ Private Sub HandleWork(ByVal UserIndex As Integer)
 
 HandleWork_Err:
 146     Call TraceError(Err.Number, Err.Description, "Protocol.HandleWork", Erl)
-148     Call UserList(UserIndex).incomingData.SafeClearPacket
+148
         
 End Sub
 
@@ -2735,7 +2642,7 @@ Private Sub HandleUseSpellMacro(ByVal UserIndex As Integer)
 
 HandleUseSpellMacro_Err:
 108     Call TraceError(Err.Number, Err.Description, "Protocol.HandleUseSpellMacro", Erl)
-110     Call UserList(UserIndex).incomingData.SafeClearPacket
+110
         
 End Sub
 
@@ -2756,7 +2663,7 @@ Private Sub HandleUseItem(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             Dim Slot As Byte
-102             Slot = .incomingData.ReadByte()
+102             Slot = Reader.ReadInt8()
         
 104         If Slot <= UserList(UserIndex).CurrentInventorySlots And Slot > 0 Then
 106             If .Invent.Object(Slot).ObjIndex = 0 Then Exit Sub
@@ -2771,7 +2678,7 @@ Private Sub HandleUseItem(ByVal UserIndex As Integer)
 
 HandleUseItem_Err:
 110     Call TraceError(Err.Number, Err.Description, "Protocol.HandleUseItem", Erl)
-112     Call UserList(UserIndex).incomingData.SafeClearPacket
+112
         
 End Sub
 
@@ -2790,10 +2697,8 @@ Private Sub HandleCraftBlacksmith(ByVal UserIndex As Integer)
         '
         '***************************************************
 
-100     With UserList(UserIndex).incomingData
-
             Dim Item As Integer
-102             Item = .ReadInteger()
+102             Item = Reader.ReadInt16()
         
 104         If Item < 1 Then Exit Sub
         
@@ -2801,13 +2706,11 @@ Private Sub HandleCraftBlacksmith(ByVal UserIndex As Integer)
         
 106         Call HerreroConstruirItem(UserIndex, Item)
 
-        End With
-        
         Exit Sub
 
 HandleCraftBlacksmith_Err:
 108     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCraftBlacksmith", Erl)
-110     Call UserList(UserIndex).incomingData.SafeClearPacket
+110
         
 End Sub
 
@@ -2826,22 +2729,18 @@ Private Sub HandleCraftCarpenter(ByVal UserIndex As Integer)
         '
         '***************************************************
 
-100     With UserList(UserIndex).incomingData
-
             Dim Item As Integer
-102             Item = .ReadInteger()
+102             Item = Reader.ReadInt16()
         
 104         If Item = 0 Then Exit Sub
 
 106         Call CarpinteroConstruirItem(UserIndex, Item)
 
-        End With
-        
         Exit Sub
 
 HandleCraftCarpenter_Err:
 108     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCraftCarpenter", Erl)
-110     Call UserList(UserIndex).incomingData.SafeClearPacket
+110
         
 End Sub
 
@@ -2855,20 +2754,16 @@ Private Sub HandleCraftAlquimia(ByVal UserIndex As Integer)
         '
         '***************************************************
 
-100     With UserList(UserIndex).incomingData
-
             Dim Item As Integer
-102             Item = .ReadInteger()
+102             Item = Reader.ReadInt16()
         
 104         If Item < 1 Then Exit Sub
 
-        End With
-        
         Exit Sub
 
 HandleCraftAlquimia_Err:
 106     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCraftAlquimia", Erl)
-108     Call UserList(UserIndex).incomingData.SafeClearPacket
+108
         
 End Sub
 
@@ -2882,22 +2777,18 @@ Private Sub HandleCraftSastre(ByVal UserIndex As Integer)
         '
         '***************************************************
 
-100     With UserList(UserIndex).incomingData
-
             Dim Item As Integer
-102             Item = .ReadInteger()
+102             Item = Reader.ReadInt16()
         
 104         If Item < 1 Then Exit Sub
 
 106         Call SastreConstruirItem(UserIndex, Item)
 
-        End With
-
         Exit Sub
 
 HandleCraftSastre_Err:
 108     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCraftSastre", Erl)
-110     Call UserList(UserIndex).incomingData.SafeClearPacket
+110
         
 End Sub
 ''
@@ -2925,10 +2816,10 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
             Dim tU       As Integer   'Target user
             Dim tN       As Integer   'Target NPC
         
-102         X = .incomingData.ReadByte()
-104         Y = .incomingData.ReadByte()
+102         X = Reader.ReadInt8()
+104         Y = Reader.ReadInt8()
             
-106         Skill = .incomingData.ReadByte()
+106         Skill = Reader.ReadInt8()
 
             .Trabajo.Target_X = X
             .Trabajo.Target_Y = Y
@@ -3540,7 +3431,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 
 HandleWorkLeftClick_Err:
 714     Call TraceError(Err.Number, Err.Description, "Protocol.HandleWorkLeftClick", Erl)
-716     Call UserList(UserIndex).incomingData.SafeClearPacket
+716
         
 End Sub
 
@@ -3566,9 +3457,9 @@ Private Sub HandleCreateNewGuild(ByVal UserIndex As Integer)
         Dim errorStr   As String
         Dim Alineacion As Byte
         
-102     Desc = .incomingData.ReadASCIIString()
-104     GuildName = .incomingData.ReadASCIIString()
-106     Alineacion = .incomingData.ReadByte()
+102     Desc = Reader.ReadString8()
+104     GuildName = Reader.ReadString8()
+106     Alineacion = Reader.ReadInt8()
         
 108     If modGuilds.CrearNuevoClan(UserIndex, Desc, GuildName, Alineacion, errorStr) Then
 
@@ -3595,7 +3486,7 @@ Private Sub HandleCreateNewGuild(ByVal UserIndex As Integer)
 ErrHandler:
 
 126 Call TraceError(Err.Number, Err.Description, "Protocol.HandleCreateNewGuild", Erl)
-128 Call UserList(UserIndex).incomingData.SafeClearPacket
+128
 
 End Sub
 
@@ -3619,7 +3510,7 @@ Private Sub HandleSpellInfo(ByVal UserIndex As Integer)
             Dim spellSlot As Byte
             Dim Spell     As Integer
         
-102         spellSlot = .incomingData.ReadByte()
+102         spellSlot = Reader.ReadInt8()
         
             'Validate slot
 104         If spellSlot < 1 Or spellSlot > MAXUSERHECHIZOS Then
@@ -3647,7 +3538,7 @@ Private Sub HandleSpellInfo(ByVal UserIndex As Integer)
 
 HandleSpellInfo_Err:
 116     Call TraceError(Err.Number, Err.Description, "Protocol.HandleSpellInfo", Erl)
-118     Call UserList(UserIndex).incomingData.SafeClearPacket
+118
         
 End Sub
 
@@ -3669,7 +3560,7 @@ Private Sub HandleEquipItem(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
         
             Dim itemSlot As Byte
-102             itemSlot = .incomingData.ReadByte()
+102             itemSlot = Reader.ReadInt8()
         
             'Dead users can't equip items
 104         If .flags.Muerto = 1 Then
@@ -3691,7 +3582,7 @@ Private Sub HandleEquipItem(ByVal UserIndex As Integer)
 
 HandleEquipItem_Err:
 114     Call TraceError(Err.Number, Err.Description, "Protocol.HandleEquipItem", Erl)
-116     Call UserList(UserIndex).incomingData.SafeClearPacket
+116
         
 End Sub
 
@@ -3714,7 +3605,7 @@ Private Sub HandleChangeHeading(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
         
             Dim Heading As eHeading
-102             Heading = .incomingData.ReadByte()
+102             Heading = Reader.ReadInt8()
         
             'Validate heading (VB won't say invalid cast if not a valid index like .Net languages would do... *sigh*)
 104         If Heading > 0 And Heading < 5 Then
@@ -3729,7 +3620,7 @@ Private Sub HandleChangeHeading(ByVal UserIndex As Integer)
 
 HandleChangeHeading_Err:
 110     Call TraceError(Err.Number, Err.Description, "Protocol.HandleChangeHeading", Erl)
-112     Call UserList(UserIndex).incomingData.SafeClearPacket
+112
         
 End Sub
 
@@ -3757,7 +3648,7 @@ Private Sub HandleModifySkills(ByVal UserIndex As Integer)
             'Codigo para prevenir el hackeo de los skills
             '<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 102         For i = 1 To NUMSKILLS
-104             points(i) = .incomingData.ReadByte()
+104             points(i) = Reader.ReadInt8()
             
 106             If points(i) < 0 Then
 108                 Call LogHackAttemp(.Name & " IP:" & .IP & " trató de hackear los skills.")
@@ -3805,7 +3696,7 @@ Private Sub HandleModifySkills(ByVal UserIndex As Integer)
 
 HandleModifySkills_Err:
 140     Call TraceError(Err.Number, Err.Description, "Protocol.HandleModifySkills", Erl)
-142     Call UserList(UserIndex).incomingData.SafeClearPacket
+142
         
 End Sub
 
@@ -3829,7 +3720,7 @@ Private Sub HandleTrain(ByVal UserIndex As Integer)
             Dim SpawnedNpc As Integer
             Dim PetIndex   As Byte
         
-102         PetIndex = .incomingData.ReadByte()
+102         PetIndex = Reader.ReadInt8()
         
 104         If .flags.TargetNPC = 0 Then Exit Sub
         
@@ -3860,7 +3751,7 @@ Private Sub HandleTrain(ByVal UserIndex As Integer)
 
 HandleTrain_Err:
 122     Call TraceError(Err.Number, Err.Description, "Protocol.HandleTrain", Erl)
-124     Call UserList(UserIndex).incomingData.SafeClearPacket
+124
         
 End Sub
 
@@ -3884,8 +3775,8 @@ Private Sub HandleCommerceBuy(ByVal UserIndex As Integer)
             Dim Slot   As Byte
             Dim amount As Integer
         
-102         Slot = .incomingData.ReadByte()
-104         amount = .incomingData.ReadInteger()
+102         Slot = Reader.ReadInt8()
+104         amount = Reader.ReadInt16()
         
             'Dead people can't commerce...
 106         If .flags.Muerto = 1 Then
@@ -3921,7 +3812,7 @@ Private Sub HandleCommerceBuy(ByVal UserIndex As Integer)
 
 HandleCommerceBuy_Err:
 124     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCommerceBuy", Erl)
-126     Call UserList(UserIndex).incomingData.SafeClearPacket
+126
         
 End Sub
 
@@ -3946,9 +3837,9 @@ Private Sub HandleBankExtractItem(ByVal UserIndex As Integer)
             Dim slotdestino As Byte
             Dim amount      As Integer
         
-102         Slot = .incomingData.ReadByte()
-104         amount = .incomingData.ReadInteger()
-106         slotdestino = .incomingData.ReadByte()
+102         Slot = Reader.ReadInt8()
+104         amount = Reader.ReadInt16()
+106         slotdestino = Reader.ReadInt8()
         
             'Dead people can't commerce
 108         If .flags.Muerto = 1 Then
@@ -3972,7 +3863,7 @@ Private Sub HandleBankExtractItem(ByVal UserIndex As Integer)
 
 HandleBankExtractItem_Err:
 118     Call TraceError(Err.Number, Err.Description, "Protocol.HandleBankExtractItem", Erl)
-120     Call UserList(UserIndex).incomingData.SafeClearPacket
+120
         
 End Sub
 
@@ -3996,8 +3887,8 @@ Private Sub HandleCommerceSell(ByVal UserIndex As Integer)
             Dim Slot   As Byte
             Dim amount As Integer
         
-102         Slot = .incomingData.ReadByte()
-104         amount = .incomingData.ReadInteger()
+102         Slot = Reader.ReadInt8()
+104         amount = Reader.ReadInt16()
         
             'Dead people can't commerce...
 106         If .flags.Muerto = 1 Then
@@ -4025,7 +3916,7 @@ Private Sub HandleCommerceSell(ByVal UserIndex As Integer)
 
 HandleCommerceSell_Err:
 118     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCommerceSell", Erl)
-120     Call UserList(UserIndex).incomingData.SafeClearPacket
+120
         
 End Sub
 
@@ -4050,9 +3941,9 @@ Private Sub HandleBankDeposit(ByVal UserIndex As Integer)
             Dim slotdestino As Byte
             Dim amount      As Integer
         
-102         Slot = .incomingData.ReadByte()
-104         amount = .incomingData.ReadInteger()
-106         slotdestino = .incomingData.ReadByte()
+102         Slot = Reader.ReadInt8()
+104         amount = Reader.ReadInt16()
+106         slotdestino = Reader.ReadInt8()
         
             'Dead people can't commerce...
 108         If .flags.Muerto = 1 Then
@@ -4086,7 +3977,7 @@ Private Sub HandleBankDeposit(ByVal UserIndex As Integer)
 
 HandleBankDeposit_Err:
 122     Call TraceError(Err.Number, Err.Description, "Protocol.HandleBankDeposit", Erl)
-124     Call UserList(UserIndex).incomingData.SafeClearPacket
+124
         
 End Sub
 
@@ -4115,8 +4006,8 @@ Private Sub HandleForumPost(ByVal UserIndex As Integer)
             Dim i        As Long
             Dim Count    As Integer
         
-102         title = .incomingData.ReadASCIIString()
-104         Msg = .incomingData.ReadASCIIString()
+102         title = Reader.ReadString8()
+104         Msg = Reader.ReadString8()
         
 106         If .flags.TargetObj > 0 Then
 108             File = App.Path & "\foros\" & UCase$(ObjData(.flags.TargetObj).ForoID) & ".for"
@@ -4163,7 +4054,7 @@ Private Sub HandleForumPost(ByVal UserIndex As Integer)
 ErrHandler:
 142     Close #handle
 144     Call TraceError(Err.Number, Err.Description, "Protocol.HandleForumPost", Erl)
-146     Call UserList(UserIndex).incomingData.SafeClearPacket
+146
 
 End Sub
 
@@ -4181,27 +4072,23 @@ Private Sub HandleMoveSpell(ByVal UserIndex As Integer)
         'Last Modification: 05/17/06
         '
         '***************************************************
-    
-100     With UserList(UserIndex).incomingData
 
             Dim dir As Integer
         
-102         If .ReadBoolean() Then
+102         If Reader.ReadBool() Then
 104             dir = 1
             Else
 106             dir = -1
 
             End If
         
-108         Call DesplazarHechizo(UserIndex, dir, .ReadByte())
+108         Call DesplazarHechizo(UserIndex, dir, Reader.ReadInt8())
 
-        End With
-        
         Exit Sub
 
 HandleMoveSpell_Err:
 110     Call TraceError(Err.Number, Err.Description, "Protocol.HandleMoveSpell", Erl)
-112     Call UserList(UserIndex).incomingData.SafeClearPacket
+112
         
 End Sub
 
@@ -4224,7 +4111,7 @@ Private Sub HandleClanCodexUpdate(ByVal UserIndex As Integer)
 
             Dim Desc As String
         
-102         Desc = .incomingData.ReadASCIIString()
+102         Desc = Reader.ReadString8()
         
 104         Call modGuilds.ChangeCodexAndDesc(Desc, .GuildIndex)
 
@@ -4234,7 +4121,7 @@ Private Sub HandleClanCodexUpdate(ByVal UserIndex As Integer)
         
 ErrHandler:
 106     Call TraceError(Err.Number, Err.Description, "Protocol.HandleMoveSpell", Erl)
-108     Call UserList(UserIndex).incomingData.SafeClearPacket
+108
 
 End Sub
 
@@ -4259,8 +4146,8 @@ Private Sub HandleUserCommerceOffer(ByVal UserIndex As Integer)
             Dim Slot   As Byte
             Dim amount As Long
             
-102         Slot = .incomingData.ReadByte()
-104         amount = .incomingData.ReadLong()
+102         Slot = Reader.ReadInt8()
+104         amount = Reader.ReadInt32()
         
             'Get the other player
 106         tUser = .ComUsu.DestUsu
@@ -4379,7 +4266,7 @@ Private Sub HandleUserCommerceOffer(ByVal UserIndex As Integer)
 
 HandleUserCommerceOffer_Err:
 172     Call TraceError(Err.Number, Err.Description, "Protocol.HandleUserCommerceOffer", Erl)
-174     Call UserList(UserIndex).incomingData.SafeClearPacket
+174
         
 End Sub
 
@@ -4404,7 +4291,7 @@ Private Sub HandleGuildAcceptPeace(ByVal UserIndex As Integer)
             Dim errorStr       As String
             Dim otherClanIndex As String
         
-102         guild = .incomingData.ReadASCIIString()
+102         guild = Reader.ReadString8()
         
 104         otherClanIndex = modGuilds.r_AceptarPropuestaDePaz(UserIndex, guild, errorStr)
         
@@ -4422,7 +4309,7 @@ Private Sub HandleGuildAcceptPeace(ByVal UserIndex As Integer)
 
 ErrHandler:
 114     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildAcceptPeace", Erl)
-116     Call UserList(UserIndex).incomingData.SafeClearPacket
+116
 
 End Sub
 
@@ -4447,7 +4334,7 @@ Private Sub HandleGuildRejectAlliance(ByVal UserIndex As Integer)
             Dim errorStr       As String
             Dim otherClanIndex As String
         
-102         guild = .incomingData.ReadASCIIString()
+102         guild = Reader.ReadString8()
         
 104         otherClanIndex = modGuilds.r_RechazarPropuestaDeAlianza(UserIndex, guild, errorStr)
         
@@ -4466,7 +4353,7 @@ Private Sub HandleGuildRejectAlliance(ByVal UserIndex As Integer)
         
 ErrHandler:
 114     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildRejectAlliance", Erl)
-116     Call UserList(UserIndex).incomingData.SafeClearPacket
+116
 
 End Sub
 
@@ -4491,7 +4378,7 @@ Private Sub HandleGuildRejectPeace(ByVal UserIndex As Integer)
             Dim errorStr       As String
             Dim otherClanIndex As String
         
-102         guild = .incomingData.ReadASCIIString()
+102         guild = Reader.ReadString8()
         
 104         otherClanIndex = modGuilds.r_RechazarPropuestaDePaz(UserIndex, guild, errorStr)
         
@@ -4510,7 +4397,7 @@ Private Sub HandleGuildRejectPeace(ByVal UserIndex As Integer)
         
 ErrHandler:
 114     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildRejectPeace", Erl)
-116     Call UserList(UserIndex).incomingData.SafeClearPacket
+116
 
 End Sub
 
@@ -4535,7 +4422,7 @@ Private Sub HandleGuildAcceptAlliance(ByVal UserIndex As Integer)
             Dim errorStr       As String
             Dim otherClanIndex As String
         
-102         guild = .incomingData.ReadASCIIString()
+102         guild = Reader.ReadString8()
         
 104         otherClanIndex = modGuilds.r_AceptarPropuestaDeAlianza(UserIndex, guild, errorStr)
         
@@ -4554,7 +4441,7 @@ Private Sub HandleGuildAcceptAlliance(ByVal UserIndex As Integer)
         
 ErrHandler:
 114     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildAcceptAlliance", Erl)
-116     Call UserList(UserIndex).incomingData.SafeClearPacket
+116
 
 End Sub
 
@@ -4579,8 +4466,8 @@ Private Sub HandleGuildOfferPeace(ByVal UserIndex As Integer)
             Dim proposal As String
             Dim errorStr As String
         
-102         guild = .incomingData.ReadASCIIString()
-104         proposal = .incomingData.ReadASCIIString()
+102         guild = Reader.ReadString8()
+104         proposal = Reader.ReadString8()
         
 106         If modGuilds.r_ClanGeneraPropuesta(UserIndex, guild, RELACIONES_GUILD.PAZ, proposal, errorStr) Then
 108             Call WriteConsoleMsg(UserIndex, "Propuesta de paz enviada", FontTypeNames.FONTTYPE_GUILD)
@@ -4596,7 +4483,7 @@ Private Sub HandleGuildOfferPeace(ByVal UserIndex As Integer)
         
 ErrHandler:
 112     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildOfferPeace", Erl)
-114     Call UserList(UserIndex).incomingData.SafeClearPacket
+114
 
 End Sub
 
@@ -4621,8 +4508,8 @@ Private Sub HandleGuildOfferAlliance(ByVal UserIndex As Integer)
             Dim proposal As String
             Dim errorStr As String
         
-102         guild = .incomingData.ReadASCIIString()
-104         proposal = .incomingData.ReadASCIIString()
+102         guild = Reader.ReadString8()
+104         proposal = Reader.ReadString8()
         
 106         If modGuilds.r_ClanGeneraPropuesta(UserIndex, guild, RELACIONES_GUILD.ALIADOS, proposal, errorStr) Then
 108             Call WriteConsoleMsg(UserIndex, "Propuesta de alianza enviada", FontTypeNames.FONTTYPE_GUILD)
@@ -4638,7 +4525,7 @@ Private Sub HandleGuildOfferAlliance(ByVal UserIndex As Integer)
         
 ErrHandler:
 112     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildOfferPeace", Erl)
-114     Call UserList(UserIndex).incomingData.SafeClearPacket
+114
 
 End Sub
 
@@ -4663,7 +4550,7 @@ Private Sub HandleGuildAllianceDetails(ByVal UserIndex As Integer)
             Dim errorStr As String
             Dim details  As String
         
-102         guild = .incomingData.ReadASCIIString()
+102         guild = Reader.ReadString8()
         
 104         details = modGuilds.r_VerPropuesta(UserIndex, guild, RELACIONES_GUILD.ALIADOS, errorStr)
         
@@ -4680,7 +4567,7 @@ Private Sub HandleGuildAllianceDetails(ByVal UserIndex As Integer)
         
 ErrHandler:
 112     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildOfferPeace", Erl)
-114     Call UserList(UserIndex).incomingData.SafeClearPacket
+114
 
 End Sub
 
@@ -4705,7 +4592,7 @@ Private Sub HandleGuildPeaceDetails(ByVal UserIndex As Integer)
             Dim errorStr As String
             Dim details  As String
         
-102         guild = .incomingData.ReadASCIIString()
+102         guild = Reader.ReadString8()
         
 104         details = modGuilds.r_VerPropuesta(UserIndex, guild, RELACIONES_GUILD.PAZ, errorStr)
         
@@ -4723,7 +4610,7 @@ Private Sub HandleGuildPeaceDetails(ByVal UserIndex As Integer)
         
 ErrHandler:
 112     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildPeaceDetails", Erl)
-114     Call UserList(UserIndex).incomingData.SafeClearPacket
+114
 
 End Sub
 
@@ -4747,7 +4634,7 @@ Private Sub HandleGuildRequestJoinerInfo(ByVal UserIndex As Integer)
             Dim user    As String
             Dim details As String
         
-102         user = .incomingData.ReadASCIIString()
+102         user = Reader.ReadString8()
         
 104         details = modGuilds.a_DetallesAspirante(UserIndex, user)
         
@@ -4764,7 +4651,7 @@ Private Sub HandleGuildRequestJoinerInfo(ByVal UserIndex As Integer)
         
 ErrHandler:
 112     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildRequestJoinerInfo", Erl)
-114     Call UserList(UserIndex).incomingData.SafeClearPacket
+114
 
 End Sub
 
@@ -4788,7 +4675,7 @@ Private Sub HandleGuildAlliancePropList(ByVal UserIndex As Integer)
 
 HandleGuildAlliancePropList_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildAlliancePropList", Erl)
-104     Call UserList(UserIndex).incomingData.SafeClearPacket
+104
         
 End Sub
 
@@ -4812,7 +4699,7 @@ Private Sub HandleGuildPeacePropList(ByVal UserIndex As Integer)
 
 HandleGuildPeacePropList_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildPeacePropList", Erl)
-104     Call UserList(UserIndex).incomingData.SafeClearPacket
+104
         
 End Sub
 
@@ -4837,7 +4724,7 @@ Private Sub HandleGuildDeclareWar(ByVal UserIndex As Integer)
             Dim errorStr        As String
             Dim otherGuildIndex As Integer
         
-102         guild = .incomingData.ReadASCIIString()
+102         guild = Reader.ReadString8()
         
 104         otherGuildIndex = modGuilds.r_DeclararGuerra(UserIndex, guild, errorStr)
         
@@ -4859,7 +4746,7 @@ Private Sub HandleGuildDeclareWar(ByVal UserIndex As Integer)
         
 ErrHandler:
 118     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildPeacePropList", Erl)
-120     Call UserList(UserIndex).incomingData.SafeClearPacket
+120
 
 End Sub
 
@@ -4878,13 +4765,13 @@ Private Sub HandleGuildNewWebsite(ByVal UserIndex As Integer)
         
         On Error GoTo ErrHandler
 
-100     Call modGuilds.ActualizarWebSite(UserIndex, UserList(UserIndex).incomingData.ReadASCIIString())
+100     Call modGuilds.ActualizarWebSite(UserIndex, Reader.ReadString8())
 
         Exit Sub
         
 ErrHandler:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildNewWebsite", Erl)
-104     Call UserList(UserIndex).incomingData.SafeClearPacket
+104
 
 End Sub
 
@@ -4909,7 +4796,7 @@ Private Sub HandleGuildAcceptNewMember(ByVal UserIndex As Integer)
             Dim UserName As String
             Dim tUser    As Integer
         
-102         UserName = .incomingData.ReadASCIIString()
+102         UserName = Reader.ReadString8()
         
 104         If Not modGuilds.a_AceptarAspirante(UserIndex, UserName, errorStr) Then
 106             Call WriteConsoleMsg(UserIndex, errorStr, FontTypeNames.FONTTYPE_GUILD)
@@ -4934,7 +4821,7 @@ Private Sub HandleGuildAcceptNewMember(ByVal UserIndex As Integer)
         
 ErrHandler:
 120     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildAcceptNewMember", Erl)
-122     Call UserList(UserIndex).incomingData.SafeClearPacket
+122
 
 End Sub
 
@@ -4961,8 +4848,8 @@ Private Sub HandleGuildRejectNewMember(ByVal UserIndex As Integer)
             Dim Reason   As String
             Dim tUser    As Integer
         
-102         UserName = .incomingData.ReadASCIIString()
-104         Reason = .incomingData.ReadASCIIString()
+102         UserName = Reader.ReadString8()
+104         Reason = Reader.ReadString8()
         
 106         If Not modGuilds.a_RechazarAspirante(UserIndex, UserName, errorStr) Then
 108             Call WriteConsoleMsg(UserIndex, errorStr, FontTypeNames.FONTTYPE_GUILD)
@@ -4986,7 +4873,7 @@ Private Sub HandleGuildRejectNewMember(ByVal UserIndex As Integer)
         
 ErrHandler:
 118     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildAcceptNewMember", Erl)
-120     Call UserList(UserIndex).incomingData.SafeClearPacket
+120
 
 End Sub
 
@@ -5010,7 +4897,7 @@ Private Sub HandleGuildKickMember(ByVal UserIndex As Integer)
             Dim UserName   As String
             Dim GuildIndex As Integer
         
-102         UserName = .incomingData.ReadASCIIString()
+102         UserName = Reader.ReadString8()
         
 104         GuildIndex = modGuilds.m_EcharMiembroDeClan(UserIndex, UserName)
         
@@ -5032,7 +4919,7 @@ Private Sub HandleGuildKickMember(ByVal UserIndex As Integer)
         
 ErrHandler:
 118     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildKickMember", Erl)
-120     Call UserList(UserIndex).incomingData.SafeClearPacket
+120
 
 End Sub
 
@@ -5051,13 +4938,13 @@ Private Sub HandleGuildUpdateNews(ByVal UserIndex As Integer)
     
         On Error GoTo ErrHandler
 
-100     Call modGuilds.ActualizarNoticias(UserIndex, UserList(UserIndex).incomingData.ReadASCIIString())
+100     Call modGuilds.ActualizarNoticias(UserIndex, Reader.ReadString8())
 
         Exit Sub
         
 ErrHandler:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildUpdateNews", Erl)
-104     Call UserList(UserIndex).incomingData.SafeClearPacket
+104
 
 End Sub
 
@@ -5076,13 +4963,13 @@ Private Sub HandleGuildMemberInfo(ByVal UserIndex As Integer)
     
         On Error GoTo ErrHandler
 
-100     Call modGuilds.SendDetallesPersonaje(UserIndex, UserList(UserIndex).incomingData.ReadASCIIString())
+100     Call modGuilds.SendDetallesPersonaje(UserIndex, Reader.ReadString8())
 
         Exit Sub
         
 ErrHandler:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildMemberInfo", Erl)
-104     Call UserList(UserIndex).incomingData.SafeClearPacket
+104
 
 End Sub
 
@@ -5117,7 +5004,7 @@ Private Sub HandleGuildOpenElections(ByVal UserIndex As Integer)
 
 HandleGuildOpenElections_Err:
 108     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildOpenElections", Erl)
-110     Call UserList(UserIndex).incomingData.SafeClearPacket
+110
         
 End Sub
 
@@ -5142,8 +5029,8 @@ Private Sub HandleGuildRequestMembership(ByVal UserIndex As Integer)
             Dim application As String
             Dim errorStr    As String
         
-102         guild = .incomingData.ReadASCIIString()
-104         application = .incomingData.ReadASCIIString()
+102         guild = Reader.ReadString8()
+104         application = Reader.ReadString8()
         
 106         If Not modGuilds.a_NuevoAspirante(UserIndex, guild, application, errorStr) Then
 108             Call WriteConsoleMsg(UserIndex, errorStr, FontTypeNames.FONTTYPE_GUILD)
@@ -5159,7 +5046,7 @@ Private Sub HandleGuildRequestMembership(ByVal UserIndex As Integer)
         
 ErrHandler:
 112     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildRequestMembership", Erl)
-114     Call UserList(UserIndex).incomingData.SafeClearPacket
+114
 
 End Sub
 
@@ -5178,13 +5065,13 @@ Private Sub HandleGuildRequestDetails(ByVal UserIndex As Integer)
 
         On Error GoTo ErrHandler
  
-100     Call modGuilds.SendGuildDetails(UserIndex, UserList(UserIndex).incomingData.ReadASCIIString())
+100     Call modGuilds.SendGuildDetails(UserIndex, Reader.ReadString8())
 
         Exit Sub
         
 ErrHandler:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildRequestDetails", Erl)
-104     Call UserList(UserIndex).incomingData.SafeClearPacket
+104
 
 End Sub
 
@@ -5262,7 +5149,7 @@ Private Sub HandleOnline(ByVal UserIndex As Integer)
 
 HandleOnline_Err:
 146     Call TraceError(Err.Number, Err.Description, "Protocol.HandleOnline", Erl)
-148     Call UserList(UserIndex).incomingData.SafeClearPacket
+148
         
 End Sub
 
@@ -5320,7 +5207,7 @@ Private Sub HandleQuit(ByVal UserIndex As Integer)
 
 HandleQuit_Err:
 140     Call TraceError(Err.Number, Err.Description, "Protocol.HandleQuit", Erl)
-142     Call UserList(UserIndex).incomingData.SafeClearPacket
+142
         
 End Sub
 
@@ -5359,7 +5246,7 @@ Private Sub HandleGuildLeave(ByVal UserIndex As Integer)
 
 HandleGuildLeave_Err:
 112     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildLeave", Erl)
-114     Call UserList(UserIndex).incomingData.SafeClearPacket
+114
         
 End Sub
 
@@ -5435,7 +5322,7 @@ Private Sub HandleRequestAccountState(ByVal UserIndex As Integer)
 
 HandleRequestAccountState_Err:
 134     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRequestAccountState", Erl)
-136     Call UserList(UserIndex).incomingData.SafeClearPacket
+136
         
 End Sub
 
@@ -5490,7 +5377,7 @@ Private Sub HandlePetStand(ByVal UserIndex As Integer)
 
 HandlePetStand_Err:
 120     Call TraceError(Err.Number, Err.Description, "Protocol.HandlePetStand", Erl)
-122     Call UserList(UserIndex).incomingData.SafeClearPacket
+122
         
 End Sub
 
@@ -5545,7 +5432,7 @@ Private Sub HandlePetFollow(ByVal UserIndex As Integer)
 
 HandlePetFollow_Err:
 120     Call TraceError(Err.Number, Err.Description, "Protocol.HandlePetFollow", Erl)
-122     Call UserList(UserIndex).incomingData.SafeClearPacket
+122
         
 End Sub
 
@@ -5586,7 +5473,7 @@ Private Sub HandlePetLeave(ByVal UserIndex As Integer)
 
 HandlePetLeave_Err:
 114     Call TraceError(Err.Number, Err.Description, "Protocol.HandlePetLeave", Erl)
-116     Call UserList(UserIndex).incomingData.SafeClearPacket
+116
         
 End Sub
 
@@ -5608,7 +5495,7 @@ Private Sub HandleGrupoMsg(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             Dim chat As String
-102             chat = .incomingData.ReadASCIIString()
+102             chat = Reader.ReadString8()
         
 104         If LenB(chat) <> 0 Then
 
@@ -5641,7 +5528,7 @@ Private Sub HandleGrupoMsg(ByVal UserIndex As Integer)
         
 ErrHandler:
 120     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGrupoMsg", Erl)
-122     Call UserList(UserIndex).incomingData.SafeClearPacket
+122
 
 End Sub
 
@@ -5694,7 +5581,7 @@ Private Sub HandleTrainList(ByVal UserIndex As Integer)
 
 HandleTrainList_Err:
 118     Call TraceError(Err.Number, Err.Description, "Protocol.HandleTrainList", Erl)
-120     Call UserList(UserIndex).incomingData.SafeClearPacket
+120
         
 End Sub
 
@@ -5753,7 +5640,7 @@ Private Sub HandleRest(ByVal UserIndex As Integer)
 
 HandleRest_Err:
 128     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRest", Erl)
-130     Call UserList(UserIndex).incomingData.SafeClearPacket
+130
         
 End Sub
 
@@ -5835,7 +5722,7 @@ Private Sub HandleMeditate(ByVal UserIndex As Integer)
 
 HandleMeditate_Err:
 148     Call TraceError(Err.Number, Err.Description, "Protocol.HandleMeditate", Erl)
-150     Call UserList(UserIndex).incomingData.SafeClearPacket
+150
         
 End Sub
 
@@ -5884,7 +5771,7 @@ Private Sub HandleResucitate(ByVal UserIndex As Integer)
 
 HandleResucitate_Err:
 120     Call TraceError(Err.Number, Err.Description, "Protocol.HandleResucitate", Erl)
-122     Call UserList(UserIndex).incomingData.SafeClearPacket
+122
         
 End Sub
 
@@ -5932,7 +5819,7 @@ Private Sub HandleHeal(ByVal UserIndex As Integer)
 
 HandleHeal_Err:
 118     Call TraceError(Err.Number, Err.Description, "Protocol.HandleHeal", Erl)
-120     Call UserList(UserIndex).incomingData.SafeClearPacket
+120
         
 End Sub
 
@@ -5955,7 +5842,7 @@ Private Sub HandleRequestStats(ByVal UserIndex As Integer)
 
 HandleRequestStats_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRequestStats", Erl)
-104     Call UserList(UserIndex).incomingData.SafeClearPacket
+104
         
 End Sub
 
@@ -5978,7 +5865,7 @@ Private Sub HandleHelp(ByVal UserIndex As Integer)
 
 HandleHelp_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleHelp", Erl)
-104     Call UserList(UserIndex).incomingData.SafeClearPacket
+104
         
 End Sub
 
@@ -6112,7 +5999,7 @@ Private Sub HandleCommerceStart(ByVal UserIndex As Integer)
 
 HandleCommerceStart_Err:
 168     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCommerceStart", Erl)
-170     Call UserList(UserIndex).incomingData.SafeClearPacket
+170
         
 End Sub
 
@@ -6172,7 +6059,7 @@ Private Sub HandleBankStart(ByVal UserIndex As Integer)
 
 HandleBankStart_Err:
 122     Call TraceError(Err.Number, Err.Description, "Protocol.HandleBankStart", Erl)
-124     Call UserList(UserIndex).incomingData.SafeClearPacket
+124
         
 End Sub
 
@@ -6223,7 +6110,7 @@ Private Sub HandleEnlist(ByVal UserIndex As Integer)
 
 HandleEnlist_Err:
 120     Call TraceError(Err.Number, Err.Description, "Protocol.HandleEnlist", Erl)
-122     Call UserList(UserIndex).incomingData.SafeClearPacket
+122
         
 End Sub
 
@@ -6286,7 +6173,7 @@ Private Sub HandleInformation(ByVal UserIndex As Integer)
 
 HandleInformation_Err:
 126     Call TraceError(Err.Number, Err.Description, "Protocol.HandleInformation", Erl)
-128     Call UserList(UserIndex).incomingData.SafeClearPacket
+128
         
 End Sub
 
@@ -6350,7 +6237,7 @@ Private Sub HandleReward(ByVal UserIndex As Integer)
 
 HandleReward_Err:
 126     Call TraceError(Err.Number, Err.Description, "Protocol.HandleReward", Erl)
-128     Call UserList(UserIndex).incomingData.SafeClearPacket
+128
         
 End Sub
 
@@ -6373,7 +6260,7 @@ Private Sub HandleRequestMOTD(ByVal UserIndex As Integer)
 
 HandleRequestMOTD_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRequestMOTD", Erl)
-104     Call UserList(UserIndex).incomingData.SafeClearPacket
+104
         
 End Sub
 
@@ -6420,7 +6307,7 @@ Private Sub HandleUpTime(ByVal UserIndex As Integer)
 
 HandleUpTime_Err:
 122     Call TraceError(Err.Number, Err.Description, "Protocol.HandleUpTime", Erl)
-124     Call UserList(UserIndex).incomingData.SafeClearPacket
+124
         
 End Sub
 
@@ -6443,7 +6330,7 @@ Private Sub HandleInquiry(ByVal UserIndex As Integer)
 
 HandleInquiry_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleInquiry", Erl)
-104     Call UserList(UserIndex).incomingData.SafeClearPacket
+104
         
 End Sub
 
@@ -6465,7 +6352,7 @@ Private Sub HandleGuildMessage(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             Dim chat As String
-102             chat = .incomingData.ReadASCIIString()
+102             chat = Reader.ReadString8()
         
 104         If LenB(chat) <> 0 Then
 
@@ -6500,7 +6387,7 @@ Private Sub HandleGuildMessage(ByVal UserIndex As Integer)
         
 ErrHandler:
 122     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildMessage", Erl)
-124     Call UserList(UserIndex).incomingData.SafeClearPacket
+124
 
 End Sub
 
@@ -6518,13 +6405,13 @@ Private Sub HandleCentinelReport(ByVal UserIndex As Integer)
         'Last Modification: 05/17/06
         '
         '***************************************************
-100     Call CentinelaCheckClave(UserIndex, UserList(UserIndex).incomingData.ReadInteger())
+100     Call CentinelaCheckClave(UserIndex, Reader.ReadInt16())
 
         Exit Sub
 
 HandleCentinelReport_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCentinelReport", Erl)
-104     Call UserList(UserIndex).incomingData.SafeClearPacket
+104
         
 End Sub
 
@@ -6561,7 +6448,7 @@ Private Sub HandleGuildOnline(ByVal UserIndex As Integer)
 
 HandleGuildOnline_Err:
 110     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildOnline", Erl)
-112     Call UserList(UserIndex).incomingData.SafeClearPacket
+112
         
 End Sub
 
@@ -6583,7 +6470,7 @@ Private Sub HandleCouncilMessage(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             Dim chat As String
-102             chat = .incomingData.ReadASCIIString()
+102             chat = Reader.ReadString8()
         
 104         If LenB(chat) <> 0 Then
 
@@ -6614,7 +6501,7 @@ Private Sub HandleCouncilMessage(ByVal UserIndex As Integer)
         
 ErrHandler:
 122     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCouncilMessage", Erl)
-124     Call UserList(UserIndex).incomingData.SafeClearPacket
+124
 
 End Sub
 
@@ -6636,7 +6523,7 @@ Private Sub HandleRoleMasterRequest(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             Dim request As String
-102             request = .incomingData.ReadASCIIString()
+102             request = Reader.ReadString8()
         
 104         If LenB(request) <> 0 Then
 106             Call WriteConsoleMsg(UserIndex, "Su solicitud ha sido enviada", FontTypeNames.FONTTYPE_INFO)
@@ -6650,7 +6537,7 @@ Private Sub HandleRoleMasterRequest(ByVal UserIndex As Integer)
         
 ErrHandler:
 110     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRoleMasterRequest", Erl)
-112     Call UserList(UserIndex).incomingData.SafeClearPacket
+112
 
 End Sub
 
@@ -6672,7 +6559,7 @@ Private Sub HandleChangeDescription(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             Dim Description As String
-102             Description = .incomingData.ReadASCIIString()
+102             Description = Reader.ReadString8()
         
 104         If .flags.Muerto = 1 Then
 106             Call WriteConsoleMsg(UserIndex, "No podés cambiar la descripción estando muerto.", FontTypeNames.FONTTYPE_INFOIAO)
@@ -6699,7 +6586,7 @@ Private Sub HandleChangeDescription(ByVal UserIndex As Integer)
         
 ErrHandler:
 120     Call TraceError(Err.Number, Err.Description, "Protocol.HandleChangeDescription", Erl)
-122     Call UserList(UserIndex).incomingData.SafeClearPacket
+122
 
 End Sub
 
@@ -6723,7 +6610,7 @@ Private Sub HandleGuildVote(ByVal UserIndex As Integer)
             Dim vote     As String
             Dim errorStr As String
         
-102         vote = .incomingData.ReadASCIIString()
+102         vote = Reader.ReadString8()
         
 104         If Not modGuilds.v_UsuarioVota(UserIndex, vote, errorStr) Then
 106             Call WriteConsoleMsg(UserIndex, "Voto NO contabilizado: " & errorStr, FontTypeNames.FONTTYPE_GUILD)
@@ -6739,7 +6626,7 @@ Private Sub HandleGuildVote(ByVal UserIndex As Integer)
         
 ErrHandler:
 110     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildVote", Erl)
-112     Call UserList(UserIndex).incomingData.SafeClearPacket
+112
 
 End Sub
 
@@ -6761,7 +6648,7 @@ Private Sub HandlePunishments(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             Dim Name As String
-102             Name = .incomingData.ReadASCIIString()
+102             Name = Reader.ReadString8()
 
             ' Si un GM usa este comando, me fijo que me haya dado el nick del PJ a analizar.
 104         If EsGM(UserIndex) And LenB(Name) = 0 Then Exit Sub
@@ -6841,7 +6728,7 @@ Private Sub HandlePunishments(ByVal UserIndex As Integer)
     
 ErrHandler:
 152     Call TraceError(Err.Number, Err.Description, "Protocol.HandlePunishments", Erl)
-154     Call UserList(UserIndex).incomingData.SafeClearPacket
+154
 
 End Sub
 
@@ -6866,8 +6753,8 @@ Private Sub HandleChangePassword(ByVal UserIndex As Integer)
             Dim newPass  As String
             Dim oldPass2 As String
 
-102         oldPass = .incomingData.ReadASCIIString()
-104         newPass = .incomingData.ReadASCIIString()
+102         oldPass = Reader.ReadString8()
+104         newPass = Reader.ReadString8()
 
 106         Call ChangePasswordDatabase(UserIndex, SDesencriptar(oldPass), SDesencriptar(newPass))
 
@@ -6877,7 +6764,7 @@ Private Sub HandleChangePassword(ByVal UserIndex As Integer)
         
 ErrHandler:
 108     Call TraceError(Err.Number, Err.Description, "Protocol.HandleChangePassword", Erl)
-110     Call UserList(UserIndex).incomingData.SafeClearPacket
+110
 
 End Sub
 
@@ -6899,7 +6786,7 @@ Private Sub HandleGamble(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             Dim amount As Integer
-102             amount = .incomingData.ReadInteger()
+102             amount = Reader.ReadInt16()
         
 104         If .flags.Muerto = 1 Then
 106             Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
@@ -6956,7 +6843,7 @@ Private Sub HandleGamble(ByVal UserIndex As Integer)
 
 HandleGamble_Err:
 156     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGamble", Erl)
-158     Call UserList(UserIndex).incomingData.SafeClearPacket
+158
         
 End Sub
 
@@ -6978,7 +6865,7 @@ Private Sub HandleInquiryVote(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             Dim opt As Byte
-102             opt = .incomingData.ReadByte()
+102             opt = Reader.ReadInt8()
         
 104         Call WriteConsoleMsg(UserIndex, ConsultaPopular.doVotar(UserIndex, opt), FontTypeNames.FONTTYPE_GUILD)
 
@@ -6988,7 +6875,7 @@ Private Sub HandleInquiryVote(ByVal UserIndex As Integer)
 
 HandleInquiryVote_Err:
 106     Call TraceError(Err.Number, Err.Description, "Protocol.HandleInquiryVote", Erl)
-108     Call UserList(UserIndex).incomingData.SafeClearPacket
+108
         
 End Sub
 
@@ -7010,7 +6897,7 @@ Private Sub HandleBankExtractGold(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             Dim amount As Long
-102             amount = .incomingData.ReadLong()
+102             amount = Reader.ReadInt32()
         
             'Dead people can't leave a faction.. they can't talk...
 104         If .flags.Muerto = 1 Then
@@ -7055,7 +6942,7 @@ Private Sub HandleBankExtractGold(ByVal UserIndex As Integer)
 
 HandleBankExtractGold_Err:
 130     Call TraceError(Err.Number, Err.Description, "Protocol.HandleBankExtractGold", Erl)
-132     Call UserList(UserIndex).incomingData.SafeClearPacket
+132
         
 End Sub
 
@@ -7170,7 +7057,7 @@ Private Sub HandleLeaveFaction(ByVal UserIndex As Integer)
 
 HandleLeaveFaction_Err:
 168     Call TraceError(Err.Number, Err.Description, "Protocol.HandleLeaveFaction", Erl)
-170     Call UserList(UserIndex).incomingData.SafeClearPacket
+170
         
 End Sub
 
@@ -7192,7 +7079,7 @@ Private Sub HandleBankDepositGold(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             Dim amount As Long
-102             amount = .incomingData.ReadLong()
+102             amount = Reader.ReadInt32()
         
             'Dead people can't leave a faction.. they can't talk...
 104         If .flags.Muerto = 1 Then
@@ -7236,7 +7123,7 @@ Private Sub HandleBankDepositGold(ByVal UserIndex As Integer)
 
 HandleBankDepositGold_Err:
 130     Call TraceError(Err.Number, Err.Description, "Protocol.HandleBankDepositGold", Erl)
-132     Call UserList(UserIndex).incomingData.SafeClearPacket
+132
         
 End Sub
 
@@ -7274,7 +7161,7 @@ Private Sub HandleFinEvento(ByVal UserIndex As Integer)
 
 HandleDenounce_Err:
 112     Call TraceError(Err.Number, Err.Description, "Protocol.HandleDenounce", Erl)
-114     Call UserList(UserIndex).incomingData.SafeClearPacket
+114
         
 End Sub ''
 
@@ -7298,7 +7185,7 @@ Private Sub HandleGuildMemberList(ByVal UserIndex As Integer)
             Dim i           As Long
             Dim UserName    As String
         
-102         guild = .incomingData.ReadASCIIString()
+102         guild = Reader.ReadString8()
         
 104         If .flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios) Then
 
@@ -7335,7 +7222,7 @@ Private Sub HandleGuildMemberList(ByVal UserIndex As Integer)
         
 ErrHandler:
 128     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildMemberList", Erl)
-130     Call UserList(UserIndex).incomingData.SafeClearPacket
+130
 
 End Sub
 
@@ -7357,7 +7244,7 @@ Private Sub HandleGMMessage(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
         
             Dim message As String
-102             message = .incomingData.ReadASCIIString()
+102             Message = Reader.ReadString8()
 
 104         If EsGM(UserIndex) Then
 106             Call LogGM(.Name, "Mensaje a Gms: " & message)
@@ -7366,7 +7253,7 @@ Private Sub HandleGMMessage(ByVal UserIndex As Integer)
                     'Analize chat...
 110                 Call Statistics.ParseChat(message)
             
-112                 Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(.Name & " » " & message, FontTypeNames.FONTTYPE_GMMSG))
+112                 Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(.Name & " » " & Message, FontTypeNames.FONTTYPE_GMMSG))
 
                 End If
 
@@ -7378,7 +7265,7 @@ Private Sub HandleGMMessage(ByVal UserIndex As Integer)
     
 ErrHandler:
 114     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGMMessage", Erl)
-116     Call UserList(UserIndex).incomingData.SafeClearPacket
+116
 
 End Sub
 
@@ -7412,7 +7299,7 @@ Private Sub HandleShowName(ByVal UserIndex As Integer)
 
 HandleShowName_Err:
 108     Call TraceError(Err.Number, Err.Description, "Protocol.HandleShowName", Erl)
-110     Call UserList(UserIndex).incomingData.SafeClearPacket
+110
         
 End Sub
 
@@ -7439,7 +7326,7 @@ Private Sub HandleOnlineRoyalArmy(ByVal UserIndex As Integer)
 
 104         For i = 1 To LastUser
 
-106             If UserList(i).ConnID <> -1 Then
+106             If UserList(i).ConnIDValida Then
 108                 If UserList(i).Faccion.ArmadaReal = 1 Then
 110                     If UserList(i).flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios) Or .flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin) Then
 112                         list = list & UserList(i).Name & ", "
@@ -7465,7 +7352,7 @@ Private Sub HandleOnlineRoyalArmy(ByVal UserIndex As Integer)
 
 HandleOnlineRoyalArmy_Err:
 122     Call TraceError(Err.Number, Err.Description, "Protocol.HandleOnlineRoyalArmy", Erl)
-124     Call UserList(UserIndex).incomingData.SafeClearPacket
+124
         
 End Sub
 
@@ -7492,7 +7379,7 @@ Private Sub HandleOnlineChaosLegion(ByVal UserIndex As Integer)
 
 104         For i = 1 To LastUser
 
-106             If UserList(i).ConnID <> -1 Then
+106             If UserList(i).ConnIDValida Then
 108                 If UserList(i).Faccion.FuerzasCaos = 1 Then
 110                     If UserList(i).flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios) Or .flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin) Then
 112                         list = list & UserList(i).Name & ", "
@@ -7519,7 +7406,7 @@ Private Sub HandleOnlineChaosLegion(ByVal UserIndex As Integer)
 
 HandleOnlineChaosLegion_Err:
 122     Call TraceError(Err.Number, Err.Description, "Protocol.HandleOnlineChaosLegion", Erl)
-124     Call UserList(UserIndex).incomingData.SafeClearPacket
+124
         
 End Sub
 
@@ -7541,7 +7428,7 @@ Private Sub HandleGoNearby(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             Dim UserName As String
-102             UserName = .incomingData.ReadASCIIString()
+102             UserName = Reader.ReadString8()
         
             Dim tIndex As Integer
 
@@ -7607,7 +7494,7 @@ Private Sub HandleGoNearby(ByVal UserIndex As Integer)
         
 ErrHandler:
 154     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGoNearby", Erl)
-156     Call UserList(UserIndex).incomingData.SafeClearPacket
+156
 
 End Sub
 
@@ -7629,7 +7516,7 @@ Private Sub HandleComment(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             Dim comment As String
-102             comment = .incomingData.ReadASCIIString()
+102             comment = Reader.ReadString8()
         
 104         If Not .flags.Privilegios And PlayerType.user Then
 106             Call LogGM(.Name, "Comentario: " & comment)
@@ -7643,7 +7530,7 @@ Private Sub HandleComment(ByVal UserIndex As Integer)
         
 ErrHandler:
 110     Call TraceError(Err.Number, Err.Description, "Protocol.HandleComment", Erl)
-112     Call UserList(UserIndex).incomingData.SafeClearPacket
+112
 
 End Sub
 
@@ -7675,7 +7562,7 @@ Private Sub HandleServerTime(ByVal UserIndex As Integer)
 
 HandleServerTime_Err:
 108     Call TraceError(Err.Number, Err.Description, "Protocol.HandleServerTime", Erl)
-110     Call UserList(UserIndex).incomingData.SafeClearPacket
+110
         
 End Sub
 
@@ -7699,7 +7586,7 @@ Private Sub HandleWhere(ByVal UserIndex As Integer)
             Dim UserName As String
             Dim tUser    As Integer
         
-102         UserName = .incomingData.ReadASCIIString()
+102         UserName = Reader.ReadString8()
         
 104         If (.flags.Privilegios And (PlayerType.Consejero Or PlayerType.user)) = 0 Then
 106             tUser = NameIndex(UserName)
@@ -7725,7 +7612,7 @@ Private Sub HandleWhere(ByVal UserIndex As Integer)
         
 ErrHandler:
 120     Call TraceError(Err.Number, Err.Description, "Protocol.HandleWhere", Erl)
-122     Call UserList(UserIndex).incomingData.SafeClearPacket
+122
 
 End Sub
 
@@ -7754,7 +7641,7 @@ Private Sub HandleCreaturesInMap(ByVal UserIndex As Integer)
             Dim List1()    As String
             Dim List2()    As String
         
-102         Map = .incomingData.ReadInteger()
+102         Map = Reader.ReadInt16()
         
 104         If .flags.Privilegios And PlayerType.user Then Exit Sub
         
@@ -7869,7 +7756,7 @@ Private Sub HandleCreaturesInMap(ByVal UserIndex As Integer)
 
 HandleCreaturesInMap_Err:
 210     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCreaturesInMap", Erl)
-212     Call UserList(UserIndex).incomingData.SafeClearPacket
+212
         
 End Sub
 
@@ -7901,7 +7788,7 @@ Private Sub HandleWarpMeToTarget(ByVal UserIndex As Integer)
 
 HandleWarpMeToTarget_Err:
 108     Call TraceError(Err.Number, Err.Description, "Protocol.HandleWarpMeToTarget", Erl)
-110     Call UserList(UserIndex).incomingData.SafeClearPacket
+110
         
 End Sub
 
@@ -7928,10 +7815,10 @@ Private Sub HandleWarpChar(ByVal UserIndex As Integer)
             Dim Y        As Byte
             Dim tUser    As Integer
         
-102         UserName = .incomingData.ReadASCIIString()
-104         Map = .incomingData.ReadInteger()
-106         X = .incomingData.ReadByte()
-108         Y = .incomingData.ReadByte()
+102         UserName = Reader.ReadString8()
+104         Map = Reader.ReadInt16()
+106         X = Reader.ReadInt8()
+108         Y = Reader.ReadInt8()
 
 110         If .flags.Privilegios And PlayerType.user Then Exit Sub
             
@@ -7983,7 +7870,7 @@ Private Sub HandleWarpChar(ByVal UserIndex As Integer)
         
 ErrHandler:
 146     Call TraceError(Err.Number, Err.Description, "Protocol.HandleWarpChar", Erl)
-148     Call UserList(UserIndex).incomingData.SafeClearPacket
+148
 
 End Sub
 
@@ -8008,8 +7895,8 @@ Private Sub HandleSilence(ByVal UserIndex As Integer)
             Dim minutos  As Integer
             Dim tUser    As Integer
         
-102         UserName = .incomingData.ReadASCIIString()
-104         minutos = .incomingData.ReadInteger()
+102         UserName = Reader.ReadString8()
+104         minutos = Reader.ReadInt16()
 
 106         If EsGM(UserIndex) Then
 108             tUser = NameIndex(UserName)
@@ -8080,7 +7967,7 @@ Private Sub HandleSilence(ByVal UserIndex As Integer)
         
 ErrHandler:
 164     Call TraceError(Err.Number, Err.Description, "Protocol.HandleSilence", Erl)
-166     Call UserList(UserIndex).incomingData.SafeClearPacket
+166
 
 End Sub
 
@@ -8110,7 +7997,7 @@ Private Sub HandleSOSShowList(ByVal UserIndex As Integer)
 
 HandleSOSShowList_Err:
 106     Call TraceError(Err.Number, Err.Description, "Protocol.HandleSOSShowList", Erl)
-108     Call UserList(UserIndex).incomingData.SafeClearPacket
+108
         
 End Sub
 
@@ -8132,7 +8019,7 @@ Private Sub HandleSOSRemove(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             Dim UserName As String
-102             UserName = .incomingData.ReadASCIIString()
+102             UserName = Reader.ReadString8()
         
 104         If Not .flags.Privilegios And PlayerType.user Then Call Ayuda.Quitar(UserName)
 
@@ -8142,7 +8029,7 @@ Private Sub HandleSOSRemove(ByVal UserIndex As Integer)
         
 ErrHandler:
 106     Call TraceError(Err.Number, Err.Description, "Protocol.HandleSOSRemove", Erl)
-108     Call UserList(UserIndex).incomingData.SafeClearPacket
+108
 
 End Sub
 
@@ -8168,7 +8055,7 @@ Private Sub HandleGoToChar(ByVal UserIndex As Integer)
             Dim X        As Byte
             Dim Y        As Byte
         
-102         UserName = .incomingData.ReadASCIIString()
+102         UserName = Reader.ReadString8()
 
 104         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) Then
         
@@ -8220,7 +8107,7 @@ Private Sub HandleGoToChar(ByVal UserIndex As Integer)
         
 ErrHandler:
 142     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGoToChar", Erl)
-144     Call UserList(UserIndex).incomingData.SafeClearPacket
+144
 
 End Sub
 
@@ -8232,7 +8119,7 @@ Private Sub HandleDesbuggear(ByVal UserIndex As Integer)
 
             Dim UserName As String, tUser As Integer, i As Long, Count As Long
         
-102         UserName = .incomingData.ReadASCIIString()
+102         UserName = Reader.ReadString8()
         
 104         If EsGM(UserIndex) And (.flags.Privilegios And PlayerType.user) = 0 Then
 106             If Len(UserName) > 0 Then
@@ -8305,7 +8192,7 @@ Private Sub HandleDesbuggear(ByVal UserIndex As Integer)
         
 ErrHandler:
 160     Call TraceError(Err.Number, Err.Description, "Protocol.HandleDesbuggear", Erl)
-162     Call UserList(UserIndex).incomingData.SafeClearPacket
+162
 
 End Sub
 
@@ -8317,8 +8204,8 @@ Private Sub HandleDarLlaveAUsuario(ByVal UserIndex As Integer)
 
             Dim UserName As String, tUser As Integer, Llave As Integer
         
-102         UserName = .incomingData.ReadASCIIString()
-104         Llave = .incomingData.ReadInteger()
+102         UserName = Reader.ReadString8()
+104         Llave = Reader.ReadInt16()
         
             ' Solo dios o admin
 106         If .flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin) Then
@@ -8390,7 +8277,7 @@ Private Sub HandleDarLlaveAUsuario(ByVal UserIndex As Integer)
         
 ErrHandler:
 148     Call TraceError(Err.Number, Err.Description, "Protocol.HandleDarLlaveAUsuario", Erl)
-150     Call UserList(UserIndex).incomingData.SafeClearPacket
+150
 
 End Sub
 
@@ -8401,7 +8288,7 @@ Private Sub HandleSacarLlave(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             Dim Llave As Integer
-102             Llave = .incomingData.ReadInteger()
+102             Llave = Reader.ReadInt16()
         
             ' Solo dios o admin
 104         If (.flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin)) Then
@@ -8433,7 +8320,7 @@ Private Sub HandleSacarLlave(ByVal UserIndex As Integer)
 
 HandleSacarLlave_Err:
 120     Call TraceError(Err.Number, Err.Description, "Protocol.HandleSacarLlave", Erl)
-122     Call UserList(UserIndex).incomingData.SafeClearPacket
+122
         
 End Sub
 
@@ -8464,7 +8351,7 @@ Private Sub HandleVerLlaves(ByVal UserIndex As Integer)
 
 HandleVerLlaves_Err:
 112     Call TraceError(Err.Number, Err.Description, "Protocol.HandleVerLlaves", Erl)
-114     Call UserList(UserIndex).incomingData.SafeClearPacket
+114
         
 End Sub
 
@@ -8475,7 +8362,7 @@ Private Sub HandleUseKey(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             Dim Slot As Byte
-102             Slot = .incomingData.ReadByte
+102             Slot = Reader.ReadInt8
 
 104         Call UsarLlave(UserIndex, Slot)
                 
@@ -8485,7 +8372,7 @@ Private Sub HandleUseKey(ByVal UserIndex As Integer)
 
 HandleUseKey_Err:
 106     Call TraceError(Err.Number, Err.Description, "Protocol.HandleUseKey", Erl)
-108     Call UserList(UserIndex).incomingData.SafeClearPacket
+108
         
 End Sub
 
@@ -8515,7 +8402,7 @@ Private Sub HandleInvisible(ByVal UserIndex As Integer)
 
 HandleInvisible_Err:
 106     Call TraceError(Err.Number, Err.Description, "Protocol.HandleInvisible", Erl)
-108     Call UserList(UserIndex).incomingData.SafeClearPacket
+108
         
 End Sub
 
@@ -8545,7 +8432,7 @@ Private Sub HandleGMPanel(ByVal UserIndex As Integer)
 
 HandleGMPanel_Err:
 106     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGMPanel", Erl)
-108     Call UserList(UserIndex).incomingData.SafeClearPacket
+108
         
 End Sub
 
@@ -8597,7 +8484,7 @@ Private Sub HandleRequestUserList(ByVal UserIndex As Integer)
 
 HandleRequestUserList_Err:
 122     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRequestUserList", Erl)
-124     Call UserList(UserIndex).incomingData.SafeClearPacket
+124
         
 End Sub
 
@@ -8651,7 +8538,7 @@ Private Sub HandleWorking(ByVal UserIndex As Integer)
 
 HandleWorking_Err:
 124     Call TraceError(Err.Number, Err.Description, "Protocol.HandleWorking", Erl)
-126     Call UserList(UserIndex).incomingData.SafeClearPacket
+126
         
 End Sub
 
@@ -8705,7 +8592,7 @@ Private Sub HandleHiding(ByVal UserIndex As Integer)
 
 HandleHiding_Err:
 122     Call TraceError(Err.Number, Err.Description, "Protocol.HandleHiding", Erl)
-124     Call UserList(UserIndex).incomingData.SafeClearPacket
+124
         
 End Sub
 
@@ -8735,9 +8622,9 @@ Private Sub HandleJail(ByVal UserIndex As Integer)
             Dim Count    As Byte
             Dim tUser    As Integer
         
-102         UserName = .incomingData.ReadASCIIString()
-104         Reason = .incomingData.ReadASCIIString()
-106         jailTime = .incomingData.ReadByte()
+102         UserName = Reader.ReadString8()
+104         Reason = Reader.ReadString8()
+106         jailTime = Reader.ReadInt8()
         
 108         If InStr(1, UserName, "+") Then
 110             UserName = Replace(UserName, "+", " ")
@@ -8803,7 +8690,7 @@ Private Sub HandleJail(ByVal UserIndex As Integer)
         
 ErrHandler:
 158     Call TraceError(Err.Number, Err.Description, "Protocol.HandleHiding", Erl)
-160     Call UserList(UserIndex).incomingData.SafeClearPacket
+160
 
 End Sub
 
@@ -8866,7 +8753,7 @@ Private Sub HandleKillNPC(ByVal UserIndex As Integer)
 HandleKillNPC_Err:
 126     Call TraceError(Err.Number, Err.Description, "Protocol.HandleKillNPC", Erl)
 
-128     Call UserList(UserIndex).incomingData.SafeClearPacket
+128
         
 End Sub
 
@@ -8884,8 +8771,8 @@ Private Sub HandleWarnUser(ByVal UserIndex As Integer)
             Dim UserName As String
             Dim Reason   As String
 
-102         UserName = .incomingData.ReadASCIIString()
-104         Reason = .incomingData.ReadASCIIString()
+102         UserName = Reader.ReadString8()
+104         Reason = Reader.ReadString8()
         
             ' Tenes que ser Admin, Dios o Semi-Dios
 106         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) = 0 Then
@@ -8972,7 +8859,7 @@ ErrHandler:
 
 160     Call TraceError(Err.Number, Err.Description, "Protocol.HandleWarnUser", Erl)
 
-162     Call UserList(UserIndex).incomingData.SafeClearPacket
+162
 
 End Sub
 
@@ -8986,8 +8873,8 @@ Private Sub HandleMensajeUser(ByVal UserIndex As Integer)
             Dim Mensaje  As String
             Dim tUser    As Integer
         
-102         UserName = .incomingData.ReadASCIIString()
-104         Mensaje = .incomingData.ReadASCIIString()
+102         UserName = Reader.ReadString8()
+104         Mensaje = Reader.ReadString8()
         
 106         If EsGM(UserIndex) Then
         
@@ -9019,7 +8906,7 @@ Private Sub HandleMensajeUser(ByVal UserIndex As Integer)
 
 ErrHandler:
 128     Call TraceError(Err.Number, Err.Description, "Protocol.HandleMensajeUser", Erl)
-130     Call UserList(UserIndex).incomingData.SafeClearPacket
+130
 
 End Sub
 
@@ -9044,7 +8931,7 @@ Private Sub HandleTraerBoveda(ByVal UserIndex As Integer)
 
 ErrHandler:
 106     Call TraceError(Err.Number, Err.Description, "Protocol.HandleTraerBoveda", Erl)
-108     Call UserList(UserIndex).incomingData.SafeClearPacket
+108
 
 End Sub
 
@@ -9073,7 +8960,7 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
             Dim n             As Byte
             Dim tmpLong       As Long
         
-102         UserName = Replace(.incomingData.ReadASCIIString(), "+", " ")
+102         UserName = Replace(Reader.ReadString8(), "+", " ")
         
 104         If UCase$(UserName) = "YO" Then
 106             tUser = UserIndex
@@ -9082,9 +8969,9 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
 108             tUser = NameIndex(UserName)
             End If
         
-110         opcion = .incomingData.ReadByte()
-112         Arg1 = .incomingData.ReadASCIIString()
-114         Arg2 = .incomingData.ReadASCIIString()
+110         opcion = Reader.ReadInt8()
+112         Arg1 = Reader.ReadString8()
+114         Arg2 = Reader.ReadString8()
 
             ' Si no es GM, no hacemos nada.
 116         If Not EsGM(UserIndex) Then Exit Sub
@@ -9770,7 +9657,7 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
 
 ErrHandler:
 716     Call TraceError(Err.Number, Err.Description, "Protocol.HandleEditChar", Erl)
-718     Call UserList(UserIndex).incomingData.SafeClearPacket
+718
 
 End Sub
 
@@ -9793,7 +9680,7 @@ Private Sub HandleRequestCharInfo(ByVal UserIndex As Integer)
             Dim targetName  As String
             Dim TargetIndex As Integer
         
-102         targetName = Replace$(.incomingData.ReadASCIIString(), "+", " ")
+102         targetName = Replace$(Reader.ReadString8(), "+", " ")
 104         TargetIndex = NameIndex(targetName)
         
 106         If .flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios) Then
@@ -9827,7 +9714,7 @@ Private Sub HandleRequestCharInfo(ByVal UserIndex As Integer)
 
 ErrHandler:
 122     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRequestCharInfo", Erl)
-124     Call UserList(UserIndex).incomingData.SafeClearPacket
+124
 
 End Sub
 
@@ -9850,7 +9737,7 @@ Private Sub HandleRequestCharStats(ByVal UserIndex As Integer)
             Dim UserName As String
             Dim tUser    As Integer
 
-102         UserName = .incomingData.ReadASCIIString()
+102         UserName = Reader.ReadString8()
         
 104         If (Not .flags.Privilegios And PlayerType.RoleMaster) <> 0 And (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) <> 0 Then
 106             Call LogGM(.Name, "/STAT " & UserName)
@@ -9876,7 +9763,7 @@ Private Sub HandleRequestCharStats(ByVal UserIndex As Integer)
 
 ErrHandler:
 120     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRequestCharStats", Erl)
-122     Call UserList(UserIndex).incomingData.SafeClearPacket
+122
 
 End Sub
 
@@ -9899,7 +9786,7 @@ Private Sub HandleRequestCharGold(ByVal UserIndex As Integer)
             Dim UserName As String
             Dim tUser    As Integer
         
-102         UserName = .incomingData.ReadASCIIString()
+102         UserName = Reader.ReadString8()
 104         tUser = NameIndex(UserName)
         
 106         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) Then
@@ -9923,7 +9810,7 @@ Private Sub HandleRequestCharGold(ByVal UserIndex As Integer)
 
 ErrHandler:
 120     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRequestCharGold", Erl)
-122     Call UserList(UserIndex).incomingData.SafeClearPacket
+122
 
 End Sub
 
@@ -9946,7 +9833,7 @@ Private Sub HandleRequestCharInventory(ByVal UserIndex As Integer)
             Dim UserName As String
             Dim tUser    As Integer
         
-102         UserName = .incomingData.ReadASCIIString()
+102         UserName = Reader.ReadString8()
 104         tUser = NameIndex(UserName)
         
 106         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) Then
@@ -9970,7 +9857,7 @@ Private Sub HandleRequestCharInventory(ByVal UserIndex As Integer)
 
 ErrHandler:
 120     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRequestCharInventory", Erl)
-122     Call UserList(UserIndex).incomingData.SafeClearPacket
+122
 
 End Sub
 
@@ -9993,7 +9880,7 @@ Private Sub HandleRequestCharBank(ByVal UserIndex As Integer)
             Dim UserName As String
             Dim tUser    As Integer
         
-102         UserName = .incomingData.ReadASCIIString()
+102         UserName = Reader.ReadString8()
 104         tUser = NameIndex(UserName)
         
 106         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) Then
@@ -10018,7 +9905,7 @@ Private Sub HandleRequestCharBank(ByVal UserIndex As Integer)
 
 ErrHandler:
 120     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRequestCharBank", Erl)
-122     Call UserList(UserIndex).incomingData.SafeClearPacket
+122
 
 End Sub
 
@@ -10043,7 +9930,7 @@ Private Sub HandleRequestCharSkills(ByVal UserIndex As Integer)
             Dim LoopC    As Long
             Dim message  As String
         
-102         UserName = .incomingData.ReadASCIIString()
+102         UserName = Reader.ReadString8()
 104         tUser = NameIndex(UserName)
         
 106         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) Then
@@ -10081,7 +9968,7 @@ Private Sub HandleRequestCharSkills(ByVal UserIndex As Integer)
 
 ErrHandler:
 132     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRequestCharSkills", Erl)
-134     Call UserList(UserIndex).incomingData.SafeClearPacket
+134
 
 End Sub
 
@@ -10105,7 +9992,7 @@ Private Sub HandleReviveChar(ByVal UserIndex As Integer)
             Dim tUser    As Integer
             Dim LoopC    As Byte
         
-102         UserName = .incomingData.ReadASCIIString()
+102         UserName = Reader.ReadString8()
         
 104         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) Then
 106             If UCase$(UserName) <> "YO" Then
@@ -10156,7 +10043,7 @@ Private Sub HandleReviveChar(ByVal UserIndex As Integer)
 
 ErrHandler:
 138     Call TraceError(Err.Number, Err.Description, "Protocol.HandleReviveChar", Erl)
-140     Call UserList(UserIndex).incomingData.SafeClearPacket
+140
 
 End Sub
 
@@ -10213,7 +10100,7 @@ Private Sub HandleOnlineGM(ByVal UserIndex As Integer)
 
 HandleOnlineGM_Err:
 126     Call TraceError(Err.Number, Err.Description, "Protocol.HandleOnlineGM", Erl)
-128     Call UserList(UserIndex).incomingData.SafeClearPacket
+128
         
 End Sub
 
@@ -10266,7 +10153,7 @@ Private Sub HandleOnlineMap(ByVal UserIndex As Integer)
 
 HandleOnlineMap_Err:
 122     Call TraceError(Err.Number, Err.Description, "Protocol.HandleOnlineMap", Erl)
-124     Call UserList(UserIndex).incomingData.SafeClearPacket
+124
         
 End Sub
 
@@ -10350,7 +10237,7 @@ Private Sub HandleForgive(ByVal UserIndex As Integer)
 
 HandleForgive_Err:
 142     Call TraceError(Err.Number, Err.Description, "Protocol.HandleForgive", Erl)
-144     Call UserList(UserIndex).incomingData.SafeClearPacket
+144
         
 End Sub
 
@@ -10377,7 +10264,7 @@ Private Sub HandleKick(ByVal UserIndex As Integer)
         
 102         rank = PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios Or PlayerType.Consejero
         
-104         UserName = .incomingData.ReadASCIIString()
+104         UserName = Reader.ReadString8()
         
 106         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) Then
         
@@ -10408,7 +10295,7 @@ Private Sub HandleKick(ByVal UserIndex As Integer)
 
 ErrHandler:
 126     Call TraceError(Err.Number, Err.Description, "Protocol.HandleKick", Erl)
-128     Call UserList(UserIndex).incomingData.SafeClearPacket
+128
 
 End Sub
 
@@ -10432,7 +10319,7 @@ Private Sub HandleExecute(ByVal UserIndex As Integer)
             Dim UserName As String
             Dim tUser    As Integer
         
-102         UserName = .incomingData.ReadASCIIString()
+102         UserName = Reader.ReadString8()
         
 104         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) Then
 106             tUser = NameIndex(UserName)
@@ -10458,7 +10345,7 @@ Private Sub HandleExecute(ByVal UserIndex As Integer)
 
 ErrHandler:
 120     Call TraceError(Err.Number, Err.Description, "Protocol.HandleExecute", Erl)
-122     Call UserList(UserIndex).incomingData.SafeClearPacket
+122
 
 End Sub
 
@@ -10482,8 +10369,8 @@ Private Sub HandleBanChar(ByVal UserIndex As Integer)
             Dim UserName As String
             Dim Reason   As String
         
-102         UserName = .incomingData.ReadASCIIString()
-104         Reason = .incomingData.ReadASCIIString()
+102         UserName = Reader.ReadString8()
+104         Reason = Reader.ReadString8()
         
 106         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) Then
 108             Call BanPJ(UserIndex, UserName, Reason)
@@ -10497,7 +10384,7 @@ Private Sub HandleBanChar(ByVal UserIndex As Integer)
 
 ErrHandler:
 112     Call TraceError(Err.Number, Err.Description, "Protocol.HandleBanChar", Erl)
-114     Call UserList(UserIndex).incomingData.SafeClearPacket
+114
 
 End Sub
 
@@ -10519,7 +10406,7 @@ Private Sub HandleUnbanChar(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             Dim UserName As String
-102             UserName = .incomingData.ReadASCIIString()
+102             UserName = Reader.ReadString8()
         
 104         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) Then
             
@@ -10549,7 +10436,7 @@ Private Sub HandleUnbanChar(ByVal UserIndex As Integer)
 
 ErrHandler:
 124     Call TraceError(Err.Number, Err.Description, "Protocol.HandleUnbanChar", Erl)
-126     Call UserList(UserIndex).incomingData.SafeClearPacket
+126
 
 End Sub
 
@@ -10591,7 +10478,7 @@ Private Sub HandleNPCFollow(ByVal UserIndex As Integer)
 
 HandleNPCFollow_Err:
 116     Call TraceError(Err.Number, Err.Description, "Protocol.HandleNPCFollow", Erl)
-118     Call UserList(UserIndex).incomingData.SafeClearPacket
+118
         
 End Sub
 
@@ -10615,7 +10502,7 @@ Private Sub HandleSummonChar(ByVal UserIndex As Integer)
         Dim UserName As String
         Dim tUser    As Integer
         
-102     UserName = .incomingData.ReadASCIIString()
+102     UserName = Reader.ReadString8()
             
 104     If .flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios) Then
 106         If LenB(UserName) <> 0 Then
@@ -10693,7 +10580,7 @@ Private Sub HandleSummonChar(ByVal UserIndex As Integer)
 ErrHandler:
 
 156 Call TraceError(Err.Number, Err.Description, "Protocol.HandleSummonChar", Erl)
-158 Call UserList(UserIndex).incomingData.SafeClearPacket
+158
 
 End Sub
 
@@ -10732,7 +10619,7 @@ Private Sub HandleSpawnListRequest(ByVal UserIndex As Integer)
 
 HandleSpawnListRequest_Err:
 114     Call TraceError(Err.Number, Err.Description, "Protocol.HandleSpawnListRequest", Erl)
-116     Call UserList(UserIndex).incomingData.SafeClearPacket
+116
         
 End Sub
 
@@ -10754,7 +10641,7 @@ Private Sub HandleSpawnCreature(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             Dim npc As Integer
-102             npc = .incomingData.ReadInteger()
+102             npc = Reader.ReadInt16()
         
 104         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) Then
         
@@ -10775,7 +10662,7 @@ Private Sub HandleSpawnCreature(ByVal UserIndex As Integer)
 
 HandleSpawnCreature_Err:
 114     Call TraceError(Err.Number, Err.Description, "Protocol.HandleSpawnCreature", Erl)
-116     Call UserList(UserIndex).incomingData.SafeClearPacket
+116
         
 End Sub
 
@@ -10811,7 +10698,7 @@ Private Sub HandleResetNPCInventory(ByVal UserIndex As Integer)
 
 HandleResetNPCInventory_Err:
 112     Call TraceError(Err.Number, Err.Description, "Protocol.HandleResetNPCInventory", Erl)
-114     Call UserList(UserIndex).incomingData.SafeClearPacket
+114
         
 End Sub
 
@@ -10845,7 +10732,7 @@ Private Sub HandleCleanWorld(ByVal UserIndex As Integer)
 
 HandleCleanWorld_Err:
 110     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCleanWorld", Erl)
-112     Call UserList(UserIndex).incomingData.SafeClearPacket
+112
         
 End Sub
 
@@ -10867,7 +10754,7 @@ Private Sub HandleServerMessage(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             Dim message As String
-102             message = .incomingData.ReadASCIIString()
+102             Message = Reader.ReadString8()
         
 104         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) Then
         
@@ -10886,7 +10773,7 @@ Private Sub HandleServerMessage(ByVal UserIndex As Integer)
 
 ErrHandler:
 114     Call TraceError(Err.Number, Err.Description, "Protocol.HandleServerMessage", Erl)
-116     Call UserList(UserIndex).incomingData.SafeClearPacket
+116
 
 End Sub
 
@@ -10910,7 +10797,7 @@ Private Sub HandleNickToIP(ByVal UserIndex As Integer)
             Dim tUser    As Integer
             Dim priv     As PlayerType
         
-102         UserName = .incomingData.ReadASCIIString()
+102         UserName = Reader.ReadString8()
         
 104         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) Then
         
@@ -10973,7 +10860,7 @@ Private Sub HandleNickToIP(ByVal UserIndex As Integer)
 
 ErrHandler:
 144     Call TraceError(Err.Number, Err.Description, "Protocol.HandleNickToIP", Erl)
-146     Call UserList(UserIndex).incomingData.SafeClearPacket
+146
 
 End Sub
 
@@ -10999,10 +10886,10 @@ Private Sub HandleIPToNick(ByVal UserIndex As Integer)
             Dim lista As String
             Dim priv  As PlayerType
         
-102         IP = .incomingData.ReadByte() & "."
-104         IP = IP & .incomingData.ReadByte() & "."
-106         IP = IP & .incomingData.ReadByte() & "."
-108         IP = IP & .incomingData.ReadByte()
+102         IP = Reader.ReadInt8() & "."
+104         IP = IP & Reader.ReadInt8() & "."
+106         IP = IP & Reader.ReadInt8() & "."
+108         IP = IP & Reader.ReadInt8()
         
 110         If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.RoleMaster)) Then
 112             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
@@ -11045,7 +10932,7 @@ Private Sub HandleIPToNick(ByVal UserIndex As Integer)
 
 HandleIPToNick_Err:
 138     Call TraceError(Err.Number, Err.Description, "Protocol.HandleIPToNick", Erl)
-140     Call UserList(UserIndex).incomingData.SafeClearPacket
+140
         
 End Sub
 
@@ -11069,7 +10956,7 @@ Private Sub HandleGuildOnlineMembers(ByVal UserIndex As Integer)
             Dim GuildName As String
             Dim tGuild    As Integer
         
-102         GuildName = .incomingData.ReadASCIIString()
+102         GuildName = Reader.ReadString8()
         
 104         If (InStrB(GuildName, "+") <> 0) Then
 106             GuildName = Replace(GuildName, "+", " ")
@@ -11091,7 +10978,7 @@ Private Sub HandleGuildOnlineMembers(ByVal UserIndex As Integer)
 
 ErrHandler:
 118     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildOnlineMembers", Erl)
-120     Call UserList(UserIndex).incomingData.SafeClearPacket
+120
 
 End Sub
 
@@ -11117,10 +11004,10 @@ Private Sub HandleTeleportCreate(ByVal UserIndex As Integer)
             Dim Y    As Byte
             Dim Motivo As String
         
-102         Mapa = .incomingData.ReadInteger()
-104         X = .incomingData.ReadByte()
-106         Y = .incomingData.ReadByte()
-            Motivo = .incomingData.ReadASCIIString()
+102         Mapa = Reader.ReadInt16()
+104         X = Reader.ReadInt8()
+106         Y = Reader.ReadInt8()
+            Motivo = Reader.ReadString8()
         
 108         If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios)) Then
 110             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
@@ -11166,7 +11053,7 @@ Private Sub HandleTeleportCreate(ByVal UserIndex As Integer)
 
 HandleTeleportCreate_Err:
 142     Call TraceError(Err.Number, Err.Description, "Protocol.HandleTeleportCreate", Erl)
-144     Call UserList(UserIndex).incomingData.SafeClearPacket
+144
         
 End Sub
 
@@ -11240,7 +11127,7 @@ Private Sub HandleTeleportDestroy(ByVal UserIndex As Integer)
 
 HandleTeleportDestroy_Err:
 144     Call TraceError(Err.Number, Err.Description, "Protocol.HandleTeleportDestroy", Erl)
-146     Call UserList(UserIndex).incomingData.SafeClearPacket
+146
         
 End Sub
 
@@ -11287,7 +11174,7 @@ Private Sub HandleRainToggle(ByVal UserIndex As Integer)
 
 HandleRainToggle_Err:
 124     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRainToggle", Erl)
-126     Call UserList(UserIndex).incomingData.SafeClearPacket
+126
         
 End Sub
 
@@ -11310,7 +11197,7 @@ Private Sub HandleSetCharDescription(ByVal UserIndex As Integer)
             Dim tUser As Integer
             Dim Desc  As String
         
-102         Desc = .incomingData.ReadASCIIString()
+102         Desc = Reader.ReadString8()
         
 104         If (.flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin Or PlayerType.RoleMaster)) Then
         
@@ -11332,7 +11219,7 @@ Private Sub HandleSetCharDescription(ByVal UserIndex As Integer)
 
 ErrHandler:
 114     Call TraceError(Err.Number, Err.Description, "Protocol.HandleSetCharDescription", Erl)
-116     Call UserList(UserIndex).incomingData.SafeClearPacket
+116
 
 End Sub
 
@@ -11356,8 +11243,8 @@ Private Sub HanldeForceMIDIToMap(ByVal UserIndex As Integer)
             Dim midiID As Byte
             Dim Mapa   As Integer
         
-102         midiID = .incomingData.ReadByte
-104         Mapa = .incomingData.ReadInteger
+102         midiID = Reader.ReadInt8
+104         Mapa = Reader.ReadInt16
         
             'Solo dioses, admins y RMS
 106         If (.flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin Or PlayerType.RoleMaster)) Then
@@ -11385,7 +11272,7 @@ Private Sub HanldeForceMIDIToMap(ByVal UserIndex As Integer)
 
 HanldeForceMIDIToMap_Err:
 118     Call TraceError(Err.Number, Err.Description, "Protocol.HanldeForceMIDIToMap", Erl)
-120     Call UserList(UserIndex).incomingData.SafeClearPacket
+120
         
 End Sub
 
@@ -11411,10 +11298,10 @@ Private Sub HandleForceWAVEToMap(ByVal UserIndex As Integer)
             Dim X      As Byte
             Dim Y      As Byte
         
-102         waveID = .incomingData.ReadByte()
-104         Mapa = .incomingData.ReadInteger()
-106         X = .incomingData.ReadByte()
-108         Y = .incomingData.ReadByte()
+102         waveID = Reader.ReadInt8()
+104         Mapa = Reader.ReadInt16()
+106         X = Reader.ReadInt8()
+108         Y = Reader.ReadInt8()
         
             'Solo dioses, admins y RMS
 110         If (.flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin Or PlayerType.RoleMaster)) Then
@@ -11439,7 +11326,7 @@ Private Sub HandleForceWAVEToMap(ByVal UserIndex As Integer)
 
 HandleForceWAVEToMap_Err:
 122     Call TraceError(Err.Number, Err.Description, "Protocol.HandleForceWAVEToMap", Erl)
-124     Call UserList(UserIndex).incomingData.SafeClearPacket
+124
         
 End Sub
 
@@ -11460,7 +11347,7 @@ Private Sub HandleRoyalArmyMessage(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             Dim message As String
-102             message = .incomingData.ReadASCIIString()
+102             Message = Reader.ReadString8()
         
             'Solo dioses, admins y RMS
 104         If (.flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin Or PlayerType.RoleMaster)) Then
@@ -11473,7 +11360,7 @@ Private Sub HandleRoyalArmyMessage(ByVal UserIndex As Integer)
 
 ErrHandler:
 108     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRoyalArmyMessage", Erl)
-110     Call UserList(UserIndex).incomingData.SafeClearPacket
+110
 
 End Sub
 
@@ -11495,7 +11382,7 @@ Private Sub HandleChaosLegionMessage(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             Dim message As String
-102             message = .incomingData.ReadASCIIString()
+102             Message = Reader.ReadString8()
         
             'Solo dioses, admins y RMS
 104         If (.flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin Or PlayerType.RoleMaster)) Then
@@ -11508,7 +11395,7 @@ Private Sub HandleChaosLegionMessage(ByVal UserIndex As Integer)
 
 ErrHandler:
 108     Call TraceError(Err.Number, Err.Description, "Protocol.HandleChaosLegionMessage", Erl)
-110     Call UserList(UserIndex).incomingData.SafeClearPacket
+110
 
 End Sub
 
@@ -11530,7 +11417,7 @@ Private Sub HandleCitizenMessage(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             Dim message As String
-102             message = .incomingData.ReadASCIIString()
+102             Message = Reader.ReadString8()
         
             'Solo dioses, admins y RMS
 104         If (.flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin Or PlayerType.RoleMaster)) Then
@@ -11543,7 +11430,7 @@ Private Sub HandleCitizenMessage(ByVal UserIndex As Integer)
 
 ErrHandler:
 108     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCitizenMessage", Erl)
-110     Call UserList(UserIndex).incomingData.SafeClearPacket
+110
 
 End Sub
 
@@ -11564,7 +11451,7 @@ Private Sub HandleCriminalMessage(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             Dim message As String
-102             message = .incomingData.ReadASCIIString()
+102             Message = Reader.ReadString8()
         
             'Solo dioses, admins y RMS
 104         If (.flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin Or PlayerType.RoleMaster)) Then
@@ -11577,7 +11464,7 @@ Private Sub HandleCriminalMessage(ByVal UserIndex As Integer)
 
 ErrHandler:
 108     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCriminalMessage", Erl)
-110     Call UserList(UserIndex).incomingData.SafeClearPacket
+110
 
 End Sub
 
@@ -11598,7 +11485,7 @@ Private Sub HandleTalkAsNPC(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
         
             Dim message As String
-102             message = .incomingData.ReadASCIIString()
+102             Message = Reader.ReadString8()
         
             'Solo dioses, admins y RMS
 104         If (.flags.Privilegios And (PlayerType.Dios Or PlayerType.Admin Or PlayerType.RoleMaster)) Then
@@ -11620,7 +11507,7 @@ Private Sub HandleTalkAsNPC(ByVal UserIndex As Integer)
 
 ErrHandler:
 112     Call TraceError(Err.Number, Err.Description, "Protocol.HandleTalkAsNPC", Erl)
-114     Call UserList(UserIndex).incomingData.SafeClearPacket
+114
 
 End Sub
 
@@ -11674,7 +11561,7 @@ Private Sub HandleDestroyAllItemsInArea(ByVal UserIndex As Integer)
 
 HandleDestroyAllItemsInArea_Err:
 124     Call TraceError(Err.Number, Err.Description, "Protocol.HandleDestroyAllItemsInArea", Erl)
-126     Call UserList(UserIndex).incomingData.SafeClearPacket
+126
         
 End Sub
 
@@ -11698,7 +11585,7 @@ Private Sub HandleAcceptRoyalCouncilMember(ByVal UserIndex As Integer)
             Dim tUser    As Integer
             Dim LoopC    As Byte
         
-102         UserName = .incomingData.ReadASCIIString()
+102         UserName = Reader.ReadString8()
         
 104         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.RoleMaster)) Then
 106             tUser = NameIndex(UserName)
@@ -11729,7 +11616,7 @@ Private Sub HandleAcceptRoyalCouncilMember(ByVal UserIndex As Integer)
 
 ErrHandler:
 122     Call TraceError(Err.Number, Err.Description, "Protocol.HandleAcceptRoyalCouncilMember", Erl)
-124     Call UserList(UserIndex).incomingData.SafeClearPacket
+124
 
 End Sub
 
@@ -11754,7 +11641,7 @@ Private Sub HandleAcceptChaosCouncilMember(ByVal UserIndex As Integer)
             Dim tUser    As Integer
             Dim LoopC    As Byte
         
-102         UserName = .incomingData.ReadASCIIString()
+102         UserName = Reader.ReadString8()
         
 104         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.RoleMaster)) Then
 106             tUser = NameIndex(UserName)
@@ -11785,7 +11672,7 @@ Private Sub HandleAcceptChaosCouncilMember(ByVal UserIndex As Integer)
 
 ErrHandler:
 122     Call TraceError(Err.Number, Err.Description, "Protocol.HandleAcceptChaosCouncilMember", Erl)
-124     Call UserList(UserIndex).incomingData.SafeClearPacket
+124
 
 End Sub
 
@@ -11836,7 +11723,7 @@ Private Sub HandleItemsInTheFloor(ByVal UserIndex As Integer)
 
 HandleItemsInTheFloor_Err:
 122     Call TraceError(Err.Number, Err.Description, "Protocol.HandleItemsInTheFloor", Erl)
-124     Call UserList(UserIndex).incomingData.SafeClearPacket
+124
         
 End Sub
 
@@ -11859,7 +11746,7 @@ Private Sub HandleMakeDumb(ByVal UserIndex As Integer)
             Dim UserName As String
             Dim tUser    As Integer
         
-102         UserName = .incomingData.ReadASCIIString()
+102         UserName = Reader.ReadString8()
         
 104         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.RoleMaster)) Then
 106             tUser = NameIndex(UserName)
@@ -11881,7 +11768,7 @@ Private Sub HandleMakeDumb(ByVal UserIndex As Integer)
 
 ErrHandler:
 114     Call TraceError(Err.Number, Err.Description, "Protocol.HandleMakeDumb", Erl)
-116     Call UserList(UserIndex).incomingData.SafeClearPacket
+116
 
 End Sub
 
@@ -11904,7 +11791,7 @@ Private Sub HandleMakeDumbNoMore(ByVal UserIndex As Integer)
             Dim UserName As String
             Dim tUser    As Integer
         
-102         UserName = .incomingData.ReadASCIIString()
+102         UserName = Reader.ReadString8()
         
 104         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.RoleMaster)) Then
 106             tUser = NameIndex(UserName)
@@ -11926,7 +11813,7 @@ Private Sub HandleMakeDumbNoMore(ByVal UserIndex As Integer)
 
 ErrHandler:
 114     Call TraceError(Err.Number, Err.Description, "Protocol.HandleMakeDumbNoMore", Erl)
-116     Call UserList(UserIndex).incomingData.SafeClearPacket
+116
 
 End Sub
 
@@ -11959,7 +11846,7 @@ Private Sub HandleDumpIPTables(ByVal UserIndex As Integer)
 
 HandleDumpIPTables_Err:
 108     Call TraceError(Err.Number, Err.Description, "Protocol.HandleDumpIPTables", Erl)
-110     Call UserList(UserIndex).incomingData.SafeClearPacket
+110
         
 End Sub
 
@@ -11983,7 +11870,7 @@ Private Sub HandleCouncilKick(ByVal UserIndex As Integer)
             Dim UserName As String
             Dim tUser    As Integer
         
-102         UserName = .incomingData.ReadASCIIString()
+102         UserName = Reader.ReadString8()
         
 104         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.RoleMaster)) Then
 106             tUser = NameIndex(UserName)
@@ -12039,7 +11926,7 @@ Private Sub HandleCouncilKick(ByVal UserIndex As Integer)
 
 ErrHandler:
 146     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCouncilKick", Erl)
-148     Call UserList(UserIndex).incomingData.SafeClearPacket
+148
 
 End Sub
 
@@ -12063,7 +11950,7 @@ Private Sub HandleSetTrigger(ByVal UserIndex As Integer)
             Dim tTrigger As Byte
             Dim tLog     As String
         
-102         tTrigger = .incomingData.ReadByte()
+102         tTrigger = Reader.ReadInt8()
         
 104         If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios Or PlayerType.RoleMaster)) Then Exit Sub
         
@@ -12085,7 +11972,7 @@ Private Sub HandleSetTrigger(ByVal UserIndex As Integer)
 
 HandleSetTrigger_Err:
 116     Call TraceError(Err.Number, Err.Description, "Protocol.HandleSetTrigger", Erl)
-118     Call UserList(UserIndex).incomingData.SafeClearPacket
+118
         
 End Sub
 
@@ -12121,7 +12008,7 @@ Private Sub HandleAskTrigger(ByVal UserIndex As Integer)
 
 HandleAskTrigger_Err:
 110     Call TraceError(Err.Number, Err.Description, "Protocol.HandleAskTrigger", Erl)
-112     Call UserList(UserIndex).incomingData.SafeClearPacket
+112
         
 End Sub
 
@@ -12157,7 +12044,7 @@ Private Sub HandleBannedIPList(ByVal UserIndex As Integer)
 
 HandleBannedIPList_Err:
 116 Call TraceError(Err.Number, Err.Description, "Protocol.HandleBannedIPList", Erl)
-118 Call UserList(UserIndex).incomingData.SafeClearPacket
+118
         
 End Sub
 
@@ -12184,7 +12071,7 @@ Private Sub HandleBannedIPReload(ByVal UserIndex As Integer)
 
 HandleBannedIPReload_Err:
 108 Call TraceError(Err.Number, Err.Description, "Protocol.HandleBannedIPReload", Erl)
-110 Call UserList(UserIndex).incomingData.SafeClearPacket
+110
         
 End Sub
 
@@ -12213,7 +12100,7 @@ Private Sub HandleGuildBan(ByVal UserIndex As Integer)
             Dim tIndex      As Integer
             Dim tFile       As String
         
-102         GuildName = .incomingData.ReadASCIIString()
+102         GuildName = Reader.ReadString8()
         
 104         If (Not .flags.Privilegios And PlayerType.RoleMaster) <> 0 And (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) Then
 106             tFile = App.Path & "\guilds\" & GuildName & "-members.mem"
@@ -12274,7 +12161,7 @@ Private Sub HandleGuildBan(ByVal UserIndex As Integer)
 
 ErrHandler:
 152     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildBan", Erl)
-154     Call UserList(UserIndex).incomingData.SafeClearPacket
+154
 
 End Sub
 
@@ -12292,8 +12179,8 @@ Private Sub HandleBanIP(ByVal UserIndex As Integer)
         
 100     With UserList(UserIndex)
         
-102         Dim NickOrIP As String: NickOrIP = .incomingData.ReadASCIIString()
-104         Dim Reason As String: Reason = .incomingData.ReadASCIIString()
+102         Dim NickOrIP As String: NickOrIP = Reader.ReadString8()
+104         Dim Reason As String: Reason = Reader.ReadString8()
         
             ' Si el 4to caracter es un ".", de "XXX.XXX.XXX.XXX", entonces es IP.
 106         If mid$(NickOrIP, 4, 1) = "." Then
@@ -12361,7 +12248,7 @@ Private Sub HandleBanIP(ByVal UserIndex As Integer)
 
 ErrHandler:
 148     Call TraceError(Err.Number, Err.Description, "Protocol.HandleBanIP", Erl)
-150     Call UserList(UserIndex).incomingData.SafeClearPacket
+150
 
 End Sub
 
@@ -12378,10 +12265,10 @@ Private Sub HandleUnbanIP(ByVal UserIndex As Integer)
         
             Dim bannedIP As String
         
-102         bannedIP = .incomingData.ReadByte() & "."
-104         bannedIP = bannedIP & .incomingData.ReadByte() & "."
-106         bannedIP = bannedIP & .incomingData.ReadByte() & "."
-108         bannedIP = bannedIP & .incomingData.ReadByte()
+102         bannedIP = Reader.ReadInt8() & "."
+104         bannedIP = bannedIP & Reader.ReadInt8() & "."
+106         bannedIP = bannedIP & Reader.ReadInt8() & "."
+108         bannedIP = bannedIP & Reader.ReadInt8()
         
 110         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) = 0 Then Exit Sub
         
@@ -12399,7 +12286,7 @@ Private Sub HandleUnbanIP(ByVal UserIndex As Integer)
 
 HandleUnbanIP_Err:
 120     Call TraceError(Err.Number, Err.Description, "Protocol.HandleUnbanIP", Erl)
-122     Call UserList(UserIndex).incomingData.SafeClearPacket
+122
         
 End Sub
 
@@ -12422,8 +12309,8 @@ Private Sub HandleCreateItem(ByVal UserIndex As Integer)
             Dim tObj    As Integer
             Dim Cuantos As Integer
         
-102         tObj = .incomingData.ReadInteger()
-104         Cuantos = .incomingData.ReadInteger()
+102         tObj = Reader.ReadInt16()
+104         Cuantos = Reader.ReadInt16()
     
             ' Si es usuario, lo sacamos cagando.
 106         If Not EsGM(UserIndex) Or (.flags.Privilegios And PlayerType.Consejero) Then Exit Sub
@@ -12491,7 +12378,7 @@ Private Sub HandleCreateItem(ByVal UserIndex As Integer)
 
 HandleCreateItem_Err:
 144     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCreateItem", Erl)
-146     Call UserList(UserIndex).incomingData.SafeClearPacket
+146
         
 End Sub
 
@@ -12529,7 +12416,7 @@ Private Sub HandleDestroyItems(ByVal UserIndex As Integer)
 
 HandleDestroyItems_Err:
 112     Call TraceError(Err.Number, Err.Description, "Protocol.HandleDestroyItems", Erl)
-114     Call UserList(UserIndex).incomingData.SafeClearPacket
+114
         
 End Sub
 
@@ -12552,7 +12439,7 @@ Private Sub HandleChaosLegionKick(ByVal UserIndex As Integer)
             Dim UserName As String
             Dim tUser    As Integer
         
-102         UserName = .incomingData.ReadASCIIString()
+102         UserName = Reader.ReadString8()
         
 104         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.RoleMaster)) Then
 106             If (InStrB(UserName, "\") <> 0) Then
@@ -12603,7 +12490,7 @@ Private Sub HandleChaosLegionKick(ByVal UserIndex As Integer)
 
 ErrHandler:
 144     Call TraceError(Err.Number, Err.Description, "Protocol.HandleChaosLegionKick", Erl)
-146     Call UserList(UserIndex).incomingData.SafeClearPacket
+146
 
 End Sub
 
@@ -12626,7 +12513,7 @@ Private Sub HandleRoyalArmyKick(ByVal UserIndex As Integer)
             Dim UserName As String
             Dim tUser    As Integer
         
-102         UserName = .incomingData.ReadASCIIString()
+102         UserName = Reader.ReadString8()
         
 104         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.RoleMaster)) Then
         
@@ -12681,7 +12568,7 @@ Private Sub HandleRoyalArmyKick(ByVal UserIndex As Integer)
 
 ErrHandler:
 144     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRoyalArmyKick", Erl)
-146     Call UserList(UserIndex).incomingData.SafeClearPacket
+146
 
 End Sub
 
@@ -12703,7 +12590,7 @@ Private Sub HandleForceMIDIAll(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             Dim midiID As Byte
-102             midiID = .incomingData.ReadByte()
+102             midiID = Reader.ReadInt8()
         
 104         If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios)) Then
 106             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
@@ -12719,7 +12606,7 @@ Private Sub HandleForceMIDIAll(ByVal UserIndex As Integer)
 
 HandleForceMIDIAll_Err:
 112     Call TraceError(Err.Number, Err.Description, "Protocol.HandleForceMIDIAll", Erl)
-114     Call UserList(UserIndex).incomingData.SafeClearPacket
+114
         
 End Sub
 
@@ -12741,7 +12628,7 @@ Private Sub HandleForceWAVEAll(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             Dim waveID As Byte
-102             waveID = .incomingData.ReadByte()
+102             waveID = Reader.ReadInt8()
         
 104         If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios)) Then
 106             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
@@ -12756,7 +12643,7 @@ Private Sub HandleForceWAVEAll(ByVal UserIndex As Integer)
 
 HandleForceWAVEAll_Err:
 110     Call TraceError(Err.Number, Err.Description, "Protocol.HandleForceWAVEAll", Erl)
-112     Call UserList(UserIndex).incomingData.SafeClearPacket
+112
         
 End Sub
 
@@ -12781,9 +12668,9 @@ Private Sub HandleRemovePunishment(ByVal UserIndex As Integer)
             Dim punishment As Byte
             Dim NewText    As String
         
-102         UserName = .incomingData.ReadASCIIString()
-104         punishment = .incomingData.ReadByte
-106         NewText = .incomingData.ReadASCIIString()
+102         UserName = Reader.ReadString8()
+104         punishment = Reader.ReadInt8
+106         NewText = Reader.ReadString8()
         
 108         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.RoleMaster)) Then
         
@@ -12826,7 +12713,7 @@ Private Sub HandleRemovePunishment(ByVal UserIndex As Integer)
 
 ErrHandler:
 134     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRemovePunishment", Erl)
-136     Call UserList(UserIndex).incomingData.SafeClearPacket
+136
 
 End Sub
 
@@ -12870,7 +12757,7 @@ Private Sub HandleTileBlockedToggle(ByVal UserIndex As Integer)
 
 HandleTileBlockedToggle_Err:
 116     Call TraceError(Err.Number, Err.Description, "Protocol.HandleTileBlockedToggle", Erl)
-118     Call UserList(UserIndex).incomingData.SafeClearPacket
+118
         
 End Sub
 
@@ -12910,7 +12797,7 @@ Private Sub HandleKillNPCNoRespawn(ByVal UserIndex As Integer)
 
 HandleKillNPCNoRespawn_Err:
 112     Call TraceError(Err.Number, Err.Description, "Protocol.HandleKillNPCNoRespawn", Erl)
-114     Call UserList(UserIndex).incomingData.SafeClearPacket
+114
         
 End Sub
 
@@ -12968,7 +12855,7 @@ Private Sub HandleKillAllNearbyNPCs(ByVal UserIndex As Integer)
 
 HandleKillAllNearbyNPCs_Err:
 124     Call TraceError(Err.Number, Err.Description, "Protocol.HandleKillAllNearbyNPCs", Erl)
-126     Call UserList(UserIndex).incomingData.SafeClearPacket
+126
         
 End Sub
 
@@ -12996,7 +12883,7 @@ Private Sub HandleLastIP(ByVal UserIndex As Integer)
             Dim validCheck As Boolean
         
 102         priv = PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios Or PlayerType.Consejero
-104         UserName = .incomingData.ReadASCIIString()
+104         UserName = Reader.ReadString8()
         
 106         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios Or PlayerType.RoleMaster)) Then
 
@@ -13053,7 +12940,7 @@ Private Sub HandleLastIP(ByVal UserIndex As Integer)
 
 ErrHandler:
 148     Call TraceError(Err.Number, Err.Description, "Protocol.HandleLastIP", Erl)
-150     Call UserList(UserIndex).incomingData.SafeClearPacket
+150
 
 End Sub
 
@@ -13076,7 +12963,7 @@ Public Sub HandleChatColor(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             Dim Color As Long
-102             Color = RGB(.incomingData.ReadByte(), .incomingData.ReadByte(), .incomingData.ReadByte())
+102             Color = RGB(Reader.ReadInt8(), Reader.ReadInt8(), Reader.ReadInt8())
         
 104         If EsGM(UserIndex) Then
 106             .flags.ChatColor = Color
@@ -13088,7 +12975,7 @@ Public Sub HandleChatColor(ByVal UserIndex As Integer)
 
 HandleChatColor_Err:
 108     Call TraceError(Err.Number, Err.Description, "Protocol.HandleChatColor", Erl)
-110     Call UserList(UserIndex).incomingData.SafeClearPacket
+110
         
 End Sub
 
@@ -13118,7 +13005,7 @@ Public Sub HandleIgnored(ByVal UserIndex As Integer)
 
 HandleIgnored_Err:
 106     Call TraceError(Err.Number, Err.Description, "Protocol.HandleIgnored", Erl)
-108     Call UserList(UserIndex).incomingData.SafeClearPacket
+108
         
 End Sub
 
@@ -13144,8 +13031,8 @@ Public Sub HandleCheckSlot(ByVal UserIndex As Integer)
             Dim Slot     As Byte
             Dim tIndex   As Integer
         
-102         UserName = .incomingData.ReadASCIIString() 'Que UserName?
-104         Slot = .incomingData.ReadByte() 'Que Slot?
+102         UserName = Reader.ReadString8() 'Que UserName?
+104         Slot = Reader.ReadInt8() 'Que Slot?
 106         tIndex = NameIndex(UserName)  'Que user index?
 
 108         If Not EsGM(UserIndex) Then Exit Sub
@@ -13178,7 +13065,7 @@ Public Sub HandleCheckSlot(ByVal UserIndex As Integer)
 
 ErrHandler:
 126     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCheckSlot", Erl)
-128     Call UserList(UserIndex).incomingData.SafeClearPacket
+128
 
 End Sub
 
@@ -13213,7 +13100,7 @@ Public Sub HandleResetAutoUpdate(ByVal UserIndex As Integer)
 
 HandleResetAutoUpdate_Err:
 108     Call TraceError(Err.Number, Err.Description, "Protocol.HandleResetAutoUpdate", Erl)
-110     Call UserList(UserIndex).incomingData.SafeClearPacket
+110
         
 End Sub
 
@@ -13249,7 +13136,7 @@ Public Sub HandleRestart(ByVal UserIndex As Integer)
 
 HandleRestart_Err:
 110     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRestart", Erl)
-112     Call UserList(UserIndex).incomingData.SafeClearPacket
+112
         
 End Sub
 
@@ -13286,7 +13173,7 @@ Public Sub HandleReloadObjects(ByVal UserIndex As Integer)
 
 HandleReloadObjects_Err:
 114     Call TraceError(Err.Number, Err.Description, "Protocol.HandleReloadObjects", Erl)
-116     Call UserList(UserIndex).incomingData.SafeClearPacket
+116
         
 End Sub
 
@@ -13320,7 +13207,7 @@ Public Sub HandleReloadSpells(ByVal UserIndex As Integer)
 
 HandleReloadSpells_Err:
 108     Call TraceError(Err.Number, Err.Description, "Protocol.HandleReloadSpells", Erl)
-110     Call UserList(UserIndex).incomingData.SafeClearPacket
+110
         
 End Sub
 
@@ -13354,7 +13241,7 @@ Public Sub HandleReloadServerIni(ByVal UserIndex As Integer)
 
 HandleReloadServerIni_Err:
 108     Call TraceError(Err.Number, Err.Description, "Protocol.HandleReloadServerIni", Erl)
-110     Call UserList(UserIndex).incomingData.SafeClearPacket
+110
         
 End Sub
 
@@ -13390,7 +13277,7 @@ Public Sub HandleReloadNPCs(ByVal UserIndex As Integer)
 
 HandleReloadNPCs_Err:
 110     Call TraceError(Err.Number, Err.Description, "Protocol.HandleReloadNPCs", Erl)
-112     Call UserList(UserIndex).incomingData.SafeClearPacket
+112
         
 End Sub
 
@@ -13431,27 +13318,6 @@ Public Sub HandleRequestTCPStats(ByVal UserIndex As Integer)
 114             Call WriteConsoleMsg(UserIndex, "OUT/s MAX: " & .BytesEnviadosXSEGMax & " -> " & .BytesEnviadosXSEGCuando, FontTypeNames.FONTTYPE_INFO)
 
             End With
-        
-            'Search for users that are working
-116         For i = 1 To LastUser
-
-118             With UserList(i)
-
-120                 If .flags.UserLogged And .ConnID >= 0 And .ConnIDValida Then
-122                     If .outgoingData.Length > 0 Then
-124                         list = list & .Name & " (" & CStr(.outgoingData.Length) & "), "
-126                         Count = Count + 1
-
-                        End If
-
-                    End If
-
-                End With
-
-128         Next i
-        
-130         Call WriteConsoleMsg(UserIndex, "Posibles pjs trabados: " & CStr(Count), FontTypeNames.FONTTYPE_INFO)
-132         Call WriteConsoleMsg(UserIndex, list, FontTypeNames.FONTTYPE_INFO)
 
         End With
         
@@ -13459,7 +13325,7 @@ Public Sub HandleRequestTCPStats(ByVal UserIndex As Integer)
 
 HandleRequestTCPStats_Err:
 134     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRequestTCPStats", Erl)
-136     Call UserList(UserIndex).incomingData.SafeClearPacket
+136
         
 End Sub
 
@@ -13493,7 +13359,7 @@ Public Sub HandleKickAllChars(ByVal UserIndex As Integer)
 
 HandleKickAllChars_Err:
 108     Call TraceError(Err.Number, Err.Description, "Protocol.HandleKickAllChars", Erl)
-110     Call UserList(UserIndex).incomingData.SafeClearPacket
+110
         
 End Sub
 
@@ -13531,7 +13397,7 @@ Public Sub HandleNight(ByVal UserIndex As Integer)
 
 HandleNight_Err:
 110     Call TraceError(Err.Number, Err.Description, "Protocol.HandleNight", Erl)
-112     Call UserList(UserIndex).incomingData.SafeClearPacket
+112
         
 End Sub
 
@@ -13563,7 +13429,7 @@ Public Sub HandleDay(ByVal UserIndex As Integer)
 
 HandleDay_Err:
 110     Call TraceError(Err.Number, Err.Description, "Protocol.HandleDay", Erl)
-112     Call UserList(UserIndex).incomingData.SafeClearPacket
+112
         
 End Sub
 
@@ -13581,7 +13447,7 @@ Public Sub HandleSetTime(ByVal UserIndex As Integer)
         
 
             Dim HoraDia As Long
-102         HoraDia = .incomingData.ReadLong
+102         HoraDia = Reader.ReadInt32
         
 104         If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios)) Then
 106             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
@@ -13598,7 +13464,7 @@ Public Sub HandleSetTime(ByVal UserIndex As Integer)
 
 HandleSetTime_Err:
 112     Call TraceError(Err.Number, Err.Description, "Protocol.HandleSetTime", Erl)
-114     Call UserList(UserIndex).incomingData.SafeClearPacket
+114
         
 End Sub
 
@@ -13611,7 +13477,7 @@ Public Sub HandleDonateGold(ByVal UserIndex As Integer)
         
 
             Dim Oro As Long
-102         Oro = .incomingData.ReadLong
+102         Oro = Reader.ReadInt32
 
 104         If Oro <= 0 Then Exit Sub
 
@@ -13683,7 +13549,7 @@ Public Sub HandleDonateGold(ByVal UserIndex As Integer)
 
 handle:
 152     Call TraceError(Err.Number, Err.Description, "Protocol.HandleDonateGold", Erl)
-154     Call UserList(UserIndex).incomingData.SafeClearPacket
+154
         
 End Sub
 
@@ -13730,7 +13596,7 @@ Public Sub HandlePromedio(ByVal UserIndex As Integer)
 
 handle:
 132     Call TraceError(Err.Number, Err.Description, "Protocol.HandlePromedio", Erl)
-134     Call UserList(UserIndex).incomingData.SafeClearPacket
+134
         
 End Sub
 
@@ -13746,10 +13612,10 @@ Public Sub HandleGiveItem(ByVal UserIndex As Integer)
             Dim Motivo   As String
             Dim tIndex   As Integer
         
-102         UserName = .incomingData.ReadASCIIString()
-104         ObjIndex = .incomingData.ReadInteger()
-106         Cantidad = .incomingData.ReadInteger()
-108         Motivo = .incomingData.ReadASCIIString()
+102         UserName = Reader.ReadString8()
+104         ObjIndex = Reader.ReadInt16()
+106         Cantidad = Reader.ReadInt16()
+108         Motivo = Reader.ReadString8()
         
 110         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) Then
 
@@ -13797,7 +13663,7 @@ Public Sub HandleGiveItem(ByVal UserIndex As Integer)
 
 ErrHandler:
 142     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGiveItem", Erl)
-144     Call UserList(UserIndex).incomingData.SafeClearPacket
+144
         
 End Sub
 
@@ -13830,7 +13696,7 @@ Public Sub HandleShowServerForm(ByVal UserIndex As Integer)
 
 HandleShowServerForm_Err:
 108     Call TraceError(Err.Number, Err.Description, "Protocol.HandleShowServerForm", Erl)
-110     Call UserList(UserIndex).incomingData.SafeClearPacket
+110
         
 End Sub
 
@@ -13864,7 +13730,7 @@ Public Sub HandleCleanSOS(ByVal UserIndex As Integer)
 
 HandleCleanSOS_Err:
 108     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCleanSOS", Erl)
-110     Call UserList(UserIndex).incomingData.SafeClearPacket
+110
         
 End Sub
 
@@ -13901,7 +13767,7 @@ Public Sub HandleSaveChars(ByVal UserIndex As Integer)
 
 HandleSaveChars_Err:
 110     Call TraceError(Err.Number, Err.Description, "Protocol.HandleSaveChars", Erl)
-112     Call UserList(UserIndex).incomingData.SafeClearPacket
+112
         
 End Sub
 
@@ -13925,7 +13791,7 @@ Public Sub HandleChangeMapInfoBackup(ByVal UserIndex As Integer)
 
             Dim doTheBackUp As Boolean
         
-102         doTheBackUp = .incomingData.ReadBoolean()
+102         doTheBackUp = Reader.ReadBool()
         
 104         If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios Or PlayerType.RoleMaster)) Then Exit Sub
         
@@ -13951,7 +13817,7 @@ Public Sub HandleChangeMapInfoBackup(ByVal UserIndex As Integer)
 
 HandleChangeMapInfoBackup_Err:
 118     Call TraceError(Err.Number, Err.Description, "Protocol.HandleChangeMapInfoBackup", Erl)
-120     Call UserList(UserIndex).incomingData.SafeClearPacket
+120
         
 End Sub
 
@@ -13974,7 +13840,7 @@ Public Sub HandleChangeMapInfoPK(ByVal UserIndex As Integer)
 
             Dim isMapPk As Boolean
         
-102         isMapPk = .incomingData.ReadBoolean()
+102         isMapPk = Reader.ReadBool()
         
 104         If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios Or PlayerType.RoleMaster)) Then
 106             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
@@ -13993,7 +13859,7 @@ Public Sub HandleChangeMapInfoPK(ByVal UserIndex As Integer)
 
 HandleChangeMapInfoPK_Err:
 114     Call TraceError(Err.Number, Err.Description, "Protocol.HandleChangeMapInfoPK", Erl)
-116     Call UserList(UserIndex).incomingData.SafeClearPacket
+116
         
 End Sub
 
@@ -14015,7 +13881,7 @@ Public Sub HandleChangeMapInfoRestricted(ByVal UserIndex As Integer)
     
 100     With UserList(UserIndex)
 
-102         tStr = .incomingData.ReadASCIIString()
+102         tStr = Reader.ReadString8()
         
 104         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.RoleMaster)) <> 0 Then
 
@@ -14059,7 +13925,7 @@ Public Sub HandleChangeMapInfoRestricted(ByVal UserIndex As Integer)
 
 ErrHandler:
 150     Call TraceError(Err.Number, Err.Description, "Protocol.HandleChangeMapInfoRestricted", Erl)
-152     Call UserList(UserIndex).incomingData.SafeClearPacket
+152
 
 End Sub
 
@@ -14082,7 +13948,7 @@ Public Sub HandleChangeMapInfoNoMagic(ByVal UserIndex As Integer)
     
 100     With UserList(UserIndex)
   
-102         nomagic = .incomingData.ReadBoolean
+102         nomagic = Reader.ReadBool
         
 104         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.RoleMaster)) Then
 106             Call LogGM(.Name, .Name & " ha cambiado la informacion sobre si esta permitido usar la Magia el mapa.")
@@ -14094,7 +13960,7 @@ Public Sub HandleChangeMapInfoNoMagic(ByVal UserIndex As Integer)
 
 HandleChangeMapInfoNoMagic_Err:
 108     Call TraceError(Err.Number, Err.Description, "Protocol.HandleChangeMapInfoNoMagic", Erl)
-110     Call UserList(UserIndex).incomingData.SafeClearPacket
+110
         
 End Sub
 
@@ -14116,7 +13982,7 @@ Public Sub HandleChangeMapInfoNoInvi(ByVal UserIndex As Integer)
     
 100     With UserList(UserIndex)
 
-102         noinvi = .incomingData.ReadBoolean()
+102         noinvi = Reader.ReadBool()
         
 104         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.RoleMaster)) Then
 106             Call LogGM(.Name, .Name & " ha cambiado la informacion sobre si esta permitido usar Invisibilidad el mapa.")
@@ -14128,7 +13994,7 @@ Public Sub HandleChangeMapInfoNoInvi(ByVal UserIndex As Integer)
 
 HandleChangeMapInfoNoInvi_Err:
 108     Call TraceError(Err.Number, Err.Description, "Protocol.HandleChangeMapInfoNoInvi", Erl)
-110     Call UserList(UserIndex).incomingData.SafeClearPacket
+110
         
 End Sub
             
@@ -14145,7 +14011,7 @@ Public Sub HandleChangeMapInfoNoResu(ByVal UserIndex As Integer)
     
 100     With UserList(UserIndex)
 
-102         noresu = .incomingData.ReadBoolean()
+102         noresu = Reader.ReadBool()
         
 104         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.RoleMaster)) Then
 106             Call LogGM(.Name, .Name & " ha cambiado la informacion sobre si esta permitido usar Resucitar el mapa.")
@@ -14157,7 +14023,7 @@ Public Sub HandleChangeMapInfoNoResu(ByVal UserIndex As Integer)
 
 HandleChangeMapInfoNoResu_Err:
 108     Call TraceError(Err.Number, Err.Description, "Protocol.HandleChangeMapInfoNoResu", Erl)
-110     Call UserList(UserIndex).incomingData.SafeClearPacket
+110
         
 End Sub
 
@@ -14180,7 +14046,7 @@ Public Sub HandleChangeMapInfoLand(ByVal UserIndex As Integer)
     
 100     With UserList(UserIndex)
 
-102         tStr = .incomingData.ReadASCIIString()
+102         tStr = Reader.ReadString8()
         
 104         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.RoleMaster)) Then
         
@@ -14209,7 +14075,7 @@ Public Sub HandleChangeMapInfoLand(ByVal UserIndex As Integer)
 
 ErrHandler:
 120     Call TraceError(Err.Number, Err.Description, "Protocol.?", Erl)
-122     Call UserList(UserIndex).incomingData.SafeClearPacket
+122
 
 End Sub
 
@@ -14232,7 +14098,7 @@ Public Sub HandleChangeMapInfoZone(ByVal UserIndex As Integer)
     
 100     With UserList(UserIndex)
 
-102         tStr = .incomingData.ReadASCIIString()
+102         tStr = Reader.ReadString8()
         
 104         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.RoleMaster)) Then
         
@@ -14258,7 +14124,7 @@ Public Sub HandleChangeMapInfoZone(ByVal UserIndex As Integer)
 
 ErrHandler:
 120     Call TraceError(Err.Number, Err.Description, "Protocol.?", Erl)
-122     Call UserList(UserIndex).incomingData.SafeClearPacket
+122
 
 End Sub
 
@@ -14292,7 +14158,7 @@ Public Sub HandleSaveMap(ByVal UserIndex As Integer)
 
 HandleSaveMap_Err:
 110     Call TraceError(Err.Number, Err.Description, "Protocol.HandleSaveMap", Erl)
-112     Call UserList(UserIndex).incomingData.SafeClearPacket
+112
         
 End Sub
 
@@ -14315,7 +14181,7 @@ Public Sub HandleShowGuildMessages(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             Dim guild As String
-102             guild = .incomingData.ReadASCIIString()
+102             guild = Reader.ReadString8()
         
 104         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.RoleMaster)) Then
 106             Call modGuilds.GMEscuchaClan(UserIndex, guild)
@@ -14328,7 +14194,7 @@ Public Sub HandleShowGuildMessages(ByVal UserIndex As Integer)
 
 ErrHandler:
 108     Call TraceError(Err.Number, Err.Description, "Protocol.?", Erl)
-110     Call UserList(UserIndex).incomingData.SafeClearPacket
+110
 
 End Sub
 
@@ -14360,7 +14226,7 @@ Public Sub HandleDoBackUp(ByVal UserIndex As Integer)
 
 HandleDoBackUp_Err:
 108     Call TraceError(Err.Number, Err.Description, "Protocol.HandleDoBackUp", Erl)
-110     Call UserList(UserIndex).incomingData.SafeClearPacket
+110
         
 End Sub
 
@@ -14386,8 +14252,8 @@ Public Sub HandleAlterName(ByVal UserIndex As Integer)
         Dim TargetUI     As Integer
         Dim GuildIndex   As Integer
 
-        UserName = UCase$(.incomingData.ReadASCIIString())
-        NewName = .incomingData.ReadASCIIString()
+        UserName = UCase$(Reader.ReadString8())
+        NewName = Reader.ReadString8()
 
         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) = 0 Then Exit Sub
 
@@ -14441,7 +14307,7 @@ Public Sub HandleAlterName(ByVal UserIndex As Integer)
 
 ErrHandler:
 150     Call TraceError(Err.Number, Err.Description, "Protocol.HandleAlterName", Erl)
-152     Call UserList(UserIndex).incomingData.SafeClearPacket
+152
 
 End Sub
 
@@ -14464,8 +14330,8 @@ Public Sub HandleAlterMail(ByVal UserIndex As Integer)
             Dim UserName As String
             Dim newMail  As String
         
-102         UserName = .incomingData.ReadASCIIString()
-104         newMail = .incomingData.ReadASCIIString()
+102         UserName = Reader.ReadString8()
+104         newMail = Reader.ReadString8()
         
 106         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.RoleMaster)) Then
         
@@ -14494,7 +14360,7 @@ Public Sub HandleAlterMail(ByVal UserIndex As Integer)
 
 ErrHandler:
 122     Call TraceError(Err.Number, Err.Description, "Protocol.HandleAlterMail", Erl)
-124     Call UserList(UserIndex).incomingData.SafeClearPacket
+124
 
 End Sub
 
@@ -14519,8 +14385,8 @@ Public Sub HandleAlterPassword(ByVal UserIndex As Integer)
             Dim copyFrom As String
             Dim Password As String
         
-102         UserName = Replace(.incomingData.ReadASCIIString(), "+", " ")
-104         copyFrom = Replace(.incomingData.ReadASCIIString(), "+", " ")
+102         UserName = Replace(Reader.ReadString8(), "+", " ")
+104         copyFrom = Replace(Reader.ReadString8(), "+", " ")
         
 106         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.RoleMaster)) Then
         
@@ -14550,7 +14416,7 @@ Public Sub HandleAlterPassword(ByVal UserIndex As Integer)
 
 ErrHandler:
 124     Call TraceError(Err.Number, Err.Description, "Protocol.HandleAlterPassword", Erl)
-126     Call UserList(UserIndex).incomingData.SafeClearPacket
+126
 
 End Sub
 
@@ -14572,7 +14438,7 @@ Public Sub HandleCreateNPC(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             Dim NpcIndex As Integer
-102         NpcIndex = .incomingData.ReadInteger()
+102         NpcIndex = Reader.ReadInt16()
 
             If Not EsGM(UserIndex) Then Exit Sub
         
@@ -14601,7 +14467,7 @@ Public Sub HandleCreateNPC(ByVal UserIndex As Integer)
 
 HandleCreateNPC_Err:
 118     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCreateNPC", Erl)
-120     Call UserList(UserIndex).incomingData.SafeClearPacket
+120
         
 End Sub
 
@@ -14624,7 +14490,7 @@ Public Sub HandleCreateNPCWithRespawn(ByVal UserIndex As Integer)
 
             Dim NpcIndex As Integer
         
-102         NpcIndex = .incomingData.ReadInteger()
+102         NpcIndex = Reader.ReadInt16()
 
             If Not EsGM(UserIndex) Then Exit Sub
         
@@ -14646,7 +14512,7 @@ Public Sub HandleCreateNPCWithRespawn(ByVal UserIndex As Integer)
 
 HandleCreateNPCWithRespawn_Err:
 114     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCreateNPCWithRespawn", Erl)
-116     Call UserList(UserIndex).incomingData.SafeClearPacket
+116
         
 End Sub
 
@@ -14672,8 +14538,8 @@ Public Sub HandleImperialArmour(ByVal UserIndex As Integer)
             Dim Index    As Byte
             Dim ObjIndex As Integer
         
-102         Index = .incomingData.ReadByte()
-104         ObjIndex = .incomingData.ReadInteger()
+102         Index = Reader.ReadInt8()
+104         ObjIndex = Reader.ReadInt16()
         
 106         If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios Or PlayerType.RoleMaster)) Then Exit Sub
         
@@ -14699,7 +14565,7 @@ Public Sub HandleImperialArmour(ByVal UserIndex As Integer)
 
 HandleImperialArmour_Err:
 116     Call TraceError(Err.Number, Err.Description, "Protocol.HandleImperialArmour", Erl)
-118     Call UserList(UserIndex).incomingData.SafeClearPacket
+118
         
 End Sub
 
@@ -14723,8 +14589,8 @@ Public Sub HandleChaosArmour(ByVal UserIndex As Integer)
             Dim Index    As Byte
             Dim ObjIndex As Integer
         
-102         Index = .incomingData.ReadByte()
-104         ObjIndex = .incomingData.ReadInteger()
+102         Index = Reader.ReadInt8()
+104         ObjIndex = Reader.ReadInt16()
         
 106         If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios Or PlayerType.RoleMaster)) Then Exit Sub
         
@@ -14750,7 +14616,7 @@ Public Sub HandleChaosArmour(ByVal UserIndex As Integer)
 
 HandleChaosArmour_Err:
 116     Call TraceError(Err.Number, Err.Description, "Protocol.HandleChaosArmour", Erl)
-118     Call UserList(UserIndex).incomingData.SafeClearPacket
+118
         
 End Sub
 
@@ -14793,7 +14659,7 @@ Public Sub HandleNavigateToggle(ByVal UserIndex As Integer)
 
 HandleNavigateToggle_Err:
 114     Call TraceError(Err.Number, Err.Description, "Protocol.HandleNavigateToggle", Erl)
-116     Call UserList(UserIndex).incomingData.SafeClearPacket
+116
         
 End Sub
 
@@ -14833,7 +14699,7 @@ Public Sub HandleServerOpenToUsersToggle(ByVal UserIndex As Integer)
 
 HandleServerOpenToUsersToggle_Err:
 114     Call TraceError(Err.Number, Err.Description, "Protocol.HandleServerOpenToUsersToggle", Erl)
-116     Call UserList(UserIndex).incomingData.SafeClearPacket
+116
         
 End Sub
 
@@ -14965,7 +14831,7 @@ Public Sub HandleParticipar(ByVal UserIndex As Integer)
 
 HandleParticipar_Err:
 176     Call TraceError(Err.Number, Err.Description, "Protocol.HandleParticipar", Erl)
-178     Call UserList(UserIndex).incomingData.SafeClearPacket
+178
         
 End Sub
 
@@ -14989,7 +14855,7 @@ Public Sub HandleTurnCriminal(ByVal UserIndex As Integer)
             Dim UserName As String
             Dim tUser    As Integer
         
-102         UserName = .incomingData.ReadASCIIString()
+102         UserName = Reader.ReadString8()
         
 104         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.RoleMaster)) Then
 106             Call LogGM(.Name, "/CONDEN " & UserName)
@@ -15006,7 +14872,7 @@ Public Sub HandleTurnCriminal(ByVal UserIndex As Integer)
 
 ErrHandler:
 112     Call TraceError(Err.Number, Err.Description, "Protocol.HandleTurnCriminal", Erl)
-114     Call UserList(UserIndex).incomingData.SafeClearPacket
+114
 
 End Sub
 
@@ -15030,7 +14896,7 @@ Public Sub HandleResetFactions(ByVal UserIndex As Integer)
             Dim UserName As String
             Dim tUser    As Integer
         
-102         UserName = .incomingData.ReadASCIIString()
+102         UserName = Reader.ReadString8()
         
 104         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.RoleMaster)) Then
 106             Call LogGM(.Name, "/RAJAR " & UserName)
@@ -15047,7 +14913,7 @@ Public Sub HandleResetFactions(ByVal UserIndex As Integer)
 
 ErrHandler:
 112     Call TraceError(Err.Number, Err.Description, "Protocol.HandleResetFactions", Erl)
-114     Call UserList(UserIndex).incomingData.SafeClearPacket
+114
 
 End Sub
 
@@ -15071,7 +14937,7 @@ Public Sub HandleRemoveCharFromGuild(ByVal UserIndex As Integer)
             Dim UserName   As String
             Dim GuildIndex As Integer
         
-102         UserName = .incomingData.ReadASCIIString()
+102         UserName = Reader.ReadString8()
         
 104         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.RoleMaster)) Then
 106             Call LogGM(.Name, "/RAJARCLAN " & UserName)
@@ -15094,7 +14960,7 @@ Public Sub HandleRemoveCharFromGuild(ByVal UserIndex As Integer)
 
 ErrHandler:
 118     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRemoveCharFromGuild", Erl)
-120     Call UserList(UserIndex).incomingData.SafeClearPacket
+120
 
 End Sub
 
@@ -15118,7 +14984,7 @@ Public Sub HandleRequestCharMail(ByVal UserIndex As Integer)
             Dim UserName As String
             Dim mail     As String
         
-102         UserName = .incomingData.ReadASCIIString()
+102         UserName = Reader.ReadString8()
         
 104         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.RoleMaster)) Then
 106             If FileExist(CharPath & UserName & ".chr") Then
@@ -15136,7 +15002,7 @@ Public Sub HandleRequestCharMail(ByVal UserIndex As Integer)
 
 ErrHandler:
 112     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRequestCharMail", Erl)
-114     Call UserList(UserIndex).incomingData.SafeClearPacket
+114
 
 End Sub
 
@@ -15158,7 +15024,7 @@ Public Sub HandleSystemMessage(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             Dim message As String
-102             message = .incomingData.ReadASCIIString()
+102             Message = Reader.ReadString8()
         
 104         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.RoleMaster)) Then
 106             Call LogGM(.Name, "Mensaje de sistema:" & message)
@@ -15173,7 +15039,7 @@ Public Sub HandleSystemMessage(ByVal UserIndex As Integer)
 
 ErrHandler:
 110     Call TraceError(Err.Number, Err.Description, "Protocol.HandleSystemMessage", Erl)
-112     Call UserList(UserIndex).incomingData.SafeClearPacket
+112
 
 End Sub
 
@@ -15203,7 +15069,7 @@ Public Sub HandleSetMOTD(ByVal UserIndex As Integer)
 
             Dim LoopC             As Long
         
-102         newMOTD = .incomingData.ReadASCIIString()
+102         newMOTD = Reader.ReadString8()
 104         auxiliaryString = Split(newMOTD, vbCrLf)
         
 106         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.RoleMaster)) Then
@@ -15231,7 +15097,7 @@ Public Sub HandleSetMOTD(ByVal UserIndex As Integer)
 
 ErrHandler:
 126     Call TraceError(Err.Number, Err.Description, "Protocol.HandleSetMOTD", Erl)
-128     Call UserList(UserIndex).incomingData.SafeClearPacket
+128
 
 End Sub
 
@@ -15277,7 +15143,7 @@ Public Sub HandleChangeMOTD(ByVal UserIndex As Integer)
 
 HandleChangeMOTD_Err:
 118     Call TraceError(Err.Number, Err.Description, "Protocol.HandleChangeMOTD", Erl)
-120     Call UserList(UserIndex).incomingData.SafeClearPacket
+120
         
 End Sub
 
@@ -15290,78 +15156,17 @@ Public Sub HandlePing(ByVal UserIndex As Integer)
         
         On Error GoTo HandlePing_Err
 
-        '***************************************************
-        'Author: Lucas Tavolaro Ortiz (Tavo)
-        'Last Modification: 12/24/06
-        'Show guilds messages
-        '***************************************************
-100     With UserList(UserIndex)
-
             Dim Time As Long
         
-102         Time = .incomingData.ReadLong()
+102         Time = Reader.ReadInt32()
         
-104         Call WritePong(UserIndex, Time)
-
-        End With
-        
+104         Call WritePong(UserIndex, Time + TIME_RECV_FREQUENCY) ' We need to correct due to different handling time
+            Call modNetwork.Flush(UserIndex)
         Exit Sub
 
 HandlePing_Err:
 106     Call TraceError(Err.Number, Err.Description, "Protocol.HandlePing", Erl)
-108     Call UserList(UserIndex).incomingData.SafeClearPacket
-        
-End Sub
-
-''
-' Flushes the outgoing data buffer of the user.
-'
-' @param    UserIndex User whose outgoing data buffer will be flushed.
-
-Public Sub FlushBuffer(ByVal UserIndex As Integer)
-        
-        On Error GoTo FlushBuffer_Err
-
-        '***************************************************
-        'Sends all data existing in the buffer
-        '***************************************************
-        
-100     If UserIndex = 0 Then Exit Sub
-        
-102     With UserList(UserIndex)
-
-104         If .outgoingData.Length = 0 Then Exit Sub
-        
-            ' Tratamos de enviar los datos.
-            Dim Ret    As Long
-106         Dim Data() As Byte: Data = .outgoingData.ReadAll
-
-            #If AntiExternos = 1 Then
-
-108             Call Security.XorData(Data, UBound(Data), .XorIndexOut)
-
-            #End If
-
-110         Ret = frmMain.Winsock.SendData(UserIndex, Data)
-    
-            ' Si recibimos un error como respuesta de la API, cerramos el socket.
-112         If Ret <> 0 And Ret <> WSAEWOULDBLOCK Then
-        
-                ' Close the socket avoiding any critical error
-114             Call CloseSocketSL(UserIndex)
-116             Call Cerrar_Usuario(UserIndex)
-
-            End If
-        
-118         Call .outgoingData.Clean
-        
-        End With
-        
-        Exit Sub
-
-FlushBuffer_Err:
-120     Call TraceError(Err.Number, Err.Description, "Protocol.FlushBuffer", Erl)
-122     Call UserList(UserIndex).incomingData.SafeClearPacket
+108
         
 End Sub
 
@@ -15374,8 +15179,8 @@ Private Sub HandleQuestionGM(ByVal UserIndex As Integer)
             Dim Consulta       As String
             Dim TipoDeConsulta As String
 
-102         Consulta = .incomingData.ReadASCIIString()
-104         TipoDeConsulta = .incomingData.ReadASCIIString()
+102         Consulta = Reader.ReadString8()
+104         TipoDeConsulta = Reader.ReadString8()
 
 106         If UserList(UserIndex).donador.activo = 1 Then
 108             Call Ayuda.Push(.Name, Consulta, TipoDeConsulta & "-Prioritario")
@@ -15397,7 +15202,7 @@ Private Sub HandleQuestionGM(ByVal UserIndex As Integer)
 
 ErrHandler:
 120     Call TraceError(Err.Number, Err.Description, "Protocol.?", Erl)
-122     Call UserList(UserIndex).incomingData.SafeClearPacket
+122
 
 End Sub
 
@@ -15408,7 +15213,7 @@ Private Sub HandleOfertaInicial(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             Dim Oferta As Long
-102             Oferta = .incomingData.ReadLong()
+102             Oferta = Reader.ReadInt32()
         
 104         If UserList(UserIndex).flags.Muerto = 1 Then
 106             Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
@@ -15473,7 +15278,7 @@ Private Sub HandleOfertaInicial(ByVal UserIndex As Integer)
 
 HandleOfertaInicial_Err:
 158     Call TraceError(Err.Number, Err.Description, "Protocol.HandleOfertaInicial", Erl)
-160     Call UserList(UserIndex).incomingData.SafeClearPacket
+160
         
 End Sub
 
@@ -15486,7 +15291,7 @@ Private Sub HandleOfertaDeSubasta(ByVal UserIndex As Integer)
             Dim Oferta   As Long
             Dim ExOferta As Long
         
-102         Oferta = .incomingData.ReadLong()
+102         Oferta = Reader.ReadInt32()
         
 104         If Subasta.HaySubastaActiva = False Then
 106             Call WriteConsoleMsg(UserIndex, "No hay ninguna subasta en curso.", FontTypeNames.FONTTYPE_INFOIAO)
@@ -15549,7 +15354,7 @@ Private Sub HandleOfertaDeSubasta(ByVal UserIndex As Integer)
 
 ErrHandler:
 152     Call TraceError(Err.Number, Err.Description, "Protocol.?", Erl)
-154     Call UserList(UserIndex).incomingData.SafeClearPacket
+154
 
 End Sub
 
@@ -15567,7 +15372,7 @@ Private Sub HandleGlobalMessage(ByVal UserIndex As Integer)
 
             Dim chat As String
 
-106         chat = .incomingData.ReadASCIIString()
+106         chat = Reader.ReadString8()
 
 108         If .flags.Silenciado = 1 Then
 110             Call WriteLocaleMsg(UserIndex, "110", FontTypeNames.FONTTYPE_VENENO, .flags.MinutosRestantes)
@@ -15611,7 +15416,7 @@ Private Sub HandleGlobalMessage(ByVal UserIndex As Integer)
 
 ErrHandler:
 134     Call TraceError(Err.Number, Err.Description, "Protocol.?", Erl)
-136     Call UserList(UserIndex).incomingData.SafeClearPacket
+136
 
 End Sub
 
@@ -15641,7 +15446,7 @@ Public Sub HandleGlobalOnOff(ByVal UserIndex As Integer)
 
 HandleGlobalOnOff_Err:
 116     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGlobalOnOff", Erl)
-118     Call UserList(UserIndex).incomingData.SafeClearPacket
+118
         
 End Sub
 
@@ -15659,12 +15464,12 @@ Private Sub HandleIngresarConCuenta(ByVal UserIndex As Integer)
             Dim HDSerial       As Long
             Dim MD5            As String
         
-102         CuentaEmail = .incomingData.ReadASCIIString()
-104         CuentaPassword = .incomingData.ReadASCIIString()
-106         Version = CStr(.incomingData.ReadByte()) & "." & CStr(.incomingData.ReadByte()) & "." & CStr(.incomingData.ReadByte())
-108         MacAddress = .incomingData.ReadASCIIString()
-110         HDSerial = .incomingData.ReadLong()
-112         MD5 = .incomingData.ReadASCIIString()
+102         CuentaEmail = Reader.ReadString8()
+104         CuentaPassword = Reader.ReadString8()
+106         Version = CStr(Reader.ReadInt8()) & "." & CStr(Reader.ReadInt8()) & "." & CStr(Reader.ReadInt8())
+108         MacAddress = Reader.ReadString8()
+110         HDSerial = Reader.ReadInt32()
+112         MD5 = Reader.ReadString8()
         
             #If DEBUGGING = False Then
     
@@ -15700,8 +15505,9 @@ Private Sub HandleIngresarConCuenta(ByVal UserIndex As Integer)
                 End Select
 
 138             If Verificar Then
-140                 Call AOGuard.WriteGuardNotice(UserIndex)
-                
+140                 Call WriteGuardNotice(UserIndex)
+
+                    Call AOGuard.EnviarCodigo(UserIndex)
                 Else
 142                 Call WritePersonajesDeCuenta(UserIndex)
 144                 Call WriteMostrarCuenta(UserIndex)
@@ -15721,7 +15527,7 @@ Private Sub HandleIngresarConCuenta(ByVal UserIndex As Integer)
 
 ErrHandler:
 148     Call TraceError(Err.Number, Err.Description, "Protocol.HandleIngresarConCuenta", Erl)
-150     Call UserList(UserIndex).incomingData.SafeClearPacket
+150
 
 End Sub
 
@@ -15739,13 +15545,13 @@ Private Sub HandleBorrarPJ(ByVal UserIndex As Integer)
             Dim MD5            As String
             Dim Version        As String
         
-102         UserDelete = .incomingData.ReadASCIIString()
-104         CuentaEmail = .incomingData.ReadASCIIString()
-106         CuentaPassword = .incomingData.ReadASCIIString()
-108         Version = CStr(.incomingData.ReadByte()) & "." & CStr(.incomingData.ReadByte()) & "." & CStr(.incomingData.ReadByte())
-110         MacAddress = .incomingData.ReadASCIIString()
-112         HDSerial = .incomingData.ReadLong()
-114         MD5 = .incomingData.ReadASCIIString()
+102         UserDelete = Reader.ReadString8()
+104         CuentaEmail = Reader.ReadString8()
+106         CuentaPassword = Reader.ReadString8()
+108         Version = CStr(Reader.ReadInt8()) & "." & CStr(Reader.ReadInt8()) & "." & CStr(Reader.ReadInt8())
+110         MacAddress = Reader.ReadString8()
+112         HDSerial = Reader.ReadInt32()
+114         MD5 = Reader.ReadString8()
         
             #If DEBUGGING = False Then
 116             If Not VersionOK(Version) Then
@@ -15804,7 +15610,7 @@ Private Sub HandleBorrarPJ(ByVal UserIndex As Integer)
 
 ErrHandler:
 156     Call TraceError(Err.Number, Err.Description, "Protocol.?", Erl)
-158     Call UserList(UserIndex).incomingData.SafeClearPacket
+158
 
 End Sub
 
@@ -15816,7 +15622,7 @@ Private Sub HandleCuentaRegresiva(ByVal UserIndex As Integer)
  
             Dim Seconds As Byte
         
-102         Seconds = .incomingData.ReadByte()
+102         Seconds = Reader.ReadInt8()
 
 104         If Not .flags.Privilegios And PlayerType.user Then
 106             CuentaRegresivaTimer = Seconds
@@ -15831,7 +15637,7 @@ Private Sub HandleCuentaRegresiva(ByVal UserIndex As Integer)
 
 ErrHandler:
 110     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCuentaRegresiva", Erl)
-112     Call UserList(UserIndex).incomingData.SafeClearPacket
+112
 
 End Sub
 
@@ -15843,7 +15649,7 @@ Private Sub HandlePossUser(ByVal UserIndex As Integer)
  
             Dim UserName As String
         
-102         UserName = .incomingData.ReadASCIIString()
+102         UserName = Reader.ReadString8()
 
 104         If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios)) = 0 Then
 106             If NameIndex(UserName) <= 0 Then
@@ -15874,7 +15680,7 @@ Private Sub HandlePossUser(ByVal UserIndex As Integer)
 
 ErrHandler:
 122     Call TraceError(Err.Number, Err.Description, "Protocol.HandlePossUser", Erl)
-124     Call UserList(UserIndex).incomingData.SafeClearPacket
+124
 
 End Sub
 
@@ -15889,10 +15695,10 @@ Private Sub HandleDuel(ByVal UserIndex As Integer)
 
 100     With UserList(UserIndex)
 
-102         Players = .incomingData.ReadASCIIString
-104         Bet = .incomingData.ReadLong
-106         PocionesMaximas = .incomingData.ReadInteger
-108         CaenItems = .incomingData.ReadBoolean
+102         Players = Reader.ReadString8
+104         Bet = Reader.ReadInt32
+106         PocionesMaximas = Reader.ReadInt16
+108         CaenItems = Reader.ReadBool
 
 110         Call CrearReto(UserIndex, Players, Bet, PocionesMaximas, CaenItems)
 
@@ -15903,7 +15709,7 @@ Private Sub HandleDuel(ByVal UserIndex As Integer)
 ErrHandler:
 
 112     Call TraceError(Err.Number, Err.Description, "Protocol.HandleDuel", Erl)
-114     Call UserList(UserIndex).incomingData.SafeClearPacket
+114
 
 End Sub
 
@@ -15915,7 +15721,7 @@ Private Sub HandleAcceptDuel(ByVal UserIndex As Integer)
 
 100     With UserList(UserIndex)
 
-102         Offerer = .incomingData.ReadASCIIString
+102         Offerer = Reader.ReadString8
 
 104         Call AceptarReto(UserIndex, Offerer)
 
@@ -15926,7 +15732,7 @@ Private Sub HandleAcceptDuel(ByVal UserIndex As Integer)
 ErrHandler:
 
 106     Call TraceError(Err.Number, Err.Description, "Protocol.HandleAcceptDuel", Erl)
-108     Call UserList(UserIndex).incomingData.SafeClearPacket
+108
 
 End Sub
 
@@ -15934,7 +15740,7 @@ Private Sub HandleCancelDuel(ByVal UserIndex As Integer)
 
 100     With UserList(UserIndex)
 
-102         .incomingData.ReadInteger
+102         Reader.ReadInt16
 
 104         If .flags.SolicitudReto.estado <> SolicitudRetoEstado.Libre Then
 106             Call CancelarSolicitudReto(UserIndex, .Name & " ha cancelado la solicitud.")
@@ -15984,7 +15790,7 @@ Private Sub HandleNieveToggle(ByVal UserIndex As Integer)
 
 HandleNieveToggle_Err:
 112     Call TraceError(Err.Number, Err.Description, "Protocol.HandleNieveToggle", Erl)
-114     Call UserList(UserIndex).incomingData.SafeClearPacket
+114
         
 End Sub
 
@@ -16010,7 +15816,7 @@ Private Sub HandleNieblaToggle(ByVal UserIndex As Integer)
 
 HandleNieblaToggle_Err:
 110     Call TraceError(Err.Number, Err.Description, "Protocol.HandleNieblaToggle", Erl)
-112     Call UserList(UserIndex).incomingData.SafeClearPacket
+112
         
 End Sub
 
@@ -16025,8 +15831,8 @@ Private Sub HandleTransFerGold(ByVal UserIndex As Integer)
             Dim Cantidad As Long
             Dim tUser    As Integer
         
-102         Cantidad = .incomingData.ReadLong()
-104         UserName = .incomingData.ReadASCIIString()
+102         Cantidad = Reader.ReadInt32()
+104         UserName = Reader.ReadString8()
 
             ' WyroX: Chequeos de seguridad... Estos chequeos ya se hacen en el cliente, pero si no se hacen se puede duplicar oro...
 
@@ -16112,7 +15918,7 @@ Private Sub HandleTransFerGold(ByVal UserIndex As Integer)
 
 ErrHandler:
 160     Call TraceError(Err.Number, Err.Description, "Protocol.?", Erl)
-162     Call UserList(UserIndex).incomingData.SafeClearPacket
+162
 
 End Sub
 
@@ -16126,8 +15932,8 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
             Dim SlotViejo As Byte
             Dim SlotNuevo As Byte
         
-102         SlotViejo = .incomingData.ReadByte()
-104         SlotNuevo = .incomingData.ReadByte()
+102         SlotViejo = Reader.ReadInt8()
+104         SlotNuevo = Reader.ReadInt8()
         
             Dim Objeto    As obj
             Dim Equipado  As Boolean
@@ -16393,7 +16199,7 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
 
 ErrHandler:
 328     Call TraceError(Err.Number, Err.Description, "Protocol.HandleMoveItem", Erl)
-330     Call UserList(UserIndex).incomingData.SafeClearPacket
+330
 
 End Sub
 
@@ -16407,8 +16213,8 @@ Private Sub HandleBovedaMoveItem(ByVal UserIndex As Integer)
             Dim SlotViejo As Byte
             Dim SlotNuevo As Byte
         
-102         SlotViejo = .incomingData.ReadByte()
-104         SlotNuevo = .incomingData.ReadByte()
+102         SlotViejo = Reader.ReadInt8()
+104         SlotNuevo = Reader.ReadInt8()
         
             Dim Objeto    As obj
             Dim Equipado  As Boolean
@@ -16436,7 +16242,7 @@ Private Sub HandleBovedaMoveItem(ByVal UserIndex As Integer)
 
 ErrHandler:
 122     Call TraceError(Err.Number, Err.Description, "Protocol.HandleBovedaMoveItem", Erl)
-124     Call UserList(UserIndex).incomingData.SafeClearPacket
+124
 
 End Sub
 
@@ -16479,7 +16285,7 @@ Private Sub HandleQuieroFundarClan(ByVal UserIndex As Integer)
 
 ErrHandler:
 120     Call TraceError(Err.Number, Err.Description, "Protocol.HandleQuieroFundarClan", Erl)
-122     Call UserList(UserIndex).incomingData.SafeClearPacket
+122
 
 End Sub
 
@@ -16513,7 +16319,7 @@ Private Sub HandleLlamadadeClan(ByVal UserIndex As Integer)
 
 ErrHandler:
 116     Call TraceError(Err.Number, Err.Description, "Protocol.HandleLlamadadeClan", Erl)
-118     Call UserList(UserIndex).incomingData.SafeClearPacket
+118
 
 End Sub
 
@@ -16556,7 +16362,7 @@ Private Sub HandleCasamiento(ByVal UserIndex As Integer)
             Dim UserName As String
             Dim tUser    As Integer
 
-102         UserName = .incomingData.ReadASCIIString()
+102         UserName = Reader.ReadString8()
 104         tUser = NameIndex(UserName)
             
 106         If .flags.TargetNPC > 0 Then
@@ -16628,7 +16434,7 @@ Private Sub HandleCasamiento(ByVal UserIndex As Integer)
 
 ErrHandler:
 158     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCasamiento", Erl)
-160     Call UserList(UserIndex).incomingData.SafeClearPacket
+160
 
 End Sub
 
@@ -16640,7 +16446,7 @@ Private Sub HandleEnviarCodigo(ByVal UserIndex As Integer)
 
             Dim Codigo As String
 
-102         Codigo = .incomingData.ReadASCIIString()
+102         Codigo = Reader.ReadString8()
 
 104         Call CheckearCodigo(UserIndex, Codigo)
 
@@ -16650,7 +16456,7 @@ Private Sub HandleEnviarCodigo(ByVal UserIndex As Integer)
 
 ErrHandler:
 106     Call TraceError(Err.Number, Err.Description, "Protocol.HandleEnviarCodigo", Erl)
-108     Call UserList(UserIndex).incomingData.SafeClearPacket
+108
 
 End Sub
 
@@ -16686,31 +16492,31 @@ Private Sub HandleCrearTorneo(ByVal UserIndex As Integer)
             Dim nombre      As String
             Dim reglas      As String
 
-102         NivelMinimo = .incomingData.ReadByte
-104         nivelmaximo = .incomingData.ReadByte
+102         NivelMinimo = Reader.ReadInt8
+104         nivelmaximo = Reader.ReadInt8
         
-106         cupos = .incomingData.ReadByte
-108         costo = .incomingData.ReadLong
+106         cupos = Reader.ReadInt8
+108         costo = Reader.ReadInt32
         
-110         mago = .incomingData.ReadByte
-112         clerico = .incomingData.ReadByte
-114         guerrero = .incomingData.ReadByte
-116         asesino = .incomingData.ReadByte
-118         bardo = .incomingData.ReadByte
-120         druido = .incomingData.ReadByte
-122         Paladin = .incomingData.ReadByte
-124         cazador = .incomingData.ReadByte
-126         Trabajador = .incomingData.ReadByte
-128         Pirata = .incomingData.ReadByte
-130         Ladron = .incomingData.ReadByte
-132         Bandido = .incomingData.ReadByte
+110         mago = Reader.ReadInt8
+112         clerico = Reader.ReadInt8
+114         guerrero = Reader.ReadInt8
+116         asesino = Reader.ReadInt8
+118         bardo = Reader.ReadInt8
+120         druido = Reader.ReadInt8
+122         Paladin = Reader.ReadInt8
+124         cazador = Reader.ReadInt8
+126         Trabajador = Reader.ReadInt8
+128         Pirata = Reader.ReadInt8
+130         Ladron = Reader.ReadInt8
+132         Bandido = Reader.ReadInt8
 
-134         Mapa = .incomingData.ReadInteger
-136         X = .incomingData.ReadByte
-138         Y = .incomingData.ReadByte
+134         Mapa = Reader.ReadInt16
+136         X = Reader.ReadInt8
+138         Y = Reader.ReadInt8
         
-140         nombre = .incomingData.ReadASCIIString
-142         reglas = .incomingData.ReadASCIIString
+140         nombre = Reader.ReadString8
+142         reglas = Reader.ReadString8
   
 144         If EsGM(UserIndex) And ((.flags.Privilegios And PlayerType.Consejero) = 0) Then
 146             Torneo.NivelMinimo = NivelMinimo
@@ -16749,7 +16555,7 @@ Private Sub HandleCrearTorneo(ByVal UserIndex As Integer)
 
 ErrHandler:
 190     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCrearTorneo", Erl)
-192     Call UserList(UserIndex).incomingData.SafeClearPacket
+192
 
 End Sub
 
@@ -16771,7 +16577,7 @@ Private Sub HandleComenzarTorneo(ByVal UserIndex As Integer)
 
 ErrHandler:
 106     Call TraceError(Err.Number, Err.Description, "Protocol.HandleComenzarTorneo", Erl)
-108     Call UserList(UserIndex).incomingData.SafeClearPacket
+108
 
 End Sub
 
@@ -16792,7 +16598,7 @@ Private Sub HandleCancelarTorneo(ByVal UserIndex As Integer)
 
 ErrHandler:
 106     Call TraceError(Err.Number, Err.Description, "Protocol.HandleComenzarTorneo", Erl)
-108     Call UserList(UserIndex).incomingData.SafeClearPacket
+108
 
 End Sub
 
@@ -16803,7 +16609,7 @@ Private Sub HandleBusquedaTesoro(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             Dim Tipo As Byte
-102             Tipo = .incomingData.ReadByte()
+102             Tipo = Reader.ReadInt8()
   
 104         If (.flags.Privilegios And Not (PlayerType.Consejero Or PlayerType.user)) Then
 
@@ -16873,7 +16679,7 @@ Private Sub HandleBusquedaTesoro(ByVal UserIndex As Integer)
 
 ErrHandler:
 158     Call TraceError(Err.Number, Err.Description, "Protocol.HandleBusquedaTesoro", Erl)
-160     Call UserList(UserIndex).incomingData.SafeClearPacket
+160
 
 End Sub
 
@@ -16894,7 +16700,7 @@ Private Sub HandleFlagTrabajar(ByVal UserIndex As Integer)
 
 ErrHandler:
 110     Call TraceError(Err.Number, Err.Description, "Protocol.?", Erl)
-112     Call UserList(UserIndex).incomingData.SafeClearPacket
+112
 
 End Sub
 
@@ -16920,7 +16726,7 @@ Private Sub HandleEscribiendo(ByVal UserIndex As Integer)
 
 ErrHandler:
 112     Call TraceError(Err.Number, Err.Description, "Protocol.?", Erl)
-114     Call UserList(UserIndex).incomingData.SafeClearPacket
+114
 
 End Sub
 
@@ -16934,7 +16740,7 @@ Private Sub HandleRequestFamiliar(ByVal UserIndex As Integer)
 
 HandleRequestFamiliar_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRequestFamiliar", Erl)
-104     Call UserList(UserIndex).incomingData.SafeClearPacket
+104
         
 End Sub
 
@@ -16945,7 +16751,7 @@ Private Sub HandleCompletarAccion(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             Dim Accion As Byte
-102             Accion = .incomingData.ReadByte()
+102             Accion = Reader.ReadInt8()
         
 104         If .Accion.AccionPendiente = True Then
 106             If .Accion.TipoAccion = Accion Then
@@ -16966,7 +16772,7 @@ Private Sub HandleCompletarAccion(ByVal UserIndex As Integer)
 
 ErrHandler:
 114     Call TraceError(Err.Number, Err.Description, "Protocol.?", Erl)
-116     Call UserList(UserIndex).incomingData.SafeClearPacket
+116
 
 End Sub
 
@@ -16977,7 +16783,7 @@ Private Sub HandleReclamarRecompensa(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             Dim Index As Byte
-102             Index = .incomingData.ReadByte()
+102             Index = Reader.ReadInt8()
         
 104         Call EntregarRecompensas(UserIndex, Index)
 
@@ -16987,7 +16793,7 @@ Private Sub HandleReclamarRecompensa(ByVal UserIndex As Integer)
 
 ErrHandler:
 106     Call TraceError(Err.Number, Err.Description, "Protocol.?", Erl)
-108     Call UserList(UserIndex).incomingData.SafeClearPacket
+108
 
 End Sub
 
@@ -17005,7 +16811,7 @@ Private Sub HandleTraerRecompensas(ByVal UserIndex As Integer)
 
 ErrHandler:
 104     Call TraceError(Err.Number, Err.Description, "Protocol.?", Erl)
-106     Call UserList(UserIndex).incomingData.SafeClearPacket
+106
 
 End Sub
 
@@ -17024,7 +16830,7 @@ Private Sub HandleCorreo(ByVal UserIndex As Integer)
 
 ErrHandler:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCorreo", Erl)
-104     Call UserList(UserIndex).incomingData.SafeClearPacket
+104
 
 End Sub
 
@@ -17041,9 +16847,9 @@ Private Sub HandleSendCorreo(ByVal UserIndex As Integer)
             Dim IndexReceptor      As Integer
             Dim Itemlista(1 To 10) As obj
 
-102         Nick = .incomingData.ReadASCIIString()
-104         Msg = .incomingData.ReadASCIIString()
-106         ItemCount = .incomingData.ReadByte()
+102         Nick = Reader.ReadString8()
+104         Msg = Reader.ReadString8()
+106         ItemCount = Reader.ReadInt8()
         
             Dim ObjIndex   As Integer
             Dim FinalCount As Byte
@@ -17054,8 +16860,8 @@ Private Sub HandleSendCorreo(ByVal UserIndex As Integer)
                 Dim i As Byte
 
 110             For i = 1 To ItemCount
-112                 Itemlista(i).ObjIndex = .incomingData.ReadByte
-114                 Itemlista(i).amount = .incomingData.ReadInteger
+112                 Itemlista(i).ObjIndex = Reader.ReadInt8
+114                 Itemlista(i).amount = Reader.ReadInt16
 116             Next i
 
             Else 'Si es solo texto
@@ -17133,7 +16939,7 @@ Private Sub HandleSendCorreo(ByVal UserIndex As Integer)
     
 ErrHandler:
 168     Call TraceError(Err.Number, Err.Description, "Protocol.HandleSendCorreo", Erl)
-170     Call UserList(UserIndex).incomingData.SafeClearPacket
+170
 
 End Sub
 
@@ -17145,7 +16951,7 @@ Private Sub HandleRetirarItemCorreo(ByVal UserIndex As Integer)
 
             Dim MsgIndex As Integer
 
-102         MsgIndex = .incomingData.ReadInteger()
+102         MsgIndex = Reader.ReadInt16()
         
             'Call ExtractItemCorreo(Userindex, MsgIndex)
 
@@ -17155,7 +16961,7 @@ Private Sub HandleRetirarItemCorreo(ByVal UserIndex As Integer)
     
 ErrHandler:
 104     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRetirarItemCorreo", Erl)
-106     Call UserList(UserIndex).incomingData.SafeClearPacket
+106
 
 End Sub
 
@@ -17167,7 +16973,7 @@ Private Sub HandleBorrarCorreo(ByVal UserIndex As Integer)
 
             Dim MsgIndex As Integer
 
-102         MsgIndex = .incomingData.ReadInteger()
+102         MsgIndex = Reader.ReadInt16()
         
             'Call BorrarCorreoMail(Userindex, MsgIndex)
 
@@ -17177,7 +16983,7 @@ Private Sub HandleBorrarCorreo(ByVal UserIndex As Integer)
     
 ErrHandler:
 104     Call TraceError(Err.Number, Err.Description, "Protocol.HandleBorrarCorreo", Erl)
-106     Call UserList(UserIndex).incomingData.SafeClearPacket
+106
 
 End Sub
 
@@ -17206,7 +17012,7 @@ Private Sub HandleInvitarGrupo(ByVal UserIndex As Integer)
 
 HandleInvitarGrupo_Err:
 112     Call TraceError(Err.Number, Err.Description, "Protocol.HandleInvitarGrupo", Erl)
-114     Call UserList(UserIndex).incomingData.SafeClearPacket
+114
     
 End Sub
 
@@ -17244,7 +17050,7 @@ Private Sub HandleMarcaDeClan(ByVal UserIndex As Integer)
 
 HandleMarcaDeClan_Err:
 116     Call TraceError(Err.Number, Err.Description, "Protocol.HandleMarcaDeClan", Erl)
-118     Call UserList(UserIndex).incomingData.SafeClearPacket
+118
 End Sub
 
 Private Sub HandleMarcaDeGM(ByVal UserIndex As Integer)
@@ -17258,7 +17064,7 @@ Private Sub HandleMarcaDeGM(ByVal UserIndex As Integer)
 
 HandleMarcaDeGM_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleMarcaDeGM", Erl)
-104     Call UserList(UserIndex).incomingData.SafeClearPacket
+104
     
 End Sub
 
@@ -17271,7 +17077,7 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
             Dim respuesta As Boolean
             Dim DeDonde   As String
 
-102         respuesta = .incomingData.ReadBoolean()
+102         respuesta = Reader.ReadBool()
         
             Dim Log As String
 
@@ -17516,7 +17322,7 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
     
 ErrHandler:
 342     Call TraceError(Err.Number, Err.Description, "Protocol.HandleResponderPregunta", Erl)
-344     Call UserList(UserIndex).incomingData.SafeClearPacket
+344
 
 End Sub
 
@@ -17532,7 +17338,7 @@ Private Sub HandleRequestGrupo(ByVal UserIndex As Integer)
     
 hErr:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRequestGrupo", Erl)
-104     Call UserList(UserIndex).incomingData.SafeClearPacket
+104
 
 End Sub
 
@@ -17544,7 +17350,7 @@ Private Sub HandleAbandonarGrupo(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
         
-102         Call .incomingData.ReadInteger
+102         Call Reader.ReadInt16
         
 104         If UserList(UserIndex).Grupo.Lider = UserIndex Then
             
@@ -17574,7 +17380,7 @@ Private Sub HandleAbandonarGrupo(ByVal UserIndex As Integer)
 
 HandleAbandonarGrupo_Err:
 128     Call TraceError(Err.Number, Err.Description, "Protocol.HandleAbandonarGrupo", Erl)
-130     Call UserList(UserIndex).incomingData.SafeClearPacket
+130
     
 End Sub
 
@@ -17587,7 +17393,7 @@ Private Sub HandleHecharDeGrupo(ByVal UserIndex As Integer)
 
             Dim Indice As Byte
 
-102         Indice = .incomingData.ReadByte()
+102         Indice = Reader.ReadInt8()
         
 104         Call EcharMiembro(UserIndex, Indice)
 
@@ -17597,7 +17403,7 @@ Private Sub HandleHecharDeGrupo(ByVal UserIndex As Integer)
 
 HandleHecharDeGrupo_Err:
 106     Call TraceError(Err.Number, Err.Description, "Protocol.HandleHecharDeGrupo", Erl)
-108     Call UserList(UserIndex).incomingData.SafeClearPacket
+108
     
 End Sub
 
@@ -17608,8 +17414,8 @@ Private Sub HandleMacroPos(ByVal UserIndex As Integer)
 
 100     With UserList(UserIndex)
 
-102         .ChatCombate = .incomingData.ReadByte()
-104         .ChatGlobal = .incomingData.ReadByte()
+102         .ChatCombate = Reader.ReadInt8()
+104         .ChatGlobal = Reader.ReadInt8()
 
         End With
         
@@ -17617,7 +17423,7 @@ Private Sub HandleMacroPos(ByVal UserIndex As Integer)
 
 HandleMacroPos_Err:
 106     Call TraceError(Err.Number, Err.Description, "Protocol.HandleMacroPos", Erl)
-108     Call UserList(UserIndex).incomingData.SafeClearPacket
+108
     
 End Sub
 
@@ -17655,7 +17461,7 @@ Private Sub HandleSubastaInfo(ByVal UserIndex As Integer)
 
 HandleSubastaInfo_Err:
 122     Call TraceError(Err.Number, Err.Description, "Protocol.HandleSubastaInfo", Erl)
-124     Call UserList(UserIndex).incomingData.SafeClearPacket
+124
 End Sub
 
 Private Sub HandleScrollInfo(ByVal UserIndex As Integer)
@@ -17716,7 +17522,7 @@ Private Sub HandleScrollInfo(ByVal UserIndex As Integer)
 
 ErrHandler:
 142     Call TraceError(Err.Number, Err.Description, "Protocol.HandleScrollInfo", Erl)
-144     Call UserList(UserIndex).incomingData.SafeClearPacket
+144
 
 End Sub
 
@@ -17731,7 +17537,7 @@ Private Sub HandleCancelarExit(ByVal UserIndex As Integer)
 
 HandleCancelarExit_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCancelarExit", Erl)
-104     Call UserList(UserIndex).incomingData.SafeClearPacket
+104
         
 End Sub
 
@@ -17750,8 +17556,8 @@ Private Sub HandleBanCuenta(ByVal UserIndex As Integer)
             Dim UserName As String
             Dim Reason   As String
         
-102         UserName = .incomingData.ReadASCIIString()
-104         Reason = .incomingData.ReadASCIIString()
+102         UserName = Reader.ReadString8()
+104         Reason = Reader.ReadString8()
         
 106         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) Then
 108             Call BanearCuenta(UserIndex, UserName, Reason)
@@ -17765,7 +17571,7 @@ Private Sub HandleBanCuenta(ByVal UserIndex As Integer)
 
 ErrHandler:
 112     Call TraceError(Err.Number, Err.Description, "Protocol.HandleBanCuenta", Erl)
-114     Call UserList(UserIndex).incomingData.SafeClearPacket
+114
 
 End Sub
 
@@ -17780,7 +17586,7 @@ Private Sub HandleUnBanCuenta(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             Dim UserNameOEmail As String
-102         UserNameOEmail = .incomingData.ReadASCIIString()
+102         UserNameOEmail = Reader.ReadString8()
         
 104         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) Then
         
@@ -17812,7 +17618,7 @@ Private Sub HandleUnBanCuenta(ByVal UserIndex As Integer)
 
 ErrHandler:
 122     Call TraceError(Err.Number, Err.Description, "Protocol.HandleUnBanCuenta", Erl)
-124     Call UserList(UserIndex).incomingData.SafeClearPacket
+124
 
 End Sub
 
@@ -17830,7 +17636,7 @@ Private Sub HandleBanSerial(ByVal UserIndex As Integer)
 
             Dim UserName As String
          
-102         UserName = .incomingData.ReadASCIIString()
+102         UserName = Reader.ReadString8()
         
 104         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) <> 0 Then
 106             Call BanearHDMAC(UserIndex, UserName)
@@ -17843,7 +17649,7 @@ Private Sub HandleBanSerial(ByVal UserIndex As Integer)
 
 ErrHandler:
 108     Call TraceError(Err.Number, Err.Description, "Protocol.HandleBanSerial", Erl)
-110     Call UserList(UserIndex).incomingData.SafeClearPacket
+110
 
 End Sub
 
@@ -17861,7 +17667,7 @@ Private Sub HandleUnBanSerial(ByVal UserIndex As Integer)
 
             Dim UserName As String
          
-102         UserName = .incomingData.ReadASCIIString()
+102         UserName = Reader.ReadString8()
         
 104         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) Then
 106             Call DesbanearHDMAC(UserName)
@@ -17875,7 +17681,7 @@ Private Sub HandleUnBanSerial(ByVal UserIndex As Integer)
 
 ErrHandler:
 110     Call TraceError(Err.Number, Err.Description, "Protocol.HandleUnBanSerial", Erl)
-112     Call UserList(UserIndex).incomingData.SafeClearPacket
+112
 
 End Sub
 
@@ -17894,7 +17700,7 @@ Private Sub HandleCerrarCliente(ByVal UserIndex As Integer)
             Dim UserName As String
             Dim tUser    As Integer
          
-102         UserName = .incomingData.ReadASCIIString()
+102         UserName = Reader.ReadString8()
         
             ' Solo administradores pueden cerrar clientes ajenos
 104         If (.flags.Privilegios And PlayerType.Admin) Then
@@ -17920,7 +17726,7 @@ Private Sub HandleCerrarCliente(ByVal UserIndex As Integer)
 
 ErrHandler:
 118     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCerrarCliente", Erl)
-120     Call UserList(UserIndex).incomingData.SafeClearPacket
+120
 
 End Sub
 
@@ -17985,7 +17791,7 @@ Private Sub HandleEventoInfo(ByVal UserIndex As Integer)
 
 HandleEventoInfo_Err:
 138     Call TraceError(Err.Number, Err.Description, "Protocol.HandleEventoInfo", Erl)
-140     Call UserList(UserIndex).incomingData.SafeClearPacket
+140
 End Sub
 
 Private Sub HandleCrearEvento(ByVal UserIndex As Integer)
@@ -18002,9 +17808,9 @@ Private Sub HandleCrearEvento(ByVal UserIndex As Integer)
             Dim Duracion       As Byte
             Dim multiplicacion As Byte
         
-102         Tipo = .incomingData.ReadByte()
-104         Duracion = .incomingData.ReadByte()
-106         multiplicacion = .incomingData.ReadByte()
+102         Tipo = Reader.ReadInt8()
+104         Duracion = Reader.ReadInt8()
+106         multiplicacion = Reader.ReadInt8()
 
 108         If multiplicacion > 5 Then 'no superar este multiplicador
 110             multiplicacion = 2
@@ -18035,7 +17841,7 @@ Private Sub HandleCrearEvento(ByVal UserIndex As Integer)
 
 ErrHandler:
 126     Call TraceError(Err.Number, Err.Description, "Protocol.?", Erl)
-128     Call UserList(UserIndex).incomingData.SafeClearPacket
+128
 
 End Sub
 
@@ -18055,9 +17861,9 @@ Private Sub HandleBanTemporal(ByVal UserIndex As Integer)
             Dim Reason   As String
             Dim dias     As Byte
         
-102         UserName = .incomingData.ReadASCIIString()
-104         Reason = .incomingData.ReadASCIIString()
-106         dias = .incomingData.ReadByte()
+102         UserName = Reader.ReadString8()
+104         Reason = Reader.ReadString8()
+106         dias = Reader.ReadInt8()
         
 108         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) Then
 110             Call Admin.BanTemporal(UserName, dias, Reason, UserList(UserIndex).Name)
@@ -18071,7 +17877,7 @@ Private Sub HandleBanTemporal(ByVal UserIndex As Integer)
 
 ErrHandler:
 114     Call TraceError(Err.Number, Err.Description, "Protocol.?", Erl)
-116     Call UserList(UserIndex).incomingData.SafeClearPacket
+116
 
 End Sub
 
@@ -18086,7 +17892,7 @@ Private Sub HandleTraerShop(ByVal UserIndex As Integer)
 
 HandleTraerShop_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleTraerShop", Erl)
-104     Call UserList(UserIndex).incomingData.SafeClearPacket
+104
 End Sub
 
 Private Sub HandleTraerRanking(ByVal UserIndex As Integer)
@@ -18100,7 +17906,7 @@ Private Sub HandleTraerRanking(ByVal UserIndex As Integer)
 
 HandleTraerRanking_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleTraerRanking", Erl)
-104     Call UserList(UserIndex).incomingData.SafeClearPacket
+104
 End Sub
 
 Private Sub HandleComprarItem(ByVal UserIndex As Integer)
@@ -18114,7 +17920,7 @@ Private Sub HandleComprarItem(ByVal UserIndex As Integer)
             Dim ObjComprado  As obj
             Dim LogeoDonador As String
 
-102         ItemIndex = .incomingData.ReadByte()
+102         ItemIndex = Reader.ReadInt8()
         
             Dim i              As Byte
             Dim InvSlotsLibres As Byte
@@ -18164,7 +17970,7 @@ Private Sub HandleComprarItem(ByVal UserIndex As Integer)
 
 ErrHandler:
 150     Call TraceError(Err.Number, Err.Description, "Protocol.HandleComprarItem", Erl)
-152     Call UserList(UserIndex).incomingData.SafeClearPacket
+152
 
 End Sub
 
@@ -18179,8 +17985,8 @@ Private Sub HandleCompletarViaje(ByVal UserIndex As Integer)
 
             Dim costo   As Long
 
-102         Destino = .incomingData.ReadByte()
-104         costo = .incomingData.ReadLong()
+102         Destino = Reader.ReadInt8()
+104         costo = Reader.ReadInt32()
 
             ' WyroX: WTF el costo lo decide el cliente... Desactivo....
             Exit Sub
@@ -18287,7 +18093,7 @@ Private Sub HandleCompletarViaje(ByVal UserIndex As Integer)
 
 ErrHandler:
 200     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCompletarViaje", Erl)
-202     Call UserList(UserIndex).incomingData.SafeClearPacket
+202
 
 End Sub
 
@@ -18326,7 +18132,7 @@ Public Sub HandleQuest(ByVal UserIndex As Integer)
 
 HandleQuest_Err:
 114     Call TraceError(Err.Number, Err.Description, "Protocol.HandleQuest", Erl)
-116     Call UserList(UserIndex).incomingData.SafeClearPacket
+116
         
 End Sub
 
@@ -18342,7 +18148,7 @@ Public Sub HandleQuestAccept(ByVal UserIndex As Integer)
         Dim QuestSlot As Byte
         Dim Indice    As Byte
 
-100     Indice = UserList(UserIndex).incomingData.ReadByte
+100     Indice = Reader.ReadInt8
  
 102     NpcIndex = UserList(UserIndex).flags.TargetNPC
     
@@ -18414,7 +18220,7 @@ Public Sub HandleQuestAccept(ByVal UserIndex As Integer)
 
 HandleQuestAccept_Err:
 148     Call TraceError(Err.Number, Err.Description, "Protocol.HandleQuestAccept", Erl)
-150     Call UserList(UserIndex).incomingData.SafeClearPacket
+150
         
 End Sub
 
@@ -18428,7 +18234,7 @@ Public Sub HandleQuestDetailsRequest(ByVal UserIndex As Integer)
         '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         Dim QuestSlot As Byte
 
-100     QuestSlot = UserList(UserIndex).incomingData.ReadByte
+100     QuestSlot = Reader.ReadInt8
     
 102     Call WriteQuestDetails(UserIndex, UserList(UserIndex).QuestStats.Quests(QuestSlot).QuestIndex, QuestSlot)
         
@@ -18436,7 +18242,7 @@ Public Sub HandleQuestDetailsRequest(ByVal UserIndex As Integer)
 
 HandleQuestDetailsRequest_Err:
 104     Call TraceError(Err.Number, Err.Description, "Protocol.HandleQuestDetailsRequest", Erl)
-106     Call UserList(UserIndex).incomingData.SafeClearPacket
+106
         
 End Sub
  
@@ -18451,7 +18257,7 @@ Public Sub HandleQuestAbandon(ByVal UserIndex As Integer)
         With UserList(UserIndex)
         
             Dim Slot As Byte
-            Slot = .incomingData.ReadByte
+            Slot = Reader.ReadInt8
             
             With .QuestStats.Quests(Slot)
                 ' Le quitamos los objetos de quest que no puede tirar
@@ -18506,7 +18312,7 @@ Public Sub HandleQuestAbandon(ByVal UserIndex As Integer)
 
 HandleQuestAbandon_Err:
 106     Call TraceError(Err.Number, Err.Description, "Protocol.HandleQuestAbandon", Erl)
-108     Call UserList(UserIndex).incomingData.SafeClearPacket
+108
         
 End Sub
 
@@ -18524,7 +18330,7 @@ Public Sub HandleQuestListRequest(ByVal UserIndex As Integer)
 
 HandleQuestListRequest_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleQuestListRequest", Erl)
-104     Call UserList(UserIndex).incomingData.SafeClearPacket
+104
         
 End Sub
 
@@ -18548,9 +18354,9 @@ Public Sub HandleCreatePretorianClan(ByVal UserIndex As Integer)
     
 100     With UserList(UserIndex)
 
-102         Map = .incomingData.ReadInteger()
-104         X = .incomingData.ReadByte()
-106         Y = .incomingData.ReadByte()
+102         Map = Reader.ReadInt16()
+104         X = Reader.ReadInt8()
+106         Y = Reader.ReadInt8()
         
             ' User Admin?
 108         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) = 0 Then
@@ -18593,7 +18399,7 @@ Public Sub HandleCreatePretorianClan(ByVal UserIndex As Integer)
 
 ErrHandler:
 130     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCreatePretorianClan", Erl)
-132     Call UserList(UserIndex).incomingData.SafeClearPacket
+132
     
 End Sub
 
@@ -18615,7 +18421,7 @@ Public Sub HandleDeletePretorianClan(ByVal UserIndex As Integer)
     
 100     With UserList(UserIndex)
 
-102         Map = .incomingData.ReadInteger()
+102         Map = Reader.ReadInt16()
         
             ' User Admin?
 104         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) = 0 Then
@@ -18639,7 +18445,7 @@ Public Sub HandleDeletePretorianClan(ByVal UserIndex As Integer)
 
 ErrHandler:
 114     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCreatePretorianClan", Erl)
-116     Call UserList(UserIndex).incomingData.SafeClearPacket
+116
 
 End Sub
 
@@ -18662,7 +18468,7 @@ Private Sub HandleConsulta(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
  
             Dim Nick As String
-102         Nick = .incomingData.ReadASCIIString
+102         Nick = Reader.ReadString8
 
             ' Comando exclusivo para gms
 104         If Not EsGM(UserIndex) Then Exit Sub
@@ -18765,74 +18571,7 @@ Private Sub HandleConsulta(ByVal UserIndex As Integer)
     
 ErrHandler:
 176     Call TraceError(Err.Number, Err.Description, "Protocol.HandleConsulta", Erl)
-178     Call UserList(UserIndex).incomingData.SafeClearPacket
-
-End Sub
-
-
-Private Sub HandleRequestScreenShot(ByVal UserIndex As Integer)
-
-100     With UserList(UserIndex)
-
-            Dim Nick As String
-102         Nick = .incomingData.ReadASCIIString
-
-            ' Comando exclusivo para gms
-            
-            Dim tUser As Integer
-            
-104         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) = 0 Then Exit Sub
-
-106         If Len(Nick) <> 0 Then
-108             tUser = NameIndex(Nick)
-            
-                'Se asegura que el target exista
-110             If tUser <= 0 Then
-112                 Call WriteConsoleMsg(UserIndex, "El usuario se encuentra offline.", FontTypeNames.FONTTYPE_INFO)
-                    Exit Sub
-
-                End If
-            
-            Else
-        
-114             tUser = .flags.TargetUser
-            
-                'Se asegura que el target exista
-116             If tUser <= 0 Then
-118                 Call WriteConsoleMsg(UserIndex, "Primero tienes que seleccionar un usuario, haz click izquierdo sobre el.", FontTypeNames.FONTTYPE_INFO)
-                    Exit Sub
-
-                End If
-
-            End If
-
-120         If tUser <> UserIndex Then
-122             If AdministratorAccounts.Exists(UCase$(UserList(tUser).Name)) Then
-124                 Call WriteConsoleMsg(UserIndex, "No podés invadir la privacidad de otro administrador.", FontTypeNames.FONTTYPE_INFO)
-                    Exit Sub
-
-                End If
-
-            End If
-        
-126         If LenB(UserList(tUser).flags.ScreenShotPara) = 0 Then
-                ' Creo un buffer de 2mb para la screenshot
-128             Set UserList(tUser).flags.ScreenShot = New clsByteQueue
-130             UserList(tUser).flags.ScreenShot.Capacity = 2097152
-            
-132             Call WriteRequestScreenShot(tUser)
-
-            End If
-
-134         UserList(tUser).flags.ScreenShotPara = UserList(tUser).flags.ScreenShotPara & ":" & .Name
-
-        End With
-    
-        Exit Sub
-    
-ErrHandler:
-136     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRequestScreenShot", Erl)
-138     Call UserList(UserIndex).incomingData.SafeClearPacket
+178
 
 End Sub
 
@@ -18842,7 +18581,7 @@ Private Sub HandleTolerancia0(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             Dim Nick As String
-102         Nick = .incomingData.ReadASCIIString
+102         Nick = Reader.ReadString8
 
             ' Comando exclusivo para admins
 104         If (.flags.Privilegios And PlayerType.Admin) = 0 Then Exit Sub
@@ -18870,78 +18609,7 @@ Private Sub HandleTolerancia0(ByVal UserIndex As Integer)
 ErrHandler:
 
 120     Call TraceError(Err.Number, Err.Description, "Protocol.HandleTolerancia0", Erl)
-122     Call UserList(UserIndex).incomingData.SafeClearPacket
-
-End Sub
-
-Private Sub HandleScreenShot(ByVal UserIndex As Integer)
-
-100     With UserList(UserIndex)
-
-            On Error GoTo ErrHandler
-        
-            Dim Data As String
-102         Data = .incomingData.ReadASCIIString
-           
-104         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) Then
-            
-                ' Si nadie requirió esto, salimos
-106             If LenB(.flags.ScreenShotPara) = 0 Then Exit Sub
-        
-                Dim Finished As Boolean
-        
-                ' Por seguridad, limito a 10Kb de datos (dejo margen para el nombre y el resto del paquete)
-108             If LenB(Data) = 0 Or Len(Data) > 10000 Then
-110                 Data = "ERROR"
-112                 Finished = True
-        
-                    ' Si envió menos de 10Kb y termina con ~~~
-114             ElseIf Len(Data) <= 10000 And Right$(Data, 3) = "~~~" Then
-                    ' Damos la screenshot por terminada
-116                 Finished = True
-
-                End If
-
-                ' Lo guardo en la cola
-118             Call .flags.ScreenShot.WriteASCIIStringFixed(Data)
-        
-120             If Finished Then
-                    Dim ListaGMs() As String
-122                 ListaGMs = Split(.flags.ScreenShotPara, ":")
-            
-                    Dim i As Integer, tGM As Integer, Offset As Long
-    
-124                 For i = LBound(ListaGMs) To UBound(ListaGMs)
-126                     tGM = NameIndex(ListaGMs(i))
-                
-128                     If tGM > 0 Then
-                    
-130                         For Offset = 0 To .flags.ScreenShot.Length - 1 Step 10000
-132                             Call WriteScreenShotData(tGM, .flags.ScreenShot, Offset, Min(.flags.ScreenShot.Length - Offset, 10000))
-                            Next
-                        
-134                         Call WriteShowScreenShot(tGM, .Name)
-
-                        End If
-
-                    Next
-
-136                 .flags.ScreenShotPara = vbNullString
-138                 Set .flags.ScreenShot = Nothing
-
-                End If
-            Else
-140             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
-            End If
-
-        End With
-    
-        Exit Sub
-    
-ErrHandler:
-
-142     Call TraceError(Err.Number, Err.Description, "Protocol.HandleScreenShot", Erl)
-144     Call UserList(UserIndex).incomingData.SafeClearPacket
+122
 
 End Sub
 
@@ -18988,7 +18656,7 @@ Private Sub HandleDenounce(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             Dim Name As String
-102         Name = .incomingData.ReadASCIIString()
+102         Name = Reader.ReadString8()
 
 104         If LenB(Name) = 0 Then Exit Sub
 
@@ -19050,7 +18718,7 @@ Private Sub HandleDenounce(ByVal UserIndex As Integer)
 
 ErrHandler:
 144     Call TraceError(Err.Number, Err.Description, "Protocol.HandleDenounce", Erl)
-146     Call UserList(UserIndex).incomingData.SafeClearPacket
+146
 
 End Sub
 
@@ -19084,10 +18752,10 @@ Private Sub HandleCuentaExtractItem(ByVal UserIndex As Integer)
 
             Dim amount      As Integer
         
-102         Slot = .incomingData.ReadByte()
-104         amount = .incomingData.ReadInteger()
+102         Slot = Reader.ReadInt8()
+104         amount = Reader.ReadInt16()
         
-106         slotdestino = .incomingData.ReadByte()
+106         slotdestino = Reader.ReadInt8()
         
 108         If .flags.Muerto = 1 Then
 110             Call WriteConsoleMsg(UserIndex, "¡¡Estás muerto!!", FontTypeNames.FONTTYPE_INFO)
@@ -19113,7 +18781,7 @@ Private Sub HandleCuentaExtractItem(ByVal UserIndex As Integer)
 
 HandleCuentaExtractItem_Err:
 116     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCuentaExtractItem", Erl)
-118     Call UserList(UserIndex).incomingData.SafeClearPacket
+118
         
 End Sub
 
@@ -19135,9 +18803,9 @@ Private Sub HandleCuentaDeposit(ByVal UserIndex As Integer)
 
             Dim amount      As Integer
         
-102         Slot = .incomingData.ReadByte()
-104         amount = .incomingData.ReadInteger()
-106         slotdestino = .incomingData.ReadByte()
+102         Slot = Reader.ReadInt8()
+104         amount = Reader.ReadInt16()
+106         slotdestino = Reader.ReadInt8()
         
             'Dead people can't commerce...
 108         If .flags.Muerto = 1 Then
@@ -19173,7 +18841,7 @@ Private Sub HandleCuentaDeposit(ByVal UserIndex As Integer)
 
 HandleCuentaDeposit_Err:
 120     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCuentaDeposit", Erl)
-122     Call UserList(UserIndex).incomingData.SafeClearPacket
+122
         
 End Sub
 
@@ -19185,7 +18853,7 @@ Private Sub HandleCommerceSendChatMessage(ByVal UserIndex As Integer)
 
             Dim chatMessage As String
         
-102         chatMessage = "[" & UserList(UserIndex).Name & "] " & .incomingData.ReadASCIIString
+102         chatMessage = "[" & UserList(UserIndex).Name & "] " & Reader.ReadString8
         
             'El mensaje se lo envío al destino
 104         Call WriteCommerceRecieveChatMessage(UserList(UserIndex).ComUsu.DestUsu, chatMessage)
@@ -19199,7 +18867,7 @@ Private Sub HandleCommerceSendChatMessage(ByVal UserIndex As Integer)
     
 ErrHandler:
 108     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCommerceSendChatMessage", Erl)
-110     Call UserList(UserIndex).incomingData.SafeClearPacket
+110
     
 End Sub
 
@@ -19221,7 +18889,7 @@ Private Sub HandleCreateEvent(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             Dim Name As String
-102         Name = .incomingData.ReadASCIIString()
+102         Name = Reader.ReadString8()
 
 104         If LenB(Name) = 0 Then Exit Sub
     
@@ -19251,7 +18919,7 @@ Private Sub HandleCreateEvent(ByVal UserIndex As Integer)
 
 ErrHandler:
 126     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCreateEvent", Erl)
-128     Call UserList(UserIndex).incomingData.SafeClearPacket
+128
         
 End Sub
 
@@ -19325,15 +18993,15 @@ HandleHome_Err:
         
 End Sub
 
-Sub HandleAddItemCrafting(ByVal UserIndex As Integer)
+Private Sub HandleAddItemCrafting(ByVal UserIndex As Integer)
 
         On Error GoTo ErrHandler
     
 100     With UserList(UserIndex)
     
             Dim InvSlot As Byte, CraftSlot As Byte
-102         InvSlot = .incomingData.ReadByte
-104         CraftSlot = .incomingData.ReadByte
+102         InvSlot = Reader.ReadInt8
+104         CraftSlot = Reader.ReadInt8
         
 106         If .flags.Crafteando = 0 Then Exit Sub
         
@@ -19380,18 +19048,18 @@ Sub HandleAddItemCrafting(ByVal UserIndex As Integer)
 
 ErrHandler:
 142     Call TraceError(Err.Number, Err.Description, "Protocol.HandleAddItemCrafting", Erl)
-144     Call UserList(UserIndex).incomingData.SafeClearPacket
+144
 End Sub
 
-Sub HandleRemoveItemCrafting(ByVal UserIndex As Integer)
+Private Sub HandleRemoveItemCrafting(ByVal UserIndex As Integer)
     
         On Error GoTo ErrHandler
     
 100     With UserList(UserIndex)
     
             Dim InvSlot As Byte, CraftSlot As Byte
-102         CraftSlot = .incomingData.ReadByte
-104         InvSlot = .incomingData.ReadByte
+102         CraftSlot = Reader.ReadInt8
+104         InvSlot = Reader.ReadInt8
         
 106         If .flags.Crafteando = 0 Then Exit Sub
 
@@ -19439,17 +19107,17 @@ Sub HandleRemoveItemCrafting(ByVal UserIndex As Integer)
     
 ErrHandler:
 148     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRemoveItemCrafting", Erl)
-150     Call UserList(UserIndex).incomingData.SafeClearPacket
+150
 End Sub
 
-Sub HandleAddCatalyst(ByVal UserIndex As Integer)
+Private Sub HandleAddCatalyst(ByVal UserIndex As Integer)
 
         On Error GoTo ErrHandler
     
 100     With UserList(UserIndex)
     
             Dim Slot As Byte
-102         Slot = .incomingData.ReadByte
+102         Slot = Reader.ReadInt8
         
 104         If .flags.Crafteando = 0 Then Exit Sub
         
@@ -19479,17 +19147,17 @@ Sub HandleAddCatalyst(ByVal UserIndex As Integer)
     
 ErrHandler:
 128     Call TraceError(Err.Number, Err.Description, "Protocol.HandleAddCatalyst", Erl)
-130     Call UserList(UserIndex).incomingData.SafeClearPacket
+130
 End Sub
 
-Sub HandleRemoveCatalyst(ByVal UserIndex As Integer)
+Private Sub HandleRemoveCatalyst(ByVal UserIndex As Integer)
 
         On Error GoTo ErrHandler
     
 100     With UserList(UserIndex)
     
             Dim Slot As Byte
-102         Slot = .incomingData.ReadByte
+102         Slot = Reader.ReadInt8
         
 104         If .flags.Crafteando = 0 Then Exit Sub
 
@@ -19525,7 +19193,7 @@ Sub HandleRemoveCatalyst(ByVal UserIndex As Integer)
     
 ErrHandler:
 134     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRemoveCatalyst", Erl)
-136     Call UserList(UserIndex).incomingData.SafeClearPacket
+136
 End Sub
 
 Sub HandleCraftItem(ByVal UserIndex As Integer)
@@ -19540,10 +19208,10 @@ Sub HandleCraftItem(ByVal UserIndex As Integer)
 
 ErrHandler:
 104     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCraftItem", Erl)
-106     Call UserList(UserIndex).incomingData.SafeClearPacket
+106
 End Sub
 
-Sub HandleCloseCrafting(ByVal UserIndex As Integer)
+Private Sub HandleCloseCrafting(ByVal UserIndex As Integer)
 
         On Error GoTo ErrHandler
     
@@ -19557,18 +19225,18 @@ Sub HandleCloseCrafting(ByVal UserIndex As Integer)
     
 ErrHandler:
 106     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCloseCrafting", Erl)
-108     Call UserList(UserIndex).incomingData.SafeClearPacket
+108
 End Sub
 
-Sub HandleMoveCraftItem(ByVal UserIndex As Integer)
+Private Sub HandleMoveCraftItem(ByVal UserIndex As Integer)
 
         On Error GoTo ErrHandler
     
 100     With UserList(UserIndex)
     
             Dim Drag As Byte, Drop As Byte
-102         Drag = .incomingData.ReadByte
-104         Drop = .incomingData.ReadByte
+102         Drag = Reader.ReadInt8
+104         Drop = Reader.ReadInt8
         
 106         If .flags.Crafteando = 0 Then Exit Sub
         
@@ -19593,10 +19261,10 @@ Sub HandleMoveCraftItem(ByVal UserIndex As Integer)
     
 ErrHandler:
 128     Call TraceError(Err.Number, Err.Description, "Protocol.HandleMoveCraftItem", Erl)
-130     Call UserList(UserIndex).incomingData.SafeClearPacket
+130
 End Sub
 
-Sub HandlePetLeaveAll(ByVal UserIndex As Integer)
+Private Sub HandlePetLeaveAll(ByVal UserIndex As Integer)
 
         On Error GoTo ErrHandler
     
@@ -19624,6 +19292,34 @@ Sub HandlePetLeaveAll(ByVal UserIndex As Integer)
     
 ErrHandler:
 118     Call TraceError(Err.Number, Err.Description, "Protocol.HandlePetLeaveAll", Erl)
-120     Call UserList(UserIndex).incomingData.SafeClearPacket
+120
+End Sub
+
+Private Sub HandleGuardNoticeResponse(ByVal UserIndex As Integer)
+    
+        On Error GoTo HandleGuardNoticeResponse_Err:
+
+        Dim Codigo As String: Codigo = Reader.ReadString8()
+
+        Call AOGuard.HandleNoticeResponse(UserIndex, Codigo)
+        
+        Exit Sub
+
+HandleGuardNoticeResponse_Err:
+130     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuardNoticeResponse", Erl)
+
+End Sub
+
+Private Sub HandleGuardResendVerificationCode(ByVal UserIndex As Integer)
+        
+        On Error GoTo HandleResendVerificationCode_Err:
+        
+100     Call AOGuard.EnviarCodigo(UserIndex)
+        
+        Exit Sub
+
+HandleResendVerificationCode_Err:
+102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuardResendVerificationCode", Erl)
+
 End Sub
 

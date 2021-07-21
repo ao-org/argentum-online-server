@@ -671,8 +671,6 @@ Sub CloseSocket(ByVal UserIndex As Integer)
 
     On Error GoTo ErrHandler
 
-100     Call FlushBuffer(UserIndex)
-
 102     If UserIndex = LastUser Then
 
 104         Do Until UserList(LastUser).flags.UserLogged
@@ -686,7 +684,7 @@ Sub CloseSocket(ByVal UserIndex As Integer)
     
             'Call SecurityIp.IpRestarConexion(api_inetaddr(.ip))
 
-112         If .ConnID <> -1 Then Call CloseSocketSL(UserIndex)
+112         If .ConnIDValida Then Call CloseSocketSL(UserIndex)
     
             'Es el mismo user al que está revisando el centinela??
             'IMPORTANTE!!! hacerlo antes de resetear así todavía sabemos el nombre del user
@@ -709,9 +707,6 @@ Sub CloseSocket(ByVal UserIndex As Integer)
     
             End If
     
-            'Empty buffer for reuse
-126         Call .incomingData.Clean
-    
 128         If .flags.UserLogged Then
 130             Call CloseUser(UserIndex)
         
@@ -722,7 +717,6 @@ Sub CloseSocket(ByVal UserIndex As Integer)
     
             End If
     
-138         .ConnID = -1
 140         .ConnIDValida = False
     
         End With
@@ -731,7 +725,7 @@ Sub CloseSocket(ByVal UserIndex As Integer)
         Exit Sub
 
 ErrHandler:
-142     UserList(UserIndex).ConnID = -1
+
 144     UserList(UserIndex).ConnIDValida = False
 146     Call ResetUserSlot(UserIndex)
 
@@ -745,11 +739,10 @@ Sub CloseSocketSL(ByVal UserIndex As Integer)
         
         On Error GoTo CloseSocketSL_Err
 
-100     If UserList(UserIndex).ConnID <> -1 And UserList(UserIndex).ConnIDValida Then
-102         Call BorraSlotSock(UserList(UserIndex).ConnID)
-104         Call frmMain.Winsock.WSA_CloseSocket(UserList(UserIndex).ConnID)
-106         UserList(UserIndex).ConnIDValida = False
+100     If UserList(UserIndex).ConnIDValida Then
+102         Call modNetwork.Kick(UserIndex)
 
+106         UserList(UserIndex).ConnIDValida = False
         End If
         
         Exit Sub
@@ -757,35 +750,6 @@ Sub CloseSocketSL(ByVal UserIndex As Integer)
 CloseSocketSL_Err:
 108     Call TraceError(Err.Number, Err.Description, "TCP.CloseSocketSL", Erl)
 
-        
-End Sub
-
-''
-' Send an string to a Slot
-'
-' @param userIndex The index of the User
-' @param Datos The string that will be send
-
-Public Sub EnviarDatosASlot(ByVal UserIndex As Integer, ByRef Datos As t_DataBuffer)
-            '***************************************************
-            'Author: Unknown
-            'Last Modification: 09/11/20
-            'Modified By: Jopi
-            'Last Modified by: WyroX - Si no hay espacio, flusheo el buffer e intento de nuevo
-            'Se agrega el paquete a la cola, para prevenir errores.
-            '***************************************************
-        
-            On Error GoTo EnviarDatosASlot_Err
-        
-100         Call UserList(UserIndex).outgoingData.WritePrepared(Datos)
-
-            Exit Sub
-
-EnviarDatosASlot_Err:
-102         If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-104             Call FlushBuffer(UserIndex)
-106             Resume
-            End If
         
 End Sub
 
@@ -1382,7 +1346,6 @@ Sub ResetUserFlags(ByVal UserIndex As Integer)
          
 260         .ProcesosPara = vbNullString
 262         .ScreenShotPara = vbNullString
-264         Set .ScreenShot = Nothing
 
             Dim i As Integer
 266         For i = LBound(.ChatHistory) To UBound(.ChatHistory)
@@ -1573,7 +1536,6 @@ Sub ResetUserSlot(ByVal UserIndex As Integer)
         
 
 100     UserList(UserIndex).ConnIDValida = False
-102     UserList(UserIndex).ConnID = -1
 
 104     If UserList(UserIndex).Grupo.Lider = UserIndex Then
 106         Call FinalizarGrupo(UserIndex)
@@ -1820,25 +1782,6 @@ ErrHandler:
 
 End Sub
 
-Sub ReloadSokcet()
-
-        On Error GoTo ErrHandler
-
-100     Call LogApiSock("ReloadSokcet() " & NumUsers & " " & LastUser & " " & MaxUsers)
-    
-102     If NumUsers <= 0 Then
-104         Call WSApiReiniciarSockets
-        Else
-            'Call apiclosesocket(SockListen)
-            'SockListen = ListenForConnect(Puerto, hWndMsg, "")
-        End If
-
-        Exit Sub
-ErrHandler:
-106     Call TraceError(Err.Number, Err.Description, "TCP.ReloadSokcet", Erl)
-
-End Sub
-
 Public Sub EcharPjsNoPrivilegiados()
         
         On Error GoTo EcharPjsNoPrivilegiados_Err
@@ -1848,7 +1791,7 @@ Public Sub EcharPjsNoPrivilegiados()
 
 100     For LoopC = 1 To LastUser
 
-102         If UserList(LoopC).flags.UserLogged And UserList(LoopC).ConnID >= 0 And UserList(LoopC).ConnIDValida Then
+102         If UserList(LoopC).flags.UserLogged And UserList(LoopC).ConnIDValida Then
 104             If UserList(LoopC).flags.Privilegios And PlayerType.user Then
 106                 Call CloseSocket(LoopC)
 

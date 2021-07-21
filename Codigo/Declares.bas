@@ -1633,9 +1633,7 @@ Public Type UserFlags
     
     ProcesosPara As String
     ScreenShotPara As String
-    
-    ScreenShot As clsByteQueue
-    
+
     ChatHistory(1 To 15) As String
     
     EnReto As Boolean
@@ -1863,7 +1861,6 @@ Public Type user
     Pos As WorldPos
     
     ConnIDValida As Boolean
-    ConnID As Long 'ID
     
     CurrentInventorySlots As Byte
     
@@ -1909,11 +1906,7 @@ Public Type user
     KeyCrypt As Integer
     
     AreasInfo As AreaInfo
-    
-    'Outgoing and incoming messages
-    outgoingData As clsByteQueue
-    incomingData As clsByteQueue
-    
+
     QuestStats As tQuestStats
 
     Keys(1 To MAXKEYS) As Integer

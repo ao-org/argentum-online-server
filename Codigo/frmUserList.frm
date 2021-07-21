@@ -116,7 +116,7 @@ Private Sub Command2_Click()
 
 100     For LoopC = 1 To MaxUsers
 
-102         If UserList(LoopC).ConnID <> -1 And Not UserList(LoopC).flags.UserLogged Then
+102         If UserList(LoopC).ConnIDValida And Not UserList(LoopC).flags.UserLogged Then
 104             Call CloseSocket(LoopC)
 
             End If
@@ -147,7 +147,6 @@ Private Sub List1_Click()
 106             With UserList(UserIndex)
 108                 Text1.Text = "UserLogged: " & .flags.UserLogged & vbCrLf
 110                 Text1.Text = Text1.Text & "IdleCount: " & .Counters.IdleCount & vbCrLf
-112                 Text1.Text = Text1.Text & "ConnId: " & .ConnID & vbCrLf
 114                 Text1.Text = Text1.Text & "ConnIDValida: " & .ConnIDValida & vbCrLf
 
                 End With
