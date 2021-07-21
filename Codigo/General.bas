@@ -1390,7 +1390,9 @@ Sub Restart()
 148     Call LoadMapData
 
 150     Call CargarHechizos
-
+        
+        Call modNetwork.Listen(MaxUsers, "0.0.0.0", CStr(Puerto))
+        
 152     If frmMain.Visible Then frmMain.txStatus.Caption = "Escuchando conexiones entrantes ..."
 
         'Log it
