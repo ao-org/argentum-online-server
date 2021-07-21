@@ -111,7 +111,61 @@ End Function
 '---------------------------------------------------------------------------------------------------
 ' Le enviamos el codigo de verificacion al usuario si la situacion lo requiere
 '---------------------------------------------------------------------------------------------------
-Private Sub EnviarCodigo(ByVal UserIndex As Integer)
+
+Public Sub HandleNoticeResponse(ByVal UserIndex As Integer, ByVal Codigo As String)
+        On Error GoTo HandleNoticeResponse_Err
+    
+
+100     With UserList(UserIndex)
+
+104         If .AccountID = 0 Then Exit Sub
+
+106         Call MakeQuery("SELECT TIMESTAMPDIFF(SECOND, `created_at`, CURRENT_TIMESTAMP) AS delta_time, code FROM account_guard WHERE account_id = ?", False, .AccountID)
+        
+            ' El codigo expira despues de 1 minuto.
+108         If AOG_EXPIRE <> 0 And QueryData!delta_time > AOG_EXPIRE Then
+            
+                ' Le avisamos que expiro
+110             Call WriteShowMessageBox(UserIndex, "El código de verificación ha expirado.")
+112             Debug.Print "El codigo expiro. Se generara uno nuevo!"
+            
+                ' Invalidamos el codigo
+114             Call MakeQuery("DELETE FROM account_guard WHERE account_id = ?", True, UserList(UserIndex).AccountID)
+            
+                ' Lo kickeamos.
+116             Call CloseSocket(UserIndex)
+                 
+            Else ' El codigo NO expiro...
+            
+                ' Lo comparamos con lo que tenemos en la BD
+118             If Codigo = QueryData!Code Then
+            
+120                 Call WritePersonajesDeCuenta(UserIndex)
+122                 Call WriteMostrarCuenta(UserIndex)
+                
+                    ' Invalidamos el codigo
+124                 Call MakeQuery("DELETE FROM account_guard WHERE account_id = ?", True, UserList(UserIndex).AccountID)
+                
+                Else
+            
+                    ' Le avisamos
+126                 Call WriteShowMessageBox(UserIndex, "El código de verificación ha incorrecto.")
+                
+                    ' Lo kickeamos.
+128                 Call CloseSocket(UserIndex)
+                
+                End If
+            
+            End If
+ 
+        End With
+
+HandleNoticeResponse_Err:
+136     Call TraceError(Err.Number, Err.Description, "AOGuard.HandleNoticeResponse", Erl)
+    
+End Sub
+
+Public Sub EnviarCodigo(ByVal UserIndex As Integer)
 
         On Error GoTo EnviarCodigo_Err
     
@@ -177,106 +231,6 @@ Private Sub EnviarCodigo(ByVal UserIndex As Integer)
 
 EnviarCodigo_Err:
 136     Call TraceError(Err.Number, Err.Description, "AOGuard.EnviarCodigo", Erl)
-    
-End Sub
-
-'---------------------------------------------------------------------------------------------------
-' Si VerificarOrigen = False, le notificamos al usuario que ponga el codigo que le mandamos al mail.
-'---------------------------------------------------------------------------------------------------
-Public Sub WriteGuardNotice(ByVal UserIndex As Integer)
-
-        On Error GoTo ErrHandler
-
-100     With UserList(UserIndex).outgoingData
-
-102         Call .WriteID(ServerPacketID.GuardNotice)
-104         Call .EndPacket
-        
-106         Call EnviarCodigo(UserIndex)
-        
-        End With
-    
-        Exit Sub
-    
-ErrHandler:
-
-108     If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-110         Call FlushBuffer(UserIndex)
-112         Resume
-
-        End If
-
-End Sub
-
-Public Sub HandleGuardNoticeResponse(ByVal UserIndex As Integer)
-    
-        On Error GoTo HandleGuardNoticeResponse_Err:
-    
-100     With UserList(UserIndex)
-        
-102         Dim Codigo As String: Codigo = .incomingData.ReadASCIIString
-
-104         If .AccountID = 0 Then Exit Sub
-
-106         Call MakeQuery("SELECT TIMESTAMPDIFF(SECOND, `created_at`, CURRENT_TIMESTAMP) AS delta_time, code FROM account_guard WHERE account_id = ?", False, .AccountID)
-        
-            ' El codigo expira despues de 1 minuto.
-108         If AOG_EXPIRE <> 0 And QueryData!delta_time > AOG_EXPIRE Then
-            
-                ' Le avisamos que expiro
-110             Call WriteShowMessageBox(UserIndex, "El código de verificación ha expirado.")
-112             Debug.Print "El codigo expiro. Se generara uno nuevo!"
-            
-                ' Invalidamos el codigo
-114             Call MakeQuery("DELETE FROM account_guard WHERE account_id = ?", True, UserList(UserIndex).AccountID)
-            
-                ' Lo kickeamos.
-116             Call CloseSocket(UserIndex)
-                 
-            Else ' El codigo NO expiro...
-            
-                ' Lo comparamos con lo que tenemos en la BD
-118             If Codigo = QueryData!code Then
-            
-120                 Call WritePersonajesDeCuenta(UserIndex)
-122                 Call WriteMostrarCuenta(UserIndex)
-                
-                    ' Invalidamos el codigo
-124                 Call MakeQuery("DELETE FROM account_guard WHERE account_id = ?", True, UserList(UserIndex).AccountID)
-                
-                Else
-            
-                    ' Le avisamos
-126                 Call WriteShowMessageBox(UserIndex, "El código de verificación ha incorrecto.")
-                
-                    ' Lo kickeamos.
-128                 Call CloseSocket(UserIndex)
-                
-                End If
-            
-            End If
- 
-        End With
-    
-        Exit Sub
-
-HandleGuardNoticeResponse_Err:
-130     Call TraceError(Err.Number, Err.Description, "AOGuard.HandleGuardNoticeResponse", Erl)
-132     Call UserList(UserIndex).incomingData.SafeClearPacket
-
-End Sub
-
-Public Sub HandleGuardResendVerificationCode(ByVal UserIndex As Integer)
-        
-        On Error GoTo HandleResendVerificationCode_Err:
-        
-100     Call EnviarCodigo(UserIndex)
-        
-        Exit Sub
-
-HandleResendVerificationCode_Err:
-102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuardResendVerificationCode", Erl)
-104     Call UserList(UserIndex).incomingData.SafeClearPacket
     
 End Sub
 

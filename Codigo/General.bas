@@ -40,7 +40,7 @@ End Type
 
 Public Declare Function QueryPerformanceCounter Lib "kernel32" (lpPerformanceCount As Currency) As Long
 Public Declare Function QueryPerformanceFrequency Lib "kernel32" (lpFrequency As Currency) As Long
-
+Public Declare Sub Sleep Lib "kernel32.dll" (ByVal dwMilliseconds As Long)
 Public Declare Sub OutputDebugString Lib "kernel32" Alias "OutputDebugStringA" (ByVal lpOutputString As String)
 
 Global LeerNPCs As New clsIniManager
@@ -731,10 +731,7 @@ Sub Main()
     
         'Resetea las conexiones de los usuarios
 258     For LoopC = 1 To MaxUsers
-260         UserList(LoopC).ConnID = -1
 262         UserList(LoopC).ConnIDValida = False
-264         Set UserList(LoopC).incomingData = New clsByteQueue
-266         Set UserList(LoopC).outgoingData = New clsByteQueue
 268     Next LoopC
     
         '¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
@@ -767,20 +764,8 @@ Sub Main()
 300         Call Security.Initialize
         #End If
         
-        'Cierra el socket de escucha
-302     If LastSockListen >= 0 Then _
-            Call API_closesocket(LastSockListen)
-        
-304     Set frmMain.Winsock = New clsWinsock
-        
-306     If frmMain.Winsock.ListenerSocket <> -1 Then
-308         Call WriteVar(IniPath & "Server.ini", "INIT", "LastSockListen", frmMain.Winsock.ListenerSocket) _
-                    ' Guarda el socket escuchando
-        Else
-310         Call MsgBox("Ha ocurrido un error al iniciar el socket del Servidor.", vbCritical + vbOKOnly)
+302     Call modNetwork.Listen(MaxUsers, "0.0.0.0", CStr(Puerto))
 
-        End If
-    
 312     If frmMain.Visible Then frmMain.txStatus.Caption = "Escuchando conexiones entrantes ..."
         ' ----------------------------------------------------
         '           Configuracion de los sockets
@@ -804,7 +789,20 @@ Sub Main()
 330     Call frmMain.InitMain(HideMe)
     
 332     tInicioServer = GetTickCount()
-
+        
+        While (True)
+        
+            Call modNetwork.Tick(GetElapsed())
+            
+            DoEvents
+            
+            ' Unlock main loop for maximum throughput but it can hog weak CPUs.
+            #If UNLOCK_CPU = 0 Then
+                Call Sleep(1)
+            #End If
+            
+        Wend
+        
         Exit Sub
         
 Handler:
@@ -1362,7 +1360,7 @@ Sub Restart()
 
         Dim LoopC As Long
 
-102    Set frmMain.Winsock = New clsWinsock
+102     Call modNetwork.Disconnect
 
 104     For LoopC = 1 To MaxUsers
 106         Call CloseSocket(LoopC)
@@ -1371,18 +1369,10 @@ Sub Restart()
         'Initialize statistics!!
         'Call Statistics.Initialize
 
-108     For LoopC = 1 To UBound(UserList())
-110         Set UserList(LoopC).incomingData = Nothing
-112         Set UserList(LoopC).outgoingData = Nothing
-114     Next LoopC
-
 116     ReDim UserList(1 To MaxUsers) As user
 
 118     For LoopC = 1 To MaxUsers
-120         UserList(LoopC).ConnID = -1
 122         UserList(LoopC).ConnIDValida = False
-124         Set UserList(LoopC).incomingData = New clsByteQueue
-126         Set UserList(LoopC).outgoingData = New clsByteQueue
 128     Next LoopC
 
 130     LastUser = 0
@@ -2582,7 +2572,7 @@ Sub ForzarActualizar()
 
 100     For i = 1 To LastUser
 
-102         If UserList(i).ConnID <> -1 Then
+102         If UserList(i).ConnIDValida Then
         
 104             Call WriteForceUpdate(i)
     
@@ -2606,7 +2596,7 @@ Sub GuardarUsuarios()
 106     For i = 1 To LastUser
 
 108         If UserList(i).flags.UserLogged Then
-110             Call FlushBuffer(i)
+110             Call modNetwork.Poll
             End If
 
 112     Next i
@@ -2833,11 +2823,11 @@ Public Sub CerrarServidor()
 102     Call frmMain.QuitarIconoSystray
     
         ' Limpieza del socket del servidor.
-104     Set frmMain.Winsock = Nothing
+104     Call modNetwork.Disconnect
     
         Dim LoopC As Long
 106     For LoopC = 1 To MaxUsers
-108         If UserList(LoopC).ConnID <> -1 Then
+108         If UserList(LoopC).ConnIDValida Then
 110             Call CloseSocket(LoopC)
             End If
         Next
@@ -3087,3 +3077,25 @@ Clamp_Err:
 
         
 End Function
+
+Private Function GetElapsed() As Single
+    Static sTime1     As Currency
+    Static sTime2     As Currency
+    Static sFrequency As Currency
+    
+    'Get the timer frequency
+    If sFrequency = 0 Then
+        Call QueryPerformanceFrequency(sFrequency)
+    End If
+    
+    'Get current time
+    Call QueryPerformanceCounter(sTime1)
+
+     'Calculate elapsed time
+    GetElapsed = ((sTime1 - sTime2) / sFrequency * 1000)
+    
+    'Get next end time
+    Call QueryPerformanceCounter(sTime2)
+End Function
+
+

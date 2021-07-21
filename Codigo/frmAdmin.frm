@@ -96,36 +96,6 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-Private Sub cboPjs_Change()
-        
-        On Error GoTo cboPjs_Change_Err
-        
-100     Call ActualizaPjInfo
-
-        
-        Exit Sub
-
-cboPjs_Change_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "frmAdmin.cboPjs_Change", Erl)
-104
-        
-End Sub
-
-Private Sub cboPjs_Click()
-        
-        On Error GoTo cboPjs_Click_Err
-        
-100     Call ActualizaPjInfo
-
-        
-        Exit Sub
-
-cboPjs_Click_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "frmAdmin.cboPjs_Click", Erl)
-104
-        
-End Sub
-
 Private Sub Command1_Click()
         
         On Error GoTo Command1_Click_Err
@@ -162,7 +132,7 @@ Public Sub ActualizaListaPjs()
     
 104         For LoopC = 1 To LastUser
 
-106             If UserList(LoopC).flags.UserLogged And UserList(LoopC).ConnID >= 0 And UserList(LoopC).ConnIDValida Then
+106             If UserList(LoopC).flags.UserLogged And UserList(LoopC).ConnIDValida Then
 108                 If UserList(LoopC).flags.Privilegios And PlayerType.user Then
 110                     .AddItem UserList(LoopC).Name
 112                     .ItemData(.NewIndex) = LoopC
@@ -198,31 +168,3 @@ Command3_Click_Err:
 104
         
 End Sub
-
-Private Sub ActualizaPjInfo()
-        
-        On Error GoTo ActualizaPjInfo_Err
-        
-
-        Dim tIndex As Long
-
-100     tIndex = NameIndex(cboPjs.Text)
-
-102     If tIndex > 0 Then
-
-104         With UserList(tIndex)
-106             Text1.Text = .outgoingData.Length & " elementos en cola." & vbCrLf
-
-            End With
-
-        End If
-
-        
-        Exit Sub
-
-ActualizaPjInfo_Err:
-108     Call RegistrarError(Err.Number, Err.Description, "frmAdmin.ActualizaPjInfo", Erl)
-110
-        
-End Sub
-

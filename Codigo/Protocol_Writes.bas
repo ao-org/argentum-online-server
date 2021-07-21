@@ -1,57 +1,35 @@
 Attribute VB_Name = "Protocol_Writes"
 Option Explicit
 
+Private Writer  As Network.Writer
+
+Public Sub InitializeAuxiliaryBuffer()
+    Set Writer = New Network.Writer
+End Sub
+    
+Public Function GetWriterBuffer() As Network.Writer
+    Set GetWriterBuffer = Writer
+End Function
+
+' \Begin: [Writes]
+
+Public Sub WriteConnected(ByVal UserIndex As Integer)
+    Call Writer.WriteInt(ServerPacketID.Connected)
+    Call modSendData.SendData(ToIndex, UserIndex)
+End Sub
+
 ''
 ' Writes the "Logged" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
 Public Sub WriteLoggedMessage(ByVal UserIndex As Integer)
-
-    On Error GoTo ErrHandler
-    
-    With UserList(UserIndex).outgoingData
-
-        Call .WriteID(ServerPacketID.logged)
-        Call .EndPacket
-    
-    End With
-    
-    
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call Writer.WriteInt(ServerPacketID.logged)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 Public Sub WriteHora(ByVal UserIndex As Integer)
-
-    On Error GoTo ErrHandler
-    
-    With UserList(UserIndex).outgoingData
-
-        Call .WritePrepared(PrepareMessageHora())
-        Call .EndPacket
-    
-    End With
-
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageHora())
 End Sub
 
 ''
@@ -59,33 +37,9 @@ End Sub
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
 Public Sub WriteRemoveAllDialogs(ByVal UserIndex As Integer)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "RemoveDialogs" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-    
-    With UserList(UserIndex).outgoingData
-
-        Call .WriteID(ServerPacketID.RemoveDialogs)
-        Call .EndPacket
-    
-    End With
-
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call Writer.WriteInt(ServerPacketID.RemoveDialogs)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ''
@@ -94,148 +48,43 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @param    CharIndex Character whose dialog will be removed.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
 Public Sub WriteRemoveCharDialog(ByVal UserIndex As Integer, ByVal CharIndex As Integer)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "RemoveCharDialog" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-    
-    With UserList(UserIndex).outgoingData
-    
-        Call .WritePrepared(PrepareMessageRemoveCharDialog(CharIndex))
-        Call .EndPacket
-        
-    End With
-
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageRemoveCharDialog( _
+            CharIndex))
 End Sub
 
 ' Writes the "NavigateToggle" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
 Public Sub WriteNavigateToggle(ByVal UserIndex As Integer)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "NavigateToggle" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-    
-    With UserList(UserIndex).outgoingData
-
-        Call .WriteID(ServerPacketID.NavigateToggle)
-        Call .EndPacket
-    
-    End With
-
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call Writer.WriteInt(ServerPacketID.NavigateToggle)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
-Public Sub WriteNadarToggle(ByVal UserIndex As Integer, ByVal Puede As Boolean, Optional ByVal esTrajeCaucho As Boolean = False)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "NavigateToggle" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-    
-        Call .WriteID(ServerPacketID.NadarToggle)
-        Call .WriteBoolean(Puede)
-        Call .WriteBoolean(esTrajeCaucho)
-        
-        Call .EndPacket
-        
-    End With
-
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-    
+Public Sub WriteNadarToggle(ByVal UserIndex As Integer, _
+                            ByVal Puede As Boolean, _
+                            Optional ByVal esTrajeCaucho As Boolean = False)
+    Call Writer.WriteInt(ServerPacketID.NadarToggle)
+    Call Writer.WriteBool(Puede)
+    Call Writer.WriteBool(esTrajeCaucho)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 Public Sub WriteEquiteToggle(ByVal UserIndex As Integer)
-        
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-    
-        Call .WriteID(ServerPacketID.EquiteToggle)
-        Call .EndPacket
-        
-    End With
-    
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call Writer.WriteInt(ServerPacketID.EquiteToggle)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 Public Sub WriteVelocidadToggle(ByVal UserIndex As Integer)
-        
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-        Call .WriteID(ServerPacketID.VelocidadToggle)
-        Call .WriteSingle(UserList(UserIndex).Char.speeding)
-        Call .EndPacket
-    End With
-
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call Writer.WriteInt(ServerPacketID.VelocidadToggle)
+    Call Writer.WriteReal32(UserList(UserIndex).Char.speeding)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 Public Sub WriteMacroTrabajoToggle(ByVal UserIndex As Integer, ByVal Activar As Boolean)
 
     If Not Activar Then
-        
         UserList(UserIndex).flags.TargetObj = 0 ' Sacamos el targer del objeto
         UserList(UserIndex).flags.UltimoMensaje = 0
         UserList(UserIndex).Counters.Trabajando = 0
@@ -245,27 +94,11 @@ Public Sub WriteMacroTrabajoToggle(ByVal UserIndex As Integer, ByVal Activar As 
         UserList(UserIndex).trabajo.TargetSkill = 0
     Else
         UserList(UserIndex).flags.UsandoMacro = True
-
     End If
 
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-        Call .WriteID(ServerPacketID.MacroTrabajoToggle)
-        Call .WriteBoolean(Activar)
-        Call .EndPacket
-    End With
-
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call Writer.WriteInt(ServerPacketID.MacroTrabajoToggle)
+    Call Writer.WriteBool(Activar)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ''
@@ -273,41 +106,18 @@ End Sub
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
-Public Sub WriteDisconnect(ByVal UserIndex As Integer, Optional ByVal FullLogout As Boolean = False)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "Disconnect" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-    
+Public Sub WriteDisconnect(ByVal UserIndex As Integer, _
+                           Optional ByVal FullLogout As Boolean = False)
     Call ClearAndSaveUser(UserIndex)
     UserList(UserIndex).flags.YaGuardo = True
-    
+
     If Not FullLogout Then
         Call WritePersonajesDeCuenta(UserIndex)
         Call WriteMostrarCuenta(UserIndex)
     End If
-    
-    With UserList(UserIndex).outgoingData
-    
-        Call .WriteID(ServerPacketID.Disconnect)
-        Call .EndPacket
-    
-    End With
-    
-    Exit Sub
-    
-ErrHandler:
 
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call Writer.WriteInt(ServerPacketID.Disconnect)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ''
@@ -315,33 +125,9 @@ End Sub
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
 Public Sub WriteCommerceEnd(ByVal UserIndex As Integer)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "CommerceEnd" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-    
-        Call .WriteID(ServerPacketID.CommerceEnd)
-        Call .EndPacket
-    
-    End With
-    
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call Writer.WriteInt(ServerPacketID.CommerceEnd)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ''
@@ -349,33 +135,9 @@ End Sub
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
 Public Sub WriteBankEnd(ByVal UserIndex As Integer)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "BankEnd" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-    
-    With UserList(UserIndex).outgoingData
-    
-        Call .WriteID(ServerPacketID.BankEnd)
-        Call .EndPacket
-    
-    End With
-
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call Writer.WriteInt(ServerPacketID.BankEnd)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ''
@@ -383,34 +145,10 @@ End Sub
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
 Public Sub WriteCommerceInit(ByVal UserIndex As Integer)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "CommerceInit" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-    
-    With UserList(UserIndex).outgoingData
-    
-        Call .WriteID(ServerPacketID.CommerceInit)
-        Call .WriteASCIIString(NpcList(UserList(UserIndex).flags.TargetNPC).Name)
-        Call .EndPacket
-    
-    End With
-
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call Writer.WriteInt(ServerPacketID.CommerceInit)
+    Call Writer.WriteString8(NpcList(UserList(UserIndex).flags.TargetNPC).Name)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ''
@@ -418,33 +156,9 @@ End Sub
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
 Public Sub WriteBankInit(ByVal UserIndex As Integer)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "BankInit" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-    
-    With UserList(UserIndex).outgoingData
-    
-        Call .WriteID(ServerPacketID.BankInit)
-        Call .EndPacket
-    
-    End With
-
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call Writer.WriteInt(ServerPacketID.BankInit)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ''
@@ -452,33 +166,9 @@ End Sub
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
 Public Sub WriteUserCommerceInit(ByVal UserIndex As Integer)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "UserCommerceInit" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-    
-    With UserList(UserIndex).outgoingData
-    
-        Call .WriteID(ServerPacketID.UserCommerceInit)
-        Call .EndPacket
-    
-    End With
-
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call Writer.WriteInt(ServerPacketID.UserCommerceInit)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ''
@@ -486,33 +176,9 @@ End Sub
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
 Public Sub WriteUserCommerceEnd(ByVal UserIndex As Integer)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "UserCommerceEnd" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-    
-    With UserList(UserIndex).outgoingData
-    
-        Call .WriteID(ServerPacketID.UserCommerceEnd)
-        Call .EndPacket
-    
-    End With
-
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call Writer.WriteInt(ServerPacketID.UserCommerceEnd)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ''
@@ -520,33 +186,9 @@ End Sub
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
 Public Sub WriteShowBlacksmithForm(ByVal UserIndex As Integer)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "ShowBlacksmithForm" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-    
-        Call .WriteID(ServerPacketID.ShowBlacksmithForm)
-        Call .EndPacket
-    
-    End With
-    
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call Writer.WriteInt(ServerPacketID.ShowBlacksmithForm)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ''
@@ -554,89 +196,19 @@ End Sub
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
 Public Sub WriteShowCarpenterForm(ByVal UserIndex As Integer)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "ShowCarpenterForm" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-    
-        Call .WriteID(ServerPacketID.ShowCarpenterForm)
-        Call .EndPacket
-    
-    End With
-    
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call Writer.WriteInt(ServerPacketID.ShowCarpenterForm)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 Public Sub WriteShowAlquimiaForm(ByVal UserIndex As Integer)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "ShowCarpenterForm" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-    
-        Call .WriteID(ServerPacketID.ShowAlquimiaForm)
-        Call .EndPacket
-    
-    End With
-    
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call Writer.WriteInt(ServerPacketID.ShowAlquimiaForm)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 Public Sub WriteShowSastreForm(ByVal UserIndex As Integer)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "ShowCarpenterForm" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-    
-        Call .WriteID(ServerPacketID.ShowSastreForm)
-        Call .EndPacket
-    
-    End With
-    
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call Writer.WriteInt(ServerPacketID.ShowSastreForm)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ''
@@ -644,28 +216,9 @@ End Sub
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
 Public Sub WriteNPCKillUser(ByVal UserIndex As Integer)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "NPCKillUser" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    Call UserList(UserIndex).outgoingData.WriteID(ServerPacketID.NPCKillUser)
-    Call UserList(UserIndex).outgoingData.EndPacket
-    
-    Exit Sub
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call Writer.WriteInt(ServerPacketID.NPCKillUser)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ''
@@ -673,33 +226,9 @@ End Sub
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
 Public Sub WriteBlockedWithShieldUser(ByVal UserIndex As Integer)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "BlockedWithShieldUser" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-    
-    With UserList(UserIndex).outgoingData
-    
-        Call .WriteID(ServerPacketID.BlockedWithShieldUser)
-        Call .EndPacket
-    
-    End With
-    
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call Writer.WriteInt(ServerPacketID.BlockedWithShieldUser)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ''
@@ -707,33 +236,9 @@ End Sub
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
 Public Sub WriteBlockedWithShieldOther(ByVal UserIndex As Integer)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "BlockedWithShieldOther" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-    
-        Call .WriteID(ServerPacketID.BlockedWithShieldOther)
-        Call .EndPacket
-    
-    End With
-    
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call Writer.WriteInt(ServerPacketID.BlockedWithShieldOther)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ''
@@ -741,29 +246,12 @@ End Sub
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
-Public Sub WriteCharSwing(ByVal UserIndex As Integer, ByVal CharIndex As Integer, Optional ByVal FX As Boolean = True, Optional ByVal ShowText As Boolean = True)
-
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-    
-        Call .WritePrepared(PrepareMessageCharSwing(CharIndex, FX, ShowText))
-        Call .EndPacket
-    
-    End With
-    
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+Public Sub WriteCharSwing(ByVal UserIndex As Integer, _
+                          ByVal CharIndex As Integer, _
+                          Optional ByVal FX As Boolean = True, _
+                          Optional ByVal ShowText As Boolean = True)
+    Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageCharSwing(CharIndex, _
+            FX, ShowText))
 End Sub
 
 ''
@@ -771,33 +259,9 @@ End Sub
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
 Public Sub WriteSafeModeOn(ByVal UserIndex As Integer)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "SafeModeOn" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-    
-        Call .WriteID(ServerPacketID.SafeModeOn)
-        Call .EndPacket
-    
-    End With
-    
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call Writer.WriteInt(ServerPacketID.SafeModeOn)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ''
@@ -805,32 +269,9 @@ End Sub
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
 Public Sub WriteSafeModeOff(ByVal UserIndex As Integer)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "SafeModeOff" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-    
-        Call .WriteID(ServerPacketID.SafeModeOff)
-        Call .EndPacket
-    
-    End With
-    
-    Exit Sub
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call Writer.WriteInt(ServerPacketID.SafeModeOff)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ''
@@ -838,32 +279,9 @@ End Sub
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
 Public Sub WritePartySafeOn(ByVal UserIndex As Integer)
-
-    '***************************************************
-    'Author: Rapsodius
-    'Last Modification: 10/10/07
-    'Writes the "PartySafeOn" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-    
-        Call .WriteID(ServerPacketID.PartySafeOn)
-        Call .EndPacket
-    
-    End With
-    
-    Exit Sub
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call Writer.WriteInt(ServerPacketID.PartySafeOn)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ''
@@ -871,86 +289,21 @@ End Sub
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
 Public Sub WritePartySafeOff(ByVal UserIndex As Integer)
-
-    '***************************************************
-    'Author: Rapsodius
-    'Last Modification: 10/10/07
-    'Writes the "PartySafeOff" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-    
-        Call .WriteID(ServerPacketID.PartySafeOff)
-        Call .EndPacket
-    
-    End With
-    
-    Exit Sub
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call Writer.WriteInt(ServerPacketID.PartySafeOff)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 Public Sub WriteClanSeguro(ByVal UserIndex As Integer, ByVal estado As Boolean)
-
-    '***************************************************
-    'Author: Rapsodius
-    'Last Modification: 10/10/07
-    'Writes the "PartySafeOff" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-    
-        Call .WriteID(ServerPacketID.ClanSeguro)
-        Call .WriteBoolean(estado)
-        
-        Call .EndPacket
-        
-    End With
-    
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call Writer.WriteInt(ServerPacketID.ClanSeguro)
+    Call Writer.WriteBool(estado)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 Public Sub WriteSeguroResu(ByVal UserIndex As Integer, ByVal estado As Boolean)
-
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-    
-        Call .WriteID(ServerPacketID.SeguroResu)
-        Call .WriteBoolean(estado)
-        
-        Call .EndPacket
-        
-    End With
-    
-    Exit Sub
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call Writer.WriteInt(ServerPacketID.SeguroResu)
+    Call Writer.WriteBool(estado)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ''
@@ -958,34 +311,9 @@ End Sub
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
 Public Sub WriteCantUseWhileMeditating(ByVal UserIndex As Integer)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "CantUseWhileMeditating" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-    
-        Call .WriteID(ServerPacketID.CantUseWhileMeditating)
-        
-        Call .EndPacket
-        
-    End With
-    
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call Writer.WriteInt(ServerPacketID.CantUseWhileMeditating)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ''
@@ -993,33 +321,10 @@ End Sub
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
 Public Sub WriteUpdateSta(ByVal UserIndex As Integer)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "UpdateMana" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-        Call .WriteID(ServerPacketID.UpdateSta)
-        Call .WriteInteger(UserList(UserIndex).Stats.MinSta)
-        
-        Call .EndPacket
-    End With
-
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call Writer.WriteInt(ServerPacketID.UpdateSta)
+    Call Writer.WriteInt16(UserList(UserIndex).Stats.MinSta)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ''
@@ -1027,34 +332,12 @@ End Sub
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
 Public Sub WriteUpdateMana(ByVal UserIndex As Integer)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "UpdateMana" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-    
-    Call SendData(SendTarget.ToDiosesYclan, UserList(UserIndex).GuildIndex, PrepareMessageCharUpdateMAN(UserIndex))
-
-    With UserList(UserIndex).outgoingData
-        Call .WriteID(ServerPacketID.UpdateMana)
-        Call .WriteInteger(UserList(UserIndex).Stats.MinMAN)
-        Call .EndPacket
-    End With
-
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call SendData(SendTarget.ToDiosesYclan, UserList(UserIndex).GuildIndex, _
+            PrepareMessageCharUpdateMAN(UserIndex))
+    Call Writer.WriteInt(ServerPacketID.UpdateMana)
+    Call Writer.WriteInt16(UserList(UserIndex).Stats.MinMAN)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ''
@@ -1062,35 +345,13 @@ End Sub
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
 Public Sub WriteUpdateHP(ByVal UserIndex As Integer)
-
     'Call SendData(SendTarget.ToDiosesYclan, UserIndex, PrepareMessageCharUpdateHP(UserIndex))
-    Call SendData(SendTarget.ToDiosesYclan, UserList(UserIndex).GuildIndex, PrepareMessageCharUpdateHP(UserIndex))
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "UpdateMana" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-        Call .WriteID(ServerPacketID.UpdateHP)
-        Call .WriteInteger(UserList(UserIndex).Stats.MinHp)
-        Call .EndPacket
-    End With
-
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call SendData(SendTarget.ToDiosesYclan, UserList(UserIndex).GuildIndex, _
+            PrepareMessageCharUpdateHP(UserIndex))
+    Call Writer.WriteInt(ServerPacketID.UpdateHP)
+    Call Writer.WriteInt16(UserList(UserIndex).Stats.MinHp)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ''
@@ -1098,32 +359,9 @@ End Sub
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
 Public Sub WriteUpdateGold(ByVal UserIndex As Integer)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "UpdateGold" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-        Call .WriteID(ServerPacketID.UpdateGold)
-        Call .WriteLong(UserList(UserIndex).Stats.GLD)
-        Call .EndPacket
-    End With
-
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call Writer.WriteInt(ServerPacketID.UpdateGold)
+    Call Writer.WriteInt32(UserList(UserIndex).Stats.GLD)
 End Sub
 
 ''
@@ -1131,32 +369,10 @@ End Sub
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
 Public Sub WriteUpdateExp(ByVal UserIndex As Integer)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "UpdateExp" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-        Call .WriteID(ServerPacketID.UpdateExp)
-        Call .WriteLong(UserList(UserIndex).Stats.Exp)
-        Call .EndPacket
-    End With
-
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call Writer.WriteInt(ServerPacketID.UpdateExp)
+    Call Writer.WriteInt32(UserList(UserIndex).Stats.Exp)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ''
@@ -1166,35 +382,11 @@ End Sub
 ' @param    map The new map to load.
 ' @param    version The version of the map in the server to check if client is properly updated.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
 Public Sub WriteChangeMap(ByVal UserIndex As Integer, ByVal Map As Integer)
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "ChangeMap" message to the given user's outgoing data buffer
-    '***************************************************
-
-    Dim Version As Integer
-
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-        Call .WriteID(ServerPacketID.changeMap)
-        Call .WriteInteger(Map)
-        Call .WriteInteger(Version)
-        Call .EndPacket
-    End With
-
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call Writer.WriteInt(ServerPacketID.changeMap)
+    Call Writer.WriteInt16(Map)
+    Call Writer.WriteInt16(0)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ''
@@ -1202,33 +394,11 @@ End Sub
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
 Public Sub WritePosUpdate(ByVal UserIndex As Integer)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "PosUpdate" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-        Call .WriteID(ServerPacketID.PosUpdate)
-        Call .WriteByte(UserList(UserIndex).Pos.X)
-        Call .WriteByte(UserList(UserIndex).Pos.Y)
-        Call .EndPacket
-    End With
-
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call Writer.WriteInt(ServerPacketID.PosUpdate)
+    Call Writer.WriteInt8(UserList(UserIndex).Pos.X)
+    Call Writer.WriteInt8(UserList(UserIndex).Pos.Y)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ''
@@ -1238,33 +408,13 @@ End Sub
 ' @param    target Part of the body where the user was hitted.
 ' @param    damage The number of HP lost by the hit.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
-Public Sub WriteNPCHitUser(ByVal UserIndex As Integer, ByVal Target As PartesCuerpo, ByVal damage As Integer)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "NPCHitUser" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-        Call .WriteID(ServerPacketID.NPCHitUser)
-        Call .WriteByte(Target)
-        Call .WriteInteger(damage)
-        Call .EndPacket
-    End With
-
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+Public Sub WriteNPCHitUser(ByVal UserIndex As Integer, _
+                           ByVal Target As PartesCuerpo, _
+                           ByVal damage As Integer)
+    Call Writer.WriteInt(ServerPacketID.NPCHitUser)
+    Call Writer.WriteInt8(Target)
+    Call Writer.WriteInt16(damage)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ''
@@ -1273,35 +423,10 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @param    damage The number of HP lost by the target creature.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
 Public Sub WriteUserHitNPC(ByVal UserIndex As Integer, ByVal damage As Long)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "UserHitNPC" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-        Call .WriteID(ServerPacketID.UserHitNPC)
-        
-        'It is a long to allow the "drake slayer" (matadracos) to kill the great red dragon of one blow.
-        Call .WriteLong(damage)
-        
-        Call .EndPacket
-    End With
-
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call Writer.WriteInt(ServerPacketID.UserHitNPC)
+    Call Writer.WriteInt32(damage)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ''
@@ -1310,32 +435,11 @@ End Sub
 ' @param    UserIndex       User to which the message is intended.
 ' @param    attackerIndex   The user index of the user that attacked.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
-Public Sub WriteUserAttackedSwing(ByVal UserIndex As Integer, ByVal AttackerIndex As Integer)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "UserAttackedSwing" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-        Call .WriteID(ServerPacketID.UserAttackedSwing)
-        Call .WriteInteger(UserList(AttackerIndex).Char.CharIndex)
-        Call .EndPacket
-    End With
-
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+Public Sub WriteUserAttackedSwing(ByVal UserIndex As Integer, _
+                                  ByVal AttackerIndex As Integer)
+    Call Writer.WriteInt(ServerPacketID.UserAttackedSwing)
+    Call Writer.WriteInt16(UserList(AttackerIndex).Char.CharIndex)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ''
@@ -1346,34 +450,15 @@ End Sub
 ' @param    attackerChar Char index of the user hitted.
 ' @param    damage The number of HP lost by the hit.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
-Public Sub WriteUserHittedByUser(ByVal UserIndex As Integer, ByVal Target As PartesCuerpo, ByVal attackerChar As Integer, ByVal damage As Integer)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "UserHittedByUser" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-        Call .WriteID(ServerPacketID.UserHittedByUser)
-        Call .WriteInteger(attackerChar)
-        Call .WriteByte(Target)
-        Call .WriteInteger(damage)
-        Call .EndPacket
-    End With
-
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+Public Sub WriteUserHittedByUser(ByVal UserIndex As Integer, _
+                                 ByVal Target As PartesCuerpo, _
+                                 ByVal attackerChar As Integer, _
+                                 ByVal damage As Integer)
+    Call Writer.WriteInt(ServerPacketID.UserHittedByUser)
+    Call Writer.WriteInt16(attackerChar)
+    Call Writer.WriteInt8(Target)
+    Call Writer.WriteInt16(damage)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ''
@@ -1384,34 +469,15 @@ End Sub
 ' @param    attackedChar Char index of the user hitted.
 ' @param    damage The number of HP lost by the oponent hitted.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
-Public Sub WriteUserHittedUser(ByVal UserIndex As Integer, ByVal Target As PartesCuerpo, ByVal attackedChar As Integer, ByVal damage As Integer)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "UserHittedUser" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-        Call .WriteID(ServerPacketID.UserHittedUser)
-        Call .WriteInteger(attackedChar)
-        Call .WriteByte(Target)
-        Call .WriteInteger(damage)
-        Call .EndPacket
-    End With
-
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+Public Sub WriteUserHittedUser(ByVal UserIndex As Integer, _
+                               ByVal Target As PartesCuerpo, _
+                               ByVal attackedChar As Integer, _
+                               ByVal damage As Integer)
+    Call Writer.WriteInt(ServerPacketID.UserHittedUser)
+    Call Writer.WriteInt16(attackedChar)
+    Call Writer.WriteInt8(Target)
+    Call Writer.WriteInt16(damage)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ''
@@ -1422,102 +488,37 @@ End Sub
 ' @param    CharIndex The character uppon which the chat will be displayed.
 ' @param    Color The color to be used when displaying the chat.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
-Public Sub WriteChatOverHead(ByVal UserIndex As Integer, ByVal chat As String, ByVal CharIndex As Integer, ByVal Color As Long)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "ChatOverHead" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
- 
-    With UserList(UserIndex).outgoingData
-    
-        Call .WritePrepared(PrepareMessageChatOverHead(chat, CharIndex, Color))
-        Call .EndPacket
-    
-    End With
-    
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+Public Sub WriteChatOverHead(ByVal UserIndex As Integer, _
+                             ByVal chat As String, _
+                             ByVal CharIndex As Integer, _
+                             ByVal Color As Long)
+    Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageChatOverHead(chat, _
+            CharIndex, Color))
 End Sub
 
-Public Sub WriteTextOverChar(ByVal UserIndex As Integer, ByVal chat As String, ByVal CharIndex As Integer, ByVal Color As Long)
-
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-    
-        Call .WritePrepared(PrepareMessageTextOverChar(chat, CharIndex, Color))
-        Call .EndPacket
-    
-    End With
-    
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+Public Sub WriteTextOverChar(ByVal UserIndex As Integer, _
+                             ByVal chat As String, _
+                             ByVal CharIndex As Integer, _
+                             ByVal Color As Long)
+    Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageTextOverChar(chat, _
+            CharIndex, Color))
 End Sub
 
-Public Sub WriteTextOverTile(ByVal UserIndex As Integer, ByVal chat As String, ByVal X As Integer, ByVal Y As Integer, ByVal Color As Long)
-
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-    
-        Call .WritePrepared(PrepareMessageTextOverTile(chat, X, Y, Color))
-        Call .EndPacket
-    
-    End With
-    
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+Public Sub WriteTextOverTile(ByVal UserIndex As Integer, _
+                             ByVal chat As String, _
+                             ByVal X As Integer, _
+                             ByVal Y As Integer, _
+                             ByVal Color As Long)
+    Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageTextOverTile(chat, X, _
+            Y, Color))
 End Sub
 
-Public Sub WriteTextCharDrop(ByVal UserIndex As Integer, ByVal chat As String, ByVal CharIndex As Integer, ByVal Color As Long)
-
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-    
-        Call .WritePrepared(PrepareMessageTextCharDrop(chat, CharIndex, Color))
-        Call .EndPacket
-    
-    End With
-    
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+Public Sub WriteTextCharDrop(ByVal UserIndex As Integer, _
+                             ByVal chat As String, _
+                             ByVal CharIndex As Integer, _
+                             ByVal Color As Long)
+    Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageTextCharDrop(chat, _
+            CharIndex, Color))
 End Sub
 
 ''
@@ -1527,91 +528,24 @@ End Sub
 ' @param    Chat Text to be displayed over the char's head.
 ' @param    FontIndex Index of the FONTTYPE structure to use.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
-Public Sub WriteConsoleMsg(ByVal UserIndex As Integer, ByVal chat As String, ByVal FontIndex As FontTypeNames)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "ConsoleMsg" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-    
-        Call .WritePrepared(PrepareMessageConsoleMsg(chat, FontIndex))
-        Call .EndPacket
-    
-    End With
-    
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+Public Sub WriteConsoleMsg(ByVal UserIndex As Integer, _
+                           ByVal chat As String, _
+                           ByVal FontIndex As FontTypeNames)
+    Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageConsoleMsg(chat, _
+            FontIndex))
 End Sub
 
-Public Sub WriteLocaleMsg(ByVal UserIndex As Integer, ByVal ID As Integer, ByVal FontIndex As FontTypeNames, Optional ByVal strExtra As String = vbNullString)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "ConsoleMsg" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-        
-    If UserIndex = 0 Then Exit Sub
-
-    With UserList(UserIndex).outgoingData
-    
-        Call .WritePrepared(PrepareMessageLocaleMsg(ID, strExtra, FontIndex))
-        Call .EndPacket
-    
-    End With
-    
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+Public Sub WriteLocaleMsg(ByVal UserIndex As Integer, _
+                          ByVal ID As Integer, _
+                          ByVal FontIndex As FontTypeNames, _
+                          Optional ByVal strExtra As String = vbNullString)
+    Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageLocaleMsg(ID, strExtra, _
+            FontIndex))
 End Sub
 
 Public Sub WriteListaCorreo(ByVal UserIndex As Integer, ByVal Actualizar As Boolean)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "ConsoleMsg" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-    
-        Call .WritePrepared(PrepareMessageListaCorreo(UserIndex, Actualizar))
-        Call .EndPacket
-    
-    End With
-    
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageListaCorreo(UserIndex, _
+            Actualizar))
 End Sub
 
 ''
@@ -1620,33 +554,10 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @param    Chat Text to be displayed over the char's head.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
-Public Sub WriteGuildChat(ByVal UserIndex As Integer, ByVal chat As String, ByVal Status As Byte)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "GuildChat" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-    
-        Call .WritePrepared(PrepareMessageGuildChat(chat, Status))
-        Call .EndPacket
-    
-    End With
-    
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+Public Sub WriteGuildChat(ByVal UserIndex As Integer, _
+                          ByVal chat As String, _
+                          ByVal Status As Byte)
+    Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageGuildChat(chat, Status))
 End Sub
 
 ''
@@ -1655,59 +566,15 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @param    Message Text to be displayed in the message box.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
 Public Sub WriteShowMessageBox(ByVal UserIndex As Integer, ByVal message As String)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "ShowMessageBox" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-        Call .WriteID(ServerPacketID.ShowMessageBox)
-        Call .WriteASCIIString(message)
-        
-        Call .EndPacket
-    End With
-
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call Writer.WriteInt(ServerPacketID.ShowMessageBox)
+    Call Writer.WriteString8(Message)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 Public Sub WriteMostrarCuenta(ByVal UserIndex As Integer)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "ShowMessageBox" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-        Call .WriteID(ServerPacketID.MostrarCuenta)
-        Call .EndPacket
-    End With
-
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call Writer.WriteInt(ServerPacketID.MostrarCuenta)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ''
@@ -1715,32 +582,10 @@ End Sub
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
 Public Sub WriteUserIndexInServer(ByVal UserIndex As Integer)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "UserIndexInServer" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-        Call .WriteID(ServerPacketID.UserIndexInServer)
-        Call .WriteInteger(UserIndex)
-        Call .EndPacket
-    End With
-
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call Writer.WriteInt(ServerPacketID.UserIndexInServer)
+    Call Writer.WriteInt16(UserIndex)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ''
@@ -1748,32 +593,10 @@ End Sub
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
 Public Sub WriteUserCharIndexInServer(ByVal UserIndex As Integer)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "UserIndexInServer" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-        Call .WriteID(ServerPacketID.UserCharIndexInServer)
-        Call .WriteInteger(UserList(UserIndex).Char.CharIndex)
-        Call .EndPacket
-    End With
-    
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call Writer.WriteInt(ServerPacketID.UserCharIndexInServer)
+    Call Writer.WriteInt16(UserList(UserIndex).Char.CharIndex)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ''
@@ -1795,33 +618,13 @@ End Sub
 ' @param    criminal Determines if the character is a criminal or not.
 ' @param    privileges Sets if the character is a normal one or any kind of administrative character.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
 Public Sub WriteCharacterCreate(ByVal UserIndex As Integer, ByVal Body As Integer, ByVal Head As Integer, ByVal Heading As eHeading, ByVal CharIndex As Integer, ByVal X As Byte, ByVal Y As Byte, ByVal weapon As Integer, ByVal shield As Integer, ByVal FX As Integer, ByVal FXLoops As Integer, ByVal helmet As Integer, ByVal Name As String, ByVal Status As Byte, ByVal privileges As Byte, ByVal ParticulaFx As Byte, ByVal Head_Aura As String, ByVal Arma_Aura As String, ByVal Body_Aura As String, ByVal DM_Aura As String, ByVal RM_Aura As String, ByVal Otra_Aura As String, ByVal Escudo_Aura As String, ByVal speeding As Single, ByVal EsNPC As Byte, ByVal donador As Byte, ByVal appear As Byte, ByVal group_index As Integer, ByVal clan_index As Integer, ByVal clan_nivel As Byte, ByVal UserMinHp As Long, ByVal UserMaxHp As Long, ByVal UserMinMAN As Long, ByVal UserMaxMAN As Long, ByVal Simbolo As Byte, Optional ByVal Idle As Boolean = False, Optional ByVal Navegando As Boolean = False)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "CharacterCreate" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-    
-    With UserList(UserIndex).outgoingData
-    
-        Call .WritePrepared(PrepareMessageCharacterCreate(Body, Head, Heading, CharIndex, X, Y, weapon, shield, FX, FXLoops, helmet, Name, Status, privileges, ParticulaFx, Head_Aura, Arma_Aura, Body_Aura, DM_Aura, RM_Aura, Otra_Aura, Escudo_Aura, speeding, EsNPC, donador, appear, group_index, clan_index, clan_nivel, UserMinHp, UserMaxHp, UserMinMAN, UserMaxMAN, Simbolo, Idle, Navegando))
-        Call .EndPacket
-    
-    End With
-    
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageCharacterCreate(Body, Head, _
+        Heading, CharIndex, X, Y, weapon, shield, FX, FXLoops, helmet, Name, Status, _
+        privileges, ParticulaFx, Head_Aura, Arma_Aura, Body_Aura, DM_Aura, RM_Aura, _
+        Otra_Aura, Escudo_Aura, speeding, EsNPC, donador, appear, group_index, _
+        clan_index, clan_nivel, UserMinHp, UserMaxHp, UserMinMAN, UserMaxMAN, Simbolo, _
+        Idle, Navegando))
 End Sub
 
 ''
@@ -1830,33 +633,11 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @param    CharIndex Character to be removed.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
-Public Sub WriteCharacterRemove(ByVal UserIndex As Integer, ByVal CharIndex As Integer, ByVal Desvanecido As Boolean)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "CharacterRemove" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-    
-    With UserList(UserIndex).outgoingData
-    
-        Call .WritePrepared(PrepareMessageCharacterRemove(CharIndex, Desvanecido))
-        Call .EndPacket
-    
-    End With
-    
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+Public Sub WriteCharacterRemove(ByVal UserIndex As Integer, _
+                                ByVal CharIndex As Integer, _
+                                ByVal Desvanecido As Boolean)
+    Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageCharacterRemove( _
+            CharIndex, Desvanecido))
 End Sub
 
 ''
@@ -1867,61 +648,16 @@ End Sub
 ' @param    X X coord of the character's new position.
 ' @param    Y Y coord of the character's new position.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
-Public Sub WriteCharacterMove(ByVal UserIndex As Integer, ByVal CharIndex As Integer, ByVal X As Byte, ByVal Y As Byte)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "CharacterMove" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-    
-        Call .WritePrepared(PrepareMessageCharacterMove(CharIndex, X, Y))
-        Call .EndPacket
-    
-    End With
-    
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+Public Sub WriteCharacterMove(ByVal UserIndex As Integer, _
+                              ByVal CharIndex As Integer, _
+                              ByVal X As Byte, _
+                              ByVal Y As Byte)
+    Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageCharacterMove( _
+            CharIndex, X, Y))
 End Sub
 
 Public Sub WriteForceCharMove(ByVal UserIndex, ByVal Direccion As eHeading)
-
-    '***************************************************
-    'Author: ZaMa
-    'Last Modification: 26/03/2009
-    'Writes the "ForceCharMove" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-    
-        Call .WritePrepared(PrepareMessageForceCharMove(Direccion))
-        Call .EndPacket
-    
-    End With
-    
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageForceCharMove(Direccion))
 End Sub
 
 ''
@@ -1938,33 +674,21 @@ End Sub
 ' @param    FXLoops Number of times the FX should be rendered.
 ' @param    helmet Helmet index of the new character.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
-Public Sub WriteCharacterChange(ByVal UserIndex As Integer, ByVal Body As Integer, ByVal Head As Integer, ByVal Heading As eHeading, ByVal CharIndex As Integer, ByVal weapon As Integer, ByVal shield As Integer, ByVal FX As Integer, ByVal FXLoops As Integer, ByVal helmet As Integer, Optional ByVal Idle As Boolean = False, Optional ByVal Navegando As Boolean = False)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "CharacterChange" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-    
-        Call .WritePrepared(PrepareMessageCharacterChange(Body, Head, Heading, CharIndex, weapon, shield, FX, FXLoops, helmet, Idle, Navegando))
-        Call .EndPacket
-    
-    End With
-    
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+Public Sub WriteCharacterChange(ByVal UserIndex As Integer, _
+                                ByVal Body As Integer, _
+                                ByVal Head As Integer, _
+                                ByVal Heading As eHeading, _
+                                ByVal CharIndex As Integer, _
+                                ByVal weapon As Integer, _
+                                ByVal shield As Integer, _
+                                ByVal FX As Integer, _
+                                ByVal FXLoops As Integer, _
+                                ByVal helmet As Integer, _
+                                Optional ByVal Idle As Boolean = False, _
+                                Optional ByVal Navegando As Boolean = False)
+    Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageCharacterChange(Body, _
+            Head, Heading, CharIndex, weapon, shield, FX, FXLoops, helmet, Idle, _
+            Navegando))
 End Sub
 
 ''
@@ -1975,109 +699,50 @@ End Sub
 ' @param    X X coord of the character's new position.
 ' @param    Y Y coord of the character's new position.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
+Public Sub WriteObjectCreate(ByVal UserIndex As Integer, _
+                             ByVal ObjIndex As Integer, _
+                             ByVal amount As Integer, _
+                             ByVal X As Byte, _
+                             ByVal Y As Byte)
+    Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageObjectCreate(ObjIndex, _
+            amount, X, Y))
+End Sub
 
-Public Sub WriteObjectCreate(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, ByVal amount As Integer, ByVal X As Byte, ByVal Y As Byte)
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "ObjectCreate" message to the given user's outgoing data buffer
-    '***************************************************
+Public Sub WriteParticleFloorCreate(ByVal UserIndex As Integer, _
+                                    ByVal Particula As Integer, _
+                                    ByVal ParticulaTime As Integer, _
+                                    ByVal Map As Integer, _
+                                    ByVal X As Byte, _
+                                    ByVal Y As Byte)
 
-    On Error GoTo ErrHandler
-    
-    With UserList(UserIndex).outgoingData
-    
-        Call .WritePrepared(PrepareMessageObjectCreate(ObjIndex, amount, X, Y))
-        Call .EndPacket
-    
-    End With
-    
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
+    If Particula = 0 Then
+        Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageParticleFXToFloor( _
+                X, Y, Particula, ParticulaTime))
     End If
 
 End Sub
 
-Public Sub WriteParticleFloorCreate(ByVal UserIndex As Integer, ByVal Particula As Integer, ByVal ParticulaTime As Integer, ByVal Map As Integer, ByVal X As Byte, ByVal Y As Byte)
-
-    On Error GoTo ErrHandler
-  
-    If Particula = 0 Then Exit Sub
-    
-    With UserList(UserIndex).outgoingData
-    
-        Call .WritePrepared(PrepareMessageParticleFXToFloor(X, Y, Particula, ParticulaTime))
-        Call .EndPacket
-    
-    End With
-    
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
-End Sub
-
-Public Sub WriteLightFloorCreate(ByVal UserIndex As Integer, ByVal LuzColor As Long, ByVal Rango As Byte, ByVal Map As Integer, ByVal X As Byte, ByVal Y As Byte)
-
-    On Error GoTo ErrHandler
-     
+Public Sub WriteLightFloorCreate(ByVal UserIndex As Integer, _
+                                 ByVal LuzColor As Long, _
+                                 ByVal Rango As Byte, _
+                                 ByVal Map As Integer, _
+                                 ByVal X As Byte, _
+                                 ByVal Y As Byte)
     MapData(Map, X, Y).Luz.Color = LuzColor
     MapData(Map, X, Y).Luz.Rango = Rango
 
-    If Rango = 0 Then Exit Sub
-
-    With UserList(UserIndex).outgoingData
-    
-        Call .WritePrepared(PrepareMessageLightFXToFloor(X, Y, LuzColor, Rango))
-        Call .EndPacket
-    
-    End With
-    
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
+    If Rango = 0 Then
+        Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageLightFXToFloor(X, _
+                Y, LuzColor, Rango))
     End If
 
 End Sub
 
-Public Sub WriteFxPiso(ByVal UserIndex As Integer, ByVal GrhIndex As Integer, ByVal X As Byte, ByVal Y As Byte)
-
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-    
-        Call .WritePrepared(PrepareMessageFxPiso(GrhIndex, X, Y))
-        Call .EndPacket
-    
-    End With
-    
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+Public Sub WriteFxPiso(ByVal UserIndex As Integer, _
+                       ByVal GrhIndex As Integer, _
+                       ByVal X As Byte, _
+                       ByVal Y As Byte)
+    Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageFxPiso(GrhIndex, X, Y))
 End Sub
 
 ''
@@ -2087,33 +752,8 @@ End Sub
 ' @param    X X coord of the character's new position.
 ' @param    Y Y coord of the character's new position.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
 Public Sub WriteObjectDelete(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "ObjectDelete" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-    
-        Call .WritePrepared(PrepareMessageObjectDelete(X, Y))
-        Call .EndPacket
-    
-    End With
-    
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageObjectDelete(X, Y))
 End Sub
 
 ''
@@ -2124,36 +764,15 @@ End Sub
 ' @param    Y Y coord of the character's new position.
 ' @param    Blocked True if the position is blocked.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
-Public Sub WriteBlockPosition(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte, ByVal Blocked As Byte)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "BlockPosition" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-        Call .WriteID(ServerPacketID.BlockPosition)
-        
-        Call .WriteByte(X)
-        Call .WriteByte(Y)
-        Call .WriteByte(Blocked)
-        
-        Call .EndPacket
-    End With
-
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+Public Sub WriteBlockPosition(ByVal UserIndex As Integer, _
+                              ByVal X As Byte, _
+                              ByVal Y As Byte, _
+                              ByVal Blocked As Byte)
+    Call Writer.WriteInt(ServerPacketID.BlockPosition)
+    Call Writer.WriteInt8(X)
+    Call Writer.WriteInt8(Y)
+    Call Writer.WriteInt8(Blocked)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ''
@@ -2163,33 +782,10 @@ End Sub
 ' @param    midi The midi to be played.
 ' @param    loops Number of repets for the midi.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
-Public Sub WritePlayMidi(ByVal UserIndex As Integer, ByVal midi As Byte, Optional ByVal loops As Integer = -1)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "PlayMidi" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-    
-        Call .WritePrepared(PrepareMessagePlayMidi(midi, loops))
-        Call .EndPacket
-    
-    End With
-    
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+Public Sub WritePlayMidi(ByVal UserIndex As Integer, _
+                         ByVal midi As Byte, _
+                         Optional ByVal loops As Integer = -1)
+    Call modSendData.SendData(ToIndex, UserIndex, PrepareMessagePlayMidi(midi, loops))
 End Sub
 
 ''
@@ -2200,34 +796,11 @@ End Sub
 ' @param    X The X position in map coordinates from where the sound comes.
 ' @param    Y The Y position in map coordinates from where the sound comes.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
-Public Sub WritePlayWave(ByVal UserIndex As Integer, ByVal wave As Integer, ByVal X As Byte, ByVal Y As Byte)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 08/08/07
-    'Last Modified by: Rapsodius
-    'Added X and Y positions for 3D Sounds
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-    
-        Call .WritePrepared(PrepareMessagePlayWave(wave, X, Y))
-        Call .EndPacket
-    
-    End With
-    
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+Public Sub WritePlayWave(ByVal UserIndex As Integer, _
+                         ByVal wave As Integer, _
+                         ByVal X As Byte, _
+                         ByVal Y As Byte)
+    Call modSendData.SendData(ToIndex, UserIndex, PrepareMessagePlayWave(wave, X, Y))
 End Sub
 
 ''
@@ -2236,45 +809,22 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @param    GuildList List of guilds to be sent.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
 Public Sub WriteGuildList(ByVal UserIndex As Integer, ByRef guildList() As String)
 
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "GuildList" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
     Dim Tmp As String
-    Dim i   As Long
-    
-    With UserList(UserIndex).outgoingData
-    
-        Call .WriteID(ServerPacketID.guildList)
-        
-        ' Prepare guild name's list
-        For i = LBound(guildList()) To UBound(guildList())
-            Tmp = Tmp & guildList(i) & SEPARATOR
-        Next i
-        
-        If Len(Tmp) Then Tmp = Left$(Tmp, Len(Tmp) - 1)
-        
-        Call .WriteASCIIString(Tmp)
-        
-        Call .EndPacket
-    End With
 
-    Exit Sub
-    
-ErrHandler:
+    Dim I   As Long
 
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
+    Call Writer.WriteInt(ServerPacketID.guildList)
 
-    End If
+    ' Prepare guild name's list
+    For I = LBound(guildList()) To UBound(guildList())
+        Tmp = Tmp & guildList(I) & SEPARATOR
+    Next I
 
+    If Len(Tmp) Then Tmp = Left$(Tmp, Len(Tmp) - 1)
+    Call Writer.WriteString8(Tmp)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ''
@@ -2282,35 +832,11 @@ End Sub
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
 Public Sub WriteAreaChanged(ByVal UserIndex As Integer)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "AreaChanged" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-        Call .WriteID(ServerPacketID.AreaChanged)
-        
-        Call .WriteByte(UserList(UserIndex).Pos.X)
-        Call .WriteByte(UserList(UserIndex).Pos.Y)
-        
-        Call .EndPacket
-    End With
-
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call Writer.WriteInt(ServerPacketID.AreaChanged)
+    Call Writer.WriteInt8(UserList(UserIndex).Pos.X)
+    Call Writer.WriteInt8(UserList(UserIndex).Pos.Y)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ''
@@ -2318,33 +844,8 @@ End Sub
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
 Public Sub WritePauseToggle(ByVal UserIndex As Integer)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "PauseToggle" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-    
-        Call .WritePrepared(PrepareMessagePauseToggle())
-        Call .EndPacket
-    
-    End With
-    
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call modSendData.SendData(ToIndex, UserIndex, PrepareMessagePauseToggle())
 End Sub
 
 ''
@@ -2352,117 +853,21 @@ End Sub
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
 Public Sub WriteRainToggle(ByVal UserIndex As Integer)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "RainToggle" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-    
-        Call .WritePrepared(PrepareMessageRainToggle())
-        Call .EndPacket
-    
-    End With
-    
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageRainToggle())
 End Sub
 
 Public Sub WriteNubesToggle(ByVal UserIndex As Integer)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "RainToggle" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-    
-        Call .WritePrepared(PrepareMessageNieblandoToggle(IntensidadDeNubes))
-        Call .EndPacket
-    
-    End With
-    
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageNieblandoToggle( _
+            IntensidadDeNubes))
 End Sub
 
 Public Sub WriteTrofeoToggleOn(ByVal UserIndex As Integer)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "RainToggle" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-    
-        Call .WritePrepared(PrepareMessageTrofeoToggleOn())
-        Call .EndPacket
-    
-    End With
-    
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageTrofeoToggleOn())
 End Sub
 
 Public Sub WriteTrofeoToggleOff(ByVal UserIndex As Integer)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "RainToggle" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-    
-        Call .WritePrepared(PrepareMessageTrofeoToggleOff())
-        Call .EndPacket
-    
-    End With
-    
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageTrofeoToggleOff())
 End Sub
 
 ''
@@ -2473,33 +878,17 @@ End Sub
 ' @param    FX FX index to be displayed over the new character.
 ' @param    FXLoops Number of times the FX should be rendered.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
-Public Sub WriteCreateFX(ByVal UserIndex As Integer, ByVal CharIndex As Integer, ByVal FX As Integer, ByVal FXLoops As Integer)
-
+Public Sub WriteCreateFX(ByVal UserIndex As Integer, _
+                         ByVal CharIndex As Integer, _
+                         ByVal FX As Integer, _
+                         ByVal FXLoops As Integer)
     '***************************************************
     'Author: Juan Martín Sotuyo Dodero (Maraxus)
     'Last Modification: 05/17/06
     'Writes the "CreateFX" message to the given user's outgoing data buffer
     '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-    
-        Call .WritePrepared(PrepareMessageCreateFX(CharIndex, FX, FXLoops))
-        Call .EndPacket
-    
-    End With
-    
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageCreateFX(CharIndex, FX, _
+            FXLoops))
 End Sub
 
 ''
@@ -2507,167 +896,97 @@ End Sub
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
 Public Sub WriteUpdateUserStats(ByVal UserIndex As Integer)
     '***************************************************
     'Author: Juan Martín Sotuyo Dodero (Maraxus)
     'Last Modification: 05/17/06
     'Writes the "UpdateUserStats" message to the given user's outgoing data buffer
     '***************************************************
-    Call SendData(SendTarget.ToDiosesYclan, UserList(UserIndex).GuildIndex, PrepareMessageCharUpdateHP(UserIndex))
-    Call SendData(SendTarget.ToDiosesYclan, UserList(UserIndex).GuildIndex, PrepareMessageCharUpdateMAN(UserIndex))
-
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-        Call .WriteID(ServerPacketID.UpdateUserStats)
-        
-        Call .WriteInteger(UserList(UserIndex).Stats.MaxHp)
-        Call .WriteInteger(UserList(UserIndex).Stats.MinHp)
-        Call .WriteInteger(UserList(UserIndex).Stats.MaxMAN)
-        Call .WriteInteger(UserList(UserIndex).Stats.MinMAN)
-        Call .WriteInteger(UserList(UserIndex).Stats.MaxSta)
-        Call .WriteInteger(UserList(UserIndex).Stats.MinSta)
-        Call .WriteLong(UserList(UserIndex).Stats.GLD)
-        Call .WriteByte(UserList(UserIndex).Stats.ELV)
-        Call .WriteLong(ExpLevelUp(UserList(UserIndex).Stats.ELV))
-        Call .WriteLong(UserList(UserIndex).Stats.Exp)
-        Call .WriteByte(UserList(UserIndex).clase)
-        
-        Call .EndPacket
-    End With
-
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call SendData(SendTarget.ToDiosesYclan, UserList(UserIndex).GuildIndex, _
+            PrepareMessageCharUpdateHP(UserIndex))
+    Call SendData(SendTarget.ToDiosesYclan, UserList(UserIndex).GuildIndex, _
+            PrepareMessageCharUpdateMAN(UserIndex))
+    Call Writer.WriteInt(ServerPacketID.UpdateUserStats)
+    Call Writer.WriteInt16(UserList(UserIndex).Stats.MaxHp)
+    Call Writer.WriteInt16(UserList(UserIndex).Stats.MinHp)
+    Call Writer.WriteInt16(UserList(UserIndex).Stats.MaxMAN)
+    Call Writer.WriteInt16(UserList(UserIndex).Stats.MinMAN)
+    Call Writer.WriteInt16(UserList(UserIndex).Stats.MaxSta)
+    Call Writer.WriteInt16(UserList(UserIndex).Stats.MinSta)
+    Call Writer.WriteInt32(UserList(UserIndex).Stats.GLD)
+    Call Writer.WriteInt8(UserList(UserIndex).Stats.ELV)
+    Call Writer.WriteInt32(ExpLevelUp(UserList(UserIndex).Stats.ELV))
+    Call Writer.WriteInt32(UserList(UserIndex).Stats.Exp)
+    Call Writer.WriteInt8(UserList(UserIndex).clase)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
-Public Sub WriteUpdateUserKey(ByVal UserIndex As Integer, ByVal Slot As Integer, ByVal Llave As Integer)
-
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-        Call .WriteID(ServerPacketID.UpdateUserKey)
-        
-        Call .WriteInteger(Slot)
-        Call .WriteInteger(Llave)
-        
-        Call .EndPacket
-    End With
-    
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+Public Sub WriteUpdateUserKey(ByVal UserIndex As Integer, _
+                              ByVal Slot As Integer, _
+                              ByVal Llave As Integer)
+    Call Writer.WriteInt(ServerPacketID.UpdateUserKey)
+    Call Writer.WriteInt16(Slot)
+    Call Writer.WriteInt16(Llave)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ' Actualiza el indicador de daño mágico
 Public Sub WriteUpdateDM(ByVal UserIndex As Integer)
 
-    On Error GoTo ErrHandler
-    
     Dim Valor As Integer
-    
+
     With UserList(UserIndex).Invent
 
         ' % daño mágico del arma
         If .WeaponEqpObjIndex > 0 Then
             Valor = Valor + ObjData(.WeaponEqpObjIndex).MagicDamageBonus
-
         End If
 
         ' % daño mágico del anillo
         If .DañoMagicoEqpObjIndex > 0 Then
             Valor = Valor + ObjData(.DañoMagicoEqpObjIndex).MagicDamageBonus
-
         End If
 
+        Call Writer.WriteInt(ServerPacketID.UpdateDM)
+        Call Writer.WriteInt16(Valor)
     End With
 
-    With UserList(UserIndex).outgoingData
-        Call .WriteID(ServerPacketID.UpdateDM)
-        
-        Call .WriteInteger(Valor)
-        
-        Call .EndPacket
-    End With
-
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ' Actualiza el indicador de resistencia mágica
 Public Sub WriteUpdateRM(ByVal UserIndex As Integer)
 
-    On Error GoTo ErrHandler
-    
     Dim Valor As Integer
-    
+
     With UserList(UserIndex).Invent
 
         ' Resistencia mágica de la armadura
         If .ArmourEqpObjIndex > 0 Then
             Valor = Valor + ObjData(.ArmourEqpObjIndex).ResistenciaMagica
         End If
-        
+
         ' Resistencia mágica del anillo
         If .ResistenciaEqpObjIndex > 0 Then
             Valor = Valor + ObjData(.ResistenciaEqpObjIndex).ResistenciaMagica
         End If
-        
+
         ' Resistencia mágica del escudo
         If .EscudoEqpObjIndex > 0 Then
             Valor = Valor + ObjData(.EscudoEqpObjIndex).ResistenciaMagica
         End If
-        
+
         ' Resistencia mágica del casco
         If .CascoEqpObjIndex > 0 Then
             Valor = Valor + ObjData(.CascoEqpObjIndex).ResistenciaMagica
         End If
-            
+
         Valor = Valor + 100 * ModClase(UserList(UserIndex).clase).ResistenciaMagica
-
+        Call Writer.WriteInt(ServerPacketID.UpdateRM)
+        Call Writer.WriteInt16(Valor)
     End With
 
-    With UserList(UserIndex).outgoingData
-        Call .WriteID(ServerPacketID.UpdateRM)
-        
-        Call .WriteInteger(Valor)
-        
-        Call .EndPacket
-    End With
-    
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ''
@@ -2676,149 +995,63 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @param    Skill The skill for which we request a target.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
 Public Sub WriteWorkRequestTarget(ByVal UserIndex As Integer, ByVal Skill As eSkill)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "WorkRequestTarget" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-        Call .WriteID(ServerPacketID.WorkRequestTarget)
-        
-        Call .WriteByte(Skill)
-        
-        Call .EndPacket
-    End With
-
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call Writer.WriteInt(ServerPacketID.WorkRequestTarget)
+    Call Writer.WriteInt8(Skill)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ' Writes the "InventoryUnlockSlots" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
 Public Sub WriteInventoryUnlockSlots(ByVal UserIndex As Integer)
-
-    '***************************************************
-    'Author: Ruthnar
-    'Last Modification: 30/09/20
-    'Writes the "WriteInventoryUnlockSlots" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-        Call .WriteID(ServerPacketID.InventoryUnlockSlots)
-        
-        Call .WriteByte(UserList(UserIndex).Stats.InventLevel)
-        
-        Call .EndPacket
-    End With
-
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call Writer.WriteInt(ServerPacketID.InventoryUnlockSlots)
+    Call Writer.WriteInt8(UserList(UserIndex).Stats.InventLevel)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 Public Sub WriteIntervals(ByVal UserIndex As Integer)
 
-    On Error GoTo ErrHandler
-
     With UserList(UserIndex)
-        Call .outgoingData.WriteID(ServerPacketID.Intervals)
-        
-        Call .outgoingData.WriteLong(.Intervals.Arco)
-        Call .outgoingData.WriteLong(.Intervals.Caminar)
-        Call .outgoingData.WriteLong(.Intervals.Golpe)
-        Call .outgoingData.WriteLong(.Intervals.GolpeMagia)
-        Call .outgoingData.WriteLong(.Intervals.Magia)
-        Call .outgoingData.WriteLong(.Intervals.MagiaGolpe)
-        Call .outgoingData.WriteLong(.Intervals.GolpeUsar)
-        Call .outgoingData.WriteLong(.Intervals.TrabajarExtraer)
-        Call .outgoingData.WriteLong(.Intervals.TrabajarConstruir)
-        Call .outgoingData.WriteLong(.Intervals.UsarU)
-        Call .outgoingData.WriteLong(.Intervals.UsarClic)
-        Call .outgoingData.WriteLong(IntervaloTirar)
-        
-        Call .outgoingData.EndPacket
+        Call Writer.WriteInt(ServerPacketID.Intervals)
+        Call Writer.WriteInt32(.Intervals.Arco)
+        Call Writer.WriteInt32(.Intervals.Caminar)
+        Call Writer.WriteInt32(.Intervals.Golpe)
+        Call Writer.WriteInt32(.Intervals.GolpeMagia)
+        Call Writer.WriteInt32(.Intervals.Magia)
+        Call Writer.WriteInt32(.Intervals.MagiaGolpe)
+        Call Writer.WriteInt32(.Intervals.GolpeUsar)
+        Call Writer.WriteInt32(.Intervals.TrabajarExtraer)
+        Call Writer.WriteInt32(.Intervals.TrabajarConstruir)
+        Call Writer.WriteInt32(.Intervals.UsarU)
+        Call Writer.WriteInt32(.Intervals.UsarClic)
+        Call Writer.WriteInt32(IntervaloTirar)
     End With
 
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 Public Sub WriteChangeInventorySlot(ByVal UserIndex As Integer, ByVal Slot As Byte)
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 3/12/09
-    'Writes the "ChangeInventorySlot" message to the given user's outgoing data buffer
-    '3/12/09: Budi - Ahora se envia MaxDef y MinDef en lugar de Def
-    '***************************************************
-
-    On Error GoTo ErrHandler
 
     Dim ObjIndex    As Integer
+
     Dim PodraUsarlo As Byte
 
-    With UserList(UserIndex).outgoingData
-        Call .WriteID(ServerPacketID.ChangeInventorySlot)
-        
-        Call .WriteByte(Slot)
-                
-        ObjIndex = UserList(UserIndex).Invent.Object(Slot).ObjIndex
+    Call Writer.WriteInt(ServerPacketID.ChangeInventorySlot)
+    Call Writer.WriteInt8(Slot)
+    ObjIndex = UserList(UserIndex).Invent.Object(Slot).ObjIndex
 
-        If ObjIndex > 0 Then
-            PodraUsarlo = PuedeUsarObjeto(UserIndex, ObjIndex)
-
-        End If
-    
-        Call .WriteInteger(ObjIndex)
-        Call .WriteInteger(UserList(UserIndex).Invent.Object(Slot).amount)
-        Call .WriteBoolean(UserList(UserIndex).Invent.Object(Slot).Equipped)
-        Call .WriteSingle(SalePrice(ObjIndex))
-        Call .WriteByte(PodraUsarlo)
-        
-        Call .EndPacket
-    End With
-
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
+    If ObjIndex > 0 Then
+        PodraUsarlo = PuedeUsarObjeto(UserIndex, ObjIndex)
     End If
 
+    Call Writer.WriteInt16(ObjIndex)
+    Call Writer.WriteInt16(UserList(UserIndex).Invent.Object(Slot).amount)
+    Call Writer.WriteBool(UserList(UserIndex).Invent.Object(Slot).Equipped)
+    Call Writer.WriteReal32(SalePrice(ObjIndex))
+    Call Writer.WriteInt8(PodraUsarlo)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ''
@@ -2827,52 +1060,28 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @param    slot Inventory slot which needs to be updated.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
 Public Sub WriteChangeBankSlot(ByVal UserIndex As Integer, ByVal Slot As Byte)
 
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "ChangeBankSlot" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-        
     Dim ObjIndex    As Integer
+
     Dim Valor       As Long
+
     Dim PodraUsarlo As Byte
 
-    With UserList(UserIndex).outgoingData
-        Call .WriteID(ServerPacketID.ChangeBankSlot)
-        
-        Call .WriteByte(Slot)
+    Call Writer.WriteInt(ServerPacketID.ChangeBankSlot)
+    Call Writer.WriteInt8(Slot)
+    ObjIndex = UserList(UserIndex).BancoInvent.Object(Slot).ObjIndex
+    Call Writer.WriteInt16(ObjIndex)
 
-        ObjIndex = UserList(UserIndex).BancoInvent.Object(Slot).ObjIndex
-        
-        Call .WriteInteger(ObjIndex)
-        
-        If ObjIndex > 0 Then
-            Valor = ObjData(ObjIndex).Valor
-            PodraUsarlo = PuedeUsarObjeto(UserIndex, ObjIndex)
-
-        End If
-
-        Call .WriteInteger(UserList(UserIndex).BancoInvent.Object(Slot).amount)
-        Call .WriteLong(Valor)
-        Call .WriteByte(PodraUsarlo)
-        
-        Call .EndPacket
-    End With
-
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
+    If ObjIndex > 0 Then
+        Valor = ObjData(ObjIndex).Valor
+        PodraUsarlo = PuedeUsarObjeto(UserIndex, ObjIndex)
     End If
 
+    Call Writer.WriteInt16(UserList(UserIndex).BancoInvent.Object(Slot).amount)
+    Call Writer.WriteInt32(Valor)
+    Call Writer.WriteInt8(PodraUsarlo)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ''
@@ -2881,41 +1090,18 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @param    slot Spell slot to update.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
 Public Sub WriteChangeSpellSlot(ByVal UserIndex As Integer, ByVal Slot As Integer)
+    Call Writer.WriteInt(ServerPacketID.ChangeSpellSlot)
+    Call Writer.WriteInt8(Slot)
+    Call Writer.WriteInt16(UserList(UserIndex).Stats.UserHechizos(Slot))
 
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "ChangeSpellSlot" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-        Call .WriteID(ServerPacketID.ChangeSpellSlot)
-        
-        Call .WriteByte(Slot)
-        Call .WriteInteger(UserList(UserIndex).Stats.UserHechizos(Slot))
-        
-        If UserList(UserIndex).Stats.UserHechizos(Slot) > 0 Then
-            Call .WriteByte(UserList(UserIndex).Stats.UserHechizos(Slot))
-        Else
-            Call .WriteByte("255")
-        End If
-        
-        Call .EndPacket
-    End With
-
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
+    If UserList(UserIndex).Stats.UserHechizos(Slot) > 0 Then
+        Call Writer.WriteInt8(UserList(UserIndex).Stats.UserHechizos(Slot))
+    Else
+        Call Writer.WriteInt8(255)
     End If
 
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ''
@@ -2923,38 +1109,16 @@ End Sub
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
 Public Sub WriteAttributes(ByVal UserIndex As Integer)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "Atributes" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-        Call .WriteID(ServerPacketID.Atributes)
-        
-        Call .WriteByte(UserList(UserIndex).Stats.UserAtributos(eAtributos.Fuerza))
-        Call .WriteByte(UserList(UserIndex).Stats.UserAtributos(eAtributos.Agilidad))
-        Call .WriteByte(UserList(UserIndex).Stats.UserAtributos(eAtributos.Inteligencia))
-        Call .WriteByte(UserList(UserIndex).Stats.UserAtributos(eAtributos.Constitucion))
-        Call .WriteByte(UserList(UserIndex).Stats.UserAtributos(eAtributos.Carisma))
-        
-        Call .EndPacket
-    End With
-
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call Writer.WriteInt(ServerPacketID.Atributes)
+    Call Writer.WriteInt8(UserList(UserIndex).Stats.UserAtributos(eAtributos.Fuerza))
+    Call Writer.WriteInt8(UserList(UserIndex).Stats.UserAtributos(eAtributos.Agilidad))
+    Call Writer.WriteInt8(UserList(UserIndex).Stats.UserAtributos( _
+            eAtributos.Inteligencia))
+    Call Writer.WriteInt8(UserList(UserIndex).Stats.UserAtributos( _
+            eAtributos.Constitucion))
+    Call Writer.WriteInt8(UserList(UserIndex).Stats.UserAtributos(eAtributos.Carisma))
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ''
@@ -2962,61 +1126,44 @@ End Sub
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
 Public Sub WriteBlacksmithWeapons(ByVal UserIndex As Integer)
 
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 04/15/2008 (NicoNZ) Habia un error al fijarse los skills del personaje
-    'Writes the "BlacksmithWeapons" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
     Dim i              As Long
+
     Dim obj            As ObjData
+
     Dim validIndexes() As Integer
+
     Dim Count          As Integer
+
     ReDim validIndexes(1 To UBound(ArmasHerrero()))
-    
-    With UserList(UserIndex).outgoingData
-        Call .WriteID(ServerPacketID.BlacksmithWeapons)
-        
-        For i = 1 To UBound(ArmasHerrero())
+    Call Writer.WriteInt(ServerPacketID.BlacksmithWeapons)
 
-            ' Can the user create this object? If so add it to the list....
-            If ObjData(ArmasHerrero(i)).SkHerreria <= UserList(UserIndex).Stats.UserSkills(eSkill.Herreria) Then
-                Count = Count + 1
-                validIndexes(Count) = i
-            End If
+    For I = 1 To UBound(ArmasHerrero())
 
-        Next i
-        
-        ' Write the number of objects in the list
-        Call .WriteInteger(Count)
-        
-        ' Write the needed data of each object
-        For i = 1 To Count
-            obj = ObjData(ArmasHerrero(validIndexes(i)))
-            'Call .WriteASCIIString(obj.Index)
-            Call .WriteInteger(ArmasHerrero(validIndexes(i)))
-            Call .WriteInteger(obj.LingH)
-            Call .WriteInteger(obj.LingP)
-            Call .WriteInteger(obj.LingO)
-        Next i
-        
-        Call .EndPacket
-    End With
+        ' Can the user create this object? If so add it to the list....
+        If ObjData(ArmasHerrero(I)).SkHerreria <= UserList(UserIndex).Stats.UserSkills( _
+                eSkill.Herreria) Then
+            Count = Count + 1
+            validIndexes(Count) = I
+        End If
 
-    Exit Sub
-    
-ErrHandler:
+    Next I
 
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
+    ' Write the number of objects in the list
+    Call Writer.WriteInt16(Count)
 
-    End If
+    ' Write the needed data of each object
+    For I = 1 To Count
+        obj = ObjData(ArmasHerrero(validIndexes(I)))
+        'Call Writer.WriteString8(obj.Index)
+        Call Writer.WriteInt16(ArmasHerrero(validIndexes(I)))
+        Call Writer.WriteInt16(obj.LingH)
+        Call Writer.WriteInt16(obj.LingP)
+        Call Writer.WriteInt16(obj.LingO)
+    Next I
 
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ''
@@ -3024,61 +1171,45 @@ End Sub
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
 Public Sub WriteBlacksmithArmors(ByVal UserIndex As Integer)
 
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 04/15/2008 (NicoNZ) Habia un error al fijarse los skills del personaje
-    'Writes the "BlacksmithArmors" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
     Dim i              As Long
+
     Dim obj            As ObjData
+
     Dim validIndexes() As Integer
+
     Dim Count          As Integer
+
     ReDim validIndexes(1 To UBound(ArmadurasHerrero()))
-    
-    With UserList(UserIndex).outgoingData
-        Call .WriteID(ServerPacketID.BlacksmithArmors)
-        
-        For i = 1 To UBound(ArmadurasHerrero())
+    Call Writer.WriteInt(ServerPacketID.BlacksmithArmors)
 
-            ' Can the user create this object? If so add it to the list....
-            If ObjData(ArmadurasHerrero(i)).SkHerreria <= Round(UserList(UserIndex).Stats.UserSkills(eSkill.Herreria) / ModHerreria(UserList(UserIndex).clase), 0) Then
-                Count = Count + 1
-                validIndexes(Count) = i
-            End If
+    For I = 1 To UBound(ArmadurasHerrero())
 
-        Next i
-        
-        ' Write the number of objects in the list
-        Call .WriteInteger(Count)
-        
-        ' Write the needed data of each object
-        For i = 1 To Count
-            obj = ObjData(ArmadurasHerrero(validIndexes(i)))
-            Call .WriteASCIIString(obj.Name)
-            Call .WriteInteger(obj.LingH)
-            Call .WriteInteger(obj.LingP)
-            Call .WriteInteger(obj.LingO)
-            Call .WriteInteger(ArmadurasHerrero(validIndexes(i)))
-        Next i
-        
-        Call .EndPacket
-    End With
+        ' Can the user create this object? If so add it to the list....
+        If ObjData(ArmadurasHerrero(I)).SkHerreria <= Round(UserList( _
+                UserIndex).Stats.UserSkills(eSkill.Herreria) / ModHerreria(UserList( _
+                UserIndex).clase), 0) Then
+            Count = Count + 1
+            validIndexes(Count) = I
+        End If
 
-    Exit Sub
-    
-ErrHandler:
+    Next I
 
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
+    ' Write the number of objects in the list
+    Call Writer.WriteInt16(Count)
 
-    End If
+    ' Write the needed data of each object
+    For I = 1 To Count
+        obj = ObjData(ArmadurasHerrero(validIndexes(I)))
+        Call Writer.WriteString8(obj.Name)
+        Call Writer.WriteInt16(obj.LingH)
+        Call Writer.WriteInt16(obj.LingP)
+        Call Writer.WriteInt16(obj.LingO)
+        Call Writer.WriteInt16(ArmadurasHerrero(validIndexes(I)))
+    Next I
 
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ''
@@ -3086,154 +1217,113 @@ End Sub
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
 Public Sub WriteCarpenterObjects(ByVal UserIndex As Integer)
 
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "CarpenterObjects" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
     Dim i              As Long
+
     Dim validIndexes() As Integer
+
     Dim Count          As Byte
+
     ReDim validIndexes(1 To UBound(ObjCarpintero()))
-    
-    With UserList(UserIndex).outgoingData
-        Call .WriteID(ServerPacketID.CarpenterObjects)
-        
-        For i = 1 To UBound(ObjCarpintero())
+    Call Writer.WriteInt(ServerPacketID.CarpenterObjects)
 
-            ' Can the user create this object? If so add it to the list....
-            If ObjData(ObjCarpintero(i)).SkCarpinteria <= UserList(UserIndex).Stats.UserSkills(eSkill.Carpinteria) Then
-                If i = 1 Then Debug.Print UserList(UserIndex).Stats.UserSkills(eSkill.Carpinteria) \ ModCarpinteria(UserList(UserIndex).clase)
-                Count = Count + 1
-                validIndexes(Count) = i
+    For I = 1 To UBound(ObjCarpintero())
 
-            End If
+        ' Can the user create this object? If so add it to the list....
+        If ObjData(ObjCarpintero(I)).SkCarpinteria <= UserList( _
+                UserIndex).Stats.UserSkills(eSkill.Carpinteria) Then
 
-        Next i
-        
-        ' Write the number of objects in the list
-        Call .WriteByte(Count)
-        
-        ' Write the needed data of each object
-        For i = 1 To Count
-            Call .WriteInteger(ObjCarpintero(validIndexes(i)))
-            'Call .WriteInteger(obj.Madera)
-            'Call .WriteLong(obj.GrhIndex)
-            ' Ladder 07/07/2014   Ahora se envia el grafico de los objetos
-        Next i
-        
-        Call .EndPacket
-    End With
+            If I = 1 Then Debug.Print UserList(UserIndex).Stats.UserSkills( _
+                    eSkill.Carpinteria) \ ModCarpinteria(UserList(UserIndex).clase)
+            Count = Count + 1
+            validIndexes(Count) = I
+        End If
 
-    Exit Sub
-    
-ErrHandler:
+    Next I
 
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
+    ' Write the number of objects in the list
+    Call Writer.WriteInt8(Count)
 
-    End If
+    ' Write the needed data of each object
+    For I = 1 To Count
+        Call Writer.WriteInt16(ObjCarpintero(validIndexes(I)))
+        'Call Writer.WriteInt16(obj.Madera)
+        'Call Writer.WriteInt32(obj.GrhIndex)
+        ' Ladder 07/07/2014   Ahora se envia el grafico de los objetos
+    Next I
 
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 Public Sub WriteAlquimistaObjects(ByVal UserIndex As Integer)
 
-    '***************************************************
-    On Error GoTo ErrHandler
-
     Dim i              As Long
+
     Dim obj            As ObjData
+
     Dim validIndexes() As Integer
+
     Dim Count          As Integer
+
     ReDim validIndexes(1 To UBound(ObjAlquimista()))
-    
-    With UserList(UserIndex).outgoingData
-        Call .WriteID(ServerPacketID.AlquimistaObj)
-        
-        For i = 1 To UBound(ObjAlquimista())
+    Call Writer.WriteInt(ServerPacketID.AlquimistaObj)
 
-            ' Can the user create this object? If so add it to the list....
-            If ObjData(ObjAlquimista(i)).SkPociones <= UserList(UserIndex).Stats.UserSkills(eSkill.Alquimia) \ ModAlquimia(UserList(UserIndex).clase) Then
-                Count = Count + 1
-                validIndexes(Count) = i
-            End If
+    For I = 1 To UBound(ObjAlquimista())
 
-        Next i
-        
-        ' Write the number of objects in the list
-        Call .WriteInteger(Count)
-        
-        ' Write the needed data of each object
-        For i = 1 To Count
-            Call .WriteInteger(ObjAlquimista(validIndexes(i)))
-        Next i
-        
-        Call .EndPacket
-    End With
+        ' Can the user create this object? If so add it to the list....
+        If ObjData(ObjAlquimista(I)).SkPociones <= UserList(UserIndex).Stats.UserSkills( _
+                eSkill.Alquimia) \ ModAlquimia(UserList(UserIndex).clase) Then
+            Count = Count + 1
+            validIndexes(Count) = I
+        End If
 
-    Exit Sub
-    
-ErrHandler:
+    Next I
 
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
+    ' Write the number of objects in the list
+    Call Writer.WriteInt16(Count)
 
-    End If
+    ' Write the needed data of each object
+    For I = 1 To Count
+        Call Writer.WriteInt16(ObjAlquimista(validIndexes(I)))
+    Next I
 
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 Public Sub WriteSastreObjects(ByVal UserIndex As Integer)
 
-    '***************************************************
-    On Error GoTo ErrHandler
-
     Dim i              As Long
+
     Dim obj            As ObjData
+
     Dim validIndexes() As Integer
+
     Dim Count          As Integer
+
     ReDim validIndexes(1 To UBound(ObjSastre()))
-    
-    With UserList(UserIndex).outgoingData
-        Call .WriteID(ServerPacketID.SastreObj)
-        
-        For i = 1 To UBound(ObjSastre())
+    Call Writer.WriteInt(ServerPacketID.SastreObj)
 
-            ' Can the user create this object? If so add it to the list....
-            If ObjData(ObjSastre(i)).SkMAGOria <= UserList(UserIndex).Stats.UserSkills(eSkill.Sastreria) Then
-                Count = Count + 1
-                validIndexes(Count) = i
-            End If
+    For I = 1 To UBound(ObjSastre())
 
-        Next i
-        
-        ' Write the number of objects in the list
-        Call .WriteInteger(Count)
-        
-        ' Write the needed data of each object
-        For i = 1 To Count
-            Call .WriteInteger(ObjSastre(validIndexes(i)))
-        Next i
-        
-        Call .EndPacket
-    End With
+        ' Can the user create this object? If so add it to the list....
+        If ObjData(ObjSastre(I)).SkMAGOria <= UserList(UserIndex).Stats.UserSkills( _
+                eSkill.Sastreria) Then
+            Count = Count + 1
+            validIndexes(Count) = I
+        End If
 
-    Exit Sub
-    
-ErrHandler:
+    Next I
 
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
+    ' Write the number of objects in the list
+    Call Writer.WriteInt16(Count)
 
-    End If
+    ' Write the needed data of each object
+    For I = 1 To Count
+        Call Writer.WriteInt16(ObjSastre(validIndexes(I)))
+    Next I
 
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ''
@@ -3241,33 +1331,9 @@ End Sub
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
 Public Sub WriteRestOK(ByVal UserIndex As Integer)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "RestOK" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-    
-        Call .WriteID(ServerPacketID.RestOK)
-        Call .EndPacket
-    
-    End With
-    
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call Writer.WriteInt(ServerPacketID.RestOK)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ''
@@ -3276,33 +1342,13 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @param    message The error message to be displayed.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
 Public Sub WriteErrorMsg(ByVal UserIndex As Integer, ByVal message As String)
-
     '***************************************************
     'Author: Juan Martín Sotuyo Dodero (Maraxus)
     'Last Modification: 05/17/06
     'Writes the "ErrorMsg" message to the given user's outgoing data buffer
     '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-    
-        Call .WritePrepared(PrepareMessageErrorMsg(message))
-        Call .EndPacket
-    
-    End With
-    
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageErrorMsg(Message))
 End Sub
 
 ''
@@ -3310,33 +1356,9 @@ End Sub
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
 Public Sub WriteBlind(ByVal UserIndex As Integer)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "Blind" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-    
-        Call .WriteID(ServerPacketID.Blind)
-        Call .EndPacket
-    
-    End With
-    
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call Writer.WriteInt(ServerPacketID.Blind)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ''
@@ -3344,33 +1366,9 @@ End Sub
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
 Public Sub WriteDumb(ByVal UserIndex As Integer)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "Dumb" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-    
-        Call .WriteID(ServerPacketID.Dumb)
-        Call .EndPacket
-    
-    End With
-    
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call Writer.WriteInt(ServerPacketID.Dumb)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ''
@@ -3380,35 +1378,11 @@ End Sub
 ' @param    objIndex Index of the signal to be displayed.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 'Optimizacion de protocolo por Ladder
-
 Public Sub WriteShowSignal(ByVal UserIndex As Integer, ByVal ObjIndex As Integer)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "ShowSignal" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-        Call .WriteID(ServerPacketID.ShowSignal)
-        
-        Call .WriteInteger(ObjIndex)
-        Call .WriteInteger(ObjData(ObjIndex).GrhSecundario)
-        
-        Call .EndPacket
-    End With
-
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call Writer.WriteInt(ServerPacketID.ShowSignal)
+    Call Writer.WriteInt16(ObjIndex)
+    Call Writer.WriteInt16(ObjData(ObjIndex).GrhSecundario)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ''
@@ -3419,47 +1393,27 @@ End Sub
 ' @param    obj         The object to be set in the NPC's inventory window.
 ' @param    price       The value the NPC asks for the object.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
-Public Sub WriteChangeNPCInventorySlot(ByVal UserIndex As Integer, ByVal Slot As Byte, ByRef obj As obj, ByVal price As Single)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Last Modified by: Nicolas Ezequiel Bouhid (NicoNZ)
-    'Writes the "ChangeNPCInventorySlot" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
+Public Sub WriteChangeNPCInventorySlot(ByVal UserIndex As Integer, _
+                                       ByVal Slot As Byte, _
+                                       ByRef obj As obj, _
+                                       ByVal price As Single)
 
     Dim ObjInfo     As ObjData
+
     Dim PodraUsarlo As Byte
-    
+
     If obj.ObjIndex >= LBound(ObjData()) And obj.ObjIndex <= UBound(ObjData()) Then
         ObjInfo = ObjData(obj.ObjIndex)
         PodraUsarlo = PuedeUsarObjeto(UserIndex, obj.ObjIndex)
     End If
-        
-    With UserList(UserIndex).outgoingData
-        Call .WriteID(ServerPacketID.ChangeNPCInventorySlot)
-        
-        Call .WriteByte(Slot)
-        Call .WriteInteger(obj.ObjIndex)
-        Call .WriteInteger(obj.amount)
-        Call .WriteSingle(price)
-        Call .WriteByte(PodraUsarlo)
-        
-        Call .EndPacket
-    End With
 
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call Writer.WriteInt(ServerPacketID.ChangeNPCInventorySlot)
+    Call Writer.WriteInt8(Slot)
+    Call Writer.WriteInt16(obj.ObjIndex)
+    Call Writer.WriteInt16(obj.amount)
+    Call Writer.WriteReal32(price)
+    Call Writer.WriteInt8(PodraUsarlo)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ''
@@ -3467,249 +1421,72 @@ End Sub
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
 Public Sub WriteUpdateHungerAndThirst(ByVal UserIndex As Integer)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "UpdateHungerAndThirst" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-        Call .WriteID(ServerPacketID.UpdateHungerAndThirst)
-        
-        Call .WriteByte(UserList(UserIndex).Stats.MaxAGU)
-        Call .WriteByte(UserList(UserIndex).Stats.MinAGU)
-        Call .WriteByte(UserList(UserIndex).Stats.MaxHam)
-        Call .WriteByte(UserList(UserIndex).Stats.MinHam)
-        
-        Call .EndPacket
-    End With
-
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call Writer.WriteInt(ServerPacketID.UpdateHungerAndThirst)
+    Call Writer.WriteInt8(UserList(UserIndex).Stats.MaxAGU)
+    Call Writer.WriteInt8(UserList(UserIndex).Stats.MinAGU)
+    Call Writer.WriteInt8(UserList(UserIndex).Stats.MaxHam)
+    Call Writer.WriteInt8(UserList(UserIndex).Stats.MinHam)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 Public Sub WriteLight(ByVal UserIndex As Integer, ByVal Map As Integer)
-
-    On Error GoTo ErrHandler
-
-    Dim light As String
-        light = MapInfo(Map).base_light
-
-    With UserList(UserIndex).outgoingData
-        Call .WriteID(ServerPacketID.light)
-        
-        Call .WriteASCIIString(light)
-        
-        Call .EndPacket
-    End With
-
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call Writer.WriteInt(ServerPacketID.light)
+    Call Writer.WriteString8(MapInfo(Map).base_light)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
-Public Sub WriteFlashScreen(ByVal UserIndex As Integer, ByVal Color As Long, ByVal Time As Long, Optional ByVal Ignorar As Boolean = False)
-
-    On Error GoTo ErrHandler
- 
-    With UserList(UserIndex).outgoingData
-        Call .WriteID(ServerPacketID.FlashScreen)
-        
-        Call .WriteLong(Color)
-        Call .WriteLong(Time)
-        Call .WriteBoolean(Ignorar)
-        
-        Call .EndPacket
-    End With
-
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+Public Sub WriteFlashScreen(ByVal UserIndex As Integer, _
+                            ByVal Color As Long, _
+                            ByVal Time As Long, _
+                            Optional ByVal Ignorar As Boolean = False)
+    Call Writer.WriteInt(ServerPacketID.FlashScreen)
+    Call Writer.WriteInt32(Color)
+    Call Writer.WriteInt32(Time)
+    Call Writer.WriteBool(Ignorar)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 Public Sub WriteFYA(ByVal UserIndex As Integer)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "Fame" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-        Call .WriteID(ServerPacketID.FYA)
-        
-        Call .WriteByte(UserList(UserIndex).Stats.UserAtributos(1))
-        Call .WriteByte(UserList(UserIndex).Stats.UserAtributos(2))
-        Call .WriteInteger(UserList(UserIndex).flags.DuracionEfecto)
-        
-        Call .EndPacket
-    End With
-    
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call Writer.WriteInt(ServerPacketID.FYA)
+    Call Writer.WriteInt8(UserList(UserIndex).Stats.UserAtributos(1))
+    Call Writer.WriteInt8(UserList(UserIndex).Stats.UserAtributos(2))
+    Call Writer.WriteInt16(UserList(UserIndex).flags.DuracionEfecto)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 Public Sub WriteCerrarleCliente(ByVal UserIndex As Integer)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "Fame" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-    
-        Call .WriteID(ServerPacketID.CerrarleCliente)
-        Call .EndPacket
-        
-    End With
-
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call Writer.WriteInt(ServerPacketID.CerrarleCliente)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 Public Sub WriteOxigeno(ByVal UserIndex As Integer)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "Fame" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-        Call .WriteID(ServerPacketID.Oxigeno)
-        
-        Call .WriteInteger(UserList(UserIndex).Counters.Oxigeno)
-        
-        Call .EndPacket
-    End With
-
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call Writer.WriteInt(ServerPacketID.Oxigeno)
+    Call Writer.WriteInt16(UserList(UserIndex).Counters.Oxigeno)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 Public Sub WriteContadores(ByVal UserIndex As Integer)
+    Call Writer.WriteInt(ServerPacketID.Contadores)
+    Call Writer.WriteInt16(UserList(UserIndex).Counters.Invisibilidad)
+    Call Writer.WriteInt16(UserList(UserIndex).Counters.ScrollExperiencia)
+    Call Writer.WriteInt16(UserList(UserIndex).Counters.ScrollOro)
 
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "Fame" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-        Call .WriteID(ServerPacketID.Contadores)
-        
-        Call .WriteInteger(UserList(UserIndex).Counters.Invisibilidad)
-        Call .WriteInteger(UserList(UserIndex).Counters.ScrollExperiencia)
-        Call .WriteInteger(UserList(UserIndex).Counters.ScrollOro)
-
-        If UserList(UserIndex).flags.NecesitaOxigeno Then
-            Call .WriteInteger(UserList(UserIndex).Counters.Oxigeno)
-        Else
-            Call .WriteInteger(0)
-
-        End If
-
-        Call .WriteInteger(UserList(UserIndex).flags.DuracionEfecto)
-        
-        Call .EndPacket
-    End With
-
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
+    If UserList(UserIndex).flags.NecesitaOxigeno Then
+        Call Writer.WriteInt16(UserList(UserIndex).Counters.Oxigeno)
+    Else
+        Call Writer.WriteInt16(0)
     End If
 
+    Call Writer.WriteInt16(UserList(UserIndex).flags.DuracionEfecto)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 Public Sub WriteBindKeys(ByVal UserIndex As Integer)
-
-    '***************************************************
-    'Envia los macros al cliente!
-    'Por Ladder
-    '23/09/2014
-    'Flor te amo!
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-        Call .WriteID(ServerPacketID.BindKeys)
-        
-        Call .WriteByte(UserList(UserIndex).ChatCombate)
-        Call .WriteByte(UserList(UserIndex).ChatGlobal)
-        
-        Call .EndPacket
-    End With
-
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call Writer.WriteInt(ServerPacketID.BindKeys)
+    Call Writer.WriteInt8(UserList(UserIndex).ChatCombate)
+    Call Writer.WriteInt8(UserList(UserIndex).ChatGlobal)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ''
@@ -3717,52 +1494,22 @@ End Sub
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
 Public Sub WriteMiniStats(ByVal UserIndex As Integer)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "MiniStats" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-        Call .WriteID(ServerPacketID.MiniStats)
-        
-        Call .WriteLong(UserList(UserIndex).Faccion.ciudadanosMatados)
-        Call .WriteLong(UserList(UserIndex).Faccion.CriminalesMatados)
-        Call .WriteByte(UserList(UserIndex).Faccion.Status)
-        
-        Call .WriteInteger(UserList(UserIndex).Stats.NPCsMuertos)
-        
-        Call .WriteByte(UserList(UserIndex).clase)
-        Call .WriteLong(UserList(UserIndex).Counters.Pena)
-        
-        'Ladder 31/07/08  Envio mas estadisticas :P
-        Call .WriteLong(UserList(UserIndex).flags.VecesQueMoriste)
-        Call .WriteByte(UserList(UserIndex).genero)
-        Call .WriteByte(UserList(UserIndex).raza)
-        
-        Call .WriteByte(UserList(UserIndex).donador.activo)
-        Call .WriteLong(CreditosDonadorCheck(UserList(UserIndex).Cuenta))
-        'ARREGLANDO
-        
-        Call .WriteInteger(DiasDonadorCheck(UserList(UserIndex).Cuenta))
-         
-        Call .EndPacket
-    End With
-    
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call Writer.WriteInt(ServerPacketID.MiniStats)
+    Call Writer.WriteInt32(UserList(UserIndex).Faccion.ciudadanosMatados)
+    Call Writer.WriteInt32(UserList(UserIndex).Faccion.CriminalesMatados)
+    Call Writer.WriteInt8(UserList(UserIndex).Faccion.Status)
+    Call Writer.WriteInt16(UserList(UserIndex).Stats.NPCsMuertos)
+    Call Writer.WriteInt8(UserList(UserIndex).clase)
+    Call Writer.WriteInt32(UserList(UserIndex).Counters.Pena)
+    Call Writer.WriteInt32(UserList(UserIndex).flags.VecesQueMoriste)
+    Call Writer.WriteInt8(UserList(UserIndex).genero)
+    Call Writer.WriteInt8(UserList(UserIndex).raza)
+    Call Writer.WriteInt8(UserList(UserIndex).donador.activo)
+    Call Writer.WriteInt32(CreditosDonadorCheck(UserList(UserIndex).Cuenta))
+    'ARREGLANDO
+    Call Writer.WriteInt16(DiasDonadorCheck(UserList(UserIndex).Cuenta))
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ''
@@ -3770,34 +1517,10 @@ End Sub
 '
 ' @param    skillPoints The number of free skill points the player has.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
 Public Sub WriteLevelUp(ByVal UserIndex As Integer, ByVal skillPoints As Integer)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "LevelUp" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-        Call .WriteID(ServerPacketID.LevelUp)
-        
-        Call .WriteInteger(skillPoints)
-        
-        Call .EndPacket
-    End With
-
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call Writer.WriteInt(ServerPacketID.LevelUp)
+    Call Writer.WriteInt16(skillPoints)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ''
@@ -3806,35 +1529,13 @@ End Sub
 ' @param    title The title of the message to display.
 ' @param    message The message to be displayed.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
-Public Sub WriteAddForumMsg(ByVal UserIndex As Integer, ByVal title As String, ByVal message As String)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "AddForumMsg" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-        Call .WriteID(ServerPacketID.AddForumMsg)
-        
-        Call .WriteASCIIString(title)
-        Call .WriteASCIIString(message)
-        
-        Call .EndPacket
-    End With
-
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+Public Sub WriteAddForumMsg(ByVal UserIndex As Integer, _
+                            ByVal title As String, _
+                            ByVal Message As String)
+    Call Writer.WriteInt(ServerPacketID.AddForumMsg)
+    Call Writer.WriteString8(title)
+    Call Writer.WriteString8(Message)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ''
@@ -3842,33 +1543,9 @@ End Sub
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
 Public Sub WriteShowForumForm(ByVal UserIndex As Integer)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "ShowForumForm" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-    
-        Call .WriteID(ServerPacketID.ShowForumForm)
-        Call .EndPacket
-        
-    End With
-    
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call Writer.WriteInt(ServerPacketID.ShowForumForm)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ''
@@ -3878,33 +1555,11 @@ End Sub
 ' @param    CharIndex The char turning visible / invisible.
 ' @param    invisible True if the char is no longer visible, False otherwise.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
-Public Sub WriteSetInvisible(ByVal UserIndex As Integer, ByVal CharIndex As Integer, ByVal invisible As Boolean)
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "SetInvisible" message to the given user's outgoing data buffer
-    '***************************************************
-
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-    
-        Call .WritePrepared(PrepareMessageSetInvisible(CharIndex, invisible))
-        Call .EndPacket
-        
-    End With
-    
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+Public Sub WriteSetInvisible(ByVal UserIndex As Integer, _
+                             ByVal CharIndex As Integer, _
+                             ByVal invisible As Boolean)
+    Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageSetInvisible(CharIndex, _
+            invisible))
 End Sub
 
 ''
@@ -3919,39 +1574,17 @@ End Sub
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
 Public Sub WriteDiceRoll(ByVal UserIndex As Integer)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "DiceRoll" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-        Call .WriteID(ServerPacketID.DiceRoll)
-        
-        ' TODO: SACAR ESTE PAQUETE USAR EL DE ATRIBUTOS
-        Call .WriteByte(UserList(UserIndex).Stats.UserAtributos(eAtributos.Fuerza))
-        Call .WriteByte(UserList(UserIndex).Stats.UserAtributos(eAtributos.Agilidad))
-        Call .WriteByte(UserList(UserIndex).Stats.UserAtributos(eAtributos.Inteligencia))
-        Call .WriteByte(UserList(UserIndex).Stats.UserAtributos(eAtributos.Constitucion))
-        Call .WriteByte(UserList(UserIndex).Stats.UserAtributos(eAtributos.Carisma))
-        
-        Call .EndPacket
-    End With
-
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call Writer.WriteInt(ServerPacketID.DiceRoll)
+    ' TODO: SACAR ESTE PAQUETE USAR EL DE ATRIBUTOS
+    Call Writer.WriteInt8(UserList(UserIndex).Stats.UserAtributos(eAtributos.Fuerza))
+    Call Writer.WriteInt8(UserList(UserIndex).Stats.UserAtributos(eAtributos.Agilidad))
+    Call Writer.WriteInt8(UserList(UserIndex).Stats.UserAtributos( _
+            eAtributos.Inteligencia))
+    Call Writer.WriteInt8(UserList(UserIndex).Stats.UserAtributos( _
+            eAtributos.Constitucion))
+    Call Writer.WriteInt8(UserList(UserIndex).Stats.UserAtributos(eAtributos.Carisma))
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ''
@@ -3959,33 +1592,9 @@ End Sub
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
 Public Sub WriteMeditateToggle(ByVal UserIndex As Integer)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "MeditateToggle" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-    
-    With UserList(UserIndex).outgoingData
-    
-        Call .WriteID(ServerPacketID.MeditateToggle)
-        Call .EndPacket
-        
-    End With
-    
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call Writer.WriteInt(ServerPacketID.MeditateToggle)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ''
@@ -3993,33 +1602,9 @@ End Sub
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
 Public Sub WriteBlindNoMore(ByVal UserIndex As Integer)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "BlindNoMore" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-    
-        Call .WriteID(ServerPacketID.BlindNoMore)
-        Call .EndPacket
-        
-    End With
-    
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call Writer.WriteInt(ServerPacketID.BlindNoMore)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ''
@@ -4027,33 +1612,9 @@ End Sub
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
 Public Sub WriteDumbNoMore(ByVal UserIndex As Integer)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "DumbNoMore" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-    
-        Call .WriteID(ServerPacketID.DumbNoMore)
-        Call .EndPacket
-        
-    End With
-    
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call Writer.WriteInt(ServerPacketID.DumbNoMore)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ''
@@ -4061,38 +1622,17 @@ End Sub
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
 Public Sub WriteSendSkills(ByVal UserIndex As Integer)
 
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "SendSkills" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
     Dim i As Long
-    
-    With UserList(UserIndex).outgoingData
-        Call .WriteID(ServerPacketID.SendSkills)
-        
-        For i = 1 To NUMSKILLS
-            Call .WriteByte(UserList(UserIndex).Stats.UserSkills(i))
-        Next i
-        
-        Call .EndPacket
-    End With
 
-    Exit Sub
-    
-ErrHandler:
+    Call Writer.WriteInt(ServerPacketID.SendSkills)
 
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
+    For I = 1 To NUMSKILLS
+        Call Writer.WriteInt8(UserList(UserIndex).Stats.UserSkills(I))
+    Next I
 
-    End If
-
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ''
@@ -4101,43 +1641,21 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @param    npcIndex The index of the requested trainer.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
 Public Sub WriteTrainerCreatureList(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
 
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "TrainerCreatureList" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
     Dim i   As Long
+
     Dim str As String
-    
-    With UserList(UserIndex).outgoingData
-        Call .WriteID(ServerPacketID.TrainerCreatureList)
-        
-        For i = 1 To NpcList(NpcIndex).NroCriaturas
-            str = str & NpcList(NpcIndex).Criaturas(i).NpcName & SEPARATOR
-        Next i
-        
-        If LenB(str) > 0 Then str = Left$(str, Len(str) - 1)
-        
-        Call .WriteASCIIString(str)
-        
-        Call .EndPacket
-    End With
 
-    Exit Sub
-    
-ErrHandler:
+    Call Writer.WriteInt(ServerPacketID.TrainerCreatureList)
 
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
+    For I = 1 To NpcList(NpcIndex).NroCriaturas
+        str = str & NpcList(NpcIndex).Criaturas(I).NpcName & SEPARATOR
+    Next I
 
-    End If
-
+    If LenB(str) > 0 Then str = Left$(str, Len(str) - 1)
+    Call Writer.WriteString8(str)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ''
@@ -4148,61 +1666,41 @@ End Sub
 ' @param    enemies The list of the guild's enemies.
 ' @param    allies The list of the guild's allies.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
-Public Sub WriteGuildNews(ByVal UserIndex As Integer, ByVal guildNews As String, ByRef guildList() As String, ByRef MemberList() As String, ByVal ClanNivel As Byte, ByVal ExpAcu As Integer, ByVal ExpNe As Integer)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "GuildNews" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
+Public Sub WriteGuildNews(ByVal UserIndex As Integer, _
+                          ByVal guildNews As String, _
+                          ByRef guildList() As String, _
+                          ByRef MemberList() As String, _
+                          ByVal ClanNivel As Byte, _
+                          ByVal ExpAcu As Integer, _
+                          ByVal ExpNe As Integer)
 
     Dim i   As Long
+
     Dim Tmp As String
-    
-    With UserList(UserIndex).outgoingData
-        Call .WriteID(ServerPacketID.guildNews)
-        
-        Call .WriteASCIIString(guildNews)
 
-        ' Prepare guild name's list
-        For i = LBound(guildList()) To UBound(guildList())
-            Tmp = Tmp & guildList(i) & SEPARATOR
-        Next i
-        
-        If Len(Tmp) Then Tmp = Left$(Tmp, Len(Tmp) - 1)
-        
-        Call .WriteASCIIString(Tmp)
-        
-        ' Prepare guild member's list
-        Tmp = vbNullString
+    Call Writer.WriteInt(ServerPacketID.guildNews)
+    Call Writer.WriteString8(guildNews)
 
-        For i = LBound(MemberList()) To UBound(MemberList())
-            Tmp = Tmp & MemberList(i) & SEPARATOR
-        Next i
-        
-        If Len(Tmp) Then Tmp = Left$(Tmp, Len(Tmp) - 1)
-          
-        Call .WriteASCIIString(Tmp)
-        Call .WriteByte(ClanNivel)
-        Call .WriteInteger(ExpAcu)
-        Call .WriteInteger(ExpNe)
-        
-        Call .EndPacket
-    End With
+    ' Prepare guild name's list
+    For I = LBound(guildList()) To UBound(guildList())
+        Tmp = Tmp & guildList(I) & SEPARATOR
+    Next I
 
-    
-    Exit Sub
-    
-ErrHandler:
+    If Len(Tmp) Then Tmp = Left$(Tmp, Len(Tmp) - 1)
+    Call Writer.WriteString8(Tmp)
+    ' Prepare guild member's list
+    Tmp = vbNullString
 
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
+    For I = LBound(MemberList()) To UBound(MemberList())
+        Tmp = Tmp & MemberList(I) & SEPARATOR
+    Next I
 
-    End If
-
+    If Len(Tmp) Then Tmp = Left$(Tmp, Len(Tmp) - 1)
+    Call Writer.WriteString8(Tmp)
+    Call Writer.WriteInt8(ClanNivel)
+    Call Writer.WriteInt16(ExpAcu)
+    Call Writer.WriteInt16(ExpNe)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ''
@@ -4211,36 +1709,13 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @param    details Th details of the Peace proposition.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
 Public Sub WriteOfferDetails(ByVal UserIndex As Integer, ByVal details As String)
 
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "OfferDetails" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
     Dim i As Long
-    
-    With UserList(UserIndex).outgoingData
-        Call .WriteID(ServerPacketID.OfferDetails)
-        
-        Call .WriteASCIIString(details)
-        
-        Call .EndPacket
-    End With
 
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call Writer.WriteInt(ServerPacketID.OfferDetails)
+    Call Writer.WriteString8(details)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ''
@@ -4249,45 +1724,22 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @param    guilds The list of guilds which propossed an alliance.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
 Public Sub WriteAlianceProposalsList(ByVal UserIndex As Integer, ByRef guilds() As String)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "AlianceProposalsList" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
 
     Dim i   As Long
 
     Dim Tmp As String
-    
-    With UserList(UserIndex).outgoingData
-        Call .WriteID(ServerPacketID.AlianceProposalsList)
-        
-        ' Prepare guild's list
-        For i = LBound(guilds()) To UBound(guilds())
-            Tmp = Tmp & guilds(i) & SEPARATOR
-        Next i
-        
-        If Len(Tmp) Then Tmp = Left$(Tmp, Len(Tmp) - 1)
-        
-        Call .WriteASCIIString(Tmp)
-        
-        Call .EndPacket
-    End With
 
-    Exit Sub
-    
-ErrHandler:
+    Call Writer.WriteInt(ServerPacketID.AlianceProposalsList)
 
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
+    ' Prepare guild's list
+    For I = LBound(guilds()) To UBound(guilds())
+        Tmp = Tmp & guilds(I) & SEPARATOR
+    Next I
 
-    End If
-
+    If Len(Tmp) Then Tmp = Left$(Tmp, Len(Tmp) - 1)
+    Call Writer.WriteString8(Tmp)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ''
@@ -4296,44 +1748,22 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @param    guilds The list of guilds which propossed peace.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
 Public Sub WritePeaceProposalsList(ByVal UserIndex As Integer, ByRef guilds() As String)
 
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "PeaceProposalsList" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
     Dim i   As Long
+
     Dim Tmp As String
-    
-    With UserList(UserIndex).outgoingData
-        Call .WriteID(ServerPacketID.PeaceProposalsList)
-                
-        ' Prepare guilds' list
-        For i = LBound(guilds()) To UBound(guilds())
-            Tmp = Tmp & guilds(i) & SEPARATOR
-        Next i
-        
-        If Len(Tmp) Then Tmp = Left$(Tmp, Len(Tmp) - 1)
-        
-        Call .WriteASCIIString(Tmp)
-        
-        Call .EndPacket
-    End With
 
-    Exit Sub
-    
-ErrHandler:
+    Call Writer.WriteInt(ServerPacketID.PeaceProposalsList)
 
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
+    ' Prepare guilds' list
+    For I = LBound(guilds()) To UBound(guilds())
+        Tmp = Tmp & guilds(I) & SEPARATOR
+    Next I
 
-    End If
-
+    If Len(Tmp) Then Tmp = Left$(Tmp, Len(Tmp) - 1)
+    Call Writer.WriteString8(Tmp)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ''
@@ -4355,51 +1785,28 @@ End Sub
 ' @param    citicensKilled The number of citicens killed by the requested char.
 ' @param    criminalsKilled The number of criminals killed by the requested char.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
-Public Sub WriteCharacterInfo(ByVal UserIndex As Integer, ByVal CharName As String, ByVal race As eRaza, ByVal Class As eClass, ByVal gender As eGenero, ByVal level As Byte, ByVal gold As Long, ByVal bank As Long, ByVal previousPetitions As String, ByVal currentGuild As String, ByVal previousGuilds As String, ByVal RoyalArmy As Boolean, ByVal CaosLegion As Boolean, ByVal citicensKilled As Long, ByVal criminalsKilled As Long)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "CharacterInfo" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-        Call .WriteID(ServerPacketID.CharacterInfo)
-        Call .WriteByte(gender)
-        
-        Call .WriteASCIIString(CharName)
-        Call .WriteByte(race)
-        Call .WriteByte(Class)
-        
-        Call .WriteByte(level)
-        Call .WriteLong(gold)
-        Call .WriteLong(bank)
-        
-        Call .WriteASCIIString(previousPetitions)
-        Call .WriteASCIIString(currentGuild)
-        Call .WriteASCIIString(previousGuilds)
-        
-        Call .WriteBoolean(RoyalArmy)
-        Call .WriteBoolean(CaosLegion)
-        
-        Call .WriteLong(citicensKilled)
-        Call .WriteLong(criminalsKilled)
-        
-        Call .EndPacket
-    End With
-
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+Public Sub WriteCharacterInfo(ByVal UserIndex As Integer, ByVal CharName As String, _
+        ByVal race As eRaza, ByVal Class As eClass, ByVal gender As eGenero, ByVal _
+        level As Byte, ByVal gold As Long, ByVal bank As Long, ByVal previousPetitions _
+        As String, ByVal currentGuild As String, ByVal previousGuilds As String, ByVal _
+        RoyalArmy As Boolean, ByVal CaosLegion As Boolean, ByVal citicensKilled As _
+        Long, ByVal criminalsKilled As Long)
+    Call Writer.WriteInt(ServerPacketID.CharacterInfo)
+    Call Writer.WriteInt8(gender)
+    Call Writer.WriteString8(CharName)
+    Call Writer.WriteInt8(race)
+    Call Writer.WriteInt8(Class)
+    Call Writer.WriteInt8(level)
+    Call Writer.WriteInt32(gold)
+    Call Writer.WriteInt32(bank)
+    Call Writer.WriteString8(previousPetitions)
+    Call Writer.WriteString8(currentGuild)
+    Call Writer.WriteString8(previousGuilds)
+    Call Writer.WriteBool(RoyalArmy)
+    Call Writer.WriteBool(CaosLegion)
+    Call Writer.WriteInt32(citicensKilled)
+    Call Writer.WriteInt32(criminalsKilled)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ''
@@ -4411,74 +1818,52 @@ End Sub
 ' @param    guildNews The guild's news.
 ' @param    joinRequests The list of chars which requested to join the clan.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
-Public Sub WriteGuildLeaderInfo(ByVal UserIndex As Integer, ByRef guildList() As String, ByRef MemberList() As String, ByVal guildNews As String, ByRef joinRequests() As String, ByVal NivelDeClan As Byte, ByVal ExpActual As Integer, ByVal ExpNecesaria As Integer)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "GuildLeaderInfo" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
+Public Sub WriteGuildLeaderInfo(ByVal UserIndex As Integer, _
+                                ByRef guildList() As String, _
+                                ByRef MemberList() As String, _
+                                ByVal guildNews As String, _
+                                ByRef joinRequests() As String, _
+                                ByVal NivelDeClan As Byte, _
+                                ByVal ExpActual As Integer, _
+                                ByVal ExpNecesaria As Integer)
 
     Dim i   As Long
+
     Dim Tmp As String
-    
-    With UserList(UserIndex).outgoingData
-        Call .WriteID(ServerPacketID.GuildLeaderInfo)
-        
-        ' Prepare guild name's list
-        For i = LBound(guildList()) To UBound(guildList())
-            Tmp = Tmp & guildList(i) & SEPARATOR
-        Next i
-        
-        If Len(Tmp) Then Tmp = Left$(Tmp, Len(Tmp) - 1)
-        
-        Call .WriteASCIIString(Tmp)
-        
-        ' Prepare guild member's list
-        Tmp = vbNullString
 
-        For i = LBound(MemberList()) To UBound(MemberList())
-            Tmp = Tmp & MemberList(i) & SEPARATOR
-        Next i
-        
-        If Len(Tmp) Then Tmp = Left$(Tmp, Len(Tmp) - 1)
-        
-        Call .WriteASCIIString(Tmp)
-        
-        ' Store guild news
-        Call .WriteASCIIString(guildNews)
-        
-        ' Prepare the join request's list
-        Tmp = vbNullString
+    Call Writer.WriteInt(ServerPacketID.GuildLeaderInfo)
 
-        For i = LBound(joinRequests()) To UBound(joinRequests())
-            Tmp = Tmp & joinRequests(i) & SEPARATOR
-        Next i
-        
-        If Len(Tmp) Then Tmp = Left$(Tmp, Len(Tmp) - 1)
-        
-        Call .WriteASCIIString(Tmp)
-        
-        Call .WriteByte(NivelDeClan)
-        
-        Call .WriteInteger(ExpActual)
-        Call .WriteInteger(ExpNecesaria)
-        
-        Call .EndPacket
-    End With
+    ' Prepare guild name's list
+    For I = LBound(guildList()) To UBound(guildList())
+        Tmp = Tmp & guildList(I) & SEPARATOR
+    Next I
 
-    Exit Sub
-    
-ErrHandler:
+    If Len(Tmp) Then Tmp = Left$(Tmp, Len(Tmp) - 1)
+    Call Writer.WriteString8(Tmp)
+    ' Prepare guild member's list
+    Tmp = vbNullString
 
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
+    For I = LBound(MemberList()) To UBound(MemberList())
+        Tmp = Tmp & MemberList(I) & SEPARATOR
+    Next I
 
-    End If
+    If Len(Tmp) Then Tmp = Left$(Tmp, Len(Tmp) - 1)
+    Call Writer.WriteString8(Tmp)
+    ' Store guild news
+    Call Writer.WriteString8(guildNews)
+    ' Prepare the join request's list
+    Tmp = vbNullString
 
+    For I = LBound(joinRequests()) To UBound(joinRequests())
+        Tmp = Tmp & joinRequests(I) & SEPARATOR
+    Next I
+
+    If Len(Tmp) Then Tmp = Left$(Tmp, Len(Tmp) - 1)
+    Call Writer.WriteString8(Tmp)
+    Call Writer.WriteInt8(NivelDeClan)
+    Call Writer.WriteInt16(ExpActual)
+    Call Writer.WriteInt16(ExpNecesaria)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ''
@@ -4499,44 +1884,27 @@ End Sub
 ' @param    codex The requested guild's codex.
 ' @param    guildDesc The requested guild's description.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
-Public Sub WriteGuildDetails(ByVal UserIndex As Integer, ByVal GuildName As String, ByVal founder As String, ByVal foundationDate As String, ByVal leader As String, ByVal memberCount As Integer, ByVal alignment As String, ByVal guildDesc As String, ByVal NivelDeClan As Byte, ByVal ExpActual As Integer, ByVal ExpNecesaria As Integer)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "GuildDetails" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    Dim i    As Long
-    Dim Temp As String
-    
-    With UserList(UserIndex).outgoingData
-        Call .WriteID(ServerPacketID.GuildDetails)
-        
-        Call .WriteASCIIString(GuildName)
-        Call .WriteASCIIString(founder)
-        Call .WriteASCIIString(foundationDate)
-        Call .WriteASCIIString(leader)
-        Call .WriteInteger(memberCount)
-        Call .WriteASCIIString(alignment)
-        Call .WriteASCIIString(guildDesc)
-        Call .WriteByte(NivelDeClan)
-        
-        Call .EndPacket
-    End With
-
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+Public Sub WriteGuildDetails(ByVal UserIndex As Integer, _
+                             ByVal GuildName As String, _
+                             ByVal founder As String, _
+                             ByVal foundationDate As String, _
+                             ByVal leader As String, _
+                             ByVal memberCount As Integer, _
+                             ByVal alignment As String, _
+                             ByVal guildDesc As String, _
+                             ByVal NivelDeClan As Byte, _
+                             ByVal ExpActual As Integer, _
+                             ByVal ExpNecesaria As Integer)
+    Call Writer.WriteInt(ServerPacketID.GuildDetails)
+    Call Writer.WriteString8(GuildName)
+    Call Writer.WriteString8(founder)
+    Call Writer.WriteString8(foundationDate)
+    Call Writer.WriteString8(leader)
+    Call Writer.WriteInt16(memberCount)
+    Call Writer.WriteString8(alignment)
+    Call Writer.WriteString8(guildDesc)
+    Call Writer.WriteInt8(NivelDeClan)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ''
@@ -4544,33 +1912,9 @@ End Sub
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
 Public Sub WriteShowGuildFundationForm(ByVal UserIndex As Integer)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "ShowGuildFundationForm" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-    
-        Call .WriteID(ServerPacketID.ShowGuildFundationForm)
-        Call .EndPacket
-        
-    End With
-    
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call Writer.WriteInt(ServerPacketID.ShowGuildFundationForm)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ''
@@ -4578,86 +1922,20 @@ End Sub
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
 Public Sub WriteParalizeOK(ByVal UserIndex As Integer)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 08/12/07
-    'Last Modified By: Lucas Tavolaro Ortiz (Tavo)
-    'Writes the "ParalizeOK" message to the given user's outgoing data buffer
-    'And updates user position
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-    
-        Call .WriteID(ServerPacketID.ParalizeOK)
-        Call .EndPacket
-        
-    End With
-    
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call Writer.WriteInt(ServerPacketID.ParalizeOK)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 Public Sub WriteInmovilizaOK(ByVal UserIndex As Integer)
-
-    '***************************************************
-    'Inmovilizar
-    'Por Ladder
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-    
-        Call .WriteID(ServerPacketID.InmovilizadoOK)
-        Call .EndPacket
-        
-    End With
-    
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call Writer.WriteInt(ServerPacketID.InmovilizadoOK)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 Public Sub WriteStopped(ByVal UserIndex As Integer, ByVal Stopped As Boolean)
-
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-        Call .WriteID(ServerPacketID.Stopped)
-        
-        Call .WriteBoolean(Stopped)
-        
-        Call .EndPacket
-    End With
-    
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call Writer.WriteInt(ServerPacketID.Stopped)
+    Call Writer.WriteBool(Stopped)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ''
@@ -4666,34 +1944,10 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @param    details DEtails of the char's request.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
 Public Sub WriteShowUserRequest(ByVal UserIndex As Integer, ByVal details As String)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "ShowUserRequest" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-        Call .WriteID(ServerPacketID.ShowUserRequest)
-        
-        Call .WriteASCIIString(details)
-        
-        Call .EndPacket
-    End With
-
-    
-    Exit Sub
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call Writer.WriteInt(ServerPacketID.ShowUserRequest)
+    Call Writer.WriteString8(details)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ''
@@ -4703,56 +1957,35 @@ End Sub
 ' @param    ObjIndex The object's index.
 ' @param    Amount The number of objects offered.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
+Public Sub WriteChangeUserTradeSlot(ByVal UserIndex As Integer, _
+                                    ByRef itemsAenviar() As obj, _
+                                    ByVal gold As Long, _
+                                    ByVal miOferta As Boolean)
+    Call Writer.WriteInt(ServerPacketID.ChangeUserTradeSlot)
+    Call Writer.WriteBool(miOferta)
+    Call Writer.WriteInt32(gold)
 
-Public Sub WriteChangeUserTradeSlot(ByVal UserIndex As Integer, ByRef itemsAenviar() As obj, ByVal gold As Long, ByVal miOferta As Boolean)
+    Dim I As Long
 
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "ChangeUserTradeSlot" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
+    For I = 1 To UBound(itemsAenviar)
+        Call Writer.WriteInt16(itemsAenviar(I).ObjIndex)
 
-    With UserList(UserIndex).outgoingData
+        If itemsAenviar(I).ObjIndex = 0 Then
+            Call Writer.WriteString8("")
+        Else
+            Call Writer.WriteString8(ObjData(itemsAenviar(I).ObjIndex).Name)
+        End If
 
-        Call .WriteID(ServerPacketID.ChangeUserTradeSlot)
-        Call .WriteBoolean(miOferta)
-        Call .WriteLong(gold)
-            
-        Dim i As Long
-        For i = 1 To UBound(itemsAenviar)
-            Call .WriteInteger(itemsAenviar(i).ObjIndex)
+        If itemsAenviar(I).ObjIndex = 0 Then
+            Call Writer.WriteInt32(0)
+        Else
+            Call Writer.WriteInt32(ObjData(itemsAenviar(I).ObjIndex).GrhIndex)
+        End If
 
-            If itemsAenviar(i).ObjIndex = 0 Then
-                Call .WriteASCIIString("")
-            Else
-                Call .WriteASCIIString(ObjData(itemsAenviar(i).ObjIndex).Name)
+        Call Writer.WriteInt32(itemsAenviar(I).amount)
+    Next I
 
-            End If
-                
-            If itemsAenviar(i).ObjIndex = 0 Then
-                Call .WriteLong(0)
-            Else
-                Call .WriteLong(ObjData(itemsAenviar(i).ObjIndex).GrhIndex)
-
-            End If
-                
-            Call .WriteLong(itemsAenviar(i).amount)
-        Next i
-        
-        Call .EndPacket
-    End With
-
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ''
@@ -4761,34 +1994,10 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @param    npcNames The names of the creatures that can be spawned.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
 Public Sub WriteSpawnList(ByVal UserIndex As Integer, ByVal ListaCompleta As Boolean)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "SpawnList" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-        Call .WriteID(ServerPacketID.SpawnListt)
-
-        Call .WriteBoolean(ListaCompleta)
-
-        Call .EndPacket
-    End With
-    
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call Writer.WriteInt(ServerPacketID.SpawnListt)
+    Call Writer.WriteBool(ListaCompleta)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ''
@@ -4796,43 +2005,21 @@ End Sub
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
 Public Sub WriteShowSOSForm(ByVal UserIndex As Integer)
 
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "ShowSOSForm" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
     Dim i   As Long
+
     Dim Tmp As String
-    
-    With UserList(UserIndex).outgoingData
-        Call .WriteID(ServerPacketID.ShowSOSForm)
-        
-        For i = 1 To Ayuda.Longitud
-            Tmp = Tmp & Ayuda.VerElemento(i) & SEPARATOR
-        Next i
-        
-        If LenB(Tmp) <> 0 Then Tmp = Left$(Tmp, Len(Tmp) - 1)
-        
-        Call .WriteASCIIString(Tmp)
-        
-        Call .EndPacket
-    End With
-    
-    Exit Sub
-    
-ErrHandler:
 
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
+    Call Writer.WriteInt(ServerPacketID.ShowSOSForm)
 
-    End If
+    For I = 1 To Ayuda.Longitud
+        Tmp = Tmp & Ayuda.VerElemento(I) & SEPARATOR
+    Next I
 
+    If LenB(Tmp) <> 0 Then Tmp = Left$(Tmp, Len(Tmp) - 1)
+    Call Writer.WriteString8(Tmp)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ''
@@ -4841,34 +2028,11 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @param    currentMOTD The current Message Of The Day.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
-Public Sub WriteShowMOTDEditionForm(ByVal UserIndex As Integer, ByVal currentMOTD As String)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "ShowMOTDEditionForm" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-        Call .WriteID(ServerPacketID.ShowMOTDEditionForm)
-        
-        Call .WriteASCIIString(currentMOTD)
-        
-        Call .EndPacket
-    End With
-    
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+Public Sub WriteShowMOTDEditionForm(ByVal UserIndex As Integer, _
+                                    ByVal currentMOTD As String)
+    Call Writer.WriteInt(ServerPacketID.ShowMOTDEditionForm)
+    Call Writer.WriteString8(currentMOTD)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ''
@@ -4876,66 +2040,19 @@ End Sub
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
 Public Sub WriteShowGMPanelForm(ByVal UserIndex As Integer)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "ShowGMPanelForm" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-        Call .WriteID(ServerPacketID.ShowGMPanelForm)
-        
-        Call .WriteInteger(UserList(UserIndex).Char.Head)
-        Call .WriteInteger(UserList(UserIndex).Char.Body)
-        Call .WriteInteger(UserList(UserIndex).Char.CascoAnim)
-        Call .WriteInteger(UserList(UserIndex).Char.WeaponAnim)
-        Call .WriteInteger(UserList(UserIndex).Char.ShieldAnim)
-        
-        Call .EndPacket
-    End With
-    
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call Writer.WriteInt(ServerPacketID.ShowGMPanelForm)
+    Call Writer.WriteInt16(UserList(UserIndex).Char.Head)
+    Call Writer.WriteInt16(UserList(UserIndex).Char.Body)
+    Call Writer.WriteInt16(UserList(UserIndex).Char.CascoAnim)
+    Call Writer.WriteInt16(UserList(UserIndex).Char.WeaponAnim)
+    Call Writer.WriteInt16(UserList(UserIndex).Char.ShieldAnim)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 Public Sub WriteShowFundarClanForm(ByVal UserIndex As Integer)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "ShowGMPanelForm" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-    
-        Call .WriteID(ServerPacketID.ShowFundarClanForm)
-        Call .EndPacket
-        
-    End With
-    
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call Writer.WriteInt(ServerPacketID.ShowFundarClanForm)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ''
@@ -4945,44 +2062,24 @@ End Sub
 ' @param    userNameList List of user names.
 ' @param    Cant Number of names to send.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
-Public Sub WriteUserNameList(ByVal UserIndex As Integer, ByRef userNamesList() As String, ByVal cant As Integer)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06 NIGO:
-    'Writes the "UserNameList" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
+Public Sub WriteUserNameList(ByVal UserIndex As Integer, _
+                             ByRef userNamesList() As String, _
+                             ByVal cant As Integer)
 
     Dim i   As Long
+
     Dim Tmp As String
-    
-    With UserList(UserIndex).outgoingData
-        Call .WriteID(ServerPacketID.UserNameList)
-        
-        ' Prepare user's names list
-        For i = 1 To cant
-            Tmp = Tmp & userNamesList(i) & SEPARATOR
-        Next i
-        
-        If Len(Tmp) Then Tmp = Left$(Tmp, Len(Tmp) - 1)
-        
-        Call .WriteASCIIString(Tmp)
-        
-        Call .EndPacket
-    End With
 
-    Exit Sub
-    
-ErrHandler:
+    Call Writer.WriteInt(ServerPacketID.UserNameList)
 
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
+    ' Prepare user's names list
+    For I = 1 To cant
+        Tmp = Tmp & userNamesList(I) & SEPARATOR
+    Next I
 
-    End If
-
+    If Len(Tmp) Then Tmp = Left$(Tmp, Len(Tmp) - 1)
+    Call Writer.WriteString8(Tmp)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ''
@@ -4990,56 +2087,33 @@ End Sub
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-
 Public Sub WritePong(ByVal UserIndex As Integer, ByVal Time As Long)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "Pong" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-        Call .WriteID(ServerPacketID.Pong)
-        
-        Call .WriteLong(Time)
-        
-        Call .EndPacket
-    End With
-    
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call Writer.WriteInt(ServerPacketID.Pong)
+    Call Writer.WriteInt32(Time)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
-
 Public Sub WritePersonajesDeCuenta(ByVal UserIndex As Integer)
-    'Author: Pablo Mercavides
-    
+
     Dim UserCuenta                     As String
+
     Dim CantPersonajes                 As Byte
+
     Dim Personaje(1 To MAX_PERSONAJES) As PersonajeCuenta
+
     Dim donador                        As Boolean
+
     Dim i                              As Byte
-    
+
     UserCuenta = UserList(UserIndex).Cuenta
-    
     donador = DonadorCheck(UserCuenta)
 
     If Database_Enabled Then
-        CantPersonajes = GetPersonajesCuentaDatabase(UserList(UserIndex).AccountID, Personaje)
-    
+        CantPersonajes = GetPersonajesCuentaDatabase(UserList(UserIndex).AccountID, _
+                Personaje)
     Else
         CantPersonajes = ObtenerCantidadDePersonajes(UserCuenta)
-        
+
         For i = 1 To CantPersonajes
             Personaje(i).nombre = ObtenerNombrePJ(UserCuenta, i)
             Personaje(i).Cabeza = ObtenerCabeza(Personaje(i).nombre)
@@ -5055,450 +2129,253 @@ Public Sub WritePersonajesDeCuenta(ByVal UserIndex As Integer)
         Next i
 
     End If
-    
-    On Error GoTo ErrHandler
 
-    With UserList(UserIndex).outgoingData
-        Call .WriteID(ServerPacketID.PersonajesDeCuenta)
-        Call .WriteByte(CantPersonajes)
-            
-        For i = 1 To CantPersonajes
-            Call .WriteASCIIString(Personaje(i).nombre)
-            Call .WriteByte(Personaje(i).nivel)
-            Call .WriteInteger(Personaje(i).Mapa)
-            Call .WriteInteger(Personaje(i).posX)
-            Call .WriteInteger(Personaje(i).posY)
-            Call .WriteInteger(Personaje(i).cuerpo)
-            Call .WriteInteger(Personaje(i).Cabeza)
-            Call .WriteByte(Personaje(i).Status)
-            Call .WriteByte(Personaje(i).clase)
-            Call .WriteInteger(Personaje(i).Casco)
-            Call .WriteInteger(Personaje(i).Escudo)
-            Call .WriteInteger(Personaje(i).Arma)
-            Call .WriteASCIIString(modGuilds.GuildName(Personaje(i).ClanIndex))
-        Next i
-            
-        Call .WriteByte(IIf(donador, 1, 0))
-        
-        Call .EndPacket
-    End With
-    
-    
-    Exit Sub
-ErrHandler:
+    Call Writer.WriteInt(ServerPacketID.PersonajesDeCuenta)
+    Call Writer.WriteInt8(CantPersonajes)
 
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
+    For I = 1 To CantPersonajes
+        Call Writer.WriteString8(Personaje(I).nombre)
+        Call Writer.WriteInt8(Personaje(I).nivel)
+        Call Writer.WriteInt16(Personaje(I).Mapa)
+        Call Writer.WriteInt16(Personaje(I).posX)
+        Call Writer.WriteInt16(Personaje(I).posY)
+        Call Writer.WriteInt16(Personaje(I).cuerpo)
+        Call Writer.WriteInt16(Personaje(I).Cabeza)
+        Call Writer.WriteInt8(Personaje(I).Status)
+        Call Writer.WriteInt8(Personaje(I).clase)
+        Call Writer.WriteInt16(Personaje(I).Casco)
+        Call Writer.WriteInt16(Personaje(I).Escudo)
+        Call Writer.WriteInt16(Personaje(I).Arma)
+        Call Writer.WriteString8(modGuilds.GuildName(Personaje(I).ClanIndex))
+    Next I
 
-    End If
-
+    Call Writer.WriteInt8(IIf(donador, 1, 0))
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 Public Sub WriteGoliathInit(ByVal UserIndex As Integer)
-
-    'Author: Pablo Mercavides
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-        Call .WriteID(ServerPacketID.Goliath)
-        
-        Call .WriteLong(UserList(UserIndex).Stats.Banco)
-        Call .WriteByte(UserList(UserIndex).BancoInvent.NroItems)
-        
-        Call .EndPacket
-    End With
-
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call Writer.WriteInt(ServerPacketID.Goliath)
+    Call Writer.WriteInt32(UserList(UserIndex).Stats.Banco)
+    Call Writer.WriteInt8(UserList(UserIndex).BancoInvent.NroItems)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 Public Sub WriteShowFrmLogear(ByVal UserIndex As Integer)
-
-    'Author: Pablo Mercavides
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-        Call .WriteID(ServerPacketID.ShowFrmLogear)
-        Call .EndPacket
-    End With
-
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call Writer.WriteInt(ServerPacketID.ShowFrmLogear)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 Public Sub WriteShowFrmMapa(ByVal UserIndex As Integer)
+    Call Writer.WriteInt(ServerPacketID.ShowFrmMapa)
 
-    'Author: Pablo Mercavides
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-        Call .WriteID(ServerPacketID.ShowFrmMapa)
-        
-        If UserList(UserIndex).donador.activo = 1 Then
-            Call .WriteInteger(ExpMult * UserList(UserIndex).flags.ScrollExp * 1.1)
-        Else
-            Call .WriteInteger(ExpMult * UserList(UserIndex).flags.ScrollExp)
-        End If
-
-        Call .WriteInteger(OroMult * UserList(UserIndex).flags.ScrollOro)
-        
-        Call .EndPacket
-    End With
-
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
+    If UserList(UserIndex).donador.activo = 1 Then
+        Call Writer.WriteInt16(ExpMult * UserList(UserIndex).flags.ScrollExp * 1.1)
+    Else
+        Call Writer.WriteInt16(ExpMult * UserList(UserIndex).flags.ScrollExp)
     End If
 
+    Call Writer.WriteInt16(OroMult * UserList(UserIndex).flags.ScrollOro)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 Public Sub WriteFamiliar(ByVal UserIndex As Integer)
 
-    'Author: Pablo Mercavides
-    On Error GoTo ErrHandler
-
     With UserList(UserIndex)
-        Call .outgoingData.WriteID(ServerPacketID.Familiar)
-        
-        Call .outgoingData.WriteByte(.Familiar.Existe)
-        Call .outgoingData.WriteByte(.Familiar.Muerto)
-        Call .outgoingData.WriteASCIIString(.Familiar.nombre)
-        Call .outgoingData.WriteLong(.Familiar.Exp)
-        Call .outgoingData.WriteLong(.Familiar.ELU)
-        Call .outgoingData.WriteByte(.Familiar.nivel)
-        Call .outgoingData.WriteInteger(.Familiar.MinHp)
-        Call .outgoingData.WriteInteger(.Familiar.MaxHp)
-        Call .outgoingData.WriteInteger(.Familiar.MinHIT)
-        Call .outgoingData.WriteInteger(.Familiar.MaxHit)
-        
-        Call .outgoingData.EndPacket
+        Call Writer.WriteInt(ServerPacketID.Familiar)
+        Call Writer.WriteInt8(.Familiar.Existe)
+        Call Writer.WriteInt8(.Familiar.Muerto)
+        Call Writer.WriteString8(.Familiar.nombre)
+        Call Writer.WriteInt32(.Familiar.Exp)
+        Call Writer.WriteInt32(.Familiar.ELU)
+        Call Writer.WriteInt8(.Familiar.nivel)
+        Call Writer.WriteInt16(.Familiar.MinHp)
+        Call Writer.WriteInt16(.Familiar.MaxHp)
+        Call Writer.WriteInt16(.Familiar.MinHIT)
+        Call Writer.WriteInt16(.Familiar.MaxHit)
     End With
 
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 Public Sub WriteRecompensas(ByVal UserIndex As Integer)
-        
-    On Error GoTo WriteRecompensas_Err
 
-    '***************************************************
-    'Envia las recompensas al cliente!
-    'Por Ladder
-    '22/04/2015
-    'Flor te amo!
-    '***************************************************
+    On Error GoTo 0
 
-    With UserList(UserIndex).outgoingData
-    
-        Dim a, b, c As Byte
- 
-        b = UserList(UserIndex).UserLogros + 1
-        a = UserList(UserIndex).NPcLogros + 1
-        c = UserList(UserIndex).LevelLogros + 1
-        
-        Call .WriteID(ServerPacketID.Logros)
-        
-        'Logros NPC
-        Call .WriteASCIIString(NPcLogros(a).nombre)
-        Call .WriteASCIIString(NPcLogros(a).Desc)
-        Call .WriteInteger(NPcLogros(a).cant)
-        Call .WriteByte(NPcLogros(a).TipoRecompensa)
-        
-        If NPcLogros(a).TipoRecompensa = 1 Then
-            Call .WriteASCIIString(NPcLogros(a).ObjRecompensa)
-        End If
+    Dim a, b, c As Byte
 
-        If NPcLogros(a).TipoRecompensa = 2 Then
-            Call .WriteLong(NPcLogros(a).OroRecompensa)
-        End If
+    b = UserList(UserIndex).UserLogros + 1
+    a = UserList(UserIndex).NPcLogros + 1
+    c = UserList(UserIndex).LevelLogros + 1
+    Call Writer.WriteInt(ServerPacketID.Logros)
+    'Logros NPC
+    Call Writer.WriteString8(NPcLogros(a).nombre)
+    Call Writer.WriteString8(NPcLogros(a).Desc)
+    Call Writer.WriteInt16(NPcLogros(a).cant)
+    Call Writer.WriteInt8(NPcLogros(a).TipoRecompensa)
 
-        If NPcLogros(a).TipoRecompensa = 3 Then
-            Call .WriteLong(NPcLogros(a).ExpRecompensa)
-        End If
-        
-        If NPcLogros(a).TipoRecompensa = 4 Then
-            Call .WriteByte(NPcLogros(a).HechizoRecompensa)
-        End If
-        
-        Call .WriteInteger(UserList(UserIndex).Stats.NPCsMuertos)
-        
-        If UserList(UserIndex).Stats.NPCsMuertos >= NPcLogros(a).cant Then
-            Call .WriteBoolean(True)
-        Else
-            Call .WriteBoolean(False)
-        End If
-        
-        'Logros User
-        Call .WriteASCIIString(UserLogros(b).nombre)
-        Call .WriteASCIIString(UserLogros(b).Desc)
-        Call .WriteInteger(UserLogros(b).cant)
-        Call .WriteInteger(UserLogros(b).TipoRecompensa)
-        Call .WriteInteger(UserList(UserIndex).Stats.UsuariosMatados)
+    If NPcLogros(a).TipoRecompensa = 1 Then
+        Call Writer.WriteString8(NPcLogros(a).ObjRecompensa)
+    End If
 
-        If UserLogros(a).TipoRecompensa = 1 Then
-            Call .WriteASCIIString(UserLogros(b).ObjRecompensa)
-        End If
-        
-        If UserLogros(a).TipoRecompensa = 2 Then
-            Call .WriteLong(UserLogros(b).OroRecompensa)
+    If NPcLogros(a).TipoRecompensa = 2 Then
+        Call Writer.WriteInt32(NPcLogros(a).OroRecompensa)
+    End If
 
-        End If
+    If NPcLogros(a).TipoRecompensa = 3 Then
+        Call Writer.WriteInt32(NPcLogros(a).ExpRecompensa)
+    End If
 
-        If UserLogros(a).TipoRecompensa = 3 Then
-            Call .WriteLong(UserLogros(b).ExpRecompensa)
+    If NPcLogros(a).TipoRecompensa = 4 Then
+        Call Writer.WriteInt8(NPcLogros(a).HechizoRecompensa)
+    End If
 
-        End If
-        
-        If UserLogros(a).TipoRecompensa = 4 Then
-            Call .WriteByte(UserLogros(b).HechizoRecompensa)
+    Call Writer.WriteInt16(UserList(UserIndex).Stats.NPCsMuertos)
 
-        End If
+    If UserList(UserIndex).Stats.NPCsMuertos >= NPcLogros(a).cant Then
+        Call Writer.WriteBool(True)
+    Else
+        Call Writer.WriteBool(False)
+    End If
 
-        If UserList(UserIndex).Stats.UsuariosMatados >= UserLogros(b).cant Then
-            Call .WriteBoolean(True)
-        Else
-            Call .WriteBoolean(False)
+    'Logros User
+    Call Writer.WriteString8(UserLogros(b).nombre)
+    Call Writer.WriteString8(UserLogros(b).Desc)
+    Call Writer.WriteInt16(UserLogros(b).cant)
+    Call Writer.WriteInt16(UserLogros(b).TipoRecompensa)
+    Call Writer.WriteInt16(UserList(UserIndex).Stats.UsuariosMatados)
 
-        End If
+    If UserLogros(a).TipoRecompensa = 1 Then
+        Call Writer.WriteString8(UserLogros(b).ObjRecompensa)
+    End If
 
-        'Nivel User
-        Call .WriteASCIIString(LevelLogros(c).nombre)
-        Call .WriteASCIIString(LevelLogros(c).Desc)
-        Call .WriteInteger(LevelLogros(c).cant)
-        Call .WriteInteger(LevelLogros(c).TipoRecompensa)
-        Call .WriteByte(UserList(UserIndex).Stats.ELV)
+    If UserLogros(a).TipoRecompensa = 2 Then
+        Call Writer.WriteInt32(UserLogros(b).OroRecompensa)
+    End If
 
-        If LevelLogros(c).TipoRecompensa = 1 Then
-            Call .WriteASCIIString(LevelLogros(c).ObjRecompensa)
+    If UserLogros(a).TipoRecompensa = 3 Then
+        Call Writer.WriteInt32(UserLogros(b).ExpRecompensa)
+    End If
 
-        End If
-        
-        If LevelLogros(c).TipoRecompensa = 2 Then
-            Call .WriteLong(LevelLogros(c).OroRecompensa)
+    If UserLogros(a).TipoRecompensa = 4 Then
+        Call Writer.WriteInt8(UserLogros(b).HechizoRecompensa)
+    End If
 
-        End If
+    If UserList(UserIndex).Stats.UsuariosMatados >= UserLogros(b).cant Then
+        Call Writer.WriteBool(True)
+    Else
+        Call Writer.WriteBool(False)
+    End If
 
-        If LevelLogros(c).TipoRecompensa = 3 Then
-            Call .WriteLong(LevelLogros(c).ExpRecompensa)
+    'Nivel User
+    Call Writer.WriteString8(LevelLogros(c).nombre)
+    Call Writer.WriteString8(LevelLogros(c).Desc)
+    Call Writer.WriteInt16(LevelLogros(c).cant)
+    Call Writer.WriteInt16(LevelLogros(c).TipoRecompensa)
+    Call Writer.WriteInt8(UserList(UserIndex).Stats.ELV)
 
-        End If
-        
-        If LevelLogros(c).TipoRecompensa = 4 Then
-            Call .WriteByte(LevelLogros(c).HechizoRecompensa)
+    If LevelLogros(c).TipoRecompensa = 1 Then
+        Call Writer.WriteString8(LevelLogros(c).ObjRecompensa)
+    End If
 
-        End If
+    If LevelLogros(c).TipoRecompensa = 2 Then
+        Call Writer.WriteInt32(LevelLogros(c).OroRecompensa)
+    End If
 
-        If UserList(UserIndex).Stats.ELV >= LevelLogros(c).cant Then
-            Call .WriteBoolean(True)
-        Else
-            Call .WriteBoolean(False)
+    If LevelLogros(c).TipoRecompensa = 3 Then
+        Call Writer.WriteInt32(LevelLogros(c).ExpRecompensa)
+    End If
 
-        End If
-        
-        Call .EndPacket
-    End With
+    If LevelLogros(c).TipoRecompensa = 4 Then
+        Call Writer.WriteInt8(LevelLogros(c).HechizoRecompensa)
+    End If
 
-    Exit Sub
+    If UserList(UserIndex).Stats.ELV >= LevelLogros(c).cant Then
+        Call Writer.WriteBool(True)
+    Else
+        Call Writer.WriteBool(False)
+    End If
 
-WriteRecompensas_Err:
-    Call TraceError(Err.Number, Err.Description, "Protocol.WriteRecompensas", Erl)
-    Call UserList(UserIndex).incomingData.SafeClearPacket
-        
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 Public Sub WritePreguntaBox(ByVal UserIndex As Integer, ByVal message As String)
-
-    '***************************************************
-    'Author: Juan Martín Sotuyo Dodero (Maraxus)
-    'Last Modification: 05/17/06
-    'Writes the "ShowMessageBox" message to the given user's outgoing data buffer
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-        Call .WriteID(ServerPacketID.ShowPregunta)
-        
-        Call .WriteASCIIString(message)
-        
-        Call UserList(UserIndex).outgoingData.EndPacket
-    End With
-
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call Writer.WriteInt(ServerPacketID.ShowPregunta)
+    Call Writer.WriteString8(Message)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 Public Sub WriteDatosGrupo(ByVal UserIndex As Integer)
 
     Dim i As Byte
 
-    'Author: Pablo Mercavides
-    On Error GoTo ErrHandler
-
     With UserList(UserIndex)
-        Call .outgoingData.WriteID(ServerPacketID.DatosGrupo)
-        Call .outgoingData.WriteBoolean(.Grupo.EnGrupo)
-        
+        Call Writer.WriteInt(ServerPacketID.DatosGrupo)
+        Call Writer.WriteBool(.Grupo.EnGrupo)
+
         If .Grupo.EnGrupo = True Then
-            Call .outgoingData.WriteByte(UserList(.Grupo.Lider).Grupo.CantidadMiembros)
-            'Call .outgoingData.WriteByte(UserList(.Grupo.Lider).name)
-   
+            Call Writer.WriteInt8(UserList(.Grupo.Lider).Grupo.CantidadMiembros)
+
+            'Call Writer.WriteInt8(UserList(.Grupo.Lider).name)
             If .Grupo.Lider = UserIndex Then
-             
+
                 For i = 1 To UserList(.Grupo.Lider).Grupo.CantidadMiembros
 
                     If i = 1 Then
-                        Call .outgoingData.WriteASCIIString(UserList(.Grupo.Miembros(i)).Name & "(Líder)")
+                        Call Writer.WriteString8(UserList(.Grupo.Miembros(I)).Name & _
+                                "(Líder)")
                     Else
-                        Call .outgoingData.WriteASCIIString(UserList(.Grupo.Miembros(i)).Name)
-
+                        Call Writer.WriteString8(UserList(.Grupo.Miembros(I)).Name)
                     End If
 
                 Next i
 
             Else
-          
-                For i = 1 To UserList(.Grupo.Lider).Grupo.CantidadMiembros
-                
-                    If i = 1 Then
-                        Call .outgoingData.WriteASCIIString(UserList(UserList(.Grupo.Lider).Grupo.Miembros(i)).Name & "(Líder)")
-                    Else
-                        Call .outgoingData.WriteASCIIString(UserList(UserList(.Grupo.Lider).Grupo.Miembros(i)).Name)
 
+                For i = 1 To UserList(.Grupo.Lider).Grupo.CantidadMiembros
+
+                    If i = 1 Then
+                        Call Writer.WriteString8(UserList(UserList( _
+                                .Grupo.Lider).Grupo.Miembros(I)).Name & "(Líder)")
+                    Else
+                        Call Writer.WriteString8(UserList(UserList( _
+                                .Grupo.Lider).Grupo.Miembros(I)).Name)
                     End If
 
                 Next i
 
             End If
-
         End If
-        .outgoingData.EndPacket
+
     End With
-    
-    
-    
-    Exit Sub
-    
-ErrHandler:
 
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
+Public Sub WriteUbicacion(ByVal UserIndex As Integer, _
+                          ByVal Miembro As Byte, _
+                          ByVal GPS As Integer)
+    Call Writer.WriteInt(ServerPacketID.ubicacion)
+    Call Writer.WriteInt8(Miembro)
 
-Public Sub WriteUbicacion(ByVal UserIndex As Integer, ByVal Miembro As Byte, ByVal GPS As Integer)
-
-    Dim i   As Byte
-    Dim X   As Byte
-    Dim Y   As Byte
-    Dim Map As Integer
-
-    'Author: Pablo Mercavides
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-    
-        Call .WriteID(ServerPacketID.ubicacion)
-        Call .WriteByte(Miembro)
-
-        If GPS > 0 Then
-        
-            Call .WriteByte(UserList(GPS).Pos.X)
-            Call .WriteByte(UserList(GPS).Pos.Y)
-            Call .WriteInteger(UserList(GPS).Pos.Map)
-        Else
-            Call .WriteByte(0)
-            Call .WriteByte(0)
-            Call .WriteInteger(0)
-
-        End If
-        
-        Call .EndPacket
-    End With
-
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
+    If GPS > 0 Then
+        Call Writer.WriteInt8(UserList(GPS).Pos.X)
+        Call Writer.WriteInt8(UserList(GPS).Pos.Y)
+        Call Writer.WriteInt16(UserList(GPS).Pos.Map)
+    Else
+        Call Writer.WriteInt8(0)
+        Call Writer.WriteInt8(0)
+        Call Writer.WriteInt16(0)
     End If
 
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 Public Sub WriteCorreoPicOn(ByVal UserIndex As Integer)
-
-    '***************************************************
-    '***************************************************
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-
-        Call .WriteID(ServerPacketID.CorreoPicOn)
-        Call .EndPacket
-
-    End With
-    
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call Writer.WriteInt(ServerPacketID.CorreoPicOn)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 Public Sub WriteShop(ByVal UserIndex As Integer)
-
-    '***************************************************
-    On Error GoTo ErrHandler
 
     Dim i              As Long
 
@@ -5507,686 +2384,1035 @@ Public Sub WriteShop(ByVal UserIndex As Integer)
     Dim validIndexes() As Integer
 
     Dim Count          As Integer
-    
+
     ReDim validIndexes(1 To UBound(ObjDonador()))
-    
-    With UserList(UserIndex).outgoingData
-        Call .WriteID(ServerPacketID.DonadorObj)
-        
-        For i = 1 To UBound(ObjDonador())
-            Count = Count + 1
-            validIndexes(Count) = i
-        Next i
-        
-        ' Write the number of objects in the list
-        Call .WriteInteger(Count)
-        
-        ' Write the needed data of each object
-        For i = 1 To Count
-            Call .WriteInteger(ObjDonador(validIndexes(i)).ObjIndex)
-            Call .WriteInteger(ObjDonador(validIndexes(i)).Valor)
-        Next i
-        
-        Call .WriteLong(CreditosDonadorCheck(UserList(UserIndex).Cuenta))
-        Call .WriteInteger(DiasDonadorCheck(UserList(UserIndex).Cuenta))
-        
-        Call .EndPacket
-    End With
+    Call Writer.WriteInt(ServerPacketID.DonadorObj)
 
-    
-    Exit Sub
-ErrHandler:
+    For I = 1 To UBound(ObjDonador())
+        Count = Count + 1
+        validIndexes(Count) = I
+    Next I
 
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
+    ' Write the number of objects in the list
+    Call Writer.WriteInt16(Count)
 
-    End If
+    ' Write the needed data of each object
+    For I = 1 To Count
+        Call Writer.WriteInt16(ObjDonador(validIndexes(I)).ObjIndex)
+        Call Writer.WriteInt16(ObjDonador(validIndexes(I)).Valor)
+    Next I
 
+    Call Writer.WriteInt32(CreditosDonadorCheck(UserList(UserIndex).Cuenta))
+    Call Writer.WriteInt16(DiasDonadorCheck(UserList(UserIndex).Cuenta))
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 Public Sub WriteRanking(ByVal UserIndex As Integer)
 
-    '***************************************************
-    On Error GoTo ErrHandler
-
     Dim i As Byte
-    
-    With UserList(UserIndex).outgoingData
-        Call .WriteID(ServerPacketID.Ranking)
 
-        For i = 1 To 10
-            Call .WriteASCIIString(Rankings(1).user(i).Nick)
-            Call .WriteInteger(Rankings(1).user(i).Value)
-        Next i
-        
-        Call .EndPacket
-    End With
+    Call Writer.WriteInt(ServerPacketID.Ranking)
 
-    
-    Exit Sub
-ErrHandler:
+    For I = 1 To 10
+        Call Writer.WriteString8(Rankings(1).user(I).Nick)
+        Call Writer.WriteInt16(Rankings(1).user(I).Value)
+    Next I
 
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 Public Sub WriteActShop(ByVal UserIndex As Integer)
-
-    'Author: Pablo Mercavides
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-    
-        Call .WriteID(ServerPacketID.ActShop)
-        
-        Call .WriteLong(CreditosDonadorCheck(UserList(UserIndex).Cuenta))
-        Call .WriteInteger(DiasDonadorCheck(UserList(UserIndex).Cuenta))
-        
-        Call .EndPacket
-    End With
-    
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call Writer.WriteInt(ServerPacketID.ActShop)
+    Call Writer.WriteInt32(CreditosDonadorCheck(UserList(UserIndex).Cuenta))
+    Call Writer.WriteInt16(DiasDonadorCheck(UserList(UserIndex).Cuenta))
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 Public Sub WriteViajarForm(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
+    Call Writer.WriteInt(ServerPacketID.ViajarForm)
 
-    'Author: Pablo Mercavides
-    On Error GoTo ErrHandler
+    Dim destinos As Byte
 
-    With UserList(UserIndex).outgoingData
-    
-        Call .WriteID(ServerPacketID.ViajarForm)
-        
-        Dim destinos As Byte
-        Dim i        As Byte
+    Dim I        As Byte
 
-        destinos = NpcList(NpcIndex).NumDestinos
-        
-        Call .WriteByte(destinos)
-        
-        For i = 1 To destinos
-            Call .WriteASCIIString(NpcList(NpcIndex).Dest(i))
-        Next i
-        
-        Call .WriteByte(NpcList(NpcIndex).Interface)
-        
-        Call .EndPacket
-    End With
+    destinos = NpcList(NpcIndex).NumDestinos
+    Call Writer.WriteInt8(destinos)
 
-    
-    Exit Sub
-ErrHandler:
+    For I = 1 To destinos
+        Call Writer.WriteString8(NpcList(NpcIndex).Dest(I))
+    Next I
 
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call Writer.WriteInt8(NpcList(NpcIndex).Interface)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
-Public Sub WriteQuestDetails(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, Optional QuestSlot As Byte = 0)
+Public Sub WriteQuestDetails(ByVal UserIndex As Integer, _
+                             ByVal QuestIndex As Integer, _
+                             Optional QuestSlot As Byte = 0)
 
-    '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-    'Envía el paquete QuestDetails y la información correspondiente.
-    'Last modified: 30/01/2010 by Amraphen
-    '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     Dim i As Integer
- 
-    On Error GoTo ErrHandler
 
-    With UserList(UserIndex).outgoingData
-    
-        'ID del paquete
-        Call .WriteID(ServerPacketID.QuestDetails)
-        
-        'Se usa la variable QuestSlot para saber si enviamos la info de una quest ya empezada o la info de una quest que no se aceptí todavía (1 para el primer caso y 0 para el segundo)
-        Call .WriteByte(IIf(QuestSlot, 1, 0))
-        
-        'Enviamos nombre, descripción y nivel requerido de la quest
-        'Call .WriteASCIIString(QuestList(QuestIndex).Nombre)
-        'Call .WriteASCIIString(QuestList(QuestIndex).Desc)
-        Call .WriteInteger(QuestIndex)
-        Call .WriteByte(QuestList(QuestIndex).RequiredLevel)
-        
-        Call .WriteInteger(QuestList(QuestIndex).RequiredQuest)
-        
-        'Enviamos la cantidad de npcs requeridos
-        Call .WriteByte(QuestList(QuestIndex).RequiredNPCs)
+    'ID del paquete
+    Call Writer.WriteInt(ServerPacketID.QuestDetails)
+    'Se usa la variable QuestSlot para saber si enviamos la info de una quest ya empezada o la info de una quest que no se aceptí todavía (1 para el primer caso y 0 para el segundo)
+    Call Writer.WriteInt8(IIf(QuestSlot, 1, 0))
+    'Enviamos nombre, descripción y nivel requerido de la quest
+    'Call Writer.WriteString8(QuestList(QuestIndex).Nombre)
+    'Call Writer.WriteString8(QuestList(QuestIndex).Desc)
+    Call Writer.WriteInt16(QuestIndex)
+    Call Writer.WriteInt8(QuestList(QuestIndex).RequiredLevel)
+    Call Writer.WriteInt16(QuestList(QuestIndex).RequiredQuest)
+    'Enviamos la cantidad de npcs requeridos
+    Call Writer.WriteInt8(QuestList(QuestIndex).RequiredNPCs)
 
-        If QuestList(QuestIndex).RequiredNPCs Then
+    If QuestList(QuestIndex).RequiredNPCs Then
 
-            'Si hay npcs entonces enviamos la lista
-            For i = 1 To QuestList(QuestIndex).RequiredNPCs
-                Call .WriteInteger(QuestList(QuestIndex).RequiredNPC(i).amount)
-                Call .WriteInteger(QuestList(QuestIndex).RequiredNPC(i).NpcIndex)
+        'Si hay npcs entonces enviamos la lista
+        For I = 1 To QuestList(QuestIndex).RequiredNPCs
+            Call Writer.WriteInt16(QuestList(QuestIndex).RequiredNPC(I).amount)
+            Call Writer.WriteInt16(QuestList(QuestIndex).RequiredNPC(I).NpcIndex)
 
-                'Si es una quest ya empezada, entonces mandamos los NPCs que matí.
-                If QuestSlot Then
-                    Call .WriteInteger(UserList(UserIndex).QuestStats.Quests(QuestSlot).NPCsKilled(i))
+            'Si es una quest ya empezada, entonces mandamos los NPCs que matí.
+            If QuestSlot Then
+                Call Writer.WriteInt16(UserList(UserIndex).QuestStats.Quests( _
+                        QuestSlot).NPCsKilled(I))
+            End If
 
-                End If
-
-            Next i
-
-        End If
-        
-        'Enviamos la cantidad de objs requeridos
-        Call .WriteByte(QuestList(QuestIndex).RequiredOBJs)
-
-        If QuestList(QuestIndex).RequiredOBJs Then
-
-            'Si hay objs entonces enviamos la lista
-            For i = 1 To QuestList(QuestIndex).RequiredOBJs
-                Call .WriteInteger(QuestList(QuestIndex).RequiredOBJ(i).amount)
-                Call .WriteInteger(QuestList(QuestIndex).RequiredOBJ(i).ObjIndex)
-                
-                'escribe si tiene ese objeto en el inventario y que cantidad
-                Call .WriteInteger(CantidadObjEnInv(UserIndex, QuestList(QuestIndex).RequiredOBJ(i).ObjIndex))
-                ' Call .WriteInteger(0)
-                
-            Next i
-
-        End If
-    
-        'Enviamos la recompensa de oro y experiencia.
-        Call .WriteLong((QuestList(QuestIndex).RewardGLD * OroMult))
-        Call .WriteLong((QuestList(QuestIndex).RewardEXP * ExpMult))
-        
-        'Enviamos la cantidad de objs de recompensa
-        Call .WriteByte(QuestList(QuestIndex).RewardOBJs)
-
-        If QuestList(QuestIndex).RewardOBJs Then
-
-            'si hay objs entonces enviamos la lista
-            For i = 1 To QuestList(QuestIndex).RewardOBJs
-                Call .WriteInteger(QuestList(QuestIndex).RewardOBJ(i).amount)
-                Call .WriteInteger(QuestList(QuestIndex).RewardOBJ(i).ObjIndex)
-            Next i
-
-        End If
-        
-        Call .EndPacket
-    End With
-
-    Exit Sub
- 
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
+        Next I
 
     End If
 
+    'Enviamos la cantidad de objs requeridos
+    Call Writer.WriteInt8(QuestList(QuestIndex).RequiredOBJs)
+
+    If QuestList(QuestIndex).RequiredOBJs Then
+
+        'Si hay objs entonces enviamos la lista
+        For I = 1 To QuestList(QuestIndex).RequiredOBJs
+            Call Writer.WriteInt16(QuestList(QuestIndex).RequiredOBJ(I).amount)
+            Call Writer.WriteInt16(QuestList(QuestIndex).RequiredOBJ(I).ObjIndex)
+            'escribe si tiene ese objeto en el inventario y que cantidad
+            Call Writer.WriteInt16(CantidadObjEnInv(UserIndex, QuestList( _
+                    QuestIndex).RequiredOBJ(I).ObjIndex))
+            ' Call Writer.WriteInt16(0)
+        Next I
+
+    End If
+
+    'Enviamos la recompensa de oro y experiencia.
+    Call Writer.WriteInt32((QuestList(QuestIndex).RewardGLD * OroMult))
+    Call Writer.WriteInt32((QuestList(QuestIndex).RewardEXP * ExpMult))
+    'Enviamos la cantidad de objs de recompensa
+    Call Writer.WriteInt8(QuestList(QuestIndex).RewardOBJs)
+
+    If QuestList(QuestIndex).RewardOBJs Then
+
+        'si hay objs entonces enviamos la lista
+        For I = 1 To QuestList(QuestIndex).RewardOBJs
+            Call Writer.WriteInt16(QuestList(QuestIndex).RewardOBJ(I).amount)
+            Call Writer.WriteInt16(QuestList(QuestIndex).RewardOBJ(I).ObjIndex)
+        Next I
+
+    End If
+
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
  
 Public Sub WriteQuestListSend(ByVal UserIndex As Integer)
 
-    '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-    'Envía el paquete QuestList y la información correspondiente.
-    'Last modified: 30/01/2010 by Amraphen
-    '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     Dim i       As Integer
+
     Dim tmpStr  As String
+
     Dim tmpByte As Byte
- 
-    On Error GoTo ErrHandler
- 
+
     With UserList(UserIndex)
-        Call .outgoingData.WriteID(ServerPacketID.QuestListSend)
-    
+        Call Writer.WriteInt(ServerPacketID.QuestListSend)
+
         For i = 1 To MAXUSERQUESTS
 
             If .QuestStats.Quests(i).QuestIndex Then
                 tmpByte = tmpByte + 1
                 tmpStr = tmpStr & QuestList(.QuestStats.Quests(i).QuestIndex).nombre & "-"
-
             End If
 
         Next i
-        
+
         'Escribimos la cantidad de quests
-        Call .outgoingData.WriteByte(tmpByte)
-        
+        Call Writer.WriteInt8(tmpByte)
+
         'Escribimos la lista de quests (sacamos el íltimo caracter)
         If tmpByte Then
-            Call .outgoingData.WriteASCIIString(Left$(tmpStr, Len(tmpStr) - 1))
+            Call Writer.WriteString8(Left$(tmpStr, Len(tmpStr) - 1))
         End If
-        
-        Call .outgoingData.EndPacket
+
     End With
 
-    Exit Sub
- 
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 Public Sub WriteNpcQuestListSend(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
 
-    '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-    'Envía el paquete QuestList y la información correspondiente.
-    'Modified: 30/01/2010 by Amraphen
-    'Last modified: 11/07/2021 by WyroX: Envio si es repetible
-    '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-    Dim i       As Integer
-    Dim j       As Integer
-    Dim tmpStr  As String
-    Dim tmpByte As Byte
- 
-    On Error GoTo ErrHandler
-    
+    Dim I          As Integer
+
+    Dim j          As Integer
+
+    Dim tmpStr     As String
+
+    Dim tmpByte    As Byte
+
     Dim QuestIndex As Integer
- 
-    With UserList(UserIndex).outgoingData
-        Call .WriteID(ServerPacketID.NpcQuestListSend)
-        
-        Call .WriteByte(NpcList(NpcIndex).NumQuest) 'Escribimos primero cuantas quest tiene el NPC
-    
-        For j = 1 To NpcList(NpcIndex).NumQuest
-        
-            QuestIndex = NpcList(NpcIndex).QuestNumber(j)
-            
-            Call .WriteInteger(QuestIndex)
-            Call .WriteByte(QuestList(QuestIndex).RequiredLevel)
-        
-            Call .WriteInteger(QuestList(QuestIndex).RequiredQuest)
-        
-            'Enviamos la cantidad de npcs requeridos
-            Call .WriteByte(QuestList(QuestIndex).RequiredNPCs)
 
-            If QuestList(QuestIndex).RequiredNPCs Then
+    Call Writer.WriteInt(ServerPacketID.NpcQuestListSend)
+    Call Writer.WriteInt8(NpcList(NpcIndex).NumQuest) 'Escribimos primero cuantas quest tiene el NPC
 
-                'Si hay npcs entonces enviamos la lista
-                For i = 1 To QuestList(QuestIndex).RequiredNPCs
-                    Call .WriteInteger(QuestList(QuestIndex).RequiredNPC(i).amount)
-                    Call .WriteInteger(QuestList(QuestIndex).RequiredNPC(i).NpcIndex)
+    For j = 1 To NpcList(NpcIndex).NumQuest
+        QuestIndex = NpcList(NpcIndex).QuestNumber(j)
+        Call Writer.WriteInt16(QuestIndex)
+        Call Writer.WriteInt8(QuestList(QuestIndex).RequiredLevel)
+        Call Writer.WriteInt16(QuestList(QuestIndex).RequiredQuest)
+        'Enviamos la cantidad de npcs requeridos
+        Call Writer.WriteInt8(QuestList(QuestIndex).RequiredNPCs)
 
-                    'Si es una quest ya empezada, entonces mandamos los NPCs que matí.
-                    'If QuestSlot Then
-                    ' Call .WriteInteger(UserList(UserIndex).QuestStats.Quests(QuestSlot).NPCsKilled(i))
+        If QuestList(QuestIndex).RequiredNPCs Then
 
-                    ' End If
+            'Si hay npcs entonces enviamos la lista
+            For I = 1 To QuestList(QuestIndex).RequiredNPCs
+                Call Writer.WriteInt16(QuestList(QuestIndex).RequiredNPC(I).amount)
+                Call Writer.WriteInt16(QuestList(QuestIndex).RequiredNPC(I).NpcIndex)
+                'Si es una quest ya empezada, entonces mandamos los NPCs que matí.
+                'If QuestSlot Then
+                ' Call Writer.WriteInt16(UserList(UserIndex).QuestStats.Quests(QuestSlot).NPCsKilled(i))
+                ' End If
+            Next I
 
-                Next i
+        End If
 
-            End If
-        
-            'Enviamos la cantidad de objs requeridos
-            Call .WriteByte(QuestList(QuestIndex).RequiredOBJs)
+        'Enviamos la cantidad de objs requeridos
+        Call Writer.WriteInt8(QuestList(QuestIndex).RequiredOBJs)
 
-            If QuestList(QuestIndex).RequiredOBJs Then
+        If QuestList(QuestIndex).RequiredOBJs Then
 
-                'Si hay objs entonces enviamos la lista
-                For i = 1 To QuestList(QuestIndex).RequiredOBJs
-                    Call .WriteInteger(QuestList(QuestIndex).RequiredOBJ(i).amount)
-                    Call .WriteInteger(QuestList(QuestIndex).RequiredOBJ(i).ObjIndex)
-                Next i
+            'Si hay objs entonces enviamos la lista
+            For I = 1 To QuestList(QuestIndex).RequiredOBJs
+                Call Writer.WriteInt16(QuestList(QuestIndex).RequiredOBJ(I).amount)
+                Call Writer.WriteInt16(QuestList(QuestIndex).RequiredOBJ(I).ObjIndex)
+            Next I
 
-            End If
-    
-            'Enviamos la recompensa de oro y experiencia.
-            Call .WriteLong(QuestList(QuestIndex).RewardGLD * OroMult)
-            Call .WriteLong(QuestList(QuestIndex).RewardEXP * ExpMult)
-        
-            'Enviamos la cantidad de objs de recompensa
-            Call .WriteByte(QuestList(QuestIndex).RewardOBJs)
+        End If
 
-            If QuestList(QuestIndex).RewardOBJs Then
+        'Enviamos la recompensa de oro y experiencia.
+        Call Writer.WriteInt32(QuestList(QuestIndex).RewardGLD * OroMult)
+        Call Writer.WriteInt32(QuestList(QuestIndex).RewardEXP * ExpMult)
+        'Enviamos la cantidad de objs de recompensa
+        Call Writer.WriteInt8(QuestList(QuestIndex).RewardOBJs)
 
-                'si hay objs entonces enviamos la lista
-                For i = 1 To QuestList(QuestIndex).RewardOBJs
-                    Call .WriteInteger(QuestList(QuestIndex).RewardOBJ(i).amount)
-                    Call .WriteInteger(QuestList(QuestIndex).RewardOBJ(i).ObjIndex)
-                Next i
+        If QuestList(QuestIndex).RewardOBJs Then
 
-            End If
-        
-            'Enviamos el estado de la QUEST
-            '0 Disponible
-            '1 EN CURSO
-            '2 REALIZADA
-            '3 no puede hacerla
-        
-            Dim PuedeHacerla As Boolean
-        
-            'La tiene aceptada el usuario?
-            If TieneQuest(UserIndex, QuestIndex) Then
-                Call .WriteByte(1)
+            'si hay objs entonces enviamos la lista
+            For I = 1 To QuestList(QuestIndex).RewardOBJs
+                Call Writer.WriteInt16(QuestList(QuestIndex).RewardOBJ(I).amount)
+                Call Writer.WriteInt16(QuestList(QuestIndex).RewardOBJ(I).ObjIndex)
+            Next I
+
+        End If
+
+        'Enviamos el estado de la QUEST
+        '0 Disponible
+        '1 EN CURSO
+        '2 REALIZADA
+        '3 no puede hacerla
+        Dim PuedeHacerla As Boolean
+
+        'La tiene aceptada el usuario?
+        If TieneQuest(UserIndex, QuestIndex) Then
+            Call Writer.WriteInt8(1)
+        Else
+
+            If UserDoneQuest(UserIndex, QuestIndex) Then
+                Call Writer.WriteInt8(2)
             Else
+                PuedeHacerla = True
 
-                If UserDoneQuest(UserIndex, QuestIndex) Then
-                    Call .WriteByte(2)
-                Else
-                    PuedeHacerla = True
-
-                    If QuestList(QuestIndex).RequiredQuest > 0 Then
-                        If Not UserDoneQuest(UserIndex, QuestList(QuestIndex).RequiredQuest) Then
-                            PuedeHacerla = False
-
-                        End If
-
-                    End If
-                
-                    If UserList(UserIndex).Stats.ELV < QuestList(QuestIndex).RequiredLevel Then
+                If QuestList(QuestIndex).RequiredQuest > 0 Then
+                    If Not UserDoneQuest(UserIndex, QuestList( _
+                            QuestIndex).RequiredQuest) Then
                         PuedeHacerla = False
-
                     End If
-                
-                    If PuedeHacerla Then
-                        Call .WriteByte(0)
-                    Else
-                        Call .WriteByte(3)
-
-                    End If
-                
                 End If
-                
+
+                If UserList(UserIndex).Stats.ELV < QuestList(QuestIndex).RequiredLevel _
+                        Then
+                    PuedeHacerla = False
+                End If
+
+                If PuedeHacerla Then
+                    Call Writer.WriteInt8(0)
+                Else
+                    Call Writer.WriteInt8(3)
+                End If
             End If
+        End If
 
-        Next j
-        
-        Call .EndPacket
-        
-    End With
+    Next j
 
-    Exit Sub
- 
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
-End Sub
-
-Public Sub WriteRequestScreenShot(ByVal UserIndex As Integer)
-
-    On Error GoTo ErrHandler
-    
-    
-    With UserList(UserIndex).outgoingData
-    
-        Call .WriteID(ServerPacketID.RequestScreenShot)
-        Call .EndPacket
-    
-    End With
-    
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
-End Sub
-
-
-Public Sub WriteShowScreenShot(ByVal UserIndex As Integer, Name As String)
-
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-        Call .WriteID(ServerPacketID.ShowScreenShot)
-        
-        Call .WriteASCIIString(Name)
-        
-        Call .EndPacket
-    End With
-
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
-End Sub
-
-
-Public Sub WriteScreenShotData(ByVal UserIndex As Integer, Buffer As clsByteQueue, ByVal Offset As Long, ByVal Size As Long)
-
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-
-        Call .WriteID(ServerPacketID.ScreenShotData)
-
-        Call .WriteSubBuffer(Buffer, Offset, Size)
-        
-        Call .EndPacket
-    End With
-
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 Public Sub WriteTolerancia0(ByVal UserIndex As Integer)
-
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-
-        Call .WriteID(ServerPacketID.Tolerancia0)
-        Call .EndPacket
-        
-    End With
-
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call Writer.WriteInt(ServerPacketID.Tolerancia0)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 Sub WriteCommerceRecieveChatMessage(ByVal UserIndex As Integer, ByVal message As String)
-
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-        Call .WriteID(ServerPacketID.CommerceRecieveChatMessage)
-        Call .WriteASCIIString(message)
-        Call .EndPacket
-    End With
-
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-
+    Call Writer.WriteInt(ServerPacketID.CommerceRecieveChatMessage)
+    Call Writer.WriteString8(Message)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
-Sub WriteInvasionInfo(ByVal UserIndex As Integer, ByVal Invasion As Integer, ByVal PorcentajeVida As Byte, ByVal PorcentajeTiempo As Byte)
-    
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-
-        Call .WriteID(ServerPacketID.InvasionInfo)
-        
-        Call .WriteByte(Invasion)
-        Call .WriteByte(PorcentajeVida)
-        Call .WriteByte(PorcentajeTiempo)
-        
-        Call .EndPacket
-    End With
-    
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-
-    End If
-    
+Sub WriteInvasionInfo(ByVal UserIndex As Integer, _
+                      ByVal Invasion As Integer, _
+                      ByVal PorcentajeVida As Byte, _
+                      ByVal PorcentajeTiempo As Byte)
+    Call Writer.WriteInt(ServerPacketID.InvasionInfo)
+    Call Writer.WriteInt8(Invasion)
+    Call Writer.WriteInt8(PorcentajeVida)
+    Call Writer.WriteInt8(PorcentajeTiempo)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 Sub WriteOpenCrafting(ByVal UserIndex As Integer, ByVal Tipo As Byte)
-    
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-
-        Call .WriteID(ServerPacketID.OpenCrafting)
-        Call .WriteByte(Tipo)
-
-        Call .EndPacket
-    End With
-    
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-    End If
-    
+    Call Writer.WriteInt(ServerPacketID.OpenCrafting)
+    Call Writer.WriteInt8(Tipo)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
-Sub WriteCraftingItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ObjIndex As Integer)
-
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-
-        Call .WriteID(ServerPacketID.CraftingItem)
-        Call .WriteByte(Slot)
-        Call .WriteInteger(ObjIndex)
-
-        Call .EndPacket
-    End With
-    
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-    End If
-    
+Sub WriteCraftingItem(ByVal UserIndex As Integer, _
+                      ByVal Slot As Byte, _
+                      ByVal ObjIndex As Integer)
+    Call Writer.WriteInt(ServerPacketID.CraftingItem)
+    Call Writer.WriteInt8(Slot)
+    Call Writer.WriteInt16(ObjIndex)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
-Sub WriteCraftingCatalyst(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, ByVal amount As Integer, ByVal Porcentaje As Byte)
-
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-
-        Call .WriteID(ServerPacketID.CraftingCatalyst)
-        Call .WriteInteger(ObjIndex)
-        Call .WriteInteger(amount)
-        Call .WriteByte(Porcentaje)
-
-        Call .EndPacket
-    End With
-    
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-    End If
-    
+Sub WriteCraftingCatalyst(ByVal UserIndex As Integer, _
+                          ByVal ObjIndex As Integer, _
+                          ByVal amount As Integer, _
+                          ByVal Porcentaje As Byte)
+    Call Writer.WriteInt(ServerPacketID.CraftingCatalyst)
+    Call Writer.WriteInt16(ObjIndex)
+    Call Writer.WriteInt16(amount)
+    Call Writer.WriteInt8(Porcentaje)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
-Sub WriteCraftingResult(ByVal UserIndex As Integer, ByVal Result As Integer, Optional ByVal Porcentaje As Byte, Optional ByVal Precio As Long)
-    
-    On Error GoTo ErrHandler
+Sub WriteCraftingResult(ByVal UserIndex As Integer, _
+                        ByVal Result As Integer, _
+                        Optional ByVal Porcentaje As Byte, _
+                        Optional ByVal Precio As Long)
+    Call Writer.WriteInt(ServerPacketID.CraftingResult)
+    Call Writer.WriteInt16(Result)
 
-    With UserList(UserIndex).outgoingData
-
-        Call .WriteID(ServerPacketID.CraftingResult)
-        Call .WriteInteger(Result)
-        
-        If Result <> 0 Then
-            Call .WriteByte(Porcentaje)
-            Call .WriteLong(Precio)
-        End If
-
-        Call .EndPacket
-    End With
-    
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
+    If Result <> 0 Then
+        Call Writer.WriteInt8(Porcentaje)
+        Call Writer.WriteInt32(Precio)
     End If
-    
+
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 Sub WriteForceUpdate(ByVal UserIndex As Integer)
-    
-    On Error GoTo ErrHandler
-
-    With UserList(UserIndex).outgoingData
-        Call .WriteID(ServerPacketID.ForceUpdate)
-        Call .EndPacket
-    End With
-    
-    Exit Sub
-    
-ErrHandler:
-
-    If Err.Number = UserList(UserIndex).outgoingData.NotEnoughSpaceErrCode Then
-        Call FlushBuffer(UserIndex)
-        Resume
-    End If
-    
+    Call Writer.WriteInt(ServerPacketID.ForceUpdate)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
+Public Sub WriteUpdateNPCSimbolo(ByVal UserIndex As Integer, _
+                                 ByVal NpcIndex As Integer, _
+                                 ByVal Simbolo As Byte)
+    Call Writer.WriteInt(ServerPacketID.UpdateNPCSimbolo)
+    Call Writer.WriteInt16(NpcList(NpcIndex).Char.CharIndex)
+    Call Writer.WriteInt8(Simbolo)
+    Call modSendData.SendData(ToIndex, UserIndex)
+End Sub
+
+Public Sub WriteGuardNotice(ByVal UserIndex As Integer)
+    Call Writer.WriteInt(ServerPacketID.GuardNotice)
+    Call modSendData.SendData(ToIndex, UserIndex)
+End Sub
+
+' \Begin: [Prepares]
+Public Function PrepareMessageCharSwing(ByVal CharIndex As Integer, _
+                                        Optional ByVal FX As Boolean = True, _
+                                        Optional ByVal ShowText As Boolean = True)
+    Call Writer.WriteInt(ServerPacketID.CharSwing)
+    Call Writer.WriteInt16(CharIndex)
+    Call Writer.WriteBool(FX)
+    Call Writer.WriteBool(ShowText)
+End Function
+
+''
+' Prepares the "SetInvisible" message and returns it.
+'
+' @param    CharIndex The char turning visible / invisible.
+' @param    invisible True if the char is no longer visible, False otherwise.
+' @return   The formated message ready to be writen as is on outgoing buffers.
+' @remarks  The message is written to no outgoing buffer, but only prepared in a single string to be easily sent to several clients.
+Public Function PrepareMessageSetInvisible(ByVal CharIndex As Integer, _
+                                           ByVal invisible As Boolean)
+    Call Writer.WriteInt(ServerPacketID.SetInvisible)
+    Call Writer.WriteInt16(CharIndex)
+    Call Writer.WriteBool(invisible)
+End Function
+
+Public Function PrepareMessageSetEscribiendo(ByVal CharIndex As Integer, _
+                                             ByVal Escribiendo As Boolean)
+    Call Writer.WriteInt(ServerPacketID.SetEscribiendo)
+    Call Writer.WriteInt16(CharIndex)
+    Call Writer.WriteBool(Escribiendo)
+End Function
+
+''
+' Prepares the "ChatOverHead" message and returns it.
+'
+' @param    Chat Text to be displayed over the char's head.
+' @param    CharIndex The character uppon which the chat will be displayed.
+' @param    Color The color to be used when displaying the chat.
+' @return   The formated message ready to be writen as is on outgoing buffers.
+' @remarks  The message is written to no outgoing buffer, but only prepared in a single string to be easily sent to several clients.
+Public Function PrepareMessageChatOverHead(ByVal chat As String, _
+                                           ByVal CharIndex As Integer, _
+                                           ByVal Color As Long, _
+                                           Optional ByVal Name As String = "")
+
+    Dim R, g, b As Byte
+
+    b = (Color And 16711680) / 65536
+    g = (Color And 65280) / 256
+    R = Color And 255
+    Call Writer.WriteInt(ServerPacketID.ChatOverHead)
+    Call Writer.WriteString8(chat)
+    Call Writer.WriteInt16(CharIndex)
+    ' Write rgb channels and save one byte from long :D
+    Call Writer.WriteInt8(R)
+    Call Writer.WriteInt8(g)
+    Call Writer.WriteInt8(b)
+    Call Writer.WriteInt32(Color)
+End Function
+
+Public Function PrepareMessageTextOverChar(ByVal chat As String, _
+                                           ByVal CharIndex As Integer, _
+                                           ByVal Color As Long)
+    Call Writer.WriteInt(ServerPacketID.TextOverChar)
+    Call Writer.WriteString8(chat)
+    Call Writer.WriteInt16(CharIndex)
+    Call Writer.WriteInt32(Color)
+End Function
+
+Public Function PrepareMessageTextCharDrop(ByVal chat As String, _
+                                           ByVal CharIndex As Integer, _
+                                           ByVal Color As Long)
+    Call Writer.WriteInt(ServerPacketID.TextCharDrop)
+    Call Writer.WriteString8(chat)
+    Call Writer.WriteInt16(CharIndex)
+    Call Writer.WriteInt32(Color)
+End Function
+
+Public Function PrepareMessageTextOverTile(ByVal chat As String, _
+                                           ByVal X As Integer, _
+                                           ByVal Y As Integer, _
+                                           ByVal Color As Long)
+    Call Writer.WriteInt(ServerPacketID.TextOverTile)
+    Call Writer.WriteString8(chat)
+    Call Writer.WriteInt16(X)
+    Call Writer.WriteInt16(Y)
+    Call Writer.WriteInt32(Color)
+End Function
+
+''
+' Prepares the "ConsoleMsg" message and returns it.
+'
+' @param    Chat Text to be displayed over the char's head.
+' @param    FontIndex Index of the FONTTYPE structure to use.
+' @return   The formated message ready to be writen as is on outgoing buffers.
+' @remarks  The data is not actually sent until the buffer is properly flushed.
+Public Function PrepareMessageConsoleMsg(ByVal chat As String, _
+                                         ByVal FontIndex As FontTypeNames)
+    Call Writer.WriteInt(ServerPacketID.ConsoleMsg)
+    Call Writer.WriteString8(chat)
+    Call Writer.WriteInt8(FontIndex)
+End Function
+
+Public Function PrepareMessageLocaleMsg(ByVal ID As Integer, _
+                                        ByVal chat As String, _
+                                        ByVal FontIndex As FontTypeNames)
+    Call Writer.WriteInt(ServerPacketID.LocaleMsg)
+    Call Writer.WriteInt16(ID)
+    Call Writer.WriteString8(chat)
+    Call Writer.WriteInt8(FontIndex)
+End Function
+
+Public Function PrepareMessageListaCorreo(ByVal UserIndex As Integer, _
+                                          ByVal Actualizar As Boolean)
+
+    Dim cant As Byte
+
+    Dim I    As Byte
+
+    cant = UserList(UserIndex).Correo.CantCorreo
+    UserList(UserIndex).Correo.NoLeidos = 0
+    Call Writer.WriteInt(ServerPacketID.ListaCorreo)
+    Call Writer.WriteInt8(cant)
+
+    If cant > 0 Then
+
+        For I = 1 To cant
+            Call Writer.WriteString8(UserList(UserIndex).Correo.Mensaje(I).Remitente)
+            Call Writer.WriteString8(UserList(UserIndex).Correo.Mensaje(I).Mensaje)
+            Call Writer.WriteInt8(UserList(UserIndex).Correo.Mensaje(I).ItemCount)
+            Call Writer.WriteString8(UserList(UserIndex).Correo.Mensaje(I).Item)
+            Call Writer.WriteInt8(UserList(UserIndex).Correo.Mensaje(I).Leido)
+            Call Writer.WriteString8(UserList(UserIndex).Correo.Mensaje(I).Fecha)
+            'Call ReadMessageCorreo(UserIndex, i)
+        Next I
+
+    End If
+
+    Call Writer.WriteBool(Actualizar)
+End Function
+
+''
+' Prepares the "CreateFX" message and returns it.
+'
+' @param    UserIndex User to which the message is intended.
+' @param    CharIndex Character upon which the FX will be created.
+' @param    FX FX index to be displayed over the new character.
+' @param    FXLoops Number of times the FX should be rendered.
+' @return   The formated message ready to be writen as is on outgoing buffers.
+' @remarks  The data is not actually sent until the buffer is properly flushed.
+Public Function PrepareMessageCreateFX(ByVal CharIndex As Integer, _
+                                       ByVal FX As Integer, _
+                                       ByVal FXLoops As Integer)
+    Call Writer.WriteInt(ServerPacketID.CreateFX)
+    Call Writer.WriteInt16(CharIndex)
+    Call Writer.WriteInt16(FX)
+    Call Writer.WriteInt16(FXLoops)
+End Function
+
+Public Function PrepareMessageMeditateToggle(ByVal CharIndex As Integer, _
+                                             ByVal FX As Integer)
+    Call Writer.WriteInt(ServerPacketID.MeditateToggle)
+    Call Writer.WriteInt16(CharIndex)
+    Call Writer.WriteInt16(FX)
+End Function
+
+Public Function PrepareMessageParticleFX(ByVal CharIndex As Integer, _
+                                         ByVal Particula As Integer, _
+                                         ByVal Time As Long, _
+                                         ByVal Remove As Boolean, _
+                                         Optional ByVal grh As Long = 0)
+    Call Writer.WriteInt(ServerPacketID.ParticleFX)
+    Call Writer.WriteInt16(CharIndex)
+    Call Writer.WriteInt16(Particula)
+    Call Writer.WriteInt32(Time)
+    Call Writer.WriteBool(Remove)
+    Call Writer.WriteInt32(grh)
+End Function
+
+Public Function PrepareMessageParticleFXWithDestino(ByVal Emisor As Integer, _
+                                                    ByVal Receptor As Integer, _
+                                                    ByVal ParticulaViaje As Integer, _
+                                                    ByVal ParticulaFinal As Integer, _
+                                                    ByVal Time As Long, _
+                                                    ByVal wav As Integer, _
+                                                    ByVal FX As Integer)
+    Call Writer.WriteInt(ServerPacketID.ParticleFXWithDestino)
+    Call Writer.WriteInt16(Emisor)
+    Call Writer.WriteInt16(Receptor)
+    Call Writer.WriteInt16(ParticulaViaje)
+    Call Writer.WriteInt16(ParticulaFinal)
+    Call Writer.WriteInt32(Time)
+    Call Writer.WriteInt16(wav)
+    Call Writer.WriteInt16(FX)
+End Function
+
+Public Function PrepareMessageParticleFXWithDestinoXY(ByVal Emisor As Integer, _
+                                                      ByVal ParticulaViaje As Integer, _
+                                                      ByVal ParticulaFinal As Integer, _
+                                                      ByVal Time As Long, _
+                                                      ByVal wav As Integer, _
+                                                      ByVal FX As Integer, _
+                                                      ByVal X As Byte, _
+                                                      ByVal Y As Byte)
+    Call Writer.WriteInt(ServerPacketID.ParticleFXWithDestinoXY)
+    Call Writer.WriteInt16(Emisor)
+    Call Writer.WriteInt16(ParticulaViaje)
+    Call Writer.WriteInt16(ParticulaFinal)
+    Call Writer.WriteInt32(Time)
+    Call Writer.WriteInt16(wav)
+    Call Writer.WriteInt16(FX)
+    Call Writer.WriteInt8(X)
+    Call Writer.WriteInt8(Y)
+End Function
+
+Public Function PrepareMessageAuraToChar(ByVal CharIndex As Integer, _
+                                         ByVal Aura As String, _
+                                         ByVal Remove As Boolean, _
+                                         ByVal Tipo As Byte)
+    Call Writer.WriteInt(ServerPacketID.AuraToChar)
+    Call Writer.WriteInt16(CharIndex)
+    Call Writer.WriteString8(Aura)
+    Call Writer.WriteBool(Remove)
+    Call Writer.WriteInt8(Tipo)
+End Function
+
+Public Function PrepareMessageSpeedingACT(ByVal CharIndex As Integer, _
+                                          ByVal speeding As Single)
+    Call Writer.WriteInt(ServerPacketID.SpeedToChar)
+    Call Writer.WriteInt16(CharIndex)
+    Call Writer.WriteReal32(speeding)
+End Function
+
+Public Function PrepareMessageParticleFXToFloor(ByVal X As Byte, _
+                                                ByVal Y As Byte, _
+                                                ByVal Particula As Integer, _
+                                                ByVal Time As Long)
+    Call Writer.WriteInt(ServerPacketID.ParticleFXToFloor)
+    Call Writer.WriteInt8(X)
+    Call Writer.WriteInt8(Y)
+    Call Writer.WriteInt16(Particula)
+    Call Writer.WriteInt32(Time)
+End Function
+
+Public Function PrepareMessageLightFXToFloor(ByVal X As Byte, _
+                                             ByVal Y As Byte, _
+                                             ByVal LuzColor As Long, _
+                                             ByVal Rango As Byte)
+    Call Writer.WriteInt(ServerPacketID.LightToFloor)
+    Call Writer.WriteInt8(X)
+    Call Writer.WriteInt8(Y)
+    Call Writer.WriteInt32(LuzColor)
+    Call Writer.WriteInt8(Rango)
+End Function
+
+''
+' Prepares the "PlayWave" message and returns it.
+'
+' @param    wave The wave to be played.
+' @param    X The X position in map coordinates from where the sound comes.
+' @param    Y The Y position in map coordinates from where the sound comes.
+' @return   The formated message ready to be writen as is on outgoing buffers.
+' @remarks  The data is not actually sent until the buffer is properly flushed.
+Public Function PrepareMessagePlayWave(ByVal wave As Integer, _
+                                       ByVal X As Byte, _
+                                       ByVal Y As Byte)
+    Call Writer.WriteInt(ServerPacketID.PlayWave)
+    Call Writer.WriteInt16(wave)
+    Call Writer.WriteInt8(X)
+    Call Writer.WriteInt8(Y)
+End Function
+
+Public Function PrepareMessageUbicacionLlamada(ByVal Mapa As Integer, _
+                                               ByVal X As Byte, _
+                                               ByVal Y As Byte)
+    Call Writer.WriteInt(ServerPacketID.PosLLamadaDeClan)
+    Call Writer.WriteInt16(Mapa)
+    Call Writer.WriteInt8(X)
+    Call Writer.WriteInt8(Y)
+End Function
+
+Public Function PrepareMessageCharUpdateHP(ByVal UserIndex As Integer)
+    Call Writer.WriteInt(ServerPacketID.CharUpdateHP)
+    Call Writer.WriteInt16(UserList(UserIndex).Char.CharIndex)
+    Call Writer.WriteInt32(UserList(UserIndex).Stats.MinHp)
+    Call Writer.WriteInt32(UserList(UserIndex).Stats.MaxHp)
+End Function
+
+Public Function PrepareMessageCharUpdateMAN(ByVal UserIndex As Integer)
+    Call Writer.WriteInt(ServerPacketID.CharUpdateMAN)
+    Call Writer.WriteInt16(UserList(UserIndex).Char.CharIndex)
+    Call Writer.WriteInt32(UserList(UserIndex).Stats.MinMAN)
+    Call Writer.WriteInt32(UserList(UserIndex).Stats.MaxMAN)
+End Function
+
+Public Function PrepareMessageNpcUpdateHP(ByVal NpcIndex As Integer)
+    Call Writer.WriteInt(ServerPacketID.CharUpdateHP)
+    Call Writer.WriteInt16(NpcList(NpcIndex).Char.CharIndex)
+    Call Writer.WriteInt32(NpcList(NpcIndex).Stats.MinHp)
+    Call Writer.WriteInt32(NpcList(NpcIndex).Stats.MaxHp)
+End Function
+
+Public Function PrepareMessageArmaMov(ByVal CharIndex As Integer)
+    Call Writer.WriteInt(ServerPacketID.ArmaMov)
+    Call Writer.WriteInt16(CharIndex)
+End Function
+
+Public Function PrepareMessageEscudoMov(ByVal CharIndex As Integer)
+    Call Writer.WriteInt(ServerPacketID.EscudoMov)
+    Call Writer.WriteInt16(CharIndex)
+End Function
+
+Public Function PrepareMessageFlashScreen(ByVal Color As Long, _
+                                          ByVal Duracion As Long, _
+                                          Optional ByVal Ignorar As Boolean = False)
+    Call Writer.WriteInt(ServerPacketID.FlashScreen)
+    Call Writer.WriteInt32(Color)
+    Call Writer.WriteInt32(Duracion)
+    Call Writer.WriteBool(Ignorar)
+End Function
+
+''
+' Prepares the "GuildChat" message and returns it.
+'
+' @param    Chat Text to be displayed over the char's head.
+' @return   The formated message ready to be writen as is on outgoing buffers.
+' @remarks  The data is not actually sent until the buffer is properly flushed.
+Public Function PrepareMessageGuildChat(ByVal chat As String, ByVal Status As Byte)
+    Call Writer.WriteInt(ServerPacketID.GuildChat)
+    Call Writer.WriteInt8(Status)
+    Call Writer.WriteString8(chat)
+End Function
+
+''
+' Prepares the "ShowMessageBox" message and returns it.
+'
+' @param    Message Text to be displayed in the message box.
+' @return   The formated message ready to be writen as is on outgoing buffers.
+' @remarks  The data is not actually sent until the buffer is properly flushed.
+Public Function PrepareMessageShowMessageBox(ByVal chat As String)
+    Call Writer.WriteInt(ServerPacketID.ShowMessageBox)
+    Call Writer.WriteString8(chat)
+End Function
+
+''
+' Prepares the "PlayMidi" message and returns it.
+'
+' @param    midi The midi to be played.
+' @param    loops Number of repets for the midi.
+' @return   The formated message ready to be writen as is on outgoing buffers.
+' @remarks  The data is not actually sent until the buffer is properly flushed.
+Public Function PrepareMessagePlayMidi(ByVal midi As Byte, _
+                                       Optional ByVal loops As Integer = -1)
+    Call Writer.WriteInt(ServerPacketID.PlayMIDI)
+    Call Writer.WriteInt8(midi)
+    Call Writer.WriteInt16(loops)
+End Function
+
+Public Function PrepareMessageOnlineUser(ByVal UserOnline As Integer)
+    Call Writer.WriteInt(ServerPacketID.UserOnline)
+    Call Writer.WriteInt16(UserOnline)
+End Function
+
+''
+' Prepares the "PauseToggle" message and returns it.
+'
+' @return   The formated message ready to be writen as is on outgoing buffers.
+' @remarks  The data is not actually sent until the buffer is properly flushed.
+Public Function PrepareMessagePauseToggle()
+    Call Writer.WriteInt(ServerPacketID.PauseToggle)
+End Function
+
+''
+' Prepares the "RainToggle" message and returns it.
+'
+' @return   The formated message ready to be writen as is on outgoing buffers.
+' @remarks  The data is not actually sent until the buffer is properly flushed.
+Public Function PrepareMessageRainToggle()
+    Call Writer.WriteInt(ServerPacketID.RainToggle)
+End Function
+
+Public Function PrepareMessageTrofeoToggleOn()
+    Call Writer.WriteInt(ServerPacketID.TrofeoToggleOn)
+End Function
+
+Public Function PrepareMessageTrofeoToggleOff()
+    Call Writer.WriteInt(ServerPacketID.TrofeoToggleOff)
+End Function
+
+Public Function PrepareMessageHora()
+    Call Writer.WriteInt(ServerPacketID.Hora)
+    Call Writer.WriteInt32((GetTickCount() - HoraMundo) Mod DuracionDia)
+    Call Writer.WriteInt32(DuracionDia)
+End Function
+
+''
+' Prepares the "ObjectDelete" message and returns it.
+'
+' @param    X X coord of the character's new position.
+' @param    Y Y coord of the character's new position.
+' @return   The formated message ready to be writen as is on outgoing buffers.
+' @remarks  The data is not actually sent until the buffer is properly flushed.
+Public Function PrepareMessageObjectDelete(ByVal X As Byte, ByVal Y As Byte)
+    Call Writer.WriteInt(ServerPacketID.ObjectDelete)
+    Call Writer.WriteInt8(X)
+    Call Writer.WriteInt8(Y)
+End Function
+
+''
+' Prepares the "BlockPosition" message and returns it.
+'
+' @param    X X coord of the tile to block/unblock.
+' @param    Y Y coord of the tile to block/unblock.
+' @param    Blocked Blocked status of the tile
+' @return   The formated message ready to be writen as is on outgoing buffers.
+' @remarks  The data is not actually sent until the buffer is properly flushed.
+Public Function PrepareMessageBlockPosition(ByVal X As Byte, _
+                                            ByVal Y As Byte, _
+                                            ByVal Blocked As Byte)
+    Call Writer.WriteInt(ServerPacketID.BlockPosition)
+    Call Writer.WriteInt8(X)
+    Call Writer.WriteInt8(Y)
+    Call Writer.WriteInt8(Blocked)
+End Function
+
+''
+' Prepares the "ObjectCreate" message and returns it.
+'
+' @param    GrhIndex Grh of the object.
+' @param    X X coord of the character's new position.
+' @param    Y Y coord of the character's new position.
+' @return   The formated message ready to be writen as is on outgoing buffers.
+' @remarks  The data is not actually sent until the buffer is properly flushed.
+'Optimizacion por Ladder
+Public Function PrepareMessageObjectCreate(ByVal ObjIndex As Integer, _
+                                           ByVal amount As Integer, _
+                                           ByVal X As Byte, _
+                                           ByVal Y As Byte)
+    Call Writer.WriteInt(ServerPacketID.ObjectCreate)
+    Call Writer.WriteInt8(X)
+    Call Writer.WriteInt8(Y)
+    Call Writer.WriteInt16(ObjIndex)
+    Call Writer.WriteInt16(amount)
+End Function
+
+Public Function PrepareMessageFxPiso(ByVal GrhIndex As Integer, _
+                                     ByVal X As Byte, _
+                                     ByVal Y As Byte)
+    Call Writer.WriteInt(ServerPacketID.fxpiso)
+    Call Writer.WriteInt8(X)
+    Call Writer.WriteInt8(Y)
+    Call Writer.WriteInt16(GrhIndex)
+End Function
+
+''
+' Prepares the "CharacterRemove" message and returns it.
+'
+' @param    CharIndex Character to be removed.
+' @return   The formated message ready to be writen as is on outgoing buffers.
+' @remarks  The data is not actually sent until the buffer is properly flushed.
+Public Function PrepareMessageCharacterRemove(ByVal CharIndex As Integer, _
+                                              ByVal Desvanecido As Boolean)
+    Call Writer.WriteInt(ServerPacketID.CharacterRemove)
+    Call Writer.WriteInt16(CharIndex)
+    Call Writer.WriteBool(Desvanecido)
+End Function
+
+''
+' Prepares the "RemoveCharDialog" message and returns it.
+'
+' @param    CharIndex Character whose dialog will be removed.
+' @return   The formated message ready to be writen as is on outgoing buffers.
+' @remarks  The data is not actually sent until the buffer is properly flushed.
+Public Function PrepareMessageRemoveCharDialog(ByVal CharIndex As Integer)
+    Call Writer.WriteInt(ServerPacketID.RemoveCharDialog)
+    Call Writer.WriteInt16(CharIndex)
+End Function
+
+''
+' Writes the "CharacterCreate" message to the given user's outgoing data .incomingData.
+'
+' @param    body Body index of the new character.
+' @param    head Head index of the new character.
+' @param    heading Heading in which the new character is looking.
+' @param    CharIndex The index of the new character.
+' @param    X X coord of the new character's position.
+' @param    Y Y coord of the new character's position.
+' @param    weapon Weapon index of the new character.
+' @param    shield Shield index of the new character.
+' @param    FX FX index to be displayed over the new character.
+' @param    FXLoops Number of times the FX should be rendered.
+' @param    helmet Helmet index of the new character.
+' @param    name Name of the new character.
+' @param    criminal Determines if the character is a criminal or not.
+' @param    privileges Sets if the character is a normal one or any kind of administrative character.
+' @return   The formated message ready to be writen as is on outgoing buffers.
+' @remarks  The data is not actually sent until the buffer is properly flushed.
+Public Function PrepareMessageCharacterCreate(ByVal Body As Integer, _
+                                              ByVal Head As Integer, _
+                                              ByVal Heading As eHeading, _
+                                              ByVal CharIndex As Integer, _
+                                              ByVal X As Byte, _
+                                              ByVal Y As Byte, _
+                                              ByVal weapon As Integer, _
+                                              ByVal shield As Integer, _
+                                              ByVal FX As Integer, _
+                                              ByVal FXLoops As Integer, _
+                                              ByVal helmet As Integer, _
+                                              ByVal Name As String, _
+                                              ByVal Status As Byte, _
+                                              ByVal privileges As Byte, _
+                                              ByVal ParticulaFx As Byte, _
+                                              ByVal Head_Aura As String, _
+                                              ByVal Arma_Aura As String, _
+                                              ByVal Body_Aura As String, _
+                                              ByVal DM_Aura As String, _
+                                              ByVal RM_Aura As String, _
+                                              ByVal Otra_Aura As String, _
+                                              ByVal Escudo_Aura As String, _
+                                              ByVal speeding As Single, _
+                                              ByVal EsNPC As Byte, _
+                                              ByVal donador As Byte, ByVal appear As Byte, ByVal group_index As Integer, ByVal clan_index As Integer, ByVal clan_nivel As Byte, ByVal UserMinHp As Long, ByVal UserMaxHp As Long, ByVal UserMinMAN As Long, ByVal UserMaxMAN As Long, ByVal Simbolo As Byte, ByVal Idle As Boolean, ByVal Navegando As Boolean)
+    Call Writer.WriteInt(ServerPacketID.CharacterCreate)
+    Call Writer.WriteInt16(CharIndex)
+    Call Writer.WriteInt16(Body)
+    Call Writer.WriteInt16(Head)
+    Call Writer.WriteInt8(Heading)
+    Call Writer.WriteInt8(X)
+    Call Writer.WriteInt8(Y)
+    Call Writer.WriteInt16(weapon)
+    Call Writer.WriteInt16(shield)
+    Call Writer.WriteInt16(helmet)
+    Call Writer.WriteInt16(FX)
+    Call Writer.WriteInt16(FXLoops)
+    Call Writer.WriteString8(Name)
+    Call Writer.WriteInt8(Status)
+    Call Writer.WriteInt8(privileges)
+    Call Writer.WriteInt8(ParticulaFx)
+    Call Writer.WriteString8(Head_Aura)
+    Call Writer.WriteString8(Arma_Aura)
+    Call Writer.WriteString8(Body_Aura)
+    Call Writer.WriteString8(DM_Aura)
+    Call Writer.WriteString8(RM_Aura)
+    Call Writer.WriteString8(Otra_Aura)
+    Call Writer.WriteString8(Escudo_Aura)
+    Call Writer.WriteReal32(speeding)
+    Call Writer.WriteInt8(EsNPC)
+    Call Writer.WriteInt8(donador)
+    Call Writer.WriteInt8(appear)
+    Call Writer.WriteInt16(group_index)
+    Call Writer.WriteInt16(clan_index)
+    Call Writer.WriteInt8(clan_nivel)
+    Call Writer.WriteInt32(UserMinHp)
+    Call Writer.WriteInt32(UserMaxHp)
+    Call Writer.WriteInt32(UserMinMAN)
+    Call Writer.WriteInt32(UserMaxMAN)
+    Call Writer.WriteInt8(Simbolo)
+    Call Writer.WriteBool(Idle)
+    Call Writer.WriteBool(Navegando)
+End Function
+
+''
+' Prepares the "CharacterChange" message and returns it.
+'
+' @param    body Body index of the new character.
+' @param    head Head index of the new character.
+' @param    heading Heading in which the new character is looking.
+' @param    CharIndex The index of the new character.
+' @param    weapon Weapon index of the new character.
+' @param    shield Shield index of the new character.
+' @param    FX FX index to be displayed over the new character.
+' @param    FXLoops Number of times the FX should be rendered.
+' @param    helmet Helmet index of the new character.
+' @return   The formated message ready to be writen as is on outgoing buffers.
+' @remarks  The data is not actually sent until the buffer is properly flushed.
+Public Function PrepareMessageCharacterChange(ByVal Body As Integer, _
+                                              ByVal Head As Integer, _
+                                              ByVal Heading As eHeading, _
+                                              ByVal CharIndex As Integer, _
+                                              ByVal weapon As Integer, _
+                                              ByVal shield As Integer, _
+                                              ByVal FX As Integer, _
+                                              ByVal FXLoops As Integer, _
+                                              ByVal helmet As Integer, _
+                                              ByVal Idle As Boolean, _
+                                              ByVal Navegando As Boolean)
+    Call Writer.WriteInt(ServerPacketID.CharacterChange)
+    Call Writer.WriteInt16(CharIndex)
+    Call Writer.WriteInt16(Body)
+    Call Writer.WriteInt16(Head)
+    Call Writer.WriteInt8(Heading)
+    Call Writer.WriteInt16(weapon)
+    Call Writer.WriteInt16(shield)
+    Call Writer.WriteInt16(helmet)
+    Call Writer.WriteInt16(FX)
+    Call Writer.WriteInt16(FXLoops)
+    Call Writer.WriteBool(Idle)
+    Call Writer.WriteBool(Navegando)
+End Function
+
+''
+' Prepares the "CharacterMove" message and returns it.
+'
+' @param    CharIndex Character which is moving.
+' @param    X X coord of the character's new position.
+' @param    Y Y coord of the character's new position.
+' @return   The formated message ready to be writen as is on outgoing buffers.
+' @remarks  The data is not actually sent until the buffer is properly flushed.
+Public Function PrepareMessageCharacterMove(ByVal CharIndex As Integer, _
+                                            ByVal X As Byte, _
+                                            ByVal Y As Byte)
+    Call Writer.WriteInt(ServerPacketID.CharacterMove)
+    Call Writer.WriteInt16(CharIndex)
+    Call Writer.WriteInt8(X)
+    Call Writer.WriteInt8(Y)
+End Function
+
+Public Function PrepareMessageForceCharMove(ByVal Direccion As eHeading)
+    Call Writer.WriteInt(ServerPacketID.ForceCharMove)
+    Call Writer.WriteInt8(Direccion)
+End Function
+
+''
+' Prepares the "UpdateTagAndStatus" message and returns it.
+'
+' @param    CharIndex Character which is moving.
+' @param    X X coord of the character's new position.
+' @param    Y Y coord of the character's new position.
+' @return   The formated message ready to be writen as is on outgoing buffers.
+' @remarks  The data is not actually sent until the buffer is properly flushed.
+Public Function PrepareMessageUpdateTagAndStatus(ByVal UserIndex As Integer, _
+                                                 Status As Byte, _
+                                                 Tag As String)
+    Call Writer.WriteInt(ServerPacketID.UpdateTagAndStatus)
+    Call Writer.WriteInt16(UserList(UserIndex).Char.CharIndex)
+    Call Writer.WriteInt8(Status)
+    Call Writer.WriteString8(Tag)
+    Call Writer.WriteInt16(UserList(UserIndex).Grupo.Lider)
+End Function
+
+''
+' Prepares the "ErrorMsg" message and returns it.
+'
+' @param    message The error message to be displayed.
+' @remarks  The data is not actually sent until the buffer is properly flushed.
+Public Function PrepareMessageErrorMsg(ByVal Message As String)
+    Call Writer.WriteInt(ServerPacketID.ErrorMsg)
+    Call Writer.WriteString8(Message)
+End Function
+
+Public Function PrepareMessageBarFx(ByVal CharIndex As Integer, _
+                                    ByVal BarTime As Integer, _
+                                    ByVal BarAccion As Byte)
+    Call Writer.WriteInt(ServerPacketID.BarFx)
+    Call Writer.WriteInt16(CharIndex)
+    Call Writer.WriteInt16(BarTime)
+    Call Writer.WriteInt8(BarAccion)
+End Function
+
+Public Function PrepareMessageNieblandoToggle(ByVal IntensidadMax As Byte)
+    Call Writer.WriteInt(ServerPacketID.NieblaToggle)
+    Call Writer.WriteInt8(IntensidadMax)
+End Function
+
+Public Function PrepareMessageNevarToggle()
+    Call Writer.WriteInt(ServerPacketID.NieveToggle)
+End Function
+
+Public Function PrepareMessageDoAnimation(ByVal CharIndex As Integer, _
+                                          ByVal Animation As Integer)
+    Call Writer.WriteInt(ServerPacketID.DoAnimation)
+    Call Writer.WriteInt16(CharIndex)
+    Call Writer.WriteInt16(Animation)
+End Function
+
+' \End: Prepares

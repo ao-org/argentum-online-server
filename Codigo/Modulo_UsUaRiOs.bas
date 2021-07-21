@@ -1512,7 +1512,7 @@ Function NextOpenUser() As Integer
 100     For LoopC = 1 To MaxUsers + 1
 
 102         If LoopC > MaxUsers Then Exit For
-104         If (UserList(LoopC).ConnID = -1 And UserList(LoopC).flags.UserLogged = False) Then Exit For
+104         If (Not UserList(LoopC).ConnIDValida And UserList(LoopC).flags.UserLogged = False) Then Exit For
 106     Next LoopC
    
 108     NextOpenUser = LoopC
@@ -1804,38 +1804,6 @@ SendUserSkillsTxt_Err:
 
         
 End Sub
-
-Function DameUserIndex(SocketID As Integer) As Integer
-        
-        On Error GoTo DameUserIndex_Err
-        
-
-        Dim LoopC As Integer
-  
-100     LoopC = 1
-  
-102     Do Until UserList(LoopC).ConnID = SocketID
-
-104         LoopC = LoopC + 1
-    
-106         If LoopC > MaxUsers Then
-108             DameUserIndex = 0
-                Exit Function
-
-            End If
-    
-        Loop
-  
-110     DameUserIndex = LoopC
-
-        
-        Exit Function
-
-DameUserIndex_Err:
-112     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.DameUserIndex", Erl)
-
-        
-End Function
 
 Function DameUserIndexConNombre(ByVal nombre As String) As Integer
         
@@ -2469,7 +2437,7 @@ Sub WarpUserChar(ByVal UserIndex As Integer, _
                 End If
 
             Else
-212             Call EnviarDatosASlot(UserIndex, PrepareMessageSetInvisible(.Char.CharIndex, True))
+212             Call SendData(ToIndex, UserIndex, PrepareMessageSetInvisible(.Char.CharIndex, True))
 
             End If
         
@@ -2580,7 +2548,7 @@ Public Sub CancelExit(ByVal UserIndex As Integer)
         'Last Modification: 04/02/08
         '
         '***************************************************
-100     If UserList(UserIndex).Counters.Saliendo And UserList(UserIndex).ConnID <> -1 Then
+100     If UserList(UserIndex).Counters.Saliendo And UserList(UserIndex).ConnIDValida Then
 
             ' Is the user still connected?
 102         If UserList(UserIndex).ConnIDValida Then

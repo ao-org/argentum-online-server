@@ -405,7 +405,7 @@ Public Sub DropObjQuest(ByRef npc As npc, ByRef UserIndex As Integer)
 
                                 ' WyroX: Ahora te lo da en el inventario, si hay espacio, y el sonido lo escuchas vos solo
 120                             Call MeterItemEnInventario(UserIndex, Dropeo)
-122                             Call EnviarDatosASlot(UserIndex, PrepareMessagePlayWave(FXSound.Dropeo_Sound, npc.Pos.X, npc.Pos.Y))
+122                             Call SendData(ToIndex, UserIndex, PrepareMessagePlayWave(FXSound.Dropeo_Sound, npc.Pos.X, npc.Pos.Y))
                             End If
                         End If
                     End If

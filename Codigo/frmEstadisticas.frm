@@ -22,29 +22,21 @@ Begin VB.Form frmEstadisticas
          Caption         =   "Adm"
          Height          =   315
          Left            =   2640
-         TabIndex        =   13
+         TabIndex        =   12
          Top             =   600
          Width           =   495
       End
       Begin VB.ComboBox cboUsusColas 
          Height          =   315
          Left            =   120
-         TabIndex        =   12
+         TabIndex        =   11
          Top             =   600
          Width           =   2415
-      End
-      Begin VB.CommandButton Command1 
-         Caption         =   "R"
-         Height          =   375
-         Left            =   4560
-         TabIndex        =   10
-         Top             =   360
-         Width           =   495
       End
       Begin VB.Label lblColas 
          Height          =   255
          Left            =   120
-         TabIndex        =   11
+         TabIndex        =   10
          Top             =   240
          Width           =   4335
       End
@@ -154,45 +146,6 @@ Attribute VB_Exposed = False
 '**************************************************************************
 
 Option Explicit
-
-Private Sub Command1_Click()
-        
-        On Error GoTo Command1_Click_Err
-        
-
-        Dim LoopC As Integer, n As Long, M As Long
-
-100     n = 0 'numero de pjs
-102     M = 0 'numero total de elementos en cola
-
-104     If cboUsusColas.ListCount > 0 Then cboUsusColas.Clear
-
-106     For LoopC = 1 To LastUser
-
-108         If UserList(LoopC).flags.UserLogged And UserList(LoopC).ConnID >= 0 And UserList(LoopC).ConnIDValida Then
-110             If UserList(LoopC).outgoingData.Length > 0 Then
-112                 n = n + 1
-114                 M = M + UserList(LoopC).outgoingData.Length
-116                 cboUsusColas.AddItem UserList(LoopC).Name
-
-                End If
-
-            End If
-
-118     Next LoopC
-
-120     lblColas.Caption = n & " PJs, " & M & " elementos en las colas."
-
-122     If cboUsusColas.ListCount > 0 Then cboUsusColas.ListIndex = 0
-    
-        
-        Exit Sub
-
-Command1_Click_Err:
-124     Call RegistrarError(Err.Number, Err.Description, "frmEstadisticas.Command1_Click", Erl)
-126
-        
-End Sub
 
 Private Sub Command2_Click()
         
