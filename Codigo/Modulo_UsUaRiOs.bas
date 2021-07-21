@@ -2736,7 +2736,11 @@ Sub VolverCriminal(ByVal UserIndex As Integer)
 
 104     If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero) Then
    
-106         If .Faccion.ArmadaReal = 1 Then Call ExpulsarFaccionReal(UserIndex)
+106         If .Faccion.ArmadaReal = 1 Then
+                ' WyroX: NUNCA debería pasar, pero dejo un log por si las...
+                Call RegistrarError(111, "Un personaje de la Armada Real atacó un ciudadano.", "UsUaRiOs.VolverCriminal")
+                'Call ExpulsarFaccionReal(UserIndex)
+            End If
 
         End If
 
