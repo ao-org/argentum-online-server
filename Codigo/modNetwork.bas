@@ -58,6 +58,10 @@ Public Sub Kick(ByVal Connection As Long, Optional ByVal Message As String = vbN
     Call Server.Kick(Connection)
 End Sub
 
+Public Function GetTimeOfNextFlush() As Single
+    GetTimeOfNextFlush = max(0, TIME_SEND_FREQUENCY - Time(1))
+End Function
+
 Public Function GetIPStringFromAddress(ByVal IPAddress As Double) As String
     Dim X       As Integer
     Dim Num     As Integer
