@@ -797,7 +797,9 @@ End Sub
 Private Sub Command20_Click()
         
         On Error GoTo Command20_Click_Err
-
+        
+        Dim LoopC As Long
+        
 100     If MsgBox("Esta seguro que desea reiniciar los sockets ? Se cerrarán todas las conexiones activas.", vbYesNo, "Reiniciar Sockets") = vbYes Then
 102         Call modNetwork.Disconnect
 
@@ -812,7 +814,7 @@ Private Sub Command20_Click()
         Exit Sub
 
 Command20_Click_Err:
-104     Call RegistrarError(Err.Number, Err.Description, "frmServidor.Command20_Click", Erl)
+108     Call RegistrarError(Err.Number, Err.Description, "frmServidor.Command20_Click", Erl)
 
         
 End Sub
