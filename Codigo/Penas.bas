@@ -162,9 +162,8 @@ Public Sub BanearCuenta(ByVal BannerIndex As Integer, _
                         ByVal Reason As String)
         
         On Error GoTo BanearCuenta_Err
-        
 
-        Dim CuentaID As Integer
+        Dim CuentaID As Long
 
 100     If Not GlobalChecks(BannerIndex, UserName) Then Exit Sub
 
