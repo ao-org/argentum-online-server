@@ -558,8 +558,6 @@ Private Sub InicializarConstantes()
 194     ListaAtributos(eAtributos.Constitucion) = "Constitución"
 196     ListaAtributos(eAtributos.Carisma) = "Carisma"
     
-198     centinelaActivado = True
-    
 200     IniPath = App.Path & "\"
     
         'Bordes del mapa
