@@ -1716,12 +1716,12 @@ Public Function PuedeAtacar(ByVal AttackerIndex As Integer, ByVal VictimIndex As
         ' Es armada?
         If esArmada(AttackerIndex) Then
             ' Si ataca otro armada
-            If esArmada(VictimaIndex) Then
+            If esArmada(VictimIndex) Then
                 Call WriteConsoleMsg(AttackerIndex, "Los miembros del Ejercito Real tienen prohibido atacarse entre sí.", FontTypeNames.FONTTYPE_WARNING)
                 PuedeAtacar = False
                 Exit Function
             ' Si ataca un ciudadano
-            ElseIf Status(VictimaIndex) = Ciudadano Then
+            ElseIf Status(VictimIndex) = Ciudadano Then
                 Call WriteConsoleMsg(AttackerIndex, "Los miembros del Ejercito Real tienen prohibido atacar ciudadanos.", FontTypeNames.FONTTYPE_WARNING)
                 PuedeAtacar = False
                 Exit Function

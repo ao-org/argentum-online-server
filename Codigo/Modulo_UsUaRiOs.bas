@@ -690,7 +690,7 @@ Public Function ConnectUser_Complete(ByVal UserIndex As Integer, _
 
              End If
 
-1145        If Status(UserIndex) = 2 Or Status(UserIndex) = 0 Then
+1145        If Status(UserIndex) = Criminal Or Status(UserIndex) = e_Facciones.Caos Then
 1150            Call WriteSafeModeOff(UserIndex)
 1155            .flags.Seguro = False
 
@@ -2786,6 +2786,9 @@ Sub VolverCiudadano(ByVal UserIndex As Integer)
         Else
 112         Call RefreshCharStatus(UserIndex)
         End If
+
+        Call WriteSafeModeOn(UserIndex)
+        .flags.Seguro = True
 
     End With
         
