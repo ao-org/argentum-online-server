@@ -12,7 +12,7 @@ https://dev.mysql.com/get/Downloads/Connector-ODBC/8.0/mysql-connector-odbc-8.0.
 # Development (test branch ao-api/web)
 IMPORTANTE: Para hacer cuentas en el servidor de test, tienen que entrar aca.
 Website:
-https://ao20-web-testing.herokuapp.com/
+http://ao20-web-testing.herokuapp.com/
 
 
 # Creacion de Parches / Actualizacion
@@ -29,15 +29,15 @@ Importante: Ejecutar uno solo a la vez y esperar a que termine y hacerlo en este
 
 a- Actualizar Recursos
 
-- http://ao20-testing-secreto.duckdns.org:9090/view/Produccion/job/Recursos/
+- http://horacio.ao20.com.ar:2095/view/Produccion/job/Recursos/
 
 b- Actualizar codigo del cliente (ESTE PIPELINE SE EJECUTA AUTOMATICAMENTE AL CREAR EL TAG)
 
-- http://ao20-testing-secreto.duckdns.org:9090/view/Produccion/job/re20-cliente-tag-release/
+- http://horacio.ao20.com.ar:2095/view/Produccion/job/re20-cliente-tag-release/
 
 c- Crear parche e instalador y subirlo al ftp.
 
-- http://ao20-testing-secreto.duckdns.org:9090/view/Produccion/job/CREAR%20PARCHE%20CLIENTE%20E%20INSTALADOR%20NUEVO%20PARA%20LA%20WEB/
+- http://horacio.ao20.com.ar:2095/view/Produccion/job/CREAR%20PARCHE%20CLIENTE%20E%20INSTALADOR%20NUEVO%20PARA%20LA%20WEB/
 
 Esperar a que termine.
 PRO TIP: Se puede continuar el proceso cuando se esta generando/subiendo el instalador, ya que el parche estaria completo, si no sabes bien cuando esto sucede, simplemente esperar a que termine el proceso.
@@ -58,8 +58,8 @@ Importante usar semantic versioning (https://semver.org/) (ejemplo: v1.0.0)
 ### 5- Ejecutar pipelines de jenkins para actualizar recursos de servidor y servidor.
 Importante: Ejecutar uno solo a la vez y esperar a que termine y hacerlo en este orden.
 
-- http://ao20-testing-secreto.duckdns.org:9090/view/Produccion/job/Recursos-tag-release/
-- http://ao20-testing-secreto.duckdns.org:9090/view/Produccion/job/re20-server-tag-release/
+- http://horacio.ao20.com.ar:2095/view/Produccion/job/Recursos-tag-release/
+- http://horacio.ao20.com.ar:2095/view/Produccion/job/re20-server-tag-release/
 
 
 Listo parche completado.
