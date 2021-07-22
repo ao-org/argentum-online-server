@@ -369,11 +369,6 @@ Begin VB.Form frmMain
       Left            =   720
       Top             =   4200
    End
-   Begin VB.Timer packetResend 
-      Interval        =   5
-      Left            =   240
-      Top             =   3060
-   End
    Begin VB.CommandButton CMDDUMP 
       Caption         =   "dump"
       Height          =   255
@@ -605,9 +600,6 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-Public WithEvents Winsock As clsWinsock
-Attribute Winsock.VB_VarHelpID = -1
-
 Public ESCUCHADAS As Long
 
 Private Type NOTIFYICONDATA
@@ -673,7 +665,7 @@ Sub CheckIdleUser()
 100     For iUserIndex = 1 To MaxUsers
 
             'Conexion activa? y es un usuario loggeado?
-102         If UserList(iUserIndex).ConnID <> -1 And UserList(iUserIndex).flags.UserLogged Then
+102         If UserList(iUserIndex).ConnIDValida And UserList(iUserIndex).flags.UserLogged Then
                 'Actualiza el contador de inactividad
 104             UserList(iUserIndex).Counters.IdleCount = UserList(iUserIndex).Counters.IdleCount + 1
 
@@ -1060,7 +1052,7 @@ Private Sub CMDDUMP_Click()
         Dim i As Integer
 
 100     For i = 1 To MaxUsers
-102         Call LogCriticEvent(i & ") ConnID: " & UserList(i).ConnID & ". ConnidValida: " & UserList(i).ConnIDValida & " Name: " & UserList(i).Name & " UserLogged: " & UserList(i).flags.UserLogged)
+102         Call LogCriticEvent(i & ") ConnIDValida: " & UserList(i).ConnIDValida & " Name: " & UserList(i).Name & " UserLogged: " & UserList(i).flags.UserLogged)
 104     Next i
 
 106     Call LogCriticEvent("Lastuser: " & LastUser & " NextOpenUser: " & NextOpenUser)
@@ -1787,26 +1779,6 @@ mnuSystray_Click_Err:
         
 End Sub
 
-Private Sub packetResend_Timer()
-
-On Error GoTo Handler
-
-    'If there is anything to be sent, we send it
-    Dim i As Long
-    For i = 1 To LastUser
-        If UserList(i).ConnIDValida Then
-            Call FlushBuffer(i)
-        End If
-    Next
-    
-    Exit Sub
-    
-Handler:
-    Call RegistrarError(Err.Number, Err.Description, "frmMain.packetResend_Timer")
-
-    
-End Sub
-
 Private Sub SubastaTimer_Timer()
         
     On Error GoTo SubastaTimer_Timer_Err
@@ -2219,55 +2191,6 @@ UptimeTimer_Timer_Err:
         
 End Sub
 
-Private Sub Winsock_Accept(ByVal SocketID As Long, ByVal UserIP As Long)
-        ' Aceptamos la conexion entrante
-100     Call wskapiAO.EventoSockAccept(SocketID, UserIP)
-End Sub
-
-Private Sub Winsock_BeforeRead(ByVal Slot As Integer, ByRef BytesToRead As Long)
-100     BytesToRead = UserList(Slot).incomingData.Capacity - UserList(Slot).incomingData.Length
-End Sub
-
-Private Sub Winsock_Read(ByVal Slot As Integer, ByRef Datos() As Byte, ByVal Length As Long)
-    
-        Dim UltError As Long
-    
-        ' Comparo por = 0 ya que esto es cuando se cierra "gracefully". (mas abajo)
-100     If Length < 0 Then
-102         UltError = Err.LastDllError
-                        
-104         Debug.Print "Error en Recv: " & Winsock.WSA_GetErrorString(UltError)
-                            
-106         Call LogApiSock("Error en Recv: Slot = " & Slot & " Str = " & Winsock.WSA_GetErrorString(UltError))
-                
-            ' NO hay q llamar a CloseSocket() directamente, ya q pueden abusar de algun error para desconectarse sin los 10segs. CREEME.
-            'Call CloseSocket(Slot)
-            
-108         Call CloseSocketSL(Slot)
-110         Call Cerrar_Usuario(Slot)
-            Exit Sub
-
-112     ElseIf Length = 0 Then
-114         Call CloseSocketSL(Slot)
-116         Call Cerrar_Usuario(Slot)
-            Exit Sub
-        End If
-    
-118     Call wskapiAO.EventoSockRead(Slot, Datos, Length)
-    
-End Sub
-
-Private Sub Winsock_Disconnect(ByVal SocketID As Integer, ByVal Slot As Integer)
-100     If Slot <= 0 Then Exit Sub
-    
-102     Call BorraSlotSock(SocketID)
-                        
-104     UserList(Slot).ConnID = -1
-106     UserList(Slot).ConnIDValida = False
-                        
-108     Call EventoSockClose(Slot)
-
-End Sub
 
 Public Sub DbManagerListen()
     On Error GoTo Handler
