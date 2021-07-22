@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.1.0
+-- version 5.0.2
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 23-07-2021 a las 01:07:42
--- Versión del servidor: 10.4.18-MariaDB
--- Versión de PHP: 8.0.3
+-- Tiempo de generación: 23-07-2021 a las 01:30:20
+-- Versión del servidor: 10.4.14-MariaDB
+-- Versión de PHP: 7.4.10
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Base de datos: `ao_server_prod`
+-- Base de datos: `ao_server_test`
 --
 
 -- --------------------------------------------------------
@@ -346,6 +346,18 @@ CREATE TABLE `statistics` (
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `statistics_users_online`
+--
+
+CREATE TABLE `statistics_users_online` (
+  `id` mediumint(8) UNSIGNED NOT NULL,
+  `date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `number` tinyint(3) UNSIGNED NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `user`
 --
 
@@ -476,7 +488,7 @@ CREATE TABLE `whitelist` (
 --
 DROP TABLE IF EXISTS `mao__deal_summaries`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `mao__deal_summaries`  AS SELECT `d`.`id` AS `id`, `d`.`publisher_account_id` AS `publisher_account_id`, `d`.`character_id` AS `character_id`, `d`.`description` AS `description`, `d`.`deal_type` AS `deal_type`, `d`.`gold_price` AS `gold_price`, `d`.`closed_at` AS `closed_at`, `d`.`created_at` AS `created_at`, `d`.`updated_at` AS `updated_at`, `u`.`name` AS `character_name`, `u`.`class_id` AS `class_id`, `u`.`race_id` AS `race_id`, `u`.`genre_id` AS `genre_id`, `u`.`elo` AS `elo`, `u`.`level` AS `level`, `u`.`head_id` AS `head_id`, `u`.`max_hp` AS `max_hp`, `u`.`warnings` AS `warnings` FROM (`mao__deals` `d` join `user` `u` on(`d`.`character_id` = `u`.`id`)) ;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `mao__deal_summaries`  AS  select `d`.`id` AS `id`,`d`.`publisher_account_id` AS `publisher_account_id`,`d`.`character_id` AS `character_id`,`d`.`description` AS `description`,`d`.`deal_type` AS `deal_type`,`d`.`gold_price` AS `gold_price`,`d`.`closed_at` AS `closed_at`,`d`.`created_at` AS `created_at`,`d`.`updated_at` AS `updated_at`,`u`.`name` AS `character_name`,`u`.`class_id` AS `class_id`,`u`.`race_id` AS `race_id`,`u`.`genre_id` AS `genre_id`,`u`.`elo` AS `elo`,`u`.`level` AS `level`,`u`.`head_id` AS `head_id`,`u`.`max_hp` AS `max_hp`,`u`.`warnings` AS `warnings` from (`mao__deals` `d` join `user` `u` on(`d`.`character_id` = `u`.`id`)) ;
 
 -- --------------------------------------------------------
 
@@ -485,7 +497,7 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 --
 DROP TABLE IF EXISTS `mao__offer_summaries`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `mao__offer_summaries`  AS SELECT `o`.`id` AS `id`, `o`.`deal_id` AS `deal_id`, `o`.`offeror_account_id` AS `offeror_account_id`, `o`.`character_id` AS `character_id`, `o`.`offer_price` AS `offer_price`, `o`.`state` AS `state`, `o`.`description` AS `description`, `o`.`created_at` AS `created_at`, `o`.`updated_at` AS `updated_at`, `u`.`name` AS `character_name`, `u`.`class_id` AS `class_id`, `u`.`race_id` AS `race_id`, `u`.`genre_id` AS `genre_id`, `u`.`elo` AS `elo`, `u`.`level` AS `level`, `u`.`head_id` AS `head_id`, `u`.`max_hp` AS `max_hp`, `u`.`warnings` AS `warnings` FROM (`mao__offers` `o` join `user` `u` on(`o`.`character_id` = `u`.`id`)) ;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `mao__offer_summaries`  AS  select `o`.`id` AS `id`,`o`.`deal_id` AS `deal_id`,`o`.`offeror_account_id` AS `offeror_account_id`,`o`.`character_id` AS `character_id`,`o`.`offer_price` AS `offer_price`,`o`.`state` AS `state`,`o`.`description` AS `description`,`o`.`created_at` AS `created_at`,`o`.`updated_at` AS `updated_at`,`u`.`name` AS `character_name`,`u`.`class_id` AS `class_id`,`u`.`race_id` AS `race_id`,`u`.`genre_id` AS `genre_id`,`u`.`elo` AS `elo`,`u`.`level` AS `level`,`u`.`head_id` AS `head_id`,`u`.`max_hp` AS `max_hp`,`u`.`warnings` AS `warnings` from (`mao__offers` `o` join `user` `u` on(`o`.`character_id` = `u`.`id`)) ;
 
 -- --------------------------------------------------------
 
@@ -494,7 +506,7 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 --
 DROP TABLE IF EXISTS `ranking_users`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `ranking_users`  AS SELECT `u`.`id` AS `id`, `u`.`name` AS `character_name`, `u`.`class_id` AS `class_id`, `u`.`race_id` AS `race_id`, `u`.`genre_id` AS `genre_id`, `u`.`head_id` AS `head_id`, `u`.`elo` AS `elo`, `u`.`level` AS `level`, `u`.`exp` AS `exp`, `u`.`gold`+ `u`.`bank_gold` AS `total_gold`, `u`.`criminales_matados`+ `u`.`ciudadanos_matados` AS `total_kills` FROM `user` AS `u` WHERE `u`.`deleted` = 0 ;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `ranking_users`  AS  select `u`.`id` AS `id`,`u`.`name` AS `character_name`,`u`.`class_id` AS `class_id`,`u`.`race_id` AS `race_id`,`u`.`genre_id` AS `genre_id`,`u`.`head_id` AS `head_id`,`u`.`elo` AS `elo`,`u`.`level` AS `level`,`u`.`exp` AS `exp`,`u`.`gold` + `u`.`bank_gold` AS `total_gold`,`u`.`criminales_matados` + `u`.`ciudadanos_matados` AS `total_kills` from `user` `u` where `u`.`deleted` = 0 ;
 
 --
 -- Índices para tablas volcadas
@@ -614,6 +626,12 @@ ALTER TABLE `statistics`
   ADD PRIMARY KEY (`name`);
 
 --
+-- Indices de la tabla `statistics_users_online`
+--
+ALTER TABLE `statistics_users_online`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indices de la tabla `user`
 --
 ALTER TABLE `user`
@@ -661,6 +679,12 @@ ALTER TABLE `mao__deals`
 --
 ALTER TABLE `mao__offers`
   MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `statistics_users_online`
+--
+ALTER TABLE `statistics_users_online`
+  MODIFY `id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `user`
