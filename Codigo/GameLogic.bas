@@ -776,7 +776,7 @@ Function RotateHeading(ByVal Heading As eHeading, ByVal R As Integer) As eHeadin
     
 End Function
 
-Function LegalPos(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer, Optional ByVal PuedeAgua As Boolean = False, Optional ByVal PuedeTierra As Boolean = True, Optional ByVal Montado As Boolean = False, Optional ByVal PuedeTraslado As Boolean = True) As Boolean
+Function LegalPos(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer, Optional ByVal PuedeAgua As Boolean = False, Optional ByVal PuedeTierra As Boolean = True, Optional ByVal Montado As Boolean = False, Optional ByVal PuedeTraslado As Boolean = True, Optional ByVal PuedeBloqueoParcial As Boolean = True) As Boolean
         '***************************************************
         'Autor: Pablo (ToxicWaste) & Unknown (orginal version)
         'Last Modification: 23/01/2007
@@ -810,11 +810,11 @@ Function LegalPos(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer, 
 122             If (.Blocked And FLAG_AGUA) = 0 Then Exit Function
             End If
             
-124         'If (.Blocked And eBlock.ALL_SIDES) = eBlock.ALL_SIDES Then Exit Function
-            ' Wyrox esto soluciona si es eBlock.ALL_SIDES pero permite saltas bloqueos de direccion
-            ' soluciono lo del drenaje pero ahora entran a casas y demas.
-            
-            If (.Blocked And eBlock.ALL_SIDES) > 0 Then Exit Function
+            If PuedeBloqueoParcial Then
+124             If (.Blocked And eBlock.ALL_SIDES) = eBlock.ALL_SIDES Then Exit Function
+            Else
+                If (.Blocked And eBlock.ALL_SIDES) > 0 Then Exit Function
+            End If
             
         End With
         

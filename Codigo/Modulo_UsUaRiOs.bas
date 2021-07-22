@@ -468,7 +468,7 @@ Public Function ConnectUser_Complete(ByVal UserIndex As Integer, _
 660                     If esAgua Then
 
                             'reviso que sea pos legal en agua, que no haya User ni NPC para poder loguear.
-665                         If LegalPos(.Pos.Map, tX, tY, True, False) Then
+665                         If LegalPos(.Pos.Map, tX, tY, True, False, False, False, False) Then
 670                             FoundPlace = True
                                 Exit For
 
@@ -477,7 +477,7 @@ Public Function ConnectUser_Complete(ByVal UserIndex As Integer, _
                         Else
 
                             'reviso que sea pos legal en tierra, que no haya User ni NPC para poder loguear.
-675                         If LegalPos(.Pos.Map, tX, tY, False, True) Then
+675                         If LegalPos(.Pos.Map, tX, tY, False, False, False, False, False) Then
 680                             FoundPlace = True
                                 Exit For
 
@@ -2308,7 +2308,7 @@ Sub WarpToLegalPos(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As 
 108         For tY = Y - LoopC To Y + LoopC
 110             For tX = X - LoopC To X + LoopC
             
-112                 If LegalPos(Map, tX, tY, AguaValida, True, UserList(UserIndex).flags.Montado = 1, False) Then
+112                 If LegalPos(Map, tX, tY, AguaValida, True, UserList(UserIndex).flags.Montado = 1, False, False) Then
                         If MapData(Map, tX, tY).trigger < 50 Then
 114                         Call WarpUserChar(UserIndex, Map, tX, tY, FX)
                             Exit Sub
