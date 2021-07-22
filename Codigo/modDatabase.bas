@@ -98,6 +98,107 @@ ErrorHandler:
 
 End Sub
 
+Private Function CreateParameter(ByVal Value As Variant, ByVal Direction As ADODB.ParameterDirectionEnum) As ADODB.Parameter
+    Set CreateParameter = New ADODB.Parameter
+    
+    CreateParameter.Direction = Direction
+    
+    Select Case VarType(Value)
+        Case VbVarType.vbString
+            CreateParameter.Type = adVarWChar
+            CreateParameter.Size = Len(Value)
+            CreateParameter.Value = Value
+        Case VbVarType.vbDecimal
+            CreateParameter.Type = adInteger
+            CreateParameter.Value = CLng(Value)
+        Case VbVarType.vbByte:
+            CreateParameter.Type = adTinyInt
+            CreateParameter.Value = CByte(Value)
+        Case VbVarType.vbInteger
+            CreateParameter.Type = adSmallInt
+            CreateParameter.Value = CInt(Value)
+        Case VbVarType.vbLong
+            CreateParameter.Type = adInteger
+            CreateParameter.Value = CLng(Value)
+        Case VbVarType.vbBoolean
+            CreateParameter.Type = adBoolean
+            CreateParameter.Value = CBool(Value)
+        Case VbVarType.vbSingle
+            CreateParameter.Type = adSingle
+            CreateParameter.Value = CSng(Value)
+        Case VbVarType.vbDouble
+            CreateParameter.Type = adDouble
+            CreateParameter.Value = CDbl(Value)
+    End Select
+    
+End Function
+
+Public Function MakeQuery(Query As String, ByVal NoResult As Boolean, ParamArray Query_Parameters() As Variant) As Boolean
+
+    ' 17/10/2020 Autor: Alexis Caraballo (WyroX)
+    ' Hace una unica query a la db. Asume una conexion.
+    ' Si NoResult = False, el metodo lee el resultado de la query
+    ' Guarda el resultado en QueryData
+    
+    On Error GoTo ErrorHandler
+    
+    If frmMain.chkLogDbPerfomance.Value = 1 Then
+        Call GetElapsedTime
+    End If
+    
+    Dim Argument As Variant
+    
+    Dim Command  As ADODB.Command
+    Set Command = New ADODB.Command
+
+    Command.ActiveConnection = Database_Connection
+    Command.CommandText = Query
+    Command.CommandType = adCmdText
+    Command.Prepared = True
+        
+    For Each Argument In Arguments
+        Command.Parameters.Append CreateParameter(Argument, adParamInput)
+    Next Argument
+    
+    If NoResult Then
+        Call Command.Execute(, , adExecuteNoRecords)
+        
+    Else
+        Set Query = Command.Execute
+        
+        If QueryData.BOF Or QueryData.EOF Then
+            Set QueryData = Nothing
+        End If
+    
+    End If
+        
+    If frmMain.chkLogDbPerfomance.Value = 1 Then
+        Call LogPerformance("Query: " & Query & vbNewLine & " - Tiempo transcurrido: " & Round(GetElapsedTime(), 1) & " ms" & vbNewLine)
+    End If
+    
+    Exit Function
+    
+ErrorHandler:
+
+    Dim errNumber As Long, ErrDesc As String
+    errNumber = Err.Number
+    ErrDesc = Err.Description
+
+    If Not adoIsConnected(Database_Connection) Then
+        Call LogDatabaseError("Alerta en MakeQuery: Se perdió la conexión con la DB. Reconectando.")
+        Call Database_Connect
+        Resume
+        
+    Else
+        Call LogDatabaseError("Error en MakeQuery: query = '" & Query & "'. " & errNumber & " - " & ErrDesc)
+        
+        On Error GoTo 0
+
+        Err.raise errNumber, "MakeQuery", ErrDesc
+
+    End If
+
+End Function
 
 Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
 
@@ -1126,77 +1227,6 @@ ErrorHandler:
 
 
 End Sub
-
-Public Function MakeQuery(query As String, ByVal NoResult As Boolean, ParamArray Query_Parameters() As Variant) As Boolean
-        ' 17/10/2020 Autor: Alexis Caraballo (WyroX)
-        ' Hace una unica query a la db. Asume una conexion.
-        ' Si NoResult = False, el metodo lee el resultado de la query
-        ' Guarda el resultado en QueryData
-    
-        On Error GoTo ErrorHandler
-    
-        If frmMain.chkLogDbPerfomance.Value = 1 Then Call GetElapsedTime
-        Dim Params As Variant
-
-100     Set Command = New ADODB.Command
-    
-102     With Command
-
-104         .ActiveConnection = Database_Connection
-106         .CommandType = adCmdText
-108         .NamedParameters = False
-110         .CommandText = query
-        
-112         If UBound(Query_Parameters) < 0 Then
-114             Params = Null
-            
-            Else
-116             Params = Query_Parameters
-            
-118             If IsArray(Query_Parameters(0)) Then
-120                 .Prepared = True
-122                 Params = Query_Parameters(0)
-                End If
-
-            End If
-
-124         If NoResult Then
-126             Call .Execute(RecordsAffected, Params, adExecuteNoRecords)
-            Else
-128             Set QueryData = .Execute(RecordsAffected, Params)
-    
-130             If QueryData.BOF Or QueryData.EOF Then
-132                 Set QueryData = Nothing
-                End If
-    
-            End If
-        
-        End With
-        If frmMain.chkLogDbPerfomance.Value = 1 Then Call LogPerformance("Query: " & query & vbNewLine & " - Tiempo transcurrido: " & Round(GetElapsedTime(), 1) & " ms" & vbNewLine)
-    
-        Exit Function
-    
-ErrorHandler:
-
-        Dim errNumber As Long, ErrDesc As String
-134     errNumber = Err.Number
-136     ErrDesc = Err.Description
-
-138     If Not adoIsConnected(Database_Connection) Then
-140         Call LogDatabaseError("Alerta en MakeQuery: Se perdió la conexión con la DB. Reconectando.")
-142         Call Database_Connect
-144         Resume
-        
-        Else
-146         Call LogDatabaseError("Error en MakeQuery: query = '" & query & "'. " & errNumber & " - " & ErrDesc)
-        
-            On Error GoTo 0
-
-148         Err.raise errNumber, "MakeQuery", ErrDesc
-
-        End If
-
-End Function
 
 Public Function GetDBValue(Tabla As String, ColumnaGet As String, ColumnaTest As String, ValueTest As Variant) As Variant
         ' 17/10/2020 Autor: Alexis Caraballo (WyroX)
