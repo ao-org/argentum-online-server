@@ -8,6 +8,10 @@ Código fuente de el servidor de Argentum20, basado en RevolucionAO de Ladder
 - ODBC DRIVERS
 https://dev.mysql.com/get/Downloads/Connector-ODBC/8.0/mysql-connector-odbc-8.0.22-win32.msi
 
+- Registrar manualmente libreria Aurora.Network.dll 
+
+Abrir CMD como Administrador `regsvr32 Aurora.Network.dll`
+
 
 # Development (test branch ao-api/web)
 IMPORTANTE: Para hacer cuentas en el servidor de test, tienen que entrar aca.
