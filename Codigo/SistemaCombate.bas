@@ -1650,7 +1650,7 @@ Public Function PuedeAtacar(ByVal AttackerIndex As Integer, ByVal VictimIndex As
         
         ' No podes atacar si estas en consulta
 120     If UserList(AttackerIndex).flags.EnConsulta Then
-122         Call WriteConsoleMsg(AttackerIndex, "No puedes atacar usuarios mientras estas en consulta.", FontTypeNames.FONTTYPE_INFO)
+122         Call WriteConsoleMsg(AttackerIndex, "No podés atacar usuarios mientras estás en consulta.", FontTypeNames.FONTTYPE_INFO)
 124         PuedeAtacar = False
             Exit Function
     
@@ -1658,14 +1658,14 @@ Public Function PuedeAtacar(ByVal AttackerIndex As Integer, ByVal VictimIndex As
         
         ' No podes atacar si esta en consulta
 126     If UserList(VictimIndex).flags.EnConsulta Then
-128         Call WriteConsoleMsg(AttackerIndex, "No puedes atacar usuarios mientras estan en consulta.", FontTypeNames.FONTTYPE_INFO)
+128         Call WriteConsoleMsg(AttackerIndex, "No podés atacar usuarios mientras estan en consulta.", FontTypeNames.FONTTYPE_INFO)
 130         PuedeAtacar = False
             Exit Function
     
         End If
         
 132     If UserList(AttackerIndex).flags.Maldicion = 1 Then
-134         Call WriteConsoleMsg(AttackerIndex, "¡Estas maldito! No podes atacar.", FontTypeNames.FONTTYPE_INFO)
+134         Call WriteConsoleMsg(AttackerIndex, "¡Estás maldito! No podes atacar.", FontTypeNames.FONTTYPE_INFO)
 136         PuedeAtacar = False
             Exit Function
 
@@ -1713,40 +1713,36 @@ Public Function PuedeAtacar(ByVal AttackerIndex As Integer, ByVal VictimIndex As
 
         End If
 
-        'Sos un Armada atacando un ciudadano?
-168     If (Status(VictimIndex) = 1) And (esArmada(AttackerIndex)) Then
-170         Call WriteConsoleMsg(AttackerIndex, "Los soldados del Ejercito Real tienen prohibido atacar ciudadanos.", FontTypeNames.FONTTYPE_WARNING)
-172         PuedeAtacar = False
-            Exit Function
-
-        End If
-
-        'Tenes puesto el seguro?
-174     If UserList(AttackerIndex).flags.Seguro Then
-176         If Status(VictimIndex) = 1 Then
-178             Call WriteConsoleMsg(AttackerIndex, "No podes atacar ciudadanos, para hacerlo debes desactivar el seguro.", FontTypeNames.FONTTYPE_WARNING)
-180             PuedeAtacar = False
+        ' Es armada?
+        If esArmada(AttackerIndex) Then
+            ' Si ataca otro armada
+            If esArmada(VictimIndex) Then
+                Call WriteConsoleMsg(AttackerIndex, "Los miembros del Ejercito Real tienen prohibido atacarse entre sí.", FontTypeNames.FONTTYPE_WARNING)
+                PuedeAtacar = False
                 Exit Function
-
-            End If
-
-        End If
-
-        'Es un ciuda queriando atacar un imperial?
-182     If UserList(AttackerIndex).flags.Seguro Then
-184         If (Status(AttackerIndex) = 1) And (esArmada(VictimIndex)) Then
-186             Call WriteConsoleMsg(AttackerIndex, "Los ciudadanos no pueden atacar a los soldados imperiales.", FontTypeNames.FONTTYPE_WARNING)
-188             PuedeAtacar = False
+            ' Si ataca un ciudadano
+            ElseIf Status(VictimIndex) = Ciudadano Then
+                Call WriteConsoleMsg(AttackerIndex, "Los miembros del Ejercito Real tienen prohibido atacar ciudadanos.", FontTypeNames.FONTTYPE_WARNING)
+                PuedeAtacar = False
                 Exit Function
-
             End If
-
-        End If
         
-190     If esCaos(AttackerIndex) And esCaos(VictimIndex) Then
-192         Call WriteConsoleMsg(AttackerIndex, "Los miembros de las fuerzas del caos se pueden atacar entre si.", FontTypeNames.FONTTYPE_WARNING)
-194         PuedeAtacar = False
-            Exit Function
+        ' No es armada
+        Else
+            'Tenes puesto el seguro?
+174         If UserList(AttackerIndex).flags.Seguro Then
+176             If Status(VictimIndex) = Ciudadano Then
+178                 Call WriteConsoleMsg(AttackerIndex, "No podés atacar ciudadanos, para hacerlo debes desactivar el seguro.", FontTypeNames.FONTTYPE_WARNING)
+180                 PuedeAtacar = False
+                    Exit Function
+                End If
+            End If
+            
+190         If esCaos(AttackerIndex) And esCaos(VictimIndex) Then
+192             Call WriteConsoleMsg(AttackerIndex, "Los miembros de las Fuerzas del Caos no se pueden atacar entre sí.", FontTypeNames.FONTTYPE_WARNING)
+194             PuedeAtacar = False
+                Exit Function
+            End If
         End If
 
         'Estas en un Mapa Seguro?

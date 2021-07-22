@@ -1743,7 +1743,7 @@ Public Sub DoRobar(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
     
 110         If .flags.Seguro Then
         
-112             If Status(LadronIndex) = 1 Then
+112             If Status(VictimaIndex) = Ciudadano Then
 114                 Call WriteConsoleMsg(LadronIndex, "Debes quitarte el seguro para robarle a un ciudadano.", FontTypeNames.FONTTYPE_FIGHT)
                     Exit Sub
 
@@ -1751,9 +1751,9 @@ Public Sub DoRobar(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
 
             Else
 
-116             If .Faccion.ArmadaReal = 1 Then
+116             If esArmada(LadronIndex) Then
             
-118                 If Status(VictimaIndex) = 1 Then
+118                 If Status(VictimaIndex) = Ciudadano Or esArmada(VictimaIndex) Then
 120                     Call WriteConsoleMsg(LadronIndex, "Los miembros del Ejército Real no tienen permitido robarle a ciudadanos.", FontTypeNames.FONTTYPE_FIGHT)
                         Exit Sub
 
@@ -1934,22 +1934,8 @@ Public Sub DoRobar(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
 276                 Call SubirSkill(LadronIndex, eSkill.Robar)
 
                 End If
-            
-278             If Status(LadronIndex) = 1 Then Call VolverCriminal(LadronIndex)
-        
-280             If .Faccion.ArmadaReal = 1 Then Call ExpulsarFaccionReal(LadronIndex)
-            
-                'If Not Criminal(LadronIndex) Then
-                'If Not Criminal(VictimaIndex) Then
-                'Call VolverCriminal(LadronIndex)
-                'End If
-                'End If
-            
-                ' Se pudo haber convertido si robo a un ciuda
-                'If Criminal(LadronIndex) Then
-                '.Reputacion.LadronesRep = .Reputacion.LadronesRep + vlLadron
-                'If .Reputacion.LadronesRep > MAXREP Then .Reputacion.LadronesRep = MAXREP
-                'End If
+
+278             If Status(LadronIndex) = Ciudadano Then Call VolverCriminal(LadronIndex)
 
             End If
 
