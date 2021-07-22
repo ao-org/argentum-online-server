@@ -2413,7 +2413,7 @@ Public Sub CargarMapaFormatoCSM(ByVal Map As Long, ByVal MAPFl As String)
                         Else
                             
                             ' Lo guardo en los logs + aparece en el Debug.Print
-310                         Call TraceError(404, "NPC no existe en los .DAT's o está mal dateado. Posicion: " & Map & "-" & NPCs(i).X & "-" & NPCs(i).Y, "ES.CargarMapaFormatoCSM")
+310                         Call TraceError(404, "NPC no existe en los .DAT's o está mal dateado. Posicion: " & Map & "-" & NPCs(I).X & "-" & NPCs(I).Y, "ES.CargarMapaFormatoCSM")
                             
                         End If
                     End If
@@ -2515,7 +2515,6 @@ Sub LoadSini()
         'Directorios
     
 122     Puerto = val(Lector.GetValue("INIT", "StartPort"))
-124     LastSockListen = val(Lector.GetValue("INIT", "LastSockListen"))
 126     HideMe = val(Lector.GetValue("INIT", "Hide"))
 128     MaxConexionesIP = val(Lector.GetValue("INIT", "MaxConexionesIP"))
 130     MaxUsersPorCuenta = val(Lector.GetValue("INIT", "MaxUsersPorCuenta"))
