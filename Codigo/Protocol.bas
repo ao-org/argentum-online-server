@@ -1,8 +1,6 @@
 Attribute VB_Name = "Protocol"
 Option Explicit
 
-Private Declare Sub CallHandle Lib "ao20.dll" (ByVal Address As Long, ByVal UserIndex As Integer)
-
 ''
 'When we have a list of strings, we use this to separate them and prevent
 'having too many string lengths in the queue. Yes, each string is NULL-terminated :P
@@ -108,7 +106,7 @@ Public Enum ServerPacketID
     ParalizeOK              ' PARADOK
     ShowUserRequest         ' PETICIO
     ChangeUserTradeSlot     ' COMUSUINV
-    SendNight               ' NOC
+    'SendNight              ' NOC
     Pong
     UpdateTagAndStatus
     FYA
@@ -513,7 +511,6 @@ Private Enum ClientPacketID
     MarcaDeClanPack
     MarcaDeGMPack
     TraerRanking
-    Pareja
     Quest
     QuestAccept
     QuestListRequest
@@ -521,7 +518,6 @@ Private Enum ClientPacketID
     QuestAbandon
     SeguroClan
     CreatePretorianClan     '/CREARPRETORIANOS
-    RemovePretorianClan     '/ELIMINARPRETORIANOS
     Home                    '/HOGAR
     Consulta                '/CONSULTA
     Tolerancia0             '/T0
@@ -646,364 +642,10 @@ Public Type PersonajeCuenta
 
 End Type
 
-Private PacketList(0 To ClientPacketID.[PacketCount] - 1) As Long
 Private Reader  As Network.Reader
 
-'Devuelve el argumento que se le pasó (sirve para usar AddressOf en variables)
-Private Function GetAddress(ByVal Address As Long) As Long
-100     GetAddress = Address
-End Function
-
 Public Sub InitializePacketList()
-        Call Protocol_Writes.InitializeAuxiliaryBuffer
-        
-100     PacketList(ClientPacketID.LoginExistingChar) = GetAddress(AddressOf HandleLoginExistingChar)
-102     PacketList(ClientPacketID.LoginNewChar) = GetAddress(AddressOf HandleLoginNewChar)
-104     PacketList(ClientPacketID.ThrowDice) = GetAddress(AddressOf HandleThrowDice)
-106     PacketList(ClientPacketID.Talk) = GetAddress(AddressOf HandleTalk)
-108     PacketList(ClientPacketID.Yell) = GetAddress(AddressOf HandleYell)
-110     PacketList(ClientPacketID.Whisper) = GetAddress(AddressOf HandleWhisper)
-112     PacketList(ClientPacketID.Walk) = GetAddress(AddressOf HandleWalk)
-114     PacketList(ClientPacketID.RequestPositionUpdate) = GetAddress(AddressOf HandleRequestPositionUpdate)
-116     PacketList(ClientPacketID.Attack) = GetAddress(AddressOf HandleAttack)
-118     PacketList(ClientPacketID.PickUp) = GetAddress(AddressOf HandlePickUp)
-120     PacketList(ClientPacketID.SafeToggle) = GetAddress(AddressOf HandleSafeToggle)
-122     PacketList(ClientPacketID.PartySafeToggle) = GetAddress(AddressOf HandlePartyToggle)
-124     PacketList(ClientPacketID.RequestGuildLeaderInfo) = GetAddress(AddressOf HandleRequestGuildLeaderInfo)
-126     PacketList(ClientPacketID.RequestAtributes) = GetAddress(AddressOf HandleRequestAtributes)
-128     PacketList(ClientPacketID.RequestSkills) = GetAddress(AddressOf HandleRequestSkills)
-130     PacketList(ClientPacketID.RequestMiniStats) = GetAddress(AddressOf HandleRequestMiniStats)
-132     PacketList(ClientPacketID.CommerceEnd) = GetAddress(AddressOf HandleCommerceEnd)
-134     PacketList(ClientPacketID.UserCommerceEnd) = GetAddress(AddressOf HandleUserCommerceEnd)
-136     PacketList(ClientPacketID.BankEnd) = GetAddress(AddressOf HandleBankEnd)
-138     PacketList(ClientPacketID.UserCommerceOk) = GetAddress(AddressOf HandleUserCommerceOk)
-140     PacketList(ClientPacketID.UserCommerceReject) = GetAddress(AddressOf HandleUserCommerceReject)
-142     PacketList(ClientPacketID.Drop) = GetAddress(AddressOf HandleDrop)
-144     PacketList(ClientPacketID.CastSpell) = GetAddress(AddressOf HandleCastSpell)
-146     PacketList(ClientPacketID.LeftClick) = GetAddress(AddressOf HandleLeftClick)
-148     PacketList(ClientPacketID.DoubleClick) = GetAddress(AddressOf HandleDoubleClick)
-150     PacketList(ClientPacketID.Work) = GetAddress(AddressOf HandleWork)
-152     PacketList(ClientPacketID.UseSpellMacro) = GetAddress(AddressOf HandleUseSpellMacro)
-154     PacketList(ClientPacketID.UseItem) = GetAddress(AddressOf HandleUseItem)
-156     PacketList(ClientPacketID.CraftBlacksmith) = GetAddress(AddressOf HandleCraftBlacksmith)
-158     PacketList(ClientPacketID.CraftCarpenter) = GetAddress(AddressOf HandleCraftCarpenter)
-160     PacketList(ClientPacketID.WorkLeftClick) = GetAddress(AddressOf HandleWorkLeftClick)
-162     PacketList(ClientPacketID.CreateNewGuild) = GetAddress(AddressOf HandleCreateNewGuild)
-164     PacketList(ClientPacketID.SpellInfo) = GetAddress(AddressOf HandleSpellInfo)
-166     PacketList(ClientPacketID.EquipItem) = GetAddress(AddressOf HandleEquipItem)
-168     PacketList(ClientPacketID.ChangeHeading) = GetAddress(AddressOf HandleChangeHeading)
-170     PacketList(ClientPacketID.ModifySkills) = GetAddress(AddressOf HandleModifySkills)
-172     PacketList(ClientPacketID.Train) = GetAddress(AddressOf HandleTrain)
-174     PacketList(ClientPacketID.CommerceBuy) = GetAddress(AddressOf HandleCommerceBuy)
-176     PacketList(ClientPacketID.BankExtractItem) = GetAddress(AddressOf HandleBankExtractItem)
-178     PacketList(ClientPacketID.CommerceSell) = GetAddress(AddressOf HandleCommerceSell)
-180     PacketList(ClientPacketID.BankDeposit) = GetAddress(AddressOf HandleBankDeposit)
-182     PacketList(ClientPacketID.ForumPost) = GetAddress(AddressOf HandleForumPost)
-184     PacketList(ClientPacketID.MoveSpell) = GetAddress(AddressOf HandleMoveSpell)
-186     PacketList(ClientPacketID.ClanCodexUpdate) = GetAddress(AddressOf HandleClanCodexUpdate)
-188     PacketList(ClientPacketID.UserCommerceOffer) = GetAddress(AddressOf HandleUserCommerceOffer)
-190     PacketList(ClientPacketID.GuildAcceptPeace) = GetAddress(AddressOf HandleGuildAcceptPeace)
-192     PacketList(ClientPacketID.GuildRejectAlliance) = GetAddress(AddressOf HandleGuildRejectAlliance)
-194     PacketList(ClientPacketID.GuildRejectPeace) = GetAddress(AddressOf HandleGuildRejectPeace)
-196     PacketList(ClientPacketID.GuildAcceptAlliance) = GetAddress(AddressOf HandleGuildAcceptAlliance)
-198     PacketList(ClientPacketID.GuildOfferPeace) = GetAddress(AddressOf HandleGuildOfferPeace)
-200     PacketList(ClientPacketID.GuildOfferAlliance) = GetAddress(AddressOf HandleGuildOfferAlliance)
-202     PacketList(ClientPacketID.GuildAllianceDetails) = GetAddress(AddressOf HandleGuildAllianceDetails)
-204     PacketList(ClientPacketID.GuildPeaceDetails) = GetAddress(AddressOf HandleGuildPeaceDetails)
-206     PacketList(ClientPacketID.GuildRequestJoinerInfo) = GetAddress(AddressOf HandleGuildRequestJoinerInfo)
-208     PacketList(ClientPacketID.GuildAlliancePropList) = GetAddress(AddressOf HandleGuildAlliancePropList)
-210     PacketList(ClientPacketID.GuildPeacePropList) = GetAddress(AddressOf HandleGuildPeacePropList)
-212     PacketList(ClientPacketID.GuildDeclareWar) = GetAddress(AddressOf HandleGuildDeclareWar)
-214     PacketList(ClientPacketID.GuildNewWebsite) = GetAddress(AddressOf HandleGuildNewWebsite)
-216     PacketList(ClientPacketID.GuildAcceptNewMember) = GetAddress(AddressOf HandleGuildAcceptNewMember)
-218     PacketList(ClientPacketID.GuildRejectNewMember) = GetAddress(AddressOf HandleGuildRejectNewMember)
-220     PacketList(ClientPacketID.GuildKickMember) = GetAddress(AddressOf HandleGuildKickMember)
-222     PacketList(ClientPacketID.GuildUpdateNews) = GetAddress(AddressOf HandleGuildUpdateNews)
-224     PacketList(ClientPacketID.GuildMemberInfo) = GetAddress(AddressOf HandleGuildMemberInfo)
-226     PacketList(ClientPacketID.GuildOpenElections) = GetAddress(AddressOf HandleGuildOpenElections)
-228     PacketList(ClientPacketID.GuildRequestMembership) = GetAddress(AddressOf HandleGuildRequestMembership)
-230     PacketList(ClientPacketID.GuildRequestDetails) = GetAddress(AddressOf HandleGuildRequestDetails)
-232     PacketList(ClientPacketID.Online) = GetAddress(AddressOf HandleOnline)
-234     PacketList(ClientPacketID.Quit) = GetAddress(AddressOf HandleQuit)
-236     PacketList(ClientPacketID.GuildLeave) = GetAddress(AddressOf HandleGuildLeave)
-238     PacketList(ClientPacketID.RequestAccountState) = GetAddress(AddressOf HandleRequestAccountState)
-240     PacketList(ClientPacketID.PetStand) = GetAddress(AddressOf HandlePetStand)
-242     PacketList(ClientPacketID.PetFollow) = GetAddress(AddressOf HandlePetFollow)
-244     PacketList(ClientPacketID.PetLeave) = GetAddress(AddressOf HandlePetLeave)
-246     PacketList(ClientPacketID.GrupoMsg) = GetAddress(AddressOf HandleGrupoMsg)
-248     PacketList(ClientPacketID.TrainList) = GetAddress(AddressOf HandleTrainList)
-250     PacketList(ClientPacketID.Rest) = GetAddress(AddressOf HandleRest)
-252     PacketList(ClientPacketID.Meditate) = GetAddress(AddressOf HandleMeditate)
-254     PacketList(ClientPacketID.Resucitate) = GetAddress(AddressOf HandleResucitate)
-256     PacketList(ClientPacketID.Heal) = GetAddress(AddressOf HandleHeal)
-258     PacketList(ClientPacketID.Help) = GetAddress(AddressOf HandleHelp)
-260     PacketList(ClientPacketID.RequestStats) = GetAddress(AddressOf HandleRequestStats)
-262     PacketList(ClientPacketID.CommerceStart) = GetAddress(AddressOf HandleCommerceStart)
-264     PacketList(ClientPacketID.BankStart) = GetAddress(AddressOf HandleBankStart)
-266     PacketList(ClientPacketID.Enlist) = GetAddress(AddressOf HandleEnlist)
-268     PacketList(ClientPacketID.Information) = GetAddress(AddressOf HandleInformation)
-270     PacketList(ClientPacketID.Reward) = GetAddress(AddressOf HandleReward)
-272     PacketList(ClientPacketID.RequestMOTD) = GetAddress(AddressOf HandleRequestMOTD)
-274     PacketList(ClientPacketID.UpTime) = GetAddress(AddressOf HandleUpTime)
-276     PacketList(ClientPacketID.Inquiry) = GetAddress(AddressOf HandleInquiry)
-278     PacketList(ClientPacketID.GuildMessage) = GetAddress(AddressOf HandleGuildMessage)
-280     PacketList(ClientPacketID.CentinelReport) = GetAddress(AddressOf HandleCentinelReport)
-282     PacketList(ClientPacketID.GuildOnline) = GetAddress(AddressOf HandleGuildOnline)
-284     PacketList(ClientPacketID.CouncilMessage) = GetAddress(AddressOf HandleCouncilMessage)
-286     PacketList(ClientPacketID.RoleMasterRequest) = GetAddress(AddressOf HandleRoleMasterRequest)
-288     PacketList(ClientPacketID.ChangeDescription) = GetAddress(AddressOf HandleChangeDescription)
-290     PacketList(ClientPacketID.GuildVote) = GetAddress(AddressOf HandleGuildVote)
-292     PacketList(ClientPacketID.punishments) = GetAddress(AddressOf HandlePunishments)
-294     PacketList(ClientPacketID.ChangePassword) = GetAddress(AddressOf HandleChangePassword)
-296     PacketList(ClientPacketID.Gamble) = GetAddress(AddressOf HandleGamble)
-298     PacketList(ClientPacketID.InquiryVote) = GetAddress(AddressOf HandleInquiryVote)
-300     PacketList(ClientPacketID.LeaveFaction) = GetAddress(AddressOf HandleLeaveFaction)
-302     PacketList(ClientPacketID.BankExtractGold) = GetAddress(AddressOf HandleBankExtractGold)
-304     PacketList(ClientPacketID.BankDepositGold) = GetAddress(AddressOf HandleBankDepositGold)
-306     PacketList(ClientPacketID.Denounce) = GetAddress(AddressOf HandleDenounce)
-308     PacketList(ClientPacketID.Ping) = GetAddress(AddressOf HandlePing)
-
-        ' GM messages
-310     PacketList(ClientPacketID.GMMessage) = GetAddress(AddressOf HandleGMMessage)
-312     PacketList(ClientPacketID.showName) = GetAddress(AddressOf HandleShowName)
-314     PacketList(ClientPacketID.OnlineRoyalArmy) = GetAddress(AddressOf HandleOnlineRoyalArmy)
-316     PacketList(ClientPacketID.OnlineChaosLegion) = GetAddress(AddressOf HandleOnlineChaosLegion)
-318     PacketList(ClientPacketID.GoNearby) = GetAddress(AddressOf HandleGoNearby)
-320     PacketList(ClientPacketID.comment) = GetAddress(AddressOf HandleComment)
-322     PacketList(ClientPacketID.serverTime) = GetAddress(AddressOf HandleServerTime)
-324     PacketList(ClientPacketID.Where) = GetAddress(AddressOf HandleWhere)
-326     PacketList(ClientPacketID.CreaturesInMap) = GetAddress(AddressOf HandleCreaturesInMap)
-328     PacketList(ClientPacketID.WarpMeToTarget) = GetAddress(AddressOf HandleWarpMeToTarget)
-330     PacketList(ClientPacketID.WarpChar) = GetAddress(AddressOf HandleWarpChar)
-332     PacketList(ClientPacketID.Silence) = GetAddress(AddressOf HandleSilence)
-334     PacketList(ClientPacketID.SOSShowList) = GetAddress(AddressOf HandleSOSShowList)
-336     PacketList(ClientPacketID.SOSRemove) = GetAddress(AddressOf HandleSOSRemove)
-338     PacketList(ClientPacketID.GoToChar) = GetAddress(AddressOf HandleGoToChar)
-340     PacketList(ClientPacketID.invisible) = GetAddress(AddressOf HandleInvisible)
-342     PacketList(ClientPacketID.GMPanel) = GetAddress(AddressOf HandleGMPanel)
-344     PacketList(ClientPacketID.RequestUserList) = GetAddress(AddressOf HandleRequestUserList)
-346     PacketList(ClientPacketID.Working) = GetAddress(AddressOf HandleWorking)
-348     PacketList(ClientPacketID.Hiding) = GetAddress(AddressOf HandleHiding)
-350     PacketList(ClientPacketID.Jail) = GetAddress(AddressOf HandleJail)
-352     PacketList(ClientPacketID.KillNPC) = GetAddress(AddressOf HandleKillNPC)
-354     PacketList(ClientPacketID.WarnUser) = GetAddress(AddressOf HandleWarnUser)
-356     PacketList(ClientPacketID.EditChar) = GetAddress(AddressOf HandleEditChar)
-358     PacketList(ClientPacketID.RequestCharInfo) = GetAddress(AddressOf HandleRequestCharInfo)
-360     PacketList(ClientPacketID.RequestCharStats) = GetAddress(AddressOf HandleRequestCharStats)
-362     PacketList(ClientPacketID.RequestCharGold) = GetAddress(AddressOf HandleRequestCharGold)
-364     PacketList(ClientPacketID.RequestCharInventory) = GetAddress(AddressOf HandleRequestCharInventory)
-366     PacketList(ClientPacketID.RequestCharBank) = GetAddress(AddressOf HandleRequestCharBank)
-368     PacketList(ClientPacketID.RequestCharSkills) = GetAddress(AddressOf HandleRequestCharSkills)
-370     PacketList(ClientPacketID.ReviveChar) = GetAddress(AddressOf HandleReviveChar)
-372     PacketList(ClientPacketID.OnlineGM) = GetAddress(AddressOf HandleOnlineGM)
-374     PacketList(ClientPacketID.OnlineMap) = GetAddress(AddressOf HandleOnlineMap)
-376     PacketList(ClientPacketID.Forgive) = GetAddress(AddressOf HandleForgive)
-378     PacketList(ClientPacketID.Kick) = GetAddress(AddressOf HandleKick)
-380     PacketList(ClientPacketID.Execute) = GetAddress(AddressOf HandleExecute)
-382     PacketList(ClientPacketID.BanChar) = GetAddress(AddressOf HandleBanChar)
-384     PacketList(ClientPacketID.UnbanChar) = GetAddress(AddressOf HandleUnbanChar)
-386     PacketList(ClientPacketID.NPCFollow) = GetAddress(AddressOf HandleNPCFollow)
-388     PacketList(ClientPacketID.SummonChar) = GetAddress(AddressOf HandleSummonChar)
-390     PacketList(ClientPacketID.SpawnListRequest) = GetAddress(AddressOf HandleSpawnListRequest)
-392     PacketList(ClientPacketID.SpawnCreature) = GetAddress(AddressOf HandleSpawnCreature)
-394     PacketList(ClientPacketID.ResetNPCInventory) = GetAddress(AddressOf HandleResetNPCInventory)
-396     PacketList(ClientPacketID.CleanWorld) = GetAddress(AddressOf HandleCleanWorld)
-398     PacketList(ClientPacketID.ServerMessage) = GetAddress(AddressOf HandleServerMessage)
-400     PacketList(ClientPacketID.NickToIP) = GetAddress(AddressOf HandleNickToIP)
-402     PacketList(ClientPacketID.IPToNick) = GetAddress(AddressOf HandleIPToNick)
-404     PacketList(ClientPacketID.GuildOnlineMembers) = GetAddress(AddressOf HandleGuildOnlineMembers)
-406     PacketList(ClientPacketID.TeleportCreate) = GetAddress(AddressOf HandleTeleportCreate)
-408     PacketList(ClientPacketID.TeleportDestroy) = GetAddress(AddressOf HandleTeleportDestroy)
-410     PacketList(ClientPacketID.RainToggle) = GetAddress(AddressOf HandleRainToggle)
-412     PacketList(ClientPacketID.SetCharDescription) = GetAddress(AddressOf HandleSetCharDescription)
-414     PacketList(ClientPacketID.ForceMIDIToMap) = GetAddress(AddressOf HanldeForceMIDIToMap)
-416     PacketList(ClientPacketID.ForceWAVEToMap) = GetAddress(AddressOf HandleForceWAVEToMap)
-418     PacketList(ClientPacketID.RoyalArmyMessage) = GetAddress(AddressOf HandleRoyalArmyMessage)
-420     PacketList(ClientPacketID.ChaosLegionMessage) = GetAddress(AddressOf HandleChaosLegionMessage)
-422     PacketList(ClientPacketID.CitizenMessage) = GetAddress(AddressOf HandleCitizenMessage)
-424     PacketList(ClientPacketID.CriminalMessage) = GetAddress(AddressOf HandleCriminalMessage)
-426     PacketList(ClientPacketID.TalkAsNPC) = GetAddress(AddressOf HandleTalkAsNPC)
-428     PacketList(ClientPacketID.DestroyAllItemsInArea) = GetAddress(AddressOf HandleDestroyAllItemsInArea)
-430     PacketList(ClientPacketID.AcceptRoyalCouncilMember) = GetAddress(AddressOf HandleAcceptRoyalCouncilMember)
-432     PacketList(ClientPacketID.AcceptChaosCouncilMember) = GetAddress(AddressOf HandleAcceptChaosCouncilMember)
-434     PacketList(ClientPacketID.ItemsInTheFloor) = GetAddress(AddressOf HandleItemsInTheFloor)
-436     PacketList(ClientPacketID.MakeDumb) = GetAddress(AddressOf HandleMakeDumb)
-438     PacketList(ClientPacketID.MakeDumbNoMore) = GetAddress(AddressOf HandleMakeDumbNoMore)
-440     PacketList(ClientPacketID.DumpIPTables) = GetAddress(AddressOf HandleDumpIPTables)
-442     PacketList(ClientPacketID.CouncilKick) = GetAddress(AddressOf HandleCouncilKick)
-444     PacketList(ClientPacketID.SetTrigger) = GetAddress(AddressOf HandleSetTrigger)
-446     PacketList(ClientPacketID.AskTrigger) = GetAddress(AddressOf HandleAskTrigger)
-448     PacketList(ClientPacketID.BannedIPList) = GetAddress(AddressOf HandleBannedIPList)
-450     PacketList(ClientPacketID.BannedIPReload) = GetAddress(AddressOf HandleBannedIPReload)
-452     PacketList(ClientPacketID.GuildMemberList) = GetAddress(AddressOf HandleGuildMemberList)
-454     PacketList(ClientPacketID.GuildBan) = GetAddress(AddressOf HandleGuildBan)
-456     PacketList(ClientPacketID.banip) = GetAddress(AddressOf HandleBanIP)
-458     PacketList(ClientPacketID.UnbanIP) = GetAddress(AddressOf HandleUnbanIP)
-460     PacketList(ClientPacketID.CreateItem) = GetAddress(AddressOf HandleCreateItem)
-462     PacketList(ClientPacketID.DestroyItems) = GetAddress(AddressOf HandleDestroyItems)
-464     PacketList(ClientPacketID.ChaosLegionKick) = GetAddress(AddressOf HandleChaosLegionKick)
-466     PacketList(ClientPacketID.RoyalArmyKick) = GetAddress(AddressOf HandleRoyalArmyKick)
-468     PacketList(ClientPacketID.ForceMIDIAll) = GetAddress(AddressOf HandleForceMIDIAll)
-470     PacketList(ClientPacketID.ForceWAVEAll) = GetAddress(AddressOf HandleForceWAVEAll)
-472     PacketList(ClientPacketID.RemovePunishment) = GetAddress(AddressOf HandleRemovePunishment)
-474     PacketList(ClientPacketID.TileBlockedToggle) = GetAddress(AddressOf HandleTileBlockedToggle)
-476     PacketList(ClientPacketID.KillNPCNoRespawn) = GetAddress(AddressOf HandleKillNPCNoRespawn)
-478     PacketList(ClientPacketID.KillAllNearbyNPCs) = GetAddress(AddressOf HandleKillAllNearbyNPCs)
-480     PacketList(ClientPacketID.LastIP) = GetAddress(AddressOf HandleLastIP)
-482     PacketList(ClientPacketID.ChangeMOTD) = GetAddress(AddressOf HandleChangeMOTD)
-484     PacketList(ClientPacketID.SetMOTD) = GetAddress(AddressOf HandleSetMOTD)
-486     PacketList(ClientPacketID.SystemMessage) = GetAddress(AddressOf HandleSystemMessage)
-488     PacketList(ClientPacketID.CreateNPC) = GetAddress(AddressOf HandleCreateNPC)
-490     PacketList(ClientPacketID.CreateNPCWithRespawn) = GetAddress(AddressOf HandleCreateNPCWithRespawn)
-492     PacketList(ClientPacketID.ImperialArmour) = GetAddress(AddressOf HandleImperialArmour)
-494     PacketList(ClientPacketID.ChaosArmour) = GetAddress(AddressOf HandleChaosArmour)
-496     PacketList(ClientPacketID.NavigateToggle) = GetAddress(AddressOf HandleNavigateToggle)
-498     PacketList(ClientPacketID.ServerOpenToUsersToggle) = GetAddress(AddressOf HandleServerOpenToUsersToggle)
-500     PacketList(ClientPacketID.Participar) = GetAddress(AddressOf HandleParticipar)
-502     PacketList(ClientPacketID.TurnCriminal) = GetAddress(AddressOf HandleTurnCriminal)
-504     PacketList(ClientPacketID.ResetFactions) = GetAddress(AddressOf HandleResetFactions)
-506     PacketList(ClientPacketID.RemoveCharFromGuild) = GetAddress(AddressOf HandleRemoveCharFromGuild)
-508     PacketList(ClientPacketID.RequestCharMail) = GetAddress(AddressOf HandleRequestCharMail)
-510     PacketList(ClientPacketID.AlterPassword) = GetAddress(AddressOf HandleAlterPassword)
-512     PacketList(ClientPacketID.AlterMail) = GetAddress(AddressOf HandleAlterMail)
-514     PacketList(ClientPacketID.AlterName) = GetAddress(AddressOf HandleAlterName)
-516     PacketList(ClientPacketID.DoBackUp) = GetAddress(AddressOf HandleDoBackUp)
-518     PacketList(ClientPacketID.ShowGuildMessages) = GetAddress(AddressOf HandleShowGuildMessages)
-520     PacketList(ClientPacketID.SaveMap) = GetAddress(AddressOf HandleSaveMap)
-522     PacketList(ClientPacketID.ChangeMapInfoPK) = GetAddress(AddressOf HandleChangeMapInfoPK)
-524     PacketList(ClientPacketID.ChangeMapInfoBackup) = GetAddress(AddressOf HandleChangeMapInfoBackup)
-526     PacketList(ClientPacketID.ChangeMapInfoRestricted) = GetAddress(AddressOf HandleChangeMapInfoRestricted)
-528     PacketList(ClientPacketID.ChangeMapInfoNoMagic) = GetAddress(AddressOf HandleChangeMapInfoNoMagic)
-530     PacketList(ClientPacketID.ChangeMapInfoNoInvi) = GetAddress(AddressOf HandleChangeMapInfoNoInvi)
-532     PacketList(ClientPacketID.ChangeMapInfoNoResu) = GetAddress(AddressOf HandleChangeMapInfoNoResu)
-534     PacketList(ClientPacketID.ChangeMapInfoLand) = GetAddress(AddressOf HandleChangeMapInfoLand)
-536     PacketList(ClientPacketID.ChangeMapInfoZone) = GetAddress(AddressOf HandleChangeMapInfoZone)
-538     PacketList(ClientPacketID.SaveChars) = GetAddress(AddressOf HandleSaveChars)
-540     PacketList(ClientPacketID.CleanSOS) = GetAddress(AddressOf HandleCleanSOS)
-542     PacketList(ClientPacketID.ShowServerForm) = GetAddress(AddressOf HandleShowServerForm)
-544     PacketList(ClientPacketID.night) = GetAddress(AddressOf HandleNight)
-546     PacketList(ClientPacketID.KickAllChars) = GetAddress(AddressOf HandleKickAllChars)
-548     PacketList(ClientPacketID.RequestTCPStats) = GetAddress(AddressOf HandleRequestTCPStats)
-550     PacketList(ClientPacketID.ReloadNPCs) = GetAddress(AddressOf HandleReloadNPCs)
-552     PacketList(ClientPacketID.ReloadServerIni) = GetAddress(AddressOf HandleReloadServerIni)
-554     PacketList(ClientPacketID.ReloadSpells) = GetAddress(AddressOf HandleReloadSpells)
-556     PacketList(ClientPacketID.ReloadObjects) = GetAddress(AddressOf HandleReloadObjects)
-558     PacketList(ClientPacketID.Restart) = GetAddress(AddressOf HandleRestart)
-560     PacketList(ClientPacketID.ResetAutoUpdate) = GetAddress(AddressOf HandleResetAutoUpdate)
-562     PacketList(ClientPacketID.ChatColor) = GetAddress(AddressOf HandleChatColor)
-564     PacketList(ClientPacketID.Ignored) = GetAddress(AddressOf HandleIgnored)
-566     PacketList(ClientPacketID.CheckSlot) = GetAddress(AddressOf HandleCheckSlot)
-
-        ' Nuevas Ladder
-568     PacketList(ClientPacketID.GlobalMessage) = GetAddress(AddressOf HandleGlobalMessage)
-570     PacketList(ClientPacketID.GlobalOnOff) = GetAddress(AddressOf HandleGlobalOnOff)
-572     PacketList(ClientPacketID.IngresarConCuenta) = GetAddress(AddressOf HandleIngresarConCuenta)
-574     PacketList(ClientPacketID.BorrarPJ) = GetAddress(AddressOf HandleBorrarPJ)
-576     PacketList(ClientPacketID.Desbuggear) = GetAddress(AddressOf HandleDesbuggear)
-578     PacketList(ClientPacketID.DarLlaveAUsuario) = GetAddress(AddressOf HandleDarLlaveAUsuario)
-580     PacketList(ClientPacketID.SacarLlave) = GetAddress(AddressOf HandleSacarLlave)
-582     PacketList(ClientPacketID.VerLlaves) = GetAddress(AddressOf HandleVerLlaves)
-584     PacketList(ClientPacketID.UseKey) = GetAddress(AddressOf HandleUseKey)
-586     PacketList(ClientPacketID.Day) = GetAddress(AddressOf HandleDay)
-588     PacketList(ClientPacketID.SetTime) = GetAddress(AddressOf HandleSetTime)
-590     PacketList(ClientPacketID.DonateGold) = GetAddress(AddressOf HandleDonateGold)
-592     PacketList(ClientPacketID.Promedio) = GetAddress(AddressOf HandlePromedio)
-594     PacketList(ClientPacketID.GiveItem) = GetAddress(AddressOf HandleGiveItem)
-596     PacketList(ClientPacketID.OfertaInicial) = GetAddress(AddressOf HandleOfertaInicial)
-598     PacketList(ClientPacketID.OfertaDeSubasta) = GetAddress(AddressOf HandleOfertaDeSubasta)
-600     PacketList(ClientPacketID.QuestionGM) = GetAddress(AddressOf HandleQuestionGM)
-602     PacketList(ClientPacketID.CuentaRegresiva) = GetAddress(AddressOf HandleCuentaRegresiva)
-604     PacketList(ClientPacketID.PossUser) = GetAddress(AddressOf HandlePossUser)
-606     PacketList(ClientPacketID.Duel) = GetAddress(AddressOf HandleDuel)
-608     PacketList(ClientPacketID.AcceptDuel) = GetAddress(AddressOf HandleAcceptDuel)
-610     PacketList(ClientPacketID.CancelDuel) = GetAddress(AddressOf HandleCancelDuel)
-612     PacketList(ClientPacketID.QuitDuel) = GetAddress(AddressOf HandleQuitDuel)
-614     PacketList(ClientPacketID.NieveToggle) = GetAddress(AddressOf HandleNieveToggle)
-616     PacketList(ClientPacketID.NieblaToggle) = GetAddress(AddressOf HandleNieblaToggle)
-618     PacketList(ClientPacketID.TransFerGold) = GetAddress(AddressOf HandleTransFerGold)
-620     PacketList(ClientPacketID.Moveitem) = GetAddress(AddressOf HandleMoveItem)
-622     PacketList(ClientPacketID.Genio) = GetAddress(AddressOf HandleGenio)
-624     PacketList(ClientPacketID.Casarse) = GetAddress(AddressOf HandleCasamiento)
-626     PacketList(ClientPacketID.CraftAlquimista) = GetAddress(AddressOf HandleCraftAlquimia)
-628     PacketList(ClientPacketID.RequestFamiliar) = GetAddress(AddressOf HandleRequestFamiliar)
-630     PacketList(ClientPacketID.FlagTrabajar) = GetAddress(AddressOf HandleFlagTrabajar)
-632     PacketList(ClientPacketID.CraftSastre) = GetAddress(AddressOf HandleCraftSastre)
-634     PacketList(ClientPacketID.MensajeUser) = GetAddress(AddressOf HandleMensajeUser)
-636     PacketList(ClientPacketID.TraerBoveda) = GetAddress(AddressOf HandleTraerBoveda)
-638     PacketList(ClientPacketID.CompletarAccion) = GetAddress(AddressOf HandleCompletarAccion)
-640     PacketList(ClientPacketID.Escribiendo) = GetAddress(AddressOf HandleEscribiendo)
-642     PacketList(ClientPacketID.TraerRecompensas) = GetAddress(AddressOf HandleTraerRecompensas)
-644     PacketList(ClientPacketID.ReclamarRecompensa) = GetAddress(AddressOf HandleReclamarRecompensa)
-646     PacketList(ClientPacketID.Correo) = GetAddress(AddressOf HandleCorreo)
-648     PacketList(ClientPacketID.SendCorreo) = GetAddress(AddressOf HandleSendCorreo)
-650     PacketList(ClientPacketID.RetirarItemCorreo) = GetAddress(AddressOf HandleRetirarItemCorreo)
-652     PacketList(ClientPacketID.BorrarCorreo) = GetAddress(AddressOf HandleBorrarCorreo)
-654     PacketList(ClientPacketID.InvitarGrupo) = GetAddress(AddressOf HandleInvitarGrupo)
-656     PacketList(ClientPacketID.ResponderPregunta) = GetAddress(AddressOf HandleResponderPregunta)
-658     PacketList(ClientPacketID.RequestGrupo) = GetAddress(AddressOf HandleRequestGrupo)
-660     PacketList(ClientPacketID.AbandonarGrupo) = GetAddress(AddressOf HandleAbandonarGrupo)
-662     PacketList(ClientPacketID.HecharDeGrupo) = GetAddress(AddressOf HandleHecharDeGrupo)
-664     PacketList(ClientPacketID.MacroPossent) = GetAddress(AddressOf HandleMacroPos)
-666     PacketList(ClientPacketID.SubastaInfo) = GetAddress(AddressOf HandleSubastaInfo)
-668     PacketList(ClientPacketID.bancuenta) = GetAddress(AddressOf HandleBanCuenta)
-670     PacketList(ClientPacketID.unBanCuenta) = GetAddress(AddressOf HandleUnBanCuenta)
-672     PacketList(ClientPacketID.BanSerial) = GetAddress(AddressOf HandleBanSerial)
-674     PacketList(ClientPacketID.unBanSerial) = GetAddress(AddressOf HandleUnBanSerial)
-676     PacketList(ClientPacketID.CerrarCliente) = GetAddress(AddressOf HandleCerrarCliente)
-678     PacketList(ClientPacketID.EventoInfo) = GetAddress(AddressOf HandleEventoInfo)
-680     PacketList(ClientPacketID.CrearEvento) = GetAddress(AddressOf HandleCrearEvento)
-682     PacketList(ClientPacketID.BanTemporal) = GetAddress(AddressOf HandleBanTemporal)
-684     PacketList(ClientPacketID.Traershop) = GetAddress(AddressOf HandleTraerShop)
-686     PacketList(ClientPacketID.ComprarItem) = GetAddress(AddressOf HandleComprarItem)
-688     PacketList(ClientPacketID.ScrollInfo) = GetAddress(AddressOf HandleScrollInfo)
-690     PacketList(ClientPacketID.CancelarExit) = GetAddress(AddressOf HandleCancelarExit)
-692     PacketList(ClientPacketID.EnviarCodigo) = GetAddress(AddressOf HandleEnviarCodigo)
-694     PacketList(ClientPacketID.CrearTorneo) = GetAddress(AddressOf HandleCrearTorneo)
-696     PacketList(ClientPacketID.ComenzarTorneo) = GetAddress(AddressOf HandleComenzarTorneo)
-698     PacketList(ClientPacketID.CancelarTorneo) = GetAddress(AddressOf HandleCancelarTorneo)
-700     PacketList(ClientPacketID.BusquedaTesoro) = GetAddress(AddressOf HandleBusquedaTesoro)
-702     PacketList(ClientPacketID.CompletarViaje) = GetAddress(AddressOf HandleCompletarViaje)
-704     PacketList(ClientPacketID.BovedaMoveItem) = GetAddress(AddressOf HandleBovedaMoveItem)
-706     PacketList(ClientPacketID.QuieroFundarClan) = GetAddress(AddressOf HandleQuieroFundarClan)
-708     PacketList(ClientPacketID.LlamadadeClan) = GetAddress(AddressOf HandleLlamadadeClan)
-710     PacketList(ClientPacketID.MarcaDeClanPack) = GetAddress(AddressOf HandleMarcaDeClan)
-712     PacketList(ClientPacketID.MarcaDeGMPack) = GetAddress(AddressOf HandleMarcaDeGM)
-714     PacketList(ClientPacketID.TraerRanking) = GetAddress(AddressOf HandleTraerRanking)
-        'PacketList(ClientPacketID.Pareja) = GetAddress(AddressOf HandlePareja)
-716     PacketList(ClientPacketID.Quest) = GetAddress(AddressOf HandleQuest)
-718     PacketList(ClientPacketID.QuestAccept) = GetAddress(AddressOf HandleQuestAccept)
-720     PacketList(ClientPacketID.QuestListRequest) = GetAddress(AddressOf HandleQuestListRequest)
-722     PacketList(ClientPacketID.QuestDetailsRequest) = GetAddress(AddressOf HandleQuestDetailsRequest)
-724     PacketList(ClientPacketID.QuestAbandon) = GetAddress(AddressOf HandleQuestAbandon)
-726     PacketList(ClientPacketID.SeguroClan) = GetAddress(AddressOf HandleSeguroClan)
-728     PacketList(ClientPacketID.CreatePretorianClan) = GetAddress(AddressOf HandleCreatePretorianClan)
-        'PacketList(ClientPacketID.RemovePretorianClan) = GetAddress(AddressOf HandleRemovePretorianClan)
-730     PacketList(ClientPacketID.Home) = GetAddress(AddressOf HandleHome)
-732     PacketList(ClientPacketID.Consulta) = GetAddress(AddressOf HandleConsulta)
-734     'PacketList(ClientPacketID.RequestScreenShot) = GetAddress(AddressOf HandleRequestScreenShot)
-        'PacketList(ClientPacketID.RequestProcesses) = GetAddress(AddressOf HandleRequestProcesses)
-        'PacketList(ClientPacketID.SendScreenShot) = GetAddress(AddressOf HandleSendScreenShot)
-        'PacketList(ClientPacketID.SendProcesses) = GetAddress(AddressOf HandleSendProcesses)
-736     PacketList(ClientPacketID.Tolerancia0) = GetAddress(AddressOf HandleTolerancia0)
-738     PacketList(ClientPacketID.GetMapInfo) = GetAddress(AddressOf HandleGetMapInfo)
-740     PacketList(ClientPacketID.FinEvento) = GetAddress(AddressOf HandleFinEvento)
-742     PacketList(ClientPacketID.SeguroResu) = GetAddress(AddressOf HandleSeguroResu)
-744     PacketList(ClientPacketID.CuentaExtractItem) = GetAddress(AddressOf HandleCuentaExtractItem)
-746     PacketList(ClientPacketID.CuentaDeposit) = GetAddress(AddressOf HandleCuentaDeposit)
-748     PacketList(ClientPacketID.CreateEvent) = GetAddress(AddressOf HandleCreateEvent)
-750     PacketList(ClientPacketID.CommerceSendChatMessage) = GetAddress(AddressOf HandleCommerceSendChatMessage)
-752     PacketList(ClientPacketID.LogMacroClickHechizo) = GetAddress(AddressOf HandleLogMacroClickHechizo)
-754     PacketList(ClientPacketID.AddItemCrafting) = GetAddress(AddressOf HandleAddItemCrafting)
-756     PacketList(ClientPacketID.RemoveItemCrafting) = GetAddress(AddressOf HandleRemoveItemCrafting)
-758     PacketList(ClientPacketID.AddCatalyst) = GetAddress(AddressOf HandleAddCatalyst)
-760     PacketList(ClientPacketID.RemoveCatalyst) = GetAddress(AddressOf HandleRemoveCatalyst)
-762     PacketList(ClientPacketID.CraftItem) = GetAddress(AddressOf HandleCraftItem)
-764     PacketList(ClientPacketID.CloseCrafting) = GetAddress(AddressOf HandleCloseCrafting)
-766     PacketList(ClientPacketID.MoveCraftItem) = GetAddress(AddressOf HandleMoveCraftItem)
-768     PacketList(ClientPacketID.PetLeaveAll) = GetAddress(AddressOf HandlePetLeaveAll)
-770     PacketList(ClientPacketID.GuardNoticeResponse) = GetAddress(AddressOf HandleGuardNoticeResponse)
-772     PacketList(ClientPacketID.GuardResendVerificationCode) = GetAddress(AddressOf HandleGuardResendVerificationCode)
-    
+    Call Protocol_Writes.InitializeAuxiliaryBuffer
 End Sub
 
 ''
@@ -1040,10 +682,683 @@ On Error Resume Next
     ElseIf PacketID <= ClientPacketID.[PacketCount] Then
         UserList(UserIndex).Counters.IdleCount = 0
     End If
-
-    If (PacketID >= 0 And PacketID < ClientPacketID.[PacketCount]) And (PacketList(PacketID) <> 0) Then
-        Call CallHandle(PacketList(PacketID), UserIndex) ' DLL call using VB Declare is a lot less eficient than a JUMP table generated by VB6
-    End If
+    
+    Select Case PacketID
+        Case ClientPacketID.LoginExistingChar
+            Call HandleLoginExistingChar(UserIndex)
+        Case ClientPacketID.LoginNewChar
+            Call HandleLoginNewChar(UserIndex)
+        Case ClientPacketID.ThrowDice
+            Call HandleThrowDice(UserIndex)
+        Case ClientPacketID.Talk
+            Call HandleTalk(UserIndex)
+        Case ClientPacketID.Yell
+            Call HandleYell(UserIndex)
+        Case ClientPacketID.Whisper
+            Call HandleWhisper(UserIndex)
+        Case ClientPacketID.Walk
+            Call HandleWalk(UserIndex)
+        Case ClientPacketID.RequestPositionUpdate
+            Call HandleRequestPositionUpdate(UserIndex)
+        Case ClientPacketID.Attack
+            Call HandleAttack(UserIndex)
+        Case ClientPacketID.PickUp
+            Call HandlePickUp(UserIndex)
+        Case ClientPacketID.SafeToggle
+            Call HandleSafeToggle(UserIndex)
+        Case ClientPacketID.PartySafeToggle
+            Call HandlePartyToggle(UserIndex)
+        Case ClientPacketID.RequestGuildLeaderInfo
+            Call HandleRequestGuildLeaderInfo(UserIndex)
+        Case ClientPacketID.RequestAtributes
+            Call HandleRequestAtributes(UserIndex)
+        Case ClientPacketID.RequestSkills
+            Call HandleRequestSkills(UserIndex)
+        Case ClientPacketID.RequestMiniStats
+            Call HandleRequestMiniStats(UserIndex)
+        Case ClientPacketID.CommerceEnd
+            Call HandleCommerceEnd(UserIndex)
+        Case ClientPacketID.UserCommerceEnd
+            Call HandleUserCommerceEnd(UserIndex)
+        Case ClientPacketID.BankEnd
+            Call HandleBankEnd(UserIndex)
+        Case ClientPacketID.UserCommerceOk
+            Call HandleUserCommerceOk(UserIndex)
+        Case ClientPacketID.UserCommerceReject
+            Call HandleUserCommerceReject(UserIndex)
+        Case ClientPacketID.Drop
+            Call HandleDrop(UserIndex)
+        Case ClientPacketID.CastSpell
+            Call HandleCastSpell(UserIndex)
+        Case ClientPacketID.LeftClick
+            Call HandleLeftClick(UserIndex)
+        Case ClientPacketID.DoubleClick
+            Call HandleDoubleClick(UserIndex)
+        Case ClientPacketID.Work
+            Call HandleWork(UserIndex)
+        Case ClientPacketID.UseSpellMacro
+            Call HandleUseSpellMacro(UserIndex)
+        Case ClientPacketID.UseItem
+            Call HandleUseItem(UserIndex)
+        Case ClientPacketID.CraftBlacksmith
+            Call HandleCraftBlacksmith(UserIndex)
+        Case ClientPacketID.CraftCarpenter
+            Call HandleCraftCarpenter(UserIndex)
+        Case ClientPacketID.WorkLeftClick
+            Call HandleWorkLeftClick(UserIndex)
+        Case ClientPacketID.CreateNewGuild
+            Call HandleCreateNewGuild(UserIndex)
+        Case ClientPacketID.SpellInfo
+            Call HandleSpellInfo(UserIndex)
+        Case ClientPacketID.EquipItem
+            Call HandleEquipItem(UserIndex)
+        Case ClientPacketID.ChangeHeading
+            Call HandleChangeHeading(UserIndex)
+        Case ClientPacketID.ModifySkills
+            Call HandleModifySkills(UserIndex)
+        Case ClientPacketID.Train
+            Call HandleTrain(UserIndex)
+        Case ClientPacketID.CommerceBuy
+            Call HandleCommerceBuy(UserIndex)
+        Case ClientPacketID.BankExtractItem
+            Call HandleBankExtractItem(UserIndex)
+        Case ClientPacketID.CommerceSell
+            Call HandleCommerceSell(UserIndex)
+        Case ClientPacketID.BankDeposit
+            Call HandleBankDeposit(UserIndex)
+        Case ClientPacketID.ForumPost
+            Call HandleForumPost(UserIndex)
+        Case ClientPacketID.MoveSpell
+            Call HandleMoveSpell(UserIndex)
+        Case ClientPacketID.ClanCodexUpdate
+            Call HandleClanCodexUpdate(UserIndex)
+        Case ClientPacketID.UserCommerceOffer
+            Call HandleUserCommerceOffer(UserIndex)
+        Case ClientPacketID.GuildAcceptPeace
+            Call HandleGuildAcceptPeace(UserIndex)
+        Case ClientPacketID.GuildRejectAlliance
+            Call HandleGuildRejectAlliance(UserIndex)
+        Case ClientPacketID.GuildRejectPeace
+            Call HandleGuildRejectPeace(UserIndex)
+        Case ClientPacketID.GuildAcceptAlliance
+            Call HandleGuildAcceptAlliance(UserIndex)
+        Case ClientPacketID.GuildOfferPeace
+            Call HandleGuildOfferPeace(UserIndex)
+        Case ClientPacketID.GuildOfferAlliance
+            Call HandleGuildOfferAlliance(UserIndex)
+        Case ClientPacketID.GuildAllianceDetails
+            Call HandleGuildAllianceDetails(UserIndex)
+        Case ClientPacketID.GuildPeaceDetails
+            Call HandleGuildPeaceDetails(UserIndex)
+        Case ClientPacketID.GuildRequestJoinerInfo
+            Call HandleGuildRequestJoinerInfo(UserIndex)
+        Case ClientPacketID.GuildAlliancePropList
+            Call HandleGuildAlliancePropList(UserIndex)
+        Case ClientPacketID.GuildPeacePropList
+            Call HandleGuildPeacePropList(UserIndex)
+        Case ClientPacketID.GuildDeclareWar
+            Call HandleGuildDeclareWar(UserIndex)
+        Case ClientPacketID.GuildNewWebsite
+            Call HandleGuildNewWebsite(UserIndex)
+        Case ClientPacketID.GuildAcceptNewMember
+            Call HandleGuildAcceptNewMember(UserIndex)
+        Case ClientPacketID.GuildRejectNewMember
+            Call HandleGuildRejectNewMember(UserIndex)
+        Case ClientPacketID.GuildKickMember
+            Call HandleGuildKickMember(UserIndex)
+        Case ClientPacketID.GuildUpdateNews
+            Call HandleGuildUpdateNews(UserIndex)
+        Case ClientPacketID.GuildMemberInfo
+            Call HandleGuildMemberInfo(UserIndex)
+        Case ClientPacketID.GuildOpenElections
+            Call HandleGuildOpenElections(UserIndex)
+        Case ClientPacketID.GuildRequestMembership
+            Call HandleGuildRequestMembership(UserIndex)
+        Case ClientPacketID.GuildRequestDetails
+            Call HandleGuildRequestDetails(UserIndex)
+        Case ClientPacketID.Online
+            Call HandleOnline(UserIndex)
+        Case ClientPacketID.Quit
+            Call HandleQuit(UserIndex)
+        Case ClientPacketID.GuildLeave
+            Call HandleGuildLeave(UserIndex)
+        Case ClientPacketID.RequestAccountState
+            Call HandleRequestAccountState(UserIndex)
+        Case ClientPacketID.PetStand
+            Call HandlePetStand(UserIndex)
+        Case ClientPacketID.PetFollow
+            Call HandlePetFollow(UserIndex)
+        Case ClientPacketID.PetLeave
+            Call HandlePetLeave(UserIndex)
+        Case ClientPacketID.GrupoMsg
+            Call HandleGrupoMsg(UserIndex)
+        Case ClientPacketID.TrainList
+            Call HandleTrainList(UserIndex)
+        Case ClientPacketID.Rest
+            Call HandleRest(UserIndex)
+        Case ClientPacketID.Meditate
+            Call HandleMeditate(UserIndex)
+        Case ClientPacketID.Resucitate
+            Call HandleResucitate(UserIndex)
+        Case ClientPacketID.Heal
+            Call HandleHeal(UserIndex)
+        Case ClientPacketID.Help
+            Call HandleHelp(UserIndex)
+        Case ClientPacketID.RequestStats
+            Call HandleRequestStats(UserIndex)
+        Case ClientPacketID.CommerceStart
+            Call HandleCommerceStart(UserIndex)
+        Case ClientPacketID.BankStart
+            Call HandleBankStart(UserIndex)
+        Case ClientPacketID.Enlist
+            Call HandleEnlist(UserIndex)
+        Case ClientPacketID.Information
+            Call HandleInformation(UserIndex)
+        Case ClientPacketID.Reward
+            Call HandleReward(UserIndex)
+        Case ClientPacketID.RequestMOTD
+            Call HandleRequestMOTD(UserIndex)
+        Case ClientPacketID.UpTime
+            Call HandleUpTime(UserIndex)
+        Case ClientPacketID.Inquiry
+            Call HandleInquiry(UserIndex)
+        Case ClientPacketID.GuildMessage
+            Call HandleGuildMessage(UserIndex)
+        Case ClientPacketID.CentinelReport
+            Call HandleCentinelReport(UserIndex)
+        Case ClientPacketID.GuildOnline
+            Call HandleGuildOnline(UserIndex)
+        Case ClientPacketID.CouncilMessage
+            Call HandleCouncilMessage(UserIndex)
+        Case ClientPacketID.RoleMasterRequest
+            Call HandleRoleMasterRequest(UserIndex)
+        Case ClientPacketID.ChangeDescription
+            Call HandleChangeDescription(UserIndex)
+        Case ClientPacketID.GuildVote
+            Call HandleGuildVote(UserIndex)
+        Case ClientPacketID.punishments
+            Call HandlePunishments(UserIndex)
+        Case ClientPacketID.ChangePassword
+            Call HandleChangePassword(UserIndex)
+        Case ClientPacketID.Gamble
+            Call HandleGamble(UserIndex)
+        Case ClientPacketID.InquiryVote
+            Call HandleInquiryVote(UserIndex)
+        Case ClientPacketID.LeaveFaction
+            Call HandleLeaveFaction(UserIndex)
+        Case ClientPacketID.BankExtractGold
+            Call HandleBankExtractGold(UserIndex)
+        Case ClientPacketID.BankDepositGold
+            Call HandleBankDepositGold(UserIndex)
+        Case ClientPacketID.Denounce
+            Call HandleDenounce(UserIndex)
+        Case ClientPacketID.Ping
+            Call HandlePing(UserIndex)
+        Case ClientPacketID.GMMessage
+            Call HandleGMMessage(UserIndex)
+        Case ClientPacketID.showName
+            Call HandleShowName(UserIndex)
+        Case ClientPacketID.OnlineRoyalArmy
+            Call HandleOnlineRoyalArmy(UserIndex)
+        Case ClientPacketID.OnlineChaosLegion
+            Call HandleOnlineChaosLegion(UserIndex)
+        Case ClientPacketID.GoNearby
+            Call HandleGoNearby(UserIndex)
+        Case ClientPacketID.comment
+            Call HandleComment(UserIndex)
+        Case ClientPacketID.serverTime
+            Call HandleServerTime(UserIndex)
+        Case ClientPacketID.Where
+            Call HandleWhere(UserIndex)
+        Case ClientPacketID.CreaturesInMap
+            Call HandleCreaturesInMap(UserIndex)
+        Case ClientPacketID.WarpMeToTarget
+            Call HandleWarpMeToTarget(UserIndex)
+        Case ClientPacketID.WarpChar
+            Call HandleWarpChar(UserIndex)
+        Case ClientPacketID.Silence
+            Call HandleSilence(UserIndex)
+        Case ClientPacketID.SOSShowList
+            Call HandleSOSShowList(UserIndex)
+        Case ClientPacketID.SOSRemove
+            Call HandleSOSRemove(UserIndex)
+        Case ClientPacketID.GoToChar
+            Call HandleGoToChar(UserIndex)
+        Case ClientPacketID.invisible
+            Call HandleInvisible(UserIndex)
+        Case ClientPacketID.GMPanel
+            Call HandleGMPanel(UserIndex)
+        Case ClientPacketID.RequestUserList
+            Call HandleRequestUserList(UserIndex)
+        Case ClientPacketID.Working
+            Call HandleWorking(UserIndex)
+        Case ClientPacketID.Hiding
+            Call HandleHiding(UserIndex)
+        Case ClientPacketID.Jail
+            Call HandleJail(UserIndex)
+        Case ClientPacketID.KillNPC
+            Call HandleKillNPC(UserIndex)
+        Case ClientPacketID.WarnUser
+            Call HandleWarnUser(UserIndex)
+        Case ClientPacketID.EditChar
+            Call HandleEditChar(UserIndex)
+        Case ClientPacketID.RequestCharInfo
+            Call HandleRequestCharInfo(UserIndex)
+        Case ClientPacketID.RequestCharStats
+            Call HandleRequestCharStats(UserIndex)
+        Case ClientPacketID.RequestCharGold
+            Call HandleRequestCharGold(UserIndex)
+        Case ClientPacketID.RequestCharInventory
+            Call HandleRequestCharInventory(UserIndex)
+        Case ClientPacketID.RequestCharBank
+            Call HandleRequestCharBank(UserIndex)
+        Case ClientPacketID.RequestCharSkills
+            Call HandleRequestCharSkills(UserIndex)
+        Case ClientPacketID.ReviveChar
+            Call HandleReviveChar(UserIndex)
+        Case ClientPacketID.OnlineGM
+            Call HandleOnlineGM(UserIndex)
+        Case ClientPacketID.OnlineMap
+            Call HandleOnlineMap(UserIndex)
+        Case ClientPacketID.Forgive
+            Call HandleForgive(UserIndex)
+        Case ClientPacketID.Kick
+            Call HandleKick(UserIndex)
+        Case ClientPacketID.Execute
+            Call HandleExecute(UserIndex)
+        Case ClientPacketID.BanChar
+            Call HandleBanChar(UserIndex)
+        Case ClientPacketID.UnbanChar
+            Call HandleUnbanChar(UserIndex)
+        Case ClientPacketID.NPCFollow
+            Call HandleNPCFollow(UserIndex)
+        Case ClientPacketID.SummonChar
+            Call HandleSummonChar(UserIndex)
+        Case ClientPacketID.SpawnListRequest
+            Call HandleSpawnListRequest(UserIndex)
+        Case ClientPacketID.SpawnCreature
+            Call HandleSpawnCreature(UserIndex)
+        Case ClientPacketID.ResetNPCInventory
+            Call HandleResetNPCInventory(UserIndex)
+        Case ClientPacketID.CleanWorld
+            Call HandleCleanWorld(UserIndex)
+        Case ClientPacketID.ServerMessage
+            Call HandleServerMessage(UserIndex)
+        Case ClientPacketID.NickToIP
+            Call HandleNickToIP(UserIndex)
+        Case ClientPacketID.IPToNick
+            Call HandleIPToNick(UserIndex)
+        Case ClientPacketID.GuildOnlineMembers
+            Call HandleGuildOnlineMembers(UserIndex)
+        Case ClientPacketID.TeleportCreate
+            Call HandleTeleportCreate(UserIndex)
+        Case ClientPacketID.TeleportDestroy
+            Call HandleTeleportDestroy(UserIndex)
+        Case ClientPacketID.RainToggle
+            Call HandleRainToggle(UserIndex)
+        Case ClientPacketID.SetCharDescription
+            Call HandleSetCharDescription(UserIndex)
+        Case ClientPacketID.ForceMIDIToMap
+            Call HandleForceMIDIAll(UserIndex)
+        Case ClientPacketID.ForceWAVEToMap
+            Call HandleForceWAVEToMap(UserIndex)
+        Case ClientPacketID.RoyalArmyMessage
+            Call HandleRoyalArmyMessage(UserIndex)
+        Case ClientPacketID.ChaosLegionMessage
+            Call HandleChaosLegionMessage(UserIndex)
+        Case ClientPacketID.CitizenMessage
+            Call HandleCitizenMessage(UserIndex)
+        Case ClientPacketID.CriminalMessage
+            Call HandleCriminalMessage(UserIndex)
+        Case ClientPacketID.TalkAsNPC
+            Call HandleTalkAsNPC(UserIndex)
+        Case ClientPacketID.DestroyAllItemsInArea
+            Call HandleDestroyAllItemsInArea(UserIndex)
+        Case ClientPacketID.AcceptRoyalCouncilMember
+            Call HandleAcceptRoyalCouncilMember(UserIndex)
+        Case ClientPacketID.AcceptChaosCouncilMember
+            Call HandleAcceptChaosCouncilMember(UserIndex)
+        Case ClientPacketID.ItemsInTheFloor
+            Call HandleItemsInTheFloor(UserIndex)
+        Case ClientPacketID.MakeDumb
+            Call HandleMakeDumb(UserIndex)
+        Case ClientPacketID.MakeDumbNoMore
+            Call HandleMakeDumbNoMore(UserIndex)
+        Case ClientPacketID.DumpIPTables
+            Call HandleDumpIPTables(UserIndex)
+        Case ClientPacketID.CouncilKick
+            Call HandleCouncilKick(UserIndex)
+        Case ClientPacketID.SetTrigger
+            Call HandleSetTrigger(UserIndex)
+        Case ClientPacketID.AskTrigger
+            Call HandleAskTrigger(UserIndex)
+        Case ClientPacketID.BannedIPList
+            Call HandleBannedIPList(UserIndex)
+        Case ClientPacketID.BannedIPReload
+            Call HandleBannedIPReload(UserIndex)
+        Case ClientPacketID.GuildMemberList
+            Call HandleGuildMemberList(UserIndex)
+        Case ClientPacketID.GuildBan
+            Call HandleGuildBan(UserIndex)
+        Case ClientPacketID.banip
+            Call HandleBanIP(UserIndex)
+        Case ClientPacketID.UnBanIp
+            Call HandleUnbanIP(UserIndex)
+        Case ClientPacketID.CreateItem
+            Call HandleCreateItem(UserIndex)
+        Case ClientPacketID.DestroyItems
+            Call HandleDestroyItems(UserIndex)
+        Case ClientPacketID.ChaosLegionKick
+            Call HandleChaosLegionKick(UserIndex)
+        Case ClientPacketID.RoyalArmyKick
+            Call HandleRoyalArmyKick(UserIndex)
+        Case ClientPacketID.ForceMIDIAll
+            Call HandleForceMIDIAll(UserIndex)
+        Case ClientPacketID.ForceWAVEAll
+            Call HandleForceWAVEAll(UserIndex)
+        Case ClientPacketID.RemovePunishment
+            Call HandleRemovePunishment(UserIndex)
+        Case ClientPacketID.TileBlockedToggle
+            Call HandleTileBlockedToggle(UserIndex)
+        Case ClientPacketID.KillNPCNoRespawn
+            Call HandleKillNPCNoRespawn(UserIndex)
+        Case ClientPacketID.KillAllNearbyNPCs
+            Call HandleKillAllNearbyNPCs(UserIndex)
+        Case ClientPacketID.LastIP
+            Call HandleLastIP(UserIndex)
+        Case ClientPacketID.ChangeMOTD
+            Call HandleChangeMOTD(UserIndex)
+        Case ClientPacketID.SetMOTD
+            Call HandleSetMOTD(UserIndex)
+        Case ClientPacketID.SystemMessage
+            Call HandleSystemMessage(UserIndex)
+        Case ClientPacketID.CreateNPC
+            Call HandleCreateNPC(UserIndex)
+        Case ClientPacketID.CreateNPCWithRespawn
+            Call HandleCreateNPCWithRespawn(UserIndex)
+        Case ClientPacketID.ImperialArmour
+            Call HandleImperialArmour(UserIndex)
+        Case ClientPacketID.ChaosArmour
+            Call HandleChaosArmour(UserIndex)
+        Case ClientPacketID.NavigateToggle
+            Call HandleNavigateToggle(UserIndex)
+        Case ClientPacketID.ServerOpenToUsersToggle
+            Call HandleServerOpenToUsersToggle(UserIndex)
+        Case ClientPacketID.Participar
+            Call HandleParticipar(UserIndex)
+        Case ClientPacketID.TurnCriminal
+            Call HandleTurnCriminal(UserIndex)
+        Case ClientPacketID.ResetFactions
+            Call HandleResetFactions(UserIndex)
+        Case ClientPacketID.RemoveCharFromGuild
+            Call HandleRemoveCharFromGuild(UserIndex)
+        Case ClientPacketID.RequestCharMail
+            Call HandleRequestCharMail(UserIndex)
+        Case ClientPacketID.AlterPassword
+            Call HandleAlterPassword(UserIndex)
+        Case ClientPacketID.AlterMail
+            Call HandleAlterMail(UserIndex)
+        Case ClientPacketID.AlterName
+            Call HandleAlterName(UserIndex)
+        Case ClientPacketID.DoBackUp
+            Call HandleDoBackUp(UserIndex)
+        Case ClientPacketID.ShowGuildMessages
+            Call HandleShowGuildMessages(UserIndex)
+        Case ClientPacketID.SaveMap
+            Call HandleSaveMap(UserIndex)
+        Case ClientPacketID.ChangeMapInfoPK
+            Call HandleChangeMapInfoPK(UserIndex)
+        Case ClientPacketID.ChangeMapInfoBackup
+            Call HandleChangeMapInfoBackup(UserIndex)
+        Case ClientPacketID.ChangeMapInfoRestricted
+            Call HandleChangeMapInfoRestricted(UserIndex)
+        Case ClientPacketID.ChangeMapInfoNoMagic
+            Call HandleChangeMapInfoNoMagic(UserIndex)
+        Case ClientPacketID.ChangeMapInfoNoInvi
+            Call HandleChangeMapInfoNoInvi(UserIndex)
+        Case ClientPacketID.ChangeMapInfoNoResu
+            Call HandleChangeMapInfoNoResu(UserIndex)
+        Case ClientPacketID.ChangeMapInfoLand
+            Call HandleChangeMapInfoLand(UserIndex)
+        Case ClientPacketID.ChangeMapInfoZone
+            Call HandleChangeMapInfoZone(UserIndex)
+        Case ClientPacketID.SaveChars
+            Call HandleSaveChars(UserIndex)
+        Case ClientPacketID.CleanSOS
+            Call HandleCleanSOS(UserIndex)
+        Case ClientPacketID.ShowServerForm
+            Call HandleShowServerForm(UserIndex)
+        Case ClientPacketID.night
+            Call HandleNight(UserIndex)
+        Case ClientPacketID.KickAllChars
+            Call HandleKickAllChars(UserIndex)
+        Case ClientPacketID.RequestTCPStats
+            Call HandleRequestTCPStats(UserIndex)
+        Case ClientPacketID.ReloadNPCs
+            Call HandleReloadNPCs(UserIndex)
+        Case ClientPacketID.ReloadServerIni
+            Call HandleReloadServerIni(UserIndex)
+        Case ClientPacketID.ReloadSpells
+            Call HandleReloadSpells(UserIndex)
+        Case ClientPacketID.ReloadObjects
+            Call HandleReloadObjects(UserIndex)
+        Case ClientPacketID.Restart
+            Call HandleRestart(UserIndex)
+        Case ClientPacketID.ResetAutoUpdate
+            Call HandleResetAutoUpdate(UserIndex)
+        Case ClientPacketID.ChatColor
+            Call HandleChatColor(UserIndex)
+        Case ClientPacketID.Ignored
+            Call HandleIgnored(UserIndex)
+        Case ClientPacketID.CheckSlot
+            Call HandleCheckSlot(UserIndex)
+        Case ClientPacketID.GlobalMessage
+            Call HandleGlobalMessage(UserIndex)
+        Case ClientPacketID.GlobalOnOff
+            Call HandleGlobalOnOff(UserIndex)
+        Case ClientPacketID.IngresarConCuenta
+            Call HandleIngresarConCuenta(UserIndex)
+        Case ClientPacketID.BorrarPJ
+            Call HandleBorrarPJ(UserIndex)
+        Case ClientPacketID.Desbuggear
+            Call HandleDesbuggear(UserIndex)
+        Case ClientPacketID.DarLlaveAUsuario
+            Call HandleDarLlaveAUsuario(UserIndex)
+        Case ClientPacketID.SacarLlave
+            Call HandleSacarLlave(UserIndex)
+        Case ClientPacketID.VerLlaves
+            Call HandleVerLlaves(UserIndex)
+        Case ClientPacketID.UseKey
+            Call HandleUseKey(UserIndex)
+        Case ClientPacketID.Day
+            Call HandleDay(UserIndex)
+        Case ClientPacketID.SetTime
+            Call HandleSetTime(UserIndex)
+        Case ClientPacketID.DonateGold
+            Call HandleDonateGold(UserIndex)
+        Case ClientPacketID.Promedio
+            Call HandlePromedio(UserIndex)
+        Case ClientPacketID.GiveItem
+            Call HandleGiveItem(UserIndex)
+        Case ClientPacketID.OfertaInicial
+            Call HandleOfertaInicial(UserIndex)
+        Case ClientPacketID.OfertaDeSubasta
+            Call HandleOfertaDeSubasta(UserIndex)
+        Case ClientPacketID.QuestionGM
+            Call HandleQuestionGM(UserIndex)
+        Case ClientPacketID.CuentaRegresiva
+            Call HandleCuentaRegresiva(UserIndex)
+        Case ClientPacketID.PossUser
+            Call HandlePossUser(UserIndex)
+        Case ClientPacketID.Duel
+            Call HandleDuel(UserIndex)
+        Case ClientPacketID.AcceptDuel
+            Call HandleAcceptDuel(UserIndex)
+        Case ClientPacketID.CancelDuel
+            Call HandleCancelDuel(UserIndex)
+        Case ClientPacketID.QuitDuel
+            Call HandleQuitDuel(UserIndex)
+        Case ClientPacketID.NieveToggle
+            Call HandleNieveToggle(UserIndex)
+        Case ClientPacketID.NieblaToggle
+            Call HandleNieblaToggle(UserIndex)
+        Case ClientPacketID.TransFerGold
+            Call HandleTransFerGold(UserIndex)
+        Case ClientPacketID.Moveitem
+            Call HandleMoveItem(UserIndex)
+        Case ClientPacketID.Genio
+            Call HandleGenio(UserIndex)
+        Case ClientPacketID.Casarse
+            Call HandleCasamiento(UserIndex)
+        Case ClientPacketID.CraftAlquimista
+            Call HandleCraftAlquimia(UserIndex)
+        Case ClientPacketID.RequestFamiliar
+            Call HandleRequestFamiliar(UserIndex)
+        Case ClientPacketID.FlagTrabajar
+            Call HandleFlagTrabajar(UserIndex)
+        Case ClientPacketID.CraftSastre
+            Call HandleCraftSastre(UserIndex)
+        Case ClientPacketID.MensajeUser
+            Call HandleMensajeUser(UserIndex)
+        Case ClientPacketID.TraerBoveda
+            Call HandleTraerBoveda(UserIndex)
+        Case ClientPacketID.CompletarAccion
+            Call HandleCompletarAccion(UserIndex)
+        Case ClientPacketID.Escribiendo
+            Call HandleEscribiendo(UserIndex)
+        Case ClientPacketID.TraerRecompensas
+            Call HandleTraerRecompensas(UserIndex)
+        Case ClientPacketID.ReclamarRecompensa
+            Call HandleReclamarRecompensa(UserIndex)
+        Case ClientPacketID.Correo
+            Call HandleCorreo(UserIndex)
+        Case ClientPacketID.SendCorreo
+            Call HandleSendCorreo(UserIndex)
+        Case ClientPacketID.RetirarItemCorreo
+            Call HandleRetirarItemCorreo(UserIndex)
+        Case ClientPacketID.BorrarCorreo
+            Call HandleBorrarCorreo(UserIndex)
+        Case ClientPacketID.InvitarGrupo
+            Call HandleInvitarGrupo(UserIndex)
+        Case ClientPacketID.ResponderPregunta
+            Call HandleResponderPregunta(UserIndex)
+        Case ClientPacketID.RequestGrupo
+            Call HandleRequestGrupo(UserIndex)
+        Case ClientPacketID.AbandonarGrupo
+            Call HandleAbandonarGrupo(UserIndex)
+        Case ClientPacketID.HecharDeGrupo
+            Call HandleHecharDeGrupo(UserIndex)
+        Case ClientPacketID.MacroPossent
+            Call HandleMacroPos(UserIndex)
+        Case ClientPacketID.SubastaInfo
+            Call HandleSubastaInfo(UserIndex)
+        Case ClientPacketID.BanCuenta
+            Call HandleBanCuenta(UserIndex)
+        Case ClientPacketID.UnbanCuenta
+            Call HandleUnBanCuenta(UserIndex)
+        Case ClientPacketID.BanSerial
+            Call HandleBanSerial(UserIndex)
+        Case ClientPacketID.unBanSerial
+            Call HandleUnBanSerial(UserIndex)
+        Case ClientPacketID.CerrarCliente
+            Call HandleCerrarCliente(UserIndex)
+        Case ClientPacketID.EventoInfo
+            Call HandleEventoInfo(UserIndex)
+        Case ClientPacketID.CrearEvento
+            Call HandleCrearEvento(UserIndex)
+        Case ClientPacketID.BanTemporal
+            Call HandleBanTemporal(UserIndex)
+        Case ClientPacketID.Traershop
+            Call HandleTraerShop(UserIndex)
+        Case ClientPacketID.ComprarItem
+            Call HandleComprarItem(UserIndex)
+        Case ClientPacketID.SCROLLINFO
+            Call HandleScrollInfo(UserIndex)
+        Case ClientPacketID.CancelarExit
+            Call HandleCancelarExit(UserIndex)
+        Case ClientPacketID.EnviarCodigo
+            Call HandleEnviarCodigo(UserIndex)
+        Case ClientPacketID.CrearTorneo
+            Call HandleCrearTorneo(UserIndex)
+        Case ClientPacketID.ComenzarTorneo
+            Call HandleComenzarTorneo(UserIndex)
+        Case ClientPacketID.CancelarTorneo
+            Call HandleCancelarTorneo(UserIndex)
+        Case ClientPacketID.BusquedaTesoro
+            Call HandleBusquedaTesoro(UserIndex)
+        Case ClientPacketID.CompletarViaje
+            Call HandleCompletarViaje(UserIndex)
+        Case ClientPacketID.BovedaMoveItem
+            Call HandleBovedaMoveItem(UserIndex)
+        Case ClientPacketID.QuieroFundarClan
+            Call HandleQuieroFundarClan(UserIndex)
+        Case ClientPacketID.llamadadeclan
+            Call HandleLlamadadeClan(UserIndex)
+        Case ClientPacketID.MarcaDeClanPack
+            Call HandleMarcaDeClan(UserIndex)
+        Case ClientPacketID.MarcaDeGMPack
+            Call HandleMarcaDeGM(UserIndex)
+        Case ClientPacketID.TraerRanking
+            Call HandleTraerRanking(UserIndex)
+        Case ClientPacketID.Quest
+            Call HandleQuest(UserIndex)
+        Case ClientPacketID.QuestAccept
+            Call HandleQuestAccept(UserIndex)
+        Case ClientPacketID.QuestListRequest
+            Call HandleQuestListRequest(UserIndex)
+        Case ClientPacketID.QuestDetailsRequest
+            Call HandleQuestDetailsRequest(UserIndex)
+        Case ClientPacketID.QuestAbandon
+            Call HandleQuestAbandon(UserIndex)
+        Case ClientPacketID.SeguroClan
+            Call HandleSeguroClan(UserIndex)
+        Case ClientPacketID.CreatePretorianClan
+            Call HandleCreatePretorianClan(UserIndex)
+        Case ClientPacketID.Home
+            Call HandleHome(UserIndex)
+        Case ClientPacketID.Consulta
+            Call HandleConsulta(UserIndex)
+        Case ClientPacketID.Tolerancia0
+            Call HandleTolerancia0(UserIndex)
+        Case ClientPacketID.GetMapInfo
+            Call HandleGetMapInfo(UserIndex)
+        Case ClientPacketID.FinEvento
+            Call HandleFinEvento(UserIndex)
+        Case ClientPacketID.SeguroResu
+            Call HandleSeguroResu(UserIndex)
+        Case ClientPacketID.CuentaExtractItem
+            Call HandleCuentaExtractItem(UserIndex)
+        Case ClientPacketID.CuentaDeposit
+            Call HandleCuentaDeposit(UserIndex)
+        Case ClientPacketID.CreateEvent
+            Call HandleCreateEvent(UserIndex)
+        Case ClientPacketID.CommerceSendChatMessage
+            Call HandleCommerceSendChatMessage(UserIndex)
+        Case ClientPacketID.LogMacroClickHechizo
+            Call HandleLogMacroClickHechizo(UserIndex)
+        Case ClientPacketID.AddItemCrafting
+            Call HandleAddItemCrafting(UserIndex)
+        Case ClientPacketID.RemoveItemCrafting
+            Call HandleRemoveItemCrafting(UserIndex)
+        Case ClientPacketID.AddCatalyst
+            Call HandleAddCatalyst(UserIndex)
+        Case ClientPacketID.RemoveCatalyst
+            Call HandleRemoveCatalyst(UserIndex)
+        Case ClientPacketID.CraftItem
+            Call HandleCraftItem(UserIndex)
+        Case ClientPacketID.CloseCrafting
+            Call HandleCloseCrafting(UserIndex)
+        Case ClientPacketID.MoveCraftItem
+            Call HandleMoveCraftItem(UserIndex)
+        Case ClientPacketID.PetLeaveAll
+            Call HandlePetLeaveAll(UserIndex)
+        Case ClientPacketID.GuardNoticeResponse
+            Call HandleGuardNoticeResponse(UserIndex)
+        Case ClientPacketID.GuardResendVerificationCode
+            Call HandleGuardResendVerificationCode(UserIndex)
+        Case Else
+            Err.raise -1, "Invalid Message"
+    End Select
 
 HandleIncomingData_Err:
     
