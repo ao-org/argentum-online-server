@@ -690,7 +690,7 @@ Public Function ConnectUser_Complete(ByVal UserIndex As Integer, _
 
              End If
 
-1145        If Status(UserIndex) = 2 Or Status(UserIndex) = 0 Then
+1145        If Status(UserIndex) = Criminal Or Status(UserIndex) = e_Facciones.Caos Then
 1150            Call WriteSafeModeOff(UserIndex)
 1155            .flags.Seguro = False
 
@@ -2704,7 +2704,11 @@ Sub VolverCriminal(ByVal UserIndex As Integer)
 
 104     If .flags.Privilegios And (PlayerType.user Or PlayerType.Consejero) Then
    
-106         If .Faccion.ArmadaReal = 1 Then Call ExpulsarFaccionReal(UserIndex)
+106         If .Faccion.ArmadaReal = 1 Then
+                ' WyroX: NUNCA debería pasar, pero dejo un log por si las...
+                Call RegistrarError(111, "Un personaje de la Armada Real atacó un ciudadano.", "UsUaRiOs.VolverCriminal")
+                'Call ExpulsarFaccionReal(UserIndex)
+            End If
 
         End If
 
@@ -2750,6 +2754,9 @@ Sub VolverCiudadano(ByVal UserIndex As Integer)
         Else
 112         Call RefreshCharStatus(UserIndex)
         End If
+
+        Call WriteSafeModeOn(UserIndex)
+        .flags.Seguro = True
 
     End With
         
