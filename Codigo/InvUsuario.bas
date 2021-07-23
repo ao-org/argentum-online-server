@@ -3388,9 +3388,13 @@ Sub TirarTodosLosItems(ByVal UserIndex As Integer)
 126                             MiObj.amount = Int(MiObj.amount * 0.3)
                             End If
                         End If
-                    
-128                     Call Tilelibre(.Pos, NuevaPos, MiObj, True, True)
-            
+                        
+                        If .flags.Navegando Then
+128                         Call Tilelibre(.Pos, NuevaPos, MiObj, True, True)
+                        Else
+129                         Call Tilelibre(.Pos, NuevaPos, MiObj, .flags.Navegando = True, (Not .flags.Navegando) = True)
+                            Call ClosestLegalPos(.Pos, NuevaPos, .flags.Navegando, Not .flags.Navegando)
+                        End If
 130                     If NuevaPos.X <> 0 And NuevaPos.Y <> 0 Then
 132                         Call DropObj(UserIndex, i, MiObj.amount, NuevaPos.Map, NuevaPos.X, NuevaPos.Y)
                         
