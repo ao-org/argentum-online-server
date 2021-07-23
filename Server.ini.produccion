@@ -31,8 +31,8 @@ MaxUsers=3000
 
 Admines=3
 Dioses=2
-SemiDioses=13
-Consejeros=13
+SemiDioses=12
+Consejeros=15
 RolesMasters=0
 
 [Admines]
@@ -56,8 +56,7 @@ SemiDios8=HarThaoS|martintrionfetti@gmail.com
 SemiDios9=Vox|ricardo_r_jc@hotmail.com
 SemiDios10=SimP|brunordeangelis@gmail.com
 SemiDios11=Thyseo|holacomota2@hotmail.com
-SemiDios12=Themis|maxitup3@hotmail.com
-SemiDios13=Dominique|marcojavierpiazza@hotmail.com
+SemiDios12=Dominique|marcojavierpiazza@hotmail.com
 
 [Consejeros]
 Consejero1=Dash|raffozelada@hotmail.com
@@ -71,8 +70,10 @@ Consejero8=Bwise|Joacovas@hotmail.com
 Consejero9=Bonyo|argentumo@hotmail.com
 Consejero10=Blair|mercuricecilia1@gmail.com
 Consejero11=Artemis|jmmastroberti@gmail.com
-Consejero12=VanCleff|luciano_rizzi@hotmail.com
-Consejero13=Vanderbilt|luciano_rizzi@hotmail.com
+Consejero12=Dista|Lukitasdegu@gmail.com
+Consejero13=Themis|maxitup3@hotmail.com
+Consejero14=VanCleff|luciano_rizzi@hotmail.com
+Consejero15=Vanderbilt|luciano_rizzi@hotmail.com
 
 [RolesMasters]
 RM1=
