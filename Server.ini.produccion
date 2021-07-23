@@ -32,7 +32,7 @@ MaxUsers=3000
 Admines=3
 Dioses=2
 SemiDioses=12
-Consejeros=15
+Consejeros=13
 RolesMasters=0
 
 [Admines]
@@ -72,8 +72,7 @@ Consejero10=Blair|mercuricecilia1@gmail.com
 Consejero11=Artemis|jmmastroberti@gmail.com
 Consejero12=Dista|Lukitasdegu@gmail.com
 Consejero13=Themis|maxitup3@hotmail.com
-Consejero14=VanCleff|luciano_rizzi@hotmail.com
-Consejero15=Vanderbilt|luciano_rizzi@hotmail.com
+
 
 [RolesMasters]
 RM1=
