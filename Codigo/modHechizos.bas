@@ -2709,6 +2709,12 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 
         ' <-------- Agilidad ---------->
 214     If Hechizos(h).SubeAgilidad = 1 Then
+
+            'Verifica que el usuario no este muerto
+            If UserList(tempChr).flags.Muerto = 1 Then
+                b = False
+                Exit Sub
+            End If
     
             'Para poder tirar cl a un pk en el ring
 216         If (TriggerZonaPelea(UserIndex, tempChr) <> TRIGGER6_PERMITE) Then
@@ -2746,6 +2752,12 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 244         Call WriteFYA(tempChr)
     
 246     ElseIf Hechizos(h).SubeAgilidad = 2 Then
+
+            'Verifica que el usuario no este muerto
+            If UserList(tempChr).flags.Muerto = 1 Then
+                b = False
+                Exit Sub
+            End If
     
 248         If Not PuedeAtacar(UserIndex, tempChr) Then Exit Sub
     
@@ -2775,6 +2787,12 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
         ' <-------- Fuerza ---------->
 272     If Hechizos(h).SubeFuerza = 1 Then
 
+                        'Verifica que el usuario no este muerto
+            If UserList(tempChr).flags.Muerto = 1 Then
+                b = False
+                Exit Sub
+            End If
+    
             'Para poder tirar fuerza a un pk en el ring
 274         If (TriggerZonaPelea(UserIndex, tempChr) <> TRIGGER6_PERMITE) Then
 276             If Status(tempChr) = 0 And Status(UserIndex) = 1 Or Status(tempChr) = 2 And Status(UserIndex) = 1 Then
@@ -2817,6 +2835,13 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 
 306     ElseIf Hechizos(h).SubeFuerza = 2 Then
 
+
+                        'Verifica que el usuario no este muerto
+            If UserList(tempChr).flags.Muerto = 1 Then
+                b = False
+                Exit Sub
+            End If
+    
 308         If Not PuedeAtacar(UserIndex, tempChr) Then Exit Sub
     
 310         If UserIndex <> tempChr Then
