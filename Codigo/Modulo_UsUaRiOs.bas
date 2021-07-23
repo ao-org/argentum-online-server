@@ -1933,7 +1933,8 @@ Sub SubirSkill(ByVal UserIndex As Integer, ByVal Skill As Integer)
 148             If UserList(UserIndex).donador.activo = 1 Then
 150                 BonusExp = BonusExp * 1.1
                 End If
-        
+                Call WriteConsoleMsg(UserIndex, "¡Has ganado " & BonusExp & " puntos de experiencia!", FontTypeNames.FONTTYPE_INFOIAO)
+                
 152             If UserList(UserIndex).Stats.ELV < STAT_MAXELV Then
 154                 UserList(UserIndex).Stats.Exp = UserList(UserIndex).Stats.Exp + BonusExp
 156                 If UserList(UserIndex).Stats.Exp > MAXEXP Then UserList(UserIndex).Stats.Exp = MAXEXP
