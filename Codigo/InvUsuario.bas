@@ -2777,7 +2777,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
 1008                 Call QuitarUserInvItem(UserIndex, Slot, 1)
 1010                 Call UpdateUserInv(False, UserIndex, Slot)
             
-1012                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageConsoleMsg(.Name & " ha abierto un " & obj.Name & " y obtuvo...", FontTypeNames.FONTTYPE_New_DONADOR))
+1012                 'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageConsoleMsg(.Name & " ha abierto un " & obj.Name & " y obtuvo...", FontTypeNames.FONTTYPE_New_DONADOR))
             
 1014                 If obj.Snd1 <> 0 Then
 1016                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .Pos.X, .Pos.Y))
