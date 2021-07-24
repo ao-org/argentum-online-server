@@ -159,7 +159,7 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
 196                         Next j
         
                         End If
-        
+                        UserList(UserIndex).flags.ModificoQuests = True
                     End If
         
                 End With
