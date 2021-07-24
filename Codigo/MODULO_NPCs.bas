@@ -1390,7 +1390,9 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
             '<<<<<<<<<<<<<< Animaciones >>>>>>>>>>>>>>>>
     
             ' Por defecto la animación es idle
-424         Call AnimacionIdle(NpcIndex, True)
+            If NumUsers > 0 Then
+424             Call AnimacionIdle(NpcIndex, True)
+            End If
     
             ' Si el tipo de movimiento es Caminata
 426         If .Movement = Caminata Then
