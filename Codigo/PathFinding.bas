@@ -205,8 +205,10 @@ Private Function IsWalkable(ByVal NpcIndex As Integer, ByVal X As Integer, ByVal
             
     End With
     
-11    IsWalkable = True
-
+11  IsWalkable = True
+    
+    Exit Function
+    
 ErrHandler:
     Call TraceError(Err.Number, Err.Description, "PathFinding.IsWalkable", Erl)
     
@@ -273,7 +275,9 @@ Private Sub ProcessAdjacent(ByVal NpcIndex As Integer, ByVal CurX As Integer, By
         End If
 
     End With
-
+    
+    Exit Sub
+    
 ErrHandler:
     Call TraceError(Err.Number, Err.Description, "PathFinding.ProcessAdjacent", Erl)
     
