@@ -362,6 +362,7 @@ End Sub
 Public Sub WriteUpdateGold(ByVal UserIndex As Integer)
     Call Writer.WriteInt(ServerPacketID.UpdateGold)
     Call Writer.WriteInt32(UserList(UserIndex).Stats.GLD)
+    Call modSendData.SendData(ToIndex, UserIndex)
 End Sub
 
 ''
