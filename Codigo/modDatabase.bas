@@ -766,7 +766,8 @@ Public Function General_File_Exists(ByVal file_path As String, ByVal file_type A
 End Function
 
 Sub LoadUserDatabase(ByVal UserIndex As Integer)
-
+        Dim Counter As Long
+            
         On Error GoTo ErrorHandler
 
         'Basic user data
@@ -941,6 +942,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
             'User inventory
 342         Call MakeQuery("SELECT number, item_id, is_equipped, amount FROM inventory_item WHERE user_id = ?;", False, .ID)
 
+            
 344         If Not QueryData Is Nothing Then
 346             QueryData.MoveFirst
 
@@ -969,7 +971,9 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
 
             'User bank inventory
 366         Call MakeQuery("SELECT number, item_id, amount FROM bank_item WHERE user_id = ?;", False, .ID)
-
+            
+            Counter = 0
+            
 368         If Not QueryData Is Nothing Then
 370             QueryData.MoveFirst
 
@@ -980,6 +984,8 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
                 
 378                     If .ObjIndex <> 0 Then
 380                         If LenB(ObjData(.ObjIndex).Name) Then
+                                Counter = Counter + 1
+                                
 382                             .amount = QueryData!amount
                             Else
 384                             .ObjIndex = 0
@@ -992,9 +998,10 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
 
 386                 QueryData.MoveNext
                 Wend
-
+                
+                .BancoInvent.NroItems = Counter
             End If
-
+            
             'User skills
 388         Call MakeQuery("SELECT number, value FROM skillpoint WHERE user_id = ?;", False, .ID)
 

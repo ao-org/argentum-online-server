@@ -2,7 +2,7 @@ Attribute VB_Name = "modNetwork"
 Option Explicit
 
 Public Const TIME_RECV_FREQUENCY As Long = 5  ' In milliseconds
-Public Const TIME_SEND_FREQUENCY As Long = 20 ' In milliseconds
+Public Const TIME_SEND_FREQUENCY As Long = 10 ' In milliseconds
 
 Private Server  As Network.Server
 Private Time(2) As Single
@@ -167,10 +167,10 @@ On Error GoTo OnServerRecv_Err:
 #If AntiExternos = 1 Then
     Call Security.XorData(BytesRef, UBound(BytesRef), UserList(Connection).XorIndexIn)
 #End If
-    
-    While (Message.GetAvailable() > 0)
+
+    Do While (Message.GetAvailable() > 0)
         Call Protocol.HandleIncomingData(Connection, Message)
-    Wend
+    Loop
     
     Exit Sub
     
