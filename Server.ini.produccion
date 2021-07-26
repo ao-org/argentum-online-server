@@ -12,7 +12,6 @@ Cliente=560138046b735bfe188922fc75b242ec
 [INIT]
 NumCuentas=1
 StartPort=7667
-LastSockListen=-1
 Hide=0
 MaxConexionesIP=5
 MaxUsersPorCuenta=1
@@ -73,9 +72,3 @@ Consejero10=Blair|mercuricecilia1@gmail.com
 Consejero11=Artemis|jmmastroberti@gmail.com
 Consejero12=Themis|maxitup3@hotmail.com
 
-
-[RolesMasters]
-RM1=
-
-[DbManager]
-Puerto=6677
