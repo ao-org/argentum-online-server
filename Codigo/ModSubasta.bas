@@ -131,31 +131,20 @@ Public Sub FinalizarSubasta()
 122             Call WriteVar(FileUser, "INIT", "MENSAJEINFORMACION", "Subastador te ha dejado un mensaje: ¡Has ganado la subasta! Te deposite el item en la boveda.")
 124             Call LogearEventoDeSubasta("El items fue depositado en la boveda del comprador correctamente.")
             Else
-126             Call LogearEventoDeSubasta("Se esta intentando enviar por correo el item.")
+134             PosMap = CInt(ReadField(1, Leer.GetValue("INIT", "Position"), 45))
+136             posX = CInt(ReadField(2, Leer.GetValue("INIT", "Position"), 45))
+138             posY = CInt(ReadField(3, Leer.GetValue("INIT", "Position"), 45))
 
-128             If AddCorreoBySubastador("Subastador", Subasta.Comprador, "¡Felicitaciones! Ganaste la subasta.", Subasta.ObjSubastado, Subasta.ObjSubastadoCantidad) Then
-130                 Call LogearEventoDeSubasta("El items fue enviado al comprador por correo correctamente.")
-132                 Call WriteVar(FileUser, "INIT", "MENSAJEINFORMACION", "Subastador te ha dejado un mensaje: ¡Has ganado la subasta! Te envie el item por correo.")
-            
-                Else
-            
-134                 PosMap = CInt(ReadField(1, Leer.GetValue("INIT", "Position"), 45))
-136                 posX = CInt(ReadField(2, Leer.GetValue("INIT", "Position"), 45))
-138                 posY = CInt(ReadField(3, Leer.GetValue("INIT", "Position"), 45))
+140             If MapData(PosMap, posX, posY).ObjInfo.ObjIndex > 0 Then Exit Sub
 
-140                 If MapData(PosMap, posX, posY).ObjInfo.ObjIndex > 0 Then Exit Sub
+142             If MapData(PosMap, posX, posY).TileExit.Map > 0 Then Exit Sub
 
-142                 If MapData(PosMap, posX, posY).TileExit.Map > 0 Then Exit Sub
+144             If Subasta.ObjSubastado < 1 Or Subasta.ObjSubastado > NumObjDatas Then Exit Sub
 
-144                 If Subasta.ObjSubastado < 1 Or Subasta.ObjSubastado > NumObjDatas Then Exit Sub
-
-146                 If LenB(ObjData(Subasta.ObjSubastado).Name) = 0 Then Exit Sub
-148                 Call MakeObj(ObjVendido, PosMap, posX, posY)
-150                 Call LogearEventoDeSubasta("La boveda del usuario estaba llena, se tiro en la posicion:" & PosMap & "-" & posX & "-" & posY)
-152                 Call WriteVar(FileUser, "INIT", "MENSAJEINFORMACION", "Subastador te ha dejado un mensaje: ¡Has ganado la subasta! Como no tenias espacio ni en tu boveda ni en el correo, tuve que tirarlo en tu ultima posicion.")
-
-                End If
-
+146             If LenB(ObjData(Subasta.ObjSubastado).Name) = 0 Then Exit Sub
+148             Call MakeObj(ObjVendido, PosMap, posX, posY)
+150             Call LogearEventoDeSubasta("La boveda del usuario estaba llena, se tiro en la posicion:" & PosMap & "-" & posX & "-" & posY)
+152             Call WriteVar(FileUser, "INIT", "MENSAJEINFORMACION", "Subastador te ha dejado un mensaje: ¡Has ganado la subasta! Como no tenias espacio ni en tu boveda ni en el correo, tuve que tirarlo en tu ultima posicion.")
             End If
 
         Else
@@ -292,42 +281,29 @@ Public Sub DevolverItem()
 124             Call LogearEventoDeSubasta("El items fue depositado en la boveda del subastador correctamente.")
 126             Call WriteVar(FileUser, "INIT", "MENSAJEINFORMACION", "Subastador te ha dejado un mensaje: Tu subasta fue cancelada por falta de ofertas, te deposite el item en la boveda.")
             Else
-            
-128             If AddCorreoBySubastador("Subastador", Subasta.Subastador, "Su subasta fue cancelada por falta de ofertas", Subasta.ObjSubastado, Subasta.ObjSubastadoCantidad) Then
-                    'Call WriteVar(FileUser, "INIT", "MENSAJEINFORMACION", "Subastador te ha dejado un mensaje: Tu subasta fue cancelada por falta de ofertas, te devolvi el item por correo.")
-130                 Call LogearEventoDeSubasta("La boveda del usuario estaba llena, se envio por correo el item")
-                Else
-                
-132                 PosMap = CInt(ReadField(1, Leer.GetValue("INIT", "Position"), 45))
-134                 posX = CInt(ReadField(2, Leer.GetValue("INIT", "Position"), 45))
-136                 posY = CInt(ReadField(3, Leer.GetValue("INIT", "Position"), 45))
 
-138                 If MapData(PosMap, posX, posY).ObjInfo.ObjIndex > 0 Then Exit Sub
+132             PosMap = CInt(ReadField(1, Leer.GetValue("INIT", "Position"), 45))
+134             posX = CInt(ReadField(2, Leer.GetValue("INIT", "Position"), 45))
+136             posY = CInt(ReadField(3, Leer.GetValue("INIT", "Position"), 45))
 
-140                 If MapData(PosMap, posX, posY).TileExit.Map > 0 Then Exit Sub
+138             If MapData(PosMap, posX, posY).ObjInfo.ObjIndex > 0 Then Exit Sub
 
-142                 If Subasta.ObjSubastado < 1 Or Subasta.ObjSubastado > NumObjDatas Then Exit Sub
+140             If MapData(PosMap, posX, posY).TileExit.Map > 0 Then Exit Sub
 
-144                 If LenB(ObjData(Subasta.ObjSubastado).Name) = 0 Then Exit Sub
-146                 Call MakeObj(ObjVendido, PosMap, posX, posY)
-148                 Call LogearEventoDeSubasta("El correo del usuario estaba lleno, se tiro en la posicion:" & PosMap & "-" & posX & "-" & posY)
-150                 Call WriteVar(FileUser, "INIT", "MENSAJEINFORMACION", "Subastador te ha dejado un mensaje: Tu subasta fue cancelada por falta de ofertas, como no tenias lugar ni en tu correo ni boveda, tuve que tirarlo en tu ultimo posicion.")
+142             If Subasta.ObjSubastado < 1 Or Subasta.ObjSubastado > NumObjDatas Then Exit Sub
 
-                End If
+144             If LenB(ObjData(Subasta.ObjSubastado).Name) = 0 Then Exit Sub
+146             Call MakeObj(ObjVendido, PosMap, posX, posY)
+148             Call LogearEventoDeSubasta("El correo del usuario estaba lleno, se tiro en la posicion:" & PosMap & "-" & posX & "-" & posY)
+150             Call WriteVar(FileUser, "INIT", "MENSAJEINFORMACION", "Subastador te ha dejado un mensaje: Tu subasta fue cancelada por falta de ofertas, como no tenias lugar ni en tu correo ni boveda, tuve que tirarlo en tu ultimo posicion.")
 
             End If
 
         Else
 
 152         If Not MeterItemEnInventario(NameIndex(Subasta.Subastador), ObjVendido) Then
-154             If AddCorreoBySubastador("Subastador", Subasta.Subastador, "Tu subasta fue cancelada por falta de ofertas.", Subasta.ObjSubastado, Subasta.ObjSubastadoCantidad) Then
-156                 Call LogearEventoDeSubasta("Se envio por correo el item.")
-                Else
-                
-158                 Call TirarItemAlPiso(UserList(NameIndex(Subasta.Subastador)).Pos, ObjVendido)
-160                 Call LogearEventoDeSubasta("Se tiro al piso el item.")
-
-                End If
+158             Call TirarItemAlPiso(UserList(NameIndex(Subasta.Subastador)).Pos, ObjVendido)
+160             Call LogearEventoDeSubasta("Se tiro al piso el item.")
 
             End If
 
@@ -387,12 +363,7 @@ Public Sub CancelarSubasta()
 124             Call LogearEventoDeSubasta("El items fue depositado en la boveda del subastador correctamente.")
 126             Call WriteVar(FileUser, "INIT", "MENSAJEINFORMACION", "Subastador te ha dejado un mensaje: Tu subasta fue cancelada, te deposite el item en la boveda.")
             Else
-            
-128             If AddCorreoBySubastador("Subastador", Subasta.Subastador, "Su subasta fue cancelada", Subasta.ObjSubastado, Subasta.ObjSubastadoCantidad) Then
-130                 Call WriteVar(FileUser, "INIT", "MENSAJEINFORMACION", "Subastador te ha dejado un mensaje: Tu subasta fue cancelada, te devolvi el item por correo.")
-132                 Call LogearEventoDeSubasta("La boveda del usuario estaba llena, se envio por correo el item")
-                Else
-                
+
 134                 PosMap = CInt(ReadField(1, Leer.GetValue("INIT", "Position"), 45))
 136                 posX = CInt(ReadField(2, Leer.GetValue("INIT", "Position"), 45))
 138                 posY = CInt(ReadField(3, Leer.GetValue("INIT", "Position"), 45))
@@ -408,22 +379,13 @@ Public Sub CancelarSubasta()
 150                 Call LogearEventoDeSubasta("El correo del usuario estaba lleno, se tiro en la posicion:" & PosMap & "-" & posX & "-" & posY)
 152                 Call WriteVar(FileUser, "INIT", "MENSAJEINFORMACION", "Subastador te ha dejado un mensaje: Tu subasta fue cancelada, como no tenias lugar ni en tu correo ni boveda, tuve que tirarlo en tu ultimo posicion.")
 
-                End If
-
             End If
 
         Else
 
 154         If Not MeterItemEnInventario(NameIndex(Subasta.Subastador), ObjVendido) Then
-156             If AddCorreoBySubastador("Subastador", Subasta.Subastador, "Tu subasta fue cancelada.", Subasta.ObjSubastado, Subasta.ObjSubastadoCantidad) Then
-158                 Call LogearEventoDeSubasta("Se envio por correo el item.")
-                Else
-                
-160                 Call TirarItemAlPiso(UserList(NameIndex(Subasta.Subastador)).Pos, ObjVendido)
-162                 Call LogearEventoDeSubasta("Se tiro al piso el item.")
-
-                End If
-
+160             Call TirarItemAlPiso(UserList(NameIndex(Subasta.Subastador)).Pos, ObjVendido)
+162             Call LogearEventoDeSubasta("Se tiro al piso el item.")
             End If
 
 164         Call LogearEventoDeSubasta("Se entrego el item en mano del subastador.")

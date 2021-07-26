@@ -102,12 +102,6 @@ End Sub
 Function QuedanItems(ByVal NpcIndex As Integer, ByVal ObjIndex As Integer) As Boolean
         
         On Error GoTo QuedanItems_Err
-    
-        
-
-        
-
-        'Call LogTarea("Function QuedanItems npcindex:" & NpcIndex & " objindex:" & ObjIndex)
 
         Dim i As Integer
 

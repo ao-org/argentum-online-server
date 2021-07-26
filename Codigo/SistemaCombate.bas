@@ -2011,13 +2011,7 @@ Sub CalcularDarExp(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal 
             End If
     
 122         If ExpMult > 0 Then
-124             ExpaDar = ExpaDar * ExpMult * UserList(UserIndex).flags.ScrollExp
-    
-            End If
-    
-126         If UserList(UserIndex).donador.activo = 1 Then
-128             ExpaDar = ExpaDar * 1.1
-
+124             ExpaDar = ExpaDar * ExpMult
             End If
 
 130         If ExpaDar > 0 Then
@@ -2128,15 +2122,7 @@ Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As I
 152             If UserList(Index).flags.Muerto = 0 Then
 154                 If Distancia(UserList(UserIndex).Pos, UserList(Index).Pos) < 20 Then
 
-156                     ExpUser = 0
-
-158                     If UserList(Index).donador.activo = 1 Then
-160                         ExpUser = ExpaDar * 1.1
-                        Else
-162                         ExpUser = ExpaDar
-                        End If
-                    
-164                     ExpUser = ExpUser * UserList(Index).flags.ScrollExp
+158                     ExpUser = ExpaDar
                 
 166                     If UserList(Index).Stats.ELV < STAT_MAXELV Then
 168                         If NpcList(NpcIndex).nivel Then

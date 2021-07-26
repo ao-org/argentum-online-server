@@ -121,11 +121,6 @@ Public TrashCollector As New Collection
 
 Public Const MAXSPAWNATTEMPS = 15
 
-' Correo Ladder 22/11/2017
-Public Const MAX_CORREOS_SLOTS = 15
-
-' Correo Ladder 22/11/2017
-
 Public Const INFINITE_LOOPS As Integer = -1
 
 Public Const FXSANGRE = 14
@@ -764,7 +759,6 @@ Public Enum eOBJType
     otNudillos = 46
     OtCorreo = 47
     OtCofre = 48
-    OtDonador = 50
     otCualquiera = 1000
 
 End Enum
@@ -1146,7 +1140,6 @@ Public Type ObjData
     ParticulaGolpe As Integer
     ParticulaViaje As Integer
 
-    donador As Byte
     ClaseTipo As Byte
 
     TipoRuna As Byte
@@ -1391,26 +1384,6 @@ End Type
 '*********************************************************
 '*********************************************************
 
-Public Type CorreoMsj
-
-    Remitente As String
-    Mensaje As String
-    Item As String
-    ItemCount As Byte
-    Leido As Byte
-    Fecha As String
-
-End Type
-
-Public Type UserCorreo
-
-    MensajesSinLeer As Byte
-    NoLeidos As Byte
-    CantCorreo As Byte
-    Mensaje(1 To MAX_CORREOS_SLOTS) As CorreoMsj
-
-End Type
-
 'Estadisticas de los usuarios
 Public Type UserStats
 
@@ -1464,16 +1437,6 @@ Public Type AccionPendiente
 
 End Type
 
-'Sistema de Barras
-
-Public Type TDonador
-
-    activo As Byte
-    CreditoDonador As Integer
-    FechaExpiracion As Date
-
-End Type
-
 'Flags
 Public Type UserFlags
     Nadando As Byte
@@ -1482,9 +1445,6 @@ Public Type UserFlags
 
     Ahogandose As Byte
     EnTorneo As Boolean
-
-    ScrollExp As Single
-    ScrollOro As Single
 
     'Ladder
     'Casamientos  08/6/10 01:10 am
@@ -1673,8 +1633,6 @@ Public Type UserCounters
 
     TiempoParaSubastar As Byte
     UserHechizosInterval(1 To MAXUSERHECHIZOS) As Long
-    ScrollExperiencia As Long
-    ScrollOro As Long
     Oxigeno As Long
     
     Ahogo As Long
@@ -1835,10 +1793,6 @@ Public Type user
     AccountID As Long
     Grupo As Tgrupo
 
-    NPcLogros As Byte
-    UserLogros As Byte
-    LevelLogros As Byte
-
     showName As Boolean 'Permite que los GMs oculten su nick con el comando /SHOWNAME
     
     Char As Char 'Define la apariencia
@@ -1872,10 +1826,8 @@ Public Type user
     
     Stats As UserStats
     flags As UserFlags
-    donador As TDonador
     Accion As AccionPendiente
 
-    Correo As UserCorreo
     Faccion As tFacciones
     Familiar As Family
 
@@ -2336,14 +2288,6 @@ Public EnPausa                           As Boolean
 
 Public EnTesting                         As Boolean
 
-Public Type tObjDonador
-
-    ObjIndex As Integer
-    Valor As Byte
-    Cantidad As Integer
-
-End Type
-
 '*****************ARRAYS PUBLICOS*************************
 Public UserList()                         As user 'USUARIOS
 
@@ -2386,8 +2330,6 @@ Public PesoPeces()                        As Long
 Public RangosFaccion()                    As tRangoFaccion
 
 Public RecompensasFaccion()               As tRecompensaFaccion
-
-Public ObjDonador()                       As tObjDonador
 
 Public ModClase(1 To NUMCLASES)           As ModClase
 

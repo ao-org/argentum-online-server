@@ -144,33 +144,24 @@ Public Enum ServerPacketID
     ShowSastreForm ' 126
     VelocidadToggle
     MacroTrabajoToggle
-    RefreshAllInventorySlot
     BindKeys
     ShowFrmLogear
     ShowFrmMapa
     InmovilizadoOK
     BarFx
     SetEscribiendo
-    Logros
-    TrofeoToggleOn
-    TrofeoToggleOff
     LocaleMsg
-    ListaCorreo
     ShowPregunta
     DatosGrupo
     ubicacion
-    CorreoPicOn
-    DonadorObj
     ArmaMov
     EscudoMov
-    ActShop
     ViajarForm
     Oxigeno
     NadarToggle
     ShowFundarClanForm
     CharUpdateHP
     CharUpdateMAN
-    Ranking
     PosLLamadaDeClan
     QuestDetails
     QuestListSend
@@ -181,7 +172,6 @@ Public Enum ServerPacketID
     UpdateUserKey
     UpdateRM
     UpdateDM
-    Tolerancia0
     SeguroResu
     Stopped
     InvasionInfo
@@ -425,13 +415,11 @@ Private Enum ClientPacketID
     ShowServerForm          '/SHOW INT
     night                   '/NOCHE
     KickAllChars            '/ECHARTODOSPJS
-    RequestTCPStats         '/TCPESSTATS
     ReloadNPCs              '/RELOADNPCS
     ReloadServerIni         '/RELOADSINI
     ReloadSpells            '/RELOADHECHIZOS
     ReloadObjects           '/RELOADOBJ
     Restart                 '/REINICIAR
-    ResetAutoUpdate         '/AUTOUPDATE
     ChatColor               '/CHATCOLOR
     Ignored                 '/IGNORADO
     CheckSlot               '/SLOT
@@ -474,12 +462,6 @@ Private Enum ClientPacketID
     TraerBoveda
     CompletarAccion
     Escribiendo
-    TraerRecompensas
-    ReclamarRecompensa
-    Correo
-    SendCorreo
-    RetirarItemCorreo
-    BorrarCorreo
     InvitarGrupo
     ResponderPregunta
     RequestGrupo
@@ -495,11 +477,7 @@ Private Enum ClientPacketID
     EventoInfo
     CrearEvento
     BanTemporal
-    Traershop
-    ComprarItem
-    ScrollInfo
     CancelarExit
-    EnviarCodigo
     CrearTorneo
     ComenzarTorneo
     CancelarTorneo
@@ -510,7 +488,6 @@ Private Enum ClientPacketID
     LlamadadeClan
     MarcaDeClanPack
     MarcaDeGMPack
-    TraerRanking
     Quest
     QuestAccept
     QuestListRequest
@@ -1132,8 +1109,6 @@ On Error Resume Next
             Call HandleNight(UserIndex)
         Case ClientPacketID.KickAllChars
             Call HandleKickAllChars(UserIndex)
-        Case ClientPacketID.RequestTCPStats
-            Call HandleRequestTCPStats(UserIndex)
         Case ClientPacketID.ReloadNPCs
             Call HandleReloadNPCs(UserIndex)
         Case ClientPacketID.ReloadServerIni
@@ -1144,8 +1119,6 @@ On Error Resume Next
             Call HandleReloadObjects(UserIndex)
         Case ClientPacketID.Restart
             Call HandleRestart(UserIndex)
-        Case ClientPacketID.ResetAutoUpdate
-            Call HandleResetAutoUpdate(UserIndex)
         Case ClientPacketID.ChatColor
             Call HandleChatColor(UserIndex)
         Case ClientPacketID.Ignored
@@ -1226,18 +1199,6 @@ On Error Resume Next
             Call HandleCompletarAccion(UserIndex)
         Case ClientPacketID.Escribiendo
             Call HandleEscribiendo(UserIndex)
-        Case ClientPacketID.TraerRecompensas
-            Call HandleTraerRecompensas(UserIndex)
-        Case ClientPacketID.ReclamarRecompensa
-            Call HandleReclamarRecompensa(UserIndex)
-        Case ClientPacketID.Correo
-            Call HandleCorreo(UserIndex)
-        Case ClientPacketID.SendCorreo
-            Call HandleSendCorreo(UserIndex)
-        Case ClientPacketID.RetirarItemCorreo
-            Call HandleRetirarItemCorreo(UserIndex)
-        Case ClientPacketID.BorrarCorreo
-            Call HandleBorrarCorreo(UserIndex)
         Case ClientPacketID.InvitarGrupo
             Call HandleInvitarGrupo(UserIndex)
         Case ClientPacketID.ResponderPregunta
@@ -1268,16 +1229,8 @@ On Error Resume Next
             Call HandleCrearEvento(UserIndex)
         Case ClientPacketID.BanTemporal
             Call HandleBanTemporal(UserIndex)
-        Case ClientPacketID.Traershop
-            Call HandleTraerShop(UserIndex)
-        Case ClientPacketID.ComprarItem
-            Call HandleComprarItem(UserIndex)
-        Case ClientPacketID.SCROLLINFO
-            Call HandleScrollInfo(UserIndex)
         Case ClientPacketID.CancelarExit
             Call HandleCancelarExit(UserIndex)
-        Case ClientPacketID.EnviarCodigo
-            Call HandleEnviarCodigo(UserIndex)
         Case ClientPacketID.CrearTorneo
             Call HandleCrearTorneo(UserIndex)
         Case ClientPacketID.ComenzarTorneo
@@ -1298,8 +1251,6 @@ On Error Resume Next
             Call HandleMarcaDeClan(UserIndex)
         Case ClientPacketID.MarcaDeGMPack
             Call HandleMarcaDeGM(UserIndex)
-        Case ClientPacketID.TraerRanking
-            Call HandleTraerRanking(UserIndex)
         Case ClientPacketID.Quest
             Call HandleQuest(UserIndex)
         Case ClientPacketID.QuestAccept
@@ -1701,10 +1652,10 @@ Private Sub HandleTalk(ByVal UserIndex As Integer)
                 
 146                 If .flags.Muerto = 1 Then
                         'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageChatOverHead(chat, .Char.CharIndex, CHAT_COLOR_DEAD_CHAR, UserList(UserIndex).Name))
-148                     Call SendData(SendTarget.ToUsuariosMuertos, UserIndex, PrepareMessageChatOverHead(chat, .Char.CharIndex, CHAT_COLOR_DEAD_CHAR, UserList(UserIndex).Name))
+148                     Call SendData(SendTarget.ToUsuariosMuertos, UserIndex, PrepareMessageChatOverHead(chat, .Char.CharIndex, CHAT_COLOR_DEAD_CHAR))
                     
                     Else
-150                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageChatOverHead(chat, .Char.CharIndex, .flags.ChatColor, UserList(UserIndex).Name))
+150                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageChatOverHead(chat, .Char.CharIndex, .flags.ChatColor))
 
                     End If
 
@@ -1802,7 +1753,7 @@ Private Sub HandleYell(ByVal UserIndex As Integer)
                     
 148                     .flags.ChatHistory(UBound(.flags.ChatHistory)) = chat
 
-150                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageChatOverHead(chat, .Char.CharIndex, vbRed, UserList(UserIndex).Name))
+150                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageChatOverHead(chat, .Char.CharIndex, vbRed))
                
                     End If
 
@@ -13397,41 +13348,6 @@ ErrHandler:
 End Sub
 
 ''
-' Handles the "ResetAutoUpdate" message.
-'
-' @param    UserIndex The index of the user sending the message.
-
-Public Sub HandleResetAutoUpdate(ByVal UserIndex As Integer)
-        
-        On Error GoTo HandleResetAutoUpdate_Err
-
-        '***************************************************
-        'Author: Lucas Tavolaro Ortiz (Tavo)
-        'Last Modification: 12/23/06
-        'Reset the AutoUpdate
-        '***************************************************
-100     With UserList(UserIndex)
-        
-        
-        
-102         If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios)) Then
-104             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
-                Exit Sub
-            End If
-        
-106         Call WriteConsoleMsg(UserIndex, "TID: " & CStr(ReiniciarAutoUpdate()), FontTypeNames.FONTTYPE_INFO)
-
-        End With
-        
-        Exit Sub
-
-HandleResetAutoUpdate_Err:
-108     Call TraceError(Err.Number, Err.Description, "Protocol.HandleResetAutoUpdate", Erl)
-110
-        
-End Sub
-
-''
 ' Handles the "Restart" message.
 '
 ' @param    UserIndex The index of the user sending the message.
@@ -13605,54 +13521,6 @@ Public Sub HandleReloadNPCs(ByVal UserIndex As Integer)
 HandleReloadNPCs_Err:
 110     Call TraceError(Err.Number, Err.Description, "Protocol.HandleReloadNPCs", Erl)
 112
-        
-End Sub
-
-''
-' Handle the "RequestTCPStats" message
-' @param UserIndex The index of the user sending the message
-
-Public Sub HandleRequestTCPStats(ByVal UserIndex As Integer)
-        
-        On Error GoTo HandleRequestTCPStats_Err
-
-        '***************************************************
-        'Author: Lucas Tavolaro Ortiz (Tavo)
-        'Last Modification: 12/23/06
-        'Last modified by: Juan Martín Sotuyo Dodero (Maraxus)
-        'Send the TCP`s stadistics
-        '***************************************************
-100     With UserList(UserIndex)
-        
-        
-        
-102         If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios Or PlayerType.RoleMaster)) Then Exit Sub
-                
-            Dim list  As String
-
-            Dim Count As Long
-
-            Dim i     As Long
-        
-104         Call LogGM(.Name, .Name & " ha pedido las estadisticas del TCP.")
-    
-106         Call WriteConsoleMsg(UserIndex, "Los datos estín en BYTES.", FontTypeNames.FONTTYPE_INFO)
-        
-            'Send the stats
-108         With TCPESStats
-110             Call WriteConsoleMsg(UserIndex, "IN/s: " & .BytesRecibidosXSEG & " OUT/s: " & .BytesEnviadosXSEG, FontTypeNames.FONTTYPE_INFO)
-112             Call WriteConsoleMsg(UserIndex, "IN/s MAX: " & .BytesRecibidosXSEGMax & " -> " & .BytesRecibidosXSEGCuando, FontTypeNames.FONTTYPE_INFO)
-114             Call WriteConsoleMsg(UserIndex, "OUT/s MAX: " & .BytesEnviadosXSEGMax & " -> " & .BytesEnviadosXSEGCuando, FontTypeNames.FONTTYPE_INFO)
-
-            End With
-
-        End With
-        
-        Exit Sub
-
-HandleRequestTCPStats_Err:
-134     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRequestTCPStats", Erl)
-136
         
 End Sub
 
@@ -15508,15 +15376,8 @@ Private Sub HandleQuestionGM(ByVal UserIndex As Integer)
 102         Consulta = Reader.ReadString8()
 104         TipoDeConsulta = Reader.ReadString8()
 
-106         If UserList(UserIndex).donador.activo = 1 Then
-108             Call Ayuda.Push(.Name, Consulta, TipoDeConsulta & "-Prioritario")
-110             Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Se ha recibido un nuevo mensaje de soporte de " & UserList(UserIndex).Name & "(Prioritario).", FontTypeNames.FONTTYPE_SERVER))
-            
-            Else
-112             Call Ayuda.Push(.Name, Consulta, TipoDeConsulta)
-114             Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Se ha recibido un nuevo mensaje de soporte de " & UserList(UserIndex).Name & ".", FontTypeNames.FONTTYPE_SERVER))
-
-            End If
+112         Call Ayuda.Push(.Name, Consulta, TipoDeConsulta)
+114         Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Se ha recibido un nuevo mensaje de soporte de " & UserList(UserIndex).Name & ".", FontTypeNames.FONTTYPE_SERVER))
 
 116         Call WriteConsoleMsg(UserIndex, "Tu mensaje fue recibido por el equipo de soporte.", FontTypeNames.FONTTYPE_INFOIAO)
         
@@ -16764,28 +16625,6 @@ ErrHandler:
 
 End Sub
 
-Private Sub HandleEnviarCodigo(ByVal UserIndex As Integer)
-
-        On Error GoTo ErrHandler
-
-100     With UserList(UserIndex)
-
-            Dim Codigo As String
-
-102         Codigo = Reader.ReadString8()
-
-104         Call CheckearCodigo(UserIndex, Codigo)
-
-        End With
-    
-        Exit Sub
-
-ErrHandler:
-106     Call TraceError(Err.Number, Err.Description, "Protocol.HandleEnviarCodigo", Erl)
-108
-
-End Sub
-
 Private Sub HandleCrearTorneo(ByVal UserIndex As Integer)
 
         On Error GoTo ErrHandler
@@ -17035,16 +16874,10 @@ Private Sub HandleEscribiendo(ByVal UserIndex As Integer)
         On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
-
-102         If .flags.Escribiendo = False Then
-104             .flags.Escribiendo = True
-106             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetEscribiendo(.Char.CharIndex, True))
             
-            Else
-108             .flags.Escribiendo = False
-110             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetEscribiendo(.Char.CharIndex, False))
-
-            End If
+            .flags.Escribiendo = Reader.ReadBool()
+            
+106         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetEscribiendo(.Char.CharIndex, .flags.Escribiendo))
 
         End With
     
@@ -17099,217 +16932,6 @@ Private Sub HandleCompletarAccion(ByVal UserIndex As Integer)
 ErrHandler:
 114     Call TraceError(Err.Number, Err.Description, "Protocol.?", Erl)
 116
-
-End Sub
-
-Private Sub HandleReclamarRecompensa(ByVal UserIndex As Integer)
-
-        On Error GoTo ErrHandler
-
-100     With UserList(UserIndex)
-
-            Dim Index As Byte
-102             Index = Reader.ReadInt8()
-        
-104         Call EntregarRecompensas(UserIndex, Index)
-
-        End With
-    
-        Exit Sub
-
-ErrHandler:
-106     Call TraceError(Err.Number, Err.Description, "Protocol.?", Erl)
-108
-
-End Sub
-
-Private Sub HandleTraerRecompensas(ByVal UserIndex As Integer)
-
-        On Error GoTo ErrHandler
-
-100     With UserList(UserIndex)
-
-102         Call EnviarRecompensaStat(UserIndex)
-
-        End With
-    
-        Exit Sub
-
-ErrHandler:
-104     Call TraceError(Err.Number, Err.Description, "Protocol.?", Erl)
-106
-
-End Sub
-
-Private Sub HandleCorreo(ByVal UserIndex As Integer)
-
-        On Error GoTo ErrHandler
-
-100     With UserList(UserIndex)
-
-            'Call WriteListaCorreo(Userindex, False)
-            'Call EnviarRecompensaStat(UserIndex)
-
-        End With
-    
-        Exit Sub
-
-ErrHandler:
-102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCorreo", Erl)
-104
-
-End Sub
-
-Private Sub HandleSendCorreo(ByVal UserIndex As Integer)
-
-        On Error GoTo ErrHandler
-
-100     With UserList(UserIndex)
-
-            Dim Nick               As String
-            Dim Msg                As String
-            Dim ItemCount          As Byte
-            Dim cant               As Integer
-            Dim IndexReceptor      As Integer
-            Dim Itemlista(1 To 10) As obj
-
-102         Nick = Reader.ReadString8()
-104         Msg = Reader.ReadString8()
-106         ItemCount = Reader.ReadInt8()
-        
-            Dim ObjIndex   As Integer
-            Dim FinalCount As Byte
-            Dim HuboError  As Boolean
-                
-108         If ItemCount > 0 Then 'Si el correo tiene item
-
-                Dim i As Byte
-
-110             For i = 1 To ItemCount
-112                 Itemlista(i).ObjIndex = Reader.ReadInt8
-114                 Itemlista(i).amount = Reader.ReadInt16
-116             Next i
-
-            Else 'Si es solo texto
-                'IndexReceptor = NameIndex(Nick)
-118             FinalCount = 0
-120             AddCorreo UserIndex, Nick, Msg, 0, FinalCount
-
-            End If
-        
-            Dim ObjArray As String
-        
-            ' WyroX: Deshabilitado
-122         If False Then
-
-124             For i = 1 To ItemCount
-126                 ObjIndex = UserList(UserIndex).Invent.Object(Itemlista(i).ObjIndex).ObjIndex
-                
-128                 If ObjData(ObjIndex).Destruye = 1 Then
-130                     HuboError = True
-                    Else
-
-132                     If ObjData(ObjIndex).Instransferible = 1 Then
-134                         HuboError = True
-                            '  Call WriteConsoleMsg(UserIndex, "No podes transferir ese item.", FontTypeNames.FONTTYPE_INFO)
-                        Else
-
-136                         If ObjData(ObjIndex).Newbie = 1 Then
-138                             HuboError = True
-                                ' Call WriteConsoleMsg(UserIndex, "No podes transferir ese item.", FontTypeNames.FONTTYPE_INFO)
-                            Else
-
-140                             If ObjData(ObjIndex).Intirable = 1 Then
-142                                 HuboError = True
-                                    ' Call WriteConsoleMsg(UserIndex, "No podes transferir ese item.", FontTypeNames.FONTTYPE_INFO)
-                                Else
-
-144                                 If ObjData(ObjIndex).OBJType = eOBJType.otMonturas And UserList(UserIndex).flags.Montado Then
-146                                     HuboError = True
-                                        '  Call WriteConsoleMsg(UserIndex, "Para transferir tu montura deberias descender de ella.", FontTypeNames.FONTTYPE_INFO)
-                                    Else
-                                
-148                                     Call QuitarUserInvItem(UserIndex, Itemlista(i).ObjIndex, Itemlista(i).amount)
-150                                     Call UpdateUserInv(False, UserIndex, Itemlista(i).ObjIndex)
-152                                     FinalCount = FinalCount + 1
-154                                     ObjArray = ObjArray & ObjIndex & "-" & Itemlista(i).amount & "@"
-
-                                    End If
-
-                                End If
-
-                            End If
-
-                        End If
-
-                    End If
-
-156             Next i
-                
-158             IndexReceptor = NameIndex(Nick)
-160             AddCorreo UserIndex, Nick, Msg, ObjArray, FinalCount
-    
-162             If HuboError Then
-164                 Call WriteConsoleMsg(UserIndex, "Hubo objetos que no se pudieron enviar.", FontTypeNames.FONTTYPE_INFO)
-
-                End If
-            
-            Else
-166             Call WriteConsoleMsg(UserIndex, "Correo desactivado.", FontTypeNames.FONTTYPE_INFO)
-
-            End If
-
-        End With
-    
-        Exit Sub
-    
-ErrHandler:
-168     Call TraceError(Err.Number, Err.Description, "Protocol.HandleSendCorreo", Erl)
-170
-
-End Sub
-
-Private Sub HandleRetirarItemCorreo(ByVal UserIndex As Integer)
-
-        On Error GoTo ErrHandler
-
-100     With UserList(UserIndex)
-
-            Dim MsgIndex As Integer
-
-102         MsgIndex = Reader.ReadInt16()
-        
-            'Call ExtractItemCorreo(Userindex, MsgIndex)
-
-        End With
-    
-        Exit Sub
-    
-ErrHandler:
-104     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRetirarItemCorreo", Erl)
-106
-
-End Sub
-
-Private Sub HandleBorrarCorreo(ByVal UserIndex As Integer)
-
-        On Error GoTo ErrHandler
-
-100     With UserList(UserIndex)
-
-            Dim MsgIndex As Integer
-
-102         MsgIndex = Reader.ReadInt16()
-        
-            'Call BorrarCorreoMail(Userindex, MsgIndex)
-
-        End With
-    
-        Exit Sub
-    
-ErrHandler:
-104     Call TraceError(Err.Number, Err.Description, "Protocol.HandleBorrarCorreo", Erl)
-106
 
 End Sub
 
@@ -17790,68 +17412,6 @@ HandleSubastaInfo_Err:
 124
 End Sub
 
-Private Sub HandleScrollInfo(ByVal UserIndex As Integer)
-        'Author: Pablo Mercavides
- 
-        On Error GoTo ErrHandler
-
-100     With UserList(UserIndex)
-
-            Dim activo As Boolean
-            Dim HR     As Integer
-            Dim MS     As Integer
-            Dim SS     As Integer
-            Dim secs   As Integer
-        
-102         If UserList(UserIndex).flags.ScrollExp > 1 Then
-104             secs = UserList(UserIndex).Counters.ScrollExperiencia
-106             HR = secs \ 3600
-108             MS = (secs Mod 3600) \ 60
-110             SS = (secs Mod 3600) Mod 60
-
-112             If SS > 9 Then
-114                 Call WriteConsoleMsg(UserIndex, "Scroll de experiencia activo. Tiempo restante: " & MS & ":" & SS & " minuto(s).", FontTypeNames.FONTTYPE_INFOIAO)
-                Else
-116                 Call WriteConsoleMsg(UserIndex, "Scroll de experiencia activo. Tiempo restante: " & MS & ":0" & SS & " minuto(s).", FontTypeNames.FONTTYPE_INFOIAO)
-
-                End If
-
-118             activo = True
-
-            End If
-
-120         If UserList(UserIndex).flags.ScrollOro > 1 Then
-122             secs = UserList(UserIndex).Counters.ScrollOro
-124             HR = secs \ 3600
-126             MS = (secs Mod 3600) \ 60
-128             SS = (secs Mod 3600) Mod 60
-
-130             If SS > 9 Then
-132                 Call WriteConsoleMsg(UserIndex, "Scroll de oro activo. Tiempo restante: " & MS & ":" & SS & " minuto(s).", FontTypeNames.FONTTYPE_INFOIAO)
-                Else
-134                 Call WriteConsoleMsg(UserIndex, "Scroll de oro activo. Tiempo restante: " & MS & ":0" & SS & " minuto(s).", FontTypeNames.FONTTYPE_INFOIAO)
-
-                End If
-
-136             activo = True
-
-            End If
-
-138         If Not activo Then
-140             Call WriteConsoleMsg(UserIndex, "No tenes ningun scroll activo.", FontTypeNames.FONTTYPE_INFOIAO)
-
-            End If
-
-        End With
-    
-        Exit Sub
-
-ErrHandler:
-142     Call TraceError(Err.Number, Err.Description, "Protocol.HandleScrollInfo", Erl)
-144
-
-End Sub
-
 Private Sub HandleCancelarExit(ByVal UserIndex As Integer)
         'Author: Pablo Mercavides
         
@@ -18204,99 +17764,6 @@ Private Sub HandleBanTemporal(ByVal UserIndex As Integer)
 ErrHandler:
 114     Call TraceError(Err.Number, Err.Description, "Protocol.?", Erl)
 116
-
-End Sub
-
-Private Sub HandleTraerShop(ByVal UserIndex As Integer)
-        'Author: Pablo Mercavides
-        
-        On Error GoTo HandleTraerShop_Err
-
-100     Call WriteShop(UserIndex)
-        
-        Exit Sub
-
-HandleTraerShop_Err:
-102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleTraerShop", Erl)
-104
-End Sub
-
-Private Sub HandleTraerRanking(ByVal UserIndex As Integer)
-        'Author: Pablo Mercavides
-        
-        On Error GoTo HandleTraerRanking_Err
-
-100     Call WriteRanking(UserIndex)
-        
-        Exit Sub
-
-HandleTraerRanking_Err:
-102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleTraerRanking", Erl)
-104
-End Sub
-
-Private Sub HandleComprarItem(ByVal UserIndex As Integer)
-        'Author: Pablo Mercavides
-
-        On Error GoTo ErrHandler
-
-100     With UserList(UserIndex)
-
-            Dim ItemIndex    As Byte
-            Dim ObjComprado  As obj
-            Dim LogeoDonador As String
-
-102         ItemIndex = Reader.ReadInt8()
-        
-            Dim i              As Byte
-            Dim InvSlotsLibres As Byte
-        
-104         For i = 1 To UserList(UserIndex).CurrentInventorySlots
-106             If UserList(UserIndex).Invent.Object(i).ObjIndex = 0 Then InvSlotsLibres = InvSlotsLibres + 1
-108         Next i
-    
-            'Nos fijamos si entra
-110         If InvSlotsLibres = 0 Then
-112             Call WriteConsoleMsg(UserIndex, "Donación> Sin espacio en el inventario.", FontTypeNames.FONTTYPE_WARNING)
-            Else
-
-114             If CreditosDonadorCheck(UserList(UserIndex).Cuenta) - ObjDonador(ItemIndex).Valor >= 0 Then
-116                 ObjComprado.amount = ObjDonador(ItemIndex).Cantidad
-118                 ObjComprado.ObjIndex = ObjDonador(ItemIndex).ObjIndex
-            
-120                 LogeoDonador = LogeoDonador & vbCrLf & "****************************************************" & vbCrLf
-122                 LogeoDonador = LogeoDonador & "Compra iniciada. Balance de la cuenta " & CreditosDonadorCheck(UserList(UserIndex).Cuenta) & " creditos." & vbCrLf
-124                 LogeoDonador = LogeoDonador & "El personaje " & UserList(UserIndex).Name & "(" & UserList(UserIndex).Cuenta & ") Compro el item " & ObjData(ObjDonador(ItemIndex).ObjIndex).Name & vbCrLf
-126                 LogeoDonador = LogeoDonador & "Se descontaron " & CLng(ObjDonador(ItemIndex).Valor) & " creditos de la cuenta " & UserList(UserIndex).Cuenta & "." & vbCrLf
-            
-128                 If Not MeterItemEnInventario(UserIndex, ObjComprado) Then
-130                     LogeoDonador = LogeoDonador & "El item se tiro al piso" & vbCrLf
-132                     Call TirarItemAlPiso(UserList(UserIndex).Pos, ObjComprado)
-
-                    End If
-                
-134                 LogeoDonador = LogeoDonador & "****************************************************" & vbCrLf
-             
-136                 Call RestarCreditosDonador(UserList(UserIndex).Cuenta, CLng(ObjDonador(ItemIndex).Valor))
-138                 Call WriteConsoleMsg(UserIndex, "Donación> Gracias por tu compra. Tu saldo es de " & CreditosDonadorCheck(UserList(UserIndex).Cuenta) & " creditos.", FontTypeNames.FONTTYPE_WARNING)
-140                 Call LogearEventoDeDonador(LogeoDonador)
-142                 Call SaveUser(UserIndex)
-144                 Call WriteActShop(UserIndex)
-                Else
-146                 Call WriteConsoleMsg(UserIndex, "Donación> Tu saldo es insuficiente. Actualmente tu saldo es de " & CreditosDonadorCheck(UserList(UserIndex).Cuenta) & " creditos.", FontTypeNames.FONTTYPE_WARNING)
-148                 Call WriteActShop(UserIndex)
-
-                End If
-
-            End If
-
-        End With
-    
-        Exit Sub
-
-ErrHandler:
-150     Call TraceError(Err.Number, Err.Description, "Protocol.HandleComprarItem", Erl)
-152
 
 End Sub
 
@@ -18921,9 +18388,7 @@ Private Sub HandleTolerancia0(ByVal UserIndex As Integer)
                 Exit Sub
 
             End If
-        
-112         Call WriteTolerancia0(tUser)
-        
+
 114         Call BanearIP(UserIndex, Nick, UserList(tUser).IP)
 116         Call BanearHDMAC(UserIndex, Nick)
 118         Call BanearCuenta(UserIndex, Nick, "Tolerancia cero")
@@ -19022,15 +18487,8 @@ Private Sub HandleDenounce(ByVal UserIndex As Integer)
 
             End If
 
-130         If UserList(UserIndex).donador.activo = 1 Then
-132             Call Ayuda.Push(.Name, Denuncia, "Denuncia a " & UserList(tUser).Name & "-Prioritario")
-134             Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Se ha recibido una nueva denuncia de parte de " & .Name & "(Prioritario).", FontTypeNames.FONTTYPE_SERVER))
-        
-            Else
-136             Call Ayuda.Push(.Name, Denuncia, "Denuncia a " & UserList(tUser).Name)
-138             Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Se ha recibido una nueva denuncia de parte de " & .Name & ".", FontTypeNames.FONTTYPE_SERVER))
-
-            End If
+136         Call Ayuda.Push(.Name, Denuncia, "Denuncia a " & UserList(tUser).Name)
+138         Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Se ha recibido una nueva denuncia de parte de " & .Name & ".", FontTypeNames.FONTTYPE_SERVER))
 
 140         Call WriteConsoleMsg(UserIndex, "Tu denuncia fue recibida por el equipo de soporte.", FontTypeNames.FONTTYPE_INFOIAO)
 
