@@ -66,8 +66,6 @@ Public ReiniciarServer              As Long
 
 Public tInicioServer                As Long
 
-Public EstadisticasWeb              As New clsEstadisticasIPC
-
 'INTERVALOS
 Public SanaIntervaloSinDescansar    As Integer
 Public StaminaIntervaloSinDescansar As Integer
@@ -166,21 +164,6 @@ Public Nieblando                    As Boolean
 
 Public IpList                       As New Collection
 
-Public Type TCPESStats
-
-    BytesEnviados As Double
-    BytesRecibidos As Double
-    BytesEnviadosXSEG As Long
-    BytesRecibidosXSEG As Long
-    BytesEnviadosXSEGMax As Long
-    BytesRecibidosXSEGMax As Long
-    BytesEnviadosXSEGCuando As Date
-    BytesRecibidosXSEGCuando As Date
-
-End Type
-
-Public TCPESStats As TCPESStats
-
 Public Baneos     As New Collection
 
 'Public ResetThread As New clsThreading
@@ -239,8 +222,6 @@ End Sub
 Sub WorldSave()
 
         On Error GoTo Handler
-
-        'Call LogTarea("Sub WorldSave")
 
         Dim LoopX As Integer
 
@@ -324,57 +305,6 @@ Public Sub PurgarPenas()
 
 PurgarPenas_Err:
 118     Call TraceError(Err.Number, Err.Description, "Admin.PurgarPenas", Erl)
-
-        
-End Sub
-
-Public Sub PurgarScroll()
-        
-        On Error GoTo PurgarScroll_Err
-        
-
-        Dim i As Long
-    
-100     For i = 1 To LastUser
-
-102         If UserList(i).flags.UserLogged Then
-104             If UserList(i).Counters.ScrollExperiencia > 0 Then
-106                 UserList(i).Counters.ScrollExperiencia = UserList(i).Counters.ScrollExperiencia - 1
-
-108                 If UserList(i).Counters.ScrollExperiencia < 1 Then
-110                     UserList(i).Counters.ScrollExperiencia = 0
-112                     UserList(i).flags.ScrollExp = 1
-114                     Call WriteConsoleMsg(i, "Tu scroll de experiencia a finalizado.", FontTypeNames.FONTTYPE_New_DONADOR)
-116                     Call WriteContadores(i)
-                    
-
-                    End If
-
-                End If
-
-118             If UserList(i).Counters.ScrollOro > 0 Then
-120                 UserList(i).Counters.ScrollOro = UserList(i).Counters.ScrollOro - 1
-
-122                 If UserList(i).Counters.ScrollOro < 1 Then
-124                     UserList(i).Counters.ScrollOro = 0
-126                     UserList(i).flags.ScrollOro = 1
-128                     Call WriteConsoleMsg(i, "Tu scroll de oro a finalizado.", FontTypeNames.FONTTYPE_New_DONADOR)
-130                     Call WriteContadores(i)
-                    
-
-                    End If
-
-                End If
-
-            End If
-
-132     Next i
-
-        
-        Exit Sub
-
-PurgarScroll_Err:
-134     Call TraceError(Err.Number, Err.Description, "Admin.PurgarScroll", Erl)
 
         
 End Sub
@@ -489,122 +419,6 @@ BANCheck_Err:
         
 End Function
 
-Public Function DonadorCheck(ByVal Name As String) As Boolean
-        
-        On Error GoTo DonadorCheck_Err
-        
-
-100     If Database_Enabled Then
-102         DonadorCheck = CheckUserDonatorDatabase(Name)
-        Else
-104         DonadorCheck = val(GetVar(CuentasPath & Name & ".act", "DONADOR", "DONADOR"))
-
-        End If
-
-        
-        Exit Function
-
-DonadorCheck_Err:
-106     Call TraceError(Err.Number, Err.Description, "Admin.DonadorCheck", Erl)
-
-        
-End Function
-
-Public Function CreditosDonadorCheck(ByVal Name As String) As Long
-        
-        On Error GoTo CreditosDonadorCheck_Err
-        
-
-100     If Database_Enabled Then
-102         CreditosDonadorCheck = GetUserCreditosDatabase(Name)
-        Else
-104         CreditosDonadorCheck = val(GetVar(CuentasPath & Name & ".act", "DONADOR", "CREDITOS"))
-
-        End If
-
-        
-        Exit Function
-
-CreditosDonadorCheck_Err:
-106     Call TraceError(Err.Number, Err.Description, "Admin.CreditosDonadorCheck", Erl)
-
-        
-End Function
-
-Public Function CreditosCanjeadosCheck(ByVal Name As String) As Long
-        
-        On Error GoTo CreditosCanjeadosCheck_Err
-        
-
-100     If Database_Enabled Then
-102         CreditosCanjeadosCheck = GetUserCreditosCanjeadosDatabase(Name)
-        Else
-104         CreditosCanjeadosCheck = val(GetVar(CuentasPath & Name & ".act", "DONADOR", "CREDITOSCANJEADOS"))
-
-        End If
-
-        
-        Exit Function
-
-CreditosCanjeadosCheck_Err:
-106     Call TraceError(Err.Number, Err.Description, "Admin.CreditosCanjeadosCheck", Erl)
-
-        
-End Function
-
-Public Function DiasDonadorCheck(ByVal Name As String) As Integer
-        
-        On Error GoTo DiasDonadorCheck_Err
-        
-
-100     If Database_Enabled Then
-            ' Uso una funcion que hace ambas queries a la vez para optimizar
-102         DiasDonadorCheck = GetUserDiasDonadorDatabase(Name)
-        Else
-
-104         If DonadorCheck(Name) Then
-
-                Dim Diasrestantes As Integer
-
-                Dim fechadonador  As Date
-
-106             fechadonador = GetVar(CuentasPath & Name & ".act", "DONADOR", "FECHAEXPIRACION")
-108             DiasDonadorCheck = DateDiff("d", Date, fechadonador)
-
-            End If
-
-        End If
-
-        
-        Exit Function
-
-DiasDonadorCheck_Err:
-110     Call TraceError(Err.Number, Err.Description, "Admin.DiasDonadorCheck", Erl)
-
-        
-End Function
-
-Public Function ComprasDonadorCheck(ByVal Name As String) As Long
-        
-        On Error GoTo ComprasDonadorCheck_Err
-        
-
-100     If Database_Enabled Then
-102         ComprasDonadorCheck = GetUserComprasDonadorDatabase(Name)
-        Else
-104         ComprasDonadorCheck = val(GetVar(CuentasPath & Name & ".act", "COMPRAS", "CANTIDAD"))
-
-        End If
-
-        
-        Exit Function
-
-ComprasDonadorCheck_Err:
-106     Call TraceError(Err.Number, Err.Description, "Admin.ComprasDonadorCheck", Erl)
-
-        
-End Function
-
 Public Function PersonajeExiste(ByVal Name As String) As Boolean
         
         On Error GoTo PersonajeExiste_Err
@@ -652,92 +466,6 @@ UnBan_Err:
 
         
 End Function
-
-
-Public Sub ActualizaEstadisticasWeb()
-        
-        On Error GoTo ActualizaEstadisticasWeb_Err
-        
-
-        Static Andando  As Boolean
-
-        Static Contador As Long
-
-        Dim Tmp         As Boolean
-
-100     Contador = Contador + 1
-
-102     If Contador >= 10 Then
-104         Contador = 0
-106         Tmp = EstadisticasWeb.EstadisticasAndando()
-    
-108         If Andando = False And Tmp = True Then
-110             Call InicializaEstadisticas
-
-            End If
-    
-112         Andando = Tmp
-
-        End If
-
-        
-        Exit Sub
-
-ActualizaEstadisticasWeb_Err:
-114     Call TraceError(Err.Number, Err.Description, "Admin.ActualizaEstadisticasWeb", Erl)
-
-        
-End Sub
-
-Public Sub ActualizaStatsES()
-        
-        On Error GoTo ActualizaStatsES_Err
-        
-
-        Static TUlt      As Single
-
-        Dim Transcurrido As Single
-
-100     Transcurrido = Timer - TUlt
-
-102     If Transcurrido >= 5 Then
-104         TUlt = Timer
-
-106         With TCPESStats
-108             .BytesEnviadosXSEG = CLng(.BytesEnviados / Transcurrido)
-110             .BytesRecibidosXSEG = CLng(.BytesRecibidos / Transcurrido)
-112             .BytesEnviados = 0
-114             .BytesRecibidos = 0
-        
-116             If .BytesEnviadosXSEG > .BytesEnviadosXSEGMax Then
-118                 .BytesEnviadosXSEGMax = .BytesEnviadosXSEG
-120                 .BytesEnviadosXSEGCuando = CDate(Now)
-
-                End If
-        
-122             If .BytesRecibidosXSEG > .BytesRecibidosXSEGMax Then
-124                 .BytesRecibidosXSEGMax = .BytesRecibidosXSEG
-126                 .BytesRecibidosXSEGCuando = CDate(Now)
-
-                End If
-        
-128             If frmEstadisticas.Visible Then
-130                 Call frmEstadisticas.ActualizaStats
-
-                End If
-
-            End With
-
-        End If
-
-        
-        Exit Sub
-
-ActualizaStatsES_Err:
-132     Call TraceError(Err.Number, Err.Description, "Admin.ActualizaStatsES", Erl)
-
-        
-End Sub
 
 Public Function UserDarPrivilegioLevel(ByVal Name As String) As PlayerType
         

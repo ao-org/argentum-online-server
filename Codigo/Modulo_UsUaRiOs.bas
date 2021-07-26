@@ -185,22 +185,6 @@ Public Sub ConnectUser_Prepare(ByVal UserIndex As Integer, ByRef Name As String,
 130         .Char.FX = 0
 135         .Counters.CuentaRegresiva = -1
 
-            'Donador
-140         If DonadorCheck(UserCuenta) Then
-
-                Dim LoopC As Integer
-145             For LoopC = 1 To Donadores.Count
-
-150                 If UCase$(Donadores(LoopC).Name) = UCase$(UserCuenta) Then
-155                     .donador.activo = 1
-160                     .donador.FechaExpiracion = Donadores(LoopC).FechaExpiracion
-                        Exit For
-                    End If
-
-165             Next LoopC
-
-            End If
-        
             ' Seteamos el nombre
 170         .Name = Name
         
@@ -424,8 +408,6 @@ Public Function ConnectUser_Complete(ByVal UserIndex As Integer, _
 575         Call UpdateUserHechizos(True, UserIndex, 0)
         
 580         Call EnviarLlaves(UserIndex)
-
-585         If .Correo.NoLeidos > 0 Then Call WriteCorreoPicOn(UserIndex)
 
 590         If .flags.Paralizado Then Call WriteParalizeOK(UserIndex)
         
@@ -1099,7 +1081,7 @@ Sub MakeUserChar(ByVal toMap As Boolean, _
                         End If
                     End If
 
-140                 Call WriteCharacterCreate(sndIndex, .Char.Body, .Char.Head, .Char.Heading, .Char.CharIndex, X, Y, .Char.WeaponAnim, .Char.ShieldAnim, .Char.FX, 999, .Char.CascoAnim, TempName, .Faccion.Status, .flags.Privilegios, .Char.ParticulaFx, .Char.Head_Aura, .Char.Arma_Aura, .Char.Body_Aura, .Char.DM_Aura, .Char.RM_Aura, .Char.Otra_Aura, .Char.Escudo_Aura, .Char.speeding, 0, .donador.activo, appear, .Grupo.Lider, .GuildIndex, clan_nivel, .Stats.MinHp, .Stats.MaxHp, .Stats.MinMAN, .Stats.MaxMAN, 0, False, .flags.Navegando)
+140                 Call WriteCharacterCreate(sndIndex, .Char.Body, .Char.Head, .Char.Heading, .Char.CharIndex, X, Y, .Char.WeaponAnim, .Char.ShieldAnim, .Char.FX, 999, .Char.CascoAnim, TempName, .Faccion.Status, .flags.Privilegios, .Char.ParticulaFx, .Char.Head_Aura, .Char.Arma_Aura, .Char.Body_Aura, .Char.DM_Aura, .Char.RM_Aura, .Char.Otra_Aura, .Char.Escudo_Aura, .Char.speeding, 0, appear, .Grupo.Lider, .GuildIndex, clan_nivel, .Stats.MinHp, .Stats.MaxHp, .Stats.MinMAN, .Stats.MaxMAN, 0, False, .flags.Navegando)
                                          
                 Else
             
@@ -1262,7 +1244,7 @@ Sub CheckUserLevel(ByVal UserIndex As Integer)
 176                 If EsNewbie(UserIndex) Then
                         Dim OroRecompenza As Long
     
-178                     OroRecompenza = OroPorNivel * .Stats.ELV * OroMult * .flags.ScrollOro
+178                     OroRecompenza = OroPorNivel * .Stats.ELV * OroMult
 180                     .Stats.GLD = .Stats.GLD + OroRecompenza
                         'Call WriteConsoleMsg(UserIndex, "Has ganado " & OroRecompenza & " monedas de oro.", FontTypeNames.FONTTYPE_INFO)
 182                     Call WriteLocaleMsg(UserIndex, "29", FontTypeNames.FONTTYPE_INFO, PonerPuntos(OroRecompenza))
@@ -1629,11 +1611,7 @@ Sub SendUserMiniStatsTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
 
 116         Call WriteConsoleMsg(sendIndex, "Oro en billetera: " & .Stats.GLD, FontTypeNames.FONTTYPE_INFO)
 118         Call WriteConsoleMsg(sendIndex, "Oro en banco: " & .Stats.Banco, FontTypeNames.FONTTYPE_INFO)
-    
-120         Call WriteConsoleMsg(sendIndex, "Cuenta: " & .Cuenta, FontTypeNames.FONTTYPE_INFO)
-122         Call WriteConsoleMsg(sendIndex, "Creditos: " & .donador.CreditoDonador, FontTypeNames.FONTTYPE_INFO)
-124         Call WriteConsoleMsg(sendIndex, "Fecha Vencimiento Donador: " & .donador.FechaExpiracion, FontTypeNames.FONTTYPE_INFO)
-    
+
         End With
 
         
@@ -1928,11 +1906,8 @@ Sub SubirSkill(ByVal UserIndex As Integer, ByVal Skill As Integer)
 144             Call WriteConsoleMsg(UserIndex, "¡Has mejorado tu skill " & SkillsNames(Skill) & " en un punto!. Ahora tienes " & UserList(UserIndex).Stats.UserSkills(Skill) & " pts.", FontTypeNames.FONTTYPE_INFO)
             
                 Dim BonusExp As Long
-146             BonusExp = 50& * ExpMult * UserList(UserIndex).flags.ScrollExp
+146             BonusExp = 50& * ExpMult
         
-148             If UserList(UserIndex).donador.activo = 1 Then
-150                 BonusExp = BonusExp * 1.1
-                End If
                 Call WriteConsoleMsg(UserIndex, "¡Has ganado " & BonusExp & " puntos de experiencia!", FontTypeNames.FONTTYPE_INFOIAO)
                 
 152             If UserList(UserIndex).Stats.ELV < STAT_MAXELV Then

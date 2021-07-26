@@ -30,14 +30,6 @@ Attribute VB_Name = "General"
 
 Option Explicit
 
-Public Type TDonador
-
-    activo As Byte
-    CreditoDonador As Integer
-    FechaExpiracion As Date
-
-End Type
-
 Public Declare Function QueryPerformanceCounter Lib "kernel32" (lpPerformanceCount As Currency) As Long
 Public Declare Function QueryPerformanceFrequency Lib "kernel32" (lpFrequency As Currency) As Long
 Public Declare Sub Sleep Lib "kernel32.dll" (ByVal dwMilliseconds As Long)
@@ -593,9 +585,7 @@ Sub Main()
         End If
     
 106     Call LeerLineaComandos
-    
-108     Call CargarRanking
-    
+
         Dim f As Date
     
 110     Call ChDir(App.Path)
@@ -613,7 +603,6 @@ Sub Main()
     
 122     Call LoadGuildsDB
     
-124     Call CargarCodigosDonador
 126     Call loadAdministrativeUsers
 
         '¿?¿?¿?¿?¿?¿?¿?¿ CARGAMOS DATOS DESDE ARCHIVOS ¿??¿?¿?¿?¿?¿?¿?¿
@@ -702,16 +691,11 @@ Sub Main()
         ' Pretorianos
 236     frmCargando.Label1(2).Caption = "Cargando Pretorianos.dat"
         'Call LoadPretorianData
-    
-238     frmCargando.Label1(2).Caption = "Cargando Logros.ini"
-240     Call CargarLogros ' Ladder 22/04/2015
-    
+
 242     frmCargando.Label1(2).Caption = "Cargando Baneos Temporales"
 244     Call LoadBans
     
-246     frmCargando.Label1(2).Caption = "Cargando Usuarios Donadores"
-248     Call LoadDonadores
-250     Call LoadObjDonador
+246     frmCargando.Label1(2).Caption = "Cargando Quests"
 252     Call LoadQuests
 
 254     EstadoGlobal = False
@@ -953,23 +937,6 @@ ErrHandler:
 
 End Sub
 
-Public Sub LogIndex(ByVal Index As Integer, ByVal Desc As String)
-
-        On Error GoTo ErrHandler
-
-        Dim nfile As Integer
-
-100     nfile = FreeFile ' obtenemos un canal
-102     Open App.Path & "\logs\" & Index & ".log" For Append Shared As #nfile
-104     Print #nfile, Date & " " & Time & " " & Desc
-106     Close #nfile
-
-        Exit Sub
-
-ErrHandler:
-
-End Sub
-
 Public Sub LogError(Desc As String)
 
 100     Dim nfile As Integer: nfile = FreeFile ' obtenemos un canal
@@ -1003,40 +970,6 @@ Public Sub LogConsulta(Desc As String)
 100     nfile = FreeFile ' obtenemos un canal
 102     Open App.Path & "\logs\ConsultasGM.log" For Append Shared As #nfile
 104     Print #nfile, Date & " - " & Time & " - " & Desc
-106     Close #nfile
-
-        Exit Sub
-
-ErrHandler:
-
-End Sub
-
-Public Sub LogStatic(Desc As String)
-
-        On Error GoTo ErrHandler
-
-        Dim nfile As Integer
-
-100     nfile = FreeFile ' obtenemos un canal
-102     Open App.Path & "\logs\Stats.log" For Append Shared As #nfile
-104     Print #nfile, Date & " " & Time & " " & Desc
-106     Close #nfile
-
-        Exit Sub
-
-ErrHandler:
-
-End Sub
-
-Public Sub LogTarea(Desc As String)
-
-        On Error GoTo ErrHandler
-
-        Dim nfile As Integer
-
-100     nfile = FreeFile(1) ' obtenemos un canal
-102     Open App.Path & "\logs\haciendo.log" For Append Shared As #nfile
-104     Print #nfile, Date & " " & Time & " " & Desc
 106     Close #nfile
 
         Exit Sub
@@ -1273,43 +1206,6 @@ Public Sub LogCheating(texto As String)
 102     Open App.Path & "\logs\CH.log" For Append Shared As #nfile
 104     Print #nfile, Date & " " & Time & " " & texto
 106     Close #nfile
-
-        Exit Sub
-
-ErrHandler:
-
-End Sub
-
-Public Sub LogCriticalHackAttemp(texto As String)
-
-        On Error GoTo ErrHandler
-
-        Dim nfile As Integer
-
-100     nfile = FreeFile ' obtenemos un canal
-102     Open App.Path & "\logs\CriticalHackAttemps.log" For Append Shared As #nfile
-104     Print #nfile, "----------------------------------------------------------"
-106     Print #nfile, Date & " " & Time & " " & texto
-108     Print #nfile, "----------------------------------------------------------"
-110     Close #nfile
-
-        Exit Sub
-
-ErrHandler:
-
-End Sub
-
-Public Sub LogAntiCheat(texto As String)
-
-        On Error GoTo ErrHandler
-
-        Dim nfile As Integer
-
-100     nfile = FreeFile ' obtenemos un canal
-102     Open App.Path & "\logs\AntiCheat.log" For Append Shared As #nfile
-104     Print #nfile, Date & " " & Time & " " & texto
-106     Print #nfile, ""
-108     Close #nfile
 
         Exit Sub
 
@@ -2520,23 +2416,7 @@ ErrHandler:
 326     Call TraceError(Err.Number, Err.Description, "General.PasarSegundo", Erl)
 
 End Sub
- 
-Public Function ReiniciarAutoUpdate() As Double
-        
-        On Error GoTo ReiniciarAutoUpdate_Err
-        
 
-100     ReiniciarAutoUpdate = Shell(App.Path & "\autoupdater\aoau.exe", vbMinimizedNoFocus)
-
-        
-        Exit Function
-
-ReiniciarAutoUpdate_Err:
-102     Call TraceError(Err.Number, Err.Description, "General.ReiniciarAutoUpdate", Erl)
-
-        
-End Function
- 
 Public Sub ReiniciarServidor(Optional ByVal EjecutarLauncher As Boolean = True)
         'WorldSave
         
@@ -2618,30 +2498,6 @@ Sub GuardarUsuarios()
 
 GuardarUsuarios_Err:
 128     Call TraceError(Err.Number, Err.Description, "General.GuardarUsuarios", Erl)
-
-        
-End Sub
-
-Sub InicializaEstadisticas()
-        
-        On Error GoTo InicializaEstadisticas_Err
-        
-
-        Dim Ta As Long
-
-100     Ta = GetTickCount()
-
-102     Call EstadisticasWeb.Inicializa(frmMain.hWnd)
-104     Call EstadisticasWeb.Informar(CANTIDAD_MAPAS, NumMaps)
-106     Call EstadisticasWeb.Informar(CANTIDAD_ONLINE, NumUsers)
-108     Call EstadisticasWeb.Informar(UPTIME_SERVER, (Ta - tInicioServer) / 1000)
-110     Call EstadisticasWeb.Informar(RECORD_USUARIOS, RecordUsuarios)
-
-        
-        Exit Sub
-
-InicializaEstadisticas_Err:
-112     Call TraceError(Err.Number, Err.Description, "General.InicializaEstadisticas", Erl)
 
         
 End Sub
@@ -2816,7 +2672,6 @@ Public Sub CerrarServidor()
         Call frmServidor.cmdDumpLogs_Click
         
         'Save stats!!!
-100     Call Statistics.DumpStatistics
 102     Call frmMain.QuitarIconoSystray
     
         ' Limpieza del socket del servidor.

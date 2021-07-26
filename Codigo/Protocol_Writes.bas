@@ -1145,23 +1145,6 @@ WriteLocaleMsg_Err:
         '</EhFooter>
 End Sub
 
-Public Sub WriteListaCorreo(ByVal UserIndex As Integer, ByVal Actualizar As Boolean)
-        '<EhHeader>
-        On Error GoTo WriteListaCorreo_Err
-        '</EhHeader>
-100     Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageListaCorreo(UserIndex, _
-                Actualizar))
-        '<EhFooter>
-        Exit Sub
-
-WriteListaCorreo_Err:
-        Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteListaCorreo", Erl)
-        Resume Next
-        '</EhFooter>
-End Sub
-
 ''
 ' Writes the "GuildChat" message to the given user's outgoing data .incomingData.
 '
@@ -1292,14 +1275,14 @@ End Sub
 ' @param    criminal Determines if the character is a criminal or not.
 ' @param    privileges Sets if the character is a normal one or any kind of administrative character.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-Public Sub WriteCharacterCreate(ByVal UserIndex As Integer, ByVal Body As Integer, ByVal Head As Integer, ByVal Heading As eHeading, ByVal CharIndex As Integer, ByVal X As Byte, ByVal Y As Byte, ByVal weapon As Integer, ByVal shield As Integer, ByVal FX As Integer, ByVal FXLoops As Integer, ByVal helmet As Integer, ByVal Name As String, ByVal Status As Byte, ByVal privileges As Byte, ByVal ParticulaFx As Byte, ByVal Head_Aura As String, ByVal Arma_Aura As String, ByVal Body_Aura As String, ByVal DM_Aura As String, ByVal RM_Aura As String, ByVal Otra_Aura As String, ByVal Escudo_Aura As String, ByVal speeding As Single, ByVal EsNPC As Byte, ByVal donador As Byte, ByVal appear As Byte, ByVal group_index As Integer, ByVal clan_index As Integer, ByVal clan_nivel As Byte, ByVal UserMinHp As Long, ByVal UserMaxHp As Long, ByVal UserMinMAN As Long, ByVal UserMaxMAN As Long, ByVal Simbolo As Byte, Optional ByVal Idle As Boolean = False, Optional ByVal Navegando As Boolean = False)
+Public Sub WriteCharacterCreate(ByVal UserIndex As Integer, ByVal Body As Integer, ByVal Head As Integer, ByVal Heading As eHeading, ByVal CharIndex As Integer, ByVal X As Byte, ByVal Y As Byte, ByVal weapon As Integer, ByVal shield As Integer, ByVal FX As Integer, ByVal FXLoops As Integer, ByVal helmet As Integer, ByVal Name As String, ByVal Status As Byte, ByVal privileges As Byte, ByVal ParticulaFx As Byte, ByVal Head_Aura As String, ByVal Arma_Aura As String, ByVal Body_Aura As String, ByVal DM_Aura As String, ByVal RM_Aura As String, ByVal Otra_Aura As String, ByVal Escudo_Aura As String, ByVal speeding As Single, ByVal EsNPC As Byte, ByVal appear As Byte, ByVal group_index As Integer, ByVal clan_index As Integer, ByVal clan_nivel As Byte, ByVal UserMinHp As Long, ByVal UserMaxHp As Long, ByVal UserMinMAN As Long, ByVal UserMaxMAN As Long, ByVal Simbolo As Byte, Optional ByVal Idle As Boolean = False, Optional ByVal Navegando As Boolean = False)
         '<EhHeader>
         On Error GoTo WriteCharacterCreate_Err
         '</EhHeader>
 100 Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageCharacterCreate(Body, Head, _
             Heading, CharIndex, X, Y, weapon, shield, FX, FXLoops, helmet, Name, Status, _
             privileges, ParticulaFx, Head_Aura, Arma_Aura, Body_Aura, DM_Aura, RM_Aura, _
-            Otra_Aura, Escudo_Aura, speeding, EsNPC, donador, appear, group_index, _
+            Otra_Aura, Escudo_Aura, speeding, EsNPC, appear, group_index, _
             clan_index, clan_nivel, UserMinHp, UserMaxHp, UserMinMAN, UserMaxMAN, Simbolo, _
             Idle, Navegando))
         '<EhFooter>
@@ -1366,7 +1349,7 @@ WriteCharacterMove_Err:
         '</EhFooter>
 End Sub
 
-Public Sub WriteForceCharMove(ByVal UserIndex, ByVal Direccion As eHeading)
+Public Sub WriteForceCharMove(ByVal UserIndex As Integer, ByVal Direccion As eHeading)
         '<EhHeader>
         On Error GoTo WriteForceCharMove_Err
         '</EhHeader>
@@ -1748,38 +1731,6 @@ WriteNubesToggle_Err:
         Call Writer.Clear
 
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteNubesToggle", Erl)
-        Resume Next
-        '</EhFooter>
-End Sub
-
-Public Sub WriteTrofeoToggleOn(ByVal UserIndex As Integer)
-        '<EhHeader>
-        On Error GoTo WriteTrofeoToggleOn_Err
-        '</EhHeader>
-100     Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageTrofeoToggleOn())
-        '<EhFooter>
-        Exit Sub
-
-WriteTrofeoToggleOn_Err:
-        Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteTrofeoToggleOn", Erl)
-        Resume Next
-        '</EhFooter>
-End Sub
-
-Public Sub WriteTrofeoToggleOff(ByVal UserIndex As Integer)
-        '<EhHeader>
-        On Error GoTo WriteTrofeoToggleOff_Err
-        '</EhHeader>
-100     Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageTrofeoToggleOff())
-        '<EhFooter>
-        Exit Sub
-
-WriteTrofeoToggleOff_Err:
-        Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteTrofeoToggleOff", Erl)
         Resume Next
         '</EhFooter>
 End Sub
@@ -2357,8 +2308,6 @@ Public Sub WriteAlquimistaObjects(ByVal UserIndex As Integer)
 
         Dim i              As Long
 
-        Dim obj            As ObjData
-
         Dim validIndexes() As Integer
 
         Dim Count          As Integer
@@ -2403,8 +2352,6 @@ Public Sub WriteSastreObjects(ByVal UserIndex As Integer)
         '</EhHeader>
 
         Dim i              As Long
-
-        Dim obj            As ObjData
 
         Dim validIndexes() As Integer
 
@@ -2579,12 +2526,9 @@ Public Sub WriteChangeNPCInventorySlot(ByVal UserIndex As Integer, _
         On Error GoTo WriteChangeNPCInventorySlot_Err
         '</EhHeader>
 
-        Dim ObjInfo     As ObjData
-
         Dim PodraUsarlo As Byte
 
 100     If obj.ObjIndex >= LBound(ObjData()) And obj.ObjIndex <= UBound(ObjData()) Then
-102         ObjInfo = ObjData(obj.ObjIndex)
 104         PodraUsarlo = PuedeUsarObjeto(UserIndex, obj.ObjIndex)
         End If
 
@@ -2734,8 +2678,6 @@ Public Sub WriteContadores(ByVal UserIndex As Integer)
         '</EhHeader>
 100     Call Writer.WriteInt(ServerPacketID.Contadores)
 102     Call Writer.WriteInt16(UserList(UserIndex).Counters.Invisibilidad)
-104     Call Writer.WriteInt16(UserList(UserIndex).Counters.ScrollExperiencia)
-106     Call Writer.WriteInt16(UserList(UserIndex).Counters.ScrollOro)
 
 108     If UserList(UserIndex).flags.NecesitaOxigeno Then
 110         Call Writer.WriteInt16(UserList(UserIndex).Counters.Oxigeno)
@@ -2794,10 +2736,6 @@ Public Sub WriteMiniStats(ByVal UserIndex As Integer)
 114     Call Writer.WriteInt32(UserList(UserIndex).flags.VecesQueMoriste)
 116     Call Writer.WriteInt8(UserList(UserIndex).genero)
 118     Call Writer.WriteInt8(UserList(UserIndex).raza)
-120     Call Writer.WriteInt8(UserList(UserIndex).donador.activo)
-122     Call Writer.WriteInt32(CreditosDonadorCheck(UserList(UserIndex).Cuenta))
-        'ARREGLANDO
-124     Call Writer.WriteInt16(DiasDonadorCheck(UserList(UserIndex).Cuenta))
 126     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub
@@ -3144,8 +3082,6 @@ Public Sub WriteOfferDetails(ByVal UserIndex As Integer, ByVal details As String
         On Error GoTo WriteOfferDetails_Err
         '</EhHeader>
 
-        Dim i As Long
-
 100     Call Writer.WriteInt(ServerPacketID.OfferDetails)
 102     Call Writer.WriteString8(details)
 104     Call modSendData.SendData(ToIndex, UserIndex)
@@ -3253,8 +3189,8 @@ End Sub
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteCharacterInfo(ByVal UserIndex As Integer, ByVal CharName As String, _
         ByVal race As eRaza, ByVal Class As eClass, ByVal gender As eGenero, ByVal _
-        level As Byte, ByVal gold As Long, ByVal bank As Long, ByVal previousPetitions _
-        As String, ByVal currentGuild As String, ByVal previousGuilds As String, ByVal _
+        level As Byte, ByVal gold As Long, ByVal bank As Long, ByVal previousPetitions As String, _
+        ByVal currentGuild As String, ByVal previousGuilds As String, ByVal _
         RoyalArmy As Boolean, ByVal CaosLegion As Boolean, ByVal citicensKilled As _
         Long, ByVal criminalsKilled As Long)
         '<EhHeader>
@@ -3382,9 +3318,7 @@ Public Sub WriteGuildDetails(ByVal UserIndex As Integer, _
                              ByVal memberCount As Integer, _
                              ByVal alignment As String, _
                              ByVal guildDesc As String, _
-                             ByVal NivelDeClan As Byte, _
-                             ByVal ExpActual As Integer, _
-                             ByVal ExpNecesaria As Integer)
+                             ByVal NivelDeClan As Byte)
         '<EhHeader>
         On Error GoTo WriteGuildDetails_Err
         '</EhHeader>
@@ -3762,12 +3696,9 @@ Public Sub WritePersonajesDeCuenta(ByVal UserIndex As Integer)
 
         Dim Personaje(1 To MAX_PERSONAJES) As PersonajeCuenta
 
-        Dim donador                        As Boolean
-
         Dim i                              As Byte
 
 100     UserCuenta = UserList(UserIndex).Cuenta
-102     donador = DonadorCheck(UserCuenta)
 
 104     If Database_Enabled Then
 106         CantPersonajes = GetPersonajesCuentaDatabase(UserList(UserIndex).AccountID, _
@@ -3810,7 +3741,6 @@ Public Sub WritePersonajesDeCuenta(ByVal UserIndex As Integer)
 166         Call Writer.WriteString8(modGuilds.GuildName(Personaje(i).ClanIndex))
 168     Next i
 
-170     Call Writer.WriteInt8(IIf(donador, 1, 0))
 172     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub
@@ -3864,14 +3794,8 @@ Public Sub WriteShowFrmMapa(ByVal UserIndex As Integer)
         On Error GoTo WriteShowFrmMapa_Err
         '</EhHeader>
 100     Call Writer.WriteInt(ServerPacketID.ShowFrmMapa)
-
-102     If UserList(UserIndex).donador.activo = 1 Then
-104         Call Writer.WriteInt16(ExpMult * UserList(UserIndex).flags.ScrollExp * 1.1)
-        Else
-106         Call Writer.WriteInt16(ExpMult * UserList(UserIndex).flags.ScrollExp)
-        End If
-
-108     Call Writer.WriteInt16(OroMult * UserList(UserIndex).flags.ScrollOro)
+106     Call Writer.WriteInt16(ExpMult)
+108     Call Writer.WriteInt16(OroMult)
 110     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub
@@ -3911,119 +3835,6 @@ WriteFamiliar_Err:
         Call Writer.Clear
 
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteFamiliar", Erl)
-        Resume Next
-        '</EhFooter>
-End Sub
-
-Public Sub WriteRecompensas(ByVal UserIndex As Integer)
-        '<EhHeader>
-        On Error GoTo WriteRecompensas_Err
-        '</EhHeader>
-
-        On Error GoTo WriteRecompensas_Err
-
-        Dim a, b, c As Byte
-
-100     b = UserList(UserIndex).UserLogros + 1
-102     a = UserList(UserIndex).NPcLogros + 1
-104     c = UserList(UserIndex).LevelLogros + 1
-106     Call Writer.WriteInt(ServerPacketID.Logros)
-        'Logros NPC
-108     Call Writer.WriteString8(NPcLogros(a).nombre)
-110     Call Writer.WriteString8(NPcLogros(a).Desc)
-112     Call Writer.WriteInt16(NPcLogros(a).cant)
-114     Call Writer.WriteInt8(NPcLogros(a).TipoRecompensa)
-
-116     If NPcLogros(a).TipoRecompensa = 1 Then
-118         Call Writer.WriteString8(NPcLogros(a).ObjRecompensa)
-        End If
-
-120     If NPcLogros(a).TipoRecompensa = 2 Then
-122         Call Writer.WriteInt32(NPcLogros(a).OroRecompensa)
-        End If
-
-124     If NPcLogros(a).TipoRecompensa = 3 Then
-126         Call Writer.WriteInt32(NPcLogros(a).ExpRecompensa)
-        End If
-
-128     If NPcLogros(a).TipoRecompensa = 4 Then
-130         Call Writer.WriteInt8(NPcLogros(a).HechizoRecompensa)
-        End If
-
-132     Call Writer.WriteInt16(UserList(UserIndex).Stats.NPCsMuertos)
-
-134     If UserList(UserIndex).Stats.NPCsMuertos >= NPcLogros(a).cant Then
-136         Call Writer.WriteBool(True)
-        Else
-138         Call Writer.WriteBool(False)
-        End If
-
-        'Logros User
-140     Call Writer.WriteString8(UserLogros(b).nombre)
-142     Call Writer.WriteString8(UserLogros(b).Desc)
-144     Call Writer.WriteInt16(UserLogros(b).cant)
-146     Call Writer.WriteInt16(UserLogros(b).TipoRecompensa)
-148     Call Writer.WriteInt16(UserList(UserIndex).Stats.UsuariosMatados)
-
-150     If UserLogros(a).TipoRecompensa = 1 Then
-152         Call Writer.WriteString8(UserLogros(b).ObjRecompensa)
-        End If
-
-154     If UserLogros(a).TipoRecompensa = 2 Then
-156         Call Writer.WriteInt32(UserLogros(b).OroRecompensa)
-        End If
-
-158     If UserLogros(a).TipoRecompensa = 3 Then
-160         Call Writer.WriteInt32(UserLogros(b).ExpRecompensa)
-        End If
-
-162     If UserLogros(a).TipoRecompensa = 4 Then
-164         Call Writer.WriteInt8(UserLogros(b).HechizoRecompensa)
-        End If
-
-166     If UserList(UserIndex).Stats.UsuariosMatados >= UserLogros(b).cant Then
-168         Call Writer.WriteBool(True)
-        Else
-170         Call Writer.WriteBool(False)
-        End If
-
-        'Nivel User
-172     Call Writer.WriteString8(LevelLogros(c).nombre)
-174     Call Writer.WriteString8(LevelLogros(c).Desc)
-176     Call Writer.WriteInt16(LevelLogros(c).cant)
-178     Call Writer.WriteInt16(LevelLogros(c).TipoRecompensa)
-180     Call Writer.WriteInt8(UserList(UserIndex).Stats.ELV)
-
-182     If LevelLogros(c).TipoRecompensa = 1 Then
-184         Call Writer.WriteString8(LevelLogros(c).ObjRecompensa)
-        End If
-
-186     If LevelLogros(c).TipoRecompensa = 2 Then
-188         Call Writer.WriteInt32(LevelLogros(c).OroRecompensa)
-        End If
-
-190     If LevelLogros(c).TipoRecompensa = 3 Then
-192         Call Writer.WriteInt32(LevelLogros(c).ExpRecompensa)
-        End If
-
-194     If LevelLogros(c).TipoRecompensa = 4 Then
-196         Call Writer.WriteInt8(LevelLogros(c).HechizoRecompensa)
-        End If
-
-198     If UserList(UserIndex).Stats.ELV >= LevelLogros(c).cant Then
-200         Call Writer.WriteBool(True)
-        Else
-202         Call Writer.WriteBool(False)
-        End If
-
-204     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
-        Exit Sub
-
-WriteRecompensas_Err:
-        Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteRecompensas", Erl)
         Resume Next
         '</EhFooter>
 End Sub
@@ -4132,112 +3943,6 @@ WriteUbicacion_Err:
         Call Writer.Clear
 
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteUbicacion", Erl)
-        Resume Next
-        '</EhFooter>
-End Sub
-
-Public Sub WriteCorreoPicOn(ByVal UserIndex As Integer)
-        '<EhHeader>
-        On Error GoTo WriteCorreoPicOn_Err
-        '</EhHeader>
-100     Call Writer.WriteInt(ServerPacketID.CorreoPicOn)
-102     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
-        Exit Sub
-
-WriteCorreoPicOn_Err:
-        Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteCorreoPicOn", Erl)
-        Resume Next
-        '</EhFooter>
-End Sub
-
-Public Sub WriteShop(ByVal UserIndex As Integer)
-        '<EhHeader>
-        On Error GoTo WriteShop_Err
-        '</EhHeader>
-
-        Dim i              As Long
-
-        Dim obj            As ObjData
-
-        Dim validIndexes() As Integer
-
-        Dim Count          As Integer
-
-100     ReDim validIndexes(1 To UBound(ObjDonador()))
-102     Call Writer.WriteInt(ServerPacketID.DonadorObj)
-
-104     For i = 1 To UBound(ObjDonador())
-106         Count = Count + 1
-108         validIndexes(Count) = i
-110     Next i
-
-        ' Write the number of objects in the list
-112     Call Writer.WriteInt16(Count)
-
-        ' Write the needed data of each object
-114     For i = 1 To Count
-116         Call Writer.WriteInt16(ObjDonador(validIndexes(i)).ObjIndex)
-118         Call Writer.WriteInt16(ObjDonador(validIndexes(i)).Valor)
-120     Next i
-
-122     Call Writer.WriteInt32(CreditosDonadorCheck(UserList(UserIndex).Cuenta))
-124     Call Writer.WriteInt16(DiasDonadorCheck(UserList(UserIndex).Cuenta))
-126     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
-        Exit Sub
-
-WriteShop_Err:
-        Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteShop", Erl)
-        Resume Next
-        '</EhFooter>
-End Sub
-
-Public Sub WriteRanking(ByVal UserIndex As Integer)
-        '<EhHeader>
-        On Error GoTo WriteRanking_Err
-        '</EhHeader>
-
-        Dim i As Byte
-
-100     Call Writer.WriteInt(ServerPacketID.Ranking)
-
-102     For i = 1 To 10
-104         Call Writer.WriteString8(Rankings(1).user(i).Nick)
-106         Call Writer.WriteInt16(Rankings(1).user(i).Value)
-108     Next i
-
-110     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
-        Exit Sub
-
-WriteRanking_Err:
-        Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteRanking", Erl)
-        Resume Next
-        '</EhFooter>
-End Sub
-
-Public Sub WriteActShop(ByVal UserIndex As Integer)
-        '<EhHeader>
-        On Error GoTo WriteActShop_Err
-        '</EhHeader>
-100     Call Writer.WriteInt(ServerPacketID.ActShop)
-102     Call Writer.WriteInt32(CreditosDonadorCheck(UserList(UserIndex).Cuenta))
-104     Call Writer.WriteInt16(DiasDonadorCheck(UserList(UserIndex).Cuenta))
-106     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
-        Exit Sub
-
-WriteActShop_Err:
-        Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteActShop", Erl)
         Resume Next
         '</EhFooter>
 End Sub
@@ -4410,10 +4115,6 @@ Public Sub WriteNpcQuestListSend(ByVal UserIndex As Integer, ByVal NpcIndex As I
 
         Dim j          As Integer
 
-        Dim tmpStr     As String
-
-        Dim tmpByte    As Byte
-
         Dim QuestIndex As Integer
 
 100     Call Writer.WriteInt(ServerPacketID.NpcQuestListSend)
@@ -4517,23 +4218,6 @@ WriteNpcQuestListSend_Err:
         Call Writer.Clear
 
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteNpcQuestListSend", Erl)
-        Resume Next
-        '</EhFooter>
-End Sub
-
-Public Sub WriteTolerancia0(ByVal UserIndex As Integer)
-        '<EhHeader>
-        On Error GoTo WriteTolerancia0_Err
-        '</EhHeader>
-100     Call Writer.WriteInt(ServerPacketID.Tolerancia0)
-102     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
-        Exit Sub
-
-WriteTolerancia0_Err:
-        Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteTolerancia0", Erl)
         Resume Next
         '</EhFooter>
 End Sub
@@ -4643,8 +4327,8 @@ End Sub
 
 Sub WriteCraftingResult(ByVal UserIndex As Integer, _
                         ByVal Result As Integer, _
-                        Optional ByVal Porcentaje As Byte, _
-                        Optional ByVal Precio As Long)
+                        Optional ByVal Porcentaje As Byte = 0, _
+                        Optional ByVal Precio As Long = 0)
         '<EhHeader>
         On Error GoTo WriteCraftingResult_Err
         '</EhHeader>
@@ -4800,13 +4484,12 @@ End Function
 ' @remarks  The message is written to no outgoing buffer, but only prepared in a single string to be easily sent to several clients.
 Public Function PrepareMessageChatOverHead(ByVal chat As String, _
                                            ByVal CharIndex As Integer, _
-                                           ByVal Color As Long, _
-                                           Optional ByVal Name As String = "")
+                                           ByVal Color As Long)
         '<EhHeader>
         On Error GoTo PrepareMessageChatOverHead_Err
         '</EhHeader>
 
-        Dim R, g, b As Byte
+        Dim R As Long, G As Long, B As Long
 
 100     b = (Color And 16711680) / 65536
 102     g = (Color And 65280) / 256
@@ -4938,47 +4621,6 @@ PrepareMessageLocaleMsg_Err:
         Call Writer.Clear
 
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageLocaleMsg", Erl)
-        Resume Next
-        '</EhFooter>
-End Function
-
-Public Function PrepareMessageListaCorreo(ByVal UserIndex As Integer, _
-                                          ByVal Actualizar As Boolean)
-        '<EhHeader>
-        On Error GoTo PrepareMessageListaCorreo_Err
-        '</EhHeader>
-
-        Dim cant As Byte
-
-        Dim i    As Byte
-
-100     cant = UserList(UserIndex).Correo.CantCorreo
-102     UserList(UserIndex).Correo.NoLeidos = 0
-104     Call Writer.WriteInt(ServerPacketID.ListaCorreo)
-106     Call Writer.WriteInt8(cant)
-
-108     If cant > 0 Then
-
-110         For i = 1 To cant
-112             Call Writer.WriteString8(UserList(UserIndex).Correo.Mensaje(i).Remitente)
-114             Call Writer.WriteString8(UserList(UserIndex).Correo.Mensaje(i).Mensaje)
-116             Call Writer.WriteInt8(UserList(UserIndex).Correo.Mensaje(i).ItemCount)
-118             Call Writer.WriteString8(UserList(UserIndex).Correo.Mensaje(i).Item)
-120             Call Writer.WriteInt8(UserList(UserIndex).Correo.Mensaje(i).Leido)
-122             Call Writer.WriteString8(UserList(UserIndex).Correo.Mensaje(i).Fecha)
-                'Call ReadMessageCorreo(UserIndex, i)
-124         Next i
-
-        End If
-
-126     Call Writer.WriteBool(Actualizar)
-        '<EhFooter>
-        Exit Function
-
-PrepareMessageListaCorreo_Err:
-        Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageListaCorreo", Erl)
         Resume Next
         '</EhFooter>
 End Function
@@ -5499,38 +5141,6 @@ PrepareMessageRainToggle_Err:
         '</EhFooter>
 End Function
 
-Public Function PrepareMessageTrofeoToggleOn()
-        '<EhHeader>
-        On Error GoTo PrepareMessageTrofeoToggleOn_Err
-        '</EhHeader>
-100     Call Writer.WriteInt(ServerPacketID.TrofeoToggleOn)
-        '<EhFooter>
-        Exit Function
-
-PrepareMessageTrofeoToggleOn_Err:
-        Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageTrofeoToggleOn", Erl)
-        Resume Next
-        '</EhFooter>
-End Function
-
-Public Function PrepareMessageTrofeoToggleOff()
-        '<EhHeader>
-        On Error GoTo PrepareMessageTrofeoToggleOff_Err
-        '</EhHeader>
-100     Call Writer.WriteInt(ServerPacketID.TrofeoToggleOff)
-        '<EhFooter>
-        Exit Function
-
-PrepareMessageTrofeoToggleOff_Err:
-        Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageTrofeoToggleOff", Erl)
-        Resume Next
-        '</EhFooter>
-End Function
-
 Public Function PrepareMessageHora()
         '<EhHeader>
         On Error GoTo PrepareMessageHora_Err
@@ -5747,7 +5357,7 @@ Public Function PrepareMessageCharacterCreate(ByVal Body As Integer, _
                                               ByVal Escudo_Aura As String, _
                                               ByVal speeding As Single, _
                                               ByVal EsNPC As Byte, _
-                                              ByVal donador As Byte, ByVal appear As Byte, ByVal group_index As Integer, ByVal clan_index As Integer, ByVal clan_nivel As Byte, ByVal UserMinHp As Long, ByVal UserMaxHp As Long, ByVal UserMinMAN As Long, ByVal UserMaxMAN As Long, ByVal Simbolo As Byte, ByVal Idle As Boolean, ByVal Navegando As Boolean)
+                                              ByVal appear As Byte, ByVal group_index As Integer, ByVal clan_index As Integer, ByVal clan_nivel As Byte, ByVal UserMinHp As Long, ByVal UserMaxHp As Long, ByVal UserMinMAN As Long, ByVal UserMaxMAN As Long, ByVal Simbolo As Byte, ByVal Idle As Boolean, ByVal Navegando As Boolean)
         '<EhHeader>
         On Error GoTo PrepareMessageCharacterCreate_Err
         '</EhHeader>
@@ -5776,7 +5386,6 @@ Public Function PrepareMessageCharacterCreate(ByVal Body As Integer, _
 144     Call Writer.WriteString8(Escudo_Aura)
 146     Call Writer.WriteReal32(speeding)
 148     Call Writer.WriteInt8(EsNPC)
-150     Call Writer.WriteInt8(donador)
 152     Call Writer.WriteInt8(appear)
 154     Call Writer.WriteInt16(group_index)
 156     Call Writer.WriteInt16(clan_index)
