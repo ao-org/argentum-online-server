@@ -23,16 +23,15 @@ ServerSoloGMs=1
 Testing=0
 CentinelaActivado=1
 
-MinDados=16
+MinDados=17
 MaxDados=18
 
-MaxUsers=3000
+MaxUsers=1000
 
 Admines=3
 Dioses=3
 SemiDioses=12
 Consejeros=12
-RolesMasters=0
 
 [Admines]
 Admin1=Haracin|hgarofalo79@gmail.com
@@ -50,17 +49,20 @@ SemiDios2=Sir Hongo|nicocapelli85@hotmail.com
 SemiDios3=Morgolock|gulfas@gmail.com
 SemiDios4=Sonic|sonicshinji@gmail.com
 SemiDios5=Jopi|jopiodz00@gmail.com
-SemiDios6=Baliam|loganfenix2000@yahoo.com.mx
-SemiDios7=emancu|emiliano.mancuso@gmail.com
-SemiDios8=Dominique|marcojavierpiazza@hotmail.com
-SemiDios9=Vox|ricardo_r_jc@hotmail.com
-SemiDios10=SimP|brunordeangelis@gmail.com
-SemiDios11=Thyseo|holacomota2@hotmail.com
+SemiDios6=emancu|emiliano.mancuso@gmail.com
+SemiDios7=SimP|brunordeangelis@gmail.com
+
+SemiDios8=Baliam|loganfenix2000@yahoo.com.mx
+SemiDios9=Thyseo|holacomota2@hotmail.com
+SemiDios10=WieGraf|wolftein1@gmail.com
+SemiDios11=Vox|ricardo_r_jc@hotmail.com
 Semidios12=Dista|Lukitasdegu@gmail.com
+SemiDios13=Dominique|marcojavierpiazza@hotmail.com
+SemiDios14=Skills|reyarb@fibertel.com.ar
 
 [Consejeros]
 Consejero1=Dash|raffozelada@hotmail.com
-Consejero2=Skills|reyarb@fibertel.com.ar
+Consejero2=Themis|maxitup3@hotmail.com
 Consejero3=Ulder|tomycapalbo@hotmail.com
 Consejero4=Okruzhkov|schick.ivan@gmail.com
 Consejero5=RoTTTeN|darioguitarras@gmail.com
@@ -70,5 +72,5 @@ Consejero8=Bwise|Joacovas@hotmail.com
 Consejero9=Bonyo|argentumo@hotmail.com
 Consejero10=Blair|mercuricecilia1@gmail.com
 Consejero11=Artemis|jmmastroberti@gmail.com
-Consejero12=Themis|maxitup3@hotmail.com
+
 
