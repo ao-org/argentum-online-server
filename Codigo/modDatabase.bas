@@ -2423,7 +2423,7 @@ Public Function EnterAccountDatabase(ByVal UserIndex As Integer, CuentaEmail As 
 122     UserList(UserIndex).AccountID = QueryData!ID
 124     UserList(UserIndex).Cuenta = CuentaEmail
         
-        Call MakeQuery("UPDATE account SET mac_address = ?, hd_serial = ?, last_ip = ?, last_access = NOW() WHERE id = ?", True, MacAddress, HDSerial, IP, CInt(QueryData!ID))
+        Call MakeQuery("UPDATE account SET mac_address = ?, hd_serial = ?, last_ip = ?, last_access = NOW() WHERE id = ?", True, MacAddress, HDSerial, IP, CLng(QueryData!ID))
         
 128     EnterAccountDatabase = True
     
