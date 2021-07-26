@@ -25,12 +25,9 @@ Option Explicit
 Sub IniciarDeposito(ByVal UserIndex As Integer)
 
     On Error GoTo ErrHandler
+        
+        Call UpdateBanUserInv(True, UserIndex, 0)
 
-        'Hacemos un Update del inventario del usuario
-100     Call UpdateBanUserInv(True, UserIndex, 0)
-        'Actualizamos el dinero
-102     Call WriteUpdateUserStats(UserIndex)
-        'Mostramos la ventana pa' comerciar y ver ladear la osamenta. jajaja
 104     Call WriteBankInit(UserIndex)
 106     UserList(UserIndex).flags.Comerciando = True
 
@@ -42,13 +39,7 @@ ErrHandler:
 End Sub
 
 Sub IniciarBanco(ByVal UserIndex As Integer)
-        'Hacemos un Update del inventario del usuario
-        
         On Error GoTo IniciarBanco_Err
-        
-100     Call UpdateBanUserInv(True, UserIndex, 0)
-        'Actualizamos el dinero
-102     Call WriteUpdateGold(UserIndex)
 
 104     Call WriteGoliathInit(UserIndex)
 
@@ -138,13 +129,13 @@ Sub UserRetiraItem(ByVal UserIndex As Integer, ByVal i As Integer, ByVal Cantida
 104         If Cantidad > UserList(UserIndex).BancoInvent.Object(i).amount Then Cantidad = UserList(UserIndex).BancoInvent.Object(i).amount
             
             'Agregamos el obj que compro al inventario
-106         Call UserReciveObj(UserIndex, CInt(i), Cantidad, slotdestino)
+106         slotdestino = UserReciveObj(UserIndex, CInt(i), Cantidad, slotdestino)
 
             'Actualizamos el inventario del usuario
-108         Call UpdateUserInv(True, UserIndex, 0)
+108         Call UpdateUserInv(False, UserIndex, slotdestino)
 
             'Actualizamos el banco
-110         Call UpdateBanUserInv(True, UserIndex, 0)
+110         Call UpdateBanUserInv(False, UserIndex, i)
 
         End If
     
@@ -156,7 +147,7 @@ ErrHandler:
     
 End Sub
 
-Sub UserReciveObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, ByVal Cantidad As Integer, ByVal slotdestino As Integer)
+Function UserReciveObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, ByVal Cantidad As Integer, ByVal slotdestino As Integer) As Long
         
         On Error GoTo UserReciveObj_Err
         
@@ -164,7 +155,7 @@ Sub UserReciveObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, ByVal C
         Dim Slot As Integer
         Dim obji As Integer
 
-100     If UserList(UserIndex).BancoInvent.Object(ObjIndex).amount <= 0 Then Exit Sub
+100     If UserList(UserIndex).BancoInvent.Object(ObjIndex).amount <= 0 Then Exit Function
 
 102     obji = UserList(UserIndex).BancoInvent.Object(ObjIndex).ObjIndex
 
@@ -214,7 +205,7 @@ Sub UserReciveObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, ByVal C
 
 134                 If Slot > UserList(UserIndex).CurrentInventorySlots Then
 136                     Call WriteConsoleMsg(UserIndex, "No podés tener mas objetos.", FontTypeNames.FONTTYPE_INFO)
-                        Exit Sub
+                        Exit Function
 
                     End If
 
@@ -246,14 +237,15 @@ Sub UserReciveObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, ByVal C
 
         End If
 
+        UserReciveObj = Slot
         
-        Exit Sub
+        Exit Function
 
 UserReciveObj_Err:
 156     Call TraceError(Err.Number, Err.Description, "modBanco.UserReciveObj", Erl)
 
         
-End Sub
+End Function
 
 Sub QuitarBancoInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal Cantidad As Integer)
         
@@ -291,13 +283,13 @@ Sub UserDepositaItem(ByVal UserIndex As Integer, ByVal Item As Integer, ByVal Ca
 102         If Cantidad > UserList(UserIndex).Invent.Object(Item).amount Then Cantidad = UserList(UserIndex).Invent.Object(Item).amount
         
             'Agregamos el obj que deposita al banco
-104         Call UserDejaObj(UserIndex, CInt(Item), Cantidad, slotdestino)
+104         slotdestino = UserDejaObj(UserIndex, CInt(Item), Cantidad, slotdestino)
         
             'Actualizamos el inventario del usuario
-106         Call UpdateUserInv(True, UserIndex, 0)
+106         Call UpdateUserInv(False, UserIndex, Item)
         
             'Actualizamos el inventario del banco
-108         Call UpdateBanUserInv(True, UserIndex, 0)
+108         Call UpdateBanUserInv(False, UserIndex, slotdestino)
 
         End If
     
@@ -331,14 +323,14 @@ ErrHandler:
 
 End Sub
 
-Sub UserDejaObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, ByVal Cantidad As Integer, ByVal slotdestino As Integer)
+Function UserDejaObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, ByVal Cantidad As Integer, ByVal slotdestino As Integer) As Long
         
         On Error GoTo UserDejaObj_Err
         
         Dim Slot As Integer
         Dim obji As Integer
     
-100     If Cantidad < 1 Then Exit Sub
+100     If Cantidad < 1 Then Exit Function
 102     obji = UserList(UserIndex).Invent.Object(ObjIndex).ObjIndex
     
         Dim slotvalido As Boolean
@@ -382,7 +374,7 @@ Sub UserDejaObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, ByVal Can
             
 134                 If Slot > MAX_BANCOINVENTORY_SLOTS Then
 136                     Call WriteConsoleMsg(UserIndex, "No tienes mas espacio en el banco.", FontTypeNames.FONTTYPE_INFOIAO)
-                        Exit Sub
+                        Exit Function
 
                     End If
 
@@ -420,13 +412,15 @@ Sub UserDejaObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, ByVal Can
 
         End If
         
-        Exit Sub
+        UserDejaObj = Slot
+        
+        Exit Function
 
 UserDejaObj_Err:
 158     Call TraceError(Err.Number, Err.Description, "modBanco.UserDejaObj", Erl)
 
         
-End Sub
+End Function
 
 Sub SendUserBovedaTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
         
