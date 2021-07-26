@@ -2728,11 +2728,27 @@ Public Sub ChangeNameDatabase(ByVal CurName As String, ByVal NewName As String)
     Call SetUserValue(CurName, "name", NewName)
 End Sub
 
+Public Sub OnDatabaseAsyncConnect(ByVal pError As ADODB.Error, adStatus As ADODB.EventStatusEnum, ByVal pConnection As ADODB.Connection)
+    If (Not pError Is Nothing) Then
+        Call RegistrarError(pError.Number, pError.Description, pError.Source)
+        End
+    End If
+
+    'Reinicio los users online
+    Call SetUsersLoggedDatabase(0)
+    
+    'Leo el record de usuarios
+    RecordUsuarios = LeerRecordUsuariosDatabase()
+    
+    'Tarea pesada
+    Call LogoutAllUsersAndAccounts
+End Sub
+
 Public Sub OnDatabaseAsyncComplete(ByVal RecordsAffected As Long, ByVal pError As ADODB.Error, adStatus As ADODB.EventStatusEnum, ByVal pCommand As ADODB.Command, ByVal pRecordset As ADODB.Recordset, ByVal pConnection As ADODB.Connection)
     If (Not pError Is Nothing) Then
         Call RegistrarError(pError.Number, pError.Description, pCommand.CommandText)
     End If
-    
+
     Call Database_Async_Queue.Remove(1)
     
     If (Database_Async_Queue.Count >= 1) Then
