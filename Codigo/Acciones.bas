@@ -376,6 +376,7 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
 
 346                 Case eOBJType.OtCorreo 'Es un cartel
                         'Call AccionParaCorreo(Map, x, Y, UserIndex)
+                        Call WriteConsoleMsg(UserIndex, "El correo está temporalmente deshabilitado.", FontTypeNames.FONTTYPE_EJECUCION)
 
 348                 Case eOBJType.otForos 'Foro
                         'Call AccionParaForo(Map, X, Y, UserIndex)
@@ -864,45 +865,6 @@ Handler:
 106 Call TraceError(Err.Number, Err.Description, "Acciones.AccionParaCartel", Erl)
 
 
-End Sub
-
-Sub AccionParaCorreo(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer, ByVal UserIndex As Integer)
-        
-        On Error GoTo AccionParaCorreo_Err
-        
-
-        Dim Pos As WorldPos
-
-100     Pos.Map = Map
-102     Pos.X = X
-104     Pos.Y = Y
-
-106     If UserList(UserIndex).flags.Muerto = 1 Then
-            'Call WriteConsoleMsg(UserIndex, "Estas muerto.", FontTypeNames.FONTTYPE_INFO)
-108         Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
-            Exit Sub
-
-        End If
-
-110     If Distancia(Pos, UserList(UserIndex).Pos) > 4 Then
-112         Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
-            ' Call WriteConsoleMsg(UserIndex, "Estas demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
-            Exit Sub
-
-        End If
-
-114     If ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex).OBJType = 47 Then
-116         Call WriteListaCorreo(UserIndex, False)
-
-        End If
-
-        
-        Exit Sub
-
-AccionParaCorreo_Err:
-118     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Acciones.AccionParaCorreo", Erl)
-
-        
 End Sub
 
 Sub AccionParaRamita(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer, ByVal UserIndex As Integer)

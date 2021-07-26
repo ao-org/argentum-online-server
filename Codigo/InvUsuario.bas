@@ -40,7 +40,7 @@ Public Function TieneObjetosRobables(ByVal UserIndex As Integer) As Boolean
 102         ObjIndex = UserList(UserIndex).Invent.Object(i).ObjIndex
 
 104         If ObjIndex > 0 Then
-106             If (ObjData(ObjIndex).OBJType <> eOBJType.otLlaves And ObjData(ObjIndex).OBJType <> eOBJType.otBarcos And ObjData(ObjIndex).OBJType <> eOBJType.otMonturas And ObjData(ObjIndex).OBJType <> eOBJType.OtDonador And ObjData(ObjIndex).OBJType <> eOBJType.otRunas) Then
+106             If (ObjData(ObjIndex).OBJType <> eOBJType.otLlaves And ObjData(ObjIndex).OBJType <> eOBJType.otBarcos And ObjData(ObjIndex).OBJType <> eOBJType.otMonturas And ObjData(ObjIndex).OBJType <> eOBJType.otRunas) Then
 108                 TieneObjetosRobables = True
                     Exit Function
 
@@ -621,8 +621,6 @@ Function MeterItemEnInventario(ByVal UserIndex As Integer, ByRef MiObj As obj) A
 
         On Error GoTo ErrHandler
 
-        'Call LogTarea("MeterItemEnInventario")
- 
         Dim X    As Integer
 
         Dim Y    As Integer
@@ -2274,84 +2272,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
                                 Exit Sub
     
                             End If
-                        
-558                     Case 11  ' Experiencia
-    
-                            Dim HR   As Integer
-    
-                            Dim MS   As Integer
-    
-                            Dim SS   As Integer
-    
-                            Dim secs As Integer
-    
-560                         If .flags.ScrollExp = 1 Then
-562                             .flags.ScrollExp = obj.CuantoAumento
-564                             .Counters.ScrollExperiencia = obj.DuracionEfecto
-566                             Call QuitarUserInvItem(UserIndex, Slot, 1)
                             
-568                             secs = obj.DuracionEfecto
-570                             HR = secs \ 3600
-572                             MS = (secs Mod 3600) \ 60
-574                             SS = (secs Mod 3600) Mod 60
-    
-576                             If SS > 9 Then
-578                                 Call WriteConsoleMsg(UserIndex, "Tu scroll de experiencia ha comenzado. Este beneficio durara: " & MS & ":" & SS & " minuto(s).", FontTypeNames.FONTTYPE_New_DONADOR)
-                                Else
-580                                 Call WriteConsoleMsg(UserIndex, "Tu scroll de experiencia ha comenzado. Este beneficio durara: " & MS & ":0" & SS & " minuto(s).", FontTypeNames.FONTTYPE_New_DONADOR)
-    
-                                End If
-    
-                            Else
-582                             Call WriteConsoleMsg(UserIndex, "Solo podes usar un scroll a la vez.", FontTypeNames.FONTTYPE_New_DONADOR)
-                                Exit Sub
-    
-                            End If
-    
-584                         Call WriteContadores(UserIndex)
-    
-586                         If obj.Snd1 <> 0 Then
-588                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .Pos.X, .Pos.Y))
-                            
-                            Else
-590                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, .Pos.X, .Pos.Y))
-    
-                            End If
-    
-592                     Case 12  ' Oro
-                
-594                         If .flags.ScrollOro = 1 Then
-596                             .flags.ScrollOro = obj.CuantoAumento
-598                             .Counters.ScrollOro = obj.DuracionEfecto
-600                             Call QuitarUserInvItem(UserIndex, Slot, 1)
-602                             secs = obj.DuracionEfecto
-604                             HR = secs \ 3600
-606                             MS = (secs Mod 3600) \ 60
-608                             SS = (secs Mod 3600) Mod 60
-    
-610                             If SS > 9 Then
-612                                 Call WriteConsoleMsg(UserIndex, "Tu scroll de oro ha comenzado. Este beneficio durara: " & MS & ":" & SS & " minuto(s).", FontTypeNames.FONTTYPE_New_DONADOR)
-                                Else
-614                                 Call WriteConsoleMsg(UserIndex, "Tu scroll de oro ha comenzado. Este beneficio durara: " & MS & ":0" & SS & " minuto(s).", FontTypeNames.FONTTYPE_New_DONADOR)
-    
-                                End If
-                            
-                            Else
-616                             Call WriteConsoleMsg(UserIndex, "Solo podes usar un scroll a la vez.", FontTypeNames.FONTTYPE_New_DONADOR)
-                                Exit Sub
-    
-                            End If
-    
-618                         Call WriteContadores(UserIndex)
-    
-620                         If obj.Snd1 <> 0 Then
-622                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .Pos.X, .Pos.Y))
-                            
-                            Else
-624                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, .Pos.X, .Pos.Y))
-    
-                            End If
-    
                         ' Poción que limpia todo
 626                     Case 13
                     
@@ -2468,6 +2389,10 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
                             End If
     
 738                     Case 15  ' Aliento de sirena
+                            Dim HR   As Integer
+                            Dim MS   As Integer
+                            Dim SS   As Integer
+                            Dim secs As Integer
                             
 740                         If .Counters.Oxigeno >= 3540 Then
                             
@@ -3060,54 +2985,6 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
             
 1208                Call DoMontar(UserIndex, obj, Slot)
     
-1210             Case eOBJType.OtDonador
-    
-1212                 Select Case obj.Subtipo
-    
-                              Case 1
-                
-1214                         If .Counters.Pena <> 0 Then
-1216                             Call WriteConsoleMsg(UserIndex, "No podes usar la runa estando en la carcel.", FontTypeNames.FONTTYPE_INFO)
-                                      Exit Sub
-    
-                                  End If
-                    
-1218                         If MapData(.Pos.Map, .Pos.X, .Pos.Y).trigger = CARCEL Then
-1220                             Call WriteConsoleMsg(UserIndex, "No podes usar la runa estando en la carcel.", FontTypeNames.FONTTYPE_INFO)
-                                      Exit Sub
-    
-                                  End If
-                
-1222                         Call WarpUserChar(UserIndex, obj.HastaMap, obj.HastaX, obj.HastaY, True)
-1224                         Call WriteConsoleMsg(UserIndex, "Has viajado por el mundo.", FontTypeNames.FONTTYPE_WARNING)
-1226                         Call QuitarUserInvItem(UserIndex, Slot, 1)
-1228                         Call UpdateUserInv(False, UserIndex, Slot)
-                    
-1230                     Case 2
-    
-1232                         If DonadorCheck(.Cuenta) = 0 Then
-1234                             Call DonadorTiempo(.Cuenta, CLng(obj.CuantoAumento))
-1236                             Call WriteConsoleMsg(UserIndex, "Donación> Se han agregado " & obj.CuantoAumento & " dias de donador a tu cuenta. Relogea tu personaje para empezar a disfrutar la experiencia.", FontTypeNames.FONTTYPE_WARNING)
-1238                             Call QuitarUserInvItem(UserIndex, Slot, 1)
-1240                             Call UpdateUserInv(False, UserIndex, Slot)
-                                  Else
-1242                             Call DonadorTiempo(.Cuenta, CLng(obj.CuantoAumento))
-1244                             Call WriteConsoleMsg(UserIndex, "¡Se han añadido " & CLng(obj.CuantoAumento) & " dias de donador a tu cuenta.", FontTypeNames.FONTTYPE_WARNING)
-1246                             .donador.activo = 1
-1248                             Call QuitarUserInvItem(UserIndex, Slot, 1)
-1250                             Call UpdateUserInv(False, UserIndex, Slot)
-    
-                                      'Call WriteConsoleMsg(UserIndex, "Donación> Debes esperar a que finalice el periodo existente para renovar tu suscripción.", FontTypeNames.FONTTYPE_INFOIAO)
-                                  End If
-    
-1252                     Case 3
-1254                         Call AgregarCreditosDonador(.Cuenta, CLng(obj.CuantoAumento))
-1256                         Call WriteConsoleMsg(UserIndex, "Donación> Tu credito ahora es de " & CreditosDonadorCheck(.Cuenta) & " creditos.", FontTypeNames.FONTTYPE_WARNING)
-1258                         Call QuitarUserInvItem(UserIndex, Slot, 1)
-1260                         Call UpdateUserInv(False, UserIndex, Slot)
-    
-                          End Select
-         
 1262             Case eOBJType.otpasajes
     
 1264                 If .flags.Muerto = 1 Then
@@ -3309,7 +3186,7 @@ Public Function ItemSeCae(ByVal Index As Integer) As Boolean
         On Error GoTo ItemSeCae_Err
         
 
-100     ItemSeCae = (ObjData(Index).Real <> 1 Or ObjData(Index).NoSeCae = 0) And (ObjData(Index).Caos <> 1 Or ObjData(Index).NoSeCae = 0) And ObjData(Index).OBJType <> eOBJType.otLlaves And ObjData(Index).OBJType <> eOBJType.otBarcos And ObjData(Index).OBJType <> eOBJType.otMonturas And ObjData(Index).NoSeCae = 0 And Not ObjData(Index).Intirable = 1 And Not ObjData(Index).Destruye = 1 And ObjData(Index).donador = 0 And Not ObjData(Index).Instransferible = 1
+100     ItemSeCae = (ObjData(Index).Real <> 1 Or ObjData(Index).NoSeCae = 0) And (ObjData(Index).Caos <> 1 Or ObjData(Index).NoSeCae = 0) And ObjData(Index).OBJType <> eOBJType.otLlaves And ObjData(Index).OBJType <> eOBJType.otBarcos And ObjData(Index).OBJType <> eOBJType.otMonturas And ObjData(Index).NoSeCae = 0 And Not ObjData(Index).Intirable = 1 And Not ObjData(Index).Destruye = 1 And Not ObjData(Index).Instransferible = 1
 
         
         Exit Function

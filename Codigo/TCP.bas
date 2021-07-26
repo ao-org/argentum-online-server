@@ -594,9 +594,6 @@ Function ConnectNewUser(ByVal UserIndex As Integer, ByRef Name As String, ByVal 
 194         .Stats.MaxHam = 100
 196         .Stats.MinHam = 100
     
-198         .flags.ScrollExp = 1
-200         .flags.ScrollOro = 1
-    
 202         .flags.VecesQueMoriste = 0
 204         .flags.Montado = 0
     
@@ -622,12 +619,7 @@ Function ConnectNewUser(ByVal UserIndex As Integer, ByRef Name As String, ByVal 
         
 226         .ChatCombate = 1
 228         .ChatGlobal = 1
-        
-            'Resetamos CORREO
-230         .Correo.CantCorreo = 0
-232         .Correo.NoLeidos = 0
-            'Resetamos CORREO
-            
+  
             Dim DungeonNewbieCoords(1 To 3) As WorldPos
             
 234         With DungeonNewbieCoords(1)
@@ -1052,8 +1044,6 @@ Sub ResetContadores(ByVal UserIndex As Integer)
             'Ladder
 162         .Incineracion = 0
             'Ladder
-164         .ScrollExperiencia = 0
-166         .ScrollOro = 0
 168         .Oxigeno = 0
 170         .TiempoParaSubastar = 0
 172         .TimerPerteneceNpc = 0
@@ -1150,22 +1140,7 @@ Sub ResetBasicUserInfo(ByVal UserIndex As Integer)
 128         .Hogar = 0
 130         .raza = 0
 132         .EmpoCont = 0
-        
-            'Ladder     Reseteo de Correos
-134         .Correo.CantCorreo = 0
-136         .Correo.NoLeidos = 0
-        
-138         For LoopC = 1 To MAX_CORREOS_SLOTS
-140             .Correo.Mensaje(LoopC).Remitente = ""
-142             .Correo.Mensaje(LoopC).Mensaje = ""
-144             .Correo.Mensaje(LoopC).Item = 0
-146             .Correo.Mensaje(LoopC).ItemCount = 0
-148             .Correo.Mensaje(LoopC).Fecha = ""
-150             .Correo.Mensaje(LoopC).Leido = 0
-152         Next LoopC
 
-            'Ladder     Reseteo de Correos
-        
 154         With .Stats
 156             .InventLevel = 0
 158             .Banco = 0
@@ -1253,8 +1228,6 @@ Sub ResetUserFlags(ByVal UserIndex As Integer)
 106         .Ban = 0
 108         .Escondido = 0
 110         .DuracionEfecto = 0
-112         .ScrollExp = 1
-114         .ScrollOro = 1
 116         .NpcInv = 0
 118         .StatsChanged = 0
 120         .TargetNPC = 0
@@ -1393,29 +1366,6 @@ Sub ResetAccionesPendientes(ByVal UserIndex As Integer)
 
 ResetAccionesPendientes_Err:
 114     Call TraceError(Err.Number, Err.Description, "TCP.ResetAccionesPendientes", Erl)
-
-        
-End Sub
-
-Sub ResetDonadorFlag(ByVal UserIndex As Integer)
-        
-        On Error GoTo ResetDonadorFlag_Err
-        
-
-        '*************************************************
-        '*************************************************
-100     With UserList(UserIndex).donador
-102         .activo = 0
-104         .CreditoDonador = 0
-106         .FechaExpiracion = 0
-
-        End With
-
-        
-        Exit Sub
-
-ResetDonadorFlag_Err:
-108     Call TraceError(Err.Number, Err.Description, "TCP.ResetDonadorFlag", Erl)
 
         
 End Sub
@@ -1567,7 +1517,6 @@ Sub ResetUserSlot(ByVal UserIndex As Integer)
 144     Call ResetBasicUserInfo(UserIndex)
 146     Call ResetUserFlags(UserIndex)
 148     Call ResetAccionesPendientes(UserIndex)
-150     Call ResetDonadorFlag(UserIndex)
 152     Call LimpiarInventario(UserIndex)
 154     Call ResetUserSpells(UserIndex)
         'Call ResetUserPets(UserIndex)

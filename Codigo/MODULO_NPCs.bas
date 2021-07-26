@@ -47,7 +47,7 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
         
         ' Objetivo de pruebas nunca muere
 100     If NpcList(NpcIndex).NPCtype = DummyTarget Then
-102         Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageChatOverHead("¡¡Auch!!", NpcList(NpcIndex).Char.CharIndex, vbRed, "Barrin"))
+102         Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageChatOverHead("¡¡Auch!!", NpcList(NpcIndex).Char.CharIndex, vbRed))
 
 104         If UBound(NpcList(NpcIndex).Char.Animation) > 0 Then
 106             Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageDoAnimation(NpcList(NpcIndex).Char.CharIndex, NpcList(NpcIndex).Char.Animation(1)))
@@ -493,7 +493,6 @@ TestSpawnTrigger_Err:
 End Function
 
 Public Function CrearNPC(NroNPC As Integer, Mapa As Integer, OrigPos As WorldPos, Optional ByVal CustomHead As Integer)
-        'Call LogTarea("Sub CrearNPC")
         'Crea un NPC del tipo NRONPC
         
         On Error GoTo CrearNPC_Err
@@ -828,8 +827,6 @@ errh:
 End Function
 
 Function NextOpenNPC() As Integer
-        'Call LogTarea("Sub NextOpenNPC")
-
         On Error GoTo ErrHandler
 
         Dim LoopC As Integer
@@ -1024,7 +1021,7 @@ Sub NPCTirarOro(MiNPC As npc, ByVal UserIndex As Integer)
 
 
                 Dim Oro As Long
-104                 Oro = MiNPC.GiveGLD * OroMult * UserList(UserIndex).flags.ScrollOro
+104             Oro = MiNPC.GiveGLD * OroMult
 
                 Dim MiObj As obj
 118             MiObj.ObjIndex = iORO

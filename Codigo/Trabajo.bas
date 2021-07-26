@@ -562,8 +562,6 @@ FundirMineral_Err:
 End Sub
 
 Function TieneObjetos(ByVal ItemIndex As Integer, ByVal cant As Integer, ByVal UserIndex As Integer) As Boolean
-        'Call LogTarea("Sub TieneObjetos")
-        
         On Error GoTo TieneObjetos_Err
         
 
@@ -596,8 +594,6 @@ TieneObjetos_Err:
 End Function
 
 Function QuitarObjetos(ByVal ItemIndex As Integer, ByVal cant As Integer, ByVal UserIndex As Integer) As Boolean
-        'Call LogTarea("Sub QuitarObjetos")
-        
         On Error GoTo QuitarObjetos_Err
         
 100     With UserList(UserIndex)
@@ -1960,7 +1956,7 @@ Public Function ObjEsRobable(ByVal VictimaIndex As Integer, ByVal Slot As Intege
 
 100     OI = UserList(VictimaIndex).Invent.Object(Slot).ObjIndex
 
-102     ObjEsRobable = ObjData(OI).OBJType <> eOBJType.otLlaves And UserList(VictimaIndex).Invent.Object(Slot).Equipped = 0 And ObjData(OI).Real = 0 And ObjData(OI).Caos = 0 And ObjData(OI).donador = 0 And ObjData(OI).OBJType <> eOBJType.otBarcos And ObjData(OI).OBJType <> eOBJType.otRunas And ObjData(OI).Instransferible = 0 And ObjData(OI).OBJType <> eOBJType.otMonturas And Not (ObjData(OI).OBJType = eOBJType.otPociones And ObjData(OI).TipoPocion = 21)
+102     ObjEsRobable = ObjData(OI).OBJType <> eOBJType.otLlaves And UserList(VictimaIndex).Invent.Object(Slot).Equipped = 0 And ObjData(OI).Real = 0 And ObjData(OI).Caos = 0 And ObjData(OI).OBJType <> eOBJType.otBarcos And ObjData(OI).OBJType <> eOBJType.otRunas And ObjData(OI).Instransferible = 0 And ObjData(OI).OBJType <> eOBJType.otMonturas And Not (ObjData(OI).OBJType = eOBJType.otPociones And ObjData(OI).TipoPocion = 21)
 
         
         Exit Function
@@ -2151,11 +2147,7 @@ Public Sub DoRaices(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte
                 ' Else
 122             MiObj.amount = RandomNumber(5, 7)
                 ' End If
-       
-124             If ObjData(.Invent.HerramientaEqpObjIndex).donador = 1 Then
-126                 MiObj.amount = MiObj.amount * 2
-                End If
-       
+
 128             MiObj.amount = MiObj.amount * RecoleccionMult
 130             MiObj.ObjIndex = Raices
         

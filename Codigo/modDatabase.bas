@@ -668,19 +668,6 @@ ErrorHandler:
 
 End Sub
 
-Public Function General_File_Exists(ByVal file_path As String, ByVal file_type As VbFileAttribute) As Boolean
-'*****************************************************************
-'Author: Aaron Perkins
-'Last Modify Date: 10/07/2002
-'Checks to see if a file exists
-'*****************************************************************
-    If dir(file_path, file_type) = "" Then
-        General_File_Exists = False
-    Else
-        General_File_Exists = True
-    End If
-End Function
-
 Sub LoadUserDatabase(ByVal UserIndex As Integer)
         Dim counter As Long
             
@@ -762,8 +749,6 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
 236         .flags.MinutosRestantes = QueryData!silence_minutes_left
 238         .flags.SegundosPasados = QueryData!silence_elapsed_seconds
 240         .flags.MascotasGuardadas = QueryData!pets_saved
-242         .flags.ScrollExp = 1 'TODO: sacar
-244         .flags.ScrollOro = 1 'TODO: sacar
 
 246         .flags.ReturnPos.Map = QueryData!return_map
 248         .flags.ReturnPos.X = QueryData!return_x
@@ -1305,86 +1290,6 @@ SetUserValueByID_Err:
 
         
 End Sub
-
-Public Function CheckUserDonatorDatabase(CuentaEmail As String) As Boolean
-        
-        On Error GoTo CheckUserDonatorDatabase_Err
-        
-100     CheckUserDonatorDatabase = GetCuentaValue(CuentaEmail, "is_donor")
-
-        
-        Exit Function
-
-CheckUserDonatorDatabase_Err:
-102     Call TraceError(Err.Number, Err.Description, "modDatabase.CheckUserDonatorDatabase", Erl)
-
-        
-End Function
-
-Public Function GetUserCreditosDatabase(CuentaEmail As String) As Long
-        
-        On Error GoTo GetUserCreditosDatabase_Err
-        
-100     GetUserCreditosDatabase = GetCuentaValue(CuentaEmail, "credits")
-
-        
-        Exit Function
-
-GetUserCreditosDatabase_Err:
-102     Call TraceError(Err.Number, Err.Description, "modDatabase.GetUserCreditosDatabase", Erl)
-
-        
-End Function
-
-Public Function GetUserCreditosCanjeadosDatabase(CuentaEmail As String) As Long
-        
-        On Error GoTo GetUserCreditosCanjeadosDatabase_Err
-        
-100     GetUserCreditosCanjeadosDatabase = GetCuentaValue(CuentaEmail, "credits_used")
-
-        
-        Exit Function
-
-GetUserCreditosCanjeadosDatabase_Err:
-102     Call TraceError(Err.Number, Err.Description, "modDatabase.GetUserCreditosCanjeadosDatabase", Erl)
-
-        
-End Function
-
-Public Function GetUserDiasDonadorDatabase(CuentaEmail As String) As Long
-        
-        On Error GoTo GetUserDiasDonadorDatabase_Err
-        
-
-        Dim DonadorExpire As Variant
-
-100     DonadorExpire = SanitizeNullValue(GetCuentaValue(CuentaEmail, "donor_expire"), False)
-    
-102     If Not DonadorExpire Then Exit Function
-104     GetUserDiasDonadorDatabase = DateDiff("d", Date, DonadorExpire)
-
-        
-        Exit Function
-
-GetUserDiasDonadorDatabase_Err:
-106     Call TraceError(Err.Number, Err.Description, "modDatabase.GetUserDiasDonadorDatabase", Erl)
-
-        
-End Function
-Public Function GetUserComprasDonadorDatabase(CuentaEmail As String) As Long
-        
-        On Error GoTo GetUserComprasDonadorDatabase_Err
-        
-100     GetUserComprasDonadorDatabase = GetCuentaValue(CuentaEmail, "donor_purchases")
-
-        
-        Exit Function
-
-GetUserComprasDonadorDatabase_Err:
-102     Call TraceError(Err.Number, Err.Description, "modDatabase.GetUserComprasDonadorDatabase", Erl)
-
-        
-End Function
 
 Public Function CheckUserExists(Name As String) As Boolean
         

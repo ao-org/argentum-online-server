@@ -205,12 +205,6 @@ End Function
 Public Function PopByVal() As String
         
         On Error GoTo PopByVal_Err
-    
-        
-
-        
-
-        'Call LogTarea("PopByVal SOS")
 
         'Quita elemento de la cola
 100     If Cola.Count > 0 Then

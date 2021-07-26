@@ -3907,9 +3907,6 @@ End Sub
 Sub UpdateUserHechizos(ByVal UpdateAll As Boolean, ByVal UserIndex As Integer, ByVal Slot As Byte)
         
         On Error GoTo UpdateUserHechizos_Err
-        
-
-        'Call LogTarea("Sub UpdateUserHechizos")
 
         Dim LoopC As Byte
 
@@ -3953,10 +3950,7 @@ End Sub
 Sub ChangeUserHechizo(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal Hechizo As Integer)
         
         On Error GoTo ChangeUserHechizo_Err
-        
 
-        'Call LogTarea("ChangeUserHechizo")
-    
 100     UserList(UserIndex).Stats.UserHechizos(Slot) = Hechizo
     
 102     If Hechizo > 0 And Hechizo < NumeroHechizos + 1 Then
