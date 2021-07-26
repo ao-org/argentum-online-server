@@ -2175,6 +2175,10 @@ UptimeTimer_Timer_Err:
         
 End Sub
 
+Private Sub Database_Async_ConnectComplete(ByVal pError As ADODB.Error, adStatus As ADODB.EventStatusEnum, ByVal pConnection As ADODB.Connection)
+    Call OnDatabaseAsyncConnect(pError, adStatus, pConnection)
+End Sub
+
 Private Sub Database_Async_ExecuteComplete(ByVal RecordsAffected As Long, ByVal pError As ADODB.Error, adStatus As ADODB.EventStatusEnum, ByVal pCommand As ADODB.Command, ByVal pRecordset As ADODB.Recordset, ByVal pConnection As ADODB.Connection)
     Call OnDatabaseAsyncComplete(RecordsAffected, pError, adStatusCancel, pCommand, pRecordset, pConnection)
 End Sub
