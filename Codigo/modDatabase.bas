@@ -302,7 +302,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
         
 106         Params(PostInc(i)) = .Name
 108         Params(PostInc(i)) = .Stats.ELV
-110         Params(PostInc(i)) = CLng(.Stats.Exp)
+110         Params(PostInc(i)) = .Stats.Exp
 112         Params(PostInc(i)) = .genero
 114         Params(PostInc(i)) = .raza
 116         Params(PostInc(i)) = .clase
@@ -1043,8 +1043,8 @@ Public Function MakeQuery(query As String, ByVal NoResultAndAsync As Boolean, Pa
     
         On Error GoTo ErrorHandler
         
-        Dim Argument As Variant
-        Dim ArgumentChild As Variant
+        Dim ArgumentOuter As Variant
+        Dim ArgumentInner As Variant
         
         If frmMain.chkLogDbPerfomance.Value = 1 Then Call GetElapsedTime
 
@@ -1062,15 +1062,15 @@ Public Function MakeQuery(query As String, ByVal NoResultAndAsync As Boolean, Pa
 106         .CommandType = adCmdText
             .Prepared = True
             
-            For Each Argument In Query_Parameters
-                If IsArray(Argument) Then
-                    For Each ArgumentChild In Argument
-                        .Parameters.Append CreateParameter(ArgumentChild, adParamInput)
-                    Next ArgumentChild
+            For Each ArgumentOuter In Query_Parameters
+                If (IsArray(ArgumentOuter)) Then
+                    For Each ArgumentInner In ArgumentOuter
+                        .Parameters.Append CreateParameter(ArgumentInner, adParamInput)
+                    Next ArgumentInner
                 Else
-                    .Parameters.Append CreateParameter(Argument, adParamInput)
+                    .Parameters.Append CreateParameter(ArgumentOuter, adParamInput)
                 End If
-            Next Argument
+            Next ArgumentOuter
 
 124         If NoResultAndAsync Then
                 Call Database_Async_Queue.Add(Command)
@@ -1079,14 +1079,12 @@ Public Function MakeQuery(query As String, ByVal NoResultAndAsync As Boolean, Pa
                     Call .Execute(, , adExecuteNoRecords + adAsyncExecute)
                 End If
             Else
-                If (InStr(1, query, "SELECT") = 1) Then ' TODO: Mejorar
-128                 Set QueryData = .Execute(RecordsAffected)
-        
-130                 If QueryData.BOF Or QueryData.EOF Then
-132                     Set QueryData = Nothing
+                Set QueryData = .Execute(RecordsAffected)
+                
+                If QueryData.State <> 0 Then
+                    If QueryData.BOF Or QueryData.EOF Then
+                        Set QueryData = Nothing
                     End If
-                Else
-                    Call .Execute(RecordsAffected, adExecuteNoRecords)
                 End If
             End If
         
@@ -1121,7 +1119,7 @@ Private Function CreateParameter(ByVal Value As Variant, ByVal Direction As ADOD
     Set CreateParameter = New ADODB.Parameter
     
     CreateParameter.Direction = Direction
-
+    
     Select Case VarType(Value)
         Case VbVarType.vbString
             CreateParameter.Type = adBSTR

@@ -1776,7 +1776,7 @@ Sub LoadUserStats(ByVal UserIndex As Integer, ByRef UserFile As clsIniManager)
 
 148     UserList(UserIndex).Stats.SkillPts = CInt(UserFile.GetValue("STATS", "SkillPtsLibres"))
 
-150     UserList(UserIndex).Stats.Exp = CDbl(UserFile.GetValue("STATS", "EXP"))
+150     UserList(UserIndex).Stats.Exp = CLng(UserFile.GetValue("STATS", "EXP"))
 152     UserList(UserIndex).Stats.ELV = CByte(UserFile.GetValue("STATS", "ELV"))
 
 154     UserList(UserIndex).flags.Envenena = CByte(UserFile.GetValue("MAGIA", "ENVENENA"))
