@@ -1094,10 +1094,14 @@ Public Function MakeQuery(query As String, ByVal NoResultAndAsync As Boolean, Pa
                     Call .Execute(, , adExecuteNoRecords + adAsyncExecute)
                 End If
             Else
-128             Set QueryData = .Execute(RecordsAffected)
-    
-130             If QueryData.BOF Or QueryData.EOF Then
-132                 Set QueryData = Nothing
+                If (InStr(1, query, "SELECT") = 1) Then ' TODO: Mejorar
+128                 Set QueryData = .Execute(RecordsAffected)
+        
+130                 If QueryData.BOF Or QueryData.EOF Then
+132                     Set QueryData = Nothing
+                    End If
+                Else
+                    Call .Execute(RecordsAffected, adExecuteNoRecords)
                 End If
             End If
         
@@ -1137,7 +1141,7 @@ Private Function CreateParameter(ByVal Value As Variant, ByVal Direction As ADOD
         Case VbVarType.vbString
             CreateParameter.Type = adBSTR
             CreateParameter.Size = Len(Value)
-            CreateParameter.Value = Value
+            CreateParameter.Value = CStr(Value)
         Case VbVarType.vbDecimal
             CreateParameter.Type = adInteger
             CreateParameter.Value = CLng(Value)
