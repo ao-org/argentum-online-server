@@ -640,9 +640,6 @@ Sub Main()
         ' Construimos las querys grandes
 156     Call Contruir_Querys
 
-        ' Abro el socket para el DbManager
-        Call frmMain.DbManagerListen
-
         ' ******************* FIN - Base de Datos ********************
 
         '*************************************************
