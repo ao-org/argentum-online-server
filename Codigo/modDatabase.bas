@@ -177,7 +177,7 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
 194         Params(PostInc(i)) = .flags.Desnudo
 196         Params(PostInc(i)) = .Faccion.Status
         
-198         Call MakeQuery(QUERY_SAVE_MAINPJ, True, Params)
+198         Call MakeQuery(QUERY_SAVE_MAINPJ, False, Params)
 
             ' Para recibir el ID del user
 200         Call MakeQuery("SELECT LAST_INSERT_ID();", False)
@@ -200,7 +200,7 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
 220             ParamC = ParamC + 3
 222         Next LoopC
         
-224         Call MakeQuery(QUERY_SAVE_ATTRIBUTES, True, Params)
+224         Call MakeQuery(QUERY_SAVE_ATTRIBUTES, False, Params)
         
             ' ******************* SPELLS **********************
 226         ReDim Params(MAXUSERHECHIZOS * 3 - 1)
@@ -214,7 +214,7 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
 238             ParamC = ParamC + 3
 240         Next LoopC
 
-242         Call MakeQuery(QUERY_SAVE_SPELLS, True, Params)
+242         Call MakeQuery(QUERY_SAVE_SPELLS, False, Params)
         
             ' ******************* INVENTORY *******************
 244         ReDim Params(MAX_INVENTORY_SLOTS * 5 - 1)
@@ -230,7 +230,7 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
 260             ParamC = ParamC + 5
 262         Next LoopC
         
-264         Call MakeQuery(QUERY_SAVE_INVENTORY, True, Params)
+264         Call MakeQuery(QUERY_SAVE_INVENTORY, False, Params)
         
             ' ******************* SKILLS *******************
 266         ReDim Params(NUMSKILLS * 3 - 1)
@@ -244,7 +244,7 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
 278             ParamC = ParamC + 3
 280         Next LoopC
         
-282         Call MakeQuery(QUERY_SAVE_SKILLS, True, Params)
+282         Call MakeQuery(QUERY_SAVE_SKILLS, False, Params)
         
             ' ******************* QUESTS *******************
 284         ReDim Params(MAXUSERQUESTS * 2 - 1)
@@ -257,7 +257,7 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
 294             ParamC = ParamC + 2
 296         Next LoopC
         
-298         Call MakeQuery(QUERY_SAVE_QUESTS, True, Params)
+298         Call MakeQuery(QUERY_SAVE_QUESTS, False, Params)
         
             ' ******************* PETS ********************
 300         ReDim Params(MAXMASCOTAS * 3 - 1)
@@ -271,7 +271,7 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
 312             ParamC = ParamC + 3
 314         Next LoopC
     
-316         Call MakeQuery(QUERY_SAVE_PETS, True, Params)
+316         Call MakeQuery(QUERY_SAVE_PETS, False, Params)
     
         End With
 
@@ -682,7 +682,7 @@ Public Function General_File_Exists(ByVal file_path As String, ByVal file_type A
 End Function
 
 Sub LoadUserDatabase(ByVal UserIndex As Integer)
-        Dim Counter As Long
+        Dim counter As Long
             
         On Error GoTo ErrorHandler
 
@@ -888,7 +888,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
             'User bank inventory
 366         Call MakeQuery("SELECT number, item_id, amount FROM bank_item WHERE user_id = ?;", False, .ID)
             
-            Counter = 0
+            counter = 0
             
 368         If Not QueryData Is Nothing Then
 370             QueryData.MoveFirst
@@ -900,7 +900,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
                 
 378                     If .ObjIndex <> 0 Then
 380                         If LenB(ObjData(.ObjIndex).Name) Then
-                                Counter = Counter + 1
+                                counter = counter + 1
                                 
 382                             .amount = QueryData!amount
                             Else
@@ -915,7 +915,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
 386                 QueryData.MoveNext
                 Wend
                 
-                .BancoInvent.NroItems = Counter
+                .BancoInvent.NroItems = counter
             End If
             
             'User skills
@@ -2654,21 +2654,21 @@ Public Sub VerLlavesDatabase(ByVal UserIndex As Integer)
 108         Call WriteConsoleMsg(UserIndex, "No hay llaves otorgadas por el momento.", FontTypeNames.FONTTYPE_INFO)
     
         Else
-            Dim message As String
+            Dim Message As String
         
-110         message = "Llaves usadas: " & QueryData.RecordCount & vbNewLine
+110         Message = "Llaves usadas: " & QueryData.RecordCount & vbNewLine
     
 112         QueryData.MoveFirst
 
 114         While Not QueryData.EOF
-116             message = message & "Llave: " & QueryData!key_obj & " - Cuenta: " & QueryData!Email & vbNewLine
+116             Message = Message & "Llave: " & QueryData!key_obj & " - Cuenta: " & QueryData!Email & vbNewLine
 
 118             QueryData.MoveNext
             Wend
         
-120         message = Left$(message, Len(message) - 2)
+120         Message = Left$(Message, Len(Message) - 2)
         
-122         Call WriteConsoleMsg(UserIndex, message, FontTypeNames.FONTTYPE_INFO)
+122         Call WriteConsoleMsg(UserIndex, Message, FontTypeNames.FONTTYPE_INFO)
         End If
 
         Exit Sub
@@ -2720,8 +2720,8 @@ GetUserLevelDatabase_Err:
 
 End Function
 
-Public Sub SetMessageInfoDatabase(ByVal Name As String, ByVal message As String)
-100     Call MakeQuery("update user set message_info = concat(message_info, ?) where upper(name) = ?;", True, message, UCase$(Name))
+Public Sub SetMessageInfoDatabase(ByVal Name As String, ByVal Message As String)
+100     Call MakeQuery("update user set message_info = concat(message_info, ?) where upper(name) = ?;", True, Message, UCase$(Name))
 End Sub
 
 Public Sub ChangeNameDatabase(ByVal CurName As String, ByVal NewName As String)
