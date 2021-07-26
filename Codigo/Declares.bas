@@ -1408,7 +1408,7 @@ Public Type UserStats
     MinAGU As Integer
         
     def As Integer
-    Exp As Double
+    Exp As Long
     ELV As Byte
     ELO As Long
 
