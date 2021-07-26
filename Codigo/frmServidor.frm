@@ -25,7 +25,7 @@ Begin VB.Form frmServidor
       EndProperty
       Height          =   1575
       Left            =   3840
-      TabIndex        =   23
+      TabIndex        =   22
       Top             =   2880
       Width           =   3615
       Begin VB.CommandButton Command4 
@@ -41,7 +41,7 @@ Begin VB.Form frmServidor
          EndProperty
          Height          =   255
          Left            =   120
-         TabIndex        =   27
+         TabIndex        =   26
          Top             =   240
          Width           =   3255
       End
@@ -58,7 +58,7 @@ Begin VB.Form frmServidor
          EndProperty
          Height          =   255
          Left            =   120
-         TabIndex        =   26
+         TabIndex        =   25
          Top             =   520
          Width           =   3255
       End
@@ -75,7 +75,7 @@ Begin VB.Form frmServidor
          EndProperty
          Height          =   255
          Left            =   120
-         TabIndex        =   25
+         TabIndex        =   24
          Top             =   820
          Width           =   3255
       End
@@ -92,7 +92,7 @@ Begin VB.Form frmServidor
          EndProperty
          Height          =   255
          Left            =   120
-         TabIndex        =   24
+         TabIndex        =   23
          Top             =   1120
          Width           =   3255
       End
@@ -110,7 +110,7 @@ Begin VB.Form frmServidor
       EndProperty
       Height          =   2775
       Left            =   3840
-      TabIndex        =   15
+      TabIndex        =   14
       Top             =   0
       Width           =   3615
       Begin VB.CommandButton cmdReloadGuilds 
@@ -126,7 +126,7 @@ Begin VB.Form frmServidor
          EndProperty
          Height          =   255
          Left            =   120
-         TabIndex        =   29
+         TabIndex        =   28
          Top             =   2430
          Width           =   3255
       End
@@ -143,7 +143,7 @@ Begin VB.Form frmServidor
          EndProperty
          Height          =   255
          Left            =   120
-         TabIndex        =   28
+         TabIndex        =   27
          Top             =   2170
          Width           =   3255
       End
@@ -160,7 +160,7 @@ Begin VB.Form frmServidor
          EndProperty
          Height          =   255
          Left            =   120
-         TabIndex        =   22
+         TabIndex        =   21
          Top             =   240
          Width           =   3255
       End
@@ -178,7 +178,7 @@ Begin VB.Form frmServidor
          EndProperty
          Height          =   255
          Left            =   120
-         TabIndex        =   21
+         TabIndex        =   20
          Top             =   510
          Width           =   3255
       End
@@ -195,7 +195,7 @@ Begin VB.Form frmServidor
          EndProperty
          Height          =   255
          Left            =   120
-         TabIndex        =   20
+         TabIndex        =   19
          Top             =   800
          Width           =   3255
       End
@@ -212,7 +212,7 @@ Begin VB.Form frmServidor
          EndProperty
          Height          =   255
          Left            =   120
-         TabIndex        =   19
+         TabIndex        =   18
          Top             =   1080
          Width           =   3255
       End
@@ -229,7 +229,7 @@ Begin VB.Form frmServidor
          EndProperty
          Height          =   255
          Left            =   120
-         TabIndex        =   18
+         TabIndex        =   17
          Top             =   1360
          Width           =   3255
       End
@@ -246,7 +246,7 @@ Begin VB.Form frmServidor
          EndProperty
          Height          =   255
          Left            =   120
-         TabIndex        =   17
+         TabIndex        =   16
          Top             =   1650
          Width           =   3255
       End
@@ -263,7 +263,7 @@ Begin VB.Form frmServidor
          EndProperty
          Height          =   255
          Left            =   120
-         TabIndex        =   16
+         TabIndex        =   15
          Top             =   1920
          Width           =   3255
       End
@@ -297,7 +297,7 @@ Begin VB.Form frmServidor
          EndProperty
          Height          =   255
          Left            =   240
-         TabIndex        =   14
+         TabIndex        =   13
          Top             =   1800
          Width           =   3255
       End
@@ -314,7 +314,7 @@ Begin VB.Form frmServidor
          EndProperty
          Height          =   255
          Left            =   240
-         TabIndex        =   13
+         TabIndex        =   12
          Top             =   360
          Width           =   3255
       End
@@ -331,25 +331,8 @@ Begin VB.Form frmServidor
          EndProperty
          Height          =   255
          Left            =   240
-         TabIndex        =   12
-         Top             =   1080
-         Width           =   3255
-      End
-      Begin VB.CommandButton Command24 
-         Caption         =   "Estadisticas"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   700
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   255
-         Left            =   240
          TabIndex        =   11
-         Top             =   1320
+         Top             =   1080
          Width           =   3255
       End
       Begin VB.CommandButton Command27 
@@ -887,21 +870,6 @@ Private Sub Command23_Click()
 
 Command23_Click_Err:
 110     Call RegistrarError(Err.Number, Err.Description, "frmServidor.Command23_Click", Erl)
-
-        
-End Sub
-
-Private Sub Command24_Click()
-        
-        On Error GoTo Command24_Click_Err
-        
-100     frmEstadisticas.Show
-
-        
-        Exit Sub
-
-Command24_Click_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "frmServidor.Command24_Click", Erl)
 
         
 End Sub

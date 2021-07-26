@@ -238,12 +238,7 @@ Public Sub SaveNewAccountCharfile(CuentaEmail As String, PasswordHash As String,
 122         Call .ChangeValue("BAN", "Baneada", "0")
 124         Call .ChangeValue("BAN", "Motivo", "")
 126         Call .ChangeValue("BAN", "BANEO", "")
-        
-            'Grabamos donador
-128         Call .ChangeValue("DONADOR", "DONADOR", "0")
-130         Call .ChangeValue("DONADOR", "CREDITOS", "0")
-132         Call .ChangeValue("DONADOR", "FECHAEXPIRACION", "")
-        
+
             'Seguridad Ladder
 134         Call .ChangeValue("INIT", "MacAdress", "0")
 136         Call .ChangeValue("INIT", "HDserial", "0")
@@ -862,7 +857,6 @@ Sub SendCharacterInfoCharfile(ByVal UserIndex As Integer, ByVal UserName As Stri
 118         .Initialize (CharPath & UserName & ".chr")
     
 120         Call WriteCharacterInfo(UserIndex, UserName, .GetValue("INIT", "Raza"), .GetValue("INIT", "Clase"), .GetValue("INIT", "Genero"), .GetValue("STATS", "ELV"), .GetValue("STATS", "GLD"), .GetValue("STATS", "Banco"), .GetValue("GUILD", "Pedidos"), gName, Miembro, .GetValue("FACCIONES", "EjercitoReal"), .GetValue("FACCIONES", "EjercitoCaos"), .GetValue("FACCIONES", "CiudMatados"), .GetValue("FACCIONES", "CrimMatados"))
-
         End With
     
 122     Set UserFile = Nothing

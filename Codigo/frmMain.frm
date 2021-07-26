@@ -3,10 +3,10 @@ Begin VB.Form frmMain
    BackColor       =   &H00E0E0E0&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   "Servidor Argentum 20"
-   ClientHeight    =   6225
+   ClientHeight    =   6210
    ClientLeft      =   1950
    ClientTop       =   1695
-   ClientWidth     =   6930
+   ClientWidth     =   6840
    FillColor       =   &H00C0C0C0&
    BeginProperty Font 
       Name            =   "Arial"
@@ -23,8 +23,8 @@ Begin VB.Form frmMain
    MaxButton       =   0   'False
    MinButton       =   0   'False
    PaletteMode     =   1  'UseZOrder
-   ScaleHeight     =   6225
-   ScaleWidth      =   6930
+   ScaleHeight     =   6210
+   ScaleWidth      =   6840
    StartUpPosition =   2  'CenterScreen
    Begin VB.Timer t_Extraer 
       Left            =   4440
@@ -44,7 +44,7 @@ Begin VB.Form frmMain
       Left            =   5160
       MaskColor       =   &H000040C0&
       Style           =   1  'Graphical
-      TabIndex        =   36
+      TabIndex        =   35
       Top             =   4920
       Width           =   1575
    End
@@ -71,7 +71,7 @@ Begin VB.Form frmMain
       Height          =   615
       Left            =   5160
       Style           =   1  'Graphical
-      TabIndex        =   33
+      TabIndex        =   32
       Top             =   5520
       Width           =   1575
    End
@@ -79,7 +79,7 @@ Begin VB.Form frmMain
       Caption         =   "Recargar intervalos.ini"
       Height          =   495
       Left            =   5160
-      TabIndex        =   32
+      TabIndex        =   31
       Top             =   4320
       Width           =   1575
    End
@@ -87,7 +87,7 @@ Begin VB.Form frmMain
       Caption         =   "Recargar Balance.dat"
       Height          =   495
       Left            =   5160
-      TabIndex        =   31
+      TabIndex        =   30
       Top             =   3720
       Width           =   1575
    End
@@ -95,7 +95,7 @@ Begin VB.Form frmMain
       Caption         =   "Recargar configuracion.ini"
       Height          =   495
       Left            =   5160
-      TabIndex        =   30
+      TabIndex        =   29
       Top             =   1320
       Width           =   1575
    End
@@ -103,7 +103,7 @@ Begin VB.Form frmMain
       Caption         =   "Recargar Server.ini"
       Height          =   495
       Left            =   5160
-      TabIndex        =   29
+      TabIndex        =   28
       Top             =   720
       Width           =   1575
    End
@@ -111,7 +111,7 @@ Begin VB.Form frmMain
       Caption         =   "Guardar Usuarios"
       Height          =   495
       Left            =   5160
-      TabIndex        =   28
+      TabIndex        =   27
       Top             =   3120
       Width           =   1575
    End
@@ -119,7 +119,7 @@ Begin VB.Form frmMain
       Caption         =   "Recargar Npcs"
       Height          =   495
       Left            =   5160
-      TabIndex        =   27
+      TabIndex        =   26
       Top             =   2520
       Width           =   1575
    End
@@ -127,7 +127,7 @@ Begin VB.Form frmMain
       Caption         =   "Recargar Objetos"
       Height          =   495
       Left            =   5160
-      TabIndex        =   26
+      TabIndex        =   25
       Top             =   1920
       Width           =   1575
    End
@@ -135,7 +135,7 @@ Begin VB.Form frmMain
       Caption         =   "Recargar Administradores"
       Height          =   495
       Left            =   5160
-      TabIndex        =   25
+      TabIndex        =   24
       Top             =   120
       Width           =   1575
    End
@@ -147,14 +147,6 @@ Begin VB.Form frmMain
       TabIndex        =   22
       Top             =   120
       Width           =   1575
-      Begin VB.CommandButton Command5 
-         Caption         =   "Command5"
-         Height          =   495
-         Left            =   120
-         TabIndex        =   24
-         Top             =   5400
-         Width           =   1455
-      End
       Begin VB.Label cuentas 
          Caption         =   "0"
          Height          =   375
@@ -231,7 +223,7 @@ Begin VB.Form frmMain
          Caption         =   "Log DB perfomance"
          Height          =   375
          Left            =   2640
-         TabIndex        =   39
+         TabIndex        =   38
          Top             =   1320
          Width           =   2055
       End
@@ -240,7 +232,7 @@ Begin VB.Form frmMain
          Caption         =   "Estabilidad:"
          Height          =   255
          Left            =   3360
-         TabIndex        =   38
+         TabIndex        =   37
          Top             =   240
          Width           =   975
       End
@@ -251,7 +243,7 @@ Begin VB.Form frmMain
          Caption         =   "0%"
          Height          =   210
          Left            =   4560
-         TabIndex        =   37
+         TabIndex        =   36
          Top             =   240
          Width           =   225
       End
@@ -360,15 +352,6 @@ Begin VB.Form frmMain
       Interval        =   1000
       Left            =   720
       Top             =   4200
-   End
-   Begin VB.CommandButton CMDDUMP 
-      Caption         =   "dump"
-      Height          =   255
-      Left            =   3720
-      TabIndex        =   6
-      Top             =   6720
-      Visible         =   0   'False
-      Width           =   1215
    End
    Begin VB.Timer Segundo 
       Enabled         =   0   'False
@@ -499,11 +482,20 @@ Begin VB.Form frmMain
          Width           =   1815
       End
    End
+   Begin VB.CommandButton CMDDUMP 
+      Caption         =   "dump"
+      Height          =   255
+      Left            =   3720
+      TabIndex        =   6
+      Top             =   6720
+      Visible         =   0   'False
+      Width           =   1215
+   End
    Begin VB.Label Label9 
       Caption         =   "Basado en rao"
       Height          =   495
       Left            =   5280
-      TabIndex        =   35
+      TabIndex        =   34
       Top             =   5640
       Width           =   1335
    End
@@ -511,7 +503,7 @@ Begin VB.Form frmMain
       Caption         =   "Label8"
       Height          =   495
       Left            =   2880
-      TabIndex        =   34
+      TabIndex        =   33
       Top             =   2880
       Width           =   1215
    End
@@ -535,15 +527,6 @@ Begin VB.Form frmMain
       End
       Begin VB.Menu mnuCerrar 
          Caption         =   "Cerrar Servidor"
-      End
-   End
-   Begin VB.Menu donador 
-      Caption         =   "Donador"
-      Begin VB.Menu addtimeDonador 
-         Caption         =   "Cargar tiempo"
-      End
-      Begin VB.Menu loadcredit 
-         Caption         =   "Cargar Creditos"
       End
    End
    Begin VB.Menu mnuPopUp 
@@ -622,6 +605,7 @@ Private Declare Function Shell_NotifyIconA Lib "SHELL32" (ByVal dwMessage As Lon
 
 Private WithEvents Database_Async As ADODB.Connection
 Attribute Database_Async.VB_VarHelpID = -1
+Private SERVER_UPTIME As Long
 
 Public Function CreateDatabaseAsync() As ADODB.Connection
     If (Database_Async Is Nothing) Then
@@ -707,40 +691,6 @@ CheckIdleUser_Err:
         
 End Sub
 
-Private Sub addtimeDonador_Click()
-        
-        On Error GoTo addtimeDonador_Click_Err
-        
-
-        Dim Tmp  As String
-
-        Dim tmp2 As String
-
-100     Tmp = InputBox("Cuenta?", "Ingrese la cuenta")
-
-102     If FileExist(CuentasPath & Tmp & ".act", vbNormal) Then
-104         tmp2 = InputBox("¿Días?", "Ingrese cantidad de días")
-
-106         If IsNumeric(tmp2) Then
-108             Call DonadorTiempo(Tmp, tmp2)
-            Else
-110             MsgBox ("Cantidad inválida")
-
-            End If
-
-        Else
-112         MsgBox ("La cuenta no existe")
-
-        End If
-
-        
-        Exit Sub
-
-addtimeDonador_Click_Err:
-114     Call RegistrarError(Err.Number, Err.Description, "frmMain.addtimeDonador_Click", Erl)
-
-End Sub
-
 Private Sub Segundo_Timer()
 
     On Error GoTo errhand
@@ -759,9 +709,6 @@ Private Sub Segundo_Timer()
     ' -----------------------------------
 
     Call PasarSegundo 'sistema de desconexion de 10 segs
-    'Call PurgarScroll
-
-    Call ActualizaStatsES
 
     Exit Sub
 
@@ -1183,24 +1130,6 @@ Command4_Click_Err:
         
 End Sub
 
-Private Sub Command5_Click()
-        'Dim tem As String
-        'tem = InputBox("Ingreste clave")
-        'MsgBox SDesencriptar(tem)
-        
-        On Error GoTo Command5_Click_Err
-        
-
-100     Call GuardarRanking
-
-        
-        Exit Sub
-
-Command5_Click_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "frmMain.Command5_Click", Erl)
-
-        
-End Sub
 
 Private Sub Command6_Click()
         
@@ -1285,18 +1214,6 @@ Private Sub EstadoTimer_Timer()
             Call ChangeBan(Baneos(i).Name, 0)
             Call Baneos.Remove(i)
             Call SaveBans
-
-        End If
-
-    Next
-
-    For i = 1 To Donadores.Count
-
-        If Donadores(i).FechaExpiracion <= Now Then
-            Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » Se ha concluido el tiempo de donador para " & Donadores(i).Name & ".", FontTypeNames.FONTTYPE_SERVER))
-            Call ChangeDonador(Donadores(i).Name, 0)
-            Call Donadores.Remove(i)
-            Call SaveDonadores
 
         End If
 
@@ -1599,41 +1516,6 @@ Private Sub LimpiezaTimer_Timer()
 
 LimpiezaTimer_Timer_Err:
     Call RegistrarError(Err.Number, Err.Description, "frmMain.LimpiezaTimer_Timer", Erl)
-
-        
-End Sub
-
-Private Sub loadcredit_Click()
-        
-        On Error GoTo loadcredit_Click_Err
-        
-
-        Dim Tmp  As String
-
-        Dim tmp2 As String
-
-100     Tmp = InputBox("¿Cuenta?", "Ingrese la cuenta")
-
-102     If FileExist(CuentasPath & Tmp & ".act", vbNormal) Then
-104         tmp2 = InputBox("¿Cantidad?", "Ingrese cantidad de creditos a agregar")
-
-106         If IsNumeric(tmp2) Then
-108             Call AgregarCreditosDonador(Tmp, CLng(tmp2))
-            Else
-110             MsgBox ("Cantidad invalida")
-
-            End If
-
-        Else
-112         MsgBox ("La cuenta no existe")
-
-        End If
-
-        
-        Exit Sub
-
-loadcredit_Click_Err:
-114     Call TraceError(Err.Number, Err.Description, "frmMain.loadcredit_Click", Erl)
 
         
 End Sub

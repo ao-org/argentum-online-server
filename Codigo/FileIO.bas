@@ -796,8 +796,6 @@ LoadMotd_Err:
 End Sub
 
 Public Sub DoBackUp()
-        'Call LogTarea("Sub DoBackUp")
-        
         On Error GoTo DoBackUp_Err
     
         
@@ -814,8 +812,6 @@ Public Sub DoBackUp()
 106     Call ResetCentinelaInfo
 
 108     Call SendData(SendTarget.ToAll, 0, PrepareMessagePauseToggle())
-
-        'Call EstadisticasWeb.Informar(EVENTO_NUEVO_CLAN, 0)
 
 110     haciendoBK = False
 
@@ -1255,32 +1251,6 @@ LoadObjSastre_Err:
         
 End Sub
 
-Sub LoadObjDonador()
-        
-        On Error GoTo LoadObjDonador_Err
-        
-
-        Dim n As Integer, lc As Integer
-
-100     n = val(GetVar(DatPath & "ObjDonador.dat", "INIT", "NumObjs"))
-
-102     ReDim Preserve ObjDonador(1 To n) As tObjDonador
-
-104     For lc = 1 To n
-106         ObjDonador(lc).ObjIndex = val(GetVar(DatPath & "ObjDonador.dat", "Obj" & lc, "Index"))
-108         ObjDonador(lc).Cantidad = val(GetVar(DatPath & "ObjDonador.dat", "Obj" & lc, "Cant"))
-110         ObjDonador(lc).Valor = val(GetVar(DatPath & "ObjDonador.dat", "Obj" & lc, "Valor"))
-112     Next lc
-
-        
-        Exit Sub
-
-LoadObjDonador_Err:
-114     Call TraceError(Err.Number, Err.Description, "ES.LoadObjDonador", Erl)
-
-        
-End Sub
-
 Sub LoadOBJData()
 
         '###################################################
@@ -1296,8 +1266,6 @@ Sub LoadOBJData()
         'Alejo
         '
         '###################################################
-
-        'Call LogTarea("Sub LoadOBJData")
 
         On Error GoTo ErrHandler
 
@@ -1368,9 +1336,7 @@ Sub LoadOBJData()
 154             .Dorada = val(Leer.GetValue(ObjKey, "Dorada"))
 156             .VidaUtil = val(Leer.GetValue(ObjKey, "VidaUtil"))
 158             .TiempoRegenerar = val(Leer.GetValue(ObjKey, "TiempoRegenerar"))
-    
-160             .donador = val(Leer.GetValue(ObjKey, "donador"))
-    
+
                 Dim i As Integer
 
 162             Select Case .OBJType
@@ -1475,12 +1441,7 @@ Sub LoadOBJData()
 318                     .HastaX = val(Leer.GetValue(ObjKey, "X"))
 320                     .HastaY = val(Leer.GetValue(ObjKey, "Y"))
 322                     .NecesitaNave = val(Leer.GetValue(ObjKey, "NecesitaNave"))
-            
-324                 Case eOBJType.OtDonador
-326                     .HastaMap = val(Leer.GetValue(ObjKey, "Map"))
-328                     .HastaX = val(Leer.GetValue(ObjKey, "X"))
-330                     .HastaY = val(Leer.GetValue(ObjKey, "Y"))
-        
+
 332                 Case eOBJType.otMagicos
 334                     .EfectoMagico = val(Leer.GetValue(ObjKey, "efectomagico"))
 
@@ -1905,9 +1866,6 @@ Sub LoadUserInit(ByVal UserIndex As Integer, ByRef UserFile As clsIniManager)
 146     UserList(UserIndex).flags.Incinerado = CByte(UserFile.GetValue("FLAGS", "Incinerado"))
 148     UserList(UserIndex).flags.Inmovilizado = CByte(UserFile.GetValue("FLAGS", "Inmovilizado"))
 
-150     UserList(UserIndex).flags.ScrollExp = CSng(UserFile.GetValue("FLAGS", "ScrollExp"))
-152     UserList(UserIndex).flags.ScrollOro = CSng(UserFile.GetValue("FLAGS", "ScrollOro"))
-
 154     If UserList(UserIndex).flags.Paralizado = 1 Then
 156         UserList(UserIndex).Counters.Paralisis = IntervaloParalizado
 
@@ -1919,9 +1877,6 @@ Sub LoadUserInit(ByVal UserIndex As Integer, ByRef UserFile As clsIniManager)
         End If
 
 162     UserList(UserIndex).Counters.Pena = CLng(UserFile.GetValue("COUNTERS", "Pena"))
-
-164     UserList(UserIndex).Counters.ScrollExperiencia = CLng(UserFile.GetValue("COUNTERS", "ScrollExperiencia"))
-166     UserList(UserIndex).Counters.ScrollOro = CLng(UserFile.GetValue("COUNTERS", "ScrollOro"))
 
 168     UserList(UserIndex).Counters.Oxigeno = CLng(UserFile.GetValue("COUNTERS", "Oxigeno"))
 
@@ -2013,24 +1968,6 @@ Sub LoadUserInit(ByVal UserIndex As Integer, ByRef UserFile As clsIniManager)
 
 284     UserList(UserIndex).ChatCombate = CByte(UserFile.GetValue("BINDKEYS", "ChatCombate"))
 286     UserList(UserIndex).ChatGlobal = CByte(UserFile.GetValue("BINDKEYS", "ChatGlobal"))
-
-288     UserList(UserIndex).Correo.CantCorreo = CByte(UserFile.GetValue("CORREO", "CantCorreo"))
-290     UserList(UserIndex).Correo.NoLeidos = CByte(UserFile.GetValue("CORREO", "NoLeidos"))
-
-292     For LoopC = 1 To UserList(UserIndex).Correo.CantCorreo
-294         UserList(UserIndex).Correo.Mensaje(LoopC).Remitente = UserFile.GetValue("CORREO", "REMITENTE" & LoopC)
-296         UserList(UserIndex).Correo.Mensaje(LoopC).Mensaje = UserFile.GetValue("CORREO", "MENSAJE" & LoopC)
-298         UserList(UserIndex).Correo.Mensaje(LoopC).Item = UserFile.GetValue("CORREO", "Item" & LoopC)
-300         UserList(UserIndex).Correo.Mensaje(LoopC).ItemCount = CByte(UserFile.GetValue("CORREO", "ItemCount" & LoopC))
-302         UserList(UserIndex).Correo.Mensaje(LoopC).Fecha = UserFile.GetValue("CORREO", "DATE" & LoopC)
-304         UserList(UserIndex).Correo.Mensaje(LoopC).Leido = CByte(UserFile.GetValue("CORREO", "LEIDO" & LoopC))
-306     Next LoopC
-
-        'Logros Ladder
-308     UserList(UserIndex).UserLogros = UserFile.GetValue("LOGROS", "UserLogros")
-310     UserList(UserIndex).NPcLogros = UserFile.GetValue("LOGROS", "NPcLogros")
-312     UserList(UserIndex).LevelLogros = UserFile.GetValue("LOGROS", "LevelLogros")
-        'Logros Ladder
 
 314     ln = UserFile.GetValue("Guild", "GUILDINDEX")
 
@@ -2413,7 +2350,7 @@ Public Sub CargarMapaFormatoCSM(ByVal Map As Long, ByVal MAPFl As String)
                         Else
                             
                             ' Lo guardo en los logs + aparece en el Debug.Print
-310                         Call TraceError(404, "NPC no existe en los .DAT's o está mal dateado. Posicion: " & Map & "-" & NPCs(I).X & "-" & NPCs(I).Y, "ES.CargarMapaFormatoCSM")
+310                         Call TraceError(404, "NPC no existe en los .DAT's o está mal dateado. Posicion: " & Map & "-" & NPCs(i).X & "-" & NPCs(i).Y, "ES.CargarMapaFormatoCSM")
                             
                         End If
                     End If
