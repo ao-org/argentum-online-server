@@ -30,9 +30,9 @@ MaxDados=18
 MaxUsers=3000
 
 Admines=3
-Dioses=2
+Dioses=3
 SemiDioses=12
-Consejeros=13
+Consejeros=12
 RolesMasters=0
 
 [Admines]
@@ -43,6 +43,7 @@ Admin3=Animal|anormal@gmail.com
 [Dioses]
 Dios1=WyroX|alexiscaraballo96@gmail.com
 Dios2=Recox|lucas.recoaro@gmail.com
+Dios3=HarThaoS|martintrionfetti@gmail.com
 
 [SemiDioses]
 SemiDios1=arandor|pedrosalvadorgugliotta@gmail.com
@@ -52,11 +53,11 @@ SemiDios4=Sonic|sonicshinji@gmail.com
 SemiDios5=Jopi|jopiodz00@gmail.com
 SemiDios6=Baliam|loganfenix2000@yahoo.com.mx
 SemiDios7=emancu|emiliano.mancuso@gmail.com
-SemiDios8=HarThaoS|martintrionfetti@gmail.com
+SemiDios8=Dominique|marcojavierpiazza@hotmail.com
 SemiDios9=Vox|ricardo_r_jc@hotmail.com
 SemiDios10=SimP|brunordeangelis@gmail.com
 SemiDios11=Thyseo|holacomota2@hotmail.com
-SemiDios12=Dominique|marcojavierpiazza@hotmail.com
+Semidios12=Dista|Lukitasdegu@gmail.com
 
 [Consejeros]
 Consejero1=Dash|raffozelada@hotmail.com
@@ -70,8 +71,7 @@ Consejero8=Bwise|Joacovas@hotmail.com
 Consejero9=Bonyo|argentumo@hotmail.com
 Consejero10=Blair|mercuricecilia1@gmail.com
 Consejero11=Artemis|jmmastroberti@gmail.com
-Consejero12=Dista|Lukitasdegu@gmail.com
-Consejero13=Themis|maxitup3@hotmail.com
+Consejero12=Themis|maxitup3@hotmail.com
 
 
 [RolesMasters]
