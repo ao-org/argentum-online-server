@@ -9846,10 +9846,10 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
 622                 commandString = commandString & "EXP "
             
 624             Case eEditOptions.eo_Body
-626                 commandString = commandString & "BODY "
+626                 commandString = vbNullString
             
 628             Case eEditOptions.eo_Head
-630                 commandString = commandString & "HEAD "
+630                 commandString = vbNullString
             
 632             Case eEditOptions.eo_CriminalsKilled
 634                 commandString = commandString & "CRI "
@@ -9909,24 +9909,21 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
 706                 commandString = commandString & "HOGAR "
                 
                 Case eEditOptions.eo_CASCO
-                    commandString = commandString & "CASCO "
+                    commandString = vbNullString
                    
                 Case eEditOptions.eo_Arma
-                    commandString = commandString & "ARMA "
+                    commandString = vbNullString
                     
                 Case eEditOptions.eo_Escudo
-                    commandString = commandString & "ESCUDO "
+                    commandString = vbNullString
 
 708             Case Else
 710                 commandString = commandString & "UNKOWN "
 
             End Select
-            If commandString <> ("ESCUDO " Or "ARMA " Or "CASCO " Or "HEAD " Or "BODY ") Then
             
-712         commandString = commandString & Arg1 & " " & Arg2
-        
-714         Call LogGM(.Name, commandString & " " & UserName)
-            
+            If commandString <> vbNullString Then
+714             Call LogGM(.Name, commandString & Arg1 & " " & Arg2 & " " & UserName)
             End If
             
         End With
