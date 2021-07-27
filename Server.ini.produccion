@@ -30,7 +30,7 @@ MaxUsers=1000
 
 Admines=3
 Dioses=3
-SemiDioses=12
+SemiDioses=13
 Consejeros=12
 
 [Admines]
@@ -51,7 +51,6 @@ SemiDios4=Sonic|sonicshinji@gmail.com
 SemiDios5=Jopi|jopiodz00@gmail.com
 SemiDios6=emancu|emiliano.mancuso@gmail.com
 SemiDios7=SimP|brunordeangelis@gmail.com
-
 SemiDios8=Baliam|loganfenix2000@yahoo.com.mx
 SemiDios9=Thyseo|holacomota2@hotmail.com
 SemiDios10=WieGraf|wolftein1@gmail.com
