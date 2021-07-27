@@ -1,8 +1,11 @@
 Attribute VB_Name = "modNetwork"
 Option Explicit
 
-Public Const TIME_RECV_FREQUENCY As Long = 5  ' In milliseconds
-Public Const TIME_SEND_FREQUENCY As Long = 10 ' In milliseconds
+Private Const WARNING_INFINITE_LOOP        As Long = 100
+Private Const WARNING_INFINITE_LOOP_REPEAT As Long = 1000
+
+Private Const TIME_RECV_FREQUENCY As Long = 5  ' In milliseconds
+Private Const TIME_SEND_FREQUENCY As Long = 10 ' In milliseconds
 
 Private Server  As Network.Server
 Private Time(2) As Single
@@ -148,7 +151,7 @@ On Error GoTo OnServerSend_Err:
     Call Message.GetData(BytesRef) ' Is only a view of the buffer as a SafeArrayPtr ;-)
 
 #If AntiExternos = 1 Then
-    Call Security.XorData(BytesRef, UBound(BytesRef), UserList(Connection).XorIndexOut)
+    Call Security.XorData(BytesRef, UBound(BytesRef) - 1, UserList(Connection).XorIndexOut)
 #End If
 
     Exit Sub
@@ -165,11 +168,19 @@ On Error GoTo OnServerRecv_Err:
     Call Message.GetData(BytesRef) ' Is only a view of the buffer as a SafeArrayPtr ;-)
 
 #If AntiExternos = 1 Then
-    Call Security.XorData(BytesRef, UBound(BytesRef), UserList(Connection).XorIndexIn)
+    Call Security.XorData(BytesRef, UBound(BytesRef) - 1, UserList(Connection).XorIndexIn)
 #End If
-
+    
+    Dim Counter As Long
+    
     Do While (Message.GetAvailable() > 0)
         Call Protocol.HandleIncomingData(Connection, Message)
+    
+        Counter = Counter + 1
+        
+        If (Counter = WARNING_INFINITE_LOOP Or Counter Mod WARNING_INFINITE_LOOP_REPEAT = 0) Then
+            Call RegistrarError(666, "Massive amount of packets detected (" & Counter & ")", "Network")
+        End If
     Loop
     
     Exit Sub
