@@ -759,6 +759,7 @@ Public Enum eOBJType
     otNudillos = 46
     OtCorreo = 47
     OtCofre = 48
+    OtDonador = 50
     otCualquiera = 1000
 
 End Enum
