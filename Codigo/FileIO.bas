@@ -1441,7 +1441,10 @@ Sub LoadOBJData()
 318                     .HastaX = val(Leer.GetValue(ObjKey, "X"))
 320                     .HastaY = val(Leer.GetValue(ObjKey, "Y"))
 322                     .NecesitaNave = val(Leer.GetValue(ObjKey, "NecesitaNave"))
-
+324                 Case eOBJType.OtDonador
+326                     .HastaMap = val(Leer.GetValue(ObjKey, "Map"))
+328                     .HastaX = val(Leer.GetValue(ObjKey, "X"))
+330                     .HastaY = val(Leer.GetValue(ObjKey, "Y"))
 332                 Case eOBJType.otMagicos
 334                     .EfectoMagico = val(Leer.GetValue(ObjKey, "efectomagico"))
 

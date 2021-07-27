@@ -40,7 +40,7 @@ Public Function TieneObjetosRobables(ByVal UserIndex As Integer) As Boolean
 102         ObjIndex = UserList(UserIndex).Invent.Object(i).ObjIndex
 
 104         If ObjIndex > 0 Then
-106             If (ObjData(ObjIndex).OBJType <> eOBJType.otLlaves And ObjData(ObjIndex).OBJType <> eOBJType.otBarcos And ObjData(ObjIndex).OBJType <> eOBJType.otMonturas And ObjData(ObjIndex).OBJType <> eOBJType.otRunas) Then
+106             If (ObjData(ObjIndex).OBJType <> eOBJType.otLlaves And ObjData(ObjIndex).OBJType <> eOBJType.otBarcos And ObjData(ObjIndex).OBJType <> eOBJType.otMonturas And ObjData(ObjIndex).OBJType <> eOBJType.OtDonador And ObjData(ObjIndex).OBJType <> eOBJType.otRunas) Then
 108                 TieneObjetosRobables = True
                     Exit Function
 
@@ -2984,7 +2984,30 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
                        End If
             
 1208                Call DoMontar(UserIndex, obj, Slot)
-    
+                
+                 Case eOBJType.OtDonador
+                    Select Case obj.Subtipo
+                        Case 1
+1214                        If .Counters.Pena <> 0 Then
+1216                            Call WriteConsoleMsg(UserIndex, "No podes usar la runa estando en la carcel.", FontTypeNames.FONTTYPE_INFO)
+                                Exit Sub
+                            End If
+                            
+1218                        If MapData(.Pos.Map, .Pos.X, .Pos.Y).trigger = CARCEL Then
+1220                            Call WriteConsoleMsg(UserIndex, "No podes usar la runa estando en la carcel.", FontTypeNames.FONTTYPE_INFO)
+                                Exit Sub
+                            End If
+
+1222                         Call WarpUserChar(UserIndex, obj.HastaMap, obj.HastaX, obj.HastaY, True)
+1224                         Call WriteConsoleMsg(UserIndex, "Has viajado por el mundo.", FontTypeNames.FONTTYPE_WARNING)
+1226                         Call QuitarUserInvItem(UserIndex, Slot, 1)
+1228                         Call UpdateUserInv(False, UserIndex, Slot)
+
+1230                     Case 2
+                            Exit Sub
+1252                     Case 3
+                            Exit Sub
+                    End Select
 1262             Case eOBJType.otpasajes
     
 1264                 If .flags.Muerto = 1 Then
