@@ -170,18 +170,8 @@ On Error GoTo OnServerRecv_Err:
 #If AntiExternos = 1 Then
     Call Security.XorData(BytesRef, UBound(BytesRef) - 1, UserList(Connection).XorIndexIn)
 #End If
-    
-    Dim Counter As Long
-    
-    Do While (Message.GetAvailable() > 0)
-        Call Protocol.HandleIncomingData(Connection, Message)
-    
-        Counter = Counter + 1
-        
-        If (Counter = WARNING_INFINITE_LOOP Or Counter Mod WARNING_INFINITE_LOOP_REPEAT = 0) Then
-            Call RegistrarError(666, "Massive amount of packets detected (" & Counter & ")", "Network")
-        End If
-    Loop
+
+    Call Protocol.HandleIncomingData(Connection, Message)
     
     Exit Sub
     

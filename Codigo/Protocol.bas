@@ -1310,7 +1310,11 @@ On Error Resume Next
         Case Else
             Err.raise -1, "Invalid Message"
     End Select
-
+    
+    If (Message.GetAvailable() > 0) Then
+        Err.raise &HDEADBEEF, "HandleIncomingData", "El paquete '" & PacketID & "' se encuentra en mal estado con '" & Message.GetAvailable() & "' bytes de mas por el usuario '" & UserList(UserIndex).Name & "'"
+    End If
+    
 HandleIncomingData_Err:
     
     Set Reader = Nothing
