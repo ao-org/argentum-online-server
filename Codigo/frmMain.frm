@@ -218,6 +218,14 @@ Begin VB.Form frmMain
       TabIndex        =   7
       Top             =   120
       Width           =   4935
+      Begin VB.CommandButton Command3 
+         Caption         =   "F"
+         Height          =   255
+         Left            =   4440
+         TabIndex        =   39
+         Top             =   600
+         Width           =   375
+      End
       Begin VB.CheckBox chkLogDbPerfomance 
          BackColor       =   &H80000016&
          Caption         =   "Log DB perfomance"
@@ -580,7 +588,7 @@ Public ESCUCHADAS As Long
 Private Type NOTIFYICONDATA
 
     cbSize As Long
-    hWnd As Long
+    hwnd As Long
     uID As Long
     uFlags As Long
     uCallbackMessage As Long
@@ -600,7 +608,7 @@ Const WM_RBUTTONUP = &H205
 
 Private GuardarYCerrar As Boolean
 
-Private Declare Function GetWindowThreadProcessId Lib "user32" (ByVal hWnd As Long, lpdwProcessId As Long) As Long
+Private Declare Function GetWindowThreadProcessId Lib "user32" (ByVal hwnd As Long, lpdwProcessId As Long) As Long
 Private Declare Function Shell_NotifyIconA Lib "SHELL32" (ByVal dwMessage As Long, lpData As NOTIFYICONDATA) As Integer
 
 Private WithEvents Database_Async As ADODB.Connection
@@ -615,7 +623,7 @@ Public Function CreateDatabaseAsync() As ADODB.Connection
     Set CreateDatabaseAsync = Database_Async
 End Function
 
-Private Function setNOTIFYICONDATA(hWnd As Long, ID As Long, flags As Long, CallbackMessage As Long, Icon As Long, Tip As String) As NOTIFYICONDATA
+Private Function setNOTIFYICONDATA(hwnd As Long, ID As Long, flags As Long, CallbackMessage As Long, Icon As Long, Tip As String) As NOTIFYICONDATA
         
         On Error GoTo setNOTIFYICONDATA_Err
         
@@ -623,7 +631,7 @@ Private Function setNOTIFYICONDATA(hWnd As Long, ID As Long, flags As Long, Call
         Dim nidTemp As NOTIFYICONDATA
 
 100     nidTemp.cbSize = Len(nidTemp)
-102     nidTemp.hWnd = hWnd
+102     nidTemp.hwnd = hwnd
 104     nidTemp.uID = ID
 106     nidTemp.uFlags = flags
 108     nidTemp.uCallbackMessage = CallbackMessage
@@ -689,6 +697,10 @@ CheckIdleUser_Err:
 126     Call TraceError(Err.Number, Err.Description, "frmMain.CheckIdleUser", Erl)
 
         
+End Sub
+
+Private Sub Command3_Click()
+    Call FlushError
 End Sub
 
 Private Sub Segundo_Timer()
@@ -906,7 +918,7 @@ Private Sub Minuto_Timer()
 
     Dim i                   As Integer
 
-    Dim num                 As Long
+    Dim Num                 As Long
 
     MinsRunning = MinsRunning + 1
 
@@ -1343,7 +1355,7 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, X As Single, Y A
 
                     Dim hProcess As Long
 
-108                 GetWindowThreadProcessId hWnd, hProcess
+108                 GetWindowThreadProcessId hwnd, hProcess
 110                 AppActivate hProcess
 
 112             Case WM_RBUTTONUP
@@ -1381,7 +1393,7 @@ Public Sub QuitarIconoSystray()
         Dim i   As Integer
         Dim nid As NOTIFYICONDATA
 
-100     nid = setNOTIFYICONDATA(frmMain.hWnd, vbNull, NIF_MESSAGE Or NIF_ICON Or NIF_TIP, vbNull, frmMain.Icon, "")
+100     nid = setNOTIFYICONDATA(frmMain.hwnd, vbNull, NIF_MESSAGE Or NIF_ICON Or NIF_TIP, vbNull, frmMain.Icon, "")
 
 102     i = Shell_NotifyIconA(NIM_DELETE, nid)
 
@@ -1629,7 +1641,7 @@ Private Sub mnuSystray_Click()
         Dim nid As NOTIFYICONDATA
 
 100     S = "ARGENTUM-ONLINE"
-102     nid = setNOTIFYICONDATA(frmMain.hWnd, vbNull, NIF_MESSAGE Or NIF_ICON Or NIF_TIP, WM_MOUSEMOVE, frmMain.Icon, S)
+102     nid = setNOTIFYICONDATA(frmMain.hwnd, vbNull, NIF_MESSAGE Or NIF_ICON Or NIF_TIP, WM_MOUSEMOVE, frmMain.Icon, S)
 104     i = Shell_NotifyIconA(NIM_ADD, nid)
     
 106     If WindowState <> vbMinimized Then WindowState = vbMinimized

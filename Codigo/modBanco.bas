@@ -130,13 +130,15 @@ Sub UserRetiraItem(ByVal UserIndex As Integer, ByVal i As Integer, ByVal Cantida
             
             'Agregamos el obj que compro al inventario
 106         slotdestino = UserReciveObj(UserIndex, CInt(i), Cantidad, slotdestino)
-
-            'Actualizamos el inventario del usuario
-108         Call UpdateUserInv(False, UserIndex, slotdestino)
-
-            'Actualizamos el banco
-110         Call UpdateBanUserInv(False, UserIndex, i)
-
+            
+            If (slotdestino <> -1) Then
+                'Actualizamos el inventario del usuario
+108             Call UpdateUserInv(False, UserIndex, slotdestino)
+    
+                'Actualizamos el banco
+110             Call UpdateBanUserInv(False, UserIndex, i)
+            End If
+            
         End If
     
         Exit Sub
@@ -150,15 +152,19 @@ End Sub
 Function UserReciveObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, ByVal Cantidad As Integer, ByVal slotdestino As Integer) As Long
         
         On Error GoTo UserReciveObj_Err
-        
-
+    
         Dim Slot As Integer
         Dim obji As Integer
 
 100     If UserList(UserIndex).BancoInvent.Object(ObjIndex).amount <= 0 Then Exit Function
+    
+        If (slotdestino > UserList(UserIndex).CurrentInventorySlots) Then ' Check exploit
+            UserReciveObj = -1
+            Exit Function
+        End If
 
 102     obji = UserList(UserIndex).BancoInvent.Object(ObjIndex).ObjIndex
-
+        
         Dim slotvalido As Boolean
 
 104     slotvalido = False

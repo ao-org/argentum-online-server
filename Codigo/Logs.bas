@@ -19,6 +19,19 @@ Public Sub TraceError(ByVal Numero As Long, ByVal Descripcion As String, ByVal C
     'Call Err.raise(Numero, Componente & " - (Linea: " & Linea & ")" & Descripcion & vbNewLine)
 End Sub
 
+Public Sub FlushError()
+    If LogsBuffer.ByteLength > MAX_LOG_SIZE Then
+        Dim File As Integer: File = FreeFile
+        
+        Open App.Path & "\logs\Errores\General.log" For Append As #File
+            Print #File, LogsBuffer.ToString
+        Close #File
+        
+        ' Limpiamos el buffer
+        Call LogsBuffer.Clear
+    End If
+End Sub
+
 Public Sub RegistrarError(ByVal Numero As Long, ByVal Descripcion As String, ByVal Componente As String, Optional ByVal Linea As Integer)
 '**********************************************************
 'Author: Jopi
