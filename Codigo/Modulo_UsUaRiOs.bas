@@ -697,12 +697,6 @@ Public Function ConnectUser_Complete(ByVal UserIndex As Integer, _
 1195            .MENSAJEINFORMACION = vbNullString
              End If
 
-1200        tStr = modGuilds.a_ObtenerRechazoDeChar(.Name)
-        
-1205        If LenB(tStr) <> 0 Then
-1210            Call WriteShowMessageBox(UserIndex, "Tu solicitud de ingreso al clan ha sido rechazada. El clan te explica que: " & tStr)
-             End If
-
 1215        If EventoActivo Then
 1220            Call WriteConsoleMsg(UserIndex, PublicidadEvento & ". Tiempo restante: " & TiempoRestanteEvento & " minuto(s).", FontTypeNames.FONTTYPE_New_Eventos)
              End If

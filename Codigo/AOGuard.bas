@@ -88,15 +88,16 @@ Public Function VerificarOrigen(ByVal AccountID As Long, ByVal HD As Long, ByVal
 
         End If
     
-104     Call MakeQuery("SELECT hd_serial, last_ip FROM account WHERE id = ?", False, AccountID)
+        Dim RS As ADODB.Recordset
+        Set RS = Query("SELECT hd_serial, last_ip FROM account WHERE id = ?", AccountID)
     
-106     If QueryData Is Nothing Then
+106     If RS Is Nothing Then
 108         VerificarOrigen = True
             Exit Function
 
         End If
     
-110     VerificarOrigen = (HD = QueryData!hd_serial Or IP = QueryData!last_ip)
+110     VerificarOrigen = (HD = RS!hd_serial Or IP = RS!last_ip)
     
         ' Mas adelante, si pinta ser mas exhaustivos podemos agregar chequeos de yokese...
         ' MAC, DNI, Numero de Tramite, lo que sea :)
@@ -120,17 +121,18 @@ Public Sub HandleNoticeResponse(ByVal UserIndex As Integer, ByVal Codigo As Stri
 
 104         If .AccountID = 0 Then Exit Sub
 
-106         Call MakeQuery("SELECT TIMESTAMPDIFF(SECOND, `created_at`, CURRENT_TIMESTAMP) AS delta_time, code FROM account_guard WHERE account_id = ?", False, .AccountID)
+            Dim RS As ADODB.Recordset
+            Set RS = Query("SELECT TIMESTAMPDIFF(SECOND, `created_at`, CURRENT_TIMESTAMP) AS delta_time, code FROM account_guard WHERE account_id = ?;", .AccountID)
         
             ' El codigo expira despues de 1 minuto.
-108         If AOG_EXPIRE <> 0 And QueryData!delta_time > AOG_EXPIRE Then
+108         If AOG_EXPIRE <> 0 And RS!delta_time > AOG_EXPIRE Then
             
                 ' Le avisamos que expiro
 110             Call WriteShowMessageBox(UserIndex, "El código de verificación ha expirado.")
 112             Debug.Print "El codigo expiro. Se generara uno nuevo!"
             
                 ' Invalidamos el codigo
-114             Call MakeQuery("DELETE FROM account_guard WHERE account_id = ?", True, UserList(UserIndex).AccountID)
+114             Call Execute("DELETE FROM account_guard WHERE account_id = ?;", UserList(UserIndex).AccountID)
             
                 ' Lo kickeamos.
 116             Call CloseSocket(UserIndex)
@@ -138,13 +140,13 @@ Public Sub HandleNoticeResponse(ByVal UserIndex As Integer, ByVal Codigo As Stri
             Else ' El codigo NO expiro...
             
                 ' Lo comparamos con lo que tenemos en la BD
-118             If Codigo = QueryData!Code Then
+118             If Codigo = RS!code Then
             
 120                 Call WritePersonajesDeCuenta(UserIndex)
 122                 Call WriteMostrarCuenta(UserIndex)
                 
                     ' Invalidamos el codigo
-124                 Call MakeQuery("DELETE FROM account_guard WHERE account_id = ?", True, UserList(UserIndex).AccountID)
+124                 Call Execute("DELETE FROM account_guard WHERE account_id = ?;", UserList(UserIndex).AccountID)
                 
                 Else
             
@@ -173,13 +175,14 @@ Public Sub EnviarCodigo(ByVal UserIndex As Integer)
     
 100     With UserList(UserIndex)
             
-102         Call MakeQuery("SELECT TIMESTAMPDIFF(SECOND, `code_last_sent`, CURRENT_TIMESTAMP) AS delta_time, code_resend_attempts FROM account_guard WHERE account_id = ?", False, .AccountID)
+            Dim RS As ADODB.Recordset
+            Set RS = Query("SELECT TIMESTAMPDIFF(SECOND, `code_last_sent`, CURRENT_TIMESTAMP) AS delta_time, code_resend_attempts FROM account_guard WHERE account_id = ?;", .AccountID)
         
             ' Hay registros en `account_guard` = tiene codigo = me fijo si le mando o no
-104         If Not QueryData Is Nothing Then
+104         If Not RS Is Nothing Then
             
                 ' Ya te dije X veces que esperes un toque! Si no lo haces, sos alto bot!
-106             If val(QueryData!code_resend_attempts) > MAX_CODE_RESEND_COUNT Then
+106             If val(RS!code_resend_attempts) > MAX_CODE_RESEND_COUNT Then
 108                 EnviarCode = False
 110                 Call CloseSocket(UserIndex)
                     Exit Sub
@@ -187,24 +190,24 @@ Public Sub EnviarCodigo(ByVal UserIndex As Integer)
                 End If
                 
                 ' Establecemos un intervalo de tiempo para volver a mandarle el codigo al usuario
-112             If QueryData!delta_time > AOG_RESEND_INTERVAL Then
+112             If RS!delta_time > AOG_RESEND_INTERVAL Then
                     
 114                 EnviarCode = True
                     
-116                 Call MakeQuery("UPDATE account_guard SET code_last_sent = CURRENT_TIMESTAMP, code_resend_attempts = 0 WHERE account_id = ?", True, .AccountID)
+116                 Call Execute("UPDATE account_guard SET code_last_sent = CURRENT_TIMESTAMP, code_resend_attempts = 0 WHERE account_id = ?;", .AccountID)
                         
 118                 Call WriteShowMessageBox(UserIndex, "Te hemos enviado un correo con el código de verificacion a tu correo. " & _
                                                         "Si no lo encuentras, revisa la carpeta de SPAM. " & _
-                                                        "Si no te ha llegado, intenta nuevamente en " & val(QueryData!delta_time) & " segundos")
+                                                        "Si no te ha llegado, intenta nuevamente en " & val(RS!delta_time) & " segundos")
                         
                 Else
                 
 120                 EnviarCode = False
                 
-122                 Call MakeQuery("UPDATE account_guard SET code_resend_attempts = code_resend_attempts + 1 WHERE account_id = ?", True, .AccountID)
+122                 Call Execute("UPDATE account_guard SET code_resend_attempts = code_resend_attempts + 1 WHERE account_id = ?;", .AccountID)
                     
 124                 Call WriteShowMessageBox(UserIndex, "Ya te hemos enviado un correo con el código de verificacion. " & _
-                                                        "Si no te ha llegado, intenta nuevamente en " & val(QueryData!delta_time) & " segundos")
+                                                        "Si no te ha llegado, intenta nuevamente en " & val(RS!delta_time) & " segundos")
                         
                 End If
         
@@ -282,15 +285,16 @@ Private Sub GenerarCodigo(ByVal UserIndex As Integer)
     
 100     With UserList(UserIndex)
         
-102         Call MakeQuery("SELECT TIMESTAMPDIFF(SECOND, `created_at`, CURRENT_TIMESTAMP) AS time_diff, code FROM account_guard WHERE account_id = ?", False, .AccountID)
+            Dim RS As ADODB.Recordset
+            Set RS = Query("SELECT TIMESTAMPDIFF(SECOND, `created_at`, CURRENT_TIMESTAMP) AS time_diff, code FROM account_guard WHERE account_id = ?;", .AccountID)
      
             ' NO tiene codigo
-104         If QueryData Is Nothing Then
+104         If RS Is Nothing Then
 
 106             NuevoCodigo = True
         
                 ' Tiene codigo, pero ya expiro...
-108         ElseIf AOG_EXPIRE <> 0 And QueryData!time_diff > AOG_EXPIRE Then
+108         ElseIf AOG_EXPIRE <> 0 And RS!time_diff > AOG_EXPIRE Then
             
 110             NuevoCodigo = True
             
@@ -306,12 +310,12 @@ Private Sub GenerarCodigo(ByVal UserIndex As Integer)
 116             Codigo = RandomString(5)
                   
                 ' Lo guardamos en la BD
-118             Call MakeQuery("REPLACE INTO account_guard (account_id, code) VALUES (?, ?)", True, .AccountID, Codigo)
+118             Call Execute("REPLACE INTO account_guard (account_id, code) VALUES (?, ?);", .AccountID, Codigo)
         
             Else
             
                 ' Usamos el codigo vigente
-120             Codigo = QueryData!code
+120             Codigo = RS!code
             
             End If
         

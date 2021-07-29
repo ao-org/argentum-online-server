@@ -611,17 +611,7 @@ Private GuardarYCerrar As Boolean
 Private Declare Function GetWindowThreadProcessId Lib "user32" (ByVal hwnd As Long, lpdwProcessId As Long) As Long
 Private Declare Function Shell_NotifyIconA Lib "SHELL32" (ByVal dwMessage As Long, lpData As NOTIFYICONDATA) As Integer
 
-Private WithEvents Database_Async As ADODB.Connection
-Attribute Database_Async.VB_VarHelpID = -1
 Private SERVER_UPTIME As Long
-
-Public Function CreateDatabaseAsync() As ADODB.Connection
-    If (Database_Async Is Nothing) Then
-        Set Database_Async = New ADODB.Connection
-    End If
-    
-    Set CreateDatabaseAsync = Database_Async
-End Function
 
 Private Function setNOTIFYICONDATA(hwnd As Long, ID As Long, flags As Long, CallbackMessage As Long, Icon As Long, Tip As String) As NOTIFYICONDATA
         
@@ -2067,13 +2057,5 @@ UptimeTimer_Timer_Err:
     Call RegistrarError(Err.Number, Err.Description, "frmMain.UptimeTimer_Timer", Erl)
 
         
-End Sub
-
-Private Sub Database_Async_ConnectComplete(ByVal pError As ADODB.Error, adStatus As ADODB.EventStatusEnum, ByVal pConnection As ADODB.Connection)
-    Call OnDatabaseAsyncConnect(pError, adStatus, pConnection)
-End Sub
-
-Private Sub Database_Async_ExecuteComplete(ByVal RecordsAffected As Long, ByVal pError As ADODB.Error, adStatus As ADODB.EventStatusEnum, ByVal pCommand As ADODB.Command, ByVal pRecordset As ADODB.Recordset, ByVal pConnection As ADODB.Connection)
-    Call OnDatabaseAsyncComplete(RecordsAffected, pError, adStatusCancel, pCommand, pRecordset, pConnection)
 End Sub
 
