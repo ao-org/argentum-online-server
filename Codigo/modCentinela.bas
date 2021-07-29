@@ -180,17 +180,8 @@ Private Sub CentinelaFinalCheck()
         
             'Call WriteVar(CharPath & name & ".chr", "BAN", "BANNEDBY", "Centinela")
             ' Call WriteVar(CharPath & name & ".chr", "BAN", "BANMOTIVO", "utilizar macro inasistido")
-        
-104         If Database_Enabled Then
-106             Call SavePenaDatabase(Name, "CENTINELA : Encarcelado por no responder. " & Date & " " & Time)
-            Else
-                'ponemos la pena
-108             numPenas = val(GetVar(CharPath & Name & ".chr", "PENAS", "Cant"))
-110             Call WriteVar(CharPath & Name & ".chr", "PENAS", "Cant", numPenas + 1)
-                'Call WriteVar(CharPath & name & ".chr", "PENAS", "P" & numPenas + 1, "CENTINELA : BAN POR MACRO INASISTIDO " & Date & " " & Time)
-112             Call WriteVar(CharPath & Name & ".chr", "PENAS", "P" & numPenas + 1, "CENTINELA : Encarcelado por no responder. " & Date & " " & Time)
 
-            End If
+106         Call SavePenaDatabase(Name, "CENTINELA : Encarcelado por no responder. " & Date & " " & Time)
         
 114         Call Encarcelar(Centinela.RevisandoUserIndex, 20, "Centinela")
         

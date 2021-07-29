@@ -218,14 +218,6 @@ Begin VB.Form frmMain
       TabIndex        =   7
       Top             =   120
       Width           =   4935
-      Begin VB.CommandButton Command3 
-         Caption         =   "F"
-         Height          =   255
-         Left            =   4440
-         TabIndex        =   39
-         Top             =   600
-         Width           =   375
-      End
       Begin VB.CheckBox chkLogDbPerfomance 
          BackColor       =   &H80000016&
          Caption         =   "Log DB perfomance"
@@ -687,10 +679,6 @@ CheckIdleUser_Err:
 126     Call TraceError(Err.Number, Err.Description, "frmMain.CheckIdleUser", Erl)
 
         
-End Sub
-
-Private Sub Command3_Click()
-    Call FlushError
 End Sub
 
 Private Sub Segundo_Timer()
@@ -1213,10 +1201,9 @@ Private Sub EstadoTimer_Timer()
 
         If Baneos(i).FechaLiberacion <= Now Then
             Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » Se ha concluido la sentencia de ban para " & Baneos(i).Name & ".", FontTypeNames.FONTTYPE_SERVER))
-            Call ChangeBan(Baneos(i).Name, 0)
+            Call UnBan(Baneos(i).Name)
             Call Baneos.Remove(i)
             Call SaveBans
-
         End If
 
     Next

@@ -3430,27 +3430,7 @@ Public Sub WritePersonajesDeCuenta(ByVal UserIndex As Integer)
 
 100     UserCuenta = UserList(UserIndex).Cuenta
 
-102     If Database_Enabled Then
-104         CantPersonajes = GetPersonajesCuentaDatabase(UserList(UserIndex).AccountID, _
-                    Personaje)
-        Else
-106         CantPersonajes = ObtenerCantidadDePersonajes(UserCuenta)
-
-108         For i = 1 To CantPersonajes
-110             Personaje(i).nombre = ObtenerNombrePJ(UserCuenta, i)
-112             Personaje(i).Cabeza = ObtenerCabeza(Personaje(i).nombre)
-114             Personaje(i).clase = ObtenerClase(Personaje(i).nombre)
-116             Personaje(i).cuerpo = ObtenerCuerpo(Personaje(i).nombre)
-118             Personaje(i).Mapa = ReadField(1, ObtenerMapa(Personaje(i).nombre), Asc("-"))
-120             Personaje(i).nivel = ObtenerNivel(Personaje(i).nombre)
-122             Personaje(i).Status = ObtenerCriminal(Personaje(i).nombre)
-124             Personaje(i).Casco = ObtenerCasco(Personaje(i).nombre)
-126             Personaje(i).Escudo = ObtenerEscudo(Personaje(i).nombre)
-128             Personaje(i).Arma = ObtenerArma(Personaje(i).nombre)
-130             Personaje(i).ClanIndex = GetUserGuildIndexCharfile(Personaje(i).nombre)
-132         Next i
-
-        End If
+104     CantPersonajes = GetPersonajesCuentaDatabase(UserList(UserIndex).AccountID, Personaje)
 
 134     Call Writer.WriteInt(ServerPacketID.PersonajesDeCuenta)
 136     Call Writer.WriteInt8(CantPersonajes)
