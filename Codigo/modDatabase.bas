@@ -190,13 +190,13 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
         On Error GoTo ErrorHandler
     
         Dim LoopC As Long
-        Dim ParamC As Long
+        Dim ParamC As Integer
         Dim Params() As Variant
     
 102     With UserList(UserIndex)
         
             Dim i As Integer
-104         ReDim Params(45)
+104         ReDim Params(44)
 
             '  ************ Basic user data *******************
 106         Params(PostInc(i)) = .Name
@@ -218,7 +218,6 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
 138         Params(PostInc(i)) = .Char.WeaponAnim
 140         Params(PostInc(i)) = .Char.CascoAnim
 142         Params(PostInc(i)) = .Char.ShieldAnim
-144         Params(PostInc(i)) = .Invent.NroItems
 146         Params(PostInc(i)) = .Invent.ArmourEqpSlot
 148         Params(PostInc(i)) = .Invent.WeaponEqpSlot
 150         Params(PostInc(i)) = .Invent.EscudoEqpSlot
@@ -259,18 +258,14 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
             End If
         
             ' ******************* ATRIBUTOS *******************
-208         ReDim Params(NUMATRIBUTOS * 3 - 1)
-210         ParamC = 0
-        
-212         For LoopC = 1 To NUMATRIBUTOS
-214             Params(ParamC) = .ID
-216             Params(ParamC + 1) = LoopC
-218             Params(ParamC + 2) = .Stats.UserAtributos(LoopC)
+208         ReDim Params(1 To NUMATRIBUTOS)
+210         ParamC = 1
             
-220             ParamC = ParamC + 3
+212         For LoopC = 1 To NUMATRIBUTOS
+214             Params(PostInc(ParamC)) = .Stats.UserAtributos(LoopC)
 222         Next LoopC
         
-            Call Execute(QUERY_SAVE_ATTRIBUTES, Params)
+            Call Execute(QUERY_INSERT_ATTRIBUTES, .ID, Params)
         
             ' ******************* SPELLS **********************
 226         ReDim Params(MAXUSERHECHIZOS * 3 - 1)
@@ -462,26 +457,6 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
 288         Params(PostInc(i)) = .ID
             
             Call Execute(QUERY_UPDATE_MAINPJ, Params)
-
-            ' ************************** User attributes ****************************
-302         If .flags.ModificoAttributos Then
-304             ReDim Params(NUMATRIBUTOS * 3 - 1)
-306             ParamC = 0
-            
-308             For LoopC = 1 To NUMATRIBUTOS
-310                 Params(ParamC) = .ID
-312                 Params(ParamC + 1) = LoopC
-314                 Params(ParamC + 2) = .Stats.UserAtributosBackUP(LoopC)
-                
-316                 ParamC = ParamC + 3
-318             Next LoopC
-                
-                Call Execute(QUERY_UPSERT_ATTRIBUTES, Params)
-
-                ' Reseteamos el flag para no volver a guardar.
-                Debug.Print "Se modificaron los atributos. WTF? Bueno, guardando..."
-                .flags.ModificoAttributos = False
-            End If
 
             ' ************************** User spells *********************************
 332         If .flags.ModificoHechizos Then
@@ -742,7 +717,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
         'Basic user data
 100     With UserList(UserIndex)
 
-             Dim RS As ADODB.Recordset
+            Dim RS As ADODB.Recordset
             Set RS = query(QUERY_LOAD_MAINPJ, .Name)
 
 104         If RS Is Nothing Then Exit Sub
@@ -857,7 +832,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
 298         .Stats.Advertencias = RS!warnings
         
             'User attributes
-            Set RS = query("SELECT * FROM attribute_2 WHERE user_id = ?;", .ID)
+            Set RS = Query("SELECT * FROM attribute WHERE user_id = ?;", .ID)
     
 302         If Not RS Is Nothing Then
                 .Stats.UserAtributos(eAtributos.Fuerza) = RS!strength
@@ -1038,18 +1013,19 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
 440         If Not RS Is Nothing Then
 442             .QuestStats.NumQuestsDone = RS.RecordCount
                 
-444             ReDim .QuestStats.QuestsDone(1 To .QuestStats.NumQuestsDone)
-
-448             LoopC = 1
-
-450             While Not RS.EOF
-            
-452                 .QuestStats.QuestsDone(LoopC) = RS!quest_id
-454                 LoopC = LoopC + 1
-
-456                 RS.MoveNext
-                Wend
-
+                If (.QuestStats.NumQuestsDone > 1) Then
+444                 ReDim .QuestStats.QuestsDone(1 To .QuestStats.NumQuestsDone)
+    
+448                 LoopC = 1
+    
+450                 While Not RS.EOF
+                
+452                     .QuestStats.QuestsDone(LoopC) = RS!quest_id
+454                     LoopC = LoopC + 1
+    
+456                     RS.MoveNext
+                    Wend
+                End If
             End If
 
             ' Llaves

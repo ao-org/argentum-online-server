@@ -7,7 +7,6 @@ Private QueryBuilder As cStringBuilder
 
 ' DYNAMIC QUERIES
 Public QUERY_SAVE_MAINPJ As String
-Public QUERY_SAVE_ATTRIBUTES As String
 Public QUERY_SAVE_SPELLS As String
 Public QUERY_SAVE_INVENTORY As String
 Public QUERY_SAVE_BANCOINV As String
@@ -19,7 +18,6 @@ Public QUERY_SAVE_PETS As String
 Public QUERY_LOAD_MAINPJ As String
 
 Public QUERY_UPDATE_MAINPJ As String
-Public QUERY_UPSERT_ATTRIBUTES As String
 Public QUERY_UPSERT_SPELLS As String
 Public QUERY_UPSERT_INVENTORY As String
 Public QUERY_UPSERT_SKILLS As String
@@ -28,6 +26,10 @@ Public QUERY_UPSERT_PETS As String
 ' CONSTANT QUERIES
 Public Const QUERY_SAVE_CONNECTION As String = "INSERT INTO connection (user_id, ip) VALUES (? , ?) ON DUPLICATE KEY UPDATE date_last_login = VALUES(date_last_login);"
 Public Const QUERY_DELETE_LAST_CONNECTIONS As String = "DELETE FROM connection WHERE user_id = ? AND date_last_login < (SELECT min(date_last_login) FROM (SELECT date_last_login FROM connection WHERE user_id = ? ORDER BY date_last_login DESC LIMIT 5) AS d);"
+
+' CONSTANT QUERIES (NEW)
+Public Const QUERY_INSERT_ATTRIBUTES As String = "INSERT INTO attribute VALUES (?, ?, ?, ?, ?, ?)"
+Public Const QUERY_UPDATE_ATTRIBUTES As String = "UPDATE attribute SET strength = ?, agility = ?,  intelligence = ?, constitution = ?, charisma = ? WHERE user_id = ?"
 
 Public Sub Contruir_Querys()
 100     Call ConstruirQuery_CrearPersonaje
@@ -199,25 +201,7 @@ Private Sub ConstruirQuery_CrearPersonaje()
     
         ' Limpio el constructor de querys
 200     Call QueryBuilder.Clear
-    
-        ' ************************** User attributes ********************************
-202     QueryBuilder.Append "INSERT INTO attribute (user_id, number, value) VALUES "
 
-204     For LoopC = 1 To NUMATRIBUTOS
-206         QueryBuilder.Append "(?, ?, ?)"
-
-208         If LoopC < NUMATRIBUTOS Then
-210             QueryBuilder.Append ", "
-            End If
-
-212     Next LoopC
-    
-        ' Guardo la query ensamblada
-214     QUERY_SAVE_ATTRIBUTES = QueryBuilder.ToString
-    
-        ' Limpio el constructor de querys
-216     Call QueryBuilder.Clear
-    
         ' ************************** User spells ************************************
 218     QueryBuilder.Append "INSERT INTO spell (user_id, number, spell_id) VALUES "
 
@@ -433,7 +417,6 @@ Private Sub ConstruirQuery_GuardarPersonaje()
     
         ' ************************** UPSERT QUERIES **************************************
     
-302     QUERY_UPSERT_ATTRIBUTES = QUERY_SAVE_ATTRIBUTES & " ON DUPLICATE KEY UPDATE value=VALUES(value); "
 304     QUERY_UPSERT_SPELLS = QUERY_SAVE_SPELLS & " ON DUPLICATE KEY UPDATE spell_id=VALUES(spell_id); "
 306     QUERY_UPSERT_INVENTORY = QUERY_SAVE_INVENTORY & " ON DUPLICATE KEY UPDATE item_id=VALUES(item_id), amount=VALUES(Amount), is_equipped=VALUES(is_equipped); "
 308     QUERY_UPSERT_SKILLS = QUERY_SAVE_SKILLS & " ON DUPLICATE KEY UPDATE value=VALUES(value); "
