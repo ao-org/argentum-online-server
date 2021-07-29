@@ -5,11 +5,11 @@ Option Explicit
 Private Writer  As Network.Writer
 
 Public Sub InitializeAuxiliaryBuffer()
-    Set Writer = New Network.Writer
+100     Set Writer = New Network.Writer
 End Sub
     
 Public Function GetWriterBuffer() As Network.Writer
-    Set GetWriterBuffer = Writer
+100     Set GetWriterBuffer = Writer
 End Function
 
 ' \Begin: [Writes]
@@ -25,9 +25,7 @@ Public Sub WriteConnected(ByVal UserIndex As Integer)
 
 WriteConnected_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteConnected", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteConnected", Erl)
         '</EhFooter>
 End Sub
 
@@ -47,9 +45,7 @@ Public Sub WriteLoggedMessage(ByVal UserIndex As Integer)
 
 WriteLoggedMessage_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteLoggedMessage", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteLoggedMessage", Erl)
         '</EhFooter>
 End Sub
 
@@ -63,9 +59,7 @@ Public Sub WriteHora(ByVal UserIndex As Integer)
 
 WriteHora_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteHora", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteHora", Erl)
         '</EhFooter>
 End Sub
 
@@ -85,9 +79,7 @@ Public Sub WriteRemoveAllDialogs(ByVal UserIndex As Integer)
 
 WriteRemoveAllDialogs_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteRemoveAllDialogs", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteRemoveAllDialogs", Erl)
         '</EhFooter>
 End Sub
 
@@ -108,9 +100,7 @@ Public Sub WriteRemoveCharDialog(ByVal UserIndex As Integer, ByVal CharIndex As 
 
 WriteRemoveCharDialog_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteRemoveCharDialog", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteRemoveCharDialog", Erl)
         '</EhFooter>
 End Sub
 
@@ -129,9 +119,7 @@ Public Sub WriteNavigateToggle(ByVal UserIndex As Integer)
 
 WriteNavigateToggle_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteNavigateToggle", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteNavigateToggle", Erl)
         '</EhFooter>
 End Sub
 
@@ -150,9 +138,7 @@ Public Sub WriteNadarToggle(ByVal UserIndex As Integer, _
 
 WriteNadarToggle_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteNadarToggle", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteNadarToggle", Erl)
         '</EhFooter>
 End Sub
 
@@ -167,9 +153,7 @@ Public Sub WriteEquiteToggle(ByVal UserIndex As Integer)
 
 WriteEquiteToggle_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteEquiteToggle", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteEquiteToggle", Erl)
         '</EhFooter>
 End Sub
 
@@ -185,9 +169,7 @@ Public Sub WriteVelocidadToggle(ByVal UserIndex As Integer)
 
 WriteVelocidadToggle_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteVelocidadToggle", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteVelocidadToggle", Erl)
         '</EhFooter>
 End Sub
 
@@ -216,9 +198,7 @@ Public Sub WriteMacroTrabajoToggle(ByVal UserIndex As Integer, ByVal Activar As 
 
 WriteMacroTrabajoToggle_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteMacroTrabajoToggle", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteMacroTrabajoToggle", Erl)
         '</EhFooter>
 End Sub
 
@@ -247,9 +227,7 @@ Public Sub WriteDisconnect(ByVal UserIndex As Integer, _
 
 WriteDisconnect_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteDisconnect", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteDisconnect", Erl)
         '</EhFooter>
 End Sub
 
@@ -269,9 +247,7 @@ Public Sub WriteCommerceEnd(ByVal UserIndex As Integer)
 
 WriteCommerceEnd_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteCommerceEnd", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteCommerceEnd", Erl)
         '</EhFooter>
 End Sub
 
@@ -291,9 +267,7 @@ Public Sub WriteBankEnd(ByVal UserIndex As Integer)
 
 WriteBankEnd_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteBankEnd", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteBankEnd", Erl)
         '</EhFooter>
 End Sub
 
@@ -314,9 +288,7 @@ Public Sub WriteCommerceInit(ByVal UserIndex As Integer)
 
 WriteCommerceInit_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteCommerceInit", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteCommerceInit", Erl)
         '</EhFooter>
 End Sub
 
@@ -336,9 +308,7 @@ Public Sub WriteBankInit(ByVal UserIndex As Integer)
 
 WriteBankInit_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteBankInit", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteBankInit", Erl)
         '</EhFooter>
 End Sub
 
@@ -358,9 +328,7 @@ Public Sub WriteUserCommerceInit(ByVal UserIndex As Integer)
 
 WriteUserCommerceInit_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteUserCommerceInit", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteUserCommerceInit", Erl)
         '</EhFooter>
 End Sub
 
@@ -380,9 +348,7 @@ Public Sub WriteUserCommerceEnd(ByVal UserIndex As Integer)
 
 WriteUserCommerceEnd_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteUserCommerceEnd", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteUserCommerceEnd", Erl)
         '</EhFooter>
 End Sub
 
@@ -402,9 +368,7 @@ Public Sub WriteShowBlacksmithForm(ByVal UserIndex As Integer)
 
 WriteShowBlacksmithForm_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteShowBlacksmithForm", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteShowBlacksmithForm", Erl)
         '</EhFooter>
 End Sub
 
@@ -424,9 +388,7 @@ Public Sub WriteShowCarpenterForm(ByVal UserIndex As Integer)
 
 WriteShowCarpenterForm_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteShowCarpenterForm", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteShowCarpenterForm", Erl)
         '</EhFooter>
 End Sub
 
@@ -441,9 +403,7 @@ Public Sub WriteShowAlquimiaForm(ByVal UserIndex As Integer)
 
 WriteShowAlquimiaForm_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteShowAlquimiaForm", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteShowAlquimiaForm", Erl)
         '</EhFooter>
 End Sub
 
@@ -458,9 +418,7 @@ Public Sub WriteShowSastreForm(ByVal UserIndex As Integer)
 
 WriteShowSastreForm_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteShowSastreForm", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteShowSastreForm", Erl)
         '</EhFooter>
 End Sub
 
@@ -480,9 +438,7 @@ Public Sub WriteNPCKillUser(ByVal UserIndex As Integer)
 
 WriteNPCKillUser_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteNPCKillUser", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteNPCKillUser", Erl)
         '</EhFooter>
 End Sub
 
@@ -502,9 +458,7 @@ Public Sub WriteBlockedWithShieldUser(ByVal UserIndex As Integer)
 
 WriteBlockedWithShieldUser_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteBlockedWithShieldUser", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteBlockedWithShieldUser", Erl)
         '</EhFooter>
 End Sub
 
@@ -524,9 +478,7 @@ Public Sub WriteBlockedWithShieldOther(ByVal UserIndex As Integer)
 
 WriteBlockedWithShieldOther_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteBlockedWithShieldOther", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteBlockedWithShieldOther", Erl)
         '</EhFooter>
 End Sub
 
@@ -549,9 +501,7 @@ Public Sub WriteCharSwing(ByVal UserIndex As Integer, _
 
 WriteCharSwing_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteCharSwing", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteCharSwing", Erl)
         '</EhFooter>
 End Sub
 
@@ -571,9 +521,7 @@ Public Sub WriteSafeModeOn(ByVal UserIndex As Integer)
 
 WriteSafeModeOn_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteSafeModeOn", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteSafeModeOn", Erl)
         '</EhFooter>
 End Sub
 
@@ -593,9 +541,7 @@ Public Sub WriteSafeModeOff(ByVal UserIndex As Integer)
 
 WriteSafeModeOff_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteSafeModeOff", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteSafeModeOff", Erl)
         '</EhFooter>
 End Sub
 
@@ -615,9 +561,7 @@ Public Sub WritePartySafeOn(ByVal UserIndex As Integer)
 
 WritePartySafeOn_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WritePartySafeOn", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WritePartySafeOn", Erl)
         '</EhFooter>
 End Sub
 
@@ -637,9 +581,7 @@ Public Sub WritePartySafeOff(ByVal UserIndex As Integer)
 
 WritePartySafeOff_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WritePartySafeOff", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WritePartySafeOff", Erl)
         '</EhFooter>
 End Sub
 
@@ -655,9 +597,7 @@ Public Sub WriteClanSeguro(ByVal UserIndex As Integer, ByVal estado As Boolean)
 
 WriteClanSeguro_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteClanSeguro", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteClanSeguro", Erl)
         '</EhFooter>
 End Sub
 
@@ -673,9 +613,7 @@ Public Sub WriteSeguroResu(ByVal UserIndex As Integer, ByVal estado As Boolean)
 
 WriteSeguroResu_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteSeguroResu", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteSeguroResu", Erl)
         '</EhFooter>
 End Sub
 
@@ -695,9 +633,7 @@ Public Sub WriteCantUseWhileMeditating(ByVal UserIndex As Integer)
 
 WriteCantUseWhileMeditating_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteCantUseWhileMeditating", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteCantUseWhileMeditating", Erl)
         '</EhFooter>
 End Sub
 
@@ -718,9 +654,7 @@ Public Sub WriteUpdateSta(ByVal UserIndex As Integer)
 
 WriteUpdateSta_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteUpdateSta", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteUpdateSta", Erl)
         '</EhFooter>
 End Sub
 
@@ -743,9 +677,7 @@ Public Sub WriteUpdateMana(ByVal UserIndex As Integer)
 
 WriteUpdateMana_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteUpdateMana", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteUpdateMana", Erl)
         '</EhFooter>
 End Sub
 
@@ -769,9 +701,7 @@ Public Sub WriteUpdateHP(ByVal UserIndex As Integer)
 
 WriteUpdateHP_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteUpdateHP", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteUpdateHP", Erl)
         '</EhFooter>
 End Sub
 
@@ -792,9 +722,7 @@ Public Sub WriteUpdateGold(ByVal UserIndex As Integer)
 
 WriteUpdateGold_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteUpdateGold", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteUpdateGold", Erl)
         '</EhFooter>
 End Sub
 
@@ -815,9 +743,7 @@ Public Sub WriteUpdateExp(ByVal UserIndex As Integer)
 
 WriteUpdateExp_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteUpdateExp", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteUpdateExp", Erl)
         '</EhFooter>
 End Sub
 
@@ -841,9 +767,7 @@ Public Sub WriteChangeMap(ByVal UserIndex As Integer, ByVal Map As Integer)
 
 WriteChangeMap_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteChangeMap", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteChangeMap", Erl)
         '</EhFooter>
 End Sub
 
@@ -865,9 +789,7 @@ Public Sub WritePosUpdate(ByVal UserIndex As Integer)
 
 WritePosUpdate_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WritePosUpdate", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WritePosUpdate", Erl)
         '</EhFooter>
 End Sub
 
@@ -893,9 +815,7 @@ Public Sub WriteNPCHitUser(ByVal UserIndex As Integer, _
 
 WriteNPCHitUser_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteNPCHitUser", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteNPCHitUser", Erl)
         '</EhFooter>
 End Sub
 
@@ -917,9 +837,7 @@ Public Sub WriteUserHitNPC(ByVal UserIndex As Integer, ByVal damage As Long)
 
 WriteUserHitNPC_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteUserHitNPC", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteUserHitNPC", Erl)
         '</EhFooter>
 End Sub
 
@@ -942,9 +860,7 @@ Public Sub WriteUserAttackedSwing(ByVal UserIndex As Integer, _
 
 WriteUserAttackedSwing_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteUserAttackedSwing", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteUserAttackedSwing", Erl)
         '</EhFooter>
 End Sub
 
@@ -973,9 +889,7 @@ Public Sub WriteUserHittedByUser(ByVal UserIndex As Integer, _
 
 WriteUserHittedByUser_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteUserHittedByUser", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteUserHittedByUser", Erl)
         '</EhFooter>
 End Sub
 
@@ -1004,9 +918,7 @@ Public Sub WriteUserHittedUser(ByVal UserIndex As Integer, _
 
 WriteUserHittedUser_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteUserHittedUser", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteUserHittedUser", Erl)
         '</EhFooter>
 End Sub
 
@@ -1032,9 +944,7 @@ Public Sub WriteChatOverHead(ByVal UserIndex As Integer, _
 
 WriteChatOverHead_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteChatOverHead", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteChatOverHead", Erl)
         '</EhFooter>
 End Sub
 
@@ -1052,9 +962,7 @@ Public Sub WriteTextOverChar(ByVal UserIndex As Integer, _
 
 WriteTextOverChar_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteTextOverChar", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteTextOverChar", Erl)
         '</EhFooter>
 End Sub
 
@@ -1073,9 +981,7 @@ Public Sub WriteTextOverTile(ByVal UserIndex As Integer, _
 
 WriteTextOverTile_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteTextOverTile", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteTextOverTile", Erl)
         '</EhFooter>
 End Sub
 
@@ -1093,9 +999,7 @@ Public Sub WriteTextCharDrop(ByVal UserIndex As Integer, _
 
 WriteTextCharDrop_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteTextCharDrop", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteTextCharDrop", Erl)
         '</EhFooter>
 End Sub
 
@@ -1119,9 +1023,7 @@ Public Sub WriteConsoleMsg(ByVal UserIndex As Integer, _
 
 WriteConsoleMsg_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteConsoleMsg", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteConsoleMsg", Erl)
         '</EhFooter>
 End Sub
 
@@ -1139,9 +1041,7 @@ Public Sub WriteLocaleMsg(ByVal UserIndex As Integer, _
 
 WriteLocaleMsg_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteLocaleMsg", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteLocaleMsg", Erl)
         '</EhFooter>
 End Sub
 
@@ -1163,9 +1063,7 @@ Public Sub WriteGuildChat(ByVal UserIndex As Integer, _
 
 WriteGuildChat_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteGuildChat", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteGuildChat", Erl)
         '</EhFooter>
 End Sub
 
@@ -1175,7 +1073,7 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @param    Message Text to be displayed in the message box.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-Public Sub WriteShowMessageBox(ByVal UserIndex As Integer, ByVal message As String)
+Public Sub WriteShowMessageBox(ByVal UserIndex As Integer, ByVal Message As String)
         '<EhHeader>
         On Error GoTo WriteShowMessageBox_Err
         '</EhHeader>
@@ -1187,9 +1085,7 @@ Public Sub WriteShowMessageBox(ByVal UserIndex As Integer, ByVal message As Stri
 
 WriteShowMessageBox_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteShowMessageBox", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteShowMessageBox", Erl)
         '</EhFooter>
 End Sub
 
@@ -1204,9 +1100,7 @@ Public Sub WriteMostrarCuenta(ByVal UserIndex As Integer)
 
 WriteMostrarCuenta_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteMostrarCuenta", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteMostrarCuenta", Erl)
         '</EhFooter>
 End Sub
 
@@ -1227,9 +1121,7 @@ Public Sub WriteUserIndexInServer(ByVal UserIndex As Integer)
 
 WriteUserIndexInServer_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteUserIndexInServer", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteUserIndexInServer", Erl)
         '</EhFooter>
 End Sub
 
@@ -1250,9 +1142,7 @@ Public Sub WriteUserCharIndexInServer(ByVal UserIndex As Integer)
 
 WriteUserCharIndexInServer_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteUserCharIndexInServer", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteUserCharIndexInServer", Erl)
         '</EhFooter>
 End Sub
 
@@ -1290,9 +1180,7 @@ Public Sub WriteCharacterCreate(ByVal UserIndex As Integer, ByVal Body As Intege
 
 WriteCharacterCreate_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteCharacterCreate", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteCharacterCreate", Erl)
         '</EhFooter>
 End Sub
 
@@ -1315,9 +1203,7 @@ Public Sub WriteCharacterRemove(ByVal UserIndex As Integer, _
 
 WriteCharacterRemove_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteCharacterRemove", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteCharacterRemove", Erl)
         '</EhFooter>
 End Sub
 
@@ -1343,9 +1229,7 @@ Public Sub WriteCharacterMove(ByVal UserIndex As Integer, _
 
 WriteCharacterMove_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteCharacterMove", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteCharacterMove", Erl)
         '</EhFooter>
 End Sub
 
@@ -1359,9 +1243,7 @@ Public Sub WriteForceCharMove(ByVal UserIndex As Integer, ByVal Direccion As eHe
 
 WriteForceCharMove_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteForceCharMove", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteForceCharMove", Erl)
         '</EhFooter>
 End Sub
 
@@ -1402,9 +1284,7 @@ Public Sub WriteCharacterChange(ByVal UserIndex As Integer, _
 
 WriteCharacterChange_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteCharacterChange", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteCharacterChange", Erl)
         '</EhFooter>
 End Sub
 
@@ -1431,9 +1311,7 @@ Public Sub WriteObjectCreate(ByVal UserIndex As Integer, _
 
 WriteObjectCreate_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteObjectCreate", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteObjectCreate", Erl)
         '</EhFooter>
 End Sub
 
@@ -1457,9 +1335,7 @@ Public Sub WriteParticleFloorCreate(ByVal UserIndex As Integer, _
 
 WriteParticleFloorCreate_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteParticleFloorCreate", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteParticleFloorCreate", Erl)
         '</EhFooter>
 End Sub
 
@@ -1485,9 +1361,7 @@ Public Sub WriteLightFloorCreate(ByVal UserIndex As Integer, _
 
 WriteLightFloorCreate_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteLightFloorCreate", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteLightFloorCreate", Erl)
         '</EhFooter>
 End Sub
 
@@ -1504,9 +1378,7 @@ Public Sub WriteFxPiso(ByVal UserIndex As Integer, _
 
 WriteFxPiso_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteFxPiso", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteFxPiso", Erl)
         '</EhFooter>
 End Sub
 
@@ -1527,9 +1399,7 @@ Public Sub WriteObjectDelete(ByVal UserIndex As Integer, ByVal X As Byte, ByVal 
 
 WriteObjectDelete_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteObjectDelete", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteObjectDelete", Erl)
         '</EhFooter>
 End Sub
 
@@ -1558,9 +1428,7 @@ Public Sub WriteBlockPosition(ByVal UserIndex As Integer, _
 
 WriteBlockPosition_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteBlockPosition", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteBlockPosition", Erl)
         '</EhFooter>
 End Sub
 
@@ -1583,9 +1451,7 @@ Public Sub WritePlayMidi(ByVal UserIndex As Integer, _
 
 WritePlayMidi_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WritePlayMidi", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WritePlayMidi", Erl)
         '</EhFooter>
 End Sub
 
@@ -1610,9 +1476,7 @@ Public Sub WritePlayWave(ByVal UserIndex As Integer, _
 
 WritePlayWave_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WritePlayWave", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WritePlayWave", Erl)
         '</EhFooter>
 End Sub
 
@@ -1646,9 +1510,7 @@ Public Sub WriteGuildList(ByVal UserIndex As Integer, ByRef guildList() As Strin
 
 WriteGuildList_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteGuildList", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteGuildList", Erl)
         '</EhFooter>
 End Sub
 
@@ -1670,9 +1532,7 @@ Public Sub WriteAreaChanged(ByVal UserIndex As Integer)
 
 WriteAreaChanged_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteAreaChanged", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteAreaChanged", Erl)
         '</EhFooter>
 End Sub
 
@@ -1691,9 +1551,7 @@ Public Sub WritePauseToggle(ByVal UserIndex As Integer)
 
 WritePauseToggle_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WritePauseToggle", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WritePauseToggle", Erl)
         '</EhFooter>
 End Sub
 
@@ -1712,9 +1570,7 @@ Public Sub WriteRainToggle(ByVal UserIndex As Integer)
 
 WriteRainToggle_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteRainToggle", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteRainToggle", Erl)
         '</EhFooter>
 End Sub
 
@@ -1729,9 +1585,7 @@ Public Sub WriteNubesToggle(ByVal UserIndex As Integer)
 
 WriteNubesToggle_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteNubesToggle", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteNubesToggle", Erl)
         '</EhFooter>
 End Sub
 
@@ -1762,9 +1616,7 @@ Public Sub WriteCreateFX(ByVal UserIndex As Integer, _
 
 WriteCreateFX_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteCreateFX", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteCreateFX", Erl)
         '</EhFooter>
 End Sub
 
@@ -1804,9 +1656,7 @@ Public Sub WriteUpdateUserStats(ByVal UserIndex As Integer)
 
 WriteUpdateUserStats_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteUpdateUserStats", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteUpdateUserStats", Erl)
         '</EhFooter>
 End Sub
 
@@ -1825,9 +1675,7 @@ Public Sub WriteUpdateUserKey(ByVal UserIndex As Integer, _
 
 WriteUpdateUserKey_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteUpdateUserKey", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteUpdateUserKey", Erl)
         '</EhFooter>
 End Sub
 
@@ -1861,9 +1709,7 @@ Public Sub WriteUpdateDM(ByVal UserIndex As Integer)
 
 WriteUpdateDM_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteUpdateDM", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteUpdateDM", Erl)
         '</EhFooter>
 End Sub
 
@@ -1908,9 +1754,7 @@ Public Sub WriteUpdateRM(ByVal UserIndex As Integer)
 
 WriteUpdateRM_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteUpdateRM", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteUpdateRM", Erl)
         '</EhFooter>
 End Sub
 
@@ -1932,9 +1776,7 @@ Public Sub WriteWorkRequestTarget(ByVal UserIndex As Integer, ByVal Skill As eSk
 
 WriteWorkRequestTarget_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteWorkRequestTarget", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteWorkRequestTarget", Erl)
         '</EhFooter>
 End Sub
 
@@ -1954,9 +1796,7 @@ Public Sub WriteInventoryUnlockSlots(ByVal UserIndex As Integer)
 
 WriteInventoryUnlockSlots_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteInventoryUnlockSlots", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteInventoryUnlockSlots", Erl)
         '</EhFooter>
 End Sub
 
@@ -1987,9 +1827,7 @@ Public Sub WriteIntervals(ByVal UserIndex As Integer)
 
 WriteIntervals_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteIntervals", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteIntervals", Erl)
         '</EhFooter>
 End Sub
 
@@ -2021,9 +1859,7 @@ Public Sub WriteChangeInventorySlot(ByVal UserIndex As Integer, ByVal Slot As By
 
 WriteChangeInventorySlot_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteChangeInventorySlot", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteChangeInventorySlot", Erl)
         '</EhFooter>
 End Sub
 
@@ -2063,9 +1899,7 @@ Public Sub WriteChangeBankSlot(ByVal UserIndex As Integer, ByVal Slot As Byte)
 
 WriteChangeBankSlot_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteChangeBankSlot", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteChangeBankSlot", Erl)
         '</EhFooter>
 End Sub
 
@@ -2095,9 +1929,7 @@ Public Sub WriteChangeSpellSlot(ByVal UserIndex As Integer, ByVal Slot As Intege
 
 WriteChangeSpellSlot_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteChangeSpellSlot", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteChangeSpellSlot", Erl)
         '</EhFooter>
 End Sub
 
@@ -2124,9 +1956,7 @@ Public Sub WriteAttributes(ByVal UserIndex As Integer)
 
 WriteAttributes_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteAttributes", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteAttributes", Erl)
         '</EhFooter>
 End Sub
 
@@ -2181,9 +2011,7 @@ Public Sub WriteBlacksmithWeapons(ByVal UserIndex As Integer)
 
 WriteBlacksmithWeapons_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteBlacksmithWeapons", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteBlacksmithWeapons", Erl)
         '</EhFooter>
 End Sub
 
@@ -2239,9 +2067,7 @@ Public Sub WriteBlacksmithArmors(ByVal UserIndex As Integer)
 
 WriteBlacksmithArmors_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteBlacksmithArmors", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteBlacksmithArmors", Erl)
         '</EhFooter>
 End Sub
 
@@ -2295,9 +2121,7 @@ Public Sub WriteCarpenterObjects(ByVal UserIndex As Integer)
 
 WriteCarpenterObjects_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteCarpenterObjects", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteCarpenterObjects", Erl)
         '</EhFooter>
 End Sub
 
@@ -2340,9 +2164,7 @@ Public Sub WriteAlquimistaObjects(ByVal UserIndex As Integer)
 
 WriteAlquimistaObjects_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteAlquimistaObjects", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteAlquimistaObjects", Erl)
         '</EhFooter>
 End Sub
 
@@ -2385,9 +2207,7 @@ Public Sub WriteSastreObjects(ByVal UserIndex As Integer)
 
 WriteSastreObjects_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteSastreObjects", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteSastreObjects", Erl)
         '</EhFooter>
 End Sub
 
@@ -2407,9 +2227,7 @@ Public Sub WriteRestOK(ByVal UserIndex As Integer)
 
 WriteRestOK_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteRestOK", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteRestOK", Erl)
         '</EhFooter>
 End Sub
 
@@ -2419,7 +2237,7 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @param    message The error message to be displayed.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-Public Sub WriteErrorMsg(ByVal UserIndex As Integer, ByVal message As String)
+Public Sub WriteErrorMsg(ByVal UserIndex As Integer, ByVal Message As String)
         '***************************************************
         'Author: Juan Martín Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
@@ -2434,9 +2252,7 @@ Public Sub WriteErrorMsg(ByVal UserIndex As Integer, ByVal message As String)
 
 WriteErrorMsg_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteErrorMsg", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteErrorMsg", Erl)
         '</EhFooter>
 End Sub
 
@@ -2456,9 +2272,7 @@ Public Sub WriteBlind(ByVal UserIndex As Integer)
 
 WriteBlind_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteBlind", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteBlind", Erl)
         '</EhFooter>
 End Sub
 
@@ -2478,9 +2292,7 @@ Public Sub WriteDumb(ByVal UserIndex As Integer)
 
 WriteDumb_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteDumb", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteDumb", Erl)
         '</EhFooter>
 End Sub
 
@@ -2504,9 +2316,7 @@ Public Sub WriteShowSignal(ByVal UserIndex As Integer, ByVal ObjIndex As Integer
 
 WriteShowSignal_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteShowSignal", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteShowSignal", Erl)
         '</EhFooter>
 End Sub
 
@@ -2529,24 +2339,22 @@ Public Sub WriteChangeNPCInventorySlot(ByVal UserIndex As Integer, _
         Dim PodraUsarlo As Byte
 
 100     If obj.ObjIndex >= LBound(ObjData()) And obj.ObjIndex <= UBound(ObjData()) Then
-104         PodraUsarlo = PuedeUsarObjeto(UserIndex, obj.ObjIndex)
+102         PodraUsarlo = PuedeUsarObjeto(UserIndex, obj.ObjIndex)
         End If
 
-106     Call Writer.WriteInt(ServerPacketID.ChangeNPCInventorySlot)
-108     Call Writer.WriteInt8(Slot)
-110     Call Writer.WriteInt16(obj.ObjIndex)
-112     Call Writer.WriteInt16(obj.amount)
-114     Call Writer.WriteReal32(price)
-116     Call Writer.WriteInt8(PodraUsarlo)
-118     Call modSendData.SendData(ToIndex, UserIndex)
+104     Call Writer.WriteInt(ServerPacketID.ChangeNPCInventorySlot)
+106     Call Writer.WriteInt8(Slot)
+108     Call Writer.WriteInt16(obj.ObjIndex)
+110     Call Writer.WriteInt16(obj.amount)
+112     Call Writer.WriteReal32(price)
+114     Call Writer.WriteInt8(PodraUsarlo)
+116     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub
 
 WriteChangeNPCInventorySlot_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteChangeNPCInventorySlot", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteChangeNPCInventorySlot", Erl)
         '</EhFooter>
 End Sub
 
@@ -2570,9 +2378,7 @@ Public Sub WriteUpdateHungerAndThirst(ByVal UserIndex As Integer)
 
 WriteUpdateHungerAndThirst_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteUpdateHungerAndThirst", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteUpdateHungerAndThirst", Erl)
         '</EhFooter>
 End Sub
 
@@ -2588,9 +2394,7 @@ Public Sub WriteLight(ByVal UserIndex As Integer, ByVal Map As Integer)
 
 WriteLight_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteLight", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteLight", Erl)
         '</EhFooter>
 End Sub
 
@@ -2611,9 +2415,7 @@ Public Sub WriteFlashScreen(ByVal UserIndex As Integer, _
 
 WriteFlashScreen_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteFlashScreen", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteFlashScreen", Erl)
         '</EhFooter>
 End Sub
 
@@ -2631,9 +2433,7 @@ Public Sub WriteFYA(ByVal UserIndex As Integer)
 
 WriteFYA_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteFYA", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteFYA", Erl)
         '</EhFooter>
 End Sub
 
@@ -2648,9 +2448,7 @@ Public Sub WriteCerrarleCliente(ByVal UserIndex As Integer)
 
 WriteCerrarleCliente_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteCerrarleCliente", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteCerrarleCliente", Erl)
         '</EhFooter>
 End Sub
 
@@ -2666,9 +2464,7 @@ Public Sub WriteOxigeno(ByVal UserIndex As Integer)
 
 WriteOxigeno_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteOxigeno", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteOxigeno", Erl)
         '</EhFooter>
 End Sub
 
@@ -2679,22 +2475,20 @@ Public Sub WriteContadores(ByVal UserIndex As Integer)
 100     Call Writer.WriteInt(ServerPacketID.Contadores)
 102     Call Writer.WriteInt16(UserList(UserIndex).Counters.Invisibilidad)
 
-108     If UserList(UserIndex).flags.NecesitaOxigeno Then
-110         Call Writer.WriteInt16(UserList(UserIndex).Counters.Oxigeno)
+104     If UserList(UserIndex).flags.NecesitaOxigeno Then
+106         Call Writer.WriteInt16(UserList(UserIndex).Counters.Oxigeno)
         Else
-112         Call Writer.WriteInt16(0)
+108         Call Writer.WriteInt16(0)
         End If
 
-114     Call Writer.WriteInt16(UserList(UserIndex).flags.DuracionEfecto)
-116     Call modSendData.SendData(ToIndex, UserIndex)
+110     Call Writer.WriteInt16(UserList(UserIndex).flags.DuracionEfecto)
+112     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub
 
 WriteContadores_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteContadores", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteContadores", Erl)
         '</EhFooter>
 End Sub
 
@@ -2711,9 +2505,7 @@ Public Sub WriteBindKeys(ByVal UserIndex As Integer)
 
 WriteBindKeys_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteBindKeys", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteBindKeys", Erl)
         '</EhFooter>
 End Sub
 
@@ -2736,15 +2528,13 @@ Public Sub WriteMiniStats(ByVal UserIndex As Integer)
 114     Call Writer.WriteInt32(UserList(UserIndex).flags.VecesQueMoriste)
 116     Call Writer.WriteInt8(UserList(UserIndex).genero)
 118     Call Writer.WriteInt8(UserList(UserIndex).raza)
-126     Call modSendData.SendData(ToIndex, UserIndex)
+120     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub
 
 WriteMiniStats_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteMiniStats", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteMiniStats", Erl)
         '</EhFooter>
 End Sub
 
@@ -2765,9 +2555,7 @@ Public Sub WriteLevelUp(ByVal UserIndex As Integer, ByVal skillPoints As Integer
 
 WriteLevelUp_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteLevelUp", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteLevelUp", Erl)
         '</EhFooter>
 End Sub
 
@@ -2792,9 +2580,7 @@ Public Sub WriteAddForumMsg(ByVal UserIndex As Integer, _
 
 WriteAddForumMsg_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteAddForumMsg", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteAddForumMsg", Erl)
         '</EhFooter>
 End Sub
 
@@ -2814,9 +2600,7 @@ Public Sub WriteShowForumForm(ByVal UserIndex As Integer)
 
 WriteShowForumForm_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteShowForumForm", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteShowForumForm", Erl)
         '</EhFooter>
 End Sub
 
@@ -2840,9 +2624,7 @@ Public Sub WriteSetInvisible(ByVal UserIndex As Integer, _
 
 WriteSetInvisible_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteSetInvisible", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteSetInvisible", Erl)
         '</EhFooter>
 End Sub
 
@@ -2877,9 +2659,7 @@ Public Sub WriteDiceRoll(ByVal UserIndex As Integer)
 
 WriteDiceRoll_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteDiceRoll", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteDiceRoll", Erl)
         '</EhFooter>
 End Sub
 
@@ -2899,9 +2679,7 @@ Public Sub WriteMeditateToggle(ByVal UserIndex As Integer)
 
 WriteMeditateToggle_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteMeditateToggle", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteMeditateToggle", Erl)
         '</EhFooter>
 End Sub
 
@@ -2921,9 +2699,7 @@ Public Sub WriteBlindNoMore(ByVal UserIndex As Integer)
 
 WriteBlindNoMore_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteBlindNoMore", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteBlindNoMore", Erl)
         '</EhFooter>
 End Sub
 
@@ -2943,9 +2719,7 @@ Public Sub WriteDumbNoMore(ByVal UserIndex As Integer)
 
 WriteDumbNoMore_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteDumbNoMore", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteDumbNoMore", Erl)
         '</EhFooter>
 End Sub
 
@@ -2973,9 +2747,7 @@ Public Sub WriteSendSkills(ByVal UserIndex As Integer)
 
 WriteSendSkills_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteSendSkills", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteSendSkills", Erl)
         '</EhFooter>
 End Sub
 
@@ -3008,9 +2780,7 @@ Public Sub WriteTrainerCreatureList(ByVal UserIndex As Integer, ByVal NpcIndex A
 
 WriteTrainerCreatureList_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteTrainerCreatureList", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteTrainerCreatureList", Erl)
         '</EhFooter>
 End Sub
 
@@ -3065,9 +2835,7 @@ Public Sub WriteGuildNews(ByVal UserIndex As Integer, _
 
 WriteGuildNews_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteGuildNews", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteGuildNews", Erl)
         '</EhFooter>
 End Sub
 
@@ -3090,9 +2858,7 @@ Public Sub WriteOfferDetails(ByVal UserIndex As Integer, ByVal details As String
 
 WriteOfferDetails_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteOfferDetails", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteOfferDetails", Erl)
         '</EhFooter>
 End Sub
 
@@ -3126,9 +2892,7 @@ Public Sub WriteAlianceProposalsList(ByVal UserIndex As Integer, ByRef guilds() 
 
 WriteAlianceProposalsList_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteAlianceProposalsList", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteAlianceProposalsList", Erl)
         '</EhFooter>
 End Sub
 
@@ -3162,9 +2926,7 @@ Public Sub WritePeaceProposalsList(ByVal UserIndex As Integer, ByRef guilds() As
 
 WritePeaceProposalsList_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WritePeaceProposalsList", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WritePeaceProposalsList", Erl)
         '</EhFooter>
 End Sub
 
@@ -3217,9 +2979,7 @@ Public Sub WriteCharacterInfo(ByVal UserIndex As Integer, ByVal CharName As Stri
 
 WriteCharacterInfo_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteCharacterInfo", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteCharacterInfo", Erl)
         '</EhFooter>
 End Sub
 
@@ -3286,9 +3046,7 @@ Public Sub WriteGuildLeaderInfo(ByVal UserIndex As Integer, _
 
 WriteGuildLeaderInfo_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteGuildLeaderInfo", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteGuildLeaderInfo", Erl)
         '</EhFooter>
 End Sub
 
@@ -3337,9 +3095,7 @@ Public Sub WriteGuildDetails(ByVal UserIndex As Integer, _
 
 WriteGuildDetails_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteGuildDetails", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteGuildDetails", Erl)
         '</EhFooter>
 End Sub
 
@@ -3359,9 +3115,7 @@ Public Sub WriteShowGuildFundationForm(ByVal UserIndex As Integer)
 
 WriteShowGuildFundationForm_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteShowGuildFundationForm", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteShowGuildFundationForm", Erl)
         '</EhFooter>
 End Sub
 
@@ -3381,9 +3135,7 @@ Public Sub WriteParalizeOK(ByVal UserIndex As Integer)
 
 WriteParalizeOK_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteParalizeOK", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteParalizeOK", Erl)
         '</EhFooter>
 End Sub
 
@@ -3398,9 +3150,7 @@ Public Sub WriteInmovilizaOK(ByVal UserIndex As Integer)
 
 WriteInmovilizaOK_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteInmovilizaOK", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteInmovilizaOK", Erl)
         '</EhFooter>
 End Sub
 
@@ -3416,9 +3166,7 @@ Public Sub WriteStopped(ByVal UserIndex As Integer, ByVal Stopped As Boolean)
 
 WriteStopped_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteStopped", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteStopped", Erl)
         '</EhFooter>
 End Sub
 
@@ -3440,9 +3188,7 @@ Public Sub WriteShowUserRequest(ByVal UserIndex As Integer, ByVal details As Str
 
 WriteShowUserRequest_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteShowUserRequest", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteShowUserRequest", Erl)
         '</EhFooter>
 End Sub
 
@@ -3490,9 +3236,7 @@ Public Sub WriteChangeUserTradeSlot(ByVal UserIndex As Integer, _
 
 WriteChangeUserTradeSlot_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteChangeUserTradeSlot", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteChangeUserTradeSlot", Erl)
         '</EhFooter>
 End Sub
 
@@ -3514,9 +3258,7 @@ Public Sub WriteSpawnList(ByVal UserIndex As Integer, ByVal ListaCompleta As Boo
 
 WriteSpawnList_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteSpawnList", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteSpawnList", Erl)
         '</EhFooter>
 End Sub
 
@@ -3548,9 +3290,7 @@ Public Sub WriteShowSOSForm(ByVal UserIndex As Integer)
 
 WriteShowSOSForm_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteShowSOSForm", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteShowSOSForm", Erl)
         '</EhFooter>
 End Sub
 
@@ -3573,9 +3313,7 @@ Public Sub WriteShowMOTDEditionForm(ByVal UserIndex As Integer, _
 
 WriteShowMOTDEditionForm_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteShowMOTDEditionForm", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteShowMOTDEditionForm", Erl)
         '</EhFooter>
 End Sub
 
@@ -3600,9 +3338,7 @@ Public Sub WriteShowGMPanelForm(ByVal UserIndex As Integer)
 
 WriteShowGMPanelForm_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteShowGMPanelForm", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteShowGMPanelForm", Erl)
         '</EhFooter>
 End Sub
 
@@ -3617,9 +3353,7 @@ Public Sub WriteShowFundarClanForm(ByVal UserIndex As Integer)
 
 WriteShowFundarClanForm_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteShowFundarClanForm", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteShowFundarClanForm", Erl)
         '</EhFooter>
 End Sub
 
@@ -3656,9 +3390,7 @@ Public Sub WriteUserNameList(ByVal UserIndex As Integer, _
 
 WriteUserNameList_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteUserNameList", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteUserNameList", Erl)
         '</EhFooter>
 End Sub
 
@@ -3679,9 +3411,7 @@ Public Sub WritePong(ByVal UserIndex As Integer, ByVal Time As Long)
 
 WritePong_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WritePong", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WritePong", Erl)
         '</EhFooter>
 End Sub
 
@@ -3700,56 +3430,54 @@ Public Sub WritePersonajesDeCuenta(ByVal UserIndex As Integer)
 
 100     UserCuenta = UserList(UserIndex).Cuenta
 
-104     If Database_Enabled Then
-106         CantPersonajes = GetPersonajesCuentaDatabase(UserList(UserIndex).AccountID, _
+102     If Database_Enabled Then
+104         CantPersonajes = GetPersonajesCuentaDatabase(UserList(UserIndex).AccountID, _
                     Personaje)
         Else
-108         CantPersonajes = ObtenerCantidadDePersonajes(UserCuenta)
+106         CantPersonajes = ObtenerCantidadDePersonajes(UserCuenta)
 
-110         For i = 1 To CantPersonajes
-112             Personaje(i).nombre = ObtenerNombrePJ(UserCuenta, i)
-114             Personaje(i).Cabeza = ObtenerCabeza(Personaje(i).nombre)
-116             Personaje(i).clase = ObtenerClase(Personaje(i).nombre)
-118             Personaje(i).cuerpo = ObtenerCuerpo(Personaje(i).nombre)
-120             Personaje(i).Mapa = ReadField(1, ObtenerMapa(Personaje(i).nombre), Asc("-"))
-122             Personaje(i).nivel = ObtenerNivel(Personaje(i).nombre)
-124             Personaje(i).Status = ObtenerCriminal(Personaje(i).nombre)
-126             Personaje(i).Casco = ObtenerCasco(Personaje(i).nombre)
-128             Personaje(i).Escudo = ObtenerEscudo(Personaje(i).nombre)
-130             Personaje(i).Arma = ObtenerArma(Personaje(i).nombre)
-132             Personaje(i).ClanIndex = GetUserGuildIndexCharfile(Personaje(i).nombre)
-134         Next i
+108         For i = 1 To CantPersonajes
+110             Personaje(i).nombre = ObtenerNombrePJ(UserCuenta, i)
+112             Personaje(i).Cabeza = ObtenerCabeza(Personaje(i).nombre)
+114             Personaje(i).clase = ObtenerClase(Personaje(i).nombre)
+116             Personaje(i).cuerpo = ObtenerCuerpo(Personaje(i).nombre)
+118             Personaje(i).Mapa = ReadField(1, ObtenerMapa(Personaje(i).nombre), Asc("-"))
+120             Personaje(i).nivel = ObtenerNivel(Personaje(i).nombre)
+122             Personaje(i).Status = ObtenerCriminal(Personaje(i).nombre)
+124             Personaje(i).Casco = ObtenerCasco(Personaje(i).nombre)
+126             Personaje(i).Escudo = ObtenerEscudo(Personaje(i).nombre)
+128             Personaje(i).Arma = ObtenerArma(Personaje(i).nombre)
+130             Personaje(i).ClanIndex = GetUserGuildIndexCharfile(Personaje(i).nombre)
+132         Next i
 
         End If
 
-136     Call Writer.WriteInt(ServerPacketID.PersonajesDeCuenta)
-138     Call Writer.WriteInt8(CantPersonajes)
+134     Call Writer.WriteInt(ServerPacketID.PersonajesDeCuenta)
+136     Call Writer.WriteInt8(CantPersonajes)
 
-140     For i = 1 To CantPersonajes
-142         Call Writer.WriteString8(Personaje(i).nombre)
-144         Call Writer.WriteInt8(Personaje(i).nivel)
-146         Call Writer.WriteInt16(Personaje(i).Mapa)
-148         Call Writer.WriteInt16(Personaje(i).posX)
-150         Call Writer.WriteInt16(Personaje(i).posY)
-152         Call Writer.WriteInt16(Personaje(i).cuerpo)
-154         Call Writer.WriteInt16(Personaje(i).Cabeza)
-156         Call Writer.WriteInt8(Personaje(i).Status)
-158         Call Writer.WriteInt8(Personaje(i).clase)
-160         Call Writer.WriteInt16(Personaje(i).Casco)
-162         Call Writer.WriteInt16(Personaje(i).Escudo)
-164         Call Writer.WriteInt16(Personaje(i).Arma)
-166         Call Writer.WriteString8(modGuilds.GuildName(Personaje(i).ClanIndex))
-168     Next i
+138     For i = 1 To CantPersonajes
+140         Call Writer.WriteString8(Personaje(i).nombre)
+142         Call Writer.WriteInt8(Personaje(i).nivel)
+144         Call Writer.WriteInt16(Personaje(i).Mapa)
+146         Call Writer.WriteInt16(Personaje(i).posX)
+148         Call Writer.WriteInt16(Personaje(i).posY)
+150         Call Writer.WriteInt16(Personaje(i).cuerpo)
+152         Call Writer.WriteInt16(Personaje(i).Cabeza)
+154         Call Writer.WriteInt8(Personaje(i).Status)
+156         Call Writer.WriteInt8(Personaje(i).clase)
+158         Call Writer.WriteInt16(Personaje(i).Casco)
+160         Call Writer.WriteInt16(Personaje(i).Escudo)
+162         Call Writer.WriteInt16(Personaje(i).Arma)
+164         Call Writer.WriteString8(modGuilds.GuildName(Personaje(i).ClanIndex))
+166     Next i
 
-172     Call modSendData.SendData(ToIndex, UserIndex)
+168     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub
 
 WritePersonajesDeCuenta_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WritePersonajesDeCuenta", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WritePersonajesDeCuenta", Erl)
         '</EhFooter>
 End Sub
 
@@ -3766,9 +3494,7 @@ Public Sub WriteGoliathInit(ByVal UserIndex As Integer)
 
 WriteGoliathInit_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteGoliathInit", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteGoliathInit", Erl)
         '</EhFooter>
 End Sub
 
@@ -3783,9 +3509,7 @@ Public Sub WriteShowFrmLogear(ByVal UserIndex As Integer)
 
 WriteShowFrmLogear_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteShowFrmLogear", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteShowFrmLogear", Erl)
         '</EhFooter>
 End Sub
 
@@ -3794,17 +3518,15 @@ Public Sub WriteShowFrmMapa(ByVal UserIndex As Integer)
         On Error GoTo WriteShowFrmMapa_Err
         '</EhHeader>
 100     Call Writer.WriteInt(ServerPacketID.ShowFrmMapa)
-106     Call Writer.WriteInt16(ExpMult)
-108     Call Writer.WriteInt16(OroMult)
-110     Call modSendData.SendData(ToIndex, UserIndex)
+102     Call Writer.WriteInt16(ExpMult)
+104     Call Writer.WriteInt16(OroMult)
+106     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub
 
 WriteShowFrmMapa_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteShowFrmMapa", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteShowFrmMapa", Erl)
         '</EhFooter>
 End Sub
 
@@ -3833,13 +3555,11 @@ Public Sub WriteFamiliar(ByVal UserIndex As Integer)
 
 WriteFamiliar_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteFamiliar", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteFamiliar", Erl)
         '</EhFooter>
 End Sub
 
-Public Sub WritePreguntaBox(ByVal UserIndex As Integer, ByVal message As String)
+Public Sub WritePreguntaBox(ByVal UserIndex As Integer, ByVal Message As String)
         '<EhHeader>
         On Error GoTo WritePreguntaBox_Err
         '</EhHeader>
@@ -3851,9 +3571,7 @@ Public Sub WritePreguntaBox(ByVal UserIndex As Integer, ByVal message As String)
 
 WritePreguntaBox_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WritePreguntaBox", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WritePreguntaBox", Erl)
         '</EhFooter>
 End Sub
 
@@ -3910,9 +3628,7 @@ Public Sub WriteDatosGrupo(ByVal UserIndex As Integer)
 
 WriteDatosGrupo_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteDatosGrupo", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteDatosGrupo", Erl)
         '</EhFooter>
 End Sub
 
@@ -3941,9 +3657,7 @@ Public Sub WriteUbicacion(ByVal UserIndex As Integer, _
 
 WriteUbicacion_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteUbicacion", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteUbicacion", Erl)
         '</EhFooter>
 End Sub
 
@@ -3971,9 +3685,7 @@ Public Sub WriteViajarForm(ByVal UserIndex As Integer, ByVal NpcIndex As Integer
 
 WriteViajarForm_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteViajarForm", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteViajarForm", Erl)
         '</EhFooter>
 End Sub
 
@@ -4055,9 +3767,7 @@ Public Sub WriteQuestDetails(ByVal UserIndex As Integer, _
 
 WriteQuestDetails_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteQuestDetails", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteQuestDetails", Erl)
         '</EhFooter>
 End Sub
  
@@ -4100,9 +3810,7 @@ Public Sub WriteQuestListSend(ByVal UserIndex As Integer)
 
 WriteQuestListSend_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteQuestListSend", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteQuestListSend", Erl)
         '</EhFooter>
 End Sub
 
@@ -4216,13 +3924,11 @@ Public Sub WriteNpcQuestListSend(ByVal UserIndex As Integer, ByVal NpcIndex As I
 
 WriteNpcQuestListSend_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteNpcQuestListSend", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteNpcQuestListSend", Erl)
         '</EhFooter>
 End Sub
 
-Sub WriteCommerceRecieveChatMessage(ByVal UserIndex As Integer, ByVal message As String)
+Sub WriteCommerceRecieveChatMessage(ByVal UserIndex As Integer, ByVal Message As String)
         '<EhHeader>
         On Error GoTo WriteCommerceRecieveChatMessage_Err
         '</EhHeader>
@@ -4234,9 +3940,7 @@ Sub WriteCommerceRecieveChatMessage(ByVal UserIndex As Integer, ByVal message As
 
 WriteCommerceRecieveChatMessage_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteCommerceRecieveChatMessage", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteCommerceRecieveChatMessage", Erl)
         '</EhFooter>
 End Sub
 
@@ -4257,9 +3961,7 @@ Sub WriteInvasionInfo(ByVal UserIndex As Integer, _
 
 WriteInvasionInfo_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteInvasionInfo", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteInvasionInfo", Erl)
         '</EhFooter>
 End Sub
 
@@ -4275,9 +3977,7 @@ Sub WriteOpenCrafting(ByVal UserIndex As Integer, ByVal Tipo As Byte)
 
 WriteOpenCrafting_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteOpenCrafting", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteOpenCrafting", Erl)
         '</EhFooter>
 End Sub
 
@@ -4296,9 +3996,7 @@ Sub WriteCraftingItem(ByVal UserIndex As Integer, _
 
 WriteCraftingItem_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteCraftingItem", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteCraftingItem", Erl)
         '</EhFooter>
 End Sub
 
@@ -4319,9 +4017,7 @@ Sub WriteCraftingCatalyst(ByVal UserIndex As Integer, _
 
 WriteCraftingCatalyst_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteCraftingCatalyst", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteCraftingCatalyst", Erl)
         '</EhFooter>
 End Sub
 
@@ -4346,9 +4042,7 @@ Sub WriteCraftingResult(ByVal UserIndex As Integer, _
 
 WriteCraftingResult_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteCraftingResult", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteCraftingResult", Erl)
         '</EhFooter>
 End Sub
 
@@ -4363,9 +4057,7 @@ Sub WriteForceUpdate(ByVal UserIndex As Integer)
 
 WriteForceUpdate_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteForceUpdate", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteForceUpdate", Erl)
         '</EhFooter>
 End Sub
 
@@ -4384,9 +4076,7 @@ Public Sub WriteUpdateNPCSimbolo(ByVal UserIndex As Integer, _
 
 WriteUpdateNPCSimbolo_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteUpdateNPCSimbolo", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteUpdateNPCSimbolo", Erl)
         '</EhFooter>
 End Sub
 
@@ -4401,9 +4091,7 @@ Public Sub WriteGuardNotice(ByVal UserIndex As Integer)
 
 WriteGuardNotice_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteGuardNotice", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteGuardNotice", Erl)
         '</EhFooter>
 End Sub
 
@@ -4423,9 +4111,7 @@ Public Function PrepareMessageCharSwing(ByVal CharIndex As Integer, _
 
 PrepareMessageCharSwing_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageCharSwing", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageCharSwing", Erl)
         '</EhFooter>
 End Function
 
@@ -4449,9 +4135,7 @@ Public Function PrepareMessageSetInvisible(ByVal CharIndex As Integer, _
 
 PrepareMessageSetInvisible_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageSetInvisible", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageSetInvisible", Erl)
         '</EhFooter>
 End Function
 
@@ -4468,9 +4152,7 @@ Public Function PrepareMessageSetEscribiendo(ByVal CharIndex As Integer, _
 
 PrepareMessageSetEscribiendo_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageSetEscribiendo", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageSetEscribiendo", Erl)
         '</EhFooter>
 End Function
 
@@ -4491,25 +4173,23 @@ Public Function PrepareMessageChatOverHead(ByVal chat As String, _
 
         Dim R As Long, G As Long, B As Long
 
-100     b = (Color And 16711680) / 65536
-102     g = (Color And 65280) / 256
+100     B = (Color And 16711680) / 65536
+102     G = (Color And 65280) / 256
 104     R = Color And 255
 106     Call Writer.WriteInt(ServerPacketID.ChatOverHead)
 108     Call Writer.WriteString8(chat)
 110     Call Writer.WriteInt16(CharIndex)
         ' Write rgb channels and save one byte from long :D
 112     Call Writer.WriteInt8(R)
-114     Call Writer.WriteInt8(g)
-116     Call Writer.WriteInt8(b)
+114     Call Writer.WriteInt8(G)
+116     Call Writer.WriteInt8(B)
 118     Call Writer.WriteInt32(Color)
         '<EhFooter>
         Exit Function
 
 PrepareMessageChatOverHead_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageChatOverHead", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageChatOverHead", Erl)
         '</EhFooter>
 End Function
 
@@ -4528,9 +4208,7 @@ Public Function PrepareMessageTextOverChar(ByVal chat As String, _
 
 PrepareMessageTextOverChar_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageTextOverChar", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageTextOverChar", Erl)
         '</EhFooter>
 End Function
 
@@ -4549,9 +4227,7 @@ Public Function PrepareMessageTextCharDrop(ByVal chat As String, _
 
 PrepareMessageTextCharDrop_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageTextCharDrop", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageTextCharDrop", Erl)
         '</EhFooter>
 End Function
 
@@ -4572,9 +4248,7 @@ Public Function PrepareMessageTextOverTile(ByVal chat As String, _
 
 PrepareMessageTextOverTile_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageTextOverTile", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageTextOverTile", Erl)
         '</EhFooter>
 End Function
 
@@ -4598,9 +4272,7 @@ Public Function PrepareMessageConsoleMsg(ByVal chat As String, _
 
 PrepareMessageConsoleMsg_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageConsoleMsg", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageConsoleMsg", Erl)
         '</EhFooter>
 End Function
 
@@ -4619,9 +4291,7 @@ Public Function PrepareMessageLocaleMsg(ByVal ID As Integer, _
 
 PrepareMessageLocaleMsg_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageLocaleMsg", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageLocaleMsg", Erl)
         '</EhFooter>
 End Function
 
@@ -4649,9 +4319,7 @@ Public Function PrepareMessageCreateFX(ByVal CharIndex As Integer, _
 
 PrepareMessageCreateFX_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageCreateFX", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageCreateFX", Erl)
         '</EhFooter>
 End Function
 
@@ -4668,9 +4336,7 @@ Public Function PrepareMessageMeditateToggle(ByVal CharIndex As Integer, _
 
 PrepareMessageMeditateToggle_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageMeditateToggle", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageMeditateToggle", Erl)
         '</EhFooter>
 End Function
 
@@ -4693,9 +4359,7 @@ Public Function PrepareMessageParticleFX(ByVal CharIndex As Integer, _
 
 PrepareMessageParticleFX_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageParticleFX", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageParticleFX", Erl)
         '</EhFooter>
 End Function
 
@@ -4722,9 +4386,7 @@ Public Function PrepareMessageParticleFXWithDestino(ByVal Emisor As Integer, _
 
 PrepareMessageParticleFXWithDestino_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageParticleFXWithDestino", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageParticleFXWithDestino", Erl)
         '</EhFooter>
 End Function
 
@@ -4753,9 +4415,7 @@ Public Function PrepareMessageParticleFXWithDestinoXY(ByVal Emisor As Integer, _
 
 PrepareMessageParticleFXWithDestinoXY_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageParticleFXWithDestinoXY", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageParticleFXWithDestinoXY", Erl)
         '</EhFooter>
 End Function
 
@@ -4776,9 +4436,7 @@ Public Function PrepareMessageAuraToChar(ByVal CharIndex As Integer, _
 
 PrepareMessageAuraToChar_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageAuraToChar", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageAuraToChar", Erl)
         '</EhFooter>
 End Function
 
@@ -4795,9 +4453,7 @@ Public Function PrepareMessageSpeedingACT(ByVal CharIndex As Integer, _
 
 PrepareMessageSpeedingACT_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageSpeedingACT", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageSpeedingACT", Erl)
         '</EhFooter>
 End Function
 
@@ -4818,9 +4474,7 @@ Public Function PrepareMessageParticleFXToFloor(ByVal X As Byte, _
 
 PrepareMessageParticleFXToFloor_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageParticleFXToFloor", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageParticleFXToFloor", Erl)
         '</EhFooter>
 End Function
 
@@ -4841,9 +4495,7 @@ Public Function PrepareMessageLightFXToFloor(ByVal X As Byte, _
 
 PrepareMessageLightFXToFloor_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageLightFXToFloor", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageLightFXToFloor", Erl)
         '</EhFooter>
 End Function
 
@@ -4870,9 +4522,7 @@ Public Function PrepareMessagePlayWave(ByVal wave As Integer, _
 
 PrepareMessagePlayWave_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessagePlayWave", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessagePlayWave", Erl)
         '</EhFooter>
 End Function
 
@@ -4891,9 +4541,7 @@ Public Function PrepareMessageUbicacionLlamada(ByVal Mapa As Integer, _
 
 PrepareMessageUbicacionLlamada_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageUbicacionLlamada", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageUbicacionLlamada", Erl)
         '</EhFooter>
 End Function
 
@@ -4910,9 +4558,7 @@ Public Function PrepareMessageCharUpdateHP(ByVal UserIndex As Integer)
 
 PrepareMessageCharUpdateHP_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageCharUpdateHP", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageCharUpdateHP", Erl)
         '</EhFooter>
 End Function
 
@@ -4929,9 +4575,7 @@ Public Function PrepareMessageCharUpdateMAN(ByVal UserIndex As Integer)
 
 PrepareMessageCharUpdateMAN_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageCharUpdateMAN", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageCharUpdateMAN", Erl)
         '</EhFooter>
 End Function
 
@@ -4948,9 +4592,7 @@ Public Function PrepareMessageNpcUpdateHP(ByVal NpcIndex As Integer)
 
 PrepareMessageNpcUpdateHP_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageNpcUpdateHP", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageNpcUpdateHP", Erl)
         '</EhFooter>
 End Function
 
@@ -4965,9 +4607,7 @@ Public Function PrepareMessageArmaMov(ByVal CharIndex As Integer)
 
 PrepareMessageArmaMov_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageArmaMov", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageArmaMov", Erl)
         '</EhFooter>
 End Function
 
@@ -4982,9 +4622,7 @@ Public Function PrepareMessageEscudoMov(ByVal CharIndex As Integer)
 
 PrepareMessageEscudoMov_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageEscudoMov", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageEscudoMov", Erl)
         '</EhFooter>
 End Function
 
@@ -5003,9 +4641,7 @@ Public Function PrepareMessageFlashScreen(ByVal Color As Long, _
 
 PrepareMessageFlashScreen_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageFlashScreen", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageFlashScreen", Erl)
         '</EhFooter>
 End Function
 
@@ -5027,9 +4663,7 @@ Public Function PrepareMessageGuildChat(ByVal chat As String, ByVal Status As By
 
 PrepareMessageGuildChat_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageGuildChat", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageGuildChat", Erl)
         '</EhFooter>
 End Function
 
@@ -5050,9 +4684,7 @@ Public Function PrepareMessageShowMessageBox(ByVal chat As String)
 
 PrepareMessageShowMessageBox_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageShowMessageBox", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageShowMessageBox", Erl)
         '</EhFooter>
 End Function
 
@@ -5076,9 +4708,7 @@ Public Function PrepareMessagePlayMidi(ByVal midi As Byte, _
 
 PrepareMessagePlayMidi_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessagePlayMidi", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessagePlayMidi", Erl)
         '</EhFooter>
 End Function
 
@@ -5093,9 +4723,7 @@ Public Function PrepareMessageOnlineUser(ByVal UserOnline As Integer)
 
 PrepareMessageOnlineUser_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageOnlineUser", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageOnlineUser", Erl)
         '</EhFooter>
 End Function
 
@@ -5114,9 +4742,7 @@ Public Function PrepareMessagePauseToggle()
 
 PrepareMessagePauseToggle_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessagePauseToggle", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessagePauseToggle", Erl)
         '</EhFooter>
 End Function
 
@@ -5135,9 +4761,7 @@ Public Function PrepareMessageRainToggle()
 
 PrepareMessageRainToggle_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageRainToggle", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageRainToggle", Erl)
         '</EhFooter>
 End Function
 
@@ -5153,9 +4777,7 @@ Public Function PrepareMessageHora()
 
 PrepareMessageHora_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageHora", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageHora", Erl)
         '</EhFooter>
 End Function
 
@@ -5178,9 +4800,7 @@ Public Function PrepareMessageObjectDelete(ByVal X As Byte, ByVal Y As Byte)
 
 PrepareMessageObjectDelete_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageObjectDelete", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageObjectDelete", Erl)
         '</EhFooter>
 End Function
 
@@ -5207,9 +4827,7 @@ Public Function PrepareMessageBlockPosition(ByVal X As Byte, _
 
 PrepareMessageBlockPosition_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageBlockPosition", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageBlockPosition", Erl)
         '</EhFooter>
 End Function
 
@@ -5239,9 +4857,7 @@ Public Function PrepareMessageObjectCreate(ByVal ObjIndex As Integer, _
 
 PrepareMessageObjectCreate_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageObjectCreate", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageObjectCreate", Erl)
         '</EhFooter>
 End Function
 
@@ -5260,9 +4876,7 @@ Public Function PrepareMessageFxPiso(ByVal GrhIndex As Integer, _
 
 PrepareMessageFxPiso_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageFxPiso", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageFxPiso", Erl)
         '</EhFooter>
 End Function
 
@@ -5285,9 +4899,7 @@ Public Function PrepareMessageCharacterRemove(ByVal CharIndex As Integer, _
 
 PrepareMessageCharacterRemove_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageCharacterRemove", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageCharacterRemove", Erl)
         '</EhFooter>
 End Function
 
@@ -5308,9 +4920,7 @@ Public Function PrepareMessageRemoveCharDialog(ByVal CharIndex As Integer)
 
 PrepareMessageRemoveCharDialog_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageRemoveCharDialog", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageRemoveCharDialog", Erl)
         '</EhFooter>
 End Function
 
@@ -5386,25 +4996,23 @@ Public Function PrepareMessageCharacterCreate(ByVal Body As Integer, _
 144     Call Writer.WriteString8(Escudo_Aura)
 146     Call Writer.WriteReal32(speeding)
 148     Call Writer.WriteInt8(EsNPC)
-152     Call Writer.WriteInt8(appear)
-154     Call Writer.WriteInt16(group_index)
-156     Call Writer.WriteInt16(clan_index)
-158     Call Writer.WriteInt8(clan_nivel)
-160     Call Writer.WriteInt32(UserMinHp)
-162     Call Writer.WriteInt32(UserMaxHp)
-164     Call Writer.WriteInt32(UserMinMAN)
-166     Call Writer.WriteInt32(UserMaxMAN)
-168     Call Writer.WriteInt8(Simbolo)
-170     Call Writer.WriteBool(Idle)
-172     Call Writer.WriteBool(Navegando)
+150     Call Writer.WriteInt8(appear)
+152     Call Writer.WriteInt16(group_index)
+154     Call Writer.WriteInt16(clan_index)
+156     Call Writer.WriteInt8(clan_nivel)
+158     Call Writer.WriteInt32(UserMinHp)
+160     Call Writer.WriteInt32(UserMaxHp)
+162     Call Writer.WriteInt32(UserMinMAN)
+164     Call Writer.WriteInt32(UserMaxMAN)
+166     Call Writer.WriteInt8(Simbolo)
+168     Call Writer.WriteBool(Idle)
+170     Call Writer.WriteBool(Navegando)
         '<EhFooter>
         Exit Function
 
 PrepareMessageCharacterCreate_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageCharacterCreate", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageCharacterCreate", Erl)
         '</EhFooter>
 End Function
 
@@ -5453,9 +5061,7 @@ Public Function PrepareMessageCharacterChange(ByVal Body As Integer, _
 
 PrepareMessageCharacterChange_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageCharacterChange", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageCharacterChange", Erl)
         '</EhFooter>
 End Function
 
@@ -5482,9 +5088,7 @@ Public Function PrepareMessageCharacterMove(ByVal CharIndex As Integer, _
 
 PrepareMessageCharacterMove_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageCharacterMove", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageCharacterMove", Erl)
         '</EhFooter>
 End Function
 
@@ -5499,9 +5103,7 @@ Public Function PrepareMessageForceCharMove(ByVal Direccion As eHeading)
 
 PrepareMessageForceCharMove_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageForceCharMove", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageForceCharMove", Erl)
         '</EhFooter>
 End Function
 
@@ -5529,9 +5131,7 @@ Public Function PrepareMessageUpdateTagAndStatus(ByVal UserIndex As Integer, _
 
 PrepareMessageUpdateTagAndStatus_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageUpdateTagAndStatus", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageUpdateTagAndStatus", Erl)
         '</EhFooter>
 End Function
 
@@ -5551,9 +5151,7 @@ Public Function PrepareMessageErrorMsg(ByVal Message As String)
 
 PrepareMessageErrorMsg_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageErrorMsg", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageErrorMsg", Erl)
         '</EhFooter>
 End Function
 
@@ -5572,9 +5170,7 @@ Public Function PrepareMessageBarFx(ByVal CharIndex As Integer, _
 
 PrepareMessageBarFx_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageBarFx", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageBarFx", Erl)
         '</EhFooter>
 End Function
 
@@ -5589,9 +5185,7 @@ Public Function PrepareMessageNieblandoToggle(ByVal IntensidadMax As Byte)
 
 PrepareMessageNieblandoToggle_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageNieblandoToggle", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageNieblandoToggle", Erl)
         '</EhFooter>
 End Function
 
@@ -5605,9 +5199,7 @@ Public Function PrepareMessageNevarToggle()
 
 PrepareMessageNevarToggle_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageNevarToggle", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageNevarToggle", Erl)
         '</EhFooter>
 End Function
 
@@ -5624,9 +5216,7 @@ Public Function PrepareMessageDoAnimation(ByVal CharIndex As Integer, _
 
 PrepareMessageDoAnimation_Err:
         Call Writer.Clear
-
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageDoAnimation", Erl)
-        Resume Next
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageDoAnimation", Erl)
         '</EhFooter>
 End Function
 
