@@ -2521,7 +2521,7 @@ Public Sub LoadDatabaseIniFile()
 110     Call Lector.Initialize(IniPath & "Database.ini")
 
 112     Database_Enabled = True
-114     Database_DataSource = Lector.GetValue("DATABASE", "DSN")
+114     Database_Source = Lector.GetValue("DATABASE", "DSN")
 116     Database_Host = Lector.GetValue("DATABASE", "Host")
 118     Database_Name = Lector.GetValue("DATABASE", "Name")
 120     Database_Username = Lector.GetValue("DATABASE", "Username")

@@ -10,111 +10,178 @@ Attribute VB_Name = "Database"
 Option Explicit
 
 Public Database_Enabled     As Boolean
-Public Database_DataSource  As String
+Public Database_Source      As String
 Public Database_Host        As String
 Public Database_Name        As String
 Public Database_Username    As String
 Public Database_Password    As String
 
-Private Database_Connection As ADODB.Connection
-Private Command             As ADODB.Command
-Public QueryData            As ADODB.Recordset
-Private RecordsAffected     As Long
-
-Private Database_Connection_Async As ADODB.Connection
-Private Database_Async_Queue      As Collection
-
-Private QueryBuilder        As cStringBuilder
-Private ConnectedOnce       As Boolean
+Private Connection          As ADODB.Connection
+Private Builder             As cStringBuilder
 
 Public Sub Database_Connect()
-
-        '************************************************************************************
-        'Author: Juan Andres Dalmasso
-        'Last Modification: 17/10/2020
-        '21/09/2019 Jopi - Agregue soporte a conexion via DSN. Solo para usuarios avanzados.
-        '17/10/2020 WyroX - Agrego soporte a multiples statements en la misma query
-        '************************************************************************************
-        On Error GoTo ErrorHandler
+        On Error GoTo Database_Connect_Err
         
         Dim ConnectionID As String
-        
-100     Set Database_Connection = New ADODB.Connection
-        Set Database_Connection_Async = frmMain.CreateDatabaseAsync()
-        
-102     If Len(Database_DataSource) <> 0 Then
-    
-104         ConnectionID = "DATA SOURCE=" & Database_DataSource & ";"
 
+        If Len(Database_Source) <> 0 Then
+104         ConnectionID = "DATA SOURCE=" & Database_Source & ";"
         Else
-    
 106         ConnectionID = "DRIVER={MySQL ODBC 8.0 ANSI Driver};" & _
-                                                   "SERVER=" & Database_Host & ";" & _
-                                                   "DATABASE=" & Database_Name & ";" & _
-                                                   "USER=" & Database_Username & ";" & _
-                                                   "PASSWORD=" & Database_Password & ";" & _
-                                                   "OPTION=3;MULTI_STATEMENTS=1"
+                                "SERVER=" & Database_Host & ";" & _
+                                "DATABASE=" & Database_Name & ";" & _
+                                "USER=" & Database_Username & ";" & _
+                                "PASSWORD=" & Database_Password & ";"
         End If
-        
-        Database_Connection.ConnectionString = ConnectionID
-        Database_Connection_Async.ConnectionString = ConnectionID
-        
-        Set Database_Async_Queue = New Collection
-        
-108     Debug.Print Database_Connection.ConnectionString
-    
-110     Database_Connection.CursorLocation = adUseClient
-        Database_Connection_Async.CursorLocation = adUseClient
-        
-112     Call Database_Connection.Open
-        Call Database_Connection_Async.Open
+                
+        Set Connection = New ADODB.Connection
+110     Connection.CursorLocation = adUseClient
+112     Call Connection.Open(ConnectionID)
 
-113     Set QueryBuilder = New cStringBuilder
-
-114     ConnectedOnce = True
+113     Set Builder = New cStringBuilder
 
         Exit Sub
     
-ErrorHandler:
+Database_Connect_Err:
 116     Call LogDatabaseError("Database Error: " & Err.Number & " - " & Err.Description)
-    
-118     If Not ConnectedOnce Then
-120         Call MsgBox("No se pudo conectar a la base de datos. Mas información en logs/Database.log", vbCritical, "OBDC - Error")
-122         End
-        End If
-
 End Sub
 
 Public Sub Database_Close()
+        On Error GoTo Database_Close_Err
 
-        '***************************************************
-        'Author: Juan Andres Dalmasso
-        'Last Modification: 18/09/2018
-        'Nota by WyroX: Cerrar la conexion tambien libera
-        'los recursos y cierra los RecordSet generados
-        '***************************************************
-        On Error GoTo ErrorHandler
-    
-100     Set Command = Nothing
-        
-102     If Database_Connection.State <> adStateClosed Then
-104         Call Database_Connection.Close
+        If Connection.State <> adStateClosed Then
+            Call Connection.Close
         End If
-        
-        If Database_Connection_Async.State <> adStateClosed Then
-            Call Database_Connection_Async.Close
-        End If
-        
-106     Set Database_Connection = Nothing
-        Set Database_Connection_Async = Nothing
+
+        Set Connection = Nothing
         
         Exit Sub
      
-ErrorHandler:
-108     Call LogDatabaseError("Unable to close Mysql Database: " & Err.Number & " - " & Err.Description)
-
+Database_Close_Err:
+        Call LogDatabaseError("Unable to close Mysql Database: " & Err.Number & " - " & Err.Description)
 End Sub
 
+Public Function query(ByVal Text As String, ParamArray Arguments() As Variant) As ADODB.Recordset
+    Dim Command  As New ADODB.Command
+    Dim Argument As Variant
+    
+    Command.ActiveConnection = Connection
+    Command.CommandText = Text
+    Command.CommandType = adCmdText
+    Command.Prepared = True
+    
+    For Each Argument In Arguments
+        If (IsArray(Argument)) Then
+            Dim Inner As Variant
+            
+            For Each Inner In Argument
+                Command.Parameters.Append CreateParameter(Inner, adParamInput)
+            Next Inner
+        Else
+            Command.Parameters.Append CreateParameter(Argument, adParamInput)
+        End If
+    Next Argument
+
+    On Error GoTo Query_Err
+
+    ' Statistics
+    If frmMain.chkLogDbPerfomance.Value = 1 Then
+        Call GetElapsedTime
+    End If
+    
+    Set query = Command.Execute()
+    
+    ' Statistics
+    If frmMain.chkLogDbPerfomance.Value = 1 Then
+        Call LogPerformance("Query: " & Text & vbNewLine & " - Tiempo transcurrido: " & Round(GetElapsedTime(), 1) & " ms" & vbNewLine)
+    End If
+    
+    Exit Function
+    
+Query_Err:
+    Call LogDatabaseError("Database Error: " & Err.Number & " - " & Err.Description)
+End Function
+
+Public Function Execute(ByVal Text As String, ParamArray Arguments() As Variant) As Boolean
+    Dim Command  As New ADODB.Command
+    Dim Argument As Variant
+    Dim Affected As Long
+    
+    Command.ActiveConnection = Connection
+    Command.CommandText = Text
+    Command.CommandType = adCmdText
+    Command.Prepared = True
+
+    For Each Argument In Arguments
+        If (IsArray(Argument)) Then
+            Dim Inner As Variant
+            
+            For Each Inner In Argument
+                Command.Parameters.Append CreateParameter(Inner, adParamInput)
+            Next Inner
+        Else
+            Command.Parameters.Append CreateParameter(Argument, adParamInput)
+        End If
+    Next Argument
+    
+On Error GoTo Execute_Err
+    
+    ' Statistics
+    If frmMain.chkLogDbPerfomance.Value = 1 Then
+        Call GetElapsedTime
+    End If
+    
+    Call Command.Execute(Affected)    ' @TODO: We want some operation to be async
+       
+    ' Statistics
+    If frmMain.chkLogDbPerfomance.Value = 1 Then
+        Call LogPerformance("Execute: " & Text & vbNewLine & " - Tiempo transcurrido: " & Round(GetElapsedTime(), 1) & " ms" & vbNewLine)
+    End If
+    
+Execute_Err:
+    
+    If (Err.Number <> 0) Then
+        Call LogDatabaseError("Database Error: " & Err.Number & " - " & Err.Description)
+    End If
+    
+    Execute = (Err.Number = 0 And Affected > 0)
+End Function
+
+Private Function CreateParameter(ByVal Value As Variant, ByVal Direction As ADODB.ParameterDirectionEnum) As ADODB.Parameter
+    Set CreateParameter = New ADODB.Parameter
+    
+    CreateParameter.Direction = Direction
+    
+    Select Case VarType(Value)
+        Case VbVarType.vbString
+            CreateParameter.Type = adBSTR
+            CreateParameter.Size = Len(Value)
+            CreateParameter.Value = CStr(Value)
+        Case VbVarType.vbDecimal
+            CreateParameter.Type = adInteger
+            CreateParameter.Value = CLng(Value)
+        Case VbVarType.vbByte:
+            CreateParameter.Type = adTinyInt
+            CreateParameter.Value = CByte(Value)
+        Case VbVarType.vbInteger
+            CreateParameter.Type = adSmallInt
+            CreateParameter.Value = CInt(Value)
+        Case VbVarType.vbLong
+            CreateParameter.Type = adInteger
+            CreateParameter.Value = CLng(Value)
+        Case VbVarType.vbBoolean
+            CreateParameter.Type = adBoolean
+            CreateParameter.Value = CBool(Value)
+        Case VbVarType.vbSingle
+            CreateParameter.Type = adSingle
+            CreateParameter.Value = CSng(Value)
+        Case VbVarType.vbDouble
+            CreateParameter.Type = adDouble
+            CreateParameter.Value = CDbl(Value)
+    End Select
+End Function
+
+' ------------------------------------------------------- VIEJO (necesita Refactor) -------------------------------------------------------------
 
 Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
 
@@ -177,15 +244,16 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
 194         Params(PostInc(i)) = .flags.Desnudo
 196         Params(PostInc(i)) = .Faccion.Status
         
-198         Call MakeQuery(QUERY_SAVE_MAINPJ, False, Params)
+198         Call Execute(QUERY_SAVE_MAINPJ, Params)
 
             ' Para recibir el ID del user
-200         Call MakeQuery("SELECT LAST_INSERT_ID();", False)
+            Dim RS As ADODB.Recordset
+            Set RS = query("SELECT LAST_INSERT_ID();")
 
-202         If QueryData Is Nothing Then
+202         If RS Is Nothing Then
 204             .ID = 1
             Else
-206             .ID = val(QueryData.Fields(0).Value)
+206             .ID = val(RS.Fields(0).Value)
             End If
         
             ' ******************* ATRIBUTOS *******************
@@ -200,7 +268,7 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
 220             ParamC = ParamC + 3
 222         Next LoopC
         
-224         Call MakeQuery(QUERY_SAVE_ATTRIBUTES, False, Params)
+            Call Execute(QUERY_SAVE_ATTRIBUTES, Params)
         
             ' ******************* SPELLS **********************
 226         ReDim Params(MAXUSERHECHIZOS * 3 - 1)
@@ -214,7 +282,7 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
 238             ParamC = ParamC + 3
 240         Next LoopC
 
-242         Call MakeQuery(QUERY_SAVE_SPELLS, False, Params)
+            Call Execute(QUERY_SAVE_SPELLS, Params)
         
             ' ******************* INVENTORY *******************
 244         ReDim Params(MAX_INVENTORY_SLOTS * 5 - 1)
@@ -230,7 +298,7 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
 260             ParamC = ParamC + 5
 262         Next LoopC
         
-264         Call MakeQuery(QUERY_SAVE_INVENTORY, False, Params)
+            Call Execute(QUERY_SAVE_INVENTORY, Params)
         
             ' ******************* SKILLS *******************
 266         ReDim Params(NUMSKILLS * 3 - 1)
@@ -244,7 +312,7 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
 278             ParamC = ParamC + 3
 280         Next LoopC
         
-282         Call MakeQuery(QUERY_SAVE_SKILLS, False, Params)
+            Call Execute(QUERY_SAVE_SKILLS, Params)
         
             ' ******************* QUESTS *******************
 284         ReDim Params(MAXUSERQUESTS * 2 - 1)
@@ -257,7 +325,7 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
 294             ParamC = ParamC + 2
 296         Next LoopC
         
-298         Call MakeQuery(QUERY_SAVE_QUESTS, False, Params)
+            Call Execute(QUERY_SAVE_QUESTS, Params)
         
             ' ******************* PETS ********************
 300         ReDim Params(MAXMASCOTAS * 3 - 1)
@@ -271,7 +339,7 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
 312             ParamC = ParamC + 3
 314         Next LoopC
     
-316         Call MakeQuery(QUERY_SAVE_PETS, False, Params)
+            Call Execute(QUERY_SAVE_PETS, Params)
     
         End With
 
@@ -291,7 +359,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
         Dim LoopC As Long
         Dim ParamC As Long
     
-100     Call QueryBuilder.Clear
+100     Call Builder.Clear
 
         'Basic user data
 102     With UserList(UserIndex)
@@ -395,7 +463,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
             ' WHERE block
 288         Params(PostInc(i)) = .ID
             
-            Call MakeQuery(QUERY_UPDATE_MAINPJ, True, Params)
+            Call Execute(QUERY_UPDATE_MAINPJ, Params)
 
             ' ************************** User attributes ****************************
 302         If .flags.ModificoAttributos Then
@@ -410,7 +478,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
 316                 ParamC = ParamC + 3
 318             Next LoopC
                 
-                Call MakeQuery(QUERY_UPSERT_ATTRIBUTES, True, Params)
+                Call Execute(QUERY_UPSERT_ATTRIBUTES, Params)
 
                 ' Reseteamos el flag para no volver a guardar.
                 Debug.Print "Se modificaron los atributos. WTF? Bueno, guardando..."
@@ -430,7 +498,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
 346                 ParamC = ParamC + 3
 348             Next LoopC
                 
-                Call MakeQuery(QUERY_UPSERT_SPELLS, True, Params)
+                Call Execute(QUERY_UPSERT_SPELLS, Params)
 
                 ' Reseteamos el flag para no volver a guardar.
                 Debug.Print "Se modificaron los hechizos. Guardando..."
@@ -452,7 +520,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
 382                 ParamC = ParamC + 5
 384             Next LoopC
 
-                Call MakeQuery(QUERY_UPSERT_INVENTORY, True, Params)
+                Call Execute(QUERY_UPSERT_INVENTORY, Params)
 
                 ' Reseteamos el flag para no volver a guardar.
                 Debug.Print "Se modifico el inventario. Guardando..."
@@ -473,7 +541,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
 416                 ParamC = ParamC + 4
 418             Next LoopC
     
-                Call MakeQuery(QUERY_SAVE_BANCOINV, True, Params)
+                Call Execute(QUERY_SAVE_BANCOINV, Params)
 
                 ' Reseteamos el flag para no volver a guardar.
                 Debug.Print "Se modifico el inventario del banco. Guardando..."
@@ -493,7 +561,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
 448                 ParamC = ParamC + 3
 450             Next LoopC
         
-                Call MakeQuery(QUERY_UPSERT_SKILLS, True, Params)
+                Call Execute(QUERY_UPSERT_SKILLS, Params)
 
                 ' Reseteamos el flag para no volver a guardar.
                 Debug.Print "Se modifico las habilidades. Guardando..."
@@ -529,7 +597,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
 490                 ParamC = ParamC + 3
 492             Next LoopC
                 
-                Call MakeQuery(QUERY_UPSERT_PETS, True, Params)
+                Call Execute(QUERY_UPSERT_PETS, Params)
 
                 ' Reseteamos el flag para no volver a guardar.
                 Debug.Print "Se modifico las mascotas. Guardando..."
@@ -539,22 +607,22 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
             ' ************************** User connection logs *********************************
         
             'Agrego ip del user
-            Call MakeQuery(QUERY_SAVE_CONNECTION, True, .ID, .IP)
+            'Call Execute(QUERY_SAVE_CONNECTION, .ID, .IP)
 
             'Borro la mas vieja si hay mas de 5 (WyroX: si alguien sabe una forma mejor de hacerlo me avisa)
-            Call MakeQuery(QUERY_DELETE_LAST_CONNECTIONS, True, .ID, .ID)
+            'Call Execute(QUERY_DELETE_LAST_CONNECTIONS, .ID, .ID)
 
             ' ************************** User quests *********************************
 524         If .flags.ModificoQuests Then
-526             QueryBuilder.Append "INSERT INTO quest (user_id, number, quest_id, npcs, npcstarget) VALUES "
+526             Builder.Append "INSERT INTO quest (user_id, number, quest_id, npcs, npcstarget) VALUES "
             
                 Dim Tmp As Integer, LoopK As Long
     
 528             For LoopC = 1 To MAXUSERQUESTS
-530                 QueryBuilder.Append "("
-532                 QueryBuilder.Append .ID & ", "
-534                 QueryBuilder.Append LoopC & ", "
-536                 QueryBuilder.Append .QuestStats.Quests(LoopC).QuestIndex & ", '"
+530                 Builder.Append "("
+532                 Builder.Append .ID & ", "
+534                 Builder.Append LoopC & ", "
+536                 Builder.Append .QuestStats.Quests(LoopC).QuestIndex & ", '"
                 
 538                 If .QuestStats.Quests(LoopC).QuestIndex > 0 Then
 540                     Tmp = QuestList(.QuestStats.Quests(LoopC).QuestIndex).RequiredNPCs
@@ -562,10 +630,10 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
 542                     If Tmp Then
     
 544                         For LoopK = 1 To Tmp
-546                             QueryBuilder.Append CStr(.QuestStats.Quests(LoopC).NPCsKilled(LoopK))
+546                             Builder.Append CStr(.QuestStats.Quests(LoopC).NPCsKilled(LoopK))
                             
 548                             If LoopK < Tmp Then
-550                                 QueryBuilder.Append "-"
+550                                 Builder.Append "-"
                                 End If
     
 552                         Next LoopK
@@ -575,7 +643,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
     
                     End If
                 
-554                 QueryBuilder.Append "', '"
+554                 Builder.Append "', '"
                 
 556                 If .QuestStats.Quests(LoopC).QuestIndex > 0 Then
                     
@@ -583,29 +651,29 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
                         
 560                     For LoopK = 1 To Tmp
     
-562                         QueryBuilder.Append CStr(.QuestStats.Quests(LoopC).NPCsTarget(LoopK))
+562                         Builder.Append CStr(.QuestStats.Quests(LoopC).NPCsTarget(LoopK))
                         
 564                         If LoopK < Tmp Then
-566                             QueryBuilder.Append "-"
+566                             Builder.Append "-"
                             End If
                     
 568                     Next LoopK
                 
                     End If
                 
-570                 QueryBuilder.Append "')"
+570                 Builder.Append "')"
     
 572                 If LoopC < MAXUSERQUESTS Then
-574                     QueryBuilder.Append ", "
+574                     Builder.Append ", "
                     End If
     
 576             Next LoopC
             
-578             QueryBuilder.Append " ON DUPLICATE KEY UPDATE quest_id=VALUES(quest_id), npcs=VALUES(npcs);"
+578             Builder.Append " ON DUPLICATE KEY UPDATE quest_id=VALUES(quest_id), npcs=VALUES(npcs);"
     
-                Call MakeQuery(QueryBuilder.ToString(), True)
+                Call Execute(Builder.ToString())
 
-584             Call QueryBuilder.Clear
+584             Call Builder.Clear
                 
                 ' Reseteamos el flag para no volver a guardar.
                 Debug.Print "Se modifico las quests. Guardando..."
@@ -618,18 +686,18 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
 588             If .flags.ModificoQuestsHechas Then
                 
                     ' Armamos la query con los placeholders
-590                 QueryBuilder.Append "INSERT INTO quest_done (user_id, quest_id) VALUES "
+590                 Builder.Append "INSERT INTO quest_done (user_id, quest_id) VALUES "
                 
 592                 For LoopC = 1 To .QuestStats.NumQuestsDone
-594                     QueryBuilder.Append "(?, ?)"
+594                     Builder.Append "(?, ?)"
                 
 596                     If LoopC < .QuestStats.NumQuestsDone Then
-598                         QueryBuilder.Append ", "
+598                         Builder.Append ", "
                         End If
                 
 600                 Next LoopC
                         
-602                 QueryBuilder.Append " ON DUPLICATE KEY UPDATE quest_id=VALUES(quest_id); "
+602                 Builder.Append " ON DUPLICATE KEY UPDATE quest_id=VALUES(quest_id); "
                 
                     ' Metemos los parametros
 604                 ReDim Params(.QuestStats.NumQuestsDone * 2 - 1)
@@ -642,9 +710,9 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
 614                     ParamC = ParamC + 2
 616                 Next LoopC
         
-622                 Call MakeQuery(QueryBuilder.ToString(), True, Params)
+                    Call Execute(Builder.ToString(), Params)
 
-626                 Call QueryBuilder.Clear
+626                 Call Builder.Clear
                     
                     ' Reseteamos el flag para no volver a guardar.
                     Debug.Print "Se modifico las quests hechas. Guardando..."
@@ -656,7 +724,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
             ' ************************** User logout *********************************
             ' Si deslogueó, actualizo la cuenta
 628         If Logout Then
-                Call MakeQuery("UPDATE account SET logged = logged - 1 WHERE id = ?; ", True, .AccountID)
+                Call Execute("UPDATE account SET logged = logged - 1 WHERE id = ?; ", .AccountID)
             End If
 
         End With
@@ -676,186 +744,183 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
         'Basic user data
 100     With UserList(UserIndex)
 
-102         Call MakeQuery(QUERY_LOAD_MAINPJ, False, .Name)
+             Dim RS As ADODB.Recordset
+            Set RS = query(QUERY_LOAD_MAINPJ, .Name)
 
-104         If QueryData Is Nothing Then Exit Sub
+104         If RS Is Nothing Then Exit Sub
 
             'Start setting data
-106         .ID = QueryData!ID
-108         .Name = QueryData!Name
-110         .Stats.ELV = QueryData!level
-112         .Stats.Exp = QueryData!Exp
-114         .genero = QueryData!genre_id
-116         .raza = QueryData!race_id
-118         .clase = QueryData!class_id
-120         .Hogar = QueryData!home_id
-122         .Desc = QueryData!Description
-124         .Stats.GLD = QueryData!gold
-126         .Stats.Banco = QueryData!bank_gold
-128         .Stats.SkillPts = QueryData!free_skillpoints
-130         .Pos.Map = QueryData!pos_map
-132         .Pos.X = QueryData!pos_x
-134         .Pos.Y = QueryData!pos_y
-136         .MENSAJEINFORMACION = QueryData!message_info
-138         .OrigChar.Body = QueryData!body_id
-140         .OrigChar.Head = QueryData!head_id
-142         .OrigChar.WeaponAnim = QueryData!weapon_id
-144         .OrigChar.CascoAnim = QueryData!helmet_id
-146         .OrigChar.ShieldAnim = QueryData!shield_id
-148         .OrigChar.Heading = QueryData!Heading
-150         .Invent.NroItems = QueryData!items_Amount
-152         .Invent.ArmourEqpSlot = SanitizeNullValue(QueryData!slot_armour, 0)
-154         .Invent.WeaponEqpSlot = SanitizeNullValue(QueryData!slot_weapon, 0)
-156         .Invent.CascoEqpSlot = SanitizeNullValue(QueryData!slot_helmet, 0)
-158         .Invent.EscudoEqpSlot = SanitizeNullValue(QueryData!slot_shield, 0)
-160         .Invent.MunicionEqpSlot = SanitizeNullValue(QueryData!slot_ammo, 0)
-162         .Invent.BarcoSlot = SanitizeNullValue(QueryData!slot_ship, 0)
-164         .Invent.MonturaSlot = SanitizeNullValue(QueryData!slot_mount, 0)
-166         .Invent.DañoMagicoEqpSlot = SanitizeNullValue(QueryData!slot_dm, 0)
-168         .Invent.ResistenciaEqpSlot = SanitizeNullValue(QueryData!slot_rm, 0)
-170         .Invent.NudilloSlot = SanitizeNullValue(QueryData!slot_knuckles, 0)
-172         .Invent.HerramientaEqpSlot = SanitizeNullValue(QueryData!slot_tool, 0)
-174         .Invent.MagicoSlot = SanitizeNullValue(QueryData!slot_magic, 0)
-176         .Stats.MinHp = QueryData!min_hp
-178         .Stats.MaxHp = QueryData!max_hp
-180         .Stats.MinMAN = QueryData!min_man
-182         .Stats.MaxMAN = QueryData!max_man
-184         .Stats.MinSta = QueryData!min_sta
-186         .Stats.MaxSta = QueryData!max_sta
-188         .Stats.MinHam = QueryData!min_ham
-190         .Stats.MaxHam = QueryData!max_ham
-192         .Stats.MinAGU = QueryData!min_sed
-194         .Stats.MaxAGU = QueryData!max_sed
-196         .Stats.MinHIT = QueryData!min_hit
-198         .Stats.MaxHit = QueryData!max_hit
-200         .Stats.NPCsMuertos = QueryData!killed_npcs
-202         .Stats.UsuariosMatados = QueryData!killed_users
-204         .Stats.InventLevel = QueryData!invent_level
-206         .Stats.ELO = QueryData!ELO
-208         .flags.Desnudo = QueryData!is_naked
-210         .flags.Envenenado = QueryData!is_poisoned
-212         .flags.Escondido = QueryData!is_hidden
-214         .flags.Hambre = QueryData!is_hungry
-216         .flags.Sed = QueryData!is_thirsty
-218         .flags.Ban = QueryData!is_banned
-220         .flags.Muerto = QueryData!is_dead
-222         .flags.Navegando = QueryData!is_sailing
-224         .flags.Paralizado = QueryData!is_paralyzed
-226         .flags.VecesQueMoriste = QueryData!deaths
-228         .flags.Montado = QueryData!is_mounted
-230         .flags.Pareja = QueryData!spouse
+106         .ID = RS!ID
+108         .Name = RS!Name
+110         .Stats.ELV = RS!level
+112         .Stats.Exp = RS!Exp
+114         .genero = RS!genre_id
+116         .raza = RS!race_id
+118         .clase = RS!class_id
+120         .Hogar = RS!home_id
+122         .Desc = RS!Description
+124         .Stats.GLD = RS!gold
+126         .Stats.Banco = RS!bank_gold
+128         .Stats.SkillPts = RS!free_skillpoints
+130         .Pos.Map = RS!pos_map
+132         .Pos.X = RS!pos_x
+134         .Pos.Y = RS!pos_y
+136         .MENSAJEINFORMACION = RS!message_info
+138         .OrigChar.Body = RS!body_id
+140         .OrigChar.Head = RS!head_id
+142         .OrigChar.WeaponAnim = RS!weapon_id
+144         .OrigChar.CascoAnim = RS!helmet_id
+146         .OrigChar.ShieldAnim = RS!shield_id
+148         .OrigChar.Heading = RS!Heading
+150         .Invent.NroItems = RS!items_Amount
+152         .Invent.ArmourEqpSlot = SanitizeNullValue(RS!slot_armour, 0)
+154         .Invent.WeaponEqpSlot = SanitizeNullValue(RS!slot_weapon, 0)
+156         .Invent.CascoEqpSlot = SanitizeNullValue(RS!slot_helmet, 0)
+158         .Invent.EscudoEqpSlot = SanitizeNullValue(RS!slot_shield, 0)
+160         .Invent.MunicionEqpSlot = SanitizeNullValue(RS!slot_ammo, 0)
+162         .Invent.BarcoSlot = SanitizeNullValue(RS!slot_ship, 0)
+164         .Invent.MonturaSlot = SanitizeNullValue(RS!slot_mount, 0)
+166         .Invent.DañoMagicoEqpSlot = SanitizeNullValue(RS!slot_dm, 0)
+168         .Invent.ResistenciaEqpSlot = SanitizeNullValue(RS!slot_rm, 0)
+170         .Invent.NudilloSlot = SanitizeNullValue(RS!slot_knuckles, 0)
+172         .Invent.HerramientaEqpSlot = SanitizeNullValue(RS!slot_tool, 0)
+174         .Invent.MagicoSlot = SanitizeNullValue(RS!slot_magic, 0)
+176         .Stats.MinHp = RS!min_hp
+178         .Stats.MaxHp = RS!max_hp
+180         .Stats.MinMAN = RS!min_man
+182         .Stats.MaxMAN = RS!max_man
+184         .Stats.MinSta = RS!min_sta
+186         .Stats.MaxSta = RS!max_sta
+188         .Stats.MinHam = RS!min_ham
+190         .Stats.MaxHam = RS!max_ham
+192         .Stats.MinAGU = RS!min_sed
+194         .Stats.MaxAGU = RS!max_sed
+196         .Stats.MinHIT = RS!min_hit
+198         .Stats.MaxHit = RS!max_hit
+200         .Stats.NPCsMuertos = RS!killed_npcs
+202         .Stats.UsuariosMatados = RS!killed_users
+204         .Stats.InventLevel = RS!invent_level
+206         .Stats.ELO = RS!ELO
+208         .flags.Desnudo = RS!is_naked
+210         .flags.Envenenado = RS!is_poisoned
+212         .flags.Escondido = RS!is_hidden
+214         .flags.Hambre = RS!is_hungry
+216         .flags.Sed = RS!is_thirsty
+218         .flags.Ban = RS!is_banned
+220         .flags.Muerto = RS!is_dead
+222         .flags.Navegando = RS!is_sailing
+224         .flags.Paralizado = RS!is_paralyzed
+226         .flags.VecesQueMoriste = RS!deaths
+228         .flags.Montado = RS!is_mounted
+230         .flags.Pareja = RS!spouse
 232         .flags.Casado = IIf(Len(.flags.Pareja) > 0, 1, 0)
-234         .flags.Silenciado = QueryData!is_silenced
-236         .flags.MinutosRestantes = QueryData!silence_minutes_left
-238         .flags.SegundosPasados = QueryData!silence_elapsed_seconds
-240         .flags.MascotasGuardadas = QueryData!pets_saved
+234         .flags.Silenciado = RS!is_silenced
+236         .flags.MinutosRestantes = RS!silence_minutes_left
+238         .flags.SegundosPasados = RS!silence_elapsed_seconds
+240         .flags.MascotasGuardadas = RS!pets_saved
 
-246         .flags.ReturnPos.Map = QueryData!return_map
-248         .flags.ReturnPos.X = QueryData!return_x
-250         .flags.ReturnPos.Y = QueryData!return_y
+246         .flags.ReturnPos.Map = RS!return_map
+248         .flags.ReturnPos.X = RS!return_x
+250         .flags.ReturnPos.Y = RS!return_y
         
-252         .Counters.Pena = QueryData!counter_pena
+252         .Counters.Pena = RS!counter_pena
         
-254         .ChatGlobal = QueryData!chat_global
-256         .ChatCombate = QueryData!chat_combate
+254         .ChatGlobal = RS!chat_global
+256         .ChatCombate = RS!chat_combate
 
-258         If QueryData!pertenece_consejo_real Then
+258         If RS!pertenece_consejo_real Then
 260             .flags.Privilegios = .flags.Privilegios Or PlayerType.RoyalCouncil
 
             End If
 
-262         If QueryData!pertenece_consejo_caos Then
+262         If RS!pertenece_consejo_caos Then
 264             .flags.Privilegios = .flags.Privilegios Or PlayerType.ChaosCouncil
 
             End If
 
-266         .Faccion.ArmadaReal = QueryData!pertenece_real
-268         .Faccion.FuerzasCaos = QueryData!pertenece_caos
-270         .Faccion.ciudadanosMatados = QueryData!ciudadanos_matados
-272         .Faccion.CriminalesMatados = QueryData!criminales_matados
-274         .Faccion.RecibioArmaduraReal = QueryData!recibio_armadura_real
-276         .Faccion.RecibioArmaduraCaos = QueryData!recibio_armadura_caos
-278         .Faccion.RecibioExpInicialReal = QueryData!recibio_exp_real
-280         .Faccion.RecibioExpInicialCaos = QueryData!recibio_exp_caos
-282         .Faccion.RecompensasReal = QueryData!recompensas_real
-284         .Faccion.RecompensasCaos = QueryData!recompensas_caos
-286         .Faccion.Reenlistadas = QueryData!Reenlistadas
-288         .Faccion.NivelIngreso = SanitizeNullValue(QueryData!nivel_ingreso, 0)
-290         .Faccion.MatadosIngreso = SanitizeNullValue(QueryData!matados_ingreso, 0)
-292         .Faccion.NextRecompensa = SanitizeNullValue(QueryData!siguiente_recompensa, 0)
-294         .Faccion.Status = QueryData!Status
+266         .Faccion.ArmadaReal = RS!pertenece_real
+268         .Faccion.FuerzasCaos = RS!pertenece_caos
+270         .Faccion.ciudadanosMatados = RS!ciudadanos_matados
+272         .Faccion.CriminalesMatados = RS!criminales_matados
+274         .Faccion.RecibioArmaduraReal = RS!recibio_armadura_real
+276         .Faccion.RecibioArmaduraCaos = RS!recibio_armadura_caos
+278         .Faccion.RecibioExpInicialReal = RS!recibio_exp_real
+280         .Faccion.RecibioExpInicialCaos = RS!recibio_exp_caos
+282         .Faccion.RecompensasReal = RS!recompensas_real
+284         .Faccion.RecompensasCaos = RS!recompensas_caos
+286         .Faccion.Reenlistadas = RS!Reenlistadas
+288         .Faccion.NivelIngreso = SanitizeNullValue(RS!nivel_ingreso, 0)
+290         .Faccion.MatadosIngreso = SanitizeNullValue(RS!matados_ingreso, 0)
+292         .Faccion.NextRecompensa = SanitizeNullValue(RS!siguiente_recompensa, 0)
+294         .Faccion.Status = RS!Status
 
-296         .GuildIndex = SanitizeNullValue(QueryData!Guild_Index, 0)
+296         .GuildIndex = SanitizeNullValue(RS!Guild_Index, 0)
         
-298         .Stats.Advertencias = QueryData!warnings
+298         .Stats.Advertencias = RS!warnings
         
             'User attributes
-300         Call MakeQuery("SELECT value, number FROM attribute WHERE user_id = ?;", False, .ID)
+            Set RS = query("SELECT value, number FROM attribute WHERE user_id = ?;", .ID)
     
-302         If Not QueryData Is Nothing Then
-304             QueryData.MoveFirst
+302         If Not RS Is Nothing Then
 
-306             While Not QueryData.EOF
+306             While Not RS.EOF
 
-308                 .Stats.UserAtributos(QueryData!Number) = QueryData!Value
-310                 .Stats.UserAtributosBackUP(QueryData!Number) = .Stats.UserAtributos(QueryData!Number)
+308                 .Stats.UserAtributos(RS!Number) = RS!Value
+310                 .Stats.UserAtributosBackUP(RS!Number) = .Stats.UserAtributos(RS!Number)
 
-312                 QueryData.MoveNext
+312                 RS.MoveNext
                 Wend
 
             End If
 
             'User spells
-314         Call MakeQuery("SELECT number, spell_id FROM spell WHERE user_id = ?;", False, .ID)
+            Set RS = query("SELECT number, spell_id FROM spell WHERE user_id = ?;", .ID)
 
-316         If Not QueryData Is Nothing Then
-318             QueryData.MoveFirst
+316         If Not RS Is Nothing Then
 
-320             While Not QueryData.EOF
+320             While Not RS.EOF
 
-322                 .Stats.UserHechizos(QueryData!Number) = QueryData!spell_id
+322                 .Stats.UserHechizos(RS!Number) = RS!spell_id
 
-324                 QueryData.MoveNext
+324                 RS.MoveNext
                 Wend
 
             End If
 
             'User pets
-326         Call MakeQuery("SELECT number, pet_id FROM pet WHERE user_id = ?;", False, .ID)
+            Set RS = query("SELECT number, pet_id FROM pet WHERE user_id = ?;", .ID)
 
-328         If Not QueryData Is Nothing Then
-330             QueryData.MoveFirst
+328         If Not RS Is Nothing Then
 
-332             While Not QueryData.EOF
+332             While Not RS.EOF
 
-334                 .MascotasType(QueryData!Number) = QueryData!pet_id
+334                 .MascotasType(RS!Number) = RS!pet_id
                 
-336                 If val(QueryData!pet_id) <> 0 Then
+336                 If val(RS!pet_id) <> 0 Then
 338                     .NroMascotas = .NroMascotas + 1
 
                     End If
 
-340                 QueryData.MoveNext
+340                 RS.MoveNext
                 Wend
 
             End If
 
             'User inventory
-342         Call MakeQuery("SELECT number, item_id, is_equipped, amount FROM inventory_item WHERE user_id = ?;", False, .ID)
+            Set RS = query("SELECT number, item_id, is_equipped, amount FROM inventory_item WHERE user_id = ?;", .ID)
 
             
-344         If Not QueryData Is Nothing Then
-346             QueryData.MoveFirst
+344         If Not RS Is Nothing Then
 
-348             While Not QueryData.EOF
+348             While Not RS.EOF
 
-350                 With .Invent.Object(QueryData!Number)
-352                     .ObjIndex = QueryData!item_id
+350                 With .Invent.Object(RS!Number)
+352                     .ObjIndex = RS!item_id
                 
 354                     If .ObjIndex <> 0 Then
 356                         If LenB(ObjData(.ObjIndex).Name) Then
-358                             .amount = QueryData!amount
-360                             .Equipped = QueryData!is_equipped
+358                             .amount = RS!amount
+360                             .Equipped = RS!is_equipped
                             Else
 362                             .ObjIndex = 0
 
@@ -865,29 +930,28 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
 
                     End With
 
-364                 QueryData.MoveNext
+364                 RS.MoveNext
                 Wend
 
             End If
 
             'User bank inventory
-366         Call MakeQuery("SELECT number, item_id, amount FROM bank_item WHERE user_id = ?;", False, .ID)
+            Set RS = query("SELECT number, item_id, amount FROM bank_item WHERE user_id = ?;", .ID)
             
             counter = 0
             
-368         If Not QueryData Is Nothing Then
-370             QueryData.MoveFirst
+368         If Not RS Is Nothing Then
 
-372             While Not QueryData.EOF
+372             While Not RS.EOF
 
-374                 With .BancoInvent.Object(QueryData!Number)
-376                     .ObjIndex = QueryData!item_id
+374                 With .BancoInvent.Object(RS!Number)
+376                     .ObjIndex = RS!item_id
                 
 378                     If .ObjIndex <> 0 Then
 380                         If LenB(ObjData(.ObjIndex).Name) Then
                                 counter = counter + 1
                                 
-382                             .amount = QueryData!amount
+382                             .amount = RS!amount
                             Else
 384                             .ObjIndex = 0
 
@@ -897,25 +961,24 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
 
                     End With
 
-386                 QueryData.MoveNext
+386                 RS.MoveNext
                 Wend
                 
                 .BancoInvent.NroItems = counter
             End If
             
             'User skills
-388         Call MakeQuery("SELECT number, value FROM skillpoint WHERE user_id = ?;", False, .ID)
+            Set RS = query("SELECT number, value FROM skillpoint WHERE user_id = ?;", .ID)
 
-390         If Not QueryData Is Nothing Then
-392             QueryData.MoveFirst
+390         If Not RS Is Nothing Then
 
-394             While Not QueryData.EOF
+394             While Not RS.EOF
 
-396                 .Stats.UserSkills(QueryData!Number) = QueryData!Value
-                    '.Stats.ExpSkills(QueryData!Number) = QueryData!Exp
-                    '.Stats.EluSkills(QueryData!Number) = QueryData!ELU
+396                 .Stats.UserSkills(RS!Number) = RS!Value
+                    '.Stats.ExpSkills(RS!Number) = RS!Exp
+                    '.Stats.EluSkills(RS!Number) = RS!ELU
 
-398                 QueryData.MoveNext
+398                 RS.MoveNext
                 Wend
 
             End If
@@ -923,82 +986,79 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
             'User friends
             'Call MakeQuery("SELECT * FROM friend WHERE user_id = ?;", False, .Id)
 
-            'If Not QueryData Is Nothing Then
-            '    QueryData.MoveFirst
+            'If Not RS Is Nothing Then
+            '    RS.MoveFirst
 
-            '    While Not QueryData.EOF
+            '    While Not RS.EOF
 
-            '200     .Amigos(QueryData!Number).Nombre = QueryData!friend
-            '200     .Amigos(QueryData!Number).Ignorado = QueryData!Ignored
+            '200     .Amigos(RS!Number).Nombre = RS!friend
+            '200     .Amigos(RS!Number).Ignorado = RS!Ignored
 
-            '        QueryData.MoveNext
+            '        RS.MoveNext
             '    Wend
             'End If
         
             Dim LoopC As Byte
         
             'User quests
-400         Call MakeQuery("SELECT number, quest_id, npcs, npcstarget FROM quest WHERE user_id = ?;", False, .ID)
+            Set RS = query("SELECT number, quest_id, npcs, npcstarget FROM quest WHERE user_id = ?;", .ID)
 
-402         If Not QueryData Is Nothing Then
-404             QueryData.MoveFirst
+402         If Not RS Is Nothing Then
 
-406             While Not QueryData.EOF
+406             While Not RS.EOF
 
-408                 .QuestStats.Quests(QueryData!Number).QuestIndex = QueryData!quest_id
+408                 .QuestStats.Quests(RS!Number).QuestIndex = RS!quest_id
                 
-410                 If .QuestStats.Quests(QueryData!Number).QuestIndex > 0 Then
-412                     If QuestList(.QuestStats.Quests(QueryData!Number).QuestIndex).RequiredNPCs Then
+410                 If .QuestStats.Quests(RS!Number).QuestIndex > 0 Then
+412                     If QuestList(.QuestStats.Quests(RS!Number).QuestIndex).RequiredNPCs Then
 
                             Dim NPCs() As String
 
-414                         NPCs = Split(QueryData!NPCs, "-")
-416                         ReDim .QuestStats.Quests(QueryData!Number).NPCsKilled(1 To QuestList(.QuestStats.Quests(QueryData!Number).QuestIndex).RequiredNPCs)
+414                         NPCs = Split(RS!NPCs, "-")
+416                         ReDim .QuestStats.Quests(RS!Number).NPCsKilled(1 To QuestList(.QuestStats.Quests(RS!Number).QuestIndex).RequiredNPCs)
 
-418                         For LoopC = 1 To QuestList(.QuestStats.Quests(QueryData!Number).QuestIndex).RequiredNPCs
-420                             .QuestStats.Quests(QueryData!Number).NPCsKilled(LoopC) = val(NPCs(LoopC - 1))
+418                         For LoopC = 1 To QuestList(.QuestStats.Quests(RS!Number).QuestIndex).RequiredNPCs
+420                             .QuestStats.Quests(RS!Number).NPCsKilled(LoopC) = val(NPCs(LoopC - 1))
 422                         Next LoopC
 
                         End If
                     
-424                     If QuestList(.QuestStats.Quests(QueryData!Number).QuestIndex).RequiredTargetNPCs Then
+424                     If QuestList(.QuestStats.Quests(RS!Number).QuestIndex).RequiredTargetNPCs Then
 
                             Dim NPCsTarget() As String
 
-426                         NPCsTarget = Split(QueryData!NPCsTarget, "-")
-428                         ReDim .QuestStats.Quests(QueryData!Number).NPCsTarget(1 To QuestList(.QuestStats.Quests(QueryData!Number).QuestIndex).RequiredTargetNPCs)
+426                         NPCsTarget = Split(RS!NPCsTarget, "-")
+428                         ReDim .QuestStats.Quests(RS!Number).NPCsTarget(1 To QuestList(.QuestStats.Quests(RS!Number).QuestIndex).RequiredTargetNPCs)
 
-430                         For LoopC = 1 To QuestList(.QuestStats.Quests(QueryData!Number).QuestIndex).RequiredTargetNPCs
-432                             .QuestStats.Quests(QueryData!Number).NPCsTarget(LoopC) = val(NPCsTarget(LoopC - 1))
+430                         For LoopC = 1 To QuestList(.QuestStats.Quests(RS!Number).QuestIndex).RequiredTargetNPCs
+432                             .QuestStats.Quests(RS!Number).NPCsTarget(LoopC) = val(NPCsTarget(LoopC - 1))
 434                         Next LoopC
 
                         End If
 
                     End If
 
-436                 QueryData.MoveNext
+436                 RS.MoveNext
                 Wend
 
             End If
         
             'User quests done
-438         Call MakeQuery("SELECT quest_id FROM quest_done WHERE user_id = ?;", False, .ID)
+            Set RS = query("SELECT quest_id FROM quest_done WHERE user_id = ?;", .ID)
 
-440         If Not QueryData Is Nothing Then
-442             .QuestStats.NumQuestsDone = QueryData.RecordCount
+440         If Not RS Is Nothing Then
+442             .QuestStats.NumQuestsDone = RS.RecordCount
                 
 444             ReDim .QuestStats.QuestsDone(1 To .QuestStats.NumQuestsDone)
-        
-446             QueryData.MoveFirst
-            
+
 448             LoopC = 1
 
-450             While Not QueryData.EOF
+450             While Not RS.EOF
             
-452                 .QuestStats.QuestsDone(LoopC) = QueryData!quest_id
+452                 .QuestStats.QuestsDone(LoopC) = RS!quest_id
 454                 LoopC = LoopC + 1
 
-456                 QueryData.MoveNext
+456                 RS.MoveNext
                 Wend
 
             End If
@@ -1007,19 +1067,17 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
             'TODO:
         
             ' Llaves
-458         Call MakeQuery("SELECT key_obj FROM house_key WHERE account_id = ?", False, .AccountID)
+            Set RS = query("SELECT key_obj FROM house_key WHERE account_id = ?", .AccountID)
 
-460         If Not QueryData Is Nothing Then
-462             QueryData.MoveFirst
-
+460         If Not RS Is Nothing Then
 464             LoopC = 1
 
-466             While Not QueryData.EOF
+466             While Not RS.EOF
 
-468                 .Keys(LoopC) = QueryData!key_obj
+468                 .Keys(LoopC) = RS!key_obj
 470                 LoopC = LoopC + 1
 
-472                 QueryData.MoveNext
+472                 RS.MoveNext
                 Wend
 
             End If
@@ -1031,123 +1089,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
 ErrorHandler:
 474     Call LogDatabaseError("Error en LoadUserDatabase: " & UserList(UserIndex).Name & ". " & Err.Number & " - " & Err.Description & ". Línea: " & Erl)
 
-
-
 End Sub
-
-Public Function MakeQuery(query As String, ByVal NoResultAndAsync As Boolean, ParamArray Query_Parameters() As Variant) As Boolean
-        ' 17/10/2020 Autor: Alexis Caraballo (WyroX)
-        ' Hace una unica query a la db. Asume una conexion.
-        ' Si NoResult = False, el metodo lee el resultado de la query
-        ' Guarda el resultado en QueryData
-    
-        On Error GoTo ErrorHandler
-        
-        Dim ArgumentOuter As Variant
-        Dim ArgumentInner As Variant
-        
-        If frmMain.chkLogDbPerfomance.Value = 1 Then Call GetElapsedTime
-
-100     Set Command = New ADODB.Command
-    
-102     With Command
-
-            If (NoResultAndAsync) Then
-                .ActiveConnection = Database_Connection_Async
-            Else
-                .ActiveConnection = Database_Connection
-            End If
-            
-110         .CommandText = query
-106         .CommandType = adCmdText
-            .Prepared = True
-            
-            For Each ArgumentOuter In Query_Parameters
-                If (IsArray(ArgumentOuter)) Then
-                    For Each ArgumentInner In ArgumentOuter
-                        .Parameters.Append CreateParameter(ArgumentInner, adParamInput)
-                    Next ArgumentInner
-                Else
-                    .Parameters.Append CreateParameter(ArgumentOuter, adParamInput)
-                End If
-            Next ArgumentOuter
-
-124         If NoResultAndAsync Then
-                Call Database_Async_Queue.Add(Command)
-
-                If (Database_Async_Queue.Count = 1) Then
-                    Call .Execute(, , adExecuteNoRecords + adAsyncExecute)
-                End If
-            Else
-                Set QueryData = .Execute(RecordsAffected)
-                
-                If QueryData.State <> 0 Then
-                    If QueryData.BOF Or QueryData.EOF Then
-                        Set QueryData = Nothing
-                    End If
-                End If
-            End If
-        
-        End With
-        If frmMain.chkLogDbPerfomance.Value = 1 Then Call LogPerformance("Query: " & query & vbNewLine & " - Tiempo transcurrido: " & Round(GetElapsedTime(), 1) & " ms" & vbNewLine)
-    
-        Exit Function
-    
-ErrorHandler:
-
-        Dim errNumber As Long, ErrDesc As String
-134     errNumber = Err.Number
-136     ErrDesc = Err.Description
-
-138     If Not adoIsConnected(Database_Connection) Then
-140         Call LogDatabaseError("Alerta en MakeQuery: Se perdió la conexión con la DB. Reconectando.")
-142         Call Database_Connect
-144         Resume
-        
-        Else
-146         Call LogDatabaseError("Error en MakeQuery: query = '" & query & "'. " & errNumber & " - " & ErrDesc)
-        
-            On Error GoTo 0
-
-148         Err.raise errNumber, "MakeQuery", ErrDesc
-
-        End If
-
-End Function
-
-Private Function CreateParameter(ByVal Value As Variant, ByVal Direction As ADODB.ParameterDirectionEnum) As ADODB.Parameter
-    Set CreateParameter = New ADODB.Parameter
-    
-    CreateParameter.Direction = Direction
-    
-    Select Case VarType(Value)
-        Case VbVarType.vbString
-            CreateParameter.Type = adBSTR
-            CreateParameter.Size = Len(Value)
-            CreateParameter.Value = CStr(Value)
-        Case VbVarType.vbDecimal
-            CreateParameter.Type = adInteger
-            CreateParameter.Value = CLng(Value)
-        Case VbVarType.vbByte:
-            CreateParameter.Type = adTinyInt
-            CreateParameter.Value = CByte(Value)
-        Case VbVarType.vbInteger
-            CreateParameter.Type = adSmallInt
-            CreateParameter.Value = CInt(Value)
-        Case VbVarType.vbLong
-            CreateParameter.Type = adInteger
-            CreateParameter.Value = CLng(Value)
-        Case VbVarType.vbBoolean
-            CreateParameter.Type = adBoolean
-            CreateParameter.Value = CBool(Value)
-        Case VbVarType.vbSingle
-            CreateParameter.Type = adSingle
-            CreateParameter.Value = CSng(Value)
-        Case VbVarType.vbDouble
-            CreateParameter.Type = adDouble
-            CreateParameter.Value = CDbl(Value)
-    End Select
-End Function
 
 Public Function GetDBValue(Tabla As String, ColumnaGet As String, ColumnaTest As String, ValueTest As Variant) As Variant
         ' 17/10/2020 Autor: Alexis Caraballo (WyroX)
@@ -1155,19 +1097,19 @@ Public Function GetDBValue(Tabla As String, ColumnaGet As String, ColumnaTest As
 
         On Error GoTo ErrorHandler
     
-100     Call MakeQuery("SELECT " & ColumnaGet & " FROM " & Tabla & " WHERE " & ColumnaTest & " = ?;", False, ValueTest)
-    
+100     Dim RS As ADODB.Recordset
+        Set RS = query("SELECT " & ColumnaGet & " FROM " & Tabla & " WHERE " & ColumnaTest & " = ?;", ValueTest)
+
         'Revisamos si recibio un resultado
-102     If QueryData Is Nothing Then Exit Function
+102     If RS Is Nothing Then Exit Function
 
         'Obtenemos la variable
-104     GetDBValue = QueryData.Fields(0).Value
+104     GetDBValue = RS.Fields(ColumnaGet).Value
 
         Exit Function
     
 ErrorHandler:
 106     Call LogDatabaseError("Error en GetDBValue: SELECT " & ColumnaGet & " FROM " & Tabla & " WHERE " & ColumnaTest & " = '" & ValueTest & "';" & ". " & Err.Number & " - " & Err.Description)
-
 End Function
 
 Public Function GetCuentaValue(CuentaEmail As String, Columna As String) As Variant
@@ -1183,8 +1125,6 @@ Public Function GetCuentaValue(CuentaEmail As String, Columna As String) As Vari
 
 GetCuentaValue_Err:
 102     Call TraceError(Err.Number, Err.Description, "modDatabase.GetCuentaValue", Erl)
-
-        
 End Function
 
 Public Function GetUserValue(CharName As String, Columna As String) As Variant
@@ -1200,8 +1140,6 @@ Public Function GetUserValue(CharName As String, Columna As String) As Variant
 
 GetUserValue_Err:
 102     Call TraceError(Err.Number, Err.Description, "modDatabase.GetUserValue", Erl)
-
-        
 End Function
 
 Public Sub SetDBValue(Tabla As String, ColumnaSet As String, ByVal ValueSet As Variant, ColumnaTest As String, ByVal ValueTest As Variant)
@@ -1210,13 +1148,12 @@ Public Sub SetDBValue(Tabla As String, ColumnaSet As String, ByVal ValueSet As V
 
         On Error GoTo ErrorHandler
 
-        Call MakeQuery("UPDATE " & Tabla & " SET " & ColumnaSet & " = ? WHERE " & ColumnaTest & " = ?;", True, ValueSet, ValueTest)
-        
+        Call Execute("UPDATE " & Tabla & " SET " & ColumnaSet & " = ? WHERE " & ColumnaTest & " = ?;", ValueSet, ValueTest)
+
         Exit Sub
     
 ErrorHandler:
 102     Call LogDatabaseError("Error en SetDBValue: UPDATE " & Tabla & " SET " & ColumnaSet & " = " & ValueSet & " WHERE " & ColumnaTest & " = " & ValueTest & ";" & ". " & Err.Number & " - " & Err.Description)
-
 End Sub
 
 Private Sub SetCuentaValue(CuentaEmail As String, Columna As String, Value As Variant)
@@ -1227,13 +1164,10 @@ Private Sub SetCuentaValue(CuentaEmail As String, Columna As String, Value As Va
         
 100     Call SetDBValue("account", Columna, Value, "email", LCase$(CuentaEmail))
 
-        
         Exit Sub
 
 SetCuentaValue_Err:
 102     Call TraceError(Err.Number, Err.Description, "modDatabase.SetCuentaValue", Erl)
-
-        
 End Sub
 
 Private Sub SetUserValue(CharName As String, Columna As String, Value As Variant)
@@ -1244,13 +1178,10 @@ Private Sub SetUserValue(CharName As String, Columna As String, Value As Variant
         
 100     Call SetDBValue("user", Columna, Value, "name", CharName)
 
-        
         Exit Sub
 
 SetUserValue_Err:
 102     Call TraceError(Err.Number, Err.Description, "modDatabase.SetUserValue", Erl)
-
-        
 End Sub
 
 Private Sub SetCuentaValueByID(ByVal AccountID As Long, Columna As String, Value As Variant)
@@ -1262,13 +1193,10 @@ Private Sub SetCuentaValueByID(ByVal AccountID As Long, Columna As String, Value
         
 100     Call SetDBValue("account", Columna, Value, "id", AccountID)
 
-        
         Exit Sub
 
 SetCuentaValueByID_Err:
 102     Call TraceError(Err.Number, Err.Description, "modDatabase.SetCuentaValueByID", Erl)
-
-        
 End Sub
 
 Private Sub SetUserValueByID(ByVal ID As Long, Columna As String, Value As Variant)
@@ -1280,13 +1208,10 @@ Private Sub SetUserValueByID(ByVal ID As Long, Columna As String, Value As Varia
         
 100     Call SetDBValue("user", Columna, Value, "id", ID)
 
-        
         Exit Sub
 
 SetUserValueByID_Err:
 102     Call TraceError(Err.Number, Err.Description, "modDatabase.SetUserValueByID", Erl)
-
-        
 End Sub
 
 Public Function CheckUserExists(Name As String) As Boolean
@@ -1295,13 +1220,10 @@ Public Function CheckUserExists(Name As String) As Boolean
         
 100     CheckUserExists = GetUserValue(Name, "COUNT(*)") > 0
 
-        
         Exit Function
 
 CheckUserExists_Err:
 102     Call TraceError(Err.Number, Err.Description, "modDatabase.CheckUserExists", Erl)
-
-        
 End Function
 
 Public Function CheckCuentaExiste(CuentaEmail As String) As Boolean
@@ -1324,14 +1246,11 @@ Public Function BANCheckDatabase(Name As String) As Boolean
         On Error GoTo BANCheckDatabase_Err
         
 100     BANCheckDatabase = CBool(GetUserValue(Name, "is_banned"))
-
-        
+  
         Exit Function
 
 BANCheckDatabase_Err:
 102     Call TraceError(Err.Number, Err.Description, "modDatabase.BANCheckDatabase", Erl)
-
-        
 End Function
 
 Public Function GetCodigoActivacionDatabase(Name As String) As String
@@ -1346,7 +1265,6 @@ Public Function GetCodigoActivacionDatabase(Name As String) As String
 GetCodigoActivacionDatabase_Err:
 102     Call TraceError(Err.Number, Err.Description, "modDatabase.GetCodigoActivacionDatabase", Erl)
 
-        
 End Function
 
 Public Function CheckCuentaActivadaDatabase(Name As String) As Boolean
@@ -1513,12 +1431,13 @@ Public Sub GetPasswordAndSaltDatabase(CuentaEmail As String, PasswordHash As Str
 
         On Error GoTo ErrorHandler
     
-100     Call MakeQuery("SELECT password, salt FROM account WHERE deleted = FALSE AND email = ?;", False, LCase$(CuentaEmail))
+        Dim RS As ADODB.Recordset
+        Set RS = query("SELECT password, salt FROM account WHERE deleted = FALSE AND email = ?;", LCase$(CuentaEmail))
 
-102     If QueryData Is Nothing Then Exit Sub
+102     If RS Is Nothing Then Exit Sub
     
-104     PasswordHash = QueryData!Password
-106     Salt = QueryData!Salt
+104     PasswordHash = RS!Password
+106     Salt = RS!Salt
     
         Exit Sub
     
@@ -1548,11 +1467,12 @@ Public Function GetPersonajesCountByIDDatabase(ByVal AccountID As Long) As Byte
 
         On Error GoTo ErrorHandler
     
-100     Call MakeQuery("SELECT COUNT(*) FROM user WHERE deleted = FALSE AND account_id = ?;", False, AccountID)
+        Dim RS As ADODB.Recordset
+100     Set RS = query("SELECT COUNT(*) FROM user WHERE deleted = FALSE AND account_id = ?;", AccountID)
     
-102     If QueryData Is Nothing Then Exit Function
+102     If RS Is Nothing Then Exit Function
     
-104     GetPersonajesCountByIDDatabase = QueryData.Fields(0).Value
+104     GetPersonajesCountByIDDatabase = RS.Fields(0).Value
     
         Exit Function
     
@@ -1565,31 +1485,29 @@ Public Function GetPersonajesCuentaDatabase(ByVal AccountID As Long, Personaje()
         
         On Error GoTo GetPersonajesCuentaDatabase_Err
         
+        Dim RS As ADODB.Recordset
+100     Set RS = query("SELECT name, head_id, class_id, body_id, pos_map, pos_x, pos_y, level, status, helmet_id, shield_id, weapon_id, guild_index, is_dead, is_sailing FROM user WHERE deleted = FALSE AND account_id = ?;", AccountID)
 
-100     Call MakeQuery("SELECT name, head_id, class_id, body_id, pos_map, pos_x, pos_y, level, status, helmet_id, shield_id, weapon_id, guild_index, is_dead, is_sailing FROM user WHERE deleted = FALSE AND account_id = ?;", False, AccountID)
+102     If RS Is Nothing Then Exit Function
+    
+104     GetPersonajesCuentaDatabase = RS.RecordCount
 
-102     If QueryData Is Nothing Then Exit Function
-    
-104     GetPersonajesCuentaDatabase = QueryData.RecordCount
-        
-106     QueryData.MoveFirst
-    
         Dim i As Integer
 
 108     For i = 1 To GetPersonajesCuentaDatabase
-110         Personaje(i).nombre = QueryData!Name
-112         Personaje(i).Cabeza = QueryData!head_id
-114         Personaje(i).clase = QueryData!class_id
-116         Personaje(i).cuerpo = QueryData!body_id
-118         Personaje(i).Mapa = QueryData!pos_map
-120         Personaje(i).posX = QueryData!pos_x
-122         Personaje(i).posY = QueryData!pos_y
-124         Personaje(i).nivel = QueryData!level
-126         Personaje(i).Status = QueryData!Status
-128         Personaje(i).Casco = QueryData!helmet_id
-130         Personaje(i).Escudo = QueryData!shield_id
-132         Personaje(i).Arma = QueryData!weapon_id
-134         Personaje(i).ClanIndex = QueryData!Guild_Index
+110         Personaje(i).nombre = RS!Name
+112         Personaje(i).Cabeza = RS!head_id
+114         Personaje(i).clase = RS!class_id
+116         Personaje(i).cuerpo = RS!body_id
+118         Personaje(i).Mapa = RS!pos_map
+120         Personaje(i).posX = RS!pos_x
+122         Personaje(i).posY = RS!pos_y
+124         Personaje(i).nivel = RS!level
+126         Personaje(i).Status = RS!Status
+128         Personaje(i).Casco = RS!helmet_id
+130         Personaje(i).Escudo = RS!shield_id
+132         Personaje(i).Arma = RS!weapon_id
+134         Personaje(i).ClanIndex = RS!Guild_Index
         
 136         If EsRolesMaster(Personaje(i).nombre) Then
 138             Personaje(i).Status = 3
@@ -1604,14 +1522,13 @@ Public Function GetPersonajesCuentaDatabase(ByVal AccountID As Long, Personaje()
 
             End If
 
-156         If val(QueryData!is_dead) = 1 Or val(QueryData!is_sailing) = 1 Then
+156         If val(RS!is_dead) = 1 Or val(RS!is_sailing) = 1 Then
 158             Personaje(i).Cabeza = 0
             End If
         
-160         QueryData.MoveNext
+160         RS.MoveNext
         Next
 
-        
         Exit Function
 
 GetPersonajesCuentaDatabase_Err:
@@ -1626,7 +1543,7 @@ Public Sub SetUserLoggedDatabase(ByVal ID As Long, ByVal AccountID As Long)
         
 100     Call SetDBValue("user", "is_logged", 1, "id", ID)
         
-        Call MakeQuery("UPDATE account SET logged = logged + 1 WHERE id = ?", True, AccountID)
+        Call Execute("UPDATE account SET logged = logged + 1 WHERE id = ?;", AccountID)
 
         Exit Sub
 
@@ -1640,7 +1557,7 @@ Public Sub ResetLoggedDatabase(ByVal AccountID As Long)
         
         On Error GoTo ResetLoggedDatabase_Err
         
-        Call MakeQuery("UPDATE account SET logged = 0 WHERE id = ?", True, AccountID)
+        Call Execute("UPDATE account SET logged = 0 WHERE id = ?;", AccountID)
         
         Exit Sub
 
@@ -1654,7 +1571,7 @@ Public Sub SetUsersLoggedDatabase(ByVal NumUsers As Long)
         
         On Error GoTo SetUsersLoggedDatabase_Err
         
-        Call MakeQuery("UPDATE statistics SET value = ? WHERE name = 'online'", True, NumUsers)
+        Call Execute("UPDATE statistics SET value = ? WHERE name = 'online';", NumUsers)
         
         Exit Sub
 
@@ -1668,11 +1585,12 @@ Public Function LeerRecordUsuariosDatabase() As Long
         
         On Error GoTo LeerRecordUsuariosDatabase_Err
         
-100     Call MakeQuery("SELECT value FROM statistics WHERE name = 'record';", False)
+        Dim RS As ADODB.Recordset
+100     Set RS = query("SELECT value FROM statistics WHERE name = 'record';")
 
-102     If QueryData Is Nothing Then Exit Function
+102     If RS Is Nothing Then Exit Function
 
-104     LeerRecordUsuariosDatabase = val(QueryData!Value)
+104     LeerRecordUsuariosDatabase = val(RS!Value)
 
         Exit Function
 
@@ -1686,7 +1604,7 @@ Public Sub SetRecordUsersDatabase(ByVal Record As Long)
         
         On Error GoTo SetRecordUsersDatabase_Err
         
-        Call MakeQuery("UPDATE statistics SET value = ? WHERE name = 'record'", True, CStr(Record))
+        Call Execute("UPDATE statistics SET value = ? WHERE name = 'record';", CStr(Record))
         
         Exit Sub
 
@@ -1700,8 +1618,8 @@ Public Sub LogoutAllUsersAndAccounts()
         
         On Error GoTo LogoutAllUsersAndAccounts_Err
 
-100     Call MakeQuery("UPDATE user SET is_logged = 0;", True)
-102     Call MakeQuery("UPDATE account SET logged = 0;", True)
+100     Call Execute("UPDATE user SET is_logged = 0;")
+102     Call Execute("UPDATE account SET logged = 0;")
         
         Exit Sub
 
@@ -1760,7 +1678,7 @@ Public Sub SaveUserSkillDatabase(UserName As String, ByVal Skill As Integer, ByV
         
         On Error GoTo SaveUserSkillDatabase_Err
         
-        Call MakeQuery("UPDATE skillpoints SET value = ? WHERE number = ? AND user_id = (SELECT id FROM user WHERE UPPER(name) = ?)", True, Value, Skill, UCase$(UserName))
+        Call Execute("UPDATE skillpoints SET value = ? WHERE number = ? AND user_id = (SELECT id FROM user WHERE UPPER(name) = ?)", Value, Skill, UCase$(UserName))
         
         Exit Sub
 
@@ -1788,7 +1706,7 @@ Public Sub SaveNewAccountDatabase(CuentaEmail As String, PasswordHash As String,
 
         On Error GoTo ErrorHandler
     
-100     Call MakeQuery("INSERT INTO account SET email = ?, password = ?, salt = ?, validate_code = ?, date_created = NOW();", True, LCase$(CuentaEmail), PasswordHash, Salt, Codigo)
+100     Call Execute("INSERT INTO account SET email = ?, password = ?, salt = ?, validate_code = ?, date_created = NOW();", LCase$(CuentaEmail), PasswordHash, Salt, Codigo)
     
         Exit Sub
         
@@ -1821,7 +1739,7 @@ Public Sub BorrarUsuarioDatabase(Name As String)
 
         On Error GoTo ErrorHandler
         
-        Call MakeQuery("UPDATE user SET name = CONCAT('DELETED_', name), deleted = TRUE WHERE UPPER(name) = ?", True, UCase$(Name))
+        Call Execute("UPDATE user SET name = CONCAT('DELETED_', name), deleted = TRUE WHERE UPPER(name) = ?;", UCase$(Name))
 
         Exit Sub
     
@@ -1838,8 +1756,8 @@ Public Sub BorrarCuentaDatabase(CuentaEmail As String)
 
 100     ID = GetDBValue("account", "id", "email", LCase$(CuentaEmail))
         
-        Call MakeQuery("UPDATE account SET email = CONCAT('DELETED_', email), deleted = TRUE WHERE email = ?", True, UCase$(CuentaEmail))
-        Call MakeQuery("UPDATE user SET name = CONCAT('DELETED_', name), deleted = TRUE WHERE account_id = ?", True, ID)
+        Call Execute("UPDATE account SET email = CONCAT('DELETED_', email), deleted = TRUE WHERE email = ?;", UCase$(CuentaEmail))
+        Call Execute("UPDATE user SET name = CONCAT('DELETED_', name), deleted = TRUE WHERE account_id = ?;", ID)
   
         Exit Sub
     
@@ -1856,7 +1774,7 @@ Public Sub SaveBanDatabase(UserName As String, Reason As String, BannedBy As Str
         '***************************************************
         On Error GoTo ErrorHandler
         
-        Call MakeQuery("UPDATE user SET is_banned = TRUE, banned_by = ?, ban_reason = ? WHERE UPPER(name) = ?", True, BannedBy, Reason, UCase$(UserName))
+        Call Execute("UPDATE user SET is_banned = TRUE, banned_by = ?, ban_reason = ? WHERE UPPER(name) = ?;", BannedBy, Reason, UCase$(UserName))
         
 102     Call SavePenaDatabase(UserName, "Baneado por: " & BannedBy & " debido a " & Reason)
 
@@ -1875,7 +1793,7 @@ Public Sub SaveWarnDatabase(UserName As String, Reason As String, WarnedBy As St
         '***************************************************
         On Error GoTo ErrorHandler
         
-        Call MakeQuery("UPDATE user SET warnings = warnings + 1 WHERE UPPER(name) = ?", True, UCase$(UserName))
+        Call Execute("UPDATE user SET warnings = warnings + 1 WHERE UPPER(name) = ?;", UCase$(UserName))
         
 102     Call SavePenaDatabase(UserName, "Advertencia de: " & WarnedBy & " debido a " & Reason)
     
@@ -1890,13 +1808,11 @@ Public Sub SavePenaDatabase(UserName As String, Reason As String)
 
         On Error GoTo ErrorHandler
 
-        Call QueryBuilder.Clear
-
         Dim query As String
 100     query = "INSERT INTO punishment(user_id, NUMBER, reason)"
-102     query = query & " SELECT u.id, COUNT(p.number) + 1, ? FROM user u LEFT JOIN punishment p ON p.user_id = u.id WHERE UPPER(u.name) = ? "
+102     query = query & " SELECT u.id, COUNT(p.number) + 1, ? FROM user u LEFT JOIN punishment p ON p.user_id = u.id WHERE UPPER(u.name) = ?;"
         
-        Call MakeQuery(query, True, Reason, UCase$(UserName))
+        Call Execute(query, Reason, UCase$(UserName))
 
         Exit Sub
 
@@ -1909,7 +1825,7 @@ Public Sub SilenciarUserDatabase(UserName As String, ByVal Tiempo As Integer)
     
         On Error GoTo ErrorHandler
         
-        Call MakeQuery("UPDATE user SET is_silenced = 1, silence_minutes_left = ?, silence_elapsed_seconds = 0 WHERE UPPER(name) = ?", True, Tiempo, UCase$(UserName))
+        Call Execute("UPDATE user SET is_silenced = 1, silence_minutes_left = ?, silence_elapsed_seconds = 0 WHERE UPPER(name) = ?;", Tiempo, UCase$(UserName))
         
         Exit Sub
 
@@ -1935,7 +1851,7 @@ Public Sub UnBanDatabase(UserName As String)
 
         On Error GoTo ErrorHandler
         
-        Call MakeQuery("UPDATE user SET is_banned = FALSE, banned_by = '', ban_reason = '' WHERE UPPER(name) = ?", True, UCase$(UserName))
+        Call Execute("UPDATE user SET is_banned = FALSE, banned_by = '', ban_reason = '' WHERE UPPER(name) = ?;", UCase$(UserName))
         
         Exit Sub
 
@@ -1948,7 +1864,7 @@ Public Sub SaveBanCuentaDatabase(ByVal AccountID As Long, Reason As String, Bann
 
         On Error GoTo ErrorHandler
         
-        Call MakeQuery("UPDATE account SET is_banned = TRUE, banned_by = ?, ban_reason = ? WHERE id = ?", True, BannedBy, Reason, AccountID)
+        Call Execute("UPDATE account SET is_banned = TRUE, banned_by = ?, ban_reason = ? WHERE id = ?;", BannedBy, Reason, AccountID)
 
         Exit Sub
 
@@ -1961,7 +1877,7 @@ Public Sub EcharConsejoDatabase(UserName As String)
         
         On Error GoTo EcharConsejoDatabase_Err
         
-        Call MakeQuery("UPDATE user SET pertenece_consejo_real = FALSE, pertenece_consejo_caos = FALSE WHERE UPPER(name) = ?", True, UCase$(UserName))
+        Call Execute("UPDATE user SET pertenece_consejo_real = FALSE, pertenece_consejo_caos = FALSE WHERE UPPER(name) = ?;", UCase$(UserName))
         
         Exit Sub
 
@@ -1975,7 +1891,7 @@ Public Sub EcharLegionDatabase(UserName As String)
         
         On Error GoTo EcharLegionDatabase_Err
         
-        Call MakeQuery("UPDATE user SET pertenece_caos = FALSE, reenlistadas = 200 WHERE UPPER(name) = ?", True, UCase$(UserName))
+        Call Execute("UPDATE user SET pertenece_caos = FALSE, reenlistadas = 200 WHERE UPPER(name) = ?;", UCase$(UserName))
         
         Exit Sub
 
@@ -1989,7 +1905,7 @@ Public Sub EcharArmadaDatabase(UserName As String)
         
         On Error GoTo EcharArmadaDatabase_Err
         
-        Call MakeQuery("UPDATE user SET pertenece_real = FALSE, reenlistadas = 200 WHERE UPPER(name) = ?", True, UCase$(UserName))
+        Call Execute("UPDATE user SET pertenece_real = FALSE, reenlistadas = 200 WHERE UPPER(name) = ?;", UCase$(UserName))
 
         Exit Sub
 
@@ -2003,7 +1919,7 @@ Public Sub CambiarPenaDatabase(UserName As String, ByVal Numero As Integer, Pena
         
         On Error GoTo CambiarPenaDatabase_Err
         
-        Call MakeQuery("UPDATE punishment SET reason = ? WHERE number = ? AND user_id = (SELECT id from user WHERE UPPER(name) = ?)", True, Pena, Numero, UCase$(UserName))
+        Call Execute("UPDATE punishment SET reason = ? WHERE number = ? AND user_id = (SELECT id from user WHERE UPPER(name) = ?);", Pena, Numero, UCase$(UserName))
         
         Exit Sub
 
@@ -2020,12 +1936,13 @@ Public Function GetUserAmountOfPunishmentsDatabase(ByVal UserName As String) As 
         'Last Modification: 10/10/2018
         '***************************************************
         On Error GoTo ErrorHandler
+        
+        Dim RS As ADODB.Recordset
+100     Set RS = query("SELECT COUNT(*) as punishments FROM `punishment` INNER JOIN `user` ON punishment.user_id = user.id WHERE UPPER(user.name) = ?;", UCase$(UserName))
 
-100     Call MakeQuery("SELECT COUNT(*) as punishments FROM `punishment` INNER JOIN `user` ON punishment.user_id = user.id WHERE UPPER(user.name) = ?;", False, UCase$(UserName))
+102     If RS Is Nothing Then Exit Function
 
-102     If QueryData Is Nothing Then Exit Function
-
-104     GetUserAmountOfPunishmentsDatabase = QueryData!punishments
+104     GetUserAmountOfPunishmentsDatabase = RS!punishments
 
         Exit Function
 ErrorHandler:
@@ -2041,17 +1958,17 @@ Public Sub SendUserPunishmentsDatabase(ByVal UserIndex As Integer, ByVal UserNam
         '***************************************************
         On Error GoTo ErrorHandler
 
-100     Call MakeQuery("SELECT user_id, number, reason FROM `punishment` INNER JOIN `user` ON punishment.user_id = user.id WHERE UPPER(user.name) = ?;", False, UCase$(UserName))
+        Dim RS As ADODB.Recordset
+100     Set RS = query("SELECT user_id, number, reason FROM `punishment` INNER JOIN `user` ON punishment.user_id = user.id WHERE UPPER(user.name) = ?;", UCase$(UserName))
     
-102     If QueryData Is Nothing Then Exit Sub
+102     If RS Is Nothing Then Exit Sub
 
-104     If Not QueryData.RecordCount = 0 Then
-106         QueryData.MoveFirst
+104     If Not RS.RecordCount = 0 Then
 
-108         While Not QueryData.EOF
-110             Call WriteConsoleMsg(UserIndex, QueryData!Number & " - " & QueryData!Reason, FontTypeNames.FONTTYPE_INFO)
+108         While Not RS.EOF
+110             Call WriteConsoleMsg(UserIndex, RS!Number & " - " & RS!Reason, FontTypeNames.FONTTYPE_INFO)
             
-112             QueryData.MoveNext
+112             RS.MoveNext
             Wend
 
         End If
@@ -2068,13 +1985,14 @@ Public Function GetNombreCuentaDatabase(Name As String) As String
         On Error GoTo ErrorHandler
 
         'Hacemos la query.
-100     Call MakeQuery("SELECT email FROM `account` INNER JOIN `user` ON user.account_id = account.id WHERE UPPER(user.name) = ?;", False, UCase$(Name))
+        Dim RS As ADODB.Recordset
+100     Set RS = query("SELECT email FROM `account` INNER JOIN `user` ON user.account_id = account.id WHERE UPPER(user.name) = ?;", UCase$(Name))
     
         'Verificamos que la query no devuelva un resultado vacio.
-102     If QueryData Is Nothing Then Exit Function
+102     If RS Is Nothing Then Exit Function
     
         'Obtenemos el nombre de la cuenta
-104     GetNombreCuentaDatabase = QueryData!Email
+104     GetNombreCuentaDatabase = RS!Email
 
         Exit Function
     
@@ -2262,16 +2180,17 @@ Public Sub SendCharacterInfoDatabase(ByVal UserIndex As Integer, ByVal UserName 
 
         Dim GuildActual As Integer
 
-100     Call MakeQuery("SELECT race_id, class_id, genre_id, level, gold, bank_gold, guild_requests_history, guild_index, guild_member_history, pertenece_real, pertenece_caos, ciudadanos_matados, criminales_matados FROM user WHERE UPPER(name) = ?;", False, UCase$(UserName))
+        Dim RS As ADODB.Recordset
+100     Set RS = query("SELECT race_id, class_id, genre_id, level, gold, bank_gold, guild_requests_history, guild_index, guild_member_history, pertenece_real, pertenece_caos, ciudadanos_matados, criminales_matados FROM user WHERE UPPER(name) = ?;", UCase$(UserName))
 
-102     If QueryData Is Nothing Then
+102     If RS Is Nothing Then
 104         Call WriteConsoleMsg(UserIndex, "Pj Inexistente", FontTypeNames.FONTTYPE_INFO)
             Exit Sub
 
         End If
 
         ' Get the character's current guild
-106     GuildActual = SanitizeNullValue(QueryData!Guild_Index, 0)
+106     GuildActual = SanitizeNullValue(RS!Guild_Index, 0)
 
 108     If GuildActual > 0 And GuildActual <= CANTIDADDECLANES Then
 110         gName = "<" & GuildName(GuildActual) & ">"
@@ -2281,14 +2200,14 @@ Public Sub SendCharacterInfoDatabase(ByVal UserIndex As Integer, ByVal UserName 
         End If
 
         'Get previous guilds
-114     Miembro = SanitizeNullValue(QueryData!guild_member_history, vbNullString)
+114     Miembro = SanitizeNullValue(RS!guild_member_history, vbNullString)
 
 116     If Len(Miembro) > 400 Then
 118         Miembro = ".." & Right$(Miembro, 400)
 
         End If
 
-120     Call WriteCharacterInfo(UserIndex, UserName, QueryData!race_id, QueryData!class_id, QueryData!genre_id, QueryData!level, QueryData!gold, QueryData!bank_gold, SanitizeNullValue(QueryData!guild_requests_history, vbNullString), gName, Miembro, QueryData!pertenece_real, QueryData!pertenece_caos, QueryData!ciudadanos_matados, QueryData!criminales_matados)
+120     Call WriteCharacterInfo(UserIndex, UserName, RS!race_id, RS!class_id, RS!genre_id, RS!level, RS!gold, RS!bank_gold, SanitizeNullValue(RS!guild_requests_history, vbNullString), gName, Miembro, RS!pertenece_real, RS!pertenece_caos, RS!ciudadanos_matados, RS!criminales_matados)
 
         Exit Sub
 ErrorHandler:
@@ -2300,37 +2219,38 @@ Public Function EnterAccountDatabase(ByVal UserIndex As Integer, CuentaEmail As 
 
         On Error GoTo ErrorHandler
     
-100     Call MakeQuery("SELECT id, password, salt, validated, is_banned, ban_reason, banned_by FROM account WHERE email = ?;", False, LCase$(CuentaEmail))
+        Dim RS As ADODB.Recordset
+100     Set RS = query("SELECT id, password, salt, validated, is_banned, ban_reason, banned_by FROM account WHERE email = ?;", LCase$(CuentaEmail))
     
-102     If Database_Connection.State = adStateClosed Then
+102     If Connection.State = adStateClosed Then
 104         Call WriteShowMessageBox(UserIndex, "Ha ocurrido un error interno en el servidor. ¡Estamos tratando de resolverlo!")
             Exit Function
         End If
     
-106     If QueryData Is Nothing Then
+106     If RS Is Nothing Then
 108         Call WriteShowMessageBox(UserIndex, "La cuenta no existe.")
             Exit Function
         End If
     
-110     If val(QueryData!is_banned) > 0 Then
-112         Call WriteShowMessageBox(UserIndex, "La cuenta se encuentra baneada debido a: " & QueryData!ban_reason & ". Esta decisión fue tomada por: " & QueryData!banned_by & ".")
+110     If val(RS!is_banned) > 0 Then
+112         Call WriteShowMessageBox(UserIndex, "La cuenta se encuentra baneada debido a: " & RS!ban_reason & ". Esta decisión fue tomada por: " & RS!banned_by & ".")
             Exit Function
         End If
     
-114     If Not PasswordValida(Password, QueryData!Password, QueryData!Salt) Then
+114     If Not PasswordValida(Password, RS!Password, RS!Salt) Then
 116         Call WriteShowMessageBox(UserIndex, "Contraseña inválida.")
             Exit Function
         End If
     
-118     If val(QueryData!validated) = 0 Then
+118     If val(RS!validated) = 0 Then
 120         Call WriteShowMessageBox(UserIndex, "¡La cuenta no ha sido validada aún!")
             Exit Function
         End If
     
-122     UserList(UserIndex).AccountID = QueryData!ID
+122     UserList(UserIndex).AccountID = RS!ID
 124     UserList(UserIndex).Cuenta = CuentaEmail
         
-        Call MakeQuery("UPDATE account SET mac_address = ?, hd_serial = ?, last_ip = ?, last_access = NOW() WHERE id = ?", True, MacAddress, HDSerial, IP, CLng(QueryData!ID))
+        Call Execute("UPDATE account SET mac_address = ?, hd_serial = ?, last_ip = ?, last_access = NOW() WHERE id = ?", MacAddress, HDSerial, IP, CLng(RS!ID))
         
 128     EnterAccountDatabase = True
     
@@ -2343,9 +2263,10 @@ End Function
 
 Public Function PersonajePerteneceEmail(ByVal UserName As String, ByVal AccountEmail As String) As Boolean
     
-100     Call MakeQuery("SELECT id FROM user INNER JOIN account ON user.account_id = account.id WHERE user.name = ? AND account.email = ?;", False, UserName, AccountEmail)
+        Dim RS As ADODB.Recordset
+100     Set RS = query("SELECT id FROM user INNER JOIN account ON user.account_id = account.id WHERE user.name = ? AND account.email = ?;", UserName, AccountEmail)
     
-102     If QueryData Is Nothing Then
+102     If RS Is Nothing Then
 104         PersonajePerteneceEmail = False
             Exit Function
         End If
@@ -2356,9 +2277,10 @@ End Function
 
 Public Function PersonajePerteneceID(ByVal UserName As String, ByVal AccountID As Long) As Boolean
     
-100     Call MakeQuery("SELECT id FROM user WHERE name = ? AND account_id = ?;", False, UserName, AccountID)
+        Dim RS As ADODB.Recordset
+100     Set RS = query("SELECT id FROM user WHERE name = ? AND account_id = ?;", UserName, AccountID)
     
-102     If QueryData Is Nothing Then
+102     If RS Is Nothing Then
 104         PersonajePerteneceID = False
             Exit Function
         End If
@@ -2377,15 +2299,16 @@ Public Sub ChangePasswordDatabase(ByVal UserIndex As Integer, OldPassword As Str
 
         End If
     
-104     Call MakeQuery("SELECT password, salt FROM account WHERE id = ?;", False, UserList(UserIndex).AccountID)
+        Dim RS As ADODB.Recordset
+        Set RS = query("SELECT password, salt FROM account WHERE id = ?;", UserList(UserIndex).AccountID)
     
-106     If QueryData Is Nothing Then
+106     If RS Is Nothing Then
 108         Call WriteConsoleMsg(UserIndex, "No se ha podido cambiar la contraseña por un error interno. Avise a un administrador.", FontTypeNames.FONTTYPE_INFO)
             Exit Sub
 
         End If
     
-110     If Not PasswordValida(OldPassword, QueryData!Password, QueryData!Salt) Then
+110     If Not PasswordValida(OldPassword, RS!Password, RS!Salt) Then
 112         Call WriteConsoleMsg(UserIndex, "La contraseña actual proporcionada no es correcta. La contraseña no ha sido cambiada, inténtelo de nuevo.", FontTypeNames.FONTTYPE_INFO)
             Exit Sub
 
@@ -2402,7 +2325,7 @@ Public Sub ChangePasswordDatabase(ByVal UserIndex As Integer, OldPassword As Str
     
 120     Set oSHA256 = Nothing
         
-        Call MakeQuery("UPDATE account SET password = ?, salt = ? WHERE id = ?", True, PasswordHash, Salt, UserList(UserIndex).AccountID)
+        Call Execute("UPDATE account SET password = ?, salt = ? WHERE id = ?;", PasswordHash, Salt, UserList(UserIndex).AccountID)
 
 124     Call WriteConsoleMsg(UserIndex, "La contraseña de su cuenta fue cambiada con éxito.", FontTypeNames.FONTTYPE_INFO)
     
@@ -2417,11 +2340,7 @@ Public Function GetUsersLoggedAccountDatabase(ByVal AccountID As Long) As Byte
 
         On Error GoTo ErrorHandler
 
-100     Call GetDBValue("account", "logged", "id", AccountID)
-    
-102     If QueryData Is Nothing Then Exit Function
-    
-104     GetUsersLoggedAccountDatabase = val(QueryData!logged)
+104     GetUsersLoggedAccountDatabase = val(GetDBValue("account", "logged", "id", AccountID))
 
         Exit Function
 
@@ -2433,9 +2352,7 @@ End Function
 Public Function SetPositionDatabase(UserName As String, ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer) As Boolean
         On Error GoTo ErrorHandler
 
-100     Call MakeQuery("UPDATE user SET pos_map = ?, pos_x = ?, pos_y = ? WHERE UPPER(name) = ?;", False, Map, X, Y, UCase$(UserName))
-    
-102     SetPositionDatabase = RecordsAffected > 0
+102     SetPositionDatabase = Execute("UPDATE user SET pos_map = ?, pos_x = ?, pos_y = ? WHERE UPPER(name) = ?;", Map, X, Y, UCase$(UserName))
 
         Exit Function
 
@@ -2459,9 +2376,7 @@ End Function
 Public Function AddOroBancoDatabase(UserName As String, ByVal OroGanado As Long) As Boolean
         On Error GoTo ErrorHandler
 
-100     Call MakeQuery("UPDATE user SET bank_gold = bank_gold + ? WHERE UPPER(name) = ?;", False, OroGanado, UCase$(UserName))
-    
-102     AddOroBancoDatabase = RecordsAffected > 0
+102     AddOroBancoDatabase = Execute("UPDATE user SET bank_gold = bank_gold + ? WHERE UPPER(name) = ?;", OroGanado, UCase$(UserName))
 
         Exit Function
 
@@ -2473,9 +2388,7 @@ End Function
 Public Function DarLlaveAUsuarioDatabase(UserName As String, ByVal LlaveObj As Integer) As Boolean
         On Error GoTo ErrorHandler
 
-100     Call MakeQuery("INSERT INTO house_key SET key_obj = ?, account_id = (SELECT account_id FROM user WHERE UPPER(name) = ?);", False, LlaveObj, UCase$(UserName))
-    
-102     DarLlaveAUsuarioDatabase = RecordsAffected > 0
+102     DarLlaveAUsuarioDatabase = Execute("INSERT INTO house_key SET key_obj = ?, account_id = (SELECT account_id FROM user WHERE UPPER(name) = ?);", LlaveObj, UCase$(UserName))
 
         Exit Function
 
@@ -2486,10 +2399,8 @@ End Function
 
 Public Function DarLlaveACuentaDatabase(Email As String, ByVal LlaveObj As Integer) As Boolean
         On Error GoTo ErrorHandler
-
-100     Call MakeQuery("INSERT INTO house_key SET key_obj = ?, account_id = (SELECT id FROM account WHERE UPPER(email) = ?);", False, LlaveObj, UCase$(Email))
     
-102     DarLlaveACuentaDatabase = RecordsAffected > 0
+102     DarLlaveACuentaDatabase = Execute("INSERT INTO house_key SET key_obj = ?, account_id = (SELECT id FROM account WHERE UPPER(email) = ?);", LlaveObj, UCase$(Email))
         Exit Function
 
 ErrorHandler:
@@ -2505,43 +2416,42 @@ Public Function SacarLlaveDatabase(ByVal LlaveObj As Integer) As Boolean
         Dim Users() As String
 
         ' Obtengo los usuarios logueados en la cuenta del dueño de la llave
-100     Call MakeQuery("SELECT name FROM `user` INNER JOIN `account` ON `user`.account_id = account.id INNER JOIN `house_key` ON `house_key`.account_id = account.id WHERE `user`.is_logged = TRUE AND `house_key`.key_obj = ?;", False, LlaveObj)
+        Dim RS As ADODB.Recordset
+100     Set RS = query("SELECT name FROM `user` INNER JOIN `account` ON `user`.account_id = account.id INNER JOIN `house_key` ON `house_key`.account_id = account.id WHERE `user`.is_logged = TRUE AND `house_key`.key_obj = ?;", LlaveObj)
     
-102     If QueryData Is Nothing Then Exit Function
+102     If RS Is Nothing Then Exit Function
 
         ' Los almaceno en un array
-104     UserCount = QueryData.RecordCount
+104     UserCount = RS.RecordCount
     
 106     ReDim Users(1 To UserCount) As String
-    
-108     QueryData.MoveFirst
 
 110     i = 1
 
-112     While Not QueryData.EOF
+112     While Not RS.EOF
     
-114         Users(i) = QueryData!Name
+114         Users(i) = RS!Name
 116         i = i + 1
 
-118         QueryData.MoveNext
+118         RS.MoveNext
         Wend
     
         ' Intento borrar la llave de la db
-120     Call MakeQuery("DELETE FROM house_key WHERE key_obj = ?;", False, LlaveObj)
+120     SacarLlaveDatabase = Execute("DELETE FROM house_key WHERE key_obj = ?;", LlaveObj)
     
         ' Si pudimos borrar, actualizamos los usuarios logueados
-        Dim UserIndex As Integer
-    
-122     For i = 1 To UserCount
-124         UserIndex = NameIndex(Users(i))
+        If (SacarLlaveDatabase) Then
+            Dim UserIndex As Integer
         
-126         If UserIndex <> 0 Then
-128             Call SacarLlaveDeLLavero(UserIndex, LlaveObj)
-            End If
-        Next
-    
-130     SacarLlaveDatabase = RecordsAffected > 0
-
+122         For i = 1 To UserCount
+124             UserIndex = NameIndex(Users(i))
+            
+126             If UserIndex <> 0 Then
+128                 Call SacarLlaveDeLLavero(UserIndex, LlaveObj)
+                End If
+            Next
+        End If
+        
         Exit Function
 
 ErrorHandler:
@@ -2552,25 +2462,24 @@ End Function
 Public Sub VerLlavesDatabase(ByVal UserIndex As Integer)
         On Error GoTo ErrorHandler
 
-100     Call MakeQuery("SELECT email, key_obj FROM `house_key` INNER JOIN `account` ON `house_key`.account_id = `account`.id;", False)
+        Dim RS As ADODB.Recordset
+100     Set RS = query("SELECT email, key_obj FROM `house_key` INNER JOIN `account` ON `house_key`.account_id = `account`.id;")
 
-102     If QueryData Is Nothing Then
+102     If RS Is Nothing Then
 104         Call WriteConsoleMsg(UserIndex, "No hay llaves otorgadas por el momento.", FontTypeNames.FONTTYPE_INFO)
 
-106     ElseIf QueryData.RecordCount = 0 Then
+106     ElseIf RS.RecordCount = 0 Then
 108         Call WriteConsoleMsg(UserIndex, "No hay llaves otorgadas por el momento.", FontTypeNames.FONTTYPE_INFO)
     
         Else
             Dim Message As String
         
-110         Message = "Llaves usadas: " & QueryData.RecordCount & vbNewLine
-    
-112         QueryData.MoveFirst
+110         Message = "Llaves usadas: " & RS.RecordCount & vbNewLine
 
-114         While Not QueryData.EOF
-116             Message = Message & "Llave: " & QueryData!key_obj & " - Cuenta: " & QueryData!Email & vbNewLine
+114         While Not RS.EOF
+116             Message = Message & "Llave: " & RS!key_obj & " - Cuenta: " & RS!Email & vbNewLine
 
-118             QueryData.MoveNext
+118             RS.MoveNext
             Wend
         
 120         Message = Left$(Message, Len(Message) - 2)
@@ -2628,81 +2537,12 @@ GetUserLevelDatabase_Err:
 End Function
 
 Public Sub SetMessageInfoDatabase(ByVal Name As String, ByVal Message As String)
-100     Call MakeQuery("update user set message_info = concat(message_info, ?) where upper(name) = ?;", True, Message, UCase$(Name))
+100     Call Execute("update user set message_info = concat(message_info, ?) where upper(name) = ?;", Message, UCase$(Name))
 End Sub
 
 Public Sub ChangeNameDatabase(ByVal CurName As String, ByVal NewName As String)
     Call SetUserValue(CurName, "name", NewName)
 End Sub
-
-Public Sub OnDatabaseAsyncConnect(ByVal pError As ADODB.Error, adStatus As ADODB.EventStatusEnum, ByVal pConnection As ADODB.Connection)
-    If (Not pError Is Nothing) Then
-        Call RegistrarError(pError.Number, pError.Description, pError.Source)
-        End
-    End If
-
-    'Reinicio los users online
-    Call SetUsersLoggedDatabase(0)
-    
-    'Leo el record de usuarios
-    RecordUsuarios = LeerRecordUsuariosDatabase()
-    
-    'Tarea pesada
-    Call LogoutAllUsersAndAccounts
-End Sub
-
-Public Sub OnDatabaseAsyncComplete(ByVal RecordsAffected As Long, ByVal pError As ADODB.Error, adStatus As ADODB.EventStatusEnum, ByVal pCommand As ADODB.Command, ByVal pRecordset As ADODB.Recordset, ByVal pConnection As ADODB.Connection)
-    If (Not pError Is Nothing) Then
-        Call RegistrarError(pError.Number, pError.Description, pCommand.CommandText)
-    End If
-
-    Call Database_Async_Queue.Remove(1)
-    
-    If (Database_Async_Queue.Count >= 1) Then
-        Dim Command As ADODB.Command
-        Set Command = Database_Async_Queue.Item(1)
-        
-        Call Command.Execute(, , adExecuteNoRecords + adAsyncExecute)
-    End If
-End Sub
-
-Function adoIsConnected(adoCn As ADODB.Connection) As Boolean
-
-        '----------------------------------------------------------------
-        '#PURPOSE: Checks whether the supplied db connection is alive and
-        '          hasn't had it's TCP connection forcibly closed by remote
-        '          host, for example, as happens during an undock event
-        '#RETURNS: True if the supplied db is connected and error-free,
-        '          False otherwise
-        '#AUTHOR:  Belladonna
-        '----------------------------------------------------------------
-
-        ' No sacar
-        On Error Resume Next
-
-        Dim i As Long
-        Dim cmd As New ADODB.Command
-
-        'Set up SQL command to return 1
-100     cmd.CommandText = "SELECT 1"
-102     cmd.ActiveConnection = adoCn
-
-        'Run a simple query, to test the connection
-        
-104     i = cmd.Execute.Fields(0)
-        On Error GoTo 0
-
-        'Tidy up
-106     Set cmd = Nothing
-
-        'If i is 1, connection is open
-108     If i = 1 Then
-110         adoIsConnected = True
-        Else
-112         adoIsConnected = False
-        End If
-
-End Function
 
 ' Función auxiliar equivalente a la expresión "i++"
 Private Function PostInc(Value As Integer) As Integer

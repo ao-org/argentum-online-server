@@ -1845,8 +1845,10 @@ Public Function a_ObtenerRechazoDeChar(ByRef Aspirante As String) As String
         End If
 
 112     a_ObtenerRechazoDeChar = GetUserGuildRejectionReason(Aspirante)
-114     Call SaveUserGuildRejectionReason(Aspirante, vbNullString)
 
+        If (a_ObtenerRechazoDeChar <> vbNullString) Then
+114         Call SaveUserGuildRejectionReason(Aspirante, vbNullString)
+        End If
         
         Exit Function
 
