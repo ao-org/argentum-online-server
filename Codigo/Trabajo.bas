@@ -1734,38 +1734,30 @@ Public Sub DoRobar(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
             Exit Sub
 
         End If
-    
+        
+        Dim Penable As Boolean
+        
 108     With UserList(LadronIndex)
-    
-110         If .flags.Seguro Then
-        
-112             If Status(VictimaIndex) = Ciudadano Then
-114                 Call WriteConsoleMsg(LadronIndex, "Debes quitarte el seguro para robarle a un ciudadano.", FontTypeNames.FONTTYPE_FIGHT)
-                    Exit Sub
 
-                End If
-
-            Else
-
-116             If esArmada(LadronIndex) Then
-            
-118                 If Status(VictimaIndex) = Ciudadano Or esArmada(VictimaIndex) Then
-120                     Call WriteConsoleMsg(LadronIndex, "Los miembros del Ejército Real no tienen permitido robarle a ciudadanos.", FontTypeNames.FONTTYPE_FIGHT)
+            If esCiudadano(LadronIndex) Then
+                If (esCiudadano(VictimaIndex) Or esArmada(VictimaIndex)) Then
+                    If (.flags.Seguro) Then
+114                     Call WriteConsoleMsg(LadronIndex, "Debes quitarte el seguro para robarle a un ciudadano o a un miembro del Ejército Real", FontTypeNames.FONTTYPE_FIGHT)
                         Exit Sub
-
                     End If
-
                 End If
-
+            ElseIf esArmada(LadronIndex) Then ' Armada robando a armada or ciudadano?
+122              If (esCiudadano(VictimaIndex) Or esArmada(VictimaIndex)) Then
+124                 Call WriteConsoleMsg(LadronIndex, "Los miembros del Ejército Real no tienen permitido robarle a ciudadanos o a otros miembros del Ejército Real", FontTypeNames.FONTTYPE_FIGHT)
+                    Exit Sub
+                End If
+            ElseIf esCaos(LadronIndex) Then ' Caos robando a caos?
+                If (esCaos(VictimaIndex)) Then
+                    Call WriteConsoleMsg(LadronIndex, "No puedes robar a otros miembros de la Legión Oscura.", FontTypeNames.FONTTYPE_FIGHT)
+                    Exit Sub
+                End If
             End If
-        
-            ' Caos robando a caos?
-122         If UserList(VictimaIndex).Faccion.FuerzasCaos = 1 And .Faccion.FuerzasCaos = 1 Then
-124             Call WriteConsoleMsg(LadronIndex, "No puedes robar a otros miembros de la Legión Oscura.", FontTypeNames.FONTTYPE_FIGHT)
-                Exit Sub
 
-            End If
-        
 126         If TriggerZonaPelea(LadronIndex, VictimaIndex) <> TRIGGER6_AUSENTE Then Exit Sub
         
             ' Tiene energia?
@@ -1930,7 +1922,7 @@ Public Sub DoRobar(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
 276                 Call SubirSkill(LadronIndex, eSkill.Robar)
 
                 End If
-
+                    
 278             If Status(LadronIndex) = Ciudadano Then Call VolverCriminal(LadronIndex)
 
             End If

@@ -1579,10 +1579,9 @@ Sub UsuarioAtacadoPorUsuario(ByVal AttackerIndex As Integer, ByVal VictimIndex A
     
 112     UserList(VictimIndex).Counters.EnCombate = IntervaloEnCombate
 114     UserList(AttackerIndex).Counters.EnCombate = IntervaloEnCombate
-    
-116     If Status(AttackerIndex) = 1 And Status(VictimIndex) = 1 Or Status(VictimIndex) = 3 Then
+        
+        If esCiudadano(AttackerIndex) And (esCiudadano(VictimIndex) Or esArmada(VictimIndex)) Then
 118         Call VolverCriminal(AttackerIndex)
-
         End If
 
 120     EraCriminal = Status(AttackerIndex)
@@ -1712,6 +1711,17 @@ Public Function PuedeAtacar(ByVal AttackerIndex As Integer, ByVal VictimIndex As
             Exit Function
 
         End If
+        
+        ' Seguro Clan
+         If UserList(AttackerIndex).GuildIndex > 0 Then
+             If UserList(AttackerIndex).flags.SeguroClan Then
+                 If UserList(AttackerIndex).GuildIndex = UserList(VictimIndex).GuildIndex Then
+                    Call WriteConsoleMsg(AttackerIndex, "No podes atacar a un miembro de tu clan.", FontTypeNames.FONTTYPE_INFOIAO)
+                    PuedeAtacar = False
+                    Exit Function
+                End If
+            End If
+        End If
 
         ' Es armada?
         If esArmada(AttackerIndex) Then
@@ -1721,7 +1731,7 @@ Public Function PuedeAtacar(ByVal AttackerIndex As Integer, ByVal VictimIndex As
                 PuedeAtacar = False
                 Exit Function
             ' Si ataca un ciudadano
-            ElseIf Status(VictimIndex) = Ciudadano Then
+            ElseIf esCiudadano(VictimIndex) Then
                 Call WriteConsoleMsg(AttackerIndex, "Los miembros del Ejercito Real tienen prohibido atacar ciudadanos.", FontTypeNames.FONTTYPE_WARNING)
                 PuedeAtacar = False
                 Exit Function
@@ -1730,15 +1740,19 @@ Public Function PuedeAtacar(ByVal AttackerIndex As Integer, ByVal VictimIndex As
         ' No es armada
         Else
             'Tenes puesto el seguro?
-174         If UserList(AttackerIndex).flags.Seguro Then
-176             If Status(VictimIndex) = Ciudadano Then
-178                 Call WriteConsoleMsg(AttackerIndex, "No podés atacar ciudadanos, para hacerlo debes desactivar el seguro.", FontTypeNames.FONTTYPE_WARNING)
-180                 PuedeAtacar = False
-                    Exit Function
+            If (esCiudadano(AttackerIndex)) Then
+                If (UserList(AttackerIndex).flags.Seguro) Then
+176                 If esCiudadano(VictimIndex) Then
+178                     Call WriteConsoleMsg(AttackerIndex, "No podés atacar ciudadanos, para hacerlo debes desactivar el seguro.", FontTypeNames.FONTTYPE_WARNING)
+180                     PuedeAtacar = False
+                        Exit Function
+                    ElseIf esArmada(VictimIndex) Then
+                        Call WriteConsoleMsg(AttackerIndex, "No podés atacar miembros del Ejercito Real, para hacerlo debes desactivar el seguro.", FontTypeNames.FONTTYPE_WARNING)
+                        PuedeAtacar = False
+                        Exit Function
+                    End If
                 End If
-            End If
-            
-190         If esCaos(AttackerIndex) And esCaos(VictimIndex) Then
+            ElseIf esCaos(AttackerIndex) And esCaos(VictimIndex) Then
 192             Call WriteConsoleMsg(AttackerIndex, "Los miembros de las Fuerzas del Caos no se pueden atacar entre sí.", FontTypeNames.FONTTYPE_WARNING)
 194             PuedeAtacar = False
                 Exit Function

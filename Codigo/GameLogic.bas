@@ -143,6 +143,30 @@ EsNewbie_Err:
         
 End Function
 
+Public Function esCiudadano(ByVal UserIndex As Integer) As Boolean
+        On Error GoTo esCiudadano_Err
+        
+100     If UserIndex > 0 Then esCiudadano = Status(UserIndex) = Ciudadano
+        
+        Exit Function
+
+esCiudadano_Err:
+102     Call TraceError(Err.Number, Err.Description, "Extra.esCiudadano", Erl)
+
+End Function
+
+Public Function esCriminal(ByVal UserIndex As Integer) As Boolean
+        On Error GoTo esCriminal_Err
+        
+100     If UserIndex > 0 Then esCriminal = Status(UserIndex) = Criminal
+        
+        Exit Function
+
+esCriminal_Err:
+102     Call TraceError(Err.Number, Err.Description, "Extra.esCriminal", Erl)
+
+End Function
+
 Public Function esArmada(ByVal UserIndex As Integer) As Boolean
         On Error GoTo esArmada_Err
         
@@ -183,7 +207,6 @@ Public Function EsGM(ByVal UserIndex As Integer) As Boolean
         End If
         
 104     EsGM = (UserList(UserIndex).flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios Or PlayerType.Consejero)) <> 0
-
         
         Exit Function
 

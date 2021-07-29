@@ -425,6 +425,7 @@ Private Enum ClientPacketID
     CheckSlot               '/SLOT
     
     'Nuevas Ladder
+    SetSpeed
     GlobalMessage           '/CONSOLA
     GlobalOnOff
     IngresarConCuenta
@@ -1125,6 +1126,8 @@ On Error Resume Next
             Call HandleIgnored(UserIndex)
         Case ClientPacketID.CheckSlot
             Call HandleCheckSlot(UserIndex)
+        Case ClientPacketID.SetSpeed
+            Call HandleSetSpeed(UserIndex)
         Case ClientPacketID.GlobalMessage
             Call HandleGlobalMessage(UserIndex)
         Case ClientPacketID.GlobalOnOff
@@ -2189,16 +2192,18 @@ Private Sub HandleSafeToggle(ByVal UserIndex As Integer)
         '
         '***************************************************
 100     With UserList(UserIndex)
-
-102         If .flags.Seguro Then
-104             Call WriteSafeModeOff(UserIndex)
             
+            If esCiudadano(UserIndex) Then
+102             If .flags.Seguro Then
+104                 Call WriteSafeModeOff(UserIndex)
+                Else
+106                 Call WriteSafeModeOn(UserIndex)
+                End If
+                
+108             .flags.Seguro = Not .flags.Seguro
             Else
-106             Call WriteSafeModeOn(UserIndex)
-
+                Call WriteConsoleMsg(UserIndex, "Solo los ciudadanos pueden cambiar el seguro", FontTypeNames.FONTTYPE_TALK)
             End If
-        
-108         .flags.Seguro = Not .flags.Seguro
 
         End With
 
@@ -7523,7 +7528,7 @@ Private Sub HandleGMMessage(ByVal UserIndex As Integer)
                     'Analize chat...
 110                 Call Statistics.ParseChat(message)
             
-112                 Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(.Name & " » " & Message, FontTypeNames.FONTTYPE_GMMSG))
+112                 Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(.Name & " » " & message, FontTypeNames.FONTTYPE_GMMSG))
 
                 End If
 
@@ -15544,6 +15549,33 @@ ErrHandler:
 152     Call TraceError(Err.Number, Err.Description, "Protocol.?", Erl)
 154
 
+End Sub
+
+Private Sub HandleSetSpeed(ByVal UserIndex As Integer)
+        
+        Dim Speed As Single
+        
+        On Error GoTo HandleGlobalOnOff_Err
+        
+        Speed = Reader.ReadReal32()
+        
+        'Author: Pablo Mercavides
+100     With UserList(UserIndex)
+
+102         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios)) = 0 Then Exit Sub
+            
+            UserList(UserIndex).Char.speeding = Speed
+            
+            Call WriteVelocidadToggle(Speed)
+        
+        End With
+        
+        Exit Sub
+
+HandleGlobalOnOff_Err:
+116     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGlobalOnOff", Erl)
+118
+        
 End Sub
 
 Private Sub HandleGlobalMessage(ByVal UserIndex As Integer)
