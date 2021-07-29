@@ -36,7 +36,9 @@ Public Sub Database_Connect()
                 
         Set Connection = New ADODB.Connection
 110     Connection.CursorLocation = adUseClient
-112     Call Connection.Open(ConnectionID)
+        Connection.ConnectionString = ConnectionID
+        
+112     Call Connection.Open
 
 113     Set Builder = New cStringBuilder
 
@@ -364,7 +366,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
         'Basic user data
 102     With UserList(UserIndex)
         
-104         ReDim Params(91)
+104         ReDim Params(87)
 
             Dim i As Integer
         
@@ -390,7 +392,6 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
 144         Params(PostInc(i)) = .Char.CascoAnim
 146         Params(PostInc(i)) = .Char.ShieldAnim
 148         Params(PostInc(i)) = .Char.Heading
-150         Params(PostInc(i)) = .Invent.NroItems
 152         Params(PostInc(i)) = .Invent.ArmourEqpSlot
 154         Params(PostInc(i)) = .Invent.WeaponEqpSlot
 156         Params(PostInc(i)) = .Invent.EscudoEqpSlot
@@ -421,9 +422,6 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
 206         Params(PostInc(i)) = .Stats.ELO
 208         Params(PostInc(i)) = .flags.Desnudo
 210         Params(PostInc(i)) = .flags.Envenenado
-212         Params(PostInc(i)) = .flags.Escondido
-214         Params(PostInc(i)) = .flags.Hambre
-216         Params(PostInc(i)) = .flags.Sed
 218         Params(PostInc(i)) = .flags.Muerto
 220         Params(PostInc(i)) = .flags.Navegando
 222         Params(PostInc(i)) = .flags.Paralizado
@@ -772,7 +770,6 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
 144         .OrigChar.CascoAnim = RS!helmet_id
 146         .OrigChar.ShieldAnim = RS!shield_id
 148         .OrigChar.Heading = RS!Heading
-150         .Invent.NroItems = RS!items_Amount
 152         .Invent.ArmourEqpSlot = SanitizeNullValue(RS!slot_armour, 0)
 154         .Invent.WeaponEqpSlot = SanitizeNullValue(RS!slot_weapon, 0)
 156         .Invent.CascoEqpSlot = SanitizeNullValue(RS!slot_helmet, 0)
@@ -803,9 +800,10 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
 206         .Stats.ELO = RS!ELO
 208         .flags.Desnudo = RS!is_naked
 210         .flags.Envenenado = RS!is_poisoned
-212         .flags.Escondido = RS!is_hidden
-214         .flags.Hambre = RS!is_hungry
-216         .flags.Sed = RS!is_thirsty
+211         .flags.Incinerado = RS!is_incinerated
+212         .flags.Escondido = False
+214         .flags.Hambre = (.Stats.MinHam = 0)
+216         .flags.Sed = (.Stats.MinAGU = 0)
 218         .flags.Ban = RS!is_banned
 220         .flags.Muerto = RS!is_dead
 222         .flags.Navegando = RS!is_sailing
@@ -909,6 +907,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
             'User inventory
             Set RS = query("SELECT number, item_id, is_equipped, amount FROM inventory_item WHERE user_id = ?;", .ID)
 
+            counter = 0
             
 344         If Not RS Is Nothing Then
 
@@ -919,6 +918,8 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
                 
 354                     If .ObjIndex <> 0 Then
 356                         If LenB(ObjData(.ObjIndex).Name) Then
+                                counter = counter + 1
+                                
 358                             .amount = RS!amount
 360                             .Equipped = RS!is_equipped
                             Else
@@ -932,7 +933,8 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
 
 364                 RS.MoveNext
                 Wend
-
+                
+                .Invent.NroItems = counter
             End If
 
             'User bank inventory
@@ -983,21 +985,6 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
 
             End If
 
-            'User friends
-            'Call MakeQuery("SELECT * FROM friend WHERE user_id = ?;", False, .Id)
-
-            'If Not RS Is Nothing Then
-            '    RS.MoveFirst
-
-            '    While Not RS.EOF
-
-            '200     .Amigos(RS!Number).Nombre = RS!friend
-            '200     .Amigos(RS!Number).Ignorado = RS!Ignored
-
-            '        RS.MoveNext
-            '    Wend
-            'End If
-        
             Dim LoopC As Byte
         
             'User quests
@@ -1062,10 +1049,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
                 Wend
 
             End If
-        
-            'User mail
-            'TODO:
-        
+
             ' Llaves
             Set RS = query("SELECT key_obj FROM house_key WHERE account_id = ?", .AccountID)
 
@@ -1092,9 +1076,6 @@ ErrorHandler:
 End Sub
 
 Public Function GetDBValue(Tabla As String, ColumnaGet As String, ColumnaTest As String, ValueTest As Variant) As Variant
-        ' 17/10/2020 Autor: Alexis Caraballo (WyroX)
-        ' Para leer un unico valor de una unica fila
-
         On Error GoTo ErrorHandler
     
 100     Dim RS As ADODB.Recordset
@@ -1113,9 +1094,6 @@ ErrorHandler:
 End Function
 
 Public Function GetCuentaValue(CuentaEmail As String, Columna As String) As Variant
-        ' 17/10/2020 Autor: Alexis Caraballo (WyroX)
-        ' Para cuando hay que leer un unico valor de la cuenta
-        
         On Error GoTo GetCuentaValue_Err
         
 100     GetCuentaValue = GetDBValue("account", Columna, "email", LCase$(CuentaEmail))
@@ -1128,9 +1106,6 @@ GetCuentaValue_Err:
 End Function
 
 Public Function GetUserValue(CharName As String, Columna As String) As Variant
-        ' 17/10/2020 Autor: Alexis Caraballo (WyroX)
-        ' Para cuando hay que leer un unico valor del char
-        
         On Error GoTo GetUserValue_Err
         
 100     GetUserValue = GetDBValue("user", Columna, "name", CharName)
@@ -1143,9 +1118,6 @@ GetUserValue_Err:
 End Function
 
 Public Sub SetDBValue(Tabla As String, ColumnaSet As String, ByVal ValueSet As Variant, ColumnaTest As String, ByVal ValueTest As Variant)
-    ' 17/10/2020 Autor: Alexis Caraballo (WyroX)
-    ' Para escribir un unico valor de una unica fila
-
         On Error GoTo ErrorHandler
 
         Call Execute("UPDATE " & Tabla & " SET " & ColumnaSet & " = ? WHERE " & ColumnaTest & " = ?;", ValueSet, ValueTest)
@@ -1157,9 +1129,6 @@ ErrorHandler:
 End Sub
 
 Private Sub SetCuentaValue(CuentaEmail As String, Columna As String, Value As Variant)
-        ' 18/10/2020 Autor: Alexis Caraballo (WyroX)
-        ' Para cuando hay que escribir un unico valor de la cuenta
-        
         On Error GoTo SetCuentaValue_Err
         
 100     Call SetDBValue("account", Columna, Value, "email", LCase$(CuentaEmail))
@@ -1171,9 +1140,6 @@ SetCuentaValue_Err:
 End Sub
 
 Private Sub SetUserValue(CharName As String, Columna As String, Value As Variant)
-        ' 18/10/2020 Autor: Alexis Caraballo (WyroX)
-        ' Para cuando hay que escribir un unico valor del char
-        
         On Error GoTo SetUserValue_Err
         
 100     Call SetDBValue("user", Columna, Value, "name", CharName)
@@ -1185,10 +1151,6 @@ SetUserValue_Err:
 End Sub
 
 Private Sub SetCuentaValueByID(ByVal AccountID As Long, Columna As String, Value As Variant)
-        ' 18/10/2020 Autor: Alexis Caraballo (WyroX)
-        ' Para cuando hay que escribir un unico valor de la cuenta
-        ' Por ID
-        
         On Error GoTo SetCuentaValueByID_Err
         
 100     Call SetDBValue("account", Columna, Value, "id", AccountID)
@@ -1200,10 +1162,6 @@ SetCuentaValueByID_Err:
 End Sub
 
 Private Sub SetUserValueByID(ByVal ID As Long, Columna As String, Value As Variant)
-        ' 18/10/2020 Autor: Alexis Caraballo (WyroX)
-        ' Para cuando hay que escribir un unico valor del char
-        ' Por ID
-        
         On Error GoTo SetUserValueByID_Err
         
 100     Call SetDBValue("user", Columna, Value, "id", ID)
@@ -1702,33 +1660,6 @@ SaveUserHeadDatabase_Err:
         
 End Sub
 
-Public Sub SaveNewAccountDatabase(CuentaEmail As String, PasswordHash As String, Salt As String, Codigo As String)
-
-        On Error GoTo ErrorHandler
-    
-100     Call Execute("INSERT INTO account SET email = ?, password = ?, salt = ?, validate_code = ?, date_created = NOW();", LCase$(CuentaEmail), PasswordHash, Salt, Codigo)
-    
-        Exit Sub
-        
-ErrorHandler:
-102     Call LogDatabaseError("Error en SaveNewAccountDatabase. Cuenta: " & CuentaEmail & ". " & Err.Number & " - " & Err.Description)
-
-End Sub
-
-Public Sub ValidarCuentaDatabase(UserCuenta As String)
-        
-        On Error GoTo ValidarCuentaDatabase_Err
-        
-100     Call SetCuentaValue(UserCuenta, "validated", 1)
-        
-        Exit Sub
-
-ValidarCuentaDatabase_Err:
-102     Call TraceError(Err.Number, Err.Description, "modDatabase.ValidarCuentaDatabase", Erl)
-
-        
-End Sub
-
 Public Function CheckUserAccount(Name As String, ByVal AccountID As Long) As Boolean
 
 100     CheckUserAccount = (val(GetUserValue(Name, "account_id")) = AccountID)
@@ -1745,24 +1676,6 @@ Public Sub BorrarUsuarioDatabase(Name As String)
     
 ErrorHandler:
 102     Call LogDatabaseError("Error en BorrarUsuarioDatabase borrando user de la Mysql Database: " & Name & ". " & Err.Number & " - " & Err.Description)
-
-End Sub
-
-Public Sub BorrarCuentaDatabase(CuentaEmail As String)
-
-        On Error GoTo ErrorHandler
-
-        Dim ID As Long
-
-100     ID = GetDBValue("account", "id", "email", LCase$(CuentaEmail))
-        
-        Call Execute("UPDATE account SET email = CONCAT('DELETED_', email), deleted = TRUE WHERE email = ?;", UCase$(CuentaEmail))
-        Call Execute("UPDATE user SET name = CONCAT('DELETED_', name), deleted = TRUE WHERE account_id = ?;", ID)
-  
-        Exit Sub
-    
-ErrorHandler:
-106     Call LogDatabaseError("Error en BorrarCuentaDatabase borrando user de la Mysql Database: " & CuentaEmail & ". " & Err.Number & " - " & Err.Description)
 
 End Sub
 
@@ -2215,7 +2128,7 @@ ErrorHandler:
 
 End Sub
 
-Public Function EnterAccountDatabase(ByVal UserIndex As Integer, CuentaEmail As String, Password As String, MacAddress As String, ByVal HDSerial As Long, IP As String) As Boolean
+Public Function EnterAccountDatabase(ByVal UserIndex As Integer, ByVal CuentaEmail As String, ByVal Password As String, ByVal MacAddress As String, ByVal HDSerial As Long, ByVal IP As String) As Boolean
 
         On Error GoTo ErrorHandler
     
@@ -2335,19 +2248,6 @@ ErrorHandler:
 126     Call LogDatabaseError("Error in ChangePasswordDatabase. Username: " & UserList(UserIndex).Name & ". " & Err.Number & " - " & Err.Description)
 
 End Sub
-
-Public Function GetUsersLoggedAccountDatabase(ByVal AccountID As Long) As Byte
-
-        On Error GoTo ErrorHandler
-
-104     GetUsersLoggedAccountDatabase = val(GetDBValue("account", "logged", "id", AccountID))
-
-        Exit Function
-
-ErrorHandler:
-106     Call LogDatabaseError("Error in GetUsersLoggedAccountDatabase. AccountID: " & AccountID & ". " & Err.Number & " - " & Err.Description)
-
-End Function
 
 Public Function SetPositionDatabase(UserName As String, ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer) As Boolean
         On Error GoTo ErrorHandler
@@ -2537,7 +2437,7 @@ GetUserLevelDatabase_Err:
 End Function
 
 Public Sub SetMessageInfoDatabase(ByVal Name As String, ByVal Message As String)
-100     Call Execute("update user set message_info = concat(message_info, ?) where upper(name) = ?;", Message, UCase$(Name))
+    Call Execute("update user set message_info = concat(message_info, ?) where upper(name) = ?;", Message, UCase$(Name))
 End Sub
 
 Public Sub ChangeNameDatabase(ByVal CurName As String, ByVal NewName As String)

@@ -11,25 +11,30 @@ Private Type UltimoError
 End Type: Private HistorialError As UltimoError
 
 Public Sub TraceError(ByVal Numero As Long, ByVal Descripcion As String, ByVal Componente As String, Optional ByVal Linea As Integer)
-    Call RegistrarError(Numero, Descripcion, Componente, Linea)
-    'Call LogError("TraceError " & Numero & " - " & Componente & " - (Linea: " & Erl & ")" & " - " & Componente & " - (Linea: " & Erl & ") - " & Descripcion)
-    'Call Err.raise(Numero, Componente & " - (Linea: " & Erl & ")", Componente & " - (Linea: " & Erl & ") - " & Descripcion & vbNewLine, "")
-    'Call Err.raise(123, "GetRegionalSetting", "GetRegionalSetting: " & "asdasdasdasd")
-    'Call LogError("TraceError " & Numero & " - " & Componente & " - (Linea: " & Erl & ")" & " - " & Componente & " - (Linea: " & Erl & ") - " & Descripcion)
-    'Call Err.raise(Numero, Componente & " - (Linea: " & Linea & ")" & Descripcion & vbNewLine)
-End Sub
+'**********************************************************
+'Author: Jopi
+'**********************************************************
+        
+    On Error GoTo TraceError_Err
+    
+    'Registramos el error en Trace.log
+    Dim File As Integer: File = FreeFile
+        
+    Open App.Path & "\logs\Errores\Trace.log" For Append As #File
+    
+        Print #File, "Response Code: " & Numero
+        Print #File, "Response Error Description: " & Descripcion
+        Print #File, "Response Contents: " & Componente
+        Print #File, "Fecha y Hora: " & Date$ & "-" & Time$
+        
+        Print #File, vbNewLine
+    Close #File
 
-Public Sub FlushError()
-    If LogsBuffer.ByteLength > MAX_LOG_SIZE Then
-        Dim File As Integer: File = FreeFile
+    Exit Sub
+
+TraceError_Err:
+    Close #File
         
-        Open App.Path & "\logs\Errores\General.log" For Append As #File
-            Print #File, LogsBuffer.ToString
-        Close #File
-        
-        ' Limpiamos el buffer
-        Call LogsBuffer.Clear
-    End If
 End Sub
 
 Public Sub RegistrarError(ByVal Numero As Long, ByVal Descripcion As String, ByVal Componente As String, Optional ByVal Linea As Integer)

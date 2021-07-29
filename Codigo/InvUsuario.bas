@@ -2451,17 +2451,10 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
 780                             Call QuitarUserInvItem(UserIndex, Slot, 1)
                             
 782                             If tUser <= 0 Then
-    
-                                    Dim FileUser As String
-    
-784                                 FileUser = CharPath & UCase$(.flags.Pareja) & ".chr"
-                                    'Call WriteVar(FileUser, "FLAGS", "CASADO", 0)
-                                    'Call WriteVar(FileUser, "FLAGS", "PAREJA", "")
 786                                 .flags.Casado = 0
 788                                 .flags.Pareja = ""
 790                                 Call WriteConsoleMsg(UserIndex, "Te has divorciado.", FontTypeNames.FONTTYPE_INFOIAO)
 792                                 .MENSAJEINFORMACION = .Name & " se ha divorciado de ti."
-    
                                 Else
 794                                 UserList(tUser).flags.Casado = 0
 796                                 UserList(tUser).flags.Pareja = ""
@@ -2469,7 +2462,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
 800                                 .flags.Pareja = ""
 802                                 Call WriteConsoleMsg(UserIndex, "Te has divorciado.", FontTypeNames.FONTTYPE_INFOIAO)
 804                                 Call WriteConsoleMsg(tUser, .Name & " se ha divorciado de ti.", FontTypeNames.FONTTYPE_INFOIAO)
-                                
+                        
                                 End If
     
 806                             If obj.Snd1 <> 0 Then

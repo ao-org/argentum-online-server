@@ -235,11 +235,8 @@ Public Function m_EcharMiembroDeClan(ByVal Expulsador As Integer, ByVal Expulsad
 
         Else
             'pj offline
-138         If Database_Enabled Then
-140             GI = GetUserGuildIndexDatabase(Expulsado)
-            Else
-142             GI = GetGuildIndexFromChar(Expulsado)
-            End If
+
+140         GI = GetUserGuildIndexDatabase(Expulsado)
 
 144         If GI > 0 Then
 146             If m_PuedeSalirDeClan(Expulsado, GI, Expulsador) Then
@@ -945,48 +942,6 @@ errh:
 132     Resume proximo
 
 End Sub
-
-Public Function GetGuildIndexFromChar(ByRef PlayerName As String) As Integer
-        
-        On Error GoTo GetGuildIndexFromChar_Err
-        
-
-        'aca si que vamos a violar las capas deliveradamente ya que
-        'visual basic no permite declarar metodos de clase
-        Dim Temps As String
-
-100     If InStrB(PlayerName, "\") <> 0 Then
-102         PlayerName = Replace(PlayerName, "\", vbNullString)
-
-        End If
-
-104     If InStrB(PlayerName, "/") <> 0 Then
-106         PlayerName = Replace(PlayerName, "/", vbNullString)
-
-        End If
-
-108     If InStrB(PlayerName, ".") <> 0 Then
-110         PlayerName = Replace(PlayerName, ".", vbNullString)
-
-        End If
-
-112     Temps = GetVar(CharPath & PlayerName & ".chr", "GUILD", "GUILDINDEX")
-
-114     If IsNumeric(Temps) Then
-116         GetGuildIndexFromChar = CInt(Temps)
-        Else
-118         GetGuildIndexFromChar = 0
-
-        End If
-
-        
-        Exit Function
-
-GetGuildIndexFromChar_Err:
-120     Call TraceError(Err.Number, Err.Description, "modGuilds.GetGuildIndexFromChar", Erl)
-
-        
-End Function
 
 Public Function GuildIndex(ByRef GuildName As String) As Integer
         
@@ -2171,11 +2126,8 @@ Public Function a_AceptarAspirante(ByVal UserIndex As Integer, ByRef Aspirante A
 138             Call guilds(GI).RetirarAspirante(Aspirante, NroAspirante)
                 Exit Function
             Else
-140             If Database_Enabled Then
-142                 tGI = GetUserGuildIndexDatabase(Aspirante)
-                Else
-144                 tGI = GetGuildIndexFromChar(Aspirante)
-                End If
+
+142             tGI = GetUserGuildIndexDatabase(Aspirante)
                 
 146             If tGI <> 0 Then
 148                 refError = Aspirante & " ya es parte de otro clan."
@@ -2426,20 +2378,9 @@ End Function
 Public Function GetUserGuildMember(ByVal UserName As String) As String
         
         On Error GoTo GetUserGuildMember_Err
-        
 
-        '***************************************************
-        'Author: Juan Andres Dalmasso
-        'Returns the guilds the user has been member of
-        '***************************************************
-100     If Not Database_Enabled Then
-102         GetUserGuildMember = GetUserGuildMemberCharfile(UserName)
-        Else
-104         GetUserGuildMember = GetUserGuildMemberDatabase(UserName)
+104     GetUserGuildMember = GetUserGuildMemberDatabase(UserName)
 
-        End If
-
-        
         Exit Function
 
 GetUserGuildMember_Err:
@@ -2451,21 +2392,9 @@ End Function
 Public Function GetUserGuildAspirant(ByVal UserName As String) As Integer
         
         On Error GoTo GetUserGuildAspirant_Err
-        
 
-        '***************************************************
-        'Author: Juan Andres Dalmasso (CHOTS)
-        'Last Modification: 24/09/2018
-        'Returns the guilds the user has been member of
-        '***************************************************
-100     If Not Database_Enabled Then
-102         GetUserGuildAspirant = GetUserGuildAspirantCharfile(UserName)
-        Else
-104         GetUserGuildAspirant = GetUserGuildAspirantDatabase(UserName)
+104     GetUserGuildAspirant = GetUserGuildAspirantDatabase(UserName)
 
-        End If
-
-        
         Exit Function
 
 GetUserGuildAspirant_Err:
@@ -2477,21 +2406,9 @@ End Function
 Public Function GetUserGuildRejectionReason(ByVal UserName As String) As String
         
         On Error GoTo GetUserGuildRejectionReason_Err
-        
 
-        '***************************************************
-        'Author: Juan Andres Dalmasso (CHOTS)
-        'Last Modification: 24/09/2018
-        'Returns the reason why the user has not been accepted to the guild
-        '***************************************************
-100     If Not Database_Enabled Then
-102         GetUserGuildRejectionReason = GetUserGuildRejectionReasonCharfile(UserName)
-        Else
-104         GetUserGuildRejectionReason = GetUserGuildRejectionReasonDatabase(UserName)
-
-        End If
-
-        
+104     GetUserGuildRejectionReason = GetUserGuildRejectionReasonDatabase(UserName)
+ 
         Exit Function
 
 GetUserGuildRejectionReason_Err:
@@ -2503,21 +2420,9 @@ End Function
 Public Function GetUserGuildPedidos(ByVal UserName As String) As String
         
         On Error GoTo GetUserGuildPedidos_Err
-        
 
-        '***************************************************
-        'Author: Juan Andres Dalmasso (CHOTS)
-        'Last Modification: 24/09/2018
-        'Returns the guilds the user asked to be a member of
-        '***************************************************
-100     If Not Database_Enabled Then
-102         GetUserGuildPedidos = GetUserGuildPedidosCharfile(UserName)
-        Else
-104         GetUserGuildPedidos = GetUserGuildPedidosDatabase(UserName)
+104     GetUserGuildPedidos = GetUserGuildPedidosDatabase(UserName)
 
-        End If
-
-        
         Exit Function
 
 GetUserGuildPedidos_Err:
@@ -2529,21 +2434,9 @@ End Function
 Public Sub SaveUserGuildRejectionReason(ByVal UserName As String, ByVal Reason As String)
         
         On Error GoTo SaveUserGuildRejectionReason_Err
-        
 
-        '***************************************************
-        'Autor: Juan Andres Dalmasso (CHOTS)
-        'Last Modification: 26/09/2018
-        'Updates the rection reason for the user
-        '***************************************************
-100     If Not Database_Enabled Then
-102         Call SaveUserGuildRejectionReasonCharfile(UserName, Reason)
-        Else
-104         Call SaveUserGuildRejectionReasonDatabase(UserName, Reason)
+104     Call SaveUserGuildRejectionReasonDatabase(UserName, Reason)
 
-        End If
-
-        
         Exit Sub
 
 SaveUserGuildRejectionReason_Err:
@@ -2555,21 +2448,9 @@ End Sub
 Public Sub SaveUserGuildIndex(ByVal UserName As String, ByVal GuildIndex As Integer)
         
         On Error GoTo SaveUserGuildIndex_Err
-        
 
-        '***************************************************
-        'Autor: Juan Andres Dalmasso (CHOTS)
-        'Last Modification: 26/09/2018
-        'Updates the guild index
-        '***************************************************
-100     If Not Database_Enabled Then
-102         Call SaveUserGuildIndexCharfile(UserName, GuildIndex)
-        Else
-104         Call SaveUserGuildIndexDatabase(UserName, GuildIndex)
+104     Call SaveUserGuildIndexDatabase(UserName, GuildIndex)
 
-        End If
-
-        
         Exit Sub
 
 SaveUserGuildIndex_Err:
@@ -2582,20 +2463,8 @@ Public Sub SaveUserGuildAspirant(ByVal UserName As String, ByVal AspirantIndex A
         
         On Error GoTo SaveUserGuildAspirant_Err
         
+104     Call SaveUserGuildAspirantDatabase(UserName, AspirantIndex)
 
-        '***************************************************
-        'Autor: Juan Andres Dalmasso (CHOTS)
-        'Last Modification: 26/09/2018
-        'Updates the guild Aspirant index
-        '***************************************************
-100     If Not Database_Enabled Then
-102         Call SaveUserGuildAspirantCharfile(UserName, AspirantIndex)
-        Else
-104         Call SaveUserGuildAspirantDatabase(UserName, AspirantIndex)
-
-        End If
-
-        
         Exit Sub
 
 SaveUserGuildAspirant_Err:
@@ -2607,21 +2476,9 @@ End Sub
 Public Sub SaveUserGuildMember(ByVal UserName As String, ByVal guilds As String)
         
         On Error GoTo SaveUserGuildMember_Err
-        
 
-        '***************************************************
-        'Autor: Juan Andres Dalmasso (CHOTS)
-        'Last Modification: 26/09/2018
-        'Updates the guilds the user has been member of
-        '***************************************************
-100     If Not Database_Enabled Then
-102         Call SaveUserGuildMemberCharfile(UserName, guilds)
-        Else
-104         Call SaveUserGuildMemberDatabase(UserName, guilds)
+104     Call SaveUserGuildMemberDatabase(UserName, guilds)
 
-        End If
-
-        
         Exit Sub
 
 SaveUserGuildMember_Err:
@@ -2634,20 +2491,8 @@ Public Sub SaveUserGuildPedidos(ByVal UserName As String, ByVal Pedidos As Strin
         
         On Error GoTo SaveUserGuildPedidos_Err
         
+104     Call SaveUserGuildPedidosDatabase(UserName, Pedidos)
 
-        '***************************************************
-        'Autor: Juan Andres Dalmasso (CHOTS)
-        'Last Modification: 26/09/2018
-        'Updates the guilds the user has asked to be a member of
-        '***************************************************
-100     If Not Database_Enabled Then
-102         Call SaveUserGuildPedidosCharfile(UserName, Pedidos)
-        Else
-104         Call SaveUserGuildPedidosDatabase(UserName, Pedidos)
-
-        End If
-
-        
         Exit Sub
 
 SaveUserGuildPedidos_Err:

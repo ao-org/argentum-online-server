@@ -372,22 +372,9 @@ End Sub
 Public Sub BorrarUsuario(ByVal UserName As String)
         
         On Error GoTo BorrarUsuario_Err
-    
-        
-    
-100     If Database_Enabled Then
+
 102         Call BorrarUsuarioDatabase(UserName)
-    
-        Else
 
-            
-        
-104         If FileExist(CharPath & UCase$(UserName) & ".chr", vbNormal) Then
-106             Kill CharPath & UCase$(UserName) & ".chr"
-
-            End If
-
-        End If
     
         
         Exit Sub
@@ -401,14 +388,9 @@ End Sub
 Public Function BANCheck(ByVal Name As String) As Boolean
         
         On Error GoTo BANCheck_Err
-        
 
-100     If Database_Enabled Then
 102         BANCheck = BANCheckDatabase(Name)
-        Else
-104         BANCheck = (val(GetVar(CharPath & Name & ".chr", "BAN", "Baneado")) = 1)
 
-        End If
 
         
         Exit Function
@@ -422,14 +404,9 @@ End Function
 Public Function PersonajeExiste(ByVal Name As String) As Boolean
         
         On Error GoTo PersonajeExiste_Err
-        
 
-100     If Database_Enabled Then
 102         PersonajeExiste = CheckUserExists(Name)
-        Else
-104         PersonajeExiste = FileExist(CharPath & Name & ".chr", vbNormal)
 
-        End If
 
         
         Exit Function
@@ -443,16 +420,9 @@ End Function
 Public Function UnBan(ByVal Name As String) As Boolean
         
         On Error GoTo UnBan_Err
-        
 
-100     If Database_Enabled Then
 102         Call UnBanDatabase(Name)
-        Else
-104         Call WriteVar(CharPath & Name & ".chr", "BAN", "Baneado", "0")
-106         Call WriteVar(CharPath & Name & ".chr", "BAN", "BannedBy", "")
-108         Call WriteVar(CharPath & Name & ".chr", "BAN", "BanMotivo", "")
 
-        End If
     
         'Remove it from the banned people database
 110     Call WriteVar(App.Path & "\logs\" & "BanDetail.dat", Name, "BannedBy", "")
@@ -560,15 +530,9 @@ Sub SaveBan(num As Integer)
 104     Call WriteVar(DatPath & "baneos.dat", "BANEO" & num, "FECHA", Baneos(num).FechaLiberacion)
 106     Call WriteVar(DatPath & "baneos.dat", "BANEO" & num, "BANEADOR", Baneos(num).Baneador)
 108     Call WriteVar(DatPath & "baneos.dat", "BANEO" & num, "CAUSA", Baneos(num).Causa)
-    
-110     If Database_Enabled Then
-112         Call SaveBanDatabase(Baneos(num).Name, Baneos(num).Causa, Baneos(num).Baneador)
-        Else
-114         Call WriteVar(CharPath & Baneos(num).Name & ".chr", "BAN", "Baneado", "1")
-116         Call WriteVar(CharPath & Baneos(num).Name & ".chr", "BAN", "BanMotivo", Baneos(num).Causa)
-118         Call WriteVar(CharPath & Baneos(num).Name & ".chr", "BAN", "BannedBy", Baneos(num).Baneador)
 
-        End If
+112     Call SaveBanDatabase(Baneos(Num).Name, Baneos(Num).Causa, Baneos(Num).Baneador)
+
 
         
         Exit Sub
@@ -615,28 +579,6 @@ LoadBans_Err:
 
         
 End Sub
-
-Public Function ChangeBan(ByVal Name As String, ByVal Baneado As Byte) As Boolean
-        
-        On Error GoTo ChangeBan_Err
-        
-
-100     If FileExist(CharPath & Name & ".chr", vbNormal) Then
-102         If (val(GetVar(CharPath & Name & ".chr", "BAN", "BANEADO")) = 1) Then
-104             Call UnBan(Name)
-
-            End If
-
-        End If
-
-        
-        Exit Function
-
-ChangeBan_Err:
-106     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Admin.ChangeBan", Erl)
-
-        
-End Function
 
 Public Function CompararUserPrivilegios(ByVal Personaje_1 As Integer, ByVal Personaje_2 As Integer) As Integer
     

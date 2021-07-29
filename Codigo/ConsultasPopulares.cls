@@ -238,13 +238,8 @@ Private Sub MarcarPjComoQueYaVoto(ByVal UserIndex As Integer)
         
         On Error GoTo MarcarPjComoQueYaVoto_Err
         
-
-100     If Database_Enabled Then
 102         Call SaveVotoDatabase(UserList(UserIndex).ID, pEncuestaActualNum)
-        Else
-104         Call WriteVar(CharPath & UserList(UserIndex).Name & ".chr", "CONSULTAS", "Voto", str(pEncuestaActualNum))
 
-        End If
 
         
         Exit Sub
