@@ -1817,7 +1817,7 @@ End Function
 
 Function ValidarNombre(nombre As String) As Boolean
     
-100     If Len(nombre) < 1 Or Len(nombre) > 18 Then Exit Function
+100     If Len(nombre) < 4 Or Len(nombre) > 18 Then Exit Function
     
         Dim Temp As String
 102     Temp = UCase$(nombre)

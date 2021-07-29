@@ -37,7 +37,7 @@ Public Sub RegistrarError(ByVal Numero As Long, ByVal Descripcion As String, ByV
 'Author: Jopi
 'Guarda una descripcion detallada del error en Errores.log
 '**********************************************************
-        
+
     On Error GoTo RegistrarError_Err
     
     'Si lo del parametro Componente es ES IGUAL, al Componente del anterior error...
@@ -81,7 +81,7 @@ Public Sub RegistrarError(ByVal Numero As Long, ByVal Descripcion As String, ByV
     ' ----------------------------------------------------------------------------------------------
     ' Jopi: Una vez que el buffer llega a cierta capacidad, volcamos los contenidos al archivo .log
     ' ----------------------------------------------------------------------------------------------
-    If LogsBuffer.ByteLength > MAX_LOG_SIZE Then
+    'If LogsBuffer.ByteLength > MAX_LOG_SIZE Then
         Dim File As Integer: File = FreeFile
         
         Open App.Path & "\logs\Errores\General.log" For Append As #File
@@ -90,7 +90,7 @@ Public Sub RegistrarError(ByVal Numero As Long, ByVal Descripcion As String, ByV
         
         ' Limpiamos el buffer
         Call LogsBuffer.Clear
-    End If
+    'End If
     
     Debug.Print "Error: " & Numero & vbNewLine & _
                 "Descripcion: " & Descripcion & vbNewLine & _

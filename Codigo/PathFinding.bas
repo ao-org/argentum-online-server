@@ -304,7 +304,7 @@ Public Function SeekPath(ByVal NpcIndex As Integer, Optional ByVal Closest As Bo
             ' Posición objetivo
 115         PosTarget.X = .pathFindingInfo.destination.X
 120         PosTarget.Y = .pathFindingInfo.destination.Y
-
+            
             ' Inicializar contenedores para el algoritmo
 125         Call InitializeTable(Table, PosNPC, .pathFindingInfo.RangoVision)
 130         VertexCount = 0
@@ -317,7 +317,13 @@ Public Function SeekPath(ByVal NpcIndex As Integer, Optional ByVal Closest As Bo
         
             ' Distancia euclideana desde la posición inicial hasta la final
 145         Table(PosNPC.X, PosNPC.Y).EstimatedTotalDistance = EuclideanDistanceV(PosNPC, PosTarget)
-        
+            
+            ' Ya estamos en la posicion
+            If (Table(PosNPC.X, PosNPC.Y).EstimatedTotalDistance = 0) Then
+                SeekPath = False
+                Exit Function
+            End If
+            
             ' Distancia posición inicial
 150         Table(PosNPC.X, PosNPC.Y).Distance = 0
         

@@ -2433,7 +2433,7 @@ End Function
 Public Function SetPositionDatabase(UserName As String, ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer) As Boolean
         On Error GoTo ErrorHandler
 
-100     Call MakeQuery("UPDATE user SET pos_map = ?, pos_x = ?, pos_y = ? WHERE UPPER(name) = ?;", True, Map, X, Y, UCase$(UserName))
+100     Call MakeQuery("UPDATE user SET pos_map = ?, pos_x = ?, pos_y = ? WHERE UPPER(name) = ?;", False, Map, X, Y, UCase$(UserName))
     
 102     SetPositionDatabase = RecordsAffected > 0
 
@@ -2459,7 +2459,7 @@ End Function
 Public Function AddOroBancoDatabase(UserName As String, ByVal OroGanado As Long) As Boolean
         On Error GoTo ErrorHandler
 
-100     Call MakeQuery("UPDATE user SET bank_gold = bank_gold + ? WHERE UPPER(name) = ?;", True, OroGanado, UCase$(UserName))
+100     Call MakeQuery("UPDATE user SET bank_gold = bank_gold + ? WHERE UPPER(name) = ?;", False, OroGanado, UCase$(UserName))
     
 102     AddOroBancoDatabase = RecordsAffected > 0
 
@@ -2473,7 +2473,7 @@ End Function
 Public Function DarLlaveAUsuarioDatabase(UserName As String, ByVal LlaveObj As Integer) As Boolean
         On Error GoTo ErrorHandler
 
-100     Call MakeQuery("INSERT INTO house_key SET key_obj = ?, account_id = (SELECT account_id FROM user WHERE UPPER(name) = ?);", True, LlaveObj, UCase$(UserName))
+100     Call MakeQuery("INSERT INTO house_key SET key_obj = ?, account_id = (SELECT account_id FROM user WHERE UPPER(name) = ?);", False, LlaveObj, UCase$(UserName))
     
 102     DarLlaveAUsuarioDatabase = RecordsAffected > 0
 
@@ -2487,7 +2487,7 @@ End Function
 Public Function DarLlaveACuentaDatabase(Email As String, ByVal LlaveObj As Integer) As Boolean
         On Error GoTo ErrorHandler
 
-100     Call MakeQuery("INSERT INTO house_key SET key_obj = ?, account_id = (SELECT id FROM account WHERE UPPER(email) = ?);", True, LlaveObj, UCase$(Email))
+100     Call MakeQuery("INSERT INTO house_key SET key_obj = ?, account_id = (SELECT id FROM account WHERE UPPER(email) = ?);", False, LlaveObj, UCase$(Email))
     
 102     DarLlaveACuentaDatabase = RecordsAffected > 0
         Exit Function
@@ -2527,7 +2527,7 @@ Public Function SacarLlaveDatabase(ByVal LlaveObj As Integer) As Boolean
         Wend
     
         ' Intento borrar la llave de la db
-120     Call MakeQuery("DELETE FROM house_key WHERE key_obj = ?;", True, LlaveObj)
+120     Call MakeQuery("DELETE FROM house_key WHERE key_obj = ?;", False, LlaveObj)
     
         ' Si pudimos borrar, actualizamos los usuarios logueados
         Dim UserIndex As Integer
