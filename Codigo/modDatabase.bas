@@ -857,18 +857,20 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
 298         .Stats.Advertencias = RS!warnings
         
             'User attributes
-            Set RS = query("SELECT value, number FROM attribute WHERE user_id = ?;", .ID)
+            Set RS = query("SELECT * FROM attribute_2 WHERE user_id = ?;", .ID)
     
 302         If Not RS Is Nothing Then
+                .Stats.UserAtributos(eAtributos.Fuerza) = RS!strength
+                .Stats.UserAtributos(eAtributos.Agilidad) = RS!agility
+                .Stats.UserAtributos(eAtributos.Constitucion) = RS!intelligence
+                .Stats.UserAtributos(eAtributos.Inteligencia) = RS!constitution
+                .Stats.UserAtributos(eAtributos.Carisma) = RS!charisma
 
-306             While Not RS.EOF
-
-308                 .Stats.UserAtributos(RS!Number) = RS!Value
-310                 .Stats.UserAtributosBackUP(RS!Number) = .Stats.UserAtributos(RS!Number)
-
-312                 RS.MoveNext
-                Wend
-
+                .Stats.UserAtributosBackUP(eAtributos.Fuerza) = .Stats.UserAtributos(eAtributos.Fuerza)
+                .Stats.UserAtributosBackUP(eAtributos.Agilidad) = .Stats.UserAtributos(eAtributos.Agilidad)
+                .Stats.UserAtributosBackUP(eAtributos.Constitucion) = .Stats.UserAtributos(eAtributos.Constitucion)
+                .Stats.UserAtributosBackUP(eAtributos.Inteligencia) = .Stats.UserAtributos(eAtributos.Inteligencia)
+                .Stats.UserAtributosBackUP(eAtributos.Carisma) = .Stats.UserAtributos(eAtributos.Carisma)
             End If
 
             'User spells
