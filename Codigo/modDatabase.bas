@@ -361,7 +361,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
         'Basic user data
 102     With UserList(UserIndex)
         
-104         ReDim Params(87)
+104         ReDim Params(88)
 
             Dim i As Integer
         
@@ -417,6 +417,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
 206         Params(PostInc(i)) = .Stats.ELO
 208         Params(PostInc(i)) = .flags.Desnudo
 210         Params(PostInc(i)) = .flags.Envenenado
+212         Params(PostInc(i)) = .flags.Incinerado
 218         Params(PostInc(i)) = .flags.Muerto
 220         Params(PostInc(i)) = .flags.Navegando
 222         Params(PostInc(i)) = .flags.Paralizado

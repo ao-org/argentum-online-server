@@ -37,7 +37,7 @@ Public Sub Contruir_Querys()
 104     Call ConstruirQuery_CargarPersonaje
 End Sub
 Private Sub ConstruirQuery_CargarPersonaje()
-        Dim loopc As Long
+        Dim LoopC As Long
     
 100     Set QueryBuilder = New cStringBuilder
     
@@ -349,7 +349,8 @@ Private Sub ConstruirQuery_GuardarPersonaje()
 200     QueryBuilder.Append "killed_users = ?, "
 202     QueryBuilder.Append "invent_level = ?, "
 203     QueryBuilder.Append "elo = ?, "
-206     QueryBuilder.Append "is_poisoned = ?, "
+206     QueryBuilder.Append "is_naked = ?, "
+207     QueryBuilder.Append "is_poisoned = ?, "
 208     QueryBuilder.Append "is_incinerated = ?, "
 214     QueryBuilder.Append "is_dead = ?, "
 216     QueryBuilder.Append "is_sailing = ?, "
