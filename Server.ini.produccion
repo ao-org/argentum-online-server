@@ -30,8 +30,8 @@ MaxUsers=1000
 
 Admines=3
 Dioses=3
-SemiDioses=13
-Consejeros=12
+SemiDioses=14
+Consejeros=11
 
 [Admines]
 Admin1=Haracin|hgarofalo79@gmail.com
