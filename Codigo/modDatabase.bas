@@ -63,7 +63,7 @@ Database_Close_Err:
         Call LogDatabaseError("Unable to close Mysql Database: " & Err.Number & " - " & Err.Description)
 End Sub
 
-Public Function query(ByVal Text As String, ParamArray Arguments() As Variant) As ADODB.Recordset
+Public Function Query(ByVal Text As String, ParamArray Arguments() As Variant) As ADODB.Recordset
     Dim Command  As New ADODB.Command
     Dim Argument As Variant
     
@@ -91,7 +91,7 @@ Public Function query(ByVal Text As String, ParamArray Arguments() As Variant) A
         Call GetElapsedTime
     End If
     
-    Set query = Command.Execute()
+    Set Query = Command.Execute()
     
     ' Statistics
     If frmMain.chkLogDbPerfomance.Value = 1 Then
@@ -249,7 +249,7 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
 
             ' Para recibir el ID del user
             Dim RS As ADODB.Recordset
-            Set RS = query("SELECT LAST_INSERT_ID();")
+            Set RS = Query("SELECT LAST_INSERT_ID();")
 
 202         If RS Is Nothing Then
 204             .ID = 1
@@ -718,7 +718,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             Dim RS As ADODB.Recordset
-            Set RS = query(QUERY_LOAD_MAINPJ, .Name)
+            Set RS = Query(QUERY_LOAD_MAINPJ, .Name)
 
 104         If RS Is Nothing Then Exit Sub
 
@@ -837,8 +837,8 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
 302         If Not RS Is Nothing Then
                 .Stats.UserAtributos(eAtributos.Fuerza) = RS!strength
                 .Stats.UserAtributos(eAtributos.Agilidad) = RS!agility
-                .Stats.UserAtributos(eAtributos.Constitucion) = RS!intelligence
-                .Stats.UserAtributos(eAtributos.Inteligencia) = RS!constitution
+                .Stats.UserAtributos(eAtributos.Constitucion) = RS!constitution
+                .Stats.UserAtributos(eAtributos.Inteligencia) = RS!intelligence
                 .Stats.UserAtributos(eAtributos.Carisma) = RS!charisma
 
                 .Stats.UserAtributosBackUP(eAtributos.Fuerza) = .Stats.UserAtributos(eAtributos.Fuerza)
@@ -849,7 +849,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
             End If
 
             'User spells
-            Set RS = query("SELECT number, spell_id FROM spell WHERE user_id = ?;", .ID)
+            Set RS = Query("SELECT number, spell_id FROM spell WHERE user_id = ?;", .ID)
 
 316         If Not RS Is Nothing Then
 
@@ -863,7 +863,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
             End If
 
             'User pets
-            Set RS = query("SELECT number, pet_id FROM pet WHERE user_id = ?;", .ID)
+            Set RS = Query("SELECT number, pet_id FROM pet WHERE user_id = ?;", .ID)
 
 328         If Not RS Is Nothing Then
 
@@ -882,7 +882,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
             End If
 
             'User inventory
-            Set RS = query("SELECT number, item_id, is_equipped, amount FROM inventory_item WHERE user_id = ?;", .ID)
+            Set RS = Query("SELECT number, item_id, is_equipped, amount FROM inventory_item WHERE user_id = ?;", .ID)
 
             counter = 0
             
@@ -915,7 +915,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
             End If
 
             'User bank inventory
-            Set RS = query("SELECT number, item_id, amount FROM bank_item WHERE user_id = ?;", .ID)
+            Set RS = Query("SELECT number, item_id, amount FROM bank_item WHERE user_id = ?;", .ID)
             
             counter = 0
             
@@ -947,7 +947,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
             End If
             
             'User skills
-            Set RS = query("SELECT number, value FROM skillpoint WHERE user_id = ?;", .ID)
+            Set RS = Query("SELECT number, value FROM skillpoint WHERE user_id = ?;", .ID)
 
 390         If Not RS Is Nothing Then
 
@@ -965,7 +965,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
             Dim LoopC As Byte
         
             'User quests
-            Set RS = query("SELECT number, quest_id, npcs, npcstarget FROM quest WHERE user_id = ?;", .ID)
+            Set RS = Query("SELECT number, quest_id, npcs, npcstarget FROM quest WHERE user_id = ?;", .ID)
 
 402         If Not RS Is Nothing Then
 
@@ -1008,7 +1008,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
             End If
         
             'User quests done
-            Set RS = query("SELECT quest_id FROM quest_done WHERE user_id = ?;", .ID)
+            Set RS = Query("SELECT quest_id FROM quest_done WHERE user_id = ?;", .ID)
 
 440         If Not RS Is Nothing Then
 442             .QuestStats.NumQuestsDone = RS.RecordCount
@@ -1029,7 +1029,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
             End If
 
             ' Llaves
-            Set RS = query("SELECT key_obj FROM house_key WHERE account_id = ?", .AccountID)
+            Set RS = Query("SELECT key_obj FROM house_key WHERE account_id = ?", .AccountID)
 
 460         If Not RS Is Nothing Then
 464             LoopC = 1
@@ -1057,7 +1057,7 @@ Public Function GetDBValue(Tabla As String, ColumnaGet As String, ColumnaTest As
         On Error GoTo ErrorHandler
     
 100     Dim RS As ADODB.Recordset
-        Set RS = query("SELECT " & ColumnaGet & " FROM " & Tabla & " WHERE " & ColumnaTest & " = ?;", ValueTest)
+        Set RS = Query("SELECT " & ColumnaGet & " FROM " & Tabla & " WHERE " & ColumnaTest & " = ?;", ValueTest)
 
         'Revisamos si recibio un resultado
 102     If RS Is Nothing Then Exit Function
@@ -1368,7 +1368,7 @@ Public Sub GetPasswordAndSaltDatabase(CuentaEmail As String, PasswordHash As Str
         On Error GoTo ErrorHandler
     
         Dim RS As ADODB.Recordset
-        Set RS = query("SELECT password, salt FROM account WHERE deleted = FALSE AND email = ?;", LCase$(CuentaEmail))
+        Set RS = Query("SELECT password, salt FROM account WHERE deleted = FALSE AND email = ?;", LCase$(CuentaEmail))
 
 102     If RS Is Nothing Then Exit Sub
     
@@ -1404,7 +1404,7 @@ Public Function GetPersonajesCountByIDDatabase(ByVal AccountID As Long) As Byte
         On Error GoTo ErrorHandler
     
         Dim RS As ADODB.Recordset
-100     Set RS = query("SELECT COUNT(*) FROM user WHERE deleted = FALSE AND account_id = ?;", AccountID)
+100     Set RS = Query("SELECT COUNT(*) FROM user WHERE deleted = FALSE AND account_id = ?;", AccountID)
     
 102     If RS Is Nothing Then Exit Function
     
@@ -1422,7 +1422,7 @@ Public Function GetPersonajesCuentaDatabase(ByVal AccountID As Long, Personaje()
         On Error GoTo GetPersonajesCuentaDatabase_Err
         
         Dim RS As ADODB.Recordset
-100     Set RS = query("SELECT name, head_id, class_id, body_id, pos_map, pos_x, pos_y, level, status, helmet_id, shield_id, weapon_id, guild_index, is_dead, is_sailing FROM user WHERE deleted = FALSE AND account_id = ?;", AccountID)
+100     Set RS = Query("SELECT name, head_id, class_id, body_id, pos_map, pos_x, pos_y, level, status, helmet_id, shield_id, weapon_id, guild_index, is_dead, is_sailing FROM user WHERE deleted = FALSE AND account_id = ?;", AccountID)
 
 102     If RS Is Nothing Then Exit Function
     
@@ -1522,7 +1522,7 @@ Public Function LeerRecordUsuariosDatabase() As Long
         On Error GoTo LeerRecordUsuariosDatabase_Err
         
         Dim RS As ADODB.Recordset
-100     Set RS = query("SELECT value FROM statistics WHERE name = 'record';")
+100     Set RS = Query("SELECT value FROM statistics WHERE name = 'record';")
 
 102     If RS Is Nothing Then Exit Function
 
@@ -1699,11 +1699,11 @@ Public Sub SavePenaDatabase(UserName As String, Reason As String)
 
         On Error GoTo ErrorHandler
 
-        Dim query As String
-100     query = "INSERT INTO punishment(user_id, NUMBER, reason)"
-102     query = query & " SELECT u.id, COUNT(p.number) + 1, ? FROM user u LEFT JOIN punishment p ON p.user_id = u.id WHERE UPPER(u.name) = ?;"
+        Dim Query As String
+100     Query = "INSERT INTO punishment(user_id, NUMBER, reason)"
+102     Query = Query & " SELECT u.id, COUNT(p.number) + 1, ? FROM user u LEFT JOIN punishment p ON p.user_id = u.id WHERE UPPER(u.name) = ?;"
         
-        Call Execute(query, Reason, UCase$(UserName))
+        Call Execute(Query, Reason, UCase$(UserName))
 
         Exit Sub
 
@@ -1829,7 +1829,7 @@ Public Function GetUserAmountOfPunishmentsDatabase(ByVal UserName As String) As 
         On Error GoTo ErrorHandler
         
         Dim RS As ADODB.Recordset
-100     Set RS = query("SELECT COUNT(*) as punishments FROM `punishment` INNER JOIN `user` ON punishment.user_id = user.id WHERE UPPER(user.name) = ?;", UCase$(UserName))
+100     Set RS = Query("SELECT COUNT(*) as punishments FROM `punishment` INNER JOIN `user` ON punishment.user_id = user.id WHERE UPPER(user.name) = ?;", UCase$(UserName))
 
 102     If RS Is Nothing Then Exit Function
 
@@ -1850,7 +1850,7 @@ Public Sub SendUserPunishmentsDatabase(ByVal UserIndex As Integer, ByVal UserNam
         On Error GoTo ErrorHandler
 
         Dim RS As ADODB.Recordset
-100     Set RS = query("SELECT user_id, number, reason FROM `punishment` INNER JOIN `user` ON punishment.user_id = user.id WHERE UPPER(user.name) = ?;", UCase$(UserName))
+100     Set RS = Query("SELECT user_id, number, reason FROM `punishment` INNER JOIN `user` ON punishment.user_id = user.id WHERE UPPER(user.name) = ?;", UCase$(UserName))
     
 102     If RS Is Nothing Then Exit Sub
 
@@ -1877,7 +1877,7 @@ Public Function GetNombreCuentaDatabase(Name As String) As String
 
         'Hacemos la query.
         Dim RS As ADODB.Recordset
-100     Set RS = query("SELECT email FROM `account` INNER JOIN `user` ON user.account_id = account.id WHERE UPPER(user.name) = ?;", UCase$(Name))
+100     Set RS = Query("SELECT email FROM `account` INNER JOIN `user` ON user.account_id = account.id WHERE UPPER(user.name) = ?;", UCase$(Name))
     
         'Verificamos que la query no devuelva un resultado vacio.
 102     If RS Is Nothing Then Exit Function
@@ -2072,7 +2072,7 @@ Public Sub SendCharacterInfoDatabase(ByVal UserIndex As Integer, ByVal UserName 
         Dim GuildActual As Integer
 
         Dim RS As ADODB.Recordset
-100     Set RS = query("SELECT race_id, class_id, genre_id, level, gold, bank_gold, guild_requests_history, guild_index, guild_member_history, pertenece_real, pertenece_caos, ciudadanos_matados, criminales_matados FROM user WHERE UPPER(name) = ?;", UCase$(UserName))
+100     Set RS = Query("SELECT race_id, class_id, genre_id, level, gold, bank_gold, guild_requests_history, guild_index, guild_member_history, pertenece_real, pertenece_caos, ciudadanos_matados, criminales_matados FROM user WHERE UPPER(name) = ?;", UCase$(UserName))
 
 102     If RS Is Nothing Then
 104         Call WriteConsoleMsg(UserIndex, "Pj Inexistente", FontTypeNames.FONTTYPE_INFO)
@@ -2111,7 +2111,7 @@ Public Function EnterAccountDatabase(ByVal UserIndex As Integer, ByVal CuentaEma
         On Error GoTo ErrorHandler
     
         Dim RS As ADODB.Recordset
-100     Set RS = query("SELECT id, password, salt, validated, is_banned, ban_reason, banned_by FROM account WHERE email = ?;", LCase$(CuentaEmail))
+100     Set RS = Query("SELECT id, password, salt, validated, is_banned, ban_reason, banned_by FROM account WHERE email = ?;", LCase$(CuentaEmail))
     
 102     If Connection.State = adStateClosed Then
 104         Call WriteShowMessageBox(UserIndex, "Ha ocurrido un error interno en el servidor. ¡Estamos tratando de resolverlo!")
@@ -2155,7 +2155,7 @@ End Function
 Public Function PersonajePerteneceEmail(ByVal UserName As String, ByVal AccountEmail As String) As Boolean
     
         Dim RS As ADODB.Recordset
-100     Set RS = query("SELECT id FROM user INNER JOIN account ON user.account_id = account.id WHERE user.name = ? AND account.email = ?;", UserName, AccountEmail)
+100     Set RS = Query("SELECT id FROM user INNER JOIN account ON user.account_id = account.id WHERE user.name = ? AND account.email = ?;", UserName, AccountEmail)
     
 102     If RS Is Nothing Then
 104         PersonajePerteneceEmail = False
@@ -2169,7 +2169,7 @@ End Function
 Public Function PersonajePerteneceID(ByVal UserName As String, ByVal AccountID As Long) As Boolean
     
         Dim RS As ADODB.Recordset
-100     Set RS = query("SELECT id FROM user WHERE name = ? AND account_id = ?;", UserName, AccountID)
+100     Set RS = Query("SELECT id FROM user WHERE name = ? AND account_id = ?;", UserName, AccountID)
     
 102     If RS Is Nothing Then
 104         PersonajePerteneceID = False
@@ -2191,7 +2191,7 @@ Public Sub ChangePasswordDatabase(ByVal UserIndex As Integer, OldPassword As Str
         End If
     
         Dim RS As ADODB.Recordset
-        Set RS = query("SELECT password, salt FROM account WHERE id = ?;", UserList(UserIndex).AccountID)
+        Set RS = Query("SELECT password, salt FROM account WHERE id = ?;", UserList(UserIndex).AccountID)
     
 106     If RS Is Nothing Then
 108         Call WriteConsoleMsg(UserIndex, "No se ha podido cambiar la contraseña por un error interno. Avise a un administrador.", FontTypeNames.FONTTYPE_INFO)
@@ -2295,7 +2295,7 @@ Public Function SacarLlaveDatabase(ByVal LlaveObj As Integer) As Boolean
 
         ' Obtengo los usuarios logueados en la cuenta del dueño de la llave
         Dim RS As ADODB.Recordset
-100     Set RS = query("SELECT name FROM `user` INNER JOIN `account` ON `user`.account_id = account.id INNER JOIN `house_key` ON `house_key`.account_id = account.id WHERE `user`.is_logged = TRUE AND `house_key`.key_obj = ?;", LlaveObj)
+100     Set RS = Query("SELECT name FROM `user` INNER JOIN `account` ON `user`.account_id = account.id INNER JOIN `house_key` ON `house_key`.account_id = account.id WHERE `user`.is_logged = TRUE AND `house_key`.key_obj = ?;", LlaveObj)
     
 102     If RS Is Nothing Then Exit Function
 
@@ -2341,7 +2341,7 @@ Public Sub VerLlavesDatabase(ByVal UserIndex As Integer)
         On Error GoTo ErrorHandler
 
         Dim RS As ADODB.Recordset
-100     Set RS = query("SELECT email, key_obj FROM `house_key` INNER JOIN `account` ON `house_key`.account_id = `account`.id;")
+100     Set RS = Query("SELECT email, key_obj FROM `house_key` INNER JOIN `account` ON `house_key`.account_id = `account`.id;")
 
 102     If RS Is Nothing Then
 104         Call WriteConsoleMsg(UserIndex, "No hay llaves otorgadas por el momento.", FontTypeNames.FONTTYPE_INFO)
