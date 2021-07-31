@@ -441,7 +441,8 @@ Sub UpdateUserInv(ByVal UpdateAll As Boolean, ByVal UserIndex As Integer, ByVal 
 106             Call ChangeUserInv(UserIndex, Slot, NullObj)
 
             End If
-
+                    
+            UserList(UserIndex).flags.ModificoInventario = True
         Else
 
             'Actualiza todos los slots
@@ -2775,18 +2776,24 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
         
 1058             Case eOBJType.otBotellaVacia
     
-1060                 If .flags.Muerto = 1 Then
-1062                     Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
-                              'Call WriteConsoleMsg(UserIndex, "¡¡Estas muerto!! Solo podes usar items cuando estas vivo. ", FontTypeNames.FONTTYPE_INFO)
-                              Exit Sub
-    
-                          End If
-    
+1060                If .flags.Muerto = 1 Then
+1062                    Call WriteLocaleMsg(UserIndex, "77", FontTypeNames.FONTTYPE_INFO)
+                        Exit Sub
+                    End If
+                    
+                    If Not InMapBounds(.flags.TargetMap, .flags.TargetX, .flags.TargetY) Then
+                        Exit Sub
+                    End If
+                    
 1064                 If (MapData(.Pos.Map, .flags.TargetX, .flags.TargetY).Blocked And FLAG_AGUA) = 0 Then
 1066                     Call WriteConsoleMsg(UserIndex, "No hay agua allí.", FontTypeNames.FONTTYPE_INFO)
-                              Exit Sub
-    
-                          End If
+                         Exit Sub
+                    End If
+                    
+                    If Distance(UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y, .flags.TargetX, .flags.TargetY) > 2 Then
+                        Call WriteConsoleMsg(UserIndex, "Debes acercarte más al agua.", FontTypeNames.FONTTYPE_INFO)
+                        Exit Sub
+                    End If
     
 1068                 MiObj.amount = 1
 1070                 MiObj.ObjIndex = ObjData(.Invent.Object(Slot).ObjIndex).IndexAbierta

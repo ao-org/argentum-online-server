@@ -6143,7 +6143,7 @@ End Sub
 Private Sub HandleCommerceStart(ByVal UserIndex As Integer)
         
         On Error GoTo HandleCommerceStart_Err
-
+        
         '***************************************************
         'Author: Juan Martín Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
@@ -6217,6 +6217,7 @@ Private Sub HandleCommerceStart(ByVal UserIndex As Integer)
                 
                 'Is the other one dead??
 138             If UserList(.flags.TargetUser).flags.Muerto = 1 Then
+                    Call FinComerciarUsu(.flags.TargetUser, True)
 140                 Call WriteConsoleMsg(UserIndex, "¡¡No podés comerciar con los muertos!!", FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
 
@@ -6230,15 +6231,23 @@ Private Sub HandleCommerceStart(ByVal UserIndex As Integer)
                 End If
             
                 'Check distance
-146             If Distancia(UserList(.flags.TargetUser).Pos, .Pos) > 3 Then
+146             If .Pos.Map <> UserList(.flags.TargetUser).Pos.Map Or Distancia(UserList(.flags.TargetUser).Pos, .Pos) > 3 Then
+                    Call FinComerciarUsu(.flags.TargetUser, True)
 148                 Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
                     'Call WriteConsoleMsg(UserIndex, "Estís demasiado lejos del usuario.", FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
-
                 End If
-            
+ 
+                'Check if map is not safe
+                If MapInfo(.Pos.Map).Seguro = 0 Then
+                    Call FinComerciarUsu(.flags.TargetUser, True)
+                    Call WriteConsoleMsg(UserIndex, "No se puede usar el comercio seguro en zona insegura.", FontTypeNames.FONTTYPE_INFO)
+                    Exit Sub
+                End If
+
                 'Is he already trading?? is it with me or someone else??
-150             If UserList(.flags.TargetUser).flags.Comerciando = True And UserList(.flags.TargetUser).ComUsu.DestUsu <> UserIndex Then
+150             If UserList(.flags.TargetUser).flags.Comerciando = True Then
+                    Call FinComerciarUsu(.flags.TargetUser, True)
 152                 Call WriteConsoleMsg(UserIndex, "No podés comerciar con el usuario en este momento.", FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
 
