@@ -95,11 +95,15 @@ Public Function Query(ByVal Text As String, ParamArray Arguments() As Variant) A
     
     Set Query = Command.Execute()
     
+    If (Not Query Is Nothing And Query.EOF) Then
+        Set Query = Nothing
+    End If
+    
     ' Statistics
     If frmMain.chkLogDbPerfomance.Value = 1 Then
         Call LogPerformance("Query: " & Text & vbNewLine & " - Tiempo transcurrido: " & Round(GetElapsedTime(), 1) & " ms" & vbNewLine)
     End If
-    
+
     Exit Function
     
 Query_Err:
