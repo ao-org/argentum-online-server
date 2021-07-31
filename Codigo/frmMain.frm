@@ -687,12 +687,18 @@ Private Sub Segundo_Timer()
 
     ' WyroX - Control de estabilidad del servidor
     Static LastTime As Currency
+    Static Frequency As Currency
     Dim CurTime As Currency
+    
+    'Get the timer frequency
+    If Frequency = 0 Then
+        Call QueryPerformanceFrequency(Frequency)
+    End If
 
     Call QueryPerformanceCounter(CurTime)
 
     If LastTime <> 0 Then
-        Estabilidad.Caption = Round(Clamp((2000 - CurTime + LastTime) * 0.1, 0, 100), 1) & "%"
+        Estabilidad.Caption = Round(Clamp(200 + (LastTime - CurTime) * 100 / Frequency, 0, 100), 1) & "%"
     End If
 
     LastTime = CurTime
