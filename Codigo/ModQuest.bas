@@ -588,7 +588,7 @@ Public Sub EnviarQuest(ByVal UserIndex As Integer)
     
         'El NPC hace quests?
 108     If NpcList(NpcIndex).NumQuest = 0 Then
-110         Call WriteChatOverHead(UserIndex, "No tengo ninguna misón para ti.", NpcList(NpcIndex).Char.CharIndex, vbYellow)
+110         Call WriteChatOverHead(UserIndex, "No tengo ninguna misión para ti.", NpcList(NpcIndex).Char.CharIndex, vbYellow)
             Exit Sub
 
         End If
