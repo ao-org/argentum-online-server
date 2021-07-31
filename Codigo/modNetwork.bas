@@ -147,10 +147,10 @@ End Sub
 Private Sub OnServerSend(ByVal Connection As Long, ByVal Message As Network.Reader)
 On Error GoTo OnServerSend_Err:
 
+#If AntiExternos = 1 Then
     Dim BytesRef() As Byte
     Call Message.GetData(BytesRef) ' Is only a view of the buffer as a SafeArrayPtr ;-)
 
-#If AntiExternos = 1 Then
     Call Security.XorData(BytesRef, UBound(BytesRef) - 1, UserList(Connection).XorIndexOut)
 #End If
 
@@ -164,10 +164,10 @@ End Sub
 Private Sub OnServerRecv(ByVal Connection As Long, ByVal Message As Network.Reader)
 On Error GoTo OnServerRecv_Err:
 
+#If AntiExternos = 1 Then
     Dim BytesRef() As Byte
     Call Message.GetData(BytesRef) ' Is only a view of the buffer as a SafeArrayPtr ;-)
 
-#If AntiExternos = 1 Then
     Call Security.XorData(BytesRef, UBound(BytesRef) - 1, UserList(Connection).XorIndexIn)
 #End If
 
