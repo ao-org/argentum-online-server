@@ -37,11 +37,13 @@ Public Sub Database_Connect()
         Set Connection = New ADODB.Connection
 110     Connection.CursorLocation = adUseClient
         Connection.ConnectionString = ConnectionID
+
+113     Set Builder = New cStringBuilder
         
 112     Call Connection.Open
 
-113     Set Builder = New cStringBuilder
-
+        Call InitDatabase
+        
         Exit Sub
     
 Database_Connect_Err:
@@ -184,6 +186,17 @@ Private Function CreateParameter(ByVal Value As Variant, ByVal Direction As ADOD
 End Function
 
 ' ------------------------------------------------------- VIEJO (necesita Refactor) -------------------------------------------------------------
+
+Public Sub InitDatabase()
+    'Reinicio los users online
+    Call SetUsersLoggedDatabase(0)
+
+    'Leo el record de usuarios
+    RecordUsuarios = LeerRecordUsuariosDatabase()
+
+    'Tarea pesada
+    Call LogoutAllUsersAndAccounts
+End Sub
 
 Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
 
@@ -753,7 +766,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
 160         .Invent.MunicionEqpSlot = SanitizeNullValue(RS!slot_ammo, 0)
 162         .Invent.BarcoSlot = SanitizeNullValue(RS!slot_ship, 0)
 164         .Invent.MonturaSlot = SanitizeNullValue(RS!slot_mount, 0)
-166         .Invent.DañoMagicoEqpSlot = SanitizeNullValue(RS!slot_dm, 0)
+166         .Invent.DañoMagicoEqpSlot = SanitizeNullValue(rs!slot_dm, 0)
 168         .Invent.ResistenciaEqpSlot = SanitizeNullValue(RS!slot_rm, 0)
 170         .Invent.NudilloSlot = SanitizeNullValue(RS!slot_knuckles, 0)
 172         .Invent.HerramientaEqpSlot = SanitizeNullValue(RS!slot_tool, 0)
@@ -1014,7 +1027,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
 440         If Not RS Is Nothing Then
 442             .QuestStats.NumQuestsDone = RS.RecordCount
                 
-                If (.QuestStats.NumQuestsDone > 1) Then
+                If (.QuestStats.NumQuestsDone > 0) Then
 444                 ReDim .QuestStats.QuestsDone(1 To .QuestStats.NumQuestsDone)
     
 448                 LoopC = 1
@@ -1062,7 +1075,8 @@ Public Function GetDBValue(Tabla As String, ColumnaGet As String, ColumnaTest As
 
         'Revisamos si recibio un resultado
 102     If RS Is Nothing Then Exit Function
-
+        If rs.BOF Or rs.EOF Then Exit Function
+        
         'Obtenemos la variable
 104     GetDBValue = RS.Fields(ColumnaGet).Value
 
@@ -2125,7 +2139,7 @@ Public Function EnterAccountDatabase(ByVal UserIndex As Integer, ByVal CuentaEma
         End If
     
 110     If val(RS!is_banned) > 0 Then
-112         Call WriteShowMessageBox(UserIndex, "La cuenta se encuentra baneada debido a: " & RS!ban_reason & ". Esta decisión fue tomada por: " & RS!banned_by & ".")
+112         Call WriteShowMessageBox(UserIndex, "La cuenta se encuentra baneada debido a: " & rs!ban_reason & ". Esta decisión fue tomada por: " & rs!banned_by & ".")
             Exit Function
         End If
     

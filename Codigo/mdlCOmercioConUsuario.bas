@@ -29,19 +29,13 @@ Private Const MAX_OBJ_LOGUEABLE As Long = 1000
 
 'origen: origen de la transaccion, originador del comando
 'destino: receptor de la transaccion
-Public Sub IniciarComercioConUsuario(ByVal Origen As Integer, ByVal Destino As Integer)
+Public Function IniciarComercioConUsuario(ByVal Origen As Integer, ByVal Destino As Integer) As Boolean
 
         On Error GoTo ErrHandler
 
-100     If MapInfo(UserList(Origen).Pos.Map).Seguro = 0 Then
-102         Call WriteConsoleMsg(Origen, "No se puede usar el comercio seguro en zona insegura.", FontTypeNames.FONTTYPE_INFO)
-104         Call WriteWorkRequestTarget(Origen, 0)
-            Exit Sub
-
-        End If
-
         'Si ambos pusieron /comerciar entonces
 106     If UserList(Origen).ComUsu.DestUsu = Destino And UserList(Destino).ComUsu.DestUsu = Origen Then
+
             'Actualiza el inventario del usuario
 108         Call UpdateUserInv(True, Origen, 0)
             'Decirle al origen que abra la ventanita.
@@ -70,13 +64,13 @@ Public Sub IniciarComercioConUsuario(ByVal Origen As Integer, ByVal Destino As I
     
         End If
 
-    
+        IniciarComercioConUsuario = True
 
-        Exit Sub
+        Exit Function
 ErrHandler:
 134     Call LogError("Error en IniciarComercioConUsuario: " & Err.Description)
 
-End Sub
+End Function
 Public Sub EnviarObjetoTransaccion(ByVal AQuien As Integer, ByVal UserIndex As Integer, ByRef ObjAEnviar As obj)
         
             On Error GoTo EnviarObjetoTransaccion_Err
@@ -172,7 +166,7 @@ EnviarObjetoTransaccion_Err:
         
 End Sub
 
-Public Sub FinComerciarUsu(ByVal UserIndex As Integer)
+Public Sub FinComerciarUsu(ByVal UserIndex As Integer, Optional ByVal Invalido As Boolean = False)
         
         On Error GoTo FinComerciarUsu_Err
         
@@ -181,9 +175,8 @@ Public Sub FinComerciarUsu(ByVal UserIndex As Integer)
 
 102     With UserList(UserIndex)
 
-104         If .ComUsu.DestUsu > 0 Then
+104         If .ComUsu.DestUsu > 0 And Not Invalido Then
 106             Call WriteUserCommerceEnd(UserIndex)
-
             End If
         
 108         .ComUsu.Acepto = False

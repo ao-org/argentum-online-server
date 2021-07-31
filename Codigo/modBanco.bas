@@ -26,10 +26,15 @@ Sub IniciarDeposito(ByVal UserIndex As Integer)
 
     On Error GoTo ErrHandler
         
+        If UserList(UserIndex).flags.Comerciando Then
+            Exit Sub
+        End If
+        
+        UserList(UserIndex).flags.Comerciando = True
+        
         Call UpdateBanUserInv(True, UserIndex, 0)
 
 104     Call WriteBankInit(UserIndex)
-106     UserList(UserIndex).flags.Comerciando = True
 
     Exit Sub
 

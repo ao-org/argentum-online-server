@@ -60,7 +60,7 @@ Distancia_Err:
         
 End Function
 
-Function Distance(X1 As Variant, Y1 As Variant, X2 As Variant, Y2 As Variant) As Double
+Function Distance(ByVal X1 As Long, ByVal Y1 As Long, ByVal X2 As Long, ByVal Y2 As Long) As Double
         
         On Error GoTo Distance_Err
         
