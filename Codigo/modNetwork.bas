@@ -65,42 +65,13 @@ Public Function GetTimeOfNextFlush() As Single
     GetTimeOfNextFlush = max(0, TIME_SEND_FREQUENCY - Time(1))
 End Function
 
-Public Function GetIPStringFromAddress(ByVal IPAddress As Double) As String
-    Dim X       As Integer
-    Dim Num     As Integer
-    
-    If IPAddress < 0 Then IPAddress = IPAddress + 4294967296#
-    
-    For X = 1 To 4
-        Num = Int(IPAddress / 256 ^ (4 - X))
-        IPAddress = IPAddress - (Num * 256 ^ (4 - X))
-        If Num > 255 Then
-            GetIPStringFromAddress = "0.0.0.0"
-            Exit Function
-        End If
-
-        If X = 1 Then
-            GetIPStringFromAddress = Num
-        Else
-            GetIPStringFromAddress = GetIPStringFromAddress & "." & Num
-        End If
-    Next
-End Function
-
-Private Sub OnServerConnect(ByVal Connection As Long, ByVal Address As Long)
+Private Sub OnServerConnect(ByVal Connection As Long, ByVal Address As String)
 On Error GoTo OnServerConnect_Err:
-    
-    Dim i As Long
-
-    'If Not SecurityIp.IpSecurityAceptarNuevaConexion(Address) Then
-    '    Call Kick(Connection)
-    '    Exit Sub
-    'End If
 
     If Connection <= MaxUsers Then
     
         UserList(Connection).ConnIDValida = True
-        UserList(Connection).IP = GetIPStringFromAddress(Address)
+        UserList(Connection).IP = Address
 
         If IP_Blacklist.Exists(UserList(Connection).IP) <> 0 Then 'Busca si esta banneada la ip
             Call Kick(Connection, "Se te ha prohibido la entrada al servidor. Cod: #0003")
