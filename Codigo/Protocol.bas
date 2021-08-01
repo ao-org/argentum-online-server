@@ -361,7 +361,6 @@ Private Enum ClientPacketID
     ItemsInTheFloor         '/PISO
     MakeDumb                '/ESTUPIDO
     MakeDumbNoMore          '/NOESTUPIDO
-    DumpIPTables            '/DUMPSECURITY
     CouncilKick             '/KICKCONSE
     SetTrigger              '/TRIGGER
     AskTrigger              '/TRIGGER with no args
