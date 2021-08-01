@@ -737,7 +737,6 @@ Sub Main()
         '           Configuracion de los sockets
         ' ----------------------------------------------------
 296     Call InitializePacketList
-298     Call SecurityIp.InitIpTables(1000)
 
         #If AntiExternos = 1 Then
 300         Call Security.Initialize

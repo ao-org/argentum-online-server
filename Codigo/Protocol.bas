@@ -999,8 +999,6 @@ On Error Resume Next
             Call HandleMakeDumb(UserIndex)
         Case ClientPacketID.MakeDumbNoMore
             Call HandleMakeDumbNoMore(UserIndex)
-        Case ClientPacketID.DumpIPTables
-            Call HandleDumpIPTables(UserIndex)
         Case ClientPacketID.CouncilKick
             Call HandleCouncilKick(UserIndex)
         Case ClientPacketID.SetTrigger
@@ -12023,39 +12021,6 @@ ErrHandler:
 114     Call TraceError(Err.Number, Err.Description, "Protocol.HandleMakeDumbNoMore", Erl)
 116
 
-End Sub
-
-''
-' Handles the "DumpIPTables" message.
-'
-' @param    UserIndex The index of the user sending the message.
-
-Private Sub HandleDumpIPTables(ByVal UserIndex As Integer)
-        
-        On Error GoTo HandleDumpIPTables_Err
-
-        '***************************************************
-        'Author: Nicolas Matias Gonzalez (NIGO)
-        'Last Modification: 12/30/06
-        '
-        '***************************************************
-100     With UserList(UserIndex)
-
-102         If (.flags.Privilegios And (PlayerType.user Or PlayerType.Consejero Or PlayerType.SemiDios)) Then
-104             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", FontTypeNames.FONTTYPE_INFO)
-                Exit Sub
-            End If
-        
-106         Call SecurityIp.DumpTables
-
-        End With
-        
-        Exit Sub
-
-HandleDumpIPTables_Err:
-108     Call TraceError(Err.Number, Err.Description, "Protocol.HandleDumpIPTables", Erl)
-110
-        
 End Sub
 
 ''
