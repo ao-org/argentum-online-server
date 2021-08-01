@@ -17665,7 +17665,7 @@ Public Sub HandleQuest(ByVal UserIndex As Integer)
     
         'El NPC hace quests?
 108     If NpcList(NpcIndex).NumQuest = 0 Then
-110         Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageChatOverHead("No tengo ninguna mision para ti.", NpcList(NpcIndex).Char.CharIndex, vbWhite))
+110         Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageChatOverHead("No tengo ninguna misión para ti.", NpcList(NpcIndex).Char.CharIndex, vbWhite))
             Exit Sub
 
         End If
@@ -17715,7 +17715,7 @@ Public Sub HandleQuestAccept(ByVal UserIndex As Integer)
         'El personaje completo la quest que requiere?
 116     If QuestList(NpcList(NpcIndex).QuestNumber(Indice)).RequiredQuest > 0 Then
 118         If Not UserDoneQuest(UserIndex, QuestList(NpcList(NpcIndex).QuestNumber(Indice)).RequiredQuest) Then
-120             Call WriteChatOverHead(UserIndex, "Debes completas la quest " & QuestList(QuestList(NpcList(NpcIndex).QuestNumber(Indice)).RequiredQuest).nombre & " para emprender esta mision.", NpcList(NpcIndex).Char.CharIndex, vbYellow)
+120             Call WriteChatOverHead(UserIndex, "Debes completar la quest " & QuestList(QuestList(NpcList(NpcIndex).QuestNumber(Indice)).RequiredQuest).nombre & " para emprender esta misión.", NpcList(NpcIndex).Char.CharIndex, vbYellow)
                 Exit Sub
 
             End If
@@ -17724,7 +17724,7 @@ Public Sub HandleQuestAccept(ByVal UserIndex As Integer)
 
         'El personaje tiene suficiente nivel?
 122     If UserList(UserIndex).Stats.ELV < QuestList(NpcList(NpcIndex).QuestNumber(Indice)).RequiredLevel Then
-124         Call WriteChatOverHead(UserIndex, "Debes ser por lo menos nivel " & QuestList(NpcList(NpcIndex).QuestNumber(Indice)).RequiredLevel & " para emprender esta mision.", NpcList(NpcIndex).Char.CharIndex, vbYellow)
+124         Call WriteChatOverHead(UserIndex, "Debes ser por lo menos nivel " & QuestList(NpcList(NpcIndex).QuestNumber(Indice)).RequiredLevel & " para emprender esta misión.", NpcList(NpcIndex).Char.CharIndex, vbYellow)
             Exit Sub
 
         End If
@@ -17755,7 +17755,7 @@ Public Sub HandleQuestAccept(ByVal UserIndex As Integer)
 142         If QuestList(.QuestIndex).RequiredTargetNPCs Then ReDim .NPCsTarget(1 To QuestList(.QuestIndex).RequiredTargetNPCs)
             UserList(UserIndex).flags.ModificoQuests = True
             
-144         Call WriteConsoleMsg(UserIndex, "Has aceptado la mision " & Chr(34) & QuestList(.QuestIndex).nombre & Chr(34) & ".", FontTypeNames.FONTTYPE_INFOIAO)
+144         Call WriteConsoleMsg(UserIndex, "Has aceptado la misión " & Chr(34) & QuestList(.QuestIndex).nombre & Chr(34) & ".", FontTypeNames.FONTTYPE_INFOIAO)
 146         Call WriteUpdateNPCSimbolo(UserIndex, NpcIndex, 4)
         
         End With
