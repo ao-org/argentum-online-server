@@ -398,9 +398,9 @@ Public Function DumpTables()
 
         Dim i As Integer
 
-100     For i = 0 To MaxConTablesEntry * 2 - 1 Step 2
-102         Call LogCriticEvent(modNetwork.GetIPStringFromAddress(MaxConTables(I)) & " > " & MaxConTables(I + 1))
-104     Next i
+'100     For i = 0 To MaxConTablesEntry * 2 - 1 Step 2
+'102         Call LogCriticEvent(modNetwork.GetIPStringFromAddress(MaxConTables(i)) & " > " & MaxConTables(i + 1))
+'104     Next i
 
         
         Exit Function
