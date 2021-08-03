@@ -135,9 +135,21 @@ Public Function ConnectUser_Check(ByVal UserIndex As Integer, _
         Else
 
             If ServerSoloGMs > 0 Then
-                Call WriteShowMessageBox(UserIndex, "Servidor restringido a administradores. Por favor reintente en unos momentos.")
-                Call CloseSocket(UserIndex)
-                Exit Function
+                Dim i As Integer
+                Dim EsCuentaGM As Boolean
+
+                For i = 0 To AdministratorAccounts.Count - 1
+                    ' Si el e-mail está declarado junto al nick de la cuenta donde esta el PJ GM en el Server.ini te dejo entrar.
+                    If UCase$(AdministratorAccounts.Items(i)) = UCase$(.Email) Then
+                        EsCuentaGM = True
+                    End If
+                Next
+
+                If Not EsCuentaGM Then
+                    Call WriteShowMessageBox(UserIndex, "Servidor restringido a administradores. Por favor reintente en unos momentos.")
+                    Call CloseSocket(UserIndex)
+                    Exit Function
+                End If
 
             End If
 
