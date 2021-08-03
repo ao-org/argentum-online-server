@@ -1162,7 +1162,7 @@ Sub ResetBasicUserInfo(ByVal UserIndex As Integer)
 188             .UserAtributosBackUP(4) = 0
 190             .MaxMAN = 0
 192             .MinMAN = 0
-                .tipoUsuario = eTipoUsuario.tNormal
+                .tipoUsuario = e_TipoUsuario.tNormal
             End With
             
 194         .NroMascotas = 0
