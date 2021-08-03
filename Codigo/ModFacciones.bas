@@ -34,7 +34,7 @@ Public Sub EnlistarArmadaReal(ByVal UserIndex As Integer)
 
                 End If
 
-120             If .clase = eClass.Thief Then
+120             If .clase = e_Class.Thief Then
 122                 Call WriteChatOverHead(UserIndex, "No hay lugar para escoria en el Ejército Real.", charIndexStr, vbWhite)
                     Exit Sub
 
@@ -59,7 +59,7 @@ Public Sub EnlistarArmadaReal(ByVal UserIndex As Integer)
 
                 End If
 
-                Dim primerRango As tRangoFaccion
+                Dim primerRango As t_RangoFaccion
 136                 primerRango = RangosFaccion(1)
 
 138             If .Faccion.CriminalesMatados < primerRango.AsesinatosRequeridos Then
@@ -98,7 +98,7 @@ Public Sub EnlistarArmadaReal(ByVal UserIndex As Integer)
 
                 End If
 
-170             Call WriteConsoleMsg(UserIndex, "¡Ahora perteneces al Ejercito Real!", FontTypeNames.FONTTYPE_INFOIAO)
+170             Call WriteConsoleMsg(UserIndex, "¡Ahora perteneces al Ejercito Real!", e_FontTypeNames.FONTTYPE_INFOIAO)
 172             Call DarRecompensas(UserIndex)
 174             Call RefreshCharStatus(UserIndex)
 
@@ -119,7 +119,7 @@ Public Sub RecompensaArmadaReal(ByVal UserIndex As Integer)
             On Error GoTo RecompensaArmadaReal_Err
 
             Dim Crimis As Long, npcCharIndex As String
-            Dim proxRango As tRangoFaccion
+            Dim proxRango As t_RangoFaccion
 
 100         With UserList(UserIndex)
 102             Crimis = .Faccion.CriminalesMatados
@@ -171,7 +171,7 @@ Public Sub ExpulsarFaccionReal(ByVal UserIndex As Integer)
 104         Call RefreshCharStatus(UserIndex)
 
 106         Call PerderItemsFaccionarios(UserIndex)
-108         Call WriteConsoleMsg(UserIndex, "Has sido expulsado del Ejercito Real.", FontTypeNames.FONTTYPE_INFOIAO)
+108         Call WriteConsoleMsg(UserIndex, "Has sido expulsado del Ejercito Real.", e_FontTypeNames.FONTTYPE_INFOIAO)
             
 
             Exit Sub
@@ -191,7 +191,7 @@ Public Sub ExpulsarFaccionCaos(ByVal UserIndex As Integer)
 104         Call RefreshCharStatus(UserIndex)
 
 106         Call PerderItemsFaccionarios(UserIndex)
-108         Call WriteConsoleMsg(UserIndex, "Has sido expulsado de la Legión Oscura.", FontTypeNames.FONTTYPE_INFOIAO)
+108         Call WriteConsoleMsg(UserIndex, "Has sido expulsado de la Legión Oscura.", e_FontTypeNames.FONTTYPE_INFOIAO)
 
             Exit Sub
 
@@ -258,7 +258,7 @@ Public Sub EnlistarCaos(ByVal UserIndex As Integer)
                     Exit Sub
                 End If
 
-124             If .clase = eClass.Thief Then
+124             If .clase = e_Class.Thief Then
 126                 Call WriteChatOverHead(UserIndex, "¡La legión oscura no tiene lugar para escorias como tú! Los ladrones no son dignos de llevar nuestras armaduras.", charIndexStr, vbWhite)
                     Exit Sub
 
@@ -271,7 +271,7 @@ Public Sub EnlistarCaos(ByVal UserIndex As Integer)
                 End If
 
 
-                Dim primerRango As tRangoFaccion
+                Dim primerRango As t_RangoFaccion
 132                 primerRango = RangosFaccion(2) ' 2 es el primer rango del caos
 
 134             If .Faccion.ciudadanosMatados < primerRango.AsesinatosRequeridos Then
@@ -307,7 +307,7 @@ Public Sub EnlistarCaos(ByVal UserIndex As Integer)
 162                 .Faccion.NivelIngreso = .Stats.ELV
                 End If
 
-164             Call WriteConsoleMsg(UserIndex, "¡Ahora perteneces a la Legión Oscura.!", FontTypeNames.FONTTYPE_INFOIAO)
+164             Call WriteConsoleMsg(UserIndex, "¡Ahora perteneces a la Legión Oscura.!", e_FontTypeNames.FONTTYPE_INFOIAO)
 166             Call DarRecompensas(UserIndex)
 168             Call RefreshCharStatus(UserIndex)
 
@@ -328,7 +328,7 @@ Public Sub RecompensaCaos(ByVal UserIndex As Integer)
 
 
             Dim ciudadanosMatados As Long, npcCharIndex As String
-            Dim proxRango As tRangoFaccion
+            Dim proxRango As t_RangoFaccion
 
 100         With UserList(UserIndex)
 102             ciudadanosMatados = .Faccion.ciudadanosMatados
@@ -392,7 +392,7 @@ End Function
 
 
 ' Devuelve el proximo rango para el usuario de la faccion que pertenece.
-Private Function ProximoRango(ByVal UserIndex As Integer) As tRangoFaccion
+Private Function ProximoRango(ByVal UserIndex As Integer) As t_RangoFaccion
             On Error GoTo ProximoRango_Err
 
 100         With UserList(UserIndex)
@@ -420,15 +420,15 @@ End Function
 Private Sub DarRecompensas(ByVal UserIndex As Integer)
             On Error GoTo DarRecompensas_Err
 
-            Dim recompensa As tRecompensaFaccion
+            Dim recompensa As t_RecompensaFaccion
             Dim rank As Byte
             Dim ultimaRecompensa As Byte
-            Dim objetoRecompensa As obj
+            Dim objetoRecompensa As t_Obj
             Dim i As Integer
 
 100         With UserList(UserIndex)
                 ' Si es semidios o consejero, no le damos nada
-102             If .flags.Privilegios And (PlayerType.Consejero Or PlayerType.SemiDios) Then
+102             If .flags.Privilegios And (e_PlayerType.Consejero Or e_PlayerType.SemiDios) Then
                     Exit Sub
                 End If
 

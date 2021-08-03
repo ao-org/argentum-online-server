@@ -40,11 +40,11 @@ Option Explicit
 '?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
 '?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
 '?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
-Public Function TirarItemAlPiso(Pos As WorldPos, obj As obj, Optional PuedeAgua As Boolean = True) As WorldPos
+Public Function TirarItemAlPiso(Pos As t_WorldPos, obj As t_Obj, Optional PuedeAgua As Boolean = True) As t_WorldPos
 
         On Error GoTo ErrHandler
 
-        Dim NuevaPos As WorldPos
+        Dim NuevaPos As t_WorldPos
 
 100     NuevaPos.X = 0
 102     NuevaPos.Y = 0
@@ -62,7 +62,7 @@ ErrHandler:
 
 End Function
 
-Public Sub NPC_TIRAR_ITEMS(ByRef npc As npc)
+Public Sub NPC_TIRAR_ITEMS(ByRef npc As t_Npc)
         
         On Error GoTo NPC_TIRAR_ITEMS_Err
     
@@ -75,7 +75,7 @@ Public Sub NPC_TIRAR_ITEMS(ByRef npc As npc)
     
             Dim i     As Byte
 
-            Dim MiObj As obj
+            Dim MiObj As t_Obj
     
 102         For i = 1 To MAX_INVENTORY_SLOTS
     
@@ -302,14 +302,14 @@ CargarInvent_Err:
         
 End Sub
 
-Public Sub NpcDropeo(ByRef npc As npc, ByRef UserIndex As Integer)
+Public Sub NpcDropeo(ByRef npc As t_Npc, ByRef UserIndex As Integer)
 
         On Error GoTo ErrHandler
 
 100     If npc.NumQuiza = 0 Then Exit Sub
 102     If DropActive = 0 Then Exit Sub 'Esta el Dropeo activado?
 
-        Dim Dropeo       As obj
+        Dim Dropeo       As t_Obj
 
         Dim Probabilidad As Long
 
@@ -350,7 +350,7 @@ Public Sub NpcDropeo(ByRef npc As npc, ByRef UserIndex As Integer)
 126     Dropeo.amount = Cantidad 'Cantidad
 128     Dropeo.ObjIndex = obj 'NUMERO DEL ITEM EN EL OBJ.DAT
 130     Call TirarItemAlPiso(npc.Pos, Dropeo, npc.flags.AguaValida = 1)
-132     Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessagePlayWave(FXSound.Dropeo_Sound, npc.Pos.X, npc.Pos.Y))
+132     Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessagePlayWave(e_FXSound.Dropeo_Sound, npc.Pos.X, npc.Pos.Y))
         
         'nfile = FreeFile ' obtenemos un canal
         'Open App.Path & "\logs\Dropeo de items.log" For Append Shared As #nfile
@@ -365,7 +365,7 @@ ErrHandler:
 End Sub
 
 
-Public Sub DropObjQuest(ByRef npc As npc, ByRef UserIndex As Integer)
+Public Sub DropObjQuest(ByRef npc As t_Npc, ByRef UserIndex As Integer)
     'Dropeo por Quest
     'Ladder
     '3/12/2020
@@ -373,7 +373,7 @@ Public Sub DropObjQuest(ByRef npc As npc, ByRef UserIndex As Integer)
 
 100     If npc.NumDropQuest = 0 Then Exit Sub
     
-        Dim Dropeo As obj
+        Dim Dropeo As t_Obj
         Dim Probabilidad As Long
         
         Dim i As Byte
@@ -395,11 +395,11 @@ Public Sub DropObjQuest(ByRef npc As npc, ByRef UserIndex As Integer)
 118                             Dropeo.ObjIndex = .ObjIndex
 
                                 'Call TirarItemAlPiso(npc.Pos, Dropeo)
-                                'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(FXSound.Dropeo_Sound, npc.Pos.X, npc.Pos.Y))
+                                'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(e_FXSound.Dropeo_Sound, npc.Pos.X, npc.Pos.Y))
 
                                 ' WyroX: Ahora te lo da en el inventario, si hay espacio, y el sonido lo escuchas vos solo
 120                             Call MeterItemEnInventario(UserIndex, Dropeo)
-122                             Call SendData(ToIndex, UserIndex, PrepareMessagePlayWave(FXSound.Dropeo_Sound, npc.Pos.X, npc.Pos.Y))
+122                             Call SendData(ToIndex, UserIndex, PrepareMessagePlayWave(e_FXSound.Dropeo_Sound, npc.Pos.X, npc.Pos.Y))
                             End If
                         End If
                     End If

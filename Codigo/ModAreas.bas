@@ -2,7 +2,7 @@ Attribute VB_Name = "ModAreas"
 Option Explicit
  
 '>>>>>>AREAS>>>>>AREAS>>>>>>>>AREAS>>>>>>>AREAS>>>>>>>>>>
-Public Type AreaInfo
+Public Type t_AreaInfo
 
     AreaPerteneceX As Integer
     AreaPerteneceY As Integer
@@ -17,7 +17,7 @@ Public Type AreaInfo
 
 End Type
  
-Public Type ConnGroup
+Public Type t_ConnGroup
 
     CountEntrys As Long
     OptValue As Long
@@ -41,7 +41,7 @@ Private PosToArea(1 To 100)           As Byte
  
 Private AreasRecive(10)               As Integer
  
-Public ConnGroups()                   As ConnGroup
+Public ConnGroups()                   As t_ConnGroup
  
 Public Sub InitAreas()
         
@@ -73,7 +73,7 @@ Public Sub InitAreas()
 116     CurDay = IIf(Weekday(Date) > 6, 1, 2) 'A ke tipo de dia pertenece?
 118     CurHour = Fix(Hour(Time) \ 3) 'A ke parte de la hora pertenece
 
-120     ReDim ConnGroups(1 To NumMaps) As ConnGroup
+120     ReDim ConnGroups(1 To NumMaps) As t_ConnGroup
     
 122     For LoopC = 1 To NumMaps
 124         ConnGroups(LoopC).OptValue = val(GetVar(DatPath & "AreasStats.ini", "Mapa" & LoopC, CurDay & "-" & CurHour))
@@ -157,28 +157,28 @@ Public Sub CheckUpdateNeededUser(ByVal UserIndex As Integer, ByVal Head As Byte,
 104         MinX = .AreasInfo.MinX
 106         MinY = .AreasInfo.MinY
         
-108         If Head = eHeading.NORTH Then
+108         If Head = e_Heading.NORTH Then
 110             MaxY = MinY - 1
 112             MinY = MinY - AREA_DIM
 114             MaxX = MinX + AREA_DIM * 3 - 1 '+ 26
 116             .AreasInfo.MinX = CInt(MinX)
 118             .AreasInfo.MinY = CInt(MinY)
         
-120         ElseIf Head = eHeading.SOUTH Then
+120         ElseIf Head = e_Heading.SOUTH Then
 122             MaxY = MinY + 4 * AREA_DIM - 1 ' + 35
 124             MinY = MinY + AREA_DIM * 3 '+ 27
 126             MaxX = MinX + AREA_DIM * 3 - 1 '+ 26
 128             .AreasInfo.MinX = CInt(MinX)
 130             .AreasInfo.MinY = CInt(MinY - AREA_DIM * 2) '- 18)
         
-132         ElseIf Head = eHeading.WEST Then
+132         ElseIf Head = e_Heading.WEST Then
 134             MaxX = MinX - 1
 136             MinX = MinX - AREA_DIM
 138             MaxY = MinY + AREA_DIM * 3 - 1 '+ 26
 140             .AreasInfo.MinX = CInt(MinX)
 142             .AreasInfo.MinY = CInt(MinY)
         
-144         ElseIf Head = eHeading.EAST Then
+144         ElseIf Head = e_Heading.EAST Then
 146             MaxX = MinX + 4 * AREA_DIM - 1 ' + 35
 148             MinX = MinX + AREA_DIM * 3 '+ 27
 150             MaxY = MinY + AREA_DIM * 3 - 1 '+ 26
@@ -258,7 +258,7 @@ Public Sub CheckUpdateNeededUser(ByVal UserIndex As Integer, ByVal Head As Byte,
 220                     If Not EsObjetoFijo(ObjData(TempInt).OBJType) Then
 222                         Call WriteObjectCreate(UserIndex, TempInt, MapData(Map, X, Y).ObjInfo.amount, X, Y)
                        
-224                         If ObjData(TempInt).OBJType = eOBJType.otPuertas And InMapBounds(Map, X, Y) Then
+224                         If ObjData(TempInt).OBJType = e_OBJType.otPuertas And InMapBounds(Map, X, Y) Then
 226                             Call MostrarBloqueosPuerta(False, UserIndex, X, Y)
                             End If
 
@@ -267,8 +267,8 @@ Public Sub CheckUpdateNeededUser(ByVal UserIndex As Integer, ByVal Head As Byte,
                     End If
 
                     ' Bloqueo GM
-228                 If (MapData(Map, X, Y).Blocked And eBlock.GM) <> 0 Then
-230                     Call Bloquear(False, UserIndex, X, Y, eBlock.ALL_SIDES)
+228                 If (MapData(Map, X, Y).Blocked And e_Block.GM) <> 0 Then
+230                     Call Bloquear(False, UserIndex, X, Y, e_Block.ALL_SIDES)
                     End If
 
                     ' If MapData(Map, x, y).Particula > 0 Then
@@ -327,28 +327,28 @@ Public Sub CheckUpdateNeededNpc(ByVal NpcIndex As Integer, ByVal Head As Byte)
 106         MinX = .AreasInfo.MinX
 108         MinY = .AreasInfo.MinY
         
-110         If Head = eHeading.NORTH Then
+110         If Head = e_Heading.NORTH Then
 112             MaxY = MinY - 1
 114             MinY = MinY - AREA_DIM
 116             MaxX = MinX + AREA_DIM * 3 - 1 '+ 26
 118             .AreasInfo.MinX = CInt(MinX)
 120             .AreasInfo.MinY = CInt(MinY)
         
-122         ElseIf Head = eHeading.SOUTH Then
+122         ElseIf Head = e_Heading.SOUTH Then
 124             MaxY = MinY + 4 * AREA_DIM - 1 ' + 35
 126             MinY = MinY + AREA_DIM * 3 '+ 27
 128             MaxX = MinX + AREA_DIM * 3 - 1 '+ 26
 130             .AreasInfo.MinX = CInt(MinX)
 132             .AreasInfo.MinY = CInt(MinY - AREA_DIM * 2) '- 18)
         
-134         ElseIf Head = eHeading.WEST Then
+134         ElseIf Head = e_Heading.WEST Then
 136             MaxX = MinX - 1
 138             MinX = MinX - AREA_DIM
 140             MaxY = MinY + AREA_DIM * 3 - 1 '+ 26
 142             .AreasInfo.MinX = CInt(MinX)
 144             .AreasInfo.MinY = CInt(MinY)
         
-146         ElseIf Head = eHeading.EAST Then
+146         ElseIf Head = e_Heading.EAST Then
 148             MaxX = MinX + 4 * AREA_DIM - 1 ' + 35
 150             MinX = MinX + AREA_DIM * 3 '+ 27
 152             MaxY = MinY + AREA_DIM * 3 - 1 '+ 26

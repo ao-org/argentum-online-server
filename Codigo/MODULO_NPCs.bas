@@ -15,7 +15,7 @@ Attribute VB_Name = "NPCs"
 
 Public Const MaxRespawn             As Integer = 255
 
-Public RespawnList(1 To MaxRespawn) As npc
+Public RespawnList(1 To MaxRespawn) As t_Npc
 
 Option Explicit
 
@@ -57,7 +57,7 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
             Exit Sub
         End If
 
-        Dim MiNPC As npc
+        Dim MiNPC As t_Npc
 
 110     MiNPC = NpcList(NpcIndex)
 
@@ -68,7 +68,7 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
 112     TiempoRespw = NpcList(NpcIndex).Contadores.IntervaloRespawn
 
         ' Es pretoriano?
-114     If MiNPC.NPCtype = eNPCType.Pretoriano Then
+114     If MiNPC.NPCtype = e_NPCType.Pretoriano Then
 116         Call ClanPretoriano(MiNPC.ClanIndex).MuerePretoriano(NpcIndex)
             
         ' Es NPC de la invasión?
@@ -87,20 +87,20 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
             End If
 
 132         UserList(UserIndex).flags.TargetNPC = 0
-134         UserList(UserIndex).flags.TargetNpcTipo = eNPCType.Comun
+134         UserList(UserIndex).flags.TargetNpcTipo = e_NPCType.Comun
         
             'El user que lo mato tiene mascotas?
 136         Call AllFollowAmo(UserIndex)
             
 138         If UserList(UserIndex).ChatCombate = 1 Then
-140             Call WriteLocaleMsg(UserIndex, "184", FontTypeNames.FONTTYPE_FIGHT, "la criatura")
+140             Call WriteLocaleMsg(UserIndex, "184", e_FontTypeNames.FONTTYPE_FIGHT, "la criatura")
             End If
 
 142         If UserList(UserIndex).Stats.NPCsMuertos < 32000 Then UserList(UserIndex).Stats.NPCsMuertos = UserList(UserIndex).Stats.NPCsMuertos + 1
             
 144         If MiNPC.MaestroUser > 0 Then Exit Sub
             
-146         Call SubirSkill(UserIndex, eSkill.Supervivencia)
+146         Call SubirSkill(UserIndex, e_Skill.Supervivencia)
 
 148         If MiNPC.flags.ExpCount > 0 Then
 
@@ -126,7 +126,7 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
 170                 Call modGuilds.CheckClanExp(UserIndex, MiNPC.GiveEXPClan)
 
                     ' Else
-                    ' Call WriteConsoleMsg(UserIndex, "No perteneces a ningún clan, experiencia perdida.", FontTypeNames.FONTTYPE_INFOIAO)
+                    ' Call WriteConsoleMsg(UserIndex, "No perteneces a ningún clan, experiencia perdida.", e_FontTypeNames.FONTTYPE_INFOIAO)
                 End If
 
             End If
@@ -146,11 +146,11 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
 184                                 If QuestList(.QuestIndex).RequiredNPC(j).amount > .NPCsKilled(j) Then
 186                                     .NPCsKilled(j) = .NPCsKilled(j) + 1
 
-188                                     Call WriteConsoleMsg(UserIndex, MiNPC.Name & " matados/as: " & .NPCsKilled(j) & " de " & QuestList(.QuestIndex).RequiredNPC(j).amount, FontTypeNames.FONTTYPE_INFOIAO)
+188                                     Call WriteConsoleMsg(UserIndex, MiNPC.Name & " matados/as: " & .NPCsKilled(j) & " de " & QuestList(.QuestIndex).RequiredNPC(j).amount, e_FontTypeNames.FONTTYPE_INFOIAO)
 190                                     Call WriteChatOverHead(UserIndex, "NOCONSOLA*" & .NPCsKilled(j) & "/" & QuestList(.QuestIndex).RequiredNPC(j).amount & " " & MiNPC.Name, UserList(UserIndex).Char.CharIndex, RGB(180, 180, 180))
 
                                     Else
-192                                     Call WriteConsoleMsg(UserIndex, "Ya has matado todos los " & MiNPC.Name & " que la misión " & QuestList(.QuestIndex).nombre & " requería. Revisa si ya estás listo para recibir la recompensa.", FontTypeNames.FONTTYPE_INFOIAO)
+192                                     Call WriteConsoleMsg(UserIndex, "Ya has matado todos los " & MiNPC.Name & " que la misión " & QuestList(.QuestIndex).nombre & " requería. Revisa si ya estás listo para recibir la recompensa.", e_FontTypeNames.FONTTYPE_INFOIAO)
 194                                     Call WriteChatOverHead(UserIndex, "NOCONSOLA*" & QuestList(.QuestIndex).RequiredNPC(j).amount & "/" & QuestList(.QuestIndex).RequiredNPC(j).amount & " " & MiNPC.Name, UserList(UserIndex).Char.CharIndex, RGB(180, 180, 180))
                                     End If
         
@@ -184,7 +184,7 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
         
 210     If NpcIndex = npc_index_evento Then
 212         BusquedaNpcActiva = False
-214         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Evento> El NPC ha sido asesinado.", FontTypeNames.FONTTYPE_CITIZEN))
+214         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Evento> El NPC ha sido asesinado.", e_FontTypeNames.FONTTYPE_CITIZEN))
 
         End If
         
@@ -443,7 +443,7 @@ Sub QuitarNPC(ByVal NpcIndex As Integer)
         End If
     
         ' Es pretoriano?
-106     If NpcList(NpcIndex).NPCtype = eNPCType.Pretoriano Then
+106     If NpcList(NpcIndex).NPCtype = e_NPCType.Pretoriano Then
 108         Call ClanPretoriano(NpcList(NpcIndex).ClanIndex).MuerePretoriano(NpcIndex)
         End If
     
@@ -492,7 +492,7 @@ TestSpawnTrigger_Err:
         
 End Function
 
-Public Function CrearNPC(NroNPC As Integer, Mapa As Integer, OrigPos As WorldPos, Optional ByVal CustomHead As Integer)
+Public Function CrearNPC(NroNPC As Integer, Mapa As Integer, OrigPos As t_WorldPos, Optional ByVal CustomHead As Integer)
         'Crea un NPC del tipo NRONPC
         
         On Error GoTo CrearNPC_Err
@@ -667,7 +667,7 @@ Sub MakeNPCChar(ByVal toMap As Boolean, sndIndex As Integer, NpcIndex As Integer
                 End If
                 
                 
-156             If UserList(sndIndex).Stats.UserSkills(eSkill.Supervivencia) >= 90 Then
+156             If UserList(sndIndex).Stats.UserSkills(e_Skill.Supervivencia) >= 90 Then
 158                 Call WriteCharacterCreate(sndIndex, IIf(.flags.NPCIdle, .Char.BodyIdle, .Char.Body), .Char.Head, .Char.Heading, .Char.CharIndex, X, Y, .Char.WeaponAnim, .Char.ShieldAnim, 0, 0, .Char.CascoAnim, GG, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, .Char.speeding, IIf(.MaestroUser = sndIndex, 2, 1), 0, 0, 0, 0, .Stats.MinHp, .Stats.MaxHp, 0, 0, Simbolo, .flags.NPCIdle)
                 Else
 160                 Call WriteCharacterCreate(sndIndex, IIf(.flags.NPCIdle, .Char.BodyIdle, .Char.Body), .Char.Head, .Char.Heading, .Char.CharIndex, X, Y, .Char.WeaponAnim, .Char.ShieldAnim, 0, 0, .Char.CascoAnim, GG, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, .Char.speeding, IIf(.MaestroUser = sndIndex, 2, 1), 0, 0, 0, 0, 0, 0, 0, 0, Simbolo, .flags.NPCIdle)
@@ -688,7 +688,7 @@ MakeNPCChar_Err:
         
 End Sub
 
-Sub ChangeNPCChar(ByVal NpcIndex As Integer, ByVal Body As Integer, ByVal Head As Integer, ByVal Heading As eHeading)
+Sub ChangeNPCChar(ByVal NpcIndex As Integer, ByVal Body As Integer, ByVal Head As Integer, ByVal Heading As e_Heading)
         
         On Error GoTo ChangeNPCChar_Err
         
@@ -757,7 +757,7 @@ End Sub
 Public Function MoveNPCChar(ByVal NpcIndex As Integer, ByVal nHeading As Byte) As Boolean
         On Error GoTo errh
 
-        Dim nPos      As WorldPos
+        Dim nPos      As t_WorldPos
         Dim UserIndex As Integer
         Dim esGuardia As Boolean
 100     With NpcList(NpcIndex)
@@ -765,7 +765,7 @@ Public Function MoveNPCChar(ByVal NpcIndex As Integer, ByVal nHeading As Byte) A
             
 104         nPos = .Pos
 106         Call HeadtoPos(nHeading, nPos)
-108         esGuardia = .NPCtype = eNPCType.GuardiaReal Or .NPCtype = eNPCType.GuardiasCaos
+108         esGuardia = .NPCtype = e_NPCType.GuardiaReal Or .NPCtype = e_NPCType.GuardiasCaos
             ' es una posicion legal
             
 110         If LegalWalkNPC(nPos.Map, nPos.X, nPos.Y, nHeading, .flags.AguaValida = 1, .flags.TierraInvalida = 0, .MaestroUser <> 0, , esGuardia) Then
@@ -859,9 +859,9 @@ Sub NpcEnvenenarUser(ByVal UserIndex As Integer, ByVal VenenoNivel As Byte)
 102     If n < 30 Then
 104         UserList(UserIndex).flags.Envenenado = VenenoNivel
 
-            'Call WriteConsoleMsg(UserIndex, "¡¡La criatura te ha envenenado!!", FontTypeNames.FONTTYPE_FIGHT)
+            'Call WriteConsoleMsg(UserIndex, "¡¡La criatura te ha envenenado!!", e_FontTypeNames.FONTTYPE_FIGHT)
 106         If UserList(UserIndex).ChatCombate = 1 Then
-108             Call WriteLocaleMsg(UserIndex, "182", FontTypeNames.FONTTYPE_FIGHT)
+108             Call WriteLocaleMsg(UserIndex, "182", e_FontTypeNames.FONTTYPE_FIGHT)
 
             End If
 
@@ -876,7 +876,7 @@ NpcEnvenenarUser_Err:
         
 End Sub
 
-Function SpawnNpc(ByVal NpcIndex As Integer, Pos As WorldPos, ByVal FX As Boolean, ByVal Respawn As Boolean, Optional Avisar As Boolean = False, Optional ByVal MaestroUser As Integer = 0) As Integer
+Function SpawnNpc(ByVal NpcIndex As Integer, Pos As t_WorldPos, ByVal FX As Boolean, ByVal Respawn As Boolean, Optional Avisar As Boolean = False, Optional ByVal MaestroUser As Integer = 0) As Integer
         
         On Error GoTo SpawnNpc_Err
         
@@ -886,9 +886,9 @@ Function SpawnNpc(ByVal NpcIndex As Integer, Pos As WorldPos, ByVal FX As Boolea
         'Last Modification: 23/01/2007
         '23/01/2007 -> Pablo (ToxicWaste): Creates an NPC of the type Npcindex
         '***************************************************
-        Dim newpos         As WorldPos
+        Dim newpos         As t_WorldPos
 
-        Dim altpos         As WorldPos
+        Dim altpos         As t_WorldPos
 
         Dim nIndex         As Integer
 
@@ -942,12 +942,12 @@ Function SpawnNpc(ByVal NpcIndex As Integer, Pos As WorldPos, ByVal FX As Boolea
 
 136     If FX Then
 138         Call SendData(SendTarget.ToNPCArea, nIndex, PrepareMessagePlayWave(SND_WARP, X, Y))
-140         Call SendData(SendTarget.ToNPCArea, nIndex, PrepareMessageCreateFX(NpcList(nIndex).Char.CharIndex, FXIDs.FXWARP, 0))
+140         Call SendData(SendTarget.ToNPCArea, nIndex, PrepareMessageCreateFX(NpcList(nIndex).Char.CharIndex, e_FXIDs.FXWARP, 0))
 
         End If
 
 142     If Avisar Then
-144         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(NpcList(nIndex).Name & " ha aparecido en " & DarNameMapa(Map) & " , todo indica que puede tener una gran recompensa para el que logre sobrevivir a él.", FontTypeNames.FONTTYPE_CITIZEN))
+144         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(NpcList(nIndex).Name & " ha aparecido en " & DarNameMapa(Map) & " , todo indica que puede tener una gran recompensa para el que logre sobrevivir a él.", e_FontTypeNames.FONTTYPE_CITIZEN))
         End If
 
 146     SpawnNpc = nIndex
@@ -961,7 +961,7 @@ SpawnNpc_Err:
         
 End Function
 
-Sub ReSpawnNpc(MiNPC As npc)
+Sub ReSpawnNpc(MiNPC As t_Npc)
         
         On Error GoTo ReSpawnNpc_Err
         
@@ -1011,7 +1011,7 @@ NPCHostiles_Err:
         
 End Function
 
-Sub NPCTirarOro(MiNPC As npc, ByVal UserIndex As Integer)
+Sub NPCTirarOro(MiNPC As t_Npc, ByVal UserIndex As Integer)
         
             On Error GoTo NPCTirarOro_Err
             
@@ -1023,7 +1023,7 @@ Sub NPCTirarOro(MiNPC As npc, ByVal UserIndex As Integer)
                 Dim Oro As Long
 104             Oro = MiNPC.GiveGLD * OroMult
 
-                Dim MiObj As obj
+                Dim MiObj As t_Obj
 118             MiObj.ObjIndex = iORO
 
 120             While (Oro > 0)
@@ -1223,11 +1223,11 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
 264             .Spells(LoopC) = val(Leer.GetValue("NPC" & NpcNumber, "Sp" & LoopC))
 266         Next LoopC
     
-268         If .NPCtype = eNPCType.Entrenador Then
+268         If .NPCtype = e_NPCType.Entrenador Then
 270             .NroCriaturas = val(Leer.GetValue("NPC" & NpcNumber, "NroCriaturas"))
                 
 272             If .NroCriaturas > 0 Then
-274                 ReDim .Criaturas(1 To .NroCriaturas) As tCriaturasEntrenador
+274                 ReDim .Criaturas(1 To .NroCriaturas) As t_CriaturasEntrenador
     
 276                 For LoopC = 1 To .NroCriaturas
 278                     .Criaturas(LoopC).NpcIndex = Leer.GetValue("NPC" & NpcNumber, "CI" & LoopC)
@@ -1337,7 +1337,7 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
         
 378             .NumDropQuest = val(aux)
                 
-380             ReDim .DropQuest(1 To .NumDropQuest) As tQuestObj
+380             ReDim .DropQuest(1 To .NumDropQuest) As t_QuestObj
                 
 382             For LoopC = 1 To .NumDropQuest
 384                 .DropQuest(LoopC).QuestIndex = val(ReadField(1, Leer.GetValue("NPC" & NpcNumber, "DropQuest" & LoopC), Asc("-")))
@@ -1454,7 +1454,7 @@ Sub DoFollow(ByVal NpcIndex As Integer, ByVal UserName As String)
 114             .flags.AttackedBy = UserName
 116             .Target = NameIndex(UserName)
 118             .flags.Follow = True
-120             .Movement = TipoAI.NpcDefensa
+120             .Movement = e_TipoAI.NpcDefensa
 122             .Hostile = 0
 
             End If
@@ -1474,7 +1474,7 @@ Public Sub FollowAmo(ByVal NpcIndex As Integer)
 
 100     With NpcList(NpcIndex)
 102         .flags.Follow = True
-104         .Movement = TipoAI.SigueAmo
+104         .Movement = e_TipoAI.SigueAmo
 106         .Hostile = 0
 108         .Target = 0
 110         .TargetNPC = 0
@@ -1585,8 +1585,8 @@ End Sub
 
 Sub WarpNpcChar(ByVal NpcIndex As Integer, ByVal Map As Byte, ByVal X As Integer, ByVal Y As Integer, Optional ByVal FX As Boolean = False)
 
-        Dim NuevaPos                    As WorldPos
-        Dim FuturePos                   As WorldPos
+        Dim NuevaPos                    As t_WorldPos
+        Dim FuturePos                   As t_WorldPos
 
 100     Call EraseNPCChar(NpcIndex)
 
@@ -1604,7 +1604,7 @@ Sub WarpNpcChar(ByVal NpcIndex As Integer, ByVal Map As Byte, ByVal X As Integer
 
 120         If FX Then                                    'FX
 122             Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessagePlayWave(SND_WARP, NuevaPos.X, NuevaPos.Y))
-124             Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageCreateFX(NpcList(NpcIndex).Char.CharIndex, FXIDs.FXWARP, 0))
+124             Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageCreateFX(NpcList(NpcIndex).Char.CharIndex, e_FXIDs.FXWARP, 0))
             End If
 
         End If
@@ -1614,7 +1614,7 @@ End Sub
 ' Autor: WyroX - 20/01/2021
 ' Intenta moverlo hacia un "costado" según el heading indicado. Se usa para mover NPCs del camino de otro char.
 ' Si no hay un lugar válido a los lados, lo mueve a la posición válida más cercana.
-Sub MoveNpcToSide(ByVal NpcIndex As Integer, ByVal Heading As eHeading)
+Sub MoveNpcToSide(ByVal NpcIndex As Integer, ByVal Heading As e_Heading)
 
         On Error GoTo Handler
 
@@ -1625,7 +1625,7 @@ Sub MoveNpcToSide(ByVal NpcIndex As Integer, ByVal Heading As eHeading)
 102         R = RandomNumber(0, 1) * 2 - 1 ' -1 o 1
 
             ' Roto el heading original hacia ese lado
-104         Heading = RotateHeading(Heading, R)
+104         Heading = Rotate_Heading(Heading, R)
 
             ' Intento moverlo para ese lado
 106         If MoveNPCChar(NpcIndex, Heading) Then Exit Sub
@@ -1635,7 +1635,7 @@ Sub MoveNpcToSide(ByVal NpcIndex As Integer, ByVal Heading As eHeading)
 110         If MoveNPCChar(NpcIndex, Heading) Then Exit Sub
         
             ' Si ambos fallan, entonces lo dejo en la posición válida más cercana
-            Dim NuevaPos As WorldPos
+            Dim NuevaPos As t_WorldPos
 112         Call ClosestLegalPos(.Pos, NuevaPos, .flags.AguaValida, .flags.TierraInvalida = 0)
 114         Call WarpNpcChar(NpcIndex, NuevaPos.Map, NuevaPos.X, NuevaPos.Y)
 

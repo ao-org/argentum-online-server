@@ -29,15 +29,18 @@ Attribute VB_Name = "Trabajo"
 
 Option Explicit
 
+Public Sub Trabajar(ByVal UserIndex As Integer, ByVal Skill As e_Skill)
+        Dim DummyInt As Integer
 
-Public Sub Trabajar(ByVal UserIndex As Integer, ByVal Skill As eSkill)
-    Dim DummyInt As Integer
-    With UserList(UserIndex)
-    Select Case Skill
-        Case eSkill.Pescar
+        With UserList(UserIndex)
+
+            Select Case Skill
+
+                Case e_Skill.Pescar
+
 288                 If .Invent.HerramientaEqpObjIndex = 0 Then Exit Sub
                     
-290                 If ObjData(.Invent.HerramientaEqpObjIndex).OBJType <> eOBJType.otHerramientas Then Exit Sub
+290                 If ObjData(.Invent.HerramientaEqpObjIndex).OBJType <> e_OBJType.otHerramientas Then Exit Sub
                     
                     'Check interval
 292                 'If Not IntervaloPermiteTrabajarExtraer(UserIndex) Then Exit Sub
@@ -46,51 +49,51 @@ Public Sub Trabajar(ByVal UserIndex As Integer, ByVal Skill As eSkill)
                 
                         Case 1      ' Subtipo: Caña de Pescar
 
-296                         If (MapData(.Pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).Blocked And FLAG_AGUA) <> 0 Or MapData(.Pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).trigger = eTrigger.PESCAVALIDA Then
+296                         If (MapData(.Pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).Blocked And FLAG_AGUA) <> 0 Or MapData(.Pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).trigger = e_Trigger.PESCAVALIDA Then
 298                             If (MapData(.Pos.Map, .Pos.X, .Pos.Y).Blocked And FLAG_AGUA) <> 0 Or (MapData(.Pos.Map, .Pos.X + 1, .Pos.Y).Blocked And FLAG_AGUA) <> 0 Or (MapData(.Pos.Map, .Pos.X, .Pos.Y + 1).Blocked And FLAG_AGUA) <> 0 Or (MapData(.Pos.Map, .Pos.X - 1, .Pos.Y).Blocked And FLAG_AGUA) <> 0 Or (MapData(.Pos.Map, .Pos.X, .Pos.Y - 1).Blocked And FLAG_AGUA) <> 0 Then
 
 300                                 Call DoPescar(UserIndex, False)
                                    
                                 Else
-304                                 Call WriteConsoleMsg(UserIndex, "Acércate a la costa para pescar.", FontTypeNames.FONTTYPE_INFO)
+304                                 Call WriteConsoleMsg(UserIndex, "Acércate a la costa para pescar.", e_FontTypeNames.FONTTYPE_INFO)
 306                                 Call WriteMacroTrabajoToggle(UserIndex, False)
 
                                 End If
                             
                             Else
-308                             Call WriteConsoleMsg(UserIndex, "No hay agua donde pescar. Busca un lago, rio o mar.", FontTypeNames.FONTTYPE_INFO)
+308                             Call WriteConsoleMsg(UserIndex, "No hay agua donde pescar. Busca un lago, rio o mar.", e_FontTypeNames.FONTTYPE_INFO)
 310                             Call WriteMacroTrabajoToggle(UserIndex, False)
     
                             End If
                     
 312                     Case 2      ' Subtipo: Red de Pesca
     
-314                         If (MapData(.Pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).Blocked And FLAG_AGUA) <> 0 Or MapData(.Pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).trigger = eTrigger.PESCAVALIDA Then
+314                         If (MapData(.Pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).Blocked And FLAG_AGUA) <> 0 Or MapData(.Pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).trigger = e_Trigger.PESCAVALIDA Then
                             
 316                             If Abs(.Pos.X - .Trabajo.Target_X) + Abs(.Pos.Y - .Trabajo.Target_Y) > 8 Then
-318                                 Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
-                                    'Call WriteConsoleMsg(UserIndex, "Estás demasiado lejos para pescar.", FontTypeNames.FONTTYPE_INFO)
+318                                 Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
+                                    'Call WriteConsoleMsg(UserIndex, "Estás demasiado lejos para pescar.", e_FontTypeNames.FONTTYPE_INFO)
 320                                 Call WriteWorkRequestTarget(UserIndex, 0)
                                     Exit Sub
     
                                 End If
                                 
-322                             If UserList(UserIndex).Stats.UserSkills(eSkill.Pescar) < 80 Then
-324                                 Call WriteConsoleMsg(UserIndex, "Para utilizar la red de pesca debes tener 80 skills en recoleccion.", FontTypeNames.FONTTYPE_INFO)
+322                             If UserList(UserIndex).Stats.UserSkills(e_Skill.Pescar) < 80 Then
+324                                 Call WriteConsoleMsg(UserIndex, "Para utilizar la red de pesca debes tener 80 skills en recoleccion.", e_FontTypeNames.FONTTYPE_INFO)
 326                                 Call WriteWorkRequestTarget(UserIndex, 0)
                                     Exit Sub
     
                                 End If
                                     
 328                             If MapInfo(UserList(UserIndex).Pos.Map).Seguro = 1 Then
-330                                 Call WriteConsoleMsg(UserIndex, "Esta prohibida la pesca masiva en las ciudades.", FontTypeNames.FONTTYPE_INFO)
+330                                 Call WriteConsoleMsg(UserIndex, "Esta prohibida la pesca masiva en las ciudades.", e_FontTypeNames.FONTTYPE_INFO)
 332                                 Call WriteWorkRequestTarget(UserIndex, 0)
                                     Exit Sub
     
                                 End If
                                     
 334                             If UserList(UserIndex).flags.Navegando = 0 Then
-336                                 Call WriteConsoleMsg(UserIndex, "Necesitas estar sobre tu barca para utilizar la red de pesca.", FontTypeNames.FONTTYPE_INFO)
+336                                 Call WriteConsoleMsg(UserIndex, "Necesitas estar sobre tu barca para utilizar la red de pesca.", e_FontTypeNames.FONTTYPE_INFO)
 338                                 Call WriteWorkRequestTarget(UserIndex, 0)
                                     Exit Sub
     
@@ -101,16 +104,17 @@ Public Sub Trabajar(ByVal UserIndex As Integer, ByVal Skill As eSkill)
                         
                             Else
                         
-344                             Call WriteConsoleMsg(UserIndex, "No hay agua donde pescar. Busca un lago, rio o mar.", FontTypeNames.FONTTYPE_INFO)
+344                             Call WriteConsoleMsg(UserIndex, "No hay agua donde pescar. Busca un lago, rio o mar.", e_FontTypeNames.FONTTYPE_INFO)
 346                             Call WriteWorkRequestTarget(UserIndex, 0)
     
                             End If
-                        End Select
-        Case eSkill.Mineria
+                    End Select
+
+                Case e_Skill.Mineria
             
 454                 If .Invent.HerramientaEqpObjIndex = 0 Then Exit Sub
                     
-456                 If ObjData(.Invent.HerramientaEqpObjIndex).OBJType <> eOBJType.otHerramientas Then Exit Sub
+456                 If ObjData(.Invent.HerramientaEqpObjIndex).OBJType <> e_OBJType.otHerramientas Then Exit Sub
                     
                     'Check interval
 458                 If Not IntervaloPermiteTrabajarExtraer(UserIndex) Then Exit Sub
@@ -128,27 +132,27 @@ Public Sub Trabajar(ByVal UserIndex As Integer, ByVal Skill As eSkill)
 
                                 'Check distance
 468                             If Abs(.Pos.X - .Trabajo.Target_X) + Abs(.Pos.Y - .Trabajo.Target_Y) > 2 Then
-470                                 Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
-                                    'Call WriteConsoleMsg(UserIndex, "Estís demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
+470                                 Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
+                                    'Call WriteConsoleMsg(UserIndex, "Estís demasiado lejos.", e_FontTypeNames.FONTTYPE_INFO)
 472                                 Call WriteWorkRequestTarget(UserIndex, 0)
                                     Exit Sub
 
                                 End If
 
                                 '¡Hay un yacimiento donde clickeo?
-474                             If ObjData(DummyInt).OBJType = eOBJType.otYacimiento Then
+474                             If ObjData(DummyInt).OBJType = e_OBJType.otYacimiento Then
 
                                     ' Si el Yacimiento requiere herramienta `Dorada` y la herramienta no lo es, o vice versa.
                                     ' Se usa para el yacimiento de Oro.
 476                                 If ObjData(DummyInt).Dorada <> ObjData(.Invent.HerramientaEqpObjIndex).Dorada Then
-478                                     Call WriteConsoleMsg(UserIndex, "El pico dorado solo puede extraer minerales del yacimiento de Oro.", FontTypeNames.FONTTYPE_INFO)
+478                                     Call WriteConsoleMsg(UserIndex, "El pico dorado solo puede extraer minerales del yacimiento de Oro.", e_FontTypeNames.FONTTYPE_INFO)
 480                                     Call WriteWorkRequestTarget(UserIndex, 0)
                                         Exit Sub
 
                                     End If
 
 482                                 If MapData(.Pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).ObjInfo.amount <= 0 Then
-484                                     Call WriteConsoleMsg(UserIndex, "Este yacimiento no tiene mas minerales para entregar.", FontTypeNames.FONTTYPE_INFO)
+484                                     Call WriteConsoleMsg(UserIndex, "Este yacimiento no tiene mas minerales para entregar.", e_FontTypeNames.FONTTYPE_INFO)
 486                                     Call WriteWorkRequestTarget(UserIndex, 0)
 488                                     Call WriteMacroTrabajoToggle(UserIndex, False)
                                         Exit Sub
@@ -158,22 +162,24 @@ Public Sub Trabajar(ByVal UserIndex As Integer, ByVal Skill As eSkill)
 490                                 Call DoMineria(UserIndex, .Trabajo.Target_X, .Trabajo.Target_Y, ObjData(.Invent.HerramientaEqpObjIndex).Dorada = 1)
 
                                 Else
-492                                 Call WriteConsoleMsg(UserIndex, "Ahí no hay ningún yacimiento.", FontTypeNames.FONTTYPE_INFO)
+492                                 Call WriteConsoleMsg(UserIndex, "Ahí no hay ningún yacimiento.", e_FontTypeNames.FONTTYPE_INFO)
 494                                 Call WriteWorkRequestTarget(UserIndex, 0)
 
                                 End If
 
                             Else
-496                             Call WriteConsoleMsg(UserIndex, "Ahí no hay ningun yacimiento.", FontTypeNames.FONTTYPE_INFO)
+496                             Call WriteConsoleMsg(UserIndex, "Ahí no hay ningun yacimiento.", e_FontTypeNames.FONTTYPE_INFO)
 498                             Call WriteWorkRequestTarget(UserIndex, 0)
 
                             End If
 
                     End Select
-        Case eSkill.Talar
+
+                Case e_Skill.Talar
+
 350                 If .Invent.HerramientaEqpObjIndex = 0 Then Exit Sub
 
-352                 If ObjData(.Invent.HerramientaEqpObjIndex).OBJType <> eOBJType.otHerramientas Then Exit Sub
+352                 If ObjData(.Invent.HerramientaEqpObjIndex).OBJType <> e_OBJType.otHerramientas Then Exit Sub
         
                     'Check interval
 354                 If Not IntervaloPermiteTrabajarExtraer(UserIndex) Then Exit Sub
@@ -184,7 +190,7 @@ Public Sub Trabajar(ByVal UserIndex As Integer, ByVal Skill As eSkill)
 
                             ' Ahora se puede talar en la ciudad
                             'If MapInfo(UserList(UserIndex).Pos.Map).Seguro = 1 Then
-                            '    Call WriteConsoleMsg(UserIndex, "Esta prohibido talar arboles en las ciudades.", FontTypeNames.FONTTYPE_INFO)
+                            '    Call WriteConsoleMsg(UserIndex, "Esta prohibido talar arboles en las ciudades.", e_FontTypeNames.FONTTYPE_INFO)
                             '    Call WriteWorkRequestTarget(UserIndex, 0)
                             '    Exit Sub
                             'End If
@@ -193,29 +199,29 @@ Public Sub Trabajar(ByVal UserIndex As Integer, ByVal Skill As eSkill)
                             
 360                         If DummyInt > 0 Then
 362                             If Abs(.Pos.X - .Trabajo.Target_X) + Abs(.Pos.Y - .Trabajo.Target_Y) > 1 Then
-364                                 Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
-                                    'Call WriteConsoleMsg(UserIndex, "Estas demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
+364                                 Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
+                                    'Call WriteConsoleMsg(UserIndex, "Estas demasiado lejos.", e_FontTypeNames.FONTTYPE_INFO)
 366                                 Call WriteWorkRequestTarget(UserIndex, 0)
                                     Exit Sub
 
                                 End If
                                 
 368                             If .Pos.X = .Trabajo.Target_X And .Pos.Y = .Trabajo.Target_Y Then
-370                                 Call WriteConsoleMsg(UserIndex, "No podés talar desde allí.", FontTypeNames.FONTTYPE_INFO)
+370                                 Call WriteConsoleMsg(UserIndex, "No podés talar desde allí.", e_FontTypeNames.FONTTYPE_INFO)
 372                                 Call WriteWorkRequestTarget(UserIndex, 0)
                                     Exit Sub
 
                                 End If
 
 374                             If ObjData(DummyInt).Elfico <> ObjData(.Invent.HerramientaEqpObjIndex).Elfico Then
-376                                 Call WriteConsoleMsg(UserIndex, "Sólo puedes talar árboles elficos con un hacha élfica.", FontTypeNames.FONTTYPE_INFO)
+376                                 Call WriteConsoleMsg(UserIndex, "Sólo puedes talar árboles elficos con un hacha élfica.", e_FontTypeNames.FONTTYPE_INFO)
 378                                 Call WriteWorkRequestTarget(UserIndex, 0)
                                     Exit Sub
 
                                 End If
 
 380                             If MapData(.Pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).ObjInfo.amount <= 0 Then
-382                                 Call WriteConsoleMsg(UserIndex, "El árbol ya no te puede entregar mas leña.", FontTypeNames.FONTTYPE_INFO)
+382                                 Call WriteConsoleMsg(UserIndex, "El árbol ya no te puede entregar mas leña.", e_FontTypeNames.FONTTYPE_INFO)
 384                                 Call WriteWorkRequestTarget(UserIndex, 0)
 386                                 Call WriteMacroTrabajoToggle(UserIndex, False)
                                     Exit Sub
@@ -223,13 +229,13 @@ Public Sub Trabajar(ByVal UserIndex As Integer, ByVal Skill As eSkill)
                                 End If
 
                                 '¡Hay un arbol donde clickeo?
-388                             If ObjData(DummyInt).OBJType = eOBJType.otArboles Then
+388                             If ObjData(DummyInt).OBJType = e_OBJType.otArboles Then
 390                                 Call DoTalar(UserIndex, .Trabajo.Target_X, .Trabajo.Target_Y, ObjData(.Invent.HerramientaEqpObjIndex).Dorada = 1)
 
                                 End If
 
                             Else
-392                             Call WriteConsoleMsg(UserIndex, "No hay ningún árbol ahí.", FontTypeNames.FONTTYPE_INFO)
+392                             Call WriteConsoleMsg(UserIndex, "No hay ningún árbol ahí.", e_FontTypeNames.FONTTYPE_INFO)
 394                             Call WriteWorkRequestTarget(UserIndex, 0)
 
 396                             If UserList(UserIndex).Counters.Trabajando > 1 Then
@@ -240,8 +246,8 @@ Public Sub Trabajar(ByVal UserIndex As Integer, ByVal Skill As eSkill)
                             End If
                 
                     End Select
-    End Select
-    End With
+            End Select
+        End With
 End Sub
 
 Public Sub DoPermanecerOculto(ByVal UserIndex As Integer)
@@ -257,7 +263,7 @@ Public Sub DoPermanecerOculto(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             ' WyroX: Si tiene armadura de cazador, no se le va nunca lo oculto
-102         If .clase = eClass.Hunter And TieneArmaduraCazador(UserIndex) Then Exit Sub
+102         If .clase = e_Class.Hunter And TieneArmaduraCazador(UserIndex) Then Exit Sub
     
 104         .Counters.TiempoOculto = .Counters.TiempoOculto - 1
 
@@ -268,10 +274,10 @@ Public Sub DoPermanecerOculto(ByVal UserIndex As Integer)
 
 112             If .flags.Navegando = 1 Then
             
-114                 If .clase = eClass.Pirat Then
+114                 If .clase = e_Class.Pirat Then
                         ' Pierde la apariencia de fragata fantasmal
 116                     Call EquiparBarco(UserIndex)
-124                     Call WriteConsoleMsg(UserIndex, "¡Has recuperado tu apariencia normal!", FontTypeNames.FONTTYPE_INFO)
+124                     Call WriteConsoleMsg(UserIndex, "¡Has recuperado tu apariencia normal!", e_FontTypeNames.FONTTYPE_INFO)
 126                     Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, NingunArma, NingunEscudo, NingunCasco)
                         Call RefreshCharStatus(UserIndex)
                     End If
@@ -280,7 +286,7 @@ Public Sub DoPermanecerOculto(ByVal UserIndex As Integer)
 
 128                 If .flags.invisible = 0 And .flags.AdminInvisible = 0 Then
 130                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(.Char.CharIndex, False))
-132                     Call WriteConsoleMsg(UserIndex, "¡Has vuelto a ser visible!", FontTypeNames.FONTTYPE_INFO)
+132                     Call WriteConsoleMsg(UserIndex, "¡Has vuelto a ser visible!", e_FontTypeNames.FONTTYPE_INFO)
 
                     End If
 
@@ -311,12 +317,12 @@ Public Sub DoOcultarse(ByVal UserIndex As Integer)
     
 100     With UserList(UserIndex)
 
-102         If .flags.Navegando = 1 And .clase <> eClass.Pirat Then
-104             Call WriteLocaleMsg(UserIndex, "56", FontTypeNames.FONTTYPE_INFO)
+102         If .flags.Navegando = 1 And .clase <> e_Class.Pirat Then
+104             Call WriteLocaleMsg(UserIndex, "56", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
     
-106         Skill = .Stats.UserSkills(eSkill.Ocultarse)
+106         Skill = .Stats.UserSkills(e_Skill.Ocultarse)
 108         Suerte = (((0.000002 * Skill - 0.0002) * Skill + 0.0064) * Skill + 0.1124) * 100
 110         res = RandomNumber(1, 100)
 
@@ -329,7 +335,7 @@ Public Sub DoOcultarse(ByVal UserIndex As Integer)
 122             Suerte = Suerte + (0.9571)
 124             Suerte = Suerte * IntervaloOculto
         
-126             If .clase = eClass.Bandit Then
+126             If .clase = e_Class.Bandit Then
 128                 .Counters.TiempoOculto = Int(Suerte / 2)
                 Else
 130                 .Counters.TiempoOculto = Suerte
@@ -342,20 +348,20 @@ Public Sub DoOcultarse(ByVal UserIndex As Integer)
                 End If
   
 138             If .flags.Navegando = 1 Then
-140                 If .clase = eClass.Pirat Then
+140                 If .clase = e_Class.Pirat Then
 142                     .Char.Body = iFragataFantasmal
 144                     .flags.Oculto = 1
 146                     .Counters.TiempoOculto = IntervaloOculto
                          
 148                     Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, NingunArma, NingunEscudo, NingunCasco)
-150                     Call WriteConsoleMsg(UserIndex, "¡Te has camuflado como barco fantasma!", FontTypeNames.FONTTYPE_INFO)
+150                     Call WriteConsoleMsg(UserIndex, "¡Te has camuflado como barco fantasma!", e_FontTypeNames.FONTTYPE_INFO)
                         Call RefreshCharStatus(UserIndex)
                     End If
                 Else
 152                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(.Char.CharIndex, True))
                     
-                    'Call WriteConsoleMsg(UserIndex, "¡Te has escondido entre las sombras!", FontTypeNames.FONTTYPE_INFO)
-154                 Call WriteLocaleMsg(UserIndex, "55", FontTypeNames.FONTTYPE_INFO)
+                    'Call WriteConsoleMsg(UserIndex, "¡Te has escondido entre las sombras!", e_FontTypeNames.FONTTYPE_INFO)
+154                 Call WriteLocaleMsg(UserIndex, "55", e_FontTypeNames.FONTTYPE_INFO)
                 End If
 
 
@@ -363,8 +369,8 @@ Public Sub DoOcultarse(ByVal UserIndex As Integer)
             Else
 
 158             If Not .flags.UltimoMensaje = 4 Then
-                    'Call WriteConsoleMsg(UserIndex, "¡No has logrado esconderte!", FontTypeNames.FONTTYPE_INFO)
-160                 Call WriteLocaleMsg(UserIndex, "57", FontTypeNames.FONTTYPE_INFO)
+                    'Call WriteConsoleMsg(UserIndex, "¡No has logrado esconderte!", e_FontTypeNames.FONTTYPE_INFO)
+160                 Call WriteLocaleMsg(UserIndex, "57", e_FontTypeNames.FONTTYPE_INFO)
 162                 .flags.UltimoMensaje = 4
                 End If
 
@@ -382,7 +388,7 @@ ErrHandler:
 End Sub
 
 Public Sub DoNavega(ByVal UserIndex As Integer, _
-                    ByRef Barco As ObjData, _
+                    ByRef Barco As t_ObjData, _
                     ByVal Slot As Integer)
         
         On Error GoTo DoNavega_Err
@@ -397,15 +403,15 @@ Public Sub DoNavega(ByVal UserIndex As Integer, _
         
                         Case 2  'Galera
         
-108                         If .clase <> eClass.Trabajador And .clase <> eClass.Pirat Then
-110                             Call WriteConsoleMsg(UserIndex, "¡Solo Piratas y trabajadores pueden usar galera!", FontTypeNames.FONTTYPE_INFO)
+108                         If .clase <> e_Class.Trabajador And .clase <> e_Class.Pirat Then
+110                             Call WriteConsoleMsg(UserIndex, "¡Solo Piratas y trabajadores pueden usar galera!", e_FontTypeNames.FONTTYPE_INFO)
                                 Exit Sub
                             End If
                         
 112                     Case 3  'Galeón
                     
-114                         If .clase <> eClass.Pirat Then
-116                             Call WriteConsoleMsg(UserIndex, "Solo los Piratas pueden usar Galeón!!", FontTypeNames.FONTTYPE_INFO)
+114                         If .clase <> e_Class.Pirat Then
+116                             Call WriteConsoleMsg(UserIndex, "Solo los Piratas pueden usar Galeón!!", e_FontTypeNames.FONTTYPE_INFO)
                                 Exit Sub
                             End If
                         
@@ -418,11 +424,11 @@ Public Sub DoNavega(ByVal UserIndex As Integer, _
                 If .Invent.Object(Slot).ObjIndex = 200 Or .Invent.Object(Slot).ObjIndex = 199 Then 'Traje nw alto y bajo
                     SkillNecesario = 0
                 Else
-118                 SkillNecesario = IIf(.clase = eClass.Trabajador Or .clase = eClass.Pirat, Barco.MinSkill \ 2, Barco.MinSkill)
+118                 SkillNecesario = IIf(.clase = e_Class.Trabajador Or .clase = e_Class.Pirat, Barco.MinSkill \ 2, Barco.MinSkill)
                 End If
                 ' Tiene el skill necesario?
-120             If .Stats.UserSkills(eSkill.Navegacion) < SkillNecesario Then
-122                 Call WriteConsoleMsg(UserIndex, "Necesitas al menos " & SkillNecesario & " puntos en navegación para poder usar este " & IIf(Barco.Subtipo = 0, "traje", "barco") & ".", FontTypeNames.FONTTYPE_INFO)
+120             If .Stats.UserSkills(e_Skill.Navegacion) < SkillNecesario Then
+122                 Call WriteConsoleMsg(UserIndex, "Necesitas al menos " & SkillNecesario & " puntos en navegación para poder usar este " & IIf(Barco.Subtipo = 0, "traje", "barco") & ".", e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
             
@@ -439,14 +445,14 @@ Public Sub DoNavega(ByVal UserIndex As Integer, _
                 End If
                 
 138             If .flags.Mimetizado <> e_EstadoMimetismo.Desactivado Then
-140                 Call WriteConsoleMsg(UserIndex, "Pierdes el efecto del mimetismo.", FontTypeNames.FONTTYPE_INFO)
+140                 Call WriteConsoleMsg(UserIndex, "Pierdes el efecto del mimetismo.", e_FontTypeNames.FONTTYPE_INFO)
 142                 .Counters.Mimetismo = 0
 144                 .flags.Mimetizado = e_EstadoMimetismo.Desactivado
                     Call RefreshCharStatus(UserIndex)
                 End If
                 
                 If .flags.invisible = 1 Then
-                    Call WriteConsoleMsg(UserIndex, "Pierdes el efecto de la invisibilidad.", FontTypeNames.FONTTYPE_INFO)
+                    Call WriteConsoleMsg(UserIndex, "Pierdes el efecto de la invisibilidad.", e_FontTypeNames.FONTTYPE_INFO)
                     .flags.invisible = 0
                     .Counters.Invisibilidad = 0
                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(UserList(UserIndex).Char.CharIndex, False))
@@ -500,13 +506,13 @@ Public Sub DoNavega(ByVal UserIndex As Integer, _
 192             .flags.Oculto = 0
 194             .Counters.TiempoOculto = 0
 
-                'Call WriteConsoleMsg(UserIndex, "Has vuelto a ser visible.", FontTypeNames.FONTTYPE_INFO)
-196             Call WriteLocaleMsg(UserIndex, "307", FontTypeNames.FONTTYPE_INFO)
+                'Call WriteConsoleMsg(UserIndex, "Has vuelto a ser visible.", e_FontTypeNames.FONTTYPE_INFO)
+196             Call WriteLocaleMsg(UserIndex, "307", e_FontTypeNames.FONTTYPE_INFO)
 198             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(.Char.CharIndex, False))
             End If
 
 200         Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
-202         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(FXSound.BARCA_SOUND, .Pos.X, .Pos.Y))
+202         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(e_FXSound.BARCA_SOUND, .Pos.X, .Pos.Y))
     
         End With
         
@@ -523,12 +529,12 @@ Public Sub FundirMineral(ByVal UserIndex As Integer)
         
         On Error GoTo FundirMineral_Err
 
-100     If UserList(UserIndex).clase <> eClass.Trabajador Then
-102         Call WriteConsoleMsg(UserIndex, "Tu clase no tiene el conocimiento suficiente para trabajar este mineral.", FontTypeNames.FONTTYPE_INFO)
+100     If UserList(UserIndex).clase <> e_Class.Trabajador Then
+102         Call WriteConsoleMsg(UserIndex, "Tu clase no tiene el conocimiento suficiente para trabajar este mineral.", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         
-104     If UserList(UserIndex).flags.Privilegios And (PlayerType.Consejero) Then
+104     If UserList(UserIndex).flags.Privilegios And (e_PlayerType.Consejero) Then
             Exit Sub
         End If
 
@@ -537,16 +543,16 @@ Public Sub FundirMineral(ByVal UserIndex As Integer)
             Dim SkillRequerido As Integer
 108         SkillRequerido = ObjData(UserList(UserIndex).flags.TargetObjInvIndex).MinSkill
    
-110         If ObjData(UserList(UserIndex).flags.TargetObjInvIndex).OBJType = eOBJType.otMinerales And _
-                UserList(UserIndex).Stats.UserSkills(eSkill.Mineria) >= SkillRequerido Then
+110         If ObjData(UserList(UserIndex).flags.TargetObjInvIndex).OBJType = e_OBJType.otMinerales And _
+                UserList(UserIndex).Stats.UserSkills(e_Skill.Mineria) >= SkillRequerido Then
             
 112             Call DoLingotes(UserIndex)
         
 114         ElseIf SkillRequerido > 100 Then
-116             Call WriteConsoleMsg(UserIndex, "Los mortales no pueden fundir este mineral.", FontTypeNames.FONTTYPE_INFO)
+116             Call WriteConsoleMsg(UserIndex, "Los mortales no pueden fundir este mineral.", e_FontTypeNames.FONTTYPE_INFO)
                 
             Else
-118             Call WriteConsoleMsg(UserIndex, "No tenés conocimientos de minería suficientes para trabajar este mineral. Necesitas " & SkillRequerido & " puntos en minería.", FontTypeNames.FONTTYPE_INFO)
+118             Call WriteConsoleMsg(UserIndex, "No tenés conocimientos de minería suficientes para trabajar este mineral. Necesitas " & SkillRequerido & " puntos en minería.", e_FontTypeNames.FONTTYPE_INFO)
 
             End If
 
@@ -717,7 +723,7 @@ Function CarpinteroTieneMateriales(ByVal UserIndex As Integer, ByVal ItemIndex A
     
 100     If ObjData(ItemIndex).Madera > 0 Then
 102         If Not TieneObjetos(Leña, ObjData(ItemIndex).Madera, UserIndex) Then
-104             Call WriteConsoleMsg(UserIndex, "No tenes suficientes madera.", FontTypeNames.FONTTYPE_INFO)
+104             Call WriteConsoleMsg(UserIndex, "No tenes suficientes madera.", e_FontTypeNames.FONTTYPE_INFO)
 106             CarpinteroTieneMateriales = False
 108             Call WriteMacroTrabajoToggle(UserIndex, False)
                 Exit Function
@@ -728,7 +734,7 @@ Function CarpinteroTieneMateriales(ByVal UserIndex As Integer, ByVal ItemIndex A
         
 110     If ObjData(ItemIndex).MaderaElfica > 0 Then
 112         If Not TieneObjetos(LeñaElfica, ObjData(ItemIndex).MaderaElfica, UserIndex) Then
-114             Call WriteConsoleMsg(UserIndex, "No tenes suficiente madera elfica.", FontTypeNames.FONTTYPE_INFO)
+114             Call WriteConsoleMsg(UserIndex, "No tenes suficiente madera elfica.", e_FontTypeNames.FONTTYPE_INFO)
 116             CarpinteroTieneMateriales = False
 118             Call WriteMacroTrabajoToggle(UserIndex, False)
                 Exit Function
@@ -754,7 +760,7 @@ Function AlquimistaTieneMateriales(ByVal UserIndex As Integer, ByVal ItemIndex A
     
 100     If ObjData(ItemIndex).Raices > 0 Then
 102         If Not TieneObjetos(Raices, ObjData(ItemIndex).Raices, UserIndex) Then
-104             Call WriteConsoleMsg(UserIndex, "No tenes suficientes raices.", FontTypeNames.FONTTYPE_INFO)
+104             Call WriteConsoleMsg(UserIndex, "No tenes suficientes raices.", e_FontTypeNames.FONTTYPE_INFO)
 106             AlquimistaTieneMateriales = False
 108             Call WriteMacroTrabajoToggle(UserIndex, False)
                 Exit Function
@@ -781,7 +787,7 @@ Function SastreTieneMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As In
     
 100     If ObjData(ItemIndex).PielLobo > 0 Then
 102         If Not TieneObjetos(PieldeLobo, ObjData(ItemIndex).PielLobo, UserIndex) Then
-104             Call WriteConsoleMsg(UserIndex, "No tenes suficientes pieles de lobo.", FontTypeNames.FONTTYPE_INFO)
+104             Call WriteConsoleMsg(UserIndex, "No tenes suficientes pieles de lobo.", e_FontTypeNames.FONTTYPE_INFO)
 106             SastreTieneMateriales = False
 108             Call WriteMacroTrabajoToggle(UserIndex, False)
                 Exit Function
@@ -792,7 +798,7 @@ Function SastreTieneMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As In
     
 110     If ObjData(ItemIndex).PielOsoPardo > 0 Then
 112         If Not TieneObjetos(PieldeOsoPardo, ObjData(ItemIndex).PielOsoPardo, UserIndex) Then
-114             Call WriteConsoleMsg(UserIndex, "No tenes suficientes pieles de oso pardo.", FontTypeNames.FONTTYPE_INFO)
+114             Call WriteConsoleMsg(UserIndex, "No tenes suficientes pieles de oso pardo.", e_FontTypeNames.FONTTYPE_INFO)
 116             SastreTieneMateriales = False
 118             Call WriteMacroTrabajoToggle(UserIndex, False)
                 Exit Function
@@ -803,7 +809,7 @@ Function SastreTieneMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As In
     
 120     If ObjData(ItemIndex).PielOsoPolaR > 0 Then
 122         If Not TieneObjetos(PieldeOsoPolar, ObjData(ItemIndex).PielOsoPolaR, UserIndex) Then
-124             Call WriteConsoleMsg(UserIndex, "No tenes suficientes pieles de oso polar.", FontTypeNames.FONTTYPE_INFO)
+124             Call WriteConsoleMsg(UserIndex, "No tenes suficientes pieles de oso polar.", e_FontTypeNames.FONTTYPE_INFO)
 126             SastreTieneMateriales = False
 128             Call WriteMacroTrabajoToggle(UserIndex, False)
                 Exit Function
@@ -830,7 +836,7 @@ Function HerreroTieneMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As I
 
 100     If ObjData(ItemIndex).LingH > 0 Then
 102         If Not TieneObjetos(LingoteHierro, ObjData(ItemIndex).LingH, UserIndex) Then
-104             Call WriteConsoleMsg(UserIndex, "No tenes suficientes lingotes de hierro.", FontTypeNames.FONTTYPE_INFO)
+104             Call WriteConsoleMsg(UserIndex, "No tenes suficientes lingotes de hierro.", e_FontTypeNames.FONTTYPE_INFO)
 106             HerreroTieneMateriales = False
 108             Call WriteMacroTrabajoToggle(UserIndex, False)
                 Exit Function
@@ -841,7 +847,7 @@ Function HerreroTieneMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As I
 
 110     If ObjData(ItemIndex).LingP > 0 Then
 112         If Not TieneObjetos(LingotePlata, ObjData(ItemIndex).LingP, UserIndex) Then
-114             Call WriteConsoleMsg(UserIndex, "No tenes suficientes lingotes de plata.", FontTypeNames.FONTTYPE_INFO)
+114             Call WriteConsoleMsg(UserIndex, "No tenes suficientes lingotes de plata.", e_FontTypeNames.FONTTYPE_INFO)
 116             HerreroTieneMateriales = False
 118             Call WriteMacroTrabajoToggle(UserIndex, False)
                 Exit Function
@@ -852,7 +858,7 @@ Function HerreroTieneMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As I
 
 120     If ObjData(ItemIndex).LingO > 0 Then
 122         If Not TieneObjetos(LingoteOro, ObjData(ItemIndex).LingO, UserIndex) Then
-124             Call WriteConsoleMsg(UserIndex, "No tenes suficientes lingotes de oro.", FontTypeNames.FONTTYPE_INFO)
+124             Call WriteConsoleMsg(UserIndex, "No tenes suficientes lingotes de oro.", e_FontTypeNames.FONTTYPE_INFO)
 126             HerreroTieneMateriales = False
 128             Call WriteMacroTrabajoToggle(UserIndex, False)
                 Exit Function
@@ -876,7 +882,7 @@ Public Function PuedeConstruir(ByVal UserIndex As Integer, ByVal ItemIndex As In
         
         On Error GoTo PuedeConstruir_Err
         
-100     PuedeConstruir = HerreroTieneMateriales(UserIndex, ItemIndex) And UserList(UserIndex).Stats.UserSkills(eSkill.Herreria) >= ObjData(ItemIndex).SkHerreria
+100     PuedeConstruir = HerreroTieneMateriales(UserIndex, ItemIndex) And UserList(UserIndex).Stats.UserSkills(e_Skill.Herreria) >= ObjData(ItemIndex).SkHerreria
 
         
         Exit Function
@@ -931,7 +937,7 @@ Public Sub HerreroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As I
         
 100     If Not IntervaloPermiteTrabajarConstruir(UserIndex) Then Exit Sub
         
-102     If UserList(UserIndex).flags.Privilegios And (PlayerType.Consejero) Then
+102     If UserList(UserIndex).flags.Privilegios And (e_PlayerType.Consejero) Then
             Exit Sub
         End If
         
@@ -941,22 +947,22 @@ Public Sub HerreroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As I
 110         Call WriteUpdateSta(UserIndex)
             ' AGREGAR FX
             Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, 253, 25, False, ObjData(ItemIndex).GrhIndex))
-112         If ObjData(ItemIndex).OBJType = eOBJType.otWeapon Then
-                ' Call WriteConsoleMsg(UserIndex, "Has construido el arma!", FontTypeNames.FONTTYPE_INFO)
+112         If ObjData(ItemIndex).OBJType = e_OBJType.otWeapon Then
+                ' Call WriteConsoleMsg(UserIndex, "Has construido el arma!", e_FontTypeNames.FONTTYPE_INFO)
 114             Call WriteTextCharDrop(UserIndex, "+1", UserList(UserIndex).Char.CharIndex, vbWhite)
-116         ElseIf ObjData(ItemIndex).OBJType = eOBJType.otEscudo Then
-                ' Call WriteConsoleMsg(UserIndex, "Has construido el escudo!", FontTypeNames.FONTTYPE_INFO)
+116         ElseIf ObjData(ItemIndex).OBJType = e_OBJType.otEscudo Then
+                ' Call WriteConsoleMsg(UserIndex, "Has construido el escudo!", e_FontTypeNames.FONTTYPE_INFO)
 118             Call WriteTextCharDrop(UserIndex, "+1", UserList(UserIndex).Char.CharIndex, vbWhite)
-120         ElseIf ObjData(ItemIndex).OBJType = eOBJType.otCasco Then
-                ' Call WriteConsoleMsg(UserIndex, "Has construido el casco!", FontTypeNames.FONTTYPE_INFO)
+120         ElseIf ObjData(ItemIndex).OBJType = e_OBJType.otCasco Then
+                ' Call WriteConsoleMsg(UserIndex, "Has construido el casco!", e_FontTypeNames.FONTTYPE_INFO)
 122             Call WriteTextCharDrop(UserIndex, "+1", UserList(UserIndex).Char.CharIndex, vbWhite)
-124         ElseIf ObjData(ItemIndex).OBJType = eOBJType.otArmadura Then
-                'Call WriteConsoleMsg(UserIndex, "Has construido la armadura!", FontTypeNames.FONTTYPE_INFO)
+124         ElseIf ObjData(ItemIndex).OBJType = e_OBJType.otArmadura Then
+                'Call WriteConsoleMsg(UserIndex, "Has construido la armadura!", e_FontTypeNames.FONTTYPE_INFO)
 126             Call WriteTextCharDrop(UserIndex, "+1", UserList(UserIndex).Char.CharIndex, vbWhite)
 
             End If
 
-            Dim MiObj As obj
+            Dim MiObj As t_Obj
 
 128         MiObj.amount = 1
 130         MiObj.ObjIndex = ItemIndex
@@ -971,7 +977,7 @@ Public Sub HerreroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As I
             '    Call LogDesarrollo(UserList(UserIndex).name & " ha construído " & MiObj.Amount & " " & ObjData(MiObj.ObjIndex).name)
             'End If
     
-136         Call SubirSkill(UserIndex, eSkill.Herreria)
+136         Call SubirSkill(UserIndex, e_Skill.Herreria)
 138         Call UpdateUserInv(True, UserIndex, 0)
 140         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(MARTILLOHERRERO, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
 
@@ -1078,7 +1084,7 @@ Public Sub CarpinteroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
         
 100     If Not IntervaloPermiteTrabajarConstruir(UserIndex) Then Exit Sub
 
-102     If UserList(UserIndex).flags.Privilegios And (PlayerType.Consejero) Then
+102     If UserList(UserIndex).flags.Privilegios And (e_PlayerType.Consejero) Then
             Exit Sub
         End If
         
@@ -1086,34 +1092,34 @@ Public Sub CarpinteroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
 
 106     If UserList(UserIndex).Invent.HerramientaEqpObjIndex = 0 Then
             ' Antes de usar la herramienta deberias equipartela.
-108         Call WriteLocaleMsg(UserIndex, "376", FontTypeNames.FONTTYPE_INFO)
+108         Call WriteLocaleMsg(UserIndex, "376", e_FontTypeNames.FONTTYPE_INFO)
 110         Call WriteMacroTrabajoToggle(UserIndex, False)
             Exit Sub
         End If
         
 112     If CarpinteroTieneMateriales(UserIndex, ItemIndex) _
-                And UserList(UserIndex).Stats.UserSkills(eSkill.Carpinteria) >= ObjData(ItemIndex).SkCarpinteria _
+                And UserList(UserIndex).Stats.UserSkills(e_Skill.Carpinteria) >= ObjData(ItemIndex).SkCarpinteria _
                 And PuedeConstruirCarpintero(ItemIndex) _
-                And ObjData(UserList(UserIndex).Invent.HerramientaEqpObjIndex).OBJType = eOBJType.otHerramientas _
+                And ObjData(UserList(UserIndex).Invent.HerramientaEqpObjIndex).OBJType = e_OBJType.otHerramientas _
                 And ObjData(UserList(UserIndex).Invent.HerramientaEqpObjIndex).Subtipo = 5 Then
     
 114         If UserList(UserIndex).Stats.MinSta > 2 Then
 116             Call QuitarSta(UserIndex, 2)
         
             Else
-118             Call WriteLocaleMsg(UserIndex, "93", FontTypeNames.FONTTYPE_INFO)
-                'Call WriteConsoleMsg(UserIndex, "Estás muy cansado para trabajar.", FontTypeNames.FONTTYPE_INFO)
+118             Call WriteLocaleMsg(UserIndex, "93", e_FontTypeNames.FONTTYPE_INFO)
+                'Call WriteConsoleMsg(UserIndex, "Estás muy cansado para trabajar.", e_FontTypeNames.FONTTYPE_INFO)
 120             Call WriteMacroTrabajoToggle(UserIndex, False)
                 Exit Sub
 
             End If
     
 122         Call CarpinteroQuitarMateriales(UserIndex, ItemIndex)
-            'Call WriteConsoleMsg(UserIndex, "Has construido un objeto!", FontTypeNames.FONTTYPE_INFO)
+            'Call WriteConsoleMsg(UserIndex, "Has construido un objeto!", e_FontTypeNames.FONTTYPE_INFO)
             'Call WriteOroOverHead(UserIndex, 1, UserList(UserIndex).Char.CharIndex)
 124         Call WriteTextCharDrop(UserIndex, "+1", UserList(UserIndex).Char.CharIndex, vbWhite)
     
-            Dim MiObj As obj
+            Dim MiObj As t_Obj
 
 126         MiObj.amount = 1
 128         MiObj.ObjIndex = ItemIndex
@@ -1129,7 +1135,7 @@ Public Sub CarpinteroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
             '    Call LogDesarrollo(UserList(UserIndex).name & " ha construído " & MiObj.Amount & " " & ObjData(MiObj.ObjIndex).name)
             ' End If
     
-136         Call SubirSkill(UserIndex, eSkill.Carpinteria)
+136         Call SubirSkill(UserIndex, e_Skill.Carpinteria)
             'Call UpdateUserInv(True, UserIndex, 0)
 138         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(LABUROCARPINTERO, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
 
@@ -1154,15 +1160,15 @@ Public Sub AlquimistaConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
         Rem Debug.Print UserList(UserIndex).Invent.HerramientaEqpObjIndex
 
 100     If Not UserList(UserIndex).Stats.MinSta > 0 Then
-102         Call WriteLocaleMsg(UserIndex, "93", FontTypeNames.FONTTYPE_INFO)
+102         Call WriteLocaleMsg(UserIndex, "93", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
 
         End If
 
 104     If AlquimistaTieneMateriales(UserIndex, ItemIndex) _
-                And UserList(UserIndex).Stats.UserSkills(eSkill.Alquimia) >= ObjData(ItemIndex).SkPociones _
+                And UserList(UserIndex).Stats.UserSkills(e_Skill.Alquimia) >= ObjData(ItemIndex).SkPociones _
                 And PuedeConstruirAlquimista(ItemIndex) _
-                And ObjData(UserList(UserIndex).Invent.HerramientaEqpObjIndex).OBJType = eOBJType.otHerramientas _
+                And ObjData(UserList(UserIndex).Invent.HerramientaEqpObjIndex).OBJType = e_OBJType.otHerramientas _
                 And ObjData(UserList(UserIndex).Invent.HerramientaEqpObjIndex).Subtipo = 4 Then
         
 106         UserList(UserIndex).Stats.MinSta = UserList(UserIndex).Stats.MinSta - 25
@@ -1171,10 +1177,10 @@ Public Sub AlquimistaConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
             ' AGREGAR FX
             Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, 253, 25, False, ObjData(ItemIndex).GrhIndex))
 110         Call AlquimistaQuitarMateriales(UserIndex, ItemIndex)
-            'Call WriteConsoleMsg(UserIndex, "Has construido el objeto.", FontTypeNames.FONTTYPE_INFO)
+            'Call WriteConsoleMsg(UserIndex, "Has construido el objeto.", e_FontTypeNames.FONTTYPE_INFO)
 112         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(117, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
     
-            Dim MiObj As obj
+            Dim MiObj As t_Obj
 
 114         MiObj.amount = 1
 116         MiObj.ObjIndex = ItemIndex
@@ -1189,7 +1195,7 @@ Public Sub AlquimistaConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
             '    Call LogDesarrollo(UserList(UserIndex).name & " ha construído " & MiObj.Amount & " " & ObjData(MiObj.ObjIndex).name)
             'End If
     
-122         Call SubirSkill(UserIndex, eSkill.Alquimia)
+122         Call SubirSkill(UserIndex, e_Skill.Alquimia)
 124         Call UpdateUserInv(True, UserIndex, 0)
             'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(LABUROCARPINTERO, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
 
@@ -1213,15 +1219,15 @@ Public Sub SastreConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As In
 100     If Not IntervaloPermiteTrabajarConstruir(UserIndex) Then Exit Sub
 
 102     If Not UserList(UserIndex).Stats.MinSta > 0 Then
-104         Call WriteLocaleMsg(UserIndex, "93", FontTypeNames.FONTTYPE_INFO)
+104         Call WriteLocaleMsg(UserIndex, "93", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
 
         End If
 
 106     If SastreTieneMateriales(UserIndex, ItemIndex) _
-                And UserList(UserIndex).Stats.UserSkills(eSkill.Herreria) >= ObjData(ItemIndex).SkMAGOria _
+                And UserList(UserIndex).Stats.UserSkills(e_Skill.Herreria) >= ObjData(ItemIndex).SkMAGOria _
                 And PuedeConstruirSastre(ItemIndex) _
-                And ObjData(UserList(UserIndex).Invent.HerramientaEqpObjIndex).OBJType = eOBJType.otHerramientas _
+                And ObjData(UserList(UserIndex).Invent.HerramientaEqpObjIndex).OBJType = e_OBJType.otHerramientas _
                 And ObjData(UserList(UserIndex).Invent.HerramientaEqpObjIndex).Subtipo = 9 Then
         
 108         UserList(UserIndex).Stats.MinSta = UserList(UserIndex).Stats.MinSta - 2
@@ -1231,7 +1237,7 @@ Public Sub SastreConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As In
 112         Call SastreQuitarMateriales(UserIndex, ItemIndex)
     
             ' If Not UserList(UserIndex).flags.UltimoMensaje = 9 Then
-            ' Call WriteConsoleMsg(UserIndex, "Has construido el objeto.", FontTypeNames.FONTTYPE_INFO)
+            ' Call WriteConsoleMsg(UserIndex, "Has construido el objeto.", e_FontTypeNames.FONTTYPE_INFO)
 114         Call WriteTextCharDrop(UserIndex, "+1", UserList(UserIndex).Char.CharIndex, vbWhite)
     '112         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateRenderValue(UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y, " 1", 5))
             ' UserList(UserIndex).flags.UltimoMensaje = 9
@@ -1239,7 +1245,7 @@ Public Sub SastreConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As In
         
 116         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(63, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
     
-            Dim MiObj As obj
+            Dim MiObj As t_Obj
 
 118         MiObj.amount = 1
 120         MiObj.ObjIndex = ItemIndex
@@ -1248,7 +1254,7 @@ Public Sub SastreConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As In
 124             Call TirarItemAlPiso(UserList(UserIndex).Pos, MiObj)
             End If
     
-126         Call SubirSkill(UserIndex, eSkill.Herreria)
+126         Call SubirSkill(UserIndex, e_Skill.Herreria)
 128         Call UpdateUserInv(True, UserIndex, 0)
             'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(LABUROCARPINTERO, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
 
@@ -1265,20 +1271,20 @@ SastreConstruirItem_Err:
         
 End Sub
 
-Private Function MineralesParaLingote(ByVal Lingote As iMinerales, ByVal cant As Byte) As Integer
+Private Function MineralesParaLingote(ByVal Lingote As e_Minerales, ByVal cant As Byte) As Integer
         
         On Error GoTo MineralesParaLingote_Err
         
 
 100     Select Case Lingote
 
-            Case iMinerales.HierroCrudo
+            Case e_Minerales.HierroCrudo
 102             MineralesParaLingote = 13 * cant
 
-104         Case iMinerales.PlataCruda
+104         Case e_Minerales.PlataCruda
 106             MineralesParaLingote = 25 * cant
 
-108         Case iMinerales.OroCrudo
+108         Case e_Minerales.OroCrudo
 110             MineralesParaLingote = 50 * cant
 
 112         Case Else
@@ -1307,8 +1313,8 @@ Public Sub DoLingotes(ByVal UserIndex As Integer)
 102             Call QuitarSta(UserIndex, 2)
 
             Else
-104             Call WriteLocaleMsg(UserIndex, "93", FontTypeNames.FONTTYPE_INFO)
-                'Call WriteConsoleMsg(UserIndex, "Estás muy cansado para excavar.", FontTypeNames.FONTTYPE_INFO)
+104             Call WriteLocaleMsg(UserIndex, "93", e_FontTypeNames.FONTTYPE_INFO)
+                'Call WriteConsoleMsg(UserIndex, "Estás muy cansado para excavar.", e_FontTypeNames.FONTTYPE_INFO)
 106             Call WriteMacroTrabajoToggle(UserIndex, False)
                 Exit Sub
 
@@ -1320,8 +1326,8 @@ Public Sub DoLingotes(ByVal UserIndex As Integer)
 112         cant = RandomNumber(10, 20)
 114         necesarios = MineralesParaLingote(obji, cant)
 
-116         If UserList(UserIndex).Invent.Object(Slot).amount < MineralesParaLingote(obji, cant) Or ObjData(obji).OBJType <> eOBJType.otMinerales Then
-118             Call WriteConsoleMsg(UserIndex, "No tienes suficientes minerales para hacer un lingote.", FontTypeNames.FONTTYPE_INFO)
+116         If UserList(UserIndex).Invent.Object(Slot).amount < MineralesParaLingote(obji, cant) Or ObjData(obji).OBJType <> e_OBJType.otMinerales Then
+118             Call WriteConsoleMsg(UserIndex, "No tienes suficientes minerales para hacer un lingote.", e_FontTypeNames.FONTTYPE_INFO)
 120             Call WriteMacroTrabajoToggle(UserIndex, False)
                 Exit Sub
 
@@ -1335,9 +1341,9 @@ Public Sub DoLingotes(ByVal UserIndex As Integer)
 
             End If
 
-            Dim nPos  As WorldPos
+            Dim nPos  As t_WorldPos
 
-            Dim MiObj As obj
+            Dim MiObj As t_Obj
 
 130         MiObj.amount = cant
 132         MiObj.ObjIndex = ObjData(UserList(UserIndex).flags.TargetObjInvIndex).LingoteIndex
@@ -1350,7 +1356,7 @@ Public Sub DoLingotes(ByVal UserIndex As Integer)
 138         Call UpdateUserInv(False, UserIndex, Slot)
 140         Call WriteTextCharDrop(UserIndex, "+" & cant, UserList(UserIndex).Char.CharIndex, vbWhite)
 142         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(41, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
-144         Call SubirSkill(UserIndex, eSkill.Mineria)
+144         Call SubirSkill(UserIndex, e_Skill.Mineria)
 
 146         UserList(UserIndex).Counters.Trabajando = UserList(UserIndex).Counters.Trabajando + 1
 
@@ -1367,15 +1373,15 @@ DoLingotes_Err:
 
 End Sub
 
-Function ModAlquimia(ByVal clase As eClass) As Integer
+Function ModAlquimia(ByVal clase As e_Class) As Integer
         On Error GoTo ModAlquimia_Err
 
 100     Select Case clase
 
-            Case eClass.Druid
+            Case e_Class.Druid
 102             ModAlquimia = 1
 
-104         Case eClass.Trabajador
+104         Case e_Class.Trabajador
 106             ModAlquimia = 1
 
 108         Case Else
@@ -1391,14 +1397,14 @@ ModAlquimia_Err:
 
 End Function
 
-Function ModSastre(ByVal clase As eClass) As Integer
+Function ModSastre(ByVal clase As e_Class) As Integer
         
         On Error GoTo ModSastre_Err
         
 
 100     Select Case clase
 
-            Case eClass.Trabajador
+            Case e_Class.Trabajador
 102             ModSastre = 1
 
 104         Case Else
@@ -1415,14 +1421,14 @@ ModSastre_Err:
         
 End Function
 
-Function ModCarpinteria(ByVal clase As eClass) As Integer
+Function ModCarpinteria(ByVal clase As e_Class) As Integer
         
         On Error GoTo ModCarpinteria_Err
         
 
 100     Select Case clase
 
-            Case eClass.Trabajador
+            Case e_Class.Trabajador
 102             ModCarpinteria = 1
 
 104         Case Else
@@ -1439,14 +1445,14 @@ ModCarpinteria_Err:
         
 End Function
 
-Function ModHerreria(ByVal clase As eClass) As Single
+Function ModHerreria(ByVal clase As e_Class) As Single
         
         On Error GoTo ModHerreriA_Err
         
 
 100     Select Case clase
 
-            Case eClass.Trabajador
+            Case e_Class.Trabajador
 102             ModHerreria = 1
 
 104         Case Else
@@ -1522,9 +1528,9 @@ Sub TratarDeHacerFogata(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Int
 
         Dim exito     As Byte
 
-        Dim obj       As obj
+        Dim obj       As t_Obj
 
-        Dim posMadera As WorldPos
+        Dim posMadera As t_WorldPos
 
 100     If Not LegalPos(Map, X, Y) Then Exit Sub
 
@@ -1536,35 +1542,35 @@ Sub TratarDeHacerFogata(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Int
         End With
 
 110     If MapData(Map, X, Y).ObjInfo.ObjIndex <> 58 Then
-112         Call WriteConsoleMsg(UserIndex, "Necesitas clickear sobre Leña para hacer ramitas", FontTypeNames.FONTTYPE_INFO)
+112         Call WriteConsoleMsg(UserIndex, "Necesitas clickear sobre Leña para hacer ramitas", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
 
         End If
 
 114     If Distancia(posMadera, UserList(UserIndex).Pos) > 2 Then
-116         Call WriteLocaleMsg(UserIndex, "8", FontTypeNames.FONTTYPE_INFO)
-            ' Call WriteConsoleMsg(UserIndex, "Estás demasiado lejos para prender la fogata.", FontTypeNames.FONTTYPE_INFO)
+116         Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
+            ' Call WriteConsoleMsg(UserIndex, "Estás demasiado lejos para prender la fogata.", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
 
         End If
 
 118     If UserList(UserIndex).flags.Muerto = 1 Then
-120         Call WriteConsoleMsg(UserIndex, "No podés hacer fogatas estando muerto.", FontTypeNames.FONTTYPE_INFO)
+120         Call WriteConsoleMsg(UserIndex, "No podés hacer fogatas estando muerto.", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
 
         End If
 
 122     If MapData(Map, X, Y).ObjInfo.amount < 3 Then
-124         Call WriteConsoleMsg(UserIndex, "Necesitas por lo menos tres troncos para hacer una fogata.", FontTypeNames.FONTTYPE_INFO)
+124         Call WriteConsoleMsg(UserIndex, "Necesitas por lo menos tres troncos para hacer una fogata.", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
 
         End If
 
-126     If UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) >= 0 And UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) < 6 Then
+126     If UserList(UserIndex).Stats.UserSkills(e_Skill.Supervivencia) >= 0 And UserList(UserIndex).Stats.UserSkills(e_Skill.Supervivencia) < 6 Then
 128         Suerte = 3
-130     ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) >= 6 And UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) <= 34 Then
+130     ElseIf UserList(UserIndex).Stats.UserSkills(e_Skill.Supervivencia) >= 6 And UserList(UserIndex).Stats.UserSkills(e_Skill.Supervivencia) <= 34 Then
 132         Suerte = 2
-134     ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Supervivencia) >= 35 Then
+134     ElseIf UserList(UserIndex).Stats.UserSkills(e_Skill.Supervivencia) >= 35 Then
 136         Suerte = 1
 
         End If
@@ -1575,7 +1581,7 @@ Sub TratarDeHacerFogata(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Int
 142         obj.ObjIndex = FOGATA_APAG
 144         obj.amount = MapData(Map, X, Y).ObjInfo.amount \ 3
     
-146         Call WriteConsoleMsg(UserIndex, "Has hecho " & obj.amount & " ramitas.", FontTypeNames.FONTTYPE_INFO)
+146         Call WriteConsoleMsg(UserIndex, "Has hecho " & obj.amount & " ramitas.", e_FontTypeNames.FONTTYPE_INFO)
     
 148         Call MakeObj(obj, Map, X, Y)
     
@@ -1607,7 +1613,7 @@ Public Sub DoPescar(ByVal UserIndex As Integer, Optional ByVal RedDePesca As Boo
     
 102     With UserList(UserIndex)
 
-104         If .flags.Privilegios And (PlayerType.Consejero) Then
+104         If .flags.Privilegios And (e_PlayerType.Consejero) Then
                 Exit Sub
             End If
             
@@ -1616,9 +1622,9 @@ Public Sub DoPescar(ByVal UserIndex As Integer, Optional ByVal RedDePesca As Boo
         
             Else
             
-110             Call WriteLocaleMsg(UserIndex, "93", FontTypeNames.FONTTYPE_INFO)
+110             Call WriteLocaleMsg(UserIndex, "93", e_FontTypeNames.FONTTYPE_INFO)
             
-                'Call WriteConsoleMsg(UserIndex, "Estás muy cansado para pescar.", FontTypeNames.FONTTYPE_INFO)
+                'Call WriteConsoleMsg(UserIndex, "Estás muy cansado para pescar.", e_FontTypeNames.FONTTYPE_INFO)
             
 112             Call WriteMacroTrabajoToggle(UserIndex, False)
             
@@ -1628,7 +1634,7 @@ Public Sub DoPescar(ByVal UserIndex As Integer, Optional ByVal RedDePesca As Boo
 
             Dim Skill As Integer
 
-114         Skill = .Stats.UserSkills(eSkill.Pescar)
+114         Skill = .Stats.UserSkills(e_Skill.Pescar)
         
 116         Suerte = Int(-0.00125 * Skill * Skill - 0.3 * Skill + 49)
     
@@ -1638,8 +1644,8 @@ Public Sub DoPescar(ByVal UserIndex As Integer, Optional ByVal RedDePesca As Boo
 
 122         If res < 6 Then
 
-                Dim nPos  As WorldPos
-                Dim MiObj As obj
+                Dim nPos  As t_WorldPos
+                Dim MiObj As t_Obj
 
 124             MiObj.amount = IIf(.clase = Trabajador, RandomNumber(1, 3), 1) * RecoleccionMult
 126             MiObj.ObjIndex = ObtenerPezRandom(ObjData(.Invent.HerramientaEqpObjIndex).Power)
@@ -1674,7 +1680,7 @@ Public Sub DoPescar(ByVal UserIndex As Integer, Optional ByVal RedDePesca As Boo
 146                     If Not MeterItemEnInventario(UserIndex, MiObj) Then Call TirarItemAlPiso(.Pos, MiObj)
                     
                         ' Le mandamos un mensaje
-148                     Call WriteConsoleMsg(UserIndex, "¡Has conseguido " & ObjData(EspecialesPesca(i).ObjIndex).Name & "!", FontTypeNames.FONTTYPE_INFO)
+148                     Call WriteConsoleMsg(UserIndex, "¡Has conseguido " & ObjData(EspecialesPesca(i).ObjIndex).Name & "!", e_FontTypeNames.FONTTYPE_INFO)
                     End If
 
                 Next
@@ -1683,7 +1689,7 @@ Public Sub DoPescar(ByVal UserIndex As Integer, Optional ByVal RedDePesca As Boo
                  Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, 253, 25, False, GRH_FALLO_PESCA))
             End If
     
-150         Call SubirSkill(UserIndex, eSkill.Pescar)
+150         Call SubirSkill(UserIndex, e_Skill.Pescar)
     
 152         .Counters.Trabajando = .Counters.Trabajando + 1
     
@@ -1725,12 +1731,12 @@ Public Sub DoRobar(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
 
         Dim OtroUserIndex As Integer
         
-100     If UserList(LadronIndex).flags.Privilegios And (PlayerType.Consejero) Then Exit Sub
+100     If UserList(LadronIndex).flags.Privilegios And (e_PlayerType.Consejero) Then Exit Sub
 
 102     If MapInfo(UserList(VictimaIndex).Pos.Map).Seguro = 1 Then Exit Sub
     
 104     If UserList(VictimaIndex).flags.EnConsulta Then
-106         Call WriteConsoleMsg(LadronIndex, "¡No puedes robar a usuarios en consulta!", FontTypeNames.FONTTYPE_INFO)
+106         Call WriteConsoleMsg(LadronIndex, "¡No puedes robar a usuarios en consulta!", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
 
         End If
@@ -1742,18 +1748,18 @@ Public Sub DoRobar(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
             If esCiudadano(LadronIndex) Then
                 If (esCiudadano(VictimaIndex) Or esArmada(VictimaIndex)) Then
                     If (.flags.Seguro) Then
-114                     Call WriteConsoleMsg(LadronIndex, "Debes quitarte el seguro para robarle a un ciudadano o a un miembro del Ejército Real", FontTypeNames.FONTTYPE_FIGHT)
+114                     Call WriteConsoleMsg(LadronIndex, "Debes quitarte el seguro para robarle a un ciudadano o a un miembro del Ejército Real", e_FontTypeNames.FONTTYPE_FIGHT)
                         Exit Sub
                     End If
                 End If
             ElseIf esArmada(LadronIndex) Then ' Armada robando a armada or ciudadano?
 122              If (esCiudadano(VictimaIndex) Or esArmada(VictimaIndex)) Then
-124                 Call WriteConsoleMsg(LadronIndex, "Los miembros del Ejército Real no tienen permitido robarle a ciudadanos o a otros miembros del Ejército Real", FontTypeNames.FONTTYPE_FIGHT)
+124                 Call WriteConsoleMsg(LadronIndex, "Los miembros del Ejército Real no tienen permitido robarle a ciudadanos o a otros miembros del Ejército Real", e_FontTypeNames.FONTTYPE_FIGHT)
                     Exit Sub
                 End If
             ElseIf esCaos(LadronIndex) Then ' Caos robando a caos?
                 If (esCaos(VictimaIndex)) Then
-                    Call WriteConsoleMsg(LadronIndex, "No puedes robar a otros miembros de la Legión Oscura.", FontTypeNames.FONTTYPE_FIGHT)
+                    Call WriteConsoleMsg(LadronIndex, "No puedes robar a otros miembros de la Legión Oscura.", e_FontTypeNames.FONTTYPE_FIGHT)
                     Exit Sub
                 End If
             End If
@@ -1763,11 +1769,11 @@ Public Sub DoRobar(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
             ' Tiene energia?
 128         If .Stats.MinSta < 15 Then
         
-130             If .genero = eGenero.Hombre Then
-132                 Call WriteConsoleMsg(LadronIndex, "Estás muy cansado para robar.", FontTypeNames.FONTTYPE_INFO)
+130             If .genero = e_Genero.Hombre Then
+132                 Call WriteConsoleMsg(LadronIndex, "Estás muy cansado para robar.", e_FontTypeNames.FONTTYPE_INFO)
                 
                 Else
-134                 Call WriteConsoleMsg(LadronIndex, "Estás muy cansada para robar.", FontTypeNames.FONTTYPE_INFO)
+134                 Call WriteConsoleMsg(LadronIndex, "Estás muy cansada para robar.", e_FontTypeNames.FONTTYPE_INFO)
 
                 End If
             
@@ -1780,7 +1786,7 @@ Public Sub DoRobar(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
 138             If .flags.SeguroClan Then
             
 140                 If .GuildIndex = UserList(VictimaIndex).GuildIndex Then
-142                     Call WriteConsoleMsg(LadronIndex, "No podes robarle a un miembro de tu clan.", FontTypeNames.FONTTYPE_INFOIAO)
+142                     Call WriteConsoleMsg(LadronIndex, "No podes robarle a un miembro de tu clan.", e_FontTypeNames.FONTTYPE_INFOIAO)
                         Exit Sub
 
                     End If
@@ -1792,7 +1798,7 @@ Public Sub DoRobar(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
             ' Quito energia
 144         Call QuitarSta(LadronIndex, 15)
 
-146         If UserList(VictimaIndex).flags.Privilegios And PlayerType.user Then
+146         If UserList(VictimaIndex).flags.Privilegios And e_PlayerType.user Then
 
                 Dim Probabilidad As Byte
 
@@ -1800,7 +1806,7 @@ Public Sub DoRobar(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
 
                 Dim RobarSkill   As Byte
             
-148             RobarSkill = .Stats.UserSkills(eSkill.Robar)
+148             RobarSkill = .Stats.UserSkills(e_Skill.Robar)
 
 150             If (RobarSkill > 0 And RobarSkill < 10) Then
 152                 Probabilidad = 1
@@ -1832,8 +1838,8 @@ Public Sub DoRobar(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
 198                     OtroUserIndex = UserList(VictimaIndex).ComUsu.DestUsu
                         
 200                     If OtroUserIndex > 0 And OtroUserIndex <= MaxUsers Then
-202                         Call WriteConsoleMsg(VictimaIndex, "Comercio cancelado, ¡te están robando!", FontTypeNames.FONTTYPE_TALK)
-204                         Call WriteConsoleMsg(OtroUserIndex, "Comercio cancelado, al otro usuario le robaron.", FontTypeNames.FONTTYPE_TALK)
+202                         Call WriteConsoleMsg(VictimaIndex, "Comercio cancelado, ¡te están robando!", e_FontTypeNames.FONTTYPE_TALK)
+204                         Call WriteConsoleMsg(OtroUserIndex, "Comercio cancelado, al otro usuario le robaron.", e_FontTypeNames.FONTTYPE_TALK)
                         
 206                         Call LimpiarComercioSeguro(VictimaIndex)
 
@@ -1841,12 +1847,12 @@ Public Sub DoRobar(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
 
                     End If
                
-208                 If (RandomNumber(1, 50) < 25) And (.clase = eClass.Thief) Then '50% de robar items
+208                 If (RandomNumber(1, 50) < 25) And (.clase = e_Class.Thief) Then '50% de robar items
                     
 210                     If TieneObjetosRobables(VictimaIndex) Then
 212                         Call RobarObjeto(LadronIndex, VictimaIndex)
                         Else
-214                         Call WriteConsoleMsg(LadronIndex, UserList(VictimaIndex).Name & " no tiene objetos.", FontTypeNames.FONTTYPE_INFO)
+214                         Call WriteConsoleMsg(LadronIndex, UserList(VictimaIndex).Name & " no tiene objetos.", e_FontTypeNames.FONTTYPE_INFO)
 
                         End If
 
@@ -1872,7 +1878,7 @@ Public Sub DoRobar(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
 
                             End If
                             
-238                         If .clase = eClass.Thief Then
+238                         If .clase = e_Class.Thief Then
 
                                 'Si no tiene puestos los guantes de hurto roba un 50% menos.
 240                             If .Invent.NudilloObjIndex > 0 Then
@@ -1901,25 +1907,25 @@ Public Sub DoRobar(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
 
 258                         If .Stats.GLD > MAXORO Then .Stats.GLD = MAXORO
                         
-260                         Call WriteConsoleMsg(LadronIndex, "Le has robado " & PonerPuntos(n) & " monedas de oro a " & UserList(VictimaIndex).Name, FontTypeNames.FONTTYPE_New_Rojo_Salmon)
-262                         Call WriteConsoleMsg(VictimaIndex, UserList(LadronIndex).Name & " te ha robado " & PonerPuntos(n) & " monedas de oro.", FontTypeNames.FONTTYPE_New_Rojo_Salmon)
+260                         Call WriteConsoleMsg(LadronIndex, "Le has robado " & PonerPuntos(n) & " monedas de oro a " & UserList(VictimaIndex).Name, e_FontTypeNames.FONTTYPE_New_Rojo_Salmon)
+262                         Call WriteConsoleMsg(VictimaIndex, UserList(LadronIndex).Name & " te ha robado " & PonerPuntos(n) & " monedas de oro.", e_FontTypeNames.FONTTYPE_New_Rojo_Salmon)
 264                         Call WriteUpdateGold(LadronIndex) 'Le actualizamos la billetera al ladron
                         
 266                         Call WriteUpdateGold(VictimaIndex) 'Le actualizamos la billetera a la victima
                         Else
-268                         Call WriteConsoleMsg(LadronIndex, UserList(VictimaIndex).Name & " no tiene oro.", FontTypeNames.FONTTYPE_INFO)
+268                         Call WriteConsoleMsg(LadronIndex, UserList(VictimaIndex).Name & " no tiene oro.", e_FontTypeNames.FONTTYPE_INFO)
 
                         End If
 
                     End If
                 
-270                 Call SubirSkill(LadronIndex, eSkill.Robar)
+270                 Call SubirSkill(LadronIndex, e_Skill.Robar)
             
                 Else
-272                 Call WriteConsoleMsg(LadronIndex, "¡No has logrado robar nada!", FontTypeNames.FONTTYPE_INFO)
-274                 Call WriteConsoleMsg(VictimaIndex, "¡" & .Name & " ha intentado robarte!", FontTypeNames.FONTTYPE_INFO)
+272                 Call WriteConsoleMsg(LadronIndex, "¡No has logrado robar nada!", e_FontTypeNames.FONTTYPE_INFO)
+274                 Call WriteConsoleMsg(VictimaIndex, "¡" & .Name & " ha intentado robarte!", e_FontTypeNames.FONTTYPE_INFO)
                 
-276                 Call SubirSkill(LadronIndex, eSkill.Robar)
+276                 Call SubirSkill(LadronIndex, e_Skill.Robar)
 
                 End If
                     
@@ -1948,7 +1954,7 @@ Public Function ObjEsRobable(ByVal VictimaIndex As Integer, ByVal Slot As Intege
 
 100     OI = UserList(VictimaIndex).Invent.Object(Slot).ObjIndex
 
-102     ObjEsRobable = ObjData(OI).OBJType <> eOBJType.otLlaves And UserList(VictimaIndex).Invent.Object(Slot).Equipped = 0 And ObjData(OI).Real = 0 And ObjData(OI).Caos = 0 And ObjData(OI).OBJType <> eOBJType.otBarcos And ObjData(OI).OBJType <> eOBJType.otRunas And ObjData(OI).Instransferible = 0 And ObjData(OI).OBJType <> eOBJType.otMonturas And Not (ObjData(OI).OBJType = eOBJType.otPociones And ObjData(OI).TipoPocion = 21)
+102     ObjEsRobable = ObjData(OI).OBJType <> e_OBJType.otLlaves And UserList(VictimaIndex).Invent.Object(Slot).Equipped = 0 And ObjData(OI).Real = 0 And ObjData(OI).Caos = 0 And ObjData(OI).OBJType <> e_OBJType.otBarcos And ObjData(OI).OBJType <> e_OBJType.otRunas And ObjData(OI).Instransferible = 0 And ObjData(OI).OBJType <> e_OBJType.otMonturas And Not (ObjData(OI).OBJType = e_OBJType.otPociones And ObjData(OI).TipoPocion = 21)
 
         
         Exit Function
@@ -2024,7 +2030,7 @@ Private Sub RobarObjeto(ByVal LadronIndex As Integer, ByVal VictimaIndex As Inte
     
 130         If flag Then
 
-                Dim MiObj     As obj
+                Dim MiObj     As t_Obj
                 Dim num       As Integer
                 Dim ObjAmount As Integer
 
@@ -2050,16 +2056,16 @@ Private Sub RobarObjeto(ByVal LadronIndex As Integer, ByVal VictimaIndex As Inte
                 
                 End If
         
-152             If UserList(LadronIndex).clase = eClass.Thief Then
-154                 Call WriteConsoleMsg(LadronIndex, "Has robado " & MiObj.amount & " " & ObjData(MiObj.ObjIndex).Name, FontTypeNames.FONTTYPE_New_Rojo_Salmon)
-156                 Call WriteConsoleMsg(VictimaIndex, UserList(LadronIndex).Name & " te ha robado " & MiObj.amount & " " & ObjData(MiObj.ObjIndex).Name, FontTypeNames.FONTTYPE_New_Rojo_Salmon)
+152             If UserList(LadronIndex).clase = e_Class.Thief Then
+154                 Call WriteConsoleMsg(LadronIndex, "Has robado " & MiObj.amount & " " & ObjData(MiObj.ObjIndex).Name, e_FontTypeNames.FONTTYPE_New_Rojo_Salmon)
+156                 Call WriteConsoleMsg(VictimaIndex, UserList(LadronIndex).Name & " te ha robado " & MiObj.amount & " " & ObjData(MiObj.ObjIndex).Name, e_FontTypeNames.FONTTYPE_New_Rojo_Salmon)
                 Else
-158                 Call WriteConsoleMsg(LadronIndex, "Has hurtado " & MiObj.amount & " " & ObjData(MiObj.ObjIndex).Name, FontTypeNames.FONTTYPE_New_Rojo_Salmon)
+158                 Call WriteConsoleMsg(LadronIndex, "Has hurtado " & MiObj.amount & " " & ObjData(MiObj.ObjIndex).Name, e_FontTypeNames.FONTTYPE_New_Rojo_Salmon)
                 
                 End If
 
             Else
-160             Call WriteConsoleMsg(LadronIndex, "No has logrado robar ningun objeto.", FontTypeNames.FONTTYPE_INFO)
+160             Call WriteConsoleMsg(LadronIndex, "No has logrado robar ningun objeto.", e_FontTypeNames.FONTTYPE_INFO)
 
             End If
 
@@ -2104,7 +2110,7 @@ Public Sub DoRaices(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte
     
 100     With UserList(UserIndex)
     
-102         If .flags.Privilegios And (PlayerType.Consejero) Then
+102         If .flags.Privilegios And (e_PlayerType.Consejero) Then
                 Exit Sub
             End If
             
@@ -2113,15 +2119,15 @@ Public Sub DoRaices(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte
         
             Else
             
-108             Call WriteLocaleMsg(UserIndex, "93", FontTypeNames.FONTTYPE_INFO)
-                'Call WriteConsoleMsg(UserIndex, "Estás muy cansado para obtener raices.", FontTypeNames.FONTTYPE_INFO)
+108             Call WriteLocaleMsg(UserIndex, "93", e_FontTypeNames.FONTTYPE_INFO)
+                'Call WriteConsoleMsg(UserIndex, "Estás muy cansado para obtener raices.", e_FontTypeNames.FONTTYPE_INFO)
 110             Call WriteMacroTrabajoToggle(UserIndex, False)
                 Exit Sub
     
             End If
     
             Dim Skill As Integer
-112             Skill = .Stats.UserSkills(eSkill.Alquimia)
+112             Skill = .Stats.UserSkills(e_Skill.Alquimia)
         
 114         Suerte = Int(-0.00125 * Skill * Skill - 0.3 * Skill + 49)
 116         res = RandomNumber(1, Suerte)
@@ -2131,10 +2137,10 @@ Public Sub DoRaices(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte
             Rem Ladder 06/08/14 Subo un poco la probabilidad de sacar raices... porque era muy lento
 120         If res < 7 Then
     
-                Dim nPos  As WorldPos
-                Dim MiObj As obj
+                Dim nPos  As t_WorldPos
+                Dim MiObj As t_Obj
         
-                'If .clase = eClass.Druid Then
+                'If .clase = e_Class.Druid Then
                 'MiObj.Amount = RandomNumber(6, 8)
                 ' Else
 122             MiObj.amount = RandomNumber(5, 7)
@@ -2158,7 +2164,7 @@ Public Sub DoRaices(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte
             
                 End If
         
-                'Call WriteConsoleMsg(UserIndex, "¡Has conseguido algunas raices!", FontTypeNames.FONTTYPE_INFO)
+                'Call WriteConsoleMsg(UserIndex, "¡Has conseguido algunas raices!", e_FontTypeNames.FONTTYPE_INFO)
 144             Call WriteTextCharDrop(UserIndex, "+" & MiObj.amount, .Char.CharIndex, vbWhite)
 146             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(60, .Pos.X, .Pos.Y))
             Else
@@ -2166,7 +2172,7 @@ Public Sub DoRaices(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte
     
             End If
     
-150         Call SubirSkill(UserIndex, eSkill.Alquimia)
+150         Call SubirSkill(UserIndex, e_Skill.Alquimia)
     
 152         .Counters.Trabajando = .Counters.Trabajando + 1
     
@@ -2191,7 +2197,7 @@ Public Sub DoTalar(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte,
 
 100     With UserList(UserIndex)
 
-102          If .flags.Privilegios And (PlayerType.Consejero) Then
+102          If .flags.Privilegios And (e_PlayerType.Consejero) Then
                 Exit Sub
              End If
 
@@ -2201,8 +2207,8 @@ Public Sub DoTalar(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte,
 106             Call QuitarSta(UserIndex, 2)
 
             Else
-108             Call WriteLocaleMsg(UserIndex, "93", FontTypeNames.FONTTYPE_INFO)
-                'Call WriteConsoleMsg(UserIndex, "Estás muy cansado para talar.", FontTypeNames.FONTTYPE_INFO)
+108             Call WriteLocaleMsg(UserIndex, "93", e_FontTypeNames.FONTTYPE_INFO)
+                'Call WriteConsoleMsg(UserIndex, "Estás muy cansado para talar.", e_FontTypeNames.FONTTYPE_INFO)
 110             Call WriteMacroTrabajoToggle(UserIndex, False)
                 Exit Sub
 
@@ -2210,7 +2216,7 @@ Public Sub DoTalar(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte,
 
             Dim Skill As Integer
 
-112         Skill = .Stats.UserSkills(eSkill.Talar)
+112         Skill = .Stats.UserSkills(e_Skill.Talar)
 114         Suerte = Int(-0.00125 * Skill * Skill - 0.3 * Skill + 49)
 
 116         res = RandomNumber(1, Suerte)
@@ -2218,9 +2224,9 @@ Public Sub DoTalar(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte,
 
 120         If res < 6 Then
 
-                Dim nPos  As WorldPos
+                Dim nPos  As t_WorldPos
 
-                Dim MiObj As obj
+                Dim MiObj As t_Obj
 
 122             Call ActualizarRecurso(.Pos.Map, X, Y)
 124             MapData(.Pos.Map, X, Y).ObjInfo.Data = GetTickCount() ' Ultimo uso
@@ -2277,7 +2283,7 @@ Public Sub DoTalar(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte,
 
             End If
         
-164         Call SubirSkill(UserIndex, eSkill.Talar)
+164         Call SubirSkill(UserIndex, e_Skill.Talar)
         
 166         .Counters.Trabajando = .Counters.Trabajando + 1
     
@@ -2301,11 +2307,11 @@ Public Sub DoMineria(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byt
         Dim Suerte      As Integer
         Dim res         As Integer
         Dim Metal       As Integer
-        Dim Yacimiento  As ObjData
+        Dim Yacimiento  As t_ObjData
 
 100     With UserList(UserIndex)
     
-102         If .flags.Privilegios And (PlayerType.Consejero) Then
+102         If .flags.Privilegios And (e_PlayerType.Consejero) Then
                 Exit Sub
             End If
     
@@ -2313,8 +2319,8 @@ Public Sub DoMineria(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byt
 104         If .Stats.MinSta > 2 Then
 106             Call QuitarSta(UserIndex, 2)
             Else
-108             Call WriteLocaleMsg(UserIndex, "93", FontTypeNames.FONTTYPE_INFO)
-                'Call WriteConsoleMsg(UserIndex, "Estás muy cansado para excavar.", FontTypeNames.FONTTYPE_INFO)
+108             Call WriteLocaleMsg(UserIndex, "93", e_FontTypeNames.FONTTYPE_INFO)
+                'Call WriteConsoleMsg(UserIndex, "Estás muy cansado para excavar.", e_FontTypeNames.FONTTYPE_INFO)
 110             Call WriteMacroTrabajoToggle(UserIndex, False)
                 Exit Sub
     
@@ -2324,7 +2330,7 @@ Public Sub DoMineria(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byt
     
             Dim Skill As Integer
     
-112         Skill = .Stats.UserSkills(eSkill.Mineria)
+112         Skill = .Stats.UserSkills(e_Skill.Mineria)
 114         Suerte = Int(-0.00125 * Skill * Skill - 0.3 * Skill + 49)
         
 116         res = RandomNumber(1, Suerte)
@@ -2333,8 +2339,8 @@ Public Sub DoMineria(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byt
         
 120         If res <= 5 Then
     
-                Dim MiObj As obj
-                Dim nPos  As WorldPos
+                Dim MiObj As t_Obj
+                Dim nPos  As t_WorldPos
             
 122             Call ActualizarRecurso(.Pos.Map, X, Y)
 124             MapData(.Pos.Map, X, Y).ObjInfo.Data = GetTickCount() ' Ultimo uso
@@ -2356,7 +2362,7 @@ Public Sub DoMineria(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byt
                 
 139             Call WriteTextCharDrop(UserIndex, "+" & MiObj.amount, .Char.CharIndex, vbWhite)
 
-140             Call WriteConsoleMsg(UserIndex, "¡Has extraido algunos minerales!", FontTypeNames.FONTTYPE_INFO)
+140             Call WriteConsoleMsg(UserIndex, "¡Has extraido algunos minerales!", e_FontTypeNames.FONTTYPE_INFO)
                 If MapInfo(.Pos.Map).Seguro = 1 Then
 141                 Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessagePlayWave(15, .Pos.X, .Pos.Y))
                 Else
@@ -2380,7 +2386,7 @@ Public Sub DoMineria(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byt
 154                     If Not MeterItemEnInventario(UserIndex, MiObj) Then Call TirarItemAlPiso(.Pos, MiObj)
 
                         ' Le mandamos un mensaje
-156                     Call WriteConsoleMsg(UserIndex, "¡Has conseguido " & ObjData(Yacimiento.Item(i).ObjIndex).Name & "!", FontTypeNames.FONTTYPE_INFO)
+156                     Call WriteConsoleMsg(UserIndex, "¡Has conseguido " & ObjData(Yacimiento.Item(i).ObjIndex).Name & "!", e_FontTypeNames.FONTTYPE_INFO)
                     End If
     
                 Next
@@ -2390,7 +2396,7 @@ Public Sub DoMineria(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byt
 
             End If
 
-160         Call SubirSkill(UserIndex, eSkill.Mineria)
+160         Call SubirSkill(UserIndex, e_Skill.Mineria)
 
 162         .Counters.Trabajando = .Counters.Trabajando + 1
 
@@ -2419,7 +2425,7 @@ Public Sub DoMeditar(ByVal UserIndex As Integer)
 
 104         If .Counters.TimerMeditar >= IntervaloMeditar Then
 
-106             Mana = Porcentaje(.Stats.MaxMAN, Porcentaje(PorcentajeRecuperoMana, 50 + .Stats.UserSkills(eSkill.Meditar) * 0.5))
+106             Mana = Porcentaje(.Stats.MaxMAN, Porcentaje(PorcentajeRecuperoMana, 50 + .Stats.UserSkills(e_Skill.Meditar) * 0.5))
 
 108             If Mana <= 0 Then Mana = 1
 
@@ -2457,7 +2463,7 @@ DoMeditar_Err:
         
 End Sub
 
-Public Sub DoMontar(ByVal UserIndex As Integer, ByRef Montura As ObjData, ByVal Slot As Integer)
+Public Sub DoMontar(ByVal UserIndex As Integer, ByRef Montura As t_ObjData, ByVal Slot As Integer)
         On Error GoTo DoMontar_Err
 
 100     With UserList(UserIndex)
@@ -2466,29 +2472,29 @@ Public Sub DoMontar(ByVal UserIndex As Integer, ByRef Montura As ObjData, ByVal 
             End If
 
 104         If .flags.Montado = 0 And .Counters.EnCombate > 0 Then
-106             Call WriteConsoleMsg(UserIndex, "Estás en combate, debes aguardar " & .Counters.EnCombate & " segundo(s) para montar...", FontTypeNames.FONTTYPE_INFOBOLD)
+106             Call WriteConsoleMsg(UserIndex, "Estás en combate, debes aguardar " & .Counters.EnCombate & " segundo(s) para montar...", e_FontTypeNames.FONTTYPE_INFOBOLD)
                 Exit Sub
             End If
 
 108         If .flags.EnReto Then
-110             Call WriteConsoleMsg(UserIndex, "No podés montar en un reto.", FontTypeNames.FONTTYPE_INFO)
+110             Call WriteConsoleMsg(UserIndex, "No podés montar en un reto.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
 
 112         If (.flags.Oculto = 1 Or .flags.invisible = 1) And .flags.AdminInvisible = 0 Then
-114             Call WriteConsoleMsg(UserIndex, "No podés montar estando oculto o invisible.", FontTypeNames.FONTTYPE_INFO)
+114             Call WriteConsoleMsg(UserIndex, "No podés montar estando oculto o invisible.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
             
             If .flags.Mimetizado <> e_EstadoMimetismo.Desactivado Then
-                Call WriteConsoleMsg(UserIndex, "Pierdes el efecto del mimetismo.", FontTypeNames.FONTTYPE_INFO)
+                Call WriteConsoleMsg(UserIndex, "Pierdes el efecto del mimetismo.", e_FontTypeNames.FONTTYPE_INFO)
                 .Counters.Mimetismo = 0
                 .flags.Mimetizado = e_EstadoMimetismo.Desactivado
                 Call RefreshCharStatus(UserIndex)
             End If
 
 116         If .flags.Montado = 0 And (MapData(.Pos.Map, .Pos.X, .Pos.Y).trigger > 10) Then
-118             Call WriteConsoleMsg(UserIndex, "No podés montar aquí.", FontTypeNames.FONTTYPE_INFO)
+118             Call WriteConsoleMsg(UserIndex, "No podés montar aquí.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
             End If
@@ -2602,7 +2608,7 @@ ObtenerPezRandom_Err:
         
 End Function
 
-Function ModDomar(ByVal clase As eClass) As Integer
+Function ModDomar(ByVal clase As e_Class) As Integer
         
         On Error GoTo ModDomar_Err
     
@@ -2615,13 +2621,13 @@ Function ModDomar(ByVal clase As eClass) As Integer
         '***************************************************
 100     Select Case clase
 
-            Case eClass.Druid
+            Case e_Class.Druid
 102             ModDomar = 6
 
-104         Case eClass.Hunter
+104         Case e_Class.Hunter
 106             ModDomar = 6
 
-108         Case eClass.Cleric
+108         Case e_Class.Cleric
 110             ModDomar = 7
 
 112         Case Else
@@ -2690,30 +2696,30 @@ Sub DoDomar(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
         Dim NroPets          As Integer
     
 100     If NpcList(NpcIndex).MaestroUser = UserIndex Then
-102         Call WriteConsoleMsg(UserIndex, "Ya domaste a esa criatura.", FontTypeNames.FONTTYPE_INFO)
+102         Call WriteConsoleMsg(UserIndex, "Ya domaste a esa criatura.", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
 
 104     With UserList(UserIndex)
 
 
-106         If .flags.Privilegios And PlayerType.Consejero Then Exit Sub
+106         If .flags.Privilegios And e_PlayerType.Consejero Then Exit Sub
             
 108         If .NroMascotas < MAXMASCOTAS Then
 
 110             If NpcList(NpcIndex).MaestroNPC > 0 Or NpcList(NpcIndex).MaestroUser > 0 Then
-112                 Call WriteConsoleMsg(UserIndex, "La criatura ya tiene amo.", FontTypeNames.FONTTYPE_INFO)
+112                 Call WriteConsoleMsg(UserIndex, "La criatura ya tiene amo.", e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
 
                 'If Not PuedeDomarMascota(UserIndex, NpcIndex) Then
-                '    Call WriteConsoleMsg(UserIndex, "No puedes domar más de dos criaturas del mismo tipo.", FontTypeNames.FONTTYPE_INFO)
+                '    Call WriteConsoleMsg(UserIndex, "No puedes domar más de dos criaturas del mismo tipo.", e_FontTypeNames.FONTTYPE_INFO)
                 '    Exit Sub
                 'End If
 
-114             puntosDomar = CInt(.Stats.UserAtributos(eAtributos.Carisma)) * CInt(.Stats.UserSkills(eSkill.Domar))
+114             puntosDomar = CInt(.Stats.UserAtributos(e_Atributos.Carisma)) * CInt(.Stats.UserSkills(e_Skill.Domar))
 
-116             If .clase = eClass.Druid Then
+116             If .clase = e_Class.Druid Then
 118                 puntosDomar = puntosDomar / 6 'original es 6
                 Else
 120                 puntosDomar = puntosDomar / 11
@@ -2736,7 +2742,7 @@ Sub DoDomar(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
 134                 Call FollowAmo(NpcIndex)
 136                 Call ReSpawnNpc(NpcList(NpcIndex))
 
-138                 Call WriteConsoleMsg(UserIndex, "La criatura te ha aceptado como su amo.", FontTypeNames.FONTTYPE_INFO)
+138                 Call WriteConsoleMsg(UserIndex, "La criatura te ha aceptado como su amo.", e_FontTypeNames.FONTTYPE_INFO)
 
                     ' Es zona segura?
 140                 If MapInfo(.Pos.Map).Seguro = 1 Then
@@ -2748,22 +2754,22 @@ Sub DoDomar(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
 148                     .MascotasType(Index) = petType
 150                     .NroMascotas = NroPets
 
-152                     Call WriteConsoleMsg(UserIndex, "No se permiten mascotas en zona segura. estas te esperaran afuera.", FontTypeNames.FONTTYPE_INFO)
+152                     Call WriteConsoleMsg(UserIndex, "No se permiten mascotas en zona segura. estas te esperaran afuera.", e_FontTypeNames.FONTTYPE_INFO)
                     End If
 
                 Else
 
 154                 If Not .flags.UltimoMensaje = 5 Then
-156                     Call WriteConsoleMsg(UserIndex, "No has logrado domar la criatura.", FontTypeNames.FONTTYPE_INFO)
+156                     Call WriteConsoleMsg(UserIndex, "No has logrado domar la criatura.", e_FontTypeNames.FONTTYPE_INFO)
 158                     .flags.UltimoMensaje = 5
                     End If
 
                 End If
 
-160             Call SubirSkill(UserIndex, eSkill.Domar)
+160             Call SubirSkill(UserIndex, e_Skill.Domar)
 
             Else
-162             Call WriteConsoleMsg(UserIndex, "No puedes controlar mas criaturas.", FontTypeNames.FONTTYPE_INFO)
+162             Call WriteConsoleMsg(UserIndex, "No puedes controlar mas criaturas.", e_FontTypeNames.FONTTYPE_INFO)
             End If
 
         End With

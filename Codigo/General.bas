@@ -51,50 +51,50 @@ Sub DarCuerpoDesnudo(ByVal UserIndex As Integer)
 
 100     Select Case UserList(UserIndex).genero
 
-            Case eGenero.Hombre
+            Case e_Genero.Hombre
 
 102             Select Case UserList(UserIndex).raza
 
-                    Case eRaza.Humano
+                    Case e_Raza.Humano
 104                     CuerpoDesnudo = 21 'ok
 
-106                 Case eRaza.Drow
+106                 Case e_Raza.Drow
 108                     CuerpoDesnudo = 32 ' ok
 
-110                 Case eRaza.Elfo
+110                 Case e_Raza.Elfo
 112                     CuerpoDesnudo = 510 'Revisar
 
-114                 Case eRaza.Gnomo
+114                 Case e_Raza.Gnomo
 116                     CuerpoDesnudo = 508 'Revisar
 
-118                 Case eRaza.Enano
+118                 Case e_Raza.Enano
 120                     CuerpoDesnudo = 53 'ok
 
-122                 Case eRaza.Orco
+122                 Case e_Raza.Orco
 124                     CuerpoDesnudo = 248 ' ok
 
                 End Select
 
-126         Case eGenero.Mujer
+126         Case e_Genero.Mujer
 
 128             Select Case UserList(UserIndex).raza
 
-                    Case eRaza.Humano
+                    Case e_Raza.Humano
 130                     CuerpoDesnudo = 39 'ok
 
-132                 Case eRaza.Drow
+132                 Case e_Raza.Drow
 134                     CuerpoDesnudo = 40 'ok
 
-136                 Case eRaza.Elfo
+136                 Case e_Raza.Elfo
 138                     CuerpoDesnudo = 511 'Revisar
 
-140                 Case eRaza.Gnomo
+140                 Case e_Raza.Gnomo
 142                     CuerpoDesnudo = 509 'Revisar
 
-144                 Case eRaza.Enano
+144                 Case e_Raza.Enano
 146                     CuerpoDesnudo = 60 ' ok
 
-148                 Case eRaza.Orco
+148                 Case e_Raza.Orco
 150                     CuerpoDesnudo = 249 'ok
 
                 End Select
@@ -127,12 +127,12 @@ Sub Bloquear(ByVal toMap As Boolean, ByVal sndIndex As Integer, ByVal X As Integ
         On Error GoTo Bloquear_Err
         
         ' Envío sólo los flags de bloq
-100     b = b And eBlock.ALL_SIDES
+100     B = B And e_Block.ALL_SIDES
 
 102     If toMap Then
-104         Call SendData(SendTarget.toMap, sndIndex, PrepareMessageBlockPosition(X, Y, b))
+104         Call SendData(SendTarget.toMap, sndIndex, PrepareMessage_BlockPosition(X, Y, B))
         Else
-106         Call WriteBlockPosition(sndIndex, X, Y, b)
+106         Call Write_BlockPosition(sndIndex, X, Y, B)
         End If
 
         
@@ -246,60 +246,60 @@ Sub BloquearPuerta(ByVal Map As Integer, _
             Case 0 'puerta 2 tiles
 
                 ' Bloqueos superiores
-104             MapData(Map, X, Y).Blocked = IIf(Bloquear, MapData(Map, X, Y).Blocked Or eBlock.NORTH, MapData(Map, X, Y).Blocked And Not eBlock.NORTH)
-106             MapData(Map, X - 1, Y).Blocked = IIf(Bloquear, MapData(Map, X - 1, Y).Blocked Or eBlock.NORTH, MapData(Map, X - 1, Y).Blocked And Not eBlock.NORTH)
+104             MapData(Map, X, Y).Blocked = IIf(Bloquear, MapData(Map, X, Y).Blocked Or e_Block.NORTH, MapData(Map, X, Y).Blocked And Not e_Block.NORTH)
+106             MapData(Map, X - 1, Y).Blocked = IIf(Bloquear, MapData(Map, X - 1, Y).Blocked Or e_Block.NORTH, MapData(Map, X - 1, Y).Blocked And Not e_Block.NORTH)
 
                 ' Cambio bloqueos inferiores
-108             MapData(Map, X, Y + 1).Blocked = IIf(Bloquear, MapData(Map, X, Y + 1).Blocked Or eBlock.SOUTH, MapData(Map, X, Y + 1).Blocked And Not eBlock.SOUTH)
-110             MapData(Map, X - 1, Y + 1).Blocked = IIf(Bloquear, MapData(Map, X - 1, Y + 1).Blocked Or eBlock.SOUTH, MapData(Map, X - 1, Y + 1).Blocked And Not eBlock.SOUTH)
+108             MapData(Map, X, Y + 1).Blocked = IIf(Bloquear, MapData(Map, X, Y + 1).Blocked Or e_Block.SOUTH, MapData(Map, X, Y + 1).Blocked And Not e_Block.SOUTH)
+110             MapData(Map, X - 1, Y + 1).Blocked = IIf(Bloquear, MapData(Map, X - 1, Y + 1).Blocked Or e_Block.SOUTH, MapData(Map, X - 1, Y + 1).Blocked And Not e_Block.SOUTH)
 
 112         Case 1
                 ' para palancas o teclas sin modicar bloqueos en X,Y
 
 114         Case 2 ' puerta 3 tiles 1 arriba
                 ' Bloqueos superiores
-116             MapData(Map, X, Y - 1).Blocked = IIf(Bloquear, MapData(Map, X, Y - 1).Blocked Or eBlock.NORTH, MapData(Map, X, Y - 1).Blocked And Not eBlock.NORTH)
-118             MapData(Map, X - 1, Y - 1).Blocked = IIf(Bloquear, MapData(Map, X - 1, Y - 1).Blocked Or eBlock.NORTH, MapData(Map, X - 1, Y - 1).Blocked And Not eBlock.NORTH)
-120             MapData(Map, X + 1, Y - 1).Blocked = IIf(Bloquear, MapData(Map, X + 1, Y - 1).Blocked Or eBlock.NORTH, MapData(Map, X + 1, Y - 1).Blocked And Not eBlock.NORTH)
+116             MapData(Map, X, Y - 1).Blocked = IIf(Bloquear, MapData(Map, X, Y - 1).Blocked Or e_Block.NORTH, MapData(Map, X, Y - 1).Blocked And Not e_Block.NORTH)
+118             MapData(Map, X - 1, Y - 1).Blocked = IIf(Bloquear, MapData(Map, X - 1, Y - 1).Blocked Or e_Block.NORTH, MapData(Map, X - 1, Y - 1).Blocked And Not e_Block.NORTH)
+120             MapData(Map, X + 1, Y - 1).Blocked = IIf(Bloquear, MapData(Map, X + 1, Y - 1).Blocked Or e_Block.NORTH, MapData(Map, X + 1, Y - 1).Blocked And Not e_Block.NORTH)
                 ' Cambio bloqueos inferiores
-122             MapData(Map, X, Y).Blocked = IIf(Bloquear, MapData(Map, X, Y).Blocked Or eBlock.SOUTH, MapData(Map, X, Y).Blocked And Not eBlock.SOUTH)
-124             MapData(Map, X - 1, Y).Blocked = IIf(Bloquear, MapData(Map, X - 1, Y).Blocked Or eBlock.SOUTH, MapData(Map, X - 1, Y).Blocked And Not eBlock.SOUTH)
-126             MapData(Map, X + 1, Y).Blocked = IIf(Bloquear, MapData(Map, X + 1, Y).Blocked Or eBlock.SOUTH, MapData(Map, X + 1, Y).Blocked And Not eBlock.SOUTH)
+122             MapData(Map, X, Y).Blocked = IIf(Bloquear, MapData(Map, X, Y).Blocked Or e_Block.SOUTH, MapData(Map, X, Y).Blocked And Not e_Block.SOUTH)
+124             MapData(Map, X - 1, Y).Blocked = IIf(Bloquear, MapData(Map, X - 1, Y).Blocked Or e_Block.SOUTH, MapData(Map, X - 1, Y).Blocked And Not e_Block.SOUTH)
+126             MapData(Map, X + 1, Y).Blocked = IIf(Bloquear, MapData(Map, X + 1, Y).Blocked Or e_Block.SOUTH, MapData(Map, X + 1, Y).Blocked And Not e_Block.SOUTH)
                 
 128         Case 3 ' puerta 3 tiles
                 ' Bloqueos superiores
-130             MapData(Map, X, Y).Blocked = IIf(Bloquear, MapData(Map, X, Y).Blocked Or eBlock.NORTH, MapData(Map, X, Y).Blocked And Not eBlock.NORTH)
-132             MapData(Map, X - 1, Y).Blocked = IIf(Bloquear, MapData(Map, X - 1, Y).Blocked Or eBlock.NORTH, MapData(Map, X - 1, Y).Blocked And Not eBlock.NORTH)
-134             MapData(Map, X + 1, Y).Blocked = IIf(Bloquear, MapData(Map, X + 1, Y).Blocked Or eBlock.NORTH, MapData(Map, X + 1, Y).Blocked And Not eBlock.NORTH)
+130             MapData(Map, X, Y).Blocked = IIf(Bloquear, MapData(Map, X, Y).Blocked Or e_Block.NORTH, MapData(Map, X, Y).Blocked And Not e_Block.NORTH)
+132             MapData(Map, X - 1, Y).Blocked = IIf(Bloquear, MapData(Map, X - 1, Y).Blocked Or e_Block.NORTH, MapData(Map, X - 1, Y).Blocked And Not e_Block.NORTH)
+134             MapData(Map, X + 1, Y).Blocked = IIf(Bloquear, MapData(Map, X + 1, Y).Blocked Or e_Block.NORTH, MapData(Map, X + 1, Y).Blocked And Not e_Block.NORTH)
                 ' Cambio bloqueos inferiores
-136             MapData(Map, X, Y + 1).Blocked = IIf(Bloquear, MapData(Map, X, Y + 1).Blocked Or eBlock.SOUTH, MapData(Map, X, Y + 1).Blocked And Not eBlock.SOUTH)
-138             MapData(Map, X - 1, Y + 1).Blocked = IIf(Bloquear, MapData(Map, X - 1, Y + 1).Blocked Or eBlock.SOUTH, MapData(Map, X - 1, Y + 1).Blocked And Not eBlock.SOUTH)
-140             MapData(Map, X + 1, Y + 1).Blocked = IIf(Bloquear, MapData(Map, X + 1, Y + 1).Blocked Or eBlock.SOUTH, MapData(Map, X + 1, Y + 1).Blocked And Not eBlock.SOUTH)
+136             MapData(Map, X, Y + 1).Blocked = IIf(Bloquear, MapData(Map, X, Y + 1).Blocked Or e_Block.SOUTH, MapData(Map, X, Y + 1).Blocked And Not e_Block.SOUTH)
+138             MapData(Map, X - 1, Y + 1).Blocked = IIf(Bloquear, MapData(Map, X - 1, Y + 1).Blocked Or e_Block.SOUTH, MapData(Map, X - 1, Y + 1).Blocked And Not e_Block.SOUTH)
+140             MapData(Map, X + 1, Y + 1).Blocked = IIf(Bloquear, MapData(Map, X + 1, Y + 1).Blocked Or e_Block.SOUTH, MapData(Map, X + 1, Y + 1).Blocked And Not e_Block.SOUTH)
         
 142         Case 4 'puerta 1 tiles
                 ' Bloqueos superiores
-144             MapData(Map, X, Y).Blocked = IIf(Bloquear, MapData(Map, X, Y).Blocked Or eBlock.NORTH, MapData(Map, X, Y).Blocked And Not eBlock.NORTH)
+144             MapData(Map, X, Y).Blocked = IIf(Bloquear, MapData(Map, X, Y).Blocked Or e_Block.NORTH, MapData(Map, X, Y).Blocked And Not e_Block.NORTH)
                 ' Cambio bloqueos inferiores
-146             MapData(Map, X, Y + 1).Blocked = IIf(Bloquear, MapData(Map, X, Y + 1).Blocked Or eBlock.SOUTH, MapData(Map, X, Y + 1).Blocked And Not eBlock.SOUTH)
+146             MapData(Map, X, Y + 1).Blocked = IIf(Bloquear, MapData(Map, X, Y + 1).Blocked Or e_Block.SOUTH, MapData(Map, X, Y + 1).Blocked And Not e_Block.SOUTH)
                 
 148         Case 5 'Ver WyroX
                 ' Bloqueos  vertical ver ReyarB
-150             MapData(Map, X + 1, Y).Blocked = IIf(Bloquear, MapData(Map, X + 1, Y).Blocked Or eBlock.ALL_SIDES, MapData(Map, X + 1, Y).Blocked And Not eBlock.ALL_SIDES)
-152             MapData(Map, X + 1, Y - 1).Blocked = IIf(Bloquear, MapData(Map, X + 1, Y - 1).Blocked Or eBlock.ALL_SIDES, MapData(Map, X + 1, Y - 1).Blocked And Not eBlock.ALL_SIDES)
+150             MapData(Map, X + 1, Y).Blocked = IIf(Bloquear, MapData(Map, X + 1, Y).Blocked Or e_Block.ALL_SIDES, MapData(Map, X + 1, Y).Blocked And Not e_Block.ALL_SIDES)
+152             MapData(Map, X + 1, Y - 1).Blocked = IIf(Bloquear, MapData(Map, X + 1, Y - 1).Blocked Or e_Block.ALL_SIDES, MapData(Map, X + 1, Y - 1).Blocked And Not e_Block.ALL_SIDES)
                 
                 ' Cambio horizontal
-154             MapData(Map, X, Y - 2).Blocked = IIf(Bloquear, MapData(Map, X, Y - 2).Blocked Or eBlock.ALL_SIDES, MapData(Map, X, Y - 2).Blocked And Not eBlock.ALL_SIDES)
-156             MapData(Map, X - 1, Y - 2).Blocked = IIf(Bloquear, MapData(Map, X - 1, Y - 2).Blocked Or eBlock.ALL_SIDES, MapData(Map, X - 1, Y - 2).Blocked And Not eBlock.ALL_SIDES)
+154             MapData(Map, X, Y - 2).Blocked = IIf(Bloquear, MapData(Map, X, Y - 2).Blocked Or e_Block.ALL_SIDES, MapData(Map, X, Y - 2).Blocked And Not e_Block.ALL_SIDES)
+156             MapData(Map, X - 1, Y - 2).Blocked = IIf(Bloquear, MapData(Map, X - 1, Y - 2).Blocked Or e_Block.ALL_SIDES, MapData(Map, X - 1, Y - 2).Blocked And Not e_Block.ALL_SIDES)
 
 
 158         Case 6 ' Ver Wyrox
                 ' Bloqueos vertical ver ReyarB
-160             MapData(Map, X - 1, Y).Blocked = IIf(Bloquear, MapData(Map, X - 1, Y).Blocked Or eBlock.ALL_SIDES, MapData(Map, X - 1, Y).Blocked And Not eBlock.ALL_SIDES)
-162             MapData(Map, X - 1, Y - 1).Blocked = IIf(Bloquear, MapData(Map, X - 1, Y - 1).Blocked Or eBlock.ALL_SIDES, MapData(Map, X - 1, Y - 1).Blocked And Not eBlock.ALL_SIDES)
+160             MapData(Map, X - 1, Y).Blocked = IIf(Bloquear, MapData(Map, X - 1, Y).Blocked Or e_Block.ALL_SIDES, MapData(Map, X - 1, Y).Blocked And Not e_Block.ALL_SIDES)
+162             MapData(Map, X - 1, Y - 1).Blocked = IIf(Bloquear, MapData(Map, X - 1, Y - 1).Blocked Or e_Block.ALL_SIDES, MapData(Map, X - 1, Y - 1).Blocked And Not e_Block.ALL_SIDES)
                 
                 ' Cambio bloqueos Puerta abierta
-164             MapData(Map, X, Y - 2).Blocked = IIf(Bloquear, MapData(Map, X, Y - 2).Blocked Or eBlock.ALL_SIDES, MapData(Map, X, Y - 2).Blocked And Not eBlock.ALL_SIDES)
-166             MapData(Map, X + 1, Y + 2).Blocked = IIf(Bloquear, MapData(Map, X + 1, Y - 2).Blocked Or eBlock.ALL_SIDES, MapData(Map, X + 1, Y - 2).Blocked And Not eBlock.ALL_SIDES)
+164             MapData(Map, X, Y - 2).Blocked = IIf(Bloquear, MapData(Map, X, Y - 2).Blocked Or e_Block.ALL_SIDES, MapData(Map, X, Y - 2).Blocked And Not e_Block.ALL_SIDES)
+166             MapData(Map, X + 1, Y + 2).Blocked = IIf(Bloquear, MapData(Map, X + 1, Y - 2).Blocked Or e_Block.ALL_SIDES, MapData(Map, X + 1, Y - 2).Blocked And Not e_Block.ALL_SIDES)
 
                 
         End Select
@@ -434,7 +434,7 @@ Sub ApagarFogatas()
         'Ladder /ApagarFogatas
         On Error GoTo ErrHandler
 
-        Dim obj As obj
+        Dim obj As t_Obj
 100         obj.ObjIndex = FOGATA_APAG
 102         obj.amount = 1
 
@@ -499,56 +499,56 @@ Private Sub InicializarConstantes()
     
 104     IniPath = App.Path & "\"
 
-106     ListaRazas(eRaza.Humano) = "Humano"
-108     ListaRazas(eRaza.Elfo) = "Elfo"
-110     ListaRazas(eRaza.Drow) = "Elfo Oscuro"
-112     ListaRazas(eRaza.Gnomo) = "Gnomo"
-114     ListaRazas(eRaza.Enano) = "Enano"
-        'ListaRazas(eRaza.Orco) = "Orco"
+106     ListaRazas(e_Raza.Humano) = "Humano"
+108     ListaRazas(e_Raza.Elfo) = "Elfo"
+110     ListaRazas(e_Raza.Drow) = "Elfo Oscuro"
+112     ListaRazas(e_Raza.Gnomo) = "Gnomo"
+114     ListaRazas(e_Raza.Enano) = "Enano"
+        'ListaRazas(e_Raza.Orco) = "Orco"
     
-116     ListaClases(eClass.Mage) = "Mago"
-118     ListaClases(eClass.Cleric) = "Clérigo"
-120     ListaClases(eClass.Warrior) = "Guerrero"
-122     ListaClases(eClass.Assasin) = "Asesino"
-124     ListaClases(eClass.Bard) = "Bardo"
-126     ListaClases(eClass.Druid) = "Druida"
-128     ListaClases(eClass.Paladin) = "Paladín"
-130     ListaClases(eClass.Hunter) = "Cazador"
-132     ListaClases(eClass.Trabajador) = "Trabajador"
-134     ListaClases(eClass.Pirat) = "Pirata"
-136     ListaClases(eClass.Thief) = "Ladrón"
-138     ListaClases(eClass.Bandit) = "Bandido"
+116     ListaClases(e_Class.Mage) = "Mago"
+118     ListaClases(e_Class.Cleric) = "Clérigo"
+120     ListaClases(e_Class.Warrior) = "Guerrero"
+122     ListaClases(e_Class.Assasin) = "Asesino"
+124     ListaClases(e_Class.Bard) = "Bardo"
+126     ListaClases(e_Class.Druid) = "Druida"
+128     ListaClases(e_Class.Paladin) = "Paladín"
+130     ListaClases(e_Class.Hunter) = "Cazador"
+132     ListaClases(e_Class.Trabajador) = "Trabajador"
+134     ListaClases(e_Class.Pirat) = "Pirata"
+136     ListaClases(e_Class.Thief) = "Ladrón"
+138     ListaClases(e_Class.Bandit) = "Bandido"
     
-140     SkillsNames(eSkill.Magia) = "Magia"
-142     SkillsNames(eSkill.Robar) = "Robar"
-144     SkillsNames(eSkill.Tacticas) = "Destreza en combate"
-146     SkillsNames(eSkill.Armas) = "Combate con armas"
-148     SkillsNames(eSkill.Meditar) = "Meditar"
-150     SkillsNames(eSkill.Apuñalar) = "Apuñalar"
-152     SkillsNames(eSkill.Ocultarse) = "Ocultarse"
-154     SkillsNames(eSkill.Supervivencia) = "Supervivencia"
-156     SkillsNames(eSkill.Comerciar) = "Comercio"
-158     SkillsNames(eSkill.Defensa) = "Defensa con escudo"
-160     SkillsNames(eSkill.liderazgo) = "Liderazgo"
-162     SkillsNames(eSkill.Proyectiles) = "Armas a distancia"
-164     SkillsNames(eSkill.Wrestling) = "Combate sin armas"
-166     SkillsNames(eSkill.Navegacion) = "Navegación"
-168     SkillsNames(eSkill.equitacion) = "Equitación"
-170     SkillsNames(eSkill.Resistencia) = "Resistencia mágica"
-172     SkillsNames(eSkill.Talar) = "Tala"
-174     SkillsNames(eSkill.Pescar) = "Pesca"
-176     SkillsNames(eSkill.Mineria) = "Minería"
-178     SkillsNames(eSkill.Herreria) = "Herrería"
-180     SkillsNames(eSkill.Carpinteria) = "Carpintería"
-182     SkillsNames(eSkill.Alquimia) = "Alquimia"
-184     SkillsNames(eSkill.Sastreria) = "Sastrería"
-186     SkillsNames(eSkill.Domar) = "Domar"
+140     SkillsNames(e_Skill.Magia) = "Magia"
+142     SkillsNames(e_Skill.Robar) = "Robar"
+144     SkillsNames(e_Skill.Tacticas) = "Destreza en combate"
+146     SkillsNames(e_Skill.Armas) = "Combate con armas"
+148     SkillsNames(e_Skill.Meditar) = "Meditar"
+150     SkillsNames(e_Skill.Apuñalar) = "Apuñalar"
+152     SkillsNames(e_Skill.Ocultarse) = "Ocultarse"
+154     SkillsNames(e_Skill.Supervivencia) = "Supervivencia"
+156     SkillsNames(e_Skill.Comerciar) = "Comercio"
+158     SkillsNames(e_Skill.Defensa) = "Defensa con escudo"
+160     SkillsNames(e_Skill.liderazgo) = "Liderazgo"
+162     SkillsNames(e_Skill.Proyectiles) = "Armas a distancia"
+164     SkillsNames(e_Skill.Wrestling) = "Combate sin armas"
+166     SkillsNames(e_Skill.Navegacion) = "Navegación"
+168     SkillsNames(e_Skill.equitacion) = "Equitación"
+170     SkillsNames(e_Skill.Resistencia) = "Resistencia mágica"
+172     SkillsNames(e_Skill.Talar) = "Tala"
+174     SkillsNames(e_Skill.Pescar) = "Pesca"
+176     SkillsNames(e_Skill.Mineria) = "Minería"
+178     SkillsNames(e_Skill.Herreria) = "Herrería"
+180     SkillsNames(e_Skill.Carpinteria) = "Carpintería"
+182     SkillsNames(e_Skill.Alquimia) = "Alquimia"
+184     SkillsNames(e_Skill.Sastreria) = "Sastrería"
+186     SkillsNames(e_Skill.Domar) = "Domar"
    
-188     ListaAtributos(eAtributos.Fuerza) = "Fuerza"
-190     ListaAtributos(eAtributos.Agilidad) = "Agilidad"
-192     ListaAtributos(eAtributos.Inteligencia) = "Inteligencia"
-194     ListaAtributos(eAtributos.Constitucion) = "Constitución"
-196     ListaAtributos(eAtributos.Carisma) = "Carisma"
+188     ListaAtributos(e_Atributos.Fuerza) = "Fuerza"
+190     ListaAtributos(e_Atributos.Agilidad) = "Agilidad"
+192     ListaAtributos(e_Atributos.Inteligencia) = "Inteligencia"
+194     ListaAtributos(e_Atributos.Constitucion) = "Constitución"
+196     ListaAtributos(e_Atributos.Carisma) = "Carisma"
     
 200     IniPath = App.Path & "\"
     
@@ -1259,7 +1259,7 @@ Sub Restart()
         'Initialize statistics!!
         'Call Statistics.Initialize
 
-116     ReDim UserList(1 To MaxUsers) As user
+116     ReDim UserList(1 To MaxUsers) As t_User
 
 118     For LoopC = 1 To MaxUsers
 122         UserList(LoopC).ConnIDValida = False
@@ -1367,7 +1367,7 @@ Public Sub EfectoFrio(ByVal UserIndex As Integer)
             Else
 
 112             If MapInfo(.Pos.Map).terrain = Nieve Then
-114                 Call WriteConsoleMsg(UserIndex, "¡Estás muriendo de frío, abrígate o morirás!", FontTypeNames.FONTTYPE_INFO)
+114                 Call WriteConsoleMsg(UserIndex, "¡Estás muriendo de frío, abrígate o morirás!", e_FontTypeNames.FONTTYPE_INFO)
 
                     ' WyroX: Sin ropa perdés vida más rápido que con una ropa no-invernal
                     Dim MinDaño As Integer, MaxDaño As Integer
@@ -1387,7 +1387,7 @@ Public Sub EfectoFrio(ByVal UserIndex As Integer)
             
 130                 If .Stats.MinHp < 1 Then
 
-132                     Call WriteConsoleMsg(UserIndex, "¡Has muerto de frío!", FontTypeNames.FONTTYPE_INFO)
+132                     Call WriteConsoleMsg(UserIndex, "¡Has muerto de frío!", e_FontTypeNames.FONTTYPE_INFO)
 
 134                     Call UserDie(UserIndex)
 
@@ -1442,7 +1442,7 @@ Public Sub EfectoStamina(ByVal UserIndex As Integer)
             'termina de descansar automaticamente
 124         If .Stats.MaxHp = .Stats.MinHp And .Stats.MaxSta = .Stats.MinSta Then
 126             Call WriteRestOK(UserIndex)
-128             Call WriteConsoleMsg(UserIndex, "Has terminado de descansar.", FontTypeNames.FONTTYPE_INFO)
+128             Call WriteConsoleMsg(UserIndex, "Has terminado de descansar.", e_FontTypeNames.FONTTYPE_INFO)
 130             .flags.Descansar = False
             End If
         
@@ -1476,11 +1476,11 @@ Public Sub EfectoLava(ByVal UserIndex As Integer)
             Else
 
 106             If HayLava(.Pos.Map, .Pos.X, .Pos.Y) Then
-108                 Call WriteConsoleMsg(UserIndex, "¡Quítate de la lava, te estás quemando!", FontTypeNames.FONTTYPE_INFO)
+108                 Call WriteConsoleMsg(UserIndex, "¡Quítate de la lava, te estás quemando!", e_FontTypeNames.FONTTYPE_INFO)
 110                 .Stats.MinHp = .Stats.MinHp - Porcentaje(.Stats.MaxHp, 5)
             
 112                 If .Stats.MinHp < 1 Then
-114                     Call WriteConsoleMsg(UserIndex, "¡Has muerto quemado!", FontTypeNames.FONTTYPE_INFO)
+114                     Call WriteConsoleMsg(UserIndex, "¡Has muerto quemado!", e_FontTypeNames.FONTTYPE_INFO)
 116                     Call UserDie(UserIndex)
                     Else
 118                     Call WriteUpdateHP(UserIndex)
@@ -1520,7 +1520,7 @@ Public Sub EfectoMimetismo(ByVal UserIndex As Integer)
         On Error GoTo EfectoMimetismo_Err
     
         
-        Dim Barco As ObjData
+        Dim Barco As t_ObjData
     
 100     With UserList(UserIndex)
 102         If .Counters.Mimetismo < IntervaloInvisible Then
@@ -1528,7 +1528,7 @@ Public Sub EfectoMimetismo(ByVal UserIndex As Integer)
 
             Else
                 'restore old char
-106             Call WriteConsoleMsg(UserIndex, "Recuperas tu apariencia normal.", FontTypeNames.FONTTYPE_INFO)
+106             Call WriteConsoleMsg(UserIndex, "Recuperas tu apariencia normal.", e_FontTypeNames.FONTTYPE_INFO)
             
 108             If .flags.Navegando Then
 110                 Call EquiparBarco(UserIndex)
@@ -1572,8 +1572,8 @@ Public Sub EfectoInvisibilidad(ByVal UserIndex As Integer)
 106         UserList(UserIndex).flags.invisible = 0
 
 108         If UserList(UserIndex).flags.Oculto = 0 Then
-                ' Call WriteConsoleMsg(UserIndex, "Has vuelto a ser visible.", FontTypeNames.FONTTYPE_INFO)
-110             Call WriteLocaleMsg(UserIndex, "307", FontTypeNames.FONTTYPE_INFO)
+                ' Call WriteConsoleMsg(UserIndex, "Has vuelto a ser visible.", e_FontTypeNames.FONTTYPE_INFO)
+110             Call WriteLocaleMsg(UserIndex, "307", e_FontTypeNames.FONTTYPE_INFO)
 112             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(UserList(UserIndex).Char.CharIndex, False))
 114             Call WriteContadores(UserIndex)
 
@@ -1734,7 +1734,7 @@ Public Sub EfectoMaldicionUser(ByVal UserIndex As Integer)
     
         Else
 104         UserList(UserIndex).flags.Maldicion = 0
-106         Call WriteConsoleMsg(UserIndex, "¡La magia perdió su efecto! Ya puedes atacar.", FontTypeNames.FONTTYPE_New_Amarillo_Oscuro)
+106         Call WriteConsoleMsg(UserIndex, "¡La magia perdió su efecto! Ya puedes atacar.", e_FontTypeNames.FONTTYPE_New_Amarillo_Oscuro)
         End If
 
         
@@ -1794,7 +1794,7 @@ Public Sub RecStamina(ByVal UserIndex As Integer, ByRef EnviarStats As Boolean, 
 
 116                 EnviarStats = True
 
-118                 Select Case .Stats.UserSkills(eSkill.Supervivencia)
+118                 Select Case .Stats.UserSkills(e_Skill.Supervivencia)
                         Case 0 To 10
 120                         Suerte = 5
 122                     Case 11 To 20
@@ -1865,7 +1865,7 @@ Public Sub PierdeEnergia(ByVal UserIndex As Integer, ByRef EnviarStats As Boolea
             
                     Dim Cantidad As Integer
     
-112                 Cantidad = RandomNumber(1, Porcentaje(.Stats.MaxSta, (MAXSKILLPOINTS * 1.5 - .Stats.UserSkills(eSkill.Supervivencia)) * 0.25))
+112                 Cantidad = RandomNumber(1, Porcentaje(.Stats.MaxSta, (MAXSKILLPOINTS * 1.5 - .Stats.UserSkills(e_Skill.Supervivencia)) * 0.25))
 114                 .Stats.MinSta = .Stats.MinSta - Cantidad
     
 116                 If .Stats.MinSta < 0 Then
@@ -1898,9 +1898,9 @@ Public Sub EfectoVeneno(ByVal UserIndex As Integer)
 104         Call CancelExit(UserIndex)
 
 106         With UserList(UserIndex)
-              'Call WriteConsoleMsg(UserIndex, "Estás envenenado, si no te curas morirás.", FontTypeNames.FONTTYPE_VENENO)
-108           Call WriteLocaleMsg(UserIndex, "47", FontTypeNames.FONTTYPE_VENENO)
-110           Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, ParticulasIndex.Envenena, 30, False))
+              'Call WriteConsoleMsg(UserIndex, "Estás envenenado, si no te curas morirás.", e_FontTypeNames.FONTTYPE_VENENO)
+108           Call WriteLocaleMsg(UserIndex, "47", e_FontTypeNames.FONTTYPE_VENENO)
+110           Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, e_ParticulasIndex.Envenena, 30, False))
 112           .Counters.Veneno = 0
 
               ' El veneno saca un porcentaje de vida random.
@@ -1910,7 +1910,7 @@ Public Sub EfectoVeneno(ByVal UserIndex As Integer)
 
 120           If .ChatCombate = 1 Then
                   ' "El veneno te ha causado ¬1 puntos de daño."
-122               Call WriteLocaleMsg(UserIndex, "390", FontTypeNames.FONTTYPE_FIGHT, PonerPuntos(damage))
+122               Call WriteLocaleMsg(UserIndex, "390", e_FontTypeNames.FONTTYPE_FIGHT, PonerPuntos(damage))
               End If
 
 124           If UserList(UserIndex).Stats.MinHp < 1 Then
@@ -1934,7 +1934,7 @@ Public Sub EfectoAhogo(ByVal UserIndex As Integer)
         
         On Error GoTo EfectoAhogo_Err
         
-100     If Not UserList(UserIndex).flags.Privilegios And PlayerType.user Then Exit Sub
+100     If Not UserList(UserIndex).flags.Privilegios And e_PlayerType.user Then Exit Sub
         
         Dim n As Integer
 
@@ -1942,7 +1942,7 @@ Public Sub EfectoAhogo(ByVal UserIndex As Integer)
 104         If UserList(UserIndex).Counters.Ahogo < 70 Then
 106             UserList(UserIndex).Counters.Ahogo = UserList(UserIndex).Counters.Ahogo + 1
             Else
-108             Call WriteConsoleMsg(UserIndex, "Te estás ahogando, si no consigues oxígeno morirás.", FontTypeNames.FONTTYPE_EJECUCION)
+108             Call WriteConsoleMsg(UserIndex, "Te estás ahogando, si no consigues oxígeno morirás.", e_FontTypeNames.FONTTYPE_EJECUCION)
                 'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, 205, 30, False))
 110             UserList(UserIndex).Counters.Ahogo = 0
 112             n = RandomNumber(150, 200)
@@ -1981,8 +1981,8 @@ Public Sub EfectoIncineramiento(ByVal UserIndex As Integer)
                 ' 5 Mini intervalitos, dentro del intervalo total de incineracion
 102             If .Counters.Incineracion Mod (IntervaloIncineracion \ 5) = 0 Then
                     ' "Te estás incinerando, si no te curas morirás.
-104                 Call WriteLocaleMsg(UserIndex, "392", FontTypeNames.FONTTYPE_FIGHT)
-                    'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, ParticulasIndex.Incinerar, 30, False))
+104                 Call WriteLocaleMsg(UserIndex, "392", e_FontTypeNames.FONTTYPE_FIGHT)
+                    'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, e_ParticulasIndex.Incinerar, 30, False))
 106                 Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageCreateFX(.Char.CharIndex, 73, 0))
 
 108                 damage = RandomNumber(35, 45)
@@ -1990,7 +1990,7 @@ Public Sub EfectoIncineramiento(ByVal UserIndex As Integer)
 
 112                 If .ChatCombate = 1 Then
                         ' "El fuego te ha causado ¬1 puntos de daño."
-114                     Call WriteLocaleMsg(UserIndex, "391", FontTypeNames.FONTTYPE_FIGHT, PonerPuntos(damage))
+114                     Call WriteLocaleMsg(UserIndex, "391", e_FontTypeNames.FONTTYPE_FIGHT, PonerPuntos(damage))
                     End If
 
 116                 If UserList(UserIndex).Stats.MinHp < 1 Then
@@ -2058,7 +2058,7 @@ Public Function HambreYSed(ByVal UserIndex As Integer) As Boolean
         On Error GoTo HambreYSed_Err
         
 
-100     If (UserList(UserIndex).flags.Privilegios And PlayerType.user) = 0 Then Exit Function
+100     If (UserList(UserIndex).flags.Privilegios And e_PlayerType.user) = 0 Then Exit Function
 
         'Sed
 102     If UserList(UserIndex).Stats.MinAGU > 0 Then
@@ -2135,7 +2135,7 @@ Public Sub Sanar(ByVal UserIndex As Integer, ByRef EnviarStats As Boolean, ByVal
 116             UserList(UserIndex).Stats.MinHp = UserList(UserIndex).Stats.MinHp + mashit
 
 118             If UserList(UserIndex).Stats.MinHp > UserList(UserIndex).Stats.MaxHp Then UserList(UserIndex).Stats.MinHp = UserList(UserIndex).Stats.MaxHp
-120             Call WriteConsoleMsg(UserIndex, "Has sanado.", FontTypeNames.FONTTYPE_INFO)
+120             Call WriteConsoleMsg(UserIndex, "Has sanado.", e_FontTypeNames.FONTTYPE_INFO)
 122             EnviarStats = True
 
             End If
@@ -2198,9 +2198,9 @@ Sub PasarSegundo()
     
 100     If CuentaRegresivaTimer > 0 Then
 102         If CuentaRegresivaTimer > 1 Then
-104             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(CuentaRegresivaTimer - 1 & " segundos...!", FontTypeNames.FONTTYPE_GUILD))
+104             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(CuentaRegresivaTimer - 1 & " segundos...!", e_FontTypeNames.FONTTYPE_GUILD))
             Else
-106             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Ya!!!", FontTypeNames.FONTTYPE_FIGHT))
+106             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Ya!!!", e_FontTypeNames.FONTTYPE_FIGHT))
 
             End If
 
@@ -2226,7 +2226,7 @@ Sub PasarSegundo()
 128                         .flags.SegundosPasados = 0
 130                         .flags.Silenciado = 0
 132                         .flags.MinutosRestantes = 0
-134                         Call WriteConsoleMsg(i, "Has sido liberado del silencio.", FontTypeNames.FONTTYPE_SERVER)
+134                         Call WriteConsoleMsg(i, "Has sido liberado del silencio.", e_FontTypeNames.FONTTYPE_SERVER)
         
                         End If
         
@@ -2257,17 +2257,17 @@ Sub PasarSegundo()
 166                     If .Counters.TimerBarra = 0 Then
         
 168                         Select Case .Accion.TipoAccion
-                                Case Accion_Barra.Hogar
+                                Case e_AccionBarra.Hogar
 170                                 Call HomeArrival(i)
-172                             Case Accion_Barra.Resucitar
-174                                 Call WriteConsoleMsg(i, "¡Has sido resucitado!", FontTypeNames.FONTTYPE_INFO)
-176                                 Call SendData(SendTarget.ToPCArea, i, PrepareMessageParticleFX(.Char.CharIndex, ParticulasIndex.Resucitar, 250, True))
+172                             Case e_AccionBarra.Resucitar
+174                                 Call WriteConsoleMsg(i, "¡Has sido resucitado!", e_FontTypeNames.FONTTYPE_INFO)
+176                                 Call SendData(SendTarget.ToPCArea, i, PrepareMessageParticleFX(.Char.CharIndex, e_ParticulasIndex.Resucitar, 250, True))
 178                                 Call SendData(SendTarget.ToPCArea, i, PrepareMessagePlayWave("117", .Pos.X, .Pos.Y))
 180                                 Call RevivirUsuario(i, True)
                             End Select
                             
 182                         .Accion.Particula = 0
-184                         .Accion.TipoAccion = Accion_Barra.CancelarAccion
+184                         .Accion.TipoAccion = e_AccionBarra.CancelarAccion
 186                         .Accion.HechizoPendiente = 0
 188                         .Accion.RunaObj = 0
 190                         .Accion.ObjSlot = 0
@@ -2286,9 +2286,9 @@ Sub PasarSegundo()
                     
 204                 If .Counters.CuentaRegresiva >= 0 Then
 206                     If .Counters.CuentaRegresiva > 0 Then
-208                         Call WriteConsoleMsg(i, ">>>  " & .Counters.CuentaRegresiva & "  <<<", FontTypeNames.FONTTYPE_New_Gris)
+208                         Call WriteConsoleMsg(i, ">>>  " & .Counters.CuentaRegresiva & "  <<<", e_FontTypeNames.FONTTYPE_New_Gris)
                         Else
-210                         Call WriteConsoleMsg(i, ">>> YA! <<<", FontTypeNames.FONTTYPE_FIGHT)
+210                         Call WriteConsoleMsg(i, ">>> YA! <<<", e_FontTypeNames.FONTTYPE_FIGHT)
 212                         Call WriteStopped(i, False)
                         End If
                         
@@ -2302,7 +2302,7 @@ Sub PasarSegundo()
 222                         Mapa = .flags.PortalM
 224                         X = .flags.PortalX
 226                         Y = .flags.PortalY
-228                         Call SendData(SendTarget.toMap, .flags.PortalM, PrepareMessageParticleFXToFloor(X, Y, ParticulasIndex.TpVerde, 0))
+228                         Call SendData(SendTarget.toMap, .flags.PortalM, PrepareMessageParticleFXToFloor(X, Y, e_ParticulasIndex.TpVerde, 0))
 230                         Call SendData(SendTarget.toMap, .flags.PortalM, PrepareMessageLightFXToFloor(X, Y, 0, 105))
         
 232                         If MapData(Mapa, X, Y).TileExit.Map > 0 Then
@@ -2352,11 +2352,11 @@ Sub PasarSegundo()
 282                 If .Counters.Saliendo Then
                         '  If .flags.Muerto = 1 Then .Counters.Salir = 0
 284                     .Counters.Salir = .Counters.Salir - 1
-                        ' Call WriteConsoleMsg(i, "Se saldrá del juego en " & .Counters.Salir & " segundos...", FontTypeNames.FONTTYPE_INFO)
-286                     Call WriteLocaleMsg(i, "203", FontTypeNames.FONTTYPE_INFO, .Counters.Salir)
+                        ' Call WriteConsoleMsg(i, "Se saldrá del juego en " & .Counters.Salir & " segundos...", e_FontTypeNames.FONTTYPE_INFO)
+286                     Call WriteLocaleMsg(i, "203", e_FontTypeNames.FONTTYPE_INFO, .Counters.Salir)
         
 288                     If .Counters.Salir <= 0 Then
-290                         Call WriteConsoleMsg(i, "Gracias por jugar Argentum 20.", FontTypeNames.FONTTYPE_INFO)
+290                         Call WriteConsoleMsg(i, "Gracias por jugar Argentum 20.", e_FontTypeNames.FONTTYPE_INFO)
 292                         Call WriteDisconnect(i)
                             
 294                         Call CloseSocket(i)
@@ -2465,7 +2465,7 @@ Sub GuardarUsuarios()
 100     haciendoBK = True
     
 102     Call SendData(SendTarget.ToAll, 0, PrepareMessagePauseToggle())
-104     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor » Grabando Personajes", FontTypeNames.FONTTYPE_SERVER))
+104     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor » Grabando Personajes", e_FontTypeNames.FONTTYPE_SERVER))
     
         Dim i As Long
         
@@ -2487,7 +2487,7 @@ Sub GuardarUsuarios()
 
 120     Next i
     
-122     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor » Personajes Grabados", FontTypeNames.FONTTYPE_SERVER))
+122     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor » Personajes Grabados", e_FontTypeNames.FONTTYPE_SERVER))
 124     Call SendData(SendTarget.ToAll, 0, PrepareMessagePauseToggle())
 
 126     haciendoBK = False
@@ -2789,9 +2789,9 @@ Function CalcularPromedioVida(ByVal UserIndex As Integer) As Double
 100     With UserList(UserIndex)
 102         If .Stats.ELV = 1 Then
                 ' Siempre estamos promedio al lvl 1
-104             CalcularPromedioVida = ModClase(.clase).Vida - (21 - .Stats.UserAtributos(eAtributos.Constitucion)) * 0.5
+104             CalcularPromedioVida = ModClase(.clase).Vida - (21 - .Stats.UserAtributos(e_Atributos.Constitucion)) * 0.5
             Else
-106             CalcularPromedioVida = (.Stats.MaxHp - .Stats.UserAtributos(eAtributos.Constitucion)) / (.Stats.ELV - 1)
+106             CalcularPromedioVida = (.Stats.MaxHp - .Stats.UserAtributos(e_Atributos.Constitucion)) / (.Stats.ELV - 1)
             End If
         End With
 
@@ -2825,12 +2825,12 @@ Public Function RunningInVB(Optional ByRef b As Boolean = True) As Boolean
 End Function
 
 ' WyroX: Mensaje a todo el mundo
-Public Sub MensajeGlobal(texto As String, Fuente As FontTypeNames)
+Public Sub MensajeGlobal(texto As String, Fuente As e_FontTypeNames)
 100     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(texto, Fuente))
 End Sub
 
 ' WyroX: Devuelve si X e Y están dentro del Rectangle
-Public Function InsideRectangle(R As Rectangle, ByVal X As Integer, ByVal Y As Integer) As Boolean
+Public Function InsideRectangle(R As t_Rectangle, ByVal X As Integer, ByVal Y As Integer) As Boolean
 100     If X < R.X1 Then Exit Function
 102     If X > R.X2 Then Exit Function
 104     If Y < R.Y1 Then Exit Function

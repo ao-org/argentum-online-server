@@ -3,15 +3,15 @@ Option Explicit
 
 Private Declare Function timeGetTime Lib "winmm.dll" () As Long
 
-Private Declare Sub GetSystemTime Lib "kernel32.dll" (lpSystemTime As SYSTEMTIME)
+Private Declare Sub GetSystemTime Lib "kernel32.dll" (lpSystemTime As t_SYSTEMTIME)
 
-Private theTime      As SYSTEMTIME
+Private theTime      As t_SYSTEMTIME
 
 Public ClaveApertura As String
 
 Public PaquetesCount As Long
 
-Private Type SYSTEMTIME
+Private Type t_SYSTEMTIME
 
     wYear As Integer
     wMonth As Integer
@@ -24,7 +24,7 @@ Private Type SYSTEMTIME
 
 End Type
 
-Public Enum Accion_Barra
+Public Enum e_AccionBarra
 
     Runa = 1
     Resucitar = 2
@@ -123,13 +123,13 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
         On Error GoTo CompletarAccionFin_Err
         
 
-        Dim obj  As ObjData
+        Dim obj  As t_ObjData
 
         Dim Slot As Byte
 
 100     Select Case UserList(UserIndex).Accion.TipoAccion
 
-            Case Accion_Barra.Runa
+            Case e_AccionBarra.Runa
 102             obj = ObjData(UserList(UserIndex).Accion.RunaObj)
 104             Slot = UserList(UserIndex).Accion.ObjSlot
 
@@ -137,7 +137,7 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
 
                     Case 1 'Cuando esta muerto lleva al lugar de Origen
 
-                        Dim DeDonde As CityWorldPos
+                        Dim DeDonde As t_CityWorldPos
 
                         Dim Map     As Integer
 
@@ -149,22 +149,22 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
 
 110                         Select Case UserList(UserIndex).Hogar
 
-                                Case eCiudad.cUllathorpe
+                                Case e_Ciudad.cUllathorpe
 112                                 DeDonde = CityUllathorpe
                         
-114                             Case eCiudad.cNix
+114                             Case e_Ciudad.cNix
 116                                 DeDonde = CityNix
             
-118                             Case eCiudad.cBanderbill
+118                             Case e_Ciudad.cBanderbill
 120                                 DeDonde = CityBanderbill
                     
-122                             Case eCiudad.cLindos 'Vamos a tener que ir por todo el desierto... uff!
+122                             Case e_Ciudad.cLindos 'Vamos a tener que ir por todo el desierto... uff!
 124                                 DeDonde = CityLindos
                         
-126                             Case eCiudad.cArghal
+126                             Case e_Ciudad.cArghal
 128                                 DeDonde = CityArghal
                         
-130                             Case eCiudad.cArkhein
+130                             Case e_Ciudad.cArkhein
 132                                 DeDonde = CityArkhein
                         
 134                             Case Else
@@ -181,22 +181,22 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
 
 146                             Select Case MapInfo(UserList(UserIndex).Pos.Map).ResuCiudad
 
-                                    Case eCiudad.cUllathorpe
+                                    Case e_Ciudad.cUllathorpe
 148                                     DeDonde = CityUllathorpe
                         
-150                                 Case eCiudad.cNix
+150                                 Case e_Ciudad.cNix
 152                                     DeDonde = CityNix
             
-154                                 Case eCiudad.cBanderbill
+154                                 Case e_Ciudad.cBanderbill
 156                                     DeDonde = CityBanderbill
                     
-158                                 Case eCiudad.cLindos
+158                                 Case e_Ciudad.cLindos
 160                                     DeDonde = CityLindos
                         
-162                                 Case eCiudad.cArghal
+162                                 Case e_Ciudad.cArghal
 164                                     DeDonde = CityArghal
                         
-166                                 Case eCiudad.cArkhein
+166                                 Case e_Ciudad.cArkhein
 168                                     DeDonde = CityArkhein
                         
 170                                 Case Else
@@ -208,22 +208,22 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
 
 174                             Select Case UserList(UserIndex).Hogar
 
-                                    Case eCiudad.cUllathorpe
+                                    Case e_Ciudad.cUllathorpe
 176                                     DeDonde = CityUllathorpe
                         
-178                                 Case eCiudad.cNix
+178                                 Case e_Ciudad.cNix
 180                                     DeDonde = CityNix
             
-182                                 Case eCiudad.cBanderbill
+182                                 Case e_Ciudad.cBanderbill
 184                                     DeDonde = CityBanderbill
                     
-186                                 Case eCiudad.cLindos
+186                                 Case e_Ciudad.cLindos
 188                                     DeDonde = CityLindos
                         
-190                                 Case eCiudad.cArghal
+190                                 Case e_Ciudad.cArghal
 192                                     DeDonde = CityArghal
                         
-194                                 Case eCiudad.cArkhein
+194                                 Case e_Ciudad.cArkhein
 196                                     DeDonde = CityArkhein
                         
 198                                 Case Else
@@ -245,12 +245,12 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
                 
 210                     Call FindLegalPos(UserIndex, Map, X, Y)
 212                     Call WarpUserChar(UserIndex, Map, X, Y, True)
-214                     Call WriteConsoleMsg(UserIndex, "Has regresado a tu ciudad de origen.", FontTypeNames.FONTTYPE_WARNING)
+214                     Call WriteConsoleMsg(UserIndex, "Has regresado a tu ciudad de origen.", e_FontTypeNames.FONTTYPE_WARNING)
 
                         'Call WriteFlashScreen(UserIndex, &HA4FFFF, 150, True)
 216                     If UserList(UserIndex).flags.Navegando = 1 Then
 
-                            Dim barca As ObjData
+                            Dim barca As t_ObjData
 
 218                         barca = ObjData(UserList(UserIndex).Invent.BarcoObjIndex)
 220                         Call DoNavega(UserIndex, barca, UserList(UserIndex).Invent.BarcoSlot)
@@ -260,24 +260,24 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
 222                     If Resu Then
                 
 224                         UserList(UserIndex).Counters.TimerBarra = 5
-226                         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, ParticulasIndex.Resucitar, UserList(UserIndex).Counters.TimerBarra, False))
-228                         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageBarFx(UserList(UserIndex).Char.CharIndex, UserList(UserIndex).Counters.TimerBarra, Accion_Barra.Resucitar))
+226                         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, e_ParticulasIndex.Resucitar, UserList(UserIndex).Counters.TimerBarra, False))
+228                         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageBarFx(UserList(UserIndex).Char.CharIndex, UserList(UserIndex).Counters.TimerBarra, e_AccionBarra.Resucitar))
 
                 
 230                         UserList(UserIndex).Accion.AccionPendiente = True
-232                         UserList(UserIndex).Accion.Particula = ParticulasIndex.Resucitar
-234                         UserList(UserIndex).Accion.TipoAccion = Accion_Barra.Resucitar
+232                         UserList(UserIndex).Accion.Particula = e_ParticulasIndex.Resucitar
+234                         UserList(UserIndex).Accion.TipoAccion = e_AccionBarra.Resucitar
 
 236                         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("104", UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
-                            'Call WriteConsoleMsg(UserIndex, "El Cura lanza unas palabras al aire. Comienzas a sentir como tu cuerpo se vuelve a formar...", FontTypeNames.FONTTYPE_INFO)
-238                         Call WriteLocaleMsg(UserIndex, "82", FontTypeNames.FONTTYPE_INFOIAO)
+                            'Call WriteConsoleMsg(UserIndex, "El Cura lanza unas palabras al aire. Comienzas a sentir como tu cuerpo se vuelve a formar...", e_FontTypeNames.FONTTYPE_INFO)
+238                         Call WriteLocaleMsg(UserIndex, "82", e_FontTypeNames.FONTTYPE_INFOIAO)
 
                         End If
                 
 240                     If Not Resu Then
 242                         UserList(UserIndex).Accion.AccionPendiente = False
 244                         UserList(UserIndex).Accion.Particula = 0
-246                         UserList(UserIndex).Accion.TipoAccion = Accion_Barra.CancelarAccion
+246                         UserList(UserIndex).Accion.TipoAccion = e_AccionBarra.CancelarAccion
 
                         End If
 
@@ -293,26 +293,26 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
 262                     If obj.DesdeMap = 0 Then
 264                         Call FindLegalPos(UserIndex, Map, X, Y)
 266                         Call WarpUserChar(UserIndex, Map, X, Y, True)
-268                         Call WriteConsoleMsg(UserIndex, "Te has teletransportado por el mundo.", FontTypeNames.FONTTYPE_WARNING)
+268                         Call WriteConsoleMsg(UserIndex, "Te has teletransportado por el mundo.", e_FontTypeNames.FONTTYPE_WARNING)
 270                         Call QuitarUserInvItem(UserIndex, Slot, 1)
 272                         Call UpdateUserInv(False, UserIndex, Slot)
                         Else
 
 274                         If UserList(UserIndex).Pos.Map <> obj.DesdeMap Then
-276                             Call WriteConsoleMsg(UserIndex, "Esta runa no puede ser usada desde aquí.", FontTypeNames.FONTTYPE_INFO)
+276                             Call WriteConsoleMsg(UserIndex, "Esta runa no puede ser usada desde aquí.", e_FontTypeNames.FONTTYPE_INFO)
                             Else
 278                             Call QuitarUserInvItem(UserIndex, Slot, 1)
 280                             Call UpdateUserInv(False, UserIndex, Slot)
 282                             Call FindLegalPos(UserIndex, Map, X, Y)
 284                             Call WarpUserChar(UserIndex, Map, X, Y, True)
-286                             Call WriteConsoleMsg(UserIndex, "Te has teletransportado por el mundo.", FontTypeNames.FONTTYPE_WARNING)
+286                             Call WriteConsoleMsg(UserIndex, "Te has teletransportado por el mundo.", e_FontTypeNames.FONTTYPE_WARNING)
 
                             End If
 
                         End If
         
 288                     UserList(UserIndex).Accion.Particula = 0
-290                     UserList(UserIndex).Accion.TipoAccion = Accion_Barra.CancelarAccion
+290                     UserList(UserIndex).Accion.TipoAccion = e_AccionBarra.CancelarAccion
 292                     UserList(UserIndex).Accion.HechizoPendiente = 0
 294                     UserList(UserIndex).Accion.RunaObj = 0
 296                     UserList(UserIndex).Accion.ObjSlot = 0
@@ -321,14 +321,14 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
             
                 End Select
                 
-300         Case Accion_Barra.Hogar
+300         Case e_AccionBarra.Hogar
 302             Call HomeArrival(UserIndex)
 304             UserList(UserIndex).Accion.AccionPendiente = False
 306             UserList(UserIndex).Accion.Particula = 0
-308             UserList(UserIndex).Accion.TipoAccion = Accion_Barra.CancelarAccion
+308             UserList(UserIndex).Accion.TipoAccion = e_AccionBarra.CancelarAccion
             
 
-310         Case Accion_Barra.Intermundia
+310         Case e_AccionBarra.Intermundia
         
 312             If UserList(UserIndex).flags.Muerto = 0 Then
 
@@ -343,8 +343,8 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
 320                 Yf = Hechizos(uh).TeleportXY
     
 322                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(Hechizos(uh).wav, UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY))  'Esta linea faltaba. Pablo (ToxicWaste)
-324                 Call WriteConsoleMsg(UserIndex, "¡Has abierto la puerta a intermundia!", FontTypeNames.FONTTYPE_INFO)
-326                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, ParticulasIndex.Runa, -1, True))
+324                 Call WriteConsoleMsg(UserIndex, "¡Has abierto la puerta a intermundia!", e_FontTypeNames.FONTTYPE_INFO)
+326                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, e_ParticulasIndex.Runa, -1, True))
 328                 UserList(UserIndex).flags.Portal = 10
 330                 UserList(UserIndex).flags.PortalMDestino = Mapaf
 332                 UserList(UserIndex).flags.PortalYDestino = Xf
@@ -355,35 +355,35 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
 336                 Mapa = UserList(UserIndex).flags.PortalM
 338                 X = UserList(UserIndex).flags.PortalX
 340                 Y = UserList(UserIndex).flags.PortalY
-342                 MapData(Mapa, X, Y).Particula = ParticulasIndex.TpVerde
+342                 MapData(Mapa, X, Y).Particula = e_ParticulasIndex.TpVerde
 344                 MapData(Mapa, X, Y).TimeParticula = -1
 346                 MapData(Mapa, X, Y).TileExit.Map = UserList(UserIndex).flags.PortalMDestino
 348                 MapData(Mapa, X, Y).TileExit.X = UserList(UserIndex).flags.PortalXDestino
 350                 MapData(Mapa, X, Y).TileExit.Y = UserList(UserIndex).flags.PortalYDestino
                 
-                    'Call SendData(SendTarget.toMap, UserList(UserIndex).flags.PortalM, PrepareMessageParticleFXToFloor(X, Y, ParticulasIndex.Intermundia, -1))
-352                 Call SendData(SendTarget.toMap, UserList(UserIndex).flags.PortalM, PrepareMessageParticleFXToFloor(X, Y, ParticulasIndex.TpVerde, -1))
+                    'Call SendData(SendTarget.toMap, UserList(UserIndex).flags.PortalM, PrepareMessageParticleFXToFloor(X, Y, e_ParticulasIndex.Intermundia, -1))
+352                 Call SendData(SendTarget.toMap, UserList(UserIndex).flags.PortalM, PrepareMessageParticleFXToFloor(X, Y, e_ParticulasIndex.TpVerde, -1))
                 
 354                 Call SendData(SendTarget.toMap, UserList(UserIndex).flags.PortalM, PrepareMessageLightFXToFloor(X, Y, &HFF80C0, 105))
 
                 End If
                     
 356             UserList(UserIndex).Accion.Particula = 0
-358             UserList(UserIndex).Accion.TipoAccion = Accion_Barra.CancelarAccion
+358             UserList(UserIndex).Accion.TipoAccion = e_AccionBarra.CancelarAccion
 360             UserList(UserIndex).Accion.HechizoPendiente = 0
 362             UserList(UserIndex).Accion.RunaObj = 0
 364             UserList(UserIndex).Accion.ObjSlot = 0
 366             UserList(UserIndex).Accion.AccionPendiente = False
             
                 '
-368         Case Accion_Barra.Resucitar
-370             Call WriteConsoleMsg(UserIndex, "¡Has sido resucitado!", FontTypeNames.FONTTYPE_INFO)
-372             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, ParticulasIndex.Resucitar, 250, True))
+368         Case e_AccionBarra.Resucitar
+370             Call WriteConsoleMsg(UserIndex, "¡Has sido resucitado!", e_FontTypeNames.FONTTYPE_INFO)
+372             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, e_ParticulasIndex.Resucitar, 250, True))
 374             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("117", UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
 376             Call RevivirUsuario(UserIndex, True)
                 
 378             UserList(UserIndex).Accion.Particula = 0
-380             UserList(UserIndex).Accion.TipoAccion = Accion_Barra.CancelarAccion
+380             UserList(UserIndex).Accion.TipoAccion = e_AccionBarra.CancelarAccion
 382             UserList(UserIndex).Accion.HechizoPendiente = 0
 384             UserList(UserIndex).Accion.RunaObj = 0
 386             UserList(UserIndex).Accion.ObjSlot = 0
@@ -516,7 +516,7 @@ End Sub
 Function PuedeUsarObjeto(UserIndex As Integer, ByVal ObjIndex As Integer, Optional ByVal writeInConsole As Boolean = False) As Byte
         On Error GoTo PuedeUsarObjeto_Err
 
-        Dim Objeto As ObjData
+        Dim Objeto As t_ObjData
         Dim Msg As String, i As Long
 100     Objeto = ObjData(ObjIndex)
                 
@@ -560,7 +560,7 @@ Function PuedeUsarObjeto(UserIndex As Integer, ByVal ObjIndex As Integer, Option
 158         Msg = ""
         End If
 
-160     If writeInConsole And Msg <> "" Then Call WriteConsoleMsg(UserIndex, Msg, FontTypeNames.FONTTYPE_INFO)
+160     If writeInConsole And Msg <> "" Then Call WriteConsoleMsg(UserIndex, Msg, e_FontTypeNames.FONTTYPE_INFO)
 
         Exit Function
 

@@ -22,21 +22,21 @@ Attribute VB_Name = "Statistics"
 
 Option Explicit
 
-Private Type fragLvlRace
+Private Type t_fragLvlRace
 
     matrix(1 To 50, 1 To 6) As Long
 
 End Type
 
-Private Type fragLvlLvl
+Private Type t_fragLvlLvl
 
     matrix(1 To 50, 1 To 50) As Long
 
 End Type
 
-Private fragLvlRaceData(1 To 7)               As fragLvlRace
+Private fragLvlRaceData(1 To 7)               As t_fragLvlRace
 
-Private fragLvlLvlData(1 To 7)                As fragLvlLvl
+Private fragLvlLvlData(1 To 7)                As t_fragLvlLvl
 
 Private fragAlignmentLvlData(1 To 50, 1 To 4) As Long
 
@@ -58,25 +58,25 @@ Public Sub StoreFrag(ByVal killer As Integer, ByVal victim As Integer)
     
 102     Select Case UserList(killer).clase
 
-            Case eClass.Assasin
+            Case e_Class.Assasin
 104             clase = 1
         
-106         Case eClass.Bard
+106         Case e_Class.Bard
 108             clase = 2
         
-110         Case eClass.Mage
+110         Case e_Class.Mage
 112             clase = 3
         
-114         Case eClass.Paladin
+114         Case e_Class.Paladin
 116             clase = 4
         
-118         Case eClass.Warrior
+118         Case e_Class.Warrior
 120             clase = 5
         
-122         Case eClass.Cleric
+122         Case e_Class.Cleric
 124             clase = 6
         
-126         Case eClass.Hunter
+126         Case e_Class.Hunter
 128             clase = 7
         
 130         Case Else
@@ -86,22 +86,22 @@ Public Sub StoreFrag(ByVal killer As Integer, ByVal victim As Integer)
     
 132     Select Case UserList(killer).raza
 
-            Case eRaza.Elfo
+            Case e_Raza.Elfo
 134             raza = 1
         
-136         Case eRaza.Drow
+136         Case e_Raza.Drow
 138             raza = 2
         
-140         Case eRaza.Enano
+140         Case e_Raza.Enano
 142             raza = 3
         
-144         Case eRaza.Gnomo
+144         Case e_Raza.Gnomo
 146             raza = 4
         
-148         Case eRaza.Humano
+148         Case e_Raza.Humano
 150             raza = 5
             
-152         Case eRaza.Orco
+152         Case e_Raza.Orco
 154             raza = 6
         
 156         Case Else

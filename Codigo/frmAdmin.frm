@@ -106,7 +106,7 @@ Private Sub Command1_Click()
 100     tIndex = NameIndex(cboPjs.Text)
 
 102     If tIndex > 0 Then
-104         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor » " & UserList(tIndex).Name & " ha sido hechado. ", FontTypeNames.FONTTYPE_SERVER))
+104         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor » " & UserList(tIndex).Name & " ha sido hechado. ", e_FontTypeNames.FONTTYPE_SERVER))
 106         Call CloseSocket(tIndex)
 
         End If
@@ -133,7 +133,7 @@ Public Sub ActualizaListaPjs()
 104         For LoopC = 1 To LastUser
 
 106             If UserList(LoopC).flags.UserLogged And UserList(LoopC).ConnIDValida Then
-108                 If UserList(LoopC).flags.Privilegios And PlayerType.user Then
+108                 If UserList(LoopC).flags.Privilegios And e_PlayerType.user Then
 110                     .AddItem UserList(LoopC).Name
 112                     .ItemData(.NewIndex) = LoopC
 
