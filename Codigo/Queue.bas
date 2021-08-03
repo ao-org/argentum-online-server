@@ -1,7 +1,7 @@
 Attribute VB_Name = "Queue"
 Option Explicit
 
-Public Type tVertice
+Public Type t_Vertice
 
     X As Integer
     Y As Integer
@@ -10,7 +10,7 @@ End Type
 
 Private Const MAXELEM As Integer = 1000
 
-Private m_array()     As tVertice
+Private m_array()     As t_Vertice
 
 Private m_lastelem    As Integer
 
@@ -48,7 +48,7 @@ IsFull_Err:
         
 End Function
 
-Public Function Push(ByRef Vertice As tVertice) As Boolean
+Public Function Push(ByRef Vertice As t_Vertice) As Boolean
         
         On Error GoTo Push_Err
         
@@ -76,7 +76,7 @@ Push_Err:
         
 End Function
 
-Public Function Pop() As tVertice
+Public Function Pop() As t_Vertice
         
         On Error GoTo Pop_Err
         
@@ -109,7 +109,7 @@ Public Sub InitQueue()
         
         On Error GoTo InitQueue_Err
         
-100     ReDim m_array(MAXELEM) As tVertice
+100     ReDim m_array(MAXELEM) As t_Vertice
 102     m_lastelem = 0
 104     m_firstelem = 0
 106     m_size = 0

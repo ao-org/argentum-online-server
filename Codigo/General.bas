@@ -434,7 +434,7 @@ Sub ApagarFogatas()
         'Ladder /ApagarFogatas
         On Error GoTo ErrHandler
 
-        Dim obj As obj
+        Dim obj As t_Obj
 100         obj.ObjIndex = FOGATA_APAG
 102         obj.amount = 1
 
@@ -1259,7 +1259,7 @@ Sub Restart()
         'Initialize statistics!!
         'Call Statistics.Initialize
 
-116     ReDim UserList(1 To MaxUsers) As user
+116     ReDim UserList(1 To MaxUsers) As t_User
 
 118     For LoopC = 1 To MaxUsers
 122         UserList(LoopC).ConnIDValida = False
@@ -1520,7 +1520,7 @@ Public Sub EfectoMimetismo(ByVal UserIndex As Integer)
         On Error GoTo EfectoMimetismo_Err
     
         
-        Dim Barco As ObjData
+        Dim Barco As t_ObjData
     
 100     With UserList(UserIndex)
 102         If .Counters.Mimetismo < IntervaloInvisible Then
@@ -2830,7 +2830,7 @@ Public Sub MensajeGlobal(texto As String, Fuente As FontTypeNames)
 End Sub
 
 ' WyroX: Devuelve si X e Y están dentro del Rectangle
-Public Function InsideRectangle(R As Rectangle, ByVal X As Integer, ByVal Y As Integer) As Boolean
+Public Function InsideRectangle(R As t_Rectangle, ByVal X As Integer, ByVal Y As Integer) As Boolean
 100     If X < R.X1 Then Exit Function
 102     If X > R.X2 Then Exit Function
 104     If Y < R.Y1 Then Exit Function

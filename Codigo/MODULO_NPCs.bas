@@ -15,7 +15,7 @@ Attribute VB_Name = "NPCs"
 
 Public Const MaxRespawn             As Integer = 255
 
-Public RespawnList(1 To MaxRespawn) As npc
+Public RespawnList(1 To MaxRespawn) As t_Npc
 
 Option Explicit
 
@@ -57,7 +57,7 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
             Exit Sub
         End If
 
-        Dim MiNPC As npc
+        Dim MiNPC As t_Npc
 
 110     MiNPC = NpcList(NpcIndex)
 
@@ -492,7 +492,7 @@ TestSpawnTrigger_Err:
         
 End Function
 
-Public Function CrearNPC(NroNPC As Integer, Mapa As Integer, OrigPos As WorldPos, Optional ByVal CustomHead As Integer)
+Public Function CrearNPC(NroNPC As Integer, Mapa As Integer, OrigPos As t_WorldPos, Optional ByVal CustomHead As Integer)
         'Crea un NPC del tipo NRONPC
         
         On Error GoTo CrearNPC_Err
@@ -757,7 +757,7 @@ End Sub
 Public Function MoveNPCChar(ByVal NpcIndex As Integer, ByVal nHeading As Byte) As Boolean
         On Error GoTo errh
 
-        Dim nPos      As WorldPos
+        Dim nPos      As t_WorldPos
         Dim UserIndex As Integer
         Dim esGuardia As Boolean
 100     With NpcList(NpcIndex)
@@ -876,7 +876,7 @@ NpcEnvenenarUser_Err:
         
 End Sub
 
-Function SpawnNpc(ByVal NpcIndex As Integer, Pos As WorldPos, ByVal FX As Boolean, ByVal Respawn As Boolean, Optional Avisar As Boolean = False, Optional ByVal MaestroUser As Integer = 0) As Integer
+Function SpawnNpc(ByVal NpcIndex As Integer, Pos As t_WorldPos, ByVal FX As Boolean, ByVal Respawn As Boolean, Optional Avisar As Boolean = False, Optional ByVal MaestroUser As Integer = 0) As Integer
         
         On Error GoTo SpawnNpc_Err
         
@@ -886,9 +886,9 @@ Function SpawnNpc(ByVal NpcIndex As Integer, Pos As WorldPos, ByVal FX As Boolea
         'Last Modification: 23/01/2007
         '23/01/2007 -> Pablo (ToxicWaste): Creates an NPC of the type Npcindex
         '***************************************************
-        Dim newpos         As WorldPos
+        Dim newpos         As t_WorldPos
 
-        Dim altpos         As WorldPos
+        Dim altpos         As t_WorldPos
 
         Dim nIndex         As Integer
 
@@ -961,7 +961,7 @@ SpawnNpc_Err:
         
 End Function
 
-Sub ReSpawnNpc(MiNPC As npc)
+Sub ReSpawnNpc(MiNPC As t_Npc)
         
         On Error GoTo ReSpawnNpc_Err
         
@@ -1011,7 +1011,7 @@ NPCHostiles_Err:
         
 End Function
 
-Sub NPCTirarOro(MiNPC As npc, ByVal UserIndex As Integer)
+Sub NPCTirarOro(MiNPC As t_Npc, ByVal UserIndex As Integer)
         
             On Error GoTo NPCTirarOro_Err
             
@@ -1023,7 +1023,7 @@ Sub NPCTirarOro(MiNPC As npc, ByVal UserIndex As Integer)
                 Dim Oro As Long
 104             Oro = MiNPC.GiveGLD * OroMult
 
-                Dim MiObj As obj
+                Dim MiObj As t_Obj
 118             MiObj.ObjIndex = iORO
 
 120             While (Oro > 0)
@@ -1227,7 +1227,7 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
 270             .NroCriaturas = val(Leer.GetValue("NPC" & NpcNumber, "NroCriaturas"))
                 
 272             If .NroCriaturas > 0 Then
-274                 ReDim .Criaturas(1 To .NroCriaturas) As tCriaturasEntrenador
+274                 ReDim .Criaturas(1 To .NroCriaturas) As t_CriaturasEntrenador
     
 276                 For LoopC = 1 To .NroCriaturas
 278                     .Criaturas(LoopC).NpcIndex = Leer.GetValue("NPC" & NpcNumber, "CI" & LoopC)
@@ -1337,7 +1337,7 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
         
 378             .NumDropQuest = val(aux)
                 
-380             ReDim .DropQuest(1 To .NumDropQuest) As tQuestObj
+380             ReDim .DropQuest(1 To .NumDropQuest) As t_QuestObj
                 
 382             For LoopC = 1 To .NumDropQuest
 384                 .DropQuest(LoopC).QuestIndex = val(ReadField(1, Leer.GetValue("NPC" & NpcNumber, "DropQuest" & LoopC), Asc("-")))
@@ -1585,8 +1585,8 @@ End Sub
 
 Sub WarpNpcChar(ByVal NpcIndex As Integer, ByVal Map As Byte, ByVal X As Integer, ByVal Y As Integer, Optional ByVal FX As Boolean = False)
 
-        Dim NuevaPos                    As WorldPos
-        Dim FuturePos                   As WorldPos
+        Dim NuevaPos                    As t_WorldPos
+        Dim FuturePos                   As t_WorldPos
 
 100     Call EraseNPCChar(NpcIndex)
 
@@ -1635,7 +1635,7 @@ Sub MoveNpcToSide(ByVal NpcIndex As Integer, ByVal Heading As eHeading)
 110         If MoveNPCChar(NpcIndex, Heading) Then Exit Sub
         
             ' Si ambos fallan, entonces lo dejo en la posición válida más cercana
-            Dim NuevaPos As WorldPos
+            Dim NuevaPos As t_WorldPos
 112         Call ClosestLegalPos(.Pos, NuevaPos, .flags.AguaValida, .flags.TierraInvalida = 0)
 114         Call WarpNpcChar(NpcIndex, NuevaPos.Map, NuevaPos.X, NuevaPos.Y)
 

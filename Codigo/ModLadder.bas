@@ -3,15 +3,15 @@ Option Explicit
 
 Private Declare Function timeGetTime Lib "winmm.dll" () As Long
 
-Private Declare Sub GetSystemTime Lib "kernel32.dll" (lpSystemTime As SYSTEMTIME)
+Private Declare Sub GetSystemTime Lib "kernel32.dll" (lpSystemTime As t_SYSTEMTIME)
 
-Private theTime      As SYSTEMTIME
+Private theTime      As t_SYSTEMTIME
 
 Public ClaveApertura As String
 
 Public PaquetesCount As Long
 
-Private Type SYSTEMTIME
+Private Type t_SYSTEMTIME
 
     wYear As Integer
     wMonth As Integer
@@ -123,7 +123,7 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
         On Error GoTo CompletarAccionFin_Err
         
 
-        Dim obj  As ObjData
+        Dim obj  As t_ObjData
 
         Dim Slot As Byte
 
@@ -137,7 +137,7 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
 
                     Case 1 'Cuando esta muerto lleva al lugar de Origen
 
-                        Dim DeDonde As CityWorldPos
+                        Dim DeDonde As t_CityWorldPos
 
                         Dim Map     As Integer
 
@@ -250,7 +250,7 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
                         'Call WriteFlashScreen(UserIndex, &HA4FFFF, 150, True)
 216                     If UserList(UserIndex).flags.Navegando = 1 Then
 
-                            Dim barca As ObjData
+                            Dim barca As t_ObjData
 
 218                         barca = ObjData(UserList(UserIndex).Invent.BarcoObjIndex)
 220                         Call DoNavega(UserIndex, barca, UserList(UserIndex).Invent.BarcoSlot)
@@ -516,7 +516,7 @@ End Sub
 Function PuedeUsarObjeto(UserIndex As Integer, ByVal ObjIndex As Integer, Optional ByVal writeInConsole As Boolean = False) As Byte
         On Error GoTo PuedeUsarObjeto_Err
 
-        Dim Objeto As ObjData
+        Dim Objeto As t_ObjData
         Dim Msg As String, i As Long
 100     Objeto = ObjData(ObjIndex)
                 

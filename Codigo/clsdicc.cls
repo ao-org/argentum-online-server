@@ -40,14 +40,14 @@ Option Explicit
 
 Private Const MAX_ELEM = 100
 
-Private Type diccElem
+Private Type t_diccElem
 
     clave As String
     def As Variant
 
 End Type
 
-Private p_elementos(1 To MAX_ELEM) As diccElem 'visual basic es una mierda para usar memoria dinamica, asi que uso esto
+Private p_elementos(1 To MAX_ELEM) As t_diccElem 'visual basic es una mierda para usar memoria dinamica, asi que uso esto
 
 Private p_cant                     As Integer
 

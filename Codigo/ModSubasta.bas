@@ -1,6 +1,6 @@
 Attribute VB_Name = "ModSubasta"
 
-Public Type tSubastas
+Public Type t_Subastas
 
     HaySubastaActiva As Boolean
     SubastaHabilitada As Boolean
@@ -17,7 +17,7 @@ Public Type tSubastas
 
 End Type
 
-Public Subasta As tSubastas
+Public Subasta As t_Subastas
 
 Dim Logear     As String
 
@@ -97,7 +97,7 @@ Public Sub FinalizarSubasta()
         'si esta offline se deposita en el banco.
         'El sistema le cobra un 10% del precio de venta, por uso de servicio.
 
-        Dim ObjVendido   As obj
+        Dim ObjVendido   As t_Obj
 
         Dim tUser        As Integer
 
@@ -244,7 +244,7 @@ Public Sub DevolverItem()
         On Error GoTo DevolverItem_Err
         
 
-        Dim ObjVendido   As obj
+        Dim ObjVendido   As t_Obj
 
         Dim tUser        As Integer
 
@@ -327,7 +327,7 @@ Public Sub CancelarSubasta()
         On Error GoTo CancelarSubasta_Err
         
 
-        Dim ObjVendido   As obj
+        Dim ObjVendido   As t_Obj
 
         Dim tUser        As Integer
 

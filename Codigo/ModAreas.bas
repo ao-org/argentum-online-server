@@ -2,7 +2,7 @@ Attribute VB_Name = "ModAreas"
 Option Explicit
  
 '>>>>>>AREAS>>>>>AREAS>>>>>>>>AREAS>>>>>>>AREAS>>>>>>>>>>
-Public Type AreaInfo
+Public Type t_AreaInfo
 
     AreaPerteneceX As Integer
     AreaPerteneceY As Integer
@@ -17,7 +17,7 @@ Public Type AreaInfo
 
 End Type
  
-Public Type ConnGroup
+Public Type t_ConnGroup
 
     CountEntrys As Long
     OptValue As Long
@@ -41,7 +41,7 @@ Private PosToArea(1 To 100)           As Byte
  
 Private AreasRecive(10)               As Integer
  
-Public ConnGroups()                   As ConnGroup
+Public ConnGroups()                   As t_ConnGroup
  
 Public Sub InitAreas()
         
@@ -73,7 +73,7 @@ Public Sub InitAreas()
 116     CurDay = IIf(Weekday(Date) > 6, 1, 2) 'A ke tipo de dia pertenece?
 118     CurHour = Fix(Hour(Time) \ 3) 'A ke parte de la hora pertenece
 
-120     ReDim ConnGroups(1 To NumMaps) As ConnGroup
+120     ReDim ConnGroups(1 To NumMaps) As t_ConnGroup
     
 122     For LoopC = 1 To NumMaps
 124         ConnGroups(LoopC).OptValue = val(GetVar(DatPath & "AreasStats.ini", "Mapa" & LoopC, CurDay & "-" & CurHour))

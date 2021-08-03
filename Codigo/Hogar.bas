@@ -4,7 +4,7 @@ Option Explicit
 'Cantidad de Ciudades
 Public Const NUMCIUDADES    As Byte = 6
 
-Public Ciudades(1 To NUMCIUDADES)         As WorldPos
+Public Ciudades(1 To NUMCIUDADES)         As t_WorldPos
 
 Public Sub goHome(ByVal UserIndex As Integer)
         '***************************************************

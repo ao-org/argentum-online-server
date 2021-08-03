@@ -286,7 +286,7 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
                     End If
 
                     Dim DeDonde As String
-                    Dim Gobernador As npc
+                    Dim Gobernador As t_Npc
 266                     Gobernador = NpcList(UserList(UserIndex).flags.TargetNPC)
             
 268                 If UserList(UserIndex).Hogar = Gobernador.GobernadorDe Then
@@ -455,7 +455,7 @@ Sub AccionParaForo(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer,
 
         
 
-        Dim Pos As WorldPos
+        Dim Pos As t_WorldPos
 
 100     Pos.Map = Map
 102     Pos.X = X
@@ -522,7 +522,7 @@ Sub AccionParaPozos(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer
 
         
 
-        Dim Pos As WorldPos
+        Dim Pos As t_WorldPos
 
 100     Pos.Map = Map
 102     Pos.X = X
@@ -591,7 +591,7 @@ Sub AccionParaArboles(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integ
 
         
 
-        Dim Pos As WorldPos
+        Dim Pos As t_WorldPos
 
 100     Pos.Map = Map
 102     Pos.X = X
@@ -661,7 +661,7 @@ Sub AccionParaAgua(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer,
 
         
 
-        Dim Pos As WorldPos
+        Dim Pos As t_WorldPos
 
 100     Pos.Map = Map
 102     Pos.X = X
@@ -718,7 +718,7 @@ Sub AccionParaYunque(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Intege
         
         On Error GoTo AccionParaYunque_Err
 
-        Dim Pos As WorldPos
+        Dim Pos As t_WorldPos
 
 100     Pos.Map = Map
 102     Pos.X = X
@@ -764,7 +764,7 @@ End Sub
 Sub AccionParaPuerta(ByVal Map As Integer, ByVal X As Byte, ByVal Y As Byte, ByVal UserIndex As Integer, Optional ByVal SinDistancia As Boolean)
         On Error GoTo Handler
 
-        Dim puerta As ObjData 'ver ReyarB
+        Dim puerta As t_ObjData 'ver ReyarB
         
         
 
@@ -817,7 +817,7 @@ End Sub
 Sub AccionParaPuertaNpc(ByVal Map As Integer, ByVal X As Byte, ByVal Y As Byte, ByVal NpcIndex As Integer)
         On Error GoTo Handler
 
-        Dim puerta As ObjData 'ver ReyarB
+        Dim puerta As t_ObjData 'ver ReyarB
 
 
 100     puerta = ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex)
@@ -848,7 +848,7 @@ Sub AccionParaCartel(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Intege
 
         On Error GoTo Handler
 
-        Dim MiObj As obj
+        Dim MiObj As t_Obj
 
 100     If ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex).OBJType = 8 Then
   
@@ -875,7 +875,7 @@ Sub AccionParaRamita(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Intege
         Dim exito  As Byte
         Dim raise  As Integer
     
-        Dim Pos    As WorldPos
+        Dim Pos    As t_WorldPos
 
 100     Pos.Map = Map
 102     Pos.X = X
@@ -929,7 +929,7 @@ Sub AccionParaRamita(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Intege
     
 140             If MapInfo(.Pos.Map).zone <> Ciudad Then
                 
-                    Dim obj As obj
+                    Dim obj As t_Obj
 142                 obj.ObjIndex = FOGATA
 144                 obj.amount = 1
         

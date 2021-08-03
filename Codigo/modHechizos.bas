@@ -387,7 +387,7 @@ Public Sub NpcLanzaSpellSobreArea(ByVal NpcIndex As Integer, ByVal SpellIndex As
     
         Dim afectaUsers As Boolean
         Dim afectaNPCs As Boolean
-        Dim TargetMap As MapBlock
+        Dim TargetMap As t_MapBlock
         Dim PosCasteadaX As Integer
         Dim PosCasteadaY As Integer
         Dim X            As Long
@@ -652,7 +652,7 @@ Sub HechizoInvocacion(ByVal UserIndex As Integer, ByRef b As Boolean)
             End If
     
             Dim h As Integer, j As Integer, ind As Integer, Index As Integer
-            Dim targetPos As WorldPos
+            Dim targetPos As t_WorldPos
     
 106         targetPos.Map = .flags.TargetMap
 108         targetPos.X = .flags.TargetX
@@ -854,7 +854,7 @@ Private Sub HechizoSobreArea(ByVal UserIndex As Integer, ByRef b As Boolean)
         
         Dim afectaUsers As Boolean
         Dim afectaNPCs As Boolean
-        Dim TargetMap As MapBlock
+        Dim TargetMap As t_MapBlock
         Dim PosCasteadaX As Byte
         Dim PosCasteadaY As Byte
         Dim h            As Integer
@@ -1007,7 +1007,7 @@ Sub HechizoMaterializacion(ByVal UserIndex As Integer, ByRef b As Boolean)
 
         Dim h   As Integer
 
-        Dim MAT As obj
+        Dim MAT As t_Obj
 
 100     h = UserList(UserIndex).Stats.UserHechizos(UserList(UserIndex).flags.Hechizo)
  

@@ -43,7 +43,7 @@ Public CentinelaNPCIndex           As Integer                'Índice del NPC en
 
 Private Const TIEMPO_INICIAL       As Byte = 2 'Tiempo inicial en minutos. No reducir sin antes revisar el timer que maneja estos datos.
 
-Private Type tCentinela
+Private Type t_Centinela
 
     RevisandoUserIndex As Integer   '¿Qué índice revisamos?
     TiempoRestante As Integer       '¿Cuántos minutos le quedan al usuario?
@@ -54,7 +54,7 @@ End Type
 
 Public centinelaActivado As Boolean
 
-Public Centinela         As tCentinela
+Public Centinela         As t_Centinela
 
 Public Sub CallUserAttention()
         

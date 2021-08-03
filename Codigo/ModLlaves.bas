@@ -95,8 +95,8 @@ Public Sub UsarLlave(ByVal UserIndex As Integer, ByVal Slot As Integer)
 
 100     If Not IntervaloPermiteUsar(UserIndex) Then Exit Sub
     
-        Dim TargObj As ObjData
-        Dim LlaveObj As ObjData
+        Dim TargObj As t_ObjData
+        Dim LlaveObj As t_ObjData
     
 102     With UserList(UserIndex)
 

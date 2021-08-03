@@ -104,7 +104,7 @@ End Function
 Function RazaPuedeUsarItem(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, Optional Slot As Byte) As Boolean
         On Error GoTo RazaPuedeUsarItem_Err
 
-        Dim Objeto As ObjData, i As Long
+        Dim Objeto As t_ObjData, i As Long
         
 100     Objeto = ObjData(ObjIndex)
         
@@ -180,7 +180,7 @@ Sub QuitarNewbieObj(ByVal UserIndex As Integer)
         'es transportado a su hogar de origen ;)
 112     If MapInfo(UserList(UserIndex).Pos.Map).Newbie Then
         
-            Dim DeDonde As WorldPos
+            Dim DeDonde As t_WorldPos
         
 114         Select Case UserList(UserIndex).Hogar
 
@@ -303,7 +303,7 @@ Sub TirarOro(ByVal Cantidad As Long, ByVal UserIndex As Integer)
 106         If (Cantidad > 0) And (Cantidad <= .Stats.GLD) Then
 
                 Dim i     As Byte
-                Dim MiObj As obj
+                Dim MiObj As t_Obj
 
                 'info debug
                 Dim loops As Integer
@@ -331,7 +331,7 @@ Sub TirarOro(ByVal Cantidad As Long, ByVal UserIndex As Integer)
 
 128                 MiObj.ObjIndex = iORO
 
-                    Dim AuxPos As WorldPos
+                    Dim AuxPos As t_WorldPos
 
 130                 If .clase = eClass.Pirat Then
 132                     AuxPos = TirarItemAlPiso(.Pos, MiObj, False)
@@ -427,7 +427,7 @@ Sub UpdateUserInv(ByVal UpdateAll As Boolean, ByVal UserIndex As Integer, ByVal 
         On Error GoTo UpdateUserInv_Err
         
 
-        Dim NullObj As UserOBJ
+        Dim NullObj As t_UserOBJ
 
         Dim LoopC   As Byte
 
@@ -478,7 +478,7 @@ Sub DropObj(ByVal UserIndex As Integer, _
         
         On Error GoTo DropObj_Err
 
-        Dim obj As obj
+        Dim obj As t_Obj
 
 100     If num > 0 Then
             
@@ -576,7 +576,7 @@ EraseObj_Err:
         
 End Sub
 
-Sub MakeObj(ByRef obj As obj, ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer, Optional ByVal Limpiar As Boolean = True)
+Sub MakeObj(ByRef obj As t_Obj, ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer, Optional ByVal Limpiar As Boolean = True)
         
         On Error GoTo MakeObj_Err
 
@@ -618,7 +618,7 @@ MakeObj_Err:
         
 End Sub
 
-Function MeterItemEnInventario(ByVal UserIndex As Integer, ByRef MiObj As obj) As Boolean
+Function MeterItemEnInventario(ByVal UserIndex As Integer, ByRef MiObj As t_Obj) As Boolean
 
         On Error GoTo ErrHandler
 
@@ -649,7 +649,7 @@ Function MeterItemEnInventario(ByVal UserIndex As Integer, ByRef MiObj As obj) A
 114             Slot = Slot + 1
 
 116             If Slot > UserList(UserIndex).CurrentInventorySlots Then
-                    'Call WriteConsoleMsg(UserIndex, "No podes cargar mas objetos.", FontTypeNames.FONTTYPE_FIGHT)
+                    'Call WriteConsoleMsg(UserIndex, "No podes cargar mAs t_Objetos.", FontTypeNames.FONTTYPE_FIGHT)
 118                 Call WriteLocaleMsg(UserIndex, "328", FontTypeNames.FONTTYPE_FIGHT)
 120                 MeterItemEnInventario = False
                     Exit Function
@@ -715,8 +715,8 @@ Sub GetObj(ByVal UserIndex As Integer)
         Dim X    As Integer
         Dim Y    As Integer
         Dim Slot As Byte
-        Dim obj   As ObjData
-        Dim MiObj As obj
+        Dim obj   As t_ObjData
+        Dim MiObj As t_Obj
 
         '¿Hay algun obj?
 100     If MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).ObjInfo.ObjIndex > 0 Then
@@ -736,7 +736,7 @@ Sub GetObj(ByVal UserIndex As Integer)
 116             MiObj.ObjIndex = MapData(UserList(UserIndex).Pos.Map, X, Y).ObjInfo.ObjIndex
         
 118             If Not MeterItemEnInventario(UserIndex, MiObj) Then
-                    'Call WriteConsoleMsg(UserIndex, "No puedo cargar mas objetos.", FontTypeNames.FONTTYPE_INFO)
+                    'Call WriteConsoleMsg(UserIndex, "No puedo cargar mAs t_Objetos.", FontTypeNames.FONTTYPE_INFO)
                 Else
             
                     'Quitamos el objeto
@@ -804,7 +804,7 @@ Sub Desequipar(ByVal UserIndex As Integer, ByVal Slot As Byte)
         On Error GoTo Desequipar_Err
     
         'Desequipa el item slot del inventario
-        Dim obj As ObjData
+        Dim obj As t_ObjData
 
 100     If (Slot < LBound(UserList(UserIndex).Invent.Object)) Or (Slot > UBound(UserList(UserIndex).Invent.Object)) Then
             Exit Sub
@@ -1098,7 +1098,7 @@ End Function
 Sub EquiparBarco(ByVal UserIndex As Integer)
         On Error GoTo EquiparBarco_Err
 
-        Dim Barco As ObjData
+        Dim Barco As t_ObjData
 
 100     With UserList(UserIndex)
 102         Barco = ObjData(.Invent.BarcoObjIndex)
@@ -1182,7 +1182,7 @@ End Sub
 Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
         On Error GoTo ErrHandler
 
-        Dim obj       As ObjData
+        Dim obj       As t_ObjData
         Dim ObjIndex  As Integer
         Dim errordesc As String
 
@@ -1748,13 +1748,13 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
         '24/01/2007 Pablo (ToxicWaste) - Utilización nueva de Barco en lvl 20 por clase Pirata y Pescador.
         '*************************************************
 
-        Dim obj      As ObjData
+        Dim obj      As t_ObjData
 
         Dim ObjIndex As Integer
 
-        Dim TargObj  As ObjData
+        Dim TargObj  As t_ObjData
 
-        Dim MiObj    As obj
+        Dim MiObj    As t_Obj
         
 100     With UserList(UserIndex)
 
@@ -2344,7 +2344,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
     
                             Dim Y       As Byte
     
-                            Dim DeDonde As WorldPos
+                            Dim DeDonde As t_WorldPos
     
 690                         Call QuitarUserInvItem(UserIndex, Slot, 1)
                 
@@ -2733,7 +2733,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
                                       Dim indexobj As Byte
 1038                                    indexobj = RandomNumber(1, obj.CantItem)
                     
-                                      Dim Index As obj
+                                      Dim Index As t_Obj
         
 1040                                 Index.ObjIndex = obj.Item(indexobj).ObjIndex
 1042                                 Index.amount = obj.Item(indexobj).amount
@@ -3260,8 +3260,8 @@ Sub TirarTodosLosItems(ByVal UserIndex As Integer)
         On Error GoTo TirarTodosLosItems_Err
 
         Dim i         As Byte
-        Dim NuevaPos  As WorldPos
-        Dim MiObj     As obj
+        Dim NuevaPos  As t_WorldPos
+        Dim MiObj     As t_Obj
         Dim ItemIndex As Integer
        
 100     With UserList(UserIndex)

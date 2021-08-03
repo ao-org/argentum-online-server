@@ -85,21 +85,21 @@ Attribute VB_Name = "PathFinding"
 
 Option Explicit
 
-Private Type tIntermidiateWork
+Private Type t_IntermidiateWork
     Closed As Boolean
     Distance As Integer
-    Previous As Position
+    Previous As t_Position
     EstimatedTotalDistance As Single
 End Type
 
-Private OpenVertices(1000) As Position
+Private OpenVertices(1000) As t_Position
 Private VertexCount As Integer
 
-Private Table(XMinMapSize To XMaxMapSize, YMinMapSize To YMaxMapSize) As tIntermidiateWork
+Private Table(XMinMapSize To XMaxMapSize, YMinMapSize To YMaxMapSize) As t_IntermidiateWork
 
-Private DirOffset(eHeading.NORTH To eHeading.WEST) As Position
+Private DirOffset(eHeading.NORTH To eHeading.WEST) As t_Position
 
-Private ClosestVertex As Position
+Private ClosestVertex As t_Position
 Private ClosestDistance As Single
 
 Private Const MAXINT As Integer = 32767
@@ -130,7 +130,7 @@ Public Sub FollowPath(ByVal NpcIndex As Integer)
         
         On Error GoTo FollowPath_Err
         
-        Dim nextPos As WorldPos
+        Dim nextPos As t_WorldPos
     
 100     With NpcList(NpcIndex)
 105         nextPos.Map = .Pos.Map
@@ -214,7 +214,7 @@ ErrHandler:
     
 End Function
 
-Private Sub ProcessAdjacent(ByVal NpcIndex As Integer, ByVal CurX As Integer, ByVal CurY As Integer, ByVal Heading As eHeading, ByRef EndPos As Position)
+Private Sub ProcessAdjacent(ByVal NpcIndex As Integer, ByVal CurX As Integer, ByVal CurY As Integer, ByVal Heading As eHeading, ByRef EndPos As t_Position)
 
     On Error GoTo ErrHandler
     
@@ -291,9 +291,9 @@ Public Function SeekPath(ByVal NpcIndex As Integer, Optional ByVal Closest As Bo
         
         On Error GoTo SeekPath_Err
 
-        Dim PosNPC As Position
-        Dim PosTarget As Position
-        Dim Heading As eHeading, Vertex As Position
+        Dim PosNPC As t_Position
+        Dim PosTarget As t_Position
+        Dim Heading As eHeading, Vertex As t_Position
         Dim MaxDistance As Integer, Index As Integer
         Dim MinTotalDistance As Integer, BestVertexIndex As Integer
 
@@ -450,7 +450,7 @@ MakePath_Err:
         
 End Sub
 
-Private Sub InitializeTable(ByRef Table() As tIntermidiateWork, ByRef PosNPC As Position, ByVal RangoVision As Single)
+Private Sub InitializeTable(ByRef Table() As t_IntermidiateWork, ByRef PosNPC As t_Position, ByVal RangoVision As Single)
         ' Inicializar la tabla de posiciones para calcular el camino.
         ' Solo limpiamos el campo de visión del NPC.
         
@@ -477,7 +477,7 @@ InitializeTable_Err:
   
 End Sub
 
-Private Function TileDistance(ByRef Vertex1 As Position, ByRef Vertex2 As Position) As Integer
+Private Function TileDistance(ByRef Vertex1 As t_Position, ByRef Vertex2 As t_Position) As Integer
         
         On Error GoTo TileDistance_Err
         
@@ -490,7 +490,7 @@ TileDistance_Err:
   
 End Function
 
-Private Function EuclideanDistance(ByVal X As Integer, ByVal Y As Integer, ByRef Vertex As Position) As Single
+Private Function EuclideanDistance(ByVal X As Integer, ByVal Y As Integer, ByRef Vertex As t_Position) As Single
         
         On Error GoTo EuclideanDistance_Err
         
@@ -506,7 +506,7 @@ EuclideanDistance_Err:
       
 End Function
 
-Private Function EuclideanDistanceV(ByRef Vertex1 As Position, ByRef Vertex2 As Position) As Single
+Private Function EuclideanDistanceV(ByRef Vertex1 As t_Position, ByRef Vertex2 As t_Position) As Single
         
         On Error GoTo EuclideanDistanceV_Err
         
@@ -538,7 +538,7 @@ OpenVertex_Err:
 
 End Sub
 
-Private Sub OpenVertexV(ByRef Vertex As Position)
+Private Sub OpenVertexV(ByRef Vertex As t_Position)
         
         On Error GoTo OpenVertexV_Err
         
@@ -567,7 +567,7 @@ CloseVertex_Err:
 End Sub
 
 ' Las posiciones se pasan ByRef pero NO SE MODIFICAN.
-Public Function GetHeadingFromWorldPos(ByRef currentPos As WorldPos, ByRef nextPos As WorldPos) As eHeading
+Public Function GetHeadingFromWorldPos(ByRef currentPos As t_WorldPos, ByRef nextPos As t_WorldPos) As eHeading
         
         On Error GoTo GetHeadingFromWorldPos_Err
         

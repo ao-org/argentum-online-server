@@ -57,7 +57,7 @@ IniciarBanco_Err:
         
 End Sub
 
-Sub SendBanObj(UserIndex As Integer, Slot As Byte, Object As UserOBJ)
+Sub SendBanObj(UserIndex As Integer, Slot As Byte, Object As t_UserOBJ)
         
         On Error GoTo SendBanObj_Err
         
@@ -80,7 +80,7 @@ Sub UpdateBanUserInv(ByVal UpdateAll As Boolean, ByVal UserIndex As Integer, ByV
         On Error GoTo UpdateBanUserInv_Err
         
 
-        Dim NullObj As UserOBJ
+        Dim NullObj As t_UserOBJ
 
         Dim LoopC   As Byte
 
@@ -215,7 +215,7 @@ Function UserReciveObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, By
 132                 Slot = Slot + 1
 
 134                 If Slot > UserList(UserIndex).CurrentInventorySlots Then
-136                     Call WriteConsoleMsg(UserIndex, "No podés tener mas objetos.", FontTypeNames.FONTTYPE_INFO)
+136                     Call WriteConsoleMsg(UserIndex, "No podés tener mAs t_Objetos.", FontTypeNames.FONTTYPE_INFO)
                         Exit Function
 
                     End If
@@ -244,7 +244,7 @@ Function UserReciveObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, By
     
 152         Call QuitarBancoInvItem(UserIndex, CByte(ObjIndex), Cantidad)
         Else
-154         Call WriteConsoleMsg(UserIndex, "No podés tener mas objetos.", FontTypeNames.FONTTYPE_INFO)
+154         Call WriteConsoleMsg(UserIndex, "No podés tener mAs t_Objetos.", FontTypeNames.FONTTYPE_INFO)
 
         End If
 

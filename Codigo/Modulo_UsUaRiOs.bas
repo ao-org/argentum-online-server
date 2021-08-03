@@ -1292,9 +1292,9 @@ Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As eHeading) As
 
         On Error GoTo MoveUserChar_Err
 
-        Dim nPos         As WorldPos
-        Dim nPosOriginal As WorldPos
-        Dim nPosMuerto   As WorldPos
+        Dim nPos         As t_WorldPos
+        Dim nPosOriginal As t_WorldPos
+        Dim nPosMuerto   As t_WorldPos
         Dim IndexMover As Integer
         Dim OppositeHeading As eHeading
 
@@ -1432,7 +1432,7 @@ InvertHeading_Err:
         
 End Function
 
-Sub ChangeUserInv(ByVal UserIndex As Integer, ByVal Slot As Byte, ByRef Object As UserOBJ)
+Sub ChangeUserInv(ByVal UserIndex As Integer, ByVal Slot As Byte, ByRef Object As t_UserOBJ)
         
         On Error GoTo ChangeUserInv_Err
         
@@ -1933,7 +1933,7 @@ Sub UserDie(ByVal UserIndex As Integer)
     
                     Else
                 
-                        Dim MiObj As obj
+                        Dim MiObj As t_Obj
 
 166                     MiObj.amount = 1
 168                     MiObj.ObjIndex = PENDIENTE
@@ -2053,7 +2053,7 @@ ContarMuerte_Err:
 
 End Sub
 
-Sub Tilelibre(ByRef Pos As WorldPos, ByRef nPos As WorldPos, ByRef obj As obj, ByRef Agua As Boolean, ByRef Tierra As Boolean, Optional ByVal InitialPos As Boolean = True)
+Sub Tilelibre(ByRef Pos As t_WorldPos, ByRef nPos As t_WorldPos, ByRef obj As t_Obj, ByRef Agua As Boolean, ByRef Tierra As Boolean, Optional ByVal InitialPos As Boolean = True)
 
         
         On Error GoTo Tilelibre_Err
@@ -2617,7 +2617,7 @@ Private Sub WarpMascotas(ByVal UserIndex As Integer)
         
 134         If petType > 0 And canWarp And UserList(UserIndex).flags.MascotasGuardadas = 0 And PetTiempoDeVida = 0 Then
         
-                Dim SpawnPos As WorldPos
+                Dim SpawnPos As t_WorldPos
         
 136             SpawnPos.Map = UserList(UserIndex).Pos.Map
 138             SpawnPos.X = UserList(UserIndex).Pos.X + RandomNumber(-3, 3)
@@ -2746,7 +2746,7 @@ Sub MoveUserToSide(ByVal UserIndex As Integer, ByVal Heading As eHeading)
             End If
         
             ' Si ambos fallan, entonces lo dejo en la posición válida más cercana
-            Dim NuevaPos As WorldPos
+            Dim NuevaPos As t_WorldPos
 116         Call ClosestLegalPos(.Pos, NuevaPos, .flags.Navegando, .flags.Navegando = 0)
 118         Call WarpUserChar(UserIndex, NuevaPos.Map, NuevaPos.X, NuevaPos.Y)
 

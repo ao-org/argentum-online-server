@@ -1,6 +1,6 @@
 Attribute VB_Name = "ModFamiliar"
 
-Public Type Family
+Public Type t_Family
 
     nombre As String
     Muerto As Byte
@@ -67,7 +67,7 @@ Public Sub InvocarFamiliar(ByVal UserIndex As Integer, ByVal b As Boolean)
 
         Dim TempY        As Integer
 
-        Dim Pos          As WorldPos
+        Dim Pos          As t_WorldPos
 
 106     Pos.X = UserList(UserIndex).flags.TargetX
 108     Pos.Y = UserList(UserIndex).flags.TargetY

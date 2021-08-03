@@ -1,26 +1,26 @@
 Attribute VB_Name = "ModInvasion"
 Option Explicit
 
-Type tSpawnBox
-    TopLeft As WorldPos
-    BottomRight As WorldPos
+Type t_SpawnBox
+    TopLeft As t_WorldPos
+    BottomRight As t_WorldPos
     Heading As eHeading
     CoordMuralla As Integer
-    LegalBox As Rectangle
+    LegalBox As t_Rectangle
 End Type
 
-Type tTopInvasion
+Type t_TopInvasion
     UserName As String
     Score As Long
 End Type
 
-Type tInvasion
+Type t_Invasion
     Activa As Boolean
     ' Muralla
     VidaMuralla As Long
     MaxVidaMuralla As Long
     ' Users
-    Top10Users(1 To 10) As tTopInvasion
+    Top10Users(1 To 10) As t_TopInvasion
     ' NPCs
     NPCsVivos() As Integer
     CantNPCs As Integer
@@ -36,7 +36,7 @@ Type tInvasion
     RepetirDesc As Integer
     TimerRepetirDesc As Integer
     ' Spawns
-    SpawnBoxes() As tSpawnBox
+    SpawnBoxes() As t_SpawnBox
     IntervaloSpawn As Integer
     TimerSpawn As Integer
     ' Duracion e intervalos
@@ -51,7 +51,7 @@ Type tInvasion
     MensajePerdieron As String
 End Type
 
-Public Invasiones() As tInvasion
+Public Invasiones() As t_Invasion
 
 Sub CargarInfoEventos()
     Dim File As clsIniManager
@@ -278,7 +278,7 @@ Sub InvasionSpawnNPC(ByVal index As Integer)
 108         With .SpawnBoxes(SpawnBox)
         
                 ' Elegimos un tile al azar dentro del área
-                Dim SpawnPos As WorldPos
+                Dim SpawnPos As t_WorldPos
 110             SpawnPos.Map = .TopLeft.Map
 112             SpawnPos.X = RandomNumber(.TopLeft.X, .BottomRight.X)
 114             SpawnPos.Y = RandomNumber(.TopLeft.Y, .BottomRight.Y)
@@ -382,7 +382,7 @@ Public Sub SumarScoreInvasion(ByVal index As Integer, ByVal UserIndex As Integer
 100     With Invasiones(index)
     
             Dim i As Integer
-            Dim tmpUser As tTopInvasion
+            Dim tmpUser As t_TopInvasion
         
             ' Buscamos si estamos en el top
 102         For i = 1 To UBound(.Top10Users)

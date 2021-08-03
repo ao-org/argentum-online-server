@@ -71,7 +71,7 @@ ErrHandler:
 134     Call LogError("Error en IniciarComercioConUsuario: " & Err.Description)
 
 End Function
-Public Sub EnviarObjetoTransaccion(ByVal AQuien As Integer, ByVal UserIndex As Integer, ByRef ObjAEnviar As obj)
+Public Sub EnviarObjetoTransaccion(ByVal AQuien As Integer, ByVal UserIndex As Integer, ByRef ObjAEnviar As t_Obj)
         
             On Error GoTo EnviarObjetoTransaccion_Err
         
@@ -200,7 +200,7 @@ End Sub
 Public Sub AceptarComercioUsu(ByVal UserIndex As Integer)
         On Error GoTo AceptarComercioUsu_Err
         
-        Dim objOfrecido As obj
+        Dim objOfrecido As t_Obj
         Dim OtroUserIndex As Integer
         Dim TerminarAhora As Boolean
 

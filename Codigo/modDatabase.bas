@@ -770,7 +770,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
 160         .Invent.MunicionEqpSlot = SanitizeNullValue(RS!slot_ammo, 0)
 162         .Invent.BarcoSlot = SanitizeNullValue(RS!slot_ship, 0)
 164         .Invent.MonturaSlot = SanitizeNullValue(RS!slot_mount, 0)
-166         .Invent.DañoMagicoEqpSlot = SanitizeNullValue(rs!slot_dm, 0)
+166         .Invent.DañoMagicoEqpSlot = SanitizeNullValue(RS!slot_dm, 0)
 168         .Invent.ResistenciaEqpSlot = SanitizeNullValue(RS!slot_rm, 0)
 170         .Invent.NudilloSlot = SanitizeNullValue(RS!slot_knuckles, 0)
 172         .Invent.HerramientaEqpSlot = SanitizeNullValue(RS!slot_tool, 0)
@@ -1436,7 +1436,7 @@ ErrorHandler:
     
 End Function
 
-Public Function GetPersonajesCuentaDatabase(ByVal AccountID As Long, Personaje() As PersonajeCuenta) As Byte
+Public Function GetPersonajesCuentaDatabase(ByVal AccountID As Long, Personaje() As t_PersonajeCuenta) As Byte
         
         On Error GoTo GetPersonajesCuentaDatabase_Err
         
@@ -2143,7 +2143,7 @@ Public Function EnterAccountDatabase(ByVal UserIndex As Integer, ByVal CuentaEma
         End If
     
 110     If val(RS!is_banned) > 0 Then
-112         Call WriteShowMessageBox(UserIndex, "La cuenta se encuentra baneada debido a: " & rs!ban_reason & ". Esta decisión fue tomada por: " & rs!banned_by & ".")
+112         Call WriteShowMessageBox(UserIndex, "La cuenta se encuentra baneada debido a: " & RS!ban_reason & ". Esta decisión fue tomada por: " & RS!banned_by & ".")
             Exit Function
         End If
     

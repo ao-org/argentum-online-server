@@ -1,6 +1,6 @@
 Attribute VB_Name = "ModTorneos"
 
-Public Type tTorneo
+Public Type t_Torneo
 
     HayTorneoaActivo As Boolean
     NivelMinimo As Byte
@@ -30,7 +30,7 @@ Public Type tTorneo
 
 End Type
 
-Public Torneo        As tTorneo
+Public Torneo        As t_Torneo
 
 Public MensajeTorneo As String
 

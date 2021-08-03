@@ -6,11 +6,11 @@ Public TiempoRestanteEvento As Byte
 
 Public EventoActivo         As Boolean
 
-Public EventoAcutal         As EventoPropiedades
+Public EventoAcutal         As t_EventoPropiedades
 
-Public Evento(0 To 23)      As EventoPropiedades
+Public Evento(0 To 23)      As t_EventoPropiedades
 
-Public Type EventoPropiedades
+Public Type t_EventoPropiedades
 
     Tipo As Byte
     Duracion As Byte

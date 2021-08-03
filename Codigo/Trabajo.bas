@@ -382,7 +382,7 @@ ErrHandler:
 End Sub
 
 Public Sub DoNavega(ByVal UserIndex As Integer, _
-                    ByRef Barco As ObjData, _
+                    ByRef Barco As t_ObjData, _
                     ByVal Slot As Integer)
         
         On Error GoTo DoNavega_Err
@@ -956,7 +956,7 @@ Public Sub HerreroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As I
 
             End If
 
-            Dim MiObj As obj
+            Dim MiObj As t_Obj
 
 128         MiObj.amount = 1
 130         MiObj.ObjIndex = ItemIndex
@@ -1113,7 +1113,7 @@ Public Sub CarpinteroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
             'Call WriteOroOverHead(UserIndex, 1, UserList(UserIndex).Char.CharIndex)
 124         Call WriteTextCharDrop(UserIndex, "+1", UserList(UserIndex).Char.CharIndex, vbWhite)
     
-            Dim MiObj As obj
+            Dim MiObj As t_Obj
 
 126         MiObj.amount = 1
 128         MiObj.ObjIndex = ItemIndex
@@ -1174,7 +1174,7 @@ Public Sub AlquimistaConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
             'Call WriteConsoleMsg(UserIndex, "Has construido el objeto.", FontTypeNames.FONTTYPE_INFO)
 112         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(117, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
     
-            Dim MiObj As obj
+            Dim MiObj As t_Obj
 
 114         MiObj.amount = 1
 116         MiObj.ObjIndex = ItemIndex
@@ -1239,7 +1239,7 @@ Public Sub SastreConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As In
         
 116         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(63, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
     
-            Dim MiObj As obj
+            Dim MiObj As t_Obj
 
 118         MiObj.amount = 1
 120         MiObj.ObjIndex = ItemIndex
@@ -1335,9 +1335,9 @@ Public Sub DoLingotes(ByVal UserIndex As Integer)
 
             End If
 
-            Dim nPos  As WorldPos
+            Dim nPos  As t_WorldPos
 
-            Dim MiObj As obj
+            Dim MiObj As t_Obj
 
 130         MiObj.amount = cant
 132         MiObj.ObjIndex = ObjData(UserList(UserIndex).flags.TargetObjInvIndex).LingoteIndex
@@ -1522,9 +1522,9 @@ Sub TratarDeHacerFogata(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Int
 
         Dim exito     As Byte
 
-        Dim obj       As obj
+        Dim obj       As t_Obj
 
-        Dim posMadera As WorldPos
+        Dim posMadera As t_WorldPos
 
 100     If Not LegalPos(Map, X, Y) Then Exit Sub
 
@@ -1638,8 +1638,8 @@ Public Sub DoPescar(ByVal UserIndex As Integer, Optional ByVal RedDePesca As Boo
 
 122         If res < 6 Then
 
-                Dim nPos  As WorldPos
-                Dim MiObj As obj
+                Dim nPos  As t_WorldPos
+                Dim MiObj As t_Obj
 
 124             MiObj.amount = IIf(.clase = Trabajador, RandomNumber(1, 3), 1) * RecoleccionMult
 126             MiObj.ObjIndex = ObtenerPezRandom(ObjData(.Invent.HerramientaEqpObjIndex).Power)
@@ -2024,7 +2024,7 @@ Private Sub RobarObjeto(ByVal LadronIndex As Integer, ByVal VictimaIndex As Inte
     
 130         If flag Then
 
-                Dim MiObj     As obj
+                Dim MiObj     As t_Obj
                 Dim num       As Integer
                 Dim ObjAmount As Integer
 
@@ -2131,8 +2131,8 @@ Public Sub DoRaices(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte
             Rem Ladder 06/08/14 Subo un poco la probabilidad de sacar raices... porque era muy lento
 120         If res < 7 Then
     
-                Dim nPos  As WorldPos
-                Dim MiObj As obj
+                Dim nPos  As t_WorldPos
+                Dim MiObj As t_Obj
         
                 'If .clase = eClass.Druid Then
                 'MiObj.Amount = RandomNumber(6, 8)
@@ -2218,9 +2218,9 @@ Public Sub DoTalar(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte,
 
 120         If res < 6 Then
 
-                Dim nPos  As WorldPos
+                Dim nPos  As t_WorldPos
 
-                Dim MiObj As obj
+                Dim MiObj As t_Obj
 
 122             Call ActualizarRecurso(.Pos.Map, X, Y)
 124             MapData(.Pos.Map, X, Y).ObjInfo.Data = GetTickCount() ' Ultimo uso
@@ -2301,7 +2301,7 @@ Public Sub DoMineria(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byt
         Dim Suerte      As Integer
         Dim res         As Integer
         Dim Metal       As Integer
-        Dim Yacimiento  As ObjData
+        Dim Yacimiento  As t_ObjData
 
 100     With UserList(UserIndex)
     
@@ -2333,8 +2333,8 @@ Public Sub DoMineria(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byt
         
 120         If res <= 5 Then
     
-                Dim MiObj As obj
-                Dim nPos  As WorldPos
+                Dim MiObj As t_Obj
+                Dim nPos  As t_WorldPos
             
 122             Call ActualizarRecurso(.Pos.Map, X, Y)
 124             MapData(.Pos.Map, X, Y).ObjInfo.Data = GetTickCount() ' Ultimo uso
@@ -2457,7 +2457,7 @@ DoMeditar_Err:
         
 End Sub
 
-Public Sub DoMontar(ByVal UserIndex As Integer, ByRef Montura As ObjData, ByVal Slot As Integer)
+Public Sub DoMontar(ByVal UserIndex As Integer, ByRef Montura As t_ObjData, ByVal Slot As Integer)
         On Error GoTo DoMontar_Err
 
 100     With UserList(UserIndex)

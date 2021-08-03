@@ -56,7 +56,7 @@ ErrorHandler:
     
 136     Call LogError("NPC.AI " & NpcList(NpcIndex).Name & " " & NpcList(NpcIndex).MaestroNPC & " mapa:" & NpcList(NpcIndex).Pos.Map & " x:" & NpcList(NpcIndex).Pos.X & " y:" & NpcList(NpcIndex).Pos.Y & " Mov:" & NpcList(NpcIndex).Movement & " TargU:" & NpcList(NpcIndex).Target & " TargN:" & NpcList(NpcIndex).TargetNPC)
 
-138     Dim MiNPC As npc: MiNPC = NpcList(NpcIndex)
+138     Dim MiNPC As t_Npc: MiNPC = NpcList(NpcIndex)
     
 140     Call QuitarNPC(NpcIndex)
 142     Call ReSpawnNpc(MiNPC)
@@ -208,7 +208,7 @@ AI_CaminarSinRumbo_Err:
         
 End Sub
 
-Private Sub AI_CaminarConRumbo(ByVal NpcIndex As Integer, ByRef rumbo As WorldPos)
+Private Sub AI_CaminarConRumbo(ByVal NpcIndex As Integer, ByRef rumbo As t_WorldPos)
         On Error GoTo AI_CaminarConRumbo_Err
     
 100     If NpcList(NpcIndex).flags.Paralizado Or NpcList(NpcIndex).flags.Inmovilizado Then
@@ -290,7 +290,7 @@ End Sub
 
 Public Sub AI_GuardiaPersigueNpc(ByVal NpcIndex As Integer)
         On Error GoTo ErrorHandler
-        Dim targetPos As WorldPos
+        Dim targetPos As t_WorldPos
         
 100     With NpcList(NpcIndex)
         
@@ -336,7 +336,7 @@ ErrorHandler:
 
 End Sub
 
-Private Function DistanciaRadial(OrigenPos As WorldPos, DestinoPos As WorldPos) As Long
+Private Function DistanciaRadial(OrigenPos As t_WorldPos, DestinoPos As t_WorldPos) As Long
 100     DistanciaRadial = max(Abs(OrigenPos.X - DestinoPos.X), Abs(OrigenPos.Y - DestinoPos.Y))
 End Function
 
@@ -388,7 +388,7 @@ End Function
 Public Sub AI_NpcAtacaNpc(ByVal NpcIndex As Integer)
         On Error GoTo ErrorHandler
     
-        Dim targetPos As WorldPos
+        Dim targetPos As t_WorldPos
     
 100     With NpcList(NpcIndex)
 102         If .TargetNPC > 0 Then
@@ -510,9 +510,9 @@ End Sub
 Private Sub HacerCaminata(ByVal NpcIndex As Integer)
         On Error GoTo Handler
     
-        Dim Destino As WorldPos
+        Dim Destino As t_WorldPos
         Dim Heading As eHeading
-        Dim NextTile As WorldPos
+        Dim NextTile As t_WorldPos
         Dim MoveChar As Integer
         Dim PudoMover As Boolean
 
@@ -592,11 +592,11 @@ Private Sub MovimientoInvasion(ByVal NpcIndex As Integer)
         On Error GoTo Handler
     
 100     With NpcList(NpcIndex)
-            Dim SpawnBox As tSpawnBox
+            Dim SpawnBox As t_SpawnBox
 102         SpawnBox = Invasiones(.flags.InvasionIndex).SpawnBoxes(.flags.SpawnBox)
     
             ' Calculamos la distancia a la muralla y generamos una posicion de destino
-            Dim DistanciaMuralla As Integer, Destino As WorldPos
+            Dim DistanciaMuralla As Integer, Destino As t_WorldPos
 104         Destino = .Pos
         
 106         If SpawnBox.Heading = eHeading.EAST Or SpawnBox.Heading = eHeading.WEST Then
@@ -615,7 +615,7 @@ Private Sub MovimientoInvasion(ByVal NpcIndex As Integer)
 118             Heading = GetHeadingFromWorldPos(.Pos, Destino)
             
                 ' Nos aseguramos que la posicion nueva esta dentro del rectangulo valido
-                Dim NextTile As WorldPos
+                Dim NextTile As t_WorldPos
 120             NextTile = .Pos
 122             Call HeadtoPos(Heading, NextTile)
             
@@ -820,8 +820,8 @@ Private Function EnRangoVision(ByVal NpcIndex As Integer, ByVal UserIndex As Int
 
         On Error GoTo EnRangoVision_Err
 
-        Dim userPos As WorldPos
-        Dim NpcPos As WorldPos
+        Dim userPos As t_WorldPos
+        Dim NpcPos As t_WorldPos
         Dim Limite_X As Byte, Limite_Y As Byte
 
         ' Si alguno es cero, devolve false

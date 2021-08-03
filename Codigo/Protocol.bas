@@ -598,7 +598,7 @@ Public Enum FontTypeNames
     
 End Enum
 
-Public Type PersonajeCuenta
+Public Type t_PersonajeCuenta
 
     nombre As String
     nivel As Byte
@@ -4512,7 +4512,7 @@ Private Sub HandleUserCommerceOffer(ByVal UserIndex As Integer)
 
                 End If
             
-                Dim ObjAEnviar As obj
+                Dim ObjAEnviar As t_Obj
                 
 166             ObjAEnviar.amount = amount
 
@@ -8980,7 +8980,7 @@ Private Sub HandleKillNPC(ByVal UserIndex As Integer)
 
 116             Call WriteConsoleMsg(UserIndex, "RMatas (con posible respawn) a: " & NpcList(tNPC).Name, FontTypeNames.FONTTYPE_INFO)
             
-                Dim auxNPC As npc
+                Dim auxNPC As t_Npc
 118             auxNPC = NpcList(tNPC)
             
 120             Call QuitarNPC(tNPC)
@@ -10388,7 +10388,7 @@ Private Sub HandleForgive(ByVal UserIndex As Integer)
             'Validate NPC and make sure player is not dead
 106         If (NpcList(.flags.TargetNPC).NPCtype <> eNPCType.Revividor And (NpcList(.flags.TargetNPC).NPCtype <> eNPCType.ResucitadorNewbie Or Not EsNewbie(UserIndex))) Or .flags.Muerto = 1 Then Exit Sub
         
-            Dim priest As npc
+            Dim priest As t_Npc
 108         priest = NpcList(.flags.TargetNPC)
 
             'Make sure it's close enough
@@ -11239,7 +11239,7 @@ Private Sub HandleTeleportCreate(ByVal UserIndex As Integer)
 
             End If
 
-            Dim Objeto As obj
+            Dim Objeto As t_Obj
         
 128         Objeto.amount = 1
 130         Objeto.ObjIndex = 378
@@ -12485,11 +12485,11 @@ Private Sub HandleCreateItem(ByVal UserIndex As Integer)
             ' El nombre del objeto es nulo?
 116         If LenB(ObjData(tObj).Name) = 0 Then Exit Sub
         
-            Dim Objeto As obj
+            Dim Objeto As t_Obj
 118         Objeto.amount = Cuantos
 120         Objeto.ObjIndex = tObj
 
-            ' Chequeo si el objeto es AGARRABLE(para las puertas, arboles y demas objs. que no deberian estar en el inventario)
+            ' Chequeo si el objeto es AGARRABLE(para las puertas, arboles y demAs t_Objs. que no deberian estar en el inventario)
             '   0 = SI
             '   1 = NO
 122         If ObjData(tObj).Agarrable = 0 Then
@@ -13539,7 +13539,7 @@ Public Sub HandleDonateGold(ByVal UserIndex As Integer)
 
             End If
         
-            Dim priest As npc
+            Dim priest As t_Npc
 110         priest = NpcList(.flags.TargetNPC)
 
             'Validate NPC is an actual priest and the player is not dead
@@ -13689,7 +13689,7 @@ Public Sub HandleGiveItem(ByVal UserIndex As Integer)
 
                 End If
 
-                Dim Objeto As obj
+                Dim Objeto As t_Obj
 126             Objeto.amount = Cantidad
 128             Objeto.ObjIndex = ObjIndex
 
@@ -15837,7 +15837,7 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
 102         SlotViejo = Reader.ReadInt8()
 104         SlotNuevo = Reader.ReadInt8()
         
-            Dim Objeto    As obj
+            Dim Objeto    As t_Obj
             Dim Equipado  As Boolean
             Dim Equipado2 As Boolean
             Dim Equipado3 As Boolean
@@ -16118,7 +16118,7 @@ Private Sub HandleBovedaMoveItem(ByVal UserIndex As Integer)
 102         SlotViejo = Reader.ReadInt8()
 104         SlotNuevo = Reader.ReadInt8()
         
-            Dim Objeto    As obj
+            Dim Objeto    As t_Obj
             Dim Equipado  As Boolean
             Dim Equipado2 As Boolean
             Dim Equipado3 As Boolean
@@ -16530,7 +16530,7 @@ Private Sub HandleBusquedaTesoro(ByVal UserIndex As Integer)
 134                 Case 2
 
 136                     If Not BusquedaNpcActiva And BusquedaTesoroActiva = False And BusquedaRegaloActiva = False Then
-                            Dim Pos As WorldPos
+                            Dim Pos As t_WorldPos
 138                         Pos.Map = TesoroNPCMapa(RandomNumber(1, UBound(TesoroNPCMapa)))
 140                         Pos.Y = 50
 142                         Pos.X = 50
@@ -17501,7 +17501,7 @@ Private Sub HandleCompletarViaje(ByVal UserIndex As Integer)
 
 106         If costo <= 0 Then Exit Sub
 
-            Dim DeDonde As CityWorldPos
+            Dim DeDonde As t_CityWorldPos
 
 108         If UserList(UserIndex).Stats.GLD < costo Then
 110             Call WriteConsoleMsg(UserIndex, "No tienes suficiente dinero.", FontTypeNames.FONTTYPE_INFO)
@@ -18567,7 +18567,7 @@ Private Sub HandleRemoveItemCrafting(ByVal UserIndex As Integer)
 110         If .CraftInventory(CraftSlot) = 0 Then Exit Sub
 
 112         If InvSlot < 1 Then
-                Dim TmpObj As obj
+                Dim TmpObj As t_Obj
 114             TmpObj.ObjIndex = .CraftInventory(CraftSlot)
 116             TmpObj.amount = 1
              

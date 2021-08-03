@@ -291,7 +291,7 @@ Public Sub DoTileEvents(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal 
         '***************************************************
         On Error GoTo ErrHandler
 
-        Dim nPos   As WorldPos
+        Dim nPos   As t_WorldPos
 
         Dim EsTeleport As Boolean
         
@@ -477,7 +477,7 @@ InMapBounds_Err:
         
 End Function
 
-Function ClosestLegalPosNPC(ByVal NpcIndex As Integer, ByVal MaxRange As Integer, Optional ByVal IgnoreUsers As Boolean) As WorldPos
+Function ClosestLegalPosNPC(ByVal NpcIndex As Integer, ByVal MaxRange As Integer, Optional ByVal IgnoreUsers As Boolean) As t_WorldPos
 
         On Error GoTo ErrHandler
 
@@ -530,7 +530,7 @@ ErrHandler:
         
 End Function
 
-Private Function ValidNPCSpawnPos(OutPos As WorldPos, ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer, ByVal AguaValida As Boolean, ByVal TierraValida As Boolean, ByVal IgnoreUsers As Boolean) As Boolean
+Private Function ValidNPCSpawnPos(OutPos As t_WorldPos, ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer, ByVal AguaValida As Boolean, ByVal TierraValida As Boolean, ByVal IgnoreUsers As Boolean) As Boolean
 
 100     If LegalPos(Map, X, Y, AguaValida, TierraValida, , False) Then
 102         If TestSpawnTrigger(Map, X, Y) Then
@@ -546,7 +546,7 @@ Private Function ValidNPCSpawnPos(OutPos As WorldPos, ByVal Map As Integer, ByVa
 
 End Function
 
-Sub ClosestLegalPos(Pos As WorldPos, ByRef nPos As WorldPos, Optional ByVal PuedeAgua As Boolean = False, Optional ByVal PuedeTierra As Boolean = True)
+Sub ClosestLegalPos(Pos As t_WorldPos, ByRef nPos As t_WorldPos, Optional ByVal PuedeAgua As Boolean = False, Optional ByVal PuedeTierra As Boolean = True)
         '*****************************************************************
         'Author: Unknown (original version)
         'Last Modification: 24/01/2007 (ToxicWaste)
@@ -605,7 +605,7 @@ ClosestLegalPos_Err:
         
 End Sub
 
-Sub ClosestStablePos(Pos As WorldPos, ByRef nPos As WorldPos)
+Sub ClosestStablePos(Pos As t_WorldPos, ByRef nPos As t_WorldPos)
         '*****************************************************************
         'Encuentra la posicion legal mas cercana que no sea un portal y la guarda en nPos
         '*****************************************************************
@@ -734,7 +734,7 @@ CheckForSameIP_Err:
         
 End Function
 
-Sub HeadtoPos(ByVal Head As eHeading, ByRef Pos As WorldPos)
+Sub HeadtoPos(ByVal Head As eHeading, ByRef Pos As t_WorldPos)
         
         On Error GoTo HeadtoPos_Err
         
@@ -1533,7 +1533,7 @@ LookatTile_Err:
         
 End Sub
 
-Function FindDirection(Pos As WorldPos, Target As WorldPos) As eHeading
+Function FindDirection(Pos As t_WorldPos, Target As t_WorldPos) As eHeading
         
         On Error GoTo FindDirection_Err
         

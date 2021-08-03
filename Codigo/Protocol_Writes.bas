@@ -1972,7 +1972,7 @@ Public Sub WriteBlacksmithWeapons(ByVal UserIndex As Integer)
 
         Dim i              As Long
 
-        Dim obj            As ObjData
+        Dim obj            As t_ObjData
 
         Dim validIndexes() As Integer
 
@@ -2027,7 +2027,7 @@ Public Sub WriteBlacksmithArmors(ByVal UserIndex As Integer)
 
         Dim i              As Long
 
-        Dim obj            As ObjData
+        Dim obj            As t_ObjData
 
         Dim validIndexes() As Integer
 
@@ -2330,7 +2330,7 @@ End Sub
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteChangeNPCInventorySlot(ByVal UserIndex As Integer, _
                                        ByVal Slot As Byte, _
-                                       ByRef obj As obj, _
+                                       ByRef obj As t_Obj, _
                                        ByVal price As Single)
         '<EhHeader>
         On Error GoTo WriteChangeNPCInventorySlot_Err
@@ -3200,7 +3200,7 @@ End Sub
 ' @param    Amount The number of objects offered.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteChangeUserTradeSlot(ByVal UserIndex As Integer, _
-                                    ByRef itemsAenviar() As obj, _
+                                    ByRef itemsAenviar() As t_Obj, _
                                     ByVal gold As Long, _
                                     ByVal miOferta As Boolean)
         '<EhHeader>
@@ -3424,7 +3424,7 @@ Public Sub WritePersonajesDeCuenta(ByVal UserIndex As Integer)
 
         Dim CantPersonajes                 As Byte
 
-        Dim Personaje(1 To MAX_PERSONAJES) As PersonajeCuenta
+        Dim Personaje(1 To MAX_PERSONAJES) As t_PersonajeCuenta
 
         Dim i                              As Byte
 

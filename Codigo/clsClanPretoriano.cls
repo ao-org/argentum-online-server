@@ -42,8 +42,8 @@ End Enum
 
 '####################
 ' Pretorians Map Vars (Only used for the default map)
-Private LeftSpawnPos  As WorldPos
-Private RightSpawnPos As WorldPos
+Private LeftSpawnPos  As t_WorldPos
+Private RightSpawnPos As t_WorldPos
 
 '####################
 'Actions and spells
@@ -151,7 +151,7 @@ Private Const MAX_DISTANCE           As Integer = 14
 Private Const NRO_PRETORIANOS        As Integer = 9
 
 ' Indicates clan map and king position
-Private CenterPos                    As WorldPos
+Private CenterPos                    As t_WorldPos
 
 ' Indicates if the clan is spawned after being defeated
 Private RespawnClan                  As Boolean
@@ -159,7 +159,7 @@ Private RespawnClan                  As Boolean
 ' The number of clan members still alive
 Private ClanMembersAlive             As Integer
 
-Private Type tPretorianData
+Private Type t_PretorianData
 
     NpcIndex As Integer
     NpcAI As ePretorianAI
@@ -170,7 +170,7 @@ End Type
 Private ClanIndex     As Integer
 
 ' Contiene los index de los miembros del clan.
-Private Pretorianos() As tPretorianData
+Private Pretorianos() As t_PretorianData
 
 Public Function SpawnClan(ByVal Mapa As Integer, _
                           ByVal X As Integer, _
@@ -187,7 +187,7 @@ Public Function SpawnClan(ByVal Mapa As Integer, _
         '********************************************************
         On Error GoTo ErrHandler
 
-        Dim nPos       As WorldPos
+        Dim nPos       As t_WorldPos
 
         Dim PretoIndex As Integer
     
@@ -196,7 +196,7 @@ Public Function SpawnClan(ByVal Mapa As Integer, _
 102     CenterPos.X = X
 104     CenterPos.Y = Y
     
-106     ReDim Pretorianos(1 To NRO_PRETORIANOS) As tPretorianData
+106     ReDim Pretorianos(1 To NRO_PRETORIANOS) As t_PretorianData
     
 108     ClanIndex = PretoClanIndex
     
@@ -347,7 +347,7 @@ InitializePretoriansVars_Err:
         
 End Sub
 
-Private Sub SpawnPretorian(ByRef SpawnPos As WorldPos, _
+Private Sub SpawnPretorian(ByRef SpawnPos As t_WorldPos, _
                            ByVal PretorianAI As Byte, _
                            ByVal PretoIndex As Integer, _
                            Optional ByVal IsKing As Boolean = False)
@@ -360,7 +360,7 @@ Private Sub SpawnPretorian(ByRef SpawnPos As WorldPos, _
         On Error GoTo SpawnPretorian_Err
         
 
-        Dim FinalPos       As WorldPos
+        Dim FinalPos       As t_WorldPos
         Dim NpcIndex       As Integer
         'Dim Head           As Integer
         Dim PretoDatNumber As Integer
@@ -881,7 +881,7 @@ Private Sub KingMeleeAttack(NpcIndex)
 
         Dim headingloop As Byte
 
-        Dim nPos        As WorldPos
+        Dim nPos        As t_WorldPos
     
         Dim UserIndex   As Integer
     
@@ -935,7 +935,7 @@ Private Sub KingReviveAlly(ByVal NpcIndex As Integer)
     
         Dim AllyIndex As Integer
 
-        Dim nPos      As WorldPos
+        Dim nPos      As t_WorldPos
     
 100     With NpcList(NpcIndex)
 
@@ -1881,7 +1881,7 @@ Private Sub SwordMasterAttack(ByVal NpcIndex As Integer)
 
         Dim headingloop As Byte
 
-        Dim NpcPos      As WorldPos
+        Dim NpcPos      As t_WorldPos
 
         Dim UserIndex   As Integer
     
@@ -2409,9 +2409,9 @@ Private Function SnatchItem(ByVal NpcIndex As Integer, _
         '***************************************************
         On Error GoTo ErrHandler
 
-        Dim DropObj As obj
+        Dim DropObj As t_Obj
 
-        Dim nPos    As WorldPos
+        Dim nPos    As t_WorldPos
     
 100     With UserList(TargetIndex)
 102         DropObj.amount = .Invent.Object(Slot).amount
@@ -2454,7 +2454,7 @@ Private Function ThiefStealITem(ByVal NpcIndex As Integer, _
         'Steal slot items from user. If no space in thief's inventory, drop it on floor.
         '22/10/2010: ZaMa - Now thief doesn't try to stel slots with no items in it.
         '***************************************************
-        Dim StolenObj As obj
+        Dim StolenObj As t_Obj
 
         Dim NroItems  As Integer
     
@@ -2535,7 +2535,7 @@ ThiefTurnInvisible_Err:
         
 End Sub
 
-Private Function TargetClose(ByRef Pos As WorldPos) As Boolean
+Private Function TargetClose(ByRef Pos As t_WorldPos) As Boolean
         
         On Error GoTo TargetClose_Err
         
@@ -2547,7 +2547,7 @@ Private Function TargetClose(ByRef Pos As WorldPos) As Boolean
         '***************************************************
         Dim UserIndex   As Integer
     
-        Dim nPos        As WorldPos
+        Dim nPos        As t_WorldPos
 
         Dim headingloop As Byte
     
@@ -3185,7 +3185,7 @@ Public Sub MuerePretoriano(ByVal NpcIndex As Integer)
                     ' Respawn it? (Only allowed in pretorian default map)
 110                 If RespawnClan Then
                     
-                        Dim NewSpawnPos As WorldPos
+                        Dim NewSpawnPos As t_WorldPos
                 
                         ' Switch respawn place (alternate between two places)
 112                     If CenterPos.X = LeftSpawnPos.X Then

@@ -483,7 +483,7 @@ Private Function CalcularDaño(ByVal UserIndex As Integer) As Long
 
                 ' Daño con arma
 104             If .Invent.WeaponEqpObjIndex > 0 Then
-                    Dim Arma As ObjData
+                    Dim Arma As t_ObjData
 106                 Arma = ObjData(.Invent.WeaponEqpObjIndex)
                 
                     ' Calculamos el daño del arma
@@ -498,7 +498,7 @@ Private Function CalcularDaño(ByVal UserIndex As Integer) As Long
 
                         ' Si requiere munición
 116                     If Arma.Municion = 1 And .Invent.MunicionEqpObjIndex > 0 Then
-                            Dim Municion As ObjData
+                            Dim Municion As t_ObjData
 118                         Municion = ObjData(.Invent.MunicionEqpObjIndex)
                             ' Agregamos el daño de la munición al daño del arma
 120                         DañoArma = DañoArma + RandomNumber(Municion.MinHIT, Municion.MaxHit)
@@ -684,7 +684,7 @@ Private Sub NpcDaño(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
 
         Dim antdaño As Integer, defbarco As Integer
 
-        Dim obj As ObjData
+        Dim obj As t_ObjData
     
 100     Daño = RandomNumber(NpcList(NpcIndex).Stats.MinHIT, NpcList(NpcIndex).Stats.MaxHit)
 102     antdaño = Daño
@@ -709,7 +709,7 @@ Private Sub NpcDaño(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
 
                 'Si tiene casco absorbe el golpe
 120             If UserList(UserIndex).Invent.CascoEqpObjIndex > 0 Then
-                    Dim Casco As ObjData
+                    Dim Casco As t_ObjData
 122                 Casco = ObjData(UserList(UserIndex).Invent.CascoEqpObjIndex)
 124                 absorbido = absorbido + RandomNumber(Casco.MinDef, Casco.MaxDef)
                 End If
@@ -718,14 +718,14 @@ Private Sub NpcDaño(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
 
                 'Si tiene armadura absorbe el golpe
 128             If UserList(UserIndex).Invent.ArmourEqpObjIndex > 0 Then
-                    Dim Armadura As ObjData
+                    Dim Armadura As t_ObjData
 130                 Armadura = ObjData(UserList(UserIndex).Invent.ArmourEqpObjIndex)
 132                 absorbido = absorbido + RandomNumber(Armadura.MinDef, Armadura.MaxDef)
                 End If
                 
                 'Si tiene escudo absorbe el golpe
 134             If UserList(UserIndex).Invent.EscudoEqpObjIndex > 0 Then
-                    Dim Escudo As ObjData
+                    Dim Escudo As t_ObjData
 136                 Escudo = ObjData(UserList(UserIndex).Invent.EscudoEqpObjIndex)
 138                 absorbido = absorbido + RandomNumber(Escudo.MinDef, Escudo.MaxDef)
                 End If
@@ -1105,7 +1105,7 @@ Public Sub UsuarioAtaca(ByVal UserIndex As Integer)
 120         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageArmaMov(UserList(UserIndex).Char.CharIndex))
         End If
 
-        Dim AttackPos As WorldPos
+        Dim AttackPos As t_WorldPos
 122         AttackPos = UserList(UserIndex).Pos
 
 124     Call HeadtoPos(UserList(UserIndex).Char.Heading, AttackPos)
@@ -1323,7 +1323,7 @@ Private Sub UserDañoUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As 
 
                     'Si tiene casco absorbe el golpe
 110                 If .Invent.CascoEqpObjIndex > 0 Then
-                        Dim Casco As ObjData
+                        Dim Casco As t_ObjData
 112                     Casco = ObjData(.Invent.CascoEqpObjIndex)
 114                     Defensa = Defensa + RandomNumber(Casco.MinDef, Casco.MaxDef)
                     End If
@@ -1332,14 +1332,14 @@ Private Sub UserDañoUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As 
 
                     'Si tiene armadura absorbe el golpe
 118                 If .Invent.ArmourEqpObjIndex > 0 Then
-                        Dim Armadura As ObjData
+                        Dim Armadura As t_ObjData
 120                     Armadura = ObjData(.Invent.ArmourEqpObjIndex)
 122                     Defensa = Defensa + RandomNumber(Armadura.MinDef, Armadura.MaxDef)
                     End If
                     
                     'Si tiene escudo absorbe el golpe
 124                 If .Invent.EscudoEqpObjIndex > 0 Then
-                        Dim Escudo As ObjData
+                        Dim Escudo As t_ObjData
 126                     Escudo = ObjData(.Invent.EscudoEqpObjIndex)
 128                     Defensa = Defensa + RandomNumber(Escudo.MinDef, Escudo.MaxDef)
                     End If
@@ -1348,13 +1348,13 @@ Private Sub UserDañoUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As 
 
             ' Defensa del barco de la víctima
 130         If .Invent.BarcoObjIndex > 0 Then
-                Dim Barco As ObjData
+                Dim Barco As t_ObjData
 132             Barco = ObjData(.Invent.BarcoObjIndex)
 134             Defensa = Defensa + RandomNumber(Barco.MinDef, Barco.MaxDef)
 
             ' Defensa de la montura de la víctima
 136         ElseIf .Invent.MonturaObjIndex > 0 Then
-                Dim Montura As ObjData
+                Dim Montura As t_ObjData
 138             Montura = ObjData(.Invent.MonturaObjIndex)
 140             Defensa = Defensa + RandomNumber(Montura.MinDef, Montura.MaxDef)
             End If

@@ -54,9 +54,9 @@ Public Sub Comercio(ByVal Modo As eModoComercio, ByVal UserIndex As Integer, ByV
         '*************************************************
         Dim Precio       As Long
 
-        Dim Objeto       As obj
+        Dim Objeto       As t_Obj
 
-        Dim objquedo     As obj
+        Dim objquedo     As t_Obj
 
         Dim precioenvio  As Single
     
@@ -304,7 +304,7 @@ Private Sub UpdateNpcInv(ByVal UpdateAll As Boolean, ByVal UserIndex As Integer,
         
             On Error GoTo EnviarNpcInv_Err
 
-            Dim obj As obj
+            Dim obj As t_Obj
             Dim LoopC As Long
             Dim Desc As Single
             Dim val As Single

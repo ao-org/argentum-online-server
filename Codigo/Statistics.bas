@@ -22,21 +22,21 @@ Attribute VB_Name = "Statistics"
 
 Option Explicit
 
-Private Type fragLvlRace
+Private Type t_fragLvlRace
 
     matrix(1 To 50, 1 To 6) As Long
 
 End Type
 
-Private Type fragLvlLvl
+Private Type t_fragLvlLvl
 
     matrix(1 To 50, 1 To 50) As Long
 
 End Type
 
-Private fragLvlRaceData(1 To 7)               As fragLvlRace
+Private fragLvlRaceData(1 To 7)               As t_fragLvlRace
 
-Private fragLvlLvlData(1 To 7)                As fragLvlLvl
+Private fragLvlLvlData(1 To 7)                As t_fragLvlLvl
 
 Private fragAlignmentLvlData(1 To 50, 1 To 4) As Long
 

@@ -620,7 +620,7 @@ Function ConnectNewUser(ByVal UserIndex As Integer, ByRef Name As String, ByVal 
 226         .ChatCombate = 1
 228         .ChatGlobal = 1
   
-            Dim DungeonNewbieCoords(1 To 3) As WorldPos
+            Dim DungeonNewbieCoords(1 To 3) As t_WorldPos
             
 234         With DungeonNewbieCoords(1)
 236             .Map = 37: .X = 76: .Y = 82
@@ -808,7 +808,7 @@ HayPCarea_Err:
         
 End Function
 
-Function HayOBJarea(Pos As WorldPos, ObjIndex As Integer) As Boolean
+Function HayOBJarea(Pos As t_WorldPos, ObjIndex As Integer) As Boolean
         
         On Error GoTo HayOBJarea_Err
         

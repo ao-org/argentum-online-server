@@ -62,7 +62,7 @@ Public Sub ReturnCraftingItems(ByVal UserIndex As Integer)
     
         On Error GoTo ReturnCraftingItems_Err:
     
-        Dim i As Integer, TmpObj As obj
+        Dim i As Integer, TmpObj As t_Obj
 
 100     With UserList(UserIndex)
 
@@ -143,7 +143,7 @@ Public Sub DoCraftItem(ByVal UserIndex As Integer)
 108             Porcentaje = CalculateCraftProb(UserIndex, .CraftResult.Probabilidad)
             
 110             If RandomNumber(1, 100) <= Porcentaje Then
-                    Dim TmpObj As obj
+                    Dim TmpObj As t_Obj
 112                 TmpObj.ObjIndex = .CraftResult.Resultado
 114                 TmpObj.amount = 1
                 

@@ -59,7 +59,7 @@ Public Sub EnlistarArmadaReal(ByVal UserIndex As Integer)
 
                 End If
 
-                Dim primerRango As tRangoFaccion
+                Dim primerRango As t_RangoFaccion
 136                 primerRango = RangosFaccion(1)
 
 138             If .Faccion.CriminalesMatados < primerRango.AsesinatosRequeridos Then
@@ -119,7 +119,7 @@ Public Sub RecompensaArmadaReal(ByVal UserIndex As Integer)
             On Error GoTo RecompensaArmadaReal_Err
 
             Dim Crimis As Long, npcCharIndex As String
-            Dim proxRango As tRangoFaccion
+            Dim proxRango As t_RangoFaccion
 
 100         With UserList(UserIndex)
 102             Crimis = .Faccion.CriminalesMatados
@@ -271,7 +271,7 @@ Public Sub EnlistarCaos(ByVal UserIndex As Integer)
                 End If
 
 
-                Dim primerRango As tRangoFaccion
+                Dim primerRango As t_RangoFaccion
 132                 primerRango = RangosFaccion(2) ' 2 es el primer rango del caos
 
 134             If .Faccion.ciudadanosMatados < primerRango.AsesinatosRequeridos Then
@@ -328,7 +328,7 @@ Public Sub RecompensaCaos(ByVal UserIndex As Integer)
 
 
             Dim ciudadanosMatados As Long, npcCharIndex As String
-            Dim proxRango As tRangoFaccion
+            Dim proxRango As t_RangoFaccion
 
 100         With UserList(UserIndex)
 102             ciudadanosMatados = .Faccion.ciudadanosMatados
@@ -392,7 +392,7 @@ End Function
 
 
 ' Devuelve el proximo rango para el usuario de la faccion que pertenece.
-Private Function ProximoRango(ByVal UserIndex As Integer) As tRangoFaccion
+Private Function ProximoRango(ByVal UserIndex As Integer) As t_RangoFaccion
             On Error GoTo ProximoRango_Err
 
 100         With UserList(UserIndex)
@@ -420,10 +420,10 @@ End Function
 Private Sub DarRecompensas(ByVal UserIndex As Integer)
             On Error GoTo DarRecompensas_Err
 
-            Dim recompensa As tRecompensaFaccion
+            Dim recompensa As t_RecompensaFaccion
             Dim rank As Byte
             Dim ultimaRecompensa As Byte
-            Dim objetoRecompensa As obj
+            Dim objetoRecompensa As t_Obj
             Dim i As Integer
 
 100         With UserList(UserIndex)

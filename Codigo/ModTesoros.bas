@@ -7,7 +7,7 @@ Public TesoroNPCMapa() As Integer
 
 Dim TesoroMapa()     As Integer
 
-Dim TesoroRegalo()    As obj
+Dim TesoroRegalo()    As t_Obj
 
 Public BusquedaTesoroActiva As Boolean
 Public BusquedaRegaloActiva As Boolean
@@ -22,7 +22,7 @@ Public TesoroY              As Byte
 
 Dim RegaloMapa()     As Integer
 
-Dim RegaloRegalo()    As obj
+Dim RegaloRegalo()    As t_Obj
 
 
 Public RegaloNumMapa        As Integer

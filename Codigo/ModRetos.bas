@@ -3,7 +3,7 @@ Option Explicit
 
 Private Const APUESTA_MAXIMA = 100000000
 
-Public Retos As tRetos
+Public Retos As t_Retos
 Private ListaDeEspera As New Dictionary
 
 Public Sub CargarInfoRetos()
@@ -799,10 +799,10 @@ Public Sub TirarItemsEnPos(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y 
         On Error GoTo TirarItemsEnPos_Err
 
         Dim i         As Byte
-        Dim NuevaPos  As WorldPos
-        Dim MiObj     As obj
+        Dim NuevaPos  As t_WorldPos
+        Dim MiObj     As t_Obj
         Dim ItemIndex As Integer
-        Dim posItems As WorldPos
+        Dim posItems As t_WorldPos
         
               
 100     With UserList(UserIndex)
@@ -866,7 +866,7 @@ Public Sub IniciarDepositoItems(ByVal Sala As Integer)
                 End If
 114         Next i
         
-            Dim Pos As WorldPos
+            Dim Pos As t_WorldPos
         
 116         Pos.Map = .PosIzquierda.Map
 118         Pos.X = ((.PosDerecha.X - .PosIzquierda.X) \ 2) + .PosIzquierda.X

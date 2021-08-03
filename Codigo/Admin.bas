@@ -31,7 +31,7 @@ Option Explicit
 
 Public AdministratorAccounts As Dictionary
 
-Public Type tMotd
+Public Type t_Motd
 
     texto As String
     Formato As String
@@ -40,7 +40,7 @@ End Type
 
 Public MaxLines As Integer
 
-Public MOTD()   As tMotd
+Public MOTD()   As t_Motd
 
 Public Type tAPuestas
 
@@ -189,7 +189,7 @@ Sub ReSpawnOrigPosNpcs()
 
         Dim i     As Integer
 
-        Dim MiNPC As npc
+        Dim MiNPC As t_Npc
    
 100     For i = 1 To LastNPC
 

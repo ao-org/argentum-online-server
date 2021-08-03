@@ -17,8 +17,8 @@ Public Sub InvitarMiembro(ByVal UserIndex As Integer, ByVal InvitadoIndex As Int
 
         Dim skillsNecesarios As Integer
             
-100     Dim Remitente        As user: Remitente = UserList(UserIndex)
-102     Dim Invitado         As user: Invitado = UserList(InvitadoIndex)
+100     Dim Remitente        As t_User: Remitente = UserList(UserIndex)
+102     Dim Invitado         As t_User: Invitado = UserList(InvitadoIndex)
 
         ' Fundar un party require 15 puntos de liderazgo, pero el carisma ayuda
 104     skillsNecesarios = 15 - Remitente.Stats.UserAtributos(eAtributos.Carisma) \ 2
@@ -383,7 +383,7 @@ Public Sub CompartirUbicacion(ByVal UserIndex As Integer)
         Dim i       As Byte
         Dim a       As Byte
         Dim indexpj As Byte
-        Dim Lider   As user
+        Dim Lider   As t_User
     
 100     With UserList(UserIndex)
         

@@ -29,7 +29,7 @@ Attribute VB_Name = "ES"
 
 Option Explicit
 
-Private Type Position
+Private Type t_Position
 
     X As Integer
     Y As Integer
@@ -37,14 +37,14 @@ Private Type Position
 End Type
 
 'Item type
-Private Type tItem
+Private Type t_Item
 
     ObjIndex As Integer
     amount As Integer
 
 End Type
 
-Private Type tWorldPos
+Private Type t_WorldPos
 
     Map As Integer
     X As Byte
@@ -52,7 +52,7 @@ Private Type tWorldPos
 
 End Type
 
-Private Type grh
+Private Type t_Grh
 
     GrhIndex As Long
     FrameCounter As Single
@@ -63,7 +63,7 @@ Private Type grh
 
 End Type
 
-Private Type GrhData
+Private Type t_GrhData
 
     sX As Integer
     sY As Integer
@@ -79,7 +79,7 @@ Private Type GrhData
 
 End Type
 
-Private Type tMapHeader
+Private Type t_MapHeader
 
     NumeroBloqueados As Long
     NumeroLayers(1 To 4) As Long
@@ -92,7 +92,7 @@ Private Type tMapHeader
 
 End Type
 
-Private Type tDatosBloqueados
+Private Type t_DatosBloqueados
 
     X As Integer
     Y As Integer
@@ -100,7 +100,7 @@ Private Type tDatosBloqueados
 
 End Type
 
-Private Type tDatosGrh
+Private Type t_DatosGrh
 
     X As Integer
     Y As Integer
@@ -108,7 +108,7 @@ Private Type tDatosGrh
 
 End Type
 
-Private Type tDatosTrigger
+Private Type t_DatosTrigger
 
     X As Integer
     Y As Integer
@@ -116,7 +116,7 @@ Private Type tDatosTrigger
 
 End Type
 
-Private Type tDatosLuces
+Private Type t_DatosLuces
 
     X As Integer
     Y As Integer
@@ -125,7 +125,7 @@ Private Type tDatosLuces
 
 End Type
 
-Private Type tDatosParticulas
+Private Type t_DatosParticulas
 
     X As Integer
     Y As Integer
@@ -133,7 +133,7 @@ Private Type tDatosParticulas
 
 End Type
 
-Private Type tDatosNPC
+Private Type t_DatosNPC
 
     X As Integer
     Y As Integer
@@ -141,7 +141,7 @@ Private Type tDatosNPC
 
 End Type
 
-Private Type tDatosObjs
+Private Type t_DatosObjs
 
     X As Integer
     Y As Integer
@@ -150,7 +150,7 @@ Private Type tDatosObjs
 
 End Type
 
-Private Type tDatosTE
+Private Type t_DatosTE
 
     X As Integer
     Y As Integer
@@ -160,7 +160,7 @@ Private Type tDatosTE
 
 End Type
 
-Private Type tMapSize
+Private Type t_MapSize
 
     XMax As Integer
     XMin As Integer
@@ -169,7 +169,7 @@ Private Type tMapSize
 
 End Type
 
-Private Type tMapDat
+Private Type t_MapDat
 
     map_name As String
     backup_mode As Byte
@@ -191,8 +191,8 @@ Private Type tMapDat
 
 End Type
 
-Private MapSize As tMapSize
-Private MapDat  As tMapDat
+Private MapSize As t_MapSize
+Private MapDat  As t_MapDat
 
 Public Sub CargarSpawnList()
         
@@ -202,7 +202,7 @@ Public Sub CargarSpawnList()
         Dim n As Integer, LoopC As Integer
 
 100     n = val(GetVar(DatPath & "npcs.dat", "INIT", "NumNPCs"))
-102     ReDim SpawnList(n) As tCriaturasEntrenador
+102     ReDim SpawnList(n) As t_CriaturasEntrenador
 
 104     For LoopC = 1 To n
 
@@ -624,7 +624,7 @@ Public Sub CargarHechizos()
         'obtiene el numero de hechizos
 104     NumeroHechizos = val(Leer.GetValue("INIT", "NumeroHechizos"))
 
-106     ReDim Hechizos(1 To NumeroHechizos) As tHechizo
+106     ReDim Hechizos(1 To NumeroHechizos) As t_Hechizo
 
 108     frmCargando.cargar.Min = 0
 110     frmCargando.cargar.max = NumeroHechizos
@@ -840,21 +840,21 @@ Public Sub GrabarMapa(ByVal Map As Long, ByVal MAPFILE As String)
 102     Dim MapRoute As String: MapRoute = MAPFILE & ".csm"
 
         Dim fh           As Integer
-        Dim MH           As tMapHeader
+        Dim MH           As t_MapHeader
 
-        Dim Blqs()       As tDatosBloqueados
+        Dim Blqs()       As t_DatosBloqueados
 
-        Dim L1()         As tDatosGrh
-        Dim L2()         As tDatosGrh
-        Dim L3()         As tDatosGrh
-        Dim L4()         As tDatosGrh
+        Dim L1()         As t_DatosGrh
+        Dim L2()         As t_DatosGrh
+        Dim L3()         As t_DatosGrh
+        Dim L4()         As t_DatosGrh
 
-        Dim Triggers()   As tDatosTrigger
-        Dim Luces()      As tDatosLuces
-        Dim Particulas() As tDatosParticulas
-        Dim Objetos()    As tDatosObjs
-        Dim NPCs()       As tDatosNPC
-        Dim TEs()        As tDatosTE
+        Dim Triggers()   As t_DatosTrigger
+        Dim Luces()      As t_DatosLuces
+        Dim Particulas() As t_DatosParticulas
+        Dim Objetos()    As t_DatosObjs
+        Dim NPCs()       As t_DatosNPC
+        Dim TEs()        As t_DatosTE
 
         Dim i            As Long
         Dim j            As Integer
@@ -1289,7 +1289,7 @@ Sub LoadOBJData()
 114         .Value = 0
         End With
     
-116     ReDim Preserve ObjData(1 To NumObjDatas) As ObjData
+116     ReDim Preserve ObjData(1 To NumObjDatas) As t_ObjData
     
         Dim ObjKey As String
         Dim str As String, Field() As String
@@ -1787,9 +1787,9 @@ Sub CargarBackUp()
 116     frmCargando.cargar.Value = 0
 118     frmCargando.ToMapLbl.Visible = True
     
-120     ReDim MapData(1 To NumMaps, XMinMapSize To XMaxMapSize, YMinMapSize To YMaxMapSize) As MapBlock
+120     ReDim MapData(1 To NumMaps, XMinMapSize To XMaxMapSize, YMinMapSize To YMaxMapSize) As t_MapBlock
 
-122     ReDim MapInfo(1 To NumMaps) As MapInfo
+122     ReDim MapInfo(1 To NumMaps) As t_MapInfo
       
 124     For Map = 1 To NumMaps
 126         frmCargando.ToMapLbl = Map & "/" & NumMaps
@@ -1831,9 +1831,9 @@ Sub LoadMapData()
 110     frmCargando.cargar.Value = 0
 112     frmCargando.ToMapLbl.Visible = True
 
-114     ReDim MapData(1 To NumMaps, XMinMapSize To XMaxMapSize, YMinMapSize To YMaxMapSize) As MapBlock
+114     ReDim MapData(1 To NumMaps, XMinMapSize To XMaxMapSize, YMinMapSize To YMaxMapSize) As t_MapBlock
 
-116     ReDim MapInfo(1 To NumMaps) As MapInfo
+116     ReDim MapInfo(1 To NumMaps) As t_MapInfo
 
 118     For Map = 1 To NumMaps
     
@@ -1867,21 +1867,21 @@ Public Sub CargarMapaFormatoCSM(ByVal Map As Long, ByVal MAPFl As String)
 
         Dim fh           As Integer
     
-        Dim MH           As tMapHeader
+        Dim MH           As t_MapHeader
 
-        Dim Blqs()       As tDatosBloqueados
+        Dim Blqs()       As t_DatosBloqueados
 
-        Dim L1()         As tDatosGrh
-        Dim L2()         As tDatosGrh
-        Dim L3()         As tDatosGrh
-        Dim L4()         As tDatosGrh
+        Dim L1()         As t_DatosGrh
+        Dim L2()         As t_DatosGrh
+        Dim L3()         As t_DatosGrh
+        Dim L4()         As t_DatosGrh
 
-        Dim Triggers()   As tDatosTrigger
-        Dim Luces()      As tDatosLuces
-        Dim Particulas() As tDatosParticulas
-        Dim Objetos()    As tDatosObjs
-        Dim NPCs()       As tDatosNPC
-        Dim TEs()        As tDatosTE
+        Dim Triggers()   As t_DatosTrigger
+        Dim Luces()      As t_DatosLuces
+        Dim Particulas() As t_DatosParticulas
+        Dim Objetos()    As t_DatosObjs
+        Dim NPCs()       As t_DatosNPC
+        Dim TEs()        As t_DatosTE
 
         Dim Body         As Integer
         Dim Head         As Integer
@@ -2233,7 +2233,7 @@ Sub LoadSini()
 158     If MaxUsers = 0 Then
 
 160         MaxUsers = Temporal
-162         ReDim UserList(1 To MaxUsers) As user
+162         ReDim UserList(1 To MaxUsers) As t_User
 
         End If
 
@@ -2950,8 +2950,8 @@ Public Sub LoadRecursosEspeciales()
         
 
 100     If Not FileExist(DatPath & "RecursosEspeciales.dat", vbArchive) Then
-102         ReDim EspecialesTala(0) As obj
-104         ReDim EspecialesPesca(0) As obj
+102         ReDim EspecialesTala(0) As t_Obj
+104         ReDim EspecialesPesca(0) As t_Obj
             Exit Sub
 
         End If
@@ -2968,7 +2968,7 @@ Public Sub LoadRecursosEspeciales()
 110     Count = val(IniFile.GetValue("Tala", "Items"))
 
 112     If Count > 0 Then
-114         ReDim EspecialesTala(1 To Count) As obj
+114         ReDim EspecialesTala(1 To Count) As t_Obj
 
 116         For i = 1 To Count
 118             str = IniFile.GetValue("Tala", "Item" & i)
@@ -2978,7 +2978,7 @@ Public Sub LoadRecursosEspeciales()
 124             EspecialesTala(i).Data = val(Field(1))      ' Probabilidad
             Next
         Else
-126         ReDim EspecialesTala(0) As obj
+126         ReDim EspecialesTala(0) As t_Obj
 
         End If
     
@@ -2986,7 +2986,7 @@ Public Sub LoadRecursosEspeciales()
 128     Count = val(IniFile.GetValue("Pesca", "Items"))
 
 130     If Count > 0 Then
-132         ReDim EspecialesPesca(1 To Count) As obj
+132         ReDim EspecialesPesca(1 To Count) As t_Obj
 
 134         For i = 1 To Count
 136             str = IniFile.GetValue("Pesca", "Item" & i)
@@ -2996,7 +2996,7 @@ Public Sub LoadRecursosEspeciales()
 142             EspecialesPesca(i).Data = val(Field(1))     ' Probabilidad
             Next
         Else
-144         ReDim EspecialesPesca(0) As obj
+144         ReDim EspecialesPesca(0) As t_Obj
 
         End If
     
@@ -3017,7 +3017,7 @@ Public Sub LoadPesca()
         
 
 100     If Not FileExist(DatPath & "pesca.dat", vbArchive) Then
-102         ReDim Peces(0) As obj
+102         ReDim Peces(0) As t_Obj
 104         ReDim PesoPeces(0) As Long
             Exit Sub
 
@@ -3037,7 +3037,7 @@ Public Sub LoadPesca()
 114     ReDim PesoPeces(0 To MaxLvlCania) As Long
     
 116     If Count > 0 Then
-118         ReDim Peces(1 To Count) As obj
+118         ReDim Peces(1 To Count) As t_Obj
 
             ' Cargo todos los peces
 120         For i = 1 To Count
@@ -3065,7 +3065,7 @@ Public Sub LoadPesca()
 146             Peces(i).Data = PesoPeces(Peces(i).amount)
 148         Next i
         Else
-150         ReDim Peces(0) As obj
+150         ReDim Peces(0) As t_Obj
 
         End If
     
@@ -3090,7 +3090,7 @@ Private Sub QuickSortPeces(ByVal First As Long, ByVal Last As Long)
 
         Dim MidValue As Long
 
-        Dim aux      As obj
+        Dim aux      As t_Obj
     
 100     Low = First
 102     High = Last
@@ -3184,7 +3184,7 @@ Public Sub LoadRangosFaccion()
             On Error GoTo LoadRangosFaccion_Err
 
 100         If Not FileExist(DatPath & "rangos_faccion.dat", vbArchive) Then
-102             ReDim RangosFaccion(0) As tRangoFaccion
+102             ReDim RangosFaccion(0) As t_RangoFaccion
                 Exit Sub
 
             End If
@@ -3201,7 +3201,7 @@ Public Sub LoadRangosFaccion()
 110         If MaxRangoFaccion > 0 Then
                 ' Los rangos de la Armada se guardan en los indices impar, y los del caos en indices pares.
                 ' Luego, para acceder es tan facil como usar el Rango directamente para la Armada, y multiplicar por 2 para el Caos.
-112             ReDim RangosFaccion(1 To MaxRangoFaccion * 2) As tRangoFaccion
+112             ReDim RangosFaccion(1 To MaxRangoFaccion * 2) As t_RangoFaccion
 
 114             For i = 1 To MaxRangoFaccion
                     '<N>Rango=<NivelRequerido>-<AsesinatosRequeridos>-<Título>
@@ -3235,7 +3235,7 @@ Public Sub LoadRecompensasFaccion()
             On Error GoTo LoadRecompensasFaccion_Err
 
 100         If Not FileExist(DatPath & "recompensas_faccion.dat", vbArchive) Then
-102             ReDim RecompensasFaccion(0) As tRecompensaFaccion
+102             ReDim RecompensasFaccion(0) As t_RecompensaFaccion
                 Exit Sub
 
             End If
@@ -3250,7 +3250,7 @@ Public Sub LoadRecompensasFaccion()
 108         cantidadRecompensas = val(IniFile.GetValue("INIT", "NumRecompensas"))
 
 110         If cantidadRecompensas > 0 Then
-112             ReDim RecompensasFaccion(1 To cantidadRecompensas) As tRecompensaFaccion
+112             ReDim RecompensasFaccion(1 To cantidadRecompensas) As t_RecompensaFaccion
 
 114             For i = 1 To cantidadRecompensas
 116                 rank_and_objindex = Split(IniFile.GetValue("Recompensas", "Recompensa" & i), "-", , vbTextCompare)

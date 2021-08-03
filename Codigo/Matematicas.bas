@@ -44,7 +44,7 @@ Porcentaje_Err:
         
 End Function
 
-Function Distancia(ByRef wp1 As WorldPos, ByRef wp2 As WorldPos) As Long
+Function Distancia(ByRef wp1 As t_WorldPos, ByRef wp2 As t_WorldPos) As Long
         'Encuentra la distancia entre dos WorldPos
         
         On Error GoTo Distancia_Err
