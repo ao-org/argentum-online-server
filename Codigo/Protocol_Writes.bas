@@ -1602,7 +1602,7 @@ Public Sub WriteCreateFX(ByVal UserIndex As Integer, _
                          ByVal FX As Integer, _
                          ByVal FXLoops As Integer)
         '***************************************************
-        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
+        'Author: Juan Martín Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "CreateFX" message to the given user's outgoing data buffer
         '***************************************************
@@ -1627,7 +1627,7 @@ End Sub
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteUpdateUserStats(ByVal UserIndex As Integer)
         '***************************************************
-        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
+        'Author: Juan Martín Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "UpdateUserStats" message to the given user's outgoing data buffer
         '***************************************************
@@ -1679,7 +1679,7 @@ WriteUpdateUserKey_Err:
         '</EhFooter>
 End Sub
 
-' Actualiza el indicador de daï¿½o mï¿½gico
+' Actualiza el indicador de daño mágico
 Public Sub WriteUpdateDM(ByVal UserIndex As Integer)
         '<EhHeader>
         On Error GoTo WriteUpdateDM_Err
@@ -1689,14 +1689,14 @@ Public Sub WriteUpdateDM(ByVal UserIndex As Integer)
 
 100     With UserList(UserIndex).Invent
 
-            ' % daï¿½o mï¿½gico del arma
+            ' % daño mágico del arma
 102         If .WeaponEqpObjIndex > 0 Then
 104             Valor = Valor + ObjData(.WeaponEqpObjIndex).MagicDamageBonus
             End If
 
-            ' % daï¿½o mï¿½gico del anillo
-106         If .Daï¿½oMagicoEqpObjIndex > 0 Then
-108             Valor = Valor + ObjData(.Daï¿½oMagicoEqpObjIndex).MagicDamageBonus
+            ' % daño mágico del anillo
+106         If .DañoMagicoEqpObjIndex > 0 Then
+108             Valor = Valor + ObjData(.DañoMagicoEqpObjIndex).MagicDamageBonus
             End If
 
 110         Call Writer.WriteInt(ServerPacketID.UpdateDM)
@@ -1713,7 +1713,7 @@ WriteUpdateDM_Err:
         '</EhFooter>
 End Sub
 
-' Actualiza el indicador de resistencia mï¿½gica
+' Actualiza el indicador de resistencia mágica
 Public Sub WriteUpdateRM(ByVal UserIndex As Integer)
         '<EhHeader>
         On Error GoTo WriteUpdateRM_Err
@@ -1723,22 +1723,22 @@ Public Sub WriteUpdateRM(ByVal UserIndex As Integer)
 
 100     With UserList(UserIndex).Invent
 
-            ' Resistencia mï¿½gica de la armadura
+            ' Resistencia mágica de la armadura
 102         If .ArmourEqpObjIndex > 0 Then
 104             Valor = Valor + ObjData(.ArmourEqpObjIndex).ResistenciaMagica
             End If
 
-            ' Resistencia mï¿½gica del anillo
+            ' Resistencia mágica del anillo
 106         If .ResistenciaEqpObjIndex > 0 Then
 108             Valor = Valor + ObjData(.ResistenciaEqpObjIndex).ResistenciaMagica
             End If
 
-            ' Resistencia mï¿½gica del escudo
+            ' Resistencia mágica del escudo
 110         If .EscudoEqpObjIndex > 0 Then
 112             Valor = Valor + ObjData(.EscudoEqpObjIndex).ResistenciaMagica
             End If
 
-            ' Resistencia mï¿½gica del casco
+            ' Resistencia mágica del casco
 114         If .CascoEqpObjIndex > 0 Then
 116             Valor = Valor + ObjData(.CascoEqpObjIndex).ResistenciaMagica
             End If
@@ -2239,7 +2239,7 @@ End Sub
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteErrorMsg(ByVal UserIndex As Integer, ByVal Message As String)
         '***************************************************
-        'Author: Juan Martï¿½n Sotuyo Dodero (Maraxus)
+        'Author: Juan Martín Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
         'Writes the "ErrorMsg" message to the given user's outgoing data buffer
         '***************************************************
@@ -3576,7 +3576,7 @@ Public Sub WriteDatosGrupo(ByVal UserIndex As Integer)
 
 114                     If i = 1 Then
 116                         Call Writer.WriteString8(UserList(.Grupo.Miembros(i)).Name & _
-                                    "(Lï¿½der)")
+                                    "(Líder)")
                         Else
 118                         Call Writer.WriteString8(UserList(.Grupo.Miembros(i)).Name)
                         End If
@@ -3589,7 +3589,7 @@ Public Sub WriteDatosGrupo(ByVal UserIndex As Integer)
 
 124                     If i = 1 Then
 126                         Call Writer.WriteString8(UserList(UserList( _
-                                    .Grupo.Lider).Grupo.Miembros(i)).Name & "(Lï¿½der)")
+                                    .Grupo.Lider).Grupo.Miembros(i)).Name & "(Líder)")
                         Else
 128                         Call Writer.WriteString8(UserList(UserList( _
                                     .Grupo.Lider).Grupo.Miembros(i)).Name)
@@ -3680,9 +3680,9 @@ Public Sub WriteQuestDetails(ByVal UserIndex As Integer, _
 
         'ID del paquete
 100     Call Writer.WriteInt(ServerPacketID.QuestDetails)
-        'Se usa la variable QuestSlot para saber si enviamos la info de una quest ya empezada o la info de una quest que no se aceptï¿½ todavï¿½a (1 para el primer caso y 0 para el segundo)
+        'Se usa la variable QuestSlot para saber si enviamos la info de una quest ya empezada o la info de una quest que no se aceptí todavía (1 para el primer caso y 0 para el segundo)
 102     Call Writer.WriteInt8(IIf(QuestSlot, 1, 0))
-        'Enviamos nombre, descripciï¿½n y nivel requerido de la quest
+        'Enviamos nombre, descripción y nivel requerido de la quest
         'Call Writer.WriteString8(QuestList(QuestIndex).Nombre)
         'Call Writer.WriteString8(QuestList(QuestIndex).Desc)
 104     Call Writer.WriteInt16(QuestIndex)
@@ -3698,7 +3698,7 @@ Public Sub WriteQuestDetails(ByVal UserIndex As Integer, _
 116             Call Writer.WriteInt16(QuestList(QuestIndex).RequiredNPC(i).amount)
 118             Call Writer.WriteInt16(QuestList(QuestIndex).RequiredNPC(i).NpcIndex)
 
-                'Si es una quest ya empezada, entonces mandamos los NPCs que matï¿½.
+                'Si es una quest ya empezada, entonces mandamos los NPCs que matí.
 120             If QuestSlot Then
 122                 Call Writer.WriteInt16(UserList(UserIndex).QuestStats.Quests( _
                             QuestSlot).NPCsKilled(i))
@@ -3777,7 +3777,7 @@ Public Sub WriteQuestListSend(ByVal UserIndex As Integer)
             'Escribimos la cantidad de quests
 114         Call Writer.WriteInt8(tmpByte)
 
-            'Escribimos la lista de quests (sacamos el ï¿½ltimo caracter)
+            'Escribimos la lista de quests (sacamos el íltimo caracter)
 116         If tmpByte Then
 118             Call Writer.WriteString8(Left$(tmpStr, Len(tmpStr) - 1))
             End If
@@ -3822,7 +3822,7 @@ Public Sub WriteNpcQuestListSend(ByVal UserIndex As Integer, ByVal NpcIndex As I
 118             For i = 1 To QuestList(QuestIndex).RequiredNPCs
 120                 Call Writer.WriteInt16(QuestList(QuestIndex).RequiredNPC(i).amount)
 122                 Call Writer.WriteInt16(QuestList(QuestIndex).RequiredNPC(i).NpcIndex)
-                    'Si es una quest ya empezada, entonces mandamos los NPCs que matï¿½.
+                    'Si es una quest ya empezada, entonces mandamos los NPCs que matí.
                     'If QuestSlot Then
                     ' Call Writer.WriteInt16(UserList(UserIndex).QuestStats.Quests(QuestSlot).NPCsKilled(i))
                     ' End If
@@ -5175,33 +5175,35 @@ Public Function PrepareMessageNevarToggle()
         On Error GoTo PrepareMessageNevarToggle_Err
         '</EhHeader>
 100     Call Writer.WriteInt(ServerPacketID.NieveToggle)
-
+        '<EhFooter>
         Exit Function
 
 PrepareMessageNevarToggle_Err:
         Call Writer.Clear
         Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageNevarToggle", Erl)
-
+        '</EhFooter>
 End Function
 
 Public Function PrepareMessageDoAnimation(ByVal CharIndex As Integer, _
                                           ByVal Animation As Integer)
-
+        '<EhHeader>
         On Error GoTo PrepareMessageDoAnimation_Err
-
+        '</EhHeader>
 100     Call Writer.WriteInt(ServerPacketID.DoAnimation)
 102     Call Writer.WriteInt16(CharIndex)
 104     Call Writer.WriteInt16(Animation)
-
+        '<EhFooter>
         Exit Function
 
 PrepareMessageDoAnimation_Err:
         Call Writer.Clear
         Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageDoAnimation", Erl)
+        '</EhFooter>
 End Function
 
+' \End: Prepares
 Public Function WritePescarEspecial(ByVal objIndex As Integer)
-
+        '<EhHeader>
         On Error GoTo PescarEspecial_Err
 100     Call Writer.WriteInt(ServerPacketID.PescarEspecial)
         Call Writer.WriteInt16(objIndex)
