@@ -5186,24 +5186,22 @@ End Function
 
 Public Function PrepareMessageDoAnimation(ByVal CharIndex As Integer, _
                                           ByVal Animation As Integer)
-        '<EhHeader>
+
         On Error GoTo PrepareMessageDoAnimation_Err
-        '</EhHeader>
+
 100     Call Writer.WriteInt(ServerPacketID.DoAnimation)
 102     Call Writer.WriteInt16(CharIndex)
 104     Call Writer.WriteInt16(Animation)
-        '<EhFooter>
+
         Exit Function
 
 PrepareMessageDoAnimation_Err:
         Call Writer.Clear
         Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageDoAnimation", Erl)
-        '</EhFooter>
 End Function
 
-' \End: Prepares
 Public Function WritePescarEspecial(ByVal objIndex As Integer)
-        '<EhHeader>
+
         On Error GoTo PescarEspecial_Err
 100     Call Writer.WriteInt(ServerPacketID.PescarEspecial)
         Call Writer.WriteInt16(objIndex)
