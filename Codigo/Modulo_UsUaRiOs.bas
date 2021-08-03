@@ -135,12 +135,29 @@ Public Function ConnectUser_Check(ByVal UserIndex As Integer, _
         Else
 
             If ServerSoloGMs > 0 Then
+            
+                Dim RS As ADODB.Recordset
+                Dim LoopC As Integer
+                Dim UserMail As String
+                
+                Set RS = Query("SELECT email from account a inner join user u  on a.id = u.account_id where u.name = LOWER(?);", LCase(Name))
+                
+                If Not RS Is Nothing Then
+                    LoopC = 1
+                    While Not RS.EOF
+                        UserMail = RS!Email
+                        LoopC = LoopC + 1
+                        RS.MoveNext
+                    Wend
+                End If
+                
+                
                 Dim i As Integer
                 Dim EsCuentaGM As Boolean
 
                 For i = 0 To AdministratorAccounts.Count - 1
                     ' Si el e-mail está declarado junto al nick de la cuenta donde esta el PJ GM en el Server.ini te dejo entrar.
-                    If UCase$(AdministratorAccounts.Items(i)) = UCase$(.Email) Then
+                    If UCase$(AdministratorAccounts.Items(i)) = UCase$(UserMail) Then
                         EsCuentaGM = True
                     End If
                 Next
