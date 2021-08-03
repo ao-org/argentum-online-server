@@ -1732,7 +1732,7 @@ Public Sub CargarTipoUsuario(ByVal UserIndex As Integer)
         If cantidadDonadores > 0 Then
         
             Dim emailDonador As String
-            Dim rango As eTipoUsuario
+            Dim Rango As e_TipoUsuario
             
             Dim i As Integer
             
@@ -1753,7 +1753,7 @@ Public Sub CargarTipoUsuario(ByVal UserIndex As Integer)
             
         End If
         
-        UserList(UserIndex).Stats.tipoUsuario = eTipoUsuario.tNormal
+        UserList(UserIndex).Stats.tipoUsuario = e_TipoUsuario.tNormal
 152     Set IniFile = Nothing
 End Sub
 

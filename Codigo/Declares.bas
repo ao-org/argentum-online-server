@@ -1373,7 +1373,7 @@ Public Type t_BancoInventario
 
 End Type
 
-Public Enum eTipoUsuario
+Public Enum e_TipoUsuario
     tNormal = 0
     tCafecito
     tHeroe
@@ -1396,7 +1396,7 @@ End Enum
 'Estadisticas de los usuarios
 Public Type t_UserStats
 
-    tipoUsuario As eTipoUsuario
+    tipoUsuario As e_TipoUsuario
     GLD As Long 'Dinero
     InventLevel As Byte 'Filas extra desbloqueadas en el inventario
     Banco As Long
