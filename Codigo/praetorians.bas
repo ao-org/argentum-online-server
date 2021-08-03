@@ -41,7 +41,7 @@ Public PRETORIANO_RESPAWNEA     As Boolean
 ''sonido. Son los numeros de los wavs del cliente.
 Public Const SONIDO_DRAGON_VIVO As Integer = 30
 
-Public Enum ePretorianAI
+Public Enum e_PretorianAI
 
     King = 1
     Healer
@@ -90,7 +90,7 @@ Public Sub LoadPretorianData()
 
         ' KINGS
 118     TempInt = val(FileReader.GetValue("KING", "Cantidad"))
-120     PretorianAIOffset(ePretorianAI.King) = 1
+120     PretorianAIOffset(e_PretorianAI.King) = 1
 
 122     For counter = 1 To TempInt
 
@@ -105,7 +105,7 @@ Public Sub LoadPretorianData()
 
         ' HEALERS
 134     TempInt = val(FileReader.GetValue("HEALER", "Cantidad"))
-136     PretorianAIOffset(ePretorianAI.Healer) = PretorianIndex
+136     PretorianAIOffset(e_PretorianAI.Healer) = PretorianIndex
 
 138     For counter = 1 To TempInt
 
@@ -120,7 +120,7 @@ Public Sub LoadPretorianData()
 
         ' SPELLCASTER
 150     TempInt = val(FileReader.GetValue("SPELLCASTER", "Cantidad"))
-152     PretorianAIOffset(ePretorianAI.SpellCaster) = PretorianIndex
+152     PretorianAIOffset(e_PretorianAI.SpellCaster) = PretorianIndex
 
 154     For counter = 1 To TempInt
 
@@ -135,7 +135,7 @@ Public Sub LoadPretorianData()
 
         ' SWORDSWINGER
 166     TempInt = val(FileReader.GetValue("SWORDSWINGER", "Cantidad"))
-168     PretorianAIOffset(ePretorianAI.SwordMaster) = PretorianIndex
+168     PretorianAIOffset(e_PretorianAI.SwordMaster) = PretorianIndex
 
 170     For counter = 1 To TempInt
 
@@ -150,7 +150,7 @@ Public Sub LoadPretorianData()
 
         ' LONGRANGE
 182     TempInt = val(FileReader.GetValue("LONGRANGE", "Cantidad"))
-184     PretorianAIOffset(ePretorianAI.Shooter) = PretorianIndex
+184     PretorianAIOffset(e_PretorianAI.Shooter) = PretorianIndex
 
 186     For counter = 1 To TempInt
 
@@ -165,7 +165,7 @@ Public Sub LoadPretorianData()
 
         ' THIEF
 198     TempInt = val(FileReader.GetValue("THIEF", "Cantidad"))
-200     PretorianAIOffset(ePretorianAI.Thief) = PretorianIndex
+200     PretorianAIOffset(e_PretorianAI.Thief) = PretorianIndex
 
 202     For counter = 1 To TempInt
 
@@ -179,16 +179,16 @@ Public Sub LoadPretorianData()
 212     Next counter
 
         ' Last
-214     PretorianAIOffset(ePretorianAI.Last) = PretorianIndex
+214     PretorianAIOffset(e_PretorianAI.Last) = PretorianIndex
 
         ' Inicializa los clanes pretorianos
-216     ReDim ClanPretoriano(ePretorianType.Default To ePretorianType.Custom) As clsClanPretoriano
-218     Set ClanPretoriano(ePretorianType.Default) = New clsClanPretoriano ' Clan default
-220     Set ClanPretoriano(ePretorianType.Custom) = New clsClanPretoriano ' Invocable por gms
+216     ReDim ClanPretoriano(e_PretorianType.Default To e_PretorianType.Custom) As clsClanPretoriano
+218     Set ClanPretoriano(e_PretorianType.Default) = New clsClanPretoriano ' Clan default
+220     Set ClanPretoriano(e_PretorianType.Custom) = New clsClanPretoriano ' Invocable por gms
         
         'Invocamos al Clan Pretoriano en su respectivo mapa.
         'Activando su respawn automatico.
-222     If Not ClanPretoriano(ePretorianType.Default).SpawnClan(MAPA_PRETORIANO, PRETORIANO_X, PRETORIANO_Y, ePretorianType.Default, PRETORIANO_RESPAWNEA) Then
+222     If Not ClanPretoriano(e_PretorianType.Default).SpawnClan(MAPA_PRETORIANO, PRETORIANO_X, PRETORIANO_Y, e_PretorianType.Default, PRETORIANO_RESPAWNEA) Then
 224         Call LogError("No se pudo invocar al Clan Pretoriano.")
             Exit Sub
         End If

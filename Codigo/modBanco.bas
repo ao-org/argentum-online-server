@@ -57,7 +57,7 @@ IniciarBanco_Err:
         
 End Sub
 
-Sub SendBanObj(UserIndex As Integer, Slot As Byte, Object As UserOBJ)
+Sub SendBanObj(UserIndex As Integer, Slot As Byte, Object As t_UserOBJ)
         
         On Error GoTo SendBanObj_Err
         
@@ -80,7 +80,7 @@ Sub UpdateBanUserInv(ByVal UpdateAll As Boolean, ByVal UserIndex As Integer, ByV
         On Error GoTo UpdateBanUserInv_Err
         
 
-        Dim NullObj As UserOBJ
+        Dim NullObj As t_UserOBJ
 
         Dim LoopC   As Byte
 
@@ -215,7 +215,7 @@ Function UserReciveObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, By
 132                 Slot = Slot + 1
 
 134                 If Slot > UserList(UserIndex).CurrentInventorySlots Then
-136                     Call WriteConsoleMsg(UserIndex, "No podés tener mas objetos.", FontTypeNames.FONTTYPE_INFO)
+136                     Call WriteConsoleMsg(UserIndex, "No podés tener mAs t_Objetos.", e_FontTypeNames.FONTTYPE_INFO)
                         Exit Function
 
                     End If
@@ -244,7 +244,7 @@ Function UserReciveObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, By
     
 152         Call QuitarBancoInvItem(UserIndex, CByte(ObjIndex), Cantidad)
         Else
-154         Call WriteConsoleMsg(UserIndex, "No podés tener mas objetos.", FontTypeNames.FONTTYPE_INFO)
+154         Call WriteConsoleMsg(UserIndex, "No podés tener mAs t_Objetos.", e_FontTypeNames.FONTTYPE_INFO)
 
         End If
 
@@ -384,7 +384,7 @@ Function UserDejaObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, ByVa
 132                 Slot = Slot + 1
             
 134                 If Slot > MAX_BANCOINVENTORY_SLOTS Then
-136                     Call WriteConsoleMsg(UserIndex, "No tienes mas espacio en el banco.", FontTypeNames.FONTTYPE_INFOIAO)
+136                     Call WriteConsoleMsg(UserIndex, "No tienes mas espacio en el banco.", e_FontTypeNames.FONTTYPE_INFOIAO)
                         Exit Function
 
                     End If
@@ -417,7 +417,7 @@ Function UserDejaObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, ByVa
 154             Call QuitarUserInvItem(UserIndex, CByte(ObjIndex), Cantidad)
 
             Else
-156             Call WriteConsoleMsg(UserIndex, "El banco no puede cargar tantos objetos.", FontTypeNames.FONTTYPE_INFO)
+156             Call WriteConsoleMsg(UserIndex, "El banco no puede cargar tantos objetos.", e_FontTypeNames.FONTTYPE_INFO)
 
             End If
 
@@ -439,13 +439,13 @@ Sub SendUserBovedaTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
 
         Dim j As Integer
 
-100     Call WriteConsoleMsg(sendIndex, UserList(UserIndex).Name, FontTypeNames.FONTTYPE_INFO)
-102     Call WriteConsoleMsg(sendIndex, " Tiene " & UserList(UserIndex).BancoInvent.NroItems & " objetos.", FontTypeNames.FONTTYPE_INFO)
+100     Call WriteConsoleMsg(sendIndex, UserList(UserIndex).Name, e_FontTypeNames.FONTTYPE_INFO)
+102     Call WriteConsoleMsg(sendIndex, " Tiene " & UserList(UserIndex).BancoInvent.NroItems & " objetos.", e_FontTypeNames.FONTTYPE_INFO)
 
 104     For j = 1 To MAX_BANCOINVENTORY_SLOTS
 
 106         If UserList(UserIndex).BancoInvent.Object(j).ObjIndex > 0 Then
-108             Call WriteConsoleMsg(sendIndex, " Objeto " & j & " " & ObjData(UserList(UserIndex).BancoInvent.Object(j).ObjIndex).Name & " Cantidad:" & UserList(UserIndex).BancoInvent.Object(j).amount, FontTypeNames.FONTTYPE_INFO)
+108             Call WriteConsoleMsg(sendIndex, " Objeto " & j & " " & ObjData(UserList(UserIndex).BancoInvent.Object(j).ObjIndex).Name & " Cantidad:" & UserList(UserIndex).BancoInvent.Object(j).amount, e_FontTypeNames.FONTTYPE_INFO)
 
             End If
 

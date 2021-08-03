@@ -187,9 +187,9 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
 160                 UserList(UserIndex).Stats.Exp = UserList(UserIndex).Stats.Exp + (.RewardEXP * ExpMult)
 162                 Call WriteUpdateExp(UserIndex)
 164                 Call CheckUserLevel(UserIndex)
-166                 Call WriteLocaleMsg(UserIndex, "140", FontTypeNames.FONTTYPE_EXP, (.RewardEXP * ExpMult))
+166                 Call WriteLocaleMsg(UserIndex, "140", e_FontTypeNames.FONTTYPE_EXP, (.RewardEXP * ExpMult))
                 Else
-168                 Call WriteConsoleMsg(UserIndex, "No se te ha dado experiencia porque eres nivel máximo.", FontTypeNames.FONTTYPE_INFO)
+168                 Call WriteConsoleMsg(UserIndex, "No se te ha dado experiencia porque eres nivel máximo.", e_FontTypeNames.FONTTYPE_INFO)
 
                 End If
 
@@ -198,7 +198,7 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
             'Se entrega el oro.
 170         If .RewardGLD Then
 172             UserList(UserIndex).Stats.GLD = UserList(UserIndex).Stats.GLD + (.RewardGLD * OroMult)
-174             Call WriteConsoleMsg(UserIndex, "Has ganado " & PonerPuntos((.RewardGLD * OroMult)) & " monedas de oro como recompensa.", FontTypeNames.FONTTYPE_INFOIAO)
+174             Call WriteConsoleMsg(UserIndex, "Has ganado " & PonerPuntos((.RewardGLD * OroMult)) & " monedas de oro como recompensa.", e_FontTypeNames.FONTTYPE_INFOIAO)
 176             Call WriteUpdateGold(UserIndex)
             End If
         
@@ -209,7 +209,7 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
 
 182                 If .RewardOBJ(i).amount Then
 184                     Call MeterItemEnInventario(UserIndex, .RewardOBJ(i))
-186                     Call WriteConsoleMsg(UserIndex, "Has recibido " & QuestList(QuestIndex).RewardOBJ(i).amount & " " & ObjData(QuestList(QuestIndex).RewardOBJ(i).ObjIndex).Name & " como recompensa.", FontTypeNames.FONTTYPE_INFOIAO)
+186                     Call WriteConsoleMsg(UserIndex, "Has recibido " & QuestList(QuestIndex).RewardOBJ(i).amount & " " & ObjData(QuestList(QuestIndex).RewardOBJ(i).ObjIndex).Name & " como recompensa.", e_FontTypeNames.FONTTYPE_INFOIAO)
 
                     End If
 
@@ -581,7 +581,7 @@ Public Sub EnviarQuest(ByVal UserIndex As Integer)
     
         'Esta el personaje en la distancia correcta?
 104     If Distancia(UserList(UserIndex).Pos, NpcList(NpcIndex).Pos) > 5 Then
-106         Call WriteConsoleMsg(UserIndex, "Estas demasiado lejos.", FontTypeNames.FONTTYPE_INFO)
+106         Call WriteConsoleMsg(UserIndex, "Estas demasiado lejos.", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
 
         End If

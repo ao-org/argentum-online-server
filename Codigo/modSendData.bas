@@ -101,7 +101,7 @@ Public Sub SendData(ByVal sndRoute As SendTarget, ByVal sndIndex As Integer, Par
 116         Case SendTarget.ToAdmins
 118             For LoopC = 1 To LastUser
 120                 If UserList(LoopC).ConnIDValida Then
-122                     If UserList(LoopC).flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios Or PlayerType.Consejero) Then
+122                     If UserList(LoopC).flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios Or e_PlayerType.Consejero) Then
 124                         Call modNetwork.Send(LoopC, Buffer)
                         End If
                     End If
@@ -196,7 +196,7 @@ Public Sub SendData(ByVal sndRoute As SendTarget, ByVal sndIndex As Integer, Par
 234         Case SendTarget.ToConsejo
 236             For LoopC = 1 To LastUser
 238                 If (UserList(LoopC).ConnIDValida) Then
-240                     If UserList(LoopC).flags.Privilegios And PlayerType.RoyalCouncil Then
+240                     If UserList(LoopC).flags.Privilegios And e_PlayerType.RoyalCouncil Then
 242                         Call modNetwork.Send(LoopC, Buffer)
                         End If
                     End If
@@ -205,7 +205,7 @@ Public Sub SendData(ByVal sndRoute As SendTarget, ByVal sndIndex As Integer, Par
 246         Case SendTarget.ToConsejoCaos
 248             For LoopC = 1 To LastUser
 250                 If (UserList(LoopC).ConnIDValida) Then
-252                     If UserList(LoopC).flags.Privilegios And PlayerType.ChaosCouncil Then
+252                     If UserList(LoopC).flags.Privilegios And e_PlayerType.ChaosCouncil Then
 254                         Call modNetwork.Send(LoopC, Buffer)
                         End If
                     End If
@@ -214,7 +214,7 @@ Public Sub SendData(ByVal sndRoute As SendTarget, ByVal sndIndex As Integer, Par
 258         Case SendTarget.ToRolesMasters
 260             For LoopC = 1 To LastUser
 262                 If (UserList(LoopC).ConnIDValida) Then
-264                     If UserList(LoopC).flags.Privilegios And PlayerType.RoleMaster Then
+264                     If UserList(LoopC).flags.Privilegios And e_PlayerType.RoleMaster Then
 266                         Call modNetwork.Send(LoopC, Buffer)
                         End If
                     End If
@@ -259,7 +259,7 @@ Public Sub SendData(ByVal sndRoute As SendTarget, ByVal sndIndex As Integer, Par
 318         Case SendTarget.ToCiudadanosYRMs
 320             For LoopC = 1 To LastUser
 322                 If (UserList(LoopC).ConnIDValida) Then
-324                     If Status(LoopC) < 2 Or (UserList(LoopC).flags.Privilegios And PlayerType.RoleMaster) <> 0 Then
+324                     If Status(LoopC) < 2 Or (UserList(LoopC).flags.Privilegios And e_PlayerType.RoleMaster) <> 0 Then
 326                         Call modNetwork.Send(LoopC, Buffer)
                         End If
                     End If
@@ -268,7 +268,7 @@ Public Sub SendData(ByVal sndRoute As SendTarget, ByVal sndIndex As Integer, Par
 330         Case SendTarget.ToCriminalesYRMs
 332             For LoopC = 1 To LastUser
 334                 If (UserList(LoopC).ConnIDValida) Then
-336                     If Status(LoopC) = 2 Or (UserList(LoopC).flags.Privilegios And PlayerType.RoleMaster) <> 0 Then
+336                     If Status(LoopC) = 2 Or (UserList(LoopC).flags.Privilegios And e_PlayerType.RoleMaster) <> 0 Then
 338                         Call modNetwork.Send(LoopC, Buffer)
                         End If
                     End If
@@ -277,7 +277,7 @@ Public Sub SendData(ByVal sndRoute As SendTarget, ByVal sndIndex As Integer, Par
 342         Case SendTarget.ToRealYRMs
 344             For LoopC = 1 To LastUser
 346                 If (UserList(LoopC).ConnIDValida) Then
-348                     If UserList(LoopC).Faccion.ArmadaReal = 1 Or (UserList(LoopC).flags.Privilegios And PlayerType.RoleMaster) <> 0 Then
+348                     If UserList(LoopC).Faccion.ArmadaReal = 1 Or (UserList(LoopC).flags.Privilegios And e_PlayerType.RoleMaster) <> 0 Then
 350                         Call modNetwork.Send(LoopC, Buffer)
                         End If
                     End If
@@ -286,7 +286,7 @@ Public Sub SendData(ByVal sndRoute As SendTarget, ByVal sndIndex As Integer, Par
 354         Case SendTarget.ToCaosYRMs
 356             For LoopC = 1 To LastUser
 358                 If (UserList(LoopC).ConnIDValida) Then
-360                     If UserList(LoopC).Faccion.FuerzasCaos = 1 Or (UserList(LoopC).flags.Privilegios And PlayerType.RoleMaster) <> 0 Then
+360                     If UserList(LoopC).Faccion.FuerzasCaos = 1 Or (UserList(LoopC).flags.Privilegios And e_PlayerType.RoleMaster) <> 0 Then
 362                         Call modNetwork.Send(LoopC, Buffer)
                         End If
                     End If
@@ -672,7 +672,7 @@ Private Sub SendToDeadUserArea(ByVal UserIndex As Integer, ByVal Buffer As Netwo
 116             If UserList(tempIndex).AreasInfo.AreaReciveY And AreaY Then
 
                     'Dead and admins read
-118                 If UserList(tempIndex).ConnIDValida = True And (UserList(tempIndex).flags.Muerto = 1 Or (UserList(tempIndex).flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios Or PlayerType.Consejero)) <> 0) Then
+118                 If UserList(tempIndex).ConnIDValida = True And (UserList(tempIndex).flags.Muerto = 1 Or (UserList(tempIndex).flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios Or e_PlayerType.Consejero)) <> 0) Then
 120                     Call modNetwork.Send(tempIndex, Buffer)
 
                     End If
@@ -773,7 +773,7 @@ Private Sub SendToAdminsButConsejerosArea(ByVal UserIndex As Integer, ByVal Buff
 114         If UserList(tempIndex).AreasInfo.AreaReciveX And AreaX Then  'Esta en el area?
 116             If UserList(tempIndex).AreasInfo.AreaReciveY And AreaY Then
 118                 If UserList(tempIndex).ConnIDValida Then
-120                     If UserList(tempIndex).flags.Privilegios And (PlayerType.SemiDios Or PlayerType.Dios Or PlayerType.Admin) Then
+120                     If UserList(tempIndex).flags.Privilegios And (e_PlayerType.SemiDios Or e_PlayerType.Dios Or e_PlayerType.Admin) Then
                             Call modNetwork.Send(tempIndex, Buffer)
                         End If
 

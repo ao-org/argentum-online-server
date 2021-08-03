@@ -40,7 +40,7 @@ Public Const MAXDISTANCIAARCO  As Byte = 18
 Public Const MAXDISTANCIAMAGIA As Byte = 18
 
 
-Private Function ModificadorPoderAtaqueArmas(ByVal clase As eClass) As Single
+Private Function ModificadorPoderAtaqueArmas(ByVal clase As e_Class) As Single
         
         On Error GoTo ModificadorPoderAtaqueArmas_Err
         
@@ -56,7 +56,7 @@ ModificadorPoderAtaqueArmas_Err:
         
 End Function
 
-Private Function ModificadorPoderAtaqueProyectiles(ByVal clase As eClass) As Single
+Private Function ModificadorPoderAtaqueProyectiles(ByVal clase As e_Class) As Single
         
         On Error GoTo ModificadorPoderAtaqueProyectiles_Err
         
@@ -72,7 +72,7 @@ ModificadorPoderAtaqueProyectiles_Err:
         
 End Function
 
-Private Function ModicadorDañoClaseArmas(ByVal clase As eClass) As Single
+Private Function ModicadorDañoClaseArmas(ByVal clase As e_Class) As Single
         
         On Error GoTo ModicadorDañoClaseArmas_Err
         
@@ -88,7 +88,7 @@ ModicadorDañoClaseArmas_Err:
         
 End Function
 
-Private Function ModicadorApuñalarClase(ByVal clase As eClass) As Single
+Private Function ModicadorApuñalarClase(ByVal clase As e_Class) As Single
         
         On Error GoTo ModicadorApuñalarClase_Err
         
@@ -104,7 +104,7 @@ ModicadorApuñalarClase_Err:
         
 End Function
 
-Private Function ModicadorDañoClaseProyectiles(ByVal clase As eClass) As Single
+Private Function ModicadorDañoClaseProyectiles(ByVal clase As e_Class) As Single
         
         On Error GoTo ModicadorDañoClaseProyectiles_Err
         
@@ -120,7 +120,7 @@ ModicadorDañoClaseProyectiles_Err:
         
 End Function
 
-Private Function ModEvasionDeEscudoClase(ByVal clase As eClass) As Single
+Private Function ModEvasionDeEscudoClase(ByVal clase As e_Class) As Single
         
         On Error GoTo ModEvasionDeEscudoClase_Err
         
@@ -225,7 +225,7 @@ Private Function PoderEvasionEscudo(ByVal UserIndex As Integer) As Long
         On Error GoTo PoderEvasionEscudo_Err
         
 
-100     PoderEvasionEscudo = (UserList(UserIndex).Stats.UserSkills(eSkill.Defensa) * ModEvasionDeEscudoClase(UserList(UserIndex).clase)) / 2
+100     PoderEvasionEscudo = (UserList(UserIndex).Stats.UserSkills(e_Skill.Defensa) * ModEvasionDeEscudoClase(UserList(UserIndex).clase)) / 2
 
         
         Exit Function
@@ -244,7 +244,7 @@ Private Function PoderEvasion(ByVal UserIndex As Integer) As Long
         Dim lTemp As Long
 
 100     With UserList(UserIndex)
-102         lTemp = (.Stats.UserSkills(eSkill.Tacticas) + .Stats.UserSkills(eSkill.Tacticas) / 33 * .Stats.UserAtributos(eAtributos.Agilidad)) * ModClase(.clase).Evasion
+102         lTemp = (.Stats.UserSkills(e_Skill.Tacticas) + .Stats.UserSkills(e_Skill.Tacticas) / 33 * .Stats.UserAtributos(e_Atributos.Agilidad)) * ModClase(.clase).Evasion
        
 104         PoderEvasion = (lTemp + (2.5 * Maximo(CInt(.Stats.ELV) - 12, 0)))
 
@@ -266,14 +266,14 @@ Private Function PoderAtaqueArma(ByVal UserIndex As Integer) As Long
 
         Dim PoderAtaqueTemp As Long
 
-100     If UserList(UserIndex).Stats.UserSkills(eSkill.Armas) < 31 Then
-102         PoderAtaqueTemp = (UserList(UserIndex).Stats.UserSkills(eSkill.Armas) * ModificadorPoderAtaqueArmas(UserList(UserIndex).clase))
-104     ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Armas) < 61 Then
-106         PoderAtaqueTemp = ((UserList(UserIndex).Stats.UserSkills(eSkill.Armas) + UserList(UserIndex).Stats.UserAtributos(eAtributos.Agilidad)) * ModificadorPoderAtaqueArmas(UserList(UserIndex).clase))
-108     ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Armas) < 91 Then
-110         PoderAtaqueTemp = ((UserList(UserIndex).Stats.UserSkills(eSkill.Armas) + (2 * UserList(UserIndex).Stats.UserAtributos(eAtributos.Agilidad))) * ModificadorPoderAtaqueArmas(UserList(UserIndex).clase))
+100     If UserList(UserIndex).Stats.UserSkills(e_Skill.Armas) < 31 Then
+102         PoderAtaqueTemp = (UserList(UserIndex).Stats.UserSkills(e_Skill.Armas) * ModificadorPoderAtaqueArmas(UserList(UserIndex).clase))
+104     ElseIf UserList(UserIndex).Stats.UserSkills(e_Skill.Armas) < 61 Then
+106         PoderAtaqueTemp = ((UserList(UserIndex).Stats.UserSkills(e_Skill.Armas) + UserList(UserIndex).Stats.UserAtributos(e_Atributos.Agilidad)) * ModificadorPoderAtaqueArmas(UserList(UserIndex).clase))
+108     ElseIf UserList(UserIndex).Stats.UserSkills(e_Skill.Armas) < 91 Then
+110         PoderAtaqueTemp = ((UserList(UserIndex).Stats.UserSkills(e_Skill.Armas) + (2 * UserList(UserIndex).Stats.UserAtributos(e_Atributos.Agilidad))) * ModificadorPoderAtaqueArmas(UserList(UserIndex).clase))
         Else
-112         PoderAtaqueTemp = ((UserList(UserIndex).Stats.UserSkills(eSkill.Armas) + (3 * UserList(UserIndex).Stats.UserAtributos(eAtributos.Agilidad))) * ModificadorPoderAtaqueArmas(UserList(UserIndex).clase))
+112         PoderAtaqueTemp = ((UserList(UserIndex).Stats.UserSkills(e_Skill.Armas) + (3 * UserList(UserIndex).Stats.UserAtributos(e_Atributos.Agilidad))) * ModificadorPoderAtaqueArmas(UserList(UserIndex).clase))
 
         End If
 
@@ -295,14 +295,14 @@ Private Function PoderAtaqueProyectil(ByVal UserIndex As Integer) As Long
 
         Dim PoderAtaqueTemp As Long
 
-100     If UserList(UserIndex).Stats.UserSkills(eSkill.Proyectiles) < 31 Then
-102         PoderAtaqueTemp = (UserList(UserIndex).Stats.UserSkills(eSkill.Proyectiles) * ModificadorPoderAtaqueProyectiles(UserList(UserIndex).clase))
-104     ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Proyectiles) < 61 Then
-106         PoderAtaqueTemp = ((UserList(UserIndex).Stats.UserSkills(eSkill.Proyectiles) + UserList(UserIndex).Stats.UserAtributos(eAtributos.Agilidad)) * ModificadorPoderAtaqueProyectiles(UserList(UserIndex).clase))
-108     ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Proyectiles) < 91 Then
-110         PoderAtaqueTemp = ((UserList(UserIndex).Stats.UserSkills(eSkill.Proyectiles) + (2 * UserList(UserIndex).Stats.UserAtributos(eAtributos.Agilidad))) * ModificadorPoderAtaqueProyectiles(UserList(UserIndex).clase))
+100     If UserList(UserIndex).Stats.UserSkills(e_Skill.Proyectiles) < 31 Then
+102         PoderAtaqueTemp = (UserList(UserIndex).Stats.UserSkills(e_Skill.Proyectiles) * ModificadorPoderAtaqueProyectiles(UserList(UserIndex).clase))
+104     ElseIf UserList(UserIndex).Stats.UserSkills(e_Skill.Proyectiles) < 61 Then
+106         PoderAtaqueTemp = ((UserList(UserIndex).Stats.UserSkills(e_Skill.Proyectiles) + UserList(UserIndex).Stats.UserAtributos(e_Atributos.Agilidad)) * ModificadorPoderAtaqueProyectiles(UserList(UserIndex).clase))
+108     ElseIf UserList(UserIndex).Stats.UserSkills(e_Skill.Proyectiles) < 91 Then
+110         PoderAtaqueTemp = ((UserList(UserIndex).Stats.UserSkills(e_Skill.Proyectiles) + (2 * UserList(UserIndex).Stats.UserAtributos(e_Atributos.Agilidad))) * ModificadorPoderAtaqueProyectiles(UserList(UserIndex).clase))
         Else
-112         PoderAtaqueTemp = ((UserList(UserIndex).Stats.UserSkills(eSkill.Proyectiles) + (3 * UserList(UserIndex).Stats.UserAtributos(eAtributos.Agilidad))) * ModificadorPoderAtaqueProyectiles(UserList(UserIndex).clase))
+112         PoderAtaqueTemp = ((UserList(UserIndex).Stats.UserSkills(e_Skill.Proyectiles) + (3 * UserList(UserIndex).Stats.UserAtributos(e_Atributos.Agilidad))) * ModificadorPoderAtaqueProyectiles(UserList(UserIndex).clase))
 
         End If
 
@@ -324,14 +324,14 @@ Private Function PoderAtaqueWrestling(ByVal UserIndex As Integer) As Long
 
         Dim PoderAtaqueTemp As Long
 
-100     If UserList(UserIndex).Stats.UserSkills(eSkill.Wrestling) < 31 Then
-102         PoderAtaqueTemp = (UserList(UserIndex).Stats.UserSkills(eSkill.Wrestling) * ModificadorPoderAtaqueArmas(UserList(UserIndex).clase))
-104     ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Wrestling) < 61 Then
-106         PoderAtaqueTemp = ((UserList(UserIndex).Stats.UserSkills(eSkill.Wrestling) + UserList(UserIndex).Stats.UserAtributos(eAtributos.Agilidad)) * ModificadorPoderAtaqueArmas(UserList(UserIndex).clase))
-108     ElseIf UserList(UserIndex).Stats.UserSkills(eSkill.Wrestling) < 91 Then
-110         PoderAtaqueTemp = ((UserList(UserIndex).Stats.UserSkills(eSkill.Wrestling) + (2 * UserList(UserIndex).Stats.UserAtributos(eAtributos.Agilidad))) * ModificadorPoderAtaqueArmas(UserList(UserIndex).clase))
+100     If UserList(UserIndex).Stats.UserSkills(e_Skill.Wrestling) < 31 Then
+102         PoderAtaqueTemp = (UserList(UserIndex).Stats.UserSkills(e_Skill.Wrestling) * ModificadorPoderAtaqueArmas(UserList(UserIndex).clase))
+104     ElseIf UserList(UserIndex).Stats.UserSkills(e_Skill.Wrestling) < 61 Then
+106         PoderAtaqueTemp = ((UserList(UserIndex).Stats.UserSkills(e_Skill.Wrestling) + UserList(UserIndex).Stats.UserAtributos(e_Atributos.Agilidad)) * ModificadorPoderAtaqueArmas(UserList(UserIndex).clase))
+108     ElseIf UserList(UserIndex).Stats.UserSkills(e_Skill.Wrestling) < 91 Then
+110         PoderAtaqueTemp = ((UserList(UserIndex).Stats.UserSkills(e_Skill.Wrestling) + (2 * UserList(UserIndex).Stats.UserAtributos(e_Atributos.Agilidad))) * ModificadorPoderAtaqueArmas(UserList(UserIndex).clase))
         Else
-112         PoderAtaqueTemp = ((UserList(UserIndex).Stats.UserSkills(eSkill.Wrestling) + (3 * UserList(UserIndex).Stats.UserAtributos(eAtributos.Agilidad))) * ModificadorPoderAtaqueArmas(UserList(UserIndex).clase))
+112         PoderAtaqueTemp = ((UserList(UserIndex).Stats.UserSkills(e_Skill.Wrestling) + (3 * UserList(UserIndex).Stats.UserAtributos(e_Atributos.Agilidad))) * ModificadorPoderAtaqueArmas(UserList(UserIndex).clase))
 
         End If
 
@@ -422,8 +422,8 @@ Private Function NpcImpacto(ByVal NpcIndex As Integer, ByVal UserIndex As Intege
 102     NpcPoderAtaque = NpcList(NpcIndex).PoderAtaque
 104     PoderEvasioEscudo = PoderEvasionEscudo(UserIndex)
 
-106     SkillTacticas = UserList(UserIndex).Stats.UserSkills(eSkill.Tacticas)
-108     SkillDefensa = UserList(UserIndex).Stats.UserSkills(eSkill.Defensa)
+106     SkillTacticas = UserList(UserIndex).Stats.UserSkills(e_Skill.Tacticas)
+108     SkillDefensa = UserList(UserIndex).Stats.UserSkills(e_Skill.Defensa)
 
         'Esta usando un escudo ???
 110     If UserList(UserIndex).Invent.EscudoEqpObjIndex > 0 Then UserEvasion = UserEvasion + PoderEvasioEscudo
@@ -444,7 +444,7 @@ Private Function NpcImpacto(ByVal NpcIndex As Integer, ByVal UserIndex As Intege
 128                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_ESCUDO, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
 
 130                     If UserList(UserIndex).ChatCombate = 1 Then
-132                         Call WriteBlockedWithShieldUser(UserIndex)
+132                         Call Write_BlockedWithShieldUser(UserIndex)
 
                         End If
 
@@ -483,7 +483,7 @@ Private Function CalcularDaño(ByVal UserIndex As Integer) As Long
 
                 ' Daño con arma
 104             If .Invent.WeaponEqpObjIndex > 0 Then
-                    Dim Arma As ObjData
+                    Dim Arma As t_ObjData
 106                 Arma = ObjData(.Invent.WeaponEqpObjIndex)
                 
                     ' Calculamos el daño del arma
@@ -498,7 +498,7 @@ Private Function CalcularDaño(ByVal UserIndex As Integer) As Long
 
                         ' Si requiere munición
 116                     If Arma.Municion = 1 And .Invent.MunicionEqpObjIndex > 0 Then
-                            Dim Municion As ObjData
+                            Dim Municion As t_ObjData
 118                         Municion = ObjData(.Invent.MunicionEqpObjIndex)
                             ' Agregamos el daño de la munición al daño del arma
 120                         DañoArma = DañoArma + RandomNumber(Municion.MinHIT, Municion.MaxHit)
@@ -531,7 +531,7 @@ Private Function CalcularDaño(ByVal UserIndex As Integer) As Long
 136             CalcularDaño = (3 * DañoArma + DañoMaxArma * 0.2 * Maximo(0, .Stats.UserAtributos(Fuerza) - 15) + DañoUsuario) * ModifClase
             
                 ' El pirata navegando pega un 20% más
-138             If .clase = eClass.Pirat And .flags.Navegando = 1 Then
+138             If .clase = e_Class.Pirat And .flags.Navegando = 1 Then
 140                 CalcularDaño = CalcularDaño * 1.2
                 End If
             
@@ -589,7 +589,7 @@ Private Sub UserDañoNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
 
             ' Mostramos en consola el golpe
 120         If .ChatCombate = 1 Then
-122             Call WriteLocaleMsg(UserIndex, "382", FontTypeNames.FONTTYPE_FIGHT, PonerPuntos(Daño))
+122             Call WriteLocaleMsg(UserIndex, "382", e_FontTypeNames.FONTTYPE_FIGHT, PonerPuntos(Daño))
             End If
 
             ' Golpe crítico
@@ -601,7 +601,7 @@ Private Sub UserDañoNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
                 
                     ' Mostramos en consola el daño
 130                 If .ChatCombate = 1 Then
-132                     Call WriteLocaleMsg(UserIndex, "383", FontTypeNames.FONTTYPE_FIGHT, PonerPuntos(DañoExtra))
+132                     Call WriteLocaleMsg(UserIndex, "383", e_FontTypeNames.FONTTYPE_FIGHT, PonerPuntos(DañoExtra))
                     End If
 
                     ' Color naranja
@@ -617,7 +617,7 @@ Private Sub UserDañoNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
                 
                     ' Mostramos en consola el daño
 142                 If .ChatCombate = 1 Then
-144                     Call WriteLocaleMsg(UserIndex, "212", FontTypeNames.FONTTYPE_FIGHT, PonerPuntos(DañoExtra))
+144                     Call WriteLocaleMsg(UserIndex, "212", e_FontTypeNames.FONTTYPE_FIGHT, PonerPuntos(DañoExtra))
                     End If
 
                     ' Color amarillo
@@ -635,7 +635,7 @@ Private Sub UserDañoNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
                 
                 ' Mostramos el daño total en consola
 156             If .ChatCombate = 1 Then
-158                 Call WriteLocaleMsg(UserIndex, "384", FontTypeNames.FONTTYPE_FIGHT, DañoStr)
+158                 Call WriteLocaleMsg(UserIndex, "384", e_FontTypeNames.FONTTYPE_FIGHT, DañoStr)
                 End If
                 
 160             DañoStr = "¡" & DañoStr & "!"
@@ -684,7 +684,7 @@ Private Sub NpcDaño(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
 
         Dim antdaño As Integer, defbarco As Integer
 
-        Dim obj As ObjData
+        Dim obj As t_ObjData
     
 100     Daño = RandomNumber(NpcList(NpcIndex).Stats.MinHIT, NpcList(NpcIndex).Stats.MaxHit)
 102     antdaño = Daño
@@ -705,11 +705,11 @@ Private Sub NpcDaño(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
     
 118     Select Case Lugar
             ' 1/6 de chances de que sea a la cabeza
-            Case PartesCuerpo.bCabeza
+            Case e_PartesCuerpo.bCabeza
 
                 'Si tiene casco absorbe el golpe
 120             If UserList(UserIndex).Invent.CascoEqpObjIndex > 0 Then
-                    Dim Casco As ObjData
+                    Dim Casco As t_ObjData
 122                 Casco = ObjData(UserList(UserIndex).Invent.CascoEqpObjIndex)
 124                 absorbido = absorbido + RandomNumber(Casco.MinDef, Casco.MaxDef)
                 End If
@@ -718,14 +718,14 @@ Private Sub NpcDaño(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
 
                 'Si tiene armadura absorbe el golpe
 128             If UserList(UserIndex).Invent.ArmourEqpObjIndex > 0 Then
-                    Dim Armadura As ObjData
+                    Dim Armadura As t_ObjData
 130                 Armadura = ObjData(UserList(UserIndex).Invent.ArmourEqpObjIndex)
 132                 absorbido = absorbido + RandomNumber(Armadura.MinDef, Armadura.MaxDef)
                 End If
                 
                 'Si tiene escudo absorbe el golpe
 134             If UserList(UserIndex).Invent.EscudoEqpObjIndex > 0 Then
-                    Dim Escudo As ObjData
+                    Dim Escudo As t_ObjData
 136                 Escudo = ObjData(UserList(UserIndex).Invent.EscudoEqpObjIndex)
 138                 absorbido = absorbido + RandomNumber(Escudo.MinDef, Escudo.MaxDef)
                 End If
@@ -742,10 +742,10 @@ Private Sub NpcDaño(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
 148         Call WriteNPCHitUser(UserIndex, Lugar, Daño)
         End If
 
-150     If UserList(UserIndex).flags.Privilegios And PlayerType.user Then UserList(UserIndex).Stats.MinHp = UserList(UserIndex).Stats.MinHp - Daño
+150     If UserList(UserIndex).flags.Privilegios And e_PlayerType.user Then UserList(UserIndex).Stats.MinHp = UserList(UserIndex).Stats.MinHp - Daño
     
 152     If UserList(UserIndex).flags.Meditando Then
-154         If Daño > Fix(UserList(UserIndex).Stats.MinHp / 100 * UserList(UserIndex).Stats.UserAtributos(eAtributos.Inteligencia) * UserList(UserIndex).Stats.UserSkills(eSkill.Meditar) / 100 * 12 / (RandomNumber(0, 5) + 7)) Then
+154         If Daño > Fix(UserList(UserIndex).Stats.MinHp / 100 * UserList(UserIndex).Stats.UserAtributos(e_Atributos.Inteligencia) * UserList(UserIndex).Stats.UserSkills(e_Skill.Meditar) / 100 * 12 / (RandomNumber(0, 5) + 7)) Then
 156             UserList(UserIndex).flags.Meditando = False
 158             UserList(UserIndex).Char.FX = 0
 160             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageMeditateToggle(UserList(UserIndex).Char.CharIndex, 0))
@@ -784,13 +784,13 @@ NpcDaño_Err:
         
 End Sub
 
-Public Function NpcAtacaUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer, ByVal Heading As eHeading) As Boolean
+Public Function NpcAtacaUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer, ByVal Heading As e_Heading) As Boolean
         
         On Error GoTo NpcAtacaUser_Err
         
 
 100     If UserList(UserIndex).flags.AdminInvisible = 1 Then Exit Function
-102     If (Not UserList(UserIndex).flags.Privilegios And PlayerType.user) <> 0 And Not UserList(UserIndex).flags.AdminPerseguible Then Exit Function
+102     If (Not UserList(UserIndex).flags.Privilegios And e_PlayerType.user) <> 0 And Not UserList(UserIndex).flags.AdminPerseguible Then Exit Function
     
         ' El npc puede atacar ???
     
@@ -924,13 +924,13 @@ Public Sub NpcAtacaNpc(ByVal Atacante As Integer, ByVal Victima As Integer, Opti
         On Error GoTo NpcAtacaNpc_Err
         
 100     If Not IntervaloPermiteAtacarNPC(Atacante) Then Exit Sub
-        Dim Heading As eHeading
+        Dim Heading As e_Heading
 102     Heading = GetHeadingFromWorldPos(NpcList(Atacante).Pos, NpcList(Victima).Pos)
 104     Call ChangeNPCChar(Atacante, NpcList(Atacante).Char.Body, NpcList(Atacante).Char.Head, Heading)
         
 106     If cambiarMovimiento Then
 108         NpcList(Victima).TargetNPC = Atacante
-110         NpcList(Victima).Movement = TipoAI.NpcAtacaNpc
+110         NpcList(Victima).Movement = e_TipoAI.NpcAtacaNpc
         End If
 
 112     If NpcList(Atacante).flags.Snd1 > 0 Then
@@ -992,8 +992,8 @@ Public Sub UsuarioAtacaNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer
 120                     NpcList(NpcIndex).Contadores.Paralisis = (IntervaloParalizado / 3) * 7
 
 122                     If UserList(UserIndex).ChatCombate = 1 Then
-                            'Call WriteConsoleMsg(UserIndex, "Tu golpe a paralizado a la criatura.", FontTypeNames.FONTTYPE_FIGHT)
-124                         Call WriteLocaleMsg(UserIndex, "136", FontTypeNames.FONTTYPE_FIGHT)
+                            'Call WriteConsoleMsg(UserIndex, "Tu golpe a paralizado a la criatura.", e_FontTypeNames.FONTTYPE_FIGHT)
+124                         Call WriteLocaleMsg(UserIndex, "136", e_FontTypeNames.FONTTYPE_FIGHT)
 
                         End If
 
@@ -1002,8 +1002,8 @@ Public Sub UsuarioAtacaNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer
                     Else
 
 128                     If UserList(UserIndex).ChatCombate = 1 Then
-                            'Call WriteConsoleMsg(UserIndex, "El NPC es inmune al hechizo.", FontTypeNames.FONTTYPE_INFO)
-130                         Call WriteLocaleMsg(UserIndex, "381", FontTypeNames.FONTTYPE_INFO)
+                            'Call WriteConsoleMsg(UserIndex, "El NPC es inmune al hechizo.", e_FontTypeNames.FONTTYPE_INFO)
+130                         Call WriteLocaleMsg(UserIndex, "381", e_FontTypeNames.FONTTYPE_INFO)
 
                         End If
 
@@ -1050,7 +1050,7 @@ Public Sub UsuarioAtacaNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer
             
             Dim sendto As SendTarget
             
-162         If UserList(UserIndex).clase = eClass.Hunter And UserList(UserIndex).flags.Oculto = 0 Then
+162         If UserList(UserIndex).clase = e_Class.Hunter And UserList(UserIndex).flags.Oculto = 0 Then
 164             sendto = SendTarget.ToPCArea
             Else
 166             sendto = SendTarget.ToIndex
@@ -1085,8 +1085,8 @@ Public Sub UsuarioAtaca(ByVal UserIndex As Integer)
 
         'Quitamos stamina
 106     If UserList(UserIndex).Stats.MinSta < 10 Then
-            'Call WriteConsoleMsg(UserIndex, "Estas muy cansado para luchar.", FontTypeNames.FONTTYPE_INFO)
-108         Call WriteLocaleMsg(UserIndex, "93", FontTypeNames.FONTTYPE_INFO)
+            'Call WriteConsoleMsg(UserIndex, "Estas muy cansado para luchar.", e_FontTypeNames.FONTTYPE_INFO)
+108         Call WriteLocaleMsg(UserIndex, "93", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
 
         End If
@@ -1105,7 +1105,7 @@ Public Sub UsuarioAtaca(ByVal UserIndex As Integer)
 120         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageArmaMov(UserList(UserIndex).Char.CharIndex))
         End If
 
-        Dim AttackPos As WorldPos
+        Dim AttackPos As t_WorldPos
 122         AttackPos = UserList(UserIndex).Pos
 
 124     Call HeadtoPos(UserList(UserIndex).Char.Heading, AttackPos)
@@ -1133,14 +1133,14 @@ Public Sub UsuarioAtaca(ByVal UserIndex As Integer)
 
 142             If NpcList(Index).Attackable Then
 144                 If NpcList(Index).MaestroUser > 0 And MapInfo(NpcList(Index).Pos.Map).Seguro = 1 Then
-146                     Call WriteConsoleMsg(UserIndex, "No podés atacar mascotas en zonas seguras", FontTypeNames.FONTTYPE_FIGHT)
+146                     Call WriteConsoleMsg(UserIndex, "No podés atacar mascotas en zonas seguras", e_FontTypeNames.FONTTYPE_FIGHT)
                         Exit Sub
                     End If
 
 148                 Call UsuarioAtacaNpc(UserIndex, Index)
 
                 Else
-150                 Call WriteConsoleMsg(UserIndex, "No podés atacar a este NPC", FontTypeNames.FONTTYPE_FIGHT)
+150                 Call WriteConsoleMsg(UserIndex, "No podés atacar a este NPC", e_FontTypeNames.FONTTYPE_FIGHT)
 
                 End If
 
@@ -1182,8 +1182,8 @@ Private Function UsuarioImpacto(ByVal AtacanteIndex As Integer, ByVal VictimaInd
 
         End If
 
-106     SkillTacticas = UserList(VictimaIndex).Stats.UserSkills(eSkill.Tacticas)
-108     SkillDefensa = UserList(VictimaIndex).Stats.UserSkills(eSkill.Defensa)
+106     SkillTacticas = UserList(VictimaIndex).Stats.UserSkills(e_Skill.Tacticas)
+108     SkillDefensa = UserList(VictimaIndex).Stats.UserSkills(e_Skill.Defensa)
 
 110     Arma = UserList(AtacanteIndex).Invent.WeaponEqpObjIndex
 
@@ -1228,17 +1228,17 @@ Private Function UsuarioImpacto(ByVal AtacanteIndex As Integer, ByVal VictimaInd
 152             Call SendData(SendTarget.ToPCArea, VictimaIndex, PrepareMessageEscudoMov(UserList(VictimaIndex).Char.CharIndex))
 
 154             If UserList(AtacanteIndex).ChatCombate = 1 Then
-156                 Call WriteBlockedWithShieldOther(AtacanteIndex)
+156                 Call Write_BlockedWithShieldOther(AtacanteIndex)
                 End If
 
 158             If UserList(VictimaIndex).ChatCombate = 1 Then
-160                 Call WriteBlockedWithShieldUser(VictimaIndex)
+160                 Call Write_BlockedWithShieldUser(VictimaIndex)
                 End If
 
 162             Call SendData(SendTarget.ToPCArea, VictimaIndex, PrepareMessageCreateFX(UserList(VictimaIndex).Char.CharIndex, 88, 0))
-164             Call SubirSkill(VictimaIndex, eSkill.Defensa)
+164             Call SubirSkill(VictimaIndex, e_Skill.Defensa)
             Else
-166             Call WriteConsoleMsg(VictimaIndex, "¡" & UserList(AtacanteIndex).Name & " te atacó y falló! ", FontTypeNames.FONTTYPE_FIGHT)
+166             Call WriteConsoleMsg(VictimaIndex, "¡" & UserList(AtacanteIndex).Name & " te atacó y falló! ", e_FontTypeNames.FONTTYPE_FIGHT)
 
             End If
         End If
@@ -1263,8 +1263,8 @@ Public Sub UsuarioAtacaUsuario(ByVal AtacanteIndex As Integer, ByVal VictimaInde
 102     If Not PuedeAtacar(AtacanteIndex, VictimaIndex) Then Exit Sub
 
 104     If Distancia(UserList(AtacanteIndex).Pos, UserList(VictimaIndex).Pos) > MAXDISTANCIAARCO Then
-106         Call WriteLocaleMsg(AtacanteIndex, "8", FontTypeNames.FONTTYPE_INFO)
-            ' Call WriteConsoleMsg(atacanteindex, "Estás muy lejos para disparar.", FontTypeNames.FONTTYPE_FIGHT)
+106         Call WriteLocaleMsg(AtacanteIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
+            ' Call WriteConsoleMsg(atacanteindex, "Estás muy lejos para disparar.", e_FontTypeNames.FONTTYPE_FIGHT)
             Exit Sub
 
         End If
@@ -1306,7 +1306,7 @@ Private Sub UserDañoUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As 
 
 100     With UserList(VictimaIndex)
 
-            Dim Daño As Long, DañoBase As Long, DañoExtra As Long, Defensa As Long, Color As Long, DañoStr As String, Lugar As PartesCuerpo
+            Dim Daño As Long, DañoBase As Long, DañoExtra As Long, Defensa As Long, Color As Long, DañoStr As String, Lugar As e_PartesCuerpo
 
             ' Daño normal
 102         DañoBase = CalcularDaño(AtacanteIndex)
@@ -1319,11 +1319,11 @@ Private Sub UserDañoUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As 
 
 108         Select Case Lugar
                 ' 1/6 de chances de que sea a la cabeza
-                Case PartesCuerpo.bCabeza
+                Case e_PartesCuerpo.bCabeza
 
                     'Si tiene casco absorbe el golpe
 110                 If .Invent.CascoEqpObjIndex > 0 Then
-                        Dim Casco As ObjData
+                        Dim Casco As t_ObjData
 112                     Casco = ObjData(.Invent.CascoEqpObjIndex)
 114                     Defensa = Defensa + RandomNumber(Casco.MinDef, Casco.MaxDef)
                     End If
@@ -1332,14 +1332,14 @@ Private Sub UserDañoUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As 
 
                     'Si tiene armadura absorbe el golpe
 118                 If .Invent.ArmourEqpObjIndex > 0 Then
-                        Dim Armadura As ObjData
+                        Dim Armadura As t_ObjData
 120                     Armadura = ObjData(.Invent.ArmourEqpObjIndex)
 122                     Defensa = Defensa + RandomNumber(Armadura.MinDef, Armadura.MaxDef)
                     End If
                     
                     'Si tiene escudo absorbe el golpe
 124                 If .Invent.EscudoEqpObjIndex > 0 Then
-                        Dim Escudo As ObjData
+                        Dim Escudo As t_ObjData
 126                     Escudo = ObjData(.Invent.EscudoEqpObjIndex)
 128                     Defensa = Defensa + RandomNumber(Escudo.MinDef, Escudo.MaxDef)
                     End If
@@ -1348,13 +1348,13 @@ Private Sub UserDañoUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As 
 
             ' Defensa del barco de la víctima
 130         If .Invent.BarcoObjIndex > 0 Then
-                Dim Barco As ObjData
+                Dim Barco As t_ObjData
 132             Barco = ObjData(.Invent.BarcoObjIndex)
 134             Defensa = Defensa + RandomNumber(Barco.MinDef, Barco.MaxDef)
 
             ' Defensa de la montura de la víctima
 136         ElseIf .Invent.MonturaObjIndex > 0 Then
-                Dim Montura As ObjData
+                Dim Montura As t_ObjData
 138             Montura = ObjData(.Invent.MonturaObjIndex)
 140             Defensa = Defensa + RandomNumber(Montura.MinDef, Montura.MaxDef)
             End If
@@ -1393,11 +1393,11 @@ Private Sub UserDañoUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As 
 
                     ' Mostramos en consola el daño al atacante
 170                 If UserList(AtacanteIndex).ChatCombate = 1 Then
-172                     Call WriteLocaleMsg(AtacanteIndex, "383", FontTypeNames.FONTTYPE_FIGHT, .Name & "¬" & DañoStr)
+172                     Call WriteLocaleMsg(AtacanteIndex, "383", e_FontTypeNames.FONTTYPE_FIGHT, .Name & "¬" & DañoStr)
                     End If
                     ' Y a la víctima
 174                 If .ChatCombate = 1 Then
-176                     Call WriteLocaleMsg(VictimaIndex, "385", FontTypeNames.FONTTYPE_FIGHT, UserList(AtacanteIndex).Name & "¬" & DañoStr)
+176                     Call WriteLocaleMsg(VictimaIndex, "385", e_FontTypeNames.FONTTYPE_FIGHT, UserList(AtacanteIndex).Name & "¬" & DañoStr)
                     End If
 178                 Call SendData(SendTarget.ToPCArea, AtacanteIndex, PrepareMessagePlayWave(SND_IMPACTO_CRITICO, UserList(AtacanteIndex).Pos.X, UserList(AtacanteIndex).Pos.Y))
                     ' Color naranja
@@ -1414,11 +1414,11 @@ Private Sub UserDañoUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As 
                 
                     ' Mostramos en consola el daño al atacante
 190                 If UserList(AtacanteIndex).ChatCombate = 1 Then
-192                     Call WriteLocaleMsg(AtacanteIndex, "210", FontTypeNames.FONTTYPE_FIGHT, .Name & "¬" & DañoStr)
+192                     Call WriteLocaleMsg(AtacanteIndex, "210", e_FontTypeNames.FONTTYPE_FIGHT, .Name & "¬" & DañoStr)
                     End If
                     ' Y a la víctima
 194                 If .ChatCombate = 1 Then
-196                     Call WriteLocaleMsg(VictimaIndex, "211", FontTypeNames.FONTTYPE_FIGHT, UserList(AtacanteIndex).Name & "¬" & DañoStr)
+196                     Call WriteLocaleMsg(VictimaIndex, "211", e_FontTypeNames.FONTTYPE_FIGHT, UserList(AtacanteIndex).Name & "¬" & DañoStr)
                     End If
                     
 198                 Call SendData(SendTarget.ToPCArea, AtacanteIndex, PrepareMessagePlayWave(SND_IMPACTO_APU, UserList(AtacanteIndex).Pos.X, UserList(AtacanteIndex).Pos.Y))
@@ -1451,11 +1451,11 @@ Private Sub UserDañoUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As 
                 
                 ' Mostramos el daño total en consola al atacante
 224             If UserList(AtacanteIndex).ChatCombate = 1 Then
-226                 Call WriteLocaleMsg(AtacanteIndex, "384", FontTypeNames.FONTTYPE_FIGHT, DañoStr)
+226                 Call WriteLocaleMsg(AtacanteIndex, "384", e_FontTypeNames.FONTTYPE_FIGHT, DañoStr)
                 End If
                 ' Y a la víctima
 228             If .ChatCombate = 1 Then
-230                 Call WriteLocaleMsg(VictimaIndex, "387", FontTypeNames.FONTTYPE_FIGHT, UserList(AtacanteIndex).Name & "¬" & DañoStr)
+230                 Call WriteLocaleMsg(VictimaIndex, "387", e_FontTypeNames.FONTTYPE_FIGHT, UserList(AtacanteIndex).Name & "¬" & DañoStr)
                 End If
                 
 232             DañoStr = "¡" & PonerPuntos(Daño) & "!"
@@ -1496,7 +1496,7 @@ UserDañoUser_Err:
         
 End Sub
 
-Private Sub DesequiparObjetoDeUnGolpe(ByVal AttackerIndex As Integer, ByVal VictimIndex As Integer, ByVal parteDelCuerpo As PartesCuerpo)
+Private Sub DesequiparObjetoDeUnGolpe(ByVal AttackerIndex As Integer, ByVal VictimIndex As Integer, ByVal parteDelCuerpo As e_PartesCuerpo)
         On Error GoTo DesequiparObjetoDeUnGolpe_Err
     
         Dim desequiparCasco As Boolean, desequiparArma As Boolean, desequiparEscudo As Boolean
@@ -1504,7 +1504,7 @@ Private Sub DesequiparObjetoDeUnGolpe(ByVal AttackerIndex As Integer, ByVal Vict
 100     With UserList(VictimIndex)
     
 102         Select Case parteDelCuerpo
-            Case PartesCuerpo.bCabeza
+            Case e_PartesCuerpo.bCabeza
                 ' Si pega en la cabeza, desequipamos el casco si tiene
 104             desequiparCasco = .Invent.CascoEqpObjIndex > 0
                 ' Si no tiene casco, intentaremos desequipar otra cosa porque un golpe en la cabeza
@@ -1512,12 +1512,12 @@ Private Sub DesequiparObjetoDeUnGolpe(ByVal AttackerIndex As Integer, ByVal Vict
 106             desequiparArma = (Not desequiparCasco) And (.Invent.WeaponEqpObjIndex > 0)
 108             desequiparEscudo = (Not desequiparCasco) And (Not desequiparArma) And (.Invent.EscudoEqpObjIndex > 0)
          
-110         Case PartesCuerpo.bBrazoDerecho, PartesCuerpo.bBrazoIzquierdo, PartesCuerpo.bTorso
+110         Case e_PartesCuerpo.bBrazoDerecho, e_PartesCuerpo.bBrazoIzquierdo, e_PartesCuerpo.bTorso
 112             desequiparArma = (.Invent.WeaponEqpObjIndex > 0)
 114             desequiparEscudo = (Not desequiparArma) And (.Invent.EscudoEqpObjIndex > 0)
 116             desequiparCasco = False
             
-118         Case PartesCuerpo.bPiernaDerecha, PartesCuerpo.bPiernaIzquierda
+118         Case e_PartesCuerpo.bPiernaDerecha, e_PartesCuerpo.bPiernaIzquierda
 120             desequiparEscudo = (.Invent.EscudoEqpObjIndex > 0)
 122             desequiparCasco = False
 124             desequiparArma = False
@@ -1617,15 +1617,15 @@ Public Function PuedeAtacar(ByVal AttackerIndex As Integer, ByVal VictimIndex As
         'Returns true if the AttackerIndex is allowed to attack the VictimIndex.
         '24/01/2007 Pablo (ToxicWaste) - Ordeno todo y agrego situacion de Defensa en ciudad Armada y Caos.
         '***************************************************
-        Dim T    As eTrigger6
+        Dim T    As e_Trigger6
         Dim rank As Integer
 
         'MUY importante el orden de estos "IF"...
 
         'Estas muerto no podes atacar
 100     If UserList(AttackerIndex).flags.Muerto = 1 Then
-102         Call WriteLocaleMsg(AttackerIndex, "77", FontTypeNames.FONTTYPE_INFO)
-            'Call WriteConsoleMsg(attackerIndex, "No podés atacar porque estas muerto", FontTypeNames.FONTTYPE_INFO)
+102         Call WriteLocaleMsg(AttackerIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
+            'Call WriteConsoleMsg(attackerIndex, "No podés atacar porque estas muerto", e_FontTypeNames.FONTTYPE_INFO)
 104         PuedeAtacar = False
             Exit Function
 
@@ -1633,7 +1633,7 @@ Public Function PuedeAtacar(ByVal AttackerIndex As Integer, ByVal VictimIndex As
         
 106     If UserList(AttackerIndex).flags.EnReto Then
 108         If Retos.Salas(UserList(AttackerIndex).flags.SalaReto).TiempoItems > 0 Then
-110             Call WriteConsoleMsg(AttackerIndex, "No podés atacar en este momento.", FontTypeNames.FONTTYPE_INFO)
+110             Call WriteConsoleMsg(AttackerIndex, "No podés atacar en este momento.", e_FontTypeNames.FONTTYPE_INFO)
 112             PuedeAtacar = False
                 Exit Function
             End If
@@ -1641,7 +1641,7 @@ Public Function PuedeAtacar(ByVal AttackerIndex As Integer, ByVal VictimIndex As
 
         'No podes atacar a alguien muerto
 114     If UserList(VictimIndex).flags.Muerto = 1 Then
-116         Call WriteConsoleMsg(AttackerIndex, "No podés atacar a un espiritu.", FontTypeNames.FONTTYPE_INFO)
+116         Call WriteConsoleMsg(AttackerIndex, "No podés atacar a un espiritu.", e_FontTypeNames.FONTTYPE_INFO)
 118         PuedeAtacar = False
             Exit Function
 
@@ -1649,7 +1649,7 @@ Public Function PuedeAtacar(ByVal AttackerIndex As Integer, ByVal VictimIndex As
         
         ' No podes atacar si estas en consulta
 120     If UserList(AttackerIndex).flags.EnConsulta Then
-122         Call WriteConsoleMsg(AttackerIndex, "No podés atacar usuarios mientras estás en consulta.", FontTypeNames.FONTTYPE_INFO)
+122         Call WriteConsoleMsg(AttackerIndex, "No podés atacar usuarios mientras estás en consulta.", e_FontTypeNames.FONTTYPE_INFO)
 124         PuedeAtacar = False
             Exit Function
     
@@ -1657,21 +1657,21 @@ Public Function PuedeAtacar(ByVal AttackerIndex As Integer, ByVal VictimIndex As
         
         ' No podes atacar si esta en consulta
 126     If UserList(VictimIndex).flags.EnConsulta Then
-128         Call WriteConsoleMsg(AttackerIndex, "No podés atacar usuarios mientras estan en consulta.", FontTypeNames.FONTTYPE_INFO)
+128         Call WriteConsoleMsg(AttackerIndex, "No podés atacar usuarios mientras estan en consulta.", e_FontTypeNames.FONTTYPE_INFO)
 130         PuedeAtacar = False
             Exit Function
     
         End If
         
 132     If UserList(AttackerIndex).flags.Maldicion = 1 Then
-134         Call WriteConsoleMsg(AttackerIndex, "¡Estás maldito! No podes atacar.", FontTypeNames.FONTTYPE_INFO)
+134         Call WriteConsoleMsg(AttackerIndex, "¡Estás maldito! No podes atacar.", e_FontTypeNames.FONTTYPE_INFO)
 136         PuedeAtacar = False
             Exit Function
 
         End If
         
 138     If UserList(AttackerIndex).flags.Montado = 1 Then
-140         Call WriteConsoleMsg(AttackerIndex, "No podés atacar usando una montura.", FontTypeNames.FONTTYPE_INFO)
+140         Call WriteConsoleMsg(AttackerIndex, "No podés atacar usando una montura.", e_FontTypeNames.FONTTYPE_INFO)
 142         PuedeAtacar = False
             Exit Function
 
@@ -1680,33 +1680,33 @@ Public Function PuedeAtacar(ByVal AttackerIndex As Integer, ByVal VictimIndex As
         'Estamos en una Arena? o un trigger zona segura?
 144     T = TriggerZonaPelea(AttackerIndex, VictimIndex)
 
-146     If T = eTrigger6.TRIGGER6_PERMITE Then
+146     If T = e_Trigger6.TRIGGER6_PERMITE Then
 148         PuedeAtacar = True
             Exit Function
-150     ElseIf T = eTrigger6.TRIGGER6_PROHIBE Then
+150     ElseIf T = e_Trigger6.TRIGGER6_PROHIBE Then
 152         PuedeAtacar = False
             Exit Function
-154     ElseIf T = eTrigger6.TRIGGER6_AUSENTE Then
+154     ElseIf T = e_Trigger6.TRIGGER6_AUSENTE Then
 
             'Si no estamos en el Trigger 6 entonces es imposible atacar un gm
-            ' If Not UserList(VictimIndex).flags.Privilegios And PlayerType.User Then
-            '   If UserList(VictimIndex).flags.AdminInvisible = 0 Then Call WriteConsoleMsg(attackerIndex, "El ser es demasiado poderoso", FontTypeNames.FONTTYPE_WARNING)
+            ' If Not UserList(VictimIndex).flags.Privilegios And e_PlayerType.User Then
+            '   If UserList(VictimIndex).flags.AdminInvisible = 0 Then Call WriteConsoleMsg(attackerIndex, "El ser es demasiado poderoso", e_FontTypeNames.FONTTYPE_WARNING)
             ' PuedeAtacar = False
             '    Exit Function
             ' End If
         End If
         
         'Solo administradores pueden atacar a usuarios (PARA TESTING)
-156     If (UserList(AttackerIndex).flags.Privilegios And (PlayerType.user Or PlayerType.Admin)) = 0 Then
+156     If (UserList(AttackerIndex).flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Admin)) = 0 Then
 158         PuedeAtacar = False
             Exit Function
         End If
         
         'Estas queriendo atacar a un GM?
-160     rank = PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios Or PlayerType.Consejero
+160     rank = e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios Or e_PlayerType.Consejero
 
 162     If (UserList(VictimIndex).flags.Privilegios And rank) > (UserList(AttackerIndex).flags.Privilegios And rank) Then
-164         If UserList(VictimIndex).flags.AdminInvisible = 0 Then Call WriteConsoleMsg(AttackerIndex, "El ser es demasiado poderoso", FontTypeNames.FONTTYPE_WARNING)
+164         If UserList(VictimIndex).flags.AdminInvisible = 0 Then Call WriteConsoleMsg(AttackerIndex, "El ser es demasiado poderoso", e_FontTypeNames.FONTTYPE_WARNING)
 166         PuedeAtacar = False
             Exit Function
 
@@ -1716,7 +1716,7 @@ Public Function PuedeAtacar(ByVal AttackerIndex As Integer, ByVal VictimIndex As
          If UserList(AttackerIndex).GuildIndex > 0 Then
              If UserList(AttackerIndex).flags.SeguroClan Then
                  If UserList(AttackerIndex).GuildIndex = UserList(VictimIndex).GuildIndex Then
-                    Call WriteConsoleMsg(AttackerIndex, "No podes atacar a un miembro de tu clan.", FontTypeNames.FONTTYPE_INFOIAO)
+                    Call WriteConsoleMsg(AttackerIndex, "No podes atacar a un miembro de tu clan.", e_FontTypeNames.FONTTYPE_INFOIAO)
                     PuedeAtacar = False
                     Exit Function
                 End If
@@ -1727,12 +1727,12 @@ Public Function PuedeAtacar(ByVal AttackerIndex As Integer, ByVal VictimIndex As
         If esArmada(AttackerIndex) Then
             ' Si ataca otro armada
             If esArmada(VictimIndex) Then
-                Call WriteConsoleMsg(AttackerIndex, "Los miembros del Ejercito Real tienen prohibido atacarse entre sí.", FontTypeNames.FONTTYPE_WARNING)
+                Call WriteConsoleMsg(AttackerIndex, "Los miembros del Ejercito Real tienen prohibido atacarse entre sí.", e_FontTypeNames.FONTTYPE_WARNING)
                 PuedeAtacar = False
                 Exit Function
             ' Si ataca un ciudadano
             ElseIf esCiudadano(VictimIndex) Then
-                Call WriteConsoleMsg(AttackerIndex, "Los miembros del Ejercito Real tienen prohibido atacar ciudadanos.", FontTypeNames.FONTTYPE_WARNING)
+                Call WriteConsoleMsg(AttackerIndex, "Los miembros del Ejercito Real tienen prohibido atacar ciudadanos.", e_FontTypeNames.FONTTYPE_WARNING)
                 PuedeAtacar = False
                 Exit Function
             End If
@@ -1743,17 +1743,17 @@ Public Function PuedeAtacar(ByVal AttackerIndex As Integer, ByVal VictimIndex As
             If (esCiudadano(AttackerIndex)) Then
                 If (UserList(AttackerIndex).flags.Seguro) Then
 176                 If esCiudadano(VictimIndex) Then
-178                     Call WriteConsoleMsg(AttackerIndex, "No podés atacar ciudadanos, para hacerlo debes desactivar el seguro.", FontTypeNames.FONTTYPE_WARNING)
+178                     Call WriteConsoleMsg(AttackerIndex, "No podés atacar ciudadanos, para hacerlo debes desactivar el seguro.", e_FontTypeNames.FONTTYPE_WARNING)
 180                     PuedeAtacar = False
                         Exit Function
                     ElseIf esArmada(VictimIndex) Then
-                        Call WriteConsoleMsg(AttackerIndex, "No podés atacar miembros del Ejercito Real, para hacerlo debes desactivar el seguro.", FontTypeNames.FONTTYPE_WARNING)
+                        Call WriteConsoleMsg(AttackerIndex, "No podés atacar miembros del Ejercito Real, para hacerlo debes desactivar el seguro.", e_FontTypeNames.FONTTYPE_WARNING)
                         PuedeAtacar = False
                         Exit Function
                     End If
                 End If
             ElseIf esCaos(AttackerIndex) And esCaos(VictimIndex) Then
-192             Call WriteConsoleMsg(AttackerIndex, "Los miembros de las Fuerzas del Caos no se pueden atacar entre sí.", FontTypeNames.FONTTYPE_WARNING)
+192             Call WriteConsoleMsg(AttackerIndex, "Los miembros de las Fuerzas del Caos no se pueden atacar entre sí.", e_FontTypeNames.FONTTYPE_WARNING)
 194             PuedeAtacar = False
                 Exit Function
             End If
@@ -1765,7 +1765,7 @@ Public Function PuedeAtacar(ByVal AttackerIndex As Integer, ByVal VictimIndex As
 198         If esArmada(AttackerIndex) Then
 200             If UserList(AttackerIndex).Faccion.RecompensasReal >= 3 Then
 202                 If UserList(VictimIndex).Pos.Map = 58 Or UserList(VictimIndex).Pos.Map = 59 Or UserList(VictimIndex).Pos.Map = 60 Then
-204                     Call WriteConsoleMsg(VictimIndex, "Huye de la ciudad! estas siendo atacado y no podrás defenderte.", FontTypeNames.FONTTYPE_WARNING)
+204                     Call WriteConsoleMsg(VictimIndex, "Huye de la ciudad! estas siendo atacado y no podrás defenderte.", e_FontTypeNames.FONTTYPE_WARNING)
 206                     PuedeAtacar = True 'Beneficio de Armadas que atacan en su ciudad.
                         Exit Function
 
@@ -1778,7 +1778,7 @@ Public Function PuedeAtacar(ByVal AttackerIndex As Integer, ByVal VictimIndex As
 208         If esCaos(AttackerIndex) Then
 210             If UserList(AttackerIndex).Faccion.RecompensasCaos >= 3 Then
 212                 If UserList(VictimIndex).Pos.Map = 195 Or UserList(VictimIndex).Pos.Map = 196 Then
-214                     Call WriteConsoleMsg(VictimIndex, "Huye de la ciudad! estas siendo atacado y no podrás defenderte.", FontTypeNames.FONTTYPE_WARNING)
+214                     Call WriteConsoleMsg(VictimIndex, "Huye de la ciudad! estas siendo atacado y no podrás defenderte.", e_FontTypeNames.FONTTYPE_WARNING)
 216                     PuedeAtacar = True 'Beneficio de Caos que atacan en su ciudad.
                         Exit Function
 
@@ -1788,15 +1788,15 @@ Public Function PuedeAtacar(ByVal AttackerIndex As Integer, ByVal VictimIndex As
 
             End If
 
-218         Call WriteConsoleMsg(AttackerIndex, "Esta es una zona segura, aqui no podes atacar otros usuarios.", FontTypeNames.FONTTYPE_WARNING)
+218         Call WriteConsoleMsg(AttackerIndex, "Esta es una zona segura, aqui no podes atacar otros usuarios.", e_FontTypeNames.FONTTYPE_WARNING)
 220         PuedeAtacar = False
             Exit Function
 
         End If
 
         'Estas atacando desde un trigger seguro? o tu victima esta en uno asi?
-222     If MapData(UserList(VictimIndex).Pos.Map, UserList(VictimIndex).Pos.X, UserList(VictimIndex).Pos.Y).trigger = eTrigger.ZONASEGURA Or MapData(UserList(AttackerIndex).Pos.Map, UserList(AttackerIndex).Pos.X, UserList(AttackerIndex).Pos.Y).trigger = eTrigger.ZONASEGURA Then
-224         Call WriteConsoleMsg(AttackerIndex, "No podes pelear aqui.", FontTypeNames.FONTTYPE_WARNING)
+222     If MapData(UserList(VictimIndex).Pos.Map, UserList(VictimIndex).Pos.X, UserList(VictimIndex).Pos.Y).trigger = e_Trigger.ZONASEGURA Or MapData(UserList(AttackerIndex).Pos.Map, UserList(AttackerIndex).Pos.X, UserList(AttackerIndex).Pos.Y).trigger = e_Trigger.ZONASEGURA Then
+224         Call WriteConsoleMsg(AttackerIndex, "No podes pelear aqui.", e_FontTypeNames.FONTTYPE_WARNING)
 226         PuedeAtacar = False
             Exit Function
 
@@ -1828,29 +1828,29 @@ Public Function PuedeAtacarNPC(ByVal AttackerIndex As Integer, ByVal NpcIndex As
 
         'Estas muerto?
 100     If UserList(AttackerIndex).flags.Muerto = 1 Then
-            'Call WriteConsoleMsg(attackerIndex, "No podés atacar porque estas muerto", FontTypeNames.FONTTYPE_INFO)
-102         Call WriteLocaleMsg(AttackerIndex, "77", FontTypeNames.FONTTYPE_INFO)
+            'Call WriteConsoleMsg(attackerIndex, "No podés atacar porque estas muerto", e_FontTypeNames.FONTTYPE_INFO)
+102         Call WriteLocaleMsg(AttackerIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
 104         PuedeAtacarNPC = False
             Exit Function
 
         End If
              
 106     If UserList(AttackerIndex).flags.Montado = 1 Then
-108         Call WriteConsoleMsg(AttackerIndex, "No podés atacar usando una montura.", FontTypeNames.FONTTYPE_INFO)
+108         Call WriteConsoleMsg(AttackerIndex, "No podés atacar usando una montura.", e_FontTypeNames.FONTTYPE_INFO)
 110         PuedeAtacarNPC = False
             Exit Function
 
         End If
         
 112     If UserList(AttackerIndex).flags.Inmunidad = 1 Then
-114         Call WriteConsoleMsg(AttackerIndex, "Espera un momento antes de atacar a la criatura.", FontTypeNames.FONTTYPE_INFO)
+114         Call WriteConsoleMsg(AttackerIndex, "Espera un momento antes de atacar a la criatura.", e_FontTypeNames.FONTTYPE_INFO)
 116         PuedeAtacarNPC = False
             Exit Function
         End If
 
         'Solo administradores, dioses y usuarios pueden atacar a NPC's (PARA TESTING)
-118     If (UserList(AttackerIndex).flags.Privilegios And (PlayerType.user Or PlayerType.Dios Or PlayerType.Admin)) = 0 And _
-            NpcList(NpcIndex).NPCtype <> eNPCType.DummyTarget Then
+118     If (UserList(AttackerIndex).flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Dios Or e_PlayerType.Admin)) = 0 And _
+            NpcList(NpcIndex).NPCtype <> e_NPCType.DummyTarget Then
             
 120         PuedeAtacarNPC = False
             Exit Function
@@ -1858,7 +1858,7 @@ Public Function PuedeAtacarNPC(ByVal AttackerIndex As Integer, ByVal NpcIndex As
         
         ' No podes atacar si estas en consulta
 122     If UserList(AttackerIndex).flags.EnConsulta Then
-124         Call WriteConsoleMsg(AttackerIndex, "No puedes atacar npcs mientras estas en consulta.", FontTypeNames.FONTTYPE_INFO)
+124         Call WriteConsoleMsg(AttackerIndex, "No puedes atacar npcs mientras estas en consulta.", e_FontTypeNames.FONTTYPE_INFO)
 126         PuedeAtacarNPC = False
             Exit Function
 
@@ -1867,7 +1867,7 @@ Public Function PuedeAtacarNPC(ByVal AttackerIndex As Integer, ByVal NpcIndex As
         'Es una criatura atacable?
 128     If NpcList(NpcIndex).Attackable = 0 Then
             'No es una criatura atacable
-130         Call WriteConsoleMsg(AttackerIndex, "No podés atacar esta criatura.", FontTypeNames.FONTTYPE_INFO)
+130         Call WriteConsoleMsg(AttackerIndex, "No podés atacar esta criatura.", e_FontTypeNames.FONTTYPE_INFO)
 132         PuedeAtacarNPC = False
             Exit Function
 
@@ -1875,8 +1875,8 @@ Public Function PuedeAtacarNPC(ByVal AttackerIndex As Integer, ByVal NpcIndex As
 
         'Es valida la distancia a la cual estamos atacando?
 134     If Distancia(UserList(AttackerIndex).Pos, NpcList(NpcIndex).Pos) >= MAXDISTANCIAARCO Then
-136         Call WriteLocaleMsg(AttackerIndex, "8", FontTypeNames.FONTTYPE_INFO)
-            'Call WriteConsoleMsg(attackerIndex, "Estás muy lejos para disparar.", FontTypeNames.FONTTYPE_FIGHT)
+136         Call WriteLocaleMsg(AttackerIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
+            'Call WriteConsoleMsg(attackerIndex, "Estás muy lejos para disparar.", e_FontTypeNames.FONTTYPE_FIGHT)
 138         PuedeAtacarNPC = False
             Exit Function
 
@@ -1887,7 +1887,7 @@ Public Function PuedeAtacarNPC(ByVal AttackerIndex As Integer, ByVal NpcIndex As
 140     If esArmada(AttackerIndex) Or esCaos(AttackerIndex) Then
             ' Y el NPC pertenece a la misma faccion
 142         If NpcList(NpcIndex).flags.Faccion = UserList(AttackerIndex).Faccion.Status Then
-144             Call WriteConsoleMsg(AttackerIndex, "No podés atacar NPCs de tu misma facción, para hacerlo debes desenlistarte.", FontTypeNames.FONTTYPE_INFO)
+144             Call WriteConsoleMsg(AttackerIndex, "No podés atacar NPCs de tu misma facción, para hacerlo debes desenlistarte.", e_FontTypeNames.FONTTYPE_INFO)
 146             PuedeAtacarNPC = False
                 Exit Function
             End If
@@ -1895,7 +1895,7 @@ Public Function PuedeAtacarNPC(ByVal AttackerIndex As Integer, ByVal NpcIndex As
             ' Si es una mascota, checkeamos en el Maestro
 148         If NpcList(NpcIndex).MaestroUser > 0 Then
 150             If UserList(NpcList(NpcIndex).MaestroUser).Faccion.Status = UserList(AttackerIndex).Faccion.Status Then
-152                 Call WriteConsoleMsg(AttackerIndex, "No podés atacar NPCs de tu misma facción, para hacerlo debes desenlistarte.", FontTypeNames.FONTTYPE_INFO)
+152                 Call WriteConsoleMsg(AttackerIndex, "No podés atacar NPCs de tu misma facción, para hacerlo debes desenlistarte.", e_FontTypeNames.FONTTYPE_INFO)
 154                 PuedeAtacarNPC = False
                     Exit Function
                 End If
@@ -1904,7 +1904,7 @@ Public Function PuedeAtacarNPC(ByVal AttackerIndex As Integer, ByVal NpcIndex As
         
 156     If Status(AttackerIndex) = Ciudadano Then
 158         If NpcList(NpcIndex).MaestroUser > 0 And NpcList(NpcIndex).MaestroUser = AttackerIndex Then
-160             Call WriteConsoleMsg(AttackerIndex, "No puedes atacar a tus mascotas siendo un ciudadano.", FontTypeNames.FONTTYPE_INFO)
+160             Call WriteConsoleMsg(AttackerIndex, "No puedes atacar a tus mascotas siendo un ciudadano.", e_FontTypeNames.FONTTYPE_INFO)
 162             PuedeAtacarNPC = False
                 Exit Function
             End If
@@ -1917,11 +1917,11 @@ Public Function PuedeAtacarNPC(ByVal AttackerIndex As Integer, ByVal NpcIndex As
             
 166         If NpcList(NpcIndex).flags.Faccion = Armada Then
 168             If UserList(AttackerIndex).flags.Seguro Then
-170                 Call WriteConsoleMsg(AttackerIndex, "Debes quitar el seguro para atacar miembros de la Armada Real (/seg)", FontTypeNames.FONTTYPE_INFO)
+170                 Call WriteConsoleMsg(AttackerIndex, "Debes quitar el seguro para atacar miembros de la Armada Real (/seg)", e_FontTypeNames.FONTTYPE_INFO)
 172                 PuedeAtacarNPC = False
                     Exit Function
                 Else
-174                 Call WriteConsoleMsg(AttackerIndex, "Atacaste un miembro de la Armada Real! Te has convertido en un Criminal.", FontTypeNames.FONTTYPE_INFO)
+174                 Call WriteConsoleMsg(AttackerIndex, "Atacaste un miembro de la Armada Real! Te has convertido en un Criminal.", e_FontTypeNames.FONTTYPE_INFO)
 176                 Call VolverCriminal(AttackerIndex)
 178                 PuedeAtacarNPC = True
                     Exit Function
@@ -1933,11 +1933,11 @@ Public Function PuedeAtacarNPC(ByVal AttackerIndex As Integer, ByVal NpcIndex As
 182             Select Case UserList(NpcList(NpcIndex).MaestroUser).Faccion.Status
                     Case e_Facciones.Armada
 184                     If UserList(AttackerIndex).flags.Seguro Then
-186                         Call WriteConsoleMsg(AttackerIndex, "Debes quitar el seguro para atacar mascotas de la Armada Real (/seg)", FontTypeNames.FONTTYPE_INFO)
+186                         Call WriteConsoleMsg(AttackerIndex, "Debes quitar el seguro para atacar mascotas de la Armada Real (/seg)", e_FontTypeNames.FONTTYPE_INFO)
 188                         PuedeAtacarNPC = False
                             Exit Function
                         Else
-190                         Call WriteConsoleMsg(AttackerIndex, "Atacaste una mascota de la Armada Real! Te has convertido en un Criminal.", FontTypeNames.FONTTYPE_INFO)
+190                         Call WriteConsoleMsg(AttackerIndex, "Atacaste una mascota de la Armada Real! Te has convertido en un Criminal.", e_FontTypeNames.FONTTYPE_INFO)
 192                         Call VolverCriminal(AttackerIndex)
 194                         PuedeAtacarNPC = True
                             Exit Function
@@ -1945,11 +1945,11 @@ Public Function PuedeAtacarNPC(ByVal AttackerIndex As Integer, ByVal NpcIndex As
                         
 196                 Case e_Facciones.Ciudadano
 198                     If UserList(AttackerIndex).flags.Seguro Then
-200                         Call WriteConsoleMsg(AttackerIndex, "Debes quitar el seguro para atacar mascotas de otros ciudadanos(/seg)", FontTypeNames.FONTTYPE_INFO)
+200                         Call WriteConsoleMsg(AttackerIndex, "Debes quitar el seguro para atacar mascotas de otros ciudadanos(/seg)", e_FontTypeNames.FONTTYPE_INFO)
 202                         PuedeAtacarNPC = False
                             Exit Function
                         Else
-204                         Call WriteConsoleMsg(AttackerIndex, "Atacaste un la mascota de un ciudadano! Te has convertido en un Criminal.", FontTypeNames.FONTTYPE_INFO)
+204                         Call WriteConsoleMsg(AttackerIndex, "Atacaste un la mascota de un ciudadano! Te has convertido en un Criminal.", e_FontTypeNames.FONTTYPE_INFO)
 206                         Call VolverCriminal(AttackerIndex)
 208                         PuedeAtacarNPC = True
                             Exit Function
@@ -1963,9 +1963,9 @@ Public Function PuedeAtacarNPC(ByVal AttackerIndex As Integer, ByVal NpcIndex As
         End If
         
         'Es el Rey Preatoriano?
-214     If NpcList(NpcIndex).NPCtype = eNPCType.Pretoriano Then
+214     If NpcList(NpcIndex).NPCtype = e_NPCType.Pretoriano Then
 216         If Not ClanPretoriano(NpcList(NpcIndex).ClanIndex).CanAtackMember(NpcIndex) Then
-218             Call WriteConsoleMsg(AttackerIndex, "Debes matar al resto del ejercito antes de atacar al rey.", FontTypeNames.FONTTYPE_FIGHT)
+218             Call WriteConsoleMsg(AttackerIndex, "Debes matar al resto del ejercito antes de atacar al rey.", e_FontTypeNames.FONTTYPE_FIGHT)
                 Exit Function
     
             End If
@@ -2035,7 +2035,7 @@ Sub CalcularDarExp(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal 
 136                 If Abs(DeltaLevel) > 5 Then ' Qué pereza da desharcodear
 138                     ExpaDar = ExpaDar * Math.Exp(15 - Abs(3 * DeltaLevel))
                         
-140                     Call WriteConsoleMsg(UserIndex, "La criatura es demasiado " & IIf(DeltaLevel < 0, "poderosa", "débil") & " y obtienes experiencia reducida al luchar contra ella", FontTypeNames.FONTTYPE_WARNING)
+140                     Call WriteConsoleMsg(UserIndex, "La criatura es demasiado " & IIf(DeltaLevel < 0, "poderosa", "débil") & " y obtienes experiencia reducida al luchar contra ella", e_FontTypeNames.FONTTYPE_WARNING)
                     End If
                 End If
 
@@ -2144,7 +2144,7 @@ Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As I
 172                             If Abs(DeltaLevel) > 5 Then ' Qué pereza da desharcodear
 174                                 ExpUser = ExpUser * Math.Exp(15 - Abs(3 * DeltaLevel))
                                     
-176                                 Call WriteConsoleMsg(Index, "La criatura es demasiado " & IIf(DeltaLevel < 0, "poderosa", "débil") & " y obtienes experiencia reducida al luchar contra ella", FontTypeNames.FONTTYPE_WARNING)
+176                                 Call WriteConsoleMsg(Index, "La criatura es demasiado " & IIf(DeltaLevel < 0, "poderosa", "débil") & " y obtienes experiencia reducida al luchar contra ella", e_FontTypeNames.FONTTYPE_WARNING)
                                 End If
                             End If
 
@@ -2153,7 +2153,7 @@ Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As I
 180                         If UserList(Index).Stats.Exp > MAXEXP Then UserList(Index).Stats.Exp = MAXEXP
 
 182                         If UserList(Index).ChatCombate = 1 Then
-184                             Call WriteLocaleMsg(Index, "141", FontTypeNames.FONTTYPE_EXP, ExpUser)
+184                             Call WriteLocaleMsg(Index, "141", e_FontTypeNames.FONTTYPE_EXP, ExpUser)
 
                             End If
 
@@ -2164,9 +2164,9 @@ Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As I
     
                     Else
     
-                        'Call WriteConsoleMsg(Index, "Estas demasiado lejos del grupo, no has ganado experiencia.", FontTypeNames.FONTTYPE_INFOIAO)
+                        'Call WriteConsoleMsg(Index, "Estas demasiado lejos del grupo, no has ganado experiencia.", e_FontTypeNames.FONTTYPE_INFOIAO)
 190                     If UserList(Index).ChatCombate = 1 Then
-192                         Call WriteLocaleMsg(Index, "69", FontTypeNames.FONTTYPE_New_GRUPO)
+192                         Call WriteLocaleMsg(Index, "69", e_FontTypeNames.FONTTYPE_New_GRUPO)
     
                         End If
     
@@ -2175,7 +2175,7 @@ Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As I
                 Else
     
 194                 If UserList(Index).ChatCombate = 1 Then
-196                     Call WriteConsoleMsg(Index, "Estás muerto, no has ganado experencia del grupo.", FontTypeNames.FONTTYPE_New_GRUPO)
+196                     Call WriteConsoleMsg(Index, "Estás muerto, no has ganado experencia del grupo.", e_FontTypeNames.FONTTYPE_New_GRUPO)
     
                     End If
     
@@ -2185,7 +2185,7 @@ Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As I
         End If
 
         'Else
-        '    Call WriteConsoleMsg(UserIndex, "No te encontras en ningun grupo, experencia perdida.", FontTypeNames.FONTTYPE_New_GRUPO)
+        '    Call WriteConsoleMsg(UserIndex, "No te encontras en ningun grupo, experencia perdida.", e_FontTypeNames.FONTTYPE_New_GRUPO)
         'End If
 
         
@@ -2232,7 +2232,7 @@ Private Sub CalcularDarOroGrupal(ByVal UserIndex As Integer, ByVal GiveGold As L
 116                     UserList(Index).Stats.GLD = UserList(Index).Stats.GLD + OroDar
 
 118                     If UserList(Index).ChatCombate = 1 Then
-120                         Call WriteConsoleMsg(Index, "¡El grupo ha ganado " & PonerPuntos(OroDar) & " monedas de oro!", FontTypeNames.FONTTYPE_New_GRUPO)
+120                         Call WriteConsoleMsg(Index, "¡El grupo ha ganado " & PonerPuntos(OroDar) & " monedas de oro!", e_FontTypeNames.FONTTYPE_New_GRUPO)
 
                         End If
 
@@ -2242,19 +2242,19 @@ Private Sub CalcularDarOroGrupal(ByVal UserIndex As Integer, ByVal GiveGold As L
 
                 Else
 
-                    'Call WriteConsoleMsg(Index, "Estas demasiado lejos del grupo, no has ganado experiencia.", FontTypeNames.FONTTYPE_INFOIAO)
-                    'Call WriteLocaleMsg(Index, "69", FontTypeNames.FONTTYPE_INFOIAO)
+                    'Call WriteConsoleMsg(Index, "Estas demasiado lejos del grupo, no has ganado experiencia.", e_FontTypeNames.FONTTYPE_INFOIAO)
+                    'Call WriteLocaleMsg(Index, "69", e_FontTypeNames.FONTTYPE_INFOIAO)
                 End If
 
             Else
 
-                '  Call WriteConsoleMsg(Index, "Estas muerto, no has ganado oro del grupo.", FontTypeNames.FONTTYPE_INFOIAO)
+                '  Call WriteConsoleMsg(Index, "Estas muerto, no has ganado oro del grupo.", e_FontTypeNames.FONTTYPE_INFOIAO)
             End If
 
 124     Next i
 
         'Else
-        '    Call WriteConsoleMsg(UserIndex, "No te encontras en ningun grupo, oro perdido.", FontTypeNames.FONTTYPE_New_GRUPO)
+        '    Call WriteConsoleMsg(UserIndex, "No te encontras en ningun grupo, oro perdido.", e_FontTypeNames.FONTTYPE_New_GRUPO)
         'End If
 
         
@@ -2266,16 +2266,16 @@ CalcularDarOroGrupal_Err:
         
 End Sub
 
-Public Function TriggerZonaPelea(ByVal Origen As Integer, ByVal Destino As Integer) As eTrigger6
+Public Function TriggerZonaPelea(ByVal Origen As Integer, ByVal Destino As Integer) As e_Trigger6
         On Error GoTo ErrHandler
 
-        Dim tOrg As eTrigger
-        Dim tDst As eTrigger
+        Dim tOrg As e_Trigger
+        Dim tDst As e_Trigger
 
 100     tOrg = MapData(UserList(Origen).Pos.Map, UserList(Origen).Pos.X, UserList(Origen).Pos.Y).trigger
 102     tDst = MapData(UserList(Destino).Pos.Map, UserList(Destino).Pos.X, UserList(Destino).Pos.Y).trigger
     
-104     If tOrg = eTrigger.ZONAPELEA Or tDst = eTrigger.ZONAPELEA Then
+104     If tOrg = e_Trigger.ZONAPELEA Or tDst = e_Trigger.ZONAPELEA Then
 106         If tOrg = tDst Then
 108             TriggerZonaPelea = TRIGGER6_PERMITE
             Else
@@ -2400,7 +2400,7 @@ Sub AllMascotasAtacanUser(ByVal victim As Integer, ByVal Maestro As Integer)
 108                 If NpcList(mascotaIndex).flags.AtacaUsuarios Then
 110                     NpcList(mascotaIndex).flags.AttackedBy = UserList(victim).Name
 112                     NpcList(mascotaIndex).Target = victim
-114                     NpcList(mascotaIndex).Movement = TipoAI.NpcDefensa
+114                     NpcList(mascotaIndex).Movement = e_TipoAI.NpcDefensa
 116                     NpcList(mascotaIndex).Hostile = 1
                     End If
                     
@@ -2431,7 +2431,7 @@ Public Sub AllMascotasAtacanNPC(ByVal NpcIndex As Integer, ByVal UserIndex As In
                     
 108                 If .flags.AtacaNPCs And .TargetNPC = 0 Then
 110                     .TargetNPC = NpcIndex
-112                     .Movement = TipoAI.NpcAtacaNpc
+112                     .Movement = e_TipoAI.NpcAtacaNpc
                     End If
             
                 End With
@@ -2451,8 +2451,8 @@ Private Function PuedeDesequiparDeUnGolpe(ByVal UserIndex As Integer) As Boolean
 100     With UserList(UserIndex)
 102         Select Case .clase
     
-            Case eClass.Bandit, eClass.Thief
-104             PuedeDesequiparDeUnGolpe = (.Stats.UserSkills(eSkill.Wrestling) >= 100) And (.Invent.WeaponEqpObjIndex = 0)
+            Case e_Class.Bandit, e_Class.Thief
+104             PuedeDesequiparDeUnGolpe = (.Stats.UserSkills(e_Skill.Wrestling) >= 100) And (.Invent.WeaponEqpObjIndex = 0)
 
 106         Case Else
 108             PuedeDesequiparDeUnGolpe = False
@@ -2476,7 +2476,7 @@ Private Function PuedeApuñalar(ByVal UserIndex As Integer) As Boolean
 100     With UserList(UserIndex)
 
 102         If .Invent.WeaponEqpObjIndex > 0 Then
-104             PuedeApuñalar = (.clase = eClass.Assasin Or .Stats.UserSkills(eSkill.Apuñalar) >= MIN_APUÑALAR) And ObjData(.Invent.WeaponEqpObjIndex).Apuñala = 1
+104             PuedeApuñalar = (.clase = e_Class.Assasin Or .Stats.UserSkills(e_Skill.Apuñalar) >= MIN_APUÑALAR) And ObjData(.Invent.WeaponEqpObjIndex).Apuñala = 1
             End If
             
         End With
@@ -2498,7 +2498,7 @@ Private Function PuedeGolpeCritico(ByVal UserIndex As Integer) As Boolean
     
 102         If .Invent.WeaponEqpObjIndex > 0 Then
                 ' Esto me parece que esta MAL; subtipo 2 es incinera :/
-104             PuedeGolpeCritico = .clase = eClass.Bandit And ObjData(.Invent.WeaponEqpObjIndex).Subtipo = 2
+104             PuedeGolpeCritico = .clase = e_Class.Bandit And ObjData(.Invent.WeaponEqpObjIndex).Subtipo = 2
             End If
             
         End With
@@ -2520,14 +2520,14 @@ Private Function ProbabilidadApuñalar(ByVal UserIndex As Integer) As Integer
 100     With UserList(UserIndex)
 
             Dim Skill  As Integer
-102         Skill = .Stats.UserSkills(eSkill.Apuñalar)
+102         Skill = .Stats.UserSkills(e_Skill.Apuñalar)
         
 104         Select Case .clase
     
-                Case eClass.Assasin '20%
+                Case e_Class.Assasin '20%
 106                 ProbabilidadApuñalar = 0.33 * Skill
     
-108             Case eClass.Pirat, eClass.Hunter '15%
+108             Case e_Class.Pirat, e_Class.Hunter '15%
 110                 ProbabilidadApuñalar = 0.15 * Skill
     
 112             Case Else ' 10%
@@ -2553,7 +2553,7 @@ End Function
 Private Function ProbabilidadGolpeCritico(ByVal UserIndex As Integer) As Integer
         On Error GoTo ProbabilidadGolpeCritico_Err
 
-100     ProbabilidadGolpeCritico = 0.2 * UserList(UserIndex).Stats.UserSkills(eSkill.Wrestling)
+100     ProbabilidadGolpeCritico = 0.2 * UserList(UserIndex).Stats.UserSkills(e_Skill.Wrestling)
 
         Exit Function
 
@@ -2570,10 +2570,10 @@ Private Function ProbabilidadDesequipar(ByVal UserIndex As Integer) As Integer
 
 102         Select Case .clase
     
-            Case eClass.Bandit
+            Case e_Class.Bandit
 104             ProbabilidadDesequipar = 0.2 * 100
     
-106         Case eClass.Thief
+106         Case e_Class.Thief
 108             ProbabilidadDesequipar = 0.33 * 100
     
 110         Case Else
@@ -2597,7 +2597,7 @@ Private Sub WriteCombatConsoleMsg(ByVal UserIndex As Integer, ByVal message As S
             On Error GoTo WriteCombatConsoleMsg_Err
 
 100         If UserList(UserIndex).ChatCombate = 1 Then
-102             Call WriteConsoleMsg(UserIndex, message, FontTypeNames.FONTTYPE_FIGHT)
+102             Call WriteConsoleMsg(UserIndex, Message, e_FontTypeNames.FONTTYPE_FIGHT)
             End If
 
             Exit Sub

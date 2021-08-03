@@ -445,8 +445,8 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
 232         Params(PostInc(i)) = .flags.Pareja
 234         Params(PostInc(i)) = .Counters.Pena
 236         Params(PostInc(i)) = .flags.VecesQueMoriste
-238         Params(PostInc(i)) = (.flags.Privilegios And PlayerType.RoyalCouncil)
-240         Params(PostInc(i)) = (.flags.Privilegios And PlayerType.ChaosCouncil)
+238         Params(PostInc(i)) = (.flags.Privilegios And e_PlayerType.RoyalCouncil)
+240         Params(PostInc(i)) = (.flags.Privilegios And e_PlayerType.ChaosCouncil)
 242         Params(PostInc(i)) = .Faccion.ArmadaReal
 244         Params(PostInc(i)) = .Faccion.FuerzasCaos
 246         Params(PostInc(i)) = .Faccion.ciudadanosMatados
@@ -820,12 +820,12 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
 256         .ChatCombate = RS!chat_combate
 
 258         If RS!pertenece_consejo_real Then
-260             .flags.Privilegios = .flags.Privilegios Or PlayerType.RoyalCouncil
+260             .flags.Privilegios = .flags.Privilegios Or e_PlayerType.RoyalCouncil
 
             End If
 
 262         If RS!pertenece_consejo_caos Then
-264             .flags.Privilegios = .flags.Privilegios Or PlayerType.ChaosCouncil
+264             .flags.Privilegios = .flags.Privilegios Or e_PlayerType.ChaosCouncil
 
             End If
 
@@ -853,17 +853,17 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
             Set RS = Query("SELECT * FROM attribute WHERE user_id = ?;", .ID)
     
 302         If Not RS Is Nothing Then
-                .Stats.UserAtributos(eAtributos.Fuerza) = RS!strength
-                .Stats.UserAtributos(eAtributos.Agilidad) = RS!agility
-                .Stats.UserAtributos(eAtributos.Constitucion) = RS!constitution
-                .Stats.UserAtributos(eAtributos.Inteligencia) = RS!intelligence
-                .Stats.UserAtributos(eAtributos.Carisma) = RS!charisma
+                .Stats.UserAtributos(e_Atributos.Fuerza) = RS!strength
+                .Stats.UserAtributos(e_Atributos.Agilidad) = RS!agility
+                .Stats.UserAtributos(e_Atributos.Constitucion) = RS!constitution
+                .Stats.UserAtributos(e_Atributos.Inteligencia) = RS!intelligence
+                .Stats.UserAtributos(e_Atributos.Carisma) = RS!charisma
 
-                .Stats.UserAtributosBackUP(eAtributos.Fuerza) = .Stats.UserAtributos(eAtributos.Fuerza)
-                .Stats.UserAtributosBackUP(eAtributos.Agilidad) = .Stats.UserAtributos(eAtributos.Agilidad)
-                .Stats.UserAtributosBackUP(eAtributos.Constitucion) = .Stats.UserAtributos(eAtributos.Constitucion)
-                .Stats.UserAtributosBackUP(eAtributos.Inteligencia) = .Stats.UserAtributos(eAtributos.Inteligencia)
-                .Stats.UserAtributosBackUP(eAtributos.Carisma) = .Stats.UserAtributos(eAtributos.Carisma)
+                .Stats.UserAtributosBackUP(e_Atributos.Fuerza) = .Stats.UserAtributos(e_Atributos.Fuerza)
+                .Stats.UserAtributosBackUP(e_Atributos.Agilidad) = .Stats.UserAtributos(e_Atributos.Agilidad)
+                .Stats.UserAtributosBackUP(e_Atributos.Constitucion) = .Stats.UserAtributos(e_Atributos.Constitucion)
+                .Stats.UserAtributosBackUP(e_Atributos.Inteligencia) = .Stats.UserAtributos(e_Atributos.Inteligencia)
+                .Stats.UserAtributosBackUP(e_Atributos.Carisma) = .Stats.UserAtributos(e_Atributos.Carisma)
             End If
 
             'User spells
@@ -1450,7 +1450,7 @@ ErrorHandler:
     
 End Function
 
-Public Function GetPersonajesCuentaDatabase(ByVal AccountID As Long, Personaje() As PersonajeCuenta) As Byte
+Public Function GetPersonajesCuentaDatabase(ByVal AccountID As Long, Personaje() As t_PersonajeCuenta) As Byte
         
         On Error GoTo GetPersonajesCuentaDatabase_Err
         
@@ -1890,7 +1890,7 @@ Public Sub SendUserPunishmentsDatabase(ByVal UserIndex As Integer, ByVal UserNam
 104     If Not RS.RecordCount = 0 Then
 
 108         While Not RS.EOF
-110             Call WriteConsoleMsg(UserIndex, RS!Number & " - " & RS!Reason, FontTypeNames.FONTTYPE_INFO)
+110             Call WriteConsoleMsg(UserIndex, RS!Number & " - " & RS!Reason, e_FontTypeNames.FONTTYPE_INFO)
             
 112             RS.MoveNext
             Wend
@@ -2108,7 +2108,7 @@ Public Sub SendCharacterInfoDatabase(ByVal UserIndex As Integer, ByVal UserName 
 100     Set RS = Query("SELECT race_id, class_id, genre_id, level, gold, bank_gold, guild_requests_history, guild_index, guild_member_history, pertenece_real, pertenece_caos, ciudadanos_matados, criminales_matados FROM user WHERE UPPER(name) = ?;", UCase$(UserName))
 
 102     If RS Is Nothing Then
-104         Call WriteConsoleMsg(UserIndex, "Pj Inexistente", FontTypeNames.FONTTYPE_INFO)
+104         Call WriteConsoleMsg(UserIndex, "Pj Inexistente", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
 
         End If
@@ -2218,7 +2218,7 @@ Public Sub ChangePasswordDatabase(ByVal UserIndex As Integer, OldPassword As Str
         On Error GoTo ErrorHandler
 
 100     If LenB(NewPassword) = 0 Then
-102         Call WriteConsoleMsg(UserIndex, "Debe especificar una contraseña nueva, inténtelo de nuevo.", FontTypeNames.FONTTYPE_INFO)
+102         Call WriteConsoleMsg(UserIndex, "Debe especificar una contraseña nueva, inténtelo de nuevo.", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
 
         End If
@@ -2227,13 +2227,13 @@ Public Sub ChangePasswordDatabase(ByVal UserIndex As Integer, OldPassword As Str
         Set RS = Query("SELECT password, salt FROM account WHERE id = ?;", UserList(UserIndex).AccountID)
     
 106     If RS Is Nothing Then
-108         Call WriteConsoleMsg(UserIndex, "No se ha podido cambiar la contraseña por un error interno. Avise a un administrador.", FontTypeNames.FONTTYPE_INFO)
+108         Call WriteConsoleMsg(UserIndex, "No se ha podido cambiar la contraseña por un error interno. Avise a un administrador.", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
 
         End If
     
 110     If Not PasswordValida(OldPassword, RS!Password, RS!Salt) Then
-112         Call WriteConsoleMsg(UserIndex, "La contraseña actual proporcionada no es correcta. La contraseña no ha sido cambiada, inténtelo de nuevo.", FontTypeNames.FONTTYPE_INFO)
+112         Call WriteConsoleMsg(UserIndex, "La contraseña actual proporcionada no es correcta. La contraseña no ha sido cambiada, inténtelo de nuevo.", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
 
         End If
@@ -2251,7 +2251,7 @@ Public Sub ChangePasswordDatabase(ByVal UserIndex As Integer, OldPassword As Str
         
         Call Execute("UPDATE account SET password = ?, salt = ? WHERE id = ?;", PasswordHash, Salt, UserList(UserIndex).AccountID)
 
-124     Call WriteConsoleMsg(UserIndex, "La contraseña de su cuenta fue cambiada con éxito.", FontTypeNames.FONTTYPE_INFO)
+124     Call WriteConsoleMsg(UserIndex, "La contraseña de su cuenta fue cambiada con éxito.", e_FontTypeNames.FONTTYPE_INFO)
     
         Exit Sub
 
@@ -2377,10 +2377,10 @@ Public Sub VerLlavesDatabase(ByVal UserIndex As Integer)
 100     Set RS = Query("SELECT email, key_obj FROM `house_key` INNER JOIN `account` ON `house_key`.account_id = `account`.id;")
 
 102     If RS Is Nothing Then
-104         Call WriteConsoleMsg(UserIndex, "No hay llaves otorgadas por el momento.", FontTypeNames.FONTTYPE_INFO)
+104         Call WriteConsoleMsg(UserIndex, "No hay llaves otorgadas por el momento.", e_FontTypeNames.FONTTYPE_INFO)
 
 106     ElseIf RS.RecordCount = 0 Then
-108         Call WriteConsoleMsg(UserIndex, "No hay llaves otorgadas por el momento.", FontTypeNames.FONTTYPE_INFO)
+108         Call WriteConsoleMsg(UserIndex, "No hay llaves otorgadas por el momento.", e_FontTypeNames.FONTTYPE_INFO)
     
         Else
             Dim Message As String
@@ -2395,7 +2395,7 @@ Public Sub VerLlavesDatabase(ByVal UserIndex As Integer)
         
 120         Message = Left$(Message, Len(Message) - 2)
         
-122         Call WriteConsoleMsg(UserIndex, Message, FontTypeNames.FONTTYPE_INFO)
+122         Call WriteConsoleMsg(UserIndex, Message, e_FontTypeNames.FONTTYPE_INFO)
         End If
 
         Exit Sub

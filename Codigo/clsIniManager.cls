@@ -37,7 +37,7 @@ Attribute VB_Exposed = False
 ''
 'Loads a complete INI file into memory and sorts it's data and keys for faster searches.
 'It is MUCH faster than GetPrivateProfileStringA if you search for several values within a file, otherwise stick to the API.
-'It's particularly usefull when you can keep a whole file in memory such as NPCs.dat'
+'It's particularly usefull when you can keep a whole file in memory such As t_Npcs.dat'
 ' Based in the idea of AlejoLP and his clsLeerInis.
 '
 ' @author Juan Martin Sotuyo Dodero (Maraxus) juansotuyo@gmail.com

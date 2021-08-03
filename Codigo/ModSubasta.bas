@@ -1,6 +1,6 @@
 Attribute VB_Name = "ModSubasta"
 
-Public Type tSubastas
+Public Type t_Subastas
 
     HaySubastaActiva As Boolean
     SubastaHabilitada As Boolean
@@ -17,7 +17,7 @@ Public Type tSubastas
 
 End Type
 
-Public Subasta As tSubastas
+Public Subasta As t_Subastas
 
 Dim Logear     As String
 
@@ -97,7 +97,7 @@ Public Sub FinalizarSubasta()
         'si esta offline se deposita en el banco.
         'El sistema le cobra un 10% del precio de venta, por uso de servicio.
 
-        Dim ObjVendido   As obj
+        Dim ObjVendido   As t_Obj
 
         Dim tUser        As Integer
 
@@ -155,7 +155,7 @@ Public Sub FinalizarSubasta()
             End If
 
 158         Call LogearEventoDeSubasta("Se entrego el item en mano.")
-160         Call WriteConsoleMsg(tUser, "Felicitaciones, has ganado la subasta.", FontTypeNames.FONTTYPE_SUBASTA)
+160         Call WriteConsoleMsg(tUser, "Felicitaciones, has ganado la subasta.", e_FontTypeNames.FONTTYPE_SUBASTA)
 
         End If
 
@@ -173,7 +173,7 @@ Public Sub FinalizarSubasta()
         Else
 178         UserList(NameIndex(Subasta.Subastador)).Stats.GLD = UserList(NameIndex(Subasta.Subastador)).Stats.GLD + Subasta.MejorOferta
         
-180         Call WriteConsoleMsg(NameIndex(Subasta.Subastador), "Felicitaciones, has ganado " & PonerPuntos(Subasta.MejorOferta) & " monedas de oro de tú subasta.", FontTypeNames.FONTTYPE_SUBASTA)
+180         Call WriteConsoleMsg(NameIndex(Subasta.Subastador), "Felicitaciones, has ganado " & PonerPuntos(Subasta.MejorOferta) & " monedas de oro de tú subasta.", e_FontTypeNames.FONTTYPE_SUBASTA)
         
 182         Call WriteUpdateGold(NameIndex(Subasta.Subastador))
 184         Call LogearEventoDeSubasta("Oro entregado en la billetera")
@@ -244,7 +244,7 @@ Public Sub DevolverItem()
         On Error GoTo DevolverItem_Err
         
 
-        Dim ObjVendido   As obj
+        Dim ObjVendido   As t_Obj
 
         Dim tUser        As Integer
 
@@ -327,7 +327,7 @@ Public Sub CancelarSubasta()
         On Error GoTo CancelarSubasta_Err
         
 
-        Dim ObjVendido   As obj
+        Dim ObjVendido   As t_Obj
 
         Dim tUser        As Integer
 

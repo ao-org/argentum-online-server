@@ -215,15 +215,15 @@ Public Function SendInfoEncuesta(ByVal UserIndex As Integer) As String
 
         Dim i As Integer
 
-100     Call WriteConsoleMsg(UserIndex, "CONSULTA POPULAR NUMERO " & pEncuestaActualNum, FontTypeNames.FONTTYPE_GUILD)
-102     Call WriteConsoleMsg(UserIndex, pEncuestaActualTex, FontTypeNames.FONTTYPE_GUILD)
-104     Call WriteConsoleMsg(UserIndex, " Opciones de voto: ", FontTypeNames.FONTTYPE_GUILDMSG)
+100     Call WriteConsoleMsg(UserIndex, "CONSULTA POPULAR NUMERO " & pEncuestaActualNum, e_FontTypeNames.FONTTYPE_GUILD)
+102     Call WriteConsoleMsg(UserIndex, pEncuestaActualTex, e_FontTypeNames.FONTTYPE_GUILD)
+104     Call WriteConsoleMsg(UserIndex, " Opciones de voto: ", e_FontTypeNames.FONTTYPE_GUILDMSG)
 
 106     For i = 1 To UBound(pOpciones)
-108         Call WriteConsoleMsg(UserIndex, "(Opcion " & i & "): " & GetVar(DatPath & ARCHIVOCONFIG, "ENCUESTA" & pEncuestaActualNum, "OPCION" & i), FontTypeNames.FONTTYPE_GUILDMSG)
+108         Call WriteConsoleMsg(UserIndex, "(Opcion " & i & "): " & GetVar(DatPath & ARCHIVOCONFIG, "ENCUESTA" & pEncuestaActualNum, "OPCION" & i), e_FontTypeNames.FONTTYPE_GUILDMSG)
 110     Next i
 
-112     Call WriteConsoleMsg(UserIndex, " Para votar una opcion, escribe /encuesta NUMERODEOPCION, por ejemplo para votar la opcion 1, escribe /encuesta 1. Tu voto no podra ser cambiado.", FontTypeNames.FONTTYPE_VENENO)
+112     Call WriteConsoleMsg(UserIndex, " Para votar una opcion, escribe /encuesta NUMERODEOPCION, por ejemplo para votar la opcion 1, escribe /encuesta 1. Tu voto no podra ser cambiado.", e_FontTypeNames.FONTTYPE_VENENO)
 
         
         Exit Function
