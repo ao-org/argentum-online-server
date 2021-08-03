@@ -2098,10 +2098,7 @@ Public Type t_Npc
     NroSpells As Byte
     Spells() As Integer  ' le da vida ;)
     
-    '
-
-
-Entrenadores>>>>>
+    ' Entrenadores
     NroCriaturas As Integer
     Criaturas() As t_CriaturasEntrenador
     EsFamiliar As Byte
