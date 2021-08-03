@@ -2620,8 +2620,7 @@ Sub LoadUser(ByVal UserIndex As Integer)
         On Error GoTo ErrorHandler
     
 105         Call LoadUserDatabase(UserIndex)
-
-
+            Call CargarTipoUsuario(UserIndex)
         Exit Sub
 
 ErrorHandler:

@@ -770,7 +770,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
 160         .Invent.MunicionEqpSlot = SanitizeNullValue(RS!slot_ammo, 0)
 162         .Invent.BarcoSlot = SanitizeNullValue(RS!slot_ship, 0)
 164         .Invent.MonturaSlot = SanitizeNullValue(RS!slot_mount, 0)
-166         .Invent.DañoMagicoEqpSlot = SanitizeNullValue(rs!slot_dm, 0)
+166         .Invent.DañoMagicoEqpSlot = SanitizeNullValue(RS!slot_dm, 0)
 168         .Invent.ResistenciaEqpSlot = SanitizeNullValue(RS!slot_rm, 0)
 170         .Invent.NudilloSlot = SanitizeNullValue(RS!slot_knuckles, 0)
 172         .Invent.HerramientaEqpSlot = SanitizeNullValue(RS!slot_tool, 0)
@@ -1061,8 +1061,22 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
                 Wend
 
             End If
-
+            
+            Set RS = Query("SELECT email from account a inner join user u  on a.id = u.account_id where u.name = LOWER(?);", LCase(.Name))
+            If Not RS Is Nothing Then
+                LoopC = 1
+                While Not RS.EOF
+                    .Email = RS!Email
+                    LoopC = LoopC + 1
+    
+                    RS.MoveNext
+                Wend
+            End If
+            
+        
         End With
+        
+        
 
         Exit Sub
 
@@ -2143,7 +2157,7 @@ Public Function EnterAccountDatabase(ByVal UserIndex As Integer, ByVal CuentaEma
         End If
     
 110     If val(RS!is_banned) > 0 Then
-112         Call WriteShowMessageBox(UserIndex, "La cuenta se encuentra baneada debido a: " & rs!ban_reason & ". Esta decisión fue tomada por: " & rs!banned_by & ".")
+112         Call WriteShowMessageBox(UserIndex, "La cuenta se encuentra baneada debido a: " & RS!ban_reason & ". Esta decisión fue tomada por: " & RS!banned_by & ".")
             Exit Function
         End If
     
