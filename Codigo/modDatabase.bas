@@ -1061,8 +1061,22 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
                 Wend
 
             End If
-
+            
+            Set RS = Query("SELECT email from account a inner join user u  on a.id = u.account_id where u.name = LOWER(?);", LCase(.Name))
+            If Not RS Is Nothing Then
+                LoopC = 1
+                While Not RS.EOF
+                    .Email = RS!Email
+                    LoopC = LoopC + 1
+    
+                    RS.MoveNext
+                Wend
+            End If
+            
+        
         End With
+        
+        
 
         Exit Sub
 

@@ -1373,6 +1373,14 @@ Public Type t_BancoInventario
 
 End Type
 
+Public Enum eTipoUsuario
+    tNormal = 0
+    tCafecito
+    tHeroe
+    tAventurero
+    tLeyenda
+End Enum
+
 '[/KEVIN]
 
 '*********************************************************
@@ -1388,6 +1396,7 @@ End Type
 'Estadisticas de los usuarios
 Public Type t_UserStats
 
+    tipoUsuario As eTipoUsuario
     GLD As Long 'Dinero
     InventLevel As Byte 'Filas extra desbloqueadas en el inventario
     Banco As Long
@@ -1421,9 +1430,7 @@ Public Type t_UserStats
     CriminalesMatados As Long
     NPCsMuertos As Integer
     SkillPts As Integer
-    
     Advertencias As Byte
-    
 End Type
 
 'Sistema de Barras
@@ -2091,7 +2098,10 @@ Public Type t_Npc
     NroSpells As Byte
     Spells() As Integer  ' le da vida ;)
     
-    '<<<<Entrenadores>>>>>
+    '
+
+
+Entrenadores>>>>>
     NroCriaturas As Integer
     Criaturas() As t_CriaturasEntrenador
     EsFamiliar As Byte
