@@ -56,7 +56,7 @@ Public Function IniciarComercioConUsuario(ByVal Origen As Integer, ByVal Destino
             'Call EnviarObjetoTransaccion(Origen)
         Else
             'Es el primero que comercia ?
-            'Call WriteConsoleMsg(Destino, UserList(Origen).Name & " desea comerciar. Si deseas aceptar, Escribe /COMERCIAR.", FontTypeNames.FONTTYPE_TALK)
+            'Call WriteConsoleMsg(Destino, UserList(Origen).Name & " desea comerciar. Si deseas aceptar, Escribe /COMERCIAR.", e_FontTypeNames.FONTTYPE_TALK)
 128         UserList(Destino).flags.TargetUser = Origen
     
 130         UserList(Destino).flags.pregunta = 4
@@ -86,7 +86,7 @@ Public Sub EnviarObjetoTransaccion(ByVal AQuien As Integer, ByVal UserIndex As I
 102             If UserList(UserIndex).ComUsu.Oro + ObjAEnviar.amount <= UserList(UserIndex).Stats.GLD Then
 104                 UserList(UserIndex).ComUsu.Oro = UserList(UserIndex).ComUsu.Oro + ObjAEnviar.amount
                 Else
-106                 Call WriteConsoleMsg(UserIndex, "No tienes esa cantidad disponible para agregar.", FontTypeNames.FONTTYPE_INFO)
+106                 Call WriteConsoleMsg(UserIndex, "No tienes esa cantidad disponible para agregar.", e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
             Else
@@ -102,7 +102,7 @@ Public Sub EnviarObjetoTransaccion(ByVal AQuien As Integer, ByVal UserIndex As I
 116             cantidadTotalItem = cantidadTotalItem + ObjAEnviar.amount
             
 118             If Not TieneObjetos(ObjAEnviar.ObjIndex, cantidadTotalItem, UserIndex) Then
-120                 Call WriteConsoleMsg(UserIndex, "No tienes esa cantidad disponible para agregar.", FontTypeNames.FONTTYPE_INFO)
+120                 Call WriteConsoleMsg(UserIndex, "No tienes esa cantidad disponible para agregar.", e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
             
@@ -147,7 +147,7 @@ Public Sub EnviarObjetoTransaccion(ByVal AQuien As Integer, ByVal UserIndex As I
 162                     .itemsAenviar(FirstEmptyPos).amount = ObjAEnviar.amount
 164                 ElseIf FirstEmptyPos = 0 And nada = False Then
                         'le aviso que no le entran los items
-166                     Call WriteConsoleMsg(UserIndex, "No tienes suficiente lugar para agregar esa cantidad o item", FontTypeNames.FONTTYPE_INFO)
+166                     Call WriteConsoleMsg(UserIndex, "No tienes suficiente lugar para agregar esa cantidad o item", e_FontTypeNames.FONTTYPE_INFO)
                     End If
                 End With
             End If
@@ -229,18 +229,18 @@ Public Sub AceptarComercioUsu(ByVal UserIndex As Integer)
 120     UserList(UserIndex).ComUsu.Acepto = True
 
 122     If UserList(OtroUserIndex).ComUsu.Acepto = False Then
-124         Call WriteConsoleMsg(UserIndex, "El otro usuario aun no ha aceptado tu oferta.", FontTypeNames.FONTTYPE_TALK)
+124         Call WriteConsoleMsg(UserIndex, "El otro usuario aun no ha aceptado tu oferta.", e_FontTypeNames.FONTTYPE_TALK)
             Exit Sub
 
         End If
 
 126     If UserList(UserIndex).ComUsu.Oro > UserList(UserIndex).Stats.GLD Then
-128         Call WriteConsoleMsg(UserIndex, "No tienes esa cantidad.", FontTypeNames.FONTTYPE_TALK)
+128         Call WriteConsoleMsg(UserIndex, "No tienes esa cantidad.", e_FontTypeNames.FONTTYPE_TALK)
 130         TerminarAhora = True
         End If
     
 132     If UserList(OtroUserIndex).ComUsu.Oro > UserList(OtroUserIndex).Stats.GLD Then
-134         Call WriteConsoleMsg(OtroUserIndex, "No tienes esa cantidad.", FontTypeNames.FONTTYPE_TALK)
+134         Call WriteConsoleMsg(OtroUserIndex, "No tienes esa cantidad.", e_FontTypeNames.FONTTYPE_TALK)
 136         GoTo FinalizarComercio
         End If
 
@@ -249,13 +249,13 @@ Public Sub AceptarComercioUsu(ByVal UserIndex As Integer)
 138     For i = 1 To UBound(UserList(OtroUserIndex).ComUsu.itemsAenviar)
 140         objOfrecido = UserList(OtroUserIndex).ComUsu.itemsAenviar(i)
 142         If objOfrecido.ObjIndex > 0 And Not TieneObjetos(objOfrecido.ObjIndex, objOfrecido.amount, OtroUserIndex) Then
-144             Call WriteConsoleMsg(OtroUserIndex, "El otro usuario no tiene esa cantidad disponible para ofrecer.", FontTypeNames.FONTTYPE_INFO)
+144             Call WriteConsoleMsg(OtroUserIndex, "El otro usuario no tiene esa cantidad disponible para ofrecer.", e_FontTypeNames.FONTTYPE_INFO)
 146             GoTo FinalizarComercio
             End If
         
 148         objOfrecido = UserList(UserIndex).ComUsu.itemsAenviar(i)
 150         If objOfrecido.ObjIndex > 0 And Not TieneObjetos(objOfrecido.ObjIndex, objOfrecido.amount, UserIndex) Then
-152             Call WriteConsoleMsg(UserIndex, "No tienes esa cantidad disponible para ofrecer.", FontTypeNames.FONTTYPE_INFO)
+152             Call WriteConsoleMsg(UserIndex, "No tienes esa cantidad disponible para ofrecer.", e_FontTypeNames.FONTTYPE_INFO)
 154             GoTo FinalizarComercio
             End If
 156     Next i

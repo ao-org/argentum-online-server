@@ -35,7 +35,7 @@ Option Explicit
 
 '####################
 ' Pretorians Clan Type (Define wether it is default or custom clan)
-Public Enum ePretorianType
+Public Enum e_PretorianType
     Default = 1
     Custom = 2
 End Enum
@@ -162,7 +162,7 @@ Private ClanMembersAlive             As Integer
 Private Type t_PretorianData
 
     NpcIndex As Integer
-    NpcAI As ePretorianAI
+    NpcAI As e_PretorianAI
 
 End Type
 
@@ -227,44 +227,44 @@ Public Function SpawnClan(ByVal Mapa As Integer, _
     
         ' Spawn King
 126     PretoIndex = PretoIndex + 1
-128     Call SpawnPretorian(nPos, ePretorianAI.King, PretoIndex, True)
+128     Call SpawnPretorian(nPos, e_PretorianAI.King, PretoIndex, True)
     
         ' Spawn 2 Healers
 130     PretoIndex = PretoIndex + 1
 132     nPos.X = nPos.X + 3
-134     Call SpawnPretorian(nPos, ePretorianAI.Healer, PretoIndex)
+134     Call SpawnPretorian(nPos, e_PretorianAI.Healer, PretoIndex)
     
 136     PretoIndex = PretoIndex + 1
 138     nPos.X = nPos.X - 6
-140     Call SpawnPretorian(nPos, ePretorianAI.Healer, PretoIndex)
+140     Call SpawnPretorian(nPos, e_PretorianAI.Healer, PretoIndex)
     
         ' Spawn 3 Sword Masters
 142     PretoIndex = PretoIndex + 1
 144     nPos.Y = nPos.Y + 3
-146     Call SpawnPretorian(nPos, ePretorianAI.SwordMaster, PretoIndex)
+146     Call SpawnPretorian(nPos, e_PretorianAI.SwordMaster, PretoIndex)
     
 148     PretoIndex = PretoIndex + 1
 150     nPos.X = nPos.X + 3
-152     Call SpawnPretorian(nPos, ePretorianAI.SwordMaster, PretoIndex)
+152     Call SpawnPretorian(nPos, e_PretorianAI.SwordMaster, PretoIndex)
     
 154     PretoIndex = PretoIndex + 1
 156     nPos.X = nPos.X + 3
-158     Call SpawnPretorian(nPos, ePretorianAI.SwordMaster, PretoIndex)
+158     Call SpawnPretorian(nPos, e_PretorianAI.SwordMaster, PretoIndex)
     
         ' Sapwn 1 Shooter
 160     PretoIndex = PretoIndex + 1
 162     nPos.Y = nPos.Y - 6
 164     nPos.X = nPos.X - 1
-166     Call SpawnPretorian(nPos, ePretorianAI.Shooter, PretoIndex)
+166     Call SpawnPretorian(nPos, e_PretorianAI.Shooter, PretoIndex)
     
         ' Spawn 1 SpellCaster
 168     PretoIndex = PretoIndex + 1
 170     nPos.X = nPos.X - 4
-172     Call SpawnPretorian(nPos, ePretorianAI.SpellCaster, PretoIndex)
+172     Call SpawnPretorian(nPos, e_PretorianAI.SpellCaster, PretoIndex)
     
         ' Spawn 1 Thief
 174     PretoIndex = PretoIndex + 1
-176     Call SpawnPretorian(nPos, ePretorianAI.Thief, PretoIndex)
+176     Call SpawnPretorian(nPos, e_PretorianAI.Thief, PretoIndex)
 
         ' Reset wand break counter
 178     WandBreakCounter = MAX_WAND_BREAK_VALUE
@@ -555,22 +555,22 @@ Public Sub PerformPretorianAI(ByVal NpcIndex As Integer)
     
 102     Select Case PretorianAI
         
-            Case ePretorianAI.King
+            Case e_PretorianAI.King
 104             Call AI_King(NpcIndex)
             
-106         Case ePretorianAI.Healer
+106         Case e_PretorianAI.Healer
 108             Call AI_Healer(NpcIndex)
             
-110         Case ePretorianAI.SpellCaster
+110         Case e_PretorianAI.SpellCaster
 112             Call AI_SpellCaster(NpcIndex)
             
-114         Case ePretorianAI.SwordMaster
+114         Case e_PretorianAI.SwordMaster
 116             Call AI_SwordMaster(NpcIndex)
             
-118         Case ePretorianAI.Shooter
+118         Case e_PretorianAI.Shooter
 120             Call AI_Shooter(NpcIndex)
             
-122         Case ePretorianAI.Thief
+122         Case e_PretorianAI.Thief
 124             Call AI_Thief(NpcIndex)
             
         End Select
@@ -838,9 +838,9 @@ Private Sub KingPerformAction(ByVal NpcIndex As Integer, _
 126                     Call NpcLanzaSpellSobreUser(NpcIndex, BestTarget, .Spells(eKingSpells.BlindAttack), True)
                     
                         ' King Message
-128                     Call WriteConsoleMsg(BestTarget, "El rey pretoriano te ha vuelto estupido.", FontTypeNames.FONTTYPE_FIGHT)
-130                     Call WriteConsoleMsg(BestTarget, "El rey pretoriano te ha vuelto ciego ", FontTypeNames.FONTTYPE_FIGHT)
-132                     Call WriteConsoleMsg(BestTarget, "A la distancia escuchas las siguientes palabras: Cobarde, no eres digno de luchar conmigo si escapas! ", FontTypeNames.FONTTYPE_VENENO)
+128                     Call WriteConsoleMsg(BestTarget, "El rey pretoriano te ha vuelto estupido.", e_FontTypeNames.FONTTYPE_FIGHT)
+130                     Call WriteConsoleMsg(BestTarget, "El rey pretoriano te ha vuelto ciego ", e_FontTypeNames.FONTTYPE_FIGHT)
+132                     Call WriteConsoleMsg(BestTarget, "A la distancia escuchas las siguientes palabras: Cobarde, no eres digno de luchar conmigo si escapas! ", e_FontTypeNames.FONTTYPE_VENENO)
 
                     End If
             
@@ -888,7 +888,7 @@ Private Sub KingMeleeAttack(NpcIndex)
 100     With NpcList(NpcIndex)
     
             ' Check the four directions
-102         For headingloop = eHeading.NORTH To eHeading.WEST
+102         For headingloop = e_Heading.NORTH To e_Heading.WEST
         
 104             nPos = .Pos
             
@@ -1294,7 +1294,7 @@ Private Function SpellCasterSacrifice(ByVal NpcIndex As Integer) As Boolean
 100     With NpcList(NpcIndex)
     
 102         If .Stats.MinHp <= START_COUNTDOWN_MIN_HP Then
-104             Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageCreateFX(.Char.CharIndex, FXIDs.FXMEDITARGRANDE, INFINITE_LOOPS))
+104             Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageCreateFX(.Char.CharIndex, e_FXIDs.FXMEDITARGRANDE, INFINITE_LOOPS))
         
 106             If IntervaloPermiteAtacarNPC(NpcIndex) Then
                 
@@ -1609,7 +1609,7 @@ Private Sub DealWandDamage(ByVal NpcIndex As Integer, ByVal SpellIndex As Intege
                         
 120                         .Stats.MinHp = .Stats.MinHp - Danio
                         
-122                         Call WriteConsoleMsg(UserIndex, NpcList(NpcIndex).Name & " te ha quitado " & Danio & " puntos de vida al romper su vara.", FontTypeNames.FONTTYPE_FIGHT)
+122                         Call WriteConsoleMsg(UserIndex, NpcList(NpcIndex).Name & " te ha quitado " & Danio & " puntos de vida al romper su vara.", e_FontTypeNames.FONTTYPE_FIGHT)
 124                         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(Hechizos(SpellIndex).wav, .Pos.X, .Pos.Y))
 126                         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(.Char.CharIndex, Hechizos(SpellIndex).FXgrh, Hechizos(SpellIndex).loops))
                         
@@ -1888,7 +1888,7 @@ Private Sub SwordMasterAttack(ByVal NpcIndex As Integer)
 100     With NpcList(NpcIndex)
     
             ' Check the four directions
-102         For headingloop = eHeading.NORTH To eHeading.WEST
+102         For headingloop = e_Heading.NORTH To e_Heading.WEST
         
 104             NpcPos = .Pos
 106             Call HeadtoPos(headingloop, NpcPos)
@@ -2218,7 +2218,7 @@ Private Function ThiefBestTarget(ByVal NpcIndex As Integer, _
 126                 If UserReachable(NpcIndex, UserIndex) Then
                 
                         ' Is it a hunter? => Has priority
-128                     If UserList(UserIndex).clase = eClass.Hunter Then
+128                     If UserList(UserIndex).clase = e_Class.Hunter Then
 130                         BestTarget = UserIndex
 132                         BestTargetDistance = UserDistance(UserIndex, NpcX, NpcY)
                             Exit For
@@ -2307,7 +2307,7 @@ Private Sub ThiefPerfomAction(ByVal NpcIndex As Integer, _
                             ' Can paralize
 110                         If RandomNumber(1, 100) < 10 Then
 112                             Call NpcLanzaSpellSobreUser(NpcIndex, BestTarget, .Spells(eThiefSpells.Paralisis), True)
-114                             Call WriteConsoleMsg(BestTarget, "" & .Name & " te ha paralizado con su golpe!!", FontTypeNames.FONTTYPE_VENENO)
+114                             Call WriteConsoleMsg(BestTarget, "" & .Name & " te ha paralizado con su golpe!!", e_FontTypeNames.FONTTYPE_VENENO)
                         
                                 ' Can unequip weapon
 116                         ElseIf RandomNumber(1, 100) < 22 Then
@@ -2329,7 +2329,7 @@ Private Sub ThiefPerfomAction(ByVal NpcIndex As Integer, _
 128                             If WeaponEqpSlot <> 0 Then
                                 
 130                                 If SnatchItem(NpcIndex, BestTarget, WeaponEqpSlot) Then
-132                                     Call WriteConsoleMsg(BestTarget, "" & .Name & " te ha arrebatado tu arma!!", FontTypeNames.FONTTYPE_VENENO)
+132                                     Call WriteConsoleMsg(BestTarget, "" & .Name & " te ha arrebatado tu arma!!", e_FontTypeNames.FONTTYPE_VENENO)
 
                                     End If
                                 
@@ -2339,7 +2339,7 @@ Private Sub ThiefPerfomAction(ByVal NpcIndex As Integer, _
 136                                 If MunicionEqpSlot <> 0 Then
                                 
 138                                     If SnatchItem(NpcIndex, BestTarget, MunicionEqpSlot) Then
-140                                         Call WriteConsoleMsg(BestTarget, "" & .Name & " te ha arrebatado tus municiones!!", FontTypeNames.FONTTYPE_VENENO)
+140                                         Call WriteConsoleMsg(BestTarget, "" & .Name & " te ha arrebatado tus municiones!!", e_FontTypeNames.FONTTYPE_VENENO)
 
                                         End If
                                     
@@ -2355,7 +2355,7 @@ Private Sub ThiefPerfomAction(ByVal NpcIndex As Integer, _
 144                             Slot = RandomNumber(1, UserList(BestTarget).CurrentInventorySlots)
                             
 146                             If ThiefStealITem(NpcIndex, BestTarget, Slot) Then
-148                                 Call WriteConsoleMsg(BestTarget, "" & .Name & " te esta robando!!", FontTypeNames.FONTTYPE_VENENO)
+148                                 Call WriteConsoleMsg(BestTarget, "" & .Name & " te esta robando!!", e_FontTypeNames.FONTTYPE_VENENO)
 
                                 End If
                             
@@ -2551,7 +2551,7 @@ Private Function TargetClose(ByRef Pos As t_WorldPos) As Boolean
 
         Dim headingloop As Byte
     
-100     For headingloop = eHeading.NORTH To eHeading.WEST
+100     For headingloop = e_Heading.NORTH To e_Heading.WEST
         
 102         nPos = Pos
 104         Call HeadtoPos(headingloop, nPos)
@@ -2643,7 +2643,7 @@ Private Function EsClaseMagica(ByVal UserIndex As Integer) As Boolean
         On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
-102         EsClaseMagica = .clase = eClass.Mage Or .clase = eClass.Cleric Or .clase = eClass.Druid Or .clase = eClass.Bard
+102         EsClaseMagica = .clase = e_Class.Mage Or .clase = e_Class.Cleric Or .clase = e_Class.Druid Or .clase = e_Class.Bard
 
         End With
     
@@ -2702,13 +2702,13 @@ Private Sub GreedyWalkTo(ByVal NpcIndex As Integer, _
 
 116             If ((RandomDir And 1) = 0) Then ''move down
             
-118                 If MoveNPCChar(NpcIndex, eHeading.SOUTH) Then
+118                 If MoveNPCChar(NpcIndex, e_Heading.SOUTH) Then
                         Exit Sub
-120                 ElseIf MoveNPCChar(NpcIndex, eHeading.WEST) Then
+120                 ElseIf MoveNPCChar(NpcIndex, e_Heading.WEST) Then
                         Exit Sub
-122                 ElseIf MoveNPCChar(NpcIndex, eHeading.EAST) Then
+122                 ElseIf MoveNPCChar(NpcIndex, e_Heading.EAST) Then
                         Exit Sub
-124                 ElseIf MoveNPCChar(NpcIndex, eHeading.NORTH) Then
+124                 ElseIf MoveNPCChar(NpcIndex, e_Heading.NORTH) Then
                         Exit Sub
 
                     End If
@@ -2716,13 +2716,13 @@ Private Sub GreedyWalkTo(ByVal NpcIndex As Integer, _
                 Else
 
                     ''random first move
-126                 If MoveNPCChar(NpcIndex, eHeading.WEST) Then
+126                 If MoveNPCChar(NpcIndex, e_Heading.WEST) Then
                         Exit Sub
-128                 ElseIf MoveNPCChar(NpcIndex, eHeading.SOUTH) Then
+128                 ElseIf MoveNPCChar(NpcIndex, e_Heading.SOUTH) Then
                         Exit Sub
-130                 ElseIf MoveNPCChar(NpcIndex, eHeading.EAST) Then
+130                 ElseIf MoveNPCChar(NpcIndex, e_Heading.EAST) Then
                         Exit Sub
-132                 ElseIf MoveNPCChar(NpcIndex, eHeading.NORTH) Then
+132                 ElseIf MoveNPCChar(NpcIndex, e_Heading.NORTH) Then
                         Exit Sub
 
                     End If
@@ -2736,13 +2736,13 @@ Private Sub GreedyWalkTo(ByVal NpcIndex As Integer, _
 
 138             If ((RandomDir And 1) = 0) Then ''move up
             
-140                 If MoveNPCChar(NpcIndex, eHeading.NORTH) Then
+140                 If MoveNPCChar(NpcIndex, e_Heading.NORTH) Then
                         Exit Sub
-142                 ElseIf MoveNPCChar(NpcIndex, eHeading.WEST) Then
+142                 ElseIf MoveNPCChar(NpcIndex, e_Heading.WEST) Then
                         Exit Sub
-144                 ElseIf MoveNPCChar(NpcIndex, eHeading.SOUTH) Then
+144                 ElseIf MoveNPCChar(NpcIndex, e_Heading.SOUTH) Then
                         Exit Sub
-146                 ElseIf MoveNPCChar(NpcIndex, eHeading.EAST) Then
+146                 ElseIf MoveNPCChar(NpcIndex, e_Heading.EAST) Then
                         Exit Sub
 
                     End If
@@ -2750,13 +2750,13 @@ Private Sub GreedyWalkTo(ByVal NpcIndex As Integer, _
                 Else
 
                     ''random first move
-148                 If MoveNPCChar(NpcIndex, eHeading.WEST) Then
+148                 If MoveNPCChar(NpcIndex, e_Heading.WEST) Then
                         Exit Sub
-150                 ElseIf MoveNPCChar(NpcIndex, eHeading.NORTH) Then
+150                 ElseIf MoveNPCChar(NpcIndex, e_Heading.NORTH) Then
                         Exit Sub
-152                 ElseIf MoveNPCChar(NpcIndex, eHeading.SOUTH) Then
+152                 ElseIf MoveNPCChar(NpcIndex, e_Heading.SOUTH) Then
                         Exit Sub
-154                 ElseIf MoveNPCChar(NpcIndex, eHeading.EAST) Then
+154                 ElseIf MoveNPCChar(NpcIndex, e_Heading.EAST) Then
                         Exit Sub
 
                     End If
@@ -2766,11 +2766,11 @@ Private Sub GreedyWalkTo(ByVal NpcIndex As Integer, _
                 ' Target is Straight Left
             Else
         
-156             If MoveNPCChar(NpcIndex, eHeading.WEST) Then
+156             If MoveNPCChar(NpcIndex, e_Heading.WEST) Then
                     Exit Sub
-158             ElseIf MoveNPCChar(NpcIndex, eHeading.SOUTH) Then
+158             ElseIf MoveNPCChar(NpcIndex, e_Heading.SOUTH) Then
                     Exit Sub
-160             ElseIf MoveNPCChar(NpcIndex, eHeading.NORTH) Then
+160             ElseIf MoveNPCChar(NpcIndex, e_Heading.NORTH) Then
                     Exit Sub
                 Else
                     ' If moves to east, algorithm fails because starts a loop
@@ -2789,26 +2789,26 @@ Private Sub GreedyWalkTo(ByVal NpcIndex As Integer, _
 
 170             If ((RandomDir And 1) = 0) Then ''move down
             
-172                 If MoveNPCChar(NpcIndex, eHeading.SOUTH) Then
+172                 If MoveNPCChar(NpcIndex, e_Heading.SOUTH) Then
                         Exit Sub
-174                 ElseIf MoveNPCChar(NpcIndex, eHeading.EAST) Then
+174                 ElseIf MoveNPCChar(NpcIndex, e_Heading.EAST) Then
                         Exit Sub
-176                 ElseIf MoveNPCChar(NpcIndex, eHeading.WEST) Then
+176                 ElseIf MoveNPCChar(NpcIndex, e_Heading.WEST) Then
                         Exit Sub
-178                 ElseIf MoveNPCChar(NpcIndex, eHeading.NORTH) Then
+178                 ElseIf MoveNPCChar(NpcIndex, e_Heading.NORTH) Then
                         Exit Sub
 
                     End If
                 
                 Else    ''random first move
                 
-180                 If MoveNPCChar(NpcIndex, eHeading.EAST) Then
+180                 If MoveNPCChar(NpcIndex, e_Heading.EAST) Then
                         Exit Sub
-182                 ElseIf MoveNPCChar(NpcIndex, eHeading.SOUTH) Then
+182                 ElseIf MoveNPCChar(NpcIndex, e_Heading.SOUTH) Then
                         Exit Sub
-184                 ElseIf MoveNPCChar(NpcIndex, eHeading.WEST) Then
+184                 ElseIf MoveNPCChar(NpcIndex, e_Heading.WEST) Then
                         Exit Sub
-186                 ElseIf MoveNPCChar(NpcIndex, eHeading.NORTH) Then
+186                 ElseIf MoveNPCChar(NpcIndex, e_Heading.NORTH) Then
                         Exit Sub
 
                     End If
@@ -2822,26 +2822,26 @@ Private Sub GreedyWalkTo(ByVal NpcIndex As Integer, _
 
 192             If ((RandomDir And 1) = 0) Then ''move up
             
-194                 If MoveNPCChar(NpcIndex, eHeading.NORTH) Then
+194                 If MoveNPCChar(NpcIndex, e_Heading.NORTH) Then
                         Exit Sub
-196                 ElseIf MoveNPCChar(NpcIndex, eHeading.EAST) Then
+196                 ElseIf MoveNPCChar(NpcIndex, e_Heading.EAST) Then
                         Exit Sub
-198                 ElseIf MoveNPCChar(NpcIndex, eHeading.WEST) Then
+198                 ElseIf MoveNPCChar(NpcIndex, e_Heading.WEST) Then
                         Exit Sub
-200                 ElseIf MoveNPCChar(NpcIndex, eHeading.SOUTH) Then
+200                 ElseIf MoveNPCChar(NpcIndex, e_Heading.SOUTH) Then
                         Exit Sub
 
                     End If
                 
                 Else
             
-202                 If MoveNPCChar(NpcIndex, eHeading.EAST) Then
+202                 If MoveNPCChar(NpcIndex, e_Heading.EAST) Then
                         Exit Sub
-204                 ElseIf MoveNPCChar(NpcIndex, eHeading.NORTH) Then
+204                 ElseIf MoveNPCChar(NpcIndex, e_Heading.NORTH) Then
                         Exit Sub
-206                 ElseIf MoveNPCChar(NpcIndex, eHeading.SOUTH) Then
+206                 ElseIf MoveNPCChar(NpcIndex, e_Heading.SOUTH) Then
                         Exit Sub
-208                 ElseIf MoveNPCChar(NpcIndex, eHeading.WEST) Then
+208                 ElseIf MoveNPCChar(NpcIndex, e_Heading.WEST) Then
                         Exit Sub
 
                     End If
@@ -2851,11 +2851,11 @@ Private Sub GreedyWalkTo(ByVal NpcIndex As Integer, _
                 ' Target is Straight Right
             Else
         
-210             If MoveNPCChar(NpcIndex, eHeading.EAST) Then
+210             If MoveNPCChar(NpcIndex, e_Heading.EAST) Then
                     Exit Sub
-212             ElseIf MoveNPCChar(NpcIndex, eHeading.SOUTH) Then
+212             ElseIf MoveNPCChar(NpcIndex, e_Heading.SOUTH) Then
                     Exit Sub
-214             ElseIf MoveNPCChar(NpcIndex, eHeading.NORTH) Then
+214             ElseIf MoveNPCChar(NpcIndex, e_Heading.NORTH) Then
                     Exit Sub
                 Else
                     ' If moves to west, algorithm fails because starts a loop
@@ -2871,11 +2871,11 @@ Private Sub GreedyWalkTo(ByVal NpcIndex As Integer, _
             ' Target is straight Up
 218         If (NpcY > TargetY) Then
         
-220             If MoveNPCChar(NpcIndex, eHeading.NORTH) Then
+220             If MoveNPCChar(NpcIndex, e_Heading.NORTH) Then
                     Exit Sub
-222             ElseIf MoveNPCChar(NpcIndex, eHeading.EAST) Then
+222             ElseIf MoveNPCChar(NpcIndex, e_Heading.EAST) Then
                     Exit Sub
-224             ElseIf MoveNPCChar(NpcIndex, eHeading.WEST) Then
+224             ElseIf MoveNPCChar(NpcIndex, e_Heading.WEST) Then
                     Exit Sub
                 Else
                     ' If moves to south, algorithm fails because starts a loop
@@ -2886,11 +2886,11 @@ Private Sub GreedyWalkTo(ByVal NpcIndex As Integer, _
                 ' Target is straight Down
             Else
         
-228             If MoveNPCChar(NpcIndex, eHeading.SOUTH) Then
+228             If MoveNPCChar(NpcIndex, e_Heading.SOUTH) Then
                     Exit Sub
-230             ElseIf MoveNPCChar(NpcIndex, eHeading.EAST) Then
+230             ElseIf MoveNPCChar(NpcIndex, e_Heading.EAST) Then
                     Exit Sub
-232             ElseIf MoveNPCChar(NpcIndex, eHeading.WEST) Then
+232             ElseIf MoveNPCChar(NpcIndex, e_Heading.WEST) Then
                     Exit Sub
                 Else
                     ' If moves to north, algorithm fails because starts a loop

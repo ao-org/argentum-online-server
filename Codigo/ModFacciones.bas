@@ -34,7 +34,7 @@ Public Sub EnlistarArmadaReal(ByVal UserIndex As Integer)
 
                 End If
 
-120             If .clase = eClass.Thief Then
+120             If .clase = e_Class.Thief Then
 122                 Call WriteChatOverHead(UserIndex, "No hay lugar para escoria en el Ejército Real.", charIndexStr, vbWhite)
                     Exit Sub
 
@@ -98,7 +98,7 @@ Public Sub EnlistarArmadaReal(ByVal UserIndex As Integer)
 
                 End If
 
-170             Call WriteConsoleMsg(UserIndex, "¡Ahora perteneces al Ejercito Real!", FontTypeNames.FONTTYPE_INFOIAO)
+170             Call WriteConsoleMsg(UserIndex, "¡Ahora perteneces al Ejercito Real!", e_FontTypeNames.FONTTYPE_INFOIAO)
 172             Call DarRecompensas(UserIndex)
 174             Call RefreshCharStatus(UserIndex)
 
@@ -171,7 +171,7 @@ Public Sub ExpulsarFaccionReal(ByVal UserIndex As Integer)
 104         Call RefreshCharStatus(UserIndex)
 
 106         Call PerderItemsFaccionarios(UserIndex)
-108         Call WriteConsoleMsg(UserIndex, "Has sido expulsado del Ejercito Real.", FontTypeNames.FONTTYPE_INFOIAO)
+108         Call WriteConsoleMsg(UserIndex, "Has sido expulsado del Ejercito Real.", e_FontTypeNames.FONTTYPE_INFOIAO)
             
 
             Exit Sub
@@ -191,7 +191,7 @@ Public Sub ExpulsarFaccionCaos(ByVal UserIndex As Integer)
 104         Call RefreshCharStatus(UserIndex)
 
 106         Call PerderItemsFaccionarios(UserIndex)
-108         Call WriteConsoleMsg(UserIndex, "Has sido expulsado de la Legión Oscura.", FontTypeNames.FONTTYPE_INFOIAO)
+108         Call WriteConsoleMsg(UserIndex, "Has sido expulsado de la Legión Oscura.", e_FontTypeNames.FONTTYPE_INFOIAO)
 
             Exit Sub
 
@@ -258,7 +258,7 @@ Public Sub EnlistarCaos(ByVal UserIndex As Integer)
                     Exit Sub
                 End If
 
-124             If .clase = eClass.Thief Then
+124             If .clase = e_Class.Thief Then
 126                 Call WriteChatOverHead(UserIndex, "¡La legión oscura no tiene lugar para escorias como tú! Los ladrones no son dignos de llevar nuestras armaduras.", charIndexStr, vbWhite)
                     Exit Sub
 
@@ -307,7 +307,7 @@ Public Sub EnlistarCaos(ByVal UserIndex As Integer)
 162                 .Faccion.NivelIngreso = .Stats.ELV
                 End If
 
-164             Call WriteConsoleMsg(UserIndex, "¡Ahora perteneces a la Legión Oscura.!", FontTypeNames.FONTTYPE_INFOIAO)
+164             Call WriteConsoleMsg(UserIndex, "¡Ahora perteneces a la Legión Oscura.!", e_FontTypeNames.FONTTYPE_INFOIAO)
 166             Call DarRecompensas(UserIndex)
 168             Call RefreshCharStatus(UserIndex)
 
@@ -428,7 +428,7 @@ Private Sub DarRecompensas(ByVal UserIndex As Integer)
 
 100         With UserList(UserIndex)
                 ' Si es semidios o consejero, no le damos nada
-102             If .flags.Privilegios And (PlayerType.Consejero Or PlayerType.SemiDios) Then
+102             If .flags.Privilegios And (e_PlayerType.Consejero Or e_PlayerType.SemiDios) Then
                     Exit Sub
                 End If
 

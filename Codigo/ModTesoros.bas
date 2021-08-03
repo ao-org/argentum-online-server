@@ -185,7 +185,7 @@ Public Sub PerderTesoro()
 106     Iterations = 0
 108     Do While Not EncontreLugar
 110     Iterations = Iterations + 1
-112         If (MapData(TesoroNumMapa, TesoroX, TesoroY).Blocked And eBlock.ALL_SIDES) <> eBlock.ALL_SIDES Then
+112         If (MapData(TesoroNumMapa, TesoroX, TesoroY).Blocked And e_Block.ALL_SIDES) <> e_Block.ALL_SIDES Then
 114             If (MapData(TesoroNumMapa, TesoroX, TesoroY).Blocked And FLAG_AGUA) = 0 Then
 116                 EncontreLugar = True
                 Else
@@ -208,7 +208,7 @@ Public Sub PerderTesoro()
         
 134         BusquedaTesoroActiva = True
 136         Call MakeObj(TesoroRegalo(RandomNumber(1, UBound(TesoroRegalo))), TesoroNumMapa, TesoroX, TesoroY, False)
-138         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos> Rondan rumores que hay un tesoro enterrado en el mapa: " & DarNameMapa(TesoroNumMapa) & "(" & TesoroNumMapa & ") ¿Quien sera el afortunado que lo encuentre?", FontTypeNames.FONTTYPE_TALK))
+138         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos> Rondan rumores que hay un tesoro enterrado en el mapa: " & DarNameMapa(TesoroNumMapa) & "(" & TesoroNumMapa & ") ¿Quien sera el afortunado que lo encuentre?", e_FontTypeNames.FONTTYPE_TALK))
 140         Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(257, NO_3D_SOUND, NO_3D_SOUND)) ' Explota un trueno 257
 
         
@@ -237,7 +237,7 @@ Public Sub PerderRegalo()
         
 108     Do While Not EncontreLugar
 110     Iterations = Iterations + 1
-112         If (MapData(RegaloNumMapa, RegaloX, RegaloY).Blocked And eBlock.ALL_SIDES) <> eBlock.ALL_SIDES Then
+112         If (MapData(RegaloNumMapa, RegaloX, RegaloY).Blocked And e_Block.ALL_SIDES) <> e_Block.ALL_SIDES Then
 114             If (MapData(RegaloNumMapa, RegaloX, RegaloY).Blocked And FLAG_AGUA) = 0 Then
 116                 EncontreLugar = True
                 Else
@@ -259,7 +259,7 @@ Public Sub PerderRegalo()
 
 134     BusquedaRegaloActiva = True
 136     Call MakeObj(RegaloRegalo(RandomNumber(1, UBound(RegaloRegalo))), RegaloNumMapa, RegaloX, RegaloY, False)
-138     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos> De repente ha surgido un item maravilloso en el mapa: " & DarNameMapa(RegaloNumMapa) & "(" & RegaloNumMapa & ") ¿Quien sera el valiente que lo encuentre? ¡MUCHO CUIDADO!", FontTypeNames.FONTTYPE_TALK))
+138     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos> De repente ha surgido un item maravilloso en el mapa: " & DarNameMapa(RegaloNumMapa) & "(" & RegaloNumMapa & ") ¿Quien sera el valiente que lo encuentre? ¡MUCHO CUIDADO!", e_FontTypeNames.FONTTYPE_TALK))
 140     Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(497, NO_3D_SOUND, NO_3D_SOUND)) ' Explota un trueno
 
 

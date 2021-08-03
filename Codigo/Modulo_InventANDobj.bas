@@ -350,7 +350,7 @@ Public Sub NpcDropeo(ByRef npc As t_Npc, ByRef UserIndex As Integer)
 126     Dropeo.amount = Cantidad 'Cantidad
 128     Dropeo.ObjIndex = obj 'NUMERO DEL ITEM EN EL OBJ.DAT
 130     Call TirarItemAlPiso(npc.Pos, Dropeo, npc.flags.AguaValida = 1)
-132     Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessagePlayWave(FXSound.Dropeo_Sound, npc.Pos.X, npc.Pos.Y))
+132     Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessagePlayWave(e_FXSound.Dropeo_Sound, npc.Pos.X, npc.Pos.Y))
         
         'nfile = FreeFile ' obtenemos un canal
         'Open App.Path & "\logs\Dropeo de items.log" For Append Shared As #nfile
@@ -395,11 +395,11 @@ Public Sub DropObjQuest(ByRef npc As t_Npc, ByRef UserIndex As Integer)
 118                             Dropeo.ObjIndex = .ObjIndex
 
                                 'Call TirarItemAlPiso(npc.Pos, Dropeo)
-                                'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(FXSound.Dropeo_Sound, npc.Pos.X, npc.Pos.Y))
+                                'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(e_FXSound.Dropeo_Sound, npc.Pos.X, npc.Pos.Y))
 
                                 ' WyroX: Ahora te lo da en el inventario, si hay espacio, y el sonido lo escuchas vos solo
 120                             Call MeterItemEnInventario(UserIndex, Dropeo)
-122                             Call SendData(ToIndex, UserIndex, PrepareMessagePlayWave(FXSound.Dropeo_Sound, npc.Pos.X, npc.Pos.Y))
+122                             Call SendData(ToIndex, UserIndex, PrepareMessagePlayWave(e_FXSound.Dropeo_Sound, npc.Pos.X, npc.Pos.Y))
                             End If
                         End If
                     End If

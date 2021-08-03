@@ -31,8 +31,8 @@ Public Sub LimpiarMascota(UserIndex)
 108     UserList(UserIndex).Familiar.ID = 0
 110     UserList(UserIndex).Familiar.Paralizado = 0
 112     UserList(UserIndex).Familiar.Inmovilizado = 0
-        'Call WriteConsoleMsg(UserIndex, "Tu familiar ha muerto, acercate al templo mas cercano para que sea resucitado.", FontTypeNames.FONTTYPE_WARNING)
-114     Call WriteLocaleMsg(UserIndex, "181", FontTypeNames.FONTTYPE_INFOIAO)
+        'Call WriteConsoleMsg(UserIndex, "Tu familiar ha muerto, acercate al templo mas cercano para que sea resucitado.", e_FontTypeNames.FONTTYPE_WARNING)
+114     Call WriteLocaleMsg(UserIndex, "181", e_FontTypeNames.FONTTYPE_INFOIAO)
 
         
         Exit Sub
@@ -49,8 +49,8 @@ Public Sub InvocarFamiliar(ByVal UserIndex As Integer, ByVal b As Boolean)
         
 
 100     If UserList(UserIndex).Familiar.Muerto = 1 Then
-102         Call WriteLocaleMsg(UserIndex, "345", FontTypeNames.FONTTYPE_WARNING)
-104         Call WriteConsoleMsg(UserIndex, "Tu familiar esta muerto, acercate al templo mas cercano para que sea resucitado.", FontTypeNames.FONTTYPE_INFOIAO)
+102         Call WriteLocaleMsg(UserIndex, "345", e_FontTypeNames.FONTTYPE_WARNING)
+104         Call WriteConsoleMsg(UserIndex, "Tu familiar esta muerto, acercate al templo mas cercano para que sea resucitado.", e_FontTypeNames.FONTTYPE_INFOIAO)
             Exit Sub
 
         End If
@@ -84,9 +84,9 @@ Public Sub InvocarFamiliar(ByVal UserIndex As Integer, ByVal b As Boolean)
 114     X = Pos.X
 116     Y = Pos.Y
     
-118     If (MapData(UserList(UserIndex).Pos.Map, X, Y).Blocked And eBlock.ALL_SIDES) = eBlock.ALL_SIDES Or MapData(UserList(UserIndex).Pos.Map, X, Y).TileExit.Map > 0 Or MapData(UserList(UserIndex).Pos.Map, X, Y).NpcIndex > 0 Or (MapData(UserList(UserIndex).Pos.Map, X, Y).Blocked And FLAG_AGUA) <> 0 Then
-120         Call WriteLocaleMsg(UserIndex, "262", FontTypeNames.FONTTYPE_INFOIAO)
-            'Call WriteConsoleMsg(UserIndex, "Area invalida para tirar el item.", FontTypeNames.FONTTYPE_INFO)
+118     If (MapData(UserList(UserIndex).Pos.Map, X, Y).Blocked And e_Block.ALL_SIDES) = e_Block.ALL_SIDES Or MapData(UserList(UserIndex).Pos.Map, X, Y).TileExit.Map > 0 Or MapData(UserList(UserIndex).Pos.Map, X, Y).NpcIndex > 0 Or (MapData(UserList(UserIndex).Pos.Map, X, Y).Blocked And FLAG_AGUA) <> 0 Then
+120         Call WriteLocaleMsg(UserIndex, "262", e_FontTypeNames.FONTTYPE_INFOIAO)
+            'Call WriteConsoleMsg(UserIndex, "Area invalida para tirar el item.", e_FontTypeNames.FONTTYPE_INFO)
         Else
 
             'Envio Palabras magicas, wavs y fxs.
@@ -106,8 +106,8 @@ Public Sub InvocarFamiliar(ByVal UserIndex As Integer, ByVal b As Boolean)
 
                     'Controlamos que se sumoneo OK
 134                 If .Familiar.ID = 0 Then
-                        'Call WriteConsoleMsg(UserIndex, "No hay espacio aquí para tu mascota. Se provoco un ERROR.", FontTypeNames.FONTTYPE_INFO)
-136                     Call WriteLocaleMsg(UserIndex, "262", FontTypeNames.FONTTYPE_INFOIAO)
+                        'Call WriteConsoleMsg(UserIndex, "No hay espacio aquí para tu mascota. Se provoco un ERROR.", e_FontTypeNames.FONTTYPE_INFO)
+136                     Call WriteLocaleMsg(UserIndex, "262", e_FontTypeNames.FONTTYPE_INFOIAO)
                         Exit Sub
 
                     End If
@@ -159,8 +159,8 @@ Public Sub RevivirFamiliar(ByVal UserIndex As Integer)
 
         End With
 
-        'Call WriteConsoleMsg(UserIndex, "Tu familiar a sido revivido.", FontTypeNames.FONTTYPE_VIOLETA)
-106     Call WriteLocaleMsg(UserIndex, "159", FontTypeNames.FONTTYPE_INFOIAO)
+        'Call WriteConsoleMsg(UserIndex, "Tu familiar a sido revivido.", e_FontTypeNames.FONTTYPE_VIOLETA)
+106     Call WriteLocaleMsg(UserIndex, "159", e_FontTypeNames.FONTTYPE_INFOIAO)
 
         
         Exit Sub
@@ -184,7 +184,7 @@ Public Sub CargarFamiliar(ByVal UserIndex As Integer)
 110         NpcList(.Familiar.ID).Stats.MaxHit = .Familiar.MaxHit
 112         NpcList(.Familiar.ID).EsFamiliar = 1
 
-114         NpcList(.Familiar.ID).Movement = TipoAI.SigueAmo
+114         NpcList(.Familiar.ID).Movement = e_TipoAI.SigueAmo
 116         NpcList(.Familiar.ID).Target = 0
 118         NpcList(.Familiar.ID).TargetNPC = 0
 120         .Familiar.Invocado = 1
@@ -301,8 +301,8 @@ Sub CalcularDarExpCompartida(ByVal UserIndex As Integer, ByVal NpcIndex As Integ
 130             UserList(UserIndex).Stats.Exp = UserList(UserIndex).Stats.Exp + ExpUser
 
 132             If UserList(UserIndex).Stats.Exp > MAXEXP Then UserList(UserIndex).Stats.Exp = MAXEXP
-                ' Call WriteConsoleMsg(UserIndex, "ID*140*" & ExpUser, FontTypeNames.FONTTYPE_EXP)
-134             Call WriteLocaleMsg(UserIndex, "140", FontTypeNames.FONTTYPE_EXP, ExpUser)
+                ' Call WriteConsoleMsg(UserIndex, "ID*140*" & ExpUser, e_FontTypeNames.FONTTYPE_EXP)
+134             Call WriteLocaleMsg(UserIndex, "140", e_FontTypeNames.FONTTYPE_EXP, ExpUser)
 136             Call CheckUserLevel(UserIndex)
 
             End If
@@ -314,7 +314,7 @@ Sub CalcularDarExpCompartida(ByVal UserIndex As Integer, ByVal NpcIndex As Integ
 
 142         If UserList(UserIndex).Familiar.Exp > MAXEXP Then UserList(UserIndex).Familiar.Exp = MAXEXP
              
-            ' Call WriteConsoleMsg(UserIndex, "ID*52*" & UserList(UserIndex).Familiar.Nombre & "*" & expPet & "*", FontTypeNames.FONTTYPE_EXP)
+            ' Call WriteConsoleMsg(UserIndex, "ID*52*" & UserList(UserIndex).Familiar.Nombre & "*" & expPet & "*", e_FontTypeNames.FONTTYPE_EXP)
 144         Call CheckFamiliarLevel(UserIndex)
 
         End If
@@ -356,7 +356,7 @@ Sub CheckFamiliarLevel(ByVal UserIndex As Integer)
 114         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_NIVEL, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
 
 116         UserList(UserIndex).Familiar.nivel = UserList(UserIndex).Familiar.nivel + 1
-118         Call WriteConsoleMsg(UserIndex, UserList(UserIndex).Familiar.nombre & " a subido de nivel!", FontTypeNames.FONTTYPE_INFOBOLD)
+118         Call WriteConsoleMsg(UserIndex, UserList(UserIndex).Familiar.nombre & " a subido de nivel!", e_FontTypeNames.FONTTYPE_INFOBOLD)
     
 120         UserList(UserIndex).Familiar.Exp = UserList(UserIndex).Familiar.Exp - UserList(UserIndex).Familiar.ELU
     
@@ -386,7 +386,7 @@ Sub CheckFamiliarLevel(ByVal UserIndex As Integer)
 152         NpcList(UserList(UserIndex).Familiar.ID).Stats.MinHp = UserList(UserIndex).Familiar.MaxHp
 
             '    Select Case UserList(UserIndex).clase
-            '        Case eClass.Warrior
+            '        Case e_Class.Warrior
             '
             '            AumentoHIT = IIf(UserList(UserIndex).Stats.ELV > 35, 2, 3)
             '            AumentoSTA = AumentoSTDef

@@ -50,50 +50,50 @@ Sub DarCuerpo(ByVal UserIndex As Integer)
 
 104     Select Case UserGenero
 
-            Case eGenero.Hombre
+            Case e_Genero.Hombre
 
 106             Select Case UserRaza
 
-                    Case eRaza.Humano
+                    Case e_Raza.Humano
 108                     NewBody = 1
 
-110                 Case eRaza.Elfo
+110                 Case e_Raza.Elfo
 112                     NewBody = 2
 
-114                 Case eRaza.Drow
+114                 Case e_Raza.Drow
 116                     NewBody = 3
 
-118                 Case eRaza.Enano
+118                 Case e_Raza.Enano
 120                     NewBody = 300
 
-122                 Case eRaza.Gnomo
+122                 Case e_Raza.Gnomo
 124                     NewBody = 300
 
-126                 Case eRaza.Orco
+126                 Case e_Raza.Orco
 128                     NewBody = 582
 
                 End Select
 
-130         Case eGenero.Mujer
+130         Case e_Genero.Mujer
 
 132             Select Case UserRaza
 
-                    Case eRaza.Humano
+                    Case e_Raza.Humano
 134                     NewBody = 1
 
-136                 Case eRaza.Elfo
+136                 Case e_Raza.Elfo
 138                     NewBody = 2
 
-140                 Case eRaza.Drow
+140                 Case e_Raza.Drow
 142                     NewBody = 3
 
-144                 Case eRaza.Gnomo
+144                 Case e_Raza.Gnomo
 146                     NewBody = 300
 
-148                 Case eRaza.Enano
+148                 Case e_Raza.Enano
 150                     NewBody = 300
 
-152                 Case eRaza.Orco
+152                 Case e_Raza.Orco
 154                     NewBody = 581
 
                 End Select
@@ -118,37 +118,37 @@ Sub AsignarAtributos(ByVal UserIndex As String)
 
 100     Select Case UserList(UserIndex).raza
 
-            Case eRaza.Humano
+            Case e_Raza.Humano
 102             UserList(UserIndex).Stats.UserAtributos(1) = 19
 104             UserList(UserIndex).Stats.UserAtributos(2) = 19
 106             UserList(UserIndex).Stats.UserAtributos(3) = 19
 108             UserList(UserIndex).Stats.UserAtributos(4) = 20
 
-110         Case eRaza.Elfo
+110         Case e_Raza.Elfo
 112             UserList(UserIndex).Stats.UserAtributos(1) = 18
 114             UserList(UserIndex).Stats.UserAtributos(2) = 20
 116             UserList(UserIndex).Stats.UserAtributos(3) = 21
 118             UserList(UserIndex).Stats.UserAtributos(4) = 18
 
-120         Case eRaza.Drow
+120         Case e_Raza.Drow
 122             UserList(UserIndex).Stats.UserAtributos(1) = 20
 124             UserList(UserIndex).Stats.UserAtributos(2) = 18
 126             UserList(UserIndex).Stats.UserAtributos(3) = 20
 128             UserList(UserIndex).Stats.UserAtributos(4) = 19
 
-130         Case eRaza.Gnomo
+130         Case e_Raza.Gnomo
 132             UserList(UserIndex).Stats.UserAtributos(1) = 13
 134             UserList(UserIndex).Stats.UserAtributos(2) = 21
 136             UserList(UserIndex).Stats.UserAtributos(3) = 22
 138             UserList(UserIndex).Stats.UserAtributos(4) = 17
 
-140         Case eRaza.Enano
+140         Case e_Raza.Enano
 142             UserList(UserIndex).Stats.UserAtributos(1) = 21
 144             UserList(UserIndex).Stats.UserAtributos(2) = 17
 146             UserList(UserIndex).Stats.UserAtributos(3) = 12
 148             UserList(UserIndex).Stats.UserAtributos(4) = 22
 
-150         Case eRaza.Orco
+150         Case e_Raza.Orco
 152             UserList(UserIndex).Stats.UserAtributos(1) = 23
 154             UserList(UserIndex).Stats.UserAtributos(2) = 17
 156             UserList(UserIndex).Stats.UserAtributos(3) = 12
@@ -184,7 +184,7 @@ Sub RellenarInventario(ByVal UserIndex As String)
             ' Magicas puras reciben más azules
 110         Select Case .clase
 
-                Case eClass.Mage, eClass.Druid
+                Case e_Class.Mage, e_Class.Druid
 112                 .Invent.Object(NumItems).ObjIndex = 1617 ' Pocion Azul
 114                 .Invent.Object(NumItems).amount = 300
 116                 NumItems = NumItems + 1
@@ -194,7 +194,7 @@ Sub RellenarInventario(ByVal UserIndex As String)
             ' Semi mágicas reciben menos
 118         Select Case .clase
 
-                Case eClass.Bard, eClass.Cleric, eClass.Paladin, eClass.Assasin, eClass.Bandit
+                Case e_Class.Bard, e_Class.Cleric, e_Class.Paladin, e_Class.Assasin, e_Class.Bandit
 120                 .Invent.Object(NumItems).ObjIndex = 1617 ' Pocion Azul
 122                 .Invent.Object(NumItems).amount = 100
 124                 NumItems = NumItems + 1
@@ -204,7 +204,7 @@ Sub RellenarInventario(ByVal UserIndex As String)
             ' Hechizos
 126         Select Case .clase
 
-                Case eClass.Mage, eClass.Cleric, eClass.Druid, eClass.Bard
+                Case e_Class.Mage, e_Class.Cleric, e_Class.Druid, e_Class.Bard
 128                 .Stats.UserHechizos(1) = 1 ' Dardo mágico
 130                 .Stats.UserHechizos(2) = 11 ' Curar Veneno
 132                 .Stats.UserHechizos(3) = 12 ' Curar Heridas Leves
@@ -214,7 +214,7 @@ Sub RellenarInventario(ByVal UserIndex As String)
             ' Pociones amarillas y verdes
 134         Select Case .clase
 
-                Case eClass.Assasin, eClass.Bard, eClass.Cleric, eClass.Hunter, eClass.Paladin, eClass.Trabajador, eClass.Warrior, eClass.Bandit, eClass.Pirat, eClass.Thief
+                Case e_Class.Assasin, e_Class.Bard, e_Class.Cleric, e_Class.Hunter, e_Class.Paladin, e_Class.Trabajador, e_Class.Warrior, e_Class.Bandit, e_Class.Pirat, e_Class.Thief
 136                 .Invent.Object(NumItems).ObjIndex = 1618 ' Pocion Amarilla
 138                 .Invent.Object(NumItems).amount = 50
 140                 NumItems = NumItems + 1
@@ -233,7 +233,7 @@ Sub RellenarInventario(ByVal UserIndex As String)
             ' Armas
 154         Select Case .clase
 
-                Case eClass.Cleric, eClass.Paladin, eClass.Trabajador, eClass.Warrior, eClass.Pirat
+                Case e_Class.Cleric, e_Class.Paladin, e_Class.Trabajador, e_Class.Warrior, e_Class.Pirat
 156                 .Invent.Object(NumItems).ObjIndex = 460 ' Daga (Newbies)
 158                 .Invent.Object(NumItems).amount = 1
 160                 NumItems = NumItems + 1
@@ -241,7 +241,7 @@ Sub RellenarInventario(ByVal UserIndex As String)
 164                 .Invent.Object(NumItems).amount = 1
 166                 NumItems = NumItems + 1
 
-168             Case eClass.Hunter
+168             Case e_Class.Hunter
 170                 .Invent.Object(NumItems).ObjIndex = 460 ' Daga (Newbies)
 172                 .Invent.Object(NumItems).amount = 1
 174                 NumItems = NumItems + 1
@@ -254,7 +254,7 @@ Sub RellenarInventario(ByVal UserIndex As String)
 184                 .Invent.Object(NumItems).amount = 300
 186                 NumItems = NumItems + 1
 
-188             Case eClass.Thief, eClass.Bandit
+188             Case e_Class.Thief, e_Class.Bandit
 190                 .Invent.Object(NumItems).ObjIndex = 460 ' Daga (Newbies)
 192                 .Invent.Object(NumItems).amount = 1
 194                 NumItems = NumItems + 1
@@ -263,12 +263,12 @@ Sub RellenarInventario(ByVal UserIndex As String)
 198                 .Invent.Object(NumItems).amount = 1
 200                 NumItems = NumItems + 1
 
-202             Case eClass.Mage
+202             Case e_Class.Mage
 204                 .Invent.Object(NumItems).ObjIndex = 1356 ' Baston (newbies)
 206                 .Invent.Object(NumItems).amount = 1
 208                 NumItems = NumItems + 1
                 
-210             Case eClass.Assasin, eClass.Druid, eClass.Bard
+210             Case e_Class.Assasin, e_Class.Druid, e_Class.Bard
 212                 .Invent.Object(NumItems).ObjIndex = 460 ' Daga (Newbies)
 214                 .Invent.Object(NumItems).amount = 1
 216                 NumItems = NumItems + 1
@@ -277,7 +277,7 @@ Sub RellenarInventario(ByVal UserIndex As String)
             End Select
         
             
-218         If .genero = eGenero.Hombre Then
+218         If .genero = e_Genero.Hombre Then
 220             If .raza = Enano Or .raza = Gnomo Then
 222                 .Invent.Object(NumItems).ObjIndex = 466 'Vestimentas de Bajo (Newbies)
                 Else
@@ -454,9 +454,9 @@ NombrePermitido_Err:
         
 End Function
 
-Function ValidateSkills(ByVal UserIndex As Integer) As Boolean
+Function Validate_Skills(ByVal UserIndex As Integer) As Boolean
         
-        On Error GoTo ValidateSkills_Err
+        On Error GoTo Validate_Skills_Err
         
 
         Dim LoopC As Integer
@@ -472,18 +472,18 @@ Function ValidateSkills(ByVal UserIndex As Integer) As Boolean
 
 106     Next LoopC
 
-108     ValidateSkills = True
+108     Validate_Skills = True
     
         
         Exit Function
 
-ValidateSkills_Err:
-110     Call TraceError(Err.Number, Err.Description, "TCP.ValidateSkills", Erl)
+Validate_Skills_Err:
+110     Call TraceError(Err.Number, Err.Description, "TCP.Validate_Skills", Erl)
 
         
 End Function
 
-Function ConnectNewUser(ByVal UserIndex As Integer, ByRef Name As String, ByVal UserRaza As eRaza, ByVal UserSexo As eGenero, ByVal UserClase As eClass, ByVal Head As Integer, ByRef UserCuenta As String, ByVal Hogar As eCiudad) As Boolean
+Function ConnectNewUser(ByVal UserIndex As Integer, ByRef Name As String, ByVal UserRaza As e_Raza, ByVal UserSexo As e_Genero, ByVal UserClase As e_Class, ByVal Head As Integer, ByRef UserCuenta As String, ByVal Hogar As e_Ciudad) As Boolean
         '*************************************************
         'Author: Unknown
         'Last modified: 20/4/2007
@@ -535,13 +535,13 @@ Function ConnectNewUser(ByVal UserIndex As Integer, ByRef Name As String, ByVal 
 126         If Not ValidarCabeza(UserRaza, UserSexo, Head) Then Exit Function
             
             'Prevenimos algun bug con dados inválidos
-128         If .Stats.UserAtributos(eAtributos.Fuerza) = 0 Then Exit Function
+128         If .Stats.UserAtributos(e_Atributos.Fuerza) = 0 Then Exit Function
         
-130         .Stats.UserAtributos(eAtributos.Fuerza) = .Stats.UserAtributos(eAtributos.Fuerza) + ModRaza(UserRaza).Fuerza
-132         .Stats.UserAtributos(eAtributos.Agilidad) = .Stats.UserAtributos(eAtributos.Agilidad) + ModRaza(UserRaza).Agilidad
-134         .Stats.UserAtributos(eAtributos.Inteligencia) = .Stats.UserAtributos(eAtributos.Inteligencia) + ModRaza(UserRaza).Inteligencia
-136         .Stats.UserAtributos(eAtributos.Constitucion) = .Stats.UserAtributos(eAtributos.Constitucion) + ModRaza(UserRaza).Constitucion
-138         .Stats.UserAtributos(eAtributos.Carisma) = .Stats.UserAtributos(eAtributos.Carisma) + ModRaza(UserRaza).Carisma
+130         .Stats.UserAtributos(e_Atributos.Fuerza) = .Stats.UserAtributos(e_Atributos.Fuerza) + ModRaza(UserRaza).Fuerza
+132         .Stats.UserAtributos(e_Atributos.Agilidad) = .Stats.UserAtributos(e_Atributos.Agilidad) + ModRaza(UserRaza).Agilidad
+134         .Stats.UserAtributos(e_Atributos.Inteligencia) = .Stats.UserAtributos(e_Atributos.Inteligencia) + ModRaza(UserRaza).Inteligencia
+136         .Stats.UserAtributos(e_Atributos.Constitucion) = .Stats.UserAtributos(e_Atributos.Constitucion) + ModRaza(UserRaza).Constitucion
+138         .Stats.UserAtributos(e_Atributos.Carisma) = .Stats.UserAtributos(e_Atributos.Carisma) + ModRaza(UserRaza).Carisma
         
 140         .flags.Muerto = 0
 142         .flags.Escondido = 0
@@ -562,7 +562,7 @@ Function ConnectNewUser(ByVal UserIndex As Integer, ByRef Name As String, ByVal 
             '%%%%%%%%%%%%% PREVENIR HACKEO DE LOS SKILLS %%%%%%%%%%%%%
 160         .Stats.SkillPts = 10
         
-162         .Char.Heading = eHeading.SOUTH
+162         .Char.Heading = e_Heading.SOUTH
         
 164         Call DarCuerpo(UserIndex) 'Ladder REVISAR
         
@@ -573,15 +573,15 @@ Function ConnectNewUser(ByVal UserIndex As Integer, ByRef Name As String, ByVal 
 172         .Char.CascoAnim = NingunCasco
 
             ' WyroX: Vida inicial
-174         .Stats.MaxHp = .Stats.UserAtributos(eAtributos.Constitucion)
+174         .Stats.MaxHp = .Stats.UserAtributos(e_Atributos.Constitucion)
 176         .Stats.MinHp = .Stats.MaxHp
 
             ' WyroX: Maná inicial
-178         .Stats.MaxMAN = .Stats.UserAtributos(eAtributos.Inteligencia) * ModClase(.clase).ManaInicial
+178         .Stats.MaxMAN = .Stats.UserAtributos(e_Atributos.Inteligencia) * ModClase(.clase).ManaInicial
 180         .Stats.MinMAN = .Stats.MaxMAN
         
             Dim MiInt As Integer
-182         MiInt = RandomNumber(1, .Stats.UserAtributos(eAtributos.Agilidad) \ 6)
+182         MiInt = RandomNumber(1, .Stats.UserAtributos(e_Atributos.Agilidad) \ 6)
     
 184         If MiInt = 1 Then MiInt = 2
         
@@ -690,7 +690,7 @@ Sub CloseSocket(ByVal UserIndex As Integer)
             
 120                 If UserList(.ComUsu.DestUsu).ComUsu.DestUsu = UserIndex Then
                 
-122                     Call WriteConsoleMsg(.ComUsu.DestUsu, "Comercio cancelado por el otro usuario", FontTypeNames.FONTTYPE_TALK)
+122                     Call WriteConsoleMsg(.ComUsu.DestUsu, "Comercio cancelado por el otro usuario", e_FontTypeNames.FONTTYPE_TALK)
 124                     Call FinComerciarUsu(.ComUsu.DestUsu)
                     
                     End If
@@ -843,7 +843,7 @@ Function ValidateChr(ByVal UserIndex As Integer) As Boolean
         On Error GoTo ValidateChr_Err
         
 
-100     ValidateChr = UserList(UserIndex).Char.Body <> 0 And ValidateSkills(UserIndex)
+100     ValidateChr = UserList(UserIndex).Char.Body <> 0 And Validate_Skills(UserIndex)
 
         
         Exit Function
@@ -946,7 +946,7 @@ Sub SendMOTD(ByVal UserIndex As Integer)
         Dim j As Long
 
 100     For j = 1 To MaxLines
-102         Call WriteConsoleMsg(UserIndex, MOTD(j).texto, FontTypeNames.FONTTYPE_EXP)
+102         Call WriteConsoleMsg(UserIndex, MOTD(j).texto, e_FontTypeNames.FONTTYPE_EXP)
 104     Next j
     
         
@@ -1231,7 +1231,7 @@ Sub ResetUserFlags(ByVal UserIndex As Integer)
 116         .NpcInv = 0
 118         .StatsChanged = 0
 120         .TargetNPC = 0
-122         .TargetNpcTipo = eNPCType.Comun
+122         .TargetNpcTipo = e_NPCType.Comun
 124         .TargetObj = 0
 126         .TargetObjMap = 0
 128         .TargetObjX = 0
@@ -1326,7 +1326,7 @@ Sub ResetUserFlags(ByVal UserIndex As Integer)
             Next
 
 270         .EnReto = False
-272         .SolicitudReto.estado = SolicitudRetoEstado.Libre
+272         .SolicitudReto.estado = e_SolicitudRetoEstado.Libre
 274         .AceptoReto = 0
 276         .LastPos.Map = 0
 278         .ReturnPos.Map = 0
@@ -1586,7 +1586,7 @@ Sub ClearAndSaveUser(ByVal UserIndex As Integer)
 136         If .flags.EnReto Then
 138             Call AbandonarReto(UserIndex, True)
 
-140         ElseIf .flags.SolicitudReto.estado <> SolicitudRetoEstado.Libre Then
+140         ElseIf .flags.SolicitudReto.estado <> e_SolicitudRetoEstado.Libre Then
 142             Call CancelarSolicitudReto(UserIndex, .Name & " se ha desconectado.")
             
 144         ElseIf .flags.AceptoReto > 0 Then
@@ -1741,7 +1741,7 @@ Public Sub EcharPjsNoPrivilegiados()
 100     For LoopC = 1 To LastUser
 
 102         If UserList(LoopC).flags.UserLogged And UserList(LoopC).ConnIDValida Then
-104             If UserList(LoopC).flags.Privilegios And PlayerType.user Then
+104             If UserList(LoopC).flags.Privilegios And e_PlayerType.user Then
 106                 Call CloseSocket(LoopC)
 
                 End If
@@ -1759,54 +1759,54 @@ EcharPjsNoPrivilegiados_Err:
         
 End Sub
 
-Function ValidarCabeza(ByVal UserRaza As eRaza, ByVal UserSexo As eGenero, ByVal Head As Integer) As Boolean
+Function ValidarCabeza(ByVal UserRaza As e_Raza, ByVal UserSexo As e_Genero, ByVal Head As Integer) As Boolean
 
 100     Select Case UserSexo
     
-            Case eGenero.Hombre
+            Case e_Genero.Hombre
         
 102             Select Case UserRaza
                 
-                    Case eRaza.Humano
+                    Case e_Raza.Humano
 104                     ValidarCabeza = Head >= 1 And Head <= 41
                     
-106                 Case eRaza.Elfo
+106                 Case e_Raza.Elfo
 108                     ValidarCabeza = Head >= 101 And Head <= 132
                     
-110                 Case eRaza.Drow
+110                 Case e_Raza.Drow
 112                     ValidarCabeza = Head >= 200 And Head <= 229
                     
-114                 Case eRaza.Enano
+114                 Case e_Raza.Enano
 116                     ValidarCabeza = Head >= 300 And Head <= 329
                     
-118                 Case eRaza.Gnomo
+118                 Case e_Raza.Gnomo
 120                     ValidarCabeza = Head >= 400 And Head <= 429
                     
-122                 Case eRaza.Orco
+122                 Case e_Raza.Orco
 124                     ValidarCabeza = Head >= 500 And Head <= 529
                 
                 End Select
         
-126         Case eGenero.Mujer
+126         Case e_Genero.Mujer
         
 128             Select Case UserRaza
                 
-                    Case eRaza.Humano
+                    Case e_Raza.Humano
 130                     ValidarCabeza = Head >= 50 And Head <= 80
                     
-132                 Case eRaza.Elfo
+132                 Case e_Raza.Elfo
 134                     ValidarCabeza = Head >= 150 And Head <= 179
                     
-136                 Case eRaza.Drow
+136                 Case e_Raza.Drow
 138                     ValidarCabeza = Head >= 250 And Head <= 279
                     
-140                 Case eRaza.Enano
+140                 Case e_Raza.Enano
 142                     ValidarCabeza = Head >= 350 And Head <= 379
                     
-144                 Case eRaza.Gnomo
+144                 Case e_Raza.Gnomo
 146                     ValidarCabeza = Head >= 450 And Head <= 479
                     
-148                 Case eRaza.Orco
+148                 Case e_Raza.Orco
 150                     ValidarCabeza = Head >= 550 And Head <= 579
                 
                 End Select

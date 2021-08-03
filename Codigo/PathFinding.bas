@@ -97,7 +97,7 @@ Private VertexCount As Integer
 
 Private Table(XMinMapSize To XMaxMapSize, YMinMapSize To YMaxMapSize) As t_IntermidiateWork
 
-Private DirOffset(eHeading.NORTH To eHeading.WEST) As t_Position
+Private DirOffset(e_Heading.NORTH To e_Heading.WEST) As t_Position
 
 Private ClosestVertex As t_Position
 Private ClosestDistance As Single
@@ -111,9 +111,9 @@ Public Sub InitPathFinding()
         
         On Error GoTo InitPathFinding_Err
 
-        Dim Heading As eHeading, DirH As Integer
+        Dim Heading As e_Heading, DirH As Integer
         
-100     For Heading = eHeading.NORTH To eHeading.WEST
+100     For Heading = e_Heading.NORTH To e_Heading.WEST
 105         DirOffset(Heading).X = (2 - DirH) * (DirH Mod 2)
 110         DirOffset(Heading).Y = (DirH - 1) * (1 - (DirH Mod 2))
 115         DirH = DirH + 1
@@ -162,7 +162,7 @@ InsideLimits_Err:
 
 End Function
 
-Private Function IsWalkable(ByVal NpcIndex As Integer, ByVal X As Integer, ByVal Y As Integer, ByVal Heading As eHeading) As Boolean
+Private Function IsWalkable(ByVal NpcIndex As Integer, ByVal X As Integer, ByVal Y As Integer, ByVal Heading As e_Heading) As Boolean
         
     On Error GoTo ErrHandler
     
@@ -189,13 +189,13 @@ Private Function IsWalkable(ByVal NpcIndex As Integer, ByVal X As Integer, ByVal
         End If
         
         ' Trigger inválido para NPCs
-        If .trigger = eTrigger.POSINVALIDA Then
+        If .trigger = e_Trigger.POSINVALIDA Then
             ' Si no es mascota
 8            If NpcList(NpcIndex).MaestroNPC = 0 Then Exit Function
         End If
     
         ' Tile bloqueado
-        If NpcList(NpcIndex).NPCtype <> eNPCType.GuardiaReal And NpcList(NpcIndex).NPCtype <> eNPCType.GuardiasCaos Then
+        If NpcList(NpcIndex).NPCtype <> e_NPCType.GuardiaReal And NpcList(NpcIndex).NPCtype <> e_NPCType.GuardiasCaos Then
 9            If .Blocked And 2 ^ (Heading - 1) Then
                 Exit Function
             End If
@@ -214,7 +214,7 @@ ErrHandler:
     
 End Function
 
-Private Sub ProcessAdjacent(ByVal NpcIndex As Integer, ByVal CurX As Integer, ByVal CurY As Integer, ByVal Heading As eHeading, ByRef EndPos As t_Position)
+Private Sub ProcessAdjacent(ByVal NpcIndex As Integer, ByVal CurX As Integer, ByVal CurY As Integer, ByVal Heading As e_Heading, ByRef EndPos As t_Position)
 
     On Error GoTo ErrHandler
     
@@ -293,7 +293,7 @@ Public Function SeekPath(ByVal NpcIndex As Integer, Optional ByVal Closest As Bo
 
         Dim PosNPC As t_Position
         Dim PosTarget As t_Position
-        Dim Heading As eHeading, Vertex As t_Position
+        Dim Heading As e_Heading, Vertex As t_Position
         Dim MaxDistance As Integer, Index As Integer
         Dim MinTotalDistance As Integer, BestVertexIndex As Integer
 
@@ -377,7 +377,7 @@ Public Function SeekPath(ByVal NpcIndex As Integer, Optional ByVal Closest As Bo
 240             If Table(.X, .Y).Distance < MaxDistance Then
             
                     ' Procesamos adyacentes
-245                 For Heading = eHeading.NORTH To eHeading.WEST
+245                 For Heading = e_Heading.NORTH To e_Heading.WEST
 250                     Call ProcessAdjacent(NpcIndex, .X, .Y, Heading, PosTarget)
                     Next
                 
@@ -567,7 +567,7 @@ CloseVertex_Err:
 End Sub
 
 ' Las posiciones se pasan ByRef pero NO SE MODIFICAN.
-Public Function GetHeadingFromWorldPos(ByRef currentPos As t_WorldPos, ByRef nextPos As t_WorldPos) As eHeading
+Public Function GetHeadingFromWorldPos(ByRef currentPos As t_WorldPos, ByRef nextPos As t_WorldPos) As e_Heading
         
         On Error GoTo GetHeadingFromWorldPos_Err
         
@@ -577,13 +577,13 @@ Public Function GetHeadingFromWorldPos(ByRef currentPos As t_WorldPos, ByRef nex
 105     dY = nextPos.Y - currentPos.Y
     
 110     If dX < 0 Then
-115         GetHeadingFromWorldPos = eHeading.WEST
+115         GetHeadingFromWorldPos = e_Heading.WEST
 120     ElseIf dX > 0 Then
-125         GetHeadingFromWorldPos = eHeading.EAST
+125         GetHeadingFromWorldPos = e_Heading.EAST
 130     ElseIf dY < 0 Then
-135         GetHeadingFromWorldPos = eHeading.NORTH
+135         GetHeadingFromWorldPos = e_Heading.NORTH
         Else
-140         GetHeadingFromWorldPos = eHeading.SOUTH
+140         GetHeadingFromWorldPos = e_Heading.SOUTH
         End If
 
         Exit Function

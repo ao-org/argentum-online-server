@@ -447,18 +447,18 @@ End Sub
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-Public Sub WriteBlockedWithShieldUser(ByVal UserIndex As Integer)
+Public Sub Write_BlockedWithShieldUser(ByVal UserIndex As Integer)
         '<EhHeader>
-        On Error GoTo WriteBlockedWithShieldUser_Err
+        On Error GoTo Write_BlockedWithShieldUser_Err
         '</EhHeader>
 100     Call Writer.WriteInt(ServerPacketID.BlockedWithShieldUser)
 102     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub
 
-WriteBlockedWithShieldUser_Err:
+Write_BlockedWithShieldUser_Err:
         Call Writer.Clear
-        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteBlockedWithShieldUser", Erl)
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.Write_BlockedWithShieldUser", Erl)
         '</EhFooter>
 End Sub
 
@@ -467,18 +467,18 @@ End Sub
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-Public Sub WriteBlockedWithShieldOther(ByVal UserIndex As Integer)
+Public Sub Write_BlockedWithShieldOther(ByVal UserIndex As Integer)
         '<EhHeader>
-        On Error GoTo WriteBlockedWithShieldOther_Err
+        On Error GoTo Write_BlockedWithShieldOther_Err
         '</EhHeader>
 100     Call Writer.WriteInt(ServerPacketID.BlockedWithShieldOther)
 102     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub
 
-WriteBlockedWithShieldOther_Err:
+Write_BlockedWithShieldOther_Err:
         Call Writer.Clear
-        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteBlockedWithShieldOther", Erl)
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.Write_BlockedWithShieldOther", Erl)
         '</EhFooter>
 End Sub
 
@@ -801,7 +801,7 @@ End Sub
 ' @param    damage The number of HP lost by the hit.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteNPCHitUser(ByVal UserIndex As Integer, _
-                           ByVal Target As PartesCuerpo, _
+                           ByVal Target As e_PartesCuerpo, _
                            ByVal damage As Integer)
         '<EhHeader>
         On Error GoTo WriteNPCHitUser_Err
@@ -873,7 +873,7 @@ End Sub
 ' @param    damage The number of HP lost by the hit.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteUserHittedByUser(ByVal UserIndex As Integer, _
-                                 ByVal Target As PartesCuerpo, _
+                                 ByVal Target As e_PartesCuerpo, _
                                  ByVal attackerChar As Integer, _
                                  ByVal damage As Integer)
         '<EhHeader>
@@ -902,7 +902,7 @@ End Sub
 ' @param    damage The number of HP lost by the oponent hitted.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteUserHittedUser(ByVal UserIndex As Integer, _
-                               ByVal Target As PartesCuerpo, _
+                               ByVal Target As e_PartesCuerpo, _
                                ByVal attackedChar As Integer, _
                                ByVal damage As Integer)
         '<EhHeader>
@@ -1012,7 +1012,7 @@ End Sub
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteConsoleMsg(ByVal UserIndex As Integer, _
                            ByVal chat As String, _
-                           ByVal FontIndex As FontTypeNames)
+                           ByVal FontIndex As e_FontTypeNames)
         '<EhHeader>
         On Error GoTo WriteConsoleMsg_Err
         '</EhHeader>
@@ -1029,7 +1029,7 @@ End Sub
 
 Public Sub WriteLocaleMsg(ByVal UserIndex As Integer, _
                           ByVal ID As Integer, _
-                          ByVal FontIndex As FontTypeNames, _
+                          ByVal FontIndex As e_FontTypeNames, _
                           Optional ByVal strExtra As String = vbNullString)
         '<EhHeader>
         On Error GoTo WriteLocaleMsg_Err
@@ -1165,7 +1165,7 @@ End Sub
 ' @param    criminal Determines if the character is a criminal or not.
 ' @param    privileges Sets if the character is a normal one or any kind of administrative character.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-Public Sub WriteCharacterCreate(ByVal UserIndex As Integer, ByVal Body As Integer, ByVal Head As Integer, ByVal Heading As eHeading, ByVal CharIndex As Integer, ByVal X As Byte, ByVal Y As Byte, ByVal weapon As Integer, ByVal shield As Integer, ByVal FX As Integer, ByVal FXLoops As Integer, ByVal helmet As Integer, ByVal Name As String, ByVal Status As Byte, ByVal privileges As Byte, ByVal ParticulaFx As Byte, ByVal Head_Aura As String, ByVal Arma_Aura As String, ByVal Body_Aura As String, ByVal DM_Aura As String, ByVal RM_Aura As String, ByVal Otra_Aura As String, ByVal Escudo_Aura As String, ByVal speeding As Single, ByVal EsNPC As Byte, ByVal appear As Byte, ByVal group_index As Integer, ByVal clan_index As Integer, ByVal clan_nivel As Byte, ByVal UserMinHp As Long, ByVal UserMaxHp As Long, ByVal UserMinMAN As Long, ByVal UserMaxMAN As Long, ByVal Simbolo As Byte, Optional ByVal Idle As Boolean = False, Optional ByVal Navegando As Boolean = False)
+Public Sub WriteCharacterCreate(ByVal UserIndex As Integer, ByVal Body As Integer, ByVal Head As Integer, ByVal Heading As e_Heading, ByVal CharIndex As Integer, ByVal X As Byte, ByVal Y As Byte, ByVal weapon As Integer, ByVal shield As Integer, ByVal FX As Integer, ByVal FXLoops As Integer, ByVal helmet As Integer, ByVal Name As String, ByVal Status As Byte, ByVal privileges As Byte, ByVal ParticulaFx As Byte, ByVal Head_Aura As String, ByVal Arma_Aura As String, ByVal Body_Aura As String, ByVal DM_Aura As String, ByVal RM_Aura As String, ByVal Otra_Aura As String, ByVal Escudo_Aura As String, ByVal speeding As Single, ByVal EsNPC As Byte, ByVal appear As Byte, ByVal group_index As Integer, ByVal clan_index As Integer, ByVal clan_nivel As Byte, ByVal UserMinHp As Long, ByVal UserMaxHp As Long, ByVal UserMinMAN As Long, ByVal UserMaxMAN As Long, ByVal Simbolo As Byte, Optional ByVal Idle As Boolean = False, Optional ByVal Navegando As Boolean = False)
         '<EhHeader>
         On Error GoTo WriteCharacterCreate_Err
         '</EhHeader>
@@ -1233,7 +1233,7 @@ WriteCharacterMove_Err:
         '</EhFooter>
 End Sub
 
-Public Sub WriteForceCharMove(ByVal UserIndex As Integer, ByVal Direccion As eHeading)
+Public Sub WriteForceCharMove(ByVal UserIndex As Integer, ByVal Direccion As e_Heading)
         '<EhHeader>
         On Error GoTo WriteForceCharMove_Err
         '</EhHeader>
@@ -1264,7 +1264,7 @@ End Sub
 Public Sub WriteCharacterChange(ByVal UserIndex As Integer, _
                                 ByVal Body As Integer, _
                                 ByVal Head As Integer, _
-                                ByVal Heading As eHeading, _
+                                ByVal Heading As e_Heading, _
                                 ByVal CharIndex As Integer, _
                                 ByVal weapon As Integer, _
                                 ByVal shield As Integer, _
@@ -1411,12 +1411,12 @@ End Sub
 ' @param    Y Y coord of the character's new position.
 ' @param    Blocked True if the position is blocked.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-Public Sub WriteBlockPosition(ByVal UserIndex As Integer, _
+Public Sub Write_BlockPosition(ByVal UserIndex As Integer, _
                               ByVal X As Byte, _
                               ByVal Y As Byte, _
                               ByVal Blocked As Byte)
         '<EhHeader>
-        On Error GoTo WriteBlockPosition_Err
+        On Error GoTo Write_BlockPosition_Err
         '</EhHeader>
 100     Call Writer.WriteInt(ServerPacketID.BlockPosition)
 102     Call Writer.WriteInt8(X)
@@ -1426,9 +1426,9 @@ Public Sub WriteBlockPosition(ByVal UserIndex As Integer, _
         '<EhFooter>
         Exit Sub
 
-WriteBlockPosition_Err:
+Write_BlockPosition_Err:
         Call Writer.Clear
-        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteBlockPosition", Erl)
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.Write_BlockPosition", Erl)
         '</EhFooter>
 End Sub
 
@@ -1764,7 +1764,7 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @param    Skill The skill for which we request a target.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-Public Sub WriteWorkRequestTarget(ByVal UserIndex As Integer, ByVal Skill As eSkill)
+Public Sub WriteWorkRequestTarget(ByVal UserIndex As Integer, ByVal Skill As e_Skill)
         '<EhHeader>
         On Error GoTo WriteWorkRequestTarget_Err
         '</EhHeader>
@@ -1943,13 +1943,13 @@ Public Sub WriteAttributes(ByVal UserIndex As Integer)
         On Error GoTo WriteAttributes_Err
         '</EhHeader>
 100     Call Writer.WriteInt(ServerPacketID.Atributes)
-102     Call Writer.WriteInt8(UserList(UserIndex).Stats.UserAtributos(eAtributos.Fuerza))
-104     Call Writer.WriteInt8(UserList(UserIndex).Stats.UserAtributos(eAtributos.Agilidad))
+102     Call Writer.WriteInt8(UserList(UserIndex).Stats.UserAtributos(e_Atributos.Fuerza))
+104     Call Writer.WriteInt8(UserList(UserIndex).Stats.UserAtributos(e_Atributos.Agilidad))
 106     Call Writer.WriteInt8(UserList(UserIndex).Stats.UserAtributos( _
-                eAtributos.Inteligencia))
+                e_Atributos.Inteligencia))
 108     Call Writer.WriteInt8(UserList(UserIndex).Stats.UserAtributos( _
-                eAtributos.Constitucion))
-110     Call Writer.WriteInt8(UserList(UserIndex).Stats.UserAtributos(eAtributos.Carisma))
+                e_Atributos.Constitucion))
+110     Call Writer.WriteInt8(UserList(UserIndex).Stats.UserAtributos(e_Atributos.Carisma))
 112     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub
@@ -1985,7 +1985,7 @@ Public Sub WriteBlacksmithWeapons(ByVal UserIndex As Integer)
 
             ' Can the user create this object? If so add it to the list....
 106         If ObjData(ArmasHerrero(i)).SkHerreria <= UserList(UserIndex).Stats.UserSkills( _
-                    eSkill.Herreria) Then
+                    e_Skill.Herreria) Then
 108             Count = Count + 1
 110             validIndexes(Count) = i
             End If
@@ -2040,7 +2040,7 @@ Public Sub WriteBlacksmithArmors(ByVal UserIndex As Integer)
 
             ' Can the user create this object? If so add it to the list....
 106         If ObjData(ArmadurasHerrero(i)).SkHerreria <= Round(UserList( _
-                    UserIndex).Stats.UserSkills(eSkill.Herreria) / ModHerreria(UserList( _
+                    UserIndex).Stats.UserSkills(e_Skill.Herreria) / ModHerreria(UserList( _
                     UserIndex).clase), 0) Then
 108             Count = Count + 1
 110             validIndexes(Count) = i
@@ -2094,10 +2094,10 @@ Public Sub WriteCarpenterObjects(ByVal UserIndex As Integer)
 
             ' Can the user create this object? If so add it to the list....
 106         If ObjData(ObjCarpintero(i)).SkCarpinteria <= UserList( _
-                    UserIndex).Stats.UserSkills(eSkill.Carpinteria) Then
+                    UserIndex).Stats.UserSkills(e_Skill.Carpinteria) Then
 
 108             If i = 1 Then Debug.Print UserList(UserIndex).Stats.UserSkills( _
-                        eSkill.Carpinteria) \ ModCarpinteria(UserList(UserIndex).clase)
+                        e_Skill.Carpinteria) \ ModCarpinteria(UserList(UserIndex).clase)
 110             Count = Count + 1
 112             validIndexes(Count) = i
             End If
@@ -2143,7 +2143,7 @@ Public Sub WriteAlquimistaObjects(ByVal UserIndex As Integer)
 
             ' Can the user create this object? If so add it to the list....
 106         If ObjData(ObjAlquimista(i)).SkPociones <= UserList(UserIndex).Stats.UserSkills( _
-                    eSkill.Alquimia) \ ModAlquimia(UserList(UserIndex).clase) Then
+                    e_Skill.Alquimia) \ ModAlquimia(UserList(UserIndex).clase) Then
 108             Count = Count + 1
 110             validIndexes(Count) = i
             End If
@@ -2186,7 +2186,7 @@ Public Sub WriteSastreObjects(ByVal UserIndex As Integer)
 
             ' Can the user create this object? If so add it to the list....
 106         If ObjData(ObjSastre(i)).SkMAGOria <= UserList(UserIndex).Stats.UserSkills( _
-                    eSkill.Sastreria) Then
+                    e_Skill.Sastreria) Then
 108             Count = Count + 1
 110             validIndexes(Count) = i
             End If
@@ -2646,13 +2646,13 @@ Public Sub WriteDiceRoll(ByVal UserIndex As Integer)
         '</EhHeader>
 100     Call Writer.WriteInt(ServerPacketID.DiceRoll)
         ' TODO: SACAR ESTE PAQUETE USAR EL DE ATRIBUTOS
-102     Call Writer.WriteInt8(UserList(UserIndex).Stats.UserAtributos(eAtributos.Fuerza))
-104     Call Writer.WriteInt8(UserList(UserIndex).Stats.UserAtributos(eAtributos.Agilidad))
+102     Call Writer.WriteInt8(UserList(UserIndex).Stats.UserAtributos(e_Atributos.Fuerza))
+104     Call Writer.WriteInt8(UserList(UserIndex).Stats.UserAtributos(e_Atributos.Agilidad))
 106     Call Writer.WriteInt8(UserList(UserIndex).Stats.UserAtributos( _
-                eAtributos.Inteligencia))
+                e_Atributos.Inteligencia))
 108     Call Writer.WriteInt8(UserList(UserIndex).Stats.UserAtributos( _
-                eAtributos.Constitucion))
-110     Call Writer.WriteInt8(UserList(UserIndex).Stats.UserAtributos(eAtributos.Carisma))
+                e_Atributos.Constitucion))
+110     Call Writer.WriteInt8(UserList(UserIndex).Stats.UserAtributos(e_Atributos.Carisma))
 112     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub
@@ -2950,7 +2950,7 @@ End Sub
 ' @param    criminalsKilled The number of criminals killed by the requested char.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteCharacterInfo(ByVal UserIndex As Integer, ByVal CharName As String, _
-        ByVal race As eRaza, ByVal Class As eClass, ByVal gender As eGenero, ByVal _
+        ByVal race As e_Raza, ByVal Class As e_Class, ByVal gender As e_Genero, ByVal _
         level As Byte, ByVal gold As Long, ByVal bank As Long, ByVal previousPetitions As String, _
         ByVal currentGuild As String, ByVal previousGuilds As String, ByVal _
         RoyalArmy As Boolean, ByVal CaosLegion As Boolean, ByVal citicensKilled As _
@@ -4240,7 +4240,7 @@ End Function
 ' @return   The formated message ready to be writen as is on outgoing buffers.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Function PrepareMessageConsoleMsg(ByVal chat As String, _
-                                         ByVal FontIndex As FontTypeNames)
+                                         ByVal FontIndex As e_FontTypeNames)
         '<EhHeader>
         On Error GoTo PrepareMessageConsoleMsg_Err
         '</EhHeader>
@@ -4258,7 +4258,7 @@ End Function
 
 Public Function PrepareMessageLocaleMsg(ByVal ID As Integer, _
                                         ByVal chat As String, _
-                                        ByVal FontIndex As FontTypeNames)
+                                        ByVal FontIndex As e_FontTypeNames)
         '<EhHeader>
         On Error GoTo PrepareMessageLocaleMsg_Err
         '</EhHeader>
@@ -4792,11 +4792,11 @@ End Function
 ' @param    Blocked Blocked status of the tile
 ' @return   The formated message ready to be writen as is on outgoing buffers.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-Public Function PrepareMessageBlockPosition(ByVal X As Byte, _
+Public Function PrepareMessage_BlockPosition(ByVal X As Byte, _
                                             ByVal Y As Byte, _
                                             ByVal Blocked As Byte)
         '<EhHeader>
-        On Error GoTo PrepareMessageBlockPosition_Err
+        On Error GoTo PrepareMessage_BlockPosition_Err
         '</EhHeader>
 100     Call Writer.WriteInt(ServerPacketID.BlockPosition)
 102     Call Writer.WriteInt8(X)
@@ -4805,9 +4805,9 @@ Public Function PrepareMessageBlockPosition(ByVal X As Byte, _
         '<EhFooter>
         Exit Function
 
-PrepareMessageBlockPosition_Err:
+PrepareMessage_BlockPosition_Err:
         Call Writer.Clear
-        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageBlockPosition", Erl)
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessage_BlockPosition", Erl)
         '</EhFooter>
 End Function
 
@@ -4925,7 +4925,7 @@ End Function
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Function PrepareMessageCharacterCreate(ByVal Body As Integer, _
                                               ByVal Head As Integer, _
-                                              ByVal Heading As eHeading, _
+                                              ByVal Heading As e_Heading, _
                                               ByVal CharIndex As Integer, _
                                               ByVal X As Byte, _
                                               ByVal Y As Byte, _
@@ -5012,7 +5012,7 @@ End Function
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Function PrepareMessageCharacterChange(ByVal Body As Integer, _
                                               ByVal Head As Integer, _
-                                              ByVal Heading As eHeading, _
+                                              ByVal Heading As e_Heading, _
                                               ByVal CharIndex As Integer, _
                                               ByVal weapon As Integer, _
                                               ByVal shield As Integer, _
@@ -5072,7 +5072,7 @@ PrepareMessageCharacterMove_Err:
         '</EhFooter>
 End Function
 
-Public Function PrepareMessageForceCharMove(ByVal Direccion As eHeading)
+Public Function PrepareMessageForceCharMove(ByVal Direccion As e_Heading)
         '<EhHeader>
         On Error GoTo PrepareMessageForceCharMove_Err
         '</EhHeader>

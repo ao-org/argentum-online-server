@@ -179,7 +179,7 @@ Public MapasInterdimensionales() As Integer
 
 Public MapasIgnoranLimpieza() As Integer
 
-Public Enum iMinerales
+Public Enum e_Minerales
 
     HierroCrudo = 192
     PlataCruda = 193
@@ -197,7 +197,7 @@ Public Type t_LlamadaGM
 
 End Type
 
-Public Enum PlayerType
+Public Enum e_PlayerType
 
     user = &H1
     RoleMaster = &H2
@@ -210,7 +210,7 @@ Public Enum PlayerType
 
 End Enum
 
-Public Enum eClass
+Public Enum e_Class
 
     Mage = 1    'Mago
     Cleric      'Clérigo
@@ -227,7 +227,7 @@ Public Enum eClass
     
 End Enum
 
-Public Enum eCiudad
+Public Enum e_Ciudad
 
     cUllathorpe = 1
     cNix
@@ -238,7 +238,7 @@ Public Enum eCiudad
 
 End Enum
 
-Public Enum eRaza
+Public Enum e_Raza
 
     Humano = 1
     Elfo
@@ -249,14 +249,14 @@ Public Enum eRaza
 
 End Enum
 
-Enum eGenero
+Enum e_Genero
 
     Hombre = 1
     Mujer
 
 End Enum
 
-Public Enum eClanType
+Public Enum e_ClanType
 
     ct_Neutral
     ct_ArmadaReal
@@ -287,7 +287,7 @@ Public Const EspadaMataDragonesIndex As Integer = 402
 
 Public Const MAXMASCOTASENTRENADOR   As Byte = 7
 
-Public Enum FXSound
+Public Enum e_FXSound
 
     Lobo_Sound = 124
     Gallo_Sound = 137
@@ -298,12 +298,12 @@ Public Enum FXSound
 
 End Enum
 
-Public Enum FXIDs
+Public Enum e_FXIDs
     FXWARP = 30
     FXMEDITARGRANDE = 42
 End Enum
 
-Public Enum Meditaciones
+Public Enum e_Meditaciones
     MeditarInicial = 115
     MeditarMayor15 = 116
     MeditarMayor30 = 117
@@ -312,7 +312,7 @@ Public Enum Meditaciones
     MeditarMayor47 = 120
 End Enum
 
-Public Enum ParticulasIndex ' Particulas FX
+Public Enum e_ParticulasIndex ' Particulas FX
 
     Envenena = 32
     Incinerar = 6
@@ -344,7 +344,7 @@ Public Const TIEMPO_CARCEL_PIQUETE As Long = 5
 ' @param ANTIPIQUETE
 ' @param ZONAPELEA al pelear en este trigger no se caen las cosas y no cambia el estado de ciuda o crimi
 '
-Public Enum eTrigger
+Public Enum e_Trigger
 
     nada = 0
     BAJOTECHO = 1
@@ -363,12 +363,12 @@ End Enum
 ''
 ' constantes para el trigger 6
 '
-' @see eTrigger
+' @see e_Trigger
 ' @param TRIGGER6_PERMITE TRIGGER6_PERMITE
 ' @param TRIGGER6_PROHIBE TRIGGER6_PROHIBE
 ' @param TRIGGER6_AUSENTE El trigger no aparece
 '
-Public Enum eTrigger6
+Public Enum e_Trigger6
 
     TRIGGER6_PERMITE = 1
     TRIGGER6_PROHIBE = 2
@@ -390,7 +390,7 @@ Public Const Campo = "CAMPO"
 Public Const Dungeon = "DUNGEON"
 
 ' <<<<<< Targets >>>>>>
-Public Enum TargetType
+Public Enum e_TargetType
 
     uUsuarios = 1
     uNPC = 2
@@ -400,7 +400,7 @@ Public Enum TargetType
 End Enum
 
 ' <<<<<< Acciona sobre >>>>>>
-Public Enum TipoHechizo
+Public Enum e_TipoHechizo
 
     uPropiedades = 1
     uEstado = 2
@@ -420,7 +420,7 @@ Public Const MAXUSERHECHIZOS   As Byte = 25
 Public Const FX_TELEPORT_INDEX             As Integer = 1
 
 ' La utilidad de esto es casi nula, sólo se revisa si fue a la cabeza...
-Public Enum PartesCuerpo
+Public Enum e_PartesCuerpo
 
     bCabeza = 1
     bPiernaIzquierda = 2
@@ -480,7 +480,7 @@ Public Const HIERRO_MINA         As Integer = 192 'OK
 Public Const ObjArboles          As Integer = 4 'OK
 
 
-Public Enum eNPCType
+Public Enum e_NPCType
 
     Comun = 0
     Revividor = 1
@@ -539,7 +539,7 @@ Public Const MAXMASCOTAS    As Byte = 3
 ' @param SOUTH Sur
 ' @param WEST Oeste
 '
-Public Enum eHeading
+Public Enum e_Heading
 
     NORTH = 1
     EAST = 2
@@ -548,7 +548,7 @@ Public Enum eHeading
 
 End Enum
 
-Public Enum eBlock
+Public Enum e_Block
 
     NORTH = &H1
     EAST = &H2
@@ -567,7 +567,7 @@ Public Const iCabezaMuerto As Integer = 0 ' El nuevo casper no usa cabeza. El vi
 Public Const iORO          As Byte = 12
 
 '%%%%%%%%%% CONSTANTES DE INDICES %%%%%%%%%%%%%%%
-Public Enum eSkill
+Public Enum e_Skill
 
     Magia = 1
     Robar = 2
@@ -603,7 +603,7 @@ End Enum
 
 Public Const FundirMetal = 88
 
-Public Enum eAtributos
+Public Enum e_Atributos
 
     Fuerza = 1
     Agilidad = 2
@@ -717,7 +717,7 @@ Public Const FLAG_AGUA               As Byte = &H20
 Public Const FLAG_ARBOL              As Byte = &H40
 
 ' CATEGORIAS PRINCIPALES
-Public Enum eOBJType
+Public Enum e_OBJType
 
     otUseOnce = 1
     otWeapon = 2
@@ -829,8 +829,8 @@ Public Type t_Hechizo
     HechizeroMsg As String
     TargetMsg As String
     PropioMsg As String
-    '    Resis As Byte
-    Tipo As TipoHechizo
+
+    Tipo As e_TipoHechizo
     wav As Integer
     FXgrh As Integer
     loops As Byte
@@ -900,7 +900,7 @@ Public Type t_Hechizo
     'Barrin 29/9/03
     StaRequerido As Integer
 
-    Target As TargetType
+    Target As e_TargetType
     
     NeedStaff As Integer
     StaffAffected As Boolean
@@ -995,7 +995,7 @@ Public Type t_Char
     ParticulaFx As Integer
     FX As Integer
     loops As Integer
-    Heading As eHeading
+    Heading As e_Heading
     Head_Aura As String
     Body_Aura As String
     Arma_Aura As String
@@ -1073,7 +1073,7 @@ Public Type t_Quest
 End Type
 
 ' ******************* RETOS ************************
-Public Enum SolicitudRetoEstado
+Public Enum e_SolicitudRetoEstado
     Libre
     Enviada
     EnCola
@@ -1086,14 +1086,14 @@ Public Type t_SolicitudJugador
 End Type
 
 Public Type t_SolicitudReto
-    estado As SolicitudRetoEstado
+    estado As e_SolicitudRetoEstado
     Jugadores() As t_SolicitudJugador
     Apuesta As Long
     PocionesMaximas As Integer
     CaenItems As Boolean
 End Type
 
-Public Enum EquipoReto
+Public Enum e_EquipoReto
     Izquierda
     Derecha
 End Enum
@@ -1147,7 +1147,7 @@ Public Type t_ObjData
 
     Name As String 'Nombre del obj
     
-    OBJType As eOBJType 'Tipo enum que determina cuales son las caract del obj
+    OBJType As e_OBJType 'Tipo enum que determina cuales son las caract del obj
     
     GrhIndex As Long ' Indice del grafico que representa el obj
     GrhSecundario As Integer
@@ -1208,7 +1208,7 @@ Public Type t_ObjData
     HastaX As Byte
     
     EfectoMagico As Byte
-    QueSkill As Byte          ' Que skill recibe la bonificacion
+    Que_Skill As Byte          ' Que skill recibe la bonificacion
     CantidadSkill As Byte     ' Cuantos puntos de skill bonifica
     
     Subtipo As Byte ' 0: -, 1: Paraliza, 2: Incinera, 3: Envenena, 4: Explosiva
@@ -1293,10 +1293,10 @@ Public Type t_ObjData
     texto As String
     
     'Clases que no tienen permitido usar este obj
-    ClaseProhibida(1 To NUMCLASES) As eClass
+    ClaseProhibida(1 To NUMCLASES) As e_Class
     
     'Razas que no tienen permitido usar este obj
-    RazaProhibida(1 To NUMRAZAS) As eRaza
+    RazaProhibida(1 To NUMRAZAS) As e_Raza
     
     ClasePermitida As String
     
@@ -1430,7 +1430,7 @@ End Type
 Public Type t_AccionPendiente
 
     AccionPendiente As Boolean
-    TipoAccion As Accion_Barra
+    TipoAccion As e_AccionBarra
     RunaObj As Integer
     ObjSlot As Byte
     Particula As Byte
@@ -1538,7 +1538,7 @@ Public Type t_UserFlags
 
     DuracionEfecto As Long
     TargetNPC As Integer ' Npc señalado por el usuario
-    TargetNpcTipo As eNPCType ' Tipo del npc señalado
+    TargetNpcTipo As e_NPCType ' Tipo del npc señalado
     NpcInv As Integer
     
     Ban As Byte
@@ -1564,7 +1564,7 @@ Public Type t_UserFlags
     NPCAtacado As Integer
     
     StatsChanged As Byte
-    Privilegios As PlayerType
+    Privilegios As e_PlayerType
     
     ValCoDe As Integer
     
@@ -1600,7 +1600,7 @@ Public Type t_UserFlags
     
     EnReto As Boolean
     SalaReto As Integer
-    EquipoReto As EquipoReto
+    EquipoReto As e_EquipoReto
     AceptoReto As Integer
     SolicitudReto As t_SolicitudReto
     LastPos As t_WorldPos
@@ -1779,7 +1779,7 @@ Public Type t_ComercioUsuario
 End Type
 
 Public Type t_UserTrabajo
-    TargetSkill As eSkill
+    TargetSkill As e_Skill
     Target_X As Integer
     Target_Y As Integer
 End Type
@@ -1805,12 +1805,12 @@ Public Type t_User
     Desc As String ' Descripcion
     DescRM As String
     
-    clase As eClass
-    raza As eRaza
-    genero As eGenero
+    clase As e_Class
+    raza As e_Raza
+    genero As e_Genero
     Email As String
-    Hogar As eCiudad
-    PosibleHogar As eCiudad
+    Hogar As e_Ciudad
+    PosibleHogar As e_Ciudad
     MENSAJEINFORMACION As String
         
     Invent As t_Inventario
@@ -1855,7 +1855,7 @@ Public Type t_User
     MascotasIndex(1 To MAXMASCOTAS) As Integer
     
     GuildIndex As Integer   'puntero al array global de guilds
-    FundandoGuildAlineacion As ALINEACION_GUILD     'esto esta aca hasta que se parchee el cliente y se pongan cadenas de datos distintas para cada alineacion
+    FundandoGuildAlineacion As e_ALINEACION_GUILD     'esto esta aca hasta que se parchee el cliente y se pongan cadenas de datos distintas para cada alineacion
     EscucheClan As Integer
     
     KeyCrypt As Integer
@@ -1933,7 +1933,7 @@ Public Type t_NPCFlags
 
     ExpCount As Long '[ALEJO]
     
-    OldMovement As TipoAI
+    OldMovement As e_TipoAI
     OldHostil As Byte
     
     AguaValida As Byte
@@ -1995,7 +1995,7 @@ Public Type t_Caminata
     Espera As Long
 End Type
 
-Public Enum TipoAI
+Public Enum e_TipoAI
     Estatico = 1
     MueveAlAzar = 2
     NpcDefensa = 4
@@ -2039,7 +2039,7 @@ Public Type t_Npc
     showName As Byte
     GobernadorDe As Byte
 
-    NPCtype As eNPCType
+    NPCtype As e_NPCType
     Numero As Integer
 
     nivel As Integer
@@ -2061,7 +2061,7 @@ Public Type t_Npc
     Pos As t_WorldPos 'Posicion
     Orig As t_WorldPos
 
-    Movement As TipoAI
+    Movement As e_TipoAI
     Attackable As Byte
     Hostile As Byte
     PoderAtaque As Long
@@ -2148,7 +2148,7 @@ Public Type t_MapBlock
     TimeParticula As Integer
     ObjInfo As t_Obj
     TileExit As t_WorldPos
-    trigger As eTrigger
+    trigger As e_Trigger
     ParticulaIndex As Integer
     Luz As t_light
 

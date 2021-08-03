@@ -4,7 +4,7 @@ Option Explicit
 Type t_SpawnBox
     TopLeft As t_WorldPos
     BottomRight As t_WorldPos
-    Heading As eHeading
+    Heading As e_Heading
     CoordMuralla As Integer
     LegalBox As t_Rectangle
 End Type
@@ -143,10 +143,10 @@ Sub CargarInfoEventos()
 202                             .LegalBox.Y2 = .BottomRight.Y
 
 204                             Select Case .Heading
-                                    Case eHeading.NORTH: .LegalBox.Y1 = .CoordMuralla
-206                                 Case eHeading.SOUTH: .LegalBox.Y2 = .CoordMuralla
-208                                 Case eHeading.EAST: .LegalBox.X2 = .CoordMuralla
-210                                 Case eHeading.WEST: .LegalBox.X1 = .CoordMuralla
+                                    Case e_Heading.NORTH: .LegalBox.Y1 = .CoordMuralla
+206                                 Case e_Heading.SOUTH: .LegalBox.Y2 = .CoordMuralla
+208                                 Case e_Heading.EAST: .LegalBox.X2 = .CoordMuralla
+210                                 Case e_Heading.WEST: .LegalBox.X1 = .CoordMuralla
                                 End Select
                             End With
                         End If
@@ -177,7 +177,7 @@ Sub IniciarInvasion(ByVal Index As Integer)
             ' Enviamos info sobre la invasión a los usuarios en estos mapas
 108         Call EnviarInfoInvasion(Index)
         
-110         Call MensajeGlobal(.Desc, FontTypeNames.FONTTYPE_New_Eventos)
+110         Call MensajeGlobal(.Desc, e_FontTypeNames.FONTTYPE_New_Eventos)
 112         Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(150, NO_3D_SOUND, NO_3D_SOUND))
     
         End With
@@ -191,11 +191,11 @@ Sub FinalizarInvasion(ByVal Index As Integer)
             Dim Ganaron As Boolean
         
 102         If .VidaMuralla > 0 Then
-104             Call MensajeGlobal(.MensajeGanaron, FontTypeNames.FONTTYPE_New_Eventos)
+104             Call MensajeGlobal(.MensajeGanaron, e_FontTypeNames.FONTTYPE_New_Eventos)
 106             Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(44, NO_3D_SOUND, NO_3D_SOUND))
 108             Ganaron = True
             Else
-110             Call MensajeGlobal(.MensajePerdieron, FontTypeNames.FONTTYPE_New_Eventos)
+110             Call MensajeGlobal(.MensajePerdieron, e_FontTypeNames.FONTTYPE_New_Eventos)
 112             Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(45, NO_3D_SOUND, NO_3D_SOUND))
             End If
 
@@ -234,7 +234,7 @@ Sub FinalizarInvasion(ByVal Index As Integer)
 150                         UserIndex = NameIndex(.UserName)
 152                         If UserIndex Then
                                 ' Le damos el oro
-154                             Call WriteConsoleMsg(UserIndex, PremioStr, FontTypeNames.FONTTYPE_New_Amarillo_Oscuro)
+154                             Call WriteConsoleMsg(UserIndex, PremioStr, e_FontTypeNames.FONTTYPE_New_Amarillo_Oscuro)
 156                             UserList(UserIndex).Stats.GLD = UserList(UserIndex).Stats.GLD + OroGanado
 158                             Call WriteUpdateGold(UserIndex)
                             End If
@@ -284,7 +284,7 @@ Sub InvasionSpawnNPC(ByVal index As Integer)
 114             SpawnPos.Y = RandomNumber(.TopLeft.Y, .BottomRight.Y)
             
                 ' Obtenemos la dirección y coordenada en la que se encuentra la muralla
-                Dim Heading As eHeading
+                Dim Heading As e_Heading
 116             Heading = .Heading
         
             End With
@@ -329,13 +329,13 @@ Public Sub MuereNpcInvasion(ByVal index As Integer, ByVal NpcIndex As Integer)
 
 End Sub
 
-Private Function String2Heading(str As String) As eHeading
+Private Function String2Heading(str As String) As e_Heading
 
 100     Select Case LCase$(str)
-            Case "norte": String2Heading = eHeading.NORTH
-102         Case "sur": String2Heading = eHeading.SOUTH
-104         Case "este": String2Heading = eHeading.EAST
-106         Case "oeste": String2Heading = eHeading.WEST
+            Case "norte": String2Heading = e_Heading.NORTH
+102         Case "sur": String2Heading = e_Heading.SOUTH
+104         Case "este": String2Heading = e_Heading.EAST
+106         Case "oeste": String2Heading = e_Heading.WEST
         End Select
 
 End Function

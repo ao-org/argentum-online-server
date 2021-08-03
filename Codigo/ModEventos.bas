@@ -102,7 +102,7 @@ Public Sub CheckEvento(ByVal Hora As Byte)
 184     EventoAcutal.multiplicacion = Evento(Hora).multiplicacion
 186     EventoAcutal.Tipo = Evento(Hora).Tipo
 
-188     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(aviso, FontTypeNames.FONTTYPE_New_Eventos))
+188     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(aviso, e_FontTypeNames.FONTTYPE_New_Eventos))
 190     TiempoRestanteEvento = Evento(Hora).Duracion
 192     frmMain.Evento.Enabled = True
 194     EventoActivo = True
@@ -158,7 +158,7 @@ Public Sub FinalizarEvento()
         End Select
 
 146     Call AgregarAConsola("Eventos > Evento finalizado.")
-148     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos > Evento finalizado.", FontTypeNames.FONTTYPE_New_Eventos))
+148     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos > Evento finalizado.", e_FontTypeNames.FONTTYPE_New_Eventos))
 150     Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(551, NO_3D_SOUND, NO_3D_SOUND)) ' Explota un trueno
 
         
@@ -259,31 +259,31 @@ Public Sub ForzarEvento(ByVal Tipo As Byte, ByVal Duracion As Byte, ByVal multi 
         
 
 100     If Tipo > 3 Or Tipo < 1 Then
-102         Call WriteConsoleMsg(NameIndex(Quien), "Tipo de evento invalido.", FontTypeNames.FONTTYPE_New_Eventos)
+102         Call WriteConsoleMsg(NameIndex(Quien), "Tipo de evento invalido.", e_FontTypeNames.FONTTYPE_New_Eventos)
             Exit Sub
 
         End If
  
 104     If Duracion > 59 Then
-106         Call WriteConsoleMsg(NameIndex(Quien), "Duracion invalida, maxima 59 minutos.", FontTypeNames.FONTTYPE_New_Eventos)
+106         Call WriteConsoleMsg(NameIndex(Quien), "Duracion invalida, maxima 59 minutos.", e_FontTypeNames.FONTTYPE_New_Eventos)
             Exit Sub
 
         End If
 
 108      If (Tipo = 1 And multi > 2) Then
-110         Call WriteConsoleMsg(NameIndex(Quien), "Multiplicacion invalida, maxima x2.", FontTypeNames.FONTTYPE_New_Eventos)
+110         Call WriteConsoleMsg(NameIndex(Quien), "Multiplicacion invalida, maxima x2.", e_FontTypeNames.FONTTYPE_New_Eventos)
             Exit Sub
 
         End If
         
 112     If (Tipo = 2 And multi > 2) Then
-114         Call WriteConsoleMsg(NameIndex(Quien), "Multiplicacion invalida, maxima x2.", FontTypeNames.FONTTYPE_New_Eventos)
+114         Call WriteConsoleMsg(NameIndex(Quien), "Multiplicacion invalida, maxima x2.", e_FontTypeNames.FONTTYPE_New_Eventos)
             Exit Sub
 
         End If
         
 116     If (Tipo = 3 And multi > 5) Then
-118         Call WriteConsoleMsg(NameIndex(Quien), "Multiplicacion invalida, maxima x5.", FontTypeNames.FONTTYPE_New_Eventos)
+118         Call WriteConsoleMsg(NameIndex(Quien), "Multiplicacion invalida, maxima x5.", e_FontTypeNames.FONTTYPE_New_Eventos)
             Exit Sub
 
         End If
@@ -349,7 +349,7 @@ Public Sub ForzarEvento(ByVal Tipo As Byte, ByVal Duracion As Byte, ByVal multi 
 200     EventoAcutal.multiplicacion = multi
 202     EventoAcutal.Tipo = Tipo
 
-204     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(aviso, FontTypeNames.FONTTYPE_New_Eventos))
+204     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(aviso, e_FontTypeNames.FONTTYPE_New_Eventos))
 206     Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(553, NO_3D_SOUND, NO_3D_SOUND)) ' Explota un trueno
 208     TiempoRestanteEvento = Duracion
 210     frmMain.Evento.Enabled = True

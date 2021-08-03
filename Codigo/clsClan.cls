@@ -43,7 +43,7 @@ Option Explicit
 
 Private p_GuildName             As String
 
-Private p_Alineacion            As ALINEACION_GUILD
+Private p_Alineacion            As e_ALINEACION_GUILD
 
 Private p_OnlineMembers         As Collection   'Array de UserIndexes!
 
@@ -63,7 +63,7 @@ Private p_IteradorOnlineGMs     As Integer
 
 Private p_GuildNumber           As Integer      'Numero de guild en el mundo
 
-Private p_Relaciones()          As RELACIONES_GUILD 'array de relaciones con los otros clanes
+Private p_Relaciones()          As e_RELACIONES_GUILD 'array de relaciones con los otros clanes
 
 Private GUILDINFOFILE           As String
 
@@ -104,7 +104,7 @@ End Property
 'ALINEACION Y ANTIFACCION
 '
 
-Public Property Get Alineacion() As ALINEACION_GUILD
+Public Property Get Alineacion() As e_ALINEACION_GUILD
         
         On Error GoTo Alineacion_Err
         
@@ -149,7 +149,7 @@ PuntosAntifaccion_Err:
         
 End Property
 
-Public Function CambiarAlineacion(ByVal NuevaAlineacion As ALINEACION_GUILD) As Boolean
+Public Function CambiarAlineacion(ByVal NuevaAlineacion As e_ALINEACION_GUILD) As Boolean
         
         On Error GoTo CambiarAlineacion_Err
         
@@ -203,7 +203,7 @@ Class_Terminate_Err:
         
 End Sub
 
-Public Sub Inicializar(ByVal GuildName As String, ByVal GuildNumber As Integer, ByVal Alineacion As ALINEACION_GUILD)
+Public Sub Inicializar(ByVal GuildName As String, ByVal GuildNumber As Integer, ByVal Alineacion As e_ALINEACION_GUILD)
         
         On Error GoTo Inicializar_Err
         
@@ -228,7 +228,7 @@ Public Sub Inicializar(ByVal GuildName As String, ByVal GuildNumber As Integer, 
 126     p_IteradorPropuesta = 0
 128     p_IteradorOnlineGMs = 0
 130     p_IteradorRelaciones = 0
-132     ReDim Preserve p_Relaciones(1 To CANTIDADDECLANES) As RELACIONES_GUILD
+132     ReDim Preserve p_Relaciones(1 To CANTIDADDECLANES) As e_RELACIONES_GUILD
 
 134     For i = 1 To CANTIDADDECLANES
 136         p_Relaciones(i) = String2Relacion(GetVar(RELACIONESFILE, "RELACIONES", CStr(i)))
@@ -240,10 +240,10 @@ Public Sub Inicializar(ByVal GuildName As String, ByVal GuildNumber As Integer, 
 
 144             Select Case String2Relacion(Trim$(GetVar(PROPUESTASFILE, CStr(i), "Tipo")))
 
-                    Case RELACIONES_GUILD.ALIADOS
+                    Case e_RELACIONES_GUILD.ALIADOS
 146                     p_PropuestasDeAlianza.Add i
 
-148                 Case RELACIONES_GUILD.PAZ
+148                 Case e_RELACIONES_GUILD.PAZ
 150                     p_PropuestasDePaz.Add i
 
                 End Select
@@ -317,7 +317,7 @@ Public Sub ProcesarFundacionDeOtroClan()
         
         On Error GoTo ProcesarFundacionDeOtroClan_Err
         
-100     ReDim Preserve p_Relaciones(1 To CANTIDADDECLANES) As RELACIONES_GUILD
+100     ReDim Preserve p_Relaciones(1 To CANTIDADDECLANES) As e_RELACIONES_GUILD
 102     p_Relaciones(CANTIDADDECLANES) = PAZ
 
         Exit Sub
@@ -444,7 +444,7 @@ Public Sub ConectarMiembro(ByVal UserIndex As Integer)
 102     With UserList(UserIndex)
 
             ' No avisa cuando loguea un dios
-104         If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) = 0 Then
+104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios)) = 0 Then
 106             Call SendData(SendTarget.ToDiosesYclan, .GuildIndex, PrepareMessageGuildChat(.Name & " se ha conectado.", 9))
 
             End If
@@ -480,7 +480,7 @@ Public Sub DesConectarMiembro(ByVal UserIndex As Integer)
 106             With UserList(UserIndex)
 
                     ' No avisa cuando se desconecta un dios
-108                 If (.flags.Privilegios And (PlayerType.Admin Or PlayerType.Dios)) = 0 Then
+108                 If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios)) = 0 Then
 110                     Call SendData(SendTarget.ToDiosesYclan, .GuildIndex, PrepareMessageGuildChat(.Name & " se ha desconectado.", 8))
 
                     End If
@@ -1288,19 +1288,19 @@ End Function
 'RELACIONES
 '
 
-Public Property Get CantidadPropuestas(ByVal Tipo As RELACIONES_GUILD) As Integer
+Public Property Get CantidadPropuestas(ByVal Tipo As e_RELACIONES_GUILD) As Integer
         
         On Error GoTo CantidadPropuestas_Err
         
 
 100     Select Case Tipo
 
-            Case RELACIONES_GUILD.ALIADOS
+            Case e_RELACIONES_GUILD.ALIADOS
 102             CantidadPropuestas = p_PropuestasDeAlianza.Count
 
-104         Case RELACIONES_GUILD.GUERRA
+104         Case e_RELACIONES_GUILD.GUERRA
         
-106         Case RELACIONES_GUILD.PAZ
+106         Case e_RELACIONES_GUILD.PAZ
 108             CantidadPropuestas = p_PropuestasDePaz.Count
 
         End Select
@@ -1354,7 +1354,7 @@ CantidadAllies_Err:
         
 End Property
 
-Public Function GetRelacion(ByVal OtroGuild As Integer) As RELACIONES_GUILD
+Public Function GetRelacion(ByVal OtroGuild As Integer) As e_RELACIONES_GUILD
         
         On Error GoTo GetRelacion_Err
         
@@ -1369,7 +1369,7 @@ GetRelacion_Err:
         
 End Function
 
-Public Sub SetRelacion(ByVal GuildIndex As Integer, ByVal Relacion As RELACIONES_GUILD)
+Public Sub SetRelacion(ByVal GuildIndex As Integer, ByVal Relacion As e_RELACIONES_GUILD)
         
         On Error GoTo SetRelacion_Err
         
@@ -1385,7 +1385,7 @@ SetRelacion_Err:
         
 End Sub
 
-Public Sub SetPropuesta(ByVal Tipo As RELACIONES_GUILD, ByVal OtroGuild As Integer, ByRef Detalle As String)
+Public Sub SetPropuesta(ByVal Tipo As e_RELACIONES_GUILD, ByVal OtroGuild As Integer, ByRef Detalle As String)
         
         On Error GoTo SetPropuesta_Err
         
@@ -1395,10 +1395,10 @@ Public Sub SetPropuesta(ByVal Tipo As RELACIONES_GUILD, ByVal OtroGuild As Integ
 
 106     Select Case Tipo
 
-            Case RELACIONES_GUILD.ALIADOS
+            Case e_RELACIONES_GUILD.ALIADOS
 108             p_PropuestasDeAlianza.Add OtroGuild
 
-110         Case RELACIONES_GUILD.PAZ
+110         Case e_RELACIONES_GUILD.PAZ
 112             p_PropuestasDePaz.Add OtroGuild
 
         End Select
@@ -1443,7 +1443,7 @@ AnularPropuestas_Err:
         
 End Sub
 
-Public Function GetPropuesta(ByVal OtroGuild As Integer, ByRef Tipo As RELACIONES_GUILD) As String
+Public Function GetPropuesta(ByVal OtroGuild As Integer, ByRef Tipo As e_RELACIONES_GUILD) As String
         'trae la solicitd que haya, no valida si es actual o de que tipo es
         
         On Error GoTo GetPropuesta_Err
@@ -1460,7 +1460,7 @@ GetPropuesta_Err:
         
 End Function
 
-Public Function HayPropuesta(ByVal OtroGuild As Integer, ByRef Tipo As RELACIONES_GUILD) As Boolean
+Public Function HayPropuesta(ByVal OtroGuild As Integer, ByRef Tipo As e_RELACIONES_GUILD) As Boolean
         
         On Error GoTo HayPropuesta_Err
         
@@ -1471,7 +1471,7 @@ Public Function HayPropuesta(ByVal OtroGuild As Integer, ByRef Tipo As RELACIONE
 
 102     Select Case Tipo
 
-            Case RELACIONES_GUILD.ALIADOS
+            Case e_RELACIONES_GUILD.ALIADOS
 
 104             For i = 1 To p_PropuestasDeAlianza.Count
 
@@ -1482,7 +1482,7 @@ Public Function HayPropuesta(ByVal OtroGuild As Integer, ByRef Tipo As RELACIONE
 
 110             Next i
 
-112         Case RELACIONES_GUILD.PAZ
+112         Case e_RELACIONES_GUILD.PAZ
 
 114             For i = 1 To p_PropuestasDePaz.Count
 
@@ -1493,7 +1493,7 @@ Public Function HayPropuesta(ByVal OtroGuild As Integer, ByRef Tipo As RELACIONE
 
 120             Next i
 
-122         Case RELACIONES_GUILD.GUERRA
+122         Case e_RELACIONES_GUILD.GUERRA
 
         End Select
 
@@ -1518,7 +1518,7 @@ End Function
 'ITERADORES
 '
 
-Public Function Iterador_ProximaPropuesta(ByVal Tipo As RELACIONES_GUILD) As Integer
+Public Function Iterador_ProximaPropuesta(ByVal Tipo As e_RELACIONES_GUILD) As Integer
         
         On Error GoTo Iterador_ProximaPropuesta_Err
         
@@ -1527,7 +1527,7 @@ Public Function Iterador_ProximaPropuesta(ByVal Tipo As RELACIONES_GUILD) As Int
 
 102     Select Case Tipo
 
-            Case RELACIONES_GUILD.ALIADOS
+            Case e_RELACIONES_GUILD.ALIADOS
 
 104             If p_IteradorPropuesta < p_PropuestasDeAlianza.Count Then
 106                 p_IteradorPropuesta = p_IteradorPropuesta + 1
@@ -1540,7 +1540,7 @@ Public Function Iterador_ProximaPropuesta(ByVal Tipo As RELACIONES_GUILD) As Int
 
                 End If
 
-114         Case RELACIONES_GUILD.PAZ
+114         Case e_RELACIONES_GUILD.PAZ
 
 116             If p_IteradorPropuesta < p_PropuestasDePaz.Count Then
 118                 p_IteradorPropuesta = p_IteradorPropuesta + 1
@@ -1610,7 +1610,7 @@ Iterador_ProximoGM_Err:
         
 End Function
 
-Public Function Iterador_ProximaRelacion(ByVal R As RELACIONES_GUILD) As Integer
+Public Function Iterador_ProximaRelacion(ByVal R As e_RELACIONES_GUILD) As Integer
         
         On Error GoTo Iterador_ProximaRelacion_Err
         

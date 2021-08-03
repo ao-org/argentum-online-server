@@ -227,7 +227,7 @@ Sub WorldSave()
 
         Dim Porc  As Long
 
-100     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor » Iniciando WorldSave", FontTypeNames.FONTTYPE_SERVER))
+100     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor » Iniciando WorldSave", e_FontTypeNames.FONTTYPE_SERVER))
 
 102     Call ReSpawnOrigPosNpcs 'respawn de los guardias en las pos originales
 
@@ -265,7 +265,7 @@ Sub WorldSave()
         '    End If
         'Next
 
-126     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor » WorldSave ha concluído", FontTypeNames.FONTTYPE_SERVER))
+126     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor » WorldSave ha concluído", e_FontTypeNames.FONTTYPE_SERVER))
 
         Exit Sub
         
@@ -291,7 +291,7 @@ Public Sub PurgarPenas()
 108                 If UserList(i).Counters.Pena < 1 Then
 110                     UserList(i).Counters.Pena = 0
 112                     Call WarpUserChar(i, Libertad.Map, Libertad.X, Libertad.Y, True)
-114                     Call WriteConsoleMsg(i, "Has sido liberado.", FontTypeNames.FONTTYPE_INFO)
+114                     Call WriteConsoleMsg(i, "Has sido liberado.", e_FontTypeNames.FONTTYPE_INFO)
                     End If
 
                 End If
@@ -324,7 +324,7 @@ Public Sub EfectoOxigeno(ByVal UserIndex As Integer)
 108             If .Counters.Oxigeno < 1 Then
 110                 .Counters.Oxigeno = 0
 112                 Call WriteOxigeno(UserIndex)
-114                 Call WriteConsoleMsg(UserIndex, "Te has quedado sin oxigeno.", FontTypeNames.FONTTYPE_EJECUCION)
+114                 Call WriteConsoleMsg(UserIndex, "Te has quedado sin oxigeno.", e_FontTypeNames.FONTTYPE_EJECUCION)
 116                 .flags.Ahogandose = 1
 118                 Call WriteContadores(UserIndex)
                 End If
@@ -354,9 +354,9 @@ Public Sub Encarcelar(ByVal UserIndex As Integer, ByVal minutos As Long, Optiona
 104     Call WarpUserChar(UserIndex, Prision.Map, Prision.X, Prision.Y, True)
         
 106     If LenB(GmName) = 0 Then
-108         Call WriteConsoleMsg(UserIndex, "Has sido encarcelado, deberas permanecer en la carcel " & minutos & " minutos.", FontTypeNames.FONTTYPE_INFO)
+108         Call WriteConsoleMsg(UserIndex, "Has sido encarcelado, deberas permanecer en la carcel " & minutos & " minutos.", e_FontTypeNames.FONTTYPE_INFO)
         Else
-110         Call WriteConsoleMsg(UserIndex, GmName & " te ha encarcelado, deberas permanecer en la carcel " & minutos & " minutos.", FontTypeNames.FONTTYPE_INFO)
+110         Call WriteConsoleMsg(UserIndex, GmName & " te ha encarcelado, deberas permanecer en la carcel " & minutos & " minutos.", e_FontTypeNames.FONTTYPE_INFO)
 
         End If
         
@@ -437,7 +437,7 @@ UnBan_Err:
         
 End Function
 
-Public Function UserDarPrivilegioLevel(ByVal Name As String) As PlayerType
+Public Function UserDarPrivilegioLevel(ByVal Name As String) As e_PlayerType
         
         On Error GoTo UserDarPrivilegioLevel_Err
         
@@ -448,15 +448,15 @@ Public Function UserDarPrivilegioLevel(ByVal Name As String) As PlayerType
         'Last Modified By: Juan Martín Sotuyo Dodero (Maraxus)
         '***************************************************
 100     If EsAdmin(Name) Then
-102         UserDarPrivilegioLevel = PlayerType.Admin
+102         UserDarPrivilegioLevel = e_PlayerType.Admin
 104     ElseIf EsDios(Name) Then
-106         UserDarPrivilegioLevel = PlayerType.Dios
+106         UserDarPrivilegioLevel = e_PlayerType.Dios
 108     ElseIf EsSemiDios(Name) Then
-110         UserDarPrivilegioLevel = PlayerType.SemiDios
+110         UserDarPrivilegioLevel = e_PlayerType.SemiDios
 112     ElseIf EsConsejero(Name) Then
-114         UserDarPrivilegioLevel = PlayerType.Consejero
+114         UserDarPrivilegioLevel = e_PlayerType.Consejero
         Else
-116         UserDarPrivilegioLevel = PlayerType.user
+116         UserDarPrivilegioLevel = e_PlayerType.user
 
         End If
 
@@ -484,7 +484,7 @@ Public Sub BanTemporal(ByVal nombre As String, ByVal dias As Integer, Causa As S
 
 110     Call Baneos.Add(tBan)
 112     Call SaveBan(Baneos.Count)
-114     Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » " & nombre & " fue baneado por " & Causa & " durante los próximos " & dias & " días. La medida fue tomada por: " & Baneador, FontTypeNames.FONTTYPE_SERVER))
+114     Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » " & nombre & " fue baneado por " & Causa & " durante los próximos " & dias & " días. La medida fue tomada por: " & Baneador, e_FontTypeNames.FONTTYPE_SERVER))
 
         
         Exit Sub
@@ -599,7 +599,7 @@ CompararPrivilegiosUser_Err:
         
 End Function
 
-Public Function CompararPrivilegios(ByVal Izquierda As PlayerType, ByVal Derecha As PlayerType) As Integer
+Public Function CompararPrivilegios(ByVal Izquierda As e_PlayerType, ByVal Derecha As e_PlayerType) As Integer
     '**************************************************************************************************************************
     'Author: Jopi
     'Last Modification: 05/07/2020
@@ -612,8 +612,8 @@ Public Function CompararPrivilegios(ByVal Izquierda As PlayerType, ByVal Derecha
         
         On Error GoTo CompararPrivilegios_Err
         
-        Dim PrivilegiosGM As PlayerType
-100     PrivilegiosGM = PlayerType.Admin Or PlayerType.Dios Or PlayerType.SemiDios Or PlayerType.Consejero Or PlayerType.RoleMaster
+        Dim PrivilegiosGM As e_PlayerType
+100     PrivilegiosGM = e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios Or e_PlayerType.Consejero Or e_PlayerType.RoleMaster
 
         ' Obtenemos el rango de los 2 personajes.
 102     Izquierda = (Izquierda And PrivilegiosGM)

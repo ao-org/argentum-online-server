@@ -16,33 +16,33 @@ Public Sub NpcAI(ByVal NpcIndex As Integer)
 
 100     With NpcList(NpcIndex)
 102         Select Case .Movement
-                Case TipoAI.Estatico
+                Case e_TipoAI.Estatico
                     ' Es un NPC estatico, no hace nada.
                     Exit Sub
 
-104             Case TipoAI.MueveAlAzar
+104             Case e_TipoAI.MueveAlAzar
 106                 If .Hostile = 1 Then
 108                     Call PerseguirUsuarioCercano(NpcIndex)
                     Else
 110                     Call AI_CaminarSinRumboCercaDeOrigen(NpcIndex)
                     End If
 
-112             Case TipoAI.NpcDefensa
+112             Case e_TipoAI.NpcDefensa
 114                 Call SeguirAgresor(NpcIndex)
 
-116             Case TipoAI.NpcAtacaNpc
+116             Case e_TipoAI.NpcAtacaNpc
 118                 Call AI_NpcAtacaNpc(NpcIndex)
 
-120             Case TipoAI.SigueAmo
+120             Case e_TipoAI.SigueAmo
 122                 Call SeguirAmo(NpcIndex)
 
-124             Case TipoAI.Caminata
+124             Case e_TipoAI.Caminata
 126                 Call HacerCaminata(NpcIndex)
 
-128             Case TipoAI.Invasion
+128             Case e_TipoAI.Invasion
 130                 Call MovimientoInvasion(NpcIndex)
 
-132             Case TipoAI.GuardiaPersigueNpc
+132             Case e_TipoAI.GuardiaPersigueNpc
 134                 Call AI_GuardiaPersigueNpc(NpcIndex)
 
 
@@ -132,7 +132,7 @@ Private Sub PerseguirUsuarioCercano(ByVal NpcIndex As Integer)
 148         If .Target > 0 Then
 150             Call AI_AtacarUsuarioObjetivo(NpcIndex)
             Else
-152             If .NPCtype <> eNPCType.GuardiaReal And .NPCtype <> eNPCType.GuardiasCaos Then
+152             If .NPCtype <> e_NPCType.GuardiaReal And .NPCtype <> e_NPCType.GuardiasCaos Then
 154                 Call RestoreOldMovement(NpcIndex)
                     ' No encontro a nadie cerca, camina unos pasos en cualquier direccion.
 156                 Call AI_CaminarSinRumboCercaDeOrigen(NpcIndex)
@@ -141,8 +141,8 @@ Private Sub PerseguirUsuarioCercano(ByVal NpcIndex As Integer)
 158                 If Distancia(.Pos, .Orig) > 0 Then
 160                     Call AI_CaminarConRumbo(NpcIndex, .Orig)
                     Else
-162                     If .Char.Heading <> eHeading.SOUTH Then
-164                         Call ChangeNPCChar(NpcIndex, .Char.Body, .Char.Head, eHeading.SOUTH)
+162                     If .Char.Heading <> e_Heading.SOUTH Then
+164                         Call ChangeNPCChar(NpcIndex, .Char.Body, .Char.Head, e_Heading.SOUTH)
                         End If
                     End If
                 End If
@@ -169,7 +169,7 @@ Private Sub AI_CaminarSinRumboCercaDeOrigen(ByVal NpcIndex As Integer)
 106         ElseIf Distancia(.Pos, .Orig) > 4 Then
 108             Call AI_CaminarConRumbo(NpcIndex, .Orig)
 110         ElseIf RandomNumber(1, 6) = 3 Then
-112             Call MoveNPCChar(NpcIndex, CByte(RandomNumber(eHeading.NORTH, eHeading.WEST)))
+112             Call MoveNPCChar(NpcIndex, CByte(RandomNumber(e_Heading.NORTH, e_Heading.WEST)))
             Else
 114             Call AnimacionIdle(NpcIndex, True)
             End If
@@ -192,7 +192,7 @@ Private Sub AI_CaminarSinRumbo(ByVal NpcIndex As Integer)
 100     With NpcList(NpcIndex)
 
 102         If RandomNumber(1, 6) = 3 And .flags.Paralizado = 0 And .flags.Inmovilizado = 0 Then
-104             Call MoveNPCChar(NpcIndex, CByte(RandomNumber(eHeading.NORTH, eHeading.WEST)))
+104             Call MoveNPCChar(NpcIndex, CByte(RandomNumber(e_Heading.NORTH, e_Heading.WEST)))
             Else
 106             Call AnimacionIdle(NpcIndex, True)
 
@@ -320,7 +320,7 @@ Public Sub AI_GuardiaPersigueNpc(ByVal NpcIndex As Integer)
 130             If Distancia(.Pos, .Orig) > 0 Then
 132                 Call AI_CaminarConRumbo(NpcIndex, .Orig)
                 Else
-134                 Call ChangeNPCChar(NpcIndex, .Char.Body, .Char.Head, eHeading.SOUTH)
+134                 Call ChangeNPCChar(NpcIndex, .Char.Body, .Char.Head, e_Heading.SOUTH)
                 End If
             End If
             
@@ -421,7 +421,7 @@ End Sub
 
 Private Sub SeguirAgresor(ByVal NpcIndex As Integer)
         ' La IA que se ejecuta cuando alguien le pega al maestro de una Mascota/Elemental
-        ' o si atacas a los NPCs con Movement = TIPOAI.NpcDefensa
+        ' o si atacas a los NPCs con Movement = e_TipoAI.NpcDefensa
         ' A diferencia de IrUsuarioCercano(), aca no buscamos objetivos cercanos en el area
         ' porque ya establecemos como objetivo a el usuario que ataco a los NPC con este tipo de IA
 
@@ -511,7 +511,7 @@ Private Sub HacerCaminata(ByVal NpcIndex As Integer)
         On Error GoTo Handler
     
         Dim Destino As t_WorldPos
-        Dim Heading As eHeading
+        Dim Heading As e_Heading
         Dim NextTile As t_WorldPos
         Dim MoveChar As Integer
         Dim PudoMover As Boolean
@@ -599,7 +599,7 @@ Private Sub MovimientoInvasion(ByVal NpcIndex As Integer)
             Dim DistanciaMuralla As Integer, Destino As t_WorldPos
 104         Destino = .Pos
         
-106         If SpawnBox.Heading = eHeading.EAST Or SpawnBox.Heading = eHeading.WEST Then
+106         If SpawnBox.Heading = e_Heading.EAST Or SpawnBox.Heading = e_Heading.WEST Then
 108             DistanciaMuralla = Abs(.Pos.X - SpawnBox.CoordMuralla)
 110             Destino.X = SpawnBox.CoordMuralla
             Else
@@ -611,7 +611,7 @@ Private Sub MovimientoInvasion(ByVal NpcIndex As Integer)
 116         If DistanciaMuralla > 1 Then
         
                 ' Tratamos de acercarnos (sin pisar)
-                Dim Heading As eHeading
+                Dim Heading As e_Heading
 118             Heading = GetHeadingFromWorldPos(.Pos, Destino)
             
                 ' Nos aseguramos que la posicion nueva esta dentro del rectangulo valido
@@ -684,7 +684,7 @@ Private Sub NpcLanzaUnSpell(ByVal NpcIndex As Integer)
     
 108     Select Case Hechizos(SpellIndex).Target
 
-            Case TargetType.uUsuarios
+            Case e_TargetType.uUsuarios
 
 110             If UsuarioAtacableConMagia(Target) And PuedeDanarAlUsuario Then
 112                 Call NpcLanzaSpellSobreUser(NpcIndex, Target, SpellIndex)
@@ -696,7 +696,7 @@ Private Sub NpcLanzaUnSpell(ByVal NpcIndex As Integer)
 
                 End If
 
-118         Case TargetType.uNPC
+118         Case e_TargetType.uNPC
 
 120             If Hechizos(SpellIndex).AutoLanzar = 1 Then
 122                 Call NpcLanzaSpellSobreNpc(NpcIndex, NpcIndex, SpellIndex)
@@ -706,7 +706,7 @@ Private Sub NpcLanzaUnSpell(ByVal NpcIndex As Integer)
 
                 End If
 
-128         Case TargetType.uUsuariosYnpc
+128         Case e_TargetType.uUsuariosYnpc
 
 130             If Hechizos(SpellIndex).AutoLanzar = 1 Then
 132                 Call NpcLanzaSpellSobreNpc(NpcIndex, NpcIndex, SpellIndex)
@@ -724,7 +724,7 @@ Private Sub NpcLanzaUnSpell(ByVal NpcIndex As Integer)
 
                 End If
 
-146         Case TargetType.uTerreno
+146         Case e_TargetType.uTerreno
 148             Call NpcLanzaSpellSobreArea(NpcIndex, SpellIndex)
 
         End Select

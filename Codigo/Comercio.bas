@@ -70,7 +70,7 @@ Public Sub Comercio(ByVal Modo As eModoComercio, ByVal UserIndex As Integer, ByV
                 Exit Sub
                 
 106         ElseIf Cantidad > MAX_INVENTORY_OBJS Then
-108             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(UserList(UserIndex).Name & " ha sido baneado por el sistema anti-cheats.", FontTypeNames.FONTTYPE_FIGHT))
+108             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(UserList(UserIndex).Name & " ha sido baneado por el sistema anti-cheats.", e_FontTypeNames.FONTTYPE_FIGHT))
 110             Call Ban(UserList(UserIndex).Name, "Sistema Anti Cheats", "Intentar hackear el sistema de comercio. Quiso comprar demasiados items:" & Cantidad)
 112             UserList(UserIndex).flags.Ban = 1
 114             Call WriteShowMessageBox(UserIndex, "Has sido baneado por el Sistema AntiCheat.")
@@ -94,7 +94,7 @@ Public Sub Comercio(ByVal Modo As eModoComercio, ByVal UserIndex As Integer, ByV
 126         Precio = Ceil(ObjData(NpcList(NpcIndex).Invent.Object(Slot).ObjIndex).Valor / Descuento(UserIndex) * Cantidad)
         
 128         If UserList(UserIndex).Stats.GLD < Precio Then
-130             Call WriteConsoleMsg(UserIndex, "No tienes suficiente dinero.", FontTypeNames.FONTTYPE_INFO)
+130             Call WriteConsoleMsg(UserIndex, "No tienes suficiente dinero.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
             End If
@@ -127,19 +127,19 @@ Public Sub Comercio(ByVal Modo As eModoComercio, ByVal UserIndex As Integer, ByV
                 Exit Sub
                 
 166         ElseIf ObjData(Objeto.ObjIndex).Newbie = 1 Then
-168             Call WriteConsoleMsg(UserIndex, "Lo siento, no comercio objetos para newbies.", FontTypeNames.FONTTYPE_TALK)
+168             Call WriteConsoleMsg(UserIndex, "Lo siento, no comercio objetos para newbies.", e_FontTypeNames.FONTTYPE_TALK)
                 Exit Sub
                 
 170         ElseIf ObjData(Objeto.ObjIndex).Destruye = 1 Then
-172             Call WriteConsoleMsg(UserIndex, "Lo siento, no puedo comprarte ese item.", FontTypeNames.FONTTYPE_TALK)
+172             Call WriteConsoleMsg(UserIndex, "Lo siento, no puedo comprarte ese item.", e_FontTypeNames.FONTTYPE_TALK)
                 Exit Sub
             
 174         ElseIf ObjData(Objeto.ObjIndex).Instransferible = 1 Then
-176             Call WriteConsoleMsg(UserIndex, "Lo siento, no puedo comprarte ese item.", FontTypeNames.FONTTYPE_TALK)
+176             Call WriteConsoleMsg(UserIndex, "Lo siento, no puedo comprarte ese item.", e_FontTypeNames.FONTTYPE_TALK)
                 Exit Sub
           
-178         ElseIf (NpcList(NpcIndex).TipoItems <> ObjData(Objeto.ObjIndex).OBJType And NpcList(NpcIndex).TipoItems <> eOBJType.otCualquiera) Or Objeto.ObjIndex = iORO Then
-180             Call WriteConsoleMsg(UserIndex, "Lo siento, no estoy interesado en este tipo de objetos.", FontTypeNames.FONTTYPE_TALK)
+178         ElseIf (NpcList(NpcIndex).TipoItems <> ObjData(Objeto.ObjIndex).OBJType And NpcList(NpcIndex).TipoItems <> e_OBJType.otCualquiera) Or Objeto.ObjIndex = iORO Then
+180             Call WriteConsoleMsg(UserIndex, "Lo siento, no estoy interesado en este tipo de objetos.", e_FontTypeNames.FONTTYPE_TALK)
                 Exit Sub
 
 182         ElseIf UserList(UserIndex).Invent.Object(Slot).amount < 0 Or Cantidad = 0 Then
@@ -148,8 +148,8 @@ Public Sub Comercio(ByVal Modo As eModoComercio, ByVal UserIndex As Integer, ByV
 184         ElseIf Slot < LBound(UserList(UserIndex).Invent.Object()) Or Slot > UBound(UserList(UserIndex).Invent.Object()) Then
                 Exit Sub
                 
-186         ElseIf UserList(UserIndex).flags.Privilegios And (PlayerType.Consejero Or PlayerType.SemiDios) Then
-188             Call WriteConsoleMsg(UserIndex, "No podés vender items.", FontTypeNames.FONTTYPE_WARNING)
+186         ElseIf UserList(UserIndex).flags.Privilegios And (e_PlayerType.Consejero Or e_PlayerType.SemiDios) Then
+188             Call WriteConsoleMsg(UserIndex, "No podés vender items.", e_FontTypeNames.FONTTYPE_WARNING)
                 Exit Sub
 
             End If
@@ -190,7 +190,7 @@ Public Sub Comercio(ByVal Modo As eModoComercio, ByVal UserIndex As Integer, ByV
 
         End If
 
-228     Call SubirSkill(UserIndex, eSkill.Comerciar)
+228     Call SubirSkill(UserIndex, e_Skill.Comerciar)
 
         Exit Sub
 
@@ -283,7 +283,7 @@ Private Function Descuento(ByVal UserIndex As Integer) As Single
         
         On Error GoTo Descuento_Err
         
-100     Descuento = 1 + UserList(UserIndex).Stats.UserSkills(eSkill.Comerciar) / 100
+100     Descuento = 1 + UserList(UserIndex).Stats.UserSkills(e_Skill.Comerciar) / 100
 
         
         Exit Function
