@@ -5200,15 +5200,15 @@ PrepareMessageDoAnimation_Err:
         Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageDoAnimation", Erl)
 End Function
 
-Public Function WritePescarEspecial(ByVal objIndex As Integer)
+'Public Function WritePescarEspecial(ByVal ObjIndex As Integer)
 
-        On Error GoTo PescarEspecial_Err
-100     Call Writer.WriteInt(ServerPacketID.PescarEspecial)
-        Call Writer.WriteInt16(objIndex)
+'        On Error GoTo PescarEspecial_Err
+'100     Call Writer.WriteInt(ServerPacketID.PescarEspecial)
+'        Call Writer.WriteInt16(ObjIndex)
 
-PescarEspecial_Err:
-        Call Writer.Clear
-        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PescarEspecial", Erl)
-End Function
+'PescarEspecial_Err:
+'        Call Writer.Clear
+'        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PescarEspecial", Erl)
+'End Function
 
 
