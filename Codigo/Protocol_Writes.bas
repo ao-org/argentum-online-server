@@ -1165,7 +1165,7 @@ End Sub
 ' @param    criminal Determines if the character is a criminal or not.
 ' @param    privileges Sets if the character is a normal one or any kind of administrative character.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-Public Sub WriteCharacterCreate(ByVal UserIndex As Integer, ByVal Body As Integer, ByVal Head As Integer, ByVal Heading As eHeading, ByVal CharIndex As Integer, ByVal X As Byte, ByVal Y As Byte, ByVal weapon As Integer, ByVal shield As Integer, ByVal FX As Integer, ByVal FXLoops As Integer, ByVal helmet As Integer, ByVal Name As String, ByVal Status As Byte, ByVal privileges As Byte, ByVal ParticulaFx As Byte, ByVal Head_Aura As String, ByVal Arma_Aura As String, ByVal Body_Aura As String, ByVal DM_Aura As String, ByVal RM_Aura As String, ByVal Otra_Aura As String, ByVal Escudo_Aura As String, ByVal speeding As Single, ByVal EsNPC As Byte, ByVal appear As Byte, ByVal group_index As Integer, ByVal clan_index As Integer, ByVal clan_nivel As Byte, ByVal UserMinHp As Long, ByVal UserMaxHp As Long, ByVal UserMinMAN As Long, ByVal UserMaxMAN As Long, ByVal Simbolo As Byte, Optional ByVal Idle As Boolean = False, Optional ByVal Navegando As Boolean = False)
+Public Sub WriteCharacterCreate(ByVal UserIndex As Integer, ByVal Body As Integer, ByVal Head As Integer, ByVal Heading As eHeading, ByVal CharIndex As Integer, ByVal X As Byte, ByVal Y As Byte, ByVal weapon As Integer, ByVal shield As Integer, ByVal FX As Integer, ByVal FXLoops As Integer, ByVal helmet As Integer, ByVal Name As String, ByVal Status As Byte, ByVal privileges As Byte, ByVal ParticulaFx As Byte, ByVal Head_Aura As String, ByVal Arma_Aura As String, ByVal Body_Aura As String, ByVal DM_Aura As String, ByVal RM_Aura As String, ByVal Otra_Aura As String, ByVal Escudo_Aura As String, ByVal speeding As Single, ByVal EsNPC As Byte, ByVal appear As Byte, ByVal group_index As Integer, ByVal clan_index As Integer, ByVal clan_nivel As Byte, ByVal UserMinHp As Long, ByVal UserMaxHp As Long, ByVal UserMinMAN As Long, ByVal UserMaxMAN As Long, ByVal Simbolo As Byte, Optional ByVal Idle As Boolean = False, Optional ByVal Navegando As Boolean = False, Optional ByVal tipoUsuario As eTipoUsuario = 0)
         '<EhHeader>
         On Error GoTo WriteCharacterCreate_Err
         '</EhHeader>
@@ -1174,7 +1174,7 @@ Public Sub WriteCharacterCreate(ByVal UserIndex As Integer, ByVal Body As Intege
             privileges, ParticulaFx, Head_Aura, Arma_Aura, Body_Aura, DM_Aura, RM_Aura, _
             Otra_Aura, Escudo_Aura, speeding, EsNPC, appear, group_index, _
             clan_index, clan_nivel, UserMinHp, UserMaxHp, UserMinMAN, UserMaxMAN, Simbolo, _
-            Idle, Navegando))
+            Idle, Navegando, tipoUsuario))
         '<EhFooter>
         Exit Sub
 
@@ -4947,7 +4947,7 @@ Public Function PrepareMessageCharacterCreate(ByVal Body As Integer, _
                                               ByVal Escudo_Aura As String, _
                                               ByVal speeding As Single, _
                                               ByVal EsNPC As Byte, _
-                                              ByVal appear As Byte, ByVal group_index As Integer, ByVal clan_index As Integer, ByVal clan_nivel As Byte, ByVal UserMinHp As Long, ByVal UserMaxHp As Long, ByVal UserMinMAN As Long, ByVal UserMaxMAN As Long, ByVal Simbolo As Byte, ByVal Idle As Boolean, ByVal Navegando As Boolean)
+                                              ByVal appear As Byte, ByVal group_index As Integer, ByVal clan_index As Integer, ByVal clan_nivel As Byte, ByVal UserMinHp As Long, ByVal UserMaxHp As Long, ByVal UserMinMAN As Long, ByVal UserMaxMAN As Long, ByVal Simbolo As Byte, ByVal Idle As Boolean, ByVal Navegando As Boolean, ByVal tipoUsuario As eTipoUsuario)
         '<EhHeader>
         On Error GoTo PrepareMessageCharacterCreate_Err
         '</EhHeader>
@@ -4987,6 +4987,7 @@ Public Function PrepareMessageCharacterCreate(ByVal Body As Integer, _
 166     Call Writer.WriteInt8(Simbolo)
 168     Call Writer.WriteBool(Idle)
 170     Call Writer.WriteBool(Navegando)
+172     Call Writer.WriteInt16(tipoUsuario)
         '<EhFooter>
         Exit Function
 
@@ -5201,3 +5202,15 @@ PrepareMessageDoAnimation_Err:
 End Function
 
 ' \End: Prepares
+Public Function WritePescarEspecial(ByVal objIndex As Integer)
+        '<EhHeader>
+        On Error GoTo PescarEspecial_Err
+100     Call Writer.WriteInt(ServerPacketID.PescarEspecial)
+        Call Writer.WriteInt16(objIndex)
+
+PescarEspecial_Err:
+        Call Writer.Clear
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PescarEspecial", Erl)
+End Function
+
+
