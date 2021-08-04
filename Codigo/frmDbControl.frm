@@ -15,6 +15,24 @@ Begin VB.Form frmDbControl
    ScaleWidth      =   8610
    ShowInTaskbar   =   0   'False
    StartUpPosition =   3  'Windows Default
+   Begin VB.CommandButton Command5 
+      Caption         =   "Rastrear OBJ boveda"
+      Height          =   255
+      Left            =   3840
+      TabIndex        =   9
+      Top             =   670
+      UseMaskColor    =   -1  'True
+      Width           =   2415
+   End
+   Begin VB.CommandButton Command4 
+      Caption         =   "Rastrear OBJ inventario"
+      Height          =   255
+      Left            =   3840
+      TabIndex        =   8
+      Top             =   420
+      UseMaskColor    =   -1  'True
+      Width           =   2415
+   End
    Begin ComctlLib.ProgressBar pbarDb 
       Height          =   255
       Left            =   120
@@ -42,7 +60,7 @@ Begin VB.Form frmDbControl
       Height          =   375
       Left            =   6360
       TabIndex        =   6
-      Top             =   420
+      Top             =   500
       Width           =   2175
    End
    Begin VB.CommandButton cmdBoveda 
@@ -57,9 +75,9 @@ Begin VB.Form frmDbControl
          Strikethrough   =   0   'False
       EndProperty
       Height          =   375
-      Left            =   3360
+      Left            =   2040
       TabIndex        =   5
-      Top             =   420
+      Top             =   500
       Width           =   1695
    End
    Begin VB.CommandButton cmdInventario 
@@ -74,9 +92,9 @@ Begin VB.Form frmDbControl
          Strikethrough   =   0   'False
       EndProperty
       Height          =   375
-      Left            =   1440
+      Left            =   120
       TabIndex        =   4
-      Top             =   420
+      Top             =   500
       Width           =   1815
    End
    Begin VB.CommandButton Command2 
@@ -91,19 +109,20 @@ Begin VB.Form frmDbControl
          Strikethrough   =   0   'False
       EndProperty
       Height          =   375
-      Left            =   120
+      Left            =   -840
       TabIndex        =   3
       Top             =   420
+      Visible         =   0   'False
       Width           =   1215
    End
    Begin MSDataGridLib.DataGrid DataGrid1 
-      Height          =   6495
+      Height          =   6255
       Left            =   120
       TabIndex        =   2
-      Top             =   840
+      Top             =   1080
       Width           =   8415
       _ExtentX        =   14843
-      _ExtentY        =   11456
+      _ExtentY        =   11033
       _Version        =   393216
       HeadLines       =   1
       RowHeight       =   15
@@ -248,3 +267,10 @@ Private Sub Command3_Click()
         
 End Sub
 
+Private Sub Command4_Click()
+    Call getData("select u.name, o.name, ii.amount from user u inner join inventory_item ii on u.id = ii.user_id inner join object o on ii.item_id = o.number where o.name like '%" & txtQuery.Text & "%' and ii.amount > 0 order by ii.amount desc")
+End Sub
+
+Private Sub Command5_Click()
+        Call getData("select u.name, o.name, bi.amount from user u inner join bank_item bi on u.id = bi.user_id inner join object o on bi.item_id = o.number where o.name like '%" & txtQuery.Text & "%' and bi.amount > 0 order by bi.amount desc")
+End Sub
