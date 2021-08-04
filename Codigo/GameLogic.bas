@@ -1679,7 +1679,7 @@ Public Function HayPuerta(ByVal Map As Integer, ByVal X As Integer, ByVal Y As I
 End Function
 
 Public Sub CargarMapasEspeciales()
-
+        
         Dim File As clsIniManager
 100     Set File = New clsIniManager
     

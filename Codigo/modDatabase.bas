@@ -155,6 +155,52 @@ Execute_Err:
     Execute = (Err.Number = 0 And Affected > 0)
 End Function
 
+Public Function Invoke(ByVal Procedure As String, ParamArray Arguments() As Variant) As ADODB.Recordset
+    Dim Command  As New ADODB.Command
+    Dim Argument As Variant
+    Dim Affected As Long
+    
+    Command.ActiveConnection = Connection
+    Command.CommandText = Procedure
+    Command.CommandType = adCmdStoredProc
+    Command.Prepared = True
+
+    For Each Argument In Arguments
+        If (IsArray(Argument)) Then
+            Dim Inner As Variant
+            
+            For Each Inner In Argument
+                Command.Parameters.Append CreateParameter(Inner, adParamInput)
+            Next Inner
+        Else
+            Command.Parameters.Append CreateParameter(Argument, adParamInput)
+        End If
+    Next Argument
+    
+On Error GoTo Execute_Err
+    
+    ' Statistics
+    If frmMain.chkLogDbPerfomance.Value = 1 Then
+        Call GetElapsedTime
+    End If
+    
+    Set Invoke = Command.Execute()
+    
+    If (Not Invoke Is Nothing And Invoke.EOF) Then
+        Set Invoke = Nothing
+    End If
+    
+    ' Statistics
+    If frmMain.chkLogDbPerfomance.Value = 1 Then
+        Call LogPerformance("Invoke: " & Procedure & vbNewLine & " - Tiempo transcurrido: " & Round(GetElapsedTime(), 1) & " ms" & vbNewLine)
+    End If
+    
+Execute_Err:
+    If (Err.Number <> 0) Then
+        Call LogDatabaseError("Database Error: " & Err.Number & " - " & Err.Description)
+    End If
+End Function
+
 Private Function CreateParameter(ByVal Value As Variant, ByVal Direction As ADODB.ParameterDirectionEnum) As ADODB.Parameter
     Set CreateParameter = New ADODB.Parameter
     
@@ -728,10 +774,25 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             Dim RS As ADODB.Recordset
-            Set RS = Query(QUERY_LOAD_MAINPJ, .Name)
+            Set RS = Invoke("sp_LoadChar", .Name, True)
 
 104         If RS Is Nothing Then Exit Sub
-
+            
+            If (RS!is_banned) Then
+                Dim BanNick     As String
+                Dim BaneoMotivo As String
+                BanNick = RS!banned_by
+                BaneoMotivo = RS!ban_reason
+                
+                If LenB(BanNick) = 0 Then BanNick = "*Error en la base de datos*"
+                If LenB(BaneoMotivo) = 0 Then BaneoMotivo = "*No se registra el motivo del baneo.*"
+            
+                Call WriteShowMessageBox(UserIndex, "Se te ha prohibido la entrada al juego debido a " & BaneoMotivo & ". Esta decisión fue tomada por " & BanNick & ".")
+            
+                Call CloseSocket(UserIndex)
+                Exit Sub
+            End If
+            
             'Start setting data
 106         .ID = RS!ID
 108         .Name = RS!Name
@@ -842,24 +903,20 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
 298         .Stats.Advertencias = RS!warnings
         
             'User attributes
-            Set RS = Query("SELECT * FROM attribute WHERE user_id = ?;", .ID)
-    
-302         If Not RS Is Nothing Then
-                .Stats.UserAtributos(e_Atributos.Fuerza) = RS!strength
-                .Stats.UserAtributos(e_Atributos.Agilidad) = RS!agility
-                .Stats.UserAtributos(e_Atributos.Constitucion) = RS!constitution
-                .Stats.UserAtributos(e_Atributos.Inteligencia) = RS!intelligence
-                .Stats.UserAtributos(e_Atributos.Carisma) = RS!charisma
+            .Stats.UserAtributos(e_Atributos.Fuerza) = RS!strength
+            .Stats.UserAtributos(e_Atributos.Agilidad) = RS!agility
+            .Stats.UserAtributos(e_Atributos.Constitucion) = RS!constitution
+            .Stats.UserAtributos(e_Atributos.Inteligencia) = RS!intelligence
+            .Stats.UserAtributos(e_Atributos.Carisma) = RS!charisma
 
-                .Stats.UserAtributosBackUP(e_Atributos.Fuerza) = .Stats.UserAtributos(e_Atributos.Fuerza)
-                .Stats.UserAtributosBackUP(e_Atributos.Agilidad) = .Stats.UserAtributos(e_Atributos.Agilidad)
-                .Stats.UserAtributosBackUP(e_Atributos.Constitucion) = .Stats.UserAtributos(e_Atributos.Constitucion)
-                .Stats.UserAtributosBackUP(e_Atributos.Inteligencia) = .Stats.UserAtributos(e_Atributos.Inteligencia)
-                .Stats.UserAtributosBackUP(e_Atributos.Carisma) = .Stats.UserAtributos(e_Atributos.Carisma)
-            End If
+            .Stats.UserAtributosBackUP(e_Atributos.Fuerza) = .Stats.UserAtributos(e_Atributos.Fuerza)
+            .Stats.UserAtributosBackUP(e_Atributos.Agilidad) = .Stats.UserAtributos(e_Atributos.Agilidad)
+            .Stats.UserAtributosBackUP(e_Atributos.Constitucion) = .Stats.UserAtributos(e_Atributos.Constitucion)
+            .Stats.UserAtributosBackUP(e_Atributos.Inteligencia) = .Stats.UserAtributos(e_Atributos.Inteligencia)
+            .Stats.UserAtributosBackUP(e_Atributos.Carisma) = .Stats.UserAtributos(e_Atributos.Carisma)
 
             'User spells
-            Set RS = Query("SELECT number, spell_id FROM spell WHERE user_id = ?;", .ID)
+            Set RS = RS.NextRecordset
 
 316         If Not RS Is Nothing Then
 
@@ -873,7 +930,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
             End If
 
             'User pets
-            Set RS = Query("SELECT number, pet_id FROM pet WHERE user_id = ?;", .ID)
+            Set RS = RS.NextRecordset
 
 328         If Not RS Is Nothing Then
 
@@ -892,7 +949,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
             End If
 
             'User inventory
-            Set RS = Query("SELECT number, item_id, is_equipped, amount FROM inventory_item WHERE user_id = ?;", .ID)
+            Set RS = RS.NextRecordset
 
             counter = 0
             
@@ -925,7 +982,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
             End If
 
             'User bank inventory
-            Set RS = Query("SELECT number, item_id, amount FROM bank_item WHERE user_id = ?;", .ID)
+            Set RS = RS.NextRecordset
             
             counter = 0
             
@@ -957,7 +1014,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
             End If
             
             'User skills
-            Set RS = Query("SELECT number, value FROM skillpoint WHERE user_id = ?;", .ID)
+            Set RS = RS.NextRecordset
 
 390         If Not RS Is Nothing Then
 
@@ -975,7 +1032,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
             Dim LoopC As Byte
         
             'User quests
-            Set RS = Query("SELECT number, quest_id, npcs, npcstarget FROM quest WHERE user_id = ?;", .ID)
+            Set RS = RS.NextRecordset
 
 402         If Not RS Is Nothing Then
 
@@ -1018,7 +1075,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
             End If
         
             'User quests done
-            Set RS = Query("SELECT quest_id FROM quest_done WHERE user_id = ?;", .ID)
+            Set RS = RS.NextRecordset
 
 440         If Not RS Is Nothing Then
 442             .QuestStats.NumQuestsDone = RS.RecordCount
@@ -1039,7 +1096,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
             End If
 
             ' Llaves
-            Set RS = Query("SELECT key_obj FROM house_key WHERE account_id = ?", .AccountID)
+            Set RS = RS.NextRecordset
 
 460         If Not RS Is Nothing Then
 464             LoopC = 1
@@ -1053,18 +1110,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
                 Wend
 
             End If
-            
-            Set RS = Query("SELECT email from account a inner join user u  on a.id = u.account_id where u.name = LOWER(?);", LCase(.Name))
-            If Not RS Is Nothing Then
-                LoopC = 1
-                While Not RS.EOF
-                    .Email = RS!Email
-                    LoopC = LoopC + 1
-    
-                    RS.MoveNext
-                Wend
-            End If
-            
+
         
         End With
         
@@ -1096,18 +1142,6 @@ ErrorHandler:
 106     Call LogDatabaseError("Error en GetDBValue: SELECT " & ColumnaGet & " FROM " & Tabla & " WHERE " & ColumnaTest & " = '" & ValueTest & "';" & ". " & Err.Number & " - " & Err.Description)
 End Function
 
-Public Function GetCuentaValue(CuentaEmail As String, Columna As String) As Variant
-        On Error GoTo GetCuentaValue_Err
-        
-100     GetCuentaValue = GetDBValue("account", Columna, "email", LCase$(CuentaEmail))
-
-        
-        Exit Function
-
-GetCuentaValue_Err:
-102     Call TraceError(Err.Number, Err.Description, "modDatabase.GetCuentaValue", Erl)
-End Function
-
 Public Function GetUserValue(CharName As String, Columna As String) As Variant
         On Error GoTo GetUserValue_Err
         
@@ -1129,17 +1163,6 @@ Public Sub SetDBValue(Tabla As String, ColumnaSet As String, ByVal ValueSet As V
     
 ErrorHandler:
 102     Call LogDatabaseError("Error en SetDBValue: UPDATE " & Tabla & " SET " & ColumnaSet & " = " & ValueSet & " WHERE " & ColumnaTest & " = " & ValueTest & ";" & ". " & Err.Number & " - " & Err.Description)
-End Sub
-
-Private Sub SetCuentaValue(CuentaEmail As String, Columna As String, Value As Variant)
-        On Error GoTo SetCuentaValue_Err
-        
-100     Call SetDBValue("account", Columna, Value, "email", LCase$(CuentaEmail))
-
-        Exit Sub
-
-SetCuentaValue_Err:
-102     Call TraceError(Err.Number, Err.Description, "modDatabase.SetCuentaValue", Erl)
 End Sub
 
 Private Sub SetUserValue(CharName As String, Columna As String, Value As Variant)
@@ -1174,21 +1197,6 @@ Public Function BANCheckDatabase(Name As String) As Boolean
 
 BANCheckDatabase_Err:
 102     Call TraceError(Err.Number, Err.Description, "modDatabase.BANCheckDatabase", Erl)
-End Function
-
-Public Function CheckBanCuentaDatabase(CuentaEmail As String) As Boolean
-        
-        On Error GoTo CheckBanCuentaDatabase_Err
-        
-100     CheckBanCuentaDatabase = CBool(GetCuentaValue(CuentaEmail, "is_banned"))
-
-        
-        Exit Function
-
-CheckBanCuentaDatabase_Err:
-102     Call TraceError(Err.Number, Err.Description, "modDatabase.CheckBanCuentaDatabase", Erl)
-
-        
 End Function
 
 Public Function GetUserStatusDatabase(Name As String) As Integer
@@ -1304,22 +1312,6 @@ GetPersonajesCuentaDatabase_Err:
 
         
 End Function
-
-Public Sub SetUserLoggedDatabase(ByVal ID As Long, ByVal AccountID As Long)
-        
-        On Error GoTo SetUserLoggedDatabase_Err
-        
-100     Call SetDBValue("user", "is_logged", 1, "id", ID)
-        
-        Call Execute("UPDATE account SET logged = logged + 1 WHERE id = ?;", AccountID)
-
-        Exit Sub
-
-SetUserLoggedDatabase_Err:
-104     Call TraceError(Err.Number, Err.Description, "modDatabase.SetUserLoggedDatabase", Erl)
-
-        
-End Sub
 
 Public Sub ResetLoggedDatabase(ByVal AccountID As Long)
         
@@ -1950,7 +1942,8 @@ Public Function EnterAccountDatabase(ByVal UserIndex As Integer, ByVal CuentaEma
     
 122     UserList(UserIndex).AccountID = RS!ID
 124     UserList(UserIndex).Cuenta = CuentaEmail
-
+        UserList(UserIndex).Email = CuentaEmail
+        
         Call Execute("UPDATE account SET last_ip = ?, last_access = NOW() WHERE id = ?", IP, CLng(RS!ID))
         
 128     EnterAccountDatabase = True
@@ -2167,17 +2160,6 @@ ErrorHandler:
 124     Call LogDatabaseError("Error in VerLlavesDatabase. UserName: " & UserList(UserIndex).Name & ". " & Err.Number & " - " & Err.Description)
 
 End Sub
-
-Public Function GetAccountID(Email As String) As String
-    On Error GoTo ErrorHandler
-
-100     GetAccountID = val(GetCuentaValue(Email, "id"))
-
-        Exit Function
-ErrorHandler:
-102     Call LogDatabaseError("Error in GetAccountID. Email: " & Email & ". " & Err.Number & " - " & Err.Description)
-
-End Function
 
 Public Function SanitizeNullValue(ByVal Value As Variant, ByVal defaultValue As Variant) As Variant
         
