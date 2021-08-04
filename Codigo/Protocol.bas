@@ -1364,18 +1364,6 @@ Private Sub HandleLoginExistingChar(ByVal UserIndex As Integer)
             Exit Sub
 
         End If
-    
-142     If Not PersonajeExiste(UserName) Then
-144         Call WriteShowMessageBox(UserIndex, "El personaje no existe.")
-146         Call CloseSocket(UserIndex)
-            Exit Sub
-
-        End If
-    
-148     If Not PersonajePerteneceID(UserName, UserList(UserIndex).AccountID) Then
-154         Call CloseSocket(UserIndex)
-            Exit Sub
-        End If
 
 180     Call ConnectUser(UserIndex, UserName, CuentaEmail)
 

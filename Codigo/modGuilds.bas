@@ -1779,40 +1779,6 @@ a_RechazarAspiranteChar_Err:
         
 End Sub
 
-Public Function a_ObtenerRechazoDeChar(ByRef Aspirante As String) As String
-        
-        On Error GoTo a_ObtenerRechazoDeChar_Err
-        
-
-100     If InStrB(Aspirante, "\") <> 0 Then
-102         Aspirante = Replace(Aspirante, "\", "")
-
-        End If
-
-104     If InStrB(Aspirante, "/") <> 0 Then
-106         Aspirante = Replace(Aspirante, "/", "")
-
-        End If
-
-108     If InStrB(Aspirante, ".") <> 0 Then
-110         Aspirante = Replace(Aspirante, ".", "")
-
-        End If
-
-112     a_ObtenerRechazoDeChar = GetUserGuildRejectionReason(Aspirante)
-
-        If (a_ObtenerRechazoDeChar <> vbNullString) Then
-114         Call SaveUserGuildRejectionReason(Aspirante, vbNullString)
-        End If
-        
-        Exit Function
-
-a_ObtenerRechazoDeChar_Err:
-116     Call TraceError(Err.Number, Err.Description, "modGuilds.a_ObtenerRechazoDeChar", Erl)
-
-        
-End Function
-
 Public Function a_RechazarAspirante(ByVal UserIndex As Integer, ByRef nombre As String, ByRef refError As String) As Boolean
         
         On Error GoTo a_RechazarAspirante_Err
@@ -2399,20 +2365,6 @@ Public Function GetUserGuildAspirant(ByVal UserName As String) As Integer
 
 GetUserGuildAspirant_Err:
 106     Call TraceError(Err.Number, Err.Description, "modGuilds.GetUserGuildAspirant", Erl)
-
-        
-End Function
-
-Public Function GetUserGuildRejectionReason(ByVal UserName As String) As String
-        
-        On Error GoTo GetUserGuildRejectionReason_Err
-
-104     GetUserGuildRejectionReason = GetUserGuildRejectionReasonDatabase(UserName)
- 
-        Exit Function
-
-GetUserGuildRejectionReason_Err:
-106     Call TraceError(Err.Number, Err.Description, "modGuilds.GetUserGuildRejectionReason", Erl)
 
         
 End Function

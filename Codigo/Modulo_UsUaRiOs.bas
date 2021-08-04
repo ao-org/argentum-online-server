@@ -627,8 +627,6 @@ Public Function ConnectUser_Complete(ByVal UserIndex As Integer, _
 970         If NumUsers > RecordUsuarios Then
 975             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Record de usuarios conectados simultáneamente: " & NumUsers & " usuarios.", e_FontTypeNames.FONTTYPE_INFO))
 980             RecordUsuarios = NumUsers
-985             Call SetRecordUsersDatabase(RecordUsuarios)
-
             End If
 
 990         Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageOnlineUser(NumUsers))
@@ -679,11 +677,13 @@ Public Function ConnectUser_Complete(ByVal UserIndex As Integer, _
                  End If
 
              End If
-        
-1095        tStr = modGuilds.a_ObtenerRechazoDeChar(.Name)
-    
-1100        If LenB(tStr) <> 0 Then
-1105            Call WriteShowMessageBox(UserIndex, "Tu solicitud de ingreso al clan ha sido rechazada. El clan te explica que: " & tStr)
+
+1100        If LenB(.LastGuildRejection) <> 0 Then
+1105            Call WriteShowMessageBox(UserIndex, "Tu solicitud de ingreso al clan ha sido rechazada. El clan te explica que: " & .LastGuildRejection)
+
+                .LastGuildRejection = vbNullString
+                
+                Call SaveUserGuildRejectionReason(.Name, vbNullString)
              End If
 
 1110        If Lloviendo Then Call WriteRainToggle(UserIndex)

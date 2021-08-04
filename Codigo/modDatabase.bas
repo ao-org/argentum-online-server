@@ -243,9 +243,6 @@ Public Sub InitDatabase()
 
     'Leo el record de usuarios
     RecordUsuarios = LeerRecordUsuariosDatabase()
-
-    'Tarea pesada
-    Call LogoutAllUsersAndAccounts
 End Sub
 
 Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
@@ -749,13 +746,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
                 End If
                 
             End If
-
-            ' ************************** User logout *********************************
-            ' Si deslogueó, actualizo la cuenta
-628         If Logout Then
-                Call Execute("UPDATE account SET logged = logged - 1 WHERE id = ?; ", .AccountID)
-            End If
-
+            
         End With
     
         Exit Sub
@@ -777,6 +768,11 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
             Set RS = Invoke("sp_LoadChar", .Name, True)
 
 104         If RS Is Nothing Then Exit Sub
+            
+            If (CLng(RS!account_id) <> UserList(UserIndex).AccountID) Then
+                Call CloseSocket(UserIndex)
+                Exit Sub
+            End If
             
             If (RS!is_banned) Then
                 Dim BanNick     As String
@@ -899,7 +895,8 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
 294         .Faccion.Status = RS!Status
 
 296         .GuildIndex = SanitizeNullValue(RS!Guild_Index, 0)
-        
+            .LastGuildRejection = SanitizeNullValue(RS!guild_rejected_because, vbNullString)
+ 
 298         .Stats.Advertencias = RS!warnings
         
             'User attributes
@@ -914,7 +911,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
             .Stats.UserAtributosBackUP(e_Atributos.Constitucion) = .Stats.UserAtributos(e_Atributos.Constitucion)
             .Stats.UserAtributosBackUP(e_Atributos.Inteligencia) = .Stats.UserAtributos(e_Atributos.Inteligencia)
             .Stats.UserAtributosBackUP(e_Atributos.Carisma) = .Stats.UserAtributos(e_Atributos.Carisma)
-
+            
             'User spells
             Set RS = RS.NextRecordset
 
@@ -1110,10 +1107,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
                 Wend
 
             End If
-
-        
         End With
-        
         
 
         Exit Sub
@@ -1313,20 +1307,6 @@ GetPersonajesCuentaDatabase_Err:
         
 End Function
 
-Public Sub ResetLoggedDatabase(ByVal AccountID As Long)
-        
-        On Error GoTo ResetLoggedDatabase_Err
-        
-        Call Execute("UPDATE account SET logged = 0 WHERE id = ?;", AccountID)
-        
-        Exit Sub
-
-ResetLoggedDatabase_Err:
-102     Call TraceError(Err.Number, Err.Description, "modDatabase.ResetLoggedDatabase", Erl)
-
-        
-End Sub
-
 Public Sub SetUsersLoggedDatabase(ByVal NumUsers As Long)
         
         On Error GoTo SetUsersLoggedDatabase_Err
@@ -1370,21 +1350,6 @@ Public Sub SetRecordUsersDatabase(ByVal Record As Long)
 
 SetRecordUsersDatabase_Err:
 102     Call TraceError(Err.Number, Err.Description, "modDatabase.SetRecordUsersDatabase", Erl)
-
-        
-End Sub
-
-Public Sub LogoutAllUsersAndAccounts()
-        
-        On Error GoTo LogoutAllUsersAndAccounts_Err
-
-100     Call Execute("UPDATE user SET is_logged = 0;")
-102     Call Execute("UPDATE account SET logged = 0;")
-        
-        Exit Sub
-
-LogoutAllUsersAndAccounts_Err:
-104     Call TraceError(Err.Number, Err.Description, "modDatabase.LogoutAllUsersAndAccounts", Erl)
 
         
 End Sub
@@ -1461,12 +1426,6 @@ SaveUserHeadDatabase_Err:
 
         
 End Sub
-
-Public Function CheckUserAccount(Name As String, ByVal AccountID As Long) As Boolean
-
-100     CheckUserAccount = (val(GetUserValue(Name, "account_id")) = AccountID)
-
-End Function
 
 Public Sub BorrarUsuarioDatabase(Name As String)
 
@@ -1742,23 +1701,6 @@ Public Function GetUserGuildAspirantDatabase(UserName As String) As Integer
 
 ErrorHandler:
 102     Call LogDatabaseError("Error in GetUserGuildAspirantDatabase: " & UserName & ". " & Err.Number & " - " & Err.Description)
-
-End Function
-
-Public Function GetUserGuildRejectionReasonDatabase(UserName As String) As String
-
-        '***************************************************
-        'Author: Juan Andres Dalmasso (CHOTS)
-        'Last Modification: 11/10/2018
-        '***************************************************
-        On Error GoTo ErrorHandler
-
-100     GetUserGuildRejectionReasonDatabase = SanitizeNullValue(GetUserValue(UserName, "guild_rejected_because"), vbNullString)
-
-        Exit Function
-
-ErrorHandler:
-102     Call LogDatabaseError("Error in GetUserGuildRejectionReasonDatabase: " & UserName & ". " & Err.Number & " - " & Err.Description)
 
 End Function
 
