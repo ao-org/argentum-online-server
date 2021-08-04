@@ -76,9 +76,9 @@ End Sub
 ' Esto se va a encargar de chequear que el usuario se haya conectado desde una ubicacion segura.
 '
 ' Se le dara acceso a la cuenta si:
-'   - El HDSerial o la IP de la PC donde esta accediendo es igual a el que tenemos en la BD
+'   - La IP de la PC donde esta accediendo es igual a el que tenemos en la BD
 '------------------------------------------------------------------------------------------------
-Public Function VerificarOrigen(ByVal AccountID As Long, ByVal HD As Long, ByVal IP As String) As Boolean
+Public Function VerificarOrigen(ByVal AccountID As Long, ByVal IP As String) As Boolean
 
         On Error GoTo VerificarOrigen_Err
     
@@ -89,7 +89,7 @@ Public Function VerificarOrigen(ByVal AccountID As Long, ByVal HD As Long, ByVal
         End If
     
         Dim RS As ADODB.Recordset
-        Set RS = Query("SELECT hd_serial, last_ip FROM account WHERE id = ?", AccountID)
+        Set RS = Query("SELECT last_ip FROM account WHERE id = ?", AccountID)
     
 106     If RS Is Nothing Then
 108         VerificarOrigen = True
@@ -97,7 +97,7 @@ Public Function VerificarOrigen(ByVal AccountID As Long, ByVal HD As Long, ByVal
 
         End If
     
-110     VerificarOrigen = (HD = RS!hd_serial Or IP = RS!last_ip)
+110     VerificarOrigen = (IP = RS!last_ip)
     
         ' Mas adelante, si pinta ser mas exhaustivos podemos agregar chequeos de yokese...
         ' MAC, DNI, Numero de Tramite, lo que sea :)
