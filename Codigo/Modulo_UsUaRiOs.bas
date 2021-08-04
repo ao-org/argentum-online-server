@@ -608,8 +608,7 @@ Public Function ConnectUser_Complete(ByVal UserIndex As Integer, _
 915         Call WriteUpdateRM(UserIndex)
         
 920         Call SendMOTD(UserIndex)
-925         Call SetUserLogged(UserIndex)
-        
+   
             'Actualiza el Num de usuarios
 930         NumUsers = NumUsers + 1
 935         .flags.UserLogged = True

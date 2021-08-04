@@ -58,10 +58,14 @@ CREATE TABLE `account` (
 -- Estructura de tabla para la tabla `attribute`
 --
 
-CREATE TABLE `attribute` (
-  `user_id` mediumint(8) UNSIGNED NOT NULL,
-  `number` tinyint(3) UNSIGNED NOT NULL,
-  `value` tinyint(3) UNSIGNED NOT NULL
+CREATE TABLE IF NOT EXISTS `attribute` (
+  `user_id` mediumint(8) unsigned NOT NULL,
+  `strength` tinyint(4) unsigned NOT NULL,
+  `agility` tinyint(4) unsigned NOT NULL,
+  `intelligence` tinyint(4) unsigned NOT NULL,
+  `constitution` tinyint(4) unsigned NOT NULL,
+  `charisma` tinyint(4) unsigned NOT NULL,
+  PRIMARY KEY (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------

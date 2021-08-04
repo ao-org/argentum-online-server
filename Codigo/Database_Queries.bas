@@ -14,18 +14,11 @@ Public QUERY_SAVE_SKILLS As String
 Public QUERY_SAVE_QUESTS As String
 Public QUERY_SAVE_PETS As String
 
-
-Public QUERY_LOAD_MAINPJ As String
-
 Public QUERY_UPDATE_MAINPJ As String
 Public QUERY_UPSERT_SPELLS As String
 Public QUERY_UPSERT_INVENTORY As String
 Public QUERY_UPSERT_SKILLS As String
 Public QUERY_UPSERT_PETS As String
-
-' CONSTANT QUERIES
-Public Const QUERY_SAVE_CONNECTION As String = "INSERT INTO connection (user_id, ip) VALUES (? , ?) ON DUPLICATE KEY UPDATE date_last_login = VALUES(date_last_login);"
-Public Const QUERY_DELETE_LAST_CONNECTIONS As String = "DELETE FROM connection WHERE user_id = ? AND date_last_login < (SELECT min(date_last_login) FROM (SELECT date_last_login FROM connection WHERE user_id = ? ORDER BY date_last_login DESC LIMIT 5) AS d);"
 
 ' CONSTANT QUERIES (NEW)
 Public Const QUERY_INSERT_ATTRIBUTES As String = "INSERT INTO attribute VALUES (?, ?, ?, ?, ?, ?)"
@@ -34,114 +27,8 @@ Public Const QUERY_UPDATE_ATTRIBUTES As String = "UPDATE attribute SET strength 
 Public Sub Contruir_Querys()
 100     Call ConstruirQuery_CrearPersonaje
 102     Call ConstruirQuery_GuardarPersonaje
-104     Call ConstruirQuery_CargarPersonaje
 End Sub
-Private Sub ConstruirQuery_CargarPersonaje()
-        Dim LoopC As Long
-    
-100     Set QueryBuilder = New cStringBuilder
-    
-        ' ************************** Basic user data ********************************
-102     QueryBuilder.Append "SELECT "
-        QueryBuilder.Append "ID,"
-        QueryBuilder.Append "name,"
-        QueryBuilder.Append "level,"
-        QueryBuilder.Append "Exp,"
-        QueryBuilder.Append "genre_id,"
-        QueryBuilder.Append "race_id,"
-        QueryBuilder.Append "class_id,"
-        QueryBuilder.Append "home_id,"
-        QueryBuilder.Append "description,"
-        QueryBuilder.Append "gold,"
-        QueryBuilder.Append "bank_gold,"
-        QueryBuilder.Append "free_skillpoints,"
-        QueryBuilder.Append "pos_map,"
-        QueryBuilder.Append "pos_x,"
-        QueryBuilder.Append "pos_y,"
-        QueryBuilder.Append "message_info,"
-        QueryBuilder.Append "body_id,"
-        QueryBuilder.Append "head_id,"
-        QueryBuilder.Append "weapon_id,"
-        QueryBuilder.Append "helmet_id,"
-        QueryBuilder.Append "shield_id,"
-        QueryBuilder.Append "Heading,"
-        QueryBuilder.Append "slot_armour,"
-        QueryBuilder.Append "slot_weapon,"
-        QueryBuilder.Append "slot_helmet,"
-        QueryBuilder.Append "slot_shield,"
-        QueryBuilder.Append "slot_ammo,"
-        QueryBuilder.Append "slot_ship,"
-        QueryBuilder.Append "slot_mount,"
-        QueryBuilder.Append "slot_dm,"
-        QueryBuilder.Append "slot_rm,"
-        QueryBuilder.Append "slot_knuckles,"
-        QueryBuilder.Append "slot_tool,"
-        QueryBuilder.Append "slot_magic,"
-        QueryBuilder.Append "min_hp,"
-        QueryBuilder.Append "max_hp,"
-        QueryBuilder.Append "min_man,"
-        QueryBuilder.Append "max_man,"
-        QueryBuilder.Append "min_sta,"
-        QueryBuilder.Append "max_sta,"
-        QueryBuilder.Append "min_ham,"
-        QueryBuilder.Append "max_ham,"
-        QueryBuilder.Append "min_sed,"
-        QueryBuilder.Append "max_sed,"
-        QueryBuilder.Append "min_hit,"
-        QueryBuilder.Append "max_hit,"
-        QueryBuilder.Append "killed_npcs,"
-        QueryBuilder.Append "killed_users,"
-        QueryBuilder.Append "invent_level,"
-        QueryBuilder.Append "ELO,"
-        QueryBuilder.Append "is_naked,"
-        QueryBuilder.Append "is_poisoned,"
-        QueryBuilder.Append "is_incinerated,"
-        QueryBuilder.Append "is_banned,"
-        QueryBuilder.Append "is_dead,"
-        QueryBuilder.Append "is_sailing,"
-        QueryBuilder.Append "is_paralyzed,"
-        QueryBuilder.Append "deaths,"
-        QueryBuilder.Append "is_mounted,"
-        QueryBuilder.Append "spouse,"
-        QueryBuilder.Append "is_silenced,"
-        QueryBuilder.Append "silence_minutes_left,"
-        QueryBuilder.Append "silence_elapsed_seconds,"
-        QueryBuilder.Append "pets_saved,"
-        QueryBuilder.Append "return_map,"
-        QueryBuilder.Append "return_x,"
-        QueryBuilder.Append "return_y,"
-        QueryBuilder.Append "counter_pena,"
-        QueryBuilder.Append "chat_global,"
-        QueryBuilder.Append "chat_combate,"
-        QueryBuilder.Append "pertenece_consejo_real,"
-        QueryBuilder.Append "pertenece_consejo_caos,"
-        QueryBuilder.Append "pertenece_real,"
-        QueryBuilder.Append "pertenece_caos,"
-        QueryBuilder.Append "ciudadanos_matados,"
-        QueryBuilder.Append "criminales_matados,"
-        QueryBuilder.Append "recibio_armadura_real,"
-        QueryBuilder.Append "recibio_armadura_caos,"
-        QueryBuilder.Append "recibio_exp_real,"
-        QueryBuilder.Append "recibio_exp_caos,"
-        QueryBuilder.Append "recompensas_real,"
-        QueryBuilder.Append "recompensas_caos,"
-        QueryBuilder.Append "Reenlistadas,"
-        QueryBuilder.Append "nivel_ingreso,"
-        QueryBuilder.Append "matados_ingreso,"
-        QueryBuilder.Append "siguiente_recompensa,"
-        QueryBuilder.Append "Status,"
-        QueryBuilder.Append "Guild_Index,"
-        QueryBuilder.Append "warnings"
-        QueryBuilder.Append ",DATE_FORMAT(fecha_ingreso, '%Y-%m-%d') as 'fecha_ingreso_format'"
-        QueryBuilder.Append " FROM user WHERE name= ?"
-    
-        ' Guardo la query ensamblada
-198     QUERY_LOAD_MAINPJ = QueryBuilder.ToString
-    
-        ' Limpio el constructor de querys
-200     Call QueryBuilder.Clear
 
-End Sub
 Private Sub ConstruirQuery_CrearPersonaje()
         Dim LoopC As Long
     

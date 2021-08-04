@@ -2656,28 +2656,6 @@ SaveNewUser_Err:
         
 End Sub
 
-Sub SetUserLogged(ByVal UserIndex As Integer)
-        
-        On Error GoTo SetUserLogged_Err
-        
-
-100     If Database_Enabled Then
-102         Call SetUserLoggedDatabase(UserList(UserIndex).ID, UserList(UserIndex).AccountID)
-        Else
-104         Call WriteVar(CharPath & UCase$(UserList(UserIndex).Name) & ".chr", "INIT", "Logged", 1)
-106         Call WriteVar(CuentasPath & UCase$(UserList(UserIndex).Cuenta) & ".act", "INIT", "LOGEADA", 1)
-
-        End If
-
-        
-        Exit Sub
-
-SetUserLogged_Err:
-108     Call TraceError(Err.Number, Err.Description, "ES.SetUserLogged", Erl)
-
-        
-End Sub
-
 Function Status(ByVal UserIndex As Integer) As e_Facciones
         
         On Error GoTo Status_Err
