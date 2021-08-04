@@ -183,11 +183,11 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 
 Private Sub cmdBoveda_Click()
-    Call getData("select o.number, o.name, i.amount from bank_item i inner join objects o on i.item_id = o.number  where user_id = (select id from user where name = '" & txtQuery.Text & "') and amount > 0")
+    Call getData("select o.number, o.name, i.amount from bank_item i inner join object o on i.item_id = o.number  where user_id = (select id from user where name = '" & txtQuery.Text & "') and amount > 0")
 End Sub
 
 Private Sub cmdInventario_Click()
-    Call getData("select o.number, o.name, i.amount from inventory_item i inner join objects o on i.item_id = o.number  where user_id = (select id from user where name = '" & txtQuery.Text & "') and amount > 0")
+    Call getData("select o.number, o.name, i.amount from inventory_item i inner join object o on i.item_id = o.number  where user_id = (select id from user where name = '" & txtQuery.Text & "') and amount > 0")
 End Sub
 
 Private Sub Command1_Click()
@@ -227,12 +227,12 @@ Private Sub Command3_Click()
 106         NumObjDatas = val(Leer.GetValue("INIT", "NumObjs"))
             
             Dim ObjKey As String
-            Set RS = Query("delete from objects")
+            Set RS = Query("delete from object")
             pbarDb.max = NumObjDatas
             'Llena la lista
 118         For Object = 1 To NumObjDatas
 122             ObjKey = "OBJ" & Object
-                Query ("INSERT INTO objects (number, name) VALUES (" & Object & ", '" & Leer.GetValue(ObjKey, "Name") & "')")
+                Query ("INSERT INTO object (number, name) VALUES (" & Object & ", '" & Leer.GetValue(ObjKey, "Name") & "')")
                 Debug.Print Object
                 pbarDb.Value = Object
 644         Next Object
@@ -246,9 +246,5 @@ Private Sub Command3_Click()
         
         End If
         
-End Sub
-
-Private Sub DataGrid1_Click()
-
 End Sub
 
