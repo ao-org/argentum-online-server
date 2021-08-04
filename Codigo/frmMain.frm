@@ -26,6 +26,14 @@ Begin VB.Form frmMain
    ScaleHeight     =   6210
    ScaleWidth      =   6840
    StartUpPosition =   2  'CenterScreen
+   Begin VB.CommandButton cmdDbControl 
+      Caption         =   "DbControl"
+      Height          =   495
+      Left            =   3720
+      TabIndex        =   39
+      Top             =   720
+      Width           =   1215
+   End
    Begin VB.Timer t_Extraer 
       Left            =   4440
       Top             =   4200
@@ -679,6 +687,10 @@ CheckIdleUser_Err:
 126     Call TraceError(Err.Number, Err.Description, "frmMain.CheckIdleUser", Erl)
 
         
+End Sub
+
+Private Sub cmdDbControl_Click()
+    frmDbControl.Show
 End Sub
 
 Private Sub Segundo_Timer()
