@@ -817,9 +817,7 @@ Private Sub T_UsersOnline_Timer()
 
 On Error GoTo T_UsersOnline_Err
 
-    If LastCountUsersOnline <> NumUsers Then
-        Call MostrarNumUsers
-    End If
+    Call MostrarNumUsers
     
     Exit Sub
 

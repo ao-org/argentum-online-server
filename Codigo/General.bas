@@ -866,17 +866,25 @@ MapaValido_Err:
 End Function
 
 Sub MostrarNumUsers()
-        
+
         On Error GoTo MostrarNumUsers_Err
         
+        If (LastCountUsersOnline <> NumUsers) Then
+100         Call SendData(SendTarget.ToAll, 0, PrepareMessageOnlineUser(NumUsers))
 
-100     Call SendData(SendTarget.ToAll, 0, PrepareMessageOnlineUser(NumUsers))
-
-102     frmMain.CantUsuarios.Caption = "Numero de usuarios jugando: " & NumUsers
-    
-104     Call SetUsersLoggedDatabase(NumUsers)
-        LastCountUsersOnline = NumUsers
+102         frmMain.CantUsuarios.Caption = "Numero de usuarios jugando: " & NumUsers
         
+            LastCountUsersOnline = NumUsers
+            
+104         Call SetUsersLoggedDatabase(NumUsers)
+        End If
+        
+        If (LastRecordUsuarios <> RecordUsuarios) Then
+            LastRecordUsuarios = RecordUsuarios
+            
+            Call SetRecordUsersDatabase(LastRecordUsuarios)
+        End If
+
         Exit Sub
 
 MostrarNumUsers_Err:

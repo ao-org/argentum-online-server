@@ -104,6 +104,7 @@ Public CostoPerdonPorCiudadano As Long
 Public MaximoSpeedHack      As Integer
 
 Public LastCountUsersOnline As Integer
+Public LastRecordUsuarios   As Integer
 
 Type t_EstadisticasDiarias
 
@@ -1800,7 +1801,6 @@ Public Type t_User
     ID As Long
     Trabajo As t_UserTrabajo
     AccountID As Long
-    AccountPersonajes As Long
     Grupo As Tgrupo
 
     showName As Boolean 'Permite que los GMs oculten su nick con el comando /SHOWNAME
@@ -1866,6 +1866,8 @@ Public Type t_User
     FundandoGuildAlineacion As e_ALINEACION_GUILD     'esto esta aca hasta que se parchee el cliente y se pongan cadenas de datos distintas para cada alineacion
     EscucheClan As Integer
     
+    LastGuildRejection As String
+    
     KeyCrypt As Integer
     
     AreasInfo As t_AreaInfo
@@ -1878,8 +1880,6 @@ Public Type t_User
         XorIndexIn As Integer
         XorIndexOut As Integer
     #End If
-
-    LastPacketID As Integer
 
     CraftInventory(1 To MAX_SLOTS_CRAFTEO) As Integer
     CraftCatalyst As t_Obj
