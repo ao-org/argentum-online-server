@@ -594,14 +594,6 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
                 Debug.Print "Se modifico las mascotas. Guardando..."
                 .flags.ModificoMascotas = False
             End If
-        
-            ' ************************** User connection logs *********************************
-        
-            'Agrego ip del user
-            'Call Execute(QUERY_SAVE_CONNECTION, .ID, .IP)
-
-            'Borro la mas vieja si hay mas de 5 (WyroX: si alguien sabe una forma mejor de hacerlo me avisa)
-            'Call Execute(QUERY_DELETE_LAST_CONNECTIONS, .ID, .ID)
 
             ' ************************** User quests *********************************
 524         If .flags.ModificoQuests Then
@@ -1161,17 +1153,6 @@ SetUserValue_Err:
 102     Call TraceError(Err.Number, Err.Description, "modDatabase.SetUserValue", Erl)
 End Sub
 
-Private Sub SetCuentaValueByID(ByVal AccountID As Long, Columna As String, Value As Variant)
-        On Error GoTo SetCuentaValueByID_Err
-        
-100     Call SetDBValue("account", Columna, Value, "id", AccountID)
-
-        Exit Sub
-
-SetCuentaValueByID_Err:
-102     Call TraceError(Err.Number, Err.Description, "modDatabase.SetCuentaValueByID", Erl)
-End Sub
-
 Private Sub SetUserValueByID(ByVal ID As Long, Columna As String, Value As Variant)
         On Error GoTo SetUserValueByID_Err
         
@@ -1182,33 +1163,6 @@ Private Sub SetUserValueByID(ByVal ID As Long, Columna As String, Value As Varia
 SetUserValueByID_Err:
 102     Call TraceError(Err.Number, Err.Description, "modDatabase.SetUserValueByID", Erl)
 End Sub
-
-Public Function CheckUserExists(Name As String) As Boolean
-        
-        On Error GoTo CheckUserExists_Err
-        
-100     CheckUserExists = GetUserValue(Name, "COUNT(*)") > 0
-
-        Exit Function
-
-CheckUserExists_Err:
-102     Call TraceError(Err.Number, Err.Description, "modDatabase.CheckUserExists", Erl)
-End Function
-
-Public Function CheckCuentaExiste(CuentaEmail As String) As Boolean
-        
-        On Error GoTo CheckCuentaExiste_Err
-        
-100     CheckCuentaExiste = GetCuentaValue(CuentaEmail, "COUNT(*)") > 0
-
-        
-        Exit Function
-
-CheckCuentaExiste_Err:
-102     Call TraceError(Err.Number, Err.Description, "modDatabase.CheckCuentaExiste", Erl)
-
-        
-End Function
 
 Public Function BANCheckDatabase(Name As String) As Boolean
         
@@ -1222,80 +1176,6 @@ BANCheckDatabase_Err:
 102     Call TraceError(Err.Number, Err.Description, "modDatabase.BANCheckDatabase", Erl)
 End Function
 
-Public Function GetCodigoActivacionDatabase(Name As String) As String
-        
-        On Error GoTo GetCodigoActivacionDatabase_Err
-        
-100     GetCodigoActivacionDatabase = GetCuentaValue(Name, "validate_code")
-
-        
-        Exit Function
-
-GetCodigoActivacionDatabase_Err:
-102     Call TraceError(Err.Number, Err.Description, "modDatabase.GetCodigoActivacionDatabase", Erl)
-
-End Function
-
-Public Function CheckCuentaActivadaDatabase(Name As String) As Boolean
-        
-        On Error GoTo CheckCuentaActivadaDatabase_Err
-        
-100     CheckCuentaActivadaDatabase = GetCuentaValue(Name, "validated")
-
-        
-        Exit Function
-
-CheckCuentaActivadaDatabase_Err:
-102     Call TraceError(Err.Number, Err.Description, "modDatabase.CheckCuentaActivadaDatabase", Erl)
-
-        
-End Function
-
-Public Function GetEmailDatabase(Name As String) As String
-        
-        On Error GoTo GetEmailDatabase_Err
-        
-100     GetEmailDatabase = GetCuentaValue(Name, "email")
-
-        
-        Exit Function
-
-GetEmailDatabase_Err:
-102     Call TraceError(Err.Number, Err.Description, "modDatabase.GetEmailDatabase", Erl)
-
-        
-End Function
-
-Public Function GetMacAddressDatabase(CuentaEmail As String) As String
-        
-        On Error GoTo GetMacAddressDatabase_Err
-        
-100     GetMacAddressDatabase = GetCuentaValue(CuentaEmail, "mac_address")
-
-        
-        Exit Function
-
-GetMacAddressDatabase_Err:
-102     Call TraceError(Err.Number, Err.Description, "modDatabase.GetMacAddressDatabase", Erl)
-
-        
-End Function
-
-Public Function GetHDSerialDatabase(CuentaEmail As String) As Long
-        
-        On Error GoTo GetHDSerialDatabase_Err
-        
-100     GetHDSerialDatabase = GetCuentaValue(CuentaEmail, "hd_serial")
-
-        
-        Exit Function
-
-GetHDSerialDatabase_Err:
-102     Call TraceError(Err.Number, Err.Description, "modDatabase.GetHDSerialDatabase", Erl)
-
-        
-End Function
-
 Public Function CheckBanCuentaDatabase(CuentaEmail As String) As Boolean
         
         On Error GoTo CheckBanCuentaDatabase_Err
@@ -1307,51 +1187,6 @@ Public Function CheckBanCuentaDatabase(CuentaEmail As String) As Boolean
 
 CheckBanCuentaDatabase_Err:
 102     Call TraceError(Err.Number, Err.Description, "modDatabase.CheckBanCuentaDatabase", Erl)
-
-        
-End Function
-
-Public Function GetMotivoBanCuentaDatabase(CuentaEmail As String) As String
-        
-        On Error GoTo GetMotivoBanCuentaDatabase_Err
-        
-100     GetMotivoBanCuentaDatabase = GetCuentaValue(CuentaEmail, "ban_reason")
-
-        
-        Exit Function
-
-GetMotivoBanCuentaDatabase_Err:
-102     Call TraceError(Err.Number, Err.Description, "modDatabase.GetMotivoBanCuentaDatabase", Erl)
-
-        
-End Function
-
-Public Function GetQuienBanCuentaDatabase(CuentaEmail As String) As String
-        
-        On Error GoTo GetQuienBanCuentaDatabase_Err
-        
-100     GetQuienBanCuentaDatabase = GetCuentaValue(CuentaEmail, "banned_by")
-
-        
-        Exit Function
-
-GetQuienBanCuentaDatabase_Err:
-102     Call TraceError(Err.Number, Err.Description, "modDatabase.GetQuienBanCuentaDatabase", Erl)
-
-        
-End Function
-
-Public Function GetCuentaLogeadaDatabase(CuentaEmail As String) As Boolean
-        
-        On Error GoTo GetCuentaLogeadaDatabase_Err
-        
-100     GetCuentaLogeadaDatabase = GetCuentaValue(CuentaEmail, "is_logged")
-
-        
-        Exit Function
-
-GetCuentaLogeadaDatabase_Err:
-102     Call TraceError(Err.Number, Err.Description, "modDatabase.GetCuentaLogeadaDatabase", Erl)
 
         
 End Function
@@ -1396,48 +1231,12 @@ GetAccountIDDatabase_Err:
         
 End Function
 
-Public Sub GetPasswordAndSaltDatabase(CuentaEmail As String, PasswordHash As String, Salt As String)
-
-        On Error GoTo ErrorHandler
-    
-        Dim RS As ADODB.Recordset
-        Set RS = Query("SELECT password, salt FROM account WHERE deleted = FALSE AND email = ?;", LCase$(CuentaEmail))
-
-102     If RS Is Nothing Then Exit Sub
-    
-104     PasswordHash = RS!Password
-106     Salt = RS!Salt
-    
-        Exit Sub
-    
-ErrorHandler:
-108     Call LogDatabaseError("Error in GetPasswordAndSaltDatabase. Cuenta: " & CuentaEmail & ". " & Err.Number & " - " & Err.Description)
-    
-End Sub
-
-Public Function GetPersonajesCountDatabase(CuentaEmail As String) As Byte
-
-        On Error GoTo ErrorHandler
-
-        Dim ID As Long
-
-100     ID = GetDBValue("account", "id", "email", LCase$(CuentaEmail))
-    
-102     GetPersonajesCountDatabase = GetPersonajesCountByIDDatabase(ID)
-    
-        Exit Function
-    
-ErrorHandler:
-104     Call LogDatabaseError("Error in GetPersonajesCountDatabase. name: " & CuentaEmail & ". " & Err.Number & " - " & Err.Description)
-    
-End Function
-
 Public Function GetPersonajesCountByIDDatabase(ByVal AccountID As Long) As Byte
 
         On Error GoTo ErrorHandler
     
         Dim RS As ADODB.Recordset
-100     Set RS = Query("SELECT COUNT(*) FROM user WHERE deleted = FALSE AND account_id = ?;", AccountID)
+100     Set RS = Query("SELECT COUNT(*) FROM user WHERE deleted = FALSE AND account_id = ?", AccountID)
     
 102     If RS Is Nothing Then Exit Function
     
@@ -1903,28 +1702,6 @@ ErrorHandler:
 
 End Sub
 
-
-Public Function GetNombreCuentaDatabase(Name As String) As String
-
-        On Error GoTo ErrorHandler
-
-        'Hacemos la query.
-        Dim RS As ADODB.Recordset
-100     Set RS = Query("SELECT email FROM `account` INNER JOIN `user` ON user.account_id = account.id WHERE UPPER(user.name) = ?;", UCase$(Name))
-    
-        'Verificamos que la query no devuelva un resultado vacio.
-102     If RS Is Nothing Then Exit Function
-    
-        'Obtenemos el nombre de la cuenta
-104     GetNombreCuentaDatabase = RS!Email
-
-        Exit Function
-    
-ErrorHandler:
-106     Call LogDatabaseError("Error en GetNombreCuentaDatabase leyendo user de la Mysql Database: " & Name & ". " & Err.Number & " - " & Err.Description)
-
-End Function
-
 Public Function GetUserGuildIndexDatabase(UserName As String) As Integer
 
         '***************************************************
@@ -2139,12 +1916,12 @@ ErrorHandler:
 
 End Sub
 
-Public Function EnterAccountDatabase(ByVal UserIndex As Integer, ByVal CuentaEmail As String, ByVal Password As String, ByVal MacAddress As String, ByVal HDSerial As Long, ByVal IP As String) As Boolean
+Public Function EnterAccountDatabase(ByVal UserIndex As Integer, ByVal CuentaEmail As String, ByVal Password As String, ByVal IP As String) As Boolean
 
         On Error GoTo ErrorHandler
     
         Dim RS As ADODB.Recordset
-100     Set RS = Query("SELECT id, password, salt, validated, is_banned, ban_reason, banned_by FROM account WHERE email = ?;", LCase$(CuentaEmail))
+100     Set RS = Query("SELECT id, password, salt, validated, is_banned, ban_reason, banned_by FROM account WHERE email = ?", LCase$(CuentaEmail))
     
 102     If Connection.State = adStateClosed Then
 104         Call WriteShowMessageBox(UserIndex, "Ha ocurrido un error interno en el servidor. ¡Estamos tratando de resolverlo!")
@@ -2155,17 +1932,17 @@ Public Function EnterAccountDatabase(ByVal UserIndex As Integer, ByVal CuentaEma
 108         Call WriteShowMessageBox(UserIndex, "La cuenta no existe.")
             Exit Function
         End If
-    
-110     If val(RS!is_banned) > 0 Then
-112         Call WriteShowMessageBox(UserIndex, "La cuenta se encuentra baneada debido a: " & RS!ban_reason & ". Esta decisión fue tomada por: " & RS!banned_by & ".")
-            Exit Function
-        End If
-    
+        
 114     If Not PasswordValida(Password, RS!Password, RS!Salt) Then
 116         Call WriteShowMessageBox(UserIndex, "Contraseña inválida.")
             Exit Function
         End If
     
+110     If val(RS!is_banned) > 0 Then
+112         Call WriteShowMessageBox(UserIndex, "La cuenta se encuentra baneada debido a: " & RS!ban_reason & ". Esta decisión fue tomada por: " & RS!banned_by & ".")
+            Exit Function
+        End If
+
 118     If val(RS!validated) = 0 Then
 120         Call WriteShowMessageBox(UserIndex, "¡La cuenta no ha sido validada aún!")
             Exit Function
@@ -2173,8 +1950,8 @@ Public Function EnterAccountDatabase(ByVal UserIndex As Integer, ByVal CuentaEma
     
 122     UserList(UserIndex).AccountID = RS!ID
 124     UserList(UserIndex).Cuenta = CuentaEmail
-        
-        Call Execute("UPDATE account SET mac_address = ?, hd_serial = ?, last_ip = ?, last_access = NOW() WHERE id = ?", MacAddress, HDSerial, IP, CLng(RS!ID))
+
+        Call Execute("UPDATE account SET last_ip = ?, last_access = NOW() WHERE id = ?", IP, CLng(RS!ID))
         
 128     EnterAccountDatabase = True
     
@@ -2183,20 +1960,6 @@ Public Function EnterAccountDatabase(ByVal UserIndex As Integer, ByVal CuentaEma
 ErrorHandler:
 130     Call LogDatabaseError("Error in EnterAccountDatabase. UserCuenta: " & CuentaEmail & ". " & Err.Number & " - " & Err.Description)
 
-End Function
-
-Public Function PersonajePerteneceEmail(ByVal UserName As String, ByVal AccountEmail As String) As Boolean
-    
-        Dim RS As ADODB.Recordset
-100     Set RS = Query("SELECT id FROM user INNER JOIN account ON user.account_id = account.id WHERE user.name = ? AND account.email = ?;", UserName, AccountEmail)
-    
-102     If RS Is Nothing Then
-104         PersonajePerteneceEmail = False
-            Exit Function
-        End If
-    
-106     PersonajePerteneceEmail = True
-    
 End Function
 
 Public Function PersonajePerteneceID(ByVal UserName As String, ByVal AccountID As Long) As Boolean
@@ -2416,10 +2179,6 @@ ErrorHandler:
 
 End Function
 
-Public Function GetBaneoAccountId(ByVal AccountID As Long) As Boolean
-100     GetBaneoAccountId = CBool(GetDBValue("account", "is_banned", "id", AccountID))
-End Function
-
 Public Function SanitizeNullValue(ByVal Value As Variant, ByVal defaultValue As Variant) As Variant
         
         On Error GoTo SanitizeNullValue_Err
@@ -2433,18 +2192,6 @@ SanitizeNullValue_Err:
 102     Call TraceError(Err.Number, Err.Description, "modDatabase.SanitizeNullValue", Erl)
 
         
-End Function
-
-Public Function GetUserLevelDatabase(ByVal Name As String) As Byte
-        On Error GoTo GetUserLevelDatabase_Err
-
-100     GetUserLevelDatabase = val(GetUserValue(Name, "level"))
-        
-        Exit Function
-        
-GetUserLevelDatabase_Err:
-102     Call TraceError(Err.Number, Err.Description, "modDatabase.GetUserLevelDatabase", Erl)
-
 End Function
 
 Public Sub SetMessageInfoDatabase(ByVal Name As String, ByVal Message As String)

@@ -405,10 +405,8 @@ Public Function PersonajeExiste(ByVal Name As String) As Boolean
         
         On Error GoTo PersonajeExiste_Err
 
-102         PersonajeExiste = CheckUserExists(Name)
+102         PersonajeExiste = GetUserValue(Name, "COUNT(*)") > 0
 
-
-        
         Exit Function
 
 PersonajeExiste_Err:

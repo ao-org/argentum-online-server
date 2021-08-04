@@ -1800,6 +1800,7 @@ Public Type t_User
     ID As Long
     Trabajo As t_UserTrabajo
     AccountID As Long
+    AccountPersonajes As Long
     Grupo As Tgrupo
 
     showName As Boolean 'Permite que los GMs oculten su nick con el comando /SHOWNAME

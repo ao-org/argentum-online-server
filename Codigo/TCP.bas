@@ -854,7 +854,7 @@ ValidateChr_Err:
         
 End Function
 
-Function EntrarCuenta(ByVal UserIndex As Integer, CuentaEmail As String, CuentaPassword As String, MacAddress As String, ByVal HDSerial As Long, MD5 As String) As Boolean
+Function EntrarCuenta(ByVal UserIndex As Integer, ByVal CuentaEmail As String, ByVal CuentaPassword As String, ByVal MD5 As String) As Boolean
         
         On Error GoTo EntrarCuenta_Err
         
@@ -878,16 +878,6 @@ Function EntrarCuenta(ByVal UserIndex As Integer, CuentaEmail As String, CuentaP
 
         End If
 
-116     If MAC_Blacklist.Exists(MacAddress) Then
-118         Call WriteShowMessageBox(UserIndex, "Su cuenta se encuentra bajo tolerancia 0. Tiene prohibido el acceso. Cod: #0001")
-            Exit Function
-        End If
-    
-120     If HD_Blacklist.Exists(HDSerial) Then
-122         Call WriteShowMessageBox(UserIndex, "Su cuenta se encuentra bajo tolerancia 0. Tiene prohibido el acceso. Cod: #0002")
-            Exit Function
-        End If
-
         #If DEBUGGING = 0 Then
 124         If LCase$(Md5Cliente) <> LCase$(MD5) Then
 126             Call WriteShowMessageBox(UserIndex, "Error al comprobar el cliente del juego, por favor reinstale y vuelva a intentar.")
@@ -900,7 +890,7 @@ Function EntrarCuenta(ByVal UserIndex As Integer, CuentaEmail As String, CuentaP
             Exit Function
         End If
     
-132     EntrarCuenta = EnterAccountDatabase(UserIndex, CuentaEmail, SDesencriptar(CuentaPassword), MacAddress, HDSerial, UserList(UserIndex).IP)
+132     EntrarCuenta = EnterAccountDatabase(UserIndex, CuentaEmail, SDesencriptar(CuentaPassword), UserList(UserIndex).IP)
         
         Exit Function
 

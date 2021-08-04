@@ -426,7 +426,6 @@ Private Enum ClientPacketID
     GlobalOnOff
     IngresarConCuenta
     BorrarPJ
-    Desbuggear
     DarLlaveAUsuario
     SacarLlave
     VerLlaves
@@ -468,8 +467,6 @@ Private Enum ClientPacketID
     SubastaInfo
     bancuenta
     unBanCuenta
-    BanSerial
-    unBanSerial
     CerrarCliente
     EventoInfo
     CrearEvento
@@ -494,7 +491,6 @@ Private Enum ClientPacketID
     CreatePretorianClan     '/CREARPRETORIANOS
     Home                    '/HOGAR
     Consulta                '/CONSULTA
-    Tolerancia0             '/T0
     GetMapInfo              '/MAPINFO
     FinEvento
     SeguroResu
@@ -1124,8 +1120,6 @@ On Error Resume Next
             Call HandleIngresarConCuenta(UserIndex)
         Case ClientPacketID.BorrarPJ
             Call HandleBorrarPJ(UserIndex)
-        Case ClientPacketID.Desbuggear
-            Call HandleDesbuggear(UserIndex)
         Case ClientPacketID.DarLlaveAUsuario
             Call HandleDarLlaveAUsuario(UserIndex)
         Case ClientPacketID.SacarLlave
@@ -1208,10 +1202,6 @@ On Error Resume Next
             Call HandleBanCuenta(UserIndex)
         Case ClientPacketID.UnbanCuenta
             Call HandleUnBanCuenta(UserIndex)
-        Case ClientPacketID.BanSerial
-            Call HandleBanSerial(UserIndex)
-        Case ClientPacketID.unBanSerial
-            Call HandleUnBanSerial(UserIndex)
         Case ClientPacketID.CerrarCliente
             Call HandleCerrarCliente(UserIndex)
         Case ClientPacketID.EventoInfo
@@ -1260,8 +1250,6 @@ On Error Resume Next
             Call HandleHome(UserIndex)
         Case ClientPacketID.Consulta
             Call HandleConsulta(UserIndex)
-        Case ClientPacketID.Tolerancia0
-            Call HandleTolerancia0(UserIndex)
         Case ClientPacketID.GetMapInfo
             Call HandleGetMapInfo(UserIndex)
         Case ClientPacketID.FinEvento
@@ -1336,16 +1324,12 @@ Private Sub HandleLoginExistingChar(ByVal UserIndex As Integer)
         Dim CuentaEmail As String
         Dim Password    As String
         Dim Version     As String
-        Dim MacAddress  As String
-        Dim HDSerial    As Long
         Dim MD5         As String
 
 102         CuentaEmail = Reader.ReadString8()
 104         Password = Reader.ReadString8()
 106         Version = CStr(Reader.ReadInt8()) & "." & CStr(Reader.ReadInt8()) & "." & CStr(Reader.ReadInt8())
 108         UserName = Reader.ReadString8()
-110         MacAddress = Reader.ReadString8()
-112         HDSerial = Reader.ReadInt32()
 114         MD5 = Reader.ReadString8()
 
         #If DEBUGGING = False Then
@@ -1362,16 +1346,13 @@ Private Sub HandleLoginExistingChar(ByVal UserIndex As Integer)
 122     If EsGmChar(UserName) Then
             
 124         If AdministratorAccounts(UCase$(UserName)) <> UCase$(CuentaEmail) Then
-126             Call WriteShowMessageBox(UserIndex, "¡ESTE PERSONAJE NO TE PERTENECE!")
-128             Call SaveBanCuentaDatabase(UserList(UserIndex).AccountID, "Intento de hackeo de personajes ajenos", "El Servidor")
 130             Call CloseSocket(UserIndex)
                 Exit Sub
-
             End If
             
         End If
   
-132     If Not EntrarCuenta(UserIndex, CuentaEmail, Password, MacAddress, HDSerial, MD5) Then
+132     If Not EntrarCuenta(UserIndex, CuentaEmail, Password, MD5) Then
 134         Call CloseSocket(UserIndex)
             Exit Sub
 
@@ -1392,12 +1373,8 @@ Private Sub HandleLoginExistingChar(ByVal UserIndex As Integer)
         End If
     
 148     If Not PersonajePerteneceID(UserName, UserList(UserIndex).AccountID) Then
-            'Call WriteShowMessageBox(UserIndex, "¡ESTE PERSONAJE NO TE PERTENECE!")
-150         Call LogHackAttemp("Alguien ha tratado de ingresar con el PJ '" & UserName & "' desde una cuenta ajena ID: " & UserList(UserIndex).AccountID & " desde la IP: " & UserList(UserIndex).IP)
-152         Call SaveBanCuentaDatabase(UserList(UserIndex).AccountID, "Intento de hackeo de personajes ajenos", "El Servidor")
 154         Call CloseSocket(UserIndex)
             Exit Sub
-            
         End If
     
 156     If BANCheck(UserName) Then
@@ -1461,8 +1438,6 @@ Private Sub HandleLoginNewChar(ByVal UserIndex As Integer)
         Dim Head        As Integer
         Dim CuentaEmail As String
         Dim Password    As String
-        Dim MacAddress  As String
-        Dim HDSerial    As Long
         Dim MD5         As String
         Dim Version     As String
 
@@ -1475,8 +1450,6 @@ Private Sub HandleLoginNewChar(ByVal UserIndex As Integer)
 114         Class = Reader.ReadInt8()
 116         Head = Reader.ReadInt16()
 118         Hogar = Reader.ReadInt8()
-120         MacAddress = Reader.ReadString8()
-122         HDSerial = Reader.ReadInt32()
 124         MD5 = Reader.ReadString8()
 
 126     If PuedeCrearPersonajes = 0 Then
@@ -1492,13 +1465,7 @@ Private Sub HandleLoginNewChar(ByVal UserIndex As Integer)
             Exit Sub
 
         End If
-    
-138     If ObtenerCantidadDePersonajesByUserIndex(UserIndex) >= MAX_PERSONAJES Then
-140         Call CloseSocket(UserIndex)
-            Exit Sub
 
-        End If
-    
         #If DEBUGGING = False Then
 
 142         If Not VersionOK(Version) Then
@@ -1520,19 +1487,18 @@ Private Sub HandleLoginNewChar(ByVal UserIndex As Integer)
             End If
             
         End If
-        
-156     If Not EntrarCuenta(UserIndex, CuentaEmail, Password, MacAddress, HDSerial, MD5) Then
+
+156     If Not EntrarCuenta(UserIndex, CuentaEmail, Password, MD5) Then
 158         Call CloseSocket(UserIndex)
             Exit Sub
 
         End If
-            
+        
 160     If GetPersonajesCountByIDDatabase(UserList(UserIndex).AccountID) >= MAX_PERSONAJES Then
 162         Call CloseSocket(UserIndex)
             Exit Sub
-
         End If
-
+        
 164     If Not ConnectNewUser(UserIndex, UserName, race, gender, Class, Head, CuentaEmail, Hogar) Then
 166         Call CloseSocket(UserIndex)
             Exit Sub
@@ -8364,91 +8330,6 @@ ErrHandler:
 
 End Sub
 
-Private Sub HandleDesbuggear(ByVal UserIndex As Integer)
-
-        On Error GoTo ErrHandler
-
-100     With UserList(UserIndex)
-
-            Dim UserName As String, tUser As Integer, i As Long, Count As Long
-        
-102         UserName = Reader.ReadString8()
-        
-104         If EsGM(UserIndex) And (.flags.Privilegios And e_PlayerType.user) = 0 Then
-106             If Len(UserName) > 0 Then
-108                 tUser = NameIndex(UserName)
-                
-110                 If tUser > 0 Then
-112                     Call WriteConsoleMsg(UserIndex, "El usuario debe estar offline.", e_FontTypeNames.FONTTYPE_INFO)
-                    Else
-
-                        Dim AccountID As Long, AccountOnline As Boolean
-                    
-114                     AccountID = GetAccountIDDatabase(UserName)
-                    
-116                     If AccountID >= 0 Then
-
-118                         For i = 1 To LastUser
-
-120                             If UserList(i).flags.UserLogged Then
-122                                 If UserList(i).AccountID = AccountID Then
-124                                     AccountOnline = True
-
-                                    End If
-
-126                                 Count = Count + 1
-
-                                End If
-
-128                         Next i
-                        
-130                         NumUsers = Count
-                        
-134                         If AccountOnline Then
-136                             Call WriteConsoleMsg(UserIndex, "Hay un usuario de la cuenta conectado. Se actualizaron solo los usuarios online.", e_FontTypeNames.FONTTYPE_INFO)
-                            Else
-138                             Call ResetLoggedDatabase(AccountID)
-140                             Call WriteConsoleMsg(UserIndex, "Cuenta del personaje desbuggeada y usuarios online actualizados.", e_FontTypeNames.FONTTYPE_INFO)
-
-                            End If
-    
-142                         Call LogGM(.Name, "/DESBUGGEAR " & UserName)
-                        Else
-144                         Call WriteConsoleMsg(UserIndex, "El usuario no existe.", e_FontTypeNames.FONTTYPE_INFO)
-
-                        End If
-
-                    End If
-
-                Else
-
-146                 For i = 1 To LastUser
-
-148                     If UserList(i).flags.UserLogged Then
-150                         Count = Count + 1
-
-                        End If
-
-152                 Next i
-                
-154                 NumUsers = Count
-                
-158                 Call WriteConsoleMsg(UserIndex, "Se actualizaron los usuarios online.", e_FontTypeNames.FONTTYPE_INFO)
-
-                End If
-
-            End If
-
-        End With
-        
-        Exit Sub
-        
-ErrHandler:
-160     Call TraceError(Err.Number, Err.Description, "Protocol.HandleDesbuggear", Erl)
-162
-
-End Sub
-
 Private Sub HandleDarLlaveAUsuario(ByVal UserIndex As Integer)
 
         On Error GoTo ErrHandler
@@ -12227,7 +12108,7 @@ Private Sub HandleBannedIPReload(ByVal UserIndex As Integer)
         
 102         If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero Or e_PlayerType.SemiDios Or e_PlayerType.RoleMaster)) Then Exit Sub
 
-104         Call CargarListaNegraUsuarios(LoadIPs)
+104         Call CargarListaNegraUsuarios
             
 106         Call WriteConsoleMsg(UserIndex, "Lista de IPs recargada.", e_FontTypeNames.FONTTYPE_INFO)
             
@@ -15379,15 +15260,11 @@ Private Sub HandleIngresarConCuenta(ByVal UserIndex As Integer)
 
             Dim CuentaEmail    As String
             Dim CuentaPassword As String
-            Dim MacAddress     As String
-            Dim HDSerial       As Long
             Dim MD5            As String
         
 102         CuentaEmail = Reader.ReadString8()
 104         CuentaPassword = Reader.ReadString8()
 106         Version = CStr(Reader.ReadInt8()) & "." & CStr(Reader.ReadInt8()) & "." & CStr(Reader.ReadInt8())
-108         MacAddress = Reader.ReadString8()
-110         HDSerial = Reader.ReadInt32()
 112         MD5 = Reader.ReadString8()
         
             #If DEBUGGING = False Then
@@ -15401,7 +15278,7 @@ Private Sub HandleIngresarConCuenta(ByVal UserIndex As Integer)
     
             #End If
     
-120         If EntrarCuenta(UserIndex, CuentaEmail, CuentaPassword, MacAddress, HDSerial, MD5) Then
+120         If EntrarCuenta(UserIndex, CuentaEmail, CuentaPassword, MD5) Then
                 Dim Verificar As Boolean
             
 122             Select Case AOGuard.AOG_STATUS
@@ -15410,9 +15287,9 @@ Private Sub HandleIngresarConCuenta(ByVal UserIndex As Integer)
                     Case 0
 124                     Verificar = False
                 
-                    ' Enviara correo solo si la IP / HDSerial no coinciden con lo que tenemos en la BD
+                    ' Enviara correo solo si la IP no coinciden con lo que tenemos en la BD
 126                 Case 1
-128                     Verificar = Not AOGuard.VerificarOrigen(.AccountID, HDSerial, .IP)
+128                     Verificar = Not AOGuard.VerificarOrigen(.AccountID, .IP)
                 
                     ' Enviara correo cada vez que iniciemos sesion
 130                 Case 2
@@ -15459,8 +15336,6 @@ Private Sub HandleBorrarPJ(ByVal UserIndex As Integer)
             Dim UserDelete     As String
             Dim CuentaEmail    As String
             Dim CuentaPassword As String
-            Dim MacAddress     As String
-            Dim HDSerial       As Long
             Dim MD5            As String
             Dim Version        As String
         
@@ -15468,8 +15343,6 @@ Private Sub HandleBorrarPJ(ByVal UserIndex As Integer)
 104         CuentaEmail = Reader.ReadString8()
 106         CuentaPassword = Reader.ReadString8()
 108         Version = CStr(Reader.ReadInt8()) & "." & CStr(Reader.ReadInt8()) & "." & CStr(Reader.ReadInt8())
-110         MacAddress = Reader.ReadString8()
-112         HDSerial = Reader.ReadInt32()
 114         MD5 = Reader.ReadString8()
         
             #If DEBUGGING = False Then
@@ -15480,25 +15353,32 @@ Private Sub HandleBorrarPJ(ByVal UserIndex As Integer)
                 End If
             #End If
         
-122         If Not EntrarCuenta(UserIndex, CuentaEmail, CuentaPassword, MacAddress, HDSerial, MD5) Then
+122         If Not EntrarCuenta(UserIndex, CuentaEmail, CuentaPassword, MD5) Then
 124             Call CloseSocket(UserIndex)
                 Exit Sub
             End If
-        
-126         If Not CheckUserAccount(UserDelete, UserList(UserIndex).AccountID) Then
+            
+            Dim RS As Recordset
+            Set RS = Query("SELECT account_id, level, is_banned WHERE name = ?", UserDelete)
+            
+            If (RS Is Nothing) Then
+                Call CloseSocket(UserIndex)
+                Exit Sub
+            End If
+            
+            If (RS!account_id <> UserList(UserIndex).AccountID) Then
 128             Call LogHackAttemp(CuentaEmail & "[" & UserList(UserIndex).IP & "] intentó borrar el pj " & UserDelete)
 130             Call CloseSocket(UserIndex)
                 Exit Sub
             End If
-        
 
-132         If GetUserLevelDatabase(UserDelete) >= 25 Then
+132         If (RS!level >= 25) Then
 134             Call WriteShowMessageBox(UserIndex, "No puedes eliminar un personaje mayor a nivel 25.")
                 Exit Sub
             End If
 
-136         If BANCheckDatabase(UserDelete) Then
-138             Call WriteShowMessageBox(UserIndex, "No puedes eliminar un personaje banneado.")
+136         If (RS!is_banned) Then
+138             Call WriteShowMessageBox(UserIndex, "No puedes eliminar un personaje baneado.")
                 Exit Sub
             End If
 
@@ -17190,25 +17070,11 @@ Private Sub HandleUnBanCuenta(ByVal UserIndex As Integer)
 102         UserNameOEmail = Reader.ReadString8()
         
 104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios)) Then
-        
-                Dim AccountID As Long
-
-106             If InStr(1, UserNameOEmail, "@") Then
-                    ' Es un email
-108                 If Not CuentaExiste(UserNameOEmail) Then Exit Sub
-
-110                 AccountID = GetAccountID(UserNameOEmail)
-                Else
-                    ' Es un nick
-112                 If Not PersonajeExiste(UserNameOEmail) Then Exit Sub
-                
-114                 AccountID = GetAccountIDDatabase(UserNameOEmail)
-                End If
-
-116             If DesbanearCuenta(UserIndex, AccountID) Then
+116             If DesbanearCuenta(UserIndex, UserNameOEmail) Then
 118                 Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » " & .Name & " ha desbaneado la cuenta de " & UserNameOEmail & ".", e_FontTypeNames.FONTTYPE_SERVER))
+                Else
+                    Call WriteConsoleMsg(UserIndex, "No se ha podido desbanear la cuenta.", e_FontTypeNames.FONTTYPE_INFO)
                 End If
-        
             Else
 120             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
             End If
@@ -17220,69 +17086,6 @@ Private Sub HandleUnBanCuenta(ByVal UserIndex As Integer)
 ErrHandler:
 122     Call TraceError(Err.Number, Err.Description, "Protocol.HandleUnBanCuenta", Erl)
 124
-
-End Sub
-
-Private Sub HandleBanSerial(ByVal UserIndex As Integer)
-
-        '***************************************************
-        'Author: Nicolas Matias Gonzalez (NIGO)
-        'Last Modification: 12/29/06
-        '
-        '***************************************************
-
-        On Error GoTo ErrHandler
-
-100     With UserList(UserIndex)
-
-            Dim UserName As String
-         
-102         UserName = Reader.ReadString8()
-        
-104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios)) <> 0 Then
-106             Call BanearHDMAC(UserIndex, UserName)
-
-            End If
-
-        End With
-
-        Exit Sub
-
-ErrHandler:
-108     Call TraceError(Err.Number, Err.Description, "Protocol.HandleBanSerial", Erl)
-110
-
-End Sub
-
-Private Sub HandleUnBanSerial(ByVal UserIndex As Integer)
-
-        '***************************************************
-        'Author: Nicolas Matias Gonzalez (NIGO)
-        'Last Modification: 12/29/06
-        '
-        '***************************************************
-
-        On Error GoTo ErrHandler
-
-100     With UserList(UserIndex)
-
-            Dim UserName As String
-         
-102         UserName = Reader.ReadString8()
-        
-104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios)) Then
-106             Call DesbanearHDMAC(UserName)
-            Else
-108             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
-            End If
-
-        End With
-
-        Exit Sub
-
-ErrHandler:
-110     Call TraceError(Err.Number, Err.Description, "Protocol.HandleUnBanSerial", Erl)
-112
 
 End Sub
 
@@ -18080,42 +17883,6 @@ Private Sub HandleConsulta(ByVal UserIndex As Integer)
 ErrHandler:
 176     Call TraceError(Err.Number, Err.Description, "Protocol.HandleConsulta", Erl)
 178
-
-End Sub
-
-Private Sub HandleTolerancia0(ByVal UserIndex As Integer)
-
-
-100     With UserList(UserIndex)
-
-            Dim Nick As String
-102         Nick = Reader.ReadString8
-
-            ' Comando exclusivo para admins
-104         If (.flags.Privilegios And e_PlayerType.Admin) = 0 Then Exit Sub
-        
-            Dim tUser As Integer
-106         tUser = NameIndex(Nick)
-        
-            'Se asegura que el target exista
-108         If tUser <= 0 Then
-110             Call WriteConsoleMsg(UserIndex, "El usuario se encuentra offline.", e_FontTypeNames.FONTTYPE_INFO)
-                Exit Sub
-
-            End If
-
-114         Call BanearIP(UserIndex, Nick, UserList(tUser).IP)
-116         Call BanearHDMAC(UserIndex, Nick)
-118         Call BanearCuenta(UserIndex, Nick, "Tolerancia cero")
-
-        End With
-    
-        Exit Sub
-    
-ErrHandler:
-
-120     Call TraceError(Err.Number, Err.Description, "Protocol.HandleTolerancia0", Erl)
-122
 
 End Sub
 
