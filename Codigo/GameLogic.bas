@@ -1716,46 +1716,6 @@ Public Sub CargarMapasEspeciales()
 
 End Sub
 
-Public Sub CargarTipoUsuario(ByVal UserIndex As Integer)
-                
-        Dim cantidadDonadores As Integer
-100     If Not FileExist(DatPath & "donadores.dat", vbArchive) Then
-            Exit Sub
-        End If
-        
-        Dim IniFile As clsIniManager
-106     Set IniFile = New clsIniManager
-108     Call IniFile.Initialize(DatPath & "donadores.dat")
-        
-        cantidadDonadores = val(IniFile.GetValue("INIT", "Cantidad"))
-        
-        If cantidadDonadores > 0 Then
-        
-            Dim emailDonador As String
-            Dim Rango As e_TipoUsuario
-            
-            Dim i As Integer
-            
-            For i = 1 To cantidadDonadores
-            
-                Dim str() As String
-                str = Split(IniFile.GetValue("DONADOR", "Donador" & i), "#")
-                emailDonador = str(0)
-                rango = val(str(1))
-                
-                If LCase(UserList(UserIndex).Email) = LCase(emailDonador) Then
-                    UserList(UserIndex).Stats.tipoUsuario = rango
-                    Set IniFile = Nothing
-                    Exit Sub
-                End If
-                
-            Next i
-            
-        End If
-        
-        UserList(UserIndex).Stats.tipoUsuario = e_TipoUsuario.tNormal
-152     Set IniFile = Nothing
-End Sub
 
 
 
