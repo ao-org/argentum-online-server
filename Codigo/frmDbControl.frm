@@ -15,7 +15,7 @@ Begin VB.Form frmDbControl
    ScaleWidth      =   8610
    ShowInTaskbar   =   0   'False
    StartUpPosition =   3  'Windows Default
-   Begin VB.CommandButton Command5 
+   Begin VB.CommandButton cmdRastrearBoveda 
       Caption         =   "Rastrear OBJ boveda"
       Height          =   255
       Left            =   3840
@@ -24,7 +24,7 @@ Begin VB.Form frmDbControl
       UseMaskColor    =   -1  'True
       Width           =   2415
    End
-   Begin VB.CommandButton Command4 
+   Begin VB.CommandButton cmdRastrearInventario 
       Caption         =   "Rastrear OBJ inventario"
       Height          =   255
       Left            =   3840
@@ -46,7 +46,7 @@ Begin VB.Form frmDbControl
       Appearance      =   1
       Max             =   1000
    End
-   Begin VB.CommandButton Command3 
+   Begin VB.CommandButton cmdActualizarObjetos 
       Caption         =   "Actualizar objetos DB"
       BeginProperty Font 
          Name            =   "MS Sans Serif"
@@ -179,7 +179,7 @@ Begin VB.Form frmDbControl
          EndProperty
       EndProperty
    End
-   Begin VB.CommandButton Command1 
+   Begin VB.CommandButton cmdEjecutarQuery 
       Caption         =   "Ejecutar Query"
       Height          =   255
       Left            =   7200
@@ -201,36 +201,8 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 
-Private Sub cmdBoveda_Click()
-    Call getData("select o.number, o.name, i.amount from bank_item i inner join object o on i.item_id = o.number  where user_id = (select id from user where name = '" & txtQuery.Text & "') and amount > 0")
-End Sub
-
-Private Sub cmdInventario_Click()
-    Call getData("select o.number, o.name, i.amount from inventory_item i inner join object o on i.item_id = o.number  where user_id = (select id from user where name = '" & txtQuery.Text & "') and amount > 0")
-End Sub
-
-Private Sub Command1_Click()
-   Call getData(txtQuery.Text)
-End Sub
-
-Private Sub getData(ByVal queryStr As String)
-     
-    Dim RS As Recordset
-    
-    Set RS = Query(queryStr)
-        
-    If Not RS Is Nothing Then
-        Set DataGrid1.DataSource = RS
-    End If
-    DataGrid1.DefColWidth = 0
-End Sub
-
-Private Sub Command2_Click()
-    Call getData("select * from user")
-End Sub
-
-Private Sub Command3_Click()
-        On Error Resume Next
+Private Sub cmdActualizarObjetos_Click()
+  On Error Resume Next
         If MsgBox("La siguiente acción es demasiado costosa para el servidor, ¿Desea continuar?", vbYesNo) = vbYes Then
             pbarDb.Visible = True
             Dim Object As Integer
@@ -264,13 +236,44 @@ Private Sub Command3_Click()
             pbarDb.Visible = False
         
         End If
-        
 End Sub
 
-Private Sub Command4_Click()
+Private Sub cmdBoveda_Click()
+    If txtQuery.Text <> "" Then
+        Call getData("select o.number, o.name, i.amount from bank_item i inner join object o on i.item_id = o.number  where user_id = (select id from user where name = '" & txtQuery.Text & "') and amount > 0")
+    End If
+End Sub
+
+Private Sub cmdEjecutarQuery_Click()
+   Call getData(txtQuery.Text)
+End Sub
+
+Private Sub cmdInventario_Click()
+    If txtQuery.Text <> "" Then
+        Call getData("select o.number, o.name, i.amount from inventory_item i inner join object o on i.item_id = o.number  where user_id = (select id from user where name = '" & txtQuery.Text & "') and amount > 0")
+    End If
+End Sub
+
+Private Sub getData(ByVal queryStr As String)
+     
+    Dim RS As Recordset
+    
+    Set RS = Query(queryStr)
+        
+    If Not RS Is Nothing Then
+        Set DataGrid1.DataSource = RS
+    End If
+    DataGrid1.DefColWidth = 0
+End Sub
+
+Private Sub cmdRastrearBoveda_Click()
+    Call getData("select u.name, o.name, bi.amount from user u inner join bank_item bi on u.id = bi.user_id inner join object o on bi.item_id = o.number where o.name like '%" & txtQuery.Text & "%' and bi.amount > 0 order by bi.amount desc")
+End Sub
+
+Private Sub cmdRastrearInventario_Click()
     Call getData("select u.name, o.name, ii.amount from user u inner join inventory_item ii on u.id = ii.user_id inner join object o on ii.item_id = o.number where o.name like '%" & txtQuery.Text & "%' and ii.amount > 0 order by ii.amount desc")
 End Sub
 
-Private Sub Command5_Click()
-        Call getData("select u.name, o.name, bi.amount from user u inner join bank_item bi on u.id = bi.user_id inner join object o on bi.item_id = o.number where o.name like '%" & txtQuery.Text & "%' and bi.amount > 0 order by bi.amount desc")
+Private Sub Command2_Click()
+    Call getData("select * from user")
 End Sub
