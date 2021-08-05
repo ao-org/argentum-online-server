@@ -133,6 +133,11 @@ Public Sub FollowPath(ByVal NpcIndex As Integer)
         Dim nextPos As t_WorldPos
     
 100     With NpcList(NpcIndex)
+            
+            If (.pathFindingInfo.PathLength > UBound(.pathFindingInfo.Path)) Then ' Fix temporal para que no explote el LOG
+                Exit Sub
+            End If
+            
 105         nextPos.Map = .Pos.Map
 110         nextPos.X = .pathFindingInfo.Path(.pathFindingInfo.PathLength).X
 115         nextPos.Y = .pathFindingInfo.Path(.pathFindingInfo.PathLength).Y
