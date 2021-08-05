@@ -2077,7 +2077,7 @@ Private Sub HandlePickUp(ByVal UserIndex As Integer)
 
             End If
         
-110         Call GetObj(UserIndex)
+110         Call PickObj(UserIndex)
 
         End With
         
@@ -17481,8 +17481,13 @@ Public Sub HandleQuestAccept(ByVal UserIndex As Integer)
             UserList(UserIndex).flags.ModificoQuests = True
             
 144         Call WriteConsoleMsg(UserIndex, "Has aceptado la misión " & Chr(34) & QuestList(.QuestIndex).nombre & Chr(34) & ".", e_FontTypeNames.FONTTYPE_INFOIAO)
-146         Call WriteUpdateNPCSimbolo(UserIndex, NpcIndex, 4)
-        
+146
+            If (FinishQuestCheck(UserIndex, .QuestIndex, QuestSlot)) Then
+                Call WriteUpdateNPCSimbolo(UserIndex, NpcIndex, 3)
+            Else
+                Call WriteUpdateNPCSimbolo(UserIndex, NpcIndex, 4)
+            End If
+            
         End With
         
         Exit Sub

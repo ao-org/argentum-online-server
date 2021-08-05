@@ -672,7 +672,7 @@ Function MeterItemEnInventario(ByVal UserIndex As Integer, ByRef MiObj As t_Obj)
         End If
         
 132     Call UpdateUserInv(False, UserIndex, Slot)
-
+     
 134     MeterItemEnInventario = True
         UserList(UserIndex).flags.ModificoInventario = True
 
@@ -708,9 +708,9 @@ ErrHandler:
 
 End Function
 
-Sub GetObj(ByVal UserIndex As Integer)
+Sub PickObj(ByVal UserIndex As Integer)
         
-        On Error GoTo GetObj_Err
+        On Error GoTo PickObj_Err
         
         Dim X    As Integer
         Dim Y    As Integer
@@ -793,8 +793,8 @@ Sub GetObj(ByVal UserIndex As Integer)
         
         Exit Sub
 
-GetObj_Err:
-150     Call TraceError(Err.Number, Err.Description, "InvUsuario.GetObj", Erl)
+PickObj_Err:
+150     Call TraceError(Err.Number, Err.Description, "InvUsuario.PickObj", Erl)
 
         
 End Sub
