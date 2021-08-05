@@ -26,6 +26,14 @@ Begin VB.Form frmMain
    ScaleHeight     =   6210
    ScaleWidth      =   6840
    StartUpPosition =   2  'CenterScreen
+   Begin VB.CommandButton Command3 
+      Caption         =   "Recargar donadores"
+      Height          =   495
+      Left            =   1200
+      TabIndex        =   40
+      Top             =   1320
+      Width           =   1335
+   End
    Begin VB.CommandButton cmdDbControl 
       Caption         =   "DbControl"
       Height          =   495
@@ -691,6 +699,10 @@ End Sub
 
 Private Sub cmdDbControl_Click()
     frmDbControl.Show
+End Sub
+
+Private Sub Command3_Click()
+    Call CargarDonadores
 End Sub
 
 Private Sub Segundo_Timer()
