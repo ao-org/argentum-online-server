@@ -682,6 +682,9 @@ Sub Main()
 226         Call LoadMapData
         End If
         
+        frmCargando.Label1(2).Caption = "Cargando donadores"
+        Call CargarDonadores
+        
 228     Call InitPathFinding
 
 230     frmCargando.Label1(2).Caption = "Cargando informacion de eventos"

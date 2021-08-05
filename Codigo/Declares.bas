@@ -49,6 +49,8 @@ Public Enum e_Facciones
     Armada = 3
 End Enum
 
+Public lstUsuariosDonadores() As String
+
 Public Administradores As clsIniManager
 
 Public Enum e_SoundIndex
