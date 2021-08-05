@@ -112,6 +112,7 @@ Main:BEGIN
 		UINFO.siguiente_recompensa,
 		UINFO.status,
 		UINFO.guild_index,
+		UINFO.guild_rejected_because,
 		UINFO.warnings,
 		DATE_FORMAT(UINFO.fecha_ingreso, '%Y-%m-%d') as 'fecha_ingreso_format',
 		UATTR.strength,
@@ -146,22 +147,16 @@ Main:BEGIN
 	SELECT number, value FROM skillpoint WHERE user_id = @UID;
 			
 	-- User quests 
-	SELECT number, quest_id, npcs, npcstarget FROM quest WHERE @UID;
+	SELECT number, quest_id, npcs, npcstarget FROM quest WHERE user_id = @UID;
 			
 	-- User quests done 
 	SELECT quest_id FROM quest_done WHERE user_id = @UID;
-	
-	-- User quests done 
-	SELECT quest_id FROM quest_done WHERE user_id = @UID;
-	
+
 	-- Keys
 	SELECT key_obj FROM house_key WHERE account_id = @AID;
 	
 	-- User's connected status
 	UPDATE user SET is_logged = true WHERE id = @UID;
-	
-	-- Account's connected status
-	UPDATE account SET logged = logged + 1 WHERE id = @AID;
 END//
 DELIMITER ;
 
