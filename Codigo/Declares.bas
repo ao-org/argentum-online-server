@@ -105,6 +105,7 @@ Public MaximoSpeedHack      As Integer
 
 Public LastCountUsersOnline As Integer
 Public LastRecordUsuarios   As Integer
+Public lstUsuariosDonadores() As String
 
 Type t_EstadisticasDiarias
 

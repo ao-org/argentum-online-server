@@ -3328,3 +3328,63 @@ Public Function GetElapsedTime() As Single
 110     start_time = end_time
 
 End Function
+
+Public Sub CargarDonadores()
+
+100     If Not FileExist(DatPath & "donadores.dat", vbArchive) Then
+            Exit Sub
+        End If
+
+        Dim IniFile As clsIniManager
+106     Set IniFile = New clsIniManager
+
+108     Call IniFile.Initialize(DatPath & "donadores.dat")
+
+        Dim cantidadDonadores As Integer
+        cantidadDonadores = val(IniFile.GetValue("INIT", "Cantidad"))
+
+        ReDim lstUsuariosDonadores(0 To cantidadDonadores)
+
+        If cantidadDonadores > 0 Then
+            Dim i As Integer
+
+            For i = 1 To cantidadDonadores
+
+                lstUsuariosDonadores(i) = IniFile.GetValue("DONADOR", "Donador" & i)
+            Next i
+        End If
+
+End Sub
+
+Private Function cargarTipoUsuario(ByVal UserIndex As Integer)
+    Dim i As Integer
+    Dim str() As String
+    
+    With UserList(UserIndex)
+    
+        For i = 1 To UBound(lstUsuariosDonadores)
+        
+            str = Split(lstUsuariosDonadores(i), "#")
+            
+            If LCase$(str(0)) = .Email Then
+                .Stats.tipoUsuario = val(str(1))
+                Exit Function
+            End If
+            
+        Next i
+        .Stats.tipoUsuario = e_TipoUsuario.tNormal
+        
+    End With
+    
+End Function
+
+
+
+
+
+
+
+
+
+
+
