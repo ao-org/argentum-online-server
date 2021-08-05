@@ -29,6 +29,8 @@ Attribute VB_Name = "Trabajo"
 
 Option Explicit
 
+Public Const GOLD_OBJ_INDEX As Long = 12
+
 Public Sub Trabajar(ByVal UserIndex As Integer, ByVal Skill As e_Skill)
         Dim DummyInt As Integer
 
@@ -574,7 +576,11 @@ Function TieneObjetos(ByVal ItemIndex As Integer, ByVal cant As Integer, ByVal U
         Dim i     As Long
 
         Dim Total As Long
-
+        
+        If (ItemIndex = GOLD_OBJ_INDEX) Then
+            Total = UserList(UserIndex).Stats.GLD
+        End If
+        
 100     For i = 1 To UserList(UserIndex).CurrentInventorySlots
 
 102         If UserList(UserIndex).Invent.Object(i).ObjIndex = ItemIndex Then
@@ -603,9 +609,8 @@ Function QuitarObjetos(ByVal ItemIndex As Integer, ByVal cant As Integer, ByVal 
         On Error GoTo QuitarObjetos_Err
         
 100     With UserList(UserIndex)
-
             Dim i As Long
-    
+            
 102         For i = 1 To .CurrentInventorySlots
     
 104             If .Invent.Object(i).ObjIndex = ItemIndex Then
@@ -635,7 +640,24 @@ Function QuitarObjetos(ByVal ItemIndex As Integer, ByVal cant As Integer, ByVal 
                 End If
     
 128         Next i
-
+           
+            If (ItemIndex = GOLD_OBJ_INDEX And cant > 0) Then
+                .Stats.GLD = .Stats.GLD - cant
+                
+                If (.Stats.GLD < 0) Then
+                    cant = Abs(.Stats.GLD)
+                    
+                    .Stats.GLD = 0
+                End If
+                
+                Call WriteUpdateGold(UserIndex)
+                
+                If (cant = 0) Then
+                    QuitarObjetos = True
+                    Exit Function
+                End If
+            End If
+                
         End With
         
         Exit Function
@@ -1680,7 +1702,7 @@ Public Sub DoPescar(ByVal UserIndex As Integer, Optional ByVal RedDePesca As Boo
 146                     If Not MeterItemEnInventario(UserIndex, MiObj) Then Call TirarItemAlPiso(.Pos, MiObj)
                     
                         ' Le mandamos un mensaje
-148                     Call WriteConsoleMsg(UserIndex, "¡Has conseguido " & ObjData(EspecialesPesca(i).ObjIndex).Name & "!", e_FontTypeNames.FONTTYPE_INFO)
+148                     Call WriteConsoleMsg(UserIndex, "¡Has conseguido " & ObjData(EspecialesPesca(I).ObjIndex).Name & "!", e_FontTypeNames.FONTTYPE_INFO)
                     End If
 
                 Next
@@ -2386,7 +2408,7 @@ Public Sub DoMineria(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byt
 154                     If Not MeterItemEnInventario(UserIndex, MiObj) Then Call TirarItemAlPiso(.Pos, MiObj)
 
                         ' Le mandamos un mensaje
-156                     Call WriteConsoleMsg(UserIndex, "¡Has conseguido " & ObjData(Yacimiento.Item(i).ObjIndex).Name & "!", e_FontTypeNames.FONTTYPE_INFO)
+156                     Call WriteConsoleMsg(UserIndex, "¡Has conseguido " & ObjData(Yacimiento.Item(I).ObjIndex).Name & "!", e_FontTypeNames.FONTTYPE_INFO)
                     End If
     
                 Next
