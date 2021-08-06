@@ -386,7 +386,7 @@ Private Sub ConstruirQuery_GuardarPersonaje()
 268     QueryBuilder.Append "guild_index = ?, "
 270     QueryBuilder.Append "chat_combate = ?, "
 272     QueryBuilder.Append "chat_global = ?, "
-274     QueryBuilder.Append "is_logged = ?, "
+'274     QueryBuilder.Append "is_logged = ?, "
 276     QueryBuilder.Append "warnings = ?,"
         QueryBuilder.Append "return_map = ?,"
         QueryBuilder.Append "return_x = ?,"
