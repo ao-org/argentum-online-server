@@ -127,12 +127,12 @@ Sub Bloquear(ByVal toMap As Boolean, ByVal sndIndex As Integer, ByVal X As Integ
         On Error GoTo Bloquear_Err
         
         ' Envío sólo los flags de bloq
-100     B = B And e_Block.ALL_SIDES
+100     b = b And e_Block.ALL_SIDES
 
 102     If toMap Then
-104         Call SendData(SendTarget.toMap, sndIndex, PrepareMessage_BlockPosition(X, Y, B))
+104         Call SendData(SendTarget.toMap, sndIndex, PrepareMessage_BlockPosition(X, Y, b))
         Else
-106         Call Write_BlockPosition(sndIndex, X, Y, B)
+106         Call Write_BlockPosition(sndIndex, X, Y, b)
         End If
 
         
@@ -876,13 +876,13 @@ Sub MostrarNumUsers()
         
             LastCountUsersOnline = NumUsers
             
-104         Call SetUsersLoggedDatabase(NumUsers)
+104         'Call SetUsersLoggedDatabase(NumUsers)
         End If
         
         If (LastRecordUsuarios <> RecordUsuarios) Then
             LastRecordUsuarios = RecordUsuarios
             
-            Call SetRecordUsersDatabase(LastRecordUsuarios)
+            'Call SetRecordUsersDatabase(LastRecordUsuarios)
         End If
 
         Exit Sub

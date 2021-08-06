@@ -10,6 +10,7 @@ Attribute VB_Name = "Database"
 Option Explicit
 
 Public Database_Enabled     As Boolean
+Public Database_Driver      As String
 Public Database_Source      As String
 Public Database_Host        As String
 Public Database_Name        As String
@@ -27,11 +28,7 @@ Public Sub Database_Connect()
         If Len(Database_Source) <> 0 Then
 104         ConnectionID = "DATA SOURCE=" & Database_Source & ";"
         Else
-106         ConnectionID = "DRIVER={MySQL ODBC 8.0 ANSI Driver};" & _
-                                "SERVER=" & Database_Host & ";" & _
-                                "DATABASE=" & Database_Name & ";" & _
-                                "USER=" & Database_Username & ";" & _
-                                "PASSWORD=" & Database_Password & ";"
+106         ConnectionID = "DRIVER={SQLite3 ODBC Driver};" & "DATABASE=" & App.Path & "/Database.db"
         End If
                 
         Set Connection = New ADODB.Connection
@@ -255,61 +252,61 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
     
 102     With UserList(UserIndex)
         
-            Dim i As Integer
-104         ReDim Params(44)
+            Dim I As Integer
+104         ReDim Params(0 To 44)
 
             '  ************ Basic user data *******************
-106         Params(PostInc(i)) = .Name
-108         Params(PostInc(i)) = .AccountID
-110         Params(PostInc(i)) = .Stats.ELV
-112         Params(PostInc(i)) = .Stats.Exp
-114         Params(PostInc(i)) = .genero
-116         Params(PostInc(i)) = .raza
-118         Params(PostInc(i)) = .clase
-120         Params(PostInc(i)) = .Hogar
-122         Params(PostInc(i)) = .Desc
-124         Params(PostInc(i)) = .Stats.GLD
-126         Params(PostInc(i)) = .Stats.SkillPts
-128         Params(PostInc(i)) = .Pos.Map
-130         Params(PostInc(i)) = .Pos.X
-132         Params(PostInc(i)) = .Pos.Y
-134         Params(PostInc(i)) = .Char.Body
-136         Params(PostInc(i)) = .Char.Head
-138         Params(PostInc(i)) = .Char.WeaponAnim
-140         Params(PostInc(i)) = .Char.CascoAnim
-142         Params(PostInc(i)) = .Char.ShieldAnim
-146         Params(PostInc(i)) = .Invent.ArmourEqpSlot
-148         Params(PostInc(i)) = .Invent.WeaponEqpSlot
-150         Params(PostInc(i)) = .Invent.EscudoEqpSlot
-152         Params(PostInc(i)) = .Invent.CascoEqpSlot
-154         Params(PostInc(i)) = .Invent.MunicionEqpSlot
-156         Params(PostInc(i)) = .Invent.DañoMagicoEqpSlot
-158         Params(PostInc(i)) = .Invent.ResistenciaEqpSlot
-160         Params(PostInc(i)) = .Invent.HerramientaEqpSlot
-162         Params(PostInc(i)) = .Invent.MagicoSlot
-164         Params(PostInc(i)) = .Invent.NudilloSlot
-166         Params(PostInc(i)) = .Invent.BarcoSlot
-168         Params(PostInc(i)) = .Invent.MonturaSlot
-170         Params(PostInc(i)) = .Stats.MinHp
-172         Params(PostInc(i)) = .Stats.MaxHp
-174         Params(PostInc(i)) = .Stats.MinMAN
-176         Params(PostInc(i)) = .Stats.MaxMAN
-178         Params(PostInc(i)) = .Stats.MinSta
-180         Params(PostInc(i)) = .Stats.MaxSta
-182         Params(PostInc(i)) = .Stats.MinHam
-184         Params(PostInc(i)) = .Stats.MaxHam
-186         Params(PostInc(i)) = .Stats.MinAGU
-188         Params(PostInc(i)) = .Stats.MaxAGU
-190         Params(PostInc(i)) = .Stats.MinHIT
-192         Params(PostInc(i)) = .Stats.MaxHit
-194         Params(PostInc(i)) = .flags.Desnudo
-196         Params(PostInc(i)) = .Faccion.Status
+106         Params(PostInc(I)) = .Name
+108         Params(PostInc(I)) = .AccountID
+110         Params(PostInc(I)) = .Stats.ELV
+112         Params(PostInc(I)) = .Stats.Exp
+114         Params(PostInc(I)) = .genero
+116         Params(PostInc(I)) = .raza
+118         Params(PostInc(I)) = .clase
+120         Params(PostInc(I)) = .Hogar
+122         Params(PostInc(I)) = .Desc
+124         Params(PostInc(I)) = .Stats.GLD
+126         Params(PostInc(I)) = .Stats.SkillPts
+128         Params(PostInc(I)) = .Pos.Map
+130         Params(PostInc(I)) = .Pos.X
+132         Params(PostInc(I)) = .Pos.Y
+134         Params(PostInc(I)) = .Char.Body
+136         Params(PostInc(I)) = .Char.Head
+138         Params(PostInc(I)) = .Char.WeaponAnim
+140         Params(PostInc(I)) = .Char.CascoAnim
+142         Params(PostInc(I)) = .Char.ShieldAnim
+146         Params(PostInc(I)) = .Invent.ArmourEqpSlot
+148         Params(PostInc(I)) = .Invent.WeaponEqpSlot
+150         Params(PostInc(I)) = .Invent.EscudoEqpSlot
+152         Params(PostInc(I)) = .Invent.CascoEqpSlot
+154         Params(PostInc(I)) = .Invent.MunicionEqpSlot
+156         Params(PostInc(I)) = .Invent.DañoMagicoEqpSlot
+158         Params(PostInc(I)) = .Invent.ResistenciaEqpSlot
+160         Params(PostInc(I)) = .Invent.HerramientaEqpSlot
+162         Params(PostInc(I)) = .Invent.MagicoSlot
+164         Params(PostInc(I)) = .Invent.NudilloSlot
+166         Params(PostInc(I)) = .Invent.BarcoSlot
+168         Params(PostInc(I)) = .Invent.MonturaSlot
+170         Params(PostInc(I)) = .Stats.MinHp
+172         Params(PostInc(I)) = .Stats.MaxHp
+174         Params(PostInc(I)) = .Stats.MinMAN
+176         Params(PostInc(I)) = .Stats.MaxMAN
+178         Params(PostInc(I)) = .Stats.MinSta
+180         Params(PostInc(I)) = .Stats.MaxSta
+182         Params(PostInc(I)) = .Stats.MinHam
+184         Params(PostInc(I)) = .Stats.MaxHam
+186         Params(PostInc(I)) = .Stats.MinAGU
+188         Params(PostInc(I)) = .Stats.MaxAGU
+190         Params(PostInc(I)) = .Stats.MinHIT
+192         Params(PostInc(I)) = .Stats.MaxHit
+194         Params(PostInc(I)) = .flags.Desnudo
+196         Params(PostInc(I)) = .Faccion.Status
         
 198         Call Execute(QUERY_SAVE_MAINPJ, Params)
 
             ' Para recibir el ID del user
             Dim RS As ADODB.Recordset
-            Set RS = Query("SELECT LAST_INSERT_ID();")
+            Set RS = Query("SELECT last_insert_rowid()")
 
 202         If RS Is Nothing Then
 204             .ID = 1
@@ -420,102 +417,105 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
 
         'Basic user data
 102     With UserList(UserIndex)
-        
-104         ReDim Params(88)
+            
+            
+            
+            
+            
+104         ReDim Params(87)
 
-            Dim i As Integer
+            Dim I As Integer
         
-106         Params(PostInc(i)) = .Name
-108         Params(PostInc(i)) = .Stats.ELV
-110         Params(PostInc(i)) = .Stats.Exp
-112         Params(PostInc(i)) = .genero
-114         Params(PostInc(i)) = .raza
-116         Params(PostInc(i)) = .clase
-118         Params(PostInc(i)) = .Hogar
-120         Params(PostInc(i)) = .Desc
-122         Params(PostInc(i)) = .Stats.GLD
-124         Params(PostInc(i)) = .Stats.Banco
-126         Params(PostInc(i)) = .Stats.SkillPts
-128         Params(PostInc(i)) = .flags.MascotasGuardadas
-130         Params(PostInc(i)) = .Pos.Map
-132         Params(PostInc(i)) = .Pos.X
-134         Params(PostInc(i)) = .Pos.Y
-136         Params(PostInc(i)) = .MENSAJEINFORMACION
-138         Params(PostInc(i)) = .Char.Body
-140         Params(PostInc(i)) = .OrigChar.Head
-142         Params(PostInc(i)) = .Char.WeaponAnim
-144         Params(PostInc(i)) = .Char.CascoAnim
-146         Params(PostInc(i)) = .Char.ShieldAnim
-148         Params(PostInc(i)) = .Char.Heading
-152         Params(PostInc(i)) = .Invent.ArmourEqpSlot
-154         Params(PostInc(i)) = .Invent.WeaponEqpSlot
-156         Params(PostInc(i)) = .Invent.EscudoEqpSlot
-158         Params(PostInc(i)) = .Invent.CascoEqpSlot
-160         Params(PostInc(i)) = .Invent.MunicionEqpSlot
-162         Params(PostInc(i)) = .Invent.DañoMagicoEqpSlot
-164         Params(PostInc(i)) = .Invent.ResistenciaEqpSlot
-166         Params(PostInc(i)) = .Invent.HerramientaEqpSlot
-168         Params(PostInc(i)) = .Invent.MagicoSlot
-170         Params(PostInc(i)) = .Invent.NudilloSlot
-172         Params(PostInc(i)) = .Invent.BarcoSlot
-174         Params(PostInc(i)) = .Invent.MonturaSlot
-176         Params(PostInc(i)) = .Stats.MinHp
-178         Params(PostInc(i)) = .Stats.MaxHp
-180         Params(PostInc(i)) = .Stats.MinMAN
-182         Params(PostInc(i)) = .Stats.MaxMAN
-184         Params(PostInc(i)) = .Stats.MinSta
-186         Params(PostInc(i)) = .Stats.MaxSta
-188         Params(PostInc(i)) = .Stats.MinHam
-190         Params(PostInc(i)) = .Stats.MaxHam
-192         Params(PostInc(i)) = .Stats.MinAGU
-194         Params(PostInc(i)) = .Stats.MaxAGU
-196         Params(PostInc(i)) = .Stats.MinHIT
-198         Params(PostInc(i)) = .Stats.MaxHit
-200         Params(PostInc(i)) = .Stats.NPCsMuertos
-202         Params(PostInc(i)) = .Stats.UsuariosMatados
-204         Params(PostInc(i)) = .Stats.InventLevel
-206         Params(PostInc(i)) = .Stats.ELO
-208         Params(PostInc(i)) = .flags.Desnudo
-210         Params(PostInc(i)) = .flags.Envenenado
-212         Params(PostInc(i)) = .flags.Incinerado
-218         Params(PostInc(i)) = .flags.Muerto
-220         Params(PostInc(i)) = .flags.Navegando
-222         Params(PostInc(i)) = .flags.Paralizado
-224         Params(PostInc(i)) = .flags.Montado
-226         Params(PostInc(i)) = .flags.Silenciado
-228         Params(PostInc(i)) = .flags.MinutosRestantes
-230         Params(PostInc(i)) = .flags.SegundosPasados
-232         Params(PostInc(i)) = .flags.Pareja
-234         Params(PostInc(i)) = .Counters.Pena
-236         Params(PostInc(i)) = .flags.VecesQueMoriste
-238         Params(PostInc(i)) = (.flags.Privilegios And e_PlayerType.RoyalCouncil)
-240         Params(PostInc(i)) = (.flags.Privilegios And e_PlayerType.ChaosCouncil)
-242         Params(PostInc(i)) = .Faccion.ArmadaReal
-244         Params(PostInc(i)) = .Faccion.FuerzasCaos
-246         Params(PostInc(i)) = .Faccion.ciudadanosMatados
-248         Params(PostInc(i)) = .Faccion.CriminalesMatados
-250         Params(PostInc(i)) = .Faccion.RecibioArmaduraReal
-252         Params(PostInc(i)) = .Faccion.RecibioArmaduraCaos
-254         Params(PostInc(i)) = .Faccion.RecibioExpInicialReal
-256         Params(PostInc(i)) = .Faccion.RecibioExpInicialCaos
-258         Params(PostInc(i)) = .Faccion.RecompensasReal
-260         Params(PostInc(i)) = .Faccion.RecompensasCaos
-262         Params(PostInc(i)) = .Faccion.Reenlistadas
-264         Params(PostInc(i)) = .Faccion.NivelIngreso
-266         Params(PostInc(i)) = .Faccion.MatadosIngreso
-268         Params(PostInc(i)) = .Faccion.NextRecompensa
-270         Params(PostInc(i)) = .Faccion.Status
-272         Params(PostInc(i)) = .GuildIndex
-274         Params(PostInc(i)) = .ChatCombate
-276         Params(PostInc(i)) = .ChatGlobal
-278         Params(PostInc(i)) = IIf(Logout, 0, 1)
-280         Params(PostInc(i)) = .Stats.Advertencias
-282         Params(PostInc(i)) = .flags.ReturnPos.Map
-284         Params(PostInc(i)) = .flags.ReturnPos.X
-286         Params(PostInc(i)) = .flags.ReturnPos.Y
+106         Params(PostInc(I)) = .Name
+108         Params(PostInc(I)) = .Stats.ELV
+110         Params(PostInc(I)) = .Stats.Exp
+112         Params(PostInc(I)) = .genero
+114         Params(PostInc(I)) = .raza
+116         Params(PostInc(I)) = .clase
+118         Params(PostInc(I)) = .Hogar
+120         Params(PostInc(I)) = .Desc
+122         Params(PostInc(I)) = .Stats.GLD
+124         Params(PostInc(I)) = .Stats.Banco
+126         Params(PostInc(I)) = .Stats.SkillPts
+128         Params(PostInc(I)) = .flags.MascotasGuardadas
+130         Params(PostInc(I)) = .Pos.Map
+132         Params(PostInc(I)) = .Pos.X
+134         Params(PostInc(I)) = .Pos.Y
+136         Params(PostInc(I)) = .MENSAJEINFORMACION
+138         Params(PostInc(I)) = .Char.Body
+140         Params(PostInc(I)) = .OrigChar.Head
+142         Params(PostInc(I)) = .Char.WeaponAnim
+144         Params(PostInc(I)) = .Char.CascoAnim
+146         Params(PostInc(I)) = .Char.ShieldAnim
+148         Params(PostInc(I)) = .Char.Heading
+152         Params(PostInc(I)) = .Invent.ArmourEqpSlot
+154         Params(PostInc(I)) = .Invent.WeaponEqpSlot
+156         Params(PostInc(I)) = .Invent.EscudoEqpSlot
+158         Params(PostInc(I)) = .Invent.CascoEqpSlot
+160         Params(PostInc(I)) = .Invent.MunicionEqpSlot
+162         Params(PostInc(I)) = .Invent.DañoMagicoEqpSlot
+164         Params(PostInc(I)) = .Invent.ResistenciaEqpSlot
+166         Params(PostInc(I)) = .Invent.HerramientaEqpSlot
+168         Params(PostInc(I)) = .Invent.MagicoSlot
+170         Params(PostInc(I)) = .Invent.NudilloSlot
+172         Params(PostInc(I)) = .Invent.BarcoSlot
+174         Params(PostInc(I)) = .Invent.MonturaSlot
+176         Params(PostInc(I)) = .Stats.MinHp
+178         Params(PostInc(I)) = .Stats.MaxHp
+180         Params(PostInc(I)) = .Stats.MinMAN
+182         Params(PostInc(I)) = .Stats.MaxMAN
+184         Params(PostInc(I)) = .Stats.MinSta
+186         Params(PostInc(I)) = .Stats.MaxSta
+188         Params(PostInc(I)) = .Stats.MinHam
+190         Params(PostInc(I)) = .Stats.MaxHam
+192         Params(PostInc(I)) = .Stats.MinAGU
+194         Params(PostInc(I)) = .Stats.MaxAGU
+196         Params(PostInc(I)) = .Stats.MinHIT
+198         Params(PostInc(I)) = .Stats.MaxHit
+200         Params(PostInc(I)) = .Stats.NPCsMuertos
+202         Params(PostInc(I)) = .Stats.UsuariosMatados
+204         Params(PostInc(I)) = .Stats.InventLevel
+206         Params(PostInc(I)) = .Stats.ELO
+208         Params(PostInc(I)) = .flags.Desnudo
+210         Params(PostInc(I)) = .flags.Envenenado
+212         Params(PostInc(I)) = .flags.Incinerado
+218         Params(PostInc(I)) = .flags.Muerto
+220         Params(PostInc(I)) = .flags.Navegando
+222         Params(PostInc(I)) = .flags.Paralizado
+224         Params(PostInc(I)) = .flags.Montado
+226         Params(PostInc(I)) = .flags.Silenciado
+228         Params(PostInc(I)) = .flags.MinutosRestantes
+230         Params(PostInc(I)) = .flags.SegundosPasados
+232         Params(PostInc(I)) = .flags.Pareja
+234         Params(PostInc(I)) = .Counters.Pena
+236         Params(PostInc(I)) = .flags.VecesQueMoriste
+238         Params(PostInc(I)) = (.flags.Privilegios And e_PlayerType.RoyalCouncil)
+240         Params(PostInc(I)) = (.flags.Privilegios And e_PlayerType.ChaosCouncil)
+242         Params(PostInc(I)) = .Faccion.ArmadaReal
+244         Params(PostInc(I)) = .Faccion.FuerzasCaos
+246         Params(PostInc(I)) = .Faccion.ciudadanosMatados
+248         Params(PostInc(I)) = .Faccion.CriminalesMatados
+250         Params(PostInc(I)) = .Faccion.RecibioArmaduraReal
+252         Params(PostInc(I)) = .Faccion.RecibioArmaduraCaos
+254         Params(PostInc(I)) = .Faccion.RecibioExpInicialReal
+256         Params(PostInc(I)) = .Faccion.RecibioExpInicialCaos
+258         Params(PostInc(I)) = .Faccion.RecompensasReal
+260         Params(PostInc(I)) = .Faccion.RecompensasCaos
+262         Params(PostInc(I)) = .Faccion.Reenlistadas
+264         Params(PostInc(I)) = .Faccion.NivelIngreso
+266         Params(PostInc(I)) = .Faccion.MatadosIngreso
+268         Params(PostInc(I)) = .Faccion.NextRecompensa
+270         Params(PostInc(I)) = .Faccion.Status
+272         Params(PostInc(I)) = .GuildIndex
+274         Params(PostInc(I)) = .ChatCombate
+276         Params(PostInc(I)) = .ChatGlobal
+280         Params(PostInc(I)) = .Stats.Advertencias
+282         Params(PostInc(I)) = .flags.ReturnPos.Map
+284         Params(PostInc(I)) = .flags.ReturnPos.X
+286         Params(PostInc(I)) = .flags.ReturnPos.Y
 
             ' WHERE block
-288         Params(PostInc(i)) = .ID
+288         Params(PostInc(I)) = .ID
             
             Call Execute(QUERY_UPDATE_MAINPJ, Params)
 
@@ -640,7 +640,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
 
             ' ************************** User quests *********************************
 524         If .flags.ModificoQuests Then
-526             Builder.Append "INSERT INTO quest (user_id, number, quest_id, npcs, npcstarget) VALUES "
+526             Builder.Append "REPLACE quest (user_id, number, quest_id, npcs, npcstarget) VALUES "
             
                 Dim Tmp As Integer, LoopK As Long
     
@@ -694,9 +694,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
                     End If
     
 576             Next LoopC
-            
-578             Builder.Append " ON DUPLICATE KEY UPDATE quest_id=VALUES(quest_id), npcs=VALUES(npcs);"
-    
+
                 Call Execute(Builder.ToString())
 
 584             Call Builder.Clear
@@ -712,7 +710,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
 588             If .flags.ModificoQuestsHechas Then
                 
                     ' Armamos la query con los placeholders
-590                 Builder.Append "INSERT INTO quest_done (user_id, quest_id) VALUES "
+590                 Builder.Append "REPLACE INTO quest_done (user_id, quest_id) VALUES "
                 
 592                 For LoopC = 1 To .QuestStats.NumQuestsDone
 594                     Builder.Append "(?, ?)"
@@ -722,9 +720,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
                         End If
                 
 600                 Next LoopC
-                        
-602                 Builder.Append " ON DUPLICATE KEY UPDATE quest_id=VALUES(quest_id); "
-                
+
                     ' Metemos los parametros
 604                 ReDim Params(.QuestStats.NumQuestsDone * 2 - 1)
 606                 ParamC = 0
@@ -763,9 +759,9 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
 
         'Basic user data
 100     With UserList(UserIndex)
-
+            
             Dim RS As ADODB.Recordset
-            Set RS = Invoke("sp_LoadChar", .Name, True)
+            Set RS = Query(QUERY_LOAD_MAINPJ, .Name)
 
 104         If RS Is Nothing Then Exit Sub
             
@@ -900,20 +896,24 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
 298         .Stats.Advertencias = RS!warnings
         
             'User attributes
-            .Stats.UserAtributos(e_Atributos.Fuerza) = RS!strength
-            .Stats.UserAtributos(e_Atributos.Agilidad) = RS!agility
-            .Stats.UserAtributos(e_Atributos.Constitucion) = RS!constitution
-            .Stats.UserAtributos(e_Atributos.Inteligencia) = RS!intelligence
-            .Stats.UserAtributos(e_Atributos.Carisma) = RS!charisma
+            Set RS = Query("SELECT * FROM attribute WHERE user_id = ?;", .ID)
+    
+302         If Not RS Is Nothing Then
+                .Stats.UserAtributos(e_Atributos.Fuerza) = RS!strength
+                .Stats.UserAtributos(e_Atributos.Agilidad) = RS!agility
+                .Stats.UserAtributos(e_Atributos.Constitucion) = RS!constitution
+                .Stats.UserAtributos(e_Atributos.Inteligencia) = RS!intelligence
+                .Stats.UserAtributos(e_Atributos.Carisma) = RS!charisma
 
-            .Stats.UserAtributosBackUP(e_Atributos.Fuerza) = .Stats.UserAtributos(e_Atributos.Fuerza)
-            .Stats.UserAtributosBackUP(e_Atributos.Agilidad) = .Stats.UserAtributos(e_Atributos.Agilidad)
-            .Stats.UserAtributosBackUP(e_Atributos.Constitucion) = .Stats.UserAtributos(e_Atributos.Constitucion)
-            .Stats.UserAtributosBackUP(e_Atributos.Inteligencia) = .Stats.UserAtributos(e_Atributos.Inteligencia)
-            .Stats.UserAtributosBackUP(e_Atributos.Carisma) = .Stats.UserAtributos(e_Atributos.Carisma)
+                .Stats.UserAtributosBackUP(e_Atributos.Fuerza) = .Stats.UserAtributos(e_Atributos.Fuerza)
+                .Stats.UserAtributosBackUP(e_Atributos.Agilidad) = .Stats.UserAtributos(e_Atributos.Agilidad)
+                .Stats.UserAtributosBackUP(e_Atributos.Constitucion) = .Stats.UserAtributos(e_Atributos.Constitucion)
+                .Stats.UserAtributosBackUP(e_Atributos.Inteligencia) = .Stats.UserAtributos(e_Atributos.Inteligencia)
+                .Stats.UserAtributosBackUP(e_Atributos.Carisma) = .Stats.UserAtributos(e_Atributos.Carisma)
+            End If
             
             'User spells
-            Set RS = RS.NextRecordset
+            Set RS = Query("SELECT number, spell_id FROM spell WHERE user_id = ?;", .ID)
 
 316         If Not RS Is Nothing Then
 
@@ -927,7 +927,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
             End If
 
             'User pets
-            Set RS = RS.NextRecordset
+            Set RS = Query("SELECT number, pet_id FROM pet WHERE user_id = ?;", .ID)
 
 328         If Not RS Is Nothing Then
 
@@ -946,7 +946,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
             End If
 
             'User inventory
-            Set RS = RS.NextRecordset
+            Set RS = Query("SELECT number, item_id, is_equipped, amount FROM inventory_item WHERE user_id = ?;", .ID)
 
             counter = 0
             
@@ -979,7 +979,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
             End If
 
             'User bank inventory
-            Set RS = RS.NextRecordset
+            Set RS = Query("SELECT number, item_id, amount FROM bank_item WHERE user_id = ?;", .ID)
             
             counter = 0
             
@@ -1011,7 +1011,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
             End If
             
             'User skills
-            Set RS = RS.NextRecordset
+            Set RS = Query("SELECT number, value FROM skillpoint WHERE user_id = ?;", .ID)
 
 390         If Not RS Is Nothing Then
 
@@ -1029,7 +1029,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
             Dim LoopC As Byte
         
             'User quests
-            Set RS = RS.NextRecordset
+            Set RS = Query("SELECT number, quest_id, npcs, npcstarget FROM quest WHERE user_id = ?;", .ID)
 
 402         If Not RS Is Nothing Then
 
@@ -1072,7 +1072,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
             End If
         
             'User quests done
-            Set RS = RS.NextRecordset
+            Set RS = Query("SELECT quest_id FROM quest_done WHERE user_id = ?;", .ID)
 
 440         If Not RS Is Nothing Then
 442             .QuestStats.NumQuestsDone = RS.RecordCount
@@ -1093,7 +1093,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
             End If
 
             ' Llaves
-            Set RS = RS.NextRecordset
+            Set RS = Query("SELECT key_obj FROM house_key WHERE account_id = ?", .AccountID)
 
 460         If Not RS Is Nothing Then
 464             LoopC = 1
@@ -1107,6 +1107,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
                 Wend
 
             End If
+
         End With
         
 
@@ -1125,7 +1126,7 @@ Public Function GetDBValue(Tabla As String, ColumnaGet As String, ColumnaTest As
 
         'Revisamos si recibio un resultado
 102     If RS Is Nothing Then Exit Function
-        If rs.BOF Or rs.EOF Then Exit Function
+        If RS.BOF Or RS.EOF Then Exit Function
         
         'Obtenemos la variable
 104     GetDBValue = RS.Fields(ColumnaGet).Value
@@ -1262,38 +1263,38 @@ Public Function GetPersonajesCuentaDatabase(ByVal AccountID As Long, Personaje()
     
 104     GetPersonajesCuentaDatabase = RS.RecordCount
 
-        Dim i As Integer
+        Dim I As Integer
 
-108     For i = 1 To GetPersonajesCuentaDatabase
-110         Personaje(i).nombre = RS!Name
-112         Personaje(i).Cabeza = RS!head_id
-114         Personaje(i).clase = RS!class_id
-116         Personaje(i).cuerpo = RS!body_id
-118         Personaje(i).Mapa = RS!pos_map
-120         Personaje(i).posX = RS!pos_x
-122         Personaje(i).posY = RS!pos_y
-124         Personaje(i).nivel = RS!level
-126         Personaje(i).Status = RS!Status
-128         Personaje(i).Casco = RS!helmet_id
-130         Personaje(i).Escudo = RS!shield_id
-132         Personaje(i).Arma = RS!weapon_id
-134         Personaje(i).ClanIndex = RS!Guild_Index
+108     For I = 1 To GetPersonajesCuentaDatabase
+110         Personaje(I).nombre = RS!Name
+112         Personaje(I).Cabeza = RS!head_id
+114         Personaje(I).clase = RS!class_id
+116         Personaje(I).cuerpo = RS!body_id
+118         Personaje(I).Mapa = RS!pos_map
+120         Personaje(I).posX = RS!pos_x
+122         Personaje(I).posY = RS!pos_y
+124         Personaje(I).nivel = RS!level
+126         Personaje(I).Status = RS!Status
+128         Personaje(I).Casco = RS!helmet_id
+130         Personaje(I).Escudo = RS!shield_id
+132         Personaje(I).Arma = RS!weapon_id
+134         Personaje(I).ClanIndex = RS!Guild_Index
         
-136         If EsRolesMaster(Personaje(i).nombre) Then
-138             Personaje(i).Status = 3
-140         ElseIf EsConsejero(Personaje(i).nombre) Then
-142             Personaje(i).Status = 4
-144         ElseIf EsSemiDios(Personaje(i).nombre) Then
-146             Personaje(i).Status = 5
-148         ElseIf EsDios(Personaje(i).nombre) Then
-150             Personaje(i).Status = 6
-152         ElseIf EsAdmin(Personaje(i).nombre) Then
-154             Personaje(i).Status = 7
+136         If EsRolesMaster(Personaje(I).nombre) Then
+138             Personaje(I).Status = 3
+140         ElseIf EsConsejero(Personaje(I).nombre) Then
+142             Personaje(I).Status = 4
+144         ElseIf EsSemiDios(Personaje(I).nombre) Then
+146             Personaje(I).Status = 5
+148         ElseIf EsDios(Personaje(I).nombre) Then
+150             Personaje(I).Status = 6
+152         ElseIf EsAdmin(Personaje(I).nombre) Then
+154             Personaje(I).Status = 7
 
             End If
 
 156         If val(RS!is_dead) = 1 Or val(RS!is_sailing) = 1 Then
-158             Personaje(i).Cabeza = 0
+158             Personaje(I).Cabeza = 0
             End If
         
 160         RS.MoveNext
@@ -1886,7 +1887,7 @@ Public Function EnterAccountDatabase(ByVal UserIndex As Integer, ByVal CuentaEma
 124     UserList(UserIndex).Cuenta = CuentaEmail
         UserList(UserIndex).Email = CuentaEmail
         
-        Call Execute("UPDATE account SET last_ip = ?, last_access = NOW() WHERE id = ?", IP, CLng(RS!ID))
+        'Call Execute("UPDATE account SET last_ip = ?, last_access = NOW() WHERE id = ?", IP, CLng(RS!ID))
         
 128     EnterAccountDatabase = True
     
@@ -2020,7 +2021,7 @@ End Function
 Public Function SacarLlaveDatabase(ByVal LlaveObj As Integer) As Boolean
         On Error GoTo ErrorHandler
 
-        Dim i As Integer
+        Dim I As Integer
         Dim UserCount As Integer
         Dim Users() As String
 
@@ -2035,12 +2036,12 @@ Public Function SacarLlaveDatabase(ByVal LlaveObj As Integer) As Boolean
     
 106     ReDim Users(1 To UserCount) As String
 
-110     i = 1
+110     I = 1
 
 112     While Not RS.EOF
     
-114         Users(i) = RS!Name
-116         i = i + 1
+114         Users(I) = RS!Name
+116         I = I + 1
 
 118         RS.MoveNext
         Wend
@@ -2052,8 +2053,8 @@ Public Function SacarLlaveDatabase(ByVal LlaveObj As Integer) As Boolean
         If (SacarLlaveDatabase) Then
             Dim UserIndex As Integer
         
-122         For i = 1 To UserCount
-124             UserIndex = NameIndex(Users(i))
+122         For I = 1 To UserCount
+124             UserIndex = NameIndex(Users(I))
             
 126             If UserIndex <> 0 Then
 128                 Call SacarLlaveDeLLavero(UserIndex, LlaveObj)
