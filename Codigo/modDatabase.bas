@@ -10,6 +10,7 @@ Attribute VB_Name = "Database"
 Option Explicit
 
 Public Database_Enabled     As Boolean
+Public Database_Driver      As String
 Public Database_Source      As String
 Public Database_Host        As String
 Public Database_Name        As String
@@ -27,11 +28,7 @@ Public Sub Database_Connect()
         If Len(Database_Source) <> 0 Then
 104         ConnectionID = "DATA SOURCE=" & Database_Source & ";"
         Else
-106         ConnectionID = "DRIVER={MySQL ODBC 8.0 ANSI Driver};" & _
-                                "SERVER=" & Database_Host & ";" & _
-                                "DATABASE=" & Database_Name & ";" & _
-                                "USER=" & Database_Username & ";" & _
-                                "PASSWORD=" & Database_Password & ";"
+106         ConnectionID = "DRIVER={SQLite3 ODBC Driver};" & "DATABASE=" & App.Path & "/Database.db"
         End If
                 
         Set Connection = New ADODB.Connection
@@ -256,7 +253,7 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
 102     With UserList(UserIndex)
         
             Dim i As Integer
-104         ReDim Params(44)
+104         ReDim Params(0 To 44)
 
             '  ************ Basic user data *******************
 106         Params(PostInc(i)) = .Name
@@ -309,7 +306,7 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
 
             ' Para recibir el ID del user
             Dim RS As ADODB.Recordset
-            Set RS = Query("SELECT LAST_INSERT_ID();")
+            Set RS = Query("SELECT last_insert_rowid()")
 
 202         If RS Is Nothing Then
 204             .ID = 1
@@ -420,8 +417,12 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
 
         'Basic user data
 102     With UserList(UserIndex)
-        
-104         ReDim Params(88)
+            
+            
+            
+            
+            
+104         ReDim Params(87)
 
             Dim i As Integer
         
@@ -508,7 +509,6 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
 272         Params(PostInc(i)) = .GuildIndex
 274         Params(PostInc(i)) = .ChatCombate
 276         Params(PostInc(i)) = .ChatGlobal
-278         Params(PostInc(i)) = IIf(Logout, 0, 1)
 280         Params(PostInc(i)) = .Stats.Advertencias
 282         Params(PostInc(i)) = .flags.ReturnPos.Map
 284         Params(PostInc(i)) = .flags.ReturnPos.X
@@ -640,7 +640,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
 
             ' ************************** User quests *********************************
 524         If .flags.ModificoQuests Then
-526             Builder.Append "INSERT INTO quest (user_id, number, quest_id, npcs, npcstarget) VALUES "
+526             Builder.Append "REPLACE INTO quest (user_id, number, quest_id, npcs, npcstarget) VALUES "
             
                 Dim Tmp As Integer, LoopK As Long
     
@@ -694,9 +694,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
                     End If
     
 576             Next LoopC
-            
-578             Builder.Append " ON DUPLICATE KEY UPDATE quest_id=VALUES(quest_id), npcs=VALUES(npcs);"
-    
+
                 Call Execute(Builder.ToString())
 
 584             Call Builder.Clear
@@ -712,7 +710,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
 588             If .flags.ModificoQuestsHechas Then
                 
                     ' Armamos la query con los placeholders
-590                 Builder.Append "INSERT INTO quest_done (user_id, quest_id) VALUES "
+590                 Builder.Append "REPLACE INTO quest_done (user_id, quest_id) VALUES "
                 
 592                 For LoopC = 1 To .QuestStats.NumQuestsDone
 594                     Builder.Append "(?, ?)"
@@ -722,9 +720,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
                         End If
                 
 600                 Next LoopC
-                        
-602                 Builder.Append " ON DUPLICATE KEY UPDATE quest_id=VALUES(quest_id); "
-                
+
                     ' Metemos los parametros
 604                 ReDim Params(.QuestStats.NumQuestsDone * 2 - 1)
 606                 ParamC = 0
@@ -763,9 +759,9 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
 
         'Basic user data
 100     With UserList(UserIndex)
-
+            
             Dim RS As ADODB.Recordset
-            Set RS = Invoke("sp_LoadChar", .Name, True)
+            Set RS = Query(QUERY_LOAD_MAINPJ, .Name)
 
 104         If RS Is Nothing Then Exit Sub
             
@@ -900,20 +896,24 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
 298         .Stats.Advertencias = RS!warnings
         
             'User attributes
-            .Stats.UserAtributos(e_Atributos.Fuerza) = RS!strength
-            .Stats.UserAtributos(e_Atributos.Agilidad) = RS!agility
-            .Stats.UserAtributos(e_Atributos.Constitucion) = RS!constitution
-            .Stats.UserAtributos(e_Atributos.Inteligencia) = RS!intelligence
-            .Stats.UserAtributos(e_Atributos.Carisma) = RS!charisma
+            Set RS = Query("SELECT * FROM attribute WHERE user_id = ?;", .ID)
+    
+302         If Not RS Is Nothing Then
+                .Stats.UserAtributos(e_Atributos.Fuerza) = RS!strength
+                .Stats.UserAtributos(e_Atributos.Agilidad) = RS!agility
+                .Stats.UserAtributos(e_Atributos.Constitucion) = RS!constitution
+                .Stats.UserAtributos(e_Atributos.Inteligencia) = RS!intelligence
+                .Stats.UserAtributos(e_Atributos.Carisma) = RS!charisma
 
-            .Stats.UserAtributosBackUP(e_Atributos.Fuerza) = .Stats.UserAtributos(e_Atributos.Fuerza)
-            .Stats.UserAtributosBackUP(e_Atributos.Agilidad) = .Stats.UserAtributos(e_Atributos.Agilidad)
-            .Stats.UserAtributosBackUP(e_Atributos.Constitucion) = .Stats.UserAtributos(e_Atributos.Constitucion)
-            .Stats.UserAtributosBackUP(e_Atributos.Inteligencia) = .Stats.UserAtributos(e_Atributos.Inteligencia)
-            .Stats.UserAtributosBackUP(e_Atributos.Carisma) = .Stats.UserAtributos(e_Atributos.Carisma)
+                .Stats.UserAtributosBackUP(e_Atributos.Fuerza) = .Stats.UserAtributos(e_Atributos.Fuerza)
+                .Stats.UserAtributosBackUP(e_Atributos.Agilidad) = .Stats.UserAtributos(e_Atributos.Agilidad)
+                .Stats.UserAtributosBackUP(e_Atributos.Constitucion) = .Stats.UserAtributos(e_Atributos.Constitucion)
+                .Stats.UserAtributosBackUP(e_Atributos.Inteligencia) = .Stats.UserAtributos(e_Atributos.Inteligencia)
+                .Stats.UserAtributosBackUP(e_Atributos.Carisma) = .Stats.UserAtributos(e_Atributos.Carisma)
+            End If
             
             'User spells
-            Set RS = RS.NextRecordset
+            Set RS = Query("SELECT number, spell_id FROM spell WHERE user_id = ?;", .ID)
 
 316         If Not RS Is Nothing Then
 
@@ -927,7 +927,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
             End If
 
             'User pets
-            Set RS = RS.NextRecordset
+            Set RS = Query("SELECT number, pet_id FROM pet WHERE user_id = ?;", .ID)
 
 328         If Not RS Is Nothing Then
 
@@ -946,7 +946,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
             End If
 
             'User inventory
-            Set RS = RS.NextRecordset
+            Set RS = Query("SELECT number, item_id, is_equipped, amount FROM inventory_item WHERE user_id = ?;", .ID)
 
             counter = 0
             
@@ -979,7 +979,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
             End If
 
             'User bank inventory
-            Set RS = RS.NextRecordset
+            Set RS = Query("SELECT number, item_id, amount FROM bank_item WHERE user_id = ?;", .ID)
             
             counter = 0
             
@@ -1011,7 +1011,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
             End If
             
             'User skills
-            Set RS = RS.NextRecordset
+            Set RS = Query("SELECT number, value FROM skillpoint WHERE user_id = ?;", .ID)
 
 390         If Not RS Is Nothing Then
 
@@ -1029,7 +1029,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
             Dim LoopC As Byte
         
             'User quests
-            Set RS = RS.NextRecordset
+            Set RS = Query("SELECT number, quest_id, npcs, npcstarget FROM quest WHERE user_id = ?;", .ID)
 
 402         If Not RS Is Nothing Then
 
@@ -1072,7 +1072,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
             End If
         
             'User quests done
-            Set RS = RS.NextRecordset
+            Set RS = Query("SELECT quest_id FROM quest_done WHERE user_id = ?;", .ID)
 
 440         If Not RS Is Nothing Then
 442             .QuestStats.NumQuestsDone = RS.RecordCount
@@ -1093,7 +1093,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
             End If
 
             ' Llaves
-            Set RS = RS.NextRecordset
+            Set RS = Query("SELECT key_obj FROM house_key WHERE account_id = ?", .AccountID)
 
 460         If Not RS Is Nothing Then
 464             LoopC = 1
@@ -1107,6 +1107,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
                 Wend
 
             End If
+
         End With
         
 
@@ -1125,7 +1126,7 @@ Public Function GetDBValue(Tabla As String, ColumnaGet As String, ColumnaTest As
 
         'Revisamos si recibio un resultado
 102     If RS Is Nothing Then Exit Function
-        If rs.BOF Or rs.EOF Then Exit Function
+        If RS.BOF Or RS.EOF Then Exit Function
         
         'Obtenemos la variable
 104     GetDBValue = RS.Fields(ColumnaGet).Value
@@ -1431,7 +1432,7 @@ Public Sub BorrarUsuarioDatabase(Name As String)
 
         On Error GoTo ErrorHandler
         
-        Call Execute("UPDATE user SET name = CONCAT('DELETED_', name), deleted = TRUE WHERE UPPER(name) = ?;", UCase$(Name))
+        Call Execute("UPDATE user SET name =  'DELETED_' || name, deleted = TRUE WHERE UPPER(name) = ?;", UCase$(Name))
 
         Exit Sub
     
@@ -1855,7 +1856,7 @@ Public Function EnterAccountDatabase(ByVal UserIndex As Integer, ByVal CuentaEma
         On Error GoTo ErrorHandler
     
         Dim RS As ADODB.Recordset
-100     Set RS = Query("SELECT id, password, salt, validated, is_banned, ban_reason, banned_by FROM account WHERE email = ?", LCase$(CuentaEmail))
+100     Set rs = Query("SELECT id, password, salt, validated, is_banned, ban_reason, banned_by FROM account WHERE upper(email) = ?", UCase(CuentaEmail))
     
 102     If Connection.State = adStateClosed Then
 104         Call WriteShowMessageBox(UserIndex, "Ha ocurrido un error interno en el servidor. ¡Estamos tratando de resolverlo!")
@@ -1886,7 +1887,7 @@ Public Function EnterAccountDatabase(ByVal UserIndex As Integer, ByVal CuentaEma
 124     UserList(UserIndex).Cuenta = CuentaEmail
         UserList(UserIndex).Email = CuentaEmail
         
-        Call Execute("UPDATE account SET last_ip = ?, last_access = NOW() WHERE id = ?", IP, CLng(RS!ID))
+        'Call Execute("UPDATE account SET last_ip = ?, last_access = NOW() WHERE id = ?", IP, CLng(RS!ID))
         
 128     EnterAccountDatabase = True
     
@@ -2009,7 +2010,7 @@ End Function
 Public Function DarLlaveACuentaDatabase(Email As String, ByVal LlaveObj As Integer) As Boolean
         On Error GoTo ErrorHandler
     
-102     DarLlaveACuentaDatabase = Execute("INSERT INTO house_key SET key_obj = ?, account_id = (SELECT id FROM account WHERE UPPER(email) = ?);", LlaveObj, UCase$(Email))
+102     DarLlaveACuentaDatabase = Execute("INSERT INTO house_key SET key_obj = ?, account_id = (SELECT id FROM account WHERE email = ?);", LlaveObj, UCase$(Email))
         Exit Function
 
 ErrorHandler:
