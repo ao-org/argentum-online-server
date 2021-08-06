@@ -1432,7 +1432,7 @@ Public Sub BorrarUsuarioDatabase(Name As String)
 
         On Error GoTo ErrorHandler
         
-        Call Execute("UPDATE user SET name = CONCAT('DELETED_', name), deleted = TRUE WHERE UPPER(name) = ?;", UCase$(Name))
+        Call Execute("UPDATE user SET name =  'DELETED_' || name, deleted = TRUE WHERE UPPER(name) = ?;", UCase$(Name))
 
         Exit Sub
     
@@ -1856,7 +1856,7 @@ Public Function EnterAccountDatabase(ByVal UserIndex As Integer, ByVal CuentaEma
         On Error GoTo ErrorHandler
     
         Dim RS As ADODB.Recordset
-100     Set RS = Query("SELECT id, password, salt, validated, is_banned, ban_reason, banned_by FROM account WHERE email = ?", LCase$(CuentaEmail))
+100     Set rs = Query("SELECT id, password, salt, validated, is_banned, ban_reason, banned_by FROM account WHERE upper(email) = ?", UCase(CuentaEmail))
     
 102     If Connection.State = adStateClosed Then
 104         Call WriteShowMessageBox(UserIndex, "Ha ocurrido un error interno en el servidor. ¡Estamos tratando de resolverlo!")
@@ -2010,7 +2010,7 @@ End Function
 Public Function DarLlaveACuentaDatabase(Email As String, ByVal LlaveObj As Integer) As Boolean
         On Error GoTo ErrorHandler
     
-102     DarLlaveACuentaDatabase = Execute("INSERT INTO house_key SET key_obj = ?, account_id = (SELECT id FROM account WHERE UPPER(email) = ?);", LlaveObj, UCase$(Email))
+102     DarLlaveACuentaDatabase = Execute("INSERT INTO house_key SET key_obj = ?, account_id = (SELECT id FROM account WHERE email = ?);", LlaveObj, UCase$(Email))
         Exit Function
 
 ErrorHandler:
