@@ -15317,7 +15317,7 @@ Private Sub HandleBorrarPJ(ByVal UserIndex As Integer)
             End If
             
             Dim RS As Recordset
-            Set RS = Query("SELECT account_id, level, is_banned WHERE name = ?", UserDelete)
+            Set rs = Query("SELECT account_id, level, is_banned from user WHERE name = ?", UserDelete)
             
             If (RS Is Nothing) Then
                 Call CloseSocket(UserIndex)
