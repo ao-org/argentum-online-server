@@ -463,7 +463,7 @@ Public Function ConnectUser_Complete(ByVal UserIndex As Integer, _
 660                     If esAgua Then
 
                             'reviso que sea pos legal en agua, que no haya User ni NPC para poder loguear.
-665                         If LegalPos(.Pos.Map, tX, tY, True, False, False, False, False) Then
+665                         If LegalPos(.Pos.Map, tX, tY, True, True, False, False, False) Then
 670                             FoundPlace = True
                                 Exit For
 
@@ -472,7 +472,7 @@ Public Function ConnectUser_Complete(ByVal UserIndex As Integer, _
                         Else
 
                             'reviso que sea pos legal en tierra, que no haya User ni NPC para poder loguear.
-675                         If LegalPos(.Pos.Map, tX, tY, False, False, False, False, False) Then
+675                         If LegalPos(.Pos.Map, tX, tY, False, True, False, False, False) Then
 680                             FoundPlace = True
                                 Exit For
 
