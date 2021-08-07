@@ -353,7 +353,7 @@ Public Enum e_Trigger
     BAJOTECHO = 1
     trigger_2 = 2
     POSINVALIDA = 3
-    ZONASEGURA = 4
+    ZonaSegura = 4
     ANTIPIQUETE = 5
     ZONAPELEA = 6
     CURA = 7
@@ -1016,7 +1016,7 @@ Public Type t_Obj
 
     ObjIndex As Integer
     amount As Long
-    data As Double
+    Data As Double
 
 End Type
 
@@ -2191,6 +2191,7 @@ Type t_MapInfo
     MinLevel As Integer
     MaxLevel As Integer
     Salida As t_WorldPos
+    NoMascotas As Boolean
 
 End Type
 

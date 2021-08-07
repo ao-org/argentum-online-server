@@ -56,7 +56,7 @@ Private Type t_Grh
 
     GrhIndex As Long
     FrameCounter As Single
-    speed As Single
+    Speed As Single
     Started As Byte
     alpha_blend As Boolean
     angle As Single
@@ -74,7 +74,7 @@ Private Type t_GrhData
     TileHeight As Single
     NumFrames As Integer
     Frames() As Integer
-    speed As Integer
+    Speed As Integer
     mini_map_color As Long
 
 End Type
@@ -1855,7 +1855,7 @@ Sub LoadMapData()
 
 man:
 132     Call MsgBox("Error durante la carga de mapas, el mapa " & Map & " contiene errores")
-134     Call LogError(Date & " " & Err.Description & " " & Err.HelpContext & " " & Err.HelpFile & " " & Err.source)
+134     Call LogError(Date & " " & Err.Description & " " & Err.HelpContext & " " & Err.HelpFile & " " & Err.Source)
 
 End Sub
 
@@ -2144,6 +2144,7 @@ Public Sub CargarMapaFormatoCSM(ByVal Map As Long, ByVal MAPFl As String)
 354     MapInfo(Map).NoCiudadanos = (val(MapDat.restrict_mode) And 8) <> 0
 356     MapInfo(Map).SinInviOcul = (val(MapDat.restrict_mode) And 16) <> 0
 358     MapInfo(Map).SoloClanes = (val(MapDat.restrict_mode) And 32) <> 0
+359     MapInfo(Map).NoMascotas = (val(MapDat.restrict_mode) And 64) <> 0
 360     MapInfo(Map).ResuCiudad = val(GetVar(DatPath & "Map.dat", "RESUCIUDAD", Map)) <> 0
 362     MapInfo(Map).letter_grh = MapDat.letter_grh
 364     MapInfo(Map).lluvia = MapDat.lluvia
@@ -2214,7 +2215,7 @@ Sub LoadSini()
 140     DiceMinimum = val(Lector.GetValue("INIT", "MinDados"))
 142     DiceMaximum = val(Lector.GetValue("INIT", "MaxDados"))
 
-143     CentinelaActivado = val(Lector.GetValue("INIT", "CentinelaActivado"))
+143     centinelaActivado = val(Lector.GetValue("INIT", "CentinelaActivado"))
     
 144     EnTesting = val(Lector.GetValue("INIT", "Testing"))
         
@@ -2620,7 +2621,7 @@ Sub LoadUser(ByVal UserIndex As Integer)
         On Error GoTo ErrorHandler
     
 105         Call LoadUserDatabase(UserIndex)
-            Call CargarTipoUsuario(UserIndex)
+            Call cargarTipoUsuario(UserIndex)
         Exit Sub
 
 ErrorHandler:

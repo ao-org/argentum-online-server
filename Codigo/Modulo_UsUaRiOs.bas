@@ -2585,7 +2585,9 @@ Private Sub WarpMascotas(ByVal UserIndex As Integer)
 
         Dim petType          As Integer
 
-        Dim canWarp          As Boolean
+        Dim ZonaSegura       As Boolean
+        
+        Dim PermiteMascotas  As Boolean
 
         Dim Index            As Integer
 
@@ -2597,7 +2599,8 @@ Private Sub WarpMascotas(ByVal UserIndex As Integer)
         Dim ElementalQuitado As Boolean
         Dim SpawnInvalido    As Boolean
 
-100     canWarp = MapInfo(UserList(UserIndex).Pos.Map).Seguro = 0
+100     ZonaSegura = MapInfo(UserList(UserIndex).Pos.Map).Seguro = 1
+        PermiteMascotas = MapInfo(UserList(UserIndex).Pos.Map).NoMascotas = False
 
 102     For i = 1 To MAXMASCOTAS
 104         Index = UserList(UserIndex).MascotasIndex(i)
@@ -2614,7 +2617,7 @@ Private Sub WarpMascotas(ByVal UserIndex As Integer)
 118                 Call QuitarMascota(UserIndex, Index)
 120                 ElementalQuitado = True
 
-122             ElseIf Not canWarp Then
+122             ElseIf ZonaSegura Or Not PermiteMascotas Then
 124                 UserList(UserIndex).MascotasIndex(i) = 0
 126                 MascotaQuitada = True
                 End If
@@ -2626,7 +2629,7 @@ Private Sub WarpMascotas(ByVal UserIndex As Integer)
         
 132         petType = UserList(UserIndex).MascotasType(i)
         
-134         If petType > 0 And canWarp And UserList(UserIndex).flags.MascotasGuardadas = 0 And PetTiempoDeVida = 0 Then
+134         If petType > 0 And Not ZonaSegura And PermiteMascotas And UserList(UserIndex).flags.MascotasGuardadas = 0 And PetTiempoDeVida = 0 Then
         
                 Dim SpawnPos As t_WorldPos
         
@@ -2654,8 +2657,13 @@ Private Sub WarpMascotas(ByVal UserIndex As Integer)
 
 154     Next i
 
-156     If Not canWarp And MascotaQuitada Then
-158         Call WriteConsoleMsg(UserIndex, "No se permiten mascotas en zona segura. Estas te esperarán afuera.", e_FontTypeNames.FONTTYPE_INFO)
+156     If MascotaQuitada Then
+            If ZonaSegura Then
+158             Call WriteConsoleMsg(UserIndex, "No se permiten mascotas en zona segura. Estas te esperarán afuera.", e_FontTypeNames.FONTTYPE_INFO)
+            
+            ElseIf Not PermiteMascotas Then
+                Call WriteConsoleMsg(UserIndex, "Una fuerza superior impide que tus mascotas entren en este mapa. Estas te esperarán afuera.", e_FontTypeNames.FONTTYPE_INFO)
+            End If
 
 160     ElseIf SpawnInvalido Then
 162         Call WriteConsoleMsg(UserIndex, "Tus mascotas no pueden transitar este mapa.", e_FontTypeNames.FONTTYPE_INFO)
