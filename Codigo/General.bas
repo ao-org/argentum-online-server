@@ -707,6 +707,8 @@ Sub Main()
     
 256     Call InicializarLimpieza
 
+        Call ResetLastLogout
+
         'Comentado porque hay worldsave en ese mapa!
         'Call CrearClanPretoriano(MAPA_PRETORIANO, ALCOBA2_X, ALCOBA2_Y)
         '¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
