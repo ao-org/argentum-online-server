@@ -2184,3 +2184,7 @@ Private Function PostInc(Value As Integer) As Integer
 100     PostInc = Value
 102     Value = Value + 1
 End Function
+
+Public Sub ResetLastLogout()
+    Call Execute("Update user set last_logout = 0")
+End Sub
