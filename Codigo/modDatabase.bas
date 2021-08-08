@@ -1289,7 +1289,7 @@ Public Function GetPersonajesCountByIDDatabase(ByVal AccountID As Long) As Byte
         On Error GoTo ErrorHandler
     
         Dim RS As ADODB.Recordset
-100     Set RS = Query("SELECT COUNT(*) FROM user WHERE deleted = FALSE AND account_id = ?", AccountID)
+100     Set RS = Query("SELECT COUNT(*) FROM user WHERE account_id = ?", AccountID)
     
 102     If RS Is Nothing Then Exit Function
     
@@ -1307,7 +1307,7 @@ Public Function GetPersonajesCuentaDatabase(ByVal AccountID As Long, Personaje()
         On Error GoTo GetPersonajesCuentaDatabase_Err
         
         Dim RS As ADODB.Recordset
-100     Set RS = Query("SELECT name, head_id, class_id, body_id, pos_map, pos_x, pos_y, level, status, helmet_id, shield_id, weapon_id, guild_index, is_dead, is_sailing FROM user WHERE deleted = FALSE AND account_id = ?;", AccountID)
+100     Set RS = Query("SELECT name, head_id, class_id, body_id, pos_map, pos_x, pos_y, level, status, helmet_id, shield_id, weapon_id, guild_index, is_dead, is_sailing FROM user WHERE account_id = ?;", AccountID)
 
 102     If RS Is Nothing Then Exit Function
     
@@ -1481,8 +1481,10 @@ End Sub
 Public Sub BorrarUsuarioDatabase(Name As String)
 
         On Error GoTo ErrorHandler
-        
-        Call Execute("UPDATE user SET name =  'DELETED_' || name, deleted = TRUE WHERE UPPER(name) = ?;", UCase$(Name))
+
+        Call Execute("insert into user_deleted select * from user where name = ?;", Name)
+        Call Execute("delete from user where name = ?;", Name)
+        Call Execute("UPDATE user_deleted set deleted = CURRENT_TIMESTAMP where name = ?;", Name)
 
         Exit Sub
     
@@ -1906,7 +1908,7 @@ Public Function EnterAccountDatabase(ByVal UserIndex As Integer, ByVal CuentaEma
         On Error GoTo ErrorHandler
     
         Dim RS As ADODB.Recordset
-100     Set rs = Query("SELECT id, password, salt, validated, is_banned, ban_reason, banned_by FROM account WHERE upper(email) = ?", UCase(CuentaEmail))
+100     Set RS = Query("SELECT id, password, salt, validated, is_banned, ban_reason, banned_by FROM account WHERE email = ?", UCase$(CuentaEmail))
     
 102     If Connection.State = adStateClosed Then
 104         Call WriteShowMessageBox(UserIndex, "Ha ocurrido un error interno en el servidor. ¡Estamos tratando de resolverlo!")
@@ -2077,7 +2079,7 @@ Public Function SacarLlaveDatabase(ByVal LlaveObj As Integer) As Boolean
 
         ' Obtengo los usuarios logueados en la cuenta del dueño de la llave
         Dim RS As ADODB.Recordset
-100     Set RS = Query("SELECT name FROM `user` INNER JOIN `account` ON `user`.account_id = account.id INNER JOIN `house_key` ON `house_key`.account_id = account.id WHERE `user`.is_logged = TRUE AND `house_key`.key_obj = ?;", LlaveObj)
+100     Set RS = Query("SELECT name FROM `user` INNER JOIN `account` ON `user`.account_id = account.id INNER JOIN `house_key` ON `house_key`.account_id = account.id WHERE `house_key`.key_obj = ?;", LlaveObj)
     
 102     If RS Is Nothing Then Exit Function
 
