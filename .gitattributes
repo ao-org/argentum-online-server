@@ -43,6 +43,7 @@
 *.ncb binary
 *.exe.compat binary
 *.ocx.compat binary
+*.db binary
 
 # Declare encoding and file type
 .manifest text
