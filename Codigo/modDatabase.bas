@@ -462,7 +462,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
             
             
             
-104         ReDim Params(87)
+104         ReDim Params(88)
 
             Dim i As Integer
         
@@ -553,6 +553,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
 282         Params(PostInc(i)) = .flags.ReturnPos.Map
 284         Params(PostInc(i)) = .flags.ReturnPos.X
 286         Params(PostInc(i)) = .flags.ReturnPos.Y
+287         Params(PostInc(i)) = GetTickCount
 
             ' WHERE block
 288         Params(PostInc(i)) = .ID
@@ -824,6 +825,15 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
                 Call CloseSocket(UserIndex)
                 Exit Sub
             End If
+            Dim last_logout As Long
+            
+            last_logout = val(RS!last_logout)
+            If last_logout > 0 And (GetTickCount - last_logout) < 3000 Then
+                Call WriteShowMessageBox(UserIndex, "Está intentando loguear muy rápido, aguarde un instante. ")
+                Call CloseSocket(UserIndex)
+                Exit Sub
+            End If
+            
             
             'Start setting data
 106         .ID = RS!ID

@@ -129,7 +129,8 @@ Private Sub ConstruirQuery_CargarPersonaje()
         QueryBuilder.Append "Status,"
         QueryBuilder.Append "Guild_Index,"
         QueryBuilder.Append "guild_rejected_because,"
-        QueryBuilder.Append "warnings"
+        QueryBuilder.Append "warnings,"
+        QueryBuilder.Append "last_logout"
         'QueryBuilder.Append ",DATE_FORMAT(fecha_ingreso, '%Y-%m-%d') as 'fecha_ingreso_format'"
         QueryBuilder.Append " FROM user WHERE name= ?"
     
@@ -386,12 +387,11 @@ Private Sub ConstruirQuery_GuardarPersonaje()
 268     QueryBuilder.Append "guild_index = ?, "
 270     QueryBuilder.Append "chat_combate = ?, "
 272     QueryBuilder.Append "chat_global = ?, "
-'274     QueryBuilder.Append "is_logged = ?, "
 276     QueryBuilder.Append "warnings = ?,"
         QueryBuilder.Append "return_map = ?,"
         QueryBuilder.Append "return_x = ?,"
-        QueryBuilder.Append "return_y = ? "
-
+        QueryBuilder.Append "return_y = ?, "
+        QueryBuilder.Append "last_logout = ? "
 278     QueryBuilder.Append "WHERE id = ?"
     
         ' Guardo la query ensamblada
