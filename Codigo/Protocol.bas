@@ -10452,7 +10452,7 @@ Private Sub HandleUnbanChar(ByVal UserIndex As Integer)
             Dim UserName As String
 102             UserName = Reader.ReadString8()
         
-104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios)) Then
+104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios)) Then
             
 106             If Not PersonajeExiste(UserName) Then
 108                 Call WriteConsoleMsg(UserIndex, "El personaje no existe.", e_FontTypeNames.FONTTYPE_INFO)
@@ -12263,7 +12263,7 @@ Private Sub HandleUnbanIP(ByVal UserIndex As Integer)
 106         bannedIP = bannedIP & Reader.ReadInt8() & "."
 108         bannedIP = bannedIP & Reader.ReadInt8()
         
-110         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios)) = 0 Then Exit Sub
+110         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios)) = 0 Then Exit Sub
         
 112         If IP_Blacklist.Exists(bannedIP) Then
 114             Call DesbanearIP(bannedIP, UserIndex)
