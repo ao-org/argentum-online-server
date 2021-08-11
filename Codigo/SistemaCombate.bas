@@ -375,7 +375,7 @@ Private Function UserImpactoNpc(ByVal UserIndex As Integer, ByVal NpcIndex As In
 
         End If
 
-114     ProbExito = Maximo(10, Minimo(90, 70 + ((PoderAtaque - NpcList(NpcIndex).PoderEvasion) * 0.1)))
+114     ProbExito = MaximoInt(10, MinimoInt(90, 50 + ((PoderAtaque - NpcList(NpcIndex).PoderEvasion) * 0.4)))
 
 116     UserImpactoNpc = (RandomNumber(1, 100) <= ProbExito)
 
@@ -1174,6 +1174,7 @@ Private Function UsuarioImpacto(ByVal AtacanteIndex As Integer, ByVal VictimaInd
         Dim Proyectil              As Boolean
         Dim SkillTacticas          As Long
         Dim SkillDefensa           As Long
+        Dim ProbEvadir             As Long
 
 100     If UserList(AtacanteIndex).flags.GolpeCertero = 1 Then
 102         UsuarioImpacto = True
@@ -1206,7 +1207,7 @@ Private Function UsuarioImpacto(ByVal AtacanteIndex As Integer, ByVal VictimaInd
 128     If UserList(VictimaIndex).Invent.EscudoEqpObjIndex > 0 Then
 130         UserPoderEvasion = UserPoderEvasion + PoderEvasionEscudo(VictimaIndex)
 132         If SkillDefensa > 0 Then
-134             ProbRechazo = Maximo(10, Minimo(90, 100 * (SkillDefensa / (SkillDefensa + SkillTacticas))))
+134             ProbRechazo = Maximo(10, Minimo(90, 100 * (SkillDefensa / (Maximo(SkillDefensa + SkillTacticas, 1)))))
             Else
 136             ProbRechazo = 10
             End If
@@ -1215,6 +1216,12 @@ Private Function UsuarioImpacto(ByVal AtacanteIndex As Integer, ByVal VictimaInd
         End If
 
 140     ProbExito = Maximo(10, Minimo(90, 50 + ((PoderAtaque - UserPoderEvasion) * 0.4)))
+
+        ' Se reduce la evasion un 25%
+        If UserList(VictimaIndex).flags.Meditando Then
+            ProbEvadir = (100 - ProbExito) * 0.75
+            ProbExito = MinimoInt(90, 100 - ProbEvadir)
+        End If
 
 142     UsuarioImpacto = (RandomNumber(1, 100) <= ProbExito)
 
