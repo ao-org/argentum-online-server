@@ -791,15 +791,24 @@ Public Function MoveNPCChar(ByVal NpcIndex As Integer, ByVal nHeading As Byte) A
 
                 End If
                 
-130             If HayPuerta(nPos.Map, nPos.X, nPos.Y) Then
-132                 Call AccionParaPuertaNpc(nPos.Map, nPos.X, nPos.Y, NpcIndex)
-134             ElseIf HayPuerta(nPos.Map, nPos.X + 1, nPos.Y) Then
-136                 Call AccionParaPuertaNpc(nPos.Map, nPos.X + 1, nPos.Y, NpcIndex)
-138             ElseIf HayPuerta(nPos.Map, nPos.X + 1, nPos.Y - 1) Then
-140                 Call AccionParaPuertaNpc(nPos.Map, nPos.X + 1, nPos.Y - 1, NpcIndex)
-142             ElseIf HayPuerta(nPos.Map, nPos.X, nPos.Y - 1) Then
-144                 Call AccionParaPuertaNpc(nPos.Map, nPos.X, nPos.Y - 1, NpcIndex)
+                ' Solo NPCs hum
+                If NpcList(NpcIndex).Humanoide Or _
+                    NpcList(NpcIndex).NPCtype = e_NPCType.GuardiaReal Or _
+                    NpcList(NpcIndex).NPCtype = e_NPCType.GuardiasCaos Or _
+                    NpcList(NpcIndex).NPCtype = e_NPCType.GuardiaNpc Then
+                
+130                 If HayPuerta(nPos.Map, nPos.X, nPos.Y) Then
+132                     Call AccionParaPuertaNpc(nPos.Map, nPos.X, nPos.Y, NpcIndex)
+134                 ElseIf HayPuerta(nPos.Map, nPos.X + 1, nPos.Y) Then
+136                     Call AccionParaPuertaNpc(nPos.Map, nPos.X + 1, nPos.Y, NpcIndex)
+138                 ElseIf HayPuerta(nPos.Map, nPos.X + 1, nPos.Y - 1) Then
+140                     Call AccionParaPuertaNpc(nPos.Map, nPos.X + 1, nPos.Y - 1, NpcIndex)
+142                 ElseIf HayPuerta(nPos.Map, nPos.X, nPos.Y - 1) Then
+144                     Call AccionParaPuertaNpc(nPos.Map, nPos.X, nPos.Y - 1, NpcIndex)
+                    End If
+                    
                 End If
+                
 146             Call AnimacionIdle(NpcIndex, False)
             
 148             Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageCharacterMove(.Char.CharIndex, nPos.X, nPos.Y))
@@ -1132,7 +1141,7 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
 156         .Char.WeaponAnim = val(Leer.GetValue("NPC" & NpcNumber, "Arma"))
 158         .Char.ShieldAnim = val(Leer.GetValue("NPC" & NpcNumber, "Escudo"))
 160         .Char.CascoAnim = val(Leer.GetValue("NPC" & NpcNumber, "Casco"))
-    
+            
 162         .Attackable = val(Leer.GetValue("NPC" & NpcNumber, "Attackable"))
 164         .Comercia = val(Leer.GetValue("NPC" & NpcNumber, "Comercia"))
 166         .Craftea = val(Leer.GetValue("NPC" & NpcNumber, "Craftea"))
@@ -1154,9 +1163,8 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
     
 184         .GiveGLD = val(Leer.GetValue("NPC" & NpcNumber, "GiveGLD"))
     
-        '166     .QuestNumber = val(Leer.GetValue("NPC" & NpcNumber, "QuestNumber"))
-    
-    
+'166        .QuestNumber = val(Leer.GetValue("NPC" & NpcNumber, "QuestNumber"))
+
 186         .PoderAtaque = val(Leer.GetValue("NPC" & NpcNumber, "PoderAtaque"))
 188         .PoderEvasion = val(Leer.GetValue("NPC" & NpcNumber, "PoderEvasion"))
     
@@ -1206,7 +1214,9 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
 242         .flags.AIAlineacion = val(Leer.GetValue("NPC" & NpcNumber, "Alineacion"))
     
 244         .Invent.NroItems = val(Leer.GetValue("NPC" & NpcNumber, "NROITEMS"))
-    
+            
+245         .Humanoide = CBool(Leer.GetValue("NPC" & NpcNumber, "Humanoide"))
+            
 246         For LoopC = 1 To .Invent.NroItems
 248             ln = Leer.GetValue("NPC" & NpcNumber, "Obj" & LoopC)
 250             .Invent.Object(LoopC).ObjIndex = val(ReadField(1, ln, 45))

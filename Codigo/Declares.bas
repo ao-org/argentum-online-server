@@ -2133,6 +2133,7 @@ Public Type t_Npc
     
     PuedeInvocar As Byte
     
+    Humanoide As Boolean
 End Type
 
 '**********************************************************
