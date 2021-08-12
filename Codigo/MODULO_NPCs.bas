@@ -1215,7 +1215,7 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
     
 244         .Invent.NroItems = val(Leer.GetValue("NPC" & NpcNumber, "NROITEMS"))
             
-245         .Humanoide = CBool(Leer.GetValue("NPC" & NpcNumber, "Humanoide"))
+245         .Humanoide = CBool(val(Leer.GetValue("NPC" & NpcNumber, "Humanoide")))
             
 246         For LoopC = 1 To .Invent.NroItems
 248             ln = Leer.GetValue("NPC" & NpcNumber, "Obj" & LoopC)
