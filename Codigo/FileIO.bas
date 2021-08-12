@@ -2252,35 +2252,6 @@ LoadSini_Err:
         
 End Sub
 
-Public Sub LoadDatabaseIniFile()
-    On Error GoTo LoadDatabaseIniFile_Err
-
-        Dim Lector As clsIniManager
-    
-100     If frmMain.Visible Then frmMain.txStatus.Caption = "Leyendo credenciales de la DB."
-                
-102     If Not FileExist(IniPath & "Database.ini", vbNormal) Then
-104         Call MsgBox("No existe el archivo de configuración de la base de datos - Database.ini.", vbCritical)
-106         End
-        End If
-                
-108     Set Lector = New clsIniManager
-110     Call Lector.Initialize(IniPath & "Database.ini")
-
-112     Database_Enabled = True
-114     Database_Source = Lector.GetValue("DATABASE", "DSN")
-116     Database_Host = Lector.GetValue("DATABASE", "Host")
-118     Database_Name = Lector.GetValue("DATABASE", "Name")
-120     Database_Username = Lector.GetValue("DATABASE", "Username")
-122     Database_Password = Lector.GetValue("DATABASE", "Password")
-
-        Exit Sub
-
-LoadDatabaseIniFile_Err:
-124     Set Lector = Nothing
-126     Call TraceError(Err.Number, Err.Description, "ES.LoadDatabaseIniFile", Erl)
-
-End Sub
 
 Sub CargarCiudades()
         
