@@ -611,7 +611,6 @@ Sub Main()
 130     MaxUsers = 0
 132     Call LoadSini
 134     Call AOGuard.LoadAOGuardConfiguration
-136     Call LoadDatabaseIniFile
 138     Call LoadConfiguraciones
 140     Call LoadIntervalos
 142     Call CargarForbidenWords
