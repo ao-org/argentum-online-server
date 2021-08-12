@@ -45,6 +45,12 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
         '********************************************************
         On Error GoTo ErrHandler
         
+        Dim MiNPC As t_Npc
+        Dim EraCriminal As Byte
+        Dim TiempoRespw As Long
+        Dim i As Long, j As Long
+        Dim Indice As Integer
+        
         ' Objetivo de pruebas nunca muere
 100     If NpcList(NpcIndex).NPCtype = DummyTarget Then
 102         Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageChatOverHead("¡¡Auch!!", NpcList(NpcIndex).Char.CharIndex, vbRed))
@@ -57,13 +63,7 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
             Exit Sub
         End If
 
-        Dim MiNPC As t_Npc
-
 110     MiNPC = NpcList(NpcIndex)
-
-        Dim EraCriminal As Byte
-
-        Dim TiempoRespw As Long
 
 112     TiempoRespw = NpcList(NpcIndex).Contadores.IntervaloRespawn
 
@@ -74,6 +74,7 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
         ' Es NPC de la invasión?
 118     ElseIf MiNPC.flags.InvasionIndex Then
 120         Call MuereNpcInvasion(MiNPC.flags.InvasionIndex, MiNPC.flags.IndexInInvasion)
+
         End If
 
         'Quitamos el npc
@@ -88,10 +89,21 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
 
 132         UserList(UserIndex).flags.TargetNPC = 0
 134         UserList(UserIndex).flags.TargetNpcTipo = e_NPCType.Comun
-        
-            'El user que lo mato tiene mascotas?
-136         Call AllFollowAmo(UserIndex)
             
+            ' El user que lo mato tiene mascotas?
+            If UserList(UserIndex).NroMascotas > 0 Then
+            
+                ' Me fijo si alguna de sus mascotas le estaba pegando al NPC
+                For i = 1 To UBound(UserList(UserIndex).MascotasIndex)
+                
+135                 If NpcList(UserList(UserIndex).MascotasIndex(i)).TargetNPC = NpcIndex Then
+136                     Call AllFollowAmo(UserIndex)
+                    End If
+                    
+                Next
+                
+            End If
+
 138         If UserList(UserIndex).ChatCombate = 1 Then
 140             Call WriteLocaleMsg(UserIndex, "184", e_FontTypeNames.FONTTYPE_FIGHT, "la criatura")
             End If
@@ -130,8 +142,6 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
                 End If
 
             End If
-        
-            Dim i As Long, j As Long
         
 172         For i = 1 To MAXUSERQUESTS
         
@@ -193,8 +203,6 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
 218         Call ReSpawnNpc(MiNPC)
 
         Else
-
-            Dim Indice As Integer
 
 220         MiNPC.flags.NPCActive = True
 222         Indice = ObtenerIndiceRespawn
