@@ -793,7 +793,6 @@ Handler:
 334     Call RegistrarError(Err.Number, Err.Description, "General.Main", Erl)
 
 
-
 End Sub
 
 Function FileExist(ByVal File As String, Optional FileType As VbFileAttribute = vbNormal) As Boolean
