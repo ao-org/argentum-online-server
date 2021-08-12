@@ -53,15 +53,13 @@ Public Sub Comercio(ByVal Modo As eModoComercio, ByVal UserIndex As Integer, ByV
         '24/01/2020: WyroX = Reduzco la cantidad de paquetes que se envian, actualizo solo los slots necesarios y solo el oro, no todos los stats.
         '*************************************************
         Dim Precio       As Long
-
         Dim Objeto       As t_Obj
-
         Dim objquedo     As t_Obj
-
         Dim precioenvio  As Single
-    
         Dim NpcSlot As Integer
-    
+        
+        Dim Objeto_A_Comprar As t_UserOBJ
+        
 100     If Cantidad < 1 Or Slot < 1 Then Exit Sub
     
 102     If Modo = eModoComercio.Compra Then
@@ -74,7 +72,7 @@ Public Sub Comercio(ByVal Modo As eModoComercio, ByVal UserIndex As Integer, ByV
 110             Call Ban(UserList(UserIndex).Name, "Sistema Anti Cheats", "Intentar hackear el sistema de comercio. Quiso comprar demasiados items:" & Cantidad)
 112             UserList(UserIndex).flags.Ban = 1
 114             Call WriteShowMessageBox(UserIndex, "Has sido baneado por el Sistema AntiCheat.")
-            
+
 116             Call CloseSocket(UserIndex)
                 Exit Sub
                 
@@ -83,15 +81,21 @@ Public Sub Comercio(ByVal Modo As eModoComercio, ByVal UserIndex As Integer, ByV
 
             End If
             
-            If NpcList(NpcIndex).Invent.Object(Slot).ObjIndex = 0 Then Exit Sub
-120         If Cantidad > NpcList(NpcIndex).Invent.Object(Slot).amount Then Cantidad = NpcList(NpcIndex).Invent.Object(Slot).amount
-        
+            Objeto_A_Comprar = NpcList(NpcIndex).Invent.Object(Slot)
+            
+            If Objeto_A_Comprar.ObjIndex = 0 Then Exit Sub
+            
+            ' Si Crucial = 0, entonces compramos lo que NPC tiene en stock.
+120         If ObjData(Objeto_A_Comprar.ObjIndex).Crucial = 0 And Cantidad > Objeto_A_Comprar.amount Then
+                Cantidad = Objeto_A_Comprar.amount
+            End If
+            
 122         Objeto.amount = Cantidad
-124         Objeto.ObjIndex = NpcList(NpcIndex).Invent.Object(Slot).ObjIndex
+124         Objeto.ObjIndex = Objeto_A_Comprar.ObjIndex
         
             'El precio, cuando nos venden algo, lo tenemos que redondear para arriba.
             'Es decir, 1.1 = 2, por lo cual se hace de la siguiente forma Precio = Clng(PrecioFinal + 0.5) Siempre va a darte el proximo numero. O el "Techo" (MarKoxX)
-126         Precio = Ceil(ObjData(NpcList(NpcIndex).Invent.Object(Slot).ObjIndex).Valor / Descuento(UserIndex) * Cantidad)
+126         Precio = Ceil(ObjData(Objeto_A_Comprar.ObjIndex).Valor / Descuento(UserIndex) * Cantidad)
         
 128         If UserList(UserIndex).Stats.GLD < Precio Then
 130             Call WriteConsoleMsg(UserIndex, "No tienes suficiente dinero.", e_FontTypeNames.FONTTYPE_INFO)
