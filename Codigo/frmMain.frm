@@ -1,4 +1,5 @@
 VERSION 5.00
+Object = "{248DD890-BB45-11CF-9ABC-0080C7E7B78D}#1.0#0"; "MSWINSCK.ocx"
 Begin VB.Form frmMain 
    BackColor       =   &H00E0E0E0&
    BorderStyle     =   4  'Fixed ToolWindow
@@ -26,6 +27,13 @@ Begin VB.Form frmMain
    ScaleHeight     =   6210
    ScaleWidth      =   6840
    StartUpPosition =   2  'CenterScreen
+   Begin MSWinsockLib.Winsock ManagerSocket 
+      Left            =   2880
+      Top             =   600
+      _ExtentX        =   741
+      _ExtentY        =   741
+      _Version        =   393216
+   End
    Begin VB.CommandButton Command3 
       Caption         =   "Recargar Donadore"
       Height          =   495
@@ -924,7 +932,7 @@ Private Sub Minuto_Timer()
 
     Dim i                   As Integer
 
-    Dim Num                 As Long
+    Dim num                 As Long
 
     MinsRunning = MinsRunning + 1
 

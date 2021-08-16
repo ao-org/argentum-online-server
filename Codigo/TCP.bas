@@ -623,22 +623,22 @@ Function ConnectNewUser(ByVal UserIndex As Integer, ByRef Name As String, ByVal 
             Dim DungeonNewbieCoords(1 To 3) As t_WorldPos
             
 234         With DungeonNewbieCoords(1)
-236             .Map = 37: .X = 76: .Y = 82
+236             .Map = 37: .x = 76: .Y = 82
             End With
             
 238         With DungeonNewbieCoords(2)
-240             .Map = 264: .X = 54: .Y = 70
+240             .Map = 264: .x = 54: .Y = 70
             End With
             
 242         With DungeonNewbieCoords(3)
-244             .Map = 168: .X = 50: .Y = 70
+244             .Map = 168: .x = 50: .Y = 70
             End With
             
             Dim RandomPosIndex As Byte
 246         RandomPosIndex = RandomNumber(LBound(DungeonNewbieCoords), UBound(DungeonNewbieCoords))
 
 248         .Pos.Map = DungeonNewbieCoords(RandomPosIndex).Map
-250         .Pos.X = DungeonNewbieCoords(RandomPosIndex).X
+250         .Pos.x = DungeonNewbieCoords(RandomPosIndex).x
 252         .Pos.Y = DungeonNewbieCoords(RandomPosIndex).Y
         
 254         UltimoChar = UCase$(Name)
@@ -661,7 +661,7 @@ End Function
 
 Sub CloseSocket(ByVal UserIndex As Integer)
 
-    On Error GoTo ErrHandler
+    On Error GoTo errHandler
 
 102     If UserIndex = LastUser Then
 
@@ -716,7 +716,7 @@ Sub CloseSocket(ByVal UserIndex As Integer)
 
         Exit Sub
 
-ErrHandler:
+errHandler:
 
 144     UserList(UserIndex).ConnIDValida = False
 146     Call ResetUserSlot(UserIndex)
@@ -750,18 +750,18 @@ Function EstaPCarea(Index As Integer, Index2 As Integer) As Boolean
         On Error GoTo EstaPCarea_Err
         
 
-        Dim X As Integer, Y As Integer
+        Dim x As Integer, Y As Integer
 
 100     For Y = UserList(Index).Pos.Y - MinYBorder + 1 To UserList(Index).Pos.Y + MinYBorder - 1
-102         For X = UserList(Index).Pos.X - MinXBorder + 1 To UserList(Index).Pos.X + MinXBorder - 1
+102         For x = UserList(Index).Pos.x - MinXBorder + 1 To UserList(Index).Pos.x + MinXBorder - 1
 
-104             If MapData(UserList(Index).Pos.Map, X, Y).UserIndex = Index2 Then
+104             If MapData(UserList(Index).Pos.Map, x, Y).UserIndex = Index2 Then
 106                 EstaPCarea = True
                     Exit Function
 
                 End If
         
-108         Next X
+108         Next x
 110     Next Y
 
 112     EstaPCarea = False
@@ -775,7 +775,7 @@ EstaPCarea_Err:
         
 End Function
 
-Function HayPCarea(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer) As Boolean
+Function HayPCarea(ByVal Map As Integer, ByVal x As Integer, ByVal Y As Integer) As Boolean
         
         On Error GoTo HayPCarea_Err
         
@@ -783,7 +783,7 @@ Function HayPCarea(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer)
         Dim tX As Integer, tY As Integer
 
 100     For tY = Y - MinYBorder + 1 To Y + MinYBorder - 1
-102         For tX = X - MinXBorder + 1 To X + MinXBorder - 1
+102         For tX = x - MinXBorder + 1 To x + MinXBorder - 1
 
 104             If InMapBounds(Map, tX, tY) Then
 106                 If MapData(Map, tX, tY).UserIndex > 0 Then
@@ -813,18 +813,18 @@ Function HayOBJarea(Pos As t_WorldPos, ObjIndex As Integer) As Boolean
         On Error GoTo HayOBJarea_Err
         
 
-        Dim X As Integer, Y As Integer
+        Dim x As Integer, Y As Integer
 
 100     For Y = Pos.Y - MinYBorder + 1 To Pos.Y + MinYBorder - 1
-102         For X = Pos.X - MinXBorder + 1 To Pos.X + MinXBorder - 1
+102         For x = Pos.x - MinXBorder + 1 To Pos.x + MinXBorder - 1
 
-104             If MapData(Pos.Map, X, Y).ObjInfo.ObjIndex = ObjIndex Then
+104             If MapData(Pos.Map, x, Y).ObjInfo.ObjIndex = ObjIndex Then
 106                 HayOBJarea = True
                     Exit Function
 
                 End If
         
-108         Next X
+108         Next x
 110     Next Y
 
 112     HayOBJarea = False
@@ -854,6 +854,7 @@ ValidateChr_Err:
         
 End Function
 
+' TODO: Convertir a sub... y sacar de tantos lados
 Function EntrarCuenta(ByVal UserIndex As Integer, ByVal CuentaEmail As String, ByVal CuentaPassword As String, ByVal MD5 As String) As Boolean
         
         On Error GoTo EntrarCuenta_Err
@@ -889,9 +890,15 @@ Function EntrarCuenta(ByVal UserIndex As Integer, ByVal CuentaEmail As String, B
 130         Call WriteShowMessageBox(UserIndex, "Email inválido.")
             Exit Function
         End If
-    
-132     EntrarCuenta = EnterAccountDatabase(UserIndex, CuentaEmail, SDesencriptar(CuentaPassword), UserList(UserIndex).IP)
-        
+
+        UserList(UserIndex).Email = UCase$(CuentaEmail)
+
+        ' TODO: Mejorar la creación de JSON con funciones auxiliares
+132     Call Manager.Send(LOGIN_ACCOUNT, "{""email"":""" & UCase$(UserList(UserIndex).Email) & """,""password"":""" & SDesencriptar(CuentaPassword) & """}", _
+                                        "{""slot"":" & UserIndex & ",""uuid"":""" & UserList(UserIndex).UUID & """}")
+
+        ' TODO: Setear un flag en el user para prevenir que envie otros paquetes hasta procesar este
+
         Exit Function
 
 EntrarCuenta_Err:
@@ -905,7 +912,7 @@ Sub ConnectUser(ByVal UserIndex As Integer, _
                 ByRef Name As String, _
                 ByRef UserCuenta As String)
 
-        On Error GoTo ErrHandler
+        On Error GoTo errHandler
 
 100     With UserList(UserIndex)
 
@@ -921,7 +928,7 @@ Sub ConnectUser(ByVal UserIndex As Integer, _
 
         Exit Sub
     
-ErrHandler:
+errHandler:
 125     Call TraceError(Err.Number, Err.Description, "TCP.ConnectUser", Erl)
 130     Call WriteShowMessageBox(UserIndex, "El personaje contiene un error. Comuníquese con un miembro del staff.")
 135     Call CloseSocket(UserIndex)
@@ -1121,7 +1128,7 @@ Sub ResetBasicUserInfo(ByVal UserIndex As Integer)
 110         .Desc = vbNullString
 112         .DescRM = vbNullString
 114         .Pos.Map = 0
-116         .Pos.X = 0
+116         .Pos.x = 0
 118         .Pos.Y = 0
 120         .IP = vbNullString
 122         .clase = 0
@@ -1434,7 +1441,7 @@ Sub ResetUserKeys(ByVal UserIndex As Integer)
             Dim i As Integer
         
 102         For i = 1 To MAXKEYS
-104             .Keys(i) = 0
+104             .keys(i) = 0
             Next
         End With
         
@@ -1534,7 +1541,7 @@ End Sub
 
 Sub ClearAndSaveUser(ByVal UserIndex As Integer)
 
-    On Error GoTo ErrHandler
+    On Error GoTo errHandler
     
     Dim errordesc As String
     Dim Map As Integer
@@ -1642,7 +1649,7 @@ Sub ClearAndSaveUser(ByVal UserIndex As Integer)
     
     Exit Sub
     
-ErrHandler:
+errHandler:
         'Call LogError("Error en CloseUser. Número " & Err.Number & ". Descripción: " & Err.Description & ". Detalle:" & errordesc)
 208     Call TraceError(Err.Number, Err.Description & ". Detalle:" & errordesc, Erl)
 210     Resume Next ' TODO: Provisional hasta solucionar bugs graves
@@ -1651,7 +1658,7 @@ End Sub
 
 Sub CloseUser(ByVal UserIndex As Integer)
 
-        On Error GoTo ErrHandler
+        On Error GoTo errHandler
     
         Dim errordesc As String
         Dim Map As Integer
@@ -1714,7 +1721,7 @@ Sub CloseUser(ByVal UserIndex As Integer)
     
         Exit Sub
     
-ErrHandler:
+errHandler:
         'Call LogError("Error en CloseUser. Número " & Err.Number & ". Descripción: " & Err.Description & ". Detalle:" & errordesc)
 144     Call TraceError(Err.Number, Err.Description & ". Detalle:" & errordesc, Erl)
 146     Resume Next ' TODO: Provisional hasta solucionar bugs graves

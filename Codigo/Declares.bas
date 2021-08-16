@@ -953,13 +953,13 @@ End Type
 
 Public Type t_WorldPos
     Map As Integer
-    X As Integer
+    x As Integer
     Y As Integer
 End Type
 
 Public Type t_Position
 
-    X As Integer
+    x As Integer
     Y As Integer
 
 End Type
@@ -967,7 +967,7 @@ End Type
 Public Type t_CityWorldPos
 
     Map As Integer
-    X As Integer
+    x As Integer
     Y As Integer
     MapaViaje As Integer
     ViajeX As Byte
@@ -1859,7 +1859,8 @@ Public Type t_User
     #End If
 
     IP As String
-    
+    UUID As String
+
     '[Alejo]
     ComUsu As t_ComercioUsuario
     '[/Alejo]
@@ -1882,7 +1883,7 @@ Public Type t_User
 
     QuestStats As t_QuestStats
 
-    Keys(1 To MAXKEYS) As Integer
+    keys(1 To MAXKEYS) As Integer
     
     #If AntiExternos = 1 Then
         XorIndexIn As Integer
@@ -2307,6 +2308,10 @@ Public ServerSoloGMs                     As Integer
 Public EnPausa                           As Boolean
 
 Public EnTesting                         As Boolean
+
+Public Manager                           As ServerManager
+
+Public MANAGER_PORT                      As Integer
 
 '*****************ARRAYS PUBLICOS*************************
 Public UserList()                         As t_User 'USUARIOS

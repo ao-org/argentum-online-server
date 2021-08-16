@@ -17,7 +17,7 @@ Public Database_Name        As String
 Public Database_Username    As String
 Public Database_Password    As String
 
-Private Const MAX_ASYNC           As Byte = 20
+Private Const MAX_ASYNC     As Byte = 20
 Private Current_async       As Byte
 
 Private Connection          As ADODB.Connection
@@ -33,7 +33,12 @@ Public Sub Database_Connect_Async()
         If Len(Database_Source) <> 0 Then
 104         ConnectionID = "DATA SOURCE=" & Database_Source & ";"
         Else
-106         ConnectionID = "DRIVER={SQLite3 ODBC Driver};" & "DATABASE=" & App.Path & "/Database.db"
+106         ConnectionID = "DRIVER={MySQL ODBC 8.0 ANSI Driver};" & _
+                            "SERVER=" & Database_Host & ";" & _
+                            "DATABASE=" & Database_Name & ";" & _
+                            "USER=" & Database_Username & ";" & _
+                            "PASSWORD=" & Database_Password & ";" & _
+                            "OPTION=3;MULTI_STATEMENTS=1"
         End If
                 
         Dim i As Byte
@@ -48,6 +53,7 @@ Public Sub Database_Connect_Async()
         Current_async = 1
         
 113     Set Builder = New cStringBuilder
+
         Call InitDatabase
         
         Exit Sub
@@ -55,6 +61,7 @@ Public Sub Database_Connect_Async()
 Database_Connect_AsyncErr:
 116     Call LogDatabaseError("Database Error: " & Err.Number & " - " & Err.Description)
 End Sub
+
 Public Sub Database_Connect()
         On Error GoTo Database_Connect_Err
         
@@ -308,7 +315,7 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
 124         Params(PostInc(i)) = .Stats.GLD
 126         Params(PostInc(i)) = .Stats.SkillPts
 128         Params(PostInc(i)) = .Pos.Map
-130         Params(PostInc(i)) = .Pos.X
+130         Params(PostInc(i)) = .Pos.x
 132         Params(PostInc(i)) = .Pos.Y
 134         Params(PostInc(i)) = .Char.Body
 136         Params(PostInc(i)) = .Char.Head
@@ -479,7 +486,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
 126         Params(PostInc(i)) = .Stats.SkillPts
 128         Params(PostInc(i)) = .flags.MascotasGuardadas
 130         Params(PostInc(i)) = .Pos.Map
-132         Params(PostInc(i)) = .Pos.X
+132         Params(PostInc(i)) = .Pos.x
 134         Params(PostInc(i)) = .Pos.Y
 136         Params(PostInc(i)) = .MENSAJEINFORMACION
 138         Params(PostInc(i)) = .Char.Body
@@ -551,7 +558,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
 276         Params(PostInc(i)) = .ChatGlobal
 280         Params(PostInc(i)) = .Stats.Advertencias
 282         Params(PostInc(i)) = .flags.ReturnPos.Map
-284         Params(PostInc(i)) = .flags.ReturnPos.X
+284         Params(PostInc(i)) = .flags.ReturnPos.x
 286         Params(PostInc(i)) = .flags.ReturnPos.Y
 287         Params(PostInc(i)) = GetTickCount
 
@@ -736,7 +743,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
     
 576             Next LoopC
 
-                Call Execute(Builder.ToString())
+                Call Execute(Builder.toString())
 
 584             Call Builder.Clear
                 
@@ -773,7 +780,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
 614                     ParamC = ParamC + 2
 616                 Next LoopC
         
-                    Call Execute(Builder.ToString(), Params)
+                    Call Execute(Builder.toString(), Params)
 
 626                 Call Builder.Clear
                     
@@ -849,7 +856,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
 126         .Stats.Banco = RS!bank_gold
 128         .Stats.SkillPts = RS!free_skillpoints
 130         .Pos.Map = RS!pos_map
-132         .Pos.X = RS!pos_x
+132         .Pos.x = RS!pos_x
 134         .Pos.Y = RS!pos_y
 136         .MENSAJEINFORMACION = RS!message_info
 138         .OrigChar.Body = RS!body_id
@@ -906,7 +913,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
 240         .flags.MascotasGuardadas = RS!pets_saved
 
 246         .flags.ReturnPos.Map = RS!return_map
-248         .flags.ReturnPos.X = RS!return_x
+248         .flags.ReturnPos.x = RS!return_x
 250         .flags.ReturnPos.Y = RS!return_y
         
 252         .Counters.Pena = RS!counter_pena
@@ -1150,7 +1157,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
 
 466             While Not RS.EOF
 
-468                 .Keys(LoopC) = RS!key_obj
+468                 .keys(LoopC) = RS!key_obj
 470                 LoopC = LoopC + 1
 
 472                 RS.MoveNext
@@ -2011,10 +2018,10 @@ ErrorHandler:
 
 End Sub
 
-Public Function SetPositionDatabase(UserName As String, ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer) As Boolean
+Public Function SetPositionDatabase(UserName As String, ByVal Map As Integer, ByVal x As Integer, ByVal Y As Integer) As Boolean
         On Error GoTo ErrorHandler
 
-102     SetPositionDatabase = Execute("UPDATE user SET pos_map = ?, pos_x = ?, pos_y = ? WHERE UPPER(name) = ?;", Map, X, Y, UCase$(UserName))
+102     SetPositionDatabase = Execute("UPDATE user SET pos_map = ?, pos_x = ?, pos_y = ? WHERE UPPER(name) = ?;", Map, x, Y, UCase$(UserName))
 
         Exit Function
 
