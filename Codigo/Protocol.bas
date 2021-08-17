@@ -509,6 +509,7 @@ Private Enum ClientPacketID
     PetLeaveAll
     GuardNoticeResponse
     GuardResendVerificationCode
+    ResetChar               '/RESET NICK
     
     [PacketCount]
 End Enum
@@ -1286,6 +1287,8 @@ On Error Resume Next
             Call HandleGuardNoticeResponse(UserIndex)
         Case ClientPacketID.GuardResendVerificationCode
             Call HandleGuardResendVerificationCode(UserIndex)
+        Case ClientPacketID.ResetChar
+            Call HandleResetChar(UserIndex)
         Case Else
             Err.raise -1, "Invalid Message"
     End Select
@@ -7430,7 +7433,7 @@ Private Sub HandleGMMessage(ByVal UserIndex As Integer)
                     'Analize chat...
 110                 Call Statistics.ParseChat(message)
             
-112                 Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(.Name & " » " & Message, e_FontTypeNames.FONTTYPE_GMMSG))
+112                 Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(.Name & " » " & message, e_FontTypeNames.FONTTYPE_GMMSG))
 
                 End If
 
@@ -18552,3 +18555,68 @@ HandleResendVerificationCode_Err:
 
 End Sub
 
+Private Sub HandleResetChar(ByVal UserIndex As Integer)
+        On Error GoTo HandleResetChar_Err:
+        
+100     Dim Nick As String: Nick = Reader.ReadString8()
+
+        #If DEBUGGING = 1 Then
+
+            If UserList(UserIndex).flags.Privilegios And e_PlayerType.Admin Then
+                Dim Index As Integer
+                Index = NameIndex(Nick)
+                
+                If Index <= 0 Then
+                    Call WriteConsoleMsg(UserIndex, "Usuario offline o inexistente.", e_FontTypeNames.FONTTYPE_INFO)
+                    Exit Sub
+                End If
+                
+                With UserList(Index)
+                    .Stats.ELV = 1
+                    .Stats.Exp = 0
+                    .Stats.SkillPts = 10
+                    
+                    Dim i As Integer
+                    For i = 1 To NUMSKILLS
+                        .Stats.UserSkills(i) = 0
+                    Next
+
+                    .Stats.MaxHp = .Stats.UserAtributos(e_Atributos.Constitucion)
+                    .Stats.MinHp = .Stats.MaxHp
+
+                    .Stats.MaxMAN = .Stats.UserAtributos(e_Atributos.Inteligencia) * ModClase(.clase).ManaInicial
+                    .Stats.MinMAN = .Stats.MaxMAN
+
+                    Dim MiInt As Integer
+                    MiInt = RandomNumber(1, .Stats.UserAtributosBackUP(e_Atributos.Agilidad) \ 6)
+
+                    If MiInt = 1 Then MiInt = 2
+                
+                    .Stats.MaxSta = 20 * MiInt
+                    .Stats.MinSta = 20 * MiInt
+                
+                    .Stats.MaxAGU = 100
+                    .Stats.MinAGU = 100
+                
+                    .Stats.MaxHam = 100
+                    .Stats.MinHam = 100
+            
+                    .Stats.MaxHit = 2
+                    .Stats.MinHIT = 1
+                    
+                    .flags.ModificoSkills = True
+                    
+                    Call WriteUpdateUserStats(Index)
+                    Call WriteLevelUp(Index, .Stats.SkillPts)
+                End With
+                
+                Call WriteConsoleMsg(UserIndex, "Personaje reseteado a nivel 1.", e_FontTypeNames.FONTTYPE_INFO)
+            End If
+        
+        #End If
+        
+        Exit Sub
+
+HandleResetChar_Err:
+102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleResetChar", Erl)
+End Sub
