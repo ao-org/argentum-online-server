@@ -1,352 +1,621 @@
-BEGIN TRANSACTION;
-DROP TABLE IF EXISTS "account";
-CREATE TABLE IF NOT EXISTS "account" (
-	"id"	integer NOT NULL,
-	"email"	varchar(320) NOT NULL,
-	"password"	char(64) NOT NULL,
-	"salt"	char(32) NOT NULL,
-	"date_created"	timestamp NOT NULL DEFAULT current_timestamp,
-	"deleted"	integer DEFAULT '0',
-	"validated"	integer NOT NULL DEFAULT '0',
-	"validate_code"	char(32) NOT NULL,
-	"recovery_code"	varchar(32) NOT NULL DEFAULT '',
-	"is_banned"	integer DEFAULT '0',
-	"banned_by"	varchar(30) NOT NULL DEFAULT '',
-	"ban_reason"	varchar(255) DEFAULT '',
-	"credits"	integer DEFAULT '0',
-	"is_donor"	integer DEFAULT '0',
-	"donor_expire"	timestamp NOT NULL DEFAULT current_timestamp,
-	"credits_used"	integer DEFAULT '0',
-	"donor_purchases"	integer DEFAULT '0',
-	"last_access"	timestamp NOT NULL DEFAULT current_timestamp,
-	"last_ip"	varchar(16) DEFAULT '',
-	PRIMARY KEY("id" AUTOINCREMENT)
-);
-DROP TABLE IF EXISTS "attribute";
-CREATE TABLE IF NOT EXISTS "attribute" (
-	"user_id"	integer NOT NULL,
-	"strength"	integer NOT NULL,
-	"agility"	integer NOT NULL,
-	"intelligence"	integer NOT NULL,
-	"constitution"	integer NOT NULL,
-	"charisma"	integer NOT NULL,
-	PRIMARY KEY("user_id")
-);
-DROP TABLE IF EXISTS "bank_item";
-CREATE TABLE IF NOT EXISTS "bank_item" (
-	"user_id"	integer NOT NULL,
-	"number"	integer NOT NULL,
-	"item_id"	integer DEFAULT NULL,
-	"amount"	integer DEFAULT NULL,
-	PRIMARY KEY("user_id","number"),
-	CONSTRAINT "fk_bank_user" FOREIGN KEY("user_id") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE
-);
-DROP TABLE IF EXISTS "house_key";
-CREATE TABLE IF NOT EXISTS "house_key" (
-	"key_obj"	integer NOT NULL,
-	"account_id"	integer NOT NULL,
-	"assigned_at"	timestamp NOT NULL DEFAULT current_timestamp,
-	PRIMARY KEY("key_obj"),
-	CONSTRAINT "fk_account" FOREIGN KEY("account_id") REFERENCES "account"("id") ON DELETE CASCADE ON UPDATE CASCADE
-);
-DROP TABLE IF EXISTS "inventory_item";
-CREATE TABLE IF NOT EXISTS "inventory_item" (
-	"user_id"	integer NOT NULL,
-	"number"	integer NOT NULL,
-	"item_id"	integer DEFAULT NULL,
-	"amount"	integer DEFAULT NULL,
-	"is_equipped"	integer DEFAULT NULL,
-	PRIMARY KEY("user_id","number"),
-	CONSTRAINT "fk_inventory_user" FOREIGN KEY("user_id") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE
-);
-DROP TABLE IF EXISTS "object";
-CREATE TABLE IF NOT EXISTS "object" (
-	"number"	integer DEFAULT NULL,
-	"name"	varchar(45) DEFAULT NULL
-);
-DROP TABLE IF EXISTS "pet";
-CREATE TABLE IF NOT EXISTS "pet" (
-	"user_id"	integer NOT NULL,
-	"number"	integer NOT NULL,
-	"pet_id"	integer DEFAULT NULL,
-	PRIMARY KEY("user_id","number"),
-	CONSTRAINT "fk_pet_user" FOREIGN KEY("user_id") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE
-);
-DROP TABLE IF EXISTS "punishment";
-CREATE TABLE IF NOT EXISTS "punishment" (
-	"user_id"	integer NOT NULL,
-	"number"	integer NOT NULL DEFAULT '0',
-	"reason"	varchar(255) NOT NULL,
-	"created_at"	timestamp DEFAULT current_timestamp,
-	PRIMARY KEY("user_id","number"),
-	CONSTRAINT "fk_punishment_user" FOREIGN KEY("user_id") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE
-);
-DROP TABLE IF EXISTS "quest";
-CREATE TABLE IF NOT EXISTS "quest" (
-	"user_id"	integer NOT NULL,
-	"number"	integer NOT NULL,
-	"quest_id"	integer NOT NULL DEFAULT '0',
-	"npcs"	varchar(64) NOT NULL DEFAULT '',
-	"npcstarget"	varchar(64) NOT NULL DEFAULT '',
-	PRIMARY KEY("user_id","number"),
-	CONSTRAINT "fk_quest_user" FOREIGN KEY("user_id") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE
-);
-DROP TABLE IF EXISTS "quest_done";
-CREATE TABLE IF NOT EXISTS "quest_done" (
-	"user_id"	integer NOT NULL,
-	"quest_id"	integer NOT NULL,
-	PRIMARY KEY("user_id","quest_id"),
-	CONSTRAINT "fk_quest_done_user" FOREIGN KEY("user_id") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE
-);
-DROP TABLE IF EXISTS "skillpoint";
-CREATE TABLE IF NOT EXISTS "skillpoint" (
-	"user_id"	integer NOT NULL,
-	"number"	integer NOT NULL,
-	"value"	integer NOT NULL,
-	PRIMARY KEY("user_id","number"),
-	CONSTRAINT "fk_skillpoint_user" FOREIGN KEY("user_id") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE
-);
-DROP TABLE IF EXISTS "spell";
-CREATE TABLE IF NOT EXISTS "spell" (
-	"user_id"	integer NOT NULL,
-	"number"	integer NOT NULL,
-	"spell_id"	integer DEFAULT NULL,
-	PRIMARY KEY("user_id","number"),
-	CONSTRAINT "fk_spell_user" FOREIGN KEY("user_id") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE
-);
-DROP TABLE IF EXISTS "statistics";
-CREATE TABLE IF NOT EXISTS "statistics" (
-	"name"	varchar(50) NOT NULL,
-	"value"	varchar(50) DEFAULT NULL,
-	PRIMARY KEY("name")
-);
-DROP TABLE IF EXISTS "user";
-CREATE TABLE IF NOT EXISTS "user" (
-	"id"	integer NOT NULL,
-	"account_id"	integer NOT NULL,
-	"deleted"	integer NOT NULL DEFAULT '0',
-	"name"	varchar(30) NOT NULL,
-	"level"	integer NOT NULL,
-	"exp"	integer NOT NULL,
-	"genre_id"	integer NOT NULL,
-	"race_id"	integer NOT NULL,
-	"class_id"	integer NOT NULL,
-	"home_id"	integer NOT NULL,
-	"description"	varchar(255) DEFAULT NULL,
-	"gold"	integer NOT NULL,
-	"bank_gold"	integer NOT NULL DEFAULT '0',
-	"free_skillpoints"	integer NOT NULL,
-	"pets_saved"	integer NOT NULL DEFAULT '0',
-	"votes_amount"	integer DEFAULT '0',
-	"spouse"	varchar(30) NOT NULL DEFAULT '',
-	"message_info"	varchar(512) DEFAULT '',
-	"pos_map"	integer NOT NULL,
-	"pos_x"	integer NOT NULL,
-	"pos_y"	integer NOT NULL,
-	"body_id"	integer NOT NULL,
-	"head_id"	integer NOT NULL,
-	"weapon_id"	integer NOT NULL,
-	"helmet_id"	integer NOT NULL,
-	"shield_id"	integer NOT NULL,
-	"heading"	integer NOT NULL DEFAULT '3',
-	"slot_armour"	integer DEFAULT NULL,
-	"slot_weapon"	integer DEFAULT NULL,
-	"slot_helmet"	integer DEFAULT NULL,
-	"slot_shield"	integer DEFAULT NULL,
-	"slot_ammo"	integer DEFAULT NULL,
-	"slot_ship"	integer DEFAULT NULL,
-	"slot_mount"	integer DEFAULT NULL,
-	"slot_dm"	integer DEFAULT NULL,
-	"slot_rm"	integer DEFAULT NULL,
-	"slot_magic"	integer DEFAULT NULL,
-	"slot_knuckles"	integer DEFAULT NULL,
-	"slot_tool"	integer DEFAULT NULL,
-	"min_hp"	integer NOT NULL,
-	"max_hp"	integer NOT NULL,
-	"min_man"	integer NOT NULL,
-	"max_man"	integer NOT NULL,
-	"min_sta"	integer NOT NULL,
-	"max_sta"	integer NOT NULL,
-	"min_ham"	integer NOT NULL,
-	"max_ham"	integer NOT NULL,
-	"min_sed"	integer NOT NULL,
-	"max_sed"	integer NOT NULL,
-	"min_hit"	integer NOT NULL,
-	"max_hit"	integer NOT NULL,
-	"killed_npcs"	integer NOT NULL DEFAULT '0',
-	"killed_users"	integer NOT NULL DEFAULT '0',
-	"invent_level"	integer NOT NULL DEFAULT '0',
-	"is_naked"	integer NOT NULL DEFAULT '0',
-	"is_poisoned"	integer NOT NULL DEFAULT '0',
-	"is_incinerated"	integer NOT NULL DEFAULT '0',
-	"is_dead"	integer NOT NULL DEFAULT '0',
-	"is_sailing"	integer NOT NULL DEFAULT '0',
-	"is_paralyzed"	integer NOT NULL DEFAULT '0',
-	"is_silenced"	integer NOT NULL DEFAULT '0',
-	"silence_minutes_left"	integer DEFAULT '0',
-	"silence_elapsed_seconds"	integer DEFAULT '0',
-	"is_mounted"	integer NOT NULL DEFAULT '0',
-	"is_banned"	integer DEFAULT '0',
-	"banned_by"	varchar(30) NOT NULL DEFAULT '',
-	"ban_reason"	varchar(255) DEFAULT '',
-	"counter_pena"	integer NOT NULL DEFAULT '0',
-	"deaths"	integer NOT NULL DEFAULT '0',
-	"pertenece_consejo_real"	integer NOT NULL DEFAULT '0',
-	"pertenece_consejo_caos"	integer NOT NULL DEFAULT '0',
-	"pertenece_real"	integer NOT NULL DEFAULT '0',
-	"pertenece_caos"	integer NOT NULL DEFAULT '0',
-	"ciudadanos_matados"	integer NOT NULL DEFAULT '0',
-	"criminales_matados"	integer NOT NULL DEFAULT '0',
-	"recibio_armadura_real"	integer NOT NULL DEFAULT '0',
-	"recibio_armadura_caos"	integer NOT NULL DEFAULT '0',
-	"recibio_exp_real"	integer NOT NULL DEFAULT '0',
-	"recibio_exp_caos"	integer NOT NULL DEFAULT '0',
-	"recompensas_real"	integer DEFAULT '0',
-	"recompensas_caos"	integer DEFAULT '0',
-	"reenlistadas"	integer NOT NULL DEFAULT '0',
-	"fecha_ingreso"	timestamp NOT NULL DEFAULT current_timestamp,
-	"nivel_ingreso"	integer DEFAULT NULL,
-	"matados_ingreso"	integer DEFAULT NULL,
-	"siguiente_recompensa"	integer DEFAULT NULL,
-	"status"	integer DEFAULT '0',
-	"guild_index"	integer DEFAULT '0',
-	"guild_aspirant_index"	integer DEFAULT NULL,
-	"guild_member_history"	varchar(1024) DEFAULT NULL,
-	"guild_requests_history"	varchar(1024) DEFAULT NULL,
-	"guild_rejected_because"	varchar(255) DEFAULT NULL,
-	"chat_global"	integer DEFAULT '1',
-	"chat_combate"	integer DEFAULT '1',
-	"warnings"	integer NOT NULL DEFAULT '0',
-	"elo"	integer NOT NULL DEFAULT '1000',
-	"return_map"	integer NOT NULL DEFAULT '0',
-	"return_x"	integer NOT NULL DEFAULT '0',
-	"return_y"	integer NOT NULL DEFAULT '0',
-	"last_logout"	integer NOT NULL DEFAULT 0,
-	UNIQUE("id","account_id","deleted"),
-	PRIMARY KEY("id" AUTOINCREMENT),
-	CONSTRAINT "fk_user_account" FOREIGN KEY("account_id") REFERENCES "account"("id") ON DELETE CASCADE ON UPDATE CASCADE
-);
-DROP TABLE IF EXISTS "user_deleted";
-CREATE TABLE IF NOT EXISTS "user_deleted" (
-	"id"	integer NOT NULL,
-	"account_id"	integer NOT NULL,
-	"deleted"	timestamp NOT NULL DEFAULT current_timestamp,
-	"name"	varchar(30) NOT NULL,
-	"level"	integer NOT NULL,
-	"exp"	integer NOT NULL,
-	"genre_id"	integer NOT NULL,
-	"race_id"	integer NOT NULL,
-	"class_id"	integer NOT NULL,
-	"home_id"	integer NOT NULL,
-	"description"	varchar(255) DEFAULT NULL,
-	"gold"	integer NOT NULL,
-	"bank_gold"	integer NOT NULL DEFAULT '0',
-	"free_skillpoints"	integer NOT NULL,
-	"pets_saved"	integer NOT NULL DEFAULT '0',
-	"votes_amount"	integer DEFAULT '0',
-	"spouse"	varchar(30) NOT NULL DEFAULT '',
-	"message_info"	varchar(512) DEFAULT '',
-	"pos_map"	integer NOT NULL,
-	"pos_x"	integer NOT NULL,
-	"pos_y"	integer NOT NULL,
-	"body_id"	integer NOT NULL,
-	"head_id"	integer NOT NULL,
-	"weapon_id"	integer NOT NULL,
-	"helmet_id"	integer NOT NULL,
-	"shield_id"	integer NOT NULL,
-	"heading"	integer NOT NULL DEFAULT '3',
-	"slot_armour"	integer DEFAULT NULL,
-	"slot_weapon"	integer DEFAULT NULL,
-	"slot_helmet"	integer DEFAULT NULL,
-	"slot_shield"	integer DEFAULT NULL,
-	"slot_ammo"	integer DEFAULT NULL,
-	"slot_ship"	integer DEFAULT NULL,
-	"slot_mount"	integer DEFAULT NULL,
-	"slot_dm"	integer DEFAULT NULL,
-	"slot_rm"	integer DEFAULT NULL,
-	"slot_magic"	integer DEFAULT NULL,
-	"slot_knuckles"	integer DEFAULT NULL,
-	"slot_tool"	integer DEFAULT NULL,
-	"min_hp"	integer NOT NULL,
-	"max_hp"	integer NOT NULL,
-	"min_man"	integer NOT NULL,
-	"max_man"	integer NOT NULL,
-	"min_sta"	integer NOT NULL,
-	"max_sta"	integer NOT NULL,
-	"min_ham"	integer NOT NULL,
-	"max_ham"	integer NOT NULL,
-	"min_sed"	integer NOT NULL,
-	"max_sed"	integer NOT NULL,
-	"min_hit"	integer NOT NULL,
-	"max_hit"	integer NOT NULL,
-	"killed_npcs"	integer NOT NULL DEFAULT '0',
-	"killed_users"	integer NOT NULL DEFAULT '0',
-	"invent_level"	integer NOT NULL DEFAULT '0',
-	"is_naked"	integer NOT NULL DEFAULT '0',
-	"is_poisoned"	integer NOT NULL DEFAULT '0',
-	"is_incinerated"	integer NOT NULL DEFAULT '0',
-	"is_dead"	integer NOT NULL DEFAULT '0',
-	"is_sailing"	integer NOT NULL DEFAULT '0',
-	"is_paralyzed"	integer NOT NULL DEFAULT '0',
-	"is_logged"	integer NOT NULL DEFAULT '0',
-	"is_silenced"	integer NOT NULL DEFAULT '0',
-	"silence_minutes_left"	integer DEFAULT '0',
-	"silence_elapsed_seconds"	integer DEFAULT '0',
-	"is_mounted"	integer NOT NULL DEFAULT '0',
-	"is_banned"	integer DEFAULT '0',
-	"banned_by"	varchar(30) NOT NULL DEFAULT '',
-	"ban_reason"	varchar(255) DEFAULT '',
-	"counter_pena"	integer NOT NULL DEFAULT '0',
-	"deaths"	integer NOT NULL DEFAULT '0',
-	"pertenece_consejo_real"	integer NOT NULL DEFAULT '0',
-	"pertenece_consejo_caos"	integer NOT NULL DEFAULT '0',
-	"pertenece_real"	integer NOT NULL DEFAULT '0',
-	"pertenece_caos"	integer NOT NULL DEFAULT '0',
-	"ciudadanos_matados"	integer NOT NULL DEFAULT '0',
-	"criminales_matados"	integer NOT NULL DEFAULT '0',
-	"recibio_armadura_real"	integer NOT NULL DEFAULT '0',
-	"recibio_armadura_caos"	integer NOT NULL DEFAULT '0',
-	"recibio_exp_real"	integer NOT NULL DEFAULT '0',
-	"recibio_exp_caos"	integer NOT NULL DEFAULT '0',
-	"recompensas_real"	integer DEFAULT '0',
-	"recompensas_caos"	integer DEFAULT '0',
-	"reenlistadas"	integer NOT NULL DEFAULT '0',
-	"fecha_ingreso"	timestamp NOT NULL DEFAULT current_timestamp,
-	"nivel_ingreso"	integer DEFAULT NULL,
-	"matados_ingreso"	integer DEFAULT NULL,
-	"siguiente_recompensa"	integer DEFAULT NULL,
-	"status"	integer DEFAULT '0',
-	"guild_index"	integer DEFAULT '0',
-	"guild_aspirant_index"	integer DEFAULT NULL,
-	"guild_member_history"	varchar(1024) DEFAULT NULL,
-	"guild_requests_history"	varchar(1024) DEFAULT NULL,
-	"guild_rejected_because"	varchar(255) DEFAULT NULL,
-	"chat_global"	integer DEFAULT '1',
-	"chat_combate"	integer DEFAULT '1',
-	"warnings"	integer NOT NULL DEFAULT '0',
-	"elo"	integer NOT NULL DEFAULT '1000',
-	"return_map"	integer NOT NULL DEFAULT '0',
-	"return_x"	integer NOT NULL DEFAULT '0',
-	"return_y"	integer NOT NULL DEFAULT '0'
-);
-DROP INDEX IF EXISTS "idx_user_fk_user_account";
-CREATE INDEX IF NOT EXISTS "idx_user_fk_user_account" ON "user" (
-	"account_id"
-);
-DROP INDEX IF EXISTS "idx_user_name";
-CREATE INDEX IF NOT EXISTS "idx_user_name" ON "user" (
-	"name"
-);
-DROP INDEX IF EXISTS "idx_house_key_fk_account";
-CREATE INDEX IF NOT EXISTS "idx_house_key_fk_account" ON "house_key" (
-	"account_id"
-);
-DROP INDEX IF EXISTS "idx_account_email";
-CREATE INDEX IF NOT EXISTS "idx_account_email" ON "account" (
-	"email"
-);
-DROP INDEX IF EXISTS "idx_delete_account";
-CREATE INDEX IF NOT EXISTS "idx_delete_account" ON "account" (
-	"deleted"
-);
-COMMIT;
+-- phpMyAdmin SQL Dump
+-- version 4.6.6deb5ubuntu0.5
+-- https://www.phpmyadmin.net/
+--
+-- Host: localhost:3306
+-- Generation Time: Aug 20, 2021 at 04:41 AM
+-- Server version: 5.7.35-0ubuntu0.18.04.1
+-- PHP Version: 7.2.24-0ubuntu0.18.04.8
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+--
+-- Database: `ao_server_prod`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `account`
+--
+
+CREATE TABLE `account` (
+  `id` int(11) NOT NULL COMMENT 'TRIAL',
+  `email` varchar(320) NOT NULL COMMENT 'TRIAL',
+  `password` char(64) NOT NULL COMMENT 'TRIAL',
+  `salt` char(32) NOT NULL COMMENT 'TRIAL',
+  `date_created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'TRIAL',
+  `deleted` int(11) DEFAULT '0' COMMENT 'TRIAL',
+  `validated` int(11) NOT NULL DEFAULT '0' COMMENT 'TRIAL',
+  `validate_code` char(32) NOT NULL COMMENT 'TRIAL',
+  `recovery_code` varchar(32) NOT NULL COMMENT 'TRIAL',
+  `is_banned` int(11) DEFAULT '0' COMMENT 'TRIAL',
+  `banned_by` varchar(30) NOT NULL COMMENT 'TRIAL',
+  `ban_reason` varchar(255) DEFAULT NULL COMMENT 'TRIAL',
+  `credits` int(11) DEFAULT '0' COMMENT 'TRIAL',
+  `is_donor` int(11) DEFAULT '0' COMMENT 'TRIAL',
+  `donor_expire` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'TRIAL',
+  `credits_used` int(11) DEFAULT '0' COMMENT 'TRIAL',
+  `donor_purchases` int(11) DEFAULT '0' COMMENT 'TRIAL',
+  `last_access` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'TRIAL',
+  `last_ip` varchar(16) DEFAULT NULL COMMENT 'TRIAL',
+  `trial982` char(1) DEFAULT NULL COMMENT 'TRIAL'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='TRIAL';
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `attribute`
+--
+
+CREATE TABLE `attribute` (
+  `user_id` int(11) NOT NULL COMMENT 'TRIAL',
+  `strength` int(11) NOT NULL COMMENT 'TRIAL',
+  `agility` int(11) NOT NULL COMMENT 'TRIAL',
+  `intelligence` int(11) NOT NULL COMMENT 'TRIAL',
+  `constitution` int(11) NOT NULL COMMENT 'TRIAL',
+  `charisma` int(11) NOT NULL COMMENT 'TRIAL',
+  `trial989` char(1) DEFAULT NULL COMMENT 'TRIAL'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='TRIAL';
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `bank_item`
+--
+
+CREATE TABLE `bank_item` (
+  `user_id` int(11) NOT NULL COMMENT 'TRIAL',
+  `number` int(11) NOT NULL COMMENT 'TRIAL',
+  `item_id` int(11) DEFAULT NULL COMMENT 'TRIAL',
+  `amount` int(11) DEFAULT NULL COMMENT 'TRIAL',
+  `trial995` char(1) DEFAULT NULL COMMENT 'TRIAL'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='TRIAL';
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `house_key`
+--
+
+CREATE TABLE `house_key` (
+  `key_obj` int(11) NOT NULL COMMENT 'TRIAL',
+  `account_id` int(11) NOT NULL COMMENT 'TRIAL',
+  `assigned_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'TRIAL',
+  `trial002` char(1) DEFAULT NULL COMMENT 'TRIAL'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='TRIAL';
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `inventory_item`
+--
+
+CREATE TABLE `inventory_item` (
+  `user_id` int(11) NOT NULL COMMENT 'TRIAL',
+  `number` int(11) NOT NULL COMMENT 'TRIAL',
+  `item_id` int(11) DEFAULT NULL COMMENT 'TRIAL',
+  `amount` int(11) DEFAULT NULL COMMENT 'TRIAL',
+  `is_equipped` int(11) DEFAULT NULL COMMENT 'TRIAL',
+  `trial005` char(1) DEFAULT NULL COMMENT 'TRIAL'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='TRIAL';
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `object`
+--
+
+CREATE TABLE `object` (
+  `number` int(11) DEFAULT NULL COMMENT 'TRIAL',
+  `name` varchar(45) DEFAULT NULL COMMENT 'TRIAL',
+  `trial015` char(1) DEFAULT NULL COMMENT 'TRIAL'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='TRIAL';
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `pet`
+--
+
+CREATE TABLE `pet` (
+  `user_id` int(11) NOT NULL COMMENT 'TRIAL',
+  `number` int(11) NOT NULL COMMENT 'TRIAL',
+  `pet_id` int(11) DEFAULT NULL COMMENT 'TRIAL',
+  `trial015` char(1) DEFAULT NULL COMMENT 'TRIAL'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='TRIAL';
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `punishment`
+--
+
+CREATE TABLE `punishment` (
+  `user_id` int(11) NOT NULL COMMENT 'TRIAL',
+  `number` int(11) NOT NULL COMMENT 'TRIAL',
+  `reason` varchar(255) NOT NULL COMMENT 'TRIAL',
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP COMMENT 'TRIAL',
+  `trial018` char(1) DEFAULT NULL COMMENT 'TRIAL'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='TRIAL';
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `quest`
+--
+
+CREATE TABLE `quest` (
+  `user_id` int(11) NOT NULL COMMENT 'TRIAL',
+  `number` int(11) NOT NULL COMMENT 'TRIAL',
+  `quest_id` int(11) NOT NULL DEFAULT '0' COMMENT 'TRIAL',
+  `npcs` varchar(64) NOT NULL COMMENT 'TRIAL',
+  `npcstarget` varchar(64) NOT NULL COMMENT 'TRIAL',
+  `trial021` char(1) DEFAULT NULL COMMENT 'TRIAL'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='TRIAL';
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `quest_done`
+--
+
+CREATE TABLE `quest_done` (
+  `user_id` int(11) NOT NULL COMMENT 'TRIAL',
+  `quest_id` int(11) NOT NULL COMMENT 'TRIAL',
+  `trial028` char(1) DEFAULT NULL COMMENT 'TRIAL'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='TRIAL';
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `skillpoint`
+--
+
+CREATE TABLE `skillpoint` (
+  `user_id` int(11) NOT NULL COMMENT 'TRIAL',
+  `number` int(11) NOT NULL COMMENT 'TRIAL',
+  `value` int(11) NOT NULL COMMENT 'TRIAL',
+  `trial034` char(1) DEFAULT NULL COMMENT 'TRIAL'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='TRIAL';
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `spell`
+--
+
+CREATE TABLE `spell` (
+  `user_id` int(11) NOT NULL COMMENT 'TRIAL',
+  `number` int(11) NOT NULL COMMENT 'TRIAL',
+  `spell_id` int(11) DEFAULT NULL COMMENT 'TRIAL',
+  `trial041` char(1) DEFAULT NULL COMMENT 'TRIAL'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='TRIAL';
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `statistics`
+--
+
+CREATE TABLE `statistics` (
+  `name` varchar(50) NOT NULL COMMENT 'TRIAL',
+  `value` varchar(50) DEFAULT NULL COMMENT 'TRIAL',
+  `trial051` char(1) DEFAULT NULL COMMENT 'TRIAL'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='TRIAL';
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `user`
+--
+
+CREATE TABLE `user` (
+  `id` int(11) NOT NULL COMMENT 'TRIAL',
+  `account_id` int(11) NOT NULL COMMENT 'TRIAL',
+  `deleted` int(11) NOT NULL DEFAULT '0' COMMENT 'TRIAL',
+  `name` varchar(30) NOT NULL COMMENT 'TRIAL',
+  `level` int(11) NOT NULL COMMENT 'TRIAL',
+  `exp` int(11) NOT NULL COMMENT 'TRIAL',
+  `genre_id` int(11) NOT NULL COMMENT 'TRIAL',
+  `race_id` int(11) NOT NULL COMMENT 'TRIAL',
+  `class_id` int(11) NOT NULL COMMENT 'TRIAL',
+  `home_id` int(11) NOT NULL COMMENT 'TRIAL',
+  `description` varchar(255) DEFAULT NULL COMMENT 'TRIAL',
+  `gold` int(11) NOT NULL COMMENT 'TRIAL',
+  `bank_gold` int(11) NOT NULL DEFAULT '0' COMMENT 'TRIAL',
+  `free_skillpoints` int(11) NOT NULL COMMENT 'TRIAL',
+  `pets_saved` int(11) NOT NULL DEFAULT '0' COMMENT 'TRIAL',
+  `votes_amount` int(11) DEFAULT '0' COMMENT 'TRIAL',
+  `spouse` varchar(30) NOT NULL COMMENT 'TRIAL',
+  `message_info` varchar(512) DEFAULT NULL COMMENT 'TRIAL',
+  `pos_map` int(11) NOT NULL COMMENT 'TRIAL',
+  `pos_x` int(11) NOT NULL COMMENT 'TRIAL',
+  `pos_y` int(11) NOT NULL COMMENT 'TRIAL',
+  `body_id` int(11) NOT NULL COMMENT 'TRIAL',
+  `head_id` int(11) NOT NULL COMMENT 'TRIAL',
+  `weapon_id` int(11) NOT NULL COMMENT 'TRIAL',
+  `helmet_id` int(11) NOT NULL COMMENT 'TRIAL',
+  `shield_id` int(11) NOT NULL COMMENT 'TRIAL',
+  `heading` int(11) NOT NULL DEFAULT '3' COMMENT 'TRIAL',
+  `slot_armour` int(11) DEFAULT NULL COMMENT 'TRIAL',
+  `slot_weapon` int(11) DEFAULT NULL COMMENT 'TRIAL',
+  `slot_helmet` int(11) DEFAULT NULL COMMENT 'TRIAL',
+  `slot_shield` int(11) DEFAULT NULL COMMENT 'TRIAL',
+  `slot_ammo` int(11) DEFAULT NULL COMMENT 'TRIAL',
+  `slot_ship` int(11) DEFAULT NULL COMMENT 'TRIAL',
+  `slot_mount` int(11) DEFAULT NULL COMMENT 'TRIAL',
+  `slot_dm` int(11) DEFAULT NULL COMMENT 'TRIAL',
+  `slot_rm` int(11) DEFAULT NULL COMMENT 'TRIAL',
+  `slot_magic` int(11) DEFAULT NULL COMMENT 'TRIAL',
+  `slot_knuckles` int(11) DEFAULT NULL COMMENT 'TRIAL',
+  `slot_tool` int(11) DEFAULT NULL COMMENT 'TRIAL',
+  `min_hp` int(11) NOT NULL COMMENT 'TRIAL',
+  `max_hp` int(11) NOT NULL COMMENT 'TRIAL',
+  `min_man` int(11) NOT NULL COMMENT 'TRIAL',
+  `max_man` int(11) NOT NULL COMMENT 'TRIAL',
+  `min_sta` int(11) NOT NULL COMMENT 'TRIAL',
+  `max_sta` int(11) NOT NULL COMMENT 'TRIAL',
+  `min_ham` int(11) NOT NULL COMMENT 'TRIAL',
+  `max_ham` int(11) NOT NULL COMMENT 'TRIAL',
+  `min_sed` int(11) NOT NULL COMMENT 'TRIAL',
+  `max_sed` int(11) NOT NULL COMMENT 'TRIAL',
+  `min_hit` int(11) NOT NULL COMMENT 'TRIAL',
+  `max_hit` int(11) NOT NULL COMMENT 'TRIAL',
+  `killed_npcs` int(11) NOT NULL DEFAULT '0' COMMENT 'TRIAL',
+  `killed_users` int(11) NOT NULL DEFAULT '0' COMMENT 'TRIAL',
+  `invent_level` int(11) NOT NULL DEFAULT '0' COMMENT 'TRIAL',
+  `is_naked` int(11) NOT NULL DEFAULT '0' COMMENT 'TRIAL',
+  `is_poisoned` int(11) NOT NULL DEFAULT '0' COMMENT 'TRIAL',
+  `is_incinerated` int(11) NOT NULL DEFAULT '0' COMMENT 'TRIAL',
+  `is_dead` int(11) NOT NULL DEFAULT '0' COMMENT 'TRIAL',
+  `is_sailing` int(11) NOT NULL DEFAULT '0' COMMENT 'TRIAL',
+  `is_paralyzed` int(11) NOT NULL DEFAULT '0' COMMENT 'TRIAL',
+  `is_silenced` int(11) NOT NULL DEFAULT '0' COMMENT 'TRIAL',
+  `silence_minutes_left` int(11) DEFAULT '0' COMMENT 'TRIAL',
+  `silence_elapsed_seconds` int(11) DEFAULT '0' COMMENT 'TRIAL',
+  `is_mounted` int(11) NOT NULL DEFAULT '0' COMMENT 'TRIAL',
+  `is_banned` int(11) DEFAULT '0' COMMENT 'TRIAL',
+  `banned_by` varchar(30) NOT NULL COMMENT 'TRIAL',
+  `ban_reason` varchar(255) DEFAULT NULL COMMENT 'TRIAL',
+  `counter_pena` int(11) NOT NULL DEFAULT '0' COMMENT 'TRIAL',
+  `deaths` int(11) NOT NULL DEFAULT '0' COMMENT 'TRIAL',
+  `pertenece_consejo_real` int(11) NOT NULL DEFAULT '0' COMMENT 'TRIAL',
+  `pertenece_consejo_caos` int(11) NOT NULL DEFAULT '0' COMMENT 'TRIAL',
+  `pertenece_real` int(11) NOT NULL DEFAULT '0' COMMENT 'TRIAL',
+  `pertenece_caos` int(11) NOT NULL DEFAULT '0' COMMENT 'TRIAL',
+  `ciudadanos_matados` int(11) NOT NULL DEFAULT '0' COMMENT 'TRIAL',
+  `criminales_matados` int(11) NOT NULL DEFAULT '0' COMMENT 'TRIAL',
+  `recibio_armadura_real` int(11) NOT NULL DEFAULT '0' COMMENT 'TRIAL',
+  `recibio_armadura_caos` int(11) NOT NULL DEFAULT '0' COMMENT 'TRIAL',
+  `recibio_exp_real` int(11) NOT NULL DEFAULT '0' COMMENT 'TRIAL',
+  `recibio_exp_caos` int(11) NOT NULL DEFAULT '0' COMMENT 'TRIAL',
+  `recompensas_real` int(11) DEFAULT '0' COMMENT 'TRIAL',
+  `recompensas_caos` int(11) DEFAULT '0' COMMENT 'TRIAL',
+  `reenlistadas` int(11) NOT NULL DEFAULT '0' COMMENT 'TRIAL',
+  `fecha_ingreso` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'TRIAL',
+  `nivel_ingreso` int(11) DEFAULT NULL COMMENT 'TRIAL',
+  `matados_ingreso` int(11) DEFAULT NULL COMMENT 'TRIAL',
+  `siguiente_recompensa` int(11) DEFAULT NULL COMMENT 'TRIAL',
+  `status` int(11) DEFAULT '0' COMMENT 'TRIAL',
+  `guild_index` int(11) DEFAULT '0' COMMENT 'TRIAL',
+  `guild_aspirant_index` int(11) DEFAULT NULL COMMENT 'TRIAL',
+  `guild_member_history` varchar(1024) DEFAULT NULL COMMENT 'TRIAL',
+  `guild_requests_history` varchar(1024) DEFAULT NULL COMMENT 'TRIAL',
+  `guild_rejected_because` varchar(255) DEFAULT NULL COMMENT 'TRIAL',
+  `chat_global` int(11) DEFAULT '1' COMMENT 'TRIAL',
+  `chat_combate` int(11) DEFAULT '1' COMMENT 'TRIAL',
+  `warnings` int(11) NOT NULL DEFAULT '0' COMMENT 'TRIAL',
+  `elo` int(11) NOT NULL DEFAULT '1000' COMMENT 'TRIAL',
+  `return_map` int(11) NOT NULL DEFAULT '0' COMMENT 'TRIAL',
+  `return_x` int(11) NOT NULL DEFAULT '0' COMMENT 'TRIAL',
+  `return_y` int(11) NOT NULL DEFAULT '0' COMMENT 'TRIAL',
+  `last_logout` int(11) NOT NULL DEFAULT '0' COMMENT 'TRIAL',
+  `trial051` char(1) DEFAULT NULL COMMENT 'TRIAL'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='TRIAL';
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `user_deleted`
+--
+
+CREATE TABLE `user_deleted` (
+  `id` int(11) NOT NULL COMMENT 'TRIAL',
+  `account_id` int(11) NOT NULL COMMENT 'TRIAL',
+  `deleted` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'TRIAL',
+  `name` varchar(30) NOT NULL COMMENT 'TRIAL',
+  `level` int(11) NOT NULL COMMENT 'TRIAL',
+  `exp` int(11) NOT NULL COMMENT 'TRIAL',
+  `genre_id` int(11) NOT NULL COMMENT 'TRIAL',
+  `race_id` int(11) NOT NULL COMMENT 'TRIAL',
+  `class_id` int(11) NOT NULL COMMENT 'TRIAL',
+  `home_id` int(11) NOT NULL COMMENT 'TRIAL',
+  `description` varchar(255) DEFAULT NULL COMMENT 'TRIAL',
+  `gold` int(11) NOT NULL COMMENT 'TRIAL',
+  `bank_gold` int(11) NOT NULL DEFAULT '0' COMMENT 'TRIAL',
+  `free_skillpoints` int(11) NOT NULL COMMENT 'TRIAL',
+  `pets_saved` int(11) NOT NULL DEFAULT '0' COMMENT 'TRIAL',
+  `votes_amount` int(11) DEFAULT '0' COMMENT 'TRIAL',
+  `spouse` varchar(30) NOT NULL COMMENT 'TRIAL',
+  `message_info` varchar(512) DEFAULT NULL COMMENT 'TRIAL',
+  `pos_map` int(11) NOT NULL COMMENT 'TRIAL',
+  `pos_x` int(11) NOT NULL COMMENT 'TRIAL',
+  `pos_y` int(11) NOT NULL COMMENT 'TRIAL',
+  `body_id` int(11) NOT NULL COMMENT 'TRIAL',
+  `head_id` int(11) NOT NULL COMMENT 'TRIAL',
+  `weapon_id` int(11) NOT NULL COMMENT 'TRIAL',
+  `helmet_id` int(11) NOT NULL COMMENT 'TRIAL',
+  `shield_id` int(11) NOT NULL COMMENT 'TRIAL',
+  `heading` int(11) NOT NULL DEFAULT '3' COMMENT 'TRIAL',
+  `slot_armour` int(11) DEFAULT NULL COMMENT 'TRIAL',
+  `slot_weapon` int(11) DEFAULT NULL COMMENT 'TRIAL',
+  `slot_helmet` int(11) DEFAULT NULL COMMENT 'TRIAL',
+  `slot_shield` int(11) DEFAULT NULL COMMENT 'TRIAL',
+  `slot_ammo` int(11) DEFAULT NULL COMMENT 'TRIAL',
+  `slot_ship` int(11) DEFAULT NULL COMMENT 'TRIAL',
+  `slot_mount` int(11) DEFAULT NULL COMMENT 'TRIAL',
+  `slot_dm` int(11) DEFAULT NULL COMMENT 'TRIAL',
+  `slot_rm` int(11) DEFAULT NULL COMMENT 'TRIAL',
+  `slot_magic` int(11) DEFAULT NULL COMMENT 'TRIAL',
+  `slot_knuckles` int(11) DEFAULT NULL COMMENT 'TRIAL',
+  `slot_tool` int(11) DEFAULT NULL COMMENT 'TRIAL',
+  `min_hp` int(11) NOT NULL COMMENT 'TRIAL',
+  `max_hp` int(11) NOT NULL COMMENT 'TRIAL',
+  `min_man` int(11) NOT NULL COMMENT 'TRIAL',
+  `max_man` int(11) NOT NULL COMMENT 'TRIAL',
+  `min_sta` int(11) NOT NULL COMMENT 'TRIAL',
+  `max_sta` int(11) NOT NULL COMMENT 'TRIAL',
+  `min_ham` int(11) NOT NULL COMMENT 'TRIAL',
+  `max_ham` int(11) NOT NULL COMMENT 'TRIAL',
+  `min_sed` int(11) NOT NULL COMMENT 'TRIAL',
+  `max_sed` int(11) NOT NULL COMMENT 'TRIAL',
+  `min_hit` int(11) NOT NULL COMMENT 'TRIAL',
+  `max_hit` int(11) NOT NULL COMMENT 'TRIAL',
+  `killed_npcs` int(11) NOT NULL DEFAULT '0' COMMENT 'TRIAL',
+  `killed_users` int(11) NOT NULL DEFAULT '0' COMMENT 'TRIAL',
+  `invent_level` int(11) NOT NULL DEFAULT '0' COMMENT 'TRIAL',
+  `is_naked` int(11) NOT NULL DEFAULT '0' COMMENT 'TRIAL',
+  `is_poisoned` int(11) NOT NULL DEFAULT '0' COMMENT 'TRIAL',
+  `is_incinerated` int(11) NOT NULL DEFAULT '0' COMMENT 'TRIAL',
+  `is_dead` int(11) NOT NULL DEFAULT '0' COMMENT 'TRIAL',
+  `is_sailing` int(11) NOT NULL DEFAULT '0' COMMENT 'TRIAL',
+  `is_paralyzed` int(11) NOT NULL DEFAULT '0' COMMENT 'TRIAL',
+  `is_logged` int(11) NOT NULL DEFAULT '0' COMMENT 'TRIAL',
+  `is_silenced` int(11) NOT NULL DEFAULT '0' COMMENT 'TRIAL',
+  `silence_minutes_left` int(11) DEFAULT '0' COMMENT 'TRIAL',
+  `silence_elapsed_seconds` int(11) DEFAULT '0' COMMENT 'TRIAL',
+  `is_mounted` int(11) NOT NULL DEFAULT '0' COMMENT 'TRIAL',
+  `is_banned` int(11) DEFAULT '0' COMMENT 'TRIAL',
+  `banned_by` varchar(30) NOT NULL COMMENT 'TRIAL',
+  `ban_reason` varchar(255) DEFAULT NULL COMMENT 'TRIAL',
+  `counter_pena` int(11) NOT NULL DEFAULT '0' COMMENT 'TRIAL',
+  `deaths` int(11) NOT NULL DEFAULT '0' COMMENT 'TRIAL',
+  `pertenece_consejo_real` int(11) NOT NULL DEFAULT '0' COMMENT 'TRIAL',
+  `pertenece_consejo_caos` int(11) NOT NULL DEFAULT '0' COMMENT 'TRIAL',
+  `pertenece_real` int(11) NOT NULL DEFAULT '0' COMMENT 'TRIAL',
+  `pertenece_caos` int(11) NOT NULL DEFAULT '0' COMMENT 'TRIAL',
+  `ciudadanos_matados` int(11) NOT NULL DEFAULT '0' COMMENT 'TRIAL',
+  `criminales_matados` int(11) NOT NULL DEFAULT '0' COMMENT 'TRIAL',
+  `recibio_armadura_real` int(11) NOT NULL DEFAULT '0' COMMENT 'TRIAL',
+  `recibio_armadura_caos` int(11) NOT NULL DEFAULT '0' COMMENT 'TRIAL',
+  `recibio_exp_real` int(11) NOT NULL DEFAULT '0' COMMENT 'TRIAL',
+  `recibio_exp_caos` int(11) NOT NULL DEFAULT '0' COMMENT 'TRIAL',
+  `recompensas_real` int(11) DEFAULT '0' COMMENT 'TRIAL',
+  `recompensas_caos` int(11) DEFAULT '0' COMMENT 'TRIAL',
+  `reenlistadas` int(11) NOT NULL DEFAULT '0' COMMENT 'TRIAL',
+  `fecha_ingreso` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'TRIAL',
+  `nivel_ingreso` int(11) DEFAULT NULL COMMENT 'TRIAL',
+  `matados_ingreso` int(11) DEFAULT NULL COMMENT 'TRIAL',
+  `siguiente_recompensa` int(11) DEFAULT NULL COMMENT 'TRIAL',
+  `status` int(11) DEFAULT '0' COMMENT 'TRIAL',
+  `guild_index` int(11) DEFAULT '0' COMMENT 'TRIAL',
+  `guild_aspirant_index` int(11) DEFAULT NULL COMMENT 'TRIAL',
+  `guild_member_history` varchar(1024) DEFAULT NULL COMMENT 'TRIAL',
+  `guild_requests_history` varchar(1024) DEFAULT NULL COMMENT 'TRIAL',
+  `guild_rejected_because` varchar(255) DEFAULT NULL COMMENT 'TRIAL',
+  `chat_global` int(11) DEFAULT '1' COMMENT 'TRIAL',
+  `chat_combate` int(11) DEFAULT '1' COMMENT 'TRIAL',
+  `warnings` int(11) NOT NULL DEFAULT '0' COMMENT 'TRIAL',
+  `elo` int(11) NOT NULL DEFAULT '1000' COMMENT 'TRIAL',
+  `return_map` int(11) NOT NULL DEFAULT '0' COMMENT 'TRIAL',
+  `return_x` int(11) NOT NULL DEFAULT '0' COMMENT 'TRIAL',
+  `return_y` int(11) NOT NULL DEFAULT '0' COMMENT 'TRIAL',
+  `trial074` char(1) DEFAULT NULL COMMENT 'TRIAL'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='TRIAL';
+
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `account`
+--
+ALTER TABLE `account`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_delete_account` (`deleted`),
+  ADD KEY `idx_account_email` (`email`(255));
+
+--
+-- Indexes for table `attribute`
+--
+ALTER TABLE `attribute`
+  ADD PRIMARY KEY (`user_id`);
+
+--
+-- Indexes for table `bank_item`
+--
+ALTER TABLE `bank_item`
+  ADD PRIMARY KEY (`user_id`,`number`);
+
+--
+-- Indexes for table `house_key`
+--
+ALTER TABLE `house_key`
+  ADD PRIMARY KEY (`key_obj`),
+  ADD KEY `idx_house_key_fk_account` (`account_id`);
+
+--
+-- Indexes for table `inventory_item`
+--
+ALTER TABLE `inventory_item`
+  ADD PRIMARY KEY (`user_id`,`number`);
+
+--
+-- Indexes for table `pet`
+--
+ALTER TABLE `pet`
+  ADD PRIMARY KEY (`user_id`,`number`);
+
+--
+-- Indexes for table `punishment`
+--
+ALTER TABLE `punishment`
+  ADD PRIMARY KEY (`user_id`,`number`);
+
+--
+-- Indexes for table `quest`
+--
+ALTER TABLE `quest`
+  ADD PRIMARY KEY (`user_id`,`number`);
+
+--
+-- Indexes for table `quest_done`
+--
+ALTER TABLE `quest_done`
+  ADD PRIMARY KEY (`user_id`,`quest_id`);
+
+--
+-- Indexes for table `skillpoint`
+--
+ALTER TABLE `skillpoint`
+  ADD PRIMARY KEY (`user_id`,`number`);
+
+--
+-- Indexes for table `spell`
+--
+ALTER TABLE `spell`
+  ADD PRIMARY KEY (`user_id`,`number`);
+
+--
+-- Indexes for table `statistics`
+--
+ALTER TABLE `statistics`
+  ADD PRIMARY KEY (`name`);
+
+--
+-- Indexes for table `user`
+--
+ALTER TABLE `user`
+  ADD PRIMARY KEY (`id`,`account_id`,`deleted`),
+  ADD KEY `idx_user_name` (`name`),
+  ADD KEY `idx_user_fk_user_account` (`account_id`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `account`
+--
+ALTER TABLE `account`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'TRIAL', AUTO_INCREMENT=296190;
+--
+-- AUTO_INCREMENT for table `attribute`
+--
+ALTER TABLE `attribute`
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'TRIAL', AUTO_INCREMENT=1562737;
+--
+-- AUTO_INCREMENT for table `bank_item`
+--
+ALTER TABLE `bank_item`
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'TRIAL', AUTO_INCREMENT=2066;
+--
+-- AUTO_INCREMENT for table `house_key`
+--
+ALTER TABLE `house_key`
+  MODIFY `key_obj` int(11) NOT NULL AUTO_INCREMENT COMMENT 'TRIAL', AUTO_INCREMENT=344;
+--
+-- AUTO_INCREMENT for table `inventory_item`
+--
+ALTER TABLE `inventory_item`
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'TRIAL', AUTO_INCREMENT=2304;
+--
+-- AUTO_INCREMENT for table `pet`
+--
+ALTER TABLE `pet`
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'TRIAL', AUTO_INCREMENT=1562740;
+--
+-- AUTO_INCREMENT for table `punishment`
+--
+ALTER TABLE `punishment`
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'TRIAL', AUTO_INCREMENT=13227;
+--
+-- AUTO_INCREMENT for table `quest`
+--
+ALTER TABLE `quest`
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'TRIAL', AUTO_INCREMENT=1562742;
+--
+-- AUTO_INCREMENT for table `quest_done`
+--
+ALTER TABLE `quest_done`
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'TRIAL', AUTO_INCREMENT=13011;
+--
+-- AUTO_INCREMENT for table `skillpoint`
+--
+ALTER TABLE `skillpoint`
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'TRIAL', AUTO_INCREMENT=3584;
+--
+-- AUTO_INCREMENT for table `spell`
+--
+ALTER TABLE `spell`
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'TRIAL', AUTO_INCREMENT=3280;
+--
+-- AUTO_INCREMENT for table `user`
+--
+ALTER TABLE `user`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'TRIAL', AUTO_INCREMENT=13247;
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `bank_item`
+--
+ALTER TABLE `bank_item`
+  ADD CONSTRAINT `fk_attribute_user_0` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `house_key`
+--
+ALTER TABLE `house_key`
+  ADD CONSTRAINT `fk_bank_item_account_0` FOREIGN KEY (`account_id`) REFERENCES `account` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `inventory_item`
+--
+ALTER TABLE `inventory_item`
+  ADD CONSTRAINT `fk_house_key_user_0` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `spell`
+--
+ALTER TABLE `spell`
+  ADD CONSTRAINT `fk_skillpoint_user_0` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `user`
+--
+ALTER TABLE `user`
+  ADD CONSTRAINT `fk_statistics_account_0` FOREIGN KEY (`account_id`) REFERENCES `account` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
