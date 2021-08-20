@@ -1893,6 +1893,8 @@ Public Type t_User
     CraftInventory(1 To MAX_SLOTS_CRAFTEO) As Integer
     CraftCatalyst As t_Obj
     CraftResult As clsCrafteo
+    
+    WaitingPacket As Integer
 
 End Type
 

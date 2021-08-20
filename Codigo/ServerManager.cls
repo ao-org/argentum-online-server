@@ -26,24 +26,49 @@ Private Enum ManagerPackets
     CREATE_CHAR_RESULT
 End Enum
 
+Private Closing As Boolean
+
 Private WithEvents Socket As Winsock
 Attribute Socket.VB_VarHelpID = -1
+Private Port As Integer
 
-Public Sub Initialize(pSocket As Winsock, ByVal Port As Integer)
+Private Buffer As cStringBuilder
+
+Public Sub Initialize(pSocket As Winsock, ByVal pPort As Integer)
     Set Socket = pSocket
+    Port = pPort
+    Set Buffer = New cStringBuilder
     
+    Call Connect
+End Sub
+
+Private Sub Connect()
     Call Socket.Connect("localhost", Port)
 End Sub
 
-Public Sub Send(ByVal Packet As Packets, Data As String, Optional Instance As String)
-    Dim message As String
-    message = "{""id"":" & Packet & ",""data"":" & Data & IIf(LenB(Instance), ",""instance"":" & Instance, "") & "}" & Chr(0)
+Public Sub Send(ByVal Packet As Packets, Data As JS_Object, Optional Instance As JS_Object)
+    Dim Msg As New JS_Object
+
+    Msg.Item("id") = Packet
+    Msg.Item("data") = Data
     
-    Call Socket.SendData(message)
+    If Not Instance Is Nothing Then
+        Msg.Item("instance") = Instance
+    End If
+
+    Call Socket.SendData(Chr(1) & Msg.ToString() & Chr(0))
 End Sub
 
 Private Sub Class_Terminate()
+    Closing = True
+    Socket.Close
     Set Socket = Nothing
+End Sub
+
+Private Sub Socket_Close()
+    If Not Closing Then
+        Call Connect
+    End If
 End Sub
 
 Private Sub Socket_Connect()
@@ -51,19 +76,34 @@ Private Sub Socket_Connect()
 End Sub
 
 Private Sub Socket_DataArrival(ByVal bytesTotal As Long)
-    ' TODO: Mejorar para evitar problemas de paquetes dobles o incompletos
-    Dim message As String
-    Call Socket.getData(message, vbString, bytesTotal)
-    Debug.Print message
+    Dim DataRecv As String
     
-    Dim Data As Object
-    Set Data = JSON.parse(message)
-    
-    Call HandlePacket(Data.Item("id"), Data.Item("data"), Data.Item("instance"))
+    Call Socket.getData(DataRecv, vbString, bytesTotal)
+    Call Buffer.Append(DataRecv)
+
+    Dim FirstSeparator As Long
+    FirstSeparator = Buffer.Find(Chr(0))
+
+    Dim Message As String
+    If FirstSeparator > 0 Then
+        Message = Buffer.SubStr(1, FirstSeparator - 2)
+
+        Dim Data As Object
+        Set Data = JSON.parse(Message)
+
+          Call HandlePacket(Data.Item("id"), Data.Item("data"), Data.Item("instance"))
+
+        Call Buffer.Remove(0, FirstSeparator)
+    End If
 End Sub
 
 Private Sub Socket_Error(ByVal Number As Integer, Description As String, ByVal Scode As Long, ByVal Source As String, ByVal HelpFile As String, ByVal HelpContext As Long, CancelDisplay As Boolean)
-    Debug.Print Number, Description
+    If Not Closing Then
+        Socket.Close
+        DoEvents
+
+        Call Connect
+    End If
 End Sub
 
 Private Sub HandlePacket(ByVal ID As Long, Data As Object, Instance As Object)
@@ -75,11 +115,10 @@ End Sub
 
 Private Function CheckPlayer(ByVal Slot As Integer, UUID As String) As Boolean
     ' TODO: Implementar comprobación de que el jugador sigue online
+    CheckPlayer = True
 End Function
 
 Private Sub HandleLoginAccount(ByVal ID As Long, Data As Object, Instance As Object)
-    Debug.Print "HandleLoginAccount(" & ID & ", " & JSON.toString(Data) & ", " & JSON.toString(Instance) & ")" ' Borrame
-
     Dim UserIndex As Integer
     UserIndex = Instance.Item("slot")
 
@@ -105,7 +144,7 @@ Private Sub HandleLoginAccount(ByVal ID As Long, Data As Object, Instance As Obj
                 
                 ' Enviara correo solo si la IP no coinciden con lo que tenemos en la BD
                 Case 1
-                    Verificar = Not AOGuard.VerificarOrigen(.AccountID, .IP)
+                    Verificar = Not AOGuard.VerificarOrigen(.AccountID, .IP) ' TODO
                 
                 ' Enviara correo cada vez que iniciemos sesion
                 Case 2
@@ -120,10 +159,10 @@ Private Sub HandleLoginAccount(ByVal ID As Long, Data As Object, Instance As Obj
         If Verificar Then
             Call WriteGuardNotice(UserIndex)
             
-            Call AOGuard.EnviarCodigo(UserIndex)
+            Call AOGuard.EnviarCodigo(UserIndex) ' TODO
         Else
-            ' TODO: Refactor: pedir directamente los personajes y hacer el chequeo de AoGuard directo en el Manager, para que con un sólo paquete se resuelva el login de la cuenta
-            Call WritePersonajesDeCuenta(UserIndex)
+            ' TODO: Refactor: hacer el chequeo de AoGuard directo en el Manager, para que con un sólo paquete se resuelva el login de la cuenta
+            Call WritePersonajesDeCuenta(UserIndex, Data.Item("chars"))
             Call WriteMostrarCuenta(UserIndex)
         End If
     

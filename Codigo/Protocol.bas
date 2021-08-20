@@ -595,24 +595,6 @@ Public Enum e_FontTypeNames
     
 End Enum
 
-Public Type t_PersonajeCuenta
-
-    nombre As String
-    nivel As Byte
-    Mapa As Integer
-    posX As Integer
-    posY As Integer
-    cuerpo As Integer
-    Cabeza As Integer
-    Status As Byte
-    clase As Byte
-    Arma As Integer
-    Escudo As Integer
-    Casco As Integer
-    ClanIndex As Integer
-
-End Type
-
 Private Reader  As Network.Reader
 
 Public Sub InitializePacketList()
@@ -15290,7 +15272,7 @@ Private Sub HandleBorrarPJ(ByVal UserIndex As Integer)
             End If
 
 152         Call BorrarUsuarioDatabase(UserDelete)
-154         Call WritePersonajesDeCuenta(UserIndex)
+154         Call WritePersonajesDeCuenta(UserIndex, Nothing)
   
         End With
     

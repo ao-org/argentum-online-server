@@ -99,8 +99,7 @@ Public Function VerificarOrigen(ByVal AccountID As Long, ByVal IP As String) As 
     
 110     VerificarOrigen = (IP = RS!last_ip)
     
-        ' Mas adelante, si pinta ser mas exhaustivos podemos agregar chequeos de yokese...
-        ' MAC, DNI, Numero de Tramite, lo que sea :)
+        
     
         Exit Function
 
@@ -142,7 +141,7 @@ Public Sub HandleNoticeResponse(ByVal UserIndex As Integer, ByVal Codigo As Stri
                 ' Lo comparamos con lo que tenemos en la BD
 118             If Codigo = RS!code Then
             
-120                 Call WritePersonajesDeCuenta(UserIndex)
+120                 Call WritePersonajesDeCuenta(UserIndex, Nothing)
 122                 Call WriteMostrarCuenta(UserIndex)
                 
                     ' Invalidamos el codigo

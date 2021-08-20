@@ -893,11 +893,19 @@ Function EntrarCuenta(ByVal UserIndex As Integer, ByVal CuentaEmail As String, B
 
         UserList(UserIndex).Email = UCase$(CuentaEmail)
 
-        ' TODO: Mejorar la creación de JSON con funciones auxiliares
-132     Call Manager.Send(LOGIN_ACCOUNT, "{""email"":""" & UCase$(UserList(UserIndex).Email) & """,""password"":""" & SDesencriptar(CuentaPassword) & """}", _
-                                        "{""slot"":" & UserIndex & ",""uuid"":""" & UserList(UserIndex).UUID & """}")
+        Dim Data As New JS_Object
+        Dim Instance As New JS_Object
+        
+        Data.Item("email") = UCase$(UserList(UserIndex).Email)
+        Data.Item("password") = SDesencriptar(CuentaPassword)
+        Data.Item("ip") = UserList(UserIndex).IP
+        
+        Instance.Item("slot") = UserIndex
+        Instance.Item("uuid") = UserList(UserIndex).UUID
 
-        ' TODO: Setear un flag en el user para prevenir que envie otros paquetes hasta procesar este
+132     Call Manager.Send(LOGIN_ACCOUNT, Data, Instance)
+
+        UserList(UserIndex).WaitingPacket = LOGIN_ACCOUNT
 
         Exit Function
 
@@ -1483,6 +1491,7 @@ Sub ResetUserSlot(ByVal UserIndex As Integer)
         
 
 100     UserList(UserIndex).ConnIDValida = False
+        UserList(UserIndex).WaitingPacket = 0
 
 104     If UserList(UserIndex).Grupo.Lider = UserIndex Then
 106         Call FinalizarGrupo(UserIndex)

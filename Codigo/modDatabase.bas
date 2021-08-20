@@ -1309,62 +1309,6 @@ ErrorHandler:
     
 End Function
 
-Public Function GetPersonajesCuentaDatabase(ByVal AccountID As Long, Personaje() As t_PersonajeCuenta) As Byte
-        
-        On Error GoTo GetPersonajesCuentaDatabase_Err
-        
-        Dim RS As ADODB.Recordset
-100     Set RS = Query("SELECT name, head_id, class_id, body_id, pos_map, pos_x, pos_y, level, status, helmet_id, shield_id, weapon_id, guild_index, is_dead, is_sailing FROM user WHERE account_id = ?;", AccountID)
-
-102     If RS Is Nothing Then Exit Function
-    
-104     GetPersonajesCuentaDatabase = RS.RecordCount
-
-        Dim i As Integer
-
-108     For i = 1 To GetPersonajesCuentaDatabase
-110         Personaje(i).nombre = RS!Name
-112         Personaje(i).Cabeza = RS!head_id
-114         Personaje(i).clase = RS!class_id
-116         Personaje(i).cuerpo = RS!body_id
-118         Personaje(i).Mapa = RS!pos_map
-120         Personaje(i).posX = RS!pos_x
-122         Personaje(i).posY = RS!pos_y
-124         Personaje(i).nivel = RS!level
-126         Personaje(i).Status = RS!Status
-128         Personaje(i).Casco = RS!helmet_id
-130         Personaje(i).Escudo = RS!shield_id
-132         Personaje(i).Arma = RS!weapon_id
-134         Personaje(i).ClanIndex = RS!Guild_Index
-        
-136         If EsRolesMaster(Personaje(i).nombre) Then
-138             Personaje(i).Status = 3
-140         ElseIf EsConsejero(Personaje(i).nombre) Then
-142             Personaje(i).Status = 4
-144         ElseIf EsSemiDios(Personaje(i).nombre) Then
-146             Personaje(i).Status = 5
-148         ElseIf EsDios(Personaje(i).nombre) Then
-150             Personaje(i).Status = 6
-152         ElseIf EsAdmin(Personaje(i).nombre) Then
-154             Personaje(i).Status = 7
-
-            End If
-
-156         If val(RS!is_dead) = 1 Or val(RS!is_sailing) = 1 Then
-158             Personaje(i).Cabeza = 0
-            End If
-        
-160         RS.MoveNext
-        Next
-
-        Exit Function
-
-GetPersonajesCuentaDatabase_Err:
-162     Call TraceError(Err.Number, Err.Description, "modDatabase.GetPersonajesCuentaDatabase", Erl)
-
-        
-End Function
-
 Public Sub SetUsersLoggedDatabase(ByVal NumUsers As Long)
         
         On Error GoTo SetUsersLoggedDatabase_Err
