@@ -18,12 +18,14 @@ Public Enum Packets
     LOGIN_CHAR
     CREATE_CHAR
     SAVE_CHAR
+    GUARD_NOTICE_RESPONSE
 End Enum
 
 Private Enum ManagerPackets
     LOGIN_ACCOUNT_RESULT
     LOGIN_CHAR_RESULT
     CREATE_CHAR_RESULT
+    GUARD_NOTICE_RESPONSE_RESULT
 End Enum
 
 Private Closing As Boolean
@@ -84,12 +86,12 @@ Private Sub Socket_DataArrival(ByVal bytesTotal As Long)
     Dim FirstSeparator As Long
     FirstSeparator = Buffer.Find(Chr(0))
 
-    Dim Message As String
+    Dim message As String
     If FirstSeparator > 0 Then
-        Message = Buffer.SubStr(1, FirstSeparator - 2)
+        message = Buffer.SubStr(1, FirstSeparator - 2)
 
         Dim Data As Object
-        Set Data = JSON.parse(Message)
+        Set Data = JSON.parse(message)
 
           Call HandlePacket(Data.Item("id"), Data.Item("data"), Data.Item("instance"))
 
@@ -108,8 +110,13 @@ End Sub
 
 Private Sub HandlePacket(ByVal ID As Long, Data As Object, Instance As Object)
     Select Case ID
+    
         Case ManagerPackets.LOGIN_ACCOUNT_RESULT
             Call HandleLoginAccount(ID, Data, Instance)
+
+        Case ManagerPackets.GUARD_NOTICE_RESPONSE_RESULT
+            Call HandleGuardNotice(ID, Data, Instance)
+            
     End Select
 End Sub
 
@@ -132,40 +139,36 @@ Private Sub HandleLoginAccount(ByVal ID As Long, Data As Object, Instance As Obj
         With UserList(UserIndex)
             .AccountID = Data.Item("account_id")
             .Cuenta = .Email
-        
-            ' Verificación AoGuard
-            Dim Verificar As Boolean
-            
-            Select Case AOGuard.AOG_STATUS
-            
-                ' Nunca enviara correo
-                Case 0
-                    Verificar = False
-                
-                ' Enviara correo solo si la IP no coinciden con lo que tenemos en la BD
-                Case 1
-                    Verificar = Not AOGuard.VerificarOrigen(.AccountID, .IP) ' TODO
-                
-                ' Enviara correo cada vez que iniciemos sesion
-                Case 2
-                    Verificar = True
-                
-                Case Else
-                    Verificar = True
-            
-            End Select
         End With
         
-        If Verificar Then
+        If Data.Item("verify") Then
             Call WriteGuardNotice(UserIndex)
-            
-            Call AOGuard.EnviarCodigo(UserIndex) ' TODO
+            Call WriteShowMessageBox(UserIndex, Data.Item("message"))
         Else
-            ' TODO: Refactor: hacer el chequeo de AoGuard directo en el Manager, para que con un sólo paquete se resuelva el login de la cuenta
             Call WritePersonajesDeCuenta(UserIndex, Data.Item("chars"))
             Call WriteMostrarCuenta(UserIndex)
         End If
-    
+
+    ' Si no pudo loguearse, le mostramos el mensaje de error y cerramos el socket
+    Else
+        Call WriteShowMessageBox(UserIndex, Data.Item("message"))
+        Call CloseSocket(UserIndex)
+    End If
+End Sub
+
+Private Sub HandleGuardNotice(ByVal ID As Long, Data As Object, Instance As Object)
+    Dim UserIndex As Integer
+    UserIndex = Instance.Item("slot")
+
+    ' Si no está online el jugador, ignoramos la respuesta
+    If Not CheckPlayer(UserIndex, Instance.Item("uuid")) Then Exit Sub
+
+    ' Si el login fue exitoso
+    If Data.Item("success") Then
+
+        Call WritePersonajesDeCuenta(UserIndex, Data.Item("chars"))
+        Call WriteMostrarCuenta(UserIndex)
+
     ' Si no pudo loguearse, le mostramos el mensaje de error y cerramos el socket
     Else
         Call WriteShowMessageBox(UserIndex, Data.Item("message"))
