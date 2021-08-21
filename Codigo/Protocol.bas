@@ -606,11 +606,11 @@ End Sub
 '
 ' @param    UserIndex The index of the user sending the message.
 
-Public Function HandleIncomingData(ByVal UserIndex As Integer, ByVal Message As Network.Reader) As Boolean
+Public Function HandleIncomingData(ByVal UserIndex As Integer, ByVal message As Network.Reader) As Boolean
 
 On Error Resume Next
 
-    Set Reader = Message
+    Set Reader = message
     
     Dim PacketID As Long:
     PacketID = Reader.ReadInt
@@ -1275,8 +1275,8 @@ On Error Resume Next
             Err.raise -1, "Invalid Message"
     End Select
     
-    If (Message.GetAvailable() > 0) Then
-        Err.raise &HDEADBEEF, "HandleIncomingData", "El paquete '" & PacketID & "' se encuentra en mal estado con '" & Message.GetAvailable() & "' bytes de mas por el usuario '" & UserList(UserIndex).Name & "'"
+    If (message.GetAvailable() > 0) Then
+        Err.raise &HDEADBEEF, "HandleIncomingData", "El paquete '" & PacketID & "' se encuentra en mal estado con '" & message.GetAvailable() & "' bytes de mas por el usuario '" & UserList(UserIndex).Name & "'"
     End If
     
 HandleIncomingData_Err:
@@ -1303,58 +1303,43 @@ Private Sub HandleLoginExistingChar(ByVal UserIndex As Integer)
         ''Last Modification: 01/12/08 Ladder
         '***************************************************
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
         Dim UserName    As String
         Dim CuentaEmail As String
         Dim Password    As String
         Dim Version     As String
         Dim MD5         As String
-
-102         CuentaEmail = Reader.ReadString8()
-104         Password = Reader.ReadString8()
-106         Version = CStr(Reader.ReadInt8()) & "." & CStr(Reader.ReadInt8()) & "." & CStr(Reader.ReadInt8())
-108         UserName = Reader.ReadString8()
-114         MD5 = Reader.ReadString8()
-
-        #If DEBUGGING = False Then
-
-116         If Not VersionOK(Version) Then
-118             Call WriteShowMessageBox(UserIndex, "Esta versión del juego es obsoleta, la versión correcta es la " & ULTIMAVERSION & ". Ejecute el launcher por favor.")
-120             Call CloseSocket(UserIndex)
-                Exit Sub
-
-            End If
-
-        #End If
         
-122     If EsGmChar(UserName) Then
-            
-124         If AdministratorAccounts(UCase$(UserName)) <> UCase$(CuentaEmail) Then
-130             Call CloseSocket(UserIndex)
+        With UserList(UserIndex)
+
+108         UserName = Reader.ReadString8()
+    
+            If .AccountID < 0 Then Exit Sub
+    
+122         If EsGmChar(UserName) Then
+                
+124             If AdministratorAccounts(UCase$(UserName)) <> .Email Then
+                    Call WriteShowMessageBox(UserIndex, "Este personaje pertenece a un Game Master.")
+130                 Call CloseSocket(UserIndex)
+                    Exit Sub
+                End If
+                
+            End If
+
+136         If Not AsciiValidos(UserName) Then
+138             Call WriteShowMessageBox(UserIndex, "Nombre invalido.")
+140             Call CloseSocket(UserIndex)
                 Exit Sub
             End If
-            
-        End If
-  
-132     If Not EntrarCuenta(UserIndex, CuentaEmail, Password, MD5) Then
-134         Call CloseSocket(UserIndex)
-            Exit Sub
+    
+180         Call ConnectUser(UserIndex, UserName, .Email)
 
-        End If
-
-136     If Not AsciiValidos(UserName) Then
-138         Call WriteShowMessageBox(UserIndex, "Nombre invalido.")
-140         Call CloseSocket(UserIndex)
-            Exit Sub
-
-        End If
-
-180     Call ConnectUser(UserIndex, UserName, CuentaEmail)
+        End With
 
         Exit Sub
     
-errHandler:
+ErrHandler:
         
 182     Call TraceError(Err.Number, Err.Description, "Protocol.HandleLoginExistingChar", Erl)
 184
@@ -1371,7 +1356,7 @@ Private Sub HandleLoginNewChar(ByVal UserIndex As Integer)
         '
         '***************************************************
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
         Dim UserName As String
         Dim race     As e_Raza
@@ -1450,7 +1435,7 @@ Private Sub HandleLoginNewChar(ByVal UserIndex As Integer)
         
         Exit Sub
     
-errHandler:
+ErrHandler:
 
 168     Call TraceError(Err.Number, Err.Description, "Protocol.HandleLoginNewChar", Erl)
 170
@@ -1493,7 +1478,7 @@ Private Sub HandleTalk(ByVal UserIndex As Integer)
         '13/01/2010: ZaMa - Now hidden on boat pirats recover the proper boat body.
         '***************************************************
     
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
@@ -1571,7 +1556,7 @@ Private Sub HandleTalk(ByVal UserIndex As Integer)
         
         Exit Sub
         
-errHandler:
+ErrHandler:
 152     Call TraceError(Err.Number, Err.Description, "Protocol.HandleTalk", Erl)
 154
 
@@ -1590,7 +1575,7 @@ Private Sub HandleYell(ByVal UserIndex As Integer)
         '
         '***************************************************
         
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
@@ -1669,7 +1654,7 @@ Private Sub HandleYell(ByVal UserIndex As Integer)
         
         Exit Sub
         
-errHandler:
+ErrHandler:
 
 152     Call TraceError(Err.Number, Err.Description, "Protocol.HandleYell", Erl)
 154
@@ -1689,7 +1674,7 @@ Private Sub HandleWhisper(ByVal UserIndex As Integer)
         '
         '***************************************************
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
@@ -1748,7 +1733,7 @@ Private Sub HandleWhisper(ByVal UserIndex As Integer)
         
         Exit Sub
         
-errHandler:
+ErrHandler:
 
 140     Call TraceError(Err.Number, Err.Description, "Protocol.HandleWhisper", Erl)
 142
@@ -2364,7 +2349,7 @@ Private Sub HandleBankEnd(ByVal UserIndex As Integer)
             'User exits banking mode
 102         .flags.Comerciando = False
         
-104         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("171", UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y))
+104         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("171", UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
 106         Call WriteBankEnd(UserIndex)
 
         End With
@@ -2513,7 +2498,7 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
 136                 ElseIf ObjData(.Invent.Object(Slot).ObjIndex).Intirable = 1 And EsGM(UserIndex) Then
 138                     If Slot <= UserList(UserIndex).CurrentInventorySlots And Slot > 0 Then
 140                         If .Invent.Object(Slot).ObjIndex = 0 Then Exit Sub
-142                         Call DropObj(UserIndex, Slot, amount, .Pos.Map, .Pos.x, .Pos.Y)
+142                         Call DropObj(UserIndex, Slot, amount, .Pos.Map, .Pos.X, .Pos.Y)
                         End If
                         Exit Sub
                     End If
@@ -2539,7 +2524,7 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
             
 154                 If .Invent.Object(Slot).ObjIndex = 0 Then Exit Sub
 
-156                 Call DropObj(UserIndex, Slot, amount, .Pos.Map, .Pos.x, .Pos.Y)
+156                 Call DropObj(UserIndex, Slot, amount, .Pos.Map, .Pos.X, .Pos.Y)
 
                 End If
 
@@ -2636,13 +2621,13 @@ Private Sub HandleLeftClick(ByVal UserIndex As Integer)
 
 100     With UserList(UserIndex)
 
-            Dim x As Byte
+            Dim X As Byte
             Dim Y As Byte
         
-102         x = Reader.ReadInt8()
+102         X = Reader.ReadInt8()
 104         Y = Reader.ReadInt8()
         
-106         Call LookatTile(UserIndex, .Pos.Map, x, Y)
+106         Call LookatTile(UserIndex, .Pos.Map, X, Y)
 
         End With
 
@@ -2671,13 +2656,13 @@ Private Sub HandleDoubleClick(ByVal UserIndex As Integer)
 
 100     With UserList(UserIndex)
 
-            Dim x As Byte
+            Dim X As Byte
             Dim Y As Byte
         
-102         x = Reader.ReadInt8()
+102         X = Reader.ReadInt8()
 104         Y = Reader.ReadInt8()
         
-106         Call Accion(UserIndex, .Pos.Map, x, Y)
+106         Call Accion(UserIndex, .Pos.Map, X, Y)
 
         End With
         
@@ -2979,7 +2964,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 
 100     With UserList(UserIndex)
         
-            Dim x        As Byte
+            Dim X        As Byte
             Dim Y        As Byte
 
             Dim Skill    As e_Skill
@@ -2988,18 +2973,18 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
             Dim tU       As Integer   'Target user
             Dim tN       As Integer   'Target NPC
         
-102         x = Reader.ReadInt8()
+102         X = Reader.ReadInt8()
 104         Y = Reader.ReadInt8()
             
 106         Skill = Reader.ReadInt8()
 
-            .Trabajo.Target_X = x
+            .Trabajo.Target_X = X
             .Trabajo.Target_Y = Y
             .Trabajo.TargetSkill = Skill
             
-108         If .flags.Muerto = 1 Or .flags.Descansar Or Not InMapBounds(.Pos.Map, x, Y) Then Exit Sub
+108         If .flags.Muerto = 1 Or .flags.Descansar Or Not InMapBounds(.Pos.Map, X, Y) Then Exit Sub
 
-110         If Not InRangoVision(UserIndex, x, Y) Then
+110         If Not InRangoVision(UserIndex, X, Y) Then
 112             Call WritePosUpdate(UserIndex)
                 Exit Sub
 
@@ -3075,7 +3060,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 
                     End If
                 
-184                 Call LookatTile(UserIndex, .Pos.Map, x, Y)
+184                 Call LookatTile(UserIndex, .Pos.Map, X, Y)
                 
 186                 tU = .flags.TargetUser
 188                 tN = .flags.TargetNPC
@@ -3135,7 +3120,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 224                 ElseIf tN > 0 Then
 
                         'Only allow to atack if the other one can retaliate (can see us)
-226                     If Abs(NpcList(tN).Pos.Y - .Pos.Y) > RANGO_VISION_Y And Abs(NpcList(tN).Pos.x - .Pos.x) > RANGO_VISION_X Then
+226                     If Abs(NpcList(tN).Pos.Y - .Pos.Y) > RANGO_VISION_Y And Abs(NpcList(tN).Pos.X - .Pos.X) > RANGO_VISION_X Then
 228                         Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
 230                         Call WriteWorkRequestTarget(UserIndex, 0)
                             'Call WriteConsoleMsg(UserIndex, "Estas demasiado lejos para atacar.", e_FontTypeNames.FONTTYPE_WARNING)
@@ -3199,11 +3184,11 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                     ' End If
                 
                     'Target whatever is in that tile
-266                 Call LookatTile(UserIndex, .Pos.Map, x, Y)
+266                 Call LookatTile(UserIndex, .Pos.Map, X, Y)
                 
                     'If it's outside range log it and exit
-268                 If Abs(.Pos.x - x) > RANGO_VISION_X Or Abs(.Pos.Y - Y) > RANGO_VISION_Y Then
-270                     Call LogCheating("Ataque fuera de rango de " & .Name & "(" & .Pos.Map & "/" & .Pos.x & "/" & .Pos.Y & ") ip: " & .IP & " a la posicion (" & .Pos.Map & "/" & x & "/" & Y & ")")
+268                 If Abs(.Pos.X - X) > RANGO_VISION_X Or Abs(.Pos.Y - Y) > RANGO_VISION_Y Then
+270                     Call LogCheating("Ataque fuera de rango de " & .Name & "(" & .Pos.Map & "/" & .Pos.X & "/" & .Pos.Y & ") ip: " & .IP & " a la posicion (" & .Pos.Map & "/" & X & "/" & Y & ")")
                         Exit Sub
 
                     End If
@@ -3255,7 +3240,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 
                             End If
                             
-416                         If MapData(.Pos.Map, x, Y).ObjInfo.amount <= 0 Then
+416                         If MapData(.Pos.Map, X, Y).ObjInfo.amount <= 0 Then
 418                             Call WriteConsoleMsg(UserIndex, "El árbol ya no te puede entregar mas raices.", e_FontTypeNames.FONTTYPE_INFO)
 420                             Call WriteWorkRequestTarget(UserIndex, 0)
 422                             Call WriteMacroTrabajoToggle(UserIndex, False)
@@ -3263,11 +3248,11 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 
                             End If
                 
-424                         DummyInt = MapData(.Pos.Map, x, Y).ObjInfo.ObjIndex
+424                         DummyInt = MapData(.Pos.Map, X, Y).ObjInfo.ObjIndex
                             
 426                         If DummyInt > 0 Then
                             
-428                             If Abs(.Pos.x - x) + Abs(.Pos.Y - Y) > 2 Then
+428                             If Abs(.Pos.X - X) + Abs(.Pos.Y - Y) > 2 Then
 430                                 Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
                                     'Call WriteConsoleMsg(UserIndex, "Estas demasiado lejos.", e_FontTypeNames.FONTTYPE_INFO)
 432                                 Call WriteWorkRequestTarget(UserIndex, 0)
@@ -3275,7 +3260,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 
                                 End If
                                 
-434                             If .Pos.x = x And .Pos.Y = Y Then
+434                             If .Pos.X = X And .Pos.Y = Y Then
 436                                 Call WriteConsoleMsg(UserIndex, "No podés quitar raices allí.", e_FontTypeNames.FONTTYPE_INFO)
 438                                 Call WriteWorkRequestTarget(UserIndex, 0)
                                     Exit Sub
@@ -3284,8 +3269,8 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                                 
                                 '¡Hay un arbol donde clickeo?
 440                             If ObjData(DummyInt).OBJType = e_OBJType.otArboles Then
-442                                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_TIJERAS, .Pos.x, .Pos.Y))
-444                                 Call DoRaices(UserIndex, x, Y)
+442                                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_TIJERAS, .Pos.X, .Pos.Y))
+444                                 Call DoRaices(UserIndex, X, Y)
 
                                 End If
 
@@ -3311,7 +3296,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 504                     If Not IntervaloPermiteTrabajarExtraer(UserIndex) Then Exit Sub
                     
                         'Target whatever is in that tile
-506                     Call LookatTile(UserIndex, UserList(UserIndex).Pos.Map, x, Y)
+506                     Call LookatTile(UserIndex, UserList(UserIndex).Pos.Map, X, Y)
                     
 508                     tU = .flags.TargetUser
                     
@@ -3329,7 +3314,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 
                                     End If
 
-522                                 If Abs(.Pos.x - UserList(tU).Pos.x) + Abs(.Pos.Y - UserList(tU).Pos.Y) > DistanciaMaxima Then
+522                                 If Abs(.Pos.X - UserList(tU).Pos.X) + Abs(.Pos.Y - UserList(tU).Pos.Y) > DistanciaMaxima Then
 524                                     Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
                                         'Call WriteConsoleMsg(UserIndex, "Estís demasiado lejos.", e_FontTypeNames.FONTTYPE_INFO)
 526                                     Call WriteWorkRequestTarget(UserIndex, 0)
@@ -3339,14 +3324,14 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                                  
                                     '17/09/02
                                     'Check the trigger
-528                                 If MapData(UserList(tU).Pos.Map, UserList(tU).Pos.x, UserList(tU).Pos.Y).trigger = e_Trigger.ZonaSegura Then
+528                                 If MapData(UserList(tU).Pos.Map, UserList(tU).Pos.X, UserList(tU).Pos.Y).trigger = e_Trigger.ZonaSegura Then
 530                                     Call WriteConsoleMsg(UserIndex, "No podés robar aquí.", e_FontTypeNames.FONTTYPE_WARNING)
 532                                     Call WriteWorkRequestTarget(UserIndex, 0)
                                         Exit Sub
 
                                     End If
                                  
-534                                 If MapData(.Pos.Map, .Pos.x, .Pos.Y).trigger = e_Trigger.ZonaSegura Then
+534                                 If MapData(.Pos.Map, .Pos.X, .Pos.Y).trigger = e_Trigger.ZonaSegura Then
 536                                     Call WriteConsoleMsg(UserIndex, "No podés robar aquí.", e_FontTypeNames.FONTTYPE_WARNING)
 538                                     Call WriteWorkRequestTarget(UserIndex, 0)
                                         Exit Sub
@@ -3376,12 +3361,12 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                     'Optimizado y solucionado el bug de la doma de criaturas hostiles.
                     
                     'Target whatever is that tile
-552                 Call LookatTile(UserIndex, .Pos.Map, x, Y)
+552                 Call LookatTile(UserIndex, .Pos.Map, X, Y)
 554                 tN = .flags.TargetNPC
                     
 556                 If tN > 0 Then
 558                     If NpcList(tN).flags.Domable > 0 Then
-560                         If Abs(.Pos.x - x) + Abs(.Pos.Y - Y) > 4 Then
+560                         If Abs(.Pos.X - X) + Abs(.Pos.Y - Y) > 4 Then
 562                             Call WriteConsoleMsg(UserIndex, "Estas demasiado lejos.", e_FontTypeNames.FONTTYPE_INFO)
                                 Exit Sub
     
@@ -3409,7 +3394,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                     'Check interval
 576                 If Not IntervaloPermiteTrabajarConstruir(UserIndex) Then Exit Sub
                 
-578                 Call LookatTile(UserIndex, .Pos.Map, x, Y)
+578                 Call LookatTile(UserIndex, .Pos.Map, X, Y)
                 
                     'Check there is a proper item there
 580                 If .flags.TargetObj > 0 Then
@@ -3478,7 +3463,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                         'Can't steal administrative players
 622                     If UserList(UserIndex).Grupo.EnGrupo = False Then
 624                         If UserList(tU).flags.Muerto = 0 Then
-626                             If Abs(.Pos.x - x) + Abs(.Pos.Y - Y) > 8 Then
+626                             If Abs(.Pos.X - X) + Abs(.Pos.Y - Y) > 8 Then
 628                                 Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
                                     'Call WriteConsoleMsg(UserIndex, "Estís demasiado lejos.", e_FontTypeNames.FONTTYPE_INFO)
 630                                 Call WriteWorkRequestTarget(UserIndex, 0)
@@ -3540,7 +3525,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                         Exit Sub
                     End If
                                 
-672                 Call LookatTile(UserIndex, UserList(UserIndex).Pos.Map, x, Y)
+672                 Call LookatTile(UserIndex, UserList(UserIndex).Pos.Map, X, Y)
                     
 674                 tU = .flags.TargetUser
 
@@ -3584,7 +3569,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                     End If
 
 702             Case e_Skill.MarcaDeGM
-704                 Call LookatTile(UserIndex, UserList(UserIndex).Pos.Map, x, Y)
+704                 Call LookatTile(UserIndex, UserList(UserIndex).Pos.Map, X, Y)
                     
 706                 tU = .flags.TargetUser
 
@@ -3620,7 +3605,7 @@ Private Sub HandleCreateNewGuild(ByVal UserIndex As Integer)
     '
     '***************************************************
 
-    On Error GoTo errHandler
+    On Error GoTo ErrHandler
 
 100 With UserList(UserIndex)
         
@@ -3655,7 +3640,7 @@ Private Sub HandleCreateNewGuild(ByVal UserIndex As Integer)
         
     Exit Sub
         
-errHandler:
+ErrHandler:
 
 126 Call TraceError(Err.Number, Err.Description, "Protocol.HandleCreateNewGuild", Erl)
 128
@@ -4166,7 +4151,7 @@ Private Sub HandleForumPost(ByVal UserIndex As Integer)
         '
         '***************************************************
     
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
@@ -4223,7 +4208,7 @@ Private Sub HandleForumPost(ByVal UserIndex As Integer)
         
         Exit Sub
         
-errHandler:
+ErrHandler:
 142     Close #handle
 144     Call TraceError(Err.Number, Err.Description, "Protocol.HandleForumPost", Erl)
 146
@@ -4277,7 +4262,7 @@ Private Sub HandleClanCodexUpdate(ByVal UserIndex As Integer)
         '
         '***************************************************
         
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
@@ -4291,7 +4276,7 @@ Private Sub HandleClanCodexUpdate(ByVal UserIndex As Integer)
         
         Exit Sub
         
-errHandler:
+ErrHandler:
 106     Call TraceError(Err.Number, Err.Description, "Protocol.HandleMoveSpell", Erl)
 108
 
@@ -4455,7 +4440,7 @@ Private Sub HandleGuildAcceptPeace(ByVal UserIndex As Integer)
         '
         '***************************************************
     
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
@@ -4479,7 +4464,7 @@ Private Sub HandleGuildAcceptPeace(ByVal UserIndex As Integer)
         
         Exit Sub
 
-errHandler:
+ErrHandler:
 114     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildAcceptPeace", Erl)
 116
 
@@ -4498,7 +4483,7 @@ Private Sub HandleGuildRejectAlliance(ByVal UserIndex As Integer)
         '
         '***************************************************
     
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
@@ -4523,7 +4508,7 @@ Private Sub HandleGuildRejectAlliance(ByVal UserIndex As Integer)
         
         Exit Sub
         
-errHandler:
+ErrHandler:
 114     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildRejectAlliance", Erl)
 116
 
@@ -4542,7 +4527,7 @@ Private Sub HandleGuildRejectPeace(ByVal UserIndex As Integer)
         '
         '***************************************************
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
@@ -4567,7 +4552,7 @@ Private Sub HandleGuildRejectPeace(ByVal UserIndex As Integer)
         
         Exit Sub
         
-errHandler:
+ErrHandler:
 114     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildRejectPeace", Erl)
 116
 
@@ -4586,7 +4571,7 @@ Private Sub HandleGuildAcceptAlliance(ByVal UserIndex As Integer)
         '
         '***************************************************
     
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
@@ -4611,7 +4596,7 @@ Private Sub HandleGuildAcceptAlliance(ByVal UserIndex As Integer)
         
         Exit Sub
         
-errHandler:
+ErrHandler:
 114     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildAcceptAlliance", Erl)
 116
 
@@ -4630,7 +4615,7 @@ Private Sub HandleGuildOfferPeace(ByVal UserIndex As Integer)
         '
         '***************************************************
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
@@ -4653,7 +4638,7 @@ Private Sub HandleGuildOfferPeace(ByVal UserIndex As Integer)
         
         Exit Sub
         
-errHandler:
+ErrHandler:
 112     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildOfferPeace", Erl)
 114
 
@@ -4672,7 +4657,7 @@ Private Sub HandleGuildOfferAlliance(ByVal UserIndex As Integer)
         '
         '***************************************************
     
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
@@ -4695,7 +4680,7 @@ Private Sub HandleGuildOfferAlliance(ByVal UserIndex As Integer)
         
         Exit Sub
         
-errHandler:
+ErrHandler:
 112     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildOfferPeace", Erl)
 114
 
@@ -4714,7 +4699,7 @@ Private Sub HandleGuildAllianceDetails(ByVal UserIndex As Integer)
         '
         '***************************************************
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
@@ -4737,7 +4722,7 @@ Private Sub HandleGuildAllianceDetails(ByVal UserIndex As Integer)
         
         Exit Sub
         
-errHandler:
+ErrHandler:
 112     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildOfferPeace", Erl)
 114
 
@@ -4756,7 +4741,7 @@ Private Sub HandleGuildPeaceDetails(ByVal UserIndex As Integer)
         '
         '***************************************************
     
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
@@ -4780,7 +4765,7 @@ Private Sub HandleGuildPeaceDetails(ByVal UserIndex As Integer)
         
         Exit Sub
         
-errHandler:
+ErrHandler:
 112     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildPeaceDetails", Erl)
 114
 
@@ -4799,7 +4784,7 @@ Private Sub HandleGuildRequestJoinerInfo(ByVal UserIndex As Integer)
         '
         '***************************************************
     
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
@@ -4821,7 +4806,7 @@ Private Sub HandleGuildRequestJoinerInfo(ByVal UserIndex As Integer)
         
         Exit Sub
         
-errHandler:
+ErrHandler:
 112     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildRequestJoinerInfo", Erl)
 114
 
@@ -4888,7 +4873,7 @@ Private Sub HandleGuildDeclareWar(ByVal UserIndex As Integer)
         '
         '***************************************************
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
@@ -4916,7 +4901,7 @@ Private Sub HandleGuildDeclareWar(ByVal UserIndex As Integer)
         
         Exit Sub
         
-errHandler:
+ErrHandler:
 118     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildPeacePropList", Erl)
 120
 
@@ -4935,13 +4920,13 @@ Private Sub HandleGuildNewWebsite(ByVal UserIndex As Integer)
         '
         '***************************************************
         
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     Call modGuilds.ActualizarWebSite(UserIndex, Reader.ReadString8())
 
         Exit Sub
         
-errHandler:
+ErrHandler:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildNewWebsite", Erl)
 104
 
@@ -4960,7 +4945,7 @@ Private Sub HandleGuildAcceptNewMember(ByVal UserIndex As Integer)
         '
         '***************************************************
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
@@ -4991,7 +4976,7 @@ Private Sub HandleGuildAcceptNewMember(ByVal UserIndex As Integer)
         
         Exit Sub
         
-errHandler:
+ErrHandler:
 120     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildAcceptNewMember", Erl)
 122
 
@@ -5011,7 +4996,7 @@ Private Sub HandleGuildRejectNewMember(ByVal UserIndex As Integer)
         '
         '***************************************************
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
@@ -5043,7 +5028,7 @@ Private Sub HandleGuildRejectNewMember(ByVal UserIndex As Integer)
         
         Exit Sub
         
-errHandler:
+ErrHandler:
 118     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildAcceptNewMember", Erl)
 120
 
@@ -5062,7 +5047,7 @@ Private Sub HandleGuildKickMember(ByVal UserIndex As Integer)
         '
         '***************************************************
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
@@ -5089,7 +5074,7 @@ Private Sub HandleGuildKickMember(ByVal UserIndex As Integer)
         
         Exit Sub
         
-errHandler:
+ErrHandler:
 118     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildKickMember", Erl)
 120
 
@@ -5108,13 +5093,13 @@ Private Sub HandleGuildUpdateNews(ByVal UserIndex As Integer)
         '
         '***************************************************
     
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     Call modGuilds.ActualizarNoticias(UserIndex, Reader.ReadString8())
 
         Exit Sub
         
-errHandler:
+ErrHandler:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildUpdateNews", Erl)
 104
 
@@ -5133,13 +5118,13 @@ Private Sub HandleGuildMemberInfo(ByVal UserIndex As Integer)
         '
         '***************************************************
     
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     Call modGuilds.SendDetallesPersonaje(UserIndex, Reader.ReadString8())
 
         Exit Sub
         
-errHandler:
+ErrHandler:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildMemberInfo", Erl)
 104
 
@@ -5193,7 +5178,7 @@ Private Sub HandleGuildRequestMembership(ByVal UserIndex As Integer)
         '
         '***************************************************
     
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
@@ -5216,7 +5201,7 @@ Private Sub HandleGuildRequestMembership(ByVal UserIndex As Integer)
         
         Exit Sub
         
-errHandler:
+ErrHandler:
 112     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildRequestMembership", Erl)
 114
 
@@ -5235,13 +5220,13 @@ Private Sub HandleGuildRequestDetails(ByVal UserIndex As Integer)
         '
         '***************************************************
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
  
 100     Call modGuilds.SendGuildDetails(UserIndex, Reader.ReadString8())
 
         Exit Sub
         
-errHandler:
+ErrHandler:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildRequestDetails", Erl)
 104
 
@@ -5662,7 +5647,7 @@ Private Sub HandleGrupoMsg(ByVal UserIndex As Integer)
         '
         '***************************************************
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
@@ -5698,7 +5683,7 @@ Private Sub HandleGrupoMsg(ByVal UserIndex As Integer)
         
         Exit Sub
         
-errHandler:
+ErrHandler:
 120     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGrupoMsg", Erl)
 122
 
@@ -5934,7 +5919,7 @@ Private Sub HandleResucitate(ByVal UserIndex As Integer)
         
 112         Call RevivirUsuario(UserIndex)
 114         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, e_ParticulasIndex.Curar, 100, False))
-116         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("104", UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y))
+116         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("104", UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
 118         Call WriteConsoleMsg(UserIndex, "¡Has sido resucitado!", e_FontTypeNames.FONTTYPE_INFO)
 
         End With
@@ -6528,7 +6513,7 @@ Private Sub HandleGuildMessage(ByVal UserIndex As Integer)
         '
         '***************************************************
         
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
@@ -6566,7 +6551,7 @@ Private Sub HandleGuildMessage(ByVal UserIndex As Integer)
         
         Exit Sub
         
-errHandler:
+ErrHandler:
 122     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildMessage", Erl)
 124
 
@@ -6646,7 +6631,7 @@ Private Sub HandleCouncilMessage(ByVal UserIndex As Integer)
         '
         '***************************************************
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
@@ -6680,7 +6665,7 @@ Private Sub HandleCouncilMessage(ByVal UserIndex As Integer)
         
         Exit Sub
         
-errHandler:
+ErrHandler:
 122     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCouncilMessage", Erl)
 124
 
@@ -6699,7 +6684,7 @@ Private Sub HandleRoleMasterRequest(ByVal UserIndex As Integer)
         '
         '***************************************************
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
@@ -6716,7 +6701,7 @@ Private Sub HandleRoleMasterRequest(ByVal UserIndex As Integer)
     
         Exit Sub
         
-errHandler:
+ErrHandler:
 110     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRoleMasterRequest", Erl)
 112
 
@@ -6735,7 +6720,7 @@ Private Sub HandleChangeDescription(ByVal UserIndex As Integer)
         '
         '***************************************************
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
@@ -6765,7 +6750,7 @@ Private Sub HandleChangeDescription(ByVal UserIndex As Integer)
         
         Exit Sub
         
-errHandler:
+ErrHandler:
 120     Call TraceError(Err.Number, Err.Description, "Protocol.HandleChangeDescription", Erl)
 122
 
@@ -6784,7 +6769,7 @@ Private Sub HandleGuildVote(ByVal UserIndex As Integer)
         '
         '***************************************************
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
@@ -6805,7 +6790,7 @@ Private Sub HandleGuildVote(ByVal UserIndex As Integer)
         
         Exit Sub
         
-errHandler:
+ErrHandler:
 110     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildVote", Erl)
 112
 
@@ -6824,7 +6809,7 @@ Private Sub HandlePunishments(ByVal UserIndex As Integer)
         '
         '***************************************************
     
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
@@ -6888,7 +6873,7 @@ Private Sub HandlePunishments(ByVal UserIndex As Integer)
     
         Exit Sub
     
-errHandler:
+ErrHandler:
 152     Call TraceError(Err.Number, Err.Description, "Protocol.HandlePunishments", Erl)
 154
 
@@ -7303,7 +7288,7 @@ Private Sub HandleGuildMemberList(ByVal UserIndex As Integer)
         'Last Modification: 05/17/06
         '
         '***************************************************
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
@@ -7347,7 +7332,7 @@ Private Sub HandleGuildMemberList(ByVal UserIndex As Integer)
         
         Exit Sub
         
-errHandler:
+ErrHandler:
 128     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildMemberList", Erl)
 130
 
@@ -7366,19 +7351,19 @@ Private Sub HandleGMMessage(ByVal UserIndex As Integer)
         'Last Modification by: (liquid)
         '***************************************************
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
         
-            Dim Message As String
-102             Message = Reader.ReadString8()
+            Dim message As String
+102             message = Reader.ReadString8()
 
 104         If EsGM(UserIndex) Then
-106             Call LogGM(.Name, "Mensaje a Gms: " & Message)
+106             Call LogGM(.Name, "Mensaje a Gms: " & message)
         
-108             If LenB(Message) <> 0 Then
+108             If LenB(message) <> 0 Then
                     'Analize chat...
-110                 Call Statistics.ParseChat(Message)
+110                 Call Statistics.ParseChat(message)
             
 112                 Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(.Name & " » " & message, e_FontTypeNames.FONTTYPE_GMMSG))
 
@@ -7390,7 +7375,7 @@ Private Sub HandleGMMessage(ByVal UserIndex As Integer)
 
         Exit Sub
     
-errHandler:
+ErrHandler:
 114     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGMMessage", Erl)
 116
 
@@ -7550,7 +7535,7 @@ Private Sub HandleGoNearby(ByVal UserIndex As Integer)
         '
         '***************************************************
     
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
@@ -7559,7 +7544,7 @@ Private Sub HandleGoNearby(ByVal UserIndex As Integer)
         
             Dim tIndex As Integer
 
-            Dim x      As Long
+            Dim X      As Long
             Dim Y      As Long
 
             Dim i      As Long
@@ -7582,13 +7567,13 @@ Private Sub HandleGoNearby(ByVal UserIndex As Integer)
                 Else
 118                 If CompararPrivilegiosUser(UserIndex, tIndex) >= 0 Then
 120                     For i = 2 To 5 'esto for sirve ir cambiando la distancia destino
-122                         For x = UserList(tIndex).Pos.x - i To UserList(tIndex).Pos.x + i
+122                         For X = UserList(tIndex).Pos.X - i To UserList(tIndex).Pos.X + i
 124                             For Y = UserList(tIndex).Pos.Y - i To UserList(tIndex).Pos.Y + i
 
-126                                 If MapData(UserList(tIndex).Pos.Map, x, Y).UserIndex = 0 Then
-128                                     If LegalPos(UserList(tIndex).Pos.Map, x, Y, True, True) Then
+126                                 If MapData(UserList(tIndex).Pos.Map, X, Y).UserIndex = 0 Then
+128                                     If LegalPos(UserList(tIndex).Pos.Map, X, Y, True, True) Then
 130                                         Call WriteConsoleMsg(UserIndex, "Te teletransportaste cerca de " & UserList(tIndex).Name & ".", e_FontTypeNames.FONTTYPE_INFO)
-132                                         Call WarpUserChar(UserIndex, UserList(tIndex).Pos.Map, x, Y, True)
+132                                         Call WarpUserChar(UserIndex, UserList(tIndex).Pos.Map, X, Y, True)
 134                                         Found = True
                                             Exit For
                                         End If
@@ -7598,7 +7583,7 @@ Private Sub HandleGoNearby(ByVal UserIndex As Integer)
 136                             Next Y
                             
 138                             If Found Then Exit For  ' Feo, pero hay que abortar 3 fors sin usar GoTo
-140                         Next x
+140                         Next X
                         
 142                         If Found Then Exit For  ' Feo, pero hay que abortar 3 fors sin usar GoTo
 144                     Next i
@@ -7619,7 +7604,7 @@ Private Sub HandleGoNearby(ByVal UserIndex As Integer)
         
         Exit Sub
         
-errHandler:
+ErrHandler:
 154     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGoNearby", Erl)
 156
 
@@ -7638,7 +7623,7 @@ Private Sub HandleComment(ByVal UserIndex As Integer)
         '
         '***************************************************
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
@@ -7655,7 +7640,7 @@ Private Sub HandleComment(ByVal UserIndex As Integer)
         
         Exit Sub
         
-errHandler:
+ErrHandler:
 110     Call TraceError(Err.Number, Err.Description, "Protocol.HandleComment", Erl)
 112
 
@@ -7706,7 +7691,7 @@ Private Sub HandleWhere(ByVal UserIndex As Integer)
         '
         '***************************************************
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
@@ -7723,7 +7708,7 @@ Private Sub HandleWhere(ByVal UserIndex As Integer)
                 Else
 
 112                 If CompararPrivilegiosUser(UserIndex, tUser) >= 0 Then
-114                     Call WriteConsoleMsg(UserIndex, "Ubicación  " & UserName & ": " & UserList(tUser).Pos.Map & ", " & UserList(tUser).Pos.x & ", " & UserList(tUser).Pos.Y & ".", e_FontTypeNames.FONTTYPE_INFO)
+114                     Call WriteConsoleMsg(UserIndex, "Ubicación  " & UserName & ": " & UserList(tUser).Pos.Map & ", " & UserList(tUser).Pos.X & ", " & UserList(tUser).Pos.Y & ".", e_FontTypeNames.FONTTYPE_INFO)
 116                     Call LogGM(.Name, "/Donde " & UserName)
 
                     End If
@@ -7737,7 +7722,7 @@ Private Sub HandleWhere(ByVal UserIndex As Integer)
         
         Exit Sub
         
-errHandler:
+ErrHandler:
 120     Call TraceError(Err.Number, Err.Description, "Protocol.HandleWhere", Erl)
 122
 
@@ -7785,14 +7770,14 @@ Private Sub HandleCreaturesInMap(ByVal UserIndex As Integer)
 116                             ReDim List1(0) As String
 118                             ReDim NPCcant1(0) As Integer
 120                             NPCcount1 = 1
-122                             List1(0) = NpcList(i).Name & ": (" & NpcList(i).Pos.x & "," & NpcList(i).Pos.Y & ")"
+122                             List1(0) = NpcList(i).Name & ": (" & NpcList(i).Pos.X & "," & NpcList(i).Pos.Y & ")"
 124                             NPCcant1(0) = 1
                             Else
 
 126                             For j = 0 To NPCcount1 - 1
 
 128                                 If Left$(List1(j), Len(NpcList(i).Name)) = NpcList(i).Name Then
-130                                     List1(j) = List1(j) & ", (" & NpcList(i).Pos.x & "," & NpcList(i).Pos.Y & ")"
+130                                     List1(j) = List1(j) & ", (" & NpcList(i).Pos.X & "," & NpcList(i).Pos.Y & ")"
 132                                     NPCcant1(j) = NPCcant1(j) + 1
                                         Exit For
 
@@ -7804,7 +7789,7 @@ Private Sub HandleCreaturesInMap(ByVal UserIndex As Integer)
 138                                 ReDim Preserve List1(0 To NPCcount1) As String
 140                                 ReDim Preserve NPCcant1(0 To NPCcount1) As Integer
 142                                 NPCcount1 = NPCcount1 + 1
-144                                 List1(j) = NpcList(i).Name & ": (" & NpcList(i).Pos.x & "," & NpcList(i).Pos.Y & ")"
+144                                 List1(j) = NpcList(i).Name & ": (" & NpcList(i).Pos.X & "," & NpcList(i).Pos.Y & ")"
 146                                 NPCcant1(j) = 1
 
                                 End If
@@ -7817,14 +7802,14 @@ Private Sub HandleCreaturesInMap(ByVal UserIndex As Integer)
 150                             ReDim List2(0) As String
 152                             ReDim NPCcant2(0) As Integer
 154                             NPCcount2 = 1
-156                             List2(0) = NpcList(i).Name & ": (" & NpcList(i).Pos.x & "," & NpcList(i).Pos.Y & ")"
+156                             List2(0) = NpcList(i).Name & ": (" & NpcList(i).Pos.X & "," & NpcList(i).Pos.Y & ")"
 158                             NPCcant2(0) = 1
                             Else
 
 160                             For j = 0 To NPCcount2 - 1
 
 162                                 If Left$(List2(j), Len(NpcList(i).Name)) = NpcList(i).Name Then
-164                                     List2(j) = List2(j) & ", (" & NpcList(i).Pos.x & "," & NpcList(i).Pos.Y & ")"
+164                                     List2(j) = List2(j) & ", (" & NpcList(i).Pos.X & "," & NpcList(i).Pos.Y & ")"
 166                                     NPCcant2(j) = NPCcant2(j) + 1
                                         Exit For
 
@@ -7836,7 +7821,7 @@ Private Sub HandleCreaturesInMap(ByVal UserIndex As Integer)
 172                                 ReDim Preserve List2(0 To NPCcount2) As String
 174                                 ReDim Preserve NPCcant2(0 To NPCcount2) As Integer
 176                                 NPCcount2 = NPCcount2 + 1
-178                                 List2(j) = NpcList(i).Name & ": (" & NpcList(i).Pos.x & "," & NpcList(i).Pos.Y & ")"
+178                                 List2(j) = NpcList(i).Name & ": (" & NpcList(i).Pos.X & "," & NpcList(i).Pos.Y & ")"
 180                                 NPCcant2(j) = 1
 
                                 End If
@@ -7932,19 +7917,19 @@ Private Sub HandleWarpChar(ByVal UserIndex As Integer)
         '
         '***************************************************
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
             Dim UserName As String
             Dim Map      As Integer
-            Dim x        As Byte
+            Dim X        As Byte
             Dim Y        As Byte
             Dim tUser    As Integer
         
 102         UserName = Reader.ReadString8()
 104         Map = Reader.ReadInt16()
-106         x = Reader.ReadInt8()
+106         X = Reader.ReadInt8()
 108         Y = Reader.ReadInt8()
 
 110         If .flags.Privilegios And e_PlayerType.user Then Exit Sub
@@ -7964,7 +7949,7 @@ Private Sub HandleWarpChar(ByVal UserIndex As Integer)
             End If
             
             '¿Para que te vas a transportar a la misma posicion?
-122         If .Pos.Map = Map And .Pos.x = x And .Pos.Y = Y Then Exit Sub
+122         If .Pos.Map = Map And .Pos.X = X And .Pos.Y = Y Then Exit Sub
             
 124         If MapaValido(Map) And LenB(UserName) <> 0 Then
 
@@ -7979,12 +7964,12 @@ Private Sub HandleWarpChar(ByVal UserIndex As Integer)
 132             If tUser <= 0 Then
 134                 Call WriteConsoleMsg(UserIndex, "Usuario offline.", e_FontTypeNames.FONTTYPE_INFO)
 
-136             ElseIf InMapBounds(Map, x, Y) Then
-138                 Call FindLegalPos(tUser, Map, x, Y)
-140                 Call WarpUserChar(tUser, Map, x, Y, True)
+136             ElseIf InMapBounds(Map, X, Y) Then
+138                 Call FindLegalPos(tUser, Map, X, Y)
+140                 Call WarpUserChar(tUser, Map, X, Y, True)
 
 142                 If tUser <> UserIndex Then
-144                     Call LogGM(.Name, "Transportó a " & UserList(tUser).Name & " hacia " & "Mapa" & Map & " X:" & x & " Y:" & Y)
+144                     Call LogGM(.Name, "Transportó a " & UserList(tUser).Name & " hacia " & "Mapa" & Map & " X:" & X & " Y:" & Y)
                     End If
                         
                 End If
@@ -7995,7 +7980,7 @@ Private Sub HandleWarpChar(ByVal UserIndex As Integer)
         
         Exit Sub
         
-errHandler:
+ErrHandler:
 146     Call TraceError(Err.Number, Err.Description, "Protocol.HandleWarpChar", Erl)
 148
 
@@ -8014,7 +7999,7 @@ Private Sub HandleSilence(ByVal UserIndex As Integer)
         '
         '***************************************************
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
@@ -8092,7 +8077,7 @@ Private Sub HandleSilence(ByVal UserIndex As Integer)
         
         Exit Sub
         
-errHandler:
+ErrHandler:
 164     Call TraceError(Err.Number, Err.Description, "Protocol.HandleSilence", Erl)
 166
 
@@ -8141,7 +8126,7 @@ Private Sub HandleSOSRemove(ByVal UserIndex As Integer)
         '
         '***************************************************
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
@@ -8154,7 +8139,7 @@ Private Sub HandleSOSRemove(ByVal UserIndex As Integer)
         
         Exit Sub
         
-errHandler:
+ErrHandler:
 106     Call TraceError(Err.Number, Err.Description, "Protocol.HandleSOSRemove", Erl)
 108
 
@@ -8173,13 +8158,13 @@ Private Sub HandleGoToChar(ByVal UserIndex As Integer)
         '
         '***************************************************
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
             Dim UserName As String
             Dim tUser    As Integer
-            Dim x        As Byte
+            Dim X        As Byte
             Dim Y        As Byte
         
 102         UserName = Reader.ReadString8()
@@ -8209,12 +8194,12 @@ Private Sub HandleGoToChar(ByVal UserIndex As Integer)
 
                 End If
 
-124             x = UserList(tUser).Pos.x
+124             X = UserList(tUser).Pos.X
 126             Y = UserList(tUser).Pos.Y + 1
 
-128             Call FindLegalPos(UserIndex, UserList(tUser).Pos.Map, x, Y)
+128             Call FindLegalPos(UserIndex, UserList(tUser).Pos.Map, X, Y)
                 
-130             Call WarpUserChar(UserIndex, UserList(tUser).Pos.Map, x, Y, True)
+130             Call WarpUserChar(UserIndex, UserList(tUser).Pos.Map, X, Y, True)
                     
 132             If .flags.AdminInvisible = 0 Then
 134                 Call WriteConsoleMsg(tUser, .Name & " se ha trasportado hacia donde te encuentras.", e_FontTypeNames.FONTTYPE_INFO)
@@ -8223,7 +8208,7 @@ Private Sub HandleGoToChar(ByVal UserIndex As Integer)
                 
 136             Call WriteConsoleMsg(UserIndex, "Te has transportado hacia " & UserList(tUser).Name & ".", e_FontTypeNames.FONTTYPE_INFO)
                     
-138             Call LogGM(.Name, "/IRA " & UserName & " Mapa:" & UserList(tUser).Pos.Map & " X:" & UserList(tUser).Pos.x & " Y:" & UserList(tUser).Pos.Y)
+138             Call LogGM(.Name, "/IRA " & UserName & " Mapa:" & UserList(tUser).Pos.Map & " X:" & UserList(tUser).Pos.X & " Y:" & UserList(tUser).Pos.Y)
             Else
 140             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo. solo puedes ir a Usuarios que piden SOS.", e_FontTypeNames.FONTTYPE_INFO)
             End If
@@ -8232,7 +8217,7 @@ Private Sub HandleGoToChar(ByVal UserIndex As Integer)
         
         Exit Sub
         
-errHandler:
+ErrHandler:
 142     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGoToChar", Erl)
 144
 
@@ -8240,7 +8225,7 @@ End Sub
 
 Private Sub HandleDarLlaveAUsuario(ByVal UserIndex As Integer)
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
@@ -8317,7 +8302,7 @@ Private Sub HandleDarLlaveAUsuario(ByVal UserIndex As Integer)
         
         Exit Sub
         
-errHandler:
+ErrHandler:
 148     Call TraceError(Err.Number, Err.Description, "Protocol.HandleDarLlaveAUsuario", Erl)
 150
 
@@ -8651,7 +8636,7 @@ Private Sub HandleJail(ByVal UserIndex As Integer)
         '
         '***************************************************
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
@@ -8722,7 +8707,7 @@ Private Sub HandleJail(ByVal UserIndex As Integer)
         
         Exit Sub
         
-errHandler:
+ErrHandler:
 158     Call TraceError(Err.Number, Err.Description, "Protocol.HandleHiding", Erl)
 160
 
@@ -8798,7 +8783,7 @@ End Sub
 
 Private Sub HandleWarnUser(ByVal UserIndex As Integer)
     
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
@@ -8879,7 +8864,7 @@ Private Sub HandleWarnUser(ByVal UserIndex As Integer)
     
         Exit Sub
     
-errHandler:
+ErrHandler:
 
 160     Call TraceError(Err.Number, Err.Description, "Protocol.HandleWarnUser", Erl)
 
@@ -8889,7 +8874,7 @@ End Sub
 
 Private Sub HandleMensajeUser(ByVal UserIndex As Integer)
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
@@ -8928,7 +8913,7 @@ Private Sub HandleMensajeUser(ByVal UserIndex As Integer)
     
         Exit Sub
 
-errHandler:
+ErrHandler:
 128     Call TraceError(Err.Number, Err.Description, "Protocol.HandleMensajeUser", Erl)
 130
 
@@ -8941,7 +8926,7 @@ Private Sub HandleTraerBoveda(ByVal UserIndex As Integer)
         'Last Modification: 04/jul/2014
         '
         '***************************************************
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
@@ -8953,7 +8938,7 @@ Private Sub HandleTraerBoveda(ByVal UserIndex As Integer)
     
         Exit Sub
 
-errHandler:
+ErrHandler:
 106     Call TraceError(Err.Number, Err.Description, "Protocol.HandleTraerBoveda", Erl)
 108
 
@@ -8966,7 +8951,7 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
         'Last Modification: 12/28/06
         '
         '***************************************************
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
         
@@ -9668,7 +9653,7 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
 
         Exit Sub
 
-errHandler:
+ErrHandler:
 716     Call TraceError(Err.Number, Err.Description, "Protocol.HandleEditChar", Erl)
 718
 
@@ -9686,7 +9671,7 @@ Private Sub HandleRequestCharInfo(ByVal UserIndex As Integer)
         'Last Modification: 01/08/07
         'Last Modification by: (liquid).. alto bug zapallo..
         '***************************************************
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
     
@@ -9716,7 +9701,7 @@ Private Sub HandleRequestCharInfo(ByVal UserIndex As Integer)
     
         Exit Sub
 
-errHandler:
+ErrHandler:
 122     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRequestCharInfo", Erl)
 124
 
@@ -9734,7 +9719,7 @@ Private Sub HandleRequestCharStats(ByVal UserIndex As Integer)
         'Last Modification: 12/29/06
         '
         '***************************************************
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
         
@@ -9761,7 +9746,7 @@ Private Sub HandleRequestCharStats(ByVal UserIndex As Integer)
 
         Exit Sub
 
-errHandler:
+ErrHandler:
 120     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRequestCharStats", Erl)
 122
 
@@ -9779,7 +9764,7 @@ Private Sub HandleRequestCharGold(ByVal UserIndex As Integer)
         'Last Modification: 12/29/06
         '
         '***************************************************
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
         
@@ -9805,7 +9790,7 @@ Private Sub HandleRequestCharGold(ByVal UserIndex As Integer)
 
         Exit Sub
 
-errHandler:
+ErrHandler:
 120     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRequestCharGold", Erl)
 122
 
@@ -9823,7 +9808,7 @@ Private Sub HandleRequestCharInventory(ByVal UserIndex As Integer)
         'Last Modification: 12/29/06
         '
         '***************************************************
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
         
@@ -9849,7 +9834,7 @@ Private Sub HandleRequestCharInventory(ByVal UserIndex As Integer)
 
         Exit Sub
 
-errHandler:
+ErrHandler:
 120     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRequestCharInventory", Erl)
 122
 
@@ -9867,7 +9852,7 @@ Private Sub HandleRequestCharBank(ByVal UserIndex As Integer)
         'Last Modification: 12/29/06
         '
         '***************************************************
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
         
@@ -9897,7 +9882,7 @@ Private Sub HandleRequestCharBank(ByVal UserIndex As Integer)
 
         Exit Sub
 
-errHandler:
+ErrHandler:
 120     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRequestCharBank", Erl)
 122
 
@@ -9915,14 +9900,14 @@ Private Sub HandleRequestCharSkills(ByVal UserIndex As Integer)
         'Last Modification: 12/29/06
         '
         '***************************************************
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
         
             Dim UserName As String
             Dim tUser    As Integer
             Dim LoopC    As Long
-            Dim Message  As String
+            Dim message  As String
         
 102         UserName = Reader.ReadString8()
 104         tUser = NameIndex(UserName)
@@ -9960,7 +9945,7 @@ Private Sub HandleRequestCharSkills(ByVal UserIndex As Integer)
 
         Exit Sub
 
-errHandler:
+ErrHandler:
 132     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRequestCharSkills", Erl)
 134
 
@@ -9978,7 +9963,7 @@ Private Sub HandleReviveChar(ByVal UserIndex As Integer)
         'Last Modification: 12/29/06
         '
         '***************************************************
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
         
@@ -10035,7 +10020,7 @@ Private Sub HandleReviveChar(ByVal UserIndex As Integer)
 
         Exit Sub
 
-errHandler:
+ErrHandler:
 138     Call TraceError(Err.Number, Err.Description, "Protocol.HandleReviveChar", Erl)
 140
 
@@ -10222,7 +10207,7 @@ Private Sub HandleForgive(ByVal UserIndex As Integer)
 134         Call WriteChatOverHead(UserIndex, "Con estas palabras, te libero de todo tipo de pecados. ¡Que Dios te acompañe hijo mío!", priest.Char.CharIndex, vbYellow)
 
 136         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, "80", 100, False))
-138         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("100", UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y))
+138         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("100", UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
 140         Call VolverCiudadano(UserIndex)
 
         End With
@@ -10248,7 +10233,7 @@ Private Sub HandleKick(ByVal UserIndex As Integer)
         '
         '***************************************************
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
@@ -10287,7 +10272,7 @@ Private Sub HandleKick(ByVal UserIndex As Integer)
 
         Exit Sub
 
-errHandler:
+ErrHandler:
 126     Call TraceError(Err.Number, Err.Description, "Protocol.HandleKick", Erl)
 128
 
@@ -10306,7 +10291,7 @@ Private Sub HandleExecute(ByVal UserIndex As Integer)
         '
         '***************************************************
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
@@ -10337,7 +10322,7 @@ Private Sub HandleExecute(ByVal UserIndex As Integer)
 
         Exit Sub
 
-errHandler:
+ErrHandler:
 120     Call TraceError(Err.Number, Err.Description, "Protocol.HandleExecute", Erl)
 122
 
@@ -10356,7 +10341,7 @@ Private Sub HandleBanChar(ByVal UserIndex As Integer)
         '
         '***************************************************
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
   
@@ -10376,7 +10361,7 @@ Private Sub HandleBanChar(ByVal UserIndex As Integer)
 
         Exit Sub
 
-errHandler:
+ErrHandler:
 112     Call TraceError(Err.Number, Err.Description, "Protocol.HandleBanChar", Erl)
 114
 
@@ -10395,7 +10380,7 @@ Private Sub HandleUnbanChar(ByVal UserIndex As Integer)
         '
         '***************************************************
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
@@ -10428,7 +10413,7 @@ Private Sub HandleUnbanChar(ByVal UserIndex As Integer)
 
         Exit Sub
 
-errHandler:
+ErrHandler:
 124     Call TraceError(Err.Number, Err.Description, "Protocol.HandleUnbanChar", Erl)
 126
 
@@ -10489,7 +10474,7 @@ Private Sub HandleSummonChar(ByVal UserIndex As Integer)
     '
     '***************************************************
 
-    On Error GoTo errHandler
+    On Error GoTo ErrHandler
 
 100 With UserList(UserIndex)
     
@@ -10515,7 +10500,7 @@ Private Sub HandleSummonChar(ByVal UserIndex As Integer)
 118         ElseIf .flags.TargetNPC > 0 Then
 
 120             If NpcList(.flags.TargetNPC).Pos.Map = .Pos.Map Then
-122                 Call WarpNpcChar(.flags.TargetNPC, .Pos.Map, .Pos.x, .Pos.Y + 1, True)
+122                 Call WarpNpcChar(.flags.TargetNPC, .Pos.Map, .Pos.X, .Pos.Y + 1, True)
 124                 Call WriteConsoleMsg(UserIndex, "Has desplazado a la criatura.", e_FontTypeNames.FONTTYPE_INFO)
                 Else
 126                 Call WriteConsoleMsg(UserIndex, "Sólo puedes mover NPCs dentro del mismo mapa.", e_FontTypeNames.FONTTYPE_INFO)
@@ -10556,11 +10541,11 @@ Private Sub HandleSummonChar(ByVal UserIndex As Integer)
                     
                     
 
-148             Call WarpToLegalPos(tUser, .Pos.Map, .Pos.x, .Pos.Y + 1, True, True)
+148             Call WarpToLegalPos(tUser, .Pos.Map, .Pos.X, .Pos.Y + 1, True, True)
 
 150             Call WriteConsoleMsg(UserIndex, "Has traído a " & UserList(tUser).Name & ".", e_FontTypeNames.FONTTYPE_INFO)
                     
-152             Call LogGM(.Name, "/SUM " & UserName & " Map:" & .Pos.Map & " X:" & .Pos.x & " Y:" & .Pos.Y)
+152             Call LogGM(.Name, "/SUM " & UserName & " Map:" & .Pos.Map & " X:" & .Pos.X & " Y:" & .Pos.Y)
                 
             End If
         Else
@@ -10571,7 +10556,7 @@ Private Sub HandleSummonChar(ByVal UserIndex As Integer)
 
     Exit Sub
         
-errHandler:
+ErrHandler:
 
 156 Call TraceError(Err.Number, Err.Description, "Protocol.HandleSummonChar", Erl)
 158
@@ -10743,18 +10728,18 @@ Private Sub HandleServerMessage(ByVal UserIndex As Integer)
         '
         '***************************************************
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
-            Dim Message As String
-102             Message = Reader.ReadString8()
+            Dim message As String
+102             message = Reader.ReadString8()
         
 104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios)) Then
         
-106             If LenB(Message) <> 0 Then
-108                 Call LogGM(.Name, "Mensaje Broadcast:" & Message)
-110                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(.Name & "> " & Message, e_FontTypeNames.FONTTYPE_SERVER))
+106             If LenB(message) <> 0 Then
+108                 Call LogGM(.Name, "Mensaje Broadcast:" & message)
+110                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(.Name & "> " & message, e_FontTypeNames.FONTTYPE_SERVER))
 
                 End If
             Else
@@ -10765,7 +10750,7 @@ Private Sub HandleServerMessage(ByVal UserIndex As Integer)
 
         Exit Sub
 
-errHandler:
+ErrHandler:
 114     Call TraceError(Err.Number, Err.Description, "Protocol.HandleServerMessage", Erl)
 116
 
@@ -10783,7 +10768,7 @@ Private Sub HandleNickToIP(ByVal UserIndex As Integer)
         'Last Modification: 24/07/07
         'Pablo (ToxicWaste): Agrego para uqe el /nick2ip tambien diga los nicks en esa ip por pedido de la DGM.
         '***************************************************
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
@@ -10852,7 +10837,7 @@ Private Sub HandleNickToIP(ByVal UserIndex As Integer)
 
         Exit Sub
 
-errHandler:
+ErrHandler:
 144     Call TraceError(Err.Number, Err.Description, "Protocol.HandleNickToIP", Erl)
 146
 
@@ -10943,7 +10928,7 @@ Private Sub HandleGuildOnlineMembers(ByVal UserIndex As Integer)
         '
         '***************************************************
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
@@ -10970,7 +10955,7 @@ Private Sub HandleGuildOnlineMembers(ByVal UserIndex As Integer)
 
         Exit Sub
 
-errHandler:
+ErrHandler:
 118     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildOnlineMembers", Erl)
 120
 
@@ -10994,12 +10979,12 @@ Private Sub HandleTeleportCreate(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             Dim Mapa As Integer
-            Dim x    As Byte
+            Dim X    As Byte
             Dim Y    As Byte
             Dim Motivo As String
         
 102         Mapa = Reader.ReadInt16()
-104         x = Reader.ReadInt8()
+104         X = Reader.ReadInt8()
 106         Y = Reader.ReadInt8()
             Motivo = Reader.ReadString8()
         
@@ -11008,21 +10993,21 @@ Private Sub HandleTeleportCreate(ByVal UserIndex As Integer)
                 Exit Sub
             End If
         
-112         Call LogGM(.Name, "/CT " & Mapa & "," & x & "," & Y & "," & Motivo)
+112         Call LogGM(.Name, "/CT " & Mapa & "," & X & "," & Y & "," & Motivo)
         
-114         If Not MapaValido(Mapa) Or Not InMapBounds(Mapa, x, Y) Then Exit Sub
+114         If Not MapaValido(Mapa) Or Not InMapBounds(Mapa, X, Y) Then Exit Sub
         
-116         If MapData(.Pos.Map, .Pos.x, .Pos.Y - 1).ObjInfo.ObjIndex > 0 Then Exit Sub
+116         If MapData(.Pos.Map, .Pos.X, .Pos.Y - 1).ObjInfo.ObjIndex > 0 Then Exit Sub
         
-118         If MapData(.Pos.Map, .Pos.x, .Pos.Y - 1).TileExit.Map > 0 Then Exit Sub
+118         If MapData(.Pos.Map, .Pos.X, .Pos.Y - 1).TileExit.Map > 0 Then Exit Sub
         
-120         If MapData(Mapa, x, Y).ObjInfo.ObjIndex > 0 Then
+120         If MapData(Mapa, X, Y).ObjInfo.ObjIndex > 0 Then
 122             Call WriteConsoleMsg(UserIndex, "Hay un objeto en el piso en ese lugar", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
             End If
         
-124         If MapData(Mapa, x, Y).TileExit.Map > 0 Then
+124         If MapData(Mapa, X, Y).TileExit.Map > 0 Then
 126             Call WriteConsoleMsg(UserIndex, "No podés crear un teleport que apunte a la entrada de otro.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
@@ -11033,11 +11018,11 @@ Private Sub HandleTeleportCreate(ByVal UserIndex As Integer)
 128         Objeto.amount = 1
 130         Objeto.ObjIndex = 378
         
-132         Call MakeObj(Objeto, .Pos.Map, .Pos.x, .Pos.Y - 1)
+132         Call MakeObj(Objeto, .Pos.Map, .Pos.X, .Pos.Y - 1)
         
-134         With MapData(.Pos.Map, .Pos.x, .Pos.Y - 1)
+134         With MapData(.Pos.Map, .Pos.X, .Pos.Y - 1)
 136             .TileExit.Map = Mapa
-138             .TileExit.x = x
+138             .TileExit.X = X
 140             .TileExit.Y = Y
             End With
 
@@ -11068,7 +11053,7 @@ Private Sub HandleTeleportDestroy(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             Dim Mapa As Integer
-            Dim x    As Byte
+            Dim X    As Byte
             Dim Y    As Byte
 
             '/dt
@@ -11078,37 +11063,37 @@ Private Sub HandleTeleportDestroy(ByVal UserIndex As Integer)
             End If
                 
 106         Mapa = .flags.TargetMap
-108         x = .flags.TargetX
+108         X = .flags.TargetX
 110         Y = .flags.TargetY
         
-112         If Not InMapBounds(Mapa, x, Y) Then Exit Sub
+112         If Not InMapBounds(Mapa, X, Y) Then Exit Sub
         
-114         With MapData(Mapa, x, Y)
+114         With MapData(Mapa, X, Y)
 
                 'Si no tengo objeto y no tengo traslado
 116             If .ObjInfo.ObjIndex = 0 And .TileExit.Map = 0 Then Exit Sub
                 
                 'Si no tengo objeto pero tengo traslado
 118             If .ObjInfo.ObjIndex = 0 And .TileExit.Map > 0 Then
-120                 Call LogGM(UserList(UserIndex).Name, "/DT: " & Mapa & "," & x & "," & Y)
+120                 Call LogGM(UserList(UserIndex).Name, "/DT: " & Mapa & "," & X & "," & Y)
                 
 122                 .TileExit.Map = 0
-124                 .TileExit.x = 0
+124                 .TileExit.X = 0
 126                 .TileExit.Y = 0
                 
                     'si tengo objeto y traslado
 128             ElseIf .ObjInfo.ObjIndex > 0 And ObjData(.ObjInfo.ObjIndex).OBJType = e_OBJType.otTeleport Then
-130                 Call LogGM(UserList(UserIndex).Name, "/DT: " & Mapa & "," & x & "," & Y)
+130                 Call LogGM(UserList(UserIndex).Name, "/DT: " & Mapa & "," & X & "," & Y)
                 
-132                 Call EraseObj(.ObjInfo.amount, Mapa, x, Y)
+132                 Call EraseObj(.ObjInfo.amount, Mapa, X, Y)
                 
-134                 If MapData(.TileExit.Map, .TileExit.x, .TileExit.Y).ObjInfo.ObjIndex = 651 Then
-136                     Call EraseObj(1, .TileExit.Map, .TileExit.x, .TileExit.Y)
+134                 If MapData(.TileExit.Map, .TileExit.X, .TileExit.Y).ObjInfo.ObjIndex = 651 Then
+136                     Call EraseObj(1, .TileExit.Map, .TileExit.X, .TileExit.Y)
 
                     End If
                 
 138                 .TileExit.Map = 0
-140                 .TileExit.x = 0
+140                 .TileExit.X = 0
 142                 .TileExit.Y = 0
 
                 End If
@@ -11184,7 +11169,7 @@ Private Sub HandleSetCharDescription(ByVal UserIndex As Integer)
         'Last Modification: 12/29/06
         '
         '***************************************************
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
@@ -11211,7 +11196,7 @@ Private Sub HandleSetCharDescription(ByVal UserIndex As Integer)
 
         Exit Sub
 
-errHandler:
+ErrHandler:
 114     Call TraceError(Err.Number, Err.Description, "Protocol.HandleSetCharDescription", Erl)
 116
 
@@ -11289,28 +11274,28 @@ Private Sub HandleForceWAVEToMap(ByVal UserIndex As Integer)
 
             Dim waveID As Byte
             Dim Mapa   As Integer
-            Dim x      As Byte
+            Dim X      As Byte
             Dim Y      As Byte
         
 102         waveID = Reader.ReadInt8()
 104         Mapa = Reader.ReadInt16()
-106         x = Reader.ReadInt8()
+106         X = Reader.ReadInt8()
 108         Y = Reader.ReadInt8()
         
             'Solo dioses, admins y RMS
 110         If (.flags.Privilegios And (e_PlayerType.Dios Or e_PlayerType.Admin Or e_PlayerType.RoleMaster)) Then
 
                 'Si el mapa no fue enviado tomo el actual
-112             If Not InMapBounds(Mapa, x, Y) Then
+112             If Not InMapBounds(Mapa, X, Y) Then
             
 114                 Mapa = .Pos.Map
-116                 x = .Pos.x
+116                 X = .Pos.X
 118                 Y = .Pos.Y
 
                 End If
             
                 'Ponemos el pedido por el GM
-120             Call SendData(SendTarget.toMap, Mapa, PrepareMessagePlayWave(waveID, x, Y))
+120             Call SendData(SendTarget.toMap, Mapa, PrepareMessagePlayWave(waveID, X, Y))
 
             End If
 
@@ -11336,23 +11321,23 @@ Private Sub HandleRoyalArmyMessage(ByVal UserIndex As Integer)
         'Last Modification: 12/29/06
         '
         '***************************************************
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
-            Dim Message As String
-102             Message = Reader.ReadString8()
+            Dim message As String
+102             message = Reader.ReadString8()
         
             'Solo dioses, admins y RMS
 104         If (.flags.Privilegios And (e_PlayerType.Dios Or e_PlayerType.Admin Or e_PlayerType.RoleMaster)) Then
-106             Call SendData(SendTarget.ToRealYRMs, 0, PrepareMessageConsoleMsg("ARMADA REAL> " & Message, e_FontTypeNames.FONTTYPE_TALK))
+106             Call SendData(SendTarget.ToRealYRMs, 0, PrepareMessageConsoleMsg("ARMADA REAL> " & message, e_FontTypeNames.FONTTYPE_TALK))
             End If
 
         End With
 
         Exit Sub
 
-errHandler:
+ErrHandler:
 108     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRoyalArmyMessage", Erl)
 110
 
@@ -11371,23 +11356,23 @@ Private Sub HandleChaosLegionMessage(ByVal UserIndex As Integer)
         '
         '***************************************************
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
-            Dim Message As String
-102             Message = Reader.ReadString8()
+            Dim message As String
+102             message = Reader.ReadString8()
         
             'Solo dioses, admins y RMS
 104         If (.flags.Privilegios And (e_PlayerType.Dios Or e_PlayerType.Admin Or e_PlayerType.RoleMaster)) Then
-106             Call SendData(SendTarget.ToCaosYRMs, 0, PrepareMessageConsoleMsg("FUERZAS DEL CAOS> " & Message, e_FontTypeNames.FONTTYPE_TALK))
+106             Call SendData(SendTarget.ToCaosYRMs, 0, PrepareMessageConsoleMsg("FUERZAS DEL CAOS> " & message, e_FontTypeNames.FONTTYPE_TALK))
             End If
 
         End With
 
         Exit Sub
 
-errHandler:
+ErrHandler:
 108     Call TraceError(Err.Number, Err.Description, "Protocol.HandleChaosLegionMessage", Erl)
 110
 
@@ -11406,23 +11391,23 @@ Private Sub HandleCitizenMessage(ByVal UserIndex As Integer)
         '
         '***************************************************
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
-            Dim Message As String
-102             Message = Reader.ReadString8()
+            Dim message As String
+102             message = Reader.ReadString8()
         
             'Solo dioses, admins y RMS
 104         If (.flags.Privilegios And (e_PlayerType.Dios Or e_PlayerType.Admin Or e_PlayerType.RoleMaster)) Then
-106             Call SendData(SendTarget.ToCiudadanosYRMs, 0, PrepareMessageConsoleMsg("CIUDADANOS> " & Message, e_FontTypeNames.FONTTYPE_TALK))
+106             Call SendData(SendTarget.ToCiudadanosYRMs, 0, PrepareMessageConsoleMsg("CIUDADANOS> " & message, e_FontTypeNames.FONTTYPE_TALK))
             End If
 
         End With
 
         Exit Sub
 
-errHandler:
+ErrHandler:
 108     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCitizenMessage", Erl)
 110
 
@@ -11440,23 +11425,23 @@ Private Sub HandleCriminalMessage(ByVal UserIndex As Integer)
         'Last Modification: 12/29/06
         '
         '***************************************************
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
-            Dim Message As String
-102             Message = Reader.ReadString8()
+            Dim message As String
+102             message = Reader.ReadString8()
         
             'Solo dioses, admins y RMS
 104         If (.flags.Privilegios And (e_PlayerType.Dios Or e_PlayerType.Admin Or e_PlayerType.RoleMaster)) Then
-106             Call SendData(SendTarget.ToCriminalesYRMs, 0, PrepareMessageConsoleMsg("CRIMINALES> " & Message, e_FontTypeNames.FONTTYPE_TALK))
+106             Call SendData(SendTarget.ToCriminalesYRMs, 0, PrepareMessageConsoleMsg("CRIMINALES> " & message, e_FontTypeNames.FONTTYPE_TALK))
             End If
 
         End With
 
         Exit Sub
 
-errHandler:
+ErrHandler:
 108     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCriminalMessage", Erl)
 110
 
@@ -11474,19 +11459,19 @@ Private Sub HandleTalkAsNPC(ByVal UserIndex As Integer)
         'Last Modification: 12/29/06
         '
         '***************************************************
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
         
-            Dim Message As String
-102             Message = Reader.ReadString8()
+            Dim message As String
+102             message = Reader.ReadString8()
         
             'Solo dioses, admins y RMS
 104         If (.flags.Privilegios And (e_PlayerType.Dios Or e_PlayerType.Admin Or e_PlayerType.RoleMaster)) Then
 
                 'Asegurarse haya un NPC seleccionado
 106             If .flags.TargetNPC > 0 Then
-108                 Call SendData(SendTarget.ToNPCArea, .flags.TargetNPC, PrepareMessageChatOverHead(Message, NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite))
+108                 Call SendData(SendTarget.ToNPCArea, .flags.TargetNPC, PrepareMessageChatOverHead(message, NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite))
                 
                 Else
 110                 Call WriteConsoleMsg(UserIndex, "Debes seleccionar el NPC por el que quieres hablar antes de usar este comando", e_FontTypeNames.FONTTYPE_INFO)
@@ -11499,7 +11484,7 @@ Private Sub HandleTalkAsNPC(ByVal UserIndex As Integer)
 
         Exit Sub
 
-errHandler:
+ErrHandler:
 112     Call TraceError(Err.Number, Err.Description, "Protocol.HandleTalkAsNPC", Erl)
 114
 
@@ -11526,25 +11511,25 @@ Private Sub HandleDestroyAllItemsInArea(ByVal UserIndex As Integer)
                 Exit Sub
             End If
         
-            Dim x As Long
+            Dim X As Long
             Dim Y As Long
         
 106         For Y = .Pos.Y - MinYBorder + 1 To .Pos.Y + MinYBorder - 1
-108             For x = .Pos.x - MinXBorder + 1 To .Pos.x + MinXBorder - 1
+108             For X = .Pos.X - MinXBorder + 1 To .Pos.X + MinXBorder - 1
 
-110                 If x > 0 And Y > 0 And x < 101 And Y < 101 Then
+110                 If X > 0 And Y > 0 And X < 101 And Y < 101 Then
                 
-112                     If MapData(.Pos.Map, x, Y).ObjInfo.ObjIndex > 0 Then
+112                     If MapData(.Pos.Map, X, Y).ObjInfo.ObjIndex > 0 Then
                     
-114                         If ItemNoEsDeMapa(MapData(.Pos.Map, x, Y).ObjInfo.ObjIndex) Then
-116                             Call EraseObj(MAX_INVENTORY_OBJS, .Pos.Map, x, Y)
+114                         If ItemNoEsDeMapa(MapData(.Pos.Map, X, Y).ObjInfo.ObjIndex) Then
+116                             Call EraseObj(MAX_INVENTORY_OBJS, .Pos.Map, X, Y)
                             End If
 
                         End If
 
                     End If
 
-118             Next x
+118             Next X
 120         Next Y
         
 122         Call LogGM(UserList(UserIndex).Name, "/MASSDEST")
@@ -11571,7 +11556,7 @@ Private Sub HandleAcceptRoyalCouncilMember(ByVal UserIndex As Integer)
         'Last Modification: 12/30/06
         '
         '***************************************************
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
     
@@ -11596,7 +11581,7 @@ Private Sub HandleAcceptRoyalCouncilMember(ByVal UserIndex As Integer)
 116                     If .flags.Privilegios And e_PlayerType.ChaosCouncil Then .flags.Privilegios = .flags.Privilegios - e_PlayerType.ChaosCouncil
 118                     If Not .flags.Privilegios And e_PlayerType.RoyalCouncil Then .flags.Privilegios = .flags.Privilegios + e_PlayerType.RoyalCouncil
                     
-120                     Call WarpUserChar(tUser, .Pos.Map, .Pos.x, .Pos.Y, False)
+120                     Call WarpUserChar(tUser, .Pos.Map, .Pos.X, .Pos.Y, False)
 
                     End With
 
@@ -11608,7 +11593,7 @@ Private Sub HandleAcceptRoyalCouncilMember(ByVal UserIndex As Integer)
 
         Exit Sub
 
-errHandler:
+ErrHandler:
 122     Call TraceError(Err.Number, Err.Description, "Protocol.HandleAcceptRoyalCouncilMember", Erl)
 124
 
@@ -11627,7 +11612,7 @@ Private Sub HandleAcceptChaosCouncilMember(ByVal UserIndex As Integer)
         '
         '***************************************************
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
@@ -11652,7 +11637,7 @@ Private Sub HandleAcceptChaosCouncilMember(ByVal UserIndex As Integer)
 116                     If .flags.Privilegios And e_PlayerType.RoyalCouncil Then .flags.Privilegios = .flags.Privilegios - e_PlayerType.RoyalCouncil
 118                     If Not .flags.Privilegios And e_PlayerType.ChaosCouncil Then .flags.Privilegios = .flags.Privilegios + e_PlayerType.ChaosCouncil
 
-120                     Call WarpUserChar(tUser, .Pos.Map, .Pos.x, .Pos.Y, False)
+120                     Call WarpUserChar(tUser, .Pos.Map, .Pos.X, .Pos.Y, False)
 
                     End With
 
@@ -11664,7 +11649,7 @@ Private Sub HandleAcceptChaosCouncilMember(ByVal UserIndex As Integer)
 
         Exit Sub
 
-errHandler:
+ErrHandler:
 122     Call TraceError(Err.Number, Err.Description, "Protocol.HandleAcceptChaosCouncilMember", Erl)
 124
 
@@ -11693,23 +11678,23 @@ Private Sub HandleItemsInTheFloor(ByVal UserIndex As Integer)
         
             Dim tObj  As Integer
             Dim lista As String
-            Dim x     As Long
+            Dim X     As Long
             Dim Y     As Long
         
-106         For x = 5 To 95
+106         For X = 5 To 95
 108             For Y = 5 To 95
-110                 tObj = MapData(.Pos.Map, x, Y).ObjInfo.ObjIndex
+110                 tObj = MapData(.Pos.Map, X, Y).ObjInfo.ObjIndex
 
 112                 If tObj > 0 Then
                 
 114                     If ObjData(tObj).OBJType <> e_OBJType.otArboles Then
-116                         Call WriteConsoleMsg(UserIndex, "(" & x & "," & Y & ") " & ObjData(tObj).Name, e_FontTypeNames.FONTTYPE_INFO)
+116                         Call WriteConsoleMsg(UserIndex, "(" & X & "," & Y & ") " & ObjData(tObj).Name, e_FontTypeNames.FONTTYPE_INFO)
                         End If
 
                     End If
 
 118             Next Y
-120         Next x
+120         Next X
 
         End With
         
@@ -11733,7 +11718,7 @@ Private Sub HandleMakeDumb(ByVal UserIndex As Integer)
         'Last Modification: 12/30/06
         '
         '***************************************************
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
                 
@@ -11760,7 +11745,7 @@ Private Sub HandleMakeDumb(ByVal UserIndex As Integer)
 
         Exit Sub
 
-errHandler:
+ErrHandler:
 114     Call TraceError(Err.Number, Err.Description, "Protocol.HandleMakeDumb", Erl)
 116
 
@@ -11778,7 +11763,7 @@ Private Sub HandleMakeDumbNoMore(ByVal UserIndex As Integer)
         'Last Modification: 12/30/06
         '
         '***************************************************
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
     
@@ -11805,7 +11790,7 @@ Private Sub HandleMakeDumbNoMore(ByVal UserIndex As Integer)
 
         Exit Sub
 
-errHandler:
+ErrHandler:
 114     Call TraceError(Err.Number, Err.Description, "Protocol.HandleMakeDumbNoMore", Erl)
 116
 
@@ -11824,7 +11809,7 @@ Private Sub HandleCouncilKick(ByVal UserIndex As Integer)
         '
         '***************************************************
   
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
  
@@ -11855,7 +11840,7 @@ Private Sub HandleCouncilKick(ByVal UserIndex As Integer)
 128                         Call WriteConsoleMsg(tUser, "Has sido echado del consejo de Banderbill", e_FontTypeNames.FONTTYPE_TALK)
 130                         .flags.Privilegios = .flags.Privilegios - e_PlayerType.RoyalCouncil
                         
-132                         Call WarpUserChar(tUser, .Pos.Map, .Pos.x, .Pos.Y)
+132                         Call WarpUserChar(tUser, .Pos.Map, .Pos.X, .Pos.Y)
 134                         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(UserName & " fue expulsado del consejo de Banderbill", e_FontTypeNames.FONTTYPE_CONSEJO))
 
                         End If
@@ -11864,7 +11849,7 @@ Private Sub HandleCouncilKick(ByVal UserIndex As Integer)
 138                         Call WriteConsoleMsg(tUser, "Has sido echado del consejo de la Legión Oscura", e_FontTypeNames.FONTTYPE_TALK)
 140                         .flags.Privilegios = .flags.Privilegios - e_PlayerType.ChaosCouncil
                         
-142                         Call WarpUserChar(tUser, .Pos.Map, .Pos.x, .Pos.Y)
+142                         Call WarpUserChar(tUser, .Pos.Map, .Pos.X, .Pos.Y)
 144                         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(UserName & " fue expulsado del consejo de la Legión Oscura", e_FontTypeNames.FONTTYPE_CONSEJO))
 
                         End If
@@ -11879,7 +11864,7 @@ Private Sub HandleCouncilKick(ByVal UserIndex As Integer)
 
         Exit Sub
 
-errHandler:
+ErrHandler:
 146     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCouncilKick", Erl)
 148
 
@@ -11911,9 +11896,9 @@ Private Sub HandleSetTrigger(ByVal UserIndex As Integer)
         
 106         If tTrigger >= 0 Then
         
-108             MapData(.Pos.Map, .Pos.x, .Pos.Y).trigger = tTrigger
+108             MapData(.Pos.Map, .Pos.X, .Pos.Y).trigger = tTrigger
             
-110             tLog = "Trigger " & tTrigger & " en mapa " & .Pos.Map & " " & .Pos.x & "," & .Pos.Y
+110             tLog = "Trigger " & tTrigger & " en mapa " & .Pos.Map & " " & .Pos.X & "," & .Pos.Y
             
 112             Call LogGM(.Name, tLog)
             
@@ -11951,11 +11936,11 @@ Private Sub HandleAskTrigger(ByVal UserIndex As Integer)
 
 102         If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero Or e_PlayerType.SemiDios Or e_PlayerType.RoleMaster)) Then Exit Sub
         
-104         tTrigger = MapData(.Pos.Map, .Pos.x, .Pos.Y).trigger
+104         tTrigger = MapData(.Pos.Map, .Pos.X, .Pos.Y).trigger
         
-106         Call LogGM(.Name, "Miro el trigger en " & .Pos.Map & "," & .Pos.x & "," & .Pos.Y & ". Era " & tTrigger)
+106         Call LogGM(.Name, "Miro el trigger en " & .Pos.Map & "," & .Pos.X & "," & .Pos.Y & ". Era " & tTrigger)
         
-108         Call WriteConsoleMsg(UserIndex, "Trigger " & tTrigger & " en mapa " & .Pos.Map & " " & .Pos.x & ", " & .Pos.Y, e_FontTypeNames.FONTTYPE_INFO)
+108         Call WriteConsoleMsg(UserIndex, "Trigger " & tTrigger & " en mapa " & .Pos.Map & " " & .Pos.X & ", " & .Pos.Y, e_FontTypeNames.FONTTYPE_INFO)
 
         End With
         
@@ -12043,7 +12028,7 @@ Private Sub HandleGuildBan(ByVal UserIndex As Integer)
         '
         '***************************************************
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
  
@@ -12102,7 +12087,7 @@ Private Sub HandleGuildBan(ByVal UserIndex As Integer)
 
         Exit Sub
 
-errHandler:
+ErrHandler:
 152     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildBan", Erl)
 154
 
@@ -12115,7 +12100,7 @@ End Sub
 
 Private Sub HandleBanIP(ByVal UserIndex As Integer)
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
     
         Dim tUser As Integer
         Dim bannedIP As String
@@ -12189,7 +12174,7 @@ Private Sub HandleBanIP(ByVal UserIndex As Integer)
 
         Exit Sub
 
-errHandler:
+ErrHandler:
 148     Call TraceError(Err.Number, Err.Description, "Protocol.HandleBanIP", Erl)
 150
 
@@ -12347,11 +12332,11 @@ Private Sub HandleDestroyItems(ByVal UserIndex As Integer)
             End If
         
         
-106         If MapData(.Pos.Map, .Pos.x, .Pos.Y).ObjInfo.ObjIndex = 0 Then Exit Sub
+106         If MapData(.Pos.Map, .Pos.X, .Pos.Y).ObjInfo.ObjIndex = 0 Then Exit Sub
         
 108         Call LogGM(.Name, "/DEST")
 
-110         Call EraseObj(MAX_INVENTORY_OBJS, .Pos.Map, .Pos.x, .Pos.Y)
+110         Call EraseObj(MAX_INVENTORY_OBJS, .Pos.Map, .Pos.X, .Pos.Y)
 
         End With
         
@@ -12375,7 +12360,7 @@ Private Sub HandleChaosLegionKick(ByVal UserIndex As Integer)
         'Last Modification: 12/30/06
         '
         '***************************************************
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
  
@@ -12424,7 +12409,7 @@ Private Sub HandleChaosLegionKick(ByVal UserIndex As Integer)
 
         Exit Sub
 
-errHandler:
+ErrHandler:
 144     Call TraceError(Err.Number, Err.Description, "Protocol.HandleChaosLegionKick", Erl)
 146
 
@@ -12442,7 +12427,7 @@ Private Sub HandleRoyalArmyKick(ByVal UserIndex As Integer)
         'Last Modification: 12/30/06
         '
         '***************************************************
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
@@ -12494,7 +12479,7 @@ Private Sub HandleRoyalArmyKick(ByVal UserIndex As Integer)
 
         Exit Sub
 
-errHandler:
+ErrHandler:
 144     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRoyalArmyKick", Erl)
 146
 
@@ -12588,7 +12573,7 @@ Private Sub HandleRemovePunishment(ByVal UserIndex As Integer)
         'Pablo (ToxicWaste): 1/05/07, You can now edit the punishment.
         '***************************************************
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
@@ -12634,7 +12619,7 @@ Private Sub HandleRemovePunishment(ByVal UserIndex As Integer)
 
         Exit Sub
 
-errHandler:
+ErrHandler:
 134     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRemovePunishment", Erl)
 136
 
@@ -12664,15 +12649,15 @@ Private Sub HandleTile_BlockedToggle(ByVal UserIndex As Integer)
 
 106         Call LogGM(.Name, "/BLOQ")
         
-108         If MapData(.Pos.Map, .Pos.x, .Pos.Y).Blocked = 0 Then
-110             MapData(.Pos.Map, .Pos.x, .Pos.Y).Blocked = e_Block.ALL_SIDES Or e_Block.GM
+108         If MapData(.Pos.Map, .Pos.X, .Pos.Y).Blocked = 0 Then
+110             MapData(.Pos.Map, .Pos.X, .Pos.Y).Blocked = e_Block.ALL_SIDES Or e_Block.GM
             
             Else
-112             MapData(.Pos.Map, .Pos.x, .Pos.Y).Blocked = 0
+112             MapData(.Pos.Map, .Pos.X, .Pos.Y).Blocked = 0
 
             End If
         
-114         Call Bloquear(True, .Pos.Map, .Pos.x, .Pos.Y, IIf(MapData(.Pos.Map, .Pos.x, .Pos.Y).Blocked > 0, e_Block.ALL_SIDES, 0))
+114         Call Bloquear(True, .Pos.Map, .Pos.X, .Pos.Y, IIf(MapData(.Pos.Map, .Pos.X, .Pos.Y).Blocked > 0, e_Block.ALL_SIDES, 0))
 
         End With
         
@@ -12751,23 +12736,23 @@ Private Sub HandleKillAllNearbyNPCs(ByVal UserIndex As Integer)
             'Si está en el mapa pretoriano, me aseguro de que los saque correctamente antes que nada.
 106         If .Pos.Map = MAPA_PRETORIANO Then Call EliminarPretorianos(MAPA_PRETORIANO)
 
-            Dim x As Long
+            Dim X As Long
             Dim Y As Long
         
 108         For Y = .Pos.Y - MinYBorder + 1 To .Pos.Y + MinYBorder - 1
-110             For x = .Pos.x - MinXBorder + 1 To .Pos.x + MinXBorder - 1
+110             For X = .Pos.X - MinXBorder + 1 To .Pos.X + MinXBorder - 1
 
-112                 If x > 0 And Y > 0 And x < 101 And Y < 101 Then
+112                 If X > 0 And Y > 0 And X < 101 And Y < 101 Then
 
-114                     If MapData(.Pos.Map, x, Y).NpcIndex > 0 Then
+114                     If MapData(.Pos.Map, X, Y).NpcIndex > 0 Then
                     
-116                         Call QuitarNPC(MapData(.Pos.Map, x, Y).NpcIndex)
+116                         Call QuitarNPC(MapData(.Pos.Map, X, Y).NpcIndex)
 
                         End If
 
                     End If
 
-118             Next x
+118             Next X
 120         Next Y
 
 122         Call LogGM(.Name, "/MASSKILL")
@@ -12795,7 +12780,7 @@ Private Sub HandleLastIP(ByVal UserIndex As Integer)
         '
         '***************************************************
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
@@ -12861,7 +12846,7 @@ Private Sub HandleLastIP(ByVal UserIndex As Integer)
 
         Exit Sub
 
-errHandler:
+ErrHandler:
 148     Call TraceError(Err.Number, Err.Description, "Protocol.HandleLastIP", Erl)
 150
 
@@ -12945,7 +12930,7 @@ Public Sub HandleCheckSlot(ByVal UserIndex As Integer)
         'Check one Users Slot in Particular from Inventory
         '***************************************************
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
@@ -12986,7 +12971,7 @@ Public Sub HandleCheckSlot(ByVal UserIndex As Integer)
     
         Exit Sub
 
-errHandler:
+ErrHandler:
 126     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCheckSlot", Erl)
 128
 
@@ -13380,7 +13365,7 @@ Public Sub HandleDonateGold(ByVal UserIndex As Integer)
 144         Call WriteChatOverHead(UserIndex, "¡Gracias por tu generosa donación! Con estas palabras, te libero de todo tipo de pecados. ¡Que Dios te acompañe hijo mío!", NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, vbYellow)
 
 146         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, "80", 100, False))
-148         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("100", UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y))
+148         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("100", UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
 150         Call VolverCiudadano(UserIndex)
     
         End With
@@ -13442,7 +13427,7 @@ End Sub
 
 Public Sub HandleGiveItem(ByVal UserIndex As Integer)
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
@@ -13501,7 +13486,7 @@ Public Sub HandleGiveItem(ByVal UserIndex As Integer)
 
         Exit Sub
 
-errHandler:
+ErrHandler:
 142     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGiveItem", Erl)
 144
         
@@ -13715,7 +13700,7 @@ Public Sub HandleChangeMapInfoRestricted(ByVal UserIndex As Integer)
         'Last Modification: 26/01/2007
         'Restringido -> Options: "NEWBIE", "SINMAGIA", "SININVI", "NOPKS", "NOCIUD".
         '***************************************************
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
         Dim tStr As String
     
@@ -13763,7 +13748,7 @@ Public Sub HandleChangeMapInfoRestricted(ByVal UserIndex As Integer)
 
         Exit Sub
 
-errHandler:
+ErrHandler:
 150     Call TraceError(Err.Number, Err.Description, "Protocol.HandleChangeMapInfoRestricted", Erl)
 152
 
@@ -13880,7 +13865,7 @@ Public Sub HandleChangeMapInfoLand(ByVal UserIndex As Integer)
         'Terreno -> Opciones: "BOSQUE", "NIEVE", "DESIERTO", "CIUDAD", "CAMPO", "DUNGEON".
         '***************************************************
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
         Dim tStr As String
     
@@ -13913,7 +13898,7 @@ Public Sub HandleChangeMapInfoLand(ByVal UserIndex As Integer)
 
         Exit Sub
 
-errHandler:
+ErrHandler:
 120     Call TraceError(Err.Number, Err.Description, "Protocol.?", Erl)
 122
 
@@ -13932,7 +13917,7 @@ Public Sub HandleChangeMapInfoZone(ByVal UserIndex As Integer)
         'Zona -> Opciones: "BOSQUE", "NIEVE", "DESIERTO", "CIUDAD", "CAMPO", "DUNGEON".
         '***************************************************
     
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
         Dim tStr As String
     
@@ -13962,7 +13947,7 @@ Public Sub HandleChangeMapInfoZone(ByVal UserIndex As Integer)
 
         Exit Sub
 
-errHandler:
+ErrHandler:
 120     Call TraceError(Err.Number, Err.Description, "Protocol.?", Erl)
 122
 
@@ -14016,7 +14001,7 @@ Public Sub HandleShowGuildMessages(ByVal UserIndex As Integer)
         'Allows admins to read guild messages
         '***************************************************
     
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
@@ -14032,7 +14017,7 @@ Public Sub HandleShowGuildMessages(ByVal UserIndex As Integer)
 
         Exit Sub
 
-errHandler:
+ErrHandler:
 108     Call TraceError(Err.Number, Err.Description, "Protocol.?", Erl)
 110
 
@@ -14082,7 +14067,7 @@ Public Sub HandleAlterName(ByVal UserIndex As Integer)
     'Last Modification: WyroX  -  11/07/2021
     'Change user name
     '***************************************************
-    On Error GoTo errHandler
+    On Error GoTo ErrHandler
 
     With UserList(UserIndex)
 
@@ -14145,7 +14130,7 @@ Public Sub HandleAlterName(ByVal UserIndex As Integer)
 
     Exit Sub
 
-errHandler:
+ErrHandler:
 150     Call TraceError(Err.Number, Err.Description, "Protocol.HandleAlterName", Erl)
 152
 
@@ -14579,7 +14564,7 @@ Public Sub HandleTurnCriminal(ByVal UserIndex As Integer)
         '
         '***************************************************
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
@@ -14601,7 +14586,7 @@ Public Sub HandleTurnCriminal(ByVal UserIndex As Integer)
 
         Exit Sub
 
-errHandler:
+ErrHandler:
 112     Call TraceError(Err.Number, Err.Description, "Protocol.HandleTurnCriminal", Erl)
 114
 
@@ -14620,7 +14605,7 @@ Public Sub HandleResetFactions(ByVal UserIndex As Integer)
         '
         '***************************************************
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
  
@@ -14642,7 +14627,7 @@ Public Sub HandleResetFactions(ByVal UserIndex As Integer)
 
         Exit Sub
 
-errHandler:
+ErrHandler:
 112     Call TraceError(Err.Number, Err.Description, "Protocol.HandleResetFactions", Erl)
 114
 
@@ -14661,7 +14646,7 @@ Public Sub HandleRemoveCharFromGuild(ByVal UserIndex As Integer)
         '
         '***************************************************
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
  
@@ -14689,7 +14674,7 @@ Public Sub HandleRemoveCharFromGuild(ByVal UserIndex As Integer)
 
         Exit Sub
 
-errHandler:
+ErrHandler:
 118     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRemoveCharFromGuild", Erl)
 120
 
@@ -14708,17 +14693,17 @@ Public Sub HandleSystemMessage(ByVal UserIndex As Integer)
         'Send a message to all the users
         '***************************************************
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
-            Dim Message As String
-102             Message = Reader.ReadString8()
+            Dim message As String
+102             message = Reader.ReadString8()
         
 104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.RoleMaster)) Then
-106             Call LogGM(.Name, "Mensaje de sistema:" & Message)
+106             Call LogGM(.Name, "Mensaje de sistema:" & message)
             
-108             Call SendData(SendTarget.ToAll, 0, PrepareMessageShowMessageBox(Message))
+108             Call SendData(SendTarget.ToAll, 0, PrepareMessageShowMessageBox(message))
 
             End If
 
@@ -14726,7 +14711,7 @@ Public Sub HandleSystemMessage(ByVal UserIndex As Integer)
 
         Exit Sub
 
-errHandler:
+ErrHandler:
 110     Call TraceError(Err.Number, Err.Description, "Protocol.HandleSystemMessage", Erl)
 112
 
@@ -14748,7 +14733,7 @@ Public Sub HandleSetMOTD(ByVal UserIndex As Integer)
         '   - Fixed a bug that caused the player to be kicked.
         '***************************************************
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
@@ -14784,7 +14769,7 @@ Public Sub HandleSetMOTD(ByVal UserIndex As Integer)
 
         Exit Sub
 
-errHandler:
+ErrHandler:
 126     Call TraceError(Err.Number, Err.Description, "Protocol.HandleSetMOTD", Erl)
 128
 
@@ -14860,7 +14845,7 @@ End Sub
 
 Private Sub HandleQuestionGM(ByVal UserIndex As Integer)
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
@@ -14881,7 +14866,7 @@ Private Sub HandleQuestionGM(ByVal UserIndex As Integer)
     
         Exit Sub
 
-errHandler:
+ErrHandler:
 120     Call TraceError(Err.Number, Err.Description, "Protocol.?", Erl)
 122
 
@@ -14965,7 +14950,7 @@ End Sub
 
 Private Sub HandleOfertaDeSubasta(ByVal UserIndex As Integer)
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
@@ -15033,7 +15018,7 @@ Private Sub HandleOfertaDeSubasta(ByVal UserIndex As Integer)
     
         Exit Sub
 
-errHandler:
+ErrHandler:
 152     Call TraceError(Err.Number, Err.Description, "Protocol.?", Erl)
 154
 
@@ -15074,7 +15059,7 @@ Private Sub HandleGlobalMessage(ByVal UserIndex As Integer)
 100     TActual = GetTickCount()
 102     ElapsedTime = TActual - UserList(UserIndex).Counters.MensajeGlobal
                 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 104     With UserList(UserIndex)
 
@@ -15122,7 +15107,7 @@ Private Sub HandleGlobalMessage(ByVal UserIndex As Integer)
     
         Exit Sub
 
-errHandler:
+ErrHandler:
 134     Call TraceError(Err.Number, Err.Description, "Protocol.?", Erl)
 136
 
@@ -15160,7 +15145,7 @@ End Sub
 
 Private Sub HandleIngresarConCuenta(ByVal UserIndex As Integer)
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
         Dim Version As String
     
@@ -15192,7 +15177,7 @@ Private Sub HandleIngresarConCuenta(ByVal UserIndex As Integer)
     
         Exit Sub
 
-errHandler:
+ErrHandler:
 148     Call TraceError(Err.Number, Err.Description, "Protocol.HandleIngresarConCuenta", Erl)
 150
 
@@ -15200,7 +15185,7 @@ End Sub
 
 Private Sub HandleBorrarPJ(ByVal UserIndex As Integer)
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
     
 100     With UserList(UserIndex)
 
@@ -15278,7 +15263,7 @@ Private Sub HandleBorrarPJ(ByVal UserIndex As Integer)
     
         Exit Sub
 
-errHandler:
+ErrHandler:
 156     Call TraceError(Err.Number, Err.Description, "Protocol.?", Erl)
 158
 
@@ -15286,7 +15271,7 @@ End Sub
 
 Private Sub HandleCuentaRegresiva(ByVal UserIndex As Integer)
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
  
@@ -15305,7 +15290,7 @@ Private Sub HandleCuentaRegresiva(ByVal UserIndex As Integer)
     
         Exit Sub
 
-errHandler:
+ErrHandler:
 110     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCuentaRegresiva", Erl)
 112
 
@@ -15313,7 +15298,7 @@ End Sub
 
 Private Sub HandlePossUser(ByVal UserIndex As Integer)
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
  
@@ -15324,12 +15309,12 @@ Private Sub HandlePossUser(ByVal UserIndex As Integer)
 104         If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero Or e_PlayerType.SemiDios)) = 0 Then
 106             If NameIndex(UserName) <= 0 Then
 
-110                     If Not SetPositionDatabase(UserName, UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.x, UserList(UserIndex).Pos.Y) Then
+110                     If Not SetPositionDatabase(UserName, UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y) Then
 112                         Call WriteConsoleMsg(UserIndex, "El usuario " & UserName & " no existe.", e_FontTypeNames.FONTTYPE_INFO)
 
                         End If
 
-116                 Call WriteConsoleMsg(UserIndex, "Servidor » Acción realizada con exito! La nueva posicion de " & UserName & " es: " & UserList(UserIndex).Pos.Map & "-" & UserList(UserIndex).Pos.x & "-" & UserList(UserIndex).Pos.Y & "...", e_FontTypeNames.FONTTYPE_INFO)
+116                 Call WriteConsoleMsg(UserIndex, "Servidor » Acción realizada con exito! La nueva posicion de " & UserName & " es: " & UserList(UserIndex).Pos.Map & "-" & UserList(UserIndex).Pos.X & "-" & UserList(UserIndex).Pos.Y & "...", e_FontTypeNames.FONTTYPE_INFO)
 
                 Else
 118                 Call WriteConsoleMsg(UserIndex, "Servidor » El usuario debe estar deslogueado para dicha solicitud!", e_FontTypeNames.FONTTYPE_INFO)
@@ -15342,7 +15327,7 @@ Private Sub HandlePossUser(ByVal UserIndex As Integer)
     
         Exit Sub
 
-errHandler:
+ErrHandler:
 122     Call TraceError(Err.Number, Err.Description, "Protocol.HandlePossUser", Erl)
 124
 
@@ -15350,7 +15335,7 @@ End Sub
 
 Private Sub HandleDuel(ByVal UserIndex As Integer)
     
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
         
         Dim Players         As String
         Dim Bet             As Long
@@ -15370,7 +15355,7 @@ Private Sub HandleDuel(ByVal UserIndex As Integer)
     
         Exit Sub
     
-errHandler:
+ErrHandler:
 
 112     Call TraceError(Err.Number, Err.Description, "Protocol.HandleDuel", Erl)
 114
@@ -15379,7 +15364,7 @@ End Sub
 
 Private Sub HandleAcceptDuel(ByVal UserIndex As Integer)
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
         
         Dim Offerer As String
 
@@ -15393,7 +15378,7 @@ Private Sub HandleAcceptDuel(ByVal UserIndex As Integer)
     
         Exit Sub
     
-errHandler:
+ErrHandler:
 
 106     Call TraceError(Err.Number, Err.Description, "Protocol.HandleAcceptDuel", Erl)
 108
@@ -15487,7 +15472,7 @@ End Sub
 Private Sub HandleTransFerGold(ByVal UserIndex As Integer)
         'Author: Pablo Mercavides
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
@@ -15569,7 +15554,7 @@ Private Sub HandleTransFerGold(ByVal UserIndex As Integer)
     
         Exit Sub
 
-errHandler:
+ErrHandler:
 160     Call TraceError(Err.Number, Err.Description, "Protocol.?", Erl)
 162
 
@@ -15578,7 +15563,7 @@ End Sub
 Private Sub HandleMoveItem(ByVal UserIndex As Integer)
         'Author: Pablo Mercavides
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
@@ -15850,7 +15835,7 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
     
         Exit Sub
 
-errHandler:
+ErrHandler:
 328     Call TraceError(Err.Number, Err.Description, "Protocol.HandleMoveItem", Erl)
 330
 
@@ -15859,7 +15844,7 @@ End Sub
 Private Sub HandleBovedaMoveItem(ByVal UserIndex As Integer)
         'Author: Pablo Mercavides
     
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
@@ -15893,7 +15878,7 @@ Private Sub HandleBovedaMoveItem(ByVal UserIndex As Integer)
     
         Exit Sub
 
-errHandler:
+ErrHandler:
 122     Call TraceError(Err.Number, Err.Description, "Protocol.HandleBovedaMoveItem", Erl)
 124
 
@@ -15902,7 +15887,7 @@ End Sub
 Private Sub HandleQuieroFundarClan(ByVal UserIndex As Integer)
         'Author: Pablo Mercavides
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
@@ -15936,7 +15921,7 @@ Private Sub HandleQuieroFundarClan(ByVal UserIndex As Integer)
     
         Exit Sub
 
-errHandler:
+ErrHandler:
 120     Call TraceError(Err.Number, Err.Description, "Protocol.HandleQuieroFundarClan", Erl)
 122
 
@@ -15945,7 +15930,7 @@ End Sub
 Private Sub HandleLlamadadeClan(ByVal UserIndex As Integer)
         'Author: Pablo Mercavides
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
@@ -15956,9 +15941,9 @@ Private Sub HandleLlamadadeClan(ByVal UserIndex As Integer)
 104             clan_nivel = modGuilds.NivelDeClan(.GuildIndex)
 
 106             If clan_nivel >= 2 Then
-108                 Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageConsoleMsg("Clan> [" & .Name & "] solicita apoyo de su clan en " & DarNameMapa(.Pos.Map) & " (" & .Pos.Map & "-" & .Pos.x & "-" & .Pos.Y & "). Puedes ver su ubicación en el mapa del mundo.", e_FontTypeNames.FONTTYPE_GUILD))
+108                 Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageConsoleMsg("Clan> [" & .Name & "] solicita apoyo de su clan en " & DarNameMapa(.Pos.Map) & " (" & .Pos.Map & "-" & .Pos.X & "-" & .Pos.Y & "). Puedes ver su ubicación en el mapa del mundo.", e_FontTypeNames.FONTTYPE_GUILD))
 110                 Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessagePlayWave("43", NO_3D_SOUND, NO_3D_SOUND))
-112                 Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageUbicacionLlamada(.Pos.Map, .Pos.x, .Pos.Y))
+112                 Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageUbicacionLlamada(.Pos.Map, .Pos.X, .Pos.Y))
 
                 Else
 114                 Call WriteConsoleMsg(UserIndex, "Servidor » El nivel de tu clan debe ser 2 para utilizar esta opción.", e_FontTypeNames.FONTTYPE_INFOIAO)
@@ -15970,7 +15955,7 @@ Private Sub HandleLlamadadeClan(ByVal UserIndex As Integer)
     
         Exit Sub
 
-errHandler:
+ErrHandler:
 116     Call TraceError(Err.Number, Err.Description, "Protocol.HandleLlamadadeClan", Erl)
 118
 
@@ -16008,7 +15993,7 @@ Private Sub HandleCasamiento(ByVal UserIndex As Integer)
 
         'Author: Pablo Mercavides
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
@@ -16085,7 +16070,7 @@ Private Sub HandleCasamiento(ByVal UserIndex As Integer)
     
         Exit Sub
 
-errHandler:
+ErrHandler:
 158     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCasamiento", Erl)
 160
 
@@ -16093,7 +16078,7 @@ End Sub
 
 Private Sub HandleCrearTorneo(ByVal UserIndex As Integer)
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
  
@@ -16117,7 +16102,7 @@ Private Sub HandleCrearTorneo(ByVal UserIndex As Integer)
             Dim Bandido     As Byte
 
             Dim Mapa        As Integer
-            Dim x           As Byte
+            Dim X           As Byte
             Dim Y           As Byte
 
             Dim nombre      As String
@@ -16143,7 +16128,7 @@ Private Sub HandleCrearTorneo(ByVal UserIndex As Integer)
 132         Bandido = Reader.ReadInt8
 
 134         Mapa = Reader.ReadInt16
-136         x = Reader.ReadInt8
+136         X = Reader.ReadInt8
 138         Y = Reader.ReadInt8
         
 140         nombre = Reader.ReadString8
@@ -16170,7 +16155,7 @@ Private Sub HandleCrearTorneo(ByVal UserIndex As Integer)
 176             Torneo.Bandido = Bandido
         
 178             Torneo.Mapa = Mapa
-180             Torneo.x = x
+180             Torneo.X = X
 182             Torneo.Y = Y
             
 184             Torneo.nombre = nombre
@@ -16184,7 +16169,7 @@ Private Sub HandleCrearTorneo(ByVal UserIndex As Integer)
     
         Exit Sub
 
-errHandler:
+ErrHandler:
 190     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCrearTorneo", Erl)
 192
 
@@ -16192,7 +16177,7 @@ End Sub
 
 Private Sub HandleComenzarTorneo(ByVal UserIndex As Integer)
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
@@ -16206,7 +16191,7 @@ Private Sub HandleComenzarTorneo(ByVal UserIndex As Integer)
     
         Exit Sub
 
-errHandler:
+ErrHandler:
 106     Call TraceError(Err.Number, Err.Description, "Protocol.HandleComenzarTorneo", Erl)
 108
 
@@ -16214,7 +16199,7 @@ End Sub
 
 Private Sub HandleCancelarTorneo(ByVal UserIndex As Integer)
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
@@ -16227,7 +16212,7 @@ Private Sub HandleCancelarTorneo(ByVal UserIndex As Integer)
     
         Exit Sub
 
-errHandler:
+ErrHandler:
 106     Call TraceError(Err.Number, Err.Description, "Protocol.HandleComenzarTorneo", Erl)
 108
 
@@ -16235,7 +16220,7 @@ End Sub
 
 Private Sub HandleBusquedaTesoro(ByVal UserIndex As Integer)
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
@@ -16284,14 +16269,14 @@ Private Sub HandleBusquedaTesoro(ByVal UserIndex As Integer)
                             Dim Pos As t_WorldPos
 138                         Pos.Map = TesoroNPCMapa(RandomNumber(1, UBound(TesoroNPCMapa)))
 140                         Pos.Y = 50
-142                         Pos.x = 50
+142                         Pos.X = 50
 144                         npc_index_evento = SpawnNpc(TesoroNPC(RandomNumber(1, UBound(TesoroNPC))), Pos, True, False, True)
 146                         BusquedaNpcActiva = True
                         Else
 
 148                         If BusquedaNpcActiva Then
 150                             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos> Todavía nadie logró matar el NPC que se encuentra en el mapa " & NpcList(npc_index_evento).Pos.Map & ".", e_FontTypeNames.FONTTYPE_TALK))
-152                             Call WriteConsoleMsg(UserIndex, "Ya hay una busqueda de npc activo. El tesoro se encuentra en: " & NpcList(npc_index_evento).Pos.Map & "-" & NpcList(npc_index_evento).Pos.x & "-" & NpcList(npc_index_evento).Pos.Y, e_FontTypeNames.FONTTYPE_INFO)
+152                             Call WriteConsoleMsg(UserIndex, "Ya hay una busqueda de npc activo. El tesoro se encuentra en: " & NpcList(npc_index_evento).Pos.Map & "-" & NpcList(npc_index_evento).Pos.X & "-" & NpcList(npc_index_evento).Pos.Y, e_FontTypeNames.FONTTYPE_INFO)
                             Else
 154                             Call WriteConsoleMsg(UserIndex, "Ya hay una busqueda del tesoro activa.", e_FontTypeNames.FONTTYPE_INFO)
 
@@ -16308,7 +16293,7 @@ Private Sub HandleBusquedaTesoro(ByVal UserIndex As Integer)
     
         Exit Sub
 
-errHandler:
+ErrHandler:
 158     Call TraceError(Err.Number, Err.Description, "Protocol.HandleBusquedaTesoro", Erl)
 160
 
@@ -16316,7 +16301,7 @@ End Sub
 
 Private Sub HandleFlagTrabajar(ByVal UserIndex As Integer)
     
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
@@ -16329,7 +16314,7 @@ Private Sub HandleFlagTrabajar(ByVal UserIndex As Integer)
     
         Exit Sub
 
-errHandler:
+ErrHandler:
 110     Call TraceError(Err.Number, Err.Description, "Protocol.?", Erl)
 112
 
@@ -16337,7 +16322,7 @@ End Sub
 
 Private Sub HandleEscribiendo(ByVal UserIndex As Integer)
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
             
@@ -16349,7 +16334,7 @@ Private Sub HandleEscribiendo(ByVal UserIndex As Integer)
     
         Exit Sub
 
-errHandler:
+ErrHandler:
 112     Call TraceError(Err.Number, Err.Description, "Protocol.?", Erl)
 114
 
@@ -16371,7 +16356,7 @@ End Sub
 
 Private Sub HandleCompletarAccion(ByVal UserIndex As Integer)
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
@@ -16395,7 +16380,7 @@ Private Sub HandleCompletarAccion(ByVal UserIndex As Integer)
     
         Exit Sub
 
-errHandler:
+ErrHandler:
 114     Call TraceError(Err.Number, Err.Description, "Protocol.?", Erl)
 116
 
@@ -16484,7 +16469,7 @@ End Sub
 
 Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
@@ -16642,7 +16627,7 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
 252                         UserList(UserIndex).Accion.Particula = e_ParticulasIndex.Resucitar
 254                         UserList(UserIndex).Accion.TipoAccion = e_AccionBarra.Resucitar
     
-256                         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("104", .Pos.x, .Pos.Y))
+256                         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("104", .Pos.X, .Pos.Y))
                             'Call WriteConsoleMsg(UserIndex, "El Cura lanza unas palabras al aire. Comienzas a sentir como tu cuerpo se vuelve a formar...", e_FontTypeNames.FONTTYPE_INFO)
 258                         Call WriteLocaleMsg(UserIndex, "82", e_FontTypeNames.FONTTYPE_INFOIAO)
                         Else
@@ -16734,7 +16719,7 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
     
         Exit Sub
     
-errHandler:
+ErrHandler:
 342     Call TraceError(Err.Number, Err.Description, "Protocol.HandleResponderPregunta", Erl)
 344
 
@@ -16901,7 +16886,7 @@ Private Sub HandleBanCuenta(ByVal UserIndex As Integer)
         '
         '***************************************************
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
@@ -16921,7 +16906,7 @@ Private Sub HandleBanCuenta(ByVal UserIndex As Integer)
 
         Exit Sub
 
-errHandler:
+ErrHandler:
 112     Call TraceError(Err.Number, Err.Description, "Protocol.HandleBanCuenta", Erl)
 114
 
@@ -16933,7 +16918,7 @@ Private Sub HandleUnBanCuenta(ByVal UserIndex As Integer)
         ' /unbancuenta email
         '***************************************************
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
@@ -16954,7 +16939,7 @@ Private Sub HandleUnBanCuenta(ByVal UserIndex As Integer)
 
         Exit Sub
 
-errHandler:
+ErrHandler:
 122     Call TraceError(Err.Number, Err.Description, "Protocol.HandleUnBanCuenta", Erl)
 124
 
@@ -16968,7 +16953,7 @@ Private Sub HandleCerrarCliente(ByVal UserIndex As Integer)
         '
         '***************************************************
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
@@ -16999,7 +16984,7 @@ Private Sub HandleCerrarCliente(ByVal UserIndex As Integer)
 
         Exit Sub
 
-errHandler:
+ErrHandler:
 118     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCerrarCliente", Erl)
 120
 
@@ -17075,7 +17060,7 @@ Private Sub HandleCrearEvento(ByVal UserIndex As Integer)
         'Author: Pablo Mercavides
         '***************************************************
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
@@ -17114,7 +17099,7 @@ Private Sub HandleCrearEvento(ByVal UserIndex As Integer)
     
         Exit Sub
 
-errHandler:
+ErrHandler:
 126     Call TraceError(Err.Number, Err.Description, "Protocol.?", Erl)
 128
 
@@ -17128,7 +17113,7 @@ Private Sub HandleBanTemporal(ByVal UserIndex As Integer)
         '
         '***************************************************
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
          
@@ -17150,7 +17135,7 @@ Private Sub HandleBanTemporal(ByVal UserIndex As Integer)
 
         Exit Sub
 
-errHandler:
+ErrHandler:
 114     Call TraceError(Err.Number, Err.Description, "Protocol.?", Erl)
 116
 
@@ -17159,7 +17144,7 @@ End Sub
 Private Sub HandleCompletarViaje(ByVal UserIndex As Integer)
         'Author: Pablo Mercavides
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
@@ -17238,12 +17223,12 @@ Private Sub HandleCompletarViaje(ByVal UserIndex As Integer)
             
                     Dim Map As Integer
 
-                    Dim x   As Byte
+                    Dim X   As Byte
 
                     Dim Y   As Byte
             
 170                 Map = DeDonde.MapaViaje
-172                 x = DeDonde.ViajeX
+172                 X = DeDonde.ViajeX
 174                 Y = DeDonde.ViajeY
 
 176                 If UserList(UserIndex).flags.TargetNPC <> 0 Then
@@ -17254,7 +17239,7 @@ Private Sub HandleCompletarViaje(ByVal UserIndex As Integer)
 
                     End If
                 
-182                 Call WarpUserChar(UserIndex, Map, x, Y, True)
+182                 Call WarpUserChar(UserIndex, Map, X, Y, True)
 184                 Call WriteConsoleMsg(UserIndex, "Has viajado por varios días, te sientes exhausto!", e_FontTypeNames.FONTTYPE_WARNING)
 186                 UserList(UserIndex).Stats.MinAGU = 0
 188                 UserList(UserIndex).Stats.MinHam = 0
@@ -17273,7 +17258,7 @@ Private Sub HandleCompletarViaje(ByVal UserIndex As Integer)
     
         Exit Sub
 
-errHandler:
+ErrHandler:
 200     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCompletarViaje", Erl)
 202
 
@@ -17579,17 +17564,17 @@ Public Sub HandleCreatePretorianClan(ByVal UserIndex As Integer)
         'Last Modification: 29/10/2010
         '***************************************************
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
         Dim Map   As Integer
-        Dim x     As Byte
+        Dim X     As Byte
         Dim Y     As Byte
         Dim Index As Long
     
 100     With UserList(UserIndex)
 
 102         Map = Reader.ReadInt16()
-104         x = Reader.ReadInt8()
+104         X = Reader.ReadInt8()
 106         Y = Reader.ReadInt8()
         
             ' User Admin?
@@ -17599,7 +17584,7 @@ Public Sub HandleCreatePretorianClan(ByVal UserIndex As Integer)
             End If
         
             ' Valid pos?
-112         If Not InMapBounds(Map, x, Y) Then
+112         If Not InMapBounds(Map, X, Y) Then
 114             Call WriteConsoleMsg(UserIndex, "Posicion invalida.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
@@ -17617,7 +17602,7 @@ Public Sub HandleCreatePretorianClan(ByVal UserIndex As Integer)
             ' Is already active any clan?
 122         If Not ClanPretoriano(Index).Active Then
             
-124             If Not ClanPretoriano(Index).SpawnClan(Map, x, Y, Index) Then
+124             If Not ClanPretoriano(Index).SpawnClan(Map, X, Y, Index) Then
 126                 Call WriteConsoleMsg(UserIndex, "La posicion no es apropiada para crear el clan", e_FontTypeNames.FONTTYPE_INFO)
 
                 End If
@@ -17631,7 +17616,7 @@ Public Sub HandleCreatePretorianClan(ByVal UserIndex As Integer)
 
         Exit Sub
 
-errHandler:
+ErrHandler:
 130     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCreatePretorianClan", Erl)
 132
     
@@ -17648,7 +17633,7 @@ Public Sub HandleDeletePretorianClan(ByVal UserIndex As Integer)
         'Last Modification: 29/10/2010
         '***************************************************
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
     
         Dim Map   As Integer
         Dim Index As Long
@@ -17677,7 +17662,7 @@ Public Sub HandleDeletePretorianClan(ByVal UserIndex As Integer)
 
         Exit Sub
 
-errHandler:
+ErrHandler:
 114     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCreatePretorianClan", Erl)
 116
 
@@ -17760,13 +17745,13 @@ Private Sub HandleConsulta(ByVal UserIndex As Integer)
 142             With UserList(UserConsulta)
 
 144                 If Not EstaPCarea(UserIndex, UserConsulta) Then
-                        Dim x As Byte
+                        Dim X As Byte
                         Dim Y As Byte
                         
-146                     x = .Pos.x
+146                     X = .Pos.X
 148                     Y = .Pos.Y
-150                     Call FindLegalPos(UserIndex, .Pos.Map, x, Y)
-152                     Call WarpUserChar(UserIndex, .Pos.Map, x, Y, True)
+150                     Call FindLegalPos(UserIndex, .Pos.Map, X, Y)
+152                     Call WarpUserChar(UserIndex, .Pos.Map, X, Y, True)
                         
                     End If
             
@@ -17803,7 +17788,7 @@ Private Sub HandleConsulta(ByVal UserIndex As Integer)
     
         Exit Sub
     
-errHandler:
+ErrHandler:
 176     Call TraceError(Err.Number, Err.Description, "Protocol.HandleConsulta", Erl)
 178
 
@@ -17827,7 +17812,7 @@ Private Sub HandleGetMapInfo(ByVal UserIndex As Integer)
 118             Response = Response & "SoloClanes = " & MapInfo(.Pos.Map).SoloClanes & vbNewLine
 120             Response = Response & "NoPKs = " & MapInfo(.Pos.Map).NoPKs & vbNewLine
 122             Response = Response & "NoCiudadanos = " & MapInfo(.Pos.Map).NoCiudadanos & vbNewLine
-124             Response = Response & "Salida = " & MapInfo(.Pos.Map).Salida.Map & "-" & MapInfo(.Pos.Map).Salida.x & "-" & MapInfo(.Pos.Map).Salida.Y & vbNewLine
+124             Response = Response & "Salida = " & MapInfo(.Pos.Map).Salida.Map & "-" & MapInfo(.Pos.Map).Salida.X & "-" & MapInfo(.Pos.Map).Salida.Y & vbNewLine
 126             Response = Response & "Terreno = " & MapInfo(.Pos.Map).terrain & vbNewLine
 128             Response = Response & "NoCiudadanos = " & MapInfo(.Pos.Map).NoCiudadanos & vbNewLine
 130             Response = Response & "Zona = " & MapInfo(.Pos.Map).zone & vbNewLine
@@ -17847,7 +17832,7 @@ End Sub
 
 Private Sub HandleDenounce(ByVal UserIndex As Integer)
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
@@ -17905,7 +17890,7 @@ Private Sub HandleDenounce(ByVal UserIndex As Integer)
     
         Exit Sub
 
-errHandler:
+ErrHandler:
 144     Call TraceError(Err.Number, Err.Description, "Protocol.HandleDenounce", Erl)
 146
 
@@ -18036,7 +18021,7 @@ End Sub
 
 Private Sub HandleCommerceSendChatMessage(ByVal UserIndex As Integer)
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
     
 100     With UserList(UserIndex)
 
@@ -18054,7 +18039,7 @@ Private Sub HandleCommerceSendChatMessage(ByVal UserIndex As Integer)
     
         Exit Sub
     
-errHandler:
+ErrHandler:
 108     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCommerceSendChatMessage", Erl)
 110
     
@@ -18073,7 +18058,7 @@ End Sub
 
 Private Sub HandleCreateEvent(ByVal UserIndex As Integer)
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
@@ -18106,7 +18091,7 @@ Private Sub HandleCreateEvent(ByVal UserIndex As Integer)
     
         Exit Sub
 
-errHandler:
+ErrHandler:
 126     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCreateEvent", Erl)
 128
         
@@ -18134,7 +18119,7 @@ Private Sub HandleHome(ByVal UserIndex As Integer)
             End If
                 
             'Si el mapa tiene alguna restriccion (newbie, dungeon, etc...), no lo dejamos viajar.
-108         If MapInfo(.Pos.Map).zone = "NEWBIE" Or MapData(.Pos.Map, .Pos.x, .Pos.Y).trigger = CARCEL Then
+108         If MapInfo(.Pos.Map).zone = "NEWBIE" Or MapData(.Pos.Map, .Pos.X, .Pos.Y).trigger = CARCEL Then
 110             Call WriteConsoleMsg(UserIndex, "No pueder viajar a tu hogar desde este mapa.", e_FontTypeNames.FONTTYPE_FIGHT)
                 Exit Sub
             
@@ -18184,7 +18169,7 @@ End Sub
 
 Private Sub HandleAddItemCrafting(ByVal UserIndex As Integer)
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
     
 100     With UserList(UserIndex)
     
@@ -18235,14 +18220,14 @@ Private Sub HandleAddItemCrafting(ByVal UserIndex As Integer)
     
         Exit Sub
 
-errHandler:
+ErrHandler:
 142     Call TraceError(Err.Number, Err.Description, "Protocol.HandleAddItemCrafting", Erl)
 144
 End Sub
 
 Private Sub HandleRemoveItemCrafting(ByVal UserIndex As Integer)
     
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
     
 100     With UserList(UserIndex)
     
@@ -18294,14 +18279,14 @@ Private Sub HandleRemoveItemCrafting(ByVal UserIndex As Integer)
     
         Exit Sub
     
-errHandler:
+ErrHandler:
 148     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRemoveItemCrafting", Erl)
 150
 End Sub
 
 Private Sub HandleAddCatalyst(ByVal UserIndex As Integer)
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
     
 100     With UserList(UserIndex)
     
@@ -18334,14 +18319,14 @@ Private Sub HandleAddCatalyst(ByVal UserIndex As Integer)
     
         Exit Sub
     
-errHandler:
+ErrHandler:
 128     Call TraceError(Err.Number, Err.Description, "Protocol.HandleAddCatalyst", Erl)
 130
 End Sub
 
 Private Sub HandleRemoveCatalyst(ByVal UserIndex As Integer)
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
     
 100     With UserList(UserIndex)
     
@@ -18380,14 +18365,14 @@ Private Sub HandleRemoveCatalyst(ByVal UserIndex As Integer)
     
         Exit Sub
     
-errHandler:
+ErrHandler:
 134     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRemoveCatalyst", Erl)
 136
 End Sub
 
 Sub HandleCraftItem(ByVal UserIndex As Integer)
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
 
 100     If UserList(UserIndex).flags.Crafteando = 0 Then Exit Sub
 
@@ -18395,14 +18380,14 @@ Sub HandleCraftItem(ByVal UserIndex As Integer)
     
         Exit Sub
 
-errHandler:
+ErrHandler:
 104     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCraftItem", Erl)
 106
 End Sub
 
 Private Sub HandleCloseCrafting(ByVal UserIndex As Integer)
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
     
 100     If UserList(UserIndex).flags.Crafteando = 0 Then Exit Sub
 
@@ -18412,14 +18397,14 @@ Private Sub HandleCloseCrafting(ByVal UserIndex As Integer)
     
         Exit Sub
     
-errHandler:
+ErrHandler:
 106     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCloseCrafting", Erl)
 108
 End Sub
 
 Private Sub HandleMoveCraftItem(ByVal UserIndex As Integer)
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
     
 100     With UserList(UserIndex)
     
@@ -18448,14 +18433,14 @@ Private Sub HandleMoveCraftItem(ByVal UserIndex As Integer)
     
         Exit Sub
     
-errHandler:
+ErrHandler:
 128     Call TraceError(Err.Number, Err.Description, "Protocol.HandleMoveCraftItem", Erl)
 130
 End Sub
 
 Private Sub HandlePetLeaveAll(ByVal UserIndex As Integer)
 
-        On Error GoTo errHandler
+        On Error GoTo ErrHandler
     
 100     With UserList(UserIndex)
     
@@ -18479,7 +18464,7 @@ Private Sub HandlePetLeaveAll(ByVal UserIndex As Integer)
     
         Exit Sub
     
-errHandler:
+ErrHandler:
 118     Call TraceError(Err.Number, Err.Description, "Protocol.HandlePetLeaveAll", Erl)
 120
 End Sub

@@ -118,7 +118,7 @@ Public Sub HandleNoticeResponse(ByVal UserIndex As Integer, ByVal Codigo As Stri
 
 100     With UserList(UserIndex)
 
-104         If .AccountID = 0 Then Exit Sub
+104         If .AccountID < 0 Then Exit Sub
 
             Dim Data As New JS_Object, Instance As New JS_Object
             

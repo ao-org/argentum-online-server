@@ -123,6 +123,9 @@ End Sub
 Private Function CheckPlayer(ByVal Slot As Integer, UUID As String) As Boolean
     ' TODO: Implementar comprobación de que el jugador sigue online
     CheckPlayer = True
+
+    'userlist(slot).
+
 End Function
 
 Private Sub HandleLoginAccount(ByVal ID As Long, Data As Object, Instance As Object)
@@ -173,5 +176,22 @@ Private Sub HandleGuardNotice(ByVal ID As Long, Data As Object, Instance As Obje
     Else
         Call WriteShowMessageBox(UserIndex, Data.Item("message"))
         Call CloseSocket(UserIndex)
+    End If
+End Sub
+
+Private Sub HandleLoginChar(ByVal ID As Long, Data As Object, Instance As Object)
+    Dim UserIndex As Integer
+    UserIndex = Instance.Item("slot")
+
+    ' Si no está online el jugador, ignoramos la respuesta
+    If Not CheckPlayer(UserIndex, Instance.Item("uuid")) Then Exit Sub
+
+    ' Si el login fue exitoso
+    If Data.Item("success") Then
+        ' Llenar el slot con los datos
+        With UserList(UserIndex)
+
+            Call ConnectUser_Complete(UserIndex, .Name, .Email)
+        End With
     End If
 End Sub
