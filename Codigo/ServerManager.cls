@@ -117,6 +117,9 @@ Private Sub HandlePacket(ByVal ID As Long, Data As Object, Instance As Object)
         Case ManagerPackets.GUARD_NOTICE_RESPONSE_RESULT
             Call HandleGuardNotice(ID, Data, Instance)
             
+        Case ManagerPackets.LOGIN_CHAR_RESULT
+            Call HandleLoginChar(ID, Data, Instance)
+            
     End Select
 End Sub
 
@@ -142,6 +145,12 @@ Private Sub HandleLoginAccount(ByVal ID As Long, Data As Object, Instance As Obj
         With UserList(UserIndex)
             .AccountID = Data.Item("account_id")
             .Cuenta = .Email
+            
+            Dim i As Integer
+            For i = 0 To Data.Item("keys").Count - 1
+                .keys(i + 1) = Data.Item("keys").Item(i)
+                Debug.Print "Key", .keys(i)
+            Next
         End With
         
         If Data.Item("verify") Then
@@ -188,8 +197,19 @@ Private Sub HandleLoginChar(ByVal ID As Long, Data As Object, Instance As Object
 
     ' Si el login fue exitoso
     If Data.Item("success") Then
+        Dim i As Integer
+    
         ' Llenar el slot con los datos
         With UserList(UserIndex)
+            .Name = Data.Item("name")
+            
+            ' Stats
+            .Stats.ELV = Data.Item("level")
+            
+            ' Hechizos
+            For i = 1 To Data.Item("Spells").Count
+                Debug.Print Data.Item("Spells").Item(i - 1)
+            Next
 
             Call ConnectUser_Complete(UserIndex, .Name, .Email)
         End With
