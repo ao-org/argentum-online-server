@@ -6,10 +6,9 @@ Private Matriz As New JS_Array
 
 Private i As Long
 
-Function Principal(ByRef UserIndex As Integer, ByRef Logout As Boolean) As JS_Object
+Function Principal(ByRef UserIndex As Integer) As JS_Object
         
         On Error GoTo Principal_Err
-        
     
 100     Call Objeto.Clear
     
@@ -18,7 +17,7 @@ Function Principal(ByRef UserIndex As Integer, ByRef Logout As Boolean) As JS_Ob
 104         Objeto.Item("id") = .Id
 106         Objeto.Item("name") = .name
 108         Objeto.Item("level") = .Stats.ELV
-110         Objeto.Item("exp") = CLng(.Stats.Exp)
+110         Objeto.Item("exp") = .Stats.Exp
 114         Objeto.Item("genre_id") = .genero
 116         Objeto.Item("race_id") = .raza
 118         Objeto.Item("class_id") = .clase
@@ -44,7 +43,6 @@ Function Principal(ByRef UserIndex As Integer, ByRef Logout As Boolean) As JS_Ob
 160         Objeto.Item("slot_shield") = .Invent.EscudoEqpSlot
 162         Objeto.Item("slot_helmet") = .Invent.CascoEqpSlot
 164         Objeto.Item("slot_ammo") = .Invent.MunicionEqpSlot
-            'Objeto.Item("slot_ring") = .Invent.AnilloEqpSlot
 166         Objeto.Item("slot_tool") = .Invent.HerramientaEqpSlot
 168         Objeto.Item("slot_magic") = .Invent.MagicoSlot
 170         Objeto.Item("slot_knuckles") = .Invent.NudilloSlot
@@ -99,10 +97,13 @@ Function Principal(ByRef UserIndex As Integer, ByRef Logout As Boolean) As JS_Ob
 268         Objeto.Item("siguiente_recompensa") = .Faccion.NextRecompensa
 270         Objeto.Item("status") = .Faccion.Status
 274         Objeto.Item("guild_index") = .GuildIndex
-276         Objeto.Item("chat_combate") = .ChatCombate
-278         Objeto.Item("chat_global") = .ChatGlobal
-280         Objeto.Item("is_logged") = Not Logout
+276         Objeto.Item("chat_combate") = IIf(.ChatCombate, 1, 0)
+278         Objeto.Item("chat_global") = IIf(.ChatGlobal, 1, 0)
 282         Objeto.Item("warnings") = .Stats.Advertencias
+            Objeto.Item("elo") = .Stats.ELO
+            Objeto.Item("return_map") = .flags.ReturnPos.Map
+            Objeto.Item("return_x") = .flags.ReturnPos.X
+            Objeto.Item("return_y") = .flags.ReturnPos.Y
     
         End With
     
@@ -125,11 +126,12 @@ Function Atributos(ByRef UserIndex As Integer) As JS_Object
     
 104     With UserList(UserIndex)
             
+            Objeto.Item("user_id") = .ID
             Objeto.Item("strength") = .Stats.UserAtributos(e_Atributos.Fuerza)
             Objeto.Item("agility") = .Stats.UserAtributos(e_Atributos.Agilidad)
-            Objeto.Item("intelligence") = .Stats.UserSkills(e_Atributos.Inteligencia)
-            Objeto.Item("constitution") = .Stats.UserSkills(e_Atributos.Constitucion)
-            Objeto.Item("charisma") = .Stats.UserSkills(e_Atributos.Carisma)
+            Objeto.Item("intelligence") = .Stats.UserAtributos(e_Atributos.Inteligencia)
+            Objeto.Item("constitution") = .Stats.UserAtributos(e_Atributos.Constitucion)
+            Objeto.Item("charisma") = .Stats.UserAtributos(e_Atributos.Carisma)
             
         End With
 
@@ -193,7 +195,7 @@ Function Inventario(ByRef UserIndex As Integer) As JS_Array
 110             Objeto.Item("number") = i
 112             Objeto.Item("item_id") = .Invent.Object(i).ObjIndex
 114             Objeto.Item("Amount") = .Invent.Object(i).Amount
-116             Objeto.Item("is_equipped") = .Invent.Object(i).Equipped
+116             Objeto.Item("is_equipped") = IIf(.Invent.Object(i).Equipped, 1, 0)
                 
                 ' Lo meto en el array de items
 118             Matriz.Push Objeto
@@ -259,6 +261,7 @@ Function Habilidades(ByRef UserIndex As Integer) As JS_Object
     
     With UserList(UserIndex)
     
+        Objeto.Item("user_id") = .ID
         Objeto.Item("magia") = .Stats.UserSkills(e_Skill.Magia)
         Objeto.Item("robar") = .Stats.UserSkills(e_Skill.Robar)
         Objeto.Item("tacticas") = .Stats.UserSkills(e_Skill.Tacticas)

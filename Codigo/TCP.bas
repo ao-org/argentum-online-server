@@ -1658,7 +1658,7 @@ Sub ClearAndSaveUser(ByVal UserIndex As Integer)
         
 204         errordesc = "ERROR AL GRABAR PJ"
 
-206         Call SaveUser(UserIndex, True)
+206         Call SaveUser(UserIndex)
 
     End With
     

@@ -1394,7 +1394,7 @@ Private Sub HandleLoginNewChar(ByVal UserIndex As Integer)
 
         End If
 
-        #If DEBUGGING = False Then
+        #If DEBUGGING = False Then ' vuela
 
 142         If Not VersionOK(Version) Then
 144             Call WriteShowMessageBox(UserIndex, "Esta versión del juego es obsoleta, la versión correcta es la " & ULTIMAVERSION & ". Ejecute el launcher por favor.")
@@ -1416,13 +1416,13 @@ Private Sub HandleLoginNewChar(ByVal UserIndex As Integer)
             
         End If
 
-156     If Not EntrarCuenta(UserIndex, CuentaEmail, Password, MD5) Then
+156     If Not EntrarCuenta(UserIndex, CuentaEmail, Password, MD5) Then ' vuela
 158         Call CloseSocket(UserIndex)
             Exit Sub
 
         End If
         
-160     If GetPersonajesCountByIDDatabase(UserList(UserIndex).AccountID) >= MAX_PERSONAJES Then
+160     If GetPersonajesCountByIDDatabase(UserList(UserIndex).AccountID) >= MAX_PERSONAJES Then ' al manager
 162         Call CloseSocket(UserIndex)
             Exit Sub
         End If

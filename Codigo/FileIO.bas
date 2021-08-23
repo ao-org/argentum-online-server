@@ -2634,20 +2634,16 @@ ErrorHandler:
     
 End Sub
 
-Sub SaveUser(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = False)
+Sub SaveUser(ByVal UserIndex As Integer)
 
         On Error GoTo SaveUser_Err
         
         Dim Data As New JS_Object
-        Dim Instance As New JS_Object
-        
-        Instance.Item("slot") = UserIndex
-        Instance.Item("uuid") = UserList(UserIndex).UUID
     
         '*************************************************************
         '   USER
         '*************************************************************
-        Data.Item("user") = JSON_User.Principal(UserIndex, Logout)
+        Data.Item("user") = JSON_User.Principal(UserIndex)
         
         '*************************************************************
         '   ATRIBUTOS
@@ -2657,17 +2653,17 @@ Sub SaveUser(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = Fals
         '*************************************************************
         '   HECHIZOS
         '*************************************************************
-        Data.Item("spell") = JSON_User.Hechizo(UserIndex)
+        Data.Item("Spells") = JSON_User.Hechizo(UserIndex)
 
         '*************************************************************
         '   INVENTARIO
         '*************************************************************
-        Data.Item("inventory_item") = JSON_User.Inventario(UserIndex)
+        Data.Item("InventoryItems") = JSON_User.Inventario(UserIndex)
 
         '*************************************************************
         '   INVENTARIO DEL BANCO
         '*************************************************************
-        Data.Item("bank_item") = JSON_User.InventarioBanco(UserIndex)
+        Data.Item("BankItems") = JSON_User.InventarioBanco(UserIndex)
 
         '*************************************************************
         '   SKILLS
@@ -2677,24 +2673,23 @@ Sub SaveUser(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = Fals
         '*************************************************************
         '   MASCOTAS
         '*************************************************************
-        Data.Item("pet") = JSON_User.Mascotas(UserIndex)
+        Data.Item("Pets") = JSON_User.Mascotas(UserIndex)
 
         '*************************************************************
         '   QUESTS
         '*************************************************************
-        Data.Item("quest") = JSON_User.Quest(UserIndex)
+        Data.Item("Quests") = JSON_User.Quest(UserIndex)
 
         '*************************************************************
         '   QUESTS TERMINADAS
         '*************************************************************
         If UserList(UserIndex).QuestStats.NumQuestsDone > 0 Then
-            Data.Item("quest_done") = JSON_User.QuestTerminadas(UserIndex)
+            Data.Item("QuestDones") = JSON_User.QuestTerminadas(UserIndex)
         End If
         
-        Call Manager.Send(SAVE_CHAR, Data, Instance)
+        Call Manager.Send(SAVE_CHAR, Data)
         
 104     UserList(UserIndex).Counters.LastSave = GetTickCount
-        UserList(UserIndex).WaitingPacket = SAVE_CHAR
         
         Exit Sub
 
