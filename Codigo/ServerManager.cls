@@ -366,7 +366,7 @@ Private Sub HandleLoginChar(ByVal ID As Long, Data As Object, Instance As Object
             
             ' Mascotas
             For i = 1 To Data.Item("Pets").Count
-                .MascotasType(i) = Data.Item("Pets").Item(i).Item("pet_id")
+                .MascotasType(i) = Data.Item("Pets").Item(i - 1).Item("pet_id")
                 
                 If .MascotasType(i) > 0 Then
                     .NroMascotas = .NroMascotas + 1
@@ -375,7 +375,7 @@ Private Sub HandleLoginChar(ByVal ID As Long, Data As Object, Instance As Object
             
             ' Hechizos
             For i = 1 To Data.Item("Spells").Count
-                .Stats.UserHechizos(i) = Data.Item("Spells").Item(i).Item("spell_id")
+                .Stats.UserHechizos(i) = Data.Item("Spells").Item(i - 1).Item("spell_id")
             Next
             
             ' Inventario
@@ -384,15 +384,15 @@ Private Sub HandleLoginChar(ByVal ID As Long, Data As Object, Instance As Object
             
                 With .Invent.Object(i)
                 
-                    .ObjIndex = Data.Item("InventoryItems").Item(i).Item("item_id")
+                    .ObjIndex = Data.Item("InventoryItems").Item(i - 1).Item("item_id")
                     
                     If .ObjIndex <> 0 Then
                     
                         If LenB(ObjData(.ObjIndex).Name) Then
                             LoopC = LoopC + 1
                             
-                            .amount = Data.Item("InventoryItems").Item(i).Item("amount")
-                            .Equipped = Data.Item("InventoryItems").Item(i).Item("is_equipped")
+                            .amount = Data.Item("InventoryItems").Item(i - 1).Item("amount")
+                            .Equipped = Data.Item("InventoryItems").Item(i - 1).Item("is_equipped")
                         Else
                             .ObjIndex = 0
                         End If
@@ -410,14 +410,14 @@ Private Sub HandleLoginChar(ByVal ID As Long, Data As Object, Instance As Object
             
                 With .BancoInvent.Object(i)
                 
-                    .ObjIndex = Data.Item("BankItems").Item(i).Item("item_id")
+                    .ObjIndex = Data.Item("BankItems").Item(i - 1).Item("item_id")
                     
                     If .ObjIndex <> 0 Then
                     
                         If LenB(ObjData(.ObjIndex).Name) Then
                             LoopC = LoopC + 1
                             
-                            .amount = Data.Item("BankItems").Item(i).Item("amount")
+                            .amount = Data.Item("BankItems").Item(i - 1).Item("amount")
                         Else
                             .ObjIndex = 0
                         End If
@@ -434,12 +434,12 @@ Private Sub HandleLoginChar(ByVal ID As Long, Data As Object, Instance As Object
             For i = 1 To Data.Item("Quests").Count
                 With .QuestStats.Quests(i)
                 
-                    .QuestIndex = Data.Item("Quests").Item(i).Item("quest_id")
+                    .QuestIndex = Data.Item("Quests").Item(i - 1).Item("quest_id")
                     
                     If .QuestIndex > 0 Then
                     
                         If QuestList(.QuestIndex).RequiredNPCs Then
-                            Dim NPCs() As String: NPCs = Split(Data.Item("Quests").Item(i).Item("NPCs"), "-")
+                            Dim NPCs() As String: NPCs = Split(Data.Item("Quests").Item(i - 1).Item("NPCs"), "-")
                             ReDim .NPCsKilled(1 To QuestList(.QuestIndex).RequiredNPCs)
                             
                             For LoopC = 1 To QuestList(.QuestIndex).RequiredNPCs
@@ -448,7 +448,7 @@ Private Sub HandleLoginChar(ByVal ID As Long, Data As Object, Instance As Object
                         End If
                         
                         If QuestList(.QuestIndex).RequiredTargetNPCs Then
-                            Dim NPCsTarget() As String: NPCsTarget = Split(Data.Item("Quests").Item(i).Item("NPCsTarget"), "-")
+                            Dim NPCsTarget() As String: NPCsTarget = Split(Data.Item("Quests").Item(i - 1).Item("NPCsTarget"), "-")
                             ReDim .NPCsTarget(1 To QuestList(.QuestIndex).RequiredTargetNPCs)
                             
                             For LoopC = 1 To QuestList(.QuestIndex).RequiredTargetNPCs
@@ -470,7 +470,7 @@ Private Sub HandleLoginChar(ByVal ID As Long, Data As Object, Instance As Object
                     ReDim .QuestsDone(1 To .NumQuestsDone)
                     
                     For i = 1 To Data.Item("QuestDones").Count
-                        .QuestsDone(i) = Data.Item("QuestDones").Item(i).Item("quest_id")
+                        .QuestsDone(i) = Data.Item("QuestDones").Item(i - 1).Item("quest_id")
                     Next
                 End If
                 
