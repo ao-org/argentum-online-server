@@ -66,19 +66,12 @@ Function Principal(ByRef UserIndex As Integer, ByRef Logout As Boolean) As JS_Ob
 200         Objeto.Item("killed_npcs") = .Stats.NPCsMuertos
 202         Objeto.Item("killed_users") = .Stats.UsuariosMatados
 204         Objeto.Item("invent_level") = .Stats.InventLevel
-            'Objeto.Item( "rep_asesino") =.Reputacion.AsesinoRep
-            'Objeto.Item( "rep_bandido") =.Reputacion.BandidoRep
-            'Objeto.Item( "rep_burgues") =.Reputacion.BurguesRep
-            'Objeto.Item( "rep_ladron") =.Reputacion.LadronesRep
-            'Objeto.Item( "rep_noble") =.Reputacion.NobleRep
-            'Objeto.Item( "rep_plebe") =.Reputacion.PlebeRep
-            'Objeto.Item( "rep_average") =.Reputacion.Promedio
 206         Objeto.Item("is_naked") = .flags.Desnudo
 208         Objeto.Item("is_poisoned") = .flags.Envenenado
 210         Objeto.Item("is_hidden") = .flags.Escondido
 212         Objeto.Item("is_hungry") = .flags.Hambre
 214         Objeto.Item("is_thirsty") = .flags.Sed
-            'Objeto.Item( "is_banned") =.flags.Ban & ") =" Esto es innecesario porque se setea cuando lo baneas
+            Objeto.Item("is_banned") = .flags.Ban
 216         Objeto.Item("is_dead") = .flags.Muerto
 218         Objeto.Item("is_sailing") = .flags.Navegando
 220         Objeto.Item("is_paralyzed") = .flags.Paralizado
@@ -126,31 +119,23 @@ Principal_Err:
         
 End Function
 
-Function Atributos(ByRef UserIndex As Integer) As JS_Array
+Function Atributos(ByRef UserIndex As Integer) As JS_Object
         
         On Error GoTo Atributos_Err
         
-    
 100     Call Objeto.Clear
-102     Call Matriz.Clear
     
 104     With UserList(UserIndex)
-    
-106         For i = 1 To NUMATRIBUTOS
-108             Objeto.Item("user_id") = .Id
-110             Objeto.Item("number") = i
-112             Objeto.Item("value") = .Stats.UserAtributosBackUP(i)
-    
-                ' Lo meto en el array de items
-114             Matriz.Push Objeto
-                    
-                ' Limpio el objeto para la proxima iteracion
-116             Objeto.Clear
-118         Next i
-    
+            
+            Objeto.Item("strength") = .Stats.UserAtributos(e_Atributos.Fuerza)
+            Objeto.Item("agility").Stats.UserAtributos (e_Atributos.Agilidad)
+            Objeto.Item("intelligence") = .Stats.UserSkills(e_Atributos.Inteligencia)
+            Objeto.Item("constitution") = .Stats.UserSkills(e_Atributos.Constitucion)
+            Objeto.Item("charisma") = .Stats.UserSkills(e_Atributos.Carisma)
+            
         End With
 
-120     Set Atributos = Matriz
+120     Set Atributos = Objeto
 
         
         Exit Function
@@ -268,38 +253,44 @@ InventarioBanco_Err:
         
 End Function
 
-Function Habilidades(ByRef UserIndex As Integer) As JS_Array
+Function Habilidades(ByRef UserIndex As Integer) As JS_Object
         
-        On Error GoTo Habilidades_Err
-        
+    On Error GoTo Habilidades_Err
     
-100     Call Objeto.Clear
-102     Call Matriz.Clear
+    Call Objeto.Clear
     
-104     With UserList(UserIndex)
-    
-106         For i = 1 To NUMSKILLS
-108             Objeto.Item("user_id") = .Id
-110             Objeto.Item("number") = i
-112             Objeto.Item("value") = .Stats.UserSkills(i)
-                
-                ' Lo meto en el array de items
-114             Matriz.Push Objeto
-                
-                ' Limpio el objeto para la proxima iteracion
-116             Objeto.Clear
-118         Next i
-    
-        End With
+    Objeto.Item("magia") = .Stats.UserSkills(e_Skill.Magia)
+    Objeto.Item("robar") = .Stats.UserSkills(e_Skill.Robar)
+    Objeto.Item("tacticas") = .Stats.UserSkills(e_Skill.Tacticas)
+    Objeto.Item("armas") = .Stats.UserSkills(e_Skill.Armas)
+    Objeto.Item("meditar") = .Stats.UserSkills(e_Skill.Meditar)
+    Objeto.Item("apunalar") = .Stats.UserSkills(e_Skill.Apuñalar)
+    Objeto.Item("ocultarse") = .Stats.UserSkills(e_Skill.Ocultarse)
+    Objeto.Item("supervivencia") = .Stats.UserSkills(e_Skill.Supervivencia)
+    Objeto.Item("comerciar") = .Stats.UserSkills(e_Skill.Comerciar)
+    Objeto.Item("defensa") = .Stats.UserSkills(e_Skill.Defensa)
+    Objeto.Item("liderazgo") = .Stats.UserSkills(e_Skill.liderazgo)
+    Objeto.Item("proyectiles") = .Stats.UserSkills(e_Skill.Proyectiles)
+    Objeto.Item("wrestling") = .Stats.UserSkills(e_Skill.Wrestling)
+    Objeto.Item("navegacion") = .Stats.UserSkills(e_Skill.Navegacion)
+    Objeto.Item("equitacion") = .Stats.UserSkills(e_Skill.equitacion)
+    Objeto.Item("resistencia") = .Stats.UserSkills(e_Skill.Resistencia)
+    Objeto.Item("talar") = .Stats.UserSkills(e_Skill.Talar)
+    Objeto.Item("pescar") = .Stats.UserSkills(e_Skill.Pescar)
+    Objeto.Item("mineria") = .Stats.UserSkills(e_Skill.Mineria)
+    Objeto.Item("herreria") = .Stats.UserSkills(e_Skill.Herreria)
+    Objeto.Item("carpinteria") = .Stats.UserSkills(e_Skill.Carpinteria)
+    Objeto.Item("alquimia") = .Stats.UserSkills(e_Skill.Alquimia)
+    Objeto.Item("sastreria") = .Stats.UserSkills(e_Skill.Sastreria)
+    Objeto.Item("domar") = .Stats.UserSkills(e_Skill.Domar)
 
-120     Set Habilidades = Matriz
-
+    Set Habilidades = Objeto
         
-        Exit Function
+    Exit Function
 
 Habilidades_Err:
-        Call RegistrarError(Err.Number, Err.Description, "API_User.Habilidades", Erl)
-        Resume Next
+    Call RegistrarError(Err.Number, Err.Description, "API_User.Habilidades", Erl)
+    Resume Next
         
 End Function
 
@@ -384,7 +375,6 @@ End Function
 Function Quest(ByRef UserIndex As Integer) As JS_Array
         
         On Error GoTo Quest_Err
-        
     
 100     Call Objeto.Clear
 102     Call Matriz.Clear
@@ -394,67 +384,72 @@ Function Quest(ByRef UserIndex As Integer) As JS_Array
 104     With UserList(UserIndex)
     
 106         For i = 1 To MAXUSERQUESTS
-108             Objeto.Item("user_id") = .Id
-110             Objeto.Item("number") = i
-112             Objeto.Item("quest_id") = .QuestStats.Quests(i).QuestIndex
+                
+108             With .QuestStats.Quests(i)
+                
+110                 Objeto.Item("user_id") = .ID
+112                 Objeto.Item("number") = i
+114                 Objeto.Item("quest_id") = .QuestIndex
             
-114             If .QuestStats.Quests(i).QuestIndex > 0 Then
+116                 If .QuestIndex > 0 Then
             
-116                 Tmp = QuestList(.QuestStats.Quests(i).QuestIndex).RequiredNPCs
-118                 tempString = vbNullString
+118                     Tmp = QuestList(.QuestIndex).RequiredNPCs
+120                     tempString = vbNullString
                 
-120                 If Tmp Then
+122                     If Tmp Then
 
-122                     For LoopK = 1 To Tmp
-124                         tempString = tempString & CStr(.QuestStats.Quests(i).NPCsKilled(LoopK))
+124                         For LoopK = 1 To Tmp
+126                             tempString = tempString & CStr(.NPCsKilled(LoopK))
                         
-126                         If LoopK < Tmp Then
-128                             tempString = tempString & "-"
-                            End If
+128                             If LoopK < Tmp Then
+130                                 tempString = tempString & "-"
+                                End If
 
-130                     Next LoopK
+132                         Next LoopK
                     
-                    End If
+                        End If
                 
-132                 Objeto.Item("npcs") = tempString
+134                     Objeto.Item("npcs") = tempString
                 
-134                 Tmp = QuestList(.QuestStats.Quests(i).QuestIndex).RequiredTargetNPCs
-136                 tempString = vbNullString
+136                     Tmp = QuestList(.QuestIndex).RequiredTargetNPCs
+138                     tempString = vbNullString
                 
-138                 If Tmp Then
+140                     If Tmp Then
                 
-140                     For LoopK = 1 To Tmp
-142                         tempString = tempString & CStr(.QuestStats.Quests(i).NPCsTarget(LoopK))
+142                         For LoopK = 1 To Tmp
+144                             tempString = tempString & CStr(.NPCsTarget(LoopK))
                         
-144                         If LoopK < Tmp Then
-146                             tempString = tempString & "-"
-                            End If
+146                             If LoopK < Tmp Then
+148                                 tempString = tempString & "-"
+                                End If
                     
-148                     Next LoopK
+150                         Next LoopK
 
+                        End If
+                
+152                     Objeto.Item("npcstarget") = .Stats.UserSkills(i)
+                
                     End If
-                
-150                 Objeto.Item("npcstarget") = .Stats.UserSkills(i)
-                
-                End If
 
-                ' Lo meto en el array de items
-152             Matriz.Push Objeto
+                    ' Lo meto en el array de items
+154                 Matriz.Push Objeto
                 
-                ' Limpio el objeto para la proxima iteracion
-154             Objeto.Clear
-156         Next i
+                    ' Limpio el objeto para la proxima iteracion
+156                 Objeto.Clear
+                
+                End With
+            
+158         Next i
     
         End With
 
-158     Set Quest = Matriz
-
+160     Set Quest = Matriz
         
         Exit Function
 
 Quest_Err:
-        Call RegistrarError(Err.Number, Err.Description, "API_User.Quest", Erl)
-        Resume Next
+162     Call RegistrarError(Err.Number, Err.Description, "API_User.Quest", Erl)
+164     Resume Next
         
 End Function
 
