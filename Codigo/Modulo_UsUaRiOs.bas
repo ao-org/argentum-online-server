@@ -165,7 +165,7 @@ Public Function ConnectUser_Check(ByVal UserIndex As Integer, _
 
         End If
         
-        If UCase$(.Cuenta) <> UCase$(UserCuenta) Then
+        If .Cuenta <> UserCuenta Then
             Call WriteShowMessageBox(UserIndex, "El personaje no corresponde a su cuenta.")
             Call CloseSocket(UserIndex)
             Exit Function

@@ -73,6 +73,7 @@ On Error GoTo OnServerConnect_Err:
         UserList(Connection).ConnIDValida = True
         UserList(Connection).IP = Address
         UserList(Connection).UUID = GenGUID()
+        UserList(Connection).AccountID = -1
 
         If IP_Blacklist.Exists(UserList(Connection).IP) <> 0 Then 'Busca si esta banneada la ip
             Call Kick(Connection, "Se te ha prohibido la entrada al servidor. Cod: #0003")
