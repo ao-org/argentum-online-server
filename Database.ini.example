@@ -10,3 +10,4 @@ Host=localhost
 Name=ao_server_test
 Username=usuario
 Password=123456
+Port=3306
