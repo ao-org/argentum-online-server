@@ -1,4 +1,4 @@
-Attribute VB_Name = "API_User"
+Attribute VB_Name = "JSON_User"
 Option Explicit
 
 Private Objeto As New JS_Object
@@ -31,7 +31,6 @@ Function Principal(ByRef UserIndex As Integer, ByRef Logout As Boolean) As JS_Ob
 132         Objeto.Item("pos_map") = .Pos.Map
 134         Objeto.Item("pos_x") = .Pos.X
 136         Objeto.Item("pos_y") = .Pos.Y
-138         Objeto.Item("last_map") = .flags.lastMap
 140         Objeto.Item("message_info") = .MENSAJEINFORMACION
 142         Objeto.Item("body_id") = .Char.Body
 144         Objeto.Item("head_id") = .OrigChar.Head
@@ -82,8 +81,8 @@ Function Principal(ByRef UserIndex As Integer, ByRef Logout As Boolean) As JS_Ob
 230         Objeto.Item("spouse") = .flags.Pareja
 232         Objeto.Item("counter_pena") = .Counters.Pena
 234         Objeto.Item("deaths") = .flags.VecesQueMoriste
-236         Objeto.Item("pertenece_consejo_real") = (.flags.Privilegios And PlayerType.RoyalCouncil)
-238         Objeto.Item("pertenece_consejo_caos") = (.flags.Privilegios And PlayerType.ChaosCouncil)
+236         Objeto.Item("pertenece_consejo_real") = (.flags.Privilegios And e_PlayerType.RoyalCouncil)
+238         Objeto.Item("pertenece_consejo_caos") = (.flags.Privilegios And e_PlayerType.ChaosCouncil)
 240         Objeto.Item("pertenece_real") = .Faccion.ArmadaReal
 242         Objeto.Item("pertenece_caos") = .Faccion.FuerzasCaos
 244         Objeto.Item("ciudadanos_matados") = .Faccion.ciudadanosMatados
@@ -95,7 +94,6 @@ Function Principal(ByRef UserIndex As Integer, ByRef Logout As Boolean) As JS_Ob
 256         Objeto.Item("recompensas_real") = .Faccion.RecompensasReal
 258         Objeto.Item("recompensas_caos") = .Faccion.RecompensasCaos
 260         Objeto.Item("reenlistadas") = .Faccion.Reenlistadas
-262         Objeto.Item("fecha_ingreso") = .Faccion.FechaIngreso
 264         Objeto.Item("nivel_ingreso") = .Faccion.NivelIngreso
 266         Objeto.Item("matados_ingreso") = .Faccion.MatadosIngreso
 268         Objeto.Item("siguiente_recompensa") = .Faccion.NextRecompensa
@@ -128,7 +126,7 @@ Function Atributos(ByRef UserIndex As Integer) As JS_Object
 104     With UserList(UserIndex)
             
             Objeto.Item("strength") = .Stats.UserAtributos(e_Atributos.Fuerza)
-            Objeto.Item("agility").Stats.UserAtributos (e_Atributos.Agilidad)
+            Objeto.Item("agility") = .Stats.UserAtributos(e_Atributos.Agilidad)
             Objeto.Item("intelligence") = .Stats.UserSkills(e_Atributos.Inteligencia)
             Objeto.Item("constitution") = .Stats.UserSkills(e_Atributos.Constitucion)
             Objeto.Item("charisma") = .Stats.UserSkills(e_Atributos.Carisma)
@@ -259,30 +257,34 @@ Function Habilidades(ByRef UserIndex As Integer) As JS_Object
     
     Call Objeto.Clear
     
-    Objeto.Item("magia") = .Stats.UserSkills(e_Skill.Magia)
-    Objeto.Item("robar") = .Stats.UserSkills(e_Skill.Robar)
-    Objeto.Item("tacticas") = .Stats.UserSkills(e_Skill.Tacticas)
-    Objeto.Item("armas") = .Stats.UserSkills(e_Skill.Armas)
-    Objeto.Item("meditar") = .Stats.UserSkills(e_Skill.Meditar)
-    Objeto.Item("apunalar") = .Stats.UserSkills(e_Skill.Apuñalar)
-    Objeto.Item("ocultarse") = .Stats.UserSkills(e_Skill.Ocultarse)
-    Objeto.Item("supervivencia") = .Stats.UserSkills(e_Skill.Supervivencia)
-    Objeto.Item("comerciar") = .Stats.UserSkills(e_Skill.Comerciar)
-    Objeto.Item("defensa") = .Stats.UserSkills(e_Skill.Defensa)
-    Objeto.Item("liderazgo") = .Stats.UserSkills(e_Skill.liderazgo)
-    Objeto.Item("proyectiles") = .Stats.UserSkills(e_Skill.Proyectiles)
-    Objeto.Item("wrestling") = .Stats.UserSkills(e_Skill.Wrestling)
-    Objeto.Item("navegacion") = .Stats.UserSkills(e_Skill.Navegacion)
-    Objeto.Item("equitacion") = .Stats.UserSkills(e_Skill.equitacion)
-    Objeto.Item("resistencia") = .Stats.UserSkills(e_Skill.Resistencia)
-    Objeto.Item("talar") = .Stats.UserSkills(e_Skill.Talar)
-    Objeto.Item("pescar") = .Stats.UserSkills(e_Skill.Pescar)
-    Objeto.Item("mineria") = .Stats.UserSkills(e_Skill.Mineria)
-    Objeto.Item("herreria") = .Stats.UserSkills(e_Skill.Herreria)
-    Objeto.Item("carpinteria") = .Stats.UserSkills(e_Skill.Carpinteria)
-    Objeto.Item("alquimia") = .Stats.UserSkills(e_Skill.Alquimia)
-    Objeto.Item("sastreria") = .Stats.UserSkills(e_Skill.Sastreria)
-    Objeto.Item("domar") = .Stats.UserSkills(e_Skill.Domar)
+    With UserList(UserIndex)
+    
+        Objeto.Item("magia") = .Stats.UserSkills(e_Skill.Magia)
+        Objeto.Item("robar") = .Stats.UserSkills(e_Skill.Robar)
+        Objeto.Item("tacticas") = .Stats.UserSkills(e_Skill.Tacticas)
+        Objeto.Item("armas") = .Stats.UserSkills(e_Skill.Armas)
+        Objeto.Item("meditar") = .Stats.UserSkills(e_Skill.Meditar)
+        Objeto.Item("apunalar") = .Stats.UserSkills(e_Skill.Apuñalar)
+        Objeto.Item("ocultarse") = .Stats.UserSkills(e_Skill.Ocultarse)
+        Objeto.Item("supervivencia") = .Stats.UserSkills(e_Skill.Supervivencia)
+        Objeto.Item("comerciar") = .Stats.UserSkills(e_Skill.Comerciar)
+        Objeto.Item("defensa") = .Stats.UserSkills(e_Skill.Defensa)
+        Objeto.Item("liderazgo") = .Stats.UserSkills(e_Skill.liderazgo)
+        Objeto.Item("proyectiles") = .Stats.UserSkills(e_Skill.Proyectiles)
+        Objeto.Item("wrestling") = .Stats.UserSkills(e_Skill.Wrestling)
+        Objeto.Item("navegacion") = .Stats.UserSkills(e_Skill.Navegacion)
+        Objeto.Item("equitacion") = .Stats.UserSkills(e_Skill.equitacion)
+        Objeto.Item("resistencia") = .Stats.UserSkills(e_Skill.Resistencia)
+        Objeto.Item("talar") = .Stats.UserSkills(e_Skill.Talar)
+        Objeto.Item("pescar") = .Stats.UserSkills(e_Skill.Pescar)
+        Objeto.Item("mineria") = .Stats.UserSkills(e_Skill.Mineria)
+        Objeto.Item("herreria") = .Stats.UserSkills(e_Skill.Herreria)
+        Objeto.Item("carpinteria") = .Stats.UserSkills(e_Skill.Carpinteria)
+        Objeto.Item("alquimia") = .Stats.UserSkills(e_Skill.Alquimia)
+        Objeto.Item("sastreria") = .Stats.UserSkills(e_Skill.Sastreria)
+        Objeto.Item("domar") = .Stats.UserSkills(e_Skill.Domar)
+    
+    End With
 
     Set Habilidades = Objeto
         
@@ -387,7 +389,7 @@ Function Quest(ByRef UserIndex As Integer) As JS_Array
                 
 108             With .QuestStats.Quests(i)
                 
-110                 Objeto.Item("user_id") = .ID
+110                 Objeto.Item("user_id") = UserList(UserIndex).ID
 112                 Objeto.Item("number") = i
 114                 Objeto.Item("quest_id") = .QuestIndex
             
@@ -427,7 +429,7 @@ Function Quest(ByRef UserIndex As Integer) As JS_Array
 
                         End If
                 
-152                     Objeto.Item("npcstarget") = .Stats.UserSkills(i)
+152                     Objeto.Item("npcstarget") = UserList(UserIndex).Stats.UserSkills(i)
                 
                     End If
 

@@ -2687,7 +2687,7 @@ Sub SaveUser(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = Fals
         '*************************************************************
         '   QUESTS TERMINADAS
         '*************************************************************
-        If .QuestStats.NumQuestsDone > 0 Then
+        If UserList(UserIndex).QuestStats.NumQuestsDone > 0 Then
             Data.Item("quest_done") = JSON_User.QuestTerminadas(UserIndex)
         End If
         
