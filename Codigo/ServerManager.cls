@@ -141,16 +141,18 @@ Private Sub HandleLoginAccount(ByVal ID As Long, Data As Object, Instance As Obj
     ' Si el login fue exitoso
     If Data.Item("success") Then
     
-        ' Seteamos variables de la cuenta
         With UserList(UserIndex)
-            .AccountID = Data.Item("account_id")
-            .Cuenta = .Email
-            
-            Dim i As Integer
-            For i = 0 To Data.Item("keys").Count - 1
-                .keys(i + 1) = Data.Item("keys").Item(i)
-                Debug.Print "Key", .keys(i)
-            Next
+            ' Sólo si está logueando por primera vez recibimos estas variables
+            If .AccountID < 0 Then
+                ' Seteamos variables de la cuenta
+                .AccountID = Data.Item("account_id")
+                .Cuenta = .Email
+                
+                Dim i As Integer
+                For i = 0 To Data.Item("keys").Count - 1
+                    .keys(i + 1) = Data.Item("keys").Item(i)
+                Next
+            End If
         End With
         
         If Data.Item("verify") Then
