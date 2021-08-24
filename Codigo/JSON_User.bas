@@ -13,8 +13,10 @@ Function Principal(ByRef UserIndex As Integer) As JS_Object
 100     Call Objeto.Clear
     
 102     With UserList(UserIndex)
-    
-104         Objeto.Item("id") = .Id
+            If .ID >= 0 Then
+104             Objeto.Item("id") = .ID
+            End If
+
 106         Objeto.Item("name") = .name
 108         Objeto.Item("level") = .Stats.ELV
 110         Objeto.Item("exp") = .Stats.Exp
@@ -63,24 +65,24 @@ Function Principal(ByRef UserIndex As Integer) As JS_Object
 200         Objeto.Item("killed_npcs") = .Stats.NPCsMuertos
 202         Objeto.Item("killed_users") = .Stats.UsuariosMatados
 204         Objeto.Item("invent_level") = .Stats.InventLevel
-206         Objeto.Item("is_naked") = .flags.Desnudo
-208         Objeto.Item("is_poisoned") = .flags.Envenenado
-210         Objeto.Item("is_hidden") = .flags.Escondido
-212         Objeto.Item("is_hungry") = .flags.Hambre
-214         Objeto.Item("is_thirsty") = .flags.Sed
-            Objeto.Item("is_banned") = .flags.Ban
-216         Objeto.Item("is_dead") = .flags.Muerto
-218         Objeto.Item("is_sailing") = .flags.Navegando
-220         Objeto.Item("is_paralyzed") = .flags.Paralizado
-222         Objeto.Item("is_mounted") = .flags.Montado
-224         Objeto.Item("is_silenced") = .flags.Silenciado
+206         Objeto.Item("is_naked") = IIf(.flags.Desnudo, 1, 0)
+208         Objeto.Item("is_poisoned") = IIf(.flags.Envenenado, 1, 0)
+210         Objeto.Item("is_hidden") = IIf(.flags.Escondido, 1, 0)
+212         Objeto.Item("is_hungry") = IIf(.flags.Hambre, 1, 0)
+214         Objeto.Item("is_thirsty") = IIf(.flags.Sed, 1, 0)
+            Objeto.Item("is_banned") = IIf(.flags.Ban, 1, 0)
+216         Objeto.Item("is_dead") = IIf(.flags.Muerto, 1, 0)
+218         Objeto.Item("is_sailing") = IIf(.flags.Navegando, 1, 0)
+220         Objeto.Item("is_paralyzed") = IIf(.flags.Paralizado, 1, 0)
+222         Objeto.Item("is_mounted") = IIf(.flags.Montado, 1, 0)
+224         Objeto.Item("is_silenced") = IIf(.flags.Silenciado, 1, 0)
 226         Objeto.Item("silence_minutes_left") = .flags.MinutosRestantes
 228         Objeto.Item("silence_elapsed_seconds") = .flags.SegundosPasados
 230         Objeto.Item("spouse") = .flags.Pareja
 232         Objeto.Item("counter_pena") = .Counters.Pena
 234         Objeto.Item("deaths") = .flags.VecesQueMoriste
-236         Objeto.Item("pertenece_consejo_real") = (.flags.Privilegios And e_PlayerType.RoyalCouncil)
-238         Objeto.Item("pertenece_consejo_caos") = (.flags.Privilegios And e_PlayerType.ChaosCouncil)
+236         Objeto.Item("pertenece_consejo_real") = IIf(.flags.Privilegios And e_PlayerType.RoyalCouncil, 1, 0)
+238         Objeto.Item("pertenece_consejo_caos") = IIf(.flags.Privilegios And e_PlayerType.ChaosCouncil, 1, 0)
 240         Objeto.Item("pertenece_real") = .Faccion.ArmadaReal
 242         Objeto.Item("pertenece_caos") = .Faccion.FuerzasCaos
 244         Objeto.Item("ciudadanos_matados") = .Faccion.ciudadanosMatados
@@ -126,7 +128,10 @@ Function Atributos(ByRef UserIndex As Integer) As JS_Object
     
 104     With UserList(UserIndex)
             
-            Objeto.Item("user_id") = .ID
+            If .ID >= 0 Then
+                Objeto.Item("user_id") = .ID
+            End If
+
             Objeto.Item("strength") = .Stats.UserAtributos(e_Atributos.Fuerza)
             Objeto.Item("agility") = .Stats.UserAtributos(e_Atributos.Agilidad)
             Objeto.Item("intelligence") = .Stats.UserAtributos(e_Atributos.Inteligencia)
@@ -156,7 +161,10 @@ Function Hechizo(ByRef UserIndex As Integer) As JS_Array
 104     With UserList(UserIndex)
     
 106         For i = 1 To MAXUSERHECHIZOS
-108             Objeto.Item("user_id") = .Id
+                If .ID >= 0 Then
+                    Objeto.Item("user_id") = .ID
+                End If
+
 110             Objeto.Item("number") = i
 112             Objeto.Item("spell_id") = .Stats.UserHechizos(i)
                     
@@ -191,7 +199,10 @@ Function Inventario(ByRef UserIndex As Integer) As JS_Array
 104     With UserList(UserIndex)
     
 106         For i = 1 To .CurrentInventorySlots
-108             Objeto.Item("user_id") = .Id
+                If .ID >= 0 Then
+                    Objeto.Item("user_id") = .ID
+                End If
+
 110             Objeto.Item("number") = i
 112             Objeto.Item("item_id") = .Invent.Object(i).ObjIndex
 114             Objeto.Item("Amount") = .Invent.Object(i).Amount
@@ -228,7 +239,10 @@ Function InventarioBanco(ByRef UserIndex As Integer) As JS_Array
 104     With UserList(UserIndex)
     
 106         For i = 1 To MAX_BANCOINVENTORY_SLOTS
-108             Objeto.Item("user_id") = .Id
+                If .ID >= 0 Then
+                    Objeto.Item("user_id") = .ID
+                End If
+
 110             Objeto.Item("number") = i
 112             Objeto.Item("item_id") = .BancoInvent.Object(i).ObjIndex
 114             Objeto.Item("amount") = .BancoInvent.Object(i).Amount
@@ -261,7 +275,10 @@ Function Habilidades(ByRef UserIndex As Integer) As JS_Object
     
     With UserList(UserIndex)
     
-        Objeto.Item("user_id") = .ID
+        If .ID >= 0 Then
+            Objeto.Item("user_id") = .ID
+        End If
+
         Objeto.Item("magia") = .Stats.UserSkills(e_Skill.Magia)
         Objeto.Item("robar") = .Stats.UserSkills(e_Skill.Robar)
         Objeto.Item("tacticas") = .Stats.UserSkills(e_Skill.Tacticas)
@@ -312,7 +329,10 @@ Function Mascotas(ByRef UserIndex As Integer) As JS_Array
 104     With UserList(UserIndex)
 
 106         For i = 1 To MAXMASCOTAS
-108             Objeto.Item("user_id") = .Id
+                If .ID >= 0 Then
+                    Objeto.Item("user_id") = .ID
+                End If
+
 110             Objeto.Item("number") = i
                 
                 'CHOTS | I got this logic from SaveUserToCharfile
@@ -359,8 +379,10 @@ Function Conexiones(ByRef UserIndex As Integer) As JS_Object
 100     Call Objeto.Clear
     
 102     With UserList(UserIndex)
+            If .ID >= 0 Then
+                Objeto.Item("user_id") = .ID
+            End If
 
-104         Objeto.Item("user_id") = .Id
 106         Objeto.Item("ip") = .ip
 108         Objeto.Item("date_last_login") = CStr(Now())
     
@@ -391,8 +413,10 @@ Function Quest(ByRef UserIndex As Integer) As JS_Array
 106         For i = 1 To MAXUSERQUESTS
                 
 108             With .QuestStats.Quests(i)
-                
-110                 Objeto.Item("user_id") = UserList(UserIndex).ID
+                    If UserList(UserIndex).ID >= 0 Then
+                        Objeto.Item("user_id") = UserList(UserIndex).ID
+                    End If
+
 112                 Objeto.Item("number") = i
 114                 Objeto.Item("quest_id") = .QuestIndex
             
@@ -469,7 +493,9 @@ Function QuestTerminadas(ByRef UserIndex As Integer) As JS_Array
 104         Call Matriz.Clear
                 
 106         For i = 1 To .QuestStats.NumQuestsDone
-108             Objeto.Item("user_id") = .Id
+                If .ID >= 0 Then
+108                 Objeto.Item("user_id") = .ID
+                End If
 110             Objeto.Item("quest_id") = .QuestStats.QuestsDone(i)
                         
                 ' Lo meto en el array de items

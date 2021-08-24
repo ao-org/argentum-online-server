@@ -29,6 +29,8 @@ Public Sub Push(ByRef Value As Variant)
             StringBuilder.Append """" & Value & """"
         Case vbBoolean
             StringBuilder.Append IIf(Value, "true", "false")
+        Case vbNull
+            StringBuilder.Append "null"
         Case vbObject
             StringBuilder.Append Value.ToString
         Case Else
@@ -39,6 +41,10 @@ Public Sub Push(ByRef Value As Variant)
 End Sub
 
 Public Function ToString() As String
-    ToString = "[" & Left$(StringBuilder.ToString, Len(StringBuilder.ToString) - 2) & "]"
+    If StringBuilder.Length > 0 Then
+        ToString = "[" & Left$(StringBuilder.ToString, StringBuilder.Length - 2) & "]"
+    Else
+        ToString = "[]"
+    End If
 End Function
 

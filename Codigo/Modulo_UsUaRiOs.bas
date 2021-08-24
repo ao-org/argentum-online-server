@@ -35,16 +35,14 @@ Option Explicit
 'Rutinas de los usuarios
 '?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
 
-Public Function ConnectUser_Check(ByVal UserIndex As Integer, _
-                                  ByRef Name As String, _
-                                  ByRef UserCuenta As String) As Boolean
+Public Function ConnectUser_Check(ByVal UserIndex As Integer, ByRef Name As String) As Boolean
                            
     On Error GoTo Check_ConnectUser_Err
 
     With UserList(UserIndex)
         
         ConnectUser_Check = False
-        
+
         If .flags.UserLogged Then
             Call LogCheating("El usuario " & .Name & " ha intentado loguear a " & Name & " desde la IP " & .IP)
             
@@ -74,8 +72,7 @@ Public Function ConnectUser_Check(ByVal UserIndex As Integer, _
                 Call Cerrar_Usuario(tIndex)
 
             End If
-
-            Call CloseSocket(UserIndex)
+            
             Exit Function
 
         End If
@@ -92,7 +89,6 @@ Public Function ConnectUser_Check(ByVal UserIndex As Integer, _
 
                 End If
 
-                Call CloseSocket(UserIndex)
                 Exit Function
 
             End If
@@ -102,21 +98,15 @@ Public Function ConnectUser_Check(ByVal UserIndex As Integer, _
         'Controlamos no pasar el maximo de usuarios
         If NumUsers >= MaxUsers Then
             Call WriteShowMessageBox(UserIndex, "El servidor ha alcanzado el maximo de usuarios soportado, por favor vuelva a intertarlo mas tarde.")
-            Call CloseSocket(UserIndex)
             Exit Function
-
         End If
         
         '¿Este IP ya esta conectado?
         If MaxConexionesIP > 0 Then
-
             If ContarMismaIP(UserIndex, .IP) >= MaxConexionesIP Then
                 Call WriteShowMessageBox(UserIndex, "Has alcanzado el límite de conexiones por IP.")
-                Call CloseSocket(UserIndex)
                 Exit Function
-
             End If
-
         End If
         
         'Le damos los privilegios
@@ -148,7 +138,6 @@ Public Function ConnectUser_Check(ByVal UserIndex As Integer, _
 
                 If Not EsCuentaGM Then
                     Call WriteShowMessageBox(UserIndex, "Servidor restringido a administradores. Por favor reintente en unos momentos.")
-                    Call CloseSocket(UserIndex)
                     Exit Function
                 End If
 
@@ -160,14 +149,6 @@ Public Function ConnectUser_Check(ByVal UserIndex As Integer, _
 
             Call WritePauseToggle(UserIndex)
             Call WriteConsoleMsg(UserIndex, "Servidor » Lo sentimos mucho pero el servidor se encuentra actualmente detenido. Intenta ingresar más tarde.", e_FontTypeNames.FONTTYPE_SERVER)
-            Call CloseSocket(UserIndex)
-            Exit Function
-
-        End If
-        
-        If .Cuenta <> UserCuenta Then
-            Call WriteShowMessageBox(UserIndex, "El personaje no corresponde a su cuenta.")
-            Call CloseSocket(UserIndex)
             Exit Function
 
         End If
@@ -183,7 +164,7 @@ Check_ConnectUser_Err:
         
 End Function
 
-Public Sub ConnectUser_Prepare(ByVal UserIndex As Integer, ByRef Name As String, ByRef UserCuenta As String)
+Public Sub ConnectUser_Prepare(ByVal UserIndex As Integer, ByRef Name As String)
 
         On Error GoTo Prepare_ConnectUser_Err
 
@@ -215,9 +196,7 @@ Prepare_ConnectUser_Err:
 
 End Sub
 
-Public Function ConnectUser_Complete(ByVal UserIndex As Integer, _
-                                     ByRef Name As String, _
-                                     ByRef UserCuenta As String)
+Public Function ConnectUser_Complete(ByVal UserIndex As Integer, ByRef Name As String)
 
         On Error GoTo Complete_ConnectUser_Err
         

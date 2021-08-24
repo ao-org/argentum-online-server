@@ -3423,17 +3423,37 @@ Public Sub WritePersonajesDeCuenta(ByVal UserIndex As Integer, Personajes As Obj
 134     Call Writer.WriteInt(ServerPacketID.PersonajesDeCuenta)
 136     Call Writer.WriteInt8(Personajes.Count)
 
+        Dim Status As Byte, Cabeza As Integer
+
         Dim Personaje As Variant
 
 138     For Each Personaje In Personajes
+            Status = Personaje.Item("status")
+            If EsRolesMaster(Personaje.Item("name")) Then
+                Status = 3
+            ElseIf EsConsejero(Personaje.Item("name")) Then
+                Status = 4
+            ElseIf EsSemiDios(Personaje.Item("name")) Then
+                Status = 5
+            ElseIf EsDios(Personaje.Item("name")) Then
+                Status = 6
+            ElseIf EsAdmin(Personaje.Item("name")) Then
+                Status = 7
+            End If
+            
+            Cabeza = Personaje.Item("head_id")
+            If Personaje.Item("is_dead") Or Personaje.Item("is_sailing") Then
+                Cabeza = 0
+            End If
+
 140         Call Writer.WriteString8(Personaje.Item("name"))
 142         Call Writer.WriteInt8(Personaje.Item("level"))
 144         Call Writer.WriteInt16(Personaje.Item("pos_map"))
 146         Call Writer.WriteInt16(Personaje.Item("pos_x"))
 148         Call Writer.WriteInt16(Personaje.Item("pos_y"))
 150         Call Writer.WriteInt16(Personaje.Item("body_id"))
-152         Call Writer.WriteInt16(Personaje.Item("head_id"))
-154         Call Writer.WriteInt8(Personaje.Item("status"))
+152         Call Writer.WriteInt16(Cabeza)
+154         Call Writer.WriteInt8(Status)
 156         Call Writer.WriteInt8(Personaje.Item("class_id"))
 158         Call Writer.WriteInt16(Personaje.Item("helmet_id"))
 160         Call Writer.WriteInt16(Personaje.Item("shield_id"))

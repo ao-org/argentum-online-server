@@ -291,6 +291,8 @@ Public Const EspadaMataDragonesIndex As Integer = 402
 
 Public Const MAXMASCOTASENTRENADOR   As Byte = 7
 
+Public Const MAX_PERSONAJES = 10
+
 Public Enum e_FXSound
 
     Lobo_Sound = 124
@@ -436,8 +438,6 @@ Public Enum e_PartesCuerpo
 End Enum
 
 Public Const Guardias As Integer = 6
-
-Public Const MAX_PERSONAJES = 10
 
 Public Const MAXORO         As Long = 90000000
 

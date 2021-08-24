@@ -515,13 +515,7 @@ Function ConnectNewUser(ByVal UserIndex As Integer, ByRef Name As String, ByVal 
 114             Call WriteShowMessageBox(UserIndex, "El nombre no está permitido.")
                 Exit Function
             End If
-    
-            '¿Existe el personaje?
-116         If PersonajeExiste(Name) Then
-118             Call WriteShowMessageBox(UserIndex, "Ya existe el personaje.")
-                Exit Function
-            End If
-            
+
             ' Raza válida
 120         If UserRaza <= 0 Or UserRaza > NUMRAZAS Then Exit Function
             
@@ -641,13 +635,11 @@ Function ConnectNewUser(ByVal UserIndex As Integer, ByRef Name As String, ByVal 
 250         .Pos.X = DungeonNewbieCoords(RandomPosIndex).X
 252         .Pos.Y = DungeonNewbieCoords(RandomPosIndex).Y
         
-254         UltimoChar = UCase$(Name)
-        
 256         Call SaveNewUser(UserIndex)
+
+            .WaitingPacket = CREATE_CHAR
     
 258         ConnectNewUser = True
-    
-260         Call ConnectUser(UserIndex, Name, UserCuenta)
 
         End With
         
@@ -916,20 +908,19 @@ EntrarCuenta_Err:
         
 End Function
 
-Sub ConnectUser(ByVal UserIndex As Integer, _
-                ByRef Name As String, _
-                ByRef UserCuenta As String)
+Sub ConnectUser(ByVal UserIndex As Integer, ByRef Name As String)
 
         On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
-105         If Not ConnectUser_Check(UserIndex, Name, UserCuenta) Then Exit Sub
+105         If Not ConnectUser_Check(UserIndex, Name) Then Exit Sub
         
-110         Call ConnectUser_Prepare(UserIndex, Name, UserCuenta)
+110         Call ConnectUser_Prepare(UserIndex, Name)
 
             Dim Data As New JS_Object, Instance As New JS_Object
 
+            Data.Item("account_id") = .AccountID
             Data.Item("name") = Name
             Data.Item("ip") = .IP
 
@@ -937,6 +928,8 @@ Sub ConnectUser(ByVal UserIndex As Integer, _
             Instance.Item("uuid") = .UUID
 
             Call Manager.Send(LOGIN_CHAR, Data, Instance)
+            
+            .WaitingPacket = LOGIN_CHAR
 
         End With
 

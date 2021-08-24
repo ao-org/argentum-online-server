@@ -2699,11 +2699,62 @@ SaveUser_Err:
 End Sub
 
 Sub SaveNewUser(ByVal UserIndex As Integer)
-    On Error GoTo SaveNewUser_Err
-            
-100 Call SaveNewUserDatabase(UserIndex)
+        On Error GoTo SaveNewUser_Err
+                
+        Dim Data As New JS_Object
+        
+        '*************************************************************
+        '   USER
+        '*************************************************************
+        Data.Item("user") = JSON_User.Principal(UserIndex)
+        
+        '*************************************************************
+        '   ATRIBUTOS
+        '*************************************************************
+        Data.Item("Attribute") = JSON_User.Atributos(UserIndex)
+        
+        '*************************************************************
+        '   HECHIZOS
+        '*************************************************************
+        Data.Item("Spells") = JSON_User.Hechizo(UserIndex)
     
-    Exit Sub
+        '*************************************************************
+        '   INVENTARIO
+        '*************************************************************
+        Data.Item("InventoryItems") = JSON_User.Inventario(UserIndex)
+    
+        '*************************************************************
+        '   INVENTARIO DEL BANCO
+        '*************************************************************
+        Data.Item("BankItems") = JSON_User.InventarioBanco(UserIndex)
+    
+        '*************************************************************
+        '   SKILLS
+        '*************************************************************
+        Data.Item("Skillpoint") = JSON_User.Habilidades(UserIndex)
+    
+        '*************************************************************
+        '   MASCOTAS
+        '*************************************************************
+        Data.Item("Pets") = JSON_User.Mascotas(UserIndex)
+    
+        '*************************************************************
+        '   QUESTS
+        '*************************************************************
+        Data.Item("Quests") = JSON_User.Quest(UserIndex)
+        
+        Data.Item("AccountId") = UserList(UserIndex).AccountID
+        Data.Item("max_personajes") = MAX_PERSONAJES
+
+        Dim Instance As New JS_Object
+        Instance.Item("slot") = UserIndex
+        Instance.Item("uuid") = UserList(UserIndex).UUID
+    
+        Call Manager.Send(CREATE_CHAR, Data, Instance)
+        
+104     UserList(UserIndex).Counters.LastSave = GetTickCount
+        
+        Exit Sub
 
 SaveNewUser_Err:
 102     Call TraceError(Err.Number, Err.Description, "ES.SaveNewUser", Erl)

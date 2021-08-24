@@ -612,6 +612,11 @@ On Error Resume Next
 
     Set Reader = message
     
+    If UserList(UserIndex).WaitingPacket >= 0 Then
+        Call Reader.Skip(Reader.GetAvailable)
+        Exit Function
+    End If
+    
     Dim PacketID As Long:
     PacketID = Reader.ReadInt
 
@@ -635,7 +640,7 @@ On Error Resume Next
     ElseIf PacketID <= ClientPacketID.[PacketCount] Then
         UserList(UserIndex).Counters.IdleCount = 0
     End If
-    
+
     Select Case PacketID
         Case ClientPacketID.LoginExistingChar
             Call HandleLoginExistingChar(UserIndex)
@@ -1333,7 +1338,7 @@ Private Sub HandleLoginExistingChar(ByVal UserIndex As Integer)
                 Exit Sub
             End If
     
-180         Call ConnectUser(UserIndex, UserName, .Email)
+180         Call ConnectUser(UserIndex, UserName)
 
         End With
 
@@ -1364,73 +1369,37 @@ Private Sub HandleLoginNewChar(ByVal UserIndex As Integer)
         Dim Hogar    As e_Ciudad
         Dim Class As e_Class
         Dim Head        As Integer
-        Dim CuentaEmail As String
-        Dim Password    As String
-        Dim MD5         As String
-        Dim Version     As String
 
-102         CuentaEmail = Reader.ReadString8()
-104         Password = Reader.ReadString8()
-106         Version = CStr(Reader.ReadInt8()) & "." & CStr(Reader.ReadInt8()) & "." & CStr(Reader.ReadInt8())
-108         UserName = Reader.ReadString8()
-110         race = Reader.ReadInt8()
-112         gender = Reader.ReadInt8()
-114         Class = Reader.ReadInt8()
-116         Head = Reader.ReadInt16()
-118         Hogar = Reader.ReadInt8()
-124         MD5 = Reader.ReadString8()
+108     UserName = Reader.ReadString8()
+110     race = Reader.ReadInt8()
+112     gender = Reader.ReadInt8()
+114     Class = Reader.ReadInt8()
+116     Head = Reader.ReadInt16()
+118     Hogar = Reader.ReadInt8()
+
+        If UserList(UserIndex).AccountID < 0 Then Exit Sub
 
 126     If PuedeCrearPersonajes = 0 Then
 128         Call WriteShowMessageBox(UserIndex, "La creacion de personajes en este servidor se ha deshabilitado.")
-130         Call CloseSocket(UserIndex)
             Exit Sub
-
         End If
 
 132     If aClon.MaxPersonajes(UserList(UserIndex).IP) Then
 134         Call WriteShowMessageBox(UserIndex, "Has creado demasiados personajes.")
-136         Call CloseSocket(UserIndex)
             Exit Sub
-
         End If
-
-        #If DEBUGGING = False Then ' vuela
-
-142         If Not VersionOK(Version) Then
-144             Call WriteShowMessageBox(UserIndex, "Esta versión del juego es obsoleta, la versión correcta es la " & ULTIMAVERSION & ". Ejecute el launcher por favor.")
-146             Call CloseSocket(UserIndex)
-                Exit Sub
-
-            End If
-
-        #End If
         
 148     If EsGmChar(UserName) Then
-            
-150         If AdministratorAccounts(UCase$(UserName)) <> UCase$(CuentaEmail) Then
-152             Call WriteShowMessageBox(UserIndex, "El nombre de usuario ingresado está siendo ocupado por un miembro del Staff.")
-154             Call CloseSocket(UserIndex)
-                Exit Sub
 
+150         If AdministratorAccounts(UCase$(UserName)) <> UserList(UserIndex).Email Then
+152             Call WriteShowMessageBox(UserIndex, "El nombre de usuario ingresado está siendo ocupado por un miembro del Staff.")
+                Exit Sub
             End If
             
         End If
-
-156     If Not EntrarCuenta(UserIndex, CuentaEmail, Password, MD5) Then ' vuela
-158         Call CloseSocket(UserIndex)
-            Exit Sub
-
-        End If
         
-160     If GetPersonajesCountByIDDatabase(UserList(UserIndex).AccountID) >= MAX_PERSONAJES Then ' al manager
-162         Call CloseSocket(UserIndex)
+164     If Not ConnectNewUser(UserIndex, UserName, race, gender, Class, Head, UserList(UserIndex).Email, Hogar) Then
             Exit Sub
-        End If
-        
-164     If Not ConnectNewUser(UserIndex, UserName, race, gender, Class, Head, CuentaEmail, Hogar) Then
-166         Call CloseSocket(UserIndex)
-            Exit Sub
-
         End If
         
         Exit Sub

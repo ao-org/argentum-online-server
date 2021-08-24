@@ -119,15 +119,25 @@ Private Sub HandlePacket(ByVal ID As Long, Data As Object, Instance As Object)
             
         Case ManagerPackets.LOGIN_CHAR_RESULT
             Call HandleLoginChar(ID, Data, Instance)
+        
+        Case ManagerPackets.CREATE_CHAR_RESULT
+            Call HandleCreateChar(ID, Data, Instance)
             
     End Select
 End Sub
 
 Private Function CheckPlayer(ByVal Slot As Integer, UUID As String) As Boolean
-    ' TODO: Implementar comprobación de que el jugador sigue online
-    CheckPlayer = True
+    CheckPlayer = False
 
-    'userlist(slot).
+    If Slot <= 0 Or Slot > MaxUsers Then Exit Function
+
+    With UserList(Slot)
+        If .WaitingPacket < 0 Then Exit Function
+
+        If .UUID <> UUID Then Exit Function
+    End With
+    
+    CheckPlayer = True
 
 End Function
 
@@ -137,11 +147,12 @@ Private Sub HandleLoginAccount(ByVal ID As Long, Data As Object, Instance As Obj
 
     ' Si no está online el jugador, ignoramos la respuesta
     If Not CheckPlayer(UserIndex, Instance.Item("uuid")) Then Exit Sub
-
-    ' Si el login fue exitoso
-    If Data.Item("success") Then
     
-        With UserList(UserIndex)
+    With UserList(UserIndex)
+        .WaitingPacket = -1
+
+        ' Si el login fue exitoso
+        If Data.Item("success") Then
             ' Sólo si está logueando por primera vez recibimos estas variables
             If .AccountID < 0 Then
                 ' Seteamos variables de la cuenta
@@ -153,21 +164,22 @@ Private Sub HandleLoginAccount(ByVal ID As Long, Data As Object, Instance As Obj
                     .keys(i) = Data.Item("keys").Item(i)
                 Next
             End If
-        End With
         
-        If Data.Item("verify") Then
-            Call WriteGuardNotice(UserIndex)
-            Call WriteShowMessageBox(UserIndex, Data.Item("message"))
+            If Data.Item("verify") Then
+                Call WriteGuardNotice(UserIndex)
+                Call WriteShowMessageBox(UserIndex, Data.Item("message"))
+            Else
+                Call WritePersonajesDeCuenta(UserIndex, Data.Item("chars"))
+                Call WriteMostrarCuenta(UserIndex)
+            End If
+    
+        ' Si no pudo loguearse, le mostramos el mensaje de error y cerramos el socket
         Else
-            Call WritePersonajesDeCuenta(UserIndex, Data.Item("chars"))
-            Call WriteMostrarCuenta(UserIndex)
+            Call WriteShowMessageBox(UserIndex, Data.Item("message"))
+            Call CloseSocket(UserIndex)
         End If
 
-    ' Si no pudo loguearse, le mostramos el mensaje de error y cerramos el socket
-    Else
-        Call WriteShowMessageBox(UserIndex, Data.Item("message"))
-        Call CloseSocket(UserIndex)
-    End If
+    End With
 End Sub
 
 Private Sub HandleGuardNotice(ByVal ID As Long, Data As Object, Instance As Object)
@@ -176,6 +188,8 @@ Private Sub HandleGuardNotice(ByVal ID As Long, Data As Object, Instance As Obje
 
     ' Si no está online el jugador, ignoramos la respuesta
     If Not CheckPlayer(UserIndex, Instance.Item("uuid")) Then Exit Sub
+    
+    UserList(UserIndex).WaitingPacket = -1
 
     ' Si el login fue exitoso
     If Data.Item("success") Then
@@ -197,13 +211,15 @@ Private Sub HandleLoginChar(ByVal ID As Long, Data As Object, Instance As Object
     ' Si no está online el jugador, ignoramos la respuesta
     If Not CheckPlayer(UserIndex, Instance.Item("uuid")) Then Exit Sub
 
-    ' Si el login fue exitoso
-    If Data.Item("success") Then
-        Dim i As Long
-        Dim LoopC As Long
-    
-        ' Llenar el slot con los datos
-        With UserList(UserIndex)
+    With UserList(UserIndex)
+        .WaitingPacket = -1
+
+        ' Si el login fue exitoso
+        If Data.Item("success") Then
+            Dim i As Long
+            Dim LoopC As Long
+        
+            ' Llenar el slot con los datos
             .ID = Data.Item("id")
             .AccountID = Data.Item("account_id")
             .Name = Data.Item("name")
@@ -476,7 +492,42 @@ Private Sub HandleLoginChar(ByVal ID As Long, Data As Object, Instance As Object
                 
             End With
             
-            Call ConnectUser_Complete(UserIndex, .Name, .Email)
-        End With
-    End If
+            If ConnectUser_Check(UserIndex, .Name) Then
+                Call ConnectUser_Complete(UserIndex, .Name)
+            End If
+        ' Si no pudo loguearse, le mostramos el mensaje de error y mantenemos el socket abierto
+        Else
+            Call WriteShowMessageBox(UserIndex, Data.Item("message"))
+        End If
+    
+    End With
+End Sub
+
+Private Sub HandleCreateChar(ByVal ID As Long, Data As Object, Instance As Object)
+    Dim UserIndex As Integer
+    UserIndex = Instance.Item("slot")
+
+    ' Si no está online el jugador, ignoramos la respuesta
+    If Not CheckPlayer(UserIndex, Instance.Item("uuid")) Then Exit Sub
+    
+    With UserList(UserIndex)
+        .WaitingPacket = -1
+
+        ' Si el login fue exitoso
+        If Data.Item("success") Then
+            ' Llenar el slot con los datos
+            .ID = Data.Item("id")
+            
+            UltimoChar = .Name
+            
+            If ConnectUser_Check(UserIndex, .Name) Then
+                Call ConnectUser_Prepare(UserIndex, .Name)
+                Call ConnectUser_Complete(UserIndex, .Name)
+            End If
+        ' Si no pudo loguearse, le mostramos el mensaje de error y mantenemos el socket abierto
+        Else
+            Call WriteShowMessageBox(UserIndex, Data.Item("message"))
+        End If
+        
+    End With
 End Sub
