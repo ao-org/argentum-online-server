@@ -510,6 +510,7 @@ Private Enum ClientPacketID
     GuardNoticeResponse
     GuardResendVerificationCode
     ResetChar               '/RESET NICK
+    DeleteItem
     
     [PacketCount]
 End Enum
@@ -1289,6 +1290,8 @@ On Error Resume Next
             Call HandleGuardResendVerificationCode(UserIndex)
         Case ClientPacketID.ResetChar
             Call HandleResetChar(UserIndex)
+        Case ClientPacketID.DeleteItem
+            Call HandleDeleteItem(UserIndex)
         Case Else
             Err.raise -1, "Invalid Message"
     End Select
@@ -18619,4 +18622,30 @@ Private Sub HandleResetChar(ByVal UserIndex As Integer)
 
 HandleResetChar_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleResetChar", Erl)
+End Sub
+
+Private Sub HandleDeleteItem(ByVal UserIndex As Integer)
+    On Error GoTo HandleDeleteItem_Err:
+
+    Dim Slot As Byte
+
+    Slot = Reader.ReadInt8()
+
+    With UserList(UserIndex)
+        If .Invent.Object(Slot).Equipped = 0 Then
+            UserList(UserIndex).Invent.Object(Slot).amount = 0
+            UserList(UserIndex).Invent.Object(Slot).Equipped = 0
+            UserList(UserIndex).Invent.Object(Slot).ObjIndex = 0
+            Call UpdateUserInv(False, UserIndex, Slot)
+            Call WriteConsoleMsg(UserIndex, "Objeto eliminado correctamente.", e_FontTypeNames.fonttype_info)
+        Else
+            Call WriteConsoleMsg(UserIndex, "No puedes eliminar un objeto estando equipado.", e_FontTypeNames.fonttype_info)
+            Exit Sub
+        End If
+    End With
+
+    Exit Sub
+
+HandleDeleteItem_Err:
+102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleDeleteItem", Erl)
 End Sub
