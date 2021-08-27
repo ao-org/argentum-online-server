@@ -6,7 +6,7 @@ Private Matriz As New JS_Array
 
 Private i As Long
 
-Function Principal(ByRef UserIndex As Integer) As JS_Object
+Function Principal(ByRef UserIndex As Integer, Optional ByVal Logout As Boolean = False) As JS_Object
         
         On Error GoTo Principal_Err
     
@@ -76,6 +76,7 @@ Function Principal(ByRef UserIndex As Integer) As JS_Object
 220         Objeto.Item("is_paralyzed") = IIf(.flags.Paralizado, 1, 0)
 222         Objeto.Item("is_mounted") = IIf(.flags.Montado, 1, 0)
 224         Objeto.Item("is_silenced") = IIf(.flags.Silenciado, 1, 0)
+            Objeto.Item("is_logged") = Not Logout
 226         Objeto.Item("silence_minutes_left") = .flags.MinutosRestantes
 228         Objeto.Item("silence_elapsed_seconds") = .flags.SegundosPasados
 230         Objeto.Item("spouse") = .flags.Pareja

@@ -2634,7 +2634,7 @@ ErrorHandler:
     
 End Sub
 
-Sub SaveUser(ByVal UserIndex As Integer)
+Sub SaveUser(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = False)
 
         On Error GoTo SaveUser_Err
         
@@ -2643,7 +2643,7 @@ Sub SaveUser(ByVal UserIndex As Integer)
         '*************************************************************
         '   USER
         '*************************************************************
-        Data.Item("user") = JSON_User.Principal(UserIndex)
+        Data.Item("user") = JSON_User.Principal(UserIndex, Logout)
         
         '*************************************************************
         '   ATRIBUTOS
