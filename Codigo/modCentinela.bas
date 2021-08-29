@@ -120,7 +120,9 @@ Private Sub GoToNextWorkingChar()
                         
 118                     Call WriteChatOverHead(LoopC, Mensaje, CStr(NpcList(CentinelaNPCIndex).Char.CharIndex), vbGreen)
 120                     Call WriteConsoleMsg(LoopC, Mensaje, e_FontTypeNames.FONTTYPE_CENTINELA)
-                    
+                        
+                        'HarThaoS: Seteo el tiempo mínimo para evaluar centinela a 5 minutos.
+                        UserList(UserIndex).Counters.TimerCentinela = TIEMPO_MINIMO_CENTINELA
 
                     End If
 

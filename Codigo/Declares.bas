@@ -33,6 +33,8 @@ Option Explicit
 ' Modulo de declaraciones. Aca hay de todo.
 '
 
+Public Const TIEMPO_MINIMO_CENTINELA As Long = 300
+
 Public Enum e_elecciones
     HayGanador = 1
     HayGanadorPeroAbandono = 2
@@ -1696,6 +1698,7 @@ Public Type t_UserCounters
     TimerCaminar As Long
     TimerTirar As Long
     TimerMeditar As Long
+    TimerCentinela As Long
 
     'Nuevos de AoLibre
     TimerPuedeSerAtacado As Long
