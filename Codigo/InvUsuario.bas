@@ -1646,8 +1646,8 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
                     End If
 
 526                 .Invent.Object(Slot).Equipped = 1
-528                 .Invent.DañoMagicoEqpObjIndex = .Invent.Object(Slot).ObjIndex
-530                 .Invent.DañoMagicoEqpSlot = Slot
+528                 .Invent.DañoMagicoEqpObjIndex = .Invent.Object(slot).ObjIndex
+530                 .Invent.DañoMagicoEqpSlot = slot
 
 532                 If Len(obj.CreaGRH) <> 0 Then
 534                     .Char.DM_Aura = obj.CreaGRH
@@ -3112,8 +3112,10 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
             
 1346             Case e_OBJType.otmapa
 1348                 Call WriteShowFrmMapa(UserIndex)
+                 Case e_OBJType.OtQuest
+1349                 Call WriteObjQuestSend(UserIndex, obj.QuestId, slot)
             
-                  End Select
+             End Select
              
              End With
 

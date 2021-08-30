@@ -1441,16 +1441,20 @@ Sub LoadOBJData()
 318                     .HastaX = val(Leer.GetValue(ObjKey, "X"))
 320                     .HastaY = val(Leer.GetValue(ObjKey, "Y"))
 322                     .NecesitaNave = val(Leer.GetValue(ObjKey, "NecesitaNave"))
+
 324                 Case e_OBJType.OtDonador
 326                     .HastaMap = val(Leer.GetValue(ObjKey, "Map"))
 328                     .HastaX = val(Leer.GetValue(ObjKey, "X"))
 330                     .HastaY = val(Leer.GetValue(ObjKey, "Y"))
+
+                    Case e_OBJType.OtQuest
+                        .QuestId = val(Leer.GetValue(ObjKey, "QuestID"))
+                        
 332                 Case e_OBJType.otMagicos
 334                     .EfectoMagico = val(Leer.GetValue(ObjKey, "efectomagico"))
 
 336                     If .EfectoMagico = 15 Then
 338                         PENDIENTE = Object
-
                         End If
             
 340                 Case e_OBJType.otRunas

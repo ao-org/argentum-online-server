@@ -183,7 +183,7 @@ Public Enum ServerPacketID
     CraftingResult
     ForceUpdate
     GuardNotice
-    
+    ObjQuestListSend
     [PacketCount]
 End Enum
 
@@ -17384,14 +17384,21 @@ Public Sub HandleQuestAccept(ByVal UserIndex As Integer)
         Dim NpcIndex  As Integer
         Dim QuestSlot As Byte
         Dim Indice    As Byte
-
+        Dim QuestNpc As Boolean
+        
 100     Indice = Reader.ReadInt8
- 
+        QuestNpc = Reader.ReadBool
 102     NpcIndex = UserList(UserIndex).flags.TargetNPC
-    
-104     If NpcIndex = 0 Then Exit Sub
-106     If Indice <= 0 Or Indice > UBound(NpcList(NpcIndex).QuestNumber) Then Exit Sub
-    
+104     If NpcIndex = 0 And QuestNpc = 1 Then Exit Sub
+
+        If QuestNpc Then
+106         If Indice <= 0 Or Indice > UBound(NpcList(NpcIndex).QuestNumber) Then Exit Sub
+        Else
+             If Indice <= 0 Then Exit Sub
+        End If
+        
+    If QuestNpc Then
+        
         'Esta el personaje en la distancia correcta?
 108     If Distancia(UserList(UserIndex).Pos, NpcList(NpcIndex).Pos) > 5 Then
 110         Call WriteConsoleMsg(UserIndex, "Estas demasiado lejos.", e_FontTypeNames.FONTTYPE_INFO)
@@ -17442,7 +17449,7 @@ Public Sub HandleQuestAccept(ByVal UserIndex As Integer)
     
         'Agregamos la quest.
 136     With UserList(UserIndex).QuestStats.Quests(QuestSlot)
-138         .QuestIndex = NpcList(NpcIndex).QuestNumber(Indice)
+138         .QuestIndex = UserList(UserIndex).flags.QuestNumber
         
 140         If QuestList(.QuestIndex).RequiredNPCs Then ReDim .NPCsKilled(1 To QuestList(.QuestIndex).RequiredNPCs)
 142         If QuestList(.QuestIndex).RequiredTargetNPCs Then ReDim .NPCsTarget(1 To QuestList(.QuestIndex).RequiredTargetNPCs)
@@ -17458,6 +17465,46 @@ Public Sub HandleQuestAccept(ByVal UserIndex As Integer)
             
         End With
         
+            
+    Else
+         If TieneQuest(UserIndex, UserList(UserIndex).flags.QuestNumber) Then
+             Call WriteConsoleMsg(UserIndex, "La quest ya esta en curso.", e_FontTypeNames.FONTTYPE_INFOIAO)
+                Exit Sub
+            End If
+            
+            'El personaje tiene suficiente nivel?
+         If UserList(UserIndex).Stats.ELV < QuestList(UserList(UserIndex).flags.QuestNumber).RequiredLevel Then
+                Call WriteConsoleMsg(UserIndex, "Debes ser por lo menos nivel " & QuestList(UserList(UserIndex).flags.QuestNumber).RequiredLevel & " para emprender esta misión.", e_FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
+                
+         QuestSlot = FreeQuestSlot(UserIndex)
+    
+         If QuestSlot = 0 Then
+                Call WriteConsoleMsg(UserIndex, "Debes completar las misiones en curso para poder aceptar más misiones.", e_FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
+        
+            'Agregamos la quest.
+            With UserList(UserIndex).QuestStats.Quests(QuestSlot)
+             .QuestIndex = UserList(UserIndex).flags.QuestNumber
+    
+            If QuestList(.QuestIndex).RequiredNPCs Then ReDim .NPCsKilled(1 To QuestList(.QuestIndex).RequiredNPCs)
+            If QuestList(.QuestIndex).RequiredTargetNPCs Then ReDim .NPCsTarget(1 To QuestList(.QuestIndex).RequiredTargetNPCs)
+                UserList(UserIndex).flags.ModificoQuests = True
+            
+            
+            Call WriteConsoleMsg(UserIndex, "Has aceptado la misión " & Chr(34) & QuestList(.QuestIndex).nombre & Chr(34) & ".", e_FontTypeNames.FONTTYPE_INFOIAO)
+    
+            If (FinishQuestCheck(UserIndex, .QuestIndex, QuestSlot)) Then
+                Call WriteUpdateNPCSimbolo(UserIndex, NpcIndex, 3)
+            Else
+                Call WriteUpdateNPCSimbolo(UserIndex, NpcIndex, 4)
+            End If
+            Call QuitarUserInvItem(UserIndex, UserList(UserIndex).flags.QuestItemSlot, 1)
+            Call UpdateUserInv(False, UserIndex, UserList(UserIndex).flags.QuestItemSlot)
+        End With
+    End If
         Exit Sub
 
 HandleQuestAccept_Err:
