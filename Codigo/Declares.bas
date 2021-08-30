@@ -52,6 +52,7 @@ End Enum
 Public lstUsuariosDonadores() As String
 
 Public Administradores As clsIniManager
+Public Const TIEMPO_MINIMO_CENTINELA As Long = 300
 
 Public Enum e_SoundIndex
 
@@ -1696,6 +1697,7 @@ Public Type t_UserCounters
     TimerCaminar As Long
     TimerTirar As Long
     TimerMeditar As Long
+    TimerCentinela As Long
 
     'Nuevos de AoLibre
     TimerPuedeSerAtacado As Long

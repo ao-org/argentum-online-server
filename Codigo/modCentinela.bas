@@ -115,11 +115,15 @@ Private Sub GoToNextWorkingChar()
                 
 116                 If CentinelaNPCIndex Then
                         'Mandamos el mensaje (el centinela habla y aparece en consola para que no haya dudas)
-                        Dim Mensaje as String
+                        Dim Mensaje As String
                         Mensaje = "Saludos " & UserList(LoopC).Name & ", soy el Centinela de estas tierras. Me gustaría que escribas /CENTINELA " & Centinela.clave & " en no más de dos minutos."
                         
 118                     Call WriteChatOverHead(LoopC, Mensaje, CStr(NpcList(CentinelaNPCIndex).Char.CharIndex), vbGreen)
 120                     Call WriteConsoleMsg(LoopC, Mensaje, e_FontTypeNames.FONTTYPE_CENTINELA)
+    
+                        'HarThaoS: Seteo el tiempo mínimo para evaluar centinela a 5 minutos.
+                        UserList(UserIndex).Counters.TimerCentinela = TIEMPO_MINIMO_CENTINELA
+
                     
 
                     End If
