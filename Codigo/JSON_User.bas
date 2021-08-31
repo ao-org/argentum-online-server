@@ -17,7 +17,7 @@ Function Principal(ByRef UserIndex As Integer, Optional ByVal Logout As Boolean 
 104             Objeto.Item("id") = .ID
             End If
 
-106         Objeto.Item("name") = .name
+106         Objeto.Item("name") = .Name
 108         Objeto.Item("level") = .Stats.ELV
 110         Objeto.Item("exp") = .Stats.Exp
 114         Objeto.Item("genre_id") = .genero
@@ -206,7 +206,7 @@ Function Inventario(ByRef UserIndex As Integer) As JS_Array
 
 110             Objeto.Item("number") = i
 112             Objeto.Item("item_id") = .Invent.Object(i).ObjIndex
-114             Objeto.Item("Amount") = .Invent.Object(i).Amount
+114             Objeto.Item("amount") = .Invent.Object(i).amount
 116             Objeto.Item("is_equipped") = IIf(.Invent.Object(i).Equipped, 1, 0)
                 
                 ' Lo meto en el array de items
@@ -246,7 +246,7 @@ Function InventarioBanco(ByRef UserIndex As Integer) As JS_Array
 
 110             Objeto.Item("number") = i
 112             Objeto.Item("item_id") = .BancoInvent.Object(i).ObjIndex
-114             Objeto.Item("amount") = .BancoInvent.Object(i).Amount
+114             Objeto.Item("amount") = .BancoInvent.Object(i).amount
                 
                 ' Lo meto en el array de items
 116             Matriz.Push Objeto
@@ -384,7 +384,7 @@ Function Conexiones(ByRef UserIndex As Integer) As JS_Object
                 Objeto.Item("user_id") = .ID
             End If
 
-106         Objeto.Item("ip") = .ip
+106         Objeto.Item("ip") = .IP
 108         Objeto.Item("date_last_login") = CStr(Now())
     
         End With

@@ -109,6 +109,9 @@ Private Sub Socket_Error(ByVal Number As Integer, Description As String, ByVal S
 End Sub
 
 Private Sub HandlePacket(ByVal ID As Long, Data As Object, Instance As Object)
+
+    On Error GoTo Handler
+
     Select Case ID
     
         Case ManagerPackets.LOGIN_ACCOUNT_RESULT
@@ -124,6 +127,12 @@ Private Sub HandlePacket(ByVal ID As Long, Data As Object, Instance As Object)
             Call HandleCreateChar(ID, Data, Instance)
             
     End Select
+    
+    Exit Sub
+    
+Handler:
+    Call RegistrarError(Err.Number, Err.Description, "ServerManager.HandlePacket", Erl)
+    
 End Sub
 
 Private Function CheckPlayer(ByVal Slot As Integer, UUID As String) As Boolean
@@ -336,7 +345,7 @@ Private Sub HandleLoginChar(ByVal ID As Long, Data As Object, Instance As Object
             .Faccion.NivelIngreso = Data.Item("nivel_ingreso")
             .Faccion.MatadosIngreso = Data.Item("matados_ingreso")
             .Faccion.NextRecompensa = Data.Item("siguiente_recompensa")
-            .Faccion.Status = Data.Item("Status")
+            .Faccion.Status = Data.Item("status")
             
             .GuildIndex = Data.Item("guild_Index")
             .LastGuildRejection = Data.Item("guild_rejected_because")

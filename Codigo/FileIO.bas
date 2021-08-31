@@ -2648,7 +2648,7 @@ Sub SaveUser(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = Fals
         '*************************************************************
         '   ATRIBUTOS
         '*************************************************************
-        Data.Item("attribute") = JSON_User.Atributos(UserIndex)
+        Data.Item("Attribute") = JSON_User.Atributos(UserIndex)
         
         '*************************************************************
         '   HECHIZOS
@@ -2668,7 +2668,7 @@ Sub SaveUser(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = Fals
         '*************************************************************
         '   SKILLS
         '*************************************************************
-        Data.Item("skillpoint") = JSON_User.Habilidades(UserIndex)
+        Data.Item("Skillpoint") = JSON_User.Habilidades(UserIndex)
 
         '*************************************************************
         '   MASCOTAS
@@ -2743,7 +2743,7 @@ Sub SaveNewUser(ByVal UserIndex As Integer)
         '*************************************************************
         Data.Item("Quests") = JSON_User.Quest(UserIndex)
         
-        Data.Item("AccountId") = UserList(UserIndex).AccountID
+        Data.Item("account_id") = UserList(UserIndex).AccountID
         Data.Item("max_personajes") = MAX_PERSONAJES
 
         Dim Instance As New JS_Object

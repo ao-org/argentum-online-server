@@ -130,6 +130,8 @@ Public Sub HandleNoticeResponse(ByVal UserIndex As Integer, ByVal Codigo As Stri
             Instance.Item("slot") = UserIndex
             Instance.Item("uuid") = .UUID
             
+            .WaitingPacket = LOGIN_ACCOUNT
+            
             Call Manager.Send(GUARD_NOTICE_RESPONSE, Data, Instance)
 
         End With
