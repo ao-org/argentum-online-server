@@ -355,7 +355,6 @@ Function HayAgua(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer) A
                     (.Graphic(1) >= 24223 And .Graphic(1) <= 24238) Or _
                     (.Graphic(1) >= 24303 And .Graphic(1) <= 24318) Or _
                     (.Graphic(1) >= 468 And .Graphic(1) <= 483) Or _
-                    (.Graphic(1) >= 44668 And .Graphic(1) <= 44939) Or _
                     (.Graphic(1) >= 24143 And .Graphic(1) <= 24158)) Or _
                     (.Graphic(1) >= 12628 And .Graphic(1) <= 12643) Or _
                     (.Graphic(1) >= 2948 And .Graphic(1) <= 2963)
