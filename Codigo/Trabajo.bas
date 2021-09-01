@@ -1680,7 +1680,12 @@ Public Sub DoPescar(ByVal UserIndex As Integer, Optional ByVal RedDePesca As Boo
                     'Si lo es detengo el macro de trabajo y lo hago pelear con el pez.
                     .flags.PezEspecial = MiObj.ObjIndex
                     .flags.PezEspecial_StartTime = GetTickCount
+                    .flags.PezEspecial_LastTime = .flags.PezEspecial_StartTime
+                    .flags.PezEspecial_X = 0
+                    .flags.PezEspecial_Dir = RandomNumber(1, 5) * (RandomNumber(0, 1) * 2 - 1)
+                    
                     Call WriteObtenerPezEspecial(UserIndex)
+                    Call WritePezEspecialValues(UserIndex, .flags.PezEspecial_Dir, 0)
                     Call WriteMacroTrabajoToggle(UserIndex, False)
                     
                     Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, 253, 25, False, ObjData(MiObj.ObjIndex).GrhIndex))

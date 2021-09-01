@@ -1637,6 +1637,7 @@ Public Type t_UserFlags
     PezEspecial_X As Integer
     PezEspecial_Dir As Integer
     PezEspecial_StartTime As Long
+    PezEspecial_LastTime As Long
 End Type
 
 Public Enum e_EstadoMimetismo

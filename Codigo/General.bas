@@ -2207,8 +2207,6 @@ Sub PasarSegundo()
         Dim X    As Byte
 
         Dim Y    As Byte
-        
-        Static LastTime As Long
     
 100     If CuentaRegresivaTimer > 0 Then
 102         If CuentaRegresivaTimer > 1 Then
@@ -2374,21 +2372,17 @@ Sub PasarSegundo()
                     If .flags.PezEspecial <> 0 Then
                         If GetTickCount - .flags.PezEspecial_StartTime > 30000 Then
                             
-                        'ElseIf RandomNumber(0, 1) = 1 Then
-                          
+                        ElseIf RandomNumber(0, 2) = 1 Then
+
+                            Dim CurTime As Long
+                            CurTime = GetTickCount
+
+                            .flags.PezEspecial_X = Clamp(.flags.PezEspecial_X + .flags.PezEspecial_Dir * (CurTime - .flags.PezEspecial_LastTime) * 0.01, -100, 100)
+                            .flags.PezEspecial_LastTime = CurTime
+
+                            .flags.PezEspecial_Dir = RandomNumber(3, 5) * (RandomNumber(0, 1) * 2 - 1)
                             
-                        Else
-                            Dim X2 As Integer
-                            
-                            X2 = .flags.PezEspecial_X
-                            .flags.PezEspecial_X = Clamp(.flags.PezEspecial_X + .flags.PezEspecial_Dir * (GetTickCount - LastTime) * 0.1, -100, 100)
-                            
-                            
-                            .flags.PezEspecial_Dir = RandomNumber(1, 5) * (RandomNumber(0, 1) * 2 - 1)
-                            
-                            Call WritePezEspecialValues(i, .flags.PezEspecial_Dir, X2)
-                            
-                            '.flags.PezEspecial_X = .flags.PezEspecial_X + .flags.PezEspecial_Dir
+                            Call WritePezEspecialValues(i, .flags.PezEspecial_Dir, .flags.PezEspecial_X)
                         End If
                         
                     End If
@@ -2453,7 +2447,6 @@ Sub PasarSegundo()
             End With
         Next
         ' **********************************
-        LastTime = GetTickCount
         Exit Sub
 
 ErrHandler:
