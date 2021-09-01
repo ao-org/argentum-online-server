@@ -2991,7 +2991,7 @@ Public Sub LoadPesca()
     
 116     If Count > 0 Then
 118         ReDim Peces(1 To Count) As t_Obj
-
+            ReDim PecesEspeciales(1 To 1) As t_Obj
             ' Cargo todos los peces
 120         For i = 1 To Count
 122             str = IniFile.GetValue("PECES", "Pez" & i)
@@ -2999,7 +2999,15 @@ Public Sub LoadPesca()
             
 126             Peces(i).ObjIndex = val(Field(0))
 128             Peces(i).Data = val(Field(1))       ' Peso
-
+                
+                'HarThaoS: Si es un pez especial lo agrego al array de peces especiales
+                If val(Field(3)) = 1 Then
+                    ReDim Preserve PecesEspeciales(1 To (UBound(PecesEspeciales) + 1))
+                    PecesEspeciales(UBound(PecesEspeciales) - 1).ObjIndex = val(Field(0))
+                    PecesEspeciales(UBound(PecesEspeciales) - 1).Data = val(Field(1))
+                    PecesEspeciales(UBound(PecesEspeciales) - 1).amount = val(Field(2))
+                End If
+                
 130             nivel = val(Field(2))               ' Nivel de caña
 
 132             If (nivel > MaxLvlCania) Then nivel = MaxLvlCania

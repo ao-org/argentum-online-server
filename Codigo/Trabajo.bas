@@ -1670,7 +1670,24 @@ Public Sub DoPescar(ByVal UserIndex As Integer, Optional ByVal RedDePesca As Boo
                 Dim MiObj As t_Obj
 
 124             MiObj.amount = IIf(.clase = Trabajador, RandomNumber(1, 3), 1) * RecoleccionMult
+
+                
 126             MiObj.ObjIndex = ObtenerPezRandom(ObjData(.Invent.HerramientaEqpObjIndex).Power)
+                
+                
+                'HarThaoS: Me fijo si el pez que obtuve es especial.
+                If esPezEspecial(MiObj.ObjIndex) Then
+                    'Si lo es detengo el macro de trabajo y lo hago pelear con el pez.
+                    .flags.PezEspecial = MiObj.ObjIndex
+                    .flags.PezEspecial_StartTime = GetTickCount
+                    Call WriteObtenerPezEspecial(UserIndex)
+                    Call WriteMacroTrabajoToggle(UserIndex, False)
+                    
+                    Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, 253, 25, False, ObjData(MiObj.ObjIndex).GrhIndex))
+                    Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessagePlayWave(SND_PESCAR, .Pos.X, .Pos.Y))
+                    Exit Sub
+                End If
+                
                  ' AGREGAR FX
                 Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, 253, 25, False, ObjData(MiObj.ObjIndex).GrhIndex))
 128             If MiObj.ObjIndex = 0 Then Exit Sub
@@ -1682,7 +1699,7 @@ Public Sub DoPescar(ByVal UserIndex As Integer, Optional ByVal RedDePesca As Boo
 134             Call WriteTextCharDrop(UserIndex, "+" & MiObj.amount, .Char.CharIndex, vbWhite)
                  
                  If MapInfo(.Pos.Map).Seguro = 1 Then
-302                 Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessagePlayWave(SND_PESCAR, .Pos.X, .Pos.Y))
+302
                 Else
 301                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_PESCAR, .Pos.X, .Pos.Y))
                 End If
@@ -1702,7 +1719,7 @@ Public Sub DoPescar(ByVal UserIndex As Integer, Optional ByVal RedDePesca As Boo
 146                     If Not MeterItemEnInventario(UserIndex, MiObj) Then Call TirarItemAlPiso(.Pos, MiObj)
                     
                         ' Le mandamos un mensaje
-148                     Call WriteConsoleMsg(UserIndex, "¡Has conseguido " & ObjData(EspecialesPesca(I).ObjIndex).Name & "!", e_FontTypeNames.FONTTYPE_INFO)
+148                     Call WriteConsoleMsg(UserIndex, "¡Has conseguido " & ObjData(EspecialesPesca(i).ObjIndex).Name & "!", e_FontTypeNames.FONTTYPE_INFO)
                     End If
 
                 Next
@@ -2408,7 +2425,7 @@ Public Sub DoMineria(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byt
 154                     If Not MeterItemEnInventario(UserIndex, MiObj) Then Call TirarItemAlPiso(.Pos, MiObj)
 
                         ' Le mandamos un mensaje
-156                     Call WriteConsoleMsg(UserIndex, "¡Has conseguido " & ObjData(Yacimiento.Item(I).ObjIndex).Name & "!", e_FontTypeNames.FONTTYPE_INFO)
+156                     Call WriteConsoleMsg(UserIndex, "¡Has conseguido " & ObjData(Yacimiento.Item(i).ObjIndex).Name & "!", e_FontTypeNames.FONTTYPE_INFO)
                     End If
     
                 Next

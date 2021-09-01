@@ -1716,6 +1716,20 @@ Public Sub CargarMapasEspeciales()
 
 End Sub
 
+Public Function esPezEspecial(ByVal ObjIndex As Integer)
+
+    Dim i As Byte
+    
+    For i = 1 To UBound(PecesEspeciales)
+        If PecesEspeciales(i).ObjIndex = ObjIndex Then
+            esPezEspecial = True
+            Exit Function
+        End If
+    Next i
+    
+    esPezEspecial = False
+End Function
+
 
 
 

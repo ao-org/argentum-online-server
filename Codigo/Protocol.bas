@@ -184,6 +184,8 @@ Public Enum ServerPacketID
     ForceUpdate
     GuardNotice
     ObjQuestListSend
+    ObtenerPezEspecial
+    PezEspecialValues
     [PacketCount]
 End Enum
 
@@ -368,7 +370,7 @@ Private Enum ClientPacketID
     GuildMemberList         '/MIEMBROSCLAN
     GuildBan                '/BANCLAN
     banip                   '/BANIP
-    UnbanIP                 '/UNBANIP
+    UnBanIp                 '/UNBANIP
     CreateItem              '/CI
     DestroyItems            '/DEST
     ChaosLegionKick         '/NOCAOS
@@ -464,8 +466,8 @@ Private Enum ClientPacketID
     HecharDeGrupo
     MacroPossent
     SubastaInfo
-    bancuenta
-    unBanCuenta
+    BanCuenta
+    UnbanCuenta
     CerrarCliente
     EventoInfo
     CrearEvento
@@ -478,7 +480,7 @@ Private Enum ClientPacketID
     CompletarViaje
     BovedaMoveItem
     QuieroFundarClan
-    LlamadadeClan
+    llamadadeclan
     MarcaDeClanPack
     MarcaDeGMPack
     Quest
@@ -530,7 +532,7 @@ Public Enum e_EditOptions
     eo_Raza
     eo_Arma
     eo_Escudo
-    eo_Casco
+    eo_CASCO
     eo_Particula
     eo_Vida
     eo_Mana
@@ -600,7 +602,7 @@ Public Type t_PersonajeCuenta
     nombre As String
     nivel As Byte
     Mapa As Integer
-    posX As Integer
+    PosX As Integer
     posY As Integer
     cuerpo As Integer
     Cabeza As Integer
@@ -624,11 +626,11 @@ End Sub
 '
 ' @param    UserIndex The index of the user sending the message.
 
-Public Function HandleIncomingData(ByVal UserIndex As Integer, ByVal Message As Network.Reader) As Boolean
+Public Function HandleIncomingData(ByVal UserIndex As Integer, ByVal message As Network.Reader) As Boolean
 
 On Error Resume Next
 
-    Set Reader = Message
+    Set Reader = message
     
     Dim PacketID As Long:
     PacketID = Reader.ReadInt
@@ -1293,8 +1295,8 @@ On Error Resume Next
             Err.raise -1, "Invalid Message"
     End Select
     
-    If (Message.GetAvailable() > 0) Then
-        Err.raise &HDEADBEEF, "HandleIncomingData", "El paquete '" & PacketID & "' se encuentra en mal estado con '" & Message.GetAvailable() & "' bytes de mas por el usuario '" & UserList(UserIndex).Name & "'"
+    If (message.GetAvailable() > 0) Then
+        Err.raise &HDEADBEEF, "HandleIncomingData", "El paquete '" & PacketID & "' se encuentra en mal estado con '" & message.GetAvailable() & "' bytes de mas por el usuario '" & UserList(UserIndex).Name & "'"
     End If
     
 HandleIncomingData_Err:
@@ -3357,14 +3359,14 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                                  
                                     '17/09/02
                                     'Check the trigger
-528                                 If MapData(UserList(tU).Pos.Map, UserList(tU).Pos.X, UserList(tU).Pos.Y).trigger = e_Trigger.ZONASEGURA Then
+528                                 If MapData(UserList(tU).Pos.Map, UserList(tU).Pos.X, UserList(tU).Pos.Y).trigger = e_Trigger.ZonaSegura Then
 530                                     Call WriteConsoleMsg(UserIndex, "No podés robar aquí.", e_FontTypeNames.FONTTYPE_WARNING)
 532                                     Call WriteWorkRequestTarget(UserIndex, 0)
                                         Exit Sub
 
                                     End If
                                  
-534                                 If MapData(.Pos.Map, .Pos.X, .Pos.Y).trigger = e_Trigger.ZONASEGURA Then
+534                                 If MapData(.Pos.Map, .Pos.X, .Pos.Y).trigger = e_Trigger.ZonaSegura Then
 536                                     Call WriteConsoleMsg(UserIndex, "No podés robar aquí.", e_FontTypeNames.FONTTYPE_WARNING)
 538                                     Call WriteWorkRequestTarget(UserIndex, 0)
                                         Exit Sub
@@ -7389,7 +7391,7 @@ Private Sub HandleGMMessage(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
         
             Dim message As String
-102             Message = Reader.ReadString8()
+102             message = Reader.ReadString8()
 
 104         If EsGM(UserIndex) Then
 106             Call LogGM(.Name, "Mensaje a Gms: " & message)
@@ -10766,13 +10768,13 @@ Private Sub HandleServerMessage(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             Dim message As String
-102             Message = Reader.ReadString8()
+102             message = Reader.ReadString8()
         
 104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios)) Then
         
 106             If LenB(message) <> 0 Then
 108                 Call LogGM(.Name, "Mensaje Broadcast:" & message)
-110                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(.Name & "> " & Message, e_FontTypeNames.FONTTYPE_SERVER))
+110                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(.Name & "> " & message, e_FontTypeNames.FONTTYPE_SERVER))
 
                 End If
             Else
@@ -11359,11 +11361,11 @@ Private Sub HandleRoyalArmyMessage(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             Dim message As String
-102             Message = Reader.ReadString8()
+102             message = Reader.ReadString8()
         
             'Solo dioses, admins y RMS
 104         If (.flags.Privilegios And (e_PlayerType.Dios Or e_PlayerType.Admin Or e_PlayerType.RoleMaster)) Then
-106             Call SendData(SendTarget.ToRealYRMs, 0, PrepareMessageConsoleMsg("ARMADA REAL> " & Message, e_FontTypeNames.FONTTYPE_TALK))
+106             Call SendData(SendTarget.ToRealYRMs, 0, PrepareMessageConsoleMsg("ARMADA REAL> " & message, e_FontTypeNames.FONTTYPE_TALK))
             End If
 
         End With
@@ -11394,11 +11396,11 @@ Private Sub HandleChaosLegionMessage(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             Dim message As String
-102             Message = Reader.ReadString8()
+102             message = Reader.ReadString8()
         
             'Solo dioses, admins y RMS
 104         If (.flags.Privilegios And (e_PlayerType.Dios Or e_PlayerType.Admin Or e_PlayerType.RoleMaster)) Then
-106             Call SendData(SendTarget.ToCaosYRMs, 0, PrepareMessageConsoleMsg("FUERZAS DEL CAOS> " & Message, e_FontTypeNames.FONTTYPE_TALK))
+106             Call SendData(SendTarget.ToCaosYRMs, 0, PrepareMessageConsoleMsg("FUERZAS DEL CAOS> " & message, e_FontTypeNames.FONTTYPE_TALK))
             End If
 
         End With
@@ -11429,11 +11431,11 @@ Private Sub HandleCitizenMessage(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             Dim message As String
-102             Message = Reader.ReadString8()
+102             message = Reader.ReadString8()
         
             'Solo dioses, admins y RMS
 104         If (.flags.Privilegios And (e_PlayerType.Dios Or e_PlayerType.Admin Or e_PlayerType.RoleMaster)) Then
-106             Call SendData(SendTarget.ToCiudadanosYRMs, 0, PrepareMessageConsoleMsg("CIUDADANOS> " & Message, e_FontTypeNames.FONTTYPE_TALK))
+106             Call SendData(SendTarget.ToCiudadanosYRMs, 0, PrepareMessageConsoleMsg("CIUDADANOS> " & message, e_FontTypeNames.FONTTYPE_TALK))
             End If
 
         End With
@@ -11463,11 +11465,11 @@ Private Sub HandleCriminalMessage(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             Dim message As String
-102             Message = Reader.ReadString8()
+102             message = Reader.ReadString8()
         
             'Solo dioses, admins y RMS
 104         If (.flags.Privilegios And (e_PlayerType.Dios Or e_PlayerType.Admin Or e_PlayerType.RoleMaster)) Then
-106             Call SendData(SendTarget.ToCriminalesYRMs, 0, PrepareMessageConsoleMsg("CRIMINALES> " & Message, e_FontTypeNames.FONTTYPE_TALK))
+106             Call SendData(SendTarget.ToCriminalesYRMs, 0, PrepareMessageConsoleMsg("CRIMINALES> " & message, e_FontTypeNames.FONTTYPE_TALK))
             End If
 
         End With
@@ -11497,7 +11499,7 @@ Private Sub HandleTalkAsNPC(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
         
             Dim message As String
-102             Message = Reader.ReadString8()
+102             message = Reader.ReadString8()
         
             'Solo dioses, admins y RMS
 104         If (.flags.Privilegios And (e_PlayerType.Dios Or e_PlayerType.Admin Or e_PlayerType.RoleMaster)) Then
@@ -14731,7 +14733,7 @@ Public Sub HandleSystemMessage(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             Dim message As String
-102             Message = Reader.ReadString8()
+102             message = Reader.ReadString8()
         
 104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.RoleMaster)) Then
 106             Call LogGM(.Name, "Mensaje de sistema:" & message)
@@ -15285,7 +15287,7 @@ Private Sub HandleBorrarPJ(ByVal UserIndex As Integer)
             End If
             
             Dim RS As Recordset
-            Set rs = Query("SELECT account_id, level, is_banned from user WHERE name = ?", UserDelete)
+            Set RS = Query("SELECT account_id, level, is_banned from user WHERE name = ?", UserDelete)
             
             If (RS Is Nothing) Then
                 Call CloseSocket(UserIndex)
@@ -18646,9 +18648,9 @@ Private Sub HandleDeleteItem(ByVal UserIndex As Integer)
             UserList(UserIndex).Invent.Object(Slot).Equipped = 0
             UserList(UserIndex).Invent.Object(Slot).ObjIndex = 0
             Call UpdateUserInv(False, UserIndex, Slot)
-            Call WriteConsoleMsg(UserIndex, "Objeto eliminado correctamente.", e_FontTypeNames.fonttype_info)
+            Call WriteConsoleMsg(UserIndex, "Objeto eliminado correctamente.", e_FontTypeNames.FONTTYPE_INFO)
         Else
-            Call WriteConsoleMsg(UserIndex, "No puedes eliminar un objeto estando equipado.", e_FontTypeNames.fonttype_info)
+            Call WriteConsoleMsg(UserIndex, "No puedes eliminar un objeto estando equipado.", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
     End With

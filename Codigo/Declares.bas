@@ -1633,6 +1633,10 @@ Public Type t_UserFlags
     ModificoQuestsHechas As Boolean
     QuestNumber As Integer
     QuestItemSlot As Integer
+    PezEspecial As Integer
+    PezEspecial_X As Integer
+    PezEspecial_Dir As Integer
+    PezEspecial_StartTime As Long
 End Type
 
 Public Enum e_EstadoMimetismo
@@ -2344,6 +2348,8 @@ Public EspecialesTala()                   As t_Obj
 Public EspecialesPesca()                  As t_Obj
 
 Public Peces()                            As t_Obj
+
+Public PecesEspeciales()                  As t_Obj
 
 Public PesoPeces()                        As Long
 

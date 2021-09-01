@@ -1073,12 +1073,12 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @param    Message Text to be displayed in the message box.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-Public Sub WriteShowMessageBox(ByVal UserIndex As Integer, ByVal Message As String)
+Public Sub WriteShowMessageBox(ByVal UserIndex As Integer, ByVal message As String)
         '<EhHeader>
         On Error GoTo WriteShowMessageBox_Err
         '</EhHeader>
 100     Call Writer.WriteInt(ServerPacketID.ShowMessageBox)
-102     Call Writer.WriteString8(Message)
+102     Call Writer.WriteString8(message)
 104     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub
@@ -2237,7 +2237,7 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @param    message The error message to be displayed.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-Public Sub WriteErrorMsg(ByVal UserIndex As Integer, ByVal Message As String)
+Public Sub WriteErrorMsg(ByVal UserIndex As Integer, ByVal message As String)
         '***************************************************
         'Author: Juan Martín Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
@@ -2246,7 +2246,7 @@ Public Sub WriteErrorMsg(ByVal UserIndex As Integer, ByVal Message As String)
         '<EhHeader>
         On Error GoTo WriteErrorMsg_Err
         '</EhHeader>
-100     Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageErrorMsg(Message))
+100     Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageErrorMsg(message))
         '<EhFooter>
         Exit Sub
 
@@ -2567,13 +2567,13 @@ End Sub
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteAddForumMsg(ByVal UserIndex As Integer, _
                             ByVal title As String, _
-                            ByVal Message As String)
+                            ByVal message As String)
         '<EhHeader>
         On Error GoTo WriteAddForumMsg_Err
         '</EhHeader>
 100     Call Writer.WriteInt(ServerPacketID.AddForumMsg)
 102     Call Writer.WriteString8(title)
-104     Call Writer.WriteString8(Message)
+104     Call Writer.WriteString8(message)
 106     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub
@@ -3439,7 +3439,7 @@ Public Sub WritePersonajesDeCuenta(ByVal UserIndex As Integer)
 140         Call Writer.WriteString8(Personaje(i).nombre)
 142         Call Writer.WriteInt8(Personaje(i).nivel)
 144         Call Writer.WriteInt16(Personaje(i).Mapa)
-146         Call Writer.WriteInt16(Personaje(i).posX)
+146         Call Writer.WriteInt16(Personaje(i).PosX)
 148         Call Writer.WriteInt16(Personaje(i).posY)
 150         Call Writer.WriteInt16(Personaje(i).cuerpo)
 152         Call Writer.WriteInt16(Personaje(i).Cabeza)
@@ -3539,12 +3539,12 @@ WriteFamiliar_Err:
         '</EhFooter>
 End Sub
 
-Public Sub WritePreguntaBox(ByVal UserIndex As Integer, ByVal Message As String)
+Public Sub WritePreguntaBox(ByVal UserIndex As Integer, ByVal message As String)
         '<EhHeader>
         On Error GoTo WritePreguntaBox_Err
         '</EhHeader>
 100     Call Writer.WriteInt(ServerPacketID.ShowPregunta)
-102     Call Writer.WriteString8(Message)
+102     Call Writer.WriteString8(message)
 104     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub
@@ -3908,7 +3908,35 @@ WriteNpcQuestListSend_Err:
         '</EhFooter>
 End Sub
 
-Public Sub WriteObjQuestSend(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, ByVal slot As Byte)
+Public Sub WriteObtenerPezEspecial(ByVal UserIndex As Integer)
+    On Error GoTo WriteObtenerPezEspecial_Err
+    
+        Call Writer.WriteInt(ServerPacketID.ObtenerPezEspecial)
+182     Call modSendData.SendData(ToIndex, UserIndex)
+        Exit Sub
+WriteObtenerPezEspecial_Err:
+        Call Writer.Clear
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteObtenerPezEspecial", Erl)
+    
+End Sub
+
+Public Sub WritePezEspecialValues(ByVal UserIndex As Integer, ByVal Direction As Integer, ByVal PosX As Integer)
+    On Error GoTo WritePezEspecialValues_Err
+    
+        Call Writer.WriteInt(ServerPacketID.PezEspecialValues)
+        Call Writer.WriteInt16(Direction)
+        Call Writer.WriteInt16(PosX)
+182     Call modSendData.SendData(ToIndex, UserIndex)
+        Exit Sub
+WritePezEspecialValues_Err:
+        Call Writer.Clear
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WritePezEspecialValues", Erl)
+    
+End Sub
+
+
+
+Public Sub WriteObjQuestSend(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, ByVal Slot As Byte)
         '<EhHeader>
         On Error GoTo WriteNpcQuestListSend_Err
         '</EhHeader>
@@ -3996,7 +4024,7 @@ Public Sub WriteObjQuestSend(ByVal UserIndex As Integer, ByVal QuestIndex As Int
                 End If
             End If
         UserList(UserIndex).flags.QuestNumber = QuestIndex
-        UserList(UserIndex).flags.QuestItemSlot = slot
+        UserList(UserIndex).flags.QuestItemSlot = Slot
 
 182     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
@@ -4007,12 +4035,12 @@ WriteNpcQuestListSend_Err:
         Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteNpcQuestListSend", Erl)
         '</EhFooter>
 End Sub
-Sub WriteCommerceRecieveChatMessage(ByVal UserIndex As Integer, ByVal Message As String)
+Sub WriteCommerceRecieveChatMessage(ByVal UserIndex As Integer, ByVal message As String)
         '<EhHeader>
         On Error GoTo WriteCommerceRecieveChatMessage_Err
         '</EhHeader>
 100     Call Writer.WriteInt(ServerPacketID.CommerceRecieveChatMessage)
-102     Call Writer.WriteString8(Message)
+102     Call Writer.WriteString8(message)
 104     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub
@@ -4250,18 +4278,18 @@ Public Function PrepareMessageChatOverHead(ByVal chat As String, _
         On Error GoTo PrepareMessageChatOverHead_Err
         '</EhHeader>
 
-        Dim R As Long, G As Long, B As Long
+        Dim R As Long, g As Long, b As Long
 
-100     B = (Color And 16711680) / 65536
-102     G = (Color And 65280) / 256
+100     b = (Color And 16711680) / 65536
+102     g = (Color And 65280) / 256
 104     R = Color And 255
 106     Call Writer.WriteInt(ServerPacketID.ChatOverHead)
 108     Call Writer.WriteString8(chat)
 110     Call Writer.WriteInt16(CharIndex)
         ' Write rgb channels and save one byte from long :D
 112     Call Writer.WriteInt8(R)
-114     Call Writer.WriteInt8(G)
-116     Call Writer.WriteInt8(B)
+114     Call Writer.WriteInt8(g)
+116     Call Writer.WriteInt8(b)
 118     Call Writer.WriteInt32(Color)
         '<EhFooter>
         Exit Function
@@ -5220,12 +5248,12 @@ End Function
 '
 ' @param    message The error message to be displayed.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-Public Function PrepareMessageErrorMsg(ByVal Message As String)
+Public Function PrepareMessageErrorMsg(ByVal message As String)
         '<EhHeader>
         On Error GoTo PrepareMessageErrorMsg_Err
         '</EhHeader>
 100     Call Writer.WriteInt(ServerPacketID.ErrorMsg)
-102     Call Writer.WriteString8(Message)
+102     Call Writer.WriteString8(message)
         '<EhFooter>
         Exit Function
 

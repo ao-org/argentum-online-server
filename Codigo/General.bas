@@ -2207,6 +2207,8 @@ Sub PasarSegundo()
         Dim X    As Byte
 
         Dim Y    As Byte
+        
+        Static LastTime As Long
     
 100     If CuentaRegresivaTimer > 0 Then
 102         If CuentaRegresivaTimer > 1 Then
@@ -2368,6 +2370,28 @@ Sub PasarSegundo()
 280                         Call CancelarSubasta
                         End If
                     End If
+                    
+                    If .flags.PezEspecial <> 0 Then
+                        If GetTickCount - .flags.PezEspecial_StartTime > 30000 Then
+                            
+                        'ElseIf RandomNumber(0, 1) = 1 Then
+                          
+                            
+                        Else
+                            Dim X2 As Integer
+                            
+                            X2 = .flags.PezEspecial_X
+                            .flags.PezEspecial_X = Clamp(.flags.PezEspecial_X + .flags.PezEspecial_Dir * (GetTickCount - LastTime) * 0.1, -100, 100)
+                            
+                            
+                            .flags.PezEspecial_Dir = RandomNumber(1, 5) * (RandomNumber(0, 1) * 2 - 1)
+                            
+                            Call WritePezEspecialValues(i, .flags.PezEspecial_Dir, X2)
+                            
+                            '.flags.PezEspecial_X = .flags.PezEspecial_X + .flags.PezEspecial_Dir
+                        End If
+                        
+                    End If
         
                     'Cerrar usuario
 282                 If .Counters.Saliendo Then
@@ -2429,7 +2453,7 @@ Sub PasarSegundo()
             End With
         Next
         ' **********************************
-
+        LastTime = GetTickCount
         Exit Sub
 
 ErrHandler:
