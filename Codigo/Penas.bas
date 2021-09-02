@@ -109,6 +109,7 @@ Public Sub BanPJ(ByVal BannerIndex As Integer, ByVal UserName As String, ByRef R
         ' Si estaba online, lo echamos.
 116     Dim tUser As Integer: tUser = NameIndex(UserName)
 118     If tUser > 0 Then
+            call write
             Call WriteDisconnect(tUser)
             Call CloseSocket(tUser)
         End If

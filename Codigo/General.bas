@@ -2397,9 +2397,6 @@ Sub PasarSegundo()
 288                     If .Counters.Salir <= 0 Then
 290                         Call WriteConsoleMsg(i, "Gracias por jugar Argentum 20.", e_FontTypeNames.FONTTYPE_INFO)
 292                         Call WriteDisconnect(i)
-                            
-294                         Call CloseSocket(i)
-        
                         End If
         
                     End If
@@ -2410,7 +2407,7 @@ Sub PasarSegundo()
 296             .Counters.IdleCount = .Counters.IdleCount + 1
 
                 'El intervalo cambia según si envió el primer paquete
-298             If .Counters.IdleCount > IIf(.flags.FirstPacket, TimeoutEsperandoLoggear, TimeoutPrimerPaquete) Then
+298             If .Counters.IdleCount > IIf(.AccountID >= 0, TimeoutEsperandoLogear, TimeoutPrimerPaquete) Then
 300                 Call CloseSocket(i)
                 End If
         

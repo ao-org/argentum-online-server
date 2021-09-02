@@ -1516,7 +1516,7 @@ Public Type t_UserFlags
     Escondido As Byte '¿Esta escondido?
     Comerciando As Boolean '¿Esta comerciando?
     UserLogged As Boolean '¿Esta online?
-    FirstPacket As Boolean ' ¿El socket envió algun paquete válido?
+    FirstPacket As Boolean
     Meditando As Boolean
     Escribiendo As Boolean
     Crafteando As Byte

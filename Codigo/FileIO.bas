@@ -2455,8 +2455,8 @@ Sub LoadIntervalos()
 160     TimeoutPrimerPaquete = val(Lector.GetValue("INTERVALOS", "TimeoutPrimerPaquete"))
 162     FrmInterv.txtTimeoutPrimerPaquete.Text = TimeoutPrimerPaquete / 25
     
-164     TimeoutEsperandoLoggear = val(Lector.GetValue("INTERVALOS", "TimeoutEsperandoLoggear"))
-166     FrmInterv.txtTimeoutEsperandoLoggear.Text = TimeoutEsperandoLoggear / 25
+164     TimeoutEsperandoLogear = val(Lector.GetValue("INTERVALOS", "TimeoutEsperandoLogear"))
+166     FrmInterv.txtTimeoutEsperandoLogear.Text = TimeoutEsperandoLogear / 25
     
 168     IntervaloIncineracion = val(Lector.GetValue("INTERVALOS", "IntervaloFuego"))
 170     FrmInterv.txtintervalofuego.Text = IntervaloIncineracion

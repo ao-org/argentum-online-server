@@ -659,6 +659,11 @@ ConnectNewUser_Err:
         
 End Function
 
+Sub DisconnectUser(ByVal UserIndex As Integer)
+    
+    Call WriteDisconnect(UserIndex)
+End Sub
+
 Sub CloseSocket(ByVal UserIndex As Integer)
 
     On Error GoTo ErrHandler
