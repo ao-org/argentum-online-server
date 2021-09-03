@@ -25,6 +25,7 @@ Private Enum ManagerPackets
     LOGIN_ACCOUNT_RESULT
     LOGIN_CHAR_RESULT
     CREATE_CHAR_RESULT
+    SAVE_CHAR_RESULT
     GUARD_NOTICE_RESPONSE_RESULT
 End Enum
 
@@ -116,15 +117,18 @@ Private Sub HandlePacket(ByVal ID As Long, Data As Object, Instance As Object)
     
         Case ManagerPackets.LOGIN_ACCOUNT_RESULT
             Call HandleLoginAccount(ID, Data, Instance)
-
-        Case ManagerPackets.GUARD_NOTICE_RESPONSE_RESULT
-            Call HandleGuardNotice(ID, Data, Instance)
             
         Case ManagerPackets.LOGIN_CHAR_RESULT
             Call HandleLoginChar(ID, Data, Instance)
         
         Case ManagerPackets.CREATE_CHAR_RESULT
             Call HandleCreateChar(ID, Data, Instance)
+            
+        Case ManagerPackets.SAVE_CHAR_RESULT
+            Call HandleSaveChar(ID, Data, Instance)
+            
+        Case ManagerPackets.GUARD_NOTICE_RESPONSE_RESULT
+            Call HandleGuardNotice(ID, Data, Instance)
             
     End Select
     
@@ -179,7 +183,6 @@ Private Sub HandleLoginAccount(ByVal ID As Long, Data As Object, Instance As Obj
                 Call WriteShowMessageBox(UserIndex, Data.Item("message"))
             Else
                 Call WritePersonajesDeCuenta(UserIndex, Data.Item("chars"))
-                Call WriteMostrarCuenta(UserIndex)
             End If
     
         ' Si no pudo loguearse, le mostramos el mensaje de error y cerramos el socket
@@ -202,9 +205,7 @@ Private Sub HandleGuardNotice(ByVal ID As Long, Data As Object, Instance As Obje
 
     ' Si el login fue exitoso
     If Data.Item("success") Then
-
         Call WritePersonajesDeCuenta(UserIndex, Data.Item("chars"))
-        Call WriteMostrarCuenta(UserIndex)
 
     ' Si no pudo loguearse, le mostramos el mensaje de error y cerramos el socket
     Else
@@ -538,5 +539,38 @@ Private Sub HandleCreateChar(ByVal ID As Long, Data As Object, Instance As Objec
             Call WriteShowMessageBox(UserIndex, Data.Item("message"))
         End If
         
+    End With
+End Sub
+
+Private Sub HandleSaveChar(ByVal ID As Long, Data As Object, Instance As Object)
+    Dim UserIndex As Integer
+    UserIndex = Instance.Item("slot")
+
+    ' Si no está online el jugador, ignoramos la respuesta
+    If Not CheckPlayer(UserIndex, Instance.Item("uuid")) Then Exit Sub
+    
+    With UserList(UserIndex)
+        .WaitingPacket = -1
+
+        ' Si se guardó el personaje correctamente
+        If Data.Item("success") Then
+            ' Limpiamos el usuario
+            Call UserClosed(UserIndex)
+
+            Dim chars As Object
+            Set chars = Data.Item("chars")
+
+            ' Si recibimos chars
+            If Not IsNull(chars) Then
+                ' Se los enviamos
+                Call WritePersonajesDeCuenta(UserIndex, chars)
+            End If
+
+        ' Si hubo un error interno, entonces el personaje no se pudo guardar (panic!)
+        Else
+            ' Reintentamos el guardado
+            Call SaveUser(UserIndex, Instance.Item("logout"))
+        End If
+
     End With
 End Sub

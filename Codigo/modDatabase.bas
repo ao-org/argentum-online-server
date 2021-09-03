@@ -47,7 +47,7 @@ Public Sub Database_Connect_Async()
             Set Connection_async(i) = New ADODB.Connection
 110         Connection_async(i).CursorLocation = adUseClient
             Connection_async(i).ConnectionString = ConnectionID
-112         Call Connection_async(i).Open(, , , adAsyncConnect)
+112         Call Connection_async(i).Open
         Next i
 
         Current_async = 1
@@ -315,7 +315,7 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
 124         Params(PostInc(i)) = .Stats.GLD
 126         Params(PostInc(i)) = .Stats.SkillPts
 128         Params(PostInc(i)) = .Pos.Map
-130         Params(PostInc(i)) = .Pos.x
+130         Params(PostInc(i)) = .Pos.X
 132         Params(PostInc(i)) = .Pos.Y
 134         Params(PostInc(i)) = .Char.Body
 136         Params(PostInc(i)) = .Char.Head
@@ -486,7 +486,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
 126         Params(PostInc(i)) = .Stats.SkillPts
 128         Params(PostInc(i)) = .flags.MascotasGuardadas
 130         Params(PostInc(i)) = .Pos.Map
-132         Params(PostInc(i)) = .Pos.x
+132         Params(PostInc(i)) = .Pos.X
 134         Params(PostInc(i)) = .Pos.Y
 136         Params(PostInc(i)) = .MENSAJEINFORMACION
 138         Params(PostInc(i)) = .Char.Body
@@ -558,7 +558,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
 276         Params(PostInc(i)) = .ChatGlobal
 280         Params(PostInc(i)) = .Stats.Advertencias
 282         Params(PostInc(i)) = .flags.ReturnPos.Map
-284         Params(PostInc(i)) = .flags.ReturnPos.x
+284         Params(PostInc(i)) = .flags.ReturnPos.X
 286         Params(PostInc(i)) = .flags.ReturnPos.Y
 287         Params(PostInc(i)) = GetTickCount
 
@@ -743,7 +743,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
     
 576             Next LoopC
 
-                Call Execute(Builder.toString())
+                Call Execute(Builder.ToString())
 
 584             Call Builder.Clear
                 
@@ -780,7 +780,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
 614                     ParamC = ParamC + 2
 616                 Next LoopC
         
-                    Call Execute(Builder.toString(), Params)
+                    Call Execute(Builder.ToString(), Params)
 
 626                 Call Builder.Clear
                     
@@ -856,7 +856,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
 126         .Stats.Banco = RS!bank_gold
 128         .Stats.SkillPts = RS!free_skillpoints
 130         .Pos.Map = RS!pos_map
-132         .Pos.x = RS!pos_x
+132         .Pos.X = RS!pos_x
 134         .Pos.Y = RS!pos_y
 136         .MENSAJEINFORMACION = RS!message_info
 138         .OrigChar.Body = RS!body_id
@@ -913,7 +913,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
 240         .flags.MascotasGuardadas = RS!pets_saved
 
 246         .flags.ReturnPos.Map = RS!return_map
-248         .flags.ReturnPos.x = RS!return_x
+248         .flags.ReturnPos.X = RS!return_x
 250         .flags.ReturnPos.Y = RS!return_y
         
 252         .Counters.Pena = RS!counter_pena
@@ -1962,10 +1962,10 @@ ErrorHandler:
 
 End Sub
 
-Public Function SetPositionDatabase(UserName As String, ByVal Map As Integer, ByVal x As Integer, ByVal Y As Integer) As Boolean
+Public Function SetPositionDatabase(UserName As String, ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer) As Boolean
         On Error GoTo ErrorHandler
 
-102     SetPositionDatabase = Execute("UPDATE user SET pos_map = ?, pos_x = ?, pos_y = ? WHERE UPPER(name) = ?;", Map, x, Y, UCase$(UserName))
+102     SetPositionDatabase = Execute("UPDATE user SET pos_map = ?, pos_x = ?, pos_y = ? WHERE UPPER(name) = ?;", Map, X, Y, UCase$(UserName))
 
         Exit Function
 
@@ -2085,19 +2085,19 @@ Public Sub VerLlavesDatabase(ByVal UserIndex As Integer)
 108         Call WriteConsoleMsg(UserIndex, "No hay llaves otorgadas por el momento.", e_FontTypeNames.FONTTYPE_INFO)
     
         Else
-            Dim Message As String
+            Dim message As String
         
-110         Message = "Llaves usadas: " & RS.RecordCount & vbNewLine
+110         message = "Llaves usadas: " & RS.RecordCount & vbNewLine
 
 114         While Not RS.EOF
-116             Message = Message & "Llave: " & RS!key_obj & " - Cuenta: " & RS!Email & vbNewLine
+116             message = message & "Llave: " & RS!key_obj & " - Cuenta: " & RS!Email & vbNewLine
 
 118             RS.MoveNext
             Wend
         
-120         Message = Left$(Message, Len(Message) - 2)
+120         message = Left$(message, Len(message) - 2)
         
-122         Call WriteConsoleMsg(UserIndex, Message, e_FontTypeNames.FONTTYPE_INFO)
+122         Call WriteConsoleMsg(UserIndex, message, e_FontTypeNames.FONTTYPE_INFO)
         End If
 
         Exit Sub
@@ -2122,8 +2122,8 @@ SanitizeNullValue_Err:
         
 End Function
 
-Public Sub SetMessageInfoDatabase(ByVal Name As String, ByVal Message As String)
-    Call Execute("update user set message_info = concat(message_info, ?) where upper(name) = ?;", Message, UCase$(Name))
+Public Sub SetMessageInfoDatabase(ByVal Name As String, ByVal message As String)
+    Call Execute("update user set message_info = concat(message_info, ?) where upper(name) = ?;", message, UCase$(Name))
 End Sub
 
 Public Sub ChangeNameDatabase(ByVal CurName As String, ByVal NewName As String)

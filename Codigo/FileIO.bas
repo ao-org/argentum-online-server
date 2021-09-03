@@ -2485,8 +2485,8 @@ Sub LoadIntervalos()
 160     TimeoutPrimerPaquete = val(Lector.GetValue("INTERVALOS", "TimeoutPrimerPaquete"))
 162     FrmInterv.txtTimeoutPrimerPaquete.Text = TimeoutPrimerPaquete / 25
     
-164     TimeoutEsperandoLoggear = val(Lector.GetValue("INTERVALOS", "TimeoutEsperandoLoggear"))
-166     FrmInterv.txtTimeoutEsperandoLoggear.Text = TimeoutEsperandoLoggear / 25
+164     TimeoutEsperandoLogear = val(Lector.GetValue("INTERVALOS", "TimeoutEsperandoLogear"))
+166     FrmInterv.txtTimeoutEsperandoLogear.Text = TimeoutEsperandoLogear / 25
     
 168     IntervaloIncineracion = val(Lector.GetValue("INTERVALOS", "IntervaloFuego"))
 170     FrmInterv.txtintervalofuego.Text = IntervaloIncineracion
@@ -2639,57 +2639,70 @@ Sub SaveUser(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = Fals
         On Error GoTo SaveUser_Err
         
         Dim Data As New JS_Object
+        
+        With UserList(UserIndex)
     
-        '*************************************************************
-        '   USER
-        '*************************************************************
-        Data.Item("user") = JSON_User.Principal(UserIndex, Logout)
-        
-        '*************************************************************
-        '   ATRIBUTOS
-        '*************************************************************
-        Data.Item("Attribute") = JSON_User.Atributos(UserIndex)
-        
-        '*************************************************************
-        '   HECHIZOS
-        '*************************************************************
-        Data.Item("Spells") = JSON_User.Hechizo(UserIndex)
+            '*************************************************************
+            '   USER
+            '*************************************************************
+            Data.Item("user") = JSON_User.Principal(UserIndex, Logout)
+            
+            '*************************************************************
+            '   ATRIBUTOS
+            '*************************************************************
+            Data.Item("Attribute") = JSON_User.Atributos(UserIndex)
+            
+            '*************************************************************
+            '   HECHIZOS
+            '*************************************************************
+            Data.Item("Spells") = JSON_User.Hechizo(UserIndex)
+    
+            '*************************************************************
+            '   INVENTARIO
+            '*************************************************************
+            Data.Item("InventoryItems") = JSON_User.Inventario(UserIndex)
+    
+            '*************************************************************
+            '   INVENTARIO DEL BANCO
+            '*************************************************************
+            Data.Item("BankItems") = JSON_User.InventarioBanco(UserIndex)
+    
+            '*************************************************************
+            '   SKILLS
+            '*************************************************************
+            Data.Item("Skillpoint") = JSON_User.Habilidades(UserIndex)
+    
+            '*************************************************************
+            '   MASCOTAS
+            '*************************************************************
+            Data.Item("Pets") = JSON_User.Mascotas(UserIndex)
+    
+            '*************************************************************
+            '   QUESTS
+            '*************************************************************
+            Data.Item("Quests") = JSON_User.Quest(UserIndex)
+    
+            '*************************************************************
+            '   QUESTS TERMINADAS
+            '*************************************************************
+            If .QuestStats.NumQuestsDone > 0 Then
+                Data.Item("QuestDones") = JSON_User.QuestTerminadas(UserIndex)
+            End If
+            
+            Data.Item("account_id") = .AccountID
+            
+            Dim Instance As New JS_Object
+            Instance.Item("slot") = UserIndex
+            Instance.Item("uuid") = .UUID
+            Instance.Item("logout") = Logout
 
-        '*************************************************************
-        '   INVENTARIO
-        '*************************************************************
-        Data.Item("InventoryItems") = JSON_User.Inventario(UserIndex)
+            Call Manager.Send(SAVE_CHAR, Data, Instance)
 
-        '*************************************************************
-        '   INVENTARIO DEL BANCO
-        '*************************************************************
-        Data.Item("BankItems") = JSON_User.InventarioBanco(UserIndex)
+            .WaitingPacket = SAVE_CHAR
+            
+104         .Counters.LastSave = GetTickCount
 
-        '*************************************************************
-        '   SKILLS
-        '*************************************************************
-        Data.Item("Skillpoint") = JSON_User.Habilidades(UserIndex)
-
-        '*************************************************************
-        '   MASCOTAS
-        '*************************************************************
-        Data.Item("Pets") = JSON_User.Mascotas(UserIndex)
-
-        '*************************************************************
-        '   QUESTS
-        '*************************************************************
-        Data.Item("Quests") = JSON_User.Quest(UserIndex)
-
-        '*************************************************************
-        '   QUESTS TERMINADAS
-        '*************************************************************
-        If UserList(UserIndex).QuestStats.NumQuestsDone > 0 Then
-            Data.Item("QuestDones") = JSON_User.QuestTerminadas(UserIndex)
-        End If
-        
-        Call Manager.Send(SAVE_CHAR, Data)
-        
-104     UserList(UserIndex).Counters.LastSave = GetTickCount
+        End With
         
         Exit Sub
 

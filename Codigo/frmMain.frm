@@ -1995,7 +1995,7 @@ Private Sub tPiqueteC_Timer()
         If UserList(i).flags.UserLogged Then
             If MapData(UserList(i).Pos.Map, UserList(i).Pos.X, UserList(i).Pos.Y).trigger = e_Trigger.ANTIPIQUETE Then
                 UserList(i).Counters.PiqueteC = UserList(i).Counters.PiqueteC + 1
-                'Call WriteConsoleMsg(i, "Estï¿½s obstruyendo la via pï¿½blica, muï¿½vete o serï¿½s encarcelado!!!", e_FontTypeNames.FONTTYPE_INFO)
+                'Call WriteConsoleMsg(i, "Estás obstruyendo la via pública, muévete o serás encarcelado!!!", e_FontTypeNames.FONTTYPE_INFO)
                 
                 'WyroX: Le empiezo a avisar a partir de los 18 segundos, para no spamear
                 If UserList(i).Counters.PiqueteC > 3 Then
@@ -2006,9 +2006,7 @@ Private Sub tPiqueteC_Timer()
                     UserList(i).Counters.PiqueteC = 0
                     'Call Encarcelar(i, TIEMPO_CARCEL_PIQUETE)
                     'WyroX: En vez de encarcelarlo, lo sacamos del juego.
-                    'Ojo! No sï¿½ si se puede abusar de esto para evitar los 10 segundos al salir
-                    Call WriteDisconnect(i)
-                    Call CloseSocket(i)
+                    Call DisconnectUser(i)
                 End If
 
             Else

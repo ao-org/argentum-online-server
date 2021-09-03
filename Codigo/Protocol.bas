@@ -48,7 +48,6 @@ Public Enum ServerPacketID
     ConsoleMsg              ' || - Beware!! its the same as above, but it was properly splitted
     GuildChat               ' |+   40
     ShowMessageBox          ' !!
-    MostrarCuenta
     CharacterCreate         ' CC
     CharacterRemove         ' BP
     CharacterMove           ' MP, +, * and _ '
@@ -612,6 +611,7 @@ On Error Resume Next
 
     Set Reader = message
     
+    ' TODO: Rever
     If UserList(UserIndex).WaitingPacket >= 0 Then
         Call Reader.Skip(Reader.GetAvailable)
         Exit Function
@@ -619,27 +619,32 @@ On Error Resume Next
     
     Dim PacketID As Long:
     PacketID = Reader.ReadInt
+    
+    ' Es un paquete válido?
+    If PacketID < 0 Or PacketID >= ClientPacketID.[PacketCount] Then
+        ' Lo echamos
+        Call CloseSocket(UserIndex)
+        Exit Function
+    End If
 
-    'Does the packet requires a logged user??
-    If Not (PacketID = ClientPacketID.LoginExistingChar Or _
-            PacketID = ClientPacketID.LoginNewChar Or _
-            PacketID = ClientPacketID.IngresarConCuenta Or _
-            PacketID = ClientPacketID.BorrarPJ Or _
-            PacketID = ClientPacketID.ThrowDice Or _
-            PacketID = ClientPacketID.GuardNoticeResponse) Then
-               
-        'Is the user actually logged?
-        If Not UserList(UserIndex).flags.UserLogged Then
+    ' Está ingresando a la cuenta?
+    If PacketID = ClientPacketID.IngresarConCuenta Then
+        ' Ya estaba logueado en la cuenta?
+        If UserList(UserIndex).AccountID >= 0 Then
+            ' Lo echamos
             Call CloseSocket(UserIndex)
             Exit Function
-        
-        'He is logged. Reset idle counter if id is valid.
-        ElseIf PacketID <= ClientPacketID.[PacketCount] Then
-            UserList(UserIndex).Counters.IdleCount = 0
         End If
-    ElseIf PacketID <= ClientPacketID.[PacketCount] Then
-        UserList(UserIndex).Counters.IdleCount = 0
+    Else
+        ' No está logueado en la cuenta?
+        If UserList(UserIndex).AccountID < 0 Then
+            ' Ignoramos el paquete
+            Call Reader.Skip(Reader.GetAvailable)
+            Exit Function
+        End If
     End If
+    
+    UserList(UserIndex).Counters.IdleCount = 0
 
     Select Case PacketID
         Case ClientPacketID.LoginExistingChar
@@ -15140,10 +15145,56 @@ Private Sub HandleIngresarConCuenta(ByVal UserIndex As Integer)
     
             #End If
     
-120         Call EntrarCuenta(UserIndex, CuentaEmail, CuentaPassword, MD5)
-
-        End With
+120         Dim adminIdx As Integer
+            Dim laCuentaEsDeAdmin As Boolean
+            
+121         If ServerSoloGMs > 0 Then
+122             laCuentaEsDeAdmin = False
     
+124             For adminIdx = 0 To AdministratorAccounts.Count - 1
+                    ' Si el e-mail está declarado junto al nick de la cuenta donde esta el PJ GM en el Server.ini te dejo entrar.
+126                 If UCase$(AdministratorAccounts.Items(adminIdx)) = UCase$(CuentaEmail) Then
+128                     laCuentaEsDeAdmin = True
+                    End If
+130             Next adminIdx
+                
+132             If Not laCuentaEsDeAdmin Then
+134                 Call WriteShowMessageBox(UserIndex, "El servidor se encuentra habilitado solo para administradores por el momento.")
+                    Exit Sub
+                End If
+    
+            End If
+    
+            #If DEBUGGING = 0 Then
+134             If LCase$(Md5Cliente) <> LCase$(MD5) Then
+136                 Call WriteShowMessageBox(UserIndex, "Error al comprobar el cliente del juego, por favor reinstale y vuelva a intentar.")
+                    Exit Sub
+                End If
+            #End If
+    
+138         If Not CheckMailString(CuentaEmail) Then
+140             Call WriteShowMessageBox(UserIndex, "Email inválido.")
+                Exit Sub
+            End If
+    
+            UserList(UserIndex).Email = UCase$(CuentaEmail)
+    
+            Dim Data As New JS_Object
+            Dim Instance As New JS_Object
+            
+            Data.Item("email") = UCase$(UserList(UserIndex).Email)
+            Data.Item("password") = SDesencriptar(CuentaPassword)
+            Data.Item("ip") = UserList(UserIndex).IP
+            
+            Instance.Item("slot") = UserIndex
+            Instance.Item("uuid") = UserList(UserIndex).UUID
+    
+142         Call Manager.Send(LOGIN_ACCOUNT, Data, Instance)
+    
+            UserList(UserIndex).WaitingPacket = LOGIN_ACCOUNT
+    
+        End With
+        
         Exit Sub
 
 ErrHandler:
@@ -15178,10 +15229,10 @@ Private Sub HandleBorrarPJ(ByVal UserIndex As Integer)
                 End If
             #End If
         
-122         If Not EntrarCuenta(UserIndex, CuentaEmail, CuentaPassword, MD5) Then
-124             Call CloseSocket(UserIndex)
-                Exit Sub
-            End If
+122         'If Not EntrarCuenta(UserIndex, CuentaEmail, CuentaPassword, MD5) Then
+124         '    Call CloseSocket(UserIndex)
+            '    Exit Sub
+            'End If
             
             Dim RS As Recordset
             Set RS = Query("SELECT account_id, level, is_banned from user WHERE name = ?", UserDelete)
@@ -18545,9 +18596,9 @@ Private Sub HandleDeleteItem(ByVal UserIndex As Integer)
             UserList(UserIndex).Invent.Object(Slot).Equipped = 0
             UserList(UserIndex).Invent.Object(Slot).ObjIndex = 0
             Call UpdateUserInv(False, UserIndex, Slot)
-            Call WriteConsoleMsg(UserIndex, "Objeto eliminado correctamente.", e_FontTypeNames.fonttype_info)
+            Call WriteConsoleMsg(UserIndex, "Objeto eliminado correctamente.", e_FontTypeNames.FONTTYPE_INFO)
         Else
-            Call WriteConsoleMsg(UserIndex, "No puedes eliminar un objeto estando equipado.", e_FontTypeNames.fonttype_info)
+            Call WriteConsoleMsg(UserIndex, "No puedes eliminar un objeto estando equipado.", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
     End With

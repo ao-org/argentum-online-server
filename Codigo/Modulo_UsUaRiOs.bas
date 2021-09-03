@@ -2374,8 +2374,7 @@ Sub Cerrar_Usuario(ByVal UserIndex As Integer)
 116             Call WriteLocaleMsg(UserIndex, "203", e_FontTypeNames.FONTTYPE_INFO, .Counters.Salir)
             
 118             If EsGM(UserIndex) Or MapInfo(.Pos.Map).Seguro = 1 Then
-120                 Call WriteDisconnect(UserIndex)
-122                 Call CloseSocket(UserIndex)
+120                 Call DisconnectUser(UserIndex)
                 End If
 
             End If
@@ -2419,9 +2418,7 @@ Public Sub CancelExit(ByVal UserIndex As Integer)
 112                 UserList(UserIndex).Counters.Salir = IntervaloCerrarConexion
                 Else
 114                 Call WriteConsoleMsg(UserIndex, "Gracias por jugar Argentum20.", e_FontTypeNames.FONTTYPE_INFO)
-116                 Call WriteDisconnect(UserIndex)
-                
-118                 Call CloseSocket(UserIndex)
+116                 Call DisconnectUser(UserIndex)
 
                 End If
             

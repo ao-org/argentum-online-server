@@ -330,7 +330,7 @@ Begin VB.Form FrmInterv
          TabIndex        =   24
          Top             =   210
          Width           =   1410
-         Begin VB.TextBox txtTimeoutEsperandoLoggear 
+         Begin VB.TextBox txtTimeoutEsperandoLogear 
             Height          =   300
             Left            =   120
             TabIndex        =   62
@@ -348,12 +348,12 @@ Begin VB.Form FrmInterv
          End
          Begin VB.Label Label24 
             AutoSize        =   -1  'True
-            Caption         =   "Espera loggear"
+            Caption         =   "Espera logear"
             Height          =   195
             Left            =   120
             TabIndex        =   63
             Top             =   930
-            Width           =   1065
+            Width           =   975
          End
          Begin VB.Label Label14 
             AutoSize        =   -1  'True
@@ -830,7 +830,7 @@ Public Sub AplicarIntervalos()
 124     IntervaloWavFx = val(txtIntervaloWAVFX.Text)
 126     IntervaloInvocacion = val(txtInvocacion.Text)
 128     TimeoutPrimerPaquete = val(txtTimeoutPrimerPaquete.Text)
-130     TimeoutEsperandoLoggear = val(txtTimeoutEsperandoLoggear.Text)
+130     TimeoutEsperandoLogear = val(txtTimeoutEsperandoLogear.Text)
 132     IntervaloTirar = val(txtintervalotirar.Text)
 134     IntervaloMeditar = val(txtIntervaloMeditar.Text)
 136     IntervaloCaminar = val(txtintervalocaminar.Text)
@@ -886,7 +886,7 @@ Private Sub Command2_Click()
 122     Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloFrio", CStr(IntervaloFrio))
 124     Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloWAVFX", CStr(IntervaloWavFx))
 126     Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "TimeoutPrimerPaquete", CStr(TimeoutPrimerPaquete))
-128     Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "TimeoutEsperandoLoggear", CStr(TimeoutEsperandoLoggear))
+128     Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "TimeoutEsperandoLogear", CStr(TimeoutEsperandoLogear))
 130     Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloCaminar", CStr(IntervaloCaminar))
 132     Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloTirar", CStr(IntervaloTirar))
 134     Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloMeditar", CStr(IntervaloMeditar))

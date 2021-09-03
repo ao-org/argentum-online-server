@@ -207,18 +207,10 @@ End Sub
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-Public Sub WriteDisconnect(ByVal UserIndex As Integer, _
-                           Optional ByVal FullLogout As Boolean = False)
+Public Sub WriteDisconnect(ByVal UserIndex As Integer)
         '<EhHeader>
         On Error GoTo WriteDisconnect_Err
         '</EhHeader>
-100     Call ClearAndSaveUser(UserIndex)
-102     UserList(UserIndex).flags.YaGuardo = True
-
-104     If Not FullLogout Then
-106         Call WritePersonajesDeCuenta(UserIndex, Nothing)
-108         Call WriteMostrarCuenta(UserIndex)
-        End If
 
 110     Call Writer.WriteInt(ServerPacketID.Disconnect)
 112     Call modSendData.SendData(ToIndex, UserIndex)
@@ -1073,12 +1065,12 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @param    Message Text to be displayed in the message box.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-Public Sub WriteShowMessageBox(ByVal UserIndex As Integer, ByVal Message As String)
+Public Sub WriteShowMessageBox(ByVal UserIndex As Integer, ByVal message As String)
         '<EhHeader>
         On Error GoTo WriteShowMessageBox_Err
         '</EhHeader>
 100     Call Writer.WriteInt(ServerPacketID.ShowMessageBox)
-102     Call Writer.WriteString8(Message)
+102     Call Writer.WriteString8(message)
 104     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub
@@ -1086,21 +1078,6 @@ Public Sub WriteShowMessageBox(ByVal UserIndex As Integer, ByVal Message As Stri
 WriteShowMessageBox_Err:
         Call Writer.Clear
         Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteShowMessageBox", Erl)
-        '</EhFooter>
-End Sub
-
-Public Sub WriteMostrarCuenta(ByVal UserIndex As Integer)
-        '<EhHeader>
-        On Error GoTo WriteMostrarCuenta_Err
-        '</EhHeader>
-100     Call Writer.WriteInt(ServerPacketID.MostrarCuenta)
-102     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
-        Exit Sub
-
-WriteMostrarCuenta_Err:
-        Call Writer.Clear
-        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteMostrarCuenta", Erl)
         '</EhFooter>
 End Sub
 
@@ -2237,7 +2214,7 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @param    message The error message to be displayed.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-Public Sub WriteErrorMsg(ByVal UserIndex As Integer, ByVal Message As String)
+Public Sub WriteErrorMsg(ByVal UserIndex As Integer, ByVal message As String)
         '***************************************************
         'Author: Juan Martín Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
@@ -2246,7 +2223,7 @@ Public Sub WriteErrorMsg(ByVal UserIndex As Integer, ByVal Message As String)
         '<EhHeader>
         On Error GoTo WriteErrorMsg_Err
         '</EhHeader>
-100     Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageErrorMsg(Message))
+100     Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageErrorMsg(message))
         '<EhFooter>
         Exit Sub
 
@@ -2567,13 +2544,13 @@ End Sub
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteAddForumMsg(ByVal UserIndex As Integer, _
                             ByVal title As String, _
-                            ByVal Message As String)
+                            ByVal message As String)
         '<EhHeader>
         On Error GoTo WriteAddForumMsg_Err
         '</EhHeader>
 100     Call Writer.WriteInt(ServerPacketID.AddForumMsg)
 102     Call Writer.WriteString8(title)
-104     Call Writer.WriteString8(Message)
+104     Call Writer.WriteString8(message)
 106     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub
@@ -3549,12 +3526,12 @@ WriteFamiliar_Err:
         '</EhFooter>
 End Sub
 
-Public Sub WritePreguntaBox(ByVal UserIndex As Integer, ByVal Message As String)
+Public Sub WritePreguntaBox(ByVal UserIndex As Integer, ByVal message As String)
         '<EhHeader>
         On Error GoTo WritePreguntaBox_Err
         '</EhHeader>
 100     Call Writer.WriteInt(ServerPacketID.ShowPregunta)
-102     Call Writer.WriteString8(Message)
+102     Call Writer.WriteString8(message)
 104     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub
@@ -3918,7 +3895,7 @@ WriteNpcQuestListSend_Err:
         '</EhFooter>
 End Sub
 
-Public Sub WriteObjQuestSend(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, ByVal slot As Byte)
+Public Sub WriteObjQuestSend(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, ByVal Slot As Byte)
         '<EhHeader>
         On Error GoTo WriteNpcQuestListSend_Err
         '</EhHeader>
@@ -4006,7 +3983,7 @@ Public Sub WriteObjQuestSend(ByVal UserIndex As Integer, ByVal QuestIndex As Int
                 End If
             End If
         UserList(UserIndex).flags.QuestNumber = QuestIndex
-        UserList(UserIndex).flags.QuestItemSlot = slot
+        UserList(UserIndex).flags.QuestItemSlot = Slot
 
 182     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
@@ -4017,12 +3994,12 @@ WriteNpcQuestListSend_Err:
         Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteNpcQuestListSend", Erl)
         '</EhFooter>
 End Sub
-Sub WriteCommerceRecieveChatMessage(ByVal UserIndex As Integer, ByVal Message As String)
+Sub WriteCommerceRecieveChatMessage(ByVal UserIndex As Integer, ByVal message As String)
         '<EhHeader>
         On Error GoTo WriteCommerceRecieveChatMessage_Err
         '</EhHeader>
 100     Call Writer.WriteInt(ServerPacketID.CommerceRecieveChatMessage)
-102     Call Writer.WriteString8(Message)
+102     Call Writer.WriteString8(message)
 104     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub
@@ -5230,12 +5207,12 @@ End Function
 '
 ' @param    message The error message to be displayed.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-Public Function PrepareMessageErrorMsg(ByVal Message As String)
+Public Function PrepareMessageErrorMsg(ByVal message As String)
         '<EhHeader>
         On Error GoTo PrepareMessageErrorMsg_Err
         '</EhHeader>
 100     Call Writer.WriteInt(ServerPacketID.ErrorMsg)
-102     Call Writer.WriteString8(Message)
+102     Call Writer.WriteString8(message)
         '<EhFooter>
         Exit Function
 
