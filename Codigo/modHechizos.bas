@@ -544,7 +544,7 @@ Private Function PuedeLanzar(ByVal UserIndex As Integer, ByVal HechizoIndex As I
                 Exit Function
             End If
 
-108         If .flags.Muerto = 1 Then
+108         If .flags.Muerto Then
 110             Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Function
             End If
@@ -912,7 +912,7 @@ Private Sub HechizoSobreArea(ByVal UserIndex As Integer, ByRef B As Boolean)
 134             TargetMap = MapData(UserList(UserIndex).Pos.Map, X + PosCasteadaX - CInt(Hechizos(h).AreaRadio / 2), PosCasteadaY + Y - CInt(Hechizos(h).AreaRadio / 2))
                 
 136             If afectaUsers And TargetMap.UserIndex > 0 Then
-138                 If UserList(TargetMap.UserIndex).flags.Muerto = 0 Then
+138                 If Not UserList(TargetMap.UserIndex).flags.Muerto Then
 140                     Call AreaHechizo(UserIndex, TargetMap.UserIndex, PosCasteadaX, PosCasteadaY, False)
                     End If
 
@@ -1356,7 +1356,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef B As Boolean)
 
 104     If Hechizos(h).Invisibilidad = 1 Then
    
-106         If UserList(tU).flags.Muerto = 1 Then
+106         If UserList(tU).flags.Muerto Then
                 'Call WriteConsoleMsg(UserIndex, "¡Está muerto!", e_FontTypeNames.FONTTYPE_INFO)
 108             Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
 110             B = False
@@ -1471,7 +1471,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef B As Boolean)
                 Exit Sub
             End If
 
-194         If UserList(tU).flags.Muerto = 1 Then
+194         If UserList(tU).flags.Muerto Then
                 Exit Sub
             End If
             
@@ -1605,7 +1605,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef B As Boolean)
 334     If Hechizos(h).CuraVeneno = 1 Then
 
             'Verificamos que el usuario no este muerto
-336         If UserList(tU).flags.Muerto = 1 Then
+336         If UserList(tU).flags.Muerto Then
                 'Call WriteConsoleMsg(UserIndex, "¡Está muerto!", e_FontTypeNames.FONTTYPE_INFO)
 338             Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
 340             B = False
@@ -1736,7 +1736,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef B As Boolean)
 
 452      If Hechizos(h).velocidad <> 0 Then
             'Verificamos que el usuario no este muerto
-454         If UserList(tU).flags.Muerto = 1 Then
+454         If UserList(tU).flags.Muerto Then
                 'Call WriteConsoleMsg(UserIndex, "¡Está muerto!", e_FontTypeNames.FONTTYPE_INFO)
 456             Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
 458             B = False
@@ -1927,7 +1927,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef B As Boolean)
         End If
 
 612     If Hechizos(h).Revivir = 1 Then
-614         If UserList(tU).flags.Muerto = 1 Then
+614         If UserList(tU).flags.Muerto Then
 
 616             If UserList(UserIndex).flags.EnReto Then
 618                 Call WriteConsoleMsg(UserIndex, "No podés revivir a nadie durante un reto.", e_FontTypeNames.FONTTYPE_INFO)
@@ -2721,7 +2721,7 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef B As Boolean)
 214     If Hechizos(h).SubeAgilidad = 1 Then
 
             'Verifica que el usuario no este muerto
-            If UserList(tempChr).flags.Muerto = 1 Then
+            If UserList(tempChr).flags.Muerto Then
                 B = False
                 Exit Sub
             End If
@@ -2764,7 +2764,7 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef B As Boolean)
 246     ElseIf Hechizos(h).SubeAgilidad = 2 Then
 
             'Verifica que el usuario no este muerto
-            If UserList(tempChr).flags.Muerto = 1 Then
+            If UserList(tempChr).flags.Muerto Then
                 B = False
                 Exit Sub
             End If
@@ -2798,7 +2798,7 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef B As Boolean)
 272     If Hechizos(h).SubeFuerza = 1 Then
 
                         'Verifica que el usuario no este muerto
-            If UserList(tempChr).flags.Muerto = 1 Then
+            If UserList(tempChr).flags.Muerto Then
                 B = False
                 Exit Sub
             End If
@@ -2847,7 +2847,7 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef B As Boolean)
 
 
                         'Verifica que el usuario no este muerto
-            If UserList(tempChr).flags.Muerto = 1 Then
+            If UserList(tempChr).flags.Muerto Then
                 B = False
                 Exit Sub
             End If
@@ -2881,7 +2881,7 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef B As Boolean)
 332     If Hechizos(h).SubeHP = 1 Then
     
             'Verifica que el usuario no este muerto
-334         If UserList(tempChr).flags.Muerto = 1 Then
+334         If UserList(tempChr).flags.Muerto Then
                 'Call WriteConsoleMsg(UserIndex, "¡Está muerto!", e_FontTypeNames.FONTTYPE_INFO)
 336             Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
 338             B = False
@@ -3320,7 +3320,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef B As Boolean)
 222     If Hechizos(h).SubeHP = 1 Then
     
             'Verifica que el usuario no este muerto
-224         If UserList(tempChr).flags.Muerto = 1 Then
+224         If UserList(tempChr).flags.Muerto Then
                 'Call WriteConsoleMsg(UserIndex, "¡Está muerto!", e_FontTypeNames.FONTTYPE_INFO)
 226             Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
 228             B = False
@@ -3465,7 +3465,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef B As Boolean)
 
 340     If Hechizos(h).Invisibilidad = 1 Then
    
-342         If UserList(tU).flags.Muerto = 1 Then
+342         If UserList(tU).flags.Muerto Then
                 'Call WriteConsoleMsg(UserIndex, "¡Está muerto!", e_FontTypeNames.FONTTYPE_INFO)
 344             Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
 346             B = False
@@ -3622,7 +3622,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef B As Boolean)
 480     If Hechizos(h).CuraVeneno = 1 Then
 
             'Verificamos que el usuario no este muerto
-482         If UserList(tU).flags.Muerto = 1 Then
+482         If UserList(tU).flags.Muerto Then
                 'Call WriteConsoleMsg(UserIndex, "¡Está muerto!", e_FontTypeNames.FONTTYPE_INFO)
 484             Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
 486             B = False

@@ -537,7 +537,7 @@ Function ConnectNewUser(ByVal UserIndex As Integer, ByRef Name As String, ByVal 
 136         .Stats.UserAtributos(e_Atributos.Constitucion) = .Stats.UserAtributos(e_Atributos.Constitucion) + ModRaza(UserRaza).Constitucion
 138         .Stats.UserAtributos(e_Atributos.Carisma) = .Stats.UserAtributos(e_Atributos.Carisma) + ModRaza(UserRaza).Carisma
         
-140         .flags.Muerto = 0
+140         .flags.Muerto = False
 142         .flags.Escondido = 0
     
 144         .flags.Casado = 0
@@ -705,15 +705,14 @@ Sub CloseSocket(ByVal UserIndex As Integer)
             Else
 136             Call ResetUserSlot(UserIndex)
 
+                .AccountID = -1
+                .UUID = vbNullString
+                .Email = vbNullString
+                .Cuenta = vbNullString
+                .IP = vbNullString
             End If
     
 140         .ConnIDValida = False
-
-            .AccountID = -1
-            .UUID = vbNullString
-            .Email = vbNullString
-            .Cuenta = vbNullString
-            .IP = vbNullString
     
         End With
     
@@ -1684,6 +1683,14 @@ Public Sub UserClosed(ByVal UserIndex As Integer)
 140         .flags.UserLogged = False
         
 142         Call ResetUserSlot(UserIndex)
+
+            If Not .ConnIDValida Then
+                .AccountID = -1
+                .UUID = vbNullString
+                .Email = vbNullString
+                .Cuenta = vbNullString
+                .IP = vbNullString
+            End If
 
         End With
     

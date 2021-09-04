@@ -454,7 +454,7 @@ Public Sub SeguirAmo(ByVal NpcIndex As Integer)
 104         If .Target = 0 And .TargetNPC = 0 Then
             
 106             If EnRangoVision(NpcIndex, .MaestroUser) Then
-108                 If UserList(.MaestroUser).flags.Muerto = 0 And _
+108                 If Not UserList(.MaestroUser).flags.Muerto And _
                         UserList(.MaestroUser).flags.invisible = 0 And _
                         UserList(.MaestroUser).flags.Oculto = 0 And _
                         Distancia(.Pos, UserList(.MaestroUser).Pos) > 3 Then
@@ -537,17 +537,17 @@ Private Sub HacerCaminata(ByVal NpcIndex As Integer)
                     ' Lo movemos hacia un lado
 120                 Call MoveNpcToSide(MoveChar, Heading)
                 End If
-            
+
                 ' Si hay un user
 122             MoveChar = MapData(NextTile.Map, NextTile.X, NextTile.Y).UserIndex
 124             If MoveChar Then
                     ' Si no esta muerto o es admin invisible (porque a esos los atraviesa)
-126                 If UserList(MoveChar).flags.AdminInvisible = 0 Or UserList(MoveChar).flags.Muerto = 0 Then
+126                 If UserList(MoveChar).flags.AdminInvisible = 0 Or Not UserList(MoveChar).flags.Muerto Then
                         ' Lo movemos hacia un lado
 128                     Call MoveUserToSide(MoveChar, Heading)
                     End If
                 End If
-            
+
                 ' Movemos al NPC de la caminata
 130             PudoMover = MoveNPCChar(NpcIndex, Heading)
             
@@ -773,7 +773,7 @@ Private Function EsObjetivoValido(ByVal NpcIndex As Integer, ByVal UserIndex As 
 102     EsObjetivoValido = ( _
           EnRangoVision(NpcIndex, UserIndex) And _
           EsEnemigo(NpcIndex, UserIndex) And _
-          UserList(UserIndex).flags.Muerto = 0 And _
+          Not UserList(UserIndex).flags.Muerto And _
           UserList(UserIndex).flags.EnConsulta = 0 And _
           Not EsGM(UserIndex))
 
@@ -856,7 +856,7 @@ Private Function UsuarioAtacableConMagia(ByVal targetUserIndex As Integer) As Bo
 
 102     With UserList(targetUserIndex)
 104       UsuarioAtacableConMagia = ( _
-            .flags.Muerto = 0 And _
+            Not .flags.Muerto And _
             .flags.invisible = 0 And _
             .flags.Inmunidad = 0 And _
             .flags.Oculto = 0 And _
@@ -887,7 +887,7 @@ Private Function UsuarioAtacableConMelee(ByVal NpcIndex As Integer, ByVal target
 104       EstaPegadoAlUser = Distancia(NpcList(NpcIndex).Pos, .Pos) = 1
 
 106       UsuarioAtacableConMelee = ( _
-            .flags.Muerto = 0 And _
+            Not .flags.Muerto And _
             .flags.Inmunidad = 0 And _
             (EstaPegadoAlUser Or (Not EstaPegadoAlUser And (.flags.invisible + .flags.Oculto) = 0)) And _
             .flags.Mimetizado < e_EstadoMimetismo.FormaBichoSinProteccion And _

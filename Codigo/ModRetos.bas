@@ -498,7 +498,7 @@ Public Sub MuereEnReto(ByVal UserIndex As Integer)
 110         For CurIndex = CurIndex To UBound(.Jugadores) Step 2
 112             If .Jugadores(CurIndex) <> 0 Then
                     ' Si todavía hay alguno vivo del equipo
-114                 If UserList(.Jugadores(CurIndex)).flags.Muerto = 0 Then
+114                 If Not UserList(.Jugadores(CurIndex)).flags.Muerto Then
                         Exit Sub
                     End If
                 End If
@@ -1006,7 +1006,7 @@ Private Sub SalaLiberada(ByVal Sala As Integer)
 104     If ListaDeEspera.Count > 0 Then
     
             Dim Oferente As Integer
-106         Oferente = ListaDeEspera.Keys(0)
+106         Oferente = ListaDeEspera.keys(0)
 108         Call ListaDeEspera.Remove(Oferente)
             
 110         Call IniciarReto(Oferente, Sala)
@@ -1186,7 +1186,7 @@ Private Sub RevivirYLimpiar(ByVal UserIndex As Integer)
 100         Call WriteStopped(UserIndex, False)
     
         ' Si está vivo
-102     If UserList(UserIndex).flags.Muerto = 0 Then
+102     If Not UserList(UserIndex).flags.Muerto Then
 104         Call LimpiarEstadosAlterados(UserIndex)
         End If
 

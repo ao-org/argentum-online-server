@@ -19,6 +19,7 @@ Public Enum Packets
     CREATE_CHAR
     SAVE_CHAR
     GUARD_NOTICE_RESPONSE
+    DELETE_CHAR
 End Enum
 
 Private Enum ManagerPackets
@@ -27,6 +28,7 @@ Private Enum ManagerPackets
     CREATE_CHAR_RESULT
     SAVE_CHAR_RESULT
     GUARD_NOTICE_RESPONSE_RESULT
+    DELETE_CHAR_RESULT
 End Enum
 
 Private Closing As Boolean
@@ -129,6 +131,9 @@ Private Sub HandlePacket(ByVal ID As Long, Data As Object, Instance As Object)
             
         Case ManagerPackets.GUARD_NOTICE_RESPONSE_RESULT
             Call HandleGuardNotice(ID, Data, Instance)
+            
+        Case ManagerPackets.DELETE_CHAR_RESULT
+            Call HandleDeleteChar(ID, Data, Instance)
             
     End Select
     
@@ -570,6 +575,29 @@ Private Sub HandleSaveChar(ByVal ID As Long, Data As Object, Instance As Object)
         Else
             ' Reintentamos el guardado
             Call SaveUser(UserIndex, Instance.Item("logout"))
+        End If
+
+    End With
+End Sub
+
+Private Sub HandleDeleteChar(ByVal ID As Long, Data As Object, Instance As Object)
+    Dim UserIndex As Integer
+    UserIndex = Instance.Item("slot")
+
+    ' Si no está online el jugador, ignoramos la respuesta
+    If Not CheckPlayer(UserIndex, Instance.Item("uuid")) Then Exit Sub
+    
+    With UserList(UserIndex)
+        .WaitingPacket = -1
+
+        ' Si se borró el personaje correctamente
+        If Data.Item("success") Then
+            ' Le enviamos los chars
+            Call WritePersonajesDeCuenta(UserIndex, Data.Item("chars"))
+
+        ' Si no se pudo borrar le mostramos el mensaje de error
+        Else
+            Call WriteShowMessageBox(UserIndex, Data.Item("message"))
         End If
 
     End With

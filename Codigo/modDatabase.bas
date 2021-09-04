@@ -1429,21 +1429,6 @@ SaveUserHeadDatabase_Err:
         
 End Sub
 
-Public Sub BorrarUsuarioDatabase(Name As String)
-
-        On Error GoTo ErrorHandler
-
-        Call Execute("insert into user_deleted select * from user where name = ?;", Name)
-        Call Execute("delete from user where name = ?;", Name)
-        Call Execute("UPDATE user_deleted set deleted = CURRENT_TIMESTAMP where name = ?;", Name)
-
-        Exit Sub
-    
-ErrorHandler:
-102     Call LogDatabaseError("Error en BorrarUsuarioDatabase borrando user de la Mysql Database: " & Name & ". " & Err.Number & " - " & Err.Description)
-
-End Sub
-
 Public Sub SaveBanDatabase(UserName As String, Reason As String, BannedBy As String)
 
         '***************************************************

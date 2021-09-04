@@ -369,22 +369,6 @@ Encarcelar_Err:
         
 End Sub
 
-Public Sub BorrarUsuario(ByVal UserName As String)
-        
-        On Error GoTo BorrarUsuario_Err
-
-102         Call BorrarUsuarioDatabase(UserName)
-
-    
-        
-        Exit Sub
-
-BorrarUsuario_Err:
-108     Call TraceError(Err.Number, Err.Description, "Admin.BorrarUsuario", Erl)
-
-        
-End Sub
-
 Public Function BANCheck(ByVal Name As String) As Boolean
         
         On Error GoTo BANCheck_Err

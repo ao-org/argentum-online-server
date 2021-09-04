@@ -71,7 +71,6 @@ Function Principal(ByRef UserIndex As Integer, Optional ByVal Logout As Boolean 
 212         Objeto.Item("is_hungry") = IIf(.flags.Hambre, 1, 0)
 214         Objeto.Item("is_thirsty") = IIf(.flags.Sed, 1, 0)
             Objeto.Item("is_banned") = IIf(.flags.Ban, 1, 0)
-216         Objeto.Item("is_dead") = IIf(.flags.Muerto, 1, 0)
 218         Objeto.Item("is_sailing") = IIf(.flags.Navegando, 1, 0)
 220         Objeto.Item("is_paralyzed") = IIf(.flags.Paralizado, 1, 0)
 222         Objeto.Item("is_mounted") = IIf(.flags.Montado, 1, 0)

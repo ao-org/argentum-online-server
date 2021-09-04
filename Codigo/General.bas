@@ -2262,7 +2262,7 @@ Sub PasarSegundo()
                         End If
                     End If
                     
-136                 If .flags.Muerto = 0 Then
+136                 If Not .flags.Muerto Then
 138                     Call DuracionPociones(i)
 140                     Call EfectoOxigeno(i)
 142                     If .flags.invisible = 1 Then Call EfectoInvisibilidad(i)
@@ -2380,7 +2380,7 @@ Sub PasarSegundo()
         
                     'Cerrar usuario
 282                 If .Counters.Saliendo Then
-                        '  If .flags.Muerto = 1 Then .Counters.Salir = 0
+                        '  If .flags.Muerto Then .Counters.Salir = 0
 284                     .Counters.Salir = .Counters.Salir - 1
                         ' Call WriteConsoleMsg(i, "Se saldrá del juego en " & .Counters.Salir & " segundos...", e_FontTypeNames.FONTTYPE_INFO)
 286                     Call WriteLocaleMsg(i, "203", e_FontTypeNames.FONTTYPE_INFO, .Counters.Salir)

@@ -1511,8 +1511,8 @@ Public Type t_UserFlags
     Montado As Byte
     Subastando As Boolean
     Incinerado As Byte
-    'Ladder
-    Muerto As Byte '¿Esta muerto?
+
+    Muerto As Boolean '¿Esta muerto?
     Escondido As Byte '¿Esta escondido?
     Comerciando As Boolean '¿Esta comerciando?
     UserLogged As Boolean '¿Esta online?

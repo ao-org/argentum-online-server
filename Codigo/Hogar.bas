@@ -17,7 +17,7 @@ Public Sub goHome(ByVal UserIndex As Integer)
         
 100     With UserList(UserIndex)
 
-102         If .flags.Muerto = 1 Then
+102         If .flags.Muerto Then
 
 104             If EsGM(UserIndex) Then
 106                 .Counters.TimerBarra = 5

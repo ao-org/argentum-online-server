@@ -213,7 +213,7 @@ Public Function ConnectUser_Complete(ByVal UserIndex As Integer, ByRef Name As S
 110             .Counters.Paralisis = IntervaloParalizado
             End If
 
-115         If .flags.Muerto = 0 Then
+115         If Not .flags.Muerto Then
 120             .Char = .OrigChar
             
 125             If .Char.Body = 0 Then
@@ -237,7 +237,7 @@ Public Function ConnectUser_Complete(ByVal UserIndex As Integer, ByRef Name As S
 180             If .Invent.Object(.Invent.WeaponEqpSlot).ObjIndex > 0 Then
 185                 .Invent.WeaponEqpObjIndex = .Invent.Object(.Invent.WeaponEqpSlot).ObjIndex
 
-190                 If .flags.Muerto = 0 Then
+190                 If Not .flags.Muerto Then
 195                     .Char.Arma_Aura = ObjData(.Invent.WeaponEqpObjIndex).CreaGRH
                     End If
                 Else
@@ -250,7 +250,7 @@ Public Function ConnectUser_Complete(ByVal UserIndex As Integer, ByRef Name As S
 210             If .Invent.Object(.Invent.ArmourEqpSlot).ObjIndex > 0 Then
 215                 .Invent.ArmourEqpObjIndex = .Invent.Object(.Invent.ArmourEqpSlot).ObjIndex
 
-220                 If .flags.Muerto = 0 Then
+220                 If Not .flags.Muerto Then
 225                     .Char.Body_Aura = ObjData(.Invent.ArmourEqpObjIndex).CreaGRH
                     End If
                 Else
@@ -266,7 +266,7 @@ Public Function ConnectUser_Complete(ByVal UserIndex As Integer, ByRef Name As S
 250             If .Invent.Object(.Invent.EscudoEqpSlot).ObjIndex > 0 Then
 255                 .Invent.EscudoEqpObjIndex = .Invent.Object(.Invent.EscudoEqpSlot).ObjIndex
 
-260                 If .flags.Muerto = 0 Then
+260                 If Not .flags.Muerto Then
 265                     .Char.Escudo_Aura = ObjData(.Invent.EscudoEqpObjIndex).CreaGRH
                     End If
                 Else
@@ -279,7 +279,7 @@ Public Function ConnectUser_Complete(ByVal UserIndex As Integer, ByRef Name As S
 280             If .Invent.Object(.Invent.CascoEqpSlot).ObjIndex > 0 Then
 285                 .Invent.CascoEqpObjIndex = .Invent.Object(.Invent.CascoEqpSlot).ObjIndex
 
-290                 If .flags.Muerto = 0 Then
+290                 If Not .flags.Muerto Then
 295                     .Char.Head_Aura = ObjData(.Invent.CascoEqpObjIndex).CreaGRH
                     End If
                 Else
@@ -310,7 +310,7 @@ Public Function ConnectUser_Complete(ByVal UserIndex As Integer, ByRef Name As S
 350             If .Invent.Object(.Invent.DañoMagicoEqpSlot).ObjIndex > 0 Then
 355                 .Invent.DañoMagicoEqpObjIndex = .Invent.Object(.Invent.DañoMagicoEqpSlot).ObjIndex
 
-360                 If .flags.Muerto = 0 Then
+360                 If Not .flags.Muerto Then
 365                     .Char.DM_Aura = ObjData(.Invent.DañoMagicoEqpObjIndex).CreaGRH
                     End If
                 Else
@@ -323,7 +323,7 @@ Public Function ConnectUser_Complete(ByVal UserIndex As Integer, ByRef Name As S
 380             If .Invent.Object(.Invent.ResistenciaEqpSlot).ObjIndex > 0 Then
 385                 .Invent.ResistenciaEqpObjIndex = .Invent.Object(.Invent.ResistenciaEqpSlot).ObjIndex
 
-390                 If .flags.Muerto = 0 Then
+390                 If Not .flags.Muerto Then
 395                     .Char.RM_Aura = ObjData(.Invent.ResistenciaEqpObjIndex).CreaGRH
                     End If
                 Else
@@ -351,7 +351,7 @@ Public Function ConnectUser_Complete(ByVal UserIndex As Integer, ByRef Name As S
 450             If .Invent.Object(.Invent.NudilloSlot).ObjIndex > 0 Then
 455                 .Invent.NudilloObjIndex = .Invent.Object(.Invent.NudilloSlot).ObjIndex
 
-460                 If .flags.Muerto = 0 Then
+460                 If Not .flags.Muerto Then
 465                     .Char.Arma_Aura = ObjData(.Invent.NudilloObjIndex).CreaGRH
                     End If
                 Else
@@ -363,7 +363,7 @@ Public Function ConnectUser_Complete(ByVal UserIndex As Integer, ByRef Name As S
 480             If .Invent.Object(.Invent.MagicoSlot).ObjIndex Then
 485                 .Invent.MagicoObjIndex = .Invent.Object(.Invent.MagicoSlot).ObjIndex
 
-490                 If .flags.Muerto = 0 Then
+490                 If Not .flags.Muerto Then
 495                     .Char.Otra_Aura = ObjData(.Invent.MagicoObjIndex).CreaGRH
                     End If
                 Else
@@ -766,7 +766,7 @@ Sub RevivirUsuario(ByVal UserIndex As Integer, Optional ByVal MedianteHechizo As
         
 100     With UserList(UserIndex)
 
-102         .flags.Muerto = 0
+102         .flags.Muerto = False
 104         .Stats.MinHp = .Stats.MaxHp
 
             ' El comportamiento cambia si usamos el hechizo Resucitar
@@ -1887,7 +1887,7 @@ Sub UserDie(ByVal UserIndex As Integer)
 120         .flags.Paraliza = 0
 122         .flags.Envenena = 0
 124         .flags.Estupidiza = 0
-126         .flags.Muerto = 1
+126         .flags.Muerto = True
 128         .flags.Ahogandose = 0
             
 130         Call WriteUpdateHP(UserIndex)
@@ -2810,10 +2810,10 @@ Public Sub LimpiarEstadosAlterados(ByVal UserIndex As Integer)
         
 150             If .flags.Navegando Then
             
-152                 If .flags.Muerto = 0 Then
-154                     .Char.Body = ObjData(UserList(UserIndex).Invent.BarcoObjIndex).Ropaje
+152                 If .flags.Muerto Then
+154                     .Char.Body = iFragataFantasmal
                     Else
-156                     .Char.Body = iFragataFantasmal
+156                     .Char.Body = ObjData(UserList(UserIndex).Invent.BarcoObjIndex).Ropaje
                     End If
 
 158                 .Char.ShieldAnim = NingunEscudo
@@ -2866,7 +2866,7 @@ Public Function ActualizarVelocidadDeUsuario(ByVal UserIndex As Integer) As Sing
 104     modificadorHechizo = 1
     
 106     With UserList(UserIndex)
-108         If .flags.Muerto = 1 Then
+108         If .flags.Muerto Then
 110             velocidad = VelocidadMuerto
 112             GoTo UpdateSpeed ' Los muertos no tienen modificadores de velocidad
             End If

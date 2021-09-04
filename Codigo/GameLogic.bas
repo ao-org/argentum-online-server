@@ -867,7 +867,7 @@ Function LegalWalk(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer,
 108         If .NpcIndex <> 0 Then Exit Function
 
 110         If .UserIndex <> 0 Then
-112             If UserList(.UserIndex).flags.AdminInvisible = 0 And UserList(.UserIndex).flags.Muerto = 0 Then
+112             If UserList(.UserIndex).flags.AdminInvisible = 0 And Not UserList(.UserIndex).flags.Muerto Then
                     Exit Function
                 End If
             End If
@@ -956,7 +956,7 @@ Function LegalWalkNPC(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integ
 
 114     If Not PuedePisar Then
 116         If .UserIndex Then
-118             If UserList(.UserIndex).flags.AdminInvisible = 0 And UserList(.UserIndex).flags.Muerto = 0 Then
+118             If UserList(.UserIndex).flags.AdminInvisible = 0 And Not UserList(.UserIndex).flags.Muerto Then
                     Exit Function
                 End If
 120         ElseIf .NpcIndex Then

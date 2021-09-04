@@ -1461,7 +1461,7 @@ Private Sub GameTimer_Timer()
                 
                 Call DoTileEvents(iUserIndex, .Pos.Map, .Pos.X, .Pos.Y)
 
-                If .flags.Muerto = 0 Then
+                If Not .flags.Muerto Then
                     
                     'Efectos en mapas
                     If (.flags.Privilegios And e_PlayerType.user) <> 0 Then

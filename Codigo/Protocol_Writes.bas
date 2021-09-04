@@ -3419,7 +3419,7 @@ Public Sub WritePersonajesDeCuenta(ByVal UserIndex As Integer, Personajes As Obj
             End If
             
             Cabeza = Personaje.Item("head_id")
-            If Personaje.Item("is_dead") Or Personaje.Item("is_sailing") Then
+            If Personaje.Item("min_hp") = 0 Or Personaje.Item("is_sailing") Then
                 Cabeza = 0
             End If
 
