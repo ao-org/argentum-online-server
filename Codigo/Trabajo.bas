@@ -471,7 +471,7 @@ Public Sub DoNavega(ByVal UserIndex As Integer, _
 154             .Invent.BarcoObjIndex = 0
 156             .Invent.BarcoSlot = 0
     
-158             If .flags.Muerto = 0 Then
+158             If Not .flags.Muerto Then
 160                 .Char.Head = .OrigChar.Head
         
 162                 If .Invent.ArmourEqpObjIndex > 0 Then
@@ -1576,7 +1576,7 @@ Sub TratarDeHacerFogata(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Int
 
         End If
 
-118     If UserList(UserIndex).flags.Muerto = 1 Then
+118     If UserList(UserIndex).flags.Muerto Then
 120         Call WriteConsoleMsg(UserIndex, "No podés hacer fogatas estando muerto.", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
 
@@ -1702,7 +1702,7 @@ Public Sub DoPescar(ByVal UserIndex As Integer, Optional ByVal RedDePesca As Boo
 146                     If Not MeterItemEnInventario(UserIndex, MiObj) Then Call TirarItemAlPiso(.Pos, MiObj)
                     
                         ' Le mandamos un mensaje
-148                     Call WriteConsoleMsg(UserIndex, "¡Has conseguido " & ObjData(EspecialesPesca(I).ObjIndex).Name & "!", e_FontTypeNames.FONTTYPE_INFO)
+148                     Call WriteConsoleMsg(UserIndex, "¡Has conseguido " & ObjData(EspecialesPesca(i).ObjIndex).Name & "!", e_FontTypeNames.FONTTYPE_INFO)
                     End If
 
                 Next
@@ -2408,7 +2408,7 @@ Public Sub DoMineria(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byt
 154                     If Not MeterItemEnInventario(UserIndex, MiObj) Then Call TirarItemAlPiso(.Pos, MiObj)
 
                         ' Le mandamos un mensaje
-156                     Call WriteConsoleMsg(UserIndex, "¡Has conseguido " & ObjData(Yacimiento.Item(I).ObjIndex).Name & "!", e_FontTypeNames.FONTTYPE_INFO)
+156                     Call WriteConsoleMsg(UserIndex, "¡Has conseguido " & ObjData(Yacimiento.Item(i).ObjIndex).Name & "!", e_FontTypeNames.FONTTYPE_INFO)
                     End If
     
                 Next

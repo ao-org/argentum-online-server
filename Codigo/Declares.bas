@@ -291,6 +291,8 @@ Public Const EspadaMataDragonesIndex As Integer = 402
 
 Public Const MAXMASCOTASENTRENADOR   As Byte = 7
 
+Public Const MAX_PERSONAJES = 10
+
 Public Enum e_FXSound
 
     Lobo_Sound = 124
@@ -436,8 +438,6 @@ Public Enum e_PartesCuerpo
 End Enum
 
 Public Const Guardias As Integer = 6
-
-Public Const MAX_PERSONAJES = 10
 
 Public Const MAXORO         As Long = 90000000
 
@@ -1511,12 +1511,11 @@ Public Type t_UserFlags
     Montado As Byte
     Subastando As Boolean
     Incinerado As Byte
-    'Ladder
-    Muerto As Byte '¿Esta muerto?
+
+    Muerto As Boolean '¿Esta muerto?
     Escondido As Byte '¿Esta escondido?
     Comerciando As Boolean '¿Esta comerciando?
     UserLogged As Boolean '¿Esta online?
-    FirstPacket As Boolean ' ¿El socket envió algun paquete válido?
     Meditando As Boolean
     Escribiendo As Boolean
     Crafteando As Byte
@@ -1859,7 +1858,8 @@ Public Type t_User
     #End If
 
     IP As String
-    
+    UUID As String
+
     '[Alejo]
     ComUsu As t_ComercioUsuario
     '[/Alejo]
@@ -1882,7 +1882,7 @@ Public Type t_User
 
     QuestStats As t_QuestStats
 
-    Keys(1 To MAXKEYS) As Integer
+    keys(1 To MAXKEYS) As Integer
     
     #If AntiExternos = 1 Then
         XorIndexIn As Integer
@@ -1892,6 +1892,8 @@ Public Type t_User
     CraftInventory(1 To MAX_SLOTS_CRAFTEO) As Integer
     CraftCatalyst As t_Obj
     CraftResult As clsCrafteo
+    
+    WaitingPacket As Integer
 
 End Type
 
@@ -2307,6 +2309,10 @@ Public ServerSoloGMs                     As Integer
 Public EnPausa                           As Boolean
 
 Public EnTesting                         As Boolean
+
+Public Manager                           As ServerManager
+
+Public MANAGER_PORT                      As Integer
 
 '*****************ARRAYS PUBLICOS*************************
 Public UserList()                         As t_User 'USUARIOS

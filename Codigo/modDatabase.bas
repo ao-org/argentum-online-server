@@ -17,7 +17,7 @@ Public Database_Name        As String
 Public Database_Username    As String
 Public Database_Password    As String
 
-Private Const MAX_ASYNC           As Byte = 20
+Private Const MAX_ASYNC     As Byte = 20
 Private Current_async       As Byte
 
 Private Connection          As ADODB.Connection
@@ -33,7 +33,12 @@ Public Sub Database_Connect_Async()
         If Len(Database_Source) <> 0 Then
 104         ConnectionID = "DATA SOURCE=" & Database_Source & ";"
         Else
-106         ConnectionID = "DRIVER={SQLite3 ODBC Driver};" & "DATABASE=" & App.Path & "/Database.db"
+106         ConnectionID = "DRIVER={MySQL ODBC 8.0 ANSI Driver};" & _
+                            "SERVER=" & Database_Host & ";" & _
+                            "DATABASE=" & Database_Name & ";" & _
+                            "USER=" & Database_Username & ";" & _
+                            "PASSWORD=" & Database_Password & ";" & _
+                            "OPTION=3;MULTI_STATEMENTS=1"
         End If
                 
         Dim i As Byte
@@ -42,12 +47,13 @@ Public Sub Database_Connect_Async()
             Set Connection_async(i) = New ADODB.Connection
 110         Connection_async(i).CursorLocation = adUseClient
             Connection_async(i).ConnectionString = ConnectionID
-112         Call Connection_async(i).Open(, , , adAsyncConnect)
+112         Call Connection_async(i).Open
         Next i
 
         Current_async = 1
         
 113     Set Builder = New cStringBuilder
+
         Call InitDatabase
         
         Exit Sub
@@ -55,6 +61,7 @@ Public Sub Database_Connect_Async()
 Database_Connect_AsyncErr:
 116     Call LogDatabaseError("Database Error: " & Err.Number & " - " & Err.Description)
 End Sub
+
 Public Sub Database_Connect()
         On Error GoTo Database_Connect_Err
         
@@ -1150,7 +1157,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
 
 466             While Not RS.EOF
 
-468                 .Keys(LoopC) = RS!key_obj
+468                 .keys(LoopC) = RS!key_obj
 470                 LoopC = LoopC + 1
 
 472                 RS.MoveNext
@@ -1302,62 +1309,6 @@ ErrorHandler:
     
 End Function
 
-Public Function GetPersonajesCuentaDatabase(ByVal AccountID As Long, Personaje() As t_PersonajeCuenta) As Byte
-        
-        On Error GoTo GetPersonajesCuentaDatabase_Err
-        
-        Dim RS As ADODB.Recordset
-100     Set RS = Query("SELECT name, head_id, class_id, body_id, pos_map, pos_x, pos_y, level, status, helmet_id, shield_id, weapon_id, guild_index, is_dead, is_sailing FROM user WHERE account_id = ?;", AccountID)
-
-102     If RS Is Nothing Then Exit Function
-    
-104     GetPersonajesCuentaDatabase = RS.RecordCount
-
-        Dim i As Integer
-
-108     For i = 1 To GetPersonajesCuentaDatabase
-110         Personaje(i).nombre = RS!Name
-112         Personaje(i).Cabeza = RS!head_id
-114         Personaje(i).clase = RS!class_id
-116         Personaje(i).cuerpo = RS!body_id
-118         Personaje(i).Mapa = RS!pos_map
-120         Personaje(i).posX = RS!pos_x
-122         Personaje(i).posY = RS!pos_y
-124         Personaje(i).nivel = RS!level
-126         Personaje(i).Status = RS!Status
-128         Personaje(i).Casco = RS!helmet_id
-130         Personaje(i).Escudo = RS!shield_id
-132         Personaje(i).Arma = RS!weapon_id
-134         Personaje(i).ClanIndex = RS!Guild_Index
-        
-136         If EsRolesMaster(Personaje(i).nombre) Then
-138             Personaje(i).Status = 3
-140         ElseIf EsConsejero(Personaje(i).nombre) Then
-142             Personaje(i).Status = 4
-144         ElseIf EsSemiDios(Personaje(i).nombre) Then
-146             Personaje(i).Status = 5
-148         ElseIf EsDios(Personaje(i).nombre) Then
-150             Personaje(i).Status = 6
-152         ElseIf EsAdmin(Personaje(i).nombre) Then
-154             Personaje(i).Status = 7
-
-            End If
-
-156         If val(RS!is_dead) = 1 Or val(RS!is_sailing) = 1 Then
-158             Personaje(i).Cabeza = 0
-            End If
-        
-160         RS.MoveNext
-        Next
-
-        Exit Function
-
-GetPersonajesCuentaDatabase_Err:
-162     Call TraceError(Err.Number, Err.Description, "modDatabase.GetPersonajesCuentaDatabase", Erl)
-
-        
-End Function
-
 Public Sub SetUsersLoggedDatabase(ByVal NumUsers As Long)
         
         On Error GoTo SetUsersLoggedDatabase_Err
@@ -1476,21 +1427,6 @@ SaveUserHeadDatabase_Err:
 102     Call TraceError(Err.Number, Err.Description, "modDatabase.SaveUserHeadDatabase", Erl)
 
         
-End Sub
-
-Public Sub BorrarUsuarioDatabase(Name As String)
-
-        On Error GoTo ErrorHandler
-
-        Call Execute("insert into user_deleted select * from user where name = ?;", Name)
-        Call Execute("delete from user where name = ?;", Name)
-        Call Execute("UPDATE user_deleted set deleted = CURRENT_TIMESTAMP where name = ?;", Name)
-
-        Exit Sub
-    
-ErrorHandler:
-102     Call LogDatabaseError("Error en BorrarUsuarioDatabase borrando user de la Mysql Database: " & Name & ". " & Err.Number & " - " & Err.Description)
-
 End Sub
 
 Public Sub SaveBanDatabase(UserName As String, Reason As String, BannedBy As String)
@@ -2134,19 +2070,19 @@ Public Sub VerLlavesDatabase(ByVal UserIndex As Integer)
 108         Call WriteConsoleMsg(UserIndex, "No hay llaves otorgadas por el momento.", e_FontTypeNames.FONTTYPE_INFO)
     
         Else
-            Dim Message As String
+            Dim message As String
         
-110         Message = "Llaves usadas: " & RS.RecordCount & vbNewLine
+110         message = "Llaves usadas: " & RS.RecordCount & vbNewLine
 
 114         While Not RS.EOF
-116             Message = Message & "Llave: " & RS!key_obj & " - Cuenta: " & RS!Email & vbNewLine
+116             message = message & "Llave: " & RS!key_obj & " - Cuenta: " & RS!Email & vbNewLine
 
 118             RS.MoveNext
             Wend
         
-120         Message = Left$(Message, Len(Message) - 2)
+120         message = Left$(message, Len(message) - 2)
         
-122         Call WriteConsoleMsg(UserIndex, Message, e_FontTypeNames.FONTTYPE_INFO)
+122         Call WriteConsoleMsg(UserIndex, message, e_FontTypeNames.FONTTYPE_INFO)
         End If
 
         Exit Sub
@@ -2171,8 +2107,8 @@ SanitizeNullValue_Err:
         
 End Function
 
-Public Sub SetMessageInfoDatabase(ByVal Name As String, ByVal Message As String)
-    Call Execute("update user set message_info = concat(message_info, ?) where upper(name) = ?;", Message, UCase$(Name))
+Public Sub SetMessageInfoDatabase(ByVal Name As String, ByVal message As String)
+    Call Execute("update user set message_info = concat(message_info, ?) where upper(name) = ?;", message, UCase$(Name))
 End Sub
 
 Public Sub ChangeNameDatabase(ByVal CurName As String, ByVal NewName As String)

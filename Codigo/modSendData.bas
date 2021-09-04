@@ -385,7 +385,7 @@ Private Sub SendToUsersMuertosArea(ByVal UserIndex As Integer, ByVal Buffer As N
                         
                         ' Envio a los que estan MUERTOS y a los GMs cercanos.
 
-120                     If UserList(tempIndex).flags.Muerto = 1 Or EsGM(tempIndex) Then
+120                     If UserList(tempIndex).flags.Muerto Or EsGM(tempIndex) Then
                         
 122                         Call modNetwork.Send(tempIndex, Buffer)
                             
@@ -672,7 +672,7 @@ Private Sub SendToDeadUserArea(ByVal UserIndex As Integer, ByVal Buffer As Netwo
 116             If UserList(tempIndex).AreasInfo.AreaReciveY And AreaY Then
 
                     'Dead and admins read
-118                 If UserList(tempIndex).ConnIDValida = True And (UserList(tempIndex).flags.Muerto = 1 Or (UserList(tempIndex).flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios Or e_PlayerType.Consejero)) <> 0) Then
+118                 If UserList(tempIndex).ConnIDValida = True And (UserList(tempIndex).flags.Muerto Or (UserList(tempIndex).flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios Or e_PlayerType.Consejero)) <> 0) Then
 120                     Call modNetwork.Send(tempIndex, Buffer)
 
                     End If

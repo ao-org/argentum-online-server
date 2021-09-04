@@ -48,7 +48,6 @@ Public Enum ServerPacketID
     ConsoleMsg              ' || - Beware!! its the same as above, but it was properly splitted
     GuildChat               ' |+   40
     ShowMessageBox          ' !!
-    MostrarCuenta
     CharacterCreate         ' CC
     CharacterRemove         ' BP
     CharacterMove           ' MP, +, * and _ '
@@ -368,7 +367,7 @@ Private Enum ClientPacketID
     GuildMemberList         '/MIEMBROSCLAN
     GuildBan                '/BANCLAN
     banip                   '/BANIP
-    UnbanIP                 '/UNBANIP
+    UnBanIp                 '/UNBANIP
     CreateItem              '/CI
     DestroyItems            '/DEST
     ChaosLegionKick         '/NOCAOS
@@ -464,8 +463,8 @@ Private Enum ClientPacketID
     HecharDeGrupo
     MacroPossent
     SubastaInfo
-    bancuenta
-    unBanCuenta
+    BanCuenta
+    UnbanCuenta
     CerrarCliente
     EventoInfo
     CrearEvento
@@ -478,7 +477,7 @@ Private Enum ClientPacketID
     CompletarViaje
     BovedaMoveItem
     QuieroFundarClan
-    LlamadadeClan
+    llamadadeclan
     MarcaDeClanPack
     MarcaDeGMPack
     Quest
@@ -530,7 +529,7 @@ Public Enum e_EditOptions
     eo_Raza
     eo_Arma
     eo_Escudo
-    eo_Casco
+    eo_CASCO
     eo_Particula
     eo_Vida
     eo_Mana
@@ -595,24 +594,6 @@ Public Enum e_FontTypeNames
     
 End Enum
 
-Public Type t_PersonajeCuenta
-
-    nombre As String
-    nivel As Byte
-    Mapa As Integer
-    posX As Integer
-    posY As Integer
-    cuerpo As Integer
-    Cabeza As Integer
-    Status As Byte
-    clase As Byte
-    Arma As Integer
-    Escudo As Integer
-    Casco As Integer
-    ClanIndex As Integer
-
-End Type
-
 Private Reader  As Network.Reader
 
 Public Sub InitializePacketList()
@@ -624,36 +605,47 @@ End Sub
 '
 ' @param    UserIndex The index of the user sending the message.
 
-Public Function HandleIncomingData(ByVal UserIndex As Integer, ByVal Message As Network.Reader) As Boolean
+Public Function HandleIncomingData(ByVal UserIndex As Integer, ByVal message As Network.Reader) As Boolean
 
 On Error Resume Next
 
-    Set Reader = Message
+    Set Reader = message
+    
+    ' TODO: Rever
+    If UserList(UserIndex).WaitingPacket >= 0 Then
+        Call Reader.Skip(Reader.GetAvailable)
+        Exit Function
+    End If
     
     Dim PacketID As Long:
     PacketID = Reader.ReadInt
+    
+    ' Es un paquete válido?
+    If PacketID < 0 Or PacketID >= ClientPacketID.[PacketCount] Then
+        ' Lo echamos
+        Call CloseSocket(UserIndex)
+        Exit Function
+    End If
 
-    'Does the packet requires a logged user??
-    If Not (PacketID = ClientPacketID.LoginExistingChar Or _
-            PacketID = ClientPacketID.LoginNewChar Or _
-            PacketID = ClientPacketID.IngresarConCuenta Or _
-            PacketID = ClientPacketID.BorrarPJ Or _
-            PacketID = ClientPacketID.ThrowDice Or _
-            PacketID = ClientPacketID.GuardNoticeResponse) Then
-               
-        'Is the user actually logged?
-        If Not UserList(UserIndex).flags.UserLogged Then
+    ' Está ingresando a la cuenta?
+    If PacketID = ClientPacketID.IngresarConCuenta Then
+        ' Ya estaba logueado en la cuenta?
+        If UserList(UserIndex).AccountID >= 0 Then
+            ' Lo echamos
             Call CloseSocket(UserIndex)
             Exit Function
-        
-        'He is logged. Reset idle counter if id is valid.
-        ElseIf PacketID <= ClientPacketID.[PacketCount] Then
-            UserList(UserIndex).Counters.IdleCount = 0
         End If
-    ElseIf PacketID <= ClientPacketID.[PacketCount] Then
-        UserList(UserIndex).Counters.IdleCount = 0
+    Else
+        ' No está logueado en la cuenta?
+        If UserList(UserIndex).AccountID < 0 Then
+            ' Ignoramos el paquete
+            Call Reader.Skip(Reader.GetAvailable)
+            Exit Function
+        End If
     End If
     
+    UserList(UserIndex).Counters.IdleCount = 0
+
     Select Case PacketID
         Case ClientPacketID.LoginExistingChar
             Call HandleLoginExistingChar(UserIndex)
@@ -1293,8 +1285,8 @@ On Error Resume Next
             Err.raise -1, "Invalid Message"
     End Select
     
-    If (Message.GetAvailable() > 0) Then
-        Err.raise &HDEADBEEF, "HandleIncomingData", "El paquete '" & PacketID & "' se encuentra en mal estado con '" & Message.GetAvailable() & "' bytes de mas por el usuario '" & UserList(UserIndex).Name & "'"
+    If (message.GetAvailable() > 0) Then
+        Err.raise &HDEADBEEF, "HandleIncomingData", "El paquete '" & PacketID & "' se encuentra en mal estado con '" & message.GetAvailable() & "' bytes de mas por el usuario '" & UserList(UserIndex).Name & "'"
     End If
     
 HandleIncomingData_Err:
@@ -1328,47 +1320,32 @@ Private Sub HandleLoginExistingChar(ByVal UserIndex As Integer)
         Dim Password    As String
         Dim Version     As String
         Dim MD5         As String
-
-102         CuentaEmail = Reader.ReadString8()
-104         Password = Reader.ReadString8()
-106         Version = CStr(Reader.ReadInt8()) & "." & CStr(Reader.ReadInt8()) & "." & CStr(Reader.ReadInt8())
-108         UserName = Reader.ReadString8()
-114         MD5 = Reader.ReadString8()
-
-        #If DEBUGGING = False Then
-
-116         If Not VersionOK(Version) Then
-118             Call WriteShowMessageBox(UserIndex, "Esta versión del juego es obsoleta, la versión correcta es la " & ULTIMAVERSION & ". Ejecute el launcher por favor.")
-120             Call CloseSocket(UserIndex)
-                Exit Sub
-
-            End If
-
-        #End If
         
-122     If EsGmChar(UserName) Then
-            
-124         If AdministratorAccounts(UCase$(UserName)) <> UCase$(CuentaEmail) Then
-130             Call CloseSocket(UserIndex)
+        With UserList(UserIndex)
+
+108         UserName = Reader.ReadString8()
+    
+            If .AccountID < 0 Then Exit Sub
+    
+122         If EsGmChar(UserName) Then
+                
+124             If AdministratorAccounts(UCase$(UserName)) <> .Email Then
+                    Call WriteShowMessageBox(UserIndex, "Este personaje pertenece a un Game Master.")
+130                 Call CloseSocket(UserIndex)
+                    Exit Sub
+                End If
+                
+            End If
+
+136         If Not AsciiValidos(UserName) Then
+138             Call WriteShowMessageBox(UserIndex, "Nombre invalido.")
+140             Call CloseSocket(UserIndex)
                 Exit Sub
             End If
-            
-        End If
-  
-132     If Not EntrarCuenta(UserIndex, CuentaEmail, Password, MD5) Then
-134         Call CloseSocket(UserIndex)
-            Exit Sub
+    
+180         Call ConnectUser(UserIndex, UserName)
 
-        End If
-
-136     If Not AsciiValidos(UserName) Then
-138         Call WriteShowMessageBox(UserIndex, "Nombre invalido.")
-140         Call CloseSocket(UserIndex)
-            Exit Sub
-
-        End If
-
-180     Call ConnectUser(UserIndex, UserName, CuentaEmail)
+        End With
 
         Exit Sub
     
@@ -1397,73 +1374,37 @@ Private Sub HandleLoginNewChar(ByVal UserIndex As Integer)
         Dim Hogar    As e_Ciudad
         Dim Class As e_Class
         Dim Head        As Integer
-        Dim CuentaEmail As String
-        Dim Password    As String
-        Dim MD5         As String
-        Dim Version     As String
 
-102         CuentaEmail = Reader.ReadString8()
-104         Password = Reader.ReadString8()
-106         Version = CStr(Reader.ReadInt8()) & "." & CStr(Reader.ReadInt8()) & "." & CStr(Reader.ReadInt8())
-108         UserName = Reader.ReadString8()
-110         race = Reader.ReadInt8()
-112         gender = Reader.ReadInt8()
-114         Class = Reader.ReadInt8()
-116         Head = Reader.ReadInt16()
-118         Hogar = Reader.ReadInt8()
-124         MD5 = Reader.ReadString8()
+108     UserName = Reader.ReadString8()
+110     race = Reader.ReadInt8()
+112     gender = Reader.ReadInt8()
+114     Class = Reader.ReadInt8()
+116     Head = Reader.ReadInt16()
+118     Hogar = Reader.ReadInt8()
+
+        If UserList(UserIndex).AccountID < 0 Then Exit Sub
 
 126     If PuedeCrearPersonajes = 0 Then
 128         Call WriteShowMessageBox(UserIndex, "La creacion de personajes en este servidor se ha deshabilitado.")
-130         Call CloseSocket(UserIndex)
             Exit Sub
-
         End If
 
 132     If aClon.MaxPersonajes(UserList(UserIndex).IP) Then
 134         Call WriteShowMessageBox(UserIndex, "Has creado demasiados personajes.")
-136         Call CloseSocket(UserIndex)
             Exit Sub
-
         End If
-
-        #If DEBUGGING = False Then
-
-142         If Not VersionOK(Version) Then
-144             Call WriteShowMessageBox(UserIndex, "Esta versión del juego es obsoleta, la versión correcta es la " & ULTIMAVERSION & ". Ejecute el launcher por favor.")
-146             Call CloseSocket(UserIndex)
-                Exit Sub
-
-            End If
-
-        #End If
         
 148     If EsGmChar(UserName) Then
-            
-150         If AdministratorAccounts(UCase$(UserName)) <> UCase$(CuentaEmail) Then
-152             Call WriteShowMessageBox(UserIndex, "El nombre de usuario ingresado está siendo ocupado por un miembro del Staff.")
-154             Call CloseSocket(UserIndex)
-                Exit Sub
 
+150         If AdministratorAccounts(UCase$(UserName)) <> UserList(UserIndex).Email Then
+152             Call WriteShowMessageBox(UserIndex, "El nombre de usuario ingresado está siendo ocupado por un miembro del Staff.")
+                Exit Sub
             End If
             
         End If
-
-156     If Not EntrarCuenta(UserIndex, CuentaEmail, Password, MD5) Then
-158         Call CloseSocket(UserIndex)
-            Exit Sub
-
-        End If
         
-160     If GetPersonajesCountByIDDatabase(UserList(UserIndex).AccountID) >= MAX_PERSONAJES Then
-162         Call CloseSocket(UserIndex)
+164     If Not ConnectNewUser(UserIndex, UserName, race, gender, Class, Head, UserList(UserIndex).Email, Hogar) Then
             Exit Sub
-        End If
-        
-164     If Not ConnectNewUser(UserIndex, UserName, race, gender, Class, Head, CuentaEmail, Hogar) Then
-166         Call CloseSocket(UserIndex)
-            Exit Sub
-
         End If
         
         Exit Sub
@@ -1572,7 +1513,7 @@ Private Sub HandleTalk(ByVal UserIndex As Integer)
                     
 144                 .flags.ChatHistory(UBound(.flags.ChatHistory)) = chat
                 
-146                 If .flags.Muerto = 1 Then
+146                 If .flags.Muerto Then
                         'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageChatOverHead(chat, .Char.CharIndex, CHAT_COLOR_DEAD_CHAR, UserList(UserIndex).Name))
 148                     Call SendData(SendTarget.ToUsuariosMuertos, UserIndex, PrepareMessageChatOverHead(chat, .Char.CharIndex, CHAT_COLOR_DEAD_CHAR))
                     
@@ -1615,7 +1556,7 @@ Private Sub HandleYell(ByVal UserIndex As Integer)
             Dim chat As String
 102             chat = Reader.ReadString8()
         
-104         If UserList(UserIndex).flags.Muerto = 1 Then
+104         If UserList(UserIndex).flags.Muerto Then
         
 106             Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
                 ' Call WriteConsoleMsg(UserIndex, "¡¡Estás muerto!! Los muertos no pueden comunicarse con el mundo de los vivos.", e_FontTypeNames.FONTTYPE_INFO)
@@ -1973,7 +1914,7 @@ Private Sub HandleAttack(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
     
             'If dead, can't attack
-102         If .flags.Muerto = 1 Then
+102         If .flags.Muerto Then
 104             Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
                 'Call WriteConsoleMsg(UserIndex, "¡No podes atacar a nadie porque estas muerto!!.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
@@ -2066,7 +2007,7 @@ Private Sub HandlePickUp(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             'If dead, it can't pick up objects
-102         If .flags.Muerto = 1 Then
+102         If .flags.Muerto Then
                 'Call WriteConsoleMsg(UserIndex, "¡¡Estás muerto!! Los muertos no pueden tomar objetos.", e_FontTypeNames.FONTTYPE_INFO)
 104             Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
@@ -2494,7 +2435,7 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
 108         If amount <= 0 Then Exit Sub
 
             'low rank admins can't drop item. Neither can the dead nor those sailing or riding a horse.
-110         If .flags.Muerto = 1 Then Exit Sub
+110         If .flags.Muerto Then Exit Sub
                       
             'If the user is trading, he can't drop items => He's cheating, we kick him.
 112         If .flags.Comerciando Then Exit Sub
@@ -2593,7 +2534,7 @@ Private Sub HandleCastSpell(ByVal UserIndex As Integer)
             Dim Spell As Byte
 102             Spell = Reader.ReadInt8()
         
-104         If .flags.Muerto = 1 Then
+104         If .flags.Muerto Then
                 'Call WriteConsoleMsg(UserIndex, "¡¡Estás muerto!!.", e_FontTypeNames.FONTTYPE_INFO)
 106             Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
@@ -2727,7 +2668,7 @@ Private Sub HandleWork(ByVal UserIndex As Integer)
             Dim Skill As e_Skill
 102             Skill = Reader.ReadInt8()
         
-104         If UserList(UserIndex).flags.Muerto = 1 Then
+104         If UserList(UserIndex).flags.Muerto Then
                 'Call WriteConsoleMsg(UserIndex, "¡¡Estás muerto!!.", e_FontTypeNames.FONTTYPE_INFO)
 106             Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
@@ -3015,7 +2956,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
             .Trabajo.Target_Y = Y
             .Trabajo.TargetSkill = Skill
             
-108         If .flags.Muerto = 1 Or .flags.Descansar Or Not InMapBounds(.Pos.Map, X, Y) Then Exit Sub
+108         If .flags.Muerto Or .flags.Descansar Or Not InMapBounds(.Pos.Map, X, Y) Then Exit Sub
 
 110         If Not InRangoVision(UserIndex, X, Y) Then
 112             Call WritePosUpdate(UserIndex)
@@ -3337,7 +3278,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 
                             'Can't steal administrative players
 512                         If UserList(tU).flags.Privilegios And e_PlayerType.user Then
-514                             If UserList(tU).flags.Muerto = 0 Then
+514                             If Not UserList(tU).flags.Muerto Then
                                     Dim DistanciaMaxima As Integer
 
 516                                 If .clase = e_Class.Thief Then
@@ -3357,14 +3298,14 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                                  
                                     '17/09/02
                                     'Check the trigger
-528                                 If MapData(UserList(tU).Pos.Map, UserList(tU).Pos.X, UserList(tU).Pos.Y).trigger = e_Trigger.ZONASEGURA Then
+528                                 If MapData(UserList(tU).Pos.Map, UserList(tU).Pos.X, UserList(tU).Pos.Y).trigger = e_Trigger.ZonaSegura Then
 530                                     Call WriteConsoleMsg(UserIndex, "No podés robar aquí.", e_FontTypeNames.FONTTYPE_WARNING)
 532                                     Call WriteWorkRequestTarget(UserIndex, 0)
                                         Exit Sub
 
                                     End If
                                  
-534                                 If MapData(.Pos.Map, .Pos.X, .Pos.Y).trigger = e_Trigger.ZONASEGURA Then
+534                                 If MapData(.Pos.Map, .Pos.X, .Pos.Y).trigger = e_Trigger.ZonaSegura Then
 536                                     Call WriteConsoleMsg(UserIndex, "No podés robar aquí.", e_FontTypeNames.FONTTYPE_WARNING)
 538                                     Call WriteWorkRequestTarget(UserIndex, 0)
                                         Exit Sub
@@ -3495,7 +3436,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 
                         'Can't steal administrative players
 622                     If UserList(UserIndex).Grupo.EnGrupo = False Then
-624                         If UserList(tU).flags.Muerto = 0 Then
+624                         If Not UserList(tU).flags.Muerto Then
 626                             If Abs(.Pos.X - X) + Abs(.Pos.Y - Y) > 8 Then
 628                                 Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
                                     'Call WriteConsoleMsg(UserIndex, "Estís demasiado lejos.", e_FontTypeNames.FONTTYPE_INFO)
@@ -3578,7 +3519,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 684                     If UserList(tU).flags.AdminInvisible <> 0 Then Exit Sub
 
                         'Can't steal administrative players
-686                     If UserList(tU).flags.Muerto = 0 Then
+686                     If Not UserList(tU).flags.Muerto Then
 
                             'call marcar
 688                         If UserList(tU).flags.invisible = 1 Or UserList(tU).flags.Oculto = 1 Then
@@ -3753,7 +3694,7 @@ Private Sub HandleEquipItem(ByVal UserIndex As Integer)
 102             itemSlot = Reader.ReadInt8()
         
             'Dead users can't equip items
-104         If .flags.Muerto = 1 Then
+104         If .flags.Muerto Then
 106             Call WriteConsoleMsg(UserIndex, "¡¡Estás muerto!! Sólo podés usar items cuando estás vivo.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
@@ -3969,7 +3910,7 @@ Private Sub HandleCommerceBuy(ByVal UserIndex As Integer)
 104         amount = Reader.ReadInt16()
         
             'Dead people can't commerce...
-106         If .flags.Muerto = 1 Then
+106         If .flags.Muerto Then
 108             Call WriteConsoleMsg(UserIndex, "¡¡Estás muerto!!", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
@@ -4032,7 +3973,7 @@ Private Sub HandleBankExtractItem(ByVal UserIndex As Integer)
 106         slotdestino = Reader.ReadInt8()
         
             'Dead people can't commerce
-108         If .flags.Muerto = 1 Then
+108         If .flags.Muerto Then
 110             Call WriteConsoleMsg(UserIndex, "¡¡Estás muerto!!", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
@@ -4081,7 +4022,7 @@ Private Sub HandleCommerceSell(ByVal UserIndex As Integer)
 104         amount = Reader.ReadInt16()
         
             'Dead people can't commerce...
-106         If .flags.Muerto = 1 Then
+106         If .flags.Muerto Then
 108             Call WriteConsoleMsg(UserIndex, "¡¡Estás muerto!!", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
@@ -4136,7 +4077,7 @@ Private Sub HandleBankDeposit(ByVal UserIndex As Integer)
 106         slotdestino = Reader.ReadInt8()
         
             'Dead people can't commerce...
-108         If .flags.Muerto = 1 Then
+108         If .flags.Muerto Then
 110             Call WriteConsoleMsg(UserIndex, "¡¡Estás muerto!!", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
@@ -4362,7 +4303,7 @@ Private Sub HandleUserCommerceOffer(ByVal UserIndex As Integer)
             Else
 
                 'Is he alive??
-120             If UserList(tUser).flags.Muerto = 1 Then
+120             If UserList(tUser).flags.Muerto Then
 122                 Call FinComerciarUsu(UserIndex)
                     Exit Sub
 
@@ -5460,7 +5401,7 @@ Private Sub HandleRequestAccountState(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             'Dead people can't check their accounts
-102         If .flags.Muerto = 1 Then
+102         If .flags.Muerto Then
 104             Call WriteConsoleMsg(UserIndex, "¡¡Estás muerto!!", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
@@ -5533,7 +5474,7 @@ Private Sub HandlePetStand(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             'Dead people can't use pets
-102         If .flags.Muerto = 1 Then
+102         If .flags.Muerto Then
 104             Call WriteConsoleMsg(UserIndex, "¡¡Estás muerto!!", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
@@ -5588,7 +5529,7 @@ Private Sub HandlePetFollow(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             'Dead users can't use pets
-102         If .flags.Muerto = 1 Then
+102         If .flags.Muerto Then
 104             Call WriteConsoleMsg(UserIndex, "¡¡Estás muerto!!", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
@@ -5639,7 +5580,7 @@ Private Sub HandlePetLeave(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             'Dead users can't use pets
-102         If .flags.Muerto = 1 Then
+102         If .flags.Muerto Then
 104             Call WriteConsoleMsg(UserIndex, "¡¡Estás muerto!!", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
@@ -5739,7 +5680,7 @@ Private Sub HandleTrainList(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             'Dead users can't use pets
-102         If .flags.Muerto = 1 Then
+102         If .flags.Muerto Then
 104             Call WriteConsoleMsg(UserIndex, "¡¡Estás muerto!!", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
@@ -5792,7 +5733,7 @@ Private Sub HandleRest(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             'Dead users can't use pets
-102         If .flags.Muerto = 1 Then
+102         If .flags.Muerto Then
 104             Call WriteConsoleMsg(UserIndex, "¡¡Estás muerto!! Solo podés usar items cuando estás vivo.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
@@ -5858,7 +5799,7 @@ Private Sub HandleMeditate(ByVal UserIndex As Integer)
             'Las clases NO MAGICAS no meditan...
 104         If .clase = e_Class.Hunter Or .clase = e_Class.Trabajador Or .clase = e_Class.Warrior Or .clase = e_Class.Pirat Or .clase = e_Class.Thief Then Exit Sub
 
-106         If .flags.Muerto = 1 Then
+106         If .flags.Muerto Then
 108             Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
@@ -5940,7 +5881,7 @@ Private Sub HandleResucitate(ByVal UserIndex As Integer)
             End If
         
             'Validate NPC and make sure player is dead
-106         If (NpcList(.flags.TargetNPC).NPCtype <> e_NPCType.Revividor And (NpcList(.flags.TargetNPC).NPCtype <> e_NPCType.ResucitadorNewbie Or Not EsNewbie(UserIndex))) Or .flags.Muerto = 0 Then Exit Sub
+106         If (NpcList(.flags.TargetNPC).NPCtype <> e_NPCType.Revividor And (NpcList(.flags.TargetNPC).NPCtype <> e_NPCType.ResucitadorNewbie Or Not EsNewbie(UserIndex))) Or Not .flags.Muerto Then Exit Sub
         
             'Make sure it's close enough
 108         If Distancia(.Pos, NpcList(.flags.TargetNPC).Pos) > 10 Then
@@ -6076,7 +6017,7 @@ Private Sub HandleCommerceStart(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             'Dead people can't commerce
-102         If .flags.Muerto = 1 Then
+102         If .flags.Muerto Then
                 'Call WriteConsoleMsg(UserIndex, "¡¡Estás muerto!!", e_FontTypeNames.FONTTYPE_INFO)
 104             Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
@@ -6140,7 +6081,7 @@ Private Sub HandleCommerceStart(ByVal UserIndex As Integer)
                 End If
                 
                 'Is the other one dead??
-138             If UserList(.flags.TargetUser).flags.Muerto = 1 Then
+138             If UserList(.flags.TargetUser).flags.Muerto Then
                     Call FinComerciarUsu(.flags.TargetUser, True)
 140                 Call WriteConsoleMsg(UserIndex, "¡¡No podés comerciar con los muertos!!", e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
@@ -6219,7 +6160,7 @@ Private Sub HandleBankStart(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             'Dead people can't commerce
-102         If .flags.Muerto = 1 Then
+102         If .flags.Muerto Then
 104             Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
                 'Call WriteConsoleMsg(UserIndex, "¡¡Estás muerto!!", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
@@ -6760,7 +6701,7 @@ Private Sub HandleChangeDescription(ByVal UserIndex As Integer)
             Dim Description As String
 102             Description = Reader.ReadString8()
         
-104         If .flags.Muerto = 1 Then
+104         If .flags.Muerto Then
 106             Call WriteConsoleMsg(UserIndex, "No podés cambiar la descripción estando muerto.", e_FontTypeNames.FONTTYPE_INFOIAO)
 
             Else
@@ -6933,7 +6874,7 @@ Private Sub HandleGamble(ByVal UserIndex As Integer)
             Dim amount As Integer
 102             amount = Reader.ReadInt16()
         
-104         If .flags.Muerto = 1 Then
+104         If .flags.Muerto Then
 106             Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
                 'Call WriteConsoleMsg(UserIndex, "¡¡Estás muerto!!", e_FontTypeNames.FONTTYPE_INFO)
                 
@@ -7045,7 +6986,7 @@ Private Sub HandleBankExtractGold(ByVal UserIndex As Integer)
 102             amount = Reader.ReadInt32()
         
             'Dead people can't leave a faction.. they can't talk...
-104         If .flags.Muerto = 1 Then
+104         If .flags.Muerto Then
 106             Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
                 'Call WriteConsoleMsg(UserIndex, "¡¡Estás muerto!!", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
@@ -7109,7 +7050,7 @@ Private Sub HandleLeaveFaction(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             'Dead people can't leave a faction.. they can't talk...
-102         If .flags.Muerto = 1 Then
+102         If .flags.Muerto Then
 104             Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
                 'Call WriteConsoleMsg(UserIndex, "¡¡Estás muerto!!", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
@@ -7227,7 +7168,7 @@ Private Sub HandleBankDepositGold(ByVal UserIndex As Integer)
 102             amount = Reader.ReadInt32()
         
             'Dead people can't leave a faction.. they can't talk...
-104         If .flags.Muerto = 1 Then
+104         If .flags.Muerto Then
 106             Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
                 'Call WriteConsoleMsg(UserIndex, "¡¡Estás muerto!!", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
@@ -7389,7 +7330,7 @@ Private Sub HandleGMMessage(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
         
             Dim message As String
-102             Message = Reader.ReadString8()
+102             message = Reader.ReadString8()
 
 104         If EsGM(UserIndex) Then
 106             Call LogGM(.Name, "Mensaje a Gms: " & message)
@@ -10021,8 +9962,8 @@ Private Sub HandleReviveChar(ByVal UserIndex As Integer)
 116                 With UserList(tUser)
 
                         'If dead, show him alive (naked).
-118                     If .flags.Muerto = 1 Then
-120                         .flags.Muerto = 0
+118                     If .flags.Muerto Then
+120                         .flags.Muerto = False
                         
                             'Call DarCuerpoDesnudo(tUser)
                         
@@ -10193,7 +10134,7 @@ Private Sub HandleForgive(ByVal UserIndex As Integer)
             End If
 
             'Validate NPC and make sure player is not dead
-106         If (NpcList(.flags.TargetNPC).NPCtype <> e_NPCType.Revividor And (NpcList(.flags.TargetNPC).NPCtype <> e_NPCType.ResucitadorNewbie Or Not EsNewbie(UserIndex))) Or .flags.Muerto = 1 Then Exit Sub
+106         If (NpcList(.flags.TargetNPC).NPCtype <> e_NPCType.Revividor And (NpcList(.flags.TargetNPC).NPCtype <> e_NPCType.ResucitadorNewbie Or Not EsNewbie(UserIndex))) Or .flags.Muerto Then Exit Sub
         
             Dim priest As t_Npc
 108         priest = NpcList(.flags.TargetNPC)
@@ -10766,13 +10707,13 @@ Private Sub HandleServerMessage(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             Dim message As String
-102             Message = Reader.ReadString8()
+102             message = Reader.ReadString8()
         
 104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios)) Then
         
 106             If LenB(message) <> 0 Then
 108                 Call LogGM(.Name, "Mensaje Broadcast:" & message)
-110                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(.Name & "> " & Message, e_FontTypeNames.FONTTYPE_SERVER))
+110                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(.Name & "> " & message, e_FontTypeNames.FONTTYPE_SERVER))
 
                 End If
             Else
@@ -11359,11 +11300,11 @@ Private Sub HandleRoyalArmyMessage(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             Dim message As String
-102             Message = Reader.ReadString8()
+102             message = Reader.ReadString8()
         
             'Solo dioses, admins y RMS
 104         If (.flags.Privilegios And (e_PlayerType.Dios Or e_PlayerType.Admin Or e_PlayerType.RoleMaster)) Then
-106             Call SendData(SendTarget.ToRealYRMs, 0, PrepareMessageConsoleMsg("ARMADA REAL> " & Message, e_FontTypeNames.FONTTYPE_TALK))
+106             Call SendData(SendTarget.ToRealYRMs, 0, PrepareMessageConsoleMsg("ARMADA REAL> " & message, e_FontTypeNames.FONTTYPE_TALK))
             End If
 
         End With
@@ -11394,11 +11335,11 @@ Private Sub HandleChaosLegionMessage(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             Dim message As String
-102             Message = Reader.ReadString8()
+102             message = Reader.ReadString8()
         
             'Solo dioses, admins y RMS
 104         If (.flags.Privilegios And (e_PlayerType.Dios Or e_PlayerType.Admin Or e_PlayerType.RoleMaster)) Then
-106             Call SendData(SendTarget.ToCaosYRMs, 0, PrepareMessageConsoleMsg("FUERZAS DEL CAOS> " & Message, e_FontTypeNames.FONTTYPE_TALK))
+106             Call SendData(SendTarget.ToCaosYRMs, 0, PrepareMessageConsoleMsg("FUERZAS DEL CAOS> " & message, e_FontTypeNames.FONTTYPE_TALK))
             End If
 
         End With
@@ -11429,11 +11370,11 @@ Private Sub HandleCitizenMessage(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             Dim message As String
-102             Message = Reader.ReadString8()
+102             message = Reader.ReadString8()
         
             'Solo dioses, admins y RMS
 104         If (.flags.Privilegios And (e_PlayerType.Dios Or e_PlayerType.Admin Or e_PlayerType.RoleMaster)) Then
-106             Call SendData(SendTarget.ToCiudadanosYRMs, 0, PrepareMessageConsoleMsg("CIUDADANOS> " & Message, e_FontTypeNames.FONTTYPE_TALK))
+106             Call SendData(SendTarget.ToCiudadanosYRMs, 0, PrepareMessageConsoleMsg("CIUDADANOS> " & message, e_FontTypeNames.FONTTYPE_TALK))
             End If
 
         End With
@@ -11463,11 +11404,11 @@ Private Sub HandleCriminalMessage(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             Dim message As String
-102             Message = Reader.ReadString8()
+102             message = Reader.ReadString8()
         
             'Solo dioses, admins y RMS
 104         If (.flags.Privilegios And (e_PlayerType.Dios Or e_PlayerType.Admin Or e_PlayerType.RoleMaster)) Then
-106             Call SendData(SendTarget.ToCriminalesYRMs, 0, PrepareMessageConsoleMsg("CRIMINALES> " & Message, e_FontTypeNames.FONTTYPE_TALK))
+106             Call SendData(SendTarget.ToCriminalesYRMs, 0, PrepareMessageConsoleMsg("CRIMINALES> " & message, e_FontTypeNames.FONTTYPE_TALK))
             End If
 
         End With
@@ -11497,7 +11438,7 @@ Private Sub HandleTalkAsNPC(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
         
             Dim message As String
-102             Message = Reader.ReadString8()
+102             message = Reader.ReadString8()
         
             'Solo dioses, admins y RMS
 104         If (.flags.Privilegios And (e_PlayerType.Dios Or e_PlayerType.Admin Or e_PlayerType.RoleMaster)) Then
@@ -13350,7 +13291,7 @@ Public Sub HandleDonateGold(ByVal UserIndex As Integer)
 110         priest = NpcList(.flags.TargetNPC)
 
             'Validate NPC is an actual priest and the player is not dead
-112         If (priest.NPCtype <> e_NPCType.Revividor And (priest.NPCtype <> e_NPCType.ResucitadorNewbie Or Not EsNewbie(UserIndex))) Or .flags.Muerto = 1 Then Exit Sub
+112         If (priest.NPCtype <> e_NPCType.Revividor And (priest.NPCtype <> e_NPCType.ResucitadorNewbie Or Not EsNewbie(UserIndex))) Or .flags.Muerto Then Exit Sub
 
             'Make sure it's close enough
 114         If Distancia(.Pos, NpcList(.flags.TargetNPC).Pos) > 3 Then
@@ -14731,7 +14672,7 @@ Public Sub HandleSystemMessage(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             Dim message As String
-102             Message = Reader.ReadString8()
+102             message = Reader.ReadString8()
         
 104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.RoleMaster)) Then
 106             Call LogGM(.Name, "Mensaje de sistema:" & message)
@@ -14914,7 +14855,7 @@ Private Sub HandleOfertaInicial(ByVal UserIndex As Integer)
             Dim Oferta As Long
 102             Oferta = Reader.ReadInt32()
         
-104         If UserList(UserIndex).flags.Muerto = 1 Then
+104         If UserList(UserIndex).flags.Muerto Then
 106             Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
                 
                 Exit Sub
@@ -15204,47 +15145,56 @@ Private Sub HandleIngresarConCuenta(ByVal UserIndex As Integer)
     
             #End If
     
-120         If EntrarCuenta(UserIndex, CuentaEmail, CuentaPassword, MD5) Then
-                Dim Verificar As Boolean
+120         Dim adminIdx As Integer
+            Dim laCuentaEsDeAdmin As Boolean
             
-122             Select Case AOGuard.AOG_STATUS
+121         If ServerSoloGMs > 0 Then
+122             laCuentaEsDeAdmin = False
+    
+124             For adminIdx = 0 To AdministratorAccounts.Count - 1
+                    ' Si el e-mail está declarado junto al nick de la cuenta donde esta el PJ GM en el Server.ini te dejo entrar.
+126                 If UCase$(AdministratorAccounts.Items(adminIdx)) = UCase$(CuentaEmail) Then
+128                     laCuentaEsDeAdmin = True
+                    End If
+130             Next adminIdx
                 
-                    ' Nunca enviara correo
-                    Case 0
-124                     Verificar = False
-                
-                    ' Enviara correo solo si la IP no coinciden con lo que tenemos en la BD
-126                 Case 1
-128                     Verificar = Not AOGuard.VerificarOrigen(.AccountID, .IP)
-                
-                    ' Enviara correo cada vez que iniciemos sesion
-130                 Case 2
-132                     Verificar = True
-                
-134                 Case Else
-136                     Verificar = True
-                    
-                End Select
-
-138             If Verificar Then
-140                 Call WriteGuardNotice(UserIndex)
-
-                    Call AOGuard.EnviarCodigo(UserIndex)
-                Else
-142                 Call WritePersonajesDeCuenta(UserIndex)
-144                 Call WriteMostrarCuenta(UserIndex)
-                
+132             If Not laCuentaEsDeAdmin Then
+134                 Call WriteShowMessageBox(UserIndex, "El servidor se encuentra habilitado solo para administradores por el momento.")
+                    Exit Sub
                 End If
-            
-            Else
-            
-146             Call CloseSocket(UserIndex)
-                Exit Sub
     
             End If
-
-        End With
     
+            #If DEBUGGING = 0 Then
+134             If LCase$(Md5Cliente) <> LCase$(MD5) Then
+136                 Call WriteShowMessageBox(UserIndex, "Error al comprobar el cliente del juego, por favor reinstale y vuelva a intentar.")
+                    Exit Sub
+                End If
+            #End If
+    
+138         If Not CheckMailString(CuentaEmail) Then
+140             Call WriteShowMessageBox(UserIndex, "Email inválido.")
+                Exit Sub
+            End If
+    
+            UserList(UserIndex).Email = UCase$(CuentaEmail)
+    
+            Dim Data As New JS_Object
+            Dim Instance As New JS_Object
+            
+            Data.Item("email") = UCase$(UserList(UserIndex).Email)
+            Data.Item("password") = SDesencriptar(CuentaPassword)
+            Data.Item("ip") = UserList(UserIndex).IP
+            
+            Instance.Item("slot") = UserIndex
+            Instance.Item("uuid") = UserList(UserIndex).UUID
+    
+142         Call Manager.Send(LOGIN_ACCOUNT, Data, Instance)
+    
+            UserList(UserIndex).WaitingPacket = LOGIN_ACCOUNT
+    
+        End With
+        
         Exit Sub
 
 ErrHandler:
@@ -15260,75 +15210,38 @@ Private Sub HandleBorrarPJ(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             Dim UserDelete     As String
-            Dim CuentaEmail    As String
             Dim CuentaPassword As String
-            Dim MD5            As String
-            Dim Version        As String
         
 102         UserDelete = Reader.ReadString8()
-104         CuentaEmail = Reader.ReadString8()
 106         CuentaPassword = Reader.ReadString8()
-108         Version = CStr(Reader.ReadInt8()) & "." & CStr(Reader.ReadInt8()) & "." & CStr(Reader.ReadInt8())
-114         MD5 = Reader.ReadString8()
-        
-            #If DEBUGGING = False Then
-116             If Not VersionOK(Version) Then
-118                 Call WriteShowMessageBox(UserIndex, "Esta versión del juego es obsoleta, la versión correcta es la " & ULTIMAVERSION & ". Ejecute el launcher por favor.")
-120                 Call CloseSocket(UserIndex)
-                    Exit Sub
-                End If
-            #End If
-        
-122         If Not EntrarCuenta(UserIndex, CuentaEmail, CuentaPassword, MD5) Then
-124             Call CloseSocket(UserIndex)
-                Exit Sub
-            End If
-            
-            Dim RS As Recordset
-            Set rs = Query("SELECT account_id, level, is_banned from user WHERE name = ?", UserDelete)
-            
-            If (RS Is Nothing) Then
-                Call CloseSocket(UserIndex)
-                Exit Sub
-            End If
-            
-            If (RS!account_id <> UserList(UserIndex).AccountID) Then
-128             Call LogHackAttemp(CuentaEmail & "[" & UserList(UserIndex).IP & "] intentó borrar el pj " & UserDelete)
-130             Call CloseSocket(UserIndex)
-                Exit Sub
-            End If
 
-132         If (RS!level >= 25) Then
-134             Call WriteShowMessageBox(UserIndex, "No puedes eliminar un personaje mayor a nivel 25.")
-                Exit Sub
-            End If
+            If .AccountID < 0 Then Exit Sub
 
-136         If (RS!is_banned) Then
-138             Call WriteShowMessageBox(UserIndex, "No puedes eliminar un personaje baneado.")
-                Exit Sub
-            End If
-
-            'HarThaoS: Si teine clan y es leader no lo puedo eliminar
+            'HarThaoS: Si tiene clan y es leader no lo puedo eliminar
 140         If PersonajeEsLeader(UserDelete) Then
 142             Call WriteShowMessageBox(UserIndex, "No puedes eliminar el personaje por ser líder de un clan.")
                 Exit Sub
             End If
 
-            ' Si está online el personaje a borrar, lo kickeo para prevenir dupeos.
-            Dim targetUserIndex As Integer
-144         targetUserIndex = NameIndex(UserDelete)
-
-            'HarThaoS: Me fijo si tiene clan y me traigo el nombre del clan
-
-146         If targetUserIndex > 0 Then
-148             Call LogHackAttemp("Se trató de eliminar al personaje " & UserDelete & " cuando este estaba conectado desde la IP " & UserList(UserIndex).IP)
-150             Call CloseSocket(targetUserIndex)
-
+            ' Si está online cancelamos el borrar
+146         If NameIndex(UserDelete) > 0 Then
+148             Call WriteShowMessageBox(UserIndex, "El personaje se encuentra conectado.")
+                Exit Sub
             End If
 
-152         Call BorrarUsuarioDatabase(UserDelete)
-154         Call WritePersonajesDeCuenta(UserIndex)
-  
+            Dim Data As New JS_Object
+152         Data.Item("account_id") = .AccountID
+            Data.Item("name") = UserDelete
+            Data.Item("password") = SDesencriptar(CuentaPassword)
+
+            Dim Instance As New JS_Object
+            Instance.Item("slot") = UserIndex
+            Instance.Item("uuid") = .UUID
+
+            Call Manager.Send(DELETE_CHAR, Data, Instance)
+
+            .WaitingPacket = DELETE_CHAR
+
         End With
     
         Exit Sub
@@ -15561,7 +15474,7 @@ Private Sub HandleTransFerGold(ByVal UserIndex As Integer)
             ' Tiene el oro?
 108         If .Stats.Banco < Cantidad Then Exit Sub
             
-110         If .flags.Muerto = 1 Then
+110         If .flags.Muerto Then
 112             Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
                 'Call WriteConsoleMsg(UserIndex, "¡¡Estás muerto!!", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
@@ -16460,7 +16373,7 @@ Private Sub HandleInvitarGrupo(ByVal UserIndex As Integer)
 
 100     With UserList(UserIndex)
 
-102         If .flags.Muerto = 1 Then
+102         If .flags.Muerto Then
                 'Call WriteConsoleMsg(UserIndex, "¡¡Estás muerto!!.", e_FontTypeNames.FONTTYPE_INFO)
 104             Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
             
@@ -16496,7 +16409,7 @@ Private Sub HandleMarcaDeClan(ByVal UserIndex As Integer)
                 Exit Sub
             End If
 
-104         If .flags.Muerto = 1 Then
+104         If .flags.Muerto Then
                 'Call WriteConsoleMsg(UserIndex, "¡¡Estás muerto!!.", e_FontTypeNames.FONTTYPE_INFO)
 106             Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
@@ -18001,7 +17914,7 @@ Private Sub HandleCuentaExtractItem(ByVal UserIndex As Integer)
         
 106         slotdestino = Reader.ReadInt8()
         
-108         If .flags.Muerto = 1 Then
+108         If .flags.Muerto Then
 110             Call WriteConsoleMsg(UserIndex, "¡¡Estás muerto!!", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
@@ -18052,7 +17965,7 @@ Private Sub HandleCuentaDeposit(ByVal UserIndex As Integer)
 106         slotdestino = Reader.ReadInt8()
         
             'Dead people can't commerce...
-108         If .flags.Muerto = 1 Then
+108         If .flags.Muerto Then
 110             Call WriteConsoleMsg(UserIndex, "¡¡Estás muerto!!", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
@@ -18182,7 +18095,7 @@ Private Sub HandleHome(ByVal UserIndex As Integer)
     
 100     With UserList(UserIndex)
 
-104         If .flags.Muerto = 0 Then
+104         If Not .flags.Muerto Then
 106             Call WriteConsoleMsg(UserIndex, "Debes estar muerto para utilizar este comando.", e_FontTypeNames.FONTTYPE_FIGHT)
                 Exit Sub
 
@@ -18646,9 +18559,9 @@ Private Sub HandleDeleteItem(ByVal UserIndex As Integer)
             UserList(UserIndex).Invent.Object(Slot).Equipped = 0
             UserList(UserIndex).Invent.Object(Slot).ObjIndex = 0
             Call UpdateUserInv(False, UserIndex, Slot)
-            Call WriteConsoleMsg(UserIndex, "Objeto eliminado correctamente.", e_FontTypeNames.fonttype_info)
+            Call WriteConsoleMsg(UserIndex, "Objeto eliminado correctamente.", e_FontTypeNames.FONTTYPE_INFO)
         Else
-            Call WriteConsoleMsg(UserIndex, "No puedes eliminar un objeto estando equipado.", e_FontTypeNames.fonttype_info)
+            Call WriteConsoleMsg(UserIndex, "No puedes eliminar un objeto estando equipado.", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
     End With

@@ -2245,6 +2245,8 @@ Sub LoadSini()
 164     Call CargarCiudades
 166     Call ConsultaPopular.LoadData
 
+        MANAGER_PORT = val(Lector.GetValue("MANAGER", "PORT"))
+
 168     Set Lector = Nothing
 
         Exit Sub
@@ -2256,6 +2258,34 @@ LoadSini_Err:
         
 End Sub
 
+Public Sub LoadDatabaseIniFile()
+    On Error GoTo LoadDatabaseIniFile_Err
+
+        Dim Lector As clsIniManager
+    
+100     If frmMain.Visible Then frmMain.txStatus.Caption = "Leyendo credenciales de la DB."
+                
+102     If Not FileExist(IniPath & "Database.ini", vbNormal) Then
+104         Call MsgBox("No existe el archivo de configuración de la base de datos - Database.ini.", vbCritical)
+106         End
+        End If
+                
+108     Set Lector = New clsIniManager
+110     Call Lector.Initialize(IniPath & "Database.ini")
+
+112     Database_Enabled = True
+116     Database_Host = Lector.GetValue("DATABASE", "Host")
+118     Database_Name = Lector.GetValue("DATABASE", "Name")
+120     Database_Username = Lector.GetValue("DATABASE", "Username")
+122     Database_Password = Lector.GetValue("DATABASE", "Password")
+
+        Exit Sub
+
+LoadDatabaseIniFile_Err:
+124     Set Lector = Nothing
+126     Call TraceError(Err.Number, Err.Description, "ES.LoadDatabaseIniFile", Erl)
+
+End Sub
 
 Sub CargarCiudades()
         
@@ -2455,8 +2485,8 @@ Sub LoadIntervalos()
 160     TimeoutPrimerPaquete = val(Lector.GetValue("INTERVALOS", "TimeoutPrimerPaquete"))
 162     FrmInterv.txtTimeoutPrimerPaquete.Text = TimeoutPrimerPaquete / 25
     
-164     TimeoutEsperandoLoggear = val(Lector.GetValue("INTERVALOS", "TimeoutEsperandoLoggear"))
-166     FrmInterv.txtTimeoutEsperandoLoggear.Text = TimeoutEsperandoLoggear / 25
+164     TimeoutEsperandoLogear = val(Lector.GetValue("INTERVALOS", "TimeoutEsperandoLogear"))
+166     FrmInterv.txtTimeoutEsperandoLogear.Text = TimeoutEsperandoLogear / 25
     
 168     IntervaloIncineracion = val(Lector.GetValue("INTERVALOS", "IntervaloFuego"))
 170     FrmInterv.txtintervalofuego.Text = IntervaloIncineracion
@@ -2607,11 +2637,73 @@ End Sub
 Sub SaveUser(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = False)
 
         On Error GoTo SaveUser_Err
-
-102     Call SaveUserDatabase(UserIndex, Logout)
+        
+        Dim Data As New JS_Object
+        
+        With UserList(UserIndex)
     
-104     UserList(UserIndex).Counters.LastSave = GetTickCount
+            '*************************************************************
+            '   USER
+            '*************************************************************
+            Data.Item("user") = JSON_User.Principal(UserIndex, Logout)
+            
+            '*************************************************************
+            '   ATRIBUTOS
+            '*************************************************************
+            Data.Item("Attribute") = JSON_User.Atributos(UserIndex)
+            
+            '*************************************************************
+            '   HECHIZOS
+            '*************************************************************
+            Data.Item("Spells") = JSON_User.Hechizo(UserIndex)
+    
+            '*************************************************************
+            '   INVENTARIO
+            '*************************************************************
+            Data.Item("InventoryItems") = JSON_User.Inventario(UserIndex)
+    
+            '*************************************************************
+            '   INVENTARIO DEL BANCO
+            '*************************************************************
+            Data.Item("BankItems") = JSON_User.InventarioBanco(UserIndex)
+    
+            '*************************************************************
+            '   SKILLS
+            '*************************************************************
+            Data.Item("Skillpoint") = JSON_User.Habilidades(UserIndex)
+    
+            '*************************************************************
+            '   MASCOTAS
+            '*************************************************************
+            Data.Item("Pets") = JSON_User.Mascotas(UserIndex)
+    
+            '*************************************************************
+            '   QUESTS
+            '*************************************************************
+            Data.Item("Quests") = JSON_User.Quest(UserIndex)
+    
+            '*************************************************************
+            '   QUESTS TERMINADAS
+            '*************************************************************
+            If .QuestStats.NumQuestsDone > 0 Then
+                Data.Item("QuestDones") = JSON_User.QuestTerminadas(UserIndex)
+            End If
+            
+            Data.Item("account_id") = .AccountID
+            
+            Dim Instance As New JS_Object
+            Instance.Item("slot") = UserIndex
+            Instance.Item("uuid") = .UUID
+            Instance.Item("logout") = Logout
 
+            Call Manager.Send(SAVE_CHAR, Data, Instance)
+
+            .WaitingPacket = SAVE_CHAR
+            
+104         .Counters.LastSave = GetTickCount
+
+        End With
+        
         Exit Sub
 
 SaveUser_Err:
@@ -2620,11 +2712,62 @@ SaveUser_Err:
 End Sub
 
 Sub SaveNewUser(ByVal UserIndex As Integer)
-    On Error GoTo SaveNewUser_Err
-            
-100 Call SaveNewUserDatabase(UserIndex)
+        On Error GoTo SaveNewUser_Err
+                
+        Dim Data As New JS_Object
+        
+        '*************************************************************
+        '   USER
+        '*************************************************************
+        Data.Item("user") = JSON_User.Principal(UserIndex)
+        
+        '*************************************************************
+        '   ATRIBUTOS
+        '*************************************************************
+        Data.Item("Attribute") = JSON_User.Atributos(UserIndex)
+        
+        '*************************************************************
+        '   HECHIZOS
+        '*************************************************************
+        Data.Item("Spells") = JSON_User.Hechizo(UserIndex)
     
-    Exit Sub
+        '*************************************************************
+        '   INVENTARIO
+        '*************************************************************
+        Data.Item("InventoryItems") = JSON_User.Inventario(UserIndex)
+    
+        '*************************************************************
+        '   INVENTARIO DEL BANCO
+        '*************************************************************
+        Data.Item("BankItems") = JSON_User.InventarioBanco(UserIndex)
+    
+        '*************************************************************
+        '   SKILLS
+        '*************************************************************
+        Data.Item("Skillpoint") = JSON_User.Habilidades(UserIndex)
+    
+        '*************************************************************
+        '   MASCOTAS
+        '*************************************************************
+        Data.Item("Pets") = JSON_User.Mascotas(UserIndex)
+    
+        '*************************************************************
+        '   QUESTS
+        '*************************************************************
+        Data.Item("Quests") = JSON_User.Quest(UserIndex)
+        
+        Data.Item("account_id") = UserList(UserIndex).AccountID
+        Data.Item("max_personajes") = MAX_PERSONAJES
+
+        Dim Instance As New JS_Object
+        Instance.Item("slot") = UserIndex
+        Instance.Item("uuid") = UserList(UserIndex).UUID
+    
+        Call Manager.Send(CREATE_CHAR, Data, Instance)
+        
+104     UserList(UserIndex).Counters.LastSave = GetTickCount
+        
+        Exit Sub
 
 SaveNewUser_Err:
 102     Call TraceError(Err.Number, Err.Description, "ES.SaveNewUser", Erl)

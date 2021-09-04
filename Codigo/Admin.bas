@@ -112,7 +112,7 @@ Public IntervaloFlechasCazadores    As Long
 
 Public TimeoutPrimerPaquete         As Long
 
-Public TimeoutEsperandoLoggear      As Long
+Public TimeoutEsperandoLogear       As Long
 
 Public IntervaloTirar               As Long
 
@@ -369,22 +369,6 @@ Encarcelar_Err:
         
 End Sub
 
-Public Sub BorrarUsuario(ByVal UserName As String)
-        
-        On Error GoTo BorrarUsuario_Err
-
-102         Call BorrarUsuarioDatabase(UserName)
-
-    
-        
-        Exit Sub
-
-BorrarUsuario_Err:
-108     Call TraceError(Err.Number, Err.Description, "Admin.BorrarUsuario", Erl)
-
-        
-End Sub
-
 Public Function BANCheck(ByVal Name As String) As Boolean
         
         On Error GoTo BANCheck_Err
@@ -529,7 +513,7 @@ Sub SaveBan(num As Integer)
 106     Call WriteVar(DatPath & "baneos.dat", "BANEO" & num, "BANEADOR", Baneos(num).Baneador)
 108     Call WriteVar(DatPath & "baneos.dat", "BANEO" & num, "CAUSA", Baneos(num).Causa)
 
-112     Call SaveBanDatabase(Baneos(Num).Name, Baneos(Num).Causa, Baneos(Num).Baneador)
+112     Call SaveBanDatabase(Baneos(num).Name, Baneos(num).Causa, Baneos(num).Baneador)
 
 
         

@@ -114,7 +114,7 @@ DarCuerpoDesnudo_Err:
         
 End Sub
 
-Sub Bloquear(ByVal toMap As Boolean, ByVal sndIndex As Integer, ByVal X As Integer, ByVal Y As Integer, ByVal b As Byte)
+Sub Bloquear(ByVal toMap As Boolean, ByVal sndIndex As Integer, ByVal X As Integer, ByVal Y As Integer, ByVal B As Byte)
         'b ahora es boolean,
         'b=true bloquea el tile en (x,y)
         'b=false desbloquea el tile en (x,y)
@@ -127,12 +127,12 @@ Sub Bloquear(ByVal toMap As Boolean, ByVal sndIndex As Integer, ByVal X As Integ
         On Error GoTo Bloquear_Err
         
         ' Envío sólo los flags de bloq
-100     b = b And e_Block.ALL_SIDES
+100     B = B And e_Block.ALL_SIDES
 
 102     If toMap Then
-104         Call SendData(SendTarget.toMap, sndIndex, PrepareMessage_BlockPosition(X, Y, b))
+104         Call SendData(SendTarget.toMap, sndIndex, PrepareMessage_BlockPosition(X, Y, B))
         Else
-106         Call Write_BlockPosition(sndIndex, X, Y, b)
+106         Call Write_BlockPosition(sndIndex, X, Y, B)
         End If
 
         
@@ -355,6 +355,7 @@ Function HayAgua(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer) A
                     (.Graphic(1) >= 24223 And .Graphic(1) <= 24238) Or _
                     (.Graphic(1) >= 24303 And .Graphic(1) <= 24318) Or _
                     (.Graphic(1) >= 468 And .Graphic(1) <= 483) Or _
+                    (.Graphic(1) >= 44668 And .Graphic(1) <= 44939) Or _
                     (.Graphic(1) >= 24143 And .Graphic(1) <= 24158)) Or _
                     (.Graphic(1) >= 12628 And .Graphic(1) <= 12643) Or _
                     (.Graphic(1) >= 2948 And .Graphic(1) <= 2963)
@@ -609,6 +610,7 @@ Sub Main()
     
 130     MaxUsers = 0
 132     Call LoadSini
+        Call LoadDatabaseIniFile
 134     Call AOGuard.LoadAOGuardConfiguration
 138     Call LoadConfiguraciones
 140     Call LoadIntervalos
@@ -619,12 +621,17 @@ Sub Main()
 150     Call CargarListaNegraUsuarios
     
 152     frmCargando.Label1(2).Caption = "Conectando base de datos y limpiando usuarios logueados"
+
+        ' ***************** UUID Generator *****************
+        Call GenInit
     
+        ' ********************* Manager ********************
+        Set Manager = New ServerManager
+        Call Manager.Initialize(frmMain.ManagerSocket, MANAGER_PORT)
+        
         ' ************************* Base de Datos ********************
         'Conecto base de datos
-154     Call Database_Connect
-        
-        Call Database_Connect_Async
+154     Call Database_Connect_Async
     
         ' Construimos las querys grandes
 156     Call Contruir_Querys
@@ -785,6 +792,8 @@ Sub Main()
             #End If
             
         Wend
+        
+        Set Manager = Nothing
         
         Exit Sub
         
@@ -2253,7 +2262,7 @@ Sub PasarSegundo()
                         End If
                     End If
                     
-136                 If .flags.Muerto = 0 Then
+136                 If Not .flags.Muerto Then
 138                     Call DuracionPociones(i)
 140                     Call EfectoOxigeno(i)
 142                     If .flags.invisible = 1 Then Call EfectoInvisibilidad(i)
@@ -2371,17 +2380,14 @@ Sub PasarSegundo()
         
                     'Cerrar usuario
 282                 If .Counters.Saliendo Then
-                        '  If .flags.Muerto = 1 Then .Counters.Salir = 0
+                        '  If .flags.Muerto Then .Counters.Salir = 0
 284                     .Counters.Salir = .Counters.Salir - 1
                         ' Call WriteConsoleMsg(i, "Se saldrá del juego en " & .Counters.Salir & " segundos...", e_FontTypeNames.FONTTYPE_INFO)
 286                     Call WriteLocaleMsg(i, "203", e_FontTypeNames.FONTTYPE_INFO, .Counters.Salir)
         
 288                     If .Counters.Salir <= 0 Then
 290                         Call WriteConsoleMsg(i, "Gracias por jugar Argentum 20.", e_FontTypeNames.FONTTYPE_INFO)
-292                         Call WriteDisconnect(i)
-                            
-294                         Call CloseSocket(i)
-        
+292                         Call DisconnectUser(i)
                         End If
         
                     End If
@@ -2392,7 +2398,7 @@ Sub PasarSegundo()
 296             .Counters.IdleCount = .Counters.IdleCount + 1
 
                 'El intervalo cambia según si envió el primer paquete
-298             If .Counters.IdleCount > IIf(.flags.FirstPacket, TimeoutEsperandoLoggear, TimeoutPrimerPaquete) Then
+298             If .Counters.IdleCount > IIf(.AccountID >= 0, TimeoutEsperandoLogear, TimeoutPrimerPaquete) Then
 300                 Call CloseSocket(i)
                 End If
         
@@ -2429,7 +2435,6 @@ Sub PasarSegundo()
             End With
         Next
         ' **********************************
-
         Exit Sub
 
 ErrHandler:
@@ -2718,16 +2723,16 @@ Public Sub CerrarServidor()
    
 End Sub
 
-Function max(ByVal a As Double, ByVal b As Double) As Double
+Function max(ByVal a As Double, ByVal B As Double) As Double
         
         On Error GoTo max_Err
     
         
 
-100     If a > b Then
+100     If a > B Then
 102         max = a
         Else
-104         max = b
+104         max = B
         End If
 
         
@@ -2739,16 +2744,16 @@ max_Err:
         
 End Function
 
-Function Min(ByVal a As Double, ByVal b As Double) As Double
+Function Min(ByVal a As Double, ByVal B As Double) As Double
         
         On Error GoTo min_Err
     
         
 
-100     If a < b Then
+100     If a < B Then
 102         Min = a
         Else
-104         Min = b
+104         Min = B
         End If
 
         
@@ -2841,8 +2846,8 @@ End Function
 
 'Very efficient function for testing whether this code is running in the IDE or compiled
 'https://www.vbforums.com/showthread.php?231468-VB-Detect-if-you-are-running-in-the-IDE&p=5413357&viewfull=1#post5413357
-Public Function RunningInVB(Optional ByRef b As Boolean = True) As Boolean
-100     If b Then Debug.Assert Not RunningInVB(RunningInVB) Else b = True
+Public Function RunningInVB(Optional ByRef B As Boolean = True) As Boolean
+100     If B Then Debug.Assert Not RunningInVB(RunningInVB) Else B = True
 End Function
 
 ' WyroX: Mensaje a todo el mundo
@@ -2935,11 +2940,11 @@ Ceil_Err:
         
 End Function
 
-Function Clamp(X As Variant, a As Variant, b As Variant) As Variant
+Function Clamp(X As Variant, a As Variant, B As Variant) As Variant
         
         On Error GoTo Clamp_Err
         
-100     Clamp = IIf(X < a, a, IIf(X > b, b, X))
+100     Clamp = IIf(X < a, a, IIf(X > B, B, X))
         
         Exit Function
 

@@ -75,7 +75,7 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
 112             If NpcList(TempCharIndex).Comercia = 1 Then
 
                     '¿Esta el user muerto? Si es asi no puede comerciar
-114                 If UserList(UserIndex).flags.Muerto = 1 Then
+114                 If UserList(UserIndex).flags.Muerto Then
 116                     Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
 
@@ -105,7 +105,7 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
 130             ElseIf NpcList(TempCharIndex).NPCtype = e_NPCType.Banquero Then
 
                     '¿Esta el user muerto? Si es asi no puede comerciar
-132                 If UserList(UserIndex).flags.Muerto = 1 Then
+132                 If UserList(UserIndex).flags.Muerto Then
 134                     Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
 
@@ -130,7 +130,7 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
 144             ElseIf NpcList(TempCharIndex).NPCtype = e_NPCType.Pirata Then  'VIAJES
 
                     '¿Esta el user muerto? Si es asi no puede comerciar
-146                 If UserList(UserIndex).flags.Muerto = 1 Then
+146                 If UserList(UserIndex).flags.Muerto Then
 148                     Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
 
@@ -176,7 +176,7 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
 176                 UserList(UserIndex).flags.Incinerado = 0
       
                     'Revivimos si es necesario
-178                 If UserList(UserIndex).flags.Muerto = 1 And (NpcList(TempCharIndex).NPCtype = e_NPCType.Revividor Or EsNewbie(UserIndex)) Then
+178                 If UserList(UserIndex).flags.Muerto And (NpcList(TempCharIndex).NPCtype = e_NPCType.Revividor Or EsNewbie(UserIndex)) Then
 180                     Call WriteConsoleMsg(UserIndex, "¡Has sido resucitado!", e_FontTypeNames.FONTTYPE_INFO)
 182                     Call RevivirUsuario(UserIndex)
 184                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, e_ParticulasIndex.Resucitar, 30, False))
@@ -207,7 +207,7 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
          
 204             ElseIf NpcList(TempCharIndex).NPCtype = e_NPCType.Subastador Then
 
-206                 If UserList(UserIndex).flags.Muerto = 1 Then
+206                 If UserList(UserIndex).flags.Muerto Then
 208                     Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
 
@@ -229,7 +229,7 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
             
 220             ElseIf NpcList(TempCharIndex).NPCtype = e_NPCType.Quest Then
 
-222                 If UserList(UserIndex).flags.Muerto = 1 Then
+222                 If UserList(UserIndex).flags.Muerto Then
 224                     Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
                     End If
@@ -243,7 +243,7 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
             
 232             ElseIf NpcList(TempCharIndex).NPCtype = e_NPCType.Enlistador Then
 
-234                 If UserList(UserIndex).flags.Muerto = 1 Then
+234                 If UserList(UserIndex).flags.Muerto Then
 236                     Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
 
@@ -272,7 +272,7 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
 
 256             ElseIf NpcList(TempCharIndex).NPCtype = e_NPCType.Gobernador Then
 
-258                 If UserList(UserIndex).flags.Muerto = 1 Then
+258                 If UserList(UserIndex).flags.Muerto Then
 260                     Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFOIAO)
                         Exit Sub
 
@@ -348,7 +348,7 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
                     End If
                     
 320             ElseIf NpcList(TempCharIndex).Craftea > 0 Then
-322                 If UserList(UserIndex).flags.Muerto = 1 Then
+322                 If UserList(UserIndex).flags.Muerto Then
 324                     Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFOIAO)
                         Exit Sub
                     End If
@@ -393,7 +393,7 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
 
 360                 Case e_OBJType.otLeña    'Leña
 
-362                     If MapData(Map, X, Y).ObjInfo.ObjIndex = FOGATA_APAG And UserList(UserIndex).flags.Muerto = 0 Then
+362                     If MapData(Map, X, Y).ObjInfo.ObjIndex = FOGATA_APAG And Not UserList(UserIndex).flags.Muerto Then
 364                         Call AccionParaRamita(Map, X, Y, UserIndex)
 
                         End If
@@ -896,7 +896,7 @@ Sub AccionParaRamita(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Intege
 
             End If
 
-116         If MapData(Map, X, Y).trigger = e_Trigger.ZONASEGURA Or MapInfo(Map).Seguro = 1 Then
+116         If MapData(Map, X, Y).trigger = e_Trigger.ZonaSegura Or MapInfo(Map).Seguro = 1 Then
 118             Call WriteConsoleMsg(UserIndex, "En zona segura no podés hacer fogatas.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 

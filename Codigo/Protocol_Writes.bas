@@ -207,18 +207,10 @@ End Sub
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-Public Sub WriteDisconnect(ByVal UserIndex As Integer, _
-                           Optional ByVal FullLogout As Boolean = False)
+Public Sub WriteDisconnect(ByVal UserIndex As Integer)
         '<EhHeader>
         On Error GoTo WriteDisconnect_Err
         '</EhHeader>
-100     Call ClearAndSaveUser(UserIndex)
-102     UserList(UserIndex).flags.YaGuardo = True
-
-104     If Not FullLogout Then
-106         Call WritePersonajesDeCuenta(UserIndex)
-108         Call WriteMostrarCuenta(UserIndex)
-        End If
 
 110     Call Writer.WriteInt(ServerPacketID.Disconnect)
 112     Call modSendData.SendData(ToIndex, UserIndex)
@@ -1073,12 +1065,12 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @param    Message Text to be displayed in the message box.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-Public Sub WriteShowMessageBox(ByVal UserIndex As Integer, ByVal Message As String)
+Public Sub WriteShowMessageBox(ByVal UserIndex As Integer, ByVal message As String)
         '<EhHeader>
         On Error GoTo WriteShowMessageBox_Err
         '</EhHeader>
 100     Call Writer.WriteInt(ServerPacketID.ShowMessageBox)
-102     Call Writer.WriteString8(Message)
+102     Call Writer.WriteString8(message)
 104     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub
@@ -1086,21 +1078,6 @@ Public Sub WriteShowMessageBox(ByVal UserIndex As Integer, ByVal Message As Stri
 WriteShowMessageBox_Err:
         Call Writer.Clear
         Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteShowMessageBox", Erl)
-        '</EhFooter>
-End Sub
-
-Public Sub WriteMostrarCuenta(ByVal UserIndex As Integer)
-        '<EhHeader>
-        On Error GoTo WriteMostrarCuenta_Err
-        '</EhHeader>
-100     Call Writer.WriteInt(ServerPacketID.MostrarCuenta)
-102     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
-        Exit Sub
-
-WriteMostrarCuenta_Err:
-        Call Writer.Clear
-        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteMostrarCuenta", Erl)
         '</EhFooter>
 End Sub
 
@@ -2237,7 +2214,7 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @param    message The error message to be displayed.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-Public Sub WriteErrorMsg(ByVal UserIndex As Integer, ByVal Message As String)
+Public Sub WriteErrorMsg(ByVal UserIndex As Integer, ByVal message As String)
         '***************************************************
         'Author: Juan Martín Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
@@ -2246,7 +2223,7 @@ Public Sub WriteErrorMsg(ByVal UserIndex As Integer, ByVal Message As String)
         '<EhHeader>
         On Error GoTo WriteErrorMsg_Err
         '</EhHeader>
-100     Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageErrorMsg(Message))
+100     Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageErrorMsg(message))
         '<EhFooter>
         Exit Sub
 
@@ -2567,13 +2544,13 @@ End Sub
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteAddForumMsg(ByVal UserIndex As Integer, _
                             ByVal title As String, _
-                            ByVal Message As String)
+                            ByVal message As String)
         '<EhHeader>
         On Error GoTo WriteAddForumMsg_Err
         '</EhHeader>
 100     Call Writer.WriteInt(ServerPacketID.AddForumMsg)
 102     Call Writer.WriteString8(title)
-104     Call Writer.WriteString8(Message)
+104     Call Writer.WriteString8(message)
 106     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub
@@ -3415,41 +3392,51 @@ WritePong_Err:
         '</EhFooter>
 End Sub
 
-Public Sub WritePersonajesDeCuenta(ByVal UserIndex As Integer)
+Public Sub WritePersonajesDeCuenta(ByVal UserIndex As Integer, Personajes As Object)
         '<EhHeader>
         On Error GoTo WritePersonajesDeCuenta_Err
         '</EhHeader>
 
-        Dim UserCuenta                     As String
-
-        Dim CantPersonajes                 As Byte
-
-        Dim Personaje(1 To MAX_PERSONAJES) As t_PersonajeCuenta
-
-        Dim i                              As Byte
-
-100     UserCuenta = UserList(UserIndex).Cuenta
-
-104     CantPersonajes = GetPersonajesCuentaDatabase(UserList(UserIndex).AccountID, Personaje)
-
 134     Call Writer.WriteInt(ServerPacketID.PersonajesDeCuenta)
-136     Call Writer.WriteInt8(CantPersonajes)
+136     Call Writer.WriteInt8(Personajes.Count)
 
-138     For i = 1 To CantPersonajes
-140         Call Writer.WriteString8(Personaje(i).nombre)
-142         Call Writer.WriteInt8(Personaje(i).nivel)
-144         Call Writer.WriteInt16(Personaje(i).Mapa)
-146         Call Writer.WriteInt16(Personaje(i).posX)
-148         Call Writer.WriteInt16(Personaje(i).posY)
-150         Call Writer.WriteInt16(Personaje(i).cuerpo)
-152         Call Writer.WriteInt16(Personaje(i).Cabeza)
-154         Call Writer.WriteInt8(Personaje(i).Status)
-156         Call Writer.WriteInt8(Personaje(i).clase)
-158         Call Writer.WriteInt16(Personaje(i).Casco)
-160         Call Writer.WriteInt16(Personaje(i).Escudo)
-162         Call Writer.WriteInt16(Personaje(i).Arma)
-164         Call Writer.WriteString8(modGuilds.GuildName(Personaje(i).ClanIndex))
-166     Next i
+        Dim Status As Byte, Cabeza As Integer
+
+        Dim Personaje As Variant
+
+138     For Each Personaje In Personajes
+            Status = Personaje.Item("status")
+            If EsRolesMaster(Personaje.Item("name")) Then
+                Status = 3
+            ElseIf EsConsejero(Personaje.Item("name")) Then
+                Status = 4
+            ElseIf EsSemiDios(Personaje.Item("name")) Then
+                Status = 5
+            ElseIf EsDios(Personaje.Item("name")) Then
+                Status = 6
+            ElseIf EsAdmin(Personaje.Item("name")) Then
+                Status = 7
+            End If
+            
+            Cabeza = Personaje.Item("head_id")
+            If Personaje.Item("min_hp") = 0 Or Personaje.Item("is_sailing") Then
+                Cabeza = 0
+            End If
+
+140         Call Writer.WriteString8(Personaje.Item("name"))
+142         Call Writer.WriteInt8(Personaje.Item("level"))
+144         Call Writer.WriteInt16(Personaje.Item("pos_map"))
+146         Call Writer.WriteInt16(Personaje.Item("pos_x"))
+148         Call Writer.WriteInt16(Personaje.Item("pos_y"))
+150         Call Writer.WriteInt16(Personaje.Item("body_id"))
+152         Call Writer.WriteInt16(Cabeza)
+154         Call Writer.WriteInt8(Status)
+156         Call Writer.WriteInt8(Personaje.Item("class_id"))
+158         Call Writer.WriteInt16(Personaje.Item("helmet_id"))
+160         Call Writer.WriteInt16(Personaje.Item("shield_id"))
+162         Call Writer.WriteInt16(Personaje.Item("weapon_id"))
+164         Call Writer.WriteString8(modGuilds.GuildName(Personaje.Item("guild_index")))
+166     Next
 
 168     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
@@ -3539,12 +3526,12 @@ WriteFamiliar_Err:
         '</EhFooter>
 End Sub
 
-Public Sub WritePreguntaBox(ByVal UserIndex As Integer, ByVal Message As String)
+Public Sub WritePreguntaBox(ByVal UserIndex As Integer, ByVal message As String)
         '<EhHeader>
         On Error GoTo WritePreguntaBox_Err
         '</EhHeader>
 100     Call Writer.WriteInt(ServerPacketID.ShowPregunta)
-102     Call Writer.WriteString8(Message)
+102     Call Writer.WriteString8(message)
 104     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub
@@ -3908,7 +3895,7 @@ WriteNpcQuestListSend_Err:
         '</EhFooter>
 End Sub
 
-Public Sub WriteObjQuestSend(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, ByVal slot As Byte)
+Public Sub WriteObjQuestSend(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, ByVal Slot As Byte)
         '<EhHeader>
         On Error GoTo WriteNpcQuestListSend_Err
         '</EhHeader>
@@ -3996,7 +3983,7 @@ Public Sub WriteObjQuestSend(ByVal UserIndex As Integer, ByVal QuestIndex As Int
                 End If
             End If
         UserList(UserIndex).flags.QuestNumber = QuestIndex
-        UserList(UserIndex).flags.QuestItemSlot = slot
+        UserList(UserIndex).flags.QuestItemSlot = Slot
 
 182     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
@@ -4007,12 +3994,12 @@ WriteNpcQuestListSend_Err:
         Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteNpcQuestListSend", Erl)
         '</EhFooter>
 End Sub
-Sub WriteCommerceRecieveChatMessage(ByVal UserIndex As Integer, ByVal Message As String)
+Sub WriteCommerceRecieveChatMessage(ByVal UserIndex As Integer, ByVal message As String)
         '<EhHeader>
         On Error GoTo WriteCommerceRecieveChatMessage_Err
         '</EhHeader>
 100     Call Writer.WriteInt(ServerPacketID.CommerceRecieveChatMessage)
-102     Call Writer.WriteString8(Message)
+102     Call Writer.WriteString8(message)
 104     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub
@@ -5220,12 +5207,12 @@ End Function
 '
 ' @param    message The error message to be displayed.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-Public Function PrepareMessageErrorMsg(ByVal Message As String)
+Public Function PrepareMessageErrorMsg(ByVal message As String)
         '<EhHeader>
         On Error GoTo PrepareMessageErrorMsg_Err
         '</EhHeader>
 100     Call Writer.WriteInt(ServerPacketID.ErrorMsg)
-102     Call Writer.WriteString8(Message)
+102     Call Writer.WriteString8(message)
         '<EhFooter>
         Exit Function
 

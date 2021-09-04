@@ -99,8 +99,7 @@ Public Function VerificarOrigen(ByVal AccountID As Long, ByVal IP As String) As 
     
 110     VerificarOrigen = (IP = RS!last_ip)
     
-        ' Mas adelante, si pinta ser mas exhaustivos podemos agregar chequeos de yokese...
-        ' MAC, DNI, Numero de Tramite, lo que sea :)
+        
     
         Exit Function
 
@@ -119,47 +118,22 @@ Public Sub HandleNoticeResponse(ByVal UserIndex As Integer, ByVal Codigo As Stri
 
 100     With UserList(UserIndex)
 
-104         If .AccountID = 0 Then Exit Sub
+104         If .AccountID < 0 Then Exit Sub
 
-            Dim RS As ADODB.Recordset
-            Set RS = Query("SELECT TIMESTAMPDIFF(SECOND, `created_at`, CURRENT_TIMESTAMP) AS delta_time, code FROM account_guard WHERE account_id = ?;", .AccountID)
-        
-            ' El codigo expira despues de 1 minuto.
-108         If AOG_EXPIRE <> 0 And RS!delta_time > AOG_EXPIRE Then
+            Dim Data As New JS_Object, Instance As New JS_Object
             
-                ' Le avisamos que expiro
-110             Call WriteShowMessageBox(UserIndex, "El código de verificación ha expirado.")
-112             Debug.Print "El codigo expiro. Se generara uno nuevo!"
+            Data.Item("account_id") = .AccountID
+            Data.Item("code") = UCase$(Codigo)
+            Data.Item("ip") = .IP
+            Data.Item("email") = .Email
             
-                ' Invalidamos el codigo
-114             Call Execute("DELETE FROM account_guard WHERE account_id = ?;", UserList(UserIndex).AccountID)
+            Instance.Item("slot") = UserIndex
+            Instance.Item("uuid") = .UUID
             
-                ' Lo kickeamos.
-116             Call CloseSocket(UserIndex)
-                 
-            Else ' El codigo NO expiro...
+            .WaitingPacket = LOGIN_ACCOUNT
             
-                ' Lo comparamos con lo que tenemos en la BD
-118             If Codigo = RS!code Then
-            
-120                 Call WritePersonajesDeCuenta(UserIndex)
-122                 Call WriteMostrarCuenta(UserIndex)
-                
-                    ' Invalidamos el codigo
-124                 Call Execute("DELETE FROM account_guard WHERE account_id = ?;", UserList(UserIndex).AccountID)
-                
-                Else
-            
-                    ' Le avisamos
-126                 Call WriteShowMessageBox(UserIndex, "El código de verificación ha incorrecto.")
-                
-                    ' Lo kickeamos.
-128                 Call CloseSocket(UserIndex)
-                
-                End If
-            
-            End If
- 
+            Call Manager.Send(GUARD_NOTICE_RESPONSE, Data, Instance)
+
         End With
 
 HandleNoticeResponse_Err:
@@ -264,7 +238,7 @@ Private Sub GenerarCodigoAPI(ByVal UserIndex As Integer)
 110     client.setRequestHeader "x-api-key", API_KEY
 112     client.setRequestHeader "Content-Type", "application/x-www-form-urlencoded"
             
-114     client.send "account_id=" & UserList(UserIndex).AccountID & _
+114     client.Send "account_id=" & UserList(UserIndex).AccountID & _
            "&email=" & UserList(UserIndex).Cuenta & _
            "&ip_address=" & UserList(UserIndex).IP & _
            "&code=" & Codigo
@@ -315,7 +289,7 @@ Private Sub GenerarCodigo(ByVal UserIndex As Integer)
             Else
             
                 ' Usamos el codigo vigente
-120             Codigo = RS!code
+120             Codigo = RS!Code
             
             End If
         
@@ -383,7 +357,7 @@ Sub SendEmail(ByVal Email As String, ByVal Codigo As String, ByVal IP As String)
 136         Set .Configuration = cdoConf
         
             ' Send the message
-138         Call .send
+138         Call .Send
 
         End With
 

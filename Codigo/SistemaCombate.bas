@@ -136,13 +136,13 @@ ModEvasionDeEscudoClase_Err:
         
 End Function
 
-Private Function Minimo(ByVal a As Single, ByVal b As Single) As Single
+Private Function Minimo(ByVal a As Single, ByVal B As Single) As Single
         
         On Error GoTo Minimo_Err
         
 
-100     If a > b Then
-102         Minimo = b
+100     If a > B Then
+102         Minimo = B
             Else:
 104         Minimo = a
 
@@ -157,13 +157,13 @@ Minimo_Err:
         
 End Function
 
-Function MinimoInt(ByVal a As Integer, ByVal b As Integer) As Integer
+Function MinimoInt(ByVal a As Integer, ByVal B As Integer) As Integer
         
         On Error GoTo MinimoInt_Err
         
 
-100     If a > b Then
-102         MinimoInt = b
+100     If a > B Then
+102         MinimoInt = B
             Else:
 104         MinimoInt = a
 
@@ -178,15 +178,15 @@ MinimoInt_Err:
         
 End Function
 
-Private Function Maximo(ByVal a As Single, ByVal b As Single) As Single
+Private Function Maximo(ByVal a As Single, ByVal B As Single) As Single
         
         On Error GoTo Maximo_Err
         
 
-100     If a > b Then
+100     If a > B Then
 102         Maximo = a
             Else:
-104         Maximo = b
+104         Maximo = B
 
         End If
 
@@ -199,15 +199,15 @@ Maximo_Err:
         
 End Function
 
-Function MaximoInt(ByVal a As Integer, ByVal b As Integer) As Integer
+Function MaximoInt(ByVal a As Integer, ByVal B As Integer) As Integer
         
         On Error GoTo MaximoInt_Err
         
 
-100     If a > b Then
+100     If a > B Then
 102         MaximoInt = a
             Else:
-104         MaximoInt = b
+104         MaximoInt = B
 
         End If
 
@@ -1630,7 +1630,7 @@ Public Function PuedeAtacar(ByVal AttackerIndex As Integer, ByVal VictimIndex As
         'MUY importante el orden de estos "IF"...
 
         'Estas muerto no podes atacar
-100     If UserList(AttackerIndex).flags.Muerto = 1 Then
+100     If UserList(AttackerIndex).flags.Muerto Then
 102         Call WriteLocaleMsg(AttackerIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
             'Call WriteConsoleMsg(attackerIndex, "No podés atacar porque estas muerto", e_FontTypeNames.FONTTYPE_INFO)
 104         PuedeAtacar = False
@@ -1647,7 +1647,7 @@ Public Function PuedeAtacar(ByVal AttackerIndex As Integer, ByVal VictimIndex As
         End If
 
         'No podes atacar a alguien muerto
-114     If UserList(VictimIndex).flags.Muerto = 1 Then
+114     If UserList(VictimIndex).flags.Muerto Then
 116         Call WriteConsoleMsg(AttackerIndex, "No podés atacar a un espiritu.", e_FontTypeNames.FONTTYPE_INFO)
 118         PuedeAtacar = False
             Exit Function
@@ -1802,7 +1802,7 @@ Public Function PuedeAtacar(ByVal AttackerIndex As Integer, ByVal VictimIndex As
         End If
 
         'Estas atacando desde un trigger seguro? o tu victima esta en uno asi?
-222     If MapData(UserList(VictimIndex).Pos.Map, UserList(VictimIndex).Pos.X, UserList(VictimIndex).Pos.Y).trigger = e_Trigger.ZONASEGURA Or MapData(UserList(AttackerIndex).Pos.Map, UserList(AttackerIndex).Pos.X, UserList(AttackerIndex).Pos.Y).trigger = e_Trigger.ZONASEGURA Then
+222     If MapData(UserList(VictimIndex).Pos.Map, UserList(VictimIndex).Pos.X, UserList(VictimIndex).Pos.Y).trigger = e_Trigger.ZonaSegura Or MapData(UserList(AttackerIndex).Pos.Map, UserList(AttackerIndex).Pos.X, UserList(AttackerIndex).Pos.Y).trigger = e_Trigger.ZonaSegura Then
 224         Call WriteConsoleMsg(AttackerIndex, "No podes pelear aqui.", e_FontTypeNames.FONTTYPE_WARNING)
 226         PuedeAtacar = False
             Exit Function
@@ -1834,7 +1834,7 @@ Public Function PuedeAtacarNPC(ByVal AttackerIndex As Integer, ByVal NpcIndex As
         
 
         'Estas muerto?
-100     If UserList(AttackerIndex).flags.Muerto = 1 Then
+100     If UserList(AttackerIndex).flags.Muerto Then
             'Call WriteConsoleMsg(attackerIndex, "No podés atacar porque estas muerto", e_FontTypeNames.FONTTYPE_INFO)
 102         Call WriteLocaleMsg(AttackerIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
 104         PuedeAtacarNPC = False
@@ -2113,7 +2113,7 @@ Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As I
         
 122     For i = 1 To UserList(UserList(UserIndex).Grupo.Lider).Grupo.CantidadMiembros
 124         Index = UserList(UserList(UserIndex).Grupo.Lider).Grupo.Miembros(i)
-126         If UserList(Index).flags.Muerto = 0 Then
+126         If Not UserList(Index).flags.Muerto Then
 128             If UserList(UserIndex).Pos.Map = UserList(Index).Pos.Map Then
 130                 If Abs(UserList(UserIndex).Pos.X - UserList(Index).Pos.X) < 20 Then
 132                     If Abs(UserList(UserIndex).Pos.Y - UserList(Index).Pos.Y) < 20 Then
@@ -2140,7 +2140,7 @@ Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As I
 148         For i = 1 To UserList(UserList(UserIndex).Grupo.Lider).Grupo.CantidadMiembros
 150             Index = UserList(UserList(UserIndex).Grupo.Lider).Grupo.Miembros(i)
     
-152             If UserList(Index).flags.Muerto = 0 Then
+152             If Not UserList(Index).flags.Muerto Then
 154                 If Distancia(UserList(UserIndex).Pos, UserList(Index).Pos) < 20 Then
 
 158                     ExpUser = ExpaDar
@@ -2232,7 +2232,7 @@ Private Sub CalcularDarOroGrupal(ByVal UserIndex As Integer, ByVal GiveGold As L
 106     For i = 1 To UserList(UserList(UserIndex).Grupo.Lider).Grupo.CantidadMiembros
 108         Index = UserList(UserList(UserIndex).Grupo.Lider).Grupo.Miembros(i)
 
-110         If UserList(Index).flags.Muerto = 0 Then
+110         If Not UserList(Index).flags.Muerto Then
 112             If UserList(UserIndex).Pos.Map = UserList(Index).Pos.Map Then
 114                 If OroDar > 0 Then
 
@@ -2604,7 +2604,7 @@ Private Sub WriteCombatConsoleMsg(ByVal UserIndex As Integer, ByVal message As S
             On Error GoTo WriteCombatConsoleMsg_Err
 
 100         If UserList(UserIndex).ChatCombate = 1 Then
-102             Call WriteConsoleMsg(UserIndex, Message, e_FontTypeNames.FONTTYPE_FIGHT)
+102             Call WriteConsoleMsg(UserIndex, message, e_FontTypeNames.FONTTYPE_FIGHT)
             End If
 
             Exit Sub

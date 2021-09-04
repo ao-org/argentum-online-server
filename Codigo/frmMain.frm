@@ -1,4 +1,5 @@
 VERSION 5.00
+Object = "{248DD890-BB45-11CF-9ABC-0080C7E7B78D}#1.0#0"; "MSWINSCK.ocx"
 Begin VB.Form frmMain 
    BackColor       =   &H00E0E0E0&
    BorderStyle     =   4  'Fixed ToolWindow
@@ -26,6 +27,13 @@ Begin VB.Form frmMain
    ScaleHeight     =   6210
    ScaleWidth      =   6840
    StartUpPosition =   2  'CenterScreen
+   Begin MSWinsockLib.Winsock ManagerSocket 
+      Left            =   2880
+      Top             =   600
+      _ExtentX        =   741
+      _ExtentY        =   741
+      _Version        =   393216
+   End
    Begin VB.CommandButton Command3 
       Caption         =   "Recargar Donadore"
       Height          =   495
@@ -924,7 +932,7 @@ Private Sub Minuto_Timer()
 
     Dim i                   As Integer
 
-    Dim Num                 As Long
+    Dim num                 As Long
 
     MinsRunning = MinsRunning + 1
 
@@ -1453,7 +1461,7 @@ Private Sub GameTimer_Timer()
                 
                 Call DoTileEvents(iUserIndex, .Pos.Map, .Pos.X, .Pos.Y)
 
-                If .flags.Muerto = 0 Then
+                If Not .flags.Muerto Then
                     
                     'Efectos en mapas
                     If (.flags.Privilegios And e_PlayerType.user) <> 0 Then
@@ -1987,7 +1995,7 @@ Private Sub tPiqueteC_Timer()
         If UserList(i).flags.UserLogged Then
             If MapData(UserList(i).Pos.Map, UserList(i).Pos.X, UserList(i).Pos.Y).trigger = e_Trigger.ANTIPIQUETE Then
                 UserList(i).Counters.PiqueteC = UserList(i).Counters.PiqueteC + 1
-                'Call WriteConsoleMsg(i, "Estï¿½s obstruyendo la via pï¿½blica, muï¿½vete o serï¿½s encarcelado!!!", e_FontTypeNames.FONTTYPE_INFO)
+                'Call WriteConsoleMsg(i, "Estás obstruyendo la via pública, muévete o serás encarcelado!!!", e_FontTypeNames.FONTTYPE_INFO)
                 
                 'WyroX: Le empiezo a avisar a partir de los 18 segundos, para no spamear
                 If UserList(i).Counters.PiqueteC > 3 Then
@@ -1998,9 +2006,7 @@ Private Sub tPiqueteC_Timer()
                     UserList(i).Counters.PiqueteC = 0
                     'Call Encarcelar(i, TIEMPO_CARCEL_PIQUETE)
                     'WyroX: En vez de encarcelarlo, lo sacamos del juego.
-                    'Ojo! No sï¿½ si se puede abusar de esto para evitar los 10 segundos al salir
-                    Call WriteDisconnect(i)
-                    Call CloseSocket(i)
+                    Call DisconnectUser(i)
                 End If
 
             Else

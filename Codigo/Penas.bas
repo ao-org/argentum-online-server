@@ -109,6 +109,7 @@ Public Sub BanPJ(ByVal BannerIndex As Integer, ByVal UserName As String, ByRef R
         ' Si estaba online, lo echamos.
 116     Dim tUser As Integer: tUser = NameIndex(UserName)
 118     If tUser > 0 Then
+            Call WriteShowMessageBox(tUser, "Tu personaje fue baneado del servidor debido a: " & LCase$(Razon) & ". Decisión tomada por " & UserList(BannerIndex).Name & ".")
             Call WriteDisconnect(tUser)
             Call CloseSocket(tUser)
         End If

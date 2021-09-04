@@ -515,13 +515,7 @@ Function ConnectNewUser(ByVal UserIndex As Integer, ByRef Name As String, ByVal 
 114             Call WriteShowMessageBox(UserIndex, "El nombre no está permitido.")
                 Exit Function
             End If
-    
-            '¿Existe el personaje?
-116         If PersonajeExiste(Name) Then
-118             Call WriteShowMessageBox(UserIndex, "Ya existe el personaje.")
-                Exit Function
-            End If
-            
+
             ' Raza válida
 120         If UserRaza <= 0 Or UserRaza > NUMRAZAS Then Exit Function
             
@@ -543,7 +537,7 @@ Function ConnectNewUser(ByVal UserIndex As Integer, ByRef Name As String, ByVal 
 136         .Stats.UserAtributos(e_Atributos.Constitucion) = .Stats.UserAtributos(e_Atributos.Constitucion) + ModRaza(UserRaza).Constitucion
 138         .Stats.UserAtributos(e_Atributos.Carisma) = .Stats.UserAtributos(e_Atributos.Carisma) + ModRaza(UserRaza).Carisma
         
-140         .flags.Muerto = 0
+140         .flags.Muerto = False
 142         .flags.Escondido = 0
     
 144         .flags.Casado = 0
@@ -641,13 +635,11 @@ Function ConnectNewUser(ByVal UserIndex As Integer, ByRef Name As String, ByVal 
 250         .Pos.X = DungeonNewbieCoords(RandomPosIndex).X
 252         .Pos.Y = DungeonNewbieCoords(RandomPosIndex).Y
         
-254         UltimoChar = UCase$(Name)
-        
 256         Call SaveNewUser(UserIndex)
+
+            .WaitingPacket = CREATE_CHAR
     
 258         ConnectNewUser = True
-    
-260         Call ConnectUser(UserIndex, Name, UserCuenta)
 
         End With
         
@@ -658,6 +650,14 @@ ConnectNewUser_Err:
 
         
 End Function
+
+Sub DisconnectUser(ByVal UserIndex As Integer)
+
+    Call CloseUser(UserIndex)
+
+    Call WriteDisconnect(UserIndex)
+
+End Sub
 
 Sub CloseSocket(ByVal UserIndex As Integer)
 
@@ -701,12 +701,15 @@ Sub CloseSocket(ByVal UserIndex As Integer)
     
 128         If .flags.UserLogged Then
 130             Call CloseUser(UserIndex)
-        
-132             If NumUsers > 0 Then NumUsers = NumUsers - 1
-        
+
             Else
 136             Call ResetUserSlot(UserIndex)
-    
+
+                .AccountID = -1
+                .UUID = vbNullString
+                .Email = vbNullString
+                .Cuenta = vbNullString
+                .IP = vbNullString
             End If
     
 140         .ConnIDValida = False
@@ -854,69 +857,29 @@ ValidateChr_Err:
         
 End Function
 
-Function EntrarCuenta(ByVal UserIndex As Integer, ByVal CuentaEmail As String, ByVal CuentaPassword As String, ByVal MD5 As String) As Boolean
-        
-        On Error GoTo EntrarCuenta_Err
-        
-        Dim adminIdx As Integer
-        Dim laCuentaEsDeAdmin As Boolean
-        
-100     If ServerSoloGMs > 0 Then
-102         laCuentaEsDeAdmin = False
-
-104         For adminIdx = 0 To AdministratorAccounts.Count - 1
-                ' Si el e-mail está declarado junto al nick de la cuenta donde esta el PJ GM en el Server.ini te dejo entrar.
-106             If UCase$(AdministratorAccounts.Items(adminIdx)) = UCase$(CuentaEmail) Then
-108                 laCuentaEsDeAdmin = True
-                End If
-110         Next adminIdx
-            
-112         If Not laCuentaEsDeAdmin Then
-114             Call WriteShowMessageBox(UserIndex, "El servidor se encuentra habilitado solo para administradores por el momento.")
-                Exit Function
-            End If
-
-        End If
-
-        #If DEBUGGING = 0 Then
-124         If LCase$(Md5Cliente) <> LCase$(MD5) Then
-126             Call WriteShowMessageBox(UserIndex, "Error al comprobar el cliente del juego, por favor reinstale y vuelva a intentar.")
-                Exit Function
-            End If
-        #End If
-
-128     If Not CheckMailString(CuentaEmail) Then
-130         Call WriteShowMessageBox(UserIndex, "Email inválido.")
-            Exit Function
-        End If
-    
-132     EntrarCuenta = EnterAccountDatabase(UserIndex, CuentaEmail, SDesencriptar(CuentaPassword), UserList(UserIndex).IP)
-        
-        Exit Function
-
-EntrarCuenta_Err:
-134     Call TraceError(Err.Number, Err.Description, "TCP.EntrarCuenta", Erl)
-
-
-        
-End Function
-
-Sub ConnectUser(ByVal UserIndex As Integer, _
-                ByRef Name As String, _
-                ByRef UserCuenta As String)
+Sub ConnectUser(ByVal UserIndex As Integer, ByRef Name As String)
 
         On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 
-105         If Not ConnectUser_Check(UserIndex, Name, UserCuenta) Then Exit Sub
+105         If Not ConnectUser_Check(UserIndex, Name) Then Exit Sub
         
-110         Call ConnectUser_Prepare(UserIndex, Name, UserCuenta)
-        
-            ' Cargamos el personaje
-115         Call LoadUser(UserIndex)
+110         Call ConnectUser_Prepare(UserIndex, Name)
 
-120         Call ConnectUser_Complete(UserIndex, Name, UserCuenta)
+            Dim Data As New JS_Object, Instance As New JS_Object
+
+            Data.Item("account_id") = .AccountID
+            Data.Item("name") = Name
+            Data.Item("ip") = .IP
+
+            Instance.Item("slot") = UserIndex
+            Instance.Item("uuid") = .UUID
+
+            Call Manager.Send(LOGIN_CHAR, Data, Instance)
+            
+            .WaitingPacket = LOGIN_CHAR
+
         End With
 
         Exit Sub
@@ -1115,17 +1078,13 @@ Sub ResetBasicUserInfo(ByVal UserIndex As Integer)
 
 100     With UserList(UserIndex)
 102         .Name = vbNullString
-104         .Cuenta = vbNullString
 106         .ID = -1
-108         .AccountID = -1
 110         .Desc = vbNullString
 112         .DescRM = vbNullString
 114         .Pos.Map = 0
 116         .Pos.X = 0
 118         .Pos.Y = 0
-120         .IP = vbNullString
 122         .clase = 0
-124         .Email = vbNullString
 126         .genero = 0
 128         .Hogar = 0
 130         .raza = 0
@@ -1288,7 +1247,6 @@ Sub ResetUserFlags(ByVal UserIndex As Integer)
 244         .LastCiudMatado = vbNullString
         
 246         .UserLogged = False
-248         .FirstPacket = False
 250         .Inmunidad = 0
             
 252         .Mimetizado = e_EstadoMimetismo.Desactivado
@@ -1434,7 +1392,7 @@ Sub ResetUserKeys(ByVal UserIndex As Integer)
             Dim i As Integer
         
 102         For i = 1 To MAXKEYS
-104             .Keys(i) = 0
+104             .keys(i) = 0
             Next
         End With
         
@@ -1473,9 +1431,6 @@ End Sub
 Sub ResetUserSlot(ByVal UserIndex As Integer)
         
         On Error GoTo ResetUserSlot_Err
-        
-
-100     UserList(UserIndex).ConnIDValida = False
 
 104     If UserList(UserIndex).Grupo.Lider = UserIndex Then
 106         Call FinalizarGrupo(UserIndex)
@@ -1638,6 +1593,8 @@ Sub ClearAndSaveUser(ByVal UserIndex As Integer)
 
 206         Call SaveUser(UserIndex, True)
 
+            .flags.YaGuardo = True
+
     End With
     
     Exit Sub
@@ -1652,19 +1609,36 @@ End Sub
 Sub CloseUser(ByVal UserIndex As Integer)
 
         On Error GoTo ErrHandler
+        
+100     With UserList(UserIndex)
+
+104         If Not .flags.YaGuardo Then
+106             Call ClearAndSaveUser(UserIndex)
+            End If
+            
+            .Counters.Saliendo = False
+
+        End With
+    
+        Exit Sub
+    
+ErrHandler:
+        'Call LogError("Error en CloseUser. Número " & Err.Number & ". Descripción: " & Err.Description & ". Detalle:" & errordesc)
+144     Call TraceError(Err.Number, Err.Description, "CloseUser", Erl)
+146     Resume Next ' TODO: Provisional hasta solucionar bugs graves
+
+End Sub
+
+Public Sub UserClosed(ByVal UserIndex As Integer)
+    On Error GoTo ErrHandler
     
         Dim errordesc As String
         Dim Map As Integer
-        Dim aN  As Integer
         Dim i   As Integer
         
 100     With UserList(UserIndex)
             
 102         Map = .Pos.Map
-        
-104         If Not .flags.YaGuardo Then
-106             Call ClearAndSaveUser(UserIndex)
-            End If
 
 108         errordesc = "ERROR AL DESCONTAR USER DE MAPA"
     
@@ -1694,6 +1668,8 @@ Sub CloseUser(ByVal UserIndex As Integer)
 130         MapInfo(Map).NumUsers = MapInfo(Map).NumUsers - 1
         
 132         If MapInfo(Map).NumUsers < 0 Then MapInfo(Map).NumUsers = 0
+
+            If NumUsers > 0 Then NumUsers = NumUsers - 1
     
             ' Si el usuario habia dejado un msg en la gm's queue lo borramos
             'If Ayuda.Existe(.Name) Then Call Ayuda.Quitar(.Name)
@@ -1705,19 +1681,24 @@ Sub CloseUser(ByVal UserIndex As Integer)
 138         errordesc = "ERROR AL RESETSLOT Name:" & .Name & " cuenta:" & .Cuenta
 
 140         .flags.UserLogged = False
-
-            .Counters.Saliendo = False
         
 142         Call ResetUserSlot(UserIndex)
+
+            If Not .ConnIDValida Then
+                .AccountID = -1
+                .UUID = vbNullString
+                .Email = vbNullString
+                .Cuenta = vbNullString
+                .IP = vbNullString
+            End If
 
         End With
     
         Exit Sub
     
 ErrHandler:
-        'Call LogError("Error en CloseUser. Número " & Err.Number & ". Descripción: " & Err.Description & ". Detalle:" & errordesc)
-144     Call TraceError(Err.Number, Err.Description & ". Detalle:" & errordesc, Erl)
-146     Resume Next ' TODO: Provisional hasta solucionar bugs graves
+144     Call TraceError(Err.Number, Err.Description & ". Detalle:" & errordesc, "UserClosed", Erl)
+146     Resume Next
 
 End Sub
 

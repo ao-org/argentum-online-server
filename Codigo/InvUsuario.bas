@@ -902,7 +902,7 @@ Sub Desequipar(ByVal UserIndex As Integer, ByVal Slot As Byte)
 
 200                 Case 12
 
-202                     If UserList(UserIndex).flags.Muerto = 0 Then UserList(UserIndex).flags.CarroMineria = 0
+202                     If Not UserList(UserIndex).flags.Muerto Then UserList(UserIndex).flags.CarroMineria = 0
                 
 204                 Case 14
                         'UserList(UserIndex).flags.DañoMagico = 0
@@ -1103,7 +1103,7 @@ Sub EquiparBarco(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 102         Barco = ObjData(.Invent.BarcoObjIndex)
 
-104         If .flags.Muerto = 1 Then
+104         If .flags.Muerto Then
 106             If Barco.Ropaje = iTraje Or Barco.Ropaje = iTrajeAltoNw Or Barco.Ropaje = iTrajeBajoNw Then
                     ' No tenemos la cabeza copada que va con iRopaBuceoMuerto,
                     ' asique asignamos el casper directamente caminando sobre el agua.
@@ -1195,7 +1195,7 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
 
 106     With UserList(UserIndex)
 
-108          If .flags.Muerto = 1 Then
+108          If .flags.Muerto Then
                  'Call WriteConsoleMsg(UserIndex, "¡¡Estas muerto!! Solo podes usar items cuando estas vivo. ", e_FontTypeNames.FONTTYPE_INFO)
 110              Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
                  Exit Sub
@@ -1646,8 +1646,8 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
                     End If
 
 526                 .Invent.Object(Slot).Equipped = 1
-528                 .Invent.DañoMagicoEqpObjIndex = .Invent.Object(slot).ObjIndex
-530                 .Invent.DañoMagicoEqpSlot = slot
+528                 .Invent.DañoMagicoEqpObjIndex = .Invent.Object(Slot).ObjIndex
+530                 .Invent.DañoMagicoEqpSlot = Slot
 
 532                 If Len(obj.CreaGRH) <> 0 Then
 534                     .Char.DM_Aura = obj.CreaGRH
@@ -1807,7 +1807,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
     
                 Case e_OBJType.otUseOnce
     
-142                 If .flags.Muerto = 1 Then
+142                 If .flags.Muerto Then
 144                     Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
                         ' Call WriteConsoleMsg(UserIndex, "¡¡Estas muerto!! Solo podes usar items cuando estas vivo. ", e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
@@ -1833,7 +1833,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
                     
 160             Case e_OBJType.otGuita
     
-162                 If .flags.Muerto = 1 Then
+162                 If .flags.Muerto Then
 164                     Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
                         ' Call WriteConsoleMsg(UserIndex, "¡¡Estas muerto!! Solo podes usar items cuando estas vivo. ", e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
@@ -1850,7 +1850,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
             
 178             Case e_OBJType.otWeapon
     
-180                 If .flags.Muerto = 1 Then
+180                 If .flags.Muerto Then
 182                     Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
                         ' Call WriteConsoleMsg(UserIndex, "¡¡Estas muerto!! Solo podes usar items cuando estas vivo. ", e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
@@ -1886,7 +1886,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
             
 200             Case e_OBJType.otHerramientas
     
-202                 If .flags.Muerto = 1 Then
+202                 If .flags.Muerto Then
 204                     Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
                         'Call WriteConsoleMsg(UserIndex, "¡¡Estas muerto!! Solo podes usar items cuando estas vivo. ", e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
@@ -1940,7 +1940,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
         
 252             Case e_OBJType.otPociones
     
-254                 If .flags.Muerto = 1 Then
+254                 If .flags.Muerto Then
 256                     Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
                         'Call WriteConsoleMsg(UserIndex, "¡¡Estas muerto!! Solo podes usar items cuando estas vivo. ", e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
@@ -2657,7 +2657,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
     
 978             Case e_OBJType.otBebidas
     
-980                 If .flags.Muerto = 1 Then
+980                 If .flags.Muerto Then
 982                     Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
                         'Call WriteConsoleMsg(UserIndex, "¡¡Estas muerto!! Solo podes usar items cuando estas vivo. ", e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
@@ -2685,7 +2685,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
             
 1002             Case e_OBJType.OtCofre
     
-1004                 If .flags.Muerto = 1 Then
+1004                 If .flags.Muerto Then
 1006                     Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
                             'Call WriteConsoleMsg(UserIndex, "¡¡Estas muerto!! Solo podes usar items cuando estas vivo. ", e_FontTypeNames.FONTTYPE_INFO)
                             Exit Sub
@@ -2753,7 +2753,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
                         
                             For i = 1 To obj.CantItem
                             
-                                If RandomNumber(1, obj.Item(i).data) = 1 Then
+                                If RandomNumber(1, obj.Item(i).Data) = 1 Then
                             
                                     If Not MeterItemEnInventario(UserIndex, obj.Item(i)) Then
                                     
@@ -2776,7 +2776,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
         
 1058             Case e_OBJType.otBotellaVacia
     
-1060                If .flags.Muerto = 1 Then
+1060                If .flags.Muerto Then
 1062                    Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
                     End If
@@ -2808,7 +2808,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
         
 1080             Case e_OBJType.otBotellaLlena
     
-1082                 If .flags.Muerto = 1 Then
+1082                 If .flags.Muerto Then
 1084                     Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
                               ' Call WriteConsoleMsg(UserIndex, "¡¡Estas muerto!! Solo podes usar items cuando estas vivo. ", e_FontTypeNames.FONTTYPE_INFO)
                               Exit Sub
@@ -2833,7 +2833,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
         
 1106             Case e_OBJType.otPergaminos
     
-1108                 If .flags.Muerto = 1 Then
+1108                 If .flags.Muerto Then
 1110                     Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
                               ' Call WriteConsoleMsg(UserIndex, "¡¡Estas muerto!! Solo podes usar items cuando estas vivo. ", e_FontTypeNames.FONTTYPE_INFO)
                               Exit Sub
@@ -2865,7 +2865,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
             
 1124             Case e_OBJType.otMinerales
     
-1126                 If .flags.Muerto = 1 Then
+1126                 If .flags.Muerto Then
 1128                     Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
                               'Call WriteConsoleMsg(UserIndex, "¡¡Estas muerto!! Solo podes usar items cuando estas vivo. ", e_FontTypeNames.FONTTYPE_INFO)
                               Exit Sub
@@ -2876,7 +2876,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
            
 1132             Case e_OBJType.otInstrumentos
     
-1134                 If .flags.Muerto = 1 Then
+1134                 If .flags.Muerto Then
 1136                     Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
                               'Call WriteConsoleMsg(UserIndex, "¡¡Estas muerto!! Solo podes usar items cuando estas vivo. ", e_FontTypeNames.FONTTYPE_INFO)
                               Exit Sub
@@ -2964,7 +2964,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
 1194             Case e_OBJType.otMonturas
                           'Verifica todo lo que requiere la montura
         
-1196                If .flags.Muerto = 1 Then
+1196                If .flags.Muerto Then
 1198                    Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
                            'Call WriteConsoleMsg(UserIndex, "¡Estas muerto! Los fantasmas no pueden montar.", e_FontTypeNames.FONTTYPE_INFO)
                            Exit Sub
@@ -3010,7 +3010,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
                     End Select
 1262             Case e_OBJType.otpasajes
     
-1264                 If .flags.Muerto = 1 Then
+1264                 If .flags.Muerto Then
 1266                     Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
                               'Call WriteConsoleMsg(UserIndex, "¡¡Estas muerto!! Solo podes usar items cuando estas vivo. ", e_FontTypeNames.FONTTYPE_INFO)
                               Exit Sub
@@ -3078,7 +3078,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
     
                        End If
                         
-1318                If MapInfo(.Pos.Map).Seguro = 0 And .flags.Muerto = 0 Then
+1318                If MapInfo(.Pos.Map).Seguro = 0 And Not .flags.Muerto Then
 1320                    Call WriteConsoleMsg(UserIndex, "Solo podes usar tu runa en zonas seguras.", e_FontTypeNames.FONTTYPE_INFO)
                            Exit Sub
     
@@ -3113,7 +3113,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
 1346             Case e_OBJType.otmapa
 1348                 Call WriteShowFrmMapa(UserIndex)
                  Case e_OBJType.OtQuest
-1349                 Call WriteObjQuestSend(UserIndex, obj.QuestId, slot)
+1349                 Call WriteObjQuestSend(UserIndex, obj.QuestId, Slot)
             
              End Select
              

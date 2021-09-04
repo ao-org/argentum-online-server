@@ -72,6 +72,10 @@ On Error GoTo OnServerConnect_Err:
     
         UserList(Connection).ConnIDValida = True
         UserList(Connection).IP = Address
+        UserList(Connection).UUID = GenGUID()
+        UserList(Connection).ID = -1
+        UserList(Connection).AccountID = -1
+        UserList(Connection).WaitingPacket = -1
 
         If IP_Blacklist.Exists(UserList(Connection).IP) <> 0 Then 'Busca si esta banneada la ip
             Call Kick(Connection, "Se te ha prohibido la entrada al servidor. Cod: #0003")
@@ -120,7 +124,7 @@ On Error GoTo OnServerSend_Err:
 
 #If AntiExternos = 1 Then
     Dim BytesRef() As Byte
-    Call Message.GetData(BytesRef) ' Is only a view of the buffer as a SafeArrayPtr ;-)
+    Call Message.getData(BytesRef) ' Is only a view of the buffer as a SafeArrayPtr ;-)
 
     Call Security.XorData(BytesRef, UBound(BytesRef) - 1, UserList(Connection).XorIndexOut)
 #End If
@@ -137,7 +141,7 @@ On Error GoTo OnServerRecv_Err:
 
 #If AntiExternos = 1 Then
     Dim BytesRef() As Byte
-    Call Message.GetData(BytesRef) ' Is only a view of the buffer as a SafeArrayPtr ;-)
+    Call Message.getData(BytesRef) ' Is only a view of the buffer as a SafeArrayPtr ;-)
 
     Call Security.XorData(BytesRef, UBound(BytesRef) - 1, UserList(Connection).XorIndexIn)
 #End If

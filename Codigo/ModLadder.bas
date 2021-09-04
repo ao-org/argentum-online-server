@@ -145,7 +145,7 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
 
                         Dim Y       As Byte
         
-108                     If UserList(UserIndex).flags.Muerto = 0 Then
+108                     If Not UserList(UserIndex).flags.Muerto Then
 
 110                         Select Case UserList(UserIndex).Hogar
 
@@ -330,7 +330,7 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
 
 310         Case e_AccionBarra.Intermundia
         
-312             If UserList(UserIndex).flags.Muerto = 0 Then
+312             If UserList(UserIndex).flags.Muerto Then
 
                     Dim uh As Integer
 
@@ -471,7 +471,7 @@ Public Function SumarTiempo(segundos As Integer) As String
         On Error GoTo SumarTiempo_Err
         
 
-        Dim a As Variant, b As Variant
+        Dim a As Variant, B As Variant
 
         Dim X As Integer
 
@@ -481,8 +481,8 @@ Public Function SumarTiempo(segundos As Integer) As String
 102     a = Format("00:00:01", "hh:mm:ss") 'guardamos en una variable el formato de 1 segundos
 
 104     For X = 1 To segundos 'hacemos segundo a segundo
-106         b = Format(T, "hh:mm:ss") 'En B guardamos un formato de hora:minuto:segundo segun lo que tenia T
-108         T = Format(TimeValue(a) + TimeValue(b), "hh:mm:ss") 'asignamos a T la suma de A + B (osea, sumamos logicamente 1 segundo)
+106         B = Format(T, "hh:mm:ss") 'En B guardamos un formato de hora:minuto:segundo segun lo que tenia T
+108         T = Format(TimeValue(a) + TimeValue(B), "hh:mm:ss") 'asignamos a T la suma de A + B (osea, sumamos logicamente 1 segundo)
 110     Next X
 
 112     SumarTiempo = T 'a la funcion le damos el valor que hallamos en T
