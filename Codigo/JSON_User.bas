@@ -39,7 +39,6 @@ Function Principal(ByRef UserIndex As Integer, Optional ByVal Logout As Boolean 
 148         Objeto.Item("helmet_id") = .Char.CascoAnim
 150         Objeto.Item("shield_id") = .Char.ShieldAnim
 152         Objeto.Item("heading") = .Char.Heading
-154         Objeto.Item("items_Amount") = .Invent.NroItems
 156         Objeto.Item("slot_armour") = .Invent.ArmourEqpSlot
 158         Objeto.Item("slot_weapon") = .Invent.WeaponEqpSlot
 160         Objeto.Item("slot_shield") = .Invent.EscudoEqpSlot
@@ -67,9 +66,6 @@ Function Principal(ByRef UserIndex As Integer, Optional ByVal Logout As Boolean 
 204         Objeto.Item("invent_level") = .Stats.InventLevel
 206         Objeto.Item("is_naked") = IIf(.flags.Desnudo, 1, 0)
 208         Objeto.Item("is_poisoned") = IIf(.flags.Envenenado, 1, 0)
-210         Objeto.Item("is_hidden") = IIf(.flags.Escondido, 1, 0)
-212         Objeto.Item("is_hungry") = IIf(.flags.Hambre, 1, 0)
-214         Objeto.Item("is_thirsty") = IIf(.flags.Sed, 1, 0)
             Objeto.Item("is_banned") = IIf(.flags.Ban, 1, 0)
 218         Objeto.Item("is_sailing") = IIf(.flags.Navegando, 1, 0)
 220         Objeto.Item("is_paralyzed") = IIf(.flags.Paralizado, 1, 0)
@@ -78,11 +74,8 @@ Function Principal(ByRef UserIndex As Integer, Optional ByVal Logout As Boolean 
             Objeto.Item("is_logged") = Not Logout
 226         Objeto.Item("silence_minutes_left") = .flags.MinutosRestantes
 228         Objeto.Item("silence_elapsed_seconds") = .flags.SegundosPasados
-230         Objeto.Item("spouse") = .flags.Pareja
 232         Objeto.Item("counter_pena") = .Counters.Pena
 234         Objeto.Item("deaths") = .flags.VecesQueMoriste
-236         Objeto.Item("pertenece_consejo_real") = IIf(.flags.Privilegios And e_PlayerType.RoyalCouncil, 1, 0)
-238         Objeto.Item("pertenece_consejo_caos") = IIf(.flags.Privilegios And e_PlayerType.ChaosCouncil, 1, 0)
 240         Objeto.Item("pertenece_real") = .Faccion.ArmadaReal
 242         Objeto.Item("pertenece_caos") = .Faccion.FuerzasCaos
 244         Objeto.Item("ciudadanos_matados") = .Faccion.ciudadanosMatados
