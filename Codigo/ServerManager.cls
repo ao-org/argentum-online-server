@@ -315,7 +315,6 @@ Private Sub HandleLoginChar(ByVal ID As Long, Data As Object, Instance As Object
             .flags.Paralizado = Data.Item("is_paralyzed")
             .flags.VecesQueMoriste = Data.Item("deaths")
             .flags.Montado = Data.Item("is_mounted")
-            .flags.Pareja = Data.Item("spouse")
             .flags.Casado = IIf(Len(.flags.Pareja) > 0, 1, 0)
             .flags.Silenciado = Data.Item("is_silenced")
             .flags.MinutosRestantes = Data.Item("silence_minutes_left")
