@@ -3894,7 +3894,18 @@ WriteNpcQuestListSend_Err:
         Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteNpcQuestListSend", Erl)
         '</EhFooter>
 End Sub
-
+Public Sub writeAnswerReset(ByVal UserIndex As Integer)
+    On Error GoTo writeAnswerReset_Err
+    
+    Call Writer.WriteInt(ServerPacketID.AnswerReset)
+    
+182     Call modSendData.SendData(ToIndex, UserIndex)
+    Exit Sub
+writeAnswerReset_Err:
+        Call Writer.Clear
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.writeAnswerReset", Erl)
+        '</EhFooter>
+End Sub
 Public Sub WriteObjQuestSend(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, ByVal Slot As Byte)
         '<EhHeader>
         On Error GoTo WriteNpcQuestListSend_Err

@@ -165,6 +165,19 @@ AsignarAtributos_Err:
         
 End Sub
 
+Sub VaciarInventario(ByVal UserIndex As Integer)
+
+    Dim i As Long
+    
+    With UserList(UserIndex)
+        For i = 1 To MAX_INVENTORY_SLOTS
+            .Invent.Object(i).amount = 0
+            .Invent.Object(i).Equipped = 0
+            .Invent.Object(i).ObjIndex = 0
+        Next i
+    End With
+End Sub
+
 Sub RellenarInventario(ByVal UserIndex As String)
         
         On Error GoTo RellenarInventario_Err
@@ -230,6 +243,7 @@ Sub RellenarInventario(ByVal UserIndex As String)
 150         .Invent.Object(NumItems).amount = 20
 152         NumItems = NumItems + 1
         
+            
             ' Armas
 154         Select Case .clase
 
@@ -275,7 +289,9 @@ Sub RellenarInventario(ByVal UserIndex As String)
                     
 
             End Select
-        
+            
+            .Invent.WeaponEqpSlot = NumItems
+            .Invent.WeaponEqpObjIndex = .Invent.Object(NumItems).ObjIndex
             
 218         If .genero = e_Genero.Hombre Then
 220             If .raza = Enano Or .raza = Gnomo Then
@@ -291,6 +307,9 @@ Sub RellenarInventario(ByVal UserIndex As String)
 230                 .Invent.Object(NumItems).ObjIndex = RandomNumber(1283, 1285) ' Vestimentas de Mujer (Newbies)
                 End If
             End If
+            
+            .Invent.Object(NumItems).Equipped = 0
+            Call EquiparInvItem(UserIndex, NumItems)
                         
 232         .Invent.Object(NumItems).amount = 1
 234         .Invent.Object(NumItems).Equipped = 1
@@ -1008,6 +1027,7 @@ Sub ResetContadores(ByVal UserIndex As Integer)
 184         .SpeedHackCounter = 0
 186         .LastStep = 0
 188         .TimerBarra = 0
+            .LastResetTick = 0
         End With
 
         

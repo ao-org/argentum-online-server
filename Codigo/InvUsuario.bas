@@ -2649,6 +2649,14 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
 
 970                         Call WriteConsoleMsg(UserIndex, "Te has suicidado.", e_FontTypeNames.FONTTYPE_EJECUCION)
 972                         Call UserDie(UserIndex)
+                        'Poción de reset (resetea el personaje)
+                        Case 22
+                            If GetTickCount - .Counters.LastResetTick > 3000 Then
+                                Call writeAnswerReset(UserIndex)
+                                .Counters.LastResetTick = GetTickCount
+                            Else
+                                Call WriteConsoleMsg(UserIndex, "Debes esperar unos momentos para tomar esta poción.", e_FontTypeNames.FONTTYPE_INFO)
+                            End If
                     
                     End Select
     

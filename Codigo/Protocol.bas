@@ -183,6 +183,8 @@ Public Enum ServerPacketID
     ForceUpdate
     GuardNotice
     ObjQuestListSend
+    AnswerReset
+    
     [PacketCount]
 End Enum
 
@@ -509,7 +511,7 @@ Private Enum ClientPacketID
     GuardResendVerificationCode
     ResetChar               '/RESET NICK
     DeleteItem
-    
+    resetearPersonaje
     [PacketCount]
 End Enum
 
@@ -1281,6 +1283,8 @@ On Error Resume Next
             Call HandleResetChar(UserIndex)
         Case ClientPacketID.DeleteItem
             Call HandleDeleteItem(UserIndex)
+        Case ClientPacketID.resetearPersonaje
+            Call HandleResetearPersonaje(UserIndex)
         Case Else
             Err.raise -1, "Invalid Message"
     End Select
@@ -18544,6 +18548,17 @@ Private Sub HandleResetChar(ByVal UserIndex As Integer)
 
 HandleResetChar_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleResetChar", Erl)
+End Sub
+
+Private Sub HandleResetearPersonaje(ByVal UserIndex As Integer)
+    On Error GoTo HandleResetearPersonaje_Err:
+    
+    Call resetPj(UserIndex)
+
+    Exit Sub
+
+HandleResetearPersonaje_Err:
+102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleResetearPersonaje", Erl)
 End Sub
 
 Private Sub HandleDeleteItem(ByVal UserIndex As Integer)

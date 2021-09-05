@@ -1716,6 +1716,109 @@ Public Sub CargarMapasEspeciales()
 
 End Sub
 
+Public Sub resetPj(ByVal UserIndex As Integer)
+
+    
+100     With UserList(UserIndex)
+        
+140         .flags.Muerto = False
+142         .flags.Escondido = 0
+    
+144         .flags.Casado = 0
+146         .flags.Pareja = ""
+        
+            '%%%%%%%%%%%%% PREVENIR HACKEO DE LOS SKILLS %%%%%%%%%%%%%
+            .Stats.SkillPts = 10
+960         Call WriteLevelUp(UserIndex, 10)
+            
+        
+164         Call DarCuerpo(UserIndex) 'Ladder REVISAR
+        
+166         .OrigChar = .Char
+            Dim i As Long
+            For i = 1 To NUMSKILLS
+                .Stats.UserSkills(i) = 0
+            Next i
+    
+168         .Char.WeaponAnim = NingunArma
+170         .Char.ShieldAnim = NingunEscudo
+172         .Char.CascoAnim = NingunCasco
+
+            ' WyroX: Vida inicial
+174         .Stats.MaxHp = .Stats.UserAtributos(e_Atributos.Constitucion)
+176         .Stats.MinHp = .Stats.MaxHp
+
+            ' WyroX: Maná inicial
+178         .Stats.MaxMAN = .Stats.UserAtributos(e_Atributos.Inteligencia) * ModClase(.clase).ManaInicial
+180         .Stats.MinMAN = .Stats.MaxMAN
+        
+            Dim MiInt As Integer
+182         MiInt = RandomNumber(1, .Stats.UserAtributos(e_Atributos.Agilidad) \ 6)
+    
+184         If MiInt = 1 Then MiInt = 2
+        
+186         .Stats.MaxSta = 20 * MiInt
+188         .Stats.MinSta = 20 * MiInt
+        
+190         .Stats.MaxAGU = 100
+192         .Stats.MinAGU = 100
+        
+194         .Stats.MaxHam = 100
+196         .Stats.MinHam = 100
+    
+202         .flags.VecesQueMoriste = 0
+204         .flags.Montado = 0
+    
+206         .Stats.MaxHit = 2
+208         .Stats.MinHIT = 1
+                
+212         .Stats.Exp = 0
+214         .Stats.ELV = 1
+
+             If .flags.TomoPocion Then
+    
+                For i = 1 To 4
+                    .Stats.UserAtributos(i) = .Stats.UserAtributosBackUP(i)
+                Next i
+    
+198             Call WriteFYA(UserIndex)
+    
+            End If
+            
+            .flags.DuracionEfecto = 0
+
+            Call VaciarInventario(UserIndex)
+        
+216         Call RellenarInventario(UserIndex)
+            'Agrego la poción
+            
+            Dim slot_libre As Byte
+            
+            For i = 1 To MAX_INVENTORY_SLOTS
+                If .Invent.Object(i).amount = 0 Then
+                    slot_libre = i
+                    Exit For
+                End If
+            Next i
+            
+            .Invent.Object(slot_libre).ObjIndex = POCION_RESET
+            .Invent.Object(slot_libre).amount = 1
+            
+            'Valores Default de facciones al Activar nuevo usuario
+222         Call ResetFacciones(UserIndex)
+        
+224         .Faccion.Status = 1
+             
+575         Call UpdateUserHechizos(True, UserIndex, 0)
+900         Call WriteUpdateUserStats(UserIndex)
+905         Call WriteUpdateHungerAndThirst(UserIndex)
+570         Call UpdateUserInv(True, UserIndex, 0)
+            Call WarpUserChar(UserIndex, .Pos.Map, .Pos.X, .Pos.Y, True)
+        End With
+    
+    'Call WarpUserChar(UserIndex, 1, 55, 45, True)
+End Sub
+
 
 
 
