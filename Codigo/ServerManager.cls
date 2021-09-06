@@ -246,8 +246,8 @@ Private Sub HandleLoginChar(ByVal ID As Long, Data As Object, Instance As Object
             .MENSAJEINFORMACION = Data.Item("message_info")
             
             ' Chat
-            .ChatGlobal = Data.Item("chat_global")
-            .ChatCombate = Data.Item("chat_combate")
+            .ChatGlobal = IIf(Data.Item("chat_global"), 1, 0)
+            .ChatCombate = IIf(Data.Item("chat_combate"), 1, 0)
             
             ' Character
             .OrigChar.Body = Data.Item("body_id")
@@ -302,48 +302,39 @@ Private Sub HandleLoginChar(ByVal ID As Long, Data As Object, Instance As Object
             .Invent.HerramientaEqpSlot = Data.Item("slot_tool")
             
             ' Flags
-            .flags.Desnudo = Data.Item("is_naked")
-            .flags.Envenenado = Data.Item("is_poisoned")
-            .flags.Incinerado = Data.Item("is_incinerated")
+            .flags.Desnudo = IIf(Data.Item("is_naked"), 1, 0)
+            .flags.Envenenado = IIf(Data.Item("is_poisoned"), 1, 0)
+            .flags.Incinerado = IIf(Data.Item("is_incinerated"), 1, 0)
             .flags.Escondido = False
             .flags.Hambre = (.Stats.MinHam = 0)
             .flags.Sed = (.Stats.MinAGU = 0)
-            .flags.Ban = Data.Item("is_banned")
+            .flags.Ban = IIf(Data.Item("is_banned"), 1, 0)
             .flags.BanMotivo = Data.Item("ban_reason")
             .flags.Muerto = (.Stats.MinHp = 0)
-            .flags.Navegando = Data.Item("is_sailing")
-            .flags.Paralizado = Data.Item("is_paralyzed")
+            .flags.Navegando = IIf(Data.Item("is_sailing"), 1, 0)
+            .flags.Paralizado = IIf(Data.Item("is_paralyzed"), 1, 0)
             .flags.VecesQueMoriste = Data.Item("deaths")
-            .flags.Montado = Data.Item("is_mounted")
-            .flags.Casado = IIf(Len(.flags.Pareja) > 0, 1, 0)
-            .flags.Silenciado = Data.Item("is_silenced")
+            .flags.Montado = IIf(Data.Item("is_mounted"), 1, 0)
+            .flags.Silenciado = IIf(Data.Item("is_silenced"), 1, 0)
             .flags.MinutosRestantes = Data.Item("silence_minutes_left")
             .flags.SegundosPasados = Data.Item("silence_elapsed_seconds")
             .flags.MascotasGuardadas = Data.Item("pets_saved")
             .flags.ReturnPos.Map = Data.Item("return_map")
             .flags.ReturnPos.X = Data.Item("return_x")
             .flags.ReturnPos.Y = Data.Item("return_y")
-            
-            If Data.Item("pertenece_consejo_real") Then
-                 .flags.Privilegios = .flags.Privilegios Or e_PlayerType.RoyalCouncil
-            
-            ElseIf Data.Item("pertenece_consejo_caos") Then
-                .flags.Privilegios = .flags.Privilegios Or e_PlayerType.ChaosCouncil
-                
-            End If
 
             ' Contadores
             .Counters.Pena = Data.Item("counter_pena")
             
             ' Faccion
-            .Faccion.ArmadaReal = Data.Item("pertenece_real")
-            .Faccion.FuerzasCaos = Data.Item("pertenece_caos")
+            .Faccion.ArmadaReal = IIf(Data.Item("pertenece_real"), 1, 0)
+            .Faccion.FuerzasCaos = IIf(Data.Item("pertenece_caos"), 1, 0)
             .Faccion.ciudadanosMatados = Data.Item("ciudadanos_matados")
             .Faccion.CriminalesMatados = Data.Item("criminales_matados")
-            .Faccion.RecibioArmaduraReal = Data.Item("recibio_armadura_real")
-            .Faccion.RecibioArmaduraCaos = Data.Item("recibio_armadura_caos")
-            .Faccion.RecibioExpInicialReal = Data.Item("recibio_exp_real")
-            .Faccion.RecibioExpInicialCaos = Data.Item("recibio_exp_caos")
+            .Faccion.RecibioArmaduraReal = IIf(Data.Item("recibio_armadura_real"), 1, 0)
+            .Faccion.RecibioArmaduraCaos = IIf(Data.Item("recibio_armadura_caos"), 1, 0)
+            .Faccion.RecibioExpInicialReal = IIf(Data.Item("recibio_exp_real"), 1, 0)
+            .Faccion.RecibioExpInicialCaos = IIf(Data.Item("recibio_exp_caos"), 1, 0)
             .Faccion.RecompensasReal = Data.Item("recompensas_real")
             .Faccion.RecompensasCaos = Data.Item("recompensas_caos")
             .Faccion.Reenlistadas = Data.Item("Reenlistadas")

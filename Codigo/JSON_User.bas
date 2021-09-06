@@ -34,7 +34,7 @@ Function Principal(ByRef UserIndex As Integer, Optional ByVal Logout As Boolean 
 136         Objeto.Item("pos_y") = .Pos.Y
 140         Objeto.Item("message_info") = .MENSAJEINFORMACION
 142         Objeto.Item("body_id") = .Char.Body
-144         Objeto.Item("head_id") = .OrigChar.Head
+144         Objeto.Item("head_id") = .Char.Head
 146         Objeto.Item("weapon_id") = .Char.WeaponAnim
 148         Objeto.Item("helmet_id") = .Char.CascoAnim
 150         Objeto.Item("shield_id") = .Char.ShieldAnim
@@ -64,26 +64,26 @@ Function Principal(ByRef UserIndex As Integer, Optional ByVal Logout As Boolean 
 200         Objeto.Item("killed_npcs") = .Stats.NPCsMuertos
 202         Objeto.Item("killed_users") = .Stats.UsuariosMatados
 204         Objeto.Item("invent_level") = .Stats.InventLevel
-206         Objeto.Item("is_naked") = IIf(.flags.Desnudo, 1, 0)
-208         Objeto.Item("is_poisoned") = IIf(.flags.Envenenado, 1, 0)
-            Objeto.Item("is_banned") = IIf(.flags.Ban, 1, 0)
-218         Objeto.Item("is_sailing") = IIf(.flags.Navegando, 1, 0)
-220         Objeto.Item("is_paralyzed") = IIf(.flags.Paralizado, 1, 0)
-222         Objeto.Item("is_mounted") = IIf(.flags.Montado, 1, 0)
-224         Objeto.Item("is_silenced") = IIf(.flags.Silenciado, 1, 0)
+206         Objeto.Item("is_naked") = (.flags.Desnudo = 1)
+208         Objeto.Item("is_poisoned") = (.flags.Envenenado = 1)
+            Objeto.Item("is_banned") = (.flags.Ban = 1)
+218         Objeto.Item("is_sailing") = (.flags.Navegando = 1)
+220         Objeto.Item("is_paralyzed") = (.flags.Paralizado = 1)
+222         Objeto.Item("is_mounted") = (.flags.Montado = 1)
+224         Objeto.Item("is_silenced") = (.flags.Silenciado = 1)
             Objeto.Item("is_logged") = Not Logout
 226         Objeto.Item("silence_minutes_left") = .flags.MinutosRestantes
 228         Objeto.Item("silence_elapsed_seconds") = .flags.SegundosPasados
 232         Objeto.Item("counter_pena") = .Counters.Pena
 234         Objeto.Item("deaths") = .flags.VecesQueMoriste
-240         Objeto.Item("pertenece_real") = .Faccion.ArmadaReal
-242         Objeto.Item("pertenece_caos") = .Faccion.FuerzasCaos
+240         Objeto.Item("pertenece_real") = (.Faccion.ArmadaReal = 1)
+242         Objeto.Item("pertenece_caos") = (.Faccion.FuerzasCaos = 1)
 244         Objeto.Item("ciudadanos_matados") = .Faccion.ciudadanosMatados
 246         Objeto.Item("criminales_matados") = .Faccion.CriminalesMatados
-248         Objeto.Item("recibio_armadura_real") = .Faccion.RecibioArmaduraReal
-250         Objeto.Item("recibio_armadura_caos") = .Faccion.RecibioArmaduraCaos
-252         Objeto.Item("recibio_exp_real") = .Faccion.RecibioExpInicialReal
-254         Objeto.Item("recibio_exp_caos") = .Faccion.RecibioExpInicialCaos
+248         Objeto.Item("recibio_armadura_real") = (.Faccion.RecibioArmaduraReal = 1)
+250         Objeto.Item("recibio_armadura_caos") = (.Faccion.RecibioArmaduraCaos = 1)
+252         Objeto.Item("recibio_exp_real") = (.Faccion.RecibioExpInicialReal = 1)
+254         Objeto.Item("recibio_exp_caos") = (.Faccion.RecibioExpInicialCaos = 1)
 256         Objeto.Item("recompensas_real") = .Faccion.RecompensasReal
 258         Objeto.Item("recompensas_caos") = .Faccion.RecompensasCaos
 260         Objeto.Item("reenlistadas") = .Faccion.Reenlistadas
@@ -92,8 +92,8 @@ Function Principal(ByRef UserIndex As Integer, Optional ByVal Logout As Boolean 
 268         Objeto.Item("siguiente_recompensa") = .Faccion.NextRecompensa
 270         Objeto.Item("status") = .Faccion.Status
 274         Objeto.Item("guild_index") = .GuildIndex
-276         Objeto.Item("chat_combate") = IIf(.ChatCombate, 1, 0)
-278         Objeto.Item("chat_global") = IIf(.ChatGlobal, 1, 0)
+276         Objeto.Item("chat_combate") = (.ChatCombate = 1)
+278         Objeto.Item("chat_global") = (.ChatGlobal = 1)
 282         Objeto.Item("warnings") = .Stats.Advertencias
             Objeto.Item("elo") = .Stats.ELO
             Objeto.Item("return_map") = .flags.ReturnPos.Map
@@ -199,7 +199,7 @@ Function Inventario(ByRef UserIndex As Integer) As JS_Array
 110             Objeto.Item("number") = i
 112             Objeto.Item("item_id") = .Invent.Object(i).ObjIndex
 114             Objeto.Item("amount") = .Invent.Object(i).amount
-116             Objeto.Item("is_equipped") = IIf(.Invent.Object(i).Equipped, 1, 0)
+116             Objeto.Item("is_equipped") = (.Invent.Object(i).Equipped = 1)
                 
                 ' Lo meto en el array de items
 118             Matriz.Push Objeto

@@ -245,6 +245,9 @@ Sub RellenarInventario(ByVal UserIndex As String)
         
             
             ' Armas
+            .Invent.WeaponEqpSlot = NumItems
+            .Invent.Object(NumItems).Equipped = 1
+
 154         Select Case .clase
 
                 Case e_Class.Cleric, e_Class.Paladin, e_Class.Trabajador, e_Class.Warrior, e_Class.Pirat
@@ -286,30 +289,27 @@ Sub RellenarInventario(ByVal UserIndex As String)
 212                 .Invent.Object(NumItems).ObjIndex = 460 ' Daga (Newbies)
 214                 .Invent.Object(NumItems).amount = 1
 216                 NumItems = NumItems + 1
-                    
-
             End Select
             
-            .Invent.WeaponEqpSlot = NumItems
-            .Invent.WeaponEqpObjIndex = .Invent.Object(NumItems).ObjIndex
+            .Invent.WeaponEqpObjIndex = .Invent.Object(.Invent.WeaponEqpSlot).ObjIndex
+            .Char.WeaponAnim = ObjData(.Invent.WeaponEqpObjIndex).WeaponAnim
             
 218         If .genero = e_Genero.Hombre Then
-220             If .raza = Enano Or .raza = Gnomo Then
+220             If .raza = Enano Or .raza = Gnomo Then ' TODO: Contemplar EOs
 222                 .Invent.Object(NumItems).ObjIndex = 466 'Vestimentas de Bajo (Newbies)
                 Else
                 
 224                 .Invent.Object(NumItems).ObjIndex = RandomNumber(463, 465) ' Vestimentas comunes (Newbies)
                 End If
             Else
-226             If .raza = Enano Or .raza = Gnomo Then
+226             If .raza = Enano Or .raza = Gnomo Then ' TODO: Contemplar EOs
 228                 .Invent.Object(NumItems).ObjIndex = 563 'Vestimentas de Baja (Newbies)
                 Else
 230                 .Invent.Object(NumItems).ObjIndex = RandomNumber(1283, 1285) ' Vestimentas de Mujer (Newbies)
                 End If
             End If
             
-            .Invent.Object(NumItems).Equipped = 0
-            Call EquiparInvItem(UserIndex, NumItems)
+            .flags.Desnudo = 0
                         
 232         .Invent.Object(NumItems).amount = 1
 234         .Invent.Object(NumItems).Equipped = 1
@@ -578,8 +578,6 @@ Function ConnectNewUser(ByVal UserIndex As Integer, ByRef Name As String, ByVal 
 162         .Char.Heading = e_Heading.SOUTH
         
 164         Call DarCuerpo(UserIndex) 'Ladder REVISAR
-        
-166         .OrigChar = .Char
     
 168         .Char.WeaponAnim = NingunArma
 170         .Char.ShieldAnim = NingunEscudo
@@ -621,6 +619,8 @@ Function ConnectNewUser(ByVal UserIndex As Integer, ByRef Name As String, ByVal 
             .CurrentInventorySlots = getMaxInventorySlots(UserIndex)
         
 216         Call RellenarInventario(UserIndex)
+
+            .OrigChar = .Char
     
             #If ConUpTime Then
 218             .LogOnTime = Now
