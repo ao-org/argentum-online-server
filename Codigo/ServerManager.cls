@@ -469,7 +469,7 @@ Private Sub HandleLoginChar(ByVal ID As Long, Data As Object, Instance As Object
                     If .QuestIndex > 0 Then
                     
                         If QuestList(.QuestIndex).RequiredNPCs Then
-                            Dim NPCs() As String: NPCs = Split(Data.Item("Quests").Item(i).Item("NPCs"), "-")
+                            Dim NPCs() As String: NPCs = Split(Data.Item("Quests").Item(i).Item("npcs"), "-")
                             ReDim .NPCsKilled(1 To QuestList(.QuestIndex).RequiredNPCs)
                             
                             For LoopC = 1 To QuestList(.QuestIndex).RequiredNPCs
@@ -478,7 +478,7 @@ Private Sub HandleLoginChar(ByVal ID As Long, Data As Object, Instance As Object
                         End If
                         
                         If QuestList(.QuestIndex).RequiredTargetNPCs Then
-                            Dim NPCsTarget() As String: NPCsTarget = Split(Data.Item("Quests").Item(i).Item("NPCsTarget"), "-")
+                            Dim NPCsTarget() As String: NPCsTarget = Split(Data.Item("Quests").Item(i).Item("npcstarget"), "-")
                             ReDim .NPCsTarget(1 To QuestList(.QuestIndex).RequiredTargetNPCs)
                             
                             For LoopC = 1 To QuestList(.QuestIndex).RequiredTargetNPCs

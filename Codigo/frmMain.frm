@@ -1001,10 +1001,6 @@ End Sub
 Private Sub CMDDUMP_Click()
         
         On Error GoTo CMDDUMP_Click_Err
-    
-        
-
-        
 
         Dim i As Integer
 
@@ -1141,7 +1137,15 @@ Private Sub Command4_Click()
         
 102     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor » Cerrando servidor.", e_FontTypeNames.FONTTYPE_PROMEDIO_MENOR))
 
-104     Call GuardarUsuarios
+        Call GuardarUsuarios
+
+        Dim i As Integer
+        For i = 1 To LastUser
+            If UserList(i).AccountID >= 0 Then
+                Call WriteShowMessageBox(i, "El servidor ha sido cerrado.")
+            End If
+        Next
+
 106     Call EcharPjsNoPrivilegiados
 
 108     GuardarYCerrar = True

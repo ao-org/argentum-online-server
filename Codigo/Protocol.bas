@@ -10236,6 +10236,7 @@ Private Sub HandleKick(ByVal UserIndex As Integer)
 116                     Call WriteConsoleMsg(UserIndex, "No podes echar a alguien con jerarquia mayor a la tuya.", e_FontTypeNames.FONTTYPE_INFO)
                     Else
 118                     Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(.Name & " echo a " & UserName & ".", e_FontTypeNames.FONTTYPE_INFO))
+                        Call WriteShowMessageBox(UserIndex, "Has sido echado por " & .Name & ".")
 120                     Call CloseSocket(tUser)
 122                     Call LogGM(.Name, "Echo a " & UserName)
 
@@ -17306,10 +17307,11 @@ Public Sub HandleQuestAccept(ByVal UserIndex As Integer)
 100     Indice = Reader.ReadInt8
         QuestNpc = Reader.ReadBool
 102     NpcIndex = UserList(UserIndex).flags.TargetNPC
-104     If NpcIndex = 0 And QuestNpc = 1 Then Exit Sub
+104     If NpcIndex = 0 And QuestNpc Then Exit Sub
 
         If QuestNpc Then
 106         If Indice <= 0 Or Indice > UBound(NpcList(NpcIndex).QuestNumber) Then Exit Sub
+            UserList(UserIndex).flags.QuestNumber = NpcList(NpcIndex).QuestNumber(Indice)
         Else
              If Indice <= 0 Then Exit Sub
         End If

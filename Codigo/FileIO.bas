@@ -2482,11 +2482,11 @@ Sub LoadIntervalos()
 156     IntervaloInvocacion = val(Lector.GetValue("INTERVALOS", "IntervaloInvocacion"))
 158     FrmInterv.txtInvocacion.Text = IntervaloInvocacion
     
-160     TimeoutPrimerPaquete = val(Lector.GetValue("INTERVALOS", "TimeoutPrimerPaquete"))
-162     FrmInterv.txtTimeoutPrimerPaquete.Text = TimeoutPrimerPaquete / 25
+160     TimeoutPrimerPaquete = val(Lector.GetValue("INTERVALOS", "TimeoutPrimerPaquete")) / 25
+162     FrmInterv.txtTimeoutPrimerPaquete.Text = TimeoutPrimerPaquete
     
-164     TimeoutEsperandoLogear = val(Lector.GetValue("INTERVALOS", "TimeoutEsperandoLogear"))
-166     FrmInterv.txtTimeoutEsperandoLogear.Text = TimeoutEsperandoLogear / 25
+164     TimeoutEsperandoLogear = val(Lector.GetValue("INTERVALOS", "TimeoutEsperandoLogear")) / 25
+166     FrmInterv.txtTimeoutEsperandoLogear.Text = TimeoutEsperandoLogear
     
 168     IntervaloIncineracion = val(Lector.GetValue("INTERVALOS", "IntervaloFuego"))
 170     FrmInterv.txtintervalofuego.Text = IntervaloIncineracion
@@ -2650,42 +2650,56 @@ Sub SaveUser(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = Fals
             '*************************************************************
             '   ATRIBUTOS
             '*************************************************************
-            Data.Item("Attribute") = JSON_User.Atributos(UserIndex)
+            If .flags.ModificoAttributos Then
+                Data.Item("Attribute") = JSON_User.Atributos(UserIndex)
+            End If
             
             '*************************************************************
             '   HECHIZOS
             '*************************************************************
-            Data.Item("Spells") = JSON_User.Hechizo(UserIndex)
+            If .flags.ModificoHechizos Then
+                Data.Item("Spells") = JSON_User.Hechizo(UserIndex)
+            End If
     
             '*************************************************************
             '   INVENTARIO
             '*************************************************************
-            Data.Item("InventoryItems") = JSON_User.Inventario(UserIndex)
+            If .flags.ModificoInventario Then
+                Data.Item("InventoryItems") = JSON_User.Inventario(UserIndex)
+            End If
     
             '*************************************************************
             '   INVENTARIO DEL BANCO
             '*************************************************************
-            Data.Item("BankItems") = JSON_User.InventarioBanco(UserIndex)
+            If .flags.ModificoInventarioBanco Then
+                Data.Item("BankItems") = JSON_User.InventarioBanco(UserIndex)
+            End If
     
             '*************************************************************
             '   SKILLS
             '*************************************************************
-            Data.Item("Skillpoint") = JSON_User.Habilidades(UserIndex)
+            If .flags.ModificoSkills Then
+                Data.Item("Skillpoint") = JSON_User.Habilidades(UserIndex)
+            End If
     
             '*************************************************************
             '   MASCOTAS
             '*************************************************************
-            Data.Item("Pets") = JSON_User.Mascotas(UserIndex)
+            If .flags.ModificoMascotas Then
+                Data.Item("Pets") = JSON_User.Mascotas(UserIndex)
+            End If
     
             '*************************************************************
             '   QUESTS
             '*************************************************************
-            Data.Item("Quests") = JSON_User.Quest(UserIndex)
+            If .flags.ModificoQuests Then
+                Data.Item("Quests") = JSON_User.Quest(UserIndex)
+            End If
     
             '*************************************************************
             '   QUESTS TERMINADAS
             '*************************************************************
-            If .QuestStats.NumQuestsDone > 0 Then
+            If .QuestStats.NumQuestsDone > 0 And .flags.ModificoQuestsHechas Then
                 Data.Item("QuestDones") = JSON_User.QuestTerminadas(UserIndex)
             End If
             

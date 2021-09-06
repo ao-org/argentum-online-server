@@ -2389,14 +2389,17 @@ Sub PasarSegundo()
         
                     End If
 
-                End If ' If UserLogged
+                Else ' If UserLogged
 
-                'Inactive players will be removed!
-296             .Counters.IdleCount = .Counters.IdleCount + 1
+                    'Inactive players will be removed!
+296                 .Counters.IdleCount = .Counters.IdleCount + 1
+    
+                    'El intervalo cambia según si envió el primer paquete
+298                 If .Counters.IdleCount > IIf(.AccountID >= 0, TimeoutEsperandoLogear, TimeoutPrimerPaquete) Then
+                        Call WriteShowMessageBox(i, "Se ha cerrado la conexión por inactividad.")
+300                     Call CloseSocket(i)
+                    End If
 
-                'El intervalo cambia según si envió el primer paquete
-298             If .Counters.IdleCount > IIf(.AccountID >= 0, TimeoutEsperandoLogear, TimeoutPrimerPaquete) Then
-300                 Call CloseSocket(i)
                 End If
         
             End With
@@ -2490,15 +2493,9 @@ Sub GuardarUsuarios()
 102     Call SendData(SendTarget.ToAll, 0, PrepareMessagePauseToggle())
 104     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor » Grabando Personajes", e_FontTypeNames.FONTTYPE_SERVER))
     
+        Call modNetwork.Poll
+    
         Dim i As Long
-        
-106     For i = 1 To LastUser
-
-108         If UserList(i).flags.UserLogged Then
-110             Call modNetwork.Poll
-            End If
-
-112     Next i
 
 114     For i = 1 To LastUser
 

@@ -617,6 +617,8 @@ Function ConnectNewUser(ByVal UserIndex As Integer, ByRef Name As String, ByVal 
         
 212         .Stats.Exp = 0
 214         .Stats.ELV = 1
+
+            .CurrentInventorySlots = getMaxInventorySlots(UserIndex)
         
 216         Call RellenarInventario(UserIndex)
     
@@ -1733,6 +1735,7 @@ Public Sub EcharPjsNoPrivilegiados()
 
 102         If UserList(LoopC).flags.UserLogged And UserList(LoopC).ConnIDValida Then
 104             If UserList(LoopC).flags.Privilegios And e_PlayerType.user Then
+
 106                 Call CloseSocket(LoopC)
 
                 End If
