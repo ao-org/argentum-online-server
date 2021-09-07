@@ -1844,8 +1844,11 @@ Private Sub resetQuests(ByVal UserIndex As Integer)
 
     With UserList(UserIndex)
     
-        'Limpio las quest_done de la base de datos.
+        'Limpio las ya hechas de la base de datos.
         Call Execute("delete from quest_done where user_id = ?", .ID)
+        
+        'Limpio las quest en curso de la base de datos.
+        Call Execute("update quest set quest_id = 0, npcs = '', npcstarget = '' from quest where user_id = ?", .ID)
         
         UserList(UserIndex).QuestStats.NumQuestsDone = 0
         
