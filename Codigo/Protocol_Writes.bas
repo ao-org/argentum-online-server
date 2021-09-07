@@ -3764,7 +3764,7 @@ Public Sub WriteQuestListSend(ByVal UserIndex As Integer)
             'Escribimos la cantidad de quests
 114         Call Writer.WriteInt8(tmpByte)
 
-            'Escribimos la lista de quests (sacamos el íltimo caracter)
+            'Escribimos la lista de quests (sacamos el último caracter)
 116         If tmpByte Then
 118             Call Writer.WriteString8(Left$(tmpStr, Len(tmpStr) - 1))
             End If

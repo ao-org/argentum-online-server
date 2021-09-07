@@ -1717,7 +1717,8 @@ Public Sub CargarMapasEspeciales()
 End Sub
 
 Public Sub resetPj(ByVal UserIndex As Integer)
-
+        
+        If Not validarReset(UserIndex) Then Exit Sub
     
 100     With UserList(UserIndex)
         
@@ -1727,12 +1728,10 @@ Public Sub resetPj(ByVal UserIndex As Integer)
 144         .flags.Casado = 0
 146         .flags.Pareja = ""
         
-            '%%%%%%%%%%%%% PREVENIR HACKEO DE LOS SKILLS %%%%%%%%%%%%%
             .Stats.SkillPts = 10
 960         Call WriteLevelUp(UserIndex, 10)
-            
         
-164         Call DarCuerpo(UserIndex) 'Ladder REVISAR
+164         Call DarCuerpo(UserIndex)
         
 166         .OrigChar = .Char
             Dim i As Long
@@ -1806,7 +1805,7 @@ Public Sub resetPj(ByVal UserIndex As Integer)
             
             'Valores Default de facciones al Activar nuevo usuario
 222         Call ResetFacciones(UserIndex)
-        
+            Call resetQuests(UserIndex)
 224         .Faccion.Status = 1
              
 575         Call UpdateUserHechizos(True, UserIndex, 0)
@@ -1814,9 +1813,50 @@ Public Sub resetPj(ByVal UserIndex As Integer)
 905         Call WriteUpdateHungerAndThirst(UserIndex)
 570         Call UpdateUserInv(True, UserIndex, 0)
             Call WarpUserChar(UserIndex, .Pos.Map, .Pos.X, .Pos.Y, True)
+            
         End With
+        
+        Exit Sub
     
-    'Call WarpUserChar(UserIndex, 1, 55, 45, True)
+End Sub
+
+Private Function validarReset(ByVal UserIndex As Integer) As Boolean
+
+    With UserList(UserIndex)
+        If MapInfo(.Pos.Map).Seguro = 0 Then
+            Call WriteConsoleMsg(UserIndex, "Para resetear tu personaje deberás estar en una zona segura.", e_FontTypeNames.FONTTYPE_INFO)
+            validarReset = False
+            Exit Function
+        End If
+        
+        If .Stats.ELV >= 25 Then
+            Call WriteConsoleMsg(UserIndex, "No puedes resetear un personaje de nivel mayor a 25.", e_FontTypeNames.FONTTYPE_INFO)
+            validarReset = False
+            Exit Function
+        End If
+    End With
+    
+    validarReset = True
+    
+End Function
+
+Private Sub resetQuests(ByVal UserIndex As Integer)
+
+    With UserList(UserIndex)
+    
+        'Limpio las quest_done de la base de datos.
+        Call Execute("delete from quest_done where user_id = ?", .ID)
+        
+        UserList(UserIndex).QuestStats.NumQuestsDone = 0
+        
+        Dim i As Byte
+        
+        'HarThaoS: Reseteo todos los stats de las quest del usuario
+        For i = 1 To MAXUSERQUESTS
+           Call CleanQuestSlot(UserIndex, i)
+        Next i
+                
+    End With
 End Sub
 
 

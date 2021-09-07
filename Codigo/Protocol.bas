@@ -17293,142 +17293,145 @@ End Sub
 
 Public Sub HandleQuestAccept(ByVal UserIndex As Integer)
         
-        On Error GoTo HandleQuestAccept_Err
+    On Error GoTo HandleQuestAccept_Err
 
-        '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-        'Maneja el evento de aceptar una quest.
-        'Last modified: 31/01/2010 by Amraphen
-        '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-        Dim NpcIndex  As Integer
-        Dim QuestSlot As Byte
-        Dim Indice    As Byte
-        Dim QuestNpc As Boolean
+    '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+    'Maneja el evento de aceptar una quest.
+    'Last modified: 31/01/2010 by Amraphen
+    '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+    Dim NpcIndex  As Integer
+    Dim QuestSlot As Byte
+    Dim Indice    As Byte
+    Dim QuestNpc As Boolean
         
-100     Indice = Reader.ReadInt8
-        QuestNpc = Reader.ReadBool
-102     NpcIndex = UserList(UserIndex).flags.TargetNPC
-104     If NpcIndex = 0 And QuestNpc Then Exit Sub
+    Indice = Reader.ReadInt8
+    QuestNpc = Reader.ReadBool
+
+    With UserList(UserIndex)
+        NpcIndex = .flags.TargetNPC
+        
+        If NpcIndex = 0 And QuestNpc Then Exit Sub
 
         If QuestNpc Then
-106         If Indice <= 0 Or Indice > UBound(NpcList(NpcIndex).QuestNumber) Then Exit Sub
-            UserList(UserIndex).flags.QuestNumber = NpcList(NpcIndex).QuestNumber(Indice)
+            If Indice <= 0 Or Indice > UBound(NpcList(NpcIndex).QuestNumber) Then Exit Sub
+            .flags.QuestNumber = NpcList(NpcIndex).QuestNumber(Indice)
         Else
-             If Indice <= 0 Then Exit Sub
+            If Indice <= 0 Then Exit Sub
         End If
         
-    If QuestNpc Then
-        
-        'Esta el personaje en la distancia correcta?
-108     If Distancia(UserList(UserIndex).Pos, NpcList(NpcIndex).Pos) > 5 Then
-110         Call WriteConsoleMsg(UserIndex, "Estas demasiado lejos.", e_FontTypeNames.FONTTYPE_INFO)
-            Exit Sub
+        'Me fijo si la quest la da un npc o un objeto.
+        If QuestNpc Then
 
-        End If
-        
-112     If TieneQuest(UserIndex, NpcList(NpcIndex).QuestNumber(Indice)) Then
-114         Call WriteConsoleMsg(UserIndex, "La quest ya esta en curso.", e_FontTypeNames.FONTTYPE_INFOIAO)
-            Exit Sub
-
-        End If
-        
-        'El personaje completo la quest que requiere?
-116     If QuestList(NpcList(NpcIndex).QuestNumber(Indice)).RequiredQuest > 0 Then
-118         If Not UserDoneQuest(UserIndex, QuestList(NpcList(NpcIndex).QuestNumber(Indice)).RequiredQuest) Then
-120             Call WriteChatOverHead(UserIndex, "Debes completar la quest " & QuestList(QuestList(NpcList(NpcIndex).QuestNumber(Indice)).RequiredQuest).nombre & " para emprender esta misión.", NpcList(NpcIndex).Char.CharIndex, vbYellow)
-                Exit Sub
-
-            End If
-
-        End If
-
-        'El personaje tiene suficiente nivel?
-122     If UserList(UserIndex).Stats.ELV < QuestList(NpcList(NpcIndex).QuestNumber(Indice)).RequiredLevel Then
-124         Call WriteChatOverHead(UserIndex, "Debes ser por lo menos nivel " & QuestList(NpcList(NpcIndex).QuestNumber(Indice)).RequiredLevel & " para emprender esta misión.", NpcList(NpcIndex).Char.CharIndex, vbYellow)
-            Exit Sub
-
-        End If
-        
-        'La quest no es repetible?
-        If QuestList(NpcList(NpcIndex).QuestNumber(Indice)).Repetible = 0 Then
-            'El personaje ya hizo la quest?
-126         If UserDoneQuest(UserIndex, NpcList(NpcIndex).QuestNumber(Indice)) Then
-128             Call WriteChatOverHead(UserIndex, "QUESTNEXT*" & NpcList(NpcIndex).QuestNumber(Indice), NpcList(NpcIndex).Char.CharIndex, vbYellow)
-                Exit Sub
-    
-            End If
-        End If
-    
-130     QuestSlot = FreeQuestSlot(UserIndex)
-
-132     If QuestSlot = 0 Then
-134         Call WriteChatOverHead(UserIndex, "Debes completar las misiones en curso para poder aceptar más misiones.", NpcList(NpcIndex).Char.CharIndex, vbYellow)
-            Exit Sub
-
-        End If
-    
-        'Agregamos la quest.
-136     With UserList(UserIndex).QuestStats.Quests(QuestSlot)
-138         .QuestIndex = UserList(UserIndex).flags.QuestNumber
-        
-140         If QuestList(.QuestIndex).RequiredNPCs Then ReDim .NPCsKilled(1 To QuestList(.QuestIndex).RequiredNPCs)
-142         If QuestList(.QuestIndex).RequiredTargetNPCs Then ReDim .NPCsTarget(1 To QuestList(.QuestIndex).RequiredTargetNPCs)
-            UserList(UserIndex).flags.ModificoQuests = True
-            
-144         Call WriteConsoleMsg(UserIndex, "Has aceptado la misión " & Chr(34) & QuestList(.QuestIndex).nombre & Chr(34) & ".", e_FontTypeNames.FONTTYPE_INFOIAO)
-146
-            If (FinishQuestCheck(UserIndex, .QuestIndex, QuestSlot)) Then
-                Call WriteUpdateNPCSimbolo(UserIndex, NpcIndex, 3)
-            Else
-                Call WriteUpdateNPCSimbolo(UserIndex, NpcIndex, 4)
-            End If
-            
-        End With
-        
-            
-    Else
-         If TieneQuest(UserIndex, UserList(UserIndex).flags.QuestNumber) Then
-             Call WriteConsoleMsg(UserIndex, "La quest ya esta en curso.", e_FontTypeNames.FONTTYPE_INFOIAO)
+            'Esta el personaje en la distancia correcta?
+            If Distancia(.Pos, NpcList(NpcIndex).Pos) > 5 Then
+                Call WriteConsoleMsg(UserIndex, "Estas demasiado lejos.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
             
+            'Me fijo si el usuario ya tiene la quest
+            If TieneQuest(UserIndex, NpcList(NpcIndex).QuestNumber(Indice)) Then
+                Call WriteConsoleMsg(UserIndex, "La quest ya esta en curso.", e_FontTypeNames.FONTTYPE_INFOIAO)
+                Exit Sub
+            End If
+            
+            'El personaje completo la quest que requiere?
+            If QuestList(.flags.QuestNumber).RequiredQuest > 0 Then
+                If Not UserDoneQuest(UserIndex, QuestList(NpcList(NpcIndex).QuestNumber(Indice)).RequiredQuest) Then
+                    Call WriteChatOverHead(UserIndex, "Debes completar la quest " & QuestList(QuestList(NpcList(NpcIndex).QuestNumber(Indice)).RequiredQuest).nombre & " para emprender esta misión.", NpcList(NpcIndex).Char.CharIndex, vbYellow)
+                    Exit Sub
+                End If
+            End If
             'El personaje tiene suficiente nivel?
-         If UserList(UserIndex).Stats.ELV < QuestList(UserList(UserIndex).flags.QuestNumber).RequiredLevel Then
-                Call WriteConsoleMsg(UserIndex, "Debes ser por lo menos nivel " & QuestList(UserList(UserIndex).flags.QuestNumber).RequiredLevel & " para emprender esta misión.", e_FontTypeNames.FONTTYPE_INFO)
+            If .Stats.ELV < QuestList(NpcList(NpcIndex).QuestNumber(Indice)).RequiredLevel Then
+                Call WriteChatOverHead(UserIndex, "Debes ser por lo menos nivel " & QuestList(NpcList(NpcIndex).QuestNumber(Indice)).RequiredLevel & " para emprender esta misión.", NpcList(NpcIndex).Char.CharIndex, vbYellow)
+                Exit Sub
+            End If
+            
+            'La quest no es repetible?
+            If QuestList(NpcList(NpcIndex).QuestNumber(Indice)).Repetible = 0 Then
+                'El personaje ya hizo la quest?
+                If UserDoneQuest(UserIndex, NpcList(NpcIndex).QuestNumber(Indice)) Then
+                    Call WriteChatOverHead(UserIndex, "QUESTNEXT*" & NpcList(NpcIndex).QuestNumber(Indice), NpcList(NpcIndex).Char.CharIndex, vbYellow)
+                    Exit Sub
+                End If
+            End If
+
+            'Reviso si tiene espacio vacio para agarrar la quest.
+            QuestSlot = FreeQuestSlot(UserIndex)
+            If QuestSlot = 0 Then
+                Call WriteChatOverHead(UserIndex, "Debes completar las misiones en curso para poder aceptar más misiones.", NpcList(NpcIndex).Char.CharIndex, vbYellow)
+                Exit Sub
+            End If
+
+            'Agregamos la quest.
+            With .QuestStats.Quests(QuestSlot)
+                
+                .QuestIndex = UserList(UserIndex).flags.QuestNumber
+            
+                If QuestList(.QuestIndex).RequiredNPCs Then ReDim .NPCsKilled(1 To QuestList(.QuestIndex).RequiredNPCs)
+                If QuestList(.QuestIndex).RequiredTargetNPCs Then ReDim .NPCsTarget(1 To QuestList(.QuestIndex).RequiredTargetNPCs)
+                UserList(UserIndex).flags.ModificoQuests = True
+                
+                Call WriteConsoleMsg(UserIndex, "Has aceptado la misión " & Chr(34) & QuestList(.QuestIndex).nombre & Chr(34) & ".", e_FontTypeNames.FONTTYPE_INFOIAO)
+                If (FinishQuestCheck(UserIndex, .QuestIndex, QuestSlot)) Then
+                    Call WriteUpdateNPCSimbolo(UserIndex, NpcIndex, 3)
+                Else
+                    Call WriteUpdateNPCSimbolo(UserIndex, NpcIndex, 4)
+                End If
+                
+            End With
+            
+            
+        Else
+            'Me fijo si ya aceptó la quest.
+            If TieneQuest(UserIndex, .flags.QuestNumber) Then
+                Call WriteConsoleMsg(UserIndex, "La quest ya esta en curso.", e_FontTypeNames.FONTTYPE_INFOIAO)
                 Exit Sub
             End If
                 
-         QuestSlot = FreeQuestSlot(UserIndex)
-    
-         If QuestSlot = 0 Then
+            'El personaje tiene suficiente nivel?
+            If .Stats.ELV < QuestList(.flags.QuestNumber).RequiredLevel Then
+                Call WriteConsoleMsg(UserIndex, "Debes ser por lo menos nivel " & QuestList(.flags.QuestNumber).RequiredLevel & " para emprender esta misión.", e_FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
+            
+            'Reviso si tiene espacio vacio para agarrar la quest.
+            QuestSlot = FreeQuestSlot(UserIndex)
+
+            If QuestSlot = 0 Then
                 Call WriteConsoleMsg(UserIndex, "Debes completar las misiones en curso para poder aceptar más misiones.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
-        
+            
             'Agregamos la quest.
-            With UserList(UserIndex).QuestStats.Quests(QuestSlot)
-             .QuestIndex = UserList(UserIndex).flags.QuestNumber
-    
-            If QuestList(.QuestIndex).RequiredNPCs Then ReDim .NPCsKilled(1 To QuestList(.QuestIndex).RequiredNPCs)
-            If QuestList(.QuestIndex).RequiredTargetNPCs Then ReDim .NPCsTarget(1 To QuestList(.QuestIndex).RequiredTargetNPCs)
+            With .QuestStats.Quests(QuestSlot)
+                .QuestIndex = UserList(UserIndex).flags.QuestNumber
+
+                If QuestList(.QuestIndex).RequiredNPCs Then ReDim .NPCsKilled(1 To QuestList(.QuestIndex).RequiredNPCs)
+
+                If QuestList(.QuestIndex).RequiredTargetNPCs Then ReDim .NPCsTarget(1 To QuestList(.QuestIndex).RequiredTargetNPCs)
+
                 UserList(UserIndex).flags.ModificoQuests = True
-            
-            
-            Call WriteConsoleMsg(UserIndex, "Has aceptado la misión " & Chr(34) & QuestList(.QuestIndex).nombre & Chr(34) & ".", e_FontTypeNames.FONTTYPE_INFOIAO)
-    
-            If (FinishQuestCheck(UserIndex, .QuestIndex, QuestSlot)) Then
-                Call WriteUpdateNPCSimbolo(UserIndex, NpcIndex, 3)
-            Else
-                Call WriteUpdateNPCSimbolo(UserIndex, NpcIndex, 4)
-            End If
-            Call QuitarUserInvItem(UserIndex, UserList(UserIndex).flags.QuestItemSlot, 1)
-            Call UpdateUserInv(False, UserIndex, UserList(UserIndex).flags.QuestItemSlot)
-        End With
-    End If
-        Exit Sub
+                
+                Call WriteConsoleMsg(UserIndex, "Has aceptado la misión " & Chr(34) & QuestList(.QuestIndex).nombre & Chr(34) & ".", e_FontTypeNames.FONTTYPE_INFOIAO)
+
+                If (FinishQuestCheck(UserIndex, .QuestIndex, QuestSlot)) Then
+                    Call WriteUpdateNPCSimbolo(UserIndex, NpcIndex, 3)
+                Else
+                    Call WriteUpdateNPCSimbolo(UserIndex, NpcIndex, 4)
+                End If
+
+                Call QuitarUserInvItem(UserIndex, UserList(UserIndex).flags.QuestItemSlot, 1)
+                Call UpdateUserInv(False, UserIndex, UserList(UserIndex).flags.QuestItemSlot)
+
+            End With
+        End If
+    End With
+
+    Exit Sub
 
 HandleQuestAccept_Err:
-148     Call TraceError(Err.Number, Err.Description, "Protocol.HandleQuestAccept", Erl)
-150
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleQuestAccept", Erl)
         
 End Sub
 
