@@ -1328,7 +1328,7 @@ Sub LoadOBJData()
 140             .Intirable = val(Leer.GetValue(ObjKey, "Intirable"))
     
 142             .CantidadSkill = val(Leer.GetValue(ObjKey, "CantidadSkill"))
-144             .Que_Skill = val(Leer.GetValue(ObjKey, "Que_Skill"))
+144             .Que_Skill = val(Leer.GetValue(ObjKey, "Queskill"))
 146             .QueAtributo = val(Leer.GetValue(ObjKey, "queatributo"))
 148             .CuantoAumento = val(Leer.GetValue(ObjKey, "cuantoaumento"))
 150             .MinELV = val(Leer.GetValue(ObjKey, "MinELV"))
