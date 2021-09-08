@@ -337,7 +337,7 @@ Private Sub HandleLoginChar(ByVal ID As Long, Data As Object, Instance As Object
             .Faccion.RecibioExpInicialCaos = IIf(Data.Item("recibio_exp_caos"), 1, 0)
             .Faccion.RecompensasReal = Data.Item("recompensas_real")
             .Faccion.RecompensasCaos = Data.Item("recompensas_caos")
-            .Faccion.Reenlistadas = Data.Item("Reenlistadas")
+            .Faccion.Reenlistadas = Data.Item("reenlistadas")
             .Faccion.NivelIngreso = Data.Item("nivel_ingreso")
             .Faccion.MatadosIngreso = Data.Item("matados_ingreso")
             .Faccion.NextRecompensa = Data.Item("siguiente_recompensa")
@@ -413,7 +413,7 @@ Private Sub HandleLoginChar(ByVal ID As Long, Data As Object, Instance As Object
                             LoopC = LoopC + 1
                             
                             .amount = Data.Item("InventoryItems").Item(i).Item("amount")
-                            .Equipped = Data.Item("InventoryItems").Item(i).Item("is_equipped")
+                            .Equipped = IIf(Data.Item("InventoryItems").Item(i).Item("is_equipped"), 1, 0)
                         Else
                             .ObjIndex = 0
                         End If
