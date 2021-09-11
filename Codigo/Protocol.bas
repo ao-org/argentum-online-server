@@ -15171,7 +15171,7 @@ Private Sub HandleIngresarConCuenta(ByVal UserIndex As Integer)
             End If
     
             #If DEBUGGING = 0 Then
-134             If LCase$(Md5Cliente) <> LCase$(MD5) Then
+135             If LCase$(Md5Cliente) <> LCase$(MD5) Then
 136                 Call WriteShowMessageBox(UserIndex, "Error al comprobar el cliente del juego, por favor reinstale y vuelva a intentar.")
                     Exit Sub
                 End If
