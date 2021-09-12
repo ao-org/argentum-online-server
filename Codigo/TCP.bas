@@ -1613,6 +1613,8 @@ Sub ClearAndSaveUser(ByVal UserIndex As Integer)
 
 206         Call SaveUser(UserIndex, True)
 
+            .WaitingPacket = SAVE_CHAR
+
             .flags.YaGuardo = True
 
     End With

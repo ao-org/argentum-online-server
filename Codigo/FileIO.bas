@@ -2711,8 +2711,6 @@ Sub SaveUser(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = Fals
             Instance.Item("logout") = Logout
 
             Call Manager.Send(SAVE_CHAR, Data, Instance)
-
-            .WaitingPacket = SAVE_CHAR
             
 104         .Counters.LastSave = GetTickCount
 

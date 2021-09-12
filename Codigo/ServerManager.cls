@@ -392,7 +392,7 @@ Private Sub HandleLoginChar(ByVal ID As Long, Data As Object, Instance As Object
             For i = 1 To Data.Item("Spells").Count
                 .Stats.UserHechizos(i) = Data.Item("Spells").Item(i).Item("spell_id")
             Next
-            
+
             ' Inventario
             LoopC = 0
             For i = 1 To Data.Item("InventoryItems").Count
@@ -534,7 +534,7 @@ End Sub
 Private Sub HandleSaveChar(ByVal ID As Long, Data As Object, Instance As Object)
     Dim UserIndex As Integer
     UserIndex = Instance.Item("slot")
-
+    
     ' Si no está online el jugador, ignoramos la respuesta
     If Not CheckPlayer(UserIndex, Instance.Item("uuid")) Then Exit Sub
     
@@ -543,16 +543,18 @@ Private Sub HandleSaveChar(ByVal ID As Long, Data As Object, Instance As Object)
 
         ' Si se guardó el personaje correctamente
         If Data.Item("success") Then
-            ' Limpiamos el usuario
-            Call UserClosed(UserIndex)
-
-            Dim chars As Object
-            Set chars = Data.Item("chars")
-
-            ' Si recibimos chars
-            If Not IsNull(chars) Then
-                ' Se los enviamos
-                Call WritePersonajesDeCuenta(UserIndex, chars)
+            If Instance.Item("logout") Then
+                ' Limpiamos el usuario
+                Call UserClosed(UserIndex)
+    
+                Dim chars As Object
+                Set chars = Data.Item("chars")
+    
+                ' Si recibimos chars
+                If Not IsNull(chars) Then
+                    ' Se los enviamos
+                    Call WritePersonajesDeCuenta(UserIndex, chars)
+                End If
             End If
 
         ' Si hubo un error interno, entonces el personaje no se pudo guardar (panic!)
