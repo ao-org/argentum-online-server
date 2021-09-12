@@ -353,12 +353,6 @@ Private Sub HandleLoginChar(ByVal ID As Long, Data As Object, Instance As Object
             .Stats.UserAtributos(e_Atributos.Inteligencia) = Data.Item("Attribute").Item("intelligence")
             .Stats.UserAtributos(e_Atributos.Carisma) = Data.Item("Attribute").Item("charisma")
 
-            .Stats.UserAtributosBackUP(e_Atributos.Fuerza) = .Stats.UserAtributos(e_Atributos.Fuerza)
-            .Stats.UserAtributosBackUP(e_Atributos.Agilidad) = .Stats.UserAtributos(e_Atributos.Agilidad)
-            .Stats.UserAtributosBackUP(e_Atributos.Constitucion) = .Stats.UserAtributos(e_Atributos.Constitucion)
-            .Stats.UserAtributosBackUP(e_Atributos.Inteligencia) = .Stats.UserAtributos(e_Atributos.Inteligencia)
-            .Stats.UserAtributosBackUP(e_Atributos.Carisma) = .Stats.UserAtributos(e_Atributos.Carisma)
-            
             ' Habilidades
             .Stats.UserSkills(e_Skill.Magia) = Data.Item("Skillpoint").Item("magia")
             .Stats.UserSkills(e_Skill.Robar) = Data.Item("Skillpoint").Item("robar")

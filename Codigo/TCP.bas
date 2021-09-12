@@ -517,16 +517,14 @@ Function ConnectNewUser(ByVal UserIndex As Integer, ByRef Name As String, ByVal 
         On Error GoTo ConnectNewUser_Err
         
 100     With UserList(UserIndex)
-        
-            Dim LoopC As Long
-        
+
 102         If .flags.UserLogged Then
 104             Call LogCheating("El usuario " & .Name & " ha intentado crear a " & Name & " desde la IP " & .IP)
 106             Call CloseSocketSL(UserIndex)
 108             Call Cerrar_Usuario(UserIndex)
                 Exit Function
             End If
-            
+
             ' Nombre válido
 110         If Not ValidarNombre(Name) Then Exit Function
             
@@ -537,19 +535,19 @@ Function ConnectNewUser(ByVal UserIndex As Integer, ByRef Name As String, ByVal 
 
             ' Raza válida
 120         If UserRaza <= 0 Or UserRaza > NUMRAZAS Then Exit Function
-            
+
             ' Género válido
 122         If UserSexo < Hombre Or UserSexo > Mujer Then Exit Function
-            
+
             ' Ciudad válida
 124         If Hogar <= 0 Or Hogar > NUMCIUDADES Then Exit Function
-            
+
             ' Cabeza válida
 126         If Not ValidarCabeza(UserRaza, UserSexo, Head) Then Exit Function
-            
+
             'Prevenimos algun bug con dados inválidos
 128         If .Stats.UserAtributos(e_Atributos.Fuerza) = 0 Then Exit Function
-        
+
 130         .Stats.UserAtributos(e_Atributos.Fuerza) = .Stats.UserAtributos(e_Atributos.Fuerza) + ModRaza(UserRaza).Fuerza
 132         .Stats.UserAtributos(e_Atributos.Agilidad) = .Stats.UserAtributos(e_Atributos.Agilidad) + ModRaza(UserRaza).Agilidad
 134         .Stats.UserAtributos(e_Atributos.Inteligencia) = .Stats.UserAtributos(e_Atributos.Inteligencia) + ModRaza(UserRaza).Inteligencia
@@ -577,7 +575,7 @@ Function ConnectNewUser(ByVal UserIndex As Integer, ByRef Name As String, ByVal 
         
 162         .Char.Heading = e_Heading.SOUTH
         
-164         Call DarCuerpo(UserIndex) 'Ladder REVISAR
+164         Call DarCuerpo(UserIndex)
     
 168         .Char.WeaponAnim = NingunArma
 170         .Char.ShieldAnim = NingunEscudo
