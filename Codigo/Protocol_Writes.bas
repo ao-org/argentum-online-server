@@ -4076,6 +4076,22 @@ WriteCraftingItem_Err:
         Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteCraftingItem", Erl)
         '</EhFooter>
 End Sub
+Sub writeSendMousePosToClient(ByVal userindex As Integer, ByVal x As Integer, ByVal y As Integer)
+  '<EhHeader>
+        On Error GoTo writeSendMousePosToClient_Err
+        '</EhHeader>
+100     Call Writer.WriteInt(ServerPacketID.SendMousePos)
+102     Call Writer.WriteInt16(x)
+104     Call Writer.WriteInt16(y)
+106     Call modSendData.SendData(ToIndex, 1)
+        '<EhFooter>
+        Exit Sub
+
+writeSendMousePosToClient_Err:
+        Call Writer.Clear
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.writeSendMousePosToClient", Erl)
+        '</EhFooter>
+End Sub
 
 Sub WriteCraftingCatalyst(ByVal UserIndex As Integer, _
                           ByVal ObjIndex As Integer, _
@@ -5296,6 +5312,7 @@ PrepareMessageDoAnimation_Err:
         Call Writer.Clear
         Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageDoAnimation", Erl)
 End Function
+
 
 'Public Function WritePescarEspecial(ByVal ObjIndex As Integer)
 
