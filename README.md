@@ -6,7 +6,11 @@ Código fuente de el servidor de Argentum20, basado en RevolucionAO de Ladder
 # Requisitos
 
 - ODBC DRIVERS
+Mysql
 https://dev.mysql.com/get/Downloads/Connector-ODBC/8.0/mysql-connector-odbc-8.0.22-win32.msi
+
+SQlite
+http://www.ch-werner.de/sqliteodbc/
 
 - Registrar manualmente libreria Aurora.Network.dll 
 
