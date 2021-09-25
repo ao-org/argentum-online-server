@@ -8382,27 +8382,20 @@ Private Sub HandleSacarLlave(ByVal UserIndex As Integer)
 102             Llave = Reader.ReadInt16()
         
             ' Solo dios o admin
-104         If (.flags.Privilegios And (e_PlayerType.Dios Or e_PlayerType.Admin)) Then
+104         If (.flags.Privilegios And (e_PlayerType.Admin)) Then
 
-                ' Me aseguro que esté activada la db
-106             If Not Database_Enabled Then
-108                 Call WriteConsoleMsg(UserIndex, "Es necesario que el juego esté corriendo con base de datos.", e_FontTypeNames.FONTTYPE_INFO)
 
-                Else
-
-                    ' Intento borrarla de la db
-110                 If SacarLlaveDatabase(Llave) Then
-112                     Call WriteConsoleMsg(UserIndex, "La llave " & Llave & " fue removida.", e_FontTypeNames.FONTTYPE_INFO)
-                    Else
-114                     Call WriteConsoleMsg(UserIndex, "No se pudo sacar la llave. Asegúrese de que esté en uso.", e_FontTypeNames.FONTTYPE_INFO)
-
-                    End If
+            ' Intento borrarla de la db
+110         If SacarLlaveDatabase(Llave) Then
+112             Call WriteConsoleMsg(UserIndex, "La llave " & Llave & " fue removida.", e_FontTypeNames.FONTTYPE_INFO)
+            Else
+114             Call WriteConsoleMsg(UserIndex, "No se pudo sacar la llave. Asegúrese de que esté en uso.", e_FontTypeNames.FONTTYPE_INFO)
+            End If
 
 116                 Call LogGM(.Name, "/SACARLLAVE " & Llave)
 
-                End If
             Else
-118             Call WriteConsoleMsg(UserIndex, "Servidor » Solo Dios y Administrador pueden Sacar llaves.", e_FontTypeNames.FONTTYPE_INFO)
+118             Call WriteConsoleMsg(UserIndex, "Servidor » Solo Administradores pueden Sacar llaves.", e_FontTypeNames.FONTTYPE_INFO)
             End If
 
         End With
