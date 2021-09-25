@@ -8302,15 +8302,11 @@ Private Sub HandleDarLlaveAUsuario(ByVal UserIndex As Integer)
 102         UserName = Reader.ReadString8()
 104         Llave = Reader.ReadInt16()
         
-            ' Solo dios o admin
-106         If .flags.Privilegios And (e_PlayerType.Dios Or e_PlayerType.Admin) Then
+            ' Solo admin
+106         If .flags.Privilegios And e_PlayerType.Admin Then
 
                 ' Me aseguro que esté activada la db
-108             If Not Database_Enabled Then
-110                 Call WriteConsoleMsg(UserIndex, "Es necesario que el juego esté corriendo con base de datos.", e_FontTypeNames.FONTTYPE_INFO)
-            
-                    ' Me aseguro que el objeto sea una llave válida
-112             ElseIf Llave < 1 Or Llave > NumObjDatas Then
+                If Llave < 1 Or Llave > NumObjDatas Then
 114                 Call WriteConsoleMsg(UserIndex, "El número ingresado no es el de una llave válida.", e_FontTypeNames.FONTTYPE_INFO)
 
 116             ElseIf ObjData(Llave).OBJType <> e_OBJType.otLlaves Then ' vb6 no tiene short-circuit evaluation :(
@@ -8363,7 +8359,7 @@ Private Sub HandleDarLlaveAUsuario(ByVal UserIndex As Integer)
                 End If
 
             Else
-146             Call WriteConsoleMsg(UserIndex, "Servidor » Solo Dios y Administrador pueden dar llaves.", e_FontTypeNames.FONTTYPE_INFO)
+146             Call WriteConsoleMsg(UserIndex, "Servidor » Solo Administradores pueden dar llaves.", e_FontTypeNames.FONTTYPE_INFO)
             End If
 
         End With
