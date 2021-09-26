@@ -1454,7 +1454,7 @@ Public Sub SaveUserSkillDatabase(UserName As String, ByVal Skill As Integer, ByV
         
         On Error GoTo SaveUserSkillDatabase_Err
         
-        Call Execute("UPDATE skillpoints SET value = ? WHERE number = ? AND user_id = (SELECT id FROM user WHERE UPPER(name) = ?)", Value, Skill, UCase$(UserName))
+        Call Execute("UPDATE skillpoints SET value = ? WHERE number = ? AND user_id = (SELECT id FROM user WHERE name = ?)", Value, Skill, UCase$(UserName))
         
         Exit Sub
 
@@ -1501,7 +1501,7 @@ Public Sub SaveBanDatabase(UserName As String, Reason As String, BannedBy As Str
         '***************************************************
         On Error GoTo ErrorHandler
         
-        Call Execute("UPDATE user SET is_banned = TRUE, banned_by = ?, ban_reason = ? WHERE UPPER(name) = ?;", BannedBy, Reason, UCase$(UserName))
+        Call Execute("UPDATE user SET is_banned = TRUE, banned_by = ?, ban_reason = ? WHERE name = ?;", BannedBy, Reason, UCase$(UserName))
         
 102     Call SavePenaDatabase(UserName, "Baneado por: " & BannedBy & " debido a " & Reason)
 
@@ -1520,7 +1520,7 @@ Public Sub SaveWarnDatabase(UserName As String, Reason As String, WarnedBy As St
         '***************************************************
         On Error GoTo ErrorHandler
         
-        Call Execute("UPDATE user SET warnings = warnings + 1 WHERE UPPER(name) = ?;", UCase$(UserName))
+        Call Execute("UPDATE user SET warnings = warnings + 1 WHERE name = ?;", UCase$(UserName))
         
 102     Call SavePenaDatabase(UserName, "Advertencia de: " & WarnedBy & " debido a " & Reason)
     
@@ -1537,7 +1537,7 @@ Public Sub SavePenaDatabase(UserName As String, Reason As String)
 
         Dim Query As String
 100     Query = "INSERT INTO punishment(user_id, NUMBER, reason)"
-102     Query = Query & " SELECT u.id, COUNT(p.number) + 1, ? FROM user u LEFT JOIN punishment p ON p.user_id = u.id WHERE UPPER(u.name) = ?;"
+102     Query = Query & " SELECT u.id, COUNT(p.number) + 1, ? FROM user u LEFT JOIN punishment p ON p.user_id = u.id WHERE uname) = ?;"
         
         Call Execute(Query, Reason, UCase$(UserName))
 
@@ -1552,7 +1552,7 @@ Public Sub SilenciarUserDatabase(UserName As String, ByVal Tiempo As Integer)
     
         On Error GoTo ErrorHandler
         
-        Call Execute("UPDATE user SET is_silenced = 1, silence_minutes_left = ?, silence_elapsed_seconds = 0 WHERE UPPER(name) = ?;", Tiempo, UCase$(UserName))
+        Call Execute("UPDATE user SET is_silenced = 1, silence_minutes_left = ?, silence_elapsed_seconds = 0 WHERE name = ?;", Tiempo, UCase$(UserName))
         
         Exit Sub
 
@@ -1578,7 +1578,7 @@ Public Sub UnBanDatabase(UserName As String)
 
         On Error GoTo ErrorHandler
         
-        Call Execute("UPDATE user SET is_banned = FALSE, banned_by = '', ban_reason = '' WHERE UPPER(name) = ?;", UCase$(UserName))
+        Call Execute("UPDATE user SET is_banned = FALSE, banned_by = '', ban_reason = '' WHERE name = ?;", UCase$(UserName))
         
         Exit Sub
 
@@ -1604,7 +1604,7 @@ Public Sub EcharConsejoDatabase(UserName As String)
         
         On Error GoTo EcharConsejoDatabase_Err
         
-        Call Execute("UPDATE user SET pertenece_consejo_real = FALSE, pertenece_consejo_caos = FALSE WHERE UPPER(name) = ?;", UCase$(UserName))
+        Call Execute("UPDATE user SET pertenece_consejo_real = FALSE, pertenece_consejo_caos = FALSE WHERE name = ?;", UCase$(UserName))
         
         Exit Sub
 
@@ -1618,7 +1618,7 @@ Public Sub EcharLegionDatabase(UserName As String)
         
         On Error GoTo EcharLegionDatabase_Err
         
-        Call Execute("UPDATE user SET pertenece_caos = FALSE, reenlistadas = 200 WHERE UPPER(name) = ?;", UCase$(UserName))
+        Call Execute("UPDATE user SET pertenece_caos = FALSE, reenlistadas = 200 WHERE name = ?;", UCase$(UserName))
         
         Exit Sub
 
@@ -1632,7 +1632,7 @@ Public Sub EcharArmadaDatabase(UserName As String)
         
         On Error GoTo EcharArmadaDatabase_Err
         
-        Call Execute("UPDATE user SET pertenece_real = FALSE, reenlistadas = 200 WHERE UPPER(name) = ?;", UCase$(UserName))
+        Call Execute("UPDATE user SET pertenece_real = FALSE, reenlistadas = 200 WHERE name = ?;", UCase$(UserName))
 
         Exit Sub
 
@@ -1646,7 +1646,7 @@ Public Sub CambiarPenaDatabase(UserName As String, ByVal Numero As Integer, Pena
         
         On Error GoTo CambiarPenaDatabase_Err
         
-        Call Execute("UPDATE punishment SET reason = ? WHERE number = ? AND user_id = (SELECT id from user WHERE UPPER(name) = ?);", Pena, Numero, UCase$(UserName))
+        Call Execute("UPDATE punishment SET reason = ? WHERE number = ? AND user_id = (SELECT id from user WHERE name = ?);", Pena, Numero, UCase$(UserName))
         
         Exit Sub
 
@@ -1665,7 +1665,7 @@ Public Function GetUserAmountOfPunishmentsDatabase(ByVal UserName As String) As 
         On Error GoTo ErrorHandler
         
         Dim RS As ADODB.Recordset
-100     Set RS = Query("SELECT COUNT(*) as punishments FROM `punishment` INNER JOIN `user` ON punishment.user_id = user.id WHERE UPPER(user.name) = ?;", UCase$(UserName))
+100     Set RS = Query("SELECT COUNT(*) as punishments FROM `punishment` INNER JOIN `user` ON punishment.user_id = user.id WHERE username) = ?;", UCase$(UserName))
 
 102     If RS Is Nothing Then Exit Function
 
@@ -1686,7 +1686,7 @@ Public Sub SendUserPunishmentsDatabase(ByVal UserIndex As Integer, ByVal UserNam
         On Error GoTo ErrorHandler
 
         Dim RS As ADODB.Recordset
-100     Set RS = Query("SELECT user_id, number, reason FROM `punishment` INNER JOIN `user` ON punishment.user_id = user.id WHERE UPPER(user.name) = ?;", UCase$(UserName))
+100     Set RS = Query("SELECT user_id, number, reason FROM `punishment` INNER JOIN `user` ON punishment.user_id = user.id WHERE username) = ?;", UCase$(UserName))
     
 102     If RS Is Nothing Then Exit Sub
 
@@ -1869,7 +1869,7 @@ Public Sub SendCharacterInfoDatabase(ByVal UserIndex As Integer, ByVal UserName 
         Dim GuildActual As Integer
 
         Dim RS As ADODB.Recordset
-100     Set RS = Query("SELECT race_id, class_id, genre_id, level, gold, bank_gold, guild_requests_history, guild_index, guild_member_history, pertenece_real, pertenece_caos, ciudadanos_matados, criminales_matados FROM user WHERE UPPER(name) = ?;", UCase$(UserName))
+100     Set RS = Query("SELECT race_id, class_id, genre_id, level, gold, bank_gold, guild_requests_history, guild_index, guild_member_history, pertenece_real, pertenece_caos, ciudadanos_matados, criminales_matados FROM user WHERE name = ?;", UCase$(UserName))
 
 102     If RS Is Nothing Then
 104         Call WriteConsoleMsg(UserIndex, "Pj Inexistente", e_FontTypeNames.FONTTYPE_INFO)
@@ -2014,7 +2014,7 @@ End Sub
 Public Function SetPositionDatabase(UserName As String, ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer) As Boolean
         On Error GoTo ErrorHandler
 
-102     SetPositionDatabase = Execute("UPDATE user SET pos_map = ?, pos_x = ?, pos_y = ? WHERE UPPER(name) = ?;", Map, X, Y, UCase$(UserName))
+102     SetPositionDatabase = Execute("UPDATE user SET pos_map = ?, pos_x = ?, pos_y = ? WHERE name = ?;", Map, X, Y, UCase$(UserName))
 
         Exit Function
 
@@ -2038,7 +2038,7 @@ End Function
 Public Function AddOroBancoDatabase(UserName As String, ByVal OroGanado As Long) As Boolean
         On Error GoTo ErrorHandler
 
-102     AddOroBancoDatabase = Execute("UPDATE user SET bank_gold = bank_gold + ? WHERE UPPER(name) = ?;", OroGanado, UCase$(UserName))
+102     AddOroBancoDatabase = Execute("UPDATE user SET bank_gold = bank_gold + ? WHERE name = ?;", OroGanado, UCase$(UserName))
 
         Exit Function
 
@@ -2050,7 +2050,7 @@ End Function
 Public Function DarLlaveAUsuarioDatabase(UserName As String, ByVal LlaveObj As Integer) As Boolean
         On Error GoTo ErrorHandler
 
-102     DarLlaveAUsuarioDatabase = Execute("INSERT INTO house_key SET key_obj = ?, account_id = (SELECT account_id FROM user WHERE UPPER(name) = ?);", LlaveObj, UCase$(UserName))
+102     DarLlaveAUsuarioDatabase = Execute("INSERT INTO house_key SET key_obj = ?, account_id = (SELECT account_id FROM user WHERE name = ?);", LlaveObj, UCase$(UserName))
 
         Exit Function
 
@@ -2174,7 +2174,7 @@ SanitizeNullValue_Err:
 End Function
 
 Public Sub SetMessageInfoDatabase(ByVal Name As String, ByVal Message As String)
-    Call Execute("update user set message_info = concat(message_info, ?) where upper(name) = ?;", Message, UCase$(Name))
+    Call Execute("update user set message_info = concat(message_info, ?) where name = ?;", Message, UCase$(Name))
 End Sub
 
 Public Sub ChangeNameDatabase(ByVal CurName As String, ByVal NewName As String)
