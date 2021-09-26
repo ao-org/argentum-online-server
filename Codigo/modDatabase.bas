@@ -2061,7 +2061,9 @@ End Function
 
 Public Function DarLlaveACuentaDatabase(Email As String, ByVal LlaveObj As Integer) As Boolean
         On Error GoTo ErrorHandler
-    
+        'Hacer verificacion de que si alguien tiene esta llave, si alguien la tiene hay que prevenir la creacion.
+' 101     LlaveYaOtorgadaAJugador = Execute("SELECT * FROM house_key WHERE key_obj = ?;", LlaveObj, UCase$(Email))
+        
 102     DarLlaveACuentaDatabase = Execute("INSERT INTO house_key SET key_obj = ?, account_id = (SELECT id FROM account WHERE email = ?);", LlaveObj, UCase$(Email))
         Exit Function
 
