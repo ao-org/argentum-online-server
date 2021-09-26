@@ -8416,13 +8416,6 @@ Private Sub HandleVerLlaves(ByVal UserIndex As Integer)
 
             ' Sólo GMs
 102         If (.flags.Privilegios And (e_PlayerType.Dios Or e_PlayerType.Admin)) Then
-                ' Me aseguro que esté activada la db
-104             If Not Database_Enabled Then
-106                 Call WriteConsoleMsg(UserIndex, "Es necesario que el juego esté corriendo con base de datos.", e_FontTypeNames.FONTTYPE_INFO)
-                    Exit Sub
-
-                End If
-            
                 ' Leo y muestro todas las llaves usadas
 108             Call VerLlavesDatabase(UserIndex)
             Else
