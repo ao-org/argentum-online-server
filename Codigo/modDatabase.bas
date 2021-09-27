@@ -2050,7 +2050,7 @@ End Function
 Public Function DarLlaveAUsuarioDatabase(UserName As String, ByVal LlaveObj As Integer) As Boolean
         On Error GoTo ErrorHandler
 
-102     DarLlaveAUsuarioDatabase = Execute("INSERT INTO house_key SET key_obj = ?, account_id = (SELECT account_id FROM user WHERE UPPER(name) = ?);", LlaveObj, UCase$(UserName))
+102     DarLlaveAUsuarioDatabase = Execute("INSERT INTO house_key (key_obj, account_id) values (?, (SELECT account_id FROM user WHERE UPPER(name) = ?))", LlaveObj, UCase$(UserName))
 
         Exit Function
 
