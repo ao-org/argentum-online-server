@@ -17,10 +17,44 @@ Public Database_Name        As String
 Public Database_Username    As String
 Public Database_Password    As String
 
+Private Const MAX_ASYNC           As Byte = 20
+Private Current_async       As Byte
+
 Private Connection          As ADODB.Connection
+Private Connection_async(1 To MAX_ASYNC)    As ADODB.Connection
 
 Private Builder             As cStringBuilder
 
+Public Sub Database_Connect_Async()
+        On Error GoTo Database_Connect_AsyncErr
+        
+        Dim ConnectionID As String
+
+        If Len(Database_Source) <> 0 Then
+104         ConnectionID = "DATA SOURCE=" & Database_Source & ";"
+        Else
+106         ConnectionID = "DRIVER={SQLite3 ODBC Driver};" & "DATABASE=" & App.Path & "/Database.db"
+        End If
+                
+        Dim i As Byte
+        
+        For i = 1 To MAX_ASYNC
+            Set Connection_async(i) = New ADODB.Connection
+110         Connection_async(i).CursorLocation = adUseClient
+            Connection_async(i).ConnectionString = ConnectionID
+112         Call Connection_async(i).Open(, , , adAsyncConnect)
+        Next i
+
+        Current_async = 1
+        
+113     Set Builder = New cStringBuilder
+        Call InitDatabase
+        
+        Exit Sub
+    
+Database_Connect_AsyncErr:
+116     Call LogDatabaseError("Database Error: " & Err.Number & " - " & Err.Description)
+End Sub
 Public Sub Database_Connect()
         On Error GoTo Database_Connect_Err
         
@@ -112,7 +146,7 @@ Public Function Execute(ByVal Text As String, ParamArray Arguments() As Variant)
     Dim Command  As New ADODB.Command
     Dim Argument As Variant
     
-    Command.ActiveConnection = Connection
+    Command.ActiveConnection = Connection_async(Current_async)
     Command.CommandText = Text
     Command.CommandType = adCmdText
     Command.Prepared = True
@@ -136,8 +170,14 @@ On Error GoTo Execute_Err
         Call GetElapsedTime
     End If
     
-    Call Command.Execute(, , -1)  ' @TODO: We want some operation to be async
-
+    Call Command.Execute(, , adAsyncExecute)  ' @TODO: We want some operation to be async
+    
+    Current_async = Current_async + 1
+    
+    If Current_async = MAX_ASYNC Then
+        Current_async = 1
+    End If
+    
     ' Statistics
     If frmMain.chkLogDbPerfomance.Value = 1 Then
         Call LogPerformance("Execute: " & Text & vbNewLine & " - Tiempo transcurrido: " & Round(GetElapsedTime(), 1) & " ms" & vbNewLine)
