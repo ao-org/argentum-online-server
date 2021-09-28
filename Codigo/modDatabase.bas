@@ -342,7 +342,7 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
 194         Params(PostInc(i)) = .flags.Desnudo
 196         Params(PostInc(i)) = .Faccion.Status
         
-198         Call Execute(QUERY_SAVE_MAINPJ, Params)
+198         Call Query(QUERY_SAVE_MAINPJ, Params)
 
             ' Para recibir el ID del user
             Dim RS As ADODB.Recordset
