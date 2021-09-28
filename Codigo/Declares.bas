@@ -694,6 +694,9 @@ Public Const SND_BEBER           As Byte = 135
 
 Public Const GRH_FALLO_PESCA     As Long = 48974
 
+'Numero de objeto de la poción de reset
+Public Const POCION_RESET       As Long = 3378
+
 ''
 ' Cantidad maxima de objetos por slot de inventario
 Public Const MAX_INVENTORY_OBJS      As Integer = 10000
@@ -1710,7 +1713,7 @@ Public Type t_UserCounters
     
     CuentaRegresiva As Integer
     TimerBarra As Integer
-
+    LastResetTick As Long
 End Type
 
 Public Type t_UserIntervals

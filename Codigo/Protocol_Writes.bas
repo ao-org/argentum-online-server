@@ -5210,5 +5210,16 @@ End Function
 '        Call Writer.Clear
 '        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PescarEspecial", Erl)
 'End Function
+Public Sub writeAnswerReset(ByVal UserIndex As Integer)
+    On Error GoTo writeAnswerReset_Err
 
+    Call Writer.WriteInt(ServerPacketID.AnswerReset)
+
+182     Call modSendData.SendData(ToIndex, UserIndex)
+    Exit Sub
+writeAnswerReset_Err:
+        Call Writer.Clear
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.writeAnswerReset", Erl)
+        '</EhFooter>
+End Sub
 
