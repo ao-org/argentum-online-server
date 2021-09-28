@@ -625,7 +625,6 @@ Sub Main()
         'Conecto base de datos
 154     Call Database_Connect
         
-        Call Database_Connect_Async
     
         ' Construimos las querys grandes
 156     Call Contruir_Querys
