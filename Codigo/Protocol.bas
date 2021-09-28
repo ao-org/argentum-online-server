@@ -183,7 +183,7 @@ Public Enum ServerPacketID
     CraftingResult
     ForceUpdate
     GuardNotice
-    
+    AnswerReset
     [PacketCount]
 End Enum
 
@@ -369,7 +369,7 @@ Private Enum ClientPacketID
     GuildMemberList         '/MIEMBROSCLAN
     GuildBan                '/BANCLAN
     banip                   '/BANIP
-    UnbanIP                 '/UNBANIP
+    UnBanIp                 '/UNBANIP
     CreateItem              '/CI
     DestroyItems            '/DEST
     ChaosLegionKick         '/NOCAOS
@@ -465,8 +465,8 @@ Private Enum ClientPacketID
     HecharDeGrupo
     MacroPossent
     SubastaInfo
-    bancuenta
-    unBanCuenta
+    BanCuenta
+    UnbanCuenta
     CerrarCliente
     EventoInfo
     CrearEvento
@@ -479,7 +479,7 @@ Private Enum ClientPacketID
     CompletarViaje
     BovedaMoveItem
     QuieroFundarClan
-    LlamadadeClan
+    llamadadeclan
     MarcaDeClanPack
     MarcaDeGMPack
     Quest
@@ -510,6 +510,7 @@ Private Enum ClientPacketID
     GuardNoticeResponse
     GuardResendVerificationCode
     ResetChar               '/RESET NICK
+    resetearPersonaje
     
     [PacketCount]
 End Enum
@@ -530,7 +531,7 @@ Public Enum e_EditOptions
     eo_Raza
     eo_Arma
     eo_Escudo
-    eo_Casco
+    eo_CASCO
     eo_Particula
     eo_Vida
     eo_Mana
@@ -1289,6 +1290,8 @@ On Error Resume Next
             Call HandleGuardResendVerificationCode(UserIndex)
         Case ClientPacketID.ResetChar
             Call HandleResetChar(UserIndex)
+        Case ClientPacketID.resetearPersonaje
+            Call HandleResetearPersonaje(UserIndex)
         Case Else
             Err.raise -1, "Invalid Message"
     End Select
@@ -3357,14 +3360,14 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                                  
                                     '17/09/02
                                     'Check the trigger
-528                                 If MapData(UserList(tU).Pos.Map, UserList(tU).Pos.X, UserList(tU).Pos.Y).trigger = e_Trigger.ZONASEGURA Then
+528                                 If MapData(UserList(tU).Pos.Map, UserList(tU).Pos.X, UserList(tU).Pos.Y).trigger = e_Trigger.ZonaSegura Then
 530                                     Call WriteConsoleMsg(UserIndex, "No podés robar aquí.", e_FontTypeNames.FONTTYPE_WARNING)
 532                                     Call WriteWorkRequestTarget(UserIndex, 0)
                                         Exit Sub
 
                                     End If
                                  
-534                                 If MapData(.Pos.Map, .Pos.X, .Pos.Y).trigger = e_Trigger.ZONASEGURA Then
+534                                 If MapData(.Pos.Map, .Pos.X, .Pos.Y).trigger = e_Trigger.ZonaSegura Then
 536                                     Call WriteConsoleMsg(UserIndex, "No podés robar aquí.", e_FontTypeNames.FONTTYPE_WARNING)
 538                                     Call WriteWorkRequestTarget(UserIndex, 0)
                                         Exit Sub
@@ -7423,17 +7426,17 @@ Private Sub HandleGMMessage(ByVal UserIndex As Integer)
 
 100     With UserList(UserIndex)
         
-            Dim message As String
+            Dim Message As String
 102             Message = Reader.ReadString8()
 
 104         If EsGM(UserIndex) Then
-106             Call LogGM(.Name, "Mensaje a Gms: " & message)
+106             Call LogGM(.Name, "Mensaje a Gms: " & Message)
         
-108             If LenB(message) <> 0 Then
+108             If LenB(Message) <> 0 Then
                     'Analize chat...
-110                 Call Statistics.ParseChat(message)
+110                 Call Statistics.ParseChat(Message)
             
-112                 Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(.Name & " » " & message, e_FontTypeNames.FONTTYPE_GMMSG))
+112                 Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(.Name & " » " & Message, e_FontTypeNames.FONTTYPE_GMMSG))
 
                 End If
 
@@ -9957,7 +9960,7 @@ Private Sub HandleRequestCharSkills(ByVal UserIndex As Integer)
             Dim UserName As String
             Dim tUser    As Integer
             Dim LoopC    As Long
-            Dim message  As String
+            Dim Message  As String
         
 102         UserName = Reader.ReadString8()
 104         tUser = NameIndex(UserName)
@@ -10782,13 +10785,13 @@ Private Sub HandleServerMessage(ByVal UserIndex As Integer)
 
 100     With UserList(UserIndex)
 
-            Dim message As String
+            Dim Message As String
 102             Message = Reader.ReadString8()
         
 104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios)) Then
         
-106             If LenB(message) <> 0 Then
-108                 Call LogGM(.Name, "Mensaje Broadcast:" & message)
+106             If LenB(Message) <> 0 Then
+108                 Call LogGM(.Name, "Mensaje Broadcast:" & Message)
 110                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(.Name & "> " & Message, e_FontTypeNames.FONTTYPE_SERVER))
 
                 End If
@@ -11375,7 +11378,7 @@ Private Sub HandleRoyalArmyMessage(ByVal UserIndex As Integer)
 
 100     With UserList(UserIndex)
 
-            Dim message As String
+            Dim Message As String
 102             Message = Reader.ReadString8()
         
             'Solo dioses, admins y RMS
@@ -11410,7 +11413,7 @@ Private Sub HandleChaosLegionMessage(ByVal UserIndex As Integer)
 
 100     With UserList(UserIndex)
 
-            Dim message As String
+            Dim Message As String
 102             Message = Reader.ReadString8()
         
             'Solo dioses, admins y RMS
@@ -11445,7 +11448,7 @@ Private Sub HandleCitizenMessage(ByVal UserIndex As Integer)
 
 100     With UserList(UserIndex)
 
-            Dim message As String
+            Dim Message As String
 102             Message = Reader.ReadString8()
         
             'Solo dioses, admins y RMS
@@ -11479,7 +11482,7 @@ Private Sub HandleCriminalMessage(ByVal UserIndex As Integer)
 
 100     With UserList(UserIndex)
 
-            Dim message As String
+            Dim Message As String
 102             Message = Reader.ReadString8()
         
             'Solo dioses, admins y RMS
@@ -11513,7 +11516,7 @@ Private Sub HandleTalkAsNPC(ByVal UserIndex As Integer)
 
 100     With UserList(UserIndex)
         
-            Dim message As String
+            Dim Message As String
 102             Message = Reader.ReadString8()
         
             'Solo dioses, admins y RMS
@@ -11521,7 +11524,7 @@ Private Sub HandleTalkAsNPC(ByVal UserIndex As Integer)
 
                 'Asegurarse haya un NPC seleccionado
 106             If .flags.TargetNPC > 0 Then
-108                 Call SendData(SendTarget.ToNPCArea, .flags.TargetNPC, PrepareMessageChatOverHead(message, NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite))
+108                 Call SendData(SendTarget.ToNPCArea, .flags.TargetNPC, PrepareMessageChatOverHead(Message, NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite))
                 
                 Else
 110                 Call WriteConsoleMsg(UserIndex, "Debes seleccionar el NPC por el que quieres hablar antes de usar este comando", e_FontTypeNames.FONTTYPE_INFO)
@@ -14747,13 +14750,13 @@ Public Sub HandleSystemMessage(ByVal UserIndex As Integer)
 
 100     With UserList(UserIndex)
 
-            Dim message As String
+            Dim Message As String
 102             Message = Reader.ReadString8()
         
 104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.RoleMaster)) Then
-106             Call LogGM(.Name, "Mensaje de sistema:" & message)
+106             Call LogGM(.Name, "Mensaje de sistema:" & Message)
             
-108             Call SendData(SendTarget.ToAll, 0, PrepareMessageShowMessageBox(message))
+108             Call SendData(SendTarget.ToAll, 0, PrepareMessageShowMessageBox(Message))
 
             End If
 
@@ -15302,7 +15305,7 @@ Private Sub HandleBorrarPJ(ByVal UserIndex As Integer)
             End If
             
             Dim RS As Recordset
-            Set rs = Query("SELECT account_id, level, is_banned from user WHERE name = ?", UserDelete)
+            Set RS = Query("SELECT account_id, level, is_banned from user WHERE name = ?", UserDelete)
             
             If (RS Is Nothing) Then
                 Call CloseSocket(UserIndex)
@@ -18601,4 +18604,14 @@ Private Sub HandleResetChar(ByVal UserIndex As Integer)
 
 HandleResetChar_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleResetChar", Erl)
+End Sub
+Private Sub HandleResetearPersonaje(ByVal UserIndex As Integer)
+    On Error GoTo HandleResetearPersonaje_Err:
+
+    Call resetPj(UserIndex)
+
+    Exit Sub
+
+HandleResetearPersonaje_Err:
+102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleResetearPersonaje", Erl)
 End Sub

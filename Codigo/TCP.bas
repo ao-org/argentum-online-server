@@ -291,6 +291,9 @@ Sub RellenarInventario(ByVal UserIndex As String)
 230                 .Invent.Object(NumItems).ObjIndex = RandomNumber(1283, 1285) ' Vestimentas de Mujer (Newbies)
                 End If
             End If
+            
+            .Invent.Object(NumItems).Equipped = 0
+            Call EquiparInvItem(UserIndex, NumItems)
                         
 232         .Invent.Object(NumItems).amount = 1
 234         .Invent.Object(NumItems).Equipped = 1
@@ -1045,6 +1048,7 @@ Sub ResetContadores(ByVal UserIndex As Integer)
 184         .SpeedHackCounter = 0
 186         .LastStep = 0
 188         .TimerBarra = 0
+            .LastResetTick = 0
         End With
 
         
@@ -1847,3 +1851,16 @@ Function ContarUsuariosMismaCuenta(ByVal AccountID As Long) As Integer
         Next
 
 End Function
+
+Sub VaciarInventario(ByVal UserIndex As Integer)
+
+    Dim i As Long
+
+    With UserList(UserIndex)
+        For i = 1 To MAX_INVENTORY_SLOTS
+            .Invent.Object(i).amount = 0
+            .Invent.Object(i).Equipped = 0
+            .Invent.Object(i).ObjIndex = 0
+        Next i
+    End With
+End Sub
