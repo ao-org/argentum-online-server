@@ -302,6 +302,10 @@ Public Sub DoTileEvents(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal 
 
             'Controla las salidas
 102         If InMapBounds(Map, X, Y) Then
+
+                If MapData(Map, X, Y).trigger = AUTORESU Then
+                    Call ResucitarOCurar(UserIndex)
+                End If
         
 104             If MapData(Map, X, Y).ObjInfo.ObjIndex > 0 Then
 106                 EsTeleport = ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex).OBJType = e_OBJType.otTeleport
@@ -1820,4 +1824,28 @@ Public Sub resetPj(ByVal UserIndex As Integer)
 End Sub
 
 
+Public Sub ResucitarOCurar(ByVal UserIndex As Integer)
+If UserList(UserIndex).flags.Muerto = 1 Then
+    Call RevivirUsuario(UserIndex)
+    UserList(UserIndex).Stats.MinHp = UserList(UserIndex).Stats.MaxHp
+        
+    Call WriteUpdateHP(UserIndex)
+    
+    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(20, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
 
+    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(UserList(UserIndex).Char.CharIndex, 35, 1))
+
+    
+    Call WriteConsoleMsg(UserIndex, "¡¡Hás sido resucitado!!", e_FontTypeNames.FONTTYPE_INFO)
+ElseIf UserList(UserIndex).Stats.MinHp < UserList(UserIndex).Stats.MaxHp Then
+    UserList(UserIndex).Stats.MinHp = UserList(UserIndex).Stats.MaxHp
+        
+    Call WriteUpdateHP(UserIndex)
+        
+    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(UserList(UserIndex).Char.CharIndex, 9, 1))
+    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(18, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+
+        
+    Call WriteConsoleMsg(UserIndex, "¡¡Hás sido curado!!", e_FontTypeNames.FONTTYPE_INFO)
+End If
+End Sub
