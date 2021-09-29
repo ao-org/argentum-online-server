@@ -356,10 +356,10 @@ Public Enum e_Trigger
     ZonaSegura = 4
     ANTIPIQUETE = 5
     ZONAPELEA = 6
-    CURA = 7
+    AUTORESU = 7
     DETALLEAGUA = 8
     CARCEL = 9
-    PESCAVALIDA = 10
+    PESCAINVALIDA = 10
     
 End Enum
 
