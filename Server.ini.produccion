@@ -29,9 +29,9 @@ MaxDados=18
 MaxUsers=1000
 
 Admines=4
-Dioses=2
-SemiDioses=14
-Consejeros=11
+Dioses=1
+SemiDioses=6
+Consejeros=1
 
 [Admines]
 Admin1=Haracin|hgarofalo79@gmail.com
@@ -40,35 +40,15 @@ Admin3=Animal|anormal@gmail.com
 Admin4=Recox|lucas.recoaro@gmail.com
 
 [Dioses]
-Dios1=WyroX|alexiscaraballo96@gmail.com
-Dios2=HarThaoS|martintrionfetti@gmail.com
+Dios1=Error 404|martintrionfetti@gmail.com
 
 [SemiDioses]
-SemiDios1=arandor|pedrosalvadorgugliotta@gmail.com
+SemiDios1=Vox|ricardo_r_jc@hotmail.com
 SemiDios2=Sir Hongo|nicocapelli85@hotmail.com
 SemiDios3=Morgolock|gulfas@gmail.com
-SemiDios4=Sonic|sonicshinji@gmail.com
-SemiDios5=Jopi|jopiodz00@gmail.com
-SemiDios6=emancu|emiliano.mancuso@gmail.com
-SemiDios7=SimP|brunordeangelis@gmail.com
-SemiDios8=Baliam|loganfenix2000@yahoo.com.mx
-SemiDios9=Thyseo|holacomota2@hotmail.com
-SemiDios10=WieGraf|wolftein1@gmail.com
-SemiDios11=Vox|ricardo_r_jc@hotmail.com
-Semidios12=Dista|Lukitasdegu@gmail.com
-SemiDios13=Skills|reyarb@fibertel.com.ar
-SemiDios14=Dominique|marcojavierpiazza@hotmail.com
+SemiDios4=Jopi|jopiodz00@gmail.com
+SemiDios5=Baliam|loganfenix2000@yahoo.com.mx
+SemiDios6=Vox|ricardo_r_jc@hotmail.com
 
 [Consejeros]
-Consejero1=RoTTTeN|darioguitarras@gmail.com
-Consejero2=Terrel|loganfenix2000@yahoo.com.mx
-Consejero3=Hainnor|Jere_estandar@hotmail.com.ar
-Consejero4=Bwise|Joacovas@hotmail.com
-Consejero5=Bonyo|argentumo@hotmail.com
-Consejero6=Artemis|jmmastroberti@gmail.com
-
-Consejero7=Themis|maxitup3@hotmail.com
-Consejero8=Ulder|tomycapalbo@hotmail.com
-Consejero9=Okruzhkov|schick.ivan@gmail.com
-Consejero10=Blair|mercuricecilia1@gmail.com
-Consejero11=Dash|raffozelada@hotmail.com
+Consejero1=Terrel|loganfenix2000@yahoo.com.mx
