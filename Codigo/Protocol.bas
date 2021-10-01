@@ -1364,7 +1364,7 @@ Private Sub HandleLoginExistingChar(ByVal UserIndex As Integer)
 
         End If
 
-136     If Not AsciiValidos(UserName) Then
+136     If Not AsciiValidos(UserName) And UserName <> "Error 404" Then
 138         Call WriteShowMessageBox(UserIndex, "Nombre invalido.")
 140         Call CloseSocket(UserIndex)
             Exit Sub
