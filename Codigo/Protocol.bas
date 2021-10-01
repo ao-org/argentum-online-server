@@ -184,6 +184,7 @@ Public Enum ServerPacketID
     ForceUpdate
     GuardNotice
     AnswerReset
+    ObjQuestListSend
     [PacketCount]
 End Enum
 
@@ -2486,12 +2487,12 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
         '07/25/09: Marco - Agregue un checkeo para patear a los usuarios que tiran items mientras comercian.
         '***************************************************
 
-        Dim Slot   As Byte
+        Dim slot   As Byte
         Dim amount As Long
     
 100     With UserList(UserIndex)
 
-102         Slot = Reader.ReadInt8()
+102         slot = Reader.ReadInt8()
 104         amount = Reader.ReadInt32()
 
 106         If Not IntervaloPermiteTirar(UserIndex) Then Exit Sub
@@ -2518,30 +2519,30 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
             End If
 
             'Are we dropping gold or other items??
-122         If Slot = FLAGORO Then
+122         If slot = FLAGORO Then
 124             Call TirarOro(amount, UserIndex)
             
             Else
         
                 '04-05-08 Ladder
 126             If (.flags.Privilegios And e_PlayerType.Admin) <> 16 Then
-128                 If EsNewbie(UserIndex) And ObjData(.Invent.Object(Slot).ObjIndex).Newbie = 1 Then
+128                 If EsNewbie(UserIndex) And ObjData(.Invent.Object(slot).ObjIndex).Newbie = 1 Then
 130                     Call WriteConsoleMsg(UserIndex, "No se pueden tirar los objetos Newbies.", e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
                     End If
             
-132                 If ObjData(.Invent.Object(Slot).ObjIndex).Intirable = 1 And Not EsGM(UserIndex) Then
+132                 If ObjData(.Invent.Object(slot).ObjIndex).Intirable = 1 And Not EsGM(UserIndex) Then
 134                     Call WriteConsoleMsg(UserIndex, "Acción no permitida.", e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
-136                 ElseIf ObjData(.Invent.Object(Slot).ObjIndex).Intirable = 1 And EsGM(UserIndex) Then
-138                     If Slot <= UserList(UserIndex).CurrentInventorySlots And Slot > 0 Then
-140                         If .Invent.Object(Slot).ObjIndex = 0 Then Exit Sub
-142                         Call DropObj(UserIndex, Slot, amount, .Pos.Map, .Pos.X, .Pos.Y)
+136                 ElseIf ObjData(.Invent.Object(slot).ObjIndex).Intirable = 1 And EsGM(UserIndex) Then
+138                     If slot <= UserList(UserIndex).CurrentInventorySlots And slot > 0 Then
+140                         If .Invent.Object(slot).ObjIndex = 0 Then Exit Sub
+142                         Call DropObj(UserIndex, slot, amount, .Pos.Map, .Pos.X, .Pos.Y)
                         End If
                         Exit Sub
                     End If
                 
-144                 If ObjData(.Invent.Object(Slot).ObjIndex).Instransferible = 1 Then
+144                 If ObjData(.Invent.Object(slot).ObjIndex).Instransferible = 1 Then
 146                     Call WriteConsoleMsg(UserIndex, "Acción no permitida.", e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
                     End If
@@ -2549,7 +2550,7 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
 
                 End If
         
-148             If ObjData(.Invent.Object(Slot).ObjIndex).OBJType = e_OBJType.otBarcos And UserList(UserIndex).flags.Navegando Then
+148             If ObjData(.Invent.Object(slot).ObjIndex).OBJType = e_OBJType.otBarcos And UserList(UserIndex).flags.Navegando Then
 150                 Call WriteConsoleMsg(UserIndex, "Para tirar la barca deberias estar en tierra firme.", e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
 
@@ -2558,11 +2559,11 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
                 '04-05-08 Ladder
         
                 'Only drop valid slots
-152             If Slot <= UserList(UserIndex).CurrentInventorySlots And Slot > 0 Then
+152             If slot <= UserList(UserIndex).CurrentInventorySlots And slot > 0 Then
             
-154                 If .Invent.Object(Slot).ObjIndex = 0 Then Exit Sub
+154                 If .Invent.Object(slot).ObjIndex = 0 Then Exit Sub
 
-156                 Call DropObj(UserIndex, Slot, amount, .Pos.Map, .Pos.X, .Pos.Y)
+156                 Call DropObj(UserIndex, slot, amount, .Pos.Map, .Pos.X, .Pos.Y)
 
                 End If
 
@@ -2857,13 +2858,13 @@ Private Sub HandleUseItem(ByVal UserIndex As Integer)
     
 100     With UserList(UserIndex)
 
-            Dim Slot As Byte
-102             Slot = Reader.ReadInt8()
+            Dim slot As Byte
+102             slot = Reader.ReadInt8()
         
-104         If Slot <= UserList(UserIndex).CurrentInventorySlots And Slot > 0 Then
-106             If .Invent.Object(Slot).ObjIndex = 0 Then Exit Sub
+104         If slot <= UserList(UserIndex).CurrentInventorySlots And slot > 0 Then
+106             If .Invent.Object(slot).ObjIndex = 0 Then Exit Sub
 
-108             Call UseInvItem(UserIndex, Slot)
+108             Call UseInvItem(UserIndex, slot)
                 
             End If
 
@@ -3967,10 +3968,10 @@ Private Sub HandleCommerceBuy(ByVal UserIndex As Integer)
     
 100     With UserList(UserIndex)
         
-            Dim Slot   As Byte
+            Dim slot   As Byte
             Dim amount As Integer
         
-102         Slot = Reader.ReadInt8()
+102         slot = Reader.ReadInt8()
 104         amount = Reader.ReadInt16()
         
             'Dead people can't commerce...
@@ -3999,7 +4000,7 @@ Private Sub HandleCommerceBuy(ByVal UserIndex As Integer)
             End If
         
             'User compra el item
-122         Call Comercio(eModoComercio.Compra, UserIndex, .flags.TargetNPC, Slot, amount)
+122         Call Comercio(eModoComercio.Compra, UserIndex, .flags.TargetNPC, slot, amount)
 
         End With
 
@@ -4028,11 +4029,11 @@ Private Sub HandleBankExtractItem(ByVal UserIndex As Integer)
 
 100     With UserList(UserIndex)
 
-            Dim Slot        As Byte
+            Dim slot        As Byte
             Dim slotdestino As Byte
             Dim amount      As Integer
         
-102         Slot = Reader.ReadInt8()
+102         slot = Reader.ReadInt8()
 104         amount = Reader.ReadInt16()
 106         slotdestino = Reader.ReadInt8()
         
@@ -4050,7 +4051,7 @@ Private Sub HandleBankExtractItem(ByVal UserIndex As Integer)
 114         If NpcList(.flags.TargetNPC).NPCtype <> e_NPCType.Banquero Then Exit Sub
 
             'User retira el item del slot
-116         Call UserRetiraItem(UserIndex, Slot, amount, slotdestino)
+116         Call UserRetiraItem(UserIndex, slot, amount, slotdestino)
 
         End With
 
@@ -4079,10 +4080,10 @@ Private Sub HandleCommerceSell(ByVal UserIndex As Integer)
     
 100     With UserList(UserIndex)
 
-            Dim Slot   As Byte
+            Dim slot   As Byte
             Dim amount As Integer
         
-102         Slot = Reader.ReadInt8()
+102         slot = Reader.ReadInt8()
 104         amount = Reader.ReadInt16()
         
             'Dead people can't commerce...
@@ -4103,7 +4104,7 @@ Private Sub HandleCommerceSell(ByVal UserIndex As Integer)
             End If
         
             'User compra el item del slot
-116         Call Comercio(eModoComercio.Venta, UserIndex, .flags.TargetNPC, Slot, amount)
+116         Call Comercio(eModoComercio.Venta, UserIndex, .flags.TargetNPC, slot, amount)
 
         End With
 
@@ -4132,11 +4133,11 @@ Private Sub HandleBankDeposit(ByVal UserIndex As Integer)
     
 100     With UserList(UserIndex)
         
-            Dim Slot        As Byte
+            Dim slot        As Byte
             Dim slotdestino As Byte
             Dim amount      As Integer
         
-102         Slot = Reader.ReadInt8()
+102         slot = Reader.ReadInt8()
 104         amount = Reader.ReadInt16()
 106         slotdestino = Reader.ReadInt8()
         
@@ -4164,7 +4165,7 @@ Private Sub HandleBankDeposit(ByVal UserIndex As Integer)
             End If
         
             'User deposita el item del slot rdata
-120         Call UserDepositaItem(UserIndex, Slot, amount, slotdestino)
+120         Call UserDepositaItem(UserIndex, slot, amount, slotdestino)
 
         End With
         
@@ -4338,17 +4339,17 @@ Private Sub HandleUserCommerceOffer(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             Dim tUser  As Integer
-            Dim Slot   As Byte
+            Dim slot   As Byte
             Dim amount As Long
             
-102         Slot = Reader.ReadInt8()
+102         slot = Reader.ReadInt8()
 104         amount = Reader.ReadInt32()
         
             'Get the other player
 106         tUser = .ComUsu.DestUsu
         
             'If Amount is invalid, or slot is invalid and it's not gold, then ignore it.
-108         If ((Slot < 1 Or Slot > UserList(UserIndex).CurrentInventorySlots) And Slot <> FLAGORO) Or amount <= 0 Then Exit Sub
+108         If ((slot < 1 Or slot > UserList(UserIndex).CurrentInventorySlots) And slot <> FLAGORO) Or amount <= 0 Then Exit Sub
         
             'Is the other player valid??
 110         If tUser < 1 Or tUser > MaxUsers Then Exit Sub
@@ -4374,7 +4375,7 @@ Private Sub HandleUserCommerceOffer(ByVal UserIndex As Integer)
                 End If
             
                 'Has he got enough??
-124             If Slot = FLAGORO Then
+124             If slot = FLAGORO Then
 
                     'gold
 126                 If amount > .Stats.GLD Then
@@ -4386,20 +4387,20 @@ Private Sub HandleUserCommerceOffer(ByVal UserIndex As Integer)
                 Else
 
                     'inventory
-130                 If amount > .Invent.Object(Slot).amount Then
+130                 If amount > .Invent.Object(slot).amount Then
 132                     Call WriteConsoleMsg(UserIndex, "No tienes esa cantidad.", e_FontTypeNames.FONTTYPE_TALK)
                         Exit Sub
 
                     End If
                 
-134                 If .Invent.Object(Slot).ObjIndex > 0 Then
-136                     If ObjData(.Invent.Object(Slot).ObjIndex).Instransferible = 1 Then
+134                 If .Invent.Object(slot).ObjIndex > 0 Then
+136                     If ObjData(.Invent.Object(slot).ObjIndex).Instransferible = 1 Then
 138                         Call WriteConsoleMsg(UserIndex, "Este objeto es intransferible, no podés venderlo.", e_FontTypeNames.FONTTYPE_TALK)
                             Exit Sub
     
                         End If
                     
-140                     If ObjData(.Invent.Object(Slot).ObjIndex).Newbie = 1 Then
+140                     If ObjData(.Invent.Object(slot).ObjIndex).Newbie = 1 Then
 142                         Call WriteConsoleMsg(UserIndex, "No puedes comerciar objetos newbie.", e_FontTypeNames.FONTTYPE_TALK)
                             Exit Sub
                         End If
@@ -4417,7 +4418,7 @@ Private Sub HandleUserCommerceOffer(ByVal UserIndex As Integer)
             
                 'Don't allow to sell boats if they are equipped (you can't take them off in the water and causes trouble)
 144             If .flags.Navegando = 1 Then
-146                 If .Invent.BarcoSlot = Slot Then
+146                 If .Invent.BarcoSlot = slot Then
 148                     Call WriteConsoleMsg(UserIndex, "No podés vender tu barco mientras lo estás usando.", e_FontTypeNames.FONTTYPE_TALK)
                         Exit Sub
 
@@ -4426,7 +4427,7 @@ Private Sub HandleUserCommerceOffer(ByVal UserIndex As Integer)
                 End If
             
 150             If .flags.Montado = 1 Then
-152                 If .Invent.MonturaSlot = Slot Then
+152                 If .Invent.MonturaSlot = slot Then
 154                     Call WriteConsoleMsg(UserIndex, "No podés vender tu montura mientras la estás usando.", e_FontTypeNames.FONTTYPE_TALK)
                         Exit Sub
 
@@ -4434,7 +4435,7 @@ Private Sub HandleUserCommerceOffer(ByVal UserIndex As Integer)
 
                 End If
             
-156             .ComUsu.Objeto = Slot
+156             .ComUsu.Objeto = slot
 158             .ComUsu.cant = amount
             
                 'If the other one had accepted, we turn that back and inform of the new offer (just to be cautious).
@@ -4449,7 +4450,7 @@ Private Sub HandleUserCommerceOffer(ByVal UserIndex As Integer)
 166             ObjAEnviar.amount = amount
 
                 'Si no es oro tmb le agrego el objInex
-168             If Slot <> FLAGORO Then ObjAEnviar.ObjIndex = UserList(UserIndex).Invent.Object(Slot).ObjIndex
+168             If slot <> FLAGORO Then ObjAEnviar.ObjIndex = UserList(UserIndex).Invent.Object(slot).ObjIndex
                 'Llamos a la funcion
 170             Call EnviarObjetoTransaccion(tUser, UserIndex, ObjAEnviar)
 
@@ -8443,10 +8444,10 @@ Private Sub HandleUseKey(ByVal UserIndex As Integer)
 
 100     With UserList(UserIndex)
 
-            Dim Slot As Byte
-102             Slot = Reader.ReadInt8
+            Dim slot As Byte
+102             slot = Reader.ReadInt8
 
-104         Call UsarLlave(UserIndex, Slot)
+104         Call UsarLlave(UserIndex, slot)
                 
         End With
         
@@ -12991,22 +12992,22 @@ Public Sub HandleCheckSlot(ByVal UserIndex As Integer)
 
             'Reads the UserName and Slot Packets
             Dim UserName As String
-            Dim Slot     As Byte
+            Dim slot     As Byte
             Dim tIndex   As Integer
         
 102         UserName = Reader.ReadString8() 'Que UserName?
-104         Slot = Reader.ReadInt8() 'Que Slot?
+104         slot = Reader.ReadInt8() 'Que Slot?
 106         tIndex = NameIndex(UserName)  'Que user index?
 
 108         If Not EsGM(UserIndex) Then Exit Sub
         
-110         Call LogGM(.Name, .Name & " Checkeo el slot " & Slot & " de " & UserName)
+110         Call LogGM(.Name, .Name & " Checkeo el slot " & slot & " de " & UserName)
            
 112         If tIndex > 0 Then
-114             If Slot > 0 And Slot <= UserList(UserIndex).CurrentInventorySlots Then
+114             If slot > 0 And slot <= UserList(UserIndex).CurrentInventorySlots Then
             
-116                 If UserList(tIndex).Invent.Object(Slot).ObjIndex > 0 Then
-118                     Call WriteConsoleMsg(UserIndex, " Objeto " & Slot & ") " & ObjData(UserList(tIndex).Invent.Object(Slot).ObjIndex).Name & " Cantidad:" & UserList(tIndex).Invent.Object(Slot).amount, e_FontTypeNames.FONTTYPE_INFO)
+116                 If UserList(tIndex).Invent.Object(slot).ObjIndex > 0 Then
+118                     Call WriteConsoleMsg(UserIndex, " Objeto " & slot & ") " & ObjData(UserList(tIndex).Invent.Object(slot).ObjIndex).Name & " Cantidad:" & UserList(tIndex).Invent.Object(slot).amount, e_FontTypeNames.FONTTYPE_INFO)
                     Else
 120                     Call WriteConsoleMsg(UserIndex, "No hay Objeto en slot seleccionado", e_FontTypeNames.FONTTYPE_INFO)
 
@@ -17406,80 +17407,128 @@ Public Sub HandleQuestAccept(ByVal UserIndex As Integer)
         Dim NpcIndex  As Integer
         Dim QuestSlot As Byte
         Dim Indice    As Byte
-
+        Dim QuestNpc As Boolean
+        
 100     Indice = Reader.ReadInt8
  
+        QuestNpc = Reader.ReadBool
+        
 102     NpcIndex = UserList(UserIndex).flags.TargetNPC
     
-104     If NpcIndex = 0 Then Exit Sub
-106     If Indice <= 0 Or Indice > UBound(NpcList(NpcIndex).QuestNumber) Then Exit Sub
-    
+104     If NpcIndex = 0 And QuestNpc = 1 Then Exit Sub
+
+        If QuestNpc Then
+106         If Indice <= 0 Or Indice > UBound(NpcList(NpcIndex).QuestNumber) Then Exit Sub
+        Else
+             If Indice <= 0 Then Exit Sub
+        End If
+
+    If QuestNpc Then
         'Esta el personaje en la distancia correcta?
-108     If Distancia(UserList(UserIndex).Pos, NpcList(NpcIndex).Pos) > 5 Then
-110         Call WriteConsoleMsg(UserIndex, "Estas demasiado lejos.", e_FontTypeNames.FONTTYPE_INFO)
-            Exit Sub
-
-        End If
-        
-112     If TieneQuest(UserIndex, NpcList(NpcIndex).QuestNumber(Indice)) Then
-114         Call WriteConsoleMsg(UserIndex, "La quest ya esta en curso.", e_FontTypeNames.FONTTYPE_INFOIAO)
-            Exit Sub
-
-        End If
-        
-        'El personaje completo la quest que requiere?
-116     If QuestList(NpcList(NpcIndex).QuestNumber(Indice)).RequiredQuest > 0 Then
-118         If Not UserDoneQuest(UserIndex, QuestList(NpcList(NpcIndex).QuestNumber(Indice)).RequiredQuest) Then
-120             Call WriteChatOverHead(UserIndex, "Debes completar la quest " & QuestList(QuestList(NpcList(NpcIndex).QuestNumber(Indice)).RequiredQuest).nombre & " para emprender esta misión.", NpcList(NpcIndex).Char.CharIndex, vbYellow)
-                Exit Sub
-
-            End If
-
-        End If
-
-        'El personaje tiene suficiente nivel?
-122     If UserList(UserIndex).Stats.ELV < QuestList(NpcList(NpcIndex).QuestNumber(Indice)).RequiredLevel Then
-124         Call WriteChatOverHead(UserIndex, "Debes ser por lo menos nivel " & QuestList(NpcList(NpcIndex).QuestNumber(Indice)).RequiredLevel & " para emprender esta misión.", NpcList(NpcIndex).Char.CharIndex, vbYellow)
-            Exit Sub
-
-        End If
-        
-        'La quest no es repetible?
-        If QuestList(NpcList(NpcIndex).QuestNumber(Indice)).Repetible = 0 Then
-            'El personaje ya hizo la quest?
-126         If UserDoneQuest(UserIndex, NpcList(NpcIndex).QuestNumber(Indice)) Then
-128             Call WriteChatOverHead(UserIndex, "QUESTNEXT*" & NpcList(NpcIndex).QuestNumber(Indice), NpcList(NpcIndex).Char.CharIndex, vbYellow)
+108         If Distancia(UserList(UserIndex).Pos, NpcList(NpcIndex).Pos) > 5 Then
+110             Call WriteConsoleMsg(UserIndex, "Estas demasiado lejos.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
     
             End If
-        End If
-    
-130     QuestSlot = FreeQuestSlot(UserIndex)
-
-132     If QuestSlot = 0 Then
-134         Call WriteChatOverHead(UserIndex, "Debes completar las misiones en curso para poder aceptar más misiones.", NpcList(NpcIndex).Char.CharIndex, vbYellow)
-            Exit Sub
-
-        End If
-    
-        'Agregamos la quest.
-136     With UserList(UserIndex).QuestStats.Quests(QuestSlot)
-138         .QuestIndex = NpcList(NpcIndex).QuestNumber(Indice)
-        
-140         If QuestList(.QuestIndex).RequiredNPCs Then ReDim .NPCsKilled(1 To QuestList(.QuestIndex).RequiredNPCs)
-142         If QuestList(.QuestIndex).RequiredTargetNPCs Then ReDim .NPCsTarget(1 To QuestList(.QuestIndex).RequiredTargetNPCs)
-            UserList(UserIndex).flags.ModificoQuests = True
             
-144         Call WriteConsoleMsg(UserIndex, "Has aceptado la misión " & Chr(34) & QuestList(.QuestIndex).nombre & Chr(34) & ".", e_FontTypeNames.FONTTYPE_INFOIAO)
+112         If TieneQuest(UserIndex, NpcList(NpcIndex).QuestNumber(Indice)) Then
+114             Call WriteConsoleMsg(UserIndex, "La quest ya esta en curso.", e_FontTypeNames.FONTTYPE_INFOIAO)
+                Exit Sub
+    
+            End If
+            
+            'El personaje completo la quest que requiere?
+116         If QuestList(NpcList(NpcIndex).QuestNumber(Indice)).RequiredQuest > 0 Then
+118             If Not UserDoneQuest(UserIndex, QuestList(NpcList(NpcIndex).QuestNumber(Indice)).RequiredQuest) Then
+120                 Call WriteChatOverHead(UserIndex, "Debes completar la quest " & QuestList(QuestList(NpcList(NpcIndex).QuestNumber(Indice)).RequiredQuest).nombre & " para emprender esta misión.", NpcList(NpcIndex).Char.CharIndex, vbYellow)
+                    Exit Sub
+    
+                End If
+    
+            End If
+    
+            'El personaje tiene suficiente nivel?
+122         If UserList(UserIndex).Stats.ELV < QuestList(NpcList(NpcIndex).QuestNumber(Indice)).RequiredLevel Then
+124             Call WriteChatOverHead(UserIndex, "Debes ser por lo menos nivel " & QuestList(NpcList(NpcIndex).QuestNumber(Indice)).RequiredLevel & " para emprender esta misión.", NpcList(NpcIndex).Char.CharIndex, vbYellow)
+                Exit Sub
+    
+            End If
+            
+            'La quest no es repetible?
+            If QuestList(NpcList(NpcIndex).QuestNumber(Indice)).Repetible = 0 Then
+                'El personaje ya hizo la quest?
+126             If UserDoneQuest(UserIndex, NpcList(NpcIndex).QuestNumber(Indice)) Then
+128                 Call WriteChatOverHead(UserIndex, "QUESTNEXT*" & NpcList(NpcIndex).QuestNumber(Indice), NpcList(NpcIndex).Char.CharIndex, vbYellow)
+                    Exit Sub
+        
+                End If
+            End If
+        
+130         QuestSlot = FreeQuestSlot(UserIndex)
+    
+132         If QuestSlot = 0 Then
+134             Call WriteChatOverHead(UserIndex, "Debes completar las misiones en curso para poder aceptar más misiones.", NpcList(NpcIndex).Char.CharIndex, vbYellow)
+                Exit Sub
+    
+            End If
+        
+            'Agregamos la quest.
+136         With UserList(UserIndex).QuestStats.Quests(QuestSlot)
+                .QuestIndex = UserList(UserIndex).flags.QuestNumber
+            
+140             If QuestList(.QuestIndex).RequiredNPCs Then ReDim .NPCsKilled(1 To QuestList(.QuestIndex).RequiredNPCs)
+142             If QuestList(.QuestIndex).RequiredTargetNPCs Then ReDim .NPCsTarget(1 To QuestList(.QuestIndex).RequiredTargetNPCs)
+                UserList(UserIndex).flags.ModificoQuests = True
+                
+144             Call WriteConsoleMsg(UserIndex, "Has aceptado la misión " & Chr(34) & QuestList(.QuestIndex).nombre & Chr(34) & ".", e_FontTypeNames.FONTTYPE_INFOIAO)
 146
+                If (FinishQuestCheck(UserIndex, .QuestIndex, QuestSlot)) Then
+                    Call WriteUpdateNPCSimbolo(UserIndex, NpcIndex, 3)
+                Else
+                    Call WriteUpdateNPCSimbolo(UserIndex, NpcIndex, 4)
+                End If
+                
+            End With
+        
+        Else
+         If TieneQuest(UserIndex, UserList(UserIndex).flags.QuestNumber) Then
+             Call WriteConsoleMsg(UserIndex, "La quest ya esta en curso.", e_FontTypeNames.FONTTYPE_INFOIAO)
+                Exit Sub
+            End If
+
+            'El personaje tiene suficiente nivel?
+         If UserList(UserIndex).Stats.ELV < QuestList(UserList(UserIndex).flags.QuestNumber).RequiredLevel Then
+                Call WriteConsoleMsg(UserIndex, "Debes ser por lo menos nivel " & QuestList(UserList(UserIndex).flags.QuestNumber).RequiredLevel & " para emprender esta misión.", e_FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
+
+         QuestSlot = FreeQuestSlot(UserIndex)
+
+         If QuestSlot = 0 Then
+                Call WriteConsoleMsg(UserIndex, "Debes completar las misiones en curso para poder aceptar más misiones.", e_FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
+
+            'Agregamos la quest.
+            With UserList(UserIndex).QuestStats.Quests(QuestSlot)
+             .QuestIndex = UserList(UserIndex).flags.QuestNumber
+
+            If QuestList(.QuestIndex).RequiredNPCs Then ReDim .NPCsKilled(1 To QuestList(.QuestIndex).RequiredNPCs)
+            If QuestList(.QuestIndex).RequiredTargetNPCs Then ReDim .NPCsTarget(1 To QuestList(.QuestIndex).RequiredTargetNPCs)
+                UserList(UserIndex).flags.ModificoQuests = True
+
+
+            Call WriteConsoleMsg(UserIndex, "Has aceptado la misión " & Chr(34) & QuestList(.QuestIndex).nombre & Chr(34) & ".", e_FontTypeNames.FONTTYPE_INFOIAO)
+
             If (FinishQuestCheck(UserIndex, .QuestIndex, QuestSlot)) Then
                 Call WriteUpdateNPCSimbolo(UserIndex, NpcIndex, 3)
             Else
                 Call WriteUpdateNPCSimbolo(UserIndex, NpcIndex, 4)
             End If
-            
+            Call QuitarUserInvItem(UserIndex, UserList(UserIndex).flags.QuestItemSlot, 1)
+            Call UpdateUserInv(False, UserIndex, UserList(UserIndex).flags.QuestItemSlot)
         End With
-        
+    End If
         Exit Sub
 
 HandleQuestAccept_Err:
@@ -17520,10 +17569,10 @@ Public Sub HandleQuestAbandon(ByVal UserIndex As Integer)
         
         With UserList(UserIndex)
         
-            Dim Slot As Byte
-            Slot = Reader.ReadInt8
+            Dim slot As Byte
+            slot = Reader.ReadInt8
             
-            With .QuestStats.Quests(Slot)
+            With .QuestStats.Quests(slot)
                 ' Le quitamos los objetos de quest que no puede tirar
                 If QuestList(.QuestIndex).RequiredOBJs Then
                 
@@ -17562,7 +17611,7 @@ Public Sub HandleQuestAbandon(ByVal UserIndex As Integer)
             End With
     
             'Borramos la quest.
-100         Call CleanQuestSlot(UserIndex, Slot)
+100         Call CleanQuestSlot(UserIndex, slot)
         
             'Ordenamos la lista de quests del usuario.
 102         Call ArrangeUserQuests(UserIndex)
@@ -17965,13 +18014,13 @@ Private Sub HandleCuentaExtractItem(ByVal UserIndex As Integer)
 
 100     With UserList(UserIndex)
 
-            Dim Slot        As Byte
+            Dim slot        As Byte
 
             Dim slotdestino As Byte
 
             Dim amount      As Integer
         
-102         Slot = Reader.ReadInt8()
+102         slot = Reader.ReadInt8()
 104         amount = Reader.ReadInt16()
         
 106         slotdestino = Reader.ReadInt8()
@@ -18016,13 +18065,13 @@ Private Sub HandleCuentaDeposit(ByVal UserIndex As Integer)
     
 100     With UserList(UserIndex)
 
-            Dim Slot        As Byte
+            Dim slot        As Byte
 
             Dim slotdestino As Byte
 
             Dim amount      As Integer
         
-102         Slot = Reader.ReadInt8()
+102         slot = Reader.ReadInt8()
 104         amount = Reader.ReadInt16()
 106         slotdestino = Reader.ReadInt8()
         
@@ -18335,24 +18384,24 @@ Private Sub HandleAddCatalyst(ByVal UserIndex As Integer)
     
 100     With UserList(UserIndex)
     
-            Dim Slot As Byte
-102         Slot = Reader.ReadInt8
+            Dim slot As Byte
+102         slot = Reader.ReadInt8
         
 104         If .flags.Crafteando = 0 Then Exit Sub
         
-106         If Slot < 1 Or Slot > .CurrentInventorySlots Then Exit Sub
+106         If slot < 1 Or slot > .CurrentInventorySlots Then Exit Sub
 
-108         If .Invent.Object(Slot).ObjIndex = 0 Then Exit Sub
+108         If .Invent.Object(slot).ObjIndex = 0 Then Exit Sub
         
-110         If ObjData(.Invent.Object(Slot).ObjIndex).CatalizadorTipo = 0 Then Exit Sub
+110         If ObjData(.Invent.Object(slot).ObjIndex).CatalizadorTipo = 0 Then Exit Sub
 
 112         If .CraftCatalyst.ObjIndex <> 0 Then Exit Sub
 
-114         .CraftCatalyst.ObjIndex = .Invent.Object(Slot).ObjIndex
-116         .CraftCatalyst.amount = .Invent.Object(Slot).amount
+114         .CraftCatalyst.ObjIndex = .Invent.Object(slot).ObjIndex
+116         .CraftCatalyst.amount = .Invent.Object(slot).amount
 
-118         Call QuitarUserInvItem(UserIndex, Slot, MAX_INVENTORY_OBJS)
-120         Call UpdateUserInv(False, UserIndex, Slot)
+118         Call QuitarUserInvItem(UserIndex, slot, MAX_INVENTORY_OBJS)
+120         Call UpdateUserInv(False, UserIndex, slot)
 
 122         If .CraftResult Is Nothing Then
 124             Call WriteCraftingCatalyst(UserIndex, .CraftCatalyst.ObjIndex, .CraftCatalyst.amount, 0)
@@ -18375,26 +18424,26 @@ Private Sub HandleRemoveCatalyst(ByVal UserIndex As Integer)
     
 100     With UserList(UserIndex)
     
-            Dim Slot As Byte
-102         Slot = Reader.ReadInt8
+            Dim slot As Byte
+102         slot = Reader.ReadInt8
         
 104         If .flags.Crafteando = 0 Then Exit Sub
 
 106         If .CraftCatalyst.ObjIndex = 0 Then Exit Sub
 
-108         If Slot < 1 Then
+108         If slot < 1 Then
 110             If Not MeterItemEnInventario(UserIndex, .CraftCatalyst) Then Exit Sub
 
-112         ElseIf Slot <= .CurrentInventorySlots Then
-114             If .Invent.Object(Slot).ObjIndex = 0 Then
-116                 .Invent.Object(Slot).ObjIndex = .CraftCatalyst.ObjIndex
+112         ElseIf slot <= .CurrentInventorySlots Then
+114             If .Invent.Object(slot).ObjIndex = 0 Then
+116                 .Invent.Object(slot).ObjIndex = .CraftCatalyst.ObjIndex
 
-118             ElseIf .Invent.Object(Slot).ObjIndex <> .CraftCatalyst.ObjIndex Then
+118             ElseIf .Invent.Object(slot).ObjIndex <> .CraftCatalyst.ObjIndex Then
                     Exit Sub
                 End If
 
-120             .Invent.Object(Slot).amount = .Invent.Object(Slot).amount + .CraftCatalyst.amount
-122             Call UpdateUserInv(False, UserIndex, Slot)
+120             .Invent.Object(slot).amount = .Invent.Object(slot).amount + .CraftCatalyst.amount
+122             Call UpdateUserInv(False, UserIndex, slot)
             End If
 
 124         .CraftCatalyst.ObjIndex = 0
@@ -18621,19 +18670,19 @@ End Sub
 Private Sub HandleDeleteItem(ByVal UserIndex As Integer)
     On Error GoTo HandleDeleteItem_Err:
 
-    Dim Slot As Byte
+    Dim slot As Byte
 
-    Slot = Reader.ReadInt8()
+    slot = Reader.ReadInt8()
 
     With UserList(UserIndex)
-        If .Invent.Object(Slot).Equipped = 0 Then
-            UserList(UserIndex).Invent.Object(Slot).amount = 0
-            UserList(UserIndex).Invent.Object(Slot).Equipped = 0
-            UserList(UserIndex).Invent.Object(Slot).ObjIndex = 0
-            Call UpdateUserInv(False, UserIndex, Slot)
-            Call WriteConsoleMsg(UserIndex, "Objeto eliminado correctamente.", e_FontTypeNames.fonttype_info)
+        If .Invent.Object(slot).Equipped = 0 Then
+            UserList(UserIndex).Invent.Object(slot).amount = 0
+            UserList(UserIndex).Invent.Object(slot).Equipped = 0
+            UserList(UserIndex).Invent.Object(slot).ObjIndex = 0
+            Call UpdateUserInv(False, UserIndex, slot)
+            Call WriteConsoleMsg(UserIndex, "Objeto eliminado correctamente.", e_FontTypeNames.FONTTYPE_INFO)
         Else
-            Call WriteConsoleMsg(UserIndex, "No puedes eliminar un objeto estando equipado.", e_FontTypeNames.fonttype_info)
+            Call WriteConsoleMsg(UserIndex, "No puedes eliminar un objeto estando equipado.", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
     End With
