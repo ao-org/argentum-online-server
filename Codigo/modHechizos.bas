@@ -1966,13 +1966,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef B As Boolean)
 640             If UserList(tU).flags.SeguroResu Then
 642                 Call WriteConsoleMsg(UserIndex, "El usuario tiene el seguro de resurrección activado.", e_FontTypeNames.FONTTYPE_INFO)
 644                 Call WriteConsoleMsg(tU, UserList(UserIndex).Name & " está intentando revivirte. Desactiva el seguro de resurrección para permitirle hacerlo.", e_FontTypeNames.FONTTYPE_INFO)
-646                 B = False
-                    Exit Sub
-                End If
-        
-648             If UserList(tU).Accion.TipoAccion = e_AccionBarra.Resucitar Then
-650                 Call WriteConsoleMsg(UserIndex, "El usuario ya esta siendo resucitado.", e_FontTypeNames.FONTTYPE_INFO)
-652                 B = False
+646                 b = False
                     Exit Sub
                 End If
         
@@ -2000,12 +1994,11 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef B As Boolean)
                     End If
 
                 End If
-672             UserList(tU).Counters.TimerBarra = 5
-674             Call SendData(SendTarget.ToPCArea, tU, PrepareMessageParticleFX(UserList(tU).Char.CharIndex, e_ParticulasIndex.Resucitar, UserList(tU).Counters.TimerBarra, False))
-676             Call SendData(SendTarget.ToPCArea, tU, PrepareMessageBarFx(UserList(tU).Char.CharIndex, UserList(tU).Counters.TimerBarra, e_AccionBarra.Resucitar))
-678             UserList(tU).Accion.AccionPendiente = True
-680             UserList(tU).Accion.Particula = e_ParticulasIndex.Resucitar
-682             UserList(tU).Accion.TipoAccion = e_AccionBarra.Resucitar
+                
+                Call WriteConsoleMsg(tU, "¡Has sido resucitado!", e_FontTypeNames.FONTTYPE_INFO)
+                Call SendData(SendTarget.ToPCArea, tU, PrepareMessageParticleFX(UserList(tU).Char.CharIndex, e_ParticulasIndex.Resucitar, 250, True))
+                Call SendData(SendTarget.ToPCArea, tU, PrepareMessagePlayWave("117", UserList(tU).Pos.X, UserList(tU).Pos.Y))
+                Call RevivirUsuario(tU, True)
                 
 684             Call WriteUpdateHungerAndThirst(tU)
 686             Call InfoHechizo(UserIndex)

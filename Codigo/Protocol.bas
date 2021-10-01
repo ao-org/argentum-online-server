@@ -16708,26 +16708,7 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
                 
                         End If
                 
-236                 Case 5
-238                     Log = "Repuesta Afirmativa 5"
-                
-240                     If MapInfo(.Pos.Map).Newbie Then
-242                         Call WarpToLegalPos(UserIndex, 140, 53, 58)
-244                         .Counters.TimerBarra = 5
-246                         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, e_ParticulasIndex.Resucitar, .Counters.TimerBarra, False))
-248                         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageBarFx(.Char.CharIndex, .Counters.TimerBarra, e_AccionBarra.Resucitar))
-250                         UserList(UserIndex).Accion.AccionPendiente = True
-252                         UserList(UserIndex).Accion.Particula = e_ParticulasIndex.Resucitar
-254                         UserList(UserIndex).Accion.TipoAccion = e_AccionBarra.Resucitar
-    
-256                         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("104", .Pos.X, .Pos.Y))
-                            'Call WriteConsoleMsg(UserIndex, "El Cura lanza unas palabras al aire. Comienzas a sentir como tu cuerpo se vuelve a formar...", e_FontTypeNames.FONTTYPE_INFO)
-258                         Call WriteLocaleMsg(UserIndex, "82", e_FontTypeNames.FONTTYPE_INFOIAO)
-                        Else
-260                         Call WriteConsoleMsg(UserIndex, "Ya no te encuentras en un mapa newbie.", e_FontTypeNames.FONTTYPE_INFOIAO)
-
-                        End If
-                
+236
 262                 Case Else
 264                     Call WriteConsoleMsg(UserIndex, "No tienes preguntas pendientes.", e_FontTypeNames.FONTTYPE_INFOIAO)
                     
