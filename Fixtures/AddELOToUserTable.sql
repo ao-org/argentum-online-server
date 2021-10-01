@@ -1,2 +1,0 @@
-ALTER TABLE `user`
-	ADD COLUMN `elo` INT NOT NULL DEFAULT 1000 AFTER `warnings`;

@@ -959,6 +959,11 @@ Public Sub HerreroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As I
         
 100     If Not IntervaloPermiteTrabajarConstruir(UserIndex) Then Exit Sub
         
+        If Not HayLugarEnInventario(UserIndex) Then
+            Call WriteConsoleMsg(UserIndex, "No tienes suficiente espacio en el inventario", e_FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+        End If
+        
 102     If UserList(UserIndex).flags.Privilegios And (e_PlayerType.Consejero) Then
             Exit Sub
         End If
@@ -989,15 +994,7 @@ Public Sub HerreroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As I
 128         MiObj.amount = 1
 130         MiObj.ObjIndex = ItemIndex
 
-132         If Not MeterItemEnInventario(UserIndex, MiObj) Then
-134             Call TirarItemAlPiso(UserList(UserIndex).Pos, MiObj)
-
-            End If
-    
-            'Log de construcción de Items. Pablo (ToxicWaste) 10/09/07
-            ' If ObjData(MiObj.ObjIndex).Log = 1 Then
-            '    Call LogDesarrollo(UserList(UserIndex).name & " ha construído " & MiObj.Amount & " " & ObjData(MiObj.ObjIndex).name)
-            'End If
+132         Call MeterItemEnInventario(UserIndex, MiObj)
     
 136         Call SubirSkill(UserIndex, e_Skill.Herreria)
 138         Call UpdateUserInv(True, UserIndex, 0)
@@ -2053,18 +2050,18 @@ Private Sub RobarObjeto(ByVal LadronIndex As Integer, ByVal VictimaIndex As Inte
 130         If flag Then
 
                 Dim MiObj     As t_Obj
-                Dim num       As Integer
+                Dim Num       As Integer
                 Dim ObjAmount As Integer
 
 132             ObjAmount = .Invent.Object(i).amount
 
                 'Cantidad al azar entre el 3 y el 6% del total, con minimo 1.
-134             num = MaximoInt(1, RandomNumber(ObjAmount * 0.03, ObjAmount * 0.06))
+134             Num = MaximoInt(1, RandomNumber(ObjAmount * 0.03, ObjAmount * 0.06))
 
-136             MiObj.amount = num
+136             MiObj.amount = Num
 138             MiObj.ObjIndex = .Invent.Object(i).ObjIndex
         
-140             .Invent.Object(i).amount = ObjAmount - num
+140             .Invent.Object(i).amount = ObjAmount - Num
                     
 142             If .Invent.Object(i).amount <= 0 Then
 144                 Call QuitarUserInvItem(VictimaIndex, CByte(i), 1)
