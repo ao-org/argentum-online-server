@@ -2284,11 +2284,6 @@ Sub PasarSegundo()
 168                         Select Case .Accion.TipoAccion
                                 Case e_AccionBarra.Hogar
 170                                 Call HomeArrival(i)
-172                             Case e_AccionBarra.Resucitar
-174                                 Call WriteConsoleMsg(i, "¡Has sido resucitado!", e_FontTypeNames.FONTTYPE_INFO)
-176                                 Call SendData(SendTarget.ToPCArea, i, PrepareMessageParticleFX(.Char.CharIndex, e_ParticulasIndex.Resucitar, 250, True))
-178                                 Call SendData(SendTarget.ToPCArea, i, PrepareMessagePlayWave("117", .Pos.X, .Pos.Y))
-180                                 Call RevivirUsuario(i, True)
                             End Select
                             
 182                         .Accion.Particula = 0
