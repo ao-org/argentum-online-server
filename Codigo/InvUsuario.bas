@@ -1646,9 +1646,8 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
                     End If
 
 526                 .Invent.Object(Slot).Equipped = 1
-528                 .Invent.DañoMagicoEqpObjIndex = .Invent.Object(Slot).ObjIndex
-530                 .Invent.DañoMagicoEqpSlot = Slot
-
+528                 .Invent.DañoMagicoEqpObjIndex = .Invent.Object(slot).ObjIndex
+530                 .Invent.DañoMagicoEqpSlot = slot
 532                 If Len(obj.CreaGRH) <> 0 Then
 534                     .Char.DM_Aura = obj.CreaGRH
 536                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, .Char.DM_Aura, False, 6))
