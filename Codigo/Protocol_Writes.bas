@@ -5222,4 +5222,102 @@ writeAnswerReset_Err:
         Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.writeAnswerReset", Erl)
         '</EhFooter>
 End Sub
+Public Sub WriteObjQuestSend(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, ByVal slot As Byte)
+        '<EhHeader>
+        On Error GoTo WriteNpcQuestListSend_Err
+        '</EhHeader>
+        Dim i As Integer
 
+100     Call Writer.WriteInt(ServerPacketID.ObjQuestListSend)
+102     Call Writer.WriteInt16(QuestIndex) 'Escribimos primero cuantas quest tiene el NPC
+
+110     Call Writer.WriteInt8(QuestList(QuestIndex).RequiredLevel)
+112     Call Writer.WriteInt16(QuestList(QuestIndex).RequiredQuest)
+            'Enviamos la cantidad de npcs requeridos
+114         Call Writer.WriteInt8(QuestList(QuestIndex).RequiredNPCs)
+
+116     If QuestList(QuestIndex).RequiredNPCs Then
+                'Si hay npcs entonces enviamos la lista
+118         For i = 1 To QuestList(QuestIndex).RequiredNPCs
+120             Call Writer.WriteInt16(QuestList(QuestIndex).RequiredNPC(i).amount)
+122             Call Writer.WriteInt16(QuestList(QuestIndex).RequiredNPC(i).NpcIndex)
+124         Next i
+        End If
+
+            'Enviamos la cantidad de objs requeridos
+126     Call Writer.WriteInt8(QuestList(QuestIndex).RequiredOBJs)
+
+128     If QuestList(QuestIndex).RequiredOBJs Then
+
+                'Si hay objs entonces enviamos la lista
+130     For i = 1 To QuestList(QuestIndex).RequiredOBJs
+132         Call Writer.WriteInt16(QuestList(QuestIndex).RequiredOBJ(i).amount)
+134         Call Writer.WriteInt16(QuestList(QuestIndex).RequiredOBJ(i).ObjIndex)
+136     Next i
+
+        End If
+
+            'Enviamos la recompensa de oro y experiencia.
+138     Call Writer.WriteInt32(QuestList(QuestIndex).RewardGLD * OroMult)
+140     Call Writer.WriteInt32(QuestList(QuestIndex).RewardEXP * ExpMult)
+            'Enviamos la cantidad de objs de recompensa
+142     Call Writer.WriteInt8(QuestList(QuestIndex).RewardOBJs)
+
+144     If QuestList(QuestIndex).RewardOBJs Then
+
+                'si hay objs entonces enviamos la lista
+146         For i = 1 To QuestList(QuestIndex).RewardOBJs
+148             Call Writer.WriteInt16(QuestList(QuestIndex).RewardOBJ(i).amount)
+150             Call Writer.WriteInt16(QuestList(QuestIndex).RewardOBJ(i).ObjIndex)
+152         Next i
+
+        End If
+
+            'Enviamos el estado de la QUEST
+            '0 Disponible
+            '1 EN CURSO
+            '2 REALIZADA
+            '3 no puede hacerla
+            Dim PuedeHacerla As Boolean
+
+            'La tiene aceptada el usuario?
+154         If TieneQuest(UserIndex, QuestIndex) Then
+156             Call Writer.WriteInt8(1)
+            Else
+
+158             If UserDoneQuest(UserIndex, QuestIndex) Then
+160                 Call Writer.WriteInt8(2)
+                Else
+162                 PuedeHacerla = True
+
+164                 If QuestList(QuestIndex).RequiredQuest > 0 Then
+166                     If Not UserDoneQuest(UserIndex, QuestList( _
+                                QuestIndex).RequiredQuest) Then
+168                         PuedeHacerla = False
+                        End If
+                    End If
+
+170                 If UserList(UserIndex).Stats.ELV < QuestList(QuestIndex).RequiredLevel _
+                            Then
+172                     PuedeHacerla = False
+                    End If
+
+174                 If PuedeHacerla Then
+176                     Call Writer.WriteInt8(0)
+                    Else
+178                     Call Writer.WriteInt8(3)
+                    End If
+                End If
+            End If
+        UserList(UserIndex).flags.QuestNumber = QuestIndex
+        UserList(UserIndex).flags.QuestItemSlot = slot
+
+182     Call modSendData.SendData(ToIndex, UserIndex)
+        '<EhFooter>
+        Exit Sub
+
+WriteNpcQuestListSend_Err:
+        Call Writer.Clear
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteNpcQuestListSend", Erl)
+        '</EhFooter>
+End Sub

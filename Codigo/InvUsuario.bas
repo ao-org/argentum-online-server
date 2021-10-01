@@ -3120,7 +3120,9 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
             
 1346             Case e_OBJType.otmapa
 1348                 Call WriteShowFrmMapa(UserIndex)
-            
+                 Case e_OBJType.OtQuest
+1349                 Call WriteObjQuestSend(UserIndex, obj.QuestId, slot)
+
                   End Select
              
              End With

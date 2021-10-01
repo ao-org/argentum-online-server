@@ -767,6 +767,7 @@ Public Enum e_OBJType
     OtCorreo = 47
     OtCofre = 48
     OtDonador = 50
+    OtQuest = 51
     otCualquiera = 1000
 
 End Enum
@@ -1329,7 +1330,7 @@ Public Type t_ObjData
 
     Log As Byte 'es un objeto que queremos loguear? Pablo (ToxicWaste) 07/09/07
     NoLog As Byte 'es un objeto que esta prohibido loguear?
-    
+    QuestId As Integer
 End Type
 
 '[Pablo ToxicWaste]
@@ -1631,7 +1632,8 @@ Public Type t_UserFlags
     ModificoMascotas As Boolean
     ModificoQuests As Boolean
     ModificoQuestsHechas As Boolean
-
+    QuestNumber As Integer
+    QuestItemSlot As Integer
 End Type
 
 Public Enum e_EstadoMimetismo
