@@ -2247,6 +2247,16 @@ Sub PasarSegundo()
         
                     End If
                     
+                     If .Counters.TimerCentinela >= 0 Then
+                        .Counters.TimerCentinela = .Counters.TimerCentinela - 1
+
+                        If .Counters.TimerCentinela = 0 Then
+                            .flags.CentinelaOK = True
+                            .Counters.TimerCentinela = -1
+                        End If
+                    End If
+
+                    
 136                 If .flags.Muerto = 0 Then
 138                     Call DuracionPociones(i)
 140                     Call EfectoOxigeno(i)
