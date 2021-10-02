@@ -17455,7 +17455,9 @@ Public Sub HandleQuestAccept(ByVal UserIndex As Integer)
         
             'Agregamos la quest.
 136         With UserList(UserIndex).QuestStats.Quests(QuestSlot)
-                .QuestIndex = UserList(UserIndex).flags.QuestNumber
+                
+                .QuestIndex = NpcList(NpcIndex).QuestNumber(Indice)
+                '.QuestIndex = UserList(UserIndex).flags.QuestNumber
             
 140             If QuestList(.QuestIndex).RequiredNPCs Then ReDim .NPCsKilled(1 To QuestList(.QuestIndex).RequiredNPCs)
 142             If QuestList(.QuestIndex).RequiredTargetNPCs Then ReDim .NPCsTarget(1 To QuestList(.QuestIndex).RequiredTargetNPCs)
