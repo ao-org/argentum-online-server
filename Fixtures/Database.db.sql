@@ -208,7 +208,7 @@ CREATE TABLE IF NOT EXISTS "user" (
 	"return_x"	integer NOT NULL DEFAULT '0',
 	"return_y"	integer NOT NULL DEFAULT '0',
 	"last_logout"	integer NOT NULL DEFAULT 0,
-	"is_locked_in_mao"	boolean,
+	"is_locked_in_mao"	boolean NOT NULL DEFAULT TRUE,
 	"eth_wallet_id"	TEXT,
 	UNIQUE("id","account_id","deleted"),
 	PRIMARY KEY("id" AUTOINCREMENT),
@@ -316,7 +316,7 @@ CREATE TABLE IF NOT EXISTS "user_deleted" (
 	"return_x"	integer NOT NULL DEFAULT '0',
 	"return_y"	integer NOT NULL DEFAULT '0'
 );
-CREATE TABLE IF NOT EXISTS "mao_item_on_sale" (
+CREATE TABLE IF NOT EXISTS "`_item_on_sale" (
 	"id"	INTEGER NOT NULL,
 	"created_at"	timestamp NOT NULL,
 	"updated_at"	timestamp NOT NULL,
@@ -327,8 +327,9 @@ CREATE TABLE IF NOT EXISTS "mao_item_on_sale" (
 	PRIMARY KEY("id" AUTOINCREMENT)
 );
 CREATE TABLE IF NOT EXISTS "mao_item_transaction_status" (
+	"user_id" INTEGER NOT NULL,
 	"eth_transaction_id"	TEXT,
-	"status"	TEXT NOT NULL,
+	"status"	TEXT NOT NULL DEFAULT "PENDING",
 	"created_at"	datetime,
 	"updated_at"	datetime,
 	"deleted_at"	datetime,
