@@ -370,4 +370,8 @@ CREATE INDEX IF NOT EXISTS "idx_delete_account" ON "account" (
 	"deleted"
 );
 CREATE VIEW `ranking_users` AS select `u`.`id` AS `id`,`u`.`name` AS `character_name`,`u`.`class_id` AS `class_id`,`u`.`race_id` AS `race_id`,`u`.`genre_id` AS `genre_id`,`u`.`head_id` AS `head_id`,`u`.`level` AS `level`,`u`.`exp` AS `exp`,`u`.`gold` + `u`.`bank_gold` AS `total_gold`,`u`.`criminales_matados` + `u`.`ciudadanos_matados` AS `total_kills` from `user` `u` where `u`.`deleted` <> true;
+
+INSERT INTO "main"."statistics" ("name", "value") VALUES ('online', '1');
+INSERT INTO "main"."statistics" ("name", "value") VALUES ('record', '1');
+
 COMMIT;
