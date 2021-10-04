@@ -213,7 +213,7 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
         Exit Sub
 
 ErrHandler:
-226     Call TraceError(Err.Number, Err.Description, "NPCs.MuereNpc", Erl())
+226     Call TraceError(Err.Number, Err.Description & "->" & Erl(), "NPCs.MuereNpc", Erl())
 
 End Sub
 

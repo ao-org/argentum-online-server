@@ -1362,7 +1362,7 @@ Public Sub SetUsersLoggedDatabase(ByVal NumUsers As Long)
         
         On Error GoTo SetUsersLoggedDatabase_Err
         
-        Call Execute("UPDATE statistics SET value = ? WHERE name = 'online';", NumUsers)
+        Call Query("UPDATE statistics SET value = ? WHERE name = 'online';", NumUsers)
         
         Exit Sub
 
