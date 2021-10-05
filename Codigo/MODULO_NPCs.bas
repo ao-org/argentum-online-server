@@ -95,9 +95,11 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
             
                 ' Me fijo si alguna de sus mascotas le estaba pegando al NPC
                 For i = 1 To UBound(UserList(UserIndex).MascotasIndex)
-                
-135                 If NpcList(UserList(UserIndex).MascotasIndex(i)).TargetNPC = NpcIndex Then
-136                     Call AllFollowAmo(UserIndex)
+                    
+                    If UserList(UserIndex).MascotasIndex(i) > 0 Then
+135                     If NpcList(UserList(UserIndex).MascotasIndex(i)).TargetNPC = NpcIndex Then
+136                         Call AllFollowAmo(UserIndex)
+                        End If
                     End If
                     
                 Next
