@@ -2543,6 +2543,7 @@ Sub LoadConfiguraciones()
 108     DropMult = val(Leer.GetValue("DROPEO", "DropMult"))
 110     DropActive = val(Leer.GetValue("DROPEO", "DropActive"))
 112     RecoleccionMult = val(Leer.GetValue("CONFIGURACIONES", "RecoleccionMult"))
+113     OroPorNivelBilletera = val(Leer.GetValue("CONFIGURACIONES", "OroPorNivelBilletera"))
 
 114     TimerLimpiarObjetos = val(Leer.GetValue("CONFIGURACIONES", "TimerLimpiarObjetos"))
 116     OroPorNivel = val(Leer.GetValue("CONFIGURACIONES", "OroPorNivel"))

@@ -306,16 +306,14 @@ Sub TirarOro(ByVal Cantidad As Long, ByVal UserIndex As Integer)
                 Dim MiObj As t_Obj
 
                 'info debug
-                Dim loops As Integer
-                Dim Extra    As Long
-                Dim TeniaOro As Long
-
-108             TeniaOro = .Stats.GLD
-
-110             If Cantidad > 100000 Then 'Para evitar explotar demasiado
-112                 Extra = Cantidad - 100000
-114                 Cantidad = 100000
-
+                Dim loops As Long
+             
+                Dim OroWallet As Long
+                
+                OroWallet = (.Stats.ELV * OroPorNivelBilletera) '3000
+                
+110             If Cantidad > OroWallet Then  'Para evitar explotar demasiado
+                    Cantidad = Cantidad - OroWallet
                 End If
         
 116             Do While (Cantidad > 0)
@@ -347,8 +345,8 @@ Sub TirarOro(ByVal Cantidad As Long, ByVal UserIndex As Integer)
                     'info debug
 140                 loops = loops + 1
 
-142                 If loops > 100 Then
-144                     Call LogError("Se ha superado el limite de iteraciones(100) permitido en el Sub TirarOro()")
+142                 If loops > 100000 Then 'si entra aca y se cuelga mal el server revisen al tipo porque tiene much oro (NachoP) seguramente es dupero
+144                     Call LogError("Se ha superado el limite de iteraciones(100000) permitido en el Sub TirarOro() - posible Nacho P")
                         Exit Sub
 
                     End If
@@ -367,14 +365,9 @@ Sub TirarOro(ByVal Cantidad As Long, ByVal UserIndex As Integer)
                     End If
 
                 End If
-        
-154             If TeniaOro = .Stats.GLD Then Extra = 0
-
-156             If Extra > 0 Then
-158                 .Stats.GLD = .Stats.GLD - Extra
-                End If
     
 160             Call WriteUpdateGold(UserIndex)
+
             End If
         
         End With
@@ -1646,8 +1639,8 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
                     End If
 
 526                 .Invent.Object(Slot).Equipped = 1
-528                 .Invent.DañoMagicoEqpObjIndex = .Invent.Object(slot).ObjIndex
-530                 .Invent.DañoMagicoEqpSlot = slot
+528                 .Invent.DañoMagicoEqpObjIndex = .Invent.Object(Slot).ObjIndex
+530                 .Invent.DañoMagicoEqpSlot = Slot
 532                 If Len(obj.CreaGRH) <> 0 Then
 534                     .Char.DM_Aura = obj.CreaGRH
 536                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, .Char.DM_Aura, False, 6))
@@ -3275,7 +3268,7 @@ Sub TirarTodosLosItems(ByVal UserIndex As Integer)
        
 100     With UserList(UserIndex)
             ' Tambien se cae el oro de la billetera
-102         If (.Stats.GLD < 100000) Then
+102         If .Stats.GLD > (.Stats.ELV * OroPorNivelBilletera) Then
 104             Call TirarOro(.Stats.GLD, UserIndex)
             End If
             
