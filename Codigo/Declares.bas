@@ -80,6 +80,8 @@ Public DropMult             As Integer
 
 Public RecoleccionMult      As Integer
 
+Public OroPorNivelBilletera As Long
+
 Public DiceMinimum          As Integer
 
 Public DiceMaximum          As Integer
