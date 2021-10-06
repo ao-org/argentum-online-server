@@ -3352,6 +3352,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef B As Boolean)
 248         enviarInfoHechizo = True
 
 250         UserList(tempChr).Stats.MinHp = UserList(tempChr).Stats.MinHp + Daño
+            WriteUpdateUserStats tempChr
 
 252         If UserList(tempChr).Stats.MinHp > UserList(tempChr).Stats.MaxHp Then UserList(tempChr).Stats.MinHp = UserList(tempChr).Stats.MaxHp
     
