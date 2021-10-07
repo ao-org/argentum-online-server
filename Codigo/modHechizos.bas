@@ -1709,8 +1709,12 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef B As Boolean)
                 Exit Sub
             End If
             
-428         If UserList(tU).flags.Paralizado = 1 Then
-430             Call WriteConsoleMsg(UserIndex, UserList(tU).Name & " ya está paralizado.", e_FontTypeNames.FONTTYPE_FIGHT)
+
+            If UserList(tU).flags.Paralizado = 1 Then
+                Call WriteConsoleMsg(UserIndex, UserList(tU).Name & " ya está paralizado.", e_FontTypeNames.FONTTYPE_FIGHT)
+                Exit Sub
+            ElseIf UserList(tU).flags.Inmovilizado = 1 Then
+                Call WriteConsoleMsg(UserIndex, UserList(tU).Name & " ya está inmovilizado.", e_FontTypeNames.FONTTYPE_FIGHT)
                 Exit Sub
             End If
     
@@ -1865,8 +1869,8 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef B As Boolean)
 556             Call WriteConsoleMsg(UserIndex, "El objetivo no esta paralizado.", e_FontTypeNames.FONTTYPE_INFO)
 558             B = False
                 Exit Sub
-
             End If
+            
         
 560         If UserList(tU).flags.Inmovilizado = 1 Then
 562             UserList(tU).Counters.Inmovilizado = 0
@@ -1875,6 +1879,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef B As Boolean)
 568             Call WritePosUpdate(tU)
             End If
     
+            
 570         If UserList(tU).flags.Paralizado = 1 Then
 572             UserList(tU).flags.Paralizado = 0
 574             UserList(tU).Counters.Paralisis = 0
@@ -3352,6 +3357,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef B As Boolean)
 248         enviarInfoHechizo = True
 
 250         UserList(tempChr).Stats.MinHp = UserList(tempChr).Stats.MinHp + Daño
+            WriteUpdateUserStats tempChr
 
 252         If UserList(tempChr).Stats.MinHp > UserList(tempChr).Stats.MaxHp Then UserList(tempChr).Stats.MinHp = UserList(tempChr).Stats.MaxHp
     

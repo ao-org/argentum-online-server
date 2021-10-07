@@ -1782,26 +1782,24 @@ Sub SubirSkill(ByVal UserIndex As Integer, ByVal Skill As Integer)
             Dim Aumenta As Integer
             Dim Prob    As Integer
             Dim Menor   As Byte
+            
 114         Menor = 10
-             
-116         If Lvl <= 3 Then
-118             Prob = 25
-120         ElseIf Lvl > 3 And Lvl < 6 Then
-122             Prob = 27
-124         ElseIf Lvl >= 6 And Lvl < 10 Then
-126             Prob = 30
-128         ElseIf Lvl >= 10 And Lvl < 20 Then
-130             Prob = 33
-            Else
-132             Prob = 38
-            End If
+            
+            Select Case Lvl
+                Case Is <= 12
+                    Prob = 15
+                Case Is <= 24
+                    Prob = 30
+                Case Else
+                    Prob = 50
+            End Select
              
 134         Aumenta = RandomNumber(1, Prob * DificultadSubirSkill)
              
 136         If UserList(UserIndex).flags.PendienteDelExperto = 1 Then
 138             Menor = 15
             End If
-        
+            
 140         If Aumenta < Menor Then
 142             UserList(UserIndex).Stats.UserSkills(Skill) = UserList(UserIndex).Stats.UserSkills(Skill) + 1
     

@@ -7,7 +7,7 @@ CuentasPath=..\re20-server\cuentas\
 DeleteCuentasPath=..\re20-server\DeleteCuentas\
 
 [CHECKSUM]
-Cliente=7575d025e3aeee17dfb672b4fa9f0ba5
+Cliente=cf56ada83808dd45cbb22b925990954b
 
 [INIT]
 NumCuentas=1
@@ -30,7 +30,7 @@ MaxUsers=1000
 
 Admines=4
 Dioses=1
-SemiDioses=6
+SemiDioses=5
 Consejeros=1
 
 [Admines]
@@ -48,7 +48,6 @@ SemiDios2=Sir Hongo|nicocapelli85@hotmail.com
 SemiDios3=Morgolock|gulfas@gmail.com
 SemiDios4=Jopi|jopiodz00@gmail.com
 SemiDios5=Baliam|loganfenix2000@yahoo.com.mx
-SemiDios6=Vox|ricardo_r_jc@hotmail.com
 
 [Consejeros]
 Consejero1=Terrel|loganfenix2000@yahoo.com.mx
