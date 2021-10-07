@@ -166,22 +166,8 @@ Private Sub CentinelaFinalCheck()
         Dim numPenas As Integer
     
 100     If Not UserList(Centinela.RevisandoUserIndex).flags.CentinelaOK Then
-            'Logueamos el evento
-            'Call LogCentinela("Centinela baneo a " & UserList(Centinela.RevisandoUserIndex).name & " por uso de macro inasistido")
-        
-            'Ponemos el ban
-            'UserList(Centinela.RevisandoUserIndex).flags.Ban = 1
         
 102         Name = UserList(Centinela.RevisandoUserIndex).Name
-        
-            'Avisamos a los admins
-            ' Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » El centinela ha baneado a " & name, e_FontTypeNames.FONTTYPE_SERVER))
-        
-            'ponemos el flag de ban a 1
-            ' Call WriteVar(CharPath & name & ".chr", "BAN", "BANEADO", "1")
-        
-            'Call WriteVar(CharPath & name & ".chr", "BAN", "BANNEDBY", "Centinela")
-            ' Call WriteVar(CharPath & name & ".chr", "BAN", "BANMOTIVO", "utilizar macro inasistido")
 
 106         Call SavePenaDatabase(Name, "CENTINELA : Encarcelado por no responder. " & Date & " " & Time)
         
@@ -340,7 +326,7 @@ Public Sub PasarMinutoCentinela()
         
 108         If Centinela.TiempoRestante = 0 Then
 110             Call CentinelaFinalCheck
-112             Call GoToNextWorkingChar
+112             'Call GoToNextWorkingChar
             Else
 
                 'Recordamos al user que debe escribir
