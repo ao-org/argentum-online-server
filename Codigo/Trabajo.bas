@@ -1659,7 +1659,7 @@ Public Sub DoPescar(ByVal UserIndex As Integer, Optional ByVal RedDePesca As Boo
     
 118         res = RandomNumber(1, Suerte)
             'HarThaoS: Movimiento de caña, lo saco. Se hace exponencial la cantidad de paquetes dependiendo la cantida de usuarios
-'120         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageArmaMov(.Char.CharIndex))
+120         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageArmaMov(.Char.CharIndex))
 
 122         If res < 6 Then
 
@@ -1678,11 +1678,12 @@ Public Sub DoPescar(ByVal UserIndex As Integer, Optional ByVal RedDePesca As Boo
 
 134             Call WriteTextCharDrop(UserIndex, "+" & MiObj.amount, .Char.CharIndex, vbWhite)
                  
-                 If MapInfo(.Pos.Map).Seguro = 1 Then
-302                 Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessagePlayWave(SND_PESCAR, .Pos.X, .Pos.Y))
-                Else
+               '  If MapInfo(.Pos.Map).Seguro = 1 Then
+302            '     Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessagePlayWave(SND_PESCAR, .Pos.X, .Pos.Y))
+               ' Else
 301                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_PESCAR, .Pos.X, .Pos.Y))
-                End If
+               ' End If
+               
                 ' Al pescar también podés sacar cosas raras (se setean desde RecursosEspeciales.dat)
                 Dim i As Integer
 
@@ -2685,7 +2686,8 @@ Function FreeMascotaIndex(ByVal UserIndex As Integer) As Integer
             End If
 
 106     Next j
-
+        
+        FreeMascotaIndex = -1
         
         Exit Function
 
@@ -2693,6 +2695,10 @@ FreeMascotaIndex_Err:
 108     Call TraceError(Err.Number, Err.Description, "Trabajo.FreeMascotaIndex", Erl)
 
         
+End Function
+
+Private Function HayEspacioMascotas(ByVal UserIndex As Integer) As Boolean
+            HayEspacioMascotas = (FreeMascotaIndex(UserIndex) > 0)
 End Function
 
 Sub DoDomar(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
@@ -2724,7 +2730,7 @@ Sub DoDomar(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
 
 106         If .flags.Privilegios And e_PlayerType.Consejero Then Exit Sub
             
-108         If .NroMascotas < MAXMASCOTAS Then
+108         If .NroMascotas < MAXMASCOTAS And HayEspacioMascotas(UserIndex) Then
 
 110             If NpcList(NpcIndex).MaestroNPC > 0 Or NpcList(NpcIndex).MaestroUser > 0 Then
 112                 Call WriteConsoleMsg(UserIndex, "La criatura ya tiene amo.", e_FontTypeNames.FONTTYPE_INFO)
@@ -2749,8 +2755,9 @@ Sub DoDomar(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
                     Dim Index As Integer
 
 124                 .NroMascotas = .NroMascotas + 1
-
+                    
 126                 Index = FreeMascotaIndex(UserIndex)
+                    
 128                 .MascotasIndex(Index) = NpcIndex
 130                 .MascotasType(Index) = NpcList(NpcIndex).Numero
 
