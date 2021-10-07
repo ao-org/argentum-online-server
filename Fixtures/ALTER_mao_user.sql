@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS "mao_user_new" (
 	PRIMARY KEY("id" AUTOINCREMENT)
 );
 
-INSERT INTO mao_item_user_new (user_id, eth_transaction_id, created_at, updated_at, deleted_at, status) 
+INSERT INTO mao_user_new (user_id, eth_transaction_id, created_at, updated_at, deleted_at, status) 
 SELECT user_id, eth_transaction_id, created_at, updated_at, deleted_at, status FROM mao_user;
 
 DROP TABLE mao_user;
