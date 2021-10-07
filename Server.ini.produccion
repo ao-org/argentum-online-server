@@ -31,7 +31,7 @@ MaxUsers=1000
 Admines=4
 Dioses=1
 SemiDioses=5
-Consejeros=1
+Consejeros=3
 
 [Admines]
 Admin1=Haracin|hgarofalo79@gmail.com
@@ -51,3 +51,5 @@ SemiDios5=Baliam|loganfenix2000@yahoo.com.mx
 
 [Consejeros]
 Consejero1=Terrel|loganfenix2000@yahoo.com.mx
+Consejero2=ok|Sforzini.jonatan@gmail.com
+Consejero3=Nakrull|Ytocarp@gmail.com
