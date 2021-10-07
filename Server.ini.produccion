@@ -29,8 +29,8 @@ MaxDados=18
 MaxUsers=1000
 
 Admines=4
-Dioses=1
-SemiDioses=5
+Dioses=2
+SemiDioses=8
 Consejeros=3
 
 [Admines]
@@ -41,6 +41,7 @@ Admin4=Recox|lucas.recoaro@gmail.com
 
 [Dioses]
 Dios1=Error 404|martintrionfetti@gmail.com
+Dios2=Maraxus|reyarb@fibertel.com.ar
 
 [SemiDioses]
 SemiDios1=Vox|ricardo_r_jc@hotmail.com
@@ -48,8 +49,12 @@ SemiDios2=Sir Hongo|nicocapelli85@hotmail.com
 SemiDios3=Morgolock|gulfas@gmail.com
 SemiDios4=Jopi|jopiodz00@gmail.com
 SemiDios5=Baliam|loganfenix2000@yahoo.com.mx
+SemiDios6=Ronin|erikeleusippi@gmail.
+SemiDios7=chicken|raamaorc@gmail.com
+SemiDios8=ZeuS|reyarb@fibertel.com.ar
 
 [Consejeros]
 Consejero1=Terrel|loganfenix2000@yahoo.com.mx
 Consejero2=ok|Sforzini.jonatan@gmail.com
 Consejero3=Nakrull|Ytocarp@gmail.com
+
