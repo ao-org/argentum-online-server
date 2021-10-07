@@ -19,7 +19,7 @@ IdleLimit=0
 Version=2.0.4
 IniciarDesdeBackUp=0
 PuedeCrearPersonajes=1
-ServerSoloGMs=1
+ServerSoloGMs=0
 Testing=0
 CentinelaActivado=1
 
