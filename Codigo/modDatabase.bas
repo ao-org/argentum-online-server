@@ -53,7 +53,7 @@ Public Sub Database_Connect_Async()
         Exit Sub
     
 Database_Connect_AsyncErr:
-116     Call LogDatabaseError("Database Error: " & Err.Number & " - " & Err.Description)
+116     Call LogDatabaseError("Database Error: " & Err.Number & " - " & Err.Description & " - Database_Connect_Async")
 End Sub
 Public Sub Database_Connect()
         On Error GoTo Database_Connect_Err
@@ -79,7 +79,7 @@ Public Sub Database_Connect()
         Exit Sub
     
 Database_Connect_Err:
-116     Call LogDatabaseError("Database Error: " & Err.Number & " - " & Err.Description)
+116     Call LogDatabaseError("Database Error: " & Err.Number & " - " & Err.Description & " - Database_Connect")
 End Sub
 
 Public Sub Database_Close()
@@ -139,7 +139,7 @@ Public Function Query(ByVal Text As String, ParamArray Arguments() As Variant) A
     Exit Function
     
 Query_Err:
-    Call LogDatabaseError("Database Error: " & Err.Number & " - " & Err.Description)
+    Call LogDatabaseError("Database Error: " & Err.Number & " - " & Err.Description & " - " & vbCrLf & Text)
 End Function
 
 Public Function Execute(ByVal Text As String, ParamArray Arguments() As Variant) As Boolean
@@ -186,7 +186,7 @@ On Error GoTo Execute_Err
 Execute_Err:
     
     If (Err.Number <> 0) Then
-        Call LogDatabaseError("Database Error: " & Err.Number & " - " & Err.Description)
+        Call LogDatabaseError("Database Error: " & Err.Number & " - " & Err.Description & " - " & vbCrLf & Text)
     End If
     
     Execute = (Err.Number = 0)
@@ -362,7 +362,7 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
 214             Params(PostInc(ParamC)) = .Stats.UserAtributos(LoopC)
 222         Next LoopC
         
-            Call Execute(QUERY_INSERT_ATTRIBUTES, .ID, Params)
+            Call Query(QUERY_INSERT_ATTRIBUTES, .ID, Params)
         
             ' ******************* SPELLS **********************
 226         ReDim Params(MAXUSERHECHIZOS * 3 - 1)
@@ -376,7 +376,7 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
 238             ParamC = ParamC + 3
 240         Next LoopC
 
-            Call Execute(QUERY_SAVE_SPELLS, Params)
+            Call Query(QUERY_SAVE_SPELLS, Params)
         
             ' ******************* INVENTORY *******************
 244         ReDim Params(MAX_INVENTORY_SLOTS * 5 - 1)
@@ -392,7 +392,7 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
 260             ParamC = ParamC + 5
 262         Next LoopC
         
-            Call Execute(QUERY_SAVE_INVENTORY, Params)
+            Call Query(QUERY_SAVE_INVENTORY, Params)
         
             ' ******************* SKILLS *******************
 266         ReDim Params(NUMSKILLS * 3 - 1)
@@ -406,7 +406,7 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
 278             ParamC = ParamC + 3
 280         Next LoopC
         
-            Call Execute(QUERY_SAVE_SKILLS, Params)
+            Call Query(QUERY_SAVE_SKILLS, Params)
         
             ' ******************* QUESTS *******************
 284         ReDim Params(MAXUSERQUESTS * 2 - 1)
@@ -419,7 +419,7 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
 294             ParamC = ParamC + 2
 296         Next LoopC
         
-            Call Execute(QUERY_SAVE_QUESTS, Params)
+            Call Query(QUERY_SAVE_QUESTS, Params)
         
             ' ******************* PETS ********************
 300         ReDim Params(MAXMASCOTAS * 3 - 1)
@@ -433,7 +433,7 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
 312             ParamC = ParamC + 3
 314         Next LoopC
     
-            Call Execute(QUERY_SAVE_PETS, Params)
+            Call Query(QUERY_SAVE_PETS, Params)
     
         End With
 
