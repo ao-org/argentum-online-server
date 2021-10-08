@@ -362,7 +362,7 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
 214             Params(PostInc(ParamC)) = .Stats.UserAtributos(LoopC)
 222         Next LoopC
         
-            Call Execute(QUERY_INSERT_ATTRIBUTES, .ID, Params)
+            Call Query(QUERY_INSERT_ATTRIBUTES, .ID, Params)
         
             ' ******************* SPELLS **********************
 226         ReDim Params(MAXUSERHECHIZOS * 3 - 1)
@@ -376,7 +376,7 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
 238             ParamC = ParamC + 3
 240         Next LoopC
 
-            Call Execute(QUERY_SAVE_SPELLS, Params)
+            Call Query(QUERY_SAVE_SPELLS, Params)
         
             ' ******************* INVENTORY *******************
 244         ReDim Params(MAX_INVENTORY_SLOTS * 5 - 1)
@@ -392,7 +392,7 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
 260             ParamC = ParamC + 5
 262         Next LoopC
         
-            Call Execute(QUERY_SAVE_INVENTORY, Params)
+            Call Query(QUERY_SAVE_INVENTORY, Params)
         
             ' ******************* SKILLS *******************
 266         ReDim Params(NUMSKILLS * 3 - 1)
@@ -406,7 +406,7 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
 278             ParamC = ParamC + 3
 280         Next LoopC
         
-            Call Execute(QUERY_SAVE_SKILLS, Params)
+            Call Query(QUERY_SAVE_SKILLS, Params)
         
             ' ******************* QUESTS *******************
 284         ReDim Params(MAXUSERQUESTS * 2 - 1)
@@ -419,7 +419,7 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
 294             ParamC = ParamC + 2
 296         Next LoopC
         
-            Call Execute(QUERY_SAVE_QUESTS, Params)
+            Call Query(QUERY_SAVE_QUESTS, Params)
         
             ' ******************* PETS ********************
 300         ReDim Params(MAXMASCOTAS * 3 - 1)
@@ -433,7 +433,7 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
 312             ParamC = ParamC + 3
 314         Next LoopC
     
-            Call Execute(QUERY_SAVE_PETS, Params)
+            Call Query(QUERY_SAVE_PETS, Params)
     
         End With
 
@@ -558,7 +558,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
             ' WHERE block
 288         Params(PostInc(i)) = .ID
             
-            Call Execute(QUERY_UPDATE_MAINPJ, Params)
+            Call Query(QUERY_UPDATE_MAINPJ, Params)
 
             ' ************************** User spells *********************************
 332         If .flags.ModificoHechizos Then
@@ -573,7 +573,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
 346                 ParamC = ParamC + 3
 348             Next LoopC
                 
-                Call Execute(QUERY_UPSERT_SPELLS, Params)
+                Call Query(QUERY_UPSERT_SPELLS, Params)
 
                 ' Reseteamos el flag para no volver a guardar.
                 Debug.Print "Se modificaron los hechizos. Guardando..."
@@ -595,7 +595,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
 382                 ParamC = ParamC + 5
 384             Next LoopC
 
-                Call Execute(QUERY_UPSERT_INVENTORY, Params)
+                Call Query(QUERY_UPSERT_INVENTORY, Params)
 
                 ' Reseteamos el flag para no volver a guardar.
                 Debug.Print "Se modifico el inventario. Guardando..."
@@ -616,7 +616,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
 416                 ParamC = ParamC + 4
 418             Next LoopC
     
-                Call Execute(QUERY_SAVE_BANCOINV, Params)
+                Call Query(QUERY_SAVE_BANCOINV, Params)
 
                 ' Reseteamos el flag para no volver a guardar.
                 Debug.Print "Se modifico el inventario del banco. Guardando..."
@@ -636,7 +636,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
 448                 ParamC = ParamC + 3
 450             Next LoopC
         
-                Call Execute(QUERY_UPSERT_SKILLS, Params)
+                Call Query(QUERY_UPSERT_SKILLS, Params)
 
                 ' Reseteamos el flag para no volver a guardar.
                 Debug.Print "Se modifico las habilidades. Guardando..."
@@ -672,7 +672,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
 490                 ParamC = ParamC + 3
 492             Next LoopC
                 
-                Call Execute(QUERY_UPSERT_PETS, Params)
+                Call Query(QUERY_UPSERT_PETS, Params)
 
                 ' Reseteamos el flag para no volver a guardar.
                 Debug.Print "Se modifico las mascotas. Guardando..."
@@ -736,7 +736,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
     
 576             Next LoopC
 
-                Call Execute(Builder.ToString())
+                Call Query(Builder.ToString())
 
 584             Call Builder.Clear
                 
@@ -773,7 +773,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
 614                     ParamC = ParamC + 2
 616                 Next LoopC
         
-                    Call Execute(Builder.ToString(), Params)
+                    Call Query(Builder.ToString(), Params)
 
 626                 Call Builder.Clear
                     
@@ -1202,7 +1202,7 @@ End Function
 Public Sub SetDBValue(Tabla As String, ColumnaSet As String, ByVal ValueSet As Variant, ColumnaTest As String, ByVal ValueTest As Variant)
         On Error GoTo ErrorHandler
 
-        Call Execute("UPDATE " & Tabla & " SET " & ColumnaSet & " = ? WHERE " & ColumnaTest & " = ?;", ValueSet, ValueTest)
+        Call Query("UPDATE " & Tabla & " SET " & ColumnaSet & " = ? WHERE " & ColumnaTest & " = ?;", ValueSet, ValueTest)
 
         Exit Sub
     
@@ -1395,7 +1395,7 @@ Public Sub SetRecordUsersDatabase(ByVal Record As Long)
         
         On Error GoTo SetRecordUsersDatabase_Err
         
-        Call Execute("UPDATE statistics SET value = ? WHERE name = 'record';", CStr(Record))
+        Call Query("UPDATE statistics SET value = ? WHERE name = 'record';", CStr(Record))
         
         Exit Sub
 
@@ -1454,7 +1454,7 @@ Public Sub SaveUserSkillDatabase(UserName As String, ByVal Skill As Integer, ByV
         
         On Error GoTo SaveUserSkillDatabase_Err
         
-        Call Execute("UPDATE skillpoints SET value = ? WHERE number = ? AND user_id = (SELECT id FROM user WHERE UPPER(name) = ?)", Value, Skill, UCase$(UserName))
+        Call Query("UPDATE skillpoints SET value = ? WHERE number = ? AND user_id = (SELECT id FROM user WHERE UPPER(name) = ?)", Value, Skill, UCase$(UserName))
         
         Exit Sub
 
@@ -1482,9 +1482,9 @@ Public Sub BorrarUsuarioDatabase(Name As String)
 
         On Error GoTo ErrorHandler
 
-        Call Execute("insert into user_deleted select * from user where name = ?;", Name)
-        Call Execute("delete from user where name = ?;", Name)
-        Call Execute("UPDATE user_deleted set deleted = CURRENT_TIMESTAMP where name = ?;", Name)
+        Call Query("insert into user_deleted select * from user where name = ?;", Name)
+        Call Query("delete from user where name = ?;", Name)
+        Call Query("UPDATE user_deleted set deleted = CURRENT_TIMESTAMP where name = ?;", Name)
 
         Exit Sub
     
@@ -1501,7 +1501,7 @@ Public Sub SaveBanDatabase(UserName As String, Reason As String, BannedBy As Str
         '***************************************************
         On Error GoTo ErrorHandler
         
-        Call Execute("UPDATE user SET is_banned = TRUE, banned_by = ?, ban_reason = ? WHERE UPPER(name) = ?;", BannedBy, Reason, UCase$(UserName))
+        Call Query("UPDATE user SET is_banned = TRUE, banned_by = ?, ban_reason = ? WHERE UPPER(name) = ?;", BannedBy, Reason, UCase$(UserName))
         
 102     Call SavePenaDatabase(UserName, "Baneado por: " & BannedBy & " debido a " & Reason)
 
@@ -1520,7 +1520,7 @@ Public Sub SaveWarnDatabase(UserName As String, Reason As String, WarnedBy As St
         '***************************************************
         On Error GoTo ErrorHandler
         
-        Call Execute("UPDATE user SET warnings = warnings + 1 WHERE UPPER(name) = ?;", UCase$(UserName))
+        Call Query("UPDATE user SET warnings = warnings + 1 WHERE UPPER(name) = ?;", UCase$(UserName))
         
 102     Call SavePenaDatabase(UserName, "Advertencia de: " & WarnedBy & " debido a " & Reason)
     
@@ -1535,11 +1535,11 @@ Public Sub SavePenaDatabase(UserName As String, Reason As String)
 
         On Error GoTo ErrorHandler
 
-        Dim Query As String
-100     Query = "INSERT INTO punishment(user_id, NUMBER, reason)"
-102     Query = Query & " SELECT u.id, COUNT(p.number) + 1, ? FROM user u LEFT JOIN punishment p ON p.user_id = u.id WHERE UPPER(u.name) = ?;"
+        Dim Quer As String
+100     Quer = "INSERT INTO punishment(user_id, NUMBER, reason)"
+102     Quer = Quer & " SELECT u.id, COUNT(p.number) + 1, ? FROM user u LEFT JOIN punishment p ON p.user_id = u.id WHERE UPPER(u.name) = ?;"
         
-        Call Execute(Query, Reason, UCase$(UserName))
+        Call Query(Quer, Reason, UCase$(UserName))
 
         Exit Sub
 
@@ -1552,7 +1552,7 @@ Public Sub SilenciarUserDatabase(UserName As String, ByVal Tiempo As Integer)
     
         On Error GoTo ErrorHandler
         
-        Call Execute("UPDATE user SET is_silenced = 1, silence_minutes_left = ?, silence_elapsed_seconds = 0 WHERE UPPER(name) = ?;", Tiempo, UCase$(UserName))
+        Call Query("UPDATE user SET is_silenced = 1, silence_minutes_left = ?, silence_elapsed_seconds = 0 WHERE UPPER(name) = ?;", Tiempo, UCase$(UserName))
         
         Exit Sub
 
@@ -1578,7 +1578,7 @@ Public Sub UnBanDatabase(UserName As String)
 
         On Error GoTo ErrorHandler
         
-        Call Execute("UPDATE user SET is_banned = FALSE, banned_by = '', ban_reason = '' WHERE UPPER(name) = ?;", UCase$(UserName))
+        Call Query("UPDATE user SET is_banned = FALSE, banned_by = '', ban_reason = '' WHERE UPPER(name) = ?;", UCase$(UserName))
         
         Exit Sub
 
@@ -1591,7 +1591,7 @@ Public Sub SaveBanCuentaDatabase(ByVal AccountID As Long, Reason As String, Bann
 
         On Error GoTo ErrorHandler
         
-        Call Execute("UPDATE account SET is_banned = TRUE, banned_by = ?, ban_reason = ? WHERE id = ?;", BannedBy, Reason, AccountID)
+        Call Query("UPDATE account SET is_banned = TRUE, banned_by = ?, ban_reason = ? WHERE id = ?;", BannedBy, Reason, AccountID)
 
         Exit Sub
 
@@ -1604,7 +1604,7 @@ Public Sub EcharConsejoDatabase(UserName As String)
         
         On Error GoTo EcharConsejoDatabase_Err
         
-        Call Execute("UPDATE user SET pertenece_consejo_real = FALSE, pertenece_consejo_caos = FALSE WHERE UPPER(name) = ?;", UCase$(UserName))
+        Call Query("UPDATE user SET pertenece_consejo_real = FALSE, pertenece_consejo_caos = FALSE WHERE UPPER(name) = ?;", UCase$(UserName))
         
         Exit Sub
 
@@ -1618,7 +1618,7 @@ Public Sub EcharLegionDatabase(UserName As String)
         
         On Error GoTo EcharLegionDatabase_Err
         
-        Call Execute("UPDATE user SET pertenece_caos = FALSE, reenlistadas = 200 WHERE UPPER(name) = ?;", UCase$(UserName))
+        Call Query("UPDATE user SET pertenece_caos = FALSE, reenlistadas = 200 WHERE UPPER(name) = ?;", UCase$(UserName))
         
         Exit Sub
 
@@ -1632,7 +1632,7 @@ Public Sub EcharArmadaDatabase(UserName As String)
         
         On Error GoTo EcharArmadaDatabase_Err
         
-        Call Execute("UPDATE user SET pertenece_real = FALSE, reenlistadas = 200 WHERE UPPER(name) = ?;", UCase$(UserName))
+        Call Query("UPDATE user SET pertenece_real = FALSE, reenlistadas = 200 WHERE UPPER(name) = ?;", UCase$(UserName))
 
         Exit Sub
 
@@ -1646,7 +1646,7 @@ Public Sub CambiarPenaDatabase(UserName As String, ByVal Numero As Integer, Pena
         
         On Error GoTo CambiarPenaDatabase_Err
         
-        Call Execute("UPDATE punishment SET reason = ? WHERE number = ? AND user_id = (SELECT id from user WHERE UPPER(name) = ?);", Pena, Numero, UCase$(UserName))
+        Call Query("UPDATE punishment SET reason = ? WHERE number = ? AND user_id = (SELECT id from user WHERE UPPER(name) = ?);", Pena, Numero, UCase$(UserName))
         
         Exit Sub
 
@@ -2000,7 +2000,7 @@ Public Sub ChangePasswordDatabase(ByVal UserIndex As Integer, OldPassword As Str
     
 120     Set oSHA256 = Nothing
         
-        Call Execute("UPDATE account SET password = ?, salt = ? WHERE id = ?;", PasswordHash, Salt, UserList(UserIndex).AccountID)
+        Call Query("UPDATE account SET password = ?, salt = ? WHERE id = ?;", PasswordHash, Salt, UserList(UserIndex).AccountID)
 
 124     Call WriteConsoleMsg(UserIndex, "La contraseña de su cuenta fue cambiada con éxito.", e_FontTypeNames.FONTTYPE_INFO)
     
@@ -2014,7 +2014,7 @@ End Sub
 Public Function SetPositionDatabase(UserName As String, ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer) As Boolean
         On Error GoTo ErrorHandler
 
-102     SetPositionDatabase = Execute("UPDATE user SET pos_map = ?, pos_x = ?, pos_y = ? WHERE UPPER(name) = ?;", Map, X, Y, UCase$(UserName))
+102     SetPositionDatabase = Query("UPDATE user SET pos_map = ?, pos_x = ?, pos_y = ? WHERE UPPER(name) = ?;", Map, X, Y, UCase$(UserName))
 
         Exit Function
 
@@ -2038,7 +2038,7 @@ End Function
 Public Function AddOroBancoDatabase(UserName As String, ByVal OroGanado As Long) As Boolean
         On Error GoTo ErrorHandler
 
-102     AddOroBancoDatabase = Execute("UPDATE user SET bank_gold = bank_gold + ? WHERE UPPER(name) = ?;", OroGanado, UCase$(UserName))
+102     AddOroBancoDatabase = Query("UPDATE user SET bank_gold = bank_gold + ? WHERE UPPER(name) = ?;", OroGanado, UCase$(UserName))
 
         Exit Function
 
@@ -2050,7 +2050,7 @@ End Function
 Public Function DarLlaveAUsuarioDatabase(UserName As String, ByVal LlaveObj As Integer) As Boolean
         On Error GoTo ErrorHandler
 
-102     DarLlaveAUsuarioDatabase = Execute("INSERT INTO house_key (key_obj, account_id) values (?, (SELECT account_id FROM user WHERE UPPER(name) = ?))", LlaveObj, UCase$(UserName))
+102     DarLlaveAUsuarioDatabase = Query("INSERT INTO house_key (key_obj, account_id) values (?, (SELECT account_id FROM user WHERE UPPER(name) = ?))", LlaveObj, UCase$(UserName))
 
         Exit Function
 
@@ -2064,7 +2064,7 @@ Public Function DarLlaveACuentaDatabase(Email As String, ByVal LlaveObj As Integ
         'Hacer verificacion de que si alguien tiene esta llave, si alguien la tiene hay que prevenir la creacion.
 ' 101     LlaveYaOtorgadaAJugador = Execute("SELECT * FROM house_key WHERE key_obj = ?;", LlaveObj, UCase$(Email))
         
-102     DarLlaveACuentaDatabase = Execute("INSERT INTO house_key SET key_obj = ?, account_id = (SELECT id FROM account WHERE email = ?);", LlaveObj, UCase$(Email))
+102     DarLlaveACuentaDatabase = Query("INSERT INTO house_key SET key_obj = ?, account_id = (SELECT id FROM account WHERE email = ?);", LlaveObj, UCase$(Email))
         Exit Function
 
 ErrorHandler:
@@ -2101,7 +2101,7 @@ Public Function SacarLlaveDatabase(ByVal LlaveObj As Integer) As Boolean
         Wend
     
         ' Intento borrar la llave de la db
-120     SacarLlaveDatabase = Execute("DELETE FROM house_key WHERE key_obj = ?;", LlaveObj)
+120     SacarLlaveDatabase = Query("DELETE FROM house_key WHERE key_obj = ?;", LlaveObj)
     
         ' Si pudimos borrar, actualizamos los usuarios logueados
         If (SacarLlaveDatabase) Then
@@ -2174,7 +2174,7 @@ SanitizeNullValue_Err:
 End Function
 
 Public Sub SetMessageInfoDatabase(ByVal Name As String, ByVal Message As String)
-    Call Execute("update user set message_info = concat(message_info, ?) where upper(name) = ?;", Message, UCase$(Name))
+    Call Query("update user set message_info = concat(message_info, ?) where upper(name) = ?;", Message, UCase$(Name))
 End Sub
 
 Public Sub ChangeNameDatabase(ByVal CurName As String, ByVal NewName As String)
@@ -2188,5 +2188,5 @@ Private Function PostInc(Value As Integer) As Integer
 End Function
 
 Public Sub ResetLastLogout()
-    Call Execute("Update user set last_logout = 0")
+    Call Query("Update user set last_logout = 0")
 End Sub
