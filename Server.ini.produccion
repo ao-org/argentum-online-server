@@ -7,7 +7,7 @@ CuentasPath=..\re20-server\cuentas\
 DeleteCuentasPath=..\re20-server\DeleteCuentas\
 
 [CHECKSUM]
-Cliente=cf56ada83808dd45cbb22b925990954b
+Cliente=32605eef88b3ce647df49c177e5da770
 
 [INIT]
 NumCuentas=1
@@ -40,7 +40,7 @@ Admin3=Animal|anormal@gmail.com
 Admin4=Recox|lucas.recoaro@gmail.com
 
 [Dioses]
-Dios1=Error 404|martintrionfetti@gmail.com
+Dios1=Harthaos|martintrionfetti@gmail.com
 Dios2=Maraxus|reyarb@fibertel.com.ar
 
 [SemiDioses]
