@@ -30,7 +30,7 @@ MaxUsers=1000
 
 Admines=4
 Dioses=2
-SemiDioses=8
+SemiDioses=9
 Consejeros=3
 
 [Admines]
@@ -52,6 +52,7 @@ SemiDios5=Baliam|loganfenix2000@yahoo.com.mx
 SemiDios6=Ronin|erikeleusippi@gmail.
 SemiDios7=chicken|raamaorc@gmail.com
 SemiDios8=ZeuS|reyarb@fibertel.com.ar
+SemiDios9=Lord Fers|lordfers@gmail.com
 
 [Consejeros]
 Consejero1=Terrel|loganfenix2000@yahoo.com.mx
