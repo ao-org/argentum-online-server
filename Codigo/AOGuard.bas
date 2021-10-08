@@ -132,7 +132,7 @@ Public Sub HandleNoticeResponse(ByVal UserIndex As Integer, ByVal Codigo As Stri
 112             Debug.Print "El codigo expiro. Se generara uno nuevo!"
             
                 ' Invalidamos el codigo
-114             Call Query("DELETE FROM account_guard WHERE account_id = ?;", UserList(UserIndex).AccountID)
+114             Call Execute("DELETE FROM account_guard WHERE account_id = ?;", UserList(UserIndex).AccountID)
             
                 ' Lo kickeamos.
 116             Call CloseSocket(UserIndex)
@@ -146,7 +146,7 @@ Public Sub HandleNoticeResponse(ByVal UserIndex As Integer, ByVal Codigo As Stri
 122                 Call WriteMostrarCuenta(UserIndex)
                 
                     ' Invalidamos el codigo
-124                 Call Query("DELETE FROM account_guard WHERE account_id = ?;", UserList(UserIndex).AccountID)
+124                 Call Execute("DELETE FROM account_guard WHERE account_id = ?;", UserList(UserIndex).AccountID)
                 
                 Else
             
@@ -194,7 +194,7 @@ Public Sub EnviarCodigo(ByVal UserIndex As Integer)
                     
 114                 EnviarCode = True
                     
-116                 Call Query("UPDATE account_guard SET code_last_sent = CURRENT_TIMESTAMP, code_resend_attempts = 0 WHERE account_id = ?;", .AccountID)
+116                 Call Execute("UPDATE account_guard SET code_last_sent = CURRENT_TIMESTAMP, code_resend_attempts = 0 WHERE account_id = ?;", .AccountID)
                         
 118                 Call WriteShowMessageBox(UserIndex, "Te hemos enviado un correo con el código de verificacion a tu correo. " & _
                                                         "Si no lo encuentras, revisa la carpeta de SPAM. " & _
@@ -204,7 +204,7 @@ Public Sub EnviarCodigo(ByVal UserIndex As Integer)
                 
 120                 EnviarCode = False
                 
-122                 Call Query("UPDATE account_guard SET code_resend_attempts = code_resend_attempts + 1 WHERE account_id = ?;", .AccountID)
+122                 Call Execute("UPDATE account_guard SET code_resend_attempts = code_resend_attempts + 1 WHERE account_id = ?;", .AccountID)
                     
 124                 Call WriteShowMessageBox(UserIndex, "Ya te hemos enviado un correo con el código de verificacion. " & _
                                                         "Si no te ha llegado, intenta nuevamente en " & val(RS!delta_time) & " segundos")
@@ -310,7 +310,7 @@ Private Sub GenerarCodigo(ByVal UserIndex As Integer)
 116             Codigo = RandomString(5)
                   
                 ' Lo guardamos en la BD
-118             Call Query("REPLACE INTO account_guard (account_id, code) VALUES (?, ?);", .AccountID, Codigo)
+118             Call Execute("REPLACE INTO account_guard (account_id, code) VALUES (?, ?);", .AccountID, Codigo)
         
             Else
             

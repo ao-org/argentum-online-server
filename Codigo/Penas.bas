@@ -172,9 +172,9 @@ Public Function DesbanearCuenta(ByVal BannerIndex As Integer, ByVal UserNameOEma
         
         ' Seteamos is_banned = 0 en la DB
         If InStr(1, UserNameOEmail, "@") Then
-            DesbanearCuenta = Query("UPDATE account SET is_banned = false WHERE email = ?", UserNameOEmail)
+            DesbanearCuenta = Execute("UPDATE account SET is_banned = false WHERE email = ?", UserNameOEmail)
         Else
-            DesbanearCuenta = Query("UPDATE `account` INNER JOIN `user` ON user.account_id=account.id SET account.is_banned=FALSE WHERE user.name = ?", UserNameOEmail)
+            DesbanearCuenta = Execute("UPDATE `account` INNER JOIN `user` ON user.account_id=account.id SET account.is_banned=FALSE WHERE user.name = ?", UserNameOEmail)
         End If
 
         Exit Function
