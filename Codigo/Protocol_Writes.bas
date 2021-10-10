@@ -716,6 +716,7 @@ Public Sub WriteUpdateGold(ByVal UserIndex As Integer)
         '</EhHeader>
 100     Call Writer.WriteInt(ServerPacketID.UpdateGold)
 102     Call Writer.WriteInt32(UserList(UserIndex).Stats.GLD)
+103     Call Writer.WriteInt32(OroPorNivelBilletera)
 104     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub
@@ -1646,6 +1647,7 @@ Public Sub WriteUpdateUserStats(ByVal UserIndex As Integer)
 114     Call Writer.WriteInt16(UserList(UserIndex).Stats.MaxSta)
 116     Call Writer.WriteInt16(UserList(UserIndex).Stats.MinSta)
 118     Call Writer.WriteInt32(UserList(UserIndex).Stats.GLD)
+119     Call Writer.WriteInt32(OroPorNivelBilletera)
 120     Call Writer.WriteInt8(UserList(UserIndex).Stats.ELV)
 122     Call Writer.WriteInt32(ExpLevelUp(UserList(UserIndex).Stats.ELV))
 124     Call Writer.WriteInt32(UserList(UserIndex).Stats.Exp)
