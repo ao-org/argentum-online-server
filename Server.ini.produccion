@@ -10,7 +10,7 @@ DeleteCuentasPath=..\re20-server\DeleteCuentas\
 Cliente=32605eef88b3ce647df49c177e5da770
 
 [INIT]
-NumCuentas=1
+NumCuentas=5
 StartPort=7667
 Hide=0
 MaxConexionesIP=5
