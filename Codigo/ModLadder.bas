@@ -56,7 +56,7 @@ Function GetTimeFormated() As String
         
         On Error GoTo GetTimeFormated_Err
         
-        Dim Elapsed As Single
+        Dim Elapsed As Long
 100     Elapsed = (GetTickCount() - HoraMundo) / DuracionDia
         
         Dim Mins As Long
@@ -75,7 +75,7 @@ Function GetTimeFormated() As String
         Exit Function
 
 GetTimeFormated_Err:
-110     Call TraceError(Err.Number, Err.Description, "ModLadder.GetTimeFormated", Erl)
+110     Call TraceError(Err.Number, Err.Description, "ModLadder.GetTimeFormated - " + Erl, Erl)
 
         
 End Function
