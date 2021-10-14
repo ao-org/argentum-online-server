@@ -770,7 +770,7 @@ Public Enum e_OBJType
     OtCofre = 48
     OtDonador = 50
     OtQuest = 51
-    otCualquiera = 1000
+    otCualquiera = 100
 
 End Enum
 
