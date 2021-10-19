@@ -2013,6 +2013,11 @@ Public Sub CargarMapaFormatoCSM(ByVal Map As Long, ByVal MAPFl As String)
 218                     MapData(Map, X, Y).Blocked = MapData(Map, X, Y).Blocked Or FLAG_AGUA
                     End If
                     
+217                 If Triggers(i).trigger = e_Trigger.VALIDONADO Then
+                        ' Vuelvo a poner flag agua
+219                     MapData(Map, X, Y).Blocked = MapData(Map, X, Y).Blocked Or FLAG_AGUA
+                    End If
+                    
 220             Next i
 
             End If

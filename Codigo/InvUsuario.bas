@@ -2924,7 +2924,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
 1164             Case e_OBJType.otBarcos
                 
                         ' Piratas y trabajadores navegan al nivel 23
-                     If .Invent.Object(Slot).ObjIndex <> 199 And .Invent.Object(Slot).ObjIndex <> 200 Then
+                     If .Invent.Object(Slot).ObjIndex <> 199 And .Invent.Object(Slot).ObjIndex <> 200 And .Invent.Object(Slot).ObjIndex <> 197 Then
 1166                     If .clase = e_Class.Trabajador Or .clase = e_Class.Pirat Then
 1168                         If .Stats.ELV < 23 Then
 1170                             Call WriteConsoleMsg(UserIndex, "Para recorrer los mares debes ser nivel 23 o superior.", e_FontTypeNames.FONTTYPE_INFO)
@@ -2935,12 +2935,18 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
 1174                        Call WriteConsoleMsg(UserIndex, "Para recorrer los mares debes ser nivel 25 o superior.", e_FontTypeNames.FONTTYPE_INFO)
                             Exit Sub
                         End If
-                    Else
-                        If MapData(.Pos.Map, .Pos.X + 1, .Pos.Y).trigger <> 8 And MapData(.Pos.Map, .Pos.X - 1, .Pos.Y).trigger <> 8 And MapData(.Pos.Map, .Pos.X, .Pos.Y + 1).trigger <> 8 And MapData(.Pos.Map, .Pos.X, .Pos.Y - 1).trigger <> 8 Then
+                    ElseIf .Invent.Object(Slot).ObjIndex = 199 Or .Invent.Object(Slot).ObjIndex = 200 Then
+                        If MapData(.Pos.Map, .Pos.X + 1, .Pos.Y).trigger <> e_Trigger.DETALLEAGUA And MapData(.Pos.Map, .Pos.X - 1, .Pos.Y).trigger <> e_Trigger.DETALLEAGUA And MapData(.Pos.Map, .Pos.X, .Pos.Y + 1).trigger <> e_Trigger.DETALLEAGUA And MapData(.Pos.Map, .Pos.X, .Pos.Y - 1).trigger <> e_Trigger.DETALLEAGUA Then
                             Call WriteConsoleMsg(UserIndex, "Este traje es para aguas contaminadas.", e_FontTypeNames.FONTTYPE_INFO)
                             Exit Sub
                         End If
+                    ElseIf .Invent.Object(Slot).ObjIndex = 197 Then
+                        If MapData(.Pos.Map, .Pos.X + 1, .Pos.Y).trigger <> e_Trigger.VALIDONADO And MapData(.Pos.Map, .Pos.X - 1, .Pos.Y).trigger <> e_Trigger.VALIDONADO And MapData(.Pos.Map, .Pos.X, .Pos.Y + 1).trigger <> e_Trigger.VALIDONADO And MapData(.Pos.Map, .Pos.X, .Pos.Y - 1).trigger <> e_Trigger.VALIDONADO Then
+                            Call WriteConsoleMsg(UserIndex, "Este traje es para zonas poco profundas.", e_FontTypeNames.FONTTYPE_INFO)
+                            Exit Sub
+                        End If
                     End If
+                    
 
 1176                If .flags.Navegando = 0 Then
 1178                    If LegalWalk(.Pos.Map, .Pos.X - 1, .Pos.Y, e_Heading.WEST, True, False) Or LegalWalk(.Pos.Map, .Pos.X, .Pos.Y - 1, e_Heading.NORTH, True, False) Or LegalWalk(.Pos.Map, .Pos.X + 1, .Pos.Y, e_Heading.EAST, True, False) Or LegalWalk(.Pos.Map, .Pos.X, .Pos.Y + 1, e_Heading.SOUTH, True, False) Then

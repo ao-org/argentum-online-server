@@ -363,6 +363,7 @@ Public Enum e_Trigger
     DETALLEAGUA = 8
     CARCEL = 9
     PESCAINVALIDA = 10
+    VALIDONADO = 11
     
 End Enum
 
