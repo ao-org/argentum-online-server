@@ -28,30 +28,22 @@ MaxDados=18
 
 MaxUsers=1000
 
-Admines=4
-Dioses=2
-SemiDioses=8
-Consejeros=5
+Admines=0
+Dioses=0
+SemiDioses=0
+Consejeros=19
 
 [Admines]
-Admin1=Haracin|hgarofalo79@gmail.com
-Admin2=ReyarB|reyarb@fibertel.com.ar
-Admin3=Animal|anormal@gmail.com
-Admin4=Recox|lucas.recoaro@gmail.com
+Admin1=
+
 
 [Dioses]
-Dios1=Harthaos|martintrionfetti@gmail.com
-Dios2=Maraxus|reyarb@fibertel.com.ar
+Dios1=
+
 
 [SemiDioses]
-SemiDios1=Vox|ricardo_r_jc@hotmail.com
-SemiDios2=Sir Hongo|nicocapelli85@hotmail.com
-SemiDios3=Morgolock|gulfas@gmail.com
-SemiDios4=Jopi|jopiodz00@gmail.com
-SemiDios5=Baliam|loganfenix2000@yahoo.com.mx
-SemiDios6=Ronin|erikeleusippi@gmail.
-SemiDios7=chicken|raamaorc@gmail.com
-SemiDios8=ZeuS|reyarb@fibertel.com.ar
+SemiDios1=
+
 
 [Consejeros]
 Consejero1=Terrel|loganfenix2000@yahoo.com.mx
@@ -59,3 +51,18 @@ Consejero2=GalaK|Sforzini.jonatan@gmail.com
 Consejero3=Nakrull|Ytocarp@gmail.com
 Consejero4=Lord Fers|lordfers@gmail.com
 Consejero5=Hainnor|Jere_estandar@hotmail.com.ar
+Consejero6=Vox|ricardo_r_jc@hotmail.com
+Consejero7=Sir Hongo|nicocapelli85@hotmail.com
+Consejero8=Morgolock|gulfas@gmail.com
+Consejero9=Jopi|jopiodz00@gmail.com
+Consejero10=Baliam|loganfenix2000@yahoo.com.mx
+Consejero11=Ronin|erikeleusippi@gmail.
+Consejero12=chicken|raamaorc@gmail.com
+Consejero13=ZeuS|reyarb@fibertel.com.ar
+Consejero14=Harthaos|martintrionfetti@gmail.com
+Consejero15=Maraxus|reyarb@fibertel.com.ar
+Consejero16=ReyarB|reyarb@fibertel.com.ar
+Consejero17=Animal|anormal@gmail.com
+Consejero18=Recox|lucas.recoaro@gmail.com
+Consejero19=Haracin|hgarofalo79@gmail.com
+
