@@ -1748,7 +1748,7 @@ Sub NPCAtacado(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
 122         Call AllMascotasAtacanUser(UserIndex, NpcList(NpcIndex).MaestroUser)
         End If
 
-'124     Call AllMascotasAtacanNPC(NpcIndex, UserIndex)
+124     Call AllMascotasAtacanNPC(NpcIndex, UserIndex)
         
         Exit Sub
 
