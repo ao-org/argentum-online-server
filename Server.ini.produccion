@@ -30,8 +30,8 @@ MaxUsers=1000
 
 Admines=0
 Dioses=0
-SemiDioses=0
-Consejeros=19
+SemiDioses=1
+Consejeros=18
 
 [Admines]
 Admin1=
@@ -42,7 +42,7 @@ Dios1=
 
 
 [SemiDioses]
-SemiDios1=
+SemiDios1=chicken|raamaorc@gmail.com
 
 
 [Consejeros]
@@ -57,12 +57,12 @@ Consejero8=Morgolock|gulfas@gmail.com
 Consejero9=Jopi|jopiodz00@gmail.com
 Consejero10=Baliam|loganfenix2000@yahoo.com.mx
 Consejero11=Ronin|erikeleusippi@gmail.
-Consejero12=chicken|raamaorc@gmail.com
+Consejero12=Haracin|hgarofalo79@gmail.com
 Consejero13=ZeuS|reyarb@fibertel.com.ar
 Consejero14=Harthaos|martintrionfetti@gmail.com
 Consejero15=Maraxus|reyarb@fibertel.com.ar
 Consejero16=ReyarB|reyarb@fibertel.com.ar
 Consejero17=Animal|anormal@gmail.com
 Consejero18=Recox|lucas.recoaro@gmail.com
-Consejero19=Haracin|hgarofalo79@gmail.com
+
 
