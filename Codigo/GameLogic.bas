@@ -323,7 +323,7 @@ Public Sub DoTileEvents(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal 
 118                         Call WarpUserChar(UserIndex, MapData(Map, X, Y).TileExit.Map, MapData(Map, X, Y).TileExit.X, MapData(Map, X, Y).TileExit.Y, EsTeleport)
                 
                         Else
-120                         Call ClosestLegalPos(MapData(Map, X, Y).TileExit, nPos)
+120                         Call ClosestLegalPos(MapData(Map, X, Y).TileExit, nPos, True)
     
 122                         If nPos.X <> 0 And nPos.Y <> 0 Then
 124                             Call WarpUserChar(UserIndex, nPos.Map, nPos.X, nPos.Y, EsTeleport)
