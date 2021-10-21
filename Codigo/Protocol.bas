@@ -10066,6 +10066,7 @@ Private Sub HandleReviveChar(ByVal UserIndex As Integer)
 130                 Call WriteUpdateHP(tUser)
 132                 Call ActualizarVelocidadDeUsuario(tUser)
 134                 Call LogGM(.Name, "Resucito a " & UserName)
+                    Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(.Name & " a resusitado a " & UserName, e_FontTypeNames.FONTTYPE_INFO))
 
                 End If
             Else
