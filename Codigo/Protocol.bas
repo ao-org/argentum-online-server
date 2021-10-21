@@ -10603,6 +10603,8 @@ Private Sub HandleSummonChar(ByVal UserIndex As Integer)
                     
 152             Call LogGM(.Name, "/SUM " & UserName & " Map:" & .Pos.Map & " X:" & .Pos.X & " Y:" & .Pos.Y)
                 
+                Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(.Name & " a trasladado a " & UserName, e_FontTypeNames.FONTTYPE_INFO))
+                
             End If
         Else
 154         Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
