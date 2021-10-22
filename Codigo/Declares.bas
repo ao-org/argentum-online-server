@@ -361,10 +361,9 @@ Public Enum e_Trigger
     ZONAPELEA = 6
     AUTORESU = 7
     DETALLEAGUA = 8
-    CARCEL = 9
     PESCAINVALIDA = 10
     VALIDONADO = 11
-    
+    CARCEL = 19
 End Enum
 
 ''
