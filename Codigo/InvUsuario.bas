@@ -1639,8 +1639,8 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
                     End If
 
 526                 .Invent.Object(Slot).Equipped = 1
-528                 .Invent.DañoMagicoEqpObjIndex = .Invent.Object(slot).ObjIndex
-530                 .Invent.DañoMagicoEqpSlot = slot
+528                 .Invent.DañoMagicoEqpObjIndex = .Invent.Object(Slot).ObjIndex
+530                 .Invent.DañoMagicoEqpSlot = Slot
 532                 If Len(obj.CreaGRH) <> 0 Then
 534                     .Char.DM_Aura = obj.CreaGRH
 536                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, .Char.DM_Aura, False, 6))
@@ -2941,13 +2941,11 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
                             Exit Sub
                         End If
                     ElseIf .Invent.Object(Slot).ObjIndex = 197 Then
-                        If MapData(.Pos.Map, .Pos.X + 1, .Pos.Y).trigger <> e_Trigger.NADOCOMBINADO And MapData(.Pos.Map, .Pos.X - 1, .Pos.Y).trigger <> e_Trigger.NADOCOMBINADO And MapData(.Pos.Map, .Pos.X, .Pos.Y + 1).trigger <> e_Trigger.NADOCOMBINADO And MapData(.Pos.Map, .Pos.X, .Pos.Y - 1).trigger <> e_Trigger.NADOCOMBINADO And MapData(.Pos.Map, .Pos.X + 1, .Pos.Y).trigger <> e_Trigger.VALIDONADO And MapData(.Pos.Map, .Pos.X - 1, .Pos.Y).trigger <> e_Trigger.VALIDONADO And MapData(.Pos.Map, .Pos.X, .Pos.Y + 1).trigger <> e_Trigger.VALIDONADO And MapData(.Pos.Map, .Pos.X, .Pos.Y - 1).trigger <> e_Trigger.VALIDONADO Then
+                        If MapData(.Pos.Map, .Pos.X + 1, .Pos.Y).trigger <> e_Trigger.VALIDONADO And MapData(.Pos.Map, .Pos.X - 1, .Pos.Y).trigger <> e_Trigger.VALIDONADO And MapData(.Pos.Map, .Pos.X, .Pos.Y + 1).trigger <> e_Trigger.VALIDONADO And MapData(.Pos.Map, .Pos.X, .Pos.Y - 1).trigger <> e_Trigger.VALIDONADO Then
                             Call WriteConsoleMsg(UserIndex, "Este traje es para zonas poco profundas.", e_FontTypeNames.FONTTYPE_INFO)
                             Exit Sub
                         End If
                     End If
-                    
-
                     
 
 1176                If .flags.Navegando = 0 Then
