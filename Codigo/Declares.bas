@@ -364,6 +364,7 @@ Public Enum e_Trigger
     CARCEL = 9
     PESCAINVALIDA = 10
     VALIDONADO = 11
+    NADOCOMBINADO = 13
     
 End Enum
 
