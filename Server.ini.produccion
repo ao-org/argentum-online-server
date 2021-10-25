@@ -31,7 +31,7 @@ MaxUsers=1000
 Admines=2
 Dioses=0
 SemiDioses=8
-Consejeros=9
+Consejeros=10
 
 [Admines]
 Admin1=Haracin|hgarofalo79@gmail.com
@@ -62,6 +62,7 @@ Consejero6=Baliam|loganfenix2000@yahoo.com.mx
 Consejero7=Ronin|erikeleusippi@gmail.com
 Consejero8=Maraxus|reyarb@fibertel.com.ar
 Consejero9=Animal|anormal@gmail.com
+Consejero10=AOLB TOKEN|info@argentumonline.org
 
 
 
