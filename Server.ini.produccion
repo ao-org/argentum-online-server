@@ -30,8 +30,8 @@ MaxUsers=1000
 
 Admines=2
 Dioses=2
-SemiDioses=9
-Consejeros=8
+SemiDioses=10
+Consejeros=7
 
 [Admines]
 Admin1=Haracin|hgarofalo79@gmail.com
@@ -51,6 +51,7 @@ SemiDios6=Jopi|jopiodz00@gmail.com
 SemiDios7=Morgolock|gulfas@gmail.com
 SemiDios8=ZeuS|reyarb@fibertel.com.ar
 SemiDios9=Nakrull|Ytocarp@gmail.com
+SemiDios10=lorena|LORENITAH1995@HOTMAIL.ES
 
 [Consejeros]
 Consejero1=Terrel|loganfenix2000@yahoo.com.mx
@@ -60,7 +61,7 @@ Consejero4=Hainnor|Jere_estandar@hotmail.com.ar
 Consejero5=Ronin|erikeleusippi@gmail.com
 Consejero6=Maraxus|reyarb@fibertel.com.ar
 Consejero7=Animal|anormal@gmail.com
-Consejero8=lorena|LORENITAH1995@HOTMAIL.ES
+
 
 
 
