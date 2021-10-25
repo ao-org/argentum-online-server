@@ -30,8 +30,8 @@ MaxUsers=1000
 
 Admines=2
 Dioses=0
-SemiDioses=8
-Consejeros=10
+SemiDioses=10
+Consejeros=8
 
 [Admines]
 Admin1=Haracin|hgarofalo79@gmail.com
@@ -51,18 +51,18 @@ SemiDios5=Sir Hongo|nicocapelli85@hotmail.com
 SemiDios6=Jopi|jopiodz00@gmail.com
 SemiDios7=Morgolock|gulfas@gmail.com
 SemiDios8=ZeuS|reyarb@fibertel.com.ar
+SemiDios9=Nakrull|Ytocarp@gmail.com
+SemiDios10=Baliam|loganfenix2000@yahoo.com.mx
 
 [Consejeros]
 Consejero1=Terrel|loganfenix2000@yahoo.com.mx
 Consejero2=GalaK|Sforzini.jonatan@gmail.com
-Consejero3=Nakrull|Ytocarp@gmail.com
-Consejero4=Lord Fers|lordfers@gmail.com
-Consejero5=Hainnor|Jere_estandar@hotmail.com.ar
-Consejero6=Baliam|loganfenix2000@yahoo.com.mx
-Consejero7=Ronin|erikeleusippi@gmail.com
-Consejero8=Maraxus|reyarb@fibertel.com.ar
-Consejero9=Animal|anormal@gmail.com
-Consejero10=AOLB TOKEN|info@argentumonline.org
+Consejero3=Lord Fers|lordfers@gmail.com
+Consejero4=Hainnor|Jere_estandar@hotmail.com.ar
+Consejero5=Ronin|erikeleusippi@gmail.com
+Consejero6=Maraxus|reyarb@fibertel.com.ar
+Consejero7=Animal|anormal@gmail.com
+Consejero8=AOLB TOKEN|info@argentumonline.org
 
 
 
