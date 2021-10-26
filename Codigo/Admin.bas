@@ -405,7 +405,7 @@ Public Function PersonajeExiste(ByVal Name As String) As Boolean
         
         On Error GoTo PersonajeExiste_Err
 
-102         PersonajeExiste = GetUserValue(Name, "COUNT(*)") > 0
+102         PersonajeExiste = GetUserValue(LCase$(Name), "COUNT(*)") > 0
 
         Exit Function
 

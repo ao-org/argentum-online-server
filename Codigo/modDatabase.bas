@@ -1168,7 +1168,7 @@ Public Function GetDBValue(Tabla As String, ColumnaGet As String, ColumnaTest As
         On Error GoTo ErrorHandler
     
 100     Dim RS As ADODB.Recordset
-        Set RS = Query("SELECT " & ColumnaGet & " FROM " & Tabla & " WHERE " & ColumnaTest & " = ?;", ValueTest)
+        Set rs = Query("SELECT " & ColumnaGet & " FROM " & Tabla & " WHERE LOWER(" & ColumnaTest & ") = ?;", ValueTest)
 
         'Revisamos si recibio un resultado
 102     If RS Is Nothing Then Exit Function
@@ -1232,7 +1232,7 @@ Public Function BANCheckDatabase(Name As String) As Boolean
         
         On Error GoTo BANCheckDatabase_Err
         
-100     BANCheckDatabase = CBool(GetUserValue(Name, "is_banned"))
+100     BANCheckDatabase = CBool(GetUserValue(LCase$(Name), "is_banned"))
   
         Exit Function
 
@@ -1244,7 +1244,7 @@ Public Function GetUserStatusDatabase(Name As String) As Integer
         
         On Error GoTo GetUserStatusDatabase_Err
         
-100     GetUserStatusDatabase = GetUserValue(Name, "status")
+100     GetUserStatusDatabase = GetUserValue(LCase$(Name), "status")
 
         
         Exit Function
@@ -1262,7 +1262,7 @@ Public Function GetAccountIDDatabase(Name As String) As Long
 
         Dim Temp As Variant
 
-100     Temp = GetUserValue(Name, "account_id")
+100     Temp = GetUserValue(LCase$(Name), "account_id")
     
 102     If VBA.IsEmpty(Temp) Then
 104         GetAccountIDDatabase = -1
@@ -1710,7 +1710,7 @@ Public Function GetUserGuildIndexDatabase(UserName As String) As Integer
         '***************************************************
         On Error GoTo ErrorHandler
 
-100     GetUserGuildIndexDatabase = SanitizeNullValue(GetUserValue(UserName, "guild_index"), 0)
+100     GetUserGuildIndexDatabase = SanitizeNullValue(GetUserValue(LCase$(UserName), "guild_index"), 0)
 
         Exit Function
 
@@ -1727,7 +1727,7 @@ Public Function GetUserGuildMemberDatabase(UserName As String) As String
         '***************************************************
         On Error GoTo ErrorHandler
 
-100     GetUserGuildMemberDatabase = SanitizeNullValue(GetUserValue(UserName, "guild_member_history"), vbNullString)
+100     GetUserGuildMemberDatabase = SanitizeNullValue(GetUserValue(LCase$(UserName), "guild_member_history"), vbNullString)
 
         Exit Function
 
@@ -1744,7 +1744,7 @@ Public Function GetUserGuildAspirantDatabase(UserName As String) As Integer
         '***************************************************
         On Error GoTo ErrorHandler
 
-100     GetUserGuildAspirantDatabase = SanitizeNullValue(GetUserValue(UserName, "guild_aspirant_index"), 0)
+100     GetUserGuildAspirantDatabase = SanitizeNullValue(GetUserValue(LCase$(UserName), "guild_aspirant_index"), 0)
 
         Exit Function
 
@@ -1761,7 +1761,7 @@ Public Function GetUserGuildPedidosDatabase(UserName As String) As String
         '***************************************************
         On Error GoTo ErrorHandler
 
-100     GetUserGuildPedidosDatabase = SanitizeNullValue(GetUserValue(UserName, "guild_requests_history"), vbNullString)
+100     GetUserGuildPedidosDatabase = SanitizeNullValue(GetUserValue(LCase$(UserName), "guild_requests_history"), vbNullString)
 
         Exit Function
 
@@ -2022,7 +2022,7 @@ End Function
 Public Function GetMapDatabase(UserName As String) As Integer
         On Error GoTo ErrorHandler
 
-100     GetMapDatabase = val(GetUserValue(UserName, "pos_map"))
+100     GetMapDatabase = val(GetUserValue(LCase$(UserName), "pos_map"))
 
         Exit Function
 
