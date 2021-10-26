@@ -598,10 +598,10 @@ Private Function m_EstadoPermiteEntrarChar(ByRef Personaje As String, ByVal Guil
 120                 m_EstadoPermiteEntrarChar = Promedio = 0 Or Promedio = 1
 
 122             Case e_ALINEACION_GUILD.ALINEACION_ARMADA
-124                 m_EstadoPermiteEntrarChar = CBool(GetUserValue(Personaje, "pertenece_real"))
+124                 m_EstadoPermiteEntrarChar = CBool(GetUserValue(LCase$(Personaje), "pertenece_real"))
 
 126             Case e_ALINEACION_GUILD.ALINEACION_CAOTICA
-128                 m_EstadoPermiteEntrarChar = CBool(GetUserValue(Personaje, "pertenece_caos"))
+128                 m_EstadoPermiteEntrarChar = CBool(GetUserValue(LCase$(Personaje), "pertenece_caos"))
 
             End Select
 
