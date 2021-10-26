@@ -8039,9 +8039,13 @@ Private Sub HandleWarpChar(ByVal UserIndex As Integer)
 134                 Call WriteConsoleMsg(UserIndex, "Usuario offline.", e_FontTypeNames.FONTTYPE_INFO)
 
 136             ElseIf InMapBounds(Map, X, Y) Then
-138                 Call FindLegalPos(tUser, Map, X, Y)
-140                 Call WarpUserChar(tUser, Map, X, Y, True)
-
+                    'Harthas no permitimos que se use el telep para llevas User a casas privadas. ReyarB
+                    If UCase$(UserName) <> "YO" Then
+                        Call WarpToLegalPos(tUser, Map, X, Y, True, True)
+                    Else
+138                     Call FindLegalPos(tUser, Map, X, Y)
+140                     Call WarpUserChar(tUser, Map, X, Y, True)
+                    End If
 142                 If tUser <> UserIndex Then
 144                     Call LogGM(.Name, "Transportó a " & UserList(tUser).Name & " hacia " & "Mapa" & Map & " X:" & X & " Y:" & Y)
                     End If
