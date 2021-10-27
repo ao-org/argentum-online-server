@@ -1729,7 +1729,7 @@ Private Sub HandleWhisper(ByVal UserIndex As Integer)
 108         targetUserIndex = NameIndex(targetCharIndex)
 
 110         If targetUserIndex <= 0 Then 'existe el usuario destino?
-112             Call WriteConsoleMsg(UserIndex, "Usuario offline o inexistente.", e_FontTypeNames.FONTTYPE_INFO)
+112            ' Call WriteConsoleMsg(UserIndex, "Usuario offline o inexistente.", e_FontTypeNames.FONTTYPE_INFO)
 
             Else
 
@@ -1759,10 +1759,10 @@ Private Sub HandleWhisper(ByVal UserIndex As Integer)
 
                     End If
 
-                Else
-134                 Call WriteConsoleMsg(UserIndex, "[" & .Name & "] " & chat, e_FontTypeNames.FONTTYPE_MP)
-136                 Call WriteConsoleMsg(targetUserIndex, "[" & .Name & "] " & chat, e_FontTypeNames.FONTTYPE_MP)
-138                 Call WritePlayWave(targetUserIndex, e_FXSound.MP_SOUND, NO_3D_SOUND, NO_3D_SOUND)
+'                Else
+'134                 Call WriteConsoleMsg(UserIndex, "[" & .Name & "] " & chat, e_FontTypeNames.FONTTYPE_MP)
+'136                 Call WriteConsoleMsg(targetUserIndex, "[" & .Name & "] " & chat, e_FontTypeNames.FONTTYPE_MP)
+'138                 Call WritePlayWave(targetUserIndex, e_FXSound.MP_SOUND, NO_3D_SOUND, NO_3D_SOUND)
 
                 End If
 
@@ -7439,7 +7439,7 @@ Private Sub HandleGMMessage(ByVal UserIndex As Integer)
                     'Analize chat...
 110                 Call Statistics.ParseChat(Message)
             
-112                 Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(.Name & " » " & Message, e_FontTypeNames.FONTTYPE_GMMSG))
+112                 Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(.Name & " » " & message, e_FontTypeNames.FONTTYPE_GMMSG))
 
                 End If
 
