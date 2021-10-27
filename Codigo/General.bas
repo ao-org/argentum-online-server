@@ -2390,12 +2390,12 @@ Sub PasarSegundo()
                 End If ' If UserLogged
 
                 'Inactive players will be removed!
-296             .Counters.IdleCount = .Counters.IdleCount + 1
+296          '   .Counters.IdleCount = .Counters.IdleCount + 1
 
                 'El intervalo cambia según si envió el primer paquete
-298             If .Counters.IdleCount > IIf(.flags.FirstPacket, TimeoutEsperandoLoggear, TimeoutPrimerPaquete) Then
-300                 Call CloseSocket(i)
-                End If
+298        '     If .Counters.IdleCount > IIf(.flags.FirstPacket, TimeoutEsperandoLoggear, TimeoutPrimerPaquete) Then
+300        '         Call CloseSocket(i)
+           '     End If
         
             End With
 302     Next i
