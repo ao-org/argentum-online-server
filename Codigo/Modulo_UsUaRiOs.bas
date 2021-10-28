@@ -2236,10 +2236,6 @@ Sub WarpUserChar(ByVal UserIndex As Integer, _
 
                 End If
             
-144             If IntervaloPuedeSerAtacado > 0 Then
-146                 .Counters.TiempoDeInmunidad = IntervaloPuedeSerAtacado
-148                 .flags.Inmunidad = 1
-                End If
 
 150             If RequiereOxigeno(OldMap) = True And .flags.NecesitaOxigeno = False Then  'And .Stats.ELV < 35 Then
         
