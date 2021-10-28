@@ -185,6 +185,7 @@ Public Enum ServerPacketID
     GuardNotice
     AnswerReset
     ObjQuestListSend
+    UpdateBankGld
     [PacketCount]
 End Enum
 
@@ -7112,10 +7113,11 @@ Private Sub HandleBankExtractGold(ByVal UserIndex As Integer)
 118         If amount > 0 And amount <= .Stats.Banco Then
 120             .Stats.Banco = .Stats.Banco - amount
 122             .Stats.GLD = .Stats.GLD + amount
-                'Call WriteChatOverHead(UserIndex, "Tenés " & .Stats.Banco & " monedas de oro en tu cuenta.", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
+                Call WriteChatOverHead(UserIndex, "Tenés " & .Stats.Banco & " monedas de oro en tu cuenta.", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
 
 124             Call WriteUpdateGold(UserIndex)
-126             Call WriteGoliathInit(UserIndex)
+126           '  Call WriteGoliathInit(UserIndex)
+                Call WriteUpdateBankGld(UserIndex)
 
             Else
 128             Call WriteChatOverHead(UserIndex, "No tenés esa cantidad.", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
@@ -7294,10 +7296,11 @@ Private Sub HandleBankDepositGold(ByVal UserIndex As Integer)
 118         If amount > 0 And amount <= .Stats.GLD Then
 120             .Stats.Banco = .Stats.Banco + amount
 122             .Stats.GLD = .Stats.GLD - amount
-                'Call WriteChatOverHead(UserIndex, "Tenés " & .Stats.Banco & " monedas de oro en tu cuenta.", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
+                Call WriteChatOverHead(UserIndex, "Tenés " & .Stats.Banco & " monedas de oro en tu cuenta.", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
             
 124             Call WriteUpdateGold(UserIndex)
-126             Call WriteGoliathInit(UserIndex)
+126            ' Call WriteGoliathInit(UserIndex)
+                Call WriteUpdateBankGld(UserIndex)
             Else
 128             Call WriteChatOverHead(UserIndex, "No tenés esa cantidad.", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
 

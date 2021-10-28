@@ -3480,6 +3480,22 @@ WriteGoliathInit_Err:
         '</EhFooter>
 End Sub
 
+Public Sub WriteUpdateBankGld(ByVal UserIndex As Integer)
+        '<EhHeader>
+        On Error GoTo WriteUpdateBankGld_Err
+        '</EhHeader>
+100     Call Writer.WriteInt(ServerPacketID.UpdateBankGld)
+102     Call Writer.WriteInt32(UserList(UserIndex).Stats.Banco)
+106     Call modSendData.SendData(ToIndex, UserIndex)
+        '<EhFooter>
+        Exit Sub
+
+WriteUpdateBankGld_Err:
+        Call Writer.Clear
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteUpdateBankGld", Erl)
+        '</EhFooter>
+End Sub
+
 Public Sub WriteShowFrmLogear(ByVal UserIndex As Integer)
         '<EhHeader>
         On Error GoTo WriteShowFrmLogear_Err
