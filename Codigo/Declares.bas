@@ -363,6 +363,9 @@ Public Enum e_Trigger
     DETALLEAGUA = 8
     PESCAINVALIDA = 10
     VALIDONADO = 11
+    ESCALERA = 12
+    VALIDOPUENTE = 17
+    NADOCOMBINADO = 18
     CARCEL = 19
 End Enum
 
