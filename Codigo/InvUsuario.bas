@@ -2941,7 +2941,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
                             Exit Sub
                         End If
                     ElseIf .Invent.Object(Slot).ObjIndex = 197 Then
-                        If MapData(.Pos.Map, .Pos.X + 1, .Pos.Y).trigger <> e_Trigger.VALIDONADO And MapData(.Pos.Map, .Pos.X - 1, .Pos.Y).trigger <> e_Trigger.VALIDONADO And MapData(.Pos.Map, .Pos.X, .Pos.Y + 1).trigger <> e_Trigger.VALIDONADO And MapData(.Pos.Map, .Pos.X, .Pos.Y - 1).trigger <> e_Trigger.VALIDONADO Then
+                          If MapData(.Pos.Map, .Pos.X + 1, .Pos.Y).trigger <> e_Trigger.NADOCOMBINADO And MapData(.Pos.Map, .Pos.X - 1, .Pos.Y).trigger <> e_Trigger.NADOCOMBINADO And MapData(.Pos.Map, .Pos.X, .Pos.Y + 1).trigger <> e_Trigger.NADOCOMBINADO And MapData(.Pos.Map, .Pos.X, .Pos.Y - 1).trigger <> e_Trigger.NADOCOMBINADO And MapData(.Pos.Map, .Pos.X + 1, .Pos.Y).trigger <> e_Trigger.VALIDONADO And MapData(.Pos.Map, .Pos.X - 1, .Pos.Y).trigger <> e_Trigger.VALIDONADO And MapData(.Pos.Map, .Pos.X, .Pos.Y + 1).trigger <> e_Trigger.VALIDONADO And MapData(.Pos.Map, .Pos.X, .Pos.Y - 1).trigger <> e_Trigger.VALIDONADO Then
                             Call WriteConsoleMsg(UserIndex, "Este traje es para zonas poco profundas.", e_FontTypeNames.FONTTYPE_INFO)
                             Exit Sub
                         End If
