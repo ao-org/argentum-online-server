@@ -1317,6 +1317,10 @@ Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As e_Heading) A
 106         If Not LegalWalk(.Pos.Map, nPos.X, nPos.Y, nHeading, .flags.Navegando = 1, .flags.Navegando = 0, .flags.Montado) Then
                 Exit Function
             End If
+            
+            If .flags.Navegando And .Invent.BarcoObjIndex = 197 And Not (MapData(.Pos.Map, nPos.X, nPos.Y).trigger = e_Trigger.DETALLEAGUA Or MapData(.Pos.Map, nPos.X, nPos.Y).trigger = e_Trigger.NADOCOMBINADO Or MapData(.Pos.Map, nPos.X, nPos.Y).trigger = e_Trigger.VALIDONADO) Then
+                Exit Function
+            End If
 
 108         If .Accion.AccionPendiente = True Then
 110             .Counters.TimerBarra = 0
