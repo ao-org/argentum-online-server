@@ -263,12 +263,22 @@ Public Sub DoPermanecerOculto(ByVal UserIndex As Integer)
         On Error GoTo DoPermanecerOculto_Err
     
 100     With UserList(UserIndex)
-
-            ' WyroX: Si tiene armadura de cazador, no se le va nunca lo oculto
-102         If .clase = e_Class.Hunter And TieneArmaduraCazador(UserIndex) Then Exit Sub
-    
-104         .Counters.TiempoOculto = .Counters.TiempoOculto - 1
-
+            Dim velocidadOcultarse As Integer
+            velocidadOcultarse = 1
+            'HarThaoS: Si tiene armadura de cazador, dependiendo skills vemos cuanto tiempo se oculta
+            If .clase = e_Class.Hunter Then
+                If TieneArmaduraCazador(UserIndex) Then
+                    Select Case .Stats.UserSkills(e_Skill.Ocultarse)
+                        Case Is = 100
+                            Exit Sub
+                        Case Is < 100
+                            velocidadOcultarse = RandomNumber(0, 1)
+                    End Select
+                End If
+            End If
+            
+104         .Counters.TiempoOculto = .Counters.TiempoOculto - velocidadOcultarse
+            Debug.Print .Counters.TiempoOculto
 106         If .Counters.TiempoOculto <= 0 Then
 
 108             .Counters.TiempoOculto = 0
@@ -337,18 +347,17 @@ Public Sub DoOcultarse(ByVal UserIndex As Integer)
 122             Suerte = Suerte + (0.9571)
 124             Suerte = Suerte * IntervaloOculto
         
-126             If .clase = e_Class.Bandit Then
-128                 .Counters.TiempoOculto = Int(Suerte / 2)
-                Else
-130                 .Counters.TiempoOculto = Suerte
-                End If
-    
-132             If .flags.AnilloOcultismo = 1 Then
-134                 .Counters.TiempoOculto = Suerte * 3
-                Else
-136                 .Counters.TiempoOculto = Suerte
-                End If
-  
+                Select Case .clase
+                    Case e_Class.Bandit
+128                     .Counters.TiempoOculto = Int(Suerte / 2)
+                    
+                    Case e_Class.Hunter
+130                     .Counters.TiempoOculto = Int(Suerte / 2)
+                    
+                    Case Else
+129                     .Counters.TiempoOculto = Int(Suerte / 3)
+                End Select
+        
 138             If .flags.Navegando = 1 Then
 140                 If .clase = e_Class.Pirat Then
 142                     .Char.Body = iFragataFantasmal
