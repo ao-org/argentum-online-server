@@ -7442,7 +7442,7 @@ Private Sub HandleGMMessage(ByVal UserIndex As Integer)
                     'Analize chat...
 110                 Call Statistics.ParseChat(Message)
             
-112                 Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(.Name & " » " & message, e_FontTypeNames.FONTTYPE_GMMSG))
+112                 Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(.Name & " » " & Message, e_FontTypeNames.FONTTYPE_GMMSG))
 
                 End If
 
@@ -10652,11 +10652,11 @@ Private Sub HandleSpawnListRequest(ByVal UserIndex As Integer)
 106             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             
-108         ElseIf .flags.Privilegios And e_PlayerType.SemiDios Then
+108         ElseIf .flags.Privilegios And (e_PlayerType.SemiDios Or e_PlayerType.Dios) Then
 110             Call WriteConsoleMsg(UserIndex, "Servidor » La cantidad de NPCs disponible para tu rango está limitada.", e_FontTypeNames.FONTTYPE_INFO)
             End If
 
-112         Call WriteSpawnList(UserIndex, UserList(UserIndex).flags.Privilegios And (e_PlayerType.Dios Or e_PlayerType.Admin))
+112         Call WriteSpawnList(UserIndex, UserList(UserIndex).flags.Privilegios And e_PlayerType.Admin)
     
         End With
         
@@ -14276,8 +14276,8 @@ Public Sub HandleCreateNPCWithRespawn(ByVal UserIndex As Integer)
 
             If Not EsGM(UserIndex) Then Exit Sub
         
-104         If .flags.Privilegios And (e_PlayerType.Consejero Or e_PlayerType.SemiDios) Then
-106             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
+104         If .flags.Privilegios And (e_PlayerType.Consejero Or e_PlayerType.SemiDios Or e_PlayerType.Dios) Then
+106             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo. Si el motivo es probar algo ya saben ir a Test", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
         
