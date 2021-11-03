@@ -898,7 +898,8 @@ Sub RevivirUsuario(ByVal UserIndex As Integer, Optional ByVal MedianteHechizo As
     
 206         Call ActualizarVelocidadDeUsuario(UserIndex)
 208         Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
-
+            
+         Call MakeUserChar(True, UserList(UserIndex).Pos.Map, UserIndex, UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y, 0)
         End With
         
         Exit Sub
@@ -2019,6 +2020,34 @@ Sub UserDie(ByVal UserIndex As Integer)
 234         If .flags.EnReto Then
 236             Call MuereEnReto(UserIndex)
             End If
+            
+            'Borramos todos los personajes del area
+            
+            
+            Dim LoopC     As Long
+            Dim tempIndex As Integer
+            Dim Map       As Integer
+            Dim AreaX     As Integer
+            Dim AreaY     As Integer
+            
+             AreaX = UserList(UserIndex).AreasInfo.AreaPerteneceX
+             AreaY = UserList(UserIndex).AreasInfo.AreaPerteneceY
+                        
+             For LoopC = 1 To ConnGroups(UserList(UserIndex).Pos.Map).CountEntrys
+                 tempIndex = ConnGroups(UserList(UserIndex).Pos.Map).UserEntrys(LoopC)
+        
+                If UserList(tempIndex).AreasInfo.AreaReciveX And AreaX Then  'Esta en el area?
+                    If UserList(tempIndex).AreasInfo.AreaReciveY And AreaY Then
+        
+                        If UserList(tempIndex).ConnIDValida And tempIndex <> UserIndex Then
+                            Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageCharacterRemove(UserList(tempIndex).Char.CharIndex, True))
+                        End If
+                    End If
+                End If
+        
+             Next LoopC
+            
+            
 
         End With
 
