@@ -2975,6 +2975,7 @@ Public Sub LoadPesca()
 
 100     If Not FileExist(DatPath & "pesca.dat", vbArchive) Then
 102         ReDim Peces(0) As t_Obj
+            ReDim PecesEspeciales(0) As t_Obj
 104         ReDim PesoPeces(0) As Long
             Exit Sub
 
@@ -2986,11 +2987,11 @@ Public Sub LoadPesca()
     
 108     Call IniFile.Initialize(DatPath & "pesca.dat")
     
-        Dim Count As Long, i As Long, j As Long, str As String, Field() As String, nivel As Integer, MaxLvlCania As Long
+        Dim Count As Long, CountEspecial As Long, i As Long, j As Long, str As String, Field() As String, nivel As Integer, MaxLvlCania As Long
 
 110     Count = val(IniFile.GetValue("PECES", "NumPeces"))
 112     MaxLvlCania = val(IniFile.GetValue("PECES", "Maxlvlcaña"))
-    
+        CountEspecial = 1
 114     ReDim PesoPeces(0 To MaxLvlCania) As Long
     
 116     If Count > 0 Then
@@ -3000,14 +3001,26 @@ Public Sub LoadPesca()
 120         For i = 1 To Count
 122             str = IniFile.GetValue("PECES", "Pez" & i)
 124             Field = Split(str, "-")
-            
+                
+                'HarThaoS: Si es un pez especial lo guardo en otro array
+                If val(Field(3)) = 1 Then
+                    ReDim Preserve PecesEspeciales(1 To CountEspecial) As t_Obj
+                    PecesEspeciales(CountEspecial).ObjIndex = val(Field(0))
+                    PecesEspeciales(CountEspecial).Data = val(Field(1))
+                    nivel = val(Field(2))               ' Nivel de caña
+                    
+                    If (nivel > MaxLvlCania) Then nivel = MaxLvlCania
+                    
+                    PecesEspeciales(CountEspecial).amount = nivel
+                    CountEspecial = CountEspecial + 1
+                End If
 126             Peces(i).ObjIndex = val(Field(0))
 128             Peces(i).Data = val(Field(1))       ' Peso
-
 130             nivel = val(Field(2))               ' Nivel de caña
 
 132             If (nivel > MaxLvlCania) Then nivel = MaxLvlCania
 134             Peces(i).amount = nivel
+                
             Next
 
             ' Los ordeno segun nivel de caña (quick sort)

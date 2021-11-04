@@ -53,8 +53,9 @@ Public Sub Trabajar(ByVal UserIndex As Integer, ByVal Skill As e_Skill)
 
 296                         If (MapData(.Pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).Blocked And FLAG_AGUA) <> 0 And Not MapData(.Pos.Map, .Pos.X, .Pos.Y).trigger = e_Trigger.PESCAINVALIDA Then
 298                             If (MapData(.Pos.Map, .Pos.X, .Pos.Y).Blocked And FLAG_AGUA) <> 0 Or (MapData(.Pos.Map, .Pos.X + 1, .Pos.Y).Blocked And FLAG_AGUA) <> 0 Or (MapData(.Pos.Map, .Pos.X, .Pos.Y + 1).Blocked And FLAG_AGUA) <> 0 Or (MapData(.Pos.Map, .Pos.X - 1, .Pos.Y).Blocked And FLAG_AGUA) <> 0 Or (MapData(.Pos.Map, .Pos.X, .Pos.Y - 1).Blocked And FLAG_AGUA) <> 0 Then
+300                                 .flags.PescandoEspecial = False
+                                    Call DoPescar(UserIndex, False)
 
-300                                 Call DoPescar(UserIndex, False)
                                    
                                 Else
 304                                 Call WriteConsoleMsg(UserIndex, "Acércate a la costa para pescar.", e_FontTypeNames.FONTTYPE_INFO)
@@ -1636,7 +1637,7 @@ Public Sub DoPescar(ByVal UserIndex As Integer, Optional ByVal RedDePesca As Boo
         Dim Suerte       As Integer
         Dim res          As Long
         Dim RestaStamina As Byte
-
+        Dim esEspecial   As Boolean
 100     RestaStamina = IIf(RedDePesca, 5, 1)
     
 102     With UserList(UserIndex)
@@ -1668,17 +1669,38 @@ Public Sub DoPescar(ByVal UserIndex As Integer, Optional ByVal RedDePesca As Boo
     
 118         res = RandomNumber(1, Suerte)
             'HarThaoS: Movimiento de caña, lo saco. Se hace exponencial la cantidad de paquetes dependiendo la cantida de usuarios
-120         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageArmaMov(.Char.CharIndex))
+            If MapInfo(UserList(UserIndex).Pos.Map).Seguro = 1 Then
+120             Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageArmaMov(.Char.CharIndex))
+            Else
+                Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageArmaMov(.Char.CharIndex))
+            End If
 
 122         If res < 6 Then
 
                 Dim nPos  As t_WorldPos
                 Dim MiObj As t_Obj
-
+                
 124             MiObj.amount = IIf(.clase = Trabajador, RandomNumber(1, 3), 1) * RecoleccionMult
 126             MiObj.ObjIndex = ObtenerPezRandom(ObjData(.Invent.HerramientaEqpObjIndex).Power)
-                 ' AGREGAR FX
-                Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, 253, 25, False, ObjData(MiObj.ObjIndex).GrhIndex))
+                Debug.Print "Num pescadito: " & MiObj.ObjIndex
+                esEspecial = False
+                Dim i As Long
+                For i = 1 To UBound(PecesEspeciales)
+                    If PecesEspeciales(i).ObjIndex = MiObj.ObjIndex Then
+                        esEspecial = True
+                    End If
+                Next i
+                
+                If Not esEspecial Then
+                    Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, 253, 25, False, ObjData(MiObj.ObjIndex).GrhIndex))
+                Else
+                    .flags.PescandoEspecial = True
+156                 Call WriteMacroTrabajoToggle(UserIndex, False)
+                    .Stats.NumObj_PezEspecial = MiObj.ObjIndex
+                    Call WritePelearConPezEspecial(UserIndex)
+                    Exit Sub
+                End If
+                
 128             If MiObj.ObjIndex = 0 Then Exit Sub
         
 130             If Not MeterItemEnInventario(UserIndex, MiObj) Then
@@ -1694,7 +1716,6 @@ Public Sub DoPescar(ByVal UserIndex As Integer, Optional ByVal RedDePesca As Boo
                ' End If
                
                 ' Al pescar también podés sacar cosas raras (se setean desde RecursosEspeciales.dat)
-                Dim i As Integer
 
                 ' Por cada drop posible
 136             For i = 1 To UBound(EspecialesPesca)
@@ -1724,7 +1745,7 @@ Public Sub DoPescar(ByVal UserIndex As Integer, Optional ByVal RedDePesca As Boo
     
             'Ladder 06/07/14 Activamos el macro de trabajo
 154         If .Counters.Trabajando = 1 And Not .flags.UsandoMacro Then
-156             Call WriteMacroTrabajoToggle(UserIndex, True)
+                Call WriteMacroTrabajoToggle(UserIndex, True)
             End If
     
         End With
@@ -2857,4 +2878,21 @@ PuedeDomarMascota_Err:
 110     Call TraceError(Err.Number, Err.Description, "Trabajo.PuedeDomarMascota", Erl)
 
         
+End Function
+
+Public Function EntregarPezEspecial(ByVal UserIndex As Integer)
+    With UserList(UserIndex)
+    
+        Dim obj As t_Obj
+        obj.amount = 1
+        obj.ObjIndex = .Stats.NumObj_PezEspecial
+        If Not MeterItemEnInventario(UserIndex, obj) Then
+            Call TirarItemAlPiso(.Pos, obj)
+        End If
+        
+        Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, 253, 25, False, ObjData(obj.ObjIndex).GrhIndex))
+        Call WriteConsoleMsg(UserIndex, "Felicitaciones has pescado un pez de gran porte ( " & ObjData(obj.ObjIndex).Name & " )", e_FontTypeNames.FONTTYPE_INFOBOLD)
+        .Stats.NumObj_PezEspecial = 0
+        .flags.PescandoEspecial = False
+    End With
 End Function
