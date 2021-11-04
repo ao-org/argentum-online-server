@@ -516,6 +516,7 @@ Private Enum ClientPacketID
     resetearPersonaje
     DeleteItem
     FinalizarPescaEspecial
+    RomperCania
     [PacketCount]
 End Enum
 
@@ -1300,6 +1301,8 @@ On Error Resume Next
             Call HandleDeleteItem(UserIndex)
         Case ClientPacketID.FinalizarPescaEspecial
             Call HandleFinalizarPescaEspecial(UserIndex)
+        Case ClientPacketID.RomperCania
+            Call HandleRomperCania(UserIndex)
         Case Else
             Err.raise -1, "Invalid Message"
     End Select
@@ -18690,7 +18693,43 @@ Private Sub HandleResetearPersonaje(ByVal UserIndex As Integer)
 HandleResetearPersonaje_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleResetearPersonaje", Erl)
 End Sub
+HandleRomperCania
+Private Sub HandleRomperCania(ByVal UserIndex As Integer)
 
+    On Error GoTo HandleRomperCania_Err:
+    
+    Dim LoopC As Integer
+    Dim Obj As t_Obj
+    
+    With UserList(UserIndex)
+    
+        Obj.ObjIndex = .Invent.HerramientaEqpObjIndex
+        Obj.amount = 1
+        For LoopC = 1 To MAX_INVENTORY_SLOTS
+            
+            'Rastreo la caña que está usando en el inventario y se la rompo
+            If .Invent.Object(LoopC).ObjIndex = .Invent.HerramientaEqpObjIndex Then
+                'Le quito una caña
+                Call QuitarUserInvItem(UserIndex, LoopC, 1)
+                Call UpdateUserInv(False, UserIndex, LoopC)
+                'Le doy una rota
+              '  If Not MeterItemEnInventario(UserIndex, Obj) Then
+              '      Call TirarItemAlPiso(.Pos, Obj)
+              '  Else
+                
+              '  End If
+                Exit Sub
+            End If
+
+262     Next LoopC
+
+    End With
+    
+     'UserList(UserIndex).Invent.HerramientaEqpObjIndex
+    
+HandleRomperCania_Err:
+102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRomperCania", Erl)
+End Sub
 Private Sub HandleFinalizarPescaEspecial(ByVal UserIndex As Integer)
 
     On Error GoTo HandleFinalizarPescaEspecial_Err:
