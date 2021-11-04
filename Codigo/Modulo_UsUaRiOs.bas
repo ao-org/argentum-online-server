@@ -585,7 +585,9 @@ Public Function ConnectUser_Complete(ByVal UserIndex As Integer, _
 885         Call WriteUserCharIndexInServer(UserIndex)
 890         Call ActualizarVelocidadDeUsuario(UserIndex)
         
-895         If EsGM(UserIndex) Then Call DoAdminInvisible(UserIndex)
+895         If .flags.Privilegios And (e_PlayerType.SemiDios Or e_PlayerType.Dios Or e_PlayerType.Admin) Then
+                Call DoAdminInvisible(UserIndex)
+            End If
 900         Call WriteUpdateUserStats(UserIndex)
 905         Call WriteUpdateHungerAndThirst(UserIndex)
 910         Call WriteUpdateDM(UserIndex)

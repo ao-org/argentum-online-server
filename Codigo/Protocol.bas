@@ -7786,7 +7786,7 @@ Private Sub HandleWhere(ByVal UserIndex As Integer)
         
 102         UserName = Reader.ReadString8()
         
-104         If (.flags.Privilegios And (e_PlayerType.Consejero Or e_PlayerType.user)) = 0 Then
+104         If (.flags.Privilegios And (e_PlayerType.SemiDios Or e_PlayerType.Consejero Or e_PlayerType.user)) = 0 Then
 106             tUser = NameIndex(UserName)
 
 108             If tUser <= 0 Then
@@ -7796,7 +7796,6 @@ Private Sub HandleWhere(ByVal UserIndex As Integer)
 112                 If CompararPrivilegiosUser(UserIndex, tUser) >= 0 Then
 114                     Call WriteConsoleMsg(UserIndex, "Ubicación  " & UserName & ": " & UserList(tUser).Pos.Map & ", " & UserList(tUser).Pos.X & ", " & UserList(tUser).Pos.Y & ".", e_FontTypeNames.FONTTYPE_INFO)
 116                     Call LogGM(.Name, "/Donde " & UserName)
-
                     End If
 
                 End If
@@ -8053,6 +8052,12 @@ Private Sub HandleWarpChar(ByVal UserIndex As Integer)
 136             ElseIf InMapBounds(Map, X, Y) Then
                     'Harthas no permitimos que se use el telep para llevas User a casas privadas. ReyarB
                     If UCase$(UserName) <> "YO" Then
+                        If .flags.Privilegios And e_PlayerType.Consejero Or e_PlayerType.SemiDios Then
+                            If MapInfo(Map).Seguro = 0 Then
+                                Call WriteConsoleMsg(UserIndex, "Solamente puedes teletransportar gente a zonas seguras.", e_FontTypeNames.FONTTYPE_INFO)
+                                Exit Sub
+                            End If
+                        End If
                         Call WarpToLegalPos(tUser, Map, X, Y, True, True)
                     Else
 138                     Call FindLegalPos(tUser, Map, X, Y)
@@ -8491,7 +8496,7 @@ Private Sub HandleInvisible(ByVal UserIndex As Integer)
         '***************************************************
 100     With UserList(UserIndex)
 
-102         If .flags.Privilegios And e_PlayerType.user Then Exit Sub
+102         If .flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero) Then Exit Sub
         
 104         Call DoAdminInvisible(UserIndex)
 
@@ -8606,7 +8611,7 @@ Private Sub HandleWorking(ByVal UserIndex As Integer)
     
 100     With UserList(UserIndex)
 
-102         If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.RoleMaster)) Then
+102         If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero Or e_PlayerType.SemiDios)) Then
 104             Call WriteConsoleMsg(UserIndex, "Servidor » /TRABAJANDO es un comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
@@ -10061,6 +10066,12 @@ Private Sub HandleReviveChar(ByVal UserIndex As Integer)
 
                         'If dead, show him alive (naked).
 118                     If .flags.Muerto = 1 Then
+                            If UserList(UserIndex).flags.Privilegios And e_PlayerType.SemiDios Then
+                                If MapInfo(.Pos.Map).Seguro = 0 Then
+                                     Call WriteConsoleMsg(UserIndex, "Servidor » No puedes teletransportar muertos desde una zona insegura.", e_FontTypeNames.FONTTYPE_INFO)
+                                     Exit Sub
+                                End If
+                            End If
 120                         .flags.Muerto = 0
                         
                             'Call DarCuerpoDesnudo(tUser)
@@ -10557,6 +10568,9 @@ Private Sub HandleSummonChar(ByVal UserIndex As Integer)
 102     UserName = Reader.ReadString8()
             
 104     If .flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios) Then
+
+           
+            
 106         If LenB(UserName) <> 0 Then
 108             tUser = NameIndex(UserName)
 
@@ -10599,27 +10613,35 @@ Private Sub HandleSummonChar(ByVal UserIndex As Integer)
                 
             ' Consejeros sólo pueden traer en el mismo mapa
 136         If NotConsejero Or .Pos.Map = UserList(tUser).Pos.Map Then
-                    
-                    ' Si el admin está invisible no mostramos el nombre
-138                 If NotConsejero And .flags.AdminInvisible = 1 Then
-140                     Call WriteConsoleMsg(tUser, "Te han trasportado.", e_FontTypeNames.FONTTYPE_INFO)
-                    Else
-142                     Call WriteConsoleMsg(tUser, .Name & " te ha trasportado.", e_FontTypeNames.FONTTYPE_INFO)
-                    End If
-                    
-                    'HarThaoS: Si lo sumonean a un mapa interdimensional desde uno no interdimensional me guardo la posición de donde viene.
-144                 If EsMapaInterdimensional(.Pos.Map) And Not EsMapaInterdimensional(UserList(tUser).Pos.Map) Then
-146                     UserList(tUser).flags.ReturnPos = UserList(tUser).Pos
-                    End If
-                    
-                    
-
-148             Call WarpToLegalPos(tUser, .Pos.Map, .Pos.X, .Pos.Y + 1, True, True)
-
-150             Call WriteConsoleMsg(UserIndex, "Has traído a " & UserList(tUser).Name & ".", e_FontTypeNames.FONTTYPE_INFO)
-                    
-152             Call LogGM(.Name, "/SUM " & UserName & " Map:" & .Pos.Map & " X:" & .Pos.X & " Y:" & .Pos.Y)
                 
+                 If .flags.Privilegios And (e_PlayerType.SemiDios) Then
+                    If MapInfo(.Pos.Map).Seguro = 0 Then
+                        Call WriteConsoleMsg(UserIndex, "Solamente puedes traer usuarios a zonas seguras.", e_FontTypeNames.FONTTYPE_INFO)
+                        Exit Sub
+                    End If
+                    If UserList(tUser).flags.Muerto = 1 Then
+                        Call WriteConsoleMsg(UserIndex, "No puedes transportar a un muerto.", e_FontTypeNames.FONTTYPE_INFO)
+                        Exit Sub
+                    End If
+                End If
+                
+                ' Si el admin está invisible no mostramos el nombre
+138             If NotConsejero And .flags.AdminInvisible = 1 Then
+140                 Call WriteConsoleMsg(tUser, "Te han trasportado.", e_FontTypeNames.FONTTYPE_INFO)
+                Else
+142                 Call WriteConsoleMsg(tUser, .Name & " te ha trasportado.", e_FontTypeNames.FONTTYPE_INFO)
+                End If
+                   
+                'HarThaoS: Si lo sumonean a un mapa interdimensional desde uno no interdimensional me guardo la posición de donde viene.
+144             If EsMapaInterdimensional(.Pos.Map) And Not EsMapaInterdimensional(UserList(tUser).Pos.Map) Then
+146                 UserList(tUser).flags.ReturnPos = UserList(tUser).Pos
+                End If
+                        
+                        
+    
+148             Call WarpToLegalPos(tUser, .Pos.Map, .Pos.X, .Pos.Y + 1, True, True)
+                Call WriteConsoleMsg(UserIndex, "Has traído a " & UserList(tUser).Name & ".", e_FontTypeNames.FONTTYPE_INFO)
+152             Call LogGM(.Name, "/SUM " & UserName & " Map:" & .Pos.Map & " X:" & .Pos.X & " Y:" & .Pos.Y)
                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(.Name & " a trasladado a " & UserName, e_FontTypeNames.FONTTYPE_INFO))
                 
             End If
