@@ -1803,9 +1803,14 @@ Private Sub HandleWalk(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
 102         Heading = Reader.ReadInt8()
-        
+            
+            If .flags.PescandoEspecial Then
+                .Stats.NumObj_PezEspecial = 0
+                .flags.PescandoEspecial = False
+            End If
+            
 104         If .flags.Paralizado = 0 And .flags.Inmovilizado = 0 Then
-        
+                
 106             If .flags.Comerciando Or .flags.Crafteando <> 0 Then Exit Sub
 
 108             If .flags.Meditando Then
