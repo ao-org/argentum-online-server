@@ -508,7 +508,7 @@ Private Sub InicializarConstantes()
 110     ListaRazas(e_Raza.Drow) = "Elfo Oscuro"
 112     ListaRazas(e_Raza.Gnomo) = "Gnomo"
 114     ListaRazas(e_Raza.Enano) = "Enano"
-        'ListaRazas(e_Raza.Orco) = "Orco"
+        ListaRazas(e_Raza.Orco) = "Orco"
     
 116     ListaClases(e_Class.Mage) = "Mago"
 118     ListaClases(e_Class.Cleric) = "Clérigo"
