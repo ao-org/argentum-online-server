@@ -2882,17 +2882,18 @@ End Function
 
 Public Function EntregarPezEspecial(ByVal UserIndex As Integer)
     With UserList(UserIndex)
-    
-        Dim obj As t_Obj
-        obj.amount = 1
-        obj.ObjIndex = .Stats.NumObj_PezEspecial
-        If Not MeterItemEnInventario(UserIndex, obj) Then
-            Call TirarItemAlPiso(.Pos, obj)
+        If .flags.PescandoEspecial Then
+            Dim obj As t_Obj
+            obj.amount = 1
+            obj.ObjIndex = .Stats.NumObj_PezEspecial
+            If Not MeterItemEnInventario(UserIndex, obj) Then
+                Call TirarItemAlPiso(.Pos, obj)
+            End If
+            
+            Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, 253, 25, False, ObjData(obj.ObjIndex).GrhIndex))
+            Call WriteConsoleMsg(UserIndex, "Felicitaciones has pescado un pez de gran porte ( " & ObjData(obj.ObjIndex).Name & " )", e_FontTypeNames.FONTTYPE_INFOBOLD)
+            .Stats.NumObj_PezEspecial = 0
+            .flags.PescandoEspecial = False
         End If
-        
-        Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, 253, 25, False, ObjData(obj.ObjIndex).GrhIndex))
-        Call WriteConsoleMsg(UserIndex, "Felicitaciones has pescado un pez de gran porte ( " & ObjData(obj.ObjIndex).Name & " )", e_FontTypeNames.FONTTYPE_INFOBOLD)
-        .Stats.NumObj_PezEspecial = 0
-        .flags.PescandoEspecial = False
     End With
 End Function
