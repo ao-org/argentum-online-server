@@ -530,7 +530,7 @@ Public Const NUMCLASES      As Byte = 12
 
 ''
 ' Cantidad de Razas
-Public Const NUMRAZAS       As Byte = 5
+Public Const NUMRAZAS       As Byte = 6
 
 ''
 ' Valor maximo de cada skill
