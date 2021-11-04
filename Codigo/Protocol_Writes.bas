@@ -3479,6 +3479,21 @@ WriteGoliathInit_Err:
         Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteGoliathInit", Erl)
         '</EhFooter>
 End Sub
+Public Sub WritePelearConPezEspecial(ByVal UserIndex As Integer)
+            '<EhHeader>
+        On Error GoTo WritePelearConPezEspecial_Err
+        '</EhHeader>
+        
+100     Call Writer.WriteInt(ServerPacketID.PelearConPezEspecial)
+106     Call modSendData.SendData(ToIndex, UserIndex)
+        '<EhFooter>
+        Exit Sub
+
+WritePelearConPezEspecial_Err:
+        Call Writer.Clear
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WritePelearConPezEspecial", Erl)
+        '</EhFooter>
+End Sub
 
 Public Sub WriteUpdateBankGld(ByVal UserIndex As Integer)
         '<EhHeader>

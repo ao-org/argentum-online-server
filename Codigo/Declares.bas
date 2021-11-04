@@ -1444,6 +1444,7 @@ Public Type t_UserStats
     NPCsMuertos As Integer
     SkillPts As Integer
     Advertencias As Byte
+    NumObj_PezEspecial As Integer
 End Type
 
 'Sistema de Barras
@@ -1461,6 +1462,7 @@ End Type
 'Flags
 Public Type t_UserFlags
     Nadando As Byte
+    PescandoEspecial As Boolean
     
     NecesitaOxigeno As Boolean
 
@@ -2349,6 +2351,8 @@ Public EspecialesTala()                   As t_Obj
 Public EspecialesPesca()                  As t_Obj
 
 Public Peces()                            As t_Obj
+
+Public PecesEspeciales()                  As t_Obj
 
 Public PesoPeces()                        As Long
 

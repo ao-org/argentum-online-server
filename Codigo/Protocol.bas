@@ -186,6 +186,7 @@ Public Enum ServerPacketID
     AnswerReset
     ObjQuestListSend
     UpdateBankGld
+    PelearConPezEspecial
     [PacketCount]
 End Enum
 
@@ -514,6 +515,7 @@ Private Enum ClientPacketID
     ResetChar               '/RESET NICK
     resetearPersonaje
     DeleteItem
+    FinalizarPescaEspecial
     [PacketCount]
 End Enum
 
@@ -1296,6 +1298,8 @@ On Error Resume Next
             Call HandleResetearPersonaje(UserIndex)
         Case ClientPacketID.DeleteItem
             Call HandleDeleteItem(UserIndex)
+        Case ClientPacketID.FinalizarPescaEspecial
+            Call HandleFinalizarPescaEspecial(UserIndex)
         Case Else
             Err.raise -1, "Invalid Message"
     End Select
@@ -7442,7 +7446,7 @@ Private Sub HandleGMMessage(ByVal UserIndex As Integer)
                     'Analize chat...
 110                 Call Statistics.ParseChat(Message)
             
-112                 Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(.Name & " » " & Message, e_FontTypeNames.FONTTYPE_GMMSG))
+112                 Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(.Name & " » " & message, e_FontTypeNames.FONTTYPE_GMMSG))
 
                 End If
 
@@ -18659,7 +18663,16 @@ Private Sub HandleResetearPersonaje(ByVal UserIndex As Integer)
 HandleResetearPersonaje_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleResetearPersonaje", Erl)
 End Sub
+HandleFinalizarPescaEspecial
+Private Sub HandleFinalizarPescaEspecial(ByVal UserIndex As Integer)
 
+    On Error GoTo HandleFinalizarPescaEspecial_Err:
+    
+    Call EntregarPezEspecial(UserIndex)
+    
+HandleFinalizarPescaEspecial_Err:
+102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleFinalizarPescaEspecial", Erl)
+End Sub
 Private Sub HandleDeleteItem(ByVal UserIndex As Integer)
     On Error GoTo HandleDeleteItem_Err:
 
