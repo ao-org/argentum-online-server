@@ -15714,6 +15714,34 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
             Dim Equipado  As Boolean
             Dim Equipado2 As Boolean
             Dim Equipado3 As Boolean
+            Dim ObjCania As t_Obj
+            'HarThaoS: Si es un hilo de pesca y lo estoy arrastrando en una caña rota borro del slot viejo y en el nuevo pongo la caña correspondiente
+            If .Invent.Object(SlotViejo).ObjIndex = 2183 Then
+            
+                Select Case .Invent.Object(SlotNuevo).ObjIndex
+                     Case 3457
+                        ObjCania.ObjIndex = 881
+                    Case 3456
+                        ObjCania.ObjIndex = 2121
+                    Case 3459
+                        ObjCania.ObjIndex = 2132
+                    Case 3458
+                        ObjCania.ObjIndex = 2133
+                End Select
+                ObjCania.amount = 1
+                'si el objeto que estaba pisando era una caña rota.
+                If ObjCania.ObjIndex > 0 Then
+                    'Quitamos del inv el item
+                    Call QuitarUserInvItem(UserIndex, SlotViejo, 1)
+                    Call UpdateUserInv(False, UserIndex, SlotViejo)
+                    Call QuitarUserInvItem(UserIndex, SlotNuevo, 1)
+                    Call UpdateUserInv(False, UserIndex, SlotNuevo)
+                    Call MeterItemEnInventario(UserIndex, ObjCania)
+                    Exit Sub
+                End If
+                
+            End If
+            
         
 106         If (SlotViejo > .CurrentInventorySlots) Or (SlotNuevo > .CurrentInventorySlots) Then
 108             Call WriteConsoleMsg(UserIndex, "Espacio no desbloqueado.", e_FontTypeNames.FONTTYPE_INFOIAO)
@@ -18700,28 +18728,38 @@ Private Sub HandleRomperCania(ByVal UserIndex As Integer)
     
     Dim LoopC As Integer
     Dim Obj As t_Obj
-    
+    Dim caniaOld As Integer
     With UserList(UserIndex)
     
-        Obj.ObjIndex = .Invent.HerramientaEqpObjIndex
-        Obj.amount = 1
-        For LoopC = 1 To MAX_INVENTORY_SLOTS
+    obj.ObjIndex = .Invent.HerramientaEqpObjIndex
+    caniaOld = .Invent.HerramientaEqpObjIndex
+    obj.amount = 1
+    For LoopC = 1 To MAX_INVENTORY_SLOTS
             
-            'Rastreo la caña que está usando en el inventario y se la rompo
-            If .Invent.Object(LoopC).ObjIndex = .Invent.HerramientaEqpObjIndex Then
-                'Le quito una caña
-                Call QuitarUserInvItem(UserIndex, LoopC, 1)
-                Call UpdateUserInv(False, UserIndex, LoopC)
-                'Le doy una rota
-              '  If Not MeterItemEnInventario(UserIndex, Obj) Then
-              '      Call TirarItemAlPiso(.Pos, Obj)
-              '  Else
-                
-              '  End If
-                Exit Sub
-            End If
+        'Rastreo la caña que está usando en el inventario y se la rompo
+        If .Invent.Object(LoopC).ObjIndex = .Invent.HerramientaEqpObjIndex Then
+            'Le quito una caña
+            Call QuitarUserInvItem(UserIndex, LoopC, 1)
+            Call UpdateUserInv(False, UserIndex, LoopC)
+            Select Case caniaOld
+                Case 881
+                    obj.ObjIndex = 3457
+                Case 2121
+                    obj.ObjIndex = 3456
+                Case 2132
+                    obj.ObjIndex = 3459
+                Case 2133
+                    obj.ObjIndex = 3458
+            End Select
+            
+            Call MeterItemEnInventario(UserIndex, obj)
+            
+            
+            Exit Sub
+            
+        End If
 
-262     Next LoopC
+262 Next LoopC
 
     End With
     
