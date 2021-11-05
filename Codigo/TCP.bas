@@ -1144,6 +1144,7 @@ Sub ResetBasicUserInfo(ByVal UserIndex As Integer)
                 '.CriminalesMatados = 0
 166             .NPCsMuertos = 0
 168             .UsuariosMatados = 0
+                .PuntosPesca = 0
 170             .SkillPts = 0
 172             .GLD = 0
 174             .UserAtributos(1) = 0

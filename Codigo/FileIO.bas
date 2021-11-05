@@ -1582,6 +1582,7 @@ Sub LoadOBJData()
     
 494             .MinHam = val(Leer.GetValue(ObjKey, "MinHam"))
 496             .MinSed = val(Leer.GetValue(ObjKey, "MinAgu"))
+497             .PuntosPesca = val(Leer.GetValue(ObjKey, "PuntosPesca"))
     
 498             .MinDef = val(Leer.GetValue(ObjKey, "MINDEF"))
 500             .MaxDef = val(Leer.GetValue(ObjKey, "MAXDEF"))
