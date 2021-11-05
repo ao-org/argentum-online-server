@@ -458,7 +458,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
             
             
             
-104         ReDim Params(88)
+104         ReDim Params(89)
 
             Dim i As Integer
         
@@ -510,6 +510,7 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
 198         Params(PostInc(i)) = .Stats.MaxHit
 200         Params(PostInc(i)) = .Stats.NPCsMuertos
 202         Params(PostInc(i)) = .Stats.UsuariosMatados
+203         Params(PostInc(i)) = .Stats.PuntosPesca
 204         Params(PostInc(i)) = .Stats.InventLevel
 206         Params(PostInc(i)) = .Stats.ELO
 208         Params(PostInc(i)) = .flags.Desnudo
@@ -880,6 +881,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
 198         .Stats.MaxHit = RS!max_hit
 200         .Stats.NPCsMuertos = RS!killed_npcs
 202         .Stats.UsuariosMatados = RS!killed_users
+203         .Stats.PuntosPesca = rs!puntos_pesca
 204         .Stats.InventLevel = RS!invent_level
 206         .Stats.ELO = RS!ELO
 208         .flags.Desnudo = RS!is_naked

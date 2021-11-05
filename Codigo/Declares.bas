@@ -509,6 +509,7 @@ Public Enum e_NPCType
     Quest = 17
     Pretoriano = 18
     DummyTarget = 19
+    EntregaPesca = 20
     
 End Enum
 
@@ -1336,6 +1337,7 @@ Public Type t_ObjData
     Log As Byte 'es un objeto que queremos loguear? Pablo (ToxicWaste) 07/09/07
     NoLog As Byte 'es un objeto que esta prohibido loguear?
     QuestId As Integer
+    PuntosPesca As Long
 End Type
 
 '[Pablo ToxicWaste]
@@ -1440,6 +1442,7 @@ Public Type t_UserStats
     UserAtributosBackUP(1 To NUMATRIBUTOS) As Byte
     UserHechizos(1 To MAXUSERHECHIZOS) As Integer
     UsuariosMatados As Long
+    PuntosPesca As Long
     CriminalesMatados As Long
     NPCsMuertos As Integer
     SkillPts As Integer

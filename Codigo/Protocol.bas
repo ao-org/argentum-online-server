@@ -16780,10 +16780,32 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
                 
                         End If
                 
+                    Case 5
+                        Dim i As Integer, j As Integer
+                        
+                        With UserList(UserIndex)
+                            For i = 1 To MAX_INVENTORY_SLOTS
+                                For j = 1 To UBound(PecesEspeciales)
+                                    If .Invent.Object(i).ObjIndex = PecesEspeciales(j).ObjIndex Then
+                                        .Stats.PuntosPesca = .Stats.PuntosPesca + (ObjData(.Invent.Object(i).ObjIndex).PuntosPesca * .Invent.Object(i).amount)
+                                        Call QuitarUserInvItem(UserIndex, i, .Invent.Object(i).amount)
+                                        Call UpdateUserInv(False, UserIndex, i)
+                                    End If
+                                Next j
+                            Next i
+                            Dim charindexstr As Integer
+                            charindexstr = str(NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex)
+                            If charindexstr > 0 Then
+                                Call WriteChatOverHead(UserIndex, "Felicitaciones! Ahora tienes un total de " & .Stats.PuntosPesca & " puntos de pesca.", charindexstr, &HFFFF00)
+                            End If
+                            .flags.pregunta = 0
+                        End With
+                                                
 236
 262                 Case Else
 264                     Call WriteConsoleMsg(UserIndex, "No tienes preguntas pendientes.", e_FontTypeNames.FONTTYPE_INFOIAO)
-                    
+
+                        
                 End Select
         
             Else

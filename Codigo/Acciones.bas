@@ -346,7 +346,26 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
 318                     Call WritePreguntaBox(UserIndex, "¿Te gustaria ser ciudadano de " & DeDonde & "?")
                 
                     End If
+                ElseIf NpcList(TempCharIndex).NPCtype = e_NPCType.EntregaPesca Then
+                    Dim i As Integer, j As Integer
+                    Dim PuntosTotales As Integer
                     
+                    For i = 1 To MAX_INVENTORY_SLOTS
+                        For j = 1 To UBound(PecesEspeciales)
+                            If UserList(UserIndex).Invent.Object(i).ObjIndex = PecesEspeciales(j).ObjIndex Then
+                                PuntosTotales = PuntosTotales + (ObjData(UserList(UserIndex).Invent.Object(i).ObjIndex).PuntosPesca * UserList(UserIndex).Invent.Object(i).amount)
+                            End If
+                        Next j
+                    Next i
+                    
+                    If PuntosTotales > 0 Then
+319                     UserList(UserIndex).flags.pregunta = 5
+                        Call WritePreguntaBox(UserIndex, "Tienes un total de " & PuntosTotales & " puntos para reclamar, ¿Desea aceptar?")
+                    Else
+                        Dim charIndexstr As Integer
+                        charIndexstr = str(NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex)
+                        Call WriteChatOverHead(UserIndex, "No tienes ningún trofeo de pesca para entregar.", charIndexstr, &HFFFF00)
+                    End If
 320             ElseIf NpcList(TempCharIndex).Craftea > 0 Then
 322                 If UserList(UserIndex).flags.Muerto = 1 Then
 324                     Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFOIAO)
