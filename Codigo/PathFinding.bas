@@ -423,8 +423,6 @@ End Function
 Private Sub MakePath(ByVal NpcIndex As Integer, ByVal X As Integer, ByVal Y As Integer)
         
         On Error GoTo MakePath_Err
-        
-        If NpcIndex > 0 Then Exit Sub
  
 100     With NpcList(NpcIndex)
             ' Obtenemos la distancia total del camino
