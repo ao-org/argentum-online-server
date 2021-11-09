@@ -585,7 +585,9 @@ Public Function ConnectUser_Complete(ByVal UserIndex As Integer, _
 885         Call WriteUserCharIndexInServer(UserIndex)
 890         Call ActualizarVelocidadDeUsuario(UserIndex)
         
-895         If EsGM(UserIndex) Then Call DoAdminInvisible(UserIndex)
+895         If .flags.Privilegios And (e_PlayerType.SemiDios Or e_PlayerType.Dios Or e_PlayerType.Admin) Then
+                Call DoAdminInvisible(UserIndex)
+            End If
 900         Call WriteUpdateUserStats(UserIndex)
 905         Call WriteUpdateHungerAndThirst(UserIndex)
 910         Call WriteUpdateDM(UserIndex)
@@ -898,7 +900,8 @@ Sub RevivirUsuario(ByVal UserIndex As Integer, Optional ByVal MedianteHechizo As
     
 206         Call ActualizarVelocidadDeUsuario(UserIndex)
 208         Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
-
+            
+         Call MakeUserChar(True, UserList(UserIndex).Pos.Map, UserIndex, UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y, 0)
         End With
         
         Exit Sub
@@ -1315,6 +1318,10 @@ Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As e_Heading) A
 104         Call HeadtoPos(nHeading, nPos)
 
 106         If Not LegalWalk(.Pos.Map, nPos.X, nPos.Y, nHeading, .flags.Navegando = 1, .flags.Navegando = 0, .flags.Montado) Then
+                Exit Function
+            End If
+            
+            If .flags.Navegando And .Invent.BarcoObjIndex = 197 And Not (MapData(.Pos.Map, nPos.X, nPos.Y).trigger = e_Trigger.DETALLEAGUA Or MapData(.Pos.Map, nPos.X, nPos.Y).trigger = e_Trigger.NADOCOMBINADO Or MapData(.Pos.Map, nPos.X, nPos.Y).trigger = e_Trigger.VALIDONADO) Then
                 Exit Function
             End If
 
@@ -2015,6 +2022,34 @@ Sub UserDie(ByVal UserIndex As Integer)
 234         If .flags.EnReto Then
 236             Call MuereEnReto(UserIndex)
             End If
+            
+            'Borramos todos los personajes del area
+            
+            
+            Dim LoopC     As Long
+            Dim tempIndex As Integer
+            Dim Map       As Integer
+            Dim AreaX     As Integer
+            Dim AreaY     As Integer
+            
+             AreaX = UserList(UserIndex).AreasInfo.AreaPerteneceX
+             AreaY = UserList(UserIndex).AreasInfo.AreaPerteneceY
+                        
+             For LoopC = 1 To ConnGroups(UserList(UserIndex).Pos.Map).CountEntrys
+                 tempIndex = ConnGroups(UserList(UserIndex).Pos.Map).UserEntrys(LoopC)
+        
+                If UserList(tempIndex).AreasInfo.AreaReciveX And AreaX Then  'Esta en el area?
+                    If UserList(tempIndex).AreasInfo.AreaReciveY And AreaY Then
+        
+                        If UserList(tempIndex).ConnIDValida And tempIndex <> UserIndex Then
+                            Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageCharacterRemove(UserList(tempIndex).Char.CharIndex, True))
+                        End If
+                    End If
+                End If
+        
+             Next LoopC
+            
+            
 
         End With
 
@@ -2236,10 +2271,6 @@ Sub WarpUserChar(ByVal UserIndex As Integer, _
 
                 End If
             
-144             If IntervaloPuedeSerAtacado > 0 Then
-146                 .Counters.TiempoDeInmunidad = IntervaloPuedeSerAtacado
-148                 .flags.Inmunidad = 1
-                End If
 
 150             If RequiereOxigeno(OldMap) = True And .flags.NecesitaOxigeno = False Then  'And .Stats.ELV < 35 Then
         

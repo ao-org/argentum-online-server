@@ -881,7 +881,7 @@ Function LegalWalk(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer,
             End If
             
 118         If Not PuedeAgua Then
-120             If (.Blocked And FLAG_AGUA) <> 0 Then Exit Function
+120             If (.Blocked And FLAG_AGUA) <> 0 And Not .trigger = e_Trigger.VALIDOPUENTE Then Exit Function
             End If
             
 122         If Not PuedeTierra Then

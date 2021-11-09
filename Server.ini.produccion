@@ -7,7 +7,7 @@ CuentasPath=..\re20-server\cuentas\
 DeleteCuentasPath=..\re20-server\DeleteCuentas\
 
 [CHECKSUM]
-Cliente=88e1a975072bbbe2fef9ae4025dfed22
+Cliente=fcdc3a4633ef1efd2bf5eadb67c3faf3
 
 [INIT]
 NumCuentas=5
@@ -31,37 +31,32 @@ MaxUsers=1000
 Admines=2
 Dioses=2
 SemiDioses=10
-Consejeros=7
+Consejeros=6
 
 [Admines]
 Admin1=Haracin|hgarofalo79@gmail.com
 Admin2=ReyarB|reyarb@fibertel.com.ar
 
 [Dioses]
-Dios1=AOLB TOKEN|info@argentumonline.org
-Dios2=Recox|lucas.recoaro@gmail.com
+Dios1=Harthaos|martintrionfetti@gmail.com
+Dios2=Nakrull|Ytocarp@gmail.com
 
 [SemiDioses]
 SemiDios1=chicken|raamaorc@gmail.com
 SemiDios2=Baliam|loganfenix2000@yahoo.com.mx
-SemiDios3=Harthaos|martintrionfetti@gmail.com
+SemiDios3=ZeuS|reyarb@fibertel.com.ar
 SemiDios4=Vox|ricardo_r_jc@hotmail.com
 SemiDios5=Sir Hongo|nicocapelli85@hotmail.com
 SemiDios6=Jopi|jopiodz00@gmail.com
-SemiDios7=Morgolock|gulfas@gmail.com
-SemiDios8=ZeuS|reyarb@fibertel.com.ar
-SemiDios9=Nakrull|Ytocarp@gmail.com
-SemiDios10=lorena|LORENITAH1995@HOTMAIL.ES
+SemiDios7=lorena|LORENITAH1995@HOTMAIL.ES
+Semidios8=Animal|anormal@gmail.com
+Semidios9=Recox|lucas.recoaro@gmail.com
+Semidios10=GalaK|Sforzini.jonatan@gmail.com
 
 [Consejeros]
 Consejero1=Terrel|loganfenix2000@yahoo.com.mx
-Consejero2=GalaK|Sforzini.jonatan@gmail.com
-Consejero3=Lord Fers|lordfers@gmail.com
-Consejero4=Hainnor|Jere_estandar@hotmail.com.ar
-Consejero5=Ronin|erikeleusippi@gmail.com
-Consejero6=Maraxus|reyarb@fibertel.com.ar
-Consejero7=Animal|anormal@gmail.com
-
-
-
-
+Consejero2=Lord Fers|lordfers@gmail.com
+Consejero3=Hainnor|Jere_estandar@hotmail.com.ar
+Consejero4=Maraxus|reyarb@fibertel.com.ar
+Consejero5=RoTTTeN|darioguitarras@gmail.com
+Consejero6=Morgolock|gulfas@gmail.com
