@@ -363,6 +363,9 @@ Public Enum e_Trigger
     DETALLEAGUA = 8
     PESCAINVALIDA = 10
     VALIDONADO = 11
+    ESCALERA = 12
+    VALIDOPUENTE = 17
+    NADOCOMBINADO = 18
     CARCEL = 19
 End Enum
 
@@ -506,6 +509,7 @@ Public Enum e_NPCType
     Quest = 17
     Pretoriano = 18
     DummyTarget = 19
+    EntregaPesca = 20
     
 End Enum
 
@@ -527,7 +531,7 @@ Public Const NUMCLASES      As Byte = 12
 
 ''
 ' Cantidad de Razas
-Public Const NUMRAZAS       As Byte = 5
+Public Const NUMRAZAS       As Byte = 6
 
 ''
 ' Valor maximo de cada skill
@@ -1333,6 +1337,7 @@ Public Type t_ObjData
     Log As Byte 'es un objeto que queremos loguear? Pablo (ToxicWaste) 07/09/07
     NoLog As Byte 'es un objeto que esta prohibido loguear?
     QuestId As Integer
+    PuntosPesca As Long
 End Type
 
 '[Pablo ToxicWaste]
@@ -1437,10 +1442,12 @@ Public Type t_UserStats
     UserAtributosBackUP(1 To NUMATRIBUTOS) As Byte
     UserHechizos(1 To MAXUSERHECHIZOS) As Integer
     UsuariosMatados As Long
+    PuntosPesca As Long
     CriminalesMatados As Long
     NPCsMuertos As Integer
     SkillPts As Integer
     Advertencias As Byte
+    NumObj_PezEspecial As Integer
 End Type
 
 'Sistema de Barras
@@ -1458,6 +1465,7 @@ End Type
 'Flags
 Public Type t_UserFlags
     Nadando As Byte
+    PescandoEspecial As Boolean
     
     NecesitaOxigeno As Boolean
 
@@ -2346,6 +2354,8 @@ Public EspecialesTala()                   As t_Obj
 Public EspecialesPesca()                  As t_Obj
 
 Public Peces()                            As t_Obj
+
+Public PecesEspeciales()                  As t_Obj
 
 Public PesoPeces()                        As Long
 

@@ -211,7 +211,6 @@ Public Sub DesbanearIP(ByVal IP As String, ByVal UnbannerIndex As Integer)
 102     Call WriteVar(DatPath & "Baneos.dat", "IP", IP, vbNullString)
 
         ' Registramos el des-baneo en los logs.
-104     Call LogGM(UserList(UnbannerIndex).Name, "Des-Baneó la IP: " & IP & " de " & IP_Blacklist(IP))
 
         Exit Sub
 

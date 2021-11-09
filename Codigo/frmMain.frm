@@ -970,9 +970,9 @@ Private Sub Minuto_Timer()
 
     Call PurgarPenas
 
-    If IdleLimit > 0 Then
-        Call CheckIdleUser
-    End If
+   ' If IdleLimit > 0 Then
+   '     Call CheckIdleUser
+   ' End If
 
     '<<<<<-------- Log the number of users online ------>>>
     Dim n As Integer

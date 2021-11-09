@@ -185,6 +185,8 @@ Public Enum ServerPacketID
     GuardNotice
     AnswerReset
     ObjQuestListSend
+    UpdateBankGld
+    PelearConPezEspecial
     [PacketCount]
 End Enum
 
@@ -513,6 +515,8 @@ Private Enum ClientPacketID
     ResetChar               '/RESET NICK
     resetearPersonaje
     DeleteItem
+    FinalizarPescaEspecial
+    RomperCania
     [PacketCount]
 End Enum
 
@@ -1295,6 +1299,10 @@ On Error Resume Next
             Call HandleResetearPersonaje(UserIndex)
         Case ClientPacketID.DeleteItem
             Call HandleDeleteItem(UserIndex)
+        Case ClientPacketID.FinalizarPescaEspecial
+            Call HandleFinalizarPescaEspecial(UserIndex)
+        Case ClientPacketID.RomperCania
+            Call HandleRomperCania(UserIndex)
         Case Else
             Err.raise -1, "Invalid Message"
     End Select
@@ -1729,7 +1737,7 @@ Private Sub HandleWhisper(ByVal UserIndex As Integer)
 108         targetUserIndex = NameIndex(targetCharIndex)
 
 110         If targetUserIndex <= 0 Then 'existe el usuario destino?
-112             Call WriteConsoleMsg(UserIndex, "Usuario offline o inexistente.", e_FontTypeNames.FONTTYPE_INFO)
+112            ' Call WriteConsoleMsg(UserIndex, "Usuario offline o inexistente.", e_FontTypeNames.FONTTYPE_INFO)
 
             Else
 
@@ -1759,10 +1767,10 @@ Private Sub HandleWhisper(ByVal UserIndex As Integer)
 
                     End If
 
-                Else
-134                 Call WriteConsoleMsg(UserIndex, "[" & .Name & "] " & chat, e_FontTypeNames.FONTTYPE_MP)
-136                 Call WriteConsoleMsg(targetUserIndex, "[" & .Name & "] " & chat, e_FontTypeNames.FONTTYPE_MP)
-138                 Call WritePlayWave(targetUserIndex, e_FXSound.MP_SOUND, NO_3D_SOUND, NO_3D_SOUND)
+'                Else
+'134                 Call WriteConsoleMsg(UserIndex, "[" & .Name & "] " & chat, e_FontTypeNames.FONTTYPE_MP)
+'136                 Call WriteConsoleMsg(targetUserIndex, "[" & .Name & "] " & chat, e_FontTypeNames.FONTTYPE_MP)
+'138                 Call WritePlayWave(targetUserIndex, e_FXSound.MP_SOUND, NO_3D_SOUND, NO_3D_SOUND)
 
                 End If
 
@@ -1798,9 +1806,14 @@ Private Sub HandleWalk(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
 102         Heading = Reader.ReadInt8()
-        
+            
+            If .flags.PescandoEspecial Then
+                .Stats.NumObj_PezEspecial = 0
+                .flags.PescandoEspecial = False
+            End If
+            
 104         If .flags.Paralizado = 0 And .flags.Inmovilizado = 0 Then
-        
+                
 106             If .flags.Comerciando Or .flags.Crafteando <> 0 Then Exit Sub
 
 108             If .flags.Meditando Then
@@ -7112,10 +7125,11 @@ Private Sub HandleBankExtractGold(ByVal UserIndex As Integer)
 118         If amount > 0 And amount <= .Stats.Banco Then
 120             .Stats.Banco = .Stats.Banco - amount
 122             .Stats.GLD = .Stats.GLD + amount
-                'Call WriteChatOverHead(UserIndex, "Tenés " & .Stats.Banco & " monedas de oro en tu cuenta.", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
+                Call WriteChatOverHead(UserIndex, "Tenés " & .Stats.Banco & " monedas de oro en tu cuenta.", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
 
 124             Call WriteUpdateGold(UserIndex)
-126             Call WriteGoliathInit(UserIndex)
+126           '  Call WriteGoliathInit(UserIndex)
+                Call WriteUpdateBankGld(UserIndex)
 
             Else
 128             Call WriteChatOverHead(UserIndex, "No tenés esa cantidad.", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
@@ -7294,10 +7308,11 @@ Private Sub HandleBankDepositGold(ByVal UserIndex As Integer)
 118         If amount > 0 And amount <= .Stats.GLD Then
 120             .Stats.Banco = .Stats.Banco + amount
 122             .Stats.GLD = .Stats.GLD - amount
-                'Call WriteChatOverHead(UserIndex, "Tenés " & .Stats.Banco & " monedas de oro en tu cuenta.", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
+                Call WriteChatOverHead(UserIndex, "Tenés " & .Stats.Banco & " monedas de oro en tu cuenta.", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
             
 124             Call WriteUpdateGold(UserIndex)
-126             Call WriteGoliathInit(UserIndex)
+126            ' Call WriteGoliathInit(UserIndex)
+                Call WriteUpdateBankGld(UserIndex)
             Else
 128             Call WriteChatOverHead(UserIndex, "No tenés esa cantidad.", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
 
@@ -7439,7 +7454,7 @@ Private Sub HandleGMMessage(ByVal UserIndex As Integer)
                     'Analize chat...
 110                 Call Statistics.ParseChat(Message)
             
-112                 Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(.Name & " » " & Message, e_FontTypeNames.FONTTYPE_GMMSG))
+112                 Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(.Name & " » " & message, e_FontTypeNames.FONTTYPE_GMMSG))
 
                 End If
 
@@ -7774,7 +7789,7 @@ Private Sub HandleWhere(ByVal UserIndex As Integer)
         
 102         UserName = Reader.ReadString8()
         
-104         If (.flags.Privilegios And (e_PlayerType.Consejero Or e_PlayerType.user)) = 0 Then
+104         If (.flags.Privilegios And (e_PlayerType.SemiDios Or e_PlayerType.Consejero Or e_PlayerType.user)) = 0 Then
 106             tUser = NameIndex(UserName)
 
 108             If tUser <= 0 Then
@@ -7784,7 +7799,6 @@ Private Sub HandleWhere(ByVal UserIndex As Integer)
 112                 If CompararPrivilegiosUser(UserIndex, tUser) >= 0 Then
 114                     Call WriteConsoleMsg(UserIndex, "Ubicación  " & UserName & ": " & UserList(tUser).Pos.Map & ", " & UserList(tUser).Pos.X & ", " & UserList(tUser).Pos.Y & ".", e_FontTypeNames.FONTTYPE_INFO)
 116                     Call LogGM(.Name, "/Donde " & UserName)
-
                     End If
 
                 End If
@@ -8039,9 +8053,19 @@ Private Sub HandleWarpChar(ByVal UserIndex As Integer)
 134                 Call WriteConsoleMsg(UserIndex, "Usuario offline.", e_FontTypeNames.FONTTYPE_INFO)
 
 136             ElseIf InMapBounds(Map, X, Y) Then
-138                 Call FindLegalPos(tUser, Map, X, Y)
-140                 Call WarpUserChar(tUser, Map, X, Y, True)
-
+                    'Harthas no permitimos que se use el telep para llevas User a casas privadas. ReyarB
+                    If UCase$(UserName) <> "YO" Then
+                        If .flags.Privilegios And e_PlayerType.Consejero Or e_PlayerType.SemiDios Then
+                            If MapInfo(Map).Seguro = 0 Then
+                                Call WriteConsoleMsg(UserIndex, "Solamente puedes teletransportar gente a zonas seguras.", e_FontTypeNames.FONTTYPE_INFO)
+                                Exit Sub
+                            End If
+                        End If
+                        Call WarpToLegalPos(tUser, Map, X, Y, True, True)
+                    Else
+138                     Call FindLegalPos(tUser, Map, X, Y)
+140                     Call WarpUserChar(tUser, Map, X, Y, True)
+                    End If
 142                 If tUser <> UserIndex Then
 144                     Call LogGM(.Name, "Transportó a " & UserList(tUser).Name & " hacia " & "Mapa" & Map & " X:" & X & " Y:" & Y)
                     End If
@@ -8475,7 +8499,7 @@ Private Sub HandleInvisible(ByVal UserIndex As Integer)
         '***************************************************
 100     With UserList(UserIndex)
 
-102         If .flags.Privilegios And e_PlayerType.user Then Exit Sub
+102         If .flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero) Then Exit Sub
         
 104         Call DoAdminInvisible(UserIndex)
 
@@ -8590,7 +8614,7 @@ Private Sub HandleWorking(ByVal UserIndex As Integer)
     
 100     With UserList(UserIndex)
 
-102         If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.RoleMaster)) Then
+102         If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero Or e_PlayerType.SemiDios)) Then
 104             Call WriteConsoleMsg(UserIndex, "Servidor » /TRABAJANDO es un comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
@@ -10045,6 +10069,12 @@ Private Sub HandleReviveChar(ByVal UserIndex As Integer)
 
                         'If dead, show him alive (naked).
 118                     If .flags.Muerto = 1 Then
+                            If UserList(UserIndex).flags.Privilegios And e_PlayerType.SemiDios Then
+                                If MapInfo(.Pos.Map).Seguro = 0 Then
+                                     Call WriteConsoleMsg(UserIndex, "Servidor » No puedes teletransportar muertos desde una zona insegura.", e_FontTypeNames.FONTTYPE_INFO)
+                                     Exit Sub
+                                End If
+                            End If
 120                         .flags.Muerto = 0
                         
                             'Call DarCuerpoDesnudo(tUser)
@@ -10541,6 +10571,9 @@ Private Sub HandleSummonChar(ByVal UserIndex As Integer)
 102     UserName = Reader.ReadString8()
             
 104     If .flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios) Then
+
+           
+            
 106         If LenB(UserName) <> 0 Then
 108             tUser = NameIndex(UserName)
 
@@ -10583,27 +10616,35 @@ Private Sub HandleSummonChar(ByVal UserIndex As Integer)
                 
             ' Consejeros sólo pueden traer en el mismo mapa
 136         If NotConsejero Or .Pos.Map = UserList(tUser).Pos.Map Then
-                    
-                    ' Si el admin está invisible no mostramos el nombre
-138                 If NotConsejero And .flags.AdminInvisible = 1 Then
-140                     Call WriteConsoleMsg(tUser, "Te han trasportado.", e_FontTypeNames.FONTTYPE_INFO)
-                    Else
-142                     Call WriteConsoleMsg(tUser, .Name & " te ha trasportado.", e_FontTypeNames.FONTTYPE_INFO)
-                    End If
-                    
-                    'HarThaoS: Si lo sumonean a un mapa interdimensional desde uno no interdimensional me guardo la posición de donde viene.
-144                 If EsMapaInterdimensional(.Pos.Map) And Not EsMapaInterdimensional(UserList(tUser).Pos.Map) Then
-146                     UserList(tUser).flags.ReturnPos = UserList(tUser).Pos
-                    End If
-                    
-                    
-
-148             Call WarpToLegalPos(tUser, .Pos.Map, .Pos.X, .Pos.Y + 1, True, True)
-
-150             Call WriteConsoleMsg(UserIndex, "Has traído a " & UserList(tUser).Name & ".", e_FontTypeNames.FONTTYPE_INFO)
-                    
-152             Call LogGM(.Name, "/SUM " & UserName & " Map:" & .Pos.Map & " X:" & .Pos.X & " Y:" & .Pos.Y)
                 
+                 If .flags.Privilegios And (e_PlayerType.SemiDios) Then
+                    If MapInfo(.Pos.Map).Seguro = 0 Then
+                        Call WriteConsoleMsg(UserIndex, "Solamente puedes traer usuarios a zonas seguras.", e_FontTypeNames.FONTTYPE_INFO)
+                        Exit Sub
+                    End If
+                    If UserList(tUser).flags.Muerto = 1 Then
+                        Call WriteConsoleMsg(UserIndex, "No puedes transportar a un muerto.", e_FontTypeNames.FONTTYPE_INFO)
+                        Exit Sub
+                    End If
+                End If
+                
+                ' Si el admin está invisible no mostramos el nombre
+138             If NotConsejero And .flags.AdminInvisible = 1 Then
+140                 Call WriteConsoleMsg(tUser, "Te han trasportado.", e_FontTypeNames.FONTTYPE_INFO)
+                Else
+142                 Call WriteConsoleMsg(tUser, .Name & " te ha trasportado.", e_FontTypeNames.FONTTYPE_INFO)
+                End If
+                   
+                'HarThaoS: Si lo sumonean a un mapa interdimensional desde uno no interdimensional me guardo la posición de donde viene.
+144             If EsMapaInterdimensional(.Pos.Map) And Not EsMapaInterdimensional(UserList(tUser).Pos.Map) Then
+146                 UserList(tUser).flags.ReturnPos = UserList(tUser).Pos
+                End If
+                        
+                        
+    
+148             Call WarpToLegalPos(tUser, .Pos.Map, .Pos.X, .Pos.Y + 1, True, True)
+                Call WriteConsoleMsg(UserIndex, "Has traído a " & UserList(tUser).Name & ".", e_FontTypeNames.FONTTYPE_INFO)
+152             Call LogGM(.Name, "/SUM " & UserName & " Map:" & .Pos.Map & " X:" & .Pos.X & " Y:" & .Pos.Y)
                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(.Name & " a trasladado a " & UserName, e_FontTypeNames.FONTTYPE_INFO))
                 
             End If
@@ -10645,11 +10686,11 @@ Private Sub HandleSpawnListRequest(ByVal UserIndex As Integer)
 106             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             
-108         ElseIf .flags.Privilegios And e_PlayerType.SemiDios Then
+108         ElseIf .flags.Privilegios And (e_PlayerType.SemiDios Or e_PlayerType.Dios) Then
 110             Call WriteConsoleMsg(UserIndex, "Servidor » La cantidad de NPCs disponible para tu rango está limitada.", e_FontTypeNames.FONTTYPE_INFO)
             End If
 
-112         Call WriteSpawnList(UserIndex, UserList(UserIndex).flags.Privilegios And (e_PlayerType.Dios Or e_PlayerType.Admin))
+112         Call WriteSpawnList(UserIndex, UserList(UserIndex).flags.Privilegios And e_PlayerType.Admin)
     
         End With
         
@@ -14269,8 +14310,8 @@ Public Sub HandleCreateNPCWithRespawn(ByVal UserIndex As Integer)
 
             If Not EsGM(UserIndex) Then Exit Sub
         
-104         If .flags.Privilegios And (e_PlayerType.Consejero Or e_PlayerType.SemiDios) Then
-106             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
+104         If .flags.Privilegios And (e_PlayerType.Consejero Or e_PlayerType.SemiDios Or e_PlayerType.Dios) Then
+106             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo. Si el motivo es probar algo ya saben ir a Test", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
         
@@ -15673,6 +15714,34 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
             Dim Equipado  As Boolean
             Dim Equipado2 As Boolean
             Dim Equipado3 As Boolean
+            Dim ObjCania As t_Obj
+            'HarThaoS: Si es un hilo de pesca y lo estoy arrastrando en una caña rota borro del slot viejo y en el nuevo pongo la caña correspondiente
+            If .Invent.Object(SlotViejo).ObjIndex = 2183 Then
+            
+                Select Case .Invent.Object(SlotNuevo).ObjIndex
+                     Case 3457
+                        ObjCania.ObjIndex = 881
+                    Case 3456
+                        ObjCania.ObjIndex = 2121
+                    Case 3459
+                        ObjCania.ObjIndex = 2132
+                    Case 3458
+                        ObjCania.ObjIndex = 2133
+                End Select
+                ObjCania.amount = 1
+                'si el objeto que estaba pisando era una caña rota.
+                If ObjCania.ObjIndex > 0 Then
+                    'Quitamos del inv el item
+                    Call QuitarUserInvItem(UserIndex, SlotViejo, 1)
+                    Call UpdateUserInv(False, UserIndex, SlotViejo)
+                    Call QuitarUserInvItem(UserIndex, SlotNuevo, 1)
+                    Call UpdateUserInv(False, UserIndex, SlotNuevo)
+                    Call MeterItemEnInventario(UserIndex, ObjCania)
+                    Exit Sub
+                End If
+                
+            End If
+            
         
 106         If (SlotViejo > .CurrentInventorySlots) Or (SlotNuevo > .CurrentInventorySlots) Then
 108             Call WriteConsoleMsg(UserIndex, "Espacio no desbloqueado.", e_FontTypeNames.FONTTYPE_INFOIAO)
@@ -16711,10 +16780,32 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
                 
                         End If
                 
+                    Case 5
+                        Dim i As Integer, j As Integer
+                        
+                        With UserList(UserIndex)
+                            For i = 1 To MAX_INVENTORY_SLOTS
+                                For j = 1 To UBound(PecesEspeciales)
+                                    If .Invent.Object(i).ObjIndex = PecesEspeciales(j).ObjIndex Then
+                                        .Stats.PuntosPesca = .Stats.PuntosPesca + (ObjData(.Invent.Object(i).ObjIndex).PuntosPesca * .Invent.Object(i).amount)
+                                        Call QuitarUserInvItem(UserIndex, i, .Invent.Object(i).amount)
+                                        Call UpdateUserInv(False, UserIndex, i)
+                                    End If
+                                Next j
+                            Next i
+                            Dim charindexstr As Integer
+                            charindexstr = str(NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex)
+                            If charindexstr > 0 Then
+                                Call WriteChatOverHead(UserIndex, "Felicitaciones! Ahora tienes un total de " & .Stats.PuntosPesca & " puntos de pesca.", charindexstr, &HFFFF00)
+                            End If
+                            .flags.pregunta = 0
+                        End With
+                                                
 236
 262                 Case Else
 264                     Call WriteConsoleMsg(UserIndex, "No tienes preguntas pendientes.", e_FontTypeNames.FONTTYPE_INFOIAO)
-                    
+
+                        
                 End Select
         
             Else
@@ -18653,6 +18744,61 @@ HandleResetearPersonaje_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleResetearPersonaje", Erl)
 End Sub
 
+Private Sub HandleRomperCania(ByVal UserIndex As Integer)
+
+    On Error GoTo HandleRomperCania_Err:
+    
+    Dim LoopC As Integer
+    Dim Obj As t_Obj
+    Dim caniaOld As Integer
+    With UserList(UserIndex)
+    
+    obj.ObjIndex = .Invent.HerramientaEqpObjIndex
+    caniaOld = .Invent.HerramientaEqpObjIndex
+    obj.amount = 1
+    For LoopC = 1 To MAX_INVENTORY_SLOTS
+            
+        'Rastreo la caña que está usando en el inventario y se la rompo
+        If .Invent.Object(LoopC).ObjIndex = .Invent.HerramientaEqpObjIndex Then
+            'Le quito una caña
+            Call QuitarUserInvItem(UserIndex, LoopC, 1)
+            Call UpdateUserInv(False, UserIndex, LoopC)
+            Select Case caniaOld
+                Case 881
+                    obj.ObjIndex = 3457
+                Case 2121
+                    obj.ObjIndex = 3456
+                Case 2132
+                    obj.ObjIndex = 3459
+                Case 2133
+                    obj.ObjIndex = 3458
+            End Select
+            
+            Call MeterItemEnInventario(UserIndex, obj)
+            
+            
+            Exit Sub
+            
+        End If
+
+262 Next LoopC
+
+    End With
+    
+     'UserList(UserIndex).Invent.HerramientaEqpObjIndex
+    
+HandleRomperCania_Err:
+102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRomperCania", Erl)
+End Sub
+Private Sub HandleFinalizarPescaEspecial(ByVal UserIndex As Integer)
+
+    On Error GoTo HandleFinalizarPescaEspecial_Err:
+    
+    Call EntregarPezEspecial(UserIndex)
+    
+HandleFinalizarPescaEspecial_Err:
+102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleFinalizarPescaEspecial", Erl)
+End Sub
 Private Sub HandleDeleteItem(ByVal UserIndex As Integer)
     On Error GoTo HandleDeleteItem_Err:
 

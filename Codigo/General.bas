@@ -508,7 +508,7 @@ Private Sub InicializarConstantes()
 110     ListaRazas(e_Raza.Drow) = "Elfo Oscuro"
 112     ListaRazas(e_Raza.Gnomo) = "Gnomo"
 114     ListaRazas(e_Raza.Enano) = "Enano"
-        'ListaRazas(e_Raza.Orco) = "Orco"
+        ListaRazas(e_Raza.Orco) = "Orco"
     
 116     ListaClases(e_Class.Mage) = "Mago"
 118     ListaClases(e_Class.Cleric) = "Clérigo"
@@ -2390,12 +2390,12 @@ Sub PasarSegundo()
                 End If ' If UserLogged
 
                 'Inactive players will be removed!
-296             .Counters.IdleCount = .Counters.IdleCount + 1
+296          '   .Counters.IdleCount = .Counters.IdleCount + 1
 
                 'El intervalo cambia según si envió el primer paquete
-298             If .Counters.IdleCount > IIf(.flags.FirstPacket, TimeoutEsperandoLoggear, TimeoutPrimerPaquete) Then
-300                 Call CloseSocket(i)
-                End If
+298        '     If .Counters.IdleCount > IIf(.flags.FirstPacket, TimeoutEsperandoLoggear, TimeoutPrimerPaquete) Then
+300        '         Call CloseSocket(i)
+           '     End If
         
             End With
 302     Next i
