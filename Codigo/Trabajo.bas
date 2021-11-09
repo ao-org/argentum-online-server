@@ -1682,18 +1682,21 @@ Public Sub DoPescar(ByVal UserIndex As Integer, Optional ByVal RedDePesca As Boo
                 
 124             MiObj.amount = IIf(.clase = Trabajador, RandomNumber(1, 3), 1) * RecoleccionMult
 126             MiObj.ObjIndex = ObtenerPezRandom(ObjData(.Invent.HerramientaEqpObjIndex).Power)
-                Debug.Print "Num pescadito: " & MiObj.ObjIndex
-                esEspecial = False
-                Dim i As Long
-                For i = 1 To UBound(PecesEspeciales)
-                    If PecesEspeciales(i).ObjIndex = MiObj.ObjIndex Then
-                        esEspecial = True
-                    End If
-                Next i
+
+                If Not RedDePesca Then
+                    esEspecial = False
+                    Dim i As Long
+                    For i = 1 To UBound(PecesEspeciales)
+                        If PecesEspeciales(i).ObjIndex = MiObj.ObjIndex Then
+                            esEspecial = True
+                        End If
+                    Next i
+                End If
+                
                 
                 If Not esEspecial Then
                     Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, 253, 25, False, ObjData(MiObj.ObjIndex).GrhIndex))
-                Else
+                ElseIf Not RedDePesca Then
                     .flags.PescandoEspecial = True
 156                 Call WriteMacroTrabajoToggle(UserIndex, False)
                     .Stats.NumObj_PezEspecial = MiObj.ObjIndex
