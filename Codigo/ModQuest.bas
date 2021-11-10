@@ -189,7 +189,7 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
 164                 Call CheckUserLevel(UserIndex)
 166                 Call WriteLocaleMsg(UserIndex, "140", e_FontTypeNames.FONTTYPE_EXP, (.RewardEXP * ExpMult))
                 Else
-168                 Call WriteConsoleMsg(UserIndex, "No se te ha dado experiencia porque eres nivel máximo.", e_FontTypeNames.fonttype_info)
+168                 Call WriteConsoleMsg(UserIndex, "No se te ha dado experiencia porque eres nivel máximo.", e_FontTypeNames.FONTTYPE_INFO)
 
                 End If
 
@@ -441,6 +441,7 @@ Public Sub LoadQuests()
                 'CARGAMOS OBJETOS REQUERIDOS
 124             .RequiredOBJs = val(Reader.GetValue("QUEST" & i, "RequiredOBJs"))
 125             .Trabajador = IIf(val(Reader.GetValue("QUEST" & i, "Trabajador")) = 1, True, False)
+123             .TalkTo = val(Reader.GetValue("QUEST" & i, "TalkTo"))
 
 126             If .RequiredOBJs > 0 Then
 128                 ReDim .RequiredOBJ(1 To .RequiredOBJs)
@@ -595,14 +596,29 @@ Public Sub EnviarQuest(ByVal UserIndex As Integer)
 108     If NpcList(NpcIndex).NumQuest = 0 Then
 110         Call WriteChatOverHead(UserIndex, "No tengo ninguna misión para ti.", NpcList(NpcIndex).Char.CharIndex, vbYellow)
             Exit Sub
-
         End If
             
         
         'Hago un for para chequear si alguna de las misiones que da el NPC ya se completo.
         Dim q As Byte
         
+        Dim i As Long, j As Long
         
+        
+        
+            For i = 1 To UBound(QuestList)
+                If QuestList(i).TalkTo > 0 And QuestList(i).TalkTo = NpcList(NpcIndex).Numero Then
+                    tmpByte = TieneQuest(UserIndex, i)
+                    If tmpByte > 0 Then
+                        For j = 1 To MAXUSERQUESTS
+                             If FinishQuestCheck(UserIndex, i, tmpByte) Then
+121                             Call FinishQuest(UserIndex, i, tmpByte)
+                                Exit Sub
+                            End If
+                        Next j
+                    End If
+                End If
+            Next i
 112     For q = 1 To NpcList(NpcIndex).NumQuest
 114         tmpByte = TieneQuest(UserIndex, NpcList(NpcIndex).QuestNumber(q))
         
@@ -612,25 +628,9 @@ Public Sub EnviarQuest(ByVal UserIndex As Integer)
 120                 Call FinishQuest(UserIndex, NpcList(NpcIndex).QuestNumber(q), tmpByte)
                     Exit Sub
                 End If
-
             End If
         
 122     Next q
-       ' Else
-            'El usuario no esta haciendo la quest, entonces primero recibe un informe con los detalles de la mision.
-            'tmpByte = FreeQuestSlot(UserIndex)
-        
-            'El personaje tiene algun slot de quest para la nueva quest?
-            'If tmpByte = 0 Then
-              '  Call WriteChatOverHead(UserIndex, "Estas haciendo demasiadas misiones. Vuelve cuando hayas completado alguna.", NpcList(NpcIndex).Char.CharIndex, vbWhite)
-              '  Exit Sub
-
-           ' End If
-        
-            'Enviamos los detalles de la quest
-            'Call WriteQuestDetails(UserIndex, NpcList(NpcIndex).QuestNumber(1))
-
-      '  End If
       
 124   Call WriteNpcQuestListSend(UserIndex, NpcIndex)
 

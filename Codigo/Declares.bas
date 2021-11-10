@@ -1065,6 +1065,7 @@ Public Type t_Quest
     
     RequiredQuest As Byte
     Trabajador As Boolean
+    TalkTo As Integer
     
     RequiredOBJs As Byte
     RequiredOBJ() As t_Obj

@@ -17583,7 +17583,7 @@ Public Sub HandleQuestAccept(ByVal UserIndex As Integer)
                 Exit Sub
             End If
             
-            If QuestList(UserList(UserIndex).QuestStats.Quests(QuestSlot).QuestIndex).Trabajador And UserList(UserIndex).clase <> e_Class.Trabajador Then
+            If QuestList(UserList(UserIndex).flags.QuestNumber).Trabajador And UserList(UserIndex).clase <> e_Class.Trabajador Then
                 Call WriteConsoleMsg(UserIndex, "La quest es solo para trabajadores.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If

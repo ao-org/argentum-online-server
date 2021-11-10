@@ -238,6 +238,7 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
 226                 If NpcList(TempCharIndex).Movement = Caminata Then
 228                     NpcList(TempCharIndex).Contadores.IntervaloMovimiento = GetTickCount + 15000 - NpcList(TempCharIndex).IntervaloMovimiento ' 15 segundos
                     End If
+
             
 230                 Call EnviarQuest(UserIndex)
             
@@ -364,7 +365,7 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
                     Else
                         Dim charIndexstr As Integer
                         charIndexstr = str(NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex)
-                        Call WriteChatOverHead(UserIndex, "No tienes ningún trofeo de pesca para entregar.", charIndexstr, &HFFFF00)
+                        Call WriteChatOverHead(UserIndex, "No tienes ningún trofeo de pesca para entregar.", charindexstr, &HFFFF00)
                     End If
 320             ElseIf NpcList(TempCharIndex).Craftea > 0 Then
 322                 If UserList(UserIndex).flags.Muerto = 1 Then
