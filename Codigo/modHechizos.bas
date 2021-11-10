@@ -217,8 +217,11 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
 294       If .flags.Envenenado = 0 Then
 296         .flags.Envenenado = Hechizos(Spell).Envenena
 298         .Counters.Veneno = Hechizos(Spell).Duration
-
-300         Call WriteConsoleMsg(UserIndex, "Has sido incinerado por " & NpcList(NpcIndex).Name & ".", e_FontTypeNames.FONTTYPE_FIGHT)
+            'Ladder:
+'300         Call WriteConsoleMsg(UserIndex, "Has sido incinerado por " & NpcList(NpcIndex).Name & ".", e_FontTypeNames.FONTTYPE_FIGHT)
+            
+            'HarThaoS
+300         Call WriteConsoleMsg(UserIndex, "Has sido envenenado por " & NpcList(NpcIndex).Name & ".", e_FontTypeNames.FONTTYPE_FIGHT)
           End If
         End If
 
