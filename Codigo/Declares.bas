@@ -1044,7 +1044,6 @@ Public Type t_QuestObj
     ObjIndex As Integer
     amount As Integer
     Probabilidad As Long
-
 End Type
  
 Public Type t_UserQuest
@@ -1052,7 +1051,6 @@ Public Type t_UserQuest
     NPCsTarget() As Integer
     NPCsKilled() As Integer
     QuestIndex As Integer
-
 End Type
 
 Public QuestList() As t_Quest
@@ -1066,6 +1064,7 @@ Public Type t_Quest
     RequiredLevel As Byte
     
     RequiredQuest As Byte
+    Trabajador As Boolean
     
     RequiredOBJs As Byte
     RequiredOBJ() As t_Obj
