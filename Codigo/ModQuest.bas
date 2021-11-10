@@ -189,7 +189,7 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
 164                 Call CheckUserLevel(UserIndex)
 166                 Call WriteLocaleMsg(UserIndex, "140", e_FontTypeNames.FONTTYPE_EXP, (.RewardEXP * ExpMult))
                 Else
-168                 Call WriteConsoleMsg(UserIndex, "No se te ha dado experiencia porque eres nivel máximo.", e_FontTypeNames.FONTTYPE_INFO)
+168                 Call WriteConsoleMsg(UserIndex, "No se te ha dado experiencia porque eres nivel máximo.", e_FontTypeNames.fonttype_info)
 
                 End If
 
@@ -440,6 +440,7 @@ Public Sub LoadQuests()
             
                 'CARGAMOS OBJETOS REQUERIDOS
 124             .RequiredOBJs = val(Reader.GetValue("QUEST" & i, "RequiredOBJs"))
+125             .Trabajador = IIf(val(Reader.GetValue("QUEST" & i, "Trabajador")) = 1, True, False)
 
 126             If .RequiredOBJs > 0 Then
 128                 ReDim .RequiredOBJ(1 To .RequiredOBJs)

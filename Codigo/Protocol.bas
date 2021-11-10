@@ -17497,19 +17497,26 @@ Public Sub HandleQuestAccept(ByVal UserIndex As Integer)
         Else
              If Indice <= 0 Then Exit Sub
         End If
+        
 
     If QuestNpc Then
         'Esta el personaje en la distancia correcta?
+        
+            If QuestList(NpcList(NpcIndex).QuestNumber(Indice)).Trabajador And UserList(UserIndex).clase <> e_Class.Trabajador Then
+                Call WriteConsoleMsg(UserIndex, "La quest es solo para trabajadores.", e_FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
+            
+            
 108         If Distancia(UserList(UserIndex).Pos, NpcList(NpcIndex).Pos) > 5 Then
 110             Call WriteConsoleMsg(UserIndex, "Estas demasiado lejos.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
-    
             End If
+            
             
 112         If TieneQuest(UserIndex, NpcList(NpcIndex).QuestNumber(Indice)) Then
 114             Call WriteConsoleMsg(UserIndex, "La quest ya esta en curso.", e_FontTypeNames.FONTTYPE_INFOIAO)
                 Exit Sub
-    
             End If
             
             'El personaje completo la quest que requiere?
@@ -17568,23 +17575,32 @@ Public Sub HandleQuestAccept(ByVal UserIndex As Integer)
             End With
         
         Else
-         If TieneQuest(UserIndex, UserList(UserIndex).flags.QuestNumber) Then
+        
+            QuestSlot = FreeQuestSlot(UserIndex)
+            
+            If QuestSlot = 0 Then
+                Call WriteConsoleMsg(UserIndex, "Debes completar las misiones en curso para poder aceptar más misiones.", e_FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
+            
+            If QuestList(UserList(UserIndex).QuestStats.Quests(QuestSlot).QuestIndex).Trabajador And UserList(UserIndex).clase <> e_Class.Trabajador Then
+                Call WriteConsoleMsg(UserIndex, "La quest es solo para trabajadores.", e_FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
+            
+            If TieneQuest(UserIndex, UserList(UserIndex).flags.QuestNumber) Then
              Call WriteConsoleMsg(UserIndex, "La quest ya esta en curso.", e_FontTypeNames.FONTTYPE_INFOIAO)
                 Exit Sub
             End If
 
             'El personaje tiene suficiente nivel?
-         If UserList(UserIndex).Stats.ELV < QuestList(UserList(UserIndex).flags.QuestNumber).RequiredLevel Then
+            If UserList(UserIndex).Stats.ELV < QuestList(UserList(UserIndex).flags.QuestNumber).RequiredLevel Then
                 Call WriteConsoleMsg(UserIndex, "Debes ser por lo menos nivel " & QuestList(UserList(UserIndex).flags.QuestNumber).RequiredLevel & " para emprender esta misión.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
 
-         QuestSlot = FreeQuestSlot(UserIndex)
 
-         If QuestSlot = 0 Then
-                Call WriteConsoleMsg(UserIndex, "Debes completar las misiones en curso para poder aceptar más misiones.", e_FontTypeNames.FONTTYPE_INFO)
-                Exit Sub
-            End If
+          
 
             'Agregamos la quest.
             With UserList(UserIndex).QuestStats.Quests(QuestSlot)
