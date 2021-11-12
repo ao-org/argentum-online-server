@@ -22,11 +22,12 @@ Public Sub goHome(ByVal UserIndex As Integer)
 104             If EsGM(UserIndex) Then
 106                 .Counters.TimerBarra = 5
                 Else
-108                 .Counters.TimerBarra = 5
+108                 .Counters.TimerBarra = 210
                 End If
-110                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, e_ParticulasIndex.Runa, .Counters.TimerBarra, False))
-112                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageBarFx(.Char.CharIndex, .Counters.TimerBarra, e_AccionBarra.Hogar))
-                
+110             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, e_ParticulasIndex.Runa, .Counters.TimerBarra * 100, False))
+112             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageBarFx(.Char.CharIndex, .Counters.TimerBarra, e_AccionBarra.Hogar))
+                Call WriteConsoleMsg(UserIndex, "Volverás a tu hogar en " & .Counters.TimerBarra & " segundos.", e_FontTypeNames.FONTTYPE_New_Gris)
+                    
 114             .Accion.Particula = e_ParticulasIndex.Runa
 116             .Accion.AccionPendiente = True
 118             .Accion.TipoAccion = e_AccionBarra.Hogar
@@ -47,6 +48,7 @@ goHome_Err:
 
         
 End Sub
+
 
 ''
 ' Maneja el tiempo de arrivo al hogar
