@@ -2475,8 +2475,8 @@ Public Sub DoMeditar(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
 102         .Counters.TimerMeditar = .Counters.TimerMeditar + 1
-
-104         If .Counters.TimerMeditar >= IntervaloMeditar Then
+            .Counters.TiempoInicioMeditar = .Counters.TiempoInicioMeditar + 1
+104         If .Counters.TimerMeditar >= IntervaloMeditar And .Counters.TiempoInicioMeditar > 20 Then
 
 106             Mana = Porcentaje(.Stats.MaxMAN, Porcentaje(PorcentajeRecuperoMana, 50 + .Stats.UserSkills(e_Skill.Meditar) * 0.5))
 

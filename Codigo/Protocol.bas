@@ -5894,6 +5894,7 @@ Private Sub HandleMeditate(ByVal UserIndex As Integer)
 116         If .flags.Meditando Then
 
 118             .Counters.TimerMeditar = 0
+                .Counters.TiempoInicioMeditar = 0
 
 120             Select Case .Stats.ELV
 

@@ -1712,6 +1712,7 @@ Public Type t_UserCounters
     TimerCaminar As Long
     TimerTirar As Long
     TimerMeditar As Long
+    TiempoInicioMeditar As Long
     TimerCentinela As Long
     'Nuevos de AoLibre
     TimerPuedeSerAtacado As Long
