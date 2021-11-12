@@ -2007,9 +2007,29 @@ Sub UserDie(ByVal UserIndex As Integer)
 218         For i = 1 To MAXMASCOTAS
 220             If .MascotasIndex(i) > 0 Then
 222                 Call MuereNpc(.MascotasIndex(i), 0)
+                        
                 End If
 224         Next i
-        
+            
+            
+            If .clase = e_Class.Druid Then
+            
+                Dim Params() As Variant
+                Dim ParamC As Long
+                ReDim Params(MAXMASCOTAS * 3 - 1)
+                ParamC = 0
+                
+                For i = 1 To MAXMASCOTAS
+                    Params(ParamC) = .ID
+                    ParamC = ParamC + 1
+                    Params(ParamC) = i
+                    ParamC = ParamC + 1
+                    Params(ParamC) = 0
+                    ParamC = ParamC + 1
+                Next i
+                
+                Call Execute(QUERY_UPSERT_PETS, Params)
+            End If
 226         .NroMascotas = 0
         
             '<< Actualizamos clientes >>
