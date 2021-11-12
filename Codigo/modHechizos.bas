@@ -669,17 +669,17 @@ Sub HechizoInvocacion(ByVal UserIndex As Integer, ByRef B As Boolean)
         
                 'No deja invocar mas de 1 fatuo
 118             If Hechizos(h).NumNpc = FUEGOFATUO And .NroMascotas >= 1 Then
-120                 Call WriteConsoleMsg(UserIndex, "Para invocar el fuego fatuo no debes tener otras criaturas.", e_FontTypeNames.FONTTYPE_INFO)
+120                 Call WriteConsoleMsg(UserIndex, "Solo puedes invocar una sola criatura de este tipo.", e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
                 
 122             If Hechizos(h).NumNpc = ELEMENTAL_VIENTO And .NroMascotas >= 1 Then
-124                 Call WriteConsoleMsg(UserIndex, "Para invocar elemental de viento no debes tener otras criaturas.", e_FontTypeNames.FONTTYPE_INFO)
+124                 Call WriteConsoleMsg(UserIndex, "Solo puedes invocar una sola criatura de este tipo.", e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
                 
 126             If Hechizos(h).NumNpc = ELEMENTAL_FUEGO And .NroMascotas >= 1 Then
-128                 Call WriteConsoleMsg(UserIndex, "Para invocar el elemental de fuego no debes tener otras criaturas.", e_FontTypeNames.FONTTYPE_INFO)
+128                 Call WriteConsoleMsg(UserIndex, "Solo puedes invocar una sola criatura de este tipo", e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
         
