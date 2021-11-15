@@ -5343,11 +5343,11 @@ Private Sub HandleOnline(ByVal UserIndex As Integer)
 134         Call WriteConsoleMsg(UserIndex, "Server Online: " & UpTimeStr, e_FontTypeNames.FONTTYPE_INFO)
 
 136         If .flags.Privilegios And e_PlayerType.user Then
-138             Call WriteConsoleMsg(UserIndex, "Número de usuarios: " & CStr(Count) & " conectados.", e_FontTypeNames.FONTTYPE_INFOIAO)
+138             Call WriteConsoleMsg(UserIndex, "Número de usuarios: " & CStr(count) & " conectados.", e_FontTypeNames.FONTTYPE_INFOIAO)
 140             Call WriteConsoleMsg(UserIndex, "Tiempo en línea: " & UpTimeStr & " Record de usuarios en simultaneo: " & RecordUsuarios & ".", e_FontTypeNames.FONTTYPE_INFOIAO)
 
             Else
-142             Call WriteConsoleMsg(UserIndex, "Número de usuarios: " & CStr(Count) & " conectados: " & nombres & ".", e_FontTypeNames.FONTTYPE_INFOIAO)
+142             Call WriteConsoleMsg(UserIndex, "Número de usuarios: " & CStr(count) & " conectados: " & nombres & ".", e_FontTypeNames.FONTTYPE_INFOIAO)
 144             Call WriteConsoleMsg(UserIndex, "Tiempo en línea: " & UpTimeStr & " Record de usuarios en simultaneo: " & RecordUsuarios & ".", e_FontTypeNames.FONTTYPE_INFOIAO)
 
             End If
@@ -12876,9 +12876,8 @@ End Sub
 Private Sub HandleLastIP(ByVal UserIndex As Integer)
 
         '***************************************************
-        'Author: Nicolas Matias Gonzalez (NIGO)
-        'Last Modification: 12/30/06
-        '
+        'Author: Martín Trionfetti (HarThaoS) - Fernando Quinteros (Lord Fers)
+        'Last Modification: 15-11-2021
         '***************************************************
 
         On Error GoTo ErrHandler
@@ -12886,15 +12885,11 @@ Private Sub HandleLastIP(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             Dim UserName   As String
-            Dim lista      As String
             Dim LoopC      As Byte
-            Dim priv       As Integer
-            Dim validCheck As Boolean
         
-102         priv = e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios Or e_PlayerType.Consejero
 104         UserName = Reader.ReadString8()
         
-106         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios Or e_PlayerType.RoleMaster)) Then
+106         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios)) Then
 
                 'Handle special chars
 108             If (InStrB(UserName, "\") <> 0) Then
@@ -12908,37 +12903,56 @@ Private Sub HandleLastIP(ByVal UserIndex As Integer)
 116             If (InStrB(UserName, "+") <> 0) Then
 118                 UserName = Replace(UserName, "+", " ")
                 End If
-            
-                'Only Gods and Admins can see the ips of adminsitrative characters. All others can be seen by every adminsitrative char.
-120             If NameIndex(UserName) > 0 Then
-122                 validCheck = (UserList(NameIndex(UserName)).flags.Privilegios And priv) = 0 Or (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios)) <> 0
                 
-                Else
-124                 validCheck = (UserDarPrivilegioLevel(UserName) And priv) = 0 Or (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios)) <> 0
-
-                End If
-            
-126             If validCheck Then
-128                 Call LogGM(.Name, "/LASTIP " & UserName)
+                Dim tIndex As Integer
                 
-130                 If FileExist(CharPath & UserName & ".chr", vbNormal) Then
-132                     'lista = "Las ultimas IPs con las que " & UserName & " se conectí son:"
-
-134                     'For LoopC = 1 To 5
-136                      '   lista = lista & vbCrLf & LoopC & " - " & GetVar(CharPath & UserName & ".chr", "INIT", "LastIP" & LoopC)
-138                     'Next LoopC
-
-140                     'Call WriteConsoleMsg(UserIndex, lista, e_FontTypeNames.FONTTYPE_INFO)
+                tIndex = NameIndex(UserName)
+                
+                Dim RS As ADODB.Recordset
+                Dim ipStr As String
+                
+120             If tIndex > 0 Then
+122                 Call LogGM(.Name, "/LASTIP " & UserName)
                     
-                    Else
-142                     Call WriteConsoleMsg(UserIndex, "Charfile """ & UserName & """ inexistente.", e_FontTypeNames.FONTTYPE_INFO)
-
-                    End If
-
+                    Set RS = Query("SELECT last_ip FROM account WHERE id = ?", UserList(tIndex).AccountID)
+            
+                    'Revisamos si recibio un resultado
+                    If RS Is Nothing Then Exit Sub
+                    If RS.BOF Or RS.EOF Then Exit Sub
+                    
+                    'Obtenemos la variable
+                    ipStr = RS.Fields(0).Value
                 Else
-144                 Call WriteConsoleMsg(UserIndex, UserName & " es de mayor jerarquía que vos.", e_FontTypeNames.FONTTYPE_INFO)
-
+                    Dim account_id As String
+                    Set RS = Query("SELECT u.account_id FROM user u WHERE LOWER(u.name) = LOWER(?)", UserName)
+                    
+                    'Revisamos si recibio un resultado
+                    If RS Is Nothing Then Exit Sub
+                    If RS.BOF Or RS.EOF Then Exit Sub
+                    
+                    'Obtenemos la variable
+                    account_id = RS.Fields(0).Value
+                    
+                    Set RS = Query("SELECT last_ip FROM account WHERE id = ?", account_id)
+            
+                    'Revisamos si recibio un resultado
+                    If RS Is Nothing Then Exit Sub
+                    If RS.BOF Or RS.EOF Then Exit Sub
+                    
+                    'Obtenemos la variable
+                    ipStr = RS.Fields(0).Value
                 End If
+                Dim countIps As Long
+                countIps = UBound(Split(ipStr, ";"))
+                
+                If countIps <= 0 Then Exit Sub
+                
+                ReDim ip_list(0 To (countIps - 1)) As String
+                ip_list = Split(ipStr, ";")
+                Call WriteConsoleMsg(UserIndex, "Las últimas ips para el personaje son: ", e_FontTypeNames.FONTTYPE_INFO)
+                For LoopC = 0 To (countIps - 1)
+                    Call WriteConsoleMsg(UserIndex, ip_list(LoopC), e_FontTypeNames.FONTTYPE_INFO)
+                Next LoopC
             Else
 146             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
             End If

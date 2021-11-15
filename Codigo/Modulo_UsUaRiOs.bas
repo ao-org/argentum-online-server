@@ -71,7 +71,7 @@ Public Function ConnectUser_Check(ByVal UserIndex As Integer, _
 
                 ' Le avisamos al usuario que está jugando, en caso de que haya uno
                 Call WriteShowMessageBox(tIndex, "Alguien está ingresando con tu personaje. Si no has sido tú, por favor cambia la contraseña de tu cuenta.")
-                Call Cerrar_Usuario(tIndex)
+            '    Call Cerrar_Usuario(tIndex)
 
             End If
 
