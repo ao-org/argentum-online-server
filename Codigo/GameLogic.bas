@@ -856,7 +856,7 @@ LegalPos_Err:
         
 End Function
 
-Function LegalWalk(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer, ByVal Heading As e_Heading, Optional ByVal PuedeAgua As Boolean = False, Optional ByVal PuedeTierra As Boolean = True, Optional ByVal Montado As Boolean = False, Optional ByVal PuedeTraslado As Boolean = True) As Boolean
+Function LegalWalk(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer, ByVal Heading As e_Heading, Optional ByVal PuedeAgua As Boolean = False, Optional ByVal PuedeTierra As Boolean = True, Optional ByVal Montado As Boolean = False, Optional ByVal PuedeTraslado As Boolean = True, Optional ByVal WalkerIndex As Integer) As Boolean
         On Error GoTo LegalWalk_Err
         
 
@@ -888,7 +888,36 @@ Function LegalWalk(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer,
 124             If (.Blocked And FLAG_AGUA) = 0 Then Exit Function
             End If
             
-126         If (.Blocked And 2 ^ (Heading - 1)) <> 0 Then Exit Function
+            Dim objeto As e_OBJType
+            
+            Dim puerta As t_ObjData
+            
+            'Si la suma de los objetos es mayor que 0 quiere decir que hay objeto.
+            If (.ObjInfo.ObjIndex + MapData(Map, X + 1, Y).ObjInfo.ObjIndex) > 0 Then
+                'Si hay un objeto, me tengo que fijar si estoy a la derecha o a la izquierda.
+                If .ObjInfo.ObjIndex > 0 Then
+                    If ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex).OBJType = e_OBJType.otPuertas Then
+                        puerta = ObjData(.ObjInfo.ObjIndex)
+                        If puerta.Cerrada = 1 Then
+                            Call AccionParaPuerta(Map, X, Y, WalkerIndex)
+                        End If
+                    Else
+                        If (.Blocked And 2 ^ (Heading - 1)) <> 0 Then Exit Function
+                    End If
+                ElseIf MapData(Map, X + 1, Y).ObjInfo.ObjIndex > 0 Then
+                    If ObjData(MapData(Map, X + 1, Y).ObjInfo.ObjIndex).OBJType = e_OBJType.otPuertas Then
+                        puerta = ObjData(MapData(Map, X + 1, Y).ObjInfo.ObjIndex)
+                        If puerta.Cerrada = 1 Then
+                            Call AccionParaPuerta(Map, X + 1, Y, WalkerIndex)
+                        End If
+                    Else
+                        If (.Blocked And 2 ^ (Heading - 1)) <> 0 Then Exit Function
+                    End If
+                End If
+            Else
+                If (.Blocked And 2 ^ (Heading - 1)) <> 0 Then Exit Function
+            End If
+            
         
         End With
         
@@ -1708,11 +1737,34 @@ Public Sub CargarMapasEspeciales()
         Else
 126         ReDim MapasIgnoranLimpieza(0)
         End If
+        
     
-128     Set File = Nothing
+128     If Cantidad > 0 Then
+130         ReDim MapasEventos(1 To Cantidad)
+        
+132         For i = 1 To Cantidad
+134             MapasEventos(i) = val(File.GetValue("MapasEventos", "Mapa" & i))
+            Next
+        Else
+136         ReDim MapasIgnoranLimpieza(0)
+        End If
+        
+    
+138     Set File = Nothing
 
 End Sub
-
+Public Function EsMapaEvento(ByVal destMap As Long) As Boolean
+    Dim i As Long
+    
+    For i = 1 To UBound(MapasEventos)
+        If MapasEventos(i) = destMap Then
+            EsMapaEvento = True
+            Exit Function
+        End If
+    Next i
+    EsMapaEvento = False
+    
+End Function
 Public Sub resetPj(ByVal UserIndex As Integer)
 
 
