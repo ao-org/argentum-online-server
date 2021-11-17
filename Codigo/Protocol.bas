@@ -10605,6 +10605,7 @@ Private Sub HandleSummonChar(ByVal UserIndex As Integer)
 
             End If
 
+            'HarThaos ReyarB creo que aca sacaria comparar Privilegios
 128         If CompararPrivilegiosUser(tUser, UserIndex) > 0 Then
 130             Call WriteConsoleMsg(UserIndex, "Se le ha avisado a " & UserList(tUser).Name & " que quieres traerlo a tu posición.", e_FontTypeNames.FONTTYPE_INFO)
 132             Call WriteConsoleMsg(tUser, .Name & " quiere transportarte a su ubicación. Escribe /ira " & .Name & " para ir.", e_FontTypeNames.FONTTYPE_INFO)
@@ -10619,12 +10620,12 @@ Private Sub HandleSummonChar(ByVal UserIndex As Integer)
 136         If NotConsejero Or .Pos.Map = UserList(tUser).Pos.Map Then
                 
                  If .flags.Privilegios And (e_PlayerType.SemiDios) Then
-                    If MapInfo(.Pos.Map).Seguro = 0 Then
+                    If MapInfo(.Pos.Map).Seguro = 0 Then 'HarThaos ReyarB hay que sacar eso de mapa seguro y poner mapas de eventos [MapasEventos]
                         Call WriteConsoleMsg(UserIndex, "Solamente puedes traer usuarios a zonas seguras.", e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
                     End If
                     If UserList(tUser).flags.Muerto = 1 Then
-                        Call WriteConsoleMsg(UserIndex, "No puedes transportar a un muerto.", e_FontTypeNames.FONTTYPE_INFO)
+                        Call WriteConsoleMsg(UserIndex, "No puedes transportar a un muerto. ellos tienen /hogar", e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
                     End If
                 End If
