@@ -15458,19 +15458,19 @@ Private Sub HandlePossUser(ByVal UserIndex As Integer)
         
 102         UserName = Reader.ReadString8()
 
-104         If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero Or e_PlayerType.SemiDios)) = 0 Then
+104         If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero)) = 0 Then
 106             If NameIndex(UserName) <= 0 Then
-
+                        'HarTaoS ReyarB cambiar por en mismo mapa del usuario buscando una legalpos
 110                     If Not SetPositionDatabase(UserName, UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y) Then
 112                         Call WriteConsoleMsg(UserIndex, "El usuario " & UserName & " no existe.", e_FontTypeNames.FONTTYPE_INFO)
 
                         End If
 
 116                 Call WriteConsoleMsg(UserIndex, "Servidor » Acción realizada con exito! La nueva posicion de " & UserName & " es: " & UserList(UserIndex).Pos.Map & "-" & UserList(UserIndex).Pos.X & "-" & UserList(UserIndex).Pos.Y & "...", e_FontTypeNames.FONTTYPE_INFO)
-
+                    'HarTaoS ReyarB ver porque si el usuario esta online lo dice igual
                 Else
 118                 Call WriteConsoleMsg(UserIndex, "Servidor » El usuario debe estar deslogueado para dicha solicitud!", e_FontTypeNames.FONTTYPE_INFO)
-
+                    'HarTaoS ReyarB avisar al usuario que un gm lo destrabara pero debe desloguear
                 End If
             Else
 120             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
