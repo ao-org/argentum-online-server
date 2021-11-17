@@ -899,7 +899,11 @@ Function LegalWalk(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer,
                     If ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex).OBJType = e_OBJType.otPuertas Then
                         puerta = ObjData(.ObjInfo.ObjIndex)
                         If puerta.Cerrada = 1 Then
-                            Call AccionParaPuerta(Map, X, Y, WalkerIndex)
+                            If puerta.Llave = 0 Then
+                                Call AccionParaPuerta(Map, X, Y, WalkerIndex)
+                            Else
+                                 Exit Function
+                            End If
                         End If
                     Else
                         If (.Blocked And 2 ^ (Heading - 1)) <> 0 Then Exit Function
@@ -908,7 +912,11 @@ Function LegalWalk(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer,
                     If ObjData(MapData(Map, X + 1, Y).ObjInfo.ObjIndex).OBJType = e_OBJType.otPuertas Then
                         puerta = ObjData(MapData(Map, X + 1, Y).ObjInfo.ObjIndex)
                         If puerta.Cerrada = 1 Then
-                            Call AccionParaPuerta(Map, X + 1, Y, WalkerIndex)
+                            If puerta.Llave = 0 Then
+                                Call AccionParaPuerta(Map, X + 1, Y, WalkerIndex)
+                            Else
+                                 Exit Function
+                            End If
                         End If
                     Else
                         If (.Blocked And 2 ^ (Heading - 1)) <> 0 Then Exit Function
