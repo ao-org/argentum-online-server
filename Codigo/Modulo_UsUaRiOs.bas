@@ -2061,7 +2061,7 @@ Sub UserDie(ByVal UserIndex As Integer)
                 If UserList(tempIndex).AreasInfo.AreaReciveX And AreaX Then  'Esta en el area?
                     If UserList(tempIndex).AreasInfo.AreaReciveY And AreaY Then
         
-                        If UserList(tempIndex).ConnIDValida And tempIndex <> UserIndex Then
+                        If UserList(tempIndex).ConnIDValida And tempIndex <> UserIndex And UserList(tempIndex).GuildIndex <> UserList(UserIndex).GuildIndex Then
                             Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageCharacterRemove(UserList(tempIndex).Char.CharIndex, True))
                         End If
                     End If

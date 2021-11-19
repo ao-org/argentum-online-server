@@ -2240,7 +2240,7 @@ Sub CheckClanExp(ByVal UserIndex As Integer, ByVal ExpDar As Integer)
 104     ExpNecesaria = guilds(GI).GetExpNecesaria
 106     nivel = guilds(GI).GetNivelDeClan
 
-108     If nivel >= 5 Then
+108     If nivel >= 6 Then
             Exit Sub
 
         End If
@@ -2256,7 +2256,7 @@ Sub CheckClanExp(ByVal UserIndex As Integer, ByVal ExpDar As Integer)
     
             'Checkea otra vez, esto sucede si tiene mas EXP y puede saltarse el maximo
             'nivel
-118         If nivel >= 5 Then
+118         If nivel >= 6 Then
 120             ExpActual = 0
 122             ExpNecesaria = 0
                 Exit Sub
@@ -2282,6 +2282,8 @@ Sub CheckClanExp(ByVal UserIndex As Integer, ByVal ExpDar As Integer)
 138             ExpNecesaria = 2000
 140         ElseIf nivel = 4 Then
 142             ExpNecesaria = 3000
+143         ElseIf nivel = 5 Then
+145             ExpNecesaria = 4000
             Else
 144             ExpNecesaria = 0
 146             ExpActual = 0
@@ -2319,16 +2321,22 @@ Public Function MiembrosPermite(ByVal GI As Integer) As Byte
 102     Select Case nivel
 
             Case 1
-104             MiembrosPermite = 15
+104             MiembrosPermite = 5
 
 106         Case 2
-108             MiembrosPermite = 20
+108             MiembrosPermite = 7
 
 110         Case 3
-112             MiembrosPermite = 25
+112             MiembrosPermite = 7
 
-114         Case Else
-116             MiembrosPermite = 30
+114         Case 4
+116             MiembrosPermite = 12
+
+            Case 5
+                MiembrosPermite = 15
+                
+            Case 6
+                MiembrosPermite = 20
 
         End Select
 

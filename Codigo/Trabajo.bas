@@ -1836,7 +1836,7 @@ Public Sub DoRobar(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
         
 136         If .GuildIndex > 0 Then
         
-138             If .flags.SeguroClan Then
+138             If .flags.SeguroClan And NivelDeClan(.GuildIndex) >= 5 Then
             
 140                 If .GuildIndex = UserList(VictimaIndex).GuildIndex Then
 142                     Call WriteConsoleMsg(LadronIndex, "No podes robarle a un miembro de tu clan.", e_FontTypeNames.FONTTYPE_INFOIAO)
