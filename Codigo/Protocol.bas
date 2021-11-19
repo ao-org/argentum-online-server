@@ -15458,16 +15458,21 @@ Private Sub HandlePossUser(ByVal UserIndex As Integer)
             Dim UserName As String
         
 102         UserName = Reader.ReadString8()
-
+            'HarThaoS: Modifico la forma en que se usa el destrabar, ahora solamente lo puedo destrabar si está online.
 104         If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero)) = 0 Then
-106             If NameIndex(UserName) <= 0 Then
-                        'HarTaoS ReyarB cambiar por en mismo mapa del usuario buscando una legalpos
-110                     If Not SetPositionDatabase(UserName, UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y) Then
-112                         Call WriteConsoleMsg(UserIndex, "El usuario " & UserName & " no existe.", e_FontTypeNames.FONTTYPE_INFO)
-
-                        End If
-
-116                 Call WriteConsoleMsg(userindex, "Servidor » Acción realizada con exito! La nueva posicion de " & UserName & " es: " & UserList(userindex).Pos.Map & "-" & UserList(userindex).Pos.X & "-" & UserList(userindex).Pos.Y & "...", e_FontTypeNames.FONTTYPE_INFO)
+                Dim tempIndex As Integer
+                tempIndex = NameIndex(UserName)
+106             If tempIndex > 0 Then
+                    If LegalPosDestrabar(UserList(tempIndex).Pos.Map, UserList(tempIndex).Pos.X, UserList(tempIndex).Pos.Y, e_Heading.SOUTH, .flags.Navegando = 1, .flags.Navegando = 0) Then Exit Sub
+                    
+                    Dim nPos As t_WorldPos
+                                        
+                    Call ClosestLegalPos(UserList(tempIndex).Pos, nPos, False, True)
+                    
+150                 Call FindLegalPos(tempIndex, UserList(tempIndex).Pos.Map, CByte(UserList(tempIndex).Pos.X), CByte(UserList(tempIndex).Pos.Y))
+152                 Call WarpUserChar(tempIndex, nPos.Map, nPos.X, nPos.Y, True)
+                    
+116                 Call WriteConsoleMsg(UserIndex, "Servidor » Acción realizada con exito! La nueva posicion de " & UserName & " es: " & UserList(tempIndex).Pos.Map & "-" & UserList(tempIndex).Pos.X & "-" & UserList(tempIndex).Pos.Y & ".", e_FontTypeNames.FONTTYPE_INFO)
                     'HarTaoS ReyarB ver porque si el usuario esta online lo dice igual
                 Else
 118                 Call WriteConsoleMsg(userindex, "Servidor » El usuario debe estar deslogueado para dicha solicitud!", e_FontTypeNames.FONTTYPE_INFO)
