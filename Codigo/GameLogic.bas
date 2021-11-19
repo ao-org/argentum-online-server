@@ -856,6 +856,50 @@ LegalPos_Err:
         
 End Function
 
+Function LegalPosDestrabar(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer, Optional ByVal PuedeAgua As Boolean = False, Optional ByVal PuedeTierra As Boolean = True, Optional ByVal Montado As Boolean = False, Optional ByVal PuedeTraslado As Boolean = True, Optional ByVal PuedeBloqueoParcial As Boolean = True) As Boolean
+        On Error GoTo LegalPosDestrabar_Err
+        
+100     If Map <= 0 Or Map > NumMaps Then Exit Function
+        
+102     If X < MinXBorder Or X > MaxXBorder Then Exit Function
+        
+104     If Y < MinYBorder Or Y > MaxYBorder Then Exit Function
+        
+106     With MapData(Map, X, Y)
+        
+108         If .NpcIndex <> 0 Then Exit Function
+
+            
+112         If Not PuedeTraslado Then
+114             If .TileExit.Map > 0 Then Exit Function
+            End If
+            
+116         If Not PuedeAgua Then
+118             If (.Blocked And FLAG_AGUA) <> 0 Then Exit Function
+            End If
+            
+120         If Not PuedeTierra Then
+122             If (.Blocked And FLAG_AGUA) = 0 Then Exit Function
+            End If
+            
+            If PuedeBloqueoParcial Then
+124             If (.Blocked And e_Block.ALL_SIDES) = e_Block.ALL_SIDES Then Exit Function
+            Else
+                If (.Blocked And e_Block.ALL_SIDES) > 0 Then Exit Function
+            End If
+            
+        End With
+        
+        
+126     LegalPos = True
+
+        Exit Function
+        
+LegalPosDestrabar_Err:
+128     Call TraceError(Err.Number, Err.Description, "Extra.LegalPosDestrabar", Erl)
+        
+End Function
+
 Function LegalWalk(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer, ByVal Heading As e_Heading, Optional ByVal PuedeAgua As Boolean = False, Optional ByVal PuedeTierra As Boolean = True, Optional ByVal Montado As Boolean = False, Optional ByVal PuedeTraslado As Boolean = True, Optional ByVal WalkerIndex As Integer) As Boolean
         On Error GoTo LegalWalk_Err
         
