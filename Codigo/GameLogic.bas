@@ -891,7 +891,7 @@ Function LegalPosDestrabar(ByVal Map As Integer, ByVal X As Integer, ByVal Y As 
         End With
         
         
-126     LegalPos = True
+126     LegalPosDestrabar = True
 
         Exit Function
         
