@@ -219,7 +219,7 @@ Public Sub CheckUpdateNeededUser(ByVal UserIndex As Integer, ByVal Head As Byte,
                    
 190                     If UserIndex <> TempInt Then
                         
-192                         If (UserList(UserIndex).flags.AdminInvisible = 0 Or EsGM(TempInt)) And UserList(TempInt).flags.Muerto = 0 Then
+192                         If (UserList(UserIndex).flags.AdminInvisible = 0 Or EsGM(TempInt)) And (UserList(TempInt).flags.Muerto = 0 Or UserList(TempInt).GuildIndex = UserList(UserIndex).GuildIndex) Or (UserList(UserIndex).flags.Muerto = 1 And UserList(TempInt).flags.Muerto = 1) Then
 194                             Call MakeUserChar(False, TempInt, UserIndex, .Pos.Map, .Pos.X, .Pos.Y, 0)
                             
 196                             If UserList(UserIndex).flags.invisible Or UserList(UserIndex).flags.Oculto Then
@@ -228,7 +228,7 @@ Public Sub CheckUpdateNeededUser(ByVal UserIndex As Integer, ByVal Head As Byte,
                             
                             End If
                             
-200                         If (UserList(TempInt).flags.AdminInvisible = 0 Or EsGM(UserIndex)) And UserList(UserIndex).flags.Muerto = 0 Then
+200                         If (UserList(TempInt).flags.AdminInvisible = 0 Or EsGM(UserIndex)) And (UserList(UserIndex).flags.Muerto = 0 Or UserList(TempInt).GuildIndex = UserList(UserIndex).GuildIndex) Or (UserList(UserIndex).flags.Muerto = 1 And UserList(TempInt).flags.Muerto = 1) Then
 202                             Call MakeUserChar(False, UserIndex, TempInt, Map, X, Y, appear)
                             
                                 'Si el user estaba invisible le avisamos al nuevo cliente de eso

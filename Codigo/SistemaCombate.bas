@@ -1721,7 +1721,7 @@ Public Function PuedeAtacar(ByVal AttackerIndex As Integer, ByVal VictimIndex As
         
         ' Seguro Clan
          If UserList(AttackerIndex).GuildIndex > 0 Then
-             If UserList(AttackerIndex).flags.SeguroClan Then
+             If UserList(AttackerIndex).flags.SeguroClan And NivelDeClan(UserList(AttackerIndex).GuildIndex) >= 5 Then
                  If UserList(AttackerIndex).GuildIndex = UserList(VictimIndex).GuildIndex Then
                     Call WriteConsoleMsg(AttackerIndex, "No podes atacar a un miembro de tu clan.", e_FontTypeNames.FONTTYPE_INFOIAO)
                     PuedeAtacar = False
