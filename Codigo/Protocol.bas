@@ -15459,11 +15459,12 @@ Private Sub HandlePossUser(ByVal UserIndex As Integer)
         
 102         UserName = Reader.ReadString8()
             'HarThaoS: Modifico la forma en que se usa el destrabar, ahora solamente lo puedo destrabar si está online.
-104         If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero)) = 0 Then
+104         If (.flags.Privilegios And (e_PlayerType.user)) = 0 Then
                 Dim tempIndex As Integer
+                UserName = Split(UserName, "(")(0)
                 tempIndex = NameIndex(UserName)
 106             If tempIndex > 0 Then
-                    If LegalPosDestrabar(UserList(tempIndex).Pos.Map, UserList(tempIndex).Pos.X, UserList(tempIndex).Pos.Y, e_Heading.SOUTH, .flags.Navegando = 1, .flags.Navegando = 0) Then Exit Sub
+                    If LegalPosDestrabar(UserList(tempIndex).Pos.Map, UserList(tempIndex).Pos.X, UserList(tempIndex).Pos.Y, .flags.Navegando = 1, .flags.Navegando = 0) Then Exit Sub
                     
                     Dim nPos As t_WorldPos
                                         
