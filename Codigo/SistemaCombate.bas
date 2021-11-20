@@ -239,14 +239,23 @@ End Function
 Private Function PoderEvasion(ByVal UserIndex As Integer) As Long
         
         On Error GoTo PoderEvasion_Err
-        
-
-        Dim lTemp As Long
 
 100     With UserList(UserIndex)
-102         lTemp = (.Stats.UserSkills(e_Skill.Tacticas) + .Stats.UserSkills(e_Skill.Tacticas) / 33 * .Stats.UserAtributos(e_Atributos.Agilidad)) * ModClase(.clase).Evasion
-       
-104         PoderEvasion = (lTemp + (2.5 * Maximo(CInt(.Stats.ELV) - 12, 0)))
+
+            Select Case .Stats.UserSkills(e_Skill.Tacticas)
+            
+                Case Is < 31
+                    PoderEvasion = .Stats.UserSkills(e_Skill.Tacticas) * ModClase(.clase).Evasion
+                Case Is < 61
+                    PoderEvasion = .Stats.UserSkills(e_Skill.Tacticas) + .Stats.UserAtributos(Agilidad) * ModClase(.clase).Evasion
+                Case Is < 91
+                    PoderEvasion = .Stats.UserSkills(e_Skill.Tacticas) + 2 * .Stats.UserAtributos(Agilidad) * ModClase(.clase).Evasion
+                Case Else
+104                 PoderEvasion = .Stats.UserSkills(e_Skill.Tacticas) + 3 * .Stats.UserAtributos(Agilidad) * ModClase(.clase).Evasion
+
+            End Select
+            
+            PoderEvasion = PoderEvasion + (2.5 * Maximo(.Stats.ELV - 12, 0))
 
         End With
 
@@ -428,7 +437,7 @@ Private Function NpcImpacto(ByVal NpcIndex As Integer, ByVal UserIndex As Intege
         'Esta usando un escudo ???
 110     If UserList(UserIndex).Invent.EscudoEqpObjIndex > 0 Then UserEvasion = UserEvasion + PoderEvasioEscudo
 
-112     ProbExito = Maximo(10, Minimo(90, 50 + ((NpcPoderAtaque - UserEvasion) * 0.2)))
+112     ProbExito = Maximo(10, Minimo(90, 50 + ((NpcPoderAtaque - UserEvasion) * 0.4)))
 
 114     NpcImpacto = (RandomNumber(1, 100) <= ProbExito)
 
@@ -613,11 +622,11 @@ Private Sub UserDañoNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
                 ' Si acertó - Doble chance contra NPCs
 138             If RandomNumber(1, 100) <= ProbabilidadApuñalar(UserIndex) * 1.5 Then
                     ' Daño del apuñalamiento
-140                 DañoExtra = Daño * ModicadorApuñalarClase(.clase)
+140                 DañoExtra = Daño * 2
                 
                     ' Mostramos en consola el daño
 142                 If .ChatCombate = 1 Then
-144                     Call WriteLocaleMsg(UserIndex, "212", e_FontTypeNames.FONTTYPE_FIGHT, PonerPuntos(DañoExtra))
+144                     Call WriteLocaleMsg(UserIndex, "212", e_FontTypeNames.FONTTYPE_INFOBOLD, PonerPuntos(DañoExtra))
                     End If
 
                     ' Color amarillo
@@ -1380,14 +1389,12 @@ Private Sub UserDañoUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As 
 
 152         DañoStr = PonerPuntos(Daño)
 
-            ' Mostramos en consola el golpe al atacante
+            ' Mostramos en consola el golpe al atacante solo si tiene activado el chat de combate
 154         If UserList(AtacanteIndex).ChatCombate = 1 Then
 156             Call WriteUserHittedUser(AtacanteIndex, Lugar, .Char.CharIndex, DañoStr)
             End If
-            ' Y a la víctima
-158         If .ChatCombate = 1 Then
-160             Call WriteUserHittedByUser(VictimaIndex, Lugar, UserList(AtacanteIndex).Char.CharIndex, DañoStr)
-            End If
+            ' Mostramos en consola el golpe a la victima independientemente de la configuración de chat
+160         Call WriteUserHittedByUser(VictimaIndex, Lugar, UserList(AtacanteIndex).Char.CharIndex, DañoStr)
 
             ' Golpe crítico (ignora defensa)
 162         If PuedeGolpeCritico(AtacanteIndex) Then
@@ -1419,14 +1426,12 @@ Private Sub UserDañoUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As 
 
 188                 DañoStr = PonerPuntos(DañoExtra)
                 
-                    ' Mostramos en consola el daño al atacante
+                    ' Mostramos en consola el golpe al atacante solo si tiene activado el chat de combate
 190                 If UserList(AtacanteIndex).ChatCombate = 1 Then
-192                     Call WriteLocaleMsg(AtacanteIndex, "210", e_FontTypeNames.FONTTYPE_FIGHT, .Name & "¬" & DañoStr)
+192                     Call WriteLocaleMsg(AtacanteIndex, "210", e_FontTypeNames.FONTTYPE_INFOBOLD, .Name & "¬" & DañoStr)
                     End If
-                    ' Y a la víctima
-194                 If .ChatCombate = 1 Then
-196                     Call WriteLocaleMsg(VictimaIndex, "211", e_FontTypeNames.FONTTYPE_FIGHT, UserList(AtacanteIndex).Name & "¬" & DañoStr)
-                    End If
+                    ' Mostramos en consola el golpe a la victima independientemente de la configuración de chat
+196                 Call WriteLocaleMsg(VictimaIndex, "211", e_FontTypeNames.FONTTYPE_INFOBOLD, UserList(AtacanteIndex).Name & "¬" & DañoStr)
                     
 198                 Call SendData(SendTarget.ToPCArea, AtacanteIndex, PrepareMessagePlayWave(SND_IMPACTO_APU, UserList(AtacanteIndex).Pos.X, UserList(AtacanteIndex).Pos.Y))
 
@@ -1466,15 +1471,25 @@ Private Sub UserDañoUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As 
                 End If
                 
 232             DañoStr = "¡" & PonerPuntos(Daño) & "!"
+
+                ' Restamos el daño a la víctima en caso de apu y si el daño total lo mata, lo dejamos en 1 de vida.
+                If .Stats.MaxHp <= Daño Then
+238                 .Stats.MinHp = 1
+                Else
+                ' Restamos el daño a la víctima en caso de que el apu no supere la maxima vida de la victima.
+                    .Stats.MinHp = .Stats.MinHp - Daño
+                End If
             Else
 234             DañoStr = PonerPuntos(Daño)
+                ' Restamos el daño a la víctima
+                .Stats.MinHp = .Stats.MinHp - Daño
             End If
 
             ' Daño sobre el tile
 236         Call SendData(SendTarget.ToPCArea, VictimaIndex, PrepareMessageTextCharDrop(DañoStr, .Char.CharIndex, Color))
 
             ' Restamos el daño a la víctima
-238         .Stats.MinHp = .Stats.MinHp - Daño
+            .Stats.MinHp = .Stats.MinHp - Daño
 
             ' Muere la víctima
 240         If .Stats.MinHp <= 0 Then
@@ -1802,7 +1817,7 @@ Public Function PuedeAtacar(ByVal AttackerIndex As Integer, ByVal VictimIndex As
         End If
 
         'Estas atacando desde un trigger seguro? o tu victima esta en uno asi?
-222     If MapData(UserList(VictimIndex).Pos.Map, UserList(VictimIndex).Pos.X, UserList(VictimIndex).Pos.Y).trigger = e_Trigger.ZONASEGURA Or MapData(UserList(AttackerIndex).Pos.Map, UserList(AttackerIndex).Pos.X, UserList(AttackerIndex).Pos.Y).trigger = e_Trigger.ZONASEGURA Then
+222     If MapData(UserList(VictimIndex).Pos.Map, UserList(VictimIndex).Pos.X, UserList(VictimIndex).Pos.Y).trigger = e_Trigger.ZonaSegura Or MapData(UserList(AttackerIndex).Pos.Map, UserList(AttackerIndex).Pos.X, UserList(AttackerIndex).Pos.Y).trigger = e_Trigger.ZonaSegura Then
 224         Call WriteConsoleMsg(AttackerIndex, "No podes pelear aqui.", e_FontTypeNames.FONTTYPE_WARNING)
 226         PuedeAtacar = False
             Exit Function
@@ -2530,12 +2545,13 @@ Private Function ProbabilidadApuñalar(ByVal UserIndex As Integer) As Integer
 102         Skill = .Stats.UserSkills(e_Skill.Apuñalar)
         
 104         Select Case .clase
-    
-                Case e_Class.Assasin '20%
-106                 ProbabilidadApuñalar = 0.33 * Skill
-    
-108             Case e_Class.Pirat, e_Class.Hunter '15%
-110                 ProbabilidadApuñalar = 0.15 * Skill
+        
+                Case e_Class.Assasin '25%
+                    
+106                 ProbabilidadApuñalar = 0.25 * Skill
+        
+108             Case e_Class.Bard, e_Class.Hunter  '15%
+                    ProbabilidadApuñalar = 0.15 * Skill
     
 112             Case Else ' 10%
 114                 ProbabilidadApuñalar = 0.1 * Skill
@@ -2600,7 +2616,7 @@ End Function
 
 
 ' Helper function to simplify the code. Keep private!
-Private Sub WriteCombatConsoleMsg(ByVal UserIndex As Integer, ByVal message As String)
+Private Sub WriteCombatConsoleMsg(ByVal UserIndex As Integer, ByVal Message As String)
             On Error GoTo WriteCombatConsoleMsg_Err
 
 100         If UserList(UserIndex).ChatCombate = 1 Then
