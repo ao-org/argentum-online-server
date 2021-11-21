@@ -1488,9 +1488,6 @@ Private Sub UserDañoUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As 
             ' Daño sobre el tile
 236         Call SendData(SendTarget.ToPCArea, VictimaIndex, PrepareMessageTextCharDrop(DañoStr, .Char.CharIndex, Color))
 
-            ' Restamos el daño a la víctima
-            .Stats.MinHp = .Stats.MinHp - Daño
-
             ' Muere la víctima
 240         If .Stats.MinHp <= 0 Then
                 ' Sumar frag y rutina de muerte
