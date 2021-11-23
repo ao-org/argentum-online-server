@@ -3,19 +3,15 @@ Attribute VB_Name = "ModEncrypt"
 Public Function SEncriptar(ByVal Cadena As String) As String
         
         On Error GoTo SEncriptar_Err
-        
-
+       
         ' GSZ-AO - Encripta una cadena de texto
         Dim i As Long, RandomNum As Integer
     
 100     RandomNum = 99 * Rnd
-
 102     If RandomNum < 10 Then RandomNum = 10
-
 104     For i = 1 To Len(Cadena)
 106         Mid$(Cadena, i, 1) = Chr$(Asc(mid$(Cadena, i, 1)) + RandomNum)
 108     Next i
-
 110     SEncriptar = Cadena & Chr$(Asc(Left$(RandomNum, 1)) + 10) & Chr$(Asc(Right$(RandomNum, 1)) + 10)
         'DoEvents (WyroX: WTF?)
 
@@ -30,24 +26,18 @@ End Function
 
 Public Function SDesencriptar(ByVal Cadena As String) As String
         
-        On Error GoTo SDesencriptar_Err
-        
-
-        ' GSZ-AO - Desencripta una cadena de texto
-        Dim i As Long, NumDesencriptar As String
+    On Error GoTo SDesencriptar_Err
+    Dim password_encrypted() As Byte
+    Dim public_key() As Byte
     
-100     NumDesencriptar = Chr$(Asc(Left$((Right(Cadena, 2)), 1)) - 10) & Chr$(Asc(Right$((Right(Cadena, 2)), 1)) - 10)
-102     Cadena = (Left$(Cadena, Len(Cadena) - 2))
+    Call Str2ByteArr(Cadena, password_encrypted)
+    Call Str2ByteArr("Pablomarquez123!", public_key)
+    
+    SDesencriptar = CHinterface.Decrypt(password_encrypted, public_key)
+    DoEvents
 
-104     For i = 1 To Len(Cadena)
-106         Mid$(Cadena, i, 1) = Chr$(Asc(mid$(Cadena, i, 1)) - NumDesencriptar)
-108     Next i
-
-110     SDesencriptar = Cadena
-        'DoEvents (WyroX: WTF?)
-
-        
-        Exit Function
+    
+    Exit Function
 
 SDesencriptar_Err:
 112     Call TraceError(Err.Number, Err.Description, "ModEncrypt.SDesencriptar", Erl)

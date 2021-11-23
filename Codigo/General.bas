@@ -589,6 +589,9 @@ Sub Main()
         
         End If
     
+    
+        Set Ch = New CryptoHelper.CryptoHelper
+        Set CHinterface = Ch
 106     Call LeerLineaComandos
 
         Dim f As Date
