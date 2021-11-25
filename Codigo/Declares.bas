@@ -2439,7 +2439,3 @@ Public Enum eNumber_Types
     ent_Long
     ent_Trigger
 End Enum
-
-
-Public CH As CryptoHelper.CryptoHelper
-Public CHinterface As CryptoHelper.ICryptoHelper
