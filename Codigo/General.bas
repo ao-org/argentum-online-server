@@ -1703,15 +1703,20 @@ Public Sub EfectoParalisisUser(ByVal UserIndex As Integer)
         
         On Error GoTo EfectoParalisisUser_Err
         
-
-100     If UserList(UserIndex).Counters.Paralisis > 0 Then
-102         UserList(UserIndex).Counters.Paralisis = UserList(UserIndex).Counters.Paralisis - 1
-        Else
-104         UserList(UserIndex).flags.Paralizado = 0
-            'UserList(UserIndex).Flags.AdministrativeParalisis = 0
-106         Call WriteParalizeOK(UserIndex)
-
-        End If
+        With UserList(UserIndex)
+100         If .Counters.Paralisis > 0 Then
+102             .Counters.Paralisis = .Counters.Paralisis - 1
+            Else
+104             .flags.Paralizado = 0
+    
+                If .clase = e_Class.Warrior Or .clase = e_Class.Hunter Or .clase = e_Class.Thief Or .clase = e_Class.Pirat Then
+                    .Counters.TiempoDeInmunidadParalisisNoMagicas = 4
+                End If
+                'UserList(UserIndex).Flags.AdministrativeParalisis = 0
+106             Call WriteParalizeOK(UserIndex)
+    
+            End If
+        End With
 
         
         Exit Sub
@@ -1768,15 +1773,19 @@ Public Sub EfectoInmoUser(ByVal UserIndex As Integer)
         
         On Error GoTo EfectoInmoUser_Err
         
+        With UserList(UserIndex)
+100         If .Counters.Inmovilizado > 0 Then
+102             .Counters.Inmovilizado = .Counters.Inmovilizado - 1
+            Else
+104             .flags.Inmovilizado = 0
 
-100     If UserList(UserIndex).Counters.Inmovilizado > 0 Then
-102         UserList(UserIndex).Counters.Inmovilizado = UserList(UserIndex).Counters.Inmovilizado - 1
-        Else
-104         UserList(UserIndex).flags.Inmovilizado = 0
-            'UserList(UserIndex).Flags.AdministrativeParalisis = 0
-106         Call WriteInmovilizaOK(UserIndex)
-
-        End If
+                If .clase = e_Class.Warrior Or .clase = e_Class.Hunter Or .clase = e_Class.Thief Or .clase = e_Class.Pirat Then
+                    .Counters.TiempoDeInmunidadParalisisNoMagicas = 4
+                End If
+106             Call WriteInmovilizaOK(UserIndex)
+    
+            End If
+        End With
 
         
         Exit Sub
@@ -2355,6 +2364,9 @@ Sub PasarSegundo()
 264                     .Counters.EnCombate = .Counters.EnCombate - 1
                     End If
                 
+                    If .Counters.TiempoDeInmunidadParalisisNoMagicas > 0 Then
+                        .Counters.TiempoDeInmunidadParalisisNoMagicas = .Counters.TiempoDeInmunidadParalisisNoMagicas - 1
+                    End If
                 
 266                 If .Counters.TiempoDeInmunidad > 0 Then
 268                     .Counters.TiempoDeInmunidad = .Counters.TiempoDeInmunidad - 1

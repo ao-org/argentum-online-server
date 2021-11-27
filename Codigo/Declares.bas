@@ -1657,6 +1657,7 @@ End Enum
 Public Type t_UserCounters
 
     TiempoDeInmunidad As Byte
+    TiempoDeInmunidadParalisisNoMagicas As Byte
     EnCombate As Byte
 
     TiempoParaSubastar As Byte
