@@ -1553,12 +1553,19 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef B As Boolean)
 276         If UserList(UserIndex).flags.Inmovilizado > 0 Then
 278             UserList(UserIndex).Counters.Inmovilizado = 0
 280             UserList(UserIndex).flags.Inmovilizado = 0
+                 If UserList(UserIndex).clase = e_Class.Warrior Or UserList(UserIndex).clase = e_Class.Hunter Or UserList(UserIndex).clase = e_Class.Thief Or UserList(UserIndex).clase = e_Class.Pirat Then
+                     UserList(UserIndex).Counters.TiempoDeInmunidadParalisisNoMagicas = 4
+                End If
 282             Call WriteInmovilizaOK(UserIndex)
             End If
 
 284         If UserList(UserIndex).flags.Paralizado > 0 Then
 286             UserList(UserIndex).Counters.Paralisis = 0
 288             UserList(UserIndex).flags.Paralizado = 0
+
+                 If UserList(UserIndex).clase = e_Class.Warrior Or UserList(UserIndex).clase = e_Class.Hunter Or UserList(UserIndex).clase = e_Class.Thief Or UserList(UserIndex).clase = e_Class.Pirat Then
+                     UserList(UserIndex).Counters.TiempoDeInmunidadParalisisNoMagicas = 4
+                End If
 290             Call WriteParalizeOK(UserIndex)
             End If
         
@@ -1712,6 +1719,10 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef B As Boolean)
                 Exit Sub
             End If
             
+            If UserList(tU).Counters.TiempoDeInmunidadParalisisNoMagicas > 0 Then
+                Call WriteConsoleMsg(UserIndex, UserList(tU).Name & " no puede volver a ser paralizado tan rápido.", e_FontTypeNames.FONTTYPE_FIGHT)
+                Exit Sub
+            End If
 
             If UserList(tU).flags.Paralizado = 1 Then
                 Call WriteConsoleMsg(UserIndex, UserList(tU).Name & " ya está paralizado.", e_FontTypeNames.FONTTYPE_FIGHT)
@@ -1822,6 +1833,11 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef B As Boolean)
 514             Call WriteConsoleMsg(UserIndex, UserList(tU).Name & " ya está inmovilizado.", e_FontTypeNames.FONTTYPE_FIGHT)
                 Exit Sub
             End If
+            
+            If UserList(tU).Counters.TiempoDeInmunidadParalisisNoMagicas > 0 Then
+515             Call WriteConsoleMsg(UserIndex, UserList(tU).Name & " no puede volver a ser inmovilizado tan rápido.", e_FontTypeNames.FONTTYPE_FIGHT)
+                Exit Sub
+            End If
     
 516         If Not PuedeAtacar(UserIndex, tU) Then Exit Sub
             
@@ -1835,6 +1851,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef B As Boolean)
 526         UserList(tU).Counters.Inmovilizado = Hechizos(h).Duration
 
 528         UserList(tU).flags.Inmovilizado = 1
+            
 530         Call WriteInmovilizaOK(tU)
 532         Call WritePosUpdate(tU)
             
@@ -1877,6 +1894,9 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef B As Boolean)
         
 560         If UserList(tU).flags.Inmovilizado = 1 Then
 562             UserList(tU).Counters.Inmovilizado = 0
+                If UserList(tU).clase = e_Class.Warrior Or UserList(tU).clase = e_Class.Hunter Or UserList(tU).clase = e_Class.Thief Or UserList(tU).clase = e_Class.Pirat Then
+                     UserList(tU).Counters.TiempoDeInmunidadParalisisNoMagicas = 4
+                End If
 564             UserList(tU).flags.Inmovilizado = 0
 566             Call WriteInmovilizaOK(tU)
 568             Call WritePosUpdate(tU)
@@ -1885,6 +1905,9 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef B As Boolean)
             
 570         If UserList(tU).flags.Paralizado = 1 Then
 572             UserList(tU).flags.Paralizado = 0
+                 If UserList(tU).clase = e_Class.Warrior Or UserList(tU).clase = e_Class.Hunter Or UserList(tU).clase = e_Class.Thief Or UserList(tU).clase = e_Class.Pirat Then
+                     UserList(tU).Counters.TiempoDeInmunidadParalisisNoMagicas = 4
+                End If
 574             UserList(tU).Counters.Paralisis = 0
 
 576             Call WriteParalizeOK(tU)
@@ -3560,6 +3583,9 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef B As Boolean)
     
 416         If UserList(UserIndex).flags.Inmovilizado = 1 Then
 418             UserList(UserIndex).Counters.Inmovilizado = 0
+                If UserList(UserIndex).clase = e_Class.Warrior Or UserList(UserIndex).clase = e_Class.Hunter Or UserList(UserIndex).clase = e_Class.Thief Or UserList(UserIndex).clase = e_Class.Pirat Then
+                     UserList(UserIndex).Counters.TiempoDeInmunidadParalisisNoMagicas = 4
+                End If
 420             UserList(UserIndex).flags.Inmovilizado = 0
 422             Call WriteInmovilizaOK(UserIndex)
             
@@ -3568,6 +3594,9 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef B As Boolean)
     
 424         If UserList(UserIndex).flags.Paralizado = 1 Then
 426             UserList(UserIndex).Counters.Paralisis = 0
+                If UserList(UserIndex).clase = e_Class.Warrior Or UserList(UserIndex).clase = e_Class.Hunter Or UserList(UserIndex).clase = e_Class.Thief Or UserList(UserIndex).clase = e_Class.Pirat Then
+                     UserList(UserIndex).Counters.TiempoDeInmunidadParalisisNoMagicas = 4
+                End If
 428             UserList(UserIndex).flags.Paralizado = 0
 430             Call WriteParalizeOK(UserIndex)
 
@@ -3805,6 +3834,9 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef B As Boolean)
 634         If UserList(tU).flags.Inmovilizado = 1 Then
 636             UserList(tU).Counters.Inmovilizado = 0
 638             UserList(tU).flags.Inmovilizado = 0
+                If UserList(tU).clase = e_Class.Warrior Or UserList(tU).clase = e_Class.Hunter Or UserList(tU).clase = e_Class.Thief Or UserList(tU).clase = e_Class.Pirat Then
+                     UserList(tU).Counters.TiempoDeInmunidadParalisisNoMagicas = 4
+                End If
 640             Call WriteInmovilizaOK(tU)
 642             enviarInfoHechizo = True
             
@@ -3815,7 +3847,9 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef B As Boolean)
 646         If UserList(tU).flags.Paralizado = 1 Then
 648             UserList(tU).Counters.Paralisis = 0
 650             UserList(tU).flags.Paralizado = 0
-
+                If UserList(tU).clase = e_Class.Warrior Or UserList(tU).clase = e_Class.Hunter Or UserList(tU).clase = e_Class.Thief Or UserList(tU).clase = e_Class.Pirat Then
+                     UserList(tU).Counters.TiempoDeInmunidadParalisisNoMagicas = 4
+                End If
 652             Call WriteParalizeOK(tU)
 654             enviarInfoHechizo = True
             
@@ -4440,6 +4474,11 @@ Private Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, X As Byte, Y 
 426         If UserList(NpcIndex).flags.Inmovilizado = 1 Then
 428             UserList(NpcIndex).Counters.Inmovilizado = 0
 430             UserList(NpcIndex).flags.Inmovilizado = 0
+
+                If UserList(NpcIndex).clase = e_Class.Warrior Or UserList(NpcIndex).clase = e_Class.Hunter Or UserList(NpcIndex).clase = e_Class.Thief Or UserList(NpcIndex).clase = e_Class.Pirat Then
+                     UserList(NpcIndex).Counters.TiempoDeInmunidadParalisisNoMagicas = 4
+                End If
+                
 432             Call WriteInmovilizaOK(NpcIndex)
             
 
@@ -4447,6 +4486,9 @@ Private Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, X As Byte, Y 
 
 434         If UserList(NpcIndex).flags.Paralizado = 1 Then
 436             UserList(NpcIndex).flags.Paralizado = 0
+                If UserList(NpcIndex).clase = e_Class.Warrior Or UserList(NpcIndex).clase = e_Class.Hunter Or UserList(NpcIndex).clase = e_Class.Thief Or UserList(NpcIndex).clase = e_Class.Pirat Then
+                     UserList(NpcIndex).Counters.TiempoDeInmunidadParalisisNoMagicas = 4
+                End If
                 'no need to crypt this
 438             Call WriteParalizeOK(NpcIndex)
             
@@ -4466,12 +4508,18 @@ Private Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, X As Byte, Y 
 452         If UserList(NpcIndex).flags.Inmovilizado = 1 Then
 454             UserList(NpcIndex).Counters.Inmovilizado = 0
 456             UserList(NpcIndex).flags.Inmovilizado = 0
+                If UserList(NpcIndex).clase = e_Class.Warrior Or UserList(NpcIndex).clase = e_Class.Hunter Or UserList(NpcIndex).clase = e_Class.Thief Or UserList(NpcIndex).clase = e_Class.Pirat Then
+                     UserList(NpcIndex).Counters.TiempoDeInmunidadParalisisNoMagicas = 4
+                End If
 458             Call WriteInmovilizaOK(NpcIndex)
 
             End If
                     
 460         If UserList(NpcIndex).flags.Paralizado = 1 Then
 462             UserList(NpcIndex).flags.Paralizado = 0
+                If UserList(NpcIndex).clase = e_Class.Warrior Or UserList(NpcIndex).clase = e_Class.Hunter Or UserList(NpcIndex).clase = e_Class.Thief Or UserList(NpcIndex).clase = e_Class.Pirat Then
+                     UserList(NpcIndex).Counters.TiempoDeInmunidadParalisisNoMagicas = 4
+                End If
 464             UserList(NpcIndex).Counters.Paralisis = 0
 466             Call WriteParalizeOK(NpcIndex)
 

@@ -436,6 +436,8 @@ Public Function ConnectUser_Complete(ByVal UserIndex As Integer, _
 610         .flags.Inmunidad = 1
 615         .Counters.TiempoDeInmunidad = IntervaloPuedeSerAtacado
             'Ladder Inmunidad
+            
+            .Counters.TiempoDeInmunidadParalisisNoMagicas = 0
         
             'Mapa válido
 620         If Not MapaValido(.Pos.Map) Then
