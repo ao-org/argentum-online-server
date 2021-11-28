@@ -1663,13 +1663,13 @@ WriteUpdateUserStats_Err:
 End Sub
 
 Public Sub WriteUpdateUserKey(ByVal UserIndex As Integer, _
-                              ByVal slot As Integer, _
+                              ByVal Slot As Integer, _
                               ByVal Llave As Integer)
         '<EhHeader>
         On Error GoTo WriteUpdateUserKey_Err
         '</EhHeader>
 100     Call Writer.WriteInt(ServerPacketID.UpdateUserKey)
-102     Call Writer.WriteInt16(slot)
+102     Call Writer.WriteInt16(Slot)
 104     Call Writer.WriteInt16(Llave)
 106     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
@@ -1833,7 +1833,7 @@ WriteIntervals_Err:
         '</EhFooter>
 End Sub
 
-Public Sub WriteChangeInventorySlot(ByVal UserIndex As Integer, ByVal slot As Byte)
+Public Sub WriteChangeInventorySlot(ByVal UserIndex As Integer, ByVal Slot As Byte)
         '<EhHeader>
         On Error GoTo WriteChangeInventorySlot_Err
         '</EhHeader>
@@ -1843,16 +1843,16 @@ Public Sub WriteChangeInventorySlot(ByVal UserIndex As Integer, ByVal slot As By
         Dim PodraUsarlo As Byte
 
 100     Call Writer.WriteInt(ServerPacketID.ChangeInventorySlot)
-102     Call Writer.WriteInt8(slot)
-104     ObjIndex = UserList(UserIndex).Invent.Object(slot).ObjIndex
+102     Call Writer.WriteInt8(Slot)
+104     ObjIndex = UserList(UserIndex).Invent.Object(Slot).ObjIndex
 
 106     If ObjIndex > 0 Then
 108         PodraUsarlo = PuedeUsarObjeto(UserIndex, ObjIndex)
         End If
 
 110     Call Writer.WriteInt16(ObjIndex)
-112     Call Writer.WriteInt16(UserList(UserIndex).Invent.Object(slot).amount)
-114     Call Writer.WriteBool(UserList(UserIndex).Invent.Object(slot).Equipped)
+112     Call Writer.WriteInt16(UserList(UserIndex).Invent.Object(Slot).amount)
+114     Call Writer.WriteBool(UserList(UserIndex).Invent.Object(Slot).Equipped)
 116     Call Writer.WriteReal32(SalePrice(ObjIndex))
 118     Call Writer.WriteInt8(PodraUsarlo)
 120     Call modSendData.SendData(ToIndex, UserIndex)
@@ -1871,7 +1871,7 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @param    slot Inventory slot which needs to be updated.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-Public Sub WriteChangeBankSlot(ByVal UserIndex As Integer, ByVal slot As Byte)
+Public Sub WriteChangeBankSlot(ByVal UserIndex As Integer, ByVal Slot As Byte)
         '<EhHeader>
         On Error GoTo WriteChangeBankSlot_Err
         '</EhHeader>
@@ -1883,8 +1883,8 @@ Public Sub WriteChangeBankSlot(ByVal UserIndex As Integer, ByVal slot As Byte)
         Dim PodraUsarlo As Byte
 
 100     Call Writer.WriteInt(ServerPacketID.ChangeBankSlot)
-102     Call Writer.WriteInt8(slot)
-104     ObjIndex = UserList(UserIndex).BancoInvent.Object(slot).ObjIndex
+102     Call Writer.WriteInt8(Slot)
+104     ObjIndex = UserList(UserIndex).BancoInvent.Object(Slot).ObjIndex
 106     Call Writer.WriteInt16(ObjIndex)
 
 108     If ObjIndex > 0 Then
@@ -1892,7 +1892,7 @@ Public Sub WriteChangeBankSlot(ByVal UserIndex As Integer, ByVal slot As Byte)
 112         PodraUsarlo = PuedeUsarObjeto(UserIndex, ObjIndex)
         End If
 
-114     Call Writer.WriteInt16(UserList(UserIndex).BancoInvent.Object(slot).amount)
+114     Call Writer.WriteInt16(UserList(UserIndex).BancoInvent.Object(Slot).amount)
 116     Call Writer.WriteInt32(Valor)
 118     Call Writer.WriteInt8(PodraUsarlo)
 120     Call modSendData.SendData(ToIndex, UserIndex)
@@ -1911,16 +1911,16 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @param    slot Spell slot to update.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-Public Sub WriteChangeSpellSlot(ByVal UserIndex As Integer, ByVal slot As Integer)
+Public Sub WriteChangeSpellSlot(ByVal UserIndex As Integer, ByVal Slot As Integer)
         '<EhHeader>
         On Error GoTo WriteChangeSpellSlot_Err
         '</EhHeader>
 100     Call Writer.WriteInt(ServerPacketID.ChangeSpellSlot)
-102     Call Writer.WriteInt8(slot)
-104     Call Writer.WriteInt16(UserList(UserIndex).Stats.UserHechizos(slot))
+102     Call Writer.WriteInt8(Slot)
+104     Call Writer.WriteInt16(UserList(UserIndex).Stats.UserHechizos(Slot))
 
-106     If UserList(UserIndex).Stats.UserHechizos(slot) > 0 Then
-108         Call Writer.WriteInt8(UserList(UserIndex).Stats.UserHechizos(slot))
+106     If UserList(UserIndex).Stats.UserHechizos(Slot) > 0 Then
+108         Call Writer.WriteInt8(UserList(UserIndex).Stats.UserHechizos(Slot))
         Else
 110         Call Writer.WriteInt8(255)
         End If
@@ -2331,7 +2331,7 @@ End Sub
 ' @param    price       The value the NPC asks for the object.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteChangeNPCInventorySlot(ByVal UserIndex As Integer, _
-                                       ByVal slot As Byte, _
+                                       ByVal Slot As Byte, _
                                        ByRef obj As t_Obj, _
                                        ByVal price As Single)
         '<EhHeader>
@@ -2345,7 +2345,7 @@ Public Sub WriteChangeNPCInventorySlot(ByVal UserIndex As Integer, _
         End If
 
 104     Call Writer.WriteInt(ServerPacketID.ChangeNPCInventorySlot)
-106     Call Writer.WriteInt8(slot)
+106     Call Writer.WriteInt8(Slot)
 108     Call Writer.WriteInt16(obj.ObjIndex)
 110     Call Writer.WriteInt16(obj.amount)
 112     Call Writer.WriteReal32(price)
@@ -3995,13 +3995,13 @@ WriteOpenCrafting_Err:
 End Sub
 
 Sub WriteCraftingItem(ByVal UserIndex As Integer, _
-                      ByVal slot As Byte, _
+                      ByVal Slot As Byte, _
                       ByVal ObjIndex As Integer)
         '<EhHeader>
         On Error GoTo WriteCraftingItem_Err
         '</EhHeader>
 100     Call Writer.WriteInt(ServerPacketID.CraftingItem)
-102     Call Writer.WriteInt8(slot)
+102     Call Writer.WriteInt8(Slot)
 104     Call Writer.WriteInt16(ObjIndex)
 106     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
@@ -5255,7 +5255,7 @@ writeAnswerReset_Err:
         Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.writeAnswerReset", Erl)
         '</EhFooter>
 End Sub
-Public Sub WriteObjQuestSend(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, ByVal slot As Byte)
+Public Sub WriteObjQuestSend(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, ByVal Slot As Byte)
         '<EhHeader>
         On Error GoTo WriteNpcQuestListSend_Err
         '</EhHeader>
@@ -5343,8 +5343,8 @@ Public Sub WriteObjQuestSend(ByVal UserIndex As Integer, ByVal QuestIndex As Int
                 End If
             End If
         UserList(UserIndex).flags.QuestNumber = QuestIndex
-        UserList(UserIndex).flags.QuestItemSlot = slot
-
+        UserList(UserIndex).flags.QuestItemSlot = Slot
+        UserList(UserIndex).flags.QuestOpenByObj = True
 182     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub
