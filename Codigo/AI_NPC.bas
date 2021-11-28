@@ -13,7 +13,7 @@ Public Const RANGO_VISION_Y  As Byte = 9
 
 Public Sub NpcAI(ByVal NpcIndex As Integer)
         On Error GoTo ErrorHandler
-
+        Debug.Print "NPC: " & NpcList(NpcIndex).Name
 100     With NpcList(NpcIndex)
 102         Select Case .Movement
                 Case e_TipoAI.Estatico
@@ -241,6 +241,43 @@ AI_CaminarConRumbo_Err:
 120     Call TraceError(Err.Number, errorDescription, "AI.AI_CaminarConRumbo", Erl)
 
 End Sub
+Private Function NpcLanzaSpellInmovilizado(ByVal NpcIndex As Integer, ByVal tIndex As Integer) As Boolean
+        
+    NpcLanzaSpellInmovilizado = False
+    
+    With NpcList(NpcIndex)
+        If .flags.Inmovilizado > 0 Then
+            Select Case .Char.Heading
+                Case e_Heading.NORTH
+                    If .Pos.X = UserList(tIndex).Pos.X And .Pos.Y > UserList(tIndex).Pos.Y Then
+                        NpcLanzaSpellInmovilizado = True
+                        Exit Function
+                    End If
+                    
+                Case e_Heading.EAST
+                    If .Pos.Y = UserList(tIndex).Pos.Y And .Pos.X > UserList(tIndex).Pos.X Then
+                        NpcLanzaSpellInmovilizado = True
+                        Exit Function
+                    End If
+                
+                Case e_Heading.SOUTH
+                    If .Pos.X = UserList(tIndex).Pos.X And .Pos.Y < UserList(tIndex).Pos.Y Then
+                        NpcLanzaSpellInmovilizado = True
+                        Exit Function
+                    End If
+                
+                Case e_Heading.WEST
+                    If .Pos.Y = UserList(tIndex).Pos.Y And .Pos.X < UserList(tIndex).Pos.X Then
+                        NpcLanzaSpellInmovilizado = True
+                        Exit Function
+                    End If
+            End Select
+        Else
+            NpcLanzaSpellInmovilizado = True
+        End If
+    End With
+    
+End Function
 
 
 Private Sub AI_AtacarUsuarioObjetivo(ByVal AtackerNpcIndex As Integer)
@@ -255,20 +292,26 @@ Private Sub AI_AtacarUsuarioObjetivo(ByVal AtackerNpcIndex As Integer)
 102         If .Target = 0 Then Exit Sub
         
 104         EstaPegadoAlUsuario = (Distancia(.Pos, UserList(.Target).Pos) <= 1)
-106         AtacaConMagia = (.flags.LanzaSpells And IntervaloPermiteLanzarHechizo(AtackerNpcIndex) And (RandomNumber(1, 100) <= 50 Or Not EstaPegadoAlUsuario))
-108         AtacaMelee = (EstaPegadoAlUsuario And UsuarioAtacableConMelee(AtackerNpcIndex, .Target) And .flags.Paralizado = 0 And Not AtacaConMagia)
+106         AtacaConMagia = .flags.LanzaSpells And IntervaloPermiteLanzarHechizo(AtackerNpcIndex) And (RandomNumber(1, 100) <= 50)
+108         AtacaMelee = (EstaPegadoAlUsuario And UsuarioAtacableConMelee(AtackerNpcIndex, .Target) And .flags.Paralizado = 0 And Not AtacaConMagia) And (.flags.LanzaSpells And (UserList(.Target).flags.invisible > 0 Or UserList(.Target).flags.Oculto > 0))
 
 110         If AtacaConMagia Then
                 ' Le lanzo un Hechizo
-112             Call NpcLanzaUnSpell(AtackerNpcIndex)
+                If NpcLanzaSpellInmovilizado(AtackerNpcIndex, .Target) Then
+112                 Call NpcLanzaUnSpell(AtackerNpcIndex)
+                End If
 114         ElseIf AtacaMelee Then
                 ' Se da vuelta y enfrenta al Usuario
 116             tHeading = GetHeadingFromWorldPos(.Pos, UserList(.Target).Pos)
-118             Call AnimacionIdle(AtackerNpcIndex, True)
-120             Call ChangeNPCChar(AtackerNpcIndex, .Char.Body, .Char.Head, tHeading)
-
-                ' Le pego al Usuario
-122             Call NpcAtacaUser(AtackerNpcIndex, .Target, tHeading)
+                If .flags.Inmovilizado > 0 And tHeading = .Char.Heading Then
+119                 Call AnimacionIdle(AtackerNpcIndex, True)
+                    Call NpcAtacaUser(AtackerNpcIndex, .Target, tHeading)
+                ElseIf .flags.Inmovilizado = 0 Then
+118                 Call AnimacionIdle(AtackerNpcIndex, True)
+120                 Call ChangeNPCChar(AtackerNpcIndex, .Char.Body, .Char.Head, tHeading)
+                    Call NpcAtacaUser(AtackerNpcIndex, .Target, tHeading)
+                    ' Le pego al Usuario122
+                End If
             End If
 
 124         If UsuarioAtacableConMagia(.Target) Or UsuarioAtacableConMelee(AtackerNpcIndex, .Target) Then
