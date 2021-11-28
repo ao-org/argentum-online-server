@@ -1774,7 +1774,7 @@ Private Sub TIMER_AI_Timer()
                         
                         If Mapa > 0 Then
                             'Emancu: Vamos a probar si el server se degrada moviendo TODOS los npc, con o sin users. HarThaoS / WyroX: Si, se degrada.
-                            If MapInfo(Mapa).NumUsers > 0 Or NpcList(NpcIndex).NPCtype = e_NPCType.GuardiaNpc Then
+                            If MapInfo(Mapa).NumUsers > 0 Then ' Or NpcList(NpcIndex).NPCtype = e_NPCType.GuardiaNpc Then
     
                                 If IntervaloPermiteMoverse(NpcIndex) Then
                                         
