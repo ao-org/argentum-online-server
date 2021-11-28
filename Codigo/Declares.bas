@@ -1467,7 +1467,7 @@ End Type
 Public Type t_UserFlags
     Nadando As Byte
     PescandoEspecial As Boolean
-    
+    QuestOpenByObj As Boolean
     NecesitaOxigeno As Boolean
 
     Ahogandose As Byte
