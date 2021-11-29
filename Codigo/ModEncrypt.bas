@@ -27,18 +27,10 @@ End Function
 Public Function SDesencriptar(ByVal Cadena As String) As String
         
      On Error GoTo SDesencriptar_Err
-        
-        ' GSZ-AO - Desencripta una cadena de texto
-        Dim i As Long, NumDesencriptar As String
-    
-100     NumDesencriptar = Chr$(Asc(Left$((Right(Cadena, 2)), 1)) - 10) & Chr$(Asc(Right$((Right(Cadena, 2)), 1)) - 10)
-102     Cadena = (Left$(Cadena, Len(Cadena) - 2))
-104     For i = 1 To Len(Cadena)
-106         Mid$(Cadena, i, 1) = Chr$(Asc(mid$(Cadena, i, 1)) - NumDesencriptar)
-108     Next i
-110     SDesencriptar = Cadena
-        'DoEvents (WyroX: WTF?)
-    DoEvents
+
+
+     SDesencriptar = AO20CryptoSysWrapper.DECRYPT("7061626C6F6D61727175657A41524731", Cadena)
+     DoEvents
 
     
     Exit Function
