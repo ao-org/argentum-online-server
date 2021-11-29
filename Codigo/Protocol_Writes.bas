@@ -4179,7 +4179,8 @@ End Function
 ' @remarks  The message is written to no outgoing buffer, but only prepared in a single string to be easily sent to several clients.
 Public Function PrepareMessageChatOverHead(ByVal chat As String, _
                                            ByVal CharIndex As Integer, _
-                                           ByVal Color As Long)
+                                           ByVal Color As Long, _
+                                           Optional ByVal EsSpell = False)
         '<EhHeader>
         On Error GoTo PrepareMessageChatOverHead_Err
         '</EhHeader>
@@ -4197,6 +4198,7 @@ Public Function PrepareMessageChatOverHead(ByVal chat As String, _
 114     Call Writer.WriteInt8(g)
 116     Call Writer.WriteInt8(b)
 118     Call Writer.WriteInt32(Color)
+119     Call Writer.WriteBool(EsSpell)
         '<EhFooter>
         Exit Function
 
