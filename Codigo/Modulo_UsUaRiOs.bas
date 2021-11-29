@@ -1964,6 +1964,18 @@ Sub UserDie(ByVal UserIndex As Integer)
                 End If
     
             End If
+            
+            Call Desequipar(UserIndex, .Invent.ArmourEqpSlot)
+            Call Desequipar(UserIndex, .Invent.WeaponEqpSlot)
+            Call Desequipar(UserIndex, .Invent.EscudoEqpSlot)
+            Call Desequipar(UserIndex, .Invent.CascoEqpSlot)
+            Call Desequipar(UserIndex, .Invent.DañoMagicoEqpSlot)
+            Call Desequipar(UserIndex, .Invent.HerramientaEqpSlot)
+            Call Desequipar(UserIndex, .Invent.MonturaSlot)
+            Call Desequipar(UserIndex, .Invent.MunicionEqpSlot)
+            Call Desequipar(UserIndex, .Invent.NudilloSlot)
+            Call Desequipar(UserIndex, .Invent.MagicoSlot)
+            Call Desequipar(UserIndex, .Invent.ResistenciaEqpSlot)
         
 176         .flags.CarroMineria = 0
    
