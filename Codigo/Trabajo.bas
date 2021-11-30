@@ -279,7 +279,6 @@ Public Sub DoPermanecerOculto(ByVal UserIndex As Integer)
             End If
             
 104         .Counters.TiempoOculto = .Counters.TiempoOculto - velocidadOcultarse
-            Debug.Print .Counters.TiempoOculto
 106         If .Counters.TiempoOculto <= 0 Then
 
 108             .Counters.TiempoOculto = 0
