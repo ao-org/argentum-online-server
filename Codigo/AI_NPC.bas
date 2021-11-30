@@ -13,7 +13,7 @@ Public Const RANGO_VISION_Y  As Byte = 9
 
 Public Sub NpcAI(ByVal NpcIndex As Integer)
         On Error GoTo ErrorHandler
-        Debug.Print "NPC: " & NpcList(NpcIndex).Name
+        'Debug.Print "NPC: " & NpcList(NpcIndex).Name
 100     With NpcList(NpcIndex)
 102         Select Case .Movement
                 Case e_TipoAI.Estatico
@@ -68,6 +68,7 @@ Private Sub PerseguirUsuarioCercano(ByVal NpcIndex As Integer)
 
         Dim i            As Long
         Dim UserIndex    As Integer
+        Dim UserIndexFront As Integer
         Dim npcEraPasivo As Boolean
         Dim agresor      As Integer
         Dim minDistancia As Integer
@@ -87,28 +88,33 @@ Private Sub PerseguirUsuarioCercano(ByVal NpcIndex As Integer)
 112         If .flags.AttackedBy <> vbNullString Then
 114           agresor = NameIndex(.flags.AttackedBy)
             End If
-
-            ' Busco algun objetivo en el area.
-116         For i = 1 To ModAreas.ConnGroups(.Pos.Map).CountEntrys
-118             UserIndex = ModAreas.ConnGroups(.Pos.Map).UserEntrys(i)
-
-120             If EsObjetivoValido(NpcIndex, UserIndex) Then
-
-                    ' Busco el mas cercano, sea atacable o no.
-122                 If Distancia(UserList(UserIndex).Pos, .Pos) < minDistancia Then
-124                     enemigoCercano = UserIndex
-126                     minDistancia = Distancia(UserList(UserIndex).Pos, .Pos)
+            
+            If NPCHasAUserInFront(NpcIndex, UserIndexFront) Then
+                enemigoAtacableMasCercano = UserIndexFront
+                minDistanciaAtacable = 1
+                minDistancia = 1
+            Else
+                ' Busco algun objetivo en el area.
+116             For i = 1 To ModAreas.ConnGroups(.Pos.Map).CountEntrys
+118                 UserIndex = ModAreas.ConnGroups(.Pos.Map).UserEntrys(i)
+    
+120                 If EsObjetivoValido(NpcIndex, UserIndex) Then
+                        ' Busco el mas cercano, sea atacable o no.
+122                     If Distancia(UserList(UserIndex).Pos, .Pos) < minDistancia Then
+124                         enemigoCercano = UserIndex
+126                         minDistancia = Distancia(UserList(UserIndex).Pos, .Pos)
+                        End If
+                        
+                        ' Busco el mas cercano que sea atacable.
+128                     If (UsuarioAtacableConMagia(UserIndex) Or UsuarioAtacableConMelee(NpcIndex, UserIndex)) And Distancia(UserList(UserIndex).Pos, .Pos) < minDistanciaAtacable Then
+130                         enemigoAtacableMasCercano = UserIndex
+132                         minDistanciaAtacable = Distancia(UserList(UserIndex).Pos, .Pos)
+                        End If
+    
                     End If
-
-                    ' Busco el mas cercano que sea atacable.
-128                 If (UsuarioAtacableConMagia(UserIndex) Or UsuarioAtacableConMelee(NpcIndex, UserIndex)) And Distancia(UserList(UserIndex).Pos, .Pos) < minDistanciaAtacable Then
-130                     enemigoAtacableMasCercano = UserIndex
-132                     minDistanciaAtacable = Distancia(UserList(UserIndex).Pos, .Pos)
-                    End If
-
-                End If
-
-134         Next i
+    
+134             Next i
+            End If
 
             ' Al terminar el `for`, puedo tener un maximo de tres objetivos distintos.
             ' Por prioridad, vamos a decidir estas cosas en orden.
@@ -130,6 +136,10 @@ Private Sub PerseguirUsuarioCercano(ByVal NpcIndex As Integer)
 
             ' Si el NPC tiene un objetivo
 148         If .Target > 0 Then
+                'asignamos heading nuevo al NPC según el Target del nuevo usuario: .Char.Heading, si la distancia es <= 1
+                If (.flags.Inmovilizado + .flags.Paralizado = 0) Then
+                    Call ChangeNPCChar(NpcIndex, .Char.Body, .Char.Head, GetHeadingFromWorldPos(.Pos, UserList(.Target).Pos))
+                End If
 150             Call AI_AtacarUsuarioObjetivo(NpcIndex)
             Else
 152             If .NPCtype <> e_NPCType.GuardiaReal And .NPCtype <> e_NPCType.GuardiasCaos Then
@@ -246,7 +256,7 @@ Private Function NpcLanzaSpellInmovilizado(ByVal NpcIndex As Integer, ByVal tInd
     NpcLanzaSpellInmovilizado = False
     
     With NpcList(NpcIndex)
-        If .flags.Inmovilizado > 0 Then
+        If .flags.Inmovilizado + .flags.Paralizado > 0 Then
             Select Case .Char.Heading
                 Case e_Heading.NORTH
                     If .Pos.X = UserList(tIndex).Pos.X And .Pos.Y > UserList(tIndex).Pos.Y Then
@@ -255,7 +265,7 @@ Private Function NpcLanzaSpellInmovilizado(ByVal NpcIndex As Integer, ByVal tInd
                     End If
                     
                 Case e_Heading.EAST
-                    If .Pos.Y = UserList(tIndex).Pos.Y And .Pos.X > UserList(tIndex).Pos.X Then
+                    If .Pos.Y = UserList(tIndex).Pos.Y And .Pos.X < UserList(tIndex).Pos.X Then
                         NpcLanzaSpellInmovilizado = True
                         Exit Function
                     End If
@@ -267,7 +277,7 @@ Private Function NpcLanzaSpellInmovilizado(ByVal NpcIndex As Integer, ByVal tInd
                     End If
                 
                 Case e_Heading.WEST
-                    If .Pos.Y = UserList(tIndex).Pos.Y And .Pos.X < UserList(tIndex).Pos.X Then
+                    If .Pos.Y = UserList(tIndex).Pos.Y And .Pos.X > UserList(tIndex).Pos.X Then
                         NpcLanzaSpellInmovilizado = True
                         Exit Function
                     End If
@@ -279,6 +289,42 @@ Private Function NpcLanzaSpellInmovilizado(ByVal NpcIndex As Integer, ByVal tInd
     
 End Function
 
+Public Function ComputeNextHeadingPos(ByVal NpcIndex As Integer) As t_WorldPos
+On Error Resume Next
+With NpcList(NpcIndex)
+    ComputeNextHeadingPos.Map = .Pos.Map
+    ComputeNextHeadingPos.X = .Pos.X
+    ComputeNextHeadingPos.Y = .Pos.Y
+    
+    Select Case .Char.Heading
+        Case e_Heading.NORTH
+            ComputeNextHeadingPos.Y = ComputeNextHeadingPos.Y - 1
+        Exit Function
+        
+        Case e_Heading.SOUTH
+            ComputeNextHeadingPos.Y = ComputeNextHeadingPos.Y + 1
+        Exit Function
+        
+        Case e_Heading.EAST
+            ComputeNextHeadingPos.X = ComputeNextHeadingPos.X + 1
+        Exit Function
+        
+        Case e_Heading.WEST
+            ComputeNextHeadingPos.X = ComputeNextHeadingPos.X - 1
+        Exit Function
+        
+    End Select
+End With
+End Function
+
+Public Function NPCHasAUserInFront(ByVal NpcIndex As Integer, ByRef UserIndex As Integer) As Boolean
+On Error Resume Next
+Dim NextPosNPC As t_WorldPos
+NextPosNPC = ComputeNextHeadingPos(NpcIndex)
+UserIndex = MapData(NextPosNPC.Map, NextPosNPC.X, NextPosNPC.Y).UserIndex
+NPCHasAUserInFront = (UserIndex > 0)
+End Function
+
 
 Private Sub AI_AtacarUsuarioObjetivo(ByVal AtackerNpcIndex As Integer)
         On Error GoTo ErrorHandler
@@ -287,30 +333,50 @@ Private Sub AI_AtacarUsuarioObjetivo(ByVal AtackerNpcIndex As Integer)
         Dim AtacaMelee As Boolean
         Dim EstaPegadoAlUsuario As Boolean
         Dim tHeading As Byte
-    
+        Dim RealizaAtaque As Boolean
+        Dim NextPosNPC As t_WorldPos
+        Dim AtacaAlDelFrente As Boolean
+        
+        AtacaAlDelFrente = False
+        RealizaAtaque = False
 100     With NpcList(AtackerNpcIndex)
 102         If .Target = 0 Then Exit Sub
         
 104         EstaPegadoAlUsuario = (Distancia(.Pos, UserList(.Target).Pos) <= 1)
-106         AtacaConMagia = .flags.LanzaSpells And IntervaloPermiteLanzarHechizo(AtackerNpcIndex) And (RandomNumber(1, 100) <= 50)
-108         AtacaMelee = (EstaPegadoAlUsuario And UsuarioAtacableConMelee(AtackerNpcIndex, .Target) And .flags.Paralizado = 0 And Not AtacaConMagia) And (.flags.LanzaSpells And (UserList(.Target).flags.invisible > 0 Or UserList(.Target).flags.Oculto > 0))
-
+106         AtacaConMagia = .flags.LanzaSpells And _
+                            IntervaloPermiteLanzarHechizo(AtackerNpcIndex) And _
+                            (RandomNumber(1, 100) <= 50)
+             
+108         AtacaMelee = (EstaPegadoAlUsuario And UsuarioAtacableConMelee(AtackerNpcIndex, .Target) And .flags.Paralizado = 0 And .flags.LanzaSpells = 0)
+            AtacaMelee = AtacaMelee Or (EstaPegadoAlUsuario And .flags.LanzaSpells And (UserList(.Target).flags.invisible > 0 Or UserList(.Target).flags.Oculto > 0))
+            
+            ' Se da vuelta y enfrenta al Usuario
+109         tHeading = GetHeadingFromWorldPos(.Pos, UserList(.Target).Pos)
+            
 110         If AtacaConMagia Then
                 ' Le lanzo un Hechizo
                 If NpcLanzaSpellInmovilizado(AtackerNpcIndex, .Target) Then
+                    Call ChangeNPCChar(AtackerNpcIndex, .Char.Body, .Char.Head, tHeading)
 112                 Call NpcLanzaUnSpell(AtackerNpcIndex)
                 End If
 114         ElseIf AtacaMelee Then
-                ' Se da vuelta y enfrenta al Usuario
-116             tHeading = GetHeadingFromWorldPos(.Pos, UserList(.Target).Pos)
-                If .flags.Inmovilizado > 0 And tHeading = .Char.Heading Then
-119                 Call AnimacionIdle(AtackerNpcIndex, True)
+                Dim ChangeHeading As Boolean
+                ChangeHeading = (.flags.Inmovilizado > 0 And tHeading = .Char.Heading) Or (.flags.Inmovilizado + .flags.Paralizado = 0)
+                RealizaAtaque = (.flags.Inmovilizado = 0) Or ChangeHeading
+                
+                Dim UserIndexFront As Integer
+                NextPosNPC = ComputeNextHeadingPos(AtackerNpcIndex)
+                UserIndexFront = MapData(NextPosNPC.Map, NextPosNPC.X, NextPosNPC.Y).UserIndex
+                AtacaAlDelFrente = (UserIndexFront > 0)
+                
+                If RealizaAtaque Or AtacaAlDelFrente Then
+                    Call AnimacionIdle(AtackerNpcIndex, True)
+                    Call NpcAtacaUser(AtackerNpcIndex, UserIndexFront, tHeading)
+119                 If ChangeHeading Then Call ChangeNPCChar(AtackerNpcIndex, .Char.Body, .Char.Head, tHeading)
+                ElseIf RealizaAtaque Then
+                    Call AnimacionIdle(AtackerNpcIndex, True)
                     Call NpcAtacaUser(AtackerNpcIndex, .Target, tHeading)
-                ElseIf .flags.Inmovilizado = 0 Then
-118                 Call AnimacionIdle(AtackerNpcIndex, True)
-120                 Call ChangeNPCChar(AtackerNpcIndex, .Char.Body, .Char.Head, tHeading)
-                    Call NpcAtacaUser(AtackerNpcIndex, .Target, tHeading)
-                    ' Le pego al Usuario122
+120                 If ChangeHeading Then Call ChangeNPCChar(AtackerNpcIndex, .Char.Body, .Char.Head, tHeading)
                 End If
             End If
 

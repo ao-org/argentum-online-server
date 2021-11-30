@@ -391,6 +391,8 @@ Private Function UserImpactoNpc(ByVal UserIndex As Integer, ByVal NpcIndex As In
 118     If UserImpactoNpc Then
 120         Call SubirSkillDeArmaActual(UserIndex)
         End If
+        
+        NpcList(NpcIndex).Target = UserIndex
 
         Exit Function
 
@@ -817,7 +819,9 @@ Public Function NpcAtacaUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integ
 
 114     Call AllMascotasAtacanNPC(NpcIndex, UserIndex)
 
-116     If NpcList(NpcIndex).Target = 0 Then NpcList(NpcIndex).Target = UserIndex
+116     If NpcList(NpcIndex).Target = 0 Then
+            NpcList(NpcIndex).Target = UserIndex
+        End If
     
 118     If UserList(UserIndex).flags.AtacadoPorNpc = 0 And UserList(UserIndex).flags.AtacadoPorUser = 0 Then UserList(UserIndex).flags.AtacadoPorNpc = NpcIndex
     
