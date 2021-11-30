@@ -295,13 +295,20 @@ Public Function SeekPath(ByVal NpcIndex As Integer, Optional ByVal Closest As Bo
         ' El camino se almacena en .PFINFO.Path
         
         On Error GoTo SeekPath_Err
-
+        
         Dim PosNPC As t_Position
         Dim PosTarget As t_Position
         Dim Heading As e_Heading, Vertex As t_Position
         Dim MaxDistance As Integer, Index As Integer
         Dim MinTotalDistance As Integer, BestVertexIndex As Integer
-
+        Dim UserIndex As Integer 'no es necesario
+        
+        'Ya estamos en la posición.
+        If NPCHasAUserInFront(NpcIndex, UserIndex) Then
+            SeekPath = False
+            Exit Function
+        End If
+        
 100     With NpcList(NpcIndex)
 105         PosNPC.X = .Pos.X
 110         PosNPC.Y = .Pos.Y
@@ -431,7 +438,7 @@ Private Sub MakePath(ByVal NpcIndex As Integer, ByVal X As Integer, ByVal Y As I
             Dim Step As Integer
         
             ' Asignamos las coordenadas del resto camino, el final queda al inicio del array
-110         For Step = 1 To .pathFindingInfo.PathLength
+110         For Step = 1 To UBound(.pathFindingInfo.Path) ' .pathFindingInfo.PathLength TODO
         
 115             With .pathFindingInfo.Path(Step)
 120                 .X = X
