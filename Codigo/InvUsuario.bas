@@ -2008,7 +2008,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
 310                         porcentajeRec = obj.Porcentaje
                     
                             'Usa el item
-312                         .Stats.MinMAN = .Stats.MinMAN + Porcentaje(.Stats.MaxMAN, porcentajeRec)
+312                          .Stats.MinMAN = IIf(.Stats.MinMAN > 20000, 20000, .Stats.MinMAN + Porcentaje(.Stats.MaxMAN, porcentajeRec))
     
 314                         If .Stats.MinMAN > .Stats.MaxMAN Then .Stats.MinMAN = .Stats.MaxMAN
                     
