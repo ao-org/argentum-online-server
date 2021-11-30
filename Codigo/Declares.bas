@@ -1658,6 +1658,8 @@ Public Type t_UserCounters
 
     TiempoDeInmunidad As Byte
     TiempoDeInmunidadParalisisNoMagicas As Byte
+    LastGmMessage As Long
+    CounterGmMessages As Long
     EnCombate As Byte
 
     TiempoParaSubastar As Byte

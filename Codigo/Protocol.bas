@@ -12252,7 +12252,7 @@ Private Sub HandleBanIP(ByVal UserIndex As Integer)
                 
 132         Call BanearIP(UserIndex, NickOrIP, bannedIP)
         
-134         Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(.Name & " baneó la IP " & bannedIP & " por " & Reason, e_FontTypeNames.FONTTYPE_FIGHT))
+134         Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(.Name & " baneó la IP " & bannedip & " por " & Reason, e_FontTypeNames.FONTTYPE_FIGHT))
         
         
             'Find every player with that ip and ban him!
@@ -14961,6 +14961,11 @@ End Sub
 
 Private Sub HandleQuestionGM(ByVal UserIndex As Integer)
 
+        Dim TActual     As Long
+        Dim ElapsedTime As Long
+        
+96      TActual = GetTickCount()
+98      ElapsedTime = TActual - UserList(UserIndex).Counters.LastGmMessage
         On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
@@ -14970,10 +14975,35 @@ Private Sub HandleQuestionGM(ByVal UserIndex As Integer)
 
 102         Consulta = Reader.ReadString8()
 104         TipoDeConsulta = Reader.ReadString8()
-
+            
+            .Counters.CounterGmMessages = .Counters.CounterGmMessages + 1
+            
+            If .Counters.CounterGmMessages >= 20 Then
+                Dim bannedip As String
+                bannedip = UserList(UserIndex).IP
+132             Call BanearIP(UserIndex, UserList(UserIndex).Name, bannedip)
+134             Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Se baneó la IP  " & bannedip & " del personaje " & UserList(UserIndex).Name & " por bot.", e_FontTypeNames.FONTTYPE_FIGHT))
+                
+                'Find every player with that ip and ban him!
+                Dim i As Long
+136             For i = 1 To LastUser
+138                 If UserList(i).ConnIDValida Then
+140                     If UserList(i).IP = bannedip Then
+142                         Call WriteCerrarleCliente(i)
+144                         Call CloseSocket(i)
+                        End If
+                    End If
+146             Next i
+            End If
+            
+            If ElapsedTime < IntervaloConsultaGM Then
+115             Call WriteConsoleMsg(UserIndex, "Solo puedes enviar una consulta cada 5 minutos.", e_FontTypeNames.FONTTYPE_WARNING)
+                Exit Sub
+            End If
+            UserList(UserIndex).Counters.LastGmMessage = TActual
 112         Call Ayuda.Push(.Name, Consulta, TipoDeConsulta)
 114         Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Se ha recibido un nuevo mensaje de soporte de " & UserList(UserIndex).Name & ".", e_FontTypeNames.FONTTYPE_SERVER))
-
+            .Counters.CounterGmMessages = 0
 116         Call WriteConsoleMsg(UserIndex, "Tu mensaje fue recibido por el equipo de soporte.", e_FontTypeNames.FONTTYPE_INFOIAO)
         
 118         Call LogConsulta(.Name & " (" & TipoDeConsulta & ") " & Consulta)

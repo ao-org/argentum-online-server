@@ -1049,6 +1049,7 @@ Sub ResetContadores(ByVal UserIndex As Integer)
 186         .LastStep = 0
 188         .TimerBarra = 0
             .LastResetTick = 0
+            .CounterGmMessages = 0
         End With
 
         
