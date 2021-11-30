@@ -15488,6 +15488,8 @@ Private Sub HandlePossUser(ByVal UserIndex As Integer)
             Dim UserName As String
         
 102         UserName = Reader.ReadString8()
+
+            If Not InStrB(UserName, "(") Then Exit Sub
             'HarThaoS: Modifico la forma en que se usa el destrabar, ahora solamente lo puedo destrabar si está online.
 104         If (.flags.Privilegios And (e_PlayerType.user)) = 0 Then
                 Dim tempIndex As Integer
