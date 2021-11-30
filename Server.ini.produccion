@@ -21,7 +21,7 @@ IniciarDesdeBackUp=0
 PuedeCrearPersonajes=1
 ServerSoloGMs=0
 Testing=0
-CentinelaActivado=1
+CentinelaActivado=0
 
 MinDados=16
 MaxDados=18
