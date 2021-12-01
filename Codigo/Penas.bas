@@ -121,6 +121,49 @@ BanPJ_Err:
 
 End Sub
 
+Public Sub BanPJWithoutGM(ByVal UserName As String, ByRef Razon As String)
+        On Error GoTo BanPJWithoutGM_Err
+
+        ' Si no existe el personaje...
+102     If Not PersonajeExiste(UserName) Then
+            Exit Sub
+        End If
+
+106     If BANCheck(UserName) Then
+            Exit Sub
+        End If
+
+        ' Guardamos el estado de baneado en la base de datos.
+110     Call SaveBanDatabase(UserName, Razon, "el sistema")
+
+100     Call WriteVar(App.Path & "\logs\" & "BanDetail.dat", UserName, "BannedBy", "Ban automático (Posible BOT).")
+        Call WriteVar(App.Path & "\logs\" & "BanDetail.dat", UserName, "Reason", Razon)
+
+        'Log interno del servidor, lo usa para hacer un UNBAN general de toda la gente banned
+        Dim mifile As Integer
+
+104     mifile = FreeFile
+        Open App.Path & "\logs\GenteBanned.log" For Append Shared As #mifile
+108     Print #mifile, UserName
+109     Close #mifile
+
+        ' Le buchoneamos al mundo.
+114     Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » Ha baneado a " & UserName & " debido a: " & LCase$(Razon) & ".", e_FontTypeNames.FONTTYPE_SERVER))
+
+        ' Si estaba online, lo echamos.
+116     Dim tUser As Integer: tUser = NameIndex(UserName)
+118     If tUser > 0 Then
+            Call WriteDisconnect(tUser)
+            Call CloseSocket(tUser)
+        End If
+
+        Exit Sub
+
+BanPJWithoutGM_Err:
+120     Call TraceError(Err.Number, Err.Description, "Mod_Baneo.BanPJWithoutGM")
+122
+
+End Sub
 Public Sub BanearCuenta(ByVal BannerIndex As Integer, ByVal UserName As String, ByVal Reason As String)
         On Error GoTo BanearCuenta_Err
         Dim CuentaID As Long
@@ -189,6 +232,12 @@ Public Sub BanearIP(ByVal BannerIndex As Integer, ByVal UserName As String, ByVa
         ' Lo guardo en Baneos.dat
 100     Call WriteVar(DatPath & "Baneos.dat", "IP", IP, UserName)
 
+        If LenB(UserName) > 0 Then
+            If Not (val(mid(UserName, 1, 1)) > 0) Then
+                Call BanPJWithoutGM(UserName, "Por ban IP.")
+            End If
+        End If
+        
         ' Lo guardo en memoria.
 102     Call IP_Blacklist.Add(IP, UserName)
 
