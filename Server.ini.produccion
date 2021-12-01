@@ -7,7 +7,7 @@ CuentasPath=..\re20-server\cuentas\
 DeleteCuentasPath=..\re20-server\DeleteCuentas\
 
 [CHECKSUM]
-Cliente=6b7934e0ac6f605058154d599c706511
+Cliente=a541539040bc18143357c99889d8c58e
 
 [INIT]
 NumCuentas=5
@@ -21,7 +21,7 @@ IniciarDesdeBackUp=0
 PuedeCrearPersonajes=1
 ServerSoloGMs=0
 Testing=0
-CentinelaActivado=1
+CentinelaActivado=0
 
 MinDados=16
 MaxDados=18
@@ -29,8 +29,8 @@ MaxDados=18
 MaxUsers=1000
 
 Admines=2
-Dioses=2
-SemiDioses=10
+Dioses=3
+SemiDioses=9
 Consejeros=6
 
 [Admines]
@@ -40,6 +40,7 @@ Admin2=ReyarB|reyarb@fibertel.com.ar
 [Dioses]
 Dios1=Harthaos|martintrionfetti@gmail.com
 Dios2=Nakrull|Ytocarp@gmail.com
+Dios3=Recox|lucas.recoaro@gmail.com
 
 [SemiDioses]
 SemiDios1=chicken|raamaorc@gmail.com
@@ -50,8 +51,7 @@ SemiDios5=Sir Hongo|nicocapelli85@hotmail.com
 SemiDios6=Jopi|jopiodz00@gmail.com
 SemiDios7=lorena|LORENITAH1995@HOTMAIL.ES
 Semidios8=Animal|anormal@gmail.com
-Semidios9=Recox|lucas.recoaro@gmail.com
-Semidios10=GalaK|Sforzini.jonatan@gmail.com
+Semidios9=GalaK|Sforzini.jonatan@gmail.com
 
 [Consejeros]
 Consejero1=Terrel|loganfenix2000@yahoo.com.mx
