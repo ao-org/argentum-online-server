@@ -95,6 +95,8 @@ Private Sub ConstruirQuery_CargarPersonaje()
         QueryBuilder.Append "is_poisoned,"
         QueryBuilder.Append "is_incinerated,"
         QueryBuilder.Append "is_banned,"
+        QueryBuilder.Append "banned_by,"
+        QueryBuilder.Append "ban_reason,"
         QueryBuilder.Append "is_dead,"
         QueryBuilder.Append "is_sailing,"
         QueryBuilder.Append "is_paralyzed,"

@@ -14981,7 +14981,7 @@ Private Sub HandleQuestionGM(ByVal UserIndex As Integer)
             If .Counters.CounterGmMessages >= 20 Then
                 Dim bannedip As String
                 bannedip = UserList(UserIndex).IP
-132             Call BanearIP(UserIndex, UserList(UserIndex).Name, bannedip)
+132             Call BanearIP(0, UserList(UserIndex).Name, bannedip)
 134             Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Se baneó la IP  " & bannedip & " del personaje " & UserList(UserIndex).Name & " por bot.", e_FontTypeNames.FONTTYPE_FIGHT))
                 
                 'Find every player with that ip and ban him!
