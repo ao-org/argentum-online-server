@@ -437,8 +437,28 @@ Public Sub NpcLanzaSpellSobreArea(ByVal NpcIndex As Integer, ByVal SpellIndex As
             ' El NPC invoca otros npcs independientes
 142         If .Invoca = 1 Then
 144             For X = 1 To .cant
-146                 Call SpawnNpc(.NumNpc, NpcList(NpcIndex).Pos, True, False, False)
-                    
+                    If NpcList(NpcIndex).Contadores.CriaturasInvocadas >= NpcList(NpcIndex).Stats.CantidadInvocaciones Then
+                        Exit Sub
+                    Else
+                        Dim npcInvocadoIndex As Integer
+146                      npcInvocadoIndex = SpawnNpc(.NumNpc, NpcList(NpcIndex).Pos, True, False, False)
+                        NpcList(npcInvocadoIndex).flags.InvocadorIndex = NpcIndex
+                        NpcList(NpcIndex).Contadores.CriaturasInvocadas = NpcList(NpcIndex).Contadores.CriaturasInvocadas + 1
+                        'Si es un NPC que invoca Mas NPCs
+                        If NpcList(NpcIndex).Stats.CantidadInvocaciones > 0 Then
+                            Dim loopC As Long
+                            'Me fijo cuantos invoca.
+                            For loopC = 1 To NpcList(NpcIndex).Stats.CantidadInvocaciones
+                                'Me fijo en que posición tiene en 0 el npcInvocadoIndex
+                                If NpcList(NpcIndex).Stats.NpcsInvocados(loopC) = 0 Then
+                                    'Y lo agrego
+                                    NpcList(NpcIndex).Stats.NpcsInvocados(loopC) = npcInvocadoIndex
+                                    Exit For
+                                End If
+                            Next loopC
+                        End If
+                        
+                    End If
 148             Next X
             End If
 

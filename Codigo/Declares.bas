@@ -1929,6 +1929,8 @@ Public Type t_NPCStats
     def As Integer
     defM As Integer
     UsuariosMatados As Integer
+    CantidadInvocaciones As Byte
+    NpcsInvocados()      As Integer
 
 End Type
 
@@ -1942,7 +1944,8 @@ Public Type t_NpcCounters
     IntervaloLanzarHechizo As Long
     IntervaloRespawn       As Long
     UltimoAtaque           As Long
-
+    CriaturasInvocadas     As Long
+    
 End Type
 
 Public Type t_NPCFlags
@@ -1956,7 +1959,7 @@ Public Type t_NPCFlags
     Faccion As e_Facciones
     LanzaSpells As Byte
     NPCIdle As Boolean
-
+    InvocadorIndex As Integer
     ' Invasiones
     InvasionIndex As Integer
     SpawnBox As Integer
