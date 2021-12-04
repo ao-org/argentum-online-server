@@ -1253,7 +1253,7 @@ Public Sub SastreConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As In
         End If
 
 106     If SastreTieneMateriales(UserIndex, ItemIndex) _
-                And UserList(UserIndex).Stats.UserSkills(e_Skill.Herreria) >= ObjData(ItemIndex).SkMAGOria _
+                And UserList(UserIndex).Stats.UserSkills(e_Skill.Sastreria) >= ObjData(ItemIndex).SkMAGOria _
                 And PuedeConstruirSastre(ItemIndex) _
                 And ObjData(UserList(UserIndex).Invent.HerramientaEqpObjIndex).OBJType = e_OBJType.otHerramientas _
                 And ObjData(UserList(UserIndex).Invent.HerramientaEqpObjIndex).Subtipo = 9 Then
@@ -1264,13 +1264,8 @@ Public Sub SastreConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As In
     
 112         Call SastreQuitarMateriales(UserIndex, ItemIndex)
     
-            ' If Not UserList(UserIndex).flags.UltimoMensaje = 9 Then
-            ' Call WriteConsoleMsg(UserIndex, "Has construido el objeto.", e_FontTypeNames.FONTTYPE_INFO)
 114         Call WriteTextCharDrop(UserIndex, "+1", UserList(UserIndex).Char.CharIndex, vbWhite)
-    '112         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateRenderValue(UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y, " 1", 5))
-            ' UserList(UserIndex).flags.UltimoMensaje = 9
-            ' End If
-        
+
 116         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(63, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
     
             Dim MiObj As t_Obj
@@ -1282,9 +1277,8 @@ Public Sub SastreConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As In
 124             Call TirarItemAlPiso(UserList(UserIndex).Pos, MiObj)
             End If
     
-126         Call SubirSkill(UserIndex, e_Skill.Herreria)
+126         Call SubirSkill(UserIndex, e_Skill.Sastreria)
 128         Call UpdateUserInv(True, UserIndex, 0)
-            'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(LABUROCARPINTERO, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
 
 130         UserList(UserIndex).Counters.Trabajando = UserList(UserIndex).Counters.Trabajando + 1
 
