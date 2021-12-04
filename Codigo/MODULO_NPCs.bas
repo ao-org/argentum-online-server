@@ -256,6 +256,7 @@ Sub ResetNpcFlags(ByVal NpcIndex As Integer)
 152         .AtacaNPCs = True
 154         .AIAlineacion = e_Alineacion.ninguna
 156         .NPCIdle = False
+159         .InvocadorIndex = 0
         End With
 
         
