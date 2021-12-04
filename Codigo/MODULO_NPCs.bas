@@ -475,7 +475,7 @@ Sub QuitarNPC(ByVal NpcIndex As Integer)
             
             For i = 1 To NpcList(NpcIndex).Stats.CantidadInvocaciones
                 If NpcList(NpcIndex).Stats.NpcsInvocados(i) > 0 Then
-                    Call MuereNpc(NpcList(NpcIndex).Stats.NpcsInvocados(i), UserIndex)
+                    Call MuereNpc(NpcList(NpcIndex).Stats.NpcsInvocados(i), 0)
                 End If
             Next i
         End If
