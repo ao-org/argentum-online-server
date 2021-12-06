@@ -16700,7 +16700,7 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
             Dim Log As String
 
 104         Log = "Repuesta "
-
+            UserList(UserIndex).flags.RespondiendoPregunta = False
 106         If respuesta Then
         
 108             Select Case UserList(UserIndex).flags.pregunta
