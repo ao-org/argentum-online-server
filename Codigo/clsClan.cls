@@ -445,7 +445,7 @@ Public Sub ConectarMiembro(ByVal UserIndex As Integer)
 
             ' No avisa cuando loguea un dios
 104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios)) = 0 Then
-106             Call SendData(SendTarget.ToDiosesYclan, .GuildIndex, PrepareMessageGuildChat(.Name & " se ha conectado.", 9))
+106             Call SendData(SendTarget.ToDiosesYclan, .GuildIndex, PrepareMessageGuildChat(.Name & " se ha conectado.", 9, 1))
 
             End If
 
@@ -481,7 +481,7 @@ Public Sub DesConectarMiembro(ByVal UserIndex As Integer)
 
                     ' No avisa cuando se desconecta un dios
 108                 If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios)) = 0 Then
-110                     Call SendData(SendTarget.ToDiosesYclan, .GuildIndex, PrepareMessageGuildChat(.Name & " se ha desconectado.", 8))
+110                     Call SendData(SendTarget.ToDiosesYclan, .GuildIndex, PrepareMessageGuildChat(.Name & " se ha desconectado.", 8, 1))
 
                     End If
 
@@ -1708,8 +1708,8 @@ Private Sub ReplaceInvalidChars(ByRef S As String)
 
         End If
 
-108     If InStrB(S, "¬") <> 0 Then
-110         S = Replace(S, "¬", vbNullString)   'morgo usaba esto como "separador"
+108     If InStrB(s, "¬") <> 0 Then
+110         s = Replace(s, "¬", vbNullString)   'morgo usaba esto como "separador"
 
         End If
 
