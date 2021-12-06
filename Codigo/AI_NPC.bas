@@ -13,7 +13,7 @@ Public Const RANGO_VISION_Y  As Byte = 9
 
 Public Sub NpcAI(ByVal NpcIndex As Integer)
         On Error GoTo ErrorHandler
-        Debug.Print "NPC: " & NpcList(NpcIndex).Name
+        'Debug.Print "NPC: " & NpcList(NpcIndex).Name
 100     With NpcList(NpcIndex)
 102         Select Case .Movement
                 Case e_TipoAI.Estatico
