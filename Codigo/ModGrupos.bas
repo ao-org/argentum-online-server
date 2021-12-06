@@ -74,23 +74,20 @@ Public Sub InvitarMiembro(ByVal UserIndex As Integer, ByVal InvitadoIndex As Int
             
         End If
         
-            'Call WriteConsoleMsg(userindex, "Se envio la invitacion a " & UserList(Invitado).name & ", ahora solo resta aguardar su respuesta.", e_FontTypeNames.FONTTYPE_INFOIAO)
-        If UserList(InvitadoIndex).flags.RespondiendoPregunta = False Then
-138         Call WriteLocaleMsg(UserIndex, "42", e_FontTypeNames.FONTTYPE_New_GRUPO)
-140         Call WriteConsoleMsg(InvitadoIndex, Remitente.Name & " te invitó a unirse a su grupo.", e_FontTypeNames.FONTTYPE_New_GRUPO)
-                    
-142         With UserList(InvitadoIndex)
-                    
-144             .Grupo.PropuestaDe = UserIndex
-146             .flags.pregunta = 1
-148             .Grupo.Lider = UserIndex
-                    
-            End With
-150         Call WritePreguntaBox(InvitadoIndex, Remitente.Name & " te invito a unirse a su grupo. ¿Deseas unirte?")
-            UserList(InvitadoIndex).flags.RespondiendoPregunta = True
-        Else
-            Call WriteConsoleMsg(UserIndex, "El usuario tiene una solicitud pendiente.", e_FontTypeNames.FONTTYPE_INFO)
-        End If
+138     Call WriteLocaleMsg(UserIndex, "42", e_FontTypeNames.FONTTYPE_New_GRUPO)
+        'Call WriteConsoleMsg(userindex, "Se envio la invitacion a " & UserList(Invitado).name & ", ahora solo resta aguardar su respuesta.", e_FontTypeNames.FONTTYPE_INFOIAO)
+140     Call WriteConsoleMsg(InvitadoIndex, Remitente.Name & " te invitó a unirse a su grupo.", e_FontTypeNames.FONTTYPE_New_GRUPO)
+                
+142     With UserList(InvitadoIndex)
+                
+144         .Grupo.PropuestaDe = UserIndex
+146         .flags.pregunta = 1
+148         .Grupo.Lider = UserIndex
+                
+        End With
+
+150     Call WritePreguntaBox(InvitadoIndex, Remitente.Name & " te invito a unirse a su grupo. ¿Deseas unirte?")
+
         Exit Sub
 
 InvitarMiembro_Err:

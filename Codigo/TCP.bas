@@ -1312,7 +1312,6 @@ Sub ResetUserFlags(ByVal UserIndex As Integer)
             .ModificoMascotas = False
             .ModificoQuests = False
             .ModificoQuestsHechas = False
-            .RespondiendoPregunta = False
          
 260         .ProcesosPara = vbNullString
 262         .ScreenShotPara = vbNullString

@@ -1645,7 +1645,6 @@ Public Type t_UserFlags
     ModificoQuestsHechas As Boolean
     QuestNumber As Integer
     QuestItemSlot As Integer
-    RespondiendoPregunta As Boolean
 End Type
 
 Public Enum e_EstadoMimetismo
