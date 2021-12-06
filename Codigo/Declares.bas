@@ -1905,7 +1905,9 @@ Public Type t_User
     CraftInventory(1 To MAX_SLOTS_CRAFTEO) As Integer
     CraftCatalyst As t_Obj
     CraftResult As clsCrafteo
-
+    public_key As String
+    decrypted_session_token As String
+    encrypted_session_token As String
 End Type
 
 '*********************************************************

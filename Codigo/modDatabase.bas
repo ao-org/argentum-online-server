@@ -862,7 +862,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
 160         .Invent.MunicionEqpSlot = SanitizeNullValue(RS!slot_ammo, 0)
 162         .Invent.BarcoSlot = SanitizeNullValue(RS!slot_ship, 0)
 164         .Invent.MonturaSlot = SanitizeNullValue(RS!slot_mount, 0)
-166         .Invent.DañoMagicoEqpSlot = SanitizeNullValue(rs!slot_dm, 0)
+166         .Invent.DañoMagicoEqpSlot = SanitizeNullValue(RS!slot_dm, 0)
 168         .Invent.ResistenciaEqpSlot = SanitizeNullValue(RS!slot_rm, 0)
 170         .Invent.NudilloSlot = SanitizeNullValue(RS!slot_knuckles, 0)
 172         .Invent.HerramientaEqpSlot = SanitizeNullValue(RS!slot_tool, 0)
@@ -1979,44 +1979,22 @@ ErrorHandler:
 
 End Sub
 
-Public Function EnterAccountDatabase(ByVal UserIndex As Integer, ByVal CuentaEmail As String, ByVal Password As String, ByVal IP As String) As Boolean
+Public Function EnterAccountDatabase(ByVal UserIndex As Integer, ByVal CuentaEmail As String) As Boolean
 
         On Error GoTo ErrorHandler
     
         Dim RS As ADODB.Recordset
-100     Set RS = Query("SELECT id, password, salt, validated, is_banned, ban_reason, banned_by FROM account WHERE email = ?", UCase$(CuentaEmail))
+100     Set RS = Query("SELECT id from account WHERE email = ?", UCase$(CuentaEmail))
     
 102     If Connection.State = adStateClosed Then
 104         Call WriteShowMessageBox(UserIndex, "Ha ocurrido un error interno en el servidor. ¡Estamos tratando de resolverlo!")
             Exit Function
         End If
     
-106     If RS Is Nothing Then
-108         Call WriteShowMessageBox(UserIndex, "La cuenta no existe.")
-            Exit Function
-        End If
-        
-114     If Not PasswordValida(Password, RS!Password, RS!Salt) Then
-116         Call WriteShowMessageBox(UserIndex, "Contraseña inválida.")
-            Exit Function
-        End If
-    
-110     If val(RS!is_banned) > 0 Then
-112         Call WriteShowMessageBox(UserIndex, "La cuenta se encuentra baneada debido a: " & RS!ban_reason & ". Esta decisión fue tomada por: " & RS!banned_by & ".")
-            Exit Function
-        End If
-
-118     If val(RS!validated) = 0 Then
-120         Call WriteShowMessageBox(UserIndex, "¡La cuenta no ha sido validada aún!")
-            Exit Function
-        End If
-    
 122     UserList(UserIndex).AccountID = RS!ID
 124     UserList(UserIndex).Cuenta = CuentaEmail
         UserList(UserIndex).Email = CuentaEmail
-        
-        'Call Execute("UPDATE account SET last_ip = ?, last_access = NOW() WHERE id = ?", IP, CLng(RS!ID))
-        
+    
 128     EnterAccountDatabase = True
     
         Exit Function
