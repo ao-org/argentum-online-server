@@ -904,17 +904,6 @@ Private Sub HechizoSobreArea(ByVal UserIndex As Integer, ByRef B As Boolean)
 
         End If
     
-110     If Hechizos(h).FXgrh > 0 Then 'Envio Fx?
-    
-112         If Hechizos(h).ParticleViaje > 0 Then
-114             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFXWithDestinoXY(UserList(UserIndex).Char.CharIndex, Hechizos(h).ParticleViaje, Hechizos(h).FXgrh, 1, Hechizos(h).wav, 1, PosCasteadaX, PosCasteadaY))
-                
-            Else
-116             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageFxPiso(Hechizos(h).FXgrh, PosCasteadaX, PosCasteadaY))
-
-            End If
-
-        End If
     
 118     If Hechizos(h).Particle > 0 Then 'Envio Particula?
 120         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFXToFloor(PosCasteadaX, PosCasteadaY, Hechizos(h).Particle, Hechizos(h).TimeParticula))
@@ -933,17 +922,41 @@ Private Sub HechizoSobreArea(ByVal UserIndex As Integer, ByRef B As Boolean)
 130     For X = 1 To Hechizos(h).AreaRadio
 132         For Y = 1 To Hechizos(h).AreaRadio
 134             TargetMap = MapData(UserList(UserIndex).Pos.Map, X + PosCasteadaX - CInt(Hechizos(h).AreaRadio / 2), PosCasteadaY + Y - CInt(Hechizos(h).AreaRadio / 2))
-                
+                                
 136             If afectaUsers And TargetMap.UserIndex > 0 Then
 138                 If UserList(TargetMap.UserIndex).flags.Muerto = 0 Then
 140                     Call AreaHechizo(UserIndex, TargetMap.UserIndex, PosCasteadaX, PosCasteadaY, False)
+
+1110                     If Hechizos(h).FXgrh > 0 Then 'Envio Fx?
+                    
+1112                         If Hechizos(h).ParticleViaje > 0 Then
+1114                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFXWithDestinoXY(UserList(UserIndex).Char.CharIndex, Hechizos(h).ParticleViaje, Hechizos(h).FXgrh, 1, Hechizos(h).wav, 1, X, Y))
+                                
+                            Else
+1116                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageFxPiso(Hechizos(h).FXgrh, X, Y))
+                
+                            End If
+                
+                        End If
                     End If
 
                 End If
                             
 142             If afectaNPCs And TargetMap.NpcIndex > 0 Then
 144                 If NpcList(TargetMap.NpcIndex).Attackable Then
+11110
 146                     Call AreaHechizo(UserIndex, TargetMap.NpcIndex, PosCasteadaX, PosCasteadaY, True)
+                        If Hechizos(h).FXgrh > 0 Then 'Envio Fx?
+                    
+11112                         If Hechizos(h).ParticleViaje > 0 Then
+11114                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFXWithDestinoXY(UserList(UserIndex).Char.CharIndex, Hechizos(h).ParticleViaje, Hechizos(h).FXgrh, 1, Hechizos(h).wav, 1, X, Y))
+                                
+                            Else
+11116                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageFxPiso(Hechizos(h).FXgrh, X + PosCasteadaX - CInt(Hechizos(h).AreaRadio / 2), Y + PosCasteadaY - CInt(Hechizos(h).AreaRadio / 2)))
+                
+                            End If
+                
+                        End If
                     End If
 
                 End If

@@ -2620,6 +2620,7 @@ Private Sub HandleCastSpell(ByVal UserIndex As Integer)
             End If
         
 108         .flags.Hechizo = Spell
+            
         
 110         If .flags.Hechizo < 1 Or .flags.Hechizo > MAXUSERHECHIZOS Then
 112             .flags.Hechizo = 0
@@ -2636,8 +2637,11 @@ Private Sub HandleCastSpell(ByVal UserIndex As Integer)
 124                         Call LanzarHechizo(.flags.Hechizo, UserIndex)
     
                         Else
-126                         Call WriteWorkRequestTarget(UserIndex, e_Skill.Magia)
-        
+                            If Hechizos(.Stats.UserHechizos(Spell)).AreaAfecta > 0 Then
+126                             Call WriteWorkRequestTarget(UserIndex, e_Skill.Magia, True, Hechizos(.Stats.UserHechizos(Spell)).AreaRadio)
+                            Else
+                                Call WriteWorkRequestTarget(UserIndex, e_Skill.Magia)
+                            End If
                         End If
                     
                     End If

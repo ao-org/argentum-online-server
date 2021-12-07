@@ -1766,12 +1766,14 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @param    Skill The skill for which we request a target.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-Public Sub WriteWorkRequestTarget(ByVal UserIndex As Integer, ByVal Skill As e_Skill)
+Public Sub WriteWorkRequestTarget(ByVal UserIndex As Integer, ByVal Skill As e_Skill, Optional ByVal CasteaArea As Boolean = False, Optional ByVal Radio As Byte = 0)
         '<EhHeader>
         On Error GoTo WriteWorkRequestTarget_Err
         '</EhHeader>
 100     Call Writer.WriteInt(ServerPacketID.WorkRequestTarget)
 102     Call Writer.WriteInt8(Skill)
+        Call Writer.WriteBool(CasteaArea)
+        Call Writer.WriteInt8(Radio)
 104     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub
