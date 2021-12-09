@@ -893,7 +893,7 @@ Function EntrarCuenta(ByVal UserIndex As Integer, ByVal CuentaEmail As String, B
             Exit Function
         End If
     
-132     EntrarCuenta = EnterAccountDatabase(UserIndex, CuentaEmail, SDesencriptar(CuentaPassword), UserList(UserIndex).IP)
+132     EntrarCuenta = EnterAccountDatabase(UserIndex, CuentaEmail)
         
         Exit Function
 
@@ -1312,6 +1312,7 @@ Sub ResetUserFlags(ByVal UserIndex As Integer)
             .ModificoMascotas = False
             .ModificoQuests = False
             .ModificoQuestsHechas = False
+            .RespondiendoPregunta = False
          
 260         .ProcesosPara = vbNullString
 262         .ScreenShotPara = vbNullString

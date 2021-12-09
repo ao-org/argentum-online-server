@@ -348,7 +348,7 @@ Private Sub AI_AtacarUsuarioObjetivo(ByVal AtackerNpcIndex As Integer)
                             (RandomNumber(1, 100) <= 50)
              
 108         AtacaMelee = (EstaPegadoAlUsuario And UsuarioAtacableConMelee(AtackerNpcIndex, .Target) And .flags.Paralizado = 0 And .flags.LanzaSpells = 0)
-            AtacaMelee = AtacaMelee Or (EstaPegadoAlUsuario And .flags.LanzaSpells And (UserList(.Target).flags.invisible > 0 Or UserList(.Target).flags.Oculto > 0))
+            AtacaMelee = AtacaMelee Or (EstaPegadoAlUsuario And .flags.LanzaSpells > 0 And (UserList(.Target).flags.invisible > 0 Or UserList(.Target).flags.Oculto > 0))
             
             ' Se da vuelta y enfrenta al Usuario
 109         tHeading = GetHeadingFromWorldPos(.Pos, UserList(.Target).Pos)

@@ -939,7 +939,19 @@ Public Sub NpcAtacaNpc(ByVal Atacante As Integer, ByVal Victima As Integer, Opti
 100     If Not IntervaloPermiteAtacarNPC(Atacante) Then Exit Sub
         Dim Heading As e_Heading
 102     Heading = GetHeadingFromWorldPos(NpcList(Atacante).Pos, NpcList(Victima).Pos)
+        If Heading <> NpcList(Atacante).Char.Heading And NpcList(Atacante).flags.Inmovilizado = 1 Then
+            NpcList(Atacante).TargetNPC = 0
+            NpcList(Atacante).Movement = e_TipoAI.MueveAlAzar
+            Exit Sub
+        End If
+
 104     Call ChangeNPCChar(Atacante, NpcList(Atacante).Char.Body, NpcList(Atacante).Char.Head, Heading)
+103     Heading = GetHeadingFromWorldPos(NpcList(Victima).Pos, NpcList(Atacante).Pos)
+        If Heading <> NpcList(Victima).Char.Heading Then
+            If NpcList(Victima).flags.Inmovilizado > 0 Then
+                cambiarMovimiento = False
+            End If
+        End If
         
 106     If cambiarMovimiento Then
 108         NpcList(Victima).TargetNPC = Atacante

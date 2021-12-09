@@ -1645,6 +1645,7 @@ Public Type t_UserFlags
     ModificoQuestsHechas As Boolean
     QuestNumber As Integer
     QuestItemSlot As Integer
+    RespondiendoPregunta As Boolean
 End Type
 
 Public Enum e_EstadoMimetismo
@@ -1907,7 +1908,9 @@ Public Type t_User
     CraftInventory(1 To MAX_SLOTS_CRAFTEO) As Integer
     CraftCatalyst As t_Obj
     CraftResult As clsCrafteo
-
+    public_key As String
+    decrypted_session_token As String
+    encrypted_session_token As String
 End Type
 
 '*********************************************************
@@ -1929,6 +1932,8 @@ Public Type t_NPCStats
     def As Integer
     defM As Integer
     UsuariosMatados As Integer
+    CantidadInvocaciones As Byte
+    NpcsInvocados()      As Integer
 
 End Type
 
@@ -1942,7 +1947,8 @@ Public Type t_NpcCounters
     IntervaloLanzarHechizo As Long
     IntervaloRespawn       As Long
     UltimoAtaque           As Long
-
+    CriaturasInvocadas     As Long
+    
 End Type
 
 Public Type t_NPCFlags
@@ -1956,7 +1962,7 @@ Public Type t_NPCFlags
     Faccion As e_Facciones
     LanzaSpells As Byte
     NPCIdle As Boolean
-
+    InvocadorIndex As Integer
     ' Invasiones
     InvasionIndex As Integer
     SpawnBox As Integer
