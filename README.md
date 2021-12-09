@@ -20,8 +20,14 @@ Abrir CMD como Administrador `regsvr32 Aurora.Network.dll`
 # Development (test branch ao-api/web)
 IMPORTANTE: Para hacer cuentas en el servidor de test, tienen que entrar aca.
 Website:
-http://ao20-web-testing.herokuapp.com/
+http://test.ao20.com.ar
 
+
+
+# Staging (test master ao-api/web)
+IMPORTANTE: Para hacer cuentas en el servidor de staging, tienen que entrar aca.
+Website:
+http://staging.ao20.com.ar
 
 # Creacion de Parches / Actualizacion
 
@@ -37,7 +43,7 @@ Importante: Ejecutar uno solo a la vez y esperar a que termine y hacerlo en este
 
 a- Actualizar Recursos
 
-- http://horacio.ao20.com.ar:2095/view/Produccion/job/Recursos/
+- http://horacio.ao20.com.ar:2095/view/Produccion/job/Recursos-tag-release-cliente/
 
 b- Actualizar codigo del cliente (ESTE PIPELINE SE EJECUTA AUTOMATICAMENTE AL CREAR EL TAG)
 
