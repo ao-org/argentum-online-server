@@ -128,7 +128,7 @@ Public Sub HandleNoticeResponse(ByVal UserIndex As Integer, ByVal Codigo As Stri
 108         If AOG_EXPIRE <> 0 And RS!delta_time > AOG_EXPIRE Then
             
                 ' Le avisamos que expiro
-110             Call WriteShowMessageBox(UserIndex, "El código de verificación ha expirado.")
+110             Call WriteShowMessageBox(userindex, "El código de verificación ha expirado.")
 112             Debug.Print "El codigo expiro. Se generara uno nuevo!"
             
                 ' Invalidamos el codigo
@@ -142,8 +142,8 @@ Public Sub HandleNoticeResponse(ByVal UserIndex As Integer, ByVal Codigo As Stri
                 ' Lo comparamos con lo que tenemos en la BD
 118             If Codigo = RS!code Then
             
-120                 Call WritePersonajesDeCuenta(UserIndex)
-122                 Call WriteMostrarCuenta(UserIndex)
+120                 'Call WritePersonajesDeCuenta(userindex)
+122                 'Call WriteMostrarCuenta(userindex)
                 
                     ' Invalidamos el codigo
 124                 Call Execute("DELETE FROM account_guard WHERE account_id = ?;", UserList(UserIndex).AccountID)
@@ -151,7 +151,7 @@ Public Sub HandleNoticeResponse(ByVal UserIndex As Integer, ByVal Codigo As Stri
                 Else
             
                     ' Le avisamos
-126                 Call WriteShowMessageBox(UserIndex, "El código de verificación ha incorrecto.")
+126                 Call WriteShowMessageBox(userindex, "El código de verificación ha incorrecto.")
                 
                     ' Lo kickeamos.
 128                 Call CloseSocket(UserIndex)
@@ -196,7 +196,7 @@ Public Sub EnviarCodigo(ByVal UserIndex As Integer)
                     
 116                 Call Execute("UPDATE account_guard SET code_last_sent = CURRENT_TIMESTAMP, code_resend_attempts = 0 WHERE account_id = ?;", .AccountID)
                         
-118                 Call WriteShowMessageBox(UserIndex, "Te hemos enviado un correo con el código de verificacion a tu correo. " & _
+118                 Call WriteShowMessageBox(userindex, "Te hemos enviado un correo con el código de verificacion a tu correo. " & _
                                                         "Si no lo encuentras, revisa la carpeta de SPAM. " & _
                                                         "Si no te ha llegado, intenta nuevamente en " & val(RS!delta_time) & " segundos")
                         
@@ -206,7 +206,7 @@ Public Sub EnviarCodigo(ByVal UserIndex As Integer)
                 
 122                 Call Execute("UPDATE account_guard SET code_resend_attempts = code_resend_attempts + 1 WHERE account_id = ?;", .AccountID)
                     
-124                 Call WriteShowMessageBox(UserIndex, "Ya te hemos enviado un correo con el código de verificacion. " & _
+124                 Call WriteShowMessageBox(userindex, "Ya te hemos enviado un correo con el código de verificacion. " & _
                                                         "Si no te ha llegado, intenta nuevamente en " & val(RS!delta_time) & " segundos")
                         
                 End If
