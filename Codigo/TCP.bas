@@ -893,7 +893,7 @@ Function EntrarCuenta(ByVal UserIndex As Integer, ByVal CuentaEmail As String, B
             Exit Function
         End If
     
-132     EntrarCuenta = EnterAccountDatabase(UserIndex, CuentaEmail, SDesencriptar(CuentaPassword), UserList(UserIndex).IP)
+132     EntrarCuenta = EnterAccountDatabase(UserIndex, CuentaEmail)
         
         Exit Function
 
