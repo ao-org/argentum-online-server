@@ -216,12 +216,11 @@ Public Sub WriteDisconnect(ByVal UserIndex As Integer, _
 102     UserList(UserIndex).flags.YaGuardo = True
 
 104     If Not FullLogout Then
-106         'Call WritePersonajesDeCuenta(userindex)
-108         'Call WriteMostrarCuenta(userindex)
+106         Call WritePersonajesDeCuenta(UserIndex)
+108         Call WriteMostrarCuenta(UserIndex)
         End If
 
 110     Call Writer.WriteInt(ServerPacketID.Disconnect)
-        Call Writer.WriteBool(FullLogout)
 112     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub
