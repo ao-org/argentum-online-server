@@ -2633,40 +2633,6 @@ WriteSetInvisible_Err:
         '</EhFooter>
 End Sub
 
-''
-' Writes the "SetInvisible" message to the given user's outgoing data .incomingData.
-'
-' @param    UserIndex User to which the message is intended.
-' @param    CharIndex The char turning visible / invisible.
-' @param    invisible True if the char is no longer visible, False otherwise.
-' @remarks  The data is not actually sent until the buffer is properly flushed.
-''
-' Writes the "DiceRoll" message to the given user's outgoing data .incomingData.
-'
-' @param    UserIndex User to which the message is intended.
-' @remarks  The data is not actually sent until the buffer is properly flushed.
-Public Sub WriteDiceRoll(ByVal UserIndex As Integer)
-        '<EhHeader>
-        On Error GoTo WriteDiceRoll_Err
-        '</EhHeader>
-100     Call Writer.WriteInt(ServerPacketID.DiceRoll)
-        ' TODO: SACAR ESTE PAQUETE USAR EL DE ATRIBUTOS
-102     Call Writer.WriteInt8(UserList(UserIndex).Stats.UserAtributos(e_Atributos.Fuerza))
-104     Call Writer.WriteInt8(UserList(UserIndex).Stats.UserAtributos(e_Atributos.Agilidad))
-106     Call Writer.WriteInt8(UserList(UserIndex).Stats.UserAtributos( _
-                e_Atributos.Inteligencia))
-108     Call Writer.WriteInt8(UserList(UserIndex).Stats.UserAtributos( _
-                e_Atributos.Constitucion))
-110     Call Writer.WriteInt8(UserList(UserIndex).Stats.UserAtributos(e_Atributos.Carisma))
-112     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
-        Exit Sub
-
-WriteDiceRoll_Err:
-        Call Writer.Clear
-        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteDiceRoll", Erl)
-        '</EhFooter>
-End Sub
 
 ''
 ' Writes the "MeditateToggle" message to the given user's outgoing data .incomingData.
