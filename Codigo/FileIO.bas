@@ -2614,9 +2614,7 @@ Sub SaveUser(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = Fals
         On Error GoTo SaveUser_Err
 
 102     Call SaveUserDatabase(UserIndex, Logout)
-        If Logout Then
-103         Call RemoveTokenDatabase(userindex)
-        End If
+    
 104     UserList(UserIndex).Counters.LastSave = GetTickCount
 
         Exit Sub
@@ -2625,9 +2623,7 @@ SaveUser_Err:
 108     Call TraceError(Err.Number, Err.Description, "ES.SaveUser", Erl)
 
 End Sub
-Public Sub RemoveTokenDatabase(ByVal userindex As Integer)
-    Call Query("delete from tokens where username =  UPPER('" & UserList(userindex).Email & "')")
-End Sub
+
 Sub SaveNewUser(ByVal UserIndex As Integer)
     On Error GoTo SaveNewUser_Err
             
