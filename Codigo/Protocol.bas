@@ -89,7 +89,6 @@ Public Enum ServerPacketID
     AddForumMsg             ' FMSG
     ShowForumForm           ' MFOR
     SetInvisible            ' NOVER 80
-    DiceRoll                ' DADOS
     MeditateToggle          ' MEDOK
     BlindNoMore             ' NSEGUE
     DumbNoMore              ' NESTUP
@@ -194,7 +193,6 @@ Private Enum ClientPacketID
 
     LoginExistingChar       'OLOGIN
     LoginNewChar            'NLOGIN
-    ThrowDice
     Talk                    ';
     Yell                    '-
     Whisper                 '\
@@ -644,7 +642,6 @@ On Error Resume Next
             PacketID = ClientPacketID.LoginNewChar Or _
             PacketID = ClientPacketID.IngresarConCuenta Or _
             PacketID = ClientPacketID.BorrarPJ Or _
-            PacketID = ClientPacketID.ThrowDice Or _
             PacketID = ClientPacketID.GuardNoticeResponse) Then
                
         'Is the user actually logged?
@@ -665,8 +662,6 @@ On Error Resume Next
             Call HandleLoginExistingChar(UserIndex)
         Case ClientPacketID.LoginNewChar
             Call HandleLoginNewChar(UserIndex)
-        Case ClientPacketID.ThrowDice
-            Call HandleThrowDice(UserIndex)
         Case ClientPacketID.Talk
             Call HandleTalk(UserIndex)
         Case ClientPacketID.Yell
@@ -1524,28 +1519,6 @@ ErrHandler:
 
 End Sub
 
-Private Sub HandleThrowDice(ByVal UserIndex As Integer)
-    
-        On Error GoTo HandleThrowDice_Err
-
-100     With UserList(UserIndex).Stats
-102         .UserAtributos(e_Atributos.Fuerza) = RandomNumber(DiceMinimum, DiceMaximum)
-104         .UserAtributos(e_Atributos.Agilidad) = RandomNumber(DiceMinimum, DiceMaximum)
-106         .UserAtributos(e_Atributos.Inteligencia) = RandomNumber(DiceMinimum, DiceMaximum)
-108         .UserAtributos(e_Atributos.Carisma) = RandomNumber(DiceMinimum, DiceMaximum)
-110         .UserAtributos(e_Atributos.Constitucion) = RandomNumber(DiceMinimum, DiceMaximum)
-
-        End With
-    
-112     Call WriteDiceRoll(UserIndex)
-
-        Exit Sub
-
-HandleThrowDice_Err:
-114     Call TraceError(Err.Number, Err.Description, "Protocol.HandleThrowDice", Erl)
-116
-        
-End Sub
 
 ''
 ' Handles the "Talk" message.
@@ -5382,11 +5355,11 @@ Private Sub HandleOnline(ByVal UserIndex As Integer)
 134         Call WriteConsoleMsg(UserIndex, "Server Online: " & UpTimeStr, e_FontTypeNames.FONTTYPE_INFO)
 
 136         If .flags.Privilegios And e_PlayerType.user Then
-138             Call WriteConsoleMsg(UserIndex, "Número de usuarios: " & CStr(count) & " conectados.", e_FontTypeNames.FONTTYPE_INFOIAO)
+138             Call WriteConsoleMsg(UserIndex, "Número de usuarios: " & CStr(Count) & " conectados.", e_FontTypeNames.FONTTYPE_INFOIAO)
 140             Call WriteConsoleMsg(UserIndex, "Tiempo en línea: " & UpTimeStr & " Record de usuarios en simultaneo: " & RecordUsuarios & ".", e_FontTypeNames.FONTTYPE_INFOIAO)
 
             Else
-142             Call WriteConsoleMsg(UserIndex, "Número de usuarios: " & CStr(count) & " conectados: " & nombres & ".", e_FontTypeNames.FONTTYPE_INFOIAO)
+142             Call WriteConsoleMsg(UserIndex, "Número de usuarios: " & CStr(Count) & " conectados: " & nombres & ".", e_FontTypeNames.FONTTYPE_INFOIAO)
 144             Call WriteConsoleMsg(UserIndex, "Tiempo en línea: " & UpTimeStr & " Record de usuarios en simultaneo: " & RecordUsuarios & ".", e_FontTypeNames.FONTTYPE_INFOIAO)
 
             End If
@@ -7499,7 +7472,7 @@ Private Sub HandleGMMessage(ByVal UserIndex As Integer)
                     'Analize chat...
 110                 Call Statistics.ParseChat(Message)
             
-112                 Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(.Name & " » " & Message, e_FontTypeNames.FONTTYPE_GMMSG))
+112                 Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(.Name & " » " & message, e_FontTypeNames.FONTTYPE_GMMSG))
 
                 End If
 

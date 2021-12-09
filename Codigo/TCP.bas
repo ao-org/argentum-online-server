@@ -540,11 +540,11 @@ Function ConnectNewUser(ByVal UserIndex As Integer, ByRef Name As String, ByVal 
             'Prevenimos algun bug con dados inválidos
 128         If .Stats.UserAtributos(e_Atributos.Fuerza) = 0 Then Exit Function
         
-130         .Stats.UserAtributos(e_Atributos.Fuerza) = .Stats.UserAtributos(e_Atributos.Fuerza) + ModRaza(UserRaza).Fuerza
-132         .Stats.UserAtributos(e_Atributos.Agilidad) = .Stats.UserAtributos(e_Atributos.Agilidad) + ModRaza(UserRaza).Agilidad
-134         .Stats.UserAtributos(e_Atributos.Inteligencia) = .Stats.UserAtributos(e_Atributos.Inteligencia) + ModRaza(UserRaza).Inteligencia
-136         .Stats.UserAtributos(e_Atributos.Constitucion) = .Stats.UserAtributos(e_Atributos.Constitucion) + ModRaza(UserRaza).Constitucion
-138         .Stats.UserAtributos(e_Atributos.Carisma) = .Stats.UserAtributos(e_Atributos.Carisma) + ModRaza(UserRaza).Carisma
+130         .Stats.UserAtributos(e_Atributos.Fuerza) = 18 + ModRaza(UserRaza).Fuerza
+132         .Stats.UserAtributos(e_Atributos.Agilidad) = 18 + ModRaza(UserRaza).Agilidad
+134         .Stats.UserAtributos(e_Atributos.Inteligencia) = 18 + ModRaza(UserRaza).Inteligencia
+136         .Stats.UserAtributos(e_Atributos.Constitucion) = 18 + ModRaza(UserRaza).Constitucion
+138         .Stats.UserAtributos(e_Atributos.Carisma) = 18 + ModRaza(UserRaza).Carisma
         
 140         .flags.Muerto = 0
 142         .flags.Escondido = 0
