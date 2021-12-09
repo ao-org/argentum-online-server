@@ -2220,9 +2220,6 @@ Sub LoadSini()
 136     PuedeCrearPersonajes = val(Lector.GetValue("INIT", "PuedeCrearPersonajes"))
 138     ServerSoloGMs = val(Lector.GetValue("init", "ServerSoloGMs"))
     
-140     DiceMinimum = val(Lector.GetValue("INIT", "MinDados"))
-142     DiceMaximum = val(Lector.GetValue("INIT", "MaxDados"))
-
 143     centinelaActivado = val(Lector.GetValue("INIT", "CentinelaActivado"))
     
 144     EnTesting = val(Lector.GetValue("INIT", "Testing"))
