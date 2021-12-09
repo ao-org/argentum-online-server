@@ -76,6 +76,8 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
 120         Call MuereNpcInvasion(MiNPC.flags.InvasionIndex, MiNPC.flags.IndexInInvasion)
 
         End If
+        
+      
 
         'Quitamos el npc
 122     Call QuitarNPC(NpcIndex)
@@ -254,6 +256,7 @@ Sub ResetNpcFlags(ByVal NpcIndex As Integer)
 152         .AtacaNPCs = True
 154         .AIAlineacion = e_Alineacion.ninguna
 156         .NPCIdle = False
+159         .InvocadorIndex = 0
         End With
 
         
@@ -276,12 +279,13 @@ Sub ResetNpcCounters(ByVal NpcIndex As Integer)
 106     NpcList(NpcIndex).Contadores.IntervaloAtaque = 0
 108     NpcList(NpcIndex).Contadores.IntervaloLanzarHechizo = 0
 110     NpcList(NpcIndex).Contadores.IntervaloRespawn = 0
+112     NpcList(NpcIndex).Contadores.CriaturasInvocadas = 0
 
         
         Exit Sub
 
 ResetNpcCounters_Err:
-112     Call TraceError(Err.Number, Err.Description, "NPCs.ResetNpcCounters", Erl)
+114     Call TraceError(Err.Number, Err.Description, "NPCs.ResetNpcCounters", Erl)
 
         
 End Sub
@@ -447,6 +451,36 @@ Sub QuitarNPC(ByVal NpcIndex As Integer)
         On Error GoTo ErrHandler
 
 100     NpcList(NpcIndex).flags.NPCActive = False
+
+        If NpcList(NpcIndex).flags.InvocadorIndex > 0 Then
+    
+            If NpcList(NpcList(NpcIndex).flags.InvocadorIndex).Contadores.CriaturasInvocadas > 0 Then
+                
+                'Resto 1 Npc invocado al invocador
+                NpcList(NpcList(NpcIndex).flags.InvocadorIndex).Contadores.CriaturasInvocadas = NpcList(NpcList(NpcIndex).flags.InvocadorIndex).Contadores.CriaturasInvocadas - 1
+                
+                'También lo saco de la lista
+                Dim loopC As Long
+                
+                For loopC = 1 To NpcList(NpcList(NpcIndex).flags.InvocadorIndex).Stats.CantidadInvocaciones
+                    If NpcList(NpcList(NpcIndex).flags.InvocadorIndex).Stats.NpcsInvocados(loopC) = NpcIndex Then
+                        NpcList(NpcList(NpcIndex).flags.InvocadorIndex).Stats.NpcsInvocados(loopC) = 0
+                        Exit For
+                    End If
+                Next loopC
+                
+            End If
+        
+        ElseIf NpcList(NpcIndex).Contadores.CriaturasInvocadas > 0 Then
+            Dim i As Long
+            
+            For i = 1 To NpcList(NpcIndex).Stats.CantidadInvocaciones
+                If NpcList(NpcIndex).Stats.NpcsInvocados(i) > 0 Then
+                    Call MuereNpc(NpcList(NpcIndex).Stats.NpcsInvocados(i), 0)
+                End If
+            Next i
+        End If
+    
     
 102     If InMapBounds(NpcList(NpcIndex).Pos.Map, NpcList(NpcIndex).Pos.X, NpcList(NpcIndex).Pos.Y) Then
 104         Call EraseNPCChar(NpcIndex)
@@ -1221,6 +1255,15 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
 236         .Stats.MinHIT = val(Leer.GetValue("NPC" & NpcNumber, "MinHIT"))
 238         .Stats.def = val(Leer.GetValue("NPC" & NpcNumber, "DEF"))
 240         .Stats.defM = val(Leer.GetValue("NPC" & NpcNumber, "DEFm"))
+241         .Stats.CantidadInvocaciones = val(Leer.GetValue("NPC" & NpcNumber, "CantidadInvocaciones"))
+
+            If .Stats.CantidadInvocaciones > 0 Then
+243             ReDim .Stats.NpcsInvocados(1 To .Stats.CantidadInvocaciones)
+                
+                For loopC = 1 To .Stats.CantidadInvocaciones
+                    .Stats.NpcsInvocados(loopC) = 0
+                Next loopC
+            End If
 242         .flags.AIAlineacion = val(Leer.GetValue("NPC" & NpcNumber, "Alineacion"))
     
 244         .Invent.NroItems = val(Leer.GetValue("NPC" & NpcNumber, "NROITEMS"))

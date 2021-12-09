@@ -216,11 +216,12 @@ Public Sub WriteDisconnect(ByVal UserIndex As Integer, _
 102     UserList(UserIndex).flags.YaGuardo = True
 
 104     If Not FullLogout Then
-106         Call WritePersonajesDeCuenta(UserIndex)
-108         Call WriteMostrarCuenta(UserIndex)
+106         'Call WritePersonajesDeCuenta(userindex)
+108         'Call WriteMostrarCuenta(userindex)
         End If
 
 110     Call Writer.WriteInt(ServerPacketID.Disconnect)
+        Call Writer.WriteBool(FullLogout)
 112     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub
@@ -1766,12 +1767,14 @@ End Sub
 ' @param    UserIndex User to which the message is intended.
 ' @param    Skill The skill for which we request a target.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-Public Sub WriteWorkRequestTarget(ByVal UserIndex As Integer, ByVal Skill As e_Skill)
+Public Sub WriteWorkRequestTarget(ByVal UserIndex As Integer, ByVal Skill As e_Skill, Optional ByVal CasteaArea As Boolean = False, Optional ByVal Radio As Byte = 0)
         '<EhHeader>
         On Error GoTo WriteWorkRequestTarget_Err
         '</EhHeader>
 100     Call Writer.WriteInt(ServerPacketID.WorkRequestTarget)
 102     Call Writer.WriteInt8(Skill)
+        Call Writer.WriteBool(CasteaArea)
+        Call Writer.WriteInt8(Radio)
 104     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub

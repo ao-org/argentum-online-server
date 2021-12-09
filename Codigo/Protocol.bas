@@ -1337,18 +1337,52 @@ Private Sub HandleLoginExistingChar(ByVal UserIndex As Integer)
 
         On Error GoTo ErrHandler
 
-        Dim UserName    As String
+        Dim user_name    As String
         Dim CuentaEmail As String
         Dim Password    As String
         Dim Version     As String
         Dim MD5         As String
+        Dim encrypted_session_token As String
+        Dim encrypted_username As String
+        
+        encrypted_session_token = Reader.ReadString8
+        encrypted_username = Reader.ReadString8
+106     Version = CStr(Reader.ReadInt8()) & "." & CStr(Reader.ReadInt8()) & "." & CStr(Reader.ReadInt8())
+114     MD5 = Reader.ReadString8()
 
-102         CuentaEmail = Reader.ReadString8()
-104         Password = Reader.ReadString8()
-106         Version = CStr(Reader.ReadInt8()) & "." & CStr(Reader.ReadInt8()) & "." & CStr(Reader.ReadInt8())
-108         UserName = Reader.ReadString8()
-114         MD5 = Reader.ReadString8()
-
+        If Len(encrypted_session_token) <> 88 Then
+            Call WriteShowMessageBox(UserIndex, "Cliente inválido, por favor realice una actualización.")
+            Exit Sub
+        End If
+                
+        
+        Dim encrypted_session_token_byte() As Byte
+        Call AO20CryptoSysWrapper.Str2ByteArr(encrypted_session_token, encrypted_session_token_byte)
+        
+        Dim decrypted_session_token As String
+        decrypted_session_token = AO20CryptoSysWrapper.DECRYPT("7061626C6F6D61727175657A41524731", cnvStringFromHexStr(cnvToHex(encrypted_session_token_byte)))
+                
+            ' Para recibir el ID del user
+        Dim RS As ADODB.Recordset
+        Set RS = Query("select * from tokens where encrypted_token = '" & encrypted_session_token & "'")
+                
+        If RS Is Nothing Then
+            Call WriteShowMessageBox(UserIndex, "Cliente inválido, por favor realice una actualización.")
+120             Call CloseSocket(UserIndex)
+            Exit Sub
+        End If
+        CuentaEmail = CStr(RS!UserName)
+        If RS!encrypted_token = encrypted_session_token Then
+            UserList(UserIndex).encrypted_session_token = encrypted_session_token
+            UserList(UserIndex).decrypted_session_token = decrypted_session_token
+            UserList(UserIndex).public_key = mid(decrypted_session_token, 1, 16)
+        Else
+            Call WriteShowMessageBox(UserIndex, "Cliente inválido, por favor realice una actualización.")
+121             Call CloseSocket(UserIndex)
+            Exit Sub
+        End If
+        
+        user_name = AO20CryptoSysWrapper.DECRYPT(cnvHexStrFromString(UserList(UserIndex).public_key), encrypted_username)
         #If DEBUGGING = False Then
 
 116         If Not VersionOK(Version) Then
@@ -1360,29 +1394,29 @@ Private Sub HandleLoginExistingChar(ByVal UserIndex As Integer)
 
         #End If
         
-122     If EsGmChar(UserName) Then
-            
-124         If AdministratorAccounts(UCase$(UserName)) <> UCase$(CuentaEmail) Then
-130             Call CloseSocket(UserIndex)
-                Exit Sub
-            End If
-            
-        End If
-  
+122   '  If EsGmChar(UserName) Then
+      '
+124   '      If AdministratorAccounts(UCase$(UserName)) <> UCase$(CuentaEmail) Then
+130   '          Call CloseSocket(UserIndex)
+      '          Exit Sub
+      '      End If
+      '
+      '  End If
+ 
 132     If Not EntrarCuenta(UserIndex, CuentaEmail, Password, MD5) Then
 134         Call CloseSocket(UserIndex)
             Exit Sub
-
+'
         End If
 
-136     If Not AsciiValidos(UserName) And UserName <> "Error 404" Then
-138         Call WriteShowMessageBox(UserIndex, "Nombre invalido.")
-140         Call CloseSocket(UserIndex)
-            Exit Sub
+136   '  If Not AsciiValidos(UserName) And UserName <> "Error 404" Then
+138   '      Call WriteShowMessageBox(UserIndex, "Nombre invalido.")
+140   '      Call CloseSocket(UserIndex)
+      '      Exit Sub
 
-        End If
-
-180     Call ConnectUser(UserIndex, UserName, CuentaEmail)
+      '  End If
+    
+180     Call ConnectUser(UserIndex, user_name, CuentaEmail)
 
         Exit Sub
     
@@ -1392,6 +1426,7 @@ ErrHandler:
 184
 
 End Sub
+
 
 '
 ' @param    UserIndex The index of the user sending the message.
@@ -2620,6 +2655,7 @@ Private Sub HandleCastSpell(ByVal UserIndex As Integer)
             End If
         
 108         .flags.Hechizo = Spell
+            
         
 110         If .flags.Hechizo < 1 Or .flags.Hechizo > MAXUSERHECHIZOS Then
 112             .flags.Hechizo = 0
@@ -2636,8 +2672,11 @@ Private Sub HandleCastSpell(ByVal UserIndex As Integer)
 124                         Call LanzarHechizo(.flags.Hechizo, UserIndex)
     
                         Else
-126                         Call WriteWorkRequestTarget(UserIndex, e_Skill.Magia)
-        
+                            If Hechizos(.Stats.UserHechizos(Spell)).AreaAfecta > 0 Then
+126                             Call WriteWorkRequestTarget(UserIndex, e_Skill.Magia, True, Hechizos(.Stats.UserHechizos(Spell)).AreaRadio)
+                            Else
+                                Call WriteWorkRequestTarget(UserIndex, e_Skill.Magia)
+                            End If
                         End If
                     
                     End If
@@ -5343,11 +5382,11 @@ Private Sub HandleOnline(ByVal UserIndex As Integer)
 134         Call WriteConsoleMsg(UserIndex, "Server Online: " & UpTimeStr, e_FontTypeNames.FONTTYPE_INFO)
 
 136         If .flags.Privilegios And e_PlayerType.user Then
-138             Call WriteConsoleMsg(UserIndex, "Número de usuarios: " & CStr(Count) & " conectados.", e_FontTypeNames.FONTTYPE_INFOIAO)
+138             Call WriteConsoleMsg(UserIndex, "Número de usuarios: " & CStr(count) & " conectados.", e_FontTypeNames.FONTTYPE_INFOIAO)
 140             Call WriteConsoleMsg(UserIndex, "Tiempo en línea: " & UpTimeStr & " Record de usuarios en simultaneo: " & RecordUsuarios & ".", e_FontTypeNames.FONTTYPE_INFOIAO)
 
             Else
-142             Call WriteConsoleMsg(UserIndex, "Número de usuarios: " & CStr(Count) & " conectados: " & nombres & ".", e_FontTypeNames.FONTTYPE_INFOIAO)
+142             Call WriteConsoleMsg(UserIndex, "Número de usuarios: " & CStr(count) & " conectados: " & nombres & ".", e_FontTypeNames.FONTTYPE_INFOIAO)
 144             Call WriteConsoleMsg(UserIndex, "Tiempo en línea: " & UpTimeStr & " Record de usuarios en simultaneo: " & RecordUsuarios & ".", e_FontTypeNames.FONTTYPE_INFOIAO)
 
             End If
@@ -5899,15 +5938,18 @@ Private Sub HandleMeditate(ByVal UserIndex As Integer)
 120             Select Case .Stats.ELV
 
                     Case 1 To 14
-122                     .Char.FX = e_Meditaciones.MeditarInicial
+122                     '.Char.FX = e_Meditaciones.MeditarInicial
+                      Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, 37, -1, False))
 
-124                 Case 15 To 29
-126                     .Char.FX = e_Meditaciones.MeditarMayor15
+124                 Case 15 To 24
+                        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, 38, -1, False))
+126                     '.Char.FX = e_Meditaciones.MeditarMayor15
 
-128                 Case 30 To 39
-130                     .Char.FX = e_Meditaciones.MeditarMayor30
+128                 Case 25 To 35
+130                     '.Char.FX = e_Meditaciones.MeditarMayor30
+                        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, 39, -1, False))
 
-132                 Case 40 To 44
+132                 Case 35 To 44
 134                     .Char.FX = e_Meditaciones.MeditarMayor40
 
 136                 Case 45 To 46
@@ -6592,10 +6634,12 @@ Private Sub HandleGuildMessage(ByVal UserIndex As Integer)
 116                 If LCase(GuildLeader(.GuildIndex)) = .Name Then
 118                     Call SendData(SendTarget.ToDiosesYclan, .GuildIndex, PrepareMessageGuildChat(.Name & "> " & chat, 10))
                     Else
+                    
 120                     Call SendData(SendTarget.ToDiosesYclan, .GuildIndex, PrepareMessageGuildChat(.Name & "> " & chat, .Faccion.Status))
+                        Call SendData(SendTarget.ToClanArea, UserIndex, PrepareMessageChatOverHead("NOCONSOLA*< " & chat & " >", .Char.CharIndex, RGB(255, 255, 0)))
                     End If
                     'TODO : Con la 0.12.1 se debe definir si esto vuelve o se borra (/CMSG overhead)
-                    'Call SendData(SendTarget.ToClanArea, UserIndex, UserList(UserIndex).Pos.Map, "||" & vbYellow & "í< " & rData & " >í" & CStr(UserList(UserIndex).Char.CharIndex))
+                   ' Call SendData(SendTarget.ToAll, UserIndex, UserList(UserIndex).Pos.Map, "||" & vbYellow & "í< " & chat & " >í" & CStr(UserList(UserIndex).Char.CharIndex))
                 End If
 
             End If
@@ -16700,7 +16744,7 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
             Dim Log As String
 
 104         Log = "Repuesta "
-
+            UserList(UserIndex).flags.RespondiendoPregunta = False
 106         If respuesta Then
         
 108             Select Case UserList(UserIndex).flags.pregunta
