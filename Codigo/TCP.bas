@@ -538,7 +538,7 @@ Function ConnectNewUser(ByVal UserIndex As Integer, ByRef Name As String, ByVal 
 126         If Not ValidarCabeza(UserRaza, UserSexo, Head) Then Exit Function
             
             'Prevenimos algun bug con dados inválidos
-128         If .Stats.UserAtributos(e_Atributos.Fuerza) = 0 Then Exit Function
+128         'If .Stats.UserAtributos(e_Atributos.Fuerza) = 0 Then Exit Function
         
 130         .Stats.UserAtributos(e_Atributos.Fuerza) = 18 + ModRaza(UserRaza).Fuerza
 132         .Stats.UserAtributos(e_Atributos.Agilidad) = 18 + ModRaza(UserRaza).Agilidad
@@ -857,7 +857,7 @@ ValidateChr_Err:
         
 End Function
 
-Function EntrarCuenta(ByVal UserIndex As Integer, ByVal CuentaEmail As String, ByVal CuentaPassword As String, ByVal MD5 As String) As Boolean
+Function EntrarCuenta(ByVal UserIndex As Integer, ByVal CuentaEmail As String, ByVal MD5 As String) As Boolean
         
         On Error GoTo EntrarCuenta_Err
         

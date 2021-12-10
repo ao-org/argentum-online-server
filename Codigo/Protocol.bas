@@ -1334,7 +1334,6 @@ Private Sub HandleLoginExistingChar(ByVal UserIndex As Integer)
 
         Dim user_name    As String
         Dim CuentaEmail As String
-        Dim Password    As String
         Dim Version     As String
         Dim MD5         As String
         Dim encrypted_session_token As String
@@ -1398,18 +1397,10 @@ Private Sub HandleLoginExistingChar(ByVal UserIndex As Integer)
       '
       '  End If
  
-132     If Not EntrarCuenta(UserIndex, CuentaEmail, Password, MD5) Then
+132     If Not EntrarCuenta(UserIndex, CuentaEmail, MD5) Then
 134         Call CloseSocket(UserIndex)
             Exit Sub
-'
         End If
-
-136   '  If Not AsciiValidos(UserName) And UserName <> "Error 404" Then
-138   '      Call WriteShowMessageBox(UserIndex, "Nombre invalido.")
-140   '      Call CloseSocket(UserIndex)
-      '      Exit Sub
-
-      '  End If
     
 180     Call ConnectUser(UserIndex, user_name, CuentaEmail)
 
@@ -1435,28 +1426,67 @@ Private Sub HandleLoginNewChar(ByVal UserIndex As Integer)
 
         On Error GoTo ErrHandler
 
-        Dim UserName As String
+
+        Dim UserName    As String
+        Dim CuentaEmail As String
+        Dim Version     As String
+        Dim MD5         As String
+        Dim encrypted_session_token As String
+        Dim encrypted_username As String
         Dim race     As e_Raza
         Dim gender   As e_Genero
         Dim Hogar    As e_Ciudad
         Dim Class As e_Class
         Dim Head        As Integer
-        Dim CuentaEmail As String
-        Dim Password    As String
-        Dim MD5         As String
-        Dim Version     As String
+        
+         
+        encrypted_session_token = Reader.ReadString8
+        encrypted_username = Reader.ReadString8
+        
+106     Version = CStr(Reader.ReadInt8()) & "." & CStr(Reader.ReadInt8()) & "." & CStr(Reader.ReadInt8())
+114     MD5 = Reader.ReadString8()
 
-102         CuentaEmail = Reader.ReadString8()
-104         Password = Reader.ReadString8()
-106         Version = CStr(Reader.ReadInt8()) & "." & CStr(Reader.ReadInt8()) & "." & CStr(Reader.ReadInt8())
-108         UserName = Reader.ReadString8()
-110         race = Reader.ReadInt8()
-112         gender = Reader.ReadInt8()
-114         Class = Reader.ReadInt8()
-116         Head = Reader.ReadInt16()
-118         Hogar = Reader.ReadInt8()
-124         MD5 = Reader.ReadString8()
+110     race = Reader.ReadInt8()
+112     gender = Reader.ReadInt8()
+113     Class = Reader.ReadInt8()
+116     Head = Reader.ReadInt16()
+118     Hogar = Reader.ReadInt8()
 
+        If Len(encrypted_session_token) <> 88 Then
+            Call WriteShowMessageBox(UserIndex, "Cliente inválido, por favor realice una actualización.")
+            Exit Sub
+        End If
+
+        Dim encrypted_session_token_byte() As Byte
+        Call AO20CryptoSysWrapper.Str2ByteArr(encrypted_session_token, encrypted_session_token_byte)
+        
+        Dim decrypted_session_token As String
+        decrypted_session_token = AO20CryptoSysWrapper.DECRYPT("7061626C6F6D61727175657A41524731", cnvStringFromHexStr(cnvToHex(encrypted_session_token_byte)))
+                
+            ' Para recibir el ID del user
+        Dim RS As ADODB.Recordset
+        Set RS = Query("select * from tokens where encrypted_token = '" & encrypted_session_token & "'")
+                
+        If RS Is Nothing Then
+            Call WriteShowMessageBox(UserIndex, "Cliente inválido, por favor realice una actualización.")
+120             Call CloseSocket(UserIndex)
+            Exit Sub
+        End If
+        
+        CuentaEmail = CStr(RS!UserName)
+        
+        If RS!encrypted_token = encrypted_session_token Then
+            UserList(UserIndex).encrypted_session_token = encrypted_session_token
+            UserList(UserIndex).decrypted_session_token = decrypted_session_token
+            UserList(UserIndex).public_key = mid(decrypted_session_token, 1, 16)
+        Else
+            Call WriteShowMessageBox(UserIndex, "Cliente inválido, por favor realice una actualización.")
+121             Call CloseSocket(UserIndex)
+            Exit Sub
+        End If
+        
+        UserName = AO20CryptoSysWrapper.DECRYPT(cnvHexStrFromString(UserList(UserIndex).public_key), encrypted_username)
+    
 126     If PuedeCrearPersonajes = 0 Then
 128         Call WriteShowMessageBox(UserIndex, "La creacion de personajes en este servidor se ha deshabilitado.")
 130         Call CloseSocket(UserIndex)
@@ -1492,15 +1522,14 @@ Private Sub HandleLoginNewChar(ByVal UserIndex As Integer)
             End If
             
         End If
-
-156     If Not EntrarCuenta(UserIndex, CuentaEmail, Password, MD5) Then
-158         Call CloseSocket(UserIndex)
-            Exit Sub
-
-        End If
         
 160     If GetPersonajesCountByIDDatabase(UserList(UserIndex).AccountID) >= MAX_PERSONAJES Then
 162         Call CloseSocket(UserIndex)
+            Exit Sub
+        End If
+        
+172     If Not EntrarCuenta(UserIndex, CuentaEmail, MD5) Then
+174         Call CloseSocket(UserIndex)
             Exit Sub
         End If
         
@@ -1509,6 +1538,7 @@ Private Sub HandleLoginNewChar(ByVal UserIndex As Integer)
             Exit Sub
 
         End If
+        
         
         Exit Sub
     
@@ -15334,7 +15364,7 @@ Private Sub HandleIngresarConCuenta(ByVal UserIndex As Integer)
     
             #End If
     
-120         If EntrarCuenta(UserIndex, CuentaEmail, CuentaPassword, MD5) Then
+120         If EntrarCuenta(UserIndex, CuentaEmail, MD5) Then
                 Dim Verificar As Boolean
             
 122             Select Case AOGuard.AOG_STATUS
@@ -15409,7 +15439,7 @@ Private Sub HandleBorrarPJ(ByVal UserIndex As Integer)
                 End If
             #End If
         
-122         If Not EntrarCuenta(UserIndex, CuentaEmail, CuentaPassword, MD5) Then
+122         If Not EntrarCuenta(UserIndex, CuentaEmail, MD5) Then
 124             Call CloseSocket(UserIndex)
                 Exit Sub
             End If
