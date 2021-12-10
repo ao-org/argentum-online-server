@@ -1790,7 +1790,7 @@ Public Sub CargarMapasEspeciales()
 126         ReDim MapasIgnoranLimpieza(0)
         End If
         
-116     Cantidad = val(File.GetValue("MapasEventos", "Cantidad"))
+117     Cantidad = val(File.GetValue("MapasEventos", "Cantidad"))
     
 128     If Cantidad > 0 Then
 130         ReDim MapasEventos(1 To Cantidad)
