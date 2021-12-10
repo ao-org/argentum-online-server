@@ -2018,53 +2018,6 @@ Public Function PersonajePerteneceID(ByVal UserName As String, ByVal AccountID A
     
 End Function
 
-Public Sub ChangePasswordDatabase(ByVal UserIndex As Integer, OldPassword As String, NewPassword As String)
-
-        On Error GoTo ErrorHandler
-
-100     If LenB(NewPassword) = 0 Then
-102         Call WriteConsoleMsg(UserIndex, "Debe especificar una contraseña nueva, inténtelo de nuevo.", e_FontTypeNames.FONTTYPE_INFO)
-            Exit Sub
-
-        End If
-    
-        Dim RS As ADODB.Recordset
-        Set RS = Query("SELECT password, salt FROM account WHERE id = ?;", UserList(UserIndex).AccountID)
-    
-106     If RS Is Nothing Then
-108         Call WriteConsoleMsg(UserIndex, "No se ha podido cambiar la contraseña por un error interno. Avise a un administrador.", e_FontTypeNames.FONTTYPE_INFO)
-            Exit Sub
-
-        End If
-    
-110     If Not PasswordValida(OldPassword, RS!Password, RS!Salt) Then
-112         Call WriteConsoleMsg(UserIndex, "La contraseña actual proporcionada no es correcta. La contraseña no ha sido cambiada, inténtelo de nuevo.", e_FontTypeNames.FONTTYPE_INFO)
-            Exit Sub
-
-        End If
-    
-        Dim Salt As String * 10
-114         Salt = RandomString(10) ' Alfanumerico
-    
-        Dim oSHA256 As CSHA256
-116     Set oSHA256 = New CSHA256
-
-        Dim PasswordHash As String * 64
-118         PasswordHash = oSHA256.SHA256(NewPassword & Salt)
-    
-120     Set oSHA256 = Nothing
-        
-        Call Execute("UPDATE account SET password = ?, salt = ? WHERE id = ?;", PasswordHash, Salt, UserList(UserIndex).AccountID)
-
-124     Call WriteConsoleMsg(UserIndex, "La contraseña de su cuenta fue cambiada con éxito.", e_FontTypeNames.FONTTYPE_INFO)
-    
-        Exit Sub
-
-ErrorHandler:
-126     Call LogDatabaseError("Error in ChangePasswordDatabase. Username: " & UserList(UserIndex).Name & ". " & Err.Number & " - " & Err.Description)
-
-End Sub
-
 Public Function SetPositionDatabase(UserName As String, ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer) As Boolean
         On Error GoTo ErrorHandler
 

@@ -287,7 +287,6 @@ Private Enum ClientPacketID
     ChangeDescription       '/DESC
     GuildVote               '/VOTO
     punishments             '/PENAS
-    ChangePassword          '/Contraseña
     Gamble                  '/APOSTAR
     InquiryVote             '/ENCUESTA ( with parameters )
     LeaveFaction            '/RETIRAR ( with no arguments )
@@ -848,8 +847,6 @@ On Error Resume Next
             Call HandleGuildVote(UserIndex)
         Case ClientPacketID.punishments
             Call HandlePunishments(UserIndex)
-        Case ClientPacketID.ChangePassword
-            Call HandleChangePassword(UserIndex)
         Case ClientPacketID.Gamble
             Call HandleGamble(UserIndex)
         Case ClientPacketID.InquiryVote
@@ -6975,41 +6972,6 @@ ErrHandler:
 
 End Sub
 
-''
-' Handles the "ChangePassword" message.
-'
-' @param    UserIndex The index of the user sending the message.
-
-Private Sub HandleChangePassword(ByVal UserIndex As Integer)
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Creation Date: 10/10/07
-        'Last Modified By: Ladder
-        'Ahora cambia la password de la cuenta y no del PJ.
-        '***************************************************
-
-        On Error GoTo ErrHandler
-
-100     With UserList(UserIndex)
-
-            Dim oldPass  As String
-            Dim newPass  As String
-            Dim oldPass2 As String
-
-102         oldPass = Reader.ReadString8()
-104         newPass = Reader.ReadString8()
-
-106         Call ChangePasswordDatabase(UserIndex, SDesencriptar(oldPass), SDesencriptar(newPass))
-
-        End With
-        
-        Exit Sub
-        
-ErrHandler:
-108     Call TraceError(Err.Number, Err.Description, "Protocol.HandleChangePassword", Erl)
-110
-
-End Sub
 
 ''
 ' Handles the "Gamble" message.
