@@ -632,11 +632,11 @@ On Error Resume Next
 
     Set Reader = Message
     
-    'Dim PacketID As Long:
+    Dim PacketID As Long:
     'Dim arr() As Byte
     'Dim crc As Long
     
-    Call Reader.getData(arr)
+    'Call Reader.getData(arr)
     
     PacketID = Reader.ReadInt
     'If PacketID = 21 Then
