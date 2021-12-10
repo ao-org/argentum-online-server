@@ -118,7 +118,6 @@ Public Enum ServerPacketID
     ShowMOTDEditionForm     ' ZMOTD
     ShowGMPanelForm         ' ABPANEL
     UserNameList            ' LISTUSU
-    PersonajesDeCuenta
     UserOnline '110
     ParticleFX
     ParticleFXToFloor
@@ -425,7 +424,6 @@ Private Enum ClientPacketID
     SetSpeed
     GlobalMessage           '/CONSOLA
     GlobalOnOff
-    IngresarConCuenta
     BorrarPJ
     DarLlaveAUsuario
     SacarLlave
@@ -640,7 +638,6 @@ On Error Resume Next
     'Does the packet requires a logged user??
     If Not (PacketID = ClientPacketID.LoginExistingChar Or _
             PacketID = ClientPacketID.LoginNewChar Or _
-            PacketID = ClientPacketID.IngresarConCuenta Or _
             PacketID = ClientPacketID.BorrarPJ Or _
             PacketID = ClientPacketID.GuardNoticeResponse) Then
                
@@ -1118,8 +1115,6 @@ On Error Resume Next
             Call HandleGlobalMessage(UserIndex)
         Case ClientPacketID.GlobalOnOff
             Call HandleGlobalOnOff(UserIndex)
-        Case ClientPacketID.IngresarConCuenta
-            Call HandleIngresarConCuenta(UserIndex)
         Case ClientPacketID.BorrarPJ
             Call HandleBorrarPJ(UserIndex)
         Case ClientPacketID.DarLlaveAUsuario
@@ -15336,82 +15331,6 @@ HandleGlobalOnOff_Err:
         
 End Sub
 
-Private Sub HandleIngresarConCuenta(ByVal UserIndex As Integer)
-
-        On Error GoTo ErrHandler
-
-        Dim Version As String
-    
-100     With UserList(UserIndex)
-
-            Dim CuentaEmail    As String
-            Dim CuentaPassword As String
-            Dim MD5            As String
-        
-102         CuentaEmail = Reader.ReadString8()
-104         CuentaPassword = Reader.ReadString8()
-106         Version = CStr(Reader.ReadInt8()) & "." & CStr(Reader.ReadInt8()) & "." & CStr(Reader.ReadInt8())
-112         MD5 = Reader.ReadString8()
-        
-            #If DEBUGGING = False Then
-    
-114             If Not VersionOK(Version) Then
-116                 Call WriteShowMessageBox(UserIndex, "Esta versión del juego es obsoleta, la versión correcta es la " & ULTIMAVERSION & ". Ejecute el launcher por favor.")
-118                 Call CloseSocket(UserIndex)
-                    Exit Sub
-        
-                End If
-    
-            #End If
-    
-120         If EntrarCuenta(UserIndex, CuentaEmail, MD5) Then
-                Dim Verificar As Boolean
-            
-122             Select Case AOGuard.AOG_STATUS
-                
-                    ' Nunca enviara correo
-                    Case 0
-124                     Verificar = False
-                
-                    ' Enviara correo solo si la IP no coinciden con lo que tenemos en la BD
-126                 Case 1
-128                     Verificar = Not AOGuard.VerificarOrigen(.AccountID, .IP)
-                
-                    ' Enviara correo cada vez que iniciemos sesion
-130                 Case 2
-132                     Verificar = True
-                
-134                 Case Else
-136                     Verificar = True
-                    
-                End Select
-
-138             If Verificar Then
-140                 Call WriteGuardNotice(UserIndex)
-
-                    Call AOGuard.EnviarCodigo(UserIndex)
-                Else
-142                 Call WritePersonajesDeCuenta(UserIndex)
-144                 Call WriteMostrarCuenta(UserIndex)
-                
-                End If
-            
-            Else
-            
-146             Call CloseSocket(UserIndex)
-                Exit Sub
-    
-            End If
-
-        End With
-    
-        Exit Sub
-
-ErrHandler:
-148     Call TraceError(Err.Number, Err.Description, "Protocol.HandleIngresarConCuenta", Erl)
-150
-
-End Sub
 
 Private Sub HandleBorrarPJ(ByVal UserIndex As Integer)
 
@@ -15487,7 +15406,7 @@ Private Sub HandleBorrarPJ(ByVal UserIndex As Integer)
             End If
 
 152         Call BorrarUsuarioDatabase(UserDelete)
-154         Call WritePersonajesDeCuenta(UserIndex)
+154         'Call WritePersonajesDeCuenta(UserIndex)
   
         End With
     
