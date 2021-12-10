@@ -66,6 +66,8 @@ End Enum
 
 Public Md5Cliente           As String
 
+Public PrivateKey           As String
+
 Public HoraMundo            As Long
 
 Public HoraActual           As Integer

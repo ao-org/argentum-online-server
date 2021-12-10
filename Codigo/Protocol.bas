@@ -1347,17 +1347,24 @@ Private Sub HandleLoginExistingChar(ByVal UserIndex As Integer)
         Call AO20CryptoSysWrapper.Str2ByteArr(encrypted_session_token, encrypted_session_token_byte)
         
         Dim decrypted_session_token As String
-        decrypted_session_token = AO20CryptoSysWrapper.DECRYPT("7061626C6F6D61727175657A41524731", cnvStringFromHexStr(cnvToHex(encrypted_session_token_byte)))
+        decrypted_session_token = AO20CryptoSysWrapper.DECRYPT(PrivateKey, cnvStringFromHexStr(cnvToHex(encrypted_session_token_byte)))
                 
-            ' Para recibir el ID del user
+        If Not IsBase64(decrypted_session_token) Then
+            Call WriteShowMessageBox(UserIndex, "Cliente inválido, por favor realice una actualización")
+            Call CloseSocket(UserIndex)
+            Exit Sub
+        End If
+        
+        ' Para recibir el ID del user
         Dim RS As ADODB.Recordset
-        Set RS = Query("select * from tokens where encrypted_token = '" & encrypted_session_token & "'")
+        Set RS = Query("select * from tokens where decrypted_token = '" & decrypted_session_token & "'")
                 
         If RS Is Nothing Then
             Call WriteShowMessageBox(UserIndex, "Cliente inválido, por favor realice una actualización.")
 120             Call CloseSocket(UserIndex)
             Exit Sub
         End If
+        
         CuentaEmail = CStr(RS!UserName)
         If RS!encrypted_token = encrypted_session_token Then
             UserList(UserIndex).encrypted_session_token = encrypted_session_token
@@ -1454,11 +1461,16 @@ Private Sub HandleLoginNewChar(ByVal UserIndex As Integer)
         Call AO20CryptoSysWrapper.Str2ByteArr(encrypted_session_token, encrypted_session_token_byte)
         
         Dim decrypted_session_token As String
-        decrypted_session_token = AO20CryptoSysWrapper.DECRYPT("7061626C6F6D61727175657A41524731", cnvStringFromHexStr(cnvToHex(encrypted_session_token_byte)))
+        decrypted_session_token = AO20CryptoSysWrapper.DECRYPT(PrivateKey, cnvStringFromHexStr(cnvToHex(encrypted_session_token_byte)))
                 
+        If Not IsBase64(decrypted_session_token) Then
+            Call WriteShowMessageBox(UserIndex, "Cliente inválido, por favor realice una actualización")
+            Call CloseSocket(UserIndex)
+            Exit Sub
+        End If
             ' Para recibir el ID del user
         Dim RS As ADODB.Recordset
-        Set RS = Query("select * from tokens where encrypted_token = '" & encrypted_session_token & "'")
+        Set RS = Query("select * from tokens where decrypted_token = '" & decrypted_session_token & "'")
                 
         If RS Is Nothing Then
             Call WriteShowMessageBox(UserIndex, "Cliente inválido, por favor realice una actualización.")

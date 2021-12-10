@@ -1,4 +1,8 @@
 Attribute VB_Name = "AO20CryptoSysWrapper"
+Option Explicit
+
+Public base64_chars(1 To 65) As String
+
 Public Function Encrypt(ByVal hex_key As String, ByVal plain_text As String) As String
     Dim iv() As Byte
     Dim key() As Byte
@@ -108,7 +112,102 @@ Public Function ByteArrayToHex(ByRef ByteArray() As Byte) As String
     ByteArrayToHex = Left$(strRet, Len(strRet) - 1)
 End Function
 
+Public Sub initBase64Chars()
+    base64_chars(1) = "B"
+    base64_chars(2) = "C"
+    base64_chars(3) = "D"
+    base64_chars(4) = "E"
+    base64_chars(5) = "F"
+    base64_chars(6) = "G"
+    base64_chars(7) = "H"
+    base64_chars(8) = "I"
+    base64_chars(9) = "J"
+    base64_chars(10) = "K"
+    base64_chars(11) = "L"
+    base64_chars(12) = "M"
+    base64_chars(13) = "N"
+    base64_chars(14) = "O"
+    base64_chars(15) = "P"
+    base64_chars(16) = "Q"
+    base64_chars(17) = "R"
+    base64_chars(18) = "S"
+    base64_chars(19) = "T"
+    base64_chars(20) = "U"
+    base64_chars(21) = "V"
+    base64_chars(22) = "W"
+    base64_chars(23) = "X"
+    base64_chars(24) = "Y"
+    base64_chars(25) = "Z"
+    base64_chars(26) = "a"
+    base64_chars(27) = "b"
+    base64_chars(28) = "c"
+    base64_chars(29) = "d"
+    base64_chars(30) = "e"
+    base64_chars(31) = "f"
+    base64_chars(32) = "g"
+    base64_chars(33) = "h"
+    base64_chars(34) = "i"
+    base64_chars(35) = "j"
+    base64_chars(36) = "k"
+    base64_chars(37) = "l"
+    base64_chars(38) = "m"
+    base64_chars(39) = "n"
+    base64_chars(40) = "o"
+    base64_chars(41) = "p"
+    base64_chars(42) = "q"
+    base64_chars(43) = "r"
+    base64_chars(44) = "s"
+    base64_chars(45) = "t"
+    base64_chars(46) = "u"
+    base64_chars(47) = "v"
+    base64_chars(48) = "w"
+    base64_chars(49) = "x"
+    base64_chars(50) = "y"
+    base64_chars(51) = "z"
+    base64_chars(52) = "0"
+    base64_chars(53) = "1"
+    base64_chars(54) = "2"
+    base64_chars(55) = "3"
+    base64_chars(56) = "4"
+    base64_chars(57) = "5"
+    base64_chars(58) = "6"
+    base64_chars(59) = "7"
+    base64_chars(60) = "8"
+    base64_chars(61) = "9"
+    base64_chars(62) = "+"
+    base64_chars(63) = "/"
+    base64_chars(64) = "="
+    base64_chars(65) = "A"
+End Sub
 
+Public Function IsBase64(ByVal str As String) As Boolean
+
+    Dim i As Long, j As Long
+    Dim isInStr As Boolean
+    Dim token_char As String
+    
+    For i = 1 To Len(str)
+    
+        isInStr = False
+        token_char = mid(str, i, 1)
+        
+        For j = 1 To UBound(base64_chars)
+            If token_char = base64_chars(j) Then
+                isInStr = True
+                Exit For
+            End If
+        Next j
+        
+        If Not isInStr Then
+            IsBase64 = False
+            Exit Function
+        End If
+        
+    Next i
+    
+    IsBase64 = True
+    
+End Function
 
 
 

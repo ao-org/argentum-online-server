@@ -24,22 +24,6 @@ SEncriptar_Err:
         
 End Function
 
-Public Function SDesencriptar(ByVal Cadena As String) As String
-        
-     On Error GoTo SDesencriptar_Err
-
-
-     SDesencriptar = AO20CryptoSysWrapper.DECRYPT("7061626C6F6D61727175657A41524731", Cadena)
-     DoEvents
-
-    
-    Exit Function
-
-SDesencriptar_Err:
-112     Call TraceError(Err.Number, Err.Description, "ModEncrypt.SDesencriptar", Erl)
-114
-        
-End Function
 
 ' GSZAO - Encriptación basica y rapida para Strings
 Public Function RndCrypt(ByVal str As String, ByVal Password As String) As String

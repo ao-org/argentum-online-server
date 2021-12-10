@@ -2199,6 +2199,7 @@ Sub LoadSini()
         'Misc
 106     BootDelBackUp = val(Lector.GetValue("INIT", "IniciarDesdeBackUp"))
 108     Md5Cliente = Lector.GetValue("CHECKSUM", "Cliente")
+109     PrivateKey = Lector.GetValue("CryptoAES", "PrivateKey")
     
         'Directorios
 110     DatPath = Lector.GetValue("DIRECTORIOS", "DatPath")
