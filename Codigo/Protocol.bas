@@ -185,6 +185,7 @@ Public Enum ServerPacketID
     ObjQuestListSend
     UpdateBankGld
     PelearConPezEspecial
+    Privilegios
     [PacketCount]
 End Enum
 

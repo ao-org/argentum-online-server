@@ -2474,7 +2474,7 @@ WriteOxigeno_Err:
 End Sub
 
 Public Sub WriteContadores(ByVal UserIndex As Integer)
-        '<EhHeader>
+ '<EhHeader>
         On Error GoTo WriteContadores_Err
         '</EhHeader>
 100     Call Writer.WriteInt(ServerPacketID.Contadores)
@@ -2487,6 +2487,7 @@ Public Sub WriteContadores(ByVal UserIndex As Integer)
         End If
 
 110     Call Writer.WriteInt16(UserList(UserIndex).flags.DuracionEfecto)
+        
 112     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub
@@ -2494,6 +2495,31 @@ Public Sub WriteContadores(ByVal UserIndex As Integer)
 WriteContadores_Err:
         Call Writer.Clear
         Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteContadores", Erl)
+        '</EhFooter>
+        
+End Sub
+
+
+Public Sub WritePrivilegios(ByVal UserIndex As Integer)
+
+        '<EhHeader>
+        On Error GoTo WritePrivilegios_Err
+        '</EhHeader>
+100     Call Writer.WriteInt(ServerPacketID.Privilegios)
+        
+        If UserList(UserIndex).flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios Or e_PlayerType.Consejero) Then
+            Call Writer.WriteBool(True)
+        Else
+            Call Writer.WriteBool(False)
+        End If
+        
+112     Call modSendData.SendData(ToIndex, UserIndex)
+        '<EhFooter>
+        Exit Sub
+
+WritePrivilegios_Err:
+        Call Writer.Clear
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WritePrivilegios", Erl)
         '</EhFooter>
 End Sub
 
