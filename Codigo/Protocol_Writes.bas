@@ -3386,51 +3386,6 @@ WritePong_Err:
         '</EhFooter>
 End Sub
 
-Public Sub WritePersonajesDeCuenta(ByVal UserIndex As Integer)
-        '<EhHeader>
-        On Error GoTo WritePersonajesDeCuenta_Err
-        '</EhHeader>
-
-        Dim UserCuenta                     As String
-
-        Dim CantPersonajes                 As Byte
-
-        Dim Personaje(1 To MAX_PERSONAJES) As t_PersonajeCuenta
-
-        Dim i                              As Byte
-
-100     UserCuenta = UserList(UserIndex).Cuenta
-
-104     CantPersonajes = GetPersonajesCuentaDatabase(UserList(UserIndex).AccountID, Personaje)
-
-134     Call Writer.WriteInt(ServerPacketID.PersonajesDeCuenta)
-136     Call Writer.WriteInt8(CantPersonajes)
-
-138     For i = 1 To CantPersonajes
-140         Call Writer.WriteString8(Personaje(i).nombre)
-142         Call Writer.WriteInt8(Personaje(i).nivel)
-144         Call Writer.WriteInt16(Personaje(i).Mapa)
-146         Call Writer.WriteInt16(Personaje(i).posX)
-148         Call Writer.WriteInt16(Personaje(i).posY)
-150         Call Writer.WriteInt16(Personaje(i).cuerpo)
-152         Call Writer.WriteInt16(Personaje(i).Cabeza)
-154         Call Writer.WriteInt8(Personaje(i).Status)
-156         Call Writer.WriteInt8(Personaje(i).clase)
-158         Call Writer.WriteInt16(Personaje(i).Casco)
-160         Call Writer.WriteInt16(Personaje(i).Escudo)
-162         Call Writer.WriteInt16(Personaje(i).Arma)
-164         Call Writer.WriteString8(modGuilds.GuildName(Personaje(i).ClanIndex))
-166     Next i
-
-168     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
-        Exit Sub
-
-WritePersonajesDeCuenta_Err:
-        Call Writer.Clear
-        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WritePersonajesDeCuenta", Erl)
-        '</EhFooter>
-End Sub
 
 Public Sub WriteGoliathInit(ByVal UserIndex As Integer)
         '<EhHeader>
