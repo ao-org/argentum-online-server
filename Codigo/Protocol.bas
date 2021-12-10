@@ -632,9 +632,19 @@ On Error Resume Next
 
     Set Reader = Message
     
-    Dim PacketID As Long:
+    'Dim PacketID As Long:
+    'Dim arr() As Byte
+    'Dim crc As Long
+    
+    Call Reader.getData(arr)
+    
     PacketID = Reader.ReadInt
+    'If PacketID = 21 Then
+        'Reader.getData
+    '    crc = crcBytes(arr)
+    'End If
 
+    
     'Does the packet requires a logged user??
     If Not (PacketID = ClientPacketID.LoginExistingChar Or _
             PacketID = ClientPacketID.LoginNewChar Or _
@@ -698,7 +708,7 @@ On Error Resume Next
         Case ClientPacketID.Drop
             Call HandleDrop(UserIndex)
         Case ClientPacketID.CastSpell
-            Call HandleCastSpell(UserIndex)
+            Call HandleCastSpell(UserIndex) ', crc)
         Case ClientPacketID.LeftClick
             Call HandleLeftClick(UserIndex)
         Case ClientPacketID.DoubleClick
@@ -2640,21 +2650,41 @@ End Sub
 '
 ' @param    UserIndex The index of the user sending the message.
 
-Private Sub HandleCastSpell(ByVal UserIndex As Integer)
+Private Sub HandleCastSpell(ByVal UserIndex As Integer) ', ByVal server_crc As Long)
         
         On Error GoTo HandleCastSpell_Err
-
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
-
+        
+        
+        
 100     With UserList(UserIndex)
 
+            
             Dim Spell As Byte
-102             Spell = Reader.ReadInt8()
-        
+102         Spell = Reader.ReadInt8()
+
+            Dim actualPacket_ts As Long
+            actualPacket_ts = Reader.ReadInt64
+            
+            'Dim client_packet_crc As Long
+            'client_packet_crc = Reader.ReadInt64
+            
+           ' If server_crc <> client_packet_crc Then
+           '     If actualPacket_ts <= .PacketTimers.TS_CastSpell Then
+           '         Call WriteShowMessageBox(UserIndex, "Se te cerró por GordonSui")
+           '         Call CloseSocket(UserIndex)
+           '     End If
+           ' End If
+            
+            If .PacketTimers.TS_CastSpell > 0 Then
+                If actualPacket_ts <= .PacketTimers.TS_CastSpell Then
+                    Call WriteShowMessageBox(UserIndex, "Se te cerró por GordonSui")
+                    Call CloseSocket(UserIndex)
+                End If
+            End If
+            
+            .PacketTimers.TS_CastSpell = actualPacket_ts
+            
+            
 104         If .flags.Muerto = 1 Then
                 'Call WriteConsoleMsg(UserIndex, "¡¡Estás muerto!!.", e_FontTypeNames.FONTTYPE_INFO)
 106             Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)

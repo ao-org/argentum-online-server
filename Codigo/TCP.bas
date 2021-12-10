@@ -515,7 +515,7 @@ Function ConnectNewUser(ByVal UserIndex As Integer, ByRef Name As String, ByVal 
 110         If Not ValidarNombre(Name) Then Exit Function
             
 112         If Not NombrePermitido(Name) Then
-114             Call WriteShowMessageBox(UserIndex, "El nombre no está permitido.")
+114             Call WriteShowMessageBox(userindex, "El nombre no está permitido.")
                 Exit Function
             End If
     
@@ -889,7 +889,7 @@ Function EntrarCuenta(ByVal UserIndex As Integer, ByVal CuentaEmail As String, B
         #End If
 
 128     If Not CheckMailString(CuentaEmail) Then
-130         Call WriteShowMessageBox(UserIndex, "Email inválido.")
+130         Call WriteShowMessageBox(userindex, "Email inválido.")
             Exit Function
         End If
     
@@ -926,7 +926,7 @@ Sub ConnectUser(ByVal UserIndex As Integer, _
     
 ErrHandler:
 125     Call TraceError(Err.Number, Err.Description, "TCP.ConnectUser", Erl)
-130     Call WriteShowMessageBox(UserIndex, "El personaje contiene un error. Comuníquese con un miembro del staff.")
+130     Call WriteShowMessageBox(userindex, "El personaje contiene un error. Comuníquese con un miembro del staff.")
 135     Call CloseSocket(UserIndex)
 
 End Sub
@@ -1204,6 +1204,21 @@ ResetGuildInfo_Err:
 112     Call TraceError(Err.Number, Err.Description, "TCP.ResetGuildInfo", Erl)
 
         
+End Sub
+Sub ResetPacketTimers(ByVal userindex As Integer)
+
+        On Error GoTo ResetPacketTimers_Err
+        
+
+100     With UserList(userindex).PacketTimers
+            .TS_CastSpell = 0
+        End With
+        
+        Exit Sub
+
+ResetPacketTimers_Err:
+282     Call TraceError(Err.Number, Err.Description, "TCP.ResetPacketTimers", Erl)
+
 End Sub
 
 Sub ResetUserFlags(ByVal UserIndex As Integer)
