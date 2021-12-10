@@ -1498,6 +1498,43 @@ OpenNPC_Err:
         
 End Function
 
+Function NpcSellsItem(ByVal NpcNumber As Integer, ByVal NroObjeto As Integer) As Boolean
+        
+        On Error GoTo NpcSellsItem_Err
+    
+        Dim Leer As clsIniManager
+100     Set Leer = LeerNPCs
+
+        'If requested index is invalid, abort
+102     If Not Leer.KeyExists("NPC" & NpcNumber) Then
+104         NpcSellsItem = False
+            Exit Function
+        End If
+
+        Dim LoopC As Long
+        Dim ln    As String
+        Dim Field() As String
+        Dim NroItems As Long
+244     NroItems = val(Leer.GetValue("NPC" & NpcNumber, "NROITEMS"))
+            
+            
+246         For LoopC = 1 To NroItems
+248             ln = Leer.GetValue("NPC" & NpcNumber, "Obj" & LoopC)
+                If NroObjeto = val(ReadField(1, ln, 45)) Then
+                    NpcSellsItem = True
+                    Exit Function
+                End If
+254         Next LoopC
+    
+        NpcSellsItem = False
+
+        Exit Function
+
+NpcSellsItem_Err:
+456     Call TraceError(Err.Number, Err.Description, "NPCs.NpcSellsItem", Erl)
+
+        
+End Function
 Sub DoFollow(ByVal NpcIndex As Integer, ByVal UserName As String)
         
         On Error GoTo DoFollow_Err
