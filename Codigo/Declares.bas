@@ -920,6 +920,10 @@ Public Type t_Hechizo
 
 End Type
 
+Public Type t_packetTimer
+    TS_CastSpell As Long
+End Type
+
 Public Type t_UserOBJ
 
     ObjIndex As Integer
@@ -1909,6 +1913,8 @@ Public Type t_User
     public_key As String
     decrypted_session_token As String
     encrypted_session_token As String
+    
+    PacketTimers As t_packetTimer
 End Type
 
 '*********************************************************
