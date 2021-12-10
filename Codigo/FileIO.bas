@@ -3249,18 +3249,33 @@ Public Sub LoadUserIntervals(ByVal UserIndex As Integer)
         On Error GoTo LoadUserIntervals_Err
         
 
-100     With UserList(UserIndex).Intervals
-102         .Arco = IntervaloFlechasCazadores
-104         .Caminar = IntervaloCaminar
-106         .Golpe = IntervaloUserPuedeAtacar
-108         .Magia = IntervaloUserPuedeCastear
-110         .GolpeMagia = IntervaloGolpeMagia
-112         .MagiaGolpe = IntervaloMagiaGolpe
-114         .GolpeUsar = IntervaloGolpeUsar
-116         .TrabajarExtraer = IntervaloTrabajarExtraer
-118         .TrabajarConstruir = IntervaloTrabajarConstruir
-120         .UsarU = IntervaloUserPuedeUsarU
-122         .UsarClic = IntervaloUserPuedeUsarClic
+100     With UserList(UserIndex)
+            If .flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios) Then
+                .Intervals.Arco = 50
+                .Intervals.Caminar = IntervaloCaminar
+                .Intervals.Golpe = 50
+                .Intervals.Magia = 50
+                .Intervals.GolpeMagia = 50
+                .Intervals.MagiaGolpe = 50
+                .Intervals.GolpeUsar = 0
+                .Intervals.TrabajarExtraer = IntervaloTrabajarExtraer
+                .Intervals.TrabajarConstruir = IntervaloTrabajarConstruir
+                .Intervals.UsarU = 50
+                .Intervals.UsarClic = 50
+            Else
+102             .Intervals.Arco = IntervaloFlechasCazadores
+104             .Intervals.Caminar = IntervaloCaminar
+106             .Intervals.Golpe = IntervaloUserPuedeAtacar
+108             .Intervals.Magia = IntervaloUserPuedeCastear
+110             .Intervals.GolpeMagia = IntervaloGolpeMagia
+112             .Intervals.MagiaGolpe = IntervaloMagiaGolpe
+114             .Intervals.GolpeUsar = IntervaloGolpeUsar
+116             .Intervals.TrabajarExtraer = IntervaloTrabajarExtraer
+118             .Intervals.TrabajarConstruir = IntervaloTrabajarConstruir
+120             .Intervals.UsarU = IntervaloUserPuedeUsarU
+122             .Intervals.UsarClic = IntervaloUserPuedeUsarClic
+            
+            End If
 
         End With
 
