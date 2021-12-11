@@ -2647,7 +2647,7 @@ HandleDrop_Err:
 160
         
 End Sub
-Private Function verifyTimeStamp(ByRef TimeStamp As Long, ByRef PacketTimer, ByVal UserIndex As Integer, ByVal PacketName As String) As Boolean
+Private Function verifyTimeStamp(ByRef TimeStamp As Long, ByRef PacketTimer, ByVal UserIndex As Integer, ByVal PacketName As String, Optional DeltaThreshold As Long = 100) As Boolean
     Dim delta As Long
     verifyTimeStamp = False
     delta = (TimeStamp - PacketTimer)
@@ -2661,7 +2661,7 @@ Private Function verifyTimeStamp(ByRef TimeStamp As Long, ByRef PacketTimer, ByV
         End If
         
         'controlamos speedhack/macro
-        If delta < 100 Then
+        If Delta < DeltaThreshold Then
             Call WriteShowMessageBox(UserIndex, "Relajate andá a tomarte un té con Gulfas.")
             Call WriteDisconnect(UserIndex)
             Call CloseSocket(UserIndex)
@@ -3015,7 +3015,7 @@ Private Sub HandleUseItemU(ByVal UserIndex As Integer)
             
             Dim actualPacket_ts As Long
             actualPacket_ts = Reader.ReadInt64
-            If Not verifyTimeStamp(actualPacket_ts, .PacketTimers.TS_UseItemU, UserIndex, "UseItemU") Then Exit Sub
+            If Not verifyTimeStamp(actualPacket_ts, .PacketTimers.TS_UseItemU, UserIndex, "UseItemU", 70) Then Exit Sub
             
 104         If Slot <= UserList(UserIndex).CurrentInventorySlots And Slot > 0 Then
 106             If .Invent.Object(Slot).ObjIndex = 0 Then Exit Sub
