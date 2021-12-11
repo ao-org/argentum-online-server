@@ -922,6 +922,10 @@ End Type
 
 Public Type t_packetTimer
     TS_CastSpell As Long
+    TS_WorkLeftClick As Long
+    TS_LeftClick As Long
+    TS_UseItem As Long
+    TS_UseItemU As Long
 End Type
 
 Public Type t_UserOBJ

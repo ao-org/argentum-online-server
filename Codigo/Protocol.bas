@@ -513,6 +513,7 @@ Private Enum ClientPacketID
     DeleteItem
     FinalizarPescaEspecial
     RomperCania
+    UseItemU
     [PacketCount]
 End Enum
 
@@ -719,6 +720,8 @@ On Error Resume Next
             Call HandleUseSpellMacro(UserIndex)
         Case ClientPacketID.UseItem
             Call HandleUseItem(UserIndex)
+        Case ClientPacketID.UseItemU
+            Call HandleUseItemU(UserIndex)
         Case ClientPacketID.CraftBlacksmith
             Call HandleCraftBlacksmith(UserIndex)
         Case ClientPacketID.CraftCarpenter
@@ -2644,6 +2647,31 @@ HandleDrop_Err:
 160
         
 End Sub
+Private Function verifyTimeStamp(ByRef TimeStamp As Long, ByRef PacketTimer, ByVal UserIndex As Integer, ByVal PacketName As String) As Boolean
+    Dim delta As Long
+    verifyTimeStamp = False
+    delta = (TimeStamp - PacketTimer)
+    If PacketTimer > 0 Then
+        'Controlamos secuencia para ver que no haya paquetes duplicados.
+        If TimeStamp <= PacketTimer Then
+            Call WriteShowMessageBox(UserIndex, "Casi... Probá con otra cosa.")
+            Call CloseSocket(UserIndex)
+            verifyTimeStamp = False
+        End If
+        
+        'controlamos speedhack/macro
+        If delta < 100 Then
+            Call WriteShowMessageBox(UserIndex, "Relajate andá a tomarte un té con Gulfas.")
+            Call CloseSocket(UserIndex)
+            verifyTimeStamp = False
+        End If
+        
+    End If
+    verifyTimeStamp = True
+    Debug.Print "First -> " & PacketTimer & " Current -> " & TimeStamp & " Delta -> " & (TimeStamp - PacketTimer) & "| Packet: " & PacketName
+    PacketTimer = TimeStamp
+End Function
+
 
 ''
 ' Handles the "CastSpell" message.
@@ -2664,25 +2692,18 @@ Private Sub HandleCastSpell(ByVal UserIndex As Integer) ', ByVal server_crc As L
 
             Dim actualPacket_ts As Long
             actualPacket_ts = Reader.ReadInt64
+            If Not verifyTimeStamp(actualPacket_ts, .PacketTimers.TS_CastSpell, UserIndex, "CastSpell") Then Exit Sub
             
-            'Dim client_packet_crc As Long
-            'client_packet_crc = Reader.ReadInt64
+           ' Dim client_packet_crc As Long
+           ' client_packet_crc = Reader.ReadInt64
             
-           ' If server_crc <> client_packet_crc Then
-           '     If actualPacket_ts <= .PacketTimers.TS_CastSpell Then
-           '         Call WriteShowMessageBox(UserIndex, "Se te cerró por GordonSui")
-           '         Call CloseSocket(UserIndex)
-           '     End If
-           ' End If
             
-            If .PacketTimers.TS_CastSpell > 0 Then
-                If actualPacket_ts <= .PacketTimers.TS_CastSpell Then
-                    Call WriteShowMessageBox(UserIndex, "Se te cerró por GordonSui")
-                    Call CloseSocket(UserIndex)
-                End If
-            End If
-            
-            .PacketTimers.TS_CastSpell = actualPacket_ts
+            'If server_crc <> client_packet_crc Then
+            '    If actualPacket_ts <= .PacketTimers.TS_CastSpell Then
+            '        Call WriteShowMessageBox(UserIndex, "Se te cerró por GordonSui")
+            '        Call CloseSocket(UserIndex)
+            '    End If
+            'End If
             
             
 104         If .flags.Muerto = 1 Then
@@ -2755,7 +2776,11 @@ Private Sub HandleLeftClick(ByVal UserIndex As Integer)
         
 102         X = Reader.ReadInt8()
 104         Y = Reader.ReadInt8()
-        
+            
+            Dim actualPacket_ts As Long
+            actualPacket_ts = Reader.ReadInt64
+            If Not verifyTimeStamp(actualPacket_ts, .PacketTimers.TS_LeftClick, UserIndex, "LeftClick") Then Exit Sub
+            
 106         Call LookatTile(UserIndex, .Pos.Map, X, Y)
 
         End With
@@ -2949,8 +2974,12 @@ Private Sub HandleUseItem(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             Dim Slot As Byte
-102             Slot = Reader.ReadInt8()
-        
+102         Slot = Reader.ReadInt8()
+            
+            Dim actualPacket_ts As Long
+            actualPacket_ts = Reader.ReadInt64
+            If Not verifyTimeStamp(actualPacket_ts, .PacketTimers.TS_UseItem, UserIndex, "UseItem") Then Exit Sub
+            
 104         If Slot <= UserList(UserIndex).CurrentInventorySlots And Slot > 0 Then
 106             If .Invent.Object(Slot).ObjIndex = 0 Then Exit Sub
 
@@ -2964,6 +2993,41 @@ Private Sub HandleUseItem(ByVal UserIndex As Integer)
 
 HandleUseItem_Err:
 110     Call TraceError(Err.Number, Err.Description, "Protocol.HandleUseItem", Erl)
+112
+        
+End Sub
+
+''
+' Handles the "UseItem" message.
+'
+' @param    UserIndex The index of the user sending the message.
+
+Private Sub HandleUseItemU(ByVal UserIndex As Integer)
+        
+        On Error GoTo HandleUseItemU_Err
+    
+100     With UserList(UserIndex)
+
+            Dim Slot As Byte
+102         Slot = Reader.ReadInt8()
+            
+            Dim actualPacket_ts As Long
+            actualPacket_ts = Reader.ReadInt64
+            If Not verifyTimeStamp(actualPacket_ts, .PacketTimers.TS_UseItemU, UserIndex, "UseItemU") Then Exit Sub
+            
+104         If Slot <= UserList(UserIndex).CurrentInventorySlots And Slot > 0 Then
+106             If .Invent.Object(Slot).ObjIndex = 0 Then Exit Sub
+
+108             Call UseInvItem(UserIndex, Slot)
+                
+            End If
+
+        End With
+
+        Exit Sub
+
+HandleUseItemU_Err:
+110     Call TraceError(Err.Number, Err.Description, "Protocol.HandleUseItemU", Erl)
 112
         
 End Sub
@@ -3106,6 +3170,11 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 104         Y = Reader.ReadInt8()
             
 106         Skill = Reader.ReadInt8()
+
+            
+            Dim actualPacket_ts As Long
+            actualPacket_ts = Reader.ReadInt64
+            If Not verifyTimeStamp(actualPacket_ts, .PacketTimers.TS_WorkLeftClick, UserIndex, "WorkLeftClick") Then Exit Sub
 
             .Trabajo.Target_X = X
             .Trabajo.Target_Y = Y
