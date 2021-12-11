@@ -2655,6 +2655,7 @@ Private Function verifyTimeStamp(ByRef TimeStamp As Long, ByRef PacketTimer, ByV
         'Controlamos secuencia para ver que no haya paquetes duplicados.
         If TimeStamp <= PacketTimer Then
             Call WriteShowMessageBox(UserIndex, "Casi... Probá con otra cosa.")
+            Call WriteDisconnect(UserIndex)
             Call CloseSocket(UserIndex)
             verifyTimeStamp = False
         End If
@@ -2662,6 +2663,7 @@ Private Function verifyTimeStamp(ByRef TimeStamp As Long, ByRef PacketTimer, ByV
         'controlamos speedhack/macro
         If delta < 100 Then
             Call WriteShowMessageBox(UserIndex, "Relajate andá a tomarte un té con Gulfas.")
+            Call WriteDisconnect(UserIndex)
             Call CloseSocket(UserIndex)
             verifyTimeStamp = False
         End If
