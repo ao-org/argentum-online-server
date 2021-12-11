@@ -7,7 +7,7 @@ CuentasPath=..\re20-server\cuentas\
 DeleteCuentasPath=..\re20-server\DeleteCuentas\
 
 [CHECKSUM]
-Cliente=1042b1c1ed8af4a5a333d1dfa20bff69
+Cliente=0476d93b498f1851ac46cfc752d9e4c7
 
 [INIT]
 NumCuentas=5
