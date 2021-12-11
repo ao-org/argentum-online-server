@@ -1347,8 +1347,8 @@ Private Sub HandleLoginExistingChar(ByVal UserIndex As Integer)
         
         encrypted_session_token = Reader.ReadString8
         encrypted_username = Reader.ReadString8
-106     Version = CStr(Reader.ReadInt8()) & "." & CStr(Reader.ReadInt8()) & "." & CStr(Reader.ReadInt8())
-114     MD5 = Reader.ReadString8()
+        Version = CStr(Reader.ReadInt8()) & "." & CStr(Reader.ReadInt8()) & "." & CStr(Reader.ReadInt8())
+        MD5 = Reader.ReadString8()
 
         If Len(encrypted_session_token) <> 88 Then
             Call WriteShowMessageBox(UserIndex, "Cliente inválido, por favor realice una actualización.")
@@ -1374,7 +1374,7 @@ Private Sub HandleLoginExistingChar(ByVal UserIndex As Integer)
                 
         If RS Is Nothing Then
             Call WriteShowMessageBox(UserIndex, "Cliente inválido, por favor realice una actualización.")
-120             Call CloseSocket(UserIndex)
+            Call CloseSocket(UserIndex)
             Exit Sub
         End If
         
@@ -1385,44 +1385,42 @@ Private Sub HandleLoginExistingChar(ByVal UserIndex As Integer)
             UserList(UserIndex).public_key = mid(decrypted_session_token, 1, 16)
         Else
             Call WriteShowMessageBox(UserIndex, "Cliente inválido, por favor realice una actualización.")
-121             Call CloseSocket(UserIndex)
+            Call CloseSocket(UserIndex)
             Exit Sub
         End If
         
         user_name = AO20CryptoSysWrapper.DECRYPT(cnvHexStrFromString(UserList(UserIndex).public_key), encrypted_username)
         #If DEBUGGING = False Then
 
-116         If Not VersionOK(Version) Then
-118             Call WriteShowMessageBox(UserIndex, "Esta versión del juego es obsoleta, la versión correcta es la " & ULTIMAVERSION & ". Ejecute el launcher por favor.")
-120             Call CloseSocket(UserIndex)
+            If Not VersionOK(Version) Then
+                Call WriteShowMessageBox(UserIndex, "Esta versión del juego es obsoleta, la versión correcta es la " & ULTIMAVERSION & ". Ejecute el launcher por favor.")
+                Call CloseSocket(UserIndex)
                 Exit Sub
 
             End If
 
         #End If
         
-122   '  If EsGmChar(UserName) Then
+   '  If EsGmChar(UserName) Then
       '
-124   '      If AdministratorAccounts(UCase$(UserName)) <> UCase$(CuentaEmail) Then
-130   '          Call CloseSocket(UserIndex)
+   '      If AdministratorAccounts(UCase$(UserName)) <> UCase$(CuentaEmail) Then
+   '          Call CloseSocket(UserIndex)
       '          Exit Sub
       '      End If
       '
       '  End If
  
-132     If Not EntrarCuenta(UserIndex, CuentaEmail, MD5) Then
-134         Call CloseSocket(UserIndex)
+        If Not EntrarCuenta(UserIndex, CuentaEmail, MD5) Then
+            Call CloseSocket(UserIndex)
             Exit Sub
         End If
     
-180     Call ConnectUser(UserIndex, user_name, CuentaEmail)
+        Call ConnectUser(UserIndex, user_name, CuentaEmail)
 
         Exit Sub
     
 ErrHandler:
-        
-182     Call TraceError(Err.Number, Err.Description, "Protocol.HandleLoginExistingChar", Erl)
-184
+        Call TraceError(Err.Number, Err.Description, "Protocol.HandleLoginExistingChar", Erl)
 
 End Sub
 
@@ -2648,9 +2646,9 @@ HandleDrop_Err:
         
 End Sub
 Private Function verifyTimeStamp(ByRef TimeStamp As Long, ByRef PacketTimer, ByVal UserIndex As Integer, ByVal PacketName As String, Optional DeltaThreshold As Long = 100) As Boolean
-    Dim delta As Long
+    Dim Delta As Long
     verifyTimeStamp = False
-    delta = (TimeStamp - PacketTimer)
+    Delta = (TimeStamp - PacketTimer)
     If PacketTimer > 0 Then
         'Controlamos secuencia para ver que no haya paquetes duplicados.
         If TimeStamp <= PacketTimer Then
@@ -7573,7 +7571,7 @@ Private Sub HandleGMMessage(ByVal UserIndex As Integer)
                     'Analize chat...
 110                 Call Statistics.ParseChat(Message)
             
-112                 Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(.Name & " » " & message, e_FontTypeNames.FONTTYPE_GMMSG))
+112                 Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(.Name & " » " & Message, e_FontTypeNames.FONTTYPE_GMMSG))
 
                 End If
 
@@ -12323,7 +12321,7 @@ Private Sub HandleBanIP(ByVal UserIndex As Integer)
         On Error GoTo ErrHandler
     
         Dim tUser As Integer
-        Dim bannedIP As String
+        Dim bannedip As String
         
 100     With UserList(UserIndex)
         
@@ -12335,7 +12333,7 @@ Private Sub HandleBanIP(ByVal UserIndex As Integer)
             
                 ' Me fijo que tenga formato valido
 108             If IsValidIPAddress(NickOrIP) Then
-110                 bannedIP = NickOrIP
+110                 bannedip = NickOrIP
                 Else
 112                 Call WriteConsoleMsg(UserIndex, "La IP " & NickOrIP & " no tiene un formato válido.", e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
@@ -12349,12 +12347,12 @@ Private Sub HandleBanIP(ByVal UserIndex As Integer)
 118                 Call WriteConsoleMsg(UserIndex, "El personaje no está online.", e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 Else
-120                 bannedIP = UserList(tUser).IP
+120                 bannedip = UserList(tUser).IP
                 End If
             
             End If
          
-122         If LenB(bannedIP) = 0 Then Exit Sub
+122         If LenB(bannedip) = 0 Then Exit Sub
         
 124         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios)) = 0 Then
 126             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
@@ -12362,13 +12360,13 @@ Private Sub HandleBanIP(ByVal UserIndex As Integer)
             End If
         
       
-128         If IP_Blacklist.Exists(bannedIP) Then
-130             Call WriteConsoleMsg(UserIndex, "La IP " & bannedIP & " ya se encuentra en la lista negra de IPs.", e_FontTypeNames.FONTTYPE_INFO)
+128         If IP_Blacklist.Exists(bannedip) Then
+130             Call WriteConsoleMsg(UserIndex, "La IP " & bannedip & " ya se encuentra en la lista negra de IPs.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
             End If
                 
-132         Call BanearIP(UserIndex, NickOrIP, bannedIP)
+132         Call BanearIP(UserIndex, NickOrIP, bannedip)
         
 134         Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(.Name & " baneó la IP " & bannedip & " por " & Reason, e_FontTypeNames.FONTTYPE_FIGHT))
         
@@ -12379,7 +12377,7 @@ Private Sub HandleBanIP(ByVal UserIndex As Integer)
 
 138             If UserList(i).ConnIDValida Then
             
-140                 If UserList(i).IP = bannedIP Then
+140                 If UserList(i).IP = bannedip Then
                 
 142                     Call WriteCerrarleCliente(i)
 144                     Call CloseSocket(i)
@@ -12411,20 +12409,20 @@ Private Sub HandleUnbanIP(ByVal UserIndex As Integer)
 
 100     With UserList(UserIndex)
         
-            Dim bannedIP As String
+            Dim bannedip As String
         
-102         bannedIP = Reader.ReadInt8() & "."
-104         bannedIP = bannedIP & Reader.ReadInt8() & "."
-106         bannedIP = bannedIP & Reader.ReadInt8() & "."
-108         bannedIP = bannedIP & Reader.ReadInt8()
+102         bannedip = Reader.ReadInt8() & "."
+104         bannedip = bannedip & Reader.ReadInt8() & "."
+106         bannedip = bannedip & Reader.ReadInt8() & "."
+108         bannedip = bannedip & Reader.ReadInt8()
         
 110         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios)) = 0 Then Exit Sub
         
-112         If IP_Blacklist.Exists(bannedIP) Then
-114             Call DesbanearIP(bannedIP, UserIndex)
-116             Call WriteConsoleMsg(UserIndex, "La IP """ & bannedIP & """ se ha quitado de la lista de bans.", e_FontTypeNames.FONTTYPE_INFO)
+112         If IP_Blacklist.Exists(bannedip) Then
+114             Call DesbanearIP(bannedip, UserIndex)
+116             Call WriteConsoleMsg(UserIndex, "La IP """ & bannedip & """ se ha quitado de la lista de bans.", e_FontTypeNames.FONTTYPE_INFO)
             Else
-118             Call WriteConsoleMsg(UserIndex, "La IP """ & bannedIP & """ NO se encuentra en la lista de bans.", e_FontTypeNames.FONTTYPE_INFO)
+118             Call WriteConsoleMsg(UserIndex, "La IP """ & bannedip & """ NO se encuentra en la lista de bans.", e_FontTypeNames.FONTTYPE_INFO)
 
             End If
 
