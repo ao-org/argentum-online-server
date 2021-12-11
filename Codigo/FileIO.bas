@@ -2183,7 +2183,12 @@ ErrorHandler:
 396     Call TraceError(Err.Number, Err.Description, "ES.CargarMapaFormatoCSM", Erl)
     
 End Sub
-
+Sub LoadPrivateKey()
+    Dim MyLine As String
+    Open App.Path & "\..\ao20-ComputePK\crypto-hex.txt" For Input As #1
+    Line Input #1, PrivateKey
+Close #1
+End Sub
 Sub LoadSini()
         On Error GoTo LoadSini_Err
 
@@ -2199,7 +2204,6 @@ Sub LoadSini()
         'Misc
 106     BootDelBackUp = val(Lector.GetValue("INIT", "IniciarDesdeBackUp"))
 108     Md5Cliente = Lector.GetValue("CHECKSUM", "Cliente")
-109     PrivateKey = Lector.GetValue("CryptoAES", "PrivateKey")
     
         'Directorios
 110     DatPath = Lector.GetValue("DIRECTORIOS", "DatPath")

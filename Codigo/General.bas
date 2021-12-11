@@ -617,6 +617,7 @@ Sub Main()
     
 130     MaxUsers = 0
 132     Call LoadSini
+133     Call LoadPrivateKey
 134     Call AOGuard.LoadAOGuardConfiguration
 138     Call LoadConfiguraciones
 140     Call LoadIntervalos
