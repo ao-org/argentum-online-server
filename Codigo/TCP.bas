@@ -515,7 +515,7 @@ Function ConnectNewUser(ByVal UserIndex As Integer, ByRef Name As String, ByVal 
 110         If Not ValidarNombre(Name) Then Exit Function
             
 112         If Not NombrePermitido(Name) Then
-114             Call WriteShowMessageBox(userindex, "El nombre no está permitido.")
+114             Call WriteShowMessageBox(UserIndex, "El nombre no está permitido.")
                 Exit Function
             End If
     
@@ -889,7 +889,7 @@ Function EntrarCuenta(ByVal UserIndex As Integer, ByVal CuentaEmail As String, B
         #End If
 
 128     If Not CheckMailString(CuentaEmail) Then
-130         Call WriteShowMessageBox(userindex, "Email inválido.")
+130         Call WriteShowMessageBox(UserIndex, "Email inválido.")
             Exit Function
         End If
     
@@ -926,7 +926,7 @@ Sub ConnectUser(ByVal UserIndex As Integer, _
     
 ErrHandler:
 125     Call TraceError(Err.Number, Err.Description, "TCP.ConnectUser", Erl)
-130     Call WriteShowMessageBox(userindex, "El personaje contiene un error. Comuníquese con un miembro del staff.")
+130     Call WriteShowMessageBox(UserIndex, "El personaje contiene un error. Comuníquese con un miembro del staff.")
 135     Call CloseSocket(UserIndex)
 
 End Sub
@@ -1205,26 +1205,63 @@ ResetGuildInfo_Err:
 
         
 End Sub
-Sub ResetPacketTimers(ByVal userindex As Integer)
 
-        On Error GoTo ResetPacketTimers_Err
+Sub ResetPacketCounters(ByVal UserIndex As Integer)
+
+        On Error GoTo ResetPacketCounters_Err
+
+100     With UserList(UserIndex).PacketCounters
+            .CastSpell = 0
+            .LeftClick = 0
+            .UseItem = 0
+            .UseItemU = 0
+            .WorkLeftClick = 0
+        End With
         
+        Exit Sub
+        
+ResetPacketCounters_Err:
+282     Call TraceError(Err.Number, Err.Description, "TCP.ResetPacketCounters", Erl)
+
+End Sub
+
+Sub ResetPacketTimer(ByVal UserIndex As Integer)
+
+        On Error GoTo ResetPacketTimer_Err
 
 100     With UserList(userindex).PacketTimers
-            .TS_CastSpell = 0
-            .TS_LeftClick = 0
-            .TS_UseItem = 0
-            .TS_UseItemU = 0
-            .TS_WorkLeftClick = 0
+            .CastSpell = 0
+            .LeftClick = 0
+            .UseItem = 0
+            .UseItemU = 0
+            .WorkLeftClick = 0
         End With
         
         Exit Sub
 
-ResetPacketTimers_Err:
-282     Call TraceError(Err.Number, Err.Description, "TCP.ResetPacketTimers", Erl)
+ResetPacketTimer_Err:
+282     Call TraceError(Err.Number, Err.Description, "TCP.ResetPacketTimer", Erl)
 
 End Sub
 
+Sub ResetMacroIterations(ByVal UserIndex As Integer)
+
+        On Error GoTo ResetMacroIterations_Err
+
+100     With UserList(UserIndex).MacroIterations
+            .CastSpell = 0
+            .LeftClick = 0
+            .UseItem = 0
+            .UseItemU = 0
+            .WorkLeftClick = 0
+        End With
+        
+        Exit Sub
+
+ResetMacroIterations_Err:
+282     Call TraceError(Err.Number, Err.Description, "TCP.ResetMacroIterations", Erl)
+
+End Sub
 Sub ResetUserFlags(ByVal UserIndex As Integer)
         '*************************************************
         'Author: Unknown
@@ -1529,7 +1566,9 @@ Sub ResetUserSlot(ByVal UserIndex As Integer)
 136     Call LimpiarComercioSeguro(UserIndex)
 138     Call ResetFacciones(UserIndex)
 140     Call ResetContadores(UserIndex)
-141     Call ResetPacketTimers(UserIndex)
+141     Call ResetPacketCounters(UserIndex)
+143     Call ResetPacketTimer(UserIndex)
+300     Call ResetMacroIterations(UserIndex)
 142     Call ResetCharInfo(UserIndex)
 144     Call ResetBasicUserInfo(UserIndex)
 146     Call ResetUserFlags(UserIndex)

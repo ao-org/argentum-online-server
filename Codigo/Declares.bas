@@ -920,12 +920,29 @@ Public Type t_Hechizo
 
 End Type
 
+
+Public Type t_macroIterations
+    CastSpell As Long
+    WorkLeftClick As Long
+    LeftClick As Long
+    UseItem As Long
+    UseItemU As Long
+End Type
+
 Public Type t_packetTimer
-    TS_CastSpell As Long
-    TS_WorkLeftClick As Long
-    TS_LeftClick As Long
-    TS_UseItem As Long
-    TS_UseItemU As Long
+    CastSpell As Long
+    WorkLeftClick As Long
+    LeftClick As Long
+    UseItem As Long
+    UseItemU As Long
+End Type
+
+Public Type t_packetCounter
+    CastSpell As Long
+    WorkLeftClick As Long
+    LeftClick As Long
+    UseItem As Long
+    UseItemU As Long
 End Type
 
 Public Type t_UserOBJ
@@ -1918,7 +1935,9 @@ Public Type t_User
     decrypted_session_token As String
     encrypted_session_token As String
     
+    MacroIterations As t_macroIterations
     PacketTimers As t_packetTimer
+    PacketCounters As t_packetCounter
 End Type
 
 '*********************************************************
