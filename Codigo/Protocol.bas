@@ -2696,7 +2696,7 @@ Private Sub HandleCastSpell(ByVal UserIndex As Integer) ', ByVal server_crc As L
 102         Spell = Reader.ReadInt8()
 
             Dim actualPacket_ts As Long
-            actualPacket_ts = Reader.ReadInt64
+            actualPacket_ts = Reader.ReadInt32
             If Not verifyTimeStamp(actualPacket_ts, .PacketTimers.TS_CastSpell, UserIndex, "CastSpell") Then Exit Sub
             
            ' Dim client_packet_crc As Long
@@ -2783,7 +2783,7 @@ Private Sub HandleLeftClick(ByVal UserIndex As Integer)
 104         Y = Reader.ReadInt8()
             
             Dim actualPacket_ts As Long
-            actualPacket_ts = Reader.ReadInt64
+            actualPacket_ts = Reader.ReadInt32
             If Not verifyTimeStamp(actualPacket_ts, .PacketTimers.TS_LeftClick, UserIndex, "LeftClick") Then Exit Sub
             
 106         Call LookatTile(UserIndex, .Pos.Map, X, Y)
@@ -2982,7 +2982,7 @@ Private Sub HandleUseItem(ByVal UserIndex As Integer)
 102         Slot = Reader.ReadInt8()
             
             Dim actualPacket_ts As Long
-            actualPacket_ts = Reader.ReadInt64
+            actualPacket_ts = Reader.ReadInt32
             If Not verifyTimeStamp(actualPacket_ts, .PacketTimers.TS_UseItem, UserIndex, "UseItem") Then Exit Sub
             
 104         If Slot <= UserList(UserIndex).CurrentInventorySlots And Slot > 0 Then
@@ -3017,7 +3017,7 @@ Private Sub HandleUseItemU(ByVal UserIndex As Integer)
 102         Slot = Reader.ReadInt8()
             
             Dim actualPacket_ts As Long
-            actualPacket_ts = Reader.ReadInt64
+            actualPacket_ts = Reader.ReadInt32
             If Not verifyTimeStamp(actualPacket_ts, .PacketTimers.TS_UseItemU, UserIndex, "UseItemU", 70) Then Exit Sub
             
 104         If Slot <= UserList(UserIndex).CurrentInventorySlots And Slot > 0 Then
@@ -3178,7 +3178,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 
             
             Dim actualPacket_ts As Long
-            actualPacket_ts = Reader.ReadInt64
+            actualPacket_ts = Reader.ReadInt32
             If Not verifyTimeStamp(actualPacket_ts, .PacketTimers.TS_WorkLeftClick, UserIndex, "WorkLeftClick") Then Exit Sub
 
             .Trabajo.Target_X = X
