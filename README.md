@@ -43,7 +43,7 @@ Importante: Ejecutar uno solo a la vez y esperar a que termine y hacerlo en este
 
 a- Actualizar Recursos
 
-- http://horacio.ao20.com.ar:2095/view/Produccion/job/Recursos-tag-release-cliente/
+- http://horacio.ao20.com.ar:2095/view/Produccion/job/Recursos/
 
 b- Actualizar codigo del cliente (ESTE PIPELINE SE EJECUTA AUTOMATICAMENTE AL CREAR EL TAG)
 
