@@ -2645,36 +2645,41 @@ HandleDrop_Err:
 160
         
 End Sub
-Private Function verifyTimeStamp(ByRef TimeStamp As Long, ByRef PacketTimer, ByVal UserIndex As Integer, ByVal PacketName As String, Optional DeltaThreshold As Long = 100) As Boolean
+Private Function verifyTimeStamp(ByVal ActualCount As Long, ByRef LastCount, ByRef LastTick, ByRef Iterations, ByVal UserIndex As Integer, ByVal PacketName As String, Optional DeltaThreshold As Long = 100) As Boolean
     
-    Dim Delta As Long
-    
+    Dim Ticks As Long, Delta As Long
+    Ticks = GetTickCount
     verifyTimeStamp = False
-    Delta = (TimeStamp - PacketTimer)
     
-    If PacketTimer > 0 Then
-        'Controlamos secuencia para ver que no haya paquetes duplicados.
-        If TimeStamp <= PacketTimer Then
-            Call WriteShowMessageBox(UserIndex, "Casi... Probá con otra cosa.")
-            Call WriteDisconnect(UserIndex)
-            Call CloseSocket(UserIndex)
-            verifyTimeStamp = False
-            Exit Function
-        End If
-        
-        'controlamos speedhack/macro
-        If Delta < DeltaThreshold Then
-            Call WriteShowMessageBox(UserIndex, "Relajate andá a tomarte un té con Gulfas.")
-            Call WriteDisconnect(UserIndex)
-            Call CloseSocket(UserIndex)
-            verifyTimeStamp = False
-            Exit Function
-        End If
-        
+    Delta = (Ticks - LastTick)
+    
+    'Controlamos secuencia para ver que no haya paquetes duplicados.
+    If ActualCount <= LastCount Then
+        'Call WriteShowMessageBox(UserIndex, "Casi... Probá con otra cosa.")
+        Call WriteCerrarleCliente(UserIndex)
+        Call CloseSocket(UserIndex)
+        verifyTimeStamp = False
+        Exit Function
     End If
+    
+    'controlamos speedhack/macro
+    If Delta < DeltaThreshold Then
+        Iterations = Iterations + 1
+        If Iterations >= 5 Then
+            'Call WriteShowMessageBox(UserIndex, "Relajate andá a tomarte un té con Gulfas.")
+            Call WriteCerrarleCliente(UserIndex)
+            Call CloseSocket(UserIndex)
+            verifyTimeStamp = False
+            Exit Function
+        End If
+    Else
+        Iterations = 0
+    End If
+        
     verifyTimeStamp = True
-    Debug.Print "First -> " & PacketTimer & " Current -> " & TimeStamp & " Delta -> " & (TimeStamp - PacketTimer) & "| Packet: " & PacketName
-    PacketTimer = TimeStamp
+    Debug.Print "First -> " & LastTick & " Current -> " & Ticks & " Delta -> " & Delta & "| Packet: " & PacketName
+    LastTick = Ticks
+    LastCount = ActualCount
 End Function
 
 
@@ -2694,10 +2699,8 @@ Private Sub HandleCastSpell(ByVal UserIndex As Integer) ', ByVal server_crc As L
             
             Dim Spell As Byte
 102         Spell = Reader.ReadInt8()
-
-            Dim actualPacket_ts As Long
-            actualPacket_ts = Reader.ReadInt32
-            If Not verifyTimeStamp(actualPacket_ts, .PacketTimers.TS_CastSpell, UserIndex, "CastSpell") Then Exit Sub
+            
+            If Not verifyTimeStamp(Reader.ReadInt32, .PacketCounters.CastSpell, .PacketTimers.CastSpell, .MacroIterations.CastSpell, UserIndex, "CastSpell") Then Exit Sub
             
            ' Dim client_packet_crc As Long
            ' client_packet_crc = Reader.ReadInt64
@@ -2781,10 +2784,9 @@ Private Sub HandleLeftClick(ByVal UserIndex As Integer)
         
 102         X = Reader.ReadInt8()
 104         Y = Reader.ReadInt8()
-            
-            Dim actualPacket_ts As Long
-            actualPacket_ts = Reader.ReadInt32
-            If Not verifyTimeStamp(actualPacket_ts, .PacketTimers.TS_LeftClick, UserIndex, "LeftClick") Then Exit Sub
+            Dim ActualCount As Long
+            ActualCount = Reader.ReadInt32
+            If Not verifyTimeStamp(ActualCount, .PacketCounters.LeftClick, .PacketTimers.LeftClick, .MacroIterations.LeftClick, UserIndex, "LeftClick") Then Exit Sub
             
 106         Call LookatTile(UserIndex, .Pos.Map, X, Y)
 
@@ -2981,9 +2983,7 @@ Private Sub HandleUseItem(ByVal UserIndex As Integer)
             Dim Slot As Byte
 102         Slot = Reader.ReadInt8()
             
-            Dim actualPacket_ts As Long
-            actualPacket_ts = Reader.ReadInt32
-            If Not verifyTimeStamp(actualPacket_ts, .PacketTimers.TS_UseItem, UserIndex, "UseItem") Then Exit Sub
+            If Not verifyTimeStamp(Reader.ReadInt32, .PacketCounters.UseItem, .PacketTimers.UseItem, .MacroIterations.UseItem, UserIndex, "UseItem") Then Exit Sub
             
 104         If Slot <= UserList(UserIndex).CurrentInventorySlots And Slot > 0 Then
 106             If .Invent.Object(Slot).ObjIndex = 0 Then Exit Sub
@@ -3016,9 +3016,7 @@ Private Sub HandleUseItemU(ByVal UserIndex As Integer)
             Dim Slot As Byte
 102         Slot = Reader.ReadInt8()
             
-            Dim actualPacket_ts As Long
-            actualPacket_ts = Reader.ReadInt32
-            If Not verifyTimeStamp(actualPacket_ts, .PacketTimers.TS_UseItemU, UserIndex, "UseItemU", 70) Then Exit Sub
+            If Not verifyTimeStamp(Reader.ReadInt32, .PacketCounters.UseItemU, .PacketTimers.UseItemU, .MacroIterations.UseItemU, UserIndex, "UseItemU", 70) Then Exit Sub
             
 104         If Slot <= UserList(UserIndex).CurrentInventorySlots And Slot > 0 Then
 106             If .Invent.Object(Slot).ObjIndex = 0 Then Exit Sub
@@ -3176,10 +3174,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
             
 106         Skill = Reader.ReadInt8()
 
-            
-            Dim actualPacket_ts As Long
-            actualPacket_ts = Reader.ReadInt32
-            If Not verifyTimeStamp(actualPacket_ts, .PacketTimers.TS_WorkLeftClick, UserIndex, "WorkLeftClick") Then Exit Sub
+            If Not verifyTimeStamp(Reader.ReadInt32, .PacketCounters.WorkLeftClick, .PacketTimers.WorkLeftClick, .MacroIterations.WorkLeftClick, UserIndex, "WorkLeftClick") Then Exit Sub
 
             .Trabajo.Target_X = X
             .Trabajo.Target_Y = Y
