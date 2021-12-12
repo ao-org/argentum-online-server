@@ -1212,6 +1212,10 @@ Sub ResetPacketTimers(ByVal userindex As Integer)
 
 100     With UserList(userindex).PacketTimers
             .TS_CastSpell = 0
+            .TS_LeftClick = 0
+            .TS_UseItem = 0
+            .TS_UseItemU = 0
+            .TS_WorkLeftClick = 0
         End With
         
         Exit Sub
@@ -1525,6 +1529,7 @@ Sub ResetUserSlot(ByVal UserIndex As Integer)
 136     Call LimpiarComercioSeguro(UserIndex)
 138     Call ResetFacciones(UserIndex)
 140     Call ResetContadores(UserIndex)
+141     Call ResetPacketTimers(UserIndex)
 142     Call ResetCharInfo(UserIndex)
 144     Call ResetBasicUserInfo(UserIndex)
 146     Call ResetUserFlags(UserIndex)

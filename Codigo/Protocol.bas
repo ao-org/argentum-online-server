@@ -2646,9 +2646,12 @@ HandleDrop_Err:
         
 End Sub
 Private Function verifyTimeStamp(ByRef TimeStamp As Long, ByRef PacketTimer, ByVal UserIndex As Integer, ByVal PacketName As String, Optional DeltaThreshold As Long = 100) As Boolean
+    
     Dim Delta As Long
+    
     verifyTimeStamp = False
     Delta = (TimeStamp - PacketTimer)
+    
     If PacketTimer > 0 Then
         'Controlamos secuencia para ver que no haya paquetes duplicados.
         If TimeStamp <= PacketTimer Then
@@ -2656,6 +2659,7 @@ Private Function verifyTimeStamp(ByRef TimeStamp As Long, ByRef PacketTimer, ByV
             Call WriteDisconnect(UserIndex)
             Call CloseSocket(UserIndex)
             verifyTimeStamp = False
+            Exit Function
         End If
         
         'controlamos speedhack/macro
@@ -2664,6 +2668,7 @@ Private Function verifyTimeStamp(ByRef TimeStamp As Long, ByRef PacketTimer, ByV
             Call WriteDisconnect(UserIndex)
             Call CloseSocket(UserIndex)
             verifyTimeStamp = False
+            Exit Function
         End If
         
     End If
@@ -7571,7 +7576,7 @@ Private Sub HandleGMMessage(ByVal UserIndex As Integer)
                     'Analize chat...
 110                 Call Statistics.ParseChat(Message)
             
-112                 Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(.Name & " » " & Message, e_FontTypeNames.FONTTYPE_GMMSG))
+112                 Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(.Name & " » " & message, e_FontTypeNames.FONTTYPE_GMMSG))
 
                 End If
 
