@@ -1979,3 +1979,61 @@ Public Function Str2ByteArr(ByVal str As String, ByRef arr() As Byte, Optional B
     
 End Function
 
+Public Function PacketIdToString(ByVal PacketId As Long) As String
+
+    Select Case PacketId
+        Case 1
+            PacketIdToString = "CastSpell"
+            Exit Function
+        Case 2
+            PacketIdToString = "WorkLeftClick"
+            Exit Function
+        Case 3
+            PacketIdToString = "LeftClick"
+            Exit Function
+        Case 4
+            PacketIdToString = "UseItem"
+            Exit Function
+        Case 5
+            PacketIdToString = "UseItemU"
+            Exit Function
+        Case 6
+            PacketIdToString = "Walk"
+            Exit Function
+        Case 7
+            PacketIdToString = "Sailing"
+            Exit Function
+        Case 8
+            PacketIdToString = "Talk"
+            Exit Function
+        Case 9
+            PacketIdToString = "Attack"
+            Exit Function
+        Case 10
+            PacketIdToString = "Drop"
+            Exit Function
+        Case 11
+            PacketIdToString = "Work"
+            Exit Function
+        Case 12
+            PacketIdToString = "EquipItem"
+            Exit Function
+        Case 13
+            PacketIdToString = "GuildMessage"
+            Exit Function
+        Case 14
+            PacketIdToString = "QuestionGM"
+            Exit Function
+    End Select
+    
+End Function
+
+
+
+
+
+
+
+
+
+
