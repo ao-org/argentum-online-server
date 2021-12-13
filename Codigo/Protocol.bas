@@ -1584,8 +1584,16 @@ Private Sub HandleTalk(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             Dim chat As String
-102             chat = Reader.ReadString8()
-
+102         chat = Reader.ReadString8()
+            
+            Dim PacketCounter As Long
+            PacketCounter = Reader.ReadInt32
+                        
+            Dim Packet_ID As Long
+            Packet_ID = PacketNames.Talk
+            
+            If Not verifyTimeStamp(PacketCounter, .PacketCounters(Packet_ID), .PacketTimers(Packet_ID), .MacroIterations(Packet_ID), UserIndex, "Talk", PacketTimerThreshold(Packet_ID), MacroIterations(Packet_ID)) Then Exit Sub
+                        
             '[Consejeros & GMs]
 104         If (.flags.Privilegios And (e_PlayerType.Consejero Or e_PlayerType.SemiDios)) Then
 106             Call LogGM(.Name, "Dijo: " & chat)
@@ -1860,6 +1868,17 @@ Private Sub HandleWalk(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
 102         Heading = Reader.ReadInt8()
+            Dim PacketCount As Long
+            PacketCount = Reader.ReadInt32
+            
+            If .flags.Muerto = 0 Then
+                If .flags.Navegando Then
+                    If Not verifyTimeStamp(PacketCount, .PacketCounters(PacketNames.Sailing), .PacketTimers(PacketNames.Sailing), .MacroIterations(PacketNames.Sailing), UserIndex, "Sailing", PacketTimerThreshold(PacketNames.Sailing), MacroIterations(PacketNames.Sailing)) Then Exit Sub
+                Else
+                    If Not verifyTimeStamp(PacketCount, .PacketCounters(PacketNames.Walk), .PacketTimers(PacketNames.Walk), .MacroIterations(PacketNames.Walk), UserIndex, "Walk", PacketTimerThreshold(PacketNames.Walk), MacroIterations(PacketNames.Walk)) Then Exit Sub
+                End If
+            End If
+            
             
             If .flags.PescandoEspecial Then
                 .Stats.NumObj_PezEspecial = 0
@@ -2044,7 +2063,18 @@ Private Sub HandleAttack(ByVal UserIndex As Integer)
         '***************************************************
         
 100     With UserList(UserIndex)
-    
+        
+        
+            
+            Dim PacketCounter As Long
+            PacketCounter = Reader.ReadInt32
+                        
+            Dim Packet_ID As Long
+            Packet_ID = PacketNames.Attack
+            
+            
+            If Not verifyTimeStamp(PacketCounter, .PacketCounters(Packet_ID), .PacketTimers(Packet_ID), .MacroIterations(Packet_ID), UserIndex, "Attack", PacketTimerThreshold(Packet_ID), MacroIterations(Packet_ID)) Then Exit Sub
+            
             'If dead, can't attack
 102         If .flags.Muerto = 1 Then
 104             Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
@@ -2561,7 +2591,16 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
 
 102         Slot = Reader.ReadInt8()
 104         amount = Reader.ReadInt32()
-
+            
+            Dim PacketCounter As Long
+            PacketCounter = Reader.ReadInt32
+                        
+            Dim Packet_ID As Long
+            Packet_ID = PacketNames.Drop
+            
+            
+            If Not verifyTimeStamp(PacketCounter, .PacketCounters(Packet_ID), .PacketTimers(Packet_ID), .MacroIterations(Packet_ID), UserIndex, "Drop", PacketTimerThreshold(Packet_ID), MacroIterations(Packet_ID)) Then Exit Sub
+            
 106         If Not IntervaloPermiteTirar(UserIndex) Then Exit Sub
 
 108         If amount <= 0 Then Exit Sub
@@ -2645,7 +2684,7 @@ HandleDrop_Err:
 160
         
 End Sub
-Private Function verifyTimeStamp(ByVal ActualCount As Long, ByRef LastCount, ByRef LastTick, ByRef Iterations, ByVal UserIndex As Integer, ByVal PacketName As String, Optional DeltaThreshold As Long = 100) As Boolean
+Private Function verifyTimeStamp(ByVal ActualCount As Long, ByRef LastCount, ByRef LastTick, ByRef Iterations, ByVal UserIndex As Integer, ByVal PacketName As String, Optional ByVal DeltaThreshold As Long = 100, Optional ByVal MaxIterations As Long = 5, Optional ByVal CloseClient As Boolean = False) As Boolean
     
     Dim Ticks As Long, Delta As Long
     Ticks = GetTickCount
@@ -2653,31 +2692,37 @@ Private Function verifyTimeStamp(ByVal ActualCount As Long, ByRef LastCount, ByR
     
     Delta = (Ticks - LastTick)
     
+    'Call SendData(SendTarget.ToAdminsAreaButConsejeros, UserIndex, PrepareMessageConsoleMsg("First -> " & LastTick & " Current -> " & Ticks & " Delta -> " & Delta & "| Packet: " & PacketName, e_FontTypeNames.FONTTYPE_INFO))
+    Debug.Print "First -> " & LastTick & " Current -> " & Ticks & " Delta -> " & Delta & "| Packet: " & PacketName
     'Controlamos secuencia para ver que no haya paquetes duplicados.
     If ActualCount <= LastCount Then
-        'Call WriteShowMessageBox(UserIndex, "Casi... Probá con otra cosa.")
-        Call WriteCerrarleCliente(UserIndex)
-        Call CloseSocket(UserIndex)
+       ' Call CloseSocket(UserIndex)
+        Call SendData(SendTarget.ToAdminsAreaButConsejeros, UserIndex, PrepareMessageConsoleMsg("Paquete grabado: " & PacketName & " | Cuenta: " & UserList(UserIndex).Cuenta & " | Ip: " & UserList(UserIndex).IP & " (Baneado automaticamente)", e_FontTypeNames.FONTTYPE_INFOBOLD))
+        Call BanearIP(0, UserList(UserIndex).Name, UserList(UserIndex).IP, UserList(UserIndex).Cuenta)
         verifyTimeStamp = False
+        LastTick = Ticks
+        LastCount = ActualCount
         Exit Function
     End If
     
     'controlamos speedhack/macro
     If Delta < DeltaThreshold Then
         Iterations = Iterations + 1
-        If Iterations >= 5 Then
-            'Call WriteShowMessageBox(UserIndex, "Relajate andá a tomarte un té con Gulfas.")
-            Call WriteCerrarleCliente(UserIndex)
-            Call CloseSocket(UserIndex)
-            verifyTimeStamp = False
-            Exit Function
+        If Iterations >= MaxIterations Then
+                'Call WriteShowMessageBox(UserIndex, "Relajate andá a tomarte un té con Gulfas.")
+                verifyTimeStamp = False
+                LastTick = Ticks
+                Call SendData(SendTarget.ToAdmins, UserIndex, PrepareMessageConsoleMsg("Control de macro---> El usuario " & UserList(UserIndex).Name & "| Controlar --> " & PacketName & " (Envíos: " & MaxIterations & ").", e_FontTypeNames.FONTTYPE_INFOBOLD))
+                LastCount = ActualCount
+                Iterations = 0
+            Debug.Print "CIERRO CLIENTE"
         End If
+        Exit Function
     Else
         Iterations = 0
     End If
         
     verifyTimeStamp = True
-    Debug.Print "First -> " & LastTick & " Current -> " & Ticks & " Delta -> " & Delta & "| Packet: " & PacketName
     LastTick = Ticks
     LastCount = ActualCount
 End Function
@@ -2699,8 +2744,15 @@ Private Sub HandleCastSpell(ByVal UserIndex As Integer) ', ByVal server_crc As L
             
             Dim Spell As Byte
 102         Spell = Reader.ReadInt8()
+
+            Dim PacketCounter As Long
+            PacketCounter = Reader.ReadInt32
+                        
+            Dim Packet_ID As Long
+            Packet_ID = PacketNames.CastSpell
             
-            If Not verifyTimeStamp(Reader.ReadInt32, .PacketCounters.CastSpell, .PacketTimers.CastSpell, .MacroIterations.CastSpell, UserIndex, "CastSpell") Then Exit Sub
+            
+            If Not verifyTimeStamp(PacketCounter, .PacketCounters(Packet_ID), .PacketTimers(Packet_ID), .MacroIterations(Packet_ID), UserIndex, "CastSpell", PacketTimerThreshold(Packet_ID), MacroIterations(Packet_ID)) Then Exit Sub
             
            ' Dim client_packet_crc As Long
            ' client_packet_crc = Reader.ReadInt64
@@ -2784,9 +2836,14 @@ Private Sub HandleLeftClick(ByVal UserIndex As Integer)
         
 102         X = Reader.ReadInt8()
 104         Y = Reader.ReadInt8()
-            Dim ActualCount As Long
-            ActualCount = Reader.ReadInt32
-            If Not verifyTimeStamp(ActualCount, .PacketCounters.LeftClick, .PacketTimers.LeftClick, .MacroIterations.LeftClick, UserIndex, "LeftClick") Then Exit Sub
+            
+            Dim PacketCounter As Long
+            PacketCounter = Reader.ReadInt32
+                        
+            Dim Packet_ID As Long
+            Packet_ID = PacketNames.LeftClick
+
+            If Not verifyTimeStamp(PacketCounter, .PacketCounters(Packet_ID), .PacketTimers(Packet_ID), .MacroIterations(Packet_ID), UserIndex, "LeftClick", PacketTimerThreshold(Packet_ID), MacroIterations(Packet_ID)) Then Exit Sub
             
 106         Call LookatTile(UserIndex, .Pos.Map, X, Y)
 
@@ -2854,7 +2911,17 @@ Private Sub HandleWork(ByVal UserIndex As Integer)
 
             Dim Skill As e_Skill
 102             Skill = Reader.ReadInt8()
-        
+            
+            
+            Dim PacketCounter As Long
+            PacketCounter = Reader.ReadInt32
+                        
+            Dim Packet_ID As Long
+            Packet_ID = PacketNames.Work
+            
+            If Not verifyTimeStamp(PacketCounter, .PacketCounters(Packet_ID), .PacketTimers(Packet_ID), .MacroIterations(Packet_ID), UserIndex, "Work", PacketTimerThreshold(Packet_ID), MacroIterations(Packet_ID)) Then Exit Sub
+            
+            
 104         If UserList(UserIndex).flags.Muerto = 1 Then
                 'Call WriteConsoleMsg(UserIndex, "¡¡Estás muerto!!.", e_FontTypeNames.FONTTYPE_INFO)
 106             Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
@@ -2982,8 +3049,12 @@ Private Sub HandleUseItem(ByVal UserIndex As Integer)
 
             Dim Slot As Byte
 102         Slot = Reader.ReadInt8()
+            Dim PacketCounter As Long
+            PacketCounter = Reader.ReadInt32
             
-            If Not verifyTimeStamp(Reader.ReadInt32, .PacketCounters.UseItem, .PacketTimers.UseItem, .MacroIterations.UseItem, UserIndex, "UseItem") Then Exit Sub
+            Dim Packet_ID As Long
+            Packet_ID = PacketNames.UseItem
+            If Not verifyTimeStamp(PacketCounter, .PacketCounters(Packet_ID), .PacketTimers(Packet_ID), .MacroIterations(Packet_ID), UserIndex, "UseItem", PacketTimerThreshold(Packet_ID), MacroIterations(Packet_ID)) Then Exit Sub
             
 104         If Slot <= UserList(UserIndex).CurrentInventorySlots And Slot > 0 Then
 106             If .Invent.Object(Slot).ObjIndex = 0 Then Exit Sub
@@ -3015,8 +3086,15 @@ Private Sub HandleUseItemU(ByVal UserIndex As Integer)
 
             Dim Slot As Byte
 102         Slot = Reader.ReadInt8()
+
             
-            If Not verifyTimeStamp(Reader.ReadInt32, .PacketCounters.UseItemU, .PacketTimers.UseItemU, .MacroIterations.UseItemU, UserIndex, "UseItemU", 70) Then Exit Sub
+            Dim PacketCounter As Long
+            PacketCounter = Reader.ReadInt32
+            
+            Dim Packet_ID As Long
+            Packet_ID = PacketNames.UseItemU
+            
+            If Not verifyTimeStamp(PacketCounter, .PacketCounters(Packet_ID), .PacketTimers(Packet_ID), .MacroIterations(Packet_ID), UserIndex, "UseItemU", PacketTimerThreshold(Packet_ID), MacroIterations(Packet_ID)) Then Exit Sub
             
 104         If Slot <= UserList(UserIndex).CurrentInventorySlots And Slot > 0 Then
 106             If .Invent.Object(Slot).ObjIndex = 0 Then Exit Sub
@@ -3174,7 +3252,13 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
             
 106         Skill = Reader.ReadInt8()
 
-            If Not verifyTimeStamp(Reader.ReadInt32, .PacketCounters.WorkLeftClick, .PacketTimers.WorkLeftClick, .MacroIterations.WorkLeftClick, UserIndex, "WorkLeftClick") Then Exit Sub
+            Dim PacketCounter As Long
+            PacketCounter = Reader.ReadInt32
+                        
+            Dim Packet_ID As Long
+            Packet_ID = PacketNames.WorkLeftClick
+
+            If Not verifyTimeStamp(PacketCounter, .PacketCounters(Packet_ID), .PacketTimers(Packet_ID), .MacroIterations(Packet_ID), UserIndex, "WorkLeftClick", PacketTimerThreshold(Packet_ID), MacroIterations(Packet_ID)) Then Exit Sub
 
             .Trabajo.Target_X = X
             .Trabajo.Target_Y = Y
@@ -3915,8 +3999,16 @@ Private Sub HandleEquipItem(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
         
             Dim itemSlot As Byte
-102             itemSlot = Reader.ReadInt8()
-        
+102         itemSlot = Reader.ReadInt8()
+                
+            Dim PacketCounter As Long
+            PacketCounter = Reader.ReadInt32
+                        
+            Dim Packet_ID As Long
+            Packet_ID = PacketNames.EquipItem
+            
+            If Not verifyTimeStamp(PacketCounter, .PacketCounters(Packet_ID), .PacketTimers(Packet_ID), .MacroIterations(Packet_ID), UserIndex, "EquipItem", PacketTimerThreshold(Packet_ID), MacroIterations(Packet_ID)) Then Exit Sub
+            
             'Dead users can't equip items
 104         If .flags.Muerto = 1 Then
 106             Call WriteConsoleMsg(UserIndex, "¡¡Estás muerto!! Sólo podés usar items cuando estás vivo.", e_FontTypeNames.FONTTYPE_INFO)
@@ -6720,8 +6812,16 @@ Private Sub HandleGuildMessage(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             Dim chat As String
-102             chat = Reader.ReadString8()
-        
+102         chat = Reader.ReadString8()
+               
+            Dim PacketCounter As Long
+            PacketCounter = Reader.ReadInt32
+                        
+            Dim Packet_ID As Long
+            Packet_ID = PacketNames.GuildMessage
+            
+            If Not verifyTimeStamp(PacketCounter, .PacketCounters(Packet_ID), .PacketTimers(Packet_ID), .MacroIterations(Packet_ID), UserIndex, "GuildMessage", PacketTimerThreshold(Packet_ID), MacroIterations(Packet_ID)) Then Exit Sub
+       
 104         If LenB(chat) <> 0 Then
 
                 'Analize chat...
@@ -12366,7 +12466,7 @@ Private Sub HandleBanIP(ByVal UserIndex As Integer)
 
             End If
                 
-132         Call BanearIP(UserIndex, NickOrIP, bannedip)
+132         Call BanearIP(UserIndex, NickOrIP, bannedip, UserList(UserIndex).Cuenta)
         
 134         Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(.Name & " baneó la IP " & bannedip & " por " & Reason, e_FontTypeNames.FONTTYPE_FIGHT))
         
@@ -13339,6 +13439,7 @@ Public Sub HandleReloadServerIni(ByVal UserIndex As Integer)
 104         Call LogGM(.Name, .Name & " ha recargado los INITs.")
         
 106         Call LoadSini
+            Call LoadPrivateKey
 
         End With
         
@@ -15091,13 +15192,21 @@ Private Sub HandleQuestionGM(ByVal UserIndex As Integer)
 
 102         Consulta = Reader.ReadString8()
 104         TipoDeConsulta = Reader.ReadString8()
+
+            Dim PacketCounter As Long
+            PacketCounter = Reader.ReadInt32
+                        
+            Dim Packet_ID As Long
+            Packet_ID = PacketNames.QuestionGM
             
+            If Not verifyTimeStamp(PacketCounter, .PacketCounters(Packet_ID), .PacketTimers(Packet_ID), .MacroIterations(Packet_ID), UserIndex, "QuestionGM", PacketTimerThreshold(Packet_ID), MacroIterations(Packet_ID)) Then Exit Sub
+
             .Counters.CounterGmMessages = .Counters.CounterGmMessages + 1
             
             If .Counters.CounterGmMessages >= 20 Then
                 Dim bannedip As String
                 bannedip = UserList(UserIndex).IP
-132             Call BanearIP(0, UserList(UserIndex).Name, bannedip)
+132             Call BanearIP(0, UserList(UserIndex).Name, bannedip, UserList(UserIndex).Cuenta)
 134             Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Se baneó la IP  " & bannedip & " del personaje " & UserList(UserIndex).Name & " por bot.", e_FontTypeNames.FONTTYPE_FIGHT))
                 
                 'Find every player with that ip and ban him!

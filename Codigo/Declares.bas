@@ -920,30 +920,24 @@ Public Type t_Hechizo
 
 End Type
 
+Public Const MAX_PACKET_COUNTERS As Long = 14
 
-Public Type t_macroIterations
-    CastSpell As Long
-    WorkLeftClick As Long
-    LeftClick As Long
-    UseItem As Long
-    UseItemU As Long
-End Type
-
-Public Type t_packetTimer
-    CastSpell As Long
-    WorkLeftClick As Long
-    LeftClick As Long
-    UseItem As Long
-    UseItemU As Long
-End Type
-
-Public Type t_packetCounter
-    CastSpell As Long
-    WorkLeftClick As Long
-    LeftClick As Long
-    UseItem As Long
-    UseItemU As Long
-End Type
+Public Enum PacketNames
+    CastSpell = 1
+    WorkLeftClick
+    LeftClick
+    UseItem
+    UseItemU
+    Walk
+    Sailing
+    Talk
+    Attack
+    Drop
+    Work
+    EquipItem
+    GuildMessage
+    QuestionGM
+End Enum
 
 Public Type t_UserOBJ
 
@@ -1935,10 +1929,14 @@ Public Type t_User
     decrypted_session_token As String
     encrypted_session_token As String
     
-    MacroIterations As t_macroIterations
-    PacketTimers As t_packetTimer
-    PacketCounters As t_packetCounter
+    MacroIterations(1 To MAX_PACKET_COUNTERS) As Long
+    PacketTimers(1 To MAX_PACKET_COUNTERS) As Long
+    PacketCounters(1 To MAX_PACKET_COUNTERS) As Long
 End Type
+
+Public MacroIterations(1 To MAX_PACKET_COUNTERS) As Long
+Public PacketTimerThreshold(1 To MAX_PACKET_COUNTERS) As Long
+    
 
 '*********************************************************
 '*********************************************************

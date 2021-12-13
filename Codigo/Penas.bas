@@ -226,7 +226,7 @@ DesbanearCuenta_Err:
         Call TraceError(Err.Number, Err.Description, "Penas.DesbanearCuenta", Erl)
 End Function
 
-Public Sub BanearIP(ByVal BannerIndex As Integer, ByVal UserName As String, ByVal IP As String)
+Public Sub BanearIP(ByVal BannerIndex As Integer, ByVal UserName As String, ByVal IP As String, Optional ByVal Email As String)
         On Error GoTo BanearIP_Err
         
         ' Lo guardo en Baneos.dat
@@ -234,6 +234,7 @@ Public Sub BanearIP(ByVal BannerIndex As Integer, ByVal UserName As String, ByVa
 
         If LenB(UserName) > 0 Then
             If Not (val(mid(UserName, 1, 1)) > 0) Then
+                Call Execute("UPDATE account set is_banned = true where UPPER(email) = ?;", UCase$(Email))
                 Call BanPJWithoutGM(UserName, "Por ban IP.")
             End If
         End If

@@ -92,7 +92,7 @@ Begin VB.Form frmMain
       Width           =   1575
    End
    Begin VB.CommandButton Command6 
-      Caption         =   "Recargar intervalos.ini"
+      Caption         =   "Recargar intervalos y rates"
       Height          =   495
       Left            =   5160
       TabIndex        =   31
@@ -1070,7 +1070,7 @@ Private Sub Command11_Click()
         On Error GoTo Command11_Click_Err
         
 100     Call LoadSini
-
+133     Call LoadPrivateKey
         
         Exit Sub
 
@@ -1154,7 +1154,7 @@ Private Sub Command6_Click()
         On Error GoTo Command6_Click_Err
         
 100     Call LoadIntervalos
-
+101     Call LoadPacketRatePolicy
         
         Exit Sub
 

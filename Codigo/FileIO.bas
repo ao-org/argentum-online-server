@@ -2261,6 +2261,32 @@ LoadSini_Err:
 
         
 End Sub
+Sub LoadPacketRatePolicy()
+        On Error GoTo LoadPacketRatePolicy_Err
+
+        Dim Lector   As clsIniManager
+        Dim i As Long
+100     If frmMain.Visible Then frmMain.txStatus.Caption = "Cargando PacketRatePolicy."
+    
+102     Set Lector = New clsIniManager
+104     Call Lector.Initialize(IniPath & "PacketRatePolicy.ini")
+            For i = 1 To MAX_PACKET_COUNTERS
+                Dim PacketName As String
+                PacketName = PacketIdToString(i)
+                MacroIterations(i) = val(Lector.GetValue(PacketName, "Iterations"))
+                PacketTimerThreshold(i) = val(Lector.GetValue(PacketName, "Limit"))
+            Next i
+
+168     Set Lector = Nothing
+
+        Exit Sub
+
+LoadPacketRatePolicy_Err:
+170     Set Lector = Nothing
+172     Call TraceError(Err.Number, Err.Description, "ES.LoadPacketRatePolicy", Erl)
+
+        
+End Sub
 
 
 Sub CargarCiudades()

@@ -1206,62 +1206,29 @@ ResetGuildInfo_Err:
         
 End Sub
 
-Sub ResetPacketCounters(ByVal UserIndex As Integer)
+Sub ResetPacketRateData(ByVal UserIndex As Integer)
 
-        On Error GoTo ResetPacketCounters_Err
+        On Error GoTo ResetPacketRateData_Err
 
-100     With UserList(UserIndex).PacketCounters
-            .CastSpell = 0
-            .LeftClick = 0
-            .UseItem = 0
-            .UseItemU = 0
-            .WorkLeftClick = 0
+        Dim i As Long
+        
+        With UserList(UserIndex)
+        
+            For i = 1 To MAX_PACKET_COUNTERS
+                .MacroIterations(i) = 0
+                .PacketTimers(i) = 0
+                .PacketCounters(i) = 0
+            Next i
+            
         End With
         
         Exit Sub
         
-ResetPacketCounters_Err:
-282     Call TraceError(Err.Number, Err.Description, "TCP.ResetPacketCounters", Erl)
+ResetPacketRateData_Err:
+282     Call TraceError(Err.Number, Err.Description, "TCP.ResetPacketRateData", Erl)
 
 End Sub
 
-Sub ResetPacketTimer(ByVal UserIndex As Integer)
-
-        On Error GoTo ResetPacketTimer_Err
-
-100     With UserList(userindex).PacketTimers
-            .CastSpell = 0
-            .LeftClick = 0
-            .UseItem = 0
-            .UseItemU = 0
-            .WorkLeftClick = 0
-        End With
-        
-        Exit Sub
-
-ResetPacketTimer_Err:
-282     Call TraceError(Err.Number, Err.Description, "TCP.ResetPacketTimer", Erl)
-
-End Sub
-
-Sub ResetMacroIterations(ByVal UserIndex As Integer)
-
-        On Error GoTo ResetMacroIterations_Err
-
-100     With UserList(UserIndex).MacroIterations
-            .CastSpell = 0
-            .LeftClick = 0
-            .UseItem = 0
-            .UseItemU = 0
-            .WorkLeftClick = 0
-        End With
-        
-        Exit Sub
-
-ResetMacroIterations_Err:
-282     Call TraceError(Err.Number, Err.Description, "TCP.ResetMacroIterations", Erl)
-
-End Sub
 Sub ResetUserFlags(ByVal UserIndex As Integer)
         '*************************************************
         'Author: Unknown
@@ -1566,9 +1533,7 @@ Sub ResetUserSlot(ByVal UserIndex As Integer)
 136     Call LimpiarComercioSeguro(UserIndex)
 138     Call ResetFacciones(UserIndex)
 140     Call ResetContadores(UserIndex)
-141     Call ResetPacketCounters(UserIndex)
-143     Call ResetPacketTimer(UserIndex)
-300     Call ResetMacroIterations(UserIndex)
+141     Call ResetPacketRateData(UserIndex)
 142     Call ResetCharInfo(UserIndex)
 144     Call ResetBasicUserInfo(UserIndex)
 146     Call ResetUserFlags(UserIndex)
