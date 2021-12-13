@@ -30,12 +30,12 @@ MaxUsers=1000
 
 Admines=2
 Dioses=3
-SemiDioses=10
+SemiDioses=11
 Consejeros=6
 
 [Admines]
 Admin1=Haracin|hgarofalo79@gmail.com
-Admin2=ReyarB|reyarb@fibertel.com.ar
+Admin2=ReyarB|reyarb@@fibertel.com
 
 [Dioses]
 Dios1=Harthaos|martintrionfetti@gmail.com
@@ -45,7 +45,7 @@ Dios3=Recox|lucas.recoaro@gmail.com
 [SemiDioses]
 SemiDios1=chicken|raamaorc@gmail.com
 SemiDios2=Baliam|loganfenix2000@yahoo.com.mx
-SemiDios3=ZeuS|reyarb@fibertel.com.ar
+SemiDios3=ZeuS|reyarb@@fibertel.com
 SemiDios4=Vox|ricardo_r_jc@hotmail.com
 SemiDios5=Sir Hongo|nicocapelli85@hotmail.com
 SemiDios6=lorena|LORENITAH1995@HOTMAIL.ES
@@ -53,11 +53,12 @@ Semidios7=Animal|anormal@gmail.com
 Semidios8=GalaK|Sforzini.jonatan@gmail.com
 Semidios9=Punisher|DIEGOTEMM22@GMAIL.COM
 Semidios10=Enith|Ao20.enith@gmail.com
+Semidios11=Amira|amira.micol.ao@gmail.com
 
 [Consejeros]
 Consejero1=Terrel|loganfenix2000@yahoo.com.mx
 Consejero2=Lord Fers|lordfers@gmail.com
 Consejero3=Hainnor|Jere_estandar@hotmail.com.ar
-Consejero4=Maraxus|reyarb@fibertel.com.ar
+Consejero4=Maraxus|reyarb@@fibertel.com
 Consejero5=RoTTTeN|darioguitarras@gmail.com
 Consejero6=Morgolock|gulfas@gmail.com
