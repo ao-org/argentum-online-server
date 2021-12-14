@@ -81,9 +81,9 @@ End Sub
 Public Sub QuitarItemLimpieza(ByVal Map As Integer, ByVal X As Byte, ByVal Y As Byte)
 
     On Error GoTo hErr
-
-100 Call Item_List.Remove(GetIndiceByPos(Map, X, Y))
-    
+    If Item_List.Count > 0 Then
+100     Call Item_List.Remove(GetIndiceByPos(Map, X, Y))
+    End If
     Exit Sub
     
 hErr:
