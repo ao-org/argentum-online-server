@@ -1526,7 +1526,7 @@ Private Sub LimpiezaTimer_Timer()
     
         
 
-    Call LimpiarItemsViejos
+   ' Call LimpiarItemsViejos
         
         
     Exit Sub

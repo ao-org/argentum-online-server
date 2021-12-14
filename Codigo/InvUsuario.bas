@@ -548,9 +548,9 @@ Sub EraseObj(ByVal num As Integer, ByVal Map As Integer, ByVal X As Integer, ByV
 
 102     If MapData(Map, X, Y).ObjInfo.amount <= 0 Then
 
-104         If ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex).OBJType <> otTeleport Then
-106             Call QuitarItemLimpieza(Map, X, Y)
-            End If
+104        ' If ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex).OBJType <> otTeleport Then
+106        '     Call QuitarItemLimpieza(Map, X, Y)
+           ' End If
             
 108         MapData(Map, X, Y).ObjInfo.ObjIndex = 0
 110         MapData(Map, X, Y).ObjInfo.amount = 0
@@ -583,9 +583,9 @@ Sub MakeObj(ByRef obj As t_Obj, ByVal Map As Integer, ByVal X As Integer, ByVal 
 104             MapData(Map, X, Y).ObjInfo.amount = MapData(Map, X, Y).ObjInfo.amount + obj.amount
             Else
                 ' Lo agrego a la limpieza del mundo o reseteo el timer si el objeto ya existía
-106             If ObjData(obj.ObjIndex).OBJType <> otTeleport Then
-108                 Call AgregarItemLimpieza(Map, X, Y, MapData(Map, X, Y).ObjInfo.ObjIndex <> 0)
-                End If
+106           '  If ObjData(obj.ObjIndex).OBJType <> otTeleport Then
+108           '      Call AgregarItemLimpieza(Map, X, Y, MapData(Map, X, Y).ObjInfo.ObjIndex <> 0)
+              '  End If
             
 110             MapData(Map, X, Y).ObjInfo.ObjIndex = obj.ObjIndex
 

@@ -2697,7 +2697,7 @@ Private Function verifyTimeStamp(ByVal ActualCount As Long, ByRef LastCount, ByR
     'Controlamos secuencia para ver que no haya paquetes duplicados.
     If ActualCount <= LastCount Then
        ' Call CloseSocket(UserIndex)
-        Call SendData(SendTarget.ToAdminsAreaButConsejeros, UserIndex, PrepareMessageConsoleMsg("Paquete grabado: " & PacketName & " | Cuenta: " & UserList(UserIndex).Cuenta & " | Ip: " & UserList(UserIndex).IP & " (Baneado automaticamente)", e_FontTypeNames.FONTTYPE_INFOBOLD))
+        Call SendData(SendTarget.ToGM, UserIndex, PrepareMessageConsoleMsg("Paquete grabado: " & PacketName & " | Cuenta: " & UserList(UserIndex).Cuenta & " | Ip: " & UserList(UserIndex).IP & " (Baneado automaticamente)", e_FontTypeNames.FONTTYPE_INFOBOLD))
         Call BanearIP(0, UserList(UserIndex).Name, UserList(UserIndex).IP, UserList(UserIndex).Cuenta)
         verifyTimeStamp = False
         LastTick = Ticks
@@ -10313,7 +10313,7 @@ Private Sub HandleReviveChar(ByVal UserIndex As Integer)
 130                 Call WriteUpdateHP(tUser)
 132                 Call ActualizarVelocidadDeUsuario(tUser)
 134                 Call LogGM(.Name, "Resucito a " & UserName)
-                    Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(.Name & " a resucitado a " & UserName, e_FontTypeNames.FONTTYPE_INFO))
+                    Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(.Name & " ha resucitado a " & UserName, e_FontTypeNames.FONTTYPE_INFO))
 
                 End If
             Else
@@ -11019,7 +11019,7 @@ Private Sub HandleCleanWorld(ByVal UserIndex As Integer)
 104             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
-106         Call LimpiezaForzada
+106        ' Call LimpiezaForzada
             
 108         Call WriteConsoleMsg(UserIndex, "Se han limpiado los items del suelo.", e_FontTypeNames.FONTTYPE_INFO)
             

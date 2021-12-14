@@ -444,11 +444,12 @@ Private Sub MakePath(ByVal NpcIndex As Integer, ByVal X As Integer, ByVal Y As I
 120                 .X = X
 125                 .Y = Y
                 End With
-
-130             With Table(X, Y)
-135                 X = .Previous.X
-140                 Y = .Previous.Y
-                End With
+                If X > 0 And Y > 0 Then
+130                 With Table(X, Y)
+135                     X = .Previous.X
+140                     Y = .Previous.Y
+                    End With
+                End If
             
             Next
 

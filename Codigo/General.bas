@@ -714,7 +714,7 @@ Sub Main()
 
 254     EstadoGlobal = False
     
-256     Call InicializarLimpieza
+256    ' Call InicializarLimpieza
 
         Call ResetLastLogout
 
@@ -2726,7 +2726,7 @@ Public Sub CerrarServidor()
     
 112     If Database_Enabled Then Database_Close
  
-114     Call LimpiarModuloLimpieza
+114    ' Call LimpiarModuloLimpieza
     
         'Log
 116     Dim n As Integer: n = FreeFile
