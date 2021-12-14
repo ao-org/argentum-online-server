@@ -1372,8 +1372,8 @@ Private Sub HandleLoginExistingChar(ByVal UserIndex As Integer)
         Dim RS As ADODB.Recordset
         Set RS = Query("select * from tokens where decrypted_token = '" & decrypted_session_token & "'")
                 
-        If RS Is Nothing Then
-            Call WriteShowMessageBox(UserIndex, "Cliente inválido, por favor realice una actualización.")
+        If RS Is Nothing Or RS.RecordCount = 0 Then
+            Call WriteShowMessageBox(UserIndex, "Sesión inválida, conéctese nuevamente.")
             Call CloseSocket(UserIndex)
             Exit Sub
         End If
@@ -1483,8 +1483,8 @@ Private Sub HandleLoginNewChar(ByVal UserIndex As Integer)
         Dim RS As ADODB.Recordset
         Set RS = Query("select * from tokens where decrypted_token = '" & decrypted_session_token & "'")
                 
-        If RS Is Nothing Then
-            Call WriteShowMessageBox(UserIndex, "Cliente inválido, por favor realice una actualización.")
+       If RS Is Nothing Or RS.RecordCount = 0 Then
+            Call WriteShowMessageBox(UserIndex, "Sesión inválida, conectese nuevamente.")
 120             Call CloseSocket(UserIndex)
             Exit Sub
         End If
@@ -2712,7 +2712,7 @@ Private Function verifyTimeStamp(ByVal ActualCount As Long, ByRef LastCount, ByR
                 'Call WriteShowMessageBox(UserIndex, "Relajate andá a tomarte un té con Gulfas.")
                 verifyTimeStamp = False
                 LastTick = Ticks
-                Call SendData(SendTarget.ToAdmins, UserIndex, PrepareMessageConsoleMsg("Control de macro---> El usuario " & UserList(UserIndex).Name & "| Controlar --> " & PacketName & " (Envíos: " & MaxIterations & ").", e_FontTypeNames.FONTTYPE_INFOBOLD))
+                Call SendData(SendTarget.ToAdminsAreaButConsejeros, UserIndex, PrepareMessageConsoleMsg("Control de macro---> El usuario " & UserList(UserIndex).Name & "| Controlar --> " & PacketName & " (Envíos: " & MaxIterations & ").", e_FontTypeNames.FONTTYPE_INFOBOLD))
                 LastCount = ActualCount
                 Iterations = 0
             Debug.Print "CIERRO CLIENTE"
@@ -10313,7 +10313,7 @@ Private Sub HandleReviveChar(ByVal UserIndex As Integer)
 130                 Call WriteUpdateHP(tUser)
 132                 Call ActualizarVelocidadDeUsuario(tUser)
 134                 Call LogGM(.Name, "Resucito a " & UserName)
-                    Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(.Name & " a resusitado a " & UserName, e_FontTypeNames.FONTTYPE_INFO))
+                    Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(.Name & " a resucitado a " & UserName, e_FontTypeNames.FONTTYPE_INFO))
 
                 End If
             Else
