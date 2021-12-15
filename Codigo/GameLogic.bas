@@ -1778,17 +1778,6 @@ Public Sub CargarMapasEspeciales()
 114         ReDim MapasInterdimensionales(0)
         End If
     
-116    ' Cantidad = val(File.GetValue("MapasIgnoranLimpieza", "Cantidad"))
-   '
-118 '     If Cantidad > 0 Then
-120 '         ReDim MapasIgnoranLimpieza(1 To Cantidad)
-   '
-122 '         For i = 1 To Cantidad
-124 '             MapasIgnoranLimpieza(i) = val(File.GetValue("MapasIgnoranLimpieza", "Mapa" & i))
-   '         Next
-   '     Else
-126 '         ReDim MapasIgnoranLimpieza(0)
-   '     End If
         
 117     Cantidad = val(File.GetValue("MapasEventos", "Cantidad"))
     

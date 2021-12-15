@@ -714,8 +714,6 @@ Sub Main()
 
 254     EstadoGlobal = False
     
-256    ' Call InicializarLimpieza
-
         Call ResetLastLogout
 
         'Comentado porque hay worldsave en ese mapa!
@@ -2726,8 +2724,6 @@ Public Sub CerrarServidor()
     
 112     If Database_Enabled Then Database_Close
  
-114    ' Call LimpiarModuloLimpieza
-    
         'Log
 116     Dim n As Integer: n = FreeFile
 118     Open App.Path & "\logs\Main.log" For Append Shared As #n

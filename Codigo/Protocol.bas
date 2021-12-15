@@ -11019,7 +11019,6 @@ Private Sub HandleCleanWorld(ByVal UserIndex As Integer)
 104             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
-106        ' Call LimpiezaForzada
             
 108         Call WriteConsoleMsg(UserIndex, "Se han limpiado los items del suelo.", e_FontTypeNames.FONTTYPE_INFO)
             
