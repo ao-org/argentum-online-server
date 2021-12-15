@@ -30,7 +30,7 @@ Begin VB.Form frmMain
       Caption         =   "Recargar Donadore"
       Height          =   495
       Left            =   1320
-      TabIndex        =   40
+      TabIndex        =   39
       Top             =   1440
       Width           =   1215
    End
@@ -38,7 +38,7 @@ Begin VB.Form frmMain
       Caption         =   "DbControl"
       Height          =   495
       Left            =   3720
-      TabIndex        =   39
+      TabIndex        =   38
       Top             =   720
       Width           =   1215
    End
@@ -60,7 +60,7 @@ Begin VB.Form frmMain
       Left            =   5160
       MaskColor       =   &H000040C0&
       Style           =   1  'Graphical
-      TabIndex        =   35
+      TabIndex        =   34
       Top             =   4920
       Width           =   1575
    End
@@ -87,7 +87,7 @@ Begin VB.Form frmMain
       Height          =   615
       Left            =   5160
       Style           =   1  'Graphical
-      TabIndex        =   32
+      TabIndex        =   31
       Top             =   5520
       Width           =   1575
    End
@@ -95,7 +95,7 @@ Begin VB.Form frmMain
       Caption         =   "Recargar intervalos y rates"
       Height          =   495
       Left            =   5160
-      TabIndex        =   31
+      TabIndex        =   30
       Top             =   4320
       Width           =   1575
    End
@@ -103,7 +103,7 @@ Begin VB.Form frmMain
       Caption         =   "Recargar Balance.dat"
       Height          =   495
       Left            =   5160
-      TabIndex        =   30
+      TabIndex        =   29
       Top             =   3720
       Width           =   1575
    End
@@ -111,7 +111,7 @@ Begin VB.Form frmMain
       Caption         =   "Recargar configuracion.ini"
       Height          =   495
       Left            =   5160
-      TabIndex        =   29
+      TabIndex        =   28
       Top             =   1320
       Width           =   1575
    End
@@ -119,7 +119,7 @@ Begin VB.Form frmMain
       Caption         =   "Recargar Server.ini"
       Height          =   495
       Left            =   5160
-      TabIndex        =   28
+      TabIndex        =   27
       Top             =   720
       Width           =   1575
    End
@@ -127,7 +127,7 @@ Begin VB.Form frmMain
       Caption         =   "Guardar Usuarios"
       Height          =   495
       Left            =   5160
-      TabIndex        =   27
+      TabIndex        =   26
       Top             =   3120
       Width           =   1575
    End
@@ -135,7 +135,7 @@ Begin VB.Form frmMain
       Caption         =   "Recargar Npcs"
       Height          =   495
       Left            =   5160
-      TabIndex        =   26
+      TabIndex        =   25
       Top             =   2520
       Width           =   1575
    End
@@ -143,7 +143,7 @@ Begin VB.Form frmMain
       Caption         =   "Recargar Objetos"
       Height          =   495
       Left            =   5160
-      TabIndex        =   25
+      TabIndex        =   24
       Top             =   1920
       Width           =   1575
    End
@@ -151,7 +151,7 @@ Begin VB.Form frmMain
       Caption         =   "Recargar Administradores"
       Height          =   495
       Left            =   5160
-      TabIndex        =   24
+      TabIndex        =   23
       Top             =   120
       Width           =   1575
    End
@@ -160,14 +160,14 @@ Begin VB.Form frmMain
       Caption         =   "Eventos"
       Height          =   6015
       Left            =   7920
-      TabIndex        =   22
+      TabIndex        =   21
       Top             =   120
       Width           =   1575
       Begin VB.Label cuentas 
          Caption         =   "0"
          Height          =   375
          Left            =   240
-         TabIndex        =   23
+         TabIndex        =   22
          Top             =   240
          Width           =   975
       End
@@ -193,13 +193,13 @@ Begin VB.Form frmMain
       Caption         =   "Logeo de eventos"
       Height          =   1455
       Left            =   120
-      TabIndex        =   20
+      TabIndex        =   19
       Top             =   4680
       Width           =   4935
       Begin VB.ListBox List1 
          Height          =   1110
          Left            =   120
-         TabIndex        =   21
+         TabIndex        =   20
          Top             =   240
          Width           =   4695
       End
@@ -239,8 +239,8 @@ Begin VB.Form frmMain
          Caption         =   "Log DB perfomance"
          Height          =   375
          Left            =   2640
-         TabIndex        =   38
-         Top             =   1320
+         TabIndex        =   37
+         Top             =   1440
          Width           =   2055
       End
       Begin VB.Label Label10 
@@ -248,7 +248,7 @@ Begin VB.Form frmMain
          Caption         =   "Estabilidad:"
          Height          =   255
          Left            =   3360
-         TabIndex        =   37
+         TabIndex        =   36
          Top             =   240
          Width           =   975
       End
@@ -259,7 +259,7 @@ Begin VB.Form frmMain
          Caption         =   "0%"
          Height          =   210
          Left            =   4560
-         TabIndex        =   36
+         TabIndex        =   35
          Top             =   240
          Width           =   225
       End
@@ -268,7 +268,7 @@ Begin VB.Form frmMain
          Caption         =   "Nublado"
          Height          =   255
          Left            =   120
-         TabIndex        =   19
+         TabIndex        =   18
          Top             =   1440
          Width           =   2535
       End
@@ -277,7 +277,7 @@ Begin VB.Form frmMain
          Caption         =   "Lloviendo"
          Height          =   255
          Left            =   120
-         TabIndex        =   18
+         TabIndex        =   17
          Top             =   1200
          Width           =   2775
       End
@@ -286,7 +286,7 @@ Begin VB.Form frmMain
          Caption         =   "Label3"
          Height          =   255
          Left            =   2040
-         TabIndex        =   13
+         TabIndex        =   12
          Top             =   960
          Width           =   855
       End
@@ -295,7 +295,7 @@ Begin VB.Form frmMain
          Caption         =   "Hora Fantasia Servidor:"
          Height          =   255
          Left            =   120
-         TabIndex        =   12
+         TabIndex        =   11
          Top             =   960
          Width           =   2175
       End
@@ -304,7 +304,7 @@ Begin VB.Form frmMain
          Caption         =   "Label3"
          Height          =   255
          Left            =   1920
-         TabIndex        =   11
+         TabIndex        =   10
          Top             =   720
          Width           =   855
       End
@@ -313,7 +313,7 @@ Begin VB.Form frmMain
          Caption         =   "Hora Actual Servidor:"
          Height          =   255
          Left            =   120
-         TabIndex        =   10
+         TabIndex        =   9
          Top             =   720
          Width           =   2175
       End
@@ -335,33 +335,10 @@ Begin VB.Form frmMain
          ForeColor       =   &H00000000&
          Height          =   195
          Left            =   120
-         TabIndex        =   9
+         TabIndex        =   8
          Top             =   240
          Width           =   1875
       End
-      Begin VB.Label lblLimpieza 
-         BackColor       =   &H00E0E0E0&
-         Caption         =   "Limpieza de objetos cada: "
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   8.25
-            Charset         =   0
-            Weight          =   700
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         Height          =   255
-         Left            =   120
-         TabIndex        =   8
-         Top             =   480
-         Width           =   4215
-      End
-   End
-   Begin VB.Timer LimpiezaTimer 
-      Interval        =   60000
-      Left            =   1200
-      Top             =   4200
    End
    Begin VB.Timer SubastaTimer 
       Enabled         =   0   'False
@@ -469,13 +446,13 @@ Begin VB.Form frmMain
       Caption         =   "Estadisticas de Paquetes"
       Height          =   1695
       Left            =   120
-      TabIndex        =   14
+      TabIndex        =   13
       Top             =   3000
       Width           =   4935
       Begin VB.ListBox listaDePaquetes 
          Height          =   1110
          Left            =   120
-         TabIndex        =   17
+         TabIndex        =   16
          Top             =   480
          Width           =   4695
       End
@@ -484,7 +461,7 @@ Begin VB.Form frmMain
          Caption         =   "0"
          Height          =   375
          Left            =   1920
-         TabIndex        =   16
+         TabIndex        =   15
          Top             =   240
          Width           =   615
       End
@@ -493,7 +470,7 @@ Begin VB.Form frmMain
          Caption         =   "Paquetes Recibidos:"
          Height          =   375
          Left            =   120
-         TabIndex        =   15
+         TabIndex        =   14
          Top             =   240
          Width           =   1815
       End
@@ -511,7 +488,7 @@ Begin VB.Form frmMain
       Caption         =   "Basado en rao"
       Height          =   495
       Left            =   5280
-      TabIndex        =   34
+      TabIndex        =   33
       Top             =   5640
       Width           =   1335
    End
@@ -519,7 +496,7 @@ Begin VB.Form frmMain
       Caption         =   "Label8"
       Height          =   495
       Left            =   2880
-      TabIndex        =   33
+      TabIndex        =   32
       Top             =   2880
       Width           =   1215
    End
@@ -1070,6 +1047,7 @@ Private Sub Command11_Click()
         On Error GoTo Command11_Click_Err
         
 100     Call LoadSini
+        Call LoadMD5
 133     Call LoadPrivateKey
         
         Exit Sub
@@ -1520,22 +1498,6 @@ HoraFantasia_Timer_Err:
         
 End Sub
 
-Private Sub LimpiezaTimer_Timer()
-        
-    On Error GoTo LimpiezaTimer_Timer_Err
-    
-        
-
-   ' Call LimpiarItemsViejos
-        
-        
-    Exit Sub
-
-LimpiezaTimer_Timer_Err:
-    Call RegistrarError(Err.Number, Err.Description, "frmMain.LimpiezaTimer_Timer", Erl)
-
-        
-End Sub
 
 Private Sub mnuCerrar_Click()
         
