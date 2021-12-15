@@ -13438,6 +13438,7 @@ Public Sub HandleReloadServerIni(ByVal UserIndex As Integer)
 104         Call LogGM(.Name, .Name & " ha recargado los INITs.")
         
 106         Call LoadSini
+            Call LoadMD5
             Call LoadPrivateKey
 
         End With
