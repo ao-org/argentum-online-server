@@ -6,9 +6,6 @@ DeletePath=..\re20-server\Chardelete\
 CuentasPath=..\re20-server\cuentas\
 DeleteCuentasPath=..\re20-server\DeleteCuentas\
 
-[CHECKSUM]
-Cliente=4e6105c464dd78523014ab51ce8e7d9e
-
 [INIT]
 NumCuentas=5
 StartPort=7667
