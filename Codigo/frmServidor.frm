@@ -687,6 +687,7 @@ Private Sub Command16_Click()
         On Error GoTo Command16_Click_Err
         
 100     Call LoadSini
+        Call LoadMD5
         Call LoadPrivateKey
 
         
@@ -974,6 +975,7 @@ Private Sub Command5_Click()
 126     Call FreeCharIndexes
 
 128     Call LoadSini
+        Call LoadMD5
 129     Call LoadPrivateKey
 130     Call LoadIntervalos
 132     Call CargarBackUp

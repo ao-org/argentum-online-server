@@ -2189,6 +2189,12 @@ Sub LoadPrivateKey()
     Line Input #1, PrivateKey
 Close #1
 End Sub
+Sub LoadMD5()
+    Open IniPath & "ClienteMD5.txt" For Input As #1
+        Line Input #1, Md5Cliente
+    Close #1
+    Md5Cliente = Replace(Md5Cliente, " ", "")
+End Sub
 Sub LoadSini()
         On Error GoTo LoadSini_Err
 
@@ -2203,7 +2209,6 @@ Sub LoadSini()
     
         'Misc
 106     BootDelBackUp = val(Lector.GetValue("INIT", "IniciarDesdeBackUp"))
-108     Md5Cliente = Lector.GetValue("CHECKSUM", "Cliente")
     
         'Directorios
 110     DatPath = Lector.GetValue("DIRECTORIOS", "DatPath")
@@ -2588,7 +2593,6 @@ Sub LoadConfiguraciones()
 
 122     MaximoSpeedHack = val(Leer.GetValue("ANTICHEAT", "MaximoSpeedHack"))
 
-124     frmMain.lblLimpieza.Caption = "Limpieza de objetos cada: " & TimerLimpiarObjetos & " minutos."
 
 126     Set Leer = Nothing
 
