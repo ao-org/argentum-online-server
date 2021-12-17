@@ -25,19 +25,19 @@ MaxDados=18
 
 MaxUsers=1000
 
-Admines=2
-Dioses=3
+Admines=3
+Dioses=2
 SemiDioses=11
 Consejeros=6
 
 [Admines]
 Admin1=Haracin|hgarofalo79@gmail.com
 Admin2=ReyarB|reyarb@@fibertel.com
+Admin3=HarThaoS|martintrionfetti@gmail.com
 
 [Dioses]
-Dios1=Harthaos|martintrionfetti@gmail.com
-Dios2=Nakrull|Ytocarp@gmail.com
-Dios3=Recox|lucas.recoaro@gmail.com
+Dios1=Nakrull|Ytocarp@gmail.com
+Dios2=Recox|lucas.recoaro@gmail.com
 
 [SemiDioses]
 SemiDios1=chicken|raamaorc@gmail.com
