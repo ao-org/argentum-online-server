@@ -514,6 +514,7 @@ Private Enum ClientPacketID
     FinalizarPescaEspecial
     RomperCania
     UseItemU
+    RepeatMacro
     [PacketCount]
 End Enum
 
@@ -1304,6 +1305,8 @@ On Error Resume Next
             Call HandleFinalizarPescaEspecial(UserIndex)
         Case ClientPacketID.RomperCania
             Call HandleRomperCania(UserIndex)
+        Case ClientPacketID.RepeatMacro
+            Call HandleRepeatMacro(UserIndex)
         Case Else
             Err.raise -1, "Invalid Message"
     End Select
@@ -18960,6 +18963,18 @@ Private Sub HandleFinalizarPescaEspecial(ByVal UserIndex As Integer)
     
 HandleFinalizarPescaEspecial_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleFinalizarPescaEspecial", Erl)
+End Sub
+
+Private Sub HandleRepeatMacro(ByVal UserIndex As Integer)
+
+    On Error GoTo HandleRepeatMacro_Err:
+    
+114         Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » El usuario " & UserList(UserIndex).Name & " está utilizando macro de click o U.", e_FontTypeNames.FONTTYPE_INFOBOLD))
+    
+     'UserList(UserIndex).Invent.HerramientaEqpObjIndex
+    
+HandleRepeatMacro_Err:
+102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRepeatMacro", Erl)
 End Sub
 Private Sub HandleDeleteItem(ByVal UserIndex As Integer)
     On Error GoTo HandleDeleteItem_Err:
