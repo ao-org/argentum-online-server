@@ -607,7 +607,7 @@ Sub Main()
 118     frmMain.Caption = frmMain.Caption & " V." & App.Major & "." & App.Minor & "." & App.Revision
     
 120     frmCargando.Label1(2).Caption = "Iniciando Arrays..."
-    
+        cuentaregresivaOrcos = 300
 122     Call LoadGuildsDB
     
 126     Call loadAdministrativeUsers
@@ -2226,7 +2226,17 @@ Sub PasarSegundo()
         Dim X    As Byte
 
         Dim Y    As Byte
-    
+        
+        
+        
+70      If cuentaregresivaOrcos > 0 Then
+74          cuentaregresivaOrcos = cuentaregresivaOrcos - 1
+        Else
+            cuentaregresivaOrcos = 300
+            Call TimerQuestOrco
+        End If
+        
+        
 100     If CuentaRegresivaTimer > 0 Then
 102         If CuentaRegresivaTimer > 1 Then
 104             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(CuentaRegresivaTimer - 1 & " segundos...!", e_FontTypeNames.FONTTYPE_GUILD))
