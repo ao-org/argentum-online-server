@@ -2532,7 +2532,9 @@ Sub LoadIntervalos()
     
         'frmMain.tLluvia.Interval = val(Lector.GetValue("INTERVALOS", "IntervaloPerdidaStaminaLluvia"))
         'FrmInterv.txtIntervaloPerdidaStaminaLluvia.Text = frmMain.tLluvia.Interval
-    
+        
+209     frmMain.timer_orco.Interval = 300000
+        
 210     MinutosWs = val(Lector.GetValue("INTERVALOS", "IntervaloWS"))
 
 212     If MinutosWs < 1 Then MinutosWs = 10
