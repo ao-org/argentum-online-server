@@ -365,7 +365,7 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
                     Else
                         Dim charIndexstr As Integer
                         charIndexstr = str(NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex)
-                        Call WriteChatOverHead(UserIndex, "No tienes ningún trofeo de pesca para entregar.", charindexstr, &HFFFF00)
+                        Call WriteChatOverHead(UserIndex, "No tienes ningún trofeo de pesca para entregar.", charIndexStr, &HFFFF00)
                     End If
 320             ElseIf NpcList(TempCharIndex).Craftea > 0 Then
 322                 If UserList(UserIndex).flags.Muerto = 1 Then
@@ -585,7 +585,6 @@ Sub AccionParaPozos(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer
             End If
 
 136         UserList(UserIndex).Stats.MinAGU = UserList(UserIndex).Stats.MaxAGU
-138         UserList(UserIndex).flags.Sed = 0 'Bug reparado 27/01/13
 140         MapData(Map, X, Y).ObjInfo.amount = MapData(Map, X, Y).ObjInfo.amount - 1
 142         Call WriteConsoleMsg(UserIndex, "Sientes la frescura del pozo. ¡Ya no sientes sed!", e_FontTypeNames.FONTTYPE_EJECUCION)
 144         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
@@ -651,7 +650,6 @@ Sub AccionParaArboles(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integ
 
 128     UserList(UserIndex).Stats.MinHam = UserList(UserIndex).Stats.MinHam + 5
 130     UserList(UserIndex).Stats.MaxHam = 100
-132     UserList(UserIndex).flags.Hambre = 0 'Bug reparado 27/01/13
     
 134     MapData(Map, X, Y).ObjInfo.amount = MapData(Map, X, Y).ObjInfo.amount - 1
     
@@ -714,7 +712,6 @@ Sub AccionParaAgua(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer,
         End If
 
 124     UserList(UserIndex).Stats.MinAGU = UserList(UserIndex).Stats.MinAGU + 5
-126     UserList(UserIndex).flags.Sed = 0 'Bug reparado 27/01/13
     
 128     If Not UserList(UserIndex).flags.UltimoMensaje = 41 Then
 130         Call WriteConsoleMsg(UserIndex, "Has bebido, ya no sientes tanta sed.", e_FontTypeNames.FONTTYPE_INFOIAO)

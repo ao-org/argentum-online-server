@@ -1781,7 +1781,7 @@ Sub SubirSkill(ByVal UserIndex As Integer, ByVal Skill As Integer)
 
 110     If UserList(UserIndex).Stats.UserSkills(Skill) >= maxPermitido Then Exit Sub
 
-112     If UserList(UserIndex).flags.Hambre = 0 And UserList(UserIndex).flags.Sed = 0 Then
+112     If UserList(UserIndex).Stats.MinHam > 0 And UserList(UserIndex).Stats.MinAGU > 0 Then
 
             Dim Aumenta As Integer
             Dim Prob    As Integer

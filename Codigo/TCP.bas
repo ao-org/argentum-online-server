@@ -1259,8 +1259,6 @@ Sub ResetUserFlags(ByVal UserIndex As Integer)
 134         .TipoPocion = 0
 136         .TomoPocion = False
 138         .Descuento = vbNullString
-140         .Hambre = 0
-142         .Sed = 0
 144         .Descansar = False
 146         .Navegando = 0
 148         .Oculto = 0
