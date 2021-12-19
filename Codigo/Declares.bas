@@ -99,6 +99,7 @@ Public OroPorNivel          As Integer
 Public DropActive           As Byte
 
 Public CuentaRegresivaTimer As Byte
+Public cuentaregresivaOrcos As Integer
 
 Public PENDIENTE            As Integer
 

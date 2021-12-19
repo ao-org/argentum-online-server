@@ -26,10 +26,6 @@ Begin VB.Form frmMain
    ScaleHeight     =   6210
    ScaleWidth      =   6840
    StartUpPosition =   2  'CenterScreen
-   Begin VB.Timer timer_orco 
-      Left            =   1200
-      Top             =   4200
-   End
    Begin VB.CommandButton Command3 
       Caption         =   "Recargar Donadore"
       Height          =   495
@@ -856,32 +852,6 @@ End Sub
 
 
 
-Private Sub timer_orco_Timer()
-    Dim UserIndex As Integer
-    
-        
-        
-        For UserIndex = 1 To LastUser
-        If UserIndex > 0 Then
-        With UserList(UserIndex)
-            If .flags.UserLogged Then
-                Dim prob As Long, estimatedProb As Long
-                
-                prob = RandomNumber(1, LastUser)
-                estimatedProb = LastUser / 3
-                'If prob < estimatedProb Then
-                    UserList(UserIndex).Stats.MinHam = 0
-                    UserList(UserIndex).Stats.MinAGU = 0
-122                 Call WriteUpdateHungerAndThirst(UserIndex)
-202                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, 20, 50, False))
-                'End If
-            End If
-        End With
-        End If
-    Next UserIndex
-    
-    Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(156, NO_3D_SOUND, NO_3D_SOUND))
-End Sub
 
 Private Sub TimerGuardarUsuarios_Timer()
 
