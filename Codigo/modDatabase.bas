@@ -888,8 +888,6 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
 210         .flags.Envenenado = RS!is_poisoned
 211         .flags.Incinerado = RS!is_incinerated
 212         .flags.Escondido = False
-214         .flags.Hambre = (.Stats.MinHam = 0)
-216         .flags.Sed = (.Stats.MinAGU = 0)
 218         .flags.Ban = RS!is_banned
 220         .flags.Muerto = RS!is_dead
 222         .flags.Navegando = RS!is_sailing

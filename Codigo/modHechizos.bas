@@ -2710,7 +2710,6 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef B As Boolean)
     
 154         If UserList(tempChr).Stats.MinHam < 1 Then
 156             UserList(tempChr).Stats.MinHam = 0
-158             UserList(tempChr).flags.Hambre = 1
 
             End If
     
@@ -2764,7 +2763,6 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef B As Boolean)
     
 204         If UserList(tempChr).Stats.MinAGU < 1 Then
 206             UserList(tempChr).Stats.MinAGU = 0
-208             UserList(tempChr).flags.Sed = 1
 
             End If
             

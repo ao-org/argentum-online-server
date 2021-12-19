@@ -1442,7 +1442,7 @@ Public Sub EfectoStamina(ByVal UserIndex As Integer)
     Dim bEnviarStats_STA As Boolean
     
 100 With UserList(UserIndex)
-102     HambreOSed = .flags.Hambre = 1 Or .flags.Sed = 1
+102     HambreOSed = .Stats.MinHam = 0 Or .Stats.MinAGU = 0
     
 104     If Not HambreOSed Then 'Si no tiene hambre ni sed
 106         If .Stats.MinHp < .Stats.MaxHp Then
@@ -2103,7 +2103,6 @@ Public Function HambreYSed(ByVal UserIndex As Integer) As Boolean
         
 112             If UserList(UserIndex).Stats.MinAGU <= 0 Then
 114                 UserList(UserIndex).Stats.MinAGU = 0
-116                 UserList(UserIndex).flags.Sed = 1
 
                 End If
         
@@ -2123,7 +2122,6 @@ Public Function HambreYSed(ByVal UserIndex As Integer) As Boolean
 
 130             If UserList(UserIndex).Stats.MinHam <= 0 Then
 132                 UserList(UserIndex).Stats.MinHam = 0
-134                 UserList(UserIndex).flags.Hambre = 1
 
                 End If
 

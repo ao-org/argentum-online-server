@@ -17584,8 +17584,6 @@ Private Sub HandleCompletarViaje(ByVal UserIndex As Integer)
 154                     Call WriteConsoleMsg(UserIndex, "Has viajado por varios días, te sientes exhausto!", e_FontTypeNames.FONTTYPE_WARNING)
 156                     UserList(UserIndex).Stats.MinAGU = 0
 158                     UserList(UserIndex).Stats.MinHam = 0
-160                     UserList(UserIndex).flags.Sed = 1
-162                     UserList(UserIndex).flags.Hambre = 1
                     
 164                     UserList(UserIndex).Stats.GLD = UserList(UserIndex).Stats.GLD - costo
 166                     Call WriteUpdateHungerAndThirst(UserIndex)
@@ -17617,8 +17615,6 @@ Private Sub HandleCompletarViaje(ByVal UserIndex As Integer)
 184                 Call WriteConsoleMsg(UserIndex, "Has viajado por varios días, te sientes exhausto!", e_FontTypeNames.FONTTYPE_WARNING)
 186                 UserList(UserIndex).Stats.MinAGU = 0
 188                 UserList(UserIndex).Stats.MinHam = 0
-190                 UserList(UserIndex).flags.Sed = 1
-192                 UserList(UserIndex).flags.Hambre = 1
                 
 194                 UserList(UserIndex).Stats.GLD = UserList(UserIndex).Stats.GLD - costo
 196                 Call WriteUpdateHungerAndThirst(UserIndex)

@@ -1802,7 +1802,6 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
 146                 .Stats.MinHam = .Stats.MinHam + obj.MinHam
     
 148                 If .Stats.MinHam > .Stats.MaxHam Then .Stats.MinHam = .Stats.MaxHam
-150                 .flags.Hambre = 0
 152                 Call WriteUpdateHungerAndThirst(UserIndex)
 
                     'Sonido
@@ -2299,8 +2298,6 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
 666                         .Stats.MinHp = .Stats.MaxHp
 668                         .Stats.MinHam = .Stats.MaxHam
                         
-670                         .flags.Hambre = 0
-672                         .flags.Sed = 0
                         
 674                         Call WriteUpdateHungerAndThirst(UserIndex)
 676                         Call WriteConsoleMsg(UserIndex, "Donador> Te sentis sano y lleno.", e_FontTypeNames.FONTTYPE_WARNING)
@@ -2659,7 +2656,6 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
 984                 .Stats.MinAGU = .Stats.MinAGU + obj.MinSed
     
 986                 If .Stats.MinAGU > .Stats.MaxAGU Then .Stats.MinAGU = .Stats.MaxAGU
-988                 .flags.Sed = 0
 990                 Call WriteUpdateHungerAndThirst(UserIndex)
             
                     'Quitamos del inv el item
@@ -2810,7 +2806,6 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
 1086                 .Stats.MinAGU = .Stats.MinAGU + obj.MinSed
     
 1088                 If .Stats.MinAGU > .Stats.MaxAGU Then .Stats.MinAGU = .Stats.MaxAGU
-1090                 .flags.Sed = 0
 1092                 Call WriteUpdateHungerAndThirst(UserIndex)
 1094                 MiObj.amount = 1
 1096                 MiObj.ObjIndex = ObjData(.Invent.Object(Slot).ObjIndex).IndexCerrada
@@ -2837,14 +2832,14 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
 1112                 If ClasePuedeUsarItem(UserIndex, .Invent.Object(Slot).ObjIndex, Slot) Then
     
                               'If .Stats.MaxMAN > 0 Then
-1114                     If .flags.Hambre = 0 And .flags.Sed = 0 Then
+1114                     If .Stats.MinHam > 0 And .Stats.MinAGU > 0 Then
 1116                         Call AgregarHechizo(UserIndex, Slot)
 1118                         Call UpdateUserInv(False, UserIndex, Slot)
                                   ' Call LogError(.Name & " lo aprendio.")
-                              Else
+                        Else
 1120                         Call WriteConsoleMsg(UserIndex, "Estas demasiado hambriento y sediento.", e_FontTypeNames.FONTTYPE_INFO)
     
-                              End If
+                        End If
     
                               ' Else
                               '    Call WriteConsoleMsg(UserIndex, "No tienes conocimientos de las Artes Arcanas.", e_FontTypeNames.FONTTYPE_WARNING)
@@ -3056,8 +3051,6 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
 1292                 Call WriteConsoleMsg(UserIndex, "Has viajado por varios días, te sientes exhausto!", e_FontTypeNames.FONTTYPE_WARNING)
 1294                 .Stats.MinAGU = 0
 1296                 .Stats.MinHam = 0
-1298                 .flags.Sed = 1
-1300                 .flags.Hambre = 1
 1302                 Call WriteUpdateHungerAndThirst(UserIndex)
 1304                 Call QuitarUserInvItem(UserIndex, Slot, 1)
 1306                 Call UpdateUserInv(False, UserIndex, Slot)

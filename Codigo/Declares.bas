@@ -1550,8 +1550,6 @@ Public Type t_UserFlags
     Crafteando As Byte
 
     Descuento As String
-    Hambre As Byte
-    Sed As Byte
     PuedeMoverse As Byte
     TimerLanzarSpell As Long
     PuedeTrabajar As Byte
