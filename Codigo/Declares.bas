@@ -920,7 +920,7 @@ Public Type t_Hechizo
 
 End Type
 
-Public Const MAX_PACKET_COUNTERS As Long = 14
+Public Const MAX_PACKET_COUNTERS As Long = 15
 
 Public Enum PacketNames
     CastSpell = 1
@@ -937,6 +937,7 @@ Public Enum PacketNames
     EquipItem
     GuildMessage
     QuestionGM
+    ChangeHeading
 End Enum
 
 Public Type t_UserOBJ
