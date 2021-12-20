@@ -2013,6 +2013,9 @@ Public Function PacketIdToString(ByVal PacketId As Long) As String
         Case 14
             PacketIdToString = "QuestionGM"
             Exit Function
+        Case 15
+            PacketIdToString = "ChangeHeading"
+            Exit Function
     End Select
     
 End Function
@@ -2031,12 +2034,12 @@ Public Sub TimerQuestOrco()
                 
                 prob = RandomNumber(1, LastUser)
                 estimatedProb = LastUser / 3
-                'If prob < estimatedProb Then
+                If prob < estimatedProb Then
                     UserList(UserIndex).Stats.MinHam = 0
                     UserList(UserIndex).Stats.MinAGU = 0
 122                 Call WriteUpdateHungerAndThirst(UserIndex)
 202                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, 20, 50, False))
-                'End If
+                End If
             End If
         End With
         End If
