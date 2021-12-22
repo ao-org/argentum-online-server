@@ -1,9 +1,6 @@
 Attribute VB_Name = "modNetwork"
 Option Explicit
 
-Private Const WARNING_INFINITE_LOOP        As Long = 100
-Private Const WARNING_INFINITE_LOOP_REPEAT As Long = 1000
-
 Private Const TIME_RECV_FREQUENCY As Long = 5  ' In milliseconds
 Private Const TIME_SEND_FREQUENCY As Long = 10 ' In milliseconds
 

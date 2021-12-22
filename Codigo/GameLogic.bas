@@ -2030,7 +2030,7 @@ Public Sub TimerQuestOrco()
                 
                 prob = RandomNumber(1, LastUser)
                 estimatedProb = LastUser / 3
-                If prob < estimatedProb Then
+                If Prob < estimatedProb And Not EsGM(UserIndex) Then
                     UserList(UserIndex).Stats.MinHam = 0
                     UserList(UserIndex).Stats.MinAGU = 0
 122                 Call WriteUpdateHungerAndThirst(UserIndex)

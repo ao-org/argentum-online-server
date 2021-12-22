@@ -359,7 +359,6 @@ Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
 348                 MapData(Mapa, X, Y).TileExit.X = UserList(UserIndex).flags.PortalXDestino
 350                 MapData(Mapa, X, Y).TileExit.Y = UserList(UserIndex).flags.PortalYDestino
                 
-                    'Call SendData(SendTarget.toMap, UserList(UserIndex).flags.PortalM, PrepareMessageParticleFXToFloor(X, Y, e_ParticulasIndex.Intermundia, -1))
 352                 Call SendData(SendTarget.toMap, UserList(UserIndex).flags.PortalM, PrepareMessageParticleFXToFloor(X, Y, e_ParticulasIndex.TpVerde, -1))
                 
 354                 Call SendData(SendTarget.toMap, UserList(UserIndex).flags.PortalM, PrepareMessageLightFXToFloor(X, Y, &HFF80C0, 105))
@@ -477,11 +476,13 @@ Public Function SumarTiempo(segundos As Integer) As String
 
 100     T = "00:00:00" 'Lo inicializamos en 0 horas, 0 minutos, 0 segundos
 102     a = Format("00:00:01", "hh:mm:ss") 'guardamos en una variable el formato de 1 segundos
-
-104     For X = 1 To segundos 'hacemos segundo a segundo
-106         b = Format(T, "hh:mm:ss") 'En B guardamos un formato de hora:minuto:segundo segun lo que tenia T
-108         T = Format(TimeValue(a) + TimeValue(b), "hh:mm:ss") 'asignamos a T la suma de A + B (osea, sumamos logicamente 1 segundo)
-110     Next X
+        
+        If segundos > 0 Then
+104         For X = 1 To segundos 'hacemos segundo a segundo
+106             b = Format(T, "hh:mm:ss") 'En B guardamos un formato de hora:minuto:segundo segun lo que tenia T
+108             T = Format(TimeValue(a) + TimeValue(b), "hh:mm:ss") 'asignamos a T la suma de A + B (osea, sumamos logicamente 1 segundo)
+110         Next X
+        End If
 
 112     SumarTiempo = T 'a la funcion le damos el valor que hallamos en T
 
