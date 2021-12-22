@@ -491,45 +491,6 @@ loadAdministrativeUsers_Err:
         
 End Sub
 
-Public Function GetCharPrivs(ByRef UserName As String) As e_PlayerType
-        '****************************************************
-        'Author: ZaMa
-        'Last Modification: 18/11/2010
-        'Reads the user's charfile and retrieves its privs.
-        '***************************************************
-        
-        On Error GoTo GetCharPrivs_Err
-        
-
-        Dim privs As e_PlayerType
-
-100     If EsAdmin(UserName) Then
-102         privs = e_PlayerType.Admin
-        
-104     ElseIf EsDios(UserName) Then
-106         privs = e_PlayerType.Dios
-
-108     ElseIf EsSemiDios(UserName) Then
-110         privs = e_PlayerType.SemiDios
-        
-112     ElseIf EsConsejero(UserName) Then
-114         privs = e_PlayerType.Consejero
-    
-        Else
-116         privs = e_PlayerType.user
-
-        End If
-
-118     GetCharPrivs = privs
-
-        
-        Exit Function
-
-GetCharPrivs_Err:
-120     Call TraceError(Err.Number, Err.Description, "ES.GetCharPrivs", Erl)
-
-        
-End Function
 
 Public Function TxtDimension(ByVal Name As String) As Long
         
@@ -3237,7 +3198,6 @@ LoadRangosFaccion_Err:
 
 
 End Sub
-
 
 Public Sub LoadRecompensasFaccion()
             On Error GoTo LoadRecompensasFaccion_Err

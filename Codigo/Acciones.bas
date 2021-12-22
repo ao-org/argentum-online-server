@@ -45,16 +45,13 @@ Option Explicit
 Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer)
         
         On Error GoTo Accion_Err
-    
-        
-
-        
 
         '¿Rango Visión? (ToxicWaste)
 100     If (Abs(UserList(UserIndex).Pos.Y - Y) > RANGO_VISION_Y) Or (Abs(UserList(UserIndex).Pos.X - X) > RANGO_VISION_X) Then
             Exit Sub
-
         End If
+        
+        If UserIndex <= 0 Then Exit Sub
 
         '¿Posicion valida?
 102     If InMapBounds(Map, X, Y) Then
@@ -350,14 +347,20 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
                 ElseIf NpcList(TempCharIndex).NPCtype = e_NPCType.EntregaPesca Then
                     Dim i As Integer, j As Integer
                     Dim PuntosTotales As Integer
+                                                            
+                    Dim CantPecesEspeciales As Long
                     
-                    For i = 1 To MAX_INVENTORY_SLOTS
-                        For j = 1 To UBound(PecesEspeciales)
-                            If UserList(UserIndex).Invent.Object(i).ObjIndex = PecesEspeciales(j).ObjIndex Then
-                                PuntosTotales = PuntosTotales + (ObjData(UserList(UserIndex).Invent.Object(i).ObjIndex).PuntosPesca * UserList(UserIndex).Invent.Object(i).amount)
-                            End If
-                        Next j
-                    Next i
+                    CantPecesEspeciales = UBound(PecesEspeciales)
+                                                
+                    If CantPecesEspeciales > 0 Then
+                        For i = 1 To MAX_INVENTORY_SLOTS
+                            For j = 1 To CantPecesEspeciales
+                                If UserList(UserIndex).Invent.Object(i).ObjIndex = PecesEspeciales(j).ObjIndex Then
+                                    PuntosTotales = PuntosTotales + (ObjData(UserList(UserIndex).Invent.Object(i).ObjIndex).PuntosPesca * UserList(UserIndex).Invent.Object(i).amount)
+                                End If
+                            Next j
+                        Next i
+                    End If
                     
                     If PuntosTotales > 0 Then
 319                     UserList(UserIndex).flags.pregunta = 5
@@ -398,16 +401,6 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
                         'Call AccionParaCorreo(Map, x, Y, UserIndex)
                         Call WriteConsoleMsg(UserIndex, "El correo está temporalmente deshabilitado.", e_FontTypeNames.FONTTYPE_EJECUCION)
 
-348                 Case e_OBJType.otForos 'Foro
-                        'Call AccionParaForo(Map, X, Y, UserIndex)
-350                     Call WriteConsoleMsg(UserIndex, "El foro está temporalmente deshabilitado.", e_FontTypeNames.FONTTYPE_EJECUCION)
-
-352                 Case e_OBJType.OtPozos 'Pozos
-                        'Call AccionParaPozos(Map, x, Y, UserIndex)
-
-354                 Case e_OBJType.otArboles 'Pozos
-                        'Call AccionParaArboles(Map, x, Y, UserIndex)
-
 356                 Case e_OBJType.otYunque 'Pozos
 358                     Call AccionParaYunque(Map, X, Y, UserIndex)
 
@@ -417,6 +410,8 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
 364                         Call AccionParaRamita(Map, X, Y, UserIndex)
 
                         End If
+                    Case Else
+                        Exit Sub
 
                 End Select
 
@@ -450,10 +445,6 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
 388                     Call AccionParaPuerta(Map, X, Y + 1, UserIndex)
 
                 End Select
-
-            'ElseIf HayAgua(Map, x, Y) Then
-                'Call AccionParaAgua(Map, x, Y, UserIndex)
-
             End If
 
         End If
@@ -467,269 +458,6 @@ Accion_Err:
         
 End Sub
 
-Sub AccionParaForo(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer, ByVal UserIndex As Integer)
-        
-        On Error GoTo AccionParaForo_Err
-    
-        
-
-        
-
-        Dim Pos As t_WorldPos
-
-100     Pos.Map = Map
-102     Pos.X = X
-104     Pos.Y = Y
-
-106     If Distancia(Pos, UserList(UserIndex).Pos) > 2 Then
-108         Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
-            'Call WriteConsoleMsg(UserIndex, "Estas demasiado lejos.", e_FontTypeNames.FONTTYPE_INFO)
-            Exit Sub
-
-        End If
-
-        '¿Hay mensajes?
-        Dim f As String, tit As String, men As String, BASE As String, auxcad As String
-
-110     f = App.Path & "\foros\" & UCase$(ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex).ForoID) & ".for"
-
-112     If FileExist(f, vbNormal) Then
-
-            Dim num As Integer
-
-114         num = val(GetVar(f, "INFO", "CantMSG"))
-116         BASE = Left$(f, Len(f) - 4)
-
-            Dim i As Integer
-
-            Dim n As Integer
-
-118         For i = 1 To num
-120             n = FreeFile
-122             f = BASE & i & ".for"
-124             Open f For Input Shared As #n
-126             Input #n, tit
-128             men = vbNullString
-130             auxcad = vbNullString
-
-132             Do While Not EOF(n)
-134                 Input #n, auxcad
-136                 men = men & vbCrLf & auxcad
-                Loop
-138             Close #n
-140             Call WriteAddForumMsg(UserIndex, tit, men)
-        
-            Next
-
-        End If
-
-142     Call WriteShowForumForm(UserIndex)
-
-        
-        Exit Sub
-
-AccionParaForo_Err:
-144     Call TraceError(Err.Number, Err.Description, "Acciones.AccionParaForo", Erl)
-
-        
-End Sub
-
-Sub AccionParaPozos(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer, ByVal UserIndex As Integer)
-        
-        On Error GoTo AccionParaPozos_Err
-    
-        
-
-        
-
-        Dim Pos As t_WorldPos
-
-100     Pos.Map = Map
-102     Pos.X = X
-104     Pos.Y = Y
-
-106     If Distancia(Pos, UserList(UserIndex).Pos) > 2 Then
-108         Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
-            'Call WriteConsoleMsg(UserIndex, "Estas demasiado lejos.", e_FontTypeNames.FONTTYPE_INFO)
-            Exit Sub
-
-        End If
-
-110     If MapData(Map, X, Y).ObjInfo.amount <= 1 Then
-112         Call WriteConsoleMsg(UserIndex, "El pozo esta drenado, regresa mas tarde...", e_FontTypeNames.FONTTYPE_EJECUCION)
-            Exit Sub
-
-        End If
-
-114     If ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex).Subtipo = 1 Then
-116         If UserList(UserIndex).Stats.MinMAN = UserList(UserIndex).Stats.MaxMAN Then
-118             Call WriteConsoleMsg(UserIndex, "No tenes necesidad del pozo...", e_FontTypeNames.FONTTYPE_INFOIAO)
-                Exit Sub
-
-            End If
-
-120         UserList(UserIndex).Stats.MinMAN = UserList(UserIndex).Stats.MaxMAN
-122         MapData(Map, X, Y).ObjInfo.amount = MapData(Map, X, Y).ObjInfo.amount - 1
-124         Call WriteConsoleMsg(UserIndex, "Sientes la frescura del pozo. ¡Tu maná a sido restaurada!", e_FontTypeNames.FONTTYPE_EJECUCION)
-126         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
-128         Call WriteUpdateUserStats(UserIndex)
-            Exit Sub
-
-        End If
-
-130     If ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex).Subtipo = 2 Then
-132         If UserList(UserIndex).Stats.MinAGU = UserList(UserIndex).Stats.MaxAGU Then
-134             Call WriteConsoleMsg(UserIndex, "No tenes necesidad del pozo...", e_FontTypeNames.FONTTYPE_INFOIAO)
-                Exit Sub
-
-            End If
-
-136         UserList(UserIndex).Stats.MinAGU = UserList(UserIndex).Stats.MaxAGU
-140         MapData(Map, X, Y).ObjInfo.amount = MapData(Map, X, Y).ObjInfo.amount - 1
-142         Call WriteConsoleMsg(UserIndex, "Sientes la frescura del pozo. ¡Ya no sientes sed!", e_FontTypeNames.FONTTYPE_EJECUCION)
-144         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
-146         Call WriteUpdateHungerAndThirst(UserIndex)
-            Exit Sub
-
-        End If
-
-        
-        Exit Sub
-
-AccionParaPozos_Err:
-148     Call TraceError(Err.Number, Err.Description, "Acciones.AccionParaPozos", Erl)
-
-        
-End Sub
-
-Sub AccionParaArboles(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer, ByVal UserIndex As Integer)
-        
-        On Error GoTo AccionParaArboles_Err
-    
-        
-
-        
-
-        Dim Pos As t_WorldPos
-
-100     Pos.Map = Map
-102     Pos.X = X
-104     Pos.Y = Y
-
-106     If Distancia(Pos, UserList(UserIndex).Pos) > 2 Then
-108         Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
-            'Call WriteConsoleMsg(UserIndex, "Estas demasiado lejos.", e_FontTypeNames.FONTTYPE_INFO)
-            Exit Sub
-
-        End If
-
-110     If MapInfo(UserList(UserIndex).Pos.Map).Seguro = 1 Then
-112         Call WriteConsoleMsg(UserIndex, "Esta prohibido manipular árboles en las ciudades.", e_FontTypeNames.FONTTYPE_INFOIAO)
-114         Call WriteWorkRequestTarget(UserIndex, 0)
-            Exit Sub
-
-        End If
-
-116     If UserList(UserIndex).Stats.UserSkills(e_Skill.Supervivencia) < 40 Then
-118         Call WriteConsoleMsg(UserIndex, "No tenes suficientes conocimientos para comer del arbol. Necesitas al menos 40 skill en supervivencia.", e_FontTypeNames.FONTTYPE_INFO)
-            Exit Sub
-
-        End If
-
-120     If MapData(Map, X, Y).ObjInfo.amount <= 1 Then
-122         Call WriteConsoleMsg(UserIndex, "El árbol no tiene más frutos para dar.", e_FontTypeNames.FONTTYPE_INFOIAO)
-            Exit Sub
-
-        End If
-
-124     If UserList(UserIndex).Stats.MinHam = UserList(UserIndex).Stats.MaxHam Then
-126         Call WriteConsoleMsg(UserIndex, "No tenes hambre.", e_FontTypeNames.FONTTYPE_INFO)
-            Exit Sub
-
-        End If
-
-128     UserList(UserIndex).Stats.MinHam = UserList(UserIndex).Stats.MinHam + 5
-130     UserList(UserIndex).Stats.MaxHam = 100
-    
-134     MapData(Map, X, Y).ObjInfo.amount = MapData(Map, X, Y).ObjInfo.amount - 1
-    
-136     If Not UserList(UserIndex).flags.UltimoMensaje = 40 Then
-138         Call WriteConsoleMsg(UserIndex, "Logras conseguir algunos frutos del árbol, ya no sientes tanta hambre.", e_FontTypeNames.FONTTYPE_INFOIAO)
-140         UserList(UserIndex).flags.UltimoMensaje = 40
-
-        End If
-    
-142     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(e_SoundIndex.SOUND_COMIDA, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
-144     Call WriteUpdateHungerAndThirst(UserIndex)
-
-        
-        Exit Sub
-
-AccionParaArboles_Err:
-146     Call TraceError(Err.Number, Err.Description, "Acciones.AccionParaArboles", Erl)
-
-        
-End Sub
-
-Sub AccionParaAgua(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer, ByVal UserIndex As Integer)
-        
-        On Error GoTo AccionParaAgua_Err
-    
-        
-
-        
-
-        Dim Pos As t_WorldPos
-
-100     Pos.Map = Map
-102     Pos.X = X
-104     Pos.Y = Y
-
-106     If Distancia(Pos, UserList(UserIndex).Pos) > 2 Then
-108         Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
-            'Call WriteConsoleMsg(UserIndex, "Estas demasiado lejos.", e_FontTypeNames.FONTTYPE_INFO)
-            Exit Sub
-
-        End If
-
-110     If MapInfo(UserList(UserIndex).Pos.Map).Seguro = 1 Then
-112         Call WriteConsoleMsg(UserIndex, "Esta prohibido beber agua en las orillas de las ciudades.", e_FontTypeNames.FONTTYPE_INFO)
-114         Call WriteWorkRequestTarget(UserIndex, 0)
-            Exit Sub
-
-        End If
-
-116     If UserList(UserIndex).Stats.UserSkills(e_Skill.Supervivencia) < 30 Then
-118         Call WriteConsoleMsg(UserIndex, "No tenes suficientes conocimientos para beber del agua. Necesitas al menos 30 skill en supervivencia.", e_FontTypeNames.FONTTYPE_INFO)
-            Exit Sub
-
-        End If
-
-120     If UserList(UserIndex).Stats.MinAGU = UserList(UserIndex).Stats.MaxAGU Then
-122         Call WriteConsoleMsg(UserIndex, "No tenes sed.", e_FontTypeNames.FONTTYPE_INFOIAO)
-            Exit Sub
-
-        End If
-
-124     UserList(UserIndex).Stats.MinAGU = UserList(UserIndex).Stats.MinAGU + 5
-    
-128     If Not UserList(UserIndex).flags.UltimoMensaje = 41 Then
-130         Call WriteConsoleMsg(UserIndex, "Has bebido, ya no sientes tanta sed.", e_FontTypeNames.FONTTYPE_INFOIAO)
-132         UserList(UserIndex).flags.UltimoMensaje = 41
-
-        End If
-    
-134     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
-136     Call WriteUpdateHungerAndThirst(UserIndex)
-
-        
-        Exit Sub
-
-AccionParaAgua_Err:
-138     Call TraceError(Err.Number, Err.Description, "Acciones.AccionParaAgua", Erl)
-
-        
-End Sub
 
 Sub AccionParaYunque(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer, ByVal UserIndex As Integer)
         
@@ -743,20 +471,17 @@ Sub AccionParaYunque(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Intege
 
 106     If Distancia(Pos, UserList(UserIndex).Pos) > 2 Then
 108         Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
-            'Call WriteConsoleMsg(UserIndex, "Estas demasiado lejos.", e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteConsoleMsg(UserIndex, "Estas demasiado lejos.", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
 
         End If
     
-        ' Herramientas: SubTipo 7 - Martillo de Herrero
-        
 110     If UserList(UserIndex).Invent.HerramientaEqpObjIndex = 0 Then
 112         Call WriteConsoleMsg(UserIndex, "Debes tener equipado un martillo de herrero para trabajar con el yunque.", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         
 114     If ObjData(UserList(UserIndex).Invent.HerramientaEqpObjIndex).Subtipo <> 7 Then
-            'Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
 116         Call WriteConsoleMsg(UserIndex, "La herramienta que tienes no es la correcta, necesitas un martillo de herrero para poder trabajar.", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
 
@@ -766,10 +491,6 @@ Sub AccionParaYunque(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Intege
 120     Call EnivarArmadurasConstruibles(UserIndex)
 122     Call WriteShowBlacksmithForm(UserIndex)
 
-        'UserList(UserIndex).Invent.HerramientaEqpObjIndex = objindex
-        'UserList(UserIndex).Invent.HerramientaEqpSlot = slot
-
-        
         Exit Sub
 
 AccionParaYunque_Err:
@@ -783,14 +504,9 @@ Sub AccionParaPuerta(ByVal Map As Integer, ByVal X As Byte, ByVal Y As Byte, ByV
 
         Dim puerta As t_ObjData 'ver ReyarB
         
-        
-
-        
 100     If Distance(UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y, X, Y) > 2 And Not SinDistancia Then
-            ' Call WriteConsoleMsg(UserIndex, "Estas demasiado lejos.", e_FontTypeNames.FONTTYPE_INFO)
 102         Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
-
         End If
 
 
@@ -829,7 +545,6 @@ Handler:
 
 
 End Sub
-
 
 Sub AccionParaPuertaNpc(ByVal Map As Integer, ByVal X As Byte, ByVal Y As Byte, ByVal NpcIndex As Integer)
         On Error GoTo Handler
@@ -881,7 +596,6 @@ Sub AccionParaCartel(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Intege
 Handler:
 106 Call TraceError(Err.Number, Err.Description, "Acciones.AccionParaCartel", Erl)
 
-
 End Sub
 
 Sub AccionParaRamita(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer, ByVal UserIndex As Integer)
@@ -910,13 +624,11 @@ Sub AccionParaRamita(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Intege
 112         If MapInfo(Map).lluvia And Lloviendo Then
 114             Call WriteConsoleMsg(UserIndex, "Esta lloviendo, no podés encender una fogata aquí.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
-
             End If
 
 116         If MapData(Map, X, Y).trigger = e_Trigger.ZONASEGURA Or MapInfo(Map).Seguro = 1 Then
 118             Call WriteConsoleMsg(UserIndex, "En zona segura no podés hacer fogatas.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
-
             End If
 
 120         If MapData(Map, X - 1, Y).ObjInfo.ObjIndex = FOGATA Or _

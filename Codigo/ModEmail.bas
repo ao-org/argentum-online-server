@@ -1,28 +1,6 @@
 Attribute VB_Name = "ModCuentas"
 Option Explicit
 
-Public Function PasswordValida(Password As String, PasswordHash As String, Salt As String) As Boolean
-        
-        On Error GoTo PasswordValida_Err
-        
-
-        Dim oSHA256 As CSHA256
-
-100     Set oSHA256 = New CSHA256
-
-102     PasswordValida = (PasswordHash = oSHA256.SHA256(Password & Salt))
-    
-104     Set oSHA256 = Nothing
-
-        
-        Exit Function
-
-PasswordValida_Err:
-106     Call TraceError(Err.Number, Err.Description, "ModCuentas.PasswordValida", Erl)
-
-        
-End Function
-
 Public Function GetUserGuildIndex(ByVal UserName As String) As Integer
         
         On Error GoTo GetUserGuildIndex_Err

@@ -7,8 +7,6 @@ Private Declare Sub GetSystemTime Lib "kernel32.dll" (lpSystemTime As t_SYSTEMTI
 
 Private theTime      As t_SYSTEMTIME
 
-Public ClaveApertura As String
-
 Public PaquetesCount As Long
 
 Private Type t_SYSTEMTIME

@@ -17,7 +17,7 @@ Public Database_Name        As String
 Public Database_Username    As String
 Public Database_Password    As String
 
-Private Const MAX_ASYNC           As Byte = 20
+Private Const MAX_ASYNC     As Byte = 20
 Private Current_async       As Byte
 
 Private Connection          As ADODB.Connection
@@ -558,7 +558,6 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
             Call Execute(QUERY_UPDATE_MAINPJ, Params)
 
             ' ************************** User spells *********************************
-332         If .flags.ModificoHechizos Then
 334             ReDim Params(MAXUSERHECHIZOS * 3 - 1)
 336             ParamC = 0
             
@@ -575,10 +574,8 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
                 ' Reseteamos el flag para no volver a guardar.
                 Debug.Print "Se modificaron los hechizos. Guardando..."
                 .flags.ModificoHechizos = False
-            End If
             
             ' ************************** User inventory *********************************
-364         If .flags.ModificoInventario Then
 366             ReDim Params(MAX_INVENTORY_SLOTS * 5 - 1)
 368             ParamC = 0
             
@@ -597,10 +594,8 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
                 ' Reseteamos el flag para no volver a guardar.
                 Debug.Print "Se modifico el inventario. Guardando..."
                 .flags.ModificoInventario = False
-            End If
             
             ' ************************** User bank inventory *********************************
-400         If .flags.ModificoInventarioBanco Then
 402             ReDim Params(MAX_BANCOINVENTORY_SLOTS * 4 - 1)
 404             ParamC = 0
             
@@ -618,10 +613,8 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
                 ' Reseteamos el flag para no volver a guardar.
                 Debug.Print "Se modifico el inventario del banco. Guardando..."
                 .flags.ModificoInventarioBanco = False
-            End If
 
             ' ************************** User skills *********************************
-434         If .flags.ModificoSkills Then
 436             ReDim Params(NUMSKILLS * 3 - 1)
 438             ParamC = 0
             
@@ -638,10 +631,8 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
                 ' Reseteamos el flag para no volver a guardar.
                 Debug.Print "Se modifico las habilidades. Guardando..."
                 .flags.ModificoSkills = False
-            End If
 
             ' ************************** User pets *********************************
-466         If .flags.ModificoMascotas Then
 468             ReDim Params(MAXMASCOTAS * 3 - 1)
 470             ParamC = 0
                 Dim petType As Integer
@@ -674,10 +665,8 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
                 ' Reseteamos el flag para no volver a guardar.
                 Debug.Print "Se modifico las mascotas. Guardando..."
                 .flags.ModificoMascotas = False
-            End If
 
             ' ************************** User quests *********************************
-524         If .flags.ModificoQuests Then
 526             Builder.Append "REPLACE INTO quest (user_id, number, quest_id, npcs, npcstarget) VALUES "
             
                 Dim Tmp As Integer, LoopK As Long
@@ -740,12 +729,10 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
                 ' Reseteamos el flag para no volver a guardar.
                 Debug.Print "Se modifico las quests. Guardando..."
                 .flags.ModificoQuests = False
-            End If
         
             ' ************************** User completed quests *********************************
 586         If .QuestStats.NumQuestsDone > 0 Then
                 
-588             If .flags.ModificoQuestsHechas Then
                 
                     ' Armamos la query con los placeholders
 590                 Builder.Append "REPLACE INTO quest_done (user_id, quest_id) VALUES "
@@ -777,8 +764,6 @@ Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As
                     ' Reseteamos el flag para no volver a guardar.
                     Debug.Print "Se modifico las quests hechas. Guardando..."
                     .flags.ModificoQuestsHechas = False
-                End If
-                
             End If
             
         End With
@@ -825,12 +810,6 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
             Dim last_logout As Long
             
             last_logout = val(RS!last_logout)
-         '   If last_logout > 0 And (GetTickCount - last_logout) < 3000 Then
-         '       Call WriteShowMessageBox(UserIndex, "Está intentando loguear muy rápido, aguarde un instante. ")
-         '       Call CloseSocket(UserIndex)
-         '       Exit Sub
-         '   End If
-            
             
             'Start setting data
 106         .ID = RS!ID
@@ -1064,8 +1043,6 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
 394             While Not RS.EOF
 
 396                 .Stats.UserSkills(RS!Number) = RS!Value
-                    '.Stats.ExpSkills(RS!Number) = RS!Exp
-                    '.Stats.EluSkills(RS!Number) = RS!ELU
 
 398                 RS.MoveNext
                 Wend
@@ -1154,7 +1131,6 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
 
             End If
             UpdateDBIpsValues UserIndex
-          '  Call Execute("update account set last_ip = ? where id = ?", .IP, .AccountID)
 
         End With
         
@@ -1265,7 +1241,6 @@ Public Function GetUserValue(CharName As String, Columna As String) As Variant
         On Error GoTo GetUserValue_Err
         
 100     GetUserValue = GetDBValue("user", Columna, "name", CharName)
-
         
         Exit Function
 
@@ -1388,7 +1363,7 @@ Public Function GetPersonajesCuentaDatabase(ByVal AccountID As Long, Personaje()
 104     GetPersonajesCuentaDatabase = RS.RecordCount
 
         Dim i As Integer
-
+        If GetPersonajesCuentaDatabase = 0 Then Exit Function
 108     For i = 1 To GetPersonajesCuentaDatabase
 110         Personaje(i).nombre = RS!Name
 112         Personaje(i).Cabeza = RS!head_id
@@ -1468,7 +1443,7 @@ End Function
 Public Sub SetRecordUsersDatabase(ByVal Record As Long)
         
         On Error GoTo SetRecordUsersDatabase_Err
-        
+                
         Call Execute("UPDATE statistics SET value = ? WHERE name = 'record';", CStr(Record))
         
         Exit Sub

@@ -1163,11 +1163,6 @@ Sub ResetBasicUserInfo(ByVal UserIndex As Integer)
             
 194         .NroMascotas = 0
 
-            #If AntiExternos = 1 Then
-196             .XorIndexIn = 0
-198             .XorIndexOut = 0
-            #End If
-
         End With
 
         
