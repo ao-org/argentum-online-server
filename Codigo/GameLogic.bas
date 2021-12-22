@@ -470,7 +470,6 @@ Function InMapBounds(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Intege
 102         InMapBounds = False
         Else
 104         InMapBounds = True
-
         End If
 
         
@@ -1571,7 +1570,7 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
 
             End If
     
-            '*** NO ENCOTRO NADA ***
+            '*** NO ENCONTRO NADA ***
 524         If FoundSomething = 0 Then
 526             UserList(UserIndex).flags.TargetNPC = 0
 528             UserList(UserIndex).flags.TargetNpcTipo = e_NPCType.Comun
@@ -1706,7 +1705,7 @@ Public Function ItemNoEsDeMapa(ByVal Index As Integer) As Boolean
         On Error GoTo ItemNoEsDeMapa_Err
         
 
-100     ItemNoEsDeMapa = ObjData(Index).OBJType <> e_OBJType.otPuertas And ObjData(Index).OBJType <> e_OBJType.otForos And ObjData(Index).OBJType <> e_OBJType.otCarteles And ObjData(Index).OBJType <> e_OBJType.otArboles And ObjData(Index).OBJType <> e_OBJType.otYacimiento And ObjData(Index).OBJType <> e_OBJType.otTeleport And ObjData(Index).OBJType <> e_OBJType.OtCorreo And ObjData(Index).OBJType <> e_OBJType.OtDecoraciones
+100     ItemNoEsDeMapa = ObjData(Index).OBJType <> e_OBJType.otPuertas And ObjData(Index).OBJType <> e_OBJType.otCarteles And ObjData(Index).OBJType <> e_OBJType.otArboles And ObjData(Index).OBJType <> e_OBJType.otYacimiento And ObjData(Index).OBJType <> e_OBJType.otTeleport And ObjData(Index).OBJType <> e_OBJType.OtCorreo And ObjData(Index).OBJType <> e_OBJType.OtDecoraciones
 
         
         Exit Function
@@ -1723,7 +1722,7 @@ Public Function MostrarCantidad(ByVal Index As Integer) As Boolean
         
         On Error GoTo MostrarCantidad_Err
         
-100     MostrarCantidad = ObjData(Index).OBJType <> e_OBJType.otPuertas And ObjData(Index).OBJType <> e_OBJType.otForos And ObjData(Index).OBJType <> e_OBJType.otCarteles And ObjData(Index).OBJType <> e_OBJType.otYacimiento And ObjData(Index).OBJType <> e_OBJType.otArboles And ObjData(Index).OBJType <> e_OBJType.OtCorreo And ObjData(Index).OBJType <> e_OBJType.otTeleport
+100     MostrarCantidad = ObjData(Index).OBJType <> e_OBJType.otPuertas And ObjData(Index).OBJType <> e_OBJType.otCarteles And ObjData(Index).OBJType <> e_OBJType.otYacimiento And ObjData(Index).OBJType <> e_OBJType.otArboles And ObjData(Index).OBJType <> e_OBJType.OtCorreo And ObjData(Index).OBJType <> e_OBJType.otTeleport
 
         
         Exit Function
@@ -1739,7 +1738,7 @@ Public Function EsObjetoFijo(ByVal OBJType As e_OBJType) As Boolean
         On Error GoTo EsObjetoFijo_Err
         
 
-100     EsObjetoFijo = OBJType = e_OBJType.otForos Or OBJType = e_OBJType.otCarteles Or OBJType = e_OBJType.otArboles Or OBJType = e_OBJType.otYacimiento Or OBJType = e_OBJType.OtDecoraciones
+100     EsObjetoFijo = OBJType = OBJType = e_OBJType.otCarteles Or OBJType = e_OBJType.otArboles Or OBJType = e_OBJType.otYacimiento Or OBJType = e_OBJType.OtDecoraciones
 
         
         Exit Function
@@ -2019,9 +2018,6 @@ Public Function PacketIdToString(ByVal PacketId As Long) As String
     End Select
     
 End Function
-
-
-
 
 Public Sub TimerQuestOrco()
     Dim UserIndex As Integer

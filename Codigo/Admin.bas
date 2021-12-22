@@ -204,11 +204,6 @@ Sub ReSpawnOrigPosNpcs()
 110                 Call ReSpawnNpc(MiNPC)
 
                 End If
-        
-                'tildada por sugerencia de yind
-                'If NpcList(i).Contadores.TiempoExistencia > 0 Then
-                '        Call MuereNpc(i, 0)
-                'End If
             End If
    
 112     Next i
@@ -236,7 +231,6 @@ Sub WorldSave()
         Dim j As Integer, K As Integer
 
 104     For j = 1 To NumMaps
-
 106         If MapInfo(j).backup_mode = 1 Then K = K + 1
 108     Next j
 
@@ -248,24 +242,12 @@ Sub WorldSave()
             'DoEvents
     
 118         If MapInfo(LoopX).backup_mode = 1 Then
-    
-                '  Call GrabarMapa(LoopX, App.Path & "\WorldBackUp\Mapa" & LoopX)
 120             FrmStat.ProgressBar1.Value = FrmStat.ProgressBar1.Value + 1
-
             End If
 
 122     Next LoopX
 
 124     FrmStat.Visible = False
-
-        'If FileExist(DatPath & "\bkNpc.dat", vbNormal) Then Kill (DatPath & "bkNpc.dat")
-        'If FileExist(DatPath & "\bkNPCs-HOSTILES.dat", vbNormal) Then Kill (DatPath & "bkNPCs-HOSTILES.dat")
-
-        'For LoopX = 1 To LastNPC
-        '    If NpcList(LoopX).flags.BackUp = 1 Then
-        '            Call BackUPnPc(LoopX)
-        '    End If
-        'Next
 
 126     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor » WorldSave ha concluído", e_FontTypeNames.FONTTYPE_SERVER))
 
@@ -376,8 +358,6 @@ Public Sub BorrarUsuario(ByVal UserName As String)
         On Error GoTo BorrarUsuario_Err
 
 102         Call BorrarUsuarioDatabase(UserName)
-
-    
         
         Exit Sub
 
@@ -392,8 +372,6 @@ Public Function BANCheck(ByVal Name As String) As Boolean
         On Error GoTo BANCheck_Err
 
 102         BANCheck = BANCheckDatabase(Name)
-
-
         
         Exit Function
 
@@ -421,13 +399,11 @@ Public Function UnBan(ByVal Name As String) As Boolean
         
         On Error GoTo UnBan_Err
 
-102         Call UnBanDatabase(Name)
-
+102     Call UnBanDatabase(Name)
     
         'Remove it from the banned people database
 110     Call WriteVar(App.Path & "\logs\" & "BanDetail.dat", Name, "BannedBy", "")
 112     Call WriteVar(App.Path & "\logs\" & "BanDetail.dat", Name, "Reason", "")
-
         
         Exit Function
 
@@ -441,7 +417,6 @@ Public Function UserDarPrivilegioLevel(ByVal Name As String) As e_PlayerType
         
         On Error GoTo UserDarPrivilegioLevel_Err
         
-
         '***************************************************
         'Author: Unknown
         'Last Modification: 03/02/07
@@ -556,20 +531,22 @@ Sub LoadBans()
 
 102     BaneosTemporales = val(GetVar(DatPath & "baneos.dat", "INIT", "NumeroBans"))
 
-104     For i = 1 To BaneosTemporales
-106         Set tBan = New tBaneo
-
-108         With tBan
-110             .Name = GetVar(DatPath & "baneos.dat", "BANEO" & i, "USER")
-112             .FechaLiberacion = GetVar(DatPath & "baneos.dat", "BANEO" & i, "FECHA")
-114             .Causa = GetVar(DatPath & "baneos.dat", "BANEO" & i, "CAUSA")
-116             .Baneador = GetVar(DatPath & "baneos.dat", "BANEO" & i, "BANEADOR")
-        
-118             Call Baneos.Add(tBan)
-
-            End With
-
-        Next
+        If BaneosTemporales > 0 Then
+104         For i = 1 To BaneosTemporales
+106             Set tBan = New tBaneo
+    
+108             With tBan
+110                 .Name = GetVar(DatPath & "baneos.dat", "BANEO" & i, "USER")
+112                 .FechaLiberacion = GetVar(DatPath & "baneos.dat", "BANEO" & i, "FECHA")
+114                 .Causa = GetVar(DatPath & "baneos.dat", "BANEO" & i, "CAUSA")
+116                 .Baneador = GetVar(DatPath & "baneos.dat", "BANEO" & i, "BANEADOR")
+            
+118                 Call Baneos.Add(tBan)
+    
+                End With
+    
+            Next
+        End If
 
         
         Exit Sub

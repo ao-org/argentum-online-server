@@ -475,25 +475,6 @@ ErrHandler:
 
 End Sub
 
-Public Sub LeerLineaComandos()
-        
-        On Error GoTo LeerLineaComandos_Err
-        
-
-        Dim rdata As String
-
-100     rdata = Command
-102     rdata = Right$(rdata, Len(rdata))
-104     ClaveApertura = ReadField(1, rdata, Asc("*")) ' NICK
-
-        
-        Exit Sub
-
-LeerLineaComandos_Err:
-106     Call TraceError(Err.Number, Err.Description, "General.LeerLineaComandos", Erl)
-
-        
-End Sub
 
 Private Sub InicializarConstantes()
         
@@ -580,18 +561,11 @@ Sub Main()
 
         ' Me fijo si ya hay un proceso llamado server.exe abierto
 100     If GetProcess(App.EXEName & ".exe") > 1 Then
-    
             ' Si lo hay, pregunto si lo queremos cerrar.
 102         If MsgBox("Se ha encontrado mas de 1 instancia abierta de esta aplicación, ¿Desea continuar?", vbYesNo) = vbNo Then
-            
-                ' Cerramos esta instancia de la aplicacion.
 104             End
-
             End If
-        
         End If
-
-106     Call LeerLineaComandos
 
         Dim f As Date
     
@@ -602,12 +576,13 @@ Sub Main()
     
 116     frmCargando.Show
         LastCountUsersOnline = -1
-        'Call PlayWaveAPI(App.Path & "\wav\harp3.wav")
     
 118     frmMain.Caption = frmMain.Caption & " V." & App.Major & "." & App.Minor & "." & App.Revision
     
 120     frmCargando.Label1(2).Caption = "Iniciando Arrays..."
+
         cuentaregresivaOrcos = 300
+        
 122     Call LoadGuildsDB
     
 126     Call loadAdministrativeUsers
@@ -620,7 +595,6 @@ Sub Main()
 137     Call LoadMD5
 135     Call LoadPacketRatePolicy
 133     Call LoadPrivateKey
-134     Call AOGuard.LoadAOGuardConfiguration
 138     Call LoadConfiguraciones
 140     Call LoadIntervalos
 142     Call CargarForbidenWords
@@ -1126,40 +1100,6 @@ ErrHandler:
 
 End Sub
 
-Public Sub SaveDayStats()
-        ''On Error GoTo errhandler
-        ''
-        ''Dim nfile As Integer
-        ''nfile = FreeFile ' obtenemos un canal
-        ''Open App.Path & "\logs\" & Replace(Date, "/", "-") & ".log" For Append Shared As #nfile
-        ''
-        ''Print #nfile, "<stats>"
-        ''Print #nfile, "<ao>"
-        ''Print #nfile, "<dia>" & Date & "</dia>"
-        ''Print #nfile, "<hora>" & Time & "</hora>"
-        ''Print #nfile, "<segundos_total>" & DayStats.Segundos & "</segundos_total>"
-        ''Print #nfile, "<max_user>" & DayStats.MaxUsuarios & "</max_user>"
-        ''Print #nfile, "</ao>"
-        ''Print #nfile, "</stats>"
-        ''
-        ''
-        ''Close #nfile
-    
-        On Error GoTo SaveDayStats_Err
-    
-        Exit Sub
-
-ErrHandler:
-
-    
-        Exit Sub
-
-SaveDayStats_Err:
-100     Call TraceError(Err.Number, Err.Description, "General.SaveDayStats", Erl)
-
-    
-End Sub
-
 Public Sub LogAsesinato(texto As String)
 
         On Error GoTo ErrHandler
@@ -1234,33 +1174,6 @@ ErrHandler:
 
 End Sub
 
-Function ValidInputNP(ByVal cad As String) As Boolean
-        
-        On Error GoTo ValidInputNP_Err
-        
-
-        Dim Arg As String
-
-        Dim i   As Integer
-
-100     For i = 1 To 33
-
-102         Arg = ReadField(i, cad, 44)
-
-104         If LenB(Arg) = 0 Then Exit Function
-
-106     Next i
-
-108     ValidInputNP = True
-
-        
-        Exit Function
-
-ValidInputNP_Err:
-110     Call TraceError(Err.Number, Err.Description, "General.ValidInputNP", Erl)
-
-        
-End Function
 
 Sub Restart()
         
@@ -1623,7 +1536,6 @@ Public Sub EfectoParalisisNpc(ByVal NpcIndex As Integer)
 104         NpcList(NpcIndex).flags.Paralizado = 0
 
         End If
-
         
         Exit Sub
 
@@ -2232,8 +2144,8 @@ Sub PasarSegundo()
 70      If cuentaregresivaOrcos > 0 Then
 74          cuentaregresivaOrcos = cuentaregresivaOrcos - 1
         Else
-            cuentaregresivaOrcos = 300
-            Call TimerQuestOrco
+76            cuentaregresivaOrcos = 300
+78            Call TimerQuestOrco
         End If
         
         
@@ -2416,14 +2328,6 @@ Sub PasarSegundo()
 
                 End If ' If UserLogged
 
-                'Inactive players will be removed!
-296          '   .Counters.IdleCount = .Counters.IdleCount + 1
-
-                'El intervalo cambia según si envió el primer paquete
-298        '     If .Counters.IdleCount > IIf(.flags.FirstPacket, TimeoutEsperandoLoggear, TimeoutPrimerPaquete) Then
-300        '         Call CloseSocket(i)
-           '     End If
-        
             End With
 302     Next i
 
@@ -2747,7 +2651,6 @@ End Sub
 Function max(ByVal a As Double, ByVal b As Double) As Double
         
         On Error GoTo max_Err
-    
         
 
 100     If a > b Then

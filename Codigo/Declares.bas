@@ -740,7 +740,6 @@ Public Enum e_OBJType
     otContenedores = 7
     otCarteles = 8
     otLlaves = 9
-    otForos = 10
     otPociones = 11
     otBebidas = 13
     otLeña = 14

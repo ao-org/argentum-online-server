@@ -120,8 +120,7 @@ Public Function ConnectUser_Check(ByVal UserIndex As Integer, _
         End If
         
         'Le damos los privilegios
-        .flags.Privilegios = UserDarPrivilegioLevel(Name)
-
+            .flags.Privilegios = UserDarPrivilegioLevel(Name)
         'Add RM flag if needed
         If EsRolesMaster(Name) Then
             .flags.Privilegios = .flags.Privilegios Or e_PlayerType.RoleMaster

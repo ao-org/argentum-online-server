@@ -506,8 +506,6 @@ Private Enum ClientPacketID
     CloseCrafting
     MoveCraftItem
     PetLeaveAll
-    GuardNoticeResponse
-    GuardResendVerificationCode
     ResetChar               '/RESET NICK
     resetearPersonaje
     DeleteItem
@@ -650,8 +648,7 @@ On Error Resume Next
     'Does the packet requires a logged user??
     If Not (PacketID = ClientPacketID.LoginExistingChar Or _
             PacketID = ClientPacketID.LoginNewChar Or _
-            PacketID = ClientPacketID.BorrarPJ Or _
-            PacketID = ClientPacketID.GuardNoticeResponse) Then
+            PacketID = ClientPacketID.BorrarPJ) Then
                
         'Is the user actually logged?
         If Not UserList(UserIndex).flags.UserLogged Then
@@ -1291,10 +1288,6 @@ On Error Resume Next
             Call HandleMoveCraftItem(UserIndex)
         Case ClientPacketID.PetLeaveAll
             Call HandlePetLeaveAll(UserIndex)
-        Case ClientPacketID.GuardNoticeResponse
-            Call HandleGuardNoticeResponse(UserIndex)
-        Case ClientPacketID.GuardResendVerificationCode
-            Call HandleGuardResendVerificationCode(UserIndex)
         Case ClientPacketID.ResetChar
             Call HandleResetChar(UserIndex)
         Case ClientPacketID.resetearPersonaje
@@ -18809,33 +18802,6 @@ ErrHandler:
 120
 End Sub
 
-Private Sub HandleGuardNoticeResponse(ByVal UserIndex As Integer)
-    
-        On Error GoTo HandleGuardNoticeResponse_Err:
-
-        Dim Codigo As String: Codigo = Reader.ReadString8()
-
-        Call AOGuard.HandleNoticeResponse(UserIndex, Codigo)
-        
-        Exit Sub
-
-HandleGuardNoticeResponse_Err:
-130     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuardNoticeResponse", Erl)
-
-End Sub
-
-Private Sub HandleGuardResendVerificationCode(ByVal UserIndex As Integer)
-        
-        On Error GoTo HandleResendVerificationCode_Err:
-        
-100     Call AOGuard.EnviarCodigo(UserIndex)
-        
-        Exit Sub
-
-HandleResendVerificationCode_Err:
-102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuardResendVerificationCode", Erl)
-
-End Sub
 
 Private Sub HandleResetChar(ByVal UserIndex As Integer)
         On Error GoTo HandleResetChar_Err:

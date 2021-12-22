@@ -133,11 +133,7 @@ End Function
 Function EncontrarCant(ByVal NpcIndex As Integer, ByVal ObjIndex As Integer) As Integer
         
         On Error GoTo EncontrarCant_Err
-    
         
-
-        
-
         'Devuelve la cantidad original del obj de un npc
 
         Dim ln As String, npcfile As String
@@ -162,7 +158,6 @@ Function EncontrarCant(ByVal NpcIndex As Integer, ByVal ObjIndex As Integer) As 
         Next
                    
 110     EncontrarCant = 0
-
         
         Exit Function
 
@@ -176,10 +171,6 @@ Sub ResetNpcInv(ByVal NpcIndex As Integer)
         
         On Error GoTo ResetNpcInv_Err
     
-        
-
-        
-
         Dim i As Integer
 
 100     NpcList(NpcIndex).Invent.NroItems = 0
@@ -190,7 +181,6 @@ Sub ResetNpcInv(ByVal NpcIndex As Integer)
 108     Next i
 
 110     NpcList(NpcIndex).InvReSpawn = 0
-
         
         Exit Sub
 
@@ -285,13 +275,15 @@ Sub CargarInvent(ByVal NpcIndex As Integer)
         'End If
 
 102     NpcList(NpcIndex).Invent.NroItems = val(GetVar(npcfile, "NPC" & NpcList(NpcIndex).Numero, "NROITEMS"))
-
-104     For LoopC = 1 To NpcList(NpcIndex).Invent.NroItems
-106         ln = GetVar(npcfile, "NPC" & NpcList(NpcIndex).Numero, "Obj" & LoopC)
-108         NpcList(NpcIndex).Invent.Object(LoopC).ObjIndex = val(ReadField(1, ln, 45))
-110         NpcList(NpcIndex).Invent.Object(LoopC).amount = val(ReadField(2, ln, 45))
-    
-112     Next LoopC
+        
+        If NpcList(NpcIndex).Invent.NroItems > 0 Then
+104         For LoopC = 1 To NpcList(NpcIndex).Invent.NroItems
+106             ln = GetVar(npcfile, "NPC" & NpcList(NpcIndex).Numero, "Obj" & LoopC)
+108             NpcList(NpcIndex).Invent.Object(LoopC).ObjIndex = val(ReadField(1, ln, 45))
+110             NpcList(NpcIndex).Invent.Object(LoopC).amount = val(ReadField(2, ln, 45))
+        
+112         Next LoopC
+        End If
 
         
         Exit Sub
@@ -351,11 +343,6 @@ Public Sub NpcDropeo(ByRef npc As t_Npc, ByRef UserIndex As Integer)
 128     Dropeo.ObjIndex = obj 'NUMERO DEL ITEM EN EL OBJ.DAT
 130     Call TirarItemAlPiso(npc.Pos, Dropeo, npc.flags.AguaValida = 1)
 132     Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessagePlayWave(e_FXSound.Dropeo_Sound, npc.Pos.X, npc.Pos.Y))
-        
-        'nfile = FreeFile ' obtenemos un canal
-        'Open App.Path & "\logs\Dropeo de items.log" For Append Shared As #nfile
-        'Print #nfile, "El dia " & Date & " a las " & Time & " al usuario " & UserList(UserIndex).Name & " se le a dropiado el objeto " & ObjData(obj).Name & "."
-        ' Close #nfile
     
         Exit Sub
 

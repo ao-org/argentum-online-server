@@ -910,7 +910,6 @@ Private Sub Minuto_Timer()
         horas = horas + 1
 
         If horas = 24 Then
-            Call SaveDayStats
             DayStats.MaxUsuarios = 0
             DayStats.segundos = 0
             DayStats.Promedio = 0
@@ -1064,7 +1063,6 @@ Private Sub Command12_Click()
         On Error GoTo Command12_Click_Err
         
 100     Call LoadConfiguraciones
-102     Call AOGuard.LoadAOGuardConfiguration
         
         Exit Sub
 

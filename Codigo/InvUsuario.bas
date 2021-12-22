@@ -35,20 +35,22 @@ Public Function TieneObjetosRobables(ByVal UserIndex As Integer) As Boolean
 
         Dim i        As Integer
         Dim ObjIndex As Integer
-
-100     For i = 1 To UserList(UserIndex).CurrentInventorySlots
-102         ObjIndex = UserList(UserIndex).Invent.Object(i).ObjIndex
-
-104         If ObjIndex > 0 Then
-106             If (ObjData(ObjIndex).OBJType <> e_OBJType.otLlaves And ObjData(ObjIndex).OBJType <> e_OBJType.otBarcos And ObjData(ObjIndex).OBJType <> e_OBJType.otMonturas And ObjData(ObjIndex).OBJType <> e_OBJType.OtDonador And ObjData(ObjIndex).OBJType <> e_OBJType.otRunas) Then
-108                 TieneObjetosRobables = True
-                    Exit Function
-
+        
+        If UserList(UserIndex).CurrentInventorySlots > 0 Then
+100         For i = 1 To UserList(UserIndex).CurrentInventorySlots
+102             ObjIndex = UserList(UserIndex).Invent.Object(i).ObjIndex
+    
+104             If ObjIndex > 0 Then
+106                 If (ObjData(ObjIndex).OBJType <> e_OBJType.otLlaves And ObjData(ObjIndex).OBJType <> e_OBJType.otBarcos And ObjData(ObjIndex).OBJType <> e_OBJType.otMonturas And ObjData(ObjIndex).OBJType <> e_OBJType.OtDonador And ObjData(ObjIndex).OBJType <> e_OBJType.otRunas) Then
+108                     TieneObjetosRobables = True
+                        Exit Function
+    
+                    End If
+        
                 End If
     
-            End If
-
-110     Next i
+110         Next i
+        End If
 
         
         Exit Function
@@ -161,20 +163,22 @@ Sub QuitarNewbieObj(ByVal UserIndex As Integer)
         
 
         Dim j As Integer
-
-100     For j = 1 To UserList(UserIndex).CurrentInventorySlots
-
-102         If UserList(UserIndex).Invent.Object(j).ObjIndex > 0 Then
-             
-104             If ObjData(UserList(UserIndex).Invent.Object(j).ObjIndex).Newbie = 1 Then
-106                 Call QuitarUserInvItem(UserIndex, j, MAX_INVENTORY_OBJS)
-108                 Call UpdateUserInv(False, UserIndex, j)
-
-                End If
         
-            End If
-
-110     Next j
+        If UserList(UserIndex).CurrentInventorySlots > 0 Then
+100         For j = 1 To UserList(UserIndex).CurrentInventorySlots
+    
+102             If UserList(UserIndex).Invent.Object(j).ObjIndex > 0 Then
+                 
+104                 If ObjData(UserList(UserIndex).Invent.Object(j).ObjIndex).Newbie = 1 Then
+106                     Call QuitarUserInvItem(UserIndex, j, MAX_INVENTORY_OBJS)
+108                     Call UpdateUserInv(False, UserIndex, j)
+    
+                    End If
+            
+                End If
+    
+110         Next j
+        End If
     
         'Si el usuario dejó de ser Newbie, y estaba en el Newbie Dungeon
         'es transportado a su hogar de origen ;)
@@ -227,12 +231,14 @@ Sub LimpiarInventario(ByVal UserIndex As Integer)
 
         Dim j As Integer
 
-100     For j = 1 To UserList(UserIndex).CurrentInventorySlots
-102         UserList(UserIndex).Invent.Object(j).ObjIndex = 0
-104         UserList(UserIndex).Invent.Object(j).amount = 0
-106         UserList(UserIndex).Invent.Object(j).Equipped = 0
-        
-        Next
+        If UserList(UserIndex).CurrentInventorySlots > 0 Then
+100         For j = 1 To UserList(UserIndex).CurrentInventorySlots
+102             UserList(UserIndex).Invent.Object(j).ObjIndex = 0
+104             UserList(UserIndex).Invent.Object(j).amount = 0
+106             UserList(UserIndex).Invent.Object(j).Equipped = 0
+            
+            Next
+        End If
 
 108     UserList(UserIndex).Invent.NroItems = 0
 
@@ -296,7 +302,6 @@ Sub TirarOro(ByVal Cantidad As Long, ByVal UserIndex As Integer)
 102         If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Admin Or e_PlayerType.Dios)) = 0 Then
 104             Call LogGM(.Name, " trató de tirar " & PonerPuntos(Cantidad) & " de oro en " & .Pos.Map & "-" & .Pos.X & "-" & .Pos.Y)
                 Exit Sub
-
             End If
          
             ' Si el usuario tiene ORO, entonces lo tiramos
@@ -426,30 +431,28 @@ Sub UpdateUserInv(ByVal UpdateAll As Boolean, ByVal UserIndex As Integer, ByVal 
 
         'Actualiza un solo slot
 100     If Not UpdateAll Then
-
+    
             'Actualiza el inventario
 102         If UserList(UserIndex).Invent.Object(Slot).ObjIndex > 0 Then
 104             Call ChangeUserInv(UserIndex, Slot, UserList(UserIndex).Invent.Object(Slot))
             Else
 106             Call ChangeUserInv(UserIndex, Slot, NullObj)
-
             End If
-                    
+                        
             UserList(UserIndex).flags.ModificoInventario = True
         Else
 
             'Actualiza todos los slots
-108         For LoopC = 1 To UserList(UserIndex).CurrentInventorySlots
-
-                'Actualiza el inventario
-110             If UserList(UserIndex).Invent.Object(LoopC).ObjIndex > 0 Then
-112                 Call ChangeUserInv(UserIndex, LoopC, UserList(UserIndex).Invent.Object(LoopC))
-                Else
-114                 Call ChangeUserInv(UserIndex, LoopC, NullObj)
-
-                End If
-
-116         Next LoopC
+            If UserList(UserIndex).CurrentInventorySlots > 0 Then
+108             For LoopC = 1 To UserList(UserIndex).CurrentInventorySlots
+                    'Actualiza el inventario
+110                 If UserList(UserIndex).Invent.Object(LoopC).ObjIndex > 0 Then
+112                     Call ChangeUserInv(UserIndex, LoopC, UserList(UserIndex).Invent.Object(LoopC))
+                    Else
+114                     Call ChangeUserInv(UserIndex, LoopC, NullObj)
+                    End If
+116             Next LoopC
+            End If
 
         End If
 
@@ -752,12 +755,6 @@ Sub PickObj(ByVal UserIndex As Integer)
                     'Es un Objeto que tenemos que loguear?
 140                 If ObjData(MiObj.ObjIndex).Log = 1 Then
 142                     Call LogDesarrollo(UserList(UserIndex).Name & " juntó del piso " & MiObj.amount & " " & ObjData(MiObj.ObjIndex).Name)
-
-                        ' ElseIf MiObj.Amount = 1000 Then 'Es mucha cantidad?
-                        '  'Si no es de los prohibidos de loguear, lo logueamos.
-                        '   'If ObjData(MiObj.ObjIndex).NoLog <> 1 Then
-                        ' Call LogDesarrollo(UserList(UserIndex).name & " juntó del piso " & MiObj.Amount & " " & ObjData(MiObj.ObjIndex).name)
-                        ' End If
                     End If
                 
                 End If
@@ -769,10 +766,7 @@ Sub PickObj(ByVal UserIndex As Integer)
 144         If Not UserList(UserIndex).flags.UltimoMensaje = 261 Then
 146             Call WriteLocaleMsg(UserIndex, "261", e_FontTypeNames.FONTTYPE_INFO)
 148             UserList(UserIndex).flags.UltimoMensaje = 261
-
             End If
-    
-            'Call WriteConsoleMsg(UserIndex, "No hay nada aqui.", e_FontTypeNames.FONTTYPE_INFO)
         End If
 
         
@@ -1028,7 +1022,6 @@ Function SexoPuedeUsarItem(ByVal UserIndex As Integer, ByVal ObjIndex As Integer
 110         SexoPuedeUsarItem = UserList(UserIndex).genero <> e_Genero.Mujer
         Else
 112         SexoPuedeUsarItem = True
-
         End If
 
         Exit Function
@@ -1053,7 +1046,6 @@ Function FaccionPuedeUsarItem(ByVal UserIndex As Integer, ByVal ObjIndex As Inte
 110             FaccionPuedeUsarItem = esArmada(UserIndex)
             Else
 112             FaccionPuedeUsarItem = False
-
             End If
 
 114     ElseIf ObjData(ObjIndex).Caos = 1 Then
@@ -1062,14 +1054,10 @@ Function FaccionPuedeUsarItem(ByVal UserIndex As Integer, ByVal ObjIndex As Inte
 118             FaccionPuedeUsarItem = esCaos(UserIndex)
             Else
 120             FaccionPuedeUsarItem = False
-
             End If
-
         Else
 122         FaccionPuedeUsarItem = True
-
         End If
-
         
         Exit Function
 
@@ -1335,7 +1323,6 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
 234                         .flags.RegeneracionSta = 1
 
 236                     Case 2 'Modif la fuerza, agilidad, carisma, etc
-                            ' .Stats.UserAtributos(obj.QueAtributo) = .Stats.UserAtributos(obj.QueAtributo)
 238                         .Stats.UserAtributosBackUP(obj.QueAtributo) = .Stats.UserAtributosBackUP(obj.QueAtributo) + obj.CuantoAumento
 240                         .Stats.UserAtributos(obj.QueAtributo) = MinimoInt(.Stats.UserAtributos(obj.QueAtributo) + obj.CuantoAumento, .Stats.UserAtributosBackUP(obj.QueAtributo) * 2)
                 
@@ -1399,10 +1386,7 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
 310                     .Char.Otra_Aura = obj.CreaGRH
 312                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, .Char.Otra_Aura, False, 5))
                     End If
-        
-                    'Call WriteUpdateExp(UserIndex)
-                    'Call CheckUserLevel(UserIndex)
-            
+                    
 314             Case e_OBJType.otNudillos
 316                 If .Invent.WeaponEqpObjIndex > 0 Then
 318                     Call Desequipar(UserIndex, .Invent.WeaponEqpSlot)
