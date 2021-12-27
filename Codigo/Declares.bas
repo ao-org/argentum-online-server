@@ -509,6 +509,7 @@ Public Enum e_NPCType
     Pretoriano = 18
     DummyTarget = 19
     EntregaPesca = 20
+    AO20Shop = 21
     
 End Enum
 

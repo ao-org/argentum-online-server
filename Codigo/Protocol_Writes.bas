@@ -5202,6 +5202,18 @@ writeAnswerReset_Err:
         Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.writeAnswerReset", Erl)
         '</EhFooter>
 End Sub
+
+Public Sub WriteShopInit(ByVal UserIndex As Integer)
+    On Error GoTo WriteShopInit_Err
+    
+    Call Writer.WriteInt(ServerPacketID.ShopInit)
+    
+182 Call modSendData.SendData(ToIndex, UserIndex)
+    
+WriteShopInit_Err:
+     Call Writer.Clear
+    Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteShopInit", Erl)
+End Sub
 Public Sub WriteObjQuestSend(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, ByVal Slot As Byte)
         '<EhHeader>
         On Error GoTo WriteNpcQuestListSend_Err
