@@ -186,6 +186,7 @@ Public Enum ServerPacketID
     UpdateBankGld
     PelearConPezEspecial
     Privilegios
+    ShopInit
     [PacketCount]
 End Enum
 
@@ -18931,6 +18932,8 @@ Private Sub HandleFinalizarPescaEspecial(ByVal UserIndex As Integer)
     
     Call EntregarPezEspecial(UserIndex)
     
+    Exit Sub
+
 HandleFinalizarPescaEspecial_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleFinalizarPescaEspecial", Erl)
 End Sub
@@ -18939,10 +18942,10 @@ Private Sub HandleRepeatMacro(ByVal UserIndex As Integer)
 
     On Error GoTo HandleRepeatMacro_Err:
     
-114         Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » El usuario " & UserList(UserIndex).Name & " está utilizando macro de click o U.", e_FontTypeNames.FONTTYPE_INFOBOLD))
-    
-     'UserList(UserIndex).Invent.HerramientaEqpObjIndex
-    
+114 Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » El usuario " & UserList(UserIndex).Name & " está utilizando macro de click o U.", e_FontTypeNames.FONTTYPE_INFOBOLD))
+        
+    Exit Sub
+
 HandleRepeatMacro_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRepeatMacro", Erl)
 End Sub

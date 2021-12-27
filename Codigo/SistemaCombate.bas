@@ -859,7 +859,7 @@ Public Function NpcAtacaUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integ
         Exit Function
 
 NpcAtacaUser_Err:
-144     Call TraceError(Err.Number, Err.Description, "SistemaCombate.NpcAtacaUser", Erl)
+144     Call TraceError(Err.Number, Err.Description & " Linea---> " & Erl, "SistemaCombate.NpcAtacaUser", Erl)
 
         
 End Function

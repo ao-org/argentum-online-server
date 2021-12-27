@@ -370,9 +370,17 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
                         charIndexstr = str(NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex)
                         Call WriteChatOverHead(UserIndex, "No tienes ningún trofeo de pesca para entregar.", charIndexStr, &HFFFF00)
                     End If
-320             ElseIf NpcList(TempCharIndex).Craftea > 0 Then
+                ElseIf NpcList(TempCharIndex).NPCtype = e_NPCType.AO20Shop Then
 322                 If UserList(UserIndex).flags.Muerto = 1 Then
 324                     Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFOIAO)
+                        Exit Sub
+                    End If
+                    
+                    Call WriteShopInit(UserIndex)
+                
+320             ElseIf NpcList(TempCharIndex).Craftea > 0 Then
+                    If UserList(UserIndex).flags.Muerto = 1 Then
+                        Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFOIAO)
                         Exit Sub
                     End If
             
