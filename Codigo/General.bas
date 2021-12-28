@@ -1118,6 +1118,59 @@ ErrHandler:
 
 End Sub
 
+Public Sub LogEdicionPaquete(texto As String)
+
+        On Error GoTo ErrHandler
+
+        Dim nfile As Integer
+
+100     nfile = FreeFile ' obtenemos un canal
+
+102     Open App.Path & "\logs\EdicionPaquete.log" For Append Shared As #nfile
+104     Print #nfile, Date & " " & Time & " " & texto
+106     Close #nfile
+
+        Exit Sub
+
+ErrHandler:
+
+End Sub
+
+Public Sub LogMacroServidor(texto As String)
+
+        On Error GoTo ErrHandler
+
+        Dim nfile As Integer
+
+100     nfile = FreeFile ' obtenemos un canal
+
+102     Open App.Path & "\logs\MacroServidor.log" For Append Shared As #nfile
+104     Print #nfile, Date & " " & Time & " " & texto
+106     Close #nfile
+
+        Exit Sub
+
+ErrHandler:
+
+End Sub
+
+Public Sub LogMacroCliente(texto As String)
+
+        On Error GoTo ErrHandler
+
+        Dim nfile As Integer
+
+100     nfile = FreeFile ' obtenemos un canal
+
+102     Open App.Path & "\logs\MacroCliente.log" For Append Shared As #nfile
+104     Print #nfile, Date & " " & Time & " " & texto
+106     Close #nfile
+
+        Exit Sub
+
+ErrHandler:
+
+End Sub
 Public Sub logVentaCasa(ByVal texto As String)
 
         On Error GoTo ErrHandler
