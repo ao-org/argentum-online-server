@@ -2688,6 +2688,7 @@ Private Function verifyTimeStamp(ByVal ActualCount As Long, ByRef LastCount, ByR
     verifyTimeStamp = False
     
     Delta = (Ticks - LastTick)
+    LastTick = Ticks
     
     'Call SendData(SendTarget.ToAdminsAreaButConsejeros, UserIndex, PrepareMessageConsoleMsg("First -> " & LastTick & " Current -> " & Ticks & " Delta -> " & Delta & "| Packet: " & PacketName, e_FontTypeNames.FONTTYPE_INFO))
     Debug.Print "First -> " & LastTick & " Current -> " & Ticks & " Delta -> " & Delta & "| Packet: " & PacketName
@@ -2695,9 +2696,11 @@ Private Function verifyTimeStamp(ByVal ActualCount As Long, ByRef LastCount, ByR
     If ActualCount <= LastCount Then
        ' Call CloseSocket(UserIndex)
         Call SendData(SendTarget.ToGM, UserIndex, PrepareMessageConsoleMsg("Paquete grabado: " & PacketName & " | Cuenta: " & UserList(UserIndex).Cuenta & " | Ip: " & UserList(UserIndex).IP & " (Baneado automaticamente)", e_FontTypeNames.FONTTYPE_INFOBOLD))
-        Call BanearIP(0, UserList(UserIndex).Name, UserList(UserIndex).IP, UserList(UserIndex).Cuenta)
+        'Call BanearIP(0, UserList(UserIndex).Name, UserList(UserIndex).IP, UserList(UserIndex).Cuenta)
+        Call LogEdicionPaquete("El usuario " & UserList(UserIndex).Name & " editó el paquete " & PacketName & ".")
+        Call WriteCerrarleCliente(UserIndex)
+        Call CloseSocket(UserIndex)
         verifyTimeStamp = False
-        LastTick = Ticks
         LastCount = ActualCount
         Exit Function
     End If
@@ -2706,12 +2709,14 @@ Private Function verifyTimeStamp(ByVal ActualCount As Long, ByRef LastCount, ByR
     If Delta < DeltaThreshold Then
         Iterations = Iterations + 1
         If Iterations >= MaxIterations Then
-                'Call WriteShowMessageBox(UserIndex, "Relajate andá a tomarte un té con Gulfas.")
-                verifyTimeStamp = False
-                LastTick = Ticks
-                Call SendData(SendTarget.ToAdminsAreaButConsejeros, UserIndex, PrepareMessageConsoleMsg("Control de macro---> El usuario " & UserList(UserIndex).Name & "| Controlar --> " & PacketName & " (Envíos: " & MaxIterations & ").", e_FontTypeNames.FONTTYPE_INFOBOLD))
-                LastCount = ActualCount
-                Iterations = 0
+            'Call WriteShowMessageBox(UserIndex, "Relajate andá a tomarte un té con Gulfas.")
+            verifyTimeStamp = False
+            Call LogMacroServidor("El usuario " & UserList(UserIndex).Name & " iteró el paquete " & PacketName & " " & MaxIterations & " veces.")
+            Call SendData(SendTarget.ToAdminsAreaButConsejeros, UserIndex, PrepareMessageConsoleMsg("Control de macro---> El usuario " & UserList(UserIndex).Name & "| Controlar --> " & PacketName & " (Envíos: " & MaxIterations & ").", e_FontTypeNames.FONTTYPE_INFOBOLD))
+            'Call WriteCerrarleCliente(UserIndex)
+            'Call CloseSocket(UserIndex)
+            LastCount = ActualCount
+            Iterations = 0
             Debug.Print "CIERRO CLIENTE"
         End If
         Exit Function
@@ -2720,7 +2725,6 @@ Private Function verifyTimeStamp(ByVal ActualCount As Long, ByRef LastCount, ByR
     End If
         
     verifyTimeStamp = True
-    LastTick = Ticks
     LastCount = ActualCount
 End Function
 
@@ -18941,9 +18945,10 @@ End Sub
 Private Sub HandleRepeatMacro(ByVal UserIndex As Integer)
 
     On Error GoTo HandleRepeatMacro_Err:
-    
-114 Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » El usuario " & UserList(UserIndex).Name & " está utilizando macro de click o U.", e_FontTypeNames.FONTTYPE_INFOBOLD))
-        
+    Call LogMacroCliente("El usuario " & UserList(UserIndex).Name & " iteró el paquete click o u." & GetTickCount)
+114 'Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » El usuario " & UserList(UserIndex).Name & " está utilizando macro de click o U.", e_FontTypeNames.FONTTYPE_INFOBOLD))
+    Call WriteCerrarleCliente(UserIndex)
+    Call CloseSocket(UserIndex)
     Exit Sub
 
 HandleRepeatMacro_Err:
