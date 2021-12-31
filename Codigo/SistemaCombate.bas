@@ -1488,12 +1488,28 @@ Private Sub UserDañoUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As 
                 
 232             DañoStr = "¡" & PonerPuntos(Daño) & "!"
 
-                ' Restamos el daño a la víctima en caso de apu y si el daño total lo mata, lo dejamos en 1 de vida.
-                If .Stats.MaxHp <= Daño Then
-238                 .Stats.MinHp = 1
+                ' Solo si la victima se encuentra en vida completa, generamos la condicion
+                If .Stats.MinHp = .Stats.MaxHp Then
+                
+                    ' Si el daño total es superior a su vida maxima, lo dejamos en uno de vida y mostrar un mensaje por consola
+                    Select Case Daño
+                        Case Is >= .Stats.MaxHp * 1.1
+                            .Stats.MinHp = 0
+                        Case Is < .Stats.MaxHp * 1.1 And Daño >= .Stats.MaxHp
+                            .Stats.MinHp = 1
+                            'Enviamos mensaje al atacante
+                            Call WriteConsoleMsg(AtacanteIndex, "Has dejado agonizando a tu oponente", e_FontTypeNames.FONTTYPE_INFOBOLD)
+                            'Enviamos mensaje a la victima
+                            Call WriteConsoleMsg(VictimaIndex, "Has quedado agonizando", e_FontTypeNames.FONTTYPE_INFOBOLD)
+                        Case Else
+                            ' Sino, restamos el daño normalmente
+                            .Stats.MinHp = .Stats.MinHp - Daño
+                    End Select
+                
                 Else
-                ' Restamos el daño a la víctima en caso de que el apu no supere la maxima vida de la victima.
+                    ' Restamos el daño a la víctima
                     .Stats.MinHp = .Stats.MinHp - Daño
+                    
                 End If
             Else
 234             DañoStr = PonerPuntos(Daño)
