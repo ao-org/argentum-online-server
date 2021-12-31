@@ -349,17 +349,7 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
             Else
 206             .ID = val(RS.Fields(0).Value)
             End If
-        
-            ' ******************* ATRIBUTOS *******************
-208         ReDim Params(1 To NUMATRIBUTOS)
-210         ParamC = 1
-            
-212         For LoopC = 1 To NUMATRIBUTOS
-214             Params(PostInc(ParamC)) = .Stats.UserAtributos(LoopC)
-222         Next LoopC
-        
-            Call Query(QUERY_INSERT_ATTRIBUTES, .ID, Params)
-        
+                
             ' ******************* SPELLS **********************
 226         ReDim Params(MAXUSERHECHIZOS * 3 - 1)
 228         ParamC = 0
@@ -919,24 +909,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
             .LastGuildRejection = SanitizeNullValue(RS!guild_rejected_because, vbNullString)
  
 298         .Stats.Advertencias = RS!warnings
-        
-            'User attributes
-            Set RS = Query("SELECT * FROM attribute WHERE user_id = ?;", .ID)
-    
-302         If Not RS Is Nothing Then
-                .Stats.UserAtributos(e_Atributos.Fuerza) = RS!strength
-                .Stats.UserAtributos(e_Atributos.Agilidad) = RS!agility
-                .Stats.UserAtributos(e_Atributos.Constitucion) = RS!constitution
-                .Stats.UserAtributos(e_Atributos.Inteligencia) = RS!intelligence
-                .Stats.UserAtributos(e_Atributos.Carisma) = RS!charisma
-
-                .Stats.UserAtributosBackUP(e_Atributos.Fuerza) = .Stats.UserAtributos(e_Atributos.Fuerza)
-                .Stats.UserAtributosBackUP(e_Atributos.Agilidad) = .Stats.UserAtributos(e_Atributos.Agilidad)
-                .Stats.UserAtributosBackUP(e_Atributos.Constitucion) = .Stats.UserAtributos(e_Atributos.Constitucion)
-                .Stats.UserAtributosBackUP(e_Atributos.Inteligencia) = .Stats.UserAtributos(e_Atributos.Inteligencia)
-                .Stats.UserAtributosBackUP(e_Atributos.Carisma) = .Stats.UserAtributos(e_Atributos.Carisma)
-            End If
-            
+                    
             'User spells
             Set RS = Query("SELECT number, spell_id FROM spell WHERE user_id = ?;", .ID)
 

@@ -22,9 +22,6 @@ Public QUERY_UPSERT_INVENTORY As String
 Public QUERY_UPSERT_SKILLS As String
 Public QUERY_UPSERT_PETS As String
 
-' CONSTANT QUERIES (NEW)
-Public Const QUERY_INSERT_ATTRIBUTES As String = "INSERT INTO attribute VALUES (?, ?, ?, ?, ?, ?)"
-Public Const QUERY_UPDATE_ATTRIBUTES As String = "UPDATE attribute SET strength = ?, agility = ?,  intelligence = ?, constitution = ?, charisma = ? WHERE user_id = ?"
 
 Public Sub Contruir_Querys()
         Call ConstruirQuery_CargarPersonaje

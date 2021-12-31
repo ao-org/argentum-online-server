@@ -111,60 +111,6 @@ DarCuerpo_Err:
         
 End Sub
 
-Sub AsignarAtributos(ByVal UserIndex As String)
-        
-        On Error GoTo AsignarAtributos_Err
-        
-
-100     Select Case UserList(UserIndex).raza
-
-            Case e_Raza.Humano
-102             UserList(UserIndex).Stats.UserAtributos(1) = 19
-104             UserList(UserIndex).Stats.UserAtributos(2) = 19
-106             UserList(UserIndex).Stats.UserAtributos(3) = 19
-108             UserList(UserIndex).Stats.UserAtributos(4) = 20
-
-110         Case e_Raza.Elfo
-112             UserList(UserIndex).Stats.UserAtributos(1) = 18
-114             UserList(UserIndex).Stats.UserAtributos(2) = 20
-116             UserList(UserIndex).Stats.UserAtributos(3) = 21
-118             UserList(UserIndex).Stats.UserAtributos(4) = 18
-
-120         Case e_Raza.Drow
-122             UserList(UserIndex).Stats.UserAtributos(1) = 20
-124             UserList(UserIndex).Stats.UserAtributos(2) = 18
-126             UserList(UserIndex).Stats.UserAtributos(3) = 20
-128             UserList(UserIndex).Stats.UserAtributos(4) = 19
-
-130         Case e_Raza.Gnomo
-132             UserList(UserIndex).Stats.UserAtributos(1) = 13
-134             UserList(UserIndex).Stats.UserAtributos(2) = 21
-136             UserList(UserIndex).Stats.UserAtributos(3) = 22
-138             UserList(UserIndex).Stats.UserAtributos(4) = 17
-
-140         Case e_Raza.Enano
-142             UserList(UserIndex).Stats.UserAtributos(1) = 21
-144             UserList(UserIndex).Stats.UserAtributos(2) = 17
-146             UserList(UserIndex).Stats.UserAtributos(3) = 12
-148             UserList(UserIndex).Stats.UserAtributos(4) = 22
-
-150         Case e_Raza.Orco
-152             UserList(UserIndex).Stats.UserAtributos(1) = 23
-154             UserList(UserIndex).Stats.UserAtributos(2) = 17
-156             UserList(UserIndex).Stats.UserAtributos(3) = 12
-158             UserList(UserIndex).Stats.UserAtributos(4) = 21
-
-        End Select
-
-        
-        Exit Sub
-
-AsignarAtributos_Err:
-160     Call TraceError(Err.Number, Err.Description, "TCP.AsignarAtributos", Erl)
-
-        
-End Sub
-
 Sub RellenarInventario(ByVal UserIndex As String)
         
         On Error GoTo RellenarInventario_Err
