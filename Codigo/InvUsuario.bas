@@ -511,7 +511,9 @@ Sub DropObj(ByVal UserIndex As Integer, _
 126                     Call UpdateUserInv(False, UserIndex, Slot)
                         
 128                     If Not .flags.Privilegios And e_PlayerType.user Then
-130                         Call LogGM(.Name, "Tiro cantidad:" & num & " Objeto:" & ObjData(obj.ObjIndex).Name)
+                            If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios)) <> 0 Then
+130                             Call LogGM(.Name, "Tiro cantidad:" & num & " Objeto:" & ObjData(obj.ObjIndex).Name)
+                            End If
                         End If
     
                     Else
