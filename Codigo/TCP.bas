@@ -491,7 +491,13 @@ Function ConnectNewUser(ByVal UserIndex As Integer, ByRef Name As String, ByVal 
 134         .Stats.UserAtributos(e_Atributos.Inteligencia) = 18 + ModRaza(UserRaza).Inteligencia
 136         .Stats.UserAtributos(e_Atributos.Constitucion) = 18 + ModRaza(UserRaza).Constitucion
 138         .Stats.UserAtributos(e_Atributos.Carisma) = 18 + ModRaza(UserRaza).Carisma
-        
+            
+            .Stats.UserAtributosBackUP(e_Atributos.Fuerza) = .Stats.UserAtributos(e_Atributos.Fuerza)
+            .Stats.UserAtributosBackUP(e_Atributos.Agilidad) = .Stats.UserAtributos(e_Atributos.Agilidad)
+            .Stats.UserAtributosBackUP(e_Atributos.Inteligencia) = .Stats.UserAtributos(e_Atributos.Inteligencia)
+            .Stats.UserAtributosBackUP(e_Atributos.Constitucion) = .Stats.UserAtributos(e_Atributos.Constitucion)
+            .Stats.UserAtributosBackUP(e_Atributos.Carisma) = .Stats.UserAtributos(e_Atributos.Carisma)
+            
 140         .flags.Muerto = 0
 142         .flags.Escondido = 0
     
@@ -1092,6 +1098,7 @@ Sub ResetBasicUserInfo(ByVal UserIndex As Integer)
 166             .NPCsMuertos = 0
 168             .UsuariosMatados = 0
                 .PuntosPesca = 0
+                .Creditos = 0
 170             .SkillPts = 0
 172             .GLD = 0
 174             .UserAtributos(1) = 0
