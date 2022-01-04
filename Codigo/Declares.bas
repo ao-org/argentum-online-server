@@ -1467,6 +1467,7 @@ Public Type t_UserStats
     SkillPts As Integer
     Advertencias As Byte
     NumObj_PezEspecial As Integer
+    Creditos As Long
 End Type
 
 'Sistema de Barras
