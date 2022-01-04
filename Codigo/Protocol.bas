@@ -2698,8 +2698,8 @@ Private Function verifyTimeStamp(ByVal ActualCount As Long, ByRef LastCount, ByR
         Call SendData(SendTarget.ToGM, UserIndex, PrepareMessageConsoleMsg("Paquete grabado: " & PacketName & " | Cuenta: " & UserList(UserIndex).Cuenta & " | Ip: " & UserList(UserIndex).IP & " (Baneado automaticamente)", e_FontTypeNames.FONTTYPE_INFOBOLD))
         'Call BanearIP(0, UserList(UserIndex).Name, UserList(UserIndex).IP, UserList(UserIndex).Cuenta)
         Call LogEdicionPaquete("El usuario " & UserList(UserIndex).Name & " editó el paquete " & PacketName & ".")
-        Call WriteCerrarleCliente(UserIndex)
-        Call CloseSocket(UserIndex)
+        'Call WriteCerrarleCliente(UserIndex)
+        'Call CloseSocket(UserIndex)
         verifyTimeStamp = False
         LastCount = ActualCount
         Exit Function
@@ -18953,8 +18953,8 @@ Private Sub HandleRepeatMacro(ByVal UserIndex As Integer)
     On Error GoTo HandleRepeatMacro_Err:
     Call LogMacroCliente("El usuario " & UserList(UserIndex).Name & " iteró el paquete click o u." & GetTickCount)
 114 'Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » El usuario " & UserList(UserIndex).Name & " está utilizando macro de click o U.", e_FontTypeNames.FONTTYPE_INFOBOLD))
-    Call WriteCerrarleCliente(UserIndex)
-    Call CloseSocket(UserIndex)
+    'Call WriteCerrarleCliente(UserIndex)
+    'Call CloseSocket(UserIndex)
     Exit Sub
 
 HandleRepeatMacro_Err:

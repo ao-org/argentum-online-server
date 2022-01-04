@@ -252,7 +252,12 @@ Public Function ConnectUser_Complete(ByVal UserIndex As Integer, _
             .Stats.UserAtributos(e_Atributos.Constitucion) = 18 + ModRaza(.raza).Constitucion
             .Stats.UserAtributos(e_Atributos.Carisma) = 18 + ModRaza(.raza).Carisma
                     
-        
+            .Stats.UserAtributosBackUP(e_Atributos.Fuerza) = .Stats.UserAtributos(e_Atributos.Fuerza)
+            .Stats.UserAtributosBackUP(e_Atributos.Agilidad) = .Stats.UserAtributos(e_Atributos.Agilidad)
+            .Stats.UserAtributosBackUP(e_Atributos.Inteligencia) = .Stats.UserAtributos(e_Atributos.Inteligencia)
+            .Stats.UserAtributosBackUP(e_Atributos.Constitucion) = .Stats.UserAtributos(e_Atributos.Constitucion)
+            .Stats.UserAtributosBackUP(e_Atributos.Carisma) = .Stats.UserAtributos(e_Atributos.Carisma)
+                    
             'Obtiene el indice-objeto del arma
 175         If .Invent.WeaponEqpSlot > 0 Then
 180             If .Invent.Object(.Invent.WeaponEqpSlot).ObjIndex > 0 Then
