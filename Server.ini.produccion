@@ -27,7 +27,7 @@ MaxUsers=1000
 
 Admines=3
 Dioses=2
-SemiDioses=11
+SemiDioses=12
 Consejeros=6
 
 [Admines]
@@ -51,6 +51,7 @@ Semidios8=GalaK|Sforzini.jonatan@gmail.com
 Semidios9=Punisher|DIEGOTEMM22@GMAIL.COM
 Semidios10=Enith|Ao20.enith@gmail.com
 Semidios11=Amira|amira.micol.ao@gmail.com
+Semidios12=arlorn|Ytocarp@gmail.com
 
 [Consejeros]
 Consejero1=Terrel|loganfenix2000@yahoo.com.mx
