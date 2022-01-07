@@ -10296,8 +10296,8 @@ Private Sub HandleReviveChar(ByVal UserIndex As Integer)
                         'If dead, show him alive (naked).
 118                     If .flags.Muerto = 1 Then
                             If UserList(UserIndex).flags.Privilegios And e_PlayerType.SemiDios Then
-                                If MapInfo(.Pos.Map).Seguro = 0 Then
-                                     Call WriteConsoleMsg(UserIndex, "Servidor » No puedes teletransportar muertos desde una zona insegura.", e_FontTypeNames.FONTTYPE_INFO)
+                                If MapInfo(.Pos.Map).Seguro = 0 Or EsMapaEvento(.Pos.Map) = False Then
+                                     Call WriteConsoleMsg(UserIndex, "Servidor » No puedes revivir en una zona insegura.", e_FontTypeNames.FONTTYPE_INFO)
                                      Exit Sub
                                 End If
                             End If
