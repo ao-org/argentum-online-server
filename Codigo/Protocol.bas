@@ -10913,11 +10913,11 @@ Private Sub HandleSpawnListRequest(ByVal UserIndex As Integer)
 106             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             
-108         ElseIf .flags.Privilegios And (e_PlayerType.SemiDios Or e_PlayerType.Dios) Then
+108         ElseIf .flags.Privilegios And (e_PlayerType.SemiDios) Then
 110             Call WriteConsoleMsg(UserIndex, "Servidor » La cantidad de NPCs disponible para tu rango está limitada.", e_FontTypeNames.FONTTYPE_INFO)
             End If
 
-112         Call WriteSpawnList(UserIndex, UserList(UserIndex).flags.Privilegios And e_PlayerType.Admin)
+112         Call WriteSpawnList(UserIndex, UserList(UserIndex).flags.Privilegios And e_PlayerType.Admin Or e_PlayerType.Dios)
     
         End With
         
