@@ -2595,7 +2595,6 @@ Sub LoadUser(ByVal UserIndex As Integer)
         On Error GoTo ErrorHandler
     
 105         Call LoadUserDatabase(UserIndex)
-            Call cargarTipoUsuario(UserIndex)
         Exit Sub
 
 ErrorHandler:
@@ -3333,28 +3332,6 @@ Public Function GetElapsedTime() As Single
     
 110     start_time = end_time
 
-End Function
-
-Private Function cargarTipoUsuario(ByVal UserIndex As Integer)
-    Dim i As Integer
-    Dim str() As String
-    
-    With UserList(UserIndex)
-    
-        For i = 1 To UBound(lstUsuariosDonadores)
-        
-            str = Split(lstUsuariosDonadores(i), "#")
-            
-            If LCase$(str(0)) = .Email Then
-                .Stats.tipoUsuario = val(str(1))
-                Exit Function
-            End If
-            
-        Next i
-        .Stats.tipoUsuario = e_TipoUsuario.tNormal
-        
-    End With
-    
 End Function
 
 
