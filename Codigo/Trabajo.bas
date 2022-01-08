@@ -191,13 +191,6 @@ Public Sub Trabajar(ByVal UserIndex As Integer, ByVal Skill As e_Skill)
                 
                         Case 6      ' Herramientas de Carpinteria - Hacha
 
-                            ' Ahora se puede talar en la ciudad
-                            'If MapInfo(UserList(UserIndex).Pos.Map).Seguro = 1 Then
-                            '    Call WriteConsoleMsg(UserIndex, "Esta prohibido talar arboles en las ciudades.", e_FontTypeNames.FONTTYPE_INFO)
-                            '    Call WriteWorkRequestTarget(UserIndex, 0)
-                            '    Exit Sub
-                            'End If
-                            
 358                         DummyInt = MapData(.Pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).ObjInfo.ObjIndex
                             
 360                         If DummyInt > 0 Then
@@ -249,6 +242,64 @@ Public Sub Trabajar(ByVal UserIndex As Integer, ByVal Skill As e_Skill)
                             End If
                 
                     End Select
+                    
+574             Case FundirMetal    'UGLY!!! This is a constant, not a skill!!
+            
+                    'Check interval
+576                 If Not IntervaloPermiteTrabajarConstruir(UserIndex) Then Exit Sub
+                                
+                    'Check there is a proper item there
+580                 If .flags.TargetObj > 0 Then
+582                     If ObjData(.flags.TargetObj).OBJType = e_OBJType.otFragua Then
+
+                            'Validate other items
+584                         If .flags.TargetObjInvSlot < 1 Or .flags.TargetObjInvSlot > UserList(UserIndex).CurrentInventorySlots Then
+                                Exit Sub
+
+                            End If
+                        
+                            ''chequeamos que no se zarpe duplicando oro
+586                         If .Invent.Object(.flags.TargetObjInvSlot).ObjIndex <> .flags.TargetObjInvIndex Then
+588                             If .Invent.Object(.flags.TargetObjInvSlot).ObjIndex = 0 Or .Invent.Object(.flags.TargetObjInvSlot).amount = 0 Then
+590                                 Call WriteConsoleMsg(UserIndex, "No tienes más minerales", e_FontTypeNames.FONTTYPE_INFO)
+592                                 Call WriteWorkRequestTarget(UserIndex, 0)
+                                    Exit Sub
+
+                                End If
+                            
+                                ''FUISTE
+594                             Call WriteShowMessageBox(UserIndex, "Has sido expulsado por el sistema anti cheats.")
+                            
+596                             Call CloseSocket(UserIndex)
+                                Exit Sub
+
+                            End If
+                        
+598                         Call FundirMineral(UserIndex)
+                        
+                        Else
+                    
+600                         Call WriteConsoleMsg(UserIndex, "Ahí no hay ninguna fragua.", e_FontTypeNames.FONTTYPE_INFO)
+602                         Call WriteWorkRequestTarget(UserIndex, 0)
+
+604                         If UserList(UserIndex).Counters.Trabajando > 1 Then
+606                             Call WriteMacroTrabajoToggle(UserIndex, False)
+
+                            End If
+
+                        End If
+
+                    Else
+                
+608                     Call WriteConsoleMsg(UserIndex, "Ahí no hay ninguna fragua.", e_FontTypeNames.FONTTYPE_INFO)
+610                     Call WriteWorkRequestTarget(UserIndex, 0)
+
+612                     If UserList(UserIndex).Counters.Trabajando > 1 Then
+614                         Call WriteMacroTrabajoToggle(UserIndex, False)
+
+                        End If
+
+                    End If
             End Select
         End With
 End Sub
