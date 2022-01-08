@@ -28,7 +28,7 @@ MaxUsers=1000
 Admines=3
 Dioses=2
 SemiDioses=12
-Consejeros=6
+Consejeros=7
 
 [Admines]
 Admin1=Haracin|hgarofalo79@gmail.com
@@ -60,3 +60,4 @@ Consejero3=Hainnor|Jere_estandar@hotmail.com.ar
 Consejero4=Maraxus|reyarb@@fibertel.com
 Consejero5=RoTTTeN|darioguitarras@gmail.com
 Consejero6=Morgolock|gulfas@gmail.com
+Consejero7=Ulder|tomycapalbo@hotmail.com
