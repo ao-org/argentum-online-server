@@ -1104,14 +1104,18 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
 
             End If
             UpdateDBIpsValues UserIndex
+            
+474         Set RS = Query("Select is_active_patron from account where id = ?;", .AccountID)
 
+476         If RS Is Nothing Then Exit Sub
+            .Stats.tipoUsuario = RS!is_active_patron
         End With
         
 
         Exit Sub
 
 ErrorHandler:
-474     Call LogDatabaseError("Error en LoadUserDatabase: " & UserList(UserIndex).Name & ". " & Err.Number & " - " & Err.Description & ". Línea: " & Erl)
+478     Call LogDatabaseError("Error en LoadUserDatabase: " & UserList(UserIndex).Name & ". " & Err.Number & " - " & Err.Description & ". Línea: " & Erl)
 
 End Sub
 Public Function UpdateDBIpsValues(ByVal UserIndex As Integer)

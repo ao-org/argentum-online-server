@@ -4967,7 +4967,7 @@ Public Function PrepareMessageCharacterCreate(ByVal Body As Integer, _
 166     Call Writer.WriteInt8(Simbolo)
 168     Call Writer.WriteBool(Idle)
 170     Call Writer.WriteBool(Navegando)
-172     Call Writer.WriteInt16(tipoUsuario)
+172     Call Writer.WriteInt32(tipoUsuario)
         '<EhFooter>
         Exit Function
 

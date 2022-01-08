@@ -1410,9 +1410,9 @@ End Type
 Public Enum e_TipoUsuario
     tNormal = 0
     tCafecito
-    tHeroe
-    tAventurero
-    tLeyenda
+    tAventurero = 6057393
+    tHeroe = 6057394
+    tLeyenda = 6057395
 End Enum
 
 '[/KEVIN]
