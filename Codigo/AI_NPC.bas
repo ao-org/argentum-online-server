@@ -89,7 +89,7 @@ Private Sub PerseguirUsuarioCercano(ByVal NpcIndex As Integer)
 114           agresor = NameIndex(.flags.AttackedBy)
             End If
             
-            If NPCHasAUserInFront(NpcIndex, UserIndexFront) Then
+            If NPCHasAUserInFront(NpcIndex, UserIndexFront) And EsEnemigo(NpcIndex, UserIndexFront) Then
                 enemigoAtacableMasCercano = UserIndexFront
                 minDistanciaAtacable = 1
                 minDistancia = 1
@@ -318,11 +318,11 @@ End With
 End Function
 
 Public Function NPCHasAUserInFront(ByVal NpcIndex As Integer, ByRef UserIndex As Integer) As Boolean
-On Error Resume Next
-Dim NextPosNPC As t_WorldPos
-NextPosNPC = ComputeNextHeadingPos(NpcIndex)
-UserIndex = MapData(NextPosNPC.Map, NextPosNPC.X, NextPosNPC.Y).UserIndex
-NPCHasAUserInFront = (UserIndex > 0)
+    On Error Resume Next
+    Dim NextPosNPC As t_WorldPos
+    NextPosNPC = ComputeNextHeadingPos(NpcIndex)
+    UserIndex = MapData(NextPosNPC.Map, NextPosNPC.X, NextPosNPC.Y).UserIndex
+    NPCHasAUserInFront = (UserIndex > 0)
 End Function
 
 
