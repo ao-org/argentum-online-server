@@ -85,6 +85,7 @@ Module=modNetwork; Codigo\modNetwork.bas
 Form=Codigo\frmDbControl.frm
 Module=AO20CryptoSysWrapper; Codigo\AO20CryptoSysWrapper.bas
 Module=basCryptoSys; Codigo\basCryptoSys.bas
+Module=ModShopAO20; Codigo\ModShopAO20.bas
 IconForm="frmMain"
 Startup="Sub Main"
 HelpFile=""
