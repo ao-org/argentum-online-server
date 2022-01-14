@@ -1694,7 +1694,7 @@ Public Sub WriteUpdateDM(ByVal UserIndex As Integer)
 
             ' % daño mágico del anillo
 106         If .DañoMagicoEqpObjIndex > 0 Then
-108             Valor = Valor + ObjData(.DañoMagicoEqpObjIndex).MagicDamageBonus
+108             valor = valor + ObjData(.DañoMagicoEqpObjIndex).MagicDamageBonus
             End If
 
 110         Call Writer.WriteInt(ServerPacketID.UpdateDM)
@@ -5205,14 +5205,39 @@ End Sub
 
 Public Sub WriteShopInit(ByVal UserIndex As Integer)
     On Error GoTo WriteShopInit_Err
-    
+    Dim i As Long, cant_obj_shop As Integer
     Call Writer.WriteInt(ServerPacketID.ShopInit)
+    cant_obj_shop = UBound(ObjShop)
+    Call Writer.WriteInt16(cant_obj_shop)
+    
+    Call Writer.WriteInt32(UserList(userindex).Stats.Creditos)
+    
+    'Envío todos los objetos.
+    For i = 1 To cant_obj_shop
+        Call Writer.WriteInt32(ObjShop(i).ObjNum)
+        Call Writer.WriteInt32(ObjShop(i).valor)
+        Call Writer.WriteString8(ObjShop(i).Name)
+    Next i
     
 182 Call modSendData.SendData(ToIndex, UserIndex)
     
 WriteShopInit_Err:
      Call Writer.Clear
     Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteShopInit", Erl)
+End Sub
+Public Sub writeUpdateShopClienteCredits(ByVal userindex As Integer)
+    On Error GoTo writeUpdateShopClienteCredits_Err
+    
+    Call Writer.WriteInt(ServerPacketID.UpdateShopCliente)
+    
+    Call Writer.WriteInt32(UserList(userindex).Stats.Creditos)
+    
+182 Call modSendData.SendData(ToIndex, userindex)
+    
+writeUpdateShopClienteCredits_Err:
+     Call Writer.Clear
+    Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.writeUpdateShopClienteCredits", Erl)
+    
 End Sub
 Public Sub WriteObjQuestSend(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, ByVal Slot As Byte)
         '<EhHeader>

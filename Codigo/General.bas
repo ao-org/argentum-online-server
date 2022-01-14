@@ -1100,6 +1100,58 @@ ErrHandler:
 
 End Sub
 
+
+Public Sub LogCreditosPatreon(Desc As String)
+        On Error GoTo ErrHandler
+
+        Dim nfile As Integer
+
+100     nfile = FreeFile
+    
+102     Open App.Path & "\logs\Monetization\CreditosPatreon.log" For Append Shared As #nfile
+104     Print #nfile, Date & " " & Time & " - " & Desc
+106     Close #nfile
+     
+        Exit Sub
+    
+ErrHandler:
+
+End Sub
+
+Public Sub LogShopTransactions(Desc As String)
+        On Error GoTo ErrHandler
+
+        Dim nfile As Integer
+
+100     nfile = FreeFile
+    
+102     Open App.Path & "\logs\Monetization\Shop\Transactions.log" For Append Shared As #nfile
+104     Print #nfile, Date & " " & Time & " - " & Desc
+106     Close #nfile
+                 
+        Exit Sub
+    
+ErrHandler:
+
+End Sub
+
+Public Sub LogShopErrors(Desc As String)
+        On Error GoTo ErrHandler
+
+        Dim nfile As Integer
+
+100     nfile = FreeFile
+    
+102     Open App.Path & "\logs\Monetization\Shop\Errors.log" For Append Shared As #nfile
+104     Print #nfile, Date & " " & Time & " - " & Desc
+106     Close #nfile
+                 
+        Exit Sub
+    
+ErrHandler:
+
+End Sub
+
 Public Sub LogAsesinato(texto As String)
 
         On Error GoTo ErrHandler

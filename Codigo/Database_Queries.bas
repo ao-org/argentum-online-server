@@ -130,7 +130,8 @@ Private Sub ConstruirQuery_CargarPersonaje()
         QueryBuilder.Append "Guild_Index,"
         QueryBuilder.Append "guild_rejected_because,"
         QueryBuilder.Append "warnings,"
-        QueryBuilder.Append "last_logout"
+        QueryBuilder.Append "last_logout,"
+        QueryBuilder.Append "credits"
         'QueryBuilder.Append ",DATE_FORMAT(fecha_ingreso, '%Y-%m-%d') as 'fecha_ingreso_format'"
         QueryBuilder.Append " FROM user WHERE name= ?"
     

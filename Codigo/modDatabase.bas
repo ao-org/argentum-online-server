@@ -431,7 +431,7 @@ ErrorHandler:
 
 End Sub
 
-Public Sub SaveUserDatabase(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = False)
+Public Sub SaveUserDatabase(ByVal userindex As Integer)
 
         On Error GoTo ErrorHandler
     
@@ -792,12 +792,17 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
                 If LenB(BanNick) = 0 Then BanNick = "*Error en la base de datos*"
                 If LenB(BaneoMotivo) = 0 Then BaneoMotivo = "*No se registra el motivo del baneo.*"
             
-                Call WriteShowMessageBox(UserIndex, "Se te ha prohibido la entrada al juego debido a " & BaneoMotivo & ". Esta decisión fue tomada por " & BanNick & ".")
+                Call WriteShowMessageBox(userindex, "Se te ha prohibido la entrada al juego debido a " & BaneoMotivo & ". Esta decisión fue tomada por " & BanNick & ".")
             
                 Call CloseSocket(UserIndex)
                 Exit Sub
             End If
             Dim last_logout As Long
+            
+            
+            Dim user_credits As Long
+            
+            user_credits = RS!credits
             
             last_logout = val(RS!last_logout)
             
@@ -909,7 +914,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
             .LastGuildRejection = SanitizeNullValue(RS!guild_rejected_because, vbNullString)
  
 298         .Stats.Advertencias = RS!warnings
-                    
+
             'User spells
             Set RS = Query("SELECT number, spell_id FROM spell WHERE user_id = ?;", .ID)
 
@@ -1105,8 +1110,20 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
             End If
             UpdateDBIpsValues UserIndex
             
-474         Set RS = Query("Select is_active_patron from account where id = ?;", .AccountID)
+474         Set RS = Query("Select is_active_patron, credits, offline_patron_credits from account where id = ?;", .accountId)
 
+
+            'viene el primer pj    offline = 200 credits = 0
+            ' Logtuea            offline = 0    credits  = 200
+            'compro 300 creditos offline = 300  credits = 200
+            'lkoguea 2do pj    offline = 0 credits = 500
+            
+            .Stats.Creditos = CLng(RS!offline_patron_credits) + user_credits
+            
+            Call Query("update account set offline_patron_credits = 0 where id = ?;", .accountId)
+            Call Query("Update user set credits = ? where id = ?;", .Stats.Creditos, .ID)
+            Call LogCreditosPatreon(.Name & " | " & .Email & " | Logged with " & .Stats.Creditos)
+            
 476         If RS Is Nothing Then Exit Sub
             .Stats.tipoUsuario = RS!is_active_patron
         End With
@@ -1115,7 +1132,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
         Exit Sub
 
 ErrorHandler:
-478     Call LogDatabaseError("Error en LoadUserDatabase: " & UserList(UserIndex).Name & ". " & Err.Number & " - " & Err.Description & ". Línea: " & Erl)
+478     Call LogDatabaseError("Error en LoadUserDatabase: " & UserList(userindex).Name & ". " & Err.Number & " - " & Err.Description & ". Línea: " & Erl)
 
 End Sub
 Public Function UpdateDBIpsValues(ByVal UserIndex As Integer)
@@ -1937,7 +1954,7 @@ Public Function EnterAccountDatabase(ByVal UserIndex As Integer, ByVal CuentaEma
 100     Set RS = Query("SELECT id from account WHERE email = ?", UCase$(CuentaEmail))
     
 102     If Connection.State = adStateClosed Then
-104         Call WriteShowMessageBox(UserIndex, "Ha ocurrido un error interno en el servidor. ¡Estamos tratando de resolverlo!")
+104         Call WriteShowMessageBox(userindex, "Ha ocurrido un error interno en el servidor. ¡Estamos tratando de resolverlo!")
             Exit Function
         End If
     
