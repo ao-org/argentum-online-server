@@ -18957,10 +18957,7 @@ End Sub
 Private Sub HandleRepeatMacro(ByVal UserIndex As Integer)
 
     On Error GoTo HandleRepeatMacro_Err:
-    Call LogMacroCliente("El usuario " & UserList(UserIndex).Name & " iteró el paquete click o u." & GetTickCount)
-114 'Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » El usuario " & UserList(UserIndex).Name & " está utilizando macro de click o U.", e_FontTypeNames.FONTTYPE_INFOBOLD))
-    'Call WriteCerrarleCliente(UserIndex)
-    'Call CloseSocket(UserIndex)
+    Call LogMacroCliente("El usuario " & UserList(userindex).Name & " iteró el paquete click o u." & GetTickCount)
     Exit Sub
 
 HandleRepeatMacro_Err:
