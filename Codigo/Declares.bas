@@ -423,7 +423,7 @@ End Enum
 
 Public Const MAX_MENSAJES_FORO As Byte = 35
 
-Public Const MAXUSERHECHIZOS   As Byte = 25
+Public Const MAXUSERHECHIZOS   As Byte = 40
 
 Public Const FX_TELEPORT_INDEX             As Integer = 1
 
@@ -1357,6 +1357,7 @@ Public Type t_ObjData
     NoLog As Byte 'es un objeto que esta prohibido loguear?
     QuestId As Integer
     PuntosPesca As Long
+    ObjNum As Long
 End Type
 
 '[Pablo ToxicWaste]
@@ -2368,6 +2369,8 @@ Public Hechizos()                         As t_Hechizo
 Public CharList(1 To MAXCHARS)            As Integer
 
 Public ObjData()                          As t_ObjData
+
+Public ObjShop()                          As t_ObjData
 
 Public FX()                               As t_FXdata
 

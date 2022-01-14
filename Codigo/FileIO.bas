@@ -1251,10 +1251,13 @@ Sub LoadOBJData()
         End With
     
 116     ReDim Preserve ObjData(1 To NumObjDatas) As t_ObjData
-    
+
+        ReDim ObjShop(1 To 1) As t_ObjData
+        
         Dim ObjKey As String
         Dim str As String, Field() As String
         Dim Crafteo As clsCrafteo
+        Dim NFT As Boolean
   
         'Llena la lista
 118     For Object = 1 To NumObjDatas
@@ -1678,8 +1681,19 @@ Sub LoadOBJData()
 636             If .CatalizadorTipo Then
 638                 .CatalizadorAumento = val(Leer.GetValue(ObjKey, "CatalizadorAumento"))
                 End If
-    
+                
+                NFT = val(Leer.GetValue(ObjKey, "NFT"))
+                
+                If NFT Then
+                    ObjShop(UBound(ObjShop)).Name = Leer.GetValue(ObjKey, "Name")
+                    ObjShop(UBound(ObjShop)).valor = 50  'val(Leer.GetValue(ObjKey, "Valor"))
+                    ObjShop(UBound(ObjShop)).ObjNum = Object
+                    ReDim Preserve ObjShop(1 To (UBound(ObjShop) + 1)) As t_ObjData
+                End If
+                
+                
 640             frmCargando.cargar.Value = frmCargando.cargar.Value + 1
+
         
             End With
             
@@ -1687,6 +1701,7 @@ Sub LoadOBJData()
 642         If Object Mod 10 = 0 Then DoEvents
         
 644     Next Object
+        ReDim Preserve ObjShop(1 To (UBound(ObjShop) - 1)) As t_ObjData
 
 646     Set Leer = Nothing
     
@@ -2606,8 +2621,9 @@ Sub SaveUser(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = Fals
 
         On Error GoTo SaveUser_Err
 
-102     Call SaveUserDatabase(UserIndex, Logout)
+102     Call SaveUserDatabase(userindex)
         If Logout Then
+            Call SaveCreditsDatabase(userindex)
 103         Call RemoveTokenDatabase(userindex)
         End If
 104     UserList(UserIndex).Counters.LastSave = GetTickCount
@@ -2617,6 +2633,24 @@ Sub SaveUser(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = Fals
 SaveUser_Err:
 108     Call TraceError(Err.Number, Err.Description, "ES.SaveUser", Erl)
 
+End Sub
+Public Sub SaveCreditsDatabase(ByVal userindex As Integer)
+    Dim toSaveCredits As Long
+    
+    Dim account_id As Long
+    Dim RS As ADODB.Recordset
+    
+    Call Query("update user set credits = 0 where id = ?;", UserList(userindex).ID)
+    
+    account_id = UserList(userindex).accountId
+    Set RS = Query("select offline_patron_credits from account where id = ?;", account_id)
+    
+    If Not RS Is Nothing Then
+        toSaveCredits = RS!offline_patron_credits + UserList(userindex).Stats.Creditos
+        Call Query("update account set offline_patron_credits = ? where id = ?;", toSaveCredits, account_id)
+    End If
+    
+    
 End Sub
 Public Sub RemoveTokenDatabase(ByVal userindex As Integer)
     Call Query("delete from tokens where username =  UPPER('" & UserList(userindex).Email & "')")

@@ -187,6 +187,7 @@ Public Enum ServerPacketID
     PelearConPezEspecial
     Privilegios
     ShopInit
+    UpdateShopCliente
     [PacketCount]
 End Enum
 
@@ -514,6 +515,7 @@ Private Enum ClientPacketID
     RomperCania
     UseItemU
     RepeatMacro
+    BuyShopItem
     [PacketCount]
 End Enum
 
@@ -1301,6 +1303,8 @@ On Error Resume Next
             Call HandleRomperCania(UserIndex)
         Case ClientPacketID.RepeatMacro
             Call HandleRepeatMacro(UserIndex)
+        Case ClientPacketID.BuyShopItem
+            Call HandleBuyShopItem(userindex)
         Case Else
             Err.raise -1, "Invalid Message"
     End Select
@@ -18961,6 +18965,21 @@ Private Sub HandleRepeatMacro(ByVal UserIndex As Integer)
 
 HandleRepeatMacro_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRepeatMacro", Erl)
+End Sub
+
+Private Sub HandleBuyShopItem(ByVal userindex As Integer)
+
+    On Error GoTo HandleBuyShopItem_Err:
+    Dim obj_to_buy As Long
+        
+    obj_to_buy = Reader.ReadInt32
+    
+    Call ModShopAO20.init_transaction(obj_to_buy, userindex)
+    
+    Exit Sub
+
+HandleBuyShopItem_Err:
+102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleBuyShopItem", Erl)
 End Sub
 Private Sub HandleDeleteItem(ByVal UserIndex As Integer)
     On Error GoTo HandleDeleteItem_Err:
