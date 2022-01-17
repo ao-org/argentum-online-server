@@ -16,14 +16,6 @@ http://www.ch-werner.de/sqliteodbc/
 
 Abrir CMD como Administrador `regsvr32 Aurora.Network.dll`
 
-
-# Development (test branch ao-api/web)
-IMPORTANTE: Para hacer cuentas en el servidor de test, tienen que entrar aca.
-Website:
-http://test.ao20.com.ar
-
-
-
 # Staging (test master ao-api/web)
 IMPORTANTE: Para hacer cuentas en el servidor de staging, tienen que entrar aca.
 Website:
