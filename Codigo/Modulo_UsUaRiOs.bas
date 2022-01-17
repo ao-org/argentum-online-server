@@ -2106,7 +2106,8 @@ Sub ContarMuerte(ByVal Muerto As Integer, ByVal Atacante As Integer)
 
 100         If EsNewbie(Muerto) Then Exit Sub
 102         If TriggerZonaPelea(Muerto, Atacante) = TRIGGER6_PERMITE Then Exit Sub
-104         If Abs(CInt(UserList(Muerto).Stats.ELV) - CInt(UserList(Atacante).Stats.ELV)) > 14 Then Exit Sub
+            'Si se llevan más de 10 niveles no le cuento la muerte.
+            If UserList(Atacante).Stats.ELV - UserList(Muerto).Stats.ELV > 10 Then Exit Sub
 106         If Status(Muerto) = 0 Or Status(Muerto) = 2 Then
 108             If UserList(Atacante).flags.LastCrimMatado <> UserList(Muerto).Name Then
 110                 UserList(Atacante).flags.LastCrimMatado = UserList(Muerto).Name
