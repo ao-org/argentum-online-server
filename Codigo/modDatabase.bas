@@ -562,7 +562,7 @@ Public Sub SaveUserDatabase(ByVal userindex As Integer)
                 Call Execute(QUERY_UPSERT_SPELLS, Params)
 
                 ' Reseteamos el flag para no volver a guardar.
-                Debug.Print "Se modificaron los hechizos. Guardando..."
+                'Debug.Print "Se modificaron los hechizos. Guardando..."
                 .flags.ModificoHechizos = False
             
             ' ************************** User inventory *********************************
@@ -582,7 +582,7 @@ Public Sub SaveUserDatabase(ByVal userindex As Integer)
                 Call Execute(QUERY_UPSERT_INVENTORY, Params)
 
                 ' Reseteamos el flag para no volver a guardar.
-                Debug.Print "Se modifico el inventario. Guardando..."
+                'Debug.Print "Se modifico el inventario. Guardando..."
                 .flags.ModificoInventario = False
             
             ' ************************** User bank inventory *********************************
@@ -601,7 +601,7 @@ Public Sub SaveUserDatabase(ByVal userindex As Integer)
                 Call Execute(QUERY_SAVE_BANCOINV, Params)
 
                 ' Reseteamos el flag para no volver a guardar.
-                Debug.Print "Se modifico el inventario del banco. Guardando..."
+                'Debug.Print "Se modifico el inventario del banco. Guardando..."
                 .flags.ModificoInventarioBanco = False
 
             ' ************************** User skills *********************************
@@ -619,7 +619,7 @@ Public Sub SaveUserDatabase(ByVal userindex As Integer)
                 Call Execute(QUERY_UPSERT_SKILLS, Params)
 
                 ' Reseteamos el flag para no volver a guardar.
-                Debug.Print "Se modifico las habilidades. Guardando..."
+               ' Debug.Print "Se modifico las habilidades. Guardando..."
                 .flags.ModificoSkills = False
 
             ' ************************** User pets *********************************
@@ -653,7 +653,7 @@ Public Sub SaveUserDatabase(ByVal userindex As Integer)
                 Call Execute(QUERY_UPSERT_PETS, Params)
 
                 ' Reseteamos el flag para no volver a guardar.
-                Debug.Print "Se modifico las mascotas. Guardando..."
+               ' Debug.Print "Se modifico las mascotas. Guardando..."
                 .flags.ModificoMascotas = False
 
             ' ************************** User quests *********************************
@@ -717,7 +717,7 @@ Public Sub SaveUserDatabase(ByVal userindex As Integer)
 584             Call Builder.Clear
                 
                 ' Reseteamos el flag para no volver a guardar.
-                Debug.Print "Se modifico las quests. Guardando..."
+               ' Debug.Print "Se modifico las quests. Guardando..."
                 .flags.ModificoQuests = False
         
             ' ************************** User completed quests *********************************
@@ -752,7 +752,7 @@ Public Sub SaveUserDatabase(ByVal userindex As Integer)
 626                 Call Builder.Clear
                     
                     ' Reseteamos el flag para no volver a guardar.
-                    Debug.Print "Se modifico las quests hechas. Guardando..."
+                   ' Debug.Print "Se modifico las quests hechas. Guardando..."
                     .flags.ModificoQuestsHechas = False
             End If
             
