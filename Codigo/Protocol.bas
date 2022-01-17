@@ -2695,7 +2695,7 @@ Private Function verifyTimeStamp(ByVal ActualCount As Long, ByRef LastCount, ByR
     LastTick = Ticks
     
     'Call SendData(SendTarget.ToAdminsAreaButConsejeros, UserIndex, PrepareMessageConsoleMsg("First -> " & LastTick & " Current -> " & Ticks & " Delta -> " & Delta & "| Packet: " & PacketName, e_FontTypeNames.FONTTYPE_INFO))
-    Debug.Print "First -> " & LastTick & " Current -> " & Ticks & " Delta -> " & Delta & "| Packet: " & PacketName
+  ' Debug.Print "First -> " & LastTick & " Current -> " & Ticks & " Delta -> " & Delta & "| Packet: " & PacketName
     'Controlamos secuencia para ver que no haya paquetes duplicados.
     If ActualCount <= LastCount Then
        ' Call CloseSocket(UserIndex)
