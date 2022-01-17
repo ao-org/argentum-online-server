@@ -320,6 +320,14 @@ End Function
 Public Function NPCHasAUserInFront(ByVal NpcIndex As Integer, ByRef UserIndex As Integer) As Boolean
     On Error Resume Next
     Dim NextPosNPC As t_WorldPos
+    
+    If UserList(UserIndex).flags.Muerto = 1 Then
+        NPCHasAUserInFront = False
+        Exit Function
+    End If
+    
+    
+    
     NextPosNPC = ComputeNextHeadingPos(NpcIndex)
     UserIndex = MapData(NextPosNPC.Map, NextPosNPC.X, NextPosNPC.Y).UserIndex
     NPCHasAUserInFront = (UserIndex > 0)
@@ -347,8 +355,10 @@ Private Sub AI_AtacarUsuarioObjetivo(ByVal AtackerNpcIndex As Integer)
                             IntervaloPermiteLanzarHechizo(AtackerNpcIndex) And _
                             (RandomNumber(1, 100) <= 50)
              
-108         AtacaMelee = (EstaPegadoAlUsuario And UsuarioAtacableConMelee(AtackerNpcIndex, .Target) And .flags.Paralizado = 0 And .flags.LanzaSpells = 0)
-            AtacaMelee = AtacaMelee Or (EstaPegadoAlUsuario And .flags.LanzaSpells > 0 And (UserList(.Target).flags.invisible > 0 Or UserList(.Target).flags.Oculto > 0))
+108         AtacaMelee = EstaPegadoAlUsuario And UsuarioAtacableConMelee(AtackerNpcIndex, .Target) And .flags.Paralizado = 0
+            AtacaMelee = AtacaMelee And (.flags.LanzaSpells > 0 And (UserList(.Target).flags.invisible > 0 Or UserList(.Target).flags.Oculto > 0))
+            AtacaMelee = AtacaMelee Or .flags.LanzaSpells = 0
+            
             
             ' Se da vuelta y enfrenta al Usuario
 109         tHeading = GetHeadingFromWorldPos(.Pos, UserList(.Target).Pos)
