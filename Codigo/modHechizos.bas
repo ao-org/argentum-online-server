@@ -2245,10 +2245,6 @@ Sub HechizoEstadoNPC(ByVal NpcIndex As Integer, ByVal hIndex As Integer, ByRef b
  
 208     If Hechizos(hIndex).Inmoviliza = 1 Then
 210         If NpcList(NpcIndex).flags.AfectaParalisis = 0 Then
-212             If NpcList(NpcIndex).flags.Paralizado <> 0 Then
-214                 Call WriteConsoleMsg(UserIndex, "El NPC se encuentra paralizado.", e_FontTypeNames.FONTTYPE_INFO)
-                    Exit Sub
-                End If
 
 216             If Not PuedeAtacarNPC(UserIndex, NpcIndex) Then
 218                 b = False
