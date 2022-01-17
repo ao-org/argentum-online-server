@@ -100,7 +100,7 @@ Private Sub PerseguirUsuarioCercano(ByVal NpcIndex As Integer)
     
 120                 If EsObjetivoValido(NpcIndex, UserIndex) Then
                         ' Busco el mas cercano, sea atacable o no.
-122                     If Distancia(UserList(UserIndex).Pos, .Pos) < minDistancia Then
+122                     If Distancia(UserList(UserIndex).Pos, .Pos) < minDistancia And Not (UserList(UserIndex).flags.invisible > 0 Or UserList(UserIndex).flags.Oculto) Then
 124                         enemigoCercano = UserIndex
 126                         minDistancia = Distancia(UserList(UserIndex).Pos, .Pos)
                         End If
