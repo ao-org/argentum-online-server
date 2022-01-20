@@ -174,7 +174,7 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
       
                     'Revivimos si es necesario
 178                 If UserList(UserIndex).flags.Muerto = 1 And (NpcList(TempCharIndex).NPCtype = e_NPCType.Revividor Or EsNewbie(UserIndex)) Then
-180                     Call WriteConsoleMsg(UserIndex, "¡Has sido resucitado!", e_FontTypeNames.FONTTYPE_INFO)
+180                     Call WriteConsoleMsg(userindex, "¡Has sido resucitado!", e_FontTypeNames.FONTTYPE_INFO)
 182                     Call RevivirUsuario(UserIndex)
 184                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, e_ParticulasIndex.Resucitar, 30, False))
 186                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("117", UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
@@ -288,14 +288,14 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
 266                     Gobernador = NpcList(UserList(UserIndex).flags.TargetNPC)
             
 268                 If UserList(UserIndex).Hogar = Gobernador.GobernadorDe Then
-270                     Call WriteChatOverHead(UserIndex, "Ya perteneces a esta ciudad. Gracias por ser uno más de nosotros.", Gobernador.Char.CharIndex, vbWhite)
+270                     Call WriteChatOverHead(userindex, "Ya perteneces a esta ciudad. Gracias por ser uno más de nosotros.", Gobernador.Char.CharIndex, vbWhite)
                         Exit Sub
 
                     End If
             
 272                 If UserList(UserIndex).Faccion.Status = 0 Or UserList(UserIndex).Faccion.Status = 2 Then
 274                     If Gobernador.GobernadorDe = e_Ciudad.cBanderbill Then
-276                         Call WriteChatOverHead(UserIndex, "Aquí no aceptamos criminales.", Gobernador.Char.CharIndex, vbWhite)
+276                         Call WriteChatOverHead(userindex, "Aquí no aceptamos criminales.", Gobernador.Char.CharIndex, vbWhite)
                             Exit Sub
 
                         End If
@@ -304,7 +304,7 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
             
 278                 If UserList(UserIndex).Faccion.Status = 3 Or UserList(UserIndex).Faccion.Status = 1 Then
 280                     If Gobernador.GobernadorDe = e_Ciudad.cArkhein Then
-282                         Call WriteChatOverHead(UserIndex, "¡¡Sal de aquí ciudadano asqueroso!!", Gobernador.Char.CharIndex, vbWhite)
+282                         Call WriteChatOverHead(userindex, "¡¡Sal de aquí ciudadano asqueroso!!", Gobernador.Char.CharIndex, vbWhite)
                             Exit Sub
 
                         End If
@@ -341,7 +341,7 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
                         End Select
                     
 316                     UserList(UserIndex).flags.pregunta = 3
-318                     Call WritePreguntaBox(UserIndex, "¿Te gustaria ser ciudadano de " & DeDonde & "?")
+318                     Call WritePreguntaBox(userindex, "¿Te gustaria ser ciudadano de " & DeDonde & "?")
                 
                     End If
                 ElseIf NpcList(TempCharIndex).NPCtype = e_NPCType.EntregaPesca Then
@@ -364,11 +364,11 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
                     
                     If PuntosTotales > 0 Then
 319                     UserList(UserIndex).flags.pregunta = 5
-                        Call WritePreguntaBox(UserIndex, "Tienes un total de " & PuntosTotales & " puntos para reclamar, ¿Desea aceptar?")
+                        Call WritePreguntaBox(userindex, "Tienes un total de " & PuntosTotales & " puntos para reclamar, ¿Desea aceptar?")
                     Else
                         Dim charIndexstr As Integer
                         charIndexstr = str(NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex)
-                        Call WriteChatOverHead(UserIndex, "No tienes ningún trofeo de pesca para entregar.", charIndexStr, &HFFFF00)
+                        Call WriteChatOverHead(userindex, "No tienes ningún trofeo de pesca para entregar.", charindexstr, &HFFFF00)
                     End If
                 ElseIf NpcList(TempCharIndex).NPCtype = e_NPCType.AO20Shop Then
 322                 If UserList(UserIndex).flags.Muerto = 1 Then
@@ -407,7 +407,7 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
 
 346                 Case e_OBJType.OtCorreo 'Es un cartel
                         'Call AccionParaCorreo(Map, x, Y, UserIndex)
-                        Call WriteConsoleMsg(UserIndex, "El correo está temporalmente deshabilitado.", e_FontTypeNames.FONTTYPE_EJECUCION)
+                        Call WriteConsoleMsg(userindex, "El correo está temporalmente deshabilitado.", e_FontTypeNames.FONTTYPE_EJECUCION)
 
 356                 Case e_OBJType.otYunque 'Pozos
 358                     Call AccionParaYunque(Map, X, Y, UserIndex)
@@ -630,12 +630,12 @@ Sub AccionParaRamita(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Intege
             End If
 
 112         If MapInfo(Map).lluvia And Lloviendo Then
-114             Call WriteConsoleMsg(UserIndex, "Esta lloviendo, no podés encender una fogata aquí.", e_FontTypeNames.FONTTYPE_INFO)
+114             Call WriteConsoleMsg(userindex, "Esta lloviendo, no podés encender una fogata aquí.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
 
 116         If MapData(Map, X, Y).trigger = e_Trigger.ZONASEGURA Or MapInfo(Map).Seguro = 1 Then
-118             Call WriteConsoleMsg(UserIndex, "En zona segura no podés hacer fogatas.", e_FontTypeNames.FONTTYPE_INFO)
+118             Call WriteConsoleMsg(userindex, "En zona segura no podés hacer fogatas.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
 
