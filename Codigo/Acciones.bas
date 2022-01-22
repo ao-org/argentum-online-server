@@ -84,7 +84,7 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
 
                     End If
             
-120                 If Distancia(NpcList(UserList(UserIndex).flags.TargetNPC).Pos, UserList(UserIndex).Pos) > 6 Then
+120                 If Distancia(NpcList(UserList(UserIndex).flags.TargetNPC).Pos, UserList(UserIndex).Pos) > 3 Then
 122                     Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
                         'Call WriteConsoleMsg(UserIndex, "Estas demasiado lejos del vendedor.", e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
@@ -114,7 +114,7 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
 
                     End If
             
-138                 If Distancia(NpcList(TempCharIndex).Pos, UserList(UserIndex).Pos) > 6 Then
+138                 If Distancia(NpcList(TempCharIndex).Pos, UserList(UserIndex).Pos) > 3 Then
 140                     Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
                         'Call WriteConsoleMsg(UserIndex, "Estas demasiado lejos del banquero.", e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
@@ -139,7 +139,7 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
 
                     End If
             
-152                 If Distancia(NpcList(TempCharIndex).Pos, UserList(UserIndex).Pos) > 5 Then
+152                 If Distancia(NpcList(TempCharIndex).Pos, UserList(UserIndex).Pos) > 3 Then
 154                     Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
 156                     Call WriteConsoleMsg(UserIndex, "Estas demasiado lejos del banquero.", e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
@@ -251,7 +251,7 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
 
                     End If
             
-238                 If Distancia(NpcList(UserList(UserIndex).flags.TargetNPC).Pos, UserList(UserIndex).Pos) > 4 Then
+238                 If Distancia(NpcList(UserList(UserIndex).flags.TargetNPC).Pos, UserList(UserIndex).Pos) > 3 Then
 240                     Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
 
