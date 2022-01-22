@@ -196,10 +196,19 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
             End If
         
             'Se entrega el oro.
-170         If .RewardGLD Then
-172             UserList(UserIndex).Stats.GLD = UserList(UserIndex).Stats.GLD + (.RewardGLD * OroMult)
-174             Call WriteConsoleMsg(UserIndex, "Has ganado " & PonerPuntos((.RewardGLD * OroMult)) & " monedas de oro como recompensa.", e_FontTypeNames.FONTTYPE_INFOIAO)
-176             Call WriteUpdateGold(UserIndex)
+170         If .RewardGLD > 0 Then
+                Dim GiveGLD As Long
+                GiveGLD = (.RewardGLD * OroMult)
+                
+                If GiveGLD < 100000 Then
+172                 UserList(UserIndex).Stats.GLD = UserList(UserIndex).Stats.GLD + GiveGLD
+174                 Call WriteConsoleMsg(UserIndex, "Has ganado " & PonerPuntos(GiveGLD) & " monedas de oro como recompensa.", e_FontTypeNames.FONTTYPE_INFOIAO)
+176                 Call WriteUpdateGold(UserIndex)
+                Else
+                    UserList(UserIndex).Stats.Banco = UserList(UserIndex).Stats.Banco + GiveGLD
+                    Call WriteConsoleMsg(UserIndex, "Has ganado " & PonerPuntos(GiveGLD) & " monedas de oro como recompensa. La recompensa ha sido depositada en su cuenta del Banco Goliath.", e_FontTypeNames.FONTTYPE_INFOIAO)
+                End If
+
             End If
         
             'Si hay recompensa de objetos, se entregan.
