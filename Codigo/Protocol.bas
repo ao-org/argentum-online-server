@@ -111,6 +111,7 @@ Public Enum ServerPacketID
     FYA
     CerrarleCliente
     Contadores
+    ShowPapiro              ' SWP
     
     'GM messages
     SpawnListt               ' SPL
