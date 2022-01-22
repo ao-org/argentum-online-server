@@ -157,9 +157,10 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
 180                         For j = 1 To QuestList(.QuestIndex).RequiredNPCs
         
 182                             If QuestList(.QuestIndex).RequiredNPC(j).NpcIndex = MiNPC.Numero Then
-184                                 If QuestList(.QuestIndex).RequiredNPC(j).amount > .NPCsKilled(j) Then
-186                                     .NPCsKilled(j) = .NPCsKilled(j) + 1
-
+       
+184                                 If QuestList(.QuestIndex).RequiredNPC(j).amount >= .NPCsKilled(j) Then
+186                                     .NPCsKilled(j) = .NPCsKilled(j) + 1 '
+        
 188                                     Call WriteConsoleMsg(UserIndex, MiNPC.Name & " matados/as: " & .NPCsKilled(j) & " de " & QuestList(.QuestIndex).RequiredNPC(j).amount, e_FontTypeNames.FONTTYPE_INFOIAO)
 190                                     Call WriteChatOverHead(UserIndex, "NOCONSOLA*" & .NPCsKilled(j) & "/" & QuestList(.QuestIndex).RequiredNPC(j).amount & " " & MiNPC.Name, UserList(UserIndex).Char.CharIndex, RGB(180, 180, 180))
 
