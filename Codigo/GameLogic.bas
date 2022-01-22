@@ -1504,9 +1504,25 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
 460                 If NpcList(TempCharIndex).Movement = Caminata Then
 462                     NpcList(TempCharIndex).Contadores.IntervaloMovimiento = GetTickCount + 5000 + Len(NpcList(TempCharIndex).Desc) * 50 - NpcList(TempCharIndex).IntervaloMovimiento ' 5 segundos + 1 segundo cada 20 caracteres
                     End If
-
-                    'Optimizacion de protocolo por Ladder
-464                 Call WriteChatOverHead(UserIndex, "NPCDESC*" & NpcList(TempCharIndex).Numero, NpcList(TempCharIndex).Char.CharIndex, vbWhite)
+                    
+                    If NpcList(TempCharIndex).NPCtype = e_NPCType.Quest Then
+                        If Distance(UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y, NpcList(TempCharIndex).Pos.X, NpcList(TempCharIndex).Pos.Y) < 3 Then
+                            If NpcList(TempCharIndex).Movement = Caminata Then
+                                NpcList(TempCharIndex).Contadores.IntervaloMovimiento = GetTickCount + 15000 - NpcList(TempCharIndex).IntervaloMovimiento ' 15 segundos
+                            End If
+                            
+                            If NpcList(TempCharIndex).SoundOpen <> 0 Then
+                                Call WritePlayWave(UserIndex, NpcList(TempCharIndex).SoundOpen, NpcList(TempCharIndex).Pos.X, NpcList(TempCharIndex).Pos.Y)
+                            End If
+                            Call WriteChatOverHead(UserIndex, "NPCDESC*" & NpcList(TempCharIndex).Numero, NpcList(TempCharIndex).Char.CharIndex, vbWhite)
+                        End If
+                        
+                        
+                    Else
+                        'Optimizacion de protocolo por Ladder
+464                     Call WriteChatOverHead(UserIndex, "NPCDESC*" & NpcList(TempCharIndex).Numero, NpcList(TempCharIndex).Char.CharIndex, vbWhite)
+                    End If
+                    
 466             ElseIf TempCharIndex = CentinelaNPCIndex Then
                     'Enviamos nuevamente el texto del centinela según quien pregunta
 468                 Call modCentinela.CentinelaSendClave(UserIndex)

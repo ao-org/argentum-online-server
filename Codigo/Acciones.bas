@@ -231,16 +231,6 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
                         Exit Sub
                     End If
                     
-                    ' WyroX: Hacemos que se detenga a hablar un momento :P
-226                 If NpcList(TempCharIndex).Movement = Caminata Then
-228                     NpcList(TempCharIndex).Contadores.IntervaloMovimiento = GetTickCount + 15000 - NpcList(TempCharIndex).IntervaloMovimiento ' 15 segundos
-                    End If
-                    
-                    ' ReyarB: Hacemos que hable :P
-                    If NpcList(TempCharIndex).SoundOpen <> 0 Then
-                        Call WritePlayWave(userindex, NpcList(UserList(userindex).flags.TargetNPC).SoundOpen, NO_3D_SOUND, NO_3D_SOUND)
-                    End If
-                    
 230                 Call EnviarQuest(UserIndex)
             
 232             ElseIf NpcList(TempCharIndex).NPCtype = e_NPCType.Enlistador Then
