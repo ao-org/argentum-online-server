@@ -2494,6 +2494,16 @@ WriteContadores_Err:
         
 End Sub
 
+Public Sub WriteShowPapiro(ByVal UserIndex As Integer)
+    On Error GoTo WriteShowPapiro_Err
+100     Call Writer.WriteInt(ServerPacketID.ShowPapiro)
+112     Call modSendData.SendData(ToIndex, UserIndex)
+    Exit Sub
+
+WriteShowPapiro_Err:
+        Call Writer.Clear
+        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteShowPapiro", Erl)
+End Sub
 
 Public Sub WritePrivilegios(ByVal UserIndex As Integer)
 

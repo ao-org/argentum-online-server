@@ -594,14 +594,14 @@ Sub AccionParaCartel(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Intege
 
         Dim MiObj As t_Obj
 
-100     If ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex).OBJType = 8 Then
-  
-102         If Len(ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex).texto) > 0 Then
-104             Call WriteShowSignal(UserIndex, MapData(Map, X, Y).ObjInfo.ObjIndex)
-
-            End If
-  
+100     'If ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex).OBJType = 8 Then
+102     If Len(ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex).texto) > 0 Then
+104         Call WriteShowSignal(UserIndex, MapData(Map, X, Y).ObjInfo.ObjIndex)
+        Else
+            Call WriteShowPapiro(UserIndex)
         End If
+  
+        'End If
         
         Exit Sub
         
