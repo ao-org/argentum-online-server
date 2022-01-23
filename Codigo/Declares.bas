@@ -2255,6 +2255,8 @@ Public SERVERONLINE                      As Boolean
 
 Public ULTIMAVERSION                     As String
 
+Public CANT_BOTS                         As Integer
+
 Public backup                            As Boolean ' TODO: Se usa esta variable ?
 
 Public ListaRazas(1 To NUMRAZAS)         As String
