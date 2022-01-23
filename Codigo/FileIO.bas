@@ -2653,7 +2653,7 @@ Public Sub SaveCreditsDatabase(ByVal userindex As Integer)
     
 End Sub
 Public Sub RemoveTokenDatabase(ByVal userindex As Integer)
-    Call Query("delete from tokens where username =  UPPER('" & UserList(userindex).Email & "')")
+    Call Query("delete from tokens where id =  UPPER('" & UserList(userindex).encrypted_session_token_db_id & "')")
 End Sub
 Sub SaveNewUser(ByVal UserIndex As Integer)
     On Error GoTo SaveNewUser_Err

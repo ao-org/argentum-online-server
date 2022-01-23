@@ -1383,6 +1383,7 @@ Private Sub HandleLoginExistingChar(ByVal UserIndex As Integer)
         
             CuentaEmail = CStr(RS!UserName)
             If RS!encrypted_token = encrypted_session_token Then
+                UserList(userindex).encrypted_session_token_db_id = RS!ID
                 UserList(UserIndex).encrypted_session_token = encrypted_session_token
                 UserList(UserIndex).decrypted_session_token = decrypted_session_token
                 UserList(UserIndex).public_key = mid(decrypted_session_token, 1, 16)
@@ -1501,6 +1502,7 @@ Private Sub HandleLoginNewChar(ByVal UserIndex As Integer)
         CuentaEmail = CStr(RS!UserName)
         
         If RS!encrypted_token = encrypted_session_token Then
+            UserList(userindex).encrypted_session_token_db_id = RS!ID
             UserList(UserIndex).encrypted_session_token = encrypted_session_token
             UserList(UserIndex).decrypted_session_token = decrypted_session_token
             UserList(UserIndex).public_key = mid(decrypted_session_token, 1, 16)

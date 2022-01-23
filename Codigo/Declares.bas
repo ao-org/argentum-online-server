@@ -1929,6 +1929,7 @@ Public Type t_User
     public_key As String
     decrypted_session_token As String
     encrypted_session_token As String
+    encrypted_session_token_db_id As Long
     
     MacroIterations(1 To MAX_PACKET_COUNTERS) As Long
     PacketTimers(1 To MAX_PACKET_COUNTERS) As Long
