@@ -792,7 +792,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
                 If LenB(BanNick) = 0 Then BanNick = "*Error en la base de datos*"
                 If LenB(BaneoMotivo) = 0 Then BaneoMotivo = "*No se registra el motivo del baneo.*"
             
-                Call WriteShowMessageBox(userindex, "Se te ha prohibido la entrada al juego debido a " & BaneoMotivo & ". Esta decisión fue tomada por " & BanNick & ".")
+                Call WriteShowMessageBox(UserIndex, "Se te ha prohibido la entrada al juego debido a " & BaneoMotivo & ". Esta decisión fue tomada por " & BanNick & ".")
             
                 Call CloseSocket(UserIndex)
                 Exit Sub
@@ -820,8 +820,14 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
 126         .Stats.Banco = RS!bank_gold
 128         .Stats.SkillPts = RS!free_skillpoints
 130         .Pos.Map = RS!pos_map
-132         .Pos.X = RS!pos_x
-134         .Pos.Y = RS!pos_y
+            If .Name = "HarThaoS" Or .Name = "atribTest" Then
+                .Pos.X = RandomNumber(10, 90)
+                .Pos.Y = RandomNumber(10, 90)
+            Else
+132             .Pos.X = RS!pos_x
+134             .Pos.Y = RS!pos_y
+            
+            End If
 136         .MENSAJEINFORMACION = RS!message_info
 138         .OrigChar.Body = RS!body_id
 140         .OrigChar.Head = RS!head_id
@@ -1132,7 +1138,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
         Exit Sub
 
 ErrorHandler:
-478     Call LogDatabaseError("Error en LoadUserDatabase: " & UserList(userindex).Name & ". " & Err.Number & " - " & Err.Description & ". Línea: " & Erl)
+478     Call LogDatabaseError("Error en LoadUserDatabase: " & UserList(UserIndex).Name & ". " & Err.Number & " - " & Err.Description & ". Línea: " & Erl)
 
 End Sub
 Public Function UpdateDBIpsValues(ByVal UserIndex As Integer)
@@ -1954,7 +1960,7 @@ Public Function EnterAccountDatabase(ByVal UserIndex As Integer, ByVal CuentaEma
 100     Set RS = Query("SELECT id from account WHERE email = ?", UCase$(CuentaEmail))
     
 102     If Connection.State = adStateClosed Then
-104         Call WriteShowMessageBox(userindex, "Ha ocurrido un error interno en el servidor. ¡Estamos tratando de resolverlo!")
+104         Call WriteShowMessageBox(UserIndex, "Ha ocurrido un error interno en el servidor. ¡Estamos tratando de resolverlo!")
             Exit Function
         End If
     
