@@ -1352,34 +1352,33 @@ Private Sub HandleLoginExistingChar(ByVal UserIndex As Integer)
         Version = CStr(Reader.ReadInt8()) & "." & CStr(Reader.ReadInt8()) & "." & CStr(Reader.ReadInt8())
         MD5 = Reader.ReadString8()
 
-        If (encrypted_session_token <> "BOT-HARTHAOS") Then
-            If Len(encrypted_session_token) <> 88 Then
-                Call WriteShowMessageBox(UserIndex, "Cliente inválido, por favor realice una actualización.")
-                Exit Sub
-            End If
+        If Len(encrypted_session_token) <> 88 Then
+            Call WriteShowMessageBox(UserIndex, "Cliente inválido, por favor realice una actualización.")
+            Exit Sub
+        End If
                 
         
         Dim encrypted_session_token_byte() As Byte
-            Call AO20CryptoSysWrapper.Str2ByteArr(encrypted_session_token, encrypted_session_token_byte)
+        Call AO20CryptoSysWrapper.Str2ByteArr(encrypted_session_token, encrypted_session_token_byte)
         
         Dim decrypted_session_token As String
-            decrypted_session_token = AO20CryptoSysWrapper.DECRYPT(PrivateKey, cnvStringFromHexStr(cnvToHex(encrypted_session_token_byte)))
+        decrypted_session_token = AO20CryptoSysWrapper.DECRYPT(PrivateKey, cnvStringFromHexStr(cnvToHex(encrypted_session_token_byte)))
                 
-            If Not IsBase64(decrypted_session_token) Then
-                Call WriteShowMessageBox(UserIndex, "Cliente inválido, por favor realice una actualización")
-                Call CloseSocket(UserIndex)
-                Exit Sub
-            End If
+        If Not IsBase64(decrypted_session_token) Then
+            Call WriteShowMessageBox(UserIndex, "Cliente inválido, por favor realice una actualización")
+            Call CloseSocket(UserIndex)
+            Exit Sub
+        End If
         
         ' Para recibir el ID del user
         Dim RS As ADODB.Recordset
-            Set RS = Query("select * from tokens where decrypted_token = '" & decrypted_session_token & "'")
+        Set RS = Query("select * from tokens where decrypted_token = '" & decrypted_session_token & "'")
                 
-            If RS Is Nothing Or RS.RecordCount = 0 Then
-                Call WriteShowMessageBox(UserIndex, "Sesión inválida, conéctese nuevamente.")
-                Call CloseSocket(UserIndex)
-                Exit Sub
-            End If
+        If RS Is Nothing Or RS.RecordCount = 0 Then
+            Call WriteShowMessageBox(UserIndex, "Sesión inválida, conéctese nuevamente.")
+            Call CloseSocket(UserIndex)
+            Exit Sub
+        End If
         
             CuentaEmail = CStr(RS!UserName)
             If RS!encrypted_token = encrypted_session_token Then
@@ -1392,14 +1391,18 @@ Private Sub HandleLoginExistingChar(ByVal UserIndex As Integer)
                 Call CloseSocket(UserIndex)
                 Exit Sub
             End If
+        CuentaEmail = CStr(RS!UserName)
+        If RS!encrypted_token = encrypted_session_token Then
+            UserList(UserIndex).encrypted_session_token = encrypted_session_token
+            UserList(UserIndex).decrypted_session_token = decrypted_session_token
+            UserList(UserIndex).public_key = mid(decrypted_session_token, 1, 16)
+        Else
+            Call WriteShowMessageBox(UserIndex, "Cliente inválido, por favor realice una actualización.")
+            Call CloseSocket(UserIndex)
+            Exit Sub
+        End If
         
         user_name = AO20CryptoSysWrapper.DECRYPT(cnvHexStrFromString(UserList(UserIndex).public_key), encrypted_username)
-            If Not VersionOK(Version) Then
-                Call WriteShowMessageBox(UserIndex, "Esta versión del juego es obsoleta, la versión correcta es la " & ULTIMAVERSION & ". Ejecute el launcher por favor.")
-                Call CloseSocket(UserIndex)
-                Exit Sub
-
-            End If
         #If DEBUGGING = False Then
 
             If Not VersionOK(Version) Then
@@ -1410,22 +1413,22 @@ Private Sub HandleLoginExistingChar(ByVal UserIndex As Integer)
             End If
 
         #End If
-
+        
+   '  If EsGmChar(UserName) Then
+      '
+   '      If AdministratorAccounts(UCase$(UserName)) <> UCase$(CuentaEmail) Then
+   '          Call CloseSocket(UserIndex)
+      '          Exit Sub
+      '      End If
+      '
+      '  End If
  
         If Not EntrarCuenta(UserIndex, CuentaEmail, MD5) Then
             Call CloseSocket(UserIndex)
             Exit Sub
         End If
-        CANT_BOTS = CANT_BOTS + 1
-        Call ConnectUser(UserIndex, user_name, CuentaEmail)
-        Else
-            user_name = "atribTest"
-            CuentaEmail = "MARTINTRIONFETTI@GMAIL.COM"
-            CANT_BOTS = CANT_BOTS + 1
-            Call EnterAccountDatabase(CANT_BOTS, CuentaEmail)
-            Call ConnectUser(CANT_BOTS, user_name, CuentaEmail)
-        End If
     
+        Call ConnectUser(UserIndex, user_name, CuentaEmail)
 
         Exit Sub
     
@@ -1877,18 +1880,18 @@ Private Sub HandleWalk(ByVal UserIndex As Integer)
         Dim Heading As e_Heading
     
 100     With UserList(UserIndex)
-            
+
 102         Heading = Reader.ReadInt8()
             Dim PacketCount As Long
             PacketCount = Reader.ReadInt32
             
-            'If .flags.Muerto = 0 Then
-            '    If .flags.Navegando Then
-            '        Call verifyTimeStamp(PacketCount, .PacketCounters(PacketNames.Sailing), .PacketTimers(PacketNames.Sailing), .MacroIterations(PacketNames.Sailing), UserIndex, "Sailing", PacketTimerThreshold(PacketNames.Sailing), MacroIterations(PacketNames.Sailing))
-            '    Else
-            '        Call verifyTimeStamp(PacketCount, .PacketCounters(PacketNames.Walk), .PacketTimers(PacketNames.Walk), .MacroIterations(PacketNames.Walk), UserIndex, "Walk", PacketTimerThreshold(PacketNames.Walk), MacroIterations(PacketNames.Walk))
-            '    End If
-            'End If
+            If .flags.Muerto = 0 Then
+                If .flags.Navegando Then
+                    Call verifyTimeStamp(PacketCount, .PacketCounters(PacketNames.Sailing), .PacketTimers(PacketNames.Sailing), .MacroIterations(PacketNames.Sailing), UserIndex, "Sailing", PacketTimerThreshold(PacketNames.Sailing), MacroIterations(PacketNames.Sailing))
+                Else
+                    Call verifyTimeStamp(PacketCount, .PacketCounters(PacketNames.Walk), .PacketTimers(PacketNames.Walk), .MacroIterations(PacketNames.Walk), UserIndex, "Walk", PacketTimerThreshold(PacketNames.Walk), MacroIterations(PacketNames.Walk))
+                End If
+            End If
             
             
             If .flags.PescandoEspecial Then
@@ -1939,13 +1942,7 @@ Private Sub HandleWalk(ByVal UserIndex As Integer)
                     End If
 
                 End If
-                'If UserList(UserIndex).Name = "atribTest" Then
-                    Dim i As Long
-                    For i = 2 To 800
-                        Call MoveUserChar(i, RandomNumber(1, 4))
-                    Next i
-                    Exit Sub
-                'End If
+            
                 'Move user
 138             If MoveUserChar(UserIndex, Heading) Then
             
@@ -7700,7 +7697,7 @@ Private Sub HandleGMMessage(ByVal UserIndex As Integer)
                     'Analize chat...
 110                 Call Statistics.ParseChat(Message)
             
-112                 Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(.Name & " » " & message, e_FontTypeNames.FONTTYPE_GMMSG))
+112                 Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(.Name & " » " & Message, e_FontTypeNames.FONTTYPE_GMMSG))
 
                 End If
 
@@ -18973,7 +18970,7 @@ End Sub
 Private Sub HandleRepeatMacro(ByVal UserIndex As Integer)
 
     On Error GoTo HandleRepeatMacro_Err:
-    Call LogMacroCliente("El usuario " & UserList(UserIndex).Name & " iteró el paquete click o u." & GetTickCount)
+    Call LogMacroCliente("El usuario " & UserList(userindex).Name & " iteró el paquete click o u." & GetTickCount)
     Exit Sub
 
 HandleRepeatMacro_Err:

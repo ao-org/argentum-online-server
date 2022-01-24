@@ -75,8 +75,8 @@ Public Function ConnectUser_Check(ByVal UserIndex As Integer, _
 
             End If
 
-           ' Call CloseSocket(UserIndex)
-          '  Exit Function
+            Call CloseSocket(UserIndex)
+            Exit Function
 
         End If
         
@@ -112,8 +112,8 @@ Public Function ConnectUser_Check(ByVal UserIndex As Integer, _
 
             If ContarMismaIP(UserIndex, .IP) >= MaxConexionesIP Then
                 Call WriteShowMessageBox(UserIndex, "Has alcanzado el límite de conexiones por IP.")
-                'Call CloseSocket(UserIndex)
-                'Exit Function
+                Call CloseSocket(UserIndex)
+                Exit Function
 
             End If
 
@@ -593,7 +593,7 @@ Public Function ConnectUser_Complete(ByVal UserIndex As Integer, _
 890         Call ActualizarVelocidadDeUsuario(UserIndex)
         
 895         If .flags.Privilegios And (e_PlayerType.SemiDios Or e_PlayerType.Dios Or e_PlayerType.Admin) Then
-                'Call DoAdminInvisible(UserIndex)
+                Call DoAdminInvisible(UserIndex)
             End If
 900         Call WriteUpdateUserStats(UserIndex)
 905         Call WriteUpdateHungerAndThirst(UserIndex)
