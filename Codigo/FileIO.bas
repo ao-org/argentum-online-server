@@ -2643,7 +2643,7 @@ Public Sub SaveCreditsDatabase(ByVal userindex As Integer)
     Call Execute("update user set credits = 0 where id = ?;", UserList(UserIndex).ID)
     
     account_id = UserList(userindex).accountId
-    Set RS = Execute("select offline_patron_credits from account where id = ?;", account_id)
+    Set RS = Query("select offline_patron_credits from account where id = ?;", account_id)
     
     If Not RS Is Nothing Then
         toSaveCredits = RS!offline_patron_credits + UserList(userindex).Stats.Creditos
