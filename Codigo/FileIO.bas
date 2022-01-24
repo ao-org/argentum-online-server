@@ -2640,20 +2640,20 @@ Public Sub SaveCreditsDatabase(ByVal userindex As Integer)
     Dim account_id As Long
     Dim RS As ADODB.Recordset
     
-    Call Query("update user set credits = 0 where id = ?;", UserList(userindex).ID)
+    Call Execute("update user set credits = 0 where id = ?;", UserList(UserIndex).ID)
     
     account_id = UserList(userindex).accountId
-    Set RS = Query("select offline_patron_credits from account where id = ?;", account_id)
+    Set RS = Execute("select offline_patron_credits from account where id = ?;", account_id)
     
     If Not RS Is Nothing Then
         toSaveCredits = RS!offline_patron_credits + UserList(userindex).Stats.Creditos
-        Call Query("update account set offline_patron_credits = ? where id = ?;", toSaveCredits, account_id)
+        Call Execute("update account set offline_patron_credits = ? where id = ?;", toSaveCredits, account_id)
     End If
     
     
 End Sub
 Public Sub RemoveTokenDatabase(ByVal userindex As Integer)
-    Call Query("delete from tokens where id =  UPPER('" & UserList(userindex).encrypted_session_token_db_id & "')")
+    Call Execute("delete from tokens where id =  ?;", UserList(UserIndex).encrypted_session_token_db_id)
 End Sub
 Sub SaveNewUser(ByVal UserIndex As Integer)
     On Error GoTo SaveNewUser_Err
