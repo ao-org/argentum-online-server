@@ -622,7 +622,7 @@ Private Sub UserDañoNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
             ' Apuñalar (le afecta la defensa)
 136         ElseIf PuedeApuñalar(UserIndex) Then
                 ' Si acertó - Doble chance contra NPCs
-138             If RandomNumber(1, 100) <= ProbabilidadApuñalar(UserIndex) * 1.5 Then
+138             If RandomNumber(1, 100) <= ProbabilidadApuñalar(userindex) Then
                     ' Daño del apuñalamiento
 140                 DañoExtra = Daño * 2
                 
