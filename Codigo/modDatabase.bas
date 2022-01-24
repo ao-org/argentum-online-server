@@ -362,7 +362,7 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
 238             ParamC = ParamC + 3
 240         Next LoopC
 
-            Call Query(QUERY_SAVE_SPELLS, Params)
+            Call Execute(QUERY_SAVE_SPELLS, Params)
         
             ' ******************* INVENTORY *******************
 244         ReDim Params(MAX_INVENTORY_SLOTS * 5 - 1)
@@ -378,7 +378,7 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
 260             ParamC = ParamC + 5
 262         Next LoopC
         
-            Call Query(QUERY_SAVE_INVENTORY, Params)
+            Call Execute(QUERY_SAVE_INVENTORY, Params)
         
             ' ******************* SKILLS *******************
 266         ReDim Params(NUMSKILLS * 3 - 1)
@@ -392,7 +392,7 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
 278             ParamC = ParamC + 3
 280         Next LoopC
         
-            Call Query(QUERY_SAVE_SKILLS, Params)
+            Call Execute(QUERY_SAVE_SKILLS, Params)
         
             ' ******************* QUESTS *******************
 284         ReDim Params(MAXUSERQUESTS * 2 - 1)
@@ -405,7 +405,7 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
 294             ParamC = ParamC + 2
 296         Next LoopC
         
-            Call Query(QUERY_SAVE_QUESTS, Params)
+            Call Execute(QUERY_SAVE_QUESTS, Params)
         
             ' ******************* PETS ********************
 300         ReDim Params(MAXMASCOTAS * 3 - 1)
@@ -419,7 +419,7 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
 312             ParamC = ParamC + 3
 314         Next LoopC
     
-            Call Query(QUERY_SAVE_PETS, Params)
+            Call Execute(QUERY_SAVE_PETS, Params)
     
         End With
 
@@ -560,10 +560,6 @@ Public Sub SaveUserDatabase(ByVal userindex As Integer)
 348             Next LoopC
                 
                 Call Execute(QUERY_UPSERT_SPELLS, Params)
-
-                ' Reseteamos el flag para no volver a guardar.
-                'Debug.Print "Se modificaron los hechizos. Guardando..."
-                .flags.ModificoHechizos = False
             
             ' ************************** User inventory *********************************
 366             ReDim Params(MAX_INVENTORY_SLOTS * 5 - 1)
@@ -581,10 +577,6 @@ Public Sub SaveUserDatabase(ByVal userindex As Integer)
 
                 Call Execute(QUERY_UPSERT_INVENTORY, Params)
 
-                ' Reseteamos el flag para no volver a guardar.
-                'Debug.Print "Se modifico el inventario. Guardando..."
-                .flags.ModificoInventario = False
-            
             ' ************************** User bank inventory *********************************
 402             ReDim Params(MAX_BANCOINVENTORY_SLOTS * 4 - 1)
 404             ParamC = 0
@@ -600,9 +592,6 @@ Public Sub SaveUserDatabase(ByVal userindex As Integer)
     
                 Call Execute(QUERY_SAVE_BANCOINV, Params)
 
-                ' Reseteamos el flag para no volver a guardar.
-                'Debug.Print "Se modifico el inventario del banco. Guardando..."
-                .flags.ModificoInventarioBanco = False
 
             ' ************************** User skills *********************************
 436             ReDim Params(NUMSKILLS * 3 - 1)
@@ -618,9 +607,6 @@ Public Sub SaveUserDatabase(ByVal userindex As Integer)
         
                 Call Execute(QUERY_UPSERT_SKILLS, Params)
 
-                ' Reseteamos el flag para no volver a guardar.
-               ' Debug.Print "Se modifico las habilidades. Guardando..."
-                .flags.ModificoSkills = False
 
             ' ************************** User pets *********************************
 468             ReDim Params(MAXMASCOTAS * 3 - 1)
@@ -651,10 +637,6 @@ Public Sub SaveUserDatabase(ByVal userindex As Integer)
 492             Next LoopC
                 
                 Call Execute(QUERY_UPSERT_PETS, Params)
-
-                ' Reseteamos el flag para no volver a guardar.
-               ' Debug.Print "Se modifico las mascotas. Guardando..."
-                .flags.ModificoMascotas = False
 
             ' ************************** User quests *********************************
 526             Builder.Append "REPLACE INTO quest (user_id, number, quest_id, npcs, npcstarget) VALUES "
@@ -715,14 +697,9 @@ Public Sub SaveUserDatabase(ByVal userindex As Integer)
                 Call Execute(Builder.ToString())
 
 584             Call Builder.Clear
-                
-                ' Reseteamos el flag para no volver a guardar.
-               ' Debug.Print "Se modifico las quests. Guardando..."
-                .flags.ModificoQuests = False
-        
+                        
             ' ************************** User completed quests *********************************
-586         If .QuestStats.NumQuestsDone > 0 Then
-                
+        
                 
                     ' Armamos la query con los placeholders
 590                 Builder.Append "REPLACE INTO quest_done (user_id, quest_id) VALUES "
@@ -751,10 +728,6 @@ Public Sub SaveUserDatabase(ByVal userindex As Integer)
 
 626                 Call Builder.Clear
                     
-                    ' Reseteamos el flag para no volver a guardar.
-                   ' Debug.Print "Se modifico las quests hechas. Guardando..."
-                    .flags.ModificoQuestsHechas = False
-            End If
             
         End With
     
@@ -783,6 +756,16 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
                 Exit Sub
             End If
             
+            'Si quiere loguear antes de los 5 segundos
+            If CLng(RS!last_logout) + 5000 >= GetTickCount Then
+                Dim tiempoRestante As Single
+                
+                tiempoRestante = Round(((CLng(RS!last_logout) + 5000) - GetTickCount) / 1000, 2)
+                Call WriteShowMessageBox(UserIndex, "No puedes volver a loguear tan rápido. Intenta nuevamente en " & tiempoRestante & " segundos.")
+                Call CloseSocket(UserIndex)
+                Exit Sub
+            End If
+            
             If (RS!is_banned) Then
                 Dim BanNick     As String
                 Dim BaneoMotivo As String
@@ -792,7 +775,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
                 If LenB(BanNick) = 0 Then BanNick = "*Error en la base de datos*"
                 If LenB(BaneoMotivo) = 0 Then BaneoMotivo = "*No se registra el motivo del baneo.*"
             
-                Call WriteShowMessageBox(userindex, "Se te ha prohibido la entrada al juego debido a " & BaneoMotivo & ". Esta decisión fue tomada por " & BanNick & ".")
+                Call WriteShowMessageBox(UserIndex, "Se te ha prohibido la entrada al juego debido a " & BaneoMotivo & ". Esta decisión fue tomada por " & BanNick & ".")
             
                 Call CloseSocket(UserIndex)
                 Exit Sub
@@ -1112,16 +1095,10 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
             
 474         Set RS = Query("Select is_active_patron, credits, offline_patron_credits from account where id = ?;", .accountId)
 
-
-            'viene el primer pj    offline = 200 credits = 0
-            ' Logtuea            offline = 0    credits  = 200
-            'compro 300 creditos offline = 300  credits = 200
-            'lkoguea 2do pj    offline = 0 credits = 500
-            
             .Stats.Creditos = CLng(RS!offline_patron_credits) + user_credits
             
-            Call Query("update account set offline_patron_credits = 0 where id = ?;", .accountId)
-            Call Query("Update user set credits = ? where id = ?;", .Stats.Creditos, .ID)
+            Call Execute("update account set offline_patron_credits = 0 where id = ?;", .AccountID)
+            Call Execute("Update user set credits = ? where id = ?;", .Stats.Creditos, .ID)
             Call LogCreditosPatreon(.Name & " | " & .Email & " | Logged with " & .Stats.Creditos)
             
 476         If RS Is Nothing Then Exit Sub
@@ -1132,7 +1109,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
         Exit Sub
 
 ErrorHandler:
-478     Call LogDatabaseError("Error en LoadUserDatabase: " & UserList(userindex).Name & ". " & Err.Number & " - " & Err.Description & ". Línea: " & Erl)
+478     Call LogDatabaseError("Error en LoadUserDatabase: " & UserList(UserIndex).Name & ". " & Err.Number & " - " & Err.Description & ". Línea: " & Erl)
 
 End Sub
 Public Function UpdateDBIpsValues(ByVal UserIndex As Integer)
@@ -1405,7 +1382,7 @@ Public Sub SetUsersLoggedDatabase(ByVal NumUsers As Long)
         
         On Error GoTo SetUsersLoggedDatabase_Err
         
-        Call Query("UPDATE statistics SET value = ? WHERE name = 'online';", NumUsers)
+        Call Execute("UPDATE statistics SET online = ? WHERE id = 1;", NumUsers)
         
         Exit Sub
 
@@ -1420,11 +1397,11 @@ Public Function LeerRecordUsuariosDatabase() As Long
         On Error GoTo LeerRecordUsuariosDatabase_Err
         
         Dim RS As ADODB.Recordset
-100     Set RS = Query("SELECT value FROM statistics WHERE name = 'record';")
+100     Set RS = Query("SELECT record FROM statistics WHERE id = 1;")
 
 102     If RS Is Nothing Then Exit Function
 
-104     LeerRecordUsuariosDatabase = val(RS!Value)
+104     LeerRecordUsuariosDatabase = val(RS!Record)
 
         Exit Function
 
@@ -1438,7 +1415,7 @@ Public Sub SetRecordUsersDatabase(ByVal Record As Long)
         
         On Error GoTo SetRecordUsersDatabase_Err
                 
-        Call Execute("UPDATE statistics SET value = ? WHERE name = 'record';", CStr(Record))
+        Call Execute("UPDATE statistics SET record = ? WHERE id = 1;", Record)
         
         Exit Sub
 
@@ -1954,7 +1931,7 @@ Public Function EnterAccountDatabase(ByVal UserIndex As Integer, ByVal CuentaEma
 100     Set RS = Query("SELECT id from account WHERE email = ?", UCase$(CuentaEmail))
     
 102     If Connection.State = adStateClosed Then
-104         Call WriteShowMessageBox(userindex, "Ha ocurrido un error interno en el servidor. ¡Estamos tratando de resolverlo!")
+104         Call WriteShowMessageBox(UserIndex, "Ha ocurrido un error interno en el servidor. ¡Estamos tratando de resolverlo!")
             Exit Function
         End If
     
