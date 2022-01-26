@@ -106,8 +106,6 @@ Public IntervaloUserPuedeUsarClic   As Long
 
 Public IntervaloGolpeUsar           As Long
 
-Public MargenDeIntervaloPorPing     As Long
-
 Public IntervaloFlechasCazadores    As Long
 
 Public TimeoutPrimerPaquete         As Long

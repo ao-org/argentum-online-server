@@ -2702,22 +2702,17 @@ Private Function verifyTimeStamp(ByVal ActualCount As Long, ByRef LastCount, ByR
     
     Dim Ticks As Long, Delta As Long
     Ticks = GetTickCount
-    verifyTimeStamp = False
     
     Delta = (Ticks - LastTick)
     LastTick = Ticks
-    
-    'Call SendData(SendTarget.ToAdminsAreaButConsejeros, UserIndex, PrepareMessageConsoleMsg("First -> " & LastTick & " Current -> " & Ticks & " Delta -> " & Delta & "| Packet: " & PacketName, e_FontTypeNames.FONTTYPE_INFO))
-  ' Debug.Print "First -> " & LastTick & " Current -> " & Ticks & " Delta -> " & Delta & "| Packet: " & PacketName
+
     'Controlamos secuencia para ver que no haya paquetes duplicados.
     If ActualCount <= LastCount Then
        ' Call CloseSocket(UserIndex)
         Call SendData(SendTarget.ToGM, UserIndex, PrepareMessageConsoleMsg("Paquete grabado: " & PacketName & " | Cuenta: " & UserList(UserIndex).Cuenta & " | Ip: " & UserList(UserIndex).IP & " (Baneado automaticamente)", e_FontTypeNames.FONTTYPE_INFOBOLD))
         'Call BanearIP(0, UserList(UserIndex).Name, UserList(UserIndex).IP, UserList(UserIndex).Cuenta)
         Call LogEdicionPaquete("El usuario " & UserList(UserIndex).Name & " editó el paquete " & PacketName & ".")
-        'Call WriteCerrarleCliente(UserIndex)
-        'Call CloseSocket(UserIndex)
-        verifyTimeStamp = False
+
         LastCount = ActualCount
         Exit Function
     End If
@@ -2736,7 +2731,7 @@ Private Function verifyTimeStamp(ByVal ActualCount As Long, ByRef LastCount, ByR
             Iterations = 0
             Debug.Print "CIERRO CLIENTE"
         End If
-        Exit Function
+        'Exit Function
     Else
         Iterations = 0
     End If
@@ -3073,11 +3068,11 @@ Private Sub HandleUseItem(ByVal UserIndex As Integer)
             Dim Packet_ID As Long
             Packet_ID = PacketNames.UseItem
             If Not verifyTimeStamp(PacketCounter, .PacketCounters(Packet_ID), .PacketTimers(Packet_ID), .MacroIterations(Packet_ID), UserIndex, "UseItem", PacketTimerThreshold(Packet_ID), MacroIterations(Packet_ID)) Then Exit Sub
-            
+            Debug.Print "LLEGA PAQUETE"
 104         If Slot <= UserList(UserIndex).CurrentInventorySlots And Slot > 0 Then
 106             If .Invent.Object(Slot).ObjIndex = 0 Then Exit Sub
 
-108             Call UseInvItem(UserIndex, Slot)
+108             Call UseInvItem(UserIndex, Slot, 1)
                 
             End If
 
@@ -3117,7 +3112,7 @@ Private Sub HandleUseItemU(ByVal UserIndex As Integer)
 104         If Slot <= UserList(UserIndex).CurrentInventorySlots And Slot > 0 Then
 106             If .Invent.Object(Slot).ObjIndex = 0 Then Exit Sub
 
-108             Call UseInvItem(UserIndex, Slot)
+108             Call UseInvItem(UserIndex, Slot, 0)
                 
             End If
 
@@ -7697,7 +7692,7 @@ Private Sub HandleGMMessage(ByVal UserIndex As Integer)
                     'Analize chat...
 110                 Call Statistics.ParseChat(Message)
             
-112                 Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(.Name & " » " & Message, e_FontTypeNames.FONTTYPE_GMMSG))
+112                 Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(.Name & " » " & message, e_FontTypeNames.FONTTYPE_GMMSG))
 
                 End If
 
@@ -18970,7 +18965,7 @@ End Sub
 Private Sub HandleRepeatMacro(ByVal UserIndex As Integer)
 
     On Error GoTo HandleRepeatMacro_Err:
-    Call LogMacroCliente("El usuario " & UserList(userindex).Name & " iteró el paquete click o u." & GetTickCount)
+    Call LogMacroCliente("El usuario " & UserList(UserIndex).Name & " iteró el paquete click o u." & GetTickCount)
     Exit Sub
 
 HandleRepeatMacro_Err:

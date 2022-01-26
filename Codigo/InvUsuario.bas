@@ -1706,7 +1706,7 @@ ErrHandler:
 
 End Function
 
-Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
+Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As Byte)
 
         On Error GoTo hErr
 
@@ -1736,19 +1736,26 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
 108             If obj.Proyectil = 1 Then
     
                     'valido para evitar el flood pero no bloqueo. El bloqueo se hace en WLC con proyectiles.
-110                 If Not IntervaloPermiteUsar(UserIndex, False) Then Exit Sub
+110                 If ByClick <> 0 Then
+                        If Not IntervaloPermiteUsar(UserIndex) Then Exit Sub
+                    Else
+                        If Not IntervaloPermiteUsarClick(UserIndex) Then Exit Sub
+                    End If
                 Else
-    
                     'dagas
-112                 If Not IntervaloPermiteUsar(UserIndex) Then Exit Sub
-    
+112                 If ByClick <> 0 Then
+                        If Not IntervaloPermiteUsar(UserIndex) Then Exit Sub
+                    Else
+                        If Not IntervaloPermiteUsarClick(UserIndex) Then Exit Sub
+                    End If
                 End If
     
             Else
-    
-114             If Not IntervaloPermiteUsar(UserIndex) Then Exit Sub
-116             If Not IntervaloPermiteGolpeUsar(UserIndex, False) Then Exit Sub
-    
+                If ByClick <> 0 Then
+                    If Not IntervaloPermiteUsar(UserIndex) Then Exit Sub
+                Else
+                    If Not IntervaloPermiteUsarClick(UserIndex) Then Exit Sub
+                End If
             End If
     
 118         If .flags.Meditando Then
