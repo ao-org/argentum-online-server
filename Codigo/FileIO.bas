@@ -2522,7 +2522,6 @@ Sub LoadIntervalos()
 
 224     IntervaloOculto = val(Lector.GetValue("INTERVALOS", "IntervaloOculto"))
 
-226     MargenDeIntervaloPorPing = val(Lector.GetValue("INTERVALOS", "MargenDeIntervaloPorPing"))
     
 228     IntervaloPuedeSerAtacado = val(Lector.GetValue("INTERVALOS", "IntervaloPuedeSerAtacado"))
 

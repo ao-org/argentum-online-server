@@ -1729,6 +1729,7 @@ Public Type t_UserCounters
     TimerPuedeUsarArco As Long
     TimerPuedeTrabajar As Long
     TimerUsar As Long
+    TimerUsarClick As Long
     TimerMagiaGolpe As Long
     TimerGolpeMagia As Long
     TimerGolpeUsar As Long
