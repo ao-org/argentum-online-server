@@ -1463,11 +1463,12 @@ End Sub
 Public Sub WritePlayWave(ByVal UserIndex As Integer, _
                          ByVal wave As Integer, _
                          ByVal X As Byte, _
-                         ByVal Y As Byte)
+                         ByVal Y As Byte, _
+                         Optional ByVal CancelLastWave As Byte = 0)
         '<EhHeader>
         On Error GoTo WritePlayWave_Err
         '</EhHeader>
-100     Call modSendData.SendData(ToIndex, UserIndex, PrepareMessagePlayWave(wave, X, Y))
+100     Call modSendData.SendData(ToIndex, userindex, PrepareMessagePlayWave(wave, X, Y, CancelLastWave))
         '<EhFooter>
         Exit Sub
 
@@ -1694,7 +1695,7 @@ Public Sub WriteUpdateDM(ByVal UserIndex As Integer)
 
             ' % daño mágico del anillo
 106         If .DañoMagicoEqpObjIndex > 0 Then
-108             valor = valor + ObjData(.DañoMagicoEqpObjIndex).MagicDamageBonus
+108             Valor = Valor + ObjData(.DañoMagicoEqpObjIndex).MagicDamageBonus
             End If
 
 110         Call Writer.WriteInt(ServerPacketID.UpdateDM)
@@ -4479,7 +4480,8 @@ End Function
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Function PrepareMessagePlayWave(ByVal wave As Integer, _
                                        ByVal X As Byte, _
-                                       ByVal Y As Byte)
+                                       ByVal Y As Byte, _
+                                       Optional ByVal CancelLastWave As Byte = False)
         '<EhHeader>
         On Error GoTo PrepareMessagePlayWave_Err
         '</EhHeader>
@@ -4487,6 +4489,7 @@ Public Function PrepareMessagePlayWave(ByVal wave As Integer, _
 102     Call Writer.WriteInt16(wave)
 104     Call Writer.WriteInt8(X)
 106     Call Writer.WriteInt8(Y)
+108     Call Writer.WriteInt8(CancelLastWave)
         '<EhFooter>
         Exit Function
 

@@ -231,6 +231,7 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
                         Exit Sub
                     End If
                     
+                    Call WritePlayWave(userindex, NpcList(TempCharIndex).SoundOpen, NpcList(TempCharIndex).Pos.X, NpcList(TempCharIndex).Pos.Y, 2)
 230                 Call EnviarQuest(UserIndex)
             
 232             ElseIf NpcList(TempCharIndex).NPCtype = e_NPCType.Enlistador Then
