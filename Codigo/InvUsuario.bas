@@ -1752,9 +1752,9 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
     
             Else
                 If ByClick <> 0 Then
-                    If Not IntervaloPermiteUsar(UserIndex) Then Exit Sub
+                    If Not IntervaloPermiteUsarClick(userindex) Then Exit Sub
                 Else
-                    If Not IntervaloPermiteUsarClick(UserIndex) Then Exit Sub
+                    If Not IntervaloPermiteUsar(userindex) Then Exit Sub
                 End If
             End If
     
