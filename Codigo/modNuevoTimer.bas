@@ -276,18 +276,18 @@ IntervaloPermiteTrabajar_Err:
 End Function
 
 ' USAR OBJETOS CON U
-Public Function IntervaloPermiteUsar(ByVal UserIndex As Integer, Optional ByVal Actualizar As Boolean = True) As Boolean
+Public Function IntervaloPermiteUsar(ByVal UserIndex As Integer) As Boolean
         
         On Error GoTo IntervaloPermiteUsar_Err
-        
 
         Dim TActual As Long
 
 100     TActual = GetTickCount()
 
 102     If TActual - UserList(UserIndex).Counters.TimerUsar >= UserList(UserIndex).Intervals.UsarU Then
-104         If Actualizar Then UserList(UserIndex).Counters.TimerUsar = TActual
 106         IntervaloPermiteUsar = True
+            Debug.Print "Intervalo u: " & TActual - UserList(UserIndex).Counters.TimerUsar
+104         UserList(UserIndex).Counters.TimerUsar = TActual
         Else
 108         IntervaloPermiteUsar = False
 
@@ -302,21 +302,15 @@ IntervaloPermiteUsar_Err:
         
 End Function
 ' USAR OBJETOS CON CLICK
-Public Function IntervaloPermiteUsarClick(ByVal UserIndex As Integer, Optional ByVal Actualizar As Boolean = True) As Boolean
-'**
-'Author: Unknown
-'Last Modification: 25/01/2010 (ZaMa)
-'25/01/2010: ZaMa - General adjustments.
-'**
+Public Function IntervaloPermiteUsarClick(ByVal UserIndex As Integer) As Boolean
 
     Dim TActual As Long
     TActual = GetTickCount() And &H7FFFFFFF
 
     If TActual - UserList(UserIndex).Counters.TimerUsarClick >= UserList(UserIndex).Intervals.UsarClic Then
-        If Actualizar Then
-            UserList(UserIndex).Counters.TimerUsarClick = TActual
-        End If
         IntervaloPermiteUsarClick = True
+        Debug.Print "Intervalo click: " & TActual - UserList(UserIndex).Counters.TimerUsarClick
+        UserList(UserIndex).Counters.TimerUsarClick = TActual
     Else
         IntervaloPermiteUsarClick = False
     End If

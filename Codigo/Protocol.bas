@@ -3068,7 +3068,7 @@ Private Sub HandleUseItem(ByVal UserIndex As Integer)
             Dim Packet_ID As Long
             Packet_ID = PacketNames.UseItem
             If Not verifyTimeStamp(PacketCounter, .PacketCounters(Packet_ID), .PacketTimers(Packet_ID), .MacroIterations(Packet_ID), UserIndex, "UseItem", PacketTimerThreshold(Packet_ID), MacroIterations(Packet_ID)) Then Exit Sub
-            Debug.Print "LLEGA PAQUETE"
+           ' Debug.Print "LLEGA PAQUETE"
 104         If Slot <= UserList(UserIndex).CurrentInventorySlots And Slot > 0 Then
 106             If .Invent.Object(Slot).ObjIndex = 0 Then Exit Sub
 
