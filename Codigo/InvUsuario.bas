@@ -1922,6 +1922,12 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                         Exit Sub
     
                     End If
+                    
+                    If Not IntervaloPermiteGolpeUsar(UserIndex, False) Then
+                        Call WriteConsoleMsg(UserIndex, "¡¡Debes esperar unos momentos para tomar otra poción!!", e_FontTypeNames.FONTTYPE_INFO)
+                        Exit Sub
+                    End If
+                    
             
 258                 .flags.TomoPocion = True
 260                 .flags.TipoPocion = obj.TipoPocion

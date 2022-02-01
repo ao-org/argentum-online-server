@@ -3278,7 +3278,7 @@ Public Sub LoadUserIntervals(ByVal UserIndex As Integer)
         
 
 100     With UserList(UserIndex)
-            If .flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios) Then
+            If False Then '.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios) Then
                 .Intervals.Arco = 50
                 .Intervals.Caminar = IntervaloCaminar
                 .Intervals.Golpe = 50
