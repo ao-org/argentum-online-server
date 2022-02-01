@@ -1706,7 +1706,7 @@ ErrHandler:
 
 End Function
 
-Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As Boolean)
+Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As Byte)
 
         On Error GoTo hErr
 
@@ -1731,8 +1731,32 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
 102         If .Invent.Object(Slot).amount = 0 Then Exit Sub
     
 104         obj = ObjData(.Invent.Object(Slot).ObjIndex)
-
-            If Not IntervaloPermiteUsar(UserIndex, ByClick) Then Exit Sub
+    
+106         If obj.OBJType = e_OBJType.otWeapon Then
+108             If obj.Proyectil = 1 Then
+    
+                    'valido para evitar el flood pero no bloqueo. El bloqueo se hace en WLC con proyectiles.
+110                 If ByClick <> 0 Then
+                        If Not IntervaloPermiteUsarClick(UserIndex) Then Exit Sub
+                    Else
+                        If Not IntervaloPermiteUsar(UserIndex) Then Exit Sub
+                    End If
+                Else
+                    'dagas
+112                 If ByClick <> 0 Then
+                        If Not IntervaloPermiteUsarClick(UserIndex) Then Exit Sub
+                    Else
+                        If Not IntervaloPermiteUsar(UserIndex) Then Exit Sub
+                    End If
+                End If
+    
+            Else
+                If ByClick <> 0 Then
+                    If Not IntervaloPermiteUsarClick(userindex) Then Exit Sub
+                Else
+                    If Not IntervaloPermiteUsar(userindex) Then Exit Sub
+                End If
+            End If
     
 118         If .flags.Meditando Then
 120             .flags.Meditando = False

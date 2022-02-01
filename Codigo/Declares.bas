@@ -1684,7 +1684,6 @@ Public Type t_UserCounters
     TiempoParaSubastar As Byte
     UserHechizosInterval(1 To MAXUSERHECHIZOS) As Long
     Oxigeno As Long
-    lastTries(1 To 2) As Boolean 'click= true, u=false
     
     Ahogo As Long
     
@@ -1731,7 +1730,6 @@ Public Type t_UserCounters
     TimerPuedeTrabajar As Long
     TimerUsar As Long
     TimerUsarClick As Long
-    TimerUsarUClick As Long
     TimerMagiaGolpe As Long
     TimerGolpeMagia As Long
     TimerGolpeUsar As Long
@@ -1763,7 +1761,6 @@ Public Type t_UserIntervals
     Arco As Long
     UsarU As Long
     UsarClic As Long
-    UsarUClic As Long
     Caminar As Long
     GolpeMagia As Long
     MagiaGolpe As Long
