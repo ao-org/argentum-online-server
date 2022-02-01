@@ -274,26 +274,68 @@ IntervaloPermiteTrabajar_Err:
 
         
 End Function
-
+Private Function pushLastTries(ByRef lastTries() As Boolean, ByVal CLK As Boolean)
+    
+    lastTries(1) = lastTries(2)
+    lastTries(2) = CLK
+    
+End Function
+Private Function checkLastTries(ByRef lastTries() As Boolean, ByVal toCkeck As Boolean) As Boolean
+    Dim i As Long
+    For i = 1 To 2
+        If lastTries(i) <> toCkeck Then
+            Debug.Print checkLastTries
+            Exit Function
+        End If
+    Next i
+    checkLastTries = True
+    Debug.Print checkLastTries
+    
+End Function
 ' USAR OBJETOS CON U
-Public Function IntervaloPermiteUsar(ByVal UserIndex As Integer) As Boolean
+Public Function IntervaloPermiteUsar(ByVal UserIndex As Integer, Optional ByVal CLK As Boolean) As Boolean
         
         On Error GoTo IntervaloPermiteUsar_Err
 
         Dim TActual As Long
-
-100     TActual = GetTickCount()
-
-102     If TActual - UserList(UserIndex).Counters.TimerUsar >= UserList(UserIndex).Intervals.UsarU Then
-106         IntervaloPermiteUsar = True
-            Debug.Print "Intervalo u: " & TActual - UserList(UserIndex).Counters.TimerUsar
-104         UserList(UserIndex).Counters.TimerUsar = TActual
-        Else
-108         IntervaloPermiteUsar = False
-
-        End If
-
-        
+        TActual = GetTickCount()
+        With UserList(UserIndex)
+             'Primero me fijo si intenta potear con U o con click
+            If CLK Then
+                'me fijo si los intentos anteriores fueron todos click
+                If checkLastTries(.Counters.lastTries, CLK) Then
+                    'Si lo fue valido contra el intervalo click
+                    If TActual - .Counters.TimerUsarClick >= .Intervals.UsarClic Then
+                        IntervaloPermiteUsar = True
+                        .Counters.TimerUsarClick = TActual
+                    End If
+                    'Si no comparo contra intervalo U + Click
+                Else
+                     If TActual - .Counters.TimerUsarUClick >= .Intervals.UsarUClic Then
+                        IntervaloPermiteUsar = True
+                        .Counters.TimerUsarUClick = TActual
+                    End If
+                End If
+            Else
+                 'Si intenta potear con U, me fijo intento anterior si fue con click
+                If checkLastTries(.Counters.lastTries, CLK) Then
+                     If TActual - .Counters.TimerUsar >= .Intervals.UsarU Then
+                        IntervaloPermiteUsar = True
+                        .Counters.TimerUsar = TActual
+                    End If
+                    'Si no comparo contra intervalo U + Click
+                Else
+                    'Si lo fue valido contra el intervalo click
+                    If TActual - .Counters.TimerUsarUClick >= .Intervals.UsarUClic Then
+                        IntervaloPermiteUsar = True
+                        .Counters.TimerUsarUClick = TActual
+                    End If
+                End If
+            End If
+            
+            Call pushLastTries(.Counters.lastTries, CLK)
+        End With
+                
         Exit Function
 
 IntervaloPermiteUsar_Err:

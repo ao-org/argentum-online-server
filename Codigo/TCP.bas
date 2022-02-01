@@ -987,6 +987,7 @@ Sub ResetContadores(ByVal UserIndex As Integer)
 158         .TimerPuedeTrabajar = 0
 160         .TimerUsar = 0
 161         .TimerUsarClick = 0
+163         .TimerUsarUClick = 0
             'Ladder
 162         .Incineracion = 0
             'Ladder
