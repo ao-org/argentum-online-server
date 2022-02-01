@@ -104,6 +104,8 @@ Public IntervaloUserPuedeUsarU      As Long
 
 Public IntervaloUserPuedeUsarClic   As Long
 
+Public IntervaloUserPuedeUsarUClic   As Long
+
 Public IntervaloGolpeUsar           As Long
 
 Public IntervaloFlechasCazadores    As Long
