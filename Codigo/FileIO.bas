@@ -2517,7 +2517,6 @@ Sub LoadIntervalos()
 214     IntervaloCerrarConexion = val(Lector.GetValue("INTERVALOS", "IntervaloCerrarConexion"))
 216     IntervaloUserPuedeUsarU = val(Lector.GetValue("INTERVALOS", "IntervaloUserPuedeUsarU"))
 218     IntervaloUserPuedeUsarClic = val(Lector.GetValue("INTERVALOS", "IntervaloUserPuedeUsarClic"))
-219     IntervaloUserPuedeUsarUClic = val(Lector.GetValue("INTERVALOS", "IntervaloUserPuedeUsarUClic"))
 220     IntervaloFlechasCazadores = val(Lector.GetValue("INTERVALOS", "IntervaloFlechasCazadores"))
 222     IntervaloGolpeUsar = val(Lector.GetValue("INTERVALOS", "IntervaloGolpeUsar"))
 
@@ -3289,9 +3288,8 @@ Public Sub LoadUserIntervals(ByVal UserIndex As Integer)
                 .Intervals.GolpeUsar = 0
                 .Intervals.TrabajarExtraer = IntervaloTrabajarExtraer
                 .Intervals.TrabajarConstruir = IntervaloTrabajarConstruir
-                .Intervals.UsarU = 400
-                .Intervals.UsarClic = 320
-                .Intervals.UsarUClic = 166
+                .Intervals.UsarU = 50
+                .Intervals.UsarClic = 50
             Else
 102             .Intervals.Arco = IntervaloFlechasCazadores
 104             .Intervals.Caminar = IntervaloCaminar
@@ -3304,7 +3302,6 @@ Public Sub LoadUserIntervals(ByVal UserIndex As Integer)
 118             .Intervals.TrabajarConstruir = IntervaloTrabajarConstruir
 120             .Intervals.UsarU = IntervaloUserPuedeUsarU
 122             .Intervals.UsarClic = IntervaloUserPuedeUsarClic
-126             .Intervals.UsarUClic = IntervaloUserPuedeUsarUClic
             
             End If
 
