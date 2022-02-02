@@ -2621,10 +2621,13 @@ Sub SaveUser(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = Fals
         On Error GoTo SaveUser_Err
 
 102     Call SaveUserDatabase(userindex)
+
         If Logout Then
             Call SaveCreditsDatabase(userindex)
 103         Call RemoveTokenDatabase(userindex)
+            Call dcnUsersLastLogout.Add(UCase(UserList(UserIndex).Name), GetTickCount())
         End If
+        
 104     UserList(UserIndex).Counters.LastSave = GetTickCount
 
         Exit Sub

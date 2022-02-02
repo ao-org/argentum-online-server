@@ -26,6 +26,11 @@ Begin VB.Form frmMain
    ScaleHeight     =   6210
    ScaleWidth      =   6840
    StartUpPosition =   2  'CenterScreen
+   Begin VB.Timer Timer1 
+      Interval        =   10000
+      Left            =   4440
+      Top             =   1920
+   End
    Begin VB.CommandButton Command3 
       Caption         =   "Recargar Donadore"
       Height          =   495
@@ -850,8 +855,14 @@ Handler:
     
 End Sub
 
-
-
+Private Sub Timer1_Timer()
+    Dim key As Variant
+    For Each key In dcnUsersLastLogout.Keys
+        If CLng(dcnUsersLastLogout(key)) < GetTickCount() - 5000 Then
+            Call dcnUsersLastLogout.Remove(key)
+        End If
+    Next key
+End Sub
 
 Private Sub TimerGuardarUsuarios_Timer()
 
@@ -1205,7 +1216,7 @@ Private Sub EstadoTimer_Timer()
     For i = 1 To Baneos.Count
 
         If Baneos(i).FechaLiberacion <= Now Then
-            Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » Se ha concluido la sentencia de ban para " & Baneos(i).Name & ".", e_FontTypeNames.FONTTYPE_SERVER))
+            Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » Se ha concluido la sentencia de ban para " & Baneos(I).Name & ".", e_FontTypeNames.FONTTYPE_SERVER))
             Call UnBan(Baneos(i).Name)
             Call Baneos.Remove(i)
             Call SaveBans

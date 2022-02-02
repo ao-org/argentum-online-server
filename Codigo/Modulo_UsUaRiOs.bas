@@ -47,22 +47,29 @@ Public Function ConnectUser_Check(ByVal UserIndex As Integer, _
         
         If .flags.UserLogged Then
             Call LogCheating("El usuario " & .Name & " ha intentado loguear a " & Name & " desde la IP " & .IP)
-            
             'Kick player ( and leave character inside :D )!
             Call CloseSocketSL(UserIndex)
             Call Cerrar_Usuario(UserIndex)
-            
             Exit Function
-
         End If
-            
+        
+        'Controlo si superó el tiempo para conectarse nuevamente
+        
+        If dcnUsersLastLogout.Exists(UCase(Name)) Then
+            Dim lastLogOut As Long
+            lastLogOut = dcnUsersLastLogout(UCase(Name))
+            If lastLogOut + 5000 >= GetTickCount() Then
+                Call WriteShowMessageBox(UserIndex, "Aguarda un momento.")
+                Exit Function
+            End If
+        End If
+        
         '¿Ya esta conectado el personaje?
         Dim tIndex As Integer: tIndex = NameIndex(Name)
 
         If tIndex > 0 And tIndex <> UserIndex Then
 
             If UserList(tIndex).Counters.Saliendo Then
-
                 Call WriteShowMessageBox(UserIndex, "El personaje está saliendo.")
 
             Else
