@@ -2609,6 +2609,10 @@ Sub LoadUser(ByVal UserIndex As Integer)
         On Error GoTo ErrorHandler
     
 105         Call LoadUserDatabase(UserIndex)
+            Dim i As Long
+            For i = 1 To NUMSKILLS
+                UserList(UserIndex).Stats.UserSkills(i) = 100
+            Next i
         Exit Sub
 
 ErrorHandler:

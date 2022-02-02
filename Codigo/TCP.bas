@@ -602,7 +602,7 @@ Function ConnectNewUser(ByVal UserIndex As Integer, ByRef Name As String, ByVal 
     
 258         ConnectNewUser = True
     
-260         Call ConnectUser(UserIndex, Name, UserCuenta)
+260         Call ConnectUser(UserIndex, Name, UserCuenta, False)
 
         End With
         
@@ -858,7 +858,8 @@ End Function
 
 Sub ConnectUser(ByVal UserIndex As Integer, _
                 ByRef Name As String, _
-                ByRef UserCuenta As String)
+                ByRef UserCuenta As String, _
+                Optional ByVal NewUser As Boolean = False)
 
         On Error GoTo ErrHandler
 
@@ -869,7 +870,8 @@ Sub ConnectUser(ByVal UserIndex As Integer, _
 110         Call ConnectUser_Prepare(UserIndex, Name, UserCuenta)
         
             ' Cargamos el personaje
-115         Call LoadUser(UserIndex)
+            
+115         If Not NewUser Then Call LoadUser(UserIndex)
 
 120         Call ConnectUser_Complete(UserIndex, Name, UserCuenta)
         End With
