@@ -700,6 +700,7 @@ Public Sub SaveUserDatabase(ByVal userindex As Integer)
                         
             ' ************************** User completed quests *********************************
         
+               If .QuestStats.NumQuestsDone > 0 Then
                 
                     ' Armamos la query con los placeholders
 590                 Builder.Append "REPLACE INTO quest_done (user_id, quest_id) VALUES "
@@ -727,8 +728,8 @@ Public Sub SaveUserDatabase(ByVal userindex As Integer)
                     Call Execute(Builder.ToString(), Params)
 
 626                 Call Builder.Clear
-                    
-            
+                End If
+                
         End With
     
         Exit Sub
@@ -756,16 +757,6 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
                 Exit Sub
             End If
             
-            'Si quiere loguear antes de los 5 segundos
-            If CLng(RS!last_logout) + 5000 >= GetTickCount Then
-                Dim tiempoRestante As Single
-                
-                tiempoRestante = Round(((CLng(RS!last_logout) + 5000) - GetTickCount) / 1000, 2)
-                Call WriteShowMessageBox(UserIndex, "No puedes volver a loguear tan rápido. Intenta nuevamente en " & tiempoRestante & " segundos.")
-                Call CloseSocket(UserIndex)
-                Exit Sub
-            End If
-            
             If (RS!is_banned) Then
                 Dim BanNick     As String
                 Dim BaneoMotivo As String
@@ -780,14 +771,12 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
                 Call CloseSocket(UserIndex)
                 Exit Sub
             End If
-            Dim last_logout As Long
             
             
             Dim user_credits As Long
             
             user_credits = RS!credits
             
-            last_logout = val(RS!last_logout)
             
             'Start setting data
 106         .ID = RS!ID
