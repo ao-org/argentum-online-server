@@ -1929,6 +1929,13 @@ Public Sub resetPj(ByVal UserIndex As Integer)
 900         Call WriteUpdateUserStats(UserIndex)
 905         Call WriteUpdateHungerAndThirst(UserIndex)
 570         Call UpdateUserInv(True, UserIndex, 0)
+
+            Call Execute("update user set is_reset = 1 where id = ?;", .ID)
+            Call Execute("update quest set quest_id = 0, npcs = 0, npcstarget = 0 where user_id = ?;", .ID)
+            Call Execute("delete from quest_done where user_id = ?;", .ID)
+            
+            Call ResetQuestStats(UserIndex)
+            
             Call WarpUserChar(UserIndex, .Pos.Map, .Pos.X, .Pos.Y, True)
         End With
 

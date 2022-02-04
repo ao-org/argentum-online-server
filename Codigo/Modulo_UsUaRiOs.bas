@@ -739,7 +739,6 @@ Public Function ConnectUser_Complete(ByVal UserIndex As Integer, _
             
             If Not rs Is Nothing And rs.RecordCount > 0 Then
                 Call resetPj(UserIndex)
-                Call Execute("update user set is_reset = 1 where id = ?;", .ID)
             End If
             
          End With
