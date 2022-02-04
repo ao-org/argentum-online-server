@@ -1822,7 +1822,7 @@ Public Function EsMapaEvento(ByVal destMap As Long) As Boolean
     EsMapaEvento = False
     
 End Function
-Public Sub resetPj(ByVal UserIndex As Integer)
+Public Sub resetPj(ByVal UserIndex As Integer, Optional ByVal borrarHechizos As Boolean = False)
 
 
 100     With UserList(UserIndex)
@@ -1924,6 +1924,12 @@ Public Sub resetPj(ByVal UserIndex As Integer)
 222         Call ResetFacciones(UserIndex)
 
 224         .Faccion.Status = 1
+            
+            If borrarHechizos Then
+                Call ResetUserSpells(UserIndex)
+575             Call UpdateUserHechizos(True, UserIndex, 0)
+            End If
+            
 
 575         Call UpdateUserHechizos(True, UserIndex, 0)
 900         Call WriteUpdateUserStats(UserIndex)
