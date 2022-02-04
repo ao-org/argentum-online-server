@@ -1930,8 +1930,6 @@ Public Sub resetPj(ByVal UserIndex As Integer, Optional ByVal borrarHechizos As 
 575             Call UpdateUserHechizos(True, UserIndex, 0)
             End If
             
-
-575         Call UpdateUserHechizos(True, UserIndex, 0)
 900         Call WriteUpdateUserStats(UserIndex)
 905         Call WriteUpdateHungerAndThirst(UserIndex)
 570         Call UpdateUserInv(True, UserIndex, 0)
