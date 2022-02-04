@@ -270,7 +270,6 @@ Public Sub AddDoneQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer)
 104         ReDim Preserve .QuestsDone(1 To .NumQuestsDone)
 106         .QuestsDone(.NumQuestsDone) = QuestIndex
             
-            UserList(UserIndex).flags.ModificoQuestsHechas = True
         End With
 
         
@@ -718,6 +717,9 @@ Public Function FinishQuestCheck(ByVal UserIndex As Integer, ByVal QuestIndex As
             
         End With
         
+        If QuestIndex = 142 Then
+            Call Execute("update user set quest_belthor = 1 where id = ?;", UserList(UserIndex).ID)
+        End If
         
 134     FinishQuestCheck = True
 
