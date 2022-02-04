@@ -1843,7 +1843,7 @@ Public Sub resetPj(ByVal UserIndex As Integer)
 166         .OrigChar = .Char
             Dim i As Long
             For i = 1 To NUMSKILLS
-                .Stats.UserSkills(i) = 0
+                .Stats.UserSkills(i) = 100
             Next i
 
 168         .Char.WeaponAnim = NingunArma
@@ -1881,6 +1881,10 @@ Public Sub resetPj(ByVal UserIndex As Integer)
 212         .Stats.Exp = 0
 214         .Stats.ELV = 1
 
+            .Stats.GLD = 0
+            .Stats.Banco = 0
+            
+
              If .flags.TomoPocion Then
 
                 For i = 1 To 4
@@ -1905,6 +1909,12 @@ Public Sub resetPj(ByVal UserIndex As Integer)
                     slot_libre = i
                     Exit For
                 End If
+            Next i
+            
+            For i = 1 To MAX_BANCOINVENTORY_SLOTS
+102             .BancoInvent.Object(i).amount = 0
+104             .BancoInvent.Object(i).Equipped = 0
+106             .BancoInvent.Object(i).ObjIndex = 0
             Next i
 
             .Invent.Object(slot_libre).ObjIndex = POCION_RESET

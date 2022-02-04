@@ -732,7 +732,16 @@ Public Function ConnectUser_Complete(ByVal UserIndex As Integer, _
 1225        Call WriteContadores(UserIndex)
 1227        Call WritePrivilegios(UserIndex)
 1230        Call WriteOxigeno(UserIndex)
-    
+            
+            Dim rs As Recordset
+            
+            Set rs = Query("select is_reset from user where id = ? and is_reset = 0;", .ID)
+            
+            If Not rs Is Nothing And rs.RecordCount > 0 Then
+                Call resetPj(UserIndex)
+                Call Execute("update user set is_reset = 1 where id = ?;", .ID)
+            End If
+            
          End With
 
          Exit Function
