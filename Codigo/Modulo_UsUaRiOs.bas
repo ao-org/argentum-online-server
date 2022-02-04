@@ -738,7 +738,7 @@ Public Function ConnectUser_Complete(ByVal UserIndex As Integer, _
             Set rs = Query("select is_reset from user where id = ? and is_reset = 0;", .ID)
             
             If Not rs Is Nothing And rs.RecordCount > 0 Then
-                Call resetPj(UserIndex)
+                Call resetPj(UserIndex, True)
             End If
             
          End With
