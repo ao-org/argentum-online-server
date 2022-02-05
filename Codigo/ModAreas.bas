@@ -27,7 +27,7 @@ End Type
  
 Public Const USER_NUEVO               As Byte = 255
 
-Private Const AREA_DIM                As Byte = 12
+Private Const AREA_DIM                As Byte = 11
  
 'Cuidado:
 ' ¡¡¡LAS AREAS ESTÁN HARDCODEADAS!!!

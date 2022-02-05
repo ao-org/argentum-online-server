@@ -961,7 +961,7 @@ ChangeUserChar_Err:
         
 End Sub
 
-Sub EraseUserChar(ByVal UserIndex As Integer, ByVal Desvanecer As Boolean)
+Sub EraseUserChar(ByVal UserIndex As Integer, ByVal Desvanecer As Boolean, Optional ByVal FueWarp As Boolean = False)
 
         On Error GoTo ErrorHandler
 
@@ -986,7 +986,7 @@ Sub EraseUserChar(ByVal UserIndex As Integer, ByVal Desvanecer As Boolean)
 114     Error = "2"
     
         'Le mandamos el mensaje para que borre el personaje a los clientes que estén cerca
-116     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCharacterRemove(UserList(UserIndex).Char.CharIndex, Desvanecer))
+116     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCharacterRemove(UserList(UserIndex).Char.CharIndex, Desvanecer, FueWarp))
 118     Error = "3"
 120     Call QuitarUser(UserIndex, UserList(UserIndex).Pos.Map)
 122     Error = "4"
@@ -2304,7 +2304,7 @@ Sub WarpUserChar(ByVal UserIndex As Integer, _
 118         OldX = .Pos.X
 120         OldY = .Pos.Y
     
-122         Call EraseUserChar(UserIndex, True)
+122         Call EraseUserChar(UserIndex, True, FX)
     
 124         If OldMap <> Map Then
 126             Call WriteChangeMap(UserIndex, Map)
