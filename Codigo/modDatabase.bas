@@ -770,7 +770,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
                 If LenB(BanNick) = 0 Then BanNick = "*Error en la base de datos*"
                 If LenB(BaneoMotivo) = 0 Then BaneoMotivo = "*No se registra el motivo del baneo.*"
             
-                Call WriteShowMessageBox(UserIndex, "Se te ha prohibido la entrada al juego debido a " & BaneoMotivo & ". Esta decisión fue tomada por " & BanNick & ".")
+                Call WriteShowMessageBox(userindex, "Se te ha prohibido la entrada al juego debido a " & BaneoMotivo & ". Esta decisión fue tomada por " & BanNick & ".")
             
                 Call CloseSocket(UserIndex)
                 Exit Sub
@@ -812,7 +812,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
 160         .Invent.MunicionEqpSlot = SanitizeNullValue(RS!slot_ammo, 0)
 162         .Invent.BarcoSlot = SanitizeNullValue(RS!slot_ship, 0)
 164         .Invent.MonturaSlot = SanitizeNullValue(RS!slot_mount, 0)
-166         .Invent.DañoMagicoEqpSlot = SanitizeNullValue(RS!slot_dm, 0)
+166         .Invent.DañoMagicoEqpSlot = SanitizeNullValue(rs!slot_dm, 0)
 168         .Invent.ResistenciaEqpSlot = SanitizeNullValue(RS!slot_rm, 0)
 170         .Invent.NudilloSlot = SanitizeNullValue(RS!slot_knuckles, 0)
 172         .Invent.HerramientaEqpSlot = SanitizeNullValue(RS!slot_tool, 0)
@@ -1102,7 +1102,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
         Exit Sub
 
 ErrorHandler:
-478     Call LogDatabaseError("Error en LoadUserDatabase: " & UserList(UserIndex).Name & ". " & Err.Number & " - " & Err.Description & ". Línea: " & Erl)
+478     Call LogDatabaseError("Error en LoadUserDatabase: " & UserList(userindex).Name & ". " & Err.Number & " - " & Err.Description & ". Línea: " & Erl)
 
 End Sub
 Public Function UpdateDBIpsValues(ByVal UserIndex As Integer)
@@ -1924,7 +1924,7 @@ Public Function EnterAccountDatabase(ByVal UserIndex As Integer, ByVal CuentaEma
 100     Set RS = Query("SELECT id from account WHERE email = ?", UCase$(CuentaEmail))
     
 102     If Connection.State = adStateClosed Then
-104         Call WriteShowMessageBox(UserIndex, "Ha ocurrido un error interno en el servidor. ¡Estamos tratando de resolverlo!")
+104         Call WriteShowMessageBox(userindex, "Ha ocurrido un error interno en el servidor. ¡Estamos tratando de resolverlo!")
             Exit Function
         End If
     
@@ -1991,116 +1991,7 @@ ErrorHandler:
 
 End Function
 
-Public Function DarLlaveAUsuarioDatabase(UserName As String, ByVal LlaveObj As Integer) As Boolean
-        On Error GoTo ErrorHandler
 
-102     DarLlaveAUsuarioDatabase = Execute("INSERT INTO house_key (key_obj, account_id) values (?, (SELECT account_id FROM user WHERE UPPER(name) = ?))", LlaveObj, UCase$(UserName))
-
-        Exit Function
-
-ErrorHandler:
-104     Call LogDatabaseError("Error in DarLlaveAUsuarioDatabase. UserName: " & UserName & ", LlaveObj: " & LlaveObj & ". " & Err.Number & " - " & Err.Description)
-
-End Function
-
-Public Function DarLlaveACuentaDatabase(Email As String, ByVal LlaveObj As Integer) As Boolean
-        On Error GoTo ErrorHandler
-        'Hacer verificacion de que si alguien tiene esta llave, si alguien la tiene hay que prevenir la creacion.
-' 101     LlaveYaOtorgadaAJugador = Execute("SELECT * FROM house_key WHERE key_obj = ?;", LlaveObj, UCase$(Email))
-        
-102     DarLlaveACuentaDatabase = Execute("INSERT INTO house_key SET key_obj = ?, account_id = (SELECT id FROM account WHERE email = ?);", LlaveObj, UCase$(Email))
-        Exit Function
-
-ErrorHandler:
-104     Call LogDatabaseError("Error in DarLlaveACuentaDatabase. Email: " & Email & ", LlaveObj: " & LlaveObj & ". " & Err.Number & " - " & Err.Description)
-
-End Function
-
-Public Function SacarLlaveDatabase(ByVal LlaveObj As Integer) As Boolean
-        On Error GoTo ErrorHandler
-
-        Dim i As Integer
-        Dim UserCount As Integer
-        Dim Users() As String
-
-        ' Obtengo los usuarios logueados en la cuenta del dueño de la llave
-        Dim RS As ADODB.Recordset
-100     Set RS = Query("SELECT name FROM `user` INNER JOIN `account` ON `user`.account_id = account.id INNER JOIN `house_key` ON `house_key`.account_id = account.id WHERE `house_key`.key_obj = ?;", LlaveObj)
-    
-102     If RS Is Nothing Then Exit Function
-
-        ' Los almaceno en un array
-104     UserCount = RS.RecordCount
-    
-106     ReDim Users(1 To UserCount) As String
-
-110     i = 1
-
-112     While Not RS.EOF
-    
-114         Users(i) = RS!Name
-116         i = i + 1
-
-118         RS.MoveNext
-        Wend
-    
-        ' Intento borrar la llave de la db
-120     SacarLlaveDatabase = Execute("DELETE FROM house_key WHERE key_obj = ?;", LlaveObj)
-    
-        ' Si pudimos borrar, actualizamos los usuarios logueados
-        If (SacarLlaveDatabase) Then
-            Dim UserIndex As Integer
-        
-122         For i = 1 To UserCount
-124             UserIndex = NameIndex(Users(i))
-            
-126             If UserIndex <> 0 Then
-128                 Call SacarLlaveDeLLavero(UserIndex, LlaveObj)
-                End If
-            Next
-        End If
-        
-        Exit Function
-
-ErrorHandler:
-132     Call LogDatabaseError("Error in SacarLlaveDatabase. LlaveObj: " & LlaveObj & ". " & Err.Number & " - " & Err.Description)
-
-End Function
-
-Public Sub VerLlavesDatabase(ByVal UserIndex As Integer)
-        On Error GoTo ErrorHandler
-
-        Dim RS As ADODB.Recordset
-100     Set RS = Query("SELECT email, key_obj FROM `house_key` INNER JOIN `account` ON `house_key`.account_id = `account`.id;")
-
-102     If RS Is Nothing Then
-104         Call WriteConsoleMsg(UserIndex, "No hay llaves otorgadas por el momento.", e_FontTypeNames.FONTTYPE_INFO)
-
-106     ElseIf RS.RecordCount = 0 Then
-108         Call WriteConsoleMsg(UserIndex, "No hay llaves otorgadas por el momento.", e_FontTypeNames.FONTTYPE_INFO)
-    
-        Else
-            Dim Message As String
-        
-110         Message = "Llaves usadas: " & RS.RecordCount & vbNewLine
-
-114         While Not RS.EOF
-116             Message = Message & "Llave: " & RS!key_obj & " - Cuenta: " & RS!Email & vbNewLine
-
-118             RS.MoveNext
-            Wend
-        
-120         Message = Left$(Message, Len(Message) - 2)
-        
-122         Call WriteConsoleMsg(UserIndex, Message, e_FontTypeNames.FONTTYPE_INFO)
-        End If
-
-        Exit Sub
-
-ErrorHandler:
-124     Call LogDatabaseError("Error in VerLlavesDatabase. UserName: " & UserList(UserIndex).Name & ". " & Err.Number & " - " & Err.Description)
-
-End Sub
 
 Public Function SanitizeNullValue(ByVal Value As Variant, ByVal defaultValue As Variant) As Variant
         
