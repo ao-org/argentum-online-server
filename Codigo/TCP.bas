@@ -871,8 +871,8 @@ Sub ConnectUser(ByVal UserIndex As Integer, _
         
             ' Cargamos el personaje
             
-115         If Not NewUser Then Call LoadUser(UserIndex)
-
+115        ' If Not NewUser Then Call LoadUser(UserIndex)
+Call LoadUser(UserIndex)
 120         Call ConnectUser_Complete(UserIndex, Name, UserCuenta)
         End With
 
