@@ -290,7 +290,7 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
         
             Dim i As Integer
             i = 0
-104         ReDim Params(0 To 46)
+104         ReDim Params(0 To 44)
 
             '  ************ Basic user data *******************
 106         Params(PostInc(i)) = .Name
@@ -338,8 +338,8 @@ Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
 192         Params(PostInc(i)) = .Stats.MaxHit
 194         Params(PostInc(i)) = .flags.Desnudo
 196         Params(PostInc(i)) = .Faccion.Status
-197         Params(PostInc(i)) = 0
-199         Params(PostInc(i)) = 0
+'197         Params(PostInc(i)) = 0
+'199         Params(PostInc(i)) = 0
             
         
 198         Call Query(QUERY_SAVE_MAINPJ, Params)
