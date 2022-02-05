@@ -304,10 +304,13 @@ Public Function SeekPath(ByVal NpcIndex As Integer, Optional ByVal Closest As Bo
         Dim UserIndex As Integer 'no es necesario
         
         'Ya estamos en la posición.
-        If NPCHasAUserInFront(NpcIndex, UserIndex) Then
-            SeekPath = False
-            Exit Function
+        If UserIndex > 0 Then
+            If NPCHasAUserInFront(NpcIndex, UserIndex) Then
+                SeekPath = False
+                Exit Function
+            End If
         End If
+        
         
 100     With NpcList(NpcIndex)
 105         PosNPC.X = .Pos.X

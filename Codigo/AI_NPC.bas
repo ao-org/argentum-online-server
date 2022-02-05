@@ -89,10 +89,13 @@ Private Sub PerseguirUsuarioCercano(ByVal NpcIndex As Integer)
 114           agresor = NameIndex(.flags.AttackedBy)
             End If
             
-            If UserIndex > 0 And UserIndexFront > 0 And NPCHasAUserInFront(NpcIndex, UserIndexFront) And EsEnemigo(NpcIndex, UserIndexFront) Then
-                enemigoAtacableMasCercano = UserIndexFront
-                minDistanciaAtacable = 1
-                minDistancia = 1
+            If UserIndex > 0 And UserIndexFront > 0 Then
+            
+                If NPCHasAUserInFront(NpcIndex, UserIndexFront) And EsEnemigo(NpcIndex, UserIndexFront) Then
+                    enemigoAtacableMasCercano = UserIndexFront
+                    minDistanciaAtacable = 1
+                    minDistancia = 1
+                End If
             Else
                 ' Busco algun objetivo en el area.
 116             For i = 1 To ModAreas.ConnGroups(.Pos.Map).CountEntrys
