@@ -4,37 +4,7 @@ Option Explicit
 ' Cantidad máxima de llaves
 Public Const MAXKEYS As Byte = 10
 
-Public Function MeterLlaveEnLLavero(ByVal UserIndex As Integer, ByVal Llave As Integer) As Boolean
 
-    On Error GoTo ErrHandler
-
-100     With UserList(UserIndex)
-
-            Dim i As Integer
-        
-102         For i = 1 To MAXKEYS
-104             If .Keys(i) = 0 Then
-                    Exit For
-                End If
-            Next
-        
-            ' No hay espacio
-106         If i > MAXKEYS Then Exit Function
-        
-            ' Metemos la llave
-108         .Keys(i) = Llave
-110         Call WriteUpdateUserKey(UserIndex, i, Llave)
-        
-        End With
-    
-112     MeterLlaveEnLLavero = True
-    
-        Exit Function
-
-ErrHandler:
-114     Call TraceError(Err.Number, Err.Description, "ModLlaves.MeterLlaveEnLLavero", Erl)
-
-End Function
 
 Public Sub SacarLlaveDeLLavero(ByVal UserIndex As Integer, ByVal Llave As Integer)
 
