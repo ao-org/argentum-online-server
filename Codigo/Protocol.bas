@@ -428,9 +428,6 @@ Private Enum ClientPacketID
     GlobalMessage           '/CONSOLA
     GlobalOnOff
     BorrarPJ
-    DarLlaveAUsuario
-    SacarLlave
-    VerLlaves
     UseKey
     Day
     SetTime
@@ -1130,12 +1127,6 @@ On Error Resume Next
             Call HandleGlobalOnOff(UserIndex)
         Case ClientPacketID.BorrarPJ
             Call HandleBorrarPJ(UserIndex)
-        Case ClientPacketID.DarLlaveAUsuario
-            Call HandleDarLlaveAUsuario(UserIndex)
-        Case ClientPacketID.SacarLlave
-            Call HandleSacarLlave(UserIndex)
-        Case ClientPacketID.VerLlaves
-            Call HandleVerLlaves(UserIndex)
         Case ClientPacketID.UseKey
             Call HandleUseKey(UserIndex)
         Case ClientPacketID.Day
@@ -8559,146 +8550,7 @@ ErrHandler:
 
 End Sub
 
-Private Sub HandleDarLlaveAUsuario(ByVal UserIndex As Integer)
 
-        On Error GoTo ErrHandler
-
-100     With UserList(UserIndex)
-
-            Dim UserName As String, tUser As Integer, Llave As Integer
-        
-102         UserName = Reader.ReadString8()
-104         Llave = Reader.ReadInt16()
-        
-            ' Solo admin
-106         If .flags.Privilegios And e_PlayerType.Admin Then
-
-                ' Me aseguro que esté activada la db
-                If Llave < 1 Or Llave > NumObjDatas Then
-114                 Call WriteConsoleMsg(userindex, "El número ingresado no es el de una llave válida.", e_FontTypeNames.FONTTYPE_INFO)
-
-116             ElseIf ObjData(Llave).OBJType <> e_OBJType.otLlaves Then ' vb6 no tiene short-circuit evaluation :(
-118                 Call WriteConsoleMsg(userindex, "El número ingresado no es el de una llave válida.", e_FontTypeNames.FONTTYPE_INFO)
-
-                Else
-                
-120                 tUser = NameIndex(UserName)
-                
-122                 If tUser > 0 Then
-
-                        ' Es un user online, guardamos la llave en la db
-124                     If DarLlaveAUsuarioDatabase(UserName, Llave) Then
-
-                            ' Actualizamos su llavero
-126                         If MeterLlaveEnLLavero(tUser, Llave) Then
-128                             Call WriteConsoleMsg(userindex, "Llave número " & Llave & " entregada a " & UserList(tUser).Name & ".", e_FontTypeNames.FONTTYPE_INFO)
-                            Else
-130                             Call WriteConsoleMsg(userindex, "No se pudo entregar la llave. El usuario no tiene más espacio en su llavero.", e_FontTypeNames.FONTTYPE_INFO)
-
-                            End If
-
-                        Else
-132                         Call WriteConsoleMsg(userindex, "No se pudo entregar la llave. Asegúrese de que la llave esté disponible.", e_FontTypeNames.FONTTYPE_INFO)
-
-                        End If
-                        
-                    Else
-                    
-                        ' No es un usuario online, nos fijamos si es un email
-134                     If CheckMailString(UserName) Then
-
-                            ' Es un email, intentamos guardarlo en la db
-136                         If DarLlaveACuentaDatabase(UserName, Llave) Then
-138                             Call WriteConsoleMsg(userindex, "Llave número " & Llave & " entregada a " & LCase$(UserName) & ".", e_FontTypeNames.FONTTYPE_INFO)
-                            Else
-140                             Call WriteConsoleMsg(userindex, "No se pudo entregar la llave. Asegúrese de que la llave esté disponible y que el email sea correcto.", e_FontTypeNames.FONTTYPE_INFO)
-
-                            End If
-
-                        Else
-142                         Call WriteConsoleMsg(userindex, "El usuario no está online. Ingrese el email de la cuenta para otorgar la llave offline.", e_FontTypeNames.FONTTYPE_INFO)
-
-                        End If
-    
-                    End If
-                
-144                 Call LogGM(.Name, "/DARLLAVE " & UserName & " " & Llave)
-
-                End If
-
-            Else
-146             Call WriteConsoleMsg(userindex, "Servidor » Solo Administradores pueden dar llaves.", e_FontTypeNames.FONTTYPE_INFO)
-            End If
-
-        End With
-        
-        Exit Sub
-        
-ErrHandler:
-148     Call TraceError(Err.Number, Err.Description, "Protocol.HandleDarLlaveAUsuario", Erl)
-150
-
-End Sub
-
-Private Sub HandleSacarLlave(ByVal UserIndex As Integer)
-        
-        On Error GoTo HandleSacarLlave_Err
-
-100     With UserList(UserIndex)
-
-            Dim Llave As Integer
-102             Llave = Reader.ReadInt16()
-        
-            ' Solo dios o admin
-104         If (.flags.Privilegios And (e_PlayerType.Admin)) Then
-
-
-            ' Intento borrarla de la db
-110         If SacarLlaveDatabase(Llave) Then
-112             Call WriteConsoleMsg(UserIndex, "La llave " & Llave & " fue removida.", e_FontTypeNames.FONTTYPE_INFO)
-            Else
-114             Call WriteConsoleMsg(userindex, "No se pudo sacar la llave. Asegúrese de que esté en uso.", e_FontTypeNames.FONTTYPE_INFO)
-            End If
-
-116                 Call LogGM(.Name, "/SACARLLAVE " & Llave)
-
-            Else
-118             Call WriteConsoleMsg(userindex, "Servidor » Solo Administradores pueden Sacar llaves.", e_FontTypeNames.FONTTYPE_INFO)
-            End If
-
-        End With
-        
-        Exit Sub
-
-HandleSacarLlave_Err:
-120     Call TraceError(Err.Number, Err.Description, "Protocol.HandleSacarLlave", Erl)
-122
-        
-End Sub
-
-Private Sub HandleVerLlaves(ByVal UserIndex As Integer)
-        
-        On Error GoTo HandleVerLlaves_Err
-
-100     With UserList(UserIndex)
-
-            ' Sólo GMs
-102         If (.flags.Privilegios And (e_PlayerType.Dios Or e_PlayerType.Admin)) Then
-                ' Leo y muestro todas las llaves usadas
-108             Call VerLlavesDatabase(UserIndex)
-            Else
-110             Call WriteConsoleMsg(userindex, "Servidor » Solo Dios y Administrador pueden ver llaves.", e_FontTypeNames.FONTTYPE_INFO)
-            End If
-                
-        End With
-
-        Exit Sub
-
-HandleVerLlaves_Err:
-112     Call TraceError(Err.Number, Err.Description, "Protocol.HandleVerLlaves", Erl)
-114
-        
-End Sub
 
 Private Sub HandleUseKey(ByVal UserIndex As Integer)
         
