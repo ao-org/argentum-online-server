@@ -1801,8 +1801,12 @@ Sub LoadMapData()
         Dim TempInt   As Integer
         Dim npcfile   As String
 
+#If UNIT_TEST = 1 Then
+        Debug.Print "UNIT_TEST Enabled Loading just 10 maps"
+        NumMaps = 10
+#Else
 102     NumMaps = CountFiles(MapPath, "*.csm") - 1
-
+#End If
 104     Call InitAreas
     
 106     frmCargando.cargar.Min = 0
