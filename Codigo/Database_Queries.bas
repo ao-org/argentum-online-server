@@ -131,7 +131,9 @@ Private Sub ConstruirQuery_CargarPersonaje()
         QueryBuilder.Append "guild_rejected_because,"
         QueryBuilder.Append "warnings,"
         QueryBuilder.Append "last_logout,"
-        QueryBuilder.Append "credits"
+        QueryBuilder.Append "credits,"
+        QueryBuilder.Append "is_reset,"
+        QueryBuilder.Append "quest_belthor"
         'QueryBuilder.Append ",DATE_FORMAT(fecha_ingreso, '%Y-%m-%d') as 'fecha_ingreso_format'"
         QueryBuilder.Append " FROM user WHERE name= ?"
     
@@ -194,10 +196,12 @@ Private Sub ConstruirQuery_CrearPersonaje()
 188     QueryBuilder.Append "min_hit, "
 190     QueryBuilder.Append "max_hit, "
 192     QueryBuilder.Append "is_naked, "
-194     QueryBuilder.Append "status) VALUES ("
+193     QueryBuilder.Append "status, "
+195     QueryBuilder.Append "is_reset, "
+194     QueryBuilder.Append "quest_belthor) VALUES ("
 
         Dim i As Long
-        For i = 0 To 43
+        For i = 0 To 45
             QueryBuilder.Append "?,"
         Next i
         QueryBuilder.Append "?)"
