@@ -344,12 +344,10 @@ Private Sub AI_AtacarUsuarioObjetivo(ByVal AtackerNpcIndex As Integer)
         Dim AtacaMelee As Boolean
         Dim EstaPegadoAlUsuario As Boolean
         Dim tHeading As Byte
-        Dim RealizaAtaque As Boolean
         Dim NextPosNPC As t_WorldPos
         Dim AtacaAlDelFrente As Boolean
         
         AtacaAlDelFrente = False
-        RealizaAtaque = False
 100     With NpcList(AtackerNpcIndex)
 102         If .Target = 0 Then Exit Sub
         
@@ -375,21 +373,15 @@ Private Sub AI_AtacarUsuarioObjetivo(ByVal AtackerNpcIndex As Integer)
 114         ElseIf AtacaMelee Then
                 Dim ChangeHeading As Boolean
                 ChangeHeading = (.flags.Inmovilizado > 0 And tHeading = .Char.Heading) Or (.flags.Inmovilizado + .flags.Paralizado = 0)
-                RealizaAtaque = (.flags.Inmovilizado = 0) Or ChangeHeading
                 
                 Dim UserIndexFront As Integer
                 NextPosNPC = ComputeNextHeadingPos(AtackerNpcIndex)
                 UserIndexFront = MapData(NextPosNPC.Map, NextPosNPC.X, NextPosNPC.Y).UserIndex
                 AtacaAlDelFrente = (UserIndexFront > 0)
                 
-                If RealizaAtaque Or AtacaAlDelFrente Then
+                If AtacaAlDelFrente And Not .flags.Paralizado = 1 Then
                     Call AnimacionIdle(AtackerNpcIndex, True)
                     Call NpcAtacaUser(AtackerNpcIndex, UserIndexFront, tHeading)
-119                 If ChangeHeading Then Call ChangeNPCChar(AtackerNpcIndex, .Char.Body, .Char.Head, tHeading)
-                ElseIf RealizaAtaque Then
-                    Call AnimacionIdle(AtackerNpcIndex, True)
-                    Call NpcAtacaUser(AtackerNpcIndex, .Target, tHeading)
-120                 If ChangeHeading Then Call ChangeNPCChar(AtackerNpcIndex, .Char.Body, .Char.Head, tHeading)
                 End If
             End If
 
