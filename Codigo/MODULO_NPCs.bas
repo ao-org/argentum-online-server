@@ -782,7 +782,7 @@ Sub EraseNPCChar(ByVal NpcIndex As Integer)
 110     MapData(NpcList(NpcIndex).Pos.Map, NpcList(NpcIndex).Pos.X, NpcList(NpcIndex).Pos.Y).NpcIndex = 0
 
         'Actualizamos los clientes
-112     Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageCharacterRemove(NpcList(NpcIndex).Char.CharIndex, True))
+112     Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageCharacterRemove(5, NpcList(NpcIndex).Char.CharIndex, True))
 
         'Update la lista npc
 114     NpcList(NpcIndex).Char.CharIndex = 0

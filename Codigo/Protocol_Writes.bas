@@ -4835,13 +4835,14 @@ End Function
 ' @param    CharIndex Character to be removed.
 ' @return   The formated message ready to be writen as is on outgoing buffers.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-Public Function PrepareMessageCharacterRemove(ByVal CharIndex As Integer, _
+Public Function PrepareMessageCharacterRemove(ByVal dbgid As Integer, ByVal CharIndex As Integer, _
                                               ByVal Desvanecido As Boolean, _
                                               Optional ByVal FueWarp As Boolean = False)
         '<EhHeader>
         On Error GoTo PrepareMessageCharacterRemove_Err
         '</EhHeader>
 100     Call Writer.WriteInt(ServerPacketID.CharacterRemove)
+        Call Writer.WriteInt16(dbgid)
 102     Call Writer.WriteInt16(CharIndex)
 104     Call Writer.WriteBool(Desvanecido)
 106     Call Writer.WriteBool(FueWarp)
