@@ -1180,31 +1180,6 @@ WriteCharacterCreate_Err:
         Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteCharacterCreate", Erl)
         '</EhFooter>
 End Sub
-
-''
-' Writes the "CharacterRemove" message to the given user's outgoing data .incomingData.
-'
-' @param    UserIndex User to which the message is intended.
-' @param    CharIndex Character to be removed.
-' @remarks  The data is not actually sent until the buffer is properly flushed.
-Public Sub WriteCharacterRemove(ByVal UserIndex As Integer, _
-                                ByVal CharIndex As Integer, _
-                                ByVal Desvanecido As Boolean, _
-                                Optional ByVal FueWarp As Boolean = False)
-        '<EhHeader>
-        On Error GoTo WriteCharacterRemove_Err
-        '</EhHeader>
-100     Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageCharacterRemove( _
-                CharIndex, Desvanecido, FueWarp))
-        '<EhFooter>
-        Exit Sub
-
-WriteCharacterRemove_Err:
-        Call Writer.Clear
-        Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteCharacterRemove", Erl)
-        '</EhFooter>
-End Sub
-
 ''
 ' Writes the "CharacterMove" message to the given user's outgoing data .incomingData.
 '
