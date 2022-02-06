@@ -987,7 +987,7 @@ Sub EraseUserChar(ByVal UserIndex As Integer, ByVal Desvanecer As Boolean, Optio
     
       #If UNIT_TEST = 0 Then
         'Le mandamos el mensaje para que borre el personaje a los clientes que estén cerca
-116     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCharacterRemove(UserList(UserIndex).Char.CharIndex, Desvanecer, FueWarp))
+116     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCharacterRemove(4, UserList(UserIndex).Char.CharIndex, Desvanecer, FueWarp))
 
       
 118     Error = "3"
@@ -2101,7 +2101,7 @@ Sub UserDie(ByVal UserIndex As Integer)
                     If UserList(tempIndex).AreasInfo.AreaReciveY And AreaY Then
         
                         If UserList(tempIndex).ConnIDValida And tempIndex <> UserIndex And UserList(tempIndex).GuildIndex <> UserList(UserIndex).GuildIndex Then
-                            Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageCharacterRemove(UserList(tempIndex).Char.CharIndex, True))
+                            Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageCharacterRemove(3, UserList(tempIndex).Char.CharIndex, True))
                         End If
                     End If
                 End If
