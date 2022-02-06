@@ -22,8 +22,22 @@ Debug.Assert (UserList(u_userindex).Char.CharIndex = u_charindex)
 Call EraseUserChar(u_userindex, False, False)
 'Debug.Assert (CharList(UserList(u_userindex).Char.CharIndex) = 0)
 Debug.Assert (MapData(u_map, u_posx, u_posy).UserIndex = 0)
+
+'Delete all NPCs
+Dim i
+For i = 1 To UBound(NpcList)
+        If NpcList(i).Char.CharIndex <> 0 Then
+            Call EraseNPCChar(1)
+        End If
+Next i
+
 Call MakeUserChar(True, 17, u_userindex2, u_map, u_posx, u_posy, 1)
 Debug.Assert (MapData(u_map, u_posx, u_posy).UserIndex = u_userindex2)
+Call MakeUserChar(True, 17, u_userindex, u_map, u_posx, u_posy, 1)
+Debug.Assert (MapData(u_map, u_posx, u_posy).UserIndex = u_userindex)
+Debug.Assert (UserList(u_userindex2).Char.CharIndex <> UserList(u_userindex).Char.CharIndex)
+
+
 End Sub
 
 Function TestSuite()
