@@ -733,13 +733,13 @@ Public Function ConnectUser_Complete(ByVal UserIndex As Integer, _
 1227        Call WritePrivilegios(UserIndex)
 1230        Call WriteOxigeno(UserIndex)
             
-            Dim rs As Recordset
+            'Dim RS As Recordset
             
-            Set rs = Query("select is_reset from user where id = ? and is_reset = 0;", .ID)
+            'Set RS = Query("select is_reset from user where id = ? and is_reset = 0;", .ID)
             
-            If Not rs Is Nothing And rs.RecordCount > 0 Then
-                Call resetPj(UserIndex, True)
-            End If
+            'If Not RS Is Nothing And RS.RecordCount > 0 Then
+            '    Call resetPj(UserIndex, True)
+            'End If
             
          End With
 
