@@ -629,21 +629,9 @@ End Sub
 Public Function HandleIncomingData(ByVal UserIndex As Integer, ByVal Message As Network.Reader) As Boolean
 
 On Error Resume Next
-
     Set Reader = Message
-    
     Dim PacketID As Long:
-    'Dim arr() As Byte
-    'Dim crc As Long
-    
-    'Call Reader.getData(arr)
-    
     PacketID = Reader.ReadInt
-    'If PacketID = 21 Then
-        'Reader.getData
-    '    crc = crcBytes(arr)
-    'End If
-
     
     'Does the packet requires a logged user??
     If Not (PacketID = ClientPacketID.LoginExistingChar Or _
@@ -667,18 +655,18 @@ On Error Resume Next
             Call HandleLoginExistingChar(UserIndex)
         Case ClientPacketID.LoginNewChar
             Call HandleLoginNewChar(UserIndex)
+        Case ClientPacketID.Walk
+            Call HandleWalk(UserIndex)
+        Case ClientPacketID.Attack
+            Call HandleAttack(UserIndex)
         Case ClientPacketID.Talk
             Call HandleTalk(UserIndex)
         Case ClientPacketID.Yell
             Call HandleYell(UserIndex)
         Case ClientPacketID.Whisper
             Call HandleWhisper(UserIndex)
-        Case ClientPacketID.Walk
-            Call HandleWalk(UserIndex)
         Case ClientPacketID.RequestPositionUpdate
             Call HandleRequestPositionUpdate(UserIndex)
-        Case ClientPacketID.Attack
-            Call HandleAttack(UserIndex)
         Case ClientPacketID.PickUp
             Call HandlePickUp(UserIndex)
         Case ClientPacketID.SafeToggle
@@ -1400,16 +1388,7 @@ Private Sub HandleLoginExistingChar(ByVal UserIndex As Integer)
             End If
 
         #End If
-        
-   '  If EsGmChar(UserName) Then
-      '
-   '      If AdministratorAccounts(UCase$(UserName)) <> UCase$(CuentaEmail) Then
-   '          Call CloseSocket(UserIndex)
-      '          Exit Sub
-      '      End If
-      '
-      '  End If
- 
+         
         If Not EntrarCuenta(UserIndex, CuentaEmail, MD5) Then
             Call CloseSocket(UserIndex)
             Exit Sub
