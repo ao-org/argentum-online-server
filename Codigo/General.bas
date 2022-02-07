@@ -557,6 +557,10 @@ End Sub
 
 Sub Main()
         On Error GoTo Handler
+        Call LogThis(0, "Starting the server " & Now, vbLogEventTypeInformation)
+
+
+
 
         ' Me fijo si ya hay un proceso llamado server.exe abierto
 100     If GetProcess(App.EXEName & ".exe") > 1 Then
@@ -777,6 +781,8 @@ Sub Main()
             
         Wend
         
+        Call LogThis(0, "Closing the server " & Now, vbLogEventTypeInformation)
+
         Exit Sub
         
 Handler:
@@ -1013,7 +1019,7 @@ Public Sub EfectoFrio(ByVal UserIndex As Integer)
             Else
 
 112             If MapInfo(.Pos.Map).terrain = Nieve Then
-114                 Call WriteConsoleMsg(userindex, "¡Estás muriendo de frío, abrígate o morirás!", e_FontTypeNames.FONTTYPE_INFO)
+114                 Call WriteConsoleMsg(UserIndex, "¡Estás muriendo de frío, abrígate o morirás!", e_FontTypeNames.FONTTYPE_INFO)
 
                     ' WyroX: Sin ropa perdés vida más rápido que con una ropa no-invernal
                     Dim MinDaño As Integer, MaxDaño As Integer
@@ -1033,7 +1039,7 @@ Public Sub EfectoFrio(ByVal UserIndex As Integer)
             
 130                 If .Stats.MinHp < 1 Then
 
-132                     Call WriteConsoleMsg(userindex, "¡Has muerto de frío!", e_FontTypeNames.FONTTYPE_INFO)
+132                     Call WriteConsoleMsg(UserIndex, "¡Has muerto de frío!", e_FontTypeNames.FONTTYPE_INFO)
 
 134                     Call UserDie(UserIndex)
 
@@ -1122,11 +1128,11 @@ Public Sub EfectoLava(ByVal UserIndex As Integer)
             Else
 
 106             If HayLava(.Pos.Map, .Pos.X, .Pos.Y) Then
-108                 Call WriteConsoleMsg(userindex, "¡Quítate de la lava, te estás quemando!", e_FontTypeNames.FONTTYPE_INFO)
+108                 Call WriteConsoleMsg(UserIndex, "¡Quítate de la lava, te estás quemando!", e_FontTypeNames.FONTTYPE_INFO)
 110                 .Stats.MinHp = .Stats.MinHp - Porcentaje(.Stats.MaxHp, 5)
             
 112                 If .Stats.MinHp < 1 Then
-114                     Call WriteConsoleMsg(userindex, "¡Has muerto quemado!", e_FontTypeNames.FONTTYPE_INFO)
+114                     Call WriteConsoleMsg(UserIndex, "¡Has muerto quemado!", e_FontTypeNames.FONTTYPE_INFO)
 116                     Call UserDie(UserIndex)
                     Else
 118                     Call WriteUpdateHP(UserIndex)
@@ -1384,7 +1390,7 @@ Public Sub EfectoMaldicionUser(ByVal UserIndex As Integer)
     
         Else
 104         UserList(UserIndex).flags.Maldicion = 0
-106         Call WriteConsoleMsg(userindex, "¡La magia perdió su efecto! Ya puedes atacar.", e_FontTypeNames.FONTTYPE_New_Amarillo_Oscuro)
+106         Call WriteConsoleMsg(UserIndex, "¡La magia perdió su efecto! Ya puedes atacar.", e_FontTypeNames.FONTTYPE_New_Amarillo_Oscuro)
         End If
 
         
@@ -1596,7 +1602,7 @@ Public Sub EfectoAhogo(ByVal UserIndex As Integer)
 104         If UserList(UserIndex).Counters.Ahogo < 70 Then
 106             UserList(UserIndex).Counters.Ahogo = UserList(UserIndex).Counters.Ahogo + 1
             Else
-108             Call WriteConsoleMsg(userindex, "Te estás ahogando, si no consigues oxígeno morirás.", e_FontTypeNames.FONTTYPE_EJECUCION)
+108             Call WriteConsoleMsg(UserIndex, "Te estás ahogando, si no consigues oxígeno morirás.", e_FontTypeNames.FONTTYPE_EJECUCION)
                 'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, 205, 30, False))
 110             UserList(UserIndex).Counters.Ahogo = 0
 112             n = RandomNumber(150, 200)

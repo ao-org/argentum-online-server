@@ -1,6 +1,31 @@
 Attribute VB_Name = "Logging"
 Option Explicit
 
+
+Private Declare Function ReportEvent _
+ Lib "advapi32.dll" Alias "ReportEventA" ( _
+ ByVal hEventLog As Long, _
+ ByVal wType As Integer, _
+ ByVal wCategory As Integer, _
+ ByVal dwEventID As Long, _
+ ByVal lpUserSid As Long, _
+ ByVal wNumStrings As Integer, _
+ ByVal dwDataSize As Long, _
+ plpStrings As String, _
+ lpRawData As Long) As Long
+
+Private Declare Function RegisterEventSource Lib "advapi32.dll" Alias "RegisterEventSourceA" ( _
+ ByVal lpUNCServerName As String, _
+ ByVal lpSourceName As String) As Long
+
+Public Sub LogThis(nErrNo As Long, sLogMsg As String, EventType As LogEventTypeConstants)
+    Dim hEvent As Long
+    hEvent = RegisterEventSource("", "Argentum20")
+    Call ReportEvent(hEvent, EventType, 0, nErrNo, 0, 1, Len(sLogMsg), sLogMsg, 0)
+End Sub
+
+
+
 Public Sub LogearEventoDeSubasta(Logeo As String)
         
         On Error GoTo LogearEventoDeSubasta_Err
@@ -119,76 +144,31 @@ ErrHandler:
 End Sub
 
 Public Sub LogMacroServidor(texto As String)
-
-        On Error GoTo ErrHandler
-
-        Dim nfile As Integer
-
-100     nfile = FreeFile ' obtenemos un canal
-
-102     Open App.Path & "\logs\MacroServidor.log" For Append Shared As #nfile
-104     Print #nfile, Date & " " & Time & " " & texto
-106     Close #nfile
-
+On Error GoTo ErrHandler
+        Call LogThis(0, "[MacroServidor] " & texto, vbLogEventTypeInformation)
         Exit Sub
-
 ErrHandler:
-
 End Sub
 
 Public Sub LogMacroCliente(texto As String)
-
-        On Error GoTo ErrHandler
-
-        Dim nfile As Integer
-
-100     nfile = FreeFile ' obtenemos un canal
-
-102     Open App.Path & "\logs\MacroCliente.log" For Append Shared As #nfile
-104     Print #nfile, Date & " " & Time & " " & texto
-106     Close #nfile
-
+On Error GoTo ErrHandler
+        Call LogThis(0, "[MacroCliente] " & texto, vbLogEventTypeInformation)
         Exit Sub
-
 ErrHandler:
-
 End Sub
 Public Sub logVentaCasa(ByVal texto As String)
-
-        On Error GoTo ErrHandler
-
-        Dim nfile As Integer
-
-100     nfile = FreeFile ' obtenemos un canal
-
-102     Open App.Path & "\logs\propiedades.log" For Append Shared As #nfile
-104     Print #nfile, "----------------------------------------------------------"
-106     Print #nfile, Date & " " & Time & " " & texto
-108     Print #nfile, "----------------------------------------------------------"
-110     Close #nfile
-
+On Error GoTo ErrHandler
+        Call LogThis(0, "[Propiedades] " & texto, vbLogEventTypeInformation)
         Exit Sub
-
 ErrHandler:
-
 End Sub
 
 
 Public Sub LogCriticEvent(Desc As String)
-
-        On Error GoTo ErrHandler
-
-        Dim nfile As Integer
-
-100     nfile = FreeFile ' obtenemos un canal
-102     Open App.Path & "\logs\Eventos.log" For Append Shared As #nfile
-104     Print #nfile, Date & " " & Time & " " & Desc
-106     Close #nfile
-
+On Error GoTo ErrHandler
+        Call LogThis(0, "[Eventos.log] " & Desc, vbLogEventTypeWarning)
         Exit Sub
-
 ErrHandler:
-
 End Sub
 
 Public Sub LogEjercitoReal(Desc As String)
