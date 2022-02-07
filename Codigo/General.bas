@@ -556,7 +556,6 @@ InicializarConstantes_Err:
 End Sub
 
 Sub Main()
-
         On Error GoTo Handler
 
         ' Me fijo si ya hay un proceso llamado server.exe abierto
@@ -758,7 +757,14 @@ Sub Main()
     
 #If UNIT_TEST = 1 Then
         Debug.Print "AO20 Unit Testing"
-        Debug.Assert (UnitTesting.TestSuite())
+        Dim suite_passed_ok As Boolean
+        suite_passed_ok = UnitTesting.TestSuite()
+        If (suite_passed_ok) Then
+            Debug.Print "suite_passed_ok!!!"
+        Else
+            Debug.Print "suite failed!!!"
+        End If
+        Debug.Assert (suite_passed_ok)
         Exit Sub
 #End If
     
