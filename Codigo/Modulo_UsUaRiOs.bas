@@ -2028,6 +2028,9 @@ Sub UserDie(ByVal UserIndex As Integer)
 198             Call WriteFYA(UserIndex)
     
             End If
+            
+            ' << Frenamos el contador de la droga >>
+            .flags.DuracionEfecto = 0
         
             '<< Cambiamos la apariencia del char >>
 200         If .flags.Navegando = 0 Then
