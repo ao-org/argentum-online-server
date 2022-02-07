@@ -27,7 +27,7 @@ Public Sub IniciarSubasta(UserIndex)
         
 
 100     If UserList(UserIndex).flags.Subastando = True And Not Subasta.HaySubastaActiva Then
-102         Call WriteChatOverHead(UserIndex, "Escribe /OFERTAINICIAL (cantidad) para comenzar la subasta. Te quedan: " & UserList(UserIndex).Counters.TiempoParaSubastar & " segundos... ¡Apurate!", NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, vbWhite)
+102         Call WriteChatOverHead(userindex, "Escribe /OFERTAINICIAL (cantidad) para comenzar la subasta. Te quedan: " & UserList(userindex).Counters.TiempoParaSubastar & " segundos... ¡Apurate!", NpcList(UserList(userindex).flags.TargetNPC).Char.CharIndex, vbWhite)
             Exit Sub
 
         End If
@@ -39,13 +39,13 @@ Public Sub IniciarSubasta(UserIndex)
         End If
 
 108     If Not MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).ObjInfo.ObjIndex > 0 Then
-110         Call WriteChatOverHead(UserIndex, "¿Pues Acaso el aire está en venta ahora? ¡Bribón!", NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, vbWhite)
+110         Call WriteChatOverHead(userindex, "¿Pues Acaso el aire está en venta ahora? ¡Bribón!", NpcList(UserList(userindex).flags.TargetNPC).Char.CharIndex, vbWhite)
             Exit Sub
 
         End If
     
 112     If Not ObjData(MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).ObjInfo.ObjIndex).Subastable = 1 Then
-114         Call WriteChatOverHead(UserIndex, "Aquí solo subastamos items que sean valiosos. ¡Largate de acá Bribón!", NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, vbWhite)
+114         Call WriteChatOverHead(userindex, "Aquí solo subastamos items que sean valiosos. ¡Largate de acá Bribón!", NpcList(UserList(userindex).flags.TargetNPC).Char.CharIndex, vbWhite)
             Exit Sub
 
         End If
@@ -63,7 +63,7 @@ Public Sub IniciarSubasta(UserIndex)
 128         Subasta.ObjSubastadoCantidad = MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).ObjInfo.amount
 130         Subasta.Subastador = UserList(UserIndex).Name
 132         UserList(UserIndex).Counters.TiempoParaSubastar = 15
-134         Call WriteChatOverHead(UserIndex, "Escribe /OFERTAINICIAL (cantidad) para comenzar la subasta. ¡Tienes 15 segundos!", NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, vbWhite)
+134         Call WriteChatOverHead(userindex, "Escribe /OFERTAINICIAL (cantidad) para comenzar la subasta. ¡Tienes 15 segundos!", NpcList(UserList(userindex).flags.TargetNPC).Char.CharIndex, vbWhite)
 136         Call EraseObj(Subasta.ObjSubastadoCantidad, UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y)
 138         UserList(UserIndex).flags.Subastando = True
             Exit Sub
@@ -191,26 +191,6 @@ FinalizarSubasta_Err:
         
 End Sub
 
-Public Sub LogearEventoDeSubasta(Logeo As String)
-        
-        On Error GoTo LogearEventoDeSubasta_Err
-        
-
-        Dim n As Integer
-
-100     n = FreeFile
-102     Open App.Path & "\LOGS\subastas.log" For Append Shared As n
-104     Print #n, Logeo
-106     Close #n
-
-        
-        Exit Sub
-
-LogearEventoDeSubasta_Err:
-108     Call TraceError(Err.Number, Err.Description, "ModSubasta.LogearEventoDeSubasta", Erl)
-
-        
-End Sub
 
 Public Sub ResetearSubasta()
         

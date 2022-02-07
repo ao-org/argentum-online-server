@@ -1,6 +1,26 @@
 Attribute VB_Name = "Logging"
 Option Explicit
 
+Public Sub LogearEventoDeSubasta(Logeo As String)
+        
+        On Error GoTo LogearEventoDeSubasta_Err
+        
+
+        Dim n As Integer
+
+100     n = FreeFile
+102     Open App.Path & "\LOGS\subastas.log" For Append Shared As n
+104     Print #n, Logeo
+106     Close #n
+
+        
+        Exit Sub
+
+LogearEventoDeSubasta_Err:
+108     Call TraceError(Err.Number, Err.Description, "ModSubasta.LogearEventoDeSubasta", Erl)
+
+        
+End Sub
 
 Sub LogBan(ByVal BannedIndex As Integer, ByVal userindex As Integer, ByVal Motivo As String)
         
