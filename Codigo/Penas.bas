@@ -138,15 +138,6 @@ Public Sub BanPJWithoutGM(ByVal UserName As String, ByRef Razon As String)
 
 100     Call WriteVar(App.Path & "\logs\" & "BanDetail.dat", UserName, "BannedBy", "Ban automático (Posible BOT).")
         Call WriteVar(App.Path & "\logs\" & "BanDetail.dat", UserName, "Reason", Razon)
-
-        'Log interno del servidor, lo usa para hacer un UNBAN general de toda la gente banned
-        Dim mifile As Integer
-
-104     mifile = FreeFile
-        Open App.Path & "\logs\GenteBanned.log" For Append Shared As #mifile
-108     Print #mifile, UserName
-109     Close #mifile
-
         ' Le buchoneamos al mundo.
 114     Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » Ha baneado a " & UserName & " debido a: " & LCase$(Razon) & ".", e_FontTypeNames.FONTTYPE_SERVER))
 

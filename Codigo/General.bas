@@ -743,13 +743,6 @@ Sub Main()
 
 318     frmCargando.Visible = False
 320     Unload frmCargando
-
-        'Log
-        Dim n As Integer
-322     n = FreeFile
-324     Open App.Path & "\logs\Main.log" For Append Shared As #n
-326     Print #n, Date & " " & Time & " server iniciado " & App.Major & "." & App.Minor & "." & App.Revision
-328     Close #n
     
         'Ocultar
 330     Call frmMain.InitMain(HideMe)
@@ -945,13 +938,6 @@ Sub Restart()
         
 152     If frmMain.Visible Then frmMain.txStatus.Caption = "Escuchando conexiones entrantes ..."
 
-        'Log it
-        Dim n As Integer
-
-154     n = FreeFile
-156     Open App.Path & "\logs\Main.log" For Append Shared As #n
-158     Print #n, Date & " " & Time & " servidor reiniciado."
-160     Close #n
 
         'Ocultar
 162     Call frmMain.InitMain(HideMe)
@@ -2361,12 +2347,6 @@ Public Sub CerrarServidor()
     
 112     If Database_Enabled Then Database_Close
  
-        'Log
-116     Dim n As Integer: n = FreeFile
-118     Open App.Path & "\logs\Main.log" For Append Shared As #n
-120     Print #n, Date & " " & Time & " server cerrado."
-122     Close #n
-    
 124     End
    
 End Sub
