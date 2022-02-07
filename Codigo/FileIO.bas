@@ -2087,7 +2087,7 @@ Public Sub CargarMapaFormatoCSM(ByVal Map As Long, ByVal MAPFl As String)
                         Else
                             
                             ' Lo guardo en los logs + aparece en el Debug.Print
-310                         Call TraceError(404, "NPC no existe en los .DAT's o está mal dateado. Posicion: " & Map & "-" & NPCs(i).X & "-" & NPCs(i).Y, "ES.CargarMapaFormatoCSM")
+310                         Call TraceError(404, "NPC no existe en los .DAT's o está mal dateado. Posicion: " & map & "-" & NPCs(i).x & "-" & NPCs(i).y, "ES.CargarMapaFormatoCSM")
                             
                         End If
                     End If
@@ -2850,30 +2850,7 @@ CargarNpcBackUp_Err:
         
 End Sub
 
-Sub LogBan(ByVal BannedIndex As Integer, ByVal UserIndex As Integer, ByVal Motivo As String)
-        
-        On Error GoTo LogBan_Err
-        
 
-100     Call WriteVar(App.Path & "\logs\" & "BanDetail.log", UserList(BannedIndex).Name, "BannedBy", UserList(UserIndex).Name)
-102     Call WriteVar(App.Path & "\logs\" & "BanDetail.log", UserList(BannedIndex).Name, "Reason", Motivo)
-
-        'Log interno del servidor, lo usa para hacer un UNBAN general de toda la gente banned
-        Dim mifile As Integer
-
-104     mifile = FreeFile
-106     Open App.Path & "\logs\GenteBanned.log" For Append Shared As #mifile
-108     Print #mifile, UserList(BannedIndex).Name
-110     Close #mifile
-
-        
-        Exit Sub
-
-LogBan_Err:
-112     Call TraceError(Err.Number, Err.Description, "ES.LogBan", Erl)
-
-        
-End Sub
 
 Sub LogBanFromName(ByVal BannedName As String, ByVal UserIndex As Integer, ByVal Motivo As String)
         
