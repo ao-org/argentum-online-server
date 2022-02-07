@@ -26,46 +26,24 @@ End Sub
 
 
 
-Public Sub LogearEventoDeSubasta(Logeo As String)
-        
-        On Error GoTo LogearEventoDeSubasta_Err
-        
-
-        Dim n As Integer
-
-100     n = FreeFile
-102     Open App.Path & "\LOGS\subastas.log" For Append Shared As n
-104     Print #n, Logeo
-106     Close #n
-
-        
+Public Sub LogearEventoDeSubasta(s As String)
+On Error GoTo ErrHandler
+        Call LogThis(0, "[Subastas.log] " & s, vbLogEventTypeInformation)
         Exit Sub
-
-LogearEventoDeSubasta_Err:
-108     Call TraceError(Err.Number, Err.Description, "ModSubasta.LogearEventoDeSubasta", Erl)
-
-        
+ErrHandler:
 End Sub
 
 Sub LogBan(ByVal BannedIndex As Integer, ByVal userindex As Integer, ByVal Motivo As String)
-        
         On Error GoTo LogBan_Err
-        
-
 100     Call WriteVar(App.Path & "\logs\" & "BanDetail.log", UserList(BannedIndex).Name, "BannedBy", UserList(userindex).Name)
 102     Call WriteVar(App.Path & "\logs\" & "BanDetail.log", UserList(BannedIndex).Name, "Reason", Motivo)
-
         'Log interno del servidor, lo usa para hacer un UNBAN general de toda la gente banned
         Dim mifile As Integer
-
 104     mifile = FreeFile
 106     Open App.Path & "\logs\GenteBanned.log" For Append Shared As #mifile
 108     Print #mifile, UserList(BannedIndex).Name
 110     Close #mifile
-
-        
         Exit Sub
-
 LogBan_Err:
 112     Call TraceError(Err.Number, Err.Description, "ES.LogBan", Erl)
 
@@ -74,73 +52,32 @@ End Sub
 
 
 Public Sub LogCreditosPatreon(Desc As String)
-        On Error GoTo ErrHandler
-
-        Dim nfile As Integer
-
-100     nfile = FreeFile
-    
-102     Open App.Path & "\logs\Monetization\CreditosPatreon.log" For Append Shared As #nfile
-104     Print #nfile, Date & " " & Time & " - " & Desc
-106     Close #nfile
-     
+On Error GoTo ErrHandler
+        Call LogThis(0, "[MonetizationCreditosPatreon.log] " & Desc, vbLogEventTypeInformation)
         Exit Sub
-    
 ErrHandler:
-
 End Sub
 
 Public Sub LogShopTransactions(Desc As String)
-        On Error GoTo ErrHandler
-
-        Dim nfile As Integer
-
-100     nfile = FreeFile
-    
-102     Open App.Path & "\logs\Monetization\Shop\Transactions.log" For Append Shared As #nfile
-104     Print #nfile, Date & " " & Time & " - " & Desc
-106     Close #nfile
-                 
+On Error GoTo ErrHandler
+        Call LogThis(0, "[MonetizationShopTransactions.log] " & Desc, vbLogEventTypeInformation)
         Exit Sub
-    
 ErrHandler:
-
 End Sub
 
 Public Sub LogShopErrors(Desc As String)
-        On Error GoTo ErrHandler
-
-        Dim nfile As Integer
-
-100     nfile = FreeFile
-    
-102     Open App.Path & "\logs\Monetization\Shop\Errors.log" For Append Shared As #nfile
-104     Print #nfile, Date & " " & Time & " - " & Desc
-106     Close #nfile
-                 
+On Error GoTo ErrHandler
+        Call LogThis(0, "[MonetizationShopErrors.log] " & Desc, vbLogEventTypeError)
         Exit Sub
-    
 ErrHandler:
-
 End Sub
 
 
 Public Sub LogEdicionPaquete(texto As String)
-
-        On Error GoTo ErrHandler
-
-        Dim nfile As Integer
-
-100     nfile = FreeFile ' obtenemos un canal
-
-102     Open App.Path & "\logs\EdicionPaquete.log" For Append Shared As #nfile
-104     Print #nfile, Date & " " & Time & " " & texto
-106     Close #nfile
-
+On Error GoTo ErrHandler
+        Call LogThis(0, "[EdicionPaquete.log] " & texto, vbLogEventTypeWarning)
         Exit Sub
-
 ErrHandler:
-
 End Sub
 
 Public Sub LogMacroServidor(texto As String)
@@ -172,49 +109,24 @@ ErrHandler:
 End Sub
 
 Public Sub LogEjercitoReal(Desc As String)
-
-        On Error GoTo ErrHandler
-
-        Dim nfile As Integer
-
-100     nfile = FreeFile ' obtenemos un canal
-102     Open App.Path & "\logs\EjercitoReal.log" For Append Shared As #nfile
-104     Print #nfile, Desc
-106     Close #nfile
-
+On Error GoTo ErrHandler
+        Call LogThis(0, "[EjercitoReal.log] " & Desc, vbLogEventTypeInformation)
         Exit Sub
-
 ErrHandler:
-
 End Sub
 
 Public Sub LogEjercitoCaos(Desc As String)
-
-        On Error GoTo ErrHandler
-
-        Dim nfile As Integer
-
-100     nfile = FreeFile ' obtenemos un canal
-102     Open App.Path & "\logs\EjercitoCaos.log" For Append Shared As #nfile
-104     Print #nfile, Desc
-106     Close #nfile
-
+On Error GoTo ErrHandler
+        Call LogThis(0, "[EjercitoCaos.log] " & Desc, vbLogEventTypeInformation)
         Exit Sub
-
 ErrHandler:
-
 End Sub
 
 Public Sub LogError(Desc As String)
-
-100     Dim nfile As Integer: nfile = FreeFile ' obtenemos un canal
-    
-102     Open App.Path & "\logs\errores.log" For Append Shared As #nfile
-104     Print #nfile, Date & " " & Time & " " & Desc
-106     Close #nfile
-
+On Error GoTo ErrHandler
+        Call LogThis(0, "[Errores.log] " & Desc, vbLogEventTypeError)
         Exit Sub
-
+ErrHandler:
 End Sub
 
 Public Sub LogPerformance(Desc As String)
