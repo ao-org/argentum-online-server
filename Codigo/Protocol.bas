@@ -18748,7 +18748,7 @@ End Sub
 Private Sub HandleResetearPersonaje(ByVal UserIndex As Integer)
     On Error GoTo HandleResetearPersonaje_Err:
 
-    Call resetPj(UserIndex)
+   ' Call resetPj(UserIndex)
 
     Exit Sub
 
