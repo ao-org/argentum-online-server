@@ -2,26 +2,24 @@ Attribute VB_Name = "UnitTesting"
 Option Explicit
 
 
-Sub TestMakeUserChar()
-Dim u_map, u_userindex, u_charindex, u_userindex2, u_posx, u_posy
-u_map = 1
-u_posx = 54
-u_posy = 51
-u_userindex = 1
-u_userindex2 = 2
+Sub test_make_user(ByVal userindex As Integer, ByVal map As Integer, ByVal x As Integer, ByVal y As Integer)
+UserList(userindex).Pos.map = map
+UserList(userindex).Pos.x = x
+UserList(userindex).Pos.y = y
+Call MakeUserChar(True, 17, userindex, map, x, y, 1)
+End Sub
 
-UserList(u_userindex).Pos.Map = u_map
-UserList(u_userindex).Pos.X = u_posx
-UserList(u_userindex).Pos.Y = u_posy
+Function TestMakeUserChar() As Boolean
 
-Call MakeUserChar(True, 17, u_userindex, u_map, u_posx, u_posy, 1)
-Debug.Assert (MapData(u_map, u_posx, u_posy).UserIndex = u_userindex)
-u_charindex = UserList(u_userindex).Char.CharIndex
-Debug.Assert (UserList(u_userindex).Char.CharIndex = u_charindex)
-Call EraseUserChar(u_userindex, False, False)
-Debug.Assert (MapData(u_map, u_posx, u_posy).UserIndex = 0)
-
-'Delete all NPCs
+'Create first User
+Call test_make_user(1, 1, 54, 51)
+Debug.Assert (MapData(1, 54, 51).userindex = 1)
+Debug.Assert (UserList(1).Char.CharIndex <> 0)
+'Delete first user
+Call EraseUserChar(1, False, False)
+Debug.Assert (MapData(1, 54, 55).userindex = 0)
+Debug.Assert (UserList(1).Char.CharIndex = 0)
+'Delete all NPCs5
 Dim i
 For i = 1 To UBound(NpcList)
         If NpcList(i).Char.CharIndex <> 0 Then
@@ -29,34 +27,47 @@ For i = 1 To UBound(NpcList)
         End If
 Next i
 
-Call MakeUserChar(True, 17, u_userindex2, u_map, u_posx, u_posy, 1)
-Debug.Assert (MapData(u_map, u_posx, u_posy).UserIndex = u_userindex2)
-Call MakeUserChar(True, 17, u_userindex, u_map, u_posx, u_posy, 1)
-Debug.Assert (MapData(u_map, u_posx, u_posy).UserIndex = u_userindex)
-Debug.Assert (UserList(u_userindex2).Char.CharIndex <> UserList(u_userindex).Char.CharIndex)
-Call EraseUserChar(u_userindex2, False, True)
-Debug.Assert (MapData(u_map, u_posx, u_posy).UserIndex = 0)
-Call MakeUserChar(True, 17, u_userindex2, u_map, u_posx, u_posy, 1)
-Debug.Assert (MapData(u_map, u_posx, u_posy).UserIndex = u_userindex2)
-Debug.Assert (UserList(u_userindex2).Char.CharIndex <> 1)
+'Create two users on the same map pos
+Call test_make_user(2, 1, 54, 56)
+Debug.Assert (MapData(1, 54, 56).userindex = 2)
+Debug.Assert (UserList(2).Char.CharIndex <> 0)
+
+Call test_make_user(1, 1, 50, 46)
+Debug.Assert (MapData(1, 50, 46).userindex = 1)
+Debug.Assert (UserList(1).Char.CharIndex <> 0)
+Debug.Assert (UserList(2).Char.CharIndex <> UserList(1).Char.CharIndex)
+
+'Delete user 2
+Call EraseUserChar(2, False, False)
+Debug.Assert (MapData(1, 54, 56).userindex = 0)
+Debug.Assert (UserList(2).Char.CharIndex = 0)
+'Create user 2 again
+Call test_make_user(2, 1, 54, 56)
+Debug.Assert (MapData(1, 54, 56).userindex = 2)
+Debug.Assert (UserList(2).Char.CharIndex <> 0)
 
 For i = 1 To UBound(UserList)
     If UserList(i).Char.CharIndex <> 0 Then
-        Call EraseUserChar(UserList(i).Char.CharIndex, False, True)
+        Call EraseUserChar(i, False, True)
     End If
 Next i
-Call MakeUserChar(True, 17, u_userindex, u_map, u_posx, u_posy, 1)
-Debug.Assert (MapData(u_map, u_posx, u_posy).UserIndex = u_userindex)
-u_charindex = UserList(u_userindex).Char.CharIndex
-Debug.Assert (UserList(u_userindex).Char.CharIndex = u_charindex)
-Debug.Assert (UserList(u_userindex).Char.CharIndex = 1)
 
-End Sub
+Call test_make_user(1, 1, 64, 66)
+Debug.Assert (MapData(1, 64, 66).userindex = 1)
+Debug.Assert (UserList(1).Char.CharIndex <> 0)
+Debug.Assert (UserList(1).Char.CharIndex = 1)
 
-Function TestSuite()
 
-TestMakeUserChar
+Call test_make_user(1, 1, 68, 66)
+Debug.Assert (MapData(1, 68, 66).userindex = 1)
+Debug.Assert (UserList(1).Char.CharIndex <> 0)
+TestMakeUserChar = True
+End Function
 
-TestSuite = True
+Function TestSuite() As Boolean
+
+
+TestSuite = TestMakeUserChar()
+
 End Function
 
