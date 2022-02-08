@@ -1608,7 +1608,6 @@ Private Sub HandleTalk(ByVal UserIndex As Integer)
 
 126                 If .flags.invisible = 0 Then
 128                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(.Char.CharIndex, False))
-                        'Call WriteConsoleMsg(UserIndex, "¡Has vuelto a ser visible!", e_FontTypeNames.FONTTYPE_INFO)
 130                     Call WriteLocaleMsg(UserIndex, "307", e_FontTypeNames.FONTTYPE_INFO)
     
                     End If
@@ -1618,16 +1617,9 @@ Private Sub HandleTalk(ByVal UserIndex As Integer)
             End If
        
 132         If .flags.Silenciado = 1 Then
-        
-                'Call WriteConsoleMsg(UserIndex, "Los administradores te han impedido hablar durante los proximos " & .flags.MinutosRestantes & " minutos debido a tu comportamiento.", e_FontTypeNames.FONTTYPE_VENENO)
 134             Call WriteLocaleMsg(UserIndex, "110", e_FontTypeNames.FONTTYPE_INFO, .flags.MinutosRestantes)
-            
             Else
-
 136             If LenB(chat) <> 0 Then
-            
-                    'Analize chat...
-138                 Call Statistics.ParseChat(chat)
 
                     ' WyroX: Foto-denuncias - Push message
                     Dim i As Long
@@ -1729,9 +1721,6 @@ Private Sub HandleYell(ByVal UserIndex As Integer)
                 Else
 
 140                 If LenB(chat) <> 0 Then
-                        'Analize chat...
-142                     Call Statistics.ParseChat(chat)
-
                         ' WyroX: Foto-denuncias - Push message
                         Dim i As Long
 144                     For i = 1 To UBound(.flags.ChatHistory) - 1
@@ -1795,10 +1784,6 @@ Private Sub HandleWhisper(ByVal UserIndex As Integer)
 114             If EstaPCarea(UserIndex, targetUserIndex) Then
 
 116                 If LenB(chat) <> 0 Then
-                    
-                        'Analize chat...
-118                     Call Statistics.ParseChat(chat)
-
                         ' WyroX: Foto-denuncias - Push message
                         Dim i As Long
 
@@ -5926,49 +5911,26 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleGrupoMsg(ByVal UserIndex As Integer)
-
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
-
         On Error GoTo ErrHandler
-
 100     With UserList(UserIndex)
-
             Dim chat As String
-102             chat = Reader.ReadString8()
-        
+102         chat = Reader.ReadString8()
 104         If LenB(chat) <> 0 Then
 
-                'Analize chat...
-106             Call Statistics.ParseChat(chat)
-            
 108             If .Grupo.EnGrupo = True Then
 
                     Dim i As Byte
          
 110                 For i = 1 To UserList(.Grupo.Lider).Grupo.CantidadMiembros
-                    
-                        'Call WriteConsoleMsg(UserList(.Grupo.Lider).Grupo.Miembros(i), "[" & .Name & "] " & chat, e_FontTypeNames.FONTTYPE_New_Amarillo_Verdoso)
 112                     Call WriteConsoleMsg(UserList(.Grupo.Lider).Grupo.Miembros(i), .Name & "> " & chat, e_FontTypeNames.FONTTYPE_New_Amarillo_Verdoso)
 114                     Call WriteChatOverHead(UserList(.Grupo.Lider).Grupo.Miembros(i), chat, UserList(UserIndex).Char.CharIndex, &HFF8000)
-                  
 116                 Next i
-            
                 Else
-                    'Call WriteConsoleMsg(UserIndex, "[" & .Name & "] " & chat, e_FontTypeNames.FONTTYPE_New_GRUPO)
 118                 Call WriteConsoleMsg(UserIndex, "Grupo> No estas en ningun grupo.", e_FontTypeNames.FONTTYPE_New_GRUPO)
-
                 End If
-
             End If
-
         End With
-        
         Exit Sub
-        
 ErrHandler:
 120     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGrupoMsg", Erl)
 122
@@ -6819,10 +6781,6 @@ Private Sub HandleGuildMessage(ByVal UserIndex As Integer)
             If Not verifyTimeStamp(PacketCounter, .PacketCounters(Packet_ID), .PacketTimers(Packet_ID), .MacroIterations(Packet_ID), UserIndex, "GuildMessage", PacketTimerThreshold(Packet_ID), MacroIterations(Packet_ID)) Then Exit Sub
        
 104         If LenB(chat) <> 0 Then
-
-                'Analize chat...
-106             Call Statistics.ParseChat(chat)
-
                 ' WyroX: Foto-denuncias - Push message
                 Dim i As Integer
 
@@ -6939,10 +6897,6 @@ Private Sub HandleCouncilMessage(ByVal UserIndex As Integer)
 102             chat = Reader.ReadString8()
         
 104         If LenB(chat) <> 0 Then
-
-                'Analize chat...
-106             Call Statistics.ParseChat(chat)
-
                 ' WyroX: Foto-denuncias - Push message
                 Dim i As Long
 108             For i = 1 To UBound(.flags.ChatHistory) - 1
@@ -7646,29 +7600,14 @@ End Sub
 ' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleGMMessage(ByVal UserIndex As Integer)
-
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 01/08/07
-        'Last Modification by: (liquid)
-        '***************************************************
-
         On Error GoTo ErrHandler
-
 100     With UserList(UserIndex)
-        
             Dim Message As String
-102             Message = Reader.ReadString8()
-
+102         Message = Reader.ReadString8()
 104         If EsGM(UserIndex) Then
 106             Call LogGM(.Name, "Mensaje a Gms: " & Message)
-        
 108             If LenB(Message) <> 0 Then
-                    'Analize chat...
-110                 Call Statistics.ParseChat(Message)
-            
 112                 Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(.name & " » " & Message, e_FontTypeNames.FONTTYPE_GMMSG))
-
                 End If
 
             End If
@@ -8010,7 +7949,7 @@ Private Sub HandleWhere(ByVal UserIndex As Integer)
                 Else
 
 112                 If CompararPrivilegiosUser(UserIndex, tUser) >= 0 Then
-114                     Call WriteConsoleMsg(UserIndex, "Ubicación  " & UserName & ": " & UserList(tUser).Pos.map & ", " & UserList(tUser).Pos.x & ", " & UserList(tUser).Pos.y & ".", e_FontTypeNames.FONTTYPE_INFO)
+114                     Call WriteConsoleMsg(UserIndex, "Ubicación  " & UserName & ": " & UserList(tUser).Pos.map & ", " & UserList(tUser).Pos.X & ", " & UserList(tUser).Pos.y & ".", e_FontTypeNames.FONTTYPE_INFO)
 116                     Call LogGM(.Name, "/Donde " & UserName)
                     End If
 
@@ -8280,7 +8219,7 @@ Private Sub HandleWarpChar(ByVal UserIndex As Integer)
 140                     Call WarpUserChar(tUser, Map, X, Y, True)
                     End If
 142                 If tUser <> UserIndex Then
-144                     Call LogGM(.name, "Transportó a " & UserList(tUser).name & " hacia " & "Mapa" & map & " X:" & x & " Y:" & y)
+144                     Call LogGM(.name, "Transportó a " & UserList(tUser).name & " hacia " & "Mapa" & map & " X:" & X & " Y:" & y)
                     End If
                         
                 End If
@@ -15305,8 +15244,6 @@ Private Sub HandleGlobalMessage(ByVal UserIndex As Integer)
 
 108         If .flags.Silenciado = 1 Then
 110             Call WriteLocaleMsg(UserIndex, "110", e_FontTypeNames.FONTTYPE_VENENO, .flags.MinutosRestantes)
-                'Call WriteConsoleMsg(UserIndex, "Los administradores te han impedido hablar durante los proximos " & .flags.MinutosRestantes & " minutos debido a tu comportamiento.", e_FontTypeNames.FONTTYPE_VENENO)
-        
 112         ElseIf ElapsedTime < IntervaloMensajeGlobal Then
 114             Call WriteConsoleMsg(UserIndex, "No puedes escribir mensajes globales tan rápido.", e_FontTypeNames.FONTTYPE_WARNING)
         
@@ -15315,9 +15252,6 @@ Private Sub HandleGlobalMessage(ByVal UserIndex As Integer)
 
 118             If EstadoGlobal Then
 120                 If LenB(chat) <> 0 Then
-                        'Analize chat...
-122                     Call Statistics.ParseChat(chat)
-
                         ' WyroX: Foto-denuncias - Push message
                         Dim i As Integer
 
@@ -15433,7 +15367,7 @@ Private Sub HandlePossUser(ByVal UserIndex As Integer)
 150                 Call FindLegalPos(tempIndex, UserList(tempIndex).Pos.Map, CByte(UserList(tempIndex).Pos.X), CByte(UserList(tempIndex).Pos.Y))
 152                 Call WarpUserChar(tempIndex, nPos.Map, nPos.X, nPos.Y, True)
                     
-116                 Call WriteConsoleMsg(UserIndex, "Servidor » Acción realizada con exito! La nueva posicion de " & UserName & " es: " & UserList(tempIndex).Pos.map & "-" & UserList(tempIndex).Pos.x & "-" & UserList(tempIndex).Pos.y & ".", e_FontTypeNames.FONTTYPE_INFO)
+116                 Call WriteConsoleMsg(UserIndex, "Servidor » Acción realizada con exito! La nueva posicion de " & UserName & " es: " & UserList(tempIndex).Pos.map & "-" & UserList(tempIndex).Pos.X & "-" & UserList(tempIndex).Pos.y & ".", e_FontTypeNames.FONTTYPE_INFO)
                     'HarTaoS ReyarB ver porque si el usuario esta online lo dice igual
                 Else
 118                 Call WriteConsoleMsg(UserIndex, "Servidor » El usuario debe estar deslogueado para dicha solicitud!", e_FontTypeNames.FONTTYPE_INFO)
@@ -16088,7 +16022,7 @@ Private Sub HandleLlamadadeClan(ByVal UserIndex As Integer)
 104             clan_nivel = modGuilds.NivelDeClan(.GuildIndex)
 
 106             If clan_nivel >= 2 Then
-108                 Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageConsoleMsg("Clan> [" & .name & "] solicita apoyo de su clan en " & DarNameMapa(.Pos.map) & " (" & .Pos.map & "-" & .Pos.x & "-" & .Pos.y & "). Puedes ver su ubicación en el mapa del mundo.", e_FontTypeNames.FONTTYPE_GUILD))
+108                 Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageConsoleMsg("Clan> [" & .name & "] solicita apoyo de su clan en " & DarNameMapa(.Pos.map) & " (" & .Pos.map & "-" & .Pos.X & "-" & .Pos.y & "). Puedes ver su ubicación en el mapa del mundo.", e_FontTypeNames.FONTTYPE_GUILD))
 110                 Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessagePlayWave("43", NO_3D_SOUND, NO_3D_SOUND))
 112                 Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageUbicacionLlamada(.Pos.Map, .Pos.X, .Pos.Y))
 
