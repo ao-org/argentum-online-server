@@ -28,6 +28,13 @@ Debug.Assert (Porcentaje(100#, 2#) = 2)
 Debug.Assert (Porcentaje(100#, 5#) = 5)
 Debug.Assert (Porcentaje(100#, 10#) = 10)
 Debug.Assert (Porcentaje(100#, 100#) = 100)
+Dim i As Integer
+For i = 1 To 100
+        Debug.Assert Porcentaje(100#, i) = i
+Next i
+For i = 1 To 1000
+        Debug.Assert Porcentaje(1000#, i) = i * 10
+Next i
 Debug.Print "Porcentaje took " & sw.ElapsedMilliseconds; " ms"
 test_percentage = True
 End Function

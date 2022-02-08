@@ -2364,46 +2364,6 @@ Public Sub CerrarServidor()
    
 End Sub
 
-Function max(ByVal a As Double, ByVal b As Double) As Double
-        
-        On Error GoTo max_Err
-        
-
-100     If a > b Then
-102         max = a
-        Else
-104         max = b
-        End If
-
-        
-        Exit Function
-
-max_Err:
-106     Call TraceError(Err.Number, Err.Description, "General.max", Erl)
-
-        
-End Function
-
-Function Min(ByVal a As Double, ByVal b As Double) As Double
-        
-        On Error GoTo min_Err
-    
-        
-
-100     If a < b Then
-102         Min = a
-        Else
-104         Min = b
-        End If
-
-        
-        Exit Function
-
-min_Err:
-106     Call TraceError(Err.Number, Err.Description, "General.min", Erl)
-
-        
-End Function
 
 Public Function PonerPuntos(ByVal Numero As Long) As String
     

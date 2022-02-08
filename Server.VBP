@@ -60,7 +60,6 @@ Module=ModFamiliar; Codigo\ModFamiliar.bas
 Module=ModClimas; Codigo\ModClimas.bas
 Module=ModGrupos; Codigo\ModGrupos.bas
 Module=ModEventos; Codigo\ModEventos.bas
-Module=ModEncrypt; Codigo\ModEncrypt.bas
 Class=tBaneo; Codigo\tBaneo.cls
 Module=ModTorneos; Codigo\ModTorneos.bas
 Module=ModTesoros; Codigo\ModTesoros.bas

@@ -34,9 +34,29 @@ Attribute VB_Name = "Matematicas"
 'La Plata - Pcia, Buenos Aires - Republica Argentina
 'Código Postal 1900
 'Pablo Ignacio Márquez
-
 Option Explicit
-
+Function max(ByVal a As Double, ByVal b As Double) As Double
+        On Error GoTo max_Err
+100     If a > b Then
+102         max = a
+        Else
+104         max = b
+        End If
+        Exit Function
+max_Err:
+106     Call TraceError(Err.Number, Err.Description, "General.max", Erl)
+End Function
+Function Min(ByVal a As Double, ByVal b As Double) As Double
+        On Error GoTo min_Err
+100     If a < b Then
+102         Min = a
+        Else
+104         Min = b
+        End If
+        Exit Function
+min_Err:
+106     Call TraceError(Err.Number, Err.Description, "General.min", Erl)
+End Function
 Public Function Porcentaje(ByVal Total As Double, ByVal Porc As Double) As Double
         On Error GoTo Porcentaje_Err
 100     Porcentaje = (Total * Porc) / 100
@@ -44,7 +64,6 @@ Public Function Porcentaje(ByVal Total As Double, ByVal Porc As Double) As Doubl
 Porcentaje_Err:
 102     Call TraceError(Err.Number, Err.Description, "Matematicas.Porcentaje", Erl)
 End Function
-
 Function Distancia(ByRef wp1 As t_WorldPos, ByRef wp2 As t_WorldPos) As Long
         On Error GoTo Distancia_Err
 100     Distancia = Abs(wp1.X - wp2.X) + Abs(wp1.Y - wp2.Y) + (Abs(wp1.Map - wp2.Map) * 100&)
@@ -52,7 +71,6 @@ Function Distancia(ByRef wp1 As t_WorldPos, ByRef wp2 As t_WorldPos) As Long
 Distancia_Err:
 102     Call TraceError(Err.Number, Err.Description, "Matematicas.Distancia", Erl)
 End Function
-
 Function Distance(ByVal X1 As Long, ByVal Y1 As Long, ByVal X2 As Long, ByVal Y2 As Long) As Double
         On Error GoTo Distance_Err
 100     Distance = Sqr(((Y1 - Y2) ^ 2 + (X1 - X2) ^ 2))
@@ -60,7 +78,6 @@ Function Distance(ByVal X1 As Long, ByVal Y1 As Long, ByVal X2 As Long, ByVal Y2
 Distance_Err:
 102     Call TraceError(Err.Number, Err.Description, "Matematicas.Distance", Erl)
 End Function
-
 Public Function RandomNumber(ByVal LowerBound As Long, ByVal UpperBound As Long) As Long
         On Error GoTo RandomNumber_Err
 100     RandomNumber = Fix(Rnd * (UpperBound - LowerBound + 1)) + LowerBound
