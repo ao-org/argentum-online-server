@@ -762,7 +762,7 @@ Sub Main()
 #If UNIT_TEST = 1 Then
         Debug.Print "AO20 Unit Testing"
         Dim suite_passed_ok As Boolean
-        suite_passed_ok = UnitTesting.TestSuite()
+        suite_passed_ok = UnitTesting.test_suite()
         If (suite_passed_ok) Then
             Debug.Print "suite_passed_ok!!!"
         Else
@@ -1040,7 +1040,7 @@ Public Sub EfectoFrio(ByVal UserIndex As Integer)
 
                     ' WyroX: Agrego aleatoriedad
                     Dim Daño As Integer
-126                 Daño = porcentaje(.Stats.MaxHp, RandomNumber(MinDaño, MaxDaño))
+126                 Daño = Porcentaje(.Stats.MaxHp, RandomNumber(MinDaño, MaxDaño))
 
 128                 .Stats.MinHp = .Stats.MinHp - Daño
             
