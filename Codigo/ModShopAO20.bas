@@ -1,4 +1,12 @@
 Attribute VB_Name = "ModShopAO20"
+'********************* COPYRIGHT NOTICE*********************
+' Copyright (c) 2021-22 Martin Trionfetti, Pablo Marquez
+' www.ao20.com.ar
+' All rights reserved.
+' Refer to licence for conditions of use.
+' This copyright notice must always be left intact.
+'****************** END OF COPYRIGHT NOTICE*****************
+'
 Option Explicit
 
 
@@ -11,13 +19,13 @@ Public Sub init_transaction(ByVal obj_num As Long, ByVal userindex As Integer)
         
         'Me fijo si es un item de shop
         If Not is_purchaseable_item(obj) Then
-            Call WriteConsoleMsg(userindex, "Error al realizar la transacción", e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteConsoleMsg(UserIndex, "Error al realizar la transacción", e_FontTypeNames.FONTTYPE_INFO)
             Call LogShopErrors("El usuario " & .Name & " intentó comprar un objeto que no es de shop (REVISAR) | " & obj.Name)
             Exit Sub
         End If
         
         If obj.valor > .Stats.Creditos Then
-            Call WriteConsoleMsg(userindex, "Error al realizar la transacción.", e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteConsoleMsg(UserIndex, "Error al realizar la transacción.", e_FontTypeNames.FONTTYPE_INFO)
             Call LogShopErrors("El usuario " & .Name & " intentó editar el valor del objeto (REVISAR) | " & obj.Name)
             Exit Sub
         End If
@@ -36,7 +44,7 @@ Public Sub init_transaction(ByVal obj_num As Long, ByVal userindex As Integer)
             .Stats.Creditos = .Stats.Creditos - obj.valor
             
             'Genero un log de los créditos que gastó y cuantos le quedan luego de la transacción.
-            Call LogShopTransactions(.Name & " | Compró -> " & ObjData(obj.ObjNum).Name & " | Valor -> " & obj.valor)
+            Call LogShopTransactions(.Name & " | Compró -> " & ObjData(obj.ObjNum).Name & " | Valor -> " & obj.Valor)
             Call Execute("update user set credits = ? where id = ?;", .Stats.Creditos, .ID)
             Call writeUpdateShopClienteCredits(userindex)
         End If

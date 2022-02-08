@@ -1,5 +1,12 @@
 Attribute VB_Name = "ModEventos"
-
+'********************* COPYRIGHT NOTICE*********************
+' Copyright (c) 2021-22 Martin Trionfetti, Pablo Marquez
+' www.ao20.com.ar
+' All rights reserved.
+' Refer to licence for conditions of use.
+' This copyright notice must always be left intact.
+'****************** END OF COPYRIGHT NOTICE*****************
+'
 Public HoraEvento           As Byte
 
 Public TiempoRestanteEvento As Byte

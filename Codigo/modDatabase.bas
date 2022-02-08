@@ -1,4 +1,13 @@
 Attribute VB_Name = "Database"
+'********************* COPYRIGHT NOTICE*********************
+' Copyright (c) 2021-22 Martin Trionfetti, Pablo Marquez
+' www.ao20.com.ar
+' All rights reserved.
+' Refer to licence for conditions of use.
+' This copyright notice must always be left intact.
+'****************** END OF COPYRIGHT NOTICE*****************
+'
+
 'Argentum Online Libre
 'Database connection module
 'Obtained from GS-Zone
@@ -770,7 +779,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
                 If LenB(BanNick) = 0 Then BanNick = "*Error en la base de datos*"
                 If LenB(BaneoMotivo) = 0 Then BaneoMotivo = "*No se registra el motivo del baneo.*"
             
-                Call WriteShowMessageBox(userindex, "Se te ha prohibido la entrada al juego debido a " & BaneoMotivo & ". Esta decisión fue tomada por " & BanNick & ".")
+                Call WriteShowMessageBox(UserIndex, "Se te ha prohibido la entrada al juego debido a " & BaneoMotivo & ". Esta decisión fue tomada por " & BanNick & ".")
             
                 Call CloseSocket(UserIndex)
                 Exit Sub
@@ -812,7 +821,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
 160         .Invent.MunicionEqpSlot = SanitizeNullValue(RS!slot_ammo, 0)
 162         .Invent.BarcoSlot = SanitizeNullValue(RS!slot_ship, 0)
 164         .Invent.MonturaSlot = SanitizeNullValue(RS!slot_mount, 0)
-166         .Invent.DañoMagicoEqpSlot = SanitizeNullValue(rs!slot_dm, 0)
+166         .Invent.DañoMagicoEqpSlot = SanitizeNullValue(RS!slot_dm, 0)
 168         .Invent.ResistenciaEqpSlot = SanitizeNullValue(RS!slot_rm, 0)
 170         .Invent.NudilloSlot = SanitizeNullValue(RS!slot_knuckles, 0)
 172         .Invent.HerramientaEqpSlot = SanitizeNullValue(RS!slot_tool, 0)
@@ -1102,7 +1111,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
         Exit Sub
 
 ErrorHandler:
-478     Call LogDatabaseError("Error en LoadUserDatabase: " & UserList(userindex).Name & ". " & Err.Number & " - " & Err.Description & ". Línea: " & Erl)
+478     Call LogDatabaseError("Error en LoadUserDatabase: " & UserList(UserIndex).Name & ". " & Err.Number & " - " & Err.Description & ". Línea: " & Erl)
 
 End Sub
 Public Function UpdateDBIpsValues(ByVal UserIndex As Integer)
@@ -1924,7 +1933,7 @@ Public Function EnterAccountDatabase(ByVal UserIndex As Integer, ByVal CuentaEma
 100     Set RS = Query("SELECT id from account WHERE email = ?", UCase$(CuentaEmail))
     
 102     If Connection.State = adStateClosed Then
-104         Call WriteShowMessageBox(userindex, "Ha ocurrido un error interno en el servidor. ¡Estamos tratando de resolverlo!")
+104         Call WriteShowMessageBox(UserIndex, "Ha ocurrido un error interno en el servidor. ¡Estamos tratando de resolverlo!")
             Exit Function
         End If
     
