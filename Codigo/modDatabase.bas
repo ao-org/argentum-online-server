@@ -57,8 +57,7 @@ Public Sub Database_Connect_Async()
         Current_async = 1
         
 113     Set Builder = New cStringBuilder
-        Call InitDatabase
-        
+
         Exit Sub
     
 Database_Connect_AsyncErr:
@@ -83,8 +82,6 @@ Public Sub Database_Connect()
         
 112     Call Connection.Open
 
-        Call InitDatabase
-        
         Exit Sub
     
 Database_Connect_Err:
@@ -277,20 +274,8 @@ Private Function CreateParameter(ByVal Value As Variant, ByVal Direction As ADOD
     End Select
 End Function
 
-' ------------------------------------------------------- VIEJO (necesita Refactor) -------------------------------------------------------------
-
-Public Sub InitDatabase()
-    'Reinicio los users online
-    Call SetUsersLoggedDatabase(0)
-
-    'Leo el record de usuarios
-    RecordUsuarios = LeerRecordUsuariosDatabase()
-End Sub
-
 Public Sub SaveNewUserDatabase(ByVal UserIndex As Integer)
-
         On Error GoTo ErrorHandler
-    
         Dim LoopC As Long
         Dim ParamC As Integer
         Dim Params() As Variant
@@ -1111,7 +1096,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
         Exit Sub
 
 ErrorHandler:
-478     Call LogDatabaseError("Error en LoadUserDatabase: " & UserList(UserIndex).Name & ". " & Err.Number & " - " & Err.Description & ". Línea: " & Erl)
+478     Call LogDatabaseError("Error en LoadUserDatabase: " & UserList(UserIndex).name & ". " & Err.Number & " - " & Err.Description & ". Línea: " & Erl)
 
 End Sub
 Public Function UpdateDBIpsValues(ByVal UserIndex As Integer)
