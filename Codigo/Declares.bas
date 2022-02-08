@@ -916,6 +916,7 @@ Public Type t_Hechizo
     '    ItemIndex As Byte
     
     Mimetiza As Byte
+    Sensui As Byte
     
     MinSkill As Integer
     ManaRequerido As Integer

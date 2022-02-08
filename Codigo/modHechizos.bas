@@ -1509,6 +1509,22 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 
         End If
         
+        If Hechizos(h).Sensui = 1 Then
+            If CompararPrivilegiosUser(userindex, tU) < 0 Then
+                Call WriteConsoleMsg(userindex, "No puedes lanzar el hechizo a alguien con más privilegios.", e_FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
+            
+            If UserList(tU).flags.Muerto = 1 Then
+                Exit Sub
+            End If
+            
+           Call InfoHechizo(userindex)
+           Call writeSensuiRetrasado(tU)
+            
+            
+        End If
+        
 188     If Hechizos(h).Mimetiza = 1 Then
 
 190         If UserList(UserIndex).flags.EnReto Then
