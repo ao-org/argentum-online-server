@@ -1,4 +1,20 @@
 Attribute VB_Name = "AO20CryptoSysWrapper"
+' Cryptography module to talk with the Login server.
+'
+'
+' @authors
+' Martin Trionfetti
+' Pablo Marquez - morgolock2002@yahoo.com.ar
+'
+' @version 6.20.0
+'
+'********************* COPYRIGHT NOTICE*********************
+' Copyright (c) 2021-22 Martin Trionfetti, Pablo Marquez
+' www.ao20.com.ar
+' All rights reserved.
+' Refer to licence for conditions of use.
+' This copyright notice must always be left intact.
+'****************** END OF COPYRIGHT NOTICE*****************
 Option Explicit
 
 Public base64_chars(1 To 65) As String

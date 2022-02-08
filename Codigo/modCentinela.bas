@@ -1,4 +1,12 @@
 Attribute VB_Name = "modCentinela"
+'********************* COPYRIGHT NOTICE*********************
+' Copyright (c) 2021-22 Martin Trionfetti, Pablo Marquez
+' www.ao20.com.ar
+' All rights reserved.
+' Refer to licence for conditions of use.
+' This copyright notice must always be left intact.
+'****************** END OF COPYRIGHT NOTICE*****************
+'
 '*****************************************************************
 'modCentinela.bas - ImperiumAO - v1.2
 '
@@ -56,39 +64,6 @@ Public centinelaActivado As Boolean
 
 Public Centinela         As t_Centinela
 
-Public Sub CallUserAttention()
-        
-        On Error GoTo CallUserAttention_Err
-        
-
-        '############################################################
-        'Makes noise and FX to call the user's attention.
-        '############################################################
-100     If (GetTickCount()) - Centinela.spawnTime >= 60000 Then
-102         If Centinela.RevisandoUserIndex <> 0 And centinelaActivado Then
-104             If Not UserList(Centinela.RevisandoUserIndex).flags.CentinelaOK Then
-106                 Call WritePlayWave(Centinela.RevisandoUserIndex, SND_WARP, NpcList(CentinelaNPCIndex).Pos.X, NpcList(CentinelaNPCIndex).Pos.Y)
-108                 Call WriteCreateFX(Centinela.RevisandoUserIndex, NpcList(CentinelaNPCIndex).Char.CharIndex, e_FXIDs.FXWARP, 0)
-                
-                    'Resend the key
-110                 Call CentinelaSendClave(Centinela.RevisandoUserIndex)
-                
-                
-
-                End If
-
-            End If
-
-        End If
-
-        
-        Exit Sub
-
-CallUserAttention_Err:
-112     Call TraceError(Err.Number, Err.Description, "modCentinela.CallUserAttention", Erl)
-
-        
-End Sub
 
 Private Sub GoToNextWorkingChar()
         

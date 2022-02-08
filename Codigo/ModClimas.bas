@@ -1,5 +1,12 @@
 Attribute VB_Name = "ModClimas"
-
+'********************* COPYRIGHT NOTICE*********************
+' Copyright (c) 2021-22 Martin Trionfetti, Pablo Marquez
+' www.ao20.com.ar
+' All rights reserved.
+' Refer to licence for conditions of use.
+' This copyright notice must always be left intact.
+'****************** END OF COPYRIGHT NOTICE*****************
+'
 Public IntensidadDeNubes   As Byte
 
 Public IntensidadDeLluvias As Byte
@@ -34,36 +41,4 @@ ResetMeteo_Err:
 112     Call TraceError(Err.Number, Err.Description, "ModClimas.ResetMeteo", Erl)
 
         
-End Sub
-
-Public Sub Nublar()
-    
-        On Error GoTo Nublar_Err
-    
-
-        Dim ProbabilidadNubes As Long
-
-        'Empezar a nublar
-
-        'send nubes
-        'Intensidad variable
-
-        'iniciar timming de 1 a 3 minutos por si llueve
-        'enviar algun trueno
-
-        'Despues de 3 minutos
-
-        'probabilidad de lluvia
-        'enviar mega trueno y luz
-        'se larga a llover
-        'no llueve
-        'sacar nubes
-
-    
-        Exit Sub
-
-Nublar_Err:
-100     Call TraceError(Err.Number, Err.Description, "ModClimas.Nublar", Erl)
-
-    
 End Sub

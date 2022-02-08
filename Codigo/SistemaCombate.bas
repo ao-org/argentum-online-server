@@ -1,4 +1,12 @@
 Attribute VB_Name = "SistemaCombate"
+'********************* COPYRIGHT NOTICE*********************
+' Copyright (c) 2021-22 Martin Trionfetti, Pablo Marquez
+' www.ao20.com.ar
+' All rights reserved.
+' Refer to licence for conditions of use.
+' This copyright notice must always be left intact.
+'****************** END OF COPYRIGHT NOTICE*****************
+'
 'Argentum Online 0.11.6
 'Copyright (C) 2002 Márquez Pablo Ignacio
 '
@@ -622,7 +630,7 @@ Private Sub UserDañoNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
             ' Apuñalar (le afecta la defensa)
 136         ElseIf PuedeApuñalar(UserIndex) Then
                 ' Si acertó - Doble chance contra NPCs
-138             If RandomNumber(1, 100) <= ProbabilidadApuñalar(userindex) Then
+138             If RandomNumber(1, 100) <= ProbabilidadApuñalar(UserIndex) Then
                     ' Daño del apuñalamiento
 140                 DañoExtra = Daño * 2
                 
