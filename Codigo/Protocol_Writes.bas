@@ -5239,6 +5239,19 @@ writeUpdateShopClienteCredits_Err:
     Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.writeUpdateShopClienteCredits", Erl)
     
 End Sub
+
+Public Sub writeSensuiRetrasado(ByVal userindex As Integer)
+    On Error GoTo writeSensuiRetrasado_Err
+    
+    Call Writer.WriteInt(ServerPacketID.SensuiRetrasado)
+    
+182 Call modSendData.SendData(ToIndex, userindex)
+    
+writeSensuiRetrasado_Err:
+     Call Writer.Clear
+    Call RegistrarError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.writeSensuiRetrasado", Erl)
+    
+End Sub
 Public Sub WriteObjQuestSend(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, ByVal Slot As Byte)
         '<EhHeader>
         On Error GoTo WriteNpcQuestListSend_Err

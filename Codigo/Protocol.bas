@@ -197,6 +197,7 @@ Public Enum ServerPacketID
     Privilegios
     ShopInit
     UpdateShopCliente
+    SensuiRetrasado
     [PacketCount]
 End Enum
 
