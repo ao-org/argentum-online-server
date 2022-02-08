@@ -308,7 +308,7 @@ Sub TirarOro(ByVal Cantidad As Long, ByVal UserIndex As Integer)
         
             ' GM's (excepto Dioses y Admins) no pueden tirar oro
 102         If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Admin Or e_PlayerType.Dios)) = 0 Then
-104             Call LogGM(.Name, " trató de tirar " & PonerPuntos(Cantidad) & " de oro en " & .Pos.Map & "-" & .Pos.X & "-" & .Pos.Y)
+104             Call LogGM(.name, " trató de tirar " & PonerPuntos(Cantidad) & " de oro en " & .Pos.map & "-" & .Pos.x & "-" & .Pos.y)
                 Exit Sub
             End If
          
@@ -745,7 +745,7 @@ Sub PickObj(ByVal UserIndex As Integer)
 124                 If BusquedaTesoroActiva Then
 126                     If UserList(UserIndex).Pos.Map = TesoroNumMapa And UserList(UserIndex).Pos.X = TesoroX And UserList(UserIndex).Pos.Y = TesoroY Then
     
-128                         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos> " & UserList(UserIndex).Name & " encontro el tesoro ¡Felicitaciones!", e_FontTypeNames.FONTTYPE_TALK))
+128                         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos> " & UserList(UserIndex).name & " encontro el tesoro ¡Felicitaciones!", e_FontTypeNames.FONTTYPE_TALK))
 130                         BusquedaTesoroActiva = False
 
                         End If
@@ -754,17 +754,11 @@ Sub PickObj(ByVal UserIndex As Integer)
                 
 132                 If BusquedaRegaloActiva Then
 134                     If UserList(UserIndex).Pos.Map = RegaloNumMapa And UserList(UserIndex).Pos.X = RegaloX And UserList(UserIndex).Pos.Y = RegaloY Then
-136                         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos> " & UserList(UserIndex).Name & " fue el valiente que encontro el gran item magico ¡Felicitaciones!", e_FontTypeNames.FONTTYPE_TALK))
+136                         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos> " & UserList(UserIndex).name & " fue el valiente que encontro el gran item magico ¡Felicitaciones!", e_FontTypeNames.FONTTYPE_TALK))
 138                         BusquedaRegaloActiva = False
 
                         End If
 
-                    End If
-                
-                    'Log de Objetos que se agarran del piso. Pablo (ToxicWaste) 07/09/07
-                    'Es un Objeto que tenemos que loguear?
-140                 If ObjData(MiObj.ObjIndex).Log = 1 Then
-142                     Call LogDesarrollo(UserList(UserIndex).Name & " juntó del piso " & MiObj.amount & " " & ObjData(MiObj.ObjIndex).Name)
                     End If
                 
                 End If
