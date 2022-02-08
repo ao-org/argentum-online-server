@@ -88,6 +88,7 @@ Module=basCryptoSys; Codigo\basCryptoSys.bas
 Module=ModShopAO20; Codigo\ModShopAO20.bas
 Module=UnitTesting; Codigo\UnitTesting.bas
 Module=Logging; Codigo\Logging.bas
+Class=Instruments; Codigo\Instrumentation.cls
 IconForm="frmMain"
 Startup="Sub Main"
 HelpFile=""

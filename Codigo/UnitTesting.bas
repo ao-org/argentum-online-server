@@ -10,6 +10,8 @@ Attribute VB_Name = "UnitTesting"
 Option Explicit
 
 
+
+
 Sub test_make_user(ByVal userindex As Integer, ByVal map As Integer, ByVal x As Integer, ByVal y As Integer)
 UserList(userindex).Pos.map = map
 UserList(userindex).Pos.x = x
@@ -17,7 +19,24 @@ UserList(userindex).Pos.y = y
 Call MakeUserChar(True, 17, userindex, map, x, y, 1)
 End Sub
 
-Function TestMakeUserChar() As Boolean
+Function test_percentage() As Boolean
+Dim sw As Instruments
+Set sw = New Instruments
+sw.start
+Debug.Assert (Porcentaje(100#, 1#) = 1)
+Debug.Assert (Porcentaje(100#, 2#) = 2)
+Debug.Assert (Porcentaje(100#, 5#) = 5)
+Debug.Assert (Porcentaje(100#, 10#) = 10)
+Debug.Assert (Porcentaje(100#, 100#) = 100)
+Debug.Print "Porcentaje took " & sw.ElapsedMilliseconds; " ms"
+test_percentage = True
+End Function
+
+Function test_maths() As Boolean
+test_maths = test_percentage()
+End Function
+
+Function test_make_user_char() As Boolean
 
 'Create first User
 Call test_make_user(1, 1, 54, 51)
@@ -69,13 +88,15 @@ Debug.Assert (UserList(1).Char.CharIndex = 1)
 Call test_make_user(1, 1, 68, 66)
 Debug.Assert (MapData(1, 68, 66).userindex = 1)
 Debug.Assert (UserList(1).Char.CharIndex <> 0)
-TestMakeUserChar = True
+test_make_user_char = True
 End Function
 
-Function TestSuite() As Boolean
+Function test_suite() As Boolean
 
+Dim result As Boolean
 
-TestSuite = TestMakeUserChar()
-
+result = test_make_user_char()
+result = result And test_maths()
+test_suite = result
 End Function
 
