@@ -54,7 +54,7 @@ Public Function ConnectUser_Check(ByVal UserIndex As Integer, _
         ConnectUser_Check = False
         
         If .flags.UserLogged Then
-            Call LogCheating("El usuario " & .Name & " ha intentado loguear a " & Name & " desde la IP " & .IP)
+            Call LogSecurity("El usuario " & .name & " ha intentado loguear a " & name & " desde la IP " & .IP)
             'Kick player ( and leave character inside :D )!
             Call CloseSocketSL(UserIndex)
             Call Cerrar_Usuario(UserIndex)
@@ -143,8 +143,8 @@ Public Function ConnectUser_Check(ByVal UserIndex As Integer, _
         
         If EsGM(UserIndex) Then
 
-            Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » " & Name & " se conecto al juego.", e_FontTypeNames.FONTTYPE_INFOBOLD))
-            Call LogGM(.Name, "Se conectó con IP: " & .IP)
+            Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » " & name & " se conecto al juego.", e_FontTypeNames.FONTTYPE_INFOBOLD))
+            Call LogGM(.name, "Se conectó con IP: " & .IP)
 
         Else
 
@@ -701,10 +701,10 @@ Public Function ConnectUser_Complete(ByVal UserIndex As Integer, _
 1120        Call WriteLoggedMessage(UserIndex)
         
 1125        If .Stats.ELV = 1 Then
-1130            Call WriteConsoleMsg(UserIndex, "¡Bienvenido a las tierras de AO20! ¡" & .Name & " que tengas buen viaje y mucha suerte!", e_FontTypeNames.FONTTYPE_GUILD)
+1130            Call WriteConsoleMsg(UserIndex, "¡Bienvenido a las tierras de AO20! ¡" & .name & " que tengas buen viaje y mucha suerte!", e_FontTypeNames.FONTTYPE_GUILD)
 
 1135        ElseIf .Stats.ELV < 14 Then
-1140            Call WriteConsoleMsg(UserIndex, "¡Bienvenido de nuevo " & .Name & "! Actualmente estas en el nivel " & .Stats.ELV & " en " & DarNameMapa(.Pos.Map) & ", ¡buen viaje y mucha suerte!", e_FontTypeNames.FONTTYPE_GUILD)
+1140            Call WriteConsoleMsg(UserIndex, "¡Bienvenido de nuevo " & .name & "! Actualmente estas en el nivel " & .Stats.ELV & " en " & DarNameMapa(.Pos.map) & ", ¡buen viaje y mucha suerte!", e_FontTypeNames.FONTTYPE_GUILD)
 
              End If
 
@@ -1277,8 +1277,6 @@ Sub CheckUserLevel(ByVal UserIndex As Integer)
 
 170             PasoDeNivel = True
              
-                ' Call LogDesarrollo(.name & " paso a nivel " & .Stats.ELV & " gano HP: " & AumentoHP)
-
 172             .Stats.MinHp = .Stats.MaxHp
             
                 ' Call UpdateUserInv(True, UserIndex, 0)

@@ -32,8 +32,6 @@ Public Sub LogThis(nErrNo As Long, sLogMsg As String, EventType As LogEventTypeC
     Call ReportEvent(hEvent, EventType, 0, nErrNo, 0, 1, Len(sLogMsg), sLogMsg, 0)
 End Sub
 
-
-
 Public Sub LogearEventoDeSubasta(s As String)
 On Error GoTo ErrHandler
         Call LogThis(0, "[Subastas.log] " & s, vbLogEventTypeInformation)
@@ -42,20 +40,12 @@ ErrHandler:
 End Sub
 
 Sub LogBan(ByVal BannedIndex As Integer, ByVal userindex As Integer, ByVal Motivo As String)
-        On Error GoTo LogBan_Err
-100     Call WriteVar(App.Path & "\logs\" & "BanDetail.log", UserList(BannedIndex).Name, "BannedBy", UserList(userindex).Name)
-102     Call WriteVar(App.Path & "\logs\" & "BanDetail.log", UserList(BannedIndex).Name, "Reason", Motivo)
-        'Log interno del servidor, lo usa para hacer un UNBAN general de toda la gente banned
-        Dim mifile As Integer
-104     mifile = FreeFile
-106     Open App.Path & "\logs\GenteBanned.log" For Append Shared As #mifile
-108     Print #mifile, UserList(BannedIndex).Name
-110     Close #mifile
+On Error GoTo ErrHandler
+        Dim s As String
+        s = UserList(BannedIndex).name & " BannedBy " & UserList(UserIndex).name & " Reason " & Motivo
+        Call LogThis(0, "[Bans] " & s, vbLogEventTypeInformation)
         Exit Sub
-LogBan_Err:
-112     Call TraceError(Err.Number, Err.Description, "ES.LogBan", Erl)
-
-        
+ErrHandler:
 End Sub
 
 
@@ -138,174 +128,53 @@ ErrHandler:
 End Sub
 
 Public Sub LogPerformance(Desc As String)
-
-100     Dim nfile As Integer: nfile = FreeFile ' obtenemos un canal
-    
-102     Open App.Path & "\logs\Performance.log" For Append Shared As #nfile
-104         Print #nfile, Date & " " & Time & " " & Desc
-106     Close #nfile
-
+On Error GoTo ErrHandler
+        Call LogThis(0, "[Performance.log] " & desc, vbLogEventTypeInformation)
         Exit Sub
-
+ErrHandler:
 End Sub
 
 Public Sub LogConsulta(Desc As String)
-
-        On Error GoTo ErrHandler
-
-        Dim nfile As Integer
-
-100     nfile = FreeFile ' obtenemos un canal
-102     Open App.Path & "\logs\ConsultasGM.log" For Append Shared As #nfile
-104     Print #nfile, Date & " - " & Time & " - " & Desc
-106     Close #nfile
-
+On Error GoTo ErrHandler
+        Call LogThis(0, "[obtenemos.log] " & desc, vbLogEventTypeInformation)
         Exit Sub
-
 ErrHandler:
-
 End Sub
 
 Public Sub LogClanes(ByVal str As String)
-        
-        On Error GoTo LogClanes_Err
-        
-
-        Dim nfile As Integer
-
-100     nfile = FreeFile ' obtenemos un canal
-102     Open App.Path & "\logs\clanes.log" For Append Shared As #nfile
-104     Print #nfile, Date & " " & Time & " " & str
-106     Close #nfile
-
-        
+On Error GoTo ErrHandler
+        Call LogThis(0, "[Clans.log] " & str, vbLogEventTypeInformation)
         Exit Sub
-
-LogClanes_Err:
-108     Call TraceError(Err.Number, Err.Description, "General.LogClanes", Erl)
-
-        
-End Sub
-
-
-Public Sub LogDesarrollo(ByVal str As String)
-        
-        On Error GoTo LogDesarrollo_Err
-        
-
-        Dim nfile As Integer
-
-100     nfile = FreeFile ' obtenemos un canal
-102     Open App.Path & "\logs\desarrollo" & Month(Date) & Year(Date) & ".log" For Append Shared As #nfile
-104     Print #nfile, Date & " " & Time & " " & str
-106     Close #nfile
-
-        
-        Exit Sub
-
-LogDesarrollo_Err:
-108     Call TraceError(Err.Number, Err.Description, "General.LogDesarrollo", Erl)
-
-        
-End Sub
-
-Public Sub LogGM(nombre As String, texto As String)
-
-        On Error GoTo ErrHandler
-
-        Dim nfile As Integer
-
-100     nfile = FreeFile ' obtenemos un canal
-        'Guardamos todo en el mismo lugar. Pablo (ToxicWaste) 18/05/07
-102     Open App.Path & "\logs\" & nombre & ".log" For Append Shared As #nfile
-104     Print #nfile, Date & " " & Time & " " & texto
-106     Close #nfile
-
-        Exit Sub
-
 ErrHandler:
+End Sub
 
+Public Sub LogGM(name As String, desc As String)
+On Error GoTo ErrHandler
+        Call LogThis(0, "[" & name & "] " & desc, vbLogEventTypeInformation)
+        Exit Sub
+ErrHandler:
 End Sub
 
 Public Sub LogPremios(GM As String, UserName As String, ByVal ObjIndex As Integer, ByVal Cantidad As Integer, Motivo As String)
-
-        On Error GoTo ErrHandler
-
-        Dim nfile As Integer
-
-100     nfile = FreeFile ' obtenemos un canal
-
-102     Open App.Path & "\logs\PremiosOtorgados.log" For Append Shared As #nfile
-104     Print #nfile, "[" & GM & "]" & vbNewLine
-106     Print #nfile, Date & " " & Time & vbNewLine
-108     Print #nfile, "Item: " & ObjData(ObjIndex).Name & " (" & ObjIndex & ") Cantidad: " & Cantidad & vbNewLine
-110     Print #nfile, "Motivo: " & Motivo & vbNewLine & vbNewLine
-112     Close #nfile
-
+On Error GoTo ErrHandler
+        Dim s As String
+        s = "Item: " & ObjData(ObjIndex).name & " (" & ObjIndex & ") Cantidad: " & Cantidad & vbNewLine _
+        & "Motivo: " & Motivo & vbNewLine & vbNewLine
+        Call LogThis(0, s, vbLogEventTypeInformation)
         Exit Sub
-
 ErrHandler:
-
 End Sub
 
 Public Sub LogDatabaseError(Desc As String)
-        '***************************************************
-        'Author: Juan Andres Dalmasso (CHOTS)
-        'Last Modification: 09/10/2018
-        '***************************************************
-
-        On Error GoTo ErrHandler
-
-        Dim nfile As Integer
-
-100     nfile = FreeFile ' obtenemos un canal
-    
-102     Open App.Path & "\logs\Database.log" For Append Shared As #nfile
-104     Print #nfile, Date & " " & Time & " - " & Desc
-106     Close #nfile
-     
-108     Debug.Print "Error en la BD: " & Desc & vbNewLine & _
-            "Fecha y Hora: " & Date$ & "-" & Time$ & vbNewLine
-            
+On Error GoTo ErrHandler
+        Call LogThis(0, "[Database.log] " & desc, vbLogEventTypeError)
         Exit Sub
-    
 ErrHandler:
-
 End Sub
 
-Public Sub LogHackAttemp(texto As String)
-
-        On Error GoTo ErrHandler
-
-        Dim nfile As Integer
-
-100     nfile = FreeFile ' obtenemos un canal
-102     Open App.Path & "\logs\HackAttemps.log" For Append Shared As #nfile
-104     Print #nfile, "----------------------------------------------------------"
-106     Print #nfile, Date & " " & Time & " " & texto
-108     Print #nfile, "----------------------------------------------------------"
-110     Close #nfile
-
+Public Sub LogSecurity(str As String)
+On Error GoTo ErrHandler
+        Call LogThis(0, "[Cheating.log] " & str, vbLogEventTypeWarning)
         Exit Sub
-
 ErrHandler:
-
 End Sub
-
-Public Sub LogCheating(texto As String)
-
-        On Error GoTo ErrHandler
-
-        Dim nfile As Integer
-
-100     nfile = FreeFile ' obtenemos un canal
-102     Open App.Path & "\logs\CH.log" For Append Shared As #nfile
-104     Print #nfile, Date & " " & Time & " " & texto
-106     Close #nfile
-
-        Exit Sub
-
-ErrHandler:
-
-End Sub
-

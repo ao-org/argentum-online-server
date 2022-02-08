@@ -459,7 +459,7 @@ Function ConnectNewUser(ByVal UserIndex As Integer, ByRef Name As String, ByVal 
             Dim LoopC As Long
         
 102         If .flags.UserLogged Then
-104             Call LogCheating("El usuario " & .Name & " ha intentado crear a " & Name & " desde la IP " & .IP)
+104             Call LogSecurity("El usuario " & .name & " ha intentado crear a " & name & " desde la IP " & .IP)
 106             Call CloseSocketSL(UserIndex)
 108             Call Cerrar_Usuario(UserIndex)
                 Exit Function
