@@ -39,8 +39,51 @@ Debug.Print "Porcentaje took " & sw.ElapsedMilliseconds; " ms"
 test_percentage = True
 End Function
 
+Function test_distance() As Boolean
+Dim sw As Instruments
+Set sw = New Instruments
+sw.start
+Debug.Assert Distance(0, 0, 0, 0) = 0
+Dim i As Integer
+For i = 1 To 100
+        Debug.Assert Distance(i, 0, 0, 0) = i
+Next i
+For i = 1 To 1000
+       Debug.Assert Distance(i, 0, -i, 0) = i + i
+Next i
+Debug.Print "distace took " & sw.ElapsedMilliseconds; " ms"
+test_distance = True
+End Function
+
+
+Function test_random_number() As Boolean
+
+Dim sw As Instruments
+Set sw = New Instruments
+sw.start
+
+Debug.Assert RandomNumber(0, 0) = 0
+Debug.Assert RandomNumber(-1, -1) = -1
+Debug.Assert RandomNumber(1, 1) = 1
+Dim i As Integer
+Dim n As Integer
+For i = 1 To 1000
+      n = RandomNumber(0, i)
+      Debug.Assert n >= 0 And n <= i
+Next i
+For i = 1 To 1000
+      n = RandomNumber(-i, 0)
+      Debug.Assert n >= -i And n <= 0
+Next i
+
+Debug.Print "random_bumber took " & sw.ElapsedMilliseconds; " ms"
+test_random_number = True
+
+End Function
+
+
 Function test_maths() As Boolean
-test_maths = test_percentage()
+test_maths = test_percentage() And test_random_number() And test_distance()
 End Function
 
 Function test_make_user_char() As Boolean
