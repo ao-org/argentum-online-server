@@ -3117,8 +3117,6 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 
             'Muere
 464         If UserList(tempChr).Stats.MinHp < 1 Then
-                'Store it!
-466             Call Statistics.StoreFrag(UserIndex, tempChr)
 468             Call ContarMuerte(tempChr, UserIndex)
 470             Call ActStats(tempChr, UserIndex)
             Else
@@ -3525,9 +3523,6 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean)
 
             'Muere
 328         If UserList(tempChr).Stats.MinHp < 1 Then
-                'Store it!
-330             Call Statistics.StoreFrag(UserIndex, tempChr)
-        
 332             Call ContarMuerte(tempChr, UserIndex)
 334             Call ActStats(tempChr, UserIndex)
             End If
@@ -4288,9 +4283,6 @@ Private Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, X As Byte, Y 
                 
                 'Muere
 222             If UserList(NpcIndex).Stats.MinHp < 1 Then
-                    'Store it!
-224                 Call Statistics.StoreFrag(UserIndex, NpcIndex)
-                        
 226                 Call ContarMuerte(NpcIndex, UserIndex)
 228                 Call ActStats(NpcIndex, UserIndex)
                 End If
