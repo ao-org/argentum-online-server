@@ -1350,7 +1350,7 @@ Public Sub EfectoParalisisUser(ByVal UserIndex As Integer)
 104             .flags.Paralizado = 0
     
                 If .clase = e_Class.Warrior Or .clase = e_Class.Hunter Or .clase = e_Class.Thief Or .clase = e_Class.Pirat Then
-                    .Counters.TiempoDeInmunidadParalisisNoMagicas = 4
+                    .Counters.TiempoDeInmunidadParalisisNoMagicas = 3
                 End If
                 'UserList(UserIndex).Flags.AdministrativeParalisis = 0
 106             Call WriteParalizeOK(UserIndex)
@@ -1420,7 +1420,7 @@ Public Sub EfectoInmoUser(ByVal UserIndex As Integer)
 104             .flags.Inmovilizado = 0
 
                 If .clase = e_Class.Warrior Or .clase = e_Class.Hunter Or .clase = e_Class.Thief Or .clase = e_Class.Pirat Then
-                    .Counters.TiempoDeInmunidadParalisisNoMagicas = 4
+                    .Counters.TiempoDeInmunidadParalisisNoMagicas = 3
                 End If
 106             Call WriteInmovilizaOK(UserIndex)
     
