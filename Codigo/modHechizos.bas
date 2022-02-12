@@ -941,7 +941,7 @@ Private Sub HechizoSobreArea(ByVal UserIndex As Integer, ByRef b As Boolean)
 1114                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFXWithDestinoXY(UserList(UserIndex).Char.CharIndex, Hechizos(h).ParticleViaje, Hechizos(h).FXgrh, 1, Hechizos(h).wav, 1, X, Y))
                                 
                             Else
-1116                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageFxPiso(Hechizos(h).FXgrh, X, Y))
+1116                             Call SendData(SendTarget.ToPCArea, userindex, PrepareMessageFxPiso(Hechizos(h).FXgrh, UserList(TargetMap.userindex).Pos.X, UserList(TargetMap.userindex).Pos.y))
                 
                             End If
                 
@@ -960,7 +960,7 @@ Private Sub HechizoSobreArea(ByVal UserIndex As Integer, ByRef b As Boolean)
 11114                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFXWithDestinoXY(UserList(UserIndex).Char.CharIndex, Hechizos(h).ParticleViaje, Hechizos(h).FXgrh, 1, Hechizos(h).wav, 1, X, Y))
                                 
                             Else
-11116                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageFxPiso(Hechizos(h).FXgrh, X + PosCasteadaX - CInt(Hechizos(h).AreaRadio / 2), Y + PosCasteadaY - CInt(Hechizos(h).AreaRadio / 2)))
+11116                             Call SendData(SendTarget.ToPCArea, userindex, PrepareMessageFxPiso(Hechizos(h).FXgrh, NpcList(TargetMap.NpcIndex).Pos.X, NpcList(TargetMap.NpcIndex).Pos.y))
                 
                             End If
                 
