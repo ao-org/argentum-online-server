@@ -1800,7 +1800,11 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 438         Call InfoHechizo(UserIndex)
 440         b = True
             
-442         UserList(tU).Counters.Paralisis = Hechizos(h).Duration
+            If UserList(tU).clase = Warrior Or UserList(tU).clase = hunter Then
+                UserList(tU).Counters.Paralisis = Hechizos(h).Duration * 0.7
+            Else
+                UserList(tU).Counters.Paralisis = Hechizos(h).Duration
+            End If
 
 444         If UserList(tU).flags.Paralizado = 0 Then
 446             UserList(tU).flags.Paralizado = 1
@@ -1906,7 +1910,11 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 522         Call InfoHechizo(UserIndex)
 524         b = True
             
-526         UserList(tU).Counters.Inmovilizado = Hechizos(h).Duration
+            If UserList(tU).clase = Warrior Or UserList(tU).clase = hunter Then
+                UserList(tU).Counters.Inmovilizado = Hechizos(h).Duration * 0.7
+            Else
+                UserList(tU).Counters.Inmovilizado = Hechizos(h).Duration
+            End If
 
 528         UserList(tU).flags.Inmovilizado = 1
             
