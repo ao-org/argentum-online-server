@@ -18,32 +18,6 @@ Private Type UltimoError
     ErrorCode As Long
 End Type: Private HistorialError As UltimoError
 
-Public Sub TraceError(ByVal Numero As Long, ByVal Descripcion As String, ByVal Componente As String, Optional ByVal Linea As Integer)
-'**********************************************************
-'Author: Jopi
-'**********************************************************
-        
-    On Error GoTo TraceError_Err
-    
-    'Registramos el error en Trace.log
-    Dim File As Integer: File = FreeFile
-        
-    Open App.Path & "\logs\Errores\Trace.log" For Append As #File
-    
-        Print #File, "Response Code: " & Numero
-        Print #File, "Response Error Description: " & Descripcion
-        Print #File, "Response Contents: " & Componente
-        Print #File, "Fecha y Hora: " & Date$ & "-" & Time$
-        
-        Print #File, vbNewLine
-    Close #File
-
-    Exit Sub
-
-TraceError_Err:
-    Close #File
-        
-End Sub
 
 Public Sub RegistrarError(ByVal Numero As Long, ByVal Descripcion As String, ByVal Componente As String, Optional ByVal Linea As Integer)
 '**********************************************************
@@ -114,39 +88,6 @@ Public Sub RegistrarError(ByVal Numero As Long, ByVal Descripcion As String, ByV
     Exit Sub
     
 RegistrarError_Err:
-    Close #File
-        
-End Sub
-
-Public Sub TraceErrorAPI(ByVal ResponseCode As Long, ByVal ResponseErrorDesc As String, ByVal ResponseText As String)
-'**********************************************************
-'Author: Jopi
-'**********************************************************
-        
-    On Error GoTo TraceError_Err
-    
-    'Registramos el error en Errores.log
-    Dim File As Integer: File = FreeFile
-        
-    Open App.Path & "\logs\Errores\API.log" For Append As #File
-    
-        Print #File, "Response Code: " & ResponseCode
-        Print #File, "Response Error Description: " & ResponseErrorDesc
-        Print #File, "Response Contents: " & ResponseText
-        Print #File, "Fecha y Hora: " & Date$ & "-" & Time$
-        
-        Print #File, vbNullString
-        
-    Close #File
-    
-    Debug.Print "Response Code: " & ResponseCode & vbNewLine & _
-                "Response Error Description: " & ResponseErrorDesc & vbNewLine & _
-                "Response Contents: " & ResponseText & vbNewLine & _
-                "Fecha y Hora: " & Date$ & "-" & Time$ & vbNewLine
-        
-    Exit Sub
-
-TraceError_Err:
     Close #File
         
 End Sub
