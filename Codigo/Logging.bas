@@ -178,3 +178,11 @@ On Error GoTo ErrHandler
         Exit Sub
 ErrHandler:
 End Sub
+
+Public Sub TraceError(ByVal Numero As Long, ByVal Descripcion As String, ByVal Componente As String, Optional ByVal Linea As Integer)
+On Error GoTo ErrHandler
+ Dim s As String
+ s = "Response Code: " & Numero & " Response Error Description: " & Descripcion & " Response Contents: " & Componente
+ Call LogThis(0, "[Trace.log] " & s, vbLogEventTypeError)
+ErrHandler:
+End Sub
