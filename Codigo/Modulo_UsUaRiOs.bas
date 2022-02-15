@@ -2124,7 +2124,7 @@ Sub UserDie(ByVal UserIndex As Integer)
         Exit Sub
 
 ErrorHandler:
-238        Call RegistrarError(Err.Number, Err.Description, "UsUaRiOs.UserDie", Erl)
+238        Call TraceError(Err.Number, Err.Description, "UsUaRiOs.UserDie", Erl)
 
 End Sub
 
@@ -2577,7 +2577,7 @@ Sub VolverCriminal(ByVal UserIndex As Integer)
    
 106         If .Faccion.ArmadaReal = 1 Then
                 ' WyroX: NUNCA debería pasar, pero dejo un log por si las...
-                Call RegistrarError(111, "Un personaje de la Armada Real atacó un ciudadano.", "UsUaRiOs.VolverCriminal")
+                Call TraceError(111, "Un personaje de la Armada Real atacó un ciudadano.", "UsUaRiOs.VolverCriminal")
                 'Call ExpulsarFaccionReal(UserIndex)
             End If
 

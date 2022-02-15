@@ -106,7 +106,7 @@ Private Sub Command1_Click()
 100     tIndex = NameIndex(cboPjs.Text)
 
 102     If tIndex > 0 Then
-104         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor » " & UserList(tIndex).Name & " ha sido hechado. ", e_FontTypeNames.FONTTYPE_SERVER))
+104         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor » " & UserList(tIndex).name & " ha sido hechado. ", e_FontTypeNames.FONTTYPE_SERVER))
 106         Call CloseSocket(tIndex)
 
         End If
@@ -115,7 +115,7 @@ Private Sub Command1_Click()
         Exit Sub
 
 Command1_Click_Err:
-108     Call RegistrarError(Err.Number, Err.Description, "frmAdmin.Command1_Click", Erl)
+108     Call TraceError(Err.Number, Err.Description, "frmAdmin.Command1_Click", Erl)
 110
         
 End Sub
@@ -149,7 +149,7 @@ Public Sub ActualizaListaPjs()
         Exit Sub
 
 ActualizaListaPjs_Err:
-116     Call RegistrarError(Err.Number, Err.Description, "frmAdmin.ActualizaListaPjs", Erl)
+116     Call TraceError(Err.Number, Err.Description, "frmAdmin.ActualizaListaPjs", Erl)
 118
         
 End Sub
@@ -164,7 +164,7 @@ Private Sub Command3_Click()
         Exit Sub
 
 Command3_Click_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "frmAdmin.Command3_Click", Erl)
+102     Call TraceError(Err.Number, Err.Description, "frmAdmin.Command3_Click", Erl)
 104
         
 End Sub

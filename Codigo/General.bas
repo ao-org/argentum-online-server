@@ -793,7 +793,7 @@ Sub Main()
         Exit Sub
         
 Handler:
-334     Call RegistrarError(Err.Number, Err.Description, "General.Main", Erl)
+334     Call TraceError(Err.Number, Err.Description, "General.Main", Erl)
 
 
 End Sub
@@ -2341,10 +2341,6 @@ Tilde_Err:
 End Function
 
 Public Sub CerrarServidor()
-        
-        ' Force-dump logs
-        Call frmServidor.cmdDumpLogs_Click
-        
         'Save stats!!!
 102     Call frmMain.QuitarIconoSystray
     

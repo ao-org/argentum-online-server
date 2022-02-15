@@ -94,7 +94,7 @@ On Error GoTo OnServerConnect_Err:
     
 OnServerConnect_Err:
     Call Kick(Connection)
-    Call RegistrarError(Err.Number, Err.Description, "modNetwork.OnServerConnect", Erl)
+    Call TraceError(Err.Number, Err.Description, "modNetwork.OnServerConnect", Erl)
 End Sub
 
 Private Sub OnServerClose(ByVal Connection As Long)
@@ -117,7 +117,7 @@ On Error GoTo OnServerClose_Err:
     Exit Sub
     
 OnServerClose_Err:
-    Call RegistrarError(Err.Number, Err.Description, "modNetwork.OnServerClose", Erl)
+    Call TraceError(Err.Number, Err.Description, "modNetwork.OnServerClose", Erl)
 End Sub
 
 Private Sub OnServerSend(ByVal Connection As Long, ByVal Message As Network.Reader)
@@ -127,7 +127,7 @@ On Error GoTo OnServerSend_Err:
     
 OnServerSend_Err:
     Call Kick(Connection)
-    Call RegistrarError(Err.Number, Err.Description, "modNetwork.OnServerSend", Erl)
+    Call TraceError(Err.Number, Err.Description, "modNetwork.OnServerSend", Erl)
 End Sub
 
 Private Sub OnServerRecv(ByVal Connection As Long, ByVal Message As Network.Reader)
@@ -139,6 +139,6 @@ On Error GoTo OnServerRecv_Err:
     
 OnServerRecv_Err:
     Call Kick(Connection)
-    Call RegistrarError(Err.Number, Err.Description, "modNetwork.OnServerRecv", Erl)
+    Call TraceError(Err.Number, Err.Description, "modNetwork.OnServerRecv", Erl)
 End Sub
 
