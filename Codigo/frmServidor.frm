@@ -543,29 +543,6 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-Public Sub cmdDumpLogs_Click()
-        On Error GoTo cmdDumpLogs_Err:
-        
-        If LogsBuffer Is Nothing Then Exit Sub
-100     If LogsBuffer.ByteLength = 0 Then Exit Sub
-    
-102     Dim File As Integer: File = FreeFile
-        
-        ' Metemos todo en el archivo .log
-104     Open App.Path & "\logs\Errores\General.log" For Append As #File
-106         Print #File, LogsBuffer.ToString
-108     Close #File
-    
-        ' Limpiamos el buffer
-110     Call LogsBuffer.Clear
-    
-        Exit Sub
-    
-cmdDumpLogs_Err:
-112     Close #File
-114     Call RegistrarError(Err.Number, Err.Description, "frmServidor.cmdDumpLogs_Click", Erl)
-    
-End Sub
 
 Private Sub cmdReloadGuilds_Click()
     Call modGuilds.LoadGuildsDB
@@ -583,7 +560,7 @@ Private Sub Command1_Click()
         Exit Sub
 
 Command1_Click_Err:
-106     Call RegistrarError(Err.Number, Err.Description, "frmServidor.Command1_Click", Erl)
+106     Call TraceError(Err.Number, Err.Description, "frmServidor.Command1_Click", Erl)
 
         
 End Sub
@@ -598,7 +575,7 @@ Private Sub Command10_Click()
         Exit Sub
 
 Command10_Click_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "frmServidor.Command10_Click", Erl)
+102     Call TraceError(Err.Number, Err.Description, "frmServidor.Command10_Click", Erl)
 
         
 End Sub
@@ -613,7 +590,7 @@ Private Sub Command12_Click()
         Exit Sub
 
 Command12_Click_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "frmServidor.Command12_Click", Erl)
+102     Call TraceError(Err.Number, Err.Description, "frmServidor.Command12_Click", Erl)
 
         
 End Sub
@@ -628,7 +605,7 @@ Private Sub Command14_Click()
         Exit Sub
 
 Command14_Click_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "frmServidor.Command14_Click", Erl)
+102     Call TraceError(Err.Number, Err.Description, "frmServidor.Command14_Click", Erl)
 
         
 End Sub
@@ -677,7 +654,7 @@ Private Sub Command15_Click()
         Exit Sub
 
 Command15_Click_Err:
-126     Call RegistrarError(Err.Number, Err.Description, "frmServidor.Command15_Click", Erl)
+126     Call TraceError(Err.Number, Err.Description, "frmServidor.Command15_Click", Erl)
 
         
 End Sub
@@ -694,7 +671,7 @@ Private Sub Command16_Click()
         Exit Sub
 
 Command16_Click_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "frmServidor.Command16_Click", Erl)
+102     Call TraceError(Err.Number, Err.Description, "frmServidor.Command16_Click", Erl)
 
         
 End Sub
@@ -709,7 +686,7 @@ Private Sub Command17_Click()
         Exit Sub
 
 Command17_Click_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "frmServidor.Command17_Click", Erl)
+102     Call TraceError(Err.Number, Err.Description, "frmServidor.Command17_Click", Erl)
 
         
 End Sub
@@ -727,7 +704,7 @@ Private Sub Command18_Click()
         Exit Sub
 
 Command18_Click_Err:
-108     Call RegistrarError(Err.Number, Err.Description, "frmServidor.Command18_Click", Erl)
+108     Call TraceError(Err.Number, Err.Description, "frmServidor.Command18_Click", Erl)
 
         
 End Sub
@@ -759,7 +736,7 @@ Private Sub Command19_Click()
         Exit Sub
 
 Command19_Click_Err:
-114     Call RegistrarError(Err.Number, Err.Description, "frmServidor.Command19_Click", Erl)
+114     Call TraceError(Err.Number, Err.Description, "frmServidor.Command19_Click", Erl)
 
         
 End Sub
@@ -774,7 +751,7 @@ Private Sub Command2_Click()
         Exit Sub
 
 Command2_Click_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "frmServidor.Command2_Click", Erl)
+102     Call TraceError(Err.Number, Err.Description, "frmServidor.Command2_Click", Erl)
 
         
 End Sub
@@ -799,7 +776,7 @@ Private Sub Command20_Click()
         Exit Sub
 
 Command20_Click_Err:
-108     Call RegistrarError(Err.Number, Err.Description, "frmServidor.Command20_Click", Erl)
+108     Call TraceError(Err.Number, Err.Description, "frmServidor.Command20_Click", Erl)
 
         
 End Sub
@@ -825,7 +802,7 @@ Private Sub Command21_Click()
         Exit Sub
 
 Command21_Click_Err:
-114     Call RegistrarError(Err.Number, Err.Description, "frmServidor.Command21_Click", Erl)
+114     Call TraceError(Err.Number, Err.Description, "frmServidor.Command21_Click", Erl)
 
         
 End Sub
@@ -841,7 +818,7 @@ Private Sub Command22_Click()
         Exit Sub
 
 Command22_Click_Err:
-104     Call RegistrarError(Err.Number, Err.Description, "frmServidor.Command22_Click", Erl)
+104     Call TraceError(Err.Number, Err.Description, "frmServidor.Command22_Click", Erl)
 
         
 End Sub
@@ -871,7 +848,7 @@ Private Sub Command23_Click()
         Exit Sub
 
 Command23_Click_Err:
-110     Call RegistrarError(Err.Number, Err.Description, "frmServidor.Command23_Click", Erl)
+110     Call TraceError(Err.Number, Err.Description, "frmServidor.Command23_Click", Erl)
 
         
 End Sub
@@ -886,7 +863,7 @@ Private Sub Command27_Click()
         Exit Sub
 
 Command27_Click_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "frmServidor.Command27_Click", Erl)
+102     Call TraceError(Err.Number, Err.Description, "frmServidor.Command27_Click", Erl)
 
         
 End Sub
@@ -901,7 +878,7 @@ Private Sub Command28_Click()
         Exit Sub
 
 Command28_Click_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "frmServidor.Command28_Click", Erl)
+102     Call TraceError(Err.Number, Err.Description, "frmServidor.Command28_Click", Erl)
 
         
 End Sub
@@ -921,7 +898,7 @@ Private Sub Command3_Click()
         Exit Sub
 
 Command3_Click_Err:
-106     Call RegistrarError(Err.Number, Err.Description, "frmServidor.Command3_Click", Erl)
+106     Call TraceError(Err.Number, Err.Description, "frmServidor.Command3_Click", Erl)
 
         
 End Sub
@@ -938,7 +915,7 @@ Private Sub Command4_Click()
 
         Exit Sub
 eh:
-110     Call RegistrarError(Err.Number, Err.Description, "frmServidor.Command4_Click", Erl)
+110     Call TraceError(Err.Number, Err.Description, "frmServidor.Command4_Click", Erl)
 
 End Sub
 
@@ -991,7 +968,7 @@ Private Sub Command5_Click()
         Exit Sub
 
 Command5_Click_Err:
-144     Call RegistrarError(Err.Number, Err.Description, "frmServidor.Command5_Click", Erl)
+144     Call TraceError(Err.Number, Err.Description, "frmServidor.Command5_Click", Erl)
 
         
 End Sub
@@ -1006,7 +983,7 @@ Private Sub Command6_Click()
         Exit Sub
 
 Command6_Click_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "frmServidor.Command6_Click", Erl)
+102     Call TraceError(Err.Number, Err.Description, "frmServidor.Command6_Click", Erl)
 
         
 End Sub
@@ -1021,7 +998,7 @@ Private Sub Command7_Click()
         Exit Sub
 
 Command7_Click_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "frmServidor.Command7_Click", Erl)
+102     Call TraceError(Err.Number, Err.Description, "frmServidor.Command7_Click", Erl)
 
         
 End Sub
@@ -1036,7 +1013,7 @@ Private Sub Command8_Click()
         Exit Sub
 
 Command8_Click_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "frmServidor.Command8_Click", Erl)
+102     Call TraceError(Err.Number, Err.Description, "frmServidor.Command8_Click", Erl)
 
         
 End Sub
@@ -1051,7 +1028,7 @@ Private Sub Command9_Click()
         Exit Sub
 
 Command9_Click_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "frmServidor.Command9_Click", Erl)
+102     Call TraceError(Err.Number, Err.Description, "frmServidor.Command9_Click", Erl)
 
         
 End Sub
@@ -1066,7 +1043,7 @@ Private Sub Form_Deactivate()
         Exit Sub
 
 Form_Deactivate_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "frmServidor.Form_Deactivate", Erl)
+102     Call TraceError(Err.Number, Err.Description, "frmServidor.Form_Deactivate", Erl)
 
         
 End Sub
@@ -1080,7 +1057,7 @@ Private Sub Form_Load()
         Exit Sub
 
 Form_Load_Err:
-104     Call RegistrarError(Err.Number, Err.Description, "frmServidor.Form_Load", Erl)
+104     Call TraceError(Err.Number, Err.Description, "frmServidor.Form_Load", Erl)
 
         
 End Sub

@@ -1303,7 +1303,7 @@ HandleIncomingData_Err:
     Set Reader = Nothing
 
     If Err.Number <> 0 Then
-        Call RegistrarError(Err.Number, Err.Description & vbNewLine & "PackedID: " & PacketID & vbNewLine & IIf(UserList(UserIndex).flags.UserLogged, "UserName: " & UserList(UserIndex).Name, "UserIndex: " & UserIndex), "Protocol.HandleIncomingData", Erl)
+        Call TraceError(Err.Number, Err.Description & vbNewLine & "PackedID: " & PacketID & vbNewLine & IIf(UserList(UserIndex).flags.UserLogged, "UserName: " & UserList(UserIndex).name, "UserIndex: " & UserIndex), "Protocol.HandleIncomingData", Erl)
         Call CloseSocket(UserIndex)
         
         HandleIncomingData = False

@@ -114,7 +114,7 @@ Private Sub Command1_Click()
         Exit Sub
 
 Command1_Click_Err:
-114     Call RegistrarError(Err.Number, Err.Description, "frmDebugNpc.Command1_Click", Erl)
+114     Call TraceError(Err.Number, Err.Description, "frmDebugNpc.Command1_Click", Erl)
 116
         
 End Sub
@@ -129,7 +129,7 @@ Private Sub Command2_Click()
         Exit Sub
 
 Command2_Click_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "frmDebugNpc.Command2_Click", Erl)
+102     Call TraceError(Err.Number, Err.Description, "frmDebugNpc.Command2_Click", Erl)
 104
         
 End Sub

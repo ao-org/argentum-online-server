@@ -715,7 +715,7 @@ Private Sub Segundo_Timer()
     Exit Sub
 
 errhand:
-    Call RegistrarError(Err.Number, Err.Description, "frmMain.Auditoria", Erl)
+    Call TraceError(Err.Number, Err.Description, "frmMain.Auditoria", Erl)
         
 End Sub
 
@@ -736,7 +736,7 @@ Private Sub CerrarYForzarActualizar_Click()
         Exit Sub
 
 Command4_Click_Err:
-114     Call RegistrarError(Err.Number, Err.Description, "frmMain.CerrarYForzarActualizar", Erl)
+114     Call TraceError(Err.Number, Err.Description, "frmMain.CerrarYForzarActualizar", Erl)
 
 End Sub
 
@@ -791,7 +791,7 @@ On Error GoTo Handler
     Exit Sub
     
 Handler:
-    Call RegistrarError(Err.Number, Err.Description, "frmMain.Invasion_Timer")
+    Call TraceError(Err.Number, Err.Description, "frmMain.Invasion_Timer")
 
     
     ' **********************************
@@ -816,7 +816,7 @@ On Error GoTo T_UsersOnline_Err
     Exit Sub
 
 T_UsersOnline_Err:
-106     Call RegistrarError(Err.Number, Err.Description, "General.T_UsersOnline", Erl)
+106     Call TraceError(Err.Number, Err.Description, "General.T_UsersOnline", Erl)
 
 End Sub
 
@@ -850,7 +850,7 @@ On Error GoTo Handler
     Exit Sub
     
 Handler:
-    Call RegistrarError(Err.Number, Err.Description, "frmMain.TiempoRetos_Timer")
+    Call TraceError(Err.Number, Err.Description, "frmMain.TiempoRetos_Timer")
 
     
 End Sub
@@ -895,7 +895,7 @@ On Error GoTo Handler
     Exit Sub
     
 Handler:
-    Call RegistrarError(Err.Number, Err.Description, "frmMain.TimreGuardarUsuarios_Timer")
+    Call TraceError(Err.Number, Err.Description, "frmMain.TimreGuardarUsuarios_Timer")
 
     
 End Sub
@@ -908,8 +908,6 @@ Private Sub Minuto_Timer()
     Static minutos          As Long
 
     Static MinutosLatsClean As Long
-    
-    Static DumpErrorsTimer     As Long
 
     Dim i                   As Integer
 
@@ -935,12 +933,6 @@ Private Sub Minuto_Timer()
     
     minutos = minutos + 1
     
-    DumpErrorsTimer = DumpErrorsTimer + 1
-    
-    If DumpErrorsTimer = 5 Then
-        Call frmServidor.cmdDumpLogs_Click
-        DumpErrorsTimer = 0
-    End If
 
     '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     Call ModAreas.AreasOptimizacion
@@ -974,7 +966,7 @@ Private Sub Minuto_Timer()
     Exit Sub
         
 ErrHandler:
-    Call RegistrarError(Err.Number, Err.Description, "General.Minuto_Timer", Erl)
+    Call TraceError(Err.Number, Err.Description, "General.Minuto_Timer", Erl)
         
 End Sub
 
@@ -998,7 +990,7 @@ Private Sub CMDDUMP_Click()
         Exit Sub
 
 CMDDUMP_Click_Err:
-108     Call RegistrarError(Err.Number, Err.Description, "frmMain.CMDDUMP_Click", Erl)
+108     Call TraceError(Err.Number, Err.Description, "frmMain.CMDDUMP_Click", Erl)
 
         
 End Sub
@@ -1013,7 +1005,7 @@ Private Sub Command1_Click()
         Exit Sub
 
 Command1_Click_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "frmMain.Command1_Click", Erl)
+102     Call TraceError(Err.Number, Err.Description, "frmMain.Command1_Click", Erl)
 
         
 End Sub
@@ -1048,7 +1040,7 @@ Private Sub Command10_Click()
         Exit Sub
 
 Command10_Click_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "frmMain.Command10_Click", Erl)
+102     Call TraceError(Err.Number, Err.Description, "frmMain.Command10_Click", Erl)
 
         
 End Sub
@@ -1064,7 +1056,7 @@ Private Sub Command11_Click()
         Exit Sub
 
 Command11_Click_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "frmMain.Command11_Click", Erl)
+102     Call TraceError(Err.Number, Err.Description, "frmMain.Command11_Click", Erl)
 
         
 End Sub
@@ -1078,7 +1070,7 @@ Private Sub Command12_Click()
         Exit Sub
 
 Command12_Click_Err:
-104     Call RegistrarError(Err.Number, Err.Description, "frmMain.Command12_Click", Erl)
+104     Call TraceError(Err.Number, Err.Description, "frmMain.Command12_Click", Erl)
 
         
 End Sub
@@ -1093,7 +1085,7 @@ Private Sub Command13_Click()
         Exit Sub
 
 Command13_Click_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "frmMain.Command13_Click", Erl)
+102     Call TraceError(Err.Number, Err.Description, "frmMain.Command13_Click", Erl)
 
         
 End Sub
@@ -1108,7 +1100,7 @@ Private Sub Command2_Click()
         Exit Sub
 
 Command2_Click_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "frmMain.Command2_Click", Erl)
+102     Call TraceError(Err.Number, Err.Description, "frmMain.Command2_Click", Erl)
 
         
 End Sub
@@ -1131,7 +1123,7 @@ Private Sub Command4_Click()
         Exit Sub
 
 Command4_Click_Err:
-112     Call RegistrarError(Err.Number, Err.Description, "frmMain.Command4_Click", Erl)
+112     Call TraceError(Err.Number, Err.Description, "frmMain.Command4_Click", Erl)
 
         
 End Sub
@@ -1147,7 +1139,7 @@ Private Sub Command6_Click()
         Exit Sub
 
 Command6_Click_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "frmMain.Command6_Click", Erl)
+102     Call TraceError(Err.Number, Err.Description, "frmMain.Command6_Click", Erl)
 
         
 End Sub
@@ -1162,7 +1154,7 @@ Private Sub Command7_Click()
         Exit Sub
 
 Command7_Click_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "frmMain.Command7_Click", Erl)
+102     Call TraceError(Err.Number, Err.Description, "frmMain.Command7_Click", Erl)
 
         
 End Sub
@@ -1181,7 +1173,7 @@ Private Sub Command8_Click()
         Exit Sub
 
 Command8_Click_Err:
-110     Call RegistrarError(Err.Number, Err.Description, "frmMain.Command8_Click", Erl)
+110     Call TraceError(Err.Number, Err.Description, "frmMain.Command8_Click", Erl)
 
         
 End Sub
@@ -1196,7 +1188,7 @@ Private Sub Command9_Click()
         Exit Sub
 
 Command9_Click_Err:
-102     Call RegistrarError(Err.Number, Err.Description, "frmMain.Command9_Click", Erl)
+102     Call TraceError(Err.Number, Err.Description, "frmMain.Command9_Click", Erl)
 
         
 End Sub
@@ -1216,7 +1208,7 @@ Private Sub EstadoTimer_Timer()
     For i = 1 To Baneos.Count
 
         If Baneos(i).FechaLiberacion <= Now Then
-            Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » Se ha concluido la sentencia de ban para " & Baneos(I).Name & ".", e_FontTypeNames.FONTTYPE_SERVER))
+            Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » Se ha concluido la sentencia de ban para " & Baneos(i).name & ".", e_FontTypeNames.FONTTYPE_SERVER))
             Call UnBan(Baneos(i).Name)
             Call Baneos.Remove(i)
             Call SaveBans
@@ -1309,7 +1301,7 @@ Private Sub EstadoTimer_Timer()
     Exit Sub
 
 EstadoTimer_Timer_Err:
-    Call RegistrarError(Err.Number, Err.Description, "frmMain.EstadoTimer_Timer", Erl)
+    Call TraceError(Err.Number, Err.Description, "frmMain.EstadoTimer_Timer", Erl)
 
         
 End Sub
@@ -1329,7 +1321,7 @@ Private Sub Evento_Timer()
     Exit Sub
 
 Evento_Timer_Err:
-    Call RegistrarError(Err.Number, Err.Description, "frmMain.Evento_Timer", Erl)
+    Call TraceError(Err.Number, Err.Description, "frmMain.Evento_Timer", Erl)
 
         
 End Sub
@@ -1369,7 +1361,7 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, X As Single, Y A
         Exit Sub
 
 Form_MouseMove_Err:
-124     Call RegistrarError(Err.Number, Err.Description, "frmMain.Form_MouseMove", Erl)
+124     Call TraceError(Err.Number, Err.Description, "frmMain.Form_MouseMove", Erl)
 
         
 End Sub
@@ -1413,7 +1405,7 @@ Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
         Exit Sub
 
 Form_QueryUnload_Err:
-106     Call RegistrarError(Err.Number, Err.Description, "frmMain.Form_QueryUnload", Erl)
+106     Call TraceError(Err.Number, Err.Description, "frmMain.Form_QueryUnload", Erl)
 
         
 End Sub
@@ -1475,7 +1467,7 @@ Private Sub GameTimer_Timer()
     Exit Sub
 
 HayError:
-    Call RegistrarError(Err.Number, Err.Description & vbNewLine & "UserIndex:" & iUserIndex, "frmMain.GameTimer", Erl)
+    Call TraceError(Err.Number, Err.Description & vbNewLine & "UserIndex:" & iUserIndex, "frmMain.GameTimer", Erl)
 
 End Sub
 
@@ -1503,7 +1495,7 @@ Private Sub HoraFantasia_Timer()
     Exit Sub
 
 HoraFantasia_Timer_Err:
-    Call RegistrarError(Err.Number, Err.Description, "frmMain.HoraFantasia_Timer", Erl)
+    Call TraceError(Err.Number, Err.Description, "frmMain.HoraFantasia_Timer", Erl)
 
         
 End Sub
@@ -1588,7 +1580,7 @@ Private Sub KillLog_Timer()
     Exit Sub
 
 KillLog_Timer_Err:
-    Call RegistrarError(Err.Number, Err.Description, "frmMain.KillLog_Timer", Erl)
+    Call TraceError(Err.Number, Err.Description, "frmMain.KillLog_Timer", Erl)
 
         
 End Sub
@@ -1701,7 +1693,7 @@ Private Sub SubastaTimer_Timer()
     Exit Sub
 
 SubastaTimer_Timer_Err:
-    Call RegistrarError(Err.Number, Err.Description, "frmMain.SubastaTimer_Timer", Erl)
+    Call TraceError(Err.Number, Err.Description, "frmMain.SubastaTimer_Timer", Erl)
 
         
 End Sub
@@ -1779,7 +1771,7 @@ Private Sub TIMER_AI_Timer()
     Exit Sub
 
 ErrorHandler:
-    Call RegistrarError(Err.Number, Err.Description & vbNewLine & _
+    Call TraceError(Err.Number, Err.Description & vbNewLine & _
                                     "NPC: " & NpcList(NpcIndex).Name & _
                                     " en la posicion: " & NpcList(NpcIndex).Pos.Map & "-" & NpcList(NpcIndex).Pos.X & "-" & NpcList(NpcIndex).Pos.Y, "frmMain.Timer_AI", Erl)
     Call MuereNpc(NpcIndex, 0)
@@ -1893,7 +1885,7 @@ Private Sub TimerMeteorologia_Timer()
     Exit Sub
 
 TimerMeteorologia_Timer_Err:
-    Call RegistrarError(Err.Number, Err.Description, "frmMain.TimerMeteorologia_Timer", Erl)
+    Call TraceError(Err.Number, Err.Description, "frmMain.TimerMeteorologia_Timer", Erl)
 
         
 End Sub
@@ -1931,7 +1923,7 @@ Private Sub TimerRespawn_Timer()
     Exit Sub
 
 ErrorHandler:
-    Call RegistrarError(Err.Number, Err.Description & vbNewLine & _
+    Call TraceError(Err.Number, Err.Description & vbNewLine & _
                                     "NPC: " & NpcList(NpcIndex).Name & _
                                     " en la posicion: " & NpcList(NpcIndex).Pos.Map & "-" & NpcList(NpcIndex).Pos.X & "-" & NpcList(NpcIndex).Pos.Y, "frmMain.TimerRespawn_Timer", Erl)
     Call MuereNpc(NpcIndex, 0)
@@ -1995,7 +1987,7 @@ Private Sub tPiqueteC_Timer()
     Exit Sub
 
 ErrHandler:
-    Call RegistrarError(Err.Number, Err.Description, "frmMain.tPiqueteC_Timer", Erl)
+    Call TraceError(Err.Number, Err.Description, "frmMain.tPiqueteC_Timer", Erl)
 
 End Sub
 
@@ -2026,7 +2018,7 @@ Private Sub Truenos_Timer()
     Exit Sub
 
 Truenos_Timer_Err:
-    Call RegistrarError(Err.Number, Err.Description, "frmMain.Truenos_Timer", Erl)
+    Call TraceError(Err.Number, Err.Description, "frmMain.Truenos_Timer", Erl)
 
         
 End Sub
@@ -2041,7 +2033,7 @@ Private Sub UptimeTimer_Timer()
     Exit Sub
 
 UptimeTimer_Timer_Err:
-    Call RegistrarError(Err.Number, Err.Description, "frmMain.UptimeTimer_Timer", Erl)
+    Call TraceError(Err.Number, Err.Description, "frmMain.UptimeTimer_Timer", Erl)
 
         
 End Sub

@@ -68,7 +68,7 @@ Public Sub CrearReto(ByVal UserIndex As Integer, JugadoresStr As String, ByVal A
 104             Call CancelarSolicitudReto(UserIndex, .Name & " ha cancelado la solicitud.")
 
 106         ElseIf .flags.AceptoReto > 0 Then
-108             Call CancelarSolicitudReto(.flags.AceptoReto, .Name & " ha cancelado su admisión.")
+108             Call CancelarSolicitudReto(.flags.AceptoReto, .name & " ha cancelado su admisión.")
             End If
         
 110         Dim TamanoReal As Byte: TamanoReal = Retos.TamañoMaximoEquipo * 2 - 1
@@ -190,7 +190,7 @@ Public Sub AceptarReto(ByVal UserIndex As Integer, OferenteName As String)
 106             Call CancelarSolicitudReto(UserIndex, .Name & " ha cancelado la solicitud.")
             
 108         ElseIf .flags.AceptoReto > 0 Then
-110             Call CancelarSolicitudReto(.flags.AceptoReto, .Name & " ha cancelado su admisión.")
+110             Call CancelarSolicitudReto(.flags.AceptoReto, .name & " ha cancelado su admisión.")
             End If
         End With
     
@@ -215,7 +215,7 @@ Public Sub AceptarReto(ByVal UserIndex As Integer, OferenteName As String)
 124     JugadorIndex = IndiceJugadorEnSolicitud(UserIndex, Oferente)
 
 126     If JugadorIndex < 0 Then
-128         Call WriteConsoleMsg(UserIndex, UserList(Oferente).Name & " no te ha invitado a ningún reto o ha sido cancelado.", e_FontTypeNames.FONTTYPE_INFO)
+128         Call WriteConsoleMsg(UserIndex, UserList(Oferente).name & " no te ha invitado a ningún reto o ha sido cancelado.", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
 
@@ -519,7 +519,7 @@ Public Sub MuereEnReto(ByVal UserIndex As Integer)
         
         Exit Sub
 ErrorHandler:
-118     Call RegistrarError(Err.Number, Err.Description, "ModRetos.MuereEnReto", Erl)
+118     Call TraceError(Err.Number, Err.Description, "ModRetos.MuereEnReto", Erl)
 End Sub
 
 Private Sub ProcesarRondaGanada(ByVal Sala As Integer, ByVal Equipo As e_EquipoReto)
@@ -576,7 +576,7 @@ Private Sub ProcesarRondaGanada(ByVal Sala As Integer, ByVal Equipo As e_EquipoR
         
         Exit Sub
 ErrorHandler:
-138     Call RegistrarError(Err.Number, Err.Description, "ModRetos.ProcesarRondaGanada", Erl)
+138     Call TraceError(Err.Number, Err.Description, "ModRetos.ProcesarRondaGanada", Erl)
 End Sub
 
 Public Sub FinalizarReto(ByVal Sala As Integer, Optional ByVal TiempoAgotado As Boolean)
@@ -642,14 +642,14 @@ Public Sub FinalizarReto(ByVal Sala As Integer, Optional ByVal TiempoAgotado As 
 150                     If i Mod 2 Then
                     
 152                         If LenB(Equipo2) > 0 Then
-154                             Equipo2 = Equipo2 & IIf((i + 1) \ 2 < .TamañoEquipoDer - 2, ", ", " y ") & UserList(tIndex).Name
+154                             Equipo2 = Equipo2 & IIf((i + 1) \ 2 < .TamañoEquipoDer - 2, ", ", " y ") & UserList(tIndex).name
                             Else
 156                             Equipo2 = UserList(tIndex).Name
                             End If
                         Else
 
 158                         If LenB(Equipo1) > 0 Then
-160                             Equipo1 = Equipo2 & IIf(i \ 2 < .TamañoEquipoIzq - 2, ", ", " y ") & UserList(tIndex).Name
+160                             Equipo1 = Equipo2 & IIf(i \ 2 < .TamañoEquipoIzq - 2, ", ", " y ") & UserList(tIndex).name
                             Else
 162                             Equipo1 = UserList(tIndex).Name
                             End If
@@ -725,7 +725,7 @@ Public Sub FinalizarReto(ByVal Sala As Integer, Optional ByVal TiempoAgotado As 
 228                     If i Mod 2 Then
                     
 230                         If LenB(Equipo2) > 0 Then
-232                             Equipo2 = Equipo2 & IIf((i + 1) \ 2 < .TamañoEquipoDer - 2, ", ", " y ") & UserList(tIndex).Name
+232                             Equipo2 = Equipo2 & IIf((i + 1) \ 2 < .TamañoEquipoDer - 2, ", ", " y ") & UserList(tIndex).name
                             Else
 234                             Equipo2 = UserList(tIndex).Name
                             End If
@@ -733,7 +733,7 @@ Public Sub FinalizarReto(ByVal Sala As Integer, Optional ByVal TiempoAgotado As 
                         Else
                     
 236                         If LenB(Equipo1) > 0 Then
-238                             Equipo1 = Equipo1 & IIf(i \ 2 < .TamañoEquipoIzq - 2, ", ", " y ") & UserList(tIndex).Name
+238                             Equipo1 = Equipo1 & IIf(i \ 2 < .TamañoEquipoIzq - 2, ", ", " y ") & UserList(tIndex).name
                             Else
 240                             Equipo1 = UserList(tIndex).Name
                             End If
@@ -800,7 +800,7 @@ Public Sub FinalizarReto(ByVal Sala As Integer, Optional ByVal TiempoAgotado As 
         
         Exit Sub
 ErrorHandler:
-280     Call RegistrarError(Err.Number, Err.Description, "ModRetos.FinalizarReto", Erl)
+280     Call TraceError(Err.Number, Err.Description, "ModRetos.FinalizarReto", Erl)
 End Sub
 Public Sub TirarItemsEnPos(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte)
             
@@ -1137,7 +1137,7 @@ Private Function TodosPuedenReto(ByVal Oferente As Integer) As Boolean
 
 110         ElseIf .PocionesMaximas >= 0 Then
 112             If TieneObjetos(38, .PocionesMaximas + 1, Oferente) Then
-114                 Call CancelarSolicitudReto(Oferente, UserList(Oferente).Name & " tiene demasiadas pociones rojas (Cantidad máxima: " & .PocionesMaximas & ").")
+114                 Call CancelarSolicitudReto(Oferente, UserList(Oferente).name & " tiene demasiadas pociones rojas (Cantidad máxima: " & .PocionesMaximas & ").")
                     Exit Function
                 End If
             End If
@@ -1156,7 +1156,7 @@ Private Function TodosPuedenReto(ByVal Oferente As Integer) As Boolean
                 
 126             ElseIf .PocionesMaximas >= 0 Then
 128                 If TieneObjetos(38, .PocionesMaximas + 1, Oferente) Then
-130                     Call CancelarSolicitudReto(Oferente, UserList(.Jugadores(i).CurIndex).Name & " tiene demasiadas pociones rojas (Cantidad máxima: " & .PocionesMaximas & ").")
+130                     Call CancelarSolicitudReto(Oferente, UserList(.Jugadores(i).CurIndex).name & " tiene demasiadas pociones rojas (Cantidad máxima: " & .PocionesMaximas & ").")
                         Exit Function
                     End If
                 End If
