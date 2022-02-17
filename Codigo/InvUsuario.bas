@@ -37,6 +37,72 @@ Attribute VB_Name = "InvUsuario"
 
 Option Explicit
 
+Public Function TieneObjEnInv(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, Optional ObjIndex2 As Integer = 0) As Boolean
+        On Error GoTo TieneObjEnInv_Err
+        
+        'Devuelve el slot del inventario donde se encuentra el obj
+        'Creaado por Ladder 25/09/2014
+        Dim i As Byte
+
+     For i = 1 To 36
+
+         If UserList(UserIndex).Invent.Object(i).ObjIndex = ObjIndex Then
+             TieneObjEnInv = True
+                Exit Function
+
+            End If
+
+         If ObjIndex2 > 0 Then
+             If UserList(UserIndex).Invent.Object(i).ObjIndex = ObjIndex2 Then
+                 TieneObjEnInv = True
+                    Exit Function
+
+                End If
+
+            End If
+
+     Next i
+
+     TieneObjEnInv = False
+
+        
+        Exit Function
+
+TieneObjEnInv_Err:
+     Call TraceError(Err.Number, Err.Description, "ModLadder.TieneObjEnInv", Erl)
+
+        
+End Function
+
+
+Public Function CantidadObjEnInv(ByVal UserIndex As Integer, ByVal ObjIndex As Integer) As Integer
+        On Error GoTo CantidadObjEnInv_Err
+        'Devuelve el amount si tiene el ObjIndex en el inventario, sino devuelve 0
+        'Creaado por Ladder 25/09/2014
+        Dim i As Byte
+
+     For i = 1 To 36
+
+         If UserList(UserIndex).Invent.Object(i).ObjIndex = ObjIndex Then
+             CantidadObjEnInv = UserList(UserIndex).Invent.Object(i).amount
+                Exit Function
+            End If
+
+
+     Next i
+
+     CantidadObjEnInv = 0
+
+        
+        Exit Function
+
+CantidadObjEnInv_Err:
+     Call TraceError(Err.Number, Err.Description, "ModLadder.CantidadObjEnInv", Erl)
+
+        
+End Function
+
+
 Public Function TieneObjetosRobables(ByVal UserIndex As Integer) As Boolean
         On Error GoTo TieneObjetosRobables_Err
       
@@ -308,7 +374,7 @@ Sub TirarOro(ByVal Cantidad As Long, ByVal UserIndex As Integer)
         
             ' GM's (excepto Dioses y Admins) no pueden tirar oro
 102         If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Admin Or e_PlayerType.Dios)) = 0 Then
-104             Call LogGM(.name, " trató de tirar " & PonerPuntos(Cantidad) & " de oro en " & .Pos.map & "-" & .Pos.x & "-" & .Pos.y)
+104             Call LogGM(.name, " trató de tirar " & PonerPuntos(Cantidad) & " de oro en " & .Pos.map & "-" & .Pos.X & "-" & .Pos.y)
                 Exit Sub
             End If
          
