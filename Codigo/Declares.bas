@@ -40,6 +40,14 @@ Option Explicit
 ''
 ' Modulo de declaraciones. Aca hay de todo.
 '
+Public Enum e_AccionBarra
+    Runa = 1
+    Resucitar = 2
+    Intermundia = 3
+    GoToPareja = 5
+    Hogar = 6
+    CancelarAccion = 99
+End Enum
 
 Public Enum e_elecciones
     HayGanador = 1

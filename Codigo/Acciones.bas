@@ -38,6 +38,75 @@ Attribute VB_Name = "Acciones"
 Option Explicit
 
 
+Public Function get_map_name(ByVal map As Long) As String
+On Error GoTo get_map_name_Err
+        get_map_name = MapInfo(map).map_name
+        Exit Function
+get_map_name_Err:
+     Call TraceError(Err.Number, Err.Description, "ModLadder.get_map_name", Erl)
+End Function
+
+
+Function PuedeUsarObjeto(UserIndex As Integer, ByVal ObjIndex As Integer, Optional ByVal writeInConsole As Boolean = False) As Byte
+        On Error GoTo PuedeUsarObjeto_Err
+
+        Dim Objeto As t_ObjData
+        Dim Msg As String, i As Long
+     Objeto = ObjData(ObjIndex)
+                
+     If EsGM(UserIndex) Then
+         PuedeUsarObjeto = 0
+         Msg = ""
+
+     ElseIf Objeto.Newbie = 1 And Not EsNewbie(UserIndex) Then
+         PuedeUsarObjeto = 7
+         Msg = "Solo los newbies pueden usar este objeto."
+            
+     ElseIf UserList(UserIndex).Stats.ELV < Objeto.MinELV Then
+         PuedeUsarObjeto = 6
+         Msg = "Necesitas ser nivel " & Objeto.MinELV & " para usar este objeto."
+
+     ElseIf Not FaccionPuedeUsarItem(UserIndex, ObjIndex) Then
+         PuedeUsarObjeto = 3
+         Msg = "Tu facción no te permite utilizarlo."
+
+     ElseIf Not ClasePuedeUsarItem(UserIndex, ObjIndex) Then
+         PuedeUsarObjeto = 2
+         Msg = "Tu clase no puede utilizar este objeto."
+
+     ElseIf Not SexoPuedeUsarItem(UserIndex, ObjIndex) Then
+         PuedeUsarObjeto = 1
+         Msg = "Tu sexo no puede utilizar este objeto."
+
+     ElseIf Not RazaPuedeUsarItem(UserIndex, ObjIndex) Then
+         PuedeUsarObjeto = 5
+         Msg = "Tu raza no puede utilizar este objeto."
+     ElseIf (Objeto.SkillIndex > 0) Then
+         If (UserList(UserIndex).Stats.UserSkills(Objeto.SkillIndex) < Objeto.SkillRequerido) Then
+             PuedeUsarObjeto = 4
+             Msg = "Necesitas " & Objeto.SkillRequerido & " puntos en " & SkillsNames(Objeto.SkillIndex) & " para usar este item."
+            Else
+             PuedeUsarObjeto = 0
+             Msg = ""
+            End If
+        Else
+         PuedeUsarObjeto = 0
+         Msg = ""
+        End If
+
+     If writeInConsole And Msg <> "" Then Call WriteConsoleMsg(UserIndex, Msg, e_FontTypeNames.FONTTYPE_INFO)
+
+        Exit Function
+
+PuedeUsarObjeto_Err:
+     Call TraceError(Err.Number, Err.Description, "ModLadder.PuedeUsarObjeto", Erl)
+
+End Function
+
+Public Function RequiereOxigeno(ByVal UserMap) As Boolean
+     RequiereOxigeno = (UserMap = 265) Or (UserMap = 266) Or (UserMap = 267)
+End Function
+
 Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
         
         On Error GoTo CompletarAccionFin_Err
