@@ -9,105 +9,17 @@ Attribute VB_Name = "ModLadder"
 '
 Option Explicit
 
-Private Declare Function timeGetTime Lib "winmm.dll" () As Long
-
-Private Declare Sub GetSystemTime Lib "kernel32.dll" (lpSystemTime As t_SYSTEMTIME)
-
-Private theTime      As t_SYSTEMTIME
-
-Public PaquetesCount As Long
-
-Private Type t_SYSTEMTIME
-
-    wYear As Integer
-    wMonth As Integer
-    wDayOfWeek As Integer
-    wDay As Integer
-    wHour As Integer
-    wMinute As Integer
-    wSecond As Integer
-    wMilliseconds As Integer
-
-End Type
 
 Public Enum e_AccionBarra
-
     Runa = 1
     Resucitar = 2
     Intermundia = 3
     GoToPareja = 5
     Hogar = 6
     CancelarAccion = 99
-
 End Enum
 
-Public Function GetTickCount() As Long
-        
-        On Error GoTo GetTickCount_Err
-    
-        
-    
-100     GetTickCount = timeGetTime And &H7FFFFFFF
-    
-        
-        Exit Function
 
-GetTickCount_Err:
-102     Call TraceError(Err.Number, Err.Description, "ModLadder.GetTickCount", Erl)
-
-        
-End Function
-
-Function GetTimeFormated() As String
-        
-        On Error GoTo GetTimeFormated_Err
-        
-        Dim Elapsed As Long
-100     Elapsed = (GetTickCount() - HoraMundo) / DuracionDia
-        
-        Dim Mins As Long
-102     Mins = (Elapsed - Fix(Elapsed)) * 1440
-
-        Dim Horita    As Byte
-
-        Dim Minutitos As Byte
-
-104     Horita = Fix(Mins / 60)
-106     Minutitos = Mins Mod 60
-
-108     GetTimeFormated = Right$("00" & Horita, 2) & ":" & Right$("00" & Minutitos, 2)
-
-        
-        Exit Function
-
-GetTimeFormated_Err:
-110     Call TraceError(Err.Number, Err.Description, "ModLadder.GetTimeFormated - " + Erl, Erl)
-
-        
-End Function
-
-Public Sub GetHoraActual()
-        
-        On Error GoTo GetHoraActual_Err
-        
-100     GetSystemTime theTime
-
-102     HoraActual = (theTime.wHour - 3)
-
-104     If HoraActual = -3 Then HoraActual = 21
-106     If HoraActual = -2 Then HoraActual = 22
-108     If HoraActual = -1 Then HoraActual = 23
-110     frmMain.lblhora.Caption = HoraActual & ":" & Format(theTime.wMinute, "00") & ":" & Format(theTime.wSecond, "00")
-112     HoraEvento = HoraActual
-
-        
-        Exit Sub
-
-GetHoraActual_Err:
-114     Call TraceError(Err.Number, Err.Description, "ModLadder.GetHoraActual", Erl)
-
-        
-End Sub
 
 Public Function DarNameMapa(ByVal Map As Long) As String
         
@@ -128,37 +40,7 @@ End Function
 
 
 
-Public Function SumarTiempo(segundos As Integer) As String
-        
-        On Error GoTo SumarTiempo_Err
-        
 
-        Dim a As Variant, b As Variant
-
-        Dim X As Integer
-
-        Dim T As String
-
-100     T = "00:00:00" 'Lo inicializamos en 0 horas, 0 minutos, 0 segundos
-102     a = Format("00:00:01", "hh:mm:ss") 'guardamos en una variable el formato de 1 segundos
-        
-        If segundos > 0 Then
-104         For X = 1 To segundos 'hacemos segundo a segundo
-106             b = Format(T, "hh:mm:ss") 'En B guardamos un formato de hora:minuto:segundo segun lo que tenia T
-108             T = Format(TimeValue(a) + TimeValue(b), "hh:mm:ss") 'asignamos a T la suma de A + B (osea, sumamos logicamente 1 segundo)
-110         Next X
-        End If
-
-112     SumarTiempo = T 'a la funcion le damos el valor que hallamos en T
-
-        
-        Exit Function
-
-SumarTiempo_Err:
-114     Call TraceError(Err.Number, Err.Description, "ModLadder.SumarTiempo", Erl)
-
-        
-End Function
 
 Public Sub AgregarAConsola(ByVal Text As String)
         
