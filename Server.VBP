@@ -53,7 +53,6 @@ Module=Protocol; Codigo\Protocol.bas
 Module=modSendData; Codigo\modSendData.bas
 Module=ModSubasta; Codigo\ModSubasta.bas
 Module=ModCuentas; Codigo\ModEmail.bas
-Module=ModLadder; Codigo\ModLadder.bas
 Module=ModRetos; Codigo\ModRetos.bas
 Module=ModFamiliar; Codigo\ModFamiliar.bas
 Module=ModClimas; Codigo\ModClimas.bas

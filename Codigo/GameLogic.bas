@@ -39,6 +39,15 @@ Option Explicit
 
 Public m_NameIndex As New Dictionary
 
+
+Public Sub AgregarAConsola(ByVal Text As String)
+        On Error GoTo AgregarAConsola_Err
+        frmMain.List1.AddItem (Text)
+        Exit Sub
+AgregarAConsola_Err:
+        Call TraceError(Err.Number, Err.Description, "ModLadder.AgregarAConsola", Erl)
+End Sub
+
 Public Function NameIndex(ByRef UserName As String) As Integer
 
 100     NameIndex = m_NameIndex(UCase$(Replace(UserName, "+", " ")))
@@ -276,7 +285,7 @@ Private Function CheckMapRestrictions(ByVal UserIndex As Integer, ByVal Map As I
 
 146         If MapInfo(Map).MaxLevel <> 0 And .Stats.ELV >= MapInfo(Map).MaxLevel Then
 148             If .flags.UltimoMensaje <> 106 Then
-150                 Call WriteConsoleMsg(UserIndex, "Sólo los personajes inferiores a nivel " & MapInfo(Map).MaxLevel & " pueden entrar a este mapa.", e_FontTypeNames.FONTTYPE_INFO)
+150                 Call WriteConsoleMsg(UserIndex, "Sólo los personajes inferiores a nivel " & MapInfo(map).MaxLevel & " pueden entrar a este mapa.", e_FontTypeNames.FONTTYPE_INFO)
 152                 .flags.UltimoMensaje = 106
                 End If
                 Exit Function
