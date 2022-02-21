@@ -591,7 +591,7 @@ Sub Main()
     
 120     frmCargando.Label1(2).Caption = "Iniciando Arrays..."
 
-        cuentaregresivaOrcos = 300
+        'cuentaregresivaOrcos = 300
         
 122     Call LoadGuildsDB
     
@@ -1863,12 +1863,12 @@ Sub PasarSegundo()
         
         
         
-70      If cuentaregresivaOrcos > 0 Then
-74          cuentaregresivaOrcos = cuentaregresivaOrcos - 1
-        Else
-76            cuentaregresivaOrcos = 300
-78            Call TimerQuestOrco
-        End If
+70      'If cuentaregresivaOrcos > 0 Then
+74      '    cuentaregresivaOrcos = cuentaregresivaOrcos - 1
+        'Else
+76      '      cuentaregresivaOrcos = 300
+78      '      Call TimerQuestOrco
+        'End If
         
         
 100     If CuentaRegresivaTimer > 0 Then
