@@ -86,6 +86,7 @@ Module=ModShopAO20; Codigo\ModShopAO20.bas
 Module=UnitTesting; Codigo\UnitTesting.bas
 Module=Logging; Codigo\Logging.bas
 Class=Instruments; Codigo\Instrumentation.cls
+Module=modTime; Codigo\modTime.bas
 IconForm="frmMain"
 Startup="Sub Main"
 HelpFile=""
