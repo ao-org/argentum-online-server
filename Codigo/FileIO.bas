@@ -214,6 +214,7 @@ On Error GoTo error_load_stats
     RecordUsuarios = val(str)
     Close #n
     
+    Exit Sub
 error_load_stats:
      Call TraceError(Err.Number, Err.Description, "ES.load_stats", Erl)
 
@@ -229,9 +230,10 @@ On Error GoTo error_dump_stats
     
     n = FreeFile()
     Open App.Path & "\logs\recordusers.log" For Output Shared As n
-    Print #n, RecordUsuarios
+    Print #n, str(RecordUsuarios)
     Close #n
     
+    Exit Sub
 error_dump_stats:
      Call TraceError(Err.Number, Err.Description, "ES.error_dump_stats", Erl)
 End Sub
