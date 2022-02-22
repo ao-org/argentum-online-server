@@ -566,7 +566,7 @@ Sub Main()
         On Error GoTo Handler
         Call LogThis(0, "Starting the server " & Now, vbLogEventTypeInformation)
 
-
+        Call load_stats
 
 
         ' Me fijo si ya hay un proceso llamado server.exe abierto
