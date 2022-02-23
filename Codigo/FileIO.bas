@@ -202,6 +202,42 @@ End Type
 Private MapSize As t_MapSize
 Private MapDat  As t_MapDat
 
+Public Sub load_stats()
+On Error GoTo error_load_stats
+    Dim n As Integer
+    Dim str As String
+    
+    n = FreeFile()
+    Open App.Path & "\logs\recordusers.log" For Input Shared As n
+    
+    Line Input #n, str
+    RecordUsuarios = val(str)
+    Close #n
+    
+    Exit Sub
+error_load_stats:
+     Call TraceError(Err.Number, Err.Description, "ES.load_stats", Erl)
+
+End Sub
+
+Public Sub dump_stats()
+On Error GoTo error_dump_stats
+    Dim n As Integer
+    n = FreeFile()
+    Open App.Path & "\logs\numusers.log" For Output Shared As n
+    Print #n, NumUsers
+    Close #n
+    
+    n = FreeFile()
+    Open App.Path & "\logs\recordusers.log" For Output Shared As n
+    Print #n, str(RecordUsuarios)
+    Close #n
+    
+    Exit Sub
+error_dump_stats:
+     Call TraceError(Err.Number, Err.Description, "ES.error_dump_stats", Erl)
+End Sub
+
 Public Sub CargarSpawnList()
         
         On Error GoTo CargarSpawnList_Err
@@ -2096,7 +2132,7 @@ Public Sub CargarMapaFormatoCSM(ByVal Map As Long, ByVal MAPFl As String)
                         Else
                             
                             ' Lo guardo en los logs + aparece en el Debug.Print
-310                         Call TraceError(404, "NPC no existe en los .DAT's o está mal dateado. Posicion: " & Map & "-" & NPCs(i).X & "-" & NPCs(i).Y, "ES.CargarMapaFormatoCSM")
+310                         Call TraceError(404, "NPC no existe en los .DAT's o está mal dateado. Posicion: " & map & "-" & NPCs(i).X & "-" & NPCs(i).y, "ES.CargarMapaFormatoCSM")
                             
                         End If
                     End If
