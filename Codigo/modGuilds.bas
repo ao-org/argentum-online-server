@@ -392,7 +392,7 @@ Public Function CrearNuevoClan(ByVal FundadorIndex As Integer, ByRef Desc As Str
         
 132         Call guilds(CANTIDADDECLANES).SetExpActual(0)
         
-134         Call guilds(CANTIDADDECLANES).SetExpNecesaria(1000)
+134         Call guilds(CANTIDADDECLANES).SetExpNecesaria(500)
         
             '"conectamos" al nuevo miembro a la lista de la clase
 136         Call guilds(CANTIDADDECLANES).AceptarNuevoMiembro(UserList(FundadorIndex).Name)
@@ -1877,7 +1877,7 @@ Public Sub SendDetallesPersonaje(ByVal UserIndex As Integer, ByVal Personaje As 
 102     Personaje = UCase$(Personaje)
     
 104     If GI <= 0 Or GI > CANTIDADDECLANES Then
-106         Call WriteConsoleMsg(UserIndex, "No perteneces a ningún clan.", e_FontTypeNames.FONTTYPE_INFO)
+106         Call WriteConsoleMsg(userindex, "No perteneces a ningún clan.", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
 
         End If
@@ -2277,22 +2277,17 @@ Sub CheckClanExp(ByVal UserIndex As Integer, ByVal ExpDar As Integer)
     
             'Nueva subida de exp x lvl. Pablo (ToxicWaste)
 132         If nivel = 2 Then
-134             ExpNecesaria = 2000
+134             ExpNecesaria = 1000
 136         ElseIf nivel = 3 Then
-138             ExpNecesaria = 2500
+138             ExpNecesaria = 2000
 140         ElseIf nivel = 4 Then
-142             ExpNecesaria = 3000
+142             ExpNecesaria = 4000
 143         ElseIf nivel = 5 Then
-145             ExpNecesaria = 4000
+145             ExpNecesaria = 8000
             Else
 144             ExpNecesaria = 0
 146             ExpActual = 0
-
             End If
-   
-            ' guilds(gi).SetExpNecesaria = ExpNecesaria
-            'guilds(gi).SetExpActual = ExpActual
-            ' guilds(gi).SetNivelDeClan = nivel
 
         End If
 
@@ -2321,22 +2316,22 @@ Public Function MiembrosPermite(ByVal GI As Integer) As Byte
 102     Select Case nivel
 
             Case 1
-104             MiembrosPermite = 5
+104             MiembrosPermite = 5 ' 5 miembros
 
 106         Case 2
-108             MiembrosPermite = 7
+108             MiembrosPermite = 7 ' 2 miembros + pedir ayuda
 
 110         Case 3
-112             MiembrosPermite = 7
+112             MiembrosPermite = 7 ' ver invi
 
 114         Case 4
-116             MiembrosPermite = 12
+116             MiembrosPermite = 12 ' 5 miembros
 
             Case 5
-                MiembrosPermite = 15
+                MiembrosPermite = 15 ' 3 miembros + seguro de clan
                 
             Case 6
-                MiembrosPermite = 20
+                MiembrosPermite = 20 ' 5 miembros + barra de vida y mana entre miembros
 
         End Select
 
