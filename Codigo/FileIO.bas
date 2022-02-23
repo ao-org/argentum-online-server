@@ -2264,10 +2264,6 @@ Sub LoadSini()
 148     ResPos.X = val(ReadField(2, Lector.GetValue("INIT", "ResPos"), 45))
 150     ResPos.Y = val(ReadField(3, Lector.GetValue("INIT", "ResPos"), 45))
       
-152     If Not Database_Enabled Then
-154         RecordUsuarios = val(Lector.GetValue("INIT", "Record"))
-        End If
-      
         'Max users
 156     Temporal = val(Lector.GetValue("INIT", "MaxUsers"))
 
