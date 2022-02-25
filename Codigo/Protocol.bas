@@ -495,7 +495,6 @@ Private Enum ClientPacketID
     QuestDetailsRequest
     QuestAbandon
     SeguroClan
-    CreatePretorianClan     '/CREARPRETORIANOS
     Home                    '/HOGAR
     Consulta                '/CONSULTA
     GetMapInfo              '/MAPINFO
@@ -1238,8 +1237,6 @@ On Error Resume Next
             Call HandleQuestAbandon(UserIndex)
         Case ClientPacketID.SeguroClan
             Call HandleSeguroClan(UserIndex)
-        Case ClientPacketID.CreatePretorianClan
-            Call HandleCreatePretorianClan(UserIndex)
         Case ClientPacketID.Home
             Call HandleHome(UserIndex)
         Case ClientPacketID.Consulta
@@ -8827,19 +8824,6 @@ Private Sub HandleKillNPC(ByVal UserIndex As Integer)
             Exit Sub
             End If
         
-            'Si estamos en el mapa pretoriano...
-106         If .Pos.Map = MAPA_PRETORIANO Then
-
-                '... solo los Dioses y Administradores pueden usar este comando en el mapa pretoriano.
-108             If .flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios) = 0 Then
-                
-110                 Call WriteConsoleMsg(UserIndex, "Solo los Administradores y Dioses pueden usar este comando en el mapa pretoriano.", e_FontTypeNames.FONTTYPE_INFO)
-                    Exit Sub
-
-                End If
-
-            End If
-        
             Dim tNPC As Integer
 112         tNPC = .flags.TargetNPC
         
@@ -12853,10 +12837,6 @@ Private Sub HandleKillAllNearbyNPCs(ByVal UserIndex As Integer)
                 Exit Sub
             End If
         
-            
-            'Si está en el mapa pretoriano, me aseguro de que los saque correctamente antes que nada.
-106         If .Pos.Map = MAPA_PRETORIANO Then Call EliminarPretorianos(MAPA_PRETORIANO)
-
             Dim X As Long
             Dim Y As Long
         
@@ -14300,12 +14280,6 @@ Public Sub HandleCreateNPC(ByVal UserIndex As Integer)
                 Exit Sub
             End If
         
-            'Nos fijamos si es pretoriano.
-108         If NpcList(NpcIndex).NPCtype = e_NPCType.Pretoriano Then
-110             Call WriteConsoleMsg(UserIndex, "No puedes sumonear miembros del clan pretoriano de esta forma, utiliza /CrearPretoianos MAPA X Y.", e_FontTypeNames.FONTTYPE_WARNING)
-                Exit Sub
-
-            End If
         
 112         NpcIndex = SpawnNpc(NpcIndex, .Pos, True, False)
         
@@ -17593,121 +17567,6 @@ HandleQuestListRequest_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleQuestListRequest", Erl)
 104
         
-End Sub
-
-''
-' Handle the "CreatePretorianClan" message
-'
-' @param userIndex The index of the user sending the message
-
-Public Sub HandleCreatePretorianClan(ByVal UserIndex As Integer)
-        '***************************************************
-        'Author: ZaMa
-        'Last Modification: 29/10/2010
-        '***************************************************
-
-        On Error GoTo ErrHandler
-
-        Dim Map   As Integer
-        Dim X     As Byte
-        Dim Y     As Byte
-        Dim Index As Long
-    
-100     With UserList(UserIndex)
-
-102         Map = Reader.ReadInt16()
-104         X = Reader.ReadInt8()
-106         Y = Reader.ReadInt8()
-        
-            ' User Admin?
-108         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios)) = 0 Then
-110             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
-                Exit Sub
-            End If
-        
-            ' Valid pos?
-112         If Not InMapBounds(Map, X, Y) Then
-114             Call WriteConsoleMsg(UserIndex, "Posicion invalida.", e_FontTypeNames.FONTTYPE_INFO)
-                Exit Sub
-
-            End If
-        
-            ' Choose pretorian clan index
-116         If Map = MAPA_PRETORIANO Then
-118             Index = e_PretorianType.Default ' Default clan
-            
-            Else
-120             Index = e_PretorianType.Custom ' Custom Clan
-
-            End If
-            
-            ' Is already active any clan?
-122         If Not ClanPretoriano(Index).Active Then
-            
-124             If Not ClanPretoriano(Index).SpawnClan(Map, X, Y, Index) Then
-126                 Call WriteConsoleMsg(UserIndex, "La posicion no es apropiada para crear el clan", e_FontTypeNames.FONTTYPE_INFO)
-
-                End If
-        
-            Else
-128             Call WriteConsoleMsg(UserIndex, "El clan pretoriano se encuentra activo en el mapa " & ClanPretoriano(Index).ClanMap & ". Utilice /EliminarPretorianos MAPA y reintente.", e_FontTypeNames.FONTTYPE_INFO)
-
-            End If
-    
-        End With
-
-        Exit Sub
-
-ErrHandler:
-130     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCreatePretorianClan", Erl)
-132
-    
-End Sub
-
-''
-' Handle the "CreatePretorianClan" message
-'
-' @param userIndex The index of the user sending the message
-
-Public Sub HandleDeletePretorianClan(ByVal UserIndex As Integer)
-        '***************************************************
-        'Author: ZaMa
-        'Last Modification: 29/10/2010
-        '***************************************************
-
-        On Error GoTo ErrHandler
-    
-        Dim Map   As Integer
-        Dim Index As Long
-    
-100     With UserList(UserIndex)
-
-102         Map = Reader.ReadInt16()
-        
-            ' User Admin?
-104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios)) = 0 Then
-106             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
-                Exit Sub
-            End If
-        
-            ' Valid map?
-108         If Map < 1 Or Map > NumMaps Then
-110             Call WriteConsoleMsg(UserIndex, "Mapa invalido.", e_FontTypeNames.FONTTYPE_INFO)
-                Exit Sub
-
-            End If
-        
-            'Los sacamos correctamente.
-112         Call EliminarPretorianos(Map)
-    
-        End With
-
-        Exit Sub
-
-ErrHandler:
-114     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCreatePretorianClan", Erl)
-116
-
 End Sub
 
 ''

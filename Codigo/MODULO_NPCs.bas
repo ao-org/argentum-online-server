@@ -75,12 +75,9 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
 
 112     TiempoRespw = NpcList(NpcIndex).Contadores.IntervaloRespawn
 
-        ' Es pretoriano?
-114     If MiNPC.NPCtype = e_NPCType.Pretoriano Then
-116         Call ClanPretoriano(MiNPC.ClanIndex).MuerePretoriano(NpcIndex)
-            
+
         ' Es NPC de la invasión?
-118     ElseIf MiNPC.flags.InvasionIndex Then
+118     If MiNPC.flags.InvasionIndex Then
 120         Call MuereNpcInvasion(MiNPC.flags.InvasionIndex, MiNPC.flags.IndexInInvasion)
 
         End If
@@ -493,11 +490,6 @@ Sub QuitarNPC(ByVal NpcIndex As Integer)
     
 102     If InMapBounds(NpcList(NpcIndex).Pos.Map, NpcList(NpcIndex).Pos.X, NpcList(NpcIndex).Pos.Y) Then
 104         Call EraseNPCChar(NpcIndex)
-        End If
-    
-        ' Es pretoriano?
-106     If NpcList(NpcIndex).NPCtype = e_NPCType.Pretoriano Then
-108         Call ClanPretoriano(NpcList(NpcIndex).ClanIndex).MuerePretoriano(NpcIndex)
         End If
     
         'Nos aseguramos de que el inventario sea removido...

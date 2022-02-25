@@ -1735,17 +1735,7 @@ Private Sub TIMER_AI_Timer()
                             If MapInfo(Mapa).NumUsers > 0 Then ' Or NpcList(NpcIndex).NPCtype = e_NPCType.GuardiaNpc Then
     
                                 If IntervaloPermiteMoverse(NpcIndex) Then
-                                        
-                                    'Si NO es pretoriano...
-                                    If .NPCtype = e_NPCType.Pretoriano Then
-                                        Call ClanPretoriano(.ClanIndex).PerformPretorianAI(NpcIndex)
-                                    
-                                    Else '... si es pretoriano.
                                         Call NpcAI(NpcIndex)
-                                        
-                                    End If
-                                        
-                                        
                                 End If
     
                             End If
