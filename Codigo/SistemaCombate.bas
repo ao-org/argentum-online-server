@@ -2019,15 +2019,7 @@ Public Function PuedeAtacarNPC(ByVal AttackerIndex As Integer, ByVal NpcIndex As
             End If
         End If
         
-        'Es el Rey Preatoriano?
-214     If NpcList(NpcIndex).NPCtype = e_NPCType.Pretoriano Then
-216         If Not ClanPretoriano(NpcList(NpcIndex).ClanIndex).CanAtackMember(NpcIndex) Then
-218             Call WriteConsoleMsg(AttackerIndex, "Debes matar al resto del ejercito antes de atacar al rey.", e_FontTypeNames.FONTTYPE_FIGHT)
-                Exit Function
-    
-            End If
-    
-        End If
+       
 
 220     PuedeAtacarNPC = True
 

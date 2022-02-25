@@ -687,10 +687,6 @@ Sub Main()
 232     Call CargarInfoRetos
 234     Call CargarInfoEventos
     
-        ' Pretorianos
-236     frmCargando.Label1(2).Caption = "Cargando Pretorianos.dat"
-        'Call LoadPretorianData
-
 242     frmCargando.Label1(2).Caption = "Cargando Baneos Temporales"
 244     Call LoadBans
     
@@ -702,8 +698,6 @@ Sub Main()
         Call ResetLastLogout
 
         'Comentado porque hay worldsave en ese mapa!
-        'Call CrearClanPretoriano(MAPA_PRETORIANO, ALCOBA2_X, ALCOBA2_Y)
-        '¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
     
         Dim LoopC As Integer
     
