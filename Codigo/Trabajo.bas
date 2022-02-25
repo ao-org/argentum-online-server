@@ -1710,8 +1710,10 @@ Public Sub DoPescar(ByVal UserIndex As Integer, Optional ByVal RedDePesca As Boo
 114         Skill = .Stats.UserSkills(e_Skill.Pescar)
         
 116         Suerte = Int(-0.00125 * Skill * Skill - 0.3 * Skill + 49)
-    
-118         res = RandomNumber(1, Suerte)
+
+            'HarThaoS: Le agrego más dificultad al talar en zona segura.  37% probabilidad de fallo en segura vs 16% en insegura
+118         res = RandomNumber(1, IIf(MapInfo(UserList(userindex).Pos.map).Seguro = 1, Suerte + 2, Suerte))
+
             'HarThaoS: Movimiento de caña, lo saco. Se hace exponencial la cantidad de paquetes dependiendo la cantida de usuarios
             If MapInfo(UserList(UserIndex).Pos.Map).Seguro = 1 Then
 120             Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageArmaMov(.Char.CharIndex))
@@ -2313,9 +2315,11 @@ Public Sub DoTalar(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte,
 112         Skill = .Stats.UserSkills(e_Skill.Talar)
 114         Suerte = Int(-0.00125 * Skill * Skill - 0.3 * Skill + 49)
 
-116         res = RandomNumber(1, Suerte)
-'118         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageArmaMov(.Char.CharIndex))
+            'HarThaoS: Le agrego más dificultad al talar en zona segura.  37% probabilidad de fallo en segura vs 16% en insegura
+116         res = RandomNumber(1, IIf(MapInfo(UserList(userindex).Pos.map).Seguro = 1, Suerte + 2, Suerte))
 
+'118         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageArmaMov(.Char.CharIndex))
+            
 120         If res < 6 Then
 
                 Dim nPos  As t_WorldPos
@@ -2426,8 +2430,9 @@ Public Sub DoMineria(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byt
     
 112         Skill = .Stats.UserSkills(e_Skill.Mineria)
 114         Suerte = Int(-0.00125 * Skill * Skill - 0.3 * Skill + 49)
-        
-116         res = RandomNumber(1, Suerte)
+
+            'HarThaoS: Le agrego más dificultad al talar en zona segura.  37% probabilidad de fallo en segura vs 16% en insegura
+116         res = RandomNumber(1, IIf(MapInfo(UserList(userindex).Pos.map).Seguro = 1, Suerte + 2, Suerte))
         
 '118         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageArmaMov(.Char.CharIndex))
         
