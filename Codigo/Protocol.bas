@@ -2680,7 +2680,7 @@ Private Function verifyTimeStamp(ByVal ActualCount As Long, ByRef LastCount, ByR
         If Iterations >= MaxIterations Then
             'Call WriteShowMessageBox(UserIndex, "Relajate andá a tomarte un té con Gulfas.")
             verifyTimeStamp = False
-            Call LogMacroServidor("El usuario " & UserList(UserIndex).name & " iteró el paquete " & PacketName & " " & MaxIterations & " veces.")
+            'Call LogMacroServidor("El usuario " & UserList(UserIndex).name & " iteró el paquete " & PacketName & " " & MaxIterations & " veces.")
             Call SendData(SendTarget.ToAdmins, UserIndex, PrepareMessageConsoleMsg("Control de macro---> El usuario " & UserList(UserIndex).name & "| Revisar --> " & PacketName & " (Envíos: " & MaxIterations & ").", e_FontTypeNames.FONTTYPE_INFOBOLD))
             'Call WriteCerrarleCliente(UserIndex)
             'Call CloseSocket(UserIndex)
@@ -18508,7 +18508,7 @@ End Sub
 Private Sub HandleRepeatMacro(ByVal UserIndex As Integer)
 
     On Error GoTo HandleRepeatMacro_Err:
-    Call LogMacroCliente("El usuario " & UserList(UserIndex).name & " iteró el paquete click o u." & GetTickCount)
+    'Call LogMacroCliente("El usuario " & UserList(UserIndex).name & " iteró el paquete click o u." & GetTickCount)
     Exit Sub
 
 HandleRepeatMacro_Err:
