@@ -14079,6 +14079,8 @@ Public Sub HandleSaveMap(ByVal UserIndex As Integer)
         
         On Error GoTo HandleSaveMap_Err
 
+        Call LogThis(0, "[BackUps.log] HandleSaveMap Started", vbLogEventTypeInformation)
+
         '***************************************************
         'Author: Lucas Tavolaro Ortiz (Tavo)
         'Last Modification: 12/24/06
@@ -14096,6 +14098,8 @@ Public Sub HandleSaveMap(ByVal UserIndex As Integer)
 
         End With
         
+        Call LogThis(0, "[BackUps.log] HandleSaveMap Ended", vbLogEventTypeInformation)
+
         Exit Sub
 
 HandleSaveMap_Err:
