@@ -9,8 +9,77 @@ Attribute VB_Name = "UnitTesting"
 '
 Option Explicit
 
+Private unit_client As Network.Client
+Private exit_client As Boolean
+    
+Private Function Create1stMessage() As Network.Writer
+    Set Create1stMessage = New Network.Writer
+    
+    Call Create1stMessage.WriteInt(0)
+    Call Create1stMessage.WriteString8("Hello, World")
+End Function
+
+Private Function Create2ndMessage() As Network.Writer
+    Set Create2ndMessage = New Network.Writer
+    
+    Call Create2ndMessage.WriteInt(1)
+    Call Create2ndMessage.WriteString8("Goodbye!")
+End Function
+
+Private Sub OnClientAttach()
+    Debug.Print "OnClientAttach"
+End Sub
+
+Private Sub OnClientDetach(ByVal Code As Long)
+    Debug.Print "OnClientDetach", Code
+    exit_client = True
+End Sub
+
+Private Sub OnClientForward(ByVal Buffer As Network.Reader)
+    Debug.Print "OnClientForward", Buffer.GetAvailable()
+    
+    Dim BufferRef() As Byte
+    Call Buffer.getData(BufferRef)
+    
+    Dim i As Long
+    For i = 0 To UBound(BufferRef)
+        BufferRef(i) = BufferRef(i) Xor CLIENT_XOR_KEY
+    Next i
+End Sub
+
+Private Sub OnClientReceive(ByVal Buffer As Network.Reader)
+    Debug.Print "OnClientReceive", Buffer.GetAvailable()
+
+    Dim BufferRef() As Byte
+    Call Buffer.getData(BufferRef)
+    
+    Dim i As Long
+    For i = 0 To UBound(BufferRef)
+        BufferRef(i) = BufferRef(i) Xor SERVER_XOR_KEY
+    Next i
+    
+    Select Case Buffer.ReadInt()
+        Case 0
+            Debug.Print "Create1stMessage", Buffer.ReadString8()
+            Call Client.Send(False, Create2ndMessage())
+    End Select
+End Sub
 
 
+Function test_proto()
+test_proto = False
+    Set unit_client = New Network.Client
+    Call unit_client.Attach(AddressOf OnClientAttach, AddressOf OnClientDetach, AddressOf OnClientForward, AddressOf OnClientReceive)
+    Call unit_client.Connect("127.0.0.1", "7667")
+    Do While (Not exit_client)
+        Call unit_client.Flush
+        Call unit_client.Poll
+        DoEvents
+    Loop
+    Call unit_client.Close(True)
+
+test_proto = True
+End Function
 
 Sub test_make_user(ByVal userindex As Integer, ByVal map As Integer, ByVal x As Integer, ByVal y As Integer)
 UserList(userindex).Pos.map = map
@@ -146,7 +215,7 @@ Function test_suite() As Boolean
 Dim result As Boolean
 
 result = test_make_user_char()
-result = result And test_maths()
+result = result And test_maths() And test_proto()
 test_suite = result
 End Function
 
