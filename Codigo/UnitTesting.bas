@@ -41,10 +41,6 @@ Private Sub OnClientForward(ByVal Buffer As Network.Reader)
     Dim BufferRef() As Byte
     Call Buffer.getData(BufferRef)
     
-    Dim i As Long
-    For i = 0 To UBound(BufferRef)
-        BufferRef(i) = BufferRef(i) Xor CLIENT_XOR_KEY
-    Next i
 End Sub
 
 Private Sub OnClientReceive(ByVal Buffer As Network.Reader)
@@ -53,15 +49,11 @@ Private Sub OnClientReceive(ByVal Buffer As Network.Reader)
     Dim BufferRef() As Byte
     Call Buffer.getData(BufferRef)
     
-    Dim i As Long
-    For i = 0 To UBound(BufferRef)
-        BufferRef(i) = BufferRef(i) Xor SERVER_XOR_KEY
-    Next i
     
     Select Case Buffer.ReadInt()
         Case 0
             Debug.Print "Create1stMessage", Buffer.ReadString8()
-            Call Client.Send(False, Create2ndMessage())
+            Call unit_client.Send(False, Create2ndMessage())
     End Select
 End Sub
 
