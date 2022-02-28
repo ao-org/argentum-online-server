@@ -1086,7 +1086,9 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
             
             Call Execute("update account set offline_patron_credits = 0 where id = ?;", .AccountID)
             Call Execute("Update user set credits = ? where id = ?;", .Stats.Creditos, .ID)
-            Call LogCreditosPatreon(.Name & " | " & .Email & " | Logged with " & .Stats.Creditos)
+            If (.Stats.Creditos > 0) Then
+                Call LogCreditosPatreon(.name & " | " & .Email & " | Logged with " & .Stats.Creditos)
+            End If
             
 476         If RS Is Nothing Then Exit Sub
             .Stats.tipoUsuario = RS!is_active_patron
