@@ -821,15 +821,7 @@ Public Sub DoBackUp()
 
 110     haciendoBK = False
 
-        'Log
-        
-
-112     Dim nfile As Integer: nfile = FreeFile ' obtenemos un canal
-114     Open App.Path & "\logs\BackUps.log" For Append Shared As #nfile
-116     Print #nfile, Date & " " & Time
-118     Close #nfile
-
-        
+        Call LogThis(0, "[BackUps.log] DoBackUp", vbLogEventTypeInformation)
         Exit Sub
 
 DoBackUp_Err:

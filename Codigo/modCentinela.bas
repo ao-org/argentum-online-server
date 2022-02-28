@@ -91,7 +91,7 @@ Private Sub GoToNextWorkingChar()
 116                 If CentinelaNPCIndex Then
                         'Mandamos el mensaje (el centinela habla y aparece en consola para que no haya dudas)
                         Dim Mensaje as String
-                        Mensaje = "Saludos " & UserList(LoopC).Name & ", soy el Centinela de estas tierras. Me gustaría que escribas /CENTINELA " & Centinela.clave & " en no más de dos minutos."
+                        Mensaje = "Saludos " & UserList(LoopC).name & ", soy el Centinela de estas tierras. Me gustaría que escribas /CENTINELA " & Centinela.clave & " en no más de dos minutos."
                         
 118                     Call WriteChatOverHead(LoopC, Mensaje, CStr(NpcList(CentinelaNPCIndex).Char.CharIndex), vbGreen)
 120                     Call WriteConsoleMsg(LoopC, Mensaje, e_FontTypeNames.FONTTYPE_CENTINELA)
@@ -195,7 +195,7 @@ Public Sub CentinelaCheckClave(ByVal UserIndex As Integer, ByVal clave As Intege
 100     If clave = Centinela.clave And UserIndex = Centinela.RevisandoUserIndex Then
 102         UserList(Centinela.RevisandoUserIndex).flags.CentinelaOK = True
             'Call WriteChatOverHead(UserIndex, "¡Muchas gracias " & UserList(Centinela.RevisandoUserIndex).name & "! Espero no haber sido una molestia", CStr(NpcList(CentinelaNPCIndex).Char.CharIndex), vbWhite)
-104         Call WriteConsoleMsg(UserIndex, "¡Muchas gracias " & UserList(Centinela.RevisandoUserIndex).Name & "! Espero no haber sido una molestia", e_FontTypeNames.FONTTYPE_CENTINELA)
+104         Call WriteConsoleMsg(UserIndex, "¡Muchas gracias " & UserList(Centinela.RevisandoUserIndex).name & "! Espero no haber sido una molestia", e_FontTypeNames.FONTTYPE_CENTINELA)
 106         Centinela.RevisandoUserIndex = 0
 108         Call GoToNextWorkingChar
         
@@ -204,9 +204,9 @@ Public Sub CentinelaCheckClave(ByVal UserIndex As Integer, ByVal clave As Intege
         
             'Logueamos el evento
 112         If UserIndex <> Centinela.RevisandoUserIndex Then
-114             Call LogCentinela("El usuario " & UserList(UserIndex).Name & " respondió aunque no se le hablaba a él.")
+114             Call LogCentinela("El usuario " & UserList(UserIndex).name & " respondió aunque no se le hablaba a él.")
             Else
-116             Call LogCentinela("El usuario " & UserList(UserIndex).Name & " respondió una clave incorrecta: " & clave & " - Se esperaba : " & Centinela.clave)
+116             Call LogCentinela("El usuario " & UserList(UserIndex).name & " respondió una clave incorrecta: " & clave & " - Se esperaba : " & Centinela.clave)
 
             End If
 
@@ -265,7 +265,7 @@ Public Sub CentinelaSendClave(ByVal UserIndex As Integer)
 108             Call WriteConsoleMsg(UserIndex, "¡La clave correcta es /CENTINELA " & Centinela.clave & ", escríbelo rápido!", e_FontTypeNames.FONTTYPE_CENTINELA)
             Else
                 'Logueamos el evento
-110             Call LogCentinela("El usuario " & UserList(Centinela.RevisandoUserIndex).Name & " respondió más de una vez la contraseña correcta.")
+110             Call LogCentinela("El usuario " & UserList(Centinela.RevisandoUserIndex).name & " respondió más de una vez la contraseña correcta.")
 112             Call WriteChatOverHead(UserIndex, "Te agradezco, pero ya me has respondido. Me retiraré pronto.", CStr(NpcList(CentinelaNPCIndex).Char.CharIndex), vbGreen)
 
             End If
@@ -311,8 +311,8 @@ Public Sub PasarMinutoCentinela()
                 End If
             
                 'El centinela habla y se manda a consola para que no quepan dudas
-118             Call WriteChatOverHead(Centinela.RevisandoUserIndex, "¡" & UserList(Centinela.RevisandoUserIndex).Name & ", tienes un minuto más para responder! Debes escribir /CENTINELA " & Centinela.clave & ".", CStr(NpcList(CentinelaNPCIndex).Char.CharIndex), vbRed)
-120             Call WriteConsoleMsg(Centinela.RevisandoUserIndex, "¡" & UserList(Centinela.RevisandoUserIndex).Name & ", tienes un minuto más para responder! Debes escribir /CENTINELA " & Centinela.clave & ".", e_FontTypeNames.FONTTYPE_CENTINELA)
+118             Call WriteChatOverHead(Centinela.RevisandoUserIndex, "¡" & UserList(Centinela.RevisandoUserIndex).name & ", tienes un minuto más para responder! Debes escribir /CENTINELA " & Centinela.clave & ".", CStr(NpcList(CentinelaNPCIndex).Char.CharIndex), vbRed)
+120             Call WriteConsoleMsg(Centinela.RevisandoUserIndex, "¡" & UserList(Centinela.RevisandoUserIndex).name & ", tienes un minuto más para responder! Debes escribir /CENTINELA " & Centinela.clave & ".", e_FontTypeNames.FONTTYPE_CENTINELA)
             
 
             End If
@@ -372,7 +372,7 @@ Public Sub CentinelaUserLogout()
         '############################################################
 100     If Centinela.RevisandoUserIndex Then
             'Logueamos el evento
-102         Call LogCentinela("El usuario " & UserList(Centinela.RevisandoUserIndex).Name & " se desolgueó al pedirsele la contraseña")
+102         Call LogCentinela("El usuario " & UserList(Centinela.RevisandoUserIndex).name & " se desolgueó al pedirsele la contraseña")
         
             'Reseteamos y esperamos a otro PasarMinuto para ir al siguiente user
 104         Centinela.clave = 0
@@ -397,23 +397,8 @@ CentinelaUserLogout_Err:
 End Sub
 
 Private Sub LogCentinela(ByVal texto As String)
-
-        '*************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last modified: 03/15/2006
-        'Loguea un evento del centinela
-        '*************************************************
-        On Error GoTo ErrHandler
-
-        Dim nfile As Integer
-
-100     nfile = FreeFile ' obtenemos un canal
-    
-102     Open App.Path & "\logs\Centinela.log" For Append Shared As #nfile
-104     Print #nfile, Date & " " & Time & " " & texto
-106     Close #nfile
+On Error GoTo ErrHandler
+        Call LogThis(0, "[Centinela.log] LogCentinela " & texto, vbLogEventTypeInformation)
         Exit Sub
-
 ErrHandler:
-
 End Sub
