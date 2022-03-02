@@ -114,7 +114,6 @@ Public Sub BanPJ(ByVal BannerIndex As Integer, ByVal UserName As String, ByRef R
 112     Call LogBanFromName(UserName, BannerIndex, Razon)
 
         ' Le buchoneamos al mundo.
-114     Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » " & UserList(BannerIndex).Name & " ha baneado a " & UserName & " debido a: " & LCase$(Razon) & ".", e_FontTypeNames.FONTTYPE_SERVER))
 114     Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » " & UserList(BannerIndex).name & " ha baneado a " & UserName & " debido a: " & LCase$(Razon) & ".", e_FontTypeNames.FONTTYPE_SERVER))
 
         ' Si estaba online, lo echamos.
