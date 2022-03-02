@@ -11,6 +11,26 @@ Option Explicit
 
 Private unit_client As Network.Client
 Private exit_client As Boolean
+Public unit_public_key As String
+
+
+Public Sub WriteLoginNewChar(ByVal username As String)
+    Dim encrypted_username_b64 As String
+    encrypted_username_b64 = AO20CryptoSysWrapper.ENCRYPT(cnvHexStrFromBytes(unit_public_key), username)
+     Call Writer.WriteInt(ClientPacketID.LoginNewChar)
+     Call Writer.WriteString8(encrypted_session_token)
+     Call Writer.WriteString8(encrypted_username_b64)
+     Call Writer.WriteInt8(App.Major)
+     Call Writer.WriteInt8(App.Minor)
+     Call Writer.WriteInt8(App.Revision)
+     Call Writer.WriteString8(CheckMD5)
+     Call Writer.WriteInt8(UserRaza)
+     Call Writer.WriteInt8(UserSexo)
+     Call Writer.WriteInt8(UserClase)
+     Call Writer.WriteInt16(MiCabeza)
+     Call Writer.WriteInt8(UserHogar)
+     Call modNetwork.Send(Writer)
+End Sub
     
 Private Function Create1stMessage() As Network.Writer
     Set Create1stMessage = New Network.Writer
@@ -60,6 +80,8 @@ End Sub
 
 Function test_proto()
 test_proto = False
+    unit_public_key = "pabloMARQUEZArg1"
+
     Set unit_client = New Network.Client
     Call unit_client.Attach(AddressOf OnClientAttach, AddressOf OnClientDetach, AddressOf OnClientForward, AddressOf OnClientReceive)
     Call unit_client.Connect("127.0.0.1", "7667")
