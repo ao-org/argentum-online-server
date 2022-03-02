@@ -59,11 +59,11 @@ Private Sub OnClientReceive(ByVal Buffer As Network.Reader)
     Call Buffer.getData(BufferRef)
     
     
-    Select Case Buffer.ReadInt()
-        Case 0
-            Debug.Print "Create1stMessage", Buffer.ReadString8()
-            Call unit_client.Send(False, Create2ndMessage())
-    End Select
+'    Select Case Buffer.ReadInt()
+'        Case 0
+'            Debug.Print "Create1stMessage", Buffer.ReadString8()
+'            Call unit_client.Send(False, Create2ndMessage())
+'    End Select
 End Sub
 
 
