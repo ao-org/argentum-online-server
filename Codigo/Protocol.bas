@@ -407,7 +407,6 @@ Private Enum ClientPacketID
     AlterName               '/ANAME
     DoBackUp                '/DOBACKUP
     ShowGuildMessages       '/SHOWCMSG
-    SaveMap                 '/GUARDAMAPA
     ChangeMapInfoPK         '/MODMAPINFO PK
     ChangeMapInfoBackup     '/MODMAPINFO BACKUP
     ChangeMapInfoRestricted '/MODMAPINFO RESTRINGIR
@@ -425,7 +424,6 @@ Private Enum ClientPacketID
     ReloadServerIni         '/RELOADSINI
     ReloadSpells            '/RELOADHECHIZOS
     ReloadObjects           '/RELOADOBJ
-    Restart                 '/REINICIAR
     ChatColor               '/CHATCOLOR
     Ignored                 '/IGNORADO
     CheckSlot               '/SLOT
@@ -13031,41 +13029,6 @@ ErrHandler:
 
 End Sub
 
-''
-' Handles the "Restart" message.
-'
-' @param    UserIndex The index of the user sending the message.
-
-Public Sub HandleRestart(ByVal UserIndex As Integer)
-        
-        On Error GoTo HandleRestart_Err
-
-        '***************************************************
-        'Author: Lucas Tavolaro Ortiz (Tavo)
-        'Last Modification: 12/23/06
-        'Restart the game
-        '***************************************************
-100     With UserList(UserIndex)
-        
-102         If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero Or e_PlayerType.SemiDios)) Then
-104             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
-                Exit Sub
-            End If
-        
-            'time and Time BUG!
-106         Call LogGM(.Name, .Name & " reinicio el mundo")
-        
-108         Call ReiniciarServidor(True)
-
-        End With
-        
-        Exit Sub
-
-HandleRestart_Err:
-110     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRestart", Erl)
-112
-        
-End Sub
 
 ''
 ' Handles the "ReloadObjects" message.
@@ -14009,43 +13972,6 @@ ErrHandler:
 
 End Sub
 
-''
-' Handle the "SaveMap" message
-'
-' @param UserIndex The index of the user sending the message
-
-Public Sub HandleSaveMap(ByVal UserIndex As Integer)
-        
-        On Error GoTo HandleSaveMap_Err
-
-        Call LogThis(0, "[BackUps.log] HandleSaveMap Started", vbLogEventTypeInformation)
-
-        '***************************************************
-        'Author: Lucas Tavolaro Ortiz (Tavo)
-        'Last Modification: 12/24/06
-        'Saves the map
-        '***************************************************
-100     With UserList(UserIndex)
-        
-102         If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero Or e_PlayerType.SemiDios Or e_PlayerType.RoleMaster)) Then Exit Sub
-        
-104         Call LogGM(.Name, .Name & " ha guardado el mapa " & CStr(.Pos.Map))
-        
-106         Call GrabarMapa(.Pos.Map, App.Path & "\WorldBackUp\Mapa" & .Pos.Map)
-        
-108         Call WriteConsoleMsg(UserIndex, "Mapa Guardado", e_FontTypeNames.FONTTYPE_INFO)
-
-        End With
-        
-        Call LogThis(0, "[BackUps.log] HandleSaveMap Ended", vbLogEventTypeInformation)
-
-        Exit Sub
-
-HandleSaveMap_Err:
-110     Call TraceError(Err.Number, Err.Description, "Protocol.HandleSaveMap", Erl)
-112
-        
-End Sub
 
 ''
 ' Handle the "ShowGuildMessages" message
