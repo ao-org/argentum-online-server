@@ -290,7 +290,6 @@ Private Enum ClientPacketID
     Reward                  '/RECOMPENSA
     RequestMOTD             '/MOTD
     UpTime                  '/UPTIME
-    Inquiry                 '/ENCUESTA ( with no params )
     GuildMessage            '/CMSG
     CentinelReport          '/CENTINELA
     GuildOnline             '/ONLINECLAN
@@ -300,7 +299,6 @@ Private Enum ClientPacketID
     GuildVote               '/VOTO
     punishments             '/PENAS
     Gamble                  '/APOSTAR
-    InquiryVote             '/ENCUESTA ( with parameters )
     LeaveFaction            '/RETIRAR ( with no arguments )
     BankExtractGold         '/RETIRAR ( with arguments )
     BankDepositGold         '/DEPOSITAR
@@ -835,8 +833,6 @@ On Error Resume Next
             Call HandleRequestMOTD(UserIndex)
         Case ClientPacketID.UpTime
             Call HandleUpTime(UserIndex)
-        Case ClientPacketID.Inquiry
-            Call HandleInquiry(UserIndex)
         Case ClientPacketID.GuildMessage
             Call HandleGuildMessage(UserIndex)
         Case ClientPacketID.CentinelReport
@@ -855,8 +851,6 @@ On Error Resume Next
             Call HandlePunishments(UserIndex)
         Case ClientPacketID.Gamble
             Call HandleGamble(UserIndex)
-        Case ClientPacketID.InquiryVote
-            Call HandleInquiryVote(UserIndex)
         Case ClientPacketID.LeaveFaction
             Call HandleLeaveFaction(UserIndex)
         Case ClientPacketID.BankExtractGold
@@ -6724,28 +6718,6 @@ HandleUpTime_Err:
         
 End Sub
 
-''
-' Handles the "Inquiry" message.
-'
-' @param    UserIndex The index of the user sending the message.
-
-Private Sub HandleInquiry(ByVal UserIndex As Integer)
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
-        On Error GoTo HandleInquiry_Err
-
-100     Call ConsultaPopular.SendInfoEncuesta(UserIndex)
-        
-        Exit Sub
-
-HandleInquiry_Err:
-102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleInquiry", Erl)
-104
-        
-End Sub
 
 ''
 ' Handles the "GuildMessage" message.
@@ -7208,37 +7180,6 @@ HandleGamble_Err:
         
 End Sub
 
-''
-' Handles the "InquiryVote" message.
-'
-' @param    UserIndex The index of the user sending the message.
-
-Private Sub HandleInquiryVote(ByVal UserIndex As Integer)
-        
-        On Error GoTo HandleInquiryVote_Err
-        
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
-
-100     With UserList(UserIndex)
-
-            Dim opt As Byte
-102             opt = Reader.ReadInt8()
-        
-104         Call WriteConsoleMsg(UserIndex, ConsultaPopular.doVotar(UserIndex, opt), e_FontTypeNames.FONTTYPE_GUILD)
-
-        End With
-        
-        Exit Sub
-
-HandleInquiryVote_Err:
-106     Call TraceError(Err.Number, Err.Description, "Protocol.HandleInquiryVote", Erl)
-108
-        
-End Sub
 
 ''
 ' Handles the "BankExtractGold" message.

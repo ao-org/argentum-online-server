@@ -2460,7 +2460,6 @@ Public Libertad                           As t_WorldPos
 
 Public Ayuda                              As New cCola
 
-Public ConsultaPopular                    As New ConsultasPopulares
 
 Public Declare Function writeprivateprofilestring Lib "kernel32" Alias "WritePrivateProfileStringA" (ByVal lpApplicationname As String, ByVal lpKeyname As Any, ByVal lpString As String, ByVal lpfilename As String) As Long
 
