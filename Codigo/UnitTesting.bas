@@ -10,14 +10,15 @@ Attribute VB_Name = "UnitTesting"
 Option Explicit
 
 Private unit_client As Network.Client
+Private client_writer As Network.writer
 Private exit_client As Boolean
 Public unit_public_key As String
 
 
-Public Sub WriteLoginNewChar(ByVal username As String)
-    Dim encrypted_username_b64 As String
-     'encrypted_username_b64 = AO20CryptoSysWrapper.ENCRYPT(cnvHexStrFromBytes(unit_public_key), UserName)
-'     Call Writer.WriteInt(ClientPacketID.LoginNewChar)
+Public Sub WriteLoginNewChar(ByRef writer As Network.writer, ByVal username As String)
+     Dim encrypted_username_b64 As String
+     encrypted_username_b64 = AO20CryptoSysWrapper.ENCRYPT(cnvHexStrFromString(unit_public_key), username)
+     Call writer.WriteInt(ClientPacketID.LoginNewChar)
 '     Call Writer.WriteString8(encrypted_session_token)
 '     Call Writer.WriteString8(encrypted_username_b64)
 '     Call Writer.WriteInt8(App.Major)
@@ -32,22 +33,10 @@ Public Sub WriteLoginNewChar(ByVal username As String)
 '     Call modNetwork.Send(Writer)
 End Sub
     
-Private Function Create1stMessage() As Network.Writer
-    Set Create1stMessage = New Network.Writer
-    
-    Call Create1stMessage.WriteInt(0)
-    Call Create1stMessage.WriteString8("Hello, World")
-End Function
-
-Private Function Create2ndMessage() As Network.Writer
-    Set Create2ndMessage = New Network.Writer
-    
-    Call Create2ndMessage.WriteInt(1)
-    Call Create2ndMessage.WriteString8("Goodbye!")
-End Function
-
 Private Sub OnClientAttach()
     Debug.Print "OnClientAttach"
+    
+    Call WriteLoginNewChar(client_writer, "gulfas")
 End Sub
 
 Private Sub OnClientDetach(ByVal Code As Long)
@@ -79,10 +68,12 @@ End Sub
 
 
 Function test_proto()
-test_proto = False
+    test_proto = False
     unit_public_key = "pabloMARQUEZArg1"
 
     Set unit_client = New Network.Client
+    Set client_writer = New Network.writer
+
     Call unit_client.Attach(AddressOf OnClientAttach, AddressOf OnClientDetach, AddressOf OnClientForward, AddressOf OnClientReceive)
     Call unit_client.Connect("127.0.0.1", "7667")
     Do While (Not exit_client)
