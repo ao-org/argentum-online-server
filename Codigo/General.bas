@@ -2085,29 +2085,6 @@ ErrHandler:
 
 End Sub
 
-Public Sub ReiniciarServidor(Optional ByVal EjecutarLauncher As Boolean = True)
-        'WorldSave
-        
-        On Error GoTo ReiniciarServidor_Err
-        
-100     Call DoBackUp
-
-        'Guardar Pjs
-102     Call GuardarUsuarios
-    
-104     If EjecutarLauncher Then Shell App.Path & "\launcher.exe" & " megustalanoche*"
-
-        'Chauuu
-106     Unload frmMain
-
-        
-        Exit Sub
-
-ReiniciarServidor_Err:
-108     Call TraceError(Err.Number, Err.Description, "General.ReiniciarServidor", Erl)
-
-        
-End Sub
 
 Sub ForzarActualizar()
     
