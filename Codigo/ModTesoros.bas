@@ -242,7 +242,7 @@ Public Sub PerderRegalo()
         Dim Iterations As Integer
         
 106     Iterations = 0
-        
+        If RegaloNumMapa <= 0 Then Exit Sub
 108     Do While Not EncontreLugar
 110     Iterations = Iterations + 1
 112         If (MapData(RegaloNumMapa, RegaloX, RegaloY).Blocked And e_Block.ALL_SIDES) <> e_Block.ALL_SIDES Then

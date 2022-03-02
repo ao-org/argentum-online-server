@@ -78,6 +78,11 @@ Public Sub UsarLlave(ByVal UserIndex As Integer, ByVal Slot As Integer)
     
 102     With UserList(UserIndex)
 
+            If Slot > MAXKEYS Then
+                'Call BanearIP(0, UserList(UserIndex).name, UserList(UserIndex).IP, UserList(UserIndex).Cuenta)
+                Call LogEdicionPaquete("El usuario " & UserList(UserIndex).name & " editó el slot del llavero | Valor: " & Slot & ".")
+                Exit Sub
+            End If
 104         If .Keys(Slot) <> 0 Then
 106             If .flags.TargetObj = 0 Then Exit Sub
             

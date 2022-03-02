@@ -28,7 +28,9 @@ Public Sub CargarListaNegraUsuarios()
         ' IP's
 108     For i = 0 To File.EntriesCount("IP") - 1
 110        Call File.GetPair("IP", i, iKey, iValue)
-112        Call IP_Blacklist.Add(iKey, iValue)
+            If Not IP_Blacklist.Exists(iKey) Then
+112             Call IP_Blacklist.Add(iKey, iValue)
+            End If
         Next
 
         Exit Sub
@@ -113,6 +115,7 @@ Public Sub BanPJ(ByVal BannerIndex As Integer, ByVal UserName As String, ByRef R
 
         ' Le buchoneamos al mundo.
 114     Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » " & UserList(BannerIndex).Name & " ha baneado a " & UserName & " debido a: " & LCase$(Razon) & ".", e_FontTypeNames.FONTTYPE_SERVER))
+114     Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » " & UserList(BannerIndex).name & " ha baneado a " & UserName & " debido a: " & LCase$(Razon) & ".", e_FontTypeNames.FONTTYPE_SERVER))
 
         ' Si estaba online, lo echamos.
 116     Dim tUser As Integer: tUser = NameIndex(UserName)

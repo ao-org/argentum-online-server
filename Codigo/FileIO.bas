@@ -2477,7 +2477,9 @@ Sub SaveUser(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = Fals
         If Logout Then
             Call SaveCreditsDatabase(userindex)
 103         Call RemoveTokenDatabase(userindex)
-            Call dcnUsersLastLogout.Add(UCase(UserList(UserIndex).Name), GetTickCount())
+            If Not dcnUsersLastLogout.Exists(UCase(UserList(UserIndex).name)) Then
+                Call dcnUsersLastLogout.Add(UCase(UserList(UserIndex).name), GetTickCount())
+            End If
         End If
         
 104     UserList(UserIndex).Counters.LastSave = GetTickCount
