@@ -1144,6 +1144,7 @@ Sub EquiparBarco(ByVal UserIndex As Integer)
         Dim Barco As t_ObjData
 
 100     With UserList(UserIndex)
+            If .Invent.BarcoObjIndex <= 0 Or .Invent.BarcoObjIndex > UBound(ObjData) Then Exit Sub
 102         Barco = ObjData(.Invent.BarcoObjIndex)
 
 104         If .flags.Muerto = 1 Then

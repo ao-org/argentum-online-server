@@ -2405,12 +2405,15 @@ Private Sub HandleUserCommerceEnd(ByVal UserIndex As Integer)
         
         
             'Quits commerce mode with user
-102         If .ComUsu.DestUsu > 0 And UserList(.ComUsu.DestUsu).ComUsu.DestUsu = UserIndex Then
-104             Call WriteConsoleMsg(.ComUsu.DestUsu, .Name & " ha dejado de comerciar con vos.", e_FontTypeNames.FONTTYPE_TALK)
-106             Call FinComerciarUsu(.ComUsu.DestUsu)
             
+102         If .ComUsu.DestUsu > 0 Then
+                If UserList(.ComUsu.DestUsu).ComUsu.DestUsu = UserIndex Then
+104                 Call WriteConsoleMsg(.ComUsu.DestUsu, .name & " ha dejado de comerciar con vos.", e_FontTypeNames.FONTTYPE_TALK)
+106                 Call FinComerciarUsu(.ComUsu.DestUsu)
+                
                 'Send data in the outgoing buffer of the other user
 
+                End If
             End If
         
 108         Call FinComerciarUsu(UserIndex)
@@ -2588,37 +2591,41 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
 124             Call TirarOro(amount, UserIndex)
             
             Else
-        
+                If Slot <= getMaxInventorySlots(UserIndex) Then
                 '04-05-08 Ladder
-126             If (.flags.Privilegios And e_PlayerType.Admin) <> 16 Then
-128                 If EsNewbie(UserIndex) And ObjData(.Invent.Object(Slot).ObjIndex).Newbie = 1 Then
-130                     Call WriteConsoleMsg(UserIndex, "No se pueden tirar los objetos Newbies.", e_FontTypeNames.FONTTYPE_INFO)
-                        Exit Sub
-                    End If
-            
-132                 If ObjData(.Invent.Object(Slot).ObjIndex).Intirable = 1 And Not EsGM(UserIndex) Then
-134                     Call WriteConsoleMsg(UserIndex, "Acción no permitida.", e_FontTypeNames.FONTTYPE_INFO)
-                        Exit Sub
-136                 ElseIf ObjData(.Invent.Object(Slot).ObjIndex).Intirable = 1 And EsGM(UserIndex) Then
-138                     If Slot <= UserList(UserIndex).CurrentInventorySlots And Slot > 0 Then
-140                         If .Invent.Object(Slot).ObjIndex = 0 Then Exit Sub
-142                         Call DropObj(UserIndex, Slot, amount, .Pos.Map, .Pos.X, .Pos.Y)
+126                 If (.flags.Privilegios And e_PlayerType.Admin) <> 16 Then
+128                     If EsNewbie(UserIndex) And ObjData(.Invent.Object(Slot).ObjIndex).Newbie = 1 Then
+130                         Call WriteConsoleMsg(UserIndex, "No se pueden tirar los objetos Newbies.", e_FontTypeNames.FONTTYPE_INFO)
+                            Exit Sub
                         End If
-                        Exit Sub
-                    End If
                 
-144                 If ObjData(.Invent.Object(Slot).ObjIndex).Instransferible = 1 Then
-146                     Call WriteConsoleMsg(UserIndex, "Acción no permitida.", e_FontTypeNames.FONTTYPE_INFO)
+132                     If ObjData(.Invent.Object(Slot).ObjIndex).Intirable = 1 And Not EsGM(UserIndex) Then
+134                         Call WriteConsoleMsg(UserIndex, "Acción no permitida.", e_FontTypeNames.FONTTYPE_INFO)
+                            Exit Sub
+136                     ElseIf ObjData(.Invent.Object(Slot).ObjIndex).Intirable = 1 And EsGM(UserIndex) Then
+138                         If Slot <= UserList(UserIndex).CurrentInventorySlots And Slot > 0 Then
+140                             If .Invent.Object(Slot).ObjIndex = 0 Then Exit Sub
+142                             Call DropObj(UserIndex, Slot, amount, .Pos.map, .Pos.X, .Pos.Y)
+                            End If
+                            Exit Sub
+                        End If
+                    
+144                     If ObjData(.Invent.Object(Slot).ObjIndex).Instransferible = 1 Then
+146                         Call WriteConsoleMsg(UserIndex, "Acción no permitida.", e_FontTypeNames.FONTTYPE_INFO)
+                            Exit Sub
+                        End If
+                
+    
+                    End If
+        
+148                 If ObjData(.Invent.Object(Slot).ObjIndex).OBJType = e_OBJType.otBarcos And UserList(UserIndex).flags.Navegando Then
+150                     Call WriteConsoleMsg(UserIndex, "Para tirar la barca deberias estar en tierra firme.", e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
                     End If
-            
-
-                End If
-        
-148             If ObjData(.Invent.Object(Slot).ObjIndex).OBJType = e_OBJType.otBarcos And UserList(UserIndex).flags.Navegando Then
-150                 Call WriteConsoleMsg(UserIndex, "Para tirar la barca deberias estar en tierra firme.", e_FontTypeNames.FONTTYPE_INFO)
-                    Exit Sub
-
+                Else
+                    'ver de banear al usuario
+                    'Call BanearIP(0, UserList(UserIndex).name, UserList(UserIndex).IP, UserList(UserIndex).Cuenta)
+                    Call LogEdicionPaquete("El usuario " & UserList(UserIndex).name & " editó el slot del inventario | Valor: " & Slot & ".")
                 End If
         
                 '04-05-08 Ladder
@@ -14726,19 +14733,21 @@ Public Sub HandleSetMOTD(ByVal UserIndex As Integer)
 108             Call LogGM(.Name, "Ha fijado un nuevo MOTD")
             
 110             MaxLines = UBound(auxiliaryString()) + 1
-            
+                If MaxLines > 0 Then
 112             ReDim MOTD(1 To MaxLines)
             
-114             Call WriteVar(DatPath & "Motd.ini", "INIT", "NumLines", CStr(MaxLines))
-            
-116             For LoopC = 1 To MaxLines
-118                 Call WriteVar(DatPath & "Motd.ini", "Motd", "Line" & CStr(LoopC), auxiliaryString(LoopC - 1))
+114                 Call WriteVar(DatPath & "Motd.ini", "INIT", "NumLines", CStr(MaxLines))
                 
-120                 MOTD(LoopC).texto = auxiliaryString(LoopC - 1)
-122             Next LoopC
-            
-124             Call WriteConsoleMsg(UserIndex, "Se ha cambiado el MOTD con exito", e_FontTypeNames.FONTTYPE_INFO)
-
+116                 For LoopC = 1 To MaxLines
+118                     Call WriteVar(DatPath & "Motd.ini", "Motd", "Line" & CStr(LoopC), auxiliaryString(LoopC - 1))
+                    
+120                     MOTD(LoopC).texto = auxiliaryString(LoopC - 1)
+122                 Next LoopC
+                
+124                 Call WriteConsoleMsg(UserIndex, "Se ha cambiado el MOTD con exito", e_FontTypeNames.FONTTYPE_INFO)
+                Else
+                    ReDim MOTD(0 To 0)
+                End If
             End If
 
         End With
@@ -14772,7 +14781,7 @@ Public Sub HandleChangeMOTD(ByVal UserIndex As Integer)
             Dim auxiliaryString As String
 
             Dim LoopC           As Long
-        
+            
 104         For LoopC = LBound(MOTD()) To UBound(MOTD())
 106             auxiliaryString = auxiliaryString & MOTD(LoopC).texto & vbCrLf
 108         Next LoopC
@@ -15471,6 +15480,8 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
             Dim Equipado3 As Boolean
             Dim ObjCania As t_Obj
             'HarThaoS: Si es un hilo de pesca y lo estoy arrastrando en una caña rota borro del slot viejo y en el nuevo pongo la caña correspondiente
+             If SlotViejo > getMaxInventorySlots(UserIndex) Or SlotNuevo > getMaxInventorySlots(UserIndex) Or SlotViejo <= 0 Or SlotNuevo <= 0 Then Exit Sub
+            
             If .Invent.Object(SlotViejo).ObjIndex = 2183 Then
             
                 Select Case .Invent.Object(SlotNuevo).ObjIndex
@@ -15779,6 +15790,7 @@ Private Sub HandleBovedaMoveItem(ByVal UserIndex As Integer)
             Dim Equipado2 As Boolean
             Dim Equipado3 As Boolean
         
+            If SlotViejo > MAX_BANCOINVENTORY_SLOTS Or SlotNuevo > MAX_BANCOINVENTORY_SLOTS Or SlotViejo <= 0 Or SlotNuevo <= 0 Then Exit Sub
 106         Objeto.ObjIndex = UserList(UserIndex).BancoInvent.Object(SlotViejo).ObjIndex
 108         Objeto.amount = UserList(UserIndex).BancoInvent.Object(SlotViejo).amount
         
@@ -17335,9 +17347,11 @@ Public Sub HandleQuestDetailsRequest(ByVal UserIndex As Integer)
         Dim QuestSlot As Byte
 
 100     QuestSlot = Reader.ReadInt8
-    
-102     Call WriteQuestDetails(UserIndex, UserList(UserIndex).QuestStats.Quests(QuestSlot).QuestIndex, QuestSlot)
-        
+        If QuestSlot <= MAXUSERQUESTS And QuestSlot > 0 Then
+            If UserList(UserIndex).QuestStats.Quests(QuestSlot).QuestIndex > 0 Then
+102             Call WriteQuestDetails(UserIndex, UserList(UserIndex).QuestStats.Quests(QuestSlot).QuestIndex, QuestSlot)
+            End If
+        End If
         Exit Sub
 
 HandleQuestDetailsRequest_Err:
@@ -17358,6 +17372,8 @@ Public Sub HandleQuestAbandon(ByVal UserIndex As Integer)
         
             Dim Slot As Byte
             Slot = Reader.ReadInt8
+            
+            If Slot > MAXUSERQUESTS Then Exit Sub
             
             With .QuestStats.Quests(Slot)
                 ' Le quitamos los objetos de quest que no puede tirar
@@ -17796,6 +17812,7 @@ Private Sub HandleCommerceSendChatMessage(ByVal UserIndex As Integer)
 102         chatMessage = "[" & UserList(UserIndex).Name & "] " & Reader.ReadString8
         
             'El mensaje se lo envío al destino
+            If UserList(UserIndex).ComUsu.DestUsu <= 0 Then Exit Sub
 104         Call WriteCommerceRecieveChatMessage(UserList(UserIndex).ComUsu.DestUsu, chatMessage)
         
             'y tambien a mi mismo
@@ -18402,6 +18419,7 @@ Private Sub HandleDeleteItem(ByVal UserIndex As Integer)
     Slot = Reader.ReadInt8()
 
     With UserList(UserIndex)
+        If Slot >= getMaxInventorySlots(UserIndex) Or Slot <= 0 Then Exit Sub
         If .Invent.Object(Slot).Equipped = 0 Then
             UserList(UserIndex).Invent.Object(Slot).amount = 0
             UserList(UserIndex).Invent.Object(Slot).Equipped = 0

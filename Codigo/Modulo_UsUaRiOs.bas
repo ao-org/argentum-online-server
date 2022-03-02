@@ -2293,7 +2293,7 @@ Sub WarpUserChar(ByVal UserIndex As Integer, _
         Dim OldY   As Integer
     
 100     With UserList(UserIndex)
-
+            If map <= 0 Then Exit Sub
 102         If .ComUsu.DestUsu > 0 Then
 
 104             If UserList(.ComUsu.DestUsu).flags.UserLogged Then

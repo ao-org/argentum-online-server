@@ -469,7 +469,7 @@ Public Function m_PuedeSalirDeClan(ByRef nombre As String, ByVal GuildIndex As I
 
 100     m_PuedeSalirDeClan = False
 
-102     If GuildIndex = 0 Then Exit Function
+102     If GuildIndex = 0 Or guilds(GuildIndex) Is Nothing Then Exit Function
     
         'esto es un parche, si viene en -1 es porque la invoca la rutina de expulsion automatica de clanes x antifacciones
 104     If QuienLoEchaUI = -1 Then
@@ -1712,7 +1712,9 @@ Public Function r_ListaDePropuestas(ByVal UserIndex As Integer, ByVal Tipo As e_
         Dim proposalCount As Integer
 
         Dim proposals()   As String
-    
+        
+        ReDim proposals(0) As String
+        
 100     GI = UserList(UserIndex).GuildIndex
     
 102     If GI > 0 And GI <= CANTIDADDECLANES Then
@@ -1723,8 +1725,6 @@ Public Function r_ListaDePropuestas(ByVal UserIndex As Integer, ByVal Tipo As e_
                 'Resize array to contain all proposals
 108             If proposalCount > 0 Then
 110                 ReDim proposals(proposalCount - 1) As String
-                Else
-112                 ReDim proposals(0) As String
 
                 End If
             
