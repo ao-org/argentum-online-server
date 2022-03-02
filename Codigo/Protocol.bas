@@ -2665,11 +2665,9 @@ Private Function verifyTimeStamp(ByVal ActualCount As Long, ByRef LastCount, ByR
 
     'Controlamos secuencia para ver que no haya paquetes duplicados.
     If ActualCount <= LastCount Then
-       ' Call CloseSocket(UserIndex)
         Call SendData(SendTarget.ToGM, UserIndex, PrepareMessageConsoleMsg("Paquete grabado: " & PacketName & " | Cuenta: " & UserList(UserIndex).Cuenta & " | Ip: " & UserList(UserIndex).IP & " (Baneado automaticamente)", e_FontTypeNames.FONTTYPE_INFOBOLD))
-        'Call BanearIP(0, UserList(UserIndex).Name, UserList(UserIndex).IP, UserList(UserIndex).Cuenta)
+        Call BanearIP(0, UserList(UserIndex).name, UserList(UserIndex).IP, UserList(UserIndex).Cuenta)
         Call LogEdicionPaquete("El usuario " & UserList(UserIndex).name & " editó el paquete " & PacketName & ".")
-
         LastCount = ActualCount
         Exit Function
     End If
