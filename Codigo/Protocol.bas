@@ -201,7 +201,7 @@ Public Enum ServerPacketID
     [PacketCount]
 End Enum
 
-Private Enum ClientPacketID
+Public Enum ClientPacketID
 
     LoginExistingChar       'OLOGIN
     LoginNewChar            'NLOGIN
