@@ -2267,7 +2267,6 @@ Sub LoadSini()
         End If
 
 164     Call CargarCiudades
-166     Call ConsultaPopular.LoadData
 
 168     Set Lector = Nothing
 
