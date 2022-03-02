@@ -42,7 +42,6 @@ Form=Codigo\frmAdmin.frm
 Module=modInvisibles; Codigo\modInvisibles.bas
 Module=modNuevoTimer; Codigo\modNuevoTimer.bas
 Form=Codigo\frmUserList.frm
-Class=ConsultasPopulares; Codigo\ConsultasPopulares.cls
 Class=clsClan; Codigo\clsClan.cls
 Module=modGuilds; Codigo\modGuilds.bas
 Class=diccionario; Codigo\clsdicc.cls
