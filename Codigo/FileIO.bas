@@ -1937,6 +1937,7 @@ Public Sub CargarMapaFormatoCSM(ByVal Map As Long, ByVal MAPFl As String)
                             
                             ' Lo guardo en los logs + aparece en el Debug.Print
 310                         Call TraceError(404, "NPC no existe en los .DAT's o está mal dateado. Posicion: " & map & "-" & NPCs(i).X & "-" & NPCs(i).y, "ES.CargarMapaFormatoCSM")
+310                         Call TraceError(404, "NPC no existe en los .DAT's o está mal dateado. Posicion: " & map & "-" & NPCs(i).X & "-" & NPCs(i).Y, "ES.CargarMapaFormatoCSM")
                             
                         End If
                     End If
@@ -2457,10 +2458,6 @@ Sub LoadUser(ByVal UserIndex As Integer)
         On Error GoTo ErrorHandler
     
 105         Call LoadUserDatabase(UserIndex)
-            Dim i As Long
-            For i = 1 To NUMSKILLS
-                UserList(UserIndex).Stats.UserSkills(i) = 100
-            Next i
         Exit Sub
 
 ErrorHandler:
