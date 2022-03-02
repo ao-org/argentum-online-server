@@ -201,7 +201,7 @@ Public Enum ServerPacketID
     [PacketCount]
 End Enum
 
-Private Enum ClientPacketID
+Public Enum ClientPacketID
 
     LoginExistingChar       'OLOGIN
     LoginNewChar            'NLOGIN
@@ -341,7 +341,7 @@ Private Enum ClientPacketID
     OnlineMap               '/ONLINEMAP
     Forgive                 '/PERDON
     Kick                    '/ECHAR
-    Execute                 '/EJECUTAR
+    ExecuteCmd              '/EJECUTAR
     BanChar                 '/BAN
     UnbanChar               '/UNBAN
     NPCFollow               '/SEGUIR
@@ -405,7 +405,7 @@ Private Enum ClientPacketID
     ResetFactions           '/RAJAR
     RemoveCharFromGuild     '/RAJARCLAN
     AlterName               '/ANAME
-    DoBackUp                '/DOBACKUP
+    DoBackUpCmd             '/DOBACKUP
     ShowGuildMessages       '/SHOWCMSG
     ChangeMapInfoPK         '/MODMAPINFO PK
     ChangeMapInfoBackup     '/MODMAPINFO BACKUP
@@ -433,7 +433,7 @@ Private Enum ClientPacketID
     GlobalMessage           '/CONSOLA
     GlobalOnOff
     UseKey
-    Day
+    DayCmd
     SetTime
     DonateGold              '/DONAR
     Promedio                '/PROMEDIO
@@ -929,7 +929,7 @@ On Error Resume Next
             Call HandleForgive(UserIndex)
         Case ClientPacketID.Kick
             Call HandleKick(UserIndex)
-        Case ClientPacketID.Execute
+        Case ClientPacketID.ExecuteCmd
             Call HandleExecute(UserIndex)
         Case ClientPacketID.BanChar
             Call HandleBanChar(UserIndex)
@@ -1057,7 +1057,7 @@ On Error Resume Next
             Call HandleRemoveCharFromGuild(UserIndex)
         Case ClientPacketID.AlterName
             Call HandleAlterName(UserIndex)
-        Case ClientPacketID.DoBackUp
+        Case ClientPacketID.DoBackUpCmd
             Call HandleDoBackUp(UserIndex)
         Case ClientPacketID.ShowGuildMessages
             Call HandleShowGuildMessages(UserIndex)
@@ -1109,7 +1109,7 @@ On Error Resume Next
             Call HandleGlobalOnOff(UserIndex)
         Case ClientPacketID.UseKey
             Call HandleUseKey(UserIndex)
-        Case ClientPacketID.Day
+        Case ClientPacketID.DayCmd
             Call HandleDay(UserIndex)
         Case ClientPacketID.SetTime
             Call HandleSetTime(UserIndex)
