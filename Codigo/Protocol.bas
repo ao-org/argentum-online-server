@@ -964,7 +964,7 @@ On Error Resume Next
         Case ClientPacketID.SetCharDescription
             Call HandleSetCharDescription(UserIndex)
         Case ClientPacketID.ForceMIDIToMap
-            Call HandleForceMIDIAll(UserIndex)
+            Call HanldeForceMIDIToMap(UserIndex)
         Case ClientPacketID.ForceWAVEToMap
             Call HandleForceWAVEToMap(UserIndex)
         Case ClientPacketID.RoyalArmyMessage
