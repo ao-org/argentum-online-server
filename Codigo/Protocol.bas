@@ -1061,8 +1061,6 @@ On Error Resume Next
             Call HandleDoBackUp(UserIndex)
         Case ClientPacketID.ShowGuildMessages
             Call HandleShowGuildMessages(UserIndex)
-        Case ClientPacketID.SaveMap
-            Call HandleSaveMap(UserIndex)
         Case ClientPacketID.ChangeMapInfoPK
             Call HandleChangeMapInfoPK(UserIndex)
         Case ClientPacketID.ChangeMapInfoBackup
@@ -1097,8 +1095,6 @@ On Error Resume Next
             Call HandleReloadSpells(UserIndex)
         Case ClientPacketID.ReloadObjects
             Call HandleReloadObjects(UserIndex)
-        Case ClientPacketID.Restart
-            Call HandleRestart(UserIndex)
         Case ClientPacketID.ChatColor
             Call HandleChatColor(UserIndex)
         Case ClientPacketID.Ignored
