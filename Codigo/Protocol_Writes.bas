@@ -4092,23 +4092,6 @@ PrepareMessageSetInvisible_Err:
         '</EhFooter>
 End Function
 
-Public Function PrepareMessageSetEscribiendo(ByVal CharIndex As Integer, _
-                                             ByVal Escribiendo As Boolean)
-        '<EhHeader>
-        On Error GoTo PrepareMessageSetEscribiendo_Err
-        '</EhHeader>
-100     Call Writer.WriteInt(ServerPacketID.SetEscribiendo)
-102     Call Writer.WriteInt16(CharIndex)
-104     Call Writer.WriteBool(Escribiendo)
-        '<EhFooter>
-        Exit Function
-
-PrepareMessageSetEscribiendo_Err:
-        Call Writer.Clear
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageSetEscribiendo", Erl)
-        '</EhFooter>
-End Function
-
 ''
 ' Prepares the "ChatOverHead" message and returns it.
 '
