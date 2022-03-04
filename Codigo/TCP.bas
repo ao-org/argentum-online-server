@@ -440,7 +440,7 @@ Validate_Skills_Err:
         
 End Function
 
-Function ConnectNewUser(ByVal UserIndex As Integer, ByRef Name As String, ByVal UserRaza As e_Raza, ByVal UserSexo As e_Genero, ByVal UserClase As e_Class, ByVal Head As Integer, ByRef UserCuenta As String, ByVal Hogar As e_Ciudad) As Boolean
+Function ConnectNewUser(ByVal UserIndex As Integer, ByRef name As String, ByVal UserRaza As e_Raza, ByVal UserSexo As e_Genero, ByVal UserClase As e_Class, ByVal Head As Integer, ByRef UserCuenta As String, ByVal Hogar As e_Ciudad) As Boolean
         '*************************************************
         'Author: Unknown
         'Last modified: 20/4/2007
@@ -466,15 +466,19 @@ Function ConnectNewUser(ByVal UserIndex As Integer, ByRef Name As String, ByVal 
             End If
             
             ' Nombre válido
-110         If Not ValidarNombre(Name) Then Exit Function
+            If Not ValidarNombre(name) Then
+                Call LogSecurity("ValidarNombre failed in ConnectNewUser for " & name & " desde la IP " & .IP)
+                Call CloseSocketSL(UserIndex)
+                Exit Function
+            End If
             
-112         If Not NombrePermitido(Name) Then
+112         If Not NombrePermitido(name) Then
 114             Call WriteShowMessageBox(UserIndex, "El nombre no está permitido.")
                 Exit Function
             End If
     
             '¿Existe el personaje?
-116         If PersonajeExiste(Name) Then
+116         If PersonajeExiste(name) Then
 118             Call WriteShowMessageBox(UserIndex, "Ya existe el personaje.")
                 Exit Function
             End If
@@ -512,7 +516,7 @@ Function ConnectNewUser(ByVal UserIndex As Integer, ByRef Name As String, ByVal 
 144         .flags.Casado = 0
 146         .flags.Pareja = ""
     
-148         .Name = Name
+148         .name = name
 
 150         .clase = UserClase
 152         .raza = UserRaza
@@ -586,31 +590,31 @@ Function ConnectNewUser(ByVal UserIndex As Integer, ByRef Name As String, ByVal 
             Dim DungeonNewbieCoords(1 To 3) As t_WorldPos
             
 234         With DungeonNewbieCoords(1)
-236             .Map = 37: .X = 76: .Y = 82
+236             .map = 37: .X = 76: .y = 82
             End With
             
 238         With DungeonNewbieCoords(2)
-240             .Map = 264: .X = 54: .Y = 70
+240             .map = 264: .X = 54: .y = 70
             End With
             
 242         With DungeonNewbieCoords(3)
-244             .Map = 168: .X = 50: .Y = 70
+244             .map = 168: .X = 50: .y = 70
             End With
             
             Dim RandomPosIndex As Byte
 246         RandomPosIndex = RandomNumber(LBound(DungeonNewbieCoords), UBound(DungeonNewbieCoords))
 
-248         .Pos.Map = DungeonNewbieCoords(RandomPosIndex).Map
+248         .Pos.map = DungeonNewbieCoords(RandomPosIndex).map
 250         .Pos.X = DungeonNewbieCoords(RandomPosIndex).X
-252         .Pos.Y = DungeonNewbieCoords(RandomPosIndex).Y
+252         .Pos.y = DungeonNewbieCoords(RandomPosIndex).y
         
-254         UltimoChar = UCase$(Name)
+254         UltimoChar = UCase$(name)
         
 256         Call SaveNewUser(UserIndex)
     
 258         ConnectNewUser = True
     
-260         Call ConnectUser(UserIndex, Name, UserCuenta, False)
+260         Call ConnectUser(UserIndex, name, UserCuenta, False)
 
         End With
         
@@ -713,19 +717,19 @@ Function EstaPCarea(Index As Integer, Index2 As Integer) As Boolean
         On Error GoTo EstaPCarea_Err
         
 
-        Dim X As Integer, Y As Integer
+        Dim X As Integer, y As Integer
 
-100     For Y = UserList(Index).Pos.Y - MinYBorder + 1 To UserList(Index).Pos.Y + MinYBorder - 1
+100     For y = UserList(Index).Pos.y - MinYBorder + 1 To UserList(Index).Pos.y + MinYBorder - 1
 102         For X = UserList(Index).Pos.X - MinXBorder + 1 To UserList(Index).Pos.X + MinXBorder - 1
 
-104             If MapData(UserList(Index).Pos.Map, X, Y).UserIndex = Index2 Then
+104             If MapData(UserList(Index).Pos.map, X, y).UserIndex = Index2 Then
 106                 EstaPCarea = True
                     Exit Function
 
                 End If
         
 108         Next X
-110     Next Y
+110     Next y
 
 112     EstaPCarea = False
 
@@ -738,18 +742,18 @@ EstaPCarea_Err:
         
 End Function
 
-Function HayPCarea(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer) As Boolean
+Function HayPCarea(ByVal map As Integer, ByVal X As Integer, ByVal y As Integer) As Boolean
         
         On Error GoTo HayPCarea_Err
         
 
         Dim tX As Integer, tY As Integer
 
-100     For tY = Y - MinYBorder + 1 To Y + MinYBorder - 1
+100     For tY = y - MinYBorder + 1 To y + MinYBorder - 1
 102         For tX = X - MinXBorder + 1 To X + MinXBorder - 1
 
-104             If InMapBounds(Map, tX, tY) Then
-106                 If MapData(Map, tX, tY).UserIndex > 0 Then
+104             If InMapBounds(map, tX, tY) Then
+106                 If MapData(map, tX, tY).UserIndex > 0 Then
 108                     HayPCarea = True
                         Exit Function
 
@@ -776,19 +780,19 @@ Function HayOBJarea(Pos As t_WorldPos, ObjIndex As Integer) As Boolean
         On Error GoTo HayOBJarea_Err
         
 
-        Dim X As Integer, Y As Integer
+        Dim X As Integer, y As Integer
 
-100     For Y = Pos.Y - MinYBorder + 1 To Pos.Y + MinYBorder - 1
+100     For y = Pos.y - MinYBorder + 1 To Pos.y + MinYBorder - 1
 102         For X = Pos.X - MinXBorder + 1 To Pos.X + MinXBorder - 1
 
-104             If MapData(Pos.Map, X, Y).ObjInfo.ObjIndex = ObjIndex Then
+104             If MapData(Pos.map, X, y).ObjInfo.ObjIndex = ObjIndex Then
 106                 HayOBJarea = True
                     Exit Function
 
                 End If
         
 108         Next X
-110     Next Y
+110     Next y
 
 112     HayOBJarea = False
 
@@ -865,7 +869,7 @@ EntrarCuenta_Err:
 End Function
 
 Sub ConnectUser(ByVal UserIndex As Integer, _
-                ByRef Name As String, _
+                ByRef name As String, _
                 ByRef UserCuenta As String, _
                 Optional ByVal NewUser As Boolean = False)
 
@@ -873,15 +877,15 @@ Sub ConnectUser(ByVal UserIndex As Integer, _
 
 100     With UserList(UserIndex)
 
-105         If Not ConnectUser_Check(UserIndex, Name, UserCuenta) Then Exit Sub
+105         If Not ConnectUser_Check(UserIndex, name, UserCuenta) Then Exit Sub
         
-110         Call ConnectUser_Prepare(UserIndex, Name, UserCuenta)
+110         Call ConnectUser_Prepare(UserIndex, name, UserCuenta)
         
             ' Cargamos el personaje
             
 115        ' If Not NewUser Then Call LoadUser(UserIndex)
 Call LoadUser(UserIndex)
-120         Call ConnectUser_Complete(UserIndex, Name, UserCuenta)
+120         Call ConnectUser_Complete(UserIndex, name, UserCuenta)
         End With
 
         Exit Sub
@@ -1082,15 +1086,15 @@ Sub ResetBasicUserInfo(ByVal UserIndex As Integer)
         Dim LoopC As Integer
 
 100     With UserList(UserIndex)
-102         .Name = vbNullString
+102         .name = vbNullString
 104         .Cuenta = vbNullString
 106         .ID = -1
 108         .AccountID = -1
 110         .Desc = vbNullString
 112         .DescRM = vbNullString
-114         .Pos.Map = 0
+114         .Pos.map = 0
 116         .Pos.X = 0
-118         .Pos.Y = 0
+118         .Pos.y = 0
 120         .IP = vbNullString
 122         .clase = 0
 124         .Email = vbNullString
@@ -1304,8 +1308,8 @@ Sub ResetUserFlags(ByVal UserIndex As Integer)
 270         .EnReto = False
 272         .SolicitudReto.estado = e_SolicitudRetoEstado.Libre
 274         .AceptoReto = 0
-276         .LastPos.Map = 0
-278         .ReturnPos.Map = 0
+276         .LastPos.map = 0
+278         .ReturnPos.map = 0
             
 280         .Crafteando = 0
 
@@ -1524,7 +1528,7 @@ Sub ClearAndSaveUser(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
     
     Dim errordesc As String
-    Dim Map As Integer
+    Dim map As Integer
     Dim aN  As Integer
     Dim i   As Integer
 
@@ -1544,7 +1548,7 @@ Sub ClearAndSaveUser(ByVal UserIndex As Integer)
 116         aN = .flags.NPCAtacado
     
 118         If aN > 0 Then
-120             If NpcList(aN).flags.AttackedFirstBy = .Name Then
+120             If NpcList(aN).flags.AttackedFirstBy = .name Then
 122                 NpcList(aN).flags.AttackedFirstBy = vbNullString
                 End If
             End If
@@ -1564,10 +1568,10 @@ Sub ClearAndSaveUser(ByVal UserIndex As Integer)
 138             Call AbandonarReto(UserIndex, True)
 
 140         ElseIf .flags.SolicitudReto.estado <> e_SolicitudRetoEstado.Libre Then
-142             Call CancelarSolicitudReto(UserIndex, .Name & " se ha desconectado.")
+142             Call CancelarSolicitudReto(UserIndex, .name & " se ha desconectado.")
             
 144         ElseIf .flags.AceptoReto > 0 Then
-146             Call CancelarSolicitudReto(.flags.AceptoReto, .Name & " se ha desconectado.")
+146             Call CancelarSolicitudReto(.flags.AceptoReto, .name & " se ha desconectado.")
             End If
         
 148         errordesc = "ERROR AL SACAR MIMETISMO"
@@ -1641,13 +1645,13 @@ Sub CloseUser(ByVal UserIndex As Integer)
         On Error GoTo ErrHandler
     
         Dim errordesc As String
-        Dim Map As Integer
+        Dim map As Integer
         Dim aN  As Integer
         Dim i   As Integer
         
 100     With UserList(UserIndex)
             
-102         Map = .Pos.Map
+102         map = .Pos.map
         
 104         If Not .flags.YaGuardo Then
 106             Call ClearAndSaveUser(UserIndex)
@@ -1655,7 +1659,7 @@ Sub CloseUser(ByVal UserIndex As Integer)
 
 108         errordesc = "ERROR AL DESCONTAR USER DE MAPA"
     
-110         If MapInfo(Map).NumUsers > 0 Then
+110         If MapInfo(map).NumUsers > 0 Then
 112             Call SendData(SendTarget.ToPCAreaButIndex, UserIndex, PrepareMessageRemoveCharDialog(.Char.CharIndex))
     
             End If
@@ -1678,18 +1682,18 @@ Sub CloseUser(ByVal UserIndex As Integer)
 128         errordesc = "ERROR Update Map Users"
         
             'Update Map Users
-130         MapInfo(Map).NumUsers = MapInfo(Map).NumUsers - 1
+130         MapInfo(map).NumUsers = MapInfo(map).NumUsers - 1
         
-132         If MapInfo(Map).NumUsers < 0 Then MapInfo(Map).NumUsers = 0
+132         If MapInfo(map).NumUsers < 0 Then MapInfo(map).NumUsers = 0
     
             ' Si el usuario habia dejado un msg en la gm's queue lo borramos
             'If Ayuda.Existe(.Name) Then Call Ayuda.Quitar(.Name)
         
-134         errordesc = "ERROR AL m_NameIndex.Remove() Name:" & .Name & " cuenta:" & .Cuenta
+134         errordesc = "ERROR AL m_NameIndex.Remove() Name:" & .name & " cuenta:" & .Cuenta
             
-136         Call m_NameIndex.Remove(UCase$(.Name))
+136         Call m_NameIndex.Remove(UCase$(.name))
         
-138         errordesc = "ERROR AL RESETSLOT Name:" & .Name & " cuenta:" & .Cuenta
+138         errordesc = "ERROR AL RESETSLOT Name:" & .name & " cuenta:" & .Cuenta
 
 140         .flags.UserLogged = False
 

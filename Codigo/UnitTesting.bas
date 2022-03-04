@@ -10,15 +10,38 @@ Attribute VB_Name = "UnitTesting"
 Option Explicit
 
 Public public_key As String
+Public private_key As String
+
+Public encrypted_token As String
+Public decrypted_token As String
+
+Public character_name As String
+
 Sub init()
-public_key = "pabloMARQUEZArg1"
+'We can mock the key value to test errors...
+private_key = PrivateKey
+character_name = "seneca"
+'Hardcoded token for unit testing...
+encrypted_token = "nu9D3ZgnAVyA76d9sXWRDLxNDmxGsJIZC9ynAfmGCu7m458+Bw7ROgoK8fYe49ASSpJ5kR8jV5JH0ZNh4hNtpw=="
+
+Dim encrypted_session_token_byte() As Byte
+Call AO20CryptoSysWrapper.Str2ByteArr(encrypted_token, encrypted_session_token_byte)
+        
+Dim decrypted_session_token As String
+decrypted_token = AO20CryptoSysWrapper.DECRYPT(private_key, cnvStringFromHexStr(cnvToHex(encrypted_session_token_byte)))
+public_key = mid(decrypted_token, 1, 16)
+
+ '           UserList(UserIndex).encrypted_session_token = encrypted_session_token
+ '           UserList(UserIndex).decrypted_session_token = decrypted_session_token
+ '           UserList(UserIndex).public_key = mid(decrypted_session_token, 1, 16)
+  
 End Sub
 
-Sub test_make_user(ByVal userindex As Integer, ByVal map As Integer, ByVal x As Integer, ByVal y As Integer)
-UserList(userindex).Pos.map = map
-UserList(userindex).Pos.x = x
-UserList(userindex).Pos.y = y
-Call MakeUserChar(True, 17, userindex, map, x, y, 1)
+Sub test_make_user(ByVal UserIndex As Integer, ByVal map As Integer, ByVal X As Integer, ByVal y As Integer)
+UserList(UserIndex).Pos.map = map
+UserList(UserIndex).Pos.X = X
+UserList(UserIndex).Pos.y = y
+Call MakeUserChar(True, 17, UserIndex, map, X, y, 1)
 End Sub
 
 Function test_percentage() As Boolean
@@ -92,11 +115,11 @@ Function test_make_user_char() As Boolean
 
 'Create first User
 Call test_make_user(1, 1, 54, 51)
-Debug.Assert (MapData(1, 54, 51).userindex = 1)
+Debug.Assert (MapData(1, 54, 51).UserIndex = 1)
 Debug.Assert (UserList(1).Char.CharIndex <> 0)
 'Delete first user
 Call EraseUserChar(1, False, False)
-Debug.Assert (MapData(1, 54, 55).userindex = 0)
+Debug.Assert (MapData(1, 54, 55).UserIndex = 0)
 Debug.Assert (UserList(1).Char.CharIndex = 0)
 'Delete all NPCs5
 Dim i
@@ -108,21 +131,21 @@ Next i
 
 'Create two users on the same map pos
 Call test_make_user(2, 1, 54, 56)
-Debug.Assert (MapData(1, 54, 56).userindex = 2)
+Debug.Assert (MapData(1, 54, 56).UserIndex = 2)
 Debug.Assert (UserList(2).Char.CharIndex <> 0)
 
 Call test_make_user(1, 1, 50, 46)
-Debug.Assert (MapData(1, 50, 46).userindex = 1)
+Debug.Assert (MapData(1, 50, 46).UserIndex = 1)
 Debug.Assert (UserList(1).Char.CharIndex <> 0)
 Debug.Assert (UserList(2).Char.CharIndex <> UserList(1).Char.CharIndex)
 
 'Delete user 2
 Call EraseUserChar(2, False, False)
-Debug.Assert (MapData(1, 54, 56).userindex = 0)
+Debug.Assert (MapData(1, 54, 56).UserIndex = 0)
 Debug.Assert (UserList(2).Char.CharIndex = 0)
 'Create user 2 again
 Call test_make_user(2, 1, 54, 56)
-Debug.Assert (MapData(1, 54, 56).userindex = 2)
+Debug.Assert (MapData(1, 54, 56).UserIndex = 2)
 Debug.Assert (UserList(2).Char.CharIndex <> 0)
 
 For i = 1 To UBound(UserList)
@@ -132,13 +155,13 @@ For i = 1 To UBound(UserList)
 Next i
 
 Call test_make_user(1, 1, 64, 66)
-Debug.Assert (MapData(1, 64, 66).userindex = 1)
+Debug.Assert (MapData(1, 64, 66).UserIndex = 1)
 Debug.Assert (UserList(1).Char.CharIndex <> 0)
 Debug.Assert (UserList(1).Char.CharIndex = 1)
 
 
 Call test_make_user(1, 1, 68, 66)
-Debug.Assert (MapData(1, 68, 66).userindex = 1)
+Debug.Assert (MapData(1, 68, 66).UserIndex = 1)
 Debug.Assert (UserList(1).Char.CharIndex <> 0)
 test_make_user_char = True
 End Function
