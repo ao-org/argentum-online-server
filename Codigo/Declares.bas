@@ -1569,7 +1569,6 @@ Public Type t_UserFlags
     UserLogged As Boolean '¿Esta online?
     FirstPacket As Boolean ' ¿El socket envió algun paquete válido?
     Meditando As Boolean
-    Escribiendo As Boolean
     Crafteando As Byte
 
     Descuento As String

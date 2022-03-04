@@ -1229,7 +1229,6 @@ Sub ResetUserFlags(ByVal UserIndex As Integer)
 160         .Maldicion = 0
 162         .Bendicion = 0
 164         .Meditando = 0
-166         .Escribiendo = 0
 168         .Privilegios = 0
 170         .PuedeMoverse = 0
 172         .OldBody = 0

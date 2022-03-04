@@ -156,7 +156,6 @@ Public Enum ServerPacketID
     ShowFrmMapa
     InmovilizadoOK
     BarFx
-    SetEscribiendo
     LocaleMsg
     ShowPregunta
     DatosGrupo
@@ -460,7 +459,6 @@ Public Enum ClientPacketID
     MensajeUser
     TraerBoveda
     CompletarAccion
-    Escribiendo
     InvitarGrupo
     ResponderPregunta
     RequestGrupo
@@ -1163,8 +1161,6 @@ On Error Resume Next
             Call HandleTraerBoveda(UserIndex)
         Case ClientPacketID.CompletarAccion
             Call HandleCompletarAccion(UserIndex)
-        Case ClientPacketID.Escribiendo
-            Call HandleEscribiendo(UserIndex)
         Case ClientPacketID.InvitarGrupo
             Call HandleInvitarGrupo(UserIndex)
         Case ClientPacketID.ResponderPregunta
@@ -16252,25 +16248,6 @@ ErrHandler:
 
 End Sub
 
-Private Sub HandleEscribiendo(ByVal UserIndex As Integer)
-
-        On Error GoTo ErrHandler
-
-100     With UserList(UserIndex)
-            
-            .flags.Escribiendo = Reader.ReadBool()
-            
-106         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetEscribiendo(.Char.CharIndex, .flags.Escribiendo))
-
-        End With
-    
-        Exit Sub
-
-ErrHandler:
-112     Call TraceError(Err.Number, Err.Description, "Protocol.?", Erl)
-114
-
-End Sub
 
 Private Sub HandleRequestFamiliar(ByVal UserIndex As Integer)
  
