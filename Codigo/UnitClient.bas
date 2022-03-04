@@ -3,7 +3,12 @@ Option Explicit
 
 Private Client As Network.Client
 
+Public connected As Boolean
+'public Public Enum ClientPacketID
+
 Public Sub Connect(ByVal Address As String, ByVal Service As String)
+    connected = False
+    
     If (Address = vbNullString Or Service = vbNullString) Then
         Exit Sub
     End If
@@ -16,9 +21,10 @@ Public Sub Connect(ByVal Address As String, ByVal Service As String)
 End Sub
 
 Public Sub Disconnect()
-If Not Client Is Nothing Then
-    Call Client.Close(True)
-End If
+    connected = False
+    If Not Client Is Nothing Then
+        Call Client.Close(True)
+    End If
 End Sub
 
 Public Sub Poll()
@@ -39,22 +45,17 @@ Public Sub Send(ByVal Buffer As Network.Writer)
 End Sub
 
 Private Sub OnClientConnect()
-On Error GoTo OnClientConnect_Err:
-Debug.Print ("Entró OnClientConnect")
-
-
-
+    Debug.Print ("UnitClient.OnClientConnect")
+    connected = True
+    Call Unit_Protocol_Writes.WriteLoginNewChar(UnitTesting.public_key, "morgolock2002@yahoo.com.ar")
     
-    Exit Sub
-    
-OnClientConnect_Err:
-    'Call RegistrarError(Err.Number, Err.Description, "modNetwork.OnClientConnect", Erl)
 End Sub
 
 Private Sub OnClientClose(ByVal Code As Long)
     Call Unit_Protocol_Writes.Clear
     Debug.Print "OnClientClose " & Code
     Call Client.Close(True)
+    connected = False
 End Sub
 
 Private Sub OnClientSend(ByVal Message As Network.Reader)
@@ -62,15 +63,7 @@ Private Sub OnClientSend(ByVal Message As Network.Reader)
 End Sub
 
 Private Sub OnClientRecv(ByVal Message As Network.Reader)
-On Error GoTo OnClientRecv_Err:
 
-
-    'Call Protocol.HandleIncomingData(Message)
-
-    Exit Sub
-    
-OnClientRecv_Err:
-    'Call RegistrarError(Err.Number, Err.Description, "modNetwork.OnClientRecv", Erl)
 End Sub
 
 
