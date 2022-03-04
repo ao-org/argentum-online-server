@@ -39,13 +39,14 @@ End Sub
 '
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteLoginNewChar(ByVal public_key As String, ByVal username As String)
-        
-    Dim encrypted_username_b64 As String
-    
-    encrypted_username_b64 = AO20CryptoSysWrapper.ENCRYPT(cnvHexStrFromString(public_key), username)
-             
+     Dim encrypted_username_b64 As String
+     encrypted_username_b64 = AO20CryptoSysWrapper.ENCRYPT(cnvHexStrFromString(public_key), username)
+     'encrypted_username_b64 = AO20CryptoSysWrapper.ENCRYPT(public_key, username)
+       
+      'decrypted_session_token = AO20CryptoSysWrapper.DECRYPT(PrivateKey, cnvStringFromHexStr(cnvToHex(encrypted_session_token_byte)))
+       
      Call Writer.WriteInt(ClientPacketID.LoginNewChar)
-     Call Writer.WriteString8("encrypted_session_token")
+     Call Writer.WriteString8(UnitTesting.encrypted_token)
      Call Writer.WriteString8(encrypted_username_b64)
      Call Writer.WriteInt8(App.Major)
      Call Writer.WriteInt8(App.Minor)
@@ -56,7 +57,6 @@ Public Sub WriteLoginNewChar(ByVal public_key As String, ByVal username As Strin
      Call Writer.WriteInt8(0)
      Call Writer.WriteInt16(0)
      Call Writer.WriteInt8(0)
-    
      Call UnitClient.Send(Writer)
 
 End Sub

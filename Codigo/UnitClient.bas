@@ -4,7 +4,7 @@ Option Explicit
 Private Client As Network.Client
 
 Public connected As Boolean
-'public Public Enum ClientPacketID
+
 
 Public Sub Connect(ByVal Address As String, ByVal Service As String)
     connected = False
@@ -37,7 +37,7 @@ Public Sub Poll()
 End Sub
 
 Public Sub Send(ByVal Buffer As Network.Writer)
-    If (Connected) Then
+    If (connected) Then
         Call Client.Send(False, Buffer)
     End If
     
@@ -47,7 +47,7 @@ End Sub
 Private Sub OnClientConnect()
     Debug.Print ("UnitClient.OnClientConnect")
     connected = True
-    Call Unit_Protocol_Writes.WriteLoginNewChar(UnitTesting.public_key, "morgolock2002@yahoo.com.ar")
+    Call Unit_Protocol_Writes.WriteLoginNewChar(UnitTesting.public_key, UnitTesting.character_name)
     
 End Sub
 
