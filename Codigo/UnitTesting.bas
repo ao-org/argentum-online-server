@@ -9,85 +9,10 @@ Attribute VB_Name = "UnitTesting"
 '
 Option Explicit
 
-Public Client As Network.Client
-Private Writer As Network.Writer
-Private exit_client As Boolean
-Public unit_public_key As String
-
-
-Public Sub WriteLoginNewChar(ByRef writer As Network.writer, ByVal username As String)
-     Dim encrypted_username_b64 As String
-     encrypted_username_b64 = AO20CryptoSysWrapper.ENCRYPT(cnvHexStrFromString(unit_public_key), username)
-     Call writer.WriteInt(ClientPacketID.LoginNewChar)
-     Call Writer.WriteString8("DSADSASADDSADSADSADSADSASDADDASASD")
-'     Call Writer.WriteString8(encrypted_username_b64)
-'     Call Writer.WriteInt8(App.Major)
-'     Call Writer.WriteInt8(App.Minor)
-'     Call Writer.WriteInt8(App.Revision)
-'     Call Writer.WriteString8(CheckMD5)
-'     Call Writer.WriteInt8(UserRaza)
-'     Call Writer.WriteInt8(UserSexo)
-'     Call Writer.WriteInt8(UserClase)
-'     Call Writer.WriteInt16(MiCabeza)
-'     Call Writer.WriteInt8(UserHogar)
- 
-    Call Client.Send(False, Writer)
+Public public_key As String
+Sub init()
+public_key = "pabloMARQUEZArg1"
 End Sub
-    
-Private Sub OnClientAttach()
-    Debug.Print "OnClientAttach"
-    
-    Call WriteLoginNewChar(Writer, "gulfas")
-End Sub
-
-Private Sub OnClientDetach(ByVal Code As Long)
-    Debug.Print "OnClientDetach", Code
-    exit_client = True
-End Sub
-
-Private Sub OnClientForward(ByVal Buffer As Network.Reader)
-    Debug.Print "OnClientForward", Buffer.GetAvailable()
-    
-    Dim BufferRef() As Byte
-    Call Buffer.getData(BufferRef)
-    
-End Sub
-
-Private Sub OnClientReceive(ByVal Buffer As Network.Reader)
-    Debug.Print "OnClientReceive", Buffer.GetAvailable()
-
-    Dim BufferRef() As Byte
-    Call Buffer.getData(BufferRef)
-    
-    
-'    Select Case Buffer.ReadInt()
-'        Case 0
-'            Debug.Print "Create1stMessage", Buffer.ReadString8()
-'            Call unit_client.Send(False, Create2ndMessage())
-'    End Select
-End Sub
-
-
-Function test_proto()
-    test_proto = False
-    unit_public_key = "pabloMARQUEZArg1"
-'If Client Is Nothing Then
-'    Set Client = New Network.Client
-'    Set writer = New Network.writer
-'
-'    Call Client.Attach(AddressOf OnClientAttach, AddressOf OnClientDetach, AddressOf OnClientForward, AddressOf OnClientReceive)
-'    Call Client.Connect("127.0.0.1", "7667")
-'End If
-'   Do While (Not exit_client)
-'        Call Client.Flush
-'        Call Client.Poll
-'
-'        DoEvents
-'    Loop
-''    Call unit_client.Close(True)
-
-test_proto = True
-End Function
 
 Sub test_make_user(ByVal userindex As Integer, ByVal map As Integer, ByVal x As Integer, ByVal y As Integer)
 UserList(userindex).Pos.map = map
@@ -223,7 +148,7 @@ Function test_suite() As Boolean
 Dim result As Boolean
 
 result = test_make_user_char()
-result = result And test_maths() And test_proto()
+result = result And test_maths()
 test_suite = result
 End Function
 

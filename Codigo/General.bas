@@ -759,6 +759,7 @@ Sub Main()
     
 332     tInicioServer = GetTickCount()
         #If UNIT_TEST = 1 Then
+                    Call UnitTesting.init
                     Debug.Print "AO20 Unit Testing"
                     Dim suite_passed_ok As Boolean
                     suite_passed_ok = UnitTesting.test_suite()
