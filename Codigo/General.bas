@@ -751,24 +751,29 @@ Sub Main()
     
         'Ocultar
 330     Call frmMain.InitMain(HideMe)
+
+
     
-    
-#If UNIT_TEST = 1 Then
-        Debug.Print "AO20 Unit Testing"
-        Dim suite_passed_ok As Boolean
-        suite_passed_ok = UnitTesting.test_suite()
-        If (suite_passed_ok) Then
-            Debug.Print "suite_passed_ok!!!"
-        Else
-            Debug.Print "suite failed!!!"
-        End If
-        Debug.Assert (suite_passed_ok)
-        Exit Sub
-#End If
+
     
     
 332     tInicioServer = GetTickCount()
+        #If UNIT_TEST = 1 Then
+                    Debug.Print "AO20 Unit Testing"
+                    Dim suite_passed_ok As Boolean
+                    suite_passed_ok = UnitTesting.test_suite()
+                    If (suite_passed_ok) Then
+                        Debug.Print "suite_passed_ok!!!"
+                    Else
+                        Debug.Print "suite failed!!!"
+                    End If
+                    Debug.Assert (suite_passed_ok)
+                    
+                    Debug.Print "Running proto suite, trying to connect to 127.0.0.1:7667"
+                    Call UnitClient.Connect("127.0.0.1", "7667")
+        #End If
         
+            
         While (True)
         
             Call modNetwork.Tick(GetElapsed())
@@ -780,6 +785,9 @@ Sub Main()
                 Call Sleep(1)
             #End If
             
+            #If UNIT_TEST = 1 Then
+                Call UnitClient.Poll
+            #End If
         Wend
         
         Call LogThis(0, "Closing the server " & Now, vbLogEventTypeInformation)

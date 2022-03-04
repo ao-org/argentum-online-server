@@ -9,8 +9,8 @@ Attribute VB_Name = "UnitTesting"
 '
 Option Explicit
 
-Private unit_client As Network.Client
-Private client_writer As Network.writer
+Public Client As Network.Client
+Private Writer As Network.Writer
 Private exit_client As Boolean
 Public unit_public_key As String
 
@@ -19,7 +19,7 @@ Public Sub WriteLoginNewChar(ByRef writer As Network.writer, ByVal username As S
      Dim encrypted_username_b64 As String
      encrypted_username_b64 = AO20CryptoSysWrapper.ENCRYPT(cnvHexStrFromString(unit_public_key), username)
      Call writer.WriteInt(ClientPacketID.LoginNewChar)
-'     Call Writer.WriteString8(encrypted_session_token)
+     Call Writer.WriteString8("DSADSASADDSADSADSADSADSASDADDASASD")
 '     Call Writer.WriteString8(encrypted_username_b64)
 '     Call Writer.WriteInt8(App.Major)
 '     Call Writer.WriteInt8(App.Minor)
@@ -30,13 +30,14 @@ Public Sub WriteLoginNewChar(ByRef writer As Network.writer, ByVal username As S
 '     Call Writer.WriteInt8(UserClase)
 '     Call Writer.WriteInt16(MiCabeza)
 '     Call Writer.WriteInt8(UserHogar)
-'     Call modNetwork.Send(Writer)
+ 
+    Call Client.Send(False, Writer)
 End Sub
     
 Private Sub OnClientAttach()
     Debug.Print "OnClientAttach"
     
-    Call WriteLoginNewChar(client_writer, "gulfas")
+    Call WriteLoginNewChar(Writer, "gulfas")
 End Sub
 
 Private Sub OnClientDetach(ByVal Code As Long)
@@ -70,18 +71,20 @@ End Sub
 Function test_proto()
     test_proto = False
     unit_public_key = "pabloMARQUEZArg1"
-
-    Set unit_client = New Network.Client
-    Set client_writer = New Network.writer
-
-    Call unit_client.Attach(AddressOf OnClientAttach, AddressOf OnClientDetach, AddressOf OnClientForward, AddressOf OnClientReceive)
-    Call unit_client.Connect("127.0.0.1", "7667")
-    Do While (Not exit_client)
-        Call unit_client.Flush
-        Call unit_client.Poll
-        DoEvents
-    Loop
-    Call unit_client.Close(True)
+'If Client Is Nothing Then
+'    Set Client = New Network.Client
+'    Set writer = New Network.writer
+'
+'    Call Client.Attach(AddressOf OnClientAttach, AddressOf OnClientDetach, AddressOf OnClientForward, AddressOf OnClientReceive)
+'    Call Client.Connect("127.0.0.1", "7667")
+'End If
+'   Do While (Not exit_client)
+'        Call Client.Flush
+'        Call Client.Poll
+'
+'        DoEvents
+'    Loop
+''    Call unit_client.Close(True)
 
 test_proto = True
 End Function
