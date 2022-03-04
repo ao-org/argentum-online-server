@@ -1089,7 +1089,7 @@ Public Sub UsuarioAtacaNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer
 166             sendto = SendTarget.ToIndex
             End If
 
-168         Call SendData(sendto, UserIndex, PrepareMessageCharSwing(UserList(UserIndex).Char.CharIndex))
+168         'Call SendData(sendto, UserIndex, PrepareMessageCharSwing(UserList(UserIndex).Char.CharIndex))
 
         End If
 
@@ -1146,11 +1146,6 @@ Public Sub UsuarioAtaca(ByVal UserIndex As Integer)
         'Exit if not legal
 126     If AttackPos.X >= XMinMapSize And AttackPos.X <= XMaxMapSize And AttackPos.Y >= YMinMapSize And AttackPos.Y <= YMaxMapSize Then
 
-128         If ((MapData(AttackPos.Map, AttackPos.X, AttackPos.Y).Blocked And 2 ^ (UserList(UserIndex).Char.Heading - 1)) <> 0) Then
-130             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCharSwing(UserList(UserIndex).Char.CharIndex, True, False))
-                Exit Sub
-            End If
-
             Dim Index As Integer
 
 132         Index = MapData(AttackPos.Map, AttackPos.X, AttackPos.Y).UserIndex
@@ -1178,12 +1173,7 @@ Public Sub UsuarioAtaca(ByVal UserIndex As Integer)
                 End If
 
                 Exit Sub
-            Else
-152             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCharSwing(UserList(UserIndex).Char.CharIndex, True, False))
             End If
-
-        Else
-154         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCharSwing(UserList(UserIndex).Char.CharIndex, True, False))
         End If
 
         Exit Sub
@@ -1328,9 +1318,6 @@ Public Sub UsuarioAtacaUsuario(ByVal AtacanteIndex As Integer, ByVal VictimaInde
             Else
 122             sendto = SendTarget.ToPCArea
             End If
-
-124         Call SendData(sendto, AtacanteIndex, PrepareMessageCharSwing(UserList(AtacanteIndex).Char.CharIndex))
-
         End If
 
         Exit Sub
