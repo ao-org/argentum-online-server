@@ -24,6 +24,7 @@ Public Sub Disconnect()
     connected = False
     If Not Client Is Nothing Then
         Call Client.Close(True)
+        Set Client = Nothing
     End If
 End Sub
 
@@ -47,7 +48,18 @@ End Sub
 Private Sub OnClientConnect()
     Debug.Print ("UnitClient.OnClientConnect")
     connected = True
-    Call Unit_Protocol_Writes.WriteLoginNewChar(UnitTesting.public_key, UnitTesting.character_name)
+    Dim good_md5, md5 As String
+    good_md5 = "a944087c826163c4ed658b1ea00594be"
+    md5 = good_md5
+    Dim app_major, app_minor, app_revision, race, gender, Class, body, head, home As Byte
+    
+    
+    Call Unit_Protocol_Writes.WriteLoginNewChar( _
+        UnitTesting.public_key, UnitTesting.character_name, app_major, app_minor, app_revision, _
+        md5, race, gender, Class, body, head, home)
+
+   
+    
     
 End Sub
 
@@ -63,7 +75,29 @@ Private Sub OnClientSend(ByVal Message As Network.Reader)
 End Sub
 
 Private Sub OnClientRecv(ByVal Message As Network.Reader)
-
+    Dim Reader As Network.Reader
+    Set Reader = Message
+    Dim PacketId As Long:
+    PacketId = Reader.ReadInt
+    Debug.Print "UnitTesting recv PacketId" & PacketId
+    Select Case PacketId
+        Case ServerPacketID.connected
+            Debug.Print "ServerPacketID.connected"
+            
+        Case ServerPacketID.logged
+            Debug.Print "ServerPacketID.logged"
+            
+            
+        Case ServerPacketID.Disconnect
+            Debug.Print "ServerPacketID.Disconnect"
+        Case Else
+            Debug.Assert False And "Not Handled yet"
+    End Select
+    
+      
+    Debug.Assert Message.GetAvailable() = 0
+    '"You are in deep shit dude"
+    
 End Sub
 
 

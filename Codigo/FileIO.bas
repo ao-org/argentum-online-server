@@ -2507,6 +2507,15 @@ End Sub
 Public Sub RemoveTokenDatabase(ByVal userindex As Integer)
     Call Execute("delete from tokens where id =  ?;", UserList(UserIndex).encrypted_session_token_db_id)
 End Sub
+
+Public Sub AddTokenDatabase(ByVal encrypted_token As String, ByVal decrypted_token As String, ByVal username As String)
+#If UNIT_TEST = 1 Then
+    'Only used in automated unit testing to create a valid session so that we can then try LoginNewChar and
+    'LoginExistingChar
+    Call Execute("insert into tokens (encrypted_token, decrypted_token, username, remote_host, timestamp) values(?,?,?,""127.0.0.1"",""123456"") ;", encrypted_token, decrypted_token, username)
+#End If
+End Sub
+
 Sub SaveNewUser(ByVal UserIndex As Integer)
     On Error GoTo SaveNewUser_Err
             

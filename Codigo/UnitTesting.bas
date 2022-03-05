@@ -17,7 +17,7 @@ Public decrypted_token As String
 
 Public character_name As String
 
-Sub init()
+Public Sub init()
     'We can mock the key value to test errors...
     private_key = PrivateKey
     character_name = "seneca"
@@ -30,6 +30,14 @@ Sub init()
     Dim decrypted_session_token As String
     decrypted_token = AO20CryptoSysWrapper.DECRYPT(private_key, cnvStringFromHexStr(cnvToHex(encrypted_session_token_byte)))
     public_key = mid(decrypted_token, 1, 16)
+    
+    'Add a fake token to be using when exercising the protocol for LoginNewChar
+    Call AddTokenDatabase(encrypted_token, decrypted_token, "MORGOLOCK2002@YAHOO.COM.AR")
+    
+End Sub
+
+Public Sub shutdown()
+    Call UnitClient.Disconnect
 End Sub
 
 Sub test_make_user(ByVal UserIndex As Integer, ByVal map As Integer, ByVal X As Integer, ByVal y As Integer)
