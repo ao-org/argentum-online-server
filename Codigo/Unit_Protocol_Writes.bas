@@ -34,29 +34,26 @@ End Sub
 '
 'End Sub
 
-''
-' Writes the "LoginNewChar" message to the outgoing data buffer.
-'
-' @remarks  The data is not actually sent until the buffer is properly flushed.
-Public Sub WriteLoginNewChar(ByVal public_key As String, ByVal username As String)
+
+Public Sub WriteLoginNewChar(ByVal public_key As String, ByVal username As String, _
+    ByVal app_major As Byte, ByVal app_minor As Byte, ByVal app_revision As Byte, ByVal md5 As String, _
+    ByVal race As Byte, ByVal gender As Byte, ByVal class As Byte, ByVal body As Byte, _
+    ByVal head As Byte, ByVal home As Byte)
+     
      Dim encrypted_username_b64 As String
      encrypted_username_b64 = AO20CryptoSysWrapper.ENCRYPT(cnvHexStrFromString(public_key), username)
-     'encrypted_username_b64 = AO20CryptoSysWrapper.ENCRYPT(public_key, username)
-       
-      'decrypted_session_token = AO20CryptoSysWrapper.DECRYPT(PrivateKey, cnvStringFromHexStr(cnvToHex(encrypted_session_token_byte)))
-       
      Call Writer.WriteInt(ClientPacketID.LoginNewChar)
      Call Writer.WriteString8(UnitTesting.encrypted_token)
      Call Writer.WriteString8(encrypted_username_b64)
      Call Writer.WriteInt8(App.Major)
      Call Writer.WriteInt8(App.Minor)
      Call Writer.WriteInt8(App.Revision)
-     Call Writer.WriteString8("a944087c826163c4ed658b1ea00594be")
-     Call Writer.WriteInt8(0)
-     Call Writer.WriteInt8(0)
-     Call Writer.WriteInt8(0)
-     Call Writer.WriteInt16(0)
-     Call Writer.WriteInt8(0)
+     Call Writer.WriteString8(md5)
+     Call Writer.WriteInt8(race)
+     Call Writer.WriteInt8(gender)
+     Call Writer.WriteInt8(class)
+     Call Writer.WriteInt16(head)
+     Call Writer.WriteInt8(home)
      Call UnitClient.Send(Writer)
 
 End Sub
