@@ -57,5 +57,47 @@ Public Sub WriteLoginNewChar(ByVal public_key As String, ByVal username As Strin
      Call UnitClient.Send(Writer)
 
 End Sub
+
+
+Public Sub HandleCharacterChange(ByRef Reader As Network.Reader)
+    
+    
+    Dim charindex As Integer
+
+    Dim TempInt   As Integer
+
+    Dim headIndex As Integer
+
+    Call Reader.ReadInt16
+    
+        TempInt = Reader.ReadInt16()
+        
+        headIndex = Reader.ReadInt16()
+        
+        Call Reader.ReadInt8
+        
+        TempInt = Reader.ReadInt16()
+
+        TempInt = Reader.ReadInt16()
+        
+        TempInt = Reader.ReadInt16()
+
+        
+        'Call SetCharacterFx(charindex, Reader.ReadInt16(), Reader.ReadInt16())
+        Reader.ReadInt16
+        
+        Reader.ReadInt16 'Ignore loops
+        
+        Call Reader.ReadBool
+        
+        Call Reader.ReadBool
+
+    
+    Exit Sub
+
+    
+End Sub
 #End If
+
+
 
