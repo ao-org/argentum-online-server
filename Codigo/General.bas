@@ -2238,6 +2238,39 @@ RandomString_Err:
         
 End Function
 
+
+Function RandomName(cb As Integer, Optional ByVal OnlyUpper As Boolean = False) As String
+        
+        On Error GoTo RandomString_Err
+        
+
+100     Randomize Time
+
+        Dim rgch As String
+
+102     rgch = "abcdefghijklmnopqrstuvwxyz"
+    
+104     If OnlyUpper Then
+106         rgch = UCase(rgch)
+        Else
+108         rgch = rgch & UCase(rgch)
+        End If
+    
+        Dim i As Long
+
+112     For i = 1 To cb
+114         RandomName = RandomName & mid$(rgch, Int(Rnd() * Len(rgch) + 1), 1)
+        Next
+
+        
+        Exit Function
+
+RandomString_Err:
+116     Call TraceError(Err.Number, Err.Description, "General.RandomString", Erl)
+
+        
+End Function
+
 '[CODE 002]:MatuX
 '
 '  Función para chequear el email
