@@ -52,8 +52,17 @@ Private Sub OnClientConnect()
     good_md5 = "a944087c826163c4ed658b1ea00594be"
     md5 = good_md5
     Dim app_major, app_minor, app_revision, race, gender, Class, body, head, home As Byte
-    
-    
+        
+    app_major = 2
+    app_minor = 0
+    app_revision = 4
+    race = 1
+    gender = 1
+    Class = 1
+    body = 1
+    head = 1
+    home = 1
+        
     Call Unit_Protocol_Writes.WriteLoginNewChar( _
         UnitTesting.public_key, UnitTesting.character_name, app_major, app_minor, app_revision, _
         md5, race, gender, Class, body, head, home)

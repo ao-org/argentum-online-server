@@ -22,13 +22,9 @@ Public Sub init()
     private_key = PrivateKey
     character_name = "seneca"
     'Hardcoded token for unit testing...
-    encrypted_token = "nu9D3ZgnAVyA76d9sXWRDLxNDmxGsJIZC9ynAfmGCu7m458+Bw7ROgoK8fYe49ASSpJ5kR8jV5JH0ZNh4hNtpw=="
-    
-    Dim encrypted_session_token_byte() As Byte
-    Call AO20CryptoSysWrapper.Str2ByteArr(encrypted_token, encrypted_session_token_byte)
-            
-    Dim decrypted_session_token As String
-    decrypted_token = AO20CryptoSysWrapper.DECRYPT(private_key, cnvStringFromHexStr(cnvToHex(encrypted_session_token_byte)))
+
+    decrypted_token = "G7H5wKOKZvebZxHtnkRtJNvL/AHWEw3dHCyBTzXVvdTe3bQAJHePsFfV/Ecgm9Wk"
+    encrypted_token = AO20CryptoSysWrapper.ENCRYPT(private_key, decrypted_token)
     public_key = mid(decrypted_token, 1, 16)
     
     'Add a fake token to be using when exercising the protocol for LoginNewChar
