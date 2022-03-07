@@ -21,6 +21,7 @@ Public Sub init()
     'We can mock the key value to test errors...
     private_key = PrivateKey
     character_name = "seneca"
+    character_name = RandomName(16)
     'Hardcoded token for unit testing...
 
     decrypted_token = "G7H5wKOKZvebZxHtnkRtJNvL/AHWEw3dHCyBTzXVvdTe3bQAJHePsFfV/Ecgm9Wk"
