@@ -601,6 +601,18 @@ Function ConnectNewUser(ByVal UserIndex As Integer, ByRef name As String, ByVal 
 244             .map = 168: .X = 50: .y = 70
             End With
             
+            #If UNIT_TEST = 1 Then
+                DungeonNewbieCoords(1).map = 1
+                DungeonNewbieCoords(1).Y = 20
+                DungeonNewbieCoords(1).X = 20
+                DungeonNewbieCoords(2).map = 1
+                DungeonNewbieCoords(2).Y = 20
+                DungeonNewbieCoords(2).X = 20
+                DungeonNewbieCoords(3).map = 1
+                DungeonNewbieCoords(3).Y = 20
+                DungeonNewbieCoords(3).X = 20
+            #End If
+            
             Dim RandomPosIndex As Byte
 246         RandomPosIndex = RandomNumber(LBound(DungeonNewbieCoords), UBound(DungeonNewbieCoords))
 

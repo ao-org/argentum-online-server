@@ -99,8 +99,15 @@ Private Sub OnClientRecv(ByVal Message As Network.Reader)
             
         Case ServerPacketID.Disconnect
             Debug.Print "ServerPacketID.Disconnect"
+            
+            
+        Case ServerPacketID.CharacterChange
+            Call Unit_Protocol_Writes.HandleCharacterChange(Reader)
+            
         Case Else
-            Debug.Assert False And "Not Handled yet"
+            While Reader.GetAvailable() > 0
+                Reader.ReadBool
+            Wend
     End Select
     
       
