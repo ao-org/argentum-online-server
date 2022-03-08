@@ -93,7 +93,11 @@ End Function
 
 Public Sub BanPJ(ByVal BannerIndex As Integer, ByVal UserName As String, ByRef Razon As String)
         On Error GoTo BanPJ_Err
-
+        
+#If STRESSER = 1 Then
+    Exit Sub
+#End If
+        
 100     If Not GlobalChecks(BannerIndex, UserName) Then Exit Sub
 
         ' Si no existe el personaje...
@@ -230,6 +234,9 @@ End Function
 Public Sub BanearIP(ByVal BannerIndex As Integer, ByVal UserName As String, ByVal IP As String, Optional ByVal Email As String)
         On Error GoTo BanearIP_Err
         
+#If STRESSER = 1 Then
+    Exit Sub
+#End If
         ' Lo guardo en Baneos.dat
 100     Call WriteVar(DatPath & "Baneos.dat", "IP", IP, UserName)
 
