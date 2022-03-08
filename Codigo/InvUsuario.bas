@@ -374,7 +374,7 @@ Sub TirarOro(ByVal Cantidad As Long, ByVal UserIndex As Integer)
         
             ' GM's (excepto Dioses y Admins) no pueden tirar oro
 102         If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Admin Or e_PlayerType.Dios)) = 0 Then
-104             Call LogGM(.name, " trató de tirar " & PonerPuntos(Cantidad) & " de oro en " & .Pos.map & "-" & .Pos.X & "-" & .Pos.y)
+104             Call LogGM(.name, " trató de tirar " & PonerPuntos(Cantidad) & " de oro en " & .Pos.map & "-" & .Pos.X & "-" & .Pos.Y)
                 Exit Sub
             End If
          
@@ -2828,8 +2828,52 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                     End Select
         
 1054             Case e_OBJType.otLlaves
-1056                 Call WriteConsoleMsg(UserIndex, "Las llaves en el inventario están desactivadas. Sólo se permiten en el llavero.", e_FontTypeNames.FONTTYPE_INFO)
-        
+                    If UserList(UserIndex).flags.Muerto = 1 Then
+                        Call WriteConsoleMsg(UserIndex, "¡¡Estas muerto!! Solo podes usar items cuando estas vivo. ", e_FontTypeNames.FONTTYPE_INFO)
+                        Exit Sub
+                    End If
+                    
+                    If UserList(UserIndex).flags.TargetObj = 0 Then Exit Sub
+                    TargObj = ObjData(UserList(UserIndex).flags.TargetObj)
+                    '¿El objeto clickeado es una puerta?
+                    If TargObj.OBJType = e_OBJType.otPuertas Then
+                        If TargObj.clave < 1000 Then
+                            Call WriteConsoleMsg(UserIndex, "Las llaves en el inventario están desactivadas. Sólo se permiten en el llavero.", e_FontTypeNames.FONTTYPE_INFO)
+                            Exit Sub
+                        End If
+                        
+                        '¿Esta cerrada?
+                        If TargObj.Cerrada = 1 Then
+                              '¿Cerrada con llave?
+                              If TargObj.Llave > 0 Then
+                                 If TargObj.clave = obj.clave Then
+                                    MapData(UserList(UserIndex).flags.TargetObjMap, UserList(UserIndex).flags.TargetObjX, UserList(UserIndex).flags.TargetObjY).ObjInfo.ObjIndex _
+                                    = ObjData(MapData(UserList(UserIndex).flags.TargetObjMap, UserList(UserIndex).flags.TargetObjX, UserList(UserIndex).flags.TargetObjY).ObjInfo.ObjIndex).IndexCerrada
+                                    UserList(UserIndex).flags.TargetObj = MapData(UserList(UserIndex).flags.TargetObjMap, UserList(UserIndex).flags.TargetObjX, UserList(UserIndex).flags.TargetObjY).ObjInfo.ObjIndex
+                                    Call WriteConsoleMsg(UserIndex, "Has abierto la puerta.", e_FontTypeNames.FONTTYPE_INFO)
+                                    Exit Sub
+                                 Else
+                                    Call WriteConsoleMsg(UserIndex, "La llave no sirve.", e_FontTypeNames.FONTTYPE_INFO)
+                                    Exit Sub
+                                 End If
+                              Else
+                                 If TargObj.clave = obj.clave Then
+                                    MapData(UserList(UserIndex).flags.TargetObjMap, UserList(UserIndex).flags.TargetObjX, UserList(UserIndex).flags.TargetObjY).ObjInfo.ObjIndex _
+                                    = ObjData(MapData(UserList(UserIndex).flags.TargetObjMap, UserList(UserIndex).flags.TargetObjX, UserList(UserIndex).flags.TargetObjY).ObjInfo.ObjIndex).IndexCerradaLlave
+                                    Call WriteConsoleMsg(UserIndex, "Has cerrado con llave la puerta.", e_FontTypeNames.FONTTYPE_INFO)
+                                    UserList(UserIndex).flags.TargetObj = MapData(UserList(UserIndex).flags.TargetObjMap, UserList(UserIndex).flags.TargetObjX, UserList(UserIndex).flags.TargetObjY).ObjInfo.ObjIndex
+                                    Exit Sub
+                                 Else
+                                    Call WriteConsoleMsg(UserIndex, "La llave no sirve.", e_FontTypeNames.FONTTYPE_INFO)
+                                    Exit Sub
+                                 End If
+                              End If
+                        Else
+                              Call WriteConsoleMsg(UserIndex, "No esta cerrada.", e_FontTypeNames.FONTTYPE_INFO)
+                              Exit Sub
+                        End If
+                    End If
+                    
 1058             Case e_OBJType.otBotellaVacia
     
 1060                If .flags.Muerto = 1 Then
