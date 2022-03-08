@@ -947,44 +947,8 @@ Function LegalWalk(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer,
 122         If Not PuedeTierra Then
 124             If (.Blocked And FLAG_AGUA) = 0 Then Exit Function
             End If
-            
-            Dim objeto As e_OBJType
-            
-            Dim puerta As t_ObjData
-            
-            'Si la suma de los objetos es mayor que 0 quiere decir que hay objeto.
-            If (.ObjInfo.ObjIndex + MapData(Map, X + 1, Y).ObjInfo.ObjIndex) > 0 Then
-                'Si hay un objeto, me tengo que fijar si estoy a la derecha o a la izquierda.
-                If .ObjInfo.ObjIndex > 0 Then
-                    If ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex).OBJType = e_OBJType.otPuertas Then
-                        puerta = ObjData(.ObjInfo.ObjIndex)
-                        If puerta.Cerrada = 1 Then
-                            If puerta.Llave = 0 Then
-                                Call AccionParaPuerta(Map, X, Y, WalkerIndex)
-                            Else
-                                 Exit Function
-                            End If
-                        End If
-                    Else
-                        If (.Blocked And 2 ^ (Heading - 1)) <> 0 Then Exit Function
-                    End If
-                ElseIf MapData(Map, X + 1, Y).ObjInfo.ObjIndex > 0 Then
-                    If ObjData(MapData(Map, X + 1, Y).ObjInfo.ObjIndex).OBJType = e_OBJType.otPuertas Then
-                        puerta = ObjData(MapData(Map, X + 1, Y).ObjInfo.ObjIndex)
-                        If puerta.Cerrada = 1 Then
-                            If puerta.Llave = 0 Then
-                                Call AccionParaPuerta(Map, X + 1, Y, WalkerIndex)
-                            Else
-                                 Exit Function
-                            End If
-                        End If
-                    Else
-                        If (.Blocked And 2 ^ (Heading - 1)) <> 0 Then Exit Function
-                    End If
-                End If
-            Else
-                If (.Blocked And 2 ^ (Heading - 1)) <> 0 Then Exit Function
-            End If
+                       
+            If (.Blocked And 2 ^ (Heading - 1)) <> 0 Then Exit Function
             
         
         End With
