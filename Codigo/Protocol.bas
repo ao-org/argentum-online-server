@@ -635,6 +635,10 @@ On Error Resume Next
     Dim PacketID As Long:
     PacketID = Reader.ReadInt
     
+#If STRESSER = 1 Then
+    Debug.Print "Paquete: " & PacketID
+#End If
+    
     'Does the packet requires a logged user??
     If Not (PacketID = ClientPacketID.LoginExistingChar Or _
             PacketID = ClientPacketID.LoginNewChar) Then
@@ -1541,6 +1545,7 @@ End Sub
 '
 ' @param    UserIndex The index of the user sending the message.
 
+
 Private Sub HandleTalk(ByVal UserIndex As Integer)
 
         '***************************************************
@@ -1555,6 +1560,7 @@ Private Sub HandleTalk(ByVal UserIndex As Integer)
 
             Dim chat As String
 102         chat = Reader.ReadString8()
+            
             
             Dim PacketCounter As Long
             PacketCounter = Reader.ReadInt32
@@ -2974,7 +2980,9 @@ Private Sub HandleUseSpellMacro(ByVal UserIndex As Integer)
         '
         '***************************************************
 100     With UserList(UserIndex)
-
+#If STRESSER = 1 Then
+    Exit Sub
+#End If
 102         Call SendData(SendTarget.ToAdmins, UserIndex, PrepareMessageConsoleMsg(.Name & " fue expulsado por Anti-macro de hechizos", e_FontTypeNames.FONTTYPE_VENENO))
 104         Call WriteShowMessageBox(UserIndex, "Has sido expulsado por usar macro de hechizos. Recomendamos leer el reglamento sobre el tema macros")
         
