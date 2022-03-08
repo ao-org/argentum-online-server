@@ -93,10 +93,20 @@ Public Sub Comercio(ByVal Modo As eModoComercio, ByVal UserIndex As Integer, ByV
             
             If Objeto_A_Comprar.ObjIndex = 0 Then Exit Sub
             
-            ' Si Crucial = 0, entonces compramos lo que NPC tiene en stock.
-120         If (ObjData(Objeto_A_Comprar.ObjIndex).Crucial = 0 And Cantidad > Objeto_A_Comprar.amount) Or ObjData(Objeto_A_Comprar.ObjIndex).Crucial = 1 And Not NpcSellsItem(NpcList(NpcIndex).Numero, Objeto_A_Comprar.ObjIndex) Then
-                Cantidad = Objeto_A_Comprar.amount
+            If ObjData(Objeto_A_Comprar.ObjIndex).Crucial = 0 Then
+                If Cantidad > Objeto_A_Comprar.amount Then
+                    Cantidad = Objeto_A_Comprar.amount
+                End If
+            ElseIf ObjData(Objeto_A_Comprar.ObjIndex).Crucial = 1 Then
+                'si es un item que vende el NPC le dejo comprar todo lo que quiera
+                If Not NpcSellsItem(NpcList(NpcIndex).Numero, Objeto_A_Comprar.ObjIndex) Then
+                    If Cantidad > Objeto_A_Comprar.amount Then
+                        Cantidad = Objeto_A_Comprar.amount
+                    End If
+                End If
             End If
+            
+            
 
             'NpcSellsItem
             
