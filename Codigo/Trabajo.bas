@@ -1964,17 +1964,20 @@ Public Sub DoRobar(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
                             Dim Extra As Single
                             
                             ' Multiplicador extra por niveles
-218                         If (.Stats.ELV < 25) Then
-220                             Extra = 1
+                            If (.Stats.ELV < 13) Then
+                                Extra = 1
+218                         ElseIf (.Stats.ELV < 25) Then
+220                             Extra = 1.1
 222                         ElseIf (.Stats.ELV < 35) Then
-224                             Extra = 1.05
+224                             Extra = 1.2
 226                         ElseIf (.Stats.ELV >= 35 And .Stats.ELV <= 40) Then
-228                             Extra = 1.1
+228                             Extra = 1.3
 230                         ElseIf (.Stats.ELV >= 41 And .Stats.ELV < 45) Then
-232                             Extra = 1.15
-234                         ElseIf (.Stats.ELV >= 45 And .Stats.ELV <= 47) Then
-236                             Extra = 1.2
-
+232                             Extra = 1.4
+234                         ElseIf (.Stats.ELV >= 45 And .Stats.ELV <= 46) Then
+236                             Extra = 1.5
+234                         ElseIf (.Stats.ELV = 47) Then
+236                             Extra = 5
                             End If
                             
 238                         If .clase = e_Class.Thief Then
