@@ -386,15 +386,7 @@ Sub TirarOro(ByVal Cantidad As Long, ByVal UserIndex As Integer)
 
                 'info debug
                 Dim loops As Long
-             
-                Dim OroWallet As Long
                 
-                OroWallet = (.Stats.ELV * OroPorNivelBilletera) '3000
-                
-110             If Cantidad > OroWallet Then  'Para evitar explotar demasiado
-                    Cantidad = Cantidad - OroWallet
-                End If
-        
 116             Do While (Cantidad > 0)
             
 118                 If Cantidad > MAX_INVENTORY_OBJS And .Stats.GLD > MAX_INVENTORY_OBJS Then
@@ -3371,7 +3363,7 @@ Sub TirarTodosLosItems(ByVal UserIndex As Integer)
        
 100     With UserList(UserIndex)
             ' Tambien se cae el oro de la billetera
-102         If .Stats.GLD > (.Stats.ELV * OroPorNivelBilletera) Then
+102         If .Stats.GLD <= 100000 Then
 104             Call TirarOro(.Stats.GLD, UserIndex)
             End If
             
