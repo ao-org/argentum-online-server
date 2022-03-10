@@ -2590,6 +2590,7 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
 
             'Are we dropping gold or other items??
 122         If Slot = FLAGORO Then
+                If amount > 100000 Then amount = 100000
 124             Call TirarOro(amount, UserIndex)
             
             Else
