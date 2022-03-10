@@ -887,13 +887,11 @@ Sub MostrarNumUsers()
         
             LastCountUsersOnline = NumUsers
             
-104         Call SetUsersLoggedDatabase(NumUsers)
         End If
         
         If (LastRecordUsuarios <> RecordUsuarios) Then
             LastRecordUsuarios = RecordUsuarios
             
-            Call SetRecordUsersDatabase(LastRecordUsuarios)
         End If
 
         Exit Sub

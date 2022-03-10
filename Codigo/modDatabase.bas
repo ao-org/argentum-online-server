@@ -1367,59 +1367,12 @@ GetPersonajesCuentaDatabase_Err:
         
 End Function
 
-Public Sub SetUsersLoggedDatabase(ByVal NumUsers As Long)
-        
-        On Error GoTo SetUsersLoggedDatabase_Err
-        
-        Call Execute("UPDATE statistics SET online = ? WHERE id = 1;", NumUsers)
-        
-        Exit Sub
-
-SetUsersLoggedDatabase_Err:
-102     Call TraceError(Err.Number, Err.Description, "modDatabase.SetUsersLoggedDatabase", Erl)
-
-        
-End Sub
-
-Public Function LeerRecordUsuariosDatabase() As Long
-        
-        On Error GoTo LeerRecordUsuariosDatabase_Err
-        
-        Dim RS As ADODB.Recordset
-100     Set RS = Query("SELECT record FROM statistics WHERE id = 1;")
-
-102     If RS Is Nothing Then Exit Function
-
-104     LeerRecordUsuariosDatabase = val(RS!Record)
-
-        Exit Function
-
-LeerRecordUsuariosDatabase_Err:
-106     Call TraceError(Err.Number, Err.Description, "modDatabase.LeerRecordUsuariosDatabase", Erl)
-
-        
-End Function
-
-Public Sub SetRecordUsersDatabase(ByVal Record As Long)
-        
-        On Error GoTo SetRecordUsersDatabase_Err
-                
-        Call Execute("UPDATE statistics SET record = ? WHERE id = 1;", Record)
-        
-        Exit Sub
-
-SetRecordUsersDatabase_Err:
-102     Call TraceError(Err.Number, Err.Description, "modDatabase.SetRecordUsersDatabase", Erl)
-
-        
-End Sub
 
 Public Sub SaveVotoDatabase(ByVal ID As Long, ByVal Encuestas As Integer)
         
         On Error GoTo SaveVotoDatabase_Err
         
 100     Call SetUserValueByID(ID, "votes_amount", Encuestas)
-
         
         Exit Sub
 
@@ -1487,20 +1440,6 @@ SaveUserHeadDatabase_Err:
         
 End Sub
 
-Public Sub BorrarUsuarioDatabase(Name As String)
-
-        On Error GoTo ErrorHandler
-
-        Call Execute("insert into user_deleted select * from user where name = ?;", Name)
-        Call Execute("delete from user where name = ?;", Name)
-        Call Execute("UPDATE user_deleted set deleted = CURRENT_TIMESTAMP where name = ?;", Name)
-
-        Exit Sub
-    
-ErrorHandler:
-102     Call LogDatabaseError("Error en BorrarUsuarioDatabase borrando user de la Mysql Database: " & Name & ". " & Err.Number & " - " & Err.Description)
-
-End Sub
 
 Public Sub SaveBanDatabase(UserName As String, Reason As String, BannedBy As String)
 
