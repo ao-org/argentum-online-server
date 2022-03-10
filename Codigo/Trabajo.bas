@@ -1976,8 +1976,8 @@ Public Sub DoRobar(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
 232                             Extra = 1.4
 234                         ElseIf (.Stats.ELV >= 45 And .Stats.ELV <= 46) Then
 236                             Extra = 1.5
-234                         ElseIf (.Stats.ELV = 47) Then
-236                             Extra = 5
+237                         ElseIf (.Stats.ELV = 47) Then
+239                             Extra = 5
                             End If
                             
 238                         If .clase = e_Class.Thief Then
