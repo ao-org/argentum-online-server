@@ -2548,6 +2548,7 @@ Public Sub WriteMiniStats(ByVal UserIndex As Integer)
 112     Call Writer.WriteInt32(UserList(UserIndex).Counters.Pena)
 114     Call Writer.WriteInt32(UserList(UserIndex).flags.VecesQueMoriste)
 116     Call Writer.WriteInt8(UserList(UserIndex).genero)
+115     Call Writer.WriteInt32(UserList(UserIndex).Stats.PuntosPesca)
 118     Call Writer.WriteInt8(UserList(UserIndex).raza)
 120     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
