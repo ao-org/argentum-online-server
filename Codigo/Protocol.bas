@@ -5517,17 +5517,9 @@ Private Sub HandleOnline(ByVal UserIndex As Integer)
         Dim UpTimeStr As String
     
 100     With UserList(UserIndex)
-
-            Dim nombres As String
-        
 102         For i = 1 To LastUser
 
 104             If UserList(i).flags.UserLogged Then
-            
-106                 If UserList(i).flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero) Then
-108                     nombres = nombres & " - " & UserList(i).Name
-                    End If
-
 110                 Count = Count + 1
 
                 End If
@@ -5555,17 +5547,8 @@ Private Sub HandleOnline(ByVal UserIndex As Integer)
             End If
     
 134         Call WriteConsoleMsg(UserIndex, "Server Online: " & UpTimeStr, e_FontTypeNames.FONTTYPE_INFO)
-
-136         If .flags.Privilegios And e_PlayerType.user Then
-138             Call WriteConsoleMsg(UserIndex, "Número de usuarios: " & CStr(Count) & " conectados.", e_FontTypeNames.FONTTYPE_INFOIAO)
-140             Call WriteConsoleMsg(UserIndex, "Tiempo en línea: " & UpTimeStr & " Record de usuarios en simultaneo: " & RecordUsuarios & ".", e_FontTypeNames.FONTTYPE_INFOIAO)
-
-            Else
-142             Call WriteConsoleMsg(UserIndex, "Número de usuarios: " & CStr(Count) & " conectados: " & nombres & ".", e_FontTypeNames.FONTTYPE_INFOIAO)
-144             Call WriteConsoleMsg(UserIndex, "Tiempo en línea: " & UpTimeStr & " Record de usuarios en simultaneo: " & RecordUsuarios & ".", e_FontTypeNames.FONTTYPE_INFOIAO)
-
-            End If
-
+            Call WriteConsoleMsg(UserIndex, "Número de usuarios: " & CStr(Count + ayudin) & " conectados.", e_FontTypeNames.FONTTYPE_INFOIAO)
+            Call WriteConsoleMsg(UserIndex, "Tiempo en línea: " & UpTimeStr & " Record de usuarios en simultaneo: " & RecordUsuarios & ".", e_FontTypeNames.FONTTYPE_INFOIAO)
         End With
         
         Exit Sub

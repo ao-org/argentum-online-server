@@ -310,6 +310,8 @@ Public Const EspadaMataDragonesIndex As Integer = 402
 
 Public Const MAXMASCOTASENTRENADOR   As Byte = 7
 
+Public ayudin                        As Long
+
 Public Enum e_FXSound
 
     Lobo_Sound = 124
