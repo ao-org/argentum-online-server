@@ -4834,7 +4834,6 @@ Public Function PrepareMessageCharacterRemove(ByVal dbgid As Integer, ByVal Char
         On Error GoTo PrepareMessageCharacterRemove_Err
         '</EhHeader>
 100     Call Writer.WriteInt(ServerPacketID.CharacterRemove)
-        Call Writer.WriteInt16(dbgid)
 102     Call Writer.WriteInt16(CharIndex)
 104     Call Writer.WriteBool(Desvanecido)
 106     Call Writer.WriteBool(FueWarp)
