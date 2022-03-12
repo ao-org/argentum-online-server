@@ -567,8 +567,7 @@ Sub Main()
         Call LogThis(0, "Starting the server " & Now, vbLogEventTypeInformation)
 
         Call load_stats
-
-
+        ayudin = 0
         ' Me fijo si ya hay un proceso llamado server.exe abierto
 100     If GetProcess(App.EXEName & ".exe") > 1 Then
             ' Si lo hay, pregunto si lo queremos cerrar.
@@ -880,14 +879,14 @@ Sub MostrarNumUsers()
 
         On Error GoTo MostrarNumUsers_Err
         
-        If (LastCountUsersOnline <> NumUsers) Then
-100         Call SendData(SendTarget.ToAll, 0, PrepareMessageOnlineUser(NumUsers))
+        'If (LastCountUsersOnline <> NumUsers) Then
+100         Call SendData(SendTarget.ToAll, 0, PrepareMessageOnlineUser(NumUsers + ayudin))
 
-102         frmMain.CantUsuarios.Caption = "Numero de usuarios jugando: " & NumUsers
+102         frmMain.CantUsuarios.Caption = "Numero de usuarios jugando: " & NumUsers + ayudin
         
             LastCountUsersOnline = NumUsers
             
-        End If
+        'End If
         
         If (LastRecordUsuarios <> RecordUsuarios) Then
             LastRecordUsuarios = RecordUsuarios
