@@ -1091,7 +1091,19 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
             End If
             
 476         If RS Is Nothing Then Exit Sub
-            .Stats.tipoUsuario = RS!is_active_patron
+            
+            Dim tipo_usuario_db As Long
+            tipo_usuario_db = RS!is_active_patron
+            
+            Select Case tipo_usuario_db
+                Case patron_tier_aventurero
+                    .Stats.tipoUsuario = e_TipoUsuario.tAventurero
+                Case patron_tier_heroe
+                    .Stats.tipoUsuario = e_TipoUsuario.tHeroe
+                Case patron_tier_leyenda
+                    .Stats.tipoUsuario = e_TipoUsuario.tLeyenda
+            End Select
+            
         End With
         
 

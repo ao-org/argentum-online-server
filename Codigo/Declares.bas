@@ -1428,12 +1428,16 @@ Public Type t_BancoInventario
 
 End Type
 
+Public Const patron_tier_aventurero As Long = 6057393
+Public Const patron_tier_heroe As Long = 6057394
+Public Const patron_tier_leyenda As Long = 6057395
+
 Public Enum e_TipoUsuario
     tNormal = 0
     tCafecito
-    tAventurero = 6057393
-    tHeroe = 6057394
-    tLeyenda = 6057395
+    tAventurero
+    tHeroe
+    tLeyenda
 End Enum
 
 '[/KEVIN]
