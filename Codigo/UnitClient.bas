@@ -45,9 +45,12 @@ Public Sub Send(ByVal Buffer As Network.Writer)
     Call Buffer.Clear
 End Sub
 
-Private Sub OnClientConnect()
-    Debug.Print ("UnitClient.OnClientConnect")
-    connected = True
+Private Sub TestInvalidPacketID()
+    Call Unit_Protocol_Writes.WriteLong(ClientPacketID.PacketCount)
+    
+End Sub
+
+Private Sub TestWriteLoginNewChar()
     Dim good_md5, md5 As String
     good_md5 = "a944087c826163c4ed658b1ea00594be"
     md5 = good_md5
@@ -67,7 +70,14 @@ Private Sub OnClientConnect()
         UnitTesting.public_key, UnitTesting.character_name, app_major, app_minor, app_revision, _
         md5, race, gender, Class, body, head, home)
 
+End Sub
+
+Private Sub OnClientConnect()
+    Debug.Print ("UnitClient.OnClientConnect")
+    connected = True
    
+    'Call TestInvalidPacketID
+    Call TestWriteLoginNewChar
     
     
 End Sub
@@ -103,6 +113,9 @@ Private Sub OnClientRecv(ByVal Message As Network.Reader)
             
         Case ServerPacketID.CharacterChange
             Call Unit_Protocol_Writes.HandleCharacterChange(Reader)
+      
+        Case ServerPacketID.ShowMessageBox
+            Call Unit_Protocol_Writes.HandleShowMessageBox(Reader)
             
         Case Else
             While Reader.GetAvailable() > 0
