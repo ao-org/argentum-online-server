@@ -225,7 +225,7 @@ On Error GoTo error_dump_stats
     Dim n As Integer
     n = FreeFile()
     Open App.Path & "\logs\numusers.log" For Output Shared As n
-    Print #n, NumUsers
+    Print #n, NumUsers + ayudin
     Close #n
     
     n = FreeFile()

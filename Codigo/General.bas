@@ -584,7 +584,6 @@ Sub Main()
 114     Call InicializarConstantes
     
 116     frmCargando.Show
-        LastCountUsersOnline = -1
     
 118     frmMain.Caption = frmMain.Caption & " V." & App.Major & "." & App.Minor & "." & App.Revision
     
@@ -879,14 +878,13 @@ Sub MostrarNumUsers()
 
         On Error GoTo MostrarNumUsers_Err
         
-        'If (LastCountUsersOnline <> NumUsers) Then
+        
 100         Call SendData(SendTarget.ToAll, 0, PrepareMessageOnlineUser(NumUsers + ayudin))
 
 102         frmMain.CantUsuarios.Caption = "Numero de usuarios jugando: " & NumUsers + ayudin
         
-            LastCountUsersOnline = NumUsers
             
-        'End If
+        
         
         If (LastRecordUsuarios <> RecordUsuarios) Then
             LastRecordUsuarios = RecordUsuarios
