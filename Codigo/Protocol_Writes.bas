@@ -4948,9 +4948,14 @@ Public Function PrepareMessageCharacterCreate(ByVal Body As Integer, _
 162     Call Writer.WriteInt32(UserMinMAN)
 164     Call Writer.WriteInt32(UserMaxMAN)
 166     Call Writer.WriteInt8(Simbolo)
-168     Call Writer.WriteBool(Idle)
-170     Call Writer.WriteBool(Navegando)
-172     Call Writer.WriteInt32(tipoUsuario)
+        Dim flags As Byte
+        flags = 0
+        If Idle Then flags = flags Or &O1 ' 00000001
+        If Navegando Then flags = flags Or &O2
+        Call Writer.WriteInt8(flags)
+168     'Call Writer.WriteBool(Idle)
+170     'Call Writer.WriteBool(Navegando)
+172     Call Writer.WriteInt8(tipoUsuario)
         '<EhFooter>
         Exit Function
 
@@ -4959,6 +4964,7 @@ PrepareMessageCharacterCreate_Err:
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageCharacterCreate", Erl)
         '</EhFooter>
 End Function
+
 
 ''
 ' Prepares the "CharacterChange" message and returns it.
@@ -4985,9 +4991,9 @@ Public Function PrepareMessageCharacterChange(ByVal Body As Integer, _
                                               ByVal helmet As Integer, _
                                               ByVal Idle As Boolean, _
                                               ByVal Navegando As Boolean)
-        '<EhHeader>
+
         On Error GoTo PrepareMessageCharacterChange_Err
-        '</EhHeader>
+
 100     Call Writer.WriteInt(ServerPacketID.CharacterChange)
 102     Call Writer.WriteInt16(CharIndex)
 104     Call Writer.WriteInt16(Body)
@@ -4998,9 +5004,11 @@ Public Function PrepareMessageCharacterChange(ByVal Body As Integer, _
 114     Call Writer.WriteInt16(helmet)
 116     Call Writer.WriteInt16(FX)
 118     Call Writer.WriteInt16(FXLoops)
-120     Call Writer.WriteBool(Idle)
-122     Call Writer.WriteBool(Navegando)
-        '<EhFooter>
+        Dim flags As Byte
+        flags = 0
+        If Idle Then flags = flags Or &O1
+        If Navegando Then flags = flags Or &O2
+        Call Writer.WriteInt8(flags)
         Exit Function
 
 PrepareMessageCharacterChange_Err:
