@@ -13,27 +13,6 @@ Public Sub Clear()
     Call Writer.Clear
 End Sub
 
-#If 1 Then
-
-
-'Public Sub WriteLoginExistingChar()
-'     Call Writer.WriteInt(ClientPacketID.LoginExistingChar)
-'     Call Writer.WriteString8(encrypted_session_token)
-'
-'
-'        Dim encrypted_username_b64 As String
-'        encrypted_username_b64 = AO20CryptoSysWrapper.ENCRYPT(cnvHexStrFromBytes(public_key), username)
-'
-'     Call Writer.WriteString8(encrypted_username_b64)
-'     Call Writer.WriteInt8(App.Major)
-'     Call Writer.WriteInt8(App.Minor)
-'     Call Writer.WriteInt8(App.Revision)
-'     Call Writer.WriteString8(CheckMD5)
-'
-'     Call modNetwork.Send(Writer)
-'
-'End Sub
-
 
 Public Sub WriteLoginNewChar(ByVal public_key As String, ByVal username As String, _
     ByVal app_major As Byte, ByVal app_minor As Byte, ByVal app_revision As Byte, ByVal md5 As String, _
@@ -55,49 +34,35 @@ Public Sub WriteLoginNewChar(ByVal public_key As String, ByVal username As Strin
      Call Writer.WriteInt16(head)
      Call Writer.WriteInt8(home)
      Call UnitClient.Send(Writer)
-
 End Sub
 
+Public Sub WriteLong(ByVal value_to_send As Long)
+    Call Writer.WriteInt(value_to_send)
+    Call UnitClient.Send(Writer)
+End Sub
+
+Public Sub HandleShowMessageBox(ByRef Reader As Network.Reader)
+    Dim mensaje As String
+    mensaje = Reader.ReadString8()
+    Debug.Print "HandleShowMessageBox " & mensaje
+End Sub
 
 Public Sub HandleCharacterChange(ByRef Reader As Network.Reader)
-    
-    
     Dim charindex As Integer
-
     Dim TempInt   As Integer
-
     Dim headIndex As Integer
-
     Call Reader.ReadInt16
-    
-        TempInt = Reader.ReadInt16()
-        
-        headIndex = Reader.ReadInt16()
-        
-        Call Reader.ReadInt8
-        
-        TempInt = Reader.ReadInt16()
-
-        TempInt = Reader.ReadInt16()
-        
-        TempInt = Reader.ReadInt16()
-
-        
-        'Call SetCharacterFx(charindex, Reader.ReadInt16(), Reader.ReadInt16())
-        Reader.ReadInt16
-        
-        Reader.ReadInt16 'Ignore loops
-        
-        Call Reader.ReadBool
-        
-        Call Reader.ReadBool
-
-    
-    Exit Sub
-
-    
+    TempInt = Reader.ReadInt16()
+    headIndex = Reader.ReadInt16()
+    Call Reader.ReadInt8
+    TempInt = Reader.ReadInt16()
+    TempInt = Reader.ReadInt16()
+    TempInt = Reader.ReadInt16()
+    Reader.ReadInt16
+    Reader.ReadInt16
+    Call Reader.ReadBool
+    Call Reader.ReadBool
 End Sub
-#End If
 
 
 
