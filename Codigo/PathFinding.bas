@@ -310,7 +310,9 @@ Public Function SeekPath(ByVal NpcIndex As Integer, Optional ByVal Closest As Bo
         Dim MaxDistance As Integer, Index As Integer
         Dim MinTotalDistance As Integer, BestVertexIndex As Integer
         Dim UserIndex As Integer 'no es necesario
+        Dim pasos As Long
         
+        pasos = 0
         'Ya estamos en la posición.
         If UserIndex > 0 Then
             If NPCHasAUserInFront(NpcIndex, UserIndex) Then
@@ -358,8 +360,9 @@ Public Function SeekPath(ByVal NpcIndex As Integer, Optional ByVal Closest As Bo
         End With
 
         ' Loop principal del algoritmo
-170     Do While (VertexCount > 0)
-    
+170     Do While (VertexCount > 0 And pasos < 300)
+            
+            pasos = pasos + 1
 175         MinTotalDistance = MAXINT
         
             ' Buscamos en la cola la posición con menor distancia total
