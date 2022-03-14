@@ -15423,9 +15423,14 @@ Private Sub HandleTransFerGold(ByVal UserIndex As Integer)
 130         If Not EsGM(UserIndex) Then
 
 132             If tUser <= 0 Then
-
-136                     If Not AddOroBancoDatabase(UserName, Cantidad) Then
-138                         Call WriteChatOverHead(UserIndex, "El usuario no existe.", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
+                        If GetTickCount() - .Counters.LastTransferGold >= 10000 Then
+136                         If Not AddOroBancoDatabase(username, Cantidad) Then
+138                             Call WriteChatOverHead(UserIndex, "El usuario no existe.", NpcList(.flags.TargetNPC).Char.charindex, vbWhite)
+                                Exit Sub
+                            End If
+                            .Counters.LastTransferGold = GetTickCount()
+                        Else
+                            'Call WriteConsoleMsg(UserIndex, "No puedes realizar transferencias tan rápido.", e_FontTypeNames.FONTTYPE_INFO)
                             Exit Sub
 
                         End If

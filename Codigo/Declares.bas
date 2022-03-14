@@ -1775,6 +1775,7 @@ Public Type t_UserCounters
     CuentaRegresiva As Integer
     TimerBarra As Integer
     LastResetTick As Long
+    LastTransferGold As Long
 End Type
 
 Public Type t_UserIntervals
