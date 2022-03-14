@@ -1776,6 +1776,8 @@ Public Type t_UserCounters
     TimerBarra As Integer
     LastResetTick As Long
     LastTransferGold As Long
+    TimeLastReset As Long
+    PacketCount As Long
 End Type
 
 Public Type t_UserIntervals

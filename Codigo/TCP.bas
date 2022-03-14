@@ -1030,6 +1030,8 @@ Sub ResetContadores(ByVal UserIndex As Integer)
             .LastResetTick = 0
             .CounterGmMessages = 0
             .LastTransferGold = 0
+            .TimeLastReset = 0
+            .PacketCount = 0
         End With
 
         

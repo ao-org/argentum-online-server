@@ -638,6 +638,23 @@ On Error Resume Next
 #If STRESSER = 1 Then
     Debug.Print "Paquete: " & PacketID
 #End If
+
+    
+    
+    If GetTickCount - UserList(UserIndex).Counters.TimeLastReset >= 5000 Then
+        UserList(UserIndex).Counters.TimeLastReset = GetTickCount()
+        UserList(UserIndex).Counters.PacketCount = UserList(UserIndex).Counters.PacketCount = 0
+    End If
+    
+    UserList(UserIndex).Counters.PacketCount = UserList(UserIndex).Counters.PacketCount + 1
+    
+    If UserList(UserIndex).Counters.PacketCount > 100 Then
+        'Lo kickeo
+        Call SendData(SendTarget.ToAdmins, UserIndex, PrepareMessageConsoleMsg("Control de paquetes -> El usuario " & UserList(UserIndex).name & " | Iteración paquetes | Último paquete: " & PacketId & ".", e_FontTypeNames.FONTTYPE_FIGHT))
+        Call CloseSocket(UserIndex)
+        Exit Function
+    End If
+
     If PacketId < 0 Or PacketId >= ClientPacketID.PacketCount Then
             Debug.Print " Baneo IP " & UserList(UserIndex).IP & " por packet < 0"
             Call BanearIP(1, UserList(UserIndex).name, UserList(UserIndex).IP, "")
