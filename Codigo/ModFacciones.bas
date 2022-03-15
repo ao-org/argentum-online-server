@@ -151,7 +151,7 @@ Public Sub RecompensaArmadaReal(ByVal UserIndex As Integer)
                 End If
 
 120             If proxRango.NivelRequerido > .Stats.ELV Then
-122               Call WriteChatOverHead(UserIndex, "Has matado suficientes criminales pero, te faltan & (proxRango.NivelRequerido - .Stats.ELV) & para poder recibir la próxima recompensa.", npcCharIndex, vbWhite)
+122               Call WriteChatOverHead(userindex, "Has matado suficientes criminales pero, te faltan " & (proxRango.NivelRequerido - .Stats.ELV) & " niveles para poder recibir la próxima recompensa.", npcCharIndex, vbWhite)
 
                 Else ' El usuario cumple con los requerimientos de nivel, se le asigna la recomenza.
 124               .Faccion.RecompensasReal = proxRango.rank
