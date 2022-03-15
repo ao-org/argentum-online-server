@@ -883,13 +883,6 @@ Sub MostrarNumUsers()
 
 102         frmMain.CantUsuarios.Caption = "Numero de usuarios jugando: " & NumUsers + ayudin
         
-            
-        
-        
-        If (LastRecordUsuarios <> RecordUsuarios) Then
-            LastRecordUsuarios = RecordUsuarios
-            
-        End If
 
         Exit Sub
 
