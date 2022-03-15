@@ -626,7 +626,7 @@ Public Function ConnectUser_Complete(ByVal UserIndex As Integer, _
         
 970         If NumUsers + ayudin > RecordUsuarios Then
 975             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Record de usuarios conectados simultáneamente: " & NumUsers + ayudin & " usuarios.", e_FontTypeNames.FONTTYPE_INFO))
-980             RecordUsuarios = NumUsers
+980             RecordUsuarios = NumUsers + ayudin
             End If
 
 990         Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageOnlineUser(NumUsers + ayudin))
