@@ -638,9 +638,13 @@ On Error Resume Next
 #End If
 
     
+    Dim actual_time As Long
     
-    If GetTickCount - UserList(UserIndex).Counters.TimeLastReset >= 5000 Then
-        UserList(UserIndex).Counters.TimeLastReset = GetTickCount()
+    actual_time = GetTickCount()
+    
+    
+    If actual_time - UserList(UserIndex).Counters.TimeLastReset >= 5000 Then
+        UserList(UserIndex).Counters.TimeLastReset = actual_time
         UserList(UserIndex).Counters.PacketCount = UserList(UserIndex).Counters.PacketCount = 0
     End If
     
@@ -654,9 +658,9 @@ On Error Resume Next
     End If
 
     If PacketId < 0 Or PacketId >= ClientPacketID.PacketCount Then
-            Debug.Print " Baneo IP " & UserList(UserIndex).IP & " por packet < 0"
-            Call BanearIP(1, UserList(UserIndex).name, UserList(UserIndex).IP, "")
+            'Call BanearIP(1, UserList(UserIndex).name, UserList(UserIndex).IP, "")
             Call LogEdicionPaquete("El usuario " & UserList(UserIndex).IP & " mando fake paquet " & PacketId)
+            Call SendData(SendTarget.ToGM, UserIndex, PrepareMessageConsoleMsg("EL USUARIO " & UserList(UserIndex).name & " | IP: " & UserList(UserIndex).IP & " ESTÁ ENVIANDO PAQUETES INVÁLIDOS", e_FontTypeNames.FONTTYPE_GUILD))
             Call CloseSocket(UserIndex)
             Exit Function
     End If
