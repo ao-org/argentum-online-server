@@ -3484,34 +3484,6 @@ WriteShowFrmMapa_Err:
         '</EhFooter>
 End Sub
 
-Public Sub WriteFamiliar(ByVal UserIndex As Integer)
-        '<EhHeader>
-        On Error GoTo WriteFamiliar_Err
-        '</EhHeader>
-
-100     With UserList(UserIndex)
-102         Call Writer.WriteInt(ServerPacketID.Familiar)
-104         Call Writer.WriteInt8(.Familiar.Existe)
-106         Call Writer.WriteInt8(.Familiar.Muerto)
-108         Call Writer.WriteString8(.Familiar.nombre)
-110         Call Writer.WriteInt32(.Familiar.Exp)
-112         Call Writer.WriteInt32(.Familiar.ELU)
-114         Call Writer.WriteInt8(.Familiar.nivel)
-116         Call Writer.WriteInt16(.Familiar.MinHp)
-118         Call Writer.WriteInt16(.Familiar.MaxHp)
-120         Call Writer.WriteInt16(.Familiar.MinHIT)
-122         Call Writer.WriteInt16(.Familiar.MaxHit)
-        End With
-
-124     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
-        Exit Sub
-
-WriteFamiliar_Err:
-        Call Writer.Clear
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteFamiliar", Erl)
-        '</EhFooter>
-End Sub
 
 Public Sub WritePreguntaBox(ByVal UserIndex As Integer, ByVal Message As String)
         '<EhHeader>

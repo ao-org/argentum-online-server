@@ -2430,41 +2430,6 @@ WarpUserChar_Err:
         
 End Sub
 
-Sub WarpFamiliar(ByVal UserIndex As Integer)
-        
-        On Error GoTo WarpFamiliar_Err
-        
-
-100     With UserList(UserIndex)
-
-102         If .Familiar.Invocado = 1 Then
-104             Call QuitarNPC(.Familiar.ID)
-                ' If MapInfo(UserList(UserIndex).Pos.map).Pk = True Then
-106             .Familiar.ID = SpawnNpc(.Familiar.NpcIndex, UserList(UserIndex).Pos, False, True)
-
-                'Controlamos que se sumoneo OK
-108             If .Familiar.ID = 0 Then
-110                 Call WriteConsoleMsg(UserIndex, "No hay espacio aquí para tu mascota.", e_FontTypeNames.FONTTYPE_INFO)
-                    Exit Sub
-
-                End If
-
-112             Call CargarFamiliar(UserIndex)
-            Else
-
-                'Call WriteConsoleMsg(UserIndex, "No se permiten familiares en zona segura. " & .Familiar.Nombre & " te esperará afuera.", e_FontTypeNames.FONTTYPE_INFO)
-            End If
-    
-        End With
-            
-        
-        Exit Sub
-
-WarpFamiliar_Err:
-114     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.WarpFamiliar", Erl)
-
-        
-End Sub
 
 Sub Cerrar_Usuario(ByVal UserIndex As Integer)
 

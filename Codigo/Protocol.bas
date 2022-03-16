@@ -146,7 +146,6 @@ Public Enum ServerPacketID
     FlashScreen
     AlquimistaObj
     ShowAlquimiaForm
-    Familiar
     SastreObj
     ShowSastreForm ' 126
     VelocidadToggle
@@ -453,7 +452,6 @@ Public Enum ClientPacketID
     Genio
     Casarse
     CraftAlquimista
-    RequestFamiliar
     FlagTrabajar
     CraftSastre
     MensajeUser
@@ -1177,8 +1175,6 @@ On Error Resume Next
             Call HandleCasamiento(UserIndex)
         Case ClientPacketID.CraftAlquimista
             Call HandleCraftAlquimia(UserIndex)
-        Case ClientPacketID.RequestFamiliar
-            Call HandleRequestFamiliar(UserIndex)
         Case ClientPacketID.FlagTrabajar
             Call HandleFlagTrabajar(UserIndex)
         Case ClientPacketID.CraftSastre
@@ -16268,21 +16264,6 @@ ErrHandler:
 110     Call TraceError(Err.Number, Err.Description, "Protocol.?", Erl)
 112
 
-End Sub
-
-
-Private Sub HandleRequestFamiliar(ByVal UserIndex As Integer)
- 
-        On Error GoTo HandleRequestFamiliar_Err
-
-100     Call WriteFamiliar(UserIndex)
-        
-        Exit Sub
-
-HandleRequestFamiliar_Err:
-102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleRequestFamiliar", Erl)
-104
-        
 End Sub
 
 Private Sub HandleCompletarAccion(ByVal UserIndex As Integer)
