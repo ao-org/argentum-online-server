@@ -631,7 +631,7 @@ Public Function HandleIncomingData(ByVal UserIndex As Integer, ByVal Message As 
 On Error Resume Next
     Set Reader = Message
     Dim PacketID As Long:
-    PacketID = Reader.ReadInt
+    PacketId = Reader.ReadInt16
     
 #If STRESSER = 1 Then
     Debug.Print "Paquete: " & PacketID
