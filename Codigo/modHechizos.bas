@@ -1118,9 +1118,6 @@ Sub HandleHechizoTerreno(ByVal UserIndex As Integer, ByVal uh As Integer)
             
 116         Case e_TipoHechizo.uPortal 'Tipo 6
 118             Call HechizoPortal(UserIndex, b)
-
-120         Case e_TipoHechizo.UFamiliar
-122             Call InvocarFamiliar(UserIndex, b)
                 
         End Select
 

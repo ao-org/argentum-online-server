@@ -52,7 +52,6 @@ Module=modSendData; Codigo\modSendData.bas
 Module=ModSubasta; Codigo\ModSubasta.bas
 Module=ModCuentas; Codigo\ModEmail.bas
 Module=ModRetos; Codigo\ModRetos.bas
-Module=ModFamiliar; Codigo\ModFamiliar.bas
 Module=ModClimas; Codigo\ModClimas.bas
 Module=ModGrupos; Codigo\ModGrupos.bas
 Module=ModEventos; Codigo\ModEventos.bas

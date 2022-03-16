@@ -435,7 +435,6 @@ Public Enum e_TipoHechizo
     uInvocacion = 4
     uArea = 5
     uPortal = 6
-    UFamiliar = 7
     uCombinados = 8
     
 End Enum
@@ -1908,7 +1907,6 @@ Public Type t_User
     Accion As t_AccionPendiente
 
     Faccion As t_Facciones
-    Familiar As t_Family
 
     ChatCombate As Byte
     ChatGlobal As Byte
@@ -2185,7 +2183,6 @@ Public Type t_Npc
     ' Entrenadores
     NroCriaturas As Integer
     Criaturas() As t_CriaturasEntrenador
-    EsFamiliar As Byte
     MaestroNPC As Integer
     MaestroUser As Integer
     Mascotas As Integer
