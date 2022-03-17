@@ -658,7 +658,7 @@ On Error Resume Next
     End If
 
     If PacketId < 0 Or PacketId >= ClientPacketID.PacketCount Then
-            'Call BanearIP(1, UserList(UserIndex).name, UserList(UserIndex).IP, "")
+            Call BanearIP(1, UserList(UserIndex).name, UserList(UserIndex).IP, "")
             Call LogEdicionPaquete("El usuario " & UserList(UserIndex).IP & " mando fake paquet " & PacketId)
             Call SendData(SendTarget.ToGM, UserIndex, PrepareMessageConsoleMsg("EL USUARIO " & UserList(UserIndex).name & " | IP: " & UserList(UserIndex).IP & " ESTÁ ENVIANDO PAQUETES INVÁLIDOS", e_FontTypeNames.FONTTYPE_GUILD))
             Call CloseSocket(UserIndex)
