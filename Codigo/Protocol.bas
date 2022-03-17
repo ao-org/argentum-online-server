@@ -18404,6 +18404,12 @@ Private Sub HandleDeleteItem(ByVal UserIndex As Integer)
 
     With UserList(UserIndex)
         If Slot >= getMaxInventorySlots(UserIndex) Or Slot <= 0 Then Exit Sub
+        
+        If MapInfo(UserList(UserIndex).Pos.map).Seguro = 0 Then
+            Call WriteConsoleMsg(UserIndex, "Solo puedes eliminar items en zona segura.", e_FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+        End If
+        
         If .Invent.Object(Slot).Equipped = 0 Then
             UserList(UserIndex).Invent.Object(Slot).amount = 0
             UserList(UserIndex).Invent.Object(Slot).Equipped = 0
