@@ -57,11 +57,16 @@ Public Sub InvitarMiembro(ByVal UserIndex As Integer, ByVal InvitadoIndex As Int
             Exit Sub
         End If
             
-126     If Status(UserIndex) <> Status(InvitadoIndex) Or _
-            (Status(UserIndex) = 1 And Status(InvitadoIndex) = 3) Or _
-            (Status(UserIndex) = 3 And Status(InvitadoIndex) = 1) Or _
-            (Status(UserIndex) = 0 And Status(InvitadoIndex) = 2) Or _
-            (Status(UserIndex) = 2 And Status(InvitadoIndex) = 0) Then
+126     If _
+            (Status(userindex) = 0 And Status(InvitadoIndex) = 1) Or _
+            (Status(userindex) = 1 And Status(InvitadoIndex) = 0) Or _
+            (Status(userindex) = 1 And Status(InvitadoIndex) = 2) Or _
+            (Status(userindex) = 2 And Status(InvitadoIndex) = 1) Or _
+            (Status(userindex) = 3 And Status(InvitadoIndex) = 0) Or _
+            (Status(userindex) = 0 And Status(InvitadoIndex) = 3) Or _
+            (Status(userindex) = 3 And Status(InvitadoIndex) = 2) Or _
+            (Status(userindex) = 2 And Status(InvitadoIndex) = 3) _
+            Then
         
 128         Call WriteConsoleMsg(UserIndex, "No podes crear un grupo con personajes de diferentes facciones.", e_FontTypeNames.FONTTYPE_New_GRUPO)
             Exit Sub
@@ -118,13 +123,13 @@ Public Sub EcharMiembro(ByVal UserIndex As Integer, ByVal Indice As Byte)
 100     With UserList(UserIndex).Grupo
     
 102         If Not .EnGrupo Then
-104             Call WriteConsoleMsg(UserIndex, "No estas en ningun grupo.", e_FontTypeNames.FONTTYPE_New_GRUPO)
+104             Call WriteConsoleMsg(userindex, "No estás en ningun grupo", e_FontTypeNames.FONTTYPE_New_GRUPO)
                 Exit Sub
         
             End If
     
 106         If .Lider = UserIndex Then
-108             Call WriteConsoleMsg(UserIndex, "Tu no podés hechar usuarios del grupo.", e_FontTypeNames.FONTTYPE_New_GRUPO)
+108             Call WriteConsoleMsg(userindex, "No podés echar a usuarios del grupo", e_FontTypeNames.FONTTYPE_New_GRUPO)
                 Exit Sub
             
             End If
