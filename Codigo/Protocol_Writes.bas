@@ -2443,9 +2443,6 @@ Public Sub WriteContadores(ByVal UserIndex As Integer)
         '</EhHeader>
 100     Call Writer.WriteInt16(ServerPacketID.Contadores)
 102     Call Writer.WriteInt16(UserList(UserIndex).Counters.Invisibilidad)
-
-108     Call Writer.WriteInt16(0)
-
 110     Call Writer.WriteInt16(UserList(UserIndex).flags.DuracionEfecto)
         
 112     Call modSendData.SendData(ToIndex, UserIndex)
