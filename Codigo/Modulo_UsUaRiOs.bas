@@ -2446,6 +2446,14 @@ Sub Cerrar_Usuario(ByVal UserIndex As Integer)
 112                 .flags.Traveling = 0
 114                 .Counters.goHome = 0
                 End If
+                
+                If .flags.invisible + .flags.Oculto > 0 Then
+                    .flags.invisible = 0
+                    .flags.Oculto = 0
+                    Call SendData(SendTarget.ToPCArea, userindex, PrepareMessageSetInvisible(.Char.charindex, False))
+                    Call WriteConsoleMsg(userindex, "Has vuelto a ser visible", e_FontTypeNames.FONTTYPE_INFO)
+                End If
+                
             
 116             Call WriteLocaleMsg(UserIndex, "203", e_FontTypeNames.FONTTYPE_INFO, .Counters.Salir)
             
