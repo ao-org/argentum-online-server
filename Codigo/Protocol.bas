@@ -659,7 +659,9 @@ On Error Resume Next
 
     If PacketId < 0 Or PacketId >= ClientPacketID.PacketCount Then
         Call LogEdicionPaquete("El usuario " & UserList(UserIndex).IP & " mando fake paquet " & PacketId)
-        Call IP_Blacklist.Add(UserList(UserIndex).IP, "FAKE")
+        If IP_Blacklist.Exists(UserList(UserIndex).IP) = 0 Then
+            Call IP_Blacklist.Add(UserList(UserIndex).IP, "FAKE")
+        End If
         Call SendData(SendTarget.ToGM, UserIndex, PrepareMessageConsoleMsg("EL USUARIO " & UserList(UserIndex).name & " | IP: " & UserList(UserIndex).IP & " ESTÁ ENVIANDO PAQUETES INVÁLIDOS", e_FontTypeNames.FONTTYPE_GUILD))
         Call CloseSocket(UserIndex)
         Exit Function
