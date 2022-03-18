@@ -25,6 +25,7 @@ Public Sub CargarListaNegraUsuarios()
 102     Set File = New clsIniManager
 104     Call File.Initialize(DatPath & "Baneos.dat")
 
+        Call IP_Blacklist.RemoveAll
         ' IP's
 108     For i = 0 To File.EntriesCount("IP") - 1
 110        Call File.GetPair("IP", i, iKey, iValue)
