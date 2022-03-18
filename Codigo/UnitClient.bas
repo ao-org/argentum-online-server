@@ -97,7 +97,7 @@ Private Sub OnClientRecv(ByVal Message As Network.Reader)
     Dim Reader As Network.Reader
     Set Reader = Message
     Dim PacketId As Long:
-    PacketId = Reader.ReadInt
+    PacketId = Reader.ReadInt16
     Debug.Print "UnitTesting recv PacketId" & PacketId
     Select Case PacketId
         Case ServerPacketID.connected
