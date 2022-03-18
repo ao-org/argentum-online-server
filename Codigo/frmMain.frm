@@ -3,10 +3,10 @@ Begin VB.Form frmMain
    BackColor       =   &H00E0E0E0&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   "Servidor Argentum 20"
-   ClientHeight    =   6210
+   ClientHeight    =   6255
    ClientLeft      =   1950
    ClientTop       =   1695
-   ClientWidth     =   6840
+   ClientWidth     =   8595
    FillColor       =   &H00C0C0C0&
    BeginProperty Font 
       Name            =   "Arial"
@@ -23,9 +23,17 @@ Begin VB.Form frmMain
    MaxButton       =   0   'False
    MinButton       =   0   'False
    PaletteMode     =   1  'UseZOrder
-   ScaleHeight     =   6210
-   ScaleWidth      =   6840
+   ScaleHeight     =   6255
+   ScaleWidth      =   8595
    StartUpPosition =   2  'CenterScreen
+   Begin VB.CommandButton Command5 
+      Caption         =   "Recargar baneos.dat"
+      Height          =   495
+      Left            =   6840
+      TabIndex        =   43
+      Top             =   120
+      Width           =   1695
+   End
    Begin VB.TextBox txtAyudin 
       Enabled         =   0   'False
       Height          =   315
@@ -188,7 +196,7 @@ Begin VB.Form frmMain
       BackColor       =   &H00E0E0E0&
       Caption         =   "Eventos"
       Height          =   6015
-      Left            =   7920
+      Left            =   8880
       TabIndex        =   21
       Top             =   120
       Width           =   1575
@@ -735,6 +743,10 @@ Private Sub Command3_Click()
     Call CargarDonadores
 End Sub
 
+
+Private Sub Command5_Click()
+    CargarListaNegraUsuarios
+End Sub
 
 Private Sub Segundo_Timer()
 
