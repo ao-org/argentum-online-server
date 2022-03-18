@@ -2966,7 +2966,13 @@ Private Sub HandleWork(ByVal UserIndex As Integer)
                     End If
                     
 136                 If .flags.EnConsulta Then
-138                     Call WriteConsoleMsg(UserIndex, "No podés ocultarte si estas en consulta.", e_FontTypeNames.FONTTYPE_INFO)
+138                     Call WriteConsoleMsg(userindex, "No podés ocultarte si estas en consulta.", e_FontTypeNames.FONTTYPE_INFO)
+                        Exit Sub
+    
+                    End If
+                    
+                    If .flags.invisible Then
+138                     Call WriteConsoleMsg(userindex, "No podés ocultarte si estás invisible.", e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
     
                     End If
