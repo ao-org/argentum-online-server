@@ -514,7 +514,7 @@ Public Function PuedeFundarUnClan(ByVal UserIndex As Integer, ByVal Alineacion A
             Exit Function
         End If
     
-106     If UserList(userindex).Stats.ELV < 25 Or UserList(userindex).Stats.UserSkills(e_Skill.liderazgo) < 100 Then
+106     If UserList(userindex).Stats.ELV < 25 Or UserList(userindex).Stats.UserSkills(e_Skill.liderazgo) < 90 Then
 108         refError = "Para fundar un clan debes ser nivel 25, tener 90 puntos en liderazgo y tener en tu inventario las Gemas Polar y Roja (Fundación)."
             Exit Function
         End If
