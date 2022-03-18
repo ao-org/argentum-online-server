@@ -21,7 +21,7 @@ Public Sub WriteLoginNewChar(ByVal public_key As String, ByVal username As Strin
      
      Dim encrypted_username_b64 As String
      encrypted_username_b64 = AO20CryptoSysWrapper.ENCRYPT(cnvHexStrFromString(public_key), username)
-     Call Writer.WriteInt(ClientPacketID.LoginNewChar)
+     Call Writer.WriteInt16(ClientPacketID.LoginNewChar)
      Call Writer.WriteString8(UnitTesting.encrypted_token)
      Call Writer.WriteString8(encrypted_username_b64)
      Call Writer.WriteInt8(App.Major)
@@ -37,7 +37,7 @@ Public Sub WriteLoginNewChar(ByVal public_key As String, ByVal username As Strin
 End Sub
 
 Public Sub WriteLong(ByVal value_to_send As Long)
-    Call Writer.WriteInt(value_to_send)
+    Call Writer.WriteInt16(value_to_send)
     Call UnitClient.Send(Writer)
 End Sub
 
@@ -60,8 +60,7 @@ Public Sub HandleCharacterChange(ByRef Reader As Network.Reader)
     TempInt = Reader.ReadInt16()
     Reader.ReadInt16
     Reader.ReadInt16
-    Call Reader.ReadBool
-    Call Reader.ReadBool
+    Reader.ReadInt8
 End Sub
 
 
