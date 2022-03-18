@@ -1501,9 +1501,9 @@ Private Sub UserDañoUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As 
                 
                     ' Si el daño total es superior a su vida maxima, lo dejamos en uno de vida y mostrar un mensaje por consola
                     Select Case Daño
-                        Case Is >= .Stats.MaxHp * 1.1
+                        Case Is >= .Stats.MaxHp * 1.05
                             .Stats.MinHp = 0
-                        Case Is < .Stats.MaxHp * 1.1 And Daño >= .Stats.MaxHp
+                        Case Is < .Stats.MaxHp * 1.05 And Daño >= .Stats.MaxHp
                             .Stats.MinHp = 1
                             'Enviamos mensaje al atacante
                             Call WriteConsoleMsg(AtacanteIndex, "Has dejado agonizando a tu oponente", e_FontTypeNames.FONTTYPE_INFOBOLD)
