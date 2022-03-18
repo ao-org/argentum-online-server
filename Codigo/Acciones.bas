@@ -103,9 +103,6 @@ PuedeUsarObjeto_Err:
 
 End Function
 
-Public Function RequiereOxigeno(ByVal UserMap) As Boolean
-     RequiereOxigeno = (UserMap = 265) Or (UserMap = 266) Or (UserMap = 267)
-End Function
 
 Public Sub CompletarAccionFin(ByVal UserIndex As Integer)
         

@@ -2436,21 +2436,6 @@ WriteCerrarleCliente_Err:
         '</EhFooter>
 End Sub
 
-Public Sub WriteOxigeno(ByVal UserIndex As Integer)
-        '<EhHeader>
-        On Error GoTo WriteOxigeno_Err
-        '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.Oxigeno)
-102     Call Writer.WriteInt16(UserList(UserIndex).Counters.Oxigeno)
-104     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
-        Exit Sub
-
-WriteOxigeno_Err:
-        Call Writer.Clear
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteOxigeno", Erl)
-        '</EhFooter>
-End Sub
 
 Public Sub WriteContadores(ByVal UserIndex As Integer)
  '<EhHeader>
@@ -2459,11 +2444,7 @@ Public Sub WriteContadores(ByVal UserIndex As Integer)
 100     Call Writer.WriteInt16(ServerPacketID.Contadores)
 102     Call Writer.WriteInt16(UserList(UserIndex).Counters.Invisibilidad)
 
-104     If UserList(UserIndex).flags.NecesitaOxigeno Then
-106         Call Writer.WriteInt16(UserList(UserIndex).Counters.Oxigeno)
-        Else
-108         Call Writer.WriteInt16(0)
-        End If
+108     Call Writer.WriteInt16(0)
 
 110     Call Writer.WriteInt16(UserList(UserIndex).flags.DuracionEfecto)
         

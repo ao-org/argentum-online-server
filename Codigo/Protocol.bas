@@ -162,7 +162,6 @@ Public Enum ServerPacketID
     ArmaMov
     EscudoMov
     ViajarForm
-    Oxigeno
     NadarToggle
     ShowFundarClanForm
     CharUpdateHP

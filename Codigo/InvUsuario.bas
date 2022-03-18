@@ -2429,59 +2429,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
 736                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, .Pos.X, .Pos.Y))
     
                             End If
-    
-738                     Case 15  ' Aliento de sirena
-                            Dim HR   As Integer
-                            Dim MS   As Integer
-                            Dim SS   As Integer
-                            Dim secs As Integer
-                            
-740                         If .Counters.Oxigeno >= 3540 Then
-                            
-742                             Call WriteConsoleMsg(UserIndex, "No podes acumular más de 59 minutos de oxigeno.", e_FontTypeNames.FONTTYPE_INFOIAO)
-744                             secs = .Counters.Oxigeno
-746                             HR = secs \ 3600
-748                             MS = (secs Mod 3600) \ 60
-750                             SS = (secs Mod 3600) Mod 60
-    
-752                             If SS > 9 Then
-754                                 Call WriteConsoleMsg(UserIndex, "Tu reserva de oxigeno es de " & HR & ":" & MS & ":" & SS & " segundos.", e_FontTypeNames.FONTTYPE_New_Blanco)
-                                Else
-756                                 Call WriteConsoleMsg(UserIndex, "Tu reserva de oxigeno es de " & HR & ":" & MS & ":0" & SS & " minuto(s).", e_FontTypeNames.FONTTYPE_New_Blanco)
-    
-                                End If
-    
-                            Else
-                                
-758                             .Counters.Oxigeno = .Counters.Oxigeno + obj.DuracionEfecto
-760                             Call QuitarUserInvItem(UserIndex, Slot, 1)
-                                
-                                'secs = .Counters.Oxigeno
-                                ' HR = secs \ 3600
-                                ' MS = (secs Mod 3600) \ 60
-                                ' SS = (secs Mod 3600) Mod 60
-                                ' If SS > 9 Then
-                                ' Call WriteConsoleMsg(UserIndex, "Tu reserva de oxigeno es de " & MS & ":" & SS & " segundos.", e_FontTypeNames.FONTTYPE_New_Blanco)
-                                'Call WriteConsoleMsg(UserIndex, "Has agregado " & MS & ":" & SS & " segundos de oxigeno.", e_FontTypeNames.FONTTYPE_New_DONADOR)
-                                ' Else
-                                ' Call WriteConsoleMsg(UserIndex, "Tu reserva de oxigeno es de " & MS & ":0" & SS & " minuto(s).", e_FontTypeNames.FONTTYPE_New_Blanco)
-                                ' End If
-                                
-762                             .flags.Ahogandose = 0
-764                             Call WriteOxigeno(UserIndex)
-                                
-766                             Call WriteContadores(UserIndex)
-    
-768                             If obj.Snd1 <> 0 Then
-770                                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .Pos.X, .Pos.Y))
-                                
-                                Else
-772                                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, .Pos.X, .Pos.Y))
-    
-                                End If
-    
-                            End If
-    
+        
 774                     Case 16 ' Divorcio
     
 776                         If .flags.Casado = 1 Then

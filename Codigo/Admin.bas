@@ -299,39 +299,6 @@ PurgarPenas_Err:
         
 End Sub
 
-Public Sub EfectoOxigeno(ByVal UserIndex As Integer)
-        
-    On Error GoTo EfectoOxigeno_Err
-        
-100 With UserList(UserIndex)
-
-102     If .flags.NecesitaOxigeno Then
-
-104         If .Counters.Oxigeno > 0 Then
-
-106             .Counters.Oxigeno = .Counters.Oxigeno - 1
-                
-108             If .Counters.Oxigeno < 1 Then
-110                 .Counters.Oxigeno = 0
-112                 Call WriteOxigeno(UserIndex)
-114                 Call WriteConsoleMsg(UserIndex, "Te has quedado sin oxigeno.", e_FontTypeNames.FONTTYPE_EJECUCION)
-116                 .flags.Ahogandose = 1
-118                 Call WriteContadores(UserIndex)
-                End If
-            
-            End If
-            
-        End If
-        
-    End With
-
-    Exit Sub
-
-EfectoOxigeno_Err:
-120     Call TraceError(Err.Number, Err.Description, "Admin.EfectoOxigeno", Erl)
-
-        
-End Sub
 
 Public Sub Encarcelar(ByVal UserIndex As Integer, ByVal minutos As Long, Optional ByVal GmName As String = vbNullString)
         

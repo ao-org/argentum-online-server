@@ -1511,9 +1511,7 @@ Public Type t_UserFlags
     Nadando As Byte
     PescandoEspecial As Boolean
     QuestOpenByObj As Boolean
-    NecesitaOxigeno As Boolean
 
-    Ahogandose As Byte
     EnTorneo As Boolean
 
     'Ladder
@@ -1705,9 +1703,7 @@ Public Type t_UserCounters
 
     TiempoParaSubastar As Byte
     UserHechizosInterval(1 To MAXUSERHECHIZOS) As Long
-    Oxigeno As Long
     
-    Ahogo As Long
     
     IdleCount As Integer
     AttackCounter As Integer

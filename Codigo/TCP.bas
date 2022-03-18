@@ -1016,7 +1016,6 @@ Sub ResetContadores(ByVal UserIndex As Integer)
             'Ladder
 162         .Incineracion = 0
             'Ladder
-168         .Oxigeno = 0
 170         .TiempoParaSubastar = 0
 172         .TimerPerteneceNpc = 0
 174         .TimerPuedeSerAtacado = 0
@@ -1241,7 +1240,6 @@ Sub ResetUserFlags(ByVal UserIndex As Integer)
 146         .Navegando = 0
 148         .Oculto = 0
 150         .Envenenado = 0
-152         .Ahogandose = 0
 154         .invisible = 0
 156         .Paralizado = 0
 158         .Inmovilizado = 0
@@ -1286,7 +1284,6 @@ Sub ResetUserFlags(ByVal UserIndex As Integer)
 234         .RegeneracionMana = 0
 236         .RegeneracionHP = 0
 238         .RegeneracionSta = 0
-240         .NecesitaOxigeno = False
 
 242         .LastCrimMatado = vbNullString
 244         .LastCiudMatado = vbNullString
