@@ -646,7 +646,7 @@ On Error Resume Next
     
     If actual_time - UserList(UserIndex).Counters.TimeLastReset >= 5000 Then
         UserList(UserIndex).Counters.TimeLastReset = actual_time
-        UserList(UserIndex).Counters.PacketCount = UserList(UserIndex).Counters.PacketCount = 0
+        UserList(UserIndex).Counters.PacketCount = 0
     End If
     
     UserList(UserIndex).Counters.PacketCount = UserList(UserIndex).Counters.PacketCount + 1
@@ -659,11 +659,11 @@ On Error Resume Next
     End If
 
     If PacketId < 0 Or PacketId >= ClientPacketID.PacketCount Then
-            Call BanearIP(1, UserList(UserIndex).name, UserList(UserIndex).IP, "")
-            Call LogEdicionPaquete("El usuario " & UserList(UserIndex).IP & " mando fake paquet " & PacketId)
-            Call SendData(SendTarget.ToGM, UserIndex, PrepareMessageConsoleMsg("EL USUARIO " & UserList(UserIndex).name & " | IP: " & UserList(UserIndex).IP & " ESTÁ ENVIANDO PAQUETES INVÁLIDOS", e_FontTypeNames.FONTTYPE_GUILD))
-            Call CloseSocket(UserIndex)
-            Exit Function
+        Call LogEdicionPaquete("El usuario " & UserList(UserIndex).IP & " mando fake paquet " & PacketId)
+        Call IP_Blacklist.Add(IP, "FAKE")
+        Call SendData(SendTarget.ToGM, UserIndex, PrepareMessageConsoleMsg("EL USUARIO " & UserList(UserIndex).name & " | IP: " & UserList(UserIndex).IP & " ESTÁ ENVIANDO PAQUETES INVÁLIDOS", e_FontTypeNames.FONTTYPE_GUILD))
+        Call CloseSocket(UserIndex)
+        Exit Function
     End If
     
     'Does the packet requires a logged user??
@@ -2689,9 +2689,9 @@ Private Function verifyTimeStamp(ByVal ActualCount As Long, ByRef LastCount, ByR
     'Controlamos secuencia para ver que no haya paquetes duplicados.
     If ActualCount <= LastCount Then
         Call SendData(SendTarget.ToGM, UserIndex, PrepareMessageConsoleMsg("Paquete grabado: " & PacketName & " | Cuenta: " & UserList(UserIndex).Cuenta & " | Ip: " & UserList(UserIndex).IP & " (Baneado automaticamente)", e_FontTypeNames.FONTTYPE_INFOBOLD))
-        Call BanearIP(0, UserList(UserIndex).name, UserList(UserIndex).IP, UserList(UserIndex).Cuenta)
         Call LogEdicionPaquete("El usuario " & UserList(UserIndex).name & " editó el paquete " & PacketName & ".")
         LastCount = ActualCount
+        Call CloseSocket(UserIndex)
         Exit Function
     End If
     
