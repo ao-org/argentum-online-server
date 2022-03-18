@@ -765,7 +765,6 @@ Public Sub WriteChangeMap(ByVal UserIndex As Integer, ByVal Map As Integer)
         '</EhHeader>
 100     Call Writer.WriteInt16(ServerPacketID.changeMap)
 102     Call Writer.WriteInt16(Map)
-104     Call Writer.WriteInt16(0)
 106     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub
