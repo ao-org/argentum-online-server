@@ -1588,45 +1588,6 @@ EfectoVeneno_Err:
 
 End Sub
 
-Public Sub EfectoAhogo(ByVal UserIndex As Integer)
-        
-        On Error GoTo EfectoAhogo_Err
-        
-100     If Not UserList(UserIndex).flags.Privilegios And e_PlayerType.user Then Exit Sub
-        
-        Dim n As Integer
-
-102     If RequiereOxigeno(UserList(UserIndex).Pos.Map) Then
-104         If UserList(UserIndex).Counters.Ahogo < 70 Then
-106             UserList(UserIndex).Counters.Ahogo = UserList(UserIndex).Counters.Ahogo + 1
-            Else
-108             Call WriteConsoleMsg(UserIndex, "Te estás ahogando, si no consigues oxígeno morirás.", e_FontTypeNames.FONTTYPE_EJECUCION)
-                'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, 205, 30, False))
-110             UserList(UserIndex).Counters.Ahogo = 0
-112             n = RandomNumber(150, 200)
-114             UserList(UserIndex).Stats.MinHp = UserList(UserIndex).Stats.MinHp - n
-
-116             If UserList(UserIndex).Stats.MinHp < 1 Then
-118                 Call UserDie(UserIndex)
-                Else
-120                 Call WriteUpdateHP(UserIndex)
-                End If
-
-            End If
-
-        Else
-122         UserList(UserIndex).flags.Ahogandose = 0
-
-        End If
-
-        
-        Exit Sub
-
-EfectoAhogo_Err:
-124     Call TraceError(Err.Number, Err.Description, "General.EfectoAhogo", Erl)
-
-        
-End Sub
 
 ' El incineramiento tiene una logica particular, que es hacer daño sostenido en el tiempo.
 Public Sub EfectoIncineramiento(ByVal UserIndex As Integer)
@@ -1907,10 +1868,10 @@ Sub PasarSegundo()
                         End If
                     End If
 
+
                     
 136                 If .flags.Muerto = 0 Then
 138                     Call DuracionPociones(i)
-140                     Call EfectoOxigeno(i)
 142                     If .flags.invisible = 1 Then Call EfectoInvisibilidad(i)
 144                     If .flags.Paralizado = 1 Then Call EfectoParalisisUser(i)
 146                     If .flags.Inmovilizado = 1 Then Call EfectoInmoUser(i)

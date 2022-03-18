@@ -1495,7 +1495,6 @@ Private Sub GameTimer_Timer()
                         Call EfectoLava(iUserIndex)
                         Call EfectoFrio(iUserIndex)
                         If .flags.Envenenado <> 0 Then Call EfectoVeneno(iUserIndex)
-                        If .flags.Ahogandose <> 0 Then Call EfectoAhogo(iUserIndex)
                         If .flags.Incinerado <> 0 Then Call EfectoIncineramiento(iUserIndex)
                     End If
 

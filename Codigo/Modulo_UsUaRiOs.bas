@@ -548,7 +548,6 @@ Public Function ConnectUser_Complete(ByVal UserIndex As Integer, _
             End If
 
 785         Call WriteUserIndexInServer(UserIndex) 'Enviamos el User index
-790         .flags.NecesitaOxigeno = RequiereOxigeno(.Pos.Map)
         
 795         Call WriteHora(UserIndex)
 800         Call WriteChangeMap(UserIndex, .Pos.Map) 'Carga el mapa
@@ -731,15 +730,6 @@ Public Function ConnectUser_Complete(ByVal UserIndex As Integer, _
         
 1225        Call WriteContadores(UserIndex)
 1227        Call WritePrivilegios(UserIndex)
-1230        Call WriteOxigeno(UserIndex)
-            
-            'Dim RS As Recordset
-            
-            'Set RS = Query("select is_reset from user where id = ? and is_reset = 0;", .ID)
-            
-            'If Not RS Is Nothing And RS.RecordCount > 0 Then
-            '    Call resetPj(UserIndex, True)
-            'End If
             
          End With
 
@@ -1939,7 +1929,6 @@ Sub UserDie(ByVal UserIndex As Integer)
 122         .flags.Envenena = 0
 124         .flags.Estupidiza = 0
 126         .flags.Muerto = 1
-128         .flags.Ahogandose = 0
             
 130         Call WriteUpdateHP(UserIndex)
 132         Call WriteUpdateSta(UserIndex)
@@ -2319,27 +2308,7 @@ Sub WarpUserChar(ByVal UserIndex As Integer, _
 
                 End If
         
-132             .flags.NecesitaOxigeno = RequiereOxigeno(Map)
 
-134             If .flags.NecesitaOxigeno Then
-136                 Call WriteContadores(UserIndex)
-138                 Call WriteOxigeno(UserIndex)
-
-140                 If .Counters.Oxigeno = 0 Then
-142                     .flags.Ahogandose = 1
-
-                    End If
-
-                End If
-            
-
-150             If RequiereOxigeno(OldMap) = True And .flags.NecesitaOxigeno = False Then  'And .Stats.ELV < 35 Then
-        
-                    'Call WriteConsoleMsg(UserIndex, "Ya no necesitas oxigeno.", e_FontTypeNames.FONTTYPE_WARNING)
-152                 Call WriteContadores(UserIndex)
-154                 Call WriteOxigeno(UserIndex)
-
-                End If
         
                 'Update new Map Users
 156             MapInfo(Map).NumUsers = MapInfo(Map).NumUsers + 1
@@ -2922,7 +2891,6 @@ Public Sub LimpiarEstadosAlterados(ByVal UserIndex As Integer)
             End If
         
             '<<<< Estados obsoletos >>>>
-178         .flags.Ahogandose = 0
 180         .flags.Incinerado = 0
         
         End With
