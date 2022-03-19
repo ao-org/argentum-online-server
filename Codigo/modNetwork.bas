@@ -9,14 +9,16 @@ Attribute VB_Name = "modNetwork"
 '
 Option Explicit
 
-Private Const TIME_RECV_FREQUENCY As Long = 5  ' In milliseconds
-Private Const TIME_SEND_FREQUENCY As Long = 10 ' In milliseconds
+Private Const TIME_RECV_FREQUENCY As Long = 0  ' In milliseconds
+Private Const TIME_SEND_FREQUENCY As Long = 0 ' In milliseconds
 
 Private Server  As Network.Server
 Private Time(2) As Single
+Private Mapping() As Long
 
 Public Sub Listen(ByVal Limit As Long, ByVal Address As String, ByVal Service As String)
     Set Server = New Network.Server
+    ReDim Mapping(1 To MaxUsers) As Long
     
     Call Server.Attach(AddressOf OnServerConnect, AddressOf OnServerClose, AddressOf OnServerSend, AddressOf OnServerRecv)
     
@@ -49,15 +51,24 @@ Public Sub Poll()
     Call Server.Flush
 End Sub
 
-Public Sub Send(ByVal Connection As Long, ByVal Buffer As Network.Writer)
-    Call Server.Send(Connection, False, Buffer)
+Public Sub Send(ByVal UserIndex As Long, ByVal Buffer As Network.Writer)
+    Call Server.Send(UserList(UserIndex).ConnID, False, Buffer)
 End Sub
 
-Public Sub Flush(ByVal Connection As Long)
-    Call Server.Flush(Connection)
+Public Sub Flush(ByVal UserIndex As Long)
+    Call Server.Flush(UserList(UserIndex).ConnID)
 End Sub
 
-Public Sub Kick(ByVal Connection As Long, Optional ByVal Message As String = vbNullString)
+Public Sub Kick(ByVal UserIndex As Long, Optional ByVal message As String = vbNullString)
+    If (message <> vbNullString) Then
+        Call Protocol_Writes.WriteErrorMsg(UserList(UserIndex).ConnID, message)
+    End If
+        
+    Call Server.Flush(UserList(UserIndex).ConnID)
+    Call Server.Kick(UserList(UserIndex).ConnID)
+End Sub
+
+Public Sub KickDirectly(ByVal Connection As Long, Optional ByVal message As String = vbNullString)
     If (Message <> vbNullString) Then
         Call Protocol_Writes.WriteErrorMsg(Connection, Message)
     End If
@@ -70,24 +81,29 @@ Public Function GetTimeOfNextFlush() As Single
     GetTimeOfNextFlush = max(0, TIME_SEND_FREQUENCY - Time(1))
 End Function
 
+
 Private Sub OnServerConnect(ByVal Connection As Long, ByVal Address As String)
 On Error GoTo OnServerConnect_Err:
-
-    If Connection <= MaxUsers Then
+  
+    If IP_Blacklist.Exists(Address) <> 0 Then 'Busca si esta banneada la ip
+        Call Kick(Connection, "Se te ha prohibido la entrada al servidor. Cod: #0003")
+        Exit Sub
+    End If
     
-        UserList(Connection).ConnIDValida = True
-        UserList(Connection).IP = Address
-
-        If IP_Blacklist.Exists(UserList(Connection).IP) <> 0 Then 'Busca si esta banneada la ip
-            Call Kick(Connection, "Se te ha prohibido la entrada al servidor. Cod: #0003")
-            Exit Sub
-        End If
-
-        If Connection > LastUser Then LastUser = Connection
+    If Connection <= MaxUsers Then
+        'By Ladder y Wolfenstein
+        Dim FreeUser As Long
+        FreeUser = NextOpenUser()
+                
+        UserList(FreeUser).ConnIDValida = True
+        UserList(FreeUser).IP = Address
+        UserList(FreeUser).ConnID = Connection
         
-        Call WriteConnected(Connection)
+        Mapping(Connection) = FreeUser
+        
+        Call WriteConnected(FreeUser)
     Else
-        Call Kick(Connection, "El server se encuentra lleno en este momento. Disculpe las molestias ocasionadas.")
+        Call KickDirectly(Connection, "El server se encuentra lleno en este momento. Disculpe las molestias ocasionadas.")
     End If
     
     Exit Sub
@@ -99,21 +115,27 @@ End Sub
 
 Private Sub OnServerClose(ByVal Connection As Long)
 On Error GoTo OnServerClose_Err:
+    
+    Dim UserIndex As Long
+    UserIndex = Mapping(Connection)
 
     'Es el mismo user al que está revisando el centinela??
     'Si estamos acá es porque se cerró la conexión, no es un /salir, y no queremos banearlo....
-    If Centinela.RevisandoUserIndex = Connection Then
+    If Centinela.RevisandoUserIndex = UserIndex Then
         Call modCentinela.CentinelaUserLogout
     End If
     
-    If UserList(Connection).flags.UserLogged Then
-        Call CloseSocketSL(Connection)
-        Call Cerrar_Usuario(Connection)
+    If UserList(UserIndex).flags.UserLogged Then
+        Call CloseSocketSL(UserIndex)
+        Call Cerrar_Usuario(UserIndex)
     Else
-        Call CloseSocket(Connection)
+        Call CloseSocket(UserIndex)
     End If
     
-    UserList(Connection).ConnIDValida = False
+    UserList(UserIndex).ConnIDValida = False
+    UserList(UserIndex).ConnID = 0
+    
+    
     Exit Sub
     
 OnServerClose_Err:
@@ -121,19 +143,16 @@ OnServerClose_Err:
 End Sub
 
 Private Sub OnServerSend(ByVal Connection As Long, ByVal Message As Network.Reader)
-On Error GoTo OnServerSend_Err:
 
-    Exit Sub
-    
-OnServerSend_Err:
-    Call Kick(Connection)
-    Call TraceError(Err.Number, Err.Description, "modNetwork.OnServerSend", Erl)
 End Sub
 
 Private Sub OnServerRecv(ByVal Connection As Long, ByVal Message As Network.Reader)
 On Error GoTo OnServerRecv_Err:
+    
+    Dim UserIndex As Long
+    UserIndex = Mapping(Connection)
 
-    Call Protocol.HandleIncomingData(Connection, Message)
+    Call Protocol.HandleIncomingData(UserIndex, message)
     
     Exit Sub
     
