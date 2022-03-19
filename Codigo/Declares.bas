@@ -1890,7 +1890,7 @@ Public Type t_User
     Pos As t_WorldPos
     
     ConnIDValida As Boolean
-    
+    ConnID As Long
     CurrentInventorySlots As Byte
     
     BancoInvent As t_BancoInventario
