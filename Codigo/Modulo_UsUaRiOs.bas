@@ -44,8 +44,7 @@ Option Explicit
 '?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
 
 Public Function ConnectUser_Check(ByVal UserIndex As Integer, _
-                                  ByRef Name As String, _
-                                  ByRef UserCuenta As String) As Boolean
+                                  ByRef name As String) As Boolean
                            
     On Error GoTo Check_ConnectUser_Err
 
