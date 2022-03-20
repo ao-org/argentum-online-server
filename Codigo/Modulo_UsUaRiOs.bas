@@ -63,9 +63,9 @@ Public Function ConnectUser_Check(ByVal UserIndex As Integer, _
         
         'Controlo si superó el tiempo para conectarse nuevamente
         
-        If dcnUsersLastLogout.Exists(UCase(Name)) Then
+        If dcnUsersLastLogout.Exists(UCase$(name)) Then
             Dim lastLogOut As Long
-            lastLogOut = dcnUsersLastLogout(UCase(Name))
+            lastLogOut = dcnUsersLastLogout(UCase$(name))
             If lastLogOut + 5000 >= GetTickCount() Then
                 Call WriteShowMessageBox(UserIndex, "Aguarda un momento.")
                 Exit Function
