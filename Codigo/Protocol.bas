@@ -631,7 +631,7 @@ On Error Resume Next
     Set Reader = Message
     
     Dim PacketId As Long
-    PacketId = Reader.ReadInt
+    PacketId = Reader.ReadInt16
     
 #If STRESSER = 1 Then
     Debug.Print "Paquete: " & PacketID

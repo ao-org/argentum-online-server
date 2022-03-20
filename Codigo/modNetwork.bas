@@ -59,23 +59,21 @@ Public Sub Flush(ByVal UserIndex As Long)
     Call Server.Flush(UserList(UserIndex).ConnID)
 End Sub
 
-Public Sub Kick(ByVal UserIndex As Long, Optional ByVal message As String = vbNullString)
+Public Sub Kick(ByVal Connection As Long, Optional ByVal message As String = vbNullString)
     If (message <> vbNullString) Then
-        Call Protocol_Writes.WriteErrorMsg(UserList(UserIndex).ConnID, message)
-    End If
-        
-    Call Server.Flush(UserList(UserIndex).ConnID)
-    Call Server.Kick(UserList(UserIndex).ConnID)
-End Sub
-
-Public Sub KickDirectly(ByVal Connection As Long, Optional ByVal message As String = vbNullString)
-    If (Message <> vbNullString) Then
-        Call Protocol_Writes.WriteErrorMsg(Connection, Message)
+        Dim UserIndex As Long
+        UserIndex = Mapping(Connection)
+        If UserIndex > 0 Then
+            Call Protocol_Writes.WriteErrorMsg(UserIndex, message)
+        Else
+            'Agregar SendErrorMsg()
+        End If
     End If
         
     Call Server.Flush(Connection)
     Call Server.Kick(Connection)
 End Sub
+
 
 Public Function GetTimeOfNextFlush() As Single
     GetTimeOfNextFlush = max(0, TIME_SEND_FREQUENCY - Time(1))
@@ -99,11 +97,13 @@ On Error GoTo OnServerConnect_Err:
         UserList(FreeUser).IP = Address
         UserList(FreeUser).ConnID = Connection
         
+        If FreeUser >= LastUser Then LastUser = FreeUser
+        
         Mapping(Connection) = FreeUser
         
         Call WriteConnected(FreeUser)
     Else
-        Call KickDirectly(Connection, "El server se encuentra lleno en este momento. Disculpe las molestias ocasionadas.")
+        Call Kick(Connection, "El server se encuentra lleno en este momento. Disculpe las molestias ocasionadas.")
     End If
     
     Exit Sub
@@ -134,6 +134,7 @@ On Error GoTo OnServerClose_Err:
     
     UserList(UserIndex).ConnIDValida = False
     UserList(UserIndex).ConnID = 0
+    Mapping(Connection) = 0
     
     
     Exit Sub
@@ -143,7 +144,13 @@ OnServerClose_Err:
 End Sub
 
 Private Sub OnServerSend(ByVal Connection As Long, ByVal Message As Network.Reader)
-
+On Error GoTo OnServerSend_Err:
+    
+    Exit Sub
+    
+OnServerSend_Err:
+    Call Kick(Connection)
+    Call TraceError(Err.Number, Err.Description, "modNetwork.OnServerSend", Erl)
 End Sub
 
 Private Sub OnServerRecv(ByVal Connection As Long, ByVal Message As Network.Reader)
