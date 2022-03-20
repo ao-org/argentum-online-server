@@ -59,22 +59,22 @@ Public Function Decrypt(ByVal hex_key As String, ByVal encrypted_text_b64 As Str
 End Function
 
 'HarThaoS: Convierto el str en arr() bytes
-Public Function Str2ByteArr(ByVal str As String, ByRef arr() As Byte, Optional ByVal length As Long = 0)
+Public Sub Str2ByteArr(ByVal str As String, ByRef arr() As Byte, Optional ByVal length As Long = 0)
     Dim i As Long
     Dim asd As String
     If length = 0 Then
         ReDim arr(0 To (Len(str) - 1))
         For i = 0 To (Len(str) - 1)
-            arr(i) = Asc(Mid(str, i + 1, 1))
+            arr(i) = Asc(mid$(str, i + 1, 1))
         Next i
     Else
         ReDim arr(0 To (length - 1)) As Byte
         For i = 0 To (length - 1)
-            arr(i) = Asc(Mid(str, i + 1, 1))
+            arr(i) = Asc(mid$(str, i + 1, 1))
         Next i
     End If
     
-End Function
+End Sub
 
 Public Function ByteArr2String(ByRef arr() As Byte) As String
     
@@ -108,14 +108,14 @@ MakeInt = ((hiByte * &H100) + LoByte)
 
 End Function
 
-Public Function CopyBytes(ByRef src() As Byte, ByRef dst() As Byte, ByVal size As Long, Optional ByVal offset As Long = 0)
+Public Sub CopyBytes(ByRef src() As Byte, ByRef dst() As Byte, ByVal size As Long, Optional ByVal offset As Long = 0)
     Dim i As Long
     
     For i = 0 To (size - 1)
         dst(i + offset) = src(i)
     Next i
     
-End Function
+End Sub
 
 Public Function ByteArrayToHex(ByRef ByteArray() As Byte) As String
     Dim l As Long, strRet As String
