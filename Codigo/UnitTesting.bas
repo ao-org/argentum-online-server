@@ -26,7 +26,7 @@ Public Sub init()
 
     decrypted_token = "G7H5wKOKZvebZxHtnkRtJNvL/AHWEw3dHCyBTzXVvdTe3bQAJHePsFfV/Ecgm9Wk"
     encrypted_token = AO20CryptoSysWrapper.ENCRYPT(private_key, decrypted_token)
-    public_key = mid(decrypted_token, 1, 16)
+    public_key = mid$(decrypted_token, 1, 16)
     
     'Add a fake token to be using when exercising the protocol for LoginNewChar
     Call AddTokenDatabase(encrypted_token, decrypted_token, "MORGOLOCK2002@YAHOO.COM.AR")

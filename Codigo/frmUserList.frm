@@ -94,7 +94,7 @@ Private Sub Command1_Click()
 106     List1.Clear
 
 108     For LoopC = 1 To MaxUsers
-110         List1.AddItem Format(LoopC, "000") & " " & IIf(UserList(LoopC).flags.UserLogged, UserList(LoopC).Name, "")
+110         List1.AddItem Format$(LoopC, "000") & " " & IIf(UserList(LoopC).flags.UserLogged, UserList(LoopC).name, "")
 112         List1.ItemData(List1.NewIndex) = LoopC
 114     Next LoopC
 

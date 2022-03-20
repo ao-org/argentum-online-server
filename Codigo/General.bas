@@ -489,8 +489,8 @@ Private Sub InicializarConstantes()
     
         
     
-100     LastBackup = Format(Now, "Short Time")
-102     minutos = Format(Now, "Short Time")
+100     LastBackup = Format$(Now, "Short Time")
+102     minutos = Format$(Now, "Short Time")
     
 104     IniPath = App.Path & "\"
 
@@ -2200,9 +2200,9 @@ Function RandomName(cb As Integer, Optional ByVal OnlyUpper As Boolean = False) 
 102     rgch = "abcdefghijklmnopqrstuvwxyz"
     
 104     If OnlyUpper Then
-106         rgch = UCase(rgch)
+106         rgch = UCase$(rgch)
         Else
-108         rgch = rgch & UCase(rgch)
+108         rgch = rgch & UCase$(rgch)
         End If
     
         Dim i As Long
@@ -2332,7 +2332,7 @@ Public Function PonerPuntos(ByVal Numero As Long) As String
 
         Dim Cifra As String
  
-100     Cifra = str(Numero)
+100     Cifra = str$(Numero)
 102     Cifra = Right$(Cifra, Len(Cifra) - 1)
 
 104     For i = 0 To 4
