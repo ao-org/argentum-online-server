@@ -473,7 +473,7 @@ Function ConnectNewUser(ByVal UserIndex As Integer, ByRef name As String, ByVal 
             End If
             
 112         If Not NombrePermitido(name) Then
-114             Call WriteShowMessageBox(UserIndex, "El nombre no está permitido.")
+114             Call WriteShowMessageBox(userindex, "El nombre no está permitido.")
                 Exit Function
             End If
     
@@ -865,7 +865,7 @@ Function EntrarCuenta(ByVal UserIndex As Integer, ByVal CuentaEmail As String, B
         #End If
 
 128     If Not CheckMailString(CuentaEmail) Then
-130         Call WriteShowMessageBox(UserIndex, "Email inválido.")
+130         Call WriteShowMessageBox(userindex, "Email inválido.")
             Exit Function
         End If
     
@@ -889,7 +889,7 @@ Sub ConnectUser(ByVal UserIndex As Integer, _
 
 100     With UserList(UserIndex)
 
-105         If Not ConnectUser_Check(UserIndex, name, UserCuenta) Then Exit Sub
+105         If Not ConnectUser_Check(userindex, name) Then Exit Sub
         
 110         Call ConnectUser_Prepare(UserIndex, name, UserCuenta)
         
@@ -904,7 +904,7 @@ Call LoadUser(UserIndex)
     
 ErrHandler:
 125     Call TraceError(Err.Number, Err.Description, "TCP.ConnectUser", Erl)
-130     Call WriteShowMessageBox(UserIndex, "El personaje contiene un error. Comuníquese con un miembro del staff.")
+130     Call WriteShowMessageBox(userindex, "El personaje contiene un error. Comuníquese con un miembro del staff.")
 135     Call CloseSocket(UserIndex)
 
 End Sub
