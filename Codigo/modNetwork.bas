@@ -65,6 +65,9 @@ Public Sub Kick(ByVal Connection As Long, Optional ByVal message As String = vbN
         UserIndex = Mapping(Connection)
         If UserIndex > 0 Then
             Call Protocol_Writes.WriteErrorMsg(UserIndex, message)
+            If UserList(UserIndex).flags.UserLogged Then
+                Call Cerrar_Usuario(UserIndex)
+            End If
         Else
             'Agregar SendErrorMsg()
         End If
@@ -119,6 +122,7 @@ On Error GoTo OnServerClose_Err:
     Dim UserIndex As Long
     UserIndex = Mapping(Connection)
 
+    If UserIndex <= 0 Then Exit Sub
     'Es el mismo user al que está revisando el centinela??
     'Si estamos acá es porque se cerró la conexión, no es un /salir, y no queremos banearlo....
     If Centinela.RevisandoUserIndex = UserIndex Then
