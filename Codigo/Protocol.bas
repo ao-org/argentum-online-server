@@ -2205,13 +2205,13 @@ Private Sub HandleSafeToggle(ByVal UserIndex As Integer)
             Dim cambiaSeguro As Boolean
             cambiaSeguro = False
             
-            If .GuildIndex > 0 And (GuildAlignmentIndex(UserIndex) = e_ALINEACION_GUILD.ALINEACION_CIUDADANA Or GuildAlignmentIndex(UserIndex) = e_ALINEACION_GUILD.ALINEACION_ARMADA) Then
+            If .GuildIndex > 0 And (GuildAlignmentIndex(.GuildIndex) = e_ALINEACION_GUILD.ALINEACION_CIUDADANA Or GuildAlignmentIndex(.GuildIndex) = e_ALINEACION_GUILD.ALINEACION_ARMADA) Then
                 cambiaSeguro = False
             Else
                 cambiaSeguro = True
             End If
              
-            If cambiaSeguro Then
+            If cambiaSeguro Or .flags.Seguro = 0 Then
                 If esCiudadano(UserIndex) Then
 102                 If .flags.Seguro Then
 104                     Call WriteSafeModeOff(UserIndex)
@@ -8610,7 +8610,7 @@ Private Sub HandleWorking(ByVal UserIndex As Integer)
     
 100     With UserList(UserIndex)
 
-102         If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero Or e_PlayerType.SemiDios)) Then
+102         If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero)) Then
 104             Call WriteConsoleMsg(UserIndex, "Servidor » /TRABAJANDO es un comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
@@ -16400,7 +16400,7 @@ Private Sub HandleMarcaDeClan(ByVal UserIndex As Integer)
 
 108         clan_nivel = modGuilds.NivelDeClan(UserList(UserIndex).GuildIndex)
 
-110         If clan_nivel < 3 Then
+110         If clan_nivel > 20 Then
 112             Call WriteConsoleMsg(UserIndex, "Servidor » El nivel de tu clan debe ser 3 para utilizar esta opción.", e_FontTypeNames.FONTTYPE_INFOIAO)
                 Exit Sub
             End If
