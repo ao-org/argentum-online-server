@@ -237,6 +237,7 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
 304       If .flags.invisible + .flags.Oculto > 0 And .flags.NoDetectable = 0 Then
 306         .flags.invisible = 0
 308         .flags.Oculto = 0
+            .Counters.TiempoOcultar = 1
 310         .Counters.Invisibilidad = 0
 312         .Counters.Ocultando = 0
 
@@ -1409,16 +1410,6 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 114             Call WriteConsoleMsg(UserIndex, "No podés lanzar invisibilidad durante un reto.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
-            
-116         'If UserList(UserIndex).flags.Navegando = 1 Then
-118             'Call WriteConsoleMsg(UserIndex, "No podés lanzar el hechizo mientras estás navegando.", e_FontTypeNames.FONTTYPE_INFO)
-                'Exit Sub
-            'End If
-            
-120         'If UserList(tU).flags.Navegando = 1 Then
-122             'Call WriteConsoleMsg(UserIndex, "No podés lanzarle el hechizo mientras está navegando.", e_FontTypeNames.FONTTYPE_INFO)
-                'Exit Sub
-            'End If
             
 124         If UserList(UserIndex).flags.Montado Then
 126             Call WriteConsoleMsg(UserIndex, "No podés lanzar invisibilidad mientras usas una montura.", e_FontTypeNames.FONTTYPE_INFO)

@@ -1968,6 +1968,10 @@ Sub PasarSegundo()
                         .Counters.TiempoDeInmunidadParalisisNoMagicas = .Counters.TiempoDeInmunidadParalisisNoMagicas - 1
                     End If
                 
+                   If .Counters.TiempoOcultar > 0 Then
+                        .Counters.TiempoOcultar = .Counters.TiempoOcultar - 1
+                    End If
+                
 266                 If .Counters.TiempoDeInmunidad > 0 Then
 268                     .Counters.TiempoDeInmunidad = .Counters.TiempoDeInmunidad - 1
 270                     If .Counters.TiempoDeInmunidad = 0 Then

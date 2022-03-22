@@ -342,6 +342,7 @@ Public Sub DoPermanecerOculto(ByVal UserIndex As Integer)
 
 108             .Counters.TiempoOculto = 0
 110             .flags.Oculto = 0
+                .Counters.TiempoOcultar = 1
 
 112             If .flags.Navegando = 1 Then
             
@@ -390,6 +391,11 @@ Public Sub DoOcultarse(ByVal UserIndex As Integer)
 
 102         If .flags.Navegando = 1 And .clase <> e_Class.Pirat Then
 104             Call WriteLocaleMsg(UserIndex, "56", e_FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
+    
+            If .Counters.TiempoOcultar > 0 Then
+                Call WriteConsoleMsg(UserIndex, "No puedes volver a ocultarta tan rápido.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
     
@@ -574,6 +580,7 @@ Public Sub DoNavega(ByVal UserIndex As Integer, _
             ' Volver visible
 190         If .flags.Oculto = 1 And .flags.AdminInvisible = 0 And .flags.invisible = 0 Then
 192             .flags.Oculto = 0
+                .Counters.TiempoOcultar = 1
 194             .Counters.TiempoOculto = 0
 
                 'Call WriteConsoleMsg(UserIndex, "Has vuelto a ser visible.", e_FontTypeNames.FONTTYPE_INFO)
@@ -1569,6 +1576,7 @@ Sub DoAdminInvisible(ByVal UserIndex As Integer)
 114             .flags.AdminInvisible = 0
 116             .flags.invisible = 0
 118             .flags.Oculto = 0
+                .Counters.TiempoOcultar = 1
 120             .Counters.TiempoOculto = 0
             
                 '.Char.Body = .flags.OldBody

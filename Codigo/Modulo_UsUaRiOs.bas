@@ -2353,6 +2353,7 @@ Sub WarpUserChar(ByVal UserIndex As Integer, _
             
 194                 .flags.invisible = 0
 196                 .flags.Oculto = 0
+                    .Counters.TiempoOcultar = 1
 198                 .Counters.TiempoOculto = 0
                 
 200                 Call WriteConsoleMsg(UserIndex, "Una fuerza divina que vigila esta zona te ha vuelto visible.", e_FontTypeNames.FONTTYPE_INFO)
@@ -2854,6 +2855,7 @@ Public Sub LimpiarEstadosAlterados(ByVal UserIndex As Integer)
             '<<<< Invisible >>>>
 136         If (.flags.invisible = 1 Or .flags.Oculto = 1) And .flags.AdminInvisible = 0 Then
 138             .flags.Oculto = 0
+                .Counters.TiempoOcultar = 1
 140             .flags.invisible = 0
 142             .Counters.TiempoOculto = 0
 144             .Counters.Invisibilidad = 0

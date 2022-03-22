@@ -1700,7 +1700,7 @@ Public Type t_UserCounters
     LastGmMessage As Long
     CounterGmMessages As Long
     EnCombate As Byte
-
+    TiempoOcultar As Byte
     TiempoParaSubastar As Byte
     UserHechizosInterval(1 To MAXUSERHECHIZOS) As Long
     
