@@ -1538,31 +1538,28 @@ Private Sub HandleLoginNewChar(ByVal UserIndex As Integer)
             End If
             
         End If
-        
-160     If GetPersonajesCountByIDDatabase(UserList(UserIndex).AccountID) >= MAX_PERSONAJES Then
-162         Call CloseSocket(UserIndex)
+        UserList(userindex).AccountID = -1
+        If Not EntrarCuenta(userindex, CuentaEmail, md5) Then
+            Call CloseSocket(userindex)
+            Exit Sub
+        End If
+        Debug.Assert UserList(userindex).AccountID > -1
+        'Check if we reached MAX_PERSONAJES for this account after updateing the UserList(userindex).AccountID in the if above
+        If GetPersonajesCountByIDDatabase(UserList(userindex).AccountID) >= MAX_PERSONAJES Then
+            Call CloseSocket(userindex)
             Exit Sub
         End If
         
-172     If Not EntrarCuenta(UserIndex, CuentaEmail, MD5) Then
-174         Call CloseSocket(UserIndex)
+        If Not ConnectNewUser(userindex, username, race, gender, Class, head, CuentaEmail, Hogar) Then
+            Call CloseSocket(userindex)
             Exit Sub
-        End If
-        
-164     If Not ConnectNewUser(UserIndex, UserName, race, gender, Class, Head, CuentaEmail, Hogar) Then
-166         Call CloseSocket(UserIndex)
-            Exit Sub
-
         End If
         
         
         Exit Sub
     
 ErrHandler:
-
-168     Call TraceError(Err.Number, Err.Description, "Protocol.HandleLoginNewChar", Erl)
-170
-
+     Call TraceError(Err.Number, Err.Description, "Protocol.HandleLoginNewChar", Erl)
 End Sub
 
 
