@@ -1636,11 +1636,14 @@ Sub UsuarioAtacadoPorUsuario(ByVal AttackerIndex As Integer, ByVal VictimIndex A
     
 112     UserList(VictimIndex).Counters.EnCombate = IntervaloEnCombate
 114     UserList(AttackerIndex).Counters.EnCombate = IntervaloEnCombate
-        
-        If esCiudadano(AttackerIndex) And (esCiudadano(VictimIndex) Or esArmada(VictimIndex)) Then
-118         Call VolverCriminal(AttackerIndex)
-        End If
 
+        'Si es ciudadano
+        If esCiudadano(AttackerIndex) Then
+            If (esCiudadano(VictimIndex) Or esArmada(VictimIndex)) Then
+118             Call VolverCriminal(AttackerIndex)
+            End If
+        End If
+            
 120     EraCriminal = Status(AttackerIndex)
     
 122     If EraCriminal = 2 And Status(AttackerIndex) < 2 Then

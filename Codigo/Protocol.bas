@@ -2202,16 +2202,29 @@ Private Sub HandleSafeToggle(ByVal UserIndex As Integer)
         '***************************************************
 100     With UserList(UserIndex)
             
-            If esCiudadano(UserIndex) Then
-102             If .flags.Seguro Then
-104                 Call WriteSafeModeOff(UserIndex)
-                Else
-106                 Call WriteSafeModeOn(UserIndex)
-                End If
-                
-108             .flags.Seguro = Not .flags.Seguro
+            Dim cambiaSeguro As Boolean
+            cambiaSeguro = False
+            
+            If .GuildIndex > 0 And (GuildAlignmentIndex(UserIndex) = e_ALINEACION_GUILD.ALINEACION_CIUDADANA Or GuildAlignmentIndex(UserIndex) = e_ALINEACION_GUILD.ALINEACION_ARMADA) Then
+                cambiaSeguro = False
             Else
-                Call WriteConsoleMsg(UserIndex, "Solo los ciudadanos pueden cambiar el seguro", e_FontTypeNames.FONTTYPE_TALK)
+                cambiaSeguro = True
+            End If
+             
+            If cambiaSeguro Then
+                If esCiudadano(UserIndex) Then
+102                 If .flags.Seguro Then
+104                     Call WriteSafeModeOff(UserIndex)
+                    Else
+106                     Call WriteSafeModeOn(UserIndex)
+                    End If
+                    
+108                 .flags.Seguro = Not .flags.Seguro
+                Else
+                    Call WriteConsoleMsg(UserIndex, "Solo los ciudadanos pueden cambiar el seguro.", e_FontTypeNames.FONTTYPE_TALK)
+                End If
+            Else
+                Call WriteConsoleMsg(UserIndex, "Debes abandonar el clan para poder sacar el seguro.", e_FontTypeNames.FONTTYPE_TALK)
             End If
 
         End With
@@ -10259,6 +10272,20 @@ Private Sub HandleForgive(ByVal UserIndex As Integer)
 132             Call WriteChatOverHead(UserIndex, "Has matado a ciudadanos inocentes, Dios no puede perdonarte lo que has hecho. " & "Pero si haces una generosa donación de, digamos, " & PonerPuntos(Donacion) & " monedas de oro, tal vez cambie de opinión...", priest.Char.CharIndex, vbWhite)
                 Exit Sub
 
+            End If
+                        
+            Dim permitePerdon As Boolean
+            permitePerdon = False
+            
+            If .GuildIndex > 0 And (GuildAlignmentIndex(UserIndex) = e_ALINEACION_GUILD.ALINEACION_CAOTICA Or GuildAlignmentIndex(UserIndex) = e_ALINEACION_GUILD.ALINEACION_CRIMINAL) Then
+                permitePerdon = False
+            Else
+                permitePerdon = True
+            End If
+            
+            If Not permitePerdon Then
+                Call WriteChatOverHead(UserIndex, "No podrás ser perdonado perteneciendo a un clan de alineación Criminal o de Alineación Oscura.", priest.Char.charindex, vbYellow)
+                Exit Sub
             End If
 
 134         Call WriteChatOverHead(UserIndex, "Con estas palabras, te libero de todo tipo de pecados. ¡Que Dios te acompañe hijo mío!", priest.Char.CharIndex, vbYellow)
