@@ -1031,6 +1031,7 @@ Sub ResetContadores(ByVal UserIndex As Integer)
             .LastTransferGold = 0
             .TimeLastReset = 0
             .PacketCount = 0
+            .TiempoOcultar = 0
         End With
 
         

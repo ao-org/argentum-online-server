@@ -60,6 +60,8 @@ Public Enum e_ALINEACION_GUILD
     ALINEACION_NEUTRAL = 0
     ALINEACION_ARMADA = 1
     ALINEACION_CAOTICA = 2
+    ALINEACION_CIUDADANA = 3
+    ALINEACION_CRIMINAL = 4
 End Enum
 
 'alineaciones permitidas
@@ -548,6 +550,19 @@ Public Function PuedeFundarUnClan(ByVal UserIndex As Integer, ByVal Alineacion A
 134                 refError = "Para fundar un clan de la Legión Oscura deberás pertenecer a la misma."
                     Exit Function
                 End If
+                
+            Case e_ALINEACION_GUILD.ALINEACION_CIUDADANA
+             If Status(UserIndex) = e_Facciones.Criminal Or Status(UserIndex) = e_Facciones.Caos Then
+                refError = "Para fundar un clan ciudadano deberás ser ciudadano o armada real."
+                Exit Function
+            End If
+                
+            Case e_ALINEACION_GUILD.ALINEACION_CRIMINAL
+             If Status(UserIndex) = e_Facciones.Armada Or Status(UserIndex) = e_Facciones.Ciudadano Then
+                refError = "Para fundar un clan criminal deberás ser criminal o legión oscura."
+                Exit Function
+            End If
+            
         End Select
 
 136     PuedeFundarUnClan = True
@@ -602,6 +617,12 @@ Private Function m_EstadoPermiteEntrarChar(ByRef Personaje As String, ByVal Guil
 
 126             Case e_ALINEACION_GUILD.ALINEACION_CAOTICA
 128                 m_EstadoPermiteEntrarChar = CBool(GetUserValue(LCase$(Personaje), "pertenece_caos"))
+                
+                Case e_ALINEACION_GUILD.ALINEACION_CIUDADANA
+                     m_EstadoPermiteEntrarChar = Promedio = 1 Or CBool(GetUserValue(LCase$(Personaje), "pertenece_real"))
+                
+                Case e_ALINEACION_GUILD.ALINEACION_CRIMINAL
+                     m_EstadoPermiteEntrarChar = Promedio = 0 Or CBool(GetUserValue(LCase$(Personaje), "pertenece_caos"))
 
             End Select
 
@@ -629,6 +650,12 @@ Private Function m_EstadoPermiteEntrar(ByVal UserIndex As Integer, ByVal GuildIn
 108         Case e_ALINEACION_GUILD.ALINEACION_CAOTICA
 110           m_EstadoPermiteEntrar = (Status(UserIndex) = 2)
 
+            Case e_ALINEACION_GUILD.ALINEACION_CIUDADANA
+               m_EstadoPermiteEntrar = (Status(UserIndex) = 1 Or Status(UserIndex) = 3)
+               
+            Case e_ALINEACION_GUILD.ALINEACION_CRIMINAL
+                m_EstadoPermiteEntrar = (Status(UserIndex) = 0 Or Status(UserIndex) = 2)
+
         End Select
 
         Exit Function
@@ -651,6 +678,10 @@ Public Function String2Alineacion(ByRef S As String) As e_ALINEACION_GUILD
 106             String2Alineacion = e_ALINEACION_GUILD.ALINEACION_ARMADA
 108         Case "Legión Oscura"
 110             String2Alineacion = e_ALINEACION_GUILD.ALINEACION_CAOTICA
+            Case "Ciudadano"
+                String2Alineacion = e_ALINEACION_GUILD.ALINEACION_CIUDADANA
+            Case "Criminal"
+                String2Alineacion = e_ALINEACION_GUILD.ALINEACION_CRIMINAL
 
         End Select
 
@@ -678,6 +709,12 @@ Public Function Alineacion2String(ByVal Alineacion As e_ALINEACION_GUILD) As Str
 
 108         Case e_ALINEACION_GUILD.ALINEACION_CAOTICA
 110             Alineacion2String = "Legión Oscura"
+
+            Case e_ALINEACION_GUILD.ALINEACION_CIUDADANA
+                Alineacion2String = "Ciudadano"
+
+            Case e_ALINEACION_GUILD.ALINEACION_CRIMINAL
+                 Alineacion2String = "Criminal"
         End Select
 
         
@@ -1877,7 +1914,7 @@ Public Sub SendDetallesPersonaje(ByVal UserIndex As Integer, ByVal Personaje As 
 102     Personaje = UCase$(Personaje)
     
 104     If GI <= 0 Or GI > CANTIDADDECLANES Then
-106         Call WriteConsoleMsg(userindex, "No perteneces a ningún clan.", e_FontTypeNames.FONTTYPE_INFO)
+106         Call WriteConsoleMsg(UserIndex, "No perteneces a ningún clan.", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
 
         End If
@@ -2182,6 +2219,24 @@ Public Function GuildAlignment(ByVal GuildIndex As Integer) As String
 
 GuildAlignment_Err:
 104     Call TraceError(Err.Number, Err.Description, "modGuilds.GuildAlignment", Erl)
+
+        
+End Function
+
+
+Public Function GuildAlignmentIndex(ByVal GuildIndex As Integer) As e_ALINEACION_GUILD
+        
+        On Error GoTo GuildAlignmentIndex_Err
+        
+
+100     If GuildIndex <= 0 Or GuildIndex > CANTIDADDECLANES Then Exit Function
+    
+102     GuildAlignmentIndex = guilds(GuildIndex).Alineacion
+        
+        Exit Function
+
+GuildAlignmentIndex_Err:
+104     Call TraceError(Err.Number, Err.Description, "modGuilds.GuildAlignmentIndex", Erl)
 
         
 End Function

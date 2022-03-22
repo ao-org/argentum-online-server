@@ -1605,6 +1605,7 @@ Private Sub HandleTalk(ByVal UserIndex As Integer)
 108         If .flags.Oculto > 0 And .flags.AdminInvisible = 0 Then
         
 110             .flags.Oculto = 0
+            .Counters.TiempoOcultar = 1
 112             .Counters.TiempoOculto = 0
             
 114             If .flags.Navegando = 1 Then
@@ -1701,6 +1702,7 @@ Private Sub HandleYell(ByVal UserIndex As Integer)
 112             If .flags.Oculto > 0 And .flags.AdminInvisible = 0 Then
             
 114                 .flags.Oculto = 0
+                    .Counters.TiempoOcultar = 1
 116                 .Counters.TiempoOculto = 0
                 
 118                 If .flags.Navegando = 1 Then
@@ -1971,6 +1973,7 @@ Private Sub HandleWalk(ByVal UserIndex As Integer)
 176             If .clase <> e_Class.Thief And .clase <> e_Class.Bandit Then
             
 178                 .flags.Oculto = 0
+                    .Counters.TiempoOcultar = 1
 180                 .Counters.TiempoOculto = 0
                 
 182                 If .flags.Navegando = 1 Then
@@ -2104,6 +2107,7 @@ Private Sub HandleAttack(ByVal UserIndex As Integer)
 128         If .flags.Oculto > 0 And .flags.AdminInvisible = 0 Then
         
 130             .flags.Oculto = 0
+                .Counters.TiempoOcultar = 1
 132             .Counters.TiempoOculto = 0
                 
 134             If .flags.Navegando = 1 Then
@@ -17539,6 +17543,7 @@ Private Sub HandleConsulta(ByVal UserIndex As Integer)
 160                 If .flags.invisible = 1 Or .flags.Oculto = 1 Then
                 
 162                     .flags.Oculto = 0
+                        .Counters.TiempoOcultar = 1
 164                     .flags.invisible = 0
 166                     .Counters.TiempoOculto = 0
 168                     .Counters.Invisibilidad = 0
