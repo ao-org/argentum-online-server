@@ -530,6 +530,11 @@ Public Function PuedeFundarUnClan(ByVal UserIndex As Integer, ByVal Alineacion A
 116         refError = "Para fundar un clan debes ser nivel 25, tener 90 puntos en liderazgo y tener en tu inventario las Gemas Polar y Roja (Fundación)."
             Exit Function
         End If
+        
+        If Alineacion = e_ALINEACION_GUILD.ALINEACION_CIUDADANA And UserList(UserIndex).flags.Seguro = False Then
+            refError = "Para fundar un clan ciudadano deberás tener activado el seguro."
+            Exit Function
+        End If
     
 118     Select Case Alineacion
             Case e_ALINEACION_GUILD.ALINEACION_NEUTRAL
@@ -2119,7 +2124,12 @@ Public Function a_AceptarAspirante(ByVal UserIndex As Integer, ByRef Aspirante A
 130             refError = Aspirante & " ya es parte de otro clan."
 132             Call guilds(GI).RetirarAspirante(Aspirante, NroAspirante)
                 Exit Function
-
+            End If
+            
+            If GuildAlignmentIndex(GI) = e_ALINEACION_GUILD.ALINEACION_CIUDADANA And UserList(AspiranteUI).flags.Seguro = False Then
+                refError = Aspirante & " deberá activar el seguro para entrar al clan."
+                Call guilds(GI).RetirarAspirante(Aspirante, NroAspirante)
+               Exit Function
             End If
 
         Else
