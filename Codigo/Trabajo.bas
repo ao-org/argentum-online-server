@@ -1853,11 +1853,9 @@ Public Sub DoRobar(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
 108     With UserList(LadronIndex)
 
             If esCiudadano(LadronIndex) Then
-                If (esCiudadano(VictimaIndex) Or esArmada(VictimaIndex)) Then
-                    If (.flags.Seguro) Then
+                If (.flags.Seguro) Then
 114                     Call WriteConsoleMsg(LadronIndex, "Debes quitarte el seguro para robarle a un ciudadano o a un miembro del Ejército Real", e_FontTypeNames.FONTTYPE_FIGHT)
-                        Exit Sub
-                    End If
+                    Exit Sub
                 End If
             ElseIf esArmada(LadronIndex) Then ' Armada robando a armada or ciudadano?
 122              If (esCiudadano(VictimaIndex) Or esArmada(VictimaIndex)) Then
@@ -1868,6 +1866,17 @@ Public Sub DoRobar(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
                 If (esCaos(VictimaIndex)) Then
                     Call WriteConsoleMsg(LadronIndex, "No puedes robar a otros miembros de la Legión Oscura.", e_FontTypeNames.FONTTYPE_FIGHT)
                     Exit Sub
+                End If
+            End If
+            
+            'Me fijo si el ladrón tiene clan
+            If .GuildIndex > 0 Then
+                'Si tiene clan me fijo si su clan es de alineación ciudadana
+                If esCiudadano(LadronIndex) And GuildAlignmentIndex(.GuildIndex) = e_ALINEACION_GUILD.ALINEACION_CIUDADANA Then
+                    If PersonajeEsLeader(.name) Then
+                        Call WriteConsoleMsg(LadronIndex, "No puedes robar siendo lider de un clan ciudadano.", e_FontTypeNames.FONTTYPE_FIGHT)
+                        Exit Sub
+                    End If
                 End If
             End If
 

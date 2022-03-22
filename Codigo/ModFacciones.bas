@@ -84,10 +84,15 @@ Public Sub EnlistarArmadaReal(ByVal UserIndex As Integer)
                 'HarThaoS: Lo pongo al final para que lo expulse del clan solamente si cumple todos los requisitos.
 146             If .GuildIndex > 0 Then
 148                 If PersonajeEsLeader(.Name) Then
-150                     Call WriteChatOverHead(UserIndex, "No puedes integrar nuestras fuerzas si perteneces a un clan neutral, deberás abandonarlo si tu deseo es integrar el Ejército Real.", charIndexStr, vbWhite)
-                        Exit Sub
+                        'Si el clan es neutral no lo dejo, le digo que tiene que salir del clan para poder enlistarse
+                        If GuildAlignmentIndex(.GuildIndex) = e_ALINEACION_GUILD.ALINEACION_NEUTRAL Then
+                            Call WriteChatOverHead(UserIndex, "No puedes integrar nuestras fuerzas si perteneces a un clan neutral, deberás abandonarlo si tu deseo es integrar el Ejército Real.", charindexstr, vbWhite)
+                            Exit Sub
+                        End If
                     Else
-152                     Call m_EcharMiembroDeClan(UserIndex, .Name)
+                        If GuildAlignmentIndex(.GuildIndex) <> e_ALINEACION_GUILD.ALINEACION_CIUDADANA Then
+152                         Call m_EcharMiembroDeClan(UserIndex, .name)
+                        End If
                     End If
                 End If
 
@@ -294,12 +299,17 @@ Public Sub EnlistarCaos(ByVal UserIndex As Integer)
                 
                 
                 'HarThaoS: Lo pongo al final para que lo expulse del clan solamente si cumple todos los requisitos.
-142             If .GuildIndex > 0 Then
-144                 If PersonajeEsLeader(.Name) Then
-146                     Call WriteChatOverHead(UserIndex, "Si quieres unirte a nuestras tropas deberás abandonar tu clan neutral.", charIndexStr, vbWhite)
-                        Exit Sub
+146             If .GuildIndex > 0 Then
+148                 If PersonajeEsLeader(.name) Then
+                        'Si el clan es neutral no lo dejo, le digo que tiene que salir del clan para poder enlistarse
+                        If GuildAlignmentIndex(.GuildIndex) = e_ALINEACION_GUILD.ALINEACION_NEUTRAL Then
+                            Call WriteChatOverHead(UserIndex, "No puedes integrar nuestras fuerzas si perteneces a un clan neutral, deberás abandonarlo si tu deseo es integrar la Legión Oscura.", charindexstr, vbWhite)
+                            Exit Sub
+                        End If
                     Else
-148                     Call m_EcharMiembroDeClan(UserIndex, .Name)
+                        If GuildAlignmentIndex(.GuildIndex) <> e_ALINEACION_GUILD.ALINEACION_CRIMINAL Then
+                         Call m_EcharMiembroDeClan(UserIndex, .name)
+                        End If
                     End If
                 End If
 

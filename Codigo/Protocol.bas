@@ -7328,12 +7328,17 @@ Private Sub HandleLeaveFaction(ByVal UserIndex As Integer)
 130                     If .GuildIndex > 0 Then
                             'Y no es leader
 132                         If Not PersonajeEsLeader(.Name) Then
-                                'Lo echo a la verga
-134                             Call m_EcharMiembroDeClan(UserIndex, .Name)
-136                             Call WriteConsoleMsg(UserIndex, "Has dejado el clan.", e_FontTypeNames.FONTTYPE_GUILD)
+                                'Me fijo de que alineación es el clan, si es ARMADA, lo hecho
+                                If GuildAlignmentIndex(.GuildIndex) = e_ALINEACION_GUILD.ALINEACION_ARMADA Then
+                                    Call m_EcharMiembroDeClan(UserIndex, .name)
+136                                 Call WriteConsoleMsg(UserIndex, "Has dejado el clan.", e_FontTypeNames.FONTTYPE_GUILD)
+                                End If
                             Else
-138                             Call WriteChatOverHead(UserIndex, "Para dejar la facción primero deberás ceder el clan", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
-                                Exit Sub
+                                'Me fijo si está en un clan armada, en ese caso no lo dejo salir de la facción
+                                If GuildAlignmentIndex(.GuildIndex) = e_ALINEACION_GUILD.ALINEACION_ARMADA Then
+138                                 Call WriteChatOverHead(UserIndex, "Para dejar la facción primero deberás ceder el liderazgo del clan", NpcList(.flags.TargetNPC).Char.charindex, vbWhite)
+                                    Exit Sub
+                                End If
                             End If
                         End If
                     
@@ -7352,15 +7357,20 @@ Private Sub HandleLeaveFaction(ByVal UserIndex As Integer)
 148                 If NpcList(.flags.TargetNPC).flags.Faccion = 2 Then
                         'HarThaoS
                         'Si tiene clan
-150                     If .GuildIndex > 0 Then
+                         If .GuildIndex > 0 Then
                             'Y no es leader
-152                         If Not PersonajeEsLeader(.Name) Then
-                                'Lo echo a la verga
-154                             Call m_EcharMiembroDeClan(UserIndex, .Name)
-156                             Call WriteConsoleMsg(UserIndex, "Has dejado el clan.", e_FontTypeNames.FONTTYPE_GUILD)
+                            If Not PersonajeEsLeader(.name) Then
+                                'Me fijo de que alineación es el clan, si es CAOS, lo hecho
+                                If GuildAlignmentIndex(.GuildIndex) = e_ALINEACION_GUILD.ALINEACION_CAOTICA Then
+                                    Call m_EcharMiembroDeClan(UserIndex, .name)
+                                 Call WriteConsoleMsg(UserIndex, "Has dejado el clan.", e_FontTypeNames.FONTTYPE_GUILD)
+                                End If
                             Else
-158                             Call WriteChatOverHead(UserIndex, "Para dejar la facción primero deberás ceder el clan", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
-                                Exit Sub
+                                'Me fijo si está en un clan CAOS, en ese caso no lo dejo salir de la facción
+                                If GuildAlignmentIndex(.GuildIndex) = e_ALINEACION_GUILD.ALINEACION_CAOTICA Then
+                                    Call WriteChatOverHead(UserIndex, "Para dejar la facción primero deberás ceder el liderazgo del clan", NpcList(.flags.TargetNPC).Char.charindex, vbWhite)
+                                    Exit Sub
+                                End If
                             End If
                         End If
                     
