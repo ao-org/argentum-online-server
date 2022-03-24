@@ -28,7 +28,7 @@ Public Subasta As t_Subastas
 
 Dim Logear     As String
 
-Public Sub IniciarSubasta(UserIndex)
+Public Sub IniciarSubasta(ByVal userindex As Integer)
         
         On Error GoTo IniciarSubasta_Err
         
