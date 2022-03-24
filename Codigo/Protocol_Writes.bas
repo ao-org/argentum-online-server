@@ -4053,7 +4053,7 @@ End Function
 Public Function PrepareMessageChatOverHead(ByVal chat As String, _
                                            ByVal CharIndex As Integer, _
                                            ByVal Color As Long, _
-                                           Optional ByVal EsSpell = False)
+                                           Optional ByVal EsSpell As Boolean = False)
         '<EhHeader>
         On Error GoTo PrepareMessageChatOverHead_Err
         '</EhHeader>

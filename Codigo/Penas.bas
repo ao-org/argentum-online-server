@@ -41,7 +41,7 @@ CargarListaNegraUsuarios_Err:
         Call TraceError(Err.Number, Err.Description, "Penas.CargarListaNegraUsuarios", Erl)
 End Sub
 
-Private Function GlobalChecks(ByVal BannerIndex, ByRef UserName As String) As Integer
+Private Function GlobalChecks(ByVal BannerIndex As Integer, ByRef username As String) As Integer
         
         On Error GoTo GlobalChecks_Err
 

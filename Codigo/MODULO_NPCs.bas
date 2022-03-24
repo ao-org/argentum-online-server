@@ -1105,7 +1105,7 @@ NPCTirarOro_Err:
 End Sub
 
 Function OpenNPC(ByVal NpcNumber As Integer, _
-                 Optional ByVal Respawn = True, _
+                 Optional ByVal Respawn As Boolean = True, _
                  Optional ByVal Reload As Boolean = False) As Integer
         
         On Error GoTo OpenNPC_Err

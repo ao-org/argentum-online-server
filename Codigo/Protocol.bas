@@ -2693,7 +2693,7 @@ HandleDrop_Err:
 160
         
 End Sub
-Private Function verifyTimeStamp(ByVal ActualCount As Long, ByRef LastCount, ByRef LastTick, ByRef Iterations, ByVal UserIndex As Integer, ByVal PacketName As String, Optional ByVal DeltaThreshold As Long = 100, Optional ByVal MaxIterations As Long = 5, Optional ByVal CloseClient As Boolean = False) As Boolean
+Private Function verifyTimeStamp(ByVal ActualCount As Long, ByRef LastCount As Long, ByRef LastTick As Long, ByRef Iterations, ByVal userindex As Integer, ByVal PacketName As String, Optional ByVal DeltaThreshold As Long = 100, Optional ByVal MaxIterations As Long = 5, Optional ByVal CloseClient As Boolean = False) As Boolean
     
     Dim Ticks As Long, Delta As Long
     Ticks = GetTickCount
