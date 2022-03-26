@@ -1262,7 +1262,7 @@ Sub LoadOBJData()
                         .QuestId = val(Leer.GetValue(ObjKey, "QuestID"))
 332                 Case e_OBJType.otMagicos
 334                     .EfectoMagico = val(Leer.GetValue(ObjKey, "efectomagico"))
-
+                        .Revive = val(Leer.GetValue(ObjKey, "Revive")) <> 0
 336                     If .EfectoMagico = 15 Then
 338                         PENDIENTE = Object
 
