@@ -775,6 +775,7 @@ Sub Main()
             
         While (True)
         
+            Call modNetwork.close_not_logged_sockets_if_timeout
             Call modNetwork.Tick(GetElapsed())
             
             DoEvents
