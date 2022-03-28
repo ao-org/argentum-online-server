@@ -82,7 +82,21 @@ Public Function GetTimeOfNextFlush() As Single
     GetTimeOfNextFlush = max(0, TIME_SEND_FREQUENCY - Time(1))
 End Function
 
-
+Public Sub close_not_logged_sockets_if_timeout()
+    Dim i As Integer
+    For i = 1 To LastUser
+         With UserList(i)
+                If Not .flags.UserLogged Then
+                    Dim Ticks As Long, Delta As Long
+                    Ticks = GetTickCount
+                    Delta = Ticks - .Counters.OnConnectTimestamp
+                    If Delta > 9000 Then
+                        Call Kick(.ConnID, ".")
+                    End If
+                End If
+            End With
+    Next i
+End Sub
 Private Sub OnServerConnect(ByVal Connection As Long, ByVal Address As String)
 On Error GoTo OnServerConnect_Err:
   
