@@ -86,7 +86,7 @@ Public Sub close_not_logged_sockets_if_timeout()
     Dim i As Integer
     For i = 1 To LastUser
          With UserList(i)
-                If Not .flags.UserLogged Then
+                If Not .flags.UserLogged And .ConnID > 0 Then
                     Dim Ticks As Long, Delta As Long
                     Ticks = GetTickCount
                     Delta = Ticks - .Counters.OnConnectTimestamp
