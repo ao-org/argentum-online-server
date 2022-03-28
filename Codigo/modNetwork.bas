@@ -99,6 +99,7 @@ On Error GoTo OnServerConnect_Err:
         UserList(FreeUser).ConnIDValida = True
         UserList(FreeUser).IP = Address
         UserList(FreeUser).ConnID = Connection
+        UserList(FreeUser).Counters.OnConnectTimestamp = GetTickCount()
         
         If FreeUser >= LastUser Then LastUser = FreeUser
         
