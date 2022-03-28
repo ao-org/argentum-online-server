@@ -1773,6 +1773,9 @@ Public Type t_UserCounters
     LastTransferGold As Long
     TimeLastReset As Long
     PacketCount As Long
+    
+    OnConnectTimestamp As Long
+    
 End Type
 
 Public Type t_UserIntervals
