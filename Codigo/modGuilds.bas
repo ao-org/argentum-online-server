@@ -1919,7 +1919,7 @@ Public Sub SendDetallesPersonaje(ByVal UserIndex As Integer, ByVal Personaje As 
 102     Personaje = UCase$(Personaje)
     
 104     If GI <= 0 Or GI > CANTIDADDECLANES Then
-106         Call WriteConsoleMsg(UserIndex, "No perteneces a ningún clan.", e_FontTypeNames.FONTTYPE_INFO)
+106         Call WriteConsoleMsg(userindex, "No perteneces a ningún clan.", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
 
         End If
@@ -2385,16 +2385,16 @@ Public Function MiembrosPermite(ByVal GI As Integer) As Byte
 108             MiembrosPermite = 7 ' 2 miembros + pedir ayuda
 
 110         Case 3
-112             MiembrosPermite = 7 ' ver invi
+112             MiembrosPermite = 7 ' ver invi (SEGURO DE CLAN)
 
 114         Case 4
 116             MiembrosPermite = 12 ' 5 miembros
 
             Case 5
-                MiembrosPermite = 15 ' 3 miembros + seguro de clan
+                MiembrosPermite = 15 ' 3 miembros + seguro de clan(BARRA DE VIDA Y MANA)
                 
             Case 6
-                MiembrosPermite = 20 ' 5 miembros + barra de vida y mana entre miembros
+                MiembrosPermite = 20 ' 5 miembros + barra de vida y mana entre miembros(VER INVI)
 
         End Select
 

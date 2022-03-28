@@ -395,7 +395,7 @@ Public Sub DoOcultarse(ByVal UserIndex As Integer)
             End If
     
             If .Counters.TiempoOcultar > 0 Then
-                Call WriteConsoleMsg(UserIndex, "No puedes volver a ocultarta tan rápido.", e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteConsoleMsg(userindex, "No puedes volver a ocultarta tan rápido.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
     
@@ -1898,8 +1898,8 @@ Public Sub DoRobar(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
             End If
         
 136         If .GuildIndex > 0 Then
-        
-138             If .flags.SeguroClan And NivelDeClan(.GuildIndex) >= 5 Then
+                
+138             If .flags.SeguroClan And NivelDeClan(.GuildIndex) >= 3 Then
             
 140                 If .GuildIndex = UserList(VictimaIndex).GuildIndex Then
 142                     Call WriteConsoleMsg(LadronIndex, "No podes robarle a un miembro de tu clan.", e_FontTypeNames.FONTTYPE_INFOIAO)
