@@ -205,7 +205,7 @@ Public Function IsBase64(ByVal str As String) As Boolean
     For i = 1 To Len(str)
     
         isInStr = False
-        token_char = mid(str, i, 1)
+        token_char = mid$(str, i, 1)
         
         For j = 1 To UBound(base64_chars)
             If token_char = base64_chars(j) Then

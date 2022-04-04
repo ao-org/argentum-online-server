@@ -15,7 +15,7 @@ Public Sub EnlistarArmadaReal(ByVal UserIndex As Integer)
             Dim charIndexStr As String
 
 100         With UserList(UserIndex)
-102             charIndexStr = str(NpcList(.flags.TargetNPC).Char.CharIndex)
+102             charindexstr = str$(NpcList(.flags.TargetNPC).Char.charindex)
                 
 104             If .Faccion.ArmadaReal = 1 Then
 106                 Call WriteChatOverHead(UserIndex, "Ya perteneces a mi ejército jóven soldado. Ve a combatir el caos en mis tierras para subir de rango en el Ejército Real.", charIndexStr, vbWhite)

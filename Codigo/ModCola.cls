@@ -240,11 +240,7 @@ Public Function Existe(ByVal nombre As String) As Boolean
 100     NombreEnMayusculas = UCase$(nombre)
  
 102     For i = 1 To Me.Longitud
-            'Pablo
-104         V = UCase(ReadField(1, Me.VerElemento(i), Asc("Ø")))
-
-            '/Pablo
-            'V = Me.VerElemento(i)
+104         V = UCase$(ReadField(1, Me.VerElemento(i), Asc("Ø")))
 106         If V = NombreEnMayusculas Then
 108             Existe = True
                 Exit Function
