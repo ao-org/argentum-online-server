@@ -90,7 +90,7 @@ Public Sub close_not_logged_sockets_if_timeout()
                     Dim Ticks As Long, Delta As Long
                     Ticks = GetTickCount
                     Delta = Ticks - .Counters.OnConnectTimestamp
-                    If Delta > 5000 Then
+                    If Delta > 3000 Then
                         Call Kick(.ConnID, ".")
                     End If
                 End If
