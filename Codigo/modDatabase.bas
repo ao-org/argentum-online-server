@@ -1131,7 +1131,7 @@ Public Function UpdateDBIpsValues(ByVal UserIndex As Integer)
         Dim count As Long
         Dim i As Long
         For i = 1 To Len(ipStr)
-            If mid(ipStr, i, 1) = ";" Then
+            If mid$(ipStr, i, 1) = ";" Then
                 count = count + 1
             End If
         Next i

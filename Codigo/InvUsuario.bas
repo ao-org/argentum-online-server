@@ -3077,14 +3077,14 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
             
 1276                 If .Pos.Map <> obj.DesdeMap Then
                               Rem  Call WriteConsoleMsg(UserIndex, "El pasaje no lo compraste aquí! Largate!", e_FontTypeNames.FONTTYPE_INFO)
-1278                     Call WriteChatOverHead(UserIndex, "El pasaje no lo compraste aquí! Largate!", str(NpcList(.flags.TargetNPC).Char.CharIndex), vbWhite)
+1278                     Call WriteChatOverHead(userindex, "El pasaje no lo compraste aquí! Largate!", str$(NpcList(.flags.TargetNPC).Char.charindex), vbWhite)
                               Exit Sub
     
                           End If
             
 1280                 If Not MapaValido(obj.HastaMap) Then
                               Rem Call WriteConsoleMsg(UserIndex, "El pasaje lleva hacia un mapa que ya no esta disponible! Disculpa las molestias.", e_FontTypeNames.FONTTYPE_INFO)
-1282                     Call WriteChatOverHead(UserIndex, "El pasaje lleva hacia un mapa que ya no esta disponible! Disculpa las molestias.", str(NpcList(.flags.TargetNPC).Char.CharIndex), vbWhite)
+1282                     Call WriteChatOverHead(userindex, "El pasaje lleva hacia un mapa que ya no esta disponible! Disculpa las molestias.", str$(NpcList(.flags.TargetNPC).Char.charindex), vbWhite)
                               Exit Sub
     
                           End If
@@ -3092,7 +3092,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
 1284                 If obj.NecesitaNave > 0 Then
 1286                     If .Stats.UserSkills(e_Skill.Navegacion) < 80 Then
                                   Rem Call WriteConsoleMsg(UserIndex, "Debido a la peligrosidad del viaje, no puedo llevarte, ya que al menos necesitas saber manejar una barca.", e_FontTypeNames.FONTTYPE_INFO)
-1288                         Call WriteChatOverHead(UserIndex, "Debido a la peligrosidad del viaje, no puedo llevarte, ya que al menos necesitas saber manejar una barca.", str(NpcList(.flags.TargetNPC).Char.CharIndex), vbWhite)
+1288                         Call WriteChatOverHead(userindex, "Debido a la peligrosidad del viaje, no puedo llevarte, ya que al menos necesitas saber manejar una barca.", str$(NpcList(.flags.TargetNPC).Char.charindex), vbWhite)
                                   Exit Sub
     
                               End If

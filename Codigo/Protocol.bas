@@ -1380,7 +1380,7 @@ Private Sub HandleLoginExistingChar(ByVal UserIndex As Integer)
                 UserList(userindex).encrypted_session_token_db_id = RS!ID
                 UserList(UserIndex).encrypted_session_token = encrypted_session_token
                 UserList(UserIndex).decrypted_session_token = decrypted_session_token
-                UserList(UserIndex).public_key = mid(decrypted_session_token, 1, 16)
+                UserList(userindex).public_key = mid$(decrypted_session_token, 1, 16)
             Else
                 Call WriteShowMessageBox(userindex, "Cliente inválido, por favor realice una actualización.")
                 Call CloseSocket(UserIndex)
@@ -1390,7 +1390,7 @@ Private Sub HandleLoginExistingChar(ByVal UserIndex As Integer)
         If RS!encrypted_token = encrypted_session_token Then
             UserList(UserIndex).encrypted_session_token = encrypted_session_token
             UserList(UserIndex).decrypted_session_token = decrypted_session_token
-            UserList(UserIndex).public_key = mid(decrypted_session_token, 1, 16)
+            UserList(userindex).public_key = mid$(decrypted_session_token, 1, 16)
         Else
             Call WriteShowMessageBox(userindex, "Cliente inválido, por favor realice una actualización.")
             Call CloseSocket(UserIndex)
@@ -1494,7 +1494,7 @@ Private Sub HandleLoginNewChar(ByVal UserIndex As Integer)
             UserList(userindex).encrypted_session_token_db_id = RS!ID
             UserList(UserIndex).encrypted_session_token = encrypted_session_token
             UserList(UserIndex).decrypted_session_token = decrypted_session_token
-            UserList(UserIndex).public_key = mid(decrypted_session_token, 1, 16)
+            UserList(userindex).public_key = mid$(decrypted_session_token, 1, 16)
         Else
             Call WriteShowMessageBox(userindex, "Cliente inválido, por favor realice una actualización.")
 121             Call CloseSocket(UserIndex)
@@ -11039,7 +11039,7 @@ Private Sub HandleGuildOnlineMembers(ByVal UserIndex As Integer)
 110             tGuild = GuildIndex(GuildName)
             
 112             If tGuild > 0 Then
-114                 Call WriteConsoleMsg(UserIndex, "Clan " & UCase(GuildName) & ": " & modGuilds.m_ListaDeMiembrosOnline(UserIndex, tGuild), e_FontTypeNames.FONTTYPE_GUILDMSG)
+114                 Call WriteConsoleMsg(userindex, "Clan " & UCase$(GuildName) & ": " & modGuilds.m_ListaDeMiembrosOnline(userindex, tGuild), e_FontTypeNames.FONTTYPE_GUILDMSG)
                 End If
             Else
 116             Call WriteConsoleMsg(userindex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
