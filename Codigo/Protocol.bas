@@ -15482,7 +15482,7 @@ Private Sub HandleTransFerGold(ByVal UserIndex As Integer)
 
             End If
     
-130         If EsGM(userindex) Then
+130         If Not EsGM(userindex) Then
 
 132             If tUser <= 0 Then
                         If GetTickCount() - .Counters.LastTransferGold >= 10000 Then
