@@ -1597,35 +1597,7 @@ Private Sub HandleTalk(ByVal UserIndex As Integer)
 104         If (.flags.Privilegios And (e_PlayerType.Consejero Or e_PlayerType.SemiDios)) Then
 106             Call LogGM(.Name, "Dijo: " & chat)
             End If
-        
-            'I see you....
-108         'If .flags.Oculto > 0 And .flags.AdminInvisible = 0 Then
-        
-110          '   .flags.Oculto = 0
-            '.Counters.TiempoOcultar = 1
-112          '   .Counters.TiempoOculto = 0
-            
-114             If .flags.Navegando = 1 Then
-
-116                 If .clase = e_Class.Pirat Then
-                        ' Pierde la apariencia de fragata fantasmal
-118                     Call EquiparBarco(UserIndex)
-120                     Call WriteConsoleMsg(userindex, "¡Has recuperado tu apariencia normal!", e_FontTypeNames.FONTTYPE_INFO)
-122                     Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, NingunArma, NingunEscudo, NingunCasco)
-124                     Call RefreshCharStatus(UserIndex)
-                    End If
-
-                Else
-
-126                 If .flags.invisible = 0 Then
-128                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(.Char.CharIndex, False))
-130                     Call WriteLocaleMsg(UserIndex, "307", e_FontTypeNames.FONTTYPE_INFO)
     
-                    End If
-
-                End If
-
-            End If
        
 132         If .flags.Silenciado = 1 Then
 134             Call WriteLocaleMsg(UserIndex, "110", e_FontTypeNames.FONTTYPE_INFO, .flags.MinutosRestantes)
