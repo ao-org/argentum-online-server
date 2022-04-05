@@ -1599,12 +1599,8 @@ Private Sub HandleTalk(ByVal UserIndex As Integer)
             End If
         
             'I see you....
-108         If .flags.Oculto > 0 And .flags.AdminInvisible = 0 Then
 108         'If .flags.Oculto > 0 And .flags.AdminInvisible = 0 Then
         
-110             .flags.Oculto = 0
-            .Counters.TiempoOcultar = 1
-112             .Counters.TiempoOculto = 0
 110          '   .flags.Oculto = 0
             '.Counters.TiempoOcultar = 1
 112          '   .Counters.TiempoOculto = 0
