@@ -1260,7 +1260,39 @@ Sub HandleHechizoNPC(ByVal UserIndex As Integer, ByVal uh As Integer)
 108     If b Then
 110         Call SubirSkill(UserIndex, Magia)
 112         UserList(UserIndex).flags.TargetNPC = 0
-114         UserList(UserIndex).Stats.MinMAN = UserList(UserIndex).Stats.MinMAN - Hechizos(uh).ManaRequerido
+
+            Dim ManaClaseHechizo As Integer
+            
+            ManaClaseHechizo = Hechizos(uh).ManaRequerido
+            
+          Select Case UserList(userindex).clase
+          
+                Case e_Class.Assasin Or e_Class.Paladin
+                    
+                    If Hechizos(uh).RemoverParalisis = 1 Then
+                        ManaClaseHechizo = 250
+                    End If
+
+                    If Hechizos(uh).Inmoviliza = 1 Then
+                        ManaClaseHechizo = 250
+                    End If
+
+                    If Hechizos(uh).Invisibilidad = 1 Then
+                        ManaClaseHechizo = 350
+                    End If
+
+                Case e_Class.Bandit
+                     If Hechizos(uh).RemoverParalisis = 1 Then
+                        ManaClaseHechizo = 250
+                    End If
+
+                    If Hechizos(uh).Inmoviliza = 1 Then
+                        ManaClaseHechizo = 250
+                    End If
+                
+            End Select
+            
+       UserList(userindex).Stats.MinMAN = UserList(userindex).Stats.MinMAN - ManaClaseHechizo
 
 116         If Hechizos(uh).RequiredHP > 0 Then
 118             If UserList(UserIndex).Stats.MinMAN < 0 Then UserList(UserIndex).Stats.MinMAN = 0
