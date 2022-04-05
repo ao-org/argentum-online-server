@@ -1181,7 +1181,7 @@ Sub HandleHechizoUsuario(ByVal UserIndex As Integer, ByVal uh As Integer)
             
           Select Case UserList(userindex).clase
           
-                Case e_Class.Assasin Or e_Class.Paladin
+                Case e_Class.Paladin
                     
                     If Hechizos(uh).RemoverParalisis = 1 Then
                         ManaClaseHechizo = 250
@@ -1195,6 +1195,19 @@ Sub HandleHechizoUsuario(ByVal UserIndex As Integer, ByVal uh As Integer)
                         ManaClaseHechizo = 350
                     End If
 
+                    Case e_Class.Assasin
+                    
+                    If Hechizos(uh).RemoverParalisis = 1 Then
+                        ManaClaseHechizo = 250
+                    End If
+
+                    If Hechizos(uh).Inmoviliza = 1 Then
+                        ManaClaseHechizo = 250
+                    End If
+
+                    If Hechizos(uh).Invisibilidad = 1 Then
+                        ManaClaseHechizo = 350
+                    End If
                 Case e_Class.Bandit
                      If Hechizos(uh).RemoverParalisis = 1 Then
                         ManaClaseHechizo = 250
@@ -1267,7 +1280,7 @@ Sub HandleHechizoNPC(ByVal UserIndex As Integer, ByVal uh As Integer)
             
           Select Case UserList(userindex).clase
           
-                Case e_Class.Assasin Or e_Class.Paladin
+                    Case e_Class.Paladin
                     
                     If Hechizos(uh).RemoverParalisis = 1 Then
                         ManaClaseHechizo = 250
@@ -1281,6 +1294,19 @@ Sub HandleHechizoNPC(ByVal UserIndex As Integer, ByVal uh As Integer)
                         ManaClaseHechizo = 350
                     End If
 
+                    Case e_Class.Assasin
+                    
+                    If Hechizos(uh).RemoverParalisis = 1 Then
+                        ManaClaseHechizo = 250
+                    End If
+
+                    If Hechizos(uh).Inmoviliza = 1 Then
+                        ManaClaseHechizo = 250
+                    End If
+
+                    If Hechizos(uh).Invisibilidad = 1 Then
+                        ManaClaseHechizo = 350
+                    End If
                 Case e_Class.Bandit
                      If Hechizos(uh).RemoverParalisis = 1 Then
                         ManaClaseHechizo = 250
