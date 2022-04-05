@@ -1480,7 +1480,9 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 176         UserList(tU).flags.invisible = 1
             'Ladder
             'Reseteamos el contador de Invisibilidad
-178         UserList(tU).Counters.Invisibilidad = Hechizos(h).Duration
+            If UserList(tU).Counters.Invisibilidad <= 0 Then UserList(tU).Counters.Invisibilidad = Hechizos(h).Duration
+            
+178
 180         Call WriteContadores(tU)
 182         Call SendData(SendTarget.ToPCArea, tU, PrepareMessageSetInvisible(UserList(tU).Char.CharIndex, True))
 
@@ -3591,7 +3593,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean)
 382         UserList(tU).flags.invisible = 1
             'Ladder
             'Reseteamos el contador de Invisibilidad
-384         UserList(tU).Counters.Invisibilidad = Hechizos(h).Duration
+384          If UserList(tU).Counters.Invisibilidad <= 0 Then UserList(tU).Counters.Invisibilidad = Hechizos(h).Duration
 386         Call WriteContadores(tU)
 388         Call SendData(SendTarget.ToPCArea, tU, PrepareMessageSetInvisible(UserList(tU).Char.CharIndex, True))
 
