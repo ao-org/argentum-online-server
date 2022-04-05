@@ -623,8 +623,8 @@ Private Function PuedeLanzar(ByVal UserIndex As Integer, ByVal HechizoIndex As I
 144             Call WriteConsoleMsg(UserIndex, "No tenes suficiente vida. Necesitas " & Hechizos(HechizoIndex).RequiredHP & " puntos de vida.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Function
             End If
-
-146         If .Stats.MinMAN < Hechizos(HechizoIndex).ManaRequerido Then
+            
+146         If .Stats.MinMAN < ManaHechizoPorClase(UserIndex, Hechizos(HechizoIndex)) Then
 148             Call WriteLocaleMsg(UserIndex, "222", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Function
             End If
@@ -1174,52 +1174,8 @@ Sub HandleHechizoUsuario(ByVal UserIndex As Integer, ByVal uh As Integer)
 
 112     If b Then
 114         Call SubirSkill(UserIndex, Magia)
-            'If Hechizos(uh).Resis = 1 Then Call SubirSkill(UserList(UserIndex).Flags.TargetUser, Resis)
-            Dim ManaClaseHechizo As Integer
-            
-            ManaClaseHechizo = Hechizos(uh).ManaRequerido
-            
-          Select Case UserList(userindex).clase
-          
-                Case e_Class.Paladin
                     
-                    If Hechizos(uh).RemoverParalisis = 1 Then
-                        ManaClaseHechizo = 250
-                    End If
-
-                    If Hechizos(uh).Inmoviliza = 1 Then
-                        ManaClaseHechizo = 250
-                    End If
-
-                    If Hechizos(uh).Invisibilidad = 1 Then
-                        ManaClaseHechizo = 350
-                    End If
-
-                    Case e_Class.Assasin
-                    
-                    If Hechizos(uh).RemoverParalisis = 1 Then
-                        ManaClaseHechizo = 250
-                    End If
-
-                    If Hechizos(uh).Inmoviliza = 1 Then
-                        ManaClaseHechizo = 250
-                    End If
-
-                    If Hechizos(uh).Invisibilidad = 1 Then
-                        ManaClaseHechizo = 350
-                    End If
-                Case e_Class.Bandit
-                     If Hechizos(uh).RemoverParalisis = 1 Then
-                        ManaClaseHechizo = 250
-                    End If
-
-                    If Hechizos(uh).Inmoviliza = 1 Then
-                        ManaClaseHechizo = 250
-                    End If
-                
-            End Select
-            
-116         UserList(userindex).Stats.MinMAN = UserList(userindex).Stats.MinMAN - ManaClaseHechizo
+116         UserList(UserIndex).Stats.MinMAN = UserList(UserIndex).Stats.MinMAN - ManaHechizoPorClase(UserIndex, Hechizos(uh))
 118         If UserList(UserIndex).Stats.MinMAN < 0 Then UserList(UserIndex).Stats.MinMAN = 0
 
 120         If Hechizos(uh).RequiredHP > 0 Then
@@ -1245,6 +1201,62 @@ HandleHechizoUsuario_Err:
 
         
 End Sub
+
+Public Function ManaHechizoPorClase(ByVal UserIndex As Integer, Hechizo As t_Hechizo) As Integer
+        
+    ManaHechizoPorClase = Hechizo.ManaRequerido
+
+    Select Case UserList(UserIndex).clase
+    
+        Case e_Class.Paladin
+              
+            If Hechizo.RemoverParalisis = 1 Then
+                ManaHechizoPorClase = 250
+                Exit Function
+            End If
+
+            If Hechizo.Inmoviliza = 1 Then
+                ManaHechizoPorClase = 250
+                Exit Function
+            End If
+
+            If Hechizo.Invisibilidad = 1 Then
+                ManaHechizoPorClase = 350
+                Exit Function
+            End If
+
+        Case e_Class.Assasin
+                  
+            If Hechizo.RemoverParalisis = 1 Then
+                ManaHechizoPorClase = 250
+                Exit Function
+            End If
+    
+            If Hechizo.Inmoviliza = 1 Then
+                ManaHechizoPorClase = 250
+                Exit Function
+            End If
+    
+            If Hechizo.Invisibilidad = 1 Then
+                ManaHechizoPorClase = 350
+                Exit Function
+                Exit Function
+            End If
+                  
+        Case e_Class.Bandit
+        
+             If Hechizo.RemoverParalisis = 1 Then
+                ManaHechizoPorClase = 250
+                Exit Function
+            End If
+        
+            If Hechizo.Inmoviliza = 1 Then
+                ManaHechizoPorClase = 250
+                Exit Function
+            End If
+            
+    End Select
+End Function
 
 Sub HandleHechizoNPC(ByVal UserIndex As Integer, ByVal uh As Integer)
         
@@ -1273,50 +1285,6 @@ Sub HandleHechizoNPC(ByVal UserIndex As Integer, ByVal uh As Integer)
 108     If b Then
 110         Call SubirSkill(UserIndex, Magia)
 112         UserList(UserIndex).flags.TargetNPC = 0
-
-            Dim ManaClaseHechizo As Integer
-            
-            ManaClaseHechizo = Hechizos(uh).ManaRequerido
-            
-          Select Case UserList(userindex).clase
-          
-                    Case e_Class.Paladin
-                    
-                    If Hechizos(uh).RemoverParalisis = 1 Then
-                        ManaClaseHechizo = 250
-                    End If
-
-                    If Hechizos(uh).Inmoviliza = 1 Then
-                        ManaClaseHechizo = 250
-                    End If
-
-                    If Hechizos(uh).Invisibilidad = 1 Then
-                        ManaClaseHechizo = 350
-                    End If
-
-                    Case e_Class.Assasin
-                    
-                    If Hechizos(uh).RemoverParalisis = 1 Then
-                        ManaClaseHechizo = 250
-                    End If
-
-                    If Hechizos(uh).Inmoviliza = 1 Then
-                        ManaClaseHechizo = 250
-                    End If
-
-                    If Hechizos(uh).Invisibilidad = 1 Then
-                        ManaClaseHechizo = 350
-                    End If
-                Case e_Class.Bandit
-                     If Hechizos(uh).RemoverParalisis = 1 Then
-                        ManaClaseHechizo = 250
-                    End If
-
-                    If Hechizos(uh).Inmoviliza = 1 Then
-                        ManaClaseHechizo = 250
-                    End If
-                
-            End Select
             
        UserList(userindex).Stats.MinMAN = UserList(userindex).Stats.MinMAN - ManaClaseHechizo
 
