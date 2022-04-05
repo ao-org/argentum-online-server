@@ -1286,7 +1286,7 @@ Sub HandleHechizoNPC(ByVal UserIndex As Integer, ByVal uh As Integer)
 110         Call SubirSkill(UserIndex, Magia)
 112         UserList(UserIndex).flags.TargetNPC = 0
             
-       UserList(userindex).Stats.MinMAN = UserList(userindex).Stats.MinMAN - ManaClaseHechizo
+            UserList(userindex).Stats.MinMAN = UserList(userindex).Stats.MinMAN - ManaHechizoPorClase(userindex, Hechizos(uh))
 
 116         If Hechizos(uh).RequiredHP > 0 Then
 118             If UserList(UserIndex).Stats.MinMAN < 0 Then UserList(UserIndex).Stats.MinMAN = 0
