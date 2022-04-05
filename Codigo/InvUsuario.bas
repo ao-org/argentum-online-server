@@ -1129,6 +1129,21 @@ FaccionPuedeUsarItem_Err:
         
 End Function
 
+Function JerarquiaPuedeUsarItem(ByVal userindex As Integer, ByVal ObjIndex As Integer) As Boolean
+       
+    With UserList(userindex)
+        If .Faccion.RecompensasCaos >= ObjData(ObjIndex).Jerarquia Then
+            JerarquiaPuedeUsarItem = True
+            Exit Function
+        End If
+
+        If .Faccion.RecompensasReal >= ObjData(ObjIndex).Jerarquia Then
+            JerarquiaPuedeUsarItem = True
+            Exit Function
+        End If
+    End With
+        
+End Function
 'Equipa barco y hace el cambio de ropaje correspondiente
 Sub EquiparBarco(ByVal UserIndex As Integer)
         On Error GoTo EquiparBarco_Err

@@ -66,7 +66,7 @@ Function PuedeUsarObjeto(UserIndex As Integer, ByVal ObjIndex As Integer, Option
          PuedeUsarObjeto = 6
          Msg = "Necesitas ser nivel " & Objeto.MinELV & " para usar este objeto."
 
-     ElseIf Not FaccionPuedeUsarItem(UserIndex, ObjIndex) Then
+     ElseIf Not FaccionPuedeUsarItem(userindex, ObjIndex) And JerarquiaPuedeUsarItem(userindex, ObjIndex) Then
          PuedeUsarObjeto = 3
          Msg = "Tu facción no te permite utilizarlo."
 

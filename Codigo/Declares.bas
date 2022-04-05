@@ -1192,6 +1192,7 @@ Public Type t_ObjData
     ParticulaGolpeTime As Integer
     ParticulaGolpe As Integer
     ParticulaViaje As Integer
+    Jerarquia As Long
 
     ClaseTipo As Byte
 
