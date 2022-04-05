@@ -1149,7 +1149,7 @@ Sub LoadOBJData()
 154             .Dorada = val(Leer.GetValue(ObjKey, "Dorada"))
 156             .VidaUtil = val(Leer.GetValue(ObjKey, "VidaUtil"))
 158             .TiempoRegenerar = val(Leer.GetValue(ObjKey, "TiempoRegenerar"))
-158             .Jerarquia = val(Leer.GetValue(ObjKey, "Jerarquia"))
+                .Jerarquia = val(Leer.GetValue(ObjKey, "Jerarquia"))
 
                 Dim i As Integer
 
