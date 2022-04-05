@@ -1081,15 +1081,8 @@ Public Sub UsuarioAtacaNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer
             
         Else
             
-            Dim sendto As SendTarget
-            
-162         If UserList(UserIndex).clase = e_Class.Hunter And UserList(UserIndex).flags.Oculto = 0 Then
-164             sendto = SendTarget.ToPCArea
-            Else
-166             sendto = SendTarget.ToIndex
-            End If
 
-168         Call SendData(sendto, UserIndex, PrepareMessageCharSwing(UserList(UserIndex).Char.CharIndex))
+168         Call SendData(SendTarget.ToPCArea, userindex, PrepareMessageCharSwing(UserList(userindex).Char.charindex))
 
         End If
 

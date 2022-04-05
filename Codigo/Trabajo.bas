@@ -395,7 +395,7 @@ Public Sub DoOcultarse(ByVal UserIndex As Integer)
             End If
     
             If .Counters.TiempoOcultar > 0 Then
-                Call WriteConsoleMsg(userindex, "No puedes volver a ocultarta tan rápido.", e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteConsoleMsg(userindex, "No puedes volver a ocultarte tan rápido.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
     
