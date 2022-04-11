@@ -711,30 +711,6 @@ CheckIdleUser_Err:
         
 End Sub
 
-Private Sub cmdAyudinMas_Click()
-    ayudin = ayudin + 1
-    If ayudin >= 2000 Then
-        ayudin = 2000
-    End If
-    frmMain.txtAyudin.Text = ayudin
-   ' Call SendData(SendTarget.ToAll, 0, PrepareMessageOnlineUser(NumUsers + ayudin))
-     
-    If NumUsers + ayudin > RecordUsuarios Then
-         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Record de usuarios conectados simultáneamente: " & NumUsers + ayudin & " usuarios.", e_FontTypeNames.FONTTYPE_INFO))
-         RecordUsuarios = NumUsers + ayudin
-    End If
-End Sub
-
-Private Sub cmdAyudinMenos_Click()
-        ayudin = ayudin - 1
-    If ayudin <= 0 Then
-        ayudin = 0
-    End If
-    frmMain.txtAyudin.Text = ayudin
-     'Call SendData(SendTarget.ToAll, 0, PrepareMessageOnlineUser(NumUsers + ayudin))
-     
-End Sub
-
 Private Sub cmdDbControl_Click()
     frmDbControl.Show
 End Sub

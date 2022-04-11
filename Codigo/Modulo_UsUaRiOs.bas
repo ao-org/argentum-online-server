@@ -622,12 +622,12 @@ Public Function ConnectUser_Complete(ByVal UserIndex As Integer, _
         
 965         If NumUsers > DayStats.MaxUsuarios Then DayStats.MaxUsuarios = NumUsers
         
-970         If NumUsers + ayudin > RecordUsuarios Then
-975             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Record de usuarios conectados simultáneamente: " & NumUsers + ayudin & " usuarios.", e_FontTypeNames.FONTTYPE_INFO))
-980             RecordUsuarios = NumUsers + ayudin
+970         If NumUsers > RecordUsuarios Then
+975             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Record de usuarios conectados simultáneamente: " & NumUsers & " usuarios.", e_FontTypeNames.FONTTYPE_INFO))
+980             RecordUsuarios = NumUsers
             End If
 
-990         Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageOnlineUser(NumUsers + ayudin))
+990         Call SendData(SendTarget.ToIndex, userindex, PrepareMessageOnlineUser(NumUsers))
 
 995         Call WriteFYA(UserIndex)
 1000         Call WriteBindKeys(UserIndex)
