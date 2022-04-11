@@ -878,9 +878,9 @@ Sub MostrarNumUsers()
         On Error GoTo MostrarNumUsers_Err
         
         
-100         Call SendData(SendTarget.ToAll, 0, PrepareMessageOnlineUser(NumUsers + ayudin))
+100         Call SendData(SendTarget.ToAll, 0, PrepareMessageOnlineUser(NumUsers))
 
-102         frmMain.CantUsuarios.Caption = "Numero de usuarios jugando: " & NumUsers + ayudin
+102         frmMain.CantUsuarios.Caption = "Numero de usuarios jugando: " & NumUsers
         
 
         Exit Sub
