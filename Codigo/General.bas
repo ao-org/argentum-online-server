@@ -565,7 +565,6 @@ Sub Main()
         Call LogThis(0, "Starting the server " & Now, vbLogEventTypeInformation)
 
         Call load_stats
-        ayudin = 0
         ' Me fijo si ya hay un proceso llamado server.exe abierto
 100     If GetProcess(App.EXEName & ".exe") > 1 Then
             ' Si lo hay, pregunto si lo queremos cerrar.
