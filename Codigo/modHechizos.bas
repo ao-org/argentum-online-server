@@ -37,6 +37,9 @@ Attribute VB_Name = "modHechizos"
 
 Option Explicit
 
+Private Const FLAUTA_ELFICA             As Long = 40
+
+
 Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer, ByVal Spell As Integer, Optional ByVal IgnoreVisibilityCheck As Boolean = False)
       On Error GoTo NpcLanzaSpellSobreUser_Err
 
@@ -1202,7 +1205,7 @@ HandleHechizoUsuario_Err:
         
 End Sub
 
-Public Function ManaHechizoPorClase(ByVal UserIndex As Integer, Hechizo As t_Hechizo) As Integer
+Public Function ManaHechizoPorClase(ByVal userindex As Integer, Hechizo As t_Hechizo, Optional ByVal HechizoIndex As Long) As Integer
         
     ManaHechizoPorClase = Hechizo.ManaRequerido
 
@@ -1254,6 +1257,12 @@ Public Function ManaHechizoPorClase(ByVal UserIndex As Integer, Hechizo As t_Hec
                 ManaHechizoPorClase = 250
                 Exit Function
             End If
+        
+        Case e_Class.Druid
+            'Si es druida y tiene equipada una flauta élfica, pido 10% menos para apoca.
+            If HechizoIndex = 53 And UserList(userindex).Invent.DañoMagicoEqpObjIndex = FLAUTA_ELFICA Then
+                ManaHechizoPorClase = 900
+            End If
             
     End Select
 End Function
@@ -1286,7 +1295,7 @@ Sub HandleHechizoNPC(ByVal UserIndex As Integer, ByVal uh As Integer)
 110         Call SubirSkill(UserIndex, Magia)
 112         UserList(UserIndex).flags.TargetNPC = 0
             
-            UserList(userindex).Stats.MinMAN = UserList(userindex).Stats.MinMAN - ManaHechizoPorClase(userindex, Hechizos(uh))
+            UserList(userindex).Stats.MinMAN = UserList(userindex).Stats.MinMAN - ManaHechizoPorClase(userindex, Hechizos(uh), uh)
 
 116         If Hechizos(uh).RequiredHP > 0 Then
 118             If UserList(UserIndex).Stats.MinMAN < 0 Then UserList(UserIndex).Stats.MinMAN = 0
