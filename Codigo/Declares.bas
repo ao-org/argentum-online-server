@@ -57,6 +57,12 @@ Public Enum e_elecciones
     AbroElecciones = 5
 End Enum
 
+Public Enum tMacro
+    dobleclick = 1
+    Coordenadas = 2
+    inasistidoPosFija = 3
+End Enum
+
 
 Public Enum e_Facciones
     Criminal = 0

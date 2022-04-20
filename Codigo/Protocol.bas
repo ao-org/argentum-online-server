@@ -653,7 +653,8 @@ On Error Resume Next
     If UserList(UserIndex).Counters.PacketCount > 100 Then
         'Lo kickeo
         Call SendData(SendTarget.ToAdmins, userindex, PrepareMessageConsoleMsg("Control de paquetes -> El usuario " & UserList(userindex).name & " | Iteración paquetes | Último paquete: " & PacketId & ".", e_FontTypeNames.FONTTYPE_FIGHT))
-        Call CloseSocket(UserIndex)
+        UserList(userindex).Counters.PacketCount = 0
+        'Call CloseSocket(userindex)
         Exit Function
     End If
 
@@ -17838,9 +17839,23 @@ End Sub
 Private Sub HandleLogMacroClickHechizo(ByVal UserIndex As Integer)
 
 100     With UserList(UserIndex)
-
-102         Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("AntiCheat> El usuario " & UserList(userindex).name & " está utilizando macro de coordenadas.", e_FontTypeNames.FONTTYPE_INFO))
-104         'Call LogSecurity("Usuario: " & .name & "   " & "Ip: " & .IP & " Posible uso de macro de hechizos.")
+            Dim tipoMacro As Byte
+            Dim mensaje As String
+            Dim clicks As Long
+            tipoMacro = Reader.ReadInt8
+            clicks = Reader.ReadInt32
+            
+            Select Case tipoMacro
+            
+                Case tMacro.Coordenadas
+102                 mensaje = "AntiCheat> El usuario " & UserList(userindex).name & " está utilizando macro de COORDENADAS."
+                Case tMacro.dobleclick
+                    mensaje = "AntiCheat> El usuario " & UserList(userindex).name & " está utilizando macro de DOBLE CLICK (CANTIDAD DE CLICKS: " & clicks & " )."
+                Case tMacro.inasistidoPosFija
+                    mensaje = "AntiCheat> El usuario " & UserList(userindex).name & " está utilizando macro de INASISTIDO."
+            End Select
+            
+            Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(mensaje, e_FontTypeNames.FONTTYPE_INFO))
 
         End With
 
