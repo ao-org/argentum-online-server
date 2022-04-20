@@ -17839,8 +17839,8 @@ Private Sub HandleLogMacroClickHechizo(ByVal UserIndex As Integer)
 
 100     With UserList(UserIndex)
 
-102         Call SendData(SendTarget.ToGM, 0, PrepareMessageConsoleMsg("AntiCheat> El usuario " & .name & " se le cerró el cliente por posible uso de macro de hechizos", e_FontTypeNames.FONTTYPE_INFO))
-104         Call LogSecurity("Usuario: " & .name & "   " & "Ip: " & .IP & " Posible uso de macro de hechizos.")
+102         Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("AntiCheat> El usuario " & UserList(userindex).name & " está utilizando macro de coordenadas.", e_FontTypeNames.FONTTYPE_INFO))
+104         'Call LogSecurity("Usuario: " & .name & "   " & "Ip: " & .IP & " Posible uso de macro de hechizos.")
 
         End With
 
