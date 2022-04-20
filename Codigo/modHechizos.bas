@@ -1546,7 +1546,8 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 176         UserList(tU).flags.invisible = 1
             'Ladder
             'Reseteamos el contador de Invisibilidad
-            If UserList(tU).Counters.Invisibilidad <= 0 Then UserList(tU).Counters.Invisibilidad = Hechizos(h).Duration
+            'Le agrego un random al tiempo de invisibilidad de 16 a 21 segundos.
+            If UserList(tU).Counters.Invisibilidad <= 0 Then UserList(tU).Counters.Invisibilidad = RandomNumber(Hechizos(h).Duration - 4, Hechizos(h).Duration + 1)
             
 178
 180         Call WriteContadores(tU)
