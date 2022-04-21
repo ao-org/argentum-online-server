@@ -1286,10 +1286,9 @@ Sub LoadOBJData()
 366                     .WeaponAnim = val(Leer.GetValue(ObjKey, "Anim"))
 368                     .SkHerreria = val(Leer.GetValue(ObjKey, "SkHerreria"))
             
-370                 Case e_OBJType.otPergaminos
-        
-                        ' .ClasePermitida = Leer.GetValue(ObjKey, "CP")
-        
+370                 Case e_OBJType.otTeleport
+                        .Radio = val(Leer.GetValue(ObjKey, "Radio"))
+                        
 372                 Case e_OBJType.OtCofre
 374                     .CantItem = val(Leer.GetValue(ObjKey, "CantItem"))
 

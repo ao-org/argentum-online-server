@@ -11048,11 +11048,13 @@ Private Sub HandleTeleportCreate(ByVal UserIndex As Integer)
             Dim Mapa As Integer
             Dim X    As Byte
             Dim Y    As Byte
+            Dim Radio As Byte
             Dim Motivo As String
-        
+            
 102         Mapa = Reader.ReadInt16()
 104         X = Reader.ReadInt8()
 106         Y = Reader.ReadInt8()
+            Radio = Reader.ReadInt8()
             Motivo = Reader.ReadString8()
         
 108         If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero Or e_PlayerType.SemiDios)) Then
@@ -11089,7 +11091,15 @@ Private Sub HandleTeleportCreate(ByVal UserIndex As Integer)
             Dim Objeto As t_Obj
         
 128         Objeto.amount = 1
-130         Objeto.ObjIndex = 378
+
+            Select Case Radio
+                Case 1
+                    Objeto.ObjIndex = 370
+                Case 2
+                    Objeto.ObjIndex = 371
+                Case Else
+130                 Objeto.ObjIndex = 378
+            End Select
         
 132         Call MakeObj(Objeto, .Pos.Map, .Pos.X, .Pos.Y - 1)
         

@@ -1343,6 +1343,8 @@ Public Type t_ObjData
     PielOsoPardo As Integer
     PielOsoPolaR As Integer
     SkMAGOria As Byte
+    
+    Radio As Byte
      
     SkHerreria As Integer
     SkCarpinteria As Integer
