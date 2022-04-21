@@ -312,7 +312,7 @@ Public Sub DoTileEvents(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal 
         Dim nPos   As t_WorldPos
 
         Dim EsTeleport As Boolean
-        
+        Dim TelepRadio As Byte
         Dim aN As Integer
         
 100     With UserList(UserIndex)
@@ -335,25 +335,22 @@ Public Sub DoTileEvents(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal 
 112                     If EsMapaInterdimensional(MapData(Map, X, Y).TileExit.Map) And Not EsMapaInterdimensional(.Pos.Map) Then
 114                         .flags.ReturnPos = .Pos
                         End If
-
-116                     If LegalPos(MapData(Map, X, Y).TileExit.Map, MapData(Map, X, Y).TileExit.X, MapData(Map, X, Y).TileExit.Y, .flags.Navegando = 1, , , False) Then
-118                         Call WarpUserChar(UserIndex, MapData(Map, X, Y).TileExit.Map, MapData(Map, X, Y).TileExit.X, MapData(Map, X, Y).TileExit.Y, EsTeleport)
-                
+                        
+                        Dim destPos As t_WorldPos
+                        
+                        destPos.map = MapData(map, X, y).TileExit.map
+                        If EsTeleport Then
+                            destPos.X = RandomNumber(MapData(map, X, y).TileExit.X - ObjData(MapData(map, X, y).ObjInfo.ObjIndex).Radio, MapData(map, X, y).TileExit.X + ObjData(MapData(map, X, y).ObjInfo.ObjIndex).Radio)
+                            destPos.y = RandomNumber(MapData(map, X, y).TileExit.y - ObjData(MapData(map, X, y).ObjInfo.ObjIndex).Radio, MapData(map, X, y).TileExit.y + ObjData(MapData(map, X, y).ObjInfo.ObjIndex).Radio)
                         Else
-120                         Call ClosestLegalPos(MapData(Map, X, Y).TileExit, nPos, True)
-    
-122                         If nPos.X <> 0 And nPos.Y <> 0 Then
-124                             Call WarpUserChar(UserIndex, nPos.Map, nPos.X, nPos.Y, EsTeleport)
-                            End If
-    
+                            destPos.X = MapData(map, X, y).TileExit.X
+                            destPos.y = MapData(map, X, y).TileExit.y
                         End If
-                
-                    ' Si hay un teleport: movemos al usuario para que no se quede bloqueándolo
-126                 ElseIf EsTeleport Then
-128                     Call ClosestLegalPos(.Pos, nPos)
-    
-130                      If nPos.X <> 0 And nPos.Y <> 0 Then
-132                          Call WarpUserChar(UserIndex, nPos.Map, nPos.X, nPos.Y, EsTeleport)
+                        
+                        Call ClosestLegalPos(destPos, nPos)
+                        
+131                     If nPos.X <> 0 And nPos.y <> 0 Then
+                            Call WarpUserChar(userindex, nPos.map, nPos.X, nPos.y, EsTeleport)
                         End If
                     End If
     
