@@ -70,8 +70,8 @@ Public Enum SendTarget
     ToCaosYRMs
     ToSuperiores
     ToSuperioresArea
-    
     ToUsuariosMuertos
+    ToAdminsYDioses
     
 End Enum
 
@@ -114,6 +114,15 @@ Public Sub SendData(ByVal sndRoute As SendTarget, ByVal sndIndex As Integer, Par
                         End If
                     End If
 126             Next LoopC
+            
+            Case SendTarget.ToAdminsYDioses
+                For LoopC = 1 To LastUser
+                    If UserList(LoopC).ConnIDValida Then
+                        If UserList(LoopC).flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios) Then
+                            Call modNetwork.Send(LoopC, Buffer)
+                           End If
+                       End If
+                Next LoopC
 
 128         Case SendTarget.ToSuperiores
 130             For LoopC = 1 To LastUser

@@ -671,7 +671,9 @@ Public Sub WriteUpdateMana(ByVal UserIndex As Integer)
         '<EhHeader>
         On Error GoTo WriteUpdateMana_Err
         '</EhHeader>
-100     Call SendData(SendTarget.ToDiosesYclan, UserList(UserIndex).GuildIndex, _
+100     Call SendData(SendTarget.ToAdminsYDioses, UserList(userindex).GuildIndex, _
+                PrepareMessageCharUpdateMAN(userindex))
+10     Call SendData(SendTarget.ToClanArea, UserList(userindex).GuildIndex, _
                 PrepareMessageCharUpdateMAN(UserIndex))
 102     Call Writer.WriteInt16(ServerPacketID.UpdateMana)
 104     Call Writer.WriteInt16(UserList(UserIndex).Stats.MinMAN)
@@ -695,7 +697,9 @@ Public Sub WriteUpdateHP(ByVal UserIndex As Integer)
         '<EhHeader>
         On Error GoTo WriteUpdateHP_Err
         '</EhHeader>
-100     Call SendData(SendTarget.ToDiosesYclan, UserList(UserIndex).GuildIndex, _
+100     Call SendData(SendTarget.ToAdminsYDioses, UserList(userindex).GuildIndex, _
+                PrepareMessageCharUpdateHP(userindex))
+101     Call SendData(SendTarget.ToClanArea, UserList(userindex).GuildIndex, _
                 PrepareMessageCharUpdateHP(UserIndex))
 102     Call Writer.WriteInt16(ServerPacketID.UpdateHP)
 104     Call Writer.WriteInt16(UserList(UserIndex).Stats.MinHp)
