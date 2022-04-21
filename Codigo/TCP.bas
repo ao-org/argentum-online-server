@@ -441,16 +441,6 @@ Validate_Skills_Err:
 End Function
 
 Function ConnectNewUser(ByVal UserIndex As Integer, ByRef name As String, ByVal UserRaza As e_Raza, ByVal UserSexo As e_Genero, ByVal UserClase As e_Class, ByVal Head As Integer, ByRef UserCuenta As String, ByVal Hogar As e_Ciudad) As Boolean
-        '*************************************************
-        'Author: Unknown
-        'Last modified: 20/4/2007
-        'Conecta un nuevo Usuario
-        '23/01/2007 Pablo (ToxicWaste) - Agregué ResetFaccion al crear usuario
-        '24/01/2007 Pablo (ToxicWaste) - Agregué el nuevo mana inicial de los magos.
-        '12/02/2007 Pablo (ToxicWaste) - Puse + 1 de const al Elfo normal.
-        '20/04/2007 Pablo (ToxicWaste) - Puse -1 de fuerza al Elfo.
-        '09/01/2008 Pablo (ToxicWaste) - Ahora los modificadores de Raza se controlan desde Balance.dat
-        '*************************************************
         
         On Error GoTo ConnectNewUser_Err
         
@@ -518,7 +508,7 @@ Function ConnectNewUser(ByVal UserIndex As Integer, ByRef name As String, ByVal 
     
 148         .name = name
 
-150         .clase = UserClase
+150         .clase = Min(max(0, UserClase), NUMCLASES)
 152         .raza = UserRaza
         
 154         .Char.Head = Head
