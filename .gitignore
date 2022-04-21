@@ -21,3 +21,5 @@ bkNpcs.dat
 server.exe
 Server.ini
 Database.ini
+Database.db-shm
+Database.db-wal
