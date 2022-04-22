@@ -347,7 +347,12 @@ Public Sub DoTileEvents(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal 
                             destPos.y = MapData(map, X, y).TileExit.y
                         End If
                         
-                        Call ClosestLegalPos(destPos, nPos)
+                        If .flags.Navegando Then
+                            Call ClosestLegalPos(destPos, nPos, True)
+                        Else
+                            Call ClosestLegalPos(destPos, nPos)
+                        End If
+                        
                         
 131                     If nPos.X <> 0 And nPos.y <> 0 Then
                             Call WarpUserChar(userindex, nPos.map, nPos.X, nPos.y, EsTeleport)
