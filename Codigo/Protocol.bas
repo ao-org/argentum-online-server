@@ -17861,6 +17861,9 @@ Private Sub HandleLogMacroClickHechizo(ByVal UserIndex As Integer)
                 Case tMacro.inasistidoPosFija
                     mensaje = "AntiCheat> El usuario " & UserList(userindex).name & " está utilizando macro de INASISTIDO."
                     Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(mensaje, e_FontTypeNames.FONTTYPE_INFO))
+                Case tMacro.borrarCartel
+                    mensaje = "AntiCheat> El usuario " & UserList(userindex).name & " está utilizando macro de CARTELEO."
+                    Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(mensaje, e_FontTypeNames.FONTTYPE_INFO))
             End Select
             
             

@@ -61,6 +61,7 @@ Public Enum tMacro
     dobleclick = 1
     Coordenadas = 2
     inasistidoPosFija = 3
+    borrarCartel = 4
 End Enum
 
 
