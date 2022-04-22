@@ -14,6 +14,21 @@ Public Sub Clear()
 End Sub
 
 
+Public Sub WriteLoginExistingChar(ByVal encrypted_session_token As String, ByVal public_key As String, ByVal username As String, _
+    ByVal app_major As Byte, ByVal app_minor As Byte, ByVal app_revision As Byte, ByVal md5 As String)
+    
+    Call Writer.WriteInt16(ClientPacketID.LoginExistingChar)
+    Call Writer.WriteString8(encrypted_session_token)
+    Dim encrypted_username_b64 As String
+    encrypted_username_b64 = AO20CryptoSysWrapper.ENCRYPT(cnvHexStrFromString(public_key), username)
+    Call Writer.WriteString8(encrypted_username_b64)
+    Call Writer.WriteInt8(app_major)
+    Call Writer.WriteInt8(app_minor)
+    Call Writer.WriteInt8(app_revision)
+    Call Writer.WriteString8(md5)
+     Call UnitClient.Send(Writer)
+End Sub
+
 Public Sub WriteLoginNewChar(ByVal public_key As String, ByVal username As String, _
     ByVal app_major As Byte, ByVal app_minor As Byte, ByVal app_revision As Byte, ByVal md5 As String, _
     ByVal race As Byte, ByVal gender As Byte, ByVal class As Byte, ByVal body As Byte, _

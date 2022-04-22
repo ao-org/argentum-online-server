@@ -46,8 +46,15 @@ Public Sub Send(ByVal Buffer As Network.Writer)
 End Sub
 
 Private Sub TestInvalidPacketID()
-    Call Unit_Protocol_Writes.WriteLong(ClientPacketID.PacketCount)
+    Call Unit_Protocol_Writes.WriteLong(ClientPacketID.PacketCount + 1)
     
+End Sub
+
+Private Sub TestWriteLoginExcistingChar()
+ Dim good_md5, md5 As String
+    good_md5 = "a944087c826163c4ed658b1ea00594be"
+    Call WriteLoginExistingChar(UnitTesting.encrypted_token, UnitTesting.public_key, _
+        "zeno", 2, 0, 4, good_md5)
 End Sub
 
 Private Sub TestWriteLoginNewChar()
@@ -72,12 +79,16 @@ Private Sub TestWriteLoginNewChar()
 
 End Sub
 
+
+
 Private Sub OnClientConnect()
     Debug.Print ("UnitClient.OnClientConnect")
     connected = True
    
     'Call TestInvalidPacketID
-    Call TestWriteLoginNewChar
+    'Call TestWriteLoginNewCharFail
+    Call TestWriteLoginExcistingChar
+    'Call TestWriteLoginNewChar
     
     
 End Sub
