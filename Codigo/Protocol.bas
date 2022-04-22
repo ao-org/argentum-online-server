@@ -8719,8 +8719,8 @@ Private Sub HandleJail(ByVal UserIndex As Integer)
 124                     If EsGM(tUser) Then
 126                         Call WriteConsoleMsg(userindex, "No podés encarcelar a administradores.", e_FontTypeNames.FONTTYPE_INFO)
                     
-128                     ElseIf jailTime > 60 Then
-130                         Call WriteConsoleMsg(userindex, "No podés encarcelar por más de 60 minutos.", e_FontTypeNames.FONTTYPE_INFO)
+128                     ElseIf jailTime > 240 Then
+130                         Call WriteConsoleMsg(UserIndex, "No podés encarcelar por más de 4 horas.", e_FontTypeNames.FONTTYPE_INFO)
                         Else
 
 132                         If (InStrB(UserName, "\") <> 0) Then
