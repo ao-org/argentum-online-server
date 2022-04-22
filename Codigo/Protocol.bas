@@ -11082,11 +11082,6 @@ Private Sub HandleTeleportCreate(ByVal UserIndex As Integer)
 
             End If
             
-            ' Tiene que llevar en zona segura, pueden entrar usuarios sin saber el destino fatal
-127         If MapInfo(Mapa).Seguro = 0 Then
-                Call WriteConsoleMsg(UserIndex, "No puedes crear teleport que lleven a mapas inseguros.", e_FontTypeNames.FONTTYPE_INFO)
-                Exit Sub
-            End If
 
             Dim Objeto As t_Obj
         
