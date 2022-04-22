@@ -611,7 +611,7 @@ Public Sub FundirMineral(ByVal UserIndex As Integer)
             Exit Sub
         End If
         
-104     If UserList(UserIndex).flags.Privilegios And (e_PlayerType.Consejero) Then
+104     If UserList(userindex).flags.Privilegios And (e_PlayerType.Consejero Or e_PlayerType.SemiDios Or e_PlayerType.Dios) Then
             Exit Sub
         End If
 
@@ -1178,7 +1178,7 @@ Public Sub CarpinteroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
         
 100     If Not IntervaloPermiteTrabajarConstruir(UserIndex) Then Exit Sub
 
-102     If UserList(UserIndex).flags.Privilegios And (e_PlayerType.Consejero) Then
+102     If UserList(userindex).flags.Privilegios And (e_PlayerType.Consejero Or e_PlayerType.SemiDios Or e_PlayerType.Dios) Then
             Exit Sub
         End If
         
