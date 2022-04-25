@@ -2898,7 +2898,7 @@ Private Sub HandleWork(ByVal UserIndex As Integer)
             Dim Packet_ID As Long
             Packet_ID = PacketNames.Work
             
-            If Not verifyTimeStamp(PacketCounter, .PacketCounters(Packet_ID), .PacketTimers(Packet_ID), .MacroIterations(Packet_ID), UserIndex, "Work", PacketTimerThreshold(Packet_ID), MacroIterations(Packet_ID)) Then Exit Sub
+            
             
             
 104         If UserList(UserIndex).flags.Muerto = 1 Then
@@ -2917,7 +2917,7 @@ Private Sub HandleWork(ByVal UserIndex As Integer)
 112                 Call WriteWorkRequestTarget(UserIndex, Skill)
 
 114             Case Ocultarse
-
+                    If Not verifyTimeStamp(PacketCounter, .PacketCounters(Packet_ID), .PacketTimers(Packet_ID), .MacroIterations(Packet_ID), userindex, "Ocultar", PacketTimerThreshold(Packet_ID), MacroIterations(Packet_ID)) Then Exit Sub
 116                 If .flags.Montado = 1 Then
 
                         '[CDT 17-02-2004]
