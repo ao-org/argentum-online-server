@@ -389,7 +389,16 @@ Private Sub AI_AtacarUsuarioObjetivo(ByVal AtackerNpcIndex As Integer)
                 
                 If AtacaAlDelFrente And Not .flags.Paralizado = 1 Then
                     Call AnimacionIdle(AtackerNpcIndex, True)
-                    Call NpcAtacaUser(AtackerNpcIndex, UserIndexFront, tHeading)
+                    If UserIndexFront > 0 Then
+                        If UserList(UserIndexFront).flags.Muerto = 0 Then
+                            If UserList(UserIndexFront).Faccion.Status = 1 And (.NPCtype = e_NPCType.GuardiaReal) Then
+                                
+                            Else
+                                Call NpcAtacaUser(AtackerNpcIndex, UserIndexFront, tHeading)
+                            End If
+                        End If
+                    End If
+
                 End If
             End If
 
