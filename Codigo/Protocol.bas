@@ -12448,6 +12448,8 @@ Private Sub HandleChaosLegionKick(ByVal UserIndex As Integer)
             Dim tUser    As Integer
         
 102         UserName = Reader.ReadString8()
+            'HarThaoS: comando roto / revisar
+            Exit Sub
         
 104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.RoleMaster)) Then
 106             If (InStrB(UserName, "\") <> 0) Then
@@ -12515,7 +12517,8 @@ Private Sub HandleRoyalArmyKick(ByVal UserIndex As Integer)
             Dim tUser    As Integer
         
 102         UserName = Reader.ReadString8()
-        
+            'HarThaoS: Comando roto / revisar.
+            Exit Sub
 104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.RoleMaster)) Then
         
 106             If (InStrB(UserName, "\") <> 0) Then
