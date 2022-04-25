@@ -527,12 +527,6 @@ Public Sub DoNavega(ByVal UserIndex As Integer, _
                     Call RefreshCharStatus(UserIndex)
                 End If
                 
-                If .flags.invisible = 1 Then
-                    Call WriteConsoleMsg(UserIndex, "Pierdes el efecto de la invisibilidad.", e_FontTypeNames.FONTTYPE_INFO)
-                    .flags.invisible = 0
-                    .Counters.Invisibilidad = 0
-                    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(UserList(UserIndex).Char.CharIndex, False))
-                End If
     
 146             Call EquiparBarco(UserIndex)
             
