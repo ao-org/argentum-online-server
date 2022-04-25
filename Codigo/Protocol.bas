@@ -12319,8 +12319,10 @@ Private Sub HandleCreateItem(ByVal UserIndex As Integer)
 104         Cuantos = Reader.ReadInt16()
     
             ' Si es usuario, lo sacamos cagando.
-106         If Not EsGM(UserIndex) Or (.flags.Privilegios And e_PlayerType.Consejero) Then Exit Sub
-        
+106         If Not EsGM(userindex) Or (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero Or e_PlayerType.SemiDios Or e_PlayerType.Dios)) Then
+                Call WriteConsoleMsg(userindex, "Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
             ' Si es Semi-Dios, dejamos crear un item siempre y cuando pueda estar en el inventario.
 108         If (.flags.Privilegios And e_PlayerType.SemiDios) <> 0 And ObjData(tObj).Agarrable = 1 Then Exit Sub
 
