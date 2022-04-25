@@ -2576,7 +2576,7 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
             Packet_ID = PacketNames.Drop
             
             
-            If Not verifyTimeStamp(PacketCounter, .PacketCounters(Packet_ID), .PacketTimers(Packet_ID), .MacroIterations(Packet_ID), UserIndex, "Drop", PacketTimerThreshold(Packet_ID), MacroIterations(Packet_ID)) Then Exit Sub
+            'If Not verifyTimeStamp(PacketCounter, .PacketCounters(Packet_ID), .PacketTimers(Packet_ID), .MacroIterations(Packet_ID), userindex, "Drop", PacketTimerThreshold(Packet_ID), MacroIterations(Packet_ID)) Then Exit Sub
             
 106         If Not IntervaloPermiteTirar(UserIndex) Then Exit Sub
 
@@ -2731,7 +2731,7 @@ Private Sub HandleCastSpell(ByVal UserIndex As Integer) ', ByVal server_crc As L
             Packet_ID = PacketNames.CastSpell
             
             
-            If Not verifyTimeStamp(PacketCounter, .PacketCounters(Packet_ID), .PacketTimers(Packet_ID), .MacroIterations(Packet_ID), UserIndex, "CastSpell", PacketTimerThreshold(Packet_ID), MacroIterations(Packet_ID)) Then Exit Sub
+           ' If Not verifyTimeStamp(PacketCounter, .PacketCounters(Packet_ID), .PacketTimers(Packet_ID), .MacroIterations(Packet_ID), userindex, "CastSpell", PacketTimerThreshold(Packet_ID), MacroIterations(Packet_ID)) Then Exit Sub
             
            ' Dim client_packet_crc As Long
            ' client_packet_crc = Reader.ReadInt64
@@ -3994,7 +3994,7 @@ Private Sub HandleEquipItem(ByVal UserIndex As Integer)
             Dim Packet_ID As Long
             Packet_ID = PacketNames.EquipItem
             
-            If Not verifyTimeStamp(PacketCounter, .PacketCounters(Packet_ID), .PacketTimers(Packet_ID), .MacroIterations(Packet_ID), UserIndex, "EquipItem", PacketTimerThreshold(Packet_ID), MacroIterations(Packet_ID)) Then Exit Sub
+            'If Not verifyTimeStamp(PacketCounter, .PacketCounters(Packet_ID), .PacketTimers(Packet_ID), .MacroIterations(Packet_ID), userindex, "EquipItem", PacketTimerThreshold(Packet_ID), MacroIterations(Packet_ID)) Then Exit Sub
             
             'Dead users can't equip items
 104         If .flags.Muerto = 1 Then
