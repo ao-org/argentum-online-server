@@ -16584,7 +16584,8 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
                                 For j = 1 To UBound(PecesEspeciales)
                                     If .Invent.Object(i).ObjIndex = PecesEspeciales(j).ObjIndex Then
                                         .Stats.PuntosPesca = .Stats.PuntosPesca + (ObjData(.Invent.Object(i).ObjIndex).PuntosPesca * .Invent.Object(i).amount)
-                                        .Stats.GLD = .Stats.GLD + (ObjData(.Invent.Object(i).ObjIndex).Valor * .Invent.Object(i).amount)
+                                        .Stats.GLD = .Stats.GLD + (ObjData(.Invent.Object(i).ObjIndex).Valor * .Invent.Object(i).amount * 1.2)
+                                        Call WriteUpdateGold(userindex)
                                         Call QuitarUserInvItem(UserIndex, i, .Invent.Object(i).amount)
                                         Call UpdateUserInv(False, UserIndex, i)
                                     End If
