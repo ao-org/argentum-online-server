@@ -114,7 +114,6 @@ Public Enum ServerPacketID
     ShowUserRequest         ' PETICIO
     ChangeUserTradeSlot     ' COMUSUINV
     'SendNight              ' NOC
-    Pong
     UpdateTagAndStatus
     FYA
     CerrarleCliente
@@ -199,35 +198,6 @@ Public Enum ServerPacketID
 End Enum
 
 Public Enum ClientPacketID
-
-    LoginExistingChar       'OLOGIN
-    LoginNewChar            'NLOGIN
-    Talk                    ';
-    Yell                    '-
-    Whisper                 '\
-    Walk                    'M
-    RequestPositionUpdate   'RPU
-    Attack                  'AT
-    PickUp                  'AG
-    SafeToggle              '/SEG & SEG  (SEG's behaviour has to be coded in the client)
-    PartySafeToggle
-    RequestGuildLeaderInfo  'GLINFO
-    RequestAtributes        'ATR
-    RequestSkills           'ESKI
-    RequestMiniStats        'FEST
-    CommerceEnd             'FINCOM
-    UserCommerceEnd         'FINCOMUSU
-    BankEnd                 'FINBAN
-    UserCommerceOk          'COMUSUOK
-    UserCommerceReject      'COMUSUNO
-    Drop                    'TI
-    CastSpell               'LH
-    LeftClick               'LC
-    DoubleClick             'RC
-    Work                    'UK
-    UseSpellMacro           'UMH
-    UseItem                 'USA
-    CraftBlacksmith         'CNS
     CraftCarpenter          'CNC
     WorkLeftClick           'WLC
     CreateNewGuild          'CIG
@@ -300,8 +270,34 @@ Public Enum ClientPacketID
     BankExtractGold         '/RETIRAR ( with arguments )
     BankDepositGold         '/DEPOSITAR
     Denounce                '/DENUNCIAR
-    Ping                    '/PING
-    
+    LoginExistingChar       'OLOGIN
+    LoginNewChar            'NLOGIN
+    Talk                    ';
+    Yell                    '-
+    Whisper                 '\
+    Walk                    'M
+    RequestPositionUpdate   'RPU
+    Attack                  'AT
+    PickUp                  'AG
+    SafeToggle              '/SEG & SEG  (SEG's behaviour has to be coded in the client)
+    PartySafeToggle
+    RequestGuildLeaderInfo  'GLINFO
+    RequestAtributes        'ATR
+    RequestSkills           'ESKI
+    RequestMiniStats        'FEST
+    CommerceEnd             'FINCOM
+    UserCommerceEnd         'FINCOMUSU
+    BankEnd                 'FINBAN
+    UserCommerceOk          'COMUSUOK
+    UserCommerceReject      'COMUSUNO
+    Drop                    'TI
+    CastSpell               'LH
+    LeftClick               'LC
+    DoubleClick             'RC
+    Work                    'UK
+    UseSpellMacro           'UMH
+    UseItem                 'USA
+    CraftBlacksmith         'CNS
     'GM messages
     GMMessage               '/GMSG
     showName                '/SHOWNAME
@@ -888,8 +884,6 @@ On Error Resume Next
             Call HandleBankDepositGold(UserIndex)
         Case ClientPacketID.Denounce
             Call HandleDenounce(UserIndex)
-        Case ClientPacketID.Ping
-            Call HandlePing(UserIndex)
         Case ClientPacketID.GMMessage
             Call HandleGMMessage(UserIndex)
         Case ClientPacketID.showName
@@ -14855,28 +14849,6 @@ Public Sub HandleChangeMOTD(ByVal UserIndex As Integer)
 HandleChangeMOTD_Err:
 118     Call TraceError(Err.Number, Err.Description, "Protocol.HandleChangeMOTD", Erl)
 120
-        
-End Sub
-
-''
-' Handle the "Ping" message
-'
-' @param UserIndex The index of the user sending the message
-
-Public Sub HandlePing(ByVal UserIndex As Integer)
-        
-        On Error GoTo HandlePing_Err
-
-            Dim Time As Long
-        
-102         Time = Reader.ReadInt32()
-        
-104         Call WritePong(UserIndex, Time + modNetwork.GetTimeOfNextFlush()) ' Correct the time
-        Exit Sub
-
-HandlePing_Err:
-106     Call TraceError(Err.Number, Err.Description, "Protocol.HandlePing", Erl)
-108
         
 End Sub
 

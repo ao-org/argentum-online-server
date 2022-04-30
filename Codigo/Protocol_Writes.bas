@@ -3363,27 +3363,6 @@ WriteUserNameList_Err:
         '</EhFooter>
 End Sub
 
-''
-' Writes the "Pong" message to the given user's outgoing data .incomingData.
-'
-' @param    UserIndex User to which the message is intended.
-' @remarks  The data is not actually sent until the buffer is properly flushed.
-Public Sub WritePong(ByVal UserIndex As Integer, ByVal Time As Long)
-        '<EhHeader>
-        On Error GoTo WritePong_Err
-        '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.Pong)
-102     Call Writer.WriteInt32(Time)
-104     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
-        Exit Sub
-
-WritePong_Err:
-        Call Writer.Clear
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WritePong", Erl)
-        '</EhFooter>
-End Sub
-
 
 Public Sub WriteGoliathInit(ByVal UserIndex As Integer)
         '<EhHeader>
