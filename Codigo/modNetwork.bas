@@ -60,6 +60,7 @@ Public Sub Flush(ByVal UserIndex As Long)
 End Sub
 
 Public Sub Kick(ByVal Connection As Long, Optional ByVal message As String = vbNullString)
+On Error GoTo Kick_ErrHandler:
     If (message <> vbNullString) Then
         Dim UserIndex As Long
         UserIndex = Mapping(Connection)
@@ -74,7 +75,11 @@ Public Sub Kick(ByVal Connection As Long, Optional ByVal message As String = vbN
     End If
         
     Call Server.Flush(Connection)
-    Call Server.Kick(Connection)
+    Call Server.Kick(Connection, True)
+    
+    Exit Sub
+    
+Kick_ErrHandler:
 End Sub
 
 
