@@ -584,11 +584,11 @@ Function ConnectNewUser(ByVal UserIndex As Integer, ByRef name As String, ByVal 
             End With
             
 238         With DungeonNewbieCoords(2)
-240             .map = 264: .X = 54: .y = 70
+240             .map = 168: .X = 58: .y = 75
             End With
             
 242         With DungeonNewbieCoords(3)
-244             .map = 168: .X = 50: .y = 70
+244             .map = 168: .X = 42: .y = 75
             End With
             
             #If UNIT_TEST = 1 Then
