@@ -1213,15 +1213,15 @@ Public Function ManaHechizoPorClase(ByVal userindex As Integer, Hechizo As t_Hec
     
         Case e_Class.Paladin
               
-            If Hechizo.RemoverParalisis = 1 Then
-                ManaHechizoPorClase = 250
-                Exit Function
-            End If
+           'If Hechizo.RemoverParalisis = 1 Then
+            '   ManaHechizoPorClase = 250
+           '    Exit Function
+         '  End If
 
-            If Hechizo.Inmoviliza = 1 Then
-                ManaHechizoPorClase = 250
-                Exit Function
-            End If
+          ' If Hechizo.Inmoviliza = 1 Then
+           '    ManaHechizoPorClase = 250
+           '    Exit Function
+           'End If
 
             If Hechizo.Invisibilidad = 1 Then
                 ManaHechizoPorClase = 350
@@ -1230,15 +1230,15 @@ Public Function ManaHechizoPorClase(ByVal userindex As Integer, Hechizo As t_Hec
 
         Case e_Class.Assasin
                   
-            If Hechizo.RemoverParalisis = 1 Then
-                ManaHechizoPorClase = 250
-                Exit Function
-            End If
+         '  If Hechizo.RemoverParalisis = 1 Then
+          '     ManaHechizoPorClase = 250
+         '      Exit Function
+        '   End If
     
-            If Hechizo.Inmoviliza = 1 Then
-                ManaHechizoPorClase = 250
-                Exit Function
-            End If
+           'If Hechizo.Inmoviliza = 1 Then
+           '    ManaHechizoPorClase = 250
+           '    Exit Function
+           'End If
     
             If Hechizo.Invisibilidad = 1 Then
                 ManaHechizoPorClase = 350
@@ -1248,15 +1248,15 @@ Public Function ManaHechizoPorClase(ByVal userindex As Integer, Hechizo As t_Hec
                   
         Case e_Class.Bandit
         
-             If Hechizo.RemoverParalisis = 1 Then
-                ManaHechizoPorClase = 250
-                Exit Function
-            End If
+           ' If Hechizo.RemoverParalisis = 1 Then
+           '    ManaHechizoPorClase = 250
+           '    Exit Function
+          ' End If
         
-            If Hechizo.Inmoviliza = 1 Then
-                ManaHechizoPorClase = 250
-                Exit Function
-            End If
+         '  If Hechizo.Inmoviliza = 1 Then
+         '      ManaHechizoPorClase = 250
+         '      Exit Function
+        '   End If
         
         Case e_Class.Druid
             'Si es druida y tiene equipada una flauta élfica, pido 10% menos para apoca.
