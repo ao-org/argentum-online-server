@@ -2583,11 +2583,11 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
 112         If .flags.Comerciando Then Exit Sub
     
             'Si esta navegando y no es pirata, no dejamos tirar items al agua.
-114         If .flags.Navegando = 1 And Not .clase = e_Class.Pirat Then
-116             Call WriteConsoleMsg(UserIndex, "Solo los Piratas pueden tirar items en altamar", e_FontTypeNames.FONTTYPE_INFO)
-                Exit Sub
+114         'If .flags.Navegando = 1 And Not .clase = e_Class.Pirat Then
+116          '   Call WriteConsoleMsg(userindex, "Solo los Piratas pueden tirar items en altamar", e_FontTypeNames.FONTTYPE_INFO)
+              '  Exit Sub
 
-            End If
+            'End If
             
 118         If .flags.Montado = 1 Then
 120             Call WriteConsoleMsg(UserIndex, "Debes descender de tu montura para dejar objetos en el suelo.", e_FontTypeNames.FONTTYPE_INFO)
