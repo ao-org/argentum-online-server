@@ -10615,7 +10615,7 @@ Private Sub HandleSummonChar(ByVal UserIndex As Integer)
 148             Call WarpToLegalPos(tUser, .Pos.Map, .Pos.X, .Pos.Y + 1, True, True)
                 Call WriteConsoleMsg(userindex, "Has traído a " & UserList(tUser).name & ".", e_FontTypeNames.FONTTYPE_INFO)
 152             Call LogGM(.Name, "/SUM " & UserName & " Map:" & .Pos.Map & " X:" & .Pos.X & " Y:" & .Pos.Y)
-                'Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(.name & " a trasladado a " & username, e_FontTypeNames.FONTTYPE_INFO))
+                Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(.name & " a trasladado al usuario " & username & " al Mapa " & .Pos.map, e_FontTypeNames.FONTTYPE_INFO))
                 
             End If
         Else
