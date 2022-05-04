@@ -1654,7 +1654,7 @@ Sub LoadMapData()
         Dim npcfile   As String
 
 #If UNIT_TEST = 1 Then
-        NumMaps = 774
+        NumMaps = 770
         Debug.Print "UNIT_TEST Enabled Loading just " & NumMaps & " maps"
 #Else
 102     NumMaps = CountFiles(MapPath, "*.csm") - 1
