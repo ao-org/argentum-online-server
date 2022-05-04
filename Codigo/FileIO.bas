@@ -1654,11 +1654,20 @@ Sub LoadMapData()
         Dim npcfile   As String
 
 #If UNIT_TEST = 1 Then
-        NumMaps = 770
+        'We only need 10 maps for unit testing
+        NumMaps = 10
         Debug.Print "UNIT_TEST Enabled Loading just " & NumMaps & " maps"
 #Else
-102     NumMaps = CountFiles(MapPath, "*.csm") - 1
+
+        #If DEBUGGING Then
+                'VB runs out of memory when debugging
+                NumMaps = 770
+        #Else
+                NumMaps = CountFiles(MapPath, "*.csm") - 1
+        #End If
+
 #End If
+
 104     Call InitAreas
     
 106     frmCargando.cargar.Min = 0
