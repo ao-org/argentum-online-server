@@ -698,7 +698,7 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
                     Dim PuntosTotales As Integer
                                                             
                     Dim CantPecesEspeciales As Long
-                    
+                    Dim OroTotal As Long
                     CantPecesEspeciales = UBound(PecesEspeciales)
                                                 
                     If CantPecesEspeciales > 0 Then
@@ -706,6 +706,7 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
                             For j = 1 To CantPecesEspeciales
                                 If UserList(UserIndex).Invent.Object(i).ObjIndex = PecesEspeciales(j).ObjIndex Then
                                     PuntosTotales = PuntosTotales + (ObjData(UserList(UserIndex).Invent.Object(i).ObjIndex).PuntosPesca * UserList(UserIndex).Invent.Object(i).amount)
+                                    OroTotal = OroTotal + (ObjData(UserList(userindex).Invent.Object(i).ObjIndex).Valor * UserList(userindex).Invent.Object(i).amount)
                                 End If
                             Next j
                         Next i
@@ -713,7 +714,7 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
                     
                     If PuntosTotales > 0 Then
 319                     UserList(UserIndex).flags.pregunta = 5
-                        Call WritePreguntaBox(UserIndex, "Tienes un total de " & PuntosTotales & " puntos para reclamar, ¿Desea aceptar?")
+                        Call WritePreguntaBox(userindex, "Tienes un total de " & PuntosTotales & " puntos y " & OroTotal & " monedas de oro para reclamar, ¿Desea aceptar?")
                     Else
                         Dim charIndexstr As Integer
                         charIndexstr = str(NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex)
