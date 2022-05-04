@@ -1934,6 +1934,7 @@ Public Sub ResucitarOCurar(ByVal UserIndex As Integer)
 If UserList(UserIndex).flags.Muerto = 1 Then
     Call RevivirUsuario(UserIndex)
     UserList(UserIndex).Stats.MinHp = UserList(UserIndex).Stats.MaxHp
+    UserList(userindex).flags.Envenenado = False
         
     Call WriteUpdateHP(UserIndex)
     
@@ -1945,6 +1946,7 @@ If UserList(UserIndex).flags.Muerto = 1 Then
     Call WriteConsoleMsg(UserIndex, "¡¡Hás sido resucitado!!", e_FontTypeNames.FONTTYPE_INFO)
 ElseIf UserList(UserIndex).Stats.MinHp < UserList(UserIndex).Stats.MaxHp Then
     UserList(UserIndex).Stats.MinHp = UserList(UserIndex).Stats.MaxHp
+    UserList(userindex).flags.Envenenado = False
         
     Call WriteUpdateHP(UserIndex)
         
