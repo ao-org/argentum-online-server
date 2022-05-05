@@ -1345,8 +1345,6 @@ Sub LoadOBJData()
 
 428                 Case e_OBJType.otResistencia
 430                     .ResistenciaMagica = val(Leer.GetValue(ObjKey, "ResistenciaMagica"))
-                        .MagicDamageBonus = val(Leer.GetValue(ObjKey, "MagicDamageBonus"))
-                        .Revive = val(Leer.GetValue(ObjKey, "Revive")) <> 0
 
 
 432                 Case e_OBJType.otMinerales

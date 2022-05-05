@@ -1680,7 +1680,7 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
 514                     Call WriteUpdateRM(UserIndex)
                     End If
 
-516             Case e_OBJType.otDañoMagico
+516             Case e_OBJType.otDañoMagico, e_OBJType.otResistencia
                     'Si esta equipado lo quita
 518                 If .Invent.Object(Slot).Equipped Then
 520                     Call Desequipar(UserIndex, Slot)
@@ -1692,38 +1692,27 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
 524                     Call Desequipar(UserIndex, .Invent.DañoMagicoEqpSlot)
                     End If
 
-526                 .Invent.Object(Slot).Equipped = 1
-528                 .Invent.DañoMagicoEqpObjIndex = .Invent.Object(Slot).ObjIndex
-530                 .Invent.DañoMagicoEqpSlot = Slot
-532                 If Len(obj.CreaGRH) <> 0 Then
-534                     .Char.DM_Aura = obj.CreaGRH
-536                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, .Char.DM_Aura, False, 6))
-                    End If
-
-538                 Call WriteUpdateDM(UserIndex)
-
-540             Case e_OBJType.otResistencia
-                    'Si esta equipado lo quita
-542                 If .Invent.Object(Slot).Equipped Then
-544                     Call Desequipar(UserIndex, Slot)
-                        Exit Sub
-                    End If
-     
-                    'Quita el anterior
 546                 If .Invent.ResistenciaEqpSlot > 0 Then
 548                     Call Desequipar(UserIndex, .Invent.ResistenciaEqpSlot)
                     End If
                 
-550                 .Invent.Object(Slot).Equipped = 1
-552                 .Invent.ResistenciaEqpObjIndex = .Invent.Object(Slot).ObjIndex
-554                 .Invent.ResistenciaEqpSlot = Slot
-                
-556                 If Len(obj.CreaGRH) <> 0 Then
-558                     .Char.RM_Aura = obj.CreaGRH
-560                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, .Char.RM_Aura, False, 7))
-                    End If
 
-562                 Call WriteUpdateRM(UserIndex)
+526                 .Invent.Object(Slot).Equipped = 1
+
+                    If ObjData(.Invent.Object(Slot).ObjIndex).OBJType = e_OBJType.otResistencia Then
+                        .Invent.ResistenciaEqpObjIndex = .Invent.Object(Slot).ObjIndex
+530                     .Invent.ResistenciaEqpSlot = Slot
+                        Call WriteUpdateRM(userindex)
+                    ElseIf ObjData(.Invent.Object(Slot).ObjIndex).OBJType = e_OBJType.otDañoMagico Then
+528                     .Invent.DañoMagicoEqpObjIndex = .Invent.Object(Slot).ObjIndex
+                        .Invent.DañoMagicoEqpSlot = Slot
+538                     Call WriteUpdateDM(userindex)
+                        
+                    End If
+532                 If Len(obj.CreaGRH) <> 0 Then
+534                     .Char.DM_Aura = obj.CreaGRH
+536                     Call SendData(SendTarget.ToPCArea, userindex, PrepareMessageAuraToChar(.Char.charindex, .Char.DM_Aura, False, 6))
+                    End If
 
             End Select
             
