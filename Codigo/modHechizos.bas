@@ -726,6 +726,28 @@ Sub HechizoInvocacion(ByVal UserIndex As Integer, ByRef b As Boolean)
                     Call WriteConsoleMsg(UserIndex, "Un gran poder te impide invocar criaturas en este mapa.", e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
+                
+                Dim MinTiempo As Integer
+                Dim i As Integer
+                
+                For i = 1 To .NroMascotas - MAXMASCOTAS + Hechizos(h).cant
+                    Index = -1
+                    MinTiempo = IntervaloInvocacion
+                    For j = 1 To MAXMASCOTAS
+                        If .MascotasIndex(j) > 0 Then
+                            If NpcList(.MascotasIndex(j)).flags.NPCActive Then
+                                If NpcList(.MascotasIndex(j)).Contadores.TiempoExistencia < MinTiempo Then
+                                    Index = j
+                                    MinTiempo = NpcList(.MascotasIndex(j)).Contadores.TiempoExistencia
+                                End If
+                            End If
+                        End If
+                    Next j
+                    If Index > -1 Then
+                        Call QuitarNPC(.MascotasIndex(Index))
+                    End If
+
+                Next i
         
 134             For j = 1 To Hechizos(h).cant
 
