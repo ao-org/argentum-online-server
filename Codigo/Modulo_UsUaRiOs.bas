@@ -2355,6 +2355,7 @@ Sub WarpUserChar(ByVal UserIndex As Integer, _
 196                 .flags.Oculto = 0
                     .Counters.TiempoOcultar = 1
 198                 .Counters.TiempoOculto = 0
+                    .Counters.Invisibilidad = 0
                     Call SendData(SendTarget.ToPCArea, userindex, PrepareMessageSetInvisible(UserList(userindex).Char.charindex, False))
 200                 Call WriteConsoleMsg(UserIndex, "Una fuerza divina que vigila esta zona te ha vuelto visible.", e_FontTypeNames.FONTTYPE_INFO)
                 
