@@ -4629,6 +4629,7 @@ Public Function PrepareMessageRainToggle()
         On Error GoTo PrepareMessageRainToggle_Err
         '</EhHeader>
 100     Call Writer.WriteInt16(ServerPacketID.RainToggle)
+        Call Writer.WriteBool(Lloviendo)
         '<EhFooter>
         Exit Function
 
@@ -5078,6 +5079,7 @@ Public Function PrepareMessageNevarToggle()
         On Error GoTo PrepareMessageNevarToggle_Err
         '</EhHeader>
 100     Call Writer.WriteInt16(ServerPacketID.NieveToggle)
+        Call Writer.WriteBool(Nebando)
         '<EhFooter>
         Exit Function
 
