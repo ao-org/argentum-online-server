@@ -468,8 +468,8 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
 
                     End If
             
-138                 If Distancia(NpcList(TempCharIndex).Pos, UserList(UserIndex).Pos) > 3 Then
-140                     Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
+138                 If Distancia(NpcList(TempCharIndex).Pos, UserList(userindex).Pos) > 4 Then
+140                     Call WriteLocaleMsg(userindex, "8", e_FontTypeNames.FONTTYPE_INFO)
                         'Call WriteConsoleMsg(UserIndex, "Estas demasiado lejos del banquero.", e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
 
@@ -493,9 +493,9 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
 
                     End If
             
-152                 If Distancia(NpcList(TempCharIndex).Pos, UserList(UserIndex).Pos) > 3 Then
-154                     Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
-156                     Call WriteConsoleMsg(UserIndex, "Estas demasiado lejos del banquero.", e_FontTypeNames.FONTTYPE_INFO)
+152                 If Distancia(NpcList(TempCharIndex).Pos, UserList(userindex).Pos) > 4 Then
+154                     Call WriteLocaleMsg(userindex, "8", e_FontTypeNames.FONTTYPE_INFO)
+156                     Call WriteConsoleMsg(userindex, "Estas demasiado lejos del vendedor de pasajes.", e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
 
                     End If
