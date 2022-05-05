@@ -809,6 +809,7 @@ Public Function NpcAtacaUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integ
         
 
 100     If UserList(UserIndex).flags.AdminInvisible = 1 Then Exit Function
+101     If UserList(userindex).flags.Muerto = 1 Then Exit Function
 102     If (Not UserList(UserIndex).flags.Privilegios And e_PlayerType.user) <> 0 And Not UserList(UserIndex).flags.AdminPerseguible Then Exit Function
     
         ' El npc puede atacar ???
