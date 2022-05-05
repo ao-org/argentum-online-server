@@ -697,7 +697,7 @@ Sub HechizoInvocacion(ByVal UserIndex As Integer, ByRef b As Boolean)
     
 114         If Hechizos(h).Invoca = 1 Then
     
-116             If .NroMascotas >= MAXMASCOTAS Then Exit Sub
+'116             If .NroMascotas >= MAXMASCOTAS Then Exit Sub
         
                 'No deja invocar mas de 1 fatuo
 118             If Hechizos(h).NumNpc = FUEGOFATUO And .NroMascotas >= 1 Then
@@ -795,8 +795,6 @@ Sub HechizoInvocacion(ByVal UserIndex As Integer, ByRef b As Boolean)
                         Call WriteConsoleMsg(UserIndex, "Un gran poder te impide invocar criaturas en este mapa.", e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
                     End If
-
-                    Dim i As Integer
                 
                     ' Si no están guardadas las mascotas
 170                 If .flags.MascotasGuardadas = 0 Then
