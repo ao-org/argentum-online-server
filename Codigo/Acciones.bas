@@ -438,7 +438,7 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
 
                     End If
             
-120                 If Distancia(NpcList(UserList(UserIndex).flags.TargetNPC).Pos, UserList(UserIndex).Pos) > 3 Then
+120                 If Distancia(NpcList(UserList(userindex).flags.TargetNPC).Pos, UserList(userindex).Pos) > 4 Then
 122                     Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
                         'Call WriteConsoleMsg(UserIndex, "Estas demasiado lejos del vendedor.", e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
