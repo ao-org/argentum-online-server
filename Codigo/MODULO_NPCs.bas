@@ -1237,7 +1237,7 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
     
 214         If .IntervaloMovimiento = 0 Then
 216             .IntervaloMovimiento = 380
-218             .Char.speeding = 0.552631578947368
+218             .Char.speeding = frmMain.TIMER_AI.Interval / 330
             Else
 220             .Char.speeding = 210 / .IntervaloMovimiento
             End If
