@@ -508,6 +508,7 @@ Public Enum ClientPacketID
     UseItemU
     RepeatMacro
     BuyShopItem
+    PerdonFaccion          '/PERDONFACCION NAME
     [PacketCount]
 End Enum
 
@@ -952,6 +953,8 @@ On Error Resume Next
             Call HandleOnlineMap(UserIndex)
         Case ClientPacketID.Forgive
             Call HandleForgive(UserIndex)
+        Case ClientPacketID.PerdonFaccion
+            Call HandlePerdonFaccion(userindex)
         Case ClientPacketID.Kick
             Call HandleKick(UserIndex)
         Case ClientPacketID.ExecuteCmd
@@ -10062,6 +10065,83 @@ Private Sub HandleReviveChar(ByVal UserIndex As Integer)
 
 ErrHandler:
 138     Call TraceError(Err.Number, Err.Description, "Protocol.HandleReviveChar", Erl)
+140
+
+End Sub
+
+'HarThaoS: Agrego perdón faccionario.
+'Puto el que lee
+
+
+'Lee abajo
+'Lee arriba
+Private Sub HandlePerdonFaccion(ByVal userindex As Integer)
+
+        On Error GoTo ErrHandler
+
+100     With UserList(userindex)
+        
+            Dim username As String
+            Dim tUser    As Integer
+            Dim LoopC    As Byte
+        
+102         username = Reader.ReadString8()
+        
+104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios)) Then
+106             If UCase$(username) <> "YO" Then
+108                 tUser = NameIndex(username)
+                Else
+110                 tUser = userindex
+
+                End If
+                
+                If UserList(tUser).Faccion.Status = e_Facciones.Armada Or UserList(tUser).Faccion.Status = e_Facciones.Caos Then
+                    Call WriteConsoleMsg(userindex, "No puedes perdonar a alguien que ya pertenece a una facción", e_FontTypeNames.FONTTYPE_INFO)
+                    Exit Sub
+                End If
+                
+                If UserList(tUser).Faccion.Reenlistadas = 0 Then
+                    
+                End If
+            
+112             If tUser <= 0 Then
+114                 Call WriteConsoleMsg(userindex, "Usuario offline.", e_FontTypeNames.FONTTYPE_INFO)
+                Else
+                    'Si es ciudadano aparte de quitarle las reenlistadas le saco los ciudadanos matados.
+                    If UserList(tUser).Faccion.Status = e_Facciones.Ciudadano Then
+                        If UserList(tUser).Faccion.ciudadanosMatados > 0 Or UserList(tUser).Faccion.Reenlistadas > 0 Then
+                            UserList(tUser).Faccion.ciudadanosMatados = 0
+                            UserList(tUser).Faccion.Reenlistadas = 0
+                            Call WriteConsoleMsg(tUser, "Has sido perdonado.", e_FontTypeNames.FONTTYPE_GUILD)
+                            Call WriteConsoleMsg(userindex, "Has perdonado a " & UserList(tUser).name & ".", e_FontTypeNames.FONTTYPE_GUILD)
+                        Else
+                            Call WriteConsoleMsg(tUser, "No necesitas ser perdonado.", e_FontTypeNames.FONTTYPE_GUILD)
+                        End If
+                    
+                        
+                    ElseIf UserList(tUser).Faccion.Status = e_Facciones.Criminal Then
+                        If UserList(tUser).Faccion.Reenlistadas = 0 Then
+                            Call WriteConsoleMsg(tUser, "No necesitas ser perdonado.", e_FontTypeNames.FONTTYPE_GUILD)
+                            Exit Sub
+                        Else
+                            UserList(tUser).Faccion.Reenlistadas = 0
+                            Call WriteConsoleMsg(tUser, "Has sido perdonado.", e_FontTypeNames.FONTTYPE_GUILD)
+                            Call WriteConsoleMsg(userindex, "Has perdonado a " & UserList(tUser).name & ".", e_FontTypeNames.FONTTYPE_GUILD)
+                        End If
+                    
+                    End If
+                    
+                End If
+            Else
+136             Call WriteConsoleMsg(userindex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
+            End If
+
+        End With
+
+        Exit Sub
+
+ErrHandler:
+138     Call TraceError(Err.Number, Err.Description, "Protocol.HandlePerdonFaccion", Erl)
 140
 
 End Sub
