@@ -1928,7 +1928,7 @@ Public Function PuedeAtacarNPC(ByVal AttackerIndex As Integer, ByVal NpcIndex As
         End If
 
         'Es valida la distancia a la cual estamos atacando?
-134     If Abs(UserList(AttackerIndex).Pos.y - NpcList(NpcIndex).Pos.y) > RANGO_VISION_Y And Abs(UserList(AttackerIndex).Pos.X - NpcList(NpcIndex).Pos.X) > RANGO_VISION_X Then
+134     If Distancia(UserList(AttackerIndex).Pos, NpcList(NpcIndex).Pos) >= MAXDISTANCIAARCO Then
 136         Call WriteLocaleMsg(AttackerIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
             'Call WriteConsoleMsg(attackerIndex, "Estás muy lejos para disparar.", e_FontTypeNames.FONTTYPE_FIGHT)
 138         PuedeAtacarNPC = False
