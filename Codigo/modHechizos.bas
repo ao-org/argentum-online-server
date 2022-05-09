@@ -1356,7 +1356,7 @@ Sub LanzarHechizo(ByVal Index As Integer, ByVal UserIndex As Integer)
                 Case e_TargetType.uUsuarios
 
 106                 If UserList(UserIndex).flags.TargetUser > 0 Then
-108                     If Abs(NpcList(UserList(userindex).flags.TargetNPC).Pos.y - UserList(userindex).Pos.y) <= RANGO_VISION_Y And Abs(NpcList(UserList(userindex).flags.TargetNPC).Pos.X - UserList(userindex).Pos.X) <= RANGO_VISION_X Then
+108                     If Abs(UserList(UserList(UserIndex).flags.TargetUser).Pos.Y - UserList(UserIndex).Pos.Y) <= RANGO_VISION_Y Then
 110                         Call HandleHechizoUsuario(UserIndex, uh)
                     
 112                         If Hechizos(uh).CoolDown > 0 Then
@@ -1378,7 +1378,7 @@ Sub LanzarHechizo(ByVal Index As Integer, ByVal UserIndex As Integer)
 120             Case e_TargetType.uNPC
 
 122                 If UserList(UserIndex).flags.TargetNPC > 0 Then
-124                     If Abs(NpcList(UserList(userindex).flags.TargetNPC).Pos.y - UserList(userindex).Pos.y) <= RANGO_VISION_Y And Abs(NpcList(UserList(userindex).flags.TargetNPC).Pos.X - UserList(userindex).Pos.X) <= RANGO_VISION_X Then
+124                     If Abs(NpcList(UserList(UserIndex).flags.TargetNPC).Pos.Y - UserList(UserIndex).Pos.Y) <= RANGO_VISION_Y Then
 126                         Call HandleHechizoNPC(UserIndex, uh)
 
 128                         If Hechizos(uh).CoolDown > 0 Then
@@ -1400,7 +1400,7 @@ Sub LanzarHechizo(ByVal Index As Integer, ByVal UserIndex As Integer)
 136             Case e_TargetType.uUsuariosYnpc
 
 138                 If UserList(UserIndex).flags.TargetUser > 0 Then
-140                     If Abs(NpcList(UserList(userindex).flags.TargetNPC).Pos.y - UserList(userindex).Pos.y) <= RANGO_VISION_Y And Abs(NpcList(UserList(userindex).flags.TargetNPC).Pos.X - UserList(userindex).Pos.X) <= RANGO_VISION_X Then
+140                     If Abs(UserList(UserList(UserIndex).flags.TargetUser).Pos.Y - UserList(UserIndex).Pos.Y) <= RANGO_VISION_Y Then
 142                         Call HandleHechizoUsuario(UserIndex, uh)
                     
 144                         If Hechizos(uh).CoolDown > 0 Then
@@ -1416,7 +1416,7 @@ Sub LanzarHechizo(ByVal Index As Integer, ByVal UserIndex As Integer)
 
 150                 ElseIf UserList(UserIndex).flags.TargetNPC > 0 Then
 
-152                     If Abs(NpcList(UserList(userindex).flags.TargetNPC).Pos.y - UserList(userindex).Pos.y) <= RANGO_VISION_Y And Abs(NpcList(UserList(userindex).flags.TargetNPC).Pos.X - UserList(userindex).Pos.X) <= RANGO_VISION_X Then
+152                     If Abs(NpcList(UserList(UserIndex).flags.TargetNPC).Pos.Y - UserList(UserIndex).Pos.Y) <= RANGO_VISION_Y Then
 154                         If Hechizos(uh).CoolDown > 0 Then
 156                             UserList(UserIndex).Counters.UserHechizosInterval(Index) = GetTickCount()
 
