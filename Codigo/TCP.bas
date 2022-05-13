@@ -1479,6 +1479,10 @@ Sub ResetUserSlot(ByVal UserIndex As Integer)
 110         Call SalirDeGrupoForzado(UserIndex)
 
         End If
+        
+        If m_NameIndex.Exists(UCase(UserList(userindex).name)) Then
+            Call m_NameIndex.Remove(UCase(UserList(userindex).name))
+        End If
 
 112     UserList(UserIndex).Grupo.CantidadMiembros = 0
 114     UserList(UserIndex).Grupo.EnGrupo = False
