@@ -247,14 +247,7 @@ Public Sub EnlistarCaos(ByVal UserIndex As Integer)
                 End If
 
 108             If .Faccion.ArmadaReal = 1 Then
-110                 Call WriteChatOverHead(UserIndex, "El caos y el poder de las sombras reinará en este mundo y tu sufrirás maldito súbdito de Tancredo.", charIndexStr, vbWhite)
-                    Exit Sub
-
-                End If
-
-                'Si fue miembro de la Armada Real no se puede enlistar
-112             If .Faccion.RecompensasReal > 0 Then
-114                 Call WriteChatOverHead(UserIndex, "No permitiré que ningún insecto real ingrese a mis tropas.", charIndexStr, vbWhite)
+110                 Call WriteChatOverHead(userindex, "El caos y el poder de las sombras reinará en este mundo y tu sufrirás maldito súbdito de Tancredo.", charindexstr, vbWhite)
                     Exit Sub
 
                 End If
