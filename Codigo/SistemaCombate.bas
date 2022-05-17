@@ -1323,7 +1323,7 @@ Public Sub UsuarioAtacaUsuario(ByVal AtacanteIndex As Integer, ByVal VictimaInde
 122             sendto = SendTarget.ToPCArea
             End If
 
-124         Call SendData(sendto, AtacanteIndex, PrepareMessageCharSwing(UserList(AtacanteIndex).Char.charindex, , , IIf(UserList(userindex).flags.invisible + UserList(userindex).flags.Oculto > 0, False, True)))
+124         Call SendData(sendto, AtacanteIndex, PrepareMessageCharSwing(UserList(AtacanteIndex).Char.charindex, , , IIf(UserList(AtacanteIndex).flags.invisible + UserList(AtacanteIndex).flags.Oculto > 0, False, True)))
 
         End If
 
