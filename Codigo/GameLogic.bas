@@ -500,7 +500,7 @@ InMapBounds_Err:
         
 End Function
 
-Function ClosestLegalPosNPC(ByVal NpcIndex As Integer, ByVal MaxRange As Integer, Optional ByVal IgnoreUsers As Boolean) As t_WorldPos
+Function ClosestLegalPosNPC(ByVal NpcIndex As Integer, ByVal MaxRange As Integer, Optional ByVal IgnoreUsers As Boolean, Optional ByVal IgnoreDeadUsers As Boolean) As t_WorldPos
 
         On Error GoTo ErrHandler
 
@@ -513,28 +513,28 @@ Function ClosestLegalPosNPC(ByVal NpcIndex As Integer, ByVal MaxRange As Integer
             Do
 102             tY = .Pos.Y - LoopC
 104             For tX = .Pos.X - LoopC To .Pos.X + LoopC
-106                 If ValidNPCSpawnPos(ClosestLegalPosNPC, .Pos.Map, tX, tY, .flags.AguaValida = 1, .flags.TierraInvalida = 0, IgnoreUsers) Then
+106                 If ValidNPCSpawnPos(ClosestLegalPosNPC, .Pos.map, tX, tY, .flags.AguaValida = 1, .flags.TierraInvalida = 0, IgnoreUsers, IgnoreDeadUsers) Then
                         Exit Function
                     End If
                 Next
 
 108             tX = .Pos.X - LoopC
 110             For tY = .Pos.Y - LoopC + 1 To .Pos.Y + LoopC - 1
-112                 If ValidNPCSpawnPos(ClosestLegalPosNPC, .Pos.Map, tX, tY, .flags.AguaValida = 1, .flags.TierraInvalida = 0, IgnoreUsers) Then
+112                 If ValidNPCSpawnPos(ClosestLegalPosNPC, .Pos.map, tX, tY, .flags.AguaValida = 1, .flags.TierraInvalida = 0, IgnoreUsers, IgnoreDeadUsers) Then
                         Exit Function
                     End If
                 Next
 
 114             tX = .Pos.X + LoopC
 116             For tY = .Pos.Y - LoopC + 1 To .Pos.Y + LoopC - 1
-118                 If ValidNPCSpawnPos(ClosestLegalPosNPC, .Pos.Map, tX, tY, .flags.AguaValida = 1, .flags.TierraInvalida = 0, IgnoreUsers) Then
+118                 If ValidNPCSpawnPos(ClosestLegalPosNPC, .Pos.map, tX, tY, .flags.AguaValida = 1, .flags.TierraInvalida = 0, IgnoreUsers, IgnoreDeadUsers) Then
                         Exit Function
                     End If
                 Next
 
 120             tY = .Pos.Y + LoopC
 122             For tX = .Pos.X - LoopC To .Pos.X + LoopC
-124                 If ValidNPCSpawnPos(ClosestLegalPosNPC, .Pos.Map, tX, tY, .flags.AguaValida = 1, .flags.TierraInvalida = 0, IgnoreUsers) Then
+124                 If ValidNPCSpawnPos(ClosestLegalPosNPC, .Pos.map, tX, tY, .flags.AguaValida = 1, .flags.TierraInvalida = 0, IgnoreUsers, IgnoreDeadUsers) Then
                         Exit Function
                     End If
                 Next
@@ -553,11 +553,11 @@ ErrHandler:
         
 End Function
 
-Private Function ValidNPCSpawnPos(OutPos As t_WorldPos, ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer, ByVal AguaValida As Boolean, ByVal TierraValida As Boolean, ByVal IgnoreUsers As Boolean) As Boolean
+Private Function ValidNPCSpawnPos(OutPos As t_WorldPos, ByVal map As Integer, ByVal X As Integer, ByVal y As Integer, ByVal AguaValida As Boolean, ByVal TierraValida As Boolean, ByVal IgnoreUsers As Boolean, ByVal IgnoreDeadUsers As Boolean) As Boolean
 
 100     If LegalPos(Map, X, Y, AguaValida, TierraValida, , False) Then
 102         If TestSpawnTrigger(Map, X, Y) Then
-104             If Not HayPCarea(Map, X, Y) Or IgnoreUsers Then
+104             If Not HayPCarea(map, X, y, IgnoreDeadUsers) Or IgnoreUsers Then
 106                 ValidNPCSpawnPos = True
 108                 OutPos.Map = Map
 110                 OutPos.X = X

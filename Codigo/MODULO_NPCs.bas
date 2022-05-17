@@ -580,7 +580,7 @@ Public Function CrearNPC(NroNPC As Integer, Mapa As Integer, OrigPos As t_WorldP
 126                 .Pos.X = RandomNumber(MinXBorder + 2, MaxXBorder - 2) 'Obtenemos posicion al azar en x
 128                 .Pos.Y = RandomNumber(MinYBorder + 2, MaxYBorder - 2) 'Obtenemos posicion al azar en y
     
-130                 .Pos = ClosestLegalPosNPC(NpcIndex, 10)       'Nos devuelve la posicion valida mas cercana
+130                 .Pos = ClosestLegalPosNPC(NpcIndex, 10, , True)     'Nos devuelve la posicion valida mas cercana
                     
 132                 Iteraciones = Iteraciones + 1
     
@@ -593,7 +593,7 @@ Public Function CrearNPC(NroNPC As Integer, Mapa As Integer, OrigPos As t_WorldP
 140                 .Pos.X = (XMaxMapSize - XMinMapSize) \ 2
 142                 .Pos.Y = (YMaxMapSize - YMinMapSize) \ 2
                     
-144                 .Pos = ClosestLegalPosNPC(NpcIndex, (XMaxMapSize - XMinMapSize) \ 2)
+144                 .Pos = ClosestLegalPosNPC(NpcIndex, (XMaxMapSize - XMinMapSize) \ 2, , True)
                     
                     ' Si sigue fallando
 146                 If .Pos.X = 0 And .Pos.Y = 0 Then
