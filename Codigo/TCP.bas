@@ -744,7 +744,7 @@ EstaPCarea_Err:
         
 End Function
 
-Function HayPCarea(ByVal map As Integer, ByVal X As Integer, ByVal y As Integer) As Boolean
+Function HayPCarea(ByVal map As Integer, ByVal X As Integer, ByVal y As Integer, ByVal ignoreUserMuerto As Boolean) As Boolean
         
         On Error GoTo HayPCarea_Err
         
@@ -756,9 +756,12 @@ Function HayPCarea(ByVal map As Integer, ByVal X As Integer, ByVal y As Integer)
 
 104             If InMapBounds(map, tX, tY) Then
 106                 If MapData(map, tX, tY).UserIndex > 0 Then
-108                     HayPCarea = True
-                        Exit Function
-
+                        If Not ignoreUserMuerto Then
+                            HayPCarea = True
+                        Else
+                            If UserList(MapData(map, tX, tY).userindex).flags.Muerto = 0 Then HayPCarea = True
+                        End If
+108                     Exit Function
                     End If
 
                 End If
