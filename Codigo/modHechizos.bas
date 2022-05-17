@@ -2253,14 +2253,15 @@ End Sub
 
 Sub checkHechizosEfectividad(ByVal UserIndex As Integer, ByVal TargetUser As Integer)
     With UserList(UserIndex)
-        If UserList(TargetUser).flags.invisible = 1 Then
+        'If UserList(TargetUser).flags.invisible = 1 Then
+        If UserList(TargetUser).flags.Inmovilizado + UserList(TargetUser).flags.Paralizado = 0 Then
             .Counters.controlHechizos.HechizosCasteados = .Counters.controlHechizos.HechizosCasteados + 1
         
             Dim efectividad As Double
             
             efectividad = (100 * .Counters.controlHechizos.HechizosCasteados) / .Counters.controlHechizos.HechizosTotales
             
-            If efectividad >= 40 And .Counters.controlHechizos.HechizosTotales > 8 Then
+            If efectividad >= 50 And .Counters.controlHechizos.HechizosTotales >= 6 Then
                 Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("El usuario " & .name & " está lanzando hechizos con una efectividad de " & efectividad & "% (Casteados: " & .Counters.controlHechizos.HechizosCasteados & "/" & .Counters.controlHechizos.HechizosTotales & "), revisar.", e_FontTypeNames.FONTTYPE_TALK))
             End If
             
