@@ -1083,7 +1083,7 @@ Public Sub UsuarioAtacaNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer
         Else
             
 
-168         Call SendData(SendTarget.ToPCArea, userindex, PrepareMessageCharSwing(UserList(userindex).Char.charindex))
+168         Call SendData(SendTarget.ToPCArea, userindex, PrepareMessageCharSwing(UserList(userindex).Char.charindex, , , IIf(UserList(userindex).flags.invisible + UserList(userindex).flags.Oculto > 0, False, True)))
 
         End If
 
@@ -1323,7 +1323,7 @@ Public Sub UsuarioAtacaUsuario(ByVal AtacanteIndex As Integer, ByVal VictimaInde
 122             sendto = SendTarget.ToPCArea
             End If
 
-124         Call SendData(sendto, AtacanteIndex, PrepareMessageCharSwing(UserList(AtacanteIndex).Char.CharIndex))
+124         Call SendData(sendto, AtacanteIndex, PrepareMessageCharSwing(UserList(AtacanteIndex).Char.charindex, , , IIf(UserList(userindex).flags.invisible + UserList(userindex).flags.Oculto > 0, False, True)))
 
         End If
 

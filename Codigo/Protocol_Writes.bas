@@ -3984,7 +3984,8 @@ End Sub
 ' \Begin: [Prepares]
 Public Function PrepareMessageCharSwing(ByVal CharIndex As Integer, _
                                         Optional ByVal FX As Boolean = True, _
-                                        Optional ByVal ShowText As Boolean = True)
+                                        Optional ByVal ShowText As Boolean = True, _
+                                        Optional ByVal NotificoTexto As Boolean = True)
         '<EhHeader>
         On Error GoTo PrepareMessageCharSwing_Err
         '</EhHeader>
@@ -3992,6 +3993,7 @@ Public Function PrepareMessageCharSwing(ByVal CharIndex As Integer, _
 102     Call Writer.WriteInt16(CharIndex)
 104     Call Writer.WriteBool(FX)
 106     Call Writer.WriteBool(ShowText)
+107     Call Writer.WriteBool(NotificoTexto)
         '<EhFooter>
         Exit Function
 
