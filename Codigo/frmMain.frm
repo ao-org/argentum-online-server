@@ -26,6 +26,10 @@ Begin VB.Form frmMain
    ScaleHeight     =   6255
    ScaleWidth      =   8595
    StartUpPosition =   2  'CenterScreen
+   Begin VB.Timer tControlHechizos 
+      Left            =   4440
+      Top             =   4800
+   End
    Begin VB.CommandButton Command5 
       Caption         =   "Recargar baneos.dat"
       Height          =   495
@@ -629,6 +633,7 @@ Const WM_LBUTTONDBLCLK = &H203
 Const WM_RBUTTONUP = &H205
 
 Private GuardarYCerrar As Boolean
+Private tHechizosMinutesCounter As Byte
 
 Private Declare Function GetWindowThreadProcessId Lib "user32" (ByVal hwnd As Long, lpdwProcessId As Long) As Long
 Private Declare Function Shell_NotifyIconA Lib "SHELL32" (ByVal dwMessage As Long, lpData As NOTIFYICONDATA) As Integer
@@ -855,6 +860,23 @@ On Error GoTo T_UsersOnline_Err
 T_UsersOnline_Err:
 106     Call TraceError(Err.Number, Err.Description, "General.T_UsersOnline", Erl)
 
+End Sub
+
+Private Sub tControlHechizos_Timer()
+    Dim UserIndex As Integer
+    'Reseteo control de hechizos
+    tHechizosMinutesCounter = tHechizosMinutesCounter + 1
+    
+    If tHechizosMinutesCounter = 2 Then
+        For UserIndex = 1 To LastUser
+            With UserList(UserIndex)
+                UserList(UserIndex).Counters.controlHechizos.HechizosTotales = 0
+                UserList(UserIndex).Counters.controlHechizos.HechizosCasteados = 0
+            End With
+        Next UserIndex
+        tHechizosMinutesCounter = 0
+    End If
+        
 End Sub
 
 ' WyroX: Comprobamos cada 10 segundos, porque no es necesaria tanta precisión

@@ -1701,6 +1701,11 @@ Public Enum e_EstadoMimetismo
     FormaBicho = 3
 End Enum
 
+Public Type t_ControlHechizos
+    HechizosTotales As Long
+    HechizosCasteados As Long
+End Type
+
 Public Type t_UserCounters
 
     TiempoDeInmunidad As Byte
@@ -1712,6 +1717,7 @@ Public Type t_UserCounters
     TiempoParaSubastar As Byte
     UserHechizosInterval(1 To MAXUSERHECHIZOS) As Long
     
+    controlHechizos As t_ControlHechizos
     
     IdleCount As Integer
     AttackCounter As Integer

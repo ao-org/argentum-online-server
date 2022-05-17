@@ -715,6 +715,8 @@ Sub Main()
             .T_UsersOnline.Enabled = True
             .t_Extraer.Enabled = True
             .t_Extraer.Interval = IntervaloTrabajarExtraer
+            .tControlHechizos.Enabled = True
+            .tControlHechizos.Interval = 60000
         End With
     
 290     Subasta.SubastaHabilitada = True

@@ -1862,6 +1862,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 432         If Not PuedeAtacar(UserIndex, tU) Then Exit Sub
             
 434         If UserIndex <> tU Then
+                Call checkHechizosEfectividad(UserIndex, tU)
 436             Call UsuarioAtacadoPorUsuario(UserIndex, tU)
 
             End If
@@ -1973,6 +1974,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 516         If Not PuedeAtacar(UserIndex, tU) Then Exit Sub
             
 518         If UserIndex <> tU Then
+                Call checkHechizosEfectividad(UserIndex, tU)
 520             Call UsuarioAtacadoPorUsuario(UserIndex, tU)
             End If
             
@@ -2247,6 +2249,26 @@ HechizoEstadoUsuario_Err:
 738     Call TraceError(Err.Number, Err.Description, "modHechizos.HechizoEstadoUsuario", Erl)
 
         
+End Sub
+
+Sub checkHechizosEfectividad(ByVal UserIndex As Integer, ByVal TargetUser As Integer)
+    With UserList(UserIndex)
+        If UserList(TargetUser).flags.invisible = 1 Then
+            .Counters.controlHechizos.HechizosCasteados = .Counters.controlHechizos.HechizosCasteados + 1
+        
+            Dim efectividad As Double
+            
+            efectividad = (100 * .Counters.controlHechizos.HechizosCasteados) / .Counters.controlHechizos.HechizosTotales
+            
+            If efectividad >= 40 And .Counters.controlHechizos.HechizosTotales > 8 Then
+                Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("El usuario " & .name & " está lanzando hechizos con una efectividad de " & efectividad & "% (Casteados: " & .Counters.controlHechizos.HechizosCasteados & "/" & .Counters.controlHechizos.HechizosTotales & "), revisar.", e_FontTypeNames.FONTTYPE_TALK))
+            End If
+            
+            Debug.Print "El usuario " & .name & " está lanzando hechizos con una efectividad de " & efectividad & "% (Casteados: " & .Counters.controlHechizos.HechizosCasteados & "/" & .Counters.controlHechizos.HechizosTotales & "), revisar."
+        Else
+            .Counters.controlHechizos.HechizosTotales = .Counters.controlHechizos.HechizosTotales - 1
+        End If
+    End With
 End Sub
 
 Sub HechizoEstadoNPC(ByVal NpcIndex As Integer, ByVal hIndex As Integer, ByRef b As Boolean, ByVal UserIndex As Integer)
@@ -3181,6 +3203,7 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 444         If Daño < 0 Then Daño = 0
     
 446         If UserIndex <> tempChr Then
+                Call checkHechizosEfectividad(UserIndex, tempChr)
 448             Call UsuarioAtacadoPorUsuario(UserIndex, tempChr)
             End If
     
