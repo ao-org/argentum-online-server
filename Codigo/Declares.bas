@@ -1385,6 +1385,7 @@ Public Type t_ObjData
     QuestId As Integer
     PuntosPesca As Long
     ObjNum As Long
+    ObjDonador As Long
 End Type
 
 '[Pablo ToxicWaste]
