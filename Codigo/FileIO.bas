@@ -1660,12 +1660,12 @@ Sub LoadMapData()
         Debug.Print "UNIT_TEST Enabled Loading just " & NumMaps & " maps"
 #Else
 
-        #If DEBUGGING Then
+        If RunningInVB() Then
                 'VB runs out of memory when debugging
                 NumMaps = 770
-        #Else
+        Else
                 NumMaps = CountFiles(MapPath, "*.csm") - 1
-        #End If
+        End If
 
 #End If
 
