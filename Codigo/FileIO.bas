@@ -1534,10 +1534,13 @@ Sub LoadOBJData()
                 
                 NFT = val(Leer.GetValue(ObjKey, "NFT"))
                 
+                .ObjDonador = NFT
+                
                 If NFT Then
                     ObjShop(UBound(ObjShop)).Name = Leer.GetValue(ObjKey, "Name")
                     ObjShop(UBound(ObjShop)).Valor = val(Leer.GetValue(ObjKey, "Valor"))
                     ObjShop(UBound(ObjShop)).ObjNum = Object
+                    ObjShop(UBound(ObjShop)).ObjDonador = 1
                     ReDim Preserve ObjShop(1 To (UBound(ObjShop) + 1)) As t_ObjData
                 End If
                 
