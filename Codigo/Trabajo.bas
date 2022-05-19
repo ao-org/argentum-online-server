@@ -2069,7 +2069,7 @@ Public Function ObjEsRobable(ByVal VictimaIndex As Integer, ByVal Slot As Intege
 
 100     OI = UserList(VictimaIndex).Invent.Object(Slot).ObjIndex
 
-102     ObjEsRobable = Not ObjData(OI).OBJType <> e_OBJType.otLlaves And UserList(VictimaIndex).Invent.Object(Slot).Equipped = 0 And ObjData(OI).Real = 0 And ObjData(OI).Caos = 0 And ObjData(OI).OBJType <> e_OBJType.otBarcos And ObjData(OI).OBJType <> e_OBJType.otRunas And ObjData(OI).Instransferible = 0 And ObjData(OI).ObjDonador = 0 And ObjData(OI).OBJType <> e_OBJType.otMonturas And ObjData(OI).And
+102     ObjEsRobable = Not ObjData(OI).OBJType <> e_OBJType.otLlaves And UserList(VictimaIndex).Invent.Object(Slot).Equipped = 0 And ObjData(OI).Real = 0 And ObjData(OI).Caos = 0 And ObjData(OI).OBJType <> e_OBJType.otBarcos And ObjData(OI).OBJType <> e_OBJType.otRunas And ObjData(OI).Instransferible = 0 And ObjData(OI).ObjDonador = 0 And ObjData(OI).OBJType <> e_OBJType.otMonturas
 
         
         Exit Function
