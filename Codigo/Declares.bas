@@ -1693,6 +1693,13 @@ Public Type t_UserFlags
     QuestNumber As Integer
     QuestItemSlot As Integer
     RespondiendoPregunta As Boolean
+    
+    'Captura de bandera
+    jugando_captura As Byte
+    jugando_captura_team As Byte
+    jugando_captura_timer As Integer
+    jugando_captura_muertes As Integer
+    tiene_bandera As Byte
 End Type
 
 Public Enum e_EstadoMimetismo

@@ -1321,6 +1321,11 @@ Sub ResetUserFlags(ByVal UserIndex As Integer)
             
 280         .Crafteando = 0
 
+            'HarThaoS: Captura de bandera
+            .jugando_captura = 0
+            .jugando_captura_team = 0
+            .jugando_captura_timer = 0
+            .jugando_captura_muertes = 0
         End With
 
         

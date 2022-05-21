@@ -194,6 +194,7 @@ Public Enum ServerPacketID
     ShopInit
     UpdateShopCliente
     SensuiRetrasado
+    UpdateFlag
     [PacketCount]
 End Enum
 
@@ -509,6 +510,9 @@ Public Enum ClientPacketID
     RepeatMacro
     BuyShopItem
     PerdonFaccion          '/PERDONFACCION NAME
+    iniciarCaptura
+    ParticiparCaptura     '/PARTICIPARCAPTURA
+    CancelarCaptura       '/CANCELARCAPTURA
     [PacketCount]
 End Enum
 
@@ -955,6 +959,12 @@ On Error Resume Next
             Call HandleForgive(UserIndex)
         Case ClientPacketID.PerdonFaccion
             Call HandlePerdonFaccion(userindex)
+        Case ClientPacketID.iniciarCaptura
+            Call HandleIniciarCaptura(UserIndex)
+         Case ClientPacketID.ParticiparCaptura
+            Call HandleParticiparCaptura(UserIndex)
+         Case ClientPacketID.CancelarCaptura
+            Call HandleCancelarCaptura(UserIndex)
         Case ClientPacketID.Kick
             Call HandleKick(UserIndex)
         Case ClientPacketID.ExecuteCmd
@@ -10146,6 +10156,114 @@ ErrHandler:
 
 End Sub
 
+'HarThaoS: Iniciar captura de bandera
+Private Sub HandleIniciarCaptura(ByVal UserIndex As Integer)
+
+        On Error GoTo ErrHandler
+
+100     With UserList(UserIndex)
+        
+            Dim cantidad_participantes As Long
+            Dim cantidad_rondas As Long
+            Dim nivel_minimo As Long
+            Dim precio As Long
+            
+            cantidad_participantes = Reader.ReadInt32()
+            cantidad_rondas = Reader.ReadInt32()
+            nivel_minimo = Reader.ReadInt32()
+            precio = Reader.ReadInt32()
+            
+104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios)) Then
+                If Not InstanciaCaptura Is Nothing Then
+                    Call WriteConsoleMsg(UserIndex, "Ya hay un evento de captura de bandera en curso.", e_FontTypeNames.FONTTYPE_INFO)
+                    Exit Sub
+                Else
+                    'El precio no puede ser negativo
+                    If precio < 0 Then
+                        Call WriteConsoleMsg(UserIndex, "El valor de la entrada al evento no podrá ser menor que 0.", e_FontTypeNames.FONTTYPE_INFO)
+                        Exit Sub
+                    End If
+                
+                    'Me fijo si que la cantidad de participantes sea par
+                    If cantidad_participantes Mod 2 <> 0 Then
+                        Call WriteConsoleMsg(UserIndex, "La cantidad de participantes debe ser un número par.", e_FontTypeNames.FONTTYPE_INFO)
+                        Exit Sub
+                    End If
+                    
+                    'Permito un máximo de 48 participantes
+                    If cantidad_participantes > 48 Then 'Leer de una variable de configuración
+                        Call WriteConsoleMsg(UserIndex, "La cantidad de participantes no podrá ser mayor que 48.", e_FontTypeNames.FONTTYPE_INFO)
+                        Exit Sub
+                    End If
+                    
+                    'Me fijo si hay más participantes conectados que el cupo para jugar
+                    If cantidad_participantes > NumUsers Then
+                        Call WriteConsoleMsg(UserIndex, "Hay pocos jugadores en el servidor, intenta con una cantidad menor de participantes.", e_FontTypeNames.FONTTYPE_INFO)
+                        Exit Sub
+                    End If
+                    
+                    If nivel_minimo < 1 Or nivel_minimo > 47 Then
+                        Call WriteConsoleMsg(UserIndex, "El nivel para el evento debe ser entre 1 y 47.", e_FontTypeNames.FONTTYPE_INFO)
+                        Exit Sub
+                    End If
+                
+                    Set InstanciaCaptura = New clsCaptura
+                    Call InstanciaCaptura.inicializar(cantidad_participantes, cantidad_rondas, nivel_minimo, precio)
+                End If
+            Else
+136             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
+            End If
+
+        End With
+
+        Exit Sub
+
+ErrHandler:
+138     Call TraceError(Err.Number, Err.Description, "Protocol.HandleIniciarCaptura", Erl)
+140
+
+End Sub
+
+'HarThaoS: Inscribirse a evento
+Private Sub HandleParticiparCaptura(ByVal UserIndex As Integer)
+
+    On Error GoTo ErrHandler
+    If InstanciaCaptura Is Nothing Then
+        Call WriteConsoleMsg(UserIndex, "Eventos » No hay ninguna instancia en curso para ese evento.", e_FontTypeNames.FONTTYPE_INFO)
+    Else
+        Call InstanciaCaptura.inscribirse(UserIndex)
+    End If
+
+    Exit Sub
+
+ErrHandler:
+138     Call TraceError(Err.Number, Err.Description, "Protocol.HandleParticiparCaptura", Erl)
+140
+
+End Sub
+''
+' Handles the "OnlineGM" message.
+'
+' @param    UserIndex The index of the user sending the message.
+
+
+'HarThaoS: Cancela el evento captura
+Private Sub HandleCancelarCaptura(ByVal UserIndex As Integer)
+
+    On Error GoTo ErrHandler
+    If InstanciaCaptura Is Nothing Then
+        Call WriteConsoleMsg(UserIndex, "Eventos » No hay ninguna instancia en curso para ese evento.", e_FontTypeNames.FONTTYPE_INFO)
+    Else
+        Call InstanciaCaptura.finalizarCaptura
+    End If
+
+    Exit Sub
+
+ErrHandler:
+138     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCancelarCaptura", Erl)
+140
+
+End Sub
 ''
 ' Handles the "OnlineGM" message.
 '

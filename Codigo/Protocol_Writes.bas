@@ -1173,7 +1173,8 @@ End Sub
 ' @param    criminal Determines if the character is a criminal or not.
 ' @param    privileges Sets if the character is a normal one or any kind of administrative character.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-Public Sub WriteCharacterCreate(ByVal UserIndex As Integer, ByVal Body As Integer, ByVal Head As Integer, ByVal Heading As e_Heading, ByVal CharIndex As Integer, ByVal X As Byte, ByVal Y As Byte, ByVal weapon As Integer, ByVal shield As Integer, ByVal FX As Integer, ByVal FXLoops As Integer, ByVal helmet As Integer, ByVal Name As String, ByVal Status As Byte, ByVal privileges As Byte, ByVal ParticulaFx As Byte, ByVal Head_Aura As String, ByVal Arma_Aura As String, ByVal Body_Aura As String, ByVal DM_Aura As String, ByVal RM_Aura As String, ByVal Otra_Aura As String, ByVal Escudo_Aura As String, ByVal speeding As Single, ByVal EsNPC As Byte, ByVal appear As Byte, ByVal group_index As Integer, ByVal clan_index As Integer, ByVal clan_nivel As Byte, ByVal UserMinHp As Long, ByVal UserMaxHp As Long, ByVal UserMinMAN As Long, ByVal UserMaxMAN As Long, ByVal Simbolo As Byte, Optional ByVal Idle As Boolean = False, Optional ByVal Navegando As Boolean = False, Optional ByVal tipoUsuario As e_TipoUsuario = 0)
+Public Sub WriteCharacterCreate(ByVal UserIndex As Integer, ByVal body As Integer, ByVal head As Integer, ByVal Heading As e_Heading, ByVal charindex As Integer, ByVal X As Byte, ByVal Y As Byte, ByVal weapon As Integer, ByVal shield As Integer, ByVal FX As Integer, ByVal FXLoops As Integer, ByVal helmet As Integer, ByVal name As String, ByVal Status As Byte, ByVal privileges As Byte, ByVal ParticulaFx As Byte, ByVal Head_Aura As String, ByVal Arma_Aura As String, ByVal Body_Aura As String, ByVal DM_Aura As String, ByVal RM_Aura As String, ByVal Otra_Aura As String, ByVal Escudo_Aura As String, ByVal speeding As Single, ByVal EsNPC As Byte, ByVal appear As Byte, ByVal group_index As Integer, ByVal clan_index As Integer, ByVal clan_nivel As Byte, ByVal UserMinHp As Long, ByVal UserMaxHp As Long, ByVal UserMinMAN As Long, ByVal UserMaxMAN As Long, ByVal Simbolo As Byte, Optional ByVal Idle As Boolean = False, Optional ByVal Navegando As Boolean = False, Optional ByVal tipoUsuario As e_TipoUsuario = 0, _
+            Optional ByVal TeamCaptura As Byte = 0, Optional ByVal TieneBandera As Byte = 0)
         '<EhHeader>
         On Error GoTo WriteCharacterCreate_Err
         '</EhHeader>
@@ -1182,7 +1183,7 @@ Public Sub WriteCharacterCreate(ByVal UserIndex As Integer, ByVal Body As Intege
             privileges, ParticulaFx, Head_Aura, Arma_Aura, Body_Aura, DM_Aura, RM_Aura, _
             Otra_Aura, Escudo_Aura, speeding, EsNPC, appear, group_index, _
             clan_index, clan_nivel, UserMinHp, UserMaxHp, UserMinMAN, UserMaxMAN, Simbolo, _
-            Idle, Navegando, tipoUsuario))
+            Idle, Navegando, tipoUsuario, TeamCaptura, TieneBandera))
         '<EhFooter>
         Exit Sub
 
@@ -1191,6 +1192,20 @@ WriteCharacterCreate_Err:
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteCharacterCreate", Erl)
         '</EhFooter>
 End Sub
+
+Public Sub WriteCharacterUpdateFlag(ByVal UserIndex As Integer, ByVal Flag As Byte, ByVal charindex As Integer)
+   On Error GoTo WriteCharacterUpdateFlag_Err
+        '</EhHeader>
+100 Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageUpdateFlag(Flag, charindex))
+        '<EhFooter>
+        Exit Sub
+
+WriteCharacterUpdateFlag_Err:
+        Call Writer.Clear
+        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteCharacterUpdateFlag", Erl)
+        '</EhFooter>
+End Sub
+
 ''
 ' Writes the "CharacterMove" message to the given user's outgoing data .incomingData.
 '
@@ -4845,7 +4860,7 @@ Public Function PrepareMessageCharacterCreate(ByVal Body As Integer, _
                                               ByVal Escudo_Aura As String, _
                                               ByVal speeding As Single, _
                                               ByVal EsNPC As Byte, _
-                                              ByVal appear As Byte, ByVal group_index As Integer, ByVal clan_index As Integer, ByVal clan_nivel As Byte, ByVal UserMinHp As Long, ByVal UserMaxHp As Long, ByVal UserMinMAN As Long, ByVal UserMaxMAN As Long, ByVal Simbolo As Byte, ByVal Idle As Boolean, ByVal Navegando As Boolean, ByVal tipoUsuario As e_TipoUsuario)
+                                              ByVal appear As Byte, ByVal group_index As Integer, ByVal clan_index As Integer, ByVal clan_nivel As Byte, ByVal UserMinHp As Long, ByVal UserMaxHp As Long, ByVal UserMinMAN As Long, ByVal UserMaxMAN As Long, ByVal Simbolo As Byte, ByVal Idle As Boolean, ByVal Navegando As Boolean, ByVal tipoUsuario As e_TipoUsuario, Optional ByVal TeamCaptura As Byte = 0, Optional ByVal TieneBandera As Byte = 0)
         '<EhHeader>
         On Error GoTo PrepareMessageCharacterCreate_Err
         '</EhHeader>
@@ -4891,6 +4906,8 @@ Public Function PrepareMessageCharacterCreate(ByVal Body As Integer, _
 168     'Call Writer.WriteBool(Idle)
 170     'Call Writer.WriteBool(Navegando)
 172     Call Writer.WriteInt8(tipoUsuario)
+173     Call Writer.WriteInt8(TeamCaptura)
+174     Call Writer.WriteInt8(TieneBandera)
         '<EhFooter>
         Exit Function
 
@@ -4952,6 +4969,35 @@ PrepareMessageCharacterChange_Err:
         '</EhFooter>
 End Function
 
+
+''
+' Prepares the "CharacterChange" message and returns it.
+'
+' @param    body Body index of the new character.
+' @param    head Head index of the new character.
+' @param    heading Heading in which the new character is looking.
+' @param    CharIndex The index of the new character.
+' @param    weapon Weapon index of the new character.
+' @param    shield Shield index of the new character.
+' @param    FX FX index to be displayed over the new character.
+' @param    FXLoops Number of times the FX should be rendered.
+' @param    helmet Helmet index of the new character.
+' @return   The formated message ready to be writen as is on outgoing buffers.
+' @remarks  The data is not actually sent until the buffer is properly flushed.
+Public Function PrepareMessageUpdateFlag(ByVal Flag As Byte, ByVal charindex As Integer)
+
+        On Error GoTo PrepareMessageUpdateFlag_Err
+
+100     Call Writer.WriteInt16(ServerPacketID.UpdateFlag)
+        Call Writer.WriteInt16(charindex)
+102     Call Writer.WriteInt8(Flag)
+        Exit Function
+
+PrepareMessageUpdateFlag_Err:
+        Call Writer.Clear
+        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageUpdateFlag", Erl)
+        '</EhFooter>
+End Function
 ''
 ' Prepares the "CharacterMove" message and returns it.
 '
