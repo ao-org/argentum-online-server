@@ -127,7 +127,7 @@ Public Sub PasarSegundo()
             With UserList(participante.UserIndex)
             Team = .flags.jugando_captura_team
             If .Pos.map = mapaEquipo(Team) Then 'Si estoy en mi mapa
-                If Distance(.Pos.X, .Pos.Y, xEquipo(Team), yEquipo(Team)) <= 5 Then 'Y estoy 5 pasos del centro
+                If Abs(.Pos.X - xEquipo(Team)) <= 8 And Abs(.Pos.Y - yEquipo(Team)) <= 5 Then ' .Pos.x Distance(.Pos.X, .Pos.Y, xEquipo(Team), yEquipo(Team)) <= 8 Then 'Y estoy 5 pasos del centro
                     If TieneObjetos(objEquipo(IIf(Team = 1, 2, 1)), 1, participante.UserIndex) Then 'Y tengo la bandera enemgia
                         contadorBandera(Team) = contadorBandera(Team) + 1
                         estaEnBandera(Team) = True
@@ -273,7 +273,7 @@ Public Function tomaBandera(ByVal UserIndex As Integer, ByVal objIndex As Intege
             UserList(UserIndex).flags.tiene_bandera = banderaTeam
             Call SendData(SendTarget.ToAll, UserIndex, PrepareMessageUpdateFlag(UserList(UserIndex).flags.tiene_bandera, UserList(UserIndex).Char.charindex))
         Else
-            UserList(UserIndex).flags.tiene_bandera = banderaTeam
+            UserList(UserIndex).flags.tiene_bandera = 0
             Call SendData(SendTarget.ToAll, UserIndex, PrepareMessageUpdateFlag(UserList(UserIndex).flags.tiene_bandera, UserList(UserIndex).Char.charindex))
         End If
         tomaBandera = True
@@ -298,6 +298,7 @@ Public Sub quitarBandera(ByVal UserIndex As Integer, ByVal objIndex As Integer)
             UserList(UserIndex).flags.tiene_bandera = banderaTeam
         Else
             UserList(UserIndex).flags.tiene_bandera = 0
+            Call SendData(SendTarget.ToAll, UserIndex, PrepareMessageUpdateFlag(0, UserList(UserIndex).Char.charindex))
             Call QuitarObjetos(objIndex, 1, UserIndex)
             Call restaurarBandera(banderaTeam)
             
@@ -345,8 +346,8 @@ Public Sub tirarBandera(ByVal UserIndex As Integer)
     
         
         If TieneObjetos(objBandera, 1, UserIndex) Then
-            
-            Call WriteCharacterUpdateFlag(UserIndex, 0, UserList(UserIndex).Char.charindex)
+            UserList(UserIndex).flags.tiene_bandera = 0
+            Call SendData(SendTarget.ToAll, UserIndex, PrepareMessageUpdateFlag(0, UserList(UserIndex).Char.charindex))
             Call QuitarObjetos(objBandera, 1, UserIndex)
             
             If Estado = EnJuego Then
@@ -403,6 +404,7 @@ Private Sub iniciarRonda()
     
     Dim participante As clsCapturaParticipante
     For Each participante In participantes
+        Call SendData(SendTarget.ToAll, participante.UserIndex, PrepareMessageUpdateFlag(0, UserList(participante.UserIndex).Char.charindex))
         UserList(participante.UserIndex).flags.jugando_captura_muertes = 0
         UserList(participante.UserIndex).flags.jugando_captura_timer = 0
         Call tirarBandera(participante.UserIndex)
@@ -473,8 +475,7 @@ Public Sub finalizarRonda(ByVal Team As Byte)
     
     
     rondasGanadas(Team) = rondasGanadas(Team) + 1
-
-    If ronda_actual + 1 >= cantidad_rondas Then
+    If ronda_actual >= cantidad_rondas Then
         'Se termina la joda
         
         If rondasGanadas(1) > rondasGanadas(2) Then
