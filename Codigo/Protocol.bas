@@ -3480,6 +3480,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                 
                     'Check intervals and cast
 278                 If .flags.Hechizo > 0 Then
+                        .Counters.controlHechizos.HechizosTotales = .Counters.controlHechizos.HechizosTotales + 1
 280                     Call LanzarHechizo(.flags.Hechizo, UserIndex)
 282                     .flags.Hechizo = 0
                     Else
