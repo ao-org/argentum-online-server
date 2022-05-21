@@ -84,6 +84,9 @@ Class=Instruments; Codigo\Instrumentation.cls
 Module=modTime; Codigo\modTime.bas
 Module=UnitClient; Codigo\UnitClient.bas
 Module=Unit_Protocol_Writes; Codigo\Unit_Protocol_Writes.bas
+Module=ModCaptura; Codigo\ModCaptura.bas
+Class=clsCaptura; Codigo\clsCaptura.cls
+Class=clsCapturaParticipante; Codigo\clsCapturaParticipante.cls
 IconForm="frmMain"
 Startup="Sub Main"
 HelpFile=""
@@ -102,7 +105,7 @@ AutoIncrementVer=0
 ServerSupportFiles=0
 VersionCompanyName="Argentum20 Staff"
 VersionProductName="Argentum20 Server"
-CondComp="DEBUGGING = 1 : AntiExternos = 0 : ConUpTime = 1 : UNLOCK_CPU = 1 : UNIT_TEST = 0 : STRESSER = 0"
+CondComp="DEBUGGING = 1 : AntiExternos = 0 : ConUpTime = 1 : UNLOCK_CPU = 1 : UNIT_TEST = 0 : STRESSER = 0 : MAPAS_COMPLETOS = 1"
 CompilationType=0
 OptimizationType=0
 FavorPentiumPro(tm)=0
