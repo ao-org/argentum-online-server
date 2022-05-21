@@ -575,6 +575,12 @@ Sub DropObj(ByVal UserIndex As Integer, _
                         
 124                     Call QuitarUserInvItem(UserIndex, Slot, num)
 126                     Call UpdateUserInv(False, UserIndex, Slot)
+
+                        If .flags.jugando_captura = 1 Then
+                            If Not InstanciaCaptura Is Nothing Then
+                                Call InstanciaCaptura.tiraBandera(UserIndex, obj.objIndex)
+                            End If
+                        End If
                         
 128                     If Not .flags.Privilegios And e_PlayerType.user Then
                             If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios)) <> 0 Then
@@ -784,9 +790,19 @@ Sub PickObj(ByVal UserIndex As Integer)
 106                 Call WriteConsoleMsg(UserIndex, "Debes descender de tu montura para agarrar objetos del suelo.", e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
-        
+                
 108             X = UserList(UserIndex).Pos.X
 110             Y = UserList(UserIndex).Pos.Y
+
+                If UserList(UserIndex).flags.jugando_captura = 1 Then
+                    If Not InstanciaCaptura Is Nothing Then
+                        If Not InstanciaCaptura.tomaBandera(UserIndex, MapData(UserList(UserIndex).Pos.map, X, Y).ObjInfo.objIndex) Then
+                            Exit Sub
+                        End If
+                    End If
+                End If
+        
+
 112             obj = ObjData(MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).ObjInfo.ObjIndex)
 114             MiObj.amount = MapData(UserList(UserIndex).Pos.Map, X, Y).ObjInfo.amount
 116             MiObj.ObjIndex = MapData(UserList(UserIndex).Pos.Map, X, Y).ObjInfo.ObjIndex
@@ -799,6 +815,12 @@ Sub PickObj(ByVal UserIndex As Integer)
 120                 Call EraseObj(MapData(UserList(UserIndex).Pos.Map, X, Y).ObjInfo.amount, UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y)
 
 122                 If Not UserList(UserIndex).flags.Privilegios And e_PlayerType.user Then Call LogGM(UserList(UserIndex).Name, "Agarro:" & MiObj.amount & " Objeto:" & ObjData(MiObj.ObjIndex).Name)
+    
+                    If UserList(UserIndex).flags.jugando_captura = 1 Then
+                    If Not InstanciaCaptura Is Nothing Then
+                            Call InstanciaCaptura.quitarBandera(UserIndex, MiObj.objIndex)
+                    End If
+                    End If
     
 124                 If BusquedaTesoroActiva Then
 126                     If UserList(UserIndex).Pos.Map = TesoroNumMapa And UserList(UserIndex).Pos.X = TesoroX And UserList(UserIndex).Pos.Y = TesoroY Then

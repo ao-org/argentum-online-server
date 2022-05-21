@@ -1834,6 +1834,11 @@ Sub PasarSegundo()
 108         CuentaRegresivaTimer = CuentaRegresivaTimer - 1
 
         End If
+        
+        
+        If Not InstanciaCaptura Is Nothing Then
+            Call InstanciaCaptura.PasarSegundo
+        End If
     
 110     For i = 1 To LastUser
 

@@ -1106,7 +1106,8 @@ Sub MakeUserChar(ByVal toMap As Boolean, _
                         End If
                     End If
 
-140                 Call WriteCharacterCreate(sndIndex, .Char.Body, .Char.Head, .Char.Heading, .Char.CharIndex, X, Y, .Char.WeaponAnim, .Char.ShieldAnim, .Char.FX, 999, .Char.CascoAnim, TempName, .Faccion.Status, .flags.Privilegios, .Char.ParticulaFx, .Char.Head_Aura, .Char.Arma_Aura, .Char.Body_Aura, .Char.DM_Aura, .Char.RM_Aura, .Char.Otra_Aura, .Char.Escudo_Aura, .Char.speeding, 0, appear, .Grupo.Lider, .GuildIndex, clan_nivel, .Stats.MinHp, .Stats.MaxHp, .Stats.MinMAN, .Stats.MaxMAN, 0, False, .flags.Navegando, .Stats.tipoUsuario)
+140                 Call WriteCharacterCreate(sndIndex, .Char.body, .Char.head, .Char.Heading, .Char.charindex, X, Y, .Char.WeaponAnim, .Char.ShieldAnim, .Char.FX, 999, .Char.CascoAnim, TempName, .Faccion.Status, .flags.Privilegios, .Char.ParticulaFx, .Char.Head_Aura, .Char.Arma_Aura, .Char.Body_Aura, .Char.DM_Aura, .Char.RM_Aura, .Char.Otra_Aura, .Char.Escudo_Aura, .Char.speeding, 0, appear, .Grupo.Lider, .GuildIndex, clan_nivel, .Stats.MinHp, .Stats.MaxHp, .Stats.MinMAN, .Stats.MaxMAN, 0, False, .flags.Navegando, .Stats.tipoUsuario, .flags.jugando_captura_team, .flags.tiene_bandera)
+                    
                 Else
             
                     'Hide the name and clan - set privs as normal user
@@ -2071,6 +2072,12 @@ Sub UserDie(ByVal UserIndex As Integer)
 236             Call MuereEnReto(UserIndex)
             End If
             
+            If .flags.jugando_captura = 1 Then
+                If Not InstanciaCaptura Is Nothing Then
+                    Call InstanciaCaptura.muereUsuario(UserIndex)
+                End If
+            End If
+            
             'Borramos todos los personajes del area
             
             
@@ -2423,6 +2430,15 @@ Sub Cerrar_Usuario(ByVal UserIndex As Integer)
                     Call SendData(SendTarget.ToPCArea, userindex, PrepareMessageSetInvisible(.Char.charindex, False))
                     Call WriteConsoleMsg(userindex, "Has vuelto a ser visible", e_FontTypeNames.FONTTYPE_INFO)
                 End If
+                
+                
+                'HarThaoS: Captura de bandera
+                If .flags.jugando_captura = 1 Then
+                    If Not InstanciaCaptura Is Nothing Then
+                         Call InstanciaCaptura.eliminarParticipante(UserIndex)
+                    End If
+                End If
+    
                 
             
 116             Call WriteLocaleMsg(UserIndex, "203", e_FontTypeNames.FONTTYPE_INFO, .Counters.Salir)

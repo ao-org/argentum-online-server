@@ -72,6 +72,7 @@ Public Enum SendTarget
     ToSuperioresArea
     ToUsuariosMuertos
     ToAdminsYDioses
+    ToJugadoresCaptura
     
 End Enum
 
@@ -123,6 +124,17 @@ Public Sub SendData(ByVal sndRoute As SendTarget, ByVal sndIndex As Integer, Par
                            End If
                        End If
                 Next LoopC
+                
+                
+            Case SendTarget.ToJugadoresCaptura
+                For LoopC = 1 To LastUser
+                    If UserList(LoopC).ConnIDValida Then
+                        If UserList(LoopC).flags.jugando_captura = 1 Then
+                            Call modNetwork.Send(LoopC, Buffer)
+                           End If
+                       End If
+                Next LoopC
+
 
 128         Case SendTarget.ToSuperiores
 130             For LoopC = 1 To LastUser
