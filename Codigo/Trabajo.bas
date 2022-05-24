@@ -120,6 +120,20 @@ Public Sub Trabajar(ByVal UserIndex As Integer, ByVal Skill As e_Skill)
     
                             End If
                     End Select
+                    
+                Case e_Skill.Carpinteria
+                    'Veo cual es la cantidad máxima que puede construir de una
+                    Dim cantidad_maxima As Long
+                    
+                    If UserList(UserIndex).clase = e_Class.Trabajador Then
+                        'Si es trabajador hace skill / 10 de máximo
+                        cantidad_maxima = UserList(UserIndex).Stats.UserSkills(e_Skill.Carpinteria) \ 10
+                    Else
+                        'Si no hace de a 1
+                        cantidad_maxima = 1
+                    End If
+                    
+                    Call CarpinteroConstruirItem(UserIndex, UserList(UserIndex).Trabajo.Item, UserList(UserIndex).Trabajo.cantidad, cantidad_maxima)
 
                 Case e_Skill.Mineria
             
@@ -755,15 +769,14 @@ HerreroQuitarMateriales_Err:
         
 End Sub
 
-Sub CarpinteroQuitarMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As Integer)
+Sub CarpinteroQuitarMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As Integer, ByVal cantidad As Integer)
         
         On Error GoTo CarpinteroQuitarMateriales_Err
         
 
-100     If ObjData(ItemIndex).Madera > 0 Then Call QuitarObjetos(Leña, ObjData(ItemIndex).Madera, userindex)
+100     If ObjData(ItemIndex).Madera > 0 Then Call QuitarObjetos(Leña, cantidad, UserIndex)
 
-102     If ObjData(ItemIndex).MaderaElfica > 0 Then Call QuitarObjetos(LeñaElfica, ObjData(ItemIndex).MaderaElfica, userindex)
-
+102     If ObjData(ItemIndex).MaderaElfica > 0 Then Call QuitarObjetos(LeñaElfica, cantidad, UserIndex)
         
         Exit Sub
 
@@ -807,13 +820,13 @@ SastreQuitarMateriales_Err:
         
 End Sub
 
-Function CarpinteroTieneMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As Integer) As Boolean
+Function CarpinteroTieneMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As Integer, ByVal cantidad As Long) As Boolean
         
         On Error GoTo CarpinteroTieneMateriales_Err
         
     
 100     If ObjData(ItemIndex).Madera > 0 Then
-102         If Not TieneObjetos(Leña, ObjData(ItemIndex).Madera, userindex) Then
+102         If Not TieneObjetos(Leña, ObjData(ItemIndex).Madera * cantidad, UserIndex) Then
 104             Call WriteConsoleMsg(UserIndex, "No tenes suficientes madera.", e_FontTypeNames.FONTTYPE_INFO)
 106             CarpinteroTieneMateriales = False
 108             Call WriteMacroTrabajoToggle(UserIndex, False)
@@ -824,7 +837,7 @@ Function CarpinteroTieneMateriales(ByVal UserIndex As Integer, ByVal ItemIndex A
         End If
         
 110     If ObjData(ItemIndex).MaderaElfica > 0 Then
-112         If Not TieneObjetos(LeñaElfica, ObjData(ItemIndex).MaderaElfica, userindex) Then
+112         If Not TieneObjetos(LeñaElfica, ObjData(ItemIndex).MaderaElfica * cantidad, UserIndex) Then
 114             Call WriteConsoleMsg(UserIndex, "No tenes suficiente madera elfica.", e_FontTypeNames.FONTTYPE_INFO)
 116             CarpinteroTieneMateriales = False
 118             Call WriteMacroTrabajoToggle(UserIndex, False)
@@ -1166,7 +1179,7 @@ PuedeConstruirSastre_Err:
         
 End Function
 
-Public Sub CarpinteroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As Integer)
+Public Sub CarpinteroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As Integer, ByVal cantidad As Long, ByVal cantidad_maxima As Integer)
         
         On Error GoTo CarpinteroConstruirItem_Err
         
@@ -1178,6 +1191,7 @@ Public Sub CarpinteroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
         
 104     If ItemIndex = 0 Then Exit Sub
 
+        'Si no tiene equipado el serrucho
 106     If UserList(UserIndex).Invent.HerramientaEqpObjIndex = 0 Then
             ' Antes de usar la herramienta deberias equipartela.
 108         Call WriteLocaleMsg(UserIndex, "376", e_FontTypeNames.FONTTYPE_INFO)
@@ -1185,7 +1199,16 @@ Public Sub CarpinteroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
             Exit Sub
         End If
         
-112     If CarpinteroTieneMateriales(UserIndex, ItemIndex) _
+        Dim cantidad_a_construir As Long
+        Dim madera_requerida As Long
+        cantidad_a_construir = IIf(UserList(UserIndex).Trabajo.cantidad >= cantidad_maxima, cantidad_maxima, UserList(UserIndex).Trabajo.cantidad)
+        
+        If cantidad_a_construir <= 0 Then
+121             Call WriteMacroTrabajoToggle(UserIndex, False)
+                Exit Sub
+        End If
+        
+112     If CarpinteroTieneMateriales(UserIndex, ItemIndex, cantidad_a_construir) _
                 And UserList(UserIndex).Stats.UserSkills(e_Skill.Carpinteria) >= ObjData(ItemIndex).SkCarpinteria _
                 And PuedeConstruirCarpintero(ItemIndex) _
                 And ObjData(UserList(UserIndex).Invent.HerramientaEqpObjIndex).OBJType = e_OBJType.otHerramientas _
@@ -1201,15 +1224,26 @@ Public Sub CarpinteroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
                 Exit Sub
 
             End If
+            
+            If ObjData(ItemIndex).Madera > 0 Then
+                madera_requerida = ObjData(ItemIndex).Madera
+            ElseIf ObjData(ItemIndex).MaderaElfica > 0 Then
+                madera_requerida = ObjData(ItemIndex).MaderaElfica
+            End If
+            
     
-122         Call CarpinteroQuitarMateriales(UserIndex, ItemIndex)
+122         Call CarpinteroQuitarMateriales(UserIndex, ItemIndex, madera_requerida * cantidad_a_construir)
+
+            UserList(UserIndex).Trabajo.cantidad = UserList(UserIndex).Trabajo.cantidad - cantidad_a_construir
+            
+            
             'Call WriteConsoleMsg(UserIndex, "Has construido un objeto!", e_FontTypeNames.FONTTYPE_INFO)
             'Call WriteOroOverHead(UserIndex, 1, UserList(UserIndex).Char.CharIndex)
-124         Call WriteTextCharDrop(UserIndex, "+1", UserList(UserIndex).Char.CharIndex, vbWhite)
+124         Call WriteTextCharDrop(UserIndex, "+" & cantidad_a_construir, UserList(UserIndex).Char.charindex, vbWhite)
     
             Dim MiObj As t_Obj
 
-126         MiObj.amount = 1
+126         MiObj.amount = cantidad_a_construir
 128         MiObj.ObjIndex = ItemIndex
              ' AGREGAR FX
 130         Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, 253, 25, False, ObjData(MiObj.ObjIndex).GrhIndex))

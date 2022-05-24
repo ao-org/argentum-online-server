@@ -1879,6 +1879,9 @@ Public Type t_UserTrabajo
     TargetSkill As e_Skill
     Target_X As Integer
     Target_Y As Integer
+    'Para macro de Carpinteria, Herrería y Sastrería
+    Item As Integer
+    Cantidad As Long
 End Type
 
 'Tipo de los Usuarios

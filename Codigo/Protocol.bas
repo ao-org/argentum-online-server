@@ -3155,11 +3155,25 @@ Private Sub HandleCraftCarpenter(ByVal UserIndex As Integer)
         '***************************************************
 
             Dim Item As Integer
-102             Item = Reader.ReadInt16()
+102         Item = Reader.ReadInt16()
+            Dim Cantidad As Long
+            Cantidad = Reader.ReadInt32()
         
 104         If Item = 0 Then Exit Sub
 
-106         Call CarpinteroConstruirItem(UserIndex, Item)
+            'Valido que haya puesto una cantidad > 0
+            If Cantidad > 0 Then
+                UserList(UserIndex).Counters.Trabajando = UserList(UserIndex).Counters.Trabajando + 1
+                UserList(UserIndex).Trabajo.TargetSkill = e_Skill.Carpinteria
+                UserList(UserIndex).Trabajo.Cantidad = Cantidad
+                UserList(UserIndex).Trabajo.Item = Item
+                Call WriteMacroTrabajoToggle(UserIndex, True)
+            Else
+            
+            End If
+            
+
+'106         Call CarpinteroConstruirItem(UserIndex, Item, Cantidad)
 
         Exit Sub
 
