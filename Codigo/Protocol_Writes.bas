@@ -194,6 +194,8 @@ Public Sub WriteMacroTrabajoToggle(ByVal UserIndex As Integer, ByVal Activar As 
 110         UserList(UserIndex).Trabajo.Target_X = 0
 112         UserList(UserIndex).Trabajo.Target_Y = 0
 114         UserList(UserIndex).Trabajo.TargetSkill = 0
+            UserList(UserIndex).Trabajo.Cantidad = 0
+            UserList(UserIndex).Trabajo.Item = 0
         Else
 116         UserList(UserIndex).flags.UsandoMacro = True
         End If
