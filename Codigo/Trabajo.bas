@@ -128,6 +128,7 @@ Public Sub Trabajar(ByVal UserIndex As Integer, ByVal Skill As e_Skill)
                     If UserList(UserIndex).clase = e_Class.Trabajador Then
                         'Si es trabajador hace skill / 10 de máximo
                         cantidad_maxima = UserList(UserIndex).Stats.UserSkills(e_Skill.Carpinteria) \ 10
+                        If cantidad_maxima = 0 Then cantidad_maxima = 1
                     Else
                         'Si no hace de a 1
                         cantidad_maxima = 1
