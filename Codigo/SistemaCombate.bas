@@ -802,7 +802,7 @@ NpcDaño_Err:
 182     Call TraceError(Err.Number, Err.Description, "SistemaCombate.NpcDaño", Erl)
 
         
-End Sub
+End Function
 
 Public Function NpcAtacaUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer, ByVal Heading As e_Heading) As Boolean
         
@@ -850,9 +850,6 @@ Public Function NpcAtacaUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integ
 
             '¿Puede envenenar?
 136         If NpcList(NpcIndex).Veneno > 0 Then Call NpcEnvenenarUser(UserIndex, NpcList(NpcIndex).Veneno)
-        
-        Else
-138         Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageCharSwing(NpcList(NpcIndex).Char.CharIndex, False))
 
         End If
         
