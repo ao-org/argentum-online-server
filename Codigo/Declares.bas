@@ -1062,6 +1062,7 @@ Public Type t_Char
     Otra_Aura As String
     speeding As Single
     BodyIdle As Integer
+    Ataque1 As Integer
     Animation() As Integer
 
 End Type
@@ -2073,7 +2074,6 @@ Public Type t_NPCFlags
 
     AtacaUsuarios As Boolean ' Si el NPC puede atacar usuarios
     AtacaNPCs As Boolean     ' Si el NPC puede atacar otros NPC
-
     AIAlineacion As e_Alineacion
 
 End Type
