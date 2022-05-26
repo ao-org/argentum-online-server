@@ -195,6 +195,7 @@ Public Enum ServerPacketID
     UpdateShopCliente
     SensuiRetrasado
     UpdateFlag
+    CharAtaca
     [PacketCount]
 End Enum
 

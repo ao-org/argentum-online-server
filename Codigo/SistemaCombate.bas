@@ -694,11 +694,12 @@ UserDañoNpc_Err:
         
 End Sub
 
-Private Sub NpcDaño(ByVal NpcIndex As Integer, ByVal userindex As Integer)
+Private Function NpcDaño(ByVal NpcIndex As Integer, ByVal UserIndex As Integer) As Long
         
         On Error GoTo NpcDaño_Err
         
-
+        NpcDaño = -1
+        
         Dim Daño As Integer, Lugar As Integer, absorbido As Integer
 
         Dim antdaño As Integer, defbarco As Integer
@@ -793,9 +794,9 @@ Private Sub NpcDaño(ByVal NpcIndex As Integer, ByVal userindex As Integer)
 180         Call WriteUpdateHP(UserIndex)
     
         End If
-
+        NpcDaño = Daño
         
-        Exit Sub
+        Exit Function
 
 NpcDaño_Err:
 182     Call TraceError(Err.Number, Err.Description, "SistemaCombate.NpcDaño", Erl)
@@ -839,16 +840,13 @@ Public Function NpcAtacaUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integ
         End If
         
 124     Call CancelExit(UserIndex)
+        
+        Dim danio As Long
 
+        danio = -1
 126     If NpcImpacto(NpcIndex, UserIndex) Then
-    
-128         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_IMPACTO, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
-        
-130         If UserList(UserIndex).flags.Navegando = 0 Or UserList(UserIndex).flags.Montado = 0 Then
-132             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(UserList(UserIndex).Char.CharIndex, FXSANGRE, 0))
-            End If
-        
-134         Call NpcDaño(NpcIndex, userindex)
+
+134         danio = NpcDaño(NpcIndex, UserIndex)
 
             '¿Puede envenenar?
 136         If NpcList(NpcIndex).Veneno > 0 Then Call NpcEnvenenarUser(UserIndex, NpcList(NpcIndex).Veneno)
@@ -857,6 +855,11 @@ Public Function NpcAtacaUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integ
 138         Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageCharSwing(NpcList(NpcIndex).Char.CharIndex, False))
 
         End If
+        
+139     Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageCharAtaca(NpcList(NpcIndex).Char.charindex, UserList(UserIndex).Char.charindex, danio, NpcList(NpcIndex).Char.Ataque1))
+        
+        
+            
 
         '-----Tal vez suba los skills------
 140     Call SubirSkill(UserIndex, Tacticas)

@@ -1176,7 +1176,7 @@ End Sub
 ' @param    privileges Sets if the character is a normal one or any kind of administrative character.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteCharacterCreate(ByVal UserIndex As Integer, ByVal body As Integer, ByVal head As Integer, ByVal Heading As e_Heading, ByVal charindex As Integer, ByVal X As Byte, ByVal Y As Byte, ByVal weapon As Integer, ByVal shield As Integer, ByVal FX As Integer, ByVal FXLoops As Integer, ByVal helmet As Integer, ByVal name As String, ByVal Status As Byte, ByVal privileges As Byte, ByVal ParticulaFx As Byte, ByVal Head_Aura As String, ByVal Arma_Aura As String, ByVal Body_Aura As String, ByVal DM_Aura As String, ByVal RM_Aura As String, ByVal Otra_Aura As String, ByVal Escudo_Aura As String, ByVal speeding As Single, ByVal EsNPC As Byte, ByVal appear As Byte, ByVal group_index As Integer, ByVal clan_index As Integer, ByVal clan_nivel As Byte, ByVal UserMinHp As Long, ByVal UserMaxHp As Long, ByVal UserMinMAN As Long, ByVal UserMaxMAN As Long, ByVal Simbolo As Byte, Optional ByVal Idle As Boolean = False, Optional ByVal Navegando As Boolean = False, Optional ByVal tipoUsuario As e_TipoUsuario = 0, _
-            Optional ByVal TeamCaptura As Byte = 0, Optional ByVal TieneBandera As Byte = 0)
+            Optional ByVal TeamCaptura As Byte = 0, Optional ByVal TieneBandera As Byte = 0, Optional ByVal AnimAtaque1 As Integer = 0)
         '<EhHeader>
         On Error GoTo WriteCharacterCreate_Err
         '</EhHeader>
@@ -1185,7 +1185,7 @@ Public Sub WriteCharacterCreate(ByVal UserIndex As Integer, ByVal body As Intege
             privileges, ParticulaFx, Head_Aura, Arma_Aura, Body_Aura, DM_Aura, RM_Aura, _
             Otra_Aura, Escudo_Aura, speeding, EsNPC, appear, group_index, _
             clan_index, clan_nivel, UserMinHp, UserMaxHp, UserMinMAN, UserMaxMAN, Simbolo, _
-            Idle, Navegando, tipoUsuario, TeamCaptura, TieneBandera))
+            Idle, Navegando, tipoUsuario, TeamCaptura, TieneBandera, AnimAtaque1))
         '<EhFooter>
         Exit Sub
 
@@ -4186,6 +4186,29 @@ PrepareMessageLocaleMsg_Err:
 End Function
 
 ''
+' Prepares the "CharAtaca" message and returns it.
+'
+Public Function PrepareMessageCharAtaca(ByVal charindex As Integer, ByVal attackerIndex As Integer, ByVal danio As Long, ByVal AnimAttack As Integer)
+        '<EhHeader>
+        On Error GoTo PrepareMessageCharAtaca_Err
+        '</EhHeader>
+        
+100     Call Writer.WriteInt16(ServerPacketID.CharAtaca)
+102     Call Writer.WriteInt16(charindex)
+104     Call Writer.WriteInt16(attackerIndex)
+106     Call Writer.WriteInt32(danio)
+108     Call Writer.WriteInt16(AnimAttack)
+
+        '<EhFooter>
+        Exit Function
+
+PrepareMessageCharAtaca_Err:
+        Call Writer.Clear
+        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageCharAtaca", Erl)
+        '</EhFooter>
+End Function
+
+''
 ' Prepares the "CreateFX" message and returns it.
 '
 ' @param    UserIndex User to which the message is intended.
@@ -4862,7 +4885,7 @@ Public Function PrepareMessageCharacterCreate(ByVal Body As Integer, _
                                               ByVal Escudo_Aura As String, _
                                               ByVal speeding As Single, _
                                               ByVal EsNPC As Byte, _
-                                              ByVal appear As Byte, ByVal group_index As Integer, ByVal clan_index As Integer, ByVal clan_nivel As Byte, ByVal UserMinHp As Long, ByVal UserMaxHp As Long, ByVal UserMinMAN As Long, ByVal UserMaxMAN As Long, ByVal Simbolo As Byte, ByVal Idle As Boolean, ByVal Navegando As Boolean, ByVal tipoUsuario As e_TipoUsuario, Optional ByVal TeamCaptura As Byte = 0, Optional ByVal TieneBandera As Byte = 0)
+                                              ByVal appear As Byte, ByVal group_index As Integer, ByVal clan_index As Integer, ByVal clan_nivel As Byte, ByVal UserMinHp As Long, ByVal UserMaxHp As Long, ByVal UserMinMAN As Long, ByVal UserMaxMAN As Long, ByVal Simbolo As Byte, ByVal Idle As Boolean, ByVal Navegando As Boolean, ByVal tipoUsuario As e_TipoUsuario, Optional ByVal TeamCaptura As Byte = 0, Optional ByVal TieneBandera As Byte = 0, Optional ByVal AnimAtaque1 As Integer = 0)
         '<EhHeader>
         On Error GoTo PrepareMessageCharacterCreate_Err
         '</EhHeader>
@@ -4905,11 +4928,10 @@ Public Function PrepareMessageCharacterCreate(ByVal Body As Integer, _
         If Idle Then flags = flags Or &O1 ' 00000001
         If Navegando Then flags = flags Or &O2
         Call Writer.WriteInt8(flags)
-168     'Call Writer.WriteBool(Idle)
-170     'Call Writer.WriteBool(Navegando)
 172     Call Writer.WriteInt8(tipoUsuario)
 173     Call Writer.WriteInt8(TeamCaptura)
 174     Call Writer.WriteInt8(TieneBandera)
+175     Call Writer.WriteInt16(AnimAtaque1)
         '<EhFooter>
         Exit Function
 
