@@ -576,39 +576,34 @@ Function ConnectNewUser(ByVal UserIndex As Integer, ByRef name As String, ByVal 
         
 226         .ChatCombate = 1
 228         .ChatGlobal = 1
-  
-            Dim DungeonNewbieCoords(1 To 3) As t_WorldPos
+              
             
-234         With DungeonNewbieCoords(1)
-236             .map = 37: .X = 76: .y = 82
-            End With
-            
-238         With DungeonNewbieCoords(2)
-240             .map = 168: .X = 58: .y = 75
-            End With
-            
-242         With DungeonNewbieCoords(3)
-244             .map = 168: .X = 42: .y = 75
-            End With
-            
-            #If UNIT_TEST = 1 Then
-                DungeonNewbieCoords(1).map = 1
-                DungeonNewbieCoords(1).Y = 20
-                DungeonNewbieCoords(1).X = 20
-                DungeonNewbieCoords(2).map = 1
-                DungeonNewbieCoords(2).Y = 20
-                DungeonNewbieCoords(2).X = 20
-                DungeonNewbieCoords(3).map = 1
-                DungeonNewbieCoords(3).Y = 20
-                DungeonNewbieCoords(3).X = 20
-            #End If
-            
-            Dim RandomPosIndex As Byte
-246         RandomPosIndex = RandomNumber(LBound(DungeonNewbieCoords), UBound(DungeonNewbieCoords))
-
-248         .Pos.map = DungeonNewbieCoords(RandomPosIndex).map
-250         .Pos.X = DungeonNewbieCoords(RandomPosIndex).X
-252         .Pos.y = DungeonNewbieCoords(RandomPosIndex).y
+            Select Case .Hogar
+                Case e_Ciudad.cUllathorpe
+                    .Pos.map = 1
+                    .Pos.X = 56
+                    .Pos.Y = 44
+                Case e_Ciudad.cArghal
+                    .Pos.map = 151
+                    .Pos.X = 46
+                    .Pos.Y = 34
+                Case e_Ciudad.cNix
+                    .Pos.map = 34
+                    .Pos.X = 40
+                    .Pos.Y = 86
+                Case e_Ciudad.cLindos
+                    .Pos.map = 62
+                    .Pos.X = 62
+                    .Pos.Y = 44
+                Case e_Ciudad.cBanderbill
+                    .Pos.map = 59
+                    .Pos.X = 54
+                    .Pos.Y = 42
+                Case e_Ciudad.cArkhein
+                    .Pos.map = 196
+                    .Pos.X = 49
+                    .Pos.Y = 64
+            End Select
         
 254         UltimoChar = UCase$(name)
         
