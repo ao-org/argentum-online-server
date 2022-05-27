@@ -3,9 +3,14 @@ Option Explicit
 
 
 Public Const CAPTURA_TIEMPO_ESPERA = 180 'Tiempo que dura la inscripcion
-Public Const CAPTURA_TIEMPO_INICIO_RONDA = 60 '60 'Tiempo hasta que se inicia la ronda
+
+#If DEBUGGING Then
+    Public Const CAPTURA_TIEMPO_INICIO_RONDA = 10 '60 'Tiempo hasta que se inicia la ronda
+#Else
+    Public Const CAPTURA_TIEMPO_INICIO_RONDA = 60 '60 'Tiempo hasta que se inicia la ronda
+#End If
 Public Const CAPTURA_TIEMPO_BANDERA = 10 'Tiempo que tiene que estar el user con la bandera en la base
-Public Const CAPTURA_TIEMPO_MUERTE = 12 'Tiempo que tarda para poder revivir cuando muere
+Public Const CAPTURA_TIEMPO_MUERTE = 7 'Tiempo que tarda para poder revivir cuando muere
 Public Const CAPTURA_TIEMPO_POR_MUERTE = 3 'Multiplicador de tiempo x veces que murio
 
 Public Const MAP_SALA_ESPERA As Integer = 278
