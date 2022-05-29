@@ -626,7 +626,7 @@ Private Function PuedeLanzar(ByVal UserIndex As Integer, ByVal HechizoIndex As I
                 Exit Function
             End If
             
-146         If .Stats.MinMAN < ManaHechizoPorClase(UserIndex, Hechizos(HechizoIndex)) Then
+146         If .Stats.MinMAN < ManaHechizoPorClase(UserIndex, Hechizos(HechizoIndex), HechizoIndex) Then
 148             Call WriteLocaleMsg(UserIndex, "222", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Function
             End If
@@ -1197,7 +1197,7 @@ Sub HandleHechizoUsuario(ByVal UserIndex As Integer, ByVal uh As Integer)
 112     If b Then
 114         Call SubirSkill(UserIndex, Magia)
                     
-116         UserList(UserIndex).Stats.MinMAN = UserList(UserIndex).Stats.MinMAN - ManaHechizoPorClase(UserIndex, Hechizos(uh))
+116         UserList(UserIndex).Stats.MinMAN = UserList(UserIndex).Stats.MinMAN - ManaHechizoPorClase(UserIndex, Hechizos(uh), uh)
 118         If UserList(UserIndex).Stats.MinMAN < 0 Then UserList(UserIndex).Stats.MinMAN = 0
 
 120         If Hechizos(uh).RequiredHP > 0 Then
@@ -1270,12 +1270,7 @@ Public Function ManaHechizoPorClase(ByVal userindex As Integer, Hechizo As t_Hec
                ManaHechizoPorClase = 250
                Exit Function
            End If
-        
-         '  If Hechizo.Inmoviliza = 1 Then
-         '      ManaHechizoPorClase = 250
-         '      Exit Function
-        '   End If
-        
+                
         Case e_Class.Druid
             'Si es druida y tiene equipada una flauta élfica, pido 10% menos para apoca.
             If HechizoIndex = 53 And UserList(userindex).Invent.DañoMagicoEqpObjIndex = FLAUTA_ELFICA Then
