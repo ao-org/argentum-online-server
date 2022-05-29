@@ -115,7 +115,7 @@ Public Sub CrearReto(ByVal UserIndex As Integer, JugadoresStr As String, ByVal A
 150                 With .Jugadores(i)
 152                     If EsGmChar(Jugadores(i)) Then
 154                         Call WriteConsoleMsg(UserIndex, "¡No puedes jugar retos con administradores!", e_FontTypeNames.FONTTYPE_INFO)
-                            Exit Sub
+                           'Exit Sub
                         End If
 
 156                     tIndex = NameIndex(Jugadores(i))
@@ -196,7 +196,7 @@ Public Sub AceptarReto(ByVal UserIndex As Integer, OferenteName As String)
     
 112     If EsGmChar(OferenteName) Then
 114         Call WriteConsoleMsg(UserIndex, "¡No puedes jugar retos con administradores!", e_FontTypeNames.FONTTYPE_INFO)
-            Exit Sub
+           ' Exit Sub
         End If
 
         Dim Oferente As Integer
@@ -1064,7 +1064,12 @@ Public Function PuedeRetoConMensaje(ByVal UserIndex As Integer) As Boolean
                 Exit Function
             End If
         
-110         If MapInfo(.Pos.Map).Seguro = 0 Then
+            If .flags.jugando_captura = 1 Then
+109             Call WriteConsoleMsg(UserIndex, "No puedes jugar un reto estando en un evento.", e_FontTypeNames.FONTTYPE_INFO)
+                Exit Function
+            End If
+        
+110         If Not esCiudad(.Pos.map) Then
 112             Call WriteConsoleMsg(UserIndex, "No puedes participar de un reto en un mapa inseguro.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Function
             End If

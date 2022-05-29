@@ -357,7 +357,6 @@ Public Sub DoPermanecerOculto(ByVal UserIndex As Integer)
 
 108             .Counters.TiempoOculto = 0
 110             .flags.Oculto = 0
-                .Counters.TiempoOcultar = 1
 
 112             If .flags.Navegando = 1 Then
             
@@ -409,10 +408,7 @@ Public Sub DoOcultarse(ByVal UserIndex As Integer)
                 Exit Sub
             End If
     
-            If .Counters.TiempoOcultar > 0 Then
-                Call WriteConsoleMsg(userindex, "No puedes volver a ocultarte tan rápido.", e_FontTypeNames.FONTTYPE_INFO)
-                Exit Sub
-            End If
+          
     
 106         Skill = .Stats.UserSkills(e_Skill.Ocultarse)
 108         Suerte = (((0.000002 * Skill - 0.0002) * Skill + 0.0064) * Skill + 0.1124) * 100
@@ -589,7 +585,6 @@ Public Sub DoNavega(ByVal UserIndex As Integer, _
             ' Volver visible
 190         If .flags.Oculto = 1 And .flags.AdminInvisible = 0 And .flags.invisible = 0 Then
 192             .flags.Oculto = 0
-                .Counters.TiempoOcultar = 1
 194             .Counters.TiempoOculto = 0
 
                 'Call WriteConsoleMsg(UserIndex, "Has vuelto a ser visible.", e_FontTypeNames.FONTTYPE_INFO)
@@ -1605,7 +1600,6 @@ Sub DoAdminInvisible(ByVal UserIndex As Integer)
 114             .flags.AdminInvisible = 0
 116             .flags.invisible = 0
 118             .flags.Oculto = 0
-                .Counters.TiempoOcultar = 1
 120             .Counters.TiempoOculto = 0
             
                 '.Char.Body = .flags.OldBody
