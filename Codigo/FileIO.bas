@@ -2135,11 +2135,12 @@ Sub CargarCiudades()
         
         On Error GoTo CargarCiudades_Err
     
-        
+        Dim i As Long
 
         Dim Lector As clsIniManager
 100     Set Lector = New clsIniManager
 102     Call Lector.Initialize(DatPath & "Ciudades.dat")
+        Dim MapasCiudades As String
     
 104     With CityNix
 106         .Map = val(Lector.GetValue("NIX", "Mapa"))
@@ -2152,6 +2153,8 @@ Sub CargarCiudades()
 120         .ResuX = val(Lector.GetValue("NIX", "ResuX"))
 122         .ResuY = val(Lector.GetValue("NIX", "ResuY"))
 124         .NecesitaNave = val(Lector.GetValue("NIX", "NecesitaNave"))
+            MapasCiudades = Lector.GetValue("NIX", "Mapas") & ","
+            
         End With
     
 126     With CityUllathorpe
@@ -2165,6 +2168,7 @@ Sub CargarCiudades()
 142         .ResuX = val(Lector.GetValue("Ullathorpe", "ResuX"))
 144         .ResuY = val(Lector.GetValue("Ullathorpe", "ResuY"))
 146         .NecesitaNave = val(Lector.GetValue("Ullathorpe", "NecesitaNave"))
+            MapasCiudades = MapasCiudades & Lector.GetValue("Ullathorpe", "Mapas") & ","
         End With
     
 148     With CityBanderbill
@@ -2178,6 +2182,7 @@ Sub CargarCiudades()
 164         .ResuX = val(Lector.GetValue("Banderbill", "ResuX"))
 166         .ResuY = val(Lector.GetValue("Banderbill", "ResuY"))
 168         .NecesitaNave = val(Lector.GetValue("Banderbill", "NecesitaNave"))
+            MapasCiudades = MapasCiudades & Lector.GetValue("Banderbill", "Mapas") & ","
         End With
     
 170     With CityLindos
@@ -2191,6 +2196,7 @@ Sub CargarCiudades()
 186         .ResuX = val(Lector.GetValue("Lindos", "ResuX"))
 188         .ResuY = val(Lector.GetValue("Lindos", "ResuY"))
 190         .NecesitaNave = val(Lector.GetValue("Lindos", "NecesitaNave"))
+            MapasCiudades = MapasCiudades & Lector.GetValue("Lindos", "Mapas") & ","
         End With
     
 192     With CityArghal
@@ -2204,7 +2210,9 @@ Sub CargarCiudades()
 208         .ResuX = val(Lector.GetValue("Arghal", "ResuX"))
 210         .ResuY = val(Lector.GetValue("Arghal", "ResuY"))
 212         .NecesitaNave = val(Lector.GetValue("Arghal", "NecesitaNave"))
+            MapasCiudades = MapasCiudades & Lector.GetValue("Arghal", "Mapas") & ","
         End With
+        
     
 214     With CityArkhein
 216         .Map = val(Lector.GetValue("Arkhein", "Mapa"))
@@ -2217,6 +2225,36 @@ Sub CargarCiudades()
 230         .ResuX = val(Lector.GetValue("Arkhein", "ResuX"))
 232         .ResuY = val(Lector.GetValue("Arkhein", "ResuY"))
 234         .NecesitaNave = val(Lector.GetValue("Arkhein", "NecesitaNave"))
+            MapasCiudades = MapasCiudades & Lector.GetValue("Arkhein", "Mapas") & ","
+        End With
+        
+    
+        With CityEleusis
+            .map = val(Lector.GetValue("Eleusis", "Mapa"))
+            .X = val(Lector.GetValue("Eleusis", "X"))
+            .Y = val(Lector.GetValue("Eleusis", "Y"))
+            .MapaViaje = val(Lector.GetValue("Eleusis", "MapaViaje"))
+            .ViajeX = val(Lector.GetValue("Eleusis", "ViajeX"))
+            .ViajeY = val(Lector.GetValue("Eleusis", "ViajeY"))
+            .MapaResu = val(Lector.GetValue("Eleusis", "MapaResu"))
+            .ResuX = val(Lector.GetValue("Eleusis", "ResuX"))
+            .ResuY = val(Lector.GetValue("Eleusis", "ResuY"))
+            .NecesitaNave = val(Lector.GetValue("Eleusis", "NecesitaNave"))
+            MapasCiudades = MapasCiudades & Lector.GetValue("Eleusis", "Mapas") & ","
+        End With
+        
+        With CityPenthar
+            .map = val(Lector.GetValue("Penthar", "Mapa"))
+            .X = val(Lector.GetValue("Penthar", "X"))
+            .Y = val(Lector.GetValue("Penthar", "Y"))
+            .MapaViaje = val(Lector.GetValue("Penthar", "MapaViaje"))
+            .ViajeX = val(Lector.GetValue("Penthar", "ViajeX"))
+            .ViajeY = val(Lector.GetValue("Penthar", "ViajeY"))
+            .MapaResu = val(Lector.GetValue("Penthar", "MapaResu"))
+            .ResuX = val(Lector.GetValue("Penthar", "ResuX"))
+            .ResuY = val(Lector.GetValue("Penthar", "ResuY"))
+            .NecesitaNave = val(Lector.GetValue("Penthar", "NecesitaNave"))
+            MapasCiudades = MapasCiudades & Lector.GetValue("Penthar", "Mapas")
         End With
     
 236     With Prision
@@ -2230,6 +2268,8 @@ Sub CargarCiudades()
 248         .X = val(Lector.GetValue("Libertad", "X"))
 250         .Y = val(Lector.GetValue("Libertad", "Y"))
         End With
+        
+        TotalMapasCiudades = Split(MapasCiudades, ",")
     
 252     Set Lector = Nothing
     
