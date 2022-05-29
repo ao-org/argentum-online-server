@@ -1028,6 +1028,7 @@ Public Type t_CityWorldPos
     ResuX As Byte
     ResuY As Byte
     NecesitaNave As Byte
+    Mapas() As String
 
 End Type
 
@@ -2475,15 +2476,21 @@ Public CityUllathorpe                     As t_CityWorldPos
 
 Public CityBanderbill                     As t_CityWorldPos
 
+Public CityArghal                         As t_CityWorldPos
+
+Public CityPenthar                        As t_CityWorldPos
+
 Public CityLindos                         As t_CityWorldPos
 
-Public CityArghal                         As t_CityWorldPos
+Public CityEleusis                        As t_CityWorldPos
 
 Public CityArkhein                        As t_CityWorldPos
 
 Public Prision                            As t_WorldPos
 
 Public Libertad                           As t_WorldPos
+
+Public TotalMapasCiudades()               As String
 
 Public Ayuda                              As New cCola
 
