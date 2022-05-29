@@ -17762,7 +17762,6 @@ Private Sub HandleConsulta(ByVal UserIndex As Integer)
 160                 If .flags.invisible = 1 Or .flags.Oculto = 1 Then
                 
 162                     .flags.Oculto = 0
-                        .Counters.TiempoOcultar = 1
 164                     .flags.invisible = 0
 166                     .Counters.TiempoOculto = 0
 168                     .Counters.Invisibilidad = 0
