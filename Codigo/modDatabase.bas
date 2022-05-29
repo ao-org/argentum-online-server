@@ -1234,7 +1234,7 @@ End Sub
 Private Sub SetUserValue(CharName As String, Columna As String, Value As Variant)
         On Error GoTo SetUserValue_Err
         
-100     Call SetDBValue("user", Columna, Value, "name", CharName)
+100     Call SetDBValue("user", Columna, Value, "UPPER(name)", UCase(CharName))
 
         Exit Sub
 
