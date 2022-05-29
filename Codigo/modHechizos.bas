@@ -240,7 +240,6 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
 304       If .flags.invisible + .flags.Oculto > 0 And .flags.NoDetectable = 0 Then
 306         .flags.invisible = 0
 308         .flags.Oculto = 0
-            .Counters.TiempoOcultar = 1
 310         .Counters.Invisibilidad = 0
 312         .Counters.Ocultando = 0
 
@@ -1267,7 +1266,6 @@ Public Function ManaHechizoPorClase(ByVal userindex As Integer, Hechizo As t_Hec
             End If
                   
         Case e_Class.Bandit
-        
              If Hechizo.RemoverParalisis = 1 Then
                ManaHechizoPorClase = 250
                Exit Function

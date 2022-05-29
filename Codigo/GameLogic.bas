@@ -38,7 +38,18 @@ Attribute VB_Name = "Extra"
 Option Explicit
 
 Public m_NameIndex As New Dictionary
+Public Function esCiudad(ByVal map As Integer) As Boolean
 
+    Dim i As Byte
+    
+    For i = 0 To UBound(TotalMapasCiudades)
+        If TotalMapasCiudades(i) = map Then
+            esCiudad = True
+            Exit Function
+        End If
+    Next i
+    
+End Function
 
 Public Sub AgregarAConsola(ByVal Text As String)
         On Error GoTo AgregarAConsola_Err
@@ -1544,7 +1555,7 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
 502                                         If QuestList(.QuestIndex).RequiredTargetNPC(j).amount = .NPCsTarget(j) Then
 504                                             Call FinishQuest(UserIndex, .QuestIndex, i)
 506                                             Call WriteUpdateNPCSimbolo(UserIndex, TempCharIndex, 1)
-508                                             Call WriteChatOverHead(UserIndex, "¡Quest Finalizada!", NpcList(TempCharIndex).Char.CharIndex, vbYellow)
+508                                             Call WriteChatOverHead(UserIndex, "¡Quest Finalizada!", NpcList(TempCharIndex).Char.charindex, vbYellow)
 510                                             Call WriteConsoleMsg(UserIndex, "Quest Finalizada!", e_FontTypeNames.FONTTYPE_INFOIAO)
                                             End If
                     

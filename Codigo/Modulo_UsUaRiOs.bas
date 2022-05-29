@@ -2360,7 +2360,6 @@ Sub WarpUserChar(ByVal UserIndex As Integer, _
             
 194                 .flags.invisible = 0
 196                 .flags.Oculto = 0
-                    .Counters.TiempoOcultar = 1
 198                 .Counters.TiempoOculto = 0
                     .Counters.Invisibilidad = 0
                     Call SendData(SendTarget.ToPCArea, userindex, PrepareMessageSetInvisible(UserList(userindex).Char.charindex, False))
@@ -2872,7 +2871,6 @@ Public Sub LimpiarEstadosAlterados(ByVal UserIndex As Integer)
             '<<<< Invisible >>>>
 136         If (.flags.invisible = 1 Or .flags.Oculto = 1) And .flags.AdminInvisible = 0 Then
 138             .flags.Oculto = 0
-                .Counters.TiempoOcultar = 1
 140             .flags.invisible = 0
 142             .Counters.TiempoOculto = 0
 144             .Counters.Invisibilidad = 0
