@@ -5272,8 +5272,11 @@ Private Sub HandleGuildAcceptNewMember(ByVal UserIndex As Integer)
 118                 Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessagePlayWave(43, NO_3D_SOUND, NO_3D_SOUND))
                 End If
             Else
-                Call WriteConsoleMsg(UserIndex, "El usuario debe estar conectado para ser aceptado como miembro del clan.", e_FontTypeNames.FONTTYPE_GUILD)
-                Exit Sub
+                If Not modGuilds.a_AceptarAspirante(UserIndex, username, errorStr) Then
+                    Call WriteConsoleMsg(UserIndex, errorStr, e_FontTypeNames.FONTTYPE_GUILD)
+                Else
+124                 Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageConsoleMsg("[" & username & "] ha sido aceptado como miembro del clan.", e_FontTypeNames.FONTTYPE_GUILD))
+                End If
             End If
 
         End With
