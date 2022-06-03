@@ -15487,8 +15487,8 @@ Private Sub HandleDuel(ByVal UserIndex As Integer)
 104         Bet = Reader.ReadInt32
 106         PocionesMaximas = Reader.ReadInt16
 108         CaenItems = Reader.ReadBool
-            Call WriteConsoleMsg(UserIndex, "No puedes realizar un reto en este momento.", e_FontTypeNames.FONTTYPE_INFO)
-            Exit Sub
+            'Call WriteConsoleMsg(UserIndex, "No puedes realizar un reto en este momento.", e_FontTypeNames.FONTTYPE_INFO)
+           'Exit Sub
 110         Call CrearReto(UserIndex, Players, Bet, PocionesMaximas, CaenItems)
 
         End With

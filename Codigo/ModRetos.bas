@@ -26,7 +26,11 @@ Public Sub CargarInfoRetos()
 108         .ApuestaMinima = val(File.GetValue("Retos", "ApuestaMinima"))
 110         .ImpuestoApuesta = val(File.GetValue("Retos", "ImpuestoApuesta"))
 112         .DuracionMaxima = val(File.GetValue("Retos", "DuracionMaxima"))
-114         .TiempoConteo = val(File.GetValue("Retos", "TiempoConteo"))
+#If DEBUGGING Then
+114         .TiempoConteo = 3
+#Else
+            .TiempoConteo = val(File.GetValue("Retos", "TiempoConteo"))
+#End If
 116         .TotalSalas = val(File.GetValue("Salas", "Cantidad"))
         
 118         If .TotalSalas <= 0 Then Exit Sub
@@ -115,7 +119,7 @@ Public Sub CrearReto(ByVal UserIndex As Integer, JugadoresStr As String, ByVal A
 150                 With .Jugadores(i)
 152                     If EsGmChar(Jugadores(i)) Then
 154                         Call WriteConsoleMsg(UserIndex, "¡No puedes jugar retos con administradores!", e_FontTypeNames.FONTTYPE_INFO)
-                           'Exit Sub
+                            Exit Sub
                         End If
 
 156                     tIndex = NameIndex(Jugadores(i))
@@ -196,7 +200,7 @@ Public Sub AceptarReto(ByVal UserIndex As Integer, OferenteName As String)
     
 112     If EsGmChar(OferenteName) Then
 114         Call WriteConsoleMsg(UserIndex, "¡No puedes jugar retos con administradores!", e_FontTypeNames.FONTTYPE_INFO)
-           ' Exit Sub
+            Exit Sub
         End If
 
         Dim Oferente As Integer
@@ -693,13 +697,7 @@ Public Sub FinalizarReto(ByVal Sala As Integer, Optional ByVal TiempoAgotado As 
 
 
 202                         If .CaenItems Then
-204                             If (tIndex \ 2) Mod 2 Then
-                                       ' Lado izquierdo
 206                                Call WarpToLegalPos(tIndex, .PosIzquierda.Map, .PosIzquierda.X, .PosIzquierda.Y, True)
-                                Else
-                                       ' Lado derecho
-208                                Call WarpToLegalPos(tIndex, .PosDerecha.Map, .PosDerecha.X, .PosDerecha.Y, True)
-                                End If
                             Else
 210                             UserList(tIndex).flags.EnReto = False
 212                             Call DevolverPosAnterior(tIndex)
@@ -881,7 +879,12 @@ Public Sub IniciarDepositoItems(ByVal Sala As Integer)
 120         Pos.Y = ((.PosDerecha.Y - .PosIzquierda.Y) \ 2) + .PosIzquierda.Y
             'Spawneo un banquero.
 122         .IndexBanquero = SpawnNpc(3, Pos, True, False)
+#If DEBUGGING Then
+            .TiempoItems = 20
+#Else
 124         .TiempoItems = 60
+#End If
+
         End With
     
     
