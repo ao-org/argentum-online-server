@@ -2527,6 +2527,53 @@ WriteBindKeys_Err:
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteBindKeys", Erl)
         '</EhFooter>
 End Sub
+Public Sub WriteNotificarClienteSeguido(ByVal UserIndex As Integer, ByVal siguiendo As Byte)
+    
+        '<EhHeader>
+        On Error GoTo WriteNotificarClienteSeguido_Err
+        '</EhHeader>
+100     Call Writer.WriteInt16(ServerPacketID.NotificarClienteSeguido)
+102     Call Writer.WriteInt8(siguiendo)
+120     Call modSendData.SendData(ToIndex, UserIndex)
+        '<EhFooter>
+        Exit Sub
+
+WriteNotificarClienteSeguido_Err:
+        Call Writer.Clear
+        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteNotificarClienteSeguido", Erl)
+        '</EhFooter>
+End Sub
+Public Sub WriteRecievePosSeguimiento(ByVal UserIndex As Integer, ByVal PosX As Integer, ByVal PosY As Integer)
+    
+        '<EhHeader>
+        On Error GoTo WriteNotificarClienteSeguido_Err
+        '</EhHeader>
+100     Call Writer.WriteInt16(ServerPacketID.RecievePosSeguimiento)
+102     Call Writer.WriteInt16(PosX)
+103     Call Writer.WriteInt16(PosY)
+120     Call modSendData.SendData(ToIndex, UserIndex)
+        '<EhFooter>
+        Exit Sub
+
+WriteNotificarClienteSeguido_Err:
+        Call Writer.Clear
+        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteNotificarClienteSeguido", Erl)
+        '</EhFooter>
+End Sub
+Public Sub WriteCancelarSeguimiento(ByVal UserIndex As Integer)
+    
+        '<EhHeader>
+        On Error GoTo WriteCancelarSeguimiento_Err
+        '</EhHeader>
+100     Call Writer.WriteInt16(ServerPacketID.CancelarSeguimiento)
+120     Call modSendData.SendData(ToIndex, UserIndex)
+        '<EhFooter>
+        Exit Sub
+
+WriteCancelarSeguimiento_Err:
+        Call Writer.Clear
+        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteCancelarSeguimiento", Erl)
+End Sub
 
 ''
 ' Writes the "MiniStats" message to the given user's outgoing data .incomingData.

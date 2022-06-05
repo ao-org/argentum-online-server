@@ -1522,7 +1522,10 @@ Public Type t_UserFlags
     Nadando As Byte
     PescandoEspecial As Boolean
     QuestOpenByObj As Boolean
-
+    
+    siguiendo As Byte
+    seguidor As Integer
+    
     EnTorneo As Boolean
 
     'Ladder
