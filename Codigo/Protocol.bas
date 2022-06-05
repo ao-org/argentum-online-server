@@ -196,6 +196,9 @@ Public Enum ServerPacketID
     SensuiRetrasado
     UpdateFlag
     CharAtaca
+    NotificarClienteSeguido
+    RecievePosSeguimiento
+    CancelarSeguimiento
     [PacketCount]
 End Enum
 
@@ -514,6 +517,8 @@ Public Enum ClientPacketID
     iniciarCaptura
     ParticiparCaptura     '/PARTICIPARCAPTURA
     CancelarCaptura       '/CANCELARCAPTURA
+    SeguirMouse
+    SendPosMovimiento
     [PacketCount]
 End Enum
 
@@ -650,7 +655,7 @@ On Error Resume Next
         UserList(UserIndex).Counters.PacketCount = 0
     End If
     
-    UserList(UserIndex).Counters.PacketCount = UserList(UserIndex).Counters.PacketCount + 1
+    If PacketId <> 312 Then UserList(UserIndex).Counters.PacketCount = UserList(UserIndex).Counters.PacketCount + 1
     
     If UserList(UserIndex).Counters.PacketCount > 100 Then
         'Lo kickeo
@@ -952,6 +957,10 @@ On Error Resume Next
             Call HandleRequestCharSkills(UserIndex)
         Case ClientPacketID.ReviveChar
             Call HandleReviveChar(UserIndex)
+        Case ClientPacketID.SeguirMouse
+            Call HandleSeguirMouse(UserIndex)
+        Case ClientPacketID.SendPosMovimiento
+            Call HandleSendPosMovimiento(UserIndex)
         Case ClientPacketID.OnlineGM
             Call HandleOnlineGM(UserIndex)
         Case ClientPacketID.OnlineMap
@@ -10095,9 +10104,103 @@ ErrHandler:
 
 End Sub
 
+' Handles the "SeguirMouse" message.
+
+Private Sub HandleSeguirMouse(ByVal UserIndex As Integer)
+
+        '***************************************************
+        'Author: Martín Trionfetti - HarThaoS
+        'Last Modification: 6/4/2022
+        '
+        '***************************************************
+        On Error GoTo ErrHandler
+
+100     With UserList(UserIndex)
+        
+            Dim username As String
+            Dim tUser    As Integer
+            Dim LoopC    As Byte
+        
+102         username = Reader.ReadString8()
+        
+104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios)) Then
+106             If UCase$(username) <> "YO" Then
+108                 tUser = NameIndex(username)
+                Else
+                    Call WriteConsoleMsg(UserIndex, "No puedes seguirte a vos mismo", e_FontTypeNames.FONTTYPE_INFO)
+                    Exit Sub
+                End If
+            
+112             If tUser <= 0 Then
+114                 Call WriteConsoleMsg(UserIndex, "Usuario offline.", e_FontTypeNames.FONTTYPE_INFO)
+                Else
+116                 With UserList(tUser)
+                        'Si está conectado pongo el flag de siguiendo en 1
+                        If .flags.siguiendo = 1 Then
+                            .flags.siguiendo = 0
+                        Else
+                            .flags.siguiendo = 1
+                        End If
+                        .flags.seguidor = UserIndex
+                        
+                        'Actualizo flag en cliente para que empiece a enviar paquetes
+                        Call WriteNotificarClienteSeguido(tUser, .flags.siguiendo)
+                        
+                    End With
+                End If
+            Else
+136             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
+            End If
+
+        End With
+
+        Exit Sub
+
+ErrHandler:
+138     Call TraceError(Err.Number, Err.Description, "Protocol.HandleReviveChar", Erl)
+140
+
+End Sub
 'HarThaoS: Agrego perdón faccionario.
 'Puto el que lee
 
+' Handles the "SendPosMovimiento" message.
+
+Private Sub HandleSendPosMovimiento(ByVal UserIndex As Integer)
+
+        '***************************************************
+        'Author: Martín Trionfetti - HarThaoS
+        'Last Modification: 6/4/2022
+        '***************************************************
+        On Error GoTo ErrHandler
+
+100     With UserList(UserIndex)
+        
+            Dim PosX As Integer
+            Dim PosY As Integer
+            Dim tUser As Integer
+        
+102         PosX = Reader.ReadString16()
+103         PosY = Reader.ReadString16()
+
+            If .flags.siguiendo = 1 Then
+                If EsGM(.flags.seguidor) Then
+                    Call WriteRecievePosSeguimiento(.flags.seguidor, PosX, PosY)
+                End If
+                'CUANDO DESCONECTA SEGUIDOR Y SEGUIDO VER FLAGS
+            End If
+            
+        End With
+
+        Exit Sub
+
+ErrHandler:
+138     Call TraceError(Err.Number, Err.Description, "Protocol.HandleReviveChar", Erl)
+140
+
+End Sub
+'HarThaoS: Agrego perdón faccionario.
+'Puto el que lee
 
 'Lee abajo
 'Lee arriba

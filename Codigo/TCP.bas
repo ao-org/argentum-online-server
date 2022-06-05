@@ -1320,6 +1320,8 @@ Sub ResetUserFlags(ByVal UserIndex As Integer)
             .jugando_captura_team = 0
             .jugando_captura_timer = 0
             .jugando_captura_muertes = 0
+            .siguiendo = 0
+            .seguidor = 0
         End With
 
         
@@ -1584,6 +1586,24 @@ Sub ClearAndSaveUser(ByVal UserIndex As Integer)
 144         ElseIf .flags.AceptoReto > 0 Then
 146             Call CancelarSolicitudReto(.flags.AceptoReto, .name & " se ha desconectado.")
             End If
+            
+            
+            If .flags.siguiendo = 1 Then
+                Call WriteNotificarClienteSeguido(i, 0)
+                Call WriteCancelarSeguimiento(.flags.seguidor)
+            End If
+            
+            If EsGM(UserIndex) Then
+                For i = 1 To LastUser
+                    If UserList(i).flags.seguidor = UserIndex Then
+                        UserList(i).flags.seguidor = 0
+                        UserList(i).flags.siguiendo = 0
+                        Call WriteNotificarClienteSeguido(i, 0)
+                    End If
+                Next i
+            End If
+            
+            
         
 148         errordesc = "ERROR AL SACAR MIMETISMO"
 150         If .flags.Mimetizado > 0 Then
