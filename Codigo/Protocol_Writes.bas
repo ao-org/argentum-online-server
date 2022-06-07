@@ -1058,7 +1058,7 @@ End Sub
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteConsoleMsg(ByVal UserIndex As Integer, _
                            ByVal chat As String, _
-                           ByVal FontIndex As e_FontTypeNames)
+                           Optional ByVal FontIndex As e_FontTypeNames = FONTTYPE_INFO)
         '<EhHeader>
         On Error GoTo WriteConsoleMsg_Err
         '</EhHeader>
@@ -1573,6 +1573,7 @@ End Sub
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
+Public Sub WriteAreaChanged(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte)
         '<EhHeader>
         On Error GoTo WriteAreaChanged_Err
         '</EhHeader>
