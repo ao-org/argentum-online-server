@@ -73,6 +73,7 @@ Public Enum SendTarget
     ToUsuariosMuertos
     ToAdminsYDioses
     ToJugadoresCaptura
+    ToPCAreaButFollowerAndIndex
     
 End Enum
 
@@ -96,10 +97,17 @@ Public Sub SendData(ByVal sndRoute As SendTarget, ByVal sndIndex As Integer, Par
             Case SendTarget.ToIndex
                 If (UserList(sndIndex).ConnIDValida) Then
                     Call modNetwork.Send(sndIndex, Buffer)
+                    If UserList(sndIndex).flags.GMMeSigue > 0 Then
+                        Call modNetwork.Send(UserList(sndIndex).flags.GMMeSigue, Buffer)
+                    End If
                 End If
 
 104         Case SendTarget.ToPCArea
 106             Call SendToUserArea(sndIndex, Buffer)
+
+            
+105         Case SendTarget.ToPCAreaButFollowerAndIndex
+107             Call SendToUserAreaButFollowerAndIndex(sndIndex, Buffer)
 
 108         Case SendTarget.ToPCAreaButGMs
 110             Call SendToUserAreaButGMs(sndIndex, Buffer)
@@ -361,8 +369,10 @@ Private Sub SendToUserArea(ByVal UserIndex As Integer, ByVal Buffer As Network.W
 116             If UserList(tempIndex).AreasInfo.AreaReciveY And AreaY Then
 
 118                 If UserList(tempIndex).ConnIDValida Then
-
 120                     Call modNetwork.Send(tempIndex, Buffer)
+                        If UserList(tempIndex).flags.GMMeSigue > 0 Then
+                            Call modNetwork.Send(UserList(tempIndex).flags.GMMeSigue, Buffer)
+                        End If
 
                     End If
 
@@ -377,6 +387,58 @@ Private Sub SendToUserArea(ByVal UserIndex As Integer, ByVal Buffer As Network.W
 
 SendToUserArea_Err:
 124     Call TraceError(Err.Number, Err.Description, "modSendData.SendToUserArea", Erl)
+
+        
+End Sub
+
+
+Private Sub SendToUserAreaButFollowerAndIndex(ByVal UserIndex As Integer, ByVal Buffer As Network.Writer)
+        
+        On Error GoTo SendToUserAreaButFollower_Err
+        
+
+        '**************************************************************
+        'Author: Lucio N. Tourrilhes (DuNga)
+        'Last Modify Date: Unknow
+        '
+        '**************************************************************
+        Dim LoopC     As Long
+        Dim tempIndex As Integer
+        Dim map       As Integer
+        Dim AreaX     As Integer
+        Dim AreaY     As Integer
+        
+100     If UserIndex = 0 Then Exit Sub
+        
+102     map = UserList(UserIndex).Pos.map
+104     AreaX = UserList(UserIndex).AreasInfo.AreaPerteneceX
+106     AreaY = UserList(UserIndex).AreasInfo.AreaPerteneceY
+    
+108     If Not MapaValido(map) Then Exit Sub
+        
+110     For LoopC = 1 To ConnGroups(map).CountEntrys
+112         tempIndex = ConnGroups(map).UserEntrys(LoopC)
+
+114         If UserList(tempIndex).AreasInfo.AreaReciveX And AreaX Then  'Esta en el area?
+116             If UserList(tempIndex).AreasInfo.AreaReciveY And AreaY Then
+
+118                 If UserList(tempIndex).ConnIDValida Then
+                        If UserList(tempIndex).flags.SigueUsuario = 0 And tempIndex <> UserIndex Then
+120                         Call modNetwork.Send(tempIndex, Buffer)
+                        End If
+                    End If
+
+                End If
+
+            End If
+
+122     Next LoopC
+
+        
+        Exit Sub
+
+SendToUserAreaButFollower_Err:
+124     Call TraceError(Err.Number, Err.Description, "modSendData.SendToUserAreaButFollower", Erl)
 
         
 End Sub
@@ -649,7 +711,9 @@ Private Sub SendToUserAreaButGMs(ByVal UserIndex As Integer, ByVal Buffer As Net
 122                 If Not EsGM(tempIndex) Then
 
 124                     If UserList(tempIndex).ConnIDValida Then
-
+                            If UserList(tempIndex).flags.GMMeSigue > 0 Then
+                                Call modNetwork.Send(UserList(tempIndex).flags.GMMeSigue, Buffer)
+                            End If
 126                         Call modNetwork.Send(tempIndex, Buffer)
 
                         End If
@@ -858,6 +922,9 @@ Private Sub SendToNpcArea(ByVal NpcIndex As Long, ByVal Buffer As Network.Writer
 
 120             If TempInt Then
 122                 If UserList(tempIndex).ConnIDValida Then
+                        If UserList(tempIndex).flags.GMMeSigue > 0 Then
+                            Call modNetwork.Send(UserList(tempIndex).flags.GMMeSigue, Buffer)
+                        End If
 124                     Call modNetwork.Send(tempIndex, Buffer)
 
                     End If
@@ -942,7 +1009,9 @@ Private Sub SendToMap(ByVal Map As Integer, ByVal Buffer As Network.Writer)
         
 106         If UserList(tempIndex).ConnIDValida Then
 108             Call modNetwork.Send(tempIndex, Buffer)
-
+                If UserList(tempIndex).flags.GMMeSigue > 0 Then
+                    Call modNetwork.Send(UserList(tempIndex).flags.GMMeSigue, Buffer)
+                End If
             End If
 
 110     Next LoopC
@@ -980,6 +1049,9 @@ Private Sub SendToMapButIndex(ByVal UserIndex As Integer, ByVal Buffer As Networ
 108         tempIndex = ConnGroups(Map).UserEntrys(LoopC)
         
 110         If tempIndex <> UserIndex And UserList(tempIndex).ConnIDValida Then
+                If UserList(tempIndex).flags.GMMeSigue > 0 Then
+112                 Call modNetwork.Send(UserList(tempIndex).flags.GMMeSigue, Buffer)
+                End If
 112             Call modNetwork.Send(tempIndex, Buffer)
 
             End If

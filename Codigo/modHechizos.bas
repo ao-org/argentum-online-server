@@ -108,6 +108,10 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
 
 156       .Stats.MinHp = .Stats.MinHp - Daño
 
+            If .flags.GMMeSigue > 0 Then
+                UserList(.flags.GMMeSigue).Stats.MinHp = UserList(.flags.GMMeSigue).Stats.MinHp - Daño
+            End If
+
           'Call WriteLocaleMsg(UserIndex, "34", e_FontTypeNames.FONTTYPE_FIGHT, NpcList(NpcIndex).name & "¬" & DañoStr)
 158       Call WriteConsoleMsg(userindex, NpcList(NpcIndex).name & " te ha quitado " & Daño & " puntos de vida.", e_FontTypeNames.FONTTYPE_FIGHT)
 160       Call SendData(SendTarget.ToPCArea, userindex, PrepareMessageTextCharDrop(DañoStr, .Char.charindex, vbRed))
@@ -1198,6 +1202,9 @@ Sub HandleHechizoUsuario(ByVal UserIndex As Integer, ByVal uh As Integer)
 114         Call SubirSkill(UserIndex, Magia)
                     
 116         UserList(UserIndex).Stats.MinMAN = UserList(UserIndex).Stats.MinMAN - ManaHechizoPorClase(UserIndex, Hechizos(uh), uh)
+            If UserList(UserIndex).flags.GMMeSigue Then
+117             UserList(UserList(UserIndex).flags.GMMeSigue).Stats.MinMAN = UserList(UserList(UserIndex).flags.GMMeSigue).Stats.MinMAN - ManaHechizoPorClase(UserList(UserIndex).flags.GMMeSigue, Hechizos(uh), uh)
+            End If
 118         If UserList(UserIndex).Stats.MinMAN < 0 Then UserList(UserIndex).Stats.MinMAN = 0
 
 120         If Hechizos(uh).RequiredHP > 0 Then
@@ -1309,7 +1316,9 @@ Sub HandleHechizoNPC(ByVal UserIndex As Integer, ByVal uh As Integer)
 112         UserList(UserIndex).flags.TargetNPC = 0
             
             UserList(userindex).Stats.MinMAN = UserList(userindex).Stats.MinMAN - ManaHechizoPorClase(userindex, Hechizos(uh), uh)
-
+            If UserList(UserIndex).flags.GMMeSigue Then
+117             UserList(UserList(UserIndex).flags.GMMeSigue).Stats.MinMAN = UserList(UserList(UserIndex).flags.GMMeSigue).Stats.MinMAN - ManaHechizoPorClase(UserList(UserIndex).flags.GMMeSigue, Hechizos(uh), uh)
+            End If
 116         If Hechizos(uh).RequiredHP > 0 Then
 118             If UserList(UserIndex).Stats.MinMAN < 0 Then UserList(UserIndex).Stats.MinMAN = 0
 120             UserList(UserIndex).Stats.MinHp = UserList(UserIndex).Stats.MinHp - Hechizos(uh).RequiredHP
@@ -3204,7 +3213,11 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 450         Call InfoHechizo(UserIndex)
     
 452         UserList(tempChr).Stats.MinHp = UserList(tempChr).Stats.MinHp - Daño
-
+            
+            If UserList(tempChr).flags.GMMeSigue > 0 Then
+                UserList(UserList(tempChr).flags.GMMeSigue).Stats.MinHp = UserList(UserList(tempChr).flags.GMMeSigue).Stats.MinHp - Daño
+            End If
+            
 454         DañoStr = PonerPuntos(Daño)
     
             'Call WriteConsoleMsg(UserIndex, "Le has quitado " & Daño & " puntos de vida a " & UserList(tempChr).name, e_FontTypeNames.FONTTYPE_FIGHT)

@@ -1044,6 +1044,7 @@ End Type
 Public Type t_Char
 
     CharIndex As Integer
+    charindex_bk As Integer
     Head As Integer
     Body As Integer
     
@@ -1523,8 +1524,8 @@ Public Type t_UserFlags
     PescandoEspecial As Boolean
     QuestOpenByObj As Boolean
     
-    siguiendo As Byte
-    seguidor As Integer
+    SigueUsuario As Integer
+    GMMeSigue As Integer
     
     EnTorneo As Boolean
 
@@ -1918,6 +1919,7 @@ Public Type t_User
     MENSAJEINFORMACION As String
         
     Invent As t_Inventario
+    Invent_bk As t_Inventario
     
     Pos As t_WorldPos
     
@@ -1931,6 +1933,7 @@ Public Type t_User
     Intervals As t_UserIntervals
     
     Stats As t_UserStats
+    Stats_bk As t_UserStats
     flags As t_UserFlags
     Accion As t_AccionPendiente
 

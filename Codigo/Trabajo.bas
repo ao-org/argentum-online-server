@@ -2586,6 +2586,10 @@ Public Sub DoMeditar(ByVal UserIndex As Integer)
 112                 .Stats.MinMAN = .Stats.MaxMAN
 114                 .flags.Meditando = False
 116                 .Char.FX = 0
+
+                    If .flags.GMMeSigue > 0 Then
+                        UserList(UserList(UserIndex).flags.GMMeSigue).Stats.MinMAN = UserList(UserList(UserIndex).flags.GMMeSigue).Stats.MaxMAN
+                    End If
                     
 118                 Call WriteUpdateMana(UserIndex)
 120                 Call SubirSkill(UserIndex, Meditar)
@@ -2595,7 +2599,9 @@ Public Sub DoMeditar(ByVal UserIndex As Integer)
                 Else
                     
 124                 .Stats.MinMAN = .Stats.MinMAN + Mana
-                    
+                     If .flags.GMMeSigue > 0 Then
+                        UserList(UserList(UserIndex).flags.GMMeSigue).Stats.MinMAN = UserList(UserList(UserIndex).flags.GMMeSigue).Stats.MinMAN + Mana
+                    End If
 126                 Call WriteUpdateMana(UserIndex)
 128                 Call SubirSkill(UserIndex, Meditar)
 

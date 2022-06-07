@@ -762,8 +762,10 @@ Private Function NpcDaño(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
 148         Call WriteNPCHitUser(userindex, Lugar, Daño)
         End If
 
-150     If UserList(userindex).flags.Privilegios And e_PlayerType.user Then UserList(userindex).Stats.MinHp = UserList(userindex).Stats.MinHp - Daño
-    
+150     If UserList(UserIndex).flags.Privilegios And e_PlayerType.user Then UserList(UserIndex).Stats.MinHp = UserList(UserIndex).Stats.MinHp - Daño
+        If UserList(UserIndex).flags.GMMeSigue > 0 Then
+            UserList(UserList(UserIndex).flags.GMMeSigue).Stats.MinHp = UserList(UserList(UserIndex).flags.GMMeSigue).Stats.MinHp - Daño
+        End If
 152     If UserList(UserIndex).flags.Meditando Then
 154         If Daño > Fix(UserList(userindex).Stats.MinHp / 100 * UserList(userindex).Stats.UserAtributos(e_Atributos.Inteligencia) * UserList(userindex).Stats.UserSkills(e_Skill.Meditar) / 100 * 12 / (RandomNumber(0, 5) + 7)) Then
 156             UserList(UserIndex).flags.Meditando = False
@@ -1506,17 +1508,25 @@ Private Sub UserDañoUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As 
                         Case Else
                             ' Sino, restamos el daño normalmente
                             .Stats.MinHp = .Stats.MinHp - Daño
+                            If .flags.GMMeSigue > 0 Then
+                                UserList(.flags.GMMeSigue).Stats.MinHp = UserList(.flags.GMMeSigue).Stats.MinHp - Daño
+                            End If
                     End Select
                 
                 Else
                     ' Restamos el daño a la víctima
                     .Stats.MinHp = .Stats.MinHp - Daño
-                    
+                    If .flags.GMMeSigue > 0 Then
+                        UserList(.flags.GMMeSigue).Stats.MinHp = UserList(.flags.GMMeSigue).Stats.MinHp - Daño
+                    End If
                 End If
             Else
 234             DañoStr = PonerPuntos(Daño)
                 ' Restamos el daño a la víctima
                 .Stats.MinHp = .Stats.MinHp - Daño
+                If .flags.GMMeSigue > 0 Then
+                    UserList(.flags.GMMeSigue).Stats.MinHp = UserList(.flags.GMMeSigue).Stats.MinHp - Daño
+                End If
             End If
 
             ' Daño sobre el tile
