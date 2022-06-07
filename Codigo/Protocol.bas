@@ -3522,6 +3522,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 278                 If .flags.Hechizo > 0 Then
                         .Counters.controlHechizos.HechizosTotales = .Counters.controlHechizos.HechizosTotales + 1
 280                     Call LanzarHechizo(.flags.Hechizo, UserIndex)
+                        Call WriteNofiticarClienteCasteo(.flags.GMMeSigue, 0)
 282                     .flags.Hechizo = 0
                     Else
 284                     Call WriteConsoleMsg(userindex, "¡Primero selecciona el hechizo que quieres lanzar!", e_FontTypeNames.FONTTYPE_INFO)
