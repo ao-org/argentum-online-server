@@ -1052,7 +1052,7 @@ Private Sub SendToMapButIndex(ByVal UserIndex As Integer, ByVal Buffer As Networ
                 If UserList(tempIndex).flags.GMMeSigue > 0 Then
 112                 Call modNetwork.Send(UserList(tempIndex).flags.GMMeSigue, Buffer)
                 End If
-112             Call modNetwork.Send(tempIndex, Buffer)
+113             Call modNetwork.Send(tempIndex, Buffer)
 
             End If
 
