@@ -1320,8 +1320,8 @@ Sub ResetUserFlags(ByVal UserIndex As Integer)
             .jugando_captura_team = 0
             .jugando_captura_timer = 0
             .jugando_captura_muertes = 0
-            .siguiendo = 0
-            .seguidor = 0
+            .SigueUsuario = 0
+            .GMMeSigue = 0
         End With
 
         
@@ -1588,19 +1588,30 @@ Sub ClearAndSaveUser(ByVal UserIndex As Integer)
             End If
             
             
-            If .flags.siguiendo = 1 Then
-                Call WriteNotificarClienteSeguido(i, 0)
-                Call WriteCancelarSeguimiento(.flags.seguidor)
+            'Se desconecta un usuario seguido
+            If .flags.GMMeSigue > 0 Then
+                Call WriteCancelarSeguimiento(.flags.GMMeSigue)
+                UserList(.flags.GMMeSigue).flags.SigueUsuario = 0
+                UserList(.flags.GMMeSigue).Invent = UserList(.flags.GMMeSigue).Invent_bk
+                UserList(.flags.GMMeSigue).Stats = UserList(.flags.GMMeSigue).Stats_bk
+                'UserList(.flags.GMMeSigue).Char.charindex = UserList(.flags.GMMeSigue).Char.charindex_bk
+                Call WriteUserCharIndexInServer(.flags.GMMeSigue)
+                Call UpdateUserInv(True, .flags.GMMeSigue, 1)
+                Call WriteUpdateUserStats(.flags.GMMeSigue)
+                Call WriteConsoleMsg(.flags.GMMeSigue, "El usuario " & UserList(UserIndex).name & " que estabas siguiendo se desconectó.", e_FontTypeNames.FONTTYPE_INFO)
+                .flags.GMMeSigue = 0
+                'Falta revertir inventario del GM
             End If
-            
-            If EsGM(UserIndex) Then
-                For i = 1 To LastUser
-                    If UserList(i).flags.seguidor = UserIndex Then
-                        UserList(i).flags.seguidor = 0
-                        UserList(i).flags.siguiendo = 0
-                        Call WriteNotificarClienteSeguido(i, 0)
-                    End If
-                Next i
+                
+            If .flags.SigueUsuario > 0 Then
+                'Para que el usuario deje de mandar el floodeo de paquetes
+                Call WriteNotificarClienteSeguido(.flags.SigueUsuario, 0)
+                UserList(.flags.SigueUsuario).flags.GMMeSigue = 0
+                UserList(UserIndex).Invent = UserList(UserIndex).Invent_bk
+                UserList(UserIndex).Stats = UserList(UserIndex).Stats_bk
+               ' UserList(UserIndex).Char.charindex = UserList(UserIndex).Char.charindex_bk
+                
+                .flags.SigueUsuario = 0
             End If
             
             

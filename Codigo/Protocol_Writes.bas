@@ -680,6 +680,10 @@ Public Sub WriteUpdateMana(ByVal UserIndex As Integer)
 102     Call Writer.WriteInt16(ServerPacketID.UpdateMana)
 104     Call Writer.WriteInt16(UserList(UserIndex).Stats.MinMAN)
 106     Call modSendData.SendData(ToIndex, UserIndex)
+
+        If UserList(UserIndex).flags.GMMeSigue > 0 And UserList(UserIndex).flags.GMMeSigue <> UserIndex Then
+            Call WriteUpdateMana(UserList(UserIndex).flags.GMMeSigue)
+        End If
         '<EhFooter>
         Exit Sub
 
@@ -706,6 +710,10 @@ Public Sub WriteUpdateHP(ByVal UserIndex As Integer)
 102     Call Writer.WriteInt16(ServerPacketID.UpdateHP)
 104     Call Writer.WriteInt16(UserList(UserIndex).Stats.MinHp)
 106     Call modSendData.SendData(ToIndex, UserIndex)
+
+        If UserList(UserIndex).flags.GMMeSigue > 0 And UserList(UserIndex).flags.GMMeSigue <> UserIndex Then
+            Call WriteUpdateHP(UserList(UserIndex).flags.GMMeSigue)
+        End If
         '<EhFooter>
         Exit Sub
 
@@ -794,12 +802,40 @@ Public Sub WritePosUpdate(ByVal UserIndex As Integer)
 102     Call Writer.WriteInt8(UserList(UserIndex).Pos.X)
 104     Call Writer.WriteInt8(UserList(UserIndex).Pos.Y)
 106     Call modSendData.SendData(ToIndex, UserIndex)
+                
+        If UserList(UserIndex).flags.GMMeSigue > 0 Then
+            Call WritePosUpdateCharIndex(UserList(UserIndex).flags.GMMeSigue, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y, UserList(UserIndex).Char.charindex)
+        End If
         '<EhFooter>
         Exit Sub
 
 WritePosUpdate_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WritePosUpdate", Erl)
+        '</EhFooter>
+End Sub
+
+''
+' Writes the "PosUpdate" message to the given user's outgoing data .incomingData.
+'
+' @param    UserIndex User to which the message is intended.
+' @remarks  The data is not actually sent until the buffer is properly flushed.
+Public Sub WritePosUpdateCharIndex(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte, ByVal charindex As Integer)
+        '<EhHeader>
+        On Error GoTo WritePosUpdateCharIndex_Err
+        '</EhHeader>
+100     Call Writer.WriteInt16(ServerPacketID.PosUpdateCharindex)
+102     Call Writer.WriteInt8(X)
+104     Call Writer.WriteInt8(Y)
+105     Call Writer.WriteInt16(charindex)
+106     Call modSendData.SendData(ToIndex, UserIndex)
+
+        '<EhFooter>
+        Exit Sub
+
+WritePosUpdateCharIndex_Err:
+        Call Writer.Clear
+        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WritePosUpdateCharIndex", Erl)
         '</EhFooter>
 End Sub
 
@@ -1248,6 +1284,22 @@ WriteForceCharMove_Err:
         '</EhFooter>
 End Sub
 
+Public Sub WriteForceCharMoveSiguiendo(ByVal UserIndex As Integer, ByVal Direccion As e_Heading)
+        '<EhHeader>
+        On Error GoTo WriteForceCharMoveSiguiendo_Err
+        '</EhHeader>
+98      Call Writer.WriteInt16(ServerPacketID.ForceCharMoveSiguiendo)
+100     Call Writer.WriteInt8(Direccion)
+102     Call modSendData.SendData(ToIndex, UserIndex)
+        '<EhFooter>
+        Exit Sub
+
+WriteForceCharMoveSiguiendo_Err:
+        Call Writer.Clear
+        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteForceCharMoveSiguiendo", Erl)
+        '</EhFooter>
+End Sub
+
 ''
 ' Writes the "CharacterChange" message to the given user's outgoing data .incomingData.
 '
@@ -1521,13 +1573,12 @@ End Sub
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-Public Sub WriteAreaChanged(ByVal UserIndex As Integer)
         '<EhHeader>
         On Error GoTo WriteAreaChanged_Err
         '</EhHeader>
 100     Call Writer.WriteInt16(ServerPacketID.AreaChanged)
-102     Call Writer.WriteInt8(UserList(UserIndex).Pos.X)
-104     Call Writer.WriteInt8(UserList(UserIndex).Pos.Y)
+102     Call Writer.WriteInt8(X)
+104     Call Writer.WriteInt8(Y)
 106     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub
@@ -1654,6 +1705,11 @@ Public Sub WriteUpdateUserStats(ByVal UserIndex As Integer)
 124     Call Writer.WriteInt32(UserList(UserIndex).Stats.Exp)
 126     Call Writer.WriteInt8(UserList(UserIndex).clase)
 128     Call modSendData.SendData(ToIndex, UserIndex)
+
+        If UserList(UserIndex).flags.GMMeSigue > 0 And UserList(UserIndex).flags.GMMeSigue <> UserIndex Then
+            Call WriteUpdateUserStats(UserList(UserIndex).flags.GMMeSigue)
+        End If
+
         '<EhFooter>
         Exit Sub
 
@@ -2560,6 +2616,40 @@ WriteNotificarClienteSeguido_Err:
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteNotificarClienteSeguido", Erl)
         '</EhFooter>
 End Sub
+Public Sub WriteGetInventarioHechizos(ByVal UserIndex As Integer, ByVal Value As Byte)
+    
+        '<EhHeader>
+        On Error GoTo GetInventarioHechizos_Err
+        '</EhHeader>
+100     Call Writer.WriteInt16(ServerPacketID.GetInventarioHechizos)
+101     Call Writer.WriteInt8(Value)
+120     Call modSendData.SendData(ToIndex, UserIndex)
+        '<EhFooter>
+        Exit Sub
+
+GetInventarioHechizos_Err:
+        Call Writer.Clear
+        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.GetInventarioHechizos", Erl)
+        '</EhFooter>
+End Sub
+
+Public Sub WriteNofiticarClienteCasteo(ByVal UserIndex As Integer, ByVal Value As Byte)
+
+        '<EhHeader>
+        On Error GoTo NofiticarClienteCasteo_Err
+        '</EhHeader>
+100     Call Writer.WriteInt16(ServerPacketID.NotificarClienteCasteo)
+101     Call Writer.WriteInt8(Value)
+120     Call modSendData.SendData(ToIndex, UserIndex)
+        '<EhFooter>
+        Exit Sub
+
+NofiticarClienteCasteo_Err:
+        Call Writer.Clear
+        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.NofiticarClienteCasteo", Erl)
+        '</EhFooter>
+End Sub
+
 Public Sub WriteCancelarSeguimiento(ByVal UserIndex As Integer)
     
         '<EhHeader>
@@ -2574,7 +2664,22 @@ WriteCancelarSeguimiento_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteCancelarSeguimiento", Erl)
 End Sub
+Public Sub WriteSendFollowingCharindex(ByVal UserIndex As Integer, ByVal charindex As Integer)
 
+        '<EhHeader>
+        On Error GoTo WriteSendFollowingCharindex_Err
+        '</EhHeader>
+100     Call Writer.WriteInt16(ServerPacketID.SendFollowingCharIndex)
+102     Call Writer.WriteInt16(charindex)
+        
+120     Call modSendData.SendData(ToIndex, UserIndex)
+        '<EhFooter>
+        Exit Sub
+
+WriteSendFollowingCharindex_Err:
+        Call Writer.Clear
+        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteSendFollowingCharindex", Erl)
+End Sub
 ''
 ' Writes the "MiniStats" message to the given user's outgoing data .incomingData.
 '
@@ -5111,6 +5216,20 @@ PrepareMessageForceCharMove_Err:
         '</EhFooter>
 End Function
 
+Public Function PrepareMessageForceCharMoveSiguiendo(ByVal Direccion As e_Heading)
+        '<EhHeader>
+        On Error GoTo PrepareMessageForceCharMoveSiguiendo_Err
+        '</EhHeader>
+100     Call Writer.WriteInt16(ServerPacketID.ForceCharMoveSiguiendo)
+102     Call Writer.WriteInt8(Direccion)
+        '<EhFooter>
+        Exit Function
+
+PrepareMessageForceCharMoveSiguiendo_Err:
+        Call Writer.Clear
+        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageForceCharMoveSiguiendo", Erl)
+        '</EhFooter>
+End Function
 ''
 ' Prepares the "UpdateTagAndStatus" message and returns it.
 '

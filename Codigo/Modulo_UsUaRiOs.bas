@@ -1361,7 +1361,7 @@ Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As e_Heading) A
             'End If
 
             'Si no estoy solo en el mapa...
-130         If MapInfo(.Pos.Map).NumUsers > 1 Then
+130         If MapInfo(.Pos.map).NumUsers > 1 Or .flags.GMMeSigue > 0 Then
 
                 ' Intercambia posición si hay un casper o gm invisible
 132             IndexMover = MapData(nPos.Map, nPos.X, nPos.Y).UserIndex
@@ -1382,18 +1382,31 @@ Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As e_Heading) A
 148                     Call SendData(SendTarget.ToAdminAreaButIndex, IndexMover, PrepareMessageCharacterMove(UserList(IndexMover).Char.CharIndex, UserList(IndexMover).Pos.X, UserList(IndexMover).Pos.Y))
                     End If
                     
+                    If UserList(IndexMover).flags.GMMeSigue > 0 Then
+                        Call WriteForceCharMoveSiguiendo(UserList(IndexMover).flags.GMMeSigue, Opposite_Heading)
+                    End If
 150                 Call WriteForceCharMove(IndexMover, Opposite_Heading)
                 
                     'Update map and char
-152                 UserList(IndexMover).Char.Heading = Opposite_Heading
-154                 MapData(UserList(IndexMover).Pos.Map, UserList(IndexMover).Pos.X, UserList(IndexMover).Pos.Y).UserIndex = IndexMover
-                
+                    UserList(IndexMover).Char.Heading = Opposite_Heading
+                    MapData(UserList(IndexMover).Pos.map, UserList(IndexMover).Pos.X, UserList(IndexMover).Pos.Y).UserIndex = IndexMover
+                    
+                        'seteo en el array el userindex del gm (en la misma pos que el usuario)
+                                    
                     'Actualizamos las areas de ser necesario
 156                 Call ModAreas.CheckUpdateNeededUser(IndexMover, Opposite_Heading, 0)
                 End If
 
 158             If .flags.AdminInvisible = 0 Then
-160                 Call SendData(SendTarget.ToPCAreaButIndex, UserIndex, PrepareMessageCharacterMove(.Char.CharIndex, nPos.X, nPos.Y))
+
+                    
+                    If .flags.GMMeSigue > 0 Then
+                        'Call SendData(SendTarget.ToPCAreaButIndex, UserIndex, PrepareMessageCharacterMove(.Char.charindex, nPos.X, nPos.Y))
+                        Call SendData(SendTarget.ToPCAreaButFollowerAndIndex, UserIndex, PrepareMessageCharacterMove(.Char.charindex, nPos.X, nPos.Y))
+                        Call WriteForceCharMoveSiguiendo(.flags.GMMeSigue, nHeading)
+                    Else
+160                     Call SendData(SendTarget.ToPCAreaButIndex, UserIndex, PrepareMessageCharacterMove(.Char.charindex, nPos.X, nPos.Y))
+                    End If
                 Else
 162                 Call SendData(SendTarget.ToAdminAreaButIndex, UserIndex, PrepareMessageCharacterMove(.Char.CharIndex, nPos.X, nPos.Y))
                 End If
@@ -2352,6 +2365,9 @@ Sub WarpUserChar(ByVal UserIndex As Integer, _
     
 188         Call WriteUserCharIndexInServer(UserIndex)
     
+            If .flags.GMMeSigue > 0 Then
+                Call WriteSendFollowingCharindex(.flags.GMMeSigue, .Char.charindex)
+            End If
             'Seguis invisible al pasar de mapa
 190         If (.flags.invisible = 1 Or .flags.Oculto = 1) And (Not .flags.AdminInvisible = 1) Then
 

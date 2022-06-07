@@ -199,6 +199,11 @@ Public Enum ServerPacketID
     NotificarClienteSeguido
     RecievePosSeguimiento
     CancelarSeguimiento
+    GetInventarioHechizos
+    NotificarClienteCasteo
+    SendFollowingCharIndex
+    ForceCharMoveSiguiendo
+    PosUpdateCharindex
     [PacketCount]
 End Enum
 
@@ -519,6 +524,7 @@ Public Enum ClientPacketID
     CancelarCaptura       '/CANCELARCAPTURA
     SeguirMouse
     SendPosMovimiento
+    NotifyInventarioHechizos
     [PacketCount]
 End Enum
 
@@ -961,6 +967,8 @@ On Error Resume Next
             Call HandleSeguirMouse(UserIndex)
         Case ClientPacketID.SendPosMovimiento
             Call HandleSendPosMovimiento(UserIndex)
+        Case ClientPacketID.NotifyInventarioHechizos
+            Call HandleNotifyInventariohechizos(UserIndex)
         Case ClientPacketID.OnlineGM
             Call HandleOnlineGM(UserIndex)
         Case ClientPacketID.OnlineMap
@@ -1798,6 +1806,12 @@ Private Sub HandleWhisper(ByVal UserIndex As Integer)
                         
 128                     Call WriteChatOverHead(UserIndex, chat, .Char.CharIndex, RGB(157, 226, 20))
 130                     Call WriteChatOverHead(targetUserIndex, chat, .Char.CharIndex, RGB(157, 226, 20))
+                        
+                        If UserList(UserIndex).flags.GMMeSigue > 0 Or UserList(targetUserIndex).flags.GMMeSigue > 0 Then
+                            Dim seguidoIndex As Integer
+                            seguidoIndex = IIf(UserList(UserIndex).flags.GMMeSigue > 0, UserIndex, targetUserIndex)
+                            Call WriteChatOverHead(UserList(seguidoIndex).flags.GMMeSigue, UserList(UserIndex).name & " susurró a " & UserList(targetUserIndex).name & "> " & chat, UserList(UserList(seguidoIndex).flags.GMMeSigue).Char.charindex, RGB(157, 226, 20))
+                        End If
                         'Call WriteConsoleMsg(UserIndex, "[" & .Name & "] " & chat, e_FontTypeNames.FONTTYPE_MP)
                         'Call WriteConsoleMsg(targetUserIndex, "[" & .Name & "] " & chat, e_FontTypeNames.FONTTYPE_MP)
 132                     Call WritePlayWave(targetUserIndex, e_FXSound.MP_SOUND, NO_3D_SOUND, NO_3D_SOUND)
@@ -2784,6 +2798,11 @@ Private Sub HandleCastSpell(ByVal UserIndex As Integer) ', ByVal server_crc As L
 124                         Call LanzarHechizo(.flags.Hechizo, UserIndex)
     
                         Else
+                            If .flags.GMMeSigue > 0 Then
+                                '1 para agarra hechizo
+                                Call WriteNofiticarClienteCasteo(.flags.GMMeSigue, 1)
+                            End If
+                            
                             If Hechizos(.Stats.UserHechizos(Spell)).AreaAfecta > 0 Then
 126                             Call WriteWorkRequestTarget(UserIndex, e_Skill.Magia, True, Hechizos(.Stats.UserHechizos(Spell)).AreaRadio)
                             Else
@@ -10134,19 +10153,66 @@ Private Sub HandleSeguirMouse(ByVal UserIndex As Integer)
 112             If tUser <= 0 Then
 114                 Call WriteConsoleMsg(UserIndex, "Usuario offline.", e_FontTypeNames.FONTTYPE_INFO)
                 Else
-116                 With UserList(tUser)
-                        'Si está conectado pongo el flag de siguiendo en 1
-                        If .flags.siguiendo = 1 Then
-                            .flags.siguiendo = 0
-                        Else
-                            .flags.siguiendo = 1
+                    'Si empiezo a seguir a alguien
+                    If UserList(UserIndex).flags.SigueUsuario = 0 Then
+                    
+                        If UserList(tUser).flags.GMMeSigue > 0 And UserList(tUser).flags.GMMeSigue <> UserIndex Then
+                            Call WriteConsoleMsg(UserIndex, "El usuario está siendo seguido por " & UserList(UserList(tUser).flags.GMMeSigue).name & ".", e_FontTypeNames.FONTTYPE_INFO)
+                            Exit Sub
                         End If
-                        .flags.seguidor = UserIndex
                         
-                        'Actualizo flag en cliente para que empiece a enviar paquetes
-                        Call WriteNotificarClienteSeguido(tUser, .flags.siguiendo)
+                        'Me backupeo el inventario y los hechizos
+                        UserList(UserIndex).Invent_bk = UserList(UserIndex).Invent
+                        UserList(UserIndex).Stats_bk = UserList(UserIndex).Stats
                         
-                    End With
+                        'Me pego el inventario y los hechizos del usuario seguido
+                        UserList(UserIndex).Invent = UserList(tUser).Invent
+                        UserList(UserIndex).Stats = UserList(tUser).Stats
+                        UserList(UserIndex).flags.SigueUsuario = tUser
+                        UserList(tUser).flags.GMMeSigue = UserIndex
+                        
+                        
+                        Call WriteConsoleMsg(UserIndex, "Comienzas a seguir a " & UserList(tUser).name & ".", e_FontTypeNames.FONTTYPE_INFO)
+                        UserList(UserIndex).Char.charindex_bk = UserList(UserIndex).Char.charindex
+                        
+                        Call WriteSendFollowingCharindex(UserIndex, UserList(tUser).Char.charindex)
+                        Call WritePosUpdateCharIndex(UserIndex, UserList(tUser).Pos.X, UserList(tUser).Pos.Y, UserList(tUser).Char.charindex)
+                        
+                        If UserList(tUser).Pos.map <> UserList(UserIndex).Pos.map Then
+                            Call WarpUserChar(UserIndex, UserList(tUser).Pos.map, 15, 15)
+                            'Hay que transformarlo en doAdminInvisible y parametrizar doAdminInvisible
+                            .flags.AdminInvisible = 1
+                            .flags.invisible = 1
+                            .flags.Oculto = 1
+                            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(UserList(UserIndex).Char.charindex, True))
+                            Call SendData(SendTarget.ToPCAreaButGMs, UserIndex, PrepareMessageCharacterRemove(2, UserList(UserIndex).Char.charindex, True))
+            
+                        End If
+                        
+                    Else
+                        If UserList(UserIndex).flags.SigueUsuario <> tUser Then
+                            Call WriteConsoleMsg(UserIndex, "Ya te encuentras siguiendo a un usuario, para dejar de seguirlo escribe /seguirmouse " & UserList(UserList(UserIndex).flags.SigueUsuario).name & ".", e_FontTypeNames.FONTTYPE_INFO)
+                            Exit Sub
+                        End If
+                        'Me devuelvo inventario y stats
+                        UserList(UserIndex).Invent = UserList(UserIndex).Invent_bk
+                        UserList(UserIndex).Stats = UserList(UserIndex).Stats_bk
+                        UserList(UserIndex).flags.SigueUsuario = 0
+                        'UserList(UserIndex).Char.charindex = UserList(UserIndex).Char.charindex_bk
+                        Call WriteConsoleMsg(UserIndex, "Dejas de seguir a " & UserList(tUser).name & ".", e_FontTypeNames.FONTTYPE_INFO)
+                        Call WriteCancelarSeguimiento(UserIndex)
+                        UserList(tUser).flags.GMMeSigue = 0
+                        Call WarpUserChar(UserIndex, UserList(UserIndex).Pos.map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y, False)
+                    End If
+                    
+                    
+                    Call UpdateUserInv(True, UserIndex, 1)
+                    Call UpdateUserHechizos(True, UserIndex, 0)
+900                 Call WriteUpdateUserStats(UserIndex)
+                    
+                    'Actualizo flag en cliente para que empiece a enviar paquetes
+                    Call WriteNotificarClienteSeguido(tUser, IIf(UserList(tUser).flags.GMMeSigue > 0, 1, 0))
+                        
                 End If
             Else
 136             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
@@ -10183,11 +10249,39 @@ Private Sub HandleSendPosMovimiento(ByVal UserIndex As Integer)
 102         PosX = Reader.ReadString16()
 103         PosY = Reader.ReadString16()
 
-            If .flags.siguiendo = 1 Then
-                If EsGM(.flags.seguidor) Then
-                    Call WriteRecievePosSeguimiento(.flags.seguidor, PosX, PosY)
-                End If
+            If .flags.GMMeSigue > 0 Then
+                Call WriteRecievePosSeguimiento(.flags.GMMeSigue, PosX, PosY)
                 'CUANDO DESCONECTA SEGUIDOR Y SEGUIDO VER FLAGS
+            End If
+            
+        End With
+
+        Exit Sub
+
+ErrHandler:
+138     Call TraceError(Err.Number, Err.Description, "Protocol.HandleReviveChar", Erl)
+140
+
+End Sub
+
+' Handles the "SendPosMovimiento" message.
+
+Private Sub HandleNotifyInventariohechizos(ByVal UserIndex As Integer)
+
+        '***************************************************
+        'Author: Martín Trionfetti - HarThaoS
+        'Last Modification: 6/6/2022
+        '***************************************************
+        On Error GoTo ErrHandler
+
+100     With UserList(UserIndex)
+        
+            Dim Value As Byte
+        
+102         Value = Reader.ReadInt8()
+
+            If .flags.GMMeSigue > 0 Then
+                Call WriteGetInventarioHechizos(.flags.GMMeSigue, Value)
             End If
             
         End With
@@ -16112,6 +16206,12 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
 326             Call UpdateUserInv(False, UserIndex, SlotNuevo)
 
             End If
+            
+            If .flags.GMMeSigue Then
+                UserList(.flags.GMMeSigue).Invent = UserList(UserIndex).Invent
+                Call UpdateUserInv(True, UserIndex, 1)
+            End If
+
 
         End With
     

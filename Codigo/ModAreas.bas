@@ -214,7 +214,11 @@ Public Sub CheckUpdateNeededUser(ByVal UserIndex As Integer, ByVal Head As Byte,
 178         Map = UserList(UserIndex).Pos.Map
        
             'Esto es para ke el cliente elimine lo "fuera de area..."
-180         Call WriteAreaChanged(UserIndex)
+180         Call WriteAreaChanged(UserIndex, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y)
+            If UserList(UserIndex).flags.GMMeSigue > 0 Then
+                Call WriteAreaChanged(UserList(UserIndex).flags.GMMeSigue, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y)
+                Call WriteSendFollowingCharindex(UserList(UserIndex).flags.GMMeSigue, UserList(UserIndex).Char.charindex)
+            End If
        
             'Actualizamos!!!
 182         For X = MinX To MaxX
@@ -224,12 +228,14 @@ Public Sub CheckUpdateNeededUser(ByVal UserIndex As Integer, ByVal Head As Byte,
 186                 If MapData(Map, X, Y).UserIndex Then
                    
 188                     TempInt = MapData(Map, X, Y).UserIndex
-                   
 190                     If UserIndex <> TempInt Then
                         
 192                         If (UserList(UserIndex).flags.AdminInvisible = 0 Or EsGM(TempInt)) And (UserList(TempInt).flags.Muerto = 0 Or UserList(TempInt).GuildIndex = UserList(UserIndex).GuildIndex) Or (UserList(UserIndex).flags.Muerto = 1 And UserList(TempInt).flags.Muerto = 1) Then
-194                             Call MakeUserChar(False, TempInt, UserIndex, .Pos.Map, .Pos.X, .Pos.Y, 0)
-                            
+                                If UserList(TempInt).flags.SigueUsuario = 0 Then
+194                                 Call MakeUserChar(False, TempInt, UserIndex, .Pos.map, .Pos.X, .Pos.Y, 0)
+                                End If
+                                'If tmpGM > 0 Then Call MakeUserChar(False, tmpGM, UserIndex, .Pos.map, .Pos.X, .Pos.Y, 0)
+
 196                             If UserList(UserIndex).flags.invisible Or UserList(UserIndex).flags.Oculto Then
 198                                 Call WriteSetInvisible(TempInt, UserList(UserIndex).Char.CharIndex, True)
                                 End If
@@ -237,8 +243,9 @@ Public Sub CheckUpdateNeededUser(ByVal UserIndex As Integer, ByVal Head As Byte,
                             End If
                             
 200                         If (UserList(TempInt).flags.AdminInvisible = 0 Or EsGM(UserIndex)) And (UserList(UserIndex).flags.Muerto = 0 Or UserList(TempInt).GuildIndex = UserList(UserIndex).GuildIndex) Or (UserList(UserIndex).flags.Muerto = 1 And UserList(TempInt).flags.Muerto = 1) Then
-202                             Call MakeUserChar(False, UserIndex, TempInt, Map, X, Y, appear)
-                            
+202                                 Call MakeUserChar(False, UserIndex, TempInt, map, X, Y, appear)
+
+                                
                                 'Si el user estaba invisible le avisamos al nuevo cliente de eso
 204                             If UserList(TempInt).flags.invisible Or UserList(TempInt).flags.Oculto Then
 206                                 Call WriteSetInvisible(UserIndex, UserList(TempInt).Char.CharIndex, True)
@@ -248,7 +255,6 @@ Public Sub CheckUpdateNeededUser(ByVal UserIndex As Integer, ByVal Head As Byte,
 
 208                     ElseIf Head = USER_NUEVO Then
 210                         Call MakeUserChar(False, UserIndex, UserIndex, Map, X, Y, appear)
-
                         End If
 
                     End If
@@ -256,7 +262,9 @@ Public Sub CheckUpdateNeededUser(ByVal UserIndex As Integer, ByVal Head As Byte,
                     '<<< Npc >>>
 212                 If MapData(Map, X, Y).NpcIndex Then
 214                     Call MakeNPCChar(False, UserIndex, MapData(Map, X, Y).NpcIndex, Map, X, Y)
-
+                       ' If tmpGM > 0 Then
+                       '     Call MakeNPCChar(False, tmpGM, MapData(map, X, Y).NpcIndex, map, X, Y)
+                       ' End If
                     End If
                  
                     '<<< Item >>>
@@ -265,11 +273,13 @@ Public Sub CheckUpdateNeededUser(ByVal UserIndex As Integer, ByVal Head As Byte,
 
 220                     If Not EsObjetoFijo(ObjData(TempInt).OBJType) Then
 222                         Call WriteObjectCreate(UserIndex, TempInt, MapData(Map, X, Y).ObjInfo.amount, X, Y)
-                       
+                           ' If tmpGM > 0 Then Call WriteObjectCreate(tmpGM, TempInt, MapData(map, X, Y).ObjInfo.amount, X, Y)
+                            
 224                         If ObjData(TempInt).OBJType = e_OBJType.otPuertas And InMapBounds(Map, X, Y) Then
 226                             Call MostrarBloqueosPuerta(False, UserIndex, X, Y)
+                                'If tmpGM > 0 Then Call MostrarBloqueosPuerta(False, tmpGM, X, Y)
                             End If
-
+                            
                         End If
 
                     End If
@@ -278,28 +288,46 @@ Public Sub CheckUpdateNeededUser(ByVal UserIndex As Integer, ByVal Head As Byte,
 228                 If (MapData(Map, X, Y).Blocked And e_Block.GM) <> 0 Then
 230                     Call Bloquear(False, UserIndex, X, Y, e_Block.ALL_SIDES)
                     End If
-
-                    ' If MapData(Map, x, y).Particula > 0 Then
-                    ' Call WriteParticleFloorCreate(UserIndex, MapData(Map, x, y).Particula, MapData(Map, x, y).TimeParticula, Map, x, y)
-                    'End If
-            
-                    'If MapData(Map, x, y).Luz.Rango > 0 Then
-                    'Call WriteLightFloorCreate(UserIndex, MapData(Map, x, y).Luz.Color, MapData(Map, x, y).Luz.Rango, Map, x, y)
-                    ' End If
+                    
 232             Next Y
 234         Next X
        
             'Precalculados :P
 236         TempInt = .Pos.X \ AREA_DIM
+            
 238         .AreasInfo.AreaReciveX = AreasRecive(TempInt)
 240         .AreasInfo.AreaPerteneceX = 2 ^ TempInt
         
 242         TempInt = .Pos.Y \ AREA_DIM
 244         .AreasInfo.AreaReciveY = AreasRecive(TempInt)
 246         .AreasInfo.AreaPerteneceY = 2 ^ TempInt
+
         
 248         .AreasInfo.AreaID = AreasInfo(.Pos.X, .Pos.Y)
-
+            
+            'Es un gm que está siguiendo a un usuario
+            If .flags.SigueUsuario > 0 Then
+              .AreasInfo.AreaReciveX = UserList(.flags.SigueUsuario).AreasInfo.AreaReciveX
+              .AreasInfo.AreaPerteneceX = UserList(.flags.SigueUsuario).AreasInfo.AreaPerteneceX
+            
+              .AreasInfo.AreaReciveY = UserList(.flags.SigueUsuario).AreasInfo.AreaReciveY
+              .AreasInfo.AreaPerteneceY = UserList(.flags.SigueUsuario).AreasInfo.AreaPerteneceY
+             
+             .AreasInfo.AreaID = UserList(.flags.SigueUsuario).AreasInfo.AreaID
+            
+            End If
+            
+            'Es un usuario que está siendo seguido
+            If .flags.GMMeSigue > 0 Then
+                UserList(.flags.GMMeSigue).AreasInfo.AreaReciveX = .AreasInfo.AreaReciveX
+                UserList(.flags.GMMeSigue).AreasInfo.AreaPerteneceX = .AreasInfo.AreaPerteneceX
+                
+                UserList(.flags.GMMeSigue).AreasInfo.AreaReciveY = .AreasInfo.AreaReciveY
+                UserList(.flags.GMMeSigue).AreasInfo.AreaPerteneceY = .AreasInfo.AreaPerteneceY
+             
+                UserList(.flags.GMMeSigue).AreasInfo.AreaID = .AreasInfo.AreaID
+            
+            End If
         End With
 
         
