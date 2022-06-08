@@ -374,7 +374,7 @@ Sub TirarOro(ByVal Cantidad As Long, ByVal UserIndex As Integer)
         
             ' GM's (excepto Dioses y Admins) no pueden tirar oro
 102         If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Admin Or e_PlayerType.Dios)) = 0 Then
-104             Call LogGM(.name, " trató de tirar " & PonerPuntos(Cantidad) & " de oro en " & .pos.map & "-" & .pos.X & "-" & .pos.Y)
+104             Call LogGM(.name, " trató de tirar " & PonerPuntos(Cantidad) & " de oro en " & .Pos.map & "-" & .Pos.X & "-" & .Pos.y)
                 Exit Sub
             End If
          
@@ -526,9 +526,6 @@ Sub UpdateUserInv(ByVal UpdateAll As Boolean, ByVal UserIndex As Integer, ByVal 
 
         End If
         
-        If UserList(UserIndex).flags.GMMeSigue > 0 And UserIndex <> UserList(UserIndex).flags.GMMeSigue Then
-            Call UpdateUserInv(UpdateAll, UserList(UserIndex).flags.GMMeSigue, Slot)
-        End If
 
         
         Exit Sub
@@ -728,10 +725,6 @@ Function MeterItemEnInventario(ByVal UserIndex As Integer, ByRef MiObj As t_Obj)
 
             Loop
 122         UserList(UserIndex).Invent.NroItems = UserList(UserIndex).Invent.NroItems + 1
-            If UserList(UserIndex).flags.GMMeSigue > 0 Then
-                UserList(UserList(UserIndex).flags.GMMeSigue).Invent.NroItems = UserList(UserList(UserIndex).flags.GMMeSigue).Invent.NroItems + 1
-            End If
-
         End If
         
         'Mete el objeto
@@ -740,15 +733,9 @@ Function MeterItemEnInventario(ByVal UserIndex As Integer, ByRef MiObj As t_Obj)
 126         UserList(UserIndex).Invent.Object(Slot).ObjIndex = MiObj.ObjIndex
 128         UserList(UserIndex).Invent.Object(Slot).amount = UserList(UserIndex).Invent.Object(Slot).amount + MiObj.amount
             
-            If UserList(UserIndex).flags.GMMeSigue > 0 Then
-                UserList(UserList(UserIndex).flags.GMMeSigue).Invent.Object(Slot).objIndex = MiObj.objIndex
-                UserList(UserList(UserIndex).flags.GMMeSigue).Invent.Object(Slot).amount = UserList(UserList(UserIndex).flags.GMMeSigue).Invent.Object(Slot).amount + MiObj.amount
-            End If
+        
         Else
 130         UserList(UserIndex).Invent.Object(Slot).amount = MAX_INVENTORY_OBJS
-            If UserList(UserIndex).flags.GMMeSigue > 0 Then
-                UserList(UserList(UserIndex).flags.GMMeSigue).Invent.Object(Slot).amount = MAX_INVENTORY_OBJS
-            End If
         End If
         
 132     Call UpdateUserInv(False, UserIndex, Slot)
@@ -1929,15 +1916,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
 174                 Call UpdateUserInv(False, UserIndex, Slot)
 176                 Call WriteUpdateGold(UserIndex)
 
-                    If .flags.GMMeSigue > 0 Then
-                        UserList(UserList(UserIndex).flags.GMMeSigue).Stats.GLD = UserList(UserList(UserIndex).flags.GMMeSigue).Stats.GLD + UserList(UserList(UserIndex).flags.GMMeSigue).Invent.Object(Slot).amount
-                        UserList(UserList(UserIndex).flags.GMMeSigue).Invent.Object(Slot).amount = 0
-                        UserList(UserList(UserIndex).flags.GMMeSigue).Invent.Object(Slot).objIndex = 0
-                        UserList(UserList(UserIndex).flags.GMMeSigue).Invent.NroItems = UserList(UserList(UserIndex).flags.GMMeSigue).Invent.NroItems - 1
-                        UserList(UserList(UserIndex).flags.GMMeSigue).flags.ModificoInventario = True
-                        Call UpdateUserInv(False, UserList(UserIndex).flags.GMMeSigue, Slot)
-                        Call WriteUpdateGold(UserList(UserIndex).flags.GMMeSigue)
-                    End If
+
             
 178             Case e_OBJType.otWeapon
     
@@ -2093,10 +2072,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                     
                             'Usa el item
 296                         .Stats.MinHp = .Stats.MinHp + RandomNumber(obj.MinModificador, obj.MaxModificador)
-                            If .flags.GMMeSigue > 0 Then
-                                UserList(.flags.GMMeSigue).Stats.MinHp = UserList(.flags.GMMeSigue).Stats.MinHp + 30
-                                If UserList(.flags.GMMeSigue).Stats.MinHp > UserList(.flags.GMMeSigue).Stats.MaxHp Then UserList(.flags.GMMeSigue).Stats.MinHp = UserList(.flags.GMMeSigue).Stats.MaxHp
-                            End If
+
 298                         If .Stats.MinHp > .Stats.MaxHp Then .Stats.MinHp = .Stats.MaxHp
                     
                             'Quitamos del inv el item
@@ -2119,11 +2095,6 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
 312                          .Stats.MinMAN = IIf(.Stats.MinMAN > 20000, 20000, .Stats.MinMAN + Porcentaje(.Stats.MaxMAN, porcentajeRec))
 314                         If .Stats.MinMAN > .Stats.MaxMAN Then .Stats.MinMAN = .Stats.MaxMAN
 
-                            If .flags.GMMeSigue > 0 Then
-                                'Usa el item
-                                UserList(UserList(UserIndex).flags.GMMeSigue).Stats.MinMAN = IIf(UserList(UserList(UserIndex).flags.GMMeSigue).Stats.MinMAN > 20000, 20000, UserList(UserList(UserIndex).flags.GMMeSigue).Stats.MinMAN + Porcentaje(UserList(UserList(UserIndex).flags.GMMeSigue).Stats.MaxMAN, porcentajeRec))
-                                If UserList(UserList(UserIndex).flags.GMMeSigue).Stats.MinMAN > UserList(UserList(UserIndex).flags.GMMeSigue).Stats.MaxMAN Then UserList(UserList(UserIndex).flags.GMMeSigue).Stats.MinMAN = UserList(UserList(UserIndex).flags.GMMeSigue).Stats.MaxMAN
-                            End If
                     
                             'Quitamos del inv el item
 316                         Call QuitarUserInvItem(UserIndex, Slot, 1)

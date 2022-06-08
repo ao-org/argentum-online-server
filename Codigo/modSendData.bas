@@ -370,10 +370,6 @@ Private Sub SendToUserArea(ByVal UserIndex As Integer, ByVal Buffer As Network.W
 
 118                 If UserList(tempIndex).ConnIDValida Then
 120                     Call modNetwork.Send(tempIndex, Buffer)
-                        If UserList(tempIndex).flags.GMMeSigue > 0 Then
-                            Call modNetwork.Send(UserList(tempIndex).flags.GMMeSigue, Buffer)
-                        End If
-
                     End If
 
                 End If
@@ -821,6 +817,7 @@ Private Sub SendToUserGuildArea(ByVal UserIndex As Integer, ByVal Buffer As Netw
 118             If UserList(tempIndex).AreasInfo.AreaReciveY And AreaY Then
 120                 If UserList(tempIndex).ConnIDValida And UserList(tempIndex).GuildIndex = UserList(UserIndex).GuildIndex Then
 122                     Call modNetwork.Send(tempIndex, Buffer)
+                        
 
                     End If
 
