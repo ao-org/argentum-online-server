@@ -1644,6 +1644,12 @@ Private Sub HandleTalk(ByVal UserIndex As Integer)
                       
                     
                     Else
+                        
+'810                 .flags.ChatColor = RGB(252, 195, 0)
+                
+'815             Case e_PlayerType.Dios
+'820                 .flags.ChatColor = RGB(217, 164, 32)
+                        '.flags.ChatColor = RGB(170, 170, 170)
 150                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageChatOverHead(chat, .Char.CharIndex, .flags.ChatColor))
                     End If
 
@@ -3618,7 +3624,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                                     Dim DistanciaMaxima As Integer
 
 516                                 If .clase = e_Class.Thief Then
-518                                     DistanciaMaxima = 2
+518                                     DistanciaMaxima = 1
                                     Else
 520                                     DistanciaMaxima = 1
 
@@ -7090,7 +7096,7 @@ Private Sub HandlePunishments(ByVal UserIndex As Integer)
 
             ' Si un GM usa este comando, me fijo que me haya dado el nick del PJ a analizar.
 104         If LenB(name) = 0 Then Exit Sub
-            If .flags.Privilegios And (e_PlayerType.Consejero Or e_PlayerType.SemiDios Or e_PlayerType.Admin Or e_PlayerType.Dios) Then
+            If (.flags.Privilegios And (e_PlayerType.Consejero Or e_PlayerType.SemiDios Or e_PlayerType.Admin Or e_PlayerType.Dios)) = 0 Then
                 Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
