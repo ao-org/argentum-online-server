@@ -971,6 +971,9 @@ Public Sub SendToAreaByPos(ByVal Map As Integer, ByVal AreaX As Integer, ByVal A
 116             If TempInt Then
 118                 If UserList(tempIndex).ConnIDValida Then
 120                     Call modNetwork.Send(tempIndex, Buffer)
+                        If UserList(tempIndex).flags.GMMeSigue > 0 Then
+                            Call modNetwork.Send(UserList(tempIndex).flags.GMMeSigue, Buffer)
+                        End If
 
                     End If
 

@@ -1353,13 +1353,6 @@ Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As e_Heading) A
 128             .Accion.AccionPendiente = False
             End If
 
-            'If .flags.Muerto = 0 Then
-            '    If MapData(nPos.Map, nPos.X, nPos.Y).TileExit.Map <> 0 And .Counters.EnCombate > 0 Then
-            '        Call WriteConsoleMsg(UserIndex, "Estás en combate, debes aguardar " & .Counters.EnCombate & " segundo(s) para escapar...", e_FontTypeNames.FONTTYPE_INFOBOLD)
-            '        Exit Function
-            '    End If
-            'End If
-
             'Si no estoy solo en el mapa...
 130         If MapInfo(.Pos.map).NumUsers > 1 Or .flags.GMMeSigue > 0 Then
 
