@@ -314,7 +314,7 @@ Public Sub SendData(ByVal sndRoute As SendTarget, ByVal sndIndex As Integer, Par
 342         Case SendTarget.ToRealYRMs
 344             For LoopC = 1 To LastUser
 346                 If (UserList(LoopC).ConnIDValida) Then
-348                     If UserList(LoopC).Faccion.ArmadaReal = 1 Or (UserList(LoopC).flags.Privilegios And e_PlayerType.RoleMaster) <> 0 Then
+348                     If UserList(LoopC).Faccion.ArmadaReal = 1 Or (UserList(LoopC).flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios Or e_PlayerType.consejero Or e_PlayerType.RoyalCouncil)) <> 0 Then
 350                         Call modNetwork.Send(LoopC, Buffer)
                         End If
                     End If
@@ -323,7 +323,7 @@ Public Sub SendData(ByVal sndRoute As SendTarget, ByVal sndIndex As Integer, Par
 354         Case SendTarget.ToCaosYRMs
 356             For LoopC = 1 To LastUser
 358                 If (UserList(LoopC).ConnIDValida) Then
-360                     If UserList(LoopC).Faccion.FuerzasCaos = 1 Or (UserList(LoopC).flags.Privilegios And e_PlayerType.RoleMaster) <> 0 Then
+360                     If UserList(LoopC).Faccion.FuerzasCaos = 1 Or (UserList(LoopC).flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios Or e_PlayerType.consejero Or e_PlayerType.RoyalCouncil)) <> 0 Then
 362                         Call modNetwork.Send(LoopC, Buffer)
                         End If
                     End If
