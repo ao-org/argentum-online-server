@@ -10174,14 +10174,13 @@ Private Sub HandleSeguirMouse(ByVal UserIndex As Integer)
                         
                         
                         Call WriteConsoleMsg(UserIndex, "Comienzas a seguir a " & UserList(tUser).name & ".", e_FontTypeNames.FONTTYPE_INFO)
-                        UserList(UserIndex).Char.charindex_bk = UserList(UserIndex).Char.charindex
                         
-                        Call WriteSendFollowingCharindex(UserIndex, UserList(tUser).Char.charindex)
                         Dim tempArea As Long
                         tempArea = UserList(UserIndex).AreasInfo.AreaID
                         
                         Call WarpUserChar(UserIndex, UserList(tUser).Pos.map, 15, 15)
                         
+                        Call WriteSendFollowingCharindex(UserIndex, UserList(tUser).Char.charindex)
                         If tempArea <> UserList(tUser).AreasInfo.AreaID Then
                             Call MakeUserChar(False, UserIndex, tUser, UserList(tUser).Pos.map, UserList(tUser).Pos.X, UserList(tUser).Pos.y)
                         End If
@@ -12309,7 +12308,7 @@ Private Sub HandleCouncilKick(ByVal UserIndex As Integer)
         
 102         UserName = Reader.ReadString8()
         
-104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.RoleMaster)) Then
+104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios)) Then
 106             tUser = NameIndex(UserName)
 
 108             If tUser <= 0 Then

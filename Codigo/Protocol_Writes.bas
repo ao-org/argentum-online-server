@@ -682,9 +682,6 @@ Public Sub WriteUpdateMana(ByVal UserIndex As Integer)
 104     Call Writer.WriteInt16(UserList(UserIndex).Stats.MinMAN)
 106     Call modSendData.SendData(ToIndex, UserIndex)
 
-        If UserList(UserIndex).flags.GMMeSigue > 0 And UserList(UserIndex).flags.GMMeSigue <> UserIndex Then
-            Call WriteUpdateMana(UserList(UserIndex).flags.GMMeSigue)
-        End If
         '<EhFooter>
         Exit Sub
 
@@ -713,9 +710,6 @@ Public Sub WriteUpdateHP(ByVal UserIndex As Integer)
 
 106     Call modSendData.SendData(ToIndex, UserIndex)
 
-        If UserList(UserIndex).flags.GMMeSigue > 0 And UserList(UserIndex).flags.GMMeSigue <> UserIndex Then
-            Call WriteUpdateHP(UserList(UserIndex).flags.GMMeSigue)
-        End If
         '<EhFooter>
         Exit Sub
 
