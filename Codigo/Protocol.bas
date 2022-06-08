@@ -11815,8 +11815,8 @@ Private Sub HandleRoyalArmyMessage(ByVal UserIndex As Integer)
 102             Message = Reader.ReadString8()
         
             'Solo dioses, admins y RMS
-104         If (.flags.Privilegios And (e_PlayerType.Dios Or e_PlayerType.Admin Or e_PlayerType.RoleMaster)) Then
-106             Call SendData(SendTarget.ToRealYRMs, 0, PrepareMessageConsoleMsg("ARMADA REAL> " & Message, e_FontTypeNames.FONTTYPE_TALK))
+104          If .flags.Privilegios And (e_PlayerType.RoyalCouncil Or e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios) Then
+106             Call SendData(SendTarget.ToRealYRMs, 0, PrepareMessageConsoleMsg("[ARMADA REAL] " & UserList(UserIndex).name & "> " & message, e_FontTypeNames.FONTTYPE_CONSEJO))
             End If
 
         End With
@@ -11850,8 +11850,8 @@ Private Sub HandleChaosLegionMessage(ByVal UserIndex As Integer)
 102             Message = Reader.ReadString8()
         
             'Solo dioses, admins y RMS
-104         If (.flags.Privilegios And (e_PlayerType.Dios Or e_PlayerType.Admin Or e_PlayerType.RoleMaster)) Then
-106             Call SendData(SendTarget.ToCaosYRMs, 0, PrepareMessageConsoleMsg("FUERZAS DEL CAOS> " & Message, e_FontTypeNames.FONTTYPE_TALK))
+104         If .flags.Privilegios And (e_PlayerType.ChaosCouncil Or e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios) Then
+106             Call SendData(SendTarget.ToCaosYRMs, 0, PrepareMessageConsoleMsg("[FUERZAS DEL CAOS] " & UserList(UserIndex).name & "> " & message, e_FontTypeNames.FONTTYPE_CONSEJOCAOS))
             End If
 
         End With
@@ -12052,7 +12052,7 @@ Private Sub HandleAcceptRoyalCouncilMember(ByVal UserIndex As Integer)
         
 102         UserName = Reader.ReadString8()
         
-104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.RoleMaster)) Then
+104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios)) Then
 106             tUser = NameIndex(UserName)
 
 108             If tUser <= 0 Then
@@ -12108,7 +12108,7 @@ Private Sub HandleAcceptChaosCouncilMember(ByVal UserIndex As Integer)
         
 102         UserName = Reader.ReadString8()
         
-104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.RoleMaster)) Then
+104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios)) Then
 106             tUser = NameIndex(UserName)
 
 108             If tUser <= 0 Then
@@ -12116,7 +12116,7 @@ Private Sub HandleAcceptChaosCouncilMember(ByVal UserIndex As Integer)
                 
                 Else
             
-112                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(username & " fue aceptado en el Consejo de la Legión Oscura.", e_FontTypeNames.FONTTYPE_CONSEJO))
+112                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(username & " fue aceptado en el Consejo de la Legión Oscura.", e_FontTypeNames.FONTTYPE_CONSEJOCAOS))
                 
 114                 With UserList(tUser)
 
@@ -12336,7 +12336,7 @@ Private Sub HandleCouncilKick(ByVal UserIndex As Integer)
 140                         .flags.Privilegios = .flags.Privilegios - e_PlayerType.ChaosCouncil
                         
 142                         Call WarpUserChar(tUser, .Pos.Map, .Pos.X, .Pos.Y)
-144                         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(username & " fue expulsado del consejo de la Legión Oscura", e_FontTypeNames.FONTTYPE_CONSEJO))
+144                         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(username & " fue expulsado del consejo de la Legión Oscura", e_FontTypeNames.FONTTYPE_CONSEJOCAOS))
 
                         End If
 

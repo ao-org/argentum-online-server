@@ -1381,12 +1381,32 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
 350                             Stat = Stat & " <Administrador>"
     
                             End If
+                        'si es pk
                         
-352                     ElseIf UserList(TempCharIndex).Faccion.Status = 0 Then
-354                         ft = e_FontTypeNames.FONTTYPE_CRIMINAL
+'Public Enum e_Facciones
+'    Criminal = 0
+'    Ciudadano = 1
+'    Caos = 2
+'    Armada = 3
+'End Enum
+352                     ElseIf UserList(TempCharIndex).Faccion.Status = 0 Or UserList(TempCharIndex).Faccion.Status = 2 Then
+                            'me fijo si pertenece al consejo del caos
+                            If UserList(TempCharIndex).flags.Privilegios And e_PlayerType.ChaosCouncil Then
+                                ft = e_FontTypeNames.FONTTYPE_CONSEJOCAOS
+                                Stat = Stat + " <Concilio Del Caos>"
+                            Else
+                                ft = e_FontTypeNames.FONTTYPE_CRIMINAL
+                            End If
                         
-356                     ElseIf UserList(TempCharIndex).Faccion.Status = 1 Then
-358                         ft = e_FontTypeNames.FONTTYPE_CITIZEN
+353                     ElseIf UserList(TempCharIndex).Faccion.Status = 1 Or UserList(TempCharIndex).Faccion.Status = 3 Then
+358
+                            If UserList(TempCharIndex).flags.Privilegios And e_PlayerType.RoyalCouncil Then
+                                ft = e_FontTypeNames.FONTTYPE_CONSEJO
+                                Stat = Stat + " <Consejo de Banderbill>"
+                            Else
+                                ft = e_FontTypeNames.FONTTYPE_CITIZEN
+                            End If
+        
                         
                         End If
                         
