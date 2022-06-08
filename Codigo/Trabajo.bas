@@ -1573,45 +1573,38 @@ ModHerreriA_Err:
         
 End Function
 
-Sub DoAdminInvisible(ByVal UserIndex As Integer)
+Sub DoAdminInvisible(ByVal UserIndex As Integer, Optional ByVal invisible As Byte = 2)
         
         On Error GoTo DoAdminInvisible_Err
+        
     
 100     With UserList(UserIndex)
-    
-102         If .flags.AdminInvisible = 0 Then
-                
-104             .flags.AdminInvisible = 1
-106             .flags.invisible = 1
-108             .flags.Oculto = 1
-            
-                '.flags.OldBody = .Char.Body
-                '.flags.OldHead = .Char.Head
-            
-                '.Char.Body = 0
-                '.Char.Head = 0
-            
-110             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(.Char.CharIndex, True))
-            
-112             Call SendData(SendTarget.ToPCAreaButGMs, UserIndex, PrepareMessageCharacterRemove(2, .Char.CharIndex, True))
-            
-            Else
+
+        If invisible = 2 Then
+           .flags.AdminInvisible = IIf(.flags.AdminInvisible = 1, 0, 1)
+        Else
+            .flags.AdminInvisible = invisible
+        End If
         
-114             .flags.AdminInvisible = 0
-116             .flags.invisible = 0
-118             .flags.Oculto = 0
-120             .Counters.TiempoOculto = 0
+102     If .flags.AdminInvisible = 1 Then
             
-                '.Char.Body = .flags.OldBody
-                '.Char.Head = .flags.OldHead
-            
-122             Call MakeUserChar(True, 0, UserIndex, .Pos.Map, .Pos.X, .Pos.Y, 1)
-124             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(.Char.CharIndex, False))
-            
-            End If
+106         .flags.invisible = 1
+108         .flags.Oculto = 1
+                    
+110         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(.Char.charindex, True))
+112         Call SendData(SendTarget.ToPCAreaButGMs, UserIndex, PrepareMessageCharacterRemove(2, .Char.charindex, True))
         
-            'Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
+        Else
     
+116         .flags.invisible = 0
+118         .flags.Oculto = 0
+120         .Counters.TiempoOculto = 0
+        
+122         Call MakeUserChar(True, 0, UserIndex, .Pos.map, .Pos.X, .Pos.y, 1)
+124         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(.Char.charindex, False))
+        
+        End If
+            
         End With
 
         Exit Sub

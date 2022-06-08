@@ -487,7 +487,7 @@ NpcImpacto_Err:
         
 End Function
 
-Private Function CalcularDaño(ByVal userindex As Integer) As Long
+Private Function CalcularDaño(ByVal UserIndex As Integer) As Long
 
             ' Reescrita por WyroX - 16/01/2021
 
@@ -573,7 +573,7 @@ CalcularDaño_Err:
         
 End Function
 
-Private Sub UserDañoNpc(ByVal userindex As Integer, ByVal NpcIndex As Integer)
+Private Sub UserDañoNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
 
         ' Reescrito por WyroX - 16/01/2021
         
@@ -590,7 +590,7 @@ Private Sub UserDañoNpc(ByVal userindex As Integer, ByVal NpcIndex As Integer)
 106             Call QuitarObjetos(EspadaMataDragonesIndex, 1, UserIndex)
             Else
                 ' Daño normal
-108             DañoBase = CalcularDaño(userindex)
+108             DañoBase = CalcularDaño(UserIndex)
 
                 ' NPC de pruebas
 110             If NpcList(NpcIndex).NPCtype = DummyTarget Then
@@ -608,7 +608,7 @@ Private Sub UserDañoNpc(ByVal userindex As Integer, ByVal NpcIndex As Integer)
 
             ' Mostramos en consola el golpe
 120         If .ChatCombate = 1 Then
-122             Call WriteLocaleMsg(userindex, "382", e_FontTypeNames.FONTTYPE_FIGHT, PonerPuntos(Daño))
+122             Call WriteLocaleMsg(UserIndex, "382", e_FontTypeNames.FONTTYPE_FIGHT, PonerPuntos(Daño))
             End If
 
             ' Golpe crítico
@@ -620,7 +620,7 @@ Private Sub UserDañoNpc(ByVal userindex As Integer, ByVal NpcIndex As Integer)
                 
                     ' Mostramos en consola el daño
 130                 If .ChatCombate = 1 Then
-132                     Call WriteLocaleMsg(userindex, "383", e_FontTypeNames.FONTTYPE_FIGHT, PonerPuntos(DañoExtra))
+132                     Call WriteLocaleMsg(UserIndex, "383", e_FontTypeNames.FONTTYPE_FIGHT, PonerPuntos(DañoExtra))
                     End If
 
                     ' Color naranja
@@ -628,15 +628,15 @@ Private Sub UserDañoNpc(ByVal userindex As Integer, ByVal NpcIndex As Integer)
                 End If
 
             ' Apuñalar (le afecta la defensa)
-136         ElseIf PuedeApuñalar(userindex) Then
+136         ElseIf PuedeApuñalar(UserIndex) Then
                 ' Si acertó - Doble chance contra NPCs
-138             If RandomNumber(1, 100) <= ProbabilidadApuñalar(userindex) Then
+138             If RandomNumber(1, 100) <= ProbabilidadApuñalar(UserIndex) Then
                     ' Daño del apuñalamiento
 140                 DañoExtra = Daño * 2
                 
                     ' Mostramos en consola el daño
 142                 If .ChatCombate = 1 Then
-144                     Call WriteLocaleMsg(userindex, "212", e_FontTypeNames.FONTTYPE_INFOBOLD, PonerPuntos(DañoExtra))
+144                     Call WriteLocaleMsg(UserIndex, "212", e_FontTypeNames.FONTTYPE_INFOBOLD, PonerPuntos(DañoExtra))
                     End If
 
                     ' Color amarillo
@@ -644,7 +644,7 @@ Private Sub UserDañoNpc(ByVal userindex As Integer, ByVal NpcIndex As Integer)
                 End If
 
                 ' Sube skills en apuñalar
-148             Call SubirSkill(userindex, Apuñalar)
+148             Call SubirSkill(UserIndex, Apuñalar)
             End If
             
 150         If DañoExtra > 0 Then
@@ -654,7 +654,7 @@ Private Sub UserDañoNpc(ByVal userindex As Integer, ByVal NpcIndex As Integer)
                 
                 ' Mostramos el daño total en consola
 156             If .ChatCombate = 1 Then
-158                 Call WriteLocaleMsg(userindex, "384", e_FontTypeNames.FONTTYPE_FIGHT, DañoStr)
+158                 Call WriteLocaleMsg(UserIndex, "384", e_FontTypeNames.FONTTYPE_FIGHT, DañoStr)
                 End If
                 
 160             DañoStr = "¡" & DañoStr & "!"
@@ -666,14 +666,14 @@ Private Sub UserDañoNpc(ByVal userindex As Integer, ByVal NpcIndex As Integer)
 164         Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageTextCharDrop(DañoStr, NpcList(NpcIndex).Char.charindex, Color))
 
             ' Experiencia
-166         Call CalcularDarExp(userindex, NpcIndex, Daño)
+166         Call CalcularDarExp(UserIndex, NpcIndex, Daño)
 
             ' Restamos el daño al NPC
 168         NpcList(NpcIndex).Stats.MinHp = NpcList(NpcIndex).Stats.MinHp - Daño
 
             ' NPC de invasión
 170         If NpcList(NpcIndex).flags.InvasionIndex Then
-172             Call SumarScoreInvasion(NpcList(NpcIndex).flags.InvasionIndex, userindex, Daño)
+172             Call SumarScoreInvasion(NpcList(NpcIndex).flags.InvasionIndex, UserIndex, Daño)
             End If
 
             ' Muere el NPC
@@ -756,10 +756,10 @@ Private Function NpcDaño(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
         
 142     If Daño < 0 Then Daño = 0
     
-144     Call SendData(SendTarget.ToPCArea, userindex, PrepareMessageTextCharDrop(PonerPuntos(Daño), UserList(userindex).Char.charindex, vbRed))
+144     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageTextCharDrop(PonerPuntos(Daño), UserList(UserIndex).Char.charindex, vbRed))
 
 146     If UserList(UserIndex).ChatCombate = 1 Then
-148         Call WriteNPCHitUser(userindex, Lugar, Daño)
+148         Call WriteNPCHitUser(UserIndex, Lugar, Daño)
         End If
 
 150     If UserList(UserIndex).flags.Privilegios And e_PlayerType.user Then UserList(UserIndex).Stats.MinHp = UserList(UserIndex).Stats.MinHp - Daño
@@ -767,7 +767,7 @@ Private Function NpcDaño(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
             UserList(UserList(UserIndex).flags.GMMeSigue).Stats.MinHp = UserList(UserList(UserIndex).flags.GMMeSigue).Stats.MinHp - Daño
         End If
 152     If UserList(UserIndex).flags.Meditando Then
-154         If Daño > Fix(UserList(userindex).Stats.MinHp / 100 * UserList(userindex).Stats.UserAtributos(e_Atributos.Inteligencia) * UserList(userindex).Stats.UserSkills(e_Skill.Meditar) / 100 * 12 / (RandomNumber(0, 5) + 7)) Then
+154         If Daño > Fix(UserList(UserIndex).Stats.MinHp / 100 * UserList(UserIndex).Stats.UserAtributos(e_Atributos.Inteligencia) * UserList(UserIndex).Stats.UserSkills(e_Skill.Meditar) / 100 * 12 / (RandomNumber(0, 5) + 7)) Then
 156             UserList(UserIndex).flags.Meditando = False
 158             UserList(UserIndex).Char.FX = 0
 160             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageMeditateToggle(UserList(UserIndex).Char.CharIndex, 0))
@@ -856,7 +856,6 @@ Public Function NpcAtacaUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integ
         End If
         
 139     Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageCharAtaca(NpcList(NpcIndex).Char.charindex, UserList(UserIndex).Char.charindex, danio, NpcList(NpcIndex).Char.Ataque1))
-        
         
             
 
@@ -1060,7 +1059,7 @@ Public Sub UsuarioAtacaNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer
             End If
             
             ' Resta la vida del NPC
-140         Call UserDañoNpc(userindex, NpcIndex)
+140         Call UserDañoNpc(UserIndex, NpcIndex)
             
 142         Dim Arma As Integer: Arma = UserList(UserIndex).Invent.WeaponEqpObjIndex
 144         Dim municionIndex As Integer: municionIndex = UserList(UserIndex).Invent.MunicionEqpObjIndex
@@ -1162,14 +1161,14 @@ Public Sub UsuarioAtaca(ByVal UserIndex As Integer)
 
 142             If NpcList(Index).Attackable Then
 144                 If NpcList(Index).MaestroUser > 0 And MapInfo(NpcList(Index).Pos.Map).Seguro = 1 Then
-146                     Call WriteConsoleMsg(userindex, "No podés atacar mascotas en zonas seguras", e_FontTypeNames.FONTTYPE_FIGHT)
+146                     Call WriteConsoleMsg(UserIndex, "No podés atacar mascotas en zonas seguras", e_FontTypeNames.FONTTYPE_FIGHT)
                         Exit Sub
                     End If
 
 148                 Call UsuarioAtacaNpc(UserIndex, Index)
 
                 Else
-150                 Call WriteConsoleMsg(userindex, "No podés atacar a este NPC", e_FontTypeNames.FONTTYPE_FIGHT)
+150                 Call WriteConsoleMsg(UserIndex, "No podés atacar a este NPC", e_FontTypeNames.FONTTYPE_FIGHT)
 
                 End If
 
@@ -1697,7 +1696,7 @@ Public Function PuedeAtacar(ByVal AttackerIndex As Integer, ByVal VictimIndex As
         
 106     If UserList(AttackerIndex).flags.EnReto Then
 108         If Retos.Salas(UserList(AttackerIndex).flags.SalaReto).TiempoItems > 0 Then
-110             Call WriteConsoleMsg(AttackerIndex, "No podés atacar en este momento.", e_FontTypeNames.FONTTYPE_INFO)
+110             Call WriteConsoleMsg(attackerIndex, "No podés atacar en este momento.", e_FontTypeNames.FONTTYPE_INFO)
 112             PuedeAtacar = False
                 Exit Function
             End If
@@ -1705,7 +1704,7 @@ Public Function PuedeAtacar(ByVal AttackerIndex As Integer, ByVal VictimIndex As
 
         'No podes atacar a alguien muerto
 114     If UserList(VictimIndex).flags.Muerto = 1 Then
-116         Call WriteConsoleMsg(AttackerIndex, "No podés atacar a un espiritu.", e_FontTypeNames.FONTTYPE_INFO)
+116         Call WriteConsoleMsg(attackerIndex, "No podés atacar a un espiritu.", e_FontTypeNames.FONTTYPE_INFO)
 118         PuedeAtacar = False
             Exit Function
 
@@ -1713,7 +1712,7 @@ Public Function PuedeAtacar(ByVal AttackerIndex As Integer, ByVal VictimIndex As
         
         ' No podes atacar si estas en consulta
 120     If UserList(AttackerIndex).flags.EnConsulta Then
-122         Call WriteConsoleMsg(AttackerIndex, "No podés atacar usuarios mientras estás en consulta.", e_FontTypeNames.FONTTYPE_INFO)
+122         Call WriteConsoleMsg(attackerIndex, "No podés atacar usuarios mientras estás en consulta.", e_FontTypeNames.FONTTYPE_INFO)
 124         PuedeAtacar = False
             Exit Function
     
@@ -1721,21 +1720,21 @@ Public Function PuedeAtacar(ByVal AttackerIndex As Integer, ByVal VictimIndex As
         
         ' No podes atacar si esta en consulta
 126     If UserList(VictimIndex).flags.EnConsulta Then
-128         Call WriteConsoleMsg(AttackerIndex, "No podés atacar usuarios mientras estan en consulta.", e_FontTypeNames.FONTTYPE_INFO)
+128         Call WriteConsoleMsg(attackerIndex, "No podés atacar usuarios mientras estan en consulta.", e_FontTypeNames.FONTTYPE_INFO)
 130         PuedeAtacar = False
             Exit Function
     
         End If
         
 132     If UserList(AttackerIndex).flags.Maldicion = 1 Then
-134         Call WriteConsoleMsg(AttackerIndex, "¡Estás maldito! No podes atacar.", e_FontTypeNames.FONTTYPE_INFO)
+134         Call WriteConsoleMsg(attackerIndex, "¡Estás maldito! No podes atacar.", e_FontTypeNames.FONTTYPE_INFO)
 136         PuedeAtacar = False
             Exit Function
 
         End If
         
 138     If UserList(AttackerIndex).flags.Montado = 1 Then
-140         Call WriteConsoleMsg(AttackerIndex, "No podés atacar usando una montura.", e_FontTypeNames.FONTTYPE_INFO)
+140         Call WriteConsoleMsg(attackerIndex, "No podés atacar usando una montura.", e_FontTypeNames.FONTTYPE_INFO)
 142         PuedeAtacar = False
             Exit Function
 
@@ -1791,7 +1790,7 @@ Public Function PuedeAtacar(ByVal AttackerIndex As Integer, ByVal VictimIndex As
         If esArmada(AttackerIndex) Then
             ' Si ataca otro armada
             If esArmada(VictimIndex) Then
-                Call WriteConsoleMsg(AttackerIndex, "Los miembros del Ejercito Real tienen prohibido atacarse entre sí.", e_FontTypeNames.FONTTYPE_WARNING)
+                Call WriteConsoleMsg(attackerIndex, "Los miembros del Ejercito Real tienen prohibido atacarse entre sí.", e_FontTypeNames.FONTTYPE_WARNING)
                 PuedeAtacar = False
                 Exit Function
             ' Si ataca un ciudadano
@@ -1807,17 +1806,17 @@ Public Function PuedeAtacar(ByVal AttackerIndex As Integer, ByVal VictimIndex As
             If (esCiudadano(AttackerIndex)) Then
                 If (UserList(AttackerIndex).flags.Seguro) Then
 176                 If esCiudadano(VictimIndex) Then
-178                     Call WriteConsoleMsg(AttackerIndex, "No podés atacar ciudadanos, para hacerlo debes desactivar el seguro.", e_FontTypeNames.FONTTYPE_WARNING)
+178                     Call WriteConsoleMsg(attackerIndex, "No podés atacar ciudadanos, para hacerlo debes desactivar el seguro.", e_FontTypeNames.FONTTYPE_WARNING)
 180                     PuedeAtacar = False
                         Exit Function
                     ElseIf esArmada(VictimIndex) Then
-                        Call WriteConsoleMsg(AttackerIndex, "No podés atacar miembros del Ejercito Real, para hacerlo debes desactivar el seguro.", e_FontTypeNames.FONTTYPE_WARNING)
+                        Call WriteConsoleMsg(attackerIndex, "No podés atacar miembros del Ejercito Real, para hacerlo debes desactivar el seguro.", e_FontTypeNames.FONTTYPE_WARNING)
                         PuedeAtacar = False
                         Exit Function
                     End If
                 End If
             ElseIf esCaos(AttackerIndex) And esCaos(VictimIndex) Then
-192             Call WriteConsoleMsg(AttackerIndex, "Los miembros de las Fuerzas del Caos no se pueden atacar entre sí.", e_FontTypeNames.FONTTYPE_WARNING)
+192             Call WriteConsoleMsg(attackerIndex, "Los miembros de las Fuerzas del Caos no se pueden atacar entre sí.", e_FontTypeNames.FONTTYPE_WARNING)
 194             PuedeAtacar = False
                 Exit Function
             End If
@@ -1900,7 +1899,7 @@ Public Function PuedeAtacarNPC(ByVal AttackerIndex As Integer, ByVal NpcIndex As
         End If
              
 106     If UserList(AttackerIndex).flags.Montado = 1 Then
-108         Call WriteConsoleMsg(AttackerIndex, "No podés atacar usando una montura.", e_FontTypeNames.FONTTYPE_INFO)
+108         Call WriteConsoleMsg(attackerIndex, "No podés atacar usando una montura.", e_FontTypeNames.FONTTYPE_INFO)
 110         PuedeAtacarNPC = False
             Exit Function
 
@@ -1931,7 +1930,7 @@ Public Function PuedeAtacarNPC(ByVal AttackerIndex As Integer, ByVal NpcIndex As
         'Es una criatura atacable?
 128     If NpcList(NpcIndex).Attackable = 0 Then
             'No es una criatura atacable
-130         Call WriteConsoleMsg(AttackerIndex, "No podés atacar esta criatura.", e_FontTypeNames.FONTTYPE_INFO)
+130         Call WriteConsoleMsg(attackerIndex, "No podés atacar esta criatura.", e_FontTypeNames.FONTTYPE_INFO)
 132         PuedeAtacarNPC = False
             Exit Function
 
@@ -1951,7 +1950,7 @@ Public Function PuedeAtacarNPC(ByVal AttackerIndex As Integer, ByVal NpcIndex As
 140     If esArmada(AttackerIndex) Or esCaos(AttackerIndex) Then
             ' Y el NPC pertenece a la misma faccion
 142         If NpcList(NpcIndex).flags.Faccion = UserList(AttackerIndex).Faccion.Status Then
-144             Call WriteConsoleMsg(AttackerIndex, "No podés atacar NPCs de tu misma facción, para hacerlo debes desenlistarte.", e_FontTypeNames.FONTTYPE_INFO)
+144             Call WriteConsoleMsg(attackerIndex, "No podés atacar NPCs de tu misma facción, para hacerlo debes desenlistarte.", e_FontTypeNames.FONTTYPE_INFO)
 146             PuedeAtacarNPC = False
                 Exit Function
             End If
@@ -1959,7 +1958,7 @@ Public Function PuedeAtacarNPC(ByVal AttackerIndex As Integer, ByVal NpcIndex As
             ' Si es una mascota, checkeamos en el Maestro
 148         If NpcList(NpcIndex).MaestroUser > 0 Then
 150             If UserList(NpcList(NpcIndex).MaestroUser).Faccion.Status = UserList(AttackerIndex).Faccion.Status Then
-152                 Call WriteConsoleMsg(AttackerIndex, "No podés atacar NPCs de tu misma facción, para hacerlo debes desenlistarte.", e_FontTypeNames.FONTTYPE_INFO)
+152                 Call WriteConsoleMsg(attackerIndex, "No podés atacar NPCs de tu misma facción, para hacerlo debes desenlistarte.", e_FontTypeNames.FONTTYPE_INFO)
 154                 PuedeAtacarNPC = False
                     Exit Function
                 End If
@@ -2039,7 +2038,7 @@ PuedeAtacarNPC_Err:
         
 End Function
 
-Sub CalcularDarExp(ByVal userindex As Integer, ByVal NpcIndex As Integer, ByVal ElDaño As Long)
+Sub CalcularDarExp(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal ElDaño As Long)
         '***************************************************
         'Autor: Nacho (Integer)
         'Last Modification: 03/09/06 Nacho
@@ -2054,7 +2053,7 @@ Sub CalcularDarExp(ByVal userindex As Integer, ByVal NpcIndex As Integer, ByVal 
         End If
 
 102     If UserList(UserIndex).Grupo.EnGrupo Then
-104         Call CalcularDarExpGrupal(userindex, NpcIndex, ElDaño)
+104         Call CalcularDarExpGrupal(UserIndex, NpcIndex, ElDaño)
         Else
 
             Dim ExpaDar As Double
@@ -2091,7 +2090,7 @@ Sub CalcularDarExp(ByVal userindex As Integer, ByVal NpcIndex As Integer, ByVal 
 136                 If Abs(DeltaLevel) > 5 Then ' Qué pereza da desharcodear
 138                     ExpaDar = ExpaDar * Math.Exp(15 - Abs(3 * DeltaLevel))
                         
-140                     Call WriteConsoleMsg(userindex, "La criatura es demasiado " & IIf(DeltaLevel < 0, "poderosa", "débil") & " y obtienes experiencia reducida al luchar contra ella", e_FontTypeNames.FONTTYPE_WARNING)
+140                     Call WriteConsoleMsg(UserIndex, "La criatura es demasiado " & IIf(DeltaLevel < 0, "poderosa", "débil") & " y obtienes experiencia reducida al luchar contra ella", e_FontTypeNames.FONTTYPE_WARNING)
                     End If
                 End If
 
@@ -2120,7 +2119,7 @@ CalcularDarExp_Err:
         
 End Sub
 
-Private Sub CalcularDarExpGrupal(ByVal userindex As Integer, ByVal NpcIndex As Integer, ByVal ElDaño As Long)
+Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal ElDaño As Long)
         
         On Error GoTo CalcularDarExpGrupal_Err
         
@@ -2525,7 +2524,7 @@ PuedeDesequiparDeUnGolpe_Err:
         
 End Function
 
-Private Function PuedeApuñalar(ByVal userindex As Integer) As Boolean
+Private Function PuedeApuñalar(ByVal UserIndex As Integer) As Boolean
         
         On Error GoTo PuedeApuñalar_Err
         
@@ -2567,7 +2566,7 @@ PuedeGolpeCritico_Err:
         
 End Function
 
-Private Function ProbabilidadApuñalar(ByVal userindex As Integer) As Integer
+Private Function ProbabilidadApuñalar(ByVal UserIndex As Integer) As Integer
 
         ' Autor: WyroX - 16/01/2021
         

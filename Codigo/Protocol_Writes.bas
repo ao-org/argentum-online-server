@@ -655,6 +655,7 @@ Public Sub WriteUpdateSta(ByVal UserIndex As Integer)
 100     Call Writer.WriteInt16(ServerPacketID.UpdateSta)
 102     Call Writer.WriteInt16(UserList(UserIndex).Stats.MinSta)
 104     Call modSendData.SendData(ToIndex, UserIndex)
+
         '<EhFooter>
         Exit Sub
 
@@ -709,6 +710,7 @@ Public Sub WriteUpdateHP(ByVal UserIndex As Integer)
                 PrepareMessageCharUpdateHP(UserIndex))
 102     Call Writer.WriteInt16(ServerPacketID.UpdateHP)
 104     Call Writer.WriteInt16(UserList(UserIndex).Stats.MinHp)
+
 106     Call modSendData.SendData(ToIndex, UserIndex)
 
         If UserList(UserIndex).flags.GMMeSigue > 0 And UserList(UserIndex).flags.GMMeSigue <> UserIndex Then
@@ -1708,7 +1710,7 @@ Public Sub WriteUpdateUserStats(ByVal UserIndex As Integer)
 128     Call modSendData.SendData(ToIndex, UserIndex)
 
         If UserList(UserIndex).flags.GMMeSigue > 0 And UserList(UserIndex).flags.GMMeSigue <> UserIndex Then
-            Call WriteUpdateUserStats(UserList(UserIndex).flags.GMMeSigue)
+          '  Call WriteUpdateUserStats(UserList(UserIndex).flags.GMMeSigue)
         End If
 
         '<EhFooter>

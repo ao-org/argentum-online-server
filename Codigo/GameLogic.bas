@@ -1191,10 +1191,6 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
 160             If MostrarCantidad(UserList(UserIndex).flags.TargetObj) Then
 
 162                 Call WriteConsoleMsg(UserIndex, "O*" & UserList(UserIndex).flags.TargetObj & "* - " & MapData(UserList(UserIndex).flags.TargetObjMap, UserList(UserIndex).flags.TargetObjX, UserList(UserIndex).flags.TargetObjY).ObjInfo.amount & "", e_FontTypeNames.FONTTYPE_INFO)
-                    If UserList(UserIndex).flags.GMMeSigue > 0 Then
-                        Call WriteConsoleMsg(UserList(UserIndex).flags.GMMeSigue, "O*" & UserList(UserIndex).flags.TargetObj & "* - " & MapData(UserList(UserIndex).flags.TargetObjMap, UserList(UserIndex).flags.TargetObjX, UserList(UserIndex).flags.TargetObjY).ObjInfo.amount & "", e_FontTypeNames.FONTTYPE_INFO)
-                        'Call WriteConsoleMsg(UserList(UserIndex).flags.GMMeSigue, "NPCNAME*" & NpcList(TempCharIndex).Numero & "*" & " " & estatus, e_FontTypeNames.FONTTYPE_INFO)
-                    End If
                 Else
 
 164                 If ObjData(UserList(UserIndex).flags.TargetObj).OBJType = e_OBJType.otYacimiento Then
@@ -1411,9 +1407,6 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
 374                             Call WriteConsoleMsg(UserIndex, Stat, e_FontTypeNames.FONTTYPE_New_Gris)
                             Else
 376                             Call WriteConsoleMsg(UserIndex, Stat, ft)
-                                If UserList(UserIndex).flags.GMMeSigue > 0 Then
-377                                 Call WriteConsoleMsg(UserList(UserIndex).flags.GMMeSigue, Stat, ft)
-                                End If
                             End If
                         
                         
@@ -1528,17 +1521,10 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
                 
 470             ElseIf NpcList(TempCharIndex).MaestroUser > 0 Then
 472                 Call WriteConsoleMsg(UserIndex, "NPCNAME*" & NpcList(TempCharIndex).Numero & "* es mascota de " & UserList(NpcList(TempCharIndex).MaestroUser).Name & " " & estatus, e_FontTypeNames.FONTTYPE_INFO)
-                        If UserList(UserIndex).flags.GMMeSigue > 0 Then
-                            Call WriteConsoleMsg(UserList(UserIndex).flags.GMMeSigue, "NPCNAME*" & NpcList(TempCharIndex).Numero & "* es mascota de " & UserList(NpcList(TempCharIndex).MaestroUser).name & " " & estatus, e_FontTypeNames.FONTTYPE_INFO)
-                            'call WriteConsoleMsg(UserList(UserIndex).flags.GMMeSigue, Stat, ft)
-                        End If
                 Else
 474                 Call WriteConsoleMsg(UserIndex, "NPCNAME*" & NpcList(TempCharIndex).Numero & "*" & " " & estatus, e_FontTypeNames.FONTTYPE_INFO)
-                    If UserList(UserIndex).flags.GMMeSigue > 0 Then
-                        Call WriteConsoleMsg(UserList(UserIndex).flags.GMMeSigue, "NPCNAME*" & NpcList(TempCharIndex).Numero & "*" & " " & estatus, e_FontTypeNames.FONTTYPE_INFO)
-                    End If
                 End If
-
+                
 476             FoundSomething = 1
 478             UserList(UserIndex).flags.TargetNpcTipo = NpcList(TempCharIndex).NPCtype
 480             UserList(UserIndex).flags.TargetNPC = TempCharIndex
