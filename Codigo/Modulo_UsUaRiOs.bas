@@ -554,17 +554,22 @@ Public Function ConnectUser_Complete(ByVal UserIndex As Integer, _
 805         Select Case .flags.Privilegios
             
                 Case e_PlayerType.Admin
-810                 .flags.ChatColor = RGB(217, 164, 32)
+810                 .flags.ChatColor = RGB(252, 195, 0)
                 
 815             Case e_PlayerType.Dios
-820                 .flags.ChatColor = RGB(217, 164, 32)
+820                 .flags.ChatColor = RGB(26, 209, 107)
                     
 825             Case e_PlayerType.SemiDios
-830                 .flags.ChatColor = RGB(2, 161, 38)
+830                 .flags.ChatColor = RGB(60, 150, 60)
                     
 835             Case e_PlayerType.Consejero
-840                 .flags.ChatColor = RGB(2, 161, 38)
-                
+840                 .flags.ChatColor = RGB(170, 170, 170)
+
+                Case e_PlayerType.user Or e_PlayerType.ChaosCouncil
+                    .flags.ChatColor = RGB(255, 78, 40)
+                    
+                Case e_PlayerType.user Or e_PlayerType.RoyalCouncil
+                    .flags.ChatColor = RGB(2, 242, 255)
 845             Case Else
 850                 .flags.ChatColor = vbWhite
                 

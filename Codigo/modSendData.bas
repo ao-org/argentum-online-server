@@ -323,7 +323,7 @@ Public Sub SendData(ByVal sndRoute As SendTarget, ByVal sndIndex As Integer, Par
 354         Case SendTarget.ToCaosYRMs
 356             For LoopC = 1 To LastUser
 358                 If (UserList(LoopC).ConnIDValida) Then
-360                     If UserList(LoopC).Faccion.FuerzasCaos = 1 Or (UserList(LoopC).flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios Or e_PlayerType.consejero Or e_PlayerType.RoyalCouncil)) <> 0 Then
+360                     If UserList(LoopC).Faccion.FuerzasCaos = 1 Or (UserList(LoopC).flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios Or e_PlayerType.Consejero Or e_PlayerType.ChaosCouncil)) <> 0 Then
 362                         Call modNetwork.Send(LoopC, Buffer)
                         End If
                     End If
@@ -591,6 +591,9 @@ Private Sub SendToUserAreaButindex(ByVal UserIndex As Integer, ByVal Buffer As N
 122                 If tempIndex <> UserIndex Then
 124                     If UserList(tempIndex).ConnIDValida Then
 126                         Call modNetwork.Send(tempIndex, Buffer)
+                            If UserList(tempIndex).flags.GMMeSigue > 0 Then
+                                Call modNetwork.Send(UserList(tempIndex).flags.GMMeSigue, Buffer)
+                            End If
 
                         End If
 
