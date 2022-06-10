@@ -6929,10 +6929,10 @@ Private Sub HandleCouncilMessage(ByVal UserIndex As Integer)
 112             .flags.ChatHistory(UBound(.flags.ChatHistory)) = chat
             
 114             If .Faccion.Status = e_Facciones.consejo Then
-116                 Call SendData(SendTarget.ToConsejo, UserIndex, PrepareMessageConsoleMsg("(Consejero) " & .Name & "> " & chat, e_FontTypeNames.FONTTYPE_CONSEJO))
+116                 Call SendData(SendTarget.ToConsejo, UserIndex, PrepareMessageConsoleMsg("(Consejo) " & .name & "> " & chat, e_FontTypeNames.FONTTYPE_CONSEJO))
 
 118             ElseIf .Faccion.Status = e_Facciones.concilio Then
-120                 Call SendData(SendTarget.ToConsejoCaos, UserIndex, PrepareMessageConsoleMsg("(Consejero) " & .Name & "> " & chat, e_FontTypeNames.FONTTYPE_CONSEJOCAOS))
+120                 Call SendData(SendTarget.ToConsejoCaos, UserIndex, PrepareMessageConsoleMsg("(Concilio) " & .name & "> " & chat, e_FontTypeNames.FONTTYPE_CONSEJOCAOS))
 
                 End If
 
@@ -10314,7 +10314,7 @@ Private Sub HandlePerdonFaccion(ByVal userindex As Integer)
 
                 End If
                 
-                If UserList(tUser).Faccion.Status = e_Facciones.Armada Or UserList(tUser).Faccion.Status = e_Facciones.Caos Then
+                If UserList(tUser).Faccion.status = e_Facciones.Armada Or UserList(tUser).Faccion.status = e_Facciones.Caos Or UserList(tUser).Faccion.status = e_Facciones.consejo Or UserList(tUser).Faccion.status = e_Facciones.concilio Then
                     Call WriteConsoleMsg(UserIndex, "No puedes perdonar a alguien que ya pertenece a una facción", e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
@@ -10620,14 +10620,14 @@ Private Sub HandleForgive(ByVal UserIndex As Integer)
 
             End If
         
-114         If .Faccion.Status = 1 Or .Faccion.ArmadaReal = 1 Then
+114         If .Faccion.status = e_Facciones.Ciudadano Or .Faccion.status = e_Facciones.Armada Or .Faccion.status = e_Facciones.consejo Then
                 'Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
 116             Call WriteChatOverHead(UserIndex, "Tu alma ya esta libre de pecados hijo mio.", priest.Char.CharIndex, vbWhite)
                 Exit Sub
 
             End If
         
-118         If .Faccion.FuerzasCaos > 0 Then
+118         If .Faccion.status = e_Facciones.Caos Or .Faccion.status = e_Facciones.consejo Then
 120             Call WriteChatOverHead(UserIndex, "¡¡Dios no te perdonará mientras seas fiel al Demonio!!", priest.Char.charindex, vbWhite)
                 Exit Sub
 
@@ -11992,6 +11992,11 @@ Private Sub HandleAcceptRoyalCouncilMember(ByVal UserIndex As Integer)
 110                 Call WriteConsoleMsg(UserIndex, "Usuario offline", e_FontTypeNames.FONTTYPE_INFO)
                 
                 Else
+                    If UserList(tUser).GuildIndex > 0 Then
+                        If GuildAlignmentIndex(UserList(tUser).GuildIndex) <> e_ALINEACION_GUILD.ALINEACION_ARMADA Then
+                            Call WriteConsoleMsg(UserIndex, "El miembro no puede ingresar al consejo porque forma parte de un clan que no es de la armada.", e_FontTypeNames.FONTTYPE_INFO)
+                        End If
+                    End If
             
 112                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(UserName & " fue aceptado en el honorable Consejo Real de Banderbill.", e_FontTypeNames.FONTTYPE_CONSEJO))
 
@@ -12045,7 +12050,12 @@ Private Sub HandleAcceptChaosCouncilMember(ByVal UserIndex As Integer)
 110                 Call WriteConsoleMsg(UserIndex, "Usuario offline", e_FontTypeNames.FONTTYPE_INFO)
                 
                 Else
-            
+                    If UserList(tUser).GuildIndex > 0 Then
+                        If GuildAlignmentIndex(UserList(tUser).GuildIndex) <> e_ALINEACION_GUILD.ALINEACION_CAOTICA Then
+                            Call WriteConsoleMsg(UserIndex, "El miembro no puede ingresar al concilio porque forma parte de un clan que no es caótico.", e_FontTypeNames.FONTTYPE_INFO)
+                        End If
+                    End If
+                    
 112                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(username & " fue aceptado en el Consejo de la Legión Oscura.", e_FontTypeNames.FONTTYPE_CONSEJOCAOS))
                 
 114                 With UserList(tUser)
@@ -12246,9 +12256,11 @@ Private Sub HandleCouncilKick(ByVal UserIndex As Integer)
                 Else
 
 124                 With UserList(tUser)
-                        If .Faccion.Status = e_Facciones.concilio Then
+                        If .Faccion.status = e_Facciones.consejo Then
 128                         Call WriteConsoleMsg(tUser, "Has sido echado del consejo de Banderbill", e_FontTypeNames.FONTTYPE_TALK)
-130                         .Faccion.Status = e_Facciones.Ciudadano
+130                         .Faccion.status = e_Facciones.Armada
+                            
+                            
                         
 132                         Call WarpUserChar(tUser, .Pos.Map, .Pos.X, .Pos.Y)
 134                         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(UserName & " fue expulsado del consejo de Banderbill", e_FontTypeNames.FONTTYPE_CONSEJO))
@@ -13702,7 +13714,7 @@ Public Sub HandleDonateGold(ByVal UserIndex As Integer)
 102         Oro = Reader.ReadInt32
 
 104         If Oro <= 0 Then Exit Sub
-
+        
             'Se asegura que el target es un npc
 106         If .flags.TargetNPC = 0 Then
 108             Call WriteConsoleMsg(UserIndex, "Primero tenés que seleccionar al sacerdote.", e_FontTypeNames.FONTTYPE_INFO)
@@ -16201,19 +16213,16 @@ Private Sub HandleQuieroFundarClan(ByVal UserIndex As Integer)
 104         If UserList(UserIndex).GuildIndex > 0 Then
 106             Call WriteConsoleMsg(UserIndex, "Ya perteneces a un clan, no podés fundar otro.", e_FontTypeNames.FONTTYPE_INFOIAO)
                 Exit Sub
-
             End If
 
 108         If UserList(userindex).Stats.ELV < 25 Or UserList(userindex).Stats.UserSkills(e_Skill.liderazgo) < 90 Then
 110             Call WriteConsoleMsg(userindex, "Para fundar un clan debes ser nivel 25, tener 90 en liderazgo y tener en tu inventario las 2 gemas: Gema Polar(1), Gema Roja(1).", e_FontTypeNames.FONTTYPE_INFOIAO)
                 Exit Sub
-
             End If
 
 112         If Not TieneObjetos(407, 1, UserIndex) Or Not TieneObjetos(408, 1, UserIndex) Then
 114             Call WriteConsoleMsg(userindex, "Para fundar un clan debes tener en tu inventario las 2 gemas: Gema Polar(1), Gema Roja(1).", e_FontTypeNames.FONTTYPE_INFOIAO)
-                'Exit Sub
-
+                Exit Sub
             End If
 
 116         Call WriteConsoleMsg(UserIndex, "Servidor » ¡Comenzamos a fundar el clan! Ingresa todos los datos solicitados.", e_FontTypeNames.FONTTYPE_INFOIAO)

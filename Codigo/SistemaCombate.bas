@@ -616,7 +616,7 @@ Private Sub UserDañoNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
                 ' Si acertó - Doble chance contra NPCs
 126             If RandomNumber(1, 100) <= ProbabilidadGolpeCritico(UserIndex) * 1.5 Then
                     ' Daño del golpe crítico (usamos el daño base)
-128                 DañoExtra = DañoBase * ModDañoGolpeCritico
+128                 DañoExtra = DañoBase * 0.33
                 
                     ' Mostramos en consola el daño
 130                 If .ChatCombate = 1 Then
@@ -1272,7 +1272,7 @@ Private Function UsuarioImpacto(ByVal AtacanteIndex As Integer, ByVal VictimaInd
 164             Call SubirSkill(VictimaIndex, e_Skill.Defensa)
             Else
 166             Call WriteConsoleMsg(VictimaIndex, "¡" & UserList(AtacanteIndex).name & " te atacó y falló! ", e_FontTypeNames.FONTTYPE_FIGHT)
-
+                Call WriteConsoleMsg(AtacanteIndex, "¡Has fallado el golpe!", e_FontTypeNames.FONTTYPE_FIGHT)
             End If
         End If
 

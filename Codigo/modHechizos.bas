@@ -2251,6 +2251,8 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
                     End Select
                 End If
                 
+                Call SendData(SendTarget.ToPCArea, tU, PrepareMessageSetInvisible(UserList(tU).Char.charindex, False))
+                
                 Call WriteConsoleMsg(tU, "¡Has sido resucitado!", e_FontTypeNames.FONTTYPE_INFO)
                 Call SendData(SendTarget.ToPCArea, tU, PrepareMessageParticleFX(UserList(tU).Char.CharIndex, e_ParticulasIndex.Resucitar, 250, True))
                 Call SendData(SendTarget.ToPCArea, tU, PrepareMessagePlayWave("117", UserList(tU).Pos.X, UserList(tU).Pos.Y))
