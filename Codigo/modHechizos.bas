@@ -1536,9 +1536,9 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
             
             If (TriggerZonaPelea(UserIndex, tU) <> TRIGGER6_PERMITE) Then
                     Select Case Status(UserIndex)
-                        Case 1, 3 'Ciudadano o armada
-                            If Status(tU) <> 3 And Status(tU) <> 1 Then
-                                If Status(UserIndex) = e_Facciones.armada Then
+                        Case 1, 3, 5 'Ciudadano o armada
+                            If Status(tU) <> e_Facciones.Ciudadano And Status(tU) <> e_Facciones.Armada And Status(tU) <> e_Facciones.consejo Then
+                                If Status(UserIndex) = e_Facciones.Armada Or Status(UserIndex) = e_Facciones.consejo Then
                                     Call WriteConsoleMsg(UserIndex, "No puedes ayudar criminales.", e_FontTypeNames.FONTTYPE_INFO)
                                     b = False
                                     Exit Sub
@@ -1568,8 +1568,8 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
                                     End If
                                 End If
                             End If
-                        Case 2 'Caos
-                            If Status(tU) <> 0 And Status(tU) <> 2 Then
+                        Case 2, 4 'Caos
+                            If Status(tU) <> e_Facciones.Caos And Status(tU) <> e_Facciones.Criminal And Status(tU) <> e_Facciones.concilio Then
                                 Call WriteConsoleMsg(UserIndex, "No podés ayudar ciudadanos.", e_FontTypeNames.FONTTYPE_INFO)
                                 b = False
                                 Exit Sub
@@ -2035,9 +2035,9 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
             'Para poder tirar remo a un pk en el ring
 536         If (TriggerZonaPelea(UserIndex, tU) <> TRIGGER6_PERMITE) Then
                     Select Case Status(UserIndex)
-                        Case 1, 3 'Ciudadano o armada
-                            If Status(tU) <> 3 And Status(tU) <> 1 Then
-                                If Status(UserIndex) = e_Facciones.armada Then
+                        Case 1, 3, 5 'Ciudadano o armada
+                            If Status(tU) <> e_Facciones.Ciudadano And Status(tU) <> e_Facciones.Armada And Status(tU) <> e_Facciones.consejo Then
+                                If Status(UserIndex) = e_Facciones.Armada Or Status(UserIndex) = e_Facciones.consejo Then
                                     Call WriteConsoleMsg(UserIndex, "No puedes ayudar criminales.", e_FontTypeNames.FONTTYPE_INFO)
                                     b = False
                                     Exit Sub
@@ -2067,8 +2067,8 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
                                     End If
                                 End If
                             End If
-                        Case 2 'Caos
-                            If Status(tU) <> 0 And Status(tU) <> 2 Then
+                        Case 2, 4 'Caos
+                            If Status(tU) <> e_Facciones.Caos And Status(tU) <> e_Facciones.Criminal And Status(tU) <> e_Facciones.concilio Then
                                 Call WriteConsoleMsg(UserIndex, "No podés ayudar ciudadanos.", e_FontTypeNames.FONTTYPE_INFO)
                                 b = False
                                 Exit Sub
@@ -2210,9 +2210,9 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
                     End If
                 
                     Select Case Status(UserIndex)
-                        Case 1, 3 'Ciudadano o armada
-                            If Status(tU) <> 3 And Status(tU) <> 1 Then
-                                If Status(UserIndex) = e_Facciones.armada Then
+                        Case 1, 3, 5 'Ciudadano o armada
+                            If Status(tU) <> e_Facciones.Ciudadano And Status(tU) <> e_Facciones.Armada And Status(tU) <> e_Facciones.consejo Then
+                                If Status(UserIndex) = e_Facciones.Armada Or Status(UserIndex) = e_Facciones.consejo Then
                                     Call WriteConsoleMsg(UserIndex, "Los miembros de la armada real solo pueden revivir ciudadanos a miembros de su facción.", e_FontTypeNames.FONTTYPE_INFO)
                                     b = False
                                     Exit Sub
@@ -2242,8 +2242,8 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
                                     End If
                                 End If
                             End If
-                        Case 2 'Caos
-                            If Status(tU) <> 0 And Status(tU) <> 2 Then
+                        Case 2, 4 'Caos
+                            If Status(tU) <> e_Facciones.Caos And Status(tU) <> e_Facciones.Criminal And Status(tU) <> e_Facciones.concilio Then
                                 Call WriteConsoleMsg(UserIndex, "Los miembros del caos solo pueden revivir criminales o miembros de su facción.", e_FontTypeNames.FONTTYPE_INFO)
                                 b = False
                                 Exit Sub
@@ -2991,9 +2991,9 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
     
             If (TriggerZonaPelea(UserIndex, tempChr) <> TRIGGER6_PERMITE) Then
                     Select Case Status(UserIndex)
-                        Case 1, 3 'Ciudadano o armada
-                            If Status(tempChr) <> 3 And Status(tempChr) <> 1 Then
-                                If Status(UserIndex) = e_Facciones.armada Then
+                        Case 1, 3, 5 'Ciudadano o armada
+                            If Status(tempChr) <> e_Facciones.Ciudadano And Status(tempChr) <> e_Facciones.Armada And Status(tempChr) <> e_Facciones.consejo Then
+                                If Status(UserIndex) = e_Facciones.Armada Or Status(UserIndex) = e_Facciones.consejo Then
                                     Call WriteConsoleMsg(UserIndex, "No puedes ayudar criminales.", e_FontTypeNames.FONTTYPE_INFO)
                                     b = False
                                     Exit Sub
@@ -3023,8 +3023,8 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
                                     End If
                                 End If
                             End If
-                        Case 2 'Caos
-                            If Status(tempChr) <> 0 And Status(tempChr) <> 2 Then
+                        Case 2, 4 'Caos
+                            If Status(tempChr) <> e_Facciones.Caos And Status(tempChr) <> e_Facciones.Criminal And Status(tempChr) <> e_Facciones.concilio Then
                                 Call WriteConsoleMsg(UserIndex, "No podés ayudar ciudadanos.", e_FontTypeNames.FONTTYPE_INFO)
                                 b = False
                                 Exit Sub
@@ -3086,9 +3086,9 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
     
         If (TriggerZonaPelea(UserIndex, tempChr) <> TRIGGER6_PERMITE) Then
                 Select Case Status(UserIndex)
-                    Case 1, 3 'Ciudadano o armada
-                        If Status(tempChr) <> 3 And Status(tempChr) <> 1 Then
-                            If Status(UserIndex) = e_Facciones.armada Then
+                    Case 1, 3, 5 'Ciudadano o armada
+                            If Status(tempChr) <> e_Facciones.Ciudadano And Status(tempChr) <> e_Facciones.Armada And Status(tempChr) <> e_Facciones.consejo Then
+                                If Status(UserIndex) = e_Facciones.Armada Or Status(UserIndex) = e_Facciones.consejo Then
                                 Call WriteConsoleMsg(UserIndex, "No puedes ayudar criminales.", e_FontTypeNames.FONTTYPE_INFO)
                                 b = False
                                 Exit Sub
@@ -3118,8 +3118,8 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
                                 End If
                             End If
                         End If
-                    Case 2 'Caos
-                        If Status(tempChr) <> 0 And Status(tempChr) <> 2 Then
+                    Case 2, 4 'Caos
+                        If Status(tempChr) <> e_Facciones.Caos And Status(tempChr) <> e_Facciones.Criminal And Status(tempChr) <> e_Facciones.concilio Then
                             Call WriteConsoleMsg(UserIndex, "No podés ayudar ciudadanos.", e_FontTypeNames.FONTTYPE_INFO)
                             b = False
                             Exit Sub
@@ -3785,9 +3785,9 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean)
     
            If (TriggerZonaPelea(UserIndex, tU) <> TRIGGER6_PERMITE) Then
                     Select Case Status(UserIndex)
-                        Case 1, 3 'Ciudadano o armada
-                            If Status(tU) <> 3 And Status(tU) <> 1 Then
-                                If Status(UserIndex) = e_Facciones.armada Then
+                        Case 1, 3, 5 'Ciudadano o armada
+                            If Status(tU) <> e_Facciones.Ciudadano And Status(tU) <> e_Facciones.Armada And Status(tU) <> e_Facciones.consejo Then
+                                If Status(UserIndex) = e_Facciones.Armada Or Status(UserIndex) = e_Facciones.consejo Then
                                     Call WriteConsoleMsg(UserIndex, "No puedes ayudar criminales.", e_FontTypeNames.FONTTYPE_INFO)
                                     b = False
                                     Exit Sub
@@ -3817,8 +3817,8 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean)
                                     End If
                                 End If
                             End If
-                        Case 2 'Caos
-                            If Status(tU) <> 0 And Status(tU) <> 2 Then
+                        Case 2, 4 'Caos
+                            If Status(tU) <> e_Facciones.Caos And Status(tU) <> e_Facciones.Criminal And Status(tU) <> e_Facciones.concilio Then
                                 Call WriteConsoleMsg(UserIndex, "No podés ayudar ciudadanos.", e_FontTypeNames.FONTTYPE_INFO)
                                 b = False
                                 Exit Sub

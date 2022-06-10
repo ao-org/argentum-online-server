@@ -1044,7 +1044,7 @@ Sub RefreshCharStatus(ByVal UserIndex As Integer)
             
         End If
     
-120     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageUpdateTagAndStatus(UserIndex, UserList(UserIndex).Faccion.Status, name))
+120     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageUpdateTagAndStatus(UserIndex, UserList(UserIndex).Faccion.Status, name))
 
         
         Exit Sub
@@ -2320,7 +2320,7 @@ Sub WarpUserChar(ByVal UserIndex As Integer, _
             End If
     
             'Quitar el dialogo
-112         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageRemoveCharDialog(.Char.charindex))
+112         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageRemoveCharDialog(.Char.charindex))
     
 114         Call WriteRemoveAllDialogs(UserIndex)
     
