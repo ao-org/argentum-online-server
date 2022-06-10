@@ -64,7 +64,7 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
 102         Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareMessageChatOverHead("¡¡Auch!!", NpcList(NpcIndex).Char.charindex, vbRed))
 
 104         If UBound(NpcList(NpcIndex).Char.Animation) > 0 Then
-106             Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageDoAnimation(NpcList(NpcIndex).Char.CharIndex, NpcList(NpcIndex).Char.Animation(1)))
+106             Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareMessageDoAnimation(NpcList(NpcIndex).Char.charindex, NpcList(NpcIndex).Char.Animation(1)))
             End If
 
 108         NpcList(NpcIndex).Stats.MinHp = NpcList(NpcIndex).Stats.MaxHp
@@ -712,7 +712,9 @@ Sub MakeNPCChar(ByVal toMap As Boolean, sndIndex As Integer, NpcIndex As Integer
                 End If
                 Dim body As Integer
                 
+                'Si está muerto el usuario y en zona insegura
                 If UserList(sndIndex).flags.Muerto = 1 And MapInfo(UserList(sndIndex).Pos.map).Seguro = 0 Then
+                    'Solamente mando el body si es de tipo revividor.
                     If .NPCtype = e_NPCType.Revividor Then
                         body = IIf(.flags.NPCIdle, .Char.BodyIdle, .Char.body)
                     Else

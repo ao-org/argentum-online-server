@@ -1131,7 +1131,7 @@ Function FaccionPuedeUsarItem(ByVal UserIndex As Integer, ByVal ObjIndex As Inte
 104     If ObjIndex < 1 Then Exit Function
 
 106     If ObjData(ObjIndex).Real = 1 Then
-108         If Status(UserIndex) = 3 Then
+108         If Status(UserIndex) = e_Facciones.Armada Or Status(UserIndex) = e_Facciones.consejo Then
 110             FaccionPuedeUsarItem = esArmada(UserIndex)
             Else
 112             FaccionPuedeUsarItem = False
@@ -1139,7 +1139,7 @@ Function FaccionPuedeUsarItem(ByVal UserIndex As Integer, ByVal ObjIndex As Inte
 
 114     ElseIf ObjData(ObjIndex).Caos = 1 Then
 
-116         If Status(UserIndex) = 2 Then
+116         If Status(UserIndex) = e_Facciones.Caos Or Status(UserIndex) = e_Facciones.concilio Then
 118             FaccionPuedeUsarItem = esCaos(UserIndex)
             Else
 120             FaccionPuedeUsarItem = False

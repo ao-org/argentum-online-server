@@ -1786,16 +1786,21 @@ Private Sub HandleWhisper(ByVal UserIndex As Integer)
 106         If CompararPrivilegios(.flags.Privilegios, UserDarPrivilegioLevel(targetCharIndex)) < 0 Then Exit Sub
         
 108         targetUserIndex = NameIndex(targetCharIndex)
-
-110         If targetUserIndex <= 0 Then 'existe el usuario destino?
-112            ' Call WriteConsoleMsg(UserIndex, "Usuario offline o inexistente.", e_FontTypeNames.FONTTYPE_INFO)
-
-            Else
-
+            If UserList(UserIndex).flags.Muerto = 1 Then
+                Call WriteConsoleMsg(UserIndex, "No puedes susurrar estando muerto.", e_FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
+            
+            If targetUserIndex > 0 Then
+                If UserList(targetUserIndex).flags.Muerto = 1 Then
+                    Call WriteConsoleMsg(UserIndex, "No puedes susurrar a un muerto.", e_FontTypeNames.FONTTYPE_INFO)
+                    Exit Sub
+                End If
+            End If
+            
 114             If EstaPCarea(UserIndex, targetUserIndex) Then
 
 116                 If LenB(chat) <> 0 Then
-                        ' WyroX: Foto-denuncias - Push message
                         Dim i As Long
 
 120                     For i = 1 To UBound(.flags.ChatHistory) - 1
@@ -1814,8 +1819,6 @@ Private Sub HandleWhisper(ByVal UserIndex As Integer)
                     End If
                     
                 End If
-
-            End If
 
         End With
         

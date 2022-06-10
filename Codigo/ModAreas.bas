@@ -234,6 +234,7 @@ Public Sub CheckUpdateNeededUser(ByVal UserIndex As Integer, ByVal head As Byte,
 190                     If UserIndex <> TempInt Then
                             'NOTIFICO AL USUARIO QUE ESTABA EN EL AREA
                             Call NotifyUser(TempInt, UserIndex)
+                            
                             'NOTIFICO AL USUARIO QUE LLEGA AL AREA
                             Call NotifyUser(UserIndex, TempInt)
 
@@ -321,8 +322,11 @@ CheckUpdateNeededUser_Err:
         
 End Sub
 Private Sub NotifyUser(ByVal UI1 As Integer, ByVal UI2 As Integer)
+
+
     With UserList(UI1)
-        If MapInfo(.Pos.map).Seguro = 0 Then
+         If MapInfo(.Pos.map).Seguro = 0 Then
+            'El que va a ser notificado es GM
             If EsGM(UI1) Then
             Debug.Print "UI1: " & UserList(UI1).name & " |UI2: " & UserList(UI2).name
             
@@ -368,6 +372,16 @@ Private Sub NotifyUser(ByVal UI1 As Integer, ByVal UI2 As Integer)
                                     If UserList(UI2).flags.invisible Or UserList(UI2).flags.Oculto Then
                                         Call WriteSetInvisible(UI1, UserList(UI2).Char.charindex, True)
                                     End If
+                                Else
+                                    Call MakeUserChar(False, UI1, UI2, UserList(UI2).Pos.map, UserList(UI2).Pos.X, UserList(UI2).Pos.y, 0)
+                                    If UserList(UI2).flags.invisible Or UserList(UI2).flags.Oculto Then
+                                        Call WriteSetInvisible(UI1, UserList(UI2).Char.charindex, True)
+                                    End If
+                                End If
+                            Else
+                                Call MakeUserChar(False, UI1, UI2, UserList(UI2).Pos.map, UserList(UI2).Pos.X, UserList(UI2).Pos.y, 0)
+                                If UserList(UI2).flags.invisible Or UserList(UI2).flags.Oculto Then
+                                    Call WriteSetInvisible(UI1, UserList(UI2).Char.charindex, True)
                                 End If
                             End If
                         End If

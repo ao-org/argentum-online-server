@@ -1358,7 +1358,7 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
 330                             Stat = Stat & " <" & modGuilds.GuildName(UserList(TempCharIndex).GuildIndex) & ">"
                             End If
     
-                        End If ' If user > 0 then
+                        End If
                                 
 332                     If EsGM(TempCharIndex) Then
 334                         ft = e_FontTypeNames.FONTTYPE_GM
@@ -1369,12 +1369,10 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
     
 340                         If UserList(TempCharIndex).flags.Privilegios = e_PlayerType.SemiDios Then
 342                             Stat = Stat & " <Semi-Dios>"
-    
                             End If
     
 344                         If UserList(TempCharIndex).flags.Privilegios = e_PlayerType.Dios Then
 346                             Stat = Stat & " <Dios>"
-    
                             End If
                             
 348                         If UserList(TempCharIndex).flags.Privilegios = e_PlayerType.Admin Then
@@ -1530,14 +1528,16 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
 466             ElseIf TempCharIndex = CentinelaNPCIndex Then
                     'Enviamos nuevamente el texto del centinela según quien pregunta
 468                 Call modCentinela.CentinelaSendClave(UserIndex)
-                
-                If UserList(UserIndex).flags.Muerto = 0 Then
-470                 ElseIf NpcList(TempCharIndex).MaestroUser > 0 Then
+470             ElseIf NpcList(TempCharIndex).MaestroUser > 0 Then
+                    If UserList(UserIndex).flags.Muerto = 0 Then
 472                     Call WriteConsoleMsg(UserIndex, "NPCNAME*" & NpcList(TempCharIndex).Numero & "* es mascota de " & UserList(NpcList(TempCharIndex).MaestroUser).name & " " & estatus, e_FontTypeNames.FONTTYPE_INFO)
-                    Else
+                    End If
+                Else
+                    If UserList(UserIndex).flags.Muerto = 0 Then
 474                     Call WriteConsoleMsg(UserIndex, "NPCNAME*" & NpcList(TempCharIndex).Numero & "*" & " " & estatus, e_FontTypeNames.FONTTYPE_INFO)
                     End If
                 End If
+               ' End If
                 
 476             FoundSomething = 1
 478             UserList(UserIndex).flags.TargetNpcTipo = NpcList(TempCharIndex).NPCtype

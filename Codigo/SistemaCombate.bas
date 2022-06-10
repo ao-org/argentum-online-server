@@ -756,7 +756,7 @@ Private Function NpcDaño(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
         
 142     If Daño < 0 Then Daño = 0
     
-144     Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessageTextCharDrop(PonerPuntos(Daño), UserList(UserIndex).Char.charindex, vbRed))
+144     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageTextCharDrop(PonerPuntos(Daño), UserList(UserIndex).Char.charindex, vbRed))
 
 146     If UserList(UserIndex).ChatCombate = 1 Then
 148         Call WriteNPCHitUser(UserIndex, Lugar, Daño)
@@ -1012,7 +1012,7 @@ Public Sub UsuarioAtacaNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer
 106         If NpcList(NpcIndex).flags.Snd2 > 0 Then
 108             Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareMessagePlayWave(NpcList(NpcIndex).flags.Snd2, NpcList(NpcIndex).Pos.X, NpcList(NpcIndex).Pos.y))
             Else
-110             Call SendData(SendTarget.ToNPCAliveArea, UserIndex, PrepareMessagePlayWave(SND_IMPACTO2, NpcList(NpcIndex).Pos.X, NpcList(NpcIndex).Pos.y))
+110             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(SND_IMPACTO2, NpcList(NpcIndex).Pos.X, NpcList(NpcIndex).Pos.y))
             End If
         
             ' Golpe Paralizador
@@ -1518,7 +1518,7 @@ Private Sub UserDañoUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As 
             End If
 
             ' Daño sobre el tile
-236         Call SendData(SendTarget.toPCAliveArea, VictimaIndex, PrepareMessageTextCharDrop(DañoStr, .Char.charindex, Color))
+236         Call SendData(SendTarget.ToPCAliveArea, VictimaIndex, PrepareMessageTextCharDrop(DañoStr, .Char.charindex, Color))
 
             ' Muere la víctima
 240         If .Stats.MinHp <= 0 Then
