@@ -538,32 +538,32 @@ Public Function PuedeFundarUnClan(ByVal UserIndex As Integer, ByVal Alineacion A
     
 118     Select Case Alineacion
             Case e_ALINEACION_GUILD.ALINEACION_NEUTRAL
-120             If Status(UserIndex) = e_Facciones.Caos Or Status(UserIndex) = e_Facciones.Armada Then
+120             If status(UserIndex) = e_Facciones.Caos Or status(UserIndex) = e_Facciones.Armada Or status(UserIndex) = e_Facciones.consejo Or status(UserIndex) = e_Facciones.concilio Then
 122                 refError = "Para fundar un clan neutral deberás ser ciudadano o criminal."
                     Exit Function
                 End If
 
 124         Case e_ALINEACION_GUILD.ALINEACION_ARMADA
 
-126             If Status(UserIndex) <> e_Facciones.Armada Then
+126             If status(UserIndex) <> e_Facciones.Armada And status(UserIndex) <> e_Facciones.consejo Then
 128                 refError = "Para fundar un clan de la Armada Real deberás pertenecer a la misma."
                     Exit Function
                 End If
                 
 130         Case e_ALINEACION_GUILD.ALINEACION_CAOTICA
-132             If Status(UserIndex) <> e_Facciones.Caos Then
+132             If status(UserIndex) <> e_Facciones.Caos And status(UserIndex) <> e_Facciones.concilio Then
 134                 refError = "Para fundar un clan de la Legión Oscura deberás pertenecer a la misma."
                     Exit Function
                 End If
                 
             Case e_ALINEACION_GUILD.ALINEACION_CIUDADANA
-             If Status(UserIndex) = e_Facciones.Criminal Or Status(UserIndex) = e_Facciones.Caos Then
-                refError = "Para fundar un clan ciudadano deberás ser ciudadano o armada real."
+             If status(UserIndex) <> e_Facciones.Ciudadano And status(UserIndex) <> e_Facciones.Armada Then
+                refError = "Para fundar un clan ciudadano deberás ser ciudadano."
                 Exit Function
             End If
                 
             Case e_ALINEACION_GUILD.ALINEACION_CRIMINAL
-             If Status(UserIndex) = e_Facciones.Armada Or Status(UserIndex) = e_Facciones.Ciudadano Then
+             If status(UserIndex) <> e_Facciones.Caos And status(UserIndex) <> e_Facciones.concilio Then
                 refError = "Para fundar un clan criminal deberás ser criminal o legión oscura."
                 Exit Function
             End If
@@ -610,24 +610,25 @@ Private Function m_EstadoPermiteEntrarChar(ByRef Personaje As String, ByVal Guil
         End If
     
 114     If PersonajeExiste(Personaje) Then
-116         Promedio = ObtenerCriminal(Personaje)
+            Dim status As Integer
+            status = CInt(GetUserValue(LCase$(Personaje), "status"))
         
 118         Select Case guilds(GuildIndex).Alineacion
 
                 Case e_ALINEACION_GUILD.ALINEACION_NEUTRAL
-120                 m_EstadoPermiteEntrarChar = Promedio = 0 Or Promedio = 1
+120                 m_EstadoPermiteEntrarChar = (status = e_Facciones.Ciudadano Or status = e_Facciones.Criminal)
 
 122             Case e_ALINEACION_GUILD.ALINEACION_ARMADA
-124                 m_EstadoPermiteEntrarChar = CBool(GetUserValue(LCase$(Personaje), "pertenece_real"))
+124                 m_EstadoPermiteEntrarChar = (status = e_Facciones.Armada Or status = e_Facciones.consejo)
 
 126             Case e_ALINEACION_GUILD.ALINEACION_CAOTICA
-128                 m_EstadoPermiteEntrarChar = CBool(GetUserValue(LCase$(Personaje), "pertenece_caos"))
+128                 m_EstadoPermiteEntrarChar = (status = e_Facciones.Caos Or status = e_Facciones.concilio)
                 
                 Case e_ALINEACION_GUILD.ALINEACION_CIUDADANA
-                     m_EstadoPermiteEntrarChar = Promedio = 1 Or CBool(GetUserValue(LCase$(Personaje), "pertenece_real"))
+                     m_EstadoPermiteEntrarChar = (status = e_Facciones.Ciudadano Or status = e_Facciones.Armada)
                 
                 Case e_ALINEACION_GUILD.ALINEACION_CRIMINAL
-                     m_EstadoPermiteEntrarChar = Promedio = 0 Or CBool(GetUserValue(LCase$(Personaje), "pertenece_caos"))
+                     m_EstadoPermiteEntrarChar = (status = e_Facciones.Criminal Or status = e_Facciones.Caos)
 
             End Select
 
@@ -650,16 +651,16 @@ Private Function m_EstadoPermiteEntrar(ByVal UserIndex As Integer, ByVal GuildIn
 102           m_EstadoPermiteEntrar = Status(UserIndex) = 0 Or Status(UserIndex) = 1
 
 104         Case e_ALINEACION_GUILD.ALINEACION_ARMADA
-106           m_EstadoPermiteEntrar = (Status(UserIndex) = 3)
+106           m_EstadoPermiteEntrar = status(UserIndex) = 3 Or status(UserIndex) = 5
 
 108         Case e_ALINEACION_GUILD.ALINEACION_CAOTICA
-110           m_EstadoPermiteEntrar = (Status(UserIndex) = 2)
+110           m_EstadoPermiteEntrar = status(UserIndex) = 2 Or status(UserIndex) = 4
 
             Case e_ALINEACION_GUILD.ALINEACION_CIUDADANA
-               m_EstadoPermiteEntrar = (Status(UserIndex) = 1 Or Status(UserIndex) = 3)
+               m_EstadoPermiteEntrar = status(UserIndex) = 1 Or status(UserIndex) = 3
                
             Case e_ALINEACION_GUILD.ALINEACION_CRIMINAL
-                m_EstadoPermiteEntrar = (Status(UserIndex) = 0 Or Status(UserIndex) = 2)
+                m_EstadoPermiteEntrar = status(UserIndex) = 0 Or status(UserIndex) = 2
 
         End Select
 
@@ -1919,7 +1920,7 @@ Public Sub SendDetallesPersonaje(ByVal UserIndex As Integer, ByVal Personaje As 
 102     Personaje = UCase$(Personaje)
     
 104     If GI <= 0 Or GI > CANTIDADDECLANES Then
-106         Call WriteConsoleMsg(userindex, "No perteneces a ningún clan.", e_FontTypeNames.FONTTYPE_INFO)
+106         Call WriteConsoleMsg(UserIndex, "No perteneces a ningún clan.", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
 
         End If

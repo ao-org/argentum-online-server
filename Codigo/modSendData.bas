@@ -56,15 +56,12 @@ Public Enum SendTarget
     ToAdmins
     ToPCAreaButIndex
     ToAdminAreaButIndex
-    ToAdminsAreaButConsejeros
     ToDiosesYclan
     ToConsejo
     ToClanArea
     ToConsejoCaos
     ToRolesMasters
     ToDeadArea
-    ToCiudadanos
-    ToCriminales
     ToReal
     ToCaos
     ToCiudadanosYRMs
@@ -208,10 +205,7 @@ Public Sub SendData(ByVal sndRoute As SendTarget, ByVal sndIndex As Integer, Par
         
 200         Case SendTarget.ToClanArea
 202             Call SendToUserGuildArea(sndIndex, Buffer)
-        
-204         Case SendTarget.ToAdminsAreaButConsejeros
-206             Call SendToAdminsButConsejerosArea(sndIndex, Buffer)
-        
+                
 208         Case SendTarget.ToNPCArea
 210             Call SendToNpcArea(sndIndex, Buffer)
         
@@ -265,43 +259,6 @@ Public Sub SendData(ByVal sndRoute As SendTarget, ByVal sndIndex As Integer, Par
                         End If
                     End If
 268             Next LoopC
-
-270         Case SendTarget.ToCiudadanos
-272             For LoopC = 1 To LastUser
-274                 If (UserList(LoopC).ConnIDValida) Then
-276                     If Status(LoopC) < 2 Then
-278                         Call modNetwork.Send(LoopC, Buffer)
-                        End If
-                    End If
-280             Next LoopC
-
-282         Case SendTarget.ToCriminales
-284             For LoopC = 1 To LastUser
-286                 If (UserList(LoopC).ConnIDValida) Then
-288                     If Status(LoopC) = 2 Then
-290                         Call modNetwork.Send(LoopC, Buffer)
-                        End If
-                    End If
-292             Next LoopC
-
-294         Case SendTarget.ToReal
-296             For LoopC = 1 To LastUser
-298                 If (UserList(LoopC).ConnIDValida) Then
-300                     If UserList(LoopC).Faccion.ArmadaReal = 1 Then
-302                         Call modNetwork.Send(LoopC, Buffer)
-                        End If
-                    End If
-304             Next LoopC
-
-306         Case SendTarget.ToCaos
-308             For LoopC = 1 To LastUser
-310                 If (UserList(LoopC).ConnIDValida) Then
-312                     If UserList(LoopC).Faccion.FuerzasCaos = 1 Then
-314                         Call modNetwork.Send(LoopC, Buffer)
-                        End If
-                    End If
-316             Next LoopC
-
 
 342         Case SendTarget.ToRealYRMs
 344             For LoopC = 1 To LastUser
@@ -882,56 +839,6 @@ SendToUserGuildArea_Err:
         
 End Sub
 
-Private Sub SendToAdminsButConsejerosArea(ByVal UserIndex As Integer, ByVal Buffer As Network.Writer)
-        
-        On Error GoTo SendToAdminsButConsejerosArea_Err
-        
-
-        '**************************************************************
-        'Author: Juan  Martín Sotuyo Dodero (Maraxus)
-        'Last Modify Date: Unknow
-        '
-        '**************************************************************
-        Dim LoopC     As Long
-        Dim tempIndex As Integer
-        Dim Map       As Integer
-        Dim AreaX     As Integer
-        Dim AreaY     As Integer
-        
-100     If UserIndex = 0 Then Exit Sub
-        
-102     Map = UserList(UserIndex).Pos.Map
-104     AreaX = UserList(UserIndex).AreasInfo.AreaPerteneceX
-106     AreaY = UserList(UserIndex).AreasInfo.AreaPerteneceY
-    
-108     If Not MapaValido(Map) Then Exit Sub
-    
-110     For LoopC = 1 To ConnGroups(Map).CountEntrys
-112         tempIndex = ConnGroups(Map).UserEntrys(LoopC)
-        
-114         If UserList(tempIndex).AreasInfo.AreaReciveX And AreaX Then  'Esta en el area?
-116             If UserList(tempIndex).AreasInfo.AreaReciveY And AreaY Then
-118                 If UserList(tempIndex).ConnIDValida Then
-120                     If UserList(tempIndex).flags.Privilegios And (e_PlayerType.SemiDios Or e_PlayerType.Dios Or e_PlayerType.Admin) Then
-                            Call modNetwork.Send(tempIndex, Buffer)
-                        End If
-
-                    End If
-
-                End If
-
-            End If
-
-122     Next LoopC
-
-        
-        Exit Sub
-
-SendToAdminsButConsejerosArea_Err:
-124     Call TraceError(Err.Number, Err.Description, "modSendData.SendToAdminsButConsejerosArea", Erl)
-
-        
-End Sub
 
 Private Sub SendToNpcArea(ByVal NpcIndex As Long, ByVal Buffer As Network.Writer)
         

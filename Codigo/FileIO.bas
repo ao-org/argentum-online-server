@@ -951,7 +951,7 @@ Sub LoadBalance()
 164     InfluenciaPromedioVidas = val(BalanceIni.GetValue("EXTRA", "InfluenciaPromedioVidas"))
 166     DesbalancePromedioVidas = val(BalanceIni.GetValue("EXTRA", "DesbalancePromedioVidas"))
 168     RangoVidas = val(BalanceIni.GetValue("EXTRA", "RangoVidas"))
-170     ModDañoGolpeCritico = val(BalanceIni.GetValue("EXTRA", "ModDañoGolpeCritico"))
+170     ModDañoGolpeCritico = 0.33
 
         ' Exp
 172     For i = 1 To STAT_MAXELV
@@ -1949,7 +1949,7 @@ Public Sub CargarMapaFormatoCSM(ByVal Map As Long, ByVal MAPFl As String)
                         Else
                             
                             ' Lo guardo en los logs + aparece en el Debug.Print
-310                         Call TraceError(404, "NPC no existe en los .DAT's o está mal dateado. Posicion: " & map & "-" & NPCs(i).X & "-" & NPCs(i).Y, "ES.CargarMapaFormatoCSM")
+310                         Call TraceError(404, "NPC no existe en los .DAT's o está mal dateado. Posicion: " & map & "-" & NPCs(i).X & "-" & NPCs(i).y, "ES.CargarMapaFormatoCSM")
                             
                         End If
                     End If
