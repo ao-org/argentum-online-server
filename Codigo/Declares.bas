@@ -70,6 +70,8 @@ Public Enum e_Facciones
     Ciudadano = 1
     Caos = 2
     Armada = 3
+    concilio = 4
+    consejo = 5
 End Enum
 
 Public lstUsuariosDonadores() As String
@@ -226,17 +228,14 @@ Public Type t_LlamadaGM
 
 End Type
 
-Public Enum e_PlayerType
 
+Public Enum e_PlayerType
     user = &H1
     RoleMaster = &H2
     Consejero = &H4
     SemiDios = &H8
     Dios = &H10
     Admin = &H20
-    ChaosCouncil = &H40
-    RoyalCouncil = &H80
-
 End Enum
 
 Public Enum e_Class

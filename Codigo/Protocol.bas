@@ -365,8 +365,6 @@ Public Enum ClientPacketID
     ForceWAVEToMap          '/FORCEWAVMAP
     RoyalArmyMessage        '/REALMSG
     ChaosLegionMessage      '/CAOSMSG
-    CitizenMessage          '/CIUMSG
-    CriminalMessage         '/CRIMSG
     TalkAsNPC               '/TALKAS
     DestroyAllItemsInArea   '/MASSDEST
     AcceptRoyalCouncilMember '/ACEPTCONSE
@@ -582,7 +580,9 @@ Public Enum e_FontTypeNames
     FONTTYPE_GM
     FONTTYPE_DIOS
     FONTTYPE_CITIZEN
+    FONTTYPE_CITIZEN_ARMADA
     FONTTYPE_CRIMINAL
+    FONTTYPE_CRIMINAL_CAOS
     FONTTYPE_EXP
     FONTTYPE_SUBASTA
     FONTTYPE_GLOBAL
@@ -1027,10 +1027,6 @@ On Error Resume Next
             Call HandleRoyalArmyMessage(UserIndex)
         Case ClientPacketID.ChaosLegionMessage
             Call HandleChaosLegionMessage(UserIndex)
-        Case ClientPacketID.CitizenMessage
-            Call HandleCitizenMessage(UserIndex)
-        Case ClientPacketID.CriminalMessage
-            Call HandleCriminalMessage(UserIndex)
         Case ClientPacketID.TalkAsNPC
             Call HandleTalkAsNPC(UserIndex)
         Case ClientPacketID.DestroyAllItemsInArea
@@ -1650,7 +1646,7 @@ Private Sub HandleTalk(ByVal UserIndex As Integer)
 '815             Case e_PlayerType.Dios
 '820                 .flags.ChatColor = RGB(217, 164, 32)
                         '.flags.ChatColor = RGB(170, 170, 170)
-150                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageChatOverHead(chat, .Char.CharIndex, .flags.ChatColor))
+150                     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageChatOverHead(chat, .Char.charindex, .flags.ChatColor))
                     End If
 
                 End If
@@ -1720,7 +1716,7 @@ Private Sub HandleYell(ByVal UserIndex As Integer)
                     Else
     
 130                     If .flags.invisible = 0 Then
-132                         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(.Char.CharIndex, False))
+132                         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageSetInvisible(.Char.charindex, False))
 134                         Call WriteConsoleMsg(UserIndex, "¡Has vuelto a ser visible!", e_FontTypeNames.FONTTYPE_INFO)
     
                         End If
@@ -1744,7 +1740,7 @@ Private Sub HandleYell(ByVal UserIndex As Integer)
                     
 148                     .flags.ChatHistory(UBound(.flags.ChatHistory)) = chat
 
-150                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageChatOverHead(chat, .Char.CharIndex, vbRed))
+150                     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageChatOverHead(chat, .Char.charindex, vbRed))
                
                     End If
 
@@ -1876,7 +1872,7 @@ Private Sub HandleWalk(ByVal UserIndex As Integer)
                     'Stop meditating, next action will start movement.
 110                 .flags.Meditando = False
 112                 UserList(UserIndex).Char.FX = 0
-114                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageMeditateToggle(UserList(UserIndex).Char.CharIndex, 0))
+114                 Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageMeditateToggle(UserList(UserIndex).Char.charindex, 0))
 
                 End If
                 
@@ -1984,7 +1980,7 @@ Private Sub HandleWalk(ByVal UserIndex As Integer)
 194                     If .flags.invisible = 0 Then
                             'Call WriteConsoleMsg(UserIndex, "Has vuelto a ser visible.", e_FontTypeNames.FONTTYPE_INFO)
 196                         Call WriteLocaleMsg(UserIndex, "307", e_FontTypeNames.FONTTYPE_INFO)
-198                         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(.Char.CharIndex, False))
+198                         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageSetInvisible(.Char.charindex, False))
 
                         End If
     
@@ -2089,7 +2085,7 @@ Private Sub HandleAttack(ByVal UserIndex As Integer)
 116         If UserList(UserIndex).flags.Meditando Then
 118             UserList(UserIndex).flags.Meditando = False
 120             UserList(UserIndex).Char.FX = 0
-122             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageMeditateToggle(UserList(UserIndex).Char.CharIndex, 0))
+122             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageMeditateToggle(UserList(UserIndex).Char.charindex, 0))
 
             End If
         
@@ -2118,7 +2114,7 @@ Private Sub HandleAttack(ByVal UserIndex As Integer)
                 Else
     
 146                 If .flags.invisible = 0 Then
-148                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(.Char.CharIndex, False))
+148                     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageSetInvisible(.Char.charindex, False))
                         'Call WriteConsoleMsg(UserIndex, "¡Has vuelto a ser visible!", e_FontTypeNames.FONTTYPE_INFO)
 150                     Call WriteLocaleMsg(UserIndex, "307", e_FontTypeNames.FONTTYPE_INFOIAO)
     
@@ -2487,7 +2483,7 @@ Private Sub HandleBankEnd(ByVal UserIndex As Integer)
             'User exits banking mode
 102         .flags.Comerciando = False
         
-104         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("171", UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+104         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave("171", UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.y))
 106         Call WriteBankEnd(UserIndex)
 
         End With
@@ -3305,7 +3301,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 114         If .flags.Meditando Then
 116             .flags.Meditando = False
 118             .Char.FX = 0
-120             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageMeditateToggle(.Char.CharIndex, 0))
+120             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageMeditateToggle(.Char.charindex, 0))
 
             End If
         
@@ -3410,20 +3406,20 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 208                     Call UsuarioAtacaUsuario(UserIndex, tU)
 
 210                     If ObjData(.Invent.MunicionEqpObjIndex).CreaFX <> 0 Then
-212                         Call SendData(SendTarget.ToPCArea, tU, PrepareMessageCreateFX(UserList(tU).Char.CharIndex, ObjData(.Invent.MunicionEqpObjIndex).CreaFX, 0))
+212                         Call SendData(SendTarget.ToPCAliveArea, tU, PrepareMessageCreateFX(UserList(tU).Char.charindex, ObjData(.Invent.MunicionEqpObjIndex).CreaFX, 0))
 
                         End If
                         
                         'Si no es GM invisible, le envio el movimiento del arma.
                         If UserList(UserIndex).flags.AdminInvisible = 0 Then
-                            Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageArmaMov(UserList(UserIndex).Char.CharIndex))
+                            Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageArmaMov(UserList(UserIndex).Char.charindex))
                         End If
                     
 214                     If ObjData(.Invent.MunicionEqpObjIndex).CreaParticula <> "" Then
                     
 216                         Particula = val(ReadField(1, ObjData(.Invent.MunicionEqpObjIndex).CreaParticula, Asc(":")))
 218                         Tiempo = val(ReadField(2, ObjData(.Invent.MunicionEqpObjIndex).CreaParticula, Asc(":")))
-220                         Call SendData(SendTarget.ToPCArea, tU, PrepareMessageParticleFX(UserList(tU).Char.CharIndex, Particula, Tiempo, False))
+220                         Call SendData(SendTarget.ToPCAliveArea, tU, PrepareMessageParticleFX(UserList(tU).Char.charindex, Particula, Tiempo, False))
 
                         End If
                     
@@ -3447,7 +3443,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 238                             consumirMunicion = True
                                 'Si no es GM invisible, le envio el movimiento del arma.
                                 If UserList(UserIndex).flags.AdminInvisible = 0 Then
-                                    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageArmaMov(UserList(UserIndex).Char.CharIndex))
+                                    Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageArmaMov(UserList(UserIndex).Char.charindex))
                                 End If
                             Else
 240                             consumirMunicion = False
@@ -3585,7 +3581,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                                 
                                 '¡Hay un arbol donde clickeo?
 440                             If ObjData(DummyInt).OBJType = e_OBJType.otArboles Then
-442                                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_TIJERAS, .Pos.X, .Pos.Y))
+442                                 Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(SND_TIJERAS, .Pos.X, .Pos.y))
 444                                 Call DoRaices(UserIndex, X, Y)
 
                                 End If
@@ -4230,7 +4226,7 @@ Private Sub HandleTrain(ByVal UserIndex As Integer)
                 End If
 
             Else
-120             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageChatOverHead("No puedo traer más criaturas, mata las existentes!", NpcList(.flags.TargetNPC).Char.charindex, vbWhite))
+120             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageChatOverHead("No puedo traer más criaturas, mata las existentes!", NpcList(.flags.TargetNPC).Char.charindex, vbWhite))
 
             End If
 
@@ -4279,7 +4275,7 @@ Private Sub HandleCommerceBuy(ByVal UserIndex As Integer)
             
             'íEl NPC puede comerciar?
 112         If NpcList(.flags.TargetNPC).Comercia = 0 Then
-114             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageChatOverHead("No tengo ningún interés en comerciar.", NpcList(.flags.TargetNPC).Char.charindex, vbWhite))
+114             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageChatOverHead("No tengo ningún interés en comerciar.", NpcList(.flags.TargetNPC).Char.charindex, vbWhite))
                 Exit Sub
 
             End If
@@ -4391,7 +4387,7 @@ Private Sub HandleCommerceSell(ByVal UserIndex As Integer)
         
             'íEl NPC puede comerciar?
 112         If NpcList(.flags.TargetNPC).Comercia = 0 Then
-114             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageChatOverHead("No tengo ningún interés en comerciar.", NpcList(.flags.TargetNPC).Char.charindex, vbWhite))
+114             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageChatOverHead("No tengo ningún interés en comerciar.", NpcList(.flags.TargetNPC).Char.charindex, vbWhite))
                 Exit Sub
 
             End If
@@ -6169,7 +6165,7 @@ Private Sub HandleMeditate(ByVal UserIndex As Integer)
                 'Call WriteLocaleMsg(UserIndex, "123", e_FontTypeNames.FONTTYPE_INFO)
             End If
 
-146         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageMeditateToggle(.Char.CharIndex, .Char.FX))
+146         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageMeditateToggle(.Char.charindex, .Char.FX))
 
         End With
         
@@ -6216,8 +6212,8 @@ Private Sub HandleResucitate(ByVal UserIndex As Integer)
             End If
         
 112         Call RevivirUsuario(UserIndex)
-114         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, e_ParticulasIndex.Curar, 100, False))
-116         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("104", UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+114         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, e_ParticulasIndex.Curar, 100, False))
+116         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave("104", UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.y))
 118         Call WriteConsoleMsg(UserIndex, "¡Has sido resucitado!", e_FontTypeNames.FONTTYPE_INFO)
 
         End With
@@ -6929,10 +6925,10 @@ Private Sub HandleCouncilMessage(ByVal UserIndex As Integer)
                 
 112             .flags.ChatHistory(UBound(.flags.ChatHistory)) = chat
             
-114             If .flags.Privilegios And e_PlayerType.RoyalCouncil Then
+114             If .Faccion.Status = e_Facciones.consejo Then
 116                 Call SendData(SendTarget.ToConsejo, UserIndex, PrepareMessageConsoleMsg("(Consejero) " & .Name & "> " & chat, e_FontTypeNames.FONTTYPE_CONSEJO))
 
-118             ElseIf .flags.Privilegios And e_PlayerType.ChaosCouncil Then
+118             ElseIf .Faccion.Status = e_Facciones.concilio Then
 120                 Call SendData(SendTarget.ToConsejoCaos, UserIndex, PrepareMessageConsoleMsg("(Consejero) " & .Name & "> " & chat, e_FontTypeNames.FONTTYPE_CONSEJOCAOS))
 
                 End If
@@ -9195,7 +9191,7 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
 204                         Call WriteConsoleMsg(UserIndex, "Usuario Offline Alterado: " & UserName, e_FontTypeNames.FONTTYPE_INFO)
                         Else
                             'Call ChangeUserChar(tUser, UserList(tUser).Char.Body, UserList(tUser).Char.Head, UserList(tUser).Char.Heading, UserList(tUser).Char.WeaponAnim, UserList(tUser).Char.ShieldAnim, val(Arg1))
-206                         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, val(Arg1), 9999, False))
+206                         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageParticleFX(.Char.charindex, val(Arg1), 9999, False))
 208                         .Char.ParticulaFx = val(Arg1)
 210                         .Char.loops = 9999
 
@@ -10075,7 +10071,6 @@ Private Sub HandleReviveChar(ByVal UserIndex As Integer)
 
 116                 With UserList(tUser)
 
-                        'If dead, show him alive (naked).
 118                     If .flags.Muerto = 1 Then
                             If UserList(UserIndex).flags.Privilegios And e_PlayerType.SemiDios Then
                                 If MapInfo(.Pos.Map).Seguro = 0 Or EsMapaEvento(.Pos.Map) = False Then
@@ -10085,11 +10080,7 @@ Private Sub HandleReviveChar(ByVal UserIndex As Integer)
                             End If
 120                         .flags.Muerto = 0
                         
-                            'Call DarCuerpoDesnudo(tUser)
-                        
-                            'Call ChangeUserChar(tUser, .Char.body, .OrigChar.Head, .Char.heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
 122                         Call RevivirUsuario(tUser)
-                        
 124                         Call WriteConsoleMsg(tUser, UserList(UserIndex).Name & " te ha resucitado.", e_FontTypeNames.FONTTYPE_INFO)
                         Else
 126                         Call WriteConsoleMsg(tUser, UserList(UserIndex).Name & " te ha curado.", e_FontTypeNames.FONTTYPE_INFO)
@@ -10097,14 +10088,17 @@ Private Sub HandleReviveChar(ByVal UserIndex As Integer)
                         End If
                     
 128                     .Stats.MinHp = .Stats.MaxHp
-
+                        .Stats.MinMAN = .Stats.MaxMAN
+                        .Stats.MinSta = .Stats.MaxSta
+                        
                     End With
                 
                     ' Call WriteHora(tUser)
 130                 Call WriteUpdateHP(tUser)
+131                 Call WriteUpdateMana(tUser)
+133                 Call WriteUpdateSta(tUser)
 132                 Call ActualizarVelocidadDeUsuario(tUser)
 134                 Call LogGM(.Name, "Resucito a " & UserName)
-                    'Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(.name & " ha resucitado a " & username, e_FontTypeNames.FONTTYPE_INFO))
 
                 End If
             Else
@@ -10672,8 +10666,8 @@ Private Sub HandleForgive(ByVal UserIndex As Integer)
 
 134         Call WriteChatOverHead(UserIndex, "Con estas palabras, te libero de todo tipo de pecados. ¡Que Dios te acompañe hijo mío!", priest.Char.charindex, vbYellow)
 
-136         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, "80", 100, False))
-138         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("100", UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+136         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, "80", 100, False))
+138         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave("100", UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.y))
 140         Call VolverCiudadano(UserIndex)
 
         End With
@@ -11819,7 +11813,7 @@ Private Sub HandleRoyalArmyMessage(ByVal UserIndex As Integer)
 102             Message = Reader.ReadString8()
         
             'Solo dioses, admins y RMS
-104          If .flags.Privilegios And (e_PlayerType.RoyalCouncil Or e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios) Then
+104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios)) Or .Faccion.Status = e_Facciones.consejo Then
 106             Call SendData(SendTarget.ToRealYRMs, 0, PrepareMessageConsoleMsg("[ARMADA REAL] " & UserList(UserIndex).name & "> " & message, e_FontTypeNames.FONTTYPE_CONSEJO))
             End If
 
@@ -11854,7 +11848,7 @@ Private Sub HandleChaosLegionMessage(ByVal UserIndex As Integer)
 102             Message = Reader.ReadString8()
         
             'Solo dioses, admins y RMS
-104         If .flags.Privilegios And (e_PlayerType.ChaosCouncil Or e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios) Then
+104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios)) Or .Faccion.Status = e_Facciones.concilio Then
 106             Call SendData(SendTarget.ToCaosYRMs, 0, PrepareMessageConsoleMsg("[FUERZAS DEL CAOS] " & UserList(UserIndex).name & "> " & message, e_FontTypeNames.FONTTYPE_CONSEJOCAOS))
             End If
 
@@ -11868,74 +11862,6 @@ ErrHandler:
 
 End Sub
 
-''
-' Handles the "CitizenMessage" message.
-'
-' @param    UserIndex The index of the user sending the message.
-
-Private Sub HandleCitizenMessage(ByVal UserIndex As Integer)
-
-        '***************************************************
-        'Author: Nicolas Matias Gonzalez (NIGO)
-        'Last Modification: 12/29/06
-        '
-        '***************************************************
-
-        On Error GoTo ErrHandler
-
-100     With UserList(UserIndex)
-
-            Dim Message As String
-102             Message = Reader.ReadString8()
-        
-            'Solo dioses, admins y RMS
-104         If (.flags.Privilegios And (e_PlayerType.Dios Or e_PlayerType.Admin Or e_PlayerType.RoleMaster)) Then
-106             Call SendData(SendTarget.ToCiudadanosYRMs, 0, PrepareMessageConsoleMsg("CIUDADANOS> " & Message, e_FontTypeNames.FONTTYPE_TALK))
-            End If
-
-        End With
-
-        Exit Sub
-
-ErrHandler:
-108     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCitizenMessage", Erl)
-110
-
-End Sub
-
-''
-' Handles the "CriminalMessage" message.
-'
-' @param    UserIndex The index of the user sending the message.
-
-Private Sub HandleCriminalMessage(ByVal UserIndex As Integer)
-
-        '***************************************************
-        'Author: Nicolas Matias Gonzalez (NIGO)
-        'Last Modification: 12/29/06
-        '
-        '***************************************************
-        On Error GoTo ErrHandler
-
-100     With UserList(UserIndex)
-
-            Dim Message As String
-102             Message = Reader.ReadString8()
-        
-            'Solo dioses, admins y RMS
-104         If (.flags.Privilegios And (e_PlayerType.Dios Or e_PlayerType.Admin Or e_PlayerType.RoleMaster)) Then
-106             Call SendData(SendTarget.ToCriminalesYRMs, 0, PrepareMessageConsoleMsg("CRIMINALES> " & Message, e_FontTypeNames.FONTTYPE_TALK))
-            End If
-
-        End With
-
-        Exit Sub
-
-ErrHandler:
-108     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCriminalMessage", Erl)
-110
-
-End Sub
 
 ''
 ' Handles the "TalkAsNPC" message.
@@ -11996,7 +11922,7 @@ Private Sub HandleDestroyAllItemsInArea(ByVal UserIndex As Integer)
         '***************************************************
 100     With UserList(UserIndex)
   
-102         If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero Or e_PlayerType.SemiDios)) Then
+102         If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero)) Then
 104             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
@@ -12067,10 +11993,7 @@ Private Sub HandleAcceptRoyalCouncilMember(ByVal UserIndex As Integer)
 112                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(UserName & " fue aceptado en el honorable Consejo Real de Banderbill.", e_FontTypeNames.FONTTYPE_CONSEJO))
 
 114                 With UserList(tUser)
-
-116                     If .flags.Privilegios And e_PlayerType.ChaosCouncil Then .flags.Privilegios = .flags.Privilegios - e_PlayerType.ChaosCouncil
-118                     If Not .flags.Privilegios And e_PlayerType.RoyalCouncil Then .flags.Privilegios = .flags.Privilegios + e_PlayerType.RoyalCouncil
-                    
+                        .Faccion.Status = e_Facciones.consejo
 120                     Call WarpUserChar(tUser, .Pos.Map, .Pos.X, .Pos.Y, False)
 
                     End With
@@ -12123,10 +12046,7 @@ Private Sub HandleAcceptChaosCouncilMember(ByVal UserIndex As Integer)
 112                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(username & " fue aceptado en el Consejo de la Legión Oscura.", e_FontTypeNames.FONTTYPE_CONSEJOCAOS))
                 
 114                 With UserList(tUser)
-
-116                     If .flags.Privilegios And e_PlayerType.RoyalCouncil Then .flags.Privilegios = .flags.Privilegios - e_PlayerType.RoyalCouncil
-118                     If Not .flags.Privilegios And e_PlayerType.ChaosCouncil Then .flags.Privilegios = .flags.Privilegios + e_PlayerType.ChaosCouncil
-
+                        .Faccion.Status = e_Facciones.concilio
 120                     Call WarpUserChar(tUser, .Pos.Map, .Pos.X, .Pos.Y, False)
 
                     End With
@@ -12314,9 +12234,7 @@ Private Sub HandleCouncilKick(ByVal UserIndex As Integer)
 108             If tUser <= 0 Then
 110                 If PersonajeExiste(UserName) Then
 112                     Call WriteConsoleMsg(UserIndex, "Usuario offline, echando de los consejos", e_FontTypeNames.FONTTYPE_INFO)
-
 116                     Call EcharConsejoDatabase(UserName)
-
                     Else
 122                     Call WriteConsoleMsg(UserIndex, "No existe el personaje.", e_FontTypeNames.FONTTYPE_INFO)
 
@@ -12325,24 +12243,24 @@ Private Sub HandleCouncilKick(ByVal UserIndex As Integer)
                 Else
 
 124                 With UserList(tUser)
-
-126                     If .flags.Privilegios And e_PlayerType.RoyalCouncil Then
+                        If .Faccion.Status = e_Facciones.concilio Then
 128                         Call WriteConsoleMsg(tUser, "Has sido echado del consejo de Banderbill", e_FontTypeNames.FONTTYPE_TALK)
-130                         .flags.Privilegios = .flags.Privilegios - e_PlayerType.RoyalCouncil
+130                         .Faccion.Status = e_Facciones.Ciudadano
                         
 132                         Call WarpUserChar(tUser, .Pos.Map, .Pos.X, .Pos.Y)
 134                         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(UserName & " fue expulsado del consejo de Banderbill", e_FontTypeNames.FONTTYPE_CONSEJO))
 
                         End If
                     
-136                     If .flags.Privilegios And e_PlayerType.ChaosCouncil Then
+                        If .Faccion.Status = e_Facciones.concilio Then
 138                         Call WriteConsoleMsg(tUser, "Has sido echado del consejo de la Legión Oscura", e_FontTypeNames.FONTTYPE_TALK)
-140                         .flags.Privilegios = .flags.Privilegios - e_PlayerType.ChaosCouncil
+140                        .Faccion.Status = e_Facciones.Caos
                         
 142                         Call WarpUserChar(tUser, .Pos.Map, .Pos.X, .Pos.Y)
 144                         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(username & " fue expulsado del consejo de la Legión Oscura", e_FontTypeNames.FONTTYPE_CONSEJOCAOS))
 
                         End If
+                        Call RefreshCharStatus(tUser)
 
                     End With
 
@@ -12351,6 +12269,7 @@ Private Sub HandleCouncilKick(ByVal UserIndex As Integer)
             End If
 
         End With
+        
 
         Exit Sub
 
@@ -12731,7 +12650,8 @@ Private Sub HandleCreateItem(ByVal UserIndex As Integer)
 104         Cuantos = Reader.ReadInt16()
     
             ' Si es usuario, lo sacamos cagando.
-106         If Not EsGM(userindex) Or (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero Or e_PlayerType.SemiDios Or e_PlayerType.Dios)) Then
+
+106         If Not EsGM(UserIndex) Or (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero Or e_PlayerType.SemiDios)) Then
                 Call WriteConsoleMsg(userindex, "Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
@@ -12865,7 +12785,7 @@ Private Sub HandleChaosLegionKick(ByVal UserIndex As Integer)
             'HarThaoS: comando roto / revisar
             Exit Sub
         
-104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.RoleMaster)) Then
+104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios)) Then
 106             If (InStrB(UserName, "\") <> 0) Then
 108                 UserName = Replace(UserName, "\", "")
 
@@ -12933,7 +12853,7 @@ Private Sub HandleRoyalArmyKick(ByVal UserIndex As Integer)
 102         UserName = Reader.ReadString8()
             'HarThaoS: Comando roto / revisar.
             Exit Sub
-104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.RoleMaster)) Then
+104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios)) Then
         
 106             If (InStrB(UserName, "\") <> 0) Then
 108                 UserName = Replace(UserName, "\", "")
@@ -13842,8 +13762,8 @@ Public Sub HandleDonateGold(ByVal UserIndex As Integer)
 
 144         Call WriteChatOverHead(UserIndex, "¡Gracias por tu generosa donación! Con estas palabras, te libero de todo tipo de pecados. ¡Que Dios te acompañe hijo mío!", NpcList(UserList(UserIndex).flags.TargetNPC).Char.charindex, vbYellow)
 
-146         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, "80", 100, False))
-148         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave("100", UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+146         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, "80", 100, False))
+148         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave("100", UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.y))
 150         Call VolverCiudadano(UserIndex)
     
         End With
@@ -17973,7 +17893,7 @@ Private Sub HandleConsulta(ByVal UserIndex As Integer)
                     
 170                     If UserList(UserConsulta).flags.Navegando = 0 Then
                             
-172                         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(.Char.CharIndex, False))
+172                         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageSetInvisible(.Char.charindex, False))
 
                         End If
 

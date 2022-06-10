@@ -111,7 +111,7 @@ Public Sub Trabajar(ByVal UserIndex As Integer, ByVal Skill As e_Skill)
                                 End If
                                     
 340                             Call DoPescar(UserIndex, True)
-342                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_PESCAR, .Pos.X, .Pos.Y))
+342                             Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessagePlayWave(SND_PESCAR, .Pos.X, .Pos.y))
                         
                             Else
                         
@@ -371,7 +371,7 @@ Public Sub DoPermanecerOculto(ByVal UserIndex As Integer)
                 Else
 
 128                 If .flags.invisible = 0 And .flags.AdminInvisible = 0 Then
-130                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(.Char.CharIndex, False))
+130                     Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessageSetInvisible(.Char.charindex, False))
 132                     Call WriteConsoleMsg(UserIndex, "¡Has vuelto a ser visible!", e_FontTypeNames.FONTTYPE_INFO)
 
                     End If
@@ -445,7 +445,7 @@ Public Sub DoOcultarse(ByVal UserIndex As Integer)
                         Call RefreshCharStatus(UserIndex)
                     End If
                 Else
-152                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(.Char.CharIndex, True))
+152                 Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessageSetInvisible(.Char.charindex, True))
                     
                     'Call WriteConsoleMsg(UserIndex, "¡Te has escondido entre las sombras!", e_FontTypeNames.FONTTYPE_INFO)
 154                 Call WriteLocaleMsg(UserIndex, "55", e_FontTypeNames.FONTTYPE_INFO)
@@ -589,11 +589,11 @@ Public Sub DoNavega(ByVal UserIndex As Integer, _
 
                 'Call WriteConsoleMsg(UserIndex, "Has vuelto a ser visible.", e_FontTypeNames.FONTTYPE_INFO)
 196             Call WriteLocaleMsg(UserIndex, "307", e_FontTypeNames.FONTTYPE_INFO)
-198             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(.Char.CharIndex, False))
+198             Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessageSetInvisible(.Char.charindex, False))
             End If
 
 200         Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
-202         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(e_FXSound.BARCA_SOUND, .Pos.X, .Pos.Y))
+202         Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessagePlayWave(e_FXSound.BARCA_SOUND, .Pos.X, .Pos.y))
     
         End With
         
@@ -1076,7 +1076,7 @@ Public Sub HerreroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As I
     
 136         Call SubirSkill(UserIndex, e_Skill.Herreria)
 138         Call UpdateUserInv(True, UserIndex, 0)
-140         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(MARTILLOHERRERO, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+140         Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessagePlayWave(MARTILLOHERRERO, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.y))
 
 142         UserList(UserIndex).Counters.Trabajando = UserList(UserIndex).Counters.Trabajando + 1
 
@@ -1251,7 +1251,7 @@ Public Sub CarpinteroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
    
 136         Call SubirSkill(UserIndex, e_Skill.Carpinteria)
             'Call UpdateUserInv(True, UserIndex, 0)
-138         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(LABUROCARPINTERO, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+138         Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessagePlayWave(LABUROCARPINTERO, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.y))
 
 140         UserList(UserIndex).Counters.Trabajando = UserList(UserIndex).Counters.Trabajando + 1
 
@@ -1292,7 +1292,7 @@ Public Sub AlquimistaConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
             Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, 253, 25, False, ObjData(ItemIndex).GrhIndex))
 110         Call AlquimistaQuitarMateriales(UserIndex, ItemIndex)
             'Call WriteConsoleMsg(UserIndex, "Has construido el objeto.", e_FontTypeNames.FONTTYPE_INFO)
-112         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(117, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+112         Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessagePlayWave(117, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.y))
     
             Dim MiObj As t_Obj
 
@@ -1348,7 +1348,7 @@ Public Sub SastreConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As In
     
 114         Call WriteTextCharDrop(UserIndex, "+1", UserList(UserIndex).Char.CharIndex, vbWhite)
 
-116         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(63, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+116         Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessagePlayWave(63, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.y))
     
             Dim MiObj As t_Obj
 
@@ -1459,7 +1459,7 @@ Public Sub DoLingotes(ByVal UserIndex As Integer)
 
 138         Call UpdateUserInv(False, UserIndex, Slot)
 140         Call WriteTextCharDrop(UserIndex, "+" & cant, UserList(UserIndex).Char.CharIndex, vbWhite)
-142         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(41, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+142         Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessagePlayWave(41, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.y))
 144         Call SubirSkill(UserIndex, e_Skill.Mineria)
 
 146         UserList(UserIndex).Counters.Trabajando = UserList(UserIndex).Counters.Trabajando + 1
@@ -1591,7 +1591,8 @@ Sub DoAdminInvisible(ByVal UserIndex As Integer, Optional ByVal invisible As Byt
 106         .flags.invisible = 1
 108         .flags.Oculto = 1
                     
-110         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(.Char.charindex, True))
+110         Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessageSetInvisible(.Char.charindex, True))
+            
 112         Call SendData(SendTarget.ToPCAreaButGMs, UserIndex, PrepareMessageCharacterRemove(2, .Char.charindex, True))
         
         Else
@@ -1601,7 +1602,7 @@ Sub DoAdminInvisible(ByVal UserIndex As Integer, Optional ByVal invisible As Byt
 120         .Counters.TiempoOculto = 0
         
 122         Call MakeUserChar(True, 0, UserIndex, .Pos.map, .Pos.X, .Pos.y, 1)
-124         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(.Char.charindex, False))
+124         Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessageSetInvisible(.Char.charindex, False))
         
         End If
             
@@ -1742,7 +1743,7 @@ Public Sub DoPescar(ByVal UserIndex As Integer, Optional ByVal RedDePesca As Boo
             If MapInfo(UserList(UserIndex).Pos.Map).Seguro = 1 Then
 120             Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageArmaMov(.Char.CharIndex))
             Else
-                Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageArmaMov(.Char.CharIndex))
+                Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessageArmaMov(.Char.charindex))
             End If
 
 122         If res < 6 Then
@@ -1785,7 +1786,7 @@ Public Sub DoPescar(ByVal UserIndex As Integer, Optional ByVal RedDePesca As Boo
                '  If MapInfo(.Pos.Map).Seguro = 1 Then
 302            '     Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessagePlayWave(SND_PESCAR, .Pos.X, .Pos.Y))
                ' Else
-301                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_PESCAR, .Pos.X, .Pos.Y))
+301                 Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessagePlayWave(SND_PESCAR, .Pos.X, .Pos.y))
                ' End If
                
                 ' Al pescar también podés sacar cosas raras (se setean desde RecursosEspeciales.dat)
@@ -2308,9 +2309,9 @@ Public Sub DoRaices(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte
         
                 'Call WriteConsoleMsg(UserIndex, "¡Has conseguido algunas raices!", e_FontTypeNames.FONTTYPE_INFO)
 144             Call WriteTextCharDrop(UserIndex, "+" & MiObj.amount, .Char.CharIndex, vbWhite)
-146             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(60, .Pos.X, .Pos.Y))
+146             Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessagePlayWave(60, .Pos.X, .Pos.y))
             Else
-148             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(61, .Pos.X, .Pos.Y))
+148             Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessagePlayWave(61, .Pos.X, .Pos.y))
     
             End If
     
@@ -2400,7 +2401,7 @@ Public Sub DoTalar(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte,
                 If MapInfo(.Pos.Map).Seguro = 1 Then
 146                 Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessagePlayWave(SND_TALAR, .Pos.X, .Pos.Y))
                 Else
-145                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_TALAR, .Pos.X, .Pos.Y))
+145                 Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessagePlayWave(SND_TALAR, .Pos.X, .Pos.y))
                 End If
 
                 ' Al talar también podés dropear cosas raras (se setean desde RecursosEspeciales.dat)
@@ -2423,7 +2424,7 @@ Public Sub DoTalar(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte,
 160             Next i
 
             Else
-162             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(64, .Pos.X, .Pos.Y))
+162             Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessagePlayWave(64, .Pos.X, .Pos.y))
 
             End If
         
@@ -2511,7 +2512,7 @@ Public Sub DoMineria(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byt
                 If MapInfo(.Pos.Map).Seguro = 1 Then
 141                 Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessagePlayWave(15, .Pos.X, .Pos.Y))
                 Else
-142                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(15, .Pos.X, .Pos.Y))
+142                 Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessagePlayWave(15, .Pos.X, .Pos.y))
                 End If
             
                 ' Al minar también puede dropear una gema
@@ -2537,7 +2538,7 @@ Public Sub DoMineria(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byt
                 Next
             
             Else
-158             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(2185, .Pos.X, .Pos.Y))
+158             Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessagePlayWave(2185, .Pos.X, .Pos.y))
 
             End If
 
@@ -2583,7 +2584,7 @@ Public Sub DoMeditar(ByVal UserIndex As Integer)
 118                 Call WriteUpdateMana(UserIndex)
 120                 Call SubirSkill(UserIndex, Meditar)
 
-122                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageMeditateToggle(.Char.CharIndex, 0))
+122                 Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessageMeditateToggle(.Char.charindex, 0))
                 
                 Else
                     
@@ -2646,7 +2647,7 @@ Public Sub DoMontar(ByVal UserIndex As Integer, ByRef Montura As t_ObjData, ByVa
 120         If .flags.Meditando Then
 122             .flags.Meditando = False
 124             .Char.FX = 0
-126             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageMeditateToggle(.Char.CharIndex, 0))
+126             Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessageMeditateToggle(.Char.charindex, 0))
             End If
 
 128         If .flags.Montado = 1 And .Invent.MonturaObjIndex > 0 Then

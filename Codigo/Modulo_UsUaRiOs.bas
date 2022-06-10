@@ -555,23 +555,29 @@ Public Function ConnectUser_Complete(ByVal UserIndex As Integer, _
             
                 Case e_PlayerType.Admin
 810                 .flags.ChatColor = RGB(252, 195, 0)
-                
 815             Case e_PlayerType.Dios
 820                 .flags.ChatColor = RGB(26, 209, 107)
-                    
 825             Case e_PlayerType.SemiDios
 830                 .flags.ChatColor = RGB(60, 150, 60)
-                    
 835             Case e_PlayerType.Consejero
 840                 .flags.ChatColor = RGB(170, 170, 170)
-
-                Case e_PlayerType.user Or e_PlayerType.ChaosCouncil
-                    .flags.ChatColor = RGB(255, 78, 40)
-                    
-                Case e_PlayerType.user Or e_PlayerType.RoyalCouncil
-                    .flags.ChatColor = RGB(2, 242, 255)
 845             Case Else
 850                 .flags.ChatColor = vbWhite
+            End Select
+            
+            Select Case .Faccion.Status
+                Case e_Facciones.Ciudadano
+                    .flags.ChatColor = vbWhite
+                Case e_Facciones.armada
+                    .flags.ChatColor = vbWhite
+                Case e_Facciones.consejo
+                    .flags.ChatColor = RGB(62, 239, 253)
+                Case e_Facciones.Criminal
+                    .flags.ChatColor = vbWhite
+                Case e_Facciones.Caos
+                    .flags.ChatColor = vbWhite
+                Case e_Facciones.concilio
+                    .flags.ChatColor = RGB(253, 143, 63)
             End Select
             
             ' Jopi: Te saco de los mapas de retos (si logueas ahi) 324 372 389 390
@@ -604,6 +610,7 @@ Public Function ConnectUser_Complete(ByVal UserIndex As Integer, _
 895         If .flags.Privilegios And (e_PlayerType.SemiDios Or e_PlayerType.Dios Or e_PlayerType.Admin) Then
                 Call DoAdminInvisible(UserIndex)
             End If
+            
 900         Call WriteUpdateUserStats(UserIndex)
 905         Call WriteUpdateHungerAndThirst(UserIndex)
 910         Call WriteUpdateDM(UserIndex)
@@ -813,11 +820,12 @@ Sub RevivirUsuario(ByVal UserIndex As Integer, Optional ByVal MedianteHechizo As
 108             .Stats.MinHp = 1
 110             .Stats.MinHam = 0
 112             .Stats.MinAGU = 0
-            
+                .Stats.MinMAN = 0
 114             Call WriteUpdateHungerAndThirst(UserIndex)
             End If
         
 116         Call WriteUpdateHP(UserIndex)
+117         Call WriteUpdateMana(UserIndex)
             
 118         If .flags.Navegando = 1 Then
 120             Call EquiparBarco(UserIndex)
@@ -839,7 +847,7 @@ Sub RevivirUsuario(ByVal UserIndex As Integer, Optional ByVal MedianteHechizo As
         
 136                 If ObjData(.Invent.WeaponEqpObjIndex).CreaGRH <> "" Then
 138                     .Char.Arma_Aura = ObjData(.Invent.WeaponEqpObjIndex).CreaGRH
-140                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, .Char.Arma_Aura, False, 1))
+140                     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageAuraToChar(.Char.charindex, .Char.Arma_Aura, False, 1))
     
                     End If
             
@@ -850,7 +858,7 @@ Sub RevivirUsuario(ByVal UserIndex As Integer, Optional ByVal MedianteHechizo As
         
 146                 If ObjData(.Invent.ArmourEqpObjIndex).CreaGRH <> "" Then
 148                     .Char.Body_Aura = ObjData(.Invent.ArmourEqpObjIndex).CreaGRH
-150                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, .Char.Body_Aura, False, 2))
+150                     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageAuraToChar(.Char.charindex, .Char.Body_Aura, False, 2))
     
                     End If
     
@@ -864,7 +872,7 @@ Sub RevivirUsuario(ByVal UserIndex As Integer, Optional ByVal MedianteHechizo As
     
 158                 If ObjData(.Invent.EscudoEqpObjIndex).CreaGRH <> "" Then
 160                     .Char.Escudo_Aura = ObjData(.Invent.EscudoEqpObjIndex).CreaGRH
-162                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, .Char.Escudo_Aura, False, 3))
+162                     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageAuraToChar(.Char.charindex, .Char.Escudo_Aura, False, 3))
     
                     End If
             
@@ -875,7 +883,7 @@ Sub RevivirUsuario(ByVal UserIndex As Integer, Optional ByVal MedianteHechizo As
     
 168                 If ObjData(.Invent.CascoEqpObjIndex).CreaGRH <> "" Then
 170                     .Char.Head_Aura = ObjData(.Invent.CascoEqpObjIndex).CreaGRH
-172                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, .Char.Head_Aura, False, 4))
+172                     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageAuraToChar(.Char.charindex, .Char.Head_Aura, False, 4))
     
                     End If
             
@@ -884,7 +892,7 @@ Sub RevivirUsuario(ByVal UserIndex As Integer, Optional ByVal MedianteHechizo As
 174             If .Invent.MagicoObjIndex > 0 Then
 176                 If ObjData(.Invent.MagicoObjIndex).CreaGRH <> "" Then
 178                     .Char.Otra_Aura = ObjData(.Invent.MagicoObjIndex).CreaGRH
-180                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, .Char.Otra_Aura, False, 5))
+180                     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageAuraToChar(.Char.charindex, .Char.Otra_Aura, False, 5))
     
                     End If
     
@@ -893,7 +901,7 @@ Sub RevivirUsuario(ByVal UserIndex As Integer, Optional ByVal MedianteHechizo As
 182             If .Invent.NudilloObjIndex > 0 Then
 184                 If ObjData(.Invent.NudilloObjIndex).CreaGRH <> "" Then
 186                     .Char.Arma_Aura = ObjData(.Invent.NudilloObjIndex).CreaGRH
-188                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, .Char.Arma_Aura, False, 1))
+188                     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageAuraToChar(.Char.charindex, .Char.Arma_Aura, False, 1))
     
                     End If
                 End If
@@ -901,14 +909,14 @@ Sub RevivirUsuario(ByVal UserIndex As Integer, Optional ByVal MedianteHechizo As
 190             If .Invent.DañoMagicoEqpObjIndex > 0 Then
 192                 If ObjData(.Invent.DañoMagicoEqpObjIndex).CreaGRH <> "" Then
 194                     .Char.DM_Aura = ObjData(.Invent.DañoMagicoEqpObjIndex).CreaGRH
-196                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, .Char.DM_Aura, False, 6))
+196                     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageAuraToChar(.Char.charindex, .Char.DM_Aura, False, 6))
                     End If
                 End If
                 
 198             If .Invent.ResistenciaEqpObjIndex > 0 Then
 200                 If ObjData(.Invent.ResistenciaEqpObjIndex).CreaGRH <> "" Then
 202                     .Char.RM_Aura = ObjData(.Invent.ResistenciaEqpObjIndex).CreaGRH
-204                     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageAuraToChar(.Char.CharIndex, .Char.RM_Aura, False, 7))
+204                     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageAuraToChar(.Char.charindex, .Char.RM_Aura, False, 7))
                     End If
                 End If
     
@@ -1036,7 +1044,7 @@ Sub RefreshCharStatus(ByVal UserIndex As Integer)
             
         End If
     
-120     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageUpdateTagAndStatus(UserIndex, UserList(UserIndex).Faccion.Status, Name))
+120     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageUpdateTagAndStatus(UserIndex, UserList(UserIndex).Faccion.Status, name))
 
         
         Exit Sub
@@ -1191,8 +1199,8 @@ Sub CheckUserLevel(ByVal UserIndex As Integer)
                 'Store it!
                 'Call Statistics.UserLevelUp(UserIndex)
 
-110             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(.Char.CharIndex, 106, 0))
-112             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_NIVEL, .Pos.X, .Pos.Y))
+110             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageCreateFX(.Char.charindex, 106, 0))
+112             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(SND_NIVEL, .Pos.X, .Pos.y))
 114             Call WriteLocaleMsg(UserIndex, "186", e_FontTypeNames.FONTTYPE_INFO)
             
 116             .Stats.Exp = .Stats.Exp - experienceToLevelUp
@@ -1365,7 +1373,7 @@ Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As e_Heading) A
             
 134             If IndexMover <> 0 Then
                     ' Sólo puedo patear caspers/gms invisibles si no es él un gm invisible
-136                 If UserList(UserIndex).flags.AdminInvisible <> 0 Then Exit Function
+136                ' If UserList(UserIndex).flags.AdminInvisible = 1 Then Exit Function
 
 138                 Call WritePosUpdate(IndexMover)
 
@@ -2090,6 +2098,8 @@ Sub UserDie(ByVal UserIndex As Integer)
             
             'Borramos todos los personajes del area
             
+            'HarThaoS: Mando un 5 en head para que cuente como muerto el area y no recalcule las posiciones.
+            Call CheckUpdateNeededUser(UserIndex, 5, 0, .flags.Muerto)
             
             Dim LoopC     As Long
             Dim tempIndex As Integer
@@ -2106,8 +2116,12 @@ Sub UserDie(ByVal UserIndex As Integer)
                 If UserList(tempIndex).AreasInfo.AreaReciveX And AreaX Then  'Esta en el area?
                     If UserList(tempIndex).AreasInfo.AreaReciveY And AreaY Then
         
-                        If UserList(tempIndex).ConnIDValida And tempIndex <> UserIndex And UserList(tempIndex).GuildIndex <> UserList(UserIndex).GuildIndex Then
-                            Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageCharacterRemove(3, UserList(tempIndex).Char.CharIndex, True))
+                        If UserList(tempIndex).ConnIDValida And tempIndex <> UserIndex And CompararPrivilegios(UserList(UserIndex).flags.Privilegios, UserList(tempIndex).flags.Privilegios) < 0 Then
+                            If UserList(tempIndex).GuildIndex <> UserList(UserIndex).GuildIndex Or UserList(UserIndex).GuildIndex = 0 Then
+                                If UserList(tempIndex).flags.Muerto = 0 Then
+                                    Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageCharacterRemove(3, UserList(tempIndex).Char.charindex, True))
+                                End If
+                            End If
                         End If
                     End If
                 End If
@@ -2306,7 +2320,7 @@ Sub WarpUserChar(ByVal UserIndex As Integer, _
             End If
     
             'Quitar el dialogo
-112         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageRemoveCharDialog(.Char.CharIndex))
+112         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageRemoveCharDialog(.Char.charindex))
     
 114         Call WriteRemoveAllDialogs(UserIndex)
     
@@ -2374,11 +2388,11 @@ Sub WarpUserChar(ByVal UserIndex As Integer, _
 196                 .flags.Oculto = 0
 198                 .Counters.TiempoOculto = 0
                     .Counters.Invisibilidad = 0
-                    Call SendData(SendTarget.ToPCArea, userindex, PrepareMessageSetInvisible(UserList(userindex).Char.charindex, False))
+                    Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageSetInvisible(UserList(UserIndex).Char.charindex, False))
 200                 Call WriteConsoleMsg(UserIndex, "Una fuerza divina que vigila esta zona te ha vuelto visible.", e_FontTypeNames.FONTTYPE_INFO)
                 
                 Else
-202                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(.Char.CharIndex, True))
+202                 Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageSetInvisible(.Char.charindex, True))
 
                 End If
 
@@ -2388,8 +2402,8 @@ Sub WarpUserChar(ByVal UserIndex As Integer, _
 204         If .flags.AdminInvisible = 0 Then
         
 206             If FX Then 'FX
-208                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(SND_WARP, X, Y))
-210                 Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(.Char.CharIndex, e_FXIDs.FXWARP, 0))
+208                 Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(SND_WARP, X, y))
+210                 Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageCreateFX(.Char.charindex, e_FXIDs.FXWARP, 0))
                 End If
 
             Else
@@ -2438,7 +2452,7 @@ Sub Cerrar_Usuario(ByVal UserIndex As Integer)
                 If .flags.invisible + .flags.Oculto > 0 Then
                     .flags.invisible = 0
                     .flags.Oculto = 0
-                    Call SendData(SendTarget.ToPCArea, userindex, PrepareMessageSetInvisible(.Char.charindex, False))
+                    Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageSetInvisible(.Char.charindex, False))
                     Call WriteConsoleMsg(userindex, "Has vuelto a ser visible", e_FontTypeNames.FONTTYPE_INFO)
                 End If
                 
@@ -2787,7 +2801,7 @@ Public Sub SetModoConsulta(ByVal UserIndex As Integer)
 
             End If
 
-112         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageUpdateTagAndStatus(UserIndex, .Faccion.Status, sndNick))
+112         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageUpdateTagAndStatus(UserIndex, .Faccion.Status, sndNick))
 
         End With
 
@@ -2877,7 +2891,7 @@ Public Sub LimpiarEstadosAlterados(ByVal UserIndex As Integer)
 128         If .flags.Meditando Then
 130             .flags.Meditando = False
 132             .Char.FX = 0
-134             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageMeditateToggle(.Char.CharIndex, 0))
+134             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageMeditateToggle(.Char.charindex, 0))
             End If
         
             '<<<< Invisible >>>>
@@ -2886,7 +2900,7 @@ Public Sub LimpiarEstadosAlterados(ByVal UserIndex As Integer)
 140             .flags.invisible = 0
 142             .Counters.TiempoOculto = 0
 144             .Counters.Invisibilidad = 0
-146             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(.Char.CharIndex, False))
+146             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageSetInvisible(.Char.charindex, False))
             End If
         
             '<<<< Mimetismo >>>>

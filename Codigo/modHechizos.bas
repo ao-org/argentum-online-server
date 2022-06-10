@@ -68,7 +68,7 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
 
           'Call WriteConsoleMsg(UserIndex, NpcList(NpcIndex).name & " te ha restaurado " & Daño & " puntos de vida.", e_FontTypeNames.FONTTYPE_FIGHT)
 122       Call WriteLocaleMsg(UserIndex, "32", e_FontTypeNames.FONTTYPE_FIGHT, NpcList(NpcIndex).name & "¬" & DañoStr)
-124       Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageTextCharDrop(DañoStr, .Char.charindex, vbGreen))
+124       Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageTextCharDrop(DañoStr, .Char.charindex, vbGreen))
 126       Call WriteUpdateHP(UserIndex)
 
 128     ElseIf Hechizos(Spell).SubeHP = 2 Then
@@ -110,7 +110,7 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
 
           'Call WriteLocaleMsg(UserIndex, "34", e_FontTypeNames.FONTTYPE_FIGHT, NpcList(NpcIndex).name & "¬" & DañoStr)
 158       Call WriteConsoleMsg(UserIndex, NpcList(NpcIndex).name & " te ha quitado " & Daño & " puntos de vida.", e_FontTypeNames.FONTTYPE_FIGHT)
-160       Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageTextCharDrop(DañoStr, .Char.charindex, vbRed))
+160       Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageTextCharDrop(DañoStr, .Char.charindex, vbRed))
 
 162       Call SubirSkill(UserIndex, Resistencia)
 
@@ -244,7 +244,7 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
 312         .Counters.Ocultando = 0
 
 314         Call WriteConsoleMsg(UserIndex, "Tu invisibilidad ya no tiene efecto.", e_FontTypeNames.FONTTYPE_INFOIAO)
-316         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(.Char.CharIndex, False))
+316         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageSetInvisible(.Char.charindex, False))
           End If
         End If
 
@@ -299,9 +299,9 @@ Sub NpcLanzaSpellSobreNpc(ByVal NpcIndex As Integer, ByVal TargetNPC As Integer,
 104     If Hechizos(Spell).SubeHP = 1 Then ' Cura
 106       Daño = RandomNumber(Hechizos(Spell).MinHp, Hechizos(Spell).MaxHp)
 108       DañoStr = PonerPuntos(Daño)
-110       Call SendData(SendTarget.ToNPCArea, TargetNPC, PrepareMessagePlayWave(Hechizos(Spell).wav, .Pos.X, .Pos.Y))
-112       Call SendData(SendTarget.ToNPCArea, TargetNPC, PrepareMessageCreateFX(.Char.CharIndex, Hechizos(Spell).FXgrh, Hechizos(Spell).loops))
-114       Call SendData(SendTarget.ToPCArea, TargetNPC, PrepareMessageTextCharDrop(DañoStr, .Char.charindex, vbGreen))
+110       Call SendData(SendTarget.ToNPCAliveArea, TargetNPC, PrepareMessagePlayWave(Hechizos(Spell).wav, .Pos.X, .Pos.y))
+112       Call SendData(SendTarget.ToNPCAliveArea, TargetNPC, PrepareMessageCreateFX(.Char.charindex, Hechizos(Spell).FXgrh, Hechizos(Spell).loops))
+114       Call SendData(SendTarget.ToPCAliveArea, TargetNPC, PrepareMessageTextCharDrop(DañoStr, .Char.charindex, vbGreen))
 
 116       .Stats.MinHp = .Stats.MinHp + Daño
 
@@ -311,9 +311,9 @@ Sub NpcLanzaSpellSobreNpc(ByVal NpcIndex As Integer, ByVal TargetNPC As Integer,
 122     ElseIf Hechizos(Spell).SubeHP = 2 Then
 
 124       Daño = RandomNumber(Hechizos(Spell).MinHp, Hechizos(Spell).MaxHp)
-126       Call SendData(SendTarget.ToNPCArea, TargetNPC, PrepareMessagePlayWave(Hechizos(Spell).wav, .Pos.X, .Pos.Y))
-128       Call SendData(SendTarget.ToNPCArea, TargetNPC, PrepareMessageCreateFX(.Char.CharIndex, Hechizos(Spell).FXgrh, Hechizos(Spell).loops))
-130       Call SendData(SendTarget.ToNPCArea, TargetNPC, PrepareMessageTextOverChar(PonerPuntos(Daño), .Char.charindex, vbRed))
+126       Call SendData(SendTarget.ToNPCAliveArea, TargetNPC, PrepareMessagePlayWave(Hechizos(Spell).wav, .Pos.X, .Pos.y))
+128       Call SendData(SendTarget.ToNPCAliveArea, TargetNPC, PrepareMessageCreateFX(.Char.charindex, Hechizos(Spell).FXgrh, Hechizos(Spell).loops))
+130       Call SendData(SendTarget.ToNPCAliveArea, TargetNPC, PrepareMessageTextOverChar(PonerPuntos(Daño), .Char.charindex, vbRed))
 
 132       .Stats.MinHp = .Stats.MinHp - Daño
 
@@ -336,15 +336,15 @@ Sub NpcLanzaSpellSobreNpc(ByVal NpcIndex As Integer, ByVal TargetNPC As Integer,
 148         .Stats.MinHp = 0
 150         Call MuereNpc(TargetNPC, 0)
           Else
-152         Call SendData(SendTarget.ToNPCArea, TargetNPC, PrepareMessageNpcUpdateHP(TargetNPC))
+152         Call SendData(SendTarget.ToNPCAliveArea, TargetNPC, PrepareMessageNpcUpdateHP(TargetNPC))
           End If
 
 
 154     ElseIf Hechizos(Spell).Paraliza = 1 Then
 
 156       If .flags.Paralizado = 0 Then
-158         Call SendData(SendTarget.ToNPCArea, TargetNPC, PrepareMessagePlayWave(Hechizos(Spell).wav, .Pos.X, .Pos.Y))
-160         Call SendData(SendTarget.ToNPCArea, TargetNPC, PrepareMessageCreateFX(.Char.CharIndex, Hechizos(Spell).FXgrh, Hechizos(Spell).loops))
+158         Call SendData(SendTarget.ToNPCAliveArea, TargetNPC, PrepareMessagePlayWave(Hechizos(Spell).wav, .Pos.X, .Pos.y))
+160         Call SendData(SendTarget.ToNPCAliveArea, TargetNPC, PrepareMessageCreateFX(.Char.charindex, Hechizos(Spell).FXgrh, Hechizos(Spell).loops))
 
 162         .flags.Paralizado = 1
 164         .Contadores.Paralisis = Hechizos(Spell).Duration / 2
@@ -354,8 +354,8 @@ Sub NpcLanzaSpellSobreNpc(ByVal NpcIndex As Integer, ByVal TargetNPC As Integer,
 166     ElseIf Hechizos(Spell).Inmoviliza = 1 Then
 
 168       If .flags.Inmovilizado = 0 And .flags.Paralizado = 0 Then
-170         Call SendData(SendTarget.ToNPCArea, TargetNPC, PrepareMessagePlayWave(Hechizos(Spell).wav, .Pos.X, .Pos.Y))
-172         Call SendData(SendTarget.ToNPCArea, TargetNPC, PrepareMessageCreateFX(.Char.CharIndex, Hechizos(Spell).FXgrh, Hechizos(Spell).loops))
+170         Call SendData(SendTarget.ToNPCAliveArea, TargetNPC, PrepareMessagePlayWave(Hechizos(Spell).wav, .Pos.X, .Pos.y))
+172         Call SendData(SendTarget.ToNPCAliveArea, TargetNPC, PrepareMessageCreateFX(.Char.charindex, Hechizos(Spell).FXgrh, Hechizos(Spell).loops))
 
 174         .flags.Inmovilizado = 1
 176         .Contadores.Inmovilizado = Hechizos(Spell).Duration / 2
@@ -364,8 +364,8 @@ Sub NpcLanzaSpellSobreNpc(ByVal NpcIndex As Integer, ByVal TargetNPC As Integer,
 178     ElseIf Hechizos(Spell).RemoverParalisis = 1 Then
 
 180       If .flags.Paralizado + .flags.Inmovilizado > 0 Then
-182         Call SendData(SendTarget.ToNPCArea, TargetNPC, PrepareMessagePlayWave(Hechizos(Spell).wav, .Pos.X, .Pos.Y))
-184         Call SendData(SendTarget.ToNPCArea, TargetNPC, PrepareMessageCreateFX(.Char.CharIndex, Hechizos(Spell).FXgrh, Hechizos(Spell).loops))
+182         Call SendData(SendTarget.ToNPCAliveArea, TargetNPC, PrepareMessagePlayWave(Hechizos(Spell).wav, .Pos.X, .Pos.y))
+184         Call SendData(SendTarget.ToNPCAliveArea, TargetNPC, PrepareMessageCreateFX(.Char.charindex, Hechizos(Spell).FXgrh, Hechizos(Spell).loops))
 
 186         .flags.Paralizado = 0
 188         .Contadores.Paralisis = 0
@@ -376,10 +376,10 @@ Sub NpcLanzaSpellSobreNpc(ByVal NpcIndex As Integer, ByVal TargetNPC As Integer,
 
 194     ElseIf Hechizos(Spell).incinera = 1 Then
 196       If .flags.Incinerado = 0 Then
-198         Call SendData(SendTarget.ToNPCArea, TargetNPC, PrepareMessagePlayWave(Hechizos(Spell).wav, .Pos.X, .Pos.Y))
+198         Call SendData(SendTarget.ToNPCAliveArea, TargetNPC, PrepareMessagePlayWave(Hechizos(Spell).wav, .Pos.X, .Pos.y))
 
 200         If Hechizos(Spell).Particle > 0 Then '¿Envio Particula?
-202           Call SendData(SendTarget.ToNPCArea, TargetNPC, PrepareMessageParticleFX(.Char.CharIndex, Hechizos(Spell).Particle, Hechizos(Spell).TimeParticula, False))
+202           Call SendData(SendTarget.ToNPCAliveArea, TargetNPC, PrepareMessageParticleFX(.Char.charindex, Hechizos(Spell).Particle, Hechizos(Spell).TimeParticula, False))
 
             End If
 
@@ -555,7 +555,7 @@ Sub DecirPalabrasMagicas(ByVal Hechizo As Byte, ByVal UserIndex As Integer)
         
         On Error GoTo DecirPalabrasMagicas_Err
 
-100     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageChatOverHead("PMAG*" & Hechizo, UserList(UserIndex).Char.CharIndex, vbCyan, True))
+100     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageChatOverHead("PMAG*" & Hechizo, UserList(UserIndex).Char.charindex, vbCyan, True))
         Exit Sub
 
 DecirPalabrasMagicas_Err:
@@ -1206,11 +1206,33 @@ Sub HandleHechizoUsuario(ByVal UserIndex As Integer, ByVal uh As Integer)
 124             If UserList(UserIndex).Stats.MinHp < 0 Then UserList(UserIndex).Stats.MinHp = 1
 126             Call WriteUpdateHP(UserIndex)
             End If
+            
 
 128         UserList(UserIndex).Stats.MinSta = UserList(UserIndex).Stats.MinSta - Hechizos(uh).StaRequerido
 130         If UserList(UserIndex).Stats.MinSta < 0 Then UserList(UserIndex).Stats.MinSta = 0
 
+            If Hechizos(uh).Revivir = 1 Then
+            
+                If TriggerZonaPelea(UserIndex, UserList(UserIndex).flags.TargetUser) <> TRIGGER6_PERMITE Then
+                    If MapInfo(UserList(UserIndex).Pos.map).Seguro = 0 Then
+                        Dim costoVidaResu As Long
+                        costoVidaResu = UserList(UserList(UserIndex).flags.TargetUser).Stats.ELV * 1.5 + UserList(UserIndex).Stats.MinHp * 0.45
+                        
+                        If UserList(UserIndex).Stats.MinHp > costoVidaResu Then
+                            UserList(UserIndex).Stats.MinHp = UserList(UserIndex).Stats.MinHp - costoVidaResu
+                        Else
+                            UserList(UserIndex).Stats.MinHp = 1
+                        End If
+                        Call WriteUpdateHP(UserIndex)
+                    End If
+                    
+                End If
+                
+                UserList(UserIndex).Stats.MinSta = 0
+            End If
+            
 132         Call WriteUpdateMana(UserIndex)
+            Call WriteUpdateHP(UserIndex)
 134         Call WriteUpdateSta(UserIndex)
 136         UserList(UserIndex).flags.TargetUser = 0
 
@@ -1483,7 +1505,6 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 108             Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
 110             b = False
                 Exit Sub
-
             End If
             
 112         If UserList(UserIndex).flags.EnReto Then
@@ -1505,41 +1526,57 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 136                 Call WriteConsoleMsg(UserIndex, "¡No podés ponerte invisible mientras te encuentres saliendo!", e_FontTypeNames.FONTTYPE_WARNING)
 138                 b = False
                     Exit Sub
-
                 End If
-
             End If
-    
-            'Para poder tirar invi a un pk en el ring
-140         If (TriggerZonaPelea(UserIndex, tU) <> TRIGGER6_PERMITE) Then
-142             If Status(tU) = 0 And Status(UserIndex) = 1 Or Status(tU) = 2 And Status(UserIndex) = 1 Then
-144                 If esArmada(UserIndex) Then
-146                     Call WriteConsoleMsg(UserIndex, "Los miembros de la armada real no pueden ayudar a los criminales", e_FontTypeNames.FONTTYPE_INFO)
-148                     b = False
-                        Exit Sub
-
-                    End If
-
-150                 If UserList(UserIndex).flags.Seguro Then
-                        'Call WriteConsoleMsg(UserIndex, "Para ayudar criminales debes sacarte el seguro ya que te volverás criminal como ellos", e_FontTypeNames.FONTTYPE_INFO)
-152                     Call WriteLocaleMsg(UserIndex, "378", e_FontTypeNames.FONTTYPE_INFO)
-154                     b = False
-                        Exit Sub
-                    Else
-156                     Call VolverCriminal(UserIndex)
-                    End If
-
-                End If
-
+            
+            If (TriggerZonaPelea(UserIndex, tU) <> TRIGGER6_PERMITE) Then
+                    Select Case Status(UserIndex)
+                        Case 1, 3 'Ciudadano o armada
+                            If Status(tU) <> 3 And Status(tU) <> 1 Then
+                                If Status(UserIndex) = e_Facciones.armada Then
+                                    Call WriteConsoleMsg(UserIndex, "No puedes ayudar criminales.", e_FontTypeNames.FONTTYPE_INFO)
+                                    b = False
+                                    Exit Sub
+                                ElseIf Status(UserIndex) = e_Facciones.Ciudadano Then
+                                    If UserList(UserIndex).flags.Seguro = True Then
+                                        Call WriteConsoleMsg(UserIndex, "Para ayudar criminales deberás desactivar el seguro.", e_FontTypeNames.FONTTYPE_INFO)
+                                        b = False
+                                        Exit Sub
+                                    Else
+                                        'Si tiene clan
+                                        If UserList(UserIndex).GuildIndex > 0 Then
+                                            'Si el clan es de alineación ciudadana.
+                                            If GuildAlignmentIndex(UserList(UserIndex).GuildIndex) = e_ALINEACION_GUILD.ALINEACION_CIUDADANA Then
+                                                'No lo dejo resucitarlo
+                                                Call WriteConsoleMsg(UserIndex, "No puedes ayudar a un usuario criminal pertenenciendo a un clan ciudadano.", e_FontTypeNames.FONTTYPE_INFO)
+                                                b = False
+                                                Exit Sub
+                                            'Si es de alineación neutral, lo dejo resucitar y lo vuelvo criminal
+                                            ElseIf GuildAlignmentIndex(UserList(UserIndex).GuildIndex) = e_ALINEACION_GUILD.ALINEACION_NEUTRAL Then
+                                                Call VolverCriminal(UserIndex)
+                                                Call RefreshCharStatus(UserIndex)
+                                            End If
+                                        Else
+                                            Call VolverCriminal(UserIndex)
+                                            Call RefreshCharStatus(UserIndex)
+                                        End If
+                                    End If
+                                End If
+                            End If
+                        Case 2 'Caos
+                            If Status(tU) <> 0 And Status(tU) <> 2 Then
+                                Call WriteConsoleMsg(UserIndex, "No podés ayudar ciudadanos.", e_FontTypeNames.FONTTYPE_INFO)
+                                b = False
+                                Exit Sub
+                            End If
+                    End Select
             End If
     
             'Si sos user, no uses este hechizo con GMS.
 158         If UserList(UserIndex).flags.Privilegios And e_PlayerType.user Then
 160             If Not UserList(tU).flags.Privilegios And e_PlayerType.user Then
                     Exit Sub
-
                 End If
-
             End If
             
 162         If MapInfo(UserList(tU).Pos.Map).SinInviOcul Then
@@ -1924,7 +1961,6 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 484             If UserList(UserIndex).flags.Privilegios And e_PlayerType.user Then
 486                 If Not UserList(tU).flags.Privilegios And e_PlayerType.user Then
                         Exit Sub
-    
                     End If
     
                 End If
@@ -1993,27 +2029,46 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
         
             'Para poder tirar remo a un pk en el ring
 536         If (TriggerZonaPelea(UserIndex, tU) <> TRIGGER6_PERMITE) Then
-538             If Status(tU) = 0 And Status(UserIndex) = 1 Or Status(tU) = 2 And Status(UserIndex) = 1 Then
-540                 If esArmada(UserIndex) Then
-                        'Call WriteConsoleMsg(UserIndex, "Los Armadas no pueden ayudar a los Criminales", e_FontTypeNames.FONTTYPE_INFO)
-542                     Call WriteLocaleMsg(UserIndex, "379", e_FontTypeNames.FONTTYPE_INFO)
-544                     b = False
-                        Exit Sub
-
-                    End If
-
-546                 If UserList(UserIndex).flags.Seguro Then
-                        'Call WriteConsoleMsg(UserIndex, "Para ayudar criminales debes sacarte el seguro ya que te volverás criminal como ellos", e_FontTypeNames.FONTTYPE_INFO)
-548                     Call WriteLocaleMsg(UserIndex, "378", e_FontTypeNames.FONTTYPE_INFO)
-550                     b = False
-                        Exit Sub
-                    Else
-552                     Call VolverCriminal(UserIndex)
-
-                    End If
-
-                End If
-
+                    Select Case Status(UserIndex)
+                        Case 1, 3 'Ciudadano o armada
+                            If Status(tU) <> 3 And Status(tU) <> 1 Then
+                                If Status(UserIndex) = e_Facciones.armada Then
+                                    Call WriteConsoleMsg(UserIndex, "No puedes ayudar criminales.", e_FontTypeNames.FONTTYPE_INFO)
+                                    b = False
+                                    Exit Sub
+                                ElseIf Status(UserIndex) = e_Facciones.Ciudadano Then
+                                    If UserList(UserIndex).flags.Seguro = True Then
+                                        Call WriteConsoleMsg(UserIndex, "Para ayudar criminales deberás desactivar el seguro.", e_FontTypeNames.FONTTYPE_INFO)
+                                        b = False
+                                        Exit Sub
+                                    Else
+                                        'Si tiene clan
+                                        If UserList(UserIndex).GuildIndex > 0 Then
+                                            'Si el clan es de alineación ciudadana.
+                                            If GuildAlignmentIndex(UserList(UserIndex).GuildIndex) = e_ALINEACION_GUILD.ALINEACION_CIUDADANA Then
+                                                'No lo dejo resucitarlo
+                                                Call WriteConsoleMsg(UserIndex, "No puedes ayudar a un usuario criminal pertenenciendo a un clan ciudadano.", e_FontTypeNames.FONTTYPE_INFO)
+                                                b = False
+                                                Exit Sub
+                                            'Si es de alineación neutral, lo dejo resucitar y lo vuelvo criminal
+                                            ElseIf GuildAlignmentIndex(UserList(UserIndex).GuildIndex) = e_ALINEACION_GUILD.ALINEACION_NEUTRAL Then
+                                                Call VolverCriminal(UserIndex)
+                                                Call RefreshCharStatus(UserIndex)
+                                            End If
+                                        Else
+                                            Call VolverCriminal(UserIndex)
+                                            Call RefreshCharStatus(UserIndex)
+                                        End If
+                                    End If
+                                End If
+                            End If
+                        Case 2 'Caos
+                            If Status(tU) <> 0 And Status(tU) <> 2 Then
+                                Call WriteConsoleMsg(UserIndex, "No podés ayudar ciudadanos.", e_FontTypeNames.FONTTYPE_INFO)
+                                b = False
+                                Exit Sub
+                            End If
+                    End Select
             End If
         
 554         If UserList(tU).flags.Inmovilizado = 0 And UserList(tU).flags.Paralizado = 0 Then
@@ -2133,36 +2188,62 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
                     End If
                 End If
                 
-640             If UserList(tU).flags.SeguroResu Then
-642                 Call WriteConsoleMsg(UserIndex, "El usuario tiene el seguro de resurrección activado.", e_FontTypeNames.FONTTYPE_INFO)
-644                 Call WriteConsoleMsg(tU, UserList(UserIndex).name & " está intentando revivirte. Desactiva el seguro de resurrección para permitirle hacerlo.", e_FontTypeNames.FONTTYPE_INFO)
-646                 b = False
+                If UserList(UserIndex).Stats.MinSta < UserList(UserIndex).Stats.MaxSta Then
+                    Call WriteConsoleMsg(UserIndex, "Deberás tener la barra de energía llena para poder resucitar.", e_FontTypeNames.FONTTYPE_INFO)
+                    b = False
                     Exit Sub
                 End If
-        
+
                 'Para poder tirar revivir a un pk en el ring
 654             If (TriggerZonaPelea(UserIndex, tU) <> TRIGGER6_PERMITE) Then
-656                 If Status(tU) = 0 And Status(UserIndex) = 1 Or Status(tU) = 2 And Status(UserIndex) = 1 Then
-658                     If esArmada(UserIndex) Then
-                            'Call WriteConsoleMsg(UserIndex, "Los Armadas no pueden ayudar a los Criminales", e_FontTypeNames.FONTTYPE_INFO)
-660                         Call WriteLocaleMsg(UserIndex, "379", e_FontTypeNames.FONTTYPE_INFO)
-662                         b = False
-                            Exit Sub
-
-                        End If
-
-664                     If UserList(UserIndex).flags.Seguro Then
-                            'call WriteConsoleMsg(UserIndex, "Para ayudar criminales debes sacarte el seguro ya que te volverás criminal como ellos", e_FontTypeNames.FONTTYPE_INFO)
-666                         Call WriteLocaleMsg(UserIndex, "378", e_FontTypeNames.FONTTYPE_INFO)
-668                         b = False
-                            Exit Sub
-                        Else
-670                         Call VolverCriminal(UserIndex)
-
-                        End If
-
+                    
+                    If UserList(tU).flags.SeguroResu Then
+                        Call WriteConsoleMsg(UserIndex, "El usuario tiene el seguro de resurrección activado.", e_FontTypeNames.FONTTYPE_INFO)
+                        Call WriteConsoleMsg(tU, UserList(UserIndex).name & " está intentando revivirte. Desactiva el seguro de resurrección para permitirle hacerlo.", e_FontTypeNames.FONTTYPE_INFO)
+                        b = False
+                        Exit Sub
                     End If
-
+                
+                    Select Case Status(UserIndex)
+                        Case 1, 3 'Ciudadano o armada
+                            If Status(tU) <> 3 And Status(tU) <> 1 Then
+                                If Status(UserIndex) = e_Facciones.armada Then
+                                    Call WriteConsoleMsg(UserIndex, "Los miembros de la armada real solo pueden revivir ciudadanos a miembros de su facción.", e_FontTypeNames.FONTTYPE_INFO)
+                                    b = False
+                                    Exit Sub
+                                ElseIf Status(UserIndex) = e_Facciones.Ciudadano Then
+                                    If UserList(UserIndex).flags.Seguro = True Then
+                                        Call WriteConsoleMsg(UserIndex, "Deberás desactivar el seguro para revivir al usuario, ten en cuenta que te convertirás en criminal.", e_FontTypeNames.FONTTYPE_INFO)
+                                        b = False
+                                        Exit Sub
+                                    Else
+                                        'Si tiene clan
+                                        If UserList(UserIndex).GuildIndex > 0 Then
+                                            'Si el clan es de alineación ciudadana.
+                                            If GuildAlignmentIndex(UserList(UserIndex).GuildIndex) = e_ALINEACION_GUILD.ALINEACION_CIUDADANA Then
+                                                'No lo dejo resucitarlo
+                                                Call WriteConsoleMsg(UserIndex, "No puedes resucitar al usuario siendo fundador de un clan ciudadano.", e_FontTypeNames.FONTTYPE_INFO)
+                                                b = False
+                                                Exit Sub
+                                            'Si es de alineación neutral, lo dejo resucitar y lo vuelvo criminal
+                                            ElseIf GuildAlignmentIndex(UserList(UserIndex).GuildIndex) = e_ALINEACION_GUILD.ALINEACION_NEUTRAL Then
+                                                Call VolverCriminal(UserIndex)
+                                                Call RefreshCharStatus(UserIndex)
+                                            End If
+                                        Else
+                                            Call VolverCriminal(UserIndex)
+                                            Call RefreshCharStatus(UserIndex)
+                                        End If
+                                    End If
+                                End If
+                            End If
+                        Case 2 'Caos
+                            If Status(tU) <> 0 And Status(tU) <> 2 Then
+                                Call WriteConsoleMsg(UserIndex, "Los miembros del caos solo pueden revivir criminales o miembros de su facción.", e_FontTypeNames.FONTTYPE_INFO)
+                                b = False
+                                Exit Sub
+                            End If
+                    End Select
                 End If
                 
                 Call WriteConsoleMsg(tU, "¡Has sido resucitado!", e_FontTypeNames.FONTTYPE_INFO)
@@ -2484,8 +2565,8 @@ Sub HechizoPropNPC(ByVal hIndex As Integer, ByVal NpcIndex As Integer, ByVal Use
                 'Call WriteConsoleMsg(UserIndex, "Has curado " & Daño & " puntos de salud a la criatura.", e_FontTypeNames.FONTTYPE_FIGHT)
 114             Call WriteLocaleMsg(UserIndex, "388", e_FontTypeNames.FONTTYPE_FIGHT, "la criatura¬" & DañoStr)
 
-116             Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageTextOverChar(DañoStr, NpcList(NpcIndex).Char.charindex, vbGreen))
-118             Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageNpcUpdateHP(NpcIndex))
+116             Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareMessageTextOverChar(DañoStr, NpcList(NpcIndex).Char.charindex, vbGreen))
+118             Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareMessageNpcUpdateHP(NpcIndex))
 120             b = True
             Else
 122             Call WriteConsoleMsg(UserIndex, "La criatura no tiene heridas que curar, el hechizo no tiene efecto.", e_FontTypeNames.FONTTYPE_INFOIAO)
@@ -2529,7 +2610,7 @@ Sub HechizoPropNPC(ByVal hIndex As Integer, ByVal NpcIndex As Integer, ByVal Use
 156         b = True
         
 158         If NpcList(NpcIndex).flags.Snd2 > 0 Then
-160             Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessagePlayWave(NpcList(NpcIndex).flags.Snd2, NpcList(NpcIndex).Pos.X, NpcList(NpcIndex).Pos.Y))
+160             Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareMessagePlayWave(NpcList(NpcIndex).flags.Snd2, NpcList(NpcIndex).Pos.X, NpcList(NpcIndex).Pos.y))
             End If
         
             'Quizas tenga defenza magica el NPC.
@@ -2562,13 +2643,13 @@ Sub HechizoPropNPC(ByVal hIndex As Integer, ByVal NpcIndex As Integer, ByVal Use
 188             Call CalcularDarExp(UserIndex, NpcIndex, Daño)
             End If
     
-190         Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageTextOverChar(DañoStr, NpcList(NpcIndex).Char.charindex, vbRed))
+190         Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareMessageTextOverChar(DañoStr, NpcList(NpcIndex).Char.charindex, vbRed))
     
 192         If NpcList(NpcIndex).Stats.MinHp < 1 Then
 194             NpcList(NpcIndex).Stats.MinHp = 0
 196             Call MuereNpc(NpcIndex, UserIndex)
             Else
-198             Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageNpcUpdateHP(NpcIndex))
+198             Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareMessageNpcUpdateHP(NpcIndex))
             End If
 
         End If
@@ -2671,18 +2752,18 @@ Private Sub InfoHechizo(ByVal UserIndex As Integer)
 
                     'Call modSendData.SendToAreaByPos(UserList(UserIndex).Pos.map, UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY, PrepareMessageFxPiso(Hechizos(H).FXgrh, UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY))
 138                 If Hechizos(h).ParticleViaje > 0 Then
-140                     Call SendData(SendTarget.ToNPCArea, UserList(UserIndex).flags.TargetNPC, PrepareMessageParticleFXWithDestinoXY(UserList(UserIndex).Char.CharIndex, Hechizos(h).ParticleViaje, Hechizos(h).FXgrh, Hechizos(h).TimeParticula, Hechizos(h).wav, 1, UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY))
+140                     Call SendData(SendTarget.ToNPCAliveArea, UserList(UserIndex).flags.TargetNPC, PrepareMessageParticleFXWithDestinoXY(UserList(UserIndex).Char.charindex, Hechizos(h).ParticleViaje, Hechizos(h).FXgrh, Hechizos(h).TimeParticula, Hechizos(h).wav, 1, UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY))
                     Else
-142                     Call SendData(SendTarget.ToNPCArea, UserList(UserIndex).flags.TargetNPC, PrepareMessageFxPiso(Hechizos(h).FXgrh, UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY))
+142                     Call SendData(SendTarget.ToNPCAliveArea, UserList(UserIndex).flags.TargetNPC, PrepareMessageFxPiso(Hechizos(h).FXgrh, UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY))
 
                     End If
 
                 Else
 
 144                 If Hechizos(h).ParticleViaje > 0 Then
-146                     Call SendData(SendTarget.ToNPCArea, UserList(UserIndex).flags.TargetNPC, PrepareMessageParticleFXWithDestino(UserList(UserIndex).Char.CharIndex, NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, Hechizos(h).ParticleViaje, Hechizos(h).FXgrh, Hechizos(h).TimeParticula, Hechizos(h).wav, 1))
+146                     Call SendData(SendTarget.ToNPCAliveArea, UserList(UserIndex).flags.TargetNPC, PrepareMessageParticleFXWithDestino(UserList(UserIndex).Char.charindex, NpcList(UserList(UserIndex).flags.TargetNPC).Char.charindex, Hechizos(h).ParticleViaje, Hechizos(h).FXgrh, Hechizos(h).TimeParticula, Hechizos(h).wav, 1))
                     Else
-148                     Call SendData(SendTarget.ToNPCArea, UserList(UserIndex).flags.TargetNPC, PrepareMessageCreateFX(NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, Hechizos(h).FXgrh, Hechizos(h).loops))
+148                     Call SendData(SendTarget.ToNPCAliveArea, UserList(UserIndex).flags.TargetNPC, PrepareMessageCreateFX(NpcList(UserList(UserIndex).flags.TargetNPC).Char.charindex, Hechizos(h).FXgrh, Hechizos(h).loops))
 
                     End If
 
@@ -2692,14 +2773,13 @@ Private Sub InfoHechizo(ByVal UserIndex As Integer)
         
 150         If Hechizos(h).Particle > 0 Then '¿Envio Particula?
 152             If NpcList(UserList(UserIndex).flags.TargetNPC).Stats.MinHp < 1 Then
-154                 Call SendData(SendTarget.ToNPCArea, UserList(UserIndex).flags.TargetNPC, PrepareMessageParticleFXWithDestinoXY(UserList(UserIndex).Char.CharIndex, Hechizos(h).ParticleViaje, Hechizos(h).Particle, Hechizos(h).TimeParticula, Hechizos(h).wav, 0, NpcList(UserList(UserIndex).flags.TargetNPC).Pos.X, NpcList(UserList(UserIndex).flags.TargetNPC).Pos.Y))
-                    'Call SendData(SendTarget.ToNPCArea, UserList(UserIndex).flags.TargetNPC, PrepareMessageParticleFXToFloor(NpcList(UserList(UserIndex).flags.TargetNPC).Pos.X, NpcList(UserList(UserIndex).flags.TargetNPC).Pos.Y, Hechizos(H).Particle, Hechizos(H).TimeParticula))
+154                 Call SendData(SendTarget.ToNPCAliveArea, UserList(UserIndex).flags.TargetNPC, PrepareMessageParticleFXWithDestinoXY(UserList(UserIndex).Char.charindex, Hechizos(h).ParticleViaje, Hechizos(h).Particle, Hechizos(h).TimeParticula, Hechizos(h).wav, 0, NpcList(UserList(UserIndex).flags.TargetNPC).Pos.X, NpcList(UserList(UserIndex).flags.TargetNPC).Pos.y))
                 Else
 
 156                 If Hechizos(h).ParticleViaje > 0 Then
-158                     Call SendData(SendTarget.ToNPCArea, UserList(UserIndex).flags.TargetNPC, PrepareMessageParticleFXWithDestino(UserList(UserIndex).Char.CharIndex, NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, Hechizos(h).ParticleViaje, Hechizos(h).Particle, Hechizos(h).TimeParticula, Hechizos(h).wav, 0))
+158                     Call SendData(SendTarget.ToNPCAliveArea, UserList(UserIndex).flags.TargetNPC, PrepareMessageParticleFXWithDestino(UserList(UserIndex).Char.charindex, NpcList(UserList(UserIndex).flags.TargetNPC).Char.charindex, Hechizos(h).ParticleViaje, Hechizos(h).Particle, Hechizos(h).TimeParticula, Hechizos(h).wav, 0))
                     Else
-160                     Call SendData(SendTarget.ToNPCArea, UserList(UserIndex).flags.TargetNPC, PrepareMessageParticleFX(NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex, Hechizos(h).Particle, Hechizos(h).TimeParticula, False))
+160                     Call SendData(SendTarget.ToNPCAliveArea, UserList(UserIndex).flags.TargetNPC, PrepareMessageParticleFX(NpcList(UserList(UserIndex).flags.TargetNPC).Char.charindex, Hechizos(h).Particle, Hechizos(h).TimeParticula, False))
 
                     End If
 
@@ -2708,7 +2788,7 @@ Private Sub InfoHechizo(ByVal UserIndex As Integer)
             End If
 
 162         If Hechizos(h).ParticleViaje = 0 Then
-164             Call SendData(SendTarget.ToNPCArea, UserList(UserIndex).flags.TargetNPC, PrepareMessagePlayWave(Hechizos(h).wav, NpcList(UserList(UserIndex).flags.TargetNPC).Pos.X, NpcList(UserList(UserIndex).flags.TargetNPC).Pos.Y))
+164             Call SendData(SendTarget.ToNPCAliveArea, UserList(UserIndex).flags.TargetNPC, PrepareMessagePlayWave(Hechizos(h).wav, NpcList(UserList(UserIndex).flags.TargetNPC).Pos.X, NpcList(UserList(UserIndex).flags.TargetNPC).Pos.y))
 
             End If
 
@@ -2720,12 +2800,12 @@ Private Sub InfoHechizo(ByVal UserIndex As Integer)
             End If
         
 170         If Hechizos(h).Particle > 0 Then 'Envio Particula?
-172             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFXToFloor(UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY, Hechizos(h).Particle, Hechizos(h).TimeParticula))
+172             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageParticleFXToFloor(UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY, Hechizos(h).Particle, Hechizos(h).TimeParticula))
 
             End If
         
 174         If Hechizos(h).wav <> 0 Then
-176             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(Hechizos(h).wav, UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY))   'Esta linea faltaba. Pablo (ToxicWaste)
+176             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(Hechizos(h).wav, UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY))   'Esta linea faltaba. Pablo (ToxicWaste)
 
             End If
     
@@ -2904,29 +2984,47 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
                 Exit Sub
             End If
     
-            'Para poder tirar cl a un pk en el ring
-216         If (TriggerZonaPelea(UserIndex, tempChr) <> TRIGGER6_PERMITE) Then
-218             If Status(tempChr) = 0 And Status(UserIndex) = 1 Or Status(tempChr) = 2 And Status(UserIndex) = 1 Then
-220                 If esArmada(UserIndex) Then
-                        'Call WriteConsoleMsg(UserIndex, "Los Armadas no pueden ayudar a los Criminales", e_FontTypeNames.FONTTYPE_INFO)
-222                     Call WriteLocaleMsg(UserIndex, "379", e_FontTypeNames.FONTTYPE_INFO)
-224                     b = False
-                        Exit Sub
-
-                    End If
-
-226                 If UserList(UserIndex).flags.Seguro Then
-                        'Call WriteConsoleMsg(UserIndex, "Para ayudar criminales debes sacarte el seguro ya que te volverás criminal como ellos", e_FontTypeNames.FONTTYPE_INFO)
-228                     Call WriteLocaleMsg(UserIndex, "378", e_FontTypeNames.FONTTYPE_INFO)
-230                     b = False
-                        Exit Sub
-                    Else
-
-                        ' Call DisNobAuBan(UserIndex, UserList(UserIndex).Reputacion.NobleRep * 0.5, 10000)
-                    End If
-
-                End If
-
+            If (TriggerZonaPelea(UserIndex, tempChr) <> TRIGGER6_PERMITE) Then
+                    Select Case Status(UserIndex)
+                        Case 1, 3 'Ciudadano o armada
+                            If Status(tempChr) <> 3 And Status(tempChr) <> 1 Then
+                                If Status(UserIndex) = e_Facciones.armada Then
+                                    Call WriteConsoleMsg(UserIndex, "No puedes ayudar criminales.", e_FontTypeNames.FONTTYPE_INFO)
+                                    b = False
+                                    Exit Sub
+                                ElseIf Status(UserIndex) = e_Facciones.Ciudadano Then
+                                    If UserList(UserIndex).flags.Seguro = True Then
+                                        Call WriteConsoleMsg(UserIndex, "Para ayudar criminales deberás desactivar el seguro.", e_FontTypeNames.FONTTYPE_INFO)
+                                        b = False
+                                        Exit Sub
+                                    Else
+                                        'Si tiene clan
+                                        If UserList(UserIndex).GuildIndex > 0 Then
+                                            'Si el clan es de alineación ciudadana.
+                                            If GuildAlignmentIndex(UserList(UserIndex).GuildIndex) = e_ALINEACION_GUILD.ALINEACION_CIUDADANA Then
+                                                'No lo dejo resucitarlo
+                                                Call WriteConsoleMsg(UserIndex, "No puedes ayudar a un usuario criminal pertenenciendo a un clan ciudadano.", e_FontTypeNames.FONTTYPE_INFO)
+                                                b = False
+                                                Exit Sub
+                                            'Si es de alineación neutral, lo dejo resucitar y lo vuelvo criminal
+                                            ElseIf GuildAlignmentIndex(UserList(UserIndex).GuildIndex) = e_ALINEACION_GUILD.ALINEACION_NEUTRAL Then
+                                                Call VolverCriminal(UserIndex)
+                                                Call RefreshCharStatus(UserIndex)
+                                            End If
+                                        Else
+                                            Call VolverCriminal(UserIndex)
+                                            Call RefreshCharStatus(UserIndex)
+                                        End If
+                                    End If
+                                End If
+                            End If
+                        Case 2 'Caos
+                            If Status(tempChr) <> 0 And Status(tempChr) <> 2 Then
+                                Call WriteConsoleMsg(UserIndex, "No podés ayudar ciudadanos.", e_FontTypeNames.FONTTYPE_INFO)
+                                b = False
+                                Exit Sub
+                            End If
+                    End Select
             End If
     
 232         Call InfoHechizo(UserIndex)
@@ -2981,29 +3079,47 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
                 Exit Sub
             End If
     
-            'Para poder tirar fuerza a un pk en el ring
-274         If (TriggerZonaPelea(UserIndex, tempChr) <> TRIGGER6_PERMITE) Then
-276             If Status(tempChr) = 0 And Status(UserIndex) = 1 Or Status(tempChr) = 2 And Status(UserIndex) = 1 Then
-278                 If esArmada(UserIndex) Then
-                        'Call WriteConsoleMsg(UserIndex, "Los Armadas no pueden ayudar a los Criminales", e_FontTypeNames.FONTTYPE_INFO)
-280                     Call WriteLocaleMsg(UserIndex, "379", e_FontTypeNames.FONTTYPE_INFO)
-282                     b = False
-                        Exit Sub
-
-                    End If
-
-284                 If UserList(UserIndex).flags.Seguro Then
-                        'Call WriteConsoleMsg(UserIndex, "Para ayudar criminales debes sacarte el seguro ya que te volverás criminal como ellos", e_FontTypeNames.FONTTYPE_INFO)
-286                     Call WriteLocaleMsg(UserIndex, "378", e_FontTypeNames.FONTTYPE_INFO)
-288                     b = False
-                        Exit Sub
-                    Else
-
-                        ' Call DisNobAuBan(UserIndex, UserList(UserIndex).Reputacion.NobleRep * 0.5, 10000)
-                    End If
-
-                End If
-
+        If (TriggerZonaPelea(UserIndex, tempChr) <> TRIGGER6_PERMITE) Then
+                Select Case Status(UserIndex)
+                    Case 1, 3 'Ciudadano o armada
+                        If Status(tempChr) <> 3 And Status(tempChr) <> 1 Then
+                            If Status(UserIndex) = e_Facciones.armada Then
+                                Call WriteConsoleMsg(UserIndex, "No puedes ayudar criminales.", e_FontTypeNames.FONTTYPE_INFO)
+                                b = False
+                                Exit Sub
+                            ElseIf Status(UserIndex) = e_Facciones.Ciudadano Then
+                                If UserList(UserIndex).flags.Seguro = True Then
+                                    Call WriteConsoleMsg(UserIndex, "Para ayudar criminales deberás desactivar el seguro.", e_FontTypeNames.FONTTYPE_INFO)
+                                    b = False
+                                    Exit Sub
+                                Else
+                                    'Si tiene clan
+                                    If UserList(UserIndex).GuildIndex > 0 Then
+                                        'Si el clan es de alineación ciudadana.
+                                        If GuildAlignmentIndex(UserList(UserIndex).GuildIndex) = e_ALINEACION_GUILD.ALINEACION_CIUDADANA Then
+                                            'No lo dejo resucitarlo
+                                            Call WriteConsoleMsg(UserIndex, "No puedes ayudar a un usuario criminal pertenenciendo a un clan ciudadano.", e_FontTypeNames.FONTTYPE_INFO)
+                                            b = False
+                                            Exit Sub
+                                        'Si es de alineación neutral, lo dejo resucitar y lo vuelvo criminal
+                                        ElseIf GuildAlignmentIndex(UserList(UserIndex).GuildIndex) = e_ALINEACION_GUILD.ALINEACION_NEUTRAL Then
+                                            Call VolverCriminal(UserIndex)
+                                            Call RefreshCharStatus(UserIndex)
+                                        End If
+                                    Else
+                                        Call VolverCriminal(UserIndex)
+                                        Call RefreshCharStatus(UserIndex)
+                                    End If
+                                End If
+                            End If
+                        End If
+                    Case 2 'Caos
+                        If Status(tempChr) <> 0 And Status(tempChr) <> 2 Then
+                            Call WriteConsoleMsg(UserIndex, "No podés ayudar ciudadanos.", e_FontTypeNames.FONTTYPE_INFO)
+                            b = False
+                            Exit Sub
+                        End If
+                End Select
             End If
     
 290         Daño = RandomNumber(Hechizos(h).MinFuerza, Hechizos(h).MaxFuerza)
@@ -3122,7 +3238,7 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 384             Call WriteLocaleMsg(UserIndex, "33", e_FontTypeNames.FONTTYPE_FIGHT, DañoStr)
             End If
     
-386         Call SendData(SendTarget.ToPCArea, tempChr, PrepareMessageTextCharDrop(DañoStr, UserList(tempChr).Char.charindex, vbGreen))
+386         Call SendData(SendTarget.ToPCAliveArea, tempChr, PrepareMessageTextCharDrop(DañoStr, UserList(tempChr).Char.charindex, vbGreen))
 388         Call WriteUpdateHP(tempChr)
     
 390         b = True
@@ -3216,7 +3332,7 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
     
 460         Call SubirSkill(tempChr, Resistencia)
     
-462         Call SendData(SendTarget.ToPCArea, tempChr, PrepareMessageTextCharDrop(Daño, UserList(tempChr).Char.charindex, vbRed))
+462         Call SendData(SendTarget.ToPCAliveArea, tempChr, PrepareMessageTextCharDrop(Daño, UserList(tempChr).Char.charindex, vbRed))
 
             'Muere
 464         If UserList(tempChr).Stats.MinHp < 1 Then
@@ -3548,7 +3664,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean)
 
             End If
     
-262         Call SendData(SendTarget.ToPCArea, tempChr, PrepareMessageTextOverChar(Daño, UserList(tempChr).Char.charindex, vbGreen))
+262         Call SendData(SendTarget.ToPCAliveArea, tempChr, PrepareMessageTextOverChar(Daño, UserList(tempChr).Char.charindex, vbGreen))
     
 264         b = True
 266     ElseIf Hechizos(h).SubeHP = 2 Then ' Daño
@@ -3622,7 +3738,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean)
 320         Call WriteConsoleMsg(UserIndex, "Le has quitado " & Daño & " puntos de vida a " & UserList(tempChr).name, e_FontTypeNames.FONTTYPE_FIGHT)
 322         Call WriteConsoleMsg(tempChr, UserList(UserIndex).name & " te ha quitado " & Daño & " puntos de vida.", e_FontTypeNames.FONTTYPE_FIGHT)
 324         Call SubirSkill(tempChr, Resistencia)
-326         Call SendData(SendTarget.ToPCArea, tempChr, PrepareMessageTextOverChar(Daño, UserList(tempChr).Char.charindex, vbRed))
+326         Call SendData(SendTarget.ToPCAliveArea, tempChr, PrepareMessageTextOverChar(Daño, UserList(tempChr).Char.charindex, vbRed))
 
             'Muere
 328         If UserList(tempChr).Stats.MinHp < 1 Then
@@ -3662,29 +3778,48 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean)
 
             End If
     
-            'Para poder tirar invi a un pk en el ring
-360         If (TriggerZonaPelea(UserIndex, tU) <> TRIGGER6_PERMITE) Then
-362             If Status(tU) = 0 And Status(UserIndex) = 1 Or Status(tU) = 2 And Status(UserIndex) = 1 Then
-364                 If esArmada(UserIndex) Then
-366                     Call WriteConsoleMsg(UserIndex, "Los miembros de la armada real no pueden ayudar a los criminales", e_FontTypeNames.FONTTYPE_INFO)
-368                     b = False
-                        Exit Sub
-
-                    End If
-
-370                 If UserList(UserIndex).flags.Seguro Then
-                        'Call WriteConsoleMsg(UserIndex, "Para ayudar criminales debes sacarte el seguro ya que te volverás criminal como ellos", e_FontTypeNames.FONTTYPE_INFO)
-372                     Call WriteLocaleMsg(UserIndex, "378", e_FontTypeNames.FONTTYPE_INFO)
-374                     b = False
-                        Exit Sub
-                    Else
-376                     Call VolverCriminal(UserIndex)
-
-                    End If
-
+           If (TriggerZonaPelea(UserIndex, tU) <> TRIGGER6_PERMITE) Then
+                    Select Case Status(UserIndex)
+                        Case 1, 3 'Ciudadano o armada
+                            If Status(tU) <> 3 And Status(tU) <> 1 Then
+                                If Status(UserIndex) = e_Facciones.armada Then
+                                    Call WriteConsoleMsg(UserIndex, "No puedes ayudar criminales.", e_FontTypeNames.FONTTYPE_INFO)
+                                    b = False
+                                    Exit Sub
+                                ElseIf Status(UserIndex) = e_Facciones.Ciudadano Then
+                                    If UserList(UserIndex).flags.Seguro = True Then
+                                        Call WriteConsoleMsg(UserIndex, "Para ayudar criminales deberás desactivar el seguro.", e_FontTypeNames.FONTTYPE_INFO)
+                                        b = False
+                                        Exit Sub
+                                    Else
+                                        'Si tiene clan
+                                        If UserList(UserIndex).GuildIndex > 0 Then
+                                            'Si el clan es de alineación ciudadana.
+                                            If GuildAlignmentIndex(UserList(UserIndex).GuildIndex) = e_ALINEACION_GUILD.ALINEACION_CIUDADANA Then
+                                                'No lo dejo resucitarlo
+                                                Call WriteConsoleMsg(UserIndex, "No puedes ayudar a un usuario criminal pertenenciendo a un clan ciudadano.", e_FontTypeNames.FONTTYPE_INFO)
+                                                b = False
+                                                Exit Sub
+                                            'Si es de alineación neutral, lo dejo resucitar y lo vuelvo criminal
+                                            ElseIf GuildAlignmentIndex(UserList(UserIndex).GuildIndex) = e_ALINEACION_GUILD.ALINEACION_NEUTRAL Then
+                                                Call VolverCriminal(UserIndex)
+                                                Call RefreshCharStatus(UserIndex)
+                                            End If
+                                        Else
+                                            Call VolverCriminal(UserIndex)
+                                            Call RefreshCharStatus(UserIndex)
+                                        End If
+                                    End If
+                                End If
+                            End If
+                        Case 2 'Caos
+                            If Status(tU) <> 0 And Status(tU) <> 2 Then
+                                Call WriteConsoleMsg(UserIndex, "No podés ayudar ciudadanos.", e_FontTypeNames.FONTTYPE_INFO)
+                                b = False
+                                Exit Sub
+                            End If
+                    End Select
                 End If
-
-            End If
     
             'Si sos user, no uses este hechizo con GMS.
 378         If UserList(UserIndex).flags.Privilegios And e_PlayerType.user Then
@@ -3700,7 +3835,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean)
             'Reseteamos el contador de Invisibilidad
 384          If UserList(tU).Counters.Invisibilidad <= 0 Then UserList(tU).Counters.Invisibilidad = Hechizos(h).Duration
 386         Call WriteContadores(tU)
-388         Call SendData(SendTarget.ToPCArea, tU, PrepareMessageSetInvisible(UserList(tU).Char.CharIndex, True))
+388         Call SendData(SendTarget.ToPCAliveArea, tU, PrepareMessageSetInvisible(UserList(tU).Char.charindex, True))
 
 390         enviarInfoHechizo = True
 392         b = True
@@ -4303,7 +4438,7 @@ Private Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, X As Byte, Y 
                     'UserList(UserIndex).Stats.GLD = UserList(UserIndex).Stats.GLD + NpcList(NpcIndex).GiveGLD
 150                 Call MuereNpc(NpcIndex, UserIndex)
                 Else
-152                 Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageNpcUpdateHP(NpcIndex))
+152                 Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareMessageNpcUpdateHP(NpcIndex))
                 End If
 
             End If
@@ -4604,7 +4739,7 @@ Private Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, X As Byte, Y 
 406         UserList(NpcIndex).flags.invisible = 1
 408         UserList(NpcIndex).Counters.Invisibilidad = Hechizos(h2).Duration
 410         Call WriteContadores(NpcIndex)
-412         Call SendData(SendTarget.ToPCArea, NpcIndex, PrepareMessageSetInvisible(UserList(NpcIndex).Char.CharIndex, True))
+412         Call SendData(SendTarget.ToPCAliveArea, NpcIndex, PrepareMessageSetInvisible(UserList(NpcIndex).Char.charindex, True))
 
         End If
                               
