@@ -514,8 +514,8 @@ Public Sub SaveUserDatabase(ByVal userindex As Integer)
 232         Params(PostInc(i)) = .flags.Pareja
 234         Params(PostInc(i)) = .Counters.Pena
 236         Params(PostInc(i)) = .flags.VecesQueMoriste
-238         Params(PostInc(i)) = (.flags.Privilegios And e_PlayerType.RoyalCouncil)
-240         Params(PostInc(i)) = (.flags.Privilegios And e_PlayerType.ChaosCouncil)
+238         Params(PostInc(i)) = (.Faccion.Status = e_Facciones.consejo)
+240         Params(PostInc(i)) = (.Faccion.Status = e_Facciones.concilio)
 242         Params(PostInc(i)) = .Faccion.ArmadaReal
 244         Params(PostInc(i)) = .Faccion.FuerzasCaos
 246         Params(PostInc(i)) = .Faccion.ciudadanosMatados
@@ -855,14 +855,13 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
 256         .ChatCombate = RS!chat_combate
 
 258         If RS!pertenece_consejo_real Then
-260             .flags.Privilegios = .flags.Privilegios Or e_PlayerType.RoyalCouncil
-
+                .Faccion.Status = e_Facciones.consejo
             End If
 
 262         If RS!pertenece_consejo_caos Then
-264             .flags.Privilegios = .flags.Privilegios Or e_PlayerType.ChaosCouncil
-
+                .Faccion.Status = e_Facciones.concilio
             End If
+260         .flags.Privilegios = .flags.Privilegios ' Or e_PlayerType.RoyalCouncil
 
 266         .Faccion.ArmadaReal = RS!pertenece_real
 268         .Faccion.FuerzasCaos = RS!pertenece_caos

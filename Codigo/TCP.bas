@@ -1638,8 +1638,8 @@ Sub ClearAndSaveUser(ByVal UserIndex As Integer)
 174         .Char.FX = 0
 176         .Char.loops = 0
 178         .Char.ParticulaFx = 0
-180         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, 0, 0, True))
-182         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(.Char.CharIndex, 0, 0))
+180         Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessageParticleFX(.Char.charindex, 0, 0, True))
+182         Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessageCreateFX(.Char.charindex, 0, 0))
 
 186         errordesc = "ERROR AL ENVIAR INVI"
         

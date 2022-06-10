@@ -1480,7 +1480,12 @@ Public Sub RecStamina(ByVal UserIndex As Integer, ByRef EnviarStats As Boolean, 
 162                 If .flags.RegeneracionSta = 1 Then Suerte = 45
                     
                     Dim NuevaStamina As Long
-164                     NuevaStamina = .Stats.MinSta + RandomNumber(1, CInt(Porcentaje(.Stats.MaxSta, Suerte)))
+                        If .clase = e_Class.Trabajador Then
+                            NuevaStamina = .Stats.MinSta + RandomNumber(1, CInt(Porcentaje(.Stats.MaxSta, Suerte)))
+                        Else
+                            NuevaStamina = .Stats.MinSta + RandomNumber(1, CInt(Porcentaje(.Stats.MaxSta, Suerte)) / 1.6)
+                        End If
+
                     
                     ' Jopi: Prevenimos overflow al acotar la stamina que se puede recuperar en cualquier caso.
                     ' Cuando te editabas la energia con el GM causaba este error.
