@@ -1411,10 +1411,12 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
                         End If
                 
 370                     If LenB(Stat) > 0 Then
-372                         If UserList(TempCharIndex).flags.Muerto Then
-374                             Call WriteConsoleMsg(UserIndex, Stat, e_FontTypeNames.FONTTYPE_New_Gris)
-                            Else
-376                             Call WriteConsoleMsg(UserIndex, Stat, ft)
+                            If UserList(UserIndex).flags.Muerto = 0 Or (UserList(UserIndex).GuildIndex > 0 And UserList(UserIndex).GuildIndex = UserList(TempCharIndex).GuildIndex) Or UserIndex = TempCharIndex Then
+372                             If UserList(TempCharIndex).flags.Muerto Then
+374                                 Call WriteConsoleMsg(UserIndex, Stat, e_FontTypeNames.FONTTYPE_New_Gris)
+                                Else
+376                                 Call WriteConsoleMsg(UserIndex, Stat, ft)
+                                End If
                             End If
                         
                         
@@ -1505,32 +1507,36 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
 462                     NpcList(TempCharIndex).Contadores.IntervaloMovimiento = GetTickCount + 5000 + Len(NpcList(TempCharIndex).Desc) * 50 - NpcList(TempCharIndex).IntervaloMovimiento ' 5 segundos + 1 segundo cada 20 caracteres
                     End If
                     
-                    If NpcList(TempCharIndex).NPCtype = e_NPCType.Quest Then
-                        If Distance(UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y, NpcList(TempCharIndex).Pos.X, NpcList(TempCharIndex).Pos.Y) < 3 Then
-                            If NpcList(TempCharIndex).Movement = Caminata Then
-                                NpcList(TempCharIndex).Contadores.IntervaloMovimiento = GetTickCount + 15000 - NpcList(TempCharIndex).IntervaloMovimiento ' 15 segundos
+                    If UserList(UserIndex).flags.Muerto = 0 Or (UserList(UserIndex).flags.Muerto = 1 And NpcList(TempCharIndex).NPCtype = e_NPCType.Revividor) Then
+                        If NpcList(TempCharIndex).NPCtype = e_NPCType.Quest Then
+                            If Distance(UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.y, NpcList(TempCharIndex).Pos.X, NpcList(TempCharIndex).Pos.y) < 3 Then
+                                If NpcList(TempCharIndex).Movement = Caminata Then
+                                    NpcList(TempCharIndex).Contadores.IntervaloMovimiento = GetTickCount + 15000 - NpcList(TempCharIndex).IntervaloMovimiento ' 15 segundos
+                                End If
+                                
+                                If NpcList(TempCharIndex).SoundOpen <> 0 Then
+                                    Call WritePlayWave(UserIndex, NpcList(TempCharIndex).SoundOpen, NpcList(TempCharIndex).Pos.X, NpcList(TempCharIndex).Pos.y, 1)
+                                End If
+                                Call WriteChatOverHead(UserIndex, "NPCDESC*" & NpcList(TempCharIndex).Numero, NpcList(TempCharIndex).Char.charindex, vbWhite)
                             End If
                             
-                            If NpcList(TempCharIndex).SoundOpen <> 0 Then
-                                Call WritePlayWave(userindex, NpcList(TempCharIndex).SoundOpen, NpcList(TempCharIndex).Pos.X, NpcList(TempCharIndex).Pos.Y, 1)
-                            End If
-                            Call WriteChatOverHead(UserIndex, "NPCDESC*" & NpcList(TempCharIndex).Numero, NpcList(TempCharIndex).Char.CharIndex, vbWhite)
+                            
+                        Else
+                            'Optimizacion de protocolo por Ladder
+464                         Call WriteChatOverHead(UserIndex, "NPCDESC*" & NpcList(TempCharIndex).Numero, NpcList(TempCharIndex).Char.charindex, vbWhite)
                         End If
-                        
-                        
-                    Else
-                        'Optimizacion de protocolo por Ladder
-464                     Call WriteChatOverHead(UserIndex, "NPCDESC*" & NpcList(TempCharIndex).Numero, NpcList(TempCharIndex).Char.CharIndex, vbWhite)
                     End If
                     
 466             ElseIf TempCharIndex = CentinelaNPCIndex Then
                     'Enviamos nuevamente el texto del centinela según quien pregunta
 468                 Call modCentinela.CentinelaSendClave(UserIndex)
                 
-470             ElseIf NpcList(TempCharIndex).MaestroUser > 0 Then
-472                 Call WriteConsoleMsg(UserIndex, "NPCNAME*" & NpcList(TempCharIndex).Numero & "* es mascota de " & UserList(NpcList(TempCharIndex).MaestroUser).Name & " " & estatus, e_FontTypeNames.FONTTYPE_INFO)
-                Else
-474                 Call WriteConsoleMsg(UserIndex, "NPCNAME*" & NpcList(TempCharIndex).Numero & "*" & " " & estatus, e_FontTypeNames.FONTTYPE_INFO)
+                If UserList(UserIndex).flags.Muerto = 0 Then
+470                 ElseIf NpcList(TempCharIndex).MaestroUser > 0 Then
+472                     Call WriteConsoleMsg(UserIndex, "NPCNAME*" & NpcList(TempCharIndex).Numero & "* es mascota de " & UserList(NpcList(TempCharIndex).MaestroUser).name & " " & estatus, e_FontTypeNames.FONTTYPE_INFO)
+                    Else
+474                     Call WriteConsoleMsg(UserIndex, "NPCNAME*" & NpcList(TempCharIndex).Numero & "*" & " " & estatus, e_FontTypeNames.FONTTYPE_INFO)
+                    End If
                 End If
                 
 476             FoundSomething = 1
