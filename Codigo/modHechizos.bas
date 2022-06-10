@@ -1516,6 +1516,11 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 126             Call WriteConsoleMsg(UserIndex, "No podés lanzar invisibilidad mientras usas una montura.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
+                        
+125         If UserList(tU).flags.Montado Then
+127             Call WriteConsoleMsg(UserIndex, "No podés lanzar invisibilidad a alguien montado.", e_FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
     
 128         If UserList(tU).Counters.Saliendo Then
 130             If UserIndex <> tU Then
