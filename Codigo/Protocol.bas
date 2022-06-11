@@ -663,7 +663,10 @@ On Error Resume Next
         UserList(UserIndex).Counters.PacketCount = 0
     End If
     
-    If PacketId <> 312 Then UserList(UserIndex).Counters.PacketCount = UserList(UserIndex).Counters.PacketCount + 1
+    If PacketId <> ClientPacketID.SendPosMovimiento Then
+        Debug.Print PacketId
+        UserList(UserIndex).Counters.PacketCount = UserList(UserIndex).Counters.PacketCount + 1
+    End If
     
     If UserList(UserIndex).Counters.PacketCount > 100 Then
         'Lo kickeo
@@ -10171,6 +10174,8 @@ Private Sub HandleSeguirMouse(ByVal UserIndex As Integer)
                         UserList(UserIndex).Invent = UserList(tUser).Invent
                         UserList(UserIndex).Stats = UserList(tUser).Stats
                         UserList(UserIndex).flags.SigueUsuario = tUser
+                        'Actualizo flag en cliente para que empiece a enviar paquetes
+                        Call WriteNotificarClienteSeguido(tUser, 1)
                         UserList(tUser).flags.GMMeSigue = UserIndex
                         
                         
@@ -10200,6 +10205,7 @@ Private Sub HandleSeguirMouse(ByVal UserIndex As Integer)
                         'UserList(UserIndex).Char.charindex = UserList(UserIndex).Char.charindex_bk
                         Call WriteConsoleMsg(UserIndex, "Dejas de seguir a " & UserList(tUser).name & ".", e_FontTypeNames.FONTTYPE_INFO)
                         Call WriteCancelarSeguimiento(UserIndex)
+                        Call WriteNotificarClienteSeguido(tUser, 0)
                         UserList(tUser).flags.GMMeSigue = 0
                         Call WriteUserCharIndexInServer(UserIndex)
                         Call WarpUserChar(UserIndex, UserList(UserIndex).Pos.map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y, False)
@@ -10208,10 +10214,8 @@ Private Sub HandleSeguirMouse(ByVal UserIndex As Integer)
                     
                     Call UpdateUserInv(True, UserIndex, 1)
                     Call UpdateUserHechizos(True, UserIndex, 0)
-900                 Call WriteUpdateUserStats(tUser)
+900                 Call WriteUpdateUserStats(UserIndex)
                     
-                    'Actualizo flag en cliente para que empiece a enviar paquetes
-                    Call WriteNotificarClienteSeguido(tUser, IIf(UserList(tUser).flags.GMMeSigue > 0, 1, 0))
                         
                 End If
             Else
