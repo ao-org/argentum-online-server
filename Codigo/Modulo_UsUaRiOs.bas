@@ -621,6 +621,7 @@ Public Function ConnectUser_Complete(ByVal UserIndex As Integer, _
             'Actualiza el Num de usuarios
 930         NumUsers = NumUsers + 1
 935         .flags.UserLogged = True
+            Call Execute("Update user set is_logged = true where id = ?", UserList(UserIndex).ID)
 940         .Counters.LastSave = GetTickCount
         
 945         MapInfo(.Pos.Map).NumUsers = MapInfo(.Pos.Map).NumUsers + 1

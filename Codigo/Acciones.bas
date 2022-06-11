@@ -728,6 +728,14 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
                     
                     Call WriteShopInit(UserIndex)
                 
+                ElseIf NpcList(TempCharIndex).NPCtype = e_NPCType.AO20ShopPjs Then
+323                 If UserList(UserIndex).flags.Muerto = 1 Then
+325                     Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFOIAO)
+                        Exit Sub
+                    End If
+                    
+                    Call WriteShopPjsInit(UserIndex)
+                
 320             ElseIf NpcList(TempCharIndex).Craftea > 0 Then
                     If UserList(UserIndex).flags.Muerto = 1 Then
                         Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFOIAO)
