@@ -18799,11 +18799,19 @@ Private Sub HandlePublicarPersonajeMAO(ByVal UserIndex As Integer)
     Valor = Reader.ReadInt32
     
     If Valor <= 0 Then
-        Call WriteConsoleMsg(UserIndex, "El valor de venta del personaje debe ser mayor que $0.", e_FontTypeNames.FONTTYPE_INFO)
+        Call WriteConsoleMsg(UserIndex, "El valor de venta del personaje debe ser mayor que $0.", e_FontTypeNames.FONTTYPE_INFOBOLD)
         Exit Sub
     End If
-    
     With UserList(UserIndex)
+        
+        If .Stats.GLD < 100000 Then
+            Call WriteConsoleMsg(UserIndex, "El costo para vender tu personajes es de 100.000 monedas de oro, no tienes esa cantidad.", e_FontTypeNames.FONTTYPE_INFOBOLD)
+            Exit Sub
+        Else
+            .Stats.GLD = .Stats.GLD - 100000
+            Call WriteUpdateGold(UserIndex)
+        End If
+    
         Call Execute("update user set price_in_mao = ?, is_locked_in_mao = true where id = ?;", Valor, .ID)
         Call CloseSocket(UserIndex)
     End With
