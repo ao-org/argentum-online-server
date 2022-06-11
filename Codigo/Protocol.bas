@@ -204,6 +204,7 @@ Public Enum ServerPacketID
     SendFollowingCharIndex
     ForceCharMoveSiguiendo
     PosUpdateCharindex
+    ShopPjsInit
     [PacketCount]
 End Enum
 
@@ -523,6 +524,7 @@ Public Enum ClientPacketID
     SeguirMouse
     SendPosMovimiento
     NotifyInventarioHechizos
+    PublicarPersonajeMAO
     [PacketCount]
 End Enum
 
@@ -1323,6 +1325,8 @@ On Error Resume Next
             Call HandleRepeatMacro(UserIndex)
         Case ClientPacketID.BuyShopItem
             Call HandleBuyShopItem(userindex)
+        Case ClientPacketID.PublicarPersonajeMAO
+            Call HandlePublicarPersonajeMAO(UserIndex)
         Case Else
             Err.raise -1, "Invalid Message"
     End Select
@@ -18781,6 +18785,29 @@ Private Sub HandleBuyShopItem(ByVal userindex As Integer)
 
 HandleBuyShopItem_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleBuyShopItem", Erl)
+End Sub
+
+Private Sub HandlePublicarPersonajeMAO(ByVal UserIndex As Integer)
+
+    On Error GoTo HandlePublicarPersonajeMAO_Err:
+    Dim Valor As Long
+        
+    Valor = Reader.ReadInt32
+    
+    If Valor <= 0 Then
+        Call WriteConsoleMsg(UserIndex, "El valor de venta del personaje debe ser mayor que $0.", e_FontTypeNames.FONTTYPE_INFO)
+        Exit Sub
+    End If
+    
+    With UserList(UserIndex)
+        Call Execute("update user set price_in_mao = ?, is_locked_in_mao = true where id = ?;", Valor, .ID)
+        Call CloseSocket(UserIndex)
+    End With
+        
+    Exit Sub
+
+HandlePublicarPersonajeMAO_Err:
+102     Call TraceError(Err.Number, Err.Description, "Protocol.HandlePublicarPersonajeMAO", Erl)
 End Sub
 Private Sub HandleDeleteItem(ByVal UserIndex As Integer)
     On Error GoTo HandleDeleteItem_Err:

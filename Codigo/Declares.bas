@@ -532,6 +532,7 @@ Public Enum e_NPCType
     DummyTarget = 19
     EntregaPesca = 20
     AO20Shop = 21
+    AO20ShopPjs = 22
     
 End Enum
 

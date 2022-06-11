@@ -770,6 +770,12 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
                 Exit Sub
             End If
             
+            If (RS!is_locked_in_mao) Then
+                Call WriteShowMessageBox(UserIndex, "El personaje que estás intentando loguear se encuentra en venta, para desbloquearlo deberás hacerlo desde la página web.")
+            
+                Call CloseSocket(UserIndex)
+                Exit Sub
+            End If
             
             Dim user_credits As Long
             
@@ -1968,6 +1974,6 @@ Private Function PostInc(Value As Integer) As Integer
 102     Value = Value + 1
 End Function
 
-Public Sub ResetLastLogout()
-    Call Execute("Update user set last_logout = 0")
+Public Sub ResetLastLogoutAndIsLogged()
+    Call Execute("Update user set last_logout = 0, is_logged = 0")
 End Sub

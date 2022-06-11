@@ -690,7 +690,7 @@ Sub Main()
 
 254     EstadoGlobal = False
     
-        Call ResetLastLogout
+        Call ResetLastLogoutAndIsLogged
 
         'Comentado porque hay worldsave en ese mapa!
     

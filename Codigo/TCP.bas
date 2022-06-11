@@ -876,15 +876,9 @@ Sub ConnectUser(ByVal UserIndex As Integer, _
         On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
-
 105         If Not ConnectUser_Check(userindex, name) Then Exit Sub
-        
 110         Call ConnectUser_Prepare(UserIndex, name, UserCuenta)
-        
-            ' Cargamos el personaje
-            
-115        ' If Not NewUser Then Call LoadUser(UserIndex)
-Call LoadUser(UserIndex)
+            Call LoadUser(UserIndex)
 120         Call ConnectUser_Complete(UserIndex, name, UserCuenta)
         End With
 
@@ -1513,7 +1507,6 @@ Sub ResetUserSlot(ByVal UserIndex As Integer)
 148     Call ResetAccionesPendientes(UserIndex)
 152     Call LimpiarInventario(UserIndex)
 154     Call ResetUserSpells(UserIndex)
-        'Call ResetUserPets(UserIndex)
 156     Call ResetUserBanco(UserIndex)
 158     Call ResetUserSkills(UserIndex)
 160     Call ResetUserKeys(UserIndex)
@@ -1724,6 +1717,7 @@ Sub CloseUser(ByVal UserIndex As Integer)
         
             'Update Map Users
 130         MapInfo(map).NumUsers = MapInfo(map).NumUsers - 1
+            Call Execute("update user set is_logged = 0 where id = ?;", UserList(UserIndex).ID)
         
 132         If MapInfo(map).NumUsers < 0 Then MapInfo(map).NumUsers = 0
     
@@ -1739,8 +1733,9 @@ Sub CloseUser(ByVal UserIndex As Integer)
 140         .flags.UserLogged = False
 
             .Counters.Saliendo = False
-        
+                
 142         Call ResetUserSlot(UserIndex)
+    
 
         End With
     

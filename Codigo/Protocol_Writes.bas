@@ -5385,6 +5385,19 @@ WriteShopInit_Err:
      Call Writer.Clear
     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteShopInit", Erl)
 End Sub
+
+
+Public Sub WriteShopPjsInit(ByVal UserIndex As Integer)
+    On Error GoTo WriteShopPjsInit_Err
+   
+    Call Writer.WriteInt16(ServerPacketID.ShopPjsInit)
+    
+182 Call modSendData.SendData(ToIndex, UserIndex)
+    
+WriteShopPjsInit_Err:
+     Call Writer.Clear
+    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteShopPjsInit", Erl)
+End Sub
 Public Sub writeUpdateShopClienteCredits(ByVal userindex As Integer)
     On Error GoTo writeUpdateShopClienteCredits_Err
     
