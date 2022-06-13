@@ -2471,30 +2471,28 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
     
                                 '.flags.Pareja
 778                             tUser = NameIndex(.flags.Pareja)
-780                             Call QuitarUserInvItem(UserIndex, Slot, 1)
+
                             
 782                             If tUser <= 0 Then
-786                                 .flags.Casado = 0
-788                                 .flags.Pareja = ""
-790                                 Call WriteConsoleMsg(UserIndex, "Te has divorciado.", e_FontTypeNames.FONTTYPE_INFOIAO)
-792                                 .MENSAJEINFORMACION = .Name & " se ha divorciado de ti."
+790                                 Call WriteConsoleMsg(UserIndex, "Tu pareja deberás estar conectada para divorciarse.", e_FontTypeNames.FONTTYPE_INFOIAO)
                                 Else
+780                                 Call QuitarUserInvItem(UserIndex, Slot, 1)
 794                                 UserList(tUser).flags.Casado = 0
 796                                 UserList(tUser).flags.Pareja = ""
 798                                 .flags.Casado = 0
 800                                 .flags.Pareja = ""
 802                                 Call WriteConsoleMsg(UserIndex, "Te has divorciado.", e_FontTypeNames.FONTTYPE_INFOIAO)
 804                                 Call WriteConsoleMsg(tUser, .Name & " se ha divorciado de ti.", e_FontTypeNames.FONTTYPE_INFOIAO)
-                        
-                                End If
-    
-806                             If obj.Snd1 <> 0 Then
-808                                 Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .Pos.X, .Pos.y))
+
+                                    If obj.Snd1 <> 0 Then
+808                                     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .Pos.X, .Pos.y))
+                                    Else
+810                                     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, .Pos.X, .Pos.y))
+                                    End If
                                 
-                                Else
-810                                 Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, .Pos.X, .Pos.y))
-    
                                 End If
+    
+806
                         
                             Else
 812                             Call WriteConsoleMsg(UserIndex, "No estas casado.", e_FontTypeNames.FONTTYPE_INFOIAO)
