@@ -349,6 +349,9 @@ Private Sub NotifyUser(ByVal UI1 As Integer, ByVal UI2 As Integer)
                 If EsGM(UI2) Then
                     If UserList(UI2).flags.AdminInvisible = 0 Then
                         Call MakeUserChar(False, UI1, UI2, UserList(UI2).Pos.map, UserList(UI2).Pos.X, UserList(UI2).Pos.y, 0)
+                         If UserList(UI2).flags.invisible Or UserList(UI2).flags.Oculto Then
+                            Call WriteSetInvisible(UI1, UserList(UI2).Char.charindex, True)
+                         End If
                     Else
                         'Si no está visible comparo los privilegios.
                         If CompararPrivilegios(.flags.Privilegios, UserList(UI2).flags.Privilegios) >= 0 Then
@@ -360,10 +363,20 @@ Private Sub NotifyUser(ByVal UI1 As Integer, ByVal UI2 As Integer)
                     End If
                 Else
                     If .flags.Muerto = 0 Then
-                        If UserList(UI2).flags.invisible = 0 Then
+                        Call MakeUserChar(False, UI1, UI2, UserList(UI2).Pos.map, UserList(UI2).Pos.X, UserList(UI2).Pos.y, 0)
+                        If UserList(UI2).flags.invisible Or UserList(UI2).flags.Oculto Then
+                            Call WriteSetInvisible(UI1, UserList(UI2).Char.charindex, True)
+                        End If
+                    Else
+                        If UserList(UI2).flags.Muerto = 1 Then
                             Call MakeUserChar(False, UI1, UI2, UserList(UI2).Pos.map, UserList(UI2).Pos.X, UserList(UI2).Pos.y, 0)
-                            If UserList(UI2).flags.invisible Or UserList(UI2).flags.Oculto Then
-                                Call WriteSetInvisible(UI1, UserList(UI2).Char.charindex, True)
+                            If .GuildIndex > 0 Then
+                                If .GuildIndex = UserList(UI2).GuildIndex Then
+                                    Call MakeUserChar(False, UI1, UI2, UserList(UI2).Pos.map, UserList(UI2).Pos.X, UserList(UI2).Pos.y, 0)
+                                    If UserList(UI2).flags.invisible Or UserList(UI2).flags.Oculto Then
+                                        Call WriteSetInvisible(UI1, UserList(UI2).Char.charindex, True)
+                                    End If
+                                End If
                             End If
                         Else
                             If .GuildIndex > 0 Then
@@ -372,25 +385,6 @@ Private Sub NotifyUser(ByVal UI1 As Integer, ByVal UI2 As Integer)
                                     If UserList(UI2).flags.invisible Or UserList(UI2).flags.Oculto Then
                                         Call WriteSetInvisible(UI1, UserList(UI2).Char.charindex, True)
                                     End If
-                                Else
-                                    Call MakeUserChar(False, UI1, UI2, UserList(UI2).Pos.map, UserList(UI2).Pos.X, UserList(UI2).Pos.y, 0)
-                                    If UserList(UI2).flags.invisible Or UserList(UI2).flags.Oculto Then
-                                        Call WriteSetInvisible(UI1, UserList(UI2).Char.charindex, True)
-                                    End If
-                                End If
-                            Else
-                                Call MakeUserChar(False, UI1, UI2, UserList(UI2).Pos.map, UserList(UI2).Pos.X, UserList(UI2).Pos.y, 0)
-                                If UserList(UI2).flags.invisible Or UserList(UI2).flags.Oculto Then
-                                    Call WriteSetInvisible(UI1, UserList(UI2).Char.charindex, True)
-                                End If
-                            End If
-                        End If
-                    Else
-                        If .GuildIndex > 0 Then
-                            If .GuildIndex = UserList(UI2).GuildIndex Then
-                                Call MakeUserChar(False, UI1, UI2, UserList(UI2).Pos.map, UserList(UI2).Pos.X, UserList(UI2).Pos.y, 0)
-                                If UserList(UI2).flags.invisible Or UserList(UI2).flags.Oculto Then
-                                    Call WriteSetInvisible(UI1, UserList(UI2).Char.charindex, True)
                                 End If
                             End If
                         End If
@@ -398,9 +392,18 @@ Private Sub NotifyUser(ByVal UI1 As Integer, ByVal UI2 As Integer)
                 End If
             End If
         Else
-            Call MakeUserChar(False, UI1, UI2, UserList(UI2).Pos.map, UserList(UI2).Pos.X, UserList(UI2).Pos.y, 0)
-            If UserList(UI2).flags.invisible Or UserList(UI2).flags.Oculto Then
-                Call WriteSetInvisible(UI1, UserList(UI2).Char.charindex, True)
+            If UserList(UI2).flags.AdminInvisible = 0 Then
+                Call MakeUserChar(False, UI1, UI2, UserList(UI2).Pos.map, UserList(UI2).Pos.X, UserList(UI2).Pos.y, 0)
+                If UserList(UI2).flags.invisible Or UserList(UI2).flags.Oculto Then
+                    Call WriteSetInvisible(UI1, UserList(UI2).Char.charindex, True)
+                End If
+            Else
+                 If CompararPrivilegios(.flags.Privilegios, UserList(UI2).flags.Privilegios) >= 0 Then
+                    Call MakeUserChar(False, UI1, UI2, UserList(UI2).Pos.map, UserList(UI2).Pos.X, UserList(UI2).Pos.y, 0)
+                    If UserList(UI2).flags.invisible Or UserList(UI2).flags.Oculto Then
+                        Call WriteSetInvisible(UI1, UserList(UI2).Char.charindex, True)
+                    End If
+                End If
             End If
         End If
     End With

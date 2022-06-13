@@ -2724,9 +2724,9 @@ Private Sub InfoHechizo(ByVal UserIndex As Integer)
 106     If UserList(UserIndex).flags.TargetUser > 0 Then '¿El Hechizo fue tirado sobre un usuario?
 108         If Hechizos(h).FXgrh > 0 Then '¿Envio FX?
 110             If Hechizos(h).ParticleViaje > 0 Then
-112                 Call SendData(SendTarget.ToPCArea, UserList(UserIndex).flags.TargetUser, PrepareMessageParticleFXWithDestino(UserList(UserIndex).Char.CharIndex, UserList(UserList(UserIndex).flags.TargetUser).Char.CharIndex, Hechizos(h).ParticleViaje, Hechizos(h).FXgrh, Hechizos(h).TimeParticula, Hechizos(h).wav, 1))
+112                 Call SendData(SendTarget.ToPCAliveArea, UserList(UserIndex).flags.TargetUser, PrepareMessageParticleFXWithDestino(UserList(UserIndex).Char.charindex, UserList(UserList(UserIndex).flags.TargetUser).Char.charindex, Hechizos(h).ParticleViaje, Hechizos(h).FXgrh, Hechizos(h).TimeParticula, Hechizos(h).wav, 1))
                 Else
-114                 Call SendData(SendTarget.ToPCArea, UserList(UserIndex).flags.TargetUser, PrepareMessageCreateFX(UserList(UserList(UserIndex).flags.TargetUser).Char.CharIndex, Hechizos(h).FXgrh, Hechizos(h).loops))
+114                 Call SendData(SendTarget.ToPCAliveArea, UserList(UserIndex).flags.TargetUser, PrepareMessageCreateFX(UserList(UserList(UserIndex).flags.TargetUser).Char.charindex, Hechizos(h).FXgrh, Hechizos(h).loops))
 
                 End If
 
@@ -2734,16 +2734,16 @@ Private Sub InfoHechizo(ByVal UserIndex As Integer)
 
 116         If Hechizos(h).Particle > 0 Then '¿Envio Particula?
 118             If Hechizos(h).ParticleViaje > 0 Then
-120                 Call SendData(SendTarget.ToPCArea, UserList(UserIndex).flags.TargetUser, PrepareMessageParticleFXWithDestino(UserList(UserIndex).Char.CharIndex, UserList(UserList(UserIndex).flags.TargetUser).Char.CharIndex, Hechizos(h).ParticleViaje, Hechizos(h).Particle, Hechizos(h).TimeParticula, Hechizos(h).wav, 0))
+120                 Call SendData(SendTarget.ToPCAliveArea, UserList(UserIndex).flags.TargetUser, PrepareMessageParticleFXWithDestino(UserList(UserIndex).Char.charindex, UserList(UserList(UserIndex).flags.TargetUser).Char.charindex, Hechizos(h).ParticleViaje, Hechizos(h).Particle, Hechizos(h).TimeParticula, Hechizos(h).wav, 0))
                 Else
-122                 Call SendData(SendTarget.ToPCArea, UserList(UserIndex).flags.TargetUser, PrepareMessageParticleFX(UserList(UserList(UserIndex).flags.TargetUser).Char.CharIndex, Hechizos(h).Particle, Hechizos(h).TimeParticula, False))
+122                 Call SendData(SendTarget.ToPCAliveArea, UserList(UserIndex).flags.TargetUser, PrepareMessageParticleFX(UserList(UserList(UserIndex).flags.TargetUser).Char.charindex, Hechizos(h).Particle, Hechizos(h).TimeParticula, False))
 
                 End If
 
             End If
         
 124         If Hechizos(h).ParticleViaje = 0 Then
-126             Call SendData(SendTarget.ToPCArea, UserList(UserIndex).flags.TargetUser, PrepareMessagePlayWave(Hechizos(h).wav, UserList(UserList(UserIndex).flags.TargetUser).Pos.X, UserList(UserList(UserIndex).flags.TargetUser).Pos.Y)) 'Esta linea faltaba. Pablo (ToxicWaste)
+126             Call SendData(SendTarget.ToPCAliveArea, UserList(UserIndex).flags.TargetUser, PrepareMessagePlayWave(Hechizos(h).wav, UserList(UserList(UserIndex).flags.TargetUser).Pos.X, UserList(UserList(UserIndex).flags.TargetUser).Pos.y)) 'Esta linea faltaba. Pablo (ToxicWaste)
 
             End If
         
