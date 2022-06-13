@@ -102,7 +102,7 @@ Public Function ConnectUser_Check(ByVal UserIndex As Integer, _
                 If MaxUsersPorCuenta = 1 Then
                     Call WriteShowMessageBox(UserIndex, "Ya hay un usuario conectado con esta cuenta.")
                 Else
-                    Call WriteShowMessageBox(userindex, "La cuenta ya alcanzó el máximo de " & MaxUsersPorCuenta & " usuarios conectados.")
+                    Call WriteShowMessageBox(UserIndex, "La cuenta ya alcanzó el máximo de " & MaxUsersPorCuenta & " usuarios conectados.")
 
                 End If
 
@@ -2116,14 +2116,20 @@ Sub UserDie(ByVal UserIndex As Integer)
         
                 If UserList(tempIndex).AreasInfo.AreaReciveX And AreaX Then  'Esta en el area?
                     If UserList(tempIndex).AreasInfo.AreaReciveY And AreaY Then
-        
-                        If UserList(tempIndex).ConnIDValida And tempIndex <> UserIndex And CompararPrivilegios(UserList(UserIndex).flags.Privilegios, UserList(tempIndex).flags.Privilegios) < 0 Then
-                            If UserList(tempIndex).GuildIndex <> UserList(UserIndex).GuildIndex Or UserList(UserIndex).GuildIndex = 0 Then
-                                If UserList(tempIndex).flags.Muerto = 0 Then
+                        If UserList(tempIndex).ConnIDValida Then
+                            'Si no soy el que se murió
+                            If UserIndex <> tempIndex And (Not EsGM(UserIndex)) And MapInfo(UserList(UserIndex).Pos.map).Seguro = 0 And UserList(tempIndex).flags.AdminInvisible = 1 Then
+                                If UserList(UserIndex).GuildIndex = 0 Then
                                     Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageCharacterRemove(3, UserList(tempIndex).Char.charindex, True))
+                                Else
+                                    If UserList(UserIndex).GuildIndex <> UserList(tempIndex).GuildIndex Then
+                                        Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageCharacterRemove(3, UserList(tempIndex).Char.charindex, True))
+                                    End If
                                 End If
                             End If
                         End If
+                        
+                        
                     End If
                 End If
         
