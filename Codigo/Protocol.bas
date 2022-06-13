@@ -12805,9 +12805,6 @@ Private Sub HandleChaosLegionKick(ByVal UserIndex As Integer)
             Dim tUser    As Integer
         
 102         UserName = Reader.ReadString8()
-            'HarThaoS: comando roto / revisar
-            Exit Sub
-        
 104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios)) Then
 106             If (InStrB(UserName, "\") <> 0) Then
 108                 UserName = Replace(UserName, "\", "")
@@ -12824,22 +12821,18 @@ Private Sub HandleChaosLegionKick(ByVal UserIndex As Integer)
 116             Call LogGM(.Name, "ECHO DEL CAOS A: " & UserName)
     
 118             If tUser > 0 Then
-120                 UserList(tUser).Faccion.FuerzasCaos = 0
-122                 UserList(tUser).Faccion.Reenlistadas = 200
-124                 Call WriteConsoleMsg(UserIndex, UserName & " expulsado de las fuerzas del caos y prohibida la reenlistada", e_FontTypeNames.FONTTYPE_INFO)
-126                 Call WriteConsoleMsg(tUser, .Name & " te ha expulsado en forma definitiva de las fuerzas del caos.", e_FontTypeNames.FONTTYPE_FIGHT)
-                
-                Else
-
-128                 If PersonajeExiste(UserName) Then
-132                     Call EcharLegionDatabase(UserName)
- 
-140                     Call WriteConsoleMsg(UserIndex, UserName & " expulsado de las fuerzas del caos y prohibida la reenlistada", e_FontTypeNames.FONTTYPE_INFO)
+                    If UserList(tUser).GuildIndex > 0 Then
+                        If GuildAlignmentIndex(UserList(tUser).GuildIndex) = e_ALINEACION_GUILD.ALINEACION_ARMADA Then
+                            Call WriteConsoleMsg(UserIndex, "El usuario " & username & " deberá abandonar el clan para poder ser echado de las fuerzas del caos.", e_FontTypeNames.FONTTYPE_INFO)
+                            Exit Sub
+                        End If
                     Else
-142                     Call WriteConsoleMsg(UserIndex, "El personaje " & UserName & " no existe.", e_FontTypeNames.FONTTYPE_INFO)
-
+120                     UserList(tUser).Faccion.FuerzasCaos = 0
+122                     UserList(tUser).Faccion.Reenlistadas = 200
+                        UserList(tUser).Faccion.Status = e_Facciones.Criminal
+124                     Call WriteConsoleMsg(UserIndex, username & " expulsado de las fuerzas del caos y prohibida la reenlistada", e_FontTypeNames.FONTTYPE_INFO)
+126                     Call WriteConsoleMsg(tUser, .name & " te ha expulsado en forma definitiva de las fuerzas del caos.", e_FontTypeNames.FONTTYPE_FIGHT)
                     End If
-
                 End If
 
             End If
@@ -12875,7 +12868,7 @@ Private Sub HandleRoyalArmyKick(ByVal UserIndex As Integer)
         
 102         UserName = Reader.ReadString8()
             'HarThaoS: Comando roto / revisar.
-            Exit Sub
+            'Exit Sub
 104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios)) Then
         
 106             If (InStrB(UserName, "\") <> 0) Then
@@ -12891,24 +12884,17 @@ Private Sub HandleRoyalArmyKick(ByVal UserIndex As Integer)
 116             Call LogGM(.Name, "ECHO DE LA REAL A: " & UserName)
             
 118             If tUser > 0 Then
-            
-120                 UserList(tUser).Faccion.ArmadaReal = 0
-122                 UserList(tUser).Faccion.Reenlistadas = 200
-                
-124                 Call WriteConsoleMsg(UserIndex, UserName & " expulsado de las fuerzas reales y prohibida la reenlistada", e_FontTypeNames.FONTTYPE_INFO)
-126                 Call WriteConsoleMsg(tUser, .Name & " te ha expulsado en forma definitiva de las fuerzas reales.", e_FontTypeNames.FONTTYPE_FIGHT)
-                
-                Else
-
-128                 If PersonajeExiste(UserName) Then
-
-132                     Call EcharArmadaDatabase(UserName)
-
-140                     Call WriteConsoleMsg(UserIndex, UserName & " expulsado de las fuerzas reales y prohibida la reenlistada", e_FontTypeNames.FONTTYPE_INFO)
-                    
+                    If UserList(tUser).GuildIndex > 0 Then
+                        If GuildAlignmentIndex(UserList(tUser).GuildIndex) = e_ALINEACION_GUILD.ALINEACION_ARMADA Then
+                            Call WriteConsoleMsg(UserIndex, "El usuario " & username & " deberá abandonar el clan para poder ser echado de la armada.", e_FontTypeNames.FONTTYPE_INFO)
+                            Exit Sub
+                        End If
                     Else
-142                     Call WriteConsoleMsg(UserIndex, UserName & " inexistente.", e_FontTypeNames.FONTTYPE_INFO)
-
+120                     UserList(tUser).Faccion.ArmadaReal = 0
+122                     UserList(tUser).Faccion.Reenlistadas = 200
+                        UserList(tUser).Faccion.Status = e_Facciones.Ciudadano
+124                     Call WriteConsoleMsg(UserIndex, username & " expulsado de las fuerzas reales y prohibida la reenlistada", e_FontTypeNames.FONTTYPE_INFO)
+126                     Call WriteConsoleMsg(tUser, .name & " te ha expulsado en forma definitiva de las fuerzas reales.", e_FontTypeNames.FONTTYPE_FIGHT)
                     End If
 
                 End If
