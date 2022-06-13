@@ -185,6 +185,8 @@ On Error GoTo Execute_Err
         Call LogPerformance("Execute: " & Text & vbNewLine & " - Tiempo transcurrido: " & Round(GetElapsedTime(), 1) & " ms" & vbNewLine)
     End If
     
+    Exit Function
+    
 Execute_Err:
     
     If (Err.Number <> 0) Then
@@ -1583,7 +1585,7 @@ Public Sub EcharLegionDatabase(UserName As String)
         
         On Error GoTo EcharLegionDatabase_Err
         
-        Call Execute("UPDATE user SET pertenece_caos = FALSE, reenlistadas = 200 WHERE UPPER(name) = ?;", UCase$(UserName))
+        Call Execute("UPDATE user SET pertenece_caos = FALSE, reenlistadas = 200, status = ? WHERE UPPER(name) = ?;", e_Facciones.Criminal, UCase$(username))
         
         Exit Sub
 
@@ -1597,7 +1599,7 @@ Public Sub EcharArmadaDatabase(UserName As String)
         
         On Error GoTo EcharArmadaDatabase_Err
         
-        Call Execute("UPDATE user SET pertenece_real = FALSE, reenlistadas = 200 WHERE UPPER(name) = ?;", UCase$(UserName))
+        Call Execute("UPDATE user SET pertenece_real = FALSE, reenlistadas = 200, status = ? WHERE UPPER(name) = ?;", e_Facciones.Ciudadano, UCase$(username))
 
         Exit Sub
 
