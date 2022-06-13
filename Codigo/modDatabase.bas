@@ -1585,7 +1585,7 @@ Public Sub EcharLegionDatabase(UserName As String)
         
         On Error GoTo EcharLegionDatabase_Err
         
-        Call Execute("UPDATE user SET pertenece_caos = FALSE, reenlistadas = 200, status = ? WHERE UPPER(name) = ?;", e_Facciones.Criminal, UCase$(username))
+        Call Execute("UPDATE user SET pertenece_caos = FALSE, reenlistadas = 2, status = ? WHERE UPPER(name) = ?;", e_Facciones.Criminal, UCase$(username))
         
         Exit Sub
 
@@ -1599,7 +1599,7 @@ Public Sub EcharArmadaDatabase(UserName As String)
         
         On Error GoTo EcharArmadaDatabase_Err
         
-        Call Execute("UPDATE user SET pertenece_real = FALSE, reenlistadas = 200, status = ? WHERE UPPER(name) = ?;", e_Facciones.Ciudadano, UCase$(username))
+        Call Execute("UPDATE user SET pertenece_real = FALSE, reenlistadas = 2, status = ? WHERE UPPER(name) = ?;", e_Facciones.Ciudadano, UCase$(username))
 
         Exit Sub
 

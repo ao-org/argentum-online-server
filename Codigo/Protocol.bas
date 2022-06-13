@@ -12828,7 +12828,7 @@ Private Sub HandleChaosLegionKick(ByVal UserIndex As Integer)
                         End If
                     Else
 120                     UserList(tUser).Faccion.FuerzasCaos = 0
-122                     UserList(tUser).Faccion.Reenlistadas = 200
+122                     UserList(tUser).Faccion.Reenlistadas = 2
                         UserList(tUser).Faccion.Status = e_Facciones.Criminal
 124                     Call WriteConsoleMsg(UserIndex, username & " expulsado de las fuerzas del caos y prohibida la reenlistada", e_FontTypeNames.FONTTYPE_INFO)
 126                     Call WriteConsoleMsg(tUser, .name & " te ha expulsado en forma definitiva de las fuerzas del caos.", e_FontTypeNames.FONTTYPE_FIGHT)
@@ -12891,7 +12891,7 @@ Private Sub HandleRoyalArmyKick(ByVal UserIndex As Integer)
                         End If
                     Else
 120                     UserList(tUser).Faccion.ArmadaReal = 0
-122                     UserList(tUser).Faccion.Reenlistadas = 200
+122                     UserList(tUser).Faccion.Reenlistadas = 2
                         UserList(tUser).Faccion.Status = e_Facciones.Ciudadano
 124                     Call WriteConsoleMsg(UserIndex, username & " expulsado de las fuerzas reales y prohibida la reenlistada", e_FontTypeNames.FONTTYPE_INFO)
 126                     Call WriteConsoleMsg(tUser, .name & " te ha expulsado en forma definitiva de las fuerzas reales.", e_FontTypeNames.FONTTYPE_FIGHT)
@@ -18784,6 +18784,8 @@ Private Sub HandlePublicarPersonajeMAO(ByVal UserIndex As Integer)
         
     Valor = Reader.ReadInt32
     
+    'HarThaoS: Comentado hasta que salga MAO
+    Exit Sub
     If Valor <= 0 Then
         Call WriteConsoleMsg(UserIndex, "El valor de venta del personaje debe ser mayor que $0.", e_FontTypeNames.FONTTYPE_INFOBOLD)
         Exit Sub
