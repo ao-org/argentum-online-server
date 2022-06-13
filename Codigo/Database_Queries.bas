@@ -142,7 +142,7 @@ Private Sub ConstruirQuery_CargarPersonaje()
         QueryBuilder.Append "credits,"
         QueryBuilder.Append "is_reset,"
         QueryBuilder.Append "quest_belthor,"
-        QueryBuilder.Append "is_locked_in_mao"
+        'QueryBuilder.Append "is_locked_in_mao"
         'QueryBuilder.Append ",DATE_FORMAT(fecha_ingreso, '%Y-%m-%d') as 'fecha_ingreso_format'"
         QueryBuilder.Append " FROM user WHERE name= ?"
     
