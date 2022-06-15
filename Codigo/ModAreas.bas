@@ -370,22 +370,10 @@ Private Sub NotifyUser(ByVal UI1 As Integer, ByVal UI2 As Integer)
                     Else
                         If UserList(UI2).flags.Muerto = 1 Then
                             Call MakeUserChar(False, UI1, UI2, UserList(UI2).Pos.map, UserList(UI2).Pos.X, UserList(UI2).Pos.y, 0)
-                            If .GuildIndex > 0 Then
-                                If .GuildIndex = UserList(UI2).GuildIndex Then
-                                    Call MakeUserChar(False, UI1, UI2, UserList(UI2).Pos.map, UserList(UI2).Pos.X, UserList(UI2).Pos.y, 0)
-                                    If UserList(UI2).flags.invisible Or UserList(UI2).flags.Oculto Then
-                                        Call WriteSetInvisible(UI1, UserList(UI2).Char.charindex, True)
-                                    End If
-                                End If
-                            End If
                         Else
-                            If .GuildIndex > 0 Then
-                                If .GuildIndex = UserList(UI2).GuildIndex Then
-                                    Call MakeUserChar(False, UI1, UI2, UserList(UI2).Pos.map, UserList(UI2).Pos.X, UserList(UI2).Pos.y, 0)
-                                    If UserList(UI2).flags.invisible Or UserList(UI2).flags.Oculto Then
-                                        Call WriteSetInvisible(UI1, UserList(UI2).Char.charindex, True)
-                                    End If
-                                End If
+                            Call MakeUserChar(False, UI1, UI2, UserList(UI2).Pos.map, UserList(UI2).Pos.X, UserList(UI2).Pos.y, 0)
+                            If UserList(UI2).flags.invisible Or UserList(UI2).flags.Oculto Then
+                                Call WriteSetInvisible(UI1, UserList(UI2).Char.charindex, True)
                             End If
                         End If
                     End If
