@@ -204,7 +204,7 @@ Public Enum ServerPacketID
     SendFollowingCharIndex
     ForceCharMoveSiguiendo
     PosUpdateCharindex
-    ShopPjsInit
+    'ShopPjsInit
     [PacketCount]
 End Enum
 
@@ -524,10 +524,10 @@ Public Enum ClientPacketID
     SeguirMouse
     SendPosMovimiento
     NotifyInventarioHechizos
-    PublicarPersonajeMAO
+    'PublicarPersonajeMAO
     [PacketCount]
-End Enum
 
+End Enum
 Public Enum e_EditOptions
 
     eo_Gold = 1
@@ -1328,8 +1328,8 @@ On Error Resume Next
             Call HandleRepeatMacro(UserIndex)
         Case ClientPacketID.BuyShopItem
             Call HandleBuyShopItem(userindex)
-        Case ClientPacketID.PublicarPersonajeMAO
-            Call HandlePublicarPersonajeMAO(UserIndex)
+        'Case ClientPacketID.PublicarPersonajeMAO
+       '     Call HandlePublicarPersonajeMAO(UserIndex)
         Case Else
             Err.raise -1, "Invalid Message"
     End Select
@@ -15791,29 +15791,29 @@ Private Sub HandleTransFerGold(ByVal UserIndex As Integer)
 130         If Not EsGM(userindex) Then
 
 132             If tUser <= 0 Then
-                        If GetTickCount() - .Counters.LastTransferGold >= 10000 Then
-                            If PersonajeExiste(username) Then
-136                             If Not AddOroBancoDatabase(username, Cantidad) Then
-138                                 Call WriteChatOverHead(UserIndex, "Error al realizar la operación.", NpcList(.flags.TargetNPC).Char.charindex, vbWhite)
-                                    Exit Sub
-                                End If
-                                .Counters.LastTransferGold = GetTickCount()
-                            Else
-                                Call WriteChatOverHead(userindex, "El usuario no existe.", NpcList(.flags.TargetNPC).Char.charindex, vbWhite)
+                    If GetTickCount() - .Counters.LastTransferGold >= 10000 Then
+                        If PersonajeExiste(username) Then
+136                         If Not AddOroBancoDatabase(username, Cantidad) Then
+138                             Call WriteChatOverHead(UserIndex, "Error al realizar la operación.", NpcList(.flags.TargetNPC).Char.charindex, vbWhite)
                                 Exit Sub
+                            Else
+150                             UserList(UserIndex).Stats.Banco = UserList(UserIndex).Stats.Banco - val(Cantidad) 'Quitamos el oro al usuario
                             End If
+                            .Counters.LastTransferGold = GetTickCount()
                         Else
-                            Call WriteChatOverHead(userindex, "Espera un momento.", NpcList(.flags.TargetNPC).Char.charindex, vbWhite)
+                            Call WriteChatOverHead(UserIndex, "El usuario no existe.", NpcList(.flags.TargetNPC).Char.charindex, vbWhite)
                             Exit Sub
                         End If
-
-
+                    Else
+                        Call WriteChatOverHead(UserIndex, "Espera un momento.", NpcList(.flags.TargetNPC).Char.charindex, vbWhite)
+                        Exit Sub
+                    End If
                 Else
 148                 UserList(tUser).Stats.Banco = UserList(tUser).Stats.Banco + val(Cantidad) 'Se lo damos al otro.
+151                 UserList(UserIndex).Stats.Banco = UserList(UserIndex).Stats.Banco - val(Cantidad) 'Quitamos el oro al usuario
 
                 End If
                 
-150             UserList(UserIndex).Stats.Banco = UserList(UserIndex).Stats.Banco - val(Cantidad) 'Quitamos el oro al usuario
     
 152             Call WriteChatOverHead(UserIndex, "¡El envío se ha realizado con éxito! Gracias por utilizar los servicios de Finanzas Goliath", NpcList(.flags.TargetNPC).Char.charindex, vbWhite)
 '154             Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessagePlayWave("173", UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))

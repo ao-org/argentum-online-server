@@ -185,15 +185,15 @@ On Error GoTo Execute_Err
         Call LogPerformance("Execute: " & Text & vbNewLine & " - Tiempo transcurrido: " & Round(GetElapsedTime(), 1) & " ms" & vbNewLine)
     End If
     
+    Execute = (Err.Number = 0)
     Exit Function
-    
+        
 Execute_Err:
     
     If (Err.Number <> 0) Then
         Call LogDatabaseError("Database Error: " & Err.Number & " - " & Err.Description & " - " & vbCrLf & Text)
     End If
     
-    Execute = (Err.Number = 0)
 End Function
 
 Public Function Invoke(ByVal Procedure As String, ParamArray Arguments() As Variant) As ADODB.Recordset
@@ -1952,7 +1952,6 @@ Public Function SanitizeNullValue(ByVal Value As Variant, ByVal defaultValue As 
         On Error GoTo SanitizeNullValue_Err
         
 100     SanitizeNullValue = IIf(IsNull(Value), defaultValue, Value)
-
         
         Exit Function
 
