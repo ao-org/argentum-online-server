@@ -323,7 +323,11 @@ Private Sub SendToUserAliveArea(ByVal UserIndex As Integer, ByVal Buffer As Netw
 
 118                 If UserList(tempIndex).ConnIDValida Then
                         If UserList(tempIndex).flags.Muerto = 0 Then
+                            If UserList(tempIndex).flags.GMMeSigue > 0 Then
+                                Call modNetwork.Send(UserList(tempIndex).flags.GMMeSigue, Buffer)
+                            End If
 120                         Call modNetwork.Send(tempIndex, Buffer)
+        
                         End If
                     End If
 
@@ -372,7 +376,12 @@ Private Sub SendToUserArea(ByVal UserIndex As Integer, ByVal Buffer As Network.W
 116             If UserList(tempIndex).AreasInfo.AreaReciveY And AreaY Then
 
 118                 If UserList(tempIndex).ConnIDValida Then
+                        If UserList(tempIndex).flags.GMMeSigue > 0 Then
+                            Call modNetwork.Send(UserList(tempIndex).flags.GMMeSigue, Buffer)
+                        End If
 120                     Call modNetwork.Send(tempIndex, Buffer)
+
+
                     End If
 
                 End If
