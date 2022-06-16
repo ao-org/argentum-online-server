@@ -42,11 +42,12 @@ End Sub
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-Public Sub WriteLoggedMessage(ByVal UserIndex As Integer)
+Public Sub WriteLoggedMessage(ByVal UserIndex As Integer, Optional ByVal newUser As Boolean = False)
         '<EhHeader>
         On Error GoTo WriteLoggedMessage_Err
         '</EhHeader>
 100     Call Writer.WriteInt16(ServerPacketID.logged)
+101     Call Writer.WriteBool(newUser)
 102     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub

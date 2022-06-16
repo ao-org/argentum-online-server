@@ -216,7 +216,8 @@ End Sub
 
 Public Function ConnectUser_Complete(ByVal UserIndex As Integer, _
                                      ByRef Name As String, _
-                                     ByRef UserCuenta As String)
+                                     ByRef UserCuenta As String, _
+                                     Optional ByVal newUser As Boolean = False)
 
         On Error GoTo Complete_ConnectUser_Err
         
@@ -700,7 +701,7 @@ Public Function ConnectUser_Complete(ByVal UserIndex As Integer, _
         
 1115        If ServidorNublado Then Call WriteNubesToggle(UserIndex)
 
-1120        Call WriteLoggedMessage(UserIndex)
+1120        Call WriteLoggedMessage(UserIndex, newUser)
         
 1125        If .Stats.ELV = 1 Then
 1130            Call WriteConsoleMsg(UserIndex, "¡Bienvenido a las tierras de AO20! ¡" & .name & " que tengas buen viaje y mucha suerte!", e_FontTypeNames.FONTTYPE_GUILD)

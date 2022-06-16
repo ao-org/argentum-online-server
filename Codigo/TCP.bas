@@ -611,7 +611,7 @@ Function ConnectNewUser(ByVal UserIndex As Integer, ByRef name As String, ByVal 
     
 258         ConnectNewUser = True
     
-260         Call ConnectUser(UserIndex, name, UserCuenta, False)
+260         Call ConnectUser(UserIndex, name, UserCuenta, True)
 
         End With
         
@@ -879,7 +879,7 @@ Sub ConnectUser(ByVal UserIndex As Integer, _
 105         If Not ConnectUser_Check(userindex, name) Then Exit Sub
 110         Call ConnectUser_Prepare(UserIndex, name, UserCuenta)
             Call LoadUser(UserIndex)
-120         Call ConnectUser_Complete(UserIndex, name, UserCuenta)
+120         Call ConnectUser_Complete(UserIndex, name, UserCuenta, newUser)
         End With
 
         Exit Sub
