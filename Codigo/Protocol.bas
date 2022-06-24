@@ -525,6 +525,12 @@ Public Enum ClientPacketID
     SendPosMovimiento
     NotifyInventarioHechizos
     'PublicarPersonajeMAO
+    
+    #If PYMMO = 0 Then
+    CreateAccount
+    LoginAccount
+    DeleteCharacter
+    #End If
     [PacketCount]
 
 End Enum
@@ -702,6 +708,33 @@ On Error Resume Next
     ElseIf PacketID <= ClientPacketID.[PacketCount] Then
         UserList(UserIndex).Counters.IdleCount = 0
     End If
+    #ElseIf PYMMO = 0 Then
+     'Does the packet requires a logged account??
+    If Not (PacketId = ClientPacketID.CreateAccount Or _
+            PacketId = ClientPacketID.LoginAccount) Then
+               
+        'Is the account actually logged?
+        If UserList(userindex).AccountID = 0 Then
+            Call CloseSocket(userindex)
+            Exit Function
+        End If
+        
+        If Not (PacketId = ClientPacketID.LoginExistingChar Or PacketId = ClientPacketID.LoginNewChar) Then
+                   
+            'Is the user actually logged?
+            If Not UserList(userindex).flags.UserLogged Then
+                Call CloseSocket(userindex)
+                Exit Function
+            
+            'He is logged. Reset idle counter if id is valid.
+            ElseIf PacketId <= ClientPacketID.[PacketCount] Then
+                UserList(userindex).Counters.IdleCount = 0
+            End If
+        ElseIf PacketId <= ClientPacketID.[PacketCount] Then
+            UserList(userindex).Counters.IdleCount = 0
+        End If
+    End If
+    #End If
     
     Select Case PacketID
         Case ClientPacketID.LoginExistingChar
@@ -1330,6 +1363,14 @@ On Error Resume Next
             Call HandleBuyShopItem(userindex)
         'Case ClientPacketID.PublicarPersonajeMAO
        '     Call HandlePublicarPersonajeMAO(UserIndex)
+#If PYMMO = 0 Then
+        Case ClientPacketID.CreateAccount
+            Call HandleCreateAccount(userindex)
+        Case ClientPacketID.LoginAccount
+            Call HandleLoginAccount(userindex)
+        Case ClientPacketID.DeleteCharacter
+            Call HandleDeleteCharacter(userindex)
+#End If
         Case Else
             Err.raise -1, "Invalid Message"
     End Select
@@ -1350,6 +1391,115 @@ HandleIncomingData_Err:
     End If
 End Function
 
+#If PYMMO = 0 Then
+
+Private Sub HandleCreateAccount(ByVal userindex As Integer)
+    On Error GoTo HandleCreateAccount_Err:
+    
+    Dim username As String
+    Dim Password As String
+    username = Reader.ReadString8
+    Password = Reader.ReadString8
+    
+    If (username = "" Or Password = "" Or LenB(Password) <= 3) Then
+        Call WriteErrorMsg(userindex, "Parametros incorrectos")
+        Call CloseSocket(userindex)
+        Exit Sub
+    End If
+
+    Dim result As ADODB.Recordset
+    Set result = Query("INSERT INTO account (email, debug_password, password, salt, validate_code) VALUES (?,?,?,?,?)", LCase(username), Password, Password, Password, "123")
+
+    If (result Is Nothing) Then
+        Call WriteErrorMsg(userindex, "Ya hay una cuenta asociada con ese email")
+        Call CloseSocket(userindex)
+        Exit Sub
+    End If
+    
+    Set result = Query("SELECT id FROM account WHERE email=?", username)
+    UserList(userindex).AccountID = result!ID
+    
+    Dim Personajes() As t_PersonajeCuenta
+    Call WriteAccountCharacterList(userindex, Personajes, 0)
+
+    Exit Sub
+HandleCreateAccount_Err:
+102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCreateAccount", Erl)
+End Sub
+
+Private Sub HandleLoginAccount(ByVal userindex As Integer)
+    On Error GoTo LoginAccount_Err:
+    
+    Dim username As String
+    Dim Password As String
+    username = Reader.ReadString8
+    Password = Reader.ReadString8
+        
+    If (username = "" Or Password = "" Or LenB(Password) <= 3) Then
+        Call WriteErrorMsg(userindex, "Parametros incorrectos")
+        Call CloseSocket(userindex)
+        Exit Sub
+    End If
+
+    Dim result As ADODB.Recordset
+    Set result = Query("SELECT * FROM account WHERE UPPER(email)=UPPER(?) AND debug_password=?", username, Password)
+    
+    If (result.EOF) Then
+        Call WriteErrorMsg(userindex, "Usuario o Contraseña erronea.")
+        Call CloseSocket(userindex)
+        Exit Sub
+    End If
+        
+    UserList(userindex).AccountID = result!ID
+    
+    Dim Personajes(8) As t_PersonajeCuenta
+    Dim Count As Long
+    Count = GetPersonajesCuentaDatabase(result!ID, Personajes)
+    
+    Call WriteAccountCharacterList(userindex, Personajes, Count)
+
+    Exit Sub
+LoginAccount_Err:
+102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleLoginAccount", Erl)
+End Sub
+
+Private Sub HandleDeleteCharacter(ByVal userindex As Integer)
+    On Error GoTo DeleteCharacter_Err:
+
+DeleteCharacter_Err:
+102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleDeleteCharacter", Erl)
+End Sub
+
+
+''
+' Handles the "LoginExistingChar" message.
+'
+' @param    UserIndex The index of the user sending the message.
+
+Private Sub HandleLoginExistingChar(ByVal userindex As Integer)
+
+        '***************************************************
+        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        ''Last Modification: 01/12/08 Ladder
+        '***************************************************
+
+        On Error GoTo ErrHandler
+
+        Dim user_name    As String
+
+        user_name = Reader.ReadString8
+
+        Call ConnectUser(userindex, user_name)
+
+        Exit Sub
+    
+ErrHandler:
+        Call TraceError(Err.Number, Err.Description, "Protocol.HandleLoginExistingChar", Erl)
+
+End Sub
+
+#End If
+#If PYMMO = 1 Then
 ''
 ' Handles the "LoginExistingChar" message.
 '
@@ -1591,6 +1741,67 @@ ErrHandler:
      Call TraceError(Err.Number, Err.Description, "Protocol.HandleLoginNewChar", Erl)
 End Sub
 
+#ElseIf PYMMO = 0 Then
+    
+
+'
+' @param    UserIndex The index of the user sending the message.
+
+Private Sub HandleLoginNewChar(ByVal userindex As Integer)
+        '***************************************************
+        'Author: Juan Martín Sotuyo Dodero (Maraxus)
+        'Last Modification: 05/17/06
+        '
+        '***************************************************
+
+        On Error GoTo ErrHandler
+
+        Dim name As String
+        Dim race     As e_Raza
+        Dim gender   As e_Genero
+        Dim Hogar    As e_Ciudad
+        Dim Class As e_Class
+        Dim Head        As Integer
+
+        name = Reader.ReadString8
+110     race = Reader.ReadInt()
+112     gender = Reader.ReadInt()
+113     Class = Reader.ReadInt()
+116     Head = Reader.ReadInt()
+118     Hogar = Reader.ReadInt()
+
+126     If PuedeCrearPersonajes = 0 Then
+128         Call WriteShowMessageBox(userindex, "La creacion de personajes en este servidor se ha deshabilitado.")
+130         Call CloseSocket(userindex)
+            Exit Sub
+
+        End If
+
+132     If aClon.MaxPersonajes(UserList(userindex).IP) Then
+134         Call WriteShowMessageBox(userindex, "Has creado demasiados personajes.")
+136         Call CloseSocket(userindex)
+            Exit Sub
+
+        End If
+
+        'Check if we reached MAX_PERSONAJES for this account after updateing the UserList(userindex).AccountID in the if above
+        If GetPersonajesCountByIDDatabase(UserList(userindex).AccountID) >= MAX_PERSONAJES Then
+            Call CloseSocket(userindex)
+            Exit Sub
+        End If
+        
+        If Not ConnectNewUser(userindex, name, race, gender, Class, Head, Hogar) Then
+            Call CloseSocket(userindex)
+            Exit Sub
+        End If
+        
+        
+        Exit Sub
+    
+ErrHandler:
+     Call TraceError(Err.Number, Err.Description, "Protocol.HandleLoginNewChar", Erl)
+End Sub
+#End If
 
 ''
 ' Handles the "Talk" message.
