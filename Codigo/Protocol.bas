@@ -692,6 +692,7 @@ On Error Resume Next
         Exit Function
     End If
     
+    #If PYMMO = 1 Then
     'Does the packet requires a logged user??
     If Not (PacketID = ClientPacketID.LoginExistingChar Or _
             PacketID = ClientPacketID.LoginNewChar) Then
