@@ -205,6 +205,9 @@ Public Enum ServerPacketID
     ForceCharMoveSiguiendo
     PosUpdateCharindex
     'ShopPjsInit
+    #If PYMMO = 0 Then
+    AccountCharacterList
+    #End If
     [PacketCount]
 End Enum
 
@@ -1730,7 +1733,7 @@ Private Sub HandleLoginNewChar(ByVal UserIndex As Integer)
             Exit Sub
         End If
         
-        If Not ConnectNewUser(userindex, username, race, gender, Class, head, CuentaEmail, Hogar) Then
+        If Not ConnectNewUser(userindex, username, race, gender, Class, Head, Hogar) Then
             Call CloseSocket(userindex)
             Exit Sub
         End If
