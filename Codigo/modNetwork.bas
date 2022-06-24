@@ -69,8 +69,6 @@ On Error GoTo Kick_ErrHandler:
             If UserList(UserIndex).flags.UserLogged Then
                 Call Cerrar_Usuario(UserIndex)
             End If
-        Else
-            'Agregar SendErrorMsg()
         End If
     End If
         
@@ -96,7 +94,7 @@ Public Sub close_not_logged_sockets_if_timeout()
                     Ticks = GetTickCount
                     Delta = Ticks - .Counters.OnConnectTimestamp
                     If Delta > 3000 Then
-                        Call Kick(.ConnID, ".")
+                        Call Kick(.ConnID, "Connection timeout")
                     End If
                 End If
             End With

@@ -773,8 +773,9 @@ Sub Main()
         
             
         While (True)
-        
+#If PYMMO = 1 Then
             Call modNetwork.close_not_logged_sockets_if_timeout
+#End If
             Call modNetwork.Tick(GetElapsed())
             
             DoEvents

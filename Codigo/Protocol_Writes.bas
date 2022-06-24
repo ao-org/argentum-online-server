@@ -19,7 +19,43 @@ End Sub
 Public Function GetWriterBuffer() As Network.Writer
 100     Set GetWriterBuffer = Writer
 End Function
+#If PYMMO = 0 Then
+Public Sub WriteAccountCharacterList(ByVal UserIndex As Integer, ByRef Personajes() As t_PersonajeCuenta, ByVal Count As Long)
+        '<EhHeader>
+        On Error GoTo WriteAccountCharacterList_Err
+        '</EhHeader>
+100     Call Writer.WriteInt16(ServerPacketID.AccountCharacterList)
+        
+        Call Writer.WriteInt(Count)
+        
+        Dim i As Long
+        For i = 1 To Count
+            With Personajes(i)
+                Call Writer.WriteString8(.nombre)
+                Call Writer.WriteInt(.cuerpo)
+                Call Writer.WriteInt(.Cabeza)
+                Call Writer.WriteInt(.clase)
+                Call Writer.WriteInt(.Mapa)
+                Call Writer.WriteInt(.posX)
+                Call Writer.WriteInt(.posY)
+                Call Writer.WriteInt(.nivel)
+                Call Writer.WriteInt(.Status)
+                Call Writer.WriteInt(.Casco)
+                Call Writer.WriteInt(.Escudo)
+                Call Writer.WriteInt(.Arma)
+            End With
+        Next i
 
+102     Call modSendData.SendData(ToIndex, UserIndex)
+        '<EhFooter>
+        Exit Sub
+
+WriteAccountCharacterList_Err:
+        Call Writer.Clear
+        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteAccountCharacterList", Erl)
+        '</EhFooter>
+End Sub
+#End If
 ' \Begin: [Writes]
 
 Public Sub WriteConnected(ByVal UserIndex As Integer)

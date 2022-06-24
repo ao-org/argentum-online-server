@@ -440,7 +440,7 @@ Validate_Skills_Err:
         
 End Function
 
-Function ConnectNewUser(ByVal UserIndex As Integer, ByRef name As String, ByVal UserRaza As e_Raza, ByVal UserSexo As e_Genero, ByVal UserClase As e_Class, ByVal Head As Integer, ByRef UserCuenta As String, ByVal Hogar As e_Ciudad) As Boolean
+Function ConnectNewUser(ByVal userindex As Integer, ByRef name As String, ByVal UserRaza As e_Raza, ByVal UserSexo As e_Genero, ByVal UserClase As e_Class, ByVal Head As Integer, ByVal Hogar As e_Ciudad) As Boolean
         
         On Error GoTo ConnectNewUser_Err
         
@@ -610,9 +610,11 @@ Function ConnectNewUser(ByVal UserIndex As Integer, ByRef name As String, ByVal 
 256         Call SaveNewUser(UserIndex)
     
 258         ConnectNewUser = True
-    
-260         Call ConnectUser(UserIndex, name, UserCuenta, True)
-
+#If PYMMO = 1 Then
+260         Call ConnectUser(userindex, name, True)
+#ElseIf PYMMO = 0 Then
+260         Call ConnectUser(userindex, name, False)
+#End If
         End With
         
         Exit Function
@@ -867,19 +869,20 @@ EntrarCuenta_Err:
 
         
 End Function
-
 Sub ConnectUser(ByVal UserIndex As Integer, _
                 ByRef name As String, _
-                ByRef UserCuenta As String, _
                 Optional ByVal NewUser As Boolean = False)
 
         On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
 105         If Not ConnectUser_Check(userindex, name) Then Exit Sub
-110         Call ConnectUser_Prepare(UserIndex, name, UserCuenta)
+
+110         Call ConnectUser_Prepare(userindex, name)
+
             Call LoadUser(UserIndex)
-120         Call ConnectUser_Complete(UserIndex, name, UserCuenta, newUser)
+    
+120         Call ConnectUser_Complete(userindex, name, newUser)
         End With
 
         Exit Sub

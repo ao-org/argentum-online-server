@@ -62,14 +62,17 @@ Public Function ConnectUser_Check(ByVal UserIndex As Integer, _
         
         'Controlo si superó el tiempo para conectarse nuevamente
         
+#If PYMMO = 1 Then
         If dcnUsersLastLogout.Exists(UCase$(name)) Then
             Dim lastLogOut As Long
             lastLogOut = dcnUsersLastLogout(UCase$(name))
             If lastLogOut + 5000 >= GetTickCount() Then
                 Call WriteShowMessageBox(UserIndex, "Aguarda un momento.")
+                Call CloseSocket(userindex)
                 Exit Function
             End If
         End If
+#End If
         
         '¿Ya esta conectado el personaje?
         Dim tIndex As Integer: tIndex = NameIndex(Name)
