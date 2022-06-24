@@ -185,7 +185,7 @@ Check_ConnectUser_Err:
         
 End Function
 
-Public Sub ConnectUser_Prepare(ByVal UserIndex As Integer, ByRef Name As String, ByRef UserCuenta As String)
+Public Sub ConnectUser_Prepare(ByVal userindex As Integer, ByRef name As String)
 
         On Error GoTo Prepare_ConnectUser_Err
 
@@ -219,7 +219,6 @@ End Sub
 
 Public Function ConnectUser_Complete(ByVal UserIndex As Integer, _
                                      ByRef Name As String, _
-                                     ByRef UserCuenta As String, _
                                      Optional ByVal newUser As Boolean = False)
 
         On Error GoTo Complete_ConnectUser_Err
