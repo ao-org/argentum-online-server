@@ -204,7 +204,7 @@ Public Enum ServerPacketID
     SendFollowingCharIndex
     ForceCharMoveSiguiendo
     PosUpdateCharindex
-    'ShopPjsInit
+    ShopPjsInit
     #If PYMMO = 0 Then
     AccountCharacterList
     #End If
@@ -527,7 +527,7 @@ Public Enum ClientPacketID
     SeguirMouse
     SendPosMovimiento
     NotifyInventarioHechizos
-    'PublicarPersonajeMAO
+    PublicarPersonajeMAO
     
     #If PYMMO = 0 Then
     CreateAccount
@@ -1365,8 +1365,8 @@ On Error Resume Next
             Call HandleRepeatMacro(UserIndex)
         Case ClientPacketID.BuyShopItem
             Call HandleBuyShopItem(userindex)
-        'Case ClientPacketID.PublicarPersonajeMAO
-       '     Call HandlePublicarPersonajeMAO(UserIndex)
+        Case ClientPacketID.PublicarPersonajeMAO
+            Call HandlePublicarPersonajeMAO(userindex)
 #If PYMMO = 0 Then
         Case ClientPacketID.CreateAccount
             Call HandleCreateAccount(userindex)
@@ -19038,12 +19038,21 @@ Private Sub HandlePublicarPersonajeMAO(ByVal UserIndex As Integer)
     Valor = Reader.ReadInt32
     
     'HarThaoS: Comentado hasta que salga MAO
-    Exit Sub
     If Valor <= 0 Then
         Call WriteConsoleMsg(UserIndex, "El valor de venta del personaje debe ser mayor que $0.", e_FontTypeNames.FONTTYPE_INFOBOLD)
         Exit Sub
     End If
     With UserList(UserIndex)
+    
+        
+            ' Para recibir el ID del user
+        Dim RS As ADODB.Recordset
+        Set RS = Query("select is_published from user where id = ?;", .ID)
+                       
+        If CBool(RS!is_published) Then
+            Call WriteConsoleMsg(userindex, "El personaje ya está publicado.", e_FontTypeNames.FONTTYPE_INFOBOLD)
+            Exit Sub
+        End If
         
         If .Stats.GLD < 100000 Then
             Call WriteConsoleMsg(UserIndex, "El costo para vender tu personajes es de 100.000 monedas de oro, no tienes esa cantidad.", e_FontTypeNames.FONTTYPE_INFOBOLD)
