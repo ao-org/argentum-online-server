@@ -1954,31 +1954,34 @@ End Sub
 
 
 Public Sub ResucitarOCurar(ByVal UserIndex As Integer)
-If UserList(UserIndex).flags.Muerto = 1 Then
-    Call RevivirUsuario(UserIndex)
-    UserList(UserIndex).Stats.MinHp = UserList(UserIndex).Stats.MaxHp
-    UserList(userindex).flags.Envenenado = False
+
+    If UserList(UserIndex).flags.Muerto = 1 Then
+        Call RevivirUsuario(UserIndex)
+        UserList(UserIndex).Stats.MinHp = UserList(UserIndex).Stats.MaxHp
+        UserList(UserIndex).flags.Envenenado = False
+            
+        Call WriteUpdateHP(UserIndex)
         
-    Call WriteUpdateHP(UserIndex)
+        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(20, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
     
-    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(20, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
-
-    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(UserList(UserIndex).Char.CharIndex, 35, 1))
-
+        UserList(UserIndex).Counters.timeFx = 2
+        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(UserList(UserIndex).Char.charindex, 35, 1, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
     
-    Call WriteConsoleMsg(UserIndex, "¡¡Hás sido resucitado!!", e_FontTypeNames.FONTTYPE_INFO)
-ElseIf UserList(UserIndex).Stats.MinHp < UserList(UserIndex).Stats.MaxHp Then
-    UserList(UserIndex).Stats.MinHp = UserList(UserIndex).Stats.MaxHp
-    UserList(userindex).flags.Envenenado = False
         
-    Call WriteUpdateHP(UserIndex)
+        Call WriteConsoleMsg(UserIndex, "¡¡Hás sido resucitado!!", e_FontTypeNames.FONTTYPE_INFO)
+    ElseIf UserList(UserIndex).Stats.MinHp < UserList(UserIndex).Stats.MaxHp Then
+        UserList(UserIndex).Stats.MinHp = UserList(UserIndex).Stats.MaxHp
+        UserList(UserIndex).flags.Envenenado = False
+            
+        Call WriteUpdateHP(UserIndex)
         
-    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(UserList(UserIndex).Char.CharIndex, 9, 1))
-    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(18, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
-
-        
-    Call WriteConsoleMsg(UserIndex, "¡¡Hás sido curado!!", e_FontTypeNames.FONTTYPE_INFO)
-End If
+        UserList(UserIndex).Counters.timeFx = 2
+        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(UserList(UserIndex).Char.charindex, 9, 1, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+        Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(18, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+    
+            
+        Call WriteConsoleMsg(UserIndex, "¡¡Hás sido curado!!", e_FontTypeNames.FONTTYPE_INFO)
+    End If
 End Sub
 
 Public Function ByteArr2String(ByRef arr() As Byte) As String

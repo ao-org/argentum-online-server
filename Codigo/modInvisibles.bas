@@ -25,7 +25,7 @@ Public Sub PonerInvisible(ByVal UserIndex As Integer, ByVal estado As Boolean)
 102         UserList(UserIndex).flags.Oculto = IIf(estado, 1, 0)
 104         UserList(UserIndex).Counters.Invisibilidad = 0
 
-106         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(UserList(UserIndex).Char.CharIndex, Not estado))
+106         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(UserList(UserIndex).Char.charindex, Not Estado, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
 
         #Else
 

@@ -2236,7 +2236,9 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
 442                         .OrigChar.Head = CabezaFinal
 444                         Call ChangeUserChar(UserIndex, .Char.Body, CabezaFinal, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
                             'Quitamos del inv el item
-446                         Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessageCreateFX(.Char.charindex, 102, 0))
+                            
+                            UserList(UserIndex).Counters.timeFx = 2
+446                         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageCreateFX(.Char.charindex, 102, 0, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
     
 448                         If CabezaActual <> CabezaFinal Then
 450                             Call QuitarUserInvItem(UserIndex, Slot, 1)
@@ -2315,7 +2317,8 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
 520                         .OrigChar.Head = CabezaFinal
 522                         Call ChangeUserChar(UserIndex, .Char.Body, CabezaFinal, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
                             'Quitamos del inv el item
-524                         Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessageCreateFX(.Char.charindex, 102, 0))
+                            UserList(UserIndex).Counters.timeFx = 2
+524                         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageCreateFX(.Char.charindex, 102, 0, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
 526                         Call QuitarUserInvItem(UserIndex, Slot, 1)
     
 528                         If obj.Snd1 <> 0 Then
@@ -2330,7 +2333,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
 536                         If .flags.invisible = 0 Then
 538                             .flags.invisible = 1
 540                             .Counters.Invisibilidad = obj.DuracionEfecto
-542                             Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessageSetInvisible(.Char.charindex, True))
+542                             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageSetInvisible(.Char.charindex, True, .Pos.X, .Pos.Y))
 544                             Call WriteContadores(UserIndex)
 546                             Call QuitarUserInvItem(UserIndex, Slot, 1)
     
@@ -2561,7 +2564,8 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
     
                             'Quitamos del inv el item
 876                         If CabezaActual <> CabezaFinal Then
-878                             Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessageCreateFX(.Char.charindex, 102, 0))
+                                UserList(UserIndex).Counters.timeFx = 2
+878                             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageCreateFX(.Char.charindex, 102, 0, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
 880                             Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .Pos.X, .Pos.y))
 882                             Call QuitarUserInvItem(UserIndex, Slot, 1)
                             Else
@@ -2594,19 +2598,14 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
 904                             If sobrechar = 1 Then
 906                                 Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessageParticleFXToFloor(.Pos.X, .Pos.y, Particula, Tiempo))
                                 Else
-                                
-908                                 Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessageParticleFX(.Char.charindex, Particula, Tiempo, False))
-    
-                                    'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFXToFloor(.Pos.x, .Pos.Y, Particula, Tiempo))
+                                    UserList(UserIndex).Counters.timeFx = 2
+908                                 Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageParticleFX(.Char.charindex, Particula, Tiempo, False, , UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
                                 End If
     
                             End If
                             
 910                         If obj.CreaFX <> 0 Then
 912                             Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessageFxPiso(obj.CreaFX, .Pos.X, .Pos.y))
-                                
-                                'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(.Char.CharIndex, obj.CreaFX, 0))
-                                ' PrepareMessageCreateFX
                             End If
                             
 914                         If obj.Snd1 <> 0 Then
@@ -2730,8 +2729,9 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                           End If
             
 1018                 If obj.CreaFX <> 0 Then
-1020                     Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessageCreateFX(.Char.charindex, obj.CreaFX, 0))
-                          End If
+                        UserList(UserIndex).Counters.timeFx = 2
+1020                    Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageCreateFX(.Char.charindex, obj.CreaFX, 0, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+                     End If
             
                           Dim i As Byte
     

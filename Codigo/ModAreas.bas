@@ -321,80 +321,31 @@ CheckUpdateNeededUser_Err:
 
         
 End Sub
-Private Sub NotifyUser(ByVal UI1 As Integer, ByVal UI2 As Integer)
 
+Private Sub NotifyUser(ByVal UserNotificado As Integer, ByVal UserIngresante As Integer)
 
-    With UserList(UI1)
-         If MapInfo(.Pos.map).Seguro = 0 Then
-            'El que va a ser notificado es GM
-            If EsGM(UI1) Then
-            Debug.Print "UI1: " & UserList(UI1).name & " |UI2: " & UserList(UI2).name
-            
-                'Si es un GM visible lo dibujo directamente.
-                If UserList(UI2).flags.AdminInvisible = 0 Then
-                    Call MakeUserChar(False, UI1, UI2, UserList(UI2).Pos.map, UserList(UI2).Pos.X, UserList(UI2).Pos.y, 0)
-                    If UserList(UI2).flags.invisible Or UserList(UI2).flags.Oculto Then
-                        Call WriteSetInvisible(UI1, UserList(UI2).Char.charindex, True)
-                    End If
-                Else
-                    'Si no está visible comparo los privilegios.
-                    If CompararPrivilegios(.flags.Privilegios, UserList(UI2).flags.Privilegios) >= 0 Then
-                        Call MakeUserChar(False, UI1, UI2, UserList(UI2).Pos.map, UserList(UI2).Pos.X, UserList(UI2).Pos.y, 0)
-                        If UserList(UI2).flags.invisible Or UserList(UI2).flags.Oculto Then
-                            Call WriteSetInvisible(UI1, UserList(UI2).Char.charindex, True)
-                        End If
-                    End If
-                End If
-            Else
-                If EsGM(UI2) Then
-                    If UserList(UI2).flags.AdminInvisible = 0 Then
-                        Call MakeUserChar(False, UI1, UI2, UserList(UI2).Pos.map, UserList(UI2).Pos.X, UserList(UI2).Pos.y, 0)
-                         If UserList(UI2).flags.invisible Or UserList(UI2).flags.Oculto Then
-                            Call WriteSetInvisible(UI1, UserList(UI2).Char.charindex, True)
-                         End If
-                    Else
-                        'Si no está visible comparo los privilegios.
-                        If CompararPrivilegios(.flags.Privilegios, UserList(UI2).flags.Privilegios) >= 0 Then
-                            Call MakeUserChar(False, UI1, UI2, UserList(UI2).Pos.map, UserList(UI2).Pos.X, UserList(UI2).Pos.y, 0)
-                            If UserList(UI2).flags.invisible Or UserList(UI2).flags.Oculto Then
-                                Call WriteSetInvisible(UI1, UserList(UI2).Char.charindex, True)
-                            End If
-                        End If
-                    End If
-                Else
-                    If .flags.Muerto = 0 Then
-                        Call MakeUserChar(False, UI1, UI2, UserList(UI2).Pos.map, UserList(UI2).Pos.X, UserList(UI2).Pos.y, 0)
-                        If UserList(UI2).flags.invisible Or UserList(UI2).flags.Oculto Then
-                            Call WriteSetInvisible(UI1, UserList(UI2).Char.charindex, True)
-                        End If
-                    Else
-                        If UserList(UI2).flags.Muerto = 1 Then
-                            Call MakeUserChar(False, UI1, UI2, UserList(UI2).Pos.map, UserList(UI2).Pos.X, UserList(UI2).Pos.y, 0)
-                        Else
-                            Call MakeUserChar(False, UI1, UI2, UserList(UI2).Pos.map, UserList(UI2).Pos.X, UserList(UI2).Pos.y, 0)
-                            If UserList(UI2).flags.invisible Or UserList(UI2).flags.Oculto Then
-                                Call WriteSetInvisible(UI1, UserList(UI2).Char.charindex, True)
-                            End If
-                        End If
-                    End If
-                End If
+    Dim sendChar As Boolean
+
+    sendChar = True
+
+    With UserList(UserNotificado)
+        If UserList(UserIngresante).flags.AdminInvisible = 1 Then
+            If Not EsGM(UserNotificado) Or CompararPrivilegios(.flags.Privilegios, UserList(UserIngresante).flags.Privilegios) <= 0 Then
+                sendChar = False
             End If
-        Else
-            If UserList(UI2).flags.AdminInvisible = 0 Then
-                Call MakeUserChar(False, UI1, UI2, UserList(UI2).Pos.map, UserList(UI2).Pos.X, UserList(UI2).Pos.y, 0)
-                If UserList(UI2).flags.invisible Or UserList(UI2).flags.Oculto Then
-                    Call WriteSetInvisible(UI1, UserList(UI2).Char.charindex, True)
-                End If
-            Else
-                 If CompararPrivilegios(.flags.Privilegios, UserList(UI2).flags.Privilegios) >= 0 Then
-                    Call MakeUserChar(False, UI1, UI2, UserList(UI2).Pos.map, UserList(UI2).Pos.X, UserList(UI2).Pos.y, 0)
-                    If UserList(UI2).flags.invisible Or UserList(UI2).flags.Oculto Then
-                        Call WriteSetInvisible(UI1, UserList(UI2).Char.charindex, True)
-                    End If
-                End If
+         ElseIf UserList(UserNotificado).flags.Muerto = 1 And MapInfo(.Pos.map).Seguro = 0 And (UserList(UserNotificado).GuildIndex = 0 Or UserList(UserNotificado).GuildIndex <> UserList(UserIngresante).GuildIndex Or modGuilds.NivelDeClan(UserList(UserIngresante).GuildIndex) < 6) Then
+            sendChar = False
+        End If
+            
+
+        If sendChar Then
+            Call MakeUserChar(False, UserNotificado, UserIngresante, UserList(UserIngresante).Pos.map, UserList(UserIngresante).Pos.X, UserList(UserIngresante).Pos.y, 0)
+            If UserList(UserIngresante).flags.invisible Or UserList(UserIngresante).flags.Oculto Then
+                Call WriteSetInvisible(UserNotificado, UserList(UserIngresante).Char.charindex, True)
             End If
         End If
     End With
+
 End Sub
 
 Public Sub CheckUpdateNeededNpc(ByVal NpcIndex As Integer, ByVal Head As Byte)
@@ -604,8 +555,13 @@ Public Sub AgregarUser(ByVal UserIndex As Integer, ByVal Map As Integer, Optiona
 128     UserList(UserIndex).AreasInfo.AreaPerteneceY = 0
 130     UserList(UserIndex).AreasInfo.AreaReciveX = 0
 132     UserList(UserIndex).AreasInfo.AreaReciveY = 0
-   
-134     Call CheckUpdateNeededUser(UserIndex, USER_NUEVO, appear)
+    
+        If UserList(UserIndex).flags.Muerto = 1 Then
+            Call CheckUpdateNeededUser(UserIndex, USER_NUEVO, appear, 1)
+        Else
+134         Call CheckUpdateNeededUser(UserIndex, USER_NUEVO, appear)
+        End If
+
 
         
         Exit Sub

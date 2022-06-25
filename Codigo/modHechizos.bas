@@ -244,7 +244,7 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
 312         .Counters.Ocultando = 0
 
 314         Call WriteConsoleMsg(UserIndex, "Tu invisibilidad ya no tiene efecto.", e_FontTypeNames.FONTTYPE_INFOIAO)
-316         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageSetInvisible(.Char.charindex, False))
+316         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageSetInvisible(.Char.charindex, False, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
           End If
         End If
 
@@ -554,8 +554,8 @@ End Sub
 Sub DecirPalabrasMagicas(ByVal Hechizo As Byte, ByVal UserIndex As Integer)
         
         On Error GoTo DecirPalabrasMagicas_Err
-
-100     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageChatOverHead("PMAG*" & Hechizo, UserList(UserIndex).Char.charindex, vbCyan, True))
+        UserList(UserIndex).Counters.timeChat = 4
+100     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageChatOverHead("PMAG*" & Hechizo, UserList(UserIndex).Char.charindex, vbCyan, True, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
         Exit Sub
 
 DecirPalabrasMagicas_Err:
@@ -888,7 +888,7 @@ Sub HechizoTerrenoEstado(ByVal UserIndex As Integer, ByRef b As Boolean)
 120                         If UserList(MapData(PosCasteadaM, TempX, TempY).UserIndex).flags.invisible = 1 And UserList(MapData(PosCasteadaM, TempX, TempY).UserIndex).flags.NoDetectable = 0 Then
 122                             UserList(MapData(PosCasteadaM, TempX, TempY).UserIndex).flags.invisible = 0
 124                             Call WriteConsoleMsg(MapData(PosCasteadaM, TempX, TempY).UserIndex, "Tu invisibilidad ya no tiene efecto.", e_FontTypeNames.FONTTYPE_INFOIAO)
-126                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(UserList(MapData(PosCasteadaM, TempX, TempY).UserIndex).Char.CharIndex, False))
+126                             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(UserList(MapData(PosCasteadaM, TempX, TempY).UserIndex).Char.charindex, False, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
 
                             End If
 
@@ -938,14 +938,11 @@ Private Sub HechizoSobreArea(ByVal UserIndex As Integer, ByRef b As Boolean)
     
 118     If Hechizos(h).Particle > 0 Then 'Envio Particula?
 120         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFXToFloor(PosCasteadaX, PosCasteadaY, Hechizos(h).Particle, Hechizos(h).TimeParticula))
-
         End If
-
 
 122     If Hechizos(h).ParticleViaje = 0 Then
 124         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(Hechizos(h).wav, PosCasteadaX, PosCasteadaY))
         End If
-
         
 126     afectaUsers = (Hechizos(h).AreaAfecta = 1 Or Hechizos(h).AreaAfecta = 3)
 128     afectaNPCs = (Hechizos(h).AreaAfecta = 2 Or Hechizos(h).AreaAfecta = 3)
@@ -1607,7 +1604,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
             
 178
 180         Call WriteContadores(tU)
-182         Call SendData(SendTarget.ToPCArea, tU, PrepareMessageSetInvisible(UserList(tU).Char.CharIndex, True))
+182         Call SendData(SendTarget.ToPCArea, tU, PrepareMessageSetInvisible(UserList(tU).Char.charindex, True, UserList(tU).Pos.X, UserList(tU).Pos.Y))
 
 184         Call InfoHechizo(UserIndex)
 186         b = True
@@ -2251,7 +2248,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
                     End Select
                 End If
                 
-                Call SendData(SendTarget.ToPCArea, tU, PrepareMessageSetInvisible(UserList(tU).Char.charindex, False))
+                Call SendData(SendTarget.ToPCArea, tU, PrepareMessageSetInvisible(UserList(tU).Char.charindex, False, UserList(tU).Pos.X, UserList(tU).Pos.Y))
                 
                 Call WriteConsoleMsg(tU, "¡Has sido resucitado!", e_FontTypeNames.FONTTYPE_INFO)
                 Call SendData(SendTarget.ToPCArea, tU, PrepareMessageParticleFX(UserList(tU).Char.CharIndex, e_ParticulasIndex.Resucitar, 250, True))
@@ -2262,9 +2259,6 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 686             Call InfoHechizo(UserIndex)
 
 688             b = True
-                'Solo saco vida si es User. no quiero que exploten GMs por ahi.
-        
-                'Call RevivirUsuario(tU)
             Else
 690             b = False
 
@@ -2676,17 +2670,21 @@ Private Sub InfoHechizoDeNpcSobreUser(ByVal NpcIndex As Integer, ByVal TargetUse
 100   With UserList(TargetUser)
 102     If Hechizos(Spell).FXgrh > 0 Then '¿Envio FX?
 104       If Hechizos(Spell).ParticleViaje > 0 Then
-106         Call SendData(SendTarget.ToPCArea, TargetUser, PrepareMessageParticleFXWithDestino(NpcList(NpcIndex).Char.CharIndex, .Char.CharIndex, Hechizos(Spell).ParticleViaje, Hechizos(Spell).FXgrh, Hechizos(Spell).TimeParticula, Hechizos(Spell).wav, 1))
+            .Counters.timeFx = 2
+106         Call SendData(SendTarget.ToPCArea, TargetUser, PrepareMessageParticleFXWithDestino(NpcList(NpcIndex).Char.charindex, .Char.charindex, Hechizos(Spell).ParticleViaje, Hechizos(Spell).FXgrh, Hechizos(Spell).TimeParticula, Hechizos(Spell).wav, 1, UserList(TargetUser).Pos.X, UserList(TargetUser).Pos.Y))
           Else
-108         Call SendData(SendTarget.ToPCArea, TargetUser, PrepareMessageCreateFX(.Char.CharIndex, Hechizos(Spell).FXgrh, Hechizos(Spell).loops))
+            .Counters.timeFx = 2
+108         Call SendData(SendTarget.ToPCArea, TargetUser, PrepareMessageCreateFX(.Char.charindex, Hechizos(Spell).FXgrh, Hechizos(Spell).loops, UserList(TargetUser).Pos.X, UserList(TargetUser).Pos.Y))
           End If
         End If
 
 110     If Hechizos(Spell).Particle > 0 Then '¿Envio Particula?
 112       If Hechizos(Spell).ParticleViaje > 0 Then
-114         Call SendData(SendTarget.ToPCArea, TargetUser, PrepareMessageParticleFXWithDestino(NpcList(NpcIndex).Char.CharIndex, .Char.CharIndex, Hechizos(Spell).ParticleViaje, Hechizos(Spell).Particle, Hechizos(Spell).TimeParticula, Hechizos(Spell).wav, 0))
+            .Counters.timeFx = 2
+114         Call SendData(SendTarget.ToPCArea, TargetUser, PrepareMessageParticleFXWithDestino(NpcList(NpcIndex).Char.charindex, .Char.charindex, Hechizos(Spell).ParticleViaje, Hechizos(Spell).Particle, Hechizos(Spell).TimeParticula, Hechizos(Spell).wav, 0, UserList(TargetUser).Pos.X, UserList(TargetUser).Pos.Y))
           Else
-116         Call SendData(SendTarget.ToPCArea, TargetUser, PrepareMessageParticleFX(.Char.CharIndex, Hechizos(Spell).Particle, Hechizos(Spell).TimeParticula, False))
+            .Counters.timeFx = 2
+116         Call SendData(SendTarget.ToPCArea, TargetUser, PrepareMessageParticleFX(.Char.charindex, Hechizos(Spell).Particle, Hechizos(Spell).TimeParticula, False, , UserList(TargetUser).Pos.X, UserList(TargetUser).Pos.Y))
           End If
         End If
 
@@ -2724,20 +2722,22 @@ Private Sub InfoHechizo(ByVal UserIndex As Integer)
 106     If UserList(UserIndex).flags.TargetUser > 0 Then '¿El Hechizo fue tirado sobre un usuario?
 108         If Hechizos(h).FXgrh > 0 Then '¿Envio FX?
 110             If Hechizos(h).ParticleViaje > 0 Then
-112                 Call SendData(SendTarget.ToPCAliveArea, UserList(UserIndex).flags.TargetUser, PrepareMessageParticleFXWithDestino(UserList(UserIndex).Char.charindex, UserList(UserList(UserIndex).flags.TargetUser).Char.charindex, Hechizos(h).ParticleViaje, Hechizos(h).FXgrh, Hechizos(h).TimeParticula, Hechizos(h).wav, 1))
+                    UserList(UserList(UserIndex).flags.TargetUser).Counters.timeFx = 2
+112                 Call SendData(SendTarget.ToPCAliveArea, UserList(UserIndex).flags.TargetUser, PrepareMessageParticleFXWithDestino(UserList(UserIndex).Char.charindex, UserList(UserList(UserIndex).flags.TargetUser).Char.charindex, Hechizos(h).ParticleViaje, Hechizos(h).FXgrh, Hechizos(h).TimeParticula, Hechizos(h).wav, 1, UserList(UserList(UserIndex).flags.TargetUser).Pos.X, UserList(UserList(UserIndex).flags.TargetUser).Pos.Y))
                 Else
-114                 Call SendData(SendTarget.ToPCAliveArea, UserList(UserIndex).flags.TargetUser, PrepareMessageCreateFX(UserList(UserList(UserIndex).flags.TargetUser).Char.charindex, Hechizos(h).FXgrh, Hechizos(h).loops))
-
+                    UserList(UserList(UserIndex).flags.TargetUser).Counters.timeFx = 2
+114                 Call SendData(SendTarget.ToPCAliveArea, UserList(UserIndex).flags.TargetUser, PrepareMessageCreateFX(UserList(UserList(UserIndex).flags.TargetUser).Char.charindex, Hechizos(h).FXgrh, Hechizos(h).loops, UserList(UserList(UserIndex).flags.TargetUser).Pos.X, UserList(UserList(UserIndex).flags.TargetUser).Pos.Y))
                 End If
 
             End If
 
 116         If Hechizos(h).Particle > 0 Then '¿Envio Particula?
 118             If Hechizos(h).ParticleViaje > 0 Then
-120                 Call SendData(SendTarget.ToPCAliveArea, UserList(UserIndex).flags.TargetUser, PrepareMessageParticleFXWithDestino(UserList(UserIndex).Char.charindex, UserList(UserList(UserIndex).flags.TargetUser).Char.charindex, Hechizos(h).ParticleViaje, Hechizos(h).Particle, Hechizos(h).TimeParticula, Hechizos(h).wav, 0))
+                    UserList(UserList(UserIndex).flags.TargetUser).Counters.timeFx = 2
+120                 Call SendData(SendTarget.ToPCAliveArea, UserList(UserIndex).flags.TargetUser, PrepareMessageParticleFXWithDestino(UserList(UserIndex).Char.charindex, UserList(UserList(UserIndex).flags.TargetUser).Char.charindex, Hechizos(h).ParticleViaje, Hechizos(h).Particle, Hechizos(h).TimeParticula, Hechizos(h).wav, 0, UserList(UserList(UserIndex).flags.TargetUser).Pos.X, UserList(UserList(UserIndex).flags.TargetUser).Pos.Y))
                 Else
-122                 Call SendData(SendTarget.ToPCAliveArea, UserList(UserIndex).flags.TargetUser, PrepareMessageParticleFX(UserList(UserList(UserIndex).flags.TargetUser).Char.charindex, Hechizos(h).Particle, Hechizos(h).TimeParticula, False))
-
+                    UserList(UserList(UserIndex).flags.TargetUser).Counters.timeFx = 2
+122                 Call SendData(SendTarget.ToPCAliveArea, UserList(UserIndex).flags.TargetUser, PrepareMessageParticleFX(UserList(UserList(UserIndex).flags.TargetUser).Char.charindex, Hechizos(h).Particle, Hechizos(h).TimeParticula, False, , UserList(UserList(UserIndex).flags.TargetUser).Pos.X, UserList(UserList(UserIndex).flags.TargetUser).Pos.Y))
                 End If
 
             End If
@@ -3842,7 +3842,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean)
             'Reseteamos el contador de Invisibilidad
 384          If UserList(tU).Counters.Invisibilidad <= 0 Then UserList(tU).Counters.Invisibilidad = Hechizos(h).Duration
 386         Call WriteContadores(tU)
-388         Call SendData(SendTarget.ToPCAliveArea, tU, PrepareMessageSetInvisible(UserList(tU).Char.charindex, True))
+388         Call SendData(SendTarget.ToPCAliveArea, tU, PrepareMessageSetInvisible(UserList(tU).Char.charindex, True, UserList(tU).Pos.X, UserList(tU).Pos.Y))
 
 390         enviarInfoHechizo = True
 392         b = True
@@ -4746,7 +4746,7 @@ Private Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, X As Byte, Y 
 406         UserList(NpcIndex).flags.invisible = 1
 408         UserList(NpcIndex).Counters.Invisibilidad = Hechizos(h2).Duration
 410         Call WriteContadores(NpcIndex)
-412         Call SendData(SendTarget.ToPCAliveArea, NpcIndex, PrepareMessageSetInvisible(UserList(NpcIndex).Char.charindex, True))
+412         Call SendData(SendTarget.ToPCAliveArea, NpcIndex, PrepareMessageSetInvisible(UserList(NpcIndex).Char.charindex, True, UserList(NpcIndex).Pos.X, UserList(NpcIndex).Pos.Y))
 
         End If
                               

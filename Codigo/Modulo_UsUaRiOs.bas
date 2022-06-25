@@ -1202,8 +1202,8 @@ Sub CheckUserLevel(ByVal UserIndex As Integer)
             
                 'Store it!
                 'Call Statistics.UserLevelUp(UserIndex)
-
-110             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageCreateFX(.Char.charindex, 106, 0))
+                UserList(userindex).Counters.timeFx = 2
+110             Call SendData(SendTarget.ToPCAliveArea, userindex, PrepareMessageCreateFX(.Char.charindex, 106, 0, .Pos.X, .Pos.y))
 112             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(SND_NIVEL, .Pos.X, .Pos.y))
 114             Call WriteLocaleMsg(UserIndex, "186", e_FontTypeNames.FONTTYPE_INFO)
             
@@ -1386,7 +1386,7 @@ Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As e_Heading) A
                 
                     ' Si es un admin invisible, no se avisa a los demas clientes
 144                 If UserList(IndexMover).flags.AdminInvisible = 0 Then
-146                     Call SendData(SendTarget.ToPCAreaButIndex, IndexMover, PrepareMessageCharacterMove(UserList(IndexMover).Char.CharIndex, UserList(IndexMover).Pos.X, UserList(IndexMover).Pos.Y))
+146                     Call SendData(SendTarget.ToPCAreaButIndex, IndexMover, PrepareMessageCharacterMove(UserList(IndexMover).Char.charindex, UserList(IndexMover).Pos.X, UserList(IndexMover).Pos.y), True)
                     Else
 148                     Call SendData(SendTarget.ToAdminAreaButIndex, IndexMover, PrepareMessageCharacterMove(UserList(IndexMover).Char.CharIndex, UserList(IndexMover).Pos.X, UserList(IndexMover).Pos.Y))
                     End If
@@ -1399,9 +1399,7 @@ Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As e_Heading) A
                     'Update map and char
                     UserList(IndexMover).Char.Heading = Opposite_Heading
                     MapData(UserList(IndexMover).Pos.map, UserList(IndexMover).Pos.X, UserList(IndexMover).Pos.Y).UserIndex = IndexMover
-                    
-                        'seteo en el array el userindex del gm (en la misma pos que el usuario)
-                                    
+                                                        
                     'Actualizamos las areas de ser necesario
 156                 Call ModAreas.CheckUpdateNeededUser(IndexMover, Opposite_Heading, 0)
                 End If
@@ -1410,11 +1408,53 @@ Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As e_Heading) A
 
                     
                     If .flags.GMMeSigue > 0 Then
-                        'Call SendData(SendTarget.ToPCAreaButIndex, UserIndex, PrepareMessageCharacterMove(.Char.charindex, nPos.X, nPos.Y))
                         Call SendData(SendTarget.ToPCAreaButFollowerAndIndex, UserIndex, PrepareMessageCharacterMove(.Char.charindex, nPos.X, nPos.Y))
                         Call WriteForceCharMoveSiguiendo(.flags.GMMeSigue, nHeading)
                     Else
-160                     Call SendData(SendTarget.ToPCAreaButIndex, UserIndex, PrepareMessageCharacterMove(.Char.charindex, nPos.X, nPos.Y))
+160                     Call SendData(SendTarget.ToPCAliveAreaButIndex, userindex, PrepareMessageCharacterMove(.Char.charindex, nPos.X, nPos.y), True)
+                        
+                        Dim LoopC As Integer
+                        Dim tempIndex As Integer
+                        
+                        UserList(userindex).flags.stepToggle = Not UserList(userindex).flags.stepToggle
+                        
+                        For LoopC = 1 To ConnGroups(UserList(userindex).Pos.map).CountEntrys
+                            tempIndex = ConnGroups(UserList(userindex).Pos.map).UserEntrys(LoopC)
+                            If UserList(tempIndex).AreasInfo.AreaReciveX And UserList(userindex).AreasInfo.AreaPerteneceX Then  'Esta en el area?
+                                If UserList(tempIndex).AreasInfo.AreaReciveY And UserList(userindex).AreasInfo.AreaPerteneceY Then
+                                    If UserList(tempIndex).ConnIDValida Then
+                                        If tempIndex <> userindex Then
+                                            If UserList(tempIndex).flags.Muerto = 0 Or MapInfo(UserList(tempIndex).Pos.map).Seguro = 1 Then
+                                                If UserList(userindex).flags.invisible + UserList(userindex).flags.Oculto > 0 Then
+                                                    If Distancia(UserList(userindex).Pos, UserList(tempIndex).Pos) > DISTANCIA_ENVIO_DATOS And UserList(userindex).Counters.timeFx + UserList(userindex).Counters.timeChat = 0 Then
+                                                        If Abs(UserList(userindex).Pos.X - UserList(tempIndex).Pos.X) <= RANGO_VISION_X And Abs(UserList(userindex).Pos.y - UserList(tempIndex).Pos.y) <= RANGO_VISION_Y Then
+                                                            
+                                                            Call WritePlayWaveStep(tempIndex, MapData(UserList(userindex).Pos.map, UserList(userindex).Pos.X, UserList(userindex).Pos.y).Graphic(1), Abs(UserList(userindex).Pos.X - UserList(tempIndex).Pos.X) + Abs(UserList(userindex).Pos.y - UserList(tempIndex).Pos.y), _
+                                                                                         Sgn(UserList(userindex).Pos.X - UserList(tempIndex).Pos.X), UserList(userindex).flags.stepToggle)
+                                                        End If
+                                                    End If
+                                                End If
+                                            End If
+                                        End If
+                                    End If
+                                End If
+                            End If
+123                     Next LoopC
+                        
+                        Dim X As Byte, y As Byte
+                        
+                        For X = .Pos.X - 2 To .Pos.X + 2
+                            For y = .Pos.y - 2 To .Pos.y + 2
+                                If MapData(.Pos.map, X, y).userindex > 0 And MapData(.Pos.map, X, y).userindex <> userindex Then
+                                    If UserList(MapData(.Pos.map, X, y).userindex).flags.invisible + UserList(MapData(.Pos.map, X, y).userindex).flags.Oculto > 0 And UserList(MapData(.Pos.map, X, y).userindex).GuildIndex <> UserList(userindex).GuildIndex And UserList(userindex).GuildIndex > 0 Then
+                                       ' Debug.Print "TODO OK"
+                                       
+                                        Call WritePosUpdateChar(userindex, X, y, UserList(MapData(.Pos.map, X, y).userindex).Char.charindex)
+                                    End If
+                                End If
+                            Next y
+                        Next X
+                            
                     End If
                 Else
 162                 Call SendData(SendTarget.ToAdminAreaButIndex, UserIndex, PrepareMessageCharacterMove(.Char.CharIndex, nPos.X, nPos.Y))
@@ -1847,7 +1887,7 @@ Sub SubirSkill(ByVal UserIndex As Integer, ByVal Skill As Integer)
 140         If Aumenta < Menor Then
 142             UserList(UserIndex).Stats.UserSkills(Skill) = UserList(UserIndex).Stats.UserSkills(Skill) + 1
     
-144             Call WriteConsoleMsg(UserIndex, "¡Has mejorado tu skill " & SkillsNames(Skill) & " en un punto!. Ahora tienes " & UserList(UserIndex).Stats.UserSkills(Skill) & " pts.", e_FontTypeNames.FONTTYPE_INFO)
+144             Call WriteConsoleMsg(userindex, "¡Has mejorado tu skill " & SkillsNames(Skill) & " en un punto!. Ahora tienes " & UserList(userindex).Stats.UserSkills(Skill) & " pts.", e_FontTypeNames.FONTTYPE_INFO)
             
                 Dim BonusExp As Long
 146             BonusExp = 50& * ExpMult
@@ -2413,7 +2453,8 @@ Sub WarpUserChar(ByVal UserIndex As Integer, _
         
 206             If FX Then 'FX
 208                 Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(SND_WARP, X, y))
-210                 Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageCreateFX(.Char.charindex, e_FXIDs.FXWARP, 0))
+                    UserList(userindex).Counters.timeFx = 2
+210                 Call SendData(SendTarget.ToPCAliveArea, userindex, PrepareMessageCreateFX(.Char.charindex, e_FXIDs.FXWARP, 0, .Pos.X, .Pos.y))
                 End If
 
             Else
@@ -2462,7 +2503,7 @@ Sub Cerrar_Usuario(ByVal UserIndex As Integer)
                 If .flags.invisible + .flags.Oculto > 0 Then
                     .flags.invisible = 0
                     .flags.Oculto = 0
-                    Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageSetInvisible(.Char.charindex, False))
+                    Call SendData(SendTarget.ToPCAliveArea, userindex, PrepareMessageSetInvisible(.Char.charindex, False, UserList(userindex).Pos.X, UserList(userindex).Pos.y))
                     Call WriteConsoleMsg(userindex, "Has vuelto a ser visible", e_FontTypeNames.FONTTYPE_INFO)
                 End If
                 
@@ -2901,7 +2942,7 @@ Public Sub LimpiarEstadosAlterados(ByVal UserIndex As Integer)
 128         If .flags.Meditando Then
 130             .flags.Meditando = False
 132             .Char.FX = 0
-134             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageMeditateToggle(.Char.charindex, 0))
+134             Call SendData(SendTarget.ToPCAliveArea, userindex, PrepareMessageMeditateToggle(.Char.charindex, 0, .Pos.X, .Pos.y))
             End If
         
             '<<<< Invisible >>>>
@@ -2910,7 +2951,7 @@ Public Sub LimpiarEstadosAlterados(ByVal UserIndex As Integer)
 140             .flags.invisible = 0
 142             .Counters.TiempoOculto = 0
 144             .Counters.Invisibilidad = 0
-146             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageSetInvisible(.Char.charindex, False))
+146             Call SendData(SendTarget.ToPCAliveArea, userindex, PrepareMessageSetInvisible(.Char.charindex, False, UserList(userindex).Pos.X, UserList(userindex).Pos.y))
             End If
         
             '<<<< Mimetismo >>>>
