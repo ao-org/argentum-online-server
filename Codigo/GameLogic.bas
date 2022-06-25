@@ -198,7 +198,7 @@ End Function
 Public Function esArmada(ByVal UserIndex As Integer) As Boolean
         On Error GoTo esArmada_Err
         
-100     If UserIndex > 0 Then esArmada = (UserList(UserIndex).Faccion.ArmadaReal = 1)
+100     If UserIndex > 0 Then esArmada = (UserList(UserIndex).Faccion.status = e_Facciones.Armada Or UserList(UserIndex).Faccion.status = e_Facciones.consejo)
         
         Exit Function
 
@@ -211,7 +211,7 @@ End Function
 Public Function esCaos(ByVal UserIndex As Integer) As Boolean
         On Error GoTo esCaos_Err
         
-100     If UserIndex > 0 Then esCaos = (UserList(UserIndex).Faccion.FuerzasCaos = 1)
+100     If UserIndex > 0 Then esCaos = (UserList(UserIndex).Faccion.status = e_Facciones.Caos Or UserList(UserIndex).Faccion.status = e_Facciones.concilio)
      
         Exit Function
 
@@ -1345,11 +1345,11 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
     
                             End If
                     
-316                         If UserList(TempCharIndex).Faccion.ArmadaReal = 1 Then
+316                         If UserList(TempCharIndex).Faccion.status = e_Facciones.Armada Or UserList(TempCharIndex).Faccion.status = e_Facciones.consejo Then
 318                             Stat = Stat & " <" & TituloReal(TempCharIndex) & ">"
 
 320                             ft = e_FontTypeNames.FONTTYPE_CONSEJOVesA
-322                         ElseIf UserList(TempCharIndex).Faccion.FuerzasCaos = 1 Then
+322                         ElseIf UserList(TempCharIndex).Faccion.status = e_Facciones.Caos Or UserList(TempCharIndex).Faccion.status = e_Facciones.concilio Then
 324                             Stat = Stat & " <" & TituloCaos(TempCharIndex) & ">"
 326                             ft = e_FontTypeNames.FONTTYPE_CONSEJOCAOSVesA
                             End If

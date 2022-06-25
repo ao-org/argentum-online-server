@@ -1224,12 +1224,12 @@ Sub EquiparBarco(ByVal UserIndex As Integer)
 128                 .Char.CascoAnim = NingunCasco
                 End If
 
-130             If .Faccion.ArmadaReal = 1 Then
+130             If .Faccion.status = e_Facciones.Armada Or .Faccion.status = e_Facciones.consejo Then
 132                 If Barco.Ropaje = iBarca Then .Char.Body = iBarcaArmada
 134                 If Barco.Ropaje = iGalera Then .Char.Body = iGaleraArmada
 136                 If Barco.Ropaje = iGaleon Then .Char.Body = iGaleonArmada
 
-138             ElseIf .Faccion.FuerzasCaos = 1 Then
+138             ElseIf .Faccion.status = e_Facciones.Caos Or .Faccion.status = e_Facciones.concilio Then
 
 140                 If Barco.Ropaje = iBarca Then .Char.Body = iBarcaCaos
 142                 If Barco.Ropaje = iGalera Then .Char.Body = iGaleraCaos

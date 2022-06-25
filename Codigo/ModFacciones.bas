@@ -17,29 +17,23 @@ Public Sub EnlistarArmadaReal(ByVal UserIndex As Integer)
 100         With UserList(UserIndex)
 102             charindexstr = str$(NpcList(.flags.TargetNPC).Char.charindex)
                 
-104             If .Faccion.ArmadaReal = 1 Then
-106                 Call WriteChatOverHead(UserIndex, "Ya perteneces a mi ejército jóven soldado. Ve a combatir el caos en mis tierras para subir de rango en el Ejército Real.", charIndexStr, vbWhite)
+104             If .Faccion.status = e_Facciones.Armada Or .Faccion.status = e_Facciones.consejo Then
+106                 Call WriteChatOverHead(UserIndex, "Ya perteneces a mi ejército jóven soldado. Ve a combatir el caos en mis tierras para subir de rango en el Ejército Real.", charindexstr, vbWhite)
                     Exit Sub
 
                 End If
 
-108             If .Faccion.FuerzasCaos = 1 Then
-110                 Call WriteChatOverHead(UserIndex, "¡Has llegado al lugar equivocado maldita escoria! Vete de aquí antes de ser encarcelado e interrogado.", charIndexStr, vbWhite)
+108             If .Faccion.status = e_Facciones.Caos Or .Faccion.status = e_Facciones.concilio Then
+110                 Call WriteChatOverHead(UserIndex, "¡Has llegado al lugar equivocado maldita escoria! Vete de aquí antes de ser encarcelado e interrogado.", charindexstr, vbWhite)
                     Exit Sub
 
                 End If
 
-112             If Status(UserIndex) = 2 Then
-114                 Call WriteChatOverHead(UserIndex, "No se permiten criminales en el Ejército Real.", charIndexStr, vbWhite)
+112             If status(UserIndex) = e_Facciones.Criminal Then
+114                 Call WriteChatOverHead(UserIndex, "No se permiten criminales en el Ejército Real.", charindexstr, vbWhite)
                     Exit Sub
                 End If
                 
-
-116             If Status(UserIndex) = 0 Then
-118                 Call WriteChatOverHead(UserIndex, "No se permiten criminales en el Ejército Real. Si no has derramado sangre inocente ve a inclinarte y pedir perdón ante un sacerdote.", charIndexStr, vbWhite)
-                    Exit Sub
-
-                End If
 
 120             If .clase = e_Class.Thief Then
 122                 Call WriteChatOverHead(UserIndex, "No hay lugar para escoria en el Ejército Real.", charIndexStr, vbWhite)
@@ -97,10 +91,9 @@ Public Sub EnlistarArmadaReal(ByVal UserIndex As Integer)
                 End If
 
                 ' Cumple con los requisitos para enlistarse
-154             .Faccion.ArmadaReal = 1
 156             .Faccion.RecompensasReal = primerRango.rank ' Asigna primer rango
 158             .Faccion.Reenlistadas = .Faccion.Reenlistadas + 1
-160             .Faccion.Status = 3
+160             .Faccion.status = e_Facciones.Armada
 
 162             If .Faccion.RecibioArmaduraReal = 0 Then
 164                 Call WriteChatOverHead(UserIndex, "¡¡¡Bienvenido al Ejercito Imperial!!!, aqui tienes tus vestimentas. Cumple bien tu labor exterminando Criminales y me encargaré de recompensarte.", charIndexStr, vbWhite)
@@ -178,8 +171,7 @@ End Sub
 Public Sub ExpulsarFaccionReal(ByVal UserIndex As Integer)
             On Error GoTo ExpulsarFaccionReal_Err
 
-100         UserList(UserIndex).Faccion.ArmadaReal = 0
-102         UserList(UserIndex).Faccion.Status = 1
+102         UserList(UserIndex).Faccion.status = e_Facciones.Ciudadano
 104         Call RefreshCharStatus(UserIndex)
 
 106         Call PerderItemsFaccionarios(UserIndex)
@@ -198,8 +190,7 @@ Public Sub ExpulsarFaccionCaos(ByVal UserIndex As Integer)
 
             On Error GoTo ExpulsarFaccionCaos_Err
 
-100         UserList(UserIndex).Faccion.FuerzasCaos = 0
-102         UserList(UserIndex).Faccion.Status = 0
+102         UserList(UserIndex).Faccion.status = e_Facciones.Criminal
 104         Call RefreshCharStatus(UserIndex)
 
 106         Call PerderItemsFaccionarios(UserIndex)
@@ -240,20 +231,14 @@ Public Sub EnlistarCaos(ByVal UserIndex As Integer)
 100         With UserList(UserIndex)
 102             charIndexStr = str(NpcList(.flags.TargetNPC).Char.CharIndex)
 
-104             If .Faccion.FuerzasCaos = 1 Then
-106                 Call WriteChatOverHead(UserIndex, "Ya perteneces a la Legión Oscura.", charIndexStr, vbWhite)
+104             If status(UserIndex) = e_Facciones.Caos Or status(UserIndex) = e_Facciones.concilio Then
+106                 Call WriteChatOverHead(UserIndex, "Ya perteneces a la Legión Oscura.", charindexstr, vbWhite)
                     Exit Sub
 
                 End If
 
-108             If .Faccion.ArmadaReal = 1 Then
-110                 Call WriteChatOverHead(userindex, "El caos y el poder de las sombras reinará en este mundo y tu sufrirás maldito súbdito de Tancredo.", charindexstr, vbWhite)
-                    Exit Sub
-
-                End If
-
-116             If Status(UserIndex) = 1 Then
-118                 Call WriteChatOverHead(UserIndex, "¡¡Ja ja ja!! Tu no eres bienvenido aquí asqueroso Ciudadano", charIndexStr, vbWhite)
+116             If status(UserIndex) = e_Facciones.Armada Or status(UserIndex) = e_Facciones.Ciudadano Or status(UserIndex) = e_Facciones.consejo Then
+118                 Call WriteChatOverHead(UserIndex, "¡¡Ja ja ja!! Tu no eres bienvenido aquí asqueroso Ciudadano", charindexstr, vbWhite)
                     Exit Sub
 
                 End If
@@ -307,10 +292,9 @@ Public Sub EnlistarCaos(ByVal UserIndex As Integer)
                 End If
 
                 ' Cumple con los requisitos para enlistarse
-150             .Faccion.FuerzasCaos = 1
 152             .Faccion.RecompensasCaos = primerRango.rank ' Asigna primer rango
 154             .Faccion.Reenlistadas = .Faccion.Reenlistadas + 1
-156             .Faccion.Status = 2
+156             .Faccion.status = e_Facciones.Caos
 
 158             If .Faccion.RecibioArmaduraCaos = 0 Then
 160                 Call WriteChatOverHead(UserIndex, "Aquí tienes tu armadura legionario, ve a derramar sangre de los súbditos de Tancredo. Esta guerra será larga y cruel.", charIndexStr, vbWhite)
@@ -406,9 +390,9 @@ Private Function ProximoRango(ByVal UserIndex As Integer) As t_RangoFaccion
             On Error GoTo ProximoRango_Err
 
 100         With UserList(UserIndex)
-102             If .Faccion.ArmadaReal = 1 And .Faccion.RecompensasReal < MaxRangoFaccion Then
+102             If .Faccion.status = e_Facciones.Armada Or .Faccion.status = e_Facciones.consejo And .Faccion.RecompensasReal < MaxRangoFaccion Then
 104                 ProximoRango = RangosFaccion(2 * .Faccion.RecompensasReal + 1)
-106             ElseIf .Faccion.FuerzasCaos = 1 And .Faccion.RecompensasCaos < MaxRangoFaccion Then
+106             ElseIf .Faccion.status = e_Facciones.Caos Or .Faccion.status = e_Facciones.concilio And .Faccion.RecompensasCaos < MaxRangoFaccion Then
 108                 ProximoRango = RangosFaccion(2 * .Faccion.RecompensasCaos + 2)
                 Else ' No pertenece a ninguna faccion.
                     ' No devuelve nada
@@ -442,10 +426,10 @@ Private Sub DarRecompensas(ByVal UserIndex As Integer)
                     Exit Sub
                 End If
 
-104             If .Faccion.ArmadaReal = 1 Then
+104             If .Faccion.status = e_Facciones.Armada Or .Faccion.status = e_Facciones.consejo Then
 106                 rank = .Faccion.RecompensasReal
 108                 ultimaRecompensa = .Faccion.RecibioArmaduraReal
-110             ElseIf .Faccion.FuerzasCaos = 1 Then
+110             ElseIf .Faccion.status = e_Facciones.Caos Or .Faccion.status = e_Facciones.concilio Then
 112                 rank = .Faccion.RecompensasCaos
 114                 ultimaRecompensa = .Faccion.RecibioArmaduraCaos
                 Else ' No pertenece a ninguna faccion.
@@ -482,9 +466,9 @@ Private Sub DarRecompensas(ByVal UserIndex As Integer)
 134             Next i
 
                 ' Guardamos que el usuario recibio las recompensas de su rank.
-136             If .Faccion.ArmadaReal = 1 Then
+136             If .Faccion.status = e_Facciones.Armada Or .Faccion.status = e_Facciones.consejo Then
 138               .Faccion.RecibioArmaduraReal = rank
-                Else
+                ElseIf .Faccion.status = e_Facciones.Caos Or .Faccion.status = e_Facciones.concilio Then
 140               .Faccion.RecibioArmaduraCaos = rank
                 End If
 

@@ -448,7 +448,7 @@ Public Sub SaveUserDatabase(ByVal userindex As Integer)
             
             
             
-104         ReDim Params(89)
+104         ReDim Params(85)
 
             Dim i As Integer
         
@@ -516,10 +516,6 @@ Public Sub SaveUserDatabase(ByVal userindex As Integer)
 232         Params(PostInc(i)) = .flags.Pareja
 234         Params(PostInc(i)) = .Counters.Pena
 236         Params(PostInc(i)) = .flags.VecesQueMoriste
-238         Params(PostInc(i)) = (.Faccion.Status = e_Facciones.consejo)
-240         Params(PostInc(i)) = (.Faccion.Status = e_Facciones.concilio)
-242         Params(PostInc(i)) = .Faccion.ArmadaReal
-244         Params(PostInc(i)) = .Faccion.FuerzasCaos
 246         Params(PostInc(i)) = .Faccion.ciudadanosMatados
 248         Params(PostInc(i)) = .Faccion.CriminalesMatados
 250         Params(PostInc(i)) = .Faccion.RecibioArmaduraReal
@@ -862,17 +858,8 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
 254         .ChatGlobal = RS!chat_global
 256         .ChatCombate = RS!chat_combate
 
-258         If RS!pertenece_consejo_real Then
-                .Faccion.Status = e_Facciones.consejo
-            End If
-
-262         If RS!pertenece_consejo_caos Then
-                .Faccion.Status = e_Facciones.concilio
-            End If
 260         .flags.Privilegios = .flags.Privilegios ' Or e_PlayerType.RoyalCouncil
 
-266         .Faccion.ArmadaReal = RS!pertenece_real
-268         .Faccion.FuerzasCaos = RS!pertenece_caos
 270         .Faccion.ciudadanosMatados = RS!ciudadanos_matados
 272         .Faccion.CriminalesMatados = RS!criminales_matados
 274         .Faccion.RecibioArmaduraReal = RS!recibio_armadura_real
@@ -1567,11 +1554,11 @@ ErrorHandler:
 
 End Sub
 
-Public Sub EcharConsejoDatabase(UserName As String)
+Public Sub EcharConsejoDatabase(username As String, ByVal Status As Integer)
         
         On Error GoTo EcharConsejoDatabase_Err
         
-        Call Execute("UPDATE user SET pertenece_consejo_real = FALSE, pertenece_consejo_caos = FALSE WHERE UPPER(name) = ?;", UCase$(UserName))
+        Call Execute("UPDATE user SET status = ? WHERE UPPER(name) = ?;", Status, UCase$(username))
         
         Exit Sub
 
@@ -1585,7 +1572,7 @@ Public Sub EcharLegionDatabase(UserName As String)
         
         On Error GoTo EcharLegionDatabase_Err
         
-        Call Execute("UPDATE user SET pertenece_caos = FALSE, reenlistadas = 2, status = ? WHERE UPPER(name) = ?;", e_Facciones.Criminal, UCase$(username))
+        Call Execute("UPDATE user SET status = ? WHERE UPPER(name) = ?;", e_Facciones.Criminal, UCase$(username))
         
         Exit Sub
 
@@ -1599,7 +1586,7 @@ Public Sub EcharArmadaDatabase(UserName As String)
         
         On Error GoTo EcharArmadaDatabase_Err
         
-        Call Execute("UPDATE user SET pertenece_real = FALSE, reenlistadas = 2, status = ? WHERE UPPER(name) = ?;", e_Facciones.Ciudadano, UCase$(username))
+        Call Execute("UPDATE user SET status = ? WHERE UPPER(name) = ?;", e_Facciones.Ciudadano, UCase$(username))
 
         Exit Sub
 
