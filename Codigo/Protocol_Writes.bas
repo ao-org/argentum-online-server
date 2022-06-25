@@ -873,6 +873,30 @@ WritePosUpdateCharIndex_Err:
 End Sub
 
 ''
+' Writes the "PosUpdate" message to the given user's outgoing data .incomingData.
+'
+' @param    UserIndex User to which the message is intended.
+' @remarks  The data is not actually sent until the buffer is properly flushed.
+Public Sub WritePosUpdateChar(ByVal UserIndex As Integer, ByVal X As Byte, ByVal y As Byte, ByVal charindex As Integer)
+        '<EhHeader>
+        On Error GoTo WritePosUpdateChar_Err
+        '</EhHeader>
+100     Call Writer.WriteInt16(ServerPacketID.PosUpdateChar)
+105     Call Writer.WriteInt16(charindex)
+102     Call Writer.WriteInt8(X)
+104     Call Writer.WriteInt8(y)
+106     Call modSendData.SendData(ToIndex, UserIndex)
+
+        '<EhFooter>
+        Exit Sub
+
+WritePosUpdateChar_Err:
+        Call Writer.Clear
+        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WritePosUpdateChar", Erl)
+        '</EhFooter>
+End Sub
+
+''
 ' Writes the "NPCHitUser" message to the given user's outgoing data .incomingData.
 '
 ' @param    UserIndex User to which the message is intended.
@@ -1017,7 +1041,7 @@ Public Sub WriteChatOverHead(ByVal UserIndex As Integer, _
         On Error GoTo WriteChatOverHead_Err
         '</EhHeader>
 100     Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageChatOverHead(chat, _
-                CharIndex, Color))
+                charindex, Color, , UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.y))
         '<EhFooter>
         Exit Sub
 
@@ -1277,31 +1301,6 @@ WriteCharacterUpdateFlag_Err:
         '</EhFooter>
 End Sub
 
-''
-' Writes the "CharacterMove" message to the given user's outgoing data .incomingData.
-'
-' @param    UserIndex User to which the message is intended.
-' @param    CharIndex Character which is moving.
-' @param    X X coord of the character's new position.
-' @param    Y Y coord of the character's new position.
-' @remarks  The data is not actually sent until the buffer is properly flushed.
-Public Sub WriteCharacterMove(ByVal UserIndex As Integer, _
-                              ByVal CharIndex As Integer, _
-                              ByVal X As Byte, _
-                              ByVal Y As Byte)
-        '<EhHeader>
-        On Error GoTo WriteCharacterMove_Err
-        '</EhHeader>
-100     Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageCharacterMove( _
-                CharIndex, X, Y))
-        '<EhFooter>
-        Exit Sub
-
-WriteCharacterMove_Err:
-        Call Writer.Clear
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteCharacterMove", Erl)
-        '</EhFooter>
-End Sub
 
 Public Sub WriteForceCharMove(ByVal UserIndex As Integer, ByVal Direccion As e_Heading)
         '<EhHeader>
@@ -1566,6 +1565,28 @@ WritePlayWave_Err:
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WritePlayWave", Erl)
         '</EhFooter>
 End Sub
+Public Sub WritePlayWaveStep(ByVal UserIndex As Integer, _
+                         ByVal wave As Integer, _
+                         ByVal distance As Byte, _
+                         ByVal balance As Integer, _
+                         ByVal step As Boolean)
+        '<EhHeader>
+        On Error GoTo WritePlayWaveStep_Err
+        '</EhHeader>
+100     Call Writer.WriteInt16(ServerPacketID.PlayWaveStep)
+102     Call Writer.WriteInt16(wave)
+108     Call Writer.WriteInt8(distance)
+109     Call Writer.WriteInt16(balance)
+110     Call Writer.WriteBool(step)
+132     Call modSendData.SendData(ToIndex, UserIndex)
+        '<EhFooter>
+        Exit Sub
+
+WritePlayWaveStep_Err:
+        Call Writer.Clear
+        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WritePlayWaveStep", Erl)
+        '</EhFooter>
+End Sub
 
 ''
 ' Writes the "GuildList" message to the given user's outgoing data .incomingData.
@@ -1697,7 +1718,7 @@ Public Sub WriteCreateFX(ByVal UserIndex As Integer, _
         On Error GoTo WriteCreateFX_Err
         '</EhHeader>
 100     Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageCreateFX(CharIndex, FX, _
-                FXLoops))
+                FXLoops, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.y))
         '<EhFooter>
         Exit Sub
 
@@ -2824,7 +2845,7 @@ Public Sub WriteSetInvisible(ByVal UserIndex As Integer, _
         On Error GoTo WriteSetInvisible_Err
         '</EhHeader>
 100     Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageSetInvisible(CharIndex, _
-                invisible))
+                invisible, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.y))
         '<EhFooter>
         Exit Sub
 
@@ -4214,13 +4235,17 @@ End Function
 ' @return   The formated message ready to be writen as is on outgoing buffers.
 ' @remarks  The message is written to no outgoing buffer, but only prepared in a single string to be easily sent to several clients.
 Public Function PrepareMessageSetInvisible(ByVal CharIndex As Integer, _
-                                           ByVal invisible As Boolean)
+                                           ByVal invisible As Boolean, _
+                                           Optional ByVal X As Byte = 0, _
+                                           Optional ByVal y As Byte = 0)
         '<EhHeader>
         On Error GoTo PrepareMessageSetInvisible_Err
         '</EhHeader>
 100     Call Writer.WriteInt16(ServerPacketID.SetInvisible)
 102     Call Writer.WriteInt16(CharIndex)
 104     Call Writer.WriteBool(invisible)
+105     Call Writer.WriteInt8(X)
+106     Call Writer.WriteInt8(y)
         '<EhFooter>
         Exit Function
 
@@ -4241,7 +4266,9 @@ End Function
 Public Function PrepareMessageChatOverHead(ByVal chat As String, _
                                            ByVal CharIndex As Integer, _
                                            ByVal Color As Long, _
-                                           Optional ByVal EsSpell As Boolean = False)
+                                           Optional ByVal EsSpell As Boolean = False, _
+                                           Optional ByVal X As Byte = 0, _
+                                           Optional ByVal y As Byte = 0)
         '<EhHeader>
         On Error GoTo PrepareMessageChatOverHead_Err
         '</EhHeader>
@@ -4260,6 +4287,8 @@ Public Function PrepareMessageChatOverHead(ByVal chat As String, _
 116     Call Writer.WriteInt8(b)
 118     Call Writer.WriteInt32(Color)
 119     Call Writer.WriteBool(EsSpell)
+        Call Writer.WriteInt8(X)
+        Call Writer.WriteInt8(y)
         '<EhFooter>
         Exit Function
 
@@ -4405,7 +4434,9 @@ End Function
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Function PrepareMessageCreateFX(ByVal CharIndex As Integer, _
                                        ByVal FX As Integer, _
-                                       ByVal FXLoops As Integer)
+                                       ByVal FXLoops As Integer, _
+                                       Optional ByVal X As Byte = 0, _
+                                       Optional ByVal y As Byte = 0)
         '<EhHeader>
         On Error GoTo PrepareMessageCreateFX_Err
         '</EhHeader>
@@ -4413,6 +4444,8 @@ Public Function PrepareMessageCreateFX(ByVal CharIndex As Integer, _
 102     Call Writer.WriteInt16(CharIndex)
 104     Call Writer.WriteInt16(FX)
 106     Call Writer.WriteInt16(FXLoops)
+107     Call Writer.WriteInt8(X)
+108     Call Writer.WriteInt8(y)
         '<EhFooter>
         Exit Function
 
@@ -4423,13 +4456,17 @@ PrepareMessageCreateFX_Err:
 End Function
 
 Public Function PrepareMessageMeditateToggle(ByVal CharIndex As Integer, _
-                                             ByVal FX As Integer)
+                                             ByVal FX As Integer, _
+                                             Optional ByVal X As Byte = 0, _
+                                             Optional ByVal y As Byte = 0)
         '<EhHeader>
         On Error GoTo PrepareMessageMeditateToggle_Err
         '</EhHeader>
 100     Call Writer.WriteInt16(ServerPacketID.MeditateToggle)
 102     Call Writer.WriteInt16(CharIndex)
 104     Call Writer.WriteInt16(FX)
+105     Call Writer.WriteInt8(X)
+106     Call Writer.WriteInt8(y)
         '<EhFooter>
         Exit Function
 
@@ -4443,7 +4480,9 @@ Public Function PrepareMessageParticleFX(ByVal CharIndex As Integer, _
                                          ByVal Particula As Integer, _
                                          ByVal Time As Long, _
                                          ByVal Remove As Boolean, _
-                                         Optional ByVal grh As Long = 0)
+                                         Optional ByVal grh As Long = 0, _
+                                         Optional ByVal X As Byte = 0, _
+                                         Optional ByVal y As Byte = 0)
         '<EhHeader>
         On Error GoTo PrepareMessageParticleFX_Err
         '</EhHeader>
@@ -4453,6 +4492,8 @@ Public Function PrepareMessageParticleFX(ByVal CharIndex As Integer, _
 106     Call Writer.WriteInt32(Time)
 108     Call Writer.WriteBool(Remove)
 110     Call Writer.WriteInt32(grh)
+        Call Writer.WriteInt8(X)
+        Call Writer.WriteInt8(y)
         '<EhFooter>
         Exit Function
 
@@ -4468,7 +4509,9 @@ Public Function PrepareMessageParticleFXWithDestino(ByVal Emisor As Integer, _
                                                     ByVal ParticulaFinal As Integer, _
                                                     ByVal Time As Long, _
                                                     ByVal wav As Integer, _
-                                                    ByVal FX As Integer)
+                                                    ByVal FX As Integer, _
+                                                    Optional ByVal X As Byte = 0, _
+                                                    Optional ByVal y As Byte = 0)
         '<EhHeader>
         On Error GoTo PrepareMessageParticleFXWithDestino_Err
         '</EhHeader>
@@ -4480,6 +4523,9 @@ Public Function PrepareMessageParticleFXWithDestino(ByVal Emisor As Integer, _
 110     Call Writer.WriteInt32(Time)
 112     Call Writer.WriteInt16(wav)
 114     Call Writer.WriteInt16(FX)
+115     Call Writer.WriteInt8(X)
+116     Call Writer.WriteInt8(y)
+    
         '<EhFooter>
         Exit Function
 
@@ -4626,6 +4672,7 @@ PrepareMessagePlayWave_Err:
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessagePlayWave", Erl)
         '</EhFooter>
 End Function
+
 
 Public Function PrepareMessageUbicacionLlamada(ByVal Mapa As Integer, _
                                                ByVal X As Byte, _

@@ -1225,7 +1225,7 @@ Public Sub EfectoInvisibilidad(ByVal UserIndex As Integer)
 108         If UserList(UserIndex).flags.Oculto = 0 Then
                 ' Call WriteConsoleMsg(UserIndex, "Has vuelto a ser visible.", e_FontTypeNames.FONTTYPE_INFO)
 110             Call WriteLocaleMsg(UserIndex, "307", e_FontTypeNames.FONTTYPE_INFO)
-112             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(UserList(UserIndex).Char.CharIndex, False))
+112             Call SendData(SendTarget.ToPCArea, userindex, PrepareMessageSetInvisible(UserList(userindex).Char.charindex, False, UserList(userindex).Pos.X, UserList(userindex).Pos.y))
 114             Call WriteContadores(UserIndex)
 
             End If
@@ -1564,7 +1564,8 @@ Public Sub EfectoVeneno(ByVal UserIndex As Integer)
 106         With UserList(UserIndex)
               'Call WriteConsoleMsg(UserIndex, "Estás envenenado, si no te curas morirás.", e_FontTypeNames.FONTTYPE_VENENO)
 108           Call WriteLocaleMsg(UserIndex, "47", e_FontTypeNames.FONTTYPE_VENENO)
-110           Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, e_ParticulasIndex.Envenena, 30, False))
+              UserList(userindex).Counters.timeFx = 2
+110           Call SendData(SendTarget.ToPCAliveArea, userindex, PrepareMessageParticleFX(.Char.charindex, e_ParticulasIndex.Envenena, 30, False, , UserList(userindex).Pos.X, UserList(userindex).Pos.y))
 112           .Counters.Veneno = 0
 
               ' El veneno saca un porcentaje de vida random.
@@ -1608,7 +1609,9 @@ Public Sub EfectoIncineramiento(ByVal UserIndex As Integer)
                     ' "Te estás incinerando, si no te curas morirás.
 104                 Call WriteLocaleMsg(UserIndex, "392", e_FontTypeNames.FONTTYPE_FIGHT)
                     'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, e_ParticulasIndex.Incinerar, 30, False))
-106                 Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageCreateFX(.Char.CharIndex, 73, 0))
+                
+                    UserList(userindex).Counters.timeFx = 2
+106                 Call SendData(SendTarget.ToPCAliveArea, userindex, PrepareMessageCreateFX(.Char.charindex, 73, 0, .Pos.X, .Pos.y))
 
 108                 damage = RandomNumber(35, 45)
 110                 .Stats.MinHp = .Stats.MinHp - damage
@@ -1841,6 +1844,16 @@ Sub PasarSegundo()
 112         With UserList(i)
 
 114             If .flags.UserLogged Then
+                    
+                    If .Counters.timeChat > 0 Then
+                        .Counters.timeChat = .Counters.timeChat - 1
+                    End If
+                    
+                    If .Counters.timeFx > 0 Then
+                        .Counters.timeFx = .Counters.timeFx - 1
+                    End If
+                    
+                    
 116                 If .flags.Silenciado = 1 Then
 118                     .flags.SegundosPasados = .flags.SegundosPasados + 1
         

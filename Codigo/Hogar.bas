@@ -32,7 +32,7 @@ Public Sub goHome(ByVal UserIndex As Integer)
                 Else
 108                 .Counters.TimerBarra = 210
                 End If
-110             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, e_ParticulasIndex.Runa, .Counters.TimerBarra * 100, False))
+110             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.charindex, e_ParticulasIndex.Runa, .Counters.TimerBarra * 100, False, .Pos.X, .Pos.Y))
 112             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageBarFx(.Char.CharIndex, .Counters.TimerBarra, e_AccionBarra.Hogar))
                 Call WriteConsoleMsg(UserIndex, "Volverás a tu hogar en " & .Counters.TimerBarra & " segundos.", e_FontTypeNames.FONTTYPE_New_Gris)
                     

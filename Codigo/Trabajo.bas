@@ -371,7 +371,7 @@ Public Sub DoPermanecerOculto(ByVal UserIndex As Integer)
                 Else
 
 128                 If .flags.invisible = 0 And .flags.AdminInvisible = 0 Then
-130                     Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessageSetInvisible(.Char.charindex, False))
+130                     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageSetInvisible(.Char.charindex, False, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
 132                     Call WriteConsoleMsg(UserIndex, "¡Has vuelto a ser visible!", e_FontTypeNames.FONTTYPE_INFO)
 
                     End If
@@ -445,8 +445,8 @@ Public Sub DoOcultarse(ByVal UserIndex As Integer)
                         Call RefreshCharStatus(UserIndex)
                     End If
                 Else
-152                 Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessageSetInvisible(.Char.charindex, True))
-                    
+                    UserList(UserIndex).Counters.timeFx = 2
+152                 Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageSetInvisible(.Char.charindex, True, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
                     'Call WriteConsoleMsg(UserIndex, "¡Te has escondido entre las sombras!", e_FontTypeNames.FONTTYPE_INFO)
 154                 Call WriteLocaleMsg(UserIndex, "55", e_FontTypeNames.FONTTYPE_INFO)
                 End If
@@ -589,7 +589,7 @@ Public Sub DoNavega(ByVal UserIndex As Integer, _
 
                 'Call WriteConsoleMsg(UserIndex, "Has vuelto a ser visible.", e_FontTypeNames.FONTTYPE_INFO)
 196             Call WriteLocaleMsg(UserIndex, "307", e_FontTypeNames.FONTTYPE_INFO)
-198             Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessageSetInvisible(.Char.charindex, False))
+198             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageSetInvisible(.Char.charindex, False, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
             End If
 
 200         Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)

@@ -1528,8 +1528,9 @@ Public Type t_UserFlags
     GMMeSigue As Integer
     
     EnTorneo As Boolean
-
-    'Ladder
+    
+    stepToggle As Boolean
+    'Ladder puto
     'Casamientos  08/6/10 01:10 am
     Pareja As String
     Casado As Byte
@@ -1731,6 +1732,10 @@ Public Type t_UserCounters
     UserHechizosInterval(1 To MAXUSERHECHIZOS) As Long
     
     controlHechizos As t_ControlHechizos
+    
+    
+    timeChat As Integer
+    timeFx As Integer
     
     IdleCount As Integer
     AttackCounter As Integer
@@ -2536,3 +2541,26 @@ Public Enum eNumber_Types
     ent_Long
     ent_Trigger
 End Enum
+
+Public Const DISTANCIA_ENVIO_DATOS As Byte = 2
+
+Public Enum TipoPaso
+    CONST_BOSQUE = 1
+    CONST_NIEVE = 2
+    CONST_CABALLO = 3
+    CONST_DUNGEON = 4
+    CONST_PISO = 5
+    CONST_DESIERTO = 6
+    CONST_PESADO = 7
+End Enum
+
+Public Type tPaso
+
+    CantPasos As Byte
+    Wav() As Integer
+
+End Type
+
+Public Const NUM_PASOS       As Byte = 6
+
+Public Pasos()               As tPaso

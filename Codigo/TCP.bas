@@ -1016,6 +1016,8 @@ Sub ResetContadores(ByVal UserIndex As Integer)
             .PacketCount = 0
             .controlHechizos.HechizosCasteados = 0
             .controlHechizos.HechizosTotales = 0
+            .timeChat = 0
+            .timeFx = 0
         End With
 
         

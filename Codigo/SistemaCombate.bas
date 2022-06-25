@@ -1029,8 +1029,8 @@ Public Sub UsuarioAtacaNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer
 124                         Call WriteLocaleMsg(UserIndex, "136", e_FontTypeNames.FONTTYPE_FIGHT)
 
                         End If
-
-126                     Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessageCreateFX(NpcList(NpcIndex).Char.charindex, 8, 0))
+                        UserList(UserIndex).Counters.timeFx = 2
+126                     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageCreateFX(NpcList(NpcIndex).Char.charindex, 8, 0, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.y))
                                  
                     Else
 
@@ -1067,14 +1067,16 @@ Public Sub UsuarioAtacaNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer
 146         If Arma > 0 Then
 148             If municionIndex > 0 And ObjData(Arma).Proyectil Then
 150                 If ObjData(municionIndex).CreaFX <> 0 Then
-152                     Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessageCreateFX(NpcList(NpcIndex).Char.charindex, ObjData(municionIndex).CreaFX, 0))
+                        UserList(UserIndex).Counters.timeFx = 2
+152                     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageCreateFX(NpcList(NpcIndex).Char.charindex, ObjData(municionIndex).CreaFX, 0, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.y))
                     
                     End If
                                         
 154                 If ObjData(municionIndex).CreaParticula <> "" Then
 156                     Particula = val(ReadField(1, ObjData(municionIndex).CreaParticula, Asc(":")))
 158                     Tiempo = val(ReadField(2, ObjData(municionIndex).CreaParticula, Asc(":")))
-160                     Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessageParticleFX(NpcList(NpcIndex).Char.charindex, Particula, Tiempo, False))
+                        UserList(UserIndex).Counters.timeFx = 2
+160                     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageParticleFX(NpcList(NpcIndex).Char.charindex, Particula, Tiempo, False, , UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.y))
                     End If
                 End If
             End If
@@ -1267,8 +1269,8 @@ Private Function UsuarioImpacto(ByVal AtacanteIndex As Integer, ByVal VictimaInd
 158             If UserList(VictimaIndex).ChatCombate = 1 Then
 160                 Call Write_BlockedWithShieldUser(VictimaIndex)
                 End If
-
-162             Call SendData(SendTarget.toPCAliveArea, VictimaIndex, PrepareMessageCreateFX(UserList(VictimaIndex).Char.charindex, 88, 0))
+                UserList(VictimaIndex).Counters.timeFx = 2
+162             Call SendData(SendTarget.ToPCAliveArea, VictimaIndex, PrepareMessageCreateFX(UserList(VictimaIndex).Char.charindex, 88, 0, UserList(VictimaIndex).Pos.X, UserList(VictimaIndex).Pos.y))
 164             Call SubirSkill(VictimaIndex, e_Skill.Defensa)
             Else
 166             Call WriteConsoleMsg(VictimaIndex, "¡" & UserList(AtacanteIndex).name & " te atacó y falló! ", e_FontTypeNames.FONTTYPE_FIGHT)
@@ -1309,7 +1311,9 @@ Public Sub UsuarioAtacaUsuario(ByVal AtacanteIndex As Integer, ByVal VictimaInde
             'Call SendData(SendTarget.ToPCArea, AtacanteIndex, PrepareMessagePlayWave(SND_IMPACTO, UserList(AtacanteIndex).Pos.X, UserList(AtacanteIndex).Pos.Y))
 
 112         If UserList(VictimaIndex).flags.Navegando = 0 Or UserList(VictimaIndex).flags.Montado = 0 Then
-114             Call SendData(SendTarget.toPCAliveArea, VictimaIndex, PrepareMessageCreateFX(UserList(VictimaIndex).Char.charindex, FXSANGRE, 0))
+                UserList(VictimaIndex).Counters.timeFx = 2
+114             Call SendData(SendTarget.ToPCAliveArea, VictimaIndex, PrepareMessageCreateFX(UserList(VictimaIndex).Char.charindex, FXSANGRE, 0, UserList(VictimaIndex).Pos.X, UserList(VictimaIndex).Pos.y))
+                Call SendData(SendTarget.ToPCAliveArea, VictimaIndex, PrepareMessageParticleFXWithDestino(UserList(AtacanteIndex).Char.charindex, UserList(VictimaIndex).Char.charindex, 181, 2, 0, 1, 2, UserList(VictimaIndex).Pos.X, UserList(VictimaIndex).Pos.y))
             End If
 
 116         Call UserDañoUser(AtacanteIndex, VictimaIndex)
@@ -1456,7 +1460,8 @@ Private Sub UserDañoUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As 
 200                 Color = vbYellow
 
                     ' Efecto en la víctima
-202                 Call SendData(SendTarget.toPCAliveArea, VictimaIndex, PrepareMessageCreateFX(UserList(VictimaIndex).Char.charindex, 89, 0))
+                    UserList(VictimaIndex).Counters.timeFx = 2
+202                 Call SendData(SendTarget.ToPCAliveArea, VictimaIndex, PrepareMessageCreateFX(UserList(VictimaIndex).Char.charindex, 89, 0, UserList(VictimaIndex).Pos.X, UserList(VictimaIndex).Pos.y))
                     
                     ' Efecto en pantalla a ambos
 204                 Call WriteFlashScreen(VictimaIndex, &H3C3CFF, 200, True)
@@ -2395,7 +2400,8 @@ Private Sub UserDañoEspecial(ByVal AtacanteIndex As Integer, ByVal VictimaIndex
 152             UserList(VictimaIndex).Counters.Paralisis = 6
 
 154             Call WriteParalizeOK(VictimaIndex)
-156             Call SendData(SendTarget.toPCAliveArea, VictimaIndex, PrepareMessageCreateFX(UserList(VictimaIndex).Char.charindex, 8, 0))
+                UserList(VictimaIndex).Counters.timeFx = 2
+156             Call SendData(SendTarget.ToPCAliveArea, VictimaIndex, PrepareMessageCreateFX(UserList(VictimaIndex).Char.charindex, 8, 0, UserList(VictimaIndex).Pos.X, UserList(VictimaIndex).Pos.y))
 
 158             Call WriteCombatConsoleMsg(VictimaIndex, "¡" & UserList(AtacanteIndex).name & " te ha paralizado!")
 160             Call WriteCombatConsoleMsg(AtacanteIndex, "¡Has paralizado a " & UserList(VictimaIndex).name & "!")
@@ -2410,7 +2416,8 @@ Private Sub UserDañoEspecial(ByVal AtacanteIndex As Integer, ByVal VictimaIndex
 168             UserList(VictimaIndex).Counters.Estupidez = 3 ' segundos?
 
 170             Call WriteDumb(VictimaIndex)
-172             Call SendData(SendTarget.toPCAliveArea, VictimaIndex, PrepareMessageParticleFX(UserList(VictimaIndex).Char.charindex, 30, 30, False))
+                UserList(VictimaIndex).Counters.timeFx = 2
+172             Call SendData(SendTarget.ToPCAliveArea, VictimaIndex, PrepareMessageParticleFX(UserList(VictimaIndex).Char.charindex, 30, 30, False, , UserList(VictimaIndex).Pos.X, UserList(VictimaIndex).Pos.y))
 
 174             Call WriteCombatConsoleMsg(VictimaIndex, "¡" & UserList(AtacanteIndex).name & " te ha estupidizado!")
 176             Call WriteCombatConsoleMsg(AtacanteIndex, "¡Has estupidizado a " & UserList(VictimaIndex).name & "!")
