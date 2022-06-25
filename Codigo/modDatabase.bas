@@ -768,12 +768,12 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
                 Exit Sub
             End If
             'HarThaoS: Comentado hasta que salga el MAO.
-            'If (RS!is_locked_in_mao) Then
-            '    Call WriteShowMessageBox(UserIndex, "El personaje que estás intentando loguear se encuentra en venta, para desbloquearlo deberás hacerlo desde la página web.")
-           '
-           '     Call CloseSocket(UserIndex)
-           '     Exit Sub
-           ' End If
+            If (RS!is_locked_in_mao) Then
+                Call WriteShowMessageBox(UserIndex, "El personaje que estás intentando loguear se encuentra en venta, para desbloquearlo deberás hacerlo desde la página web.")
+           
+                Call CloseSocket(UserIndex)
+                Exit Sub
+            End If
             
             Dim user_credits As Long
             

@@ -1819,16 +1819,6 @@ Sub PasarSegundo()
 
         Dim Y    As Byte
         
-        
-        
-70      'If cuentaregresivaOrcos > 0 Then
-74      '    cuentaregresivaOrcos = cuentaregresivaOrcos - 1
-        'Else
-76      '      cuentaregresivaOrcos = 300
-78      '      Call TimerQuestOrco
-        'End If
-        
-        
 100     If CuentaRegresivaTimer > 0 Then
 102         If CuentaRegresivaTimer > 1 Then
 104             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(CuentaRegresivaTimer - 1 & " segundos...!", e_FontTypeNames.FONTTYPE_GUILD))

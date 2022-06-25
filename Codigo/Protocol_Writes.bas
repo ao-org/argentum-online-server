@@ -5427,7 +5427,7 @@ End Sub
 Public Sub WriteShopPjsInit(ByVal UserIndex As Integer)
     On Error GoTo WriteShopPjsInit_Err
    
-   ' Call Writer.WriteInt16(ServerPacketID.ShopPjsInit)
+    Call Writer.WriteInt16(ServerPacketID.ShopPjsInit)
     
 182 Call modSendData.SendData(ToIndex, UserIndex)
     
