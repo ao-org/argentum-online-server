@@ -1644,7 +1644,7 @@ Sub UsuarioAtacadoPorUsuario(ByVal AttackerIndex As Integer, ByVal VictimIndex A
 128         Call RefreshCharStatus(AttackerIndex)
         End If
 
-130     If Status(AttackerIndex) = 2 Then If UserList(AttackerIndex).Faccion.ArmadaReal = 1 Then Call ExpulsarFaccionReal(AttackerIndex)
+130     If Status(attackerIndex) = e_Facciones.Caos Then If UserList(attackerIndex).Faccion.Status = e_Facciones.Armada Then Call ExpulsarFaccionReal(attackerIndex)
 
 
 132     Call AllMascotasAtacanUser(VictimIndex, AttackerIndex)

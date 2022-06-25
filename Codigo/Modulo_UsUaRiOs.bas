@@ -2561,7 +2561,7 @@ Sub VolverCriminal(ByVal UserIndex As Integer)
 
 104     If .flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero) Then
    
-106         If .Faccion.ArmadaReal = 1 Then
+106         If .Faccion.Status = e_Facciones.Armada Then
                 ' WyroX: NUNCA debería pasar, pero dejo un log por si las...
                 Call TraceError(111, "Un personaje de la Armada Real atacó un ciudadano.", "UsUaRiOs.VolverCriminal")
                 'Call ExpulsarFaccionReal(UserIndex)
@@ -2569,7 +2569,7 @@ Sub VolverCriminal(ByVal UserIndex As Integer)
 
         End If
 
-108     If .Faccion.FuerzasCaos = 1 Then Exit Sub
+108     If .Faccion.Status = e_Facciones.Caos Or .Faccion.Status = e_Facciones.concilio Then Exit Sub
 
 110     .Faccion.Status = 0
         

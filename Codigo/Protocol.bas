@@ -6832,7 +6832,7 @@ Private Sub HandleInformation(ByVal UserIndex As Integer)
             End If
         
 112         If NpcList(.flags.TargetNPC).flags.Faccion = 0 Then
-114             If .Faccion.ArmadaReal = 0 Then
+114             If .Faccion.Status <> e_Facciones.Armada Or .Faccion.Status <> e_Facciones.consejo Then
 116                 Call WriteChatOverHead(UserIndex, "No perteneces a las tropas reales!!!", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
                     Exit Sub
 
@@ -6842,8 +6842,8 @@ Private Sub HandleInformation(ByVal UserIndex As Integer)
             
             Else
 
-120             If .Faccion.FuerzasCaos = 0 Then
-122                 Call WriteChatOverHead(UserIndex, "No perteneces a la legión oscura!!!", NpcList(.flags.TargetNPC).Char.charindex, vbWhite)
+120             If .Faccion.Status <> e_Facciones.Caos Or .Faccion.Status <> e_Facciones.concilio Then
+122                 Call WriteChatOverHead(userindex, "No perteneces a la legión oscura!!!", NpcList(.flags.TargetNPC).Char.charindex, vbWhite)
                     Exit Sub
 
                 End If
@@ -6896,7 +6896,7 @@ Private Sub HandleReward(ByVal UserIndex As Integer)
         
 112         If NpcList(.flags.TargetNPC).flags.Faccion = 0 Then
         
-114             If .Faccion.ArmadaReal = 0 Then
+114             If .Faccion.Status <> e_Facciones.Armada Or .Faccion.Status <> e_Facciones.consejo Then
 116                 Call WriteChatOverHead(UserIndex, "No perteneces a las tropas reales!!!", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
                     Exit Sub
 
@@ -6906,8 +6906,8 @@ Private Sub HandleReward(ByVal UserIndex As Integer)
             
             Else
 
-120             If .Faccion.FuerzasCaos = 0 Then
-122                 Call WriteChatOverHead(UserIndex, "No perteneces a la legión oscura!!!", NpcList(.flags.TargetNPC).Char.charindex, vbWhite)
+120             If .Faccion.Status <> e_Facciones.Caos Or .Faccion.Status <> e_Facciones.concilio Then
+122                 Call WriteChatOverHead(userindex, "No perteneces a la legión oscura!!!", NpcList(.flags.TargetNPC).Char.charindex, vbWhite)
                     Exit Sub
 
                 End If
@@ -7557,7 +7557,7 @@ Private Sub HandleLeaveFaction(ByVal UserIndex As Integer)
 
             End If
         
-106         If .Faccion.ArmadaReal = 0 And .Faccion.FuerzasCaos = 0 Then
+106         If .Faccion.Status = e_Facciones.Ciudadano Then
 108             If .Faccion.Status = 1 Then
 110                 Call VolverCriminal(UserIndex)
 112                 Call WriteConsoleMsg(UserIndex, "Ahora sos un criminal.", e_FontTypeNames.FONTTYPE_INFOIAO)
@@ -7567,10 +7567,10 @@ Private Sub HandleLeaveFaction(ByVal UserIndex As Integer)
         
             'Validate target NPC
 114         If .flags.TargetNPC = 0 Then
-116             If .Faccion.ArmadaReal = 1 Then
+116             If .Faccion.Status = e_Facciones.Armada Or .Faccion.Status = e_Facciones.consejo Then
 118                 Call WriteConsoleMsg(UserIndex, "Para salir del ejercito debes ir a visitar al rey.", e_FontTypeNames.FONTTYPE_INFOIAO)
                     Exit Sub
-120             ElseIf .Faccion.FuerzasCaos = 1 Then
+120             ElseIf .Faccion.Status = e_Facciones.Caos Or .Faccion.Status = e_Facciones.concilio Then
 122                 Call WriteConsoleMsg(UserIndex, "Para salir de la legion debes ir a visitar al diablo.", e_FontTypeNames.FONTTYPE_INFOIAO)
                     Exit Sub
                 End If
@@ -7579,7 +7579,7 @@ Private Sub HandleLeaveFaction(ByVal UserIndex As Integer)
         
 124         If NpcList(.flags.TargetNPC).NPCtype = e_NPCType.Enlistador Then
                 'Quit the Royal Army?
-126             If .Faccion.ArmadaReal = 1 Then
+126             If .Faccion.Status = e_Facciones.Armada Or .Faccion.Status = e_Facciones.consejo Then
 128                 If NpcList(.flags.TargetNPC).flags.Faccion = 0 Then
                 
                         'HarThaoS
@@ -7611,7 +7611,7 @@ Private Sub HandleLeaveFaction(ByVal UserIndex As Integer)
                     End If
 
                     'Quit the Chaos Legion??
-146             ElseIf .Faccion.FuerzasCaos = 1 Then
+146             ElseIf .Faccion.Status = e_Facciones.Caos Or .Faccion.Status = e_Facciones.concilio Then
 
 148                 If NpcList(.flags.TargetNPC).flags.Faccion = 2 Then
                         'HarThaoS
@@ -7909,7 +7909,7 @@ Private Sub HandleOnlineRoyalArmy(ByVal UserIndex As Integer)
 104         For i = 1 To LastUser
 
 106             If UserList(i).ConnIDValida Then
-108                 If UserList(i).Faccion.ArmadaReal = 1 Then
+108                 If UserList(i).Faccion.Status = e_Facciones.Armada Or UserList(i).Faccion.Status = e_Facciones.consejo Then
 110                     If UserList(i).flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero Or e_PlayerType.SemiDios) Or .flags.Privilegios And (e_PlayerType.Dios Or e_PlayerType.Admin) Then
 112                         list = list & UserList(i).Name & ", "
 
@@ -7962,7 +7962,7 @@ Private Sub HandleOnlineChaosLegion(ByVal UserIndex As Integer)
 104         For i = 1 To LastUser
 
 106             If UserList(i).ConnIDValida Then
-108                 If UserList(i).Faccion.FuerzasCaos = 1 Then
+108                 If UserList(i).Faccion.Status = e_Facciones.Caos Or UserList(i).Faccion.Status = e_Facciones.concilio Then
 110                     If UserList(i).flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero Or e_PlayerType.SemiDios) Or .flags.Privilegios And (e_PlayerType.Dios Or e_PlayerType.Admin) Then
 112                         list = list & UserList(i).Name & ", "
 
@@ -12470,7 +12470,11 @@ Private Sub HandleCouncilKick(ByVal UserIndex As Integer)
 108             If tUser <= 0 Then
 110                 If PersonajeExiste(UserName) Then
 112                     Call WriteConsoleMsg(UserIndex, "Usuario offline, echando de los consejos", e_FontTypeNames.FONTTYPE_INFO)
-116                     Call EcharConsejoDatabase(UserName)
+                        Dim Status As Integer
+                        
+                        Status = GetDBValue("user", "status", "name", username)
+116                     Call EcharConsejoDatabase(username, IIf(Status = 4, 2, 3))
+                        Call WriteConsoleMsg(userindex, "Usuario " & username & " expulsado correctamente.", e_FontTypeNames.FONTTYPE_INFO)
                     Else
 122                     Call WriteConsoleMsg(UserIndex, "No existe el personaje.", e_FontTypeNames.FONTTYPE_INFO)
 
@@ -13042,11 +13046,29 @@ Private Sub HandleChaosLegionKick(ByVal UserIndex As Integer)
                             Exit Sub
                         End If
                     Else
-120                     UserList(tUser).Faccion.FuerzasCaos = 0
 122                     UserList(tUser).Faccion.Reenlistadas = 2
                         UserList(tUser).Faccion.Status = e_Facciones.Criminal
 124                     Call WriteConsoleMsg(UserIndex, username & " expulsado de las fuerzas del caos y prohibida la reenlistada", e_FontTypeNames.FONTTYPE_INFO)
 126                     Call WriteConsoleMsg(tUser, .name & " te ha expulsado en forma definitiva de las fuerzas del caos.", e_FontTypeNames.FONTTYPE_FIGHT)
+                    End If
+                Else
+                    If PersonajeExiste(username) Then
+                        Call WriteConsoleMsg(userindex, "Usuario offline, echando de la facción", e_FontTypeNames.FONTTYPE_INFO)
+                        
+                        
+                        Dim Status As Integer
+                        Status = GetDBValue("user", "status", "name", username)
+                        
+                        If Status = e_Facciones.Caos Then
+                            Call EcharLegionDatabase(username)
+                            Call WriteConsoleMsg(userindex, "Usuario " & username & " expulsado correctamente.", e_FontTypeNames.FONTTYPE_INFO)
+                        Else
+                            Call WriteConsoleMsg(userindex, "El personaje no pertenece a la legión.", e_FontTypeNames.FONTTYPE_INFO)
+                        End If
+                        
+                    Else
+                        Call WriteConsoleMsg(userindex, "No existe el personaje.", e_FontTypeNames.FONTTYPE_INFO)
+
                     End If
                 End If
 
@@ -13105,13 +13127,29 @@ Private Sub HandleRoyalArmyKick(ByVal UserIndex As Integer)
                             Exit Sub
                         End If
                     Else
-120                     UserList(tUser).Faccion.ArmadaReal = 0
 122                     UserList(tUser).Faccion.Reenlistadas = 2
                         UserList(tUser).Faccion.Status = e_Facciones.Ciudadano
 124                     Call WriteConsoleMsg(UserIndex, username & " expulsado de las fuerzas reales y prohibida la reenlistada", e_FontTypeNames.FONTTYPE_INFO)
 126                     Call WriteConsoleMsg(tUser, .name & " te ha expulsado en forma definitiva de las fuerzas reales.", e_FontTypeNames.FONTTYPE_FIGHT)
                     End If
 
+                Else
+                    If PersonajeExiste(username) Then
+                        Call WriteConsoleMsg(userindex, "Usuario offline, echando de la facción", e_FontTypeNames.FONTTYPE_INFO)
+                                                
+                        Dim Status As Integer
+                        Status = GetDBValue("user", "status", "name", username)
+                        
+                        If Status = e_Facciones.Armada Then
+                            Call EcharArmadaDatabase(username)
+                            Call WriteConsoleMsg(userindex, "Usuario " & username & " expulsado correctamente.", e_FontTypeNames.FONTTYPE_INFO)
+                        Else
+                            Call WriteConsoleMsg(userindex, "El personaje no pertenece a la armada.", e_FontTypeNames.FONTTYPE_INFO)
+                        End If
+                    Else
+                        Call WriteConsoleMsg(userindex, "No existe el personaje.", e_FontTypeNames.FONTTYPE_INFO)
+
+                    End If
                 End If
 
             End If
@@ -13944,8 +13982,8 @@ Public Sub HandleDonateGold(ByVal UserIndex As Integer)
 
             End If
 
-118         If .Faccion.Status = 1 Or .Faccion.ArmadaReal = 1 Or .Faccion.FuerzasCaos > 0 Or .Faccion.ciudadanosMatados = 0 Then
-120             Call WriteChatOverHead(UserIndex, "No puedo aceptar tu donación en este momento...", NpcList(.flags.TargetNPC).Char.charindex, vbWhite)
+118         If .Faccion.Status = e_Facciones.Ciudadano Or .Faccion.Status = e_Facciones.Armada Or .Faccion.Status = e_Facciones.consejo Or .Faccion.Status = e_Facciones.concilio Or .Faccion.Status = e_Facciones.Caos Or .Faccion.ciudadanosMatados = 0 Then
+120             Call WriteChatOverHead(userindex, "No puedo aceptar tu donación en este momento...", NpcList(.flags.TargetNPC).Char.charindex, vbWhite)
                 Exit Sub
 
             End If

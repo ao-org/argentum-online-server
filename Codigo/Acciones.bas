@@ -603,14 +603,14 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
                     End If
         
 242                 If NpcList(UserList(UserIndex).flags.TargetNPC).flags.Faccion = 0 Then
-244                     If UserList(UserIndex).Faccion.ArmadaReal = 0 Then
+244                     If UserList(UserIndex).Faccion.Status <> e_Facciones.Armada Or UserList(UserIndex).Faccion.Status <> e_Facciones.consejo Then
 246                         Call EnlistarArmadaReal(UserIndex)
                         Else
 248                         Call RecompensaArmadaReal(UserIndex)
 
                         End If
                     Else
-250                     If UserList(UserIndex).Faccion.FuerzasCaos = 0 Then
+250                     If UserList(UserIndex).Faccion.Status <> e_Facciones.Caos Or UserList(UserIndex).Faccion.Status <> e_Facciones.concilio Then
 252                         Call EnlistarCaos(UserIndex)
                         Else
 254                         Call RecompensaCaos(UserIndex)
