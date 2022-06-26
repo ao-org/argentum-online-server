@@ -2564,3 +2564,5 @@ End Type
 Public Const NUM_PASOS       As Byte = 6
 
 Public Pasos()               As tPaso
+
+Public DBError As String

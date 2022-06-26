@@ -141,6 +141,7 @@ Public Function Query(ByVal Text As String, ParamArray Arguments() As Variant) A
     Exit Function
     
 Query_Err:
+    DBError = err.Description
     Call LogDatabaseError("Database Error: " & Err.Number & " - " & Err.Description & " - " & vbCrLf & Text)
 End Function
 

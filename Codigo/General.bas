@@ -620,6 +620,7 @@ Sub Main()
         ' Construimos las querys grandes
 156     Call Contruir_Querys
 
+113     Call LoadDBMigrations
         ' ******************* FIN - Base de Datos ********************
 
         '*************************************************
@@ -2550,3 +2551,62 @@ Private Function GetElapsed() As Single
 End Function
 
 
+Public Sub LoadDBMigrations()
+   
+        On Error GoTo LoadDBMigrations_Err
+    'Consulto a la DB a ver si existe la tabla migrations
+    
+    Dim RS As Recordset
+    Set RS = Query("select * from migrations")
+    Dim LastScript As String: LastScript = ""
+    
+    If RS Is Nothing Then
+        Call Query("CREATE TABLE ""migrations"" (    ""id"" INTEGER NOT NULL,    ""date"" VARCHAR(11) NOT NULL,    ""description"" VARCHAR(50) NULL,    Primary key(""id""));")
+    Else
+        Set RS = Query("select date from migrations order by id desc LIMIT 1;")
+        If RS.RecordCount > 0 Then LastScript = RS!Date
+    End If
+    
+    Dim sFilename  As String
+    sFilename = dir(App.Path & "/ScriptsDB/")
+        
+    Do While sFilename <> ""
+        If Len(sFilename) > 11 Then
+            Dim date_ As String
+            date_ = Left(sFilename, 11)
+            If LastScript < date_ Then
+                'Leemos el archivo
+                Dim script As String
+                script = FileText(App.Path & "/ScriptsDB/" & sFilename)
+                
+                If script <> vbNullString Then
+                    Set RS = Query(script)
+                    Dim Description As String
+                    Description = mid(sFilename, 13, Len(sFilename) - 16)
+                    
+                    If RS Is Nothing Then
+                        Call err.raise(5, , "invalid - " & Description)
+                    Else
+                        Call Query("insert into migrations (date, description) values (?,?);", date_, Description)
+                        
+                    End If
+                End If
+            End If
+        End If
+        sFilename = dir()
+    Loop
+        
+    Exit Sub
+
+LoadDBMigrations_Err:
+122     Call TraceError(err.Number, err.Description, "modGuilds.LoadDBMigrations", Erl)
+        Call MsgBox(DBError & vbNewLine & "Script:" & err.Description, vbCritical, "ERROR MIGRATIONS")
+        
+End Sub
+Function FileText(filename$) As String
+    Dim handle As Integer
+    handle = FreeFile
+    Open filename$ For Input As #handle
+    FileText = Input$(LOF(handle), handle)
+    Close #handle
+End Function
