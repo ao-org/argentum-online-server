@@ -158,7 +158,7 @@ Public ModDañoGolpeCritico          As Single
 
 Public MinutosWs                    As Long
 
-Public Puerto                       As Integer
+Public Puerto                       As Long
 
 Public MAXPASOS                     As Long
 
