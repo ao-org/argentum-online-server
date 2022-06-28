@@ -10508,8 +10508,12 @@ Private Sub HandleNotifyInventariohechizos(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
         
             Dim Value As Byte
+            Dim hechiSel As Byte
+            Dim scrollSel As Byte
         
 102         Value = Reader.ReadInt8()
+            hechiSel = Reader.ReadInt8()
+            scrollSel = Reader.ReadInt8()
 
             If .flags.GMMeSigue > 0 Then
                 Call WriteGetInventarioHechizos(.flags.GMMeSigue, Value, hechiSel, scrollSel)
