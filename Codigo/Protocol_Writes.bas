@@ -2671,13 +2671,15 @@ WriteNotificarClienteSeguido_Err:
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteNotificarClienteSeguido", Erl)
         '</EhFooter>
 End Sub
-Public Sub WriteGetInventarioHechizos(ByVal UserIndex As Integer, ByVal Value As Byte)
+Public Sub WriteGetInventarioHechizos(ByVal UserIndex As Integer, ByVal Value As Byte, ByVal hechiSel As Byte, ByVal scrollSel As Byte)
     
         '<EhHeader>
         On Error GoTo GetInventarioHechizos_Err
         '</EhHeader>
 100     Call Writer.WriteInt16(ServerPacketID.GetInventarioHechizos)
 101     Call Writer.WriteInt8(Value)
+        Call Writer.WriteInt8(hechiSel)
+        Call Writer.WriteInt8(scrollSel)
 120     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub
