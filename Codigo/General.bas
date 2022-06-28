@@ -622,7 +622,7 @@ Sub Main()
         ' Construimos las querys grandes
 156     Call Contruir_Querys
 
-113     Call LoadDBMigrations
+113  '   Call LoadDBMigrations
         ' ******************* FIN - Base de Datos ********************
 
         '*************************************************
@@ -2581,17 +2581,23 @@ Public Sub LoadDBMigrations()
                 Dim script As String
                 script = FileText(App.Path & "/ScriptsDB/" & sFilename)
                 
+                
                 If script <> vbNullString Then
-                    Set RS = Query(script)
-                    Dim Description As String
-                    Description = mid(sFilename, 13, Len(sFilename) - 16)
+                    Dim i As Integer
+                    Dim queries() As String
                     
-                    If RS Is Nothing Then
-                        Call err.raise(5, , "invalid - " & Description)
-                    Else
-                        Call Query("insert into migrations (date, description) values (?,?);", date_, Description)
+                    queries = Split(script, ";")
+                    
+                    For i = 0 To UBound(queries)
+                        Set RS = Query(queries(i))
+                        Dim Description As String
+                        Description = mid(sFilename, 13, Len(sFilename) - 16)
                         
-                    End If
+                        If RS Is Nothing Then
+                            Call Err.raise(5, , "invalid - " & Description)
+                        End If
+                    Next i
+                    Call Query("insert into migrations (date, description) values (?,?);", date_, Description)
                 End If
             End If
         End If
