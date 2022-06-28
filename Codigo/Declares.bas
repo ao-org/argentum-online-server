@@ -2542,7 +2542,7 @@ Public Enum eNumber_Types
     ent_Trigger
 End Enum
 
-Public Const DISTANCIA_ENVIO_DATOS As Byte = 2
+Public Const DISTANCIA_ENVIO_DATOS As Byte = 3
 
 Public Enum TipoPaso
     CONST_BOSQUE = 1
