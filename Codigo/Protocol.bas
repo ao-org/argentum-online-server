@@ -10512,7 +10512,7 @@ Private Sub HandleNotifyInventariohechizos(ByVal UserIndex As Integer)
 102         Value = Reader.ReadInt8()
 
             If .flags.GMMeSigue > 0 Then
-                Call WriteGetInventarioHechizos(.flags.GMMeSigue, Value)
+                Call WriteGetInventarioHechizos(.flags.GMMeSigue, Value, hechiSel, scrollSel)
             End If
             
         End With
