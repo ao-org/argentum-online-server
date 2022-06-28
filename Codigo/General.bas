@@ -599,7 +599,9 @@ Sub Main()
 132     Call LoadSini
 137     Call LoadMD5
 135     Call LoadPacketRatePolicy
+#If PYMMO = 1 Then
 133     Call LoadPrivateKey
+#End If
 138     Call LoadConfiguraciones
 140     Call LoadIntervalos
 142     Call CargarForbidenWords
