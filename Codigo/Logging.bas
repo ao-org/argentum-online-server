@@ -202,5 +202,11 @@ ErrHandler:
 End Sub
 
 Public Sub TraceError(ByVal Numero As Long, ByVal Descripcion As String, ByVal Componente As String, Optional ByVal Linea As Integer)
-    'harThaoS: Ver como se le implementa correctamente.
+    'Start append text to file
+    Dim filenum As Integer
+    filenum = FreeFile
+    Open App.Path & "\Logs\errores.log" For Append As filenum
+    Print #filenum, "Error number: " & Numero & " | Description: " & Descripcion & vbNewLine & "Component: " & Componente & " | Line number: " & Linea
+    Close filenum
+
 End Sub

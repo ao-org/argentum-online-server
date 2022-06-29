@@ -6916,7 +6916,7 @@ Private Sub HandleReward(ByVal UserIndex As Integer)
         
 112         If NpcList(.flags.TargetNPC).flags.Faccion = 0 Then
         
-114             If .Faccion.Status <> e_Facciones.Armada Or .Faccion.Status <> e_Facciones.consejo Then
+114             If .Faccion.Status <> e_Facciones.Armada And .Faccion.Status <> e_Facciones.consejo Then
 116                 Call WriteChatOverHead(UserIndex, "No perteneces a las tropas reales!!!", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
                     Exit Sub
 
@@ -6926,7 +6926,7 @@ Private Sub HandleReward(ByVal UserIndex As Integer)
             
             Else
 
-120             If .Faccion.Status <> e_Facciones.Caos Or .Faccion.Status <> e_Facciones.concilio Then
+120             If .Faccion.Status <> e_Facciones.Caos And .Faccion.Status <> e_Facciones.concilio Then
 122                 Call WriteChatOverHead(UserIndex, "No perteneces a la legión oscura!!!", NpcList(.flags.TargetNPC).Char.charindex, vbWhite)
                     Exit Sub
 
