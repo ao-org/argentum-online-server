@@ -1458,7 +1458,7 @@ Private Sub HandleLoginAccount(ByVal userindex As Integer)
         
     UserList(userindex).AccountID = result!ID
     
-    Dim Personajes(8) As t_PersonajeCuenta
+    Dim Personajes(1 To 10) As t_PersonajeCuenta
     Dim Count As Long
     Count = GetPersonajesCuentaDatabase(result!ID, Personajes)
     
