@@ -3293,6 +3293,14 @@ Private Sub HandleUseItem(ByVal UserIndex As Integer)
 
             Dim Slot As Byte
 102         Slot = Reader.ReadInt8()
+
+            Dim DesdeInventario As Boolean
+            DesdeInventario = Reader.ReadInt8
+            
+            If Not DesdeInventario Then
+                Call SendData(SendTarget.ToAdmins, UserIndex, PrepareMessageConsoleMsg("El usuario " & .name & " está tomando pociones con click estando en hechizos... raaaaaro, poleeeeemico. BAN? Preg a HarThaoS.", e_FontTypeNames.FONTTYPE_INFOBOLD))
+            End If
+            
             Dim PacketCounter As Long
             PacketCounter = Reader.ReadInt32
             
