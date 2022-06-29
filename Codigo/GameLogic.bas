@@ -1136,6 +1136,8 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
             Exit Sub
 
         End If
+        
+
 
         '¿Posicion valida?
 102     If InMapBounds(Map, X, Y) Then
@@ -1219,11 +1221,12 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
                 End If
     
             End If
-
+            Dim yy As Byte
             '¿Es un personaje?
 190         If Y + 1 <= YMaxMapSize Then
 192             If MapData(Map, X, Y + 1).UserIndex > 0 Then
 194                 TempCharIndex = MapData(Map, X, Y + 1).UserIndex
+                    yy = y + 1
 196                 FoundChar = 1
 
                 End If
@@ -1240,6 +1243,7 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
 204         If FoundChar = 0 Then
 206             If MapData(Map, X, Y).UserIndex > 0 Then
 208                 TempCharIndex = MapData(Map, X, Y).UserIndex
+                    yy = y
 210                 FoundChar = 1
 
                 End If
@@ -1254,6 +1258,13 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
     
             'Reaccion al personaje
 218         If FoundChar = 1 Then '  ¿Encontro un Usuario?
+                
+                If UserList(TempCharIndex).Pos.X <> X Or UserList(TempCharIndex).Pos.y <> yy Then
+                    'Mapblock bugeado
+                    MapData(map, X, yy).UserIndex = 0
+                    Call TraceError(999, "Hay un mapblock con un usuario y el usuario tiene otra posicion. Index: " & TempCharIndex & ", user: " & UserList(TempCharIndex).name & ", mapblock: " & map & "," & X & "," & y & ", userpos: " & UserList(TempCharIndex).Pos.map & "," & UserList(TempCharIndex).Pos.X & "," & UserList(TempCharIndex).Pos.y, "LookatTile")
+                End If
+            
             
 220             If UserList(TempCharIndex).flags.AdminInvisible = 0 Or CompararPrivilegiosUser(UserIndex, TempCharIndex) >= 0 Then
                     
