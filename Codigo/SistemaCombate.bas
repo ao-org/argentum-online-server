@@ -1313,7 +1313,6 @@ Public Sub UsuarioAtacaUsuario(ByVal AtacanteIndex As Integer, ByVal VictimaInde
 112         If UserList(VictimaIndex).flags.Navegando = 0 Or UserList(VictimaIndex).flags.Montado = 0 Then
                 UserList(VictimaIndex).Counters.timeFx = 2
 114             Call SendData(SendTarget.ToPCAliveArea, VictimaIndex, PrepareMessageCreateFX(UserList(VictimaIndex).Char.charindex, FXSANGRE, 0, UserList(VictimaIndex).Pos.X, UserList(VictimaIndex).Pos.y))
-                Call SendData(SendTarget.ToPCAliveArea, VictimaIndex, PrepareMessageParticleFXWithDestino(UserList(AtacanteIndex).Char.charindex, UserList(VictimaIndex).Char.charindex, 181, 2, 0, 1, 2, UserList(VictimaIndex).Pos.X, UserList(VictimaIndex).Pos.y))
             End If
 
 116         Call UserDañoUser(AtacanteIndex, VictimaIndex)
