@@ -1420,10 +1420,10 @@ Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As e_Heading) A
                         
                         For LoopC = 1 To ConnGroups(UserList(userindex).Pos.map).CountEntrys
                             tempIndex = ConnGroups(UserList(userindex).Pos.map).UserEntrys(LoopC)
-                            If UserList(tempIndex).AreasInfo.AreaReciveX And UserList(userindex).AreasInfo.AreaPerteneceX Then  'Esta en el area?
-                                If UserList(tempIndex).AreasInfo.AreaReciveY And UserList(userindex).AreasInfo.AreaPerteneceY Then
-                                    If UserList(tempIndex).ConnIDValida Then
-                                        If tempIndex <> userindex Then
+                            If tempIndex <> UserIndex Then
+                                If UserList(tempIndex).AreasInfo.AreaReciveX And UserList(UserIndex).AreasInfo.AreaPerteneceX Then  'Esta en el area?
+                                    If UserList(tempIndex).AreasInfo.AreaReciveY And UserList(UserIndex).AreasInfo.AreaPerteneceY Then
+                                        If UserList(tempIndex).ConnIDValida Then
                                             If UserList(tempIndex).flags.Muerto = 0 Or MapInfo(UserList(tempIndex).Pos.map).Seguro = 1 Then
                                                 If UserList(userindex).flags.invisible + UserList(userindex).flags.Oculto > 0 Then
                                                     If Distancia(UserList(userindex).Pos, UserList(tempIndex).Pos) > DISTANCIA_ENVIO_DATOS And UserList(userindex).Counters.timeFx + UserList(userindex).Counters.timeChat = 0 Then
@@ -1486,7 +1486,7 @@ Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As e_Heading) A
         Exit Function
     
 MoveUserChar_Err:
-184     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.MoveUserChar", Erl)
+184     Call TraceError(Err.Number, Err.Description + " UI:" + UserIndex, "UsUaRiOs.MoveUserChar", Erl)
 
         
 End Function
@@ -1887,7 +1887,7 @@ Sub SubirSkill(ByVal UserIndex As Integer, ByVal Skill As Integer)
 140         If Aumenta < Menor Then
 142             UserList(UserIndex).Stats.UserSkills(Skill) = UserList(UserIndex).Stats.UserSkills(Skill) + 1
     
-144             Call WriteConsoleMsg(userindex, "¡Has mejorado tu skill " & SkillsNames(Skill) & " en un punto!. Ahora tienes " & UserList(userindex).Stats.UserSkills(Skill) & " pts.", e_FontTypeNames.FONTTYPE_INFO)
+144             Call WriteConsoleMsg(UserIndex, "¡Has mejorado tu skill " & SkillsNames(Skill) & " en un punto!. Ahora tienes " & UserList(UserIndex).Stats.UserSkills(Skill) & " pts.", e_FontTypeNames.FONTTYPE_INFO)
             
                 Dim BonusExp As Long
 146             BonusExp = 50& * ExpMult

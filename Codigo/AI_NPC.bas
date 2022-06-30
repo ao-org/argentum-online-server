@@ -812,6 +812,8 @@ Private Sub NpcLanzaUnSpell(ByVal NpcIndex As Integer)
 102     Target = NpcList(NpcIndex).Target
 104     SpellIndex = NpcList(NpcIndex).Spells(RandomNumber(1, NpcList(NpcIndex).flags.LanzaSpells))
 106     PuedeDanarAlUsuario = UserList(Target).flags.NoMagiaEfecto = 0 And NpcList(NpcIndex).flags.Paralizado = 0
+        
+        If SpellIndex = 0 Then Exit Sub
     
 108     Select Case Hechizos(SpellIndex).Target
 

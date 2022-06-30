@@ -2112,7 +2112,7 @@ Private Sub HandleWalk(ByVal UserIndex As Integer)
 116                 CurrentTick = GetTickCount
             
                 'Prevent SpeedHack (refactored by WyroX)
-118             If Not EsGM(UserIndex) Then
+118             If Not EsGM(UserIndex) And .Char.speeding > 0 Then
                     Dim ElapsedTimeStep As Long, MinTimeStep As Long, DeltaStep As Single
 120                 ElapsedTimeStep = CurrentTick - .Counters.LastStep
 122                 MinTimeStep = .Intervals.Caminar / .Char.speeding

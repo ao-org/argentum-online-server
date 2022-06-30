@@ -425,23 +425,24 @@ Public Sub NpcLanzaSpellSobreArea(ByVal NpcIndex As Integer, ByVal SpellIndex As
        
 120         For X = 1 To .AreaRadio
 122             For Y = 1 To .AreaRadio
-
-124                 TargetMap = MapData(NpcList(NpcIndex).Pos.Map, X + PosCasteadaX - mitadAreaRadio, PosCasteadaY + Y - mitadAreaRadio)
-                
-126                 If afectaUsers And TargetMap.UserIndex > 0 Then
-128                     If Not UserList(TargetMap.UserIndex).flags.Muerto And Not EsGM(TargetMap.UserIndex) Then
-130                         Call NpcLanzaSpellSobreUser(NpcIndex, TargetMap.UserIndex, SpellIndex, True)
+                    
+                    If InMapBounds(NpcList(NpcIndex).Pos.map, X + PosCasteadaX - mitadAreaRadio, PosCasteadaY + y - mitadAreaRadio) Then
+124                     TargetMap = MapData(NpcList(NpcIndex).Pos.map, X + PosCasteadaX - mitadAreaRadio, PosCasteadaY + y - mitadAreaRadio)
+                    
+126                     If afectaUsers And TargetMap.UserIndex > 0 Then
+128                         If Not UserList(TargetMap.UserIndex).flags.Muerto And Not EsGM(TargetMap.UserIndex) Then
+130                             Call NpcLanzaSpellSobreUser(NpcIndex, TargetMap.UserIndex, SpellIndex, True)
+                            End If
+    
                         End If
-
-                    End If
-                            
-132                 If afectaNPCs And TargetMap.NpcIndex > 0 Then
-134                     If NpcList(TargetMap.NpcIndex).Attackable Then
-136                         Call NpcLanzaSpellSobreNpc(NpcIndex, TargetMap.NpcIndex, SpellIndex)
+                                
+132                     If afectaNPCs And TargetMap.NpcIndex > 0 Then
+134                         If NpcList(TargetMap.NpcIndex).Attackable Then
+136                             Call NpcLanzaSpellSobreNpc(NpcIndex, TargetMap.NpcIndex, SpellIndex)
+                            End If
+    
                         End If
-
                     End If
-                            
 138             Next Y
 140         Next X
 
