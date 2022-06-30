@@ -5495,7 +5495,7 @@ Public Sub writeUpdateShopClienteCredits(ByVal userindex As Integer)
     
 writeUpdateShopClienteCredits_Err:
      Call Writer.Clear
-    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.writeUpdateShopClienteCredits", Erl)
+    Call TraceError(Err.Number, Err.Description + " UI: " + UserIndex, "Argentum20Server.Protocol_Writes.writeUpdateShopClienteCredits", Erl)
     
 End Sub
 
