@@ -125,7 +125,7 @@ Sub UpdateBanUserInv(ByVal UpdateAll As Boolean, ByVal UserIndex As Integer, ByV
         Exit Sub
 
 UpdateBanUserInv_Err:
-118     Call TraceError(Err.Number, Err.Description, "modBanco.UpdateBanUserInv", Erl)
+118     Call TraceError(Err.Number, Err.Description + " UI: " & UserIndex & " Slot:" & Slot, "modBanco.UpdateBanUserInv", Erl)
 
         
 End Sub
