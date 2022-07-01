@@ -982,6 +982,7 @@ Sub ResetContadores(ByVal UserIndex As Integer)
 130         .STACounter = 0
 132         .Veneno = 0
 134         .Trabajando = 0
+            .LastTrabajo = 0
 136         .Ocultando = 0
 138         .Lava = 0
 140         .Maldicion = 0

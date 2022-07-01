@@ -31,7 +31,7 @@ Public OroMultOld         As Integer
 
 Public DropMultOld        As Integer
 
-Public RecoleccionMultOld As Integer
+Public RecoleccionMultOld As Double
 
 Public PublicidadEvento   As String
 

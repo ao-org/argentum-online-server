@@ -206,7 +206,7 @@ Public Sub TraceError(ByVal Numero As Long, ByVal Descripcion As String, ByVal C
     Dim filenum As Integer
     filenum = FreeFile
     Open App.Path & "\Logs\errores.log" For Append As filenum
-    Print #FileNum, "[" & Date & "] Error number: " & Numero & " | Description: " & Descripcion & "Component: " & Componente & " | Line number: " & Linea
+    Print #FileNum, "Error number: " & Numero & " | Description: " & Descripcion & vbNewLine & "Component: " & Componente & " | Line number: " & Linea
     Close filenum
 
 End Sub
