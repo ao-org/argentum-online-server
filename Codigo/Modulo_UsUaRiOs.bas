@@ -1411,26 +1411,30 @@ Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As e_Heading) A
                         Call SendData(SendTarget.ToPCAreaButFollowerAndIndex, UserIndex, PrepareMessageCharacterMove(.Char.charindex, nPos.X, nPos.Y))
                         Call WriteForceCharMoveSiguiendo(.flags.GMMeSigue, nHeading)
                     Else
+                        'Mando a todos menos a mi donde estoy
 160                     Call SendData(SendTarget.ToPCAliveAreaButIndex, userindex, PrepareMessageCharacterMove(.Char.charindex, nPos.X, nPos.y), True)
                         
                         Dim LoopC As Integer
                         Dim tempIndex As Integer
                         
-                        UserList(userindex).flags.stepToggle = Not UserList(userindex).flags.stepToggle
+                        'Togle para alternar el paso para los invis
+                        .flags.stepToggle = Not .flags.stepToggle
                         
-                        For LoopC = 1 To ConnGroups(UserList(userindex).Pos.map).CountEntrys
-                            tempIndex = ConnGroups(UserList(userindex).Pos.map).UserEntrys(LoopC)
-                            If tempIndex <> UserIndex Then
-                                If UserList(tempIndex).AreasInfo.AreaReciveX And UserList(UserIndex).AreasInfo.AreaPerteneceX Then  'Esta en el area?
-                                    If UserList(tempIndex).AreasInfo.AreaReciveY And UserList(UserIndex).AreasInfo.AreaPerteneceY Then
-                                        If UserList(tempIndex).ConnIDValida Then
-                                            If UserList(tempIndex).flags.Muerto = 0 Or MapInfo(UserList(tempIndex).Pos.map).Seguro = 1 Then
-                                                If UserList(userindex).flags.invisible + UserList(userindex).flags.Oculto > 0 Then
-                                                    If Distancia(UserList(userindex).Pos, UserList(tempIndex).Pos) > DISTANCIA_ENVIO_DATOS And UserList(userindex).Counters.timeFx + UserList(userindex).Counters.timeChat = 0 Then
-                                                        If Abs(UserList(userindex).Pos.X - UserList(tempIndex).Pos.X) <= RANGO_VISION_X And Abs(UserList(userindex).Pos.y - UserList(tempIndex).Pos.y) <= RANGO_VISION_Y Then
-                                                            
-                                                            Call WritePlayWaveStep(tempIndex, MapData(UserList(userindex).Pos.map, UserList(userindex).Pos.X, UserList(userindex).Pos.y).Graphic(1), Abs(UserList(userindex).Pos.X - UserList(tempIndex).Pos.X) + Abs(UserList(userindex).Pos.y - UserList(tempIndex).Pos.y), _
-                                                                                         Sgn(UserList(userindex).Pos.X - UserList(tempIndex).Pos.X), UserList(userindex).flags.stepToggle)
+                        If Not EsGM(UserIndex) Then
+                            For LoopC = 1 To ConnGroups(UserList(UserIndex).Pos.map).CountEntrys
+                                tempIndex = ConnGroups(UserList(UserIndex).Pos.map).UserEntrys(LoopC)
+                                If tempIndex <> UserIndex Then
+                                    If UserList(tempIndex).AreasInfo.AreaReciveX And UserList(UserIndex).AreasInfo.AreaPerteneceX Then  'Esta en el area?
+                                        If UserList(tempIndex).AreasInfo.AreaReciveY And UserList(UserIndex).AreasInfo.AreaPerteneceY Then
+                                            If UserList(tempIndex).ConnIDValida Then
+                                                If UserList(tempIndex).flags.Muerto = 0 Or MapInfo(UserList(tempIndex).Pos.map).Seguro = 1 Then
+                                                    If .flags.invisible + .flags.Oculto > 0 Then
+                                                        If Distancia(.Pos, UserList(tempIndex).Pos) > DISTANCIA_ENVIO_DATOS And .Counters.timeFx + .Counters.timeChat = 0 Then
+                                                            If Abs(.Pos.X - UserList(tempIndex).Pos.X) <= RANGO_VISION_X And Abs(.Pos.y - UserList(tempIndex).Pos.y) <= RANGO_VISION_Y Then
+                                                                'Mandamos los pasos para los pjs q estan lejos para que simule que caminen.
+                                                                Call WritePlayWaveStep(tempIndex, MapData(.Pos.map, .Pos.X, .Pos.y).Graphic(1), Abs(.Pos.X - UserList(tempIndex).Pos.X) + Abs(.Pos.y - UserList(tempIndex).Pos.y), _
+                                                                                             Sgn(.Pos.X - UserList(tempIndex).Pos.X), .flags.stepToggle)
+                                                            End If
                                                         End If
                                                     End If
                                                 End If
@@ -1438,23 +1442,23 @@ Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As e_Heading) A
                                         End If
                                     End If
                                 End If
-                            End If
-123                     Next LoopC
-                        
-                        Dim X As Byte, y As Byte
-                        
-                        For X = .Pos.X - 2 To .Pos.X + 2
-                            For y = .Pos.y - 2 To .Pos.y + 2
-                                If MapData(.Pos.map, X, y).userindex > 0 And MapData(.Pos.map, X, y).userindex <> userindex Then
-                                    If UserList(MapData(.Pos.map, X, y).userindex).flags.invisible + UserList(MapData(.Pos.map, X, y).userindex).flags.Oculto > 0 And UserList(MapData(.Pos.map, X, y).userindex).GuildIndex <> UserList(userindex).GuildIndex And UserList(userindex).GuildIndex > 0 Then
-                                       ' Debug.Print "TODO OK"
-                                       
-                                        Call WritePosUpdateChar(userindex, X, y, UserList(MapData(.Pos.map, X, y).userindex).Char.charindex)
-                                    End If
-                                End If
-                            Next y
-                        Next X
+123                         Next LoopC
                             
+                            Dim X As Byte, y As Byte
+                            'Esto es para q si me acerco a un usuario que esta invisible y no se mueve me notifique su posicion
+                            For X = .Pos.X - 2 To .Pos.X + 2
+                                For y = .Pos.y - 2 To .Pos.y + 2
+                                    If MapData(.Pos.map, X, y).UserIndex > 0 And MapData(.Pos.map, X, y).UserIndex <> UserIndex Then
+                                        If UserList(MapData(.Pos.map, X, y).UserIndex).flags.invisible + UserList(MapData(.Pos.map, X, y).UserIndex).flags.Oculto > 0 And UserList(MapData(.Pos.map, X, y).UserIndex).GuildIndex <> UserList(UserIndex).GuildIndex And UserList(UserIndex).GuildIndex > 0 Then
+                                            Call WritePosUpdateChar(UserIndex, X, y, UserList(MapData(.Pos.map, X, y).UserIndex).Char.charindex)
+                                        End If
+                                    End If
+                                Next y
+                            Next X
+                            
+                        End If
+                        
+                        
                     End If
                 Else
 162                 Call SendData(SendTarget.ToAdminAreaButIndex, UserIndex, PrepareMessageCharacterMove(.Char.CharIndex, nPos.X, nPos.Y))

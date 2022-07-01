@@ -1723,7 +1723,7 @@ On Error GoTo ErrHandler
             'Debug.Print "Total: " & (botin - BotinInicial) & ", hora: " & Round(3600 * (botin - BotinInicial) / TiempoPesca)
         
         
-            RestaStamina = 0 'IIf(RedDePesca, 12, RandomNumber(2, 3))
+            RestaStamina = IIf(RedDePesca, 12, RandomNumber(2, 3))
 104         If .flags.Privilegios And (e_PlayerType.Consejero) Then
                 Exit Sub
             End If
@@ -1749,79 +1749,90 @@ On Error GoTo ErrHandler
                 Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageArmaMov(.Char.charindex))
             End If
 
-            bonificacionPescaLvl(1) = 0.004386962
-            bonificacionPescaLvl(2) = 0.008864383
-            bonificacionPescaLvl(3) = 0.013436073
-            bonificacionPescaLvl(4) = 0.018106086
-            bonificacionPescaLvl(5) = 0.022878745
-            bonificacionPescaLvl(6) = 0.027758664
-            bonificacionPescaLvl(7) = 0.032750774
-            bonificacionPescaLvl(8) = 0.037860357
-            bonificacionPescaLvl(9) = 0.043093074
-            bonificacionPescaLvl(10) = 0.048455007
-            bonificacionPescaLvl(11) = 0.053952699
-            bonificacionPescaLvl(12) = 0.059593204
-            bonificacionPescaLvl(13) = 0.06538414
-            bonificacionPescaLvl(14) = 0.071333752
-            bonificacionPescaLvl(15) = 0.07745098
-            bonificacionPescaLvl(16) = 0.083745544
-            bonificacionPescaLvl(17) = 0.090228032
-            bonificacionPescaLvl(18) = 0.096910013
-            bonificacionPescaLvl(19) = 0.103804155
-            bonificacionPescaLvl(20) = 0.110924375
-            bonificacionPescaLvl(21) = 0.118286003
-            bonificacionPescaLvl(22) = 0.125905986
-            bonificacionPescaLvl(23) = 0.13380312
-            bonificacionPescaLvl(24) = 0.141998328
-            bonificacionPescaLvl(25) = 0.150514998
-            bonificacionPescaLvl(26) = 0.159379381
-            bonificacionPescaLvl(27) = 0.168621084
-            bonificacionPescaLvl(28) = 0.178273662
-            bonificacionPescaLvl(29) = 0.188375355
-            bonificacionPescaLvl(30) = 0.198970004
-            bonificacionPescaLvl(31) = 0.210108202
-            bonificacionPescaLvl(32) = 0.22184875
-            bonificacionPescaLvl(33) = 0.234260541
-            bonificacionPescaLvl(34) = 0.247425011
-            bonificacionPescaLvl(35) = 0.261439373
-            bonificacionPescaLvl(36) = 0.349485002
-            bonificacionPescaLvl(37) = 0.372363747
-            bonificacionPescaLvl(38) = 0.397940009
-            bonificacionPescaLvl(39) = 0.426935982
-            bonificacionPescaLvl(40) = 0.460409377
-            bonificacionPescaLvl(41) = 0.5
-            bonificacionPescaLvl(42) = 0.548455007
-            bonificacionPescaLvl(43) = 0.610924375
-            bonificacionPescaLvl(44) = 0.698970004
-            bonificacionPescaLvl(45) = 0.849485002
-            bonificacionPescaLvl(46) = 1
-            bonificacionPescaLvl(47) = 1.5
+            bonificacionPescaLvl(1) = 0
+            bonificacionPescaLvl(2) = 0.009
+            bonificacionPescaLvl(3) = 0.015
+            bonificacionPescaLvl(4) = 0.019
+            bonificacionPescaLvl(5) = 0.025
+            bonificacionPescaLvl(6) = 0.03
+            bonificacionPescaLvl(7) = 0.035
+            bonificacionPescaLvl(8) = 0.04
+            bonificacionPescaLvl(9) = 0.045
+            bonificacionPescaLvl(10) = 0.05
+            bonificacionPescaLvl(11) = 0.06
+            bonificacionPescaLvl(12) = 0.07
+            bonificacionPescaLvl(13) = 0.08
+            bonificacionPescaLvl(14) = 0.09
+            bonificacionPescaLvl(15) = 0.1
+            bonificacionPescaLvl(16) = 0.11
+            bonificacionPescaLvl(17) = 0.13
+            bonificacionPescaLvl(18) = 0.14
+            bonificacionPescaLvl(19) = 0.16
+            bonificacionPescaLvl(20) = 0.18
+            bonificacionPescaLvl(21) = 0.2
+            bonificacionPescaLvl(22) = 0.22
+            bonificacionPescaLvl(23) = 0.24
+            bonificacionPescaLvl(24) = 0.27
+            bonificacionPescaLvl(25) = 0.3
+            bonificacionPescaLvl(26) = 0.32
+            bonificacionPescaLvl(27) = 0.35
+            bonificacionPescaLvl(28) = 0.37
+            bonificacionPescaLvl(29) = 0.4
+            bonificacionPescaLvl(30) = 0.43
+            bonificacionPescaLvl(31) = 0.47
+            bonificacionPescaLvl(32) = 0.51
+            bonificacionPescaLvl(33) = 0.55
+            bonificacionPescaLvl(34) = 0.58
+            bonificacionPescaLvl(35) = 0.62
+            bonificacionPescaLvl(36) = 0.7
+            bonificacionPescaLvl(37) = 0.77
+            bonificacionPescaLvl(38) = 0.84
+            bonificacionPescaLvl(39) = 0.92
+            bonificacionPescaLvl(40) = 1#
+            bonificacionPescaLvl(41) = 1.1
+            bonificacionPescaLvl(42) = 1.15
+            bonificacionPescaLvl(43) = 1.3
+            bonificacionPescaLvl(44) = 1.5
+            bonificacionPescaLvl(45) = 1.8
+            bonificacionPescaLvl(46) = 2#
+            bonificacionPescaLvl(47) = 2.5
         
-            
-                Select Case ObjData(.Invent.HerramientaEqpObjIndex).Power
-                    Case 1 'Caña comun
-                        bonificacionCaña = 1
-                    Case 2 'Caña reforzada
-                        bonificacionCaña = 1.6
-                    Case 3 'Caña especial
-                        bonificacionCaña = 3
-                    Case 4 'Caña de plata
-                        bonificacionCaña = 5
-                    Case 5 'Red de pesca
-                        bonificacionCaña = 7
-                    Case 6 'Red lisa
-                        bonificacionCaña = 15
-                End Select
+                If MapInfo(.Pos.map).Seguro Or RedDePesca Then
+                    Select Case ObjData(.Invent.HerramientaEqpObjIndex).Power
+                        Case 1 'Caña comun
+                            bonificacionCaña = 1
+                        Case 2 'Caña reforzada
+                            bonificacionCaña = 1.5
+                        Case 3 'Caña especial
+                            bonificacionCaña = 1.9
+                        Case 4 'Caña de plata
+                            bonificacionCaña = 2.2
+                        Case 5 'Red de pesca
+                            bonificacionCaña = 6.5
+                        Case 6 'Red lisa
+                            bonificacionCaña = 9
+                    End Select
+                Else
+                    Select Case ObjData(.Invent.HerramientaEqpObjIndex).Power
+                        Case 1 'Caña comun
+                            bonificacionCaña = 1.3
+                        Case 2 'Caña reforzada
+                            bonificacionCaña = 1.65
+                        Case 3 'Caña especial
+                            bonificacionCaña = 3
+                        Case 4 'Caña de plata
+                            bonificacionCaña = 6
+                    End Select
+                End If
                 
                 
-                bonificacionZona = IIf(MapInfo(.Pos.map).Seguro Or RedDePesca, 1, 1.3) 'Si esta en zona insegura pesca 30% mas y no es red de pesca
                 bonificacionLvl = 1 + bonificacionPescaLvl(.Stats.ELV) 'Segun el nivel se le bonifica extra
                 bonificacionClase = IIf(.clase = Trabajador, 1, RandomNumber(1, 3) / 3) 'Si no es pescador va a pescar menos al azar.
                 
-                bonificacionTotal = bonificacionCaña * bonificacionZona * bonificacionLvl * bonificacionClase * RecoleccionMult
+                bonificacionTotal = bonificacionCaña * bonificacionLvl * bonificacionClase * RecoleccionMult
                 
-                'Calculo el botin esperado por iteracción. 'La base del calculo son 8000 por hora + 30% de chances de no pescar + un +/- 10%
-                Reward = (IntervaloTrabajarExtraer / 3600000) * 8000 * bonificacionTotal * 1.3 * (1 + (RandomNumber(0, 20) - 5) / 100)
+                'Calculo el botin esperado por iteracción. 'La base del calculo son 8000 por hora + 20% de chances de no pescar + un +/- 10%
+                Reward = (IntervaloTrabajarExtraer / 3600000) * 8000 * bonificacionTotal * 1.2 * (1 + (RandomNumber(0, 20) - 10) / 100)
                 
                 
                 'Calculo la suerte de pescar o no pescar y aplico eso sobre el reward para promediar.
@@ -1971,6 +1982,11 @@ Public Sub DoPescar(ByVal UserIndex As Integer, Optional ByVal RedDePesca As Boo
 114         Skill = .Stats.UserSkills(e_Skill.Pescar)
         
 116         Suerte = Int(-0.00125 * Skill * Skill - 0.3 * Skill + 49)
+
+            
+
+
+
 
             'HarThaoS: Le agrego más dificultad al talar en zona segura.  37% probabilidad de fallo en segura vs 16% en insegura
 118         res = RandomNumber(1, IIf(MapInfo(UserList(userindex).Pos.map).Seguro = 1, Suerte + 2, Suerte))

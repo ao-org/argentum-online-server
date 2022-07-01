@@ -38,8 +38,7 @@ Public RegaloNumMapa        As Integer
 Public RegaloX              As Byte
 
 Public RegaloY              As Byte
-Public TiempoPesca As Long
-Public BotinInicial As Double
+
 Public Sub InitTesoro()
         
         On Error GoTo InitTesoro_Err

@@ -2506,6 +2506,11 @@ Public TotalMapasCiudades()               As String
 
 Public Ayuda                              As New cCola
 
+Public TiempoPesca As Long
+
+Public BotinInicial As Double
+
+Public Segundos As Long
 
 Public Declare Function writeprivateprofilestring Lib "kernel32" Alias "WritePrivateProfileStringA" (ByVal lpApplicationname As String, ByVal lpKeyname As Any, ByVal lpString As String, ByVal lpfilename As String) As Long
 
