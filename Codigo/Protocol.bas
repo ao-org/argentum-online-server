@@ -3766,11 +3766,18 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                     End If
             
 286             Case e_Skill.Pescar
-                    If .Counters.Trabajando = 0 Then
+                    If .Counters.Trabajando = 0 And .Counters.LastTrabajo = 0 Then
+                        'TiempoPesca = 1
+                        'BotinInicial = 0
+                        'For x = 1 To 20
+                        '    If .Invent.Object(x).objIndex > 0 Then
+                        '    BotinInicial = BotinInicial + ObjData(.Invent.Object(x).objIndex).Valor / 3 * .Invent.Object(x).amount
+                        '    End If
+                        'Next x
                         Call Trabajar(UserIndex, e_Skill.Pescar)
                     End If
 348             Case e_Skill.Talar
-                    If .Counters.Trabajando = 0 Then
+                    If .Counters.Trabajando = 0 And .Counters.LastTrabajo = 0 Then
                         Call Trabajar(UserIndex, e_Skill.Talar)
                     End If
                     
@@ -3838,7 +3845,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                     End Select
                 
 452             Case e_Skill.Mineria
-                    If .Counters.Trabajando = 0 Then
+                    If .Counters.Trabajando = 0 And .Counters.LastTrabajo = 0 Then
                         Call Trabajar(UserIndex, e_Skill.Mineria)
                     End If
 500             Case e_Skill.Robar

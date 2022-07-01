@@ -107,7 +107,7 @@ Public OroMult              As Integer
 
 Public DropMult             As Integer
 
-Public RecoleccionMult      As Integer
+Public RecoleccionMult      As Double
 
 Public OroPorNivelBilletera As Long
 
@@ -1793,6 +1793,7 @@ Public Type t_UserCounters
     TimerPerteneceNpc As Long
 
     Trabajando As Long  ' Para el centinela
+    LastTrabajo As Integer
     Ocultando As Long   ' Unico trabajo no revisado por el centinela
 
     goHome As Long

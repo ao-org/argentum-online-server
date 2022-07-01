@@ -1825,6 +1825,8 @@ Sub PasarSegundo()
 
         Dim Y    As Byte
         
+        If TiempoPesca > 0 Then TiempoPesca = TiempoPesca + 1
+        
 100     If CuentaRegresivaTimer > 0 Then
 102         If CuentaRegresivaTimer > 1 Then
 104             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(CuentaRegresivaTimer - 1 & " segundos...!", e_FontTypeNames.FONTTYPE_GUILD))
@@ -1850,6 +1852,10 @@ Sub PasarSegundo()
                     
                     If .Counters.timeChat > 0 Then
                         .Counters.timeChat = .Counters.timeChat - 1
+                    End If
+                    
+                    If .Counters.LastTrabajo > 0 Then
+                        .Counters.LastTrabajo = .Counters.LastTrabajo - 1
                     End If
                     
                     If .Counters.timeFx > 0 Then
