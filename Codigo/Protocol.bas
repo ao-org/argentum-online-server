@@ -19086,6 +19086,11 @@ Private Sub HandlePublicarPersonajeMAO(ByVal UserIndex As Integer)
             Exit Sub
         End If
         
+        If .Stats.ELV < 20 Then
+            Call WriteConsoleMsg(UserIndex, "No puedes publicar un personaje menor a nivel 20.", e_FontTypeNames.FONTTYPE_INFOBOLD)
+            Exit Sub
+        End If
+        
         If .Stats.GLD < 100000 Then
             Call WriteConsoleMsg(UserIndex, "El costo para vender tu personajes es de 100.000 monedas de oro, no tienes esa cantidad.", e_FontTypeNames.FONTTYPE_INFOBOLD)
             Exit Sub
