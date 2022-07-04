@@ -3901,7 +3901,7 @@ Public Sub WriteQuestListSend(ByVal UserIndex As Integer)
 
 106             If .QuestStats.Quests(i).QuestIndex Then
 108                 tmpByte = tmpByte + 1
-110                 tmpStr = tmpStr & QuestList(.QuestStats.Quests(i).QuestIndex).nombre & "-"
+110                 tmpStr = tmpStr & QuestList(.QuestStats.Quests(i).QuestIndex).nombre & ";"
                 End If
 
 112         Next i
