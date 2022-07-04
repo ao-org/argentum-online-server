@@ -530,6 +530,7 @@ Public Enum ClientPacketID
     SendPosMovimiento
     NotifyInventarioHechizos
     PublicarPersonajeMAO
+    EventoFaccionario    '/EVENTOFACCIONARIO
     
     #If PYMMO = 0 Then
     CreateAccount
@@ -1369,6 +1370,8 @@ On Error Resume Next
             Call HandleBuyShopItem(userindex)
         Case ClientPacketID.PublicarPersonajeMAO
             Call HandlePublicarPersonajeMAO(userindex)
+        Case ClientPacketID.EventoFaccionario
+            Call HandleEventoFaccionario(UserIndex)
 #If PYMMO = 0 Then
         Case ClientPacketID.CreateAccount
             Call HandleCreateAccount(userindex)
@@ -10366,9 +10369,6 @@ ErrHandler:
 140
 
 End Sub
-
-' Handles the "SeguirMouse" message.
-
 Private Sub HandleSeguirMouse(ByVal UserIndex As Integer)
 
         '***************************************************
@@ -10384,17 +10384,83 @@ Private Sub HandleSeguirMouse(ByVal UserIndex As Integer)
             Dim tUser    As Integer
             Dim LoopC    As Byte
         
+                    Dim tempArea As Long
 102         username = Reader.ReadString8()
         
-104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios)) Then
+104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios)) Then
 106             If UCase$(username) <> "YO" Then
 108                 tUser = NameIndex(username)
                 Else
                     Call WriteConsoleMsg(UserIndex, "No puedes seguirte a vos mismo", e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
-            
-112             If tUser <= 0 Then
+                
+                If username = "" And .flags.SigueUsuario > 0 Then
+                    
+                    'Me devuelvo inventario y stats
+                    UserList(UserIndex).Invent = UserList(UserIndex).Invent_bk
+                    UserList(UserIndex).Stats = UserList(UserIndex).Stats_bk
+                    'UserList(UserIndex).Char.charindex = UserList(UserIndex).Char.charindex_bk
+                    Call WriteConsoleMsg(UserIndex, "Dejas de seguir a " & UserList(.flags.SigueUsuario).name & ".", e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteCancelarSeguimiento(UserIndex)
+                    Call WriteNotificarClienteSeguido(.flags.SigueUsuario, 0)
+                    UserList(.flags.SigueUsuario).flags.GMMeSigue = 0
+                    Call WriteUserCharIndexInServer(UserIndex)
+                    Call WarpUserChar(UserIndex, UserList(UserIndex).Pos.map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.y, False)
+                    UserList(UserIndex).flags.SigueUsuario = 0
+                
+                ElseIf tUser <> .flags.SigueUsuario And .flags.SigueUsuario > 0 And tUser > 0 Then
+                    
+                    If UserList(tUser).flags.GMMeSigue > 0 And UserList(tUser).flags.GMMeSigue <> UserIndex Then
+                        Call WriteConsoleMsg(UserIndex, "El usuario está siendo seguido por " & UserList(UserList(tUser).flags.GMMeSigue).name & ".", e_FontTypeNames.FONTTYPE_INFO)
+                        Exit Sub
+                    End If
+                    
+                    'Me devuelvo inventario y stats
+                    UserList(UserIndex).Invent = UserList(UserIndex).Invent_bk
+                    UserList(UserIndex).Stats = UserList(UserIndex).Stats_bk
+                    'UserList(UserIndex).Char.charindex = UserList(UserIndex).Char.charindex_bk
+                    Call WriteConsoleMsg(UserIndex, "Dejas de seguir a " & UserList(.flags.SigueUsuario).name & ".", e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteCancelarSeguimiento(UserIndex)
+                    Call WriteNotificarClienteSeguido(.flags.SigueUsuario, 0)
+                    UserList(.flags.SigueUsuario).flags.GMMeSigue = 0
+                    Call WriteUserCharIndexInServer(UserIndex)
+                    Call WarpUserChar(UserIndex, UserList(UserIndex).Pos.map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.y, False)
+                    UserList(UserIndex).flags.SigueUsuario = 0
+                    
+                    Call DoAdminInvisible(UserIndex, 1) 'HACER LO DE ADMIN INVISIBLE
+                    'Call WarpUserChar(UserIndex, UserList(tUser).Pos.map, UserList(tUser).Pos.X, UserList(tUser).Pos.y, False)
+                    
+                    'Me backupeo el inventario y los hechizos
+                    UserList(UserIndex).Invent_bk = UserList(UserIndex).Invent
+                    UserList(UserIndex).Stats_bk = UserList(UserIndex).Stats
+                    
+                    'Me pego el inventario y los hechizos del usuario seguido
+                    UserList(UserIndex).Invent = UserList(tUser).Invent
+                    UserList(UserIndex).Stats = UserList(tUser).Stats
+                    UserList(UserIndex).flags.SigueUsuario = tUser
+                    'Actualizo flag en cliente para que empiece a enviar paquetes
+                    Call WriteNotificarClienteSeguido(tUser, 1)
+                    UserList(tUser).flags.GMMeSigue = UserIndex
+                    
+                    
+                    Call WriteConsoleMsg(UserIndex, "Comienzas a seguir a " & UserList(tUser).name & ".", e_FontTypeNames.FONTTYPE_INFO)
+                    
+                    tempArea = UserList(UserIndex).AreasInfo.AreaID
+                    
+                    Call WarpUserChar(UserIndex, UserList(tUser).Pos.map, 15, 15)
+                    
+                    Call WriteSendFollowingCharindex(UserIndex, UserList(tUser).Char.charindex)
+                    If tempArea <> UserList(tUser).AreasInfo.AreaID Then
+                        Call MakeUserChar(False, UserIndex, tUser, UserList(tUser).Pos.map, UserList(tUser).Pos.X, UserList(tUser).Pos.y)
+                    End If
+                    
+                    Call WritePosUpdateCharIndex(UserIndex, UserList(tUser).Pos.X, UserList(tUser).Pos.y, UserList(tUser).Char.charindex)
+                    Call WriteUserCharIndexInServer(tUser)
+                    UserList(UserIndex).AreasInfo = UserList(tUser).AreasInfo
+                    Call ModAreas.CheckUpdateNeededUser(UserIndex, 5, 0)
+                    
+112             ElseIf tUser <= 0 Then
 114                 Call WriteConsoleMsg(UserIndex, "Usuario offline.", e_FontTypeNames.FONTTYPE_INFO)
                 Else
                     'Si empiezo a seguir a alguien
@@ -10423,7 +10489,6 @@ Private Sub HandleSeguirMouse(ByVal UserIndex As Integer)
                         
                         Call WriteConsoleMsg(UserIndex, "Comienzas a seguir a " & UserList(tUser).name & ".", e_FontTypeNames.FONTTYPE_INFO)
                         
-                        Dim tempArea As Long
                         tempArea = UserList(UserIndex).AreasInfo.AreaID
                         
                         Call WarpUserChar(UserIndex, UserList(tUser).Pos.map, 15, 15)
@@ -10439,7 +10504,7 @@ Private Sub HandleSeguirMouse(ByVal UserIndex As Integer)
                         Call ModAreas.CheckUpdateNeededUser(UserIndex, 5, 0)
                     Else
                         If UserList(UserIndex).flags.SigueUsuario <> tUser Then
-                            Call WriteConsoleMsg(UserIndex, "Ya te encuentras siguiendo a un usuario, para dejar de seguirlo escribe /seguirmouse " & UserList(UserList(UserIndex).flags.SigueUsuario).name & ".", e_FontTypeNames.FONTTYPE_INFO)
+                            Call WriteConsoleMsg(UserIndex, "Ya te encuentras siguiendo a un usuario, para dejar de seguirlo escribe /SM " & UserList(UserList(UserIndex).flags.SigueUsuario).name & ".", e_FontTypeNames.FONTTYPE_INFO)
                             Exit Sub
                         End If
                         'Me devuelvo inventario y stats
@@ -10456,17 +10521,18 @@ Private Sub HandleSeguirMouse(ByVal UserIndex As Integer)
                     End If
                     
                     
-                    Call UpdateUserInv(True, UserIndex, 1)
-                    Call UpdateUserHechizos(True, UserIndex, 0)
-900                 Call WriteUpdateUserStats(UserIndex)
+                    
                     
                         
                 End If
             Else
 136             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
             End If
-
         End With
+        
+        Call UpdateUserInv(True, UserIndex, 1)
+        Call UpdateUserHechizos(True, UserIndex, 0)
+900     Call WriteUpdateUserStats(UserIndex)
 
         Exit Sub
 
@@ -19100,13 +19166,27 @@ Private Sub HandlePublicarPersonajeMAO(ByVal UserIndex As Integer)
         End If
     
         Call Execute("update user set price_in_mao = ?, is_published = 1 where id = ?;", Valor, .ID)
-        'Call CloseSocket(UserIndex)
     End With
         
     Exit Sub
 
 HandlePublicarPersonajeMAO_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandlePublicarPersonajeMAO", Erl)
+End Sub
+
+Private Sub HandleEventoFaccionario(ByVal UserIndex As Integer)
+    
+    On Error GoTo HandleEventoFaccionario_Err:
+    
+    If (UserList(UserIndex).flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios)) Then
+        EnEventoFaccionario = Not EnEventoFaccionario
+        Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » Se ha " & IIf(EnEventoFaccionario, "iniciado", "finalizado") & " el evento faccionario.", e_FontTypeNames.FONTTYPE_SERVER))
+    End If
+    
+    Exit Sub
+
+HandleEventoFaccionario_Err:
+102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleEventoFaccionario", Erl)
 End Sub
 Private Sub HandleDeleteItem(ByVal UserIndex As Integer)
     On Error GoTo HandleDeleteItem_Err:

@@ -2024,8 +2024,10 @@ Sub UserDie(ByVal UserIndex As Integer)
 160             If (.flags.Privilegios And e_PlayerType.user) <> 0 Then
 
 162                 If .flags.PendienteDelSacrificio = 0 Then
-                
-164                     Call TirarTodosLosItems(UserIndex)
+                        
+                        If Not (MapInfo(.Pos.map).Seguro = 1 And EnEventoFaccionario) Then
+164                         Call TirarTodosLosItems(UserIndex)
+                        End If
     
                     Else
                 
