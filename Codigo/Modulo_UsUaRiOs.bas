@@ -1446,10 +1446,10 @@ Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As e_Heading) A
                             
                             Dim X As Byte, y As Byte
                             'Esto es para q si me acerco a un usuario que esta invisible y no se mueve me notifique su posicion
-                            For X = .Pos.X - 2 To .Pos.X + 2
-                                For y = .Pos.y - 2 To .Pos.y + 2
+                            For X = .Pos.X - DISTANCIA_ENVIO_DATOS To .Pos.X + DISTANCIA_ENVIO_DATOS
+                                For y = .Pos.y - DISTANCIA_ENVIO_DATOS To .Pos.y + DISTANCIA_ENVIO_DATOS
                                     If MapData(.Pos.map, X, y).UserIndex > 0 And MapData(.Pos.map, X, y).UserIndex <> UserIndex Then
-                                        If UserList(MapData(.Pos.map, X, y).UserIndex).flags.invisible + UserList(MapData(.Pos.map, X, y).UserIndex).flags.Oculto > 0 And UserList(MapData(.Pos.map, X, y).UserIndex).GuildIndex <> UserList(UserIndex).GuildIndex And UserList(UserIndex).GuildIndex > 0 Then
+                                        If UserList(MapData(.Pos.map, X, y).UserIndex).flags.invisible + UserList(MapData(.Pos.map, X, y).UserIndex).flags.Oculto > 0 And (UserList(MapData(.Pos.map, X, y).UserIndex).GuildIndex <> UserList(UserIndex).GuildIndex Or UserList(UserIndex).GuildIndex = 0) Then
                                             Call WritePosUpdateChar(UserIndex, X, y, UserList(MapData(.Pos.map, X, y).UserIndex).Char.charindex)
                                         End If
                                     End If
@@ -2024,11 +2024,7 @@ Sub UserDie(ByVal UserIndex As Integer)
 160             If (.flags.Privilegios And e_PlayerType.user) <> 0 Then
 
 162                 If .flags.PendienteDelSacrificio = 0 Then
-                        
-                        If Not (MapInfo(.Pos.map).Seguro = 1 And EnEventoFaccionario) Then
 164                         Call TirarTodosLosItems(UserIndex)
-                        End If
-    
                     Else
                 
                         Dim MiObj As t_Obj

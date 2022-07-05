@@ -647,21 +647,22 @@ Private Function m_EstadoPermiteEntrar(ByVal UserIndex As Integer, ByVal GuildIn
         On Error GoTo m_EstadoPermiteEntrar_Err
 
 100     Select Case guilds(GuildIndex).Alineacion
+
             Case e_ALINEACION_GUILD.ALINEACION_NEUTRAL
-102           m_EstadoPermiteEntrar = Status(UserIndex) = 0 Or Status(UserIndex) = 1
+102           m_EstadoPermiteEntrar = Status(UserIndex) = e_Facciones.Ciudadano Or Status(UserIndex) = e_Facciones.Criminal
 
 104         Case e_ALINEACION_GUILD.ALINEACION_ARMADA
-106           m_EstadoPermiteEntrar = status(UserIndex) = 3 Or status(UserIndex) = 5
+106           m_EstadoPermiteEntrar = Status(UserIndex) = e_Facciones.Armada Or Status(UserIndex) = e_Facciones.consejo
 
 108         Case e_ALINEACION_GUILD.ALINEACION_CAOTICA
-110           m_EstadoPermiteEntrar = status(UserIndex) = 2 Or status(UserIndex) = 4
+110           m_EstadoPermiteEntrar = Status(UserIndex) = e_Facciones.Caos Or Status(UserIndex) = e_Facciones.concilio
 
             Case e_ALINEACION_GUILD.ALINEACION_CIUDADANA
-               m_EstadoPermiteEntrar = status(UserIndex) = 1 Or status(UserIndex) = 3
+               m_EstadoPermiteEntrar = Status(UserIndex) = e_Facciones.Ciudadano Or Status(UserIndex) = e_Facciones.Armada Or Status(UserIndex) = e_Facciones.consejo
                
             Case e_ALINEACION_GUILD.ALINEACION_CRIMINAL
-                m_EstadoPermiteEntrar = status(UserIndex) = 0 Or status(UserIndex) = 2
-
+                m_EstadoPermiteEntrar = Status(UserIndex) = e_Facciones.Criminal Or Status(UserIndex) = e_Facciones.Caos Or Status(UserIndex) = e_Facciones.concilio
+                
         End Select
 
         Exit Function
