@@ -3341,6 +3341,9 @@ Sub TirarTodosLosItems(ByVal UserIndex As Integer)
         Dim ItemIndex As Integer
        
 100     With UserList(UserIndex)
+
+            
+            If ((.Pos.map = 58 Or .Pos.map = 59 Or .Pos.map = 60 Or .Pos.map = 61) And EnEventoFaccionario) Then Exit Sub
             ' Tambien se cae el oro de la billetera
 102         If .Stats.GLD <= 100000 Then
 104             Call TirarOro(.Stats.GLD, UserIndex)
