@@ -32,8 +32,8 @@ Public Sub goHome(ByVal UserIndex As Integer)
                 Else
 108                 .Counters.TimerBarra = 210
                 End If
-110             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.charindex, e_ParticulasIndex.Runa, .Counters.TimerBarra * 100, False, .Pos.X, .Pos.Y))
-112             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageBarFx(.Char.CharIndex, .Counters.TimerBarra, e_AccionBarra.Hogar))
+110             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.charindex, e_ParticulasIndex.Runa, .Counters.TimerBarra * 100, False, , .Pos.X, .Pos.y))
+112             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageBarFx(.Char.charindex, .Counters.TimerBarra, e_AccionBarra.Hogar))
                 Call WriteConsoleMsg(UserIndex, "Volverás a tu hogar en " & .Counters.TimerBarra & " segundos.", e_FontTypeNames.FONTTYPE_New_Gris)
                     
 114             .Accion.Particula = e_ParticulasIndex.Runa
@@ -109,8 +109,8 @@ Public Sub HomeArrival(ByVal UserIndex As Integer)
 
             'Antes de que el pj llegue a la ciudad, lo hacemos dejar de navegar para que no se buguee.
 102         If .flags.Navegando = 1 Then
-104             .Char.Body = iCuerpoMuerto
-106             .Char.Head = 0
+104             .Char.body = iCuerpoMuerto
+106             .Char.head = 0
 108             .Char.ShieldAnim = NingunEscudo
 110             .Char.WeaponAnim = NingunArma
 112             .Char.CascoAnim = NingunCasco
@@ -123,8 +123,8 @@ Public Sub HomeArrival(ByVal UserIndex As Integer)
             End If
         
 118         tX = Ciudades(.Hogar).X
-120         tY = Ciudades(.Hogar).Y
-122         tMap = Ciudades(.Hogar).Map
+120         tY = Ciudades(.Hogar).y
+122         tMap = Ciudades(.Hogar).map
         
 124         Call FindLegalPos(UserIndex, tMap, CByte(tX), CByte(tY))
 126         Call WarpUserChar(UserIndex, tMap, tX, tY, True)
