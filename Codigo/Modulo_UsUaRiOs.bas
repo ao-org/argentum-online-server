@@ -2123,7 +2123,10 @@ Sub UserDie(ByVal UserIndex As Integer)
                 
                 Call Execute(QUERY_UPSERT_PETS, Params)
             End If
-226         .NroMascotas = 0
+            If (.flags.MascotasGuardadas = 0) Then
+                .NroMascotas = 0
+            End If
+                
         
             '<< Actualizamos clientes >>
 228         Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, NingunArma, NingunEscudo, NingunCasco)
