@@ -563,7 +563,7 @@ Public Function PuedeFundarUnClan(ByVal UserIndex As Integer, ByVal Alineacion A
             End If
                 
             Case e_ALINEACION_GUILD.ALINEACION_CRIMINAL
-             If status(UserIndex) <> e_Facciones.Caos And status(UserIndex) <> e_Facciones.concilio Then
+             If Status(UserIndex) <> e_Facciones.Criminal And Status(UserIndex) <> e_Facciones.Caos Then
                 refError = "Para fundar un clan criminal deberás ser criminal o legión oscura."
                 Exit Function
             End If
