@@ -38,6 +38,8 @@ Attribute VB_Name = "Trabajo"
 Option Explicit
 
 Public Const GOLD_OBJ_INDEX As Long = 12
+Public Const SAFE_GOLD As Long = 100001
+
 
 Public Sub Trabajar(ByVal UserIndex As Integer, ByVal Skill As e_Skill)
         Dim DummyInt As Integer
@@ -2290,9 +2292,12 @@ Public Sub DoRobar(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
                             End If
 
 252                         If n > UserList(VictimaIndex).Stats.GLD Then n = UserList(VictimaIndex).Stats.GLD
-                        
+                            Dim prevGold As Long: prevGold = UserList(VictimaIndex).Stats.GLD
 254                         UserList(VictimaIndex).Stats.GLD = UserList(VictimaIndex).Stats.GLD - n
-                        
+                            If prevGold >= SAFE_GOLD And UserList(VictimaIndex).Stats.GLD < SAFE_GOLD Then
+                                n = prevGold - SAFE_GOLD
+                                UserList(VictimaIndex).Stats.GLD = SAFE_GOLD
+                            End If
 256                         .Stats.GLD = .Stats.GLD + n
 
 258                         If .Stats.GLD > MAXORO Then .Stats.GLD = MAXORO
