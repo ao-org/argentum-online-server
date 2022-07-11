@@ -3721,7 +3721,7 @@ Public Sub WriteDatosGrupo(ByVal UserIndex As Integer)
 
 124                     If i = 1 Then
 126                         Call Writer.WriteString8(UserList(UserList( _
-                                    .Grupo.Lider).Grupo.Miembros(i)).name & "(Líder)")
+                                    .Grupo.Lider).Grupo.Miembros(i)).Name & "(Líder)")
                         Else
 128                         Call Writer.WriteString8(UserList(UserList( _
                                     .Grupo.Lider).Grupo.Miembros(i)).Name)
@@ -5609,4 +5609,23 @@ WriteNpcQuestListSend_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteNpcQuestListSend", Erl)
         '</EhFooter>
+End Sub
+
+Public Sub WriteDebugLogResponse(ByVal UserIndex As Integer)
+    On Error GoTo WriteDebugLogResponse_Err:
+    Dim messageList() As String
+    messageList = GetLastMessages()
+    Dim messageCount As Integer: messageCount = UBound(messageList)
+    Call Writer.WriteInt16(ServerPacketID.DebugDataResponse)
+    Call Writer.WriteInt16(messageCount + 1)
+    Call Writer.WriteString8("remote errors:")
+    Dim i As Integer
+    For i = 1 To messageCount
+        Call Writer.WriteString8(messageList(i))
+    Next i
+    Call modSendData.SendData(ToIndex, UserIndex)
+    Exit Sub
+WriteDebugLogResponse_Err:
+    Call Writer.Clear
+    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteDebugLogResponse", Erl)
 End Sub

@@ -44,10 +44,43 @@ Private Declare Function ReportEvent _
     e_LogDatabaseError = 18
     e_LogSecurity = 19
  End Enum
+Private Type t_CircularBuffer
+    currentIndex As Integer
+    Messages() As String
+    size As Integer
+End Type
+Public CircularLogBuffer As t_CircularBuffer
 
 Private Declare Function RegisterEventSource Lib "advapi32.dll" Alias "RegisterEventSourceA" ( _
  ByVal lpUNCServerName As String, _
  ByVal lpSourceName As String) As Long
+
+
+Public Sub InitializeCircularLogBuffer(Optional size As Integer = 10)
+    CircularLogBuffer.size = size
+    CircularLogBuffer.currentIndex = 0
+    ReDim CircularLogBuffer.Messages(0 To size)
+End Sub
+
+Public Sub AddLogToCircularBuffer(Message As String)
+    CircularLogBuffer.currentIndex = CircularLogBuffer.currentIndex + 1
+    CircularLogBuffer.currentIndex = (CircularLogBuffer.currentIndex Mod CircularLogBuffer.size)
+    CircularLogBuffer.Messages(CircularLogBuffer.currentIndex) = Message
+End Sub
+
+Public Function GetLastMessages() As String()
+    Dim errorList() As String
+    ReDim errorList(CircularLogBuffer.size)
+    Dim i As Integer
+    Dim circularIndex As Integer
+    For i = 1 To CircularLogBuffer.size
+        circularIndex = ((CircularLogBuffer.currentIndex + i) Mod CircularLogBuffer.size)
+        errorList(i) = CircularLogBuffer.Messages(circularIndex)
+    Next i
+    GetLastMessages = errorList
+End Function
+
+
 
 Public Sub LogThis(nErrNo As Long, sLogMsg As String, EventType As LogEventTypeConstants)
     Dim hEvent As Long
@@ -146,6 +179,7 @@ End Sub
 Public Sub LogError(Desc As String)
 On Error GoTo ErrHandler
         Call LogThis(type_log.e_LogError, "[Errores.log] " & Desc, vbLogEventTypeError)
+        Call AddLogToCircularBuffer(Desc)
         Exit Sub
 ErrHandler:
 End Sub
@@ -208,5 +242,6 @@ Public Sub TraceError(ByVal Numero As Long, ByVal Descripcion As String, ByVal C
     Open App.Path & "\Logs\errores.log" For Append As filenum
     Print #FileNum, "Error number: " & Numero & " | Description: " & Descripcion & vbNewLine & "Component: " & Componente & " | Line number: " & Linea
     Close filenum
+    Call AddLogToCircularBuffer("Error number: " & Numero & " | Description: " & Descripcion & "|||" & "Component: " & Componente & " | Line number: " & Linea)
 
 End Sub
