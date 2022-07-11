@@ -610,7 +610,8 @@ Sub Main()
 148     Call LoadMotd
 150     Call CargarListaNegraUsuarios
         Call initBase64Chars
-    
+        Call InitializeCircularLogBuffer
+        
 152     frmCargando.Label1(2).Caption = "Conectando base de datos y limpiando usuarios logueados"
     
         ' ************************* Base de Datos ********************
@@ -622,7 +623,7 @@ Sub Main()
         ' Construimos las querys grandes
 156     Call Contruir_Querys
 
-113  '   Call LoadDBMigrations
+113     ' Call LoadDBMigrations
         ' ******************* FIN - Base de Datos ********************
 
         '*************************************************
@@ -2161,7 +2162,7 @@ Public Sub FreeNPCs()
     
         ' Free all NPC indexes
 100     For LoopC = 1 To MaxNPCs
-102         NpcList(LoopC).flags.NPCActive = False
+            ReleaseNpc (LoopC)
 104     Next LoopC
 
         
@@ -2603,24 +2604,17 @@ Public Sub LoadDBMigrations()
                 'Leemos el archivo
                 Dim script As String
                 script = FileText(App.Path & "/ScriptsDB/" & sFilename)
-                
+                script = Replace(Replace(script, Chr(10), ""), Chr(13), "")
                 
                 If script <> vbNullString Then
-                    Dim i As Integer
-                    Dim queries() As String
-                    
-                    queries = Split(script, ";")
-                    
-                    For i = 0 To UBound(queries)
-                        Set RS = Query(queries(i))
-                        Dim Description As String
-                        Description = mid(sFilename, 13, Len(sFilename) - 16)
-                        
-                        If RS Is Nothing Then
-                            Call Err.raise(5, , "invalid - " & Description)
-                        End If
-                    Next i
-                    Call Query("insert into migrations (date, description) values (?,?);", date_, Description)
+                    Set RS = Query(script)
+                    Dim Description As String
+                    Description = mid(sFilename, 13, Len(sFilename) - 16)
+                    If RS Is Nothing Then
+                        Call Err.raise(5, , "invalid - " & Description)
+                    Else
+                        Call Query("insert into migrations (date, description) values (?,?);", date_, Description)
+                    End If
                 End If
             End If
         End If
