@@ -207,6 +207,7 @@ Public Enum ServerPacketID
     PosUpdateChar
     PlayWaveStep
     ShopPjsInit
+    DebugDataResponse
     #If PYMMO = 0 Then
     AccountCharacterList
     #End If
@@ -531,6 +532,7 @@ Public Enum ClientPacketID
     NotifyInventarioHechizos
     PublicarPersonajeMAO
     EventoFaccionario    '/EVENTOFACCIONARIO
+    RequestDebug '/RequestDebug consulta info debug al server, para gms
     
     #If PYMMO = 0 Then
     CreateAccount
@@ -1372,6 +1374,8 @@ On Error Resume Next
             Call HandlePublicarPersonajeMAO(userindex)
         Case ClientPacketID.EventoFaccionario
             Call HandleEventoFaccionario(UserIndex)
+        Case ClientPacketID.RequestDebug
+            Call HandleDebugRequest(UserIndex)
 #If PYMMO = 0 Then
         Case ClientPacketID.CreateAccount
             Call HandleCreateAccount(userindex)
@@ -7866,7 +7870,7 @@ Private Sub HandleGMMessage(ByVal UserIndex As Integer)
 104         If EsGM(UserIndex) Then
 106             Call LogGM(.Name, "Mensaje a Gms: " & Message)
 108             If LenB(Message) <> 0 Then
-112                 Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(.name & " » " & message, e_FontTypeNames.FONTTYPE_GMMSG))
+112                 Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(.name & " » " & Message, e_FontTypeNames.FONTTYPE_GMMSG))
                 End If
 
             End If
@@ -19187,6 +19191,18 @@ Private Sub HandleEventoFaccionario(ByVal UserIndex As Integer)
 
 HandleEventoFaccionario_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleEventoFaccionario", Erl)
+End Sub
+
+Private Sub HandleDebugRequest(ByVal UserIndex As Integer)
+On Error GoTo HandleDebugRequest_Err:
+    
+    If (UserList(UserIndex).flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.Consejero)) Then
+        Call WriteDebugLogResponse(UserIndex)
+    End If
+    
+    Exit Sub
+HandleDebugRequest_Err:
+102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleDebugRequest", Erl)
 End Sub
 Private Sub HandleDeleteItem(ByVal UserIndex As Integer)
     On Error GoTo HandleDeleteItem_Err:
