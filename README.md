@@ -13,6 +13,7 @@ SQlite
 http://www.ch-werner.de/sqliteodbc/
 
 - Registrar manualmente libreria Aurora.Network.dll 
+Liberia de networking - https://github.com/Wolftein/Aurora.Network
 
 Abrir CMD como Administrador `regsvr32 Aurora.Network.dll`
 
@@ -37,5 +38,7 @@ Importante usar semantic versioning (https://semver.org/) (ejemplo: v1.0.0)
 http://horacio.ao20.com.ar:2095/job/1%20-%20CREAR%20PARCHE%20TOTAL/
 
 Listo parche completado.
+
+
 
 
