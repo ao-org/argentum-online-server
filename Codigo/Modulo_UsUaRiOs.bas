@@ -144,8 +144,8 @@ Public Function ConnectUser_Check(ByVal UserIndex As Integer, _
         End If
         
         If EsGM(UserIndex) Then
-            Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » " & name & " se conecto al juego.", e_FontTypeNames.FONTTYPE_INFOBOLD))
-            Call LogGM(name, "Se conectó con IP: " & .IP)
+            Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » " & Name & " se conecto al juego.", e_FontTypeNames.FONTTYPE_INFOBOLD))
+            Call LogGM(Name, "Se conectó con IP: " & .IP)
         Else
             If ServerSoloGMs > 0 Then
                 Dim i As Integer
@@ -706,10 +706,10 @@ Public Function ConnectUser_Complete(ByVal UserIndex As Integer, _
 1120        Call WriteLoggedMessage(UserIndex, newUser)
         
 1125        If .Stats.ELV = 1 Then
-1130            Call WriteConsoleMsg(UserIndex, "¡Bienvenido a las tierras de AO20! ¡" & .name & " que tengas buen viaje y mucha suerte!", e_FontTypeNames.FONTTYPE_GUILD)
+1130            Call WriteConsoleMsg(UserIndex, "¡Bienvenido a las tierras de AO20! ¡" & .Name & " que tengas buen viaje y mucha suerte!", e_FontTypeNames.FONTTYPE_GUILD)
 
 1135        ElseIf .Stats.ELV < 14 Then
-1140            Call WriteConsoleMsg(UserIndex, "¡Bienvenido de nuevo " & .name & "! Actualmente estas en el nivel " & .Stats.ELV & " en " & get_map_name(.Pos.map) & ", ¡buen viaje y mucha suerte!", e_FontTypeNames.FONTTYPE_GUILD)
+1140            Call WriteConsoleMsg(UserIndex, "¡Bienvenido de nuevo " & .Name & "! Actualmente estas en el nivel " & .Stats.ELV & " en " & get_map_name(.Pos.map) & ", ¡buen viaje y mucha suerte!", e_FontTypeNames.FONTTYPE_GUILD)
 
              End If
 
@@ -2759,7 +2759,7 @@ Private Sub WarpMascotas(ByVal UserIndex As Integer)
         
 132         petType = UserList(UserIndex).MascotasType(i)
         
-134         If petType > 0 And Not ZonaSegura And PermiteMascotas And UserList(UserIndex).flags.MascotasGuardadas = 0 And PetTiempoDeVida = 0 Then
+134         If petType > 0 And Not ZonaSegura And PermiteMascotas And (UserList(UserIndex).flags.MascotasGuardadas = 0 Or UserList(UserIndex).MascotasIndex(i) > 0) And PetTiempoDeVida = 0 Then
         
                 Dim SpawnPos As t_WorldPos
         
@@ -2776,7 +2776,7 @@ Private Sub WarpMascotas(ByVal UserIndex As Integer)
 
                     ' Nos aseguramos de que conserve el hp, si estaba danado
 148                 If iMinHP Then NpcList(Index).Stats.MinHp = iMinHP
-
+                    NpcList(Index).MaestroUser = UserIndex
 150                 Call FollowAmo(Index)
             
                 Else
