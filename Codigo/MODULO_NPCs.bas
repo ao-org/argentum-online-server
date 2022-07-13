@@ -22,6 +22,7 @@ Attribute VB_Name = "NPCs"
 '?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
 
 Public Const MaxRespawn             As Integer = 255
+Public Const NpcIndexHeapSize As Integer = 10000
 
 Public RespawnList(1 To MaxRespawn) As t_Npc
 
@@ -29,7 +30,7 @@ Private IdNpcLibres As t_IndexHeap
 
 Option Explicit
 
-Public Sub InitializeNpcIndexHeap(Optional size As Integer = 10000)
+Public Sub InitializeNpcIndexHeap(Optional size As Integer = NpcIndexHeapSize)
 On Error GoTo ErrHandler_InitizlizeNpcIndex
     ReDim IdNpcLibres.IndexInfo(size)
     Dim i As Integer
@@ -42,7 +43,7 @@ ErrHandler_InitizlizeNpcIndex:
     Call TraceError(Err.Number, Err.Description, "NPCs.InitializeNpcIndexHeap", Erl)
 End Sub
 
-Public Function ReleaseNpc(NpcIndex As Integer) As Boolean
+Public Function ReleaseNpc(ByVal NpcIndex As Integer) As Boolean
 
 On Error GoTo ErrHandler
     If Not NpcList(NpcIndex).flags.NPCActive Then
@@ -65,20 +66,20 @@ Public Function AvailableNpc() As Integer
     AvailableNpc = IdNpcLibres.CurrentIndex
 End Function
 
-Public Function GetFreeNpcIndex() As Integer
+Public Function GetNextAvailableNpc() As Integer
 On Error GoTo ErrHandler
     If (IdNpcLibres.CurrentIndex = 0) Then
-        GetFreeNpcIndex = 0
+        GetNextAvailableNpc = 0
         Return
     End If
-    GetFreeNpcIndex = IdNpcLibres.IndexInfo(IdNpcLibres.CurrentIndex)
+    GetNextAvailableNpc = IdNpcLibres.IndexInfo(IdNpcLibres.currentIndex)
     IdNpcLibres.CurrentIndex = IdNpcLibres.CurrentIndex - 1
-    If NpcList(GetFreeNpcIndex).flags.NPCActive Then
+    If NpcList(GetNextAvailableNpc).flags.NPCActive Then
         Call TraceError(Err.Number, "Trying to active the same id twice", "NPCs.ReleaseNpc", Erl)
     End If
     Exit Function
 ErrHandler:
-    Call TraceError(Err.Number, Err.Description, "NPCs.GetFreeNpcIndex", Erl)
+    Call TraceError(Err.Number, Err.Description, "NPCs.GetNextAvailableNpc", Erl)
 End Function
 
 Sub QuitarMascotaNpc(ByVal Maestro As Integer)
@@ -1179,7 +1180,7 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
             Exit Function
         End If
 
-106     NpcIndex = GetFreeNpcIndex
+106     NpcIndex = GetNextAvailableNpc
 
 108     If NpcIndex > MaxNPCs Then 'Limite de npcs
 110         OpenNPC = 0
