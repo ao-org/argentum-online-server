@@ -586,7 +586,6 @@ Sub Main()
     
 120     frmCargando.Label1(2).Caption = "Iniciando Arrays..."
 
-        'cuentaregresivaOrcos = 300
         Call InitializeNpcIndexHeap
         
 122     Call LoadGuildsDB
