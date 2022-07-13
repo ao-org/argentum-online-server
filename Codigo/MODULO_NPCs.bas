@@ -30,7 +30,7 @@ Private IdNpcLibres As t_IndexHeap
 
 Option Explicit
 
-Public Sub InitializeNpcIndexHeap(Optional size As Integer = NpcIndexHeapSize)
+Public Sub InitializeNpcIndexHeap(Optional ByVal size As Integer = NpcIndexHeapSize)
 On Error GoTo ErrHandler_InitizlizeNpcIndex
     ReDim IdNpcLibres.IndexInfo(size)
     Dim i As Integer
@@ -54,6 +54,7 @@ On Error GoTo ErrHandler
     
     NpcList(NpcIndex).flags.NPCActive = False
     IdNpcLibres.CurrentIndex = IdNpcLibres.CurrentIndex + 1
+    Debug.Assert IdNpcLibres.currentIndex <= NpcIndexHeapSize
     IdNpcLibres.IndexInfo(IdNpcLibres.CurrentIndex) = NpcIndex
     ReleaseNpc = True
     Exit Function
@@ -62,8 +63,8 @@ ErrHandler:
     Call TraceError(Err.Number, Err.Description, "NPCs.ReleaseNpc", Erl)
 End Function
 
-Public Function AvailableNpc() As Integer
-    AvailableNpc = IdNpcLibres.CurrentIndex
+Public Function GetAvailableNpcIndex() As Integer
+    GetAvailableNpcIndex = IdNpcLibres.currentIndex
 End Function
 
 Public Function GetNextAvailableNpc() As Integer
@@ -1811,7 +1812,7 @@ End Sub
 Public Sub KillRandomNpc()
     Dim validNpc As Boolean: validNpc = False
     Dim NpcIndex As Integer: NpcIndex = 0
-    If AvailableNpc > 8000 Or AvailableNpc = 0 Then
+    If GetAvailableNpcIndex > 8000 Or GetAvailableNpcIndex = 0 Then
         Exit Sub
     End If
     Do While Not validNpc
