@@ -373,10 +373,12 @@ Public Sub DoTileEvents(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal 
 134                 aN = .flags.AtacadoPorNpc
     
 136                 If aN > 0 Then
-138                     NpcList(aN).Movement = NpcList(aN).flags.OldMovement
-140                     NpcList(aN).Hostile = NpcList(aN).flags.OldHostil
-142                     NpcList(aN).flags.AttackedBy = vbNullString
-144                     NpcList(aN).Target = 0
+                        If NpcList(aN).Target = UserIndex Then
+138                         NpcList(aN).Movement = NpcList(aN).flags.OldMovement
+140                         NpcList(aN).Hostile = NpcList(aN).flags.OldHostil
+142                         NpcList(aN).flags.AttackedBy = vbNullString
+144                         NpcList(aN).Target = 0
+                        End If
                     End If
         
 146                 aN = .flags.NPCAtacado
