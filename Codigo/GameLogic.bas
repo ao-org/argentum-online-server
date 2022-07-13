@@ -372,7 +372,7 @@ Public Sub DoTileEvents(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal 
                     'Te fusite del mapa. La criatura ya no es más tuya ni te reconoce como que vos la atacaste.
 134                 aN = .flags.AtacadoPorNpc
     
-136                 If aN > 0 Then
+136                 If aN > 0 And NpcList(aN).Target = UserIndex Then
 138                     NpcList(aN).Movement = NpcList(aN).flags.OldMovement
 140                     NpcList(aN).Hostile = NpcList(aN).flags.OldHostil
 142                     NpcList(aN).flags.AttackedBy = vbNullString
