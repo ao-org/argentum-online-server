@@ -2310,6 +2310,11 @@ Type t_MapInfo
 
 End Type
 
+Public Type t_IndexHeap
+    CurrentIndex As Integer
+    IndexInfo() As Integer
+End Type
+
 '********** V A R I A B L E S     P U B L I C A S ***********
 
 Public SERVERONLINE                      As Boolean
