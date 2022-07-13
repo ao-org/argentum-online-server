@@ -22,10 +22,66 @@ Attribute VB_Name = "NPCs"
 '?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
 
 Public Const MaxRespawn             As Integer = 255
+Public Const NpcIndexHeapSize As Integer = 10000
 
 Public RespawnList(1 To MaxRespawn) As t_Npc
 
+Private IdNpcLibres As t_IndexHeap
+
 Option Explicit
+
+Public Sub InitializeNpcIndexHeap(Optional ByVal size As Integer = NpcIndexHeapSize)
+On Error GoTo ErrHandler_InitizlizeNpcIndex
+    ReDim IdNpcLibres.IndexInfo(size)
+    Dim i As Integer
+    For i = 1 To size
+        IdNpcLibres.IndexInfo(i) = size - (i - 1)
+    Next i
+    IdNpcLibres.CurrentIndex = size
+    Exit Sub
+ErrHandler_InitizlizeNpcIndex:
+    Call TraceError(Err.Number, Err.Description, "NPCs.InitializeNpcIndexHeap", Erl)
+End Sub
+
+Public Function ReleaseNpc(ByVal NpcIndex As Integer) As Boolean
+
+On Error GoTo ErrHandler
+    If Not NpcList(NpcIndex).flags.NPCActive Then
+        Call TraceError(Err.Number, "Trying to release the id twice", "NPCs.ReleaseNpc", Erl)
+        ReleaseNpc = False
+        Return
+    End If
+    
+    NpcList(NpcIndex).flags.NPCActive = False
+    IdNpcLibres.CurrentIndex = IdNpcLibres.CurrentIndex + 1
+    Debug.Assert IdNpcLibres.currentIndex <= NpcIndexHeapSize
+    IdNpcLibres.IndexInfo(IdNpcLibres.CurrentIndex) = NpcIndex
+    ReleaseNpc = True
+    Exit Function
+ErrHandler:
+    ReleaseNpc = False
+    Call TraceError(Err.Number, Err.Description, "NPCs.ReleaseNpc", Erl)
+End Function
+
+Public Function GetAvailableNpcIndex() As Integer
+    GetAvailableNpcIndex = IdNpcLibres.currentIndex
+End Function
+
+Public Function GetNextAvailableNpc() As Integer
+On Error GoTo ErrHandler
+    If (IdNpcLibres.CurrentIndex = 0) Then
+        GetNextAvailableNpc = 0
+        Return
+    End If
+    GetNextAvailableNpc = IdNpcLibres.IndexInfo(IdNpcLibres.currentIndex)
+    IdNpcLibres.CurrentIndex = IdNpcLibres.CurrentIndex - 1
+    If NpcList(GetNextAvailableNpc).flags.NPCActive Then
+        Call TraceError(Err.Number, "Trying to active the same id twice", "NPCs.ReleaseNpc", Erl)
+    End If
+    Exit Function
+ErrHandler:
+    Call TraceError(Err.Number, Err.Description, "NPCs.GetNextAvailableNpc", Erl)
+End Function
 
 Sub QuitarMascotaNpc(ByVal Maestro As Integer)
         
@@ -170,7 +226,7 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
 190                                     Call WriteChatOverHead(UserIndex, "NOCONSOLA*" & .NPCsKilled(j) & "/" & QuestList(.QuestIndex).RequiredNPC(j).amount & " " & MiNPC.Name, UserList(UserIndex).Char.CharIndex, RGB(180, 180, 180))
 
                                     Else
-192                                     Call WriteConsoleMsg(UserIndex, "Ya has matado todos los " & MiNPC.name & " que la misión " & QuestList(.QuestIndex).nombre & " requería. Revisa si ya estás listo para recibir la recompensa.", e_FontTypeNames.FONTTYPE_INFOIAO)
+192                                     Call WriteConsoleMsg(UserIndex, "Ya has matado todos los " & MiNPC.Name & " que la misión " & QuestList(.QuestIndex).nombre & " requería. Revisa si ya estás listo para recibir la recompensa.", e_FontTypeNames.FONTTYPE_INFOIAO)
 194                                     Call WriteChatOverHead(UserIndex, "NOCONSOLA*" & QuestList(.QuestIndex).RequiredNPC(j).amount & "/" & QuestList(.QuestIndex).RequiredNPC(j).amount & " " & MiNPC.Name, UserList(UserIndex).Char.CharIndex, RGB(180, 180, 180))
                                     End If
         
@@ -456,8 +512,9 @@ Sub QuitarNPC(ByVal NpcIndex As Integer)
 
         On Error GoTo ErrHandler
 
-100     NpcList(NpcIndex).flags.NPCActive = False
-
+        If Not ReleaseNpc(NpcIndex) Then
+            Exit Sub
+        End If
         If NpcList(NpcIndex).flags.InvocadorIndex > 0 Then
     
             If NpcList(NpcList(NpcIndex).flags.InvocadorIndex).Contadores.CriaturasInvocadas > 0 Then
@@ -518,7 +575,7 @@ Sub QuitarNPC(ByVal NpcIndex As Integer)
         Exit Sub
 
 ErrHandler:
-130     NpcList(NpcIndex).flags.NPCActive = False
+        ReleaseNpc (NpcIndex)
 132     Call LogError("Error en QuitarNPC")
 
 End Sub
@@ -553,7 +610,6 @@ Public Function CrearNPC(NroNPC As Integer, Mapa As Integer, OrigPos As t_WorldP
         Dim Y              As Integer
 
 100     NpcIndex = OpenNPC(NroNPC) 'Conseguimos un indice
-    
 102     If NpcIndex = 0 Then Exit Function
 
 104     With NpcList(NpcIndex)
@@ -891,27 +947,6 @@ errh:
 
 End Function
 
-Function NextOpenNPC() As Integer
-        On Error GoTo ErrHandler
-
-        Dim LoopC As Integer
-  
-100     For LoopC = 1 To MaxNPCs + 1
-
-102         If LoopC > MaxNPCs Then Exit For
-
-104         If Not NpcList(LoopC).flags.NPCActive Then Exit For
-
-106     Next LoopC
-  
-108     NextOpenNPC = LoopC
-
-        Exit Function
-ErrHandler:
-110     Call LogError("Error en NextOpenNPC")
-
-End Function
-
 Sub NpcEnvenenarUser(ByVal UserIndex As Integer, ByVal VenenoNivel As Byte)
         
         On Error GoTo NpcEnvenenarUser_Err
@@ -968,7 +1003,6 @@ Function SpawnNpc(ByVal NpcIndex As Integer, Pos As t_WorldPos, ByVal FX As Bool
         Dim Y              As Integer
 
 100     nIndex = OpenNPC(NpcIndex, Respawn)   'Conseguimos un indice
-
 102     If nIndex = 0 Then
 104         SpawnNpc = 0
             Exit Function
@@ -1012,7 +1046,7 @@ Function SpawnNpc(ByVal NpcIndex As Integer, Pos As t_WorldPos, ByVal FX As Bool
         End If
 
 142     If Avisar Then
-144         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(NpcList(nIndex).name & " ha aparecido en " & get_map_name(map) & " , todo indica que puede tener una gran recompensa para el que logre sobrevivir a él.", e_FontTypeNames.FONTTYPE_CITIZEN))
+144         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(NpcList(nIndex).Name & " ha aparecido en " & get_map_name(map) & " , todo indica que puede tener una gran recompensa para el que logre sobrevivir a él.", e_FontTypeNames.FONTTYPE_CITIZEN))
         End If
 
 146     SpawnNpc = nIndex
@@ -1147,7 +1181,7 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
             Exit Function
         End If
 
-106     NpcIndex = NextOpenNPC
+106     NpcIndex = GetNextAvailableNpc
 
 108     If NpcIndex > MaxNPCs Then 'Limite de npcs
 110         OpenNPC = 0
@@ -1774,3 +1808,20 @@ Public Sub DummyTargetAttacked(ByVal NpcIndex As Integer)
 
         End With
 End Sub
+
+Public Sub KillRandomNpc()
+    Dim validNpc As Boolean: validNpc = False
+    Dim NpcIndex As Integer: NpcIndex = 0
+    If GetAvailableNpcIndex > 8000 Or GetAvailableNpcIndex = 0 Then
+        Exit Sub
+    End If
+    Do While Not validNpc
+        NpcIndex = RandomNumber(1, 10000)
+        If NpcList(NpcIndex).flags.NPCActive And NpcList(NpcIndex).Hostile > 0 Then
+            validNpc = True
+        End If
+    Loop
+    Call MuereNpc(NpcIndex, 0)
+End Sub
+
+
