@@ -903,12 +903,12 @@ Private Function EsObjetivoValido(ByVal NpcIndex As Integer, ByVal UserIndex As 
 100     If UserIndex = 0 Then Exit Function
 
         ' Esta condicion debe ejecutarse independiemente de el modo de busqueda.
-102     EsObjetivoValido = ( _
-          EnRangoVision(NpcIndex, UserIndex) And _
-          EsEnemigo(NpcIndex, UserIndex) And _
-          UserList(UserIndex).flags.Muerto = 0 And _
-          UserList(UserIndex).flags.EnConsulta = 0 And _
-          Not EsGM(UserIndex))
+102     EsObjetivoValido = EnRangoVision(NpcIndex, UserIndex)
+        EsObjetivoValido = EsObjetivoValido And EsEnemigo(NpcIndex, UserIndex)
+        EsObjetivoValido = EsObjetivoValido And UserList(UserIndex).flags.Muerto = 0
+        EsObjetivoValido = EsObjetivoValido And UserList(UserIndex).flags.EnConsulta = 0
+        Dim EsAdmin As Boolean: EsAdmin = EsGM(UserIndex) And Not UserList(UserIndex).flags.AdminPerseguible
+        EsObjetivoValido = EsObjetivoValido And Not EsAdmin
 
 End Function
 
@@ -994,7 +994,7 @@ Private Function UsuarioAtacableConMagia(ByVal targetUserIndex As Integer) As Bo
             .flags.Inmunidad = 0 And _
             .flags.Oculto = 0 And _
             .flags.Mimetizado < e_EstadoMimetismo.FormaBichoSinProteccion And _
-            Not EsGM(targetUserIndex) And _
+            Not (EsGM(targetUserIndex) And Not UserList(targetUserIndex).flags.AdminPerseguible) And _
             Not .flags.EnConsulta)
         End With
 
@@ -1024,7 +1024,7 @@ Private Function UsuarioAtacableConMelee(ByVal NpcIndex As Integer, ByVal target
             .flags.Inmunidad = 0 And _
             (EstaPegadoAlUser Or (Not EstaPegadoAlUser And (.flags.invisible + .flags.Oculto) = 0)) And _
             .flags.Mimetizado < e_EstadoMimetismo.FormaBichoSinProteccion And _
-            Not EsGM(targetUserIndex) And _
+            Not (EsGM(targetUserIndex) And Not UserList(targetUserIndex).flags.AdminPerseguible) And _
             Not .flags.EnConsulta)
         End With
 
