@@ -205,11 +205,20 @@ Private MapDat  As t_MapDat
 Public Sub load_stats()
 On Error GoTo error_load_stats
     Dim n As Integer
+    Dim strFile As String
+    strFile = App.Path & "\logs\recordusers.log"
     Dim str As String
     
-    n = FreeFile()
-    Open App.Path & "\logs\recordusers.log" For Input Shared As n
+    If Not FileExist(strFile) Then
+        n = FreeFile()
+        Open strFile For Append As #n
+        Print #n, "1"
+        Close #n
+    End If
     
+    Debug.Assert FileExist(strFile)
+    n = FreeFile()
+    Open strFile For Input Shared As n
     Line Input #n, str
     RecordUsuarios = val(str)
     Close #n
