@@ -1,3 +1,5 @@
+## Por favor considera apoyarnos en https://www.patreon.com/nolandstudios
+
 # Server AO20
 Código fuente de el servidor de Argentum20
 
