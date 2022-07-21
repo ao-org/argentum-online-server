@@ -439,6 +439,8 @@ Public Sub loadAdministrativeUsers()
         ' Server ini info file
         Dim ServerIni As clsIniManager
 104     Set ServerIni = New clsIniManager
+        Debug.Assert FileExist(IniPath & "Server.ini")
+        
 106     Call ServerIni.Initialize(IniPath & "Server.ini")
        
         ' Admines
