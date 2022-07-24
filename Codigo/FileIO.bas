@@ -1673,7 +1673,7 @@ Sub LoadMapData()
 
         If RunningInVB() Then
                 'VB runs out of memory when debugging
-                NumMaps = 770
+                NumMaps = 100
         Else
                 NumMaps = CountFiles(MapPath, "*.csm") - 1
         End If
@@ -2516,17 +2516,20 @@ WriteVar_Err:
         
 End Sub
 
-Sub LoadUser(ByVal UserIndex As Integer)
+Function LoadUser(ByVal UserIndex As Integer) As Boolean
+
 
         On Error GoTo ErrorHandler
     
-105         Call LoadUserDatabase(UserIndex)
-        Exit Sub
+        LoadUser = LoadUserDatabase(UserIndex)
+            
+        Exit Function
 
 ErrorHandler:
-535     Call TraceError(Err.Number, Err.Description & " UserName: " & UserList(UserIndex).Name, "ES.LoadUser", Erl)
-    
-End Sub
+        Call TraceError(Err.Number, Err.Description & " UserName: " & UserList(UserIndex).name, "ES.LoadUser", Erl)
+        LoadUser = False
+        
+End Function
 
 Sub SaveUser(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = False)
 

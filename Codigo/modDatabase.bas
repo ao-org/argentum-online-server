@@ -736,22 +736,25 @@ ErrorHandler:
 
 End Sub
 
-Sub LoadUserDatabase(ByVal UserIndex As Integer)
+Function LoadUserDatabase(ByVal UserIndex As Integer) As Boolean
+
         Dim counter As Long
             
         On Error GoTo ErrorHandler
-
+        LoadUserDatabase = False
         'Basic user data
 100     With UserList(UserIndex)
             
             Dim RS As ADODB.Recordset
             Set RS = Query(QUERY_LOAD_MAINPJ, .Name)
 
-104         If RS Is Nothing Then Exit Sub
+104         If RS Is Nothing Then Exit Function
             
             If (CLng(RS!account_id) <> UserList(UserIndex).AccountID) Then
                 Call CloseSocket(UserIndex)
-                Exit Sub
+                LoadUserDatabase = False
+                
+                Exit Function
             End If
             
             If (RS!is_banned) Then
@@ -766,14 +769,15 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
                 Call WriteShowMessageBox(UserIndex, "Se te ha prohibido la entrada al juego debido a " & BaneoMotivo & ". Esta decisión fue tomada por " & BanNick & ".")
             
                 Call CloseSocket(UserIndex)
-                Exit Sub
+                LoadUserDatabase = False
+                Exit Function
             End If
             'HarThaoS: Comentado hasta que salga el MAO.
             If (RS!is_locked_in_mao) Then
                 Call WriteShowMessageBox(UserIndex, "El personaje que estás intentando loguear se encuentra en venta, para desbloquearlo deberás hacerlo desde la página web.")
-           
+                LoadUserDatabase = False
                 Call CloseSocket(UserIndex)
-                Exit Sub
+                Exit Function
             End If
             
             Dim user_credits As Long
@@ -1085,7 +1089,7 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
                 Call LogCreditosPatreon(.name & " | " & .Email & " | Logged with " & .Stats.Creditos)
             End If
             
-476         If RS Is Nothing Then Exit Sub
+476         If RS Is Nothing Then Exit Function
             
             Dim tipo_usuario_db As Long
             tipo_usuario_db = RS!is_active_patron
@@ -1101,13 +1105,14 @@ Sub LoadUserDatabase(ByVal UserIndex As Integer)
             
         End With
         
-
-        Exit Sub
+        LoadUserDatabase = True
+        
+        Exit Function
 
 ErrorHandler:
 478     Call LogDatabaseError("Error en LoadUserDatabase: " & UserList(UserIndex).name & ". " & Err.Number & " - " & Err.Description & ". Línea: " & Erl)
 
-End Sub
+End Function
 Public Function UpdateDBIpsValues(ByVal UserIndex As Integer)
     With UserList(UserIndex)
         Dim ipStr As String
