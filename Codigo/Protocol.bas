@@ -7734,10 +7734,12 @@ Private Sub HandleBankDepositGold(ByVal UserIndex As Integer)
                 Exit Sub
 
             End If
-        
+            
 118         If amount > 0 And amount <= .Stats.GLD Then
-120             .Stats.Banco = .Stats.Banco + amount
-122             .Stats.GLD = .Stats.GLD - amount
+                'substract first in case there is overflow we don't dup gold
+                .Stats.GLD = .Stats.GLD - amount
+                .Stats.Banco = .Stats.Banco + amount
+
                 Call WriteChatOverHead(UserIndex, "Tenés " & .Stats.Banco & " monedas de oro en tu cuenta.", NpcList(.flags.TargetNPC).Char.charindex, vbWhite)
             
 124             Call WriteUpdateGold(UserIndex)
