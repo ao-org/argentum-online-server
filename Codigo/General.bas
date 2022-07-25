@@ -2576,7 +2576,11 @@ Private Function GetElapsed() As Single
     Call QueryPerformanceCounter(sTime2)
 End Function
 
-
+'Reads the files inside the ScriptsDB folder, it can be a create table, alter, etc.
+'we are calling this files dbmigrations, this function check this
+'folder and the db, and run all the files that are not registered in the db migration table
+'the file should store the name in the format of YYYYMMDD-XX-description text.sql
+'where the XX is the number of migrations generated the same day
 Public Sub LoadDBMigrations()
    
         On Error GoTo LoadDBMigrations_Err
