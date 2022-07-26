@@ -40,7 +40,7 @@ Sub IniciarDeposito(ByVal UserIndex As Integer)
         
         UserList(UserIndex).flags.Comerciando = True
         
-        Call UpdateBanUserInv(True, UserIndex, 0)
+        Call UpdateBanUserInv(True, UserIndex, 0, "IniciarDeposito")
 
 104     Call WriteBankInit(UserIndex)
 
@@ -83,7 +83,7 @@ SendBanObj_Err:
         
 End Sub
 
-Sub UpdateBanUserInv(ByVal UpdateAll As Boolean, ByVal UserIndex As Integer, ByVal Slot As Byte)
+Sub UpdateBanUserInv(ByVal UpdateAll As Boolean, ByVal UserIndex As Integer, ByVal Slot As Byte, caller As String)
         
         On Error GoTo UpdateBanUserInv_Err
         
@@ -125,7 +125,7 @@ Sub UpdateBanUserInv(ByVal UpdateAll As Boolean, ByVal UserIndex As Integer, ByV
         Exit Sub
 
 UpdateBanUserInv_Err:
-118     Call TraceError(Err.Number, Err.Description + " UI: " & UserIndex & " Slot:" & Slot, "modBanco.UpdateBanUserInv", Erl)
+118     Call TraceError(Err.Number, Err.Description + " UI: " & UserIndex & " Slot:" & Slot, "modBanco.UpdateBanUserInv" & "userID: " & UserList(UserIndex).ID & "caller: " & caller, Erl)
 
         
 End Sub
@@ -149,7 +149,7 @@ Sub UserRetiraItem(ByVal UserIndex As Integer, ByVal i As Integer, ByVal Cantida
 108             Call UpdateUserInv(False, UserIndex, slotdestino)
     
                 'Actualizamos el banco
-110             Call UpdateBanUserInv(False, UserIndex, i)
+110             Call UpdateBanUserInv(False, UserIndex, i, "UserRetiraItem")
             End If
             
         End If
@@ -308,7 +308,7 @@ Sub UserDepositaItem(ByVal UserIndex As Integer, ByVal Item As Integer, ByVal Ca
 106         Call UpdateUserInv(False, UserIndex, Item)
         
             'Actualizamos el inventario del banco
-108         Call UpdateBanUserInv(False, UserIndex, slotdestino)
+108         Call UpdateBanUserInv(False, UserIndex, slotdestino, "UserDepositaItem")
 
         End If
     
