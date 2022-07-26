@@ -5869,7 +5869,7 @@ Private Sub HandleOnline(ByVal UserIndex As Integer)
             End If
     
 134         Call WriteConsoleMsg(UserIndex, "Server Online: " & UpTimeStr, e_FontTypeNames.FONTTYPE_INFO)
-            Call WriteConsoleMsg(UserIndex, "Número de usuarios: " & CStr(count) & " conectados.", e_FontTypeNames.FONTTYPE_INFOIAO)
+            Call WriteConsoleMsg(UserIndex, "Número de usuarios: " & CStr(Count) & " conectados.", e_FontTypeNames.FONTTYPE_INFOIAO)
             Call WriteConsoleMsg(UserIndex, "Tiempo en línea: " & UpTimeStr & " Record de usuarios en simultaneo: " & RecordUsuarios & ".", e_FontTypeNames.FONTTYPE_INFOIAO)
         End With
         
@@ -16537,8 +16537,8 @@ Private Sub HandleBovedaMoveItem(ByVal UserIndex As Integer)
 116         UserList(UserIndex).BancoInvent.Object(SlotNuevo).amount = Objeto.amount
     
             'Actualizamos el banco
-118         Call UpdateBanUserInv(False, UserIndex, SlotViejo)
-120         Call UpdateBanUserInv(False, UserIndex, SlotNuevo)
+118         Call UpdateBanUserInv(False, UserIndex, SlotViejo, "HandleBovedaMoveItem - slot viejo")
+120         Call UpdateBanUserInv(False, UserIndex, SlotNuevo, "HandleBovedaMoveItem - slot nuevo")
 
         End With
     
