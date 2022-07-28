@@ -1,6 +1,13 @@
 ## Por favor considera apoyarnos en https://www.patreon.com/nolandstudios
 
-Renombrar carpeta argentum20-server a re20-server.
+Como correr mi server:
+Crear unas nueva carpeta AO20 y entrar a la misma, en ella seguir lo siguientes pasos:
+1- Clonar `argentum20-server`
+2- Renombrar carpeta argentum20-server a re20-server.
+3- Renombrar el archivo Example.Server.ini a Server.ini
+4- Clonar `Recursos`
+5- Abrir Visual Basic 6 como administrador
+6- Abrir el archivo Server.VBP
 
 # Server AO20
 Código fuente de el servidor de Argentum20
