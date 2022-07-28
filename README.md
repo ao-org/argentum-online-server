@@ -1,5 +1,7 @@
 ## Por favor considera apoyarnos en https://www.patreon.com/nolandstudios
 
+Renombrar carpeta argentum20-server a re20s-server.
+
 # Server AO20
 Código fuente de el servidor de Argentum20
 
