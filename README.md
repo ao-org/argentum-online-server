@@ -16,7 +16,7 @@ Crear una nueva carpeta llamada AO20 y entrar a la misma, en ella seguir lo sigu
 6- Abrir el archivo `Server.VBP`
 
 # Server AO20
-Código fuente de el servidor de Argentum20
+Código fuente del servidor de Argentum20
 
 ![image](https://i.ibb.co/gFDn3SG/AO20-drawio-2.png)
 
