@@ -5869,7 +5869,7 @@ Private Sub HandleOnline(ByVal UserIndex As Integer)
             End If
     
 134         Call WriteConsoleMsg(UserIndex, "Server Online: " & UpTimeStr, e_FontTypeNames.FONTTYPE_INFO)
-            Call WriteConsoleMsg(UserIndex, "Número de usuarios: " & CStr(count) & " conectados.", e_FontTypeNames.FONTTYPE_INFOIAO)
+            Call WriteConsoleMsg(UserIndex, "Número de usuarios: " & CStr(Count) & " conectados.", e_FontTypeNames.FONTTYPE_INFOIAO)
             Call WriteConsoleMsg(UserIndex, "Tiempo en línea: " & UpTimeStr & " Record de usuarios en simultaneo: " & RecordUsuarios & ".", e_FontTypeNames.FONTTYPE_INFOIAO)
         End With
         
@@ -6391,31 +6391,34 @@ Private Sub HandleMeditate(ByVal UserIndex As Integer)
 
 118             .Counters.TimerMeditar = 0
                 .Counters.TiempoInicioMeditar = 0
-
-120             Select Case .Stats.ELV
-
-                    Case 1 To 14
-122                     .Char.FX = e_Meditaciones.MeditarInicial
-                      'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, 37, -1, False))
-
-124                 Case 15 To 24
-                        'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, 38, -1, False))
-126                     .Char.FX = e_Meditaciones.MeditarMayor15
-
-128                 Case 25 To 35
-130                     .Char.FX = e_Meditaciones.MeditarMayor30
-                        'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, 39, -1, False))
-
-132                 Case 35 To 44
-134                     .Char.FX = e_Meditaciones.MeditarMayor40
-
-136                 Case 45 To 46
-138                     .Char.FX = e_Meditaciones.MeditarMayor45
-
-140                 Case Else
-142                     .Char.FX = e_Meditaciones.MeditarMayor47
-
-                End Select
+                If .MeditateEffect > 0 Then
+                    .Char.FX = .MeditateEffect
+                Else
+120                 Select Case .Stats.ELV
+    
+                        Case 1 To 14
+122                         .Char.FX = e_Meditaciones.MeditarInicial
+                          'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, 37, -1, False))
+    
+124                     Case 15 To 24
+                            'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, 38, -1, False))
+126                         .Char.FX = e_Meditaciones.MeditarMayor15
+    
+128                     Case 25 To 35
+130                         .Char.FX = e_Meditaciones.MeditarMayor30
+                            'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, 39, -1, False))
+    
+132                     Case 35 To 44
+134                         .Char.FX = e_Meditaciones.MeditarMayor40
+    
+136                     Case 45 To 46
+138                         .Char.FX = e_Meditaciones.MeditarMayor45
+    
+140                     Case Else
+142                         .Char.FX = e_Meditaciones.MeditarMayor47
+    
+                    End Select
+                End If
 
             Else
 144             .Char.FX = 0

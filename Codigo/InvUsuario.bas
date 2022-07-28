@@ -3083,6 +3083,12 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                             Exit Sub
 1252                     Case 3
                             Exit Sub
+                         Case 4 ' Meditation effect Potion
+                            Call QuitarUserInvItem(UserIndex, Slot, 1)
+                            Call UpdateUserInv(False, UserIndex, Slot)
+                            .MeditateEffect = obj.HechizoIndex
+                            Call Execute("UPDATE user set meditate_type = ?", obj.HechizoIndex)
+                            Exit Sub
                     End Select
 1262             Case e_OBJType.otpasajes
     

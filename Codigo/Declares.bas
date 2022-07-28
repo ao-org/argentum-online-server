@@ -1919,6 +1919,8 @@ Public Type t_User
     clase As e_Class
     raza As e_Raza
     genero As e_Genero
+    
+    MeditateEffect As Integer
     Email As String
     Hogar As e_Ciudad
     PosibleHogar As e_Ciudad
