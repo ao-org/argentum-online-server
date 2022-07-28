@@ -33,8 +33,14 @@ Registrar manualmente libreria Aurora.Network.dll
 Abrir CMD como Administrador `regsvr32 Aurora.Network.dll`
 
 ## Cryptography
-- CryptoSys is used in AO20 to cipher sensitive data - https://www.cryptosys.net/api.html 
-You will have to buy your own license to use CryptoSys
+CryptoSys is used in AO20 to cipher sensitive data.
+
+- https://www.cryptosys.net/api.html 
+
+Please note this is not free software and you will have to buy your own license to use CryptoSys
+
+## Microsoft Visual C++ Redistributable
+- https://docs.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170
 
 # Logs
 Los logs estan en la carpeta de Logs, Errores y en Windows Events
