@@ -9329,7 +9329,16 @@ Private Sub HandleEditChar(ByVal UserIndex As Integer)
 
             ' Si no es GM, no hacemos nada.
 116         If Not EsGM(UserIndex) Then Exit Sub
-        
+
+
+' From now on we disabled character edition in production environment
+' This should have never been enabled in the first place
+' If we require similar functionality for adhoc quests we will have to
+' create new in-game tools focusing in TRANSPARENCY to prevent future abuse
+#If DEBUGGING = 0 Then
+            Exit Sub
+#End If
+
             ' Si NO sos Dios o Admin,
 118         If (.flags.Privilegios And e_PlayerType.Admin) = 0 Then
 
