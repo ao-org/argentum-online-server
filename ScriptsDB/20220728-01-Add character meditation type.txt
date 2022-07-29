@@ -1,1 +1,0 @@
-ALTER TABLE user ADD meditate_type integer not null default 0;

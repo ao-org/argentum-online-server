@@ -792,7 +792,6 @@ Function LoadUserDatabase(ByVal UserIndex As Integer) As Boolean
 112         .Stats.Exp = RS!Exp
 114         .genero = RS!genre_id
 116         .raza = RS!race_id
-            .MeditateEffect = RS!meditate_type
 118         .clase = RS!class_id
 120         .Hogar = RS!home_id
 122         .Desc = RS!Description

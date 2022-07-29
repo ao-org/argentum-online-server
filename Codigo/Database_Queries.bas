@@ -51,7 +51,6 @@ Private Sub ConstruirQuery_CargarPersonaje()
         QueryBuilder.Append "Exp,"
         QueryBuilder.Append "genre_id,"
         QueryBuilder.Append "race_id,"
-        QueryBuilder.Append "meditate_type,"
         QueryBuilder.Append "class_id,"
         QueryBuilder.Append "home_id,"
         QueryBuilder.Append "description,"
