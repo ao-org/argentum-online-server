@@ -1766,7 +1766,8 @@ Public Sub EquipAura(ByVal Slot As Integer, ByRef inventory As t_Inventario, ByV
         inventory.Object(Slot).Equipped = False
         Exit Sub
     End If
-    
+    If Slot < 1 Or Slot > UBound(inventory.Object) Then Exit Sub
+
     Dim Index As Integer
     Dim obj As t_ObjData
     For Index = 1 To UBound(inventory.Object)

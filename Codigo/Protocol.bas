@@ -6392,11 +6392,12 @@ Private Sub HandleMeditate(ByVal UserIndex As Integer)
 118             .Counters.TimerMeditar = 0
                 .Counters.TiempoInicioMeditar = 0
                 Dim customEffect As Integer
+                Dim Index As Integer
                 Dim obj As t_ObjData
                 For Index = 1 To UBound(.Invent.Object)
                     If .Invent.Object(Index).objIndex > 0 Then
                         If .Invent.Object(Index).objIndex > 0 Then
-                            obj = ObjData(Invent.Object(Index).objIndex)
+                            obj = ObjData(.Invent.Object(Index).objIndex)
                             If obj.OBJType = OtDonador And obj.Subtipo = 4 And .Invent.Object(Index).Equipped Then
                                customEffect = obj.HechizoIndex
                                Exit For
