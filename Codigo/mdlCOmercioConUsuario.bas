@@ -68,7 +68,7 @@ Public Function IniciarComercioConUsuario(ByVal Origen As Integer, ByVal Destino
 128         UserList(Destino).flags.TargetUser = Origen
     
 130         UserList(Destino).flags.pregunta = 4
-132         Call WritePreguntaBox(Destino, UserList(Origen).Name & " desea comerciar contigo. ¿Aceptás?")
+132         Call WritePreguntaBox(Destino, UserList(Origen).name & " desea comerciar contigo. ¿Aceptás?")
     
         End If
 
@@ -89,7 +89,7 @@ Public Sub EnviarObjetoTransaccion(ByVal AQuien As Integer, ByVal UserIndex As I
             Dim cantidadTotalItem As Long
         
             'Me fijo si recibe oro
-100         If ObjAEnviar.ObjIndex = 0 Then
+100         If ObjAEnviar.objIndex = 0 Then
                 'Si es oro simplemente me fijo si ya había agregado antes y se lo sumo
 102             If UserList(UserIndex).ComUsu.Oro + ObjAEnviar.amount <= UserList(UserIndex).Stats.GLD Then
 104                 UserList(UserIndex).ComUsu.Oro = UserList(UserIndex).ComUsu.Oro + ObjAEnviar.amount
@@ -102,14 +102,14 @@ Public Sub EnviarObjetoTransaccion(ByVal AQuien As Integer, ByVal UserIndex As I
                 Dim j As Long
                 'me fijo si tiene esas cantidades para que no duplique items
 108             For j = 1 To UBound(UserList(UserIndex).ComUsu.itemsAenviar)
-110                 If UserList(UserIndex).ComUsu.itemsAenviar(j).ObjIndex = ObjAEnviar.ObjIndex Then
+110                 If UserList(UserIndex).ComUsu.itemsAenviar(j).objIndex = ObjAEnviar.objIndex Then
 112                     cantidadTotalItem = cantidadTotalItem + UserList(UserIndex).ComUsu.itemsAenviar(j).amount
                     End If
 114             Next j
             
 116             cantidadTotalItem = cantidadTotalItem + ObjAEnviar.amount
             
-118             If Not TieneObjetos(ObjAEnviar.ObjIndex, cantidadTotalItem, UserIndex) Then
+118             If Not TieneObjetos(ObjAEnviar.objIndex, cantidadTotalItem, UserIndex) Then
 120                 Call WriteConsoleMsg(UserIndex, "No tienes esa cantidad disponible para agregar.", e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
@@ -118,7 +118,7 @@ Public Sub EnviarObjetoTransaccion(ByVal AQuien As Integer, ByVal UserIndex As I
                 Dim i As Long
 122             For i = 1 To UBound(UserList(UserIndex).ComUsu.itemsAenviar)
                     'Si encuentro el item y tiene lugar pongo Found en la posición que lo encontré
-124                 If UserList(UserIndex).ComUsu.itemsAenviar(i).ObjIndex = ObjAEnviar.ObjIndex And UserList(UserIndex).ComUsu.itemsAenviar(i).amount <= 10000 Then
+124                 If UserList(UserIndex).ComUsu.itemsAenviar(i).objIndex = ObjAEnviar.objIndex And UserList(UserIndex).ComUsu.itemsAenviar(i).amount <= 10000 Then
                         'Me fijo si le va a entrar el objeto con las cantidades en el slot que encontró
 126                     If UserList(UserIndex).ComUsu.itemsAenviar(i).amount + ObjAEnviar.amount <= 10000 Then
                             'Si le entra simplemente le agrego las cantidades
@@ -130,7 +130,7 @@ Public Sub EnviarObjetoTransaccion(ByVal AQuien As Integer, ByVal UserIndex As I
 132                         FoundPos = i
                         End If
                     'Si no encuentra item en la pos y todavía no guardó ninguna primera posición me la guardo.
-134                 ElseIf UserList(UserIndex).ComUsu.itemsAenviar(i).ObjIndex = 0 And FirstEmptyPos = 0 Then
+134                 ElseIf UserList(UserIndex).ComUsu.itemsAenviar(i).objIndex = 0 And FirstEmptyPos = 0 Then
 136                     FirstEmptyPos = i
                     End If
                 
@@ -148,10 +148,10 @@ Public Sub EnviarObjetoTransaccion(ByVal AQuien As Integer, ByVal UserIndex As I
 152                         .itemsAenviar(FoundPos).amount = 10000
 154                         .itemsAenviar(FirstEmptyPos).amount = restante
                         End If
-156                     .itemsAenviar(FirstEmptyPos).ObjIndex = ObjAEnviar.ObjIndex
+156                     .itemsAenviar(FirstEmptyPos).objIndex = ObjAEnviar.objIndex
 158                 ElseIf FoundPos = 0 And FirstEmptyPos <> 0 Then
                         'Si entré aca es porque tengo que guardar el item en la pos vacía que encontré
-160                     .itemsAenviar(FirstEmptyPos).ObjIndex = ObjAEnviar.ObjIndex
+160                     .itemsAenviar(FirstEmptyPos).objIndex = ObjAEnviar.objIndex
 162                     .itemsAenviar(FirstEmptyPos).amount = ObjAEnviar.amount
 164                 ElseIf FirstEmptyPos = 0 And nada = False Then
                         'le aviso que no le entran los items
@@ -256,13 +256,13 @@ Public Sub AceptarComercioUsu(ByVal UserIndex As Integer)
         Dim i As Long
 138     For i = 1 To UBound(UserList(OtroUserIndex).ComUsu.itemsAenviar)
 140         objOfrecido = UserList(OtroUserIndex).ComUsu.itemsAenviar(i)
-142         If objOfrecido.ObjIndex > 0 And Not TieneObjetos(objOfrecido.ObjIndex, objOfrecido.amount, OtroUserIndex) Then
+142         If objOfrecido.objIndex > 0 And Not TieneObjetos(objOfrecido.objIndex, objOfrecido.amount, OtroUserIndex) Then
 144             Call WriteConsoleMsg(OtroUserIndex, "El otro usuario no tiene esa cantidad disponible para ofrecer.", e_FontTypeNames.FONTTYPE_INFO)
 146             GoTo FinalizarComercio
             End If
         
 148         objOfrecido = UserList(UserIndex).ComUsu.itemsAenviar(i)
-150         If objOfrecido.ObjIndex > 0 And Not TieneObjetos(objOfrecido.ObjIndex, objOfrecido.amount, UserIndex) Then
+150         If objOfrecido.objIndex > 0 And Not TieneObjetos(objOfrecido.objIndex, objOfrecido.amount, UserIndex) Then
 152             Call WriteConsoleMsg(UserIndex, "No tienes esa cantidad disponible para ofrecer.", e_FontTypeNames.FONTTYPE_INFO)
 154             GoTo FinalizarComercio
             End If
@@ -271,12 +271,16 @@ Public Sub AceptarComercioUsu(ByVal UserIndex As Integer)
         'Por si las moscas...
 158     If TerminarAhora Then GoTo FinalizarComercio
     
+        Dim registroComercio As String
+        registroComercio = "Usuario " & UserList(UserIndex).name & " comercio con " & UserList(OtroUserIndex).name & "."
+    
         'pone el oro directamente en la billetera
 160     If UserList(OtroUserIndex).ComUsu.Oro > 0 Then
 162         UserList(OtroUserIndex).Stats.GLD = UserList(OtroUserIndex).Stats.GLD - UserList(OtroUserIndex).ComUsu.Oro
 164         Call WriteUpdateUserStats(OtroUserIndex)
 166         UserList(UserIndex).Stats.GLD = UserList(UserIndex).Stats.GLD + UserList(OtroUserIndex).ComUsu.Oro
 168         Call WriteUpdateUserStats(UserIndex)
+            registroComercio = registroComercio & " Recibio oro: " & UserList(OtroUserIndex).ComUsu.Oro & ". "
         End If
     
 170     If UserList(UserIndex).ComUsu.Oro > 0 Then
@@ -284,25 +288,35 @@ Public Sub AceptarComercioUsu(ByVal UserIndex As Integer)
 174         Call WriteUpdateUserStats(UserIndex)
 176         UserList(OtroUserIndex).Stats.GLD = UserList(OtroUserIndex).Stats.GLD + UserList(UserIndex).ComUsu.Oro
 178         Call WriteUpdateUserStats(OtroUserIndex)
+            registroComercio = registroComercio & "Envio oro: " & UserList(UserIndex).ComUsu.Oro & "."
         End If
         
         ' Confirmamos que SI tienen los objetos a comerciar, procedemos con el cambio.
+        registroComercio = registroComercio & " Recibio items: "
 180     For i = 1 To UBound(UserList(OtroUserIndex).ComUsu.itemsAenviar)
 182         If Not MeterItemEnInventario(UserIndex, UserList(OtroUserIndex).ComUsu.itemsAenviar(i)) Then
 184             Call TirarItemAlPiso(UserList(UserIndex).Pos, UserList(OtroUserIndex).ComUsu.itemsAenviar(i))
             End If
         
-186         Call QuitarObjetos(UserList(OtroUserIndex).ComUsu.itemsAenviar(i).ObjIndex, UserList(OtroUserIndex).ComUsu.itemsAenviar(i).amount, OtroUserIndex)
+186         Call QuitarObjetos(UserList(OtroUserIndex).ComUsu.itemsAenviar(i).objIndex, UserList(OtroUserIndex).ComUsu.itemsAenviar(i).amount, OtroUserIndex)
+            If UserList(OtroUserIndex).ComUsu.itemsAenviar(i).amount > 0 Then
+                registroComercio = registroComercio & " obj " & UserList(OtroUserIndex).ComUsu.itemsAenviar(i).objIndex & " cant " & UserList(OtroUserIndex).ComUsu.itemsAenviar(i).amount & ", "
+            End If
 188     Next i
     
+        registroComercio = registroComercio & " Envio items: "
         Dim j As Long
 190     For j = 1 To UBound(UserList(UserIndex).ComUsu.itemsAenviar)
 192         If MeterItemEnInventario(OtroUserIndex, UserList(UserIndex).ComUsu.itemsAenviar(j)) = False Then
 194             Call TirarItemAlPiso(UserList(OtroUserIndex).Pos, UserList(UserIndex).ComUsu.itemsAenviar(j))
             End If
-196         Call QuitarObjetos(UserList(UserIndex).ComUsu.itemsAenviar(j).ObjIndex, UserList(UserIndex).ComUsu.itemsAenviar(j).amount, UserIndex)
+196         Call QuitarObjetos(UserList(UserIndex).ComUsu.itemsAenviar(j).objIndex, UserList(UserIndex).ComUsu.itemsAenviar(j).amount, UserIndex)
+            If UserList(UserIndex).ComUsu.itemsAenviar(j).amount > 0 Then
+                registroComercio = registroComercio & " obj " & UserList(UserIndex).ComUsu.itemsAenviar(j).objIndex & " cant " & UserList(UserIndex).ComUsu.itemsAenviar(j).amount & ", "
+            End If
 198     Next j
 
+        Call LogGM("Transfer", registroComercio)
 
 200     Call UpdateUserInv(True, UserIndex, 0)
 202     Call UpdateUserInv(True, OtroUserIndex, 0)
