@@ -6391,31 +6391,48 @@ Private Sub HandleMeditate(ByVal UserIndex As Integer)
 
 118             .Counters.TimerMeditar = 0
                 .Counters.TiempoInicioMeditar = 0
-
-120             Select Case .Stats.ELV
-
-                    Case 1 To 14
-122                     .Char.FX = e_Meditaciones.MeditarInicial
-                      'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, 37, -1, False))
-
-124                 Case 15 To 24
-                        'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, 38, -1, False))
-126                     .Char.FX = e_Meditaciones.MeditarMayor15
-
-128                 Case 25 To 35
-130                     .Char.FX = e_Meditaciones.MeditarMayor30
-                        'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, 39, -1, False))
-
-132                 Case 35 To 44
-134                     .Char.FX = e_Meditaciones.MeditarMayor40
-
-136                 Case 45 To 46
-138                     .Char.FX = e_Meditaciones.MeditarMayor45
-
-140                 Case Else
-142                     .Char.FX = e_Meditaciones.MeditarMayor47
-
-                End Select
+                Dim customEffect As Integer
+                Dim Index As Integer
+                Dim obj As t_ObjData
+                For Index = 1 To UBound(.Invent.Object)
+                    If .Invent.Object(Index).objIndex > 0 Then
+                        If .Invent.Object(Index).objIndex > 0 Then
+                            obj = ObjData(.Invent.Object(Index).objIndex)
+                            If obj.OBJType = OtDonador And obj.Subtipo = 4 And .Invent.Object(Index).Equipped Then
+                               customEffect = obj.HechizoIndex
+                               Exit For
+                            End If
+                        End If
+                    End If
+                Next Index
+                If customEffect > 0 Then
+                    .Char.FX = customEffect
+                Else
+120                 Select Case .Stats.ELV
+    
+                        Case 1 To 14
+122                         .Char.FX = e_Meditaciones.MeditarInicial
+                          'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, 37, -1, False))
+    
+124                     Case 15 To 24
+                            'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, 38, -1, False))
+126                         .Char.FX = e_Meditaciones.MeditarMayor15
+    
+128                     Case 25 To 35
+130                         .Char.FX = e_Meditaciones.MeditarMayor30
+                            'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, 39, -1, False))
+    
+132                     Case 35 To 44
+134                         .Char.FX = e_Meditaciones.MeditarMayor40
+    
+136                     Case 45 To 46
+138                         .Char.FX = e_Meditaciones.MeditarMayor45
+    
+140                     Case Else
+142                         .Char.FX = e_Meditaciones.MeditarMayor47
+    
+                    End Select
+                End If
 
             Else
 144             .Char.FX = 0

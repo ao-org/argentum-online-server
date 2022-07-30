@@ -1740,6 +1740,10 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
 534                     .Char.DM_Aura = obj.CreaGRH
 536                     Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessageAuraToChar(.Char.charindex, .Char.DM_Aura, False, 6))
                     End If
+                Case e_OBJType.OtDonador
+                    If obj.Subtipo = 4 Then
+                       Call EquipAura(Slot, .Invent, UserIndex)
+                    End If
 
             End Select
             
@@ -1754,6 +1758,32 @@ ErrHandler:
 566     Debug.Print errordesc
 568     Call LogError("EquiparInvItem Slot:" & Slot & " - Error: " & Err.Number & " - Error Description : " & Err.Description & "- " & errordesc)
 
+End Sub
+
+Public Sub EquipAura(ByVal Slot As Integer, ByRef inventory As t_Inventario, ByVal UserIndex As Integer)
+    
+    If inventory.Object(Slot).Equipped Then
+        inventory.Object(Slot).Equipped = False
+        Exit Sub
+    End If
+    If Slot < 1 Or Slot > UBound(inventory.Object) Then Exit Sub
+
+    Dim Index As Integer
+    Dim obj As t_ObjData
+    For Index = 1 To UBound(inventory.Object)
+        If Index <> Slot And inventory.Object(Index).Equipped Then
+            If inventory.Object(Index).objIndex > 0 Then
+                If inventory.Object(Index).objIndex > 0 Then
+                    obj = ObjData(inventory.Object(Index).objIndex)
+                    If obj.OBJType = OtDonador And obj.Subtipo = 4 Then
+                       inventory.Object(Index).Equipped = 0
+                       Call UpdateUserInv(False, UserIndex, Index)
+                    End If
+                End If
+             End If
+        End If
+    Next Index
+    inventory.Object(Slot).Equipped = 1
 End Sub
 
 Public Function CheckClaseTipo(ByVal UserIndex As Integer, ItemIndex As Integer) As Boolean
