@@ -15,6 +15,10 @@ Crear una nueva carpeta llamada AO20 y entrar a la misma, en ella seguir lo sigu
 
 6- Abrir el archivo `Server.VBP`
 
+# Pull Requests
+
+Before make a `git commit` please run the file git_ignore_case.sh to avoid false changes in the PR.
+
 # Server AO20
 Código fuente del servidor de Argentum20
 
