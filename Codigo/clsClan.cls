@@ -862,8 +862,11 @@ End Function
 Public Sub SetURL(ByRef URL As String)
         
         On Error GoTo SetURL_Err
+                                                                              
+                                                                              
+100     Call ReplaceInvalidChars(URL)
         
-100     Call WriteVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "URL", Left$(URL, 40))
+110     Call WriteVar(GUILDINFOFILE, "GUILD" & p_GuildNumber, "URL", Left$(URL, 40))
 
         
         Exit Sub
