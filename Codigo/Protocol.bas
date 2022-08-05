@@ -6630,8 +6630,8 @@ Private Sub HandleCommerceStart(ByVal UserIndex As Integer)
             'Validate target NPC
 110         If .flags.TargetNPC > 0 Then
                 
-                'VOS, como GM, NO podes COMERCIAR con NPCs. (excepto Dioses y Admins)
-112             If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Dios Or e_PlayerType.Admin)) = 0 Then
+                'VOS, como GM, NO podes COMERCIAR con NPCs. (excepto Admins)
+112             If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Admin)) = 0 Then
 114                 Call WriteConsoleMsg(UserIndex, "No podés vender items.", e_FontTypeNames.FONTTYPE_WARNING)
                     Exit Sub
 
@@ -6662,15 +6662,15 @@ Private Sub HandleCommerceStart(ByVal UserIndex As Integer)
 
                 ' **********************  Comercio con Usuarios  *********************
                 
-                'VOS, como GM, NO podes COMERCIAR con usuarios. (excepto Dioses y Admins)
-130             If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Dios Or e_PlayerType.Admin)) = 0 Then
+                'VOS, como GM, NO podes COMERCIAR con usuarios. (excepto  Admins)
+130             If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Admin)) = 0 Then
 132                 Call WriteConsoleMsg(UserIndex, "No podés vender items.", e_FontTypeNames.FONTTYPE_WARNING)
                     Exit Sub
 
                 End If
                 
-                'NO podes COMERCIAR CON un GM. (excepto Dioses y Admins)
-134             If (UserList(.flags.TargetUser).flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Dios Or e_PlayerType.Admin)) = 0 Then
+                'NO podes COMERCIAR CON un GM. (excepto  Admins)
+134             If (UserList(.flags.TargetUser).flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Admin)) = 0 Then
 136                 Call WriteConsoleMsg(UserIndex, "No podés vender items a este usuario.", e_FontTypeNames.FONTTYPE_WARNING)
                     Exit Sub
 

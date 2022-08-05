@@ -34,33 +34,9 @@ Begin VB.Form frmMain
       Caption         =   "Recargar baneos.dat"
       Height          =   495
       Left            =   6840
-      TabIndex        =   43
+      TabIndex        =   40
       Top             =   120
       Width           =   1695
-   End
-   Begin VB.TextBox txtAyudin 
-      Enabled         =   0   'False
-      Height          =   315
-      Left            =   3720
-      TabIndex        =   42
-      Top             =   0
-      Width           =   855
-   End
-   Begin VB.CommandButton cmdAyudinMenos 
-      Caption         =   "-"
-      Height          =   255
-      Left            =   3480
-      TabIndex        =   41
-      Top             =   0
-      Width           =   255
-   End
-   Begin VB.CommandButton cmdAyudinMas 
-      Caption         =   "+"
-      Height          =   255
-      Left            =   4560
-      TabIndex        =   40
-      Top             =   0
-      Width           =   255
    End
    Begin VB.Timer Timer1 
       Interval        =   10000
