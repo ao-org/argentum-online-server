@@ -11565,7 +11565,7 @@ Private Sub HandleServerMessage(ByVal UserIndex As Integer)
             Dim Message As String
 102             Message = Reader.ReadString8()
         
-104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios)) Then
+104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios Or e_PlayerType.Consejero)) Then
         
 106             If LenB(Message) <> 0 Then
 108                 Call LogGM(.Name, "Mensaje Broadcast:" & Message)
@@ -13024,7 +13024,7 @@ Private Sub HandleCreateItem(ByVal UserIndex As Integer)
     
             ' Si es usuario, lo sacamos cagando.
 
-106         If Not EsGM(UserIndex) Or (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero Or e_PlayerType.SemiDios)) Then
+106         If Not EsGM(UserIndex) Or (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero Or e_PlayerType.SemiDios Or e_PlayerType.Dios)) Then
                 Call WriteConsoleMsg(userindex, "Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
@@ -13062,7 +13062,7 @@ Private Sub HandleCreateItem(ByVal UserIndex As Integer)
 128                 Call WriteConsoleMsg(UserIndex, "No tenes espacio en tu inventario para crear el item.", e_FontTypeNames.FONTTYPE_INFO)
                 
                     ' Si no hay espacio y es Dios o Admin, lo tiro al piso.
-130                 If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios)) <> 0 Then
+130                 If (.flags.Privilegios And (e_PlayerType.Admin)) <> 0 Then
 132                     Call TirarItemAlPiso(.Pos, Objeto)
 134                     Call WriteConsoleMsg(UserIndex, "ATENCION: CREASTE [" & Cuantos & "] ITEMS, TIRE E INGRESE /DEST EN CONSOLA PARA DESTRUIR LOS QUE NO NECESITE!!", e_FontTypeNames.FONTTYPE_GUILD)
 
@@ -13074,7 +13074,7 @@ Private Sub HandleCreateItem(ByVal UserIndex As Integer)
         
                 ' Crear el item NO AGARRARBLE y tirarlo al piso.
                 ' Si no hay espacio y es Dios o Admin, lo tiro al piso.
-136             If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios)) <> 0 Then
+136             If (.flags.Privilegios And (e_PlayerType.Admin)) <> 0 Then
 138                 Call TirarItemAlPiso(.Pos, Objeto)
 140                 Call WriteConsoleMsg(UserIndex, "ATENCION: CREASTE [" & Cuantos & "] ITEMS, TIRE E INGRESE /DEST EN CONSOLA PARA DESTRUIR LOS QUE NO NECESITE!!", e_FontTypeNames.FONTTYPE_GUILD)
 
@@ -13083,7 +13083,7 @@ Private Sub HandleCreateItem(ByVal UserIndex As Integer)
             End If
         
             ' Lo registro en los logs.
-            If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios)) <> 0 Then
+            If (.flags.Privilegios And (e_PlayerType.Admin)) <> 0 Then
 142             Call LogGM(.Name, "/CI: " & tObj & " Cantidad : " & Cuantos)
             End If
 
@@ -13395,7 +13395,7 @@ Private Sub HandleRemovePunishment(ByVal UserIndex As Integer)
 104         punishment = Reader.ReadInt8
 106         NewText = Reader.ReadString8()
         
-108         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.RoleMaster)) Then
+108         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios)) Then
         
 110             If LenB(UserName) = 0 Then
 112                 Call WriteConsoleMsg(UserIndex, "Utilice /borrarpena Nick@NumeroDePena@NuevaPena", e_FontTypeNames.FONTTYPE_INFO)
@@ -14026,7 +14026,7 @@ Public Sub HandleDay(ByVal UserIndex As Integer)
         
         
         
-102         If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero Or e_PlayerType.SemiDios)) Then
+102         If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero Or e_PlayerType.SemiDios Or e_PlayerType.Dios)) Then
 104             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
