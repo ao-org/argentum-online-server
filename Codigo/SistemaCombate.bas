@@ -588,6 +588,8 @@ Private Sub UserDañoNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
 104             DañoBase = NpcList(NpcIndex).Stats.MinHp + NpcList(NpcIndex).Stats.def
                 ' La pierde una vez usada
 106             Call QuitarObjetos(EspadaMataDragonesIndex, 1, UserIndex)
+                'registramos quien mato y uso la MD
+                Call LogGM(.name, " Mato un Dragon Rojo ")
             Else
                 ' Daño normal
 108             DañoBase = CalcularDaño(UserIndex)
