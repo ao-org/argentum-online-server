@@ -3721,7 +3721,7 @@ Public Sub WriteDatosGrupo(ByVal UserIndex As Integer)
 
 124                     If i = 1 Then
 126                         Call Writer.WriteString8(UserList(UserList( _
-                                    .Grupo.Lider).Grupo.Miembros(i)).Name & "(Líder)")
+                                    .Grupo.Lider).Grupo.Miembros(i)).name & "(Líder)")
                         Else
 128                         Call Writer.WriteString8(UserList(UserList( _
                                     .Grupo.Lider).Grupo.Miembros(i)).Name)
@@ -5511,6 +5511,21 @@ writeSensuiRetrasado_Err:
     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.writeSensuiRetrasado", Erl)
     
 End Sub
+
+Public Sub WriteRequestResponse(ByVal UserIndex As Integer)
+    On Error GoTo RequestResponse_Err
+    
+    Call Writer.WriteInt16(ServerPacketID.RequestResponse)
+    
+182 Call modSendData.SendData(ToIndex, UserIndex)
+    
+RequestResponse_Err:
+     Call Writer.Clear
+    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_WritesRequestResponse", Erl)
+    
+End Sub
+
+
 Public Sub WriteObjQuestSend(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, ByVal Slot As Byte)
         '<EhHeader>
         On Error GoTo WriteNpcQuestListSend_Err

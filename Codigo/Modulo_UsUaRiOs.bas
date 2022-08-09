@@ -81,13 +81,21 @@ Public Function ConnectUser_Check(ByVal UserIndex As Integer, _
 
             If UserList(tIndex).Counters.Saliendo Then
                 Call WriteShowMessageBox(UserIndex, "El personaje está saliendo.")
-
             Else
+                If UserList(tIndex).ExpectPing And (GetTickCount() - UserList(tIndex).ExpectPingTime > 10000) Then
+                    Call Cerrar_Usuario(tIndex)
+                    UserList(tIndex).ExpectPing = False
+                Else
+                    Call WriteShowMessageBox(UserIndex, "El personaje ya está conectado. Espere mientras es desconectado.")
+    
+                    ' Le avisamos al usuario que está jugando, en caso de que haya uno
+                    Call WriteShowMessageBox(tIndex, "Alguien está ingresando con tu personaje. Si no has sido tú, por favor cambia la contraseña de tu cuenta.")
+                    UserList(tIndex).ExpectPing = True
+                    UserList(tIndex).ExpectPingTime = GetTickCount()
+                    Call WriteRequestResponse(tIndex)
+                End If
                 
-                Call WriteShowMessageBox(UserIndex, "El personaje ya está conectado. Espere mientras es desconectado.")
-
-                ' Le avisamos al usuario que está jugando, en caso de que haya uno
-                Call WriteShowMessageBox(tIndex, "Alguien está ingresando con tu personaje. Si no has sido tú, por favor cambia la contraseña de tu cuenta.")
+                
             '    Call Cerrar_Usuario(tIndex)
 
             End If
@@ -144,8 +152,8 @@ Public Function ConnectUser_Check(ByVal UserIndex As Integer, _
         End If
         
         If EsGM(UserIndex) Then
-            Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » " & Name & " se conecto al juego.", e_FontTypeNames.FONTTYPE_INFOBOLD))
-            Call LogGM(Name, "Se conectó con IP: " & .IP)
+            Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » " & name & " se conecto al juego.", e_FontTypeNames.FONTTYPE_INFOBOLD))
+            Call LogGM(name, "Se conectó con IP: " & .IP)
         Else
             If ServerSoloGMs > 0 Then
                 Dim i As Integer
@@ -202,6 +210,7 @@ Public Sub ConnectUser_Prepare(ByVal userindex As Integer, ByRef name As String)
 
             ' Seteamos el nombre
 170         .Name = Name
+            .ExpectPing = False
         
             ' Vinculamos el nombre con el UserIndex
 175         m_NameIndex(UCase$(Name)) = UserIndex
@@ -706,10 +715,10 @@ Public Function ConnectUser_Complete(ByVal UserIndex As Integer, _
 1120        Call WriteLoggedMessage(UserIndex, newUser)
         
 1125        If .Stats.ELV = 1 Then
-1130            Call WriteConsoleMsg(UserIndex, "¡Bienvenido a las tierras de AO20! ¡" & .Name & " que tengas buen viaje y mucha suerte!", e_FontTypeNames.FONTTYPE_GUILD)
+1130            Call WriteConsoleMsg(UserIndex, "¡Bienvenido a las tierras de AO20! ¡" & .name & " que tengas buen viaje y mucha suerte!", e_FontTypeNames.FONTTYPE_GUILD)
 
 1135        ElseIf .Stats.ELV < 14 Then
-1140            Call WriteConsoleMsg(UserIndex, "¡Bienvenido de nuevo " & .Name & "! Actualmente estas en el nivel " & .Stats.ELV & " en " & get_map_name(.Pos.map) & ", ¡buen viaje y mucha suerte!", e_FontTypeNames.FONTTYPE_GUILD)
+1140            Call WriteConsoleMsg(UserIndex, "¡Bienvenido de nuevo " & .name & "! Actualmente estas en el nivel " & .Stats.ELV & " en " & get_map_name(.Pos.map) & ", ¡buen viaje y mucha suerte!", e_FontTypeNames.FONTTYPE_GUILD)
 
              End If
 

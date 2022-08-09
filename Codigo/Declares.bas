@@ -1997,6 +1997,9 @@ Public Type t_User
     MacroIterations(1 To MAX_PACKET_COUNTERS) As Long
     PacketTimers(1 To MAX_PACKET_COUNTERS) As Long
     PacketCounters(1 To MAX_PACKET_COUNTERS) As Long
+    
+    ExpectPing As Boolean
+    ExpectPingTime As Long
 End Type
 
 Public MacroIterations(1 To MAX_PACKET_COUNTERS) As Long
