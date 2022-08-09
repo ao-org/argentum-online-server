@@ -92,7 +92,7 @@ Public Function ConnectUser_Check(ByVal UserIndex As Integer, _
                     Call WriteShowMessageBox(tIndex, "Alguien está ingresando con tu personaje. Si no has sido tú, por favor cambia la contraseña de tu cuenta.")
                     UserList(tIndex).ExpectPing = True
                     UserList(tIndex).ExpectPingTime = GetTickCount()
-                    Call WriteRequestResponse(tIndex)
+                    Call WriteRequestPing(tIndex)
                 End If
                 
                 

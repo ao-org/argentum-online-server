@@ -208,7 +208,7 @@ Public Enum ServerPacketID
     PlayWaveStep
     ShopPjsInit
     DebugDataResponse
-    RequestResponse
+    RequestPing
     #If PYMMO = 0 Then
     AccountCharacterList
     #End If
@@ -534,7 +534,7 @@ Public Enum ClientPacketID
     PublicarPersonajeMAO
     EventoFaccionario    '/EVENTOFACCIONARIO
     RequestDebug '/RequestDebug consulta info debug al server, para gms
-    ReplyRequestResponse
+    ReplyPingRequest
     #If PYMMO = 0 Then
     CreateAccount
     LoginAccount
@@ -1377,8 +1377,8 @@ On Error Resume Next
             Call HandleEventoFaccionario(UserIndex)
         Case ClientPacketID.RequestDebug
             Call HandleDebugRequest(UserIndex)
-        Case ClientPacketID.ReplyRequestResponse
-            Call HandleReplyRequestResponse(UserIndex)
+        Case ClientPacketID.ReplyPingRequest
+            Call HandleReplyPingRequest(UserIndex)
 #If PYMMO = 0 Then
         Case ClientPacketID.CreateAccount
             Call HandleCreateAccount(userindex)
@@ -19236,11 +19236,12 @@ HandleDebugRequest_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleDebugRequest", Erl)
 End Sub
 
-Private Sub HandleReplyRequestResponse(ByVal UserIndex As Integer)
-On Error GoTo HandleReplyRequestResponse_Err:
+Private Sub HandleReplyPingRequest(ByVal UserIndex As Integer)
+On Error GoTo ResponseConnectionPingRequest_Err:
     UserList(UserIndex).ExpectPing = False
-HandleReplyRequestResponse_Err:
-102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleReplyRequestResponse", Erl)
+    Exit Sub
+ResponseConnectionPingRequest_Err:
+102     Call TraceError(Err.Number, Err.Description, "Protocol.ResponseConnectionPingRequest", Erl)
 End Sub
 
 Private Sub HandleDeleteItem(ByVal UserIndex As Integer)

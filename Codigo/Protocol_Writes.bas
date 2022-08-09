@@ -5512,10 +5512,10 @@ writeSensuiRetrasado_Err:
     
 End Sub
 
-Public Sub WriteRequestResponse(ByVal UserIndex As Integer)
+Public Sub WriteRequestPing(ByVal UserIndex As Integer)
     On Error GoTo RequestResponse_Err
     
-    Call Writer.WriteInt16(ServerPacketID.RequestResponse)
+    Call Writer.WriteInt16(ServerPacketID.RequestPing)
     
 182 Call modSendData.SendData(ToIndex, UserIndex)
     
