@@ -59,13 +59,13 @@ Public Sub Flush(ByVal UserIndex As Long)
     Call Server.Flush(UserList(UserIndex).ConnID)
 End Sub
 
-Public Sub Kick(ByVal Connection As Long, Optional ByVal message As String = vbNullString)
+Public Sub Kick(ByVal Connection As Long, Optional ByVal Message As String = vbNullString)
 On Error GoTo Kick_ErrHandler:
-    If (message <> vbNullString) Then
+    If (Message <> vbNullString) Then
         Dim UserIndex As Long
         UserIndex = Mapping(Connection)
         If UserIndex > 0 Then
-            Call Protocol_Writes.WriteErrorMsg(UserIndex, message)
+            Call Protocol_Writes.WriteErrorMsg(UserIndex, Message)
             If UserList(UserIndex).flags.UserLogged Then
                 Call Cerrar_Usuario(UserIndex)
             End If
@@ -162,6 +162,7 @@ On Error GoTo OnServerClose_Err:
     Exit Sub
     
 OnServerClose_Err:
+    Call ForcedClose(UserIndex, Connection)
     Call TraceError(Err.Number, Err.Description, "modNetwork.OnServerClose", Erl)
 End Sub
 
@@ -181,12 +182,24 @@ On Error GoTo OnServerRecv_Err:
     Dim UserIndex As Long
     UserIndex = Mapping(Connection)
 
-    Call Protocol.HandleIncomingData(UserIndex, message)
+    Call Protocol.HandleIncomingData(UserIndex, Message)
     
     Exit Sub
     
 OnServerRecv_Err:
     Call Kick(Connection)
     Call TraceError(Err.Number, Err.Description, "modNetwork.OnServerRecv", Erl)
+End Sub
+
+Private Sub ForcedClose(ByVal UserIndex As Integer, Connection As Long)
+On Error GoTo ForcedClose_Err:
+    UserList(UserIndex).ConnIDValida = False
+    UserList(UserIndex).ConnID = 0
+    Call Server.Flush(Connection)
+    Call Server.Kick(Connection, True)
+    Mapping(Connection) = 0
+    
+ForcedClose_Err:
+    Call TraceError(Err.Number, Err.Description, "modNetwork.ForcedClose", Erl)
 End Sub
 
