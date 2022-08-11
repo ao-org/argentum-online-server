@@ -15,6 +15,7 @@ Type lobby
     Players() As PlayerInLobby
     SummonCoordinates As t_WorldPos
     RegisteredPlayers As Integer
+    ClassFilter As Integer 'check for e_Class or <= 0 for no filter
 End Type
 
 Public ActiveLobby As lobby
@@ -29,12 +30,12 @@ Public Sub InitializeLobby(ByRef instance As lobby)
 End Sub
 
 Public Sub SetMaxPlayers(ByRef instance As lobby, ByVal playerCount As Integer)
-    instance.MaxPlayer = playerCount
+    instance.MaxPlayers = playerCount
     ReDim instance.Players(0 To playerCount)
 End Sub
 
 Public Sub SetMinPlayers(ByRef instance As lobby, ByVal playerCount As Integer)
-    instance.MinPlayer = playerCount
+    instance.MinPlayers = playerCount
 End Sub
 
 Public Sub SetMinLevel(ByRef instance As lobby, ByVal level As Byte)
@@ -43,6 +44,10 @@ End Sub
 
 Public Sub SetMaxLevel(ByRef instance As lobby, ByVal level As Byte)
     instance.MaxLevel = level
+End Sub
+
+Public Sub SetClassFilter(ByRef instance As lobby, ByVal Class As Integer)
+    instance.ClassFilter = Class
 End Sub
 
 Public Function AddPlayer(ByRef instance As lobby, ByVal UserIndex As Integer) As Boolean
@@ -55,9 +60,17 @@ Public Function AddPlayer(ByRef instance As lobby, ByVal UserIndex As Integer) A
             AddPlayer = False
             Exit Function
         End If
+        If instance.ClassFilter > 0 And .clase <> instance.ClassFilter Then
+            AddPlayer = False
+            Exit Function
+        End If
         instance.Players(instance.RegisteredPlayers).UserId = UserIndex
         instance.Players(instance.RegisteredPlayers).IsSummoned = False
         instance.RegisteredPlayers = instance.RegisteredPlayers + 1
         AddPlayer = True
     End With
+End Function
+
+Public Function SummonPlayer(ByRef instance As lobby, ByVal user As Integer)
+    
 End Function
