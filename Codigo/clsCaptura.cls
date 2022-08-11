@@ -17,6 +17,7 @@ Private participantes As Collection
 
 Private cantidad_rondas As Byte
 Private nivel_minimo As Byte
+Private nivel_maximo As Byte
 Private max_participantes As Byte
 Private tiempo_espera As Integer
 Private tiempo_ronda As Integer
@@ -209,7 +210,7 @@ Private Sub iniciarCaptura()
         UserList(participante.UserIndex).flags.jugando_captura_team = Team
         UserList(participante.UserIndex).flags.tiene_bandera = 0
          Call SendData(SendTarget.ToAll, participante.UserIndex, PrepareMessageUpdateFlag(UserList(participante.UserIndex).flags.tiene_bandera, UserList(participante.UserIndex).Char.charindex))
-        Call WriteConsoleMsg(participante.UserIndex, "Te ha tocado participar en el equipo " & colorEquipo(participante.Team) & " deberás proteger a tus compañeros de equipo y capturar la bandera del equipo contrario para ganar.", e_FontTypeNames.FONTTYPE_GUILD)
+        Call WriteConsoleMsg(participante.userindex, "Te ha tocado participar en el equipo " & colorEquipo(participante.Team) & " deberás proteger a tus compañeros de equipo y capturar la bandera del equipo contrario para ganar.", e_FontTypeNames.FONTTYPE_GUILD)
         counter = counter + 1
         If counter = 2 Then
             Team = IIf(Team = 1, 2, 1)
@@ -238,7 +239,7 @@ Public Sub muereUsuario(ByVal UserIndex As Integer)
         .flags.jugando_captura_timer = .flags.jugando_captura_muertes * CAPTURA_TIEMPO_POR_MUERTE + CAPTURA_TIEMPO_MUERTE
         
         
-        Call WriteConsoleMsg(UserIndex, "Volverás a tu base en " & .flags.jugando_captura_timer & " segundos.", e_FontTypeNames.FONTTYPE_GUILD)
+        Call WriteConsoleMsg(userindex, "Volverás a tu base en " & .flags.jugando_captura_timer & " segundos.", e_FontTypeNames.FONTTYPE_GUILD)
         
         
         Call enviarUsuarioSala(UserIndex)
@@ -325,7 +326,7 @@ Public Sub tiraBandera(ByVal UserIndex As Integer, ByVal objIndex As Integer)
         UserList(UserIndex).flags.tiene_bandera = 0
         
         Call SendData(SendTarget.ToAll, UserIndex, PrepareMessageUpdateFlag(UserList(UserIndex).flags.tiene_bandera, UserList(UserIndex).Char.charindex))
-        Call SendData(SendTarget.ToJugadoresCaptura, 0, PrepareMessageConsoleMsg("Eventos» ¡Atención! la bandera del equipo " & colorEquipo(Team) & " se encuentra en (" & .Pos.map & "," & .Pos.X & "," & .Pos.Y & ")", e_FontTypeNames.FONTTYPE_GUILD))
+        Call SendData(SendTarget.ToJugadoresCaptura, 0, PrepareMessageConsoleMsg("Eventos» ¡Atención! la bandera del equipo " & colorEquipo(Team) & " se encuentra en (" & .Pos.map & "," & .Pos.X & "," & .Pos.y & ")", e_FontTypeNames.FONTTYPE_GUILD))
         
     End With
 End Sub
@@ -357,7 +358,7 @@ Public Sub tirarBandera(ByVal UserIndex As Integer)
                 MiObj.objIndex = objBandera
             
                 Call TirarItemAlPiso(.Pos, MiObj, False)
-                Call SendData(SendTarget.ToJugadoresCaptura, 0, PrepareMessageConsoleMsg("Eventos» ¡Atención! la bandera del equipo " & colorEquipo(Team) & " se encuentra en (" & .Pos.map & "," & .Pos.X & "," & .Pos.Y & ")", e_FontTypeNames.FONTTYPE_GUILD))
+                Call SendData(SendTarget.ToJugadoresCaptura, 0, PrepareMessageConsoleMsg("Eventos» ¡Atención! la bandera del equipo " & colorEquipo(Team) & " se encuentra en (" & .Pos.map & "," & .Pos.X & "," & .Pos.y & ")", e_FontTypeNames.FONTTYPE_GUILD))
             End If
             
         End If
@@ -492,14 +493,15 @@ Public Sub finalizarRonda(ByVal Team As Byte)
     End If
 End Sub
 
-Public Function inicializar(ByVal MaxParticipantes As Long, ByVal CantidadRondas As Byte, ByVal NivelMinimo As Byte, ByVal precio_ As Long) As Boolean
+Public Function Inicializar(ByVal MaxParticipantes As Long, ByVal CantidadRondas As Byte, ByVal NivelMinimo As Byte, ByVal NivelMaximo, ByVal precio_ As Long) As Boolean
     
     'Agregar random en comando para que no lo macreen rr-magax
-    Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos» Se ha iniciado un Captura de la bandera de " & MaxParticipantes & " participantes, el precio de inscripción es de " & PonerPuntos(precio_) & " y el nivel mínimo para ingresar es " & NivelMinimo & ", para participar envía /PARTICIPARCAPTURA Las inscripciones se cerraran en 3 minutos.", e_FontTypeNames.FONTTYPE_GUILD))
+    Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos» Se ha iniciado un Captura de la bandera de " & MaxParticipantes & " participantes, el precio de inscripción es de " & PonerPuntos(precio_) & ", el nivel mínimo para ingresar es " & NivelMinimo & " y el maximo es " & NivelMaximo & ", para participar envía /PARTICIPARCAPTURA Las inscripciones se cerraran en 3 minutos.", e_FontTypeNames.FONTTYPE_GUILD))
         
     max_participantes = MaxParticipantes
     cantidad_rondas = CantidadRondas
     nivel_minimo = NivelMinimo
+    nivel_maximo = NivelMaximo
     tiempo_espera = CAPTURA_TIEMPO_ESPERA
     precio = precio_
     Estado = Inscripcion
@@ -511,7 +513,7 @@ Public Sub inscribirse(ByVal UserIndex As Integer)
     With UserList(UserIndex)
         
         If Estado <> Inscripcion Then
-            Call WriteConsoleMsg(UserIndex, "Ya se ha cerrado la inscripción para el evento.", e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteConsoleMsg(userindex, "Ya se ha cerrado la inscripción para el evento.", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         
@@ -521,31 +523,37 @@ Public Sub inscribirse(ByVal UserIndex As Integer)
         End If
         
         If .flags.jugando_captura = 1 Then
-            Call WriteConsoleMsg(UserIndex, "Ya estás anotado en el evento.", e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteConsoleMsg(userindex, "Ya estás anotado en el evento.", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         
         'Nivel
         If .Stats.ELV < nivel_minimo Then
-            Call WriteConsoleMsg(UserIndex, "Para ingresar al evento deberás ser al menos nivel " & nivel_minimo & ".", e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteConsoleMsg(userindex, "Para ingresar al evento deberás ser al menos nivel " & nivel_minimo & ".", e_FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+        End If
+        
+        'Nivel
+        If .Stats.ELV > nivel_maximo Then
+            Call WriteConsoleMsg(userindex, "Para ingresar al evento tu nivel no puede ser mayor a " & nivel_maximo & ".", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         
         'Zona segura
         If MapInfo(.Pos.map).Seguro = 0 Then
-            Call WriteConsoleMsg(UserIndex, "Solamente podrás ingresar al evento en zona segura.", e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteConsoleMsg(userindex, "Solamente podrás ingresar al evento en zona segura.", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         
         'cupos completos
         If participantes.Count >= max_participantes Then
-            Call WriteConsoleMsg(UserIndex, "Los cupos ya están completos.", e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteConsoleMsg(userindex, "Los cupos ya están completos.", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         
         'que no esté en carcel
         If .Counters.Pena > 0 Then
-            Call WriteConsoleMsg(UserIndex, "No puedes anotarte al evento mientras estás encarcelado.", e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteConsoleMsg(userindex, "No puedes anotarte al evento mientras estás encarcelado.", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         
@@ -557,7 +565,7 @@ Public Sub inscribirse(ByVal UserIndex As Integer)
         
         'que no esté comerciando
         If .flags.Comerciando Then
-            Call WriteConsoleMsg(UserIndex, "No puedes ingresar al evento mientras estás comerciando.", e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteConsoleMsg(userindex, "No puedes ingresar al evento mientras estás comerciando.", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         
@@ -567,7 +575,7 @@ Public Sub inscribirse(ByVal UserIndex As Integer)
         End If
         
         If .flags.Navegando = 1 Then
-            Call WriteConsoleMsg(UserIndex, "No puedes ingresar al evento mientras estás navegando.", e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteConsoleMsg(userindex, "No puedes ingresar al evento mientras estás navegando.", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         
