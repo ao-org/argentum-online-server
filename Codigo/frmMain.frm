@@ -729,7 +729,7 @@ Private Sub Segundo_Timer()
     ' -----------------------------------
 
     Call PasarSegundo 'sistema de desconexion de 10 segs
-
+    Call CheckDisconnectedUsers
     Exit Sub
 
 errhand:

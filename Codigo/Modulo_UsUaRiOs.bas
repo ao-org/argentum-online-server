@@ -80,11 +80,11 @@ Public Function ConnectUser_Check(ByVal UserIndex As Integer, _
         If tIndex > 0 And tIndex <> UserIndex Then
 
             If UserList(tIndex).Counters.Saliendo Then
-                Call WriteShowMessageBox(UserIndex, "El personaje está saliendo.")
+                Call WriteShowMessageBox(userindex, "El personaje está saliendo.")
 
             Else
                 
-                Call WriteShowMessageBox(UserIndex, "El personaje ya está conectado. Espere mientras es desconectado.")
+                Call WriteShowMessageBox(userindex, "El personaje ya está conectado. Espere mientras es desconectado.")
 
                 ' Le avisamos al usuario que está jugando, en caso de que haya uno
                 Call WriteShowMessageBox(tIndex, "Alguien está ingresando con tu personaje. Si no has sido tú, por favor cambia la contraseña de tu cuenta.")
@@ -105,7 +105,7 @@ Public Function ConnectUser_Check(ByVal UserIndex As Integer, _
                 If MaxUsersPorCuenta = 1 Then
                     Call WriteShowMessageBox(UserIndex, "Ya hay un usuario conectado con esta cuenta.")
                 Else
-                    Call WriteShowMessageBox(UserIndex, "La cuenta ya alcanzó el máximo de " & MaxUsersPorCuenta & " usuarios conectados.")
+                    Call WriteShowMessageBox(userindex, "La cuenta ya alcanzó el máximo de " & MaxUsersPorCuenta & " usuarios conectados.")
 
                 End If
 
@@ -128,7 +128,7 @@ Public Function ConnectUser_Check(ByVal UserIndex As Integer, _
         If MaxConexionesIP > 0 Then
 
             If ContarMismaIP(UserIndex, .IP) >= MaxConexionesIP Then
-                Call WriteShowMessageBox(UserIndex, "Has alcanzado el límite de conexiones por IP.")
+                Call WriteShowMessageBox(userindex, "Has alcanzado el límite de conexiones por IP.")
                 Call CloseSocket(UserIndex)
                 Exit Function
 
@@ -144,8 +144,8 @@ Public Function ConnectUser_Check(ByVal UserIndex As Integer, _
         End If
         
         If EsGM(UserIndex) Then
-            Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » " & Name & " se conecto al juego.", e_FontTypeNames.FONTTYPE_INFOBOLD))
-            Call LogGM(Name, "Se conectó con IP: " & .IP)
+            Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » " & name & " se conecto al juego.", e_FontTypeNames.FONTTYPE_INFOBOLD))
+            Call LogGM(name, "Se conectó con IP: " & .IP)
         Else
             If ServerSoloGMs > 0 Then
                 Dim i As Integer
@@ -167,7 +167,7 @@ Public Function ConnectUser_Check(ByVal UserIndex As Integer, _
         If EnPausa Then
 
             Call WritePauseToggle(UserIndex)
-            Call WriteConsoleMsg(UserIndex, "Servidor » Lo sentimos mucho pero el servidor se encuentra actualmente detenido. Intenta ingresar más tarde.", e_FontTypeNames.FONTTYPE_SERVER)
+            Call WriteConsoleMsg(userindex, "Servidor » Lo sentimos mucho pero el servidor se encuentra actualmente detenido. Intenta ingresar más tarde.", e_FontTypeNames.FONTTYPE_SERVER)
             Call CloseSocket(UserIndex)
             Exit Function
 
@@ -342,8 +342,8 @@ Public Function ConnectUser_Complete(ByVal UserIndex As Integer, _
 
             ' DM
 345         If .Invent.DañoMagicoEqpSlot > 0 Then
-350             If .Invent.Object(.Invent.DañoMagicoEqpSlot).objIndex > 0 Then
-355                 .Invent.DañoMagicoEqpObjIndex = .Invent.Object(.Invent.DañoMagicoEqpSlot).objIndex
+350             If .Invent.Object(.Invent.DañoMagicoEqpSlot).ObjIndex > 0 Then
+355                 .Invent.DañoMagicoEqpObjIndex = .Invent.Object(.Invent.DañoMagicoEqpSlot).ObjIndex
 
 360                 If .flags.Muerto = 0 Then
 365                     .Char.DM_Aura = ObjData(.Invent.DañoMagicoEqpObjIndex).CreaGRH
@@ -706,10 +706,10 @@ Public Function ConnectUser_Complete(ByVal UserIndex As Integer, _
 1120        Call WriteLoggedMessage(UserIndex, newUser)
         
 1125        If .Stats.ELV = 1 Then
-1130            Call WriteConsoleMsg(UserIndex, "¡Bienvenido a las tierras de AO20! ¡" & .Name & " que tengas buen viaje y mucha suerte!", e_FontTypeNames.FONTTYPE_GUILD)
+1130            Call WriteConsoleMsg(userindex, "¡Bienvenido a las tierras de AO20! ¡" & .name & " que tengas buen viaje y mucha suerte!", e_FontTypeNames.FONTTYPE_GUILD)
 
 1135        ElseIf .Stats.ELV < 14 Then
-1140            Call WriteConsoleMsg(UserIndex, "¡Bienvenido de nuevo " & .Name & "! Actualmente estas en el nivel " & .Stats.ELV & " en " & get_map_name(.Pos.map) & ", ¡buen viaje y mucha suerte!", e_FontTypeNames.FONTTYPE_GUILD)
+1140            Call WriteConsoleMsg(userindex, "¡Bienvenido de nuevo " & .name & "! Actualmente estas en el nivel " & .Stats.ELV & " en " & get_map_name(.Pos.map) & ", ¡buen viaje y mucha suerte!", e_FontTypeNames.FONTTYPE_GUILD)
 
              End If
 
@@ -1891,12 +1891,12 @@ Sub SubirSkill(ByVal UserIndex As Integer, ByVal Skill As Integer)
 140         If Aumenta < Menor Then
 142             UserList(UserIndex).Stats.UserSkills(Skill) = UserList(UserIndex).Stats.UserSkills(Skill) + 1
     
-144             Call WriteConsoleMsg(UserIndex, "¡Has mejorado tu skill " & SkillsNames(Skill) & " en un punto!. Ahora tienes " & UserList(UserIndex).Stats.UserSkills(Skill) & " pts.", e_FontTypeNames.FONTTYPE_INFO)
+144             Call WriteConsoleMsg(userindex, "¡Has mejorado tu skill " & SkillsNames(Skill) & " en un punto!. Ahora tienes " & UserList(userindex).Stats.UserSkills(Skill) & " pts.", e_FontTypeNames.FONTTYPE_INFO)
             
                 Dim BonusExp As Long
 146             BonusExp = 50& * ExpMult
         
-                Call WriteConsoleMsg(UserIndex, "¡Has ganado " & BonusExp & " puntos de experiencia!", e_FontTypeNames.FONTTYPE_INFOIAO)
+                Call WriteConsoleMsg(userindex, "¡Has ganado " & BonusExp & " puntos de experiencia!", e_FontTypeNames.FONTTYPE_INFOIAO)
                 
 152             If UserList(UserIndex).Stats.ELV < STAT_MAXELV Then
 154                 UserList(UserIndex).Stats.Exp = UserList(UserIndex).Stats.Exp + BonusExp
@@ -2045,7 +2045,7 @@ Sub UserDie(ByVal UserIndex As Integer)
             Call Desequipar(UserIndex, .Invent.WeaponEqpSlot)
             Call Desequipar(UserIndex, .Invent.EscudoEqpSlot)
             Call Desequipar(UserIndex, .Invent.CascoEqpSlot)
-            Call Desequipar(UserIndex, .Invent.DañoMagicoEqpSlot)
+            Call Desequipar(userindex, .Invent.DañoMagicoEqpSlot)
             Call Desequipar(UserIndex, .Invent.HerramientaEqpSlot)
             Call Desequipar(UserIndex, .Invent.MonturaSlot)
             Call Desequipar(UserIndex, .Invent.MunicionEqpSlot)
@@ -2132,7 +2132,7 @@ Sub UserDie(ByVal UserIndex As Integer)
 228         Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, NingunArma, NingunEscudo, NingunCasco)
 
 230         If MapInfo(.Pos.Map).Seguro = 0 Then
-232             Call WriteConsoleMsg(UserIndex, "Escribe /HOGAR si deseas regresar rápido a tu hogar.", e_FontTypeNames.FONTTYPE_New_Naranja)
+232             Call WriteConsoleMsg(userindex, "Escribe /HOGAR si deseas regresar rápido a tu hogar.", e_FontTypeNames.FONTTYPE_New_Naranja)
             End If
             
 234         If .flags.EnReto Then
@@ -2388,7 +2388,7 @@ Sub WarpUserChar(ByVal UserIndex As Integer, _
 124         If OldMap <> Map Then
 126             Call WriteChangeMap(UserIndex, Map)
 128             If MapInfo(OldMap).Seguro = 1 And MapInfo(Map).Seguro = 0 And .Stats.ELV < 42 Then
-130                 Call WriteConsoleMsg(UserIndex, "Estás saliendo de una zona segura, recuerda que aquí corres riesgo de ser atacado.", e_FontTypeNames.FONTTYPE_WARNING)
+130                 Call WriteConsoleMsg(userindex, "Estás saliendo de una zona segura, recuerda que aquí corres riesgo de ser atacado.", e_FontTypeNames.FONTTYPE_WARNING)
 
                 End If
         
@@ -2489,7 +2489,7 @@ WarpUserChar_Err:
 End Sub
 
 
-Sub Cerrar_Usuario(ByVal UserIndex As Integer)
+Sub Cerrar_Usuario(ByVal userindex As Integer, Optional ByVal forceClose As Boolean = False)
 
         On Error GoTo Cerrar_Usuario_Err
     
@@ -2524,7 +2524,7 @@ Sub Cerrar_Usuario(ByVal UserIndex As Integer)
             
 116             Call WriteLocaleMsg(UserIndex, "203", e_FontTypeNames.FONTTYPE_INFO, .Counters.Salir)
             
-118             If EsGM(UserIndex) Or MapInfo(.Pos.Map).Seguro = 1 Then
+118             If EsGM(userindex) Or MapInfo(.Pos.map).Seguro = 1 Or forceClose Then
 120                 Call WriteDisconnect(UserIndex)
 122                 Call CloseSocket(UserIndex)
                 End If
@@ -2789,10 +2789,10 @@ Private Sub WarpMascotas(ByVal UserIndex As Integer)
 
 156     If MascotaQuitada Then
             If ZonaSegura Then
-158             Call WriteConsoleMsg(UserIndex, "No se permiten mascotas en zona segura. Estas te esperarán afuera.", e_FontTypeNames.FONTTYPE_INFO)
+158             Call WriteConsoleMsg(userindex, "No se permiten mascotas en zona segura. Estas te esperarán afuera.", e_FontTypeNames.FONTTYPE_INFO)
             
             ElseIf Not PermiteMascotas Then
-                Call WriteConsoleMsg(UserIndex, "Una fuerza superior impide que tus mascotas entren en este mapa. Estas te esperarán afuera.", e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteConsoleMsg(userindex, "Una fuerza superior impide que tus mascotas entren en este mapa. Estas te esperarán afuera.", e_FontTypeNames.FONTTYPE_INFO)
             End If
 
 160     ElseIf SpawnInvalido Then
@@ -2819,7 +2819,7 @@ Function TieneArmaduraCazador(ByVal UserIndex As Integer) As Boolean
 
 100     If UserList(UserIndex).Invent.ArmourEqpObjIndex > 0 Then
         
-102         If ObjData(UserList(UserIndex).Invent.ArmourEqpObjIndex).Subtipo = 3 Then ' Aguante hardcodear números :D
+102         If ObjData(UserList(userindex).Invent.ArmourEqpObjIndex).Subtipo = 3 Then ' Aguante hardcodear números :D
 104             TieneArmaduraCazador = True
             End If
         

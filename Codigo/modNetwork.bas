@@ -12,6 +12,7 @@ Option Explicit
 Private Const TIME_RECV_FREQUENCY As Long = 0  ' In milliseconds
 Private Const TIME_SEND_FREQUENCY As Long = 0 ' In milliseconds
 
+Const TimeOutTime As Long = 40000
 Private Server  As Network.Server
 Private Time(2) As Single
 Private Mapping() As Long
@@ -203,3 +204,29 @@ ForcedClose_Err:
     Call TraceError(Err.Number, Err.Description, "modNetwork.ForcedClose", Erl)
 End Sub
 
+Public Sub CheckDisconnectedUsers()
+On Error GoTo CheckDisconnectedUsers_Err:
+    
+    Dim currentTime As Long
+    Dim iUserIndex As Integer
+    currentTime = GetTickCount()
+    For iUserIndex = 1 To MaxUsers
+        'Conexion activa? y es un usuario loggeado?
+102     If UserList(iUserIndex).ConnIDValida = 0 And UserList(iUserIndex).flags.UserLogged And currentTime - UserList(iUserIndex).Counters.TimeLastReset > TimeOutTime Then
+106         'mato los comercios seguros
+110         If UserList(iUserIndex).ComUsu.DestUsu > 0 Then
+112             If UserList(UserList(iUserIndex).ComUsu.DestUsu).flags.UserLogged Then
+114                 If UserList(UserList(iUserIndex).ComUsu.DestUsu).ComUsu.DestUsu = iUserIndex Then
+116                     Call WriteConsoleMsg(UserList(iUserIndex).ComUsu.DestUsu, "Comercio cancelado por el otro usuario.", e_FontTypeNames.FONTTYPE_TALK)
+118                     Call FinComerciarUsu(UserList(iUserIndex).ComUsu.DestUsu)
+                    End If
+                End If
+120             Call FinComerciarUsu(iUserIndex)
+            End If
+122         Call Cerrar_Usuario(iUserIndex, True)
+        End If
+    
+124 Next iUserIndex
+CheckDisconnectedUsers_Err:
+    Call TraceError(Err.Number, Err.Description, "modNetwork.ForcedClose", Erl)
+End Sub
