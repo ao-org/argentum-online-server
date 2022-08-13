@@ -12,7 +12,7 @@ Option Explicit
 Private Const TIME_RECV_FREQUENCY As Long = 0  ' In milliseconds
 Private Const TIME_SEND_FREQUENCY As Long = 0 ' In milliseconds
 
-Const TimeOutTime As Long = 40000
+Const DisconnectTimeout As Long = 40000
 Private Server  As Network.Server
 Private Time(2) As Single
 Private Mapping() As Long
@@ -206,13 +206,15 @@ End Sub
 
 Public Sub CheckDisconnectedUsers()
 On Error GoTo CheckDisconnectedUsers_Err:
-    
+    If DisconnectTimeout < 0 Then
+        Exit Sub
+    End If
     Dim currentTime As Long
     Dim iUserIndex As Integer
     currentTime = GetTickCount()
     For iUserIndex = 1 To MaxUsers
         'Conexion activa? y es un usuario loggeado?
-102     If UserList(iUserIndex).ConnIDValida = 0 And UserList(iUserIndex).flags.UserLogged And currentTime - UserList(iUserIndex).Counters.TimeLastReset > TimeOutTime Then
+102     If UserList(iUserIndex).ConnIDValida = 0 And UserList(iUserIndex).flags.UserLogged And currentTime - UserList(iUserIndex).Counters.TimeLastReset > DisconnectTimeout Then
 106         'mato los comercios seguros
 110         If UserList(iUserIndex).ComUsu.DestUsu > 0 Then
 112             If UserList(UserList(iUserIndex).ComUsu.DestUsu).flags.UserLogged Then
