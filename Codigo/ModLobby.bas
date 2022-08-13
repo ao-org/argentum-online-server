@@ -51,6 +51,7 @@ Public Sub SetClassFilter(ByRef instance As lobby, ByVal Class As Integer)
 End Sub
 
 Public Function AddPlayer(ByRef instance As lobby, ByVal UserIndex As Integer) As Boolean
+On Error GoTo AddPlayer_Err
     With UserList(UserIndex)
         If .Stats.ELV < instance.MinLevel Or .Stats.ELV > instance.MaxLevel Then
             AddPlayer = False
@@ -69,8 +70,40 @@ Public Function AddPlayer(ByRef instance As lobby, ByVal UserIndex As Integer) A
         instance.RegisteredPlayers = instance.RegisteredPlayers + 1
         AddPlayer = True
     End With
+    Exit Function
+On Error GoTo AddPlayer_Err
+102     Call TraceError(Err.Number, Err.Description, "ModLobby.AddPlayer_Err", Erl)
+
 End Function
 
-Public Function SummonPlayer(ByRef instance As lobby, ByVal user As Integer)
-    
-End Function
+Public Sub summonPlayer(ByRef instance As lobby, ByVal user As Integer)
+   On Error GoTo SummonPlayer_Err
+        Dim UserIndex As Integer
+        With instance.Players(user)
+            UserIndex = .UserId
+            If Not .IsSummoned Then
+                .SummonedFrom = UserList(UserIndex).Pos
+            End If
+100         Call WarpToLegalPos(UserIndex, instance.SummonCoordinates.map, instance.SummonCoordinates.X, instance.SummonCoordinates.y, True, True)
+            .IsSummoned = True
+        End With
+    Exit Sub
+On Error GoTo SummonPlayer_Err
+102     Call TraceError(Err.Number, Err.Description, "ModLobby.AddPlayer_Err", Erl)
+End Sub
+
+Public Sub ReturnPlayer(ByRef instance As lobby, ByVal user As Integer)
+On Error GoTo ReturnPlayer_Err
+    Dim UserIndex As Integer
+    With instance.Players(user)
+        UserIndex = .UserId
+        If Not .IsSummoned Then
+            Exit Sub
+        End If
+100         Call WarpToLegalPos(UserIndex, .SummonedFrom.map, .SummonedFrom.X, .SummonedFrom.y, True, True)
+        .IsSummoned = False
+    End With
+    Exit Sub
+On Error GoTo ReturnPlayer_Err
+102     Call TraceError(Err.Number, Err.Description, "ModLobby.ReturnPlayer", Erl)
+End Sub
