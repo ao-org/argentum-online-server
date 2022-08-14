@@ -2489,7 +2489,7 @@ WarpUserChar_Err:
 End Sub
 
 
-Sub Cerrar_Usuario(ByVal UserIndex As Integer)
+Sub Cerrar_Usuario(ByVal UserIndex As Integer, Optional ByVal forceClose As Boolean = False)
 
         On Error GoTo Cerrar_Usuario_Err
     
@@ -2524,7 +2524,7 @@ Sub Cerrar_Usuario(ByVal UserIndex As Integer)
             
 116             Call WriteLocaleMsg(UserIndex, "203", e_FontTypeNames.FONTTYPE_INFO, .Counters.Salir)
             
-118             If EsGM(UserIndex) Or MapInfo(.Pos.Map).Seguro = 1 Then
+118             If EsGM(UserIndex) Or MapInfo(.Pos.map).Seguro = 1 Or forceClose Then
 120                 Call WriteDisconnect(UserIndex)
 122                 Call CloseSocket(UserIndex)
                 End If

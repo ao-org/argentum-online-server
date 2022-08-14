@@ -2082,7 +2082,7 @@ Sub LoadSini()
     
 136     PuedeCrearPersonajes = val(Lector.GetValue("INIT", "PuedeCrearPersonajes"))
 138     ServerSoloGMs = val(Lector.GetValue("init", "ServerSoloGMs"))
-    
+140     DisconnectTimeout = val(Lector.GetValue("INIT", "DisconnectTimeout"))
 143     centinelaActivado = val(Lector.GetValue("INIT", "CentinelaActivado"))
     
 144     EnTesting = val(Lector.GetValue("INIT", "Testing"))
