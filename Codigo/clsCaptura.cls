@@ -17,6 +17,7 @@ Private participantes As Collection
 
 Private cantidad_rondas As Byte
 Private nivel_minimo As Byte
+Private nivel_maximo As Byte
 Private max_participantes As Byte
 Private tiempo_espera As Integer
 Private tiempo_ronda As Integer
@@ -492,10 +493,10 @@ Public Sub finalizarRonda(ByVal Team As Byte)
     End If
 End Sub
 
-Public Function inicializar(ByVal MaxParticipantes As Long, ByVal CantidadRondas As Byte, ByVal NivelMinimo As Byte, ByVal precio_ As Long) As Boolean
+Public Function inicializar(ByVal MaxParticipantes As Long, ByVal CantidadRondas As Byte, ByVal NivelMinimo As Byte, ByVal NivelMaximo, ByVal precio_ As Long) As Boolean
     
     'Agregar random en comando para que no lo macreen rr-magax
-    Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos» Se ha iniciado un Captura de la bandera de " & MaxParticipantes & " participantes, el precio de inscripción es de " & PonerPuntos(precio_) & " y el nivel mínimo para ingresar es " & NivelMinimo & ", para participar envía /PARTICIPARCAPTURA Las inscripciones se cerraran en 3 minutos.", e_FontTypeNames.FONTTYPE_GUILD))
+    Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos» Se ha iniciado un Captura de la bandera de " & MaxParticipantes & " participantes, el precio de inscripción es de " & PonerPuntos(precio_) & ", el nivel mínimo para ingresar es " & NivelMinimo & " y el maximo es " & NivelMaximo & ", para participar envía /PARTICIPARCAPTURA Las inscripciones se cerraran en 3 minutos.", e_FontTypeNames.FONTTYPE_GUILD))
         
     max_participantes = MaxParticipantes
     cantidad_rondas = CantidadRondas
@@ -529,6 +530,10 @@ Public Sub inscribirse(ByVal UserIndex As Integer)
         If .Stats.ELV < nivel_minimo Then
             Call WriteConsoleMsg(UserIndex, "Para ingresar al evento deberás ser al menos nivel " & nivel_minimo & ".", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
+        End If
+        
+        If .Stats.ELV > nivel_maximo Then
+            Call WriteConsoleMsg(UserIndex, "Para ingresar al evento tu nivel no puede ser mayor a " & nivel_maximo & ".", e_FontTypeNames.FONTTYPE_INFO)
         End If
         
         'Zona segura

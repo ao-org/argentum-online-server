@@ -10728,15 +10728,16 @@ Private Sub HandleIniciarCaptura(ByVal UserIndex As Integer)
         
             Dim cantidad_participantes As Long
             Dim cantidad_rondas As Long
-            Dim nivel_minimo As Long
+            Dim nivel_minimo, nivel_maximo As Byte
             Dim precio As Long
             
             cantidad_participantes = Reader.ReadInt32()
             cantidad_rondas = Reader.ReadInt32()
-            nivel_minimo = Reader.ReadInt32()
+            nivel_minimo = Reader.ReadInt8()
+            nivel_maximo = Reader.ReadInt8()
             precio = Reader.ReadInt32()
             
-104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios)) Then
+104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios)) Then
                 If Not InstanciaCaptura Is Nothing Then
                     Call WriteConsoleMsg(UserIndex, "Ya hay un evento de captura de bandera en curso.", e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
@@ -10769,9 +10770,14 @@ Private Sub HandleIniciarCaptura(ByVal UserIndex As Integer)
                         Call WriteConsoleMsg(UserIndex, "El nivel para el evento debe ser entre 1 y 47.", e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
                     End If
+                    
+                    If nivel_minimo > nivel_maximo Then
+                        Call WriteConsoleMsg(UserIndex, "El nivel minimo debe ser menor al maximo.", e_FontTypeNames.FONTTYPE_INFO)
+                        Exit Sub
+                    End If
                 
                     Set InstanciaCaptura = New clsCaptura
-                    Call InstanciaCaptura.inicializar(cantidad_participantes, cantidad_rondas, nivel_minimo, precio)
+                    Call InstanciaCaptura.inicializar(cantidad_participantes, cantidad_rondas, nivel_minimo, nivel_maximo, precio)
                 End If
             Else
 136             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
