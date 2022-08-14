@@ -15,6 +15,7 @@ Private Const TIME_SEND_FREQUENCY As Long = 0 ' In milliseconds
 Private Server  As Network.Server
 Private Time(2) As Single
 Private Mapping() As Long
+Public DisconnectTimeout As Long
 
 Public Sub Listen(ByVal Limit As Long, ByVal Address As String, ByVal Service As String)
     Set Server = New Network.Server
@@ -162,6 +163,7 @@ On Error GoTo OnServerClose_Err:
     Exit Sub
     
 OnServerClose_Err:
+    Call ForcedClose(UserIndex, Connection)
     Call TraceError(Err.Number, Err.Description, "modNetwork.OnServerClose", Erl)
 End Sub
 
@@ -188,5 +190,46 @@ On Error GoTo OnServerRecv_Err:
 OnServerRecv_Err:
     Call Kick(Connection)
     Call TraceError(Err.Number, Err.Description, "modNetwork.OnServerRecv", Erl)
+End Sub
+
+Private Sub ForcedClose(ByVal UserIndex As Integer, Connection As Long)
+On Error GoTo ForcedClose_Err:
+    UserList(UserIndex).ConnIDValida = False
+    UserList(UserIndex).ConnID = 0
+    Call Server.Flush(Connection)
+    Call Server.Kick(Connection, True)
+    Mapping(Connection) = 0
+
+ForcedClose_Err:
+    Call TraceError(Err.Number, Err.Description, "modNetwork.ForcedClose", Erl)
+End Sub
+
+Public Sub CheckDisconnectedUsers()
+On Error GoTo CheckDisconnectedUsers_Err:
+    If DisconnectTimeout <= 0 Then
+        Exit Sub
+    End If
+    Dim currentTime As Long
+    Dim iUserIndex As Integer
+    currentTime = GetTickCount()
+    For iUserIndex = 1 To MaxUsers
+        'Conexion activa? y es un usuario loggeado?
+102     If UserList(iUserIndex).ConnIDValida = 0 And UserList(iUserIndex).flags.UserLogged And currentTime - UserList(iUserIndex).Counters.TimeLastReset > DisconnectTimeout Then
+106         'mato los comercios seguros
+110         If UserList(iUserIndex).ComUsu.DestUsu > 0 Then
+112             If UserList(UserList(iUserIndex).ComUsu.DestUsu).flags.UserLogged Then
+114                 If UserList(UserList(iUserIndex).ComUsu.DestUsu).ComUsu.DestUsu = iUserIndex Then
+116                     Call WriteConsoleMsg(UserList(iUserIndex).ComUsu.DestUsu, "Comercio cancelado por el otro usuario.", e_FontTypeNames.FONTTYPE_TALK)
+118                     Call FinComerciarUsu(UserList(iUserIndex).ComUsu.DestUsu)
+                    End If
+                End If
+120             Call FinComerciarUsu(iUserIndex)
+            End If
+122         Call Cerrar_Usuario(iUserIndex, True)
+        End If
+
+124 Next iUserIndex
+CheckDisconnectedUsers_Err:
+    Call TraceError(Err.Number, Err.Description, "modNetwork.ForcedClose", Erl)
 End Sub
 
