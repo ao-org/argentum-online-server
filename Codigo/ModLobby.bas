@@ -6,6 +6,14 @@ Type PlayerInLobby
     UserId As Integer
 End Type
 
+Public Enum e_LobbyState
+    UnInitilized
+    Initialized
+    AcceptingPlayers
+    InProgress
+    Closed
+End Enum
+
 Type lobby
     MinLevel As Byte
     MaxLevel As Byte
@@ -16,9 +24,20 @@ Type lobby
     SummonCoordinates As t_WorldPos
     RegisteredPlayers As Integer
     ClassFilter As Integer 'check for e_Class or <= 0 for no filter
+    State As e_LobbyState
 End Type
 
-Public ActiveLobby As lobby
+Public GenericGlobalLobby As Lobby
+
+Public Type t_response
+    Success As Boolean
+    Message As Integer
+End Type
+
+Public Enum e_EventType
+    Generic = 0
+    CaptureTheFlag = 1
+End Enum
 
 Public Sub InitializeLobby(ByRef instance As lobby)
     instance.MinLevel = 1
@@ -27,6 +46,13 @@ Public Sub InitializeLobby(ByRef instance As lobby)
     instance.MinPlayers = 1
     instance.EventStarted = False
     instance.RegisteredPlayers = 0
+    instance.State = Initialized
+End Sub
+
+Public Sub SetSummonCoordinates(ByRef instance As Lobby, ByVal map As Integer, ByVal posX As Integer, ByVal posY As Integer)
+    instance.SummonCoordinates.map = map
+    instance.SummonCoordinates.X = posX
+    instance.SummonCoordinates.y = posY
 End Sub
 
 Public Sub SetMaxPlayers(ByRef instance As lobby, ByVal playerCount As Integer)
@@ -50,25 +76,28 @@ Public Sub SetClassFilter(ByRef instance As lobby, ByVal Class As Integer)
     instance.ClassFilter = Class
 End Sub
 
-Public Function AddPlayer(ByRef instance As lobby, ByVal UserIndex As Integer) As Boolean
+Public Function AddPlayer(ByRef instance As Lobby, ByVal UserIndex As Integer) As t_response
 On Error GoTo AddPlayer_Err
     With UserList(UserIndex)
         If .Stats.ELV < instance.MinLevel Or .Stats.ELV > instance.MaxLevel Then
-            AddPlayer = False
+            AddPlayer.Success = False
+            AddPlayer.Message = 396
             Exit Function
         End If
         If instance.RegisteredPlayers >= instance.MaxPlayers Then
-            AddPlayer = False
+            AddPlayer.Success = False
+            AddPlayer.Message = 397
             Exit Function
         End If
         If instance.ClassFilter > 0 And .clase <> instance.ClassFilter Then
-            AddPlayer = False
+            AddPlayer.Success = False
+            AddPlayer.Message = 398
             Exit Function
         End If
         instance.Players(instance.RegisteredPlayers).UserId = UserIndex
         instance.Players(instance.RegisteredPlayers).IsSummoned = False
         instance.RegisteredPlayers = instance.RegisteredPlayers + 1
-        AddPlayer = True
+        AddPlayer.Success = True
     End With
     Exit Function
 On Error GoTo AddPlayer_Err
