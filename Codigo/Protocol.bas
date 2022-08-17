@@ -13062,7 +13062,7 @@ Private Sub HandleCreateItem(ByVal UserIndex As Integer)
 128                 Call WriteConsoleMsg(UserIndex, "No tenes espacio en tu inventario para crear el item.", e_FontTypeNames.FONTTYPE_INFO)
                 
                     ' Si no hay espacio y es Dios o Admin, lo tiro al piso.
-130                 If (.flags.Privilegios And (e_PlayerType.Admin)) <> 0 Then
+130                 If (.flags.Privilegios And e_PlayerType.Admin) Then
 132                     Call TirarItemAlPiso(.Pos, Objeto)
 134                     Call WriteConsoleMsg(UserIndex, "ATENCION: CREASTE [" & Cuantos & "] ITEMS, TIRE E INGRESE /DEST EN CONSOLA PARA DESTRUIR LOS QUE NO NECESITE!!", e_FontTypeNames.FONTTYPE_GUILD)
 
@@ -13074,7 +13074,7 @@ Private Sub HandleCreateItem(ByVal UserIndex As Integer)
         
                 ' Crear el item NO AGARRARBLE y tirarlo al piso.
                 ' Si no hay espacio y es Dios o Admin, lo tiro al piso.
-136             If (.flags.Privilegios And (e_PlayerType.Admin)) <> 0 Then
+136             If (.flags.Privilegios And e_PlayerType.Admin) Then
 138                 Call TirarItemAlPiso(.Pos, Objeto)
 140                 Call WriteConsoleMsg(UserIndex, "ATENCION: CREASTE [" & Cuantos & "] ITEMS, TIRE E INGRESE /DEST EN CONSOLA PARA DESTRUIR LOS QUE NO NECESITE!!", e_FontTypeNames.FONTTYPE_GUILD)
 
@@ -13083,7 +13083,7 @@ Private Sub HandleCreateItem(ByVal UserIndex As Integer)
             End If
         
             ' Lo registro en los logs.
-            If (.flags.Privilegios And (e_PlayerType.Admin)) <> 0 Then
+            If (.flags.Privilegios And e_PlayerType.Admin) Then
 142             Call LogGM(.Name, "/CI: " & tObj & " Cantidad : " & Cuantos)
             End If
 
