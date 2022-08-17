@@ -15201,7 +15201,7 @@ Public Sub HandleParticipar(ByVal UserIndex As Integer)
             End If
     
 110         If .Stats.ELV > Torneo.nivelmaximo Then
-112             Call WriteConsoleMsg(UserIndex, "El nivel máximo para participar es " & Torneo.NivelMaximo & ".", e_FontTypeNames.FONTTYPE_INFO)
+112             Call WriteConsoleMsg(UserIndex, "El nivel máximo para participar es " & Torneo.nivelmaximo & ".", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
             End If
