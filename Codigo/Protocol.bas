@@ -11571,7 +11571,7 @@ Private Sub HandleServerMessage(ByVal UserIndex As Integer)
             Dim Message As String
 102             Message = Reader.ReadString8()
         
-104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios)) Then
+104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios Or e_PlayerType.Consejero)) Then
         
 106             If LenB(Message) <> 0 Then
 108                 Call LogGM(.Name, "Mensaje Broadcast:" & Message)
@@ -13030,12 +13030,12 @@ Private Sub HandleCreateItem(ByVal UserIndex As Integer)
     
             ' Si es usuario, lo sacamos cagando.
 
-106         If Not EsGM(UserIndex) Or (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero Or e_PlayerType.SemiDios)) Then
+106         If Not EsGM(UserIndex) Or (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero Or e_PlayerType.SemiDios Or e_PlayerType.Dios)) Then
                 Call WriteConsoleMsg(userindex, "Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
-            ' Si es Semi-Dios, dejamos crear un item siempre y cuando pueda estar en el inventario.
-108         If (.flags.Privilegios And e_PlayerType.SemiDios) <> 0 And ObjData(tObj).Agarrable = 1 Then Exit Sub
+            ' Si es Dios, dejamos crear un item siempre y cuando pueda estar en el inventario.
+108         If (.flags.Privilegios And e_PlayerType.Dios) <> 0 And ObjData(tObj).Agarrable = 1 Then Exit Sub
 
             ' Si hace mas de 10000, lo sacamos cagando.
 110         If Cuantos > MAX_INVENTORY_OBJS Then
@@ -13067,8 +13067,8 @@ Private Sub HandleCreateItem(ByVal UserIndex As Integer)
 
 128                 Call WriteConsoleMsg(UserIndex, "No tenes espacio en tu inventario para crear el item.", e_FontTypeNames.FONTTYPE_INFO)
                 
-                    ' Si no hay espacio y es Dios o Admin, lo tiro al piso.
-130                 If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios)) <> 0 Then
+                    ' Si no hay espacio y es Admin, lo tiro al piso.
+130                 If (.flags.Privilegios And e_PlayerType.Admin) <> 0 Then
 132                     Call TirarItemAlPiso(.Pos, Objeto)
 134                     Call WriteConsoleMsg(UserIndex, "ATENCION: CREASTE [" & Cuantos & "] ITEMS, TIRE E INGRESE /DEST EN CONSOLA PARA DESTRUIR LOS QUE NO NECESITE!!", e_FontTypeNames.FONTTYPE_GUILD)
 
@@ -13079,8 +13079,8 @@ Private Sub HandleCreateItem(ByVal UserIndex As Integer)
             Else
         
                 ' Crear el item NO AGARRARBLE y tirarlo al piso.
-                ' Si no hay espacio y es Dios o Admin, lo tiro al piso.
-136             If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios)) <> 0 Then
+                ' Si no hay espacio y es Admin, lo tiro al piso.
+136             If (.flags.Privilegios And e_PlayerType.Admin) <> 0 Then
 138                 Call TirarItemAlPiso(.Pos, Objeto)
 140                 Call WriteConsoleMsg(UserIndex, "ATENCION: CREASTE [" & Cuantos & "] ITEMS, TIRE E INGRESE /DEST EN CONSOLA PARA DESTRUIR LOS QUE NO NECESITE!!", e_FontTypeNames.FONTTYPE_GUILD)
 
@@ -13089,7 +13089,7 @@ Private Sub HandleCreateItem(ByVal UserIndex As Integer)
             End If
         
             ' Lo registro en los logs.
-            If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios)) <> 0 Then
+            If (.flags.Privilegios And e_PlayerType.Admin) <> 0 Then
 142             Call LogGM(.Name, "/CI: " & tObj & " Cantidad : " & Cuantos)
             End If
 
