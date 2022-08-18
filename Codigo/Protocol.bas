@@ -10684,6 +10684,7 @@ Private Sub HandlePerdonFaccion(ByVal userindex As Integer)
                         If UserList(tUser).Faccion.ciudadanosMatados > 0 Or UserList(tUser).Faccion.Reenlistadas > 0 Then
                             UserList(tUser).Faccion.ciudadanosMatados = 0
                             UserList(tUser).Faccion.Reenlistadas = 0
+                            UserList(tUser).Faccion.RecibioArmaduraReal = 0
                             Call WriteConsoleMsg(tUser, "Has sido perdonado.", e_FontTypeNames.FONTTYPE_GUILD)
                             Call WriteConsoleMsg(userindex, "Has perdonado a " & UserList(tUser).name & ".", e_FontTypeNames.FONTTYPE_GUILD)
                         Else
@@ -10697,6 +10698,7 @@ Private Sub HandlePerdonFaccion(ByVal userindex As Integer)
                             Exit Sub
                         Else
                             UserList(tUser).Faccion.Reenlistadas = 0
+                            UserList(tUser).Faccion.RecibioArmaduraCaos = 0
                             Call WriteConsoleMsg(tUser, "Has sido perdonado.", e_FontTypeNames.FONTTYPE_GUILD)
                             Call WriteConsoleMsg(userindex, "Has perdonado a " & UserList(tUser).name & ".", e_FontTypeNames.FONTTYPE_GUILD)
                         End If
