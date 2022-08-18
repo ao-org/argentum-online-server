@@ -14238,7 +14238,7 @@ Public Sub HandleGiveItem(ByVal UserIndex As Integer)
 106         Cantidad = Reader.ReadInt16()
 108         Motivo = Reader.ReadString8()
         
-110         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios)) Then
+110         If (.flags.Privilegios And e_PlayerType.Admin) Then
 
 112             If ObjData(ObjIndex).Agarrable = 1 Then Exit Sub
 
@@ -14275,7 +14275,7 @@ Public Sub HandleGiveItem(ByVal UserIndex As Integer)
 136             Call LogGM(.Name, "/DAR " & UserName & " - Item: " & ObjData(ObjIndex).Name & "(" & ObjIndex & ") Cantidad : " & Cantidad)
 138             Call LogPremios(.Name, UserName, ObjIndex, Cantidad, Motivo)
             Else
-140             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo, debes pedir a un Dios que lo de.", e_FontTypeNames.FONTTYPE_INFO)
+140             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo, debes pedir a un Admin que lo de.", e_FontTypeNames.FONTTYPE_INFO)
             End If
 
         End With
