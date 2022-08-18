@@ -932,7 +932,11 @@ Sub ResetFacciones(ByVal UserIndex As Integer)
         '23/01/2007 Pablo (ToxicWaste) - Agrego NivelIngreso, MatadosIngreso y NextRecompensa.
         '*************************************************
 100     With UserList(UserIndex).Faccion
-108         .Status = 0
+            If .status = e_Facciones.Armada Or .status = e_Facciones.concilio Then
+                .status = e_Facciones.Ciudadano
+            Else
+108             .status = e_Facciones.Criminal
+            End If
 112         .RecibioArmaduraCaos = 0
 114         .RecibioArmaduraReal = 0
 116         .RecibioExpInicialCaos = 0
