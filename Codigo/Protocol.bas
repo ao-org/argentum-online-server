@@ -10856,6 +10856,7 @@ On Error GoTo ErrHandler
             Call WriteConsoleMsg(UserIndex, "Se creo el lobby, recorda que tenes que abrirlo para que se pueda anotar gente.", e_FontTypeNames.FONTTYPE_INFO)
         End If
     End With
+    Exit Sub
 ErrHandler:
 138     Call TraceError(Err.Number, Err.Description, "Protocol.HandleStartGenericLobby", Erl)
 140

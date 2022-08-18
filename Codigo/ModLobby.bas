@@ -187,6 +187,7 @@ On Error GoTo CancelLobby_Err
     Call ReturnAllPlayers(instance)
     instance.RegisteredPlayers = 0
     instance.State = Closed
+    Exit Sub
 CancelLobby_Err:
 102     Call TraceError(Err.Number, Err.Description, "ModLobby.CancelLobby", Erl)
 End Sub
