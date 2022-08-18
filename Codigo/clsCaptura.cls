@@ -86,7 +86,7 @@ Public Sub PasarSegundo()
     If Estado = Inscripcion Then
         tiempo_espera = tiempo_espera - 1
         If tiempo_espera Mod 30 = 0 And tiempo_espera > 5 Then
-            Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos» En " & tiempo_espera & " segundos se cierran las inscripciones para el evento captura de bandera, escribe /PARTICIPARCAPTURA para anotarte.", e_FontTypeNames.FONTTYPE_GUILD))
+            Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos» En " & tiempo_espera & " segundos se cierran las inscripciones para el evento captura de bandera, escribe /PARTICIPAR para anotarte.", e_FontTypeNames.FONTTYPE_GUILD))
         ElseIf tiempo_espera <= 5 And tiempo_espera > 0 Then
             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos» Cerramos inscripciones en " & tiempo_espera & ".", e_FontTypeNames.FONTTYPE_GUILD))
         ElseIf tiempo_espera = 0 Then
@@ -496,7 +496,7 @@ End Sub
 Public Function inicializar(ByVal MaxParticipantes As Long, ByVal CantidadRondas As Byte, ByVal NivelMinimo As Byte, ByVal NivelMaximo, ByVal precio_ As Long) As Boolean
     
     'Agregar random en comando para que no lo macreen rr-magax
-    Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos» Se ha iniciado un Captura de la bandera de " & MaxParticipantes & " participantes, el precio de inscripción es de " & PonerPuntos(precio_) & ", el nivel mínimo para ingresar es " & NivelMinimo & " y el maximo es " & NivelMaximo & ", para participar envía /PARTICIPARCAPTURA Las inscripciones se cerraran en 3 minutos.", e_FontTypeNames.FONTTYPE_GUILD))
+    Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos» Se ha iniciado un Captura de la bandera de " & MaxParticipantes & " participantes, el precio de inscripción es de " & PonerPuntos(precio_) & ", el nivel mínimo para ingresar es " & NivelMinimo & " y el maximo es " & NivelMaximo & ", para participar envía /PARTICIPAR Las inscripciones se cerraran en 3 minutos.", e_FontTypeNames.FONTTYPE_GUILD))
         
     max_participantes = MaxParticipantes
     cantidad_rondas = CantidadRondas

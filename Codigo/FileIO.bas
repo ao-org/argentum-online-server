@@ -1673,7 +1673,7 @@ Sub LoadMapData()
 
         If RunningInVB() Then
                 'VB runs out of memory when debugging
-                NumMaps = 305
+                NumMaps = 400
         Else
                 NumMaps = CountFiles(MapPath, "*.csm") - 1
         End If
