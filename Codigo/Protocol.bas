@@ -10789,13 +10789,15 @@ On Error GoTo HandleLobbyCommand_err
                     Call ModLobby.ListPlayers(GenericGlobalLobby, UserIndex)
                     Exit Sub
                 End If
+            Case Else
+                Exit Sub
         End Select
         'normally we will do this first and return but we need to evaluate all message type to read the values from the stream
         If hasPermission Then
             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
         End If
     End With
-    
+    Exit Sub
 HandleLobbyCommand_err:
 138     Call TraceError(Err.Number, Err.Description, "Protocol.HandleLobbyCommand", Erl)
 
@@ -10811,6 +10813,8 @@ On Error GoTo ErrHandler
             HandleIniciarCaptura (UserIndex)
         Case e_EventType.Generic
             HandleStartGenericLobby (UserIndex)
+        Case Else
+            Exit Sub
     End Select
     CurrentActiveEventType = EventType
     Exit Sub
