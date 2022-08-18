@@ -408,7 +408,7 @@ Public Enum ClientPacketID
     ChaosArmour             '/AC1 - 4
     NavigateToggle          '/NAVE
     ServerOpenToUsersToggle '/HABILITAR
-    Participar              '/APAGAR
+    Participar              '/Participar
     TurnCriminal            '/CONDEN
     ResetFactions           '/RAJAR
     RemoveCharFromGuild     '/RAJARCLAN
@@ -524,16 +524,15 @@ Public Enum ClientPacketID
     RepeatMacro
     BuyShopItem
     PerdonFaccion          '/PERDONFACCION NAME
-    iniciarCaptura
-    ParticiparCaptura     '/PARTICIPARCAPTURA
-    CancelarCaptura       '/CANCELARCAPTURA
+    StartEvent
+    CancelarEvento       '/CANCELAR
     SeguirMouse
     SendPosMovimiento
     NotifyInventarioHechizos
     PublicarPersonajeMAO
     EventoFaccionario    '/EVENTOFACCIONARIO
     RequestDebug '/RequestDebug consulta info debug al server, para gms
-    
+    LobbyCommand
     #If PYMMO = 0 Then
     CreateAccount
     LoginAccount
@@ -1024,12 +1023,10 @@ On Error Resume Next
             Call HandleForgive(UserIndex)
         Case ClientPacketID.PerdonFaccion
             Call HandlePerdonFaccion(userindex)
-        Case ClientPacketID.iniciarCaptura
-            Call HandleIniciarCaptura(UserIndex)
-         Case ClientPacketID.ParticiparCaptura
-            Call HandleParticiparCaptura(UserIndex)
-         Case ClientPacketID.CancelarCaptura
-            Call HandleCancelarCaptura(UserIndex)
+        Case ClientPacketID.StartEvent
+            Call HandleStartEvent(UserIndex)
+        Case ClientPacketID.CancelarEvento
+            Call HandleCancelarEvento(UserIndex)
         Case ClientPacketID.Kick
             Call HandleKick(UserIndex)
         Case ClientPacketID.ExecuteCmd
@@ -1376,6 +1373,8 @@ On Error Resume Next
             Call HandleEventoFaccionario(UserIndex)
         Case ClientPacketID.RequestDebug
             Call HandleDebugRequest(UserIndex)
+        Case ClientPacketID.LobbyCommand
+            Call HandleLobbyCommand(UserIndex)
 #If PYMMO = 0 Then
         Case ClientPacketID.CreateAccount
             Call HandleCreateAccount(userindex)
@@ -10719,6 +10718,145 @@ ErrHandler:
 
 End Sub
 
+Private Sub HandleLobbyCommand(ByVal UserIndex As Integer)
+On Error GoTo HandleLobbyCommand_err
+    Dim Command As Byte
+    Dim hasPermission As Integer
+    Dim retValue As t_response
+    Dim Value As Long
+    Command = Reader.ReadInt8()
+100 With UserList(UserIndex)
+        hasPermission = .flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios)
+        Select Case Command
+            Case e_LobbyCommandId.eSetSpawnPos
+                If hasPermission Then
+                    Call SetSummonCoordinates(GenericGlobalLobby, .Pos.map, .Pos.X, .Pos.y)
+                    Exit Sub
+                End If
+            Case e_LobbyCommandId.eEndEvent
+                If hasPermission Then
+                    Call CancelLobby(GenericGlobalLobby)
+                    Exit Sub
+                End If
+            Case e_LobbyCommandId.eReturnAllSummoned
+                If hasPermission Then
+                    Call ModLobby.ReturnAllPlayers(GenericGlobalLobby)
+                    Exit Sub
+                End If
+            Case e_LobbyCommandId.eReturnSinglePlayer
+                Value = Reader.ReadInt32()
+                If hasPermission Then
+                    Call ModLobby.ReturnPlayer(GenericGlobalLobby, Value)
+                    Exit Sub
+                End If
+            Case e_LobbyCommandId.eSetClassLimit
+                Value = Reader.ReadInt32()
+                If hasPermission Then
+                    Call ModLobby.SetClassFilter(GenericGlobalLobby, Value)
+                    Exit Sub
+                End If
+            Case e_LobbyCommandId.eSetMaxLevel
+                Value = Reader.ReadInt32()
+                If hasPermission Then
+                    Call ModLobby.SetMaxLevel(GenericGlobalLobby, Value)
+                    Exit Sub
+                End If
+            Case e_LobbyCommandId.eSetMinLevel
+                Value = Reader.ReadInt32()
+                If hasPermission Then
+                    Call ModLobby.SetMinLevel(GenericGlobalLobby, Value)
+                    Exit Sub
+                End If
+            Case e_LobbyCommandId.eStartEvent
+                If hasPermission Then
+                    retValue = ModLobby.StartLobby(GenericGlobalLobby)
+                    Call WriteLocaleMsg(UserIndex, retValue.Message, e_FontTypeNames.FONTTYPE_INFO)
+                    Exit Sub
+                End If
+            Case e_LobbyCommandId.eSummonAll
+                If hasPermission Then
+                    Call ModLobby.SummonAll(GenericGlobalLobby)
+                    Exit Sub
+                End If
+            Case e_LobbyCommandId.eSummonSinglePlayer
+                Value = Reader.ReadInt32()
+                If hasPermission Then
+                    Call ModLobby.SummonPlayer(GenericGlobalLobby, Value)
+                    Exit Sub
+                End If
+            Case e_LobbyCommandId.eListPlayers
+                If hasPermission Then
+                    Call ModLobby.ListPlayers(GenericGlobalLobby, UserIndex)
+                    Exit Sub
+                End If
+        End Select
+        'normally we will do this first and return but we need to evaluate all message type to read the values from the stream
+        If hasPermission Then
+            Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
+        End If
+    End With
+    
+HandleLobbyCommand_err:
+138     Call TraceError(Err.Number, Err.Description, "Protocol.HandleLobbyCommand", Erl)
+
+End Sub
+
+Private Sub HandleStartEvent(ByVal UserIndex As Integer)
+On Error GoTo ErrHandler
+    Dim EventType As Byte
+    EventType = Reader.ReadInt8()
+    
+    Select Case EventType
+        Case e_EventType.CaptureTheFlag
+            HandleIniciarCaptura (UserIndex)
+        Case e_EventType.Generic
+            HandleStartGenericLobby (UserIndex)
+    End Select
+    CurrentActiveEventType = EventType
+    Exit Sub
+ErrHandler:
+138     Call TraceError(Err.Number, Err.Description, "Protocol.HandleStartEvent", Erl)
+End Sub
+
+Private Sub HandleStartGenericLobby(ByVal UserIndex As Integer)
+On Error GoTo ErrHandler
+    Dim maxPlayers As Integer
+    Dim minLevel, maxLevel As Byte
+    maxPlayers = Reader.ReadInt16()
+    minLevel = Reader.ReadInt8()
+    maxLevel = Reader.ReadInt8()
+    
+    With UserList(UserIndex)
+        If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios)) = 0 Then
+            Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
+        Else
+136         'Me fijo si hay más participantes conectados que el cupo para jugar
+            If maxPlayers > NumUsers Then
+                Call WriteConsoleMsg(UserIndex, "Hay pocos jugadores en el servidor, intenta con una cantidad menor de participantes.", e_FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
+            
+            If minLevel < 1 Or maxLevel > 47 Then
+                Call WriteConsoleMsg(UserIndex, "El nivel para el evento debe ser entre 1 y 47.", e_FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
+            
+            If minLevel > maxLevel Then
+                Call WriteConsoleMsg(UserIndex, "El nivel minimo debe ser menor al maximo.", e_FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
+            Call InitializeLobby(GenericGlobalLobby)
+            Call ModLobby.SetMinLevel(GenericGlobalLobby, minLevel)
+            Call ModLobby.SetMaxLevel(GenericGlobalLobby, maxLevel)
+            Call ModLobby.SetMaxPlayers(GenericGlobalLobby, maxPlayers)
+            Call WriteConsoleMsg(UserIndex, "Se creo el lobby, recorda que tenes que abrirlo para que se pueda anotar gente.", e_FontTypeNames.FONTTYPE_INFO)
+        End If
+    End With
+ErrHandler:
+138     Call TraceError(Err.Number, Err.Description, "Protocol.HandleStartGenericLobby", Erl)
+140
+
+End Sub
 'HarThaoS: Iniciar captura de bandera
 Private Sub HandleIniciarCaptura(ByVal UserIndex As Integer)
 
@@ -10726,13 +10864,13 @@ Private Sub HandleIniciarCaptura(ByVal UserIndex As Integer)
 
 100     With UserList(UserIndex)
         
-            Dim cantidad_participantes As Long
-            Dim cantidad_rondas As Long
+            Dim cantidad_participantes As Integer
+            Dim cantidad_rondas As Byte
             Dim nivel_minimo, nivel_maximo As Byte
             Dim precio As Long
             
-            cantidad_participantes = Reader.ReadInt32()
-            cantidad_rondas = Reader.ReadInt32()
+            cantidad_participantes = Reader.ReadInt16()
+            cantidad_rondas = Reader.ReadInt8()
             nivel_minimo = Reader.ReadInt8()
             nivel_maximo = Reader.ReadInt8()
             precio = Reader.ReadInt32()
@@ -10793,23 +10931,6 @@ ErrHandler:
 
 End Sub
 
-'HarThaoS: Inscribirse a evento
-Private Sub HandleParticiparCaptura(ByVal UserIndex As Integer)
-
-    On Error GoTo ErrHandler
-    If InstanciaCaptura Is Nothing Then
-        Call WriteConsoleMsg(UserIndex, "Eventos » No hay ninguna instancia en curso para ese evento.", e_FontTypeNames.FONTTYPE_INFO)
-    Else
-        Call InstanciaCaptura.inscribirse(UserIndex)
-    End If
-
-    Exit Sub
-
-ErrHandler:
-138     Call TraceError(Err.Number, Err.Description, "Protocol.HandleParticiparCaptura", Erl)
-140
-
-End Sub
 ''
 ' Handles the "OnlineGM" message.
 '
@@ -10817,13 +10938,18 @@ End Sub
 
 
 'HarThaoS: Cancela el evento captura
-Private Sub HandleCancelarCaptura(ByVal UserIndex As Integer)
+Private Sub HandleCancelarEvento(ByVal UserIndex As Integer)
 
     On Error GoTo ErrHandler
-    If InstanciaCaptura Is Nothing Then
-        Call WriteConsoleMsg(UserIndex, "Eventos » No hay ninguna instancia en curso para ese evento.", e_FontTypeNames.FONTTYPE_INFO)
+    If CurrentActiveEventType = CaptureTheFlag Then
+        If InstanciaCaptura Is Nothing Then
+            Call WriteConsoleMsg(UserIndex, "Eventos » No hay ninguna instancia en curso para ese evento.", e_FontTypeNames.FONTTYPE_INFO)
+        Else
+            Call InstanciaCaptura.finalizarCaptura
+        End If
     Else
-        Call InstanciaCaptura.finalizarCaptura
+        Call CancelLobby(GenericGlobalLobby)
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos» El evento ha sido cancelado.", e_FontTypeNames.FONTTYPE_GUILD))
     End If
 
     Exit Sub
@@ -15187,7 +15313,21 @@ Public Sub HandleParticipar(ByVal UserIndex As Integer)
         Dim handle As Integer
     
 100     With UserList(UserIndex)
-
+            
+            If CurrentActiveEventType = CaptureTheFlag Then
+                If Not InstanciaCaptura Is Nothing Then
+                    Call InstanciaCaptura.inscribirse(UserIndex)
+                    Exit Sub
+                End If
+            ElseIf CurrentActiveEventType = Generic Then
+                If GenericGlobalLobby.State = AcceptingPlayers Then
+                    Dim addPlayerResult As t_response
+                    addPlayerResult = ModLobby.AddPlayer(GenericGlobalLobby, UserIndex)
+                    Call WriteLocaleMsg(UserIndex, addPlayerResult.Message, e_FontTypeNames.FONTTYPE_INFO)
+                    Exit Sub
+                End If
+            End If
+            
 102         If Torneo.HayTorneoaActivo = False Then
 104             Call WriteConsoleMsg(UserIndex, "No hay ningún evento disponible.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
