@@ -17073,7 +17073,7 @@ Private Sub HandleBusquedaTesoro(ByVal UserIndex As Integer)
             Dim Tipo As Byte
 102             Tipo = Reader.ReadInt8()
   
-104         If (.flags.Privilegios And Not (e_PlayerType.Consejero Or e_PlayerType.user)) Then
+104         If (.flags.Privilegios And Not (e_PlayerType.Consejero Or e_PlayerType.SemiDios Or e_PlayerType.Dios Or e_PlayerType.user)) Then
 
 106             Select Case Tipo
 
