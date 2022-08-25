@@ -261,7 +261,7 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
 210     If NpcIndex = npc_index_evento Then
 212         BusquedaNpcActiva = False
 214         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Evento> El NPC ha sido asesinado.", e_FontTypeNames.FONTTYPE_CITIZEN))
-
+            npc_index_evento = 0
         End If
         
         'ReSpawn o no
