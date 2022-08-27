@@ -194,12 +194,12 @@ End Sub
 
 Private Sub ForcedClose(ByVal UserIndex As Integer, Connection As Long)
 On Error GoTo ForcedClose_Err:
-    UserList(UserIndex).ConnIDValida = False
-    UserList(UserIndex).ConnID = 0
-    Call Server.Flush(Connection)
-    Call Server.Kick(Connection, True)
-    Mapping(Connection) = 0
-
+100     UserList(UserIndex).ConnIDValida = False
+102     UserList(UserIndex).ConnID = 0
+104     Call Server.Flush(Connection)
+106     Call Server.Kick(Connection, True)
+108     Mapping(Connection) = 0
+        Exit Sub
 ForcedClose_Err:
     Call TraceError(Err.Number, Err.Description, "modNetwork.ForcedClose", Erl)
 End Sub
@@ -229,7 +229,8 @@ On Error GoTo CheckDisconnectedUsers_Err:
         End If
 
 124 Next iUserIndex
+    Exit Sub
 CheckDisconnectedUsers_Err:
-    Call TraceError(Err.Number, Err.Description, "modNetwork.ForcedClose", Erl)
+    Call TraceError(Err.Number, Err.Description, "modNetwork.CheckDisconnectedUsers", Erl)
 End Sub
 
