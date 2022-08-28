@@ -7367,9 +7367,12 @@ Private Sub HandlePunishments(ByVal UserIndex As Integer)
 
             ' Si un GM usa este comando, me fijo que me haya dado el nick del PJ a analizar.
 104         If LenB(name) = 0 Then Exit Sub
-            If (.flags.Privilegios And (e_PlayerType.Consejero Or e_PlayerType.SemiDios Or e_PlayerType.Admin Or e_PlayerType.Dios)) = 0 Then
-                Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
-                Exit Sub
+
+            If UserList(UserIndex).name <> name Then
+                If (.flags.Privilegios And (e_PlayerType.Consejero Or e_PlayerType.SemiDios Or e_PlayerType.Admin Or e_PlayerType.Dios)) = 0 Then
+                    Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
+                    Exit Sub
+                End If
             End If
             
         
