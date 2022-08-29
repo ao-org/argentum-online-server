@@ -19384,11 +19384,13 @@ On Error GoTo HandleDebugRequest_Err:
     Dim debugType As Byte
     Dim args() As String
     debugType = Reader.ReadInt8()
-    If debugType = 1 Then
+    If debugType = 0 Then
+        ReDim Args(0) As String
+    ElseIf debugType = 1 Then
         ReDim args(1) As String
         args(0) = Reader.ReadString8()
     Else
-        ReDim args(0) As String
+        Exit Sub
     End If
     If (UserList(UserIndex).flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios Or e_PlayerType.Consejero)) Then
         Call WriteDebugLogResponse(UserIndex, debugType, args, UBound(args))
