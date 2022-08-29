@@ -5611,18 +5611,40 @@ WriteNpcQuestListSend_Err:
         '</EhFooter>
 End Sub
 
-Public Sub WriteDebugLogResponse(ByVal UserIndex As Integer)
+Public Sub WriteDebugLogResponse(ByVal UserIndex As Integer, ByVal debugType, ByRef args() As String, ByVal argc As Integer)
     On Error GoTo WriteDebugLogResponse_Err:
-    Dim messageList() As String
-    messageList = GetLastMessages()
-    Dim messageCount As Integer: messageCount = UBound(messageList)
     Call Writer.WriteInt16(ServerPacketID.DebugDataResponse)
-    Call Writer.WriteInt16(messageCount + 1)
-    Call Writer.WriteString8("remote errors:")
-    Dim i As Integer
-    For i = 1 To messageCount
-        Call Writer.WriteString8(messageList(i))
-    Next i
+    
+    If debugType = 0 Then
+        Dim messageList() As String
+        messageList = GetLastMessages()
+        Dim messageCount As Integer: messageCount = UBound(messageList)
+        
+        Call Writer.WriteInt16(messageCount + 1)
+        Call Writer.WriteString8("remote errors:")
+        Dim i As Integer
+        For i = 1 To messageCount
+            Call Writer.WriteString8(messageList(i))
+        Next i
+    ElseIf debugType = 1 Then
+        'TODO- debug
+        Dim tIndex As Integer: tIndex = NameIndex(args(0))
+        If tIndex > 0 Then
+            Call Writer.WriteInt16(2)
+            Call Writer.WriteString8("remote DEBUG: " & " user name: " & args(0))
+            With UserList(tIndex)
+                Dim timeSinceLastReset As Long
+                timeSinceLastReset = GetTickCount() - .Counters.TimeLastReset
+                Call Writer.WriteString8("validConnection: " & .ConnIDValida & " UserLogged state: " & .flags.UserLogged & ", time since last message: " & timeSinceLastReset & " timeout setting: " & DisconnectTimeout)
+            End With
+        Else
+            Call Writer.WriteInt16(1)
+        Call Writer.WriteString8("DEBUG: failed to find user: " & args(0))
+        End If
+        
+        
+    End If
+    
     Call modSendData.SendData(ToIndex, UserIndex)
     Exit Sub
 WriteDebugLogResponse_Err:
