@@ -15523,7 +15523,7 @@ Public Sub HandleResetFactions(ByVal UserIndex As Integer)
         
 102         UserName = Reader.ReadString8()
         
-104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.RoleMaster)) Then
+104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios)) Then
 106             Call LogGM(.Name, "/RAJAR " & UserName)
             
 108             tUser = NameIndex(UserName)
