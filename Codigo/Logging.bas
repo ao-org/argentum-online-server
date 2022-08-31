@@ -56,7 +56,7 @@ Private Declare Function RegisterEventSource Lib "advapi32.dll" Alias "RegisterE
  ByVal lpSourceName As String) As Long
 
 
-Public Sub InitializeCircularLogBuffer(Optional size As Integer = 10)
+Public Sub InitializeCircularLogBuffer(Optional size As Integer = 30)
     CircularLogBuffer.size = size
     CircularLogBuffer.currentIndex = 0
     ReDim CircularLogBuffer.Messages(0 To size)

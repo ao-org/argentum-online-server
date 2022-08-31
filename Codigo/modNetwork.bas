@@ -104,11 +104,16 @@ End Sub
 Private Sub OnServerConnect(ByVal Connection As Long, ByVal Address As String)
 On Error GoTo OnServerConnect_Err:
   
+    If IsFeatureEnabled("debug_connections") Then
+        Call AddLogToCircularBuffer("OnServerConnect connecting new user on id: " & Connection & " ip: " & Address)
+    End If
     If IP_Blacklist.Exists(Address) <> 0 Then 'Busca si esta banneada la ip
         Call Kick(Connection, "Se te ha prohibido la entrada al servidor. Cod: #0003")
         Exit Sub
     End If
-    
+    If Mapping(Connection) > 0 Then
+        Call TraceError(Err.Number, Err.Description, "OnServerConnect Mapping(Connection) > 0, connection: " & Connection & " value: " & Mapping(Connection), Erl)
+    End If
     If Connection <= MaxUsers Then
         'By Ladder y Wolfenstein
         Dim FreeUser As Long
@@ -120,7 +125,7 @@ On Error GoTo OnServerConnect_Err:
         UserList(FreeUser).Counters.OnConnectTimestamp = GetTickCount()
         
         If FreeUser >= LastUser Then LastUser = FreeUser
-        
+        Debug.Assert Mapping(Connection) = 0
         Mapping(Connection) = FreeUser
         
         Call WriteConnected(FreeUser)
@@ -140,7 +145,15 @@ On Error GoTo OnServerClose_Err:
     
     Dim UserIndex As Long
     UserIndex = Mapping(Connection)
-
+    If IsFeatureEnabled("debug_connections") Then
+        If UserIndex > 0 Then
+            Call AddLogToCircularBuffer("OnServerClose disconnected user index: " & UserIndex & " With connection id: " & Connection & " with name: " & UserList(UserIndex).name & " and ip" & UserList(UserIndex).IP)
+        Else
+            Call AddLogToCircularBuffer("OnServerClose disconnected user index: " & UserIndex & " With connection id: " & Connection)
+        End If
+    End If
+    
+    Debug.Assert UserIndex > 0
     If UserIndex <= 0 Then Exit Sub
     'Es el mismo user al que está revisando el centinela??
     'Si estamos acá es porque se cerró la conexión, no es un /salir, y no queremos banearlo....
