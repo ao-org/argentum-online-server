@@ -19440,8 +19440,13 @@ Private Sub HandleFeatureToggle(ByVal UserIndex As Integer)
 On Error GoTo HandleFeatureToggle_Err:
     Dim value As Byte
     Dim name As String
-    value = Reader.ReadInt8
+    Dim nameSize As Integer
+    value = max(Min(1, Reader.ReadInt8), 0)
     name = Reader.ReadString8
+    nameSize = Len(nameSize)
+    If nameSize = 0 Or nameSize > 100 Then
+        Exit Sub
+    End If
     If (UserList(UserIndex).flags.Privilegios And (e_PlayerType.Admin)) Then
         Call SetFeatureToggle(name, value > 0)
         Call WriteConsoleMsg(UserIndex, "variable configurada correctamente.", e_FontTypeNames.FONTTYPE_INFO)
