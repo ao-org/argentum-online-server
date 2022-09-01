@@ -196,11 +196,11 @@ Private Type t_MapDat
     lluvia As Byte
     Nieve As Byte
     niebla As Byte
-
 End Type
 
 Private MapSize As t_MapSize
 Private MapDat  As t_MapDat
+Private FeatureToggles As Dictionary
 
 Public Sub load_stats()
 On Error GoTo error_load_stats
@@ -2103,6 +2103,7 @@ Sub LoadSini()
         End If
 
 164     Call CargarCiudades
+166     Call LoadFeatureToggles
 
 168     Set Lector = Nothing
 
@@ -2114,6 +2115,44 @@ LoadSini_Err:
 
         
 End Sub
+
+Sub LoadFeatureToggles()
+On Error GoTo LoadFeatureToggles_Err
+
+        Dim Lector   As clsIniManager
+
+        Dim Temporal As Long
+        Set FeatureToggles = New Dictionary
+        If Not FileExist("feature_toggle.ini") Then
+            Exit Sub
+        End If
+100     If frmMain.Visible Then frmMain.txStatus.Caption = "Cargando info de feature toggles."
+    
+102     Set Lector = New clsIniManager
+104     Call Lector.Initialize(IniPath & "feature_toggle.ini")
+        If Lector.NodesCount = 0 Then
+            Exit Sub
+        End If
+        Dim TOGGLECOUNT As Integer
+        TOGGLECOUNT = val(Lector.GetValue("INIT", "TOGGLECOUNT"))
+        
+        Dim i As Integer
+        Dim key As String
+        Dim value As Boolean
+        For i = 1 To TOGGLECOUNT
+            key = Lector.GetValue("TOGGLE" & i, "name")
+            value = val(Lector.GetValue("TOGGLE" & i, "value")) > 0
+            Call SetFeatureToggle(key, value)
+        Next i
+        
+168     Set Lector = Nothing
+            
+        Exit Sub
+LoadFeatureToggles_Err:
+170     Set Lector = Nothing
+172     Call TraceError(Err.Number, Err.Description, "ES.LoadFeatureToggles", Erl)
+End Sub
+
 Sub LoadPacketRatePolicy()
         On Error GoTo LoadPacketRatePolicy_Err
 
@@ -3290,4 +3329,19 @@ Public Sub CargarDonadores()
                 lstUsuariosDonadores(i) = IniFile.GetValue("DONADOR", "Donador" & i)
             Next i
         End If
+End Sub
+
+Public Function IsFeatureEnabled(ByVal featureName As String)
+    If FeatureToggles.Exists(featureName) Then
+        IsFeatureEnabled = FeatureToggles.Item(featureName)
+    Else
+        IsFeatureEnabled = False
+    End If
+End Function
+
+Public Sub SetFeatureToggle(ByVal name As String, ByVal State As Boolean)
+    If FeatureToggles.Exists(name) Then
+        FeatureToggles.Remove name
+    End If
+    Call FeatureToggles.Add(name, state)
 End Sub

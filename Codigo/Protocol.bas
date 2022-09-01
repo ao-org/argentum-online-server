@@ -533,6 +533,7 @@ Public Enum ClientPacketID
     EventoFaccionario    '/EVENTOFACCIONARIO
     RequestDebug '/RequestDebug consulta info debug al server, para gms
     LobbyCommand
+    FeatureToggle
     #If PYMMO = 0 Then
     CreateAccount
     LoginAccount
@@ -1375,6 +1376,8 @@ On Error Resume Next
             Call HandleDebugRequest(UserIndex)
         Case ClientPacketID.LobbyCommand
             Call HandleLobbyCommand(UserIndex)
+        Case ClientPacketID.FeatureToggle
+            Call HandleFeatureToggle(UserIndex)
 #If PYMMO = 0 Then
         Case ClientPacketID.CreateAccount
             Call HandleCreateAccount(userindex)
@@ -19431,4 +19434,26 @@ Private Sub HandleDeleteItem(ByVal UserIndex As Integer)
 
 HandleDeleteItem_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleDeleteItem", Erl)
+End Sub
+
+Private Sub HandleFeatureToggle(ByVal UserIndex As Integer)
+On Error GoTo HandleFeatureToggle_Err:
+    Dim value As Byte
+    Dim name As String
+    Dim nameSize As Integer
+    value = max(Min(1, Reader.ReadInt8), 0)
+    name = Reader.ReadString8
+    nameSize = Len(nameSize)
+    If nameSize = 0 Or nameSize > 100 Then
+        Exit Sub
+    End If
+    If (UserList(UserIndex).flags.Privilegios And (e_PlayerType.Admin)) Then
+        Call SetFeatureToggle(name, value > 0)
+        Call WriteConsoleMsg(UserIndex, "variable configurada correctamente.", e_FontTypeNames.FONTTYPE_INFO)
+    Else
+        Call WriteConsoleMsg(UserIndex, "no tienes permisos para realizar esta accion.", e_FontTypeNames.FONTTYPE_INFO)
+    End If
+    Exit Sub
+HandleFeatureToggle_Err:
+102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleFeatureToggle", Erl)
 End Sub
