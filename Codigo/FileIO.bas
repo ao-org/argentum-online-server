@@ -2122,6 +2122,7 @@ On Error GoTo LoadFeatureToggles_Err
         Dim Lector   As clsIniManager
 
         Dim Temporal As Long
+        Set FeatureToggles = New Dictionary
         If Not FileExist("feature_toggle.ini") Then
             Exit Sub
         End If
@@ -2134,7 +2135,7 @@ On Error GoTo LoadFeatureToggles_Err
         End If
         Dim TOGGLECOUNT As Integer
         TOGGLECOUNT = val(Lector.GetValue("INIT", "TOGGLECOUNT"))
-        Set FeatureToggles = New Dictionary
+        
         Dim i As Integer
         Dim key As String
         Dim value As Boolean
