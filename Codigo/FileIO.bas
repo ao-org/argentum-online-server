@@ -3331,7 +3331,7 @@ Public Sub CargarDonadores()
         End If
 End Sub
 
-Public Function IsFeatureEnabled(featureName As String)
+Public Function IsFeatureEnabled(ByVal featureName As String)
     If FeatureToggles.Exists(featureName) Then
         IsFeatureEnabled = FeatureToggles.Item(featureName)
     Else
@@ -3339,7 +3339,7 @@ Public Function IsFeatureEnabled(featureName As String)
     End If
 End Function
 
-Public Sub SetFeatureToggle(name As String, state As Boolean)
+Public Sub SetFeatureToggle(ByVal name As String, ByVal State As Boolean)
     If FeatureToggles.Exists(name) Then
         FeatureToggles.Remove name
     End If
