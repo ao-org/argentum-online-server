@@ -271,12 +271,16 @@ Public Sub AceptarComercioUsu(ByVal UserIndex As Integer)
         'Por si las moscas...
 158     If TerminarAhora Then GoTo FinalizarComercio
     
+        Dim registroComercio As String
+        registroComercio = "Usuario " & UserList(UserIndex).name & " comercio con " & UserList(OtroUserIndex).name & "."
+    
         'pone el oro directamente en la billetera
 160     If UserList(OtroUserIndex).ComUsu.Oro > 0 Then
 162         UserList(OtroUserIndex).Stats.GLD = UserList(OtroUserIndex).Stats.GLD - UserList(OtroUserIndex).ComUsu.Oro
 164         Call WriteUpdateUserStats(OtroUserIndex)
 166         UserList(UserIndex).Stats.GLD = UserList(UserIndex).Stats.GLD + UserList(OtroUserIndex).ComUsu.Oro
 168         Call WriteUpdateUserStats(UserIndex)
+            registroComercio = registroComercio & " Recibio oro: " & UserList(OtroUserIndex).ComUsu.Oro & ". "
         End If
     
 170     If UserList(UserIndex).ComUsu.Oro > 0 Then
@@ -284,25 +288,35 @@ Public Sub AceptarComercioUsu(ByVal UserIndex As Integer)
 174         Call WriteUpdateUserStats(UserIndex)
 176         UserList(OtroUserIndex).Stats.GLD = UserList(OtroUserIndex).Stats.GLD + UserList(UserIndex).ComUsu.Oro
 178         Call WriteUpdateUserStats(OtroUserIndex)
+            registroComercio = registroComercio & "Envio oro: " & UserList(UserIndex).ComUsu.Oro & "."
         End If
         
         ' Confirmamos que SI tienen los objetos a comerciar, procedemos con el cambio.
+        registroComercio = registroComercio & " Recibio items: "
 180     For i = 1 To UBound(UserList(OtroUserIndex).ComUsu.itemsAenviar)
 182         If Not MeterItemEnInventario(UserIndex, UserList(OtroUserIndex).ComUsu.itemsAenviar(i)) Then
 184             Call TirarItemAlPiso(UserList(UserIndex).Pos, UserList(OtroUserIndex).ComUsu.itemsAenviar(i))
             End If
         
 186         Call QuitarObjetos(UserList(OtroUserIndex).ComUsu.itemsAenviar(i).ObjIndex, UserList(OtroUserIndex).ComUsu.itemsAenviar(i).amount, OtroUserIndex)
+            If UserList(OtroUserIndex).ComUsu.itemsAenviar(i).amount > 0 Then
+                registroComercio = registroComercio & " obj " & UserList(OtroUserIndex).ComUsu.itemsAenviar(i).objIndex & " cant " & UserList(OtroUserIndex).ComUsu.itemsAenviar(i).amount & ", "
+            End If
 188     Next i
     
+        registroComercio = registroComercio & " Envio items: "
         Dim j As Long
 190     For j = 1 To UBound(UserList(UserIndex).ComUsu.itemsAenviar)
 192         If MeterItemEnInventario(OtroUserIndex, UserList(UserIndex).ComUsu.itemsAenviar(j)) = False Then
 194             Call TirarItemAlPiso(UserList(OtroUserIndex).Pos, UserList(UserIndex).ComUsu.itemsAenviar(j))
             End If
 196         Call QuitarObjetos(UserList(UserIndex).ComUsu.itemsAenviar(j).ObjIndex, UserList(UserIndex).ComUsu.itemsAenviar(j).amount, UserIndex)
+            If UserList(UserIndex).ComUsu.itemsAenviar(j).amount > 0 Then
+                registroComercio = registroComercio & " obj " & UserList(UserIndex).ComUsu.itemsAenviar(j).objIndex & " cant " & UserList(UserIndex).ComUsu.itemsAenviar(j).amount & ", "
+            End If
 198     Next j
 
+        Call LogGM("Transfer", registroComercio)
 
 200     Call UpdateUserInv(True, UserIndex, 0)
 202     Call UpdateUserInv(True, OtroUserIndex, 0)

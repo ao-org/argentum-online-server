@@ -16361,6 +16361,7 @@ Private Sub HandleTransFerGold(ByVal UserIndex As Integer)
     
 152             Call WriteChatOverHead(UserIndex, "¡El envío se ha realizado con éxito! Gracias por utilizar los servicios de Finanzas Goliath", NpcList(.flags.TargetNPC).Char.charindex, vbWhite)
 '154             Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessagePlayWave("173", UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+                Call LogGM("Transfer", "El usuario: " & .name & " transfirio a: " & username & " la cantidad: " & Cantidad)
         
             Else
 156             Call WriteChatOverHead(UserIndex, "Los administradores no pueden transferir oro.", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
