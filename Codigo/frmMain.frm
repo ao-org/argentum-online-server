@@ -1491,7 +1491,7 @@ Private Sub GameTimer_Timer()
         End With
 
     Next iUserIndex
-
+    Call CustomScenarios.UpdateAll
     Exit Sub
 
 HayError:

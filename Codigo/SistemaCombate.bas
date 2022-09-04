@@ -779,7 +779,6 @@ Private Function NpcDaño(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
 162     If UserList(UserIndex).Stats.MinHp <= 0 Then
     
 164         Call WriteNPCKillUser(UserIndex) ' Le informamos que ha muerto ;)
-                    
 166         If NpcList(NpcIndex).MaestroUser > 0 Then
 168             Call AllFollowAmo(NpcList(NpcIndex).MaestroUser)
             Else
@@ -791,6 +790,7 @@ Private Function NpcDaño(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
             End If
         
 178         Call UserDie(UserIndex)
+            Call NPcKillPlayer(NpcList(npcIndex).pos.map, npcIndex, userIndex, e_phisical, npcIndex)
 
         Else
 180         Call WriteUpdateHP(UserIndex)
@@ -923,6 +923,7 @@ Private Sub NpcDañoNpc(ByVal Atacante As Integer, ByVal Victima As Integer)
                 
 120                 If .MaestroUser > 0 Then
 122                     Call FollowAmo(Atacante)
+                        Call PlayerKillNpc(.pos.map, Victima, .MaestroUser, e_pet, Atacante)
                     End If
                 
 124                 Call MuereNpc(Victima, .MaestroUser)
@@ -1530,6 +1531,7 @@ Private Sub UserDañoUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As 
 240         If .Stats.MinHp <= 0 Then
 244             Call ContarMuerte(VictimaIndex, AtacanteIndex)
 246             Call ActStats(VictimaIndex, AtacanteIndex)
+                Call PlayerKillPlayer(.pos.map, AtacanteIndex, VictimaIndex, e_DamageSourceType.e_phisical, .Invent.WeaponEqpObjIndex)
             ' Si sigue vivo
             Else
                 ' Enviamos la vida
