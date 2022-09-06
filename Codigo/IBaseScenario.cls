@@ -17,6 +17,18 @@ Public Sub Reset()
 
 End Sub
 
+Public Function ValidateUser(ByVal userIndex As Integer) As Integer
+
+End Function
+
+Friend Sub WillSummonPlayer(ByVal userIndex As Integer, ByRef lobby As t_Lobby)
+
+End Sub
+
+Public Sub UpdateLobbyState(ByVal oldState As e_LobbyState, ByRef newState As e_LobbyState)
+
+End Sub
+
 Public Sub PlayerKillNpc(ByVal npcIndex As Integer, ByVal userIndex As Integer, ByVal sourceType As e_DamageSourceType, ByVal sourceIndex As Integer)
 
 End Sub

@@ -7,7 +7,7 @@ Public Enum e_DamageSourceType
     e_pet
 End Enum
 
-Private CustomScenarioList As Dictionary
+Private CustomScenarioList As New Dictionary
 Private ScenarioUpdateList() As IBaseScenario
 
 Public Sub InitializeCustomMaps()
@@ -81,3 +81,6 @@ Public Sub PlayerKillPlayer(ByVal MapNumber As Integer, ByVal killerIndex As Int
     Call scenario.PlayerKillPlayer(killerIndex, deadIndex, sourceType, sourceIndex)
 End Sub
 
+Public Sub PrepareNewEvent(ByVal eventType As e_EventType)
+    
+End Sub

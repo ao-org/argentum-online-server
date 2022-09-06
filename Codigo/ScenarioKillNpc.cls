@@ -64,6 +64,27 @@ Public Sub IBaseScenario_Reset()
 
 End Sub
 
+Private Function IBaseScenario_ValidateUser(ByVal userIndex As Integer) As Integer
+    Dim i As Integer
+    With UserList(userIndex)
+        For i = 0 To UBound(.Invent.Object)
+            If .Invent.Object(i).objIndex = RequiredWeaponId Then
+                IBaseScenario_ValidateUser = 0
+                Exit Function
+            End If
+        Next i
+        IBaseScenario_ValidateUser = 403 'TODO create valid message here
+    End With
+End Function
+
+Private Sub IBaseScenario_WillSummonPlayer(ByVal userIndex As Integer, ByRef lobby As t_Lobby)
+
+End Sub
+
+Public Sub IBaseScenario_UpdateLobbyState(ByVal oldState As e_LobbyState, ByRef newState As e_LobbyState)
+
+End Sub
+
 Private Sub IBaseScenario_PlayerKillNpc(ByVal npcIndex As Integer, ByVal userIndex As Integer, ByVal sourceType As e_DamageSourceType, ByVal sourceIndex As Integer)
     Dim npcType As Integer
     npcType = NpcList(npcIndex).npcType

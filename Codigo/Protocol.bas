@@ -10823,6 +10823,7 @@ On Error GoTo ErrHandler
         Case e_EventType.Generic
             HandleStartGenericLobby (UserIndex)
         Case Else
+            Call CustomScenarios.PrepareNewEvent(eventType)
             Exit Sub
     End Select
     CurrentActiveEventType = EventType
