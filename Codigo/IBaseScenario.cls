@@ -17,11 +17,15 @@ Public Sub Reset()
 
 End Sub
 
+Public Function RequiresSpawn() As Boolean
+    RequiresSpawn = False
+End Function
+
 Public Function ValidateUser(ByVal userIndex As Integer) As Integer
 
 End Function
 
-Friend Sub WillSummonPlayer(ByVal userIndex As Integer, ByRef lobby As t_Lobby)
+Public Sub WillSummonPlayer(ByVal UserIndex As Integer)
 
 End Sub
 
