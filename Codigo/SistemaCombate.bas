@@ -681,6 +681,7 @@ Private Sub UserDañoNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
             ' Muere el NPC
 174         If NpcList(NpcIndex).Stats.MinHp <= 0 Then
                 ' Drop items, respawn, etc.
+                Call CustomScenarios.PlayerKillNpc(.Pos.map, npcIndex, UserIndex, e_phisical, .Invent.WeaponEqpObjIndex)
 176             Call MuereNpc(NpcIndex, UserIndex)
             Else
 178             Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareMessageNpcUpdateHP(NpcIndex))

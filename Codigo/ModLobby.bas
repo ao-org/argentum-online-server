@@ -11,6 +11,7 @@ Public Enum e_LobbyState
     Initialized
     AcceptingPlayers
     InProgress
+    Completed
     Closed
 End Enum
 
@@ -49,12 +50,13 @@ Public Enum e_LobbyCommandId
     eSummonAll
     eReturnSinglePlayer
     eReturnAllSummoned
+    eOpenLobby
     eStartEvent
     eEndEvent
     eCancelEvent
     eListPlayers
+    eKickPlayer
 End Enum
-
 Public GenericGlobalLobby As t_Lobby
 Public CurrentActiveEventType As e_EventType
 
@@ -154,7 +156,7 @@ Public Sub SummonPlayer(ByRef instance As t_Lobby, ByVal user As Integer)
                 .SummonedFrom = UserList(UserIndex).Pos
             End If
             If Not instance.Scenario Is Nothing Then
-                Call instance.Scenario.WillSummonPlayer(userIndex, instance)
+                Call instance.scenario.WillSummonPlayer(UserIndex)
             End If
 100         Call WarpToLegalPos(UserIndex, instance.SummonCoordinates.map, instance.SummonCoordinates.X, instance.SummonCoordinates.y, True, True)
             .IsSummoned = True
@@ -223,9 +225,14 @@ ListPlayers_Err:
 102     Call TraceError(Err.Number, Err.Description, "ModLobby.CancelLobby", Erl)
 End Sub
 
-Public Function StartLobby(ByRef instance As t_Lobby) As t_response
+Public Function OpenLobby(ByRef instance As t_Lobby) As t_response
 On Error GoTo StartLobby_Err
-        If instance.SummonCoordinates.map < 0 Then
+        Dim RequiresSpawn As Boolean
+        If Not instance.scenario Is Nothing Then
+            RequiresSpawn = instance.scenario.RequiresSpawn
+        End If
+        RequiresSpawn = RequiresSpawn Or instance.SummonCoordinates.map > 0
+        If RequiresSpawn Then
             StartLobby.Success = False
             StartLobby.Message = 400
             Exit Function
