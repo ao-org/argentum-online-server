@@ -14,7 +14,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Public Sub Reset()
-
+    'empty interface
 End Sub
 
 Public Function RequiresSpawn() As Boolean
@@ -22,31 +22,31 @@ Public Function RequiresSpawn() As Boolean
 End Function
 
 Public Function ValidateUser(ByVal userIndex As Integer) As Integer
-
+    'empty interface
 End Function
 
 Public Sub WillSummonPlayer(ByVal UserIndex As Integer)
-
+    'empty interface
 End Sub
 
 Public Sub UpdateLobbyState(ByVal oldState As e_LobbyState, ByRef newState As e_LobbyState)
-
+'empty interface
 End Sub
 
 Public Sub PlayerKillNpc(ByVal npcIndex As Integer, ByVal userIndex As Integer, ByVal sourceType As e_DamageSourceType, ByVal sourceIndex As Integer)
-
+    'empty interface
 End Sub
 
 Public Sub NPcKillPlayer(ByVal npcIndex As Integer, ByVal userIndex As Integer, ByVal sourceType As e_DamageSourceType, ByVal sourceIndex As Integer)
-
+    'empty interface
 End Sub
 
 Public Sub PlayerKillPlayer(ByVal killerIndex As Integer, ByVal deadIndex As Integer, ByVal sourceType As e_DamageSourceType, ByVal sourceIndex As Integer)
-
+    'empty interface
 End Sub
 
 Public Sub Update()
-
+    'empty interface
 End Sub
 
 

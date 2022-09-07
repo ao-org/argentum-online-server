@@ -59,14 +59,13 @@ End Sub
 
 Private Sub Class_Initialize()
 On Error GoTo Hunt_Initialize_Err:
-        Dim validNpcCount, invalidNpcCount As Integer
+        Dim validNpcCount As Integer
         Dim ScenearioIni As clsIniManager
 104     Set ScenearioIni = New clsIniManager
         Debug.Assert FileExist(DatPath & configPath)
         
 106     Call ScenearioIni.Initialize(DatPath & configPath)
 108     validNpcCount = val(ScenearioIni.GetValue("INIT", "TargetNpc"))
-110     invalidNpcCount = val(ScenearioIni.GetValue("INIT", "OtherNpc"))
 112     mapNumber = val(ScenearioIni.GetValue("INIT", "MapNumber"))
 114     MaxTime = val(ScenearioIni.GetValue("INIT", "MaxTime"))
 116     TargetScore = val(ScenearioIni.GetValue("INIT", "TargetScore"))
@@ -96,7 +95,7 @@ CloseScenario_Err:
 End Sub
 
 Public Sub IBaseScenario_Reset()
-
+    'implements interface
 End Sub
 
 Private Function IBaseScenario_RequiresSpawn() As Boolean
@@ -174,11 +173,11 @@ Private Sub IBaseScenario_PlayerKillNpc(ByVal npcIndex As Integer, ByVal userInd
 End Sub
 
 Private Sub IBaseScenario_NPcKillPlayer(ByVal npcIndex As Integer, ByVal userIndex As Integer, ByVal sourceType As e_DamageSourceType, ByVal sourceIndex As Integer)
-
+    'implements interface
 End Sub
 
 Private Sub IBaseScenario_PlayerKillPlayer(ByVal killerIndex As Integer, ByVal deadIndex As Integer, ByVal sourceType As e_DamageSourceType, ByVal sourceIndex As Integer)
-
+    'implements interface
 End Sub
 
 Private Sub PublishScoreboard()
@@ -301,7 +300,6 @@ Private Sub BroadCastTimeUpdate()
         Call SendData(SendTarget.toMap, mapNumber, PrepareMessageConsoleMsg("quedan " & pendingTime & " minutos.", e_FontTypeNames.FONTTYPE_GUILD))
         BroadCastInterval = 60000
     ElseIf pendingTime <= 10 Then
-        pendingTime = pendingTime
         Call SendData(SendTarget.toMap, mapNumber, PrepareMessageConsoleMsg(pendingTime, e_FontTypeNames.FONTTYPE_GUILD))
     End If
     If pendingTime <= 1 Then
