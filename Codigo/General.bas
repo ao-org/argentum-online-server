@@ -2636,7 +2636,7 @@ Function FileText(filename$) As String
     Close #handle
 End Function
 
-Public Function IsArrayInitialized(arr) As Boolean
+Public Function IsArrayInitialized(ByRef arr) As Boolean
 
   Dim rv As Long
 

@@ -46,6 +46,7 @@ AddUpdateScenario_Err:
 End Function
 
 Public Sub RemoveUpdateScenario(ByRef Index As Integer)
+    Debug.Assert Index < UBound(ScenarioUpdateList)
     Set ScenarioUpdateList(Index) = Nothing
 End Sub
 
