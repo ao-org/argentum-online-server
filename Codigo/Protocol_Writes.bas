@@ -5635,7 +5635,7 @@ Public Sub WriteDebugLogResponse(ByVal UserIndex As Integer, ByVal debugType, By
             With UserList(tIndex)
                 Dim timeSinceLastReset As Long
                 timeSinceLastReset = GetTickCount() - .Counters.TimeLastReset
-                Call Writer.WriteString8("validConnection: " & .ConnIDValida & " UserLogged state: " & .flags.UserLogged & ", time since last message: " & timeSinceLastReset & " timeout setting: " & DisconnectTimeout)
+                Call Writer.WriteString8("validConnection: " & .ConnIDValida & " connectionID: " & .ConnID & " UserIndex: " & tIndex & " charNmae" & .name & " UserLogged state: " & .flags.UserLogged & ", time since last message: " & timeSinceLastReset & " timeout setting: " & DisconnectTimeout)
             End With
         Else
             Call Writer.WriteInt16(1)

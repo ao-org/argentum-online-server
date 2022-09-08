@@ -1860,11 +1860,11 @@ On Error GoTo ErrHandler
                     
                     Dim nPos  As t_WorldPos
                     Dim MiObj As t_Obj
+                    Dim objValue As Integer
                     
-    
 124                 MiObj.objIndex = ObtenerPezRandom(ObjData(.Invent.HerramientaEqpObjIndex).Power)
-126                 MiObj.amount = Round(Reward / (ObjData(MiObj.objIndex).Valor / 3))
-                    'Debug.Print Reward & "  " & MiObj.amount * (ObjData(MiObj.objIndex).Valor / 3)
+125                 objValue = max(ObjData(MiObj.objIndex).Valor / 3, 1)
+126                 MiObj.amount = Round(Reward / objValue)
                     If MiObj.amount <= 0 Then
                         MiObj.amount = 1
                     End If
@@ -1943,8 +1943,7 @@ On Error GoTo ErrHandler
     Exit Sub
 
 ErrHandler:
-158     Call LogError("Error en DoPescar. Error " & Err.Number & " - " & Err.Description)
-
+158     Call LogError("Error en DoPescar. Error " & Err.Number & " - " & Err.Description & " Line number: " & Erl)
 
 End Sub
 
