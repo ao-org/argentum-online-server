@@ -144,8 +144,8 @@ Public Function ConnectUser_Check(ByVal UserIndex As Integer, _
         End If
         
         If EsGM(UserIndex) Then
-            Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » " & Name & " se conecto al juego.", e_FontTypeNames.FONTTYPE_INFOBOLD))
-            Call LogGM(Name, "Se conectó con IP: " & .IP)
+            Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » " & name & " se conecto al juego.", e_FontTypeNames.FONTTYPE_INFOBOLD))
+            Call LogGM(name, "Se conectó con IP: " & .IP)
         Else
             If ServerSoloGMs > 0 Then
                 Dim i As Integer
@@ -706,10 +706,10 @@ Public Function ConnectUser_Complete(ByVal UserIndex As Integer, _
 1120        Call WriteLoggedMessage(UserIndex, newUser)
         
 1125        If .Stats.ELV = 1 Then
-1130            Call WriteConsoleMsg(UserIndex, "¡Bienvenido a las tierras de AO20! ¡" & .Name & " que tengas buen viaje y mucha suerte!", e_FontTypeNames.FONTTYPE_GUILD)
+1130            Call WriteConsoleMsg(UserIndex, "¡Bienvenido a las tierras de AO20! ¡" & .name & " que tengas buen viaje y mucha suerte!", e_FontTypeNames.FONTTYPE_GUILD)
 
 1135        ElseIf .Stats.ELV < 14 Then
-1140            Call WriteConsoleMsg(UserIndex, "¡Bienvenido de nuevo " & .Name & "! Actualmente estas en el nivel " & .Stats.ELV & " en " & get_map_name(.Pos.map) & ", ¡buen viaje y mucha suerte!", e_FontTypeNames.FONTTYPE_GUILD)
+1140            Call WriteConsoleMsg(UserIndex, "¡Bienvenido de nuevo " & .name & "! Actualmente estas en el nivel " & .Stats.ELV & " en " & get_map_name(.Pos.map) & ", ¡buen viaje y mucha suerte!", e_FontTypeNames.FONTTYPE_GUILD)
 
              End If
 
@@ -2492,9 +2492,11 @@ End Sub
 Sub Cerrar_Usuario(ByVal UserIndex As Integer, Optional ByVal forceClose As Boolean = False)
 
         On Error GoTo Cerrar_Usuario_Err
-    
+        
 100     With UserList(UserIndex)
-
+            If IsFeatureEnabled("debug_connections") Then
+                Call AddLogToCircularBuffer("Cerrar_Usuario: " & UserIndex & ", force close: " & forceClose & ", usrLogged: " & .flags.UserLogged & ", Saliendo: " & .Counters.Saliendo)
+            End If
 102         If .flags.UserLogged And Not .Counters.Saliendo Then
 104             .Counters.Saliendo = True
 106             .Counters.Salir = IntervaloCerrarConexion

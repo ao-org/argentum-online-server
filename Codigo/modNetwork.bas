@@ -62,6 +62,9 @@ End Sub
 
 Public Sub Kick(ByVal Connection As Long, Optional ByVal message As String = vbNullString)
 On Error GoTo Kick_ErrHandler:
+    If IsFeatureEnabled("debug_connections") Then
+        Call AddLogToCircularBuffer("Kick connection: " & Connection)
+    End If
     If (message <> vbNullString) Then
         Dim UserIndex As Long
         UserIndex = Mapping(Connection)
