@@ -10775,11 +10775,17 @@ On Error GoTo HandleLobbyCommand_err
                     Call ModLobby.SetMinLevel(GenericGlobalLobby, Value)
                     Exit Sub
                 End If
-            Case e_LobbyCommandId.eStartEvent
+            Case e_LobbyCommandId.eOpenLobby
                 If hasPermission Then
-                    retValue = ModLobby.StartLobby(GenericGlobalLobby)
+                    retValue = ModLobby.OpenLobby(GenericGlobalLobby)
                     Call WriteLocaleMsg(UserIndex, retValue.Message, e_FontTypeNames.FONTTYPE_INFO)
                     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(.name & " creó un nuevo evento, para participar ingresá /participar", e_FontTypeNames.FONTTYPE_GUILD))
+                    Exit Sub
+                End If
+            Case e_LobbyCommandId.eStartEvent
+                If hasPermission Then
+                    Call ModLobby.UpdateLobbyState(GenericGlobalLobby, e_LobbyState.InProgress)
+                    Call WriteConsoleMsg(userIndex, "Evento iniciado", e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
             Case e_LobbyCommandId.eSummonAll
@@ -10819,10 +10825,9 @@ On Error GoTo ErrHandler
     
     Select Case EventType
         Case e_EventType.CaptureTheFlag
-            HandleIniciarCaptura (UserIndex)
-        Case e_EventType.Generic
-            HandleStartGenericLobby (UserIndex)
+            Call HandleIniciarCaptura(userIndex)
         Case Else
+            Call HandleStartGenericLobby(userIndex, EventType)
             Exit Sub
     End Select
     CurrentActiveEventType = EventType
@@ -10831,7 +10836,7 @@ ErrHandler:
 138     Call TraceError(Err.Number, Err.Description, "Protocol.HandleStartEvent", Erl)
 End Sub
 
-Private Sub HandleStartGenericLobby(ByVal UserIndex As Integer)
+Private Sub HandleStartGenericLobby(ByVal userIndex As Integer, ByVal EventType As Integer)
 On Error GoTo ErrHandler
     Dim maxPlayers As Integer
     Dim minLevel, maxLevel As Byte
@@ -10862,6 +10867,7 @@ On Error GoTo ErrHandler
             Call ModLobby.SetMinLevel(GenericGlobalLobby, minLevel)
             Call ModLobby.SetMaxLevel(GenericGlobalLobby, maxLevel)
             Call ModLobby.SetMaxPlayers(GenericGlobalLobby, maxPlayers)
+            Call CustomScenarios.PrepareNewEvent(EventType)
             Call WriteConsoleMsg(UserIndex, "Se creo el lobby, recorda que tenes que abrirlo para que se pueda anotar gente.", e_FontTypeNames.FONTTYPE_INFO)
             Call LogGM(.name, "Inicio un Lobby")
         End If

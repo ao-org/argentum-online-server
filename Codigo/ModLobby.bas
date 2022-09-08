@@ -11,6 +11,7 @@ Public Enum e_LobbyState
     Initialized
     AcceptingPlayers
     InProgress
+    Completed
     Closed
 End Enum
 
@@ -25,6 +26,7 @@ Type t_Lobby
     ClassFilter As Integer 'check for e_Class or <= 0 for no filter
     State As e_LobbyState
     SummonAfterInscription As Boolean
+    Scenario As IBaseScenario
 End Type
 
 Public Type t_response
@@ -35,6 +37,7 @@ End Type
 Public Enum e_EventType
     Generic = 0
     CaptureTheFlag = 1
+    NpcHunt = 2
 End Enum
 
 Public Enum e_LobbyCommandId
@@ -47,12 +50,13 @@ Public Enum e_LobbyCommandId
     eSummonAll
     eReturnSinglePlayer
     eReturnAllSummoned
+    eOpenLobby
     eStartEvent
     eEndEvent
     eCancelEvent
     eListPlayers
+    eKickPlayer
 End Enum
-
 Public GenericGlobalLobby As t_Lobby
 Public CurrentActiveEventType As e_EventType
 
@@ -94,6 +98,13 @@ Public Sub SetClassFilter(ByRef instance As t_Lobby, ByVal Class As Integer)
     instance.ClassFilter = Class
 End Sub
 
+Public Sub UpdateLobbyState(ByRef instance As t_Lobby, ByVal newState As e_LobbyState)
+    If Not instance.Scenario Is Nothing Then
+        Call instance.Scenario.UpdateLobbyState(instance.State, newState)
+    End If
+    instance.State = newState
+End Sub
+
 Public Function AddPlayer(ByRef instance As t_Lobby, ByVal UserIndex As Integer) As t_response
 On Error GoTo AddPlayer_Err
     With UserList(UserIndex)
@@ -112,6 +123,13 @@ On Error GoTo AddPlayer_Err
             AddPlayer.Message = 398
             Exit Function
         End If
+        If Not instance.Scenario Is Nothing Then
+            AddPlayer.Message = instance.Scenario.ValidateUser(userIndex)
+            If AddPlayer.Message > 0 Then
+                AddPlayer.Success = False
+                Exit Function
+            End If
+        End If
         Dim playerPos As Integer: playerPos = instance.RegisteredPlayers
         instance.Players(playerPos).UserId = UserIndex
         instance.Players(playerPos).IsSummoned = False
@@ -121,6 +139,7 @@ On Error GoTo AddPlayer_Err
         If instance.SummonAfterInscription Then
             Call SummonPlayer(instance, playerPos)
         End If
+        
     End With
     Exit Function
 AddPlayer_Err:
@@ -135,6 +154,9 @@ Public Sub SummonPlayer(ByRef instance As t_Lobby, ByVal user As Integer)
             UserIndex = .UserId
             If Not .IsSummoned Then
                 .SummonedFrom = UserList(UserIndex).Pos
+            End If
+            If Not instance.Scenario Is Nothing Then
+                Call instance.scenario.WillSummonPlayer(UserIndex)
             End If
 100         Call WarpToLegalPos(UserIndex, instance.SummonCoordinates.map, instance.SummonCoordinates.X, instance.SummonCoordinates.y, True, True)
             .IsSummoned = True
@@ -186,7 +208,7 @@ Public Sub CancelLobby(ByRef instance As t_Lobby)
 On Error GoTo CancelLobby_Err
     Call ReturnAllPlayers(instance)
     instance.RegisteredPlayers = 0
-    instance.State = Closed
+    Call UpdateLobbyState(instance, Closed)
     Exit Sub
 CancelLobby_Err:
 102     Call TraceError(Err.Number, Err.Description, "ModLobby.CancelLobby", Erl)
@@ -203,14 +225,19 @@ ListPlayers_Err:
 102     Call TraceError(Err.Number, Err.Description, "ModLobby.CancelLobby", Erl)
 End Sub
 
-Public Function StartLobby(ByRef instance As t_Lobby) As t_response
+Public Function OpenLobby(ByRef instance As t_Lobby) As t_response
 On Error GoTo StartLobby_Err
-        If instance.SummonCoordinates.map < 0 Then
+        Dim RequiresSpawn As Boolean
+        If Not instance.scenario Is Nothing Then
+            RequiresSpawn = instance.scenario.RequiresSpawn
+        End If
+        RequiresSpawn = RequiresSpawn Or instance.SummonCoordinates.map > 0
+        If RequiresSpawn Then
             StartLobby.Success = False
             StartLobby.Message = 400
             Exit Function
         End If
-        instance.State = AcceptingPlayers
+        Call UpdateLobbyState(instance, AcceptingPlayers)
         StartLobby.Message = 401
         StartLobby.Success = True
     Exit Function

@@ -334,7 +334,11 @@ Sub NpcLanzaSpellSobreNpc(ByVal NpcIndex As Integer, ByVal TargetNPC As Integer,
           'Muere
 146       If .Stats.MinHp < 1 Then
 148         .Stats.MinHp = 0
+            If NpcList(npcIndex).MaestroUser > 0 Then
+                Call PlayerKillNpc(.pos.map, TargetNPC, NpcList(npcIndex).MaestroUser, e_pet, npcIndex)
+            End If
 150         Call MuereNpc(TargetNPC, 0)
+            
           Else
 152         Call SendData(SendTarget.ToNPCAliveArea, TargetNPC, PrepareMessageNpcUpdateHP(TargetNPC))
           End If
@@ -2649,7 +2653,8 @@ Sub HechizoPropNPC(ByVal hIndex As Integer, ByVal NpcIndex As Integer, ByVal Use
     
 192         If NpcList(NpcIndex).Stats.MinHp < 1 Then
 194             NpcList(NpcIndex).Stats.MinHp = 0
-196             Call MuereNpc(NpcIndex, UserIndex)
+                Call CustomScenarios.PlayerKillNpc(UserList(userIndex).pos.map, npcIndex, userIndex, e_magic, hIndex)
+196             Call MuereNpc(npcIndex, UserIndex)
             Else
 198             Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareMessageNpcUpdateHP(NpcIndex))
             End If
@@ -3346,6 +3351,7 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 464         If UserList(tempChr).Stats.MinHp < 1 Then
 468             Call ContarMuerte(tempChr, UserIndex)
 470             Call ActStats(tempChr, UserIndex)
+                Call CustomScenarios.PlayerKillPlayer(UserList(userIndex).pos.map, userIndex, tempChr, e_magic, h)
             Else
 472             Call WriteUpdateHP(tempChr)
             End If
@@ -4442,9 +4448,9 @@ Private Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, X As Byte, Y 
 146             Call CalcularDarExp(UserIndex, NpcIndex, Daño)
                 
 148             If NpcList(NpcIndex).Stats.MinHp <= 0 Then
-                    'UserList(UserIndex).Stats.Exp = UserList(UserIndex).Stats.Exp + NpcList(NpcIndex).GiveEXP
-                    'UserList(UserIndex).Stats.GLD = UserList(UserIndex).Stats.GLD + NpcList(NpcIndex).GiveGLD
-150                 Call MuereNpc(NpcIndex, UserIndex)
+                    Call CustomScenarios.PlayerKillNpc(UserList(userIndex).pos.map, npcIndex, userIndex, e_magic, h2)
+150                 Call MuereNpc(npcIndex, UserIndex)
+                    
                 Else
 152                 Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareMessageNpcUpdateHP(NpcIndex))
                 End If
