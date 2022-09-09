@@ -92,6 +92,7 @@ Module=CustomScenarios; Codigo\CustomScenarios.bas
 Class=IBaseScenario; Codigo\IBaseScenario.cls
 Class=ScenarioHunt; Codigo\ScenarioKillNpc.cls
 Class=EventNpcDefinition; Codigo\EventNpcDefinition.cls
+Module=Protocol_GmCommands; Codigo\Protocol_GmCommands.bas
 IconForm="frmMain"
 Startup="Sub Main"
 HelpFile=""
