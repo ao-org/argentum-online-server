@@ -3339,6 +3339,7 @@ Public Sub WriteStunStart(ByVal UserIndex As Integer, duration As Integer)
 100     Call Writer.WriteInt16(ServerPacketID.StunStart)
         Call Writer.WriteInt16(duration)
 102     Call modSendData.SendData(ToIndex, UserIndex)
+    Exit Sub
 WriteStunStart_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteStunStart", Erl)
@@ -3731,7 +3732,7 @@ Public Sub WriteDatosGrupo(ByVal UserIndex As Integer)
 
 124                     If i = 1 Then
 126                         Call Writer.WriteString8(UserList(UserList( _
-                                    .Grupo.Lider).Grupo.Miembros(i)).Name & "(Líder)")
+                                    .Grupo.Lider).Grupo.Miembros(i)).name & "(Líder)")
                         Else
 128                         Call Writer.WriteString8(UserList(UserList( _
                                     .Grupo.Lider).Grupo.Miembros(i)).Name)

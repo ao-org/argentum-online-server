@@ -2315,7 +2315,7 @@ Private Sub HandleAttack(ByVal UserIndex As Integer)
                     Exit Sub
                 End If
 
-                If IsItemInCd(.Invent.Object(.Invent.WeaponEqpSlot)) Then
+                If IsItemInCooldown(.Invent.Object(.Invent.WeaponEqpSlot)) Then
                     Debug.Print "item is on cd"
                     Exit Sub
 

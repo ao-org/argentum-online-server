@@ -3448,8 +3448,8 @@ ItemNewbie_Err:
 102     Call TraceError(Err.Number, Err.Description, "InvUsuario.ItemNewbie", Erl)
 End Function
 
-Public Function IsItemInCd(ByRef obj As t_UserOBJ) As Boolean
+Public Function IsItemInCooldown(ByRef obj As t_UserOBJ) As Boolean
     Dim elapsedTime As Long
     elapsedTime = GetTickCount() - obj.LastUseTime
-    IsItemInCd = elapsedTime < ObjData(obj.objIndex).Cooldown
+    IsItemInCooldown = ElapsedTime < ObjData(obj.objIndex).Cooldown
 End Function

@@ -117,7 +117,7 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
         
         ' Objetivo de pruebas nunca muere
 100     If NpcList(NpcIndex).NPCtype = DummyTarget Then
-102         Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareMessageChatOverHead("¡¡Auch!!", NpcList(NpcIndex).Char.charindex, vbRed))
+102         Call SendData(SendTarget.ToNPCAliveArea, npcIndex, PrepareMessageChatOverHead("¡¡Auch!!", NpcList(npcIndex).Char.charindex, vbRed))
 
 104         If UBound(NpcList(NpcIndex).Char.Animation) > 0 Then
 106             Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareMessageDoAnimation(NpcList(NpcIndex).Char.charindex, NpcList(NpcIndex).Char.Animation(1)))
@@ -226,7 +226,7 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
 190                                     Call WriteChatOverHead(UserIndex, "NOCONSOLA*" & .NPCsKilled(j) & "/" & QuestList(.QuestIndex).RequiredNPC(j).amount & " " & MiNPC.Name, UserList(UserIndex).Char.CharIndex, RGB(180, 180, 180))
 
                                     Else
-192                                     Call WriteConsoleMsg(UserIndex, "Ya has matado todos los " & MiNPC.Name & " que la misión " & QuestList(.QuestIndex).nombre & " requería. Revisa si ya estás listo para recibir la recompensa.", e_FontTypeNames.FONTTYPE_INFOIAO)
+192                                     Call WriteConsoleMsg(UserIndex, "Ya has matado todos los " & MiNPC.name & " que la misión " & QuestList(.QuestIndex).nombre & " requería. Revisa si ya estás listo para recibir la recompensa.", e_FontTypeNames.FONTTYPE_INFOIAO)
 194                                     Call WriteChatOverHead(UserIndex, "NOCONSOLA*" & QuestList(.QuestIndex).RequiredNPC(j).amount & "/" & QuestList(.QuestIndex).RequiredNPC(j).amount & " " & MiNPC.Name, UserList(UserIndex).Char.CharIndex, RGB(180, 180, 180))
                                     End If
         
@@ -1046,7 +1046,7 @@ Function SpawnNpc(ByVal NpcIndex As Integer, Pos As t_WorldPos, ByVal FX As Bool
         End If
 
 142     If Avisar Then
-144         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(NpcList(nIndex).Name & " ha aparecido en " & get_map_name(map) & " , todo indica que puede tener una gran recompensa para el que logre sobrevivir a él.", e_FontTypeNames.FONTTYPE_CITIZEN))
+144         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(NpcList(nIndex).name & " ha aparecido en " & get_map_name(map) & " , todo indica que puede tener una gran recompensa para el que logre sobrevivir a él.", e_FontTypeNames.FONTTYPE_CITIZEN))
         End If
 
 146     SpawnNpc = nIndex
@@ -1833,5 +1833,5 @@ Public Function CanAttack(counter As t_NpcCounters, flags As t_NPCFlags) As Bool
 End Function
 
 Public Function StunNPc(ByRef Counters As t_NpcCounters)
-    Counters.StunEndTime = GetTickCount() + 5000
+    Counters.StunEndTime = GetTickCount() + NPC_STUN_TIME
 End Function

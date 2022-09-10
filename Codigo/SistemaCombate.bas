@@ -368,7 +368,7 @@ PoderAtaqueWrestling_Err:
         
 End Function
 
-Private Function UserImpactoNpc(ByVal UserIndex As Integer, ByVal npcIndex As Integer, aType As AttackType) As Boolean
+Private Function UserImpactoNpc(ByVal UserIndex As Integer, ByVal npcIndex As Integer, ByVal aType As AttackType) As Boolean
         
         On Error GoTo UserImpactoNpc_Err
 
@@ -579,7 +579,7 @@ CalcularDaño_Err:
         
 End Function
 
-Private Sub UserDañoNpc(ByVal UserIndex As Integer, ByVal npcIndex As Integer, aType As AttackType)
+Private Sub UserDañoNpc(ByVal UserIndex As Integer, ByVal npcIndex As Integer, ByVal aType As AttackType)
 
         ' Reescrito por WyroX - 16/01/2021
         
@@ -610,7 +610,7 @@ Private Sub UserDañoNpc(ByVal UserIndex As Integer, ByVal npcIndex As Integer, 
 114         Color = vbRed
 
             ' Defensa del NPC
-116         Daño = DañoBase - NpcList(NpcIndex).Stats.def
+116         Daño = DañoBase - NpcList(npcIndex).Stats.def
 
 118         If Daño < 0 Then Daño = 0
 
@@ -671,17 +671,17 @@ Private Sub UserDañoNpc(ByVal UserIndex As Integer, ByVal npcIndex As Integer, 
             End If
 
             ' Daño sobre el tile
-164         Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareMessageTextCharDrop(DañoStr, NpcList(NpcIndex).Char.charindex, Color))
+164         Call SendData(SendTarget.ToNPCAliveArea, npcIndex, PrepareMessageTextCharDrop(DañoStr, NpcList(npcIndex).Char.charindex, Color))
 
             ' Experiencia
-166         Call CalcularDarExp(UserIndex, NpcIndex, Daño)
+166         Call CalcularDarExp(UserIndex, npcIndex, Daño)
 
             ' Restamos el daño al NPC
-168         NpcList(NpcIndex).Stats.MinHp = NpcList(NpcIndex).Stats.MinHp - Daño
+168         NpcList(npcIndex).Stats.MinHp = NpcList(npcIndex).Stats.MinHp - Daño
 
             ' NPC de invasión
 170         If NpcList(NpcIndex).flags.InvasionIndex Then
-172             Call SumarScoreInvasion(NpcList(NpcIndex).flags.InvasionIndex, UserIndex, Daño)
+172             Call SumarScoreInvasion(NpcList(npcIndex).flags.InvasionIndex, UserIndex, Daño)
             End If
 
             ' Muere el NPC
@@ -727,7 +727,7 @@ UserDañoNpc_Err:
         
 End Sub
 
-Private Function NpcDaño(ByVal NpcIndex As Integer, ByVal UserIndex As Integer) As Long
+Private Function NpcDaño(ByVal npcIndex As Integer, ByVal UserIndex As Integer) As Long
         
         On Error GoTo NpcDaño_Err
         
@@ -739,7 +739,7 @@ Private Function NpcDaño(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
 
         Dim obj As t_ObjData
     
-100     Daño = RandomNumber(NpcList(NpcIndex).Stats.MinHIT, NpcList(NpcIndex).Stats.MaxHit)
+100     Daño = RandomNumber(NpcList(npcIndex).Stats.MinHIT, NpcList(npcIndex).Stats.MaxHit)
 102     antdaño = Daño
     
 104     If UserList(UserIndex).flags.Navegando = 1 And UserList(UserIndex).Invent.BarcoObjIndex > 0 Then
@@ -879,7 +879,7 @@ Public Function NpcAtacaUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integ
         danio = -1
 126     If NpcImpacto(NpcIndex, UserIndex) Then
 
-134         danio = NpcDaño(NpcIndex, UserIndex)
+134         danio = NpcDaño(npcIndex, UserIndex)
 
             '¿Puede envenenar?
 136         If NpcList(NpcIndex).Veneno > 0 Then Call NpcEnvenenarUser(UserIndex, NpcList(NpcIndex).Veneno)
@@ -1032,7 +1032,7 @@ NpcAtacaNpc_Err:
         
 End Sub
 
-Public Sub UsuarioAtacaNpc(ByVal UserIndex As Integer, ByVal npcIndex As Integer, aType As AttackType)
+Public Sub UsuarioAtacaNpc(ByVal UserIndex As Integer, ByVal npcIndex As Integer, ByVal aType As AttackType)
         
         On Error GoTo UsuarioAtacaNpc_Err
         
@@ -1223,7 +1223,7 @@ UsuarioAtaca_Err:
         
 End Sub
 
-Private Function UsuarioImpacto(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As Integer, aType As AttackType) As Boolean
+Private Function UsuarioImpacto(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As Integer, ByVal aType As AttackType) As Boolean
 
         On Error GoTo UsuarioImpacto_Err
 
@@ -1320,7 +1320,7 @@ UsuarioImpacto_Err:
 
 End Function
 
-Public Sub UsuarioAtacaUsuario(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As Integer, aType As AttackType)
+Public Sub UsuarioAtacaUsuario(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As Integer, ByVal aType As AttackType)
         
         On Error GoTo UsuarioAtacaUsuario_Err
 
@@ -1371,7 +1371,7 @@ UsuarioAtacaUsuario_Err:
 
 End Sub
 
-Private Sub UserDañoUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As Integer, aType As AttackType)
+Private Sub UserDañoUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As Integer, ByVal aType As AttackType)
         On Error GoTo UserDañoUser_Err
 
 100     With UserList(VictimaIndex)
@@ -2066,7 +2066,7 @@ PuedeAtacarNPC_Err:
         
 End Function
 
-Sub CalcularDarExp(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal ElDaño As Long)
+Sub CalcularDarExp(ByVal UserIndex As Integer, ByVal npcIndex As Integer, ByVal ElDaño As Long)
         '***************************************************
         'Autor: Nacho (Integer)
         'Last Modification: 03/09/06 Nacho
@@ -2081,7 +2081,7 @@ Sub CalcularDarExp(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal 
         End If
 
 102     If UserList(UserIndex).Grupo.EnGrupo Then
-104         Call CalcularDarExpGrupal(UserIndex, NpcIndex, ElDaño)
+104         Call CalcularDarExpGrupal(UserIndex, npcIndex, ElDaño)
         Else
 
             Dim ExpaDar As Double
@@ -2092,7 +2092,7 @@ Sub CalcularDarExp(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal 
 
             '[Nacho] La experiencia a dar es la porcion de vida quitada * toda la experiencia
             
-110         ExpaDar = CDbl(ElDaño) * CDbl(NpcList(NpcIndex).GiveEXP) / NpcList(NpcIndex).Stats.MaxHp
+110         ExpaDar = CDbl(ElDaño) * CDbl(NpcList(npcIndex).GiveEXP) / NpcList(npcIndex).Stats.MaxHp
 
 112         If ExpaDar <= 0 Then Exit Sub
 
@@ -2147,7 +2147,7 @@ CalcularDarExp_Err:
         
 End Sub
 
-Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal ElDaño As Long)
+Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal npcIndex As Integer, ByVal ElDaño As Long)
         
         On Error GoTo CalcularDarExpGrupal_Err
         
@@ -2170,10 +2170,10 @@ Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As I
 102     If UserIndex = 0 Then Exit Sub
 104     If ElDaño <= 0 Then ElDaño = 0
 106     If NpcList(NpcIndex).Stats.MaxHp <= 0 Then Exit Sub
-108     If ElDaño > NpcList(NpcIndex).Stats.MinHp Then ElDaño = NpcList(NpcIndex).Stats.MinHp
+108     If ElDaño > NpcList(npcIndex).Stats.MinHp Then ElDaño = NpcList(npcIndex).Stats.MinHp
     
         '[Nacho] La experiencia a dar es la porcion de vida quitada * toda la experiencia
-110     ExpaDar = CLng((ElDaño) * (NpcList(NpcIndex).GiveEXP / NpcList(NpcIndex).Stats.MaxHp))
+110     ExpaDar = CLng((ElDaño) * (NpcList(npcIndex).GiveEXP / NpcList(npcIndex).Stats.MaxHp))
 
 112     If ExpaDar <= 0 Then Exit Sub
 
@@ -2378,7 +2378,7 @@ ErrHandler:
 
 End Function
 
-Private Sub UserDañoEspecial(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As Integer, aType As AttackType)
+Private Sub UserDañoEspecial(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As Integer, ByVal aType As AttackType)
         On Error GoTo UserDañoEspecial_Err
 
         Dim ArmaObjInd As Integer, ObjInd As Integer
