@@ -78,6 +78,8 @@ Public lstUsuariosDonadores() As String
 
 Public Administradores As clsIniManager
 Public Const TIEMPO_MINIMO_CENTINELA As Long = 300
+Public Const PLAYER_STUN_TIME = 1500
+Public Const NPC_STUN_TIME = 5000
 
 Public dcnUsersLastLogout As New Dictionary
 
@@ -969,7 +971,7 @@ Public Type t_UserOBJ
     ObjIndex As Integer
     amount As Integer
     Equipped As Byte
-
+    LastUseTime As Long
 End Type
 
 Public Type t_Inventario
@@ -1285,6 +1287,8 @@ Public Type t_ObjData
 
     'Puntos de Stamina que da
     MinSta As Integer ' Minimo puntos de stamina
+    
+    Cooldown As Long
     
     'Pociones
     TipoPocion As Byte
@@ -1750,6 +1754,7 @@ Public Type t_UserCounters
     Paralisis As Integer
     velocidad As Integer
     Inmovilizado As Integer
+    StunEndTime As Long
     Ceguera As Integer
     Estupidez As Integer
     Mimetismo As Integer
@@ -2031,6 +2036,7 @@ Public Type t_NpcCounters
 
     Paralisis              As Long
     Inmovilizado           As Long
+    StunEndTime            As Long
     TiempoExistencia       As Long
     IntervaloAtaque        As Long
     IntervaloMovimiento    As Long

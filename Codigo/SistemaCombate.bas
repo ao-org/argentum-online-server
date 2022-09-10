@@ -47,6 +47,11 @@ Public Const MAXDISTANCIAARCO  As Byte = 18
 
 Public Const MAXDISTANCIAMAGIA As Byte = 18
 
+Public Enum AttackType
+    Ranged
+    Melee
+End Enum
+
 
 Private Function ModificadorPoderAtaqueArmas(ByVal clase As e_Class) As Single
         
@@ -363,7 +368,7 @@ PoderAtaqueWrestling_Err:
         
 End Function
 
-Private Function UserImpactoNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer) As Boolean
+Private Function UserImpactoNpc(ByVal UserIndex As Integer, ByVal npcIndex As Integer, aType As AttackType) As Boolean
         
         On Error GoTo UserImpactoNpc_Err
 
@@ -380,7 +385,8 @@ Private Function UserImpactoNpc(ByVal UserIndex As Integer, ByVal NpcIndex As In
 102     If Arma = 0 Then Proyectil = False Else Proyectil = ObjData(Arma).Proyectil = 1
 
 104     If Arma > 0 Then 'Usando un arma
-106         If Proyectil Then
+            Proyectil = ObjData(Arma).Proyectil = 1
+106         If aType = Ranged Then
 108             PoderAtaque = PoderAtaqueProyectil(UserIndex)
             Else
 110             PoderAtaque = PoderAtaqueArma(UserIndex)
@@ -389,7 +395,7 @@ Private Function UserImpactoNpc(ByVal UserIndex As Integer, ByVal NpcIndex As In
 
         Else 'Peleando con puños
 112         PoderAtaque = PoderAtaqueWrestling(UserIndex)
-
+            Proyectil = False
         End If
 
 114     ProbExito = MaximoInt(10, MinimoInt(90, 50 + ((PoderAtaque - NpcList(NpcIndex).PoderEvasion) * 0.4)))
@@ -573,7 +579,7 @@ CalcularDaño_Err:
         
 End Function
 
-Private Sub UserDañoNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
+Private Sub UserDañoNpc(ByVal UserIndex As Integer, ByVal npcIndex As Integer, aType As AttackType)
 
         ' Reescrito por WyroX - 16/01/2021
         
@@ -585,7 +591,7 @@ Private Sub UserDañoNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
 
 102         If .Invent.WeaponEqpObjIndex = EspadaMataDragonesIndex And NpcList(NpcIndex).NPCtype = DRAGON Then
                 ' Espada MataDragones
-104             DañoBase = NpcList(NpcIndex).Stats.MinHp + NpcList(NpcIndex).Stats.def
+104             DañoBase = NpcList(npcIndex).Stats.MinHp + NpcList(npcIndex).Stats.def
                 ' La pierde una vez usada
 106             Call QuitarObjetos(EspadaMataDragonesIndex, 1, UserIndex)
                 'registramos quien mato y uso la MD
@@ -685,14 +691,38 @@ Private Sub UserDañoNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
 176             Call MuereNpc(NpcIndex, UserIndex)
             Else
 178             Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareMessageNpcUpdateHP(NpcIndex))
+                'efectos
+                Dim ArmaObjInd, ObjInd As Integer
+180             ObjInd = 0
+182             ArmaObjInd = .Invent.WeaponEqpObjIndex
+184             If ArmaObjInd = 0 Then ArmaObjInd = .Invent.NudilloObjIndex
+186
+                If ObjData(ArmaObjInd).Municion = 0 Then
+188                 ObjInd = ArmaObjInd
+                Else
+190                 ObjInd = .Invent.MunicionEqpObjIndex
+                End If
+                Dim rangeStun As Boolean
+                Dim stunChance As Byte
+                If ObjInd > 0 Then
+                    rangeStun = ObjData(ObjInd).Subtipo = 2 And aType = Ranged
+                    stunChance = ObjData(ObjInd).Porcentaje
+                End If
+                If rangeStun Then
+                    If (RandomNumber(1, 100) < stunChance) Then
+                        With NpcList(npcIndex)
+                            Call StunNPc(.Contadores)
+                            'Call SendData(SendTarget.ToNPCAliveArea, TargetNPC, PrepareMessagePlayWave(Hechizos(Spell).wav, .Pos.X, .Pos.y))
+192                         Call SendData(SendTarget.ToNPCAliveArea, npcIndex, PrepareMessageCreateFX(.Char.charindex, 142, 6))
+                        End With
+                    End If
+                End If
             End If
-
         End With
-        
         Exit Sub
 
 UserDañoNpc_Err:
-180     Call TraceError(Err.Number, Err.Description, "SistemaCombate.UserDañoNpc", Erl)
+194     Call TraceError(Err.Number, Err.Description, "SistemaCombate.UserDañoNpc", Erl)
 
         
 End Sub
@@ -1002,7 +1032,7 @@ NpcAtacaNpc_Err:
         
 End Sub
 
-Public Sub UsuarioAtacaNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
+Public Sub UsuarioAtacaNpc(ByVal UserIndex As Integer, ByVal npcIndex As Integer, aType As AttackType)
         
         On Error GoTo UsuarioAtacaNpc_Err
         
@@ -1010,7 +1040,7 @@ Public Sub UsuarioAtacaNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer
 
 102     If UserList(UserIndex).flags.invisible = 0 Then Call NPCAtacado(NpcIndex, UserIndex)
 
-104     If UserImpactoNpc(UserIndex, NpcIndex) Then
+104     If UserImpactoNpc(UserIndex, npcIndex, aType) Then
         
             ' Suena el Golpe en el cliente.
 106         If NpcList(NpcIndex).flags.Snd2 > 0 Then
@@ -1061,7 +1091,7 @@ Public Sub UsuarioAtacaNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer
             End If
             
             ' Resta la vida del NPC
-140         Call UserDañoNpc(UserIndex, NpcIndex)
+140         Call UserDañoNpc(UserIndex, npcIndex, aType)
             
 142         Dim Arma As Integer: Arma = UserList(UserIndex).Invent.WeaponEqpObjIndex
 144         Dim municionIndex As Integer: municionIndex = UserList(UserIndex).Invent.MunicionEqpObjIndex
@@ -1156,7 +1186,7 @@ Public Sub UsuarioAtaca(ByVal UserIndex As Integer)
 
             'Look for user
 134         If Index > 0 Then
-136             Call UsuarioAtacaUsuario(UserIndex, Index)
+136             Call UsuarioAtacaUsuario(UserIndex, Index, Melee)
 
             'Look for NPC
 138         ElseIf MapData(AttackPos.Map, AttackPos.X, AttackPos.Y).NpcIndex > 0 Then
@@ -1169,7 +1199,7 @@ Public Sub UsuarioAtaca(ByVal UserIndex As Integer)
                         Exit Sub
                     End If
 
-148                 Call UsuarioAtacaNpc(UserIndex, Index)
+148                 Call UsuarioAtacaNpc(UserIndex, Index, Melee)
 
                 Else
 150                 Call WriteConsoleMsg(UserIndex, "No podés atacar a este NPC", e_FontTypeNames.FONTTYPE_FIGHT)
@@ -1193,7 +1223,7 @@ UsuarioAtaca_Err:
         
 End Sub
 
-Private Function UsuarioImpacto(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As Integer) As Boolean
+Private Function UsuarioImpacto(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As Integer, aType As AttackType) As Boolean
 
         On Error GoTo UsuarioImpacto_Err
 
@@ -1223,7 +1253,7 @@ Private Function UsuarioImpacto(ByVal AtacanteIndex As Integer, ByVal VictimaInd
 112     If Arma > 0 Then
 114         Proyectil = ObjData(Arma).Proyectil = 1
 
-116         If Proyectil Then
+116         If aType = Ranged Then
 118             PoderAtaque = PoderAtaqueProyectil(AtacanteIndex)
             Else
 120             PoderAtaque = PoderAtaqueArma(AtacanteIndex)
@@ -1290,7 +1320,7 @@ UsuarioImpacto_Err:
 
 End Function
 
-Public Sub UsuarioAtacaUsuario(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As Integer)
+Public Sub UsuarioAtacaUsuario(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As Integer, aType As AttackType)
         
         On Error GoTo UsuarioAtacaUsuario_Err
 
@@ -1310,7 +1340,7 @@ Public Sub UsuarioAtacaUsuario(ByVal AtacanteIndex As Integer, ByVal VictimaInde
 
 108     Call UsuarioAtacadoPorUsuario(AtacanteIndex, VictimaIndex)
 
-110     If UsuarioImpacto(AtacanteIndex, VictimaIndex) Then
+110     If UsuarioImpacto(AtacanteIndex, VictimaIndex, aType) Then
 
             'Call SendData(SendTarget.ToPCArea, AtacanteIndex, PrepareMessagePlayWave(SND_IMPACTO, UserList(AtacanteIndex).Pos.X, UserList(AtacanteIndex).Pos.Y))
 
@@ -1319,7 +1349,7 @@ Public Sub UsuarioAtacaUsuario(ByVal AtacanteIndex As Integer, ByVal VictimaInde
 114             Call SendData(SendTarget.ToPCAliveArea, VictimaIndex, PrepareMessageCreateFX(UserList(VictimaIndex).Char.charindex, FXSANGRE, 0, UserList(VictimaIndex).Pos.X, UserList(VictimaIndex).Pos.y))
             End If
 
-116         Call UserDañoUser(AtacanteIndex, VictimaIndex)
+116         Call UserDañoUser(AtacanteIndex, VictimaIndex, aType)
 
         Else
 
@@ -1341,7 +1371,7 @@ UsuarioAtacaUsuario_Err:
 
 End Sub
 
-Private Sub UserDañoUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As Integer)
+Private Sub UserDañoUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As Integer, aType As AttackType)
         On Error GoTo UserDañoUser_Err
 
 100     With UserList(VictimaIndex)
@@ -1541,7 +1571,7 @@ Private Sub UserDañoUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As 
 250             Call SendData(SendTarget.toPCAliveArea, AtacanteIndex, PrepareMessagePlayWave(SND_IMPACTO, UserList(AtacanteIndex).Pos.X, UserList(AtacanteIndex).Pos.y))
 
                 ' Intentamos aplicar algún efecto de estado
-252             Call UserDañoEspecial(AtacanteIndex, VictimaIndex)
+252             Call UserDañoEspecial(AtacanteIndex, VictimaIndex, aType)
             End If
 
         End With
@@ -2348,7 +2378,7 @@ ErrHandler:
 
 End Function
 
-Private Sub UserDañoEspecial(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As Integer)
+Private Sub UserDañoEspecial(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As Integer, aType As AttackType)
         On Error GoTo UserDañoEspecial_Err
 
         Dim ArmaObjInd As Integer, ObjInd As Integer
@@ -2365,18 +2395,22 @@ Private Sub UserDañoEspecial(ByVal AtacanteIndex As Integer, ByVal VictimaIndex
           Exit Sub
         End If
 
-110     If ObjData(ArmaObjInd).Proyectil = 0 Then
+110     If ObjData(ArmaObjInd).Proyectil = 0 Or ObjData(ArmaObjInd).Municion = 0 Then
 112         ObjInd = ArmaObjInd
         Else
 114         ObjInd = UserList(AtacanteIndex).Invent.MunicionEqpObjIndex
         End If
 
-        Dim puedeEnvenenar, puedeEstupidizar, puedeIncinierar, puedeParalizar As Boolean
+        Dim puedeEnvenenar, puedeEstupidizar, puedeIncinierar, puedeParalizar, rangeStun As Boolean
+        Dim stunChance As Byte
 116     puedeEnvenenar = (UserList(AtacanteIndex).flags.Envenena > 0) Or (ObjInd > 0 And ObjData(ObjInd).Envenena)
 118     puedeEstupidizar = (UserList(AtacanteIndex).flags.Estupidiza > 0) Or (ObjInd > 0 And ObjData(ObjInd).Estupidiza)
 120     puedeIncinierar = (UserList(AtacanteIndex).flags.incinera > 0) Or (ObjInd > 0 And ObjData(ObjInd).incinera)
 122     puedeParalizar = (UserList(AtacanteIndex).flags.Paraliza > 0) Or (ObjInd > 0 And ObjData(ObjInd).Paraliza)
-
+        If ObjInd > 0 Then
+            rangeStun = ObjData(ObjInd).Subtipo = 2 And aType = Ranged
+            stunChance = ObjData(ObjInd).Porcentaje
+        End If
 124     If puedeEnvenenar And (UserList(VictimaIndex).flags.Envenenado = 0) Then
 126         If RandomNumber(1, 100) < 30 Then
 128             UserList(VictimaIndex).flags.Envenenado = ObjData(ObjInd).Envenena
@@ -2429,11 +2463,22 @@ Private Sub UserDañoEspecial(ByVal AtacanteIndex As Integer, ByVal VictimaIndex
                 Exit Sub
             End If
         End If
+        
+        If rangeStun And IsFeatureEnabled("enable_stun") Then
+            If (RandomNumber(1, 100) < stunChance) Then
+                With UserList(VictimaIndex)
+                    Call StunPlayer(.Counters)
+                    Call WriteStunStart(VictimaIndex, PLAYER_STUN_TIME)
+                    Call WritePosUpdate(VictimaIndex)
+178                 Call SendData(SendTarget.ToPCAliveArea, VictimaIndex, PrepareMessageCreateFX(.Char.charindex, 142, 1))
+                End With
+            End If
+        End If
 
         Exit Sub
 
 UserDañoEspecial_Err:
-178     Call TraceError(Err.Number, Err.Description, "SistemaCombate.UserDañoEspecial", Erl)
+180     Call TraceError(Err.Number, Err.Description, "SistemaCombate.UserDañoEspecial", Erl)
 
 
 End Sub

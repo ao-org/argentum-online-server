@@ -148,7 +148,7 @@ Private Sub PerseguirUsuarioCercano(ByVal NpcIndex As Integer)
             ' Si el NPC tiene un objetivo
 148         If .Target > 0 Then
                 'asignamos heading nuevo al NPC según el Target del nuevo usuario: .Char.Heading, si la distancia es <= 1
-                If (.flags.Inmovilizado + .flags.Paralizado = 0) Then
+                If NPCs.CanMove(.Contadores, .flags) Then
                     Call ChangeNPCChar(NpcIndex, .Char.Body, .Char.Head, GetHeadingFromWorldPos(.Pos, UserList(.Target).Pos))
                 End If
 150             Call AI_AtacarUsuarioObjetivo(NpcIndex)
@@ -185,7 +185,7 @@ Private Sub AI_CaminarSinRumboCercaDeOrigen(ByVal NpcIndex As Integer)
         On Error GoTo AI_CaminarSinRumboCercaDeOrigen_Err
 
 100     With NpcList(NpcIndex)
-102         If .flags.Paralizado > 0 Or .flags.Inmovilizado > 0 Then
+102         If Not NPCs.CanMove(.Contadores, .flags) Then
 104             Call AnimacionIdle(NpcIndex, True)
 106         ElseIf Distancia(.Pos, .Orig) > 4 Then
 108             Call AI_CaminarConRumbo(NpcIndex, .Orig)
@@ -212,7 +212,7 @@ Private Sub AI_CaminarSinRumbo(ByVal NpcIndex As Integer)
 
 100     With NpcList(NpcIndex)
 
-102         If RandomNumber(1, 6) = 3 And .flags.Paralizado = 0 And .flags.Inmovilizado = 0 Then
+102         If RandomNumber(1, 6) = 3 And NPCs.CanMove(.Contadores, .flags) Then
 104             Call MoveNPCChar(NpcIndex, CByte(RandomNumber(e_Heading.NORTH, e_Heading.WEST)))
             Else
 106             Call AnimacionIdle(NpcIndex, True)
@@ -232,7 +232,7 @@ End Sub
 Private Sub AI_CaminarConRumbo(ByVal NpcIndex As Integer, ByRef rumbo As t_WorldPos)
         On Error GoTo AI_CaminarConRumbo_Err
     
-100     If NpcList(NpcIndex).flags.Paralizado Or NpcList(NpcIndex).flags.Inmovilizado Then
+100     If Not NPCs.CanMove(NpcList(npcIndex).Contadores, NpcList(npcIndex).flags) Then
 102         Call AnimacionIdle(NpcIndex, True)
             Exit Sub
         End If
@@ -267,7 +267,7 @@ Private Function NpcLanzaSpellInmovilizado(ByVal NpcIndex As Integer, ByVal tInd
     NpcLanzaSpellInmovilizado = False
     
     With NpcList(NpcIndex)
-        If .flags.Inmovilizado + .flags.Paralizado > 0 Then
+        If Not NPCs.CanMove(.Contadores, .flags) Then
             Select Case .Char.Heading
                 Case e_Heading.NORTH
                     If .Pos.X = UserList(tIndex).Pos.X And .Pos.Y > UserList(tIndex).Pos.Y Then
@@ -364,7 +364,7 @@ Private Sub AI_AtacarUsuarioObjetivo(ByVal AtackerNpcIndex As Integer)
                             IntervaloPermiteLanzarHechizo(AtackerNpcIndex) And _
                             (RandomNumber(1, 100) <= 50)
              
-108         AtacaMelee = EstaPegadoAlUsuario And UsuarioAtacableConMelee(AtackerNpcIndex, .Target) And .flags.Paralizado = 0
+108         AtacaMelee = EstaPegadoAlUsuario And UsuarioAtacableConMelee(AtackerNpcIndex, .Target) And NPCs.CanAttack(.Contadores, .flags)
             AtacaMelee = AtacaMelee And (.flags.LanzaSpells > 0 And (UserList(.Target).flags.invisible > 0 Or UserList(.Target).flags.Oculto > 0))
             AtacaMelee = AtacaMelee Or .flags.LanzaSpells = 0
             
@@ -380,14 +380,14 @@ Private Sub AI_AtacarUsuarioObjetivo(ByVal AtackerNpcIndex As Integer)
                 End If
 114         ElseIf AtacaMelee Then
                 Dim ChangeHeading As Boolean
-                ChangeHeading = (.flags.Inmovilizado > 0 And tHeading = .Char.Heading) Or (.flags.Inmovilizado + .flags.Paralizado = 0)
+                ChangeHeading = (.flags.Inmovilizado > 0 And tHeading = .Char.Heading) Or NPCs.CanMove(.Contadores, .flags)
                 
                 Dim UserIndexFront As Integer
                 NextPosNPC = ComputeNextHeadingPos(AtackerNpcIndex)
                 UserIndexFront = MapData(NextPosNPC.Map, NextPosNPC.X, NextPosNPC.Y).UserIndex
                 AtacaAlDelFrente = (UserIndexFront > 0)
                 
-                If AtacaAlDelFrente And Not .flags.Paralizado = 1 Then
+                If AtacaAlDelFrente And NPCs.CanAttack(.Contadores, .flags) Then
                     Call AnimacionIdle(AtackerNpcIndex, True)
                     If UserIndexFront > 0 Then
                         If UserList(UserIndexFront).flags.Muerto = 0 Then
@@ -527,7 +527,7 @@ Public Sub AI_NpcAtacaNpc(ByVal NpcIndex As Integer)
             
 106             If InRangoVisionNPC(NpcIndex, targetPos.X, targetPos.Y) Then
                    ' Me fijo si el NPC esta al lado del Objetivo
-108                If Distancia(.Pos, targetPos) = 1 And .flags.Paralizado = 0 Then
+108                If Distancia(.Pos, targetPos) = 1 And NPCs.CanAttack(.Contadores, .flags) Then
 110                    Call SistemaCombate.NpcAtacaNpc(NpcIndex, .TargetNPC)
                    End If
                

@@ -874,7 +874,7 @@ Public Function MoveNPCChar(ByVal NpcIndex As Integer, ByVal nHeading As Byte) A
         Dim UserIndex As Integer
         Dim esGuardia As Boolean
 100     With NpcList(NpcIndex)
-102         If .flags.Paralizado + .flags.Inmovilizado > 0 Then Exit Function
+102         If Not NPCs.CanMove(.Contadores, .flags) Then Exit Function
             
 104         nPos = .Pos
 106         Call HeadtoPos(nHeading, nPos)
@@ -1824,4 +1824,14 @@ Public Sub KillRandomNpc()
     Call MuereNpc(NpcIndex, 0)
 End Sub
 
+Public Function CanMove(counter As t_NpcCounters, flags As t_NPCFlags) As Boolean
+    CanMove = flags.Inmovilizado + flags.Paralizado = 0 And counter.StunEndTime < GetTickCount()
+End Function
 
+Public Function CanAttack(counter As t_NpcCounters, flags As t_NPCFlags) As Boolean
+    CanAttack = flags.Inmovilizado + flags.Paralizado = 0 And counter.StunEndTime < GetTickCount()
+End Function
+
+Public Function StunNPc(ByRef Counters As t_NpcCounters)
+    Counters.StunEndTime = GetTickCount() + 5000
+End Function

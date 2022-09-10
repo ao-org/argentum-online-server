@@ -111,6 +111,7 @@ Public Enum ServerPacketID
     GuildDetails            ' CLANDET
     ShowGuildFundationForm  ' SHOWFUN
     ParalizeOK              ' PARADOK
+    StunStart               ' Stun start time
     ShowUserRequest         ' PETICIO
     ChangeUserTradeSlot     ' COMUSUINV
     'SendNight              ' NOC
@@ -208,6 +209,7 @@ Public Enum ServerPacketID
     PlayWaveStep
     ShopPjsInit
     DebugDataResponse
+    CreateProjectile
     #If PYMMO = 0 Then
     AccountCharacterList
     #End If
@@ -2104,7 +2106,7 @@ Private Sub HandleWalk(ByVal UserIndex As Integer)
                 .flags.PescandoEspecial = False
             End If
             
-104         If .flags.Paralizado = 0 And .flags.Inmovilizado = 0 Then
+104         If UserMod.CanMove(.flags, .Counters) Then
                 
 106             If .flags.Comerciando Or .flags.Crafteando <> 0 Then Exit Sub
 
@@ -2192,9 +2194,8 @@ Private Sub HandleWalk(ByVal UserIndex As Integer)
 170                 .flags.UltimoMensaje = 1
                     'Call WriteConsoleMsg(UserIndex, "No podes moverte porque estas paralizado.", e_FontTypeNames.FONTTYPE_INFO)
 172                 Call WriteLocaleMsg(UserIndex, "54", e_FontTypeNames.FONTTYPE_INFO)
-
                 End If
-
+                Call WritePosUpdate(UserIndex)
             End If
             
             'Can't move while hidden except he is a thief
@@ -2309,8 +2310,13 @@ Private Sub HandleAttack(ByVal UserIndex As Integer)
             'If equiped weapon is ranged, can't attack this way
 106         If .Invent.WeaponEqpObjIndex > 0 Then
 
-108             If ObjData(.Invent.WeaponEqpObjIndex).Proyectil = 1 Then
+108             If ObjData(.Invent.WeaponEqpObjIndex).Proyectil = 1 And ObjData(.Invent.WeaponEqpObjIndex).Municion > 0 Then
 110                 Call WriteConsoleMsg(UserIndex, "No podés usar así esta arma.", e_FontTypeNames.FONTTYPE_INFOIAO)
+                    Exit Sub
+                End If
+
+                If IsItemInCd(.Invent.Object(.Invent.WeaponEqpSlot)) Then
+                    Debug.Print "item is on cd"
                     Exit Sub
 
                 End If
@@ -3015,6 +3021,10 @@ Private Sub HandleCastSpell(ByVal UserIndex As Integer) ', ByVal server_crc As L
             End If
         
 108         .flags.Hechizo = Spell
+            If UserMod.IsStun(.flags, .Counters) Then
+                Call WriteLocaleMsg(UserIndex, "394", e_FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
             
         
 110         If .flags.Hechizo < 1 Or .flags.Hechizo > MAXUSERHECHIZOS Then
@@ -3540,7 +3550,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
             .Trabajo.TargetSkill = Skill
             
 108         If .flags.Muerto = 1 Or .flags.Descansar Or Not InMapBounds(.Pos.Map, X, Y) Then Exit Sub
-
+            If UserMod.IsStun(.flags, .Counters) Then Exit Sub
 110         If Not InRangoVision(UserIndex, X, Y) Then
 112             Call WritePosUpdate(UserIndex)
                 Exit Sub
@@ -3562,7 +3572,8 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                     Dim consumirMunicion As Boolean
 
                 Case e_Skill.Proyectiles
-            
+                    Dim WeaponData As t_ObjData
+                    Dim ProjectileType As Byte
                     'Check attack interval
 126                 If Not IntervaloPermiteMagiaGolpe(UserIndex, False) Then Exit Sub
 
@@ -3574,8 +3585,15 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                 
                     'Make sure the item is valid and there is ammo equipped.
 132                 With .Invent
+                        If .WeaponEqpObjIndex < 1 Then Exit Sub
+                        WeaponData = ObjData(.WeaponEqpObjIndex)
 
-134                     If .WeaponEqpObjIndex = 0 Then
+                        If GetTickCount() - .Object(.WeaponEqpSlot).LastUseTime < WeaponData.Cooldown Then Exit Sub
+                        ProjectileType = 1
+                        If WeaponData.Proyectil = 1 And WeaponData.Municion = 0 Then
+                            DummyInt = 0
+                            ProjectileType = 2
+                        ElseIf .WeaponEqpObjIndex = 0 Then
 136                         DummyInt = 1
 138                     ElseIf .WeaponEqpSlot < 1 Or .WeaponEqpSlot > UserList(UserIndex).CurrentInventorySlots Then
 140                         DummyInt = 1
@@ -3652,26 +3670,30 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                         Dim Tiempo    As Long
 
                         ' Porque no es HandleAttack ???
-208                     Call UsuarioAtacaUsuario(UserIndex, tU)
-                    
-210                     If ObjData(.Invent.MunicionEqpObjIndex).CreaFX <> 0 Then
-                            UserList(tU).Counters.timeFx = 2
-212                         Call SendData(SendTarget.ToPCAliveArea, tU, PrepareMessageCreateFX(UserList(tU).Char.charindex, ObjData(.Invent.MunicionEqpObjIndex).CreaFX, 0, UserList(tU).Pos.X, UserList(tU).Pos.y))
-                            
+208                     Call UsuarioAtacaUsuario(UserIndex, tU, Ranged)
+                        Dim FX As Integer
+                        If .Invent.MunicionEqpObjIndex Then
+                            FX = ObjData(.Invent.MunicionEqpObjIndex).CreaFX
                         End If
-                        
+210                     If FX <> 0 Then
+                            UserList(tU).Counters.timeFx = 2
+212                         Call SendData(SendTarget.ToPCAliveArea, tU, PrepareMessageCreateFX(UserList(tU).Char.charindex, FX, 0, UserList(tU).Pos.X, UserList(tU).Pos.y))
+                        End If
+                        If IsFeatureEnabled("proyectile_visible") Then
+                            Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareCreateProjectile(UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.y, X, y, ProjectileType))
+                        End If
                         'Si no es GM invisible, le envio el movimiento del arma.
                         If UserList(UserIndex).flags.AdminInvisible = 0 Then
-                            Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageArmaMov(UserList(UserIndex).Char.charindex))
+                            Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageArmaMov(UserList(UserIndex).Char.charindex, 1))
                         End If
                     
-214                     If ObjData(.Invent.MunicionEqpObjIndex).CreaParticula <> "" Then
-                    
-216                         Particula = val(ReadField(1, ObjData(.Invent.MunicionEqpObjIndex).CreaParticula, Asc(":")))
-218                         Tiempo = val(ReadField(2, ObjData(.Invent.MunicionEqpObjIndex).CreaParticula, Asc(":")))
-                            UserList(tU).Counters.timeFx = 2
-220                         Call SendData(SendTarget.ToPCAliveArea, tU, PrepareMessageParticleFX(UserList(tU).Char.charindex, Particula, Tiempo, False, , UserList(tU).Pos.X, UserList(tU).Pos.y))
-
+214                     If .Invent.MunicionEqpObjIndex > 0 Then
+215                         If ObjData(.Invent.MunicionEqpObjIndex).CreaParticula <> "" Then
+216                             Particula = val(ReadField(1, ObjData(.Invent.MunicionEqpObjIndex).CreaParticula, Asc(":")))
+218                             Tiempo = val(ReadField(2, ObjData(.Invent.MunicionEqpObjIndex).CreaParticula, Asc(":")))
+                                UserList(tU).Counters.timeFx = 2
+220                             Call SendData(SendTarget.ToPCAliveArea, tU, PrepareMessageParticleFX(UserList(tU).Char.charindex, Particula, Tiempo, False, , UserList(tU).Pos.X, UserList(tU).Pos.y))
+                            End If
                         End If
                     
 222                     consumirMunicion = True
@@ -3690,11 +3712,14 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                         'Is it attackable???
 232                     If NpcList(tN).Attackable <> 0 Then
 234                         If PuedeAtacarNPC(UserIndex, tN) Then
-236                             Call UsuarioAtacaNpc(UserIndex, tN)
+236                             Call UsuarioAtacaNpc(UserIndex, tN, Ranged)
 238                             consumirMunicion = True
+                                If IsFeatureEnabled("proyectile_visible") Then
+                                    Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareCreateProjectile(UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.y, X, y, ProjectileType))
+                                End If
                                 'Si no es GM invisible, le envio el movimiento del arma.
                                 If UserList(UserIndex).flags.AdminInvisible = 0 Then
-                                    Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageArmaMov(UserList(UserIndex).Char.charindex))
+                                    Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageArmaMov(UserList(UserIndex).Char.charindex, 1))
                                 End If
                             Else
 240                             consumirMunicion = False
@@ -3706,30 +3731,33 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                     End If
                 
 242                 With .Invent
-244                     DummyInt = .MunicionEqpSlot
-                        
-                        If DummyInt <> 0 Then
-                        
-                            'Take 1 arrow away - we do it AFTER hitting, since if Ammo Slot is 0 it gives a rt9 and kicks players
-246                         If consumirMunicion Then
-248                             Call QuitarUserInvItem(UserIndex, DummyInt, 1)
-                            End If
-                        
-250                         If .Object(DummyInt).amount > 0 Then
+                        If WeaponData.Proyectil = 1 And WeaponData.Municion > 0 Then
+244                         DummyInt = .MunicionEqpSlot
 
-                                'QuitarUserInvItem unequipps the ammo, so we equip it again
-252                             .MunicionEqpSlot = DummyInt
-254                             .MunicionEqpObjIndex = .Object(DummyInt).ObjIndex
-256                             .Object(DummyInt).Equipped = 1
-    
-                            Else
-258                             .MunicionEqpSlot = 0
-260                             .MunicionEqpObjIndex = 0
-    
-                            End If
-    
-262                         Call UpdateUserInv(False, UserIndex, DummyInt)
+                            If DummyInt <> 0 Then
                         
+                                'Take 1 arrow away - we do it AFTER hitting, since if Ammo Slot is 0 it gives a rt9 and kicks players
+246                             If consumirMunicion Then
+248                                 Call QuitarUserInvItem(UserIndex, DummyInt, 1)
+                                End If
+                            
+250                             If .Object(DummyInt).amount > 0 Then
+    
+                                    'QuitarUserInvItem unequipps the ammo, so we equip it again
+252                                 .MunicionEqpSlot = DummyInt
+254                                 .MunicionEqpObjIndex = .Object(DummyInt).objIndex
+256                                 .Object(DummyInt).Equipped = 1
+        
+                                Else
+258                                 .MunicionEqpSlot = 0
+260                                 .MunicionEqpObjIndex = 0
+        
+                                End If
+        
+262                             Call UpdateUserInv(False, UserIndex, DummyInt)
+                            End If
+                        ElseIf consumirMunicion Then
+                            .Object(.WeaponEqpSlot).LastUseTime = GetTickCount()
                         End If
                         
                     End With
