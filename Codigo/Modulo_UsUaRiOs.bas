@@ -78,23 +78,21 @@ Public Function ConnectUser_Check(ByVal UserIndex As Integer, _
         Dim tIndex As Integer: tIndex = NameIndex(Name)
 
         If tIndex > 0 And tIndex <> UserIndex Then
-
-            If UserList(tIndex).Counters.Saliendo Then
-                Call WriteShowMessageBox(UserIndex, "El personaje está saliendo.")
-
-            Else
-                
-                Call WriteShowMessageBox(UserIndex, "El personaje ya está conectado. Espere mientras es desconectado.")
-
-                ' Le avisamos al usuario que está jugando, en caso de que haya uno
+            If IsFeatureEnabled("override_same_ip_connection") And .IP = UserList(tIndex).IP Then
                 Call WriteShowMessageBox(tIndex, "Alguien está ingresando con tu personaje. Si no has sido tú, por favor cambia la contraseña de tu cuenta.")
-            '    Call Cerrar_Usuario(tIndex)
-
-            End If
-
+                Call CloseSocket(tIndex)
+            Else
+                If UserList(tIndex).Counters.Saliendo Then
+                    Call WriteShowMessageBox(UserIndex, "El personaje está saliendo.")
+                Else
+                    Call WriteShowMessageBox(UserIndex, "El personaje ya está conectado. Espere mientras es desconectado.")
+                    ' Le avisamos al usuario que está jugando, en caso de que haya uno
+                    Call WriteShowMessageBox(tIndex, "Alguien está ingresando con tu personaje. Si no has sido tú, por favor cambia la contraseña de tu cuenta.")
+                '    Call Cerrar_Usuario(tIndex)
+                End If
             Call CloseSocket(UserIndex)
             Exit Function
-
+            End If
         End If
         
         '¿Supera el máximo de usuarios por cuenta?
