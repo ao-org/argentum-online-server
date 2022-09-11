@@ -30,10 +30,8 @@ Dim ElapsedTime As Long
 Dim LastFrameTime As Long
 Dim LastScoreUpdate As Long
 Dim ActiveNpc As Integer
-Dim PlayersScore As New Dictionary
 Dim SpawnedCreaturesId As New Dictionary
 Dim MapNumber As Integer
-Dim TopFive(5) As e_Rank
 Dim UpdateIndex As Integer
 Dim MaxTime As Long
 Dim TargetScore As Integer
@@ -41,6 +39,7 @@ Dim BroadCastInterval As Long
 Attribute BroadCastInterval.VB_VarHelpID = -1
 Dim LastBroadCastTime As Long
 Dim FrameTime As Long
+Dim board As New ScoreBoard
 
 
 Friend Sub RegisterNpc(ByVal Tag, ByVal sectionSize, ByRef registry As Dictionary, ByRef File As clsIniManager)
@@ -73,6 +72,7 @@ On Error GoTo Hunt_Initialize_Err:
 120     UpdateIndex = AddUpdateScenario(Me)
 122     Call CustomScenarios.SetCustomScenario(mapNumber, Me)
 124     LastBroadCastTime = 0
+        Call board.Initiaize(5)
         Exit Sub
 Hunt_Initialize_Err:
     Call TraceError(Err.Number, Err.Description, "ScenarioHunt.Initialize ", Erl)
@@ -121,9 +121,7 @@ Private Sub IBaseScenario_WillSummonPlayer(ByVal UserIndex As Integer)
     SpawnPos.X = RandomNumber(12, 85)
     SpawnPos.y = RandomNumber(12, 85)
     GenericGlobalLobby.SummonCoordinates = SpawnPos
-    If Not PlayersScore.Exists(UserIndex) Then
-        Call PlayersScore.Add(UserIndex, 0)
-    End If
+    Call board.AddPlayer(UserIndex)
 End Sub
 
 Private Sub IBaseScenario_UpdateLobbyState(ByVal oldState As e_LobbyState, ByRef newState As e_LobbyState)
@@ -156,13 +154,11 @@ Private Sub IBaseScenario_PlayerKillNpc(ByVal npcIndex As Integer, ByVal userInd
     NPCtype = NpcList(npcIndex).Numero
     If sourceType = e_phisical And sourceIndex = RequiredWeaponId Then
         If MatchNpc.Exists(NPCtype) Then
-            PlayersScore.Item(UserIndex) = PlayersScore.Item(UserIndex) + MatchNpc.Item(NPCtype).Score
-            Call UpdateRanking(PlayersScore.Item(userIndex), userIndex)
-            If PlayersScore.Item(UserIndex) >= TargetScore Then
+            If board.UpdatePlayerScore(UserIndex, MatchNpc.Item(npcType).Score) >= TargetScore Then
                 GenericGlobalLobby.State = Completed
                 Call SendData(SendTarget.toMap, mapNumber, PrepareMessageConsoleMsg("Tenemos un ganador!", e_FontTypeNames.FONTTYPE_GUILD))
                 ElapsedTime = MaxTime
-                Call PublishScoreboard
+                Call board.PublishScoreboard(SendTarget.toMap, MapNumber)
             End If
         End If
     Else
@@ -180,19 +176,6 @@ Private Sub IBaseScenario_PlayerKillPlayer(ByVal killerIndex As Integer, ByVal d
     'implements interface
 End Sub
 
-Private Sub PublishScoreboard()
-    Dim i As Integer
-    For i = 0 To UBound(TopFive)
-        If TopFive(i).score <= 0 Then
-            Exit Sub
-        End If
-        If i = 0 Then
-            Call SendData(SendTarget.toMap, mapNumber, PrepareMessageConsoleMsg("Posiciones:", e_FontTypeNames.FONTTYPE_GUILD))
-        End If
-        Call SendData(SendTarget.toMap, mapNumber, PrepareMessageConsoleMsg((i + 1) & ") " & UserList(TopFive(i).UserIndex).name & ": " & TopFive(i).Score, e_FontTypeNames.FONTTYPE_GUILD))
-    Next i
-End Sub
-
 Private Sub IBaseScenario_Update()
     Dim frameTime As Long
     If GenericGlobalLobby.State = e_LobbyState.InProgress Then
@@ -201,12 +184,12 @@ Private Sub IBaseScenario_Update()
         LastFrameTime = GetTickCount()
         If ElapsedTime - LastScoreUpdate > 30000 Then
             LastScoreUpdate = ElapsedTime
-            Call PublishScoreboard
+            Call board.PublishScoreboard(SendTarget.toMap, MapNumber)
         End If
         If ElapsedTime > MaxTime Then
             GenericGlobalLobby.State = Completed
             Call SendData(SendTarget.toMap, mapNumber, PrepareMessageConsoleMsg("Se acabo el tiempo!", e_FontTypeNames.FONTTYPE_GUILD))
-            Call PublishScoreboard
+            Call board.PublishScoreboard(SendTarget.toMap, MapNumber)
         End If
         Call BroadCastTimeUpdate
     ElseIf GenericGlobalLobby.State = e_LobbyState.Completed Then
@@ -229,50 +212,6 @@ Private Sub SpawnNpc(ByVal npcType As Integer)
     NpcList(NpcId).flags.Respawn = 1
     NpcList(NpcId).Contadores.IntervaloRespawn = 0
     Call SpawnedCreaturesId.Add(NpcId, 0)
-End Sub
-
-Public Sub UpdateRanking(ByVal value As Integer, ByVal userIndex As Integer)
-    Dim insertPos As Integer
-    insertPos = InsertionPos(value)
-    If (insertPos <= UBound(TopFive)) Then
-        If TopFive(insertPos).UserIndex <> UserIndex Then
-            Call ShiftElement(insertPos, CurrentScorePos(UserIndex))
-        End If
-        TopFive(insertPos).userIndex = userIndex
-        TopFive(insertPos).score = value
-    End If
-End Sub
-
-Private Function InsertionPos(ByVal score As Integer) As Integer
-    If TopFive(5).score >= score Then
-        InsertionPos = UBound(TopFive) + 1
-        Exit Function
-    End If
-    
-    Dim currentPosition As Integer
-    For currentPosition = 0 To UBound(TopFive)
-        If TopFive(currentPosition).Score < Score Then
-            Exit For
-        End If
-    Next currentPosition
-    InsertionPos = currentPosition
-End Function
-
-Private Function CurrentScorePos(ByVal UserIndex As Integer) As Integer
-    Dim i As Integer
-    For i = 0 To UBound(TopFive) - 1
-        If TopFive(i).UserIndex = UserIndex Then
-            Exit For
-        End If
-    Next i
-    CurrentScorePos = i
-End Function
-
-Sub ShiftElement(ByVal position As Integer, ByVal starPos As Integer)
-    Dim i As Integer
-    For i = starPos To position + 1 Step -1
-        TopFive(i) = TopFive(i - 1)
-    Next i
 End Sub
 
 Private Sub CloseCountDown()
