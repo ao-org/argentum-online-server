@@ -1746,9 +1746,9 @@ On Error GoTo ErrHandler
             End If
             
             If MapInfo(.Pos.map).Seguro = 1 Then
-120             Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageArmaMov(.Char.charindex))
+120             Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageArmaMov(.Char.charindex, 0))
             Else
-                Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageArmaMov(.Char.charindex))
+                Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageArmaMov(.Char.charindex, 0))
             End If
 
             bonificacionPescaLvl(1) = 0
@@ -1994,9 +1994,9 @@ Public Sub DoPescar(ByVal UserIndex As Integer, Optional ByVal RedDePesca As Boo
 
             'HarThaoS: Movimiento de caña, lo saco. Se hace exponencial la cantidad de paquetes dependiendo la cantida de usuarios
             If MapInfo(UserList(UserIndex).Pos.Map).Seguro = 1 Then
-120             Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageArmaMov(.Char.CharIndex))
+120             Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageArmaMov(.Char.charindex, 0))
             Else
-                Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessageArmaMov(.Char.charindex))
+                Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageArmaMov(.Char.charindex, 0))
             End If
 
 122         If res < 6 Then

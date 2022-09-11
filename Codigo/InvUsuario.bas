@@ -310,7 +310,7 @@ Sub LimpiarInventario(ByVal UserIndex As Integer)
 102             UserList(UserIndex).Invent.Object(j).ObjIndex = 0
 104             UserList(UserIndex).Invent.Object(j).amount = 0
 106             UserList(UserIndex).Invent.Object(j).Equipped = 0
-            
+                UserList(UserIndex).Invent.Object(j).LastUseTime = 0
             Next
         End If
 
@@ -1317,7 +1317,7 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
 140                 .Invent.WeaponEqpObjIndex = .Invent.Object(Slot).ObjIndex
 142                 .Invent.WeaponEqpSlot = Slot
             
-144                 If obj.Proyectil = 1 Then 'Si es un arco, desequipa el escudo.
+144                 If obj.Proyectil = 1 And obj.Municion > 0 Then 'Si es un arco, desequipa el escudo.
 
 146                     If .Invent.EscudoEqpObjIndex = 1700 Or _
                            .Invent.EscudoEqpObjIndex = 1730 Or _
@@ -1851,8 +1851,14 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
 100     With UserList(UserIndex)
 
 102         If .Invent.Object(Slot).amount = 0 Then Exit Sub
+            If Not CanUseItem(.flags, .Counters) Then
+                Call WriteLocaleMsg(UserIndex, "395", e_FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
     
 104         obj = ObjData(.Invent.Object(Slot).ObjIndex)
+            Dim TimeSinceLastUse As Long: TimeSinceLastUse = GetTickCount() - .Invent.Object(Slot).LastUseTime
+            If TimeSinceLastUse < obj.Cooldown Then Exit Sub
     
 106         If obj.OBJType = e_OBJType.otWeapon Then
 108             If obj.Proyectil = 1 Then
@@ -3434,14 +3440,16 @@ Function ItemNewbie(ByVal ItemIndex As Integer) As Boolean
         
         On Error GoTo ItemNewbie_Err
         
-
 100     ItemNewbie = ObjData(ItemIndex).Newbie = 1
 
-        
         Exit Function
 
 ItemNewbie_Err:
 102     Call TraceError(Err.Number, Err.Description, "InvUsuario.ItemNewbie", Erl)
+End Function
 
-        
+Public Function IsItemInCooldown(ByRef obj As t_UserOBJ) As Boolean
+    Dim elapsedTime As Long
+    elapsedTime = GetTickCount() - obj.LastUseTime
+    IsItemInCooldown = ElapsedTime < ObjData(obj.objIndex).Cooldown
 End Function

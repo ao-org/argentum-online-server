@@ -247,6 +247,7 @@ Sub RellenarInventario(ByVal UserIndex As String)
             End If
             
             .Invent.Object(NumItems).Equipped = 0
+            .Invent.Object(NumItems).LastUseTime = 0
             Call EquiparInvItem(UserIndex, NumItems)
                         
 232         .Invent.Object(NumItems).amount = 1
@@ -1894,6 +1895,7 @@ Sub VaciarInventario(ByVal UserIndex As Integer)
             .Invent.Object(i).amount = 0
             .Invent.Object(i).Equipped = 0
             .Invent.Object(i).ObjIndex = 0
+            .Invent.Object(i).LastUseTime = 0
         Next i
     End With
 End Sub

@@ -3334,6 +3334,17 @@ WriteParalizeOK_Err:
         '</EhFooter>
 End Sub
 
+Public Sub WriteStunStart(ByVal UserIndex As Integer, duration As Integer)
+    On Error GoTo WriteStunStart_Err
+100     Call Writer.WriteInt16(ServerPacketID.StunStart)
+        Call Writer.WriteInt16(duration)
+102     Call modSendData.SendData(ToIndex, UserIndex)
+    Exit Sub
+WriteStunStart_Err:
+        Call Writer.Clear
+        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteStunStart", Erl)
+End Sub
+
 Public Sub WriteInmovilizaOK(ByVal UserIndex As Integer)
         '<EhHeader>
         On Error GoTo WriteInmovilizaOK_Err
@@ -3721,7 +3732,7 @@ Public Sub WriteDatosGrupo(ByVal UserIndex As Integer)
 
 124                     If i = 1 Then
 126                         Call Writer.WriteString8(UserList(UserList( _
-                                    .Grupo.Lider).Grupo.Miembros(i)).Name & "(Líder)")
+                                    .Grupo.Lider).Grupo.Miembros(i)).name & "(Líder)")
                         Else
 128                         Call Writer.WriteString8(UserList(UserList( _
                                     .Grupo.Lider).Grupo.Miembros(i)).Name)
@@ -4746,18 +4757,38 @@ PrepareMessageNpcUpdateHP_Err:
         '</EhFooter>
 End Function
 
-Public Function PrepareMessageArmaMov(ByVal CharIndex As Integer)
+Public Function PrepareMessageArmaMov(ByVal charindex As Integer, Optional ByVal isRanged As Byte = 0)
         '<EhHeader>
         On Error GoTo PrepareMessageArmaMov_Err
         '</EhHeader>
 100     Call Writer.WriteInt16(ServerPacketID.ArmaMov)
 102     Call Writer.WriteInt16(CharIndex)
+104     Call Writer.WriteInt8(isRanged)
         '<EhFooter>
         Exit Function
 
 PrepareMessageArmaMov_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageArmaMov", Erl)
+        '</EhFooter>
+End Function
+
+Public Function PrepareCreateProjectile(ByVal startX As Byte, ByVal startY As Byte, ByVal targetX As Byte, ByVal targetY As Byte, ByVal ProjectileType As Byte)
+    '<EhHeader>
+        On Error GoTo PrepareCreateProjectile_Err
+        '</EhHeader>
+        Call Writer.WriteInt16(ServerPacketID.CreateProjectile)
+        Call Writer.WriteInt8(startX)
+        Call Writer.WriteInt8(startY)
+        Call Writer.WriteInt8(targetX)
+        Call Writer.WriteInt8(targetY)
+        Call Writer.WriteInt8(ProjectileType)
+        '<EhFooter>
+        Exit Function
+
+PrepareCreateProjectile_Err:
+        Call Writer.Clear
+        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareCreateProjectile", Erl)
         '</EhFooter>
 End Function
 

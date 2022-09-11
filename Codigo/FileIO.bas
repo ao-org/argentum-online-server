@@ -1161,7 +1161,7 @@ Sub LoadOBJData()
 156             .VidaUtil = val(Leer.GetValue(ObjKey, "VidaUtil"))
 158             .TiempoRegenerar = val(Leer.GetValue(ObjKey, "TiempoRegenerar"))
                 .Jerarquia = val(Leer.GetValue(ObjKey, "Jerarquia"))
-
+160             .Cooldown = val(Leer.GetValue(ObjKey, "CD"))
                 Dim i As Integer
 
 162             Select Case .OBJType
@@ -1207,9 +1207,9 @@ Sub LoadOBJData()
 228                     .Caos = val(Leer.GetValue(ObjKey, "Caos"))
 230                     .EfectoMagico = val(Leer.GetValue(ObjKey, "efectomagico"))
 232                     .Revive = val(Leer.GetValue(ObjKey, "Revive")) <> 0
-                    
 234                     .DosManos = val(Leer.GetValue(ObjKey, "DosManos"))
-        
+                        .Porcentaje = val(Leer.GetValue(ObjKey, "Porcentaje"))
+                        
 236                 Case e_OBJType.otInstrumentos
         
                         'Pablo (ToxicWaste)

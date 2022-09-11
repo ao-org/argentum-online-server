@@ -1,4 +1,4 @@
-Attribute VB_Name = "UsUaRiOs"
+Attribute VB_Name = "UserMod"
 '********************* COPYRIGHT NOTICE*********************
 ' Copyright (c) 2021-22 Martin Trionfetti, Pablo Marquez
 ' www.ao20.com.ar
@@ -2949,7 +2949,8 @@ Public Sub LimpiarEstadosAlterados(ByVal UserIndex As Integer)
 132             .Char.FX = 0
 134             Call SendData(SendTarget.ToPCAliveArea, userindex, PrepareMessageMeditateToggle(.Char.charindex, 0, .Pos.X, .Pos.y))
             End If
-        
+            '<<<< Stun >>>>
+            .Counters.StunEndTime = 0
             '<<<< Invisible >>>>
 136         If (.flags.invisible = 1 Or .flags.Oculto = 1) And .flags.AdminInvisible = 0 Then
 138             .flags.Oculto = 0
@@ -3055,3 +3056,18 @@ ActualizarVelocidadDeUsuario_Err:
 
 End Function
 
+Public Function IsStun(ByRef flags As t_UserFlags, ByRef Counters As t_UserCounters) As Boolean
+    IsStun = Counters.StunEndTime > GetTickCount()
+End Function
+
+Public Function CanMove(ByRef flags As t_UserFlags, ByRef Counters As t_UserCounters) As Boolean
+    CanMove = flags.Paralizado = 0 And flags.Inmovilizado = 0 And Not IsStun(flags, Counters)
+End Function
+
+Public Sub StunPlayer(ByRef counter As t_UserCounters)
+    counter.StunEndTime = GetTickCount() + PLAYER_STUN_TIME
+End Sub
+
+Public Function CanUseItem(ByRef flags As t_UserFlags, ByRef Counters As t_UserCounters) As Boolean
+    CanUseItem = Not IsStun(flags, Counters)
+End Function
