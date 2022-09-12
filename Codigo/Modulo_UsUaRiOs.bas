@@ -782,7 +782,7 @@ Sub ActStats(ByVal VictimIndex As Integer, ByVal AttackerIndex As Integer)
         'Call WriteConsoleMsg(VictimIndex, UserList(attackerIndex).name & " te ha matado!", e_FontTypeNames.FONTTYPE_FIGHT)
 116     Call WriteLocaleMsg(VictimIndex, "185", e_FontTypeNames.FONTTYPE_FIGHT, UserList(AttackerIndex).Name)
     
-118     If TriggerZonaPelea(VictimIndex, AttackerIndex) <> TRIGGER6_PERMITE Then
+118     If Not PeleaSegura(VictimIndex, attackerIndex) Then
 120         EraCriminal = Status(AttackerIndex)
         
 122         If EraCriminal = 2 And Status(AttackerIndex) < 2 Then
@@ -2197,7 +2197,7 @@ Sub ContarMuerte(ByVal Muerto As Integer, ByVal Atacante As Integer)
 
 
 100         If EsNewbie(Muerto) Then Exit Sub
-102         If TriggerZonaPelea(Muerto, Atacante) = TRIGGER6_PERMITE Then Exit Sub
+102         If PeleaSegura(Atacante, Muerto) Then Exit Sub
             'Si se llevan más de 10 niveles no le cuento la muerte.
             If CInt(UserList(Atacante).Stats.ELV) - CInt(UserList(Muerto).Stats.ELV) > 10 Then Exit Sub
 106         If Status(Muerto) = 0 Or Status(Muerto) = 2 Then

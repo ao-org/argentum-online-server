@@ -2315,6 +2315,7 @@ Type t_MapInfo
     Salida As t_WorldPos
     NoMascotas As Boolean
     DropItems As Boolean
+    SafeFightMap As Boolean
 
 End Type
 
