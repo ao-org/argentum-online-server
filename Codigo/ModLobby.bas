@@ -38,6 +38,7 @@ Public Enum e_EventType
     Generic = 0
     CaptureTheFlag = 1
     NpcHunt = 2
+    DeathMatch = 3
 End Enum
 
 Public Enum e_LobbyCommandId

@@ -1661,7 +1661,7 @@ Sub UsuarioAtacadoPorUsuario(ByVal AttackerIndex As Integer, ByVal VictimIndex A
 108         Call SendData(SendTarget.toPCAliveArea, VictimIndex, PrepareMessageMeditateToggle(UserList(VictimIndex).Char.charindex, 0))
         End If
     
-110     If TriggerZonaPelea(AttackerIndex, VictimIndex) = TRIGGER6_PERMITE Then Exit Sub
+110     If PeleaSegura(attackerIndex, VictimIndex) Then Exit Sub
     
         Dim EraCriminal As Byte
     
@@ -1773,6 +1773,9 @@ Public Function PuedeAtacar(ByVal AttackerIndex As Integer, ByVal VictimIndex As
 
 146     If T = e_Trigger6.TRIGGER6_PERMITE Then
 148         PuedeAtacar = True
+            Exit Function
+        ElseIf PeleaSegura(attackerIndex, VictimIndex) Then
+            PuedeAtacar = True
             Exit Function
 150     ElseIf T = e_Trigger6.TRIGGER6_PROHIBE Then
 152         PuedeAtacar = False
@@ -2376,6 +2379,14 @@ ErrHandler:
 114     TriggerZonaPelea = TRIGGER6_AUSENTE
 116     LogError ("Error en TriggerZonaPelea - " & Err.Description)
 
+End Function
+
+Public Function PeleaSegura(ByVal source As Integer, ByVal dest As Integer) As Boolean
+    If MapInfo(UserList(source).pos.map).SafeFightMap Then
+        PeleaSegura = True
+    Else
+        PeleaSegura = TriggerZonaPelea(source, dest) = TRIGGER6_PERMITE
+    End If
 End Function
 
 Private Sub UserDañoEspecial(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As Integer, ByVal aType As AttackType)

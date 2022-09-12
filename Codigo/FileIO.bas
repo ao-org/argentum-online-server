@@ -2020,6 +2020,7 @@ Public Sub CargarMapaFormatoCSM(ByVal Map As Long, ByVal MAPFl As String)
 
 380     MapInfo(Map).terrain = MapDat.terrain
 382     MapInfo(Map).zone = MapDat.zone
+383     MapInfo(map).DropItems = True
 
 384     If LenB(MapDat.Salida) <> 0 Then
             Dim Fields() As String

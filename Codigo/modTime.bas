@@ -28,6 +28,12 @@ Private Type t_SYSTEMTIME
 
 End Type
 
+Public Type t_Timer
+    ElapsedTime As Long
+    Interval As Long
+    Occurrences As Integer
+End Type
+
 Public Function GetTickCount() As Long
         On Error GoTo GetTickCount_Err
         GetTickCount = timeGetTime And &H7FFFFFFF
@@ -66,7 +72,6 @@ GetHoraActual_Err:
      Call TraceError(Err.Number, Err.Description, "ModLadder.GetHoraActual", Erl)
 End Sub
 
-
 Public Function SumarTiempo(segundos As Integer) As String
         On Error GoTo SumarTiempo_Err
         Dim a As Variant, b As Variant
@@ -84,4 +89,19 @@ Public Function SumarTiempo(segundos As Integer) As String
         Exit Function
 SumarTiempo_Err:
      Call TraceError(Err.Number, Err.Description, "ModLadder.SumarTiempo", Erl)
+End Function
+
+Public Sub SetTimer(ByRef timer As t_Timer, ByVal Interval As Long)
+    timer.ElapsedTime = 0
+    timer.Interval = Interval
+    timer.Occurrences = 0
+End Sub
+
+Public Function UpdateTime(ByRef timer As t_Timer, ByVal deltaTime As Long) As Boolean
+    timer.ElapsedTime = timer.ElapsedTime + deltaTime
+    UpdateTime = timer.ElapsedTime - timer.Interval > 0
+    timer.ElapsedTime = timer.ElapsedTime Mod timer.Interval
+    If UpdateTime Then
+        timer.Occurrences = timer.Occurrences + 1
+    End If
 End Function

@@ -7,6 +7,11 @@ Public Enum e_DamageSourceType
     e_pet
 End Enum
 
+Public Type e_Rank
+    PlayerIndex As Integer
+    Score As Integer
+End Type
+
 Private CustomScenarioList As New Dictionary
 Private ScenarioUpdateList() As IBaseScenario
 
@@ -123,9 +128,25 @@ On Error GoTo PrepareNewEvent_Err:
     Select Case EventType
         Case e_EventType.NpcHunt
             Set GenericGlobalLobby.scenario = New ScenarioHunt
+        Case e_EventType.DeathMatch
+            Set GenericGlobalLobby.scenario = New ScenarioDeathMatch
     End Select
     Exit Sub
 PrepareNewEvent_Err:
     Call TraceError(Err.Number, Err.Description, "CustomScenarios.PrepareNewEvent", Erl)
 End Sub
 
+Public Sub ClearMap(ByVal mapNumber As Integer)
+    Dim x As Long
+    Dim y As Long
+        
+106 For y = 1 To 99
+108     For x = 1 To 99
+110         If MapData(mapNumber, x, y).ObjInfo.objIndex > 0 Then
+114             If ItemNoEsDeMapa(MapData(mapNumber, x, y).ObjInfo.objIndex) Then
+116                 Call EraseObj(MAX_INVENTORY_OBJS, mapNumber, x, y)
+                End If
+            End If
+118     Next x
+120 Next y
+End Sub

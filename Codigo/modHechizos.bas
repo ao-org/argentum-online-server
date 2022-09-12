@@ -1215,7 +1215,7 @@ Sub HandleHechizoUsuario(ByVal UserIndex As Integer, ByVal uh As Integer)
 
             If Hechizos(uh).Revivir = 1 Then
             
-                If TriggerZonaPelea(UserIndex, UserList(UserIndex).flags.TargetUser) <> TRIGGER6_PERMITE Then
+                If Not PeleaSegura(UserIndex, UserList(UserIndex).flags.TargetUser) Then
                     If MapInfo(UserList(UserIndex).Pos.map).Seguro = 0 Then
                         Dim costoVidaResu As Long
                         costoVidaResu = UserList(UserList(UserIndex).flags.TargetUser).Stats.ELV * 1.5 + UserList(UserIndex).Stats.MinHp * 0.45
@@ -1536,7 +1536,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
                 End If
             End If
             
-            If (TriggerZonaPelea(UserIndex, tU) <> TRIGGER6_PERMITE) Then
+            If Not PeleaSegura(UserIndex, tU) Then
                     Select Case Status(UserIndex)
                         Case 1, 3, 5 'Ciudadano o armada
                             If Status(tU) <> e_Facciones.Ciudadano And Status(tU) <> e_Facciones.Armada And Status(tU) <> e_Facciones.consejo Then
@@ -1795,7 +1795,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
             End If
     
             'Para poder tirar curar veneno a un pk en el ring
-348         If (TriggerZonaPelea(UserIndex, tU) <> TRIGGER6_PERMITE) Then
+348         If Not PeleaSegura(UserIndex, tU) Then
 350             If Status(tU) = 0 And Status(UserIndex) = 1 Or Status(tU) = 2 And Status(UserIndex) = 1 Then
 352                 If esArmada(UserIndex) Then
                         'Call WriteConsoleMsg(UserIndex, "Los Armadas no pueden ayudar a los Criminales", e_FontTypeNames.FONTTYPE_INFO)
@@ -1942,7 +1942,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 
             Else
                 'Para poder tirar curar veneno a un pk en el ring
-468             If (TriggerZonaPelea(UserIndex, tU) <> TRIGGER6_PERMITE) Then
+468             If Not PeleaSegura(UserIndex, tU) Then
 470                 If Status(tU) = 0 And Status(UserIndex) = 1 Or Status(tU) = 2 And Status(UserIndex) = 1 Then
 472                     If esArmada(UserIndex) Then
                             'Call WriteConsoleMsg(UserIndex, "Los Armadas no pueden ayudar a los Criminales", e_FontTypeNames.FONTTYPE_INFO)
@@ -2035,7 +2035,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 534     If Hechizos(h).RemoverParalisis = 1 Then
         
             'Para poder tirar remo a un pk en el ring
-536         If (TriggerZonaPelea(UserIndex, tU) <> TRIGGER6_PERMITE) Then
+536         If Not PeleaSegura(UserIndex, tU) Then
                     Select Case Status(UserIndex)
                         Case 1, 3, 5 'Ciudadano o armada
                             If Status(tU) <> e_Facciones.Ciudadano And Status(tU) <> e_Facciones.Armada And Status(tU) <> e_Facciones.consejo Then
@@ -2115,7 +2115,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 584         If UserList(tU).flags.Estupidez = 1 Then
 
                 'Para poder tirar remo estu a un pk en el ring
-586             If (TriggerZonaPelea(UserIndex, tU) <> TRIGGER6_PERMITE) Then
+586             If Not PeleaSegura(UserIndex, tU) Then
 588                 If Status(tU) = 0 And Status(UserIndex) = 1 Or Status(tU) = 2 And Status(UserIndex) = 1 Then
 590                     If esArmada(UserIndex) Then
                             'Call WriteConsoleMsg(UserIndex, "Los Armadas no pueden ayudar a los Criminales", e_FontTypeNames.FONTTYPE_INFO)
@@ -2202,7 +2202,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
                 End If
 
                 'Para poder tirar revivir a un pk en el ring
-654             If (TriggerZonaPelea(UserIndex, tU) <> TRIGGER6_PERMITE) Then
+654             If Not PeleaSegura(UserIndex, tU) Then
                     
                     If UserList(tU).flags.SeguroResu Then
                         Call WriteConsoleMsg(UserIndex, "El usuario tiene el seguro de resurrección activado.", e_FontTypeNames.FONTTYPE_INFO)
@@ -2997,7 +2997,7 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
                 Exit Sub
             End If
     
-            If (TriggerZonaPelea(UserIndex, tempChr) <> TRIGGER6_PERMITE) Then
+            If Not PeleaSegura(UserIndex, tempChr) Then
                     Select Case Status(UserIndex)
                         Case 1, 3, 5 'Ciudadano o armada
                             If Status(tempChr) <> e_Facciones.Ciudadano And Status(tempChr) <> e_Facciones.Armada And Status(tempChr) <> e_Facciones.consejo Then
@@ -3092,7 +3092,7 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
                 Exit Sub
             End If
     
-        If (TriggerZonaPelea(UserIndex, tempChr) <> TRIGGER6_PERMITE) Then
+        If Not PeleaSegura(UserIndex, tempChr) Then
                 Select Case Status(UserIndex)
                     Case 1, 3, 5 'Ciudadano o armada
                             If Status(tempChr) <> e_Facciones.Ciudadano And Status(tempChr) <> e_Facciones.Armada And Status(tempChr) <> e_Facciones.consejo Then
@@ -3202,10 +3202,7 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
             End If
     
             'Para poder tirar curar a un pk en el ring
-            Dim trigger As e_Trigger6
-346         trigger = TriggerZonaPelea(UserIndex, tempChr)
-
-348         If trigger = TRIGGER6_AUSENTE Then
+348         If Not PeleaSegura(UserIndex, tempChr) Then
 350             If Status(tempChr) = 0 And Status(UserIndex) = 1 Or Status(tempChr) = 2 And Status(UserIndex) = 1 Then
 352                 If esArmada(UserIndex) Then
                         'Call WriteConsoleMsg(UserIndex, "Los Armadas no pueden ayudar a los Criminales", e_FontTypeNames.FONTTYPE_INFO)
@@ -3223,7 +3220,8 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
                     End If
 
                 End If
-                
+            Dim trigger As e_Trigger6
+            trigger = TriggerZonaPelea(UserIndex, tempChr)
             ' Están en zona segura en un ring e intenta curarse desde afuera hacia adentro o viceversa
 364         ElseIf trigger = TRIGGER6_PROHIBE And MapInfo(UserList(UserIndex).Pos.Map).Seguro <> 0 Then
 366             b = False
@@ -3492,7 +3490,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean)
 106     If Hechizos(h).SubeAgilidad = 1 Then
     
             'Para poder tirar cl a un pk en el ring
-108         If (TriggerZonaPelea(UserIndex, tempChr) <> TRIGGER6_PERMITE) Then
+108         If Not PeleaSegura(UserIndex, tempChr) Then
 110             If Status(tempChr) = 0 And Status(UserIndex) = 1 Or Status(tempChr) = 2 And Status(UserIndex) = 1 Then
 112                 If esArmada(UserIndex) Then
                         'Call WriteConsoleMsg(UserIndex, "Los Armadas no pueden ayudar a los Criminales", e_FontTypeNames.FONTTYPE_INFO)
@@ -3562,7 +3560,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean)
 164     If Hechizos(h).SubeFuerza = 1 Then
 
             'Para poder tirar fuerza a un pk en el ring
-166         If (TriggerZonaPelea(UserIndex, tempChr) <> TRIGGER6_PERMITE) Then
+166         If Not PeleaSegura(UserIndex, tempChr) Then
 168             If Status(tempChr) = 0 And Status(UserIndex) = 1 Or Status(tempChr) = 2 And Status(UserIndex) = 1 Then
 170                 If esArmada(UserIndex) Then
                         'Call WriteConsoleMsg(UserIndex, "Los Armadas no pueden ayudar a los Criminales", e_FontTypeNames.FONTTYPE_INFO)
@@ -3636,7 +3634,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean)
             End If
     
             'Para poder tirar curar a un pk en el ring
-230         If (TriggerZonaPelea(UserIndex, tempChr) <> TRIGGER6_PERMITE) Then
+230         If Not PeleaSegura(UserIndex, tempChr) Then
 232             If Status(tempChr) = 0 And Status(UserIndex) = 1 Or Status(tempChr) = 2 And Status(UserIndex) = 1 Then
 234                 If esArmada(UserIndex) Then
                         'Call WriteConsoleMsg(UserIndex, "Los Armadas no pueden ayudar a los Criminales", e_FontTypeNames.FONTTYPE_INFO)
@@ -3792,7 +3790,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean)
 
             End If
     
-           If (TriggerZonaPelea(UserIndex, tU) <> TRIGGER6_PERMITE) Then
+           If Not PeleaSegura(UserIndex, tU) Then
                     Select Case Status(UserIndex)
                         Case 1, 3, 5 'Ciudadano o armada
                             If Status(tU) <> e_Facciones.Ciudadano And Status(tU) <> e_Facciones.Armada And Status(tU) <> e_Facciones.consejo Then
@@ -3961,7 +3959,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean)
             End If
     
             'Para poder tirar curar veneno a un pk en el ring
-488         If (TriggerZonaPelea(UserIndex, tU) <> TRIGGER6_PERMITE) Then
+488         If Not PeleaSegura(UserIndex, tU) Then
 490             If Status(tU) = 0 And Status(UserIndex) = 1 Or Status(tU) = 2 And Status(UserIndex) = 1 Then
 492                 If esArmada(UserIndex) Then
                         'Call WriteConsoleMsg(UserIndex, "Los Armadas no pueden ayudar a los Criminales", e_FontTypeNames.FONTTYPE_INFO)
@@ -4106,7 +4104,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean)
 614     If Hechizos(h).RemoverParalisis = 1 Then
         
             'Para poder tirar remo a un pk en el ring
-616         If (TriggerZonaPelea(UserIndex, tU) <> TRIGGER6_PERMITE) Then
+616         If Not PeleaSegura(UserIndex, tU) Then
 618             If Status(tU) = 0 And Status(UserIndex) = 1 Or Status(tU) = 2 And Status(UserIndex) = 1 Then
 620                 If esArmada(UserIndex) Then
                         'Call WriteConsoleMsg(UserIndex, "Los Armadas no pueden ayudar a los Criminales", e_FontTypeNames.FONTTYPE_INFO)
@@ -4542,7 +4540,7 @@ Private Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, X As Byte, Y 
             End If
                 
 230         If Hechizos(h2).SubeHP = 1 Then
-232             If (TriggerZonaPelea(UserIndex, NpcIndex) <> TRIGGER6_PERMITE) Then
+232             If Not PeleaSegura(UserIndex, npcIndex) Then
 234                 If Status(UserIndex) = 1 And Status(NpcIndex) <> 1 Then
                         Exit Sub
 
