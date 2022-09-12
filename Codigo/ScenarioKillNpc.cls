@@ -16,6 +16,8 @@ Option Explicit
 Const RequiredWeaponId = 1848
 Const MaxActiveNpc = 30
 Const configPath = "../init/Scenarios/Snakes.ini"
+Const RequireItemMessage = 403
+Const MillisecondInSecond = 1000
 
 Implements IBaseScenario
 
@@ -120,7 +122,7 @@ Private Function IBaseScenario_ValidateUser(ByVal userIndex As Integer) As Integ
                 Exit Function
             End If
         Next i
-        IBaseScenario_ValidateUser = 403
+        IBaseScenario_ValidateUser = RequireItemMessage
     End With
 End Function
 
@@ -138,7 +140,7 @@ Private Sub IBaseScenario_UpdateLobbyState(ByVal oldState As e_LobbyState, ByRef
         Exit Sub
     End If
     If newState = InProgress Then
-        Call SetTimer(StartTimer, 1000)
+        Call SetTimer(StartTimer, MillisecondInSecond)
     End If
 End Sub
 

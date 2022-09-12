@@ -106,7 +106,7 @@ CloseScenario_Err:
     Call TraceError(Err.Number, Err.Description, "ScenarioHunt.CloseScenario ", Erl)
 End Sub
 
-Private Function IsForbidden(itemId As Integer) As Boolean
+Private Function IsForbidden(ByVal itemId As Integer) As Boolean
     Dim i As Integer
     If itemId = 0 Then
         IsForbidden = False
