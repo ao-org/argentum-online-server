@@ -13,17 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 Option Explicit
 
-Private Type e_Rank
-    PlayerIndex As Integer
-    Score As Integer
-End Type
-
-Dim TopList() As e_Rank
 Dim PlayersScore As New Dictionary
-
-Public Sub Initiaize(ByVal rankSize As Integer)
-    ReDim TopList(rankSize) As e_Rank
-End Sub
 
 Public Sub AddPlayer(ByVal PlayerIndex As Integer)
     If Not PlayersScore.Exists(PlayerIndex) Then
@@ -34,62 +24,58 @@ End Sub
 Public Function UpdatePlayerScore(ByVal PlayerIndex As Integer, ByVal modifyValue As Integer) As Integer
     UpdatePlayerScore = max(PlayersScore.Item(PlayerIndex) + modifyValue, 0)
     PlayersScore.Item(PlayerIndex) = UpdatePlayerScore
-    Call UpdateRanking(PlayersScore.Item(PlayerIndex), PlayerIndex)
 End Function
 
-Private Sub UpdateRanking(ByVal value As Integer, ByVal PlayerIndex As Integer)
-    Dim insertPos As Integer
-    insertPos = InsertionPos(value)
-    If (insertPos <= UBound(TopList)) Then
-        If TopList(insertPos).PlayerIndex <> PlayerIndex Then
-            Call ShiftElement(insertPos, CurrentScorePos(PlayerIndex))
+Friend Function GetRanking(ByVal size As Integer) As e_Rank()
+    ReDim rank(size) As e_Rank
+    Dim key As Variant
+    Dim pos As Integer
+    Dim value As Integer
+    For Each key In PlayersScore.Keys
+        value = PlayersScore.Item(key)
+        pos = InsertionPos(value, rank)
+        If pos < size Then
+            Call ShiftElement(pos, rank)
+            rank(pos).PlayerIndex = key
+            rank(pos).Score = value
         End If
-        TopList(insertPos).PlayerIndex = PlayerIndex
-        TopList(insertPos).Score = value
-    End If
-End Sub
+    Next key
+    GetRanking = rank
+End Function
 
-Private Function InsertionPos(ByVal Score As Integer) As Integer
-    If TopList(UBound(TopList)).Score >= Score Then
-        InsertionPos = UBound(TopList) + 1
+Private Function InsertionPos(ByVal Score As Integer, ByRef rank() As e_Rank) As Integer
+    If rank(UBound(rank)).Score >= Score Then
+        InsertionPos = UBound(rank) + 1
         Exit Function
     End If
     
     Dim currentPosition As Integer
-    For currentPosition = 0 To UBound(TopList)
-        If TopList(currentPosition).Score < Score Then
+    For currentPosition = 0 To UBound(rank)
+        If rank(currentPosition).Score < Score Then
             Exit For
         End If
     Next currentPosition
     InsertionPos = currentPosition
 End Function
 
-Private Function CurrentScorePos(ByVal PlayerIndex As Integer) As Integer
+Private Sub ShiftElement(ByVal position As Integer, ByRef rank() As e_Rank)
     Dim i As Integer
-    For i = 0 To UBound(TopList) - 1
-        If TopList(i).PlayerIndex = PlayerIndex Then
-            Exit For
-        End If
-    Next i
-    CurrentScorePos = i
-End Function
-
-Private Sub ShiftElement(ByVal position As Integer, ByVal starPos As Integer)
-    Dim i As Integer
-    For i = starPos To position + 1 Step -1
-        TopList(i) = TopList(i - 1)
+    For i = UBound(rank) To position + 1 Step -1
+        rank(i) = rank(i - 1)
     Next i
 End Sub
 
 Public Sub PublishScoreboard(ByVal audience As Integer, ByVal audienceIndex)
     Dim i As Integer
-    For i = 0 To UBound(TopList) - 1
-        If TopList(i).Score <= 0 Then
+    Dim rank() As e_Rank
+    rank = GetRanking(5)
+    For i = 0 To UBound(rank) - 1
+        If rank(i).Score <= 0 Then
             Exit Sub
         End If
         If i = 0 Then
             Call SendData(audience, audienceIndex, PrepareMessageConsoleMsg("Posiciones:", e_FontTypeNames.FONTTYPE_GUILD))
         End If
-        Call SendData(audience, audienceIndex, PrepareMessageConsoleMsg((i + 1) & ") " & UserList(TopList(i).PlayerIndex).name & ": " & TopList(i).Score, e_FontTypeNames.FONTTYPE_GUILD))
+        Call SendData(audience, audienceIndex, PrepareMessageConsoleMsg((i + 1) & ") " & UserList(rank(i).PlayerIndex).name & ": " & rank(i).Score, e_FontTypeNames.FONTTYPE_GUILD))
     Next i
 End Sub

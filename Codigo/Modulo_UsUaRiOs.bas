@@ -2017,7 +2017,7 @@ Sub UserDie(ByVal UserIndex As Integer)
 154         .flags.AtacadoPorNpc = 0
 156         .flags.NPCAtacado = 0
     
-158         If MapData(.Pos.Map, .Pos.X, .Pos.Y).trigger <> e_Trigger.ZONAPELEA Then
+158         If MapData(.Pos.map, .Pos.X, .Pos.y).trigger <> e_Trigger.ZONAPELEA And MapInfo(.Pos.map).DropItems Then
 
 160             If (.flags.Privilegios And e_PlayerType.user) <> 0 Then
 

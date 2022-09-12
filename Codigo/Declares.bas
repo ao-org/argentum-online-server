@@ -2314,6 +2314,7 @@ Type t_MapInfo
     MaxLevel As Integer
     Salida As t_WorldPos
     NoMascotas As Boolean
+    DropItems As Boolean
 
 End Type
 

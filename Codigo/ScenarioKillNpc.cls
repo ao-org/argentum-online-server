@@ -40,6 +40,9 @@ Attribute BroadCastInterval.VB_VarHelpID = -1
 Dim LastBroadCastTime As Long
 Dim FrameTime As Long
 Dim board As New ScoreBoard
+Dim StartTimer As t_Timer
+Dim PrevMapState As Integer
+Dim MapDropItems As Boolean
 
 
 Friend Sub RegisterNpc(ByVal Tag, ByVal sectionSize, ByRef registry As Dictionary, ByRef File As clsIniManager)
@@ -56,6 +59,13 @@ Friend Sub RegisterNpc(ByVal Tag, ByVal sectionSize, ByRef registry As Dictionar
     Next i
 End Sub
 
+Private Sub ConfigMapLobby()
+    PrevMapState = MapInfo(MapNumber).Seguro
+    MapDropItems = MapInfo(MapNumber).DropItems
+    MapInfo(MapNumber).Seguro = 1
+    MapInfo(MapNumber).DropItems = False
+End Sub
+
 Private Sub Class_Initialize()
 On Error GoTo Hunt_Initialize_Err:
         Dim validNpcCount As Integer
@@ -67,12 +77,13 @@ On Error GoTo Hunt_Initialize_Err:
 108     validNpcCount = val(ScenearioIni.GetValue("INIT", "TargetNpc"))
 112     mapNumber = val(ScenearioIni.GetValue("INIT", "MapNumber"))
 114     MaxTime = val(ScenearioIni.GetValue("INIT", "MaxTime"))
+        MaxTime = MaxTime * 1000
 116     TargetScore = val(ScenearioIni.GetValue("INIT", "TargetScore"))
 118     Call RegisterNpc("TARGET", validNpcCount, MatchNpc, ScenearioIni)
 120     UpdateIndex = AddUpdateScenario(Me)
 122     Call CustomScenarios.SetCustomScenario(mapNumber, Me)
 124     LastBroadCastTime = 0
-        Call board.Initiaize(5)
+        Call ConfigMapLobby
         Exit Sub
 Hunt_Initialize_Err:
     Call TraceError(Err.Number, Err.Description, "ScenarioHunt.Initialize ", Erl)
@@ -85,10 +96,8 @@ On Error GoTo CloseScenario_Err:
 104    Call ModLobby.UpdateLobbyState(GenericGlobalLobby, e_LobbyState.UnInitilized)
 106    CustomScenarios.RemoveCustomScenario (mapNumber)
 108    CustomScenarios.RemoveUpdateScenario (UpdateIndex)
-110    Dim key As Variant
-112    For Each key In SpawnedCreaturesId.Keys
-114        Call QuitarNPC(key)
-116    Next key
+110    MapInfo(MapNumber).Seguro = PrevMapState
+112    MapInfo(MapNumber).DropItems = MapDropItems
     Exit Sub
 CloseScenario_Err:
     Call TraceError(Err.Number, Err.Description, "ScenarioHunt.CloseScenario ", Erl)
@@ -111,7 +120,7 @@ Private Function IBaseScenario_ValidateUser(ByVal userIndex As Integer) As Integ
                 Exit Function
             End If
         Next i
-        IBaseScenario_ValidateUser = 403 'TODO create valid message here
+        IBaseScenario_ValidateUser = 403
     End With
 End Function
 
@@ -129,7 +138,7 @@ Private Sub IBaseScenario_UpdateLobbyState(ByVal oldState As e_LobbyState, ByRef
         Exit Sub
     End If
     If newState = InProgress Then
-        Call StartGame
+        Call SetTimer(StartTimer, 1000)
     End If
 End Sub
 
@@ -157,8 +166,8 @@ Private Sub IBaseScenario_PlayerKillNpc(ByVal npcIndex As Integer, ByVal userInd
             If board.UpdatePlayerScore(UserIndex, MatchNpc.Item(npcType).Score) >= TargetScore Then
                 GenericGlobalLobby.State = Completed
                 Call SendData(SendTarget.toMap, mapNumber, PrepareMessageConsoleMsg("Tenemos un ganador!", e_FontTypeNames.FONTTYPE_GUILD))
-                ElapsedTime = MaxTime
-                Call board.PublishScoreboard(SendTarget.toMap, MapNumber)
+                Call MatchComplete
+                Exit Sub
             End If
         End If
     Else
@@ -178,28 +187,47 @@ End Sub
 
 Private Sub IBaseScenario_Update()
     Dim frameTime As Long
+    frametime = GetTickCount() - LastFrameTime
+    LastFrameTime = GetTickCount()
     If GenericGlobalLobby.State = e_LobbyState.InProgress Then
-        FrameTime = GetTickCount() - LastFrameTime
+        If StartTimer.Occurrences < 10 Then
+            If UpdateTime(StartTimer, frametime) Then
+                If StartTimer.Occurrences >= 10 Then
+                    Call StartGame
+                Else
+                    Call SendData(SendTarget.toMap, MapNumber, PrepareMessageConsoleMsg("La caceria iniciara en " & 10 - StartTimer.Occurrences, e_FontTypeNames.FONTTYPE_GUILD))
+                End If
+            End If
+            Exit Sub
+        End If
         ElapsedTime = ElapsedTime + FrameTime
-        LastFrameTime = GetTickCount()
         If ElapsedTime - LastScoreUpdate > 30000 Then
             LastScoreUpdate = ElapsedTime
             Call board.PublishScoreboard(SendTarget.toMap, MapNumber)
         End If
         If ElapsedTime > MaxTime Then
-            GenericGlobalLobby.State = Completed
             Call SendData(SendTarget.toMap, mapNumber, PrepareMessageConsoleMsg("Se acabo el tiempo!", e_FontTypeNames.FONTTYPE_GUILD))
-            Call board.PublishScoreboard(SendTarget.toMap, MapNumber)
+            Call MatchComplete
         End If
         Call BroadCastTimeUpdate
     ElseIf GenericGlobalLobby.State = e_LobbyState.Completed Then
-        ElapsedTime = ElapsedTime + GetTickCount() - LastFrameTime
-        LastFrameTime = GetTickCount()
+        ElapsedTime = ElapsedTime + frametime
         If ElapsedTime - LastScoreUpdate > 1000 Then
             LastScoreUpdate = ElapsedTime
             Call CloseCountDown
         End If
     End If
+End Sub
+
+Private Sub MatchComplete()
+    GenericGlobalLobby.State = Completed
+    Call ClearMap(MapNumber)
+    Call Board.PublishScoreboard(SendTarget.toMap, MapNumber)
+    ElapsedTime = MaxTime
+    Dim key As Variant
+    For Each key In SpawnedCreaturesId.Keys
+        Call QuitarNPC(key)
+    Next key
 End Sub
 
 Private Sub SpawnNpc(ByVal npcType As Integer)
