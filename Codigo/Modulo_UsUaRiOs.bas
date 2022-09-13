@@ -743,6 +743,7 @@ Public Function ConnectUser_Complete(ByVal UserIndex As Integer, _
 1225        Call WriteContadores(UserIndex)
 1227        Call WritePrivilegios(UserIndex)
             
+            Call CustomScenarios.UserConnected(userIndex)
          End With
 
          Exit Function

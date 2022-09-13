@@ -226,6 +226,14 @@ Private Sub IBaseScenario_Update()
     End If
 End Sub
 
+Public Sub IBaseScenario_OnUserDisconnected(ByVal userIndex As Integer)
+    Call Board.DisconnectUser(userIndex, UserList(userIndex).ID)
+End Sub
+
+Public Sub IBaseScenario_OnUserReconnect(ByVal userIndex As Integer)
+    Call Board.RestoreDisconnectUser(userIndex, UserList(userIndex).ID)
+End Sub
+
 Private Sub MatchComplete()
     GenericGlobalLobby.State = Completed
     Call ClearMap(MapNumber)
@@ -279,5 +287,5 @@ Private Sub BroadCastTimeUpdate()
     If pendingTime <= 1 Then
         BroadCastInterval = 1000
     End If
-    
 End Sub
+

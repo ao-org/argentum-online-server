@@ -4,6 +4,9 @@ Type PlayerInLobby
     SummonedFrom As t_WorldPos
     IsSummoned As Boolean
     UserId As Integer
+    Connected As Boolean
+    dbId As Integer
+    ReturnOnReconnect As Boolean
 End Type
 
 Public Enum e_LobbyState
@@ -134,6 +137,9 @@ On Error GoTo AddPlayer_Err
         Dim playerPos As Integer: playerPos = instance.RegisteredPlayers
         instance.Players(playerPos).UserId = UserIndex
         instance.Players(playerPos).IsSummoned = False
+        instance.Players(playerPos).Connected = True
+        instance.Players(playerPos).dbId = .ID
+        instance.Players(playerPos).ReturnOnReconnect = False
         instance.RegisteredPlayers = instance.RegisteredPlayers + 1
         AddPlayer.Message = 399
         AddPlayer.Success = True
@@ -153,7 +159,7 @@ Public Sub SummonPlayer(ByRef instance As t_Lobby, ByVal user As Integer)
         Dim UserIndex As Integer
         With instance.Players(user)
             UserIndex = .UserId
-            If Not .IsSummoned Then
+            If Not .IsSummoned And .SummonedFrom.map = 0 Then
                 .SummonedFrom = UserList(UserIndex).Pos
             End If
             If Not instance.Scenario Is Nothing Then
@@ -191,13 +197,13 @@ On Error GoTo ReturnPlayer_Err
     End With
     Exit Sub
 ReturnPlayer_Err:
-102     Call TraceError(Err.Number, Err.Description, "ModLobby.ReturnPlayer", Erl)
+102     Call TraceError(Err.Number, Err.Description, "ModLobby.ReturnPlayer return user:" & User, Erl)
 End Sub
 
 Public Sub ReturnAllPlayers(ByRef instance As t_Lobby)
 On Error GoTo ReturnAllPlayer_Err
     Dim i As Integer
-    For i = 0 To instance.RegisteredPlayers
+    For i = 0 To instance.RegisteredPlayers - 1
         Call ReturnPlayer(instance, i)
     Next i
     Exit Sub
@@ -227,21 +233,71 @@ ListPlayers_Err:
 End Sub
 
 Public Function OpenLobby(ByRef instance As t_Lobby) As t_response
-On Error GoTo StartLobby_Err
-        Dim RequiresSpawn As Boolean
-        If Not instance.scenario Is Nothing Then
-            RequiresSpawn = instance.scenario.RequiresSpawn
-        End If
-        RequiresSpawn = RequiresSpawn Or instance.SummonCoordinates.map > 0
-        If RequiresSpawn Then
-            StartLobby.Success = False
-            StartLobby.Message = 400
-            Exit Function
-        End If
-        Call UpdateLobbyState(instance, AcceptingPlayers)
-        StartLobby.Message = 401
-        StartLobby.Success = True
-    Exit Function
-StartLobby_Err:
-102     Call TraceError(Err.Number, Err.Description, "ModLobby.StartLobby", Erl)
+On Error GoTo OpenLobby_Err
+       Dim RequiresSpawn As Boolean
+100        If Not instance.Scenario Is Nothing Then
+102            RequiresSpawn = instance.Scenario.RequiresSpawn
+104        End If
+106        RequiresSpawn = RequiresSpawn Or instance.SummonCoordinates.map > 0
+108        If RequiresSpawn Then
+110            StartLobby.Success = False
+112            StartLobby.Message = 400
+114            Exit Function
+116        End If
+118        Call UpdateLobbyState(instance, AcceptingPlayers)
+120        StartLobby.Message = 401
+124        StartLobby.Success = True
+126    Exit Function
+OpenLobby_Err:
+128     Call TraceError(Err.Number, Err.Description, "ModLobby.OpenLobby", Erl)
 End Function
+
+Public Sub RegisterDisconnectedUser(ByRef instance As t_Lobby, ByVal userIndex As Integer)
+On Error GoTo RegisterDisconnectedUser_Err
+    If instance.State = UnInitilized Then
+        Exit Sub
+    End If
+    Dim i As Integer
+    For i = 0 To UBound(instance.Players)
+        If instance.Players(i).userID = userIndex Then
+            instance.Players(i).Connected = False
+            If instance.Players(i).IsSummoned Then
+                instance.Players(i).ReturnOnReconnect = True
+                Call ReturnPlayer(instance, i)
+            End If
+            If Not instance.Scenario Is Nothing Then
+                instance.Scenario.OnUserDisconnected (userIndex)
+            End If
+            Exit Sub
+        End If
+    Next i
+    Exit Sub
+RegisterDisconnectedUser_Err:
+102     Call TraceError(Err.Number, Err.Description, "ModLobby.RegisterDisconnectedUser", Erl)
+End Sub
+
+Public Sub RegisterReconnectedUser(ByRef instance As t_Lobby, ByVal userIndex As Integer)
+On Error GoTo RegisterReconnectedUser_Err
+    If instance.State = UnInitilized Then
+        Exit Sub
+    End If
+    Dim i As Integer
+    Dim userID As Integer
+    userID = UserList(userIndex).ID
+    For i = 0 To UBound(instance.Players)
+        If instance.Players(i).dbId = userID Then
+            instance.Players(i).Connected = True
+            instance.Players(i).userID = userIndex
+            If instance.Players(i).ReturnOnReconnect Then
+                Call SummonPlayer(instance, i)
+            End If
+            If Not instance.Scenario Is Nothing Then
+                instance.Scenario.OnUserReconnect (userIndex)
+            End If
+            Exit Sub
+        End If
+    Next i
+    Exit Sub
+RegisterReconnectedUser_Err:
+102     Call TraceError(Err.Number, Err.Description, "ModLobby.RegisterReconnectedUser", Erl)
+End Sub

@@ -158,3 +158,11 @@ Public Function IsEventActive() As Boolean
         IsEventActive = GenericGlobalLobby.State > e_LobbyState.UnInitilized
     End If
 End Function
+
+Public Sub UserDisconnected(ByVal mapNumber As Integer, ByVal userIndex As Integer)
+    Call RegisterDisconnectedUser(GenericGlobalLobby, userIndex)
+End Sub
+
+Public Sub UserConnected(ByVal userIndex)
+    Call RegisterReconnectedUser(GenericGlobalLobby, userIndex)
+End Sub

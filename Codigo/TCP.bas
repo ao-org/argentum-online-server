@@ -1697,7 +1697,7 @@ Sub CloseUser(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
             
 102         map = .Pos.map
-        
+            Call USerDisconnected(map, userIndex)
 104         If Not .flags.YaGuardo Then
 106             Call ClearAndSaveUser(UserIndex)
             End If

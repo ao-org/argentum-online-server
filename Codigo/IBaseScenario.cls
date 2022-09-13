@@ -49,6 +49,14 @@ Public Sub Update()
     'empty interface
 End Sub
 
+Public Sub OnUserDisconnected(ByVal userIndex As Integer)
+    
+End Sub
+
+Public Sub OnUserReconnect(ByVal userIndex As Integer)
+
+End Sub
+
 
 
 

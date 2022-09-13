@@ -14,6 +14,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Dim PlayersScore As New Dictionary
+Dim DisconnectedUser As New Dictionary
 
 Public Sub AddPlayer(ByVal PlayerIndex As Integer)
     If Not PlayersScore.Exists(PlayerIndex) Then
@@ -78,4 +79,24 @@ Public Sub PublishScoreboard(ByVal audience As Integer, ByVal audienceIndex)
         End If
         Call SendData(audience, audienceIndex, PrepareMessageConsoleMsg((i + 1) & ") " & UserList(rank(i).PlayerIndex).name & ": " & rank(i).Score, e_FontTypeNames.FONTTYPE_GUILD))
     Next i
+End Sub
+
+Public Sub DisconnectUser(ByVal userIndex As Integer, ByVal userID As Integer)
+    If Not PlayersScore.Exists(userIndex) Then
+        Exit Sub
+    End If
+    Call DisconnectedUser.Add(userID, PlayersScore.Item(userIndex))
+    PlayersScore.Remove (userIndex)
+End Sub
+
+Public Sub RestoreDisconnectUser(ByVal userIndex As Integer, ByVal userID As Integer)
+    If Not DisconnectedUser.Exists(userID) Then
+        Exit Sub
+    End If
+    If PlayersScore.Exists(userIndex) Then
+        PlayersScore.Item(userIndex) = DisconnectedUser.Item(userID)
+    Else
+        Call PlayersScore.Add(userIndex, DisconnectedUser.Item(userID))
+    End If
+    DisconnectedUser.Remove (userID)
 End Sub
