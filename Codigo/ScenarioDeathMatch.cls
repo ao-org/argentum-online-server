@@ -156,6 +156,9 @@ Public Sub IBaseScenario_UpdateLobbyState(ByVal oldState As e_LobbyState, ByRef 
     If newState = InProgress Then
         Call SetTimer(CountdownTimer, 1000)
     End If
+    If newState = Closed Then
+        Call MatchCompleted
+    End If
 End Sub
 
 Public Sub IBaseScenario_PlayerKillNpc(ByVal npcIndex As Integer, ByVal UserIndex As Integer, ByVal sourceType As e_DamageSourceType, ByVal sourceIndex As Integer)
@@ -213,6 +216,8 @@ Public Sub IBaseScenario_Update()
             End If
             Exit Sub
         End If
+    ElseIf GenericGlobalLobby.State = e_LobbyState.Closed Then
+        Call CloseScenario
     End If
 End Sub
 

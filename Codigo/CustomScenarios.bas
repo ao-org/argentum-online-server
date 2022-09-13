@@ -150,3 +150,11 @@ Public Sub ClearMap(ByVal mapNumber As Integer)
 118     Next x
 120 Next y
 End Sub
+
+Public Function IsEventActive() As Boolean
+    If CurrentActiveEventType = CaptureTheFlag Then
+        IsEventActive = Not InstanciaCaptura Is Nothing
+    Else
+        IsEventActive = GenericGlobalLobby.State > e_LobbyState.UnInitilized
+    End If
+End Function

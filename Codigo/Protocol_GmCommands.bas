@@ -5122,6 +5122,10 @@ On Error GoTo ErrHandler
     MinLevel = Reader.ReadInt8()
     MaxLevel = Reader.ReadInt8()
     
+    If IsEventActive Then
+        Call WriteConsoleMsg(UserIndex, "Ya hay un evento activo, debes cancelarlo primero.", e_FontTypeNames.FONTTYPE_INFO)
+        Exit Sub
+    End If
     With UserList(UserIndex)
         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios)) = 0 Then
             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
