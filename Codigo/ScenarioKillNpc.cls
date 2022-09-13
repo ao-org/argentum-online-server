@@ -142,6 +142,9 @@ Private Sub IBaseScenario_UpdateLobbyState(ByVal oldState As e_LobbyState, ByRef
     If newState = InProgress Then
         Call SetTimer(StartTimer, MillisecondInSecond)
     End If
+    If newState = Closed Then
+        Call MatchComplete
+    End If
 End Sub
 
 Private Sub StartGame()
@@ -218,6 +221,8 @@ Private Sub IBaseScenario_Update()
             LastScoreUpdate = ElapsedTime
             Call CloseCountDown
         End If
+    ElseIf GenericGlobalLobby.State = e_LobbyState.Closed Then
+        Call CloseScenario
     End If
 End Sub
 
