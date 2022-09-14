@@ -1181,6 +1181,7 @@ Sub LoadOBJData()
 182                     .Real = val(Leer.GetValue(ObjKey, "Real"))
 184                     .Caos = val(Leer.GetValue(ObjKey, "Caos"))
 186                     .ResistenciaMagica = val(Leer.GetValue(ObjKey, "ResistenciaMagica"))
+                        .Porcentaje = val(Leer.GetValue(ObjKey, "Porcentaje"))
         
 188                 Case e_OBJType.otCasco
 190                     .CascoAnim = val(Leer.GetValue(ObjKey, "Anim"))

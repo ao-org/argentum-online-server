@@ -236,15 +236,18 @@ End Function
 Private Function PoderEvasionEscudo(ByVal UserIndex As Integer) As Long
         
         On Error GoTo PoderEvasionEscudo_Err
+        With UserList(userIndex)
         
+            Dim itemModifier As Single
+100         itemModifier = CSng(ObjData(.Invent.EscudoEqpObjIndex).Porcentaje) / 100
 
-100     PoderEvasionEscudo = (UserList(UserIndex).Stats.UserSkills(e_Skill.Defensa) * ModEvasionDeEscudoClase(UserList(UserIndex).clase)) / 2
-
+102         PoderEvasionEscudo = ((UserList(userIndex).Stats.UserSkills(e_Skill.Defensa) * ModEvasionDeEscudoClase(UserList(userIndex).clase)) / 2) * itemModifier
+        End With
         
         Exit Function
 
 PoderEvasionEscudo_Err:
-102     Call TraceError(Err.Number, Err.Description, "SistemaCombate.PoderEvasionEscudo", Erl)
+104     Call TraceError(Err.Number, Err.Description, "SistemaCombate.PoderEvasionEscudo", Erl)
 
         
 End Function
@@ -458,7 +461,7 @@ Private Function NpcImpacto(ByVal NpcIndex As Integer, ByVal UserIndex As Intege
 114     NpcImpacto = (RandomNumber(1, 100) <= ProbExito)
 
         ' el usuario esta usando un escudo ???
-116     If UserList(UserIndex).Invent.EscudoEqpObjIndex > 0 Then
+116     If UserList(userIndex).Invent.EscudoEqpObjIndex > 0 And ObjData(UserList(userIndex).Invent.EscudoEqpObjIndex).Porcentaje > 0 Then
 118         If Not NpcImpacto Then
 120             If SkillDefensa + SkillTacticas > 0 Then  'Evitamos división por cero
 122                 ProbRechazo = Maximo(10, Minimo(90, 100 * (SkillDefensa / (SkillDefensa + SkillTacticas))))
@@ -1266,7 +1269,7 @@ Private Function UsuarioImpacto(ByVal AtacanteIndex As Integer, ByVal VictimaInd
         'Calculamos el poder de evasion...
 126     UserPoderEvasion = PoderEvasion(VictimaIndex)
 
-128     If UserList(VictimaIndex).Invent.EscudoEqpObjIndex > 0 Then
+128     If UserList(VictimaIndex).Invent.EscudoEqpObjIndex > 0 And ObjData(UserList(VictimaIndex).Invent.EscudoEqpObjIndex).Porcentaje > 0 Then
 130         UserPoderEvasion = UserPoderEvasion + PoderEvasionEscudo(VictimaIndex)
 132         If SkillDefensa > 0 Then
 134             ProbRechazo = Maximo(10, Minimo(90, 100 * (SkillDefensa / (Maximo(SkillDefensa + SkillTacticas, 1)))))
