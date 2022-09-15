@@ -461,30 +461,31 @@ Private Function NpcImpacto(ByVal NpcIndex As Integer, ByVal UserIndex As Intege
 114     NpcImpacto = (RandomNumber(1, 100) <= ProbExito)
 
         ' el usuario esta usando un escudo ???
-116     If UserList(userIndex).Invent.EscudoEqpObjIndex > 0 And ObjData(UserList(userIndex).Invent.EscudoEqpObjIndex).Porcentaje > 0 Then
-118         If Not NpcImpacto Then
-120             If SkillDefensa + SkillTacticas > 0 Then  'Evitamos división por cero
-122                 ProbRechazo = Maximo(10, Minimo(90, 100 * (SkillDefensa / (SkillDefensa + SkillTacticas))))
-124                 Rechazo = (RandomNumber(1, 100) <= ProbRechazo)
-
-126                 If Rechazo = True Then
-                        'Se rechazo el ataque con el escudo
-128                     Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessagePlayWave(SND_ESCUDO, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.y))
-
-130                     If UserList(UserIndex).ChatCombate = 1 Then
-132                         Call Write_BlockedWithShieldUser(UserIndex)
-
+116     If UserList(userIndex).Invent.EscudoEqpObjIndex > 0 Then
+            If ObjData(UserList(userIndex).Invent.EscudoEqpObjIndex).Porcentaje > 0 Then
+118             If Not NpcImpacto Then
+120                 If SkillDefensa + SkillTacticas > 0 Then  'Evitamos división por cero
+122                     ProbRechazo = Maximo(10, Minimo(90, 100 * (SkillDefensa / (SkillDefensa + SkillTacticas))))
+124                     Rechazo = (RandomNumber(1, 100) <= ProbRechazo)
+    
+126                     If Rechazo = True Then
+                            'Se rechazo el ataque con el escudo
+128                         Call SendData(SendTarget.ToPCAliveArea, userIndex, PrepareMessagePlayWave(SND_ESCUDO, UserList(userIndex).pos.x, UserList(userIndex).pos.y))
+    
+130                         If UserList(userIndex).ChatCombate = 1 Then
+132                             Call Write_BlockedWithShieldUser(userIndex)
+    
+                            End If
+    
+                            'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(UserList(UserIndex).Char.CharIndex, 88, 0))
                         End If
-
-                        'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(UserList(UserIndex).Char.CharIndex, 88, 0))
+    
                     End If
-
+    
                 End If
-
+                
+134             Call SubirSkill(userIndex, Defensa)
             End If
-            
-134         Call SubirSkill(UserIndex, Defensa)
-
         End If
 
         
@@ -1269,13 +1270,17 @@ Private Function UsuarioImpacto(ByVal AtacanteIndex As Integer, ByVal VictimaInd
         'Calculamos el poder de evasion...
 126     UserPoderEvasion = PoderEvasion(VictimaIndex)
 
-128     If UserList(VictimaIndex).Invent.EscudoEqpObjIndex > 0 And ObjData(UserList(VictimaIndex).Invent.EscudoEqpObjIndex).Porcentaje > 0 Then
+128     If UserList(VictimaIndex).Invent.EscudoEqpObjIndex > 0 Then
+          If ObjData(UserList(VictimaIndex).Invent.EscudoEqpObjIndex).Porcentaje > 0 Then
 130         UserPoderEvasion = UserPoderEvasion + PoderEvasionEscudo(VictimaIndex)
 132         If SkillDefensa > 0 Then
 134             ProbRechazo = Maximo(10, Minimo(90, 100 * (SkillDefensa / (Maximo(SkillDefensa + SkillTacticas, 1)))))
             Else
 136             ProbRechazo = 10
             End If
+         Else
+            ProbRechazo = 0
+         End If
         Else
 138         ProbRechazo = 0
         End If

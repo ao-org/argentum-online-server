@@ -1824,14 +1824,14 @@ Public Sub KillRandomNpc()
     Call MuereNpc(NpcIndex, 0)
 End Sub
 
-Public Function CanMove(counter As t_NpcCounters, flags As t_NPCFlags) As Boolean
+Public Function CanMove(ByRef counter As t_NpcCounters, ByRef flags As t_NPCFlags) As Boolean
     CanMove = flags.Inmovilizado + flags.Paralizado = 0 And counter.StunEndTime < GetTickCount()
 End Function
 
-Public Function CanAttack(counter As t_NpcCounters, flags As t_NPCFlags) As Boolean
-    CanAttack = flags.Inmovilizado + flags.Paralizado = 0 And counter.StunEndTime < GetTickCount()
+Public Function CanAttack(ByRef counter As t_NpcCounters, ByRef flags As t_NPCFlags) As Boolean
+    CanAttack = flags.Paralizado = 0 And counter.StunEndTime < GetTickCount()
 End Function
 
-Public Function StunNPc(ByRef Counters As t_NpcCounters)
+Public Sub StunNPc(ByRef Counters As t_NpcCounters)
     Counters.StunEndTime = GetTickCount() + NPC_STUN_TIME
-End Function
+End Sub
