@@ -1829,7 +1829,7 @@ Public Function CanMove(counter As t_NpcCounters, flags As t_NPCFlags) As Boolea
 End Function
 
 Public Function CanAttack(counter As t_NpcCounters, flags As t_NPCFlags) As Boolean
-    CanAttack = flags.Inmovilizado + flags.Paralizado = 0 And counter.StunEndTime < GetTickCount()
+    CanAttack = flags.Paralizado = 0 And counter.StunEndTime < GetTickCount()
 End Function
 
 Public Function StunNPc(ByRef Counters As t_NpcCounters)
