@@ -106,6 +106,18 @@ CloseScenario_Err:
     Call TraceError(Err.Number, Err.Description, "ScenarioHunt.CloseScenario ", Erl)
 End Sub
 
+Private Sub ClearMap()
+On Error GoTo ClearMap_Err:
+106    CustomScenarios.RemoveCustomScenario (MapNumber)
+108    CustomScenarios.RemoveUpdateScenario (UpdateIndex)
+110    MapInfo(MapNumber).DropItems = MapDropItems
+112    MapInfo(MapNumber).Seguro = PrevMapState
+114    MapInfo(MapNumber).SafeFightMap = SafeFigthState
+    Exit Sub
+ClearMap_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioHunt.ClearMap", Erl)
+End Sub
+
 Private Function IsForbidden(ByVal itemId As Integer) As Boolean
     Dim i As Integer
     If itemId = 0 Then
@@ -273,7 +285,7 @@ Private Sub MatchCompleted()
     GenericGlobalLobby.State = Completed
     ElapsedTime = MaxTime
     Call Board.PublishScoreboard(SendTarget.toMap, MapNumber)
-    Call ClearMap(MapNumber)
+    Call CustomScenarios.ClearMap(MapNumber)
 End Sub
 
 Private Sub BroadcastPendingTime(ByVal frametime As Long)

@@ -137,6 +137,7 @@ PrepareNewEvent_Err:
 End Sub
 
 Public Sub ClearMap(ByVal mapNumber As Integer)
+On Error GoTo ClearMap_Err:
     Dim x As Long
     Dim y As Long
         
@@ -149,13 +150,17 @@ Public Sub ClearMap(ByVal mapNumber As Integer)
             End If
 118     Next x
 120 Next y
+    Exit Sub
+ClearMap_Err:
+    Call TraceError(Err.Number, Err.Description, "CustomScenarios.ClearMap", Erl)
+    Resume Next
 End Sub
 
 Public Function IsEventActive() As Boolean
     If CurrentActiveEventType = CaptureTheFlag Then
         IsEventActive = Not InstanciaCaptura Is Nothing
     Else
-        IsEventActive = GenericGlobalLobby.State > e_LobbyState.UnInitilized
+        IsEventActive = GenericGlobalLobby.State > e_LobbyState.UnInitilized And GenericGlobalLobby.State < Completed
     End If
 End Function
 

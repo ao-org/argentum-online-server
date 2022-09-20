@@ -5013,6 +5013,12 @@ On Error GoTo HandleLobbyCommand_err
                     Call ModLobby.ListPlayers(GenericGlobalLobby, UserIndex)
                     Exit Sub
                 End If
+            Case e_LobbyCommandId.eForceReset
+                If hasPermission Then
+                    Call ModLobby.ForceReset(GenericGlobalLobby)
+                    Call WriteConsoleMsg(userIndex, "Reset done.", e_FontTypeNames.FONTTYPE_INFO)
+                    Exit Sub
+                End If
             Case Else
                 Exit Sub
         End Select

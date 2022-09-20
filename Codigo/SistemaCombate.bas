@@ -237,7 +237,10 @@ Private Function PoderEvasionEscudo(ByVal UserIndex As Integer) As Long
         
         On Error GoTo PoderEvasionEscudo_Err
         With UserList(userIndex)
-        
+            If .Invent.EscudoEqpObjIndex <= 0 Then
+                PoderEvasionEscudo = 0
+                Exit Function
+            End If
             Dim itemModifier As Single
 100         itemModifier = CSng(ObjData(.Invent.EscudoEqpObjIndex).Porcentaje) / 100
 

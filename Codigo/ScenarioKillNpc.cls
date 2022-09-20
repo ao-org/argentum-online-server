@@ -96,17 +96,25 @@ On Error GoTo CloseScenario_Err:
 100    Call ModLobby.ReturnAllPlayers(GenericGlobalLobby)
 102    Set GenericGlobalLobby.scenario = Nothing
 104    Call ModLobby.UpdateLobbyState(GenericGlobalLobby, e_LobbyState.UnInitilized)
-106    CustomScenarios.RemoveCustomScenario (mapNumber)
-108    CustomScenarios.RemoveUpdateScenario (UpdateIndex)
-110    MapInfo(MapNumber).Seguro = PrevMapState
-112    MapInfo(MapNumber).DropItems = MapDropItems
+106    Call ClearMap
     Exit Sub
 CloseScenario_Err:
     Call TraceError(Err.Number, Err.Description, "ScenarioHunt.CloseScenario ", Erl)
 End Sub
 
+Private Sub ClearMap()
+On Error GoTo ClearMap_Err:
+106    CustomScenarios.RemoveCustomScenario (mapNumber)
+108    CustomScenarios.RemoveUpdateScenario (UpdateIndex)
+110    MapInfo(MapNumber).Seguro = PrevMapState
+112    MapInfo(MapNumber).DropItems = MapDropItems
+    Exit Sub
+ClearMap_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioHunt.ClearMap", Erl)
+End Sub
+
 Public Sub IBaseScenario_Reset()
-    'implements interface
+106        Call ClearMap
 End Sub
 
 Private Function IBaseScenario_RequiresSpawn() As Boolean
@@ -114,16 +122,20 @@ Private Function IBaseScenario_RequiresSpawn() As Boolean
 End Function
 
 Private Function IBaseScenario_ValidateUser(ByVal userIndex As Integer) As Integer
-    Dim i As Integer
-    With UserList(userIndex)
-        For i = 1 To UBound(.Invent.Object)
-            If .Invent.Object(i).objIndex = RequiredWeaponId Then
-                IBaseScenario_ValidateUser = 0
-                Exit Function
-            End If
-        Next i
-        IBaseScenario_ValidateUser = RequireItemMessage
-    End With
+On Error GoTo ValidateUser_Err:
+       Dim i As Integer
+100    With UserList(userIndex)
+102        For i = 1 To UBound(.Invent.Object)
+104            If .Invent.Object(i).objIndex = RequiredWeaponId Then
+106                IBaseScenario_ValidateUser = 0
+108                Exit Function
+110            End If
+112        Next i
+114        IBaseScenario_ValidateUser = RequireItemMessage
+116    End With
+       Exit Function
+ValidateUser_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioHunt.ValidateUser userIndex: " & userIndex, Erl)
 End Function
 
 Private Sub IBaseScenario_WillSummonPlayer(ByVal UserIndex As Integer)
@@ -235,14 +247,20 @@ Public Sub IBaseScenario_OnUserReconnect(ByVal userIndex As Integer)
 End Sub
 
 Private Sub MatchComplete()
-    GenericGlobalLobby.State = Completed
-    Call ClearMap(MapNumber)
-    Call Board.PublishScoreboard(SendTarget.toMap, MapNumber)
-    ElapsedTime = MaxTime
-    Dim key As Variant
-    For Each key In SpawnedCreaturesId.Keys
-        Call QuitarNPC(key)
-    Next key
+On Error GoTo MatchComplete_Err:
+100    Dim i As Integer
+102    GenericGlobalLobby.State = Completed
+104    Call CustomScenarios.ClearMap(MapNumber)
+106    Call Board.PublishScoreboard(SendTarget.toMap, MapNumber)
+108    ElapsedTime = MaxTime
+110    Dim key As Variant
+112    For Each key In SpawnedCreaturesId.Keys
+114        Call QuitarNPC(key)
+116    Next key
+       Exit Sub
+MatchComplete_Err:
+    Call TraceError(Err.Number, Err.Description, "ScenarioHunt.MatchComplete ", Erl)
+    Resume Next
 End Sub
 
 Private Sub SpawnNpc(ByVal npcType As Integer)

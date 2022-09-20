@@ -90,6 +90,7 @@ Public Sub DisconnectUser(ByVal userIndex As Integer, ByVal userID As Integer)
 End Sub
 
 Public Sub RestoreDisconnectUser(ByVal userIndex As Integer, ByVal userID As Integer)
+
     If Not DisconnectedUser.Exists(userID) Then
         Exit Sub
     End If
