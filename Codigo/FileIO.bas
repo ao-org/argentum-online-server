@@ -2594,23 +2594,21 @@ SaveUser_Err:
 108     Call TraceError(Err.Number, Err.Description, "ES.SaveUser", Erl)
 
 End Sub
-Public Sub SaveCreditsDatabase(ByVal userindex As Integer)
-    Dim toSaveCredits As Long
-    
-    Dim account_id As Long
+Public Sub SaveCreditsDatabase(ByVal user_index As Integer)
     Dim RS As ADODB.Recordset
-    
-    Call Execute("update user set credits = 0 where id = ?;", UserList(UserIndex).ID)
-    
-    account_id = UserList(userindex).accountId
-    Set RS = Query("select offline_patron_credits from account where id = ?;", account_id)
-    
-    If Not RS Is Nothing Then
-        toSaveCredits = RS!offline_patron_credits + UserList(userindex).Stats.Creditos
-        Call Execute("update account set offline_patron_credits = ? where id = ?;", toSaveCredits, account_id)
-    End If
-    
-    
+    With UserList(user_index)
+        Debug.Assert .flags.UserLogged And .ConnID > 0
+        Call Execute("update user set credits = 0 where id = ?;", .ID)
+        Set RS = Query("select offline_patron_credits from account where id = ?;", .AccountID)
+        If Not RS Is Nothing Then
+            Dim offline_credits As Long
+            Dim toSaveCredits As Long
+            'Has the user got a payment while playing?
+            offline_credits = CLng(RS!offline_patron_credits)
+            toSaveCredits = offline_credits + .Stats.Creditos
+            Call Execute("update account set offline_patron_credits = ? where id = ?;", toSaveCredits, .AccountID)
+        End If
+    End With
 End Sub
 Public Sub RemoveTokenDatabase(ByVal userindex As Integer)
     Call Execute("delete from tokens where id =  ?;", UserList(UserIndex).encrypted_session_token_db_id)

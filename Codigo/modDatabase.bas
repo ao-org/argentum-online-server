@@ -766,7 +766,7 @@ Function LoadUserDatabase(ByVal UserIndex As Integer) As Boolean
                 If LenB(BanNick) = 0 Then BanNick = "*Error en la base de datos*"
                 If LenB(BaneoMotivo) = 0 Then BaneoMotivo = "*No se registra el motivo del baneo.*"
             
-                Call WriteShowMessageBox(UserIndex, "Se te ha prohibido la entrada al juego debido a " & BaneoMotivo & ". Esta decisión fue tomada por " & BanNick & ".")
+                Call WriteShowMessageBox(userIndex, "Se te ha prohibido la entrada al juego debido a " & BaneoMotivo & ". Esta decisión fue tomada por " & BanNick & ".")
             
                 Call CloseSocket(UserIndex)
                 LoadUserDatabase = False
@@ -774,16 +774,13 @@ Function LoadUserDatabase(ByVal UserIndex As Integer) As Boolean
             End If
             'HarThaoS: Comentado hasta que salga el MAO.
             If (RS!is_locked_in_mao) Then
-                Call WriteShowMessageBox(UserIndex, "El personaje que estás intentando loguear se encuentra en venta, para desbloquearlo deberás hacerlo desde la página web.")
+                Call WriteShowMessageBox(userIndex, "El personaje que estás intentando loguear se encuentra en venta, para desbloquearlo deberás hacerlo desde la página web.")
                 LoadUserDatabase = False
                 Call CloseSocket(UserIndex)
                 Exit Function
             End If
             
-            Dim user_credits As Long
-            
-            user_credits = RS!credits
-            
+        
             
             'Start setting data
 106         .ID = RS!ID
@@ -1079,30 +1076,47 @@ Function LoadUserDatabase(ByVal UserIndex As Integer) As Boolean
             End If
             UpdateDBIpsValues UserIndex
             
-474         Set RS = Query("Select is_active_patron, credits, offline_patron_credits from account where id = ?;", .accountId)
-
-            .Stats.Creditos = CLng(RS!offline_patron_credits) + user_credits
+            .Stats.Creditos = 0
+            Set RS = Query("Select is_active_patron, credits, offline_patron_credits from account where id = ?;", .AccountID)
+            If Not RS Is Nothing Then
+                'Patreon gateway pay to the field offline_patron_credits
+                'In-game credits are the field credits
+                'So here we add the offline_patron_credits to whatever the user had in credits already
             
-            Call Execute("update account set offline_patron_credits = 0 where id = ?;", .AccountID)
-            Call Execute("Update user set credits = ? where id = ?;", .Stats.Creditos, .ID)
-            If (.Stats.Creditos > 0) Then
-                Call LogCreditosPatreon(.name & " | " & .Email & " | Logged with " & .Stats.Creditos)
+                Dim in_game_credits As Long
+                Dim offline_credits As Long
+                in_game_credits = RS!credits
+                offline_credits = CLng(RS!offline_patron_credits)
+                .Stats.Creditos = offline_credits + in_game_credits
+                 If (offline_credits > 0) Then
+                    Call LogCreditosPatreon(.name & " | " & .Email & " | Offline_Credits = " & offline_credits & " | Ingame_credits = " & in_game_credits)
+                End If
+                
+                'Since me moved the offline_credits into in_game_credits we need to reset the offline_credits_field to 0
+                Call Execute("update account set offline_patron_credits = 0 where id = ?;", .AccountID)
+                'And we update the DB with the new total amount in_game_credits
+                Call Execute("Update user set credits = ? where id = ?;", .Stats.Creditos, .ID)
+                
+                If (.Stats.Creditos > 0) Then
+                    Call LogCreditosPatreon(.name & " | " & .Email & " | Logged with " & .Stats.Creditos)
+                End If
+                
+                Dim tipo_usuario_db As Long
+                tipo_usuario_db = RS!is_active_patron
+                Select Case tipo_usuario_db
+                    Case patron_tier_aventurero
+                        .Stats.tipoUsuario = e_TipoUsuario.tAventurero
+                    Case patron_tier_heroe
+                        .Stats.tipoUsuario = e_TipoUsuario.tHeroe
+                    Case patron_tier_leyenda
+                        .Stats.tipoUsuario = e_TipoUsuario.tLeyenda
+                    Case Else
+                         .Stats.tipoUsuario = e_TipoUsuario.tNormal
+                End Select
+            Else
+                'If we can't access patron info we set the user to normal
+                .Stats.tipoUsuario = e_TipoUsuario.tNormal
             End If
-            
-476         If RS Is Nothing Then Exit Function
-            
-            Dim tipo_usuario_db As Long
-            tipo_usuario_db = RS!is_active_patron
-            
-            Select Case tipo_usuario_db
-                Case patron_tier_aventurero
-                    .Stats.tipoUsuario = e_TipoUsuario.tAventurero
-                Case patron_tier_heroe
-                    .Stats.tipoUsuario = e_TipoUsuario.tHeroe
-                Case patron_tier_leyenda
-                    .Stats.tipoUsuario = e_TipoUsuario.tLeyenda
-            End Select
-            
         End With
         
         LoadUserDatabase = True
@@ -1110,7 +1124,7 @@ Function LoadUserDatabase(ByVal UserIndex As Integer) As Boolean
         Exit Function
 
 ErrorHandler:
-478     Call LogDatabaseError("Error en LoadUserDatabase: " & UserList(UserIndex).name & ". " & Err.Number & " - " & Err.Description & ". Línea: " & Erl)
+478     Call LogDatabaseError("Error en LoadUserDatabase: " & UserList(userIndex).name & ". " & Err.Number & " - " & Err.Description & ". Línea: " & Erl)
 
 End Function
 Public Function UpdateDBIpsValues(ByVal UserIndex As Integer)
@@ -1871,7 +1885,7 @@ Public Function EnterAccountDatabase(ByVal UserIndex As Integer, ByVal CuentaEma
 100     Set RS = Query("SELECT id from account WHERE email = ?", UCase$(CuentaEmail))
     
 102     If Connection.State = adStateClosed Then
-104         Call WriteShowMessageBox(UserIndex, "Ha ocurrido un error interno en el servidor. ¡Estamos tratando de resolverlo!")
+104         Call WriteShowMessageBox(userIndex, "Ha ocurrido un error interno en el servidor. ¡Estamos tratando de resolverlo!")
             Exit Function
         End If
     
