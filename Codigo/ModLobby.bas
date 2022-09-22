@@ -135,23 +135,30 @@ On Error GoTo AddPlayer_Err
 140                Exit Function
 142            End If
 144        End If
-146        Dim playerPos As Integer: playerPos = instance.RegisteredPlayers
-148        instance.Players(playerPos).userID = userIndex
-149        instance.Players(playerPos).IsSummoned = False
-150        instance.Players(playerPos).connected = True
-152        instance.Players(playerPos).dbId = .ID
-154        instance.Players(playerPos).ReturnOnReconnect = False
-156        instance.RegisteredPlayers = instance.RegisteredPlayers + 1
-158        AddPlayer.Message = 399
-160        AddPlayer.Success = True
-162        If instance.SummonAfterInscription Then
-164            Call SummonPlayer(instance, playerPos)
-166        End If
-168    End With
-170    Exit Function
+146        Dim i As Integer
+148        For i = 0 To instance.RegisteredPlayers - 1
+150            If instance.Players(i).dbId = .ID Then
+152                AddPlayer.Success = False
+154                AddPlayer.Message = 405
+156                Exit Function
+158            End If
+160        Next i
+162        Dim playerPos As Integer: playerPos = instance.RegisteredPlayers
+164        instance.Players(playerPos).userID = userIndex
+166        instance.Players(playerPos).IsSummoned = False
+168        instance.Players(playerPos).Connected = True
+170        instance.Players(playerPos).dbId = .ID
+172        instance.Players(playerPos).ReturnOnReconnect = False
+174        instance.RegisteredPlayers = instance.RegisteredPlayers + 1
+176        AddPlayer.Message = 399
+178        AddPlayer.Success = True
+180        If instance.SummonAfterInscription Then
+182            Call SummonPlayer(instance, playerPos)
+184        End If
+186    End With
+188    Exit Function
 AddPlayer_Err:
-172    Call TraceError(Err.Number, Err.Description, "ModLobby.AddPlayer", Erl)
-
+190    Call TraceError(Err.Number, Err.Description, "ModLobby.AddPlayer", Erl)
 End Function
 
 Public Sub SummonPlayer(ByRef instance As t_Lobby, ByVal user As Integer)
@@ -160,7 +167,7 @@ On Error GoTo SummonPlayer_Err
 102        With instance.Players(user)
 104            userIndex = .userID
 106            If Not .IsSummoned And .SummonedFrom.map = 0 Then
-108                .SummonedFrom = UserList(userIndex).Pos
+108                .SummonedFrom = UserList(userIndex).pos
 110            End If
 112            If Not instance.scenario Is Nothing Then
 114                Call instance.scenario.WillSummonPlayer(userIndex)
