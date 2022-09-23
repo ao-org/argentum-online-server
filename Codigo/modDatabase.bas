@@ -740,6 +740,7 @@ Function db_load_house_key(ByRef user As t_User) As Boolean
     db_load_house_key = False
     With user
         Debug.Assert .Stats.tipoUsuario = tAventurero Or .Stats.tipoUsuario = tHeroe Or .Stats.tipoUsuario = tLeyenda
+        Dim RS As ADODB.Recordset
         Set RS = Query("SELECT key_obj FROM house_key WHERE account_id = ?", .AccountID)
         If Not RS Is Nothing Then
             Dim LoopC As Integer
