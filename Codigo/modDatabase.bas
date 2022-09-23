@@ -1074,7 +1074,8 @@ Function LoadUserDatabase(ByVal UserIndex As Integer) As Boolean
                 Wend
 
             End If
-            UpdateDBIpsValues UserIndex
+            
+            Call Execute("update account set last_ip = ? where id = ?", .IP, .AccountID)
             
             .Stats.Creditos = 0
             Set RS = Query("Select is_active_patron, credits, offline_patron_credits from account where id = ?;", .AccountID)
@@ -1126,82 +1127,6 @@ Function LoadUserDatabase(ByVal UserIndex As Integer) As Boolean
 ErrorHandler:
 478     Call LogDatabaseError("Error en LoadUserDatabase: " & UserList(userIndex).name & ". " & Err.Number & " - " & Err.Description & ". Línea: " & Erl)
 
-End Function
-Public Function UpdateDBIpsValues(ByVal UserIndex As Integer)
-    With UserList(UserIndex)
-        Dim ipStr As String
-        'ipStr = GetDBValue("account", "last_ip", "id", .AccountID)
-        
-        
-100     Dim RS As ADODB.Recordset
-        Set RS = Query("SELECT last_ip FROM account WHERE id = ?", .AccountID)
-
-        'Revisamos si recibio un resultado
-102     If RS Is Nothing Then Exit Function
-        If RS.BOF Or RS.EOF Then Exit Function
-        
-        'Obtenemos la variable
-104     ipStr = RS.Fields(0).Value
-        Dim count As Long
-        Dim i As Long
-        For i = 1 To Len(ipStr)
-            If mid$(ipStr, i, 1) = ";" Then
-                count = count + 1
-            End If
-        Next i
-        
-        'Si ya tengo alguna ip guardada
-        If count > 0 And count < 5 Then
-            
-            ReDim ip_list(0 To (count - 1)) As String
-            count = count + 1
-            ReDim ip_list_new(0 To (count - 1)) As String
-            
-            ip_list = Split(ipStr, ";")
-            
-            For i = 0 To (count - 1)
-                If .IP = ip_list(i) Then Exit Function
-            Next i
-            
-            For i = 0 To (count - 1)
-                ip_list_new(i) = ip_list(i)
-            Next i
-            
-            ip_list_new(count - 1) = .IP
-            
-        ElseIf count >= 5 Then
-        
-            ReDim ip_list(0 To (count - 1)) As String
-            ReDim ip_list_new(0 To (count - 1)) As String
-            
-            ip_list = Split(ipStr, ";")
-            
-            For i = 0 To (count - 1)
-                If .IP = ip_list(i) Then Exit Function
-            Next i
-            
-            For i = 1 To (count - 1)
-                ip_list_new(i - 1) = ip_list(i)
-            Next i
-            
-            ip_list_new(count - 1) = .IP
-            
-        Else
-            Call Execute("update account set last_ip = ? where id = ?", .IP & ";", .AccountID)
-            Exit Function
-        End If
-        
-    
-        ipStr = ""
-        For i = 0 To (count - 1)
-            ipStr = ipStr & ip_list_new(i) & ";"
-        Next i
-        
-        Debug.Print ipStr
-        
-         Call Execute("update account set last_ip = ? where id = ?", ipStr, .AccountID)
-        
-    End With
 End Function
 
 Public Function GetDBValue(Tabla As String, ColumnaGet As String, ColumnaTest As String, ValueTest As Variant) As Variant
