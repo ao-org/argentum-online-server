@@ -4747,7 +4747,7 @@ End Sub
 
 Public Sub HandleCancelarEvento(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
-    If Not (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios)) Then
+    If (UserList(userIndex).flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios)) = 0 Then
         Call WriteConsoleMsg(userIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
         Exit Sub
     End If

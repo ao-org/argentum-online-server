@@ -115,17 +115,17 @@ On Error GoTo AddPlayer_Err
 100    With UserList(userIndex)
 102        If .Stats.ELV < instance.MinLevel Or .Stats.ELV > instance.MaxLevel Then
 104            AddPlayer.Success = False
-106            AddPlayer.Message = 396
+106            AddPlayer.Message = ForbiddenLevelMessage
 108            Exit Function
 110        End If
 112        If instance.RegisteredPlayers >= instance.MaxPlayers Then
 114            AddPlayer.Success = False
-116            AddPlayer.Message = 397
+116            AddPlayer.Message = LobbyIsFullMessage
 118            Exit Function
 120        End If
 122        If instance.ClassFilter > 0 And .clase <> instance.ClassFilter Then
 124            AddPlayer.Success = False
-126            AddPlayer.Message = 398
+126            AddPlayer.Message = ForbiddenClassMessage
 128            Exit Function
 130        End If
 132        If Not instance.scenario Is Nothing Then
@@ -139,7 +139,7 @@ On Error GoTo AddPlayer_Err
 148        For i = 0 To instance.RegisteredPlayers - 1
 150            If instance.Players(i).dbId = .ID Then
 152                AddPlayer.Success = False
-154                AddPlayer.Message = 405
+154                AddPlayer.Message = AlreadyRegisteredMessage
 156                Exit Function
 158            End If
 160        Next i
@@ -150,7 +150,7 @@ On Error GoTo AddPlayer_Err
 170        instance.Players(playerPos).dbId = .ID
 172        instance.Players(playerPos).ReturnOnReconnect = False
 174        instance.RegisteredPlayers = instance.RegisteredPlayers + 1
-176        AddPlayer.Message = 399
+176        AddPlayer.Message = JoinSuccessMessage
 178        AddPlayer.Success = True
 180        If instance.SummonAfterInscription Then
 182            Call SummonPlayer(instance, playerPos)
