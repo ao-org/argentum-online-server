@@ -736,6 +736,24 @@ ErrorHandler:
 
 End Sub
 
+Function db_load_house_key(ByRef user As t_User) As Boolean
+    db_load_house_key = False
+    With user
+        Debug.Assert .Stats.tipoUsuario = tAventurero Or .Stats.tipoUsuario = tHeroe Or .Stats.tipoUsuario = tLeyenda
+        Set RS = Query("SELECT key_obj FROM house_key WHERE account_id = ?", .AccountID)
+        If Not RS Is Nothing Then
+            Dim LoopC As Integer
+            LoopC = 1
+            While Not RS.EOF
+                .Keys(LoopC) = RS!key_obj
+                LoopC = LoopC + 1
+                RS.MoveNext
+                db_load_house_key = True
+            Wend
+        End If
+    End With
+End Function
+
 Function LoadUserDatabase(ByVal UserIndex As Integer) As Boolean
 
         Dim counter As Long
@@ -1059,21 +1077,7 @@ Function LoadUserDatabase(ByVal UserIndex As Integer) As Boolean
                 End If
             End If
 
-            ' Llaves
-            Set RS = Query("SELECT key_obj FROM house_key WHERE account_id = ?", .AccountID)
 
-460         If Not RS Is Nothing Then
-464             LoopC = 1
-
-466             While Not RS.EOF
-
-468                 .Keys(LoopC) = RS!key_obj
-470                 LoopC = LoopC + 1
-
-472                 RS.MoveNext
-                Wend
-
-            End If
             
             Call Execute("update account set last_ip = ? where id = ?", .IP, .AccountID)
             
@@ -1114,6 +1118,11 @@ Function LoadUserDatabase(ByVal UserIndex As Integer) As Boolean
                     Case Else
                          .Stats.tipoUsuario = e_TipoUsuario.tNormal
                 End Select
+                
+                If .Stats.tipoUsuario = tAventurero Or .Stats.tipoUsuario = tHeroe Or .Stats.tipoUsuario = tLeyenda Then
+                    'Only load the house key if we are dealing with a patron
+                    Call db_load_house_key(UserList(userIndex))
+                End If
             Else
                 'If we can't access patron info we set the user to normal
                 .Stats.tipoUsuario = e_TipoUsuario.tNormal
