@@ -1986,11 +1986,6 @@ Public Type t_User
 
     Keys(1 To MAXKEYS) As Integer
     
-    #If AntiExternos = 1 Then
-        XorIndexIn As Integer
-        XorIndexOut As Integer
-    #End If
-
     CraftInventory(1 To MAX_SLOTS_CRAFTEO) As Integer
     CraftCatalyst As t_Obj
     CraftResult As clsCrafteo
@@ -2542,9 +2537,6 @@ Public Enum e_ObjetosCriticos
 
 End Enum
 
-#If AntiExternos = 1 Then
-    Public Security As New clsSecurity
-#End If
 
 Public Type t_Rectangle
     X1 As Integer

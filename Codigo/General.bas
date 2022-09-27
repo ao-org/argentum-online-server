@@ -728,10 +728,6 @@ Sub Main()
         ' ----------------------------------------------------
 296     Call InitializePacketList
 
-        #If AntiExternos = 1 Then
-300         Call Security.Initialize
-        #End If
-        
 302     Call modNetwork.Listen(MaxUsers, "0.0.0.0", CStr(Puerto))
 
 312     If frmMain.Visible Then frmMain.txStatus.Caption = "Escuchando conexiones entrantes ..."
