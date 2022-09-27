@@ -557,7 +557,7 @@ Public Sub DoNavega(ByVal UserIndex As Integer, _
 162                 If .Invent.ArmourEqpObjIndex > 0 Then
 164                     .Char.Body = ObjData(.Invent.ArmourEqpObjIndex).Ropaje
                     Else
-166                     Call DarCuerpoDesnudo(UserIndex)
+                        Call SetNakedBody(UserList(userIndex))
                     End If
         
 168                 If .Invent.EscudoEqpObjIndex > 0 Then .Char.ShieldAnim = ObjData(.Invent.EscudoEqpObjIndex).ShieldAnim
@@ -2934,7 +2934,7 @@ Public Sub DoMontar(ByVal UserIndex As Integer, ByRef Montura As t_ObjData, ByVa
 158                 .Char.Body = ObjData(.Invent.ArmourEqpObjIndex).Ropaje
 
                 Else
-160                 Call DarCuerpoDesnudo(UserIndex)
+                    Call SetNakedBody(UserList(userIndex))
 
                 End If
 

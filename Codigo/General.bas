@@ -44,81 +44,46 @@ Public Declare Sub OutputDebugString Lib "kernel32" Alias "OutputDebugStringA" (
 
 Global LeerNPCs As New clsIniManager
 
-Sub DarCuerpoDesnudo(ByVal UserIndex As Integer)
-        
-        On Error GoTo DarCuerpoDesnudo_Err
-        
 
-        '***************************************************
-        'Autor: Nacho (Integer)
-        'Last Modification: 03/14/07
-        'Da cuerpo desnudo a un usuario
-        '***************************************************
-        Dim CuerpoDesnudo As Integer
-
-100     Select Case UserList(UserIndex).genero
-
+Sub SetNakedBody(ByRef user As t_User)
+        user.flags.Desnudo = 1
+        Select Case user.genero
             Case e_Genero.Hombre
-
-102             Select Case UserList(UserIndex).raza
-
-                    Case e_Raza.Humano
-104                     CuerpoDesnudo = 21 'ok
-
-106                 Case e_Raza.Drow
-108                     CuerpoDesnudo = 32 ' ok
-
-110                 Case e_Raza.Elfo
-112                     CuerpoDesnudo = 510 'Revisar
-
-114                 Case e_Raza.Gnomo
-116                     CuerpoDesnudo = 508 'Revisar
-
-118                 Case e_Raza.Enano
-120                     CuerpoDesnudo = 53 'ok
-
-122                 Case e_Raza.Orco
-124                     CuerpoDesnudo = 248 ' ok
-
+               Select Case user.raza
+                 Case e_Raza.Humano
+                     user.Char.body = 21
+                 Case e_Raza.Drow
+                     user.Char.body = 32
+                 Case e_Raza.Elfo
+                     user.Char.body = 510
+                 Case e_Raza.Gnomo
+                     user.Char.body = 508
+                 Case e_Raza.Enano
+                     user.Char.body = 53
+                 Case e_Raza.Orco
+                     user.Char.body = 248
+                 Case Else
+                     user.Char.body = 21
                 End Select
 
-126         Case e_Genero.Mujer
-
-128             Select Case UserList(UserIndex).raza
-
+            Case e_Genero.Mujer
+                Select Case user.raza
                     Case e_Raza.Humano
-130                     CuerpoDesnudo = 39 'ok
-
-132                 Case e_Raza.Drow
-134                     CuerpoDesnudo = 40 'ok
-
-136                 Case e_Raza.Elfo
-138                     CuerpoDesnudo = 511 'Revisar
-
-140                 Case e_Raza.Gnomo
-142                     CuerpoDesnudo = 509 'Revisar
-
-144                 Case e_Raza.Enano
-146                     CuerpoDesnudo = 60 ' ok
-
-148                 Case e_Raza.Orco
-150                     CuerpoDesnudo = 249 'ok
-
+                        user.Char.body = 39
+                    Case e_Raza.Drow
+                        user.Char.body = 40
+                    Case e_Raza.Elfo
+                        user.Char.body = 511
+                    Case e_Raza.Gnomo
+                        user.Char.body = 509
+                    Case e_Raza.Enano
+                        user.Char.body = 60
+                    Case e_Raza.Orco
+                        user.Char.body = 249
+                    Case Else
+                        user.Char.body = 39
                 End Select
-
         End Select
-
-152     UserList(UserIndex).Char.Body = CuerpoDesnudo
-
-154     UserList(UserIndex).flags.Desnudo = 1
-
-        
-        Exit Sub
-
-DarCuerpoDesnudo_Err:
-156     Call TraceError(Err.Number, Err.Description, "General.DarCuerpoDesnudo", Erl)
-
-        
 End Sub
 
 Sub Bloquear(ByVal toMap As Boolean, ByVal sndIndex As Integer, ByVal X As Integer, ByVal Y As Integer, ByVal b As Byte)

@@ -1022,7 +1022,7 @@ Sub Desequipar(ByVal UserIndex As Integer, ByVal Slot As Byte)
         
 264             If UserList(UserIndex).flags.Navegando = 0 Then
 266                 If UserList(UserIndex).flags.Montado = 0 Then
-268                     Call DarCuerpoDesnudo(UserIndex)
+                        Call SetNakedBody(UserList(userIndex))
 270                     Call ChangeUserChar(UserIndex, UserList(UserIndex).Char.Body, UserList(UserIndex).Char.Head, UserList(UserIndex).Char.Heading, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.CascoAnim)
                     End If
                 End If
@@ -1563,7 +1563,7 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
 378                     Call Desequipar(UserIndex, Slot)
 
 380                     If .flags.Navegando = 0 And .flags.Montado = 0 Then
-382                         Call DarCuerpoDesnudo(UserIndex)
+                            Call SetNakedBody(UserList(userIndex))
 384                         Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
                         Else
 386                         .flags.Desnudo = 1
