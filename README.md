@@ -47,7 +47,7 @@ Please note this is not free software and you will have to buy your own license 
 - https://docs.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170
 
 # Logs
-Los logs estan en la carpeta de Logs, Errores y en Windows Events
+Los logs estan en la carpeta de Logs, Errores y en Windows Events.
 
 
 
