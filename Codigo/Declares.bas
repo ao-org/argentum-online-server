@@ -2101,6 +2101,11 @@ Public Type t_CriaturasEntrenador
 
 End Type
 
+Public Type t_Vertice
+    x As Integer
+    y As Integer
+End Type
+
 Public Type t_NpcPathFindingInfo
 
     PathLength As Integer   ' Number of steps *

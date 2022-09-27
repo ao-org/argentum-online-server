@@ -35,7 +35,6 @@ Form=Codigo\frmDebugNpc.frm
 Class=CColaArray; Codigo\cColaArray.cls
 Class=clsAntiMassClon; Codigo\clsAntiMassClon.cls
 Module=PathFinding; Codigo\PathFinding.bas
-Module=Queue; Codigo\Queue.bas
 Module=mdlCOmercioConUsuario; Codigo\mdlCOmercioConUsuario.bas
 Module=modBanco; Codigo\modBanco.bas
 Form=Codigo\frmAdmin.frm
