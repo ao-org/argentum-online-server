@@ -3679,7 +3679,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                             UserList(tU).Counters.timeFx = 2
 212                         Call SendData(SendTarget.ToPCAliveArea, tU, PrepareMessageCreateFX(UserList(tU).Char.charindex, FX, 0, UserList(tU).Pos.X, UserList(tU).Pos.y))
                         End If
-                        If IsFeatureEnabled("proyectile_visible") Then
+                        If IsFeatureEnabled("proyectile_visible") And .flags.Oculto = 0 Then
                             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareCreateProjectile(UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.y, X, y, ProjectileType))
                         End If
                         'Si no es GM invisible, le envio el movimiento del arma.
@@ -3714,7 +3714,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 234                         If PuedeAtacarNPC(UserIndex, tN) Then
 236                             Call UsuarioAtacaNpc(UserIndex, tN, Ranged)
 238                             consumirMunicion = True
-                                If IsFeatureEnabled("proyectile_visible") Then
+                                If IsFeatureEnabled("proyectile_visible") And .flags.Oculto = 0 Then
                                     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareCreateProjectile(UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.y, X, y, ProjectileType))
                                 End If
                                 'Si no es GM invisible, le envio el movimiento del arma.

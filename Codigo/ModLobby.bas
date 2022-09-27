@@ -1,5 +1,9 @@
 Attribute VB_Name = "ModLobby"
-
+Const ForbiddenLevelMessage = 396
+Const LobbyIsFullMessage = 397
+Const ForbiddenClassMessage = 398
+Const JoinSuccessMessage = 399
+Const AlreadyRegisteredMessage = 405
 Public Type PlayerInLobby
     SummonedFrom As t_WorldPos
     IsSummoned As Boolean
