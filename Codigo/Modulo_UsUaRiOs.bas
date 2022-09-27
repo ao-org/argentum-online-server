@@ -238,7 +238,7 @@ Public Function ConnectUser_Complete(ByVal UserIndex As Integer, _
 120             .Char = .OrigChar
             
 125             If .Char.Body = 0 Then
-130                 Call DarCuerpoDesnudo(UserIndex)
+                    Call SetNakedBody(UserList(userIndex))
                 End If
             
 135             If .Char.Head = 0 Then
@@ -866,7 +866,7 @@ Sub RevivirUsuario(ByVal UserIndex As Integer, Optional ByVal MedianteHechizo As
                     End If
     
                 Else
-152                 Call DarCuerpoDesnudo(UserIndex)
+                    Call SetNakedBody(UserList(userIndex))
             
                 End If
     
