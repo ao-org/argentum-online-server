@@ -1,4 +1,4 @@
-Attribute VB_Name = "DatabaceGlobals"
+Attribute VB_Name = "DatabaseGlobals"
 Option Explicit
 
 Option Base 0
