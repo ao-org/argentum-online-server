@@ -75,7 +75,7 @@ Sub SetNakedBody(ByRef user As t_User)
                  Case e_Raza.Enano
                      user.Char.body = man_dwarf_naked_body
                  Case e_Raza.Orco
-                     user.Char.body = woman_gnome_naked_body
+                     user.Char.body = man_orc_naked_body
                  Case Else
                      user.Char.body = man_human_naked_body
                 End Select
