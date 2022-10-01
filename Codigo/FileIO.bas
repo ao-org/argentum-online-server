@@ -1868,7 +1868,7 @@ Public Sub CargarMapaFormatoCSM(ByVal map As Long, ByVal MAPFl As String)
 218                     MapData(map, x, y).Blocked = MapData(map, x, y).Blocked Or FLAG_AGUA
                     End If
                     
-217                 If Triggers(i).trigger = e_Trigger.VALIDONADO Or Triggers(i).trigger = e_Trigger.NADOCOMBINADO Then
+217                 If Triggers(i).trigger = e_Trigger.VALIDONADO Or Triggers(i).trigger = e_Trigger.NADOCOMBINADO Or Triggers(i).trigger = e_Trigger.NADOBAJOTECHO Then
                         ' Vuelvo a poner flag agua
 219                     MapData(map, x, y).Blocked = MapData(map, x, y).Blocked Or FLAG_AGUA
                     End If
