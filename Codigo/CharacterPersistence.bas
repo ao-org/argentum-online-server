@@ -32,11 +32,10 @@ Public Function LoadCharacterFromDB(ByVal userIndex As Integer) As Boolean
             Set RS = Query(QUERY_LOAD_MAINPJ, .Name)
 
             If RS Is Nothing Then Exit Function
-            
-            If (CLng(RS!account_id) <> UserList(userIndex).AccountID) Then
+            Debug.Assert .AccountID > -1 ' You need PYMMO =1 if this fails
+            If (CLng(RS!account_id) <> .AccountID) Then
                 Call CloseSocket(userIndex)
                 LoadCharacterFromDB = False
-                
                 Exit Function
             End If
             
@@ -410,16 +409,16 @@ Public Sub SaveCharacterDB(ByVal userIndex As Integer)
         Dim Params() As Variant
         Dim LoopC As Long
         Dim ParamC As Long
-    
 100     Call Builder.Clear
 
-        'Basic user data
 102     With UserList(userIndex)
-            
-            
-            
-            
-            
+            Debug.Assert .flags.UserLogged = True
+            If Not .flags.UserLogged Then
+                Call LogDatabaseError("Error trying to save an user not logged in SaveCharacterDB")
+                Exit Sub
+            End If
+
+              
 104         ReDim Params(85)
 
             Dim i As Integer
