@@ -3317,7 +3317,7 @@ Private Sub HandleUseItem(ByVal UserIndex As Integer)
             DesdeInventario = Reader.ReadInt8
             
             If Not DesdeInventario Then
-                Call SendData(SendTarget.ToAdmins, UserIndex, PrepareMessageConsoleMsg("El usuario " & .name & " está tomando pociones con click estando en hechizos... raaaaaro, poleeeeemico. BAN? Preg a HarThaoS.", e_FontTypeNames.FONTTYPE_INFOBOLD))
+                Call SendData(SendTarget.ToAdmins, UserIndex, PrepareMessageConsoleMsg("El usuario " & .name & " está tomando pociones con click estando en hechizos... raaaaaro, poleeeeemico. BAN?", e_FontTypeNames.FONTTYPE_INFOBOLD))
             End If
             
             Dim PacketCounter As Long
@@ -7760,7 +7760,7 @@ End Sub
 
 
 'HarThaoS: Agrego perdón faccionario.
-'Puto el que lee
+
 
 ' Handles the "SendPosMovimiento" message.
 
@@ -7830,7 +7830,7 @@ ErrHandler:
 
 End Sub
 'HarThaoS: Agrego perdón faccionario.
-'Puto el que lee
+
 
 'Lee abajo
 'Lee arriba
