@@ -742,32 +742,6 @@ IP_Index_Err:
         
 End Function
 
-Function ContarMismaIP(ByVal UserIndex As Integer, ByVal UserIP As String) As Integer
-        
-        On Error GoTo CheckForSameIP_Err
-        
-
-        Dim LoopC As Integer
-
-100     For LoopC = 1 To MaxUsers
-
-102         If UserList(LoopC).flags.UserLogged = True Then
-104             If UserList(LoopC).IP = UserIP And UserIndex <> LoopC Then
-106                 ContarMismaIP = ContarMismaIP + 1
-                End If
-
-            End If
-
-108     Next LoopC
-
-        
-        Exit Function
-
-CheckForSameIP_Err:
-110     Call TraceError(Err.Number, Err.Description, "Extra.MaxConexionesIP", Erl)
-
-        
-End Function
 
 Sub HeadtoPos(ByVal Head As e_Heading, ByRef Pos As t_WorldPos)
         

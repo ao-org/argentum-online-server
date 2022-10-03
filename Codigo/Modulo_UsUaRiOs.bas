@@ -37,35 +37,45 @@ Attribute VB_Name = "UserMod"
 
 Option Explicit
 
-'?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
-'                        Modulo Usuarios
-'?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
-'Rutinas de los usuarios
-'?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
-
-Public Function ConnectUser_Check(ByVal UserIndex As Integer, _
-                                  ByRef name As String) As Boolean
+Public Function ConnectUser_Check(ByVal userIndex As Integer, ByVal Name As String) As Boolean
                            
-    On Error GoTo Check_ConnectUser_Err
+On Error GoTo Check_ConnectUser_Err
+    ConnectUser_Check = False
+    'Controlamos no pasar el maximo de usuarios
+    If NumUsers >= MaxUsers Then
+        Call WriteShowMessageBox(userIndex, "El servidor ha alcanzado el maximo de usuarios soportado, por favor vuelva a intertarlo mas tarde.")
+        Call CloseSocket(userIndex)
+        Exit Function
+    End If
+    
+    If EnPausa Then
+        Call WritePauseToggle(userIndex)
+        Call WriteConsoleMsg(userIndex, "Servidor » Lo sentimos mucho pero el servidor se encuentra actualmente detenido. Intenta ingresar más tarde.", e_FontTypeNames.FONTTYPE_SERVER)
+        Call CloseSocket(userIndex)
+        Exit Function
+    End If
+    
+    If Not EsGM(userIndex) And ServerSoloGMs > 0 Then
+        Call WriteShowMessageBox(userIndex, "Servidor restringido a administradores. Por favor reintente en unos momentos.")
+        Call CloseSocket(userIndex)
+        Exit Function
+    End If
 
-    With UserList(UserIndex)
         
-        ConnectUser_Check = False
-        
+    With UserList(userIndex)
         If .flags.UserLogged Then
             Call LogSecurity("El usuario " & .name & " ha intentado loguear a " & name & " desde la IP " & .IP)
-            'Kick player ( and leave character inside :D )!
             Call CloseSocketSL(UserIndex)
             Call Cerrar_Usuario(UserIndex)
             Exit Function
         End If
-        
         'Controlo si superó el tiempo para conectarse nuevamente
-        
 #If PYMMO = 1 Then
-        If dcnUsersLastLogout.Exists(UCase$(name)) Then
+        Dim UName As String
+        UName = UCase$(Name)
+        If dcnUsersLastLogout.Exists(UName) Then
             Dim lastLogOut As Long
-            lastLogOut = dcnUsersLastLogout(UCase$(name))
+            lastLogOut = dcnUsersLastLogout(UName)
             If lastLogOut + 5000 >= GetTickCount() Then
                 Call WriteShowMessageBox(UserIndex, "Aguarda un momento.")
                 Call CloseSocket(userindex)
@@ -76,19 +86,17 @@ Public Function ConnectUser_Check(ByVal UserIndex As Integer, _
         
         '¿Ya esta conectado el personaje?
         Dim tIndex As Integer: tIndex = NameIndex(Name)
-
         If tIndex > 0 And tIndex <> UserIndex Then
             If IsFeatureEnabled("override_same_ip_connection") And .IP = UserList(tIndex).IP Then
                 Call WriteShowMessageBox(tIndex, "Alguien está ingresando con tu personaje. Si no has sido tú, por favor cambia la contraseña de tu cuenta.")
                 Call CloseSocket(tIndex)
             Else
                 If UserList(tIndex).Counters.Saliendo Then
-                    Call WriteShowMessageBox(UserIndex, "El personaje está saliendo.")
+                    Call WriteShowMessageBox(userIndex, "El personaje está saliendo.")
                 Else
-                    Call WriteShowMessageBox(UserIndex, "El personaje ya está conectado. Espere mientras es desconectado.")
+                    Call WriteShowMessageBox(userIndex, "El personaje ya está conectado. Espere mientras es desconectado.")
                     ' Le avisamos al usuario que está jugando, en caso de que haya uno
                     Call WriteShowMessageBox(tIndex, "Alguien está ingresando con tu personaje. Si no has sido tú, por favor cambia la contraseña de tu cuenta.")
-                '    Call Cerrar_Usuario(tIndex)
                 End If
             Call CloseSocket(UserIndex)
             Exit Function
@@ -97,81 +105,28 @@ Public Function ConnectUser_Check(ByVal UserIndex As Integer, _
         
         '¿Supera el máximo de usuarios por cuenta?
         If MaxUsersPorCuenta > 0 Then
-
             If ContarUsuariosMismaCuenta(.AccountID) >= MaxUsersPorCuenta Then
-
                 If MaxUsersPorCuenta = 1 Then
                     Call WriteShowMessageBox(UserIndex, "Ya hay un usuario conectado con esta cuenta.")
                 Else
-                    Call WriteShowMessageBox(UserIndex, "La cuenta ya alcanzó el máximo de " & MaxUsersPorCuenta & " usuarios conectados.")
-
+                    Call WriteShowMessageBox(userIndex, "La cuenta ya alcanzó el máximo de " & MaxUsersPorCuenta & " usuarios conectados.")
                 End If
-
                 Call CloseSocket(UserIndex)
                 Exit Function
-
             End If
-
         End If
         
-        'Controlamos no pasar el maximo de usuarios
-        If NumUsers >= MaxUsers Then
-            Call WriteShowMessageBox(UserIndex, "El servidor ha alcanzado el maximo de usuarios soportado, por favor vuelva a intertarlo mas tarde.")
-            Call CloseSocket(UserIndex)
-            Exit Function
 
-        End If
+        .flags.Privilegios = UserDarPrivilegioLevel(Name)
         
-        '¿Este IP ya esta conectado?
-        If MaxConexionesIP > 0 Then
-
-            If ContarMismaIP(UserIndex, .IP) >= MaxConexionesIP Then
-                Call WriteShowMessageBox(UserIndex, "Has alcanzado el límite de conexiones por IP.")
-                Call CloseSocket(UserIndex)
-                Exit Function
-
-            End If
-
-        End If
-        
-        'Le damos los privilegios
-            .flags.Privilegios = UserDarPrivilegioLevel(Name)
-        'Add RM flag if needed
         If EsRolesMaster(Name) Then
             .flags.Privilegios = .flags.Privilegios Or e_PlayerType.RoleMaster
         End If
         
         If EsGM(UserIndex) Then
-            Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » " & name & " se conecto al juego.", e_FontTypeNames.FONTTYPE_INFOBOLD))
-            Call LogGM(name, "Se conectó con IP: " & .IP)
-        Else
-            If ServerSoloGMs > 0 Then
-                Dim i As Integer
-                Dim EsCuentaGM As Boolean
-                For i = 0 To AdministratorAccounts.Count - 1
-                    ' Si el e-mail está declarado junto al nick de la cuenta donde esta el PJ GM en el Server.ini te dejo entrar.
-                    If UCase$(AdministratorAccounts.Items(i)) = UCase$(UserList(UserIndex).Email) Then
-                        EsCuentaGM = True
-                    End If
-                Next
-                If Not EsCuentaGM Then
-                    Call WriteShowMessageBox(UserIndex, "Servidor restringido a administradores. Por favor reintente en unos momentos.")
-                    Call CloseSocket(UserIndex)
-                    Exit Function
-                End If
-            End If
+            Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » " & Name & " se conecto al juego.", e_FontTypeNames.FONTTYPE_INFOBOLD))
+            Call LogGM(Name, "Se conectó con IP: " & .IP)
         End If
-        
-        If EnPausa Then
-
-            Call WritePauseToggle(UserIndex)
-            Call WriteConsoleMsg(UserIndex, "Servidor » Lo sentimos mucho pero el servidor se encuentra actualmente detenido. Intenta ingresar más tarde.", e_FontTypeNames.FONTTYPE_SERVER)
-            Call CloseSocket(UserIndex)
-            Exit Function
-
-        End If
-
-    
     End With
     
     ConnectUser_Check = True
