@@ -1804,9 +1804,7 @@ Sub PasarSegundo()
         
         Segundos = Segundos + 1
         
-        Dim IPs As New Dictionary
-        
-    
+   
 110     For i = 1 To LastUser
 
 112         With UserList(i)
@@ -1825,19 +1823,7 @@ Sub PasarSegundo()
                         .Counters.timeFx = .Counters.timeFx - 1
                     End If
                     
-                    If Segundos Mod 120 = 0 Then
-                        If IPs.Exists(.IP) Then
-                            'Doble client
-                            If .Counters.Trabajando > 0 Then
-                                Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Control de macro---> El usuario " & .name & "| Revisar --> Doble cliente.", e_FontTypeNames.FONTTYPE_INFOBOLD))
-                            End If
-                        Else
-                            IPs.Add .IP, .IP
-                        End If
-                        
-                    End If
-                    
-                    
+                                      
 116                 If .flags.Silenciado = 1 Then
 118                     .flags.SegundosPasados = .flags.SegundosPasados + 1
         

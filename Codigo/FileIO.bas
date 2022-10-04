@@ -2573,26 +2573,18 @@ ErrorHandler:
 End Function
 
 Sub SaveUser(ByVal userIndex As Integer, Optional ByVal Logout As Boolean = False)
+On Error GoTo SaveUser_Err
 
-        On Error GoTo SaveUser_Err
-
-102     Call SaveCharacterDB(userIndex)
-
+        Call SaveCharacterDB(userIndex)
         If Logout Then
             Call SaveCreditsDatabase(userIndex)
-103         Call RemoveTokenDatabase(userIndex)
-            If Not dcnUsersLastLogout.Exists(UCase(UserList(userIndex).Name)) Then
-                Call dcnUsersLastLogout.Add(UCase(UserList(userIndex).Name), GetTickCount())
-            End If
+            Call RemoveTokenDatabase(userIndex)
         End If
-        
-104     UserList(userIndex).Counters.LastSave = GetTickCount
-
+        UserList(userIndex).Counters.LastSave = GetTickCount
         Exit Sub
 
 SaveUser_Err:
-108     Call TraceError(Err.Number, Err.Description, "ES.SaveUser", Erl)
-
+        Call TraceError(Err.Number, Err.Description, "ES.SaveUser", Erl)
 End Sub
 Public Sub SaveCreditsDatabase(ByVal user_index As Integer)
     Dim RS As ADODB.Recordset

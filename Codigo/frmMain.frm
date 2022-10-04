@@ -3,14 +3,14 @@ Begin VB.Form frmMain
    BackColor       =   &H00E0E0E0&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   "Servidor Argentum 20"
-   ClientHeight    =   6255
-   ClientLeft      =   1950
-   ClientTop       =   1695
-   ClientWidth     =   8595
+   ClientHeight    =   6264
+   ClientLeft      =   1956
+   ClientTop       =   1692
+   ClientWidth     =   8592
    FillColor       =   &H00C0C0C0&
    BeginProperty Font 
       Name            =   "Arial"
-      Size            =   8.25
+      Size            =   8.4
       Charset         =   0
       Weight          =   700
       Underline       =   0   'False
@@ -23,8 +23,8 @@ Begin VB.Form frmMain
    MaxButton       =   0   'False
    MinButton       =   0   'False
    PaletteMode     =   1  'UseZOrder
-   ScaleHeight     =   6255
-   ScaleWidth      =   8595
+   ScaleHeight     =   6264
+   ScaleWidth      =   8592
    StartUpPosition =   2  'CenterScreen
    Begin VB.Timer tControlHechizos 
       Left            =   4440
@@ -214,7 +214,7 @@ Begin VB.Form frmMain
       Top             =   4680
       Width           =   4935
       Begin VB.ListBox List1 
-         Height          =   1110
+         Height          =   1008
          Left            =   120
          TabIndex        =   20
          Top             =   240
@@ -342,7 +342,7 @@ Begin VB.Form frmMain
          Caption         =   "Numero de usuarios: 0"
          BeginProperty Font 
             Name            =   "Tahoma"
-            Size            =   8.25
+            Size            =   8.4
             Charset         =   0
             Weight          =   700
             Underline       =   0   'False
@@ -410,7 +410,7 @@ Begin VB.Form frmMain
          Caption         =   "Via consola"
          BeginProperty Font 
             Name            =   "Tahoma"
-            Size            =   8.25
+            Size            =   8.4
             Charset         =   0
             Weight          =   700
             Underline       =   0   'False
@@ -427,7 +427,7 @@ Begin VB.Form frmMain
          Caption         =   "Via ventana"
          BeginProperty Font 
             Name            =   "Tahoma"
-            Size            =   8.25
+            Size            =   8.4
             Charset         =   0
             Weight          =   700
             Underline       =   0   'False
@@ -467,7 +467,7 @@ Begin VB.Form frmMain
       Top             =   3000
       Width           =   4935
       Begin VB.ListBox listaDePaquetes 
-         Height          =   1110
+         Height          =   1008
          Left            =   120
          TabIndex        =   16
          Top             =   480
@@ -890,14 +890,7 @@ Handler:
     
 End Sub
 
-Private Sub Timer1_Timer()
-    Dim key As Variant
-    For Each key In dcnUsersLastLogout.Keys
-        If CLng(dcnUsersLastLogout(key)) < GetTickCount() - 5000 Then
-            Call dcnUsersLastLogout.Remove(key)
-        End If
-    Next key
-End Sub
+
 
 Private Sub TimerGuardarUsuarios_Timer()
 
@@ -1237,7 +1230,7 @@ Private Sub EstadoTimer_Timer()
     For i = 1 To Baneos.Count
 
         If Baneos(i).FechaLiberacion <= Now Then
-            Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » Se ha concluido la sentencia de ban para " & Baneos(i).name & ".", e_FontTypeNames.FONTTYPE_SERVER))
+            Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » Se ha concluido la sentencia de ban para " & Baneos(i).Name & ".", e_FontTypeNames.FONTTYPE_SERVER))
             Call UnBan(Baneos(i).Name)
             Call Baneos.Remove(i)
             Call SaveBans

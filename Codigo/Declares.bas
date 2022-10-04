@@ -81,8 +81,6 @@ Public Const TIEMPO_MINIMO_CENTINELA As Long = 300
 Public Const PLAYER_STUN_TIME = 1500
 Public Const NPC_STUN_TIME = 5000
 
-Public dcnUsersLastLogout As New Dictionary
-
 Public Enum e_SoundIndex
 
     MUERTE_HOMBRE = 11
