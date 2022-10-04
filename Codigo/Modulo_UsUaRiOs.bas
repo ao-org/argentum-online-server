@@ -138,33 +138,21 @@ Check_ConnectUser_Err:
         
 End Function
 
-Public Sub ConnectUser_Prepare(ByVal userindex As Integer, ByRef name As String)
-
-        On Error GoTo Prepare_ConnectUser_Err
-
-100     With UserList(UserIndex)
-    
-            'Reseteamos los FLAGS
-105         .flags.Escondido = 0
-110         .flags.TargetNPC = 0
-115         .flags.TargetNpcTipo = e_NPCType.Comun
-120         .flags.TargetObj = 0
-125         .flags.TargetUser = 0
-130         .Char.FX = 0
-135         .Counters.CuentaRegresiva = -1
-
-            ' Seteamos el nombre
-170         .Name = Name
-        
-            ' Vinculamos el nombre con el UserIndex
-175         m_NameIndex(UCase$(Name)) = UserIndex
-
-180         .showName = True
-    
-        End With
-    
-        Exit Sub
-
+Public Sub ConnectUser_Prepare(ByVal userIndex As Integer, ByVal name As String)
+On Error GoTo Prepare_ConnectUser_Err
+    With UserList(userIndex)
+        .flags.Escondido = 0
+        .flags.TargetNPC = 0
+        .flags.TargetNpcTipo = e_NPCType.Comun
+        .flags.TargetObj = 0
+        .flags.TargetUser = 0
+        .Char.FX = 0
+        .Counters.CuentaRegresiva = -1
+        .name = name
+        m_NameIndex(UCase$(name)) = userIndex
+        .showName = True
+    End With
+    Exit Sub
 Prepare_ConnectUser_Err:
         Call TraceError(Err.Number, Err.Description, "UsUaRiOs.ConnectUser_Prepare", Erl)
 
@@ -174,17 +162,14 @@ Public Function ConnectUser_Complete(ByVal UserIndex As Integer, _
                                      ByRef Name As String, _
                                      Optional ByVal newUser As Boolean = False)
 
-        On Error GoTo Complete_ConnectUser_Err
+On Error GoTo Complete_ConnectUser_Err
+        
+        ConnectUser_Complete = False
         
         Dim n    As Integer
         Dim tStr As String
         
 100     With UserList(UserIndex)
-            
-            ' -----------------------------------------------------------------------
-            '   INFORMACION INICIAL DEL PERSONAJE
-            ' -----------------------------------------------------------------------
-
 105         If .flags.Paralizado = 1 Then
 110             .Counters.Paralisis = IntervaloParalizado
             End If
@@ -700,6 +685,9 @@ Public Function ConnectUser_Complete(ByVal UserIndex As Integer, _
             
             Call CustomScenarios.UserConnected(userIndex)
          End With
+
+            
+         ConnectUser_Complete = True
 
          Exit Function
 

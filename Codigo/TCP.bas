@@ -870,27 +870,24 @@ EntrarCuenta_Err:
 
         
 End Function
-Sub ConnectUser(ByVal UserIndex As Integer, _
-                ByRef name As String, _
-                Optional ByVal NewUser As Boolean = False)
-
-        On Error GoTo ErrHandler
-
-100     With UserList(UserIndex)
-105         If Not ConnectUser_Check(userindex, name) Then Exit Sub
-
-110         Call ConnectUser_Prepare(userindex, name)
-
-            If LoadUser(UserIndex) Then
-                Call ConnectUser_Complete(UserIndex, name, newUser)
-                Exit Sub
-            Else
-                Call WriteShowMessageBox(UserIndex, "Cannot load character")
-                Call CloseSocket(UserIndex)
+Function ConnectUser(ByVal userIndex As Integer, ByRef name As String, Optional ByVal newUser As Boolean = False) As Boolean
+On Error GoTo ErrHandler
+    ConnectUser = False
+    With UserList(userIndex)
+        If Not ConnectUser_Check(userIndex, name) Then Exit Function
+        Call ConnectUser_Prepare(userIndex, name)
+        If LoadUser(userIndex) Then
+            If ConnectUser_Complete(userIndex, name, newUser) Then
+                ConnectUser = True
+                Exit Function
             End If
-                
-            Exit Sub
-        End With
+        Else
+            Call WriteShowMessageBox(userIndex, "Cannot load character")
+            Call CloseSocket(userIndex)
+        End If
+    End With
+
+    Exit Function
 
     
 ErrHandler:
@@ -898,7 +895,7 @@ ErrHandler:
      Call WriteShowMessageBox(UserIndex, "El personaje contiene un error. Comuníquese con un miembro del staff.")
      Call CloseSocket(UserIndex)
 
-End Sub
+End Function
 
 Sub SendMOTD(ByVal UserIndex As Integer)
         
