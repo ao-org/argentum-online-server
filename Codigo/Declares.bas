@@ -2038,6 +2038,7 @@ Public Type t_NpcCounters
     IntervaloMovimiento    As Long
     IntervaloLanzarHechizo As Long
     IntervaloRespawn       As Long
+    IntervaloRespawnMin    As Long
     UltimoAtaque           As Long
     CriaturasInvocadas     As Long
     
