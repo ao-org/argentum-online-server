@@ -50,8 +50,8 @@ Sub SetNakedBody(ByRef user As t_User)
         Const man_drow_naked_body As Integer = 32
         Const man_elf_naked_body As Integer = 510
         Const man_gnome_naked_body As Integer = 508
-        Const man_dwarf_naked_body As Integer = 508
-        Const man_orc_naked_body As Integer = 53
+        Const man_dwarf_naked_body As Integer = 53
+        Const man_orc_naked_body As Integer = 248
         
         Const woman_human_naked_body As Integer = 39
         Const woman_drow_naked_body As Integer = 40
