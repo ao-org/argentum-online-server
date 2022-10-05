@@ -1287,8 +1287,16 @@ Private Function UsuarioImpacto(ByVal AtacanteIndex As Integer, ByVal VictimaInd
         Else
 138         ProbRechazo = 0
         End If
-
-140     ProbExito = Maximo(10, Minimo(90, 50 + ((PoderAtaque - UserPoderEvasion) * 0.4)))
+        Dim WeaponHitModifier As Integer
+        WeaponHitModifier = 0
+        If UserList(AtacanteIndex).Invent.WeaponEqpObjIndex > 0 And IsFeatureEnabled("Improved-Hit-Chance") Then
+            If aType = Melee Then
+                WeaponHitModifier = ObjData(UserList(AtacanteIndex).Invent.WeaponEqpObjIndex).ImprovedMeleeHitChance
+            Else
+                WeaponHitModifier = ObjData(UserList(AtacanteIndex).Invent.WeaponEqpObjIndex).ImprovedRangedHitChance
+            End If
+        End If
+140     ProbExito = Maximo(10, Minimo(90, 50 + ((PoderAtaque - UserPoderEvasion) * 0.4) + WeaponHitModifier))
 
         ' Se reduce la evasion un 25%
         If UserList(VictimaIndex).flags.Meditando Then

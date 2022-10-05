@@ -1288,6 +1288,8 @@ Public Type t_ObjData
     MinSta As Integer ' Minimo puntos de stamina
     
     Cooldown As Long
+    ImprovedRangedHitChance As Integer
+    ImprovedMeleeHitChance As Integer
     
     'Pociones
     TipoPocion As Byte
