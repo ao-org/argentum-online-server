@@ -46,42 +46,56 @@ Global LeerNPCs As New clsIniManager
 
 
 Sub SetNakedBody(ByRef user As t_User)
+        Const man_human_naked_body As Integer = 21
+        Const man_drow_naked_body As Integer = 32
+        Const man_elf_naked_body As Integer = 510
+        Const man_gnome_naked_body As Integer = 508
+        Const man_dwarf_naked_body As Integer = 53
+        Const man_orc_naked_body As Integer = 248
+        
+        Const woman_human_naked_body As Integer = 39
+        Const woman_drow_naked_body As Integer = 40
+        Const woman_elf_naked_body As Integer = 511
+        Const woman_gnome_naked_body As Integer = 509
+        Const woman_dwarf_naked_body As Integer = 60
+        Const woman_orc_naked_body As Integer = 249
+        
         user.flags.Desnudo = 1
         Select Case user.genero
             Case e_Genero.Hombre
                Select Case user.raza
                  Case e_Raza.Humano
-                     user.Char.body = 21
+                     user.Char.body = man_human_naked_body
                  Case e_Raza.Drow
-                     user.Char.body = 32
+                     user.Char.body = man_drow_naked_body
                  Case e_Raza.Elfo
-                     user.Char.body = 510
+                     user.Char.body = man_elf_naked_body
                  Case e_Raza.Gnomo
-                     user.Char.body = 508
+                     user.Char.body = man_gnome_naked_body
                  Case e_Raza.Enano
-                     user.Char.body = 53
+                     user.Char.body = man_dwarf_naked_body
                  Case e_Raza.Orco
-                     user.Char.body = 248
+                     user.Char.body = man_orc_naked_body
                  Case Else
-                     user.Char.body = 21
+                     user.Char.body = man_human_naked_body
                 End Select
 
             Case e_Genero.Mujer
                 Select Case user.raza
                     Case e_Raza.Humano
-                        user.Char.body = 39
+                        user.Char.body = woman_human_naked_body
                     Case e_Raza.Drow
-                        user.Char.body = 40
+                        user.Char.body = woman_drow_naked_body
                     Case e_Raza.Elfo
-                        user.Char.body = 511
+                        user.Char.body = woman_elf_naked_body
                     Case e_Raza.Gnomo
-                        user.Char.body = 509
+                        user.Char.body = woman_gnome_naked_body
                     Case e_Raza.Enano
-                        user.Char.body = 60
+                        user.Char.body = woman_dwarf_naked_body
                     Case e_Raza.Orco
-                        user.Char.body = 249
+                        user.Char.body = woman_orc_naked_body
                     Case Else
-                        user.Char.body = 39
+                        user.Char.body = woman_human_naked_body
                 End Select
         End Select
 End Sub
