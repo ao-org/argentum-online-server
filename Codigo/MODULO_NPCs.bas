@@ -1273,8 +1273,8 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
             
 204         .IntervaloLanzarHechizo = val(Leer.GetValue("NPC" & NpcNumber, "IntervaloLanzarHechizo"))
 
-206         .Contadores.IntervaloRespawn = RandomNumber(0, val(Leer.GetValue("NPC" & NpcNumber, "IntervaloRespawn")))
-    
+206         .Contadores.IntervaloRespawn = RandomNumber(val(Leer.GetValue("NPC" & NpcNumber, "IntervaloRespawnMin")), val(Leer.GetValue("NPC" & NpcNumber, "IntervaloRespawn")))
+            
 208         .InformarRespawn = val(Leer.GetValue("NPC" & NpcNumber, "InformarRespawn"))
     
 210         .QuizaProb = val(Leer.GetValue("NPC" & NpcNumber, "QuizaProb"))
