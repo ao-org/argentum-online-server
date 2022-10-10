@@ -1511,10 +1511,6 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
 464                         Call WriteChatOverHead(UserIndex, "NPCDESC*" & NpcList(TempCharIndex).Numero, NpcList(TempCharIndex).Char.charindex, vbWhite)
                         End If
                     End If
-                    
-466             ElseIf TempCharIndex = CentinelaNPCIndex Then
-                    'Enviamos nuevamente el texto del centinela según quien pregunta
-468                 Call modCentinela.CentinelaSendClave(UserIndex)
 470             ElseIf NpcList(TempCharIndex).MaestroUser > 0 Then
                     If UserList(UserIndex).flags.Muerto = 0 Then
 472                     Call WriteConsoleMsg(UserIndex, "NPCNAME*" & NpcList(TempCharIndex).Numero & "* es mascota de " & UserList(NpcList(TempCharIndex).MaestroUser).name & " " & estatus, e_FontTypeNames.FONTTYPE_INFO)

@@ -997,10 +997,6 @@ Public Sub HandleWorking(ByVal UserIndex As Integer)
 
 108             If UserList(i).flags.UserLogged And UserList(i).Counters.Trabajando > 0 Then
 110                 Users = Users & ", " & UserList(i).name
-                
-                    ' Display the user being checked by the centinel
-112                 If modCentinela.Centinela.RevisandoUserIndex = i Then Users = Users & " (*)"
-
                 End If
 
 114         Next i

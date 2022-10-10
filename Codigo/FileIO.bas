@@ -824,9 +824,6 @@ Public Sub DoBackUp()
 
         'Call WorldSave
 104     Call modGuilds.v_RutinaElecciones
-    
-        'Reseteamos al centinela
-106     Call ResetCentinelaInfo
 
 108     Call SendData(SendTarget.ToAll, 0, PrepareMessagePauseToggle())
 
@@ -1963,7 +1960,7 @@ Public Sub CargarMapaFormatoCSM(ByVal map As Long, ByVal MAPFl As String)
                         Else
                             
                             ' Lo guardo en los logs + aparece en el Debug.Print
-310                         Call TraceError(404, "NPC no existe en los .DAT's o está mal dateado. Posicion: " & map & "-" & NPCs(i).x & "-" & NPCs(i).y, "ES.CargarMapaFormatoCSM")
+310                         Call TraceError(404, "NPC no existe en los .DAT's o está mal dateado. Posicion: " & map & "-" & NPCs(i).X & "-" & NPCs(i).y, "ES.CargarMapaFormatoCSM")
                             
                         End If
                     End If
@@ -2087,7 +2084,6 @@ Sub LoadSini()
 136     PuedeCrearPersonajes = val(Lector.GetValue("INIT", "PuedeCrearPersonajes"))
 138     ServerSoloGMs = val(Lector.GetValue("init", "ServerSoloGMs"))
 140     DisconnectTimeout = val(Lector.GetValue("INIT", "DisconnectTimeout"))
-143     centinelaActivado = val(Lector.GetValue("INIT", "CentinelaActivado"))
     
 144     EnTesting = val(Lector.GetValue("INIT", "Testing"))
         

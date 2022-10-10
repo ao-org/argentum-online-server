@@ -12,9 +12,21 @@ Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 
-Public UserIndex As Integer
+Dim UserRef As t_UserReference
 Public LastPosMap As Integer
 Public LastPosX As Byte
 Public LastPosY As Byte
 Public Team As Byte
 
+
+Public Sub SetPlayer(ByVal UserIndex As Integer)
+    Call SetUserRef(UserRef, UserIndex)
+End Sub
+
+Public Function PlayerIndex() As Integer
+    UserIndex = UserRef.ArrayIndex
+End Function
+
+Public Function IsValid() As Boolean
+    IsValid = IsValidUserRef(UserRef)
+End Function

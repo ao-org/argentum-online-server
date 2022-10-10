@@ -277,7 +277,6 @@ Public Enum ClientPacketID
     RequestMOTD             '/MOTD
     UpTime                  '/UPTIME
     GuildMessage            '/CMSG
-    CentinelReport          '/CENTINELA
     GuildOnline             '/ONLINECLAN
     CouncilMessage          '/BMSG
     RoleMasterRequest       '/ROL
@@ -926,8 +925,6 @@ On Error Resume Next
             Call HandleUpTime(UserIndex)
         Case ClientPacketID.GuildMessage
             Call HandleGuildMessage(UserIndex)
-        Case ClientPacketID.CentinelReport
-            Call HandleCentinelReport(UserIndex)
         Case ClientPacketID.GuildOnline
             Call HandleGuildOnline(UserIndex)
         Case ClientPacketID.CouncilMessage
@@ -6964,30 +6961,6 @@ ErrHandler:
 122     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildMessage", Erl)
 124
 
-End Sub
-
-''
-' Handles the "CentinelReport" message.
-'
-' @param    UserIndex The index of the user sending the message.
-
-Private Sub HandleCentinelReport(ByVal UserIndex As Integer)
-        
-        On Error GoTo HandleCentinelReport_Err
-
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
-100     Call CentinelaCheckClave(UserIndex, Reader.ReadInt16())
-
-        Exit Sub
-
-HandleCentinelReport_Err:
-102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCentinelReport", Erl)
-104
-        
 End Sub
 
 ''

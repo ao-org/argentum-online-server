@@ -645,11 +645,6 @@ Sub CloseSocket(ByVal UserIndex As Integer)
 
 112         If .ConnIDValida Then Call CloseSocketSL(UserIndex)
     
-            'Es el mismo user al que está revisando el centinela??
-            'IMPORTANTE!!! hacerlo antes de resetear así todavía sabemos el nombre del user
-            ' y lo podemos loguear
-114         If Centinela.RevisandoUserIndex = UserIndex Then Call modCentinela.CentinelaUserLogout
-    
             'mato los comercios seguros
 116         If .ComUsu.DestUsu > 0 Then
         

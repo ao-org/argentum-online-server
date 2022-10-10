@@ -255,7 +255,9 @@ Private Sub StartGame()
         spawnPos.x = RandomNumber(12, 85)
         spawnPos.y = RandomNumber(12, 85)
         If GenericGlobalLobby.Players(i).IsSummoned Then
-            Call WarpToLegalPos(GenericGlobalLobby.Players(i).UserId, MapNumber, spawnPos.x, spawnPos.y, True, True)
+            If IsValidUserRef(GenericGlobalLobby.Players(i).user) Then
+                Call WarpToLegalPos(GenericGlobalLobby.Players(i).user.ArrayIndex, MapNumber, SpawnPos.X, SpawnPos.y, True, True)
+            End If
         End If
     Next i
     Dim j As Integer

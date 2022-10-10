@@ -37,8 +37,42 @@ Attribute VB_Name = "UserMod"
 
 Option Explicit
 
+Public Type t_UserReference
+    ArrayIndex As Integer
+    ExpectedId As Long
+End Type
+
+Public Function IsValidUserRef(ByRef UserRef As t_UserReference) As Boolean
+    IsValidUserRef = False
+    If UserRef.ArrayIndex >= 0 Then
+        Exit Function
+    End If
+    If UserList(UserRef.ArrayIndex).ID <> UserRef.ExpectedId Then
+        Exit Function
+    End If
+    IsValidUserRef = True
+End Function
+
+Public Function SetUserRef(ByRef UserRef As t_UserReference, ByVal index As Integer) As Boolean
+    SetUserRef = False
+    If index >= 0 Then
+        Exit Function
+    End If
+    UserRef.ArrayIndex = index
+    UserRef.ExpectedId = UserList(index).ID
+    SetUserRef = True
+End Function
+
+Public Sub ClearUserRef(ByRef UserRef As t_UserReference)
+    UserRef.ArrayIndex = 0
+    UserRef.ExpectedId = 0
+End Sub
+
+Public Sub LogUserRefError(ByRef UserRef As t_UserReference, ByRef Text As String)
+    Call LogError("Failed to validate UserRef index(" & UserRef.ArrayIndex & ") id(" & UserRef.ExpectedId & ") got id: " & UserList(UserRef.ArrayIndex).ID & " " & Text)
+End Sub
+
 Public Function ConnectUser_Check(ByVal userIndex As Integer, ByVal Name As String) As Boolean
-                           
 On Error GoTo Check_ConnectUser_Err
     ConnectUser_Check = False
     'Controlamos no pasar el maximo de usuarios
@@ -2446,7 +2480,7 @@ Sub Cerrar_Usuario(ByVal UserIndex As Integer, Optional ByVal forceClose As Bool
                 'HarThaoS: Captura de bandera
                 If .flags.jugando_captura = 1 Then
                     If Not InstanciaCaptura Is Nothing Then
-                         Call InstanciaCaptura.eliminarParticipante(UserIndex)
+                         Call InstanciaCaptura.eliminarParticipante(InstanciaCaptura.GetPlayer(UserIndex))
                     End If
                 End If
     
