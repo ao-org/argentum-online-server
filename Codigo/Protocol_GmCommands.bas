@@ -4788,13 +4788,13 @@ Public Sub HandleSeguirMouse(ByVal UserIndex As Integer)
                     Call WriteConsoleMsg(UserIndex, "Dejas de seguir a " & UserList(.flags.SigueUsuario).name & ".", e_FontTypeNames.FONTTYPE_INFO)
                     Call WriteCancelarSeguimiento(UserIndex)
                     Call WriteNotificarClienteSeguido(.flags.SigueUsuario, 0)
-                    UserList(.flags.SigueUsuario).flags.GMMeSigue = 0
+                    Call SetUserRef(UserList(.flags.SigueUsuario).flags.GMMeSigue, 0)
                     Call WriteUserCharIndexInServer(UserIndex)
                     Call WarpUserChar(UserIndex, UserList(UserIndex).Pos.map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.y, False)
                     UserList(UserIndex).flags.SigueUsuario = 0
                 ElseIf tUser <> .flags.SigueUsuario And .flags.SigueUsuario > 0 And tUser > 0 Then
-                    If UserList(tUser).flags.GMMeSigue > 0 And UserList(tUser).flags.GMMeSigue <> UserIndex Then
-                        Call WriteConsoleMsg(UserIndex, "El usuario está siendo seguido por " & UserList(UserList(tUser).flags.GMMeSigue).name & ".", e_FontTypeNames.FONTTYPE_INFO)
+                    If IsValidUserRef(UserList(tUser).flags.GMMeSigue) And UserList(tUser).flags.GMMeSigue.ArrayIndex <> UserIndex Then
+                        Call WriteConsoleMsg(UserIndex, "El usuario está siendo seguido por " & UserList(UserList(tUser).flags.GMMeSigue.ArrayIndex).name & ".", e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
                     End If
                     
@@ -4805,7 +4805,7 @@ Public Sub HandleSeguirMouse(ByVal UserIndex As Integer)
                     Call WriteConsoleMsg(UserIndex, "Dejas de seguir a " & UserList(.flags.SigueUsuario).name & ".", e_FontTypeNames.FONTTYPE_INFO)
                     Call WriteCancelarSeguimiento(UserIndex)
                     Call WriteNotificarClienteSeguido(.flags.SigueUsuario, 0)
-                    UserList(.flags.SigueUsuario).flags.GMMeSigue = 0
+                    Call SetUserRef(UserList(.flags.SigueUsuario).flags.GMMeSigue, 0)
                     Call WriteUserCharIndexInServer(UserIndex)
                     Call WarpUserChar(UserIndex, UserList(UserIndex).Pos.map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.y, False)
                     UserList(UserIndex).flags.SigueUsuario = 0
@@ -4823,7 +4823,7 @@ Public Sub HandleSeguirMouse(ByVal UserIndex As Integer)
                     UserList(UserIndex).flags.SigueUsuario = tUser
                     'Actualizo flag en cliente para que empiece a enviar paquetes
                     Call WriteNotificarClienteSeguido(tUser, 1)
-                    UserList(tUser).flags.GMMeSigue = UserIndex
+                    Call SetUserRef(UserList(tUser).flags.GMMeSigue, UserIndex)
                     Call WriteConsoleMsg(UserIndex, "Comienzas a seguir a " & UserList(tUser).name & ".", e_FontTypeNames.FONTTYPE_INFO)
                     tempArea = UserList(UserIndex).AreasInfo.AreaID
                     Call WarpUserChar(UserIndex, UserList(tUser).Pos.map, 15, 15)
@@ -4841,8 +4841,8 @@ Public Sub HandleSeguirMouse(ByVal UserIndex As Integer)
                 Else
                     'Si empiezo a seguir a alguien
                     If UserList(UserIndex).flags.SigueUsuario = 0 Then
-                        If UserList(tUser).flags.GMMeSigue > 0 And UserList(tUser).flags.GMMeSigue <> UserIndex Then
-                            Call WriteConsoleMsg(UserIndex, "El usuario está siendo seguido por " & UserList(UserList(tUser).flags.GMMeSigue).name & ".", e_FontTypeNames.FONTTYPE_INFO)
+                        If IsValidUserRef(UserList(tUser).flags.GMMeSigue) And UserList(tUser).flags.GMMeSigue.ArrayIndex <> UserIndex Then
+                            Call WriteConsoleMsg(UserIndex, "El usuario está siendo seguido por " & UserList(UserList(tUser).flags.GMMeSigue.ArrayIndex).name & ".", e_FontTypeNames.FONTTYPE_INFO)
                             Exit Sub
                         End If
                         
@@ -4858,7 +4858,7 @@ Public Sub HandleSeguirMouse(ByVal UserIndex As Integer)
                         UserList(UserIndex).flags.SigueUsuario = tUser
                         'Actualizo flag en cliente para que empiece a enviar paquetes
                         Call WriteNotificarClienteSeguido(tUser, 1)
-                        UserList(tUser).flags.GMMeSigue = UserIndex
+                        Call SetUserRef(UserList(tUser).flags.GMMeSigue, UserIndex)
                         Call WriteConsoleMsg(UserIndex, "Comienzas a seguir a " & UserList(tUser).name & ".", e_FontTypeNames.FONTTYPE_INFO)
                         tempArea = UserList(UserIndex).AreasInfo.AreaID
                         Call WarpUserChar(UserIndex, UserList(tUser).Pos.map, 15, 15)
@@ -4884,7 +4884,7 @@ Public Sub HandleSeguirMouse(ByVal UserIndex As Integer)
                         Call WriteConsoleMsg(UserIndex, "Dejas de seguir a " & UserList(tUser).name & ".", e_FontTypeNames.FONTTYPE_INFO)
                         Call WriteCancelarSeguimiento(UserIndex)
                         Call WriteNotificarClienteSeguido(tUser, 0)
-                        UserList(tUser).flags.GMMeSigue = 0
+                        Call SetUserRef(UserList(tUser).flags.GMMeSigue, 0)
                         Call WriteUserCharIndexInServer(UserIndex)
                         Call WarpUserChar(UserIndex, UserList(UserIndex).Pos.map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.y, False)
                     End If

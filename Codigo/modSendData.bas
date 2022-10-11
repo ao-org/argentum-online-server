@@ -96,8 +96,8 @@ Public Sub SendData(ByVal sndRoute As SendTarget, ByVal sndIndex As Integer, Opt
             Case SendTarget.ToIndex
                 If (UserList(sndIndex).ConnIDValida) Then
                     Call modNetwork.Send(sndIndex, Buffer)
-                    If UserList(sndIndex).flags.GMMeSigue > 0 Then
-                        Call modNetwork.Send(UserList(sndIndex).flags.GMMeSigue, Buffer)
+                    If IsValidUserRef(UserList(sndIndex).flags.GMMeSigue) Then
+                        Call modNetwork.Send(UserList(sndIndex).flags.GMMeSigue.ArrayIndex, Buffer)
                     End If
                 End If
 
@@ -331,8 +331,8 @@ Private Sub SendToUserAliveArea(ByVal UserIndex As Integer, ByVal Buffer As Netw
                                 End If
                             End If
                             
-                            If UserList(tempIndex).flags.GMMeSigue > 0 Then
-                                    Call modNetwork.Send(UserList(tempIndex).flags.GMMeSigue, Buffer)
+                            If IsValidUserRef(UserList(tempIndex).flags.GMMeSigue) Then
+                                    Call modNetwork.Send(UserList(tempIndex).flags.GMMeSigue.ArrayIndex, Buffer)
                             End If
                             
                             If enviaDatos Then
@@ -397,8 +397,8 @@ Private Sub SendToUserArea(ByVal UserIndex As Integer, ByVal Buffer As Network.W
                             End If
                         End If
                         
-                        If UserList(tempIndex).flags.GMMeSigue > 0 Then
-                                Call modNetwork.Send(UserList(tempIndex).flags.GMMeSigue, Buffer)
+                        If IsValidUserRef(UserList(tempIndex).flags.GMMeSigue) Then
+                                Call modNetwork.Send(UserList(tempIndex).flags.GMMeSigue.ArrayIndex, Buffer)
                         End If
                         
                         If enviaDatos Then
@@ -631,8 +631,8 @@ Private Sub SendToUserAreaButindex(ByVal UserIndex As Integer, ByVal Buffer As N
                                 End If
                             End If
                             
-                            If UserList(tempIndex).flags.GMMeSigue > 0 Then
-                                    Call modNetwork.Send(UserList(tempIndex).flags.GMMeSigue, Buffer)
+                            If IsValidUserRef(UserList(tempIndex).flags.GMMeSigue) Then
+                                    Call modNetwork.Send(UserList(tempIndex).flags.GMMeSigue.ArrayIndex, Buffer)
                             End If
                             
                             If enviaDatos Then
@@ -707,8 +707,8 @@ Private Sub SendToUserAliveAreaButindex(ByVal UserIndex As Integer, ByVal Buffer
                                     End If
                                 End If
                                 
-                                If UserList(tempIndex).flags.GMMeSigue > 0 Then
-                                        Call modNetwork.Send(UserList(tempIndex).flags.GMMeSigue, Buffer)
+                                If IsValidUserRef(UserList(tempIndex).flags.GMMeSigue) Then
+                                        Call modNetwork.Send(UserList(tempIndex).flags.GMMeSigue.ArrayIndex, Buffer)
                                 End If
                                 
                                 If enviaDatos Then
@@ -947,8 +947,8 @@ Private Sub SendToNpcArea(ByVal NpcIndex As Long, ByVal Buffer As Network.Writer
 120             If TempInt Then
 122                 If UserList(tempIndex).ConnIDValida Then
 
-                        If UserList(tempIndex).flags.GMMeSigue > 0 Then
-                            Call modNetwork.Send(UserList(tempIndex).flags.GMMeSigue, Buffer)
+                        If IsValidUserRef(UserList(tempIndex).flags.GMMeSigue) Then
+                            Call modNetwork.Send(UserList(tempIndex).flags.GMMeSigue.ArrayIndex, Buffer)
                         End If
                         
 124                     Call modNetwork.Send(tempIndex, Buffer)
@@ -1005,8 +1005,8 @@ Private Sub SendToNpcAliveArea(ByVal NpcIndex As Long, ByVal Buffer As Network.W
 120             If TempInt Then
 122                 If UserList(tempIndex).ConnIDValida Then
                         If UserList(tempIndex).flags.Muerto = 0 Then
-                            If UserList(tempIndex).flags.GMMeSigue > 0 Then
-                                Call modNetwork.Send(UserList(tempIndex).flags.GMMeSigue, Buffer)
+                            If IsValidUserRef(UserList(tempIndex).flags.GMMeSigue) Then
+                                Call modNetwork.Send(UserList(tempIndex).flags.GMMeSigue.ArrayIndex, Buffer)
                             End If
                             
 124                         Call modNetwork.Send(tempIndex, Buffer)
@@ -1055,8 +1055,8 @@ Public Sub SendToAreaByPos(ByVal Map As Integer, ByVal AreaX As Integer, ByVal A
 116             If TempInt Then
 118                 If UserList(tempIndex).ConnIDValida Then
 120                     Call modNetwork.Send(tempIndex, Buffer)
-                        If UserList(tempIndex).flags.GMMeSigue > 0 Then
-                            Call modNetwork.Send(UserList(tempIndex).flags.GMMeSigue, Buffer)
+                        If IsValidUserRef(UserList(tempIndex).flags.GMMeSigue) Then
+                            Call modNetwork.Send(UserList(tempIndex).flags.GMMeSigue.ArrayIndex, Buffer)
                         End If
 
                     End If
@@ -1096,8 +1096,8 @@ Private Sub SendToMap(ByVal Map As Integer, ByVal Buffer As Network.Writer)
         
 106         If UserList(tempIndex).ConnIDValida Then
 108             Call modNetwork.Send(tempIndex, Buffer)
-                If UserList(tempIndex).flags.GMMeSigue > 0 Then
-                    Call modNetwork.Send(UserList(tempIndex).flags.GMMeSigue, Buffer)
+                If IsValidUserRef(UserList(tempIndex).flags.GMMeSigue) Then
+                    Call modNetwork.Send(UserList(tempIndex).flags.GMMeSigue.ArrayIndex, Buffer)
                 End If
             End If
 
@@ -1136,8 +1136,8 @@ Private Sub SendToMapButIndex(ByVal UserIndex As Integer, ByVal Buffer As Networ
 108         tempIndex = ConnGroups(Map).UserEntrys(LoopC)
         
 110         If tempIndex <> UserIndex And UserList(tempIndex).ConnIDValida Then
-                If UserList(tempIndex).flags.GMMeSigue > 0 Then
-112                 Call modNetwork.Send(UserList(tempIndex).flags.GMMeSigue, Buffer)
+                If IsValidUserRef(UserList(tempIndex).flags.GMMeSigue) Then
+112                 Call modNetwork.Send(UserList(tempIndex).flags.GMMeSigue.ArrayIndex, Buffer)
                 End If
 113             Call modNetwork.Send(tempIndex, Buffer)
 

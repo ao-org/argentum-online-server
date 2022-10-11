@@ -836,8 +836,8 @@ Public Sub WritePosUpdate(ByVal UserIndex As Integer)
 104     Call Writer.WriteInt8(UserList(UserIndex).Pos.Y)
 106     Call modSendData.SendData(ToIndex, UserIndex)
                 
-        If UserList(UserIndex).flags.GMMeSigue > 0 Then
-            Call WritePosUpdateCharIndex(UserList(UserIndex).flags.GMMeSigue, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y, UserList(UserIndex).Char.charindex)
+        If IsValidUserRef(UserList(UserIndex).flags.GMMeSigue) Then
+            Call WritePosUpdateCharIndex(UserList(UserIndex).flags.GMMeSigue.ArrayIndex, UserList(UserIndex).pos.X, UserList(UserIndex).pos.y, UserList(UserIndex).Char.charindex)
         End If
         '<EhFooter>
         Exit Sub
@@ -1760,10 +1760,6 @@ Public Sub WriteUpdateUserStats(ByVal UserIndex As Integer)
 124     Call Writer.WriteInt32(UserList(UserIndex).Stats.Exp)
 126     Call Writer.WriteInt8(UserList(UserIndex).clase)
 128     Call modSendData.SendData(ToIndex, UserIndex)
-
-        If UserList(UserIndex).flags.GMMeSigue > 0 And UserList(UserIndex).flags.GMMeSigue <> UserIndex Then
-          '  Call WriteUpdateUserStats(UserList(UserIndex).flags.GMMeSigue)
-        End If
 
         '<EhFooter>
         Exit Sub

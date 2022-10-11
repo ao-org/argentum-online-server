@@ -1318,7 +1318,7 @@ Sub ResetUserFlags(ByVal UserIndex As Integer)
             .jugando_captura_timer = 0
             .jugando_captura_muertes = 0
             .SigueUsuario = 0
-            .GMMeSigue = 0
+            Call SetUserRef(.GMMeSigue, 0)
         End With
 
         
@@ -1585,24 +1585,24 @@ Sub ClearAndSaveUser(ByVal UserIndex As Integer)
             
             
             'Se desconecta un usuario seguido
-            If .flags.GMMeSigue > 0 Then
-                Call WriteCancelarSeguimiento(.flags.GMMeSigue)
-                UserList(.flags.GMMeSigue).flags.SigueUsuario = 0
-                UserList(.flags.GMMeSigue).Invent = UserList(.flags.GMMeSigue).Invent_bk
-                UserList(.flags.GMMeSigue).Stats = UserList(.flags.GMMeSigue).Stats_bk
+            If IsValidUserRef(.flags.GMMeSigue) Then
+                Call WriteCancelarSeguimiento(.flags.GMMeSigue.ArrayIndex)
+                UserList(.flags.GMMeSigue.ArrayIndex).flags.SigueUsuario = 0
+                UserList(.flags.GMMeSigue.ArrayIndex).Invent = UserList(.flags.GMMeSigue.ArrayIndex).Invent_bk
+                UserList(.flags.GMMeSigue.ArrayIndex).Stats = UserList(.flags.GMMeSigue.ArrayIndex).Stats_bk
                 'UserList(.flags.GMMeSigue).Char.charindex = UserList(.flags.GMMeSigue).Char.charindex_bk
-                Call WriteUserCharIndexInServer(.flags.GMMeSigue)
-                Call UpdateUserInv(True, .flags.GMMeSigue, 1)
-                Call WriteUpdateUserStats(.flags.GMMeSigue)
-                Call WriteConsoleMsg(.flags.GMMeSigue, "El usuario " & UserList(UserIndex).name & " que estabas siguiendo se desconectó.", e_FontTypeNames.FONTTYPE_INFO)
-                .flags.GMMeSigue = 0
+                Call WriteUserCharIndexInServer(.flags.GMMeSigue.ArrayIndex)
+                Call UpdateUserInv(True, .flags.GMMeSigue.ArrayIndex, 1)
+                Call WriteUpdateUserStats(.flags.GMMeSigue.ArrayIndex)
+                Call WriteConsoleMsg(.flags.GMMeSigue.ArrayIndex, "El usuario " & UserList(UserIndex).name & " que estabas siguiendo se desconectó.", e_FontTypeNames.FONTTYPE_INFO)
+                Call SetUserRef(.flags.GMMeSigue, 0)
                 'Falta revertir inventario del GM
             End If
                 
             If .flags.SigueUsuario > 0 Then
                 'Para que el usuario deje de mandar el floodeo de paquetes
                 Call WriteNotificarClienteSeguido(.flags.SigueUsuario, 0)
-                UserList(.flags.SigueUsuario).flags.GMMeSigue = 0
+                Call SetUserRef(UserList(.flags.SigueUsuario).flags.GMMeSigue, 0)
                 UserList(UserIndex).Invent = UserList(UserIndex).Invent_bk
                 UserList(UserIndex).Stats = UserList(UserIndex).Stats_bk
                ' UserList(UserIndex).Char.charindex = UserList(UserIndex).Char.charindex_bk

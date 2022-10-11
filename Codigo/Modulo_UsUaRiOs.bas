@@ -37,17 +37,12 @@ Attribute VB_Name = "UserMod"
 
 Option Explicit
 
-Public Type t_UserReference
-    ArrayIndex As Integer
-    ExpectedId As Long
-End Type
-
 Public Function IsValidUserRef(ByRef UserRef As t_UserReference) As Boolean
     IsValidUserRef = False
-    If UserRef.ArrayIndex >= 0 Then
+    If UserRef.ArrayIndex <= 0 Then
         Exit Function
     End If
-    If UserList(UserRef.ArrayIndex).ID <> UserRef.ExpectedId Then
+    If UserList(UserRef.ArrayIndex).VersionId <> UserRef.VersionId Then
         Exit Function
     End If
     IsValidUserRef = True
@@ -55,21 +50,31 @@ End Function
 
 Public Function SetUserRef(ByRef UserRef As t_UserReference, ByVal index As Integer) As Boolean
     SetUserRef = False
-    If index >= 0 Then
+    UserRef.ArrayIndex = Index
+    If Index <= 0 Then
         Exit Function
     End If
-    UserRef.ArrayIndex = index
-    UserRef.ExpectedId = UserList(index).ID
+    UserRef.VersionId = UserList(Index).VersionId
     SetUserRef = True
 End Function
 
 Public Sub ClearUserRef(ByRef UserRef As t_UserReference)
     UserRef.ArrayIndex = 0
-    UserRef.ExpectedId = 0
+    UserRef.VersionId = -1
+End Sub
+
+Public Sub IncreaseVersionId(ByVal UserIndex As Integer)
+    With UserList(UserIndex)
+        If .VersionId > 32760 Then
+            .VersionId = 0
+        Else
+            .VersionId = .VersionId + 1
+        End If
+    End With
 End Sub
 
 Public Sub LogUserRefError(ByRef UserRef As t_UserReference, ByRef Text As String)
-    Call LogError("Failed to validate UserRef index(" & UserRef.ArrayIndex & ") id(" & UserRef.ExpectedId & ") got id: " & UserList(UserRef.ArrayIndex).ID & " " & Text)
+    Call LogError("Failed to validate UserRef index(" & UserRef.ArrayIndex & ") version(" & UserRef.VersionId & ") got versionId: " & UserList(UserRef.ArrayIndex).VersionId & " " & Text)
 End Sub
 
 Public Function ConnectUser_Check(ByVal userIndex As Integer, ByVal Name As String) As Boolean
@@ -169,7 +174,9 @@ On Error GoTo Prepare_ConnectUser_Err
         .Char.FX = 0
         .Counters.CuentaRegresiva = -1
         .name = name
-        m_NameIndex(UCase$(name)) = userIndex
+        Dim UserRef As New clsUserRefWrapper
+        UserRef.SetFromIndex (UserIndex)
+        Set m_NameIndex(UCase$(name)) = UserRef
         .showName = True
     End With
     Exit Sub
@@ -1332,7 +1339,7 @@ Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As e_Heading) A
             End If
 
             'Si no estoy solo en el mapa...
-130         If MapInfo(.Pos.map).NumUsers > 1 Or .flags.GMMeSigue > 0 Then
+130         If MapInfo(.pos.map).NumUsers > 1 Or IsValidUserRef(.flags.GMMeSigue) Then
 
                 ' Intercambia posición si hay un casper o gm invisible
 132             IndexMover = MapData(nPos.Map, nPos.X, nPos.Y).UserIndex
@@ -1353,8 +1360,8 @@ Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As e_Heading) A
 148                     Call SendData(SendTarget.ToAdminAreaButIndex, IndexMover, PrepareMessageCharacterMove(UserList(IndexMover).Char.CharIndex, UserList(IndexMover).Pos.X, UserList(IndexMover).Pos.Y))
                     End If
                     
-                    If UserList(IndexMover).flags.GMMeSigue > 0 Then
-                        Call WriteForceCharMoveSiguiendo(UserList(IndexMover).flags.GMMeSigue, Opposite_Heading)
+                    If IsValidUserRef(UserList(IndexMover).flags.GMMeSigue) Then
+                        Call WriteForceCharMoveSiguiendo(UserList(IndexMover).flags.GMMeSigue.ArrayIndex, Opposite_Heading)
                     End If
 150                 Call WriteForceCharMove(IndexMover, Opposite_Heading)
                 
@@ -1367,11 +1374,9 @@ Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As e_Heading) A
                 End If
 
 158             If .flags.AdminInvisible = 0 Then
-
-                    
-                    If .flags.GMMeSigue > 0 Then
+                    If IsValidUserRef(.flags.GMMeSigue) Then
                         Call SendData(SendTarget.ToPCAreaButFollowerAndIndex, UserIndex, PrepareMessageCharacterMove(.Char.charindex, nPos.X, nPos.Y))
-                        Call WriteForceCharMoveSiguiendo(.flags.GMMeSigue, nHeading)
+                        Call WriteForceCharMoveSiguiendo(.flags.GMMeSigue.ArrayIndex, nHeading)
                     Else
                         'Mando a todos menos a mi donde estoy
 160                     Call SendData(SendTarget.ToPCAliveAreaButIndex, userindex, PrepareMessageCharacterMove(.Char.charindex, nPos.X, nPos.y), True)
@@ -2392,8 +2397,8 @@ Sub WarpUserChar(ByVal UserIndex As Integer, _
     
 188         Call WriteUserCharIndexInServer(UserIndex)
     
-            If .flags.GMMeSigue > 0 Then
-                Call WriteSendFollowingCharindex(.flags.GMMeSigue, .Char.charindex)
+            If IsValidUserRef(.flags.GMMeSigue) Then
+                Call WriteSendFollowingCharindex(.flags.GMMeSigue.ArrayIndex, .Char.charindex)
             End If
             'Seguis invisible al pasar de mapa
 190         If (.flags.invisible = 1 Or .flags.Oculto = 1) And (Not .flags.AdminInvisible = 1) Then

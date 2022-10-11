@@ -8,6 +8,7 @@ Public Type PlayerInLobby
     SummonedFrom As t_WorldPos
     IsSummoned As Boolean
     user As t_UserReference
+    UserId As Long
     Connected As Boolean
     ReturnOnReconnect As Boolean
 End Type
@@ -140,7 +141,7 @@ On Error GoTo AddPlayer_Err
 144        End If
 146        Dim i As Integer
 148        For i = 0 To instance.RegisteredPlayers - 1
-150            If instance.Players(i).user.ExpectedId = .ID Then
+150            If instance.Players(i).UserId = .ID Then
 152                AddPlayer.Success = False
 154                AddPlayer.Message = AlreadyRegisteredMessage
 156                Exit Function
@@ -148,6 +149,7 @@ On Error GoTo AddPlayer_Err
 160        Next i
 162        Dim playerPos As Integer: playerPos = instance.RegisteredPlayers
 164        Call SetUserRef(instance.Players(playerPos).user, UserIndex)
+165        instance.Players(playerPos).UserId = UserList(UserIndex).ID
 166        instance.Players(playerPos).IsSummoned = False
 168        instance.Players(playerPos).Connected = True
 172        instance.Players(playerPos).ReturnOnReconnect = False
@@ -293,14 +295,14 @@ ForceReset_Err:
         Resume Next
 End Sub
 
-Public Sub RegisterDisconnectedUser(ByRef instance As t_Lobby, ByVal userIndex As Integer)
+Public Sub RegisterDisconnectedUser(ByRef instance As t_Lobby, ByVal DisconnectedUserIndex As Integer)
 On Error GoTo RegisterDisconnectedUser_Err
 100    If instance.State < AcceptingPlayers Then
 102        Exit Sub
 104    End If
 106    Dim i As Integer
 108    For i = 0 To instance.RegisteredPlayers - 1
-110        If instance.Players(i).user.ArrayIndex = UserIndex And IsValidUserRef(instance.Players(i).user) Then
+110        If instance.Players(i).User.ArrayIndex = DisconnectedUserIndex And IsValidUserRef(instance.Players(i).User) Then
 112            instance.Players(i).connected = False
 114            If instance.Players(i).IsSummoned Then
 116                instance.Players(i).ReturnOnReconnect = True
@@ -326,9 +328,9 @@ On Error GoTo RegisterReconnectedUser_Err
 108    Dim userID As Integer
 110    userID = UserList(userIndex).ID
 112    For i = 0 To instance.RegisteredPlayers - 1
-114        If instance.Players(i).user.ExpectedId = userID Then
+114        If instance.Players(i).UserId = UserId Then
 116            instance.Players(i).connected = True
-118            instance.Players(i).user.ArrayIndex = UserIndex
+118            Call SetUserRef(instance.Players(i).User, UserIndex)
 120            If instance.Players(i).ReturnOnReconnect Then
 122                Call SummonPlayer(instance, i)
 124            End If

@@ -821,6 +821,10 @@ Public Const STAT_MAXDEF              As Byte = 99
 ' ************************ TIPOS *******************************
 ' **************************************************************
 ' **************************************************************
+Public Type t_UserReference
+    ArrayIndex As Integer
+    VersionId As Integer
+End Type
 
 Public Type t_Hechizo
     AutoLanzar As Byte
@@ -1530,7 +1534,7 @@ Public Type t_UserFlags
     QuestOpenByObj As Boolean
     
     SigueUsuario As Integer
-    GMMeSigue As Integer
+    GMMeSigue As t_UserReference
     
     EnTorneo As Boolean
     
@@ -1907,6 +1911,10 @@ Public Type t_User
     Name As String
     Cuenta As String
     
+    'User types are created at startup and reused every time,
+    'the version id help to validate that a reference we stored is still valid,
+    'this value should be updated every time we reuse this instance
+    VersionId As Integer
     ID As Long
     Trabajo As t_UserTrabajo
     AccountID As Long

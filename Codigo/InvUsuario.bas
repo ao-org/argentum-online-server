@@ -477,8 +477,8 @@ Sub QuitarUserInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal Cant
             
         End With
         
-        If UserList(UserIndex).flags.GMMeSigue > 0 And UserIndex <> UserList(UserIndex).flags.GMMeSigue Then
-            Call QuitarUserInvItem(UserList(UserIndex).flags.GMMeSigue, Slot, Cantidad)
+        If IsValidUserRef(UserList(UserIndex).flags.GMMeSigue) And UserIndex <> UserList(UserIndex).flags.GMMeSigue.ArrayIndex Then
+            Call QuitarUserInvItem(UserList(UserIndex).flags.GMMeSigue.ArrayIndex, Slot, Cantidad)
         End If
 
         

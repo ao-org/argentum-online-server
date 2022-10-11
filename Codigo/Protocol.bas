@@ -3039,8 +3039,8 @@ Private Sub HandleCastSpell(ByVal UserIndex As Integer) ', ByVal server_crc As L
 124                         Call LanzarHechizo(.flags.Hechizo, UserIndex)
     
                         Else
-                            If .flags.GMMeSigue > 0 Then
-                                Call WriteNofiticarClienteCasteo(.flags.GMMeSigue, 1)
+                            If IsValidUserRef(.flags.GMMeSigue) Then
+                                Call WriteNofiticarClienteCasteo(.flags.GMMeSigue.ArrayIndex, 1)
                             End If
                             
                             If Hechizos(.Stats.UserHechizos(Spell)).AreaAfecta > 0 Then
@@ -3790,8 +3790,8 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 278                 If .flags.Hechizo > 0 Then
                         .Counters.controlHechizos.HechizosTotales = .Counters.controlHechizos.HechizosTotales + 1
 280                     Call LanzarHechizo(.flags.Hechizo, UserIndex)
-                        If .flags.GMMeSigue > 0 Then
-                            Call WriteNofiticarClienteCasteo(.flags.GMMeSigue, 0)
+                        If IsValidUserRef(.flags.GMMeSigue) Then
+                            Call WriteNofiticarClienteCasteo(.flags.GMMeSigue.ArrayIndex, 0)
                         End If
 282                     .flags.Hechizo = 0
                     Else
@@ -7754,8 +7754,8 @@ Private Sub HandleSendPosMovimiento(ByVal UserIndex As Integer)
 102         PosX = Reader.ReadString16()
 103         PosY = Reader.ReadString16()
 
-            If .flags.GMMeSigue > 0 Then
-                Call WriteRecievePosSeguimiento(.flags.GMMeSigue, PosX, PosY)
+            If IsValidUserRef(.flags.GMMeSigue) Then
+                Call WriteRecievePosSeguimiento(.flags.GMMeSigue.ArrayIndex, posX, posY)
                 'CUANDO DESCONECTA SEGUIDOR Y SEGUIDO VER FLAGS
             End If
             
@@ -7789,8 +7789,8 @@ Private Sub HandleNotifyInventariohechizos(ByVal UserIndex As Integer)
             hechiSel = Reader.ReadInt8()
             scrollSel = Reader.ReadInt8()
 
-            If .flags.GMMeSigue > 0 Then
-                Call WriteGetInventarioHechizos(.flags.GMMeSigue, Value, hechiSel, scrollSel)
+            If IsValidUserRef(.flags.GMMeSigue) Then
+                Call WriteGetInventarioHechizos(.flags.GMMeSigue.ArrayIndex, value, hechiSel, scrollSel)
             End If
             
         End With
@@ -9657,8 +9657,8 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
 
             End If
             
-            If .flags.GMMeSigue Then
-                UserList(.flags.GMMeSigue).Invent = UserList(UserIndex).Invent
+            If IsValidUserRef(.flags.GMMeSigue) Then
+                UserList(.flags.GMMeSigue.ArrayIndex).Invent = UserList(UserIndex).Invent
                 Call UpdateUserInv(True, UserIndex, 1)
             End If
 

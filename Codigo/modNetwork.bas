@@ -125,6 +125,7 @@ On Error GoTo OnServerConnect_Err:
         UserList(FreeUser).IP = Address
         UserList(FreeUser).ConnID = Connection
         UserList(FreeUser).Counters.OnConnectTimestamp = GetTickCount()
+        Call IncreaseVersionId(FreeUser)
         
         If FreeUser >= LastUser Then LastUser = FreeUser
         Debug.Assert Not IsValidUserRef(Mapping(Connection))
