@@ -1544,26 +1544,7 @@ Sub ClearAndSaveUser(ByVal UserIndex As Integer)
 100 With UserList(UserIndex)
 102         errordesc = "ERROR AL SETEAR NPC"
         
-104         aN = .flags.AtacadoPorNpc
-    
-106         If aN > 0 Then
-108             NpcList(aN).Movement = NpcList(aN).flags.OldMovement
-110             NpcList(aN).Hostile = NpcList(aN).flags.OldHostil
-112             NpcList(aN).flags.AttackedBy = vbNullString
-114             NpcList(aN).Target = 0
-    
-            End If
-    
-116         aN = .flags.NPCAtacado
-    
-118         If aN > 0 Then
-120             If NpcList(aN).flags.AttackedFirstBy = .name Then
-122                 NpcList(aN).flags.AttackedFirstBy = vbNullString
-                End If
-            End If
-    
-124         .flags.AtacadoPorNpc = 0
-126         .flags.NPCAtacado = 0
+104         Call ClearAttackerNpc(UserIndex)
         
 128         errordesc = "ERROR AL DESMONTAR"
     

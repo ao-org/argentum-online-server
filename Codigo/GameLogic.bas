@@ -59,9 +59,9 @@ AgregarAConsola_Err:
         Call TraceError(Err.Number, Err.Description, "ModLadder.AgregarAConsola", Erl)
 End Sub
 
-Public Function NameIndex(ByRef UserName As String) As Integer
+Public Function NameIndex(ByRef username As String) As clsUserRefWrapper
 
-100     NameIndex = m_NameIndex(UCase$(Replace(UserName, "+", " ")))
+100     Set NameIndex = m_NameIndex(UCase$(Replace(username, "+", " ")))
     
 End Function
 
@@ -370,29 +370,7 @@ Public Sub DoTileEvents(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal 
                     End If
     
                     'Te fusite del mapa. La criatura ya no es más tuya ni te reconoce como que vos la atacaste.
-134                 aN = .flags.AtacadoPorNpc
-    
-136                 If aN > 0 Then
-                        If NpcList(aN).Target = UserIndex Then
-138                         NpcList(aN).Movement = NpcList(aN).flags.OldMovement
-140                         NpcList(aN).Hostile = NpcList(aN).flags.OldHostil
-142                         NpcList(aN).flags.AttackedBy = vbNullString
-144                         NpcList(aN).Target = 0
-                        End If
-                    End If
-        
-146                 aN = .flags.NPCAtacado
-    
-148                 If aN > 0 Then
-150                     If NpcList(aN).flags.AttackedFirstBy = .Name Then
-152                         NpcList(aN).flags.AttackedFirstBy = vbNullString
-    
-                        End If
-    
-                    End If
-    
-154                 .flags.AtacadoPorNpc = 0
-156                 .flags.NPCAtacado = 0
+134                 Call ClearAttackerNpc(UserIndex)
     
 158             ElseIf MapData(Map, X, Y).TileExit.Map < 0 Then
 160                 If .flags.ReturnPos.Map <> 0 Then
@@ -408,27 +386,7 @@ Public Sub DoTileEvents(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal 
                         End If
                         
                         'Te fusite del mapa. La criatura ya no es más tuya ni te reconoce como que vos la atacaste.
-172                     aN = .flags.AtacadoPorNpc
-        
-174                     If aN > 0 Then
-176                         NpcList(aN).Movement = NpcList(aN).flags.OldMovement
-178                         NpcList(aN).Hostile = NpcList(aN).flags.OldHostil
-180                         NpcList(aN).flags.AttackedBy = vbNullString
-182                         NpcList(aN).Target = 0
-                        End If
-            
-184                     aN = .flags.NPCAtacado
-        
-186                     If aN > 0 Then
-188                         If NpcList(aN).flags.AttackedFirstBy = .Name Then
-190                             NpcList(aN).flags.AttackedFirstBy = vbNullString
-        
-                            End If
-        
-                        End If
-        
-192                     .flags.AtacadoPorNpc = 0
-194                     .flags.NPCAtacado = 0
+172                     Call ClearAttackerNpc(UserIndex)
                     End If
                 End If
             End If
@@ -440,6 +398,32 @@ Public Sub DoTileEvents(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal 
 ErrHandler:
 196     Call LogError("Error en DotileEvents. Error: " & Err.Number & " - Desc: " & Err.Description)
 
+End Sub
+
+Public Sub ClearAttackerNpc(ByVal UserIndex As Integer)
+    With UserList(UserIndex)
+        Dim aN As Integer
+100     aN = .flags.AtacadoPorNpc
+
+102     If aN > 0 Then
+104         If IsValidUserRef(NpcList(aN).TargetUser) And NpcList(aN).TargetUser.ArrayIndex = UserIndex Then
+106           NpcList(aN).Movement = NpcList(aN).flags.OldMovement
+108             NpcList(aN).Hostile = NpcList(aN).flags.OldHostil
+110             NpcList(aN).flags.AttackedBy = vbNullString
+112             Call SetUserRef(NpcList(aN).TargetUser, 0)
+114         End If
+116     End If
+
+118     aN = .flags.NPCAtacado
+
+120     If aN > 0 Then
+122        If NpcList(aN).flags.AttackedFirstBy = .name Then
+124            NpcList(aN).flags.AttackedFirstBy = vbNullString
+126        End If
+128     End If
+130     .flags.AtacadoPorNpc = 0
+132     .flags.NPCAtacado = 0
+    End With
 End Sub
 
 Function InRangoVision(ByVal UserIndex As Integer, ByVal X As Integer, ByVal Y As Integer) As Boolean

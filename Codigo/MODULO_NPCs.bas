@@ -473,7 +473,7 @@ Sub ResetNpcMainInfo(ByVal NpcIndex As Integer)
 138     NpcList(NpcIndex).Pos.Map = 0
 140     NpcList(NpcIndex).Pos.X = 0
 142     NpcList(NpcIndex).Pos.Y = 0
-144     NpcList(NpcIndex).Target = 0
+144     Call SetUserRef(NpcList(npcIndex).TargetUser, 0)
 146     NpcList(NpcIndex).TargetNPC = 0
 148     NpcList(NpcIndex).TipoItems = 0
 150     NpcList(NpcIndex).Veneno = 0
@@ -1591,19 +1591,21 @@ Sub DoFollow(ByVal NpcIndex As Integer, ByVal UserName As String)
 102         If .flags.Follow Then
         
 104             .flags.AttackedBy = vbNullString
-106             .Target = 0
+106             Call SetUserRef(.TargetUser, 0)
 108             .flags.Follow = False
 110             .Movement = .flags.OldMovement
 112             .Hostile = .flags.OldHostil
    
             Else
-        
-114             .flags.AttackedBy = UserName
-116             .Target = NameIndex(UserName)
-118             .flags.Follow = True
-120             .Movement = e_TipoAI.NpcDefensa
-122             .Hostile = 0
-
+                Dim player As clsUserRefWrapper
+                Set player = NameIndex(username)
+                If player.IsValid Then
+114                 .flags.AttackedBy = username
+116                 Call SetUserRef(.TargetUser, player.PlayerIndex())
+118                 .flags.Follow = True
+120                 .Movement = e_TipoAI.NpcDefensa
+122                 .Hostile = 0
+                End If
             End If
     
         End With
@@ -1623,7 +1625,7 @@ Public Sub FollowAmo(ByVal NpcIndex As Integer)
 102         .flags.Follow = True
 104         .Movement = e_TipoAI.SigueAmo
 106         .Hostile = 0
-108         .Target = 0
+108         Call SetUserRef(.TargetUser, 0)
 110         .TargetNPC = 0
         End With
 

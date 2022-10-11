@@ -1783,7 +1783,7 @@ Sub NPCAtacado(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
 
         'Guardamos el usuario que ataco el npc.
 104     If NpcList(NpcIndex).Movement <> Estatico And NpcList(NpcIndex).flags.AttackedFirstBy = vbNullString Then
-106         NpcList(NpcIndex).Target = UserIndex
+106         Call SetUserRef(NpcList(npcIndex).TargetUser, UserIndex)
 108         NpcList(NpcIndex).Hostile = 1
 110         NpcList(NpcIndex).flags.AttackedBy = UserList(UserIndex).Name
         End If
@@ -1965,26 +1965,8 @@ Sub UserDie(ByVal UserIndex As Integer)
             
 130         Call WriteUpdateHP(UserIndex)
 132         Call WriteUpdateSta(UserIndex)
-        
-134         aN = .flags.AtacadoPorNpc
-    
-136         If aN > 0 Then
-138             NpcList(aN).Movement = NpcList(aN).flags.OldMovement
-140             NpcList(aN).Hostile = NpcList(aN).flags.OldHostil
-142             NpcList(aN).flags.AttackedBy = vbNullString
-144             NpcList(aN).Target = 0
-            End If
-        
-146         aN = .flags.NPCAtacado
-    
-148         If aN > 0 Then
-150             If NpcList(aN).flags.AttackedFirstBy = .Name Then
-152                 NpcList(aN).flags.AttackedFirstBy = vbNullString
-                End If
-            End If
-    
-154         .flags.AtacadoPorNpc = 0
-156         .flags.NPCAtacado = 0
+            
+            Call ClearAttackerNpc(UserIndex)
     
 158         If MapData(.Pos.map, .Pos.X, .Pos.y).trigger <> e_Trigger.ZONAPELEA And MapInfo(.Pos.map).DropItems Then
 

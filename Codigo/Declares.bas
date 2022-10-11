@@ -2190,7 +2190,7 @@ Public Type t_Npc
     Comercia As Integer
     Craftea As Byte
     
-    Target As Long
+    TargetUser As t_UserReference
     TargetNPC As Long
     TipoItems As Integer
     

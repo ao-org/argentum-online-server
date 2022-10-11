@@ -419,9 +419,9 @@ Public Sub NpcLanzaSpellSobreArea(ByVal NpcIndex As Integer, ByVal SpellIndex As
 106         afectaNPCs = (.AreaAfecta = 2 Or .AreaAfecta = 3)
 108         mitadAreaRadio = CInt(.AreaRadio / 2)
         
-110         If NpcList(NpcIndex).Target > 0 Then
-112             PosCasteadaX = UserList(NpcList(NpcIndex).Target).Pos.X + RandomNumber(-2, 2)
-114             PosCasteadaY = UserList(NpcList(NpcIndex).Target).Pos.Y + RandomNumber(-2, 2)
+110         If IsValidUserRef(NpcList(npcIndex).TargetUser) Then
+112             PosCasteadaX = UserList(NpcList(npcIndex).TargetUser.ArrayIndex).pos.x + RandomNumber(-2, 2)
+114             PosCasteadaY = UserList(NpcList(npcIndex).TargetUser.ArrayIndex).pos.y + RandomNumber(-2, 2)
             Else
 116             PosCasteadaX = NpcList(NpcIndex).Pos.X + RandomNumber(-2, 2)
 118             PosCasteadaY = NpcList(NpcIndex).Pos.Y + RandomNumber(-1, 2)

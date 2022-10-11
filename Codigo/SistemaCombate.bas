@@ -412,7 +412,7 @@ Private Function UserImpactoNpc(ByVal UserIndex As Integer, ByVal npcIndex As In
 120         Call SubirSkillDeArmaActual(UserIndex)
         End If
         
-        NpcList(NpcIndex).Target = UserIndex
+        Call SetUserRef(NpcList(npcIndex).TargetUser, UserIndex)
 
         Exit Function
 
@@ -824,7 +824,7 @@ Private Function NpcDaño(ByVal npcIndex As Integer, ByVal UserIndex As Integer)
 170             NpcList(NpcIndex).Movement = NpcList(NpcIndex).flags.OldMovement
 172             NpcList(NpcIndex).Hostile = NpcList(NpcIndex).flags.OldHostil
 174             NpcList(NpcIndex).flags.AttackedBy = vbNullString
-176             NpcList(NpcIndex).Target = 0
+176             Call SetUserRef(NpcList(npcIndex).TargetUser, 0)
             End If
         
 178         Call UserDie(UserIndex)
@@ -869,8 +869,8 @@ Public Function NpcAtacaUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integ
 
 114     Call AllMascotasAtacanNPC(NpcIndex, UserIndex)
 
-116     If NpcList(NpcIndex).Target = 0 Then
-            NpcList(NpcIndex).Target = UserIndex
+116     If Not IsValidUserRef(NpcList(npcIndex).TargetUser) Then
+            Call SetUserRef(NpcList(npcIndex).TargetUser, UserIndex)
         End If
     
 118     If UserList(UserIndex).flags.AtacadoPorNpc = 0 And UserList(UserIndex).flags.AtacadoPorUser = 0 Then UserList(UserIndex).flags.AtacadoPorNpc = NpcIndex
@@ -1088,8 +1088,8 @@ Public Sub UsuarioAtacaNpc(ByVal UserIndex As Integer, ByVal npcIndex As Integer
             End If
             
             ' Cambiamos el objetivo del NPC si uno le pega cuerpo a cuerpo.
-132         If NpcList(NpcIndex).Target <> UserIndex Then
-134             NpcList(NpcIndex).Target = UserIndex
+132         If Not IsValidUserRef(NpcList(npcIndex).TargetUser) Or NpcList(npcIndex).TargetUser.ArrayIndex <> UserIndex Then
+134             Call SetUserRef(NpcList(npcIndex).TargetUser, UserIndex)
             End If
             
             ' Si te mimetizaste en forma de bicho y le pegas al chobi, el chobi te va a pegar.
@@ -2529,7 +2529,7 @@ Sub AllMascotasAtacanUser(ByVal victim As Integer, ByVal Maestro As Integer)
 106             If mascotaIndex > 0 Then
 108                 If NpcList(mascotaIndex).flags.AtacaUsuarios Then
 110                     NpcList(mascotaIndex).flags.AttackedBy = UserList(victim).Name
-112                     NpcList(mascotaIndex).Target = victim
+112                     Call SetUserRef(NpcList(mascotaIndex).TargetUser, victim)
 114                     NpcList(mascotaIndex).Movement = e_TipoAI.NpcDefensa
 116                     NpcList(mascotaIndex).Hostile = 1
                     End If
