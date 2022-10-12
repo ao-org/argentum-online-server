@@ -2236,7 +2236,7 @@ Public Type t_Npc
     NroCriaturas As Integer
     Criaturas() As t_CriaturasEntrenador
     MaestroNPC As Integer
-    MaestroUser As Integer
+    MaestroUser As t_UserReference
     Mascotas As Integer
     
     ' New!! Needed for pathfindig

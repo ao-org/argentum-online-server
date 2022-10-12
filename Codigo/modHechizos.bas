@@ -322,20 +322,20 @@ Sub NpcLanzaSpellSobreNpc(ByVal NpcIndex As Integer, ByVal TargetNPC As Integer,
           End If
 
           ' Mascotas dan experiencia al amo
-138       If .MaestroUser > 0 Then
-140         Call CalcularDarExp(.MaestroUser, TargetNPC, Daño)
+138       If IsValidUserRef(.MaestroUser) Then
+140         Call CalcularDarExp(.MaestroUser.ArrayIndex, TargetNPC, Daño)
 
             ' NPC de invasión
 142         If .flags.InvasionIndex Then
-144           Call SumarScoreInvasion(.flags.InvasionIndex, .MaestroUser, Daño)
+144           Call SumarScoreInvasion(.flags.InvasionIndex, .MaestroUser.ArrayIndex, Daño)
             End If
           End If
 
           'Muere
 146       If .Stats.MinHp < 1 Then
 148         .Stats.MinHp = 0
-            If NpcList(npcIndex).MaestroUser > 0 Then
-                Call PlayerKillNpc(.pos.map, TargetNPC, NpcList(npcIndex).MaestroUser, e_pet, npcIndex)
+            If IsValidUserRef(NpcList(npcIndex).MaestroUser) Then
+                Call PlayerKillNpc(.pos.map, TargetNPC, NpcList(npcIndex).MaestroUser.ArrayIndex, e_pet, npcIndex)
             End If
 150         Call MuereNpc(TargetNPC, 0)
             
@@ -765,7 +765,7 @@ Sub HechizoInvocacion(ByVal UserIndex As Integer, ByRef b As Boolean)
 146                         .MascotasIndex(Index) = ind
 148                         .MascotasType(Index) = NpcList(ind).Numero
                         
-150                         NpcList(ind).MaestroUser = UserIndex
+150                         Call SetUserRef(NpcList(ind).MaestroUser, userIndex)
 152                         NpcList(ind).Contadores.TiempoExistencia = IntervaloInvocacion
 154                         NpcList(ind).GiveGLD = 0
                             
@@ -807,7 +807,7 @@ Sub HechizoInvocacion(ByVal UserIndex As Integer, ByRef b As Boolean)
                                 ' Si no es un elemental, lo "guardamos"... lo matamos
 176                             If NpcList(.MascotasIndex(i)).Contadores.TiempoExistencia = 0 Then
                                     ' Le saco el maestro, para que no me lo quite de mis mascotas
-178                                 NpcList(.MascotasIndex(i)).MaestroUser = 0
+178                                 Call SetUserRef(NpcList(.MascotasIndex(i)).MaestroUser, 0)
                                     ' Lo borro
 180                                 Call QuitarNPC(.MascotasIndex(i))
                                     ' Saco el índice
@@ -827,7 +827,7 @@ Sub HechizoInvocacion(ByVal UserIndex As Integer, ByRef b As Boolean)
 190                         If .MascotasType(i) > 0 And .MascotasIndex(i) = 0 Then
 192                             .MascotasIndex(i) = SpawnNpc(.MascotasType(i), targetPos, True, True, False, UserIndex)
 
-194                             NpcList(.MascotasIndex(i)).MaestroUser = UserIndex
+194                             Call SetUserRef(NpcList(.MascotasIndex(i)).MaestroUser, userIndex)
 196                             Call FollowAmo(.MascotasIndex(i))
                             
 198                             b = True
@@ -2436,12 +2436,14 @@ Sub HechizoEstadoNPC(ByVal NpcIndex As Integer, ByVal hIndex As Integer, ByRef b
 184                 Call WriteConsoleMsg(UserIndex, "Este NPC no esta Paralizado", e_FontTypeNames.FONTTYPE_INFOIAO)
 186                 b = False
                 Else
+                    Dim IsValidMaster As Boolean
+                    IsValidMaster = IsValidUserRef(.MaestroUser)
                     ' Si el usuario es Armada o Caos y el NPC es de la misma faccion
 188                 b = ((esArmada(UserIndex) Or esCaos(UserIndex)) And .flags.Faccion = UserList(UserIndex).Faccion.Status)
                     'O si es mi propia mascota
-190                 b = b Or (.MaestroUser = UserIndex)
+190                 b = b Or (IsValidMaster And (.MaestroUser.ArrayIndex = userIndex))
                     'O si es mascota de otro usuario de la misma faccion
-192                 b = b Or ((esArmada(UserIndex) And esArmada(.MaestroUser)) Or (esCaos(UserIndex) And esCaos(.MaestroUser)))
+192                 b = b Or ((esArmada(userIndex) And (IsValidMaster And esArmada(.MaestroUser.ArrayIndex))) Or (esCaos(userIndex) And (IsValidMaster And esCaos(.MaestroUser.ArrayIndex))))
                     
 194                 If b Then
 196                     Call InfoHechizo(UserIndex)
@@ -2645,8 +2647,8 @@ Sub HechizoPropNPC(ByVal hIndex As Integer, ByVal NpcIndex As Integer, ByVal Use
 184             Call WriteLocaleMsg(UserIndex, "389", e_FontTypeNames.FONTTYPE_FIGHT, "la criatura¬" & DañoStr)
             End If
         
-186         If NpcList(NpcIndex).MaestroUser <= 0 Then
-188             Call CalcularDarExp(UserIndex, NpcIndex, Daño)
+186         If Not IsValidUserRef(NpcList(npcIndex).MaestroUser) Then
+188             Call CalcularDarExp(userIndex, npcIndex, Daño)
             End If
     
 190         Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareMessageTextOverChar(DañoStr, NpcList(NpcIndex).Char.charindex, vbRed))

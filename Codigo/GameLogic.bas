@@ -1495,9 +1495,9 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
 464                         Call WriteChatOverHead(UserIndex, "NPCDESC*" & NpcList(TempCharIndex).Numero, NpcList(TempCharIndex).Char.charindex, vbWhite)
                         End If
                     End If
-470             ElseIf NpcList(TempCharIndex).MaestroUser > 0 Then
+470             ElseIf IsValidUserRef(NpcList(TempCharIndex).MaestroUser) Then
                     If UserList(UserIndex).flags.Muerto = 0 Then
-472                     Call WriteConsoleMsg(UserIndex, "NPCNAME*" & NpcList(TempCharIndex).Numero & "* es mascota de " & UserList(NpcList(TempCharIndex).MaestroUser).name & " " & estatus, e_FontTypeNames.FONTTYPE_INFO)
+472                     Call WriteConsoleMsg(userIndex, "NPCNAME*" & NpcList(TempCharIndex).Numero & "* es mascota de " & UserList(NpcList(TempCharIndex).MaestroUser.ArrayIndex).name & " " & estatus, e_FontTypeNames.FONTTYPE_INFO)
                     End If
                 Else
                     If UserList(UserIndex).flags.Muerto = 0 Then

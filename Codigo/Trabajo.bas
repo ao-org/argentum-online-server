@@ -3104,7 +3104,7 @@ Sub DoDomar(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
 
         Dim NroPets          As Integer
     
-100     If NpcList(NpcIndex).MaestroUser = UserIndex Then
+100     If IsValidUserRef(NpcList(npcIndex).MaestroUser) And NpcList(npcIndex).MaestroUser.ArrayIndex = userIndex Then
 102         Call WriteConsoleMsg(UserIndex, "Ya domaste a esa criatura.", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
@@ -3116,15 +3116,10 @@ Sub DoDomar(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
             
 108         If .NroMascotas < MAXMASCOTAS And HayEspacioMascotas(UserIndex) Then
 
-110             If NpcList(NpcIndex).MaestroNPC > 0 Or NpcList(NpcIndex).MaestroUser > 0 Then
+110             If NpcList(npcIndex).MaestroNPC > 0 Or IsValidUserRef(NpcList(npcIndex).MaestroUser) Then
 112                 Call WriteConsoleMsg(UserIndex, "La criatura ya tiene amo.", e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
-
-                'If Not PuedeDomarMascota(UserIndex, NpcIndex) Then
-                '    Call WriteConsoleMsg(UserIndex, "No puedes domar más de dos criaturas del mismo tipo.", e_FontTypeNames.FONTTYPE_INFO)
-                '    Exit Sub
-                'End If
 
 114             puntosDomar = CInt(.Stats.UserAtributos(e_Atributos.Carisma)) * CInt(.Stats.UserSkills(e_Skill.Domar))
 
@@ -3145,7 +3140,7 @@ Sub DoDomar(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
 128                 .MascotasIndex(Index) = NpcIndex
 130                 .MascotasType(Index) = NpcList(NpcIndex).Numero
 
-132                 NpcList(NpcIndex).MaestroUser = UserIndex
+132                 Call SetUserRef(NpcList(npcIndex).MaestroUser, userIndex)
                     
                     .flags.ModificoMascotas = True
                     

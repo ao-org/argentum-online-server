@@ -817,8 +817,8 @@ Private Function NpcDaño(ByVal npcIndex As Integer, ByVal UserIndex As Integer)
 162     If UserList(UserIndex).Stats.MinHp <= 0 Then
     
 164         Call WriteNPCKillUser(UserIndex) ' Le informamos que ha muerto ;)
-166         If NpcList(NpcIndex).MaestroUser > 0 Then
-168             Call AllFollowAmo(NpcList(NpcIndex).MaestroUser)
+166         If IsValidUserRef(NpcList(npcIndex).MaestroUser) Then
+168             Call AllFollowAmo(NpcList(npcIndex).MaestroUser.ArrayIndex)
             Else
                 'Al matarlo no lo sigue mas
 170             NpcList(NpcIndex).Movement = NpcList(NpcIndex).flags.OldMovement
@@ -948,8 +948,8 @@ Private Sub NpcDañoNpc(ByVal Atacante As Integer, ByVal Victima As Integer)
 106             Call SendData(SendTarget.ToNPCAliveArea, Victima, PrepareMessageTextCharDrop(PonerPuntos(Daño), NpcList(Victima).Char.charindex, vbRed))
             
                 ' Mascotas dan experiencia al amo
-108             If .MaestroUser > 0 Then
-110                 Call CalcularDarExp(.MaestroUser, Victima, Daño)
+108             If IsValidUserRef(.MaestroUser) Then
+110                 Call CalcularDarExp(.MaestroUser.ArrayIndex, Victima, Daño)
                 End If
             
 112             If NpcList(Victima).Stats.MinHp < 1 Then
@@ -959,12 +959,12 @@ Private Sub NpcDañoNpc(ByVal Atacante As Integer, ByVal Victima As Integer)
 118                     .Hostile = .flags.OldHostil
                     End If
                 
-120                 If .MaestroUser > 0 Then
+120                 If IsValidUserRef(.MaestroUser) Then
 122                     Call FollowAmo(Atacante)
-                        Call PlayerKillNpc(.pos.map, Victima, .MaestroUser, e_pet, Atacante)
+                        Call PlayerKillNpc(.pos.map, Victima, .MaestroUser.ArrayIndex, e_pet, Atacante)
                     End If
                 
-124                 Call MuereNpc(Victima, .MaestroUser)
+124                 Call MuereNpc(Victima, .MaestroUser.ArrayIndex)
 
                 Else
 126                 Call SendData(SendTarget.ToNPCAliveArea, Victima, PrepareMessageNpcUpdateHP(Victima))
@@ -1201,8 +1201,8 @@ Public Sub UsuarioAtaca(ByVal UserIndex As Integer)
 140             Index = MapData(AttackPos.Map, AttackPos.X, AttackPos.Y).NpcIndex
 
 142             If NpcList(Index).Attackable Then
-144                 If NpcList(Index).MaestroUser > 0 And MapInfo(NpcList(Index).Pos.Map).Seguro = 1 Then
-146                     Call WriteConsoleMsg(UserIndex, "No podés atacar mascotas en zonas seguras", e_FontTypeNames.FONTTYPE_FIGHT)
+144                 If IsValidUserRef(NpcList(Index).MaestroUser) And MapInfo(NpcList(Index).pos.map).Seguro = 1 Then
+146                     Call WriteConsoleMsg(userIndex, "No podés atacar mascotas en zonas seguras", e_FontTypeNames.FONTTYPE_FIGHT)
                         Exit Sub
                     End If
 
@@ -1995,7 +1995,8 @@ Public Function PuedeAtacarNPC(ByVal AttackerIndex As Integer, ByVal NpcIndex As
 
         End If
 
-
+        Dim IsPet As Boolean
+        IsPet = IsValidUserRef(NpcList(npcIndex).MaestroUser)
         'Si el usuario pertenece a una faccion
 140     If esArmada(AttackerIndex) Or esCaos(AttackerIndex) Then
             ' Y el NPC pertenece a la misma faccion
@@ -2006,8 +2007,8 @@ Public Function PuedeAtacarNPC(ByVal AttackerIndex As Integer, ByVal NpcIndex As
             End If
             
             ' Si es una mascota, checkeamos en el Maestro
-148         If NpcList(NpcIndex).MaestroUser > 0 Then
-150             If UserList(NpcList(NpcIndex).MaestroUser).Faccion.Status = UserList(AttackerIndex).Faccion.Status Then
+148         If IsPet Then
+150             If UserList(NpcList(npcIndex).MaestroUser.ArrayIndex).Faccion.Status = UserList(attackerIndex).Faccion.Status Then
 152                 Call WriteConsoleMsg(attackerIndex, "No podés atacar NPCs de tu misma facción, para hacerlo debes desenlistarte.", e_FontTypeNames.FONTTYPE_INFO)
 154                 PuedeAtacarNPC = False
                     Exit Function
@@ -2016,7 +2017,7 @@ Public Function PuedeAtacarNPC(ByVal AttackerIndex As Integer, ByVal NpcIndex As
         End If
         
 156     If Status(AttackerIndex) = Ciudadano Then
-158         If NpcList(NpcIndex).MaestroUser > 0 And NpcList(NpcIndex).MaestroUser = AttackerIndex Then
+158         If IsPet And NpcList(npcIndex).MaestroUser.ArrayIndex = attackerIndex Then
 160             Call WriteConsoleMsg(AttackerIndex, "No puedes atacar a tus mascotas siendo un ciudadano.", e_FontTypeNames.FONTTYPE_INFO)
 162             PuedeAtacarNPC = False
                 Exit Function
@@ -2042,8 +2043,8 @@ Public Function PuedeAtacarNPC(ByVal AttackerIndex As Integer, ByVal NpcIndex As
             End If
             
             'Es el NPC mascota de alguien?
-180         If NpcList(NpcIndex).MaestroUser > 0 Then
-182             Select Case UserList(NpcList(NpcIndex).MaestroUser).Faccion.Status
+180         If IsPet Then
+182             Select Case UserList(NpcList(npcIndex).MaestroUser.ArrayIndex).Faccion.Status
                     Case e_Facciones.Armada
 184                     If UserList(AttackerIndex).flags.Seguro Then
 186                         Call WriteConsoleMsg(AttackerIndex, "Debes quitar el seguro para atacar mascotas de la Armada Real (/seg)", e_FontTypeNames.FONTTYPE_INFO)
@@ -2098,12 +2099,12 @@ Sub CalcularDarExp(ByVal UserIndex As Integer, ByVal npcIndex As Integer, ByVal 
         
         On Error GoTo CalcularDarExp_Err
         
-100     If NpcList(NpcIndex).MaestroUser <> 0 Then
+100     If NpcList(npcIndex).MaestroUser.ArrayIndex <> 0 Then
             Exit Sub
         End If
 
 102     If UserList(UserIndex).Grupo.EnGrupo Then
-104         Call CalcularDarExpGrupal(UserIndex, npcIndex, ElDaño)
+104         Call CalcularDarExpGrupal(userIndex, npcIndex, ElDaño)
         Else
 
             Dim ExpaDar As Double

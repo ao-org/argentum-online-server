@@ -6060,7 +6060,7 @@ Private Sub HandlePetStand(ByVal UserIndex As Integer)
             End If
         
             'Make sure it's his pet
-114         If NpcList(.flags.TargetNPC).MaestroUser <> UserIndex Then Exit Sub
+114         If Not IsValidUserRef(NpcList(.flags.TargetNPC).MaestroUser) Or NpcList(.flags.TargetNPC).MaestroUser.ArrayIndex <> userIndex Then Exit Sub
         
             'Do it!
 116         NpcList(.flags.TargetNPC).Movement = e_TipoAI.Estatico
@@ -6115,7 +6115,7 @@ Private Sub HandlePetFollow(ByVal UserIndex As Integer)
             End If
         
             'Make usre it's the user's pet
-114         If NpcList(.flags.TargetNPC).MaestroUser <> UserIndex Then Exit Sub
+114         If Not IsValidUserRef(NpcList(.flags.TargetNPC).MaestroUser) Or NpcList(.flags.TargetNPC).MaestroUser.ArrayIndex <> userIndex Then Exit Sub
         
             'Do it
 116         Call FollowAmo(.flags.TargetNPC)
@@ -6159,7 +6159,7 @@ Private Sub HandlePetLeave(ByVal UserIndex As Integer)
             End If
         
             'Make usre it's the user's pet
-110         If NpcList(.flags.TargetNPC).MaestroUser <> UserIndex Then Exit Sub
+110         If Not IsValidUserRef(NpcList(.flags.TargetNPC).MaestroUser) Or NpcList(.flags.TargetNPC).MaestroUser.ArrayIndex <> userIndex Then Exit Sub
 
 112         Call QuitarNPC(.flags.TargetNPC)
 

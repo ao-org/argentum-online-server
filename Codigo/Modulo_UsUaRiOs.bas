@@ -621,7 +621,7 @@ On Error GoTo Complete_ConnectUser_Err
 1020                    .MascotasIndex(i) = SpawnNpc(.MascotasType(i), .Pos, False, False, False, UserIndex)
                     
 1025                    If .MascotasIndex(i) > 0 Then
-1030                        NpcList(.MascotasIndex(i)).MaestroUser = UserIndex
+1030                        Call SetUserRef(NpcList(.MascotasIndex(i)).MaestroUser, userIndex)
 1035                        Call FollowAmo(.MascotasIndex(i))
                         
                          Else
@@ -1799,8 +1799,8 @@ Sub NPCAtacado(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
 118         Call VolverCriminal(UserIndex)
         End If
         
-120     If NpcList(NpcIndex).MaestroUser > 0 And NpcList(NpcIndex).MaestroUser <> UserIndex Then
-122         Call AllMascotasAtacanUser(UserIndex, NpcList(NpcIndex).MaestroUser)
+120     If IsValidUserRef(NpcList(npcIndex).MaestroUser) And NpcList(npcIndex).MaestroUser.ArrayIndex <> userIndex Then
+122         Call AllMascotasAtacanUser(userIndex, NpcList(npcIndex).MaestroUser.ArrayIndex)
         End If
 
 124     'Call AllMascotasAtacanNPC(NpcIndex, UserIndex)
@@ -2690,7 +2690,7 @@ Private Sub WarpMascotas(ByVal UserIndex As Integer)
 108             iMinHP = NpcList(Index).Stats.MinHp
 110             PetTiempoDeVida = NpcList(Index).Contadores.TiempoExistencia
             
-112             NpcList(Index).MaestroUser = 0
+112             Call SetUserRef(NpcList(Index).MaestroUser, 0)
             
 114             Call QuitarNPC(Index)
 
@@ -2727,7 +2727,7 @@ Private Sub WarpMascotas(ByVal UserIndex As Integer)
 
                     ' Nos aseguramos de que conserve el hp, si estaba danado
 148                 If iMinHP Then NpcList(Index).Stats.MinHp = iMinHP
-                    NpcList(Index).MaestroUser = UserIndex
+                    Call SetUserRef(NpcList(Index).MaestroUser, userIndex)
 150                 Call FollowAmo(Index)
             
                 Else

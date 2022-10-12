@@ -579,19 +579,19 @@ Public Sub SeguirAmo(ByVal NpcIndex As Integer)
         
 100     With NpcList(NpcIndex)
         
-102         If .MaestroUser = 0 Or Not .flags.Follow Then Exit Sub
+102         If Not IsValidUserRef(.MaestroUser) Or Not .flags.Follow Then Exit Sub
         
             ' Si la mascota no tiene objetivo establecido.
 104         If Not IsValidUserRef(.TargetUser) And .TargetNPC = 0 Then
             
-106             If EnRangoVision(NpcIndex, .MaestroUser) Then
-108                 If UserList(.MaestroUser).flags.Muerto = 0 And _
-                        UserList(.MaestroUser).flags.invisible = 0 And _
-                        UserList(.MaestroUser).flags.Oculto = 0 And _
-                        Distancia(.Pos, UserList(.MaestroUser).Pos) > 3 Then
+106             If EnRangoVision(npcIndex, .MaestroUser.ArrayIndex) Then
+108                 If UserList(.MaestroUser.ArrayIndex).flags.Muerto = 0 And _
+                        UserList(.MaestroUser.ArrayIndex).flags.invisible = 0 And _
+                        UserList(.MaestroUser.ArrayIndex).flags.Oculto = 0 And _
+                        Distancia(.pos, UserList(.MaestroUser.ArrayIndex).pos) > 3 Then
                     
                         ' Caminamos cerca del usuario
-110                     Call AI_CaminarConRumbo(NpcIndex, UserList(.MaestroUser).Pos)
+110                     Call AI_CaminarConRumbo(npcIndex, UserList(.MaestroUser.ArrayIndex).pos)
                         Exit Sub
                     
                     End If
@@ -617,7 +617,7 @@ Private Sub RestoreOldMovement(ByVal NpcIndex As Integer)
 104         .TargetNPC = 0
         
             ' Si el NPC no tiene maestro, reseteamos el movimiento que tenia antes.
-106         If .MaestroUser = 0 Then
+106         If Not IsValidUserRef(.MaestroUser) Then
 108             .Movement = .flags.OldMovement
 110             .Hostile = .flags.OldHostil
 112             .flags.AttackedBy = vbNullString
