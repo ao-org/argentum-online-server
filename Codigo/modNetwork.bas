@@ -125,7 +125,6 @@ On Error GoTo OnServerConnect_Err:
         UserList(FreeUser).IP = Address
         UserList(FreeUser).ConnID = Connection
         UserList(FreeUser).Counters.OnConnectTimestamp = GetTickCount()
-        Call IncreaseVersionId(FreeUser)
         
         If FreeUser >= LastUser Then LastUser = FreeUser
         Debug.Assert Not IsValidUserRef(Mapping(Connection))
@@ -149,31 +148,31 @@ Private Sub OnServerClose(ByVal Connection As Long)
 On Error GoTo OnServerClose_Err:
     
     Dim UserRef As t_UserReference
-    UserRef = Mapping(Connection)
-    If IsFeatureEnabled("debug_connections") Then
-        If UserRef.ArrayIndex > 0 Then
-            Call AddLogToCircularBuffer("OnServerClose disconnected user index: " & UserRef.ArrayIndex & " With connection id: " & Connection & " with name: " & UserList(UserRef.ArrayIndex).name & " and ip" & UserList(UserRef.ArrayIndex).IP)
-        Else
-            Call AddLogToCircularBuffer("OnServerClose disconnected user index: " & UserRef.ArrayIndex & " With connection id: " & Connection)
-        End If
-    End If
+100    UserRef = Mapping(Connection)
+102    If IsFeatureEnabled("debug_connections") Then
+104        If UserRef.ArrayIndex > 0 Then
+106            Call AddLogToCircularBuffer("OnServerClose disconnected user index: " & UserRef.ArrayIndex & " With connection id: " & Connection & " with name: " & UserList(UserRef.ArrayIndex).name & " and ip" & UserList(UserRef.ArrayIndex).IP)
+108        Else
+110            Call AddLogToCircularBuffer("OnServerClose disconnected user index: " & UserRef.ArrayIndex & " With connection id: " & Connection)
+112        End If
+114    End If
     
-    Debug.Assert IsValidUserRef(UserRef)
-    If Not IsValidUserRef(UserRef) Then Exit Sub
+116    Debug.Assert IsValidUserRef(UserRef)
+118    If Not IsValidUserRef(UserRef) Then Exit Sub
     
-    If UserList(UserRef.ArrayIndex).flags.UserLogged Then
-        Call CloseSocketSL(UserRef.ArrayIndex)
-        Call Cerrar_Usuario(UserRef.ArrayIndex)
-    Else
-        Call CloseSocket(UserRef.ArrayIndex)
-    End If
+120    If UserList(UserRef.ArrayIndex).flags.UserLogged Then
+122        Call CloseSocketSL(UserRef.ArrayIndex)
+124        Call Cerrar_Usuario(UserRef.ArrayIndex)
+126    Else
+128        Call CloseSocket(UserRef.ArrayIndex)
+130    End If
     
-    UserList(UserRef.ArrayIndex).ConnIDValida = False
-    UserList(UserRef.ArrayIndex).ConnID = 0
-    Call ClearUserRef(Mapping(Connection))
+132    UserList(UserRef.ArrayIndex).ConnIDValida = False
+134    UserList(UserRef.ArrayIndex).ConnID = 0
+136    Call ClearUserRef(Mapping(Connection))
+138    Call IncreaseVersionId(UserRef.ArrayIndex)
     
-    
-    Exit Sub
+140    Exit Sub
     
 OnServerClose_Err:
     Call ForcedClose(UserRef.ArrayIndex, Connection)
@@ -212,6 +211,7 @@ On Error GoTo ForcedClose_Err:
 104     Call Server.Flush(Connection)
 106     Call Server.Kick(Connection, True)
 108     Call ClearUserRef(Mapping(Connection))
+110     Call IncreaseVersionId(userIndex)
         Exit Sub
 ForcedClose_Err:
     Call TraceError(Err.Number, Err.Description, "modNetwork.ForcedClose", Erl)
@@ -229,11 +229,11 @@ On Error GoTo CheckDisconnectedUsers_Err:
         'Conexion activa? y es un usuario loggeado?
 102     If UserList(iUserIndex).ConnIDValida = 0 And UserList(iUserIndex).flags.UserLogged And currentTime - UserList(iUserIndex).Counters.TimeLastReset > DisconnectTimeout Then
 106         'mato los comercios seguros
-110         If UserList(iUserIndex).ComUsu.DestUsu > 0 Then
-112             If UserList(UserList(iUserIndex).ComUsu.DestUsu).flags.UserLogged Then
-114                 If UserList(UserList(iUserIndex).ComUsu.DestUsu).ComUsu.DestUsu = iUserIndex Then
-116                     Call WriteConsoleMsg(UserList(iUserIndex).ComUsu.DestUsu, "Comercio cancelado por el otro usuario.", e_FontTypeNames.FONTTYPE_TALK)
-118                     Call FinComerciarUsu(UserList(iUserIndex).ComUsu.DestUsu)
+110         If UserList(iUserIndex).ComUsu.DestUsu.ArrayIndex > 0 Then
+112             If IsValidUserRef(UserList(iUserIndex).ComUsu.DestUsu) And UserList(UserList(iUserIndex).ComUsu.DestUsu.ArrayIndex).flags.UserLogged Then
+114                 If UserList(UserList(iUserIndex).ComUsu.DestUsu.ArrayIndex).ComUsu.DestUsu.ArrayIndex = iUserIndex Then
+116                     Call WriteConsoleMsg(UserList(iUserIndex).ComUsu.DestUsu.ArrayIndex, "Comercio cancelado por el otro usuario.", e_FontTypeNames.FONTTYPE_TALK)
+118                     Call FinComerciarUsu(UserList(iUserIndex).ComUsu.DestUsu.ArrayIndex)
                     End If
                 End If
 120             Call FinComerciarUsu(iUserIndex)

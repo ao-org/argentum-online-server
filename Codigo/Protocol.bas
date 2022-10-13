@@ -2686,10 +2686,10 @@ Private Sub HandleUserCommerceEnd(ByVal UserIndex As Integer)
         
             'Quits commerce mode with user
             
-102         If .ComUsu.DestUsu > 0 Then
-                If UserList(.ComUsu.DestUsu).ComUsu.DestUsu = UserIndex Then
-104                 Call WriteConsoleMsg(.ComUsu.DestUsu, .name & " ha dejado de comerciar con vos.", e_FontTypeNames.FONTTYPE_TALK)
-106                 Call FinComerciarUsu(.ComUsu.DestUsu)
+102         If IsValidUserRef(.ComUsu.DestUsu) Then
+                If UserList(.ComUsu.DestUsu.ArrayIndex).ComUsu.DestUsu.ArrayIndex = userIndex Then
+104                 Call WriteConsoleMsg(.ComUsu.DestUsu.ArrayIndex, .name & " ha dejado de comerciar con vos.", e_FontTypeNames.FONTTYPE_TALK)
+106                 Call FinComerciarUsu(.ComUsu.DestUsu.ArrayIndex)
                 
                 'Send data in the outgoing buffer of the other user
 
@@ -2784,7 +2784,7 @@ Private Sub HandleUserCommerceReject(ByVal UserIndex As Integer)
     
 100     With UserList(UserIndex)
 
-102         otherUser = .ComUsu.DestUsu
+102         otherUser = .ComUsu.DestUsu.ArrayIndex
         
             'Offer rejected
 104         If otherUser > 0 Then
@@ -4045,66 +4045,42 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                     End If
 
 616             Case e_Skill.Grupo
-                    'If UserList(UserIndex).Grupo.EnGrupo = False Then
                     'Target whatever is in that tile
-                    'Call LookatTile(UserIndex, UserList(UserIndex).Pos.Map, X, Y)
-                    
 618                 tU = .flags.TargetUser
                     
-                    'Call WritePreguntaBox(UserIndex, UserList(UserIndex).name & " te invitó a unirte a su grupo. ¿Deseas unirte?")
-                    
 620                 If tU > 0 And tU <> UserIndex Then
-
-                        'Can't steal administrative players
 622                     If UserList(UserIndex).Grupo.EnGrupo = False Then
 624                         If UserList(tU).flags.Muerto = 0 Then
 626                             If Abs(.Pos.X - X) + Abs(.Pos.Y - Y) > 8 Then
 628                                 Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
-                                    'Call WriteConsoleMsg(UserIndex, "Estís demasiado lejos.", e_FontTypeNames.FONTTYPE_INFO)
 630                                 Call WriteWorkRequestTarget(UserIndex, 0)
                                     Exit Sub
-
                                 End If
-                                         
 632                             If UserList(UserIndex).Grupo.CantidadMiembros = 0 Then
-634                                 UserList(UserIndex).Grupo.Lider = UserIndex
-636                                 UserList(UserIndex).Grupo.Miembros(1) = UserIndex
+634                                 Call SetUserRef(UserList(userIndex).Grupo.Lider, userIndex)
+636                                 Call SetUserRef(UserList(userIndex).Grupo.Miembros(1), userIndex)
 638                                 UserList(UserIndex).Grupo.CantidadMiembros = 1
 640                                 Call InvitarMiembro(UserIndex, tU)
                                 Else
-642                                 UserList(UserIndex).Grupo.Lider = UserIndex
+642                                 Call SetUserRef(UserList(userIndex).Grupo.Lider, userIndex)
 644                                 Call InvitarMiembro(UserIndex, tU)
-
                                 End If
-                                         
                             Else
 646                             Call WriteLocaleMsg(UserIndex, "7", e_FontTypeNames.FONTTYPE_INFO)
-                                'Call WriteConsoleMsg(UserIndex, "El usuario esta muerto.", e_FontTypeNames.FONTTYPE_INFOIAO)
 648                             Call WriteWorkRequestTarget(UserIndex, 0)
-
                             End If
-
                         Else
-
-650                         If UserList(UserIndex).Grupo.Lider = UserIndex Then
+650                         If UserList(userIndex).Grupo.Lider.ArrayIndex = userIndex Then
 652                             Call InvitarMiembro(UserIndex, tU)
                             Else
-654                             Call WriteConsoleMsg(UserIndex, "Tu no podés invitar usuarios, debe hacerlo " & UserList(UserList(UserIndex).Grupo.Lider).name & ".", e_FontTypeNames.FONTTYPE_INFOIAO)
+654                             Call WriteConsoleMsg(userIndex, "Tu no podés invitar usuarios, debe hacerlo " & UserList(UserList(userIndex).Grupo.Lider.ArrayIndex).name & ".", e_FontTypeNames.FONTTYPE_INFOIAO)
 656                             Call WriteWorkRequestTarget(UserIndex, 0)
-
                             End If
-
                         End If
-
                     Else
 658                     Call WriteLocaleMsg(UserIndex, "261", e_FontTypeNames.FONTTYPE_INFO)
-
                     End If
-
-                    ' End If
 660             Case e_Skill.MarcaDeClan
-
-                    'If UserList(UserIndex).Grupo.EnGrupo = False Then
                     'Target whatever is in that tile
                     Dim clan_nivel As Byte
                 
@@ -4918,22 +4894,20 @@ Private Sub HandleUserCommerceOffer(ByVal UserIndex As Integer)
             
 102         Slot = Reader.ReadInt8()
 104         amount = Reader.ReadInt32()
-        
+            
+            'Is the commerce attempt valid??
+            If Not IsValidUserRef(.ComUsu.DestUsu) Or UserList(tUser).ComUsu.DestUsu.ArrayIndex <> userIndex Then
+                Call FinComerciarUsu(userIndex)
+                Exit Sub
+            End If
             'Get the other player
-106         tUser = .ComUsu.DestUsu
+106         tUser = .ComUsu.DestUsu.ArrayIndex
         
             'If Amount is invalid, or slot is invalid and it's not gold, then ignore it.
 108         If ((Slot < 1 Or Slot > UserList(UserIndex).CurrentInventorySlots) And Slot <> FLAGORO) Or amount <= 0 Then Exit Sub
         
             'Is the other player valid??
 110         If tUser < 1 Or tUser > MaxUsers Then Exit Sub
-        
-            'Is the commerce attempt valid??
-112         If UserList(tUser).ComUsu.DestUsu <> UserIndex Then
-114             Call FinComerciarUsu(UserIndex)
-                Exit Sub
-
-            End If
         
             'Is he still logged??
 116         If Not UserList(tUser).flags.UserLogged Then
@@ -5877,12 +5851,12 @@ Private Sub HandleQuit(ByVal UserIndex As Integer)
             End If
         
             'exit secure commerce
-106         If .ComUsu.DestUsu > 0 Then
-108             tUser = .ComUsu.DestUsu
+106         If .ComUsu.DestUsu.ArrayIndex > 0 Then
+108             tUser = .ComUsu.DestUsu.ArrayIndex
             
-110             If UserList(tUser).flags.UserLogged Then
+110             If IsValidUserRef(.ComUsu.DestUsu) And UserList(tUser).flags.UserLogged Then
             
-112                 If UserList(tUser).ComUsu.DestUsu = UserIndex Then
+112                 If UserList(tUser).ComUsu.DestUsu.ArrayIndex = userIndex Then
 114                     Call WriteConsoleMsg(tUser, "Comercio cancelado por el otro usuario", e_FontTypeNames.FONTTYPE_TALK)
 116                     Call FinComerciarUsu(tUser)
 
@@ -6189,9 +6163,9 @@ Private Sub HandleGrupoMsg(ByVal UserIndex As Integer)
 
                     Dim i As Byte
          
-110                 For i = 1 To UserList(.Grupo.Lider).Grupo.CantidadMiembros
-112                     Call WriteConsoleMsg(UserList(.Grupo.Lider).Grupo.Miembros(i), .Name & "> " & chat, e_FontTypeNames.FONTTYPE_New_Amarillo_Verdoso)
-114                     Call WriteChatOverHead(UserList(.Grupo.Lider).Grupo.Miembros(i), chat, UserList(UserIndex).Char.CharIndex, &HFF8000)
+110                 For i = 1 To UserList(.Grupo.Lider.ArrayIndex).Grupo.CantidadMiembros
+112                     Call WriteConsoleMsg(UserList(.Grupo.Lider.ArrayIndex).Grupo.Miembros(i).ArrayIndex, .name & "> " & chat, e_FontTypeNames.FONTTYPE_New_Amarillo_Verdoso)
+114                     Call WriteChatOverHead(UserList(.Grupo.Lider.ArrayIndex).Grupo.Miembros(i).ArrayIndex, chat, UserList(userIndex).Char.charindex, &HFF8000)
 116                 Next i
                 Else
 118                 Call WriteConsoleMsg(UserIndex, "Grupo> No estas en ningun grupo.", e_FontTypeNames.FONTTYPE_New_GRUPO)
@@ -6638,7 +6612,7 @@ Private Sub HandleCommerceStart(ByVal UserIndex As Integer)
                 End If
             
                 'Initialize some variables...
-154             .ComUsu.DestUsu = .flags.TargetUser
+154             Call SetUserRef(.ComUsu.DestUsu, .flags.TargetUser)
 156             .ComUsu.DestNick = UserList(.flags.TargetUser).Name
 158             .ComUsu.cant = 0
 160             .ComUsu.Objeto = 0
@@ -10127,53 +10101,47 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
                     Case 1
 110                     Log = "Repuesta Afirmativa 1"
 
-                        'Call WriteConsoleMsg(UserIndex, "El usuario desea unirse al grupo.", e_FontTypeNames.FONTTYPE_SUBASTA)
-                        ' UserList(UserIndex).Grupo.PropuestaDe = 0
-112                     If UserList(UserIndex).Grupo.PropuestaDe <> 0 Then
+112                     If IsValidUserRef(UserList(userIndex).Grupo.PropuestaDe) Then
                 
-114                         If UserList(UserList(UserIndex).Grupo.PropuestaDe).Grupo.Lider <> UserList(UserIndex).Grupo.PropuestaDe Then
-116                             Call WriteConsoleMsg(UserIndex, "¡El lider del grupo a cambiado, imposible unirse!", e_FontTypeNames.FONTTYPE_INFOIAO)
+114                         If UserList(UserList(userIndex).Grupo.PropuestaDe.ArrayIndex).Grupo.Lider.ArrayIndex <> UserList(userIndex).Grupo.PropuestaDe.ArrayIndex Then
+116                             Call WriteConsoleMsg(userIndex, "¡El lider del grupo a cambiado, imposible unirse!", e_FontTypeNames.FONTTYPE_INFOIAO)
                             Else
                         
 118                             Log = "Repuesta Afirmativa 1-1 "
                         
-120                             If UserList(UserList(UserIndex).Grupo.PropuestaDe).Grupo.Lider = 0 Then
-122                                 Call WriteConsoleMsg(UserIndex, "¡El grupo ya no existe!", e_FontTypeNames.FONTTYPE_INFOIAO)
+120                             If Not IsValidUserRef(UserList(UserList(userIndex).Grupo.PropuestaDe.ArrayIndex).Grupo.Lider) Then
+122                                 Call WriteConsoleMsg(userIndex, "¡El grupo ya no existe!", e_FontTypeNames.FONTTYPE_INFOIAO)
                                 Else
-                            
 124                                 Log = "Repuesta Afirmativa 1-2 "
-                            
-126                                 If UserList(UserList(UserIndex).Grupo.PropuestaDe).Grupo.CantidadMiembros = 1 Then
-128                                     Call WriteLocaleMsg(UserList(UserIndex).Grupo.PropuestaDe, "36", e_FontTypeNames.FONTTYPE_INFOIAO)
+126                                 If UserList(UserList(userIndex).Grupo.PropuestaDe.ArrayIndex).Grupo.CantidadMiembros = 1 Then
+128                                     Call WriteLocaleMsg(UserList(userIndex).Grupo.PropuestaDe.ArrayIndex, "36", e_FontTypeNames.FONTTYPE_INFOIAO)
                                         'Call WriteConsoleMsg(UserList(UserIndex).Grupo.PropuestaDe, "íEl grupo a sido creado!", e_FontTypeNames.FONTTYPE_INFOIAO)
-130                                     UserList(UserList(UserIndex).Grupo.PropuestaDe).Grupo.EnGrupo = True
+130                                     UserList(UserList(userIndex).Grupo.PropuestaDe.ArrayIndex).Grupo.EnGrupo = True
 132                                     Log = "Repuesta Afirmativa 1-3 "
-
                                     End If
                                 
 134                                 Log = "Repuesta Afirmativa 1-4"
-136                                 UserList(UserList(UserIndex).Grupo.PropuestaDe).Grupo.CantidadMiembros = UserList(UserList(UserIndex).Grupo.PropuestaDe).Grupo.CantidadMiembros + 1
-138                                 UserList(UserList(UserIndex).Grupo.PropuestaDe).Grupo.Miembros(UserList(UserList(UserIndex).Grupo.PropuestaDe).Grupo.CantidadMiembros) = UserIndex
+136                                 UserList(UserList(userIndex).Grupo.PropuestaDe.ArrayIndex).Grupo.CantidadMiembros = UserList(UserList(userIndex).Grupo.PropuestaDe.ArrayIndex).Grupo.CantidadMiembros + 1
+138                                 Call SetUserRef(UserList(UserList(userIndex).Grupo.PropuestaDe.ArrayIndex).Grupo.Miembros(UserList(UserList(userIndex).Grupo.PropuestaDe.ArrayIndex).Grupo.CantidadMiembros), userIndex)
 140                                 UserList(UserIndex).Grupo.EnGrupo = True
                                 
                                     Dim Index As Byte
                                 
 142                                 Log = "Repuesta Afirmativa 1-5 "
                                 
-144                                 For Index = 2 To UserList(UserList(UserIndex).Grupo.PropuestaDe).Grupo.CantidadMiembros - 1
-146                                     Call WriteLocaleMsg(UserList(UserList(UserIndex).Grupo.PropuestaDe).Grupo.Miembros(Index), "40", e_FontTypeNames.FONTTYPE_INFOIAO, UserList(UserIndex).Name)
+144                                 For Index = 2 To UserList(UserList(userIndex).Grupo.PropuestaDe.ArrayIndex).Grupo.CantidadMiembros - 1
+146                                     Call WriteLocaleMsg(UserList(UserList(userIndex).Grupo.PropuestaDe.ArrayIndex).Grupo.Miembros(Index).ArrayIndex, "40", e_FontTypeNames.FONTTYPE_INFOIAO, UserList(userIndex).name)
                                 
 148                                 Next Index
                                 
 150                                 Log = "Repuesta Afirmativa 1-6 "
-                                    'Call WriteConsoleMsg(UserList(UserIndex).Grupo.PropuestaDe, "í" & UserList(UserIndex).name & " a sido añadido al grupo!", e_FontTypeNames.FONTTYPE_INFOIAO)
-152                                 Call WriteLocaleMsg(UserList(UserIndex).Grupo.PropuestaDe, "40", e_FontTypeNames.FONTTYPE_INFOIAO, UserList(UserIndex).Name)
+152                                 Call WriteLocaleMsg(UserList(userIndex).Grupo.PropuestaDe.ArrayIndex, "40", e_FontTypeNames.FONTTYPE_INFOIAO, UserList(userIndex).name)
                                 
-154                                 Call WriteConsoleMsg(UserIndex, "¡Has sido añadido al grupo!", e_FontTypeNames.FONTTYPE_INFOIAO)
+154                                 Call WriteConsoleMsg(userIndex, "¡Has sido añadido al grupo!", e_FontTypeNames.FONTTYPE_INFOIAO)
                                 
 156                                 Log = "Repuesta Afirmativa 1-7 "
                                 
-158                                 Call RefreshCharStatus(UserList(UserIndex).Grupo.PropuestaDe)
+158                                 Call RefreshCharStatus(UserList(userIndex).Grupo.PropuestaDe.ArrayIndex)
 160                                 Call RefreshCharStatus(UserIndex)
                                  
 162                                 Log = "Repuesta Afirmativa 1-8"
@@ -10193,7 +10161,7 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
                         'unirlo
 168                 Case 2
 170                     Log = "Repuesta Afirmativa 2"
-172                     Call WriteConsoleMsg(UserIndex, "¡Ahora sos un ciudadano!", e_FontTypeNames.FONTTYPE_INFOIAO)
+172                     Call WriteConsoleMsg(userIndex, "¡Ahora sos un ciudadano!", e_FontTypeNames.FONTTYPE_INFOIAO)
 174                     Call VolverCiudadano(UserIndex)
                     
 176                 Case 3
@@ -10228,9 +10196,9 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
                     
 210                     If UserList(UserIndex).flags.TargetNPC <> 0 Then
                     
-212                         Call WriteChatOverHead(UserIndex, "¡Gracias " & UserList(UserIndex).name & "! Ahora perteneces a la ciudad de " & DeDonde & ".", NpcList(UserList(UserIndex).flags.TargetNPC).Char.charindex, vbWhite)
+212                         Call WriteChatOverHead(userIndex, "¡Gracias " & UserList(userIndex).name & "! Ahora perteneces a la ciudad de " & DeDonde & ".", NpcList(UserList(userIndex).flags.TargetNPC).Char.charindex, vbWhite)
                         Else
-214                         Call WriteConsoleMsg(UserIndex, "¡Gracias " & UserList(UserIndex).name & "! Ahora perteneces a la ciudad de " & DeDonde & ".", e_FontTypeNames.FONTTYPE_INFOIAO)
+214                         Call WriteConsoleMsg(userIndex, "¡Gracias " & UserList(userIndex).name & "! Ahora perteneces a la ciudad de " & DeDonde & ".", e_FontTypeNames.FONTTYPE_INFOIAO)
 
                         End If
                     
@@ -10239,7 +10207,7 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
                 
 220                     If UserList(UserIndex).flags.TargetUser <> 0 Then
                 
-222                         UserList(UserIndex).ComUsu.DestUsu = UserList(UserIndex).flags.TargetUser
+222                         Call SetUserRef(UserList(userIndex).ComUsu.DestUsu, UserList(userIndex).flags.TargetUser)
 224                         UserList(UserIndex).ComUsu.DestNick = UserList(UserList(UserIndex).flags.TargetUser).Name
 226                         UserList(UserIndex).ComUsu.cant = 0
 228                         UserList(UserIndex).ComUsu.Objeto = 0
@@ -10290,18 +10258,16 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
 
                     Case 1
 270                     Log = "Repuesta negativa 1"
-
-272                     If UserList(UserIndex).Grupo.PropuestaDe <> 0 Then
-274                         Call WriteConsoleMsg(UserList(UserIndex).Grupo.PropuestaDe, "El usuario no esta interesado en formar parte del grupo.", e_FontTypeNames.FONTTYPE_INFOIAO)
-
+272                     If IsValidUserRef(UserList(userIndex).Grupo.PropuestaDe) Then
+274                         Call WriteConsoleMsg(UserList(userIndex).Grupo.PropuestaDe.ArrayIndex, "El usuario no esta interesado en formar parte del grupo.", e_FontTypeNames.FONTTYPE_INFOIAO)
                         End If
 
-276                     UserList(UserIndex).Grupo.PropuestaDe = 0
+276                     Call SetUserRef(UserList(userIndex).Grupo.PropuestaDe, 0)
 278                     Call WriteConsoleMsg(UserIndex, "Has rechazado la propuesta.", e_FontTypeNames.FONTTYPE_INFOIAO)
                 
 280                 Case 2
 282                     Log = "Repuesta negativa 2"
-284                     Call WriteConsoleMsg(UserIndex, "¡Continuas siendo neutral!", e_FontTypeNames.FONTTYPE_INFOIAO)
+284                     Call WriteConsoleMsg(userIndex, "¡Continuas siendo neutral!", e_FontTypeNames.FONTTYPE_INFOIAO)
 286                     Call VolverCriminal(UserIndex)
 
 288                 Case 3
@@ -10394,7 +10360,7 @@ Private Sub HandleAbandonarGrupo(ByVal UserIndex As Integer)
         
 102         Call Reader.ReadInt16
         
-104         If UserList(UserIndex).Grupo.Lider = UserIndex Then
+104         If UserList(userIndex).Grupo.Lider.ArrayIndex = userIndex Then
             
 106             Call FinalizarGrupo(UserIndex)
 
@@ -10406,18 +10372,14 @@ Private Sub HandleAbandonarGrupo(ByVal UserIndex As Integer)
 
 114             UserList(UserIndex).Grupo.CantidadMiembros = 0
 116             UserList(UserIndex).Grupo.EnGrupo = False
-118             UserList(UserIndex).Grupo.Lider = 0
-120             UserList(UserIndex).Grupo.PropuestaDe = 0
+118             Call SetUserRef(UserList(userIndex).Grupo.Lider, 0)
+120             Call SetUserRef(UserList(userIndex).Grupo.PropuestaDe, 0)
 122             Call WriteConsoleMsg(UserIndex, "Has disuelto el grupo.", e_FontTypeNames.FONTTYPE_INFOIAO)
 124             Call RefreshCharStatus(UserIndex)
-            
             Else
 126             Call SalirDeGrupo(UserIndex)
-
             End If
-
         End With
-        
         Exit Sub
 
 HandleAbandonarGrupo_Err:
@@ -11302,8 +11264,8 @@ Private Sub HandleCommerceSendChatMessage(ByVal UserIndex As Integer)
 102         chatMessage = "[" & UserList(UserIndex).Name & "] " & Reader.ReadString8
         
             'El mensaje se lo envío al destino
-            If UserList(UserIndex).ComUsu.DestUsu <= 0 Then Exit Sub
-104         Call WriteCommerceRecieveChatMessage(UserList(UserIndex).ComUsu.DestUsu, chatMessage)
+            If Not IsValidUserRef(UserList(userIndex).ComUsu.DestUsu) Then Exit Sub
+104         Call WriteCommerceRecieveChatMessage(UserList(userIndex).ComUsu.DestUsu.ArrayIndex, chatMessage)
         
             'y tambien a mi mismo
 106         Call WriteCommerceRecieveChatMessage(UserIndex, chatMessage)

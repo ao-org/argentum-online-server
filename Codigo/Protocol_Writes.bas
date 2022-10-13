@@ -3706,32 +3706,31 @@ Public Sub WriteDatosGrupo(ByVal UserIndex As Integer)
 104         Call Writer.WriteBool(.Grupo.EnGrupo)
 
 106         If .Grupo.EnGrupo = True Then
-108             Call Writer.WriteInt8(UserList(.Grupo.Lider).Grupo.CantidadMiembros)
+108             Call Writer.WriteInt8(UserList(.Grupo.Lider.ArrayIndex).Grupo.CantidadMiembros)
 
-                'Call Writer.WriteInt8(UserList(.Grupo.Lider).name)
-110             If .Grupo.Lider = UserIndex Then
+110             If .Grupo.Lider.ArrayIndex = userIndex Then
 
-112                 For i = 1 To UserList(.Grupo.Lider).Grupo.CantidadMiembros
+112                 For i = 1 To UserList(.Grupo.Lider.ArrayIndex).Grupo.CantidadMiembros
 
 114                     If i = 1 Then
-116                         Call Writer.WriteString8(UserList(.Grupo.Miembros(i)).Name & _
+116                         Call Writer.WriteString8(UserList(.Grupo.Miembros(i).ArrayIndex).name & _
                                     "(Líder)")
                         Else
-118                         Call Writer.WriteString8(UserList(.Grupo.Miembros(i)).Name)
+118                         Call Writer.WriteString8(UserList(.Grupo.Miembros(i).ArrayIndex).name)
                         End If
 
 120                 Next i
 
                 Else
 
-122                 For i = 1 To UserList(.Grupo.Lider).Grupo.CantidadMiembros
+122                 For i = 1 To UserList(.Grupo.Lider.ArrayIndex).Grupo.CantidadMiembros
 
 124                     If i = 1 Then
 126                         Call Writer.WriteString8(UserList(UserList( _
-                                    .Grupo.Lider).Grupo.Miembros(i)).name & "(Líder)")
+                                    .Grupo.Lider.ArrayIndex).Grupo.Miembros(i).ArrayIndex).name & "(Líder)")
                         Else
 128                         Call Writer.WriteString8(UserList(UserList( _
-                                    .Grupo.Lider).Grupo.Miembros(i)).Name)
+                                    .Grupo.Lider.ArrayIndex).Grupo.Miembros(i).ArrayIndex).name)
                         End If
 
 130                 Next i
@@ -5358,7 +5357,7 @@ Public Function PrepareMessageUpdateTagAndStatus(ByVal UserIndex As Integer, _
 102     Call Writer.WriteInt16(UserList(UserIndex).Char.CharIndex)
 104     Call Writer.WriteInt8(Status)
 106     Call Writer.WriteString8(Tag)
-108     Call Writer.WriteInt16(UserList(UserIndex).Grupo.Lider)
+108     Call Writer.WriteInt16(UserList(userIndex).Grupo.Lider.ArrayIndex)
         '<EhFooter>
         Exit Function
 

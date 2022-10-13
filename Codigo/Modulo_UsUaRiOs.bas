@@ -477,12 +477,12 @@ On Error GoTo Complete_ConnectUser_Err
 715                 If MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex <> 0 Then
 
                         'Si no encontramos lugar, y abajo teniamos a un usuario, lo pisamos y cerramos su comercio seguro
-720                     If UserList(MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex).ComUsu.DestUsu > 0 Then
+720                     If IsValidUserRef(UserList(MapData(.pos.map, .pos.x, .pos.y).userIndex).ComUsu.DestUsu) Then
 
                             'Le avisamos al que estaba comerciando que se tuvo que ir.
-725                         If UserList(UserList(MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex).ComUsu.DestUsu).flags.UserLogged Then
-730                             Call FinComerciarUsu(UserList(MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex).ComUsu.DestUsu)
-735                             Call WriteConsoleMsg(UserList(MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex).ComUsu.DestUsu, "Comercio cancelado. El otro usuario se ha desconectado.", e_FontTypeNames.FONTTYPE_WARNING)
+725                         If UserList(UserList(MapData(.pos.map, .pos.x, .pos.y).userIndex).ComUsu.DestUsu.ArrayIndex).flags.UserLogged Then
+730                             Call FinComerciarUsu(UserList(MapData(.pos.map, .pos.x, .pos.y).userIndex).ComUsu.DestUsu.ArrayIndex)
+735                             Call WriteConsoleMsg(UserList(MapData(.pos.map, .pos.x, .pos.y).userIndex).ComUsu.DestUsu.ArrayIndex, "Comercio cancelado. El otro usuario se ha desconectado.", e_FontTypeNames.FONTTYPE_WARNING)
 
                             End If
 
@@ -1091,7 +1091,7 @@ Sub MakeUserChar(ByVal toMap As Boolean, _
                         End If
                     End If
 
-140                 Call WriteCharacterCreate(sndIndex, .Char.body, .Char.head, .Char.Heading, .Char.charindex, X, Y, .Char.WeaponAnim, .Char.ShieldAnim, .Char.FX, 999, .Char.CascoAnim, TempName, .Faccion.Status, .flags.Privilegios, .Char.ParticulaFx, .Char.Head_Aura, .Char.Arma_Aura, .Char.Body_Aura, .Char.DM_Aura, .Char.RM_Aura, .Char.Otra_Aura, .Char.Escudo_Aura, .Char.speeding, 0, appear, .Grupo.Lider, .GuildIndex, clan_nivel, .Stats.MinHp, .Stats.MaxHp, .Stats.MinMAN, .Stats.MaxMAN, 0, False, .flags.Navegando, .Stats.tipoUsuario, .flags.jugando_captura_team, .flags.tiene_bandera)
+140                 Call WriteCharacterCreate(sndIndex, .Char.body, .Char.head, .Char.Heading, .Char.charindex, x, y, .Char.WeaponAnim, .Char.ShieldAnim, .Char.FX, 999, .Char.CascoAnim, TempName, .Faccion.Status, .flags.Privilegios, .Char.ParticulaFx, .Char.Head_Aura, .Char.Arma_Aura, .Char.Body_Aura, .Char.DM_Aura, .Char.RM_Aura, .Char.Otra_Aura, .Char.Escudo_Aura, .Char.speeding, 0, appear, .Grupo.Lider.ArrayIndex, .GuildIndex, clan_nivel, .Stats.MinHp, .Stats.MaxHp, .Stats.MinMAN, .Stats.MaxMAN, 0, False, .flags.Navegando, .Stats.tipoUsuario, .flags.jugando_captura_team, .flags.tiene_bandera)
                     
                 Else
             
@@ -2309,13 +2309,13 @@ Sub WarpUserChar(ByVal UserIndex As Integer, _
     
 100     With UserList(UserIndex)
             If map <= 0 Then Exit Sub
-102         If .ComUsu.DestUsu > 0 Then
+102         If IsValidUserRef(.ComUsu.DestUsu) Then
 
-104             If UserList(.ComUsu.DestUsu).flags.UserLogged Then
+104             If UserList(.ComUsu.DestUsu.ArrayIndex).flags.UserLogged Then
 
-106                 If UserList(.ComUsu.DestUsu).ComUsu.DestUsu = UserIndex Then
-108                     Call WriteConsoleMsg(.ComUsu.DestUsu, "Comercio cancelado por el otro usuario", e_FontTypeNames.FONTTYPE_TALK)
-110                     Call FinComerciarUsu(.ComUsu.DestUsu)
+106                 If UserList(.ComUsu.DestUsu.ArrayIndex).ComUsu.DestUsu.ArrayIndex = userIndex Then
+108                     Call WriteConsoleMsg(.ComUsu.DestUsu.ArrayIndex, "Comercio cancelado por el otro usuario", e_FontTypeNames.FONTTYPE_TALK)
+110                     Call FinComerciarUsu(.ComUsu.DestUsu.ArrayIndex)
 
                     End If
 

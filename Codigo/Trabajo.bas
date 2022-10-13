@@ -68,7 +68,7 @@ Public Sub Trabajar(ByVal UserIndex As Integer, ByVal Skill As e_Skill)
 
                                    
                                 Else
-304                                 Call WriteConsoleMsg(UserIndex, "Acércate a la costa para pescar.", e_FontTypeNames.FONTTYPE_INFO)
+304                                 Call WriteConsoleMsg(userIndex, "Acércate a la costa para pescar.", e_FontTypeNames.FONTTYPE_INFO)
 306                                 Call WriteMacroTrabajoToggle(UserIndex, False)
 
                                 End If
@@ -189,13 +189,13 @@ Public Sub Trabajar(ByVal UserIndex As Integer, ByVal Skill As e_Skill)
 490                                 Call DoMineria(UserIndex, .Trabajo.Target_X, .Trabajo.Target_Y, ObjData(.Invent.HerramientaEqpObjIndex).Dorada = 1)
 
                                 Else
-492                                 Call WriteConsoleMsg(UserIndex, "Ahí no hay ningún yacimiento.", e_FontTypeNames.FONTTYPE_INFO)
+492                                 Call WriteConsoleMsg(userIndex, "Ahí no hay ningún yacimiento.", e_FontTypeNames.FONTTYPE_INFO)
 494                                 Call WriteWorkRequestTarget(UserIndex, 0)
 
                                 End If
 
                             Else
-496                             Call WriteConsoleMsg(UserIndex, "Ahí no hay ningun yacimiento.", e_FontTypeNames.FONTTYPE_INFO)
+496                             Call WriteConsoleMsg(userIndex, "Ahí no hay ningun yacimiento.", e_FontTypeNames.FONTTYPE_INFO)
 498                             Call WriteWorkRequestTarget(UserIndex, 0)
 
                             End If
@@ -227,21 +227,21 @@ Public Sub Trabajar(ByVal UserIndex As Integer, ByVal Skill As e_Skill)
                                 End If
                                 
 368                             If .Pos.X = .Trabajo.Target_X And .Pos.Y = .Trabajo.Target_Y Then
-370                                 Call WriteConsoleMsg(UserIndex, "No podés talar desde allí.", e_FontTypeNames.FONTTYPE_INFO)
+370                                 Call WriteConsoleMsg(userIndex, "No podés talar desde allí.", e_FontTypeNames.FONTTYPE_INFO)
 372                                 Call WriteWorkRequestTarget(UserIndex, 0)
                                     Exit Sub
 
                                 End If
 
 374                             If ObjData(DummyInt).Elfico <> ObjData(.Invent.HerramientaEqpObjIndex).Elfico Then
-376                                 Call WriteConsoleMsg(UserIndex, "Sólo puedes talar árboles elficos con un hacha élfica.", e_FontTypeNames.FONTTYPE_INFO)
+376                                 Call WriteConsoleMsg(userIndex, "Sólo puedes talar árboles elficos con un hacha élfica.", e_FontTypeNames.FONTTYPE_INFO)
 378                                 Call WriteWorkRequestTarget(UserIndex, 0)
                                     Exit Sub
 
                                 End If
 
 380                             If MapData(.Pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).ObjInfo.amount <= 0 Then
-382                                 Call WriteConsoleMsg(UserIndex, "El árbol ya no te puede entregar mas leña.", e_FontTypeNames.FONTTYPE_INFO)
+382                                 Call WriteConsoleMsg(userIndex, "El árbol ya no te puede entregar mas leña.", e_FontTypeNames.FONTTYPE_INFO)
 384                                 Call WriteWorkRequestTarget(UserIndex, 0)
 386                                 Call WriteMacroTrabajoToggle(UserIndex, False)
                                     Exit Sub
@@ -255,7 +255,7 @@ Public Sub Trabajar(ByVal UserIndex As Integer, ByVal Skill As e_Skill)
                                 End If
 
                             Else
-392                             Call WriteConsoleMsg(UserIndex, "No hay ningún árbol ahí.", e_FontTypeNames.FONTTYPE_INFO)
+392                             Call WriteConsoleMsg(userIndex, "No hay ningún árbol ahí.", e_FontTypeNames.FONTTYPE_INFO)
 394                             Call WriteWorkRequestTarget(UserIndex, 0)
 
 396                             If UserList(UserIndex).Counters.Trabajando > 1 Then
@@ -285,7 +285,7 @@ Public Sub Trabajar(ByVal UserIndex As Integer, ByVal Skill As e_Skill)
                             ''chequeamos que no se zarpe duplicando oro
 586                         If .Invent.Object(.flags.TargetObjInvSlot).ObjIndex <> .flags.TargetObjInvIndex Then
 588                             If .Invent.Object(.flags.TargetObjInvSlot).ObjIndex = 0 Or .Invent.Object(.flags.TargetObjInvSlot).amount = 0 Then
-590                                 Call WriteConsoleMsg(UserIndex, "No tienes más minerales", e_FontTypeNames.FONTTYPE_INFO)
+590                                 Call WriteConsoleMsg(userIndex, "No tienes más minerales", e_FontTypeNames.FONTTYPE_INFO)
 592                                 Call WriteWorkRequestTarget(UserIndex, 0)
                                     Exit Sub
 
@@ -303,7 +303,7 @@ Public Sub Trabajar(ByVal UserIndex As Integer, ByVal Skill As e_Skill)
                         
                         Else
                     
-600                         Call WriteConsoleMsg(UserIndex, "Ahí no hay ninguna fragua.", e_FontTypeNames.FONTTYPE_INFO)
+600                         Call WriteConsoleMsg(userIndex, "Ahí no hay ninguna fragua.", e_FontTypeNames.FONTTYPE_INFO)
 602                         Call WriteWorkRequestTarget(UserIndex, 0)
 
 604                         If UserList(UserIndex).Counters.Trabajando > 1 Then
@@ -315,7 +315,7 @@ Public Sub Trabajar(ByVal UserIndex As Integer, ByVal Skill As e_Skill)
 
                     Else
                 
-608                     Call WriteConsoleMsg(UserIndex, "Ahí no hay ninguna fragua.", e_FontTypeNames.FONTTYPE_INFO)
+608                     Call WriteConsoleMsg(userIndex, "Ahí no hay ninguna fragua.", e_FontTypeNames.FONTTYPE_INFO)
 610                     Call WriteWorkRequestTarget(UserIndex, 0)
 
 612                     If UserList(UserIndex).Counters.Trabajando > 1 Then
@@ -364,7 +364,7 @@ Public Sub DoPermanecerOculto(ByVal UserIndex As Integer)
 114                 If .clase = e_Class.Pirat Then
                         ' Pierde la apariencia de fragata fantasmal
 116                     Call EquiparBarco(UserIndex)
-124                     Call WriteConsoleMsg(UserIndex, "¡Has recuperado tu apariencia normal!", e_FontTypeNames.FONTTYPE_INFO)
+124                     Call WriteConsoleMsg(userIndex, "¡Has recuperado tu apariencia normal!", e_FontTypeNames.FONTTYPE_INFO)
 126                     Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, NingunArma, NingunEscudo, NingunCasco)
                         Call RefreshCharStatus(UserIndex)
                     End If
@@ -373,7 +373,7 @@ Public Sub DoPermanecerOculto(ByVal UserIndex As Integer)
 
 128                 If .flags.invisible = 0 And .flags.AdminInvisible = 0 Then
 130                     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageSetInvisible(.Char.charindex, False, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
-132                     Call WriteConsoleMsg(UserIndex, "¡Has vuelto a ser visible!", e_FontTypeNames.FONTTYPE_INFO)
+132                     Call WriteConsoleMsg(userIndex, "¡Has vuelto a ser visible!", e_FontTypeNames.FONTTYPE_INFO)
 
                     End If
 
@@ -442,7 +442,7 @@ Public Sub DoOcultarse(ByVal UserIndex As Integer)
 146                     .Counters.TiempoOculto = IntervaloOculto
                          
 148                     Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, NingunArma, NingunEscudo, NingunCasco)
-150                     Call WriteConsoleMsg(UserIndex, "¡Te has camuflado como barco fantasma!", e_FontTypeNames.FONTTYPE_INFO)
+150                     Call WriteConsoleMsg(userIndex, "¡Te has camuflado como barco fantasma!", e_FontTypeNames.FONTTYPE_INFO)
                         Call RefreshCharStatus(UserIndex)
                     End If
                 Else
@@ -492,14 +492,14 @@ Public Sub DoNavega(ByVal UserIndex As Integer, _
                         Case 2  'Galera
         
 108                         If .clase <> e_Class.Trabajador And .clase <> e_Class.Pirat Then
-110                             Call WriteConsoleMsg(UserIndex, "¡Solo Piratas y trabajadores pueden usar galera!", e_FontTypeNames.FONTTYPE_INFO)
+110                             Call WriteConsoleMsg(userIndex, "¡Solo Piratas y trabajadores pueden usar galera!", e_FontTypeNames.FONTTYPE_INFO)
                                 Exit Sub
                             End If
                         
 112                     Case 3  'Galeón
                     
 114                         If .clase <> e_Class.Pirat Then
-116                             Call WriteConsoleMsg(UserIndex, "Solo los Piratas pueden usar Galeón!!", e_FontTypeNames.FONTTYPE_INFO)
+116                             Call WriteConsoleMsg(userIndex, "Solo los Piratas pueden usar Galeón!!", e_FontTypeNames.FONTTYPE_INFO)
                                 Exit Sub
                             End If
                         
@@ -516,7 +516,7 @@ Public Sub DoNavega(ByVal UserIndex As Integer, _
                 End If
                 ' Tiene el skill necesario?
 120             If .Stats.UserSkills(e_Skill.Navegacion) < SkillNecesario Then
-122                 Call WriteConsoleMsg(UserIndex, "Necesitas al menos " & SkillNecesario & " puntos en navegación para poder usar este " & IIf(Barco.Subtipo = 0, "traje", "barco") & ".", e_FontTypeNames.FONTTYPE_INFO)
+122                 Call WriteConsoleMsg(userIndex, "Necesitas al menos " & SkillNecesario & " puntos en navegación para poder usar este " & IIf(Barco.Subtipo = 0, "traje", "barco") & ".", e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
             
@@ -634,7 +634,7 @@ Public Sub FundirMineral(ByVal UserIndex As Integer)
 116             Call WriteConsoleMsg(UserIndex, "Los mortales no pueden fundir este mineral.", e_FontTypeNames.FONTTYPE_INFO)
                 
             Else
-118             Call WriteConsoleMsg(UserIndex, "No tenés conocimientos de minería suficientes para trabajar este mineral. Necesitas " & SkillRequerido & " puntos en minería.", e_FontTypeNames.FONTTYPE_INFO)
+118             Call WriteConsoleMsg(userIndex, "No tenés conocimientos de minería suficientes para trabajar este mineral. Necesitas " & SkillRequerido & " puntos en minería.", e_FontTypeNames.FONTTYPE_INFO)
 
             End If
 
@@ -771,9 +771,9 @@ Sub CarpinteroQuitarMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As In
         On Error GoTo CarpinteroQuitarMateriales_Err
         
 
-100     If ObjData(ItemIndex).Madera > 0 Then Call QuitarObjetos(Leña, Cantidad, UserIndex)
+100     If ObjData(ItemIndex).Madera > 0 Then Call QuitarObjetos(Leña, Cantidad, userIndex)
 
-102     If ObjData(ItemIndex).MaderaElfica > 0 Then Call QuitarObjetos(LeñaElfica, Cantidad, UserIndex)
+102     If ObjData(ItemIndex).MaderaElfica > 0 Then Call QuitarObjetos(LeñaElfica, Cantidad, userIndex)
         
         Exit Sub
 
@@ -823,7 +823,7 @@ Function CarpinteroTieneMateriales(ByVal UserIndex As Integer, ByVal ItemIndex A
         
     
 100     If ObjData(ItemIndex).Madera > 0 Then
-102         If Not TieneObjetos(Leña, ObjData(ItemIndex).Madera * Cantidad, UserIndex) Then
+102         If Not TieneObjetos(Leña, ObjData(ItemIndex).Madera * Cantidad, userIndex) Then
 104             Call WriteConsoleMsg(UserIndex, "No tenes suficientes madera.", e_FontTypeNames.FONTTYPE_INFO)
 106             CarpinteroTieneMateriales = False
 108             Call WriteMacroTrabajoToggle(UserIndex, False)
@@ -834,7 +834,7 @@ Function CarpinteroTieneMateriales(ByVal UserIndex As Integer, ByVal ItemIndex A
         End If
         
 110     If ObjData(ItemIndex).MaderaElfica > 0 Then
-112         If Not TieneObjetos(LeñaElfica, ObjData(ItemIndex).MaderaElfica * Cantidad, UserIndex) Then
+112         If Not TieneObjetos(LeñaElfica, ObjData(ItemIndex).MaderaElfica * Cantidad, userIndex) Then
 114             Call WriteConsoleMsg(UserIndex, "No tenes suficiente madera elfica.", e_FontTypeNames.FONTTYPE_INFO)
 116             CarpinteroTieneMateriales = False
 118             Call WriteMacroTrabajoToggle(UserIndex, False)
@@ -1641,7 +1641,7 @@ Sub TratarDeHacerFogata(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Int
         End With
 
 110     If MapData(Map, X, Y).ObjInfo.ObjIndex <> 58 Then
-112         Call WriteConsoleMsg(UserIndex, "Necesitas clickear sobre Leña para hacer ramitas", e_FontTypeNames.FONTTYPE_INFO)
+112         Call WriteConsoleMsg(userIndex, "Necesitas clickear sobre Leña para hacer ramitas", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
 
         End If
@@ -1654,7 +1654,7 @@ Sub TratarDeHacerFogata(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Int
         End If
 
 118     If UserList(UserIndex).flags.Muerto = 1 Then
-120         Call WriteConsoleMsg(UserIndex, "No podés hacer fogatas estando muerto.", e_FontTypeNames.FONTTYPE_INFO)
+120         Call WriteConsoleMsg(userIndex, "No podés hacer fogatas estando muerto.", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
 
         End If
@@ -1919,7 +1919,7 @@ On Error GoTo ErrHandler
 146                         If Not MeterItemEnInventario(UserIndex, MiObj) Then Call TirarItemAlPiso(.Pos, MiObj)
                         
                             ' Le mandamos un mensaje
-148                         Call WriteConsoleMsg(UserIndex, "¡Has conseguido " & ObjData(EspecialesPesca(i).objIndex).name & "!", e_FontTypeNames.FONTTYPE_INFO)
+148                         Call WriteConsoleMsg(userIndex, "¡Has conseguido " & ObjData(EspecialesPesca(i).ObjIndex).name & "!", e_FontTypeNames.FONTTYPE_INFO)
                         End If
     
                     Next
@@ -2057,7 +2057,7 @@ Public Sub DoPescar(ByVal UserIndex As Integer, Optional ByVal RedDePesca As Boo
 146                     If Not MeterItemEnInventario(UserIndex, MiObj) Then Call TirarItemAlPiso(.Pos, MiObj)
                     
                         ' Le mandamos un mensaje
-148                     Call WriteConsoleMsg(UserIndex, "¡Has conseguido " & ObjData(EspecialesPesca(i).objIndex).name & "!", e_FontTypeNames.FONTTYPE_INFO)
+148                     Call WriteConsoleMsg(userIndex, "¡Has conseguido " & ObjData(EspecialesPesca(i).ObjIndex).name & "!", e_FontTypeNames.FONTTYPE_INFO)
                     End If
 
                 Next
@@ -2221,7 +2221,7 @@ Public Sub DoRobar(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
 194             If (RandomNumber(1, 100) < Probabilidad) Then 'Exito robo
                 
 196                 If UserList(VictimaIndex).flags.Comerciando Then
-198                     OtroUserIndex = UserList(VictimaIndex).ComUsu.DestUsu
+198                     OtroUserIndex = UserList(VictimaIndex).ComUsu.DestUsu.ArrayIndex
                         
 200                     If OtroUserIndex > 0 And OtroUserIndex <= MaxUsers Then
 202                         Call WriteConsoleMsg(VictimaIndex, "Comercio cancelado, ¡te están robando!", e_FontTypeNames.FONTTYPE_TALK)
@@ -2636,9 +2636,9 @@ Public Sub DoTalar(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte,
 126             MiObj.amount = Round(IIf(.clase = Trabajador, 5, RandomNumber(1, 2)) * RecoleccionMult * 2.5)
 
 128             If ObjData(MapData(.Pos.Map, X, Y).ObjInfo.ObjIndex).Elfico = 0 Then
-130                 MiObj.objIndex = Leña
+130                 MiObj.ObjIndex = Leña
                 Else
-132                 MiObj.objIndex = LeñaElfica
+132                 MiObj.ObjIndex = LeñaElfica
                 End If
 
 
@@ -2766,7 +2766,7 @@ Public Sub DoMineria(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byt
                 
 139             Call WriteTextCharDrop(UserIndex, "+" & MiObj.amount, .Char.CharIndex, vbWhite)
 
-140             Call WriteConsoleMsg(UserIndex, "¡Has extraido algunos minerales!", e_FontTypeNames.FONTTYPE_INFO)
+140             Call WriteConsoleMsg(userIndex, "¡Has extraido algunos minerales!", e_FontTypeNames.FONTTYPE_INFO)
                 If MapInfo(.Pos.Map).Seguro = 1 Then
 141                 Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessagePlayWave(15, .Pos.X, .Pos.Y))
                 Else
@@ -2790,7 +2790,7 @@ Public Sub DoMineria(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byt
 154                     If Not MeterItemEnInventario(UserIndex, MiObj) Then Call TirarItemAlPiso(.Pos, MiObj)
 
                         ' Le mandamos un mensaje
-156                     Call WriteConsoleMsg(UserIndex, "¡Has conseguido " & ObjData(Yacimiento.Item(i).objIndex).name & "!", e_FontTypeNames.FONTTYPE_INFO)
+156                     Call WriteConsoleMsg(userIndex, "¡Has conseguido " & ObjData(Yacimiento.Item(i).ObjIndex).name & "!", e_FontTypeNames.FONTTYPE_INFO)
                     End If
     
                 Next
@@ -2876,17 +2876,17 @@ Public Sub DoMontar(ByVal UserIndex As Integer, ByRef Montura As t_ObjData, ByVa
             End If
 
 104         If .flags.Montado = 0 And .Counters.EnCombate > 0 Then
-106             Call WriteConsoleMsg(UserIndex, "Estás en combate, debes aguardar " & .Counters.EnCombate & " segundo(s) para montar...", e_FontTypeNames.FONTTYPE_INFOBOLD)
+106             Call WriteConsoleMsg(userIndex, "Estás en combate, debes aguardar " & .Counters.EnCombate & " segundo(s) para montar...", e_FontTypeNames.FONTTYPE_INFOBOLD)
                 Exit Sub
             End If
 
 108         If .flags.EnReto Then
-110             Call WriteConsoleMsg(UserIndex, "No podés montar en un reto.", e_FontTypeNames.FONTTYPE_INFO)
+110             Call WriteConsoleMsg(userIndex, "No podés montar en un reto.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
 
 112         If (.flags.Oculto = 1 Or .flags.invisible = 1) And .flags.AdminInvisible = 0 Then
-114             Call WriteConsoleMsg(UserIndex, "No podés montar estando oculto o invisible.", e_FontTypeNames.FONTTYPE_INFO)
+114             Call WriteConsoleMsg(userIndex, "No podés montar estando oculto o invisible.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
             
@@ -2898,7 +2898,7 @@ Public Sub DoMontar(ByVal UserIndex As Integer, ByRef Montura As t_ObjData, ByVa
             End If
 
 116         If .flags.Montado = 0 And (MapData(.Pos.Map, .Pos.X, .Pos.Y).trigger > 10) Then
-118             Call WriteConsoleMsg(UserIndex, "No podés montar aquí.", e_FontTypeNames.FONTTYPE_INFO)
+118             Call WriteConsoleMsg(userIndex, "No podés montar aquí.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
             End If

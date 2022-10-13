@@ -1887,7 +1887,7 @@ End Type
 Public Type t_ComercioUsuario
     
     itemsAenviar(1 To 6) As t_Obj ' Mas de 6 no se puede, la UI muestra solo eso.
-    DestUsu As Integer 'El otro Usuario
+    DestUsu As t_UserReference 'El otro Usuario
     DestNick As String
     Objeto As Integer 'Indice del inventario a comerciar, que objeto desea dar
     Oro As Long
@@ -1903,6 +1903,14 @@ Public Type t_UserTrabajo
     'Para macro de Carpinteria, Herrería y Sastrería
     Item As Integer
     Cantidad As Long
+End Type
+
+Type Tgrupo
+    EnGrupo As Boolean
+    CantidadMiembros As Byte
+    Miembros(1 To 6) As t_UserReference
+    Lider As t_UserReference
+    PropuestaDe As t_UserReference
 End Type
 
 'Tipo de los Usuarios

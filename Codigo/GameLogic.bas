@@ -121,12 +121,12 @@ Public Sub FindLegalPos(ByVal UserIndex As Integer, ByVal Map As Integer, ByRef 
 132             If OtherUserIndex <> 0 Then
 
                     'Si no encontramos lugar, y abajo teniamos a un usuario, lo pisamos y cerramos su comercio seguro
-134                 If UserList(OtherUserIndex).ComUsu.DestUsu > 0 Then
+134                 If IsValidUserRef(UserList(OtherUserIndex).ComUsu.DestUsu) Then
 
                         'Le avisamos al que estaba comerciando que se tuvo que ir.
-136                     If UserList(UserList(OtherUserIndex).ComUsu.DestUsu).flags.UserLogged Then
-138                         Call FinComerciarUsu(UserList(OtherUserIndex).ComUsu.DestUsu)
-140                         Call WriteConsoleMsg(UserList(OtherUserIndex).ComUsu.DestUsu, "Comercio cancelado. El otro usuario se ha desconectado.", e_FontTypeNames.FONTTYPE_TALK)
+136                     If UserList(UserList(OtherUserIndex).ComUsu.DestUsu.ArrayIndex).flags.UserLogged Then
+138                         Call FinComerciarUsu(UserList(OtherUserIndex).ComUsu.DestUsu.ArrayIndex)
+140                         Call WriteConsoleMsg(UserList(OtherUserIndex).ComUsu.DestUsu.ArrayIndex, "Comercio cancelado. El otro usuario se ha desconectado.", e_FontTypeNames.FONTTYPE_TALK)
                         
 
                         End If

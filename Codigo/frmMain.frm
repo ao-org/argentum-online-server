@@ -660,11 +660,11 @@ Sub CheckIdleUser()
 108                 Call WriteShowMessageBox(iUserIndex, "Demasiado tiempo inactivo. Has sido desconectado...")
 
                     'mato los comercios seguros
-110                 If UserList(iUserIndex).ComUsu.DestUsu > 0 Then
-112                     If UserList(UserList(iUserIndex).ComUsu.DestUsu).flags.UserLogged Then
-114                         If UserList(UserList(iUserIndex).ComUsu.DestUsu).ComUsu.DestUsu = iUserIndex Then
-116                             Call WriteConsoleMsg(UserList(iUserIndex).ComUsu.DestUsu, "Comercio cancelado por el otro usuario.", e_FontTypeNames.FONTTYPE_TALK)
-118                             Call FinComerciarUsu(UserList(iUserIndex).ComUsu.DestUsu)
+110                 If IsValidUserRef(UserList(iUserIndex).ComUsu.DestUsu) Then
+112                     If UserList(UserList(iUserIndex).ComUsu.DestUsu.ArrayIndex).flags.UserLogged Then
+114                         If UserList(UserList(iUserIndex).ComUsu.DestUsu.ArrayIndex).ComUsu.DestUsu.ArrayIndex = iUserIndex Then
+116                             Call WriteConsoleMsg(UserList(iUserIndex).ComUsu.DestUsu.ArrayIndex, "Comercio cancelado por el otro usuario.", e_FontTypeNames.FONTTYPE_TALK)
+118                             Call FinComerciarUsu(UserList(iUserIndex).ComUsu.DestUsu.ArrayIndex)
                             
 
                             End If

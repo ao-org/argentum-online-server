@@ -42,7 +42,7 @@ Public Function IniciarComercioConUsuario(ByVal Origen As Integer, ByVal Destino
         On Error GoTo ErrHandler
 
         'Si ambos pusieron /comerciar entonces
-106     If UserList(Origen).ComUsu.DestUsu = Destino And UserList(Destino).ComUsu.DestUsu = Origen Then
+106     If UserList(Origen).ComUsu.DestUsu.ArrayIndex = Destino And UserList(Destino).ComUsu.DestUsu.ArrayIndex = Origen Then
 
             'Actualiza el inventario del usuario
 108         Call UpdateUserInv(True, Origen, 0)
@@ -183,13 +183,13 @@ Public Sub FinComerciarUsu(ByVal UserIndex As Integer, Optional ByVal Invalido A
 
 102     With UserList(UserIndex)
 
-104         If .ComUsu.DestUsu > 0 And Not Invalido Then
+104         If IsValidUserRef(.ComUsu.DestUsu) And Not Invalido Then
 106             Call WriteUserCommerceEnd(UserIndex)
             End If
         
 108         .ComUsu.Acepto = False
 110         .ComUsu.cant = 0
-112         .ComUsu.DestUsu = 0
+112         Call SetUserRef(.ComUsu.DestUsu, 0)
 114         .ComUsu.Objeto = 0
 116         .ComUsu.DestNick = vbNullString
 118         .flags.Comerciando = False
@@ -212,15 +212,15 @@ Public Sub AceptarComercioUsu(ByVal UserIndex As Integer)
         Dim OtroUserIndex As Integer
         Dim TerminarAhora As Boolean
 
-100     TerminarAhora = UserList(UserIndex).ComUsu.DestUsu <= 0 Or UserList(UserIndex).ComUsu.DestUsu > MaxUsers
-102     OtroUserIndex = UserList(UserIndex).ComUsu.DestUsu
+100     TerminarAhora = UserList(userIndex).ComUsu.DestUsu.ArrayIndex <= 0 Or UserList(userIndex).ComUsu.DestUsu.ArrayIndex > MaxUsers
+102     OtroUserIndex = UserList(userIndex).ComUsu.DestUsu.ArrayIndex
 
 104     If Not TerminarAhora Then
 106         TerminarAhora = Not UserList(OtroUserIndex).flags.UserLogged Or Not UserList(UserIndex).flags.UserLogged
         End If
 
 108     If Not TerminarAhora Then
-110         TerminarAhora = UserList(OtroUserIndex).ComUsu.DestUsu <> UserIndex
+110         TerminarAhora = UserList(OtroUserIndex).ComUsu.DestUsu.ArrayIndex <> userIndex
         End If
 
 112     If TerminarAhora Then

@@ -464,7 +464,7 @@ Function ConnectNewUser(ByVal userindex As Integer, ByRef name As String, ByVal 
             End If
             
 112         If Not NombrePermitido(name) Then
-114             Call WriteShowMessageBox(UserIndex, "El nombre no está permitido.")
+114             Call WriteShowMessageBox(userIndex, "El nombre no está permitido.")
                 Exit Function
             End If
     
@@ -646,14 +646,14 @@ Sub CloseSocket(ByVal UserIndex As Integer)
 112         If .ConnIDValida Then Call CloseSocketSL(UserIndex)
     
             'mato los comercios seguros
-116         If .ComUsu.DestUsu > 0 Then
+116         If IsValidUserRef(.ComUsu.DestUsu) Then
         
-118             If UserList(.ComUsu.DestUsu).flags.UserLogged Then
+118             If UserList(.ComUsu.DestUsu.ArrayIndex).flags.UserLogged Then
             
-120                 If UserList(.ComUsu.DestUsu).ComUsu.DestUsu = UserIndex Then
+120                 If UserList(.ComUsu.DestUsu.ArrayIndex).ComUsu.DestUsu.ArrayIndex = userIndex Then
                 
-122                     Call WriteConsoleMsg(.ComUsu.DestUsu, "Comercio cancelado por el otro usuario", e_FontTypeNames.FONTTYPE_TALK)
-124                     Call FinComerciarUsu(.ComUsu.DestUsu)
+122                     Call WriteConsoleMsg(.ComUsu.DestUsu.ArrayIndex, "Comercio cancelado por el otro usuario", e_FontTypeNames.FONTTYPE_TALK)
+124                     Call FinComerciarUsu(.ComUsu.DestUsu.ArrayIndex)
                     
                     End If
     
@@ -851,7 +851,7 @@ Function EntrarCuenta(ByVal UserIndex As Integer, ByVal CuentaEmail As String, B
         #End If
 
 128     If Not CheckMailString(CuentaEmail) Then
-130         Call WriteShowMessageBox(UserIndex, "Email inválido.")
+130         Call WriteShowMessageBox(userIndex, "Email inválido.")
             Exit Function
         End If
     
@@ -887,7 +887,7 @@ On Error GoTo ErrHandler
     
 ErrHandler:
      Call TraceError(Err.Number, Err.Description, "TCP.ConnectUser", Erl)
-     Call WriteShowMessageBox(UserIndex, "El personaje contiene un error. Comuníquese con un miembro del staff.")
+     Call WriteShowMessageBox(userIndex, "El personaje contiene un error. Comuníquese con un miembro del staff.")
      Call CloseSocket(UserIndex)
 
 End Function
@@ -1449,8 +1449,8 @@ Public Sub LimpiarComercioSeguro(ByVal UserIndex As Integer)
 
 100     With UserList(UserIndex).ComUsu
 
-102         If .DestUsu > 0 Then
-104             Call FinComerciarUsu(.DestUsu)
+102         If IsValidUserRef(.DestUsu) Then
+104             Call FinComerciarUsu(.DestUsu.ArrayIndex)
 106             Call FinComerciarUsu(UserIndex)
 
             End If
@@ -1473,7 +1473,7 @@ Sub ResetUserSlot(ByVal UserIndex As Integer)
 
 100     UserList(UserIndex).ConnIDValida = False
 
-104     If UserList(UserIndex).Grupo.Lider = UserIndex Then
+104     If UserList(userIndex).Grupo.Lider.ArrayIndex = userIndex Then
 106         Call FinalizarGrupo(UserIndex)
 
         End If
@@ -1489,14 +1489,14 @@ Sub ResetUserSlot(ByVal UserIndex As Integer)
 
 112     UserList(UserIndex).Grupo.CantidadMiembros = 0
 114     UserList(UserIndex).Grupo.EnGrupo = False
-116     UserList(UserIndex).Grupo.Lider = 0
-118     UserList(UserIndex).Grupo.PropuestaDe = 0
-120     UserList(UserIndex).Grupo.Miembros(6) = 0
-122     UserList(UserIndex).Grupo.Miembros(1) = 0
-124     UserList(UserIndex).Grupo.Miembros(2) = 0
-126     UserList(UserIndex).Grupo.Miembros(3) = 0
-128     UserList(UserIndex).Grupo.Miembros(4) = 0
-130     UserList(UserIndex).Grupo.Miembros(5) = 0
+116     Call SetUserRef(UserList(userIndex).Grupo.Lider, 0)
+118     Call SetUserRef(UserList(userIndex).Grupo.PropuestaDe, 0)
+120     Call SetUserRef(UserList(userIndex).Grupo.Miembros(6), 0)
+122     Call SetUserRef(UserList(userIndex).Grupo.Miembros(1), 0)
+124     Call SetUserRef(UserList(userIndex).Grupo.Miembros(2), 0)
+126     Call SetUserRef(UserList(userIndex).Grupo.Miembros(3), 0)
+128     Call SetUserRef(UserList(userIndex).Grupo.Miembros(4), 0)
+130     Call SetUserRef(UserList(userIndex).Grupo.Miembros(5), 0)
 
 132     Call ResetQuestStats(UserIndex)
 134     Call ResetGuildInfo(UserIndex)
@@ -1518,7 +1518,7 @@ Sub ResetUserSlot(ByVal UserIndex As Integer)
 164         .Acepto = False
 166         .cant = 0
 168         .DestNick = vbNullString
-170         .DestUsu = 0
+170         Call SetUserRef(.DestUsu, 0)
 172         .Objeto = 0
 
         End With
@@ -1575,7 +1575,7 @@ Sub ClearAndSaveUser(ByVal UserIndex As Integer)
                 Call WriteUserCharIndexInServer(.flags.GMMeSigue.ArrayIndex)
                 Call UpdateUserInv(True, .flags.GMMeSigue.ArrayIndex, 1)
                 Call WriteUpdateUserStats(.flags.GMMeSigue.ArrayIndex)
-                Call WriteConsoleMsg(.flags.GMMeSigue.ArrayIndex, "El usuario " & UserList(UserIndex).name & " que estabas siguiendo se desconectó.", e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteConsoleMsg(.flags.GMMeSigue.ArrayIndex, "El usuario " & UserList(userIndex).name & " que estabas siguiendo se desconectó.", e_FontTypeNames.FONTTYPE_INFO)
                 Call SetUserRef(.flags.GMMeSigue, 0)
                 'Falta revertir inventario del GM
             End If
