@@ -23,3 +23,4 @@ Server.ini
 Database.ini
 Database.db-shm
 Database.db-wal
+Logs/numusers.log
