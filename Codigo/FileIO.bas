@@ -963,6 +963,11 @@ Sub LoadBalance()
 166     DesbalancePromedioVidas = val(BalanceIni.GetValue("EXTRA", "DesbalancePromedioVidas"))
 168     RangoVidas = val(BalanceIni.GetValue("EXTRA", "RangoVidas"))
 170     ModDañoGolpeCritico = 0.33
+        
+        'stun
+        PlayerStunTime = val(BalanceIni.GetValue("STUN", "PlayerStunTime"))
+        NpcStunTime = val(BalanceIni.GetValue("STUN", "NpcStunTime"))
+        PlayerInmuneTime = val(BalanceIni.GetValue("STUN", "PlayerInmuneTime"))
 
         ' Exp
 172     For i = 1 To STAT_MAXELV

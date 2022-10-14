@@ -78,8 +78,6 @@ Public lstUsuariosDonadores() As String
 
 Public Administradores As clsIniManager
 Public Const TIEMPO_MINIMO_CENTINELA As Long = 300
-Public Const PLAYER_STUN_TIME = 1500
-Public Const NPC_STUN_TIME = 5000
 
 Public Enum e_SoundIndex
 
