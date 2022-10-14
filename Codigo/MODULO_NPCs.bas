@@ -1833,5 +1833,5 @@ Public Function CanAttack(ByRef counter As t_NpcCounters, ByRef flags As t_NPCFl
 End Function
 
 Public Sub StunNPc(ByRef Counters As t_NpcCounters)
-    Counters.StunEndTime = GetTickCount() + NPC_STUN_TIME
+    Counters.StunEndTime = GetTickCount() + NpcStunTime
 End Sub

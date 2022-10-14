@@ -3334,7 +3334,7 @@ WriteParalizeOK_Err:
         '</EhFooter>
 End Sub
 
-Public Sub WriteStunStart(ByVal UserIndex As Integer, duration As Integer)
+Public Sub WriteStunStart(ByVal userIndex As Integer, ByVal duration As Integer)
     On Error GoTo WriteStunStart_Err
 100     Call Writer.WriteInt16(ServerPacketID.StunStart)
         Call Writer.WriteInt16(duration)

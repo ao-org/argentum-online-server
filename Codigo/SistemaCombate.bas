@@ -2497,10 +2497,11 @@ Private Sub UserDañoEspecial(ByVal AtacanteIndex As Integer, ByVal VictimaIndex
         If rangeStun And IsFeatureEnabled("enable_stun") Then
             If (RandomNumber(1, 100) < stunChance) Then
                 With UserList(VictimaIndex)
-                    Call StunPlayer(.Counters)
-                    Call WriteStunStart(VictimaIndex, PLAYER_STUN_TIME)
-                    Call WritePosUpdate(VictimaIndex)
-178                 Call SendData(SendTarget.ToPCAliveArea, VictimaIndex, PrepareMessageCreateFX(.Char.charindex, 142, 1))
+                    If StunPlayer(.Counters) Then
+                        Call WriteStunStart(VictimaIndex, PlayerStunTime)
+                        Call WritePosUpdate(VictimaIndex)
+178                     Call SendData(SendTarget.ToPCAliveArea, VictimaIndex, PrepareMessageCreateFX(.Char.charindex, 142, 1))
+                    End If
                 End With
             End If
         End If

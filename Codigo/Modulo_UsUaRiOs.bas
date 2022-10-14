@@ -2994,9 +2994,15 @@ Public Function CanMove(ByRef flags As t_UserFlags, ByRef Counters As t_UserCoun
     CanMove = flags.Paralizado = 0 And flags.Inmovilizado = 0 And Not IsStun(flags, Counters)
 End Function
 
-Public Sub StunPlayer(ByRef counter As t_UserCounters)
-    counter.StunEndTime = GetTickCount() + PLAYER_STUN_TIME
-End Sub
+Public Function StunPlayer(ByRef counter As t_UserCounters) As Boolean
+    Dim currTime As Long
+    StunPlayer = False
+    currTime = GetTickCount()
+    If currTime > counter.StunEndTime + PlayerInmuneTime Then
+        counter.StunEndTime = GetTickCount() + PlayerStunTime
+        StunPlayer = True
+    End If
+End Function
 
 Public Function CanUseItem(ByRef flags As t_UserFlags, ByRef Counters As t_UserCounters) As Boolean
     CanUseItem = Not IsStun(flags, Counters)
