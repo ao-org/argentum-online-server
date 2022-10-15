@@ -477,8 +477,8 @@ Sub QuitarUserInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal Cant
             
         End With
         
-        If UserList(UserIndex).flags.GMMeSigue > 0 And UserIndex <> UserList(UserIndex).flags.GMMeSigue Then
-            Call QuitarUserInvItem(UserList(UserIndex).flags.GMMeSigue, Slot, Cantidad)
+        If IsValidUserRef(UserList(UserIndex).flags.GMMeSigue) And UserIndex <> UserList(UserIndex).flags.GMMeSigue.ArrayIndex Then
+            Call QuitarUserInvItem(UserList(UserIndex).flags.GMMeSigue.ArrayIndex, Slot, Cantidad)
         End If
 
         
@@ -2506,22 +2506,22 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
     
 776                         If .flags.Casado = 1 Then
     
-                                Dim tUser As Integer
+                                Dim tUser As t_UserReference
     
                                 '.flags.Pareja
 778                             tUser = NameIndex(.flags.Pareja)
 
                             
-782                             If tUser <= 0 Then
+782                             If IsValidUserRef(tUser) Then
 790                                 Call WriteConsoleMsg(UserIndex, "Tu pareja deberás estar conectada para divorciarse.", e_FontTypeNames.FONTTYPE_INFOIAO)
                                 Else
 780                                 Call QuitarUserInvItem(UserIndex, Slot, 1)
-794                                 UserList(tUser).flags.Casado = 0
-796                                 UserList(tUser).flags.Pareja = ""
+794                                 UserList(tUser.ArrayIndex).flags.Casado = 0
+796                                 UserList(tUser.ArrayIndex).flags.Pareja = ""
 798                                 .flags.Casado = 0
 800                                 .flags.Pareja = ""
 802                                 Call WriteConsoleMsg(UserIndex, "Te has divorciado.", e_FontTypeNames.FONTTYPE_INFOIAO)
-804                                 Call WriteConsoleMsg(tUser, .Name & " se ha divorciado de ti.", e_FontTypeNames.FONTTYPE_INFOIAO)
+804                                 Call WriteConsoleMsg(tUser.ArrayIndex, .name & " se ha divorciado de ti.", e_FontTypeNames.FONTTYPE_INFOIAO)
 
                                     If obj.Snd1 <> 0 Then
 808                                     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .Pos.X, .Pos.y))

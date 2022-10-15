@@ -59,10 +59,19 @@ AgregarAConsola_Err:
         Call TraceError(Err.Number, Err.Description, "ModLadder.AgregarAConsola", Erl)
 End Sub
 
-Public Function NameIndex(ByRef UserName As String) As Integer
-
-100     NameIndex = m_NameIndex(UCase$(Replace(UserName, "+", " ")))
-    
+Public Function NameIndex(ByRef username As String) As t_UserReference
+        Dim UserRef As t_UserReference
+        Dim key As String
+        Dim wrapper As clsUserRefWrapper
+        key = UCase$(Replace(username, "+", " "))
+        If m_NameIndex.Exists(key) Then
+            Set wrapper = m_NameIndex(key)
+            UserRef.ArrayIndex = wrapper.PlayerIndex
+            UserRef.VersionId = wrapper.VersionId
+        Else
+            Call SetUserRef(UserRef, 0)
+        End If
+        NameIndex = UserRef
 End Function
 
 Public Sub FindLegalPos(ByVal UserIndex As Integer, ByVal Map As Integer, ByRef X As Byte, ByRef Y As Byte)
@@ -121,12 +130,12 @@ Public Sub FindLegalPos(ByVal UserIndex As Integer, ByVal Map As Integer, ByRef 
 132             If OtherUserIndex <> 0 Then
 
                     'Si no encontramos lugar, y abajo teniamos a un usuario, lo pisamos y cerramos su comercio seguro
-134                 If UserList(OtherUserIndex).ComUsu.DestUsu > 0 Then
+134                 If IsValidUserRef(UserList(OtherUserIndex).ComUsu.DestUsu) Then
 
                         'Le avisamos al que estaba comerciando que se tuvo que ir.
-136                     If UserList(UserList(OtherUserIndex).ComUsu.DestUsu).flags.UserLogged Then
-138                         Call FinComerciarUsu(UserList(OtherUserIndex).ComUsu.DestUsu)
-140                         Call WriteConsoleMsg(UserList(OtherUserIndex).ComUsu.DestUsu, "Comercio cancelado. El otro usuario se ha desconectado.", e_FontTypeNames.FONTTYPE_TALK)
+136                     If UserList(UserList(OtherUserIndex).ComUsu.DestUsu.ArrayIndex).flags.UserLogged Then
+138                         Call FinComerciarUsu(UserList(OtherUserIndex).ComUsu.DestUsu.ArrayIndex)
+140                         Call WriteConsoleMsg(UserList(OtherUserIndex).ComUsu.DestUsu.ArrayIndex, "Comercio cancelado. El otro usuario se ha desconectado.", e_FontTypeNames.FONTTYPE_TALK)
                         
 
                         End If
@@ -255,7 +264,7 @@ Private Function CheckMapRestrictions(ByVal UserIndex As Integer, ByVal Map As I
 
 106         If MapInfo(Map).Newbie And Not EsNewbie(UserIndex) Then
 108             If .flags.UltimoMensaje <> 101 Then
-110                 Call WriteConsoleMsg(UserIndex, "Sólo los newbies pueden entrar a este mapa.", e_FontTypeNames.FONTTYPE_INFO)
+110                 Call WriteConsoleMsg(userIndex, "Sólo los newbies pueden entrar a este mapa.", e_FontTypeNames.FONTTYPE_INFO)
 112                 .flags.UltimoMensaje = 101
                 End If
                 Exit Function
@@ -263,7 +272,7 @@ Private Function CheckMapRestrictions(ByVal UserIndex As Integer, ByVal Map As I
 
 114         If MapInfo(Map).NoPKs And (Status(UserIndex) = 0 Or Status(UserIndex) = 2) Then
 116             If .flags.UltimoMensaje <> 102 Then
-118                 Call WriteConsoleMsg(UserIndex, "Sólo los ciudadanos pueden entrar a este mapa.", e_FontTypeNames.FONTTYPE_INFO)
+118                 Call WriteConsoleMsg(userIndex, "Sólo los ciudadanos pueden entrar a este mapa.", e_FontTypeNames.FONTTYPE_INFO)
 120                 .flags.UltimoMensaje = 102
                 End If
                 Exit Function
@@ -271,7 +280,7 @@ Private Function CheckMapRestrictions(ByVal UserIndex As Integer, ByVal Map As I
 
 122         If MapInfo(Map).NoCiudadanos And (Status(UserIndex) = 1 Or Status(UserIndex) = 3) Then
 124             If .flags.UltimoMensaje <> 103 Then
-126                 Call WriteConsoleMsg(UserIndex, "Sólo los criminales pueden entrar a este mapa.", e_FontTypeNames.FONTTYPE_INFO)
+126                 Call WriteConsoleMsg(userIndex, "Sólo los criminales pueden entrar a este mapa.", e_FontTypeNames.FONTTYPE_INFO)
 128                 .flags.UltimoMensaje = 103
                 End If
                 Exit Function
@@ -295,7 +304,7 @@ Private Function CheckMapRestrictions(ByVal UserIndex As Integer, ByVal Map As I
 
 146         If MapInfo(Map).MaxLevel <> 0 And .Stats.ELV >= MapInfo(Map).MaxLevel Then
 148             If .flags.UltimoMensaje <> 106 Then
-150                 Call WriteConsoleMsg(UserIndex, "Sólo los personajes inferiores a nivel " & MapInfo(map).MaxLevel & " pueden entrar a este mapa.", e_FontTypeNames.FONTTYPE_INFO)
+150                 Call WriteConsoleMsg(userIndex, "Sólo los personajes inferiores a nivel " & MapInfo(map).MaxLevel & " pueden entrar a este mapa.", e_FontTypeNames.FONTTYPE_INFO)
 152                 .flags.UltimoMensaje = 106
                 End If
                 Exit Function
@@ -370,29 +379,7 @@ Public Sub DoTileEvents(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal 
                     End If
     
                     'Te fusite del mapa. La criatura ya no es más tuya ni te reconoce como que vos la atacaste.
-134                 aN = .flags.AtacadoPorNpc
-    
-136                 If aN > 0 Then
-                        If NpcList(aN).Target = UserIndex Then
-138                         NpcList(aN).Movement = NpcList(aN).flags.OldMovement
-140                         NpcList(aN).Hostile = NpcList(aN).flags.OldHostil
-142                         NpcList(aN).flags.AttackedBy = vbNullString
-144                         NpcList(aN).Target = 0
-                        End If
-                    End If
-        
-146                 aN = .flags.NPCAtacado
-    
-148                 If aN > 0 Then
-150                     If NpcList(aN).flags.AttackedFirstBy = .Name Then
-152                         NpcList(aN).flags.AttackedFirstBy = vbNullString
-    
-                        End If
-    
-                    End If
-    
-154                 .flags.AtacadoPorNpc = 0
-156                 .flags.NPCAtacado = 0
+134                 Call ClearAttackerNpc(UserIndex)
     
 158             ElseIf MapData(Map, X, Y).TileExit.Map < 0 Then
 160                 If .flags.ReturnPos.Map <> 0 Then
@@ -408,27 +395,7 @@ Public Sub DoTileEvents(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal 
                         End If
                         
                         'Te fusite del mapa. La criatura ya no es más tuya ni te reconoce como que vos la atacaste.
-172                     aN = .flags.AtacadoPorNpc
-        
-174                     If aN > 0 Then
-176                         NpcList(aN).Movement = NpcList(aN).flags.OldMovement
-178                         NpcList(aN).Hostile = NpcList(aN).flags.OldHostil
-180                         NpcList(aN).flags.AttackedBy = vbNullString
-182                         NpcList(aN).Target = 0
-                        End If
-            
-184                     aN = .flags.NPCAtacado
-        
-186                     If aN > 0 Then
-188                         If NpcList(aN).flags.AttackedFirstBy = .Name Then
-190                             NpcList(aN).flags.AttackedFirstBy = vbNullString
-        
-                            End If
-        
-                        End If
-        
-192                     .flags.AtacadoPorNpc = 0
-194                     .flags.NPCAtacado = 0
+172                     Call ClearAttackerNpc(UserIndex)
                     End If
                 End If
             End If
@@ -440,6 +407,36 @@ Public Sub DoTileEvents(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal 
 ErrHandler:
 196     Call LogError("Error en DotileEvents. Error: " & Err.Number & " - Desc: " & Err.Description)
 
+End Sub
+
+Public Sub ClearAttackerNpc(ByVal UserIndex As Integer)
+On Error GoTo ClearAttackerNpc_err
+    With UserList(UserIndex)
+        Dim aN As Integer
+100     aN = .flags.AtacadoPorNpc
+
+102     If aN > 0 Then
+104         If IsValidUserRef(NpcList(aN).TargetUser) And NpcList(aN).TargetUser.ArrayIndex = UserIndex Then
+106           NpcList(aN).Movement = NpcList(aN).flags.OldMovement
+108             NpcList(aN).Hostile = NpcList(aN).flags.OldHostil
+110             NpcList(aN).flags.AttackedBy = vbNullString
+112             Call SetUserRef(NpcList(aN).TargetUser, 0)
+114         End If
+116     End If
+
+118     aN = .flags.NPCAtacado
+
+120     If aN > 0 Then
+122        If NpcList(aN).flags.AttackedFirstBy = .name Then
+124            NpcList(aN).flags.AttackedFirstBy = vbNullString
+126        End If
+128     End If
+130     .flags.AtacadoPorNpc = 0
+132     .flags.NPCAtacado = 0
+    End With
+    Exit Sub
+ClearAttackerNpc_err:
+    Call TraceError(Err.Number, Err.Description, "Extra.ClearAttackerNpc failed to clear userindex" & userIndex & "(" & UserList(userIndex).VersionId & ")", Erl)
 End Sub
 
 Function InRangoVision(ByVal UserIndex As Integer, ByVal X As Integer, ByVal Y As Integer) As Boolean
@@ -1408,14 +1405,14 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
                         End If
                 
 378                     FoundSomething = 1
-380                     UserList(UserIndex).flags.TargetUser = TempCharIndex
+380                     Call SetUserRef(UserList(userIndex).flags.targetUser, TempCharIndex)
 382                     UserList(UserIndex).flags.TargetNPC = 0
 384                     UserList(UserIndex).flags.TargetNpcTipo = e_NPCType.Comun
 
                     Else
 386                     Call WriteConsoleMsg(UserIndex, "Ves a ??? <Game Master>", e_FontTypeNames.FONTTYPE_GM)
     
-388                     UserList(UserIndex).flags.TargetUser = TempCharIndex
+388                     Call SetUserRef(UserList(userIndex).flags.targetUser, TempCharIndex)
 390                     UserList(UserIndex).flags.TargetNPC = 0
 392                     UserList(UserIndex).flags.TargetNpcTipo = e_NPCType.Comun
     
@@ -1511,13 +1508,9 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
 464                         Call WriteChatOverHead(UserIndex, "NPCDESC*" & NpcList(TempCharIndex).Numero, NpcList(TempCharIndex).Char.charindex, vbWhite)
                         End If
                     End If
-                    
-466             ElseIf TempCharIndex = CentinelaNPCIndex Then
-                    'Enviamos nuevamente el texto del centinela según quien pregunta
-468                 Call modCentinela.CentinelaSendClave(UserIndex)
-470             ElseIf NpcList(TempCharIndex).MaestroUser > 0 Then
+470             ElseIf IsValidUserRef(NpcList(TempCharIndex).MaestroUser) Then
                     If UserList(UserIndex).flags.Muerto = 0 Then
-472                     Call WriteConsoleMsg(UserIndex, "NPCNAME*" & NpcList(TempCharIndex).Numero & "* es mascota de " & UserList(NpcList(TempCharIndex).MaestroUser).name & " " & estatus, e_FontTypeNames.FONTTYPE_INFO)
+472                     Call WriteConsoleMsg(userIndex, "NPCNAME*" & NpcList(TempCharIndex).Numero & "* es mascota de " & UserList(NpcList(TempCharIndex).MaestroUser.ArrayIndex).name & " " & estatus, e_FontTypeNames.FONTTYPE_INFO)
                     End If
                 Else
                     If UserList(UserIndex).flags.Muerto = 0 Then
@@ -1529,7 +1522,7 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
 476             FoundSomething = 1
 478             UserList(UserIndex).flags.TargetNpcTipo = NpcList(TempCharIndex).NPCtype
 480             UserList(UserIndex).flags.TargetNPC = TempCharIndex
-482             UserList(UserIndex).flags.TargetUser = 0
+482             Call SetUserRef(UserList(userIndex).flags.targetUser, 0)
 484             UserList(UserIndex).flags.TargetObj = 0
 
 
@@ -1575,7 +1568,7 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
 516         If FoundChar = 0 Then
 518             UserList(UserIndex).flags.TargetNPC = 0
 520             UserList(UserIndex).flags.TargetNpcTipo = e_NPCType.Comun
-522             UserList(UserIndex).flags.TargetUser = 0
+522             Call SetUserRef(UserList(userIndex).flags.targetUser, 0)
 
             End If
     
@@ -1583,7 +1576,7 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
 524         If FoundSomething = 0 Then
 526             UserList(UserIndex).flags.TargetNPC = 0
 528             UserList(UserIndex).flags.TargetNpcTipo = e_NPCType.Comun
-530             UserList(UserIndex).flags.TargetUser = 0
+530             Call SetUserRef(UserList(userIndex).flags.targetUser, 0)
 532             UserList(UserIndex).flags.TargetObj = 0
 534             UserList(UserIndex).flags.TargetObjMap = 0
 536             UserList(UserIndex).flags.TargetObjX = 0
@@ -1597,7 +1590,7 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
 540         If FoundSomething = 0 Then
 542             UserList(UserIndex).flags.TargetNPC = 0
 544             UserList(UserIndex).flags.TargetNpcTipo = e_NPCType.Comun
-546             UserList(UserIndex).flags.TargetUser = 0
+546             Call SetUserRef(UserList(userIndex).flags.targetUser, 0)
 548             UserList(UserIndex).flags.TargetObj = 0
 550             UserList(UserIndex).flags.TargetObjMap = 0
 552             UserList(UserIndex).flags.TargetObjX = 0

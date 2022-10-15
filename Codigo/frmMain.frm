@@ -3,14 +3,14 @@ Begin VB.Form frmMain
    BackColor       =   &H00E0E0E0&
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   "Servidor Argentum 20"
-   ClientHeight    =   6264
-   ClientLeft      =   1956
-   ClientTop       =   1692
-   ClientWidth     =   8592
+   ClientHeight    =   6255
+   ClientLeft      =   1950
+   ClientTop       =   1695
+   ClientWidth     =   8595
    FillColor       =   &H00C0C0C0&
    BeginProperty Font 
       Name            =   "Arial"
-      Size            =   8.4
+      Size            =   8.25
       Charset         =   0
       Weight          =   700
       Underline       =   0   'False
@@ -23,8 +23,8 @@ Begin VB.Form frmMain
    MaxButton       =   0   'False
    MinButton       =   0   'False
    PaletteMode     =   1  'UseZOrder
-   ScaleHeight     =   6264
-   ScaleWidth      =   8592
+   ScaleHeight     =   6255
+   ScaleWidth      =   8595
    StartUpPosition =   2  'CenterScreen
    Begin VB.Timer tControlHechizos 
       Left            =   4440
@@ -214,7 +214,7 @@ Begin VB.Form frmMain
       Top             =   4680
       Width           =   4935
       Begin VB.ListBox List1 
-         Height          =   1008
+         Height          =   900
          Left            =   120
          TabIndex        =   20
          Top             =   240
@@ -342,7 +342,7 @@ Begin VB.Form frmMain
          Caption         =   "Numero de usuarios: 0"
          BeginProperty Font 
             Name            =   "Tahoma"
-            Size            =   8.4
+            Size            =   8.25
             Charset         =   0
             Weight          =   700
             Underline       =   0   'False
@@ -410,7 +410,7 @@ Begin VB.Form frmMain
          Caption         =   "Via consola"
          BeginProperty Font 
             Name            =   "Tahoma"
-            Size            =   8.4
+            Size            =   8.25
             Charset         =   0
             Weight          =   700
             Underline       =   0   'False
@@ -427,7 +427,7 @@ Begin VB.Form frmMain
          Caption         =   "Via ventana"
          BeginProperty Font 
             Name            =   "Tahoma"
-            Size            =   8.4
+            Size            =   8.25
             Charset         =   0
             Weight          =   700
             Underline       =   0   'False
@@ -467,7 +467,7 @@ Begin VB.Form frmMain
       Top             =   3000
       Width           =   4935
       Begin VB.ListBox listaDePaquetes 
-         Height          =   1008
+         Height          =   900
          Left            =   120
          TabIndex        =   16
          Top             =   480
@@ -660,11 +660,11 @@ Sub CheckIdleUser()
 108                 Call WriteShowMessageBox(iUserIndex, "Demasiado tiempo inactivo. Has sido desconectado...")
 
                     'mato los comercios seguros
-110                 If UserList(iUserIndex).ComUsu.DestUsu > 0 Then
-112                     If UserList(UserList(iUserIndex).ComUsu.DestUsu).flags.UserLogged Then
-114                         If UserList(UserList(iUserIndex).ComUsu.DestUsu).ComUsu.DestUsu = iUserIndex Then
-116                             Call WriteConsoleMsg(UserList(iUserIndex).ComUsu.DestUsu, "Comercio cancelado por el otro usuario.", e_FontTypeNames.FONTTYPE_TALK)
-118                             Call FinComerciarUsu(UserList(iUserIndex).ComUsu.DestUsu)
+110                 If IsValidUserRef(UserList(iUserIndex).ComUsu.DestUsu) Then
+112                     If UserList(UserList(iUserIndex).ComUsu.DestUsu.ArrayIndex).flags.UserLogged Then
+114                         If UserList(UserList(iUserIndex).ComUsu.DestUsu.ArrayIndex).ComUsu.DestUsu.ArrayIndex = iUserIndex Then
+116                             Call WriteConsoleMsg(UserList(iUserIndex).ComUsu.DestUsu.ArrayIndex, "Comercio cancelado por el otro usuario.", e_FontTypeNames.FONTTYPE_TALK)
+118                             Call FinComerciarUsu(UserList(iUserIndex).ComUsu.DestUsu.ArrayIndex)
                             
 
                             End If
@@ -965,9 +965,6 @@ Private Sub Minuto_Timer()
     '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     Call ModAreas.AreasOptimizacion
     '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
-    'Actualizamos el centinela
-    Call modCentinela.PasarMinutoCentinela
 
     If MinutosLatsClean >= 15 Then
         MinutosLatsClean = 0

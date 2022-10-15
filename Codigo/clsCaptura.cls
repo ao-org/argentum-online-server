@@ -62,22 +62,23 @@ Private Sub Class_Initialize()
     objEquipo(2) = OBJ_CAPTURA_BANDERA_2
 End Sub
 
-Public Sub eliminarParticipante(ByVal UserIndex As Integer)
+Public Function GetPlayer(ByVal UserIndex As Integer) As clsCapturaParticipante
+    Set GetPlayer = Participantes.Item(CStr(UserIndex))
+End Function
 
-    Call tirarBandera(UserIndex)
-
-    UserList(UserIndex).flags.jugando_captura = 0
-    UserList(UserIndex).flags.jugando_captura_team = 0
+Public Sub eliminarParticipante(ByRef player As clsCapturaParticipante)
+    If player Is Nothing Then
+        Exit Sub
+    End If
+    If player.IsValid Then
+        Call tirarBandera(player.PlayerIndex)
     
-    Dim p As clsCapturaParticipante
-    
-    Set p = participantes.Item(CStr(UserIndex))
-    
-    Call WarpUserChar(UserIndex, p.LastPosMap, p.LastPosX, p.LastPosY)
-    
-    Call participantes.Remove(CStr(UserIndex))
-    
-    
+        UserList(player.PlayerIndex).flags.jugando_captura = 0
+        UserList(player.PlayerIndex).flags.jugando_captura_team = 0
+        
+        Call WarpUserChar(player.PlayerIndex, player.LastPosMap, player.LastPosX, player.LastPosY)
+    End If
+    Call Participantes.Remove(CStr(player.PlayerIndex))
 End Sub
 
 Public Sub PasarSegundo()
@@ -116,7 +117,9 @@ Public Sub PasarSegundo()
 
             
             For Each participante In participantes
-                Call enviarUsuarioBase(participante.UserIndex)
+                If participante.IsValid Then
+                    Call enviarUsuarioBase(participante.PlayerIndex)
+                End If
             Next participante
         
             Estado = EnJuego
@@ -125,28 +128,30 @@ Public Sub PasarSegundo()
         Dim Team As Byte
         Dim estaEnBandera(1 To 2) As Boolean
         For Each participante In participantes
-            With UserList(participante.UserIndex)
-            Team = .flags.jugando_captura_team
-            If .Pos.map = mapaEquipo(Team) Then 'Si estoy en mi mapa
-                If Abs(.Pos.X - xEquipo(Team)) <= 8 And Abs(.Pos.Y - yEquipo(Team)) <= 5 Then ' .Pos.x Distance(.Pos.X, .Pos.Y, xEquipo(Team), yEquipo(Team)) <= 8 Then 'Y estoy 5 pasos del centro
-                    If TieneObjetos(objEquipo(IIf(Team = 1, 2, 1)), 1, participante.UserIndex) Then 'Y tengo la bandera enemgia
-                        contadorBandera(Team) = contadorBandera(Team) + 1
-                        estaEnBandera(Team) = True
-                        If contadorBandera(Team) >= CAPTURA_TIEMPO_BANDERA Then
-                            Call finalizarRonda(Team)
-                        Else
-                            Call SendData(SendTarget.ToJugadoresCaptura, 0, PrepareMessageConsoleMsg("Eventos» ¡Atención! " & .name & " del equipo " & colorEquipo(Team) & " tiene la bandera enemiga en su base, si aguanta " & CAPTURA_TIEMPO_BANDERA - contadorBandera(Team) & " segundos más ganará la ronda.", e_FontTypeNames.FONTTYPE_GUILD))
+            If participante.IsValid Then
+                With UserList(participante.PlayerIndex)
+                Team = .flags.jugando_captura_team
+                If .pos.map = mapaEquipo(Team) Then 'Si estoy en mi mapa
+                    If Abs(.pos.X - xEquipo(Team)) <= 8 And Abs(.pos.y - yEquipo(Team)) <= 5 Then ' .Pos.x Distance(.Pos.X, .Pos.Y, xEquipo(Team), yEquipo(Team)) <= 8 Then 'Y estoy 5 pasos del centro
+                        If TieneObjetos(objEquipo(IIf(Team = 1, 2, 1)), 1, participante.PlayerIndex) Then 'Y tengo la bandera enemgia
+                            contadorBandera(Team) = contadorBandera(Team) + 1
+                            estaEnBandera(Team) = True
+                            If contadorBandera(Team) >= CAPTURA_TIEMPO_BANDERA Then
+                                Call finalizarRonda(Team)
+                            Else
+                                Call SendData(SendTarget.ToJugadoresCaptura, 0, PrepareMessageConsoleMsg("Eventos» ¡Atención! " & .name & " del equipo " & colorEquipo(Team) & " tiene la bandera enemiga en su base, si aguanta " & CAPTURA_TIEMPO_BANDERA - contadorBandera(Team) & " segundos más ganará la ronda.", e_FontTypeNames.FONTTYPE_GUILD))
+                            End If
+                            
                         End If
-                        
+                    End If
+                ElseIf .flags.jugando_captura_timer > 0 Then
+                    .flags.jugando_captura_timer = .flags.jugando_captura_timer - 1
+                    If .flags.jugando_captura_timer = 0 And participante.IsValid Then
+                        Call enviarUsuarioBase(participante.PlayerIndex)
                     End If
                 End If
-            ElseIf .flags.jugando_captura_timer > 0 Then
-                .flags.jugando_captura_timer = .flags.jugando_captura_timer - 1
-                If .flags.jugando_captura_timer = 0 Then
-                    Call enviarUsuarioBase(participante.UserIndex)
-                End If
+                End With
             End If
-            End With
         Next participante
         If Not estaEnBandera(1) Then
             contadorBandera(1) = 0
@@ -191,10 +196,12 @@ Private Sub iniciarCaptura()
     Dim participante As clsCapturaParticipante
     
     If participantes.Count Mod 2 <> 0 Then
-        Dim UI As Integer
-        UI = participantes(participantes.Count).UserIndex
-        Call eliminarParticipante(UI)
-        Call WriteConsoleMsg(UI, "Has sido eliminado del evento por ser el último en ingresar y los equipos eran impares.", e_FontTypeNames.FONTTYPE_INFOBOLD)
+        Dim player As clsCapturaParticipante
+        Set player = Participantes(Participantes.Count)
+        Call eliminarParticipante(player)
+        If player.IsValid Then
+            Call WriteConsoleMsg(player.PlayerIndex, "Has sido eliminado del evento por ser el último en ingresar y los equipos eran impares.", e_FontTypeNames.FONTTYPE_INFOBOLD)
+        End If
     End If
     
     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos» El evento captura la bandera ha iniciado.", e_FontTypeNames.FONTTYPE_GUILD))
@@ -206,20 +213,19 @@ Private Sub iniciarCaptura()
     counter = 1
     'Armamos los equipos segun level para que sea lo mas parejo.
     For Each participante In sortedParticipantes
-        participante.Team = Team
-        UserList(participante.UserIndex).flags.jugando_captura_team = Team
-        UserList(participante.UserIndex).flags.tiene_bandera = 0
-         Call SendData(SendTarget.ToAll, participante.UserIndex, PrepareMessageUpdateFlag(UserList(participante.UserIndex).flags.tiene_bandera, UserList(participante.UserIndex).Char.charindex))
-        Call WriteConsoleMsg(participante.UserIndex, "Te ha tocado participar en el equipo " & colorEquipo(participante.Team) & " deberás proteger a tus compañeros de equipo y capturar la bandera del equipo contrario para ganar.", e_FontTypeNames.FONTTYPE_GUILD)
-        counter = counter + 1
-        If counter = 2 Then
-            Team = IIf(Team = 1, 2, 1)
-            counter = 0
+        If participante.IsValid Then
+            participante.Team = Team
+            UserList(participante.PlayerIndex).flags.jugando_captura_team = Team
+            UserList(participante.PlayerIndex).flags.tiene_bandera = 0
+             Call SendData(SendTarget.ToAll, participante.PlayerIndex, PrepareMessageUpdateFlag(UserList(participante.PlayerIndex).flags.tiene_bandera, UserList(participante.PlayerIndex).Char.charindex))
+            Call WriteConsoleMsg(participante.PlayerIndex, "Te ha tocado participar en el equipo " & colorEquipo(participante.Team) & " deberás proteger a tus compañeros de equipo y capturar la bandera del equipo contrario para ganar.", e_FontTypeNames.FONTTYPE_GUILD)
+            counter = counter + 1
+            If counter = 2 Then
+                Team = IIf(Team = 1, 2, 1)
+                counter = 0
+            End If
         End If
     Next participante
-    
-    
-
 
     Call iniciarRonda
 End Sub
@@ -326,7 +332,7 @@ Public Sub tiraBandera(ByVal UserIndex As Integer, ByVal objIndex As Integer)
         UserList(UserIndex).flags.tiene_bandera = 0
         
         Call SendData(SendTarget.ToAll, UserIndex, PrepareMessageUpdateFlag(UserList(UserIndex).flags.tiene_bandera, UserList(UserIndex).Char.charindex))
-        Call SendData(SendTarget.ToJugadoresCaptura, 0, PrepareMessageConsoleMsg("Eventos» ¡Atención! la bandera del equipo " & colorEquipo(Team) & " se encuentra en (" & .Pos.map & "," & .Pos.X & "," & .Pos.Y & ")", e_FontTypeNames.FONTTYPE_GUILD))
+        Call SendData(SendTarget.ToJugadoresCaptura, 0, PrepareMessageConsoleMsg("Eventos» ¡Atención! la bandera del equipo " & colorEquipo(Team) & " se encuentra en (" & .pos.map & "," & .pos.X & "," & .pos.y & ")", e_FontTypeNames.FONTTYPE_GUILD))
         
     End With
 End Sub
@@ -358,7 +364,7 @@ Public Sub tirarBandera(ByVal UserIndex As Integer)
                 MiObj.objIndex = objBandera
             
                 Call TirarItemAlPiso(.Pos, MiObj, False)
-                Call SendData(SendTarget.ToJugadoresCaptura, 0, PrepareMessageConsoleMsg("Eventos» ¡Atención! la bandera del equipo " & colorEquipo(Team) & " se encuentra en (" & .Pos.map & "," & .Pos.X & "," & .Pos.Y & ")", e_FontTypeNames.FONTTYPE_GUILD))
+                Call SendData(SendTarget.ToJugadoresCaptura, 0, PrepareMessageConsoleMsg("Eventos» ¡Atención! la bandera del equipo " & colorEquipo(Team) & " se encuentra en (" & .pos.map & "," & .pos.X & "," & .pos.y & ")", e_FontTypeNames.FONTTYPE_GUILD))
             End If
             
         End If
@@ -405,11 +411,13 @@ Private Sub iniciarRonda()
     
     Dim participante As clsCapturaParticipante
     For Each participante In participantes
-        Call SendData(SendTarget.ToAll, participante.UserIndex, PrepareMessageUpdateFlag(0, UserList(participante.UserIndex).Char.charindex))
-        UserList(participante.UserIndex).flags.jugando_captura_muertes = 0
-        UserList(participante.UserIndex).flags.jugando_captura_timer = 0
-        Call tirarBandera(participante.UserIndex)
-        Call enviarUsuarioSala(participante.UserIndex)
+        If participante.IsValid Then
+            Call SendData(SendTarget.ToAll, participante.PlayerIndex, PrepareMessageUpdateFlag(0, UserList(participante.PlayerIndex).Char.charindex))
+            UserList(participante.PlayerIndex).flags.jugando_captura_muertes = 0
+            UserList(participante.PlayerIndex).flags.jugando_captura_timer = 0
+            Call tirarBandera(participante.PlayerIndex)
+            Call enviarUsuarioSala(participante.PlayerIndex)
+        End If
     Next participante
     
     'Ponemos las banderas de nuevo
@@ -444,8 +452,10 @@ Public Sub finalizarCaptura(Optional Team As Integer = -1)
     ElseIf Team = -1 Then 'Se aborto el evento
         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos» El evento de captura la bandera ha sido cancelado. Se te ha devuelto el precio de inscripción.", e_FontTypeNames.FONTTYPE_GUILD))
          For Each participante In participantes
-            UserList(participante.UserIndex).Stats.GLD = UserList(participante.UserIndex).Stats.GLD + precio
-            Call WriteUpdateGold(participante.UserIndex)
+            If participante.IsValid Then
+                UserList(participante.PlayerIndex).Stats.GLD = UserList(participante.PlayerIndex).Stats.GLD + precio
+                Call WriteUpdateGold(participante.PlayerIndex)
+            End If
         Next participante
     ElseIf Team = 0 Then 'Hubo empate
         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos» ¡El evento de captura la bandera ha terminado en empate!.", e_FontTypeNames.FONTTYPE_GUILD))
@@ -458,7 +468,7 @@ Public Sub finalizarCaptura(Optional Team As Integer = -1)
 
     
     For Each participante In participantes
-        Call eliminarParticipante(participante.UserIndex)
+        Call eliminarParticipante(participante)
     Next participante
 
     'Destruyo la instancia
@@ -579,7 +589,7 @@ Public Sub inscribirse(ByVal UserIndex As Integer)
         Dim participante As clsCapturaParticipante
         Set participante = New clsCapturaParticipante
                 
-        participante.UserIndex = UserIndex
+        Call participante.SetPlayer(UserIndex)
         participante.LastPosMap = UserList(UserIndex).Pos.map
         participante.LastPosX = UserList(UserIndex).Pos.X
         participante.LastPosY = UserList(UserIndex).Pos.Y

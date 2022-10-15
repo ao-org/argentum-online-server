@@ -45,7 +45,7 @@ Private Function GlobalChecks(ByVal BannerIndex As Integer, ByRef username As St
         
         On Error GoTo GlobalChecks_Err
 
-        Dim TargetIndex As Integer
+        Dim tUser As t_UserReference
 
 100     GlobalChecks = False
 
@@ -56,17 +56,17 @@ Private Function GlobalChecks(ByVal BannerIndex As Integer, ByRef username As St
 106         UserName = Replace(UserName, "+", " ")
         End If
 
-108     TargetIndex = NameIndex(UserName)
+108     tUser = NameIndex(username)
 
-110     If TargetIndex Then
+110     If IsValidUserRef(tUser) Then
 
-112         If TargetIndex = BannerIndex Then
+112         If tUser.ArrayIndex = BannerIndex Then
 114             Call WriteConsoleMsg(BannerIndex, "No podes banearte a vos mismo.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Function
             End If
 
             ' Estas tratando de banear a alguien con mas privilegios que vos, no va a pasar bro.
-116         If CompararUserPrivilegios(TargetIndex, BannerIndex) >= 0 Then
+116         If CompararUserPrivilegios(tUser.ArrayIndex, BannerIndex) >= 0 Then
 118             Call WriteConsoleMsg(BannerIndex, "No podes banear a al alguien de igual o mayor jerarquia.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Function
             End If
@@ -119,13 +119,13 @@ Public Sub BanPJ(ByVal BannerIndex As Integer, ByVal UserName As String, ByRef R
 112     Call LogBanFromName(UserName, BannerIndex, Razon)
 
         ' Le buchoneamos al mundo.
-114     Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » " & UserList(BannerIndex).name & " ha baneado a " & UserName & " debido a: " & LCase$(Razon) & ".", e_FontTypeNames.FONTTYPE_SERVER))
+114     Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » " & UserList(BannerIndex).name & " ha baneado a " & username & " debido a: " & LCase$(Razon) & ".", e_FontTypeNames.FONTTYPE_SERVER))
 
         ' Si estaba online, lo echamos.
-116     Dim tUser As Integer: tUser = NameIndex(UserName)
-118     If tUser > 0 Then
-            Call WriteDisconnect(tUser)
-            Call CloseSocket(tUser)
+116     Dim tUser As t_UserReference: tUser = NameIndex(username)
+118     If IsValidUserRef(tUser) Then
+            Call WriteDisconnect(tUser.ArrayIndex)
+            Call CloseSocket(tUser.ArrayIndex)
         End If
 
         Exit Sub
@@ -151,16 +151,16 @@ Public Sub BanPJWithoutGM(ByVal UserName As String, ByRef Razon As String)
         ' Guardamos el estado de baneado en la base de datos.
 110     Call SaveBanDatabase(UserName, Razon, "el sistema")
 
-100     Call WriteVar(App.Path & "\logs\" & "BanDetail.dat", UserName, "BannedBy", "Ban automático (Posible BOT).")
+100     Call WriteVar(App.Path & "\logs\" & "BanDetail.dat", username, "BannedBy", "Ban automático (Posible BOT).")
         Call WriteVar(App.Path & "\logs\" & "BanDetail.dat", UserName, "Reason", Razon)
         ' Le buchoneamos al mundo.
-114     Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » Ha baneado a " & UserName & " debido a: " & LCase$(Razon) & ".", e_FontTypeNames.FONTTYPE_SERVER))
+114     Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » Ha baneado a " & username & " debido a: " & LCase$(Razon) & ".", e_FontTypeNames.FONTTYPE_SERVER))
 
         ' Si estaba online, lo echamos.
-116     Dim tUser As Integer: tUser = NameIndex(UserName)
-118     If tUser > 0 Then
-            Call WriteDisconnect(tUser)
-            Call CloseSocket(tUser)
+116     Dim tUser As t_UserReference: tUser = NameIndex(username)
+118     If IsValidUserRef(tUser) Then
+            Call WriteDisconnect(tUser.ArrayIndex)
+            Call CloseSocket(tUser.ArrayIndex)
         End If
 
         Exit Sub

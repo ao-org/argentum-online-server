@@ -836,8 +836,8 @@ Public Sub WritePosUpdate(ByVal UserIndex As Integer)
 104     Call Writer.WriteInt8(UserList(UserIndex).Pos.Y)
 106     Call modSendData.SendData(ToIndex, UserIndex)
                 
-        If UserList(UserIndex).flags.GMMeSigue > 0 Then
-            Call WritePosUpdateCharIndex(UserList(UserIndex).flags.GMMeSigue, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y, UserList(UserIndex).Char.charindex)
+        If IsValidUserRef(UserList(UserIndex).flags.GMMeSigue) Then
+            Call WritePosUpdateCharIndex(UserList(UserIndex).flags.GMMeSigue.ArrayIndex, UserList(UserIndex).pos.X, UserList(UserIndex).pos.y, UserList(UserIndex).Char.charindex)
         End If
         '<EhFooter>
         Exit Sub
@@ -1760,10 +1760,6 @@ Public Sub WriteUpdateUserStats(ByVal UserIndex As Integer)
 124     Call Writer.WriteInt32(UserList(UserIndex).Stats.Exp)
 126     Call Writer.WriteInt8(UserList(UserIndex).clase)
 128     Call modSendData.SendData(ToIndex, UserIndex)
-
-        If UserList(UserIndex).flags.GMMeSigue > 0 And UserList(UserIndex).flags.GMMeSigue <> UserIndex Then
-          '  Call WriteUpdateUserStats(UserList(UserIndex).flags.GMMeSigue)
-        End If
 
         '<EhFooter>
         Exit Sub
@@ -3710,32 +3706,31 @@ Public Sub WriteDatosGrupo(ByVal UserIndex As Integer)
 104         Call Writer.WriteBool(.Grupo.EnGrupo)
 
 106         If .Grupo.EnGrupo = True Then
-108             Call Writer.WriteInt8(UserList(.Grupo.Lider).Grupo.CantidadMiembros)
+108             Call Writer.WriteInt8(UserList(.Grupo.Lider.ArrayIndex).Grupo.CantidadMiembros)
 
-                'Call Writer.WriteInt8(UserList(.Grupo.Lider).name)
-110             If .Grupo.Lider = UserIndex Then
+110             If .Grupo.Lider.ArrayIndex = userIndex Then
 
-112                 For i = 1 To UserList(.Grupo.Lider).Grupo.CantidadMiembros
+112                 For i = 1 To UserList(.Grupo.Lider.ArrayIndex).Grupo.CantidadMiembros
 
 114                     If i = 1 Then
-116                         Call Writer.WriteString8(UserList(.Grupo.Miembros(i)).Name & _
+116                         Call Writer.WriteString8(UserList(.Grupo.Miembros(i).ArrayIndex).name & _
                                     "(Líder)")
                         Else
-118                         Call Writer.WriteString8(UserList(.Grupo.Miembros(i)).Name)
+118                         Call Writer.WriteString8(UserList(.Grupo.Miembros(i).ArrayIndex).name)
                         End If
 
 120                 Next i
 
                 Else
 
-122                 For i = 1 To UserList(.Grupo.Lider).Grupo.CantidadMiembros
+122                 For i = 1 To UserList(.Grupo.Lider.ArrayIndex).Grupo.CantidadMiembros
 
 124                     If i = 1 Then
 126                         Call Writer.WriteString8(UserList(UserList( _
-                                    .Grupo.Lider).Grupo.Miembros(i)).name & "(Líder)")
+                                    .Grupo.Lider.ArrayIndex).Grupo.Miembros(i).ArrayIndex).name & "(Líder)")
                         Else
 128                         Call Writer.WriteString8(UserList(UserList( _
-                                    .Grupo.Lider).Grupo.Miembros(i)).Name)
+                                    .Grupo.Lider.ArrayIndex).Grupo.Miembros(i).ArrayIndex).name)
                         End If
 
 130                 Next i
@@ -5362,7 +5357,7 @@ Public Function PrepareMessageUpdateTagAndStatus(ByVal UserIndex As Integer, _
 102     Call Writer.WriteInt16(UserList(UserIndex).Char.CharIndex)
 104     Call Writer.WriteInt8(Status)
 106     Call Writer.WriteString8(Tag)
-108     Call Writer.WriteInt16(UserList(UserIndex).Grupo.Lider)
+108     Call Writer.WriteInt16(UserList(userIndex).Grupo.Lider.ArrayIndex)
         '<EhFooter>
         Exit Function
 
@@ -5659,7 +5654,7 @@ Public Sub WriteDebugLogResponse(ByVal UserIndex As Integer, ByVal debugType, By
         Next i
     ElseIf debugType = 1 Then
         'TODO- debug
-        Dim tIndex As Integer: tIndex = NameIndex(args(0))
+        Dim tIndex As Integer: tIndex = NameIndex(Args(0)).ArrayIndex
         If tIndex > 0 Then
             Call Writer.WriteInt16(2)
             Call Writer.WriteString8("remote DEBUG: " & " user name: " & args(0))

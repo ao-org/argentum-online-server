@@ -6,27 +6,25 @@ BEGIN
   DataSourceBehavior  = 0  'vbNone
   MTSTransactionMode  = 0  'NotAnMTSObject
 END
-Attribute VB_Name = "clsCapturaParticipante"
+Attribute VB_Name = "clsUserRefWrapper"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
-
 Dim UserRef As t_UserReference
-Public LastPosMap As Integer
-Public LastPosX As Byte
-Public LastPosY As Byte
-Public Team As Byte
 
-
-Public Sub SetPlayer(ByVal UserIndex As Integer)
+Public Sub SetFromIndex(ByVal UserIndex As Integer)
     Call SetUserRef(UserRef, UserIndex)
 End Sub
 
-Public Function PlayerIndex() As Integer
-    UserIndex = UserRef.ArrayIndex
-End Function
-
 Public Function IsValid() As Boolean
     IsValid = IsValidUserRef(UserRef)
+End Function
+
+Public Function PlayerIndex() As Integer
+    PlayerIndex = UserRef.ArrayIndex
+End Function
+
+Public Function VersionId() As Integer
+    VersionId = UserRef.VersionId
 End Function

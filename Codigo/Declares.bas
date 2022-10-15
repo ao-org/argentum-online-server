@@ -819,6 +819,12 @@ Public Const STAT_MAXDEF              As Byte = 99
 ' ************************ TIPOS *******************************
 ' **************************************************************
 ' **************************************************************
+Public Type t_UserReference
+    'hold and index to a UserIndex, this elements are reused all the time so we also keep a
+    'versionId to track that we are refering the same user that we intended when we generated this ref
+    ArrayIndex As Integer
+    VersionId As Integer
+End Type
 
 Public Type t_Hechizo
     AutoLanzar As Byte
@@ -1141,7 +1147,7 @@ End Enum
 Public Type t_SolicitudJugador
     nombre As String
     Aceptado As Boolean
-    CurIndex As Integer
+    CurIndex As t_UserReference
 End Type
 
 Public Type t_SolicitudReto
@@ -1172,7 +1178,7 @@ Public Type t_SalaReto
     TiempoItems As Integer
     TamañoEquipoIzq As Byte
     TamañoEquipoDer As Byte
-    Jugadores() As Integer
+    Jugadores() As t_UserReference
 End Type
 
 Public Type t_Retos
@@ -1527,17 +1533,15 @@ Public Type t_UserFlags
     PescandoEspecial As Boolean
     QuestOpenByObj As Boolean
     
-    SigueUsuario As Integer
-    GMMeSigue As Integer
+    SigueUsuario As t_UserReference
+    GMMeSigue As t_UserReference
     
     EnTorneo As Boolean
     
     stepToggle As Boolean
-    'Ladder puto
-    'Casamientos  08/6/10 01:10 am
     Pareja As String
     Casado As Byte
-    Candidato As Integer
+    Candidato As t_UserReference
     
     pregunta As Byte
        
@@ -1628,7 +1632,7 @@ Public Type t_UserFlags
     AdministrativeBan As Byte
     BanMotivo As String
 
-    TargetUser As Integer ' Usuario señalado
+    targetUser As t_UserReference ' Usuario señalado
     
     TargetObj As Integer ' Obj señalado
     TargetObjMap As Integer
@@ -1684,7 +1688,7 @@ Public Type t_UserFlags
     EnReto As Boolean
     SalaReto As Integer
     EquipoReto As e_EquipoReto
-    AceptoReto As Integer
+    AceptoReto As t_UserReference
     SolicitudReto As t_SolicitudReto
     LastPos As t_WorldPos
     
@@ -1881,7 +1885,7 @@ End Type
 Public Type t_ComercioUsuario
     
     itemsAenviar(1 To 6) As t_Obj ' Mas de 6 no se puede, la UI muestra solo eso.
-    DestUsu As Integer 'El otro Usuario
+    DestUsu As t_UserReference 'El otro Usuario
     DestNick As String
     Objeto As Integer 'Indice del inventario a comerciar, que objeto desea dar
     Oro As Long
@@ -1899,12 +1903,24 @@ Public Type t_UserTrabajo
     Cantidad As Long
 End Type
 
+Type Tgrupo
+    EnGrupo As Boolean
+    CantidadMiembros As Byte
+    Miembros(1 To 6) As t_UserReference
+    Lider As t_UserReference
+    PropuestaDe As t_UserReference
+End Type
+
 'Tipo de los Usuarios
 Public Type t_User
 
     Name As String
     Cuenta As String
     
+    'User types are created at startup and reused every time,
+    'the version id help to validate that a reference we stored is still valid,
+    'this value should be updated every time we reuse this instance
+    VersionId As Integer
     ID As Long
     Trabajo As t_UserTrabajo
     AccountID As Long
@@ -2180,7 +2196,7 @@ Public Type t_Npc
     Comercia As Integer
     Craftea As Byte
     
-    Target As Long
+    TargetUser As t_UserReference
     TargetNPC As Long
     TipoItems As Integer
     
@@ -2226,7 +2242,7 @@ Public Type t_Npc
     NroCriaturas As Integer
     Criaturas() As t_CriaturasEntrenador
     MaestroNPC As Integer
-    MaestroUser As Integer
+    MaestroUser As t_UserReference
     Mascotas As Integer
     
     ' New!! Needed for pathfindig

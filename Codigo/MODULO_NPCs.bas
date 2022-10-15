@@ -175,7 +175,7 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
 
 142         If UserList(UserIndex).Stats.NPCsMuertos < 32000 Then UserList(UserIndex).Stats.NPCsMuertos = UserList(UserIndex).Stats.NPCsMuertos + 1
             
-144         If MiNPC.MaestroUser > 0 Then Exit Sub
+144         If IsValidUserRef(MiNPC.MaestroUser) Then Exit Sub
             
 146         Call SubirSkill(UserIndex, e_Skill.Supervivencia)
 
@@ -256,7 +256,7 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
         End If ' UserIndex > 0
         
         ' Mascotas y npcs de entrenamiento no respawnean
-208     If MiNPC.MaestroNPC > 0 Or MiNPC.MaestroUser > 0 Then Exit Sub
+208     If MiNPC.MaestroNPC > 0 Or IsValidUserRef(MiNPC.MaestroUser) Then Exit Sub
         
 210     If NpcIndex = npc_index_evento Then
 212         BusquedaNpcActiva = False
@@ -473,17 +473,17 @@ Sub ResetNpcMainInfo(ByVal NpcIndex As Integer)
 138     NpcList(NpcIndex).Pos.Map = 0
 140     NpcList(NpcIndex).Pos.X = 0
 142     NpcList(NpcIndex).Pos.Y = 0
-144     NpcList(NpcIndex).Target = 0
+144     Call SetUserRef(NpcList(npcIndex).TargetUser, 0)
 146     NpcList(NpcIndex).TargetNPC = 0
 148     NpcList(NpcIndex).TipoItems = 0
 150     NpcList(NpcIndex).Veneno = 0
 152     NpcList(NpcIndex).Desc = vbNullString
 154     NpcList(NpcIndex).NumDropQuest = 0
         
-156     If NpcList(NpcIndex).MaestroUser > 0 Then Call QuitarMascota(NpcList(NpcIndex).MaestroUser, NpcIndex)
+156     If IsValidUserRef(NpcList(npcIndex).MaestroUser) Then Call QuitarMascota(NpcList(npcIndex).MaestroUser.ArrayIndex, npcIndex)
 158     If NpcList(NpcIndex).MaestroNPC > 0 Then Call QuitarMascotaNpc(NpcList(NpcIndex).MaestroNPC)
 
-160     NpcList(NpcIndex).MaestroUser = 0
+160     Call SetUserRef(NpcList(npcIndex).MaestroUser, 0)
 162     NpcList(NpcIndex).MaestroNPC = 0
 
 164     NpcList(NpcIndex).CaminataActual = 0
@@ -781,9 +781,9 @@ Sub MakeNPCChar(ByVal toMap As Boolean, sndIndex As Integer, NpcIndex As Integer
                 End If
                 
 156             If UserList(sndIndex).Stats.UserSkills(e_Skill.Supervivencia) >= 90 Then
-158                 Call WriteCharacterCreate(sndIndex, body, .Char.head, .Char.Heading, .Char.charindex, X, y, .Char.WeaponAnim, .Char.ShieldAnim, 0, 0, .Char.CascoAnim, GG, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, .Char.speeding, IIf(.MaestroUser = sndIndex, 2, 1), 0, 0, 0, 0, .Stats.MinHp, .Stats.MaxHp, 0, 0, Simbolo, .flags.NPCIdle, , , , , .Char.Ataque1)
+158                 Call WriteCharacterCreate(sndIndex, body, .Char.head, .Char.Heading, .Char.charindex, x, y, .Char.WeaponAnim, .Char.ShieldAnim, 0, 0, .Char.CascoAnim, GG, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, .Char.speeding, IIf(.MaestroUser.ArrayIndex = sndIndex, 2, 1), 0, 0, 0, 0, .Stats.MinHp, .Stats.MaxHp, 0, 0, Simbolo, .flags.NPCIdle, , , , , .Char.Ataque1)
                 Else
-160                 Call WriteCharacterCreate(sndIndex, body, .Char.head, .Char.Heading, .Char.charindex, X, y, .Char.WeaponAnim, .Char.ShieldAnim, 0, 0, .Char.CascoAnim, GG, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, .Char.speeding, IIf(.MaestroUser = sndIndex, 2, 1), 0, 0, 0, 0, 0, 0, 0, 0, Simbolo, .flags.NPCIdle, , , , , .Char.Ataque1)
+160                 Call WriteCharacterCreate(sndIndex, body, .Char.head, .Char.Heading, .Char.charindex, x, y, .Char.WeaponAnim, .Char.ShieldAnim, 0, 0, .Char.CascoAnim, GG, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, .Char.speeding, IIf(.MaestroUser.ArrayIndex = sndIndex, 2, 1), 0, 0, 0, 0, 0, 0, 0, 0, Simbolo, .flags.NPCIdle, , , , , .Char.Ataque1)
                 
                 End If
             Else
@@ -881,7 +881,7 @@ Public Function MoveNPCChar(ByVal NpcIndex As Integer, ByVal nHeading As Byte) A
 108         esGuardia = .NPCtype = e_NPCType.GuardiaReal Or .NPCtype = e_NPCType.GuardiasCaos
             ' es una posicion legal
             
-110         If LegalWalkNPC(nPos.Map, nPos.X, nPos.Y, nHeading, .flags.AguaValida = 1, .flags.TierraInvalida = 0, .MaestroUser <> 0, , esGuardia) Then
+110         If LegalWalkNPC(nPos.map, nPos.x, nPos.y, nHeading, .flags.AguaValida = 1, .flags.TierraInvalida = 0, IsValidUserRef(.MaestroUser), , esGuardia) Then
             
 112             UserIndex = MapData(.Pos.Map, nPos.X, nPos.Y).UserIndex
     
@@ -1032,7 +1032,7 @@ Function SpawnNpc(ByVal NpcIndex As Integer, Pos As t_WorldPos, ByVal FX As Bool
 128     Y = NpcList(nIndex).Pos.Y
 
         ' WyroX: Asignamos el dueño
-130     NpcList(nIndex).MaestroUser = MaestroUser
+130     Call SetUserRef(NpcList(nIndex).MaestroUser, MaestroUser)
         
 132     NpcList(nIndex).Orig = NpcList(nIndex).Pos
 
@@ -1591,19 +1591,21 @@ Sub DoFollow(ByVal NpcIndex As Integer, ByVal UserName As String)
 102         If .flags.Follow Then
         
 104             .flags.AttackedBy = vbNullString
-106             .Target = 0
+106             Call SetUserRef(.TargetUser, 0)
 108             .flags.Follow = False
 110             .Movement = .flags.OldMovement
 112             .Hostile = .flags.OldHostil
    
             Else
-        
-114             .flags.AttackedBy = UserName
-116             .Target = NameIndex(UserName)
-118             .flags.Follow = True
-120             .Movement = e_TipoAI.NpcDefensa
-122             .Hostile = 0
-
+                Dim player As t_UserReference
+                player = NameIndex(username)
+                If IsValidUserRef(player) Then
+114                 .flags.AttackedBy = username
+116                 .targetUser = player
+118                 .flags.Follow = True
+120                 .Movement = e_TipoAI.NpcDefensa
+122                 .Hostile = 0
+                End If
             End If
     
         End With
@@ -1623,7 +1625,7 @@ Public Sub FollowAmo(ByVal NpcIndex As Integer)
 102         .flags.Follow = True
 104         .Movement = e_TipoAI.SigueAmo
 106         .Hostile = 0
-108         .Target = 0
+108         Call SetUserRef(.TargetUser, 0)
 110         .TargetNPC = 0
         End With
 

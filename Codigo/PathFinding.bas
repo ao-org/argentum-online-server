@@ -188,7 +188,7 @@ Private Function IsWalkable(ByVal NpcIndex As Integer, ByVal X As Integer, ByVal
 2        If .NpcIndex Then Exit Function
         
         ' Usuario
-3        If .UserIndex And .UserIndex <> NpcList(NpcIndex).Target Then Exit Function
+3        If .UserIndex And .UserIndex <> NpcList(npcIndex).TargetUser.ArrayIndex Then Exit Function
 
         ' Traslado
 4        If .TileExit.Map Then Exit Function

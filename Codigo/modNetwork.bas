@@ -14,12 +14,12 @@ Private Const TIME_SEND_FREQUENCY As Long = 0 ' In milliseconds
 
 Private Server  As Network.Server
 Private Time(2) As Single
-Private Mapping() As Long
+Private Mapping() As t_UserReference
 Public DisconnectTimeout As Long
 
 Public Sub Listen(ByVal Limit As Long, ByVal Address As String, ByVal Service As String)
     Set Server = New Network.Server
-    ReDim Mapping(1 To MaxUsers) As Long
+    ReDim Mapping(1 To MaxUsers) As t_UserReference
     
     Call Server.Attach(AddressOf OnServerConnect, AddressOf OnServerClose, AddressOf OnServerSend, AddressOf OnServerRecv)
     
@@ -66,12 +66,12 @@ On Error GoTo Kick_ErrHandler:
         Call AddLogToCircularBuffer("Kick connection: " & Connection)
     End If
     If (message <> vbNullString) Then
-        Dim UserIndex As Long
-        UserIndex = Mapping(Connection)
-        If UserIndex > 0 Then
-            Call Protocol_Writes.WriteErrorMsg(UserIndex, message)
-            If UserList(UserIndex).flags.UserLogged Then
-                Call Cerrar_Usuario(UserIndex)
+        Dim UserRef As t_UserReference
+        UserRef = Mapping(Connection)
+        If UserRef.ArrayIndex > 0 Then
+            Call Protocol_Writes.WriteErrorMsg(UserRef.ArrayIndex, Message)
+            If UserList(UserRef.ArrayIndex).flags.UserLogged Then
+                Call Cerrar_Usuario(UserRef.ArrayIndex)
             End If
         End If
     End If
@@ -83,7 +83,6 @@ On Error GoTo Kick_ErrHandler:
     
 Kick_ErrHandler:
 End Sub
-
 
 Public Function GetTimeOfNextFlush() As Single
     GetTimeOfNextFlush = max(0, TIME_SEND_FREQUENCY - Time(1))
@@ -114,8 +113,8 @@ On Error GoTo OnServerConnect_Err:
         Call Kick(Connection, "Se te ha prohibido la entrada al servidor. Cod: #0003")
         Exit Sub
     End If
-    If Mapping(Connection) > 0 Then
-        Call TraceError(Err.Number, Err.Description, "OnServerConnect Mapping(Connection) > 0, connection: " & Connection & " value: " & Mapping(Connection), Erl)
+    If Mapping(Connection).ArrayIndex > 0 Then
+        Call TraceError(Err.Number, Err.Description, "OnServerConnect Mapping(Connection) > 0, connection: " & Connection & " value: " & Mapping(Connection).ArrayIndex, Erl)
     End If
     If Connection <= MaxUsers Then
         'By Ladder y Wolfenstein
@@ -128,10 +127,12 @@ On Error GoTo OnServerConnect_Err:
         UserList(FreeUser).Counters.OnConnectTimestamp = GetTickCount()
         
         If FreeUser >= LastUser Then LastUser = FreeUser
-        Debug.Assert Mapping(Connection) = 0
-        Mapping(Connection) = FreeUser
+        Debug.Assert Not IsValidUserRef(Mapping(Connection))
+        If Not SetUserRef(Mapping(Connection), FreeUser) Then
+            Call TraceError(Err.Number, Err.Description, "OnServerConnect failed to map connection (" & Connection & ") to user: " & FreeUser, Erl)
+        End If
         
-        Call WriteConnected(FreeUser)
+        Call WriteConnected(Mapping(Connection).ArrayIndex)
     Else
         Call Kick(Connection, "El server se encuentra lleno en este momento. Disculpe las molestias ocasionadas.")
     End If
@@ -146,40 +147,35 @@ End Sub
 Private Sub OnServerClose(ByVal Connection As Long)
 On Error GoTo OnServerClose_Err:
     
-    Dim UserIndex As Long
-    UserIndex = Mapping(Connection)
-    If IsFeatureEnabled("debug_connections") Then
-        If UserIndex > 0 Then
-            Call AddLogToCircularBuffer("OnServerClose disconnected user index: " & UserIndex & " With connection id: " & Connection & " with name: " & UserList(UserIndex).name & " and ip" & UserList(UserIndex).IP)
-        Else
-            Call AddLogToCircularBuffer("OnServerClose disconnected user index: " & UserIndex & " With connection id: " & Connection)
-        End If
-    End If
+    Dim UserRef As t_UserReference
+100    UserRef = Mapping(Connection)
+102    If IsFeatureEnabled("debug_connections") Then
+104        If UserRef.ArrayIndex > 0 Then
+106            Call AddLogToCircularBuffer("OnServerClose disconnected user index: " & UserRef.ArrayIndex & " With connection id: " & Connection & " with name: " & UserList(UserRef.ArrayIndex).name & " and ip" & UserList(UserRef.ArrayIndex).IP)
+108        Else
+110            Call AddLogToCircularBuffer("OnServerClose disconnected user index: " & UserRef.ArrayIndex & " With connection id: " & Connection)
+112        End If
+114    End If
     
-    Debug.Assert UserIndex > 0
-    If UserIndex <= 0 Then Exit Sub
-    'Es el mismo user al que está revisando el centinela??
-    'Si estamos acá es porque se cerró la conexión, no es un /salir, y no queremos banearlo....
-    If Centinela.RevisandoUserIndex = UserIndex Then
-        Call modCentinela.CentinelaUserLogout
-    End If
+116    Debug.Assert IsValidUserRef(UserRef)
+118    If Not IsValidUserRef(UserRef) Then Exit Sub
     
-    If UserList(UserIndex).flags.UserLogged Then
-        Call CloseSocketSL(UserIndex)
-        Call Cerrar_Usuario(UserIndex)
-    Else
-        Call CloseSocket(UserIndex)
-    End If
+120    If UserList(UserRef.ArrayIndex).flags.UserLogged Then
+122        Call CloseSocketSL(UserRef.ArrayIndex)
+124        Call Cerrar_Usuario(UserRef.ArrayIndex)
+126    Else
+128        Call CloseSocket(UserRef.ArrayIndex)
+130    End If
     
-    UserList(UserIndex).ConnIDValida = False
-    UserList(UserIndex).ConnID = 0
-    Mapping(Connection) = 0
+132    UserList(UserRef.ArrayIndex).ConnIDValida = False
+134    UserList(UserRef.ArrayIndex).ConnID = 0
+136    Call ClearUserRef(Mapping(Connection))
+138    Call IncreaseVersionId(UserRef.ArrayIndex)
     
-    
-    Exit Sub
+140    Exit Sub
     
 OnServerClose_Err:
-    Call ForcedClose(UserIndex, Connection)
+    Call ForcedClose(UserRef.ArrayIndex, Connection)
     Call TraceError(Err.Number, Err.Description, "modNetwork.OnServerClose", Erl)
 End Sub
 
@@ -196,10 +192,10 @@ End Sub
 Private Sub OnServerRecv(ByVal Connection As Long, ByVal Message As Network.Reader)
 On Error GoTo OnServerRecv_Err:
     
-    Dim UserIndex As Long
-    UserIndex = Mapping(Connection)
+    Dim UserRef As t_UserReference
+    UserRef = Mapping(Connection)
 
-    Call Protocol.HandleIncomingData(UserIndex, message)
+    Call Protocol.HandleIncomingData(UserRef.ArrayIndex, Message)
     
     Exit Sub
     
@@ -214,7 +210,8 @@ On Error GoTo ForcedClose_Err:
 102     UserList(UserIndex).ConnID = 0
 104     Call Server.Flush(Connection)
 106     Call Server.Kick(Connection, True)
-108     Mapping(Connection) = 0
+108     Call ClearUserRef(Mapping(Connection))
+110     Call IncreaseVersionId(userIndex)
         Exit Sub
 ForcedClose_Err:
     Call TraceError(Err.Number, Err.Description, "modNetwork.ForcedClose", Erl)
@@ -232,11 +229,11 @@ On Error GoTo CheckDisconnectedUsers_Err:
         'Conexion activa? y es un usuario loggeado?
 102     If UserList(iUserIndex).ConnIDValida = 0 And UserList(iUserIndex).flags.UserLogged And currentTime - UserList(iUserIndex).Counters.TimeLastReset > DisconnectTimeout Then
 106         'mato los comercios seguros
-110         If UserList(iUserIndex).ComUsu.DestUsu > 0 Then
-112             If UserList(UserList(iUserIndex).ComUsu.DestUsu).flags.UserLogged Then
-114                 If UserList(UserList(iUserIndex).ComUsu.DestUsu).ComUsu.DestUsu = iUserIndex Then
-116                     Call WriteConsoleMsg(UserList(iUserIndex).ComUsu.DestUsu, "Comercio cancelado por el otro usuario.", e_FontTypeNames.FONTTYPE_TALK)
-118                     Call FinComerciarUsu(UserList(iUserIndex).ComUsu.DestUsu)
+110         If UserList(iUserIndex).ComUsu.DestUsu.ArrayIndex > 0 Then
+112             If IsValidUserRef(UserList(iUserIndex).ComUsu.DestUsu) And UserList(UserList(iUserIndex).ComUsu.DestUsu.ArrayIndex).flags.UserLogged Then
+114                 If UserList(UserList(iUserIndex).ComUsu.DestUsu.ArrayIndex).ComUsu.DestUsu.ArrayIndex = iUserIndex Then
+116                     Call WriteConsoleMsg(UserList(iUserIndex).ComUsu.DestUsu.ArrayIndex, "Comercio cancelado por el otro usuario.", e_FontTypeNames.FONTTYPE_TALK)
+118                     Call FinComerciarUsu(UserList(iUserIndex).ComUsu.DestUsu.ArrayIndex)
                     End If
                 End If
 120             Call FinComerciarUsu(iUserIndex)

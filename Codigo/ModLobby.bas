@@ -7,9 +7,9 @@ Const AlreadyRegisteredMessage = 405
 Public Type PlayerInLobby
     SummonedFrom As t_WorldPos
     IsSummoned As Boolean
-    UserId As Integer
+    user As t_UserReference
+    UserId As Long
     Connected As Boolean
-    dbId As Integer
     ReturnOnReconnect As Boolean
 End Type
 
@@ -141,17 +141,17 @@ On Error GoTo AddPlayer_Err
 144        End If
 146        Dim i As Integer
 148        For i = 0 To instance.RegisteredPlayers - 1
-150            If instance.Players(i).dbId = .ID Then
+150            If instance.Players(i).UserId = .ID Then
 152                AddPlayer.Success = False
 154                AddPlayer.Message = AlreadyRegisteredMessage
 156                Exit Function
 158            End If
 160        Next i
 162        Dim playerPos As Integer: playerPos = instance.RegisteredPlayers
-164        instance.Players(playerPos).userID = userIndex
+164        Call SetUserRef(instance.Players(playerPos).user, UserIndex)
+165        instance.Players(playerPos).UserId = UserList(UserIndex).ID
 166        instance.Players(playerPos).IsSummoned = False
 168        instance.Players(playerPos).Connected = True
-170        instance.Players(playerPos).dbId = .ID
 172        instance.Players(playerPos).ReturnOnReconnect = False
 174        instance.RegisteredPlayers = instance.RegisteredPlayers + 1
 176        AddPlayer.Message = JoinSuccessMessage
@@ -169,15 +169,18 @@ Public Sub SummonPlayer(ByRef instance As t_Lobby, ByVal user As Integer)
 On Error GoTo SummonPlayer_Err
 100        Dim userIndex As Integer
 102        With instance.Players(user)
-104            userIndex = .userID
-106            If Not .IsSummoned And .SummonedFrom.map = 0 Then
-108                .SummonedFrom = UserList(userIndex).pos
+103            If Not IsValidUserRef(.user) Then
+104                Call LogUserRefError(.user, "SummonPlayer")
+105                Exit Sub
+106            End If
+108            If Not .IsSummoned And .SummonedFrom.map = 0 Then
+109                .SummonedFrom = UserList(.user.ArrayIndex).Pos
 110            End If
 112            If Not instance.scenario Is Nothing Then
-114                Call instance.scenario.WillSummonPlayer(userIndex)
+114                Call instance.scenario.WillSummonPlayer(.user.ArrayIndex)
 116            End If
-118          Call WarpToLegalPos(userIndex, instance.SummonCoordinates.map, instance.SummonCoordinates.X, instance.SummonCoordinates.y, True, True)
-120         .IsSummoned = True
+118            Call WarpToLegalPos(.user.ArrayIndex, instance.SummonCoordinates.map, instance.SummonCoordinates.X, instance.SummonCoordinates.y, True, True)
+120            .IsSummoned = True
 122        End With
 124        Exit Sub
 SummonPlayer_Err:
@@ -197,18 +200,20 @@ End Sub
 
 Public Sub ReturnPlayer(ByRef instance As t_Lobby, ByVal user As Integer)
 On Error GoTo ReturnPlayer_Err
-       Dim userIndex As Integer
 100    With instance.Players(user)
-        UserIndex = .UserId
-        If Not .IsSummoned Or Not .connected Then
-            Exit Sub
-        End If
-102     Call WarpToLegalPos(userIndex, .SummonedFrom.map, .SummonedFrom.X, .SummonedFrom.y, True, True)
-        .IsSummoned = False
+103        If Not IsValidUserRef(.user) Then
+104            Call LogUserRefError(.user, "SummonPlayer")
+105            Exit Sub
+106        End If
+108        If Not .IsSummoned Or Not .connected Then
+110            Exit Sub
+112        End If
+114        Call WarpToLegalPos(.user.ArrayIndex, .SummonedFrom.map, .SummonedFrom.X, .SummonedFrom.y, True, True)
+116        .IsSummoned = False
     End With
     Exit Sub
 ReturnPlayer_Err:
-104     Call TraceError(Err.Number, Err.Description, "ModLobby.ReturnPlayer return user:" & user, Erl)
+118     Call TraceError(Err.Number, Err.Description, "ModLobby.ReturnPlayer return user:" & user, Erl)
 End Sub
 
 Public Sub ReturnAllPlayers(ByRef instance As t_Lobby)
@@ -236,8 +241,8 @@ Public Sub ListPlayers(ByRef instance As t_Lobby, ByVal UserIndex As Integer)
 On Error GoTo ListPlayers_Err
     Dim i As Integer
     For i = 0 To instance.RegisteredPlayers
-        If instance.Players(i).connected Then
-            Call WriteConsoleMsg(userIndex, i & ") " & UserList(instance.Players(i).userID).name, e_FontTypeNames.FONTTYPE_INFOBOLD)
+        If instance.Players(i).connected And IsValidUserRef(instance.Players(i).user) Then
+            Call WriteConsoleMsg(UserIndex, i & ") " & UserList(instance.Players(i).user.ArrayIndex).name, e_FontTypeNames.FONTTYPE_INFOBOLD)
         Else
             Call WriteConsoleMsg(userIndex, i & ") " & "Disconnected player.", e_FontTypeNames.FONTTYPE_New_Verde_Oscuro)
         End If
@@ -290,14 +295,14 @@ ForceReset_Err:
         Resume Next
 End Sub
 
-Public Sub RegisterDisconnectedUser(ByRef instance As t_Lobby, ByVal userIndex As Integer)
+Public Sub RegisterDisconnectedUser(ByRef instance As t_Lobby, ByVal DisconnectedUserIndex As Integer)
 On Error GoTo RegisterDisconnectedUser_Err
 100    If instance.State < AcceptingPlayers Then
 102        Exit Sub
 104    End If
 106    Dim i As Integer
 108    For i = 0 To instance.RegisteredPlayers - 1
-110        If instance.Players(i).userID = userIndex Then
+110        If instance.Players(i).User.ArrayIndex = DisconnectedUserIndex And IsValidUserRef(instance.Players(i).User) Then
 112            instance.Players(i).connected = False
 114            If instance.Players(i).IsSummoned Then
 116                instance.Players(i).ReturnOnReconnect = True
@@ -323,9 +328,9 @@ On Error GoTo RegisterReconnectedUser_Err
 108    Dim userID As Integer
 110    userID = UserList(userIndex).ID
 112    For i = 0 To instance.RegisteredPlayers - 1
-114        If instance.Players(i).dbId = userID Then
+114        If instance.Players(i).UserId = UserId Then
 116            instance.Players(i).connected = True
-118            instance.Players(i).userID = userIndex
+118            Call SetUserRef(instance.Players(i).User, UserIndex)
 120            If instance.Players(i).ReturnOnReconnect Then
 122                Call SummonPlayer(instance, i)
 124            End If

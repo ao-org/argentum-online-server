@@ -464,7 +464,7 @@ Function ConnectNewUser(ByVal userindex As Integer, ByRef name As String, ByVal 
             End If
             
 112         If Not NombrePermitido(name) Then
-114             Call WriteShowMessageBox(UserIndex, "El nombre no está permitido.")
+114             Call WriteShowMessageBox(userIndex, "El nombre no está permitido.")
                 Exit Function
             End If
     
@@ -645,20 +645,15 @@ Sub CloseSocket(ByVal UserIndex As Integer)
 
 112         If .ConnIDValida Then Call CloseSocketSL(UserIndex)
     
-            'Es el mismo user al que está revisando el centinela??
-            'IMPORTANTE!!! hacerlo antes de resetear así todavía sabemos el nombre del user
-            ' y lo podemos loguear
-114         If Centinela.RevisandoUserIndex = UserIndex Then Call modCentinela.CentinelaUserLogout
-    
             'mato los comercios seguros
-116         If .ComUsu.DestUsu > 0 Then
+116         If IsValidUserRef(.ComUsu.DestUsu) Then
         
-118             If UserList(.ComUsu.DestUsu).flags.UserLogged Then
+118             If UserList(.ComUsu.DestUsu.ArrayIndex).flags.UserLogged Then
             
-120                 If UserList(.ComUsu.DestUsu).ComUsu.DestUsu = UserIndex Then
+120                 If UserList(.ComUsu.DestUsu.ArrayIndex).ComUsu.DestUsu.ArrayIndex = userIndex Then
                 
-122                     Call WriteConsoleMsg(.ComUsu.DestUsu, "Comercio cancelado por el otro usuario", e_FontTypeNames.FONTTYPE_TALK)
-124                     Call FinComerciarUsu(.ComUsu.DestUsu)
+122                     Call WriteConsoleMsg(.ComUsu.DestUsu.ArrayIndex, "Comercio cancelado por el otro usuario", e_FontTypeNames.FONTTYPE_TALK)
+124                     Call FinComerciarUsu(.ComUsu.DestUsu.ArrayIndex)
                     
                     End If
     
@@ -856,7 +851,7 @@ Function EntrarCuenta(ByVal UserIndex As Integer, ByVal CuentaEmail As String, B
         #End If
 
 128     If Not CheckMailString(CuentaEmail) Then
-130         Call WriteShowMessageBox(UserIndex, "Email inválido.")
+130         Call WriteShowMessageBox(userIndex, "Email inválido.")
             Exit Function
         End If
     
@@ -892,7 +887,7 @@ On Error GoTo ErrHandler
     
 ErrHandler:
      Call TraceError(Err.Number, Err.Description, "TCP.ConnectUser", Erl)
-     Call WriteShowMessageBox(UserIndex, "El personaje contiene un error. Comuníquese con un miembro del staff.")
+     Call WriteShowMessageBox(userIndex, "El personaje contiene un error. Comuníquese con un miembro del staff.")
      Call CloseSocket(UserIndex)
 
 End Function
@@ -1224,7 +1219,7 @@ Sub ResetUserFlags(ByVal UserIndex As Integer)
 126         .TargetObjMap = 0
 128         .TargetObjX = 0
 130         .TargetObjY = 0
-132         .TargetUser = 0
+132         Call SetUserRef(.targetUser, 0)
 134         .TipoPocion = 0
 136         .TomoPocion = False
 138         .Descuento = vbNullString
@@ -1248,7 +1243,6 @@ Sub ResetUserFlags(ByVal UserIndex As Integer)
 182         .Silenciado = 0
 184         .CentinelaOK = False
 186         .AdminPerseguible = False
-            'Ladder
 188         .VecesQueMoriste = 0
 190         .MinutosRestantes = 0
 192         .SegundosPasados = 0
@@ -1257,7 +1251,7 @@ Sub ResetUserFlags(ByVal UserIndex As Integer)
 198         .Incinerado = 0
 200         .Casado = 0
 202         .Pareja = ""
-204         .Candidato = 0
+204         Call SetUserRef(.Candidato, 0)
 206         .UsandoMacro = False
 208         .pregunta = 0
 
@@ -1311,7 +1305,7 @@ Sub ResetUserFlags(ByVal UserIndex As Integer)
 
 270         .EnReto = False
 272         .SolicitudReto.estado = e_SolicitudRetoEstado.Libre
-274         .AceptoReto = 0
+274         Call SetUserRef(.AceptoReto, 0)
 276         .LastPos.map = 0
 278         .ReturnPos.map = 0
             
@@ -1322,8 +1316,8 @@ Sub ResetUserFlags(ByVal UserIndex As Integer)
             .jugando_captura_team = 0
             .jugando_captura_timer = 0
             .jugando_captura_muertes = 0
-            .SigueUsuario = 0
-            .GMMeSigue = 0
+            Call SetUserRef(.SigueUsuario, 0)
+            Call SetUserRef(.GMMeSigue, 0)
         End With
 
         
@@ -1454,8 +1448,8 @@ Public Sub LimpiarComercioSeguro(ByVal UserIndex As Integer)
 
 100     With UserList(UserIndex).ComUsu
 
-102         If .DestUsu > 0 Then
-104             Call FinComerciarUsu(.DestUsu)
+102         If IsValidUserRef(.DestUsu) Then
+104             Call FinComerciarUsu(.DestUsu.ArrayIndex)
 106             Call FinComerciarUsu(UserIndex)
 
             End If
@@ -1478,7 +1472,7 @@ Sub ResetUserSlot(ByVal UserIndex As Integer)
 
 100     UserList(UserIndex).ConnIDValida = False
 
-104     If UserList(UserIndex).Grupo.Lider = UserIndex Then
+104     If UserList(userIndex).Grupo.Lider.ArrayIndex = userIndex Then
 106         Call FinalizarGrupo(UserIndex)
 
         End If
@@ -1494,14 +1488,14 @@ Sub ResetUserSlot(ByVal UserIndex As Integer)
 
 112     UserList(UserIndex).Grupo.CantidadMiembros = 0
 114     UserList(UserIndex).Grupo.EnGrupo = False
-116     UserList(UserIndex).Grupo.Lider = 0
-118     UserList(UserIndex).Grupo.PropuestaDe = 0
-120     UserList(UserIndex).Grupo.Miembros(6) = 0
-122     UserList(UserIndex).Grupo.Miembros(1) = 0
-124     UserList(UserIndex).Grupo.Miembros(2) = 0
-126     UserList(UserIndex).Grupo.Miembros(3) = 0
-128     UserList(UserIndex).Grupo.Miembros(4) = 0
-130     UserList(UserIndex).Grupo.Miembros(5) = 0
+116     Call SetUserRef(UserList(userIndex).Grupo.Lider, 0)
+118     Call SetUserRef(UserList(userIndex).Grupo.PropuestaDe, 0)
+120     Call SetUserRef(UserList(userIndex).Grupo.Miembros(6), 0)
+122     Call SetUserRef(UserList(userIndex).Grupo.Miembros(1), 0)
+124     Call SetUserRef(UserList(userIndex).Grupo.Miembros(2), 0)
+126     Call SetUserRef(UserList(userIndex).Grupo.Miembros(3), 0)
+128     Call SetUserRef(UserList(userIndex).Grupo.Miembros(4), 0)
+130     Call SetUserRef(UserList(userIndex).Grupo.Miembros(5), 0)
 
 132     Call ResetQuestStats(UserIndex)
 134     Call ResetGuildInfo(UserIndex)
@@ -1523,7 +1517,7 @@ Sub ResetUserSlot(ByVal UserIndex As Integer)
 164         .Acepto = False
 166         .cant = 0
 168         .DestNick = vbNullString
-170         .DestUsu = 0
+170         Call SetUserRef(.DestUsu, 0)
 172         .Objeto = 0
 
         End With
@@ -1549,26 +1543,7 @@ Sub ClearAndSaveUser(ByVal UserIndex As Integer)
 100 With UserList(UserIndex)
 102         errordesc = "ERROR AL SETEAR NPC"
         
-104         aN = .flags.AtacadoPorNpc
-    
-106         If aN > 0 Then
-108             NpcList(aN).Movement = NpcList(aN).flags.OldMovement
-110             NpcList(aN).Hostile = NpcList(aN).flags.OldHostil
-112             NpcList(aN).flags.AttackedBy = vbNullString
-114             NpcList(aN).Target = 0
-    
-            End If
-    
-116         aN = .flags.NPCAtacado
-    
-118         If aN > 0 Then
-120             If NpcList(aN).flags.AttackedFirstBy = .name Then
-122                 NpcList(aN).flags.AttackedFirstBy = vbNullString
-                End If
-            End If
-    
-124         .flags.AtacadoPorNpc = 0
-126         .flags.NPCAtacado = 0
+104         Call ClearAttackerNpc(UserIndex)
         
 128         errordesc = "ERROR AL DESMONTAR"
     
@@ -1584,35 +1559,33 @@ Sub ClearAndSaveUser(ByVal UserIndex As Integer)
 140         ElseIf .flags.SolicitudReto.estado <> e_SolicitudRetoEstado.Libre Then
 142             Call CancelarSolicitudReto(UserIndex, .name & " se ha desconectado.")
             
-144         ElseIf .flags.AceptoReto > 0 Then
-146             Call CancelarSolicitudReto(.flags.AceptoReto, .name & " se ha desconectado.")
+144         ElseIf IsValidUserRef(.flags.AceptoReto) Then
+146             Call CancelarSolicitudReto(.flags.AceptoReto.ArrayIndex, .name & " se ha desconectado.")
             End If
             
             
             'Se desconecta un usuario seguido
-            If .flags.GMMeSigue > 0 Then
-                Call WriteCancelarSeguimiento(.flags.GMMeSigue)
-                UserList(.flags.GMMeSigue).flags.SigueUsuario = 0
-                UserList(.flags.GMMeSigue).Invent = UserList(.flags.GMMeSigue).Invent_bk
-                UserList(.flags.GMMeSigue).Stats = UserList(.flags.GMMeSigue).Stats_bk
+            If IsValidUserRef(.flags.GMMeSigue) Then
+                Call WriteCancelarSeguimiento(.flags.GMMeSigue.ArrayIndex)
+                Call SetUserRef(UserList(.flags.GMMeSigue.ArrayIndex).flags.SigueUsuario, 0)
+                UserList(.flags.GMMeSigue.ArrayIndex).Invent = UserList(.flags.GMMeSigue.ArrayIndex).Invent_bk
+                UserList(.flags.GMMeSigue.ArrayIndex).Stats = UserList(.flags.GMMeSigue.ArrayIndex).Stats_bk
                 'UserList(.flags.GMMeSigue).Char.charindex = UserList(.flags.GMMeSigue).Char.charindex_bk
-                Call WriteUserCharIndexInServer(.flags.GMMeSigue)
-                Call UpdateUserInv(True, .flags.GMMeSigue, 1)
-                Call WriteUpdateUserStats(.flags.GMMeSigue)
-                Call WriteConsoleMsg(.flags.GMMeSigue, "El usuario " & UserList(UserIndex).name & " que estabas siguiendo se desconectó.", e_FontTypeNames.FONTTYPE_INFO)
-                .flags.GMMeSigue = 0
+                Call WriteUserCharIndexInServer(.flags.GMMeSigue.ArrayIndex)
+                Call UpdateUserInv(True, .flags.GMMeSigue.ArrayIndex, 1)
+                Call WriteUpdateUserStats(.flags.GMMeSigue.ArrayIndex)
+                Call WriteConsoleMsg(.flags.GMMeSigue.ArrayIndex, "El usuario " & UserList(userIndex).name & " que estabas siguiendo se desconectó.", e_FontTypeNames.FONTTYPE_INFO)
+                Call SetUserRef(.flags.GMMeSigue, 0)
                 'Falta revertir inventario del GM
             End If
                 
-            If .flags.SigueUsuario > 0 Then
+            If IsValidUserRef(.flags.SigueUsuario) Then
                 'Para que el usuario deje de mandar el floodeo de paquetes
-                Call WriteNotificarClienteSeguido(.flags.SigueUsuario, 0)
-                UserList(.flags.SigueUsuario).flags.GMMeSigue = 0
+                Call WriteNotificarClienteSeguido(.flags.SigueUsuario.ArrayIndex, 0)
+                Call SetUserRef(UserList(.flags.SigueUsuario.ArrayIndex).flags.GMMeSigue, 0)
                 UserList(UserIndex).Invent = UserList(UserIndex).Invent_bk
                 UserList(UserIndex).Stats = UserList(UserIndex).Stats_bk
-               ' UserList(UserIndex).Char.charindex = UserList(UserIndex).Char.charindex_bk
-                
-                .flags.SigueUsuario = 0
+                Call SetUserRef(.flags.SigueUsuario, 0)
             End If
             
         

@@ -62,7 +62,7 @@ Public Sub NpcAI(ByVal NpcIndex As Integer)
 
 ErrorHandler:
     
-136     Call LogError("NPC.AI " & NpcList(NpcIndex).Name & " " & NpcList(NpcIndex).MaestroNPC & " mapa:" & NpcList(NpcIndex).Pos.Map & " x:" & NpcList(NpcIndex).Pos.X & " y:" & NpcList(NpcIndex).Pos.Y & " Mov:" & NpcList(NpcIndex).Movement & " TargU:" & NpcList(NpcIndex).Target & " TargN:" & NpcList(NpcIndex).TargetNPC)
+136     Call LogError("NPC.AI " & NpcList(npcIndex).name & " " & NpcList(npcIndex).MaestroNPC & " mapa:" & NpcList(npcIndex).pos.map & " x:" & NpcList(npcIndex).pos.x & " y:" & NpcList(npcIndex).pos.y & " Mov:" & NpcList(npcIndex).Movement & " TargU:" & NpcList(npcIndex).TargetUser.ArrayIndex & " TargN:" & NpcList(npcIndex).TargetNPC)
 
 138     Dim MiNPC As t_Npc: MiNPC = NpcList(NpcIndex)
     
@@ -78,7 +78,7 @@ Private Sub PerseguirUsuarioCercano(ByVal NpcIndex As Integer)
         Dim UserIndex    As Integer
         Dim UserIndexFront As Integer
         Dim npcEraPasivo As Boolean
-        Dim agresor      As Integer
+        Dim agresor      As t_UserReference
         Dim minDistancia As Integer
         Dim minDistanciaAtacable As Integer
         Dim enemigoCercano As Integer
@@ -90,7 +90,7 @@ Private Sub PerseguirUsuarioCercano(ByVal NpcIndex As Integer)
 
 104     With NpcList(NpcIndex)
 106         npcEraPasivo = .flags.OldHostil = 0
-108         .Target = 0
+108         Call SetUserRef(.TargetUser, 0)
 110         .TargetNPC = 0
 
 112         If .flags.AttackedBy <> vbNullString Then
@@ -133,23 +133,23 @@ Private Sub PerseguirUsuarioCercano(ByVal NpcIndex As Integer)
 136         If npcEraPasivo Then
                 ' Significa que alguien le pego, y esta en modo agresivo trantando de darle.
                 ' El unico objetivo que importa aca es el atacante; los demas son ignorados.
-138             If EnRangoVision(NpcIndex, agresor) Then .Target = agresor
+138             If EnRangoVision(npcIndex, agresor.ArrayIndex) Then Call SetUserRef(.targetUser, agresor.ArrayIndex)
 
             Else ' El NPC es hostil siempre, le quiere pegar a alguien.
 
 140             If minDistanciaAtacable > 0 And enemigoAtacableMasCercano > 0 Then ' Hay alguien atacable cerca
-142                 .Target = enemigoAtacableMasCercano
+142                 Call SetUserRef(.TargetUser, enemigoAtacableMasCercano)
 144             ElseIf enemigoCercano > 0 Then ' Hay alguien cerca, pero no es atacable
-146                 .Target = enemigoCercano
+146                 Call SetUserRef(.TargetUser, enemigoCercano)
                 End If
 
             End If
 
             ' Si el NPC tiene un objetivo
-148         If .Target > 0 Then
+148         If IsValidUserRef(.TargetUser) Then
                 'asignamos heading nuevo al NPC según el Target del nuevo usuario: .Char.Heading, si la distancia es <= 1
                 If NPCs.CanMove(.Contadores, .flags) Then
-                    Call ChangeNPCChar(NpcIndex, .Char.Body, .Char.Head, GetHeadingFromWorldPos(.Pos, UserList(.Target).Pos))
+                    Call ChangeNPCChar(npcIndex, .Char.body, .Char.head, GetHeadingFromWorldPos(.pos, UserList(.TargetUser.ArrayIndex).pos))
                 End If
 150             Call AI_AtacarUsuarioObjetivo(NpcIndex)
             Else
@@ -357,24 +357,24 @@ Private Sub AI_AtacarUsuarioObjetivo(ByVal AtackerNpcIndex As Integer)
         
         AtacaAlDelFrente = False
 100     With NpcList(AtackerNpcIndex)
-102         If .Target = 0 Then Exit Sub
+102         If Not IsValidUserRef(.TargetUser) Then Exit Sub
         
-104         EstaPegadoAlUsuario = (Distancia(.Pos, UserList(.Target).Pos) <= 1)
+104         EstaPegadoAlUsuario = (Distancia(.pos, UserList(.TargetUser.ArrayIndex).pos) <= 1)
 106         AtacaConMagia = .flags.LanzaSpells And _
                             IntervaloPermiteLanzarHechizo(AtackerNpcIndex) And _
                             (RandomNumber(1, 100) <= 50)
              
-108         AtacaMelee = EstaPegadoAlUsuario And UsuarioAtacableConMelee(AtackerNpcIndex, .Target) And NPCs.CanAttack(.Contadores, .flags)
-            AtacaMelee = AtacaMelee And (.flags.LanzaSpells > 0 And (UserList(.Target).flags.invisible > 0 Or UserList(.Target).flags.Oculto > 0))
+108         AtacaMelee = EstaPegadoAlUsuario And UsuarioAtacableConMelee(AtackerNpcIndex, .TargetUser.ArrayIndex) And NPCs.CanAttack(.Contadores, .flags)
+            AtacaMelee = AtacaMelee And (.flags.LanzaSpells > 0 And (UserList(.TargetUser.ArrayIndex).flags.invisible > 0 Or UserList(.TargetUser.ArrayIndex).flags.Oculto > 0))
             AtacaMelee = AtacaMelee Or .flags.LanzaSpells = 0
             
             
             ' Se da vuelta y enfrenta al Usuario
-109         tHeading = GetHeadingFromWorldPos(.Pos, UserList(.Target).Pos)
+109         tHeading = GetHeadingFromWorldPos(.pos, UserList(.TargetUser.ArrayIndex).pos)
             
 110         If AtacaConMagia Then
                 ' Le lanzo un Hechizo
-                If NpcLanzaSpellInmovilizado(AtackerNpcIndex, .Target) Then
+                If NpcLanzaSpellInmovilizado(AtackerNpcIndex, .TargetUser.ArrayIndex) Then
                     Call ChangeNPCChar(AtackerNpcIndex, .Char.Body, .Char.Head, tHeading)
 112                 Call NpcLanzaUnSpell(AtackerNpcIndex)
                 End If
@@ -402,11 +402,11 @@ Private Sub AI_AtacarUsuarioObjetivo(ByVal AtackerNpcIndex As Integer)
                 End If
             End If
 
-124         If UsuarioAtacableConMagia(.Target) Or UsuarioAtacableConMelee(AtackerNpcIndex, .Target) Then
+124         If UsuarioAtacableConMagia(.TargetUser.ArrayIndex) Or UsuarioAtacableConMelee(AtackerNpcIndex, .TargetUser.ArrayIndex) Then
                 ' Si no tiene un camino pero esta pegado al usuario, no queremos gastar tiempo calculando caminos.
 126             If .pathFindingInfo.PathLength = 0 And EstaPegadoAlUsuario Then Exit Sub
             
-128             Call AI_CaminarConRumbo(AtackerNpcIndex, UserList(.Target).Pos)
+128             Call AI_CaminarConRumbo(AtackerNpcIndex, UserList(.TargetUser.ArrayIndex).pos)
             Else
 130             Call AI_CaminarSinRumboCercaDeOrigen(AtackerNpcIndex)
             End If
@@ -433,9 +433,9 @@ Public Sub AI_GuardiaPersigueNpc(ByVal NpcIndex As Integer)
                 End If
                 
 110             If DistanciaRadial(.Orig, targetPos) <= (DIAMETRO_VISION_GUARDIAS_NPCS \ 2) Then
-112                 If NpcList(.TargetNPC).Target = 0 Then
+112                 If Not IsValidUserRef(NpcList(.TargetNPC).TargetUser) Then
 114                     Call AI_CaminarConRumbo(NpcIndex, targetPos)
-116                 ElseIf UserList(NpcList(.TargetNPC).Target).flags.NPCAtacado <> .TargetNPC Then
+116                 ElseIf UserList(NpcList(.TargetNPC).TargetUser.ArrayIndex).flags.NPCAtacado <> .TargetNPC Then
 118                     Call AI_CaminarConRumbo(NpcIndex, targetPos)
                     Else
 120                     .TargetNPC = 0
@@ -488,10 +488,10 @@ Private Function BuscarNpcEnArea(ByVal NpcIndex As Integer) As Integer
                         
 110                     If NpcList(foundNpc).Hostile Then
                         
-112                         If NpcList(foundNpc).Target = 0 Then
+112                         If Not IsValidUserRef(NpcList(foundNpc).TargetUser) Then
 114                             BuscarNpcEnArea = MapData(.Orig.Map, X, Y).NpcIndex
                                 Exit Function
-116                         ElseIf UserList(NpcList(foundNpc).Target).flags.NPCAtacado <> foundNpc Then
+116                         ElseIf UserList(NpcList(foundNpc).TargetUser.ArrayIndex).flags.NPCAtacado <> foundNpc Then
 118                             BuscarNpcEnArea = MapData(.Orig.Map, X, Y).NpcIndex
                                 Exit Function
                             End If
@@ -558,8 +558,8 @@ Private Sub SeguirAgresor(ByVal NpcIndex As Integer)
 
         On Error GoTo SeguirAgresor_Err
 
-
-100     If EsObjetivoValido(NpcIndex, NpcList(NpcIndex).Target) Then
+        
+100     If IsValidUserRef(NpcList(npcIndex).TargetUser) And EsObjetivoValido(npcIndex, NpcList(npcIndex).TargetUser.ArrayIndex) Then
 102         Call AI_AtacarUsuarioObjetivo(NpcIndex)
         Else
 104         Call RestoreOldMovement(NpcIndex)
@@ -579,19 +579,19 @@ Public Sub SeguirAmo(ByVal NpcIndex As Integer)
         
 100     With NpcList(NpcIndex)
         
-102         If .MaestroUser = 0 Or Not .flags.Follow Then Exit Sub
+102         If Not IsValidUserRef(.MaestroUser) Or Not .flags.Follow Then Exit Sub
         
             ' Si la mascota no tiene objetivo establecido.
-104         If .Target = 0 And .TargetNPC = 0 Then
+104         If Not IsValidUserRef(.TargetUser) And .TargetNPC = 0 Then
             
-106             If EnRangoVision(NpcIndex, .MaestroUser) Then
-108                 If UserList(.MaestroUser).flags.Muerto = 0 And _
-                        UserList(.MaestroUser).flags.invisible = 0 And _
-                        UserList(.MaestroUser).flags.Oculto = 0 And _
-                        Distancia(.Pos, UserList(.MaestroUser).Pos) > 3 Then
+106             If EnRangoVision(npcIndex, .MaestroUser.ArrayIndex) Then
+108                 If UserList(.MaestroUser.ArrayIndex).flags.Muerto = 0 And _
+                        UserList(.MaestroUser.ArrayIndex).flags.invisible = 0 And _
+                        UserList(.MaestroUser.ArrayIndex).flags.Oculto = 0 And _
+                        Distancia(.pos, UserList(.MaestroUser.ArrayIndex).pos) > 3 Then
                     
                         ' Caminamos cerca del usuario
-110                     Call AI_CaminarConRumbo(NpcIndex, UserList(.MaestroUser).Pos)
+110                     Call AI_CaminarConRumbo(npcIndex, UserList(.MaestroUser.ArrayIndex).pos)
                         Exit Sub
                     
                     End If
@@ -613,11 +613,11 @@ Private Sub RestoreOldMovement(ByVal NpcIndex As Integer)
         On Error GoTo RestoreOldMovement_Err
 
 100     With NpcList(NpcIndex)
-102         .Target = 0
+102         Call SetUserRef(.TargetUser, 0)
 104         .TargetNPC = 0
         
             ' Si el NPC no tiene maestro, reseteamos el movimiento que tenia antes.
-106         If .MaestroUser = 0 Then
+106         If Not IsValidUserRef(.MaestroUser) Then
 108             .Movement = .flags.OldMovement
 110             .Hostile = .flags.OldHostil
 112             .flags.AttackedBy = vbNullString
@@ -809,7 +809,8 @@ Private Sub NpcLanzaUnSpell(ByVal NpcIndex As Integer)
 
 100     If Not IntervaloPermiteLanzarHechizo(NpcIndex) Then Exit Sub
 
-102     Target = NpcList(NpcIndex).Target
+        If Not IsValidUserRef(NpcList(npcIndex).TargetUser) Then Exit Sub
+102     Target = NpcList(npcIndex).TargetUser.ArrayIndex
 104     SpellIndex = NpcList(NpcIndex).Spells(RandomNumber(1, NpcList(NpcIndex).flags.LanzaSpells))
 106     PuedeDanarAlUsuario = UserList(Target).flags.NoMagiaEfecto = 0 And NpcList(NpcIndex).flags.Paralizado = 0
         
@@ -922,7 +923,7 @@ Private Function EsEnemigo(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
 102     With NpcList(NpcIndex)
 
 104         If .flags.AttackedBy <> vbNullString Then
-106             EsEnemigo = (UserIndex = NameIndex(.flags.AttackedBy))
+106             EsEnemigo = (UserIndex = NameIndex(.flags.AttackedBy).ArrayIndex)
 108             If EsEnemigo Then Exit Function
             End If
 

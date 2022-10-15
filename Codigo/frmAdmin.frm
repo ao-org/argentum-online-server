@@ -101,13 +101,13 @@ Private Sub Command1_Click()
         On Error GoTo Command1_Click_Err
         
 
-        Dim tIndex As Long
+        Dim uUser As t_UserReference
 
-100     tIndex = NameIndex(cboPjs.Text)
+100     uUser = NameIndex(cboPjs.Text)
 
-102     If tIndex > 0 Then
-104         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor » " & UserList(tIndex).name & " ha sido hechado. ", e_FontTypeNames.FONTTYPE_SERVER))
-106         Call CloseSocket(tIndex)
+102     If IsValidUserRef(uUser) Then
+104         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor » " & UserList(uUser.ArrayIndex).name & " ha sido hechado. ", e_FontTypeNames.FONTTYPE_SERVER))
+106         Call CloseSocket(uUser.ArrayIndex)
 
         End If
 

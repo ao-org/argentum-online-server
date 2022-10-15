@@ -228,7 +228,7 @@ Sub FinalizarInvasion(ByVal Index As Integer)
             Next
         
             ' Entregamos premios y limpiamos el top
-            Dim UserIndex As Integer, OroGanado As Long, PremioStr As String
+            Dim tUser As t_UserReference, OroGanado As Long, PremioStr As String
     
 138         OroGanado = 50000 * OroMult
 140         PremioStr = "¡La ciudad te entrega " & PonerPuntos(OroGanado) & " monedas de oro por tu ayuda durante la invasión!"
@@ -239,12 +239,12 @@ Sub FinalizarInvasion(ByVal Index As Integer)
 146                 If LenB(.UserName) Then
 148                     If Ganaron And .Score > 0 Then
                             ' Si está conectado
-150                         UserIndex = NameIndex(.UserName)
-152                         If UserIndex Then
+150                         tUser = NameIndex(.username)
+152                         If IsValidUserRef(tUser) Then
                                 ' Le damos el oro
-154                             Call WriteConsoleMsg(UserIndex, PremioStr, e_FontTypeNames.FONTTYPE_New_Amarillo_Oscuro)
-156                             UserList(UserIndex).Stats.GLD = UserList(UserIndex).Stats.GLD + OroGanado
-158                             Call WriteUpdateGold(UserIndex)
+154                             Call WriteConsoleMsg(tUser.ArrayIndex, PremioStr, e_FontTypeNames.FONTTYPE_New_Amarillo_Oscuro)
+156                             UserList(tUser.ArrayIndex).Stats.GLD = UserList(tUser.ArrayIndex).Stats.GLD + OroGanado
+158                             Call WriteUpdateGold(tUser.ArrayIndex)
                             End If
                         End If
                     

@@ -37,8 +37,47 @@ Attribute VB_Name = "UserMod"
 
 Option Explicit
 
+Public Function IsValidUserRef(ByRef UserRef As t_UserReference) As Boolean
+    IsValidUserRef = False
+    If UserRef.ArrayIndex <= 0 Or UserRef.ArrayIndex > UBound(UserList) Then
+        Exit Function
+    End If
+    If UserList(UserRef.ArrayIndex).VersionId <> UserRef.VersionId Then
+        Exit Function
+    End If
+    IsValidUserRef = True
+End Function
+
+Public Function SetUserRef(ByRef UserRef As t_UserReference, ByVal index As Integer) As Boolean
+    SetUserRef = False
+    UserRef.ArrayIndex = Index
+    If Index <= 0 Or UserRef.ArrayIndex > UBound(UserList) Then
+        Exit Function
+    End If
+    UserRef.VersionId = UserList(Index).VersionId
+    SetUserRef = True
+End Function
+
+Public Sub ClearUserRef(ByRef UserRef As t_UserReference)
+    UserRef.ArrayIndex = 0
+    UserRef.VersionId = -1
+End Sub
+
+Public Sub IncreaseVersionId(ByVal UserIndex As Integer)
+    With UserList(UserIndex)
+        If .VersionId > 32760 Then
+            .VersionId = 0
+        Else
+            .VersionId = .VersionId + 1
+        End If
+    End With
+End Sub
+
+Public Sub LogUserRefError(ByRef UserRef As t_UserReference, ByRef Text As String)
+    Call LogError("Failed to validate UserRef index(" & UserRef.ArrayIndex & ") version(" & UserRef.VersionId & ") got versionId: " & UserList(UserRef.ArrayIndex).VersionId & " " & Text)
+End Sub
+
 Public Function ConnectUser_Check(ByVal userIndex As Integer, ByVal Name As String) As Boolean
-                           
 On Error GoTo Check_ConnectUser_Err
     ConnectUser_Check = False
     'Controlamos no pasar el maximo de usuarios
@@ -71,18 +110,18 @@ On Error GoTo Check_ConnectUser_Err
         End If
              
         '¿Ya esta conectado el personaje?
-        Dim tIndex As Integer: tIndex = NameIndex(Name)
-        If tIndex > 0 And tIndex <> UserIndex Then
-            If IsFeatureEnabled("override_same_ip_connection") And .IP = UserList(tIndex).IP Then
-                Call WriteShowMessageBox(tIndex, "Alguien está ingresando con tu personaje. Si no has sido tú, por favor cambia la contraseña de tu cuenta.")
-                Call CloseSocket(tIndex)
+        Dim tIndex As t_UserReference: tIndex = NameIndex(name)
+        If IsValidUserRef(tIndex) Then
+            If IsFeatureEnabled("override_same_ip_connection") And .IP = UserList(tIndex.ArrayIndex).IP Then
+                Call WriteShowMessageBox(tIndex.ArrayIndex, "Alguien está ingresando con tu personaje. Si no has sido tú, por favor cambia la contraseña de tu cuenta.")
+                Call CloseSocket(tIndex.ArrayIndex)
             Else
-                If UserList(tIndex).Counters.Saliendo Then
+                If UserList(tIndex.ArrayIndex).Counters.Saliendo Then
                     Call WriteShowMessageBox(userIndex, "El personaje está saliendo.")
                 Else
                     Call WriteShowMessageBox(userIndex, "El personaje ya está conectado. Espere mientras es desconectado.")
                     ' Le avisamos al usuario que está jugando, en caso de que haya uno
-                    Call WriteShowMessageBox(tIndex, "Alguien está ingresando con tu personaje. Si no has sido tú, por favor cambia la contraseña de tu cuenta.")
+                    Call WriteShowMessageBox(tIndex.ArrayIndex, "Alguien está ingresando con tu personaje. Si no has sido tú, por favor cambia la contraseña de tu cuenta.")
                 End If
             Call CloseSocket(UserIndex)
             Exit Function
@@ -131,11 +170,13 @@ On Error GoTo Prepare_ConnectUser_Err
         .flags.TargetNPC = 0
         .flags.TargetNpcTipo = e_NPCType.Comun
         .flags.TargetObj = 0
-        .flags.TargetUser = 0
+        Call SetUserRef(.flags.targetUser, 0)
         .Char.FX = 0
         .Counters.CuentaRegresiva = -1
         .name = name
-        m_NameIndex(UCase$(name)) = userIndex
+        Dim UserRef As New clsUserRefWrapper
+        UserRef.SetFromIndex (UserIndex)
+        Set m_NameIndex(UCase$(name)) = UserRef
         .showName = True
     End With
     Exit Sub
@@ -266,8 +307,8 @@ On Error GoTo Complete_ConnectUser_Err
 
             ' DM
 345         If .Invent.DañoMagicoEqpSlot > 0 Then
-350             If .Invent.Object(.Invent.DañoMagicoEqpSlot).objIndex > 0 Then
-355                 .Invent.DañoMagicoEqpObjIndex = .Invent.Object(.Invent.DañoMagicoEqpSlot).objIndex
+350             If .Invent.Object(.Invent.DañoMagicoEqpSlot).ObjIndex > 0 Then
+355                 .Invent.DañoMagicoEqpObjIndex = .Invent.Object(.Invent.DañoMagicoEqpSlot).ObjIndex
 
 360                 If .flags.Muerto = 0 Then
 365                     .Char.DM_Aura = ObjData(.Invent.DañoMagicoEqpObjIndex).CreaGRH
@@ -436,12 +477,12 @@ On Error GoTo Complete_ConnectUser_Err
 715                 If MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex <> 0 Then
 
                         'Si no encontramos lugar, y abajo teniamos a un usuario, lo pisamos y cerramos su comercio seguro
-720                     If UserList(MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex).ComUsu.DestUsu > 0 Then
+720                     If IsValidUserRef(UserList(MapData(.pos.map, .pos.x, .pos.y).userIndex).ComUsu.DestUsu) Then
 
                             'Le avisamos al que estaba comerciando que se tuvo que ir.
-725                         If UserList(UserList(MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex).ComUsu.DestUsu).flags.UserLogged Then
-730                             Call FinComerciarUsu(UserList(MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex).ComUsu.DestUsu)
-735                             Call WriteConsoleMsg(UserList(MapData(.Pos.Map, .Pos.X, .Pos.Y).UserIndex).ComUsu.DestUsu, "Comercio cancelado. El otro usuario se ha desconectado.", e_FontTypeNames.FONTTYPE_WARNING)
+725                         If UserList(UserList(MapData(.pos.map, .pos.x, .pos.y).userIndex).ComUsu.DestUsu.ArrayIndex).flags.UserLogged Then
+730                             Call FinComerciarUsu(UserList(MapData(.pos.map, .pos.x, .pos.y).userIndex).ComUsu.DestUsu.ArrayIndex)
+735                             Call WriteConsoleMsg(UserList(MapData(.pos.map, .pos.x, .pos.y).userIndex).ComUsu.DestUsu.ArrayIndex, "Comercio cancelado. El otro usuario se ha desconectado.", e_FontTypeNames.FONTTYPE_WARNING)
 
                             End If
 
@@ -580,7 +621,7 @@ On Error GoTo Complete_ConnectUser_Err
 1020                    .MascotasIndex(i) = SpawnNpc(.MascotasType(i), .Pos, False, False, False, UserIndex)
                     
 1025                    If .MascotasIndex(i) > 0 Then
-1030                        NpcList(.MascotasIndex(i)).MaestroUser = UserIndex
+1030                        Call SetUserRef(NpcList(.MascotasIndex(i)).MaestroUser, userIndex)
 1035                        Call FollowAmo(.MascotasIndex(i))
                         
                          Else
@@ -1050,7 +1091,7 @@ Sub MakeUserChar(ByVal toMap As Boolean, _
                         End If
                     End If
 
-140                 Call WriteCharacterCreate(sndIndex, .Char.body, .Char.head, .Char.Heading, .Char.charindex, X, Y, .Char.WeaponAnim, .Char.ShieldAnim, .Char.FX, 999, .Char.CascoAnim, TempName, .Faccion.Status, .flags.Privilegios, .Char.ParticulaFx, .Char.Head_Aura, .Char.Arma_Aura, .Char.Body_Aura, .Char.DM_Aura, .Char.RM_Aura, .Char.Otra_Aura, .Char.Escudo_Aura, .Char.speeding, 0, appear, .Grupo.Lider, .GuildIndex, clan_nivel, .Stats.MinHp, .Stats.MaxHp, .Stats.MinMAN, .Stats.MaxMAN, 0, False, .flags.Navegando, .Stats.tipoUsuario, .flags.jugando_captura_team, .flags.tiene_bandera)
+140                 Call WriteCharacterCreate(sndIndex, .Char.body, .Char.head, .Char.Heading, .Char.charindex, x, y, .Char.WeaponAnim, .Char.ShieldAnim, .Char.FX, 999, .Char.CascoAnim, TempName, .Faccion.Status, .flags.Privilegios, .Char.ParticulaFx, .Char.Head_Aura, .Char.Arma_Aura, .Char.Body_Aura, .Char.DM_Aura, .Char.RM_Aura, .Char.Otra_Aura, .Char.Escudo_Aura, .Char.speeding, 0, appear, .Grupo.Lider.ArrayIndex, .GuildIndex, clan_nivel, .Stats.MinHp, .Stats.MaxHp, .Stats.MinMAN, .Stats.MaxMAN, 0, False, .flags.Navegando, .Stats.tipoUsuario, .flags.jugando_captura_team, .flags.tiene_bandera)
                     
                 Else
             
@@ -1298,7 +1339,7 @@ Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As e_Heading) A
             End If
 
             'Si no estoy solo en el mapa...
-130         If MapInfo(.Pos.map).NumUsers > 1 Or .flags.GMMeSigue > 0 Then
+130         If MapInfo(.pos.map).NumUsers > 1 Or IsValidUserRef(.flags.GMMeSigue) Then
 
                 ' Intercambia posición si hay un casper o gm invisible
 132             IndexMover = MapData(nPos.Map, nPos.X, nPos.Y).UserIndex
@@ -1319,8 +1360,8 @@ Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As e_Heading) A
 148                     Call SendData(SendTarget.ToAdminAreaButIndex, IndexMover, PrepareMessageCharacterMove(UserList(IndexMover).Char.CharIndex, UserList(IndexMover).Pos.X, UserList(IndexMover).Pos.Y))
                     End If
                     
-                    If UserList(IndexMover).flags.GMMeSigue > 0 Then
-                        Call WriteForceCharMoveSiguiendo(UserList(IndexMover).flags.GMMeSigue, Opposite_Heading)
+                    If IsValidUserRef(UserList(IndexMover).flags.GMMeSigue) Then
+                        Call WriteForceCharMoveSiguiendo(UserList(IndexMover).flags.GMMeSigue.ArrayIndex, Opposite_Heading)
                     End If
 150                 Call WriteForceCharMove(IndexMover, Opposite_Heading)
                 
@@ -1333,11 +1374,9 @@ Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As e_Heading) A
                 End If
 
 158             If .flags.AdminInvisible = 0 Then
-
-                    
-                    If .flags.GMMeSigue > 0 Then
+                    If IsValidUserRef(.flags.GMMeSigue) Then
                         Call SendData(SendTarget.ToPCAreaButFollowerAndIndex, UserIndex, PrepareMessageCharacterMove(.Char.charindex, nPos.X, nPos.Y))
-                        Call WriteForceCharMoveSiguiendo(.flags.GMMeSigue, nHeading)
+                        Call WriteForceCharMoveSiguiendo(.flags.GMMeSigue.ArrayIndex, nHeading)
                     Else
                         'Mando a todos menos a mi donde estoy
 160                     Call SendData(SendTarget.ToPCAliveAreaButIndex, userindex, PrepareMessageCharacterMove(.Char.charindex, nPos.X, nPos.y), True)
@@ -1744,7 +1783,7 @@ Sub NPCAtacado(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
 
         'Guardamos el usuario que ataco el npc.
 104     If NpcList(NpcIndex).Movement <> Estatico And NpcList(NpcIndex).flags.AttackedFirstBy = vbNullString Then
-106         NpcList(NpcIndex).Target = UserIndex
+106         Call SetUserRef(NpcList(npcIndex).TargetUser, UserIndex)
 108         NpcList(NpcIndex).Hostile = 1
 110         NpcList(NpcIndex).flags.AttackedBy = UserList(UserIndex).Name
         End If
@@ -1760,8 +1799,8 @@ Sub NPCAtacado(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
 118         Call VolverCriminal(UserIndex)
         End If
         
-120     If NpcList(NpcIndex).MaestroUser > 0 And NpcList(NpcIndex).MaestroUser <> UserIndex Then
-122         Call AllMascotasAtacanUser(UserIndex, NpcList(NpcIndex).MaestroUser)
+120     If IsValidUserRef(NpcList(npcIndex).MaestroUser) And NpcList(npcIndex).MaestroUser.ArrayIndex <> userIndex Then
+122         Call AllMascotasAtacanUser(userIndex, NpcList(npcIndex).MaestroUser.ArrayIndex)
         End If
 
 124     'Call AllMascotasAtacanNPC(NpcIndex, UserIndex)
@@ -1926,26 +1965,8 @@ Sub UserDie(ByVal UserIndex As Integer)
             
 130         Call WriteUpdateHP(UserIndex)
 132         Call WriteUpdateSta(UserIndex)
-        
-134         aN = .flags.AtacadoPorNpc
-    
-136         If aN > 0 Then
-138             NpcList(aN).Movement = NpcList(aN).flags.OldMovement
-140             NpcList(aN).Hostile = NpcList(aN).flags.OldHostil
-142             NpcList(aN).flags.AttackedBy = vbNullString
-144             NpcList(aN).Target = 0
-            End If
-        
-146         aN = .flags.NPCAtacado
-    
-148         If aN > 0 Then
-150             If NpcList(aN).flags.AttackedFirstBy = .Name Then
-152                 NpcList(aN).flags.AttackedFirstBy = vbNullString
-                End If
-            End If
-    
-154         .flags.AtacadoPorNpc = 0
-156         .flags.NPCAtacado = 0
+            
+            Call ClearAttackerNpc(UserIndex)
     
 158         If MapData(.Pos.map, .Pos.X, .Pos.y).trigger <> e_Trigger.ZONAPELEA And MapInfo(.Pos.map).DropItems Then
 
@@ -2288,13 +2309,13 @@ Sub WarpUserChar(ByVal UserIndex As Integer, _
     
 100     With UserList(UserIndex)
             If map <= 0 Then Exit Sub
-102         If .ComUsu.DestUsu > 0 Then
+102         If IsValidUserRef(.ComUsu.DestUsu) Then
 
-104             If UserList(.ComUsu.DestUsu).flags.UserLogged Then
+104             If UserList(.ComUsu.DestUsu.ArrayIndex).flags.UserLogged Then
 
-106                 If UserList(.ComUsu.DestUsu).ComUsu.DestUsu = UserIndex Then
-108                     Call WriteConsoleMsg(.ComUsu.DestUsu, "Comercio cancelado por el otro usuario", e_FontTypeNames.FONTTYPE_TALK)
-110                     Call FinComerciarUsu(.ComUsu.DestUsu)
+106                 If UserList(.ComUsu.DestUsu.ArrayIndex).ComUsu.DestUsu.ArrayIndex = userIndex Then
+108                     Call WriteConsoleMsg(.ComUsu.DestUsu.ArrayIndex, "Comercio cancelado por el otro usuario", e_FontTypeNames.FONTTYPE_TALK)
+110                     Call FinComerciarUsu(.ComUsu.DestUsu.ArrayIndex)
 
                     End If
 
@@ -2358,8 +2379,8 @@ Sub WarpUserChar(ByVal UserIndex As Integer, _
     
 188         Call WriteUserCharIndexInServer(UserIndex)
     
-            If .flags.GMMeSigue > 0 Then
-                Call WriteSendFollowingCharindex(.flags.GMMeSigue, .Char.charindex)
+            If IsValidUserRef(.flags.GMMeSigue) Then
+                Call WriteSendFollowingCharindex(.flags.GMMeSigue.ArrayIndex, .Char.charindex)
             End If
             'Seguis invisible al pasar de mapa
 190         If (.flags.invisible = 1 Or .flags.Oculto = 1) And (Not .flags.AdminInvisible = 1) Then
@@ -2446,7 +2467,7 @@ Sub Cerrar_Usuario(ByVal UserIndex As Integer, Optional ByVal forceClose As Bool
                 'HarThaoS: Captura de bandera
                 If .flags.jugando_captura = 1 Then
                     If Not InstanciaCaptura Is Nothing Then
-                         Call InstanciaCaptura.eliminarParticipante(UserIndex)
+                         Call InstanciaCaptura.eliminarParticipante(InstanciaCaptura.GetPlayer(UserIndex))
                     End If
                 End If
     
@@ -2669,7 +2690,7 @@ Private Sub WarpMascotas(ByVal UserIndex As Integer)
 108             iMinHP = NpcList(Index).Stats.MinHp
 110             PetTiempoDeVida = NpcList(Index).Contadores.TiempoExistencia
             
-112             NpcList(Index).MaestroUser = 0
+112             Call SetUserRef(NpcList(Index).MaestroUser, 0)
             
 114             Call QuitarNPC(Index)
 
@@ -2706,7 +2727,7 @@ Private Sub WarpMascotas(ByVal UserIndex As Integer)
 
                     ' Nos aseguramos de que conserve el hp, si estaba danado
 148                 If iMinHP Then NpcList(Index).Stats.MinHp = iMinHP
-                    NpcList(Index).MaestroUser = UserIndex
+                    Call SetUserRef(NpcList(Index).MaestroUser, userIndex)
 150                 Call FollowAmo(Index)
             
                 Else
