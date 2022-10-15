@@ -266,6 +266,11 @@ Public Sub ForzarEvento(ByVal Tipo As Byte, ByVal Duracion As Byte, ByVal multi 
         
         Dim tUser As t_UserReference
         tUser = NameIndex(Quien)
+        If Not IsValidUserRef(tUser) Then
+            Call LogError("Failed to force event, unknown user: " & Quien)
+            Exit Sub
+        End If
+        
 100     If Tipo > 3 Or Tipo < 1 Then
 102         Call WriteConsoleMsg(tUser.ArrayIndex, "Tipo de evento invalido.", e_FontTypeNames.FONTTYPE_New_Eventos)
             Exit Sub

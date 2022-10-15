@@ -434,6 +434,7 @@ On Error GoTo ClearAttackerNpc_err
 130     .flags.AtacadoPorNpc = 0
 132     .flags.NPCAtacado = 0
     End With
+    Exit Sub
 ClearAttackerNpc_err:
     Call TraceError(Err.Number, Err.Description, "Extra.ClearAttackerNpc failed to clear userindex" & userIndex & "(" & UserList(userIndex).VersionId & ")", Erl)
 End Sub
