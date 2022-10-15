@@ -321,23 +321,23 @@ Public Sub HandleDenounce(ByVal UserIndex As Integer)
 
             End If
         
-            Dim tUser As Integer
+            Dim tUser As t_UserReference
 110         tUser = NameIndex(name)
         
-112         If tUser <= 0 Then
-114             Call WriteConsoleMsg(UserIndex, "El usuario no está online.", e_FontTypeNames.FONTTYPE_INFO)
+112         If Not IsValidUserRef(tUser) Then
+114             Call WriteConsoleMsg(userIndex, "El usuario no está online.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
             End If
         
             Dim Denuncia As String, HayChat As Boolean
-116         Denuncia = "[Últimos mensajes de " & UserList(tUser).name & "]" & vbNewLine
+116         Denuncia = "[Últimos mensajes de " & UserList(tUser.ArrayIndex).name & "]" & vbNewLine
             Dim i As Integer
 
-118         For i = 1 To UBound(UserList(tUser).flags.ChatHistory)
+118         For i = 1 To UBound(UserList(tUser.ArrayIndex).flags.ChatHistory)
 
-120             If LenB(UserList(tUser).flags.ChatHistory(i)) <> 0 Then
-122                 Denuncia = Denuncia & UserList(tUser).flags.ChatHistory(i) & vbNewLine
+120             If LenB(UserList(tUser.ArrayIndex).flags.ChatHistory(i)) <> 0 Then
+122                 Denuncia = Denuncia & UserList(tUser.ArrayIndex).flags.ChatHistory(i) & vbNewLine
 124                 HayChat = True
                 End If
             Next
@@ -347,10 +347,10 @@ Public Sub HandleDenounce(ByVal UserIndex As Integer)
                 Exit Sub
             End If
 
-136         Call Ayuda.Push(.name, Denuncia, "Denuncia a " & UserList(tUser).name)
+136         Call Ayuda.Push(.name, Denuncia, "Denuncia a " & UserList(tUser.ArrayIndex).name)
 138         Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Se ha recibido una nueva denuncia de parte de " & .name & ".", e_FontTypeNames.FONTTYPE_SERVER))
 140         Call WriteConsoleMsg(UserIndex, "Tu denuncia fue recibida por el equipo de soporte.", e_FontTypeNames.FONTTYPE_INFOIAO)
-142         Call LogConsulta(.name & " (Denuncia a " & UserList(tUser).name & ")" & vbNewLine & Denuncia)
+142         Call LogConsulta(.name & " (Denuncia a " & UserList(tUser.ArrayIndex).name & ")" & vbNewLine & Denuncia)
         End With
         Exit Sub
 ErrHandler:
@@ -414,7 +414,7 @@ Public Sub HandleGoNearby(ByVal UserIndex As Integer)
             Dim username As String
 102             username = Reader.ReadString8()
         
-            Dim tIndex As Integer
+            Dim tUser As t_UserReference
 
             Dim X      As Long
             Dim y      As Long
@@ -427,24 +427,24 @@ Public Sub HandleGoNearby(ByVal UserIndex As Integer)
         
             'Check the user has enough powers
 106         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios)) Or Ayuda.Existe(username) Then
-108             tIndex = NameIndex(username)
+108             tUser = NameIndex(username)
             
-110             If tIndex <= 0 Then
+110             If Not IsValidUserRef(tUser) Then
                     ' Si está offline, comparamos privilegios offline, para no revelar si está el gm conectado
 112                 If CompararPrivilegios(.flags.Privilegios, UserDarPrivilegioLevel(username)) >= 0 Then
 114                     Call WriteConsoleMsg(UserIndex, "Usuario offline.", e_FontTypeNames.FONTTYPE_INFO)
                     Else
-116                     Call WriteConsoleMsg(UserIndex, "No podés ir cerca de un GM de mayor jerarquía.", e_FontTypeNames.FONTTYPE_INFO)
+116                     Call WriteConsoleMsg(userIndex, "No podés ir cerca de un GM de mayor jerarquía.", e_FontTypeNames.FONTTYPE_INFO)
                     End If
                 Else
-118                 If CompararPrivilegiosUser(UserIndex, tIndex) >= 0 Then
+118                 If CompararPrivilegiosUser(userIndex, tUser.ArrayIndex) >= 0 Then
 120                     For i = 2 To 5 'esto for sirve ir cambiando la distancia destino
-122                         For X = UserList(tIndex).Pos.X - i To UserList(tIndex).Pos.X + i
-124                             For y = UserList(tIndex).Pos.y - i To UserList(tIndex).Pos.y + i
-126                                 If MapData(UserList(tIndex).Pos.map, X, y).UserIndex = 0 Then
-128                                     If LegalPos(UserList(tIndex).Pos.map, X, y, True, True) Then
-130                                         Call WriteConsoleMsg(UserIndex, "Te teletransportaste cerca de " & UserList(tIndex).name & ".", e_FontTypeNames.FONTTYPE_INFO)
-132                                         Call WarpUserChar(UserIndex, UserList(tIndex).Pos.map, X, y, True)
+122                         For x = UserList(tUser.ArrayIndex).pos.x - i To UserList(tUser.ArrayIndex).pos.x + i
+124                             For y = UserList(tUser.ArrayIndex).pos.y - i To UserList(tUser.ArrayIndex).pos.y + i
+126                                 If MapData(UserList(tUser.ArrayIndex).pos.map, x, y).userIndex = 0 Then
+128                                     If LegalPos(UserList(tUser.ArrayIndex).pos.map, x, y, True, True) Then
+130                                         Call WriteConsoleMsg(userIndex, "Te teletransportaste cerca de " & UserList(tUser.ArrayIndex).name & ".", e_FontTypeNames.FONTTYPE_INFO)
+132                                         Call WarpUserChar(userIndex, UserList(tUser.ArrayIndex).pos.map, x, y, True)
 134                                         Found = True
                                             Exit For
                                         End If
@@ -476,21 +476,21 @@ Public Sub HandleWhere(ByVal UserIndex As Integer)
         On Error GoTo ErrHandler
 100     With UserList(UserIndex)
             Dim username As String
-            Dim tUser    As Integer
+            Dim tUser    As t_UserReference
         
 102         username = Reader.ReadString8()
 104         If (.flags.Privilegios And (e_PlayerType.SemiDios Or e_PlayerType.Consejero Or e_PlayerType.user)) = 0 Then
 106             tUser = NameIndex(username)
-108             If tUser <= 0 Then
+108             If Not IsValidUserRef(tUser) Then
 110                 Call WriteConsoleMsg(UserIndex, "Usuario offline.", e_FontTypeNames.FONTTYPE_INFO)
                 Else
-112                 If CompararPrivilegiosUser(UserIndex, tUser) >= 0 Then
-114                     Call WriteConsoleMsg(UserIndex, "Ubicación  " & username & ": " & UserList(tUser).Pos.map & ", " & UserList(tUser).Pos.X & ", " & UserList(tUser).Pos.y & ".", e_FontTypeNames.FONTTYPE_INFO)
+112                 If CompararPrivilegiosUser(userIndex, tUser.ArrayIndex) >= 0 Then
+114                     Call WriteConsoleMsg(userIndex, "Ubicación  " & username & ": " & UserList(tUser.ArrayIndex).pos.map & ", " & UserList(tUser.ArrayIndex).pos.x & ", " & UserList(tUser.ArrayIndex).pos.y & ".", e_FontTypeNames.FONTTYPE_INFO)
 116                     Call LogGM(.name, "/Donde " & username)
                     End If
                 End If
             Else
-118             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
+118             Call WriteConsoleMsg(userIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
             End If
         End With
         Exit Sub
@@ -630,7 +630,7 @@ Public Sub HandleWarpChar(ByVal UserIndex As Integer)
             Dim map      As Integer
             Dim X        As Byte
             Dim y        As Byte
-            Dim tUser    As Integer
+            Dim tUser    As t_UserReference
         
 102         username = Reader.ReadString8()
 104         map = Reader.ReadInt16()
@@ -660,13 +660,11 @@ Public Sub HandleWarpChar(ByVal UserIndex As Integer)
 
 126             If UCase$(username) <> "YO" Then
 128                 tUser = NameIndex(username)
-                
                 Else
-130                 tUser = UserIndex
-
+130                 Call SetUserRef(tUser, userIndex)
                 End If
             
-132             If tUser <= 0 Then
+132             If Not IsValidUserRef(tUser) Then
 134                 Call WriteConsoleMsg(UserIndex, "Usuario offline.", e_FontTypeNames.FONTTYPE_INFO)
 
 136             ElseIf InMapBounds(map, X, y) Then
@@ -678,23 +676,18 @@ Public Sub HandleWarpChar(ByVal UserIndex As Integer)
                                 Exit Sub
                             End If
                         End If
-                        Call WarpToLegalPos(tUser, map, X, y, True, True)
+                        Call WarpToLegalPos(tUser.ArrayIndex, map, x, y, True, True)
                     Else
-138                     Call FindLegalPos(tUser, map, X, y)
-140                     Call WarpUserChar(tUser, map, X, y, True)
+138                     Call FindLegalPos(tUser.ArrayIndex, map, x, y)
+140                     Call WarpUserChar(tUser.ArrayIndex, map, x, y, True)
                     End If
-142                 If tUser <> UserIndex Then
-144                     Call LogGM(.name, "Transportó a " & UserList(tUser).name & " hacia " & "Mapa" & map & " X:" & X & " Y:" & y)
+142                 If tUser.ArrayIndex <> userIndex Then
+144                     Call LogGM(.name, "Transportó a " & UserList(tUser.ArrayIndex).name & " hacia " & "Mapa" & map & " X:" & x & " Y:" & y)
                     End If
-                        
                 End If
-
             End If
-
         End With
-        
         Exit Sub
-        
 ErrHandler:
 146     Call TraceError(Err.Number, Err.Description, "Protocol.HandleWarpChar", Erl)
 148
@@ -709,7 +702,7 @@ Public Sub HandleSilence(ByVal UserIndex As Integer)
 
             Dim username As String
             Dim minutos  As Integer
-            Dim tUser    As Integer
+            Dim tUser    As t_UserReference
         
 102         username = Reader.ReadString8()
 104         minutos = Reader.ReadInt16()
@@ -717,7 +710,7 @@ Public Sub HandleSilence(ByVal UserIndex As Integer)
 106         If EsGM(UserIndex) Then
 108             tUser = NameIndex(username)
         
-110             If tUser <= 0 Then
+110             If Not IsValidUserRef(tUser) Then
 
 112                 If PersonajeExiste(username) Then
 
@@ -727,11 +720,11 @@ Public Sub HandleSilence(ByVal UserIndex As Integer)
 118                             Call SilenciarUserDatabase(username, minutos)
 120                             Call SavePenaDatabase(username, .name & ": silencio por " & Time & " minutos. " & Date & " " & Time)
 122                             Call SendData(SendTarget.ToGM, 0, PrepareMessageConsoleMsg("Administración » " & .name & " ha silenciado a " & username & "(offline) por " & minutos & " minutos.", e_FontTypeNames.FONTTYPE_GM))
-124                             Call LogGM(.name, "Silenciar a " & UserList(tUser).name & " por " & minutos & " minutos.")
+124                             Call LogGM(.name, "Silenciar a " & UserList(tUser.ArrayIndex).name & " por " & minutos & " minutos.")
                             Else
 126                             Call DesilenciarUserDatabase(username)
 128                             Call SendData(SendTarget.ToGM, 0, PrepareMessageConsoleMsg("Administración » " & .name & " ha desilenciado a " & username & "(offline).", e_FontTypeNames.FONTTYPE_GM))
-130                             Call LogGM(.name, "Desilenciar a " & UserList(tUser).name & ".")
+130                             Call LogGM(.name, "Desilenciar a " & UserList(tUser.ArrayIndex).name & ".")
 
                             End If
                             
@@ -747,25 +740,25 @@ Public Sub HandleSilence(ByVal UserIndex As Integer)
 
                     End If
                 
-136             ElseIf CompararPrivilegiosUser(UserIndex, tUser) > 0 Then
+136             ElseIf CompararPrivilegiosUser(userIndex, tUser.ArrayIndex) > 0 Then
 
 138                 If minutos > 0 Then
-140                     UserList(tUser).flags.Silenciado = 1
-142                     UserList(tUser).flags.MinutosRestantes = minutos
-144                     UserList(tUser).flags.SegundosPasados = 0
+140                     UserList(tUser.ArrayIndex).flags.Silenciado = 1
+142                     UserList(tUser.ArrayIndex).flags.MinutosRestantes = minutos
+144                     UserList(tUser.ArrayIndex).flags.SegundosPasados = 0
 
 146                     Call SavePenaDatabase(username, .name & ": silencio por " & Time & " minutos. " & Date & " " & Time)
-148                     Call SendData(SendTarget.ToGM, 0, PrepareMessageConsoleMsg("Administración » " & .name & " ha silenciado a " & UserList(tUser).name & " por " & minutos & " minutos.", e_FontTypeNames.FONTTYPE_GM))
-150                     Call WriteConsoleMsg(tUser, "Has sido silenciado por los administradores, no podrás hablar con otros usuarios. Utilice /GM para pedir ayuda.", e_FontTypeNames.FONTTYPE_GM)
-152                     Call LogGM(.name, "Silenciar a " & UserList(tUser).name & " por " & minutos & " minutos.")
+148                     Call SendData(SendTarget.ToGM, 0, PrepareMessageConsoleMsg("Administración » " & .name & " ha silenciado a " & UserList(tUser.ArrayIndex).name & " por " & minutos & " minutos.", e_FontTypeNames.FONTTYPE_GM))
+150                     Call WriteConsoleMsg(tUser.ArrayIndex, "Has sido silenciado por los administradores, no podrás hablar con otros usuarios. Utilice /GM para pedir ayuda.", e_FontTypeNames.FONTTYPE_GM)
+152                     Call LogGM(.name, "Silenciar a " & UserList(tUser.ArrayIndex).name & " por " & minutos & " minutos.")
 
                     Else
                     
-154                     UserList(tUser).flags.Silenciado = 1
+154                     UserList(tUser.ArrayIndex).flags.Silenciado = 1
 
-156                     Call SendData(SendTarget.ToGM, 0, PrepareMessageConsoleMsg("Administración » " & .name & " ha desilenciado a " & UserList(tUser).name & ".", e_FontTypeNames.FONTTYPE_GM))
-158                     Call WriteConsoleMsg(tUser, "Has sido desilenciado.", e_FontTypeNames.FONTTYPE_GM)
-160                     Call LogGM(.name, "Desilenciar a " & UserList(tUser).name & ".")
+156                     Call SendData(SendTarget.ToGM, 0, PrepareMessageConsoleMsg("Administración » " & .name & " ha desilenciado a " & UserList(tUser.ArrayIndex).name & ".", e_FontTypeNames.FONTTYPE_GM))
+158                     Call WriteConsoleMsg(tUser.ArrayIndex, "Has sido desilenciado.", e_FontTypeNames.FONTTYPE_GM)
+160                     Call LogGM(.name, "Desilenciar a " & UserList(tUser.ArrayIndex).name & ".")
 
                     End If
                     
@@ -837,7 +830,7 @@ Public Sub HandleGoToChar(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             Dim username As String
-            Dim tUser    As Integer
+            Dim tUser    As t_UserReference
             Dim X        As Byte
             Dim y        As Byte
         
@@ -848,8 +841,8 @@ Public Sub HandleGoToChar(ByVal UserIndex As Integer)
 106             If LenB(username) <> 0 Then
 108                 tUser = NameIndex(username)
                     
-110                 If tUser <= 0 Then
-112                     Call WriteConsoleMsg(UserIndex, "El jugador no está online.", e_FontTypeNames.FONTTYPE_INFO)
+110                 If Not IsValidUserRef(tUser) Then
+112                     Call WriteConsoleMsg(userIndex, "El jugador no está online.", e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
 
                     End If
@@ -857,40 +850,33 @@ Public Sub HandleGoToChar(ByVal UserIndex As Integer)
                 Else
 114                 tUser = .flags.TargetUser
 
-116                 If tUser <= 0 Then Exit Sub
+116                 If Not IsValidUserRef(tUser) Then Exit Sub
 
                 End If
       
-118             If CompararPrivilegiosUser(tUser, UserIndex) > 0 Then
-120                 Call WriteConsoleMsg(UserIndex, "Se le ha avisado a " & UserList(tUser).name & " que quieres ir a su posición.", e_FontTypeNames.FONTTYPE_INFO)
-122                 Call WriteConsoleMsg(tUser, .name & " quiere transportarse a tu ubicación. Escribe /sum " & .name & " para traerlo.", e_FontTypeNames.FONTTYPE_INFO)
+118             If CompararPrivilegiosUser(tUser.ArrayIndex, userIndex) > 0 Then
+120                 Call WriteConsoleMsg(userIndex, "Se le ha avisado a " & UserList(tUser.ArrayIndex).name & " que quieres ir a su posición.", e_FontTypeNames.FONTTYPE_INFO)
+122                 Call WriteConsoleMsg(tUser.ArrayIndex, .name & " quiere transportarse a tu ubicación. Escribe /sum " & .name & " para traerlo.", e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
 
                 End If
 
-124             X = UserList(tUser).Pos.X
-126             y = UserList(tUser).Pos.y + 1
-
-128             Call FindLegalPos(UserIndex, UserList(tUser).Pos.map, X, y)
-                
-130             Call WarpUserChar(UserIndex, UserList(tUser).Pos.map, X, y, True)
+124             x = UserList(tUser.ArrayIndex).pos.x
+126             y = UserList(tUser.ArrayIndex).pos.y + 1
+128             Call FindLegalPos(userIndex, UserList(tUser.ArrayIndex).pos.map, x, y)
+130             Call WarpUserChar(userIndex, UserList(tUser.ArrayIndex).pos.map, x, y, True)
                     
 132             If .flags.AdminInvisible = 0 Then
-134                 Call WriteConsoleMsg(tUser, .name & " se ha trasportado hacia donde te encuentras.", e_FontTypeNames.FONTTYPE_INFO)
-
+134                 Call WriteConsoleMsg(tUser.ArrayIndex, .name & " se ha trasportado hacia donde te encuentras.", e_FontTypeNames.FONTTYPE_INFO)
                 End If
                 
-136             Call WriteConsoleMsg(UserIndex, "Te has transportado hacia " & UserList(tUser).name & ".", e_FontTypeNames.FONTTYPE_INFO)
-                    
-138             Call LogGM(.name, "/IRA " & username & " Mapa:" & UserList(tUser).Pos.map & " X:" & UserList(tUser).Pos.X & " Y:" & UserList(tUser).Pos.y)
+136             Call WriteConsoleMsg(userIndex, "Te has transportado hacia " & UserList(tUser.ArrayIndex).name & ".", e_FontTypeNames.FONTTYPE_INFO)
+138             Call LogGM(.name, "/IRA " & username & " Mapa:" & UserList(tUser.ArrayIndex).pos.map & " X:" & UserList(tUser.ArrayIndex).pos.x & " Y:" & UserList(tUser.ArrayIndex).pos.y)
             Else
-140             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo. solo puedes ir a Usuarios que piden SOS.", e_FontTypeNames.FONTTYPE_INFO)
+140             Call WriteConsoleMsg(userIndex, "Servidor » Comando deshabilitado para tu cargo. solo puedes ir a Usuarios que piden SOS.", e_FontTypeNames.FONTTYPE_INFO)
             End If
-
         End With
-        
         Exit Sub
-        
 ErrHandler:
 142     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGoToChar", Erl)
 144
@@ -901,13 +887,9 @@ Public Sub HandleInvisible(ByVal UserIndex As Integer)
         On Error GoTo HandleInvisible_Err
         'Author: Juan Martín Sotuyo Dodero (Maraxus)
 100     With UserList(UserIndex)
-
 102         If .flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero) Then Exit Sub
-        
 104         Call DoAdminInvisible(UserIndex)
-
         End With
-        
         Exit Sub
 
 HandleInvisible_Err:
@@ -989,7 +971,7 @@ Public Sub HandleWorking(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
 102         If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero)) Then
-104             Call WriteConsoleMsg(UserIndex, "Servidor » /TRABAJANDO es un comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
+104             Call WriteConsoleMsg(userIndex, "Servidor » /TRABAJANDO es un comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
         
@@ -1032,7 +1014,7 @@ Public Sub HandleHiding(ByVal UserIndex As Integer)
         
         
 102         If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.RoleMaster)) Then
-104             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
+104             Call WriteConsoleMsg(userIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
         
@@ -1077,7 +1059,7 @@ Public Sub HandleJail(ByVal UserIndex As Integer)
             Dim Reason   As String
             Dim jailTime As Byte
             Dim count    As Byte
-            Dim tUser    As Integer
+            Dim tUser    As t_UserReference
         
 102         username = Reader.ReadString8()
 104         Reason = Reader.ReadString8()
@@ -1096,15 +1078,15 @@ Public Sub HandleJail(ByVal UserIndex As Integer)
                 Else
 118                 tUser = NameIndex(username)
                 
-120                 If tUser <= 0 Then
-122                     Call WriteConsoleMsg(UserIndex, "El usuario no está online.", e_FontTypeNames.FONTTYPE_INFO)
+120                 If Not IsValidUserRef(tUser) Then
+122                     Call WriteConsoleMsg(userIndex, "El usuario no está online.", e_FontTypeNames.FONTTYPE_INFO)
                     Else
 
-124                     If EsGM(tUser) Then
-126                         Call WriteConsoleMsg(UserIndex, "No podés encarcelar a administradores.", e_FontTypeNames.FONTTYPE_INFO)
+124                     If EsGM(tUser.ArrayIndex) Then
+126                         Call WriteConsoleMsg(userIndex, "No podés encarcelar a administradores.", e_FontTypeNames.FONTTYPE_INFO)
                     
 128                     ElseIf jailTime > 240 Then
-130                         Call WriteConsoleMsg(UserIndex, "No podés encarcelar por más de 4 horas.", e_FontTypeNames.FONTTYPE_INFO)
+130                         Call WriteConsoleMsg(userIndex, "No podés encarcelar por más de 4 horas.", e_FontTypeNames.FONTTYPE_INFO)
                         Else
 
 132                         If (InStrB(username, "\") <> 0) Then
@@ -1121,22 +1103,16 @@ Public Sub HandleJail(ByVal UserIndex As Integer)
 144                                 Call SavePenaDatabase(username, .name & ": CARCEL " & jailTime & "m, MOTIVO: " & Reason & " " & Date & " " & Time)
                             End If
                         
-152                         Call Encarcelar(tUser, jailTime, .name)
+152                         Call Encarcelar(tUser.ArrayIndex, jailTime, .name)
 154                         Call LogGM(.name, " encarceló a " & username)
-
                         End If
-
                     End If
-
                 End If
             Else
-156             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
+156             Call WriteConsoleMsg(userIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
             End If
-
         End With
-        
         Exit Sub
-        
 ErrHandler:
 158     Call TraceError(Err.Number, Err.Description, "Protocol.HandleHiding", Erl)
 160
@@ -1206,11 +1182,11 @@ Public Sub HandleWarnUser(ByVal UserIndex As Integer)
                 Exit Sub
             End If
         
-            Dim tUser As Integer
+            Dim tUser As t_UserReference
 114         tUser = NameIndex(username)
         
             ' No advertir a GM's
-116         If EsGM(tUser) Then
+116         If EsGM(tUser.ArrayIndex) Then
 118             Call WriteConsoleMsg(UserIndex, "No podes advertir a Game Masters.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
@@ -1234,20 +1210,19 @@ Public Sub HandleWarnUser(ByVal UserIndex As Integer)
 144             Call LogGM(.name, " advirtio a " & username & " por " & Reason)
 
                 ' Si esta online...
-146             If tUser >= 0 Then
+146             If IsValidUserRef(tUser) Then
                     ' Actualizo el valor en la memoria.
-148                 UserList(tUser).Stats.Advertencias = UserList(tUser).Stats.Advertencias + 1
+148                 UserList(tUser.ArrayIndex).Stats.Advertencias = UserList(tUser.ArrayIndex).Stats.Advertencias + 1
                 
                     ' Para el usuario advertido
-150                 Call WriteConsoleMsg(tUser, "Has sido advertido por " & Reason, e_FontTypeNames.FONTTYPE_CENTINELA)
-152                 Call WriteConsoleMsg(tUser, "Tenés " & UserList(tUser).Stats.Advertencias & " advertencias actualmente.", e_FontTypeNames.FONTTYPE_CENTINELA)
+150                 Call WriteConsoleMsg(tUser.ArrayIndex, "Has sido advertido por " & Reason, e_FontTypeNames.FONTTYPE_CENTINELA)
+152                 Call WriteConsoleMsg(tUser.ArrayIndex, "Tenés " & UserList(tUser.ArrayIndex).Stats.Advertencias & " advertencias actualmente.", e_FontTypeNames.FONTTYPE_CENTINELA)
                     ' Cuando acumulas cierta cantidad de advertencias...
-154                 Select Case UserList(tUser).Stats.Advertencias
+154                 Select Case UserList(tUser.ArrayIndex).Stats.Advertencias
                         Case 3
-156                         Call Encarcelar(tUser, 30, "Servidor")
+156                         Call Encarcelar(tUser.ArrayIndex, 30, "Servidor")
 158                     Case 5
                             ' TODO: Banear PJ alv.
-                    
                     End Select
                 End If
             End If
@@ -1266,7 +1241,7 @@ Public Sub HandleEditChar(ByVal UserIndex As Integer)
 
 100     With UserList(UserIndex)
             Dim username      As String
-            Dim tUser         As Integer
+            Dim tUser         As t_UserReference
             Dim opcion        As Byte
             Dim Arg1          As String
             Dim Arg2          As String
@@ -1278,8 +1253,7 @@ Public Sub HandleEditChar(ByVal UserIndex As Integer)
 102         username = Replace(Reader.ReadString8(), "+", " ")
         
 104         If UCase$(username) = "YO" Then
-106             tUser = UserIndex
-            
+106             Call SetUserRef(tUser, userIndex)
             Else
 108             tUser = NameIndex(username)
             End If
@@ -1301,151 +1275,90 @@ Public Sub HandleEditChar(ByVal UserIndex As Integer)
             ' Si NO sos Dios o Admin,
 118         If (.flags.Privilegios And e_PlayerType.Admin) = 0 Then
                 ' Si te editas a vos mismo esta bien ;)
-120             If UserIndex <> tUser Then Exit Sub
+120             If userIndex <> tUser.ArrayIndex Then Exit Sub
             End If
-        
-122         Select Case opcion
+            If Not IsValidUserRef(tUser) Then
+122             Call WriteConsoleMsg(userIndex, "Usuario offline: " & username, e_FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
+124         Select Case opcion
 
                 Case e_EditOptions.eo_Gold
-124
+126
                     If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero Or e_PlayerType.SemiDios)) Then Exit Sub
 
-126                 If tUser <= 0 Then
-128                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & username, e_FontTypeNames.FONTTYPE_INFO)
-                    Else
-130                     UserList(tUser).Stats.GLD = val(Arg1)
-132                     Call WriteUpdateGold(tUser)
-                    End If
-                
+130                 UserList(tUser.ArrayIndex).Stats.GLD = val(Arg1)
+132                 Call WriteUpdateGold(tUser.ArrayIndex)
 134             Case e_EditOptions.eo_Experience
-                    
                     If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero Or e_PlayerType.SemiDios)) Then Exit Sub
-
-136                 If tUser <= 0 Then
-138                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & username, e_FontTypeNames.FONTTYPE_INFO)
+140                 If UserList(tUser.ArrayIndex).Stats.ELV < STAT_MAXELV Then
+142                     UserList(tUser.ArrayIndex).Stats.Exp = UserList(tUser.ArrayIndex).Stats.Exp + val(Arg1)
+144                     Call CheckUserLevel(tUser.ArrayIndex)
+146                     Call WriteUpdateExp(tUser.ArrayIndex)
                     Else
-140                     If UserList(tUser).Stats.ELV < STAT_MAXELV Then
-142                         UserList(tUser).Stats.Exp = UserList(tUser).Stats.Exp + val(Arg1)
-144                         Call CheckUserLevel(tUser)
-146                         Call WriteUpdateExp(tUser)
-                        Else
-148                         Call WriteConsoleMsg(UserIndex, "El usuario es nivel máximo.", e_FontTypeNames.FONTTYPE_INFO)
-                        End If
+148                     Call WriteConsoleMsg(userIndex, "El usuario es nivel máximo.", e_FontTypeNames.FONTTYPE_INFO)
                     End If
-                
 150             Case e_EditOptions.eo_Body
 
-152                 If tUser <= 0 Then
+152                 If Not IsValidUserRef(tUser) Then
 156                     Call SaveUserBodyDatabase(username, val(Arg1))
 160                     Call WriteConsoleMsg(UserIndex, "Usuario Offline Alterado: " & username, e_FontTypeNames.FONTTYPE_INFO)
                     Else
-162                     Call ChangeUserChar(tUser, val(Arg1), UserList(tUser).Char.head, UserList(tUser).Char.Heading, UserList(tUser).Char.WeaponAnim, UserList(tUser).Char.ShieldAnim, UserList(tUser).Char.CascoAnim)
+162                     Call ChangeUserChar(tUser.ArrayIndex, val(Arg1), UserList(tUser.ArrayIndex).Char.head, UserList(tUser.ArrayIndex).Char.Heading, UserList(tUser.ArrayIndex).Char.WeaponAnim, UserList(tUser.ArrayIndex).Char.ShieldAnim, UserList(tUser.ArrayIndex).Char.CascoAnim)
                     End If
                    
 164             Case e_EditOptions.eo_Arma
-                
-166                 If tUser <= 0 Then
-170                     Call WriteConsoleMsg(UserIndex, "Usuario Offline Alterado: " & username, e_FontTypeNames.FONTTYPE_INFO)
-                    Else
-172                     Call ChangeUserChar(tUser, UserList(tUser).Char.body, UserList(tUser).Char.head, UserList(tUser).Char.Heading, val(Arg1), UserList(tUser).Char.ShieldAnim, UserList(tUser).Char.CascoAnim)
-                    End If
-                       
+172                 Call ChangeUserChar(tUser.ArrayIndex, UserList(tUser.ArrayIndex).Char.body, UserList(tUser.ArrayIndex).Char.head, UserList(tUser.ArrayIndex).Char.Heading, val(Arg1), UserList(tUser.ArrayIndex).Char.ShieldAnim, UserList(tUser.ArrayIndex).Char.CascoAnim)
 174             Case e_EditOptions.eo_Escudo
-176                 If tUser <= 0 Then
-180                     Call WriteConsoleMsg(UserIndex, "Usuario Offline Alterado: " & username, e_FontTypeNames.FONTTYPE_INFO)
-                    Else
-182                     Call ChangeUserChar(tUser, UserList(tUser).Char.body, UserList(tUser).Char.head, UserList(tUser).Char.Heading, UserList(tUser).Char.WeaponAnim, val(Arg1), UserList(tUser).Char.CascoAnim)
-                    
-                    End If
-                       
+182                 Call ChangeUserChar(tUser.ArrayIndex, UserList(tUser.ArrayIndex).Char.body, UserList(tUser.ArrayIndex).Char.head, UserList(tUser.ArrayIndex).Char.Heading, UserList(tUser.ArrayIndex).Char.WeaponAnim, val(Arg1), UserList(tUser.ArrayIndex).Char.CascoAnim)
 184             Case e_EditOptions.eo_CASCO
-                
-186                 If tUser <= 0 Then
-190                     Call WriteConsoleMsg(UserIndex, "Usuario Offline Alterado: " & username, e_FontTypeNames.FONTTYPE_INFO)
-                    Else
-192                     Call ChangeUserChar(tUser, UserList(tUser).Char.body, UserList(tUser).Char.head, UserList(tUser).Char.Heading, UserList(tUser).Char.WeaponAnim, UserList(tUser).Char.ShieldAnim, val(Arg1))
-                    End If
-                       
+192                     Call ChangeUserChar(tUser.ArrayIndex, UserList(tUser.ArrayIndex).Char.body, UserList(tUser.ArrayIndex).Char.head, UserList(tUser.ArrayIndex).Char.Heading, UserList(tUser.ArrayIndex).Char.WeaponAnim, UserList(tUser.ArrayIndex).Char.ShieldAnim, val(Arg1))
 194             Case e_EditOptions.eo_Particula
-
 196                 If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero Or e_PlayerType.SemiDios)) Then Exit Sub
 198                 If Not .flags.Privilegios = Consejero Then
-200                     If tUser <= 0 Then
-204                         Call WriteConsoleMsg(UserIndex, "Usuario Offline Alterado: " & username, e_FontTypeNames.FONTTYPE_INFO)
-                        Else
-206                         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageParticleFX(.Char.charindex, val(Arg1), 9999, False))
-208                         .Char.ParticulaFx = val(Arg1)
-210                         .Char.loops = 9999
-                        End If
+206                     Call SendData(SendTarget.ToPCAliveArea, userIndex, PrepareMessageParticleFX(.Char.charindex, val(Arg1), 9999, False))
+208                     .Char.ParticulaFx = val(Arg1)
+210                     .Char.loops = 9999
                     End If
-                
 212             Case e_EditOptions.eo_Head
-
-214                 If tUser <= 0 Then
+214                 If tUser.ArrayIndex <= 0 Then
 218                     Call SaveUserHeadDatabase(username, val(Arg1))
 222                     Call WriteConsoleMsg(UserIndex, "Usuario Offline Alterado: " & username, e_FontTypeNames.FONTTYPE_INFO)
                     Else
-224                     Call ChangeUserChar(tUser, UserList(tUser).Char.body, val(Arg1), UserList(tUser).Char.Heading, UserList(tUser).Char.WeaponAnim, UserList(tUser).Char.ShieldAnim, UserList(tUser).Char.CascoAnim)
+224                     Call ChangeUserChar(tUser.ArrayIndex, UserList(tUser.ArrayIndex).Char.body, val(Arg1), UserList(tUser.ArrayIndex).Char.Heading, UserList(tUser.ArrayIndex).Char.WeaponAnim, UserList(tUser.ArrayIndex).Char.ShieldAnim, UserList(tUser.ArrayIndex).Char.CascoAnim)
                     End If
-                
 226             Case e_EditOptions.eo_CriminalsKilled
-                
 228                 If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero Or e_PlayerType.SemiDios)) Then Exit Sub
-                
-230                 If tUser <= 0 Then
-232                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & username, e_FontTypeNames.FONTTYPE_INFO)
+234                 If val(Arg1) > MAXUSERMATADOS Then
+236                     UserList(tUser.ArrayIndex).Faccion.CriminalesMatados = MAXUSERMATADOS
                     Else
-234                     If val(Arg1) > MAXUSERMATADOS Then
-236                         UserList(tUser).Faccion.CriminalesMatados = MAXUSERMATADOS
-                        Else
-238                         UserList(tUser).Faccion.CriminalesMatados = val(Arg1)
-                        End If
+238                     UserList(tUser.ArrayIndex).Faccion.CriminalesMatados = val(Arg1)
                     End If
-                
 240             Case e_EditOptions.eo_CiticensKilled
-
 242                 If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero Or e_PlayerType.SemiDios)) Then Exit Sub
-                
-244                 If tUser <= 0 Then
-246                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & username, e_FontTypeNames.FONTTYPE_INFO)
+248                 If val(Arg1) > MAXUSERMATADOS Then
+250                     UserList(tUser.ArrayIndex).Faccion.ciudadanosMatados = MAXUSERMATADOS
                     Else
-248                     If val(Arg1) > MAXUSERMATADOS Then
-250                         UserList(tUser).Faccion.ciudadanosMatados = MAXUSERMATADOS
-                        Else
-252                         UserList(tUser).Faccion.ciudadanosMatados = val(Arg1)
-                        End If
+252                     UserList(tUser.ArrayIndex).Faccion.ciudadanosMatados = val(Arg1)
                     End If
-                
 254             Case e_EditOptions.eo_Level
-                    
                     If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero)) Then Exit Sub
-
-256                 If tUser <= 0 Then
-258                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & username, e_FontTypeNames.FONTTYPE_INFO)
-                    Else
-
-260                     If val(Arg1) > STAT_MAXELV Then
-262                         Arg1 = CStr(STAT_MAXELV)
-264                         Call WriteConsoleMsg(UserIndex, "No podés tener un nivel superior a " & STAT_MAXELV & ".", FONTTYPE_INFO)
-                        End If
-266                     UserList(tUser).Stats.ELV = val(Arg1)
+260                 If val(Arg1) > STAT_MAXELV Then
+262                     Arg1 = CStr(STAT_MAXELV)
+264                     Call WriteConsoleMsg(userIndex, "No podés tener un nivel superior a " & STAT_MAXELV & ".", FONTTYPE_INFO)
                     End If
+266                     UserList(tUser.ArrayIndex).Stats.ELV = val(Arg1)
 268                 Call WriteUpdateUserStats(UserIndex)
                 
 270             Case e_EditOptions.eo_Class
-
-272                 If tUser <= 0 Then
-274                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & username, e_FontTypeNames.FONTTYPE_INFO)
-                    Else
-276                     For LoopC = 1 To NUMCLASES
-278                         If Tilde(ListaClases(LoopC)) = Tilde(Arg1) Then Exit For
-280                     Next LoopC
+276                 For LoopC = 1 To NUMCLASES
+278                     If Tilde(ListaClases(LoopC)) = Tilde(Arg1) Then Exit For
+280                 Next LoopC
                         
-282                     If LoopC > NUMCLASES Then
-284                         Call WriteConsoleMsg(UserIndex, "Clase desconocida. Intente nuevamente.", e_FontTypeNames.FONTTYPE_INFO)
-                        Else
-286                         UserList(tUser).clase = LoopC
-                        End If
+282                 If LoopC > NUMCLASES Then
+284                     Call WriteConsoleMsg(userIndex, "Clase desconocida. Intente nuevamente.", e_FontTypeNames.FONTTYPE_INFO)
+                    Else
+286                     UserList(tUser.ArrayIndex).clase = LoopC
                     End If
                 
 288             Case e_EditOptions.eo_Skills
@@ -1459,244 +1372,202 @@ Public Sub HandleEditChar(ByVal UserIndex As Integer)
 296                 If LoopC > NUMSKILLS Then
 298                     Call WriteConsoleMsg(UserIndex, "Skill Inexistente!", e_FontTypeNames.FONTTYPE_INFO)
                     Else
-300                     If tUser <= 0 Then
+300                     If Not IsValidUserRef(tUser) Then
 304                         Call SaveUserSkillDatabase(username, LoopC, val(Arg2))
 308                         Call WriteConsoleMsg(UserIndex, "Usuario Offline Alterado: " & username, e_FontTypeNames.FONTTYPE_INFO)
                         Else
-310                         UserList(tUser).Stats.UserSkills(LoopC) = val(Arg2)
+310                         UserList(tUser.ArrayIndex).Stats.UserSkills(LoopC) = val(Arg2)
                         End If
                     End If
                 
 312             Case e_EditOptions.eo_SkillPointsLeft
 314                 If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero)) Then Exit Sub
-316                 If tUser <= 0 Then
+316                 If Not IsValidUserRef(tUser) Then
 320                     Call SaveUserSkillsLibres(username, val(Arg1))
 324                     Call WriteConsoleMsg(UserIndex, "Usuario Offline Alterado: " & username, e_FontTypeNames.FONTTYPE_INFO)
                     Else
-326                     UserList(tUser).Stats.SkillPts = val(Arg1)
+326                     UserList(tUser.ArrayIndex).Stats.SkillPts = val(Arg1)
                     End If
                 
 328             Case e_EditOptions.eo_Sex
 
-330                 If tUser <= 0 Then
+330                 If Not IsValidUserRef(tUser) Then
 332                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & username, e_FontTypeNames.FONTTYPE_INFO)
                     Else
 334                     Arg1 = UCase$(Arg1)
 336                     If (Arg1 = "MUJER") Then
-338                         UserList(tUser).genero = e_Genero.Mujer
+338                         UserList(tUser.ArrayIndex).genero = e_Genero.Mujer
 340                     ElseIf (Arg1 = "HOMBRE") Then
-342                         UserList(tUser).genero = e_Genero.Hombre
+342                         UserList(tUser.ArrayIndex).genero = e_Genero.Hombre
                         End If
                     End If
                 
 344             Case e_EditOptions.eo_Raza
-346                 If tUser <= 0 Then
+346                 If Not IsValidUserRef(tUser) Then
 348                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & username, e_FontTypeNames.FONTTYPE_INFO)
                     Else
 350                     Arg1 = UCase$(Arg1)
 352                     If (Arg1 = "HUMANO") Then
-354                         UserList(tUser).raza = e_Raza.Humano
+354                         UserList(tUser.ArrayIndex).raza = e_Raza.Humano
 356                     ElseIf (Arg1 = "ELFO") Then
-358                         UserList(tUser).raza = e_Raza.Elfo
+358                         UserList(tUser.ArrayIndex).raza = e_Raza.Elfo
 360                     ElseIf (Arg1 = "DROW") Then
-362                         UserList(tUser).raza = e_Raza.Drow
+362                         UserList(tUser.ArrayIndex).raza = e_Raza.Drow
 364                     ElseIf (Arg1 = "ENANO") Then
-366                         UserList(tUser).raza = e_Raza.Enano
+366                         UserList(tUser.ArrayIndex).raza = e_Raza.Enano
 368                     ElseIf (Arg1 = "GNOMO") Then
-370                         UserList(tUser).raza = e_Raza.Gnomo
+370                         UserList(tUser.ArrayIndex).raza = e_Raza.Gnomo
 372                     ElseIf (Arg1 = "ORCO") Then
-374                         UserList(tUser).raza = e_Raza.Orco
+374                         UserList(tUser.ArrayIndex).raza = e_Raza.Orco
                         End If
                     End If
-                    
 376             Case e_EditOptions.eo_Vida
                     If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero Or e_PlayerType.SemiDios)) Then Exit Sub
-378                 If tUser <= 0 Then
+378                 If Not IsValidUserRef(tUser) Then
 380                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & username, e_FontTypeNames.FONTTYPE_INFO)
                     Else
 382                     tmpLong = val(Arg1)
 384                     If tmpLong > 0 Then
-386                         UserList(tUser).Stats.MaxHp = Min(tmpLong, STAT_MAXHP)
-388                         UserList(tUser).Stats.MinHp = UserList(tUser).Stats.MaxHp
-390                         Call WriteUpdateUserStats(tUser)
+386                         UserList(tUser.ArrayIndex).Stats.MaxHp = Min(tmpLong, STAT_MAXHP)
+388                         UserList(tUser.ArrayIndex).Stats.MinHp = UserList(tUser.ArrayIndex).Stats.MaxHp
+390                         Call WriteUpdateUserStats(tUser.ArrayIndex)
                         End If
                     End If
                     
 392             Case e_EditOptions.eo_Mana
                     If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero Or e_PlayerType.SemiDios)) Then Exit Sub
-394                 If tUser <= 0 Then
-396                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & username, e_FontTypeNames.FONTTYPE_INFO)
-                    Else
 398                     tmpLong = val(Arg1)
 400                     If tmpLong > 0 Then
-402                         UserList(tUser).Stats.MaxMAN = Min(tmpLong, STAT_MAXMP)
-404                         UserList(tUser).Stats.MinMAN = UserList(tUser).Stats.MaxMAN
-406                         Call WriteUpdateUserStats(tUser)
+402                         UserList(tUser.ArrayIndex).Stats.MaxMAN = Min(tmpLong, STAT_MAXMP)
+404                         UserList(tUser.ArrayIndex).Stats.MinMAN = UserList(tUser.ArrayIndex).Stats.MaxMAN
+406                         Call WriteUpdateUserStats(tUser.ArrayIndex)
                         End If
-                    End If
                     
 408             Case e_EditOptions.eo_Energia
                     If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero Or e_PlayerType.SemiDios)) Then Exit Sub
-410                 If tUser <= 0 Then
-412                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & username, e_FontTypeNames.FONTTYPE_INFO)
-                    Else
 414                     tmpLong = val(Arg1)
-416                     If tmpLong > 0 Then
-418                         UserList(tUser).Stats.MaxSta = Min(tmpLong, STAT_MAXSTA)
-420                         UserList(tUser).Stats.MinSta = UserList(tUser).Stats.MaxSta
-422                         Call WriteUpdateUserStats(tUser)
-                        End If
+416                 If tmpLong > 0 Then
+418                     UserList(tUser.ArrayIndex).Stats.MaxSta = Min(tmpLong, STAT_MAXSTA)
+420                     UserList(tUser.ArrayIndex).Stats.MinSta = UserList(tUser.ArrayIndex).Stats.MaxSta
+422                     Call WriteUpdateUserStats(tUser.ArrayIndex)
                     End If
                         
 424             Case e_EditOptions.eo_MinHP
                     If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero Or e_PlayerType.SemiDios)) Then Exit Sub
-426                 If tUser <= 0 Then
-428                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & username, e_FontTypeNames.FONTTYPE_INFO)
-                    Else
 430                     tmpLong = val(Arg1)
-432                     If tmpLong >= 0 Then
-434                         UserList(tUser).Stats.MinHp = Min(tmpLong, STAT_MAXHP)
-436                         Call WriteUpdateHP(tUser)
-                        End If
+432                 If tmpLong >= 0 Then
+434                     UserList(tUser.ArrayIndex).Stats.MinHp = Min(tmpLong, STAT_MAXHP)
+436                     Call WriteUpdateHP(tUser.ArrayIndex)
                     End If
                     
 438             Case e_EditOptions.eo_MinMP
-                    
                     If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero Or e_PlayerType.SemiDios)) Then Exit Sub
-                    
-440                 If tUser <= 0 Then
-442                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & username, e_FontTypeNames.FONTTYPE_INFO)
-                    Else
 444                     tmpLong = val(Arg1)
-446                     If tmpLong >= 0 Then
-448                         UserList(tUser).Stats.MinMAN = Min(tmpLong, STAT_MAXMP)
-450                         Call WriteUpdateMana(tUser)
-                        End If
+446                 If tmpLong >= 0 Then
+448                     UserList(tUser.ArrayIndex).Stats.MinMAN = Min(tmpLong, STAT_MAXMP)
+450                     Call WriteUpdateMana(tUser.ArrayIndex)
                     End If
                     
 452             Case e_EditOptions.eo_Hit
                     If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero Or e_PlayerType.SemiDios)) Then Exit Sub
-454                 If tUser <= 0 Then
-456                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & username, e_FontTypeNames.FONTTYPE_INFO)
-                    Else
 458                     tmpLong = val(Arg1)
-460                     If tmpLong >= 0 Then
-462                         UserList(tUser).Stats.MaxHit = Min(tmpLong, STAT_MAXHIT)
-464                         UserList(tUser).Stats.MinHIT = UserList(tUser).Stats.MaxHit
-                        End If
+460                 If tmpLong >= 0 Then
+462                     UserList(tUser.ArrayIndex).Stats.MaxHit = Min(tmpLong, STAT_MAXHIT)
+464                     UserList(tUser.ArrayIndex).Stats.MinHIT = UserList(tUser.ArrayIndex).Stats.MaxHit
                     End If
-                    
+
 466             Case e_EditOptions.eo_MinHit
 468                 If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero Or e_PlayerType.SemiDios)) Then Exit Sub
-                    If tUser <= 0 Then
-470                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & username, e_FontTypeNames.FONTTYPE_INFO)
-                    Else
-472                     tmpLong = val(Arg1)
-474                     If tmpLong >= 0 Then
-476                         UserList(tUser).Stats.MinHIT = Min(tmpLong, STAT_MAXHIT)
-                        End If
+472                 tmpLong = val(Arg1)
+474                 If tmpLong >= 0 Then
+476                     UserList(tUser.ArrayIndex).Stats.MinHIT = Min(tmpLong, STAT_MAXHIT)
                     End If
                     
 478             Case e_EditOptions.eo_MaxHit
                     If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero Or e_PlayerType.SemiDios)) Then Exit Sub
-480                 If tUser <= 0 Then
-482                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & username, e_FontTypeNames.FONTTYPE_INFO)
-                    Else
-484                     tmpLong = val(Arg1)
-486                     If tmpLong >= 0 Then
-488                         UserList(tUser).Stats.MaxHit = Min(tmpLong, STAT_MAXHIT)
-                        End If
+484                 tmpLong = val(Arg1)
+486                 If tmpLong >= 0 Then
+488                     UserList(tUser.ArrayIndex).Stats.MaxHit = Min(tmpLong, STAT_MAXHIT)
                     End If
                     
 490             Case e_EditOptions.eo_Desc
-492                 If tUser <= 0 Then
-494                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & username, e_FontTypeNames.FONTTYPE_INFO)
-496                 ElseIf DescripcionValida(Arg1) Then
-498                     UserList(tUser).Desc = Arg1
+                    If DescripcionValida(Arg1) Then
+498                     UserList(tUser.ArrayIndex).Desc = Arg1
                     Else
-500                     Call WriteConsoleMsg(UserIndex, "Caracteres inválidos en la descripción.", e_FontTypeNames.FONTTYPE_INFO)
+500                     Call WriteConsoleMsg(userIndex, "Caracteres inválidos en la descripción.", e_FontTypeNames.FONTTYPE_INFO)
                     End If
                     
 502             Case e_EditOptions.eo_Intervalo
 504                 If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero Or e_PlayerType.SemiDios)) Then Exit Sub
-506                 If tUser <= 0 Then
-508                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & username, e_FontTypeNames.FONTTYPE_INFO)
-                    Else
 510                     Arg1 = UCase$(Arg1)
 512                     tmpLong = val(Arg2)
 514                     If tmpLong >= 0 Then
 516                         Select Case Arg1
+                            Case "USAR"
+518                             UserList(tUser.ArrayIndex).Intervals.UsarClic = tmpLong
+520                             UserList(tUser.ArrayIndex).Intervals.UsarU = tmpLong
+                                    
+522                         Case "USAR_U", "USAR+U", "USAR-U"
+524                             UserList(tUser.ArrayIndex).Intervals.UsarU = tmpLong
+                                    
+526                         Case "USAR_CLIC", "USAR+CLIC", "USAR-CLIC", "USAR_CLICK", "USAR+CLICK", "USAR-CLICK"
+528                             UserList(tUser.ArrayIndex).Intervals.UsarClic = tmpLong
+                                    
+530                         Case "ARCO", "PROYECTILES"
+532                             UserList(tUser.ArrayIndex).Intervals.Arco = tmpLong
+                                
+534                         Case "GOLPE", "GOLPES", "GOLPEAR"
+536                             UserList(tUser.ArrayIndex).Intervals.Golpe = tmpLong
+                                    
+538                         Case "MAGIA", "HECHIZO", "HECHIZOS", "LANZAR"
+540                             UserList(tUser.ArrayIndex).Intervals.Magia = tmpLong
 
-                                Case "USAR"
-518                                 UserList(tUser).Intervals.UsarClic = tmpLong
-520                                 UserList(tUser).Intervals.UsarU = tmpLong
-                                    
-522                             Case "USAR_U", "USAR+U", "USAR-U"
-524                                 UserList(tUser).Intervals.UsarU = tmpLong
-                                    
-526                             Case "USAR_CLIC", "USAR+CLIC", "USAR-CLIC", "USAR_CLICK", "USAR+CLICK", "USAR-CLICK"
-528                                 UserList(tUser).Intervals.UsarClic = tmpLong
-                                    
-530                             Case "ARCO", "PROYECTILES"
-532                                 UserList(tUser).Intervals.Arco = tmpLong
-                                    
-534                             Case "GOLPE", "GOLPES", "GOLPEAR"
-536                                 UserList(tUser).Intervals.Golpe = tmpLong
-                                    
-538                             Case "MAGIA", "HECHIZO", "HECHIZOS", "LANZAR"
-540                                 UserList(tUser).Intervals.Magia = tmpLong
+542                         Case "COMBO"
+544                             UserList(tUser.ArrayIndex).Intervals.GolpeMagia = tmpLong
+546                             UserList(tUser.ArrayIndex).Intervals.MagiaGolpe = tmpLong
 
-542                             Case "COMBO"
-544                                 UserList(tUser).Intervals.GolpeMagia = tmpLong
-546                                 UserList(tUser).Intervals.MagiaGolpe = tmpLong
+548                         Case "GOLPE-MAGIA", "GOLPE-HECHIZO"
+550                             UserList(tUser.ArrayIndex).Intervals.GolpeMagia = tmpLong
 
-548                             Case "GOLPE-MAGIA", "GOLPE-HECHIZO"
-550                                 UserList(tUser).Intervals.GolpeMagia = tmpLong
-
-552                             Case "MAGIA-GOLPE", "HECHIZO-GOLPE"
-554                                 UserList(tUser).Intervals.MagiaGolpe = tmpLong
+552                         Case "MAGIA-GOLPE", "HECHIZO-GOLPE"
+554                             UserList(tUser.ArrayIndex).Intervals.MagiaGolpe = tmpLong
+                                
+556                         Case "GOLPE-USAR"
+558                             UserList(tUser.ArrayIndex).Intervals.GolpeUsar = tmpLong
                                     
-556                             Case "GOLPE-USAR"
-558                                 UserList(tUser).Intervals.GolpeUsar = tmpLong
-                                    
-560                             Case "TRABAJAR", "WORK", "TRABAJO"
-562                                 UserList(tUser).Intervals.TrabajarConstruir = tmpLong
-564                                 UserList(tUser).Intervals.TrabajarExtraer = tmpLong
-                                    
-566                             Case "TRABAJAR_EXTRAER", "EXTRAER", "TRABAJO_EXTRAER"
-568                                 UserList(tUser).Intervals.TrabajarExtraer = tmpLong
-                                    
-570                             Case "TRABAJAR_CONSTRUIR", "CONSTRUIR", "TRABAJO_CONSTRUIR"
-572                                 UserList(tUser).Intervals.TrabajarConstruir = tmpLong
-                                    
-574                             Case Else
-                                    Exit Sub
-                            End Select
-576                         Call WriteIntervals(tUser)
-                        End If
+560                         Case "TRABAJAR", "WORK", "TRABAJO"
+562                             UserList(tUser.ArrayIndex).Intervals.TrabajarConstruir = tmpLong
+564                             UserList(tUser.ArrayIndex).Intervals.TrabajarExtraer = tmpLong
+                                
+566                         Case "TRABAJAR_EXTRAER", "EXTRAER", "TRABAJO_EXTRAER"
+568                             UserList(tUser.ArrayIndex).Intervals.TrabajarExtraer = tmpLong
+                                
+570                         Case "TRABAJAR_CONSTRUIR", "CONSTRUIR", "TRABAJO_CONSTRUIR"
+572                             UserList(tUser.ArrayIndex).Intervals.TrabajarConstruir = tmpLong
+                                
+574                         Case Else
+                                Exit Sub
+                        End Select
+576                     Call WriteIntervals(tUser.ArrayIndex)
                     End If
                     
 578             Case e_EditOptions.eo_Hogar
-580                 If tUser <= 0 Then
-582                     Call WriteConsoleMsg(UserIndex, "Usuario offline: " & username, e_FontTypeNames.FONTTYPE_INFO)
-                    Else
-584                     Arg1 = UCase$(Arg1)
-586                     Select Case Arg1
-                            Case "NIX"
-588                             UserList(tUser).Hogar = e_Ciudad.cNix
-590                         Case "ULLA", "ULLATHORPE"
-592                             UserList(tUser).Hogar = e_Ciudad.cUllathorpe
-594                         Case "BANDER", "BANDERBILL"
-596                             UserList(tUser).Hogar = e_Ciudad.cBanderbill
-598                         Case "LINDOS"
-600                             UserList(tUser).Hogar = e_Ciudad.cLindos
-602                         Case "ARGHAL"
-604                             UserList(tUser).Hogar = e_Ciudad.cArghal
-606                         Case "ARKHEIN"
-608                             UserList(tUser).Hogar = e_Ciudad.cArkhein
-                        End Select
-                    End If
-                
+584                 Arg1 = UCase$(Arg1)
+586                 Select Case Arg1
+                        Case "NIX"
+588                         UserList(tUser.ArrayIndex).Hogar = e_Ciudad.cNix
+590                     Case "ULLA", "ULLATHORPE"
+592                         UserList(tUser.ArrayIndex).Hogar = e_Ciudad.cUllathorpe
+594                     Case "BANDER", "BANDERBILL"
+596                         UserList(tUser.ArrayIndex).Hogar = e_Ciudad.cBanderbill
+598                     Case "LINDOS"
+600                           UserList(tUser.ArrayIndex).Hogar = e_Ciudad.cLindos
+602                     Case "ARGHAL"
+604                         UserList(tUser.ArrayIndex).Hogar = e_Ciudad.cArghal
+606                     Case "ARKHEIN"
+608                         UserList(tUser.ArrayIndex).Hogar = e_Ciudad.cArkhein
+                    End Select
+
 610             Case Else
 612                 Call WriteConsoleMsg(UserIndex, "Comando no permitido.", e_FontTypeNames.FONTTYPE_INFO)
             End Select
@@ -1807,21 +1678,21 @@ Public Sub HandleRequestCharInfo(ByVal UserIndex As Integer)
 
 100     With UserList(UserIndex)
             Dim targetName  As String
-            Dim TargetIndex As Integer
+            Dim tUser As t_UserReference
         
 102         targetName = Replace$(Reader.ReadString8(), "+", " ")
-104         TargetIndex = NameIndex(targetName)
+104         tUser = NameIndex(targetName)
         
 106         If .flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios) Then
                 'is the player offline?
-108             If TargetIndex > 0 Then
+108             If IsValidUserRef(tUser) Then
                     'don't allow to retrieve administrator's info
-116                 If UserList(TargetIndex).flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero Or e_PlayerType.SemiDios) Then
-118                     Call SendUserStatsTxt(UserIndex, TargetIndex)
+116                 If UserList(tUser.ArrayIndex).flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero Or e_PlayerType.SemiDios) Then
+118                     Call SendUserStatsTxt(userIndex, tUser.ArrayIndex)
                     End If
                 End If
             Else
-120             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
+120             Call WriteConsoleMsg(userIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
             End If
         End With
         Exit Sub
@@ -1836,17 +1707,17 @@ Public Sub HandleRequestCharStats(ByVal UserIndex As Integer)
 
 100     With UserList(UserIndex)
             Dim username As String
-            Dim tUser    As Integer
+            Dim tUser    As t_UserReference
 
 102         username = Reader.ReadString8()
 104         If (Not .flags.Privilegios And e_PlayerType.RoleMaster) <> 0 And (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios)) <> 0 Then
 106             Call LogGM(.name, "/STAT " & username)
 108             tUser = NameIndex(username)
-110             If tUser > 0 Then
-116                 Call SendUserMiniStatsTxt(UserIndex, tUser)
+110             If IsValidUserRef(tUser) Then
+116                 Call SendUserMiniStatsTxt(userIndex, tUser.ArrayIndex)
                 End If
             Else
-118             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
+118             Call WriteConsoleMsg(userIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
             End If
         End With
         Exit Sub
@@ -1863,7 +1734,7 @@ Public Sub HandleRequestCharGold(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
         
             Dim username As String
-            Dim tUser    As Integer
+            Dim tUser    As t_UserReference
         
 102         username = Reader.ReadString8()
 104         tUser = NameIndex(username)
@@ -1871,11 +1742,11 @@ Public Sub HandleRequestCharGold(ByVal UserIndex As Integer)
 106         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios)) Then
 108             Call LogGM(.name, "/BAL " & username)
             
-110             If tUser > 0 Then
-116                 Call WriteConsoleMsg(UserIndex, "El usuario " & username & " tiene " & UserList(tUser).Stats.Banco & " en el banco", e_FontTypeNames.FONTTYPE_TALK)
+110             If IsValidUserRef(tUser) Then
+116                 Call WriteConsoleMsg(userIndex, "El usuario " & username & " tiene " & UserList(tUser.ArrayIndex).Stats.Banco & " en el banco", e_FontTypeNames.FONTTYPE_TALK)
                 End If
             Else
-118             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
+118             Call WriteConsoleMsg(userIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
             End If
         End With
         Exit Sub
@@ -1892,14 +1763,14 @@ Public Sub HandleRequestCharInventory(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
         
             Dim username As String
-            Dim tUser    As Integer
+            Dim tUser    As t_UserReference
 102         username = Reader.ReadString8()
 104         tUser = NameIndex(username)
         
 106         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios)) Then
 108             Call LogGM(.name, "/INV " & username)
-110             If tUser > 0 Then
-116                 Call SendUserInvTxt(UserIndex, tUser)
+110             If IsValidUserRef(tUser) Then
+116                 Call SendUserInvTxt(userIndex, tUser.ArrayIndex)
                 End If
             Else
 118             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
@@ -1918,19 +1789,19 @@ Public Sub HandleRequestCharBank(ByVal UserIndex As Integer)
 
 100     With UserList(UserIndex)
             Dim username As String
-            Dim tUser    As Integer
+            Dim tUser    As t_UserReference
 102         username = Reader.ReadString8()
 104         tUser = NameIndex(username)
         
 106         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios)) Then
 108             Call LogGM(.name, "/BOV " & username)
-110             If tUser <= 0 Then
+110             If Not IsValidUserRef(tUser) Then
 112                 Call WriteConsoleMsg(UserIndex, "Usuario offline.", e_FontTypeNames.FONTTYPE_TALK)
                 Else
-116                 Call SendUserBovedaTxt(UserIndex, tUser)
+116                 Call SendUserBovedaTxt(userIndex, tUser.ArrayIndex)
                 End If
             Else
-118             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
+118             Call WriteConsoleMsg(userIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
 
             End If
         End With
@@ -1946,7 +1817,7 @@ Public Sub HandleRequestCharSkills(ByVal UserIndex As Integer)
 
 100     With UserList(UserIndex)
             Dim username As String
-            Dim tUser    As Integer
+            Dim tUser    As t_UserReference
             Dim LoopC    As Long
             Dim Message  As String
         
@@ -1956,7 +1827,7 @@ Public Sub HandleRequestCharSkills(ByVal UserIndex As Integer)
 106         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios)) Then
 108             Call LogGM(.name, "/STATS " & username)
             
-110             If tUser <= 0 Then
+110             If Not IsValidUserRef(tUser) Then
 112                 If (InStrB(username, "\") <> 0) Then
 114                     username = Replace(username, "\", "")
                     End If
@@ -1965,10 +1836,10 @@ Public Sub HandleRequestCharSkills(ByVal UserIndex As Integer)
 118                     username = Replace(username, "/", "")
                     End If
                 Else
-128                 Call SendUserSkillsTxt(UserIndex, tUser)
+128                 Call SendUserSkillsTxt(userIndex, tUser.ArrayIndex)
                 End If
             Else
-130             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
+130             Call WriteConsoleMsg(userIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
             End If
         End With
         Exit Sub
@@ -1982,7 +1853,7 @@ Public Sub HandleReviveChar(ByVal UserIndex As Integer)
 
 100     With UserList(UserIndex)
             Dim username As String
-            Dim tUser    As Integer
+            Dim tUser    As t_UserReference
             Dim LoopC    As Byte
         
 102         username = Reader.ReadString8()
@@ -1990,25 +1861,25 @@ Public Sub HandleReviveChar(ByVal UserIndex As Integer)
 106             If UCase$(username) <> "YO" Then
 108                 tUser = NameIndex(username)
                 Else
-110                 tUser = UserIndex
+110                 Call SetUserRef(tUser, userIndex)
                 End If
             
-112             If tUser <= 0 Then
+112             If Not IsValidUserRef(tUser) Then
 114                 Call WriteConsoleMsg(UserIndex, "Usuario offline.", e_FontTypeNames.FONTTYPE_INFO)
                 Else
-116                 With UserList(tUser)
+116                 With UserList(tUser.ArrayIndex)
 118                     If .flags.Muerto = 1 Then
                             If UserList(UserIndex).flags.Privilegios And e_PlayerType.SemiDios Then
                                 If MapInfo(.Pos.map).Seguro = 0 Or EsMapaEvento(.Pos.map) = False Then
-                                     Call WriteConsoleMsg(UserIndex, "Servidor » No puedes revivir en una zona insegura.", e_FontTypeNames.FONTTYPE_INFO)
+                                     Call WriteConsoleMsg(userIndex, "Servidor » No puedes revivir en una zona insegura.", e_FontTypeNames.FONTTYPE_INFO)
                                      Exit Sub
                                 End If
                             End If
 120                         .flags.Muerto = 0
-122                         Call RevivirUsuario(tUser)
-124                         Call WriteConsoleMsg(tUser, UserList(UserIndex).name & " te ha resucitado.", e_FontTypeNames.FONTTYPE_INFO)
+122                         Call RevivirUsuario(tUser.ArrayIndex)
+124                         Call WriteConsoleMsg(tUser.ArrayIndex, UserList(userIndex).name & " te ha resucitado.", e_FontTypeNames.FONTTYPE_INFO)
                         Else
-126                         Call WriteConsoleMsg(tUser, UserList(UserIndex).name & " te ha curado.", e_FontTypeNames.FONTTYPE_INFO)
+126                         Call WriteConsoleMsg(tUser.ArrayIndex, UserList(userIndex).name & " te ha curado.", e_FontTypeNames.FONTTYPE_INFO)
                         End If
                     
 128                     .Stats.MinHp = .Stats.MaxHp
@@ -2016,14 +1887,14 @@ Public Sub HandleReviveChar(ByVal UserIndex As Integer)
                         .Stats.MinSta = .Stats.MaxSta
                     End With
                 
-130                 Call WriteUpdateHP(tUser)
-131                 Call WriteUpdateMana(tUser)
-133                 Call WriteUpdateSta(tUser)
-132                 Call ActualizarVelocidadDeUsuario(tUser)
+130                 Call WriteUpdateHP(tUser.ArrayIndex)
+131                 Call WriteUpdateMana(tUser.ArrayIndex)
+133                 Call WriteUpdateSta(tUser.ArrayIndex)
+132                 Call ActualizarVelocidadDeUsuario(tUser.ArrayIndex)
 134                 Call LogGM(.name, "Resucito a " & username)
                 End If
             Else
-136             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
+136             Call WriteConsoleMsg(userIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
             End If
         End With
         Exit Sub
@@ -2040,7 +1911,7 @@ Public Sub HandleOnlineGM(ByVal UserIndex As Integer)
     
 100     With UserList(UserIndex)
 102         If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero)) Then
-104             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
+104             Call WriteConsoleMsg(userIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
 106         priv = e_PlayerType.Consejero Or e_PlayerType.SemiDios
@@ -2070,7 +1941,7 @@ Public Sub HandleOnlineMap(ByVal UserIndex As Integer)
         'Author: Nicolas Matias Gonzalez (NIGO)
 100     With UserList(UserIndex)
 102         If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero)) Then
-104             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
+104             Call WriteConsoleMsg(userIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
 
@@ -2102,7 +1973,7 @@ Public Sub HandleForgive(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
             'Se asegura que el target es un npc
 102         If .flags.TargetNPC = 0 Then
-104             Call WriteConsoleMsg(UserIndex, "Primero tenés que seleccionar al sacerdote.", e_FontTypeNames.FONTTYPE_INFO)
+104             Call WriteConsoleMsg(userIndex, "Primero tenés que seleccionar al sacerdote.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
 
@@ -2115,7 +1986,7 @@ Public Sub HandleForgive(ByVal UserIndex As Integer)
             'Make sure it's close enough
 110         If Distancia(.Pos, priest.Pos) > 3 Then
                 'Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
-112             Call WriteConsoleMsg(UserIndex, "El sacerdote no puede escuchar tus pecados debido a que estás demasiado lejos.", e_FontTypeNames.FONTTYPE_INFO)
+112             Call WriteConsoleMsg(userIndex, "El sacerdote no puede escuchar tus pecados debido a que estás demasiado lejos.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
         
@@ -2140,7 +2011,7 @@ Public Sub HandleForgive(ByVal UserIndex As Integer)
 128         If .Faccion.ciudadanosMatados > 0 Then
                 Dim Donacion As Long
 130             Donacion = .Faccion.ciudadanosMatados * OroMult * CostoPerdonPorCiudadano
-132             Call WriteChatOverHead(UserIndex, "Has matado a ciudadanos inocentes, Dios no puede perdonarte lo que has hecho. " & "Pero si haces una generosa donación de, digamos, " & PonerPuntos(Donacion) & " monedas de oro, tal vez cambie de opinión...", priest.Char.charindex, vbWhite)
+132             Call WriteChatOverHead(userIndex, "Has matado a ciudadanos inocentes, Dios no puede perdonarte lo que has hecho. " & "Pero si haces una generosa donación de, digamos, " & PonerPuntos(Donacion) & " monedas de oro, tal vez cambie de opinión...", priest.Char.charindex, vbWhite)
                 Exit Sub
             Else
                 Call WriteChatOverHead(UserIndex, "Para volver a ser un ciudadano deberás donar 10.000 monedas de oro.", priest.Char.charindex, vbWhite)
@@ -2177,7 +2048,7 @@ Public Sub HandleKick(ByVal UserIndex As Integer)
 
 100     With UserList(UserIndex)
             Dim username As String
-            Dim tUser    As Integer
+            Dim tUser    As t_UserReference
             Dim rank     As Integer
         
 102         rank = e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios Or e_PlayerType.Consejero
@@ -2185,14 +2056,14 @@ Public Sub HandleKick(ByVal UserIndex As Integer)
         
 106         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios)) Then
 108             tUser = NameIndex(username)
-110             If tUser <= 0 Then
+110             If Not IsValidUserRef(tUser) Then
 112                 Call WriteConsoleMsg(UserIndex, "El usuario no esta online.", e_FontTypeNames.FONTTYPE_INFO)
                 Else
-114                 If (UserList(tUser).flags.Privilegios And rank) > (.flags.Privilegios And rank) Then
+114                 If (UserList(tUser.ArrayIndex).flags.Privilegios And rank) > (.flags.Privilegios And rank) Then
 116                     Call WriteConsoleMsg(UserIndex, "No podes echar a alguien con jerarquia mayor a la tuya.", e_FontTypeNames.FONTTYPE_INFO)
                     Else
 118                     Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(.name & " echo a " & username & ".", e_FontTypeNames.FONTTYPE_INFO))
-120                     Call CloseSocket(tUser)
+120                     Call CloseSocket(tUser.ArrayIndex)
 122                     Call LogGM(.name, "Echo a " & username)
                     End If
                 End If
@@ -2212,19 +2083,19 @@ Public Sub HandleExecute(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             Dim username As String
-            Dim tUser    As Integer
+            Dim tUser    As t_UserReference
 102         username = Reader.ReadString8()
 104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios)) Then
 106             tUser = NameIndex(username)
-108             If tUser > 0 Then
-110                 Call UserDie(tUser)
-112                 Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(.name & " ha ejecutado a " & UserList(tUser).name, e_FontTypeNames.FONTTYPE_EJECUCION))
+108             If IsValidUserRef(tUser) Then
+110                 Call UserDie(tUser.ArrayIndex)
+112                 Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(.name & " ha ejecutado a " & UserList(tUser.ArrayIndex).name, e_FontTypeNames.FONTTYPE_EJECUCION))
 114                 Call LogGM(.name, " ejecuto a " & username)
                 Else
-116                 Call WriteConsoleMsg(UserIndex, "No está online", e_FontTypeNames.FONTTYPE_INFO)
+116                 Call WriteConsoleMsg(userIndex, "No está online", e_FontTypeNames.FONTTYPE_INFO)
                 End If
             Else
-118             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
+118             Call WriteConsoleMsg(userIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
             End If
         End With
         Exit Sub
@@ -2308,17 +2179,17 @@ Public Sub HandleSummonChar(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
 100 With UserList(UserIndex)
         Dim username As String
-        Dim tUser    As Integer
+        Dim tUser    As t_UserReference
         
 102     username = Reader.ReadString8()
 104     If .flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios) Then
 106         If LenB(username) <> 0 Then
 108             tUser = NameIndex(username)
-110             If tUser <= 0 Then
-112                 Call WriteConsoleMsg(UserIndex, "El jugador no está online.", e_FontTypeNames.FONTTYPE_INFO)
+110             If Not IsValidUserRef(tUser) Then
+112                 Call WriteConsoleMsg(userIndex, "El jugador no está online.", e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
-114         ElseIf .flags.TargetUser > 0 Then
+114         ElseIf IsValidUserRef(.flags.targetUser) Then
 116             tUser = .flags.TargetUser
                 ' Mover NPCs
 118         ElseIf .flags.TargetNPC > 0 Then
@@ -2333,9 +2204,9 @@ Public Sub HandleSummonChar(ByVal UserIndex As Integer)
                 Exit Sub
             End If
 
-128         If CompararPrivilegiosUser(tUser, UserIndex) > 0 Then
-130             Call WriteConsoleMsg(UserIndex, "Se le ha avisado a " & UserList(tUser).name & " que quieres traerlo a tu posición.", e_FontTypeNames.FONTTYPE_INFO)
-132             Call WriteConsoleMsg(tUser, .name & " quiere transportarte a su ubicación. Escribe /ira " & .name & " para ir.", e_FontTypeNames.FONTTYPE_INFO)
+128         If CompararPrivilegiosUser(tUser.ArrayIndex, userIndex) > 0 Then
+130             Call WriteConsoleMsg(userIndex, "Se le ha avisado a " & UserList(tUser.ArrayIndex).name & " que quieres traerlo a tu posición.", e_FontTypeNames.FONTTYPE_INFO)
+132             Call WriteConsoleMsg(tUser.ArrayIndex, .name & " quiere transportarte a su ubicación. Escribe /ira " & .name & " para ir.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
                 
@@ -2343,14 +2214,14 @@ Public Sub HandleSummonChar(ByVal UserIndex As Integer)
 134         NotConsejero = (.flags.Privilegios And e_PlayerType.Consejero) = 0
                 
             ' Consejeros sólo pueden traer en el mismo mapa
-136         If NotConsejero Or .Pos.map = UserList(tUser).Pos.map Then
+136         If NotConsejero Or .pos.map = UserList(tUser.ArrayIndex).pos.map Then
                 
                  If .flags.Privilegios And (e_PlayerType.SemiDios) Then
                     If Not EsMapaEvento(.Pos.map) Then 'HarThaos ReyarB hay que sacar eso de mapa seguro y poner mapas de eventos [MapasEventos]
                         Call WriteConsoleMsg(UserIndex, "Solamente puedes traer usuarios a mapas de evento.", e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
                     End If
-                    If UserList(tUser).flags.Muerto = 1 Then
+                    If UserList(tUser.ArrayIndex).flags.Muerto = 1 Then
                         Call WriteConsoleMsg(UserIndex, "No puedes transportar a un muerto. ellos tienen /hogar", e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
                     End If
@@ -2358,18 +2229,18 @@ Public Sub HandleSummonChar(ByVal UserIndex As Integer)
                 
                 ' Si el admin está invisible no mostramos el nombre
 138             If NotConsejero And .flags.AdminInvisible = 1 Then
-140                 Call WriteConsoleMsg(tUser, "Te han trasportado.", e_FontTypeNames.FONTTYPE_INFO)
+140                 Call WriteConsoleMsg(tUser.ArrayIndex, "Te han trasportado.", e_FontTypeNames.FONTTYPE_INFO)
                 Else
-142                 Call WriteConsoleMsg(tUser, .name & " te ha trasportado.", e_FontTypeNames.FONTTYPE_INFO)
+142                 Call WriteConsoleMsg(tUser.ArrayIndex, .name & " te ha trasportado.", e_FontTypeNames.FONTTYPE_INFO)
                 End If
                    
                 'Si lo sumonean a un mapa interdimensional desde uno no interdimensional me guardo la posición de donde viene.
-144             If EsMapaInterdimensional(.Pos.map) And Not EsMapaInterdimensional(UserList(tUser).Pos.map) Then
-146                 UserList(tUser).flags.ReturnPos = UserList(tUser).Pos
+144             If EsMapaInterdimensional(.pos.map) And Not EsMapaInterdimensional(UserList(tUser.ArrayIndex).pos.map) Then
+146                 UserList(tUser.ArrayIndex).flags.ReturnPos = UserList(tUser.ArrayIndex).pos
                 End If
 
-148             Call WarpToLegalPos(tUser, .Pos.map, .Pos.X, .Pos.y + 1, True, True)
-                Call WriteConsoleMsg(UserIndex, "Has traído a " & UserList(tUser).name & ".", e_FontTypeNames.FONTTYPE_INFO)
+148             Call WarpToLegalPos(tUser.ArrayIndex, .pos.map, .pos.x, .pos.y + 1, True, True)
+                Call WriteConsoleMsg(userIndex, "Has traído a " & UserList(tUser.ArrayIndex).name & ".", e_FontTypeNames.FONTTYPE_INFO)
 152             Call LogGM(.name, "/SUM " & username & " Map:" & .Pos.map & " X:" & .Pos.X & " Y:" & .Pos.y)
                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(.name & " a trasladado al usuario " & username & " al Mapa " & .Pos.map, e_FontTypeNames.FONTTYPE_INFO))
             End If
@@ -2488,7 +2359,7 @@ Public Sub HandleNickToIP(ByVal UserIndex As Integer)
 
 100     With UserList(UserIndex)
             Dim username As String
-            Dim tUser    As Integer
+            Dim tUser    As t_UserReference
             Dim priv     As e_PlayerType
         
 102         username = Reader.ReadString8()
@@ -2503,13 +2374,13 @@ Public Sub HandleNickToIP(ByVal UserIndex As Integer)
 114                 priv = e_PlayerType.user
                 End If
             
-116             If tUser > 0 Then
-118                 If UserList(tUser).flags.Privilegios And priv Then
-120                     Call WriteConsoleMsg(UserIndex, "El ip de " & username & " es " & UserList(tUser).IP, e_FontTypeNames.FONTTYPE_INFO)
+116             If IsValidUserRef(tUser) Then
+118                 If UserList(tUser.ArrayIndex).flags.Privilegios And priv Then
+120                     Call WriteConsoleMsg(userIndex, "El ip de " & username & " es " & UserList(tUser.ArrayIndex).IP, e_FontTypeNames.FONTTYPE_INFO)
                         Dim IP    As String
                         Dim lista As String
                         Dim LoopC As Long
-122                     IP = UserList(tUser).IP
+122                     IP = UserList(tUser.ArrayIndex).IP
 124                     For LoopC = 1 To LastUser
 126                         If UserList(LoopC).IP = IP Then
 128                             If LenB(UserList(LoopC).name) <> 0 And UserList(LoopC).flags.UserLogged Then
@@ -2689,7 +2560,7 @@ Public Sub HandleRainToggle(ByVal UserIndex As Integer)
         'Author: Nicolas Matias Gonzalez (NIGO)
 100     With UserList(UserIndex)
 102         If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero)) Then
-104             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
+104             Call WriteConsoleMsg(userIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
 106         Call LogGM(.name, "/LLUVIA")
@@ -2712,13 +2583,13 @@ Public Sub HandleSetCharDescription(ByVal UserIndex As Integer)
         'Author: Nicolas Matias Gonzalez (NIGO)
         On Error GoTo ErrHandler
 100     With UserList(UserIndex)
-            Dim tUser As Integer
+            Dim tUser As t_UserReference
             Dim Desc  As String
 102         Desc = Reader.ReadString8()
 104         If (.flags.Privilegios And (e_PlayerType.Dios Or e_PlayerType.Admin Or e_PlayerType.RoleMaster)) Then
 106             tUser = .flags.TargetUser
-108             If tUser > 0 Then
-110                 UserList(tUser).DescRM = Desc
+108             If IsValidUserRef(tUser) Then
+110                 UserList(tUser.ArrayIndex).DescRM = Desc
                 Else
 112                 Call WriteConsoleMsg(UserIndex, "Haz click sobre un personaje antes!", e_FontTypeNames.FONTTYPE_INFO)
                 End If
@@ -2814,7 +2685,7 @@ Public Sub HandleDestroyAllItemsInArea(ByVal UserIndex As Integer)
         'Author: Nicolas Matias Gonzalez (NIGO)
 100     With UserList(UserIndex)
 102         If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero)) Then
-104             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
+104             Call WriteConsoleMsg(userIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
         
@@ -2844,7 +2715,7 @@ Public Sub HandleItemsInTheFloor(ByVal UserIndex As Integer)
         'Author: Nicolas Matias Gonzalez (NIGO)
 100     With UserList(UserIndex)
 102         If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero Or e_PlayerType.SemiDios)) Then
-104             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
+104             Call WriteConsoleMsg(userIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
         
@@ -2873,16 +2744,16 @@ Public Sub HandleMakeDumb(ByVal UserIndex As Integer)
         On Error GoTo ErrHandler
 100     With UserList(UserIndex)
             Dim username As String
-            Dim tUser    As Integer
+            Dim tUser    As t_UserReference
         
 102         username = Reader.ReadString8()
 104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.RoleMaster)) Then
 106             tUser = NameIndex(username)
                 'para deteccion de aoice
-108             If tUser <= 0 Then
+108             If Not IsValidUserRef(tUser) Then
 110                 Call WriteConsoleMsg(UserIndex, "Offline", e_FontTypeNames.FONTTYPE_INFO)
                 Else
-112                 Call WriteDumb(tUser)
+112                 Call WriteDumb(tUser.ArrayIndex)
                 End If
             End If
         End With
@@ -2896,16 +2767,16 @@ Public Sub HandleMakeDumbNoMore(ByVal UserIndex As Integer)
         On Error GoTo ErrHandler
 100     With UserList(UserIndex)
             Dim username As String
-            Dim tUser    As Integer
+            Dim tUser    As t_UserReference
         
 102         username = Reader.ReadString8()
 104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.RoleMaster)) Then
 106             tUser = NameIndex(username)
                 'para deteccion de aoice
-108             If tUser <= 0 Then
+108             If Not IsValidUserRef(tUser) Then
 110                 Call WriteConsoleMsg(UserIndex, "Offline", e_FontTypeNames.FONTTYPE_INFO)
                 Else
-112                 Call WriteDumbNoMore(tUser)
+112                 Call WriteDumbNoMore(tUser.ArrayIndex)
                 End If
             End If
         End With
@@ -2987,7 +2858,7 @@ End Sub
 
 Public Sub HandleBanIP(ByVal UserIndex As Integer)
         On Error GoTo ErrHandler
-        Dim tUser As Integer
+        Dim tUser As t_UserReference
         Dim bannedip As String
         
 100     With UserList(UserIndex)
@@ -2999,24 +2870,24 @@ Public Sub HandleBanIP(ByVal UserIndex As Integer)
 108             If IsValidIPAddress(NickOrIP) Then
 110                 bannedip = NickOrIP
                 Else
-112                 Call WriteConsoleMsg(UserIndex, "La IP " & NickOrIP & " no tiene un formato válido.", e_FontTypeNames.FONTTYPE_INFO)
+112                 Call WriteConsoleMsg(userIndex, "La IP " & NickOrIP & " no tiene un formato válido.", e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
             Else ' Es un Nick
 114             tUser = NameIndex(NickOrIP)
                 
-116             If tUser <= 0 Then
-118                 Call WriteConsoleMsg(UserIndex, "El personaje no está online.", e_FontTypeNames.FONTTYPE_INFO)
+116             If Not IsValidUserRef(tUser) Then
+118                 Call WriteConsoleMsg(userIndex, "El personaje no está online.", e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 Else
-120                 bannedip = UserList(tUser).IP
+120                 bannedip = UserList(tUser.ArrayIndex).IP
                 End If
             End If
          
 122         If LenB(bannedip) = 0 Then Exit Sub
         
 124         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios)) = 0 Then
-126             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
+126             Call WriteConsoleMsg(userIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
       
@@ -3086,7 +2957,7 @@ Public Sub HandleCreateItem(ByVal UserIndex As Integer)
 108         If (.flags.Privilegios And e_PlayerType.Dios) <> 0 And ObjData(tObj).Agarrable = 1 Then Exit Sub
             ' Si hace mas de 10000, lo sacamos cagando.
 110         If Cuantos > MAX_INVENTORY_OBJS Then
-112             Call WriteConsoleMsg(UserIndex, "Solo podés crear hasta " & CStr(MAX_INVENTORY_OBJS) & " unidades", e_FontTypeNames.FONTTYPE_TALK)
+112             Call WriteConsoleMsg(userIndex, "Solo podés crear hasta " & CStr(MAX_INVENTORY_OBJS) & " unidades", e_FontTypeNames.FONTTYPE_TALK)
                 Exit Sub
             End If
             ' El indice proporcionado supera la cantidad minima o total de items existentes en el juego?
@@ -3136,7 +3007,7 @@ Public Sub HandleDestroyItems(ByVal UserIndex As Integer)
         'Author: Nicolas Matias Gonzalez (NIGO)
 100     With UserList(UserIndex)
 102         If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero Or e_PlayerType.SemiDios)) Then
-104             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
+104             Call WriteConsoleMsg(userIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
         
@@ -3157,7 +3028,7 @@ Public Sub HandleForceMIDIAll(ByVal UserIndex As Integer)
 102             midiID = Reader.ReadInt8()
         
 104         If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero Or e_PlayerType.SemiDios)) Then
-106             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
+106             Call WriteConsoleMsg(userIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
 108         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(.name & " broadcast musica: " & midiID, e_FontTypeNames.FONTTYPE_SERVER))
@@ -3175,7 +3046,7 @@ Public Sub HandleForceWAVEAll(ByVal UserIndex As Integer)
             Dim waveID As Byte
 102             waveID = Reader.ReadInt8()
 104         If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero Or e_PlayerType.SemiDios)) Then
-106             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
+106             Call WriteConsoleMsg(userIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
 108         Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(waveID, NO_3D_SOUND, NO_3D_SOUND))
@@ -3228,7 +3099,7 @@ Public Sub HandleTile_BlockedToggle(ByVal UserIndex As Integer)
         'Author: Nicolas Matias Gonzalez (NIGO)
 100     With UserList(UserIndex)
 102         If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero)) Then
-104             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
+104             Call WriteConsoleMsg(userIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
 
@@ -3252,7 +3123,7 @@ Public Sub HandleKillNPCNoRespawn(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
             If Not EsGM(UserIndex) Then Exit Sub
 102         If .flags.Privilegios And e_PlayerType.Consejero Then
-104             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
+104             Call WriteConsoleMsg(userIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
 106         If .flags.TargetNPC = 0 Then Exit Sub
@@ -3271,7 +3142,7 @@ Public Sub HandleKillAllNearbyNPCs(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
             If Not EsGM(UserIndex) Then Exit Sub
 102         If (.flags.Privilegios And (e_PlayerType.Consejero Or e_PlayerType.SemiDios)) Then
-104             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
+104             Call WriteConsoleMsg(userIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
         
@@ -3317,14 +3188,14 @@ Public Sub HandleLastIP(ByVal UserIndex As Integer)
 118                 username = Replace(username, "+", " ")
                 End If
                 
-                Dim tIndex As Integer
-                tIndex = NameIndex(username)
+                Dim tUser As t_UserReference
+                tUser = NameIndex(username)
                 Dim RS As ADODB.Recordset
                 Dim ipStr As String
                 
-120             If tIndex > 0 Then
+120             If IsValidUserRef(tUser) Then
 122                 Call LogGM(.name, "/LASTIP " & username)
-                    Set RS = Query("SELECT last_ip FROM account WHERE id = ?", UserList(tIndex).AccountID)
+                    Set RS = Query("SELECT last_ip FROM account WHERE id = ?", UserList(tUser.ArrayIndex).AccountID)
             
                     'Revisamos si recibio un resultado
                     If RS Is Nothing Then Exit Sub
@@ -3358,12 +3229,12 @@ Public Sub HandleLastIP(ByVal UserIndex As Integer)
                 
                 ReDim ip_list(0 To (countIps - 1)) As String
                 ip_list = Split(ipStr, ";")
-                Call WriteConsoleMsg(UserIndex, "Las últimas ips para el personaje son: ", e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteConsoleMsg(userIndex, "Las últimas ips para el personaje son: ", e_FontTypeNames.FONTTYPE_INFO)
                 For LoopC = 0 To (countIps - 1)
                     Call WriteConsoleMsg(UserIndex, ip_list(LoopC), e_FontTypeNames.FONTTYPE_INFO)
                 Next LoopC
             Else
-146             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
+146             Call WriteConsoleMsg(userIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
             End If
         End With
         Exit Sub
@@ -3441,7 +3312,7 @@ Public Sub HandleCreateNPC(ByVal UserIndex As Integer)
             If Not EsGM(UserIndex) Then Exit Sub
         
 104         If .flags.Privilegios And (e_PlayerType.Consejero Or e_PlayerType.SemiDios) Then
-106             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
+106             Call WriteConsoleMsg(userIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
         
@@ -3464,7 +3335,7 @@ Public Sub HandleCreateNPCWithRespawn(ByVal UserIndex As Integer)
 102         npcIndex = Reader.ReadInt16()
             If Not EsGM(UserIndex) Then Exit Sub
 104         If .flags.Privilegios And (e_PlayerType.Consejero Or e_PlayerType.SemiDios Or e_PlayerType.Dios) Then
-106             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo. Si el motivo es probar algo ya saben ir a Test", e_FontTypeNames.FONTTYPE_INFO)
+106             Call WriteConsoleMsg(userIndex, "Servidor » Comando deshabilitado para tu cargo. Si el motivo es probar algo ya saben ir a Test", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
         
@@ -3545,13 +3416,13 @@ Public Sub HandleTurnCriminal(ByVal UserIndex As Integer)
 
 100     With UserList(UserIndex)
             Dim username As String
-            Dim tUser    As Integer
+            Dim tUser    As t_UserReference
         
 102         username = Reader.ReadString8()
 104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.RoleMaster)) Then
 106             Call LogGM(.name, "/CONDEN " & username)
 108             tUser = NameIndex(username)
-110             If tUser > 0 Then Call VolverCriminal(tUser)
+110             If IsValidUserRef(tUser) Then Call VolverCriminal(tUser.ArrayIndex)
             End If
         End With
         Exit Sub
@@ -3567,7 +3438,7 @@ Public Sub HandleAlterName(ByVal UserIndex As Integer)
         'Reads the userName and newUser Packets
         Dim username     As String
         Dim NewName      As String
-        Dim TargetUI     As Integer
+        Dim tUser        As t_UserReference
         Dim GuildIndex   As Integer
 
         username = UCase$(Reader.ReadString8())
@@ -3579,9 +3450,9 @@ Public Sub HandleAlterName(ByVal UserIndex As Integer)
             Call WriteConsoleMsg(UserIndex, "Usar: /ANAME origen@destino", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
-        TargetUI = NameIndex(username)
-        If TargetUI > 0 Then
-            If UserList(TargetUI).GuildIndex > 0 Then
+        tUser = NameIndex(username)
+        If IsValidUserRef(tUser) Then
+            If UserList(tUser.ArrayIndex).GuildIndex > 0 Then
                 Call WriteConsoleMsg(UserIndex, "El personaje " & username & " pertenece a un clan, debe salir del mismo con /salirclan para ser transferido.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
@@ -3608,9 +3479,9 @@ Public Sub HandleAlterName(ByVal UserIndex As Integer)
         Call SendData(SendTarget.ToGM, 0, PrepareMessageConsoleMsg("Administración » " & .name & " cambió el nombre del usuario """ & username & """ por """ & NewName & """.", e_FontTypeNames.FONTTYPE_GM))
         Call LogGM(.name, "Ha cambiado de nombre al usuario """ & username & """. Ahora se llama """ & NewName & """.")
         
-        If TargetUI > 0 Then
-            UserList(TargetUI).name = NewName
-            Call RefreshCharStatus(TargetUI)
+        If IsValidUserRef(tUser) Then
+            UserList(tUser.ArrayIndex).name = NewName
+            Call RefreshCharStatus(tUser.ArrayIndex)
         End If
     End With
     Exit Sub
@@ -3640,7 +3511,7 @@ Public Sub HandleChangeMapInfoPK(ByVal UserIndex As Integer)
             Dim isMapPk As Boolean
 102         isMapPk = Reader.ReadBool()
 104         If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero Or e_PlayerType.SemiDios Or e_PlayerType.RoleMaster)) Then
-106             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
+106             Call WriteConsoleMsg(userIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
         
@@ -3693,27 +3564,27 @@ Public Sub HandleChangeMapInfoRestricted(ByVal UserIndex As Integer)
                     Case "NEWBIE"
 108                     MapInfo(.Pos.map).Newbie = Not MapInfo(.Pos.map).Newbie
 110                     Call WriteConsoleMsg(UserIndex, "Mapa " & .Pos.map & ": Newbie = " & MapInfo(.Pos.map).Newbie, e_FontTypeNames.FONTTYPE_INFO)
-112                     Call LogGM(.name, .name & " ha cambiado la restricción del mapa " & .Pos.map & ": Newbie = " & MapInfo(.Pos.map).Newbie)
+112                     Call LogGM(.name, .name & " ha cambiado la restricción del mapa " & .pos.map & ": Newbie = " & MapInfo(.pos.map).Newbie)
                         
 114                 Case "SINMAGIA"
 116                     MapInfo(.Pos.map).SinMagia = Not MapInfo(.Pos.map).SinMagia
 118                     Call WriteConsoleMsg(UserIndex, "Mapa " & .Pos.map & ": SinMagia = " & MapInfo(.Pos.map).SinMagia, e_FontTypeNames.FONTTYPE_INFO)
-120                     Call LogGM(.name, .name & " ha cambiado la restricción del mapa " & .Pos.map & ": SinMagia = " & MapInfo(.Pos.map).SinMagia)
+120                     Call LogGM(.name, .name & " ha cambiado la restricción del mapa " & .pos.map & ": SinMagia = " & MapInfo(.pos.map).SinMagia)
                         
 122                 Case "NOPKS"
 124                     MapInfo(.Pos.map).NoPKs = Not MapInfo(.Pos.map).NoPKs
 126                     Call WriteConsoleMsg(UserIndex, "Mapa " & .Pos.map & ": NoPKs = " & MapInfo(.Pos.map).NoPKs, e_FontTypeNames.FONTTYPE_INFO)
-128                     Call LogGM(.name, .name & " ha cambiado la restricción del mapa " & .Pos.map & ": NoPKs = " & MapInfo(.Pos.map).NoPKs)
+128                     Call LogGM(.name, .name & " ha cambiado la restricción del mapa " & .pos.map & ": NoPKs = " & MapInfo(.pos.map).NoPKs)
                         
 130                 Case "NOCIUD"
 132                     MapInfo(.Pos.map).NoCiudadanos = Not MapInfo(.Pos.map).NoCiudadanos
 134                     Call WriteConsoleMsg(UserIndex, "Mapa " & .Pos.map & ": NoCiudadanos = " & MapInfo(.Pos.map).NoCiudadanos, e_FontTypeNames.FONTTYPE_INFO)
-136                     Call LogGM(.name, .name & " ha cambiado la restricción del mapa " & .Pos.map & ": NoCiudadanos = " & MapInfo(.Pos.map).NoCiudadanos)
+136                     Call LogGM(.name, .name & " ha cambiado la restricción del mapa " & .pos.map & ": NoCiudadanos = " & MapInfo(.pos.map).NoCiudadanos)
                         
 138                 Case "SININVI"
 140                     MapInfo(.Pos.map).SinInviOcul = Not MapInfo(.Pos.map).SinInviOcul
 142                     Call WriteConsoleMsg(UserIndex, "Mapa " & .Pos.map & ": SinInvi = " & MapInfo(.Pos.map).SinInviOcul, e_FontTypeNames.FONTTYPE_INFO)
-144                     Call LogGM(.name, .name & " ha cambiado la restricción del mapa " & .Pos.map & ": SinInvi = " & MapInfo(.Pos.map).SinInviOcul)
+144                     Call LogGM(.name, .name & " ha cambiado la restricción del mapa " & .pos.map & ": SinInvi = " & MapInfo(.pos.map).SinInviOcul)
                 
 146                 Case Else
 148                     Call WriteConsoleMsg(UserIndex, "Opciones para restringir: 'NEWBIE', 'SINMAGIA', 'SININVI', 'NOPKS', 'NOCIUD'", e_FontTypeNames.FONTTYPE_INFO)
@@ -3789,7 +3660,7 @@ Public Sub HandleChangeMapInfoLand(ByVal UserIndex As Integer)
 114                 Call WriteConsoleMsg(UserIndex, "Mapa " & .Pos.map & " Terreno: " & MapInfo(.Pos.map).terrain, e_FontTypeNames.FONTTYPE_INFO)
                 Else
 116                 Call WriteConsoleMsg(UserIndex, "Opciones para terreno: 'BOSQUE', 'NIEVE', 'DESIERTO', 'CIUDAD', 'CAMPO', 'DUNGEON'", e_FontTypeNames.FONTTYPE_INFO)
-118                 Call WriteConsoleMsg(UserIndex, "Igualmente, el ínico ítil es 'NIEVE' ya que al ingresarlo, la gente muere de frio en el Mapa", e_FontTypeNames.FONTTYPE_INFO)
+118                 Call WriteConsoleMsg(userIndex, "Igualmente, el ínico ítil es 'NIEVE' ya que al ingresarlo, la gente muere de frio en el Mapa", e_FontTypeNames.FONTTYPE_INFO)
                 End If
             End If
         End With
@@ -3814,7 +3685,7 @@ Public Sub HandleChangeMapInfoZone(ByVal UserIndex As Integer)
 114                 Call WriteConsoleMsg(UserIndex, "Mapa " & .Pos.map & " Zona: " & MapInfo(.Pos.map).zone, e_FontTypeNames.FONTTYPE_INFO)
                 Else
 116                 Call WriteConsoleMsg(UserIndex, "Opciones para terreno: 'BOSQUE', 'NIEVE', 'DESIERTO', 'CIUDAD', 'CAMPO', 'DUNGEON'", e_FontTypeNames.FONTTYPE_INFO)
-118                 Call WriteConsoleMsg(UserIndex, "Igualmente, el ínico ítil es 'DUNGEON' ya que al ingresarlo, NO se sentirí el efecto de la lluvia en este mapa.", e_FontTypeNames.FONTTYPE_INFO)
+118                 Call WriteConsoleMsg(userIndex, "Igualmente, el ínico ítil es 'DUNGEON' ya que al ingresarlo, NO se sentirí el efecto de la lluvia en este mapa.", e_FontTypeNames.FONTTYPE_INFO)
                 End If
             End If
         End With
@@ -3828,7 +3699,7 @@ Public Sub HandleSaveChars(ByVal UserIndex As Integer)
         'Author: Lucas Tavolaro Ortiz (Tavo)
 100     With UserList(UserIndex)
 102         If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero Or e_PlayerType.RoleMaster)) Then
-104             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
+104             Call WriteConsoleMsg(userIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
 106         Call LogGM(.name, .name & " ha guardado todos los chars")
@@ -3873,7 +3744,7 @@ Public Sub HandleNight(ByVal UserIndex As Integer)
         'Last modified by: Juan Martín Sotuyo Dodero (Maraxus)
 100     With UserList(UserIndex)
 102         If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero Or e_PlayerType.SemiDios)) Then
-104             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
+104             Call WriteConsoleMsg(userIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
 106         HoraMundo = GetTickCount()
@@ -3976,23 +3847,23 @@ Public Sub HandleCheckSlot(ByVal UserIndex As Integer)
             'Reads the UserName and Slot Packets
             Dim username As String
             Dim Slot     As Byte
-            Dim tIndex   As Integer
+            Dim tUser    As t_UserReference
         
 102         username = Reader.ReadString8() 'Que UserName?
 104         Slot = Reader.ReadInt8() 'Que Slot?
-106         tIndex = NameIndex(username)  'Que user index?
+106         tUser = NameIndex(username)
 108         If Not EsGM(UserIndex) Then Exit Sub
 110         Call LogGM(.name, .name & " Checkeo el slot " & Slot & " de " & username)
            
-112         If tIndex > 0 Then
+112         If IsValidUserRef(tUser) Then
 114             If Slot > 0 And Slot <= UserList(UserIndex).CurrentInventorySlots Then
-116                 If UserList(tIndex).Invent.Object(Slot).objIndex > 0 Then
-118                     Call WriteConsoleMsg(UserIndex, " Objeto " & Slot & ") " & ObjData(UserList(tIndex).Invent.Object(Slot).objIndex).name & " Cantidad:" & UserList(tIndex).Invent.Object(Slot).amount, e_FontTypeNames.FONTTYPE_INFO)
+116                 If UserList(tUser.ArrayIndex).Invent.Object(Slot).ObjIndex > 0 Then
+118                     Call WriteConsoleMsg(userIndex, " Objeto " & Slot & ") " & ObjData(UserList(tUser.ArrayIndex).Invent.Object(Slot).ObjIndex).name & " Cantidad:" & UserList(tUser.ArrayIndex).Invent.Object(Slot).amount, e_FontTypeNames.FONTTYPE_INFO)
                     Else
 120                     Call WriteConsoleMsg(UserIndex, "No hay Objeto en slot seleccionado", e_FontTypeNames.FONTTYPE_INFO)
                     End If
                 Else
-122                 Call WriteConsoleMsg(UserIndex, "Slot Invílido.", e_FontTypeNames.FONTTYPE_TALK)
+122                 Call WriteConsoleMsg(userIndex, "Slot Invílido.", e_FontTypeNames.FONTTYPE_TALK)
                 End If
             Else
 124             Call WriteConsoleMsg(UserIndex, "Usuario offline.", e_FontTypeNames.FONTTYPE_TALK)
@@ -4031,7 +3902,7 @@ Public Sub HandleGlobalMessage(ByVal UserIndex As Integer)
 108         If .flags.Silenciado = 1 Then
 110             Call WriteLocaleMsg(UserIndex, "110", e_FontTypeNames.FONTTYPE_VENENO, .flags.MinutosRestantes)
 112         ElseIf ElapsedTime < IntervaloMensajeGlobal Then
-114             Call WriteConsoleMsg(UserIndex, "No puedes escribir mensajes globales tan rápido.", e_FontTypeNames.FONTTYPE_WARNING)
+114             Call WriteConsoleMsg(userIndex, "No puedes escribir mensajes globales tan rápido.", e_FontTypeNames.FONTTYPE_WARNING)
             Else
 116             UserList(UserIndex).Counters.MensajeGlobal = TActual
 
@@ -4080,7 +3951,7 @@ Public Sub HandleDay(ByVal UserIndex As Integer)
         On Error GoTo HandleDay_Err
 100     With UserList(UserIndex)
 102         If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero Or e_PlayerType.SemiDios)) Then
-104             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
+104             Call WriteConsoleMsg(userIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
 106         HoraMundo = GetTickCount() - DuracionDia \ 2
@@ -4097,7 +3968,7 @@ Public Sub HandleSetTime(ByVal UserIndex As Integer)
             Dim HoraDia As Long
 102         HoraDia = Reader.ReadInt32
 104         If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero Or e_PlayerType.SemiDios)) Then
-106             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
+106             Call WriteConsoleMsg(userIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
 108         HoraMundo = GetTickCount() - HoraDia
@@ -4116,7 +3987,7 @@ Public Sub HandleGiveItem(ByVal UserIndex As Integer)
             Dim objIndex As Integer
             Dim Cantidad As Integer
             Dim Motivo   As String
-            Dim tIndex   As Integer
+            Dim tUser    As t_UserReference
         
 102         username = Reader.ReadString8()
 104         objIndex = Reader.ReadInt16()
@@ -4131,9 +4002,9 @@ Public Sub HandleGiveItem(ByVal UserIndex As Integer)
                 ' El nombre del objeto es nulo?
 118             If LenB(ObjData(objIndex).name) = 0 Then Exit Sub
                 ' Está online?
-120             tIndex = NameIndex(username)
-122             If tIndex = 0 Then
-124                 Call WriteConsoleMsg(UserIndex, "El usuario " & username & " no está conectado.", e_FontTypeNames.FONTTYPE_INFO)
+120             tUser = NameIndex(username)
+122             If Not IsValidUserRef(tUser) Then
+124                 Call WriteConsoleMsg(userIndex, "El usuario " & username & " no está conectado.", e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
 
@@ -4141,8 +4012,8 @@ Public Sub HandleGiveItem(ByVal UserIndex As Integer)
 126             Objeto.amount = Cantidad
 128             Objeto.objIndex = objIndex
                 ' Trato de meterlo en el inventario.
-130             If MeterItemEnInventario(tIndex, Objeto) Then
-132                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(.name & " ha otorgado a " & UserList(tIndex).name & " " & Cantidad & " " & ObjData(objIndex).name & ": " & Motivo, e_FontTypeNames.FONTTYPE_ROSA))
+130             If MeterItemEnInventario(tUser.ArrayIndex, Objeto) Then
+132                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(.name & " ha otorgado a " & UserList(tUser.ArrayIndex).name & " " & Cantidad & " " & ObjData(ObjIndex).name & ": " & Motivo, e_FontTypeNames.FONTTYPE_ROSA))
                 Else
 134                 Call WriteConsoleMsg(UserIndex, "El usuario no tiene espacio en el inventario.", e_FontTypeNames.FONTTYPE_INFO)
                 End If
@@ -4150,7 +4021,7 @@ Public Sub HandleGiveItem(ByVal UserIndex As Integer)
 136             Call LogGM(.name, "/DAR " & username & " - Item: " & ObjData(objIndex).name & "(" & objIndex & ") Cantidad : " & Cantidad)
 138             Call LogPremios(.name, username, objIndex, Cantidad, Motivo)
             Else
-140             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo, debes pedir a un Admin que lo de.", e_FontTypeNames.FONTTYPE_INFO)
+140             Call WriteConsoleMsg(userIndex, "Servidor » Comando deshabilitado para tu cargo, debes pedir a un Admin que lo de.", e_FontTypeNames.FONTTYPE_INFO)
             End If
         End With
         Exit Sub
@@ -4183,7 +4054,7 @@ Public Sub HandleQuestionGM(ByVal UserIndex As Integer)
                 Dim bannedip As String
                 bannedip = UserList(UserIndex).IP
 132             Call BanearIP(0, UserList(UserIndex).name, bannedip, UserList(UserIndex).Cuenta)
-134             Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Se baneó la IP  " & bannedip & " del personaje " & UserList(UserIndex).name & " por bot.", e_FontTypeNames.FONTTYPE_FIGHT))
+134             Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Se baneó la IP  " & bannedip & " del personaje " & UserList(userIndex).name & " por bot.", e_FontTypeNames.FONTTYPE_FIGHT))
                 'Find every player with that ip and ban him!
                 Dim i As Long
 136             For i = 1 To LastUser
@@ -4235,23 +4106,23 @@ Public Sub HandlePossUser(ByVal UserIndex As Integer)
             If Not InStrB(username, "(") Then Exit Sub
             'Modifico la forma en que se usa el destrabar, ahora solamente lo puedo destrabar si está online.
 104         If (.flags.Privilegios And (e_PlayerType.user)) = 0 Then
-                Dim tempIndex As Integer
+                Dim tUser As t_UserReference
                 username = Split(username, "(")(0)
-                tempIndex = NameIndex(username)
-106             If tempIndex > 0 Then
-                    If LegalPosDestrabar(UserList(tempIndex).Pos.map, UserList(tempIndex).Pos.X, UserList(tempIndex).Pos.y, .flags.Navegando = 1, .flags.Navegando = 0) Then Exit Sub
+                tUser = NameIndex(username)
+106             If IsValidUserRef(tUser) Then
+                    If LegalPosDestrabar(UserList(tUser.ArrayIndex).pos.map, UserList(tUser.ArrayIndex).pos.x, UserList(tUser.ArrayIndex).pos.y, .flags.Navegando = 1, .flags.Navegando = 0) Then Exit Sub
                     Dim nPos As t_WorldPos
-                    Call ClosestLegalPos(UserList(tempIndex).Pos, nPos, False, True)
-150                 Call FindLegalPos(tempIndex, UserList(tempIndex).Pos.map, CByte(UserList(tempIndex).Pos.X), CByte(UserList(tempIndex).Pos.y))
-152                 Call WarpUserChar(tempIndex, nPos.map, nPos.X, nPos.y, True)
-116                 Call WriteConsoleMsg(UserIndex, "Servidor » Acción realizada con exito! La nueva posicion de " & username & " es: " & UserList(tempIndex).Pos.map & "-" & UserList(tempIndex).Pos.X & "-" & UserList(tempIndex).Pos.y & ".", e_FontTypeNames.FONTTYPE_INFO)
+                    Call ClosestLegalPos(UserList(tUser.ArrayIndex).pos, nPos, False, True)
+150                 Call FindLegalPos(tUser.ArrayIndex, UserList(tUser.ArrayIndex).pos.map, CByte(UserList(tUser.ArrayIndex).pos.x), CByte(UserList(tUser.ArrayIndex).pos.y))
+152                 Call WarpUserChar(tUser.ArrayIndex, nPos.map, nPos.x, nPos.y, True)
+116                 Call WriteConsoleMsg(userIndex, "Servidor » Acción realizada con exito! La nueva posicion de " & username & " es: " & UserList(tUser.ArrayIndex).pos.map & "-" & UserList(tUser.ArrayIndex).pos.x & "-" & UserList(tUser.ArrayIndex).pos.y & ".", e_FontTypeNames.FONTTYPE_INFO)
                     'ver porque si el usuario esta online lo dice igual
                 Else
-118                 Call WriteConsoleMsg(UserIndex, "Servidor » El usuario debe estar deslogueado para dicha solicitud!", e_FontTypeNames.FONTTYPE_INFO)
+118                 Call WriteConsoleMsg(userIndex, "Servidor » El usuario debe estar deslogueado para dicha solicitud!", e_FontTypeNames.FONTTYPE_INFO)
                     'avisar al usuario que un gm lo destrabara pero debe desloguear
                 End If
             Else
-120             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
+120             Call WriteConsoleMsg(userIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
             End If
         End With
         Exit Sub
@@ -4264,7 +4135,7 @@ Public Sub HandleNieveToggle(ByVal UserIndex As Integer)
         'Author: Pablo Mercavides
 100     With UserList(UserIndex)
 102         If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero)) Then
-104             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
+104             Call WriteConsoleMsg(userIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
 106         Call LogGM(.name, "/NIEVE")
@@ -4282,7 +4153,7 @@ Public Sub HandleNieblaToggle(ByVal UserIndex As Integer)
         'Author: Pablo Mercavides
 100     With UserList(UserIndex)
 102         If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero)) Then
-104             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
+104             Call WriteConsoleMsg(userIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
         
@@ -4322,7 +4193,7 @@ Public Sub HandleBanCuenta(ByVal UserIndex As Integer)
 106         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios)) Then
 108             Call BanearCuenta(UserIndex, username, Reason)
             Else
-110             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
+110             Call WriteConsoleMsg(userIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
             End If
         End With
         Exit Sub
@@ -4346,7 +4217,7 @@ Public Sub HandleUnBanCuenta(ByVal UserIndex As Integer)
                     Call WriteConsoleMsg(UserIndex, "No se ha podido desbanear la cuenta.", e_FontTypeNames.FONTTYPE_INFO)
                 End If
             Else
-120             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
+120             Call WriteConsoleMsg(userIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
             End If
         End With
         Exit Sub
@@ -4360,16 +4231,16 @@ Public Sub HandleCerrarCliente(ByVal UserIndex As Integer)
         On Error GoTo ErrHandler
 100     With UserList(UserIndex)
             Dim username As String
-            Dim tUser    As Integer
+            Dim tUser    As t_UserReference
 102         username = Reader.ReadString8()
             ' Solo administradores pueden cerrar clientes ajenos
 104         If (.flags.Privilegios And e_PlayerType.Admin) Then
 106             tUser = NameIndex(username)
-108             If tUser <= 0 Then
+108             If Not IsValidUserRef(tUser) Then
 110                 Call WriteConsoleMsg(UserIndex, "El usuario no esta online.", e_FontTypeNames.FONTTYPE_INFO)
                 Else
 112                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(.name & " cerro el cliente de " & username & ".", e_FontTypeNames.FONTTYPE_INFO))
-114                 Call WriteCerrarleCliente(tUser)
+114                 Call WriteCerrarleCliente(tUser.ArrayIndex)
 116                 Call LogGM(.name, "Cerro el cliene de:" & username)
                 End If
             End If
@@ -4452,7 +4323,7 @@ Public Sub HandleCrearEvento(ByVal UserIndex As Integer)
 122                 Call WriteConsoleMsg(UserIndex, "Ya hay un evento en curso. Finalicelo con /FINEVENTO primero.", e_FontTypeNames.FONTTYPE_New_Eventos)
                 End If
             Else
-124             Call WriteConsoleMsg(UserIndex, "Servidor » Solo Administradores pueder crear estos eventos.", e_FontTypeNames.FONTTYPE_INFO)
+124             Call WriteConsoleMsg(userIndex, "Servidor » Solo Administradores pueder crear estos eventos.", e_FontTypeNames.FONTTYPE_INFO)
             End If
         End With
         Exit Sub
@@ -4476,7 +4347,7 @@ Public Sub HandleBanTemporal(ByVal UserIndex As Integer)
 108         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios)) Then
 110             Call Admin.BanTemporal(username, dias, Reason, UserList(UserIndex).name)
             Else
-112             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
+112             Call WriteConsoleMsg(userIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
             End If
         End With
         Exit Sub
@@ -4652,7 +4523,7 @@ Public Sub HandleBusquedaTesoro(ByVal UserIndex As Integer)
 146                         BusquedaNpcActiva = True
                         Else
 148                         If BusquedaNpcActiva Then
-150                             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos> Todavía nadie logró matar el NPC que se encuentra en el mapa " & NpcList(npc_index_evento).Pos.map & ".", e_FontTypeNames.FONTTYPE_TALK))
+150                             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos> Todavía nadie logró matar el NPC que se encuentra en el mapa " & NpcList(npc_index_evento).pos.map & ".", e_FontTypeNames.FONTTYPE_TALK))
 152                             Call WriteConsoleMsg(UserIndex, "Ya hay una busqueda de npc activo. El tesoro se encuentra en: " & NpcList(npc_index_evento).Pos.map & "-" & NpcList(npc_index_evento).Pos.X & "-" & NpcList(npc_index_evento).Pos.y, e_FontTypeNames.FONTTYPE_INFO)
                             Else
 154                             Call WriteConsoleMsg(UserIndex, "Ya hay una busqueda del tesoro activa.", e_FontTypeNames.FONTTYPE_INFO)
@@ -4660,7 +4531,7 @@ Public Sub HandleBusquedaTesoro(ByVal UserIndex As Integer)
                         End If
                 End Select
             Else
-156             Call WriteConsoleMsg(UserIndex, "Servidor » No estas habilitado para hacer Eventos.", e_FontTypeNames.FONTTYPE_INFO)
+156             Call WriteConsoleMsg(userIndex, "Servidor » No estas habilitado para hacer Eventos.", e_FontTypeNames.FONTTYPE_INFO)
             End If
         End With
         Exit Sub
@@ -4683,7 +4554,7 @@ Public Sub HandleFinEvento(ByVal UserIndex As Integer)
         'Author: Juan Martín Sotuyo Dodero (Maraxus)
 100     With UserList(UserIndex)
 102         If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero Or e_PlayerType.RoleMaster)) Then
-104             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
+104             Call WriteConsoleMsg(userIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
 106         If EventoActivo Then
@@ -4705,7 +4576,7 @@ Public Sub HandleCreateEvent(ByVal UserIndex As Integer)
 102         name = Reader.ReadString8()
 104         If LenB(name) = 0 Then Exit Sub
 106         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios)) = 0 Then
-108             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
+108             Call WriteConsoleMsg(userIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
 110         Select Case UCase$(name)
@@ -4749,7 +4620,7 @@ Public Sub HandleCancelarEvento(ByVal UserIndex As Integer)
     End If
     If CurrentActiveEventType = CaptureTheFlag Then
         If InstanciaCaptura Is Nothing Then
-            Call WriteConsoleMsg(UserIndex, "Eventos » No hay ninguna instancia en curso para ese evento.", e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteConsoleMsg(userIndex, "Eventos » No hay ninguna instancia en curso para ese evento.", e_FontTypeNames.FONTTYPE_INFO)
         Else
             Call InstanciaCaptura.finalizarCaptura
         End If
@@ -4766,7 +4637,7 @@ Public Sub HandleSeguirMouse(ByVal UserIndex As Integer)
         On Error GoTo ErrHandler
 100     With UserList(UserIndex)
             Dim username As String
-            Dim tUser    As Integer
+            Dim tUser    As t_UserReference
             Dim LoopC    As Byte
             
             Dim tempArea As Long
@@ -4780,21 +4651,21 @@ Public Sub HandleSeguirMouse(ByVal UserIndex As Integer)
                     Exit Sub
                 End If
                 
-                If username = "" And .flags.SigueUsuario > 0 Then
+                If username = "" And .flags.SigueUsuario.ArrayIndex > 0 Then
                     'Me devuelvo inventario y stats
                     UserList(UserIndex).Invent = UserList(UserIndex).Invent_bk
                     UserList(UserIndex).Stats = UserList(UserIndex).Stats_bk
                     'UserList(UserIndex).Char.charindex = UserList(UserIndex).Char.charindex_bk
-                    Call WriteConsoleMsg(UserIndex, "Dejas de seguir a " & UserList(.flags.SigueUsuario).name & ".", e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteConsoleMsg(userIndex, "Dejas de seguir a " & UserList(.flags.SigueUsuario.ArrayIndex).name & ".", e_FontTypeNames.FONTTYPE_INFO)
                     Call WriteCancelarSeguimiento(UserIndex)
-                    Call WriteNotificarClienteSeguido(.flags.SigueUsuario, 0)
-                    Call SetUserRef(UserList(.flags.SigueUsuario).flags.GMMeSigue, 0)
+                    Call WriteNotificarClienteSeguido(.flags.SigueUsuario.ArrayIndex, 0)
+                    Call SetUserRef(UserList(.flags.SigueUsuario.ArrayIndex).flags.GMMeSigue, 0)
                     Call WriteUserCharIndexInServer(UserIndex)
                     Call WarpUserChar(UserIndex, UserList(UserIndex).Pos.map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.y, False)
-                    UserList(UserIndex).flags.SigueUsuario = 0
-                ElseIf tUser <> .flags.SigueUsuario And .flags.SigueUsuario > 0 And tUser > 0 Then
-                    If IsValidUserRef(UserList(tUser).flags.GMMeSigue) And UserList(tUser).flags.GMMeSigue.ArrayIndex <> UserIndex Then
-                        Call WriteConsoleMsg(UserIndex, "El usuario está siendo seguido por " & UserList(UserList(tUser).flags.GMMeSigue.ArrayIndex).name & ".", e_FontTypeNames.FONTTYPE_INFO)
+                    Call SetUserRef(UserList(userIndex).flags.SigueUsuario, 0)
+                ElseIf tUser.ArrayIndex <> .flags.SigueUsuario.ArrayIndex And .flags.SigueUsuario.ArrayIndex > 0 And IsValidUserRef(tUser) Then
+                    If IsValidUserRef(UserList(tUser.ArrayIndex).flags.GMMeSigue) And UserList(tUser.ArrayIndex).flags.GMMeSigue.ArrayIndex <> userIndex Then
+                        Call WriteConsoleMsg(userIndex, "El usuario está siendo seguido por " & UserList(UserList(tUser.ArrayIndex).flags.GMMeSigue.ArrayIndex).name & ".", e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
                     End If
                     
@@ -4802,13 +4673,13 @@ Public Sub HandleSeguirMouse(ByVal UserIndex As Integer)
                     UserList(UserIndex).Invent = UserList(UserIndex).Invent_bk
                     UserList(UserIndex).Stats = UserList(UserIndex).Stats_bk
                     'UserList(UserIndex).Char.charindex = UserList(UserIndex).Char.charindex_bk
-                    Call WriteConsoleMsg(UserIndex, "Dejas de seguir a " & UserList(.flags.SigueUsuario).name & ".", e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteConsoleMsg(userIndex, "Dejas de seguir a " & UserList(.flags.SigueUsuario.ArrayIndex).name & ".", e_FontTypeNames.FONTTYPE_INFO)
                     Call WriteCancelarSeguimiento(UserIndex)
-                    Call WriteNotificarClienteSeguido(.flags.SigueUsuario, 0)
-                    Call SetUserRef(UserList(.flags.SigueUsuario).flags.GMMeSigue, 0)
+                    Call WriteNotificarClienteSeguido(.flags.SigueUsuario.ArrayIndex, 0)
+                    Call SetUserRef(UserList(.flags.SigueUsuario.ArrayIndex).flags.GMMeSigue, 0)
                     Call WriteUserCharIndexInServer(UserIndex)
                     Call WarpUserChar(UserIndex, UserList(UserIndex).Pos.map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.y, False)
-                    UserList(UserIndex).flags.SigueUsuario = 0
+                    Call SetUserRef(UserList(userIndex).flags.SigueUsuario, 0)
                     
                     Call DoAdminInvisible(UserIndex, 1) 'HACER LO DE ADMIN INVISIBLE
                     'Call WarpUserChar(UserIndex, UserList(tUser).Pos.map, UserList(tUser).Pos.X, UserList(tUser).Pos.y, False)
@@ -4818,31 +4689,31 @@ Public Sub HandleSeguirMouse(ByVal UserIndex As Integer)
                     UserList(UserIndex).Stats_bk = UserList(UserIndex).Stats
                     
                     'Me pego el inventario y los hechizos del usuario seguido
-                    UserList(UserIndex).Invent = UserList(tUser).Invent
-                    UserList(UserIndex).Stats = UserList(tUser).Stats
+                    UserList(userIndex).Invent = UserList(tUser.ArrayIndex).Invent
+                    UserList(userIndex).Stats = UserList(tUser.ArrayIndex).Stats
                     UserList(UserIndex).flags.SigueUsuario = tUser
                     'Actualizo flag en cliente para que empiece a enviar paquetes
-                    Call WriteNotificarClienteSeguido(tUser, 1)
-                    Call SetUserRef(UserList(tUser).flags.GMMeSigue, UserIndex)
-                    Call WriteConsoleMsg(UserIndex, "Comienzas a seguir a " & UserList(tUser).name & ".", e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteNotificarClienteSeguido(tUser.ArrayIndex, 1)
+                    Call SetUserRef(UserList(tUser.ArrayIndex).flags.GMMeSigue, userIndex)
+                    Call WriteConsoleMsg(userIndex, "Comienzas a seguir a " & UserList(tUser.ArrayIndex).name & ".", e_FontTypeNames.FONTTYPE_INFO)
                     tempArea = UserList(UserIndex).AreasInfo.AreaID
-                    Call WarpUserChar(UserIndex, UserList(tUser).Pos.map, 15, 15)
-                    Call WriteSendFollowingCharindex(UserIndex, UserList(tUser).Char.charindex)
-                    If tempArea <> UserList(tUser).AreasInfo.AreaID Then
-                        Call MakeUserChar(False, UserIndex, tUser, UserList(tUser).Pos.map, UserList(tUser).Pos.X, UserList(tUser).Pos.y)
+                    Call WarpUserChar(userIndex, UserList(tUser.ArrayIndex).pos.map, 15, 15)
+                    Call WriteSendFollowingCharindex(userIndex, UserList(tUser.ArrayIndex).Char.charindex)
+                    If tempArea <> UserList(tUser.ArrayIndex).AreasInfo.AreaID Then
+                        Call MakeUserChar(False, userIndex, tUser.ArrayIndex, UserList(tUser.ArrayIndex).pos.map, UserList(tUser.ArrayIndex).pos.x, UserList(tUser.ArrayIndex).pos.y)
                     End If
                     
-                    Call WritePosUpdateCharIndex(UserIndex, UserList(tUser).Pos.X, UserList(tUser).Pos.y, UserList(tUser).Char.charindex)
-                    Call WriteUserCharIndexInServer(tUser)
-                    UserList(UserIndex).AreasInfo = UserList(tUser).AreasInfo
+                    Call WritePosUpdateCharIndex(userIndex, UserList(tUser.ArrayIndex).pos.x, UserList(tUser.ArrayIndex).pos.y, UserList(tUser.ArrayIndex).Char.charindex)
+                    Call WriteUserCharIndexInServer(tUser.ArrayIndex)
+                    UserList(userIndex).AreasInfo = UserList(tUser.ArrayIndex).AreasInfo
                     Call ModAreas.CheckUpdateNeededUser(UserIndex, 5, 0)
-112             ElseIf tUser <= 0 Then
+112             ElseIf Not IsValidUserRef(tUser) Then
 114                 Call WriteConsoleMsg(UserIndex, "Usuario offline.", e_FontTypeNames.FONTTYPE_INFO)
                 Else
                     'Si empiezo a seguir a alguien
-                    If UserList(UserIndex).flags.SigueUsuario = 0 Then
-                        If IsValidUserRef(UserList(tUser).flags.GMMeSigue) And UserList(tUser).flags.GMMeSigue.ArrayIndex <> UserIndex Then
-                            Call WriteConsoleMsg(UserIndex, "El usuario está siendo seguido por " & UserList(UserList(tUser).flags.GMMeSigue.ArrayIndex).name & ".", e_FontTypeNames.FONTTYPE_INFO)
+                    If Not IsValidUserRef(UserList(userIndex).flags.SigueUsuario) Then
+                        If IsValidUserRef(UserList(tUser.ArrayIndex).flags.GMMeSigue) And UserList(tUser.ArrayIndex).flags.GMMeSigue.ArrayIndex <> userIndex Then
+                            Call WriteConsoleMsg(userIndex, "El usuario está siendo seguido por " & UserList(UserList(tUser.ArrayIndex).flags.GMMeSigue.ArrayIndex).name & ".", e_FontTypeNames.FONTTYPE_INFO)
                             Exit Sub
                         End If
                         
@@ -4853,38 +4724,37 @@ Public Sub HandleSeguirMouse(ByVal UserIndex As Integer)
                         UserList(UserIndex).Invent_bk = UserList(UserIndex).Invent
                         UserList(UserIndex).Stats_bk = UserList(UserIndex).Stats
                         'Me pego el inventario y los hechizos del usuario seguido
-                        UserList(UserIndex).Invent = UserList(tUser).Invent
-                        UserList(UserIndex).Stats = UserList(tUser).Stats
+                        UserList(userIndex).Invent = UserList(tUser.ArrayIndex).Invent
+                        UserList(userIndex).Stats = UserList(tUser.ArrayIndex).Stats
                         UserList(UserIndex).flags.SigueUsuario = tUser
                         'Actualizo flag en cliente para que empiece a enviar paquetes
-                        Call WriteNotificarClienteSeguido(tUser, 1)
-                        Call SetUserRef(UserList(tUser).flags.GMMeSigue, UserIndex)
-                        Call WriteConsoleMsg(UserIndex, "Comienzas a seguir a " & UserList(tUser).name & ".", e_FontTypeNames.FONTTYPE_INFO)
+                        Call WriteNotificarClienteSeguido(tUser.ArrayIndex, 1)
+                        Call SetUserRef(UserList(tUser.ArrayIndex).flags.GMMeSigue, userIndex)
+                        Call WriteConsoleMsg(userIndex, "Comienzas a seguir a " & UserList(tUser.ArrayIndex).name & ".", e_FontTypeNames.FONTTYPE_INFO)
                         tempArea = UserList(UserIndex).AreasInfo.AreaID
-                        Call WarpUserChar(UserIndex, UserList(tUser).Pos.map, 15, 15)
-                        Call WriteSendFollowingCharindex(UserIndex, UserList(tUser).Char.charindex)
-                        If tempArea <> UserList(tUser).AreasInfo.AreaID Then
-                            Call MakeUserChar(False, UserIndex, tUser, UserList(tUser).Pos.map, UserList(tUser).Pos.X, UserList(tUser).Pos.y)
+                        Call WarpUserChar(userIndex, UserList(tUser.ArrayIndex).pos.map, 15, 15)
+                        Call WriteSendFollowingCharindex(userIndex, UserList(tUser.ArrayIndex).Char.charindex)
+                        If tempArea <> UserList(tUser.ArrayIndex).AreasInfo.AreaID Then
+                            Call MakeUserChar(False, userIndex, tUser.ArrayIndex, UserList(tUser.ArrayIndex).pos.map, UserList(tUser.ArrayIndex).pos.x, UserList(tUser.ArrayIndex).pos.y)
                         End If
                         
-                        Call WritePosUpdateCharIndex(UserIndex, UserList(tUser).Pos.X, UserList(tUser).Pos.y, UserList(tUser).Char.charindex)
-                        Call WriteUserCharIndexInServer(tUser)
-                        UserList(UserIndex).AreasInfo = UserList(tUser).AreasInfo
+                        Call WritePosUpdateCharIndex(userIndex, UserList(tUser.ArrayIndex).pos.x, UserList(tUser.ArrayIndex).pos.y, UserList(tUser.ArrayIndex).Char.charindex)
+                        Call WriteUserCharIndexInServer(tUser.ArrayIndex)
+                        UserList(userIndex).AreasInfo = UserList(tUser.ArrayIndex).AreasInfo
                         Call ModAreas.CheckUpdateNeededUser(UserIndex, 5, 0)
                     Else
-                        If UserList(UserIndex).flags.SigueUsuario <> tUser Then
-                            Call WriteConsoleMsg(UserIndex, "Ya te encuentras siguiendo a un usuario, para dejar de seguirlo escribe /SM " & UserList(UserList(UserIndex).flags.SigueUsuario).name & ".", e_FontTypeNames.FONTTYPE_INFO)
+                        If UserList(userIndex).flags.SigueUsuario.ArrayIndex <> tUser.ArrayIndex Then
+                            Call WriteConsoleMsg(userIndex, "Ya te encuentras siguiendo a un usuario, para dejar de seguirlo escribe /SM " & UserList(UserList(userIndex).flags.SigueUsuario.ArrayIndex).name & ".", e_FontTypeNames.FONTTYPE_INFO)
                             Exit Sub
                         End If
                         'Me devuelvo inventario y stats
                         UserList(UserIndex).Invent = UserList(UserIndex).Invent_bk
                         UserList(UserIndex).Stats = UserList(UserIndex).Stats_bk
-                        UserList(UserIndex).flags.SigueUsuario = 0
-                        'UserList(UserIndex).Char.charindex = UserList(UserIndex).Char.charindex_bk
-                        Call WriteConsoleMsg(UserIndex, "Dejas de seguir a " & UserList(tUser).name & ".", e_FontTypeNames.FONTTYPE_INFO)
+                        Call SetUserRef(UserList(userIndex).flags.SigueUsuario, 0)
+                        Call WriteConsoleMsg(userIndex, "Dejas de seguir a " & UserList(tUser.ArrayIndex).name & ".", e_FontTypeNames.FONTTYPE_INFO)
                         Call WriteCancelarSeguimiento(UserIndex)
-                        Call WriteNotificarClienteSeguido(tUser, 0)
-                        Call SetUserRef(UserList(tUser).flags.GMMeSigue, 0)
+                        Call WriteNotificarClienteSeguido(tUser.ArrayIndex, 0)
+                        Call SetUserRef(UserList(tUser.ArrayIndex).flags.GMMeSigue, 0)
                         Call WriteUserCharIndexInServer(UserIndex)
                         Call WarpUserChar(UserIndex, UserList(UserIndex).Pos.map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.y, False)
                     End If

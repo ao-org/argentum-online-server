@@ -1597,11 +1597,11 @@ Sub DoFollow(ByVal NpcIndex As Integer, ByVal UserName As String)
 112             .Hostile = .flags.OldHostil
    
             Else
-                Dim player As clsUserRefWrapper
-                Set player = NameIndex(username)
-                If player.IsValid Then
+                Dim player As t_UserReference
+                player = NameIndex(username)
+                If IsValidUserRef(player) Then
 114                 .flags.AttackedBy = username
-116                 Call SetUserRef(.TargetUser, player.PlayerIndex())
+116                 .targetUser = player
 118                 .flags.Follow = True
 120                 .Movement = e_TipoAI.NpcDefensa
 122                 .Hostile = 0

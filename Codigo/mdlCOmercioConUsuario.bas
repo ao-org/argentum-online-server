@@ -65,10 +65,10 @@ Public Function IniciarComercioConUsuario(ByVal Origen As Integer, ByVal Destino
         Else
             'Es el primero que comercia ?
             'Call WriteConsoleMsg(Destino, UserList(Origen).Name & " desea comerciar. Si deseas aceptar, Escribe /COMERCIAR.", e_FontTypeNames.FONTTYPE_TALK)
-128         UserList(Destino).flags.TargetUser = Origen
+128         Call SetUserRef(UserList(Destino).flags.targetUser, Origen)
     
 130         UserList(Destino).flags.pregunta = 4
-132         Call WritePreguntaBox(Destino, UserList(Origen).Name & " desea comerciar contigo. ¿Aceptás?")
+132         Call WritePreguntaBox(Destino, UserList(Origen).name & " desea comerciar contigo. ¿Aceptás?")
     
         End If
 

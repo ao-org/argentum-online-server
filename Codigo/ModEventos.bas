@@ -264,33 +264,34 @@ Public Sub ForzarEvento(ByVal Tipo As Byte, ByVal Duracion As Byte, ByVal multi 
         
         On Error GoTo ForzarEvento_Err
         
-
+        Dim tUser As t_UserReference
+        tUser = NameIndex(Quien)
 100     If Tipo > 3 Or Tipo < 1 Then
-102         Call WriteConsoleMsg(NameIndex(Quien), "Tipo de evento invalido.", e_FontTypeNames.FONTTYPE_New_Eventos)
+102         Call WriteConsoleMsg(tUser.ArrayIndex, "Tipo de evento invalido.", e_FontTypeNames.FONTTYPE_New_Eventos)
             Exit Sub
 
         End If
  
 104     If Duracion > 59 Then
-106         Call WriteConsoleMsg(NameIndex(Quien), "Duracion invalida, maxima 59 minutos.", e_FontTypeNames.FONTTYPE_New_Eventos)
+106         Call WriteConsoleMsg(tUser.ArrayIndex, "Duracion invalida, maxima 59 minutos.", e_FontTypeNames.FONTTYPE_New_Eventos)
             Exit Sub
 
         End If
 
 108      If (Tipo = 1 And multi > 2) Then
-110         Call WriteConsoleMsg(NameIndex(Quien), "Multiplicacion invalida, maxima x2.", e_FontTypeNames.FONTTYPE_New_Eventos)
+110         Call WriteConsoleMsg(tUser.ArrayIndex, "Multiplicacion invalida, maxima x2.", e_FontTypeNames.FONTTYPE_New_Eventos)
             Exit Sub
 
         End If
         
 112     If (Tipo = 2 And multi > 2) Then
-114         Call WriteConsoleMsg(NameIndex(Quien), "Multiplicacion invalida, maxima x2.", e_FontTypeNames.FONTTYPE_New_Eventos)
+114         Call WriteConsoleMsg(tUser.ArrayIndex, "Multiplicacion invalida, maxima x2.", e_FontTypeNames.FONTTYPE_New_Eventos)
             Exit Sub
 
         End If
         
 116     If (Tipo = 3 And multi > 5) Then
-118         Call WriteConsoleMsg(NameIndex(Quien), "Multiplicacion invalida, maxima x5.", e_FontTypeNames.FONTTYPE_New_Eventos)
+118         Call WriteConsoleMsg(tUser.ArrayIndex, "Multiplicacion invalida, maxima x5.", e_FontTypeNames.FONTTYPE_New_Eventos)
             Exit Sub
 
         End If

@@ -24,3 +24,7 @@ End Function
 Public Function PlayerIndex() As Integer
     PlayerIndex = UserRef.ArrayIndex
 End Function
+
+Public Function VersionId() As Integer
+    VersionId = UserRef.VersionId
+End Function

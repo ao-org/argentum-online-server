@@ -822,6 +822,8 @@ Public Const STAT_MAXDEF              As Byte = 99
 ' **************************************************************
 ' **************************************************************
 Public Type t_UserReference
+    'hold and index to a UserIndex, this elements are reused all the time so we also keep a
+    'versionId to track that we are refering the same user that we intended when we generated this ref
     ArrayIndex As Integer
     VersionId As Integer
 End Type
@@ -1147,7 +1149,7 @@ End Enum
 Public Type t_SolicitudJugador
     nombre As String
     Aceptado As Boolean
-    CurIndex As Integer
+    CurIndex As t_UserReference
 End Type
 
 Public Type t_SolicitudReto
@@ -1178,7 +1180,7 @@ Public Type t_SalaReto
     TiempoItems As Integer
     TamañoEquipoIzq As Byte
     TamañoEquipoDer As Byte
-    Jugadores() As Integer
+    Jugadores() As t_UserReference
 End Type
 
 Public Type t_Retos
@@ -1533,17 +1535,15 @@ Public Type t_UserFlags
     PescandoEspecial As Boolean
     QuestOpenByObj As Boolean
     
-    SigueUsuario As Integer
+    SigueUsuario As t_UserReference
     GMMeSigue As t_UserReference
     
     EnTorneo As Boolean
     
     stepToggle As Boolean
-    'Ladder puto
-    'Casamientos  08/6/10 01:10 am
     Pareja As String
     Casado As Byte
-    Candidato As Integer
+    Candidato As t_UserReference
     
     pregunta As Byte
        
@@ -1634,7 +1634,7 @@ Public Type t_UserFlags
     AdministrativeBan As Byte
     BanMotivo As String
 
-    TargetUser As Integer ' Usuario señalado
+    targetUser As t_UserReference ' Usuario señalado
     
     TargetObj As Integer ' Obj señalado
     TargetObjMap As Integer
@@ -1690,7 +1690,7 @@ Public Type t_UserFlags
     EnReto As Boolean
     SalaReto As Integer
     EquipoReto As e_EquipoReto
-    AceptoReto As Integer
+    AceptoReto As t_UserReference
     SolicitudReto As t_SolicitudReto
     LastPos As t_WorldPos
     

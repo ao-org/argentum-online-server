@@ -1219,7 +1219,7 @@ Sub ResetUserFlags(ByVal UserIndex As Integer)
 126         .TargetObjMap = 0
 128         .TargetObjX = 0
 130         .TargetObjY = 0
-132         .TargetUser = 0
+132         Call SetUserRef(.targetUser, 0)
 134         .TipoPocion = 0
 136         .TomoPocion = False
 138         .Descuento = vbNullString
@@ -1243,7 +1243,6 @@ Sub ResetUserFlags(ByVal UserIndex As Integer)
 182         .Silenciado = 0
 184         .CentinelaOK = False
 186         .AdminPerseguible = False
-            'Ladder
 188         .VecesQueMoriste = 0
 190         .MinutosRestantes = 0
 192         .SegundosPasados = 0
@@ -1252,7 +1251,7 @@ Sub ResetUserFlags(ByVal UserIndex As Integer)
 198         .Incinerado = 0
 200         .Casado = 0
 202         .Pareja = ""
-204         .Candidato = 0
+204         Call SetUserRef(.Candidato, 0)
 206         .UsandoMacro = False
 208         .pregunta = 0
 
@@ -1306,7 +1305,7 @@ Sub ResetUserFlags(ByVal UserIndex As Integer)
 
 270         .EnReto = False
 272         .SolicitudReto.estado = e_SolicitudRetoEstado.Libre
-274         .AceptoReto = 0
+274         Call SetUserRef(.AceptoReto, 0)
 276         .LastPos.map = 0
 278         .ReturnPos.map = 0
             
@@ -1317,7 +1316,7 @@ Sub ResetUserFlags(ByVal UserIndex As Integer)
             .jugando_captura_team = 0
             .jugando_captura_timer = 0
             .jugando_captura_muertes = 0
-            .SigueUsuario = 0
+            Call SetUserRef(.SigueUsuario, 0)
             Call SetUserRef(.GMMeSigue, 0)
         End With
 
@@ -1560,15 +1559,15 @@ Sub ClearAndSaveUser(ByVal UserIndex As Integer)
 140         ElseIf .flags.SolicitudReto.estado <> e_SolicitudRetoEstado.Libre Then
 142             Call CancelarSolicitudReto(UserIndex, .name & " se ha desconectado.")
             
-144         ElseIf .flags.AceptoReto > 0 Then
-146             Call CancelarSolicitudReto(.flags.AceptoReto, .name & " se ha desconectado.")
+144         ElseIf IsValidUserRef(.flags.AceptoReto) Then
+146             Call CancelarSolicitudReto(.flags.AceptoReto.ArrayIndex, .name & " se ha desconectado.")
             End If
             
             
             'Se desconecta un usuario seguido
             If IsValidUserRef(.flags.GMMeSigue) Then
                 Call WriteCancelarSeguimiento(.flags.GMMeSigue.ArrayIndex)
-                UserList(.flags.GMMeSigue.ArrayIndex).flags.SigueUsuario = 0
+                Call SetUserRef(UserList(.flags.GMMeSigue.ArrayIndex).flags.SigueUsuario, 0)
                 UserList(.flags.GMMeSigue.ArrayIndex).Invent = UserList(.flags.GMMeSigue.ArrayIndex).Invent_bk
                 UserList(.flags.GMMeSigue.ArrayIndex).Stats = UserList(.flags.GMMeSigue.ArrayIndex).Stats_bk
                 'UserList(.flags.GMMeSigue).Char.charindex = UserList(.flags.GMMeSigue).Char.charindex_bk
@@ -1580,15 +1579,13 @@ Sub ClearAndSaveUser(ByVal UserIndex As Integer)
                 'Falta revertir inventario del GM
             End If
                 
-            If .flags.SigueUsuario > 0 Then
+            If IsValidUserRef(.flags.SigueUsuario) Then
                 'Para que el usuario deje de mandar el floodeo de paquetes
-                Call WriteNotificarClienteSeguido(.flags.SigueUsuario, 0)
-                Call SetUserRef(UserList(.flags.SigueUsuario).flags.GMMeSigue, 0)
+                Call WriteNotificarClienteSeguido(.flags.SigueUsuario.ArrayIndex, 0)
+                Call SetUserRef(UserList(.flags.SigueUsuario.ArrayIndex).flags.GMMeSigue, 0)
                 UserList(UserIndex).Invent = UserList(UserIndex).Invent_bk
                 UserList(UserIndex).Stats = UserList(UserIndex).Stats_bk
-               ' UserList(UserIndex).Char.charindex = UserList(UserIndex).Char.charindex_bk
-                
-                .flags.SigueUsuario = 0
+                Call SetUserRef(.flags.SigueUsuario, 0)
             End If
             
         

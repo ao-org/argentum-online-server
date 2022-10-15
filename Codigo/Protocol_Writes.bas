@@ -5654,7 +5654,7 @@ Public Sub WriteDebugLogResponse(ByVal UserIndex As Integer, ByVal debugType, By
         Next i
     ElseIf debugType = 1 Then
         'TODO- debug
-        Dim tIndex As Integer: tIndex = NameIndex(args(0))
+        Dim tIndex As Integer: tIndex = NameIndex(Args(0)).ArrayIndex
         If tIndex > 0 Then
             Call Writer.WriteInt16(2)
             Call Writer.WriteString8("remote DEBUG: " & " user name: " & args(0))

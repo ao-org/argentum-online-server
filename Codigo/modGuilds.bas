@@ -193,7 +193,7 @@ Public Function m_EcharMiembroDeClan(ByVal Expulsador As Integer, ByVal Expulsad
         
 
         'UI echa a Expulsado del clan de Expulsado
-        Dim UserIndex As Integer
+        Dim UserReference As t_UserReference
 
         Dim GI        As Integer
         
@@ -201,27 +201,27 @@ Public Function m_EcharMiembroDeClan(ByVal Expulsador As Integer, ByVal Expulsad
     
 100     m_EcharMiembroDeClan = 0
 
-102     UserIndex = NameIndex(Expulsado)
+102     UserReference = NameIndex(expulsado)
 
-104     If UserIndex > 0 Then
+104     If IsValidUserRef(UserReference) Then
             'pj online
-106         GI = UserList(UserIndex).GuildIndex
+106         GI = UserList(UserReference.ArrayIndex).GuildIndex
 
 108         If GI > 0 Then
 110             If m_PuedeSalirDeClan(Expulsado, GI, Expulsador) Then
 112                 If m_EsGuildLeader(Expulsado, GI) Then guilds(GI).SetLeader (guilds(GI).Fundador)
-114                 Call guilds(GI).DesConectarMiembro(UserIndex)
+114                 Call guilds(GI).DesConectarMiembro(UserReference.ArrayIndex)
 116                 Call guilds(GI).ExpulsarMiembro(Expulsado)
 118                 Call LogClanes(Expulsado & " ha sido expulsado de " & guilds(GI).GuildName & " Expulsador = " & Expulsador)
-120                 UserList(UserIndex).GuildIndex = 0
+120                 UserList(UserReference.ArrayIndex).GuildIndex = 0
 
-122                 Map = UserList(UserIndex).Pos.Map
+122                 map = UserList(UserReference.ArrayIndex).pos.map
 
 124                 If MapInfo(Map).SoloClanes And MapInfo(Map).Salida.Map <> 0 Then
-126                     Call WriteConsoleMsg(UserIndex, "Necesitas un clan para pertenecer en este mapa.", e_FontTypeNames.FONTTYPE_INFO)
-128                     Call WarpUserChar(UserIndex, MapInfo(Map).Salida.Map, MapInfo(Map).Salida.X, MapInfo(Map).Salida.Y, True)
+126                     Call WriteConsoleMsg(UserReference.ArrayIndex, "Necesitas un clan para pertenecer en este mapa.", e_FontTypeNames.FONTTYPE_INFO)
+128                     Call WarpUserChar(UserReference.ArrayIndex, MapInfo(map).Salida.map, MapInfo(map).Salida.x, MapInfo(map).Salida.y, True)
                     Else
-130                     Call RefreshCharStatus(UserIndex)
+130                     Call RefreshCharStatus(UserReference.ArrayIndex)
                     End If
 
 132                 m_EcharMiembroDeClan = GI
@@ -2085,7 +2085,7 @@ Public Function a_AceptarAspirante(ByVal UserIndex As Integer, ByRef Aspirante A
 
         Dim NroAspirante As Integer
 
-        Dim AspiranteUI  As Integer
+        Dim AspiranteRef  As t_UserReference
 
         'un pj ingresa al clan :D
 
@@ -2113,22 +2113,22 @@ Public Function a_AceptarAspirante(ByVal UserIndex As Integer, ByRef Aspirante A
 
         End If
     
-118     AspiranteUI = NameIndex(Aspirante)
+118     AspiranteRef = NameIndex(Aspirante)
 
-120     If AspiranteUI > 0 Then
+120     If IsValidUserRef(AspiranteRef) Then
 
             'pj Online
-122         If Not m_EstadoPermiteEntrar(AspiranteUI, GI) Then
+122         If Not m_EstadoPermiteEntrar(AspiranteRef.ArrayIndex, GI) Then
 124             refError = Aspirante & " no puede entrar a un clan " & Alineacion2String(guilds(GI).Alineacion)
 126             Call guilds(GI).RetirarAspirante(Aspirante, NroAspirante)
                 Exit Function
-128         ElseIf Not UserList(AspiranteUI).GuildIndex = 0 Then
+128         ElseIf Not UserList(AspiranteRef.ArrayIndex).GuildIndex = 0 Then
 130             refError = Aspirante & " ya es parte de otro clan."
 132             Call guilds(GI).RetirarAspirante(Aspirante, NroAspirante)
                 Exit Function
             End If
             
-            If GuildAlignmentIndex(GI) = e_ALINEACION_GUILD.ALINEACION_CIUDADANA And UserList(AspiranteUI).flags.Seguro = False Then
+            If GuildAlignmentIndex(GI) = e_ALINEACION_GUILD.ALINEACION_CIUDADANA And UserList(AspiranteRef.ArrayIndex).flags.Seguro = False Then
                 refError = Aspirante & " deberá activar el seguro para entrar al clan."
                 Call guilds(GI).RetirarAspirante(Aspirante, NroAspirante)
                Exit Function
@@ -2166,8 +2166,8 @@ Public Function a_AceptarAspirante(ByVal UserIndex As Integer, ByRef Aspirante A
 158     Call guilds(GI).AceptarNuevoMiembro(Aspirante)
     
         ' If player is online, update tag
-160     If AspiranteUI > 0 Then
-162         Call RefreshCharStatus(AspiranteUI)
+160     If IsValidUserRef(AspiranteRef) Then
+162         Call RefreshCharStatus(AspiranteRef.ArrayIndex)
 
         End If
     

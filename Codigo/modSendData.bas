@@ -454,7 +454,7 @@ Private Sub SendToUserAreaButFollowerAndIndex(ByVal UserIndex As Integer, ByVal 
 116             If UserList(tempIndex).AreasInfo.AreaReciveY And AreaY Then
 
 118                 If UserList(tempIndex).ConnIDValida Then
-                        If UserList(tempIndex).flags.SigueUsuario = 0 And tempIndex <> UserIndex Then
+                        If UserList(tempIndex).flags.SigueUsuario.ArrayIndex = 0 And tempIndex <> userIndex Then
 120                         Call modNetwork.Send(tempIndex, Buffer)
                         End If
                     End If

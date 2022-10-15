@@ -89,9 +89,7 @@ End Sub
 Public Sub FinalizarSubasta()
         'Primero Damos el objeto subastado
         'Despues el oro al subastador
-        
         On Error GoTo FinalizarSubasta_Err
-        
 
         '1) nos fijamos si el usuario que gano la subasta esta online,
         'si esta online le ponemos el objeto en el inventario, si no tiene
@@ -103,21 +101,14 @@ Public Sub FinalizarSubasta()
         '2)Nos fijamos si esta online, si esta online, le damos el oro a la billetera,
         'si esta offline se deposita en el banco.
         'El sistema le cobra un 10% del precio de venta, por uso de servicio.
-
         Dim ObjVendido   As t_Obj
-
-        Dim tUser        As Integer
-
+        Dim tUser        As t_UserReference
+        Dim Subastador  As t_UserReference
         Dim Leer         As New clsIniManager
-
         Dim FileUser     As String
-
         Dim SlotEnBoveda As Integer
-
         Dim PosMap       As Byte
-
         Dim posX         As Byte
-
         Dim posY         As Byte
 
 100     FileUser = CharPath & UCase$(Subasta.Comprador) & ".chr"
@@ -126,7 +117,7 @@ Public Sub FinalizarSubasta()
 104     ObjVendido.amount = Subasta.ObjSubastadoCantidad
 106     tUser = NameIndex(Subasta.Comprador)
 
-108     If tUser <= 0 Then
+108     If Not IsValidUserRef(tUser) Then
 110         Call LogearEventoDeSubasta("El usuario ganador de subasta se encuentra offline, intentando depositar en boveda")
 112         Call Leer.Initialize(FileUser)
 114         SlotEnBoveda = CInt(Leer.GetValue("BancoInventory", "CantidadItems")) + 1
@@ -156,13 +147,12 @@ Public Sub FinalizarSubasta()
 
         Else
 
-154         If Not MeterItemEnInventario(NameIndex(Subasta.Comprador), ObjVendido) Then
-156             Call TirarItemAlPiso(UserList(NameIndex(Subasta.Comprador)).Pos, ObjVendido)
-
+154         If Not MeterItemEnInventario(tUser.ArrayIndex, ObjVendido) Then
+156             Call TirarItemAlPiso(UserList(tUser.ArrayIndex).pos, ObjVendido)
             End If
 
 158         Call LogearEventoDeSubasta("Se entrego el item en mano.")
-160         Call WriteConsoleMsg(tUser, "Felicitaciones, has ganado la subasta.", e_FontTypeNames.FONTTYPE_SUBASTA)
+160         Call WriteConsoleMsg(tUser.ArrayIndex, "Felicitaciones, has ganado la subasta.", e_FontTypeNames.FONTTYPE_SUBASTA)
 
         End If
 
@@ -170,19 +160,19 @@ Public Sub FinalizarSubasta()
 
 162     Descuento = Subasta.MejorOferta / 100 * 5
 164     Subasta.MejorOferta = Subasta.MejorOferta - Descuento
-        
-166     If NameIndex(Subasta.Subastador) <= 0 Then
+        Subastador = NameIndex(Subasta.Subastador)
+166     If Not IsValidUserRef(Subastador) Then
 168         Call LogearEventoDeSubasta("El subastador se encontraba offline cuando se le tenia que dar el oro, depositando en el banco.")
 170         Call Leer.Initialize(CharPath & UCase$(Subasta.Subastador) & ".chr")
 172         Call WriteVar(CharPath & UCase$(Subasta.Subastador) & ".chr", "STATS", "Banco", CLng(Leer.GetValue("STATS", "BANCO")) + Subasta.MejorOferta)
 174         Call LogearEventoDeSubasta("El Oro fue depositado en la boveda Correctamente!.")
 176         Call WriteVar(CharPath & UCase$(Subasta.Subastador) & ".chr", "INIT", "MENSAJEINFORMACION", "Subastador te ha dejado un mensaje: ¡Has vendido tu item! Te deposite el oro en el sistema de finanzas Goliath.")
         Else
-178         UserList(NameIndex(Subasta.Subastador)).Stats.GLD = UserList(NameIndex(Subasta.Subastador)).Stats.GLD + Subasta.MejorOferta
+178         UserList(Subastador.ArrayIndex).Stats.GLD = UserList(Subastador.ArrayIndex).Stats.GLD + Subasta.MejorOferta
         
-180         Call WriteConsoleMsg(NameIndex(Subasta.Subastador), "Felicitaciones, has ganado " & PonerPuntos(Subasta.MejorOferta) & " monedas de oro de tú subasta.", e_FontTypeNames.FONTTYPE_SUBASTA)
+180         Call WriteConsoleMsg(Subastador.ArrayIndex, "Felicitaciones, has ganado " & PonerPuntos(Subasta.MejorOferta) & " monedas de oro de tú subasta.", e_FontTypeNames.FONTTYPE_SUBASTA)
         
-182         Call WriteUpdateGold(NameIndex(Subasta.Subastador))
+182         Call WriteUpdateGold(Subastador.ArrayIndex)
 184         Call LogearEventoDeSubasta("Oro entregado en la billetera")
         
         End If
@@ -232,19 +222,13 @@ Public Sub DevolverItem()
         
 
         Dim ObjVendido   As t_Obj
-
-        Dim tUser        As Integer
-
+        Dim tUser        As t_UserReference
+        Dim Subastador   As t_UserReference
         Dim Leer         As New clsIniManager
-
         Dim FileUser     As String
-
         Dim SlotEnBoveda As Integer
-
         Dim PosMap       As Byte
-
         Dim posX         As Byte
-
         Dim posY         As Byte
 
 100     Call LogearEventoDeSubasta("Subasta cancelada por falta de ofertas, devolviendo items...")
@@ -255,7 +239,7 @@ Public Sub DevolverItem()
 106     ObjVendido.amount = Subasta.ObjSubastadoCantidad
 108     tUser = NameIndex(Subasta.Subastador)
 
-110     If tUser <= 0 Then
+110     If Not IsValidUserRef(tUser) Then
     
 112         Call LogearEventoDeSubasta("El usuario vendedor de subasta se encuentra offline, intentando depositar en boveda")
 114         Call Leer.Initialize(FileUser)
@@ -287,9 +271,9 @@ Public Sub DevolverItem()
             End If
 
         Else
-
-152         If Not MeterItemEnInventario(NameIndex(Subasta.Subastador), ObjVendido) Then
-158             Call TirarItemAlPiso(UserList(NameIndex(Subasta.Subastador)).Pos, ObjVendido)
+            Subastador = NameIndex(Subasta.Subastador)
+152         If Not MeterItemEnInventario(Subastador.ArrayIndex, ObjVendido) Then
+158             Call TirarItemAlPiso(UserList(Subastador.ArrayIndex).pos, ObjVendido)
 160             Call LogearEventoDeSubasta("Se tiro al piso el item.")
 
             End If
@@ -315,19 +299,13 @@ Public Sub CancelarSubasta()
         
 
         Dim ObjVendido   As t_Obj
-
-        Dim tUser        As Integer
-
+        Dim tUser        As t_UserReference
+        Dim Subastador   As t_UserReference
         Dim Leer         As New clsIniManager
-
         Dim FileUser     As String
-
         Dim SlotEnBoveda As Integer
-
         Dim PosMap       As Byte
-
         Dim posX         As Byte
-
         Dim posY         As Byte
 
 100     Call LogearEventoDeSubasta("Subasta cancelada.")
@@ -338,7 +316,7 @@ Public Sub CancelarSubasta()
 106     ObjVendido.amount = Subasta.ObjSubastadoCantidad
 108     tUser = NameIndex(Subasta.Subastador)
 
-110     If tUser <= 0 Then
+110     If Not IsValidUserRef(tUser) Then
 112         Call LogearEventoDeSubasta("El usuario de subasta se encuentra offline, intentando depositar en boveda")
 114         Call Leer.Initialize(FileUser)
 116         SlotEnBoveda = CInt(Leer.GetValue("BancoInventory", "CantidadItems")) + 1
@@ -365,18 +343,16 @@ Public Sub CancelarSubasta()
 148                 Call MakeObj(ObjVendido, PosMap, posX, posY)
 150                 Call LogearEventoDeSubasta("El correo del usuario estaba lleno, se tiro en la posicion:" & PosMap & "-" & posX & "-" & posY)
 152                 Call WriteVar(FileUser, "INIT", "MENSAJEINFORMACION", "Subastador te ha dejado un mensaje: Tu subasta fue cancelada, como no tenias lugar ni en tu correo ni boveda, tuve que tirarlo en tu ultimo posicion.")
-
             End If
-
         Else
-
-154         If Not MeterItemEnInventario(NameIndex(Subasta.Subastador), ObjVendido) Then
-160             Call TirarItemAlPiso(UserList(NameIndex(Subasta.Subastador)).Pos, ObjVendido)
+            Subastador = NameIndex(Subasta.Subastador)
+154         If Not MeterItemEnInventario(Subastador.ArrayIndex, ObjVendido) Then
+160             Call TirarItemAlPiso(UserList(Subastador.ArrayIndex).pos, ObjVendido)
 162             Call LogearEventoDeSubasta("Se tiro al piso el item.")
             End If
 
 164         Call LogearEventoDeSubasta("Se entrego el item en mano del subastador.")
-166         UserList(tUser).flags.Subastando = False
+166         UserList(tUser.ArrayIndex).flags.Subastando = False
             
         End If
 

@@ -78,7 +78,7 @@ Private Sub PerseguirUsuarioCercano(ByVal NpcIndex As Integer)
         Dim UserIndex    As Integer
         Dim UserIndexFront As Integer
         Dim npcEraPasivo As Boolean
-        Dim agresor      As Integer
+        Dim agresor      As t_UserReference
         Dim minDistancia As Integer
         Dim minDistanciaAtacable As Integer
         Dim enemigoCercano As Integer
@@ -133,7 +133,7 @@ Private Sub PerseguirUsuarioCercano(ByVal NpcIndex As Integer)
 136         If npcEraPasivo Then
                 ' Significa que alguien le pego, y esta en modo agresivo trantando de darle.
                 ' El unico objetivo que importa aca es el atacante; los demas son ignorados.
-138             If EnRangoVision(npcIndex, agresor) Then Call SetUserRef(.TargetUser, agresor)
+138             If EnRangoVision(npcIndex, agresor.ArrayIndex) Then Call SetUserRef(.targetUser, agresor.ArrayIndex)
 
             Else ' El NPC es hostil siempre, le quiere pegar a alguien.
 
@@ -923,7 +923,7 @@ Private Function EsEnemigo(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
 102     With NpcList(NpcIndex)
 
 104         If .flags.AttackedBy <> vbNullString Then
-106             EsEnemigo = (UserIndex = NameIndex(.flags.AttackedBy))
+106             EsEnemigo = (UserIndex = NameIndex(.flags.AttackedBy).ArrayIndex)
 108             If EsEnemigo Then Exit Function
             End If
 

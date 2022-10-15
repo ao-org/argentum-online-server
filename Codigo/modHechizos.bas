@@ -1031,7 +1031,7 @@ Sub HechizoPortal(ByVal UserIndex As Integer, ByRef b As Boolean)
     
         'Envio Palabras magicas, wavs y fxs.
    
-108     If MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY).ObjInfo.amount > 0 Or (MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY).Blocked And e_Block.ALL_SIDES) <> e_Block.ALL_SIDES Or MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).flags.TargetX, UserList(UserIndex).flags.TargetY).TileExit.Map > 0 Or UserList(UserIndex).flags.TargetUser <> 0 Then
+108     If MapData(UserList(UserIndex).pos.map, UserList(UserIndex).flags.targetX, UserList(UserIndex).flags.targetY).ObjInfo.amount > 0 Or (MapData(UserList(UserIndex).pos.map, UserList(UserIndex).flags.targetX, UserList(UserIndex).flags.targetY).Blocked And e_Block.ALL_SIDES) <> e_Block.ALL_SIDES Or MapData(UserList(UserIndex).pos.map, UserList(UserIndex).flags.targetX, UserList(UserIndex).flags.targetY).TileExit.map > 0 Or UserList(UserIndex).flags.targetUser.ArrayIndex <> 0 Then
 110         b = False
             'Call WriteConsoleMsg(UserIndex, "Area invalida para lanzar este Hechizo!", e_FontTypeNames.FONTTYPE_INFO)
 112         Call WriteLocaleMsg(UserIndex, "262", e_FontTypeNames.FONTTYPE_INFO)
@@ -1215,10 +1215,10 @@ Sub HandleHechizoUsuario(ByVal UserIndex As Integer, ByVal uh As Integer)
 
             If Hechizos(uh).Revivir = 1 Then
             
-                If Not PeleaSegura(UserIndex, UserList(UserIndex).flags.TargetUser) Then
+                If Not PeleaSegura(UserIndex, UserList(UserIndex).flags.targetUser.ArrayIndex) Then
                     If MapInfo(UserList(UserIndex).Pos.map).Seguro = 0 Then
                         Dim costoVidaResu As Long
-                        costoVidaResu = UserList(UserList(UserIndex).flags.TargetUser).Stats.ELV * 1.5 + UserList(UserIndex).Stats.MinHp * 0.45
+                        costoVidaResu = UserList(UserList(UserIndex).flags.targetUser.ArrayIndex).Stats.ELV * 1.5 + UserList(UserIndex).Stats.MinHp * 0.45
                         
                         If UserList(UserIndex).Stats.MinHp > costoVidaResu Then
                             UserList(UserIndex).Stats.MinHp = UserList(UserIndex).Stats.MinHp - costoVidaResu
@@ -1236,7 +1236,7 @@ Sub HandleHechizoUsuario(ByVal UserIndex As Integer, ByVal uh As Integer)
 132         Call WriteUpdateMana(UserIndex)
             Call WriteUpdateHP(UserIndex)
 134         Call WriteUpdateSta(UserIndex)
-136         UserList(UserIndex).flags.TargetUser = 0
+136         Call SetUserRef(UserList(UserIndex).flags.targetUser, 0)
 
         End If
 
@@ -1373,8 +1373,8 @@ Sub LanzarHechizo(ByVal Index As Integer, ByVal UserIndex As Integer)
 
                 Case e_TargetType.uUsuarios
 
-106                 If UserList(UserIndex).flags.TargetUser > 0 Then
-108                     If Abs(UserList(UserList(UserIndex).flags.TargetUser).Pos.Y - UserList(UserIndex).Pos.Y) <= RANGO_VISION_Y Then
+106                 If IsValidUserRef(UserList(UserIndex).flags.targetUser) Then
+108                     If Abs(UserList(UserList(UserIndex).flags.targetUser.ArrayIndex).pos.y - UserList(UserIndex).pos.y) <= RANGO_VISION_Y Then
 110                         Call HandleHechizoUsuario(UserIndex, uh)
                     
 112                         If Hechizos(uh).CoolDown > 0 Then
@@ -1417,8 +1417,8 @@ Sub LanzarHechizo(ByVal Index As Integer, ByVal UserIndex As Integer)
         
 136             Case e_TargetType.uUsuariosYnpc
 
-138                 If UserList(UserIndex).flags.TargetUser > 0 Then
-140                     If Abs(UserList(UserList(UserIndex).flags.TargetUser).Pos.Y - UserList(UserIndex).Pos.Y) <= RANGO_VISION_Y Then
+138                 If IsValidUserRef(UserList(UserIndex).flags.targetUser) Then
+140                     If Abs(UserList(UserList(UserIndex).flags.targetUser.ArrayIndex).pos.y - UserList(UserIndex).pos.y) <= RANGO_VISION_Y Then
 142                         Call HandleHechizoUsuario(UserIndex, uh)
                     
 144                         If Hechizos(uh).CoolDown > 0 Then
@@ -1498,7 +1498,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
         Dim h As Integer, tU As Integer
 
 100     h = UserList(UserIndex).Stats.UserHechizos(UserList(UserIndex).flags.Hechizo)
-102     tU = UserList(UserIndex).flags.TargetUser
+102     tU = UserList(UserIndex).flags.targetUser.ArrayIndex
 
 104     If Hechizos(h).Invisibilidad = 1 Then
    
@@ -2727,31 +2727,31 @@ Private Sub InfoHechizo(ByVal UserIndex As Integer)
 
         End If
 
-106     If UserList(UserIndex).flags.TargetUser > 0 Then '¿El Hechizo fue tirado sobre un usuario?
+106     If IsValidUserRef(UserList(UserIndex).flags.targetUser) Then '¿El Hechizo fue tirado sobre un usuario?
 108         If Hechizos(h).FXgrh > 0 Then '¿Envio FX?
 110             If Hechizos(h).ParticleViaje > 0 Then
-                    UserList(UserList(UserIndex).flags.TargetUser).Counters.timeFx = 2
-112                 Call SendData(SendTarget.ToPCAliveArea, UserList(UserIndex).flags.TargetUser, PrepareMessageParticleFXWithDestino(UserList(UserIndex).Char.charindex, UserList(UserList(UserIndex).flags.TargetUser).Char.charindex, Hechizos(h).ParticleViaje, Hechizos(h).FXgrh, Hechizos(h).TimeParticula, Hechizos(h).wav, 1, UserList(UserList(UserIndex).flags.TargetUser).Pos.X, UserList(UserList(UserIndex).flags.TargetUser).Pos.Y))
+                    UserList(UserList(UserIndex).flags.targetUser.ArrayIndex).Counters.timeFx = 2
+112                 Call SendData(SendTarget.ToPCAliveArea, UserList(UserIndex).flags.targetUser.ArrayIndex, PrepareMessageParticleFXWithDestino(UserList(UserIndex).Char.charindex, UserList(UserList(UserIndex).flags.targetUser.ArrayIndex).Char.charindex, Hechizos(h).ParticleViaje, Hechizos(h).FXgrh, Hechizos(h).TimeParticula, Hechizos(h).wav, 1, UserList(UserList(UserIndex).flags.targetUser.ArrayIndex).pos.x, UserList(UserList(UserIndex).flags.targetUser.ArrayIndex).pos.y))
                 Else
-                    UserList(UserList(UserIndex).flags.TargetUser).Counters.timeFx = 2
-114                 Call SendData(SendTarget.ToPCAliveArea, UserList(UserIndex).flags.TargetUser, PrepareMessageCreateFX(UserList(UserList(UserIndex).flags.TargetUser).Char.charindex, Hechizos(h).FXgrh, Hechizos(h).loops, UserList(UserList(UserIndex).flags.TargetUser).Pos.X, UserList(UserList(UserIndex).flags.TargetUser).Pos.Y))
+                    UserList(UserList(UserIndex).flags.targetUser.ArrayIndex).Counters.timeFx = 2
+114                 Call SendData(SendTarget.ToPCAliveArea, UserList(UserIndex).flags.targetUser.ArrayIndex, PrepareMessageCreateFX(UserList(UserList(UserIndex).flags.targetUser.ArrayIndex).Char.charindex, Hechizos(h).FXgrh, Hechizos(h).loops, UserList(UserList(UserIndex).flags.targetUser.ArrayIndex).pos.x, UserList(UserList(UserIndex).flags.targetUser.ArrayIndex).pos.y))
                 End If
 
             End If
 
 116         If Hechizos(h).Particle > 0 Then '¿Envio Particula?
 118             If Hechizos(h).ParticleViaje > 0 Then
-                    UserList(UserList(UserIndex).flags.TargetUser).Counters.timeFx = 2
-120                 Call SendData(SendTarget.ToPCAliveArea, UserList(UserIndex).flags.TargetUser, PrepareMessageParticleFXWithDestino(UserList(UserIndex).Char.charindex, UserList(UserList(UserIndex).flags.TargetUser).Char.charindex, Hechizos(h).ParticleViaje, Hechizos(h).Particle, Hechizos(h).TimeParticula, Hechizos(h).wav, 0, UserList(UserList(UserIndex).flags.TargetUser).Pos.X, UserList(UserList(UserIndex).flags.TargetUser).Pos.Y))
+                    UserList(UserList(UserIndex).flags.targetUser.ArrayIndex).Counters.timeFx = 2
+120                 Call SendData(SendTarget.ToPCAliveArea, UserList(UserIndex).flags.targetUser.ArrayIndex, PrepareMessageParticleFXWithDestino(UserList(UserIndex).Char.charindex, UserList(UserList(UserIndex).flags.targetUser.ArrayIndex).Char.charindex, Hechizos(h).ParticleViaje, Hechizos(h).Particle, Hechizos(h).TimeParticula, Hechizos(h).wav, 0, UserList(UserList(UserIndex).flags.targetUser.ArrayIndex).pos.x, UserList(UserList(UserIndex).flags.targetUser.ArrayIndex).pos.y))
                 Else
-                    UserList(UserList(UserIndex).flags.TargetUser).Counters.timeFx = 2
-122                 Call SendData(SendTarget.ToPCAliveArea, UserList(UserIndex).flags.TargetUser, PrepareMessageParticleFX(UserList(UserList(UserIndex).flags.TargetUser).Char.charindex, Hechizos(h).Particle, Hechizos(h).TimeParticula, False, , UserList(UserList(UserIndex).flags.TargetUser).Pos.X, UserList(UserList(UserIndex).flags.TargetUser).Pos.Y))
+                    UserList(UserList(UserIndex).flags.targetUser.ArrayIndex).Counters.timeFx = 2
+122                 Call SendData(SendTarget.ToPCAliveArea, UserList(UserIndex).flags.targetUser.ArrayIndex, PrepareMessageParticleFX(UserList(UserList(UserIndex).flags.targetUser.ArrayIndex).Char.charindex, Hechizos(h).Particle, Hechizos(h).TimeParticula, False, , UserList(UserList(UserIndex).flags.targetUser.ArrayIndex).pos.x, UserList(UserList(UserIndex).flags.targetUser.ArrayIndex).pos.y))
                 End If
 
             End If
         
 124         If Hechizos(h).ParticleViaje = 0 Then
-126             Call SendData(SendTarget.ToPCAliveArea, UserList(UserIndex).flags.TargetUser, PrepareMessagePlayWave(Hechizos(h).wav, UserList(UserList(UserIndex).flags.TargetUser).Pos.X, UserList(UserList(UserIndex).flags.TargetUser).Pos.y)) 'Esta linea faltaba. Pablo (ToxicWaste)
+126             Call SendData(SendTarget.ToPCAliveArea, UserList(UserIndex).flags.targetUser.ArrayIndex, PrepareMessagePlayWave(Hechizos(h).wav, UserList(UserList(UserIndex).flags.targetUser.ArrayIndex).pos.x, UserList(UserList(UserIndex).flags.targetUser.ArrayIndex).pos.y))
 
             End If
         
@@ -2830,12 +2830,11 @@ Private Sub InfoHechizo(ByVal UserIndex As Integer)
 180         If Hechizos(h).Target = e_TargetType.uTerreno Then
 182             Call WriteConsoleMsg(UserIndex, "ProMSG*" & h, e_FontTypeNames.FONTTYPE_FIGHT)
             
-184         ElseIf UserList(UserIndex).flags.TargetUser > 0 Then
-
+184         ElseIf IsValidUserRef(UserList(UserIndex).flags.targetUser) Then
                 'Optimizacion de protocolo por Ladder
-186             If UserIndex <> UserList(UserIndex).flags.TargetUser Then
-188                 Call WriteConsoleMsg(UserIndex, "HecMSGU*" & h & "*" & UserList(UserList(UserIndex).flags.TargetUser).Name, e_FontTypeNames.FONTTYPE_FIGHT)
-190                 Call WriteConsoleMsg(UserList(UserIndex).flags.TargetUser, "HecMSGA*" & h & "*" & UserList(UserIndex).Name, e_FontTypeNames.FONTTYPE_FIGHT)
+186             If UserIndex <> UserList(UserIndex).flags.targetUser.ArrayIndex Then
+188                 Call WriteConsoleMsg(UserIndex, "HecMSGU*" & h & "*" & UserList(UserList(UserIndex).flags.targetUser.ArrayIndex).name, e_FontTypeNames.FONTTYPE_FIGHT)
+190                 Call WriteConsoleMsg(UserList(UserIndex).flags.targetUser.ArrayIndex, "HecMSGA*" & h & "*" & UserList(UserIndex).name, e_FontTypeNames.FONTTYPE_FIGHT)
     
                 Else
 192                 Call WriteConsoleMsg(UserIndex, "ProMSG*" & h, e_FontTypeNames.FONTTYPE_FIGHT)
@@ -2871,7 +2870,7 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
         Dim tempChr As Integer
     
 100     h = UserList(UserIndex).Stats.UserHechizos(UserList(UserIndex).flags.Hechizo)
-102     tempChr = UserList(UserIndex).flags.TargetUser
+102     tempChr = UserList(UserIndex).flags.targetUser.ArrayIndex
       
         'Hambre
 104     If Hechizos(h).SubeHam = 1 Then
@@ -3486,7 +3485,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean)
 100     enviarInfoHechizo = False
     
 102     h = UserList(UserIndex).Stats.UserHechizos(UserList(UserIndex).flags.Hechizo)
-104     tempChr = UserList(UserIndex).flags.TargetUser
+104     tempChr = UserList(UserIndex).flags.targetUser.ArrayIndex
       
         ' <-------- Agilidad ---------->
 106     If Hechizos(h).SubeAgilidad = 1 Then

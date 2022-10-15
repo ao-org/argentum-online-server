@@ -39,7 +39,7 @@ Option Explicit
 
 Public Function IsValidUserRef(ByRef UserRef As t_UserReference) As Boolean
     IsValidUserRef = False
-    If UserRef.ArrayIndex <= 0 Then
+    If UserRef.ArrayIndex <= 0 Or UserRef.ArrayIndex > UBound(UserList) Then
         Exit Function
     End If
     If UserList(UserRef.ArrayIndex).VersionId <> UserRef.VersionId Then
@@ -51,7 +51,7 @@ End Function
 Public Function SetUserRef(ByRef UserRef As t_UserReference, ByVal index As Integer) As Boolean
     SetUserRef = False
     UserRef.ArrayIndex = Index
-    If Index <= 0 Then
+    If Index <= 0 Or UserRef.ArrayIndex > UBound(UserList) Then
         Exit Function
     End If
     UserRef.VersionId = UserList(Index).VersionId
@@ -110,18 +110,18 @@ On Error GoTo Check_ConnectUser_Err
         End If
              
         '¿Ya esta conectado el personaje?
-        Dim tIndex As Integer: tIndex = NameIndex(Name)
-        If tIndex > 0 And tIndex <> UserIndex Then
-            If IsFeatureEnabled("override_same_ip_connection") And .IP = UserList(tIndex).IP Then
-                Call WriteShowMessageBox(tIndex, "Alguien está ingresando con tu personaje. Si no has sido tú, por favor cambia la contraseña de tu cuenta.")
-                Call CloseSocket(tIndex)
+        Dim tIndex As t_UserReference: tIndex = NameIndex(name)
+        If IsValidUserRef(tIndex) Then
+            If IsFeatureEnabled("override_same_ip_connection") And .IP = UserList(tIndex.ArrayIndex).IP Then
+                Call WriteShowMessageBox(tIndex.ArrayIndex, "Alguien está ingresando con tu personaje. Si no has sido tú, por favor cambia la contraseña de tu cuenta.")
+                Call CloseSocket(tIndex.ArrayIndex)
             Else
-                If UserList(tIndex).Counters.Saliendo Then
+                If UserList(tIndex.ArrayIndex).Counters.Saliendo Then
                     Call WriteShowMessageBox(userIndex, "El personaje está saliendo.")
                 Else
                     Call WriteShowMessageBox(userIndex, "El personaje ya está conectado. Espere mientras es desconectado.")
                     ' Le avisamos al usuario que está jugando, en caso de que haya uno
-                    Call WriteShowMessageBox(tIndex, "Alguien está ingresando con tu personaje. Si no has sido tú, por favor cambia la contraseña de tu cuenta.")
+                    Call WriteShowMessageBox(tIndex.ArrayIndex, "Alguien está ingresando con tu personaje. Si no has sido tú, por favor cambia la contraseña de tu cuenta.")
                 End If
             Call CloseSocket(UserIndex)
             Exit Function
@@ -170,7 +170,7 @@ On Error GoTo Prepare_ConnectUser_Err
         .flags.TargetNPC = 0
         .flags.TargetNpcTipo = e_NPCType.Comun
         .flags.TargetObj = 0
-        .flags.TargetUser = 0
+        Call SetUserRef(.flags.targetUser, 0)
         .Char.FX = 0
         .Counters.CuentaRegresiva = -1
         .name = name
@@ -307,8 +307,8 @@ On Error GoTo Complete_ConnectUser_Err
 
             ' DM
 345         If .Invent.DañoMagicoEqpSlot > 0 Then
-350             If .Invent.Object(.Invent.DañoMagicoEqpSlot).objIndex > 0 Then
-355                 .Invent.DañoMagicoEqpObjIndex = .Invent.Object(.Invent.DañoMagicoEqpSlot).objIndex
+350             If .Invent.Object(.Invent.DañoMagicoEqpSlot).ObjIndex > 0 Then
+355                 .Invent.DañoMagicoEqpObjIndex = .Invent.Object(.Invent.DañoMagicoEqpSlot).ObjIndex
 
 360                 If .flags.Muerto = 0 Then
 365                     .Char.DM_Aura = ObjData(.Invent.DañoMagicoEqpObjIndex).CreaGRH
