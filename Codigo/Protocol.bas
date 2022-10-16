@@ -2948,7 +2948,7 @@ Public Function verifyTimeStamp(ByVal ActualCount As Long, ByRef LastCount As Lo
             verifyTimeStamp = False
             'Call LogMacroServidor("El usuario " & UserList(UserIndex).name & " iteró el paquete " & PacketName & " " & MaxIterations & " veces.")
             Call SendData(SendTarget.ToAdmins, UserIndex, PrepareMessageConsoleMsg("Control de macro---> El usuario " & UserList(UserIndex).name & "| Revisar --> " & PacketName & " (Envíos: " & MaxIterations & ").", e_FontTypeNames.FONTTYPE_INFOBOLD))
-            If MaxIterations >= 6 And PacketName = "Ocultar" Then
+            If MaxIterations >= MaxIterationsOcultar And PacketName = "Ocultar" Then
                 Call Encarcelar(UserList(UserIndex).AccountID, 60, "Servidor")
                 Call SendData(SendTarget.ToAdmins, UserIndex, PrepareMessageConsoleMsg("Sistema ---> Encarcelando a  " & UserList(UserIndex).name & "| por macro en --> " & PacketName & " (Envíos: " & MaxIterations & ").", e_FontTypeNames.FONTTYPE_INFOBOLD))
 
