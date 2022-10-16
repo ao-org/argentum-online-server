@@ -703,7 +703,6 @@ Private Sub UserDañoNpc(ByVal UserIndex As Integer, ByVal npcIndex As Integer, 
 180             ObjInd = 0
 182             ArmaObjInd = .Invent.WeaponEqpObjIndex
 184             If ArmaObjInd = 0 Then ArmaObjInd = .Invent.NudilloObjIndex
-186
                 If ObjData(ArmaObjInd).Municion = 0 Then
 188                 ObjInd = ArmaObjInd
                 Else

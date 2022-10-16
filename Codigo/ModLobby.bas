@@ -202,7 +202,7 @@ Public Sub ReturnPlayer(ByRef instance As t_Lobby, ByVal user As Integer)
 On Error GoTo ReturnPlayer_Err
 100    With instance.Players(user)
 103        If Not IsValidUserRef(.user) Then
-104            Call LogUserRefError(.user, "SummonPlayer")
+104            Call LogUserRefError(.user, "ReturnPlayer")
 105            Exit Sub
 106        End If
 108        If Not .IsSummoned Or Not .connected Then
@@ -239,17 +239,17 @@ End Sub
 
 Public Sub ListPlayers(ByRef instance As t_Lobby, ByVal UserIndex As Integer)
 On Error GoTo ListPlayers_Err
-    Dim i As Integer
-    For i = 0 To instance.RegisteredPlayers
-        If instance.Players(i).connected And IsValidUserRef(instance.Players(i).user) Then
-            Call WriteConsoleMsg(UserIndex, i & ") " & UserList(instance.Players(i).user.ArrayIndex).name, e_FontTypeNames.FONTTYPE_INFOBOLD)
-        Else
-            Call WriteConsoleMsg(userIndex, i & ") " & "Disconnected player.", e_FontTypeNames.FONTTYPE_New_Verde_Oscuro)
-        End If
-    Next i
-    Exit Sub
+       Dim i As Integer
+100    For i = 0 To instance.RegisteredPlayers - 1
+102        If instance.Players(i).Connected And IsValidUserRef(instance.Players(i).user) Then
+104            Call WriteConsoleMsg(userIndex, i & ") " & UserList(instance.Players(i).user.ArrayIndex).name, e_FontTypeNames.FONTTYPE_INFOBOLD)
+106        Else
+108            Call WriteConsoleMsg(userIndex, i & ") " & "Disconnected player.", e_FontTypeNames.FONTTYPE_New_Verde_Oscuro)
+110        End If
+112    Next i
+114    Exit Sub
 ListPlayers_Err:
-102     Call TraceError(Err.Number, Err.Description, "ModLobby.CancelLobby", Erl)
+116    Call TraceError(Err.Number, Err.Description, "ModLobby.ListPlayers", Erl)
 End Sub
 
 Public Function OpenLobby(ByRef instance As t_Lobby) As t_response
