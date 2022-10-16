@@ -2088,7 +2088,7 @@ Sub LoadSini()
     
 136     PuedeCrearPersonajes = val(Lector.GetValue("INIT", "PuedeCrearPersonajes"))
 138     ServerSoloGMs = val(Lector.GetValue("init", "ServerSoloGMs"))
-139     MaxIterationsOcultar = val(Lector.GetValue("init", "MaxIterationsOcultar"))
+139     MaxHidePacketIteration = val(Lector.GetValue("init", "MaxHidePacketIteration"))
 140     DisconnectTimeout = val(Lector.GetValue("INIT", "DisconnectTimeout"))
     
 144     EnTesting = val(Lector.GetValue("INIT", "Testing"))

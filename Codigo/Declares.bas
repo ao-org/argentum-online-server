@@ -2441,7 +2441,7 @@ Public PuedeCrearPersonajes              As Integer
 
 Public ServerSoloGMs                     As Integer
 
-Public MaxIterationsOcultar              As Integer
+Public MaxHidePacketIteration              As Integer
 
 Public EnPausa                           As Boolean
 
