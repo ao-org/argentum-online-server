@@ -2633,12 +2633,17 @@ Public Sub DoTalar(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte,
 122             Call ActualizarRecurso(.Pos.Map, X, Y)
 124             MapData(.Pos.Map, X, Y).ObjInfo.Data = GetTickCount() ' Ultimo uso
     
-126             MiObj.amount = Round(IIf(.clase = Trabajador, 5, RandomNumber(1, 2)) * RecoleccionMult * 2.5)
-
-128             If ObjData(MapData(.Pos.Map, X, Y).ObjInfo.ObjIndex).Elfico = 0 Then
-130                 MiObj.ObjIndex = Leña
+125             If .clase = Trabajador Then
+126                 MiObj.amount = 10 + RandomNumber(.Stats.ELV / 8, .Stats.ELV / 4)
                 Else
-132                 MiObj.ObjIndex = LeñaElfica
+127                 MiObj.amount = RandomNumber(1, 2)
+                End If
+128             MiObj.amount = MiObj.amount * RecoleccionMult
+
+129             If ObjData(MapData(.pos.map, X, y).ObjInfo.objIndex).Elfico = 0 Then
+130                 MiObj.objIndex = Leña
+                Else
+132                 MiObj.objIndex = LeñaElfica
                 End If
 
 
@@ -2752,9 +2757,14 @@ Public Sub DoMineria(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byt
 126             Yacimiento = ObjData(MapData(.Pos.Map, X, Y).ObjInfo.ObjIndex)
             
 128             MiObj.ObjIndex = Yacimiento.MineralIndex
-130             MiObj.amount = Round(IIf(.clase = Trabajador, 5, RandomNumber(1, 2)) * RecoleccionMult * 2.5)
+129             If .clase = Trabajador Then
+130                 MiObj.amount = 10 + RandomNumber(.Stats.ELV / 8, .Stats.ELV / 4)
+                Else
+131                 MiObj.amount = RandomNumber(1, 2)
+                End If
+132             MiObj.amount = MiObj.amount * RecoleccionMult
             
-132             If MiObj.amount > MapData(.Pos.Map, X, Y).ObjInfo.amount Then
+133             If MiObj.amount > MapData(.pos.map, X, y).ObjInfo.amount Then
 134                 MiObj.amount = MapData(.Pos.Map, X, Y).ObjInfo.amount
                 End If
             
