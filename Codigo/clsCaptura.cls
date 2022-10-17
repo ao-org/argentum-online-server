@@ -511,6 +511,7 @@ Public Function inicializar(ByVal MaxParticipantes As Long, ByVal CantidadRondas
     max_participantes = MaxParticipantes
     cantidad_rondas = CantidadRondas
     nivel_minimo = NivelMinimo
+    nivel_maximo = NivelMaximo
     tiempo_espera = CAPTURA_TIEMPO_ESPERA
     precio = precio_
     Estado = Inscripcion
@@ -544,6 +545,7 @@ Public Sub inscribirse(ByVal UserIndex As Integer)
         
         If .Stats.ELV > nivel_maximo Then
             Call WriteConsoleMsg(UserIndex, "Para ingresar al evento tu nivel no puede ser mayor a " & nivel_maximo & ".", e_FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
         End If
         
         'Zona segura
