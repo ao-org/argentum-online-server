@@ -74,7 +74,7 @@ Public Sub IncreaseVersionId(ByVal UserIndex As Integer)
 End Sub
 
 Public Sub LogUserRefError(ByRef UserRef As t_UserReference, ByRef Text As String)
-    Call LogError("Failed to validate UserRef index(" & UserRef.ArrayIndex & ") version(" & UserRef.VersionId & ") got versionId: " & UserList(UserRef.ArrayIndex).VersionId & " " & Text)
+    Call LogError("Failed to validate UserRef index(" & UserRef.ArrayIndex & ") version(" & UserRef.VersionId & ") got versionId: " & UserList(UserRef.ArrayIndex).VersionId & " At: " & Text)
 End Sub
 
 Public Function ConnectUser_Check(ByVal userIndex As Integer, ByVal Name As String) As Boolean

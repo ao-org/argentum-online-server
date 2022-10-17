@@ -49,7 +49,7 @@ On Error GoTo ErrHandler
     If Not NpcList(NpcIndex).flags.NPCActive Then
         Call TraceError(Err.Number, "Trying to release the id twice", "NPCs.ReleaseNpc", Erl)
         ReleaseNpc = False
-        Return
+        Exit Function
     End If
     
     NpcList(NpcIndex).flags.NPCActive = False

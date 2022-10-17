@@ -2512,8 +2512,8 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
 778                             tUser = NameIndex(.flags.Pareja)
 
                             
-782                             If IsValidUserRef(tUser) Then
-790                                 Call WriteConsoleMsg(UserIndex, "Tu pareja deberás estar conectada para divorciarse.", e_FontTypeNames.FONTTYPE_INFOIAO)
+782                             If Not IsValidUserRef(tUser) Then
+790                                 Call WriteConsoleMsg(userIndex, "Tu pareja deberás estar conectada para divorciarse.", e_FontTypeNames.FONTTYPE_INFOIAO)
                                 Else
 780                                 Call QuitarUserInvItem(UserIndex, Slot, 1)
 794                                 UserList(tUser.ArrayIndex).flags.Casado = 0
