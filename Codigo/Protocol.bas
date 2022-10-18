@@ -4871,14 +4871,18 @@ Private Sub HandleUserCommerceOffer(ByVal UserIndex As Integer)
 102         Slot = Reader.ReadInt8()
 104         amount = Reader.ReadInt32()
             
+            
             'Is the commerce attempt valid??
-            If Not IsValidUserRef(.ComUsu.DestUsu) Or UserList(tUser).ComUsu.DestUsu.ArrayIndex <> userIndex Then
+            If Not IsValidUserRef(.ComUsu.DestUsu) Then
                 Call FinComerciarUsu(userIndex)
                 Exit Sub
             End If
             'Get the other player
 106         tUser = .ComUsu.DestUsu.ArrayIndex
-        
+            If UserList(tUser).ComUsu.DestUsu.ArrayIndex <> UserIndex Then
+                Call FinComerciarUsu(UserIndex)
+                Exit Sub
+            End If
             'If Amount is invalid, or slot is invalid and it's not gold, then ignore it.
 108         If ((Slot < 1 Or Slot > UserList(UserIndex).CurrentInventorySlots) And Slot <> FLAGORO) Or amount <= 0 Then Exit Sub
         
