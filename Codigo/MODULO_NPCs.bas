@@ -366,12 +366,12 @@ Sub ResetNpcCharInfo(ByVal NpcIndex As Integer)
 112     NpcList(NpcIndex).Char.loops = 0
 114     NpcList(NpcIndex).Char.ShieldAnim = 0
 116     NpcList(NpcIndex).Char.WeaponAnim = 0
-
+118     NpcList(npcIndex).Char.CartAnim = 0
         
         Exit Sub
 
 ResetNpcCharInfo_Err:
-118     Call TraceError(Err.Number, Err.Description, "NPCs.ResetNpcCharInfo", Erl)
+120     Call TraceError(Err.Number, Err.Description, "NPCs.ResetNpcCharInfo", Erl)
 
         
 End Sub
@@ -781,9 +781,9 @@ Sub MakeNPCChar(ByVal toMap As Boolean, sndIndex As Integer, NpcIndex As Integer
                 End If
                 
 156             If UserList(sndIndex).Stats.UserSkills(e_Skill.Supervivencia) >= 90 Then
-158                 Call WriteCharacterCreate(sndIndex, body, .Char.head, .Char.Heading, .Char.charindex, x, y, .Char.WeaponAnim, .Char.ShieldAnim, 0, 0, .Char.CascoAnim, GG, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, .Char.speeding, IIf(.MaestroUser.ArrayIndex = sndIndex, 2, 1), 0, 0, 0, 0, .Stats.MinHp, .Stats.MaxHp, 0, 0, Simbolo, .flags.NPCIdle, , , , , .Char.Ataque1)
+158                 Call WriteCharacterCreate(sndIndex, body, .Char.head, .Char.Heading, .Char.charindex, x, y, .Char.WeaponAnim, .Char.ShieldAnim, 0, 0, .Char.CascoAnim, .Char.CartAnim, GG, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, .Char.speeding, IIf(.MaestroUser.ArrayIndex = sndIndex, 2, 1), 0, 0, 0, 0, .Stats.MinHp, .Stats.MaxHp, 0, 0, Simbolo, .flags.NPCIdle, , , , , .Char.Ataque1)
                 Else
-160                 Call WriteCharacterCreate(sndIndex, body, .Char.head, .Char.Heading, .Char.charindex, x, y, .Char.WeaponAnim, .Char.ShieldAnim, 0, 0, .Char.CascoAnim, GG, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, .Char.speeding, IIf(.MaestroUser.ArrayIndex = sndIndex, 2, 1), 0, 0, 0, 0, 0, 0, 0, 0, Simbolo, .flags.NPCIdle, , , , , .Char.Ataque1)
+160                 Call WriteCharacterCreate(sndIndex, body, .Char.head, .Char.Heading, .Char.charindex, x, y, .Char.WeaponAnim, .Char.ShieldAnim, 0, 0, .Char.CascoAnim, .Char.CartAnim, GG, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, .Char.speeding, IIf(.MaestroUser.ArrayIndex = sndIndex, 2, 1), 0, 0, 0, 0, 0, 0, 0, 0, Simbolo, .flags.NPCIdle, , , , , .Char.Ataque1)
                 
                 End If
             Else
@@ -815,7 +815,7 @@ Sub ChangeNPCChar(ByVal NpcIndex As Integer, ByVal Body As Integer, ByVal Head A
 108             .Char.Head = Head
 110             .Char.Heading = Heading
                 
-112             Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareMessageCharacterChange(body, head, Heading, .Char.charindex, 0, 0, 0, 0, 0, .flags.NPCIdle, False))
+112             Call SendData(SendTarget.ToNPCAliveArea, npcIndex, PrepareMessageCharacterChange(body, head, Heading, .Char.charindex, 0, 0, 0, 0, 0, 0, .flags.NPCIdle, False))
 
             End If
         
@@ -1232,7 +1232,7 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
 156         .Char.WeaponAnim = val(Leer.GetValue("NPC" & NpcNumber, "Arma"))
 158         .Char.ShieldAnim = val(Leer.GetValue("NPC" & NpcNumber, "Escudo"))
 160         .Char.CascoAnim = val(Leer.GetValue("NPC" & NpcNumber, "Casco"))
-            
+161         .Char.CartAnim = val(Leer.GetValue("NPC" & NpcNumber, "Cart"))
 162         .Attackable = val(Leer.GetValue("NPC" & NpcNumber, "Attackable"))
 164         .Comercia = val(Leer.GetValue("NPC" & NpcNumber, "Comercia"))
 166         .Craftea = val(Leer.GetValue("NPC" & NpcNumber, "Craftea"))

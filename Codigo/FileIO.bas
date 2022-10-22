@@ -1282,7 +1282,9 @@ Sub LoadOBJData()
                         .Revive = val(Leer.GetValue(ObjKey, "Revive")) <> 0
 336                     If .EfectoMagico = 15 Then
 338                         PENDIENTE = Object
-
+                        End If
+                        If .EfectoMagico = 12 Then
+                            .MaxItems = val(Leer.GetValue(ObjKey, "Peces"))
                         End If
             
 340                 Case e_OBJType.otRunas

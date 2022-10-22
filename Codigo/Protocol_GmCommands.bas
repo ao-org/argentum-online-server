@@ -1304,15 +1304,15 @@ Public Sub HandleEditChar(ByVal UserIndex As Integer)
 156                     Call SaveUserBodyDatabase(username, val(Arg1))
 160                     Call WriteConsoleMsg(UserIndex, "Usuario Offline Alterado: " & username, e_FontTypeNames.FONTTYPE_INFO)
                     Else
-162                     Call ChangeUserChar(tUser.ArrayIndex, val(Arg1), UserList(tUser.ArrayIndex).Char.head, UserList(tUser.ArrayIndex).Char.Heading, UserList(tUser.ArrayIndex).Char.WeaponAnim, UserList(tUser.ArrayIndex).Char.ShieldAnim, UserList(tUser.ArrayIndex).Char.CascoAnim)
+162                     Call ChangeUserChar(tUser.ArrayIndex, val(Arg1), UserList(tUser.ArrayIndex).char.head, UserList(tUser.ArrayIndex).char.Heading, UserList(tUser.ArrayIndex).char.WeaponAnim, UserList(tUser.ArrayIndex).char.ShieldAnim, UserList(tUser.ArrayIndex).char.CascoAnim, UserList(UserIndex).char.CartAnim)
                     End If
                    
 164             Case e_EditOptions.eo_Arma
-172                 Call ChangeUserChar(tUser.ArrayIndex, UserList(tUser.ArrayIndex).Char.body, UserList(tUser.ArrayIndex).Char.head, UserList(tUser.ArrayIndex).Char.Heading, val(Arg1), UserList(tUser.ArrayIndex).Char.ShieldAnim, UserList(tUser.ArrayIndex).Char.CascoAnim)
+172                 Call ChangeUserChar(tUser.ArrayIndex, UserList(tUser.ArrayIndex).char.body, UserList(tUser.ArrayIndex).char.head, UserList(tUser.ArrayIndex).char.Heading, val(Arg1), UserList(tUser.ArrayIndex).char.ShieldAnim, UserList(tUser.ArrayIndex).char.CascoAnim, UserList(UserIndex).char.CartAnim)
 174             Case e_EditOptions.eo_Escudo
-182                 Call ChangeUserChar(tUser.ArrayIndex, UserList(tUser.ArrayIndex).Char.body, UserList(tUser.ArrayIndex).Char.head, UserList(tUser.ArrayIndex).Char.Heading, UserList(tUser.ArrayIndex).Char.WeaponAnim, val(Arg1), UserList(tUser.ArrayIndex).Char.CascoAnim)
+182                 Call ChangeUserChar(tUser.ArrayIndex, UserList(tUser.ArrayIndex).char.body, UserList(tUser.ArrayIndex).char.head, UserList(tUser.ArrayIndex).char.Heading, UserList(tUser.ArrayIndex).char.WeaponAnim, val(Arg1), UserList(tUser.ArrayIndex).char.CascoAnim, UserList(UserIndex).char.CartAnim)
 184             Case e_EditOptions.eo_CASCO
-192                     Call ChangeUserChar(tUser.ArrayIndex, UserList(tUser.ArrayIndex).Char.body, UserList(tUser.ArrayIndex).Char.head, UserList(tUser.ArrayIndex).Char.Heading, UserList(tUser.ArrayIndex).Char.WeaponAnim, UserList(tUser.ArrayIndex).Char.ShieldAnim, val(Arg1))
+192                     Call ChangeUserChar(tUser.ArrayIndex, UserList(tUser.ArrayIndex).char.body, UserList(tUser.ArrayIndex).char.head, UserList(tUser.ArrayIndex).char.Heading, UserList(tUser.ArrayIndex).char.WeaponAnim, UserList(tUser.ArrayIndex).char.ShieldAnim, val(Arg1), UserList(UserIndex).char.CartAnim)
 194             Case e_EditOptions.eo_Particula
 196                 If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero Or e_PlayerType.SemiDios)) Then Exit Sub
 198                 If Not .flags.Privilegios = Consejero Then
@@ -1325,7 +1325,7 @@ Public Sub HandleEditChar(ByVal UserIndex As Integer)
 218                     Call SaveUserHeadDatabase(username, val(Arg1))
 222                     Call WriteConsoleMsg(UserIndex, "Usuario Offline Alterado: " & username, e_FontTypeNames.FONTTYPE_INFO)
                     Else
-224                     Call ChangeUserChar(tUser.ArrayIndex, UserList(tUser.ArrayIndex).Char.body, val(Arg1), UserList(tUser.ArrayIndex).Char.Heading, UserList(tUser.ArrayIndex).Char.WeaponAnim, UserList(tUser.ArrayIndex).Char.ShieldAnim, UserList(tUser.ArrayIndex).Char.CascoAnim)
+224                     Call ChangeUserChar(tUser.ArrayIndex, UserList(tUser.ArrayIndex).char.body, val(Arg1), UserList(tUser.ArrayIndex).char.Heading, UserList(tUser.ArrayIndex).char.WeaponAnim, UserList(tUser.ArrayIndex).char.ShieldAnim, UserList(tUser.ArrayIndex).char.CascoAnim, UserList(UserIndex).char.CartAnim)
                     End If
 226             Case e_EditOptions.eo_CriminalsKilled
 228                 If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero Or e_PlayerType.SemiDios)) Then Exit Sub

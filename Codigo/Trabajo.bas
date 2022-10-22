@@ -364,8 +364,8 @@ Public Sub DoPermanecerOculto(ByVal UserIndex As Integer)
 114                 If .clase = e_Class.Pirat Then
                         ' Pierde la apariencia de fragata fantasmal
 116                     Call EquiparBarco(UserIndex)
-124                     Call WriteConsoleMsg(userIndex, "¡Has recuperado tu apariencia normal!", e_FontTypeNames.FONTTYPE_INFO)
-126                     Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, NingunArma, NingunEscudo, NingunCasco)
+124                     Call WriteConsoleMsg(UserIndex, "¡Has recuperado tu apariencia normal!", e_FontTypeNames.FONTTYPE_INFO)
+126                     Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, NingunArma, NingunEscudo, NingunCasco, NoCart)
                         Call RefreshCharStatus(UserIndex)
                     End If
 
@@ -441,8 +441,8 @@ Public Sub DoOcultarse(ByVal UserIndex As Integer)
 144                     .flags.Oculto = 1
 146                     .Counters.TiempoOculto = IntervaloOculto
                          
-148                     Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, NingunArma, NingunEscudo, NingunCasco)
-150                     Call WriteConsoleMsg(userIndex, "¡Te has camuflado como barco fantasma!", e_FontTypeNames.FONTTYPE_INFO)
+148                     Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, NingunArma, NingunEscudo, NingunCasco, NoCart)
+150                     Call WriteConsoleMsg(UserIndex, "¡Te has camuflado como barco fantasma!", e_FontTypeNames.FONTTYPE_INFO)
                         Call RefreshCharStatus(UserIndex)
                     End If
                 Else
@@ -561,21 +561,17 @@ Public Sub DoNavega(ByVal UserIndex As Integer, _
                     End If
         
 168                 If .Invent.EscudoEqpObjIndex > 0 Then .Char.ShieldAnim = ObjData(.Invent.EscudoEqpObjIndex).ShieldAnim
-
 170                 If .Invent.WeaponEqpObjIndex > 0 Then .Char.WeaponAnim = ObjData(.Invent.WeaponEqpObjIndex).WeaponAnim
-
 172                 If .Invent.NudilloObjIndex > 0 Then .Char.WeaponAnim = ObjData(.Invent.NudilloObjIndex).WeaponAnim
-
 174                 If .Invent.HerramientaEqpObjIndex > 0 Then .Char.WeaponAnim = ObjData(.Invent.HerramientaEqpObjIndex).WeaponAnim
-
 176                 If .Invent.CascoEqpObjIndex > 0 Then .Char.CascoAnim = ObjData(.Invent.CascoEqpObjIndex).CascoAnim
-
+177                 If .invent.MagicoObjIndex > 0 Then
+                        If ObjData(.invent.MagicoObjIndex).Ropaje > 0 Then .Char.CartAnim = ObjData(.invent.MagicoObjIndex).Ropaje
+                    End If
                 Else
 178                 .Char.Body = iCuerpoMuerto
 180                 .Char.Head = 0
-182                 .Char.ShieldAnim = NingunEscudo
-184                 .Char.WeaponAnim = NingunArma
-186                 .Char.CascoAnim = NingunCasco
+182                 Call ClearClothes(.Char)
 
                 End If
 
@@ -593,7 +589,7 @@ Public Sub DoNavega(ByVal UserIndex As Integer, _
 198             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageSetInvisible(.Char.charindex, False, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
             End If
 
-200         Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
+200         Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim)
 202         Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessagePlayWave(e_FXSound.BARCA_SOUND, .Pos.X, .Pos.y))
     
         End With
@@ -771,9 +767,9 @@ Sub CarpinteroQuitarMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As In
         On Error GoTo CarpinteroQuitarMateriales_Err
         
 
-100     If ObjData(ItemIndex).Madera > 0 Then Call QuitarObjetos(Leña, Cantidad, userIndex)
+100     If ObjData(ItemIndex).Madera > 0 Then Call QuitarObjetos(Wood, Cantidad, UserIndex)
 
-102     If ObjData(ItemIndex).MaderaElfica > 0 Then Call QuitarObjetos(LeñaElfica, Cantidad, userIndex)
+102     If ObjData(ItemIndex).MaderaElfica > 0 Then Call QuitarObjetos(ElvenWood, Cantidad, UserIndex)
         
         Exit Sub
 
@@ -823,7 +819,7 @@ Function CarpinteroTieneMateriales(ByVal UserIndex As Integer, ByVal ItemIndex A
         
     
 100     If ObjData(ItemIndex).Madera > 0 Then
-102         If Not TieneObjetos(Leña, ObjData(ItemIndex).Madera * Cantidad, userIndex) Then
+102         If Not TieneObjetos(Wood, ObjData(ItemIndex).Madera * Cantidad, UserIndex) Then
 104             Call WriteConsoleMsg(UserIndex, "No tenes suficientes madera.", e_FontTypeNames.FONTTYPE_INFO)
 106             CarpinteroTieneMateriales = False
 108             Call WriteMacroTrabajoToggle(UserIndex, False)
@@ -834,7 +830,7 @@ Function CarpinteroTieneMateriales(ByVal UserIndex As Integer, ByVal ItemIndex A
         End If
         
 110     If ObjData(ItemIndex).MaderaElfica > 0 Then
-112         If Not TieneObjetos(LeñaElfica, ObjData(ItemIndex).MaderaElfica * Cantidad, userIndex) Then
+112         If Not TieneObjetos(ElvenWood, ObjData(ItemIndex).MaderaElfica * Cantidad, UserIndex) Then
 114             Call WriteConsoleMsg(UserIndex, "No tenes suficiente madera elfica.", e_FontTypeNames.FONTTYPE_INFO)
 116             CarpinteroTieneMateriales = False
 118             Call WriteMacroTrabajoToggle(UserIndex, False)
@@ -2641,9 +2637,9 @@ Public Sub DoTalar(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte,
 128             MiObj.amount = MiObj.amount * RecoleccionMult
 
 129             If ObjData(MapData(.pos.map, X, y).ObjInfo.objIndex).Elfico = 0 Then
-130                 MiObj.objIndex = Leña
+130                 MiObj.ObjIndex = Wood
                 Else
-132                 MiObj.objIndex = LeñaElfica
+132                 MiObj.ObjIndex = ElvenWood
                 End If
 
 
@@ -2935,6 +2931,7 @@ Public Sub DoMontar(ByVal UserIndex As Integer, ByRef Montura As t_ObjData, ByVa
 144             .Char.ShieldAnim = NingunEscudo
 146             .Char.WeaponAnim = NingunArma
 148             .Char.CascoAnim = .Char.CascoAnim
+149             .Char.CartAnim = NoCart
 150             .flags.Montado = 1
             Else
 152             .flags.Montado = 0
@@ -2949,15 +2946,16 @@ Public Sub DoMontar(ByVal UserIndex As Integer, ByRef Montura As t_ObjData, ByVa
                 End If
 
 162             If .Invent.EscudoEqpObjIndex > 0 Then .Char.ShieldAnim = ObjData(.Invent.EscudoEqpObjIndex).ShieldAnim
-
 164             If .Invent.WeaponEqpObjIndex > 0 Then .Char.WeaponAnim = ObjData(.Invent.WeaponEqpObjIndex).WeaponAnim
-
 166             If .Invent.CascoEqpObjIndex > 0 Then .Char.CascoAnim = ObjData(.Invent.CascoEqpObjIndex).CascoAnim
+167             If .invent.MagicoObjIndex > 0 Then
+                    If ObjData(.invent.MagicoObjIndex).Ropaje > 0 Then .Char.CartAnim = ObjData(.invent.MagicoObjIndex).Ropaje
+                End If
 
             End If
 
 168         Call ActualizarVelocidadDeUsuario(UserIndex)
-170         Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
+170         Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim)
 
 172         Call UpdateUserInv(False, UserIndex, Slot)
 174         Call WriteEquiteToggle(UserIndex)
