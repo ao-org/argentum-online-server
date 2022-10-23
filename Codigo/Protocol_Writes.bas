@@ -1261,6 +1261,7 @@ End Sub
 ' @param    Y Y coord of the new character's position.
 ' @param    weapon Weapon index of the new character.
 ' @param    shield Shield index of the new character.
+' @param    cart index of the new character.
 ' @param    FX FX index to be displayed over the new character.
 ' @param    FXLoops Number of times the FX should be rendered.
 ' @param    helmet Helmet index of the new character.
@@ -1268,13 +1269,20 @@ End Sub
 ' @param    criminal Determines if the character is a criminal or not.
 ' @param    privileges Sets if the character is a normal one or any kind of administrative character.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-Public Sub WriteCharacterCreate(ByVal UserIndex As Integer, ByVal body As Integer, ByVal head As Integer, ByVal Heading As e_Heading, ByVal charindex As Integer, ByVal X As Byte, ByVal Y As Byte, ByVal weapon As Integer, ByVal shield As Integer, ByVal FX As Integer, ByVal FXLoops As Integer, ByVal helmet As Integer, ByVal name As String, ByVal Status As Byte, ByVal privileges As Byte, ByVal ParticulaFx As Byte, ByVal Head_Aura As String, ByVal Arma_Aura As String, ByVal Body_Aura As String, ByVal DM_Aura As String, ByVal RM_Aura As String, ByVal Otra_Aura As String, ByVal Escudo_Aura As String, ByVal speeding As Single, ByVal EsNPC As Byte, ByVal appear As Byte, ByVal group_index As Integer, ByVal clan_index As Integer, ByVal clan_nivel As Byte, ByVal UserMinHp As Long, ByVal UserMaxHp As Long, ByVal UserMinMAN As Long, ByVal UserMaxMAN As Long, ByVal Simbolo As Byte, Optional ByVal Idle As Boolean = False, Optional ByVal Navegando As Boolean = False, Optional ByVal tipoUsuario As e_TipoUsuario = 0, _
-            Optional ByVal TeamCaptura As Byte = 0, Optional ByVal TieneBandera As Byte = 0, Optional ByVal AnimAtaque1 As Integer = 0)
+Public Sub WriteCharacterCreate(ByVal UserIndex As Integer, ByVal body As Integer, ByVal head As Integer, ByVal Heading As e_Heading, ByVal charindex As Integer, _
+                                ByVal x As Byte, ByVal y As Byte, ByVal weapon As Integer, ByVal shield As Integer, ByVal Cart As Integer, ByVal FX As Integer, ByVal FXLoops As Integer, _
+                                ByVal helmet As Integer, ByVal name As String, ByVal Status As Byte, ByVal privileges As Byte, ByVal ParticulaFx As Byte, _
+                                ByVal Head_Aura As String, ByVal Arma_Aura As String, ByVal Body_Aura As String, ByVal DM_Aura As String, ByVal RM_Aura As String, _
+                                ByVal Otra_Aura As String, ByVal Escudo_Aura As String, ByVal speeding As Single, ByVal EsNPC As Byte, ByVal appear As Byte, _
+                                ByVal group_index As Integer, ByVal clan_index As Integer, ByVal clan_nivel As Byte, ByVal UserMinHp As Long, _
+                                ByVal UserMaxHp As Long, ByVal UserMinMAN As Long, ByVal UserMaxMAN As Long, ByVal Simbolo As Byte, Optional ByVal Idle As Boolean = False, _
+                                Optional ByVal Navegando As Boolean = False, Optional ByVal tipoUsuario As e_TipoUsuario = 0, _
+                                Optional ByVal TeamCaptura As Byte = 0, Optional ByVal TieneBandera As Byte = 0, Optional ByVal AnimAtaque1 As Integer = 0)
         '<EhHeader>
         On Error GoTo WriteCharacterCreate_Err
         '</EhHeader>
 100 Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageCharacterCreate(Body, Head, _
-            Heading, CharIndex, X, Y, weapon, shield, FX, FXLoops, helmet, Name, Status, _
+            Heading, charindex, x, y, weapon, shield, Cart, FX, FXLoops, helmet, name, Status, _
             privileges, ParticulaFx, Head_Aura, Arma_Aura, Body_Aura, DM_Aura, RM_Aura, _
             Otra_Aura, Escudo_Aura, speeding, EsNPC, appear, group_index, _
             clan_index, clan_nivel, UserMinHp, UserMaxHp, UserMinMAN, UserMaxMAN, Simbolo, _
@@ -1353,6 +1361,7 @@ Public Sub WriteCharacterChange(ByVal UserIndex As Integer, _
                                 ByVal CharIndex As Integer, _
                                 ByVal weapon As Integer, _
                                 ByVal shield As Integer, _
+                                ByVal Cart As Integer, _
                                 ByVal FX As Integer, _
                                 ByVal FXLoops As Integer, _
                                 ByVal helmet As Integer, _
@@ -1362,7 +1371,7 @@ Public Sub WriteCharacterChange(ByVal UserIndex As Integer, _
         On Error GoTo WriteCharacterChange_Err
         '</EhHeader>
 100     Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageCharacterChange(Body, _
-                Head, Heading, CharIndex, weapon, shield, FX, FXLoops, helmet, Idle, _
+                head, Heading, charindex, weapon, shield, Cart, FX, FXLoops, helmet, Idle, _
                 Navegando))
         '<EhFooter>
         Exit Sub
@@ -5122,31 +5131,15 @@ End Function
 ' @param    privileges Sets if the character is a normal one or any kind of administrative character.
 ' @return   The formated message ready to be writen as is on outgoing buffers.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-Public Function PrepareMessageCharacterCreate(ByVal Body As Integer, _
-                                              ByVal Head As Integer, _
-                                              ByVal Heading As e_Heading, _
-                                              ByVal CharIndex As Integer, _
-                                              ByVal X As Byte, _
-                                              ByVal Y As Byte, _
-                                              ByVal weapon As Integer, _
-                                              ByVal shield As Integer, _
-                                              ByVal FX As Integer, _
-                                              ByVal FXLoops As Integer, _
-                                              ByVal helmet As Integer, _
-                                              ByVal Name As String, _
-                                              ByVal Status As Byte, _
-                                              ByVal privileges As Byte, _
-                                              ByVal ParticulaFx As Byte, _
-                                              ByVal Head_Aura As String, _
-                                              ByVal Arma_Aura As String, _
-                                              ByVal Body_Aura As String, _
-                                              ByVal DM_Aura As String, _
-                                              ByVal RM_Aura As String, _
-                                              ByVal Otra_Aura As String, _
-                                              ByVal Escudo_Aura As String, _
-                                              ByVal speeding As Single, _
-                                              ByVal EsNPC As Byte, _
-                                              ByVal appear As Byte, ByVal group_index As Integer, ByVal clan_index As Integer, ByVal clan_nivel As Byte, ByVal UserMinHp As Long, ByVal UserMaxHp As Long, ByVal UserMinMAN As Long, ByVal UserMaxMAN As Long, ByVal Simbolo As Byte, ByVal Idle As Boolean, ByVal Navegando As Boolean, ByVal tipoUsuario As e_TipoUsuario, Optional ByVal TeamCaptura As Byte = 0, Optional ByVal TieneBandera As Byte = 0, Optional ByVal AnimAtaque1 As Integer = 0)
+Public Function PrepareMessageCharacterCreate(ByVal body As Integer, ByVal head As Integer, ByVal Heading As e_Heading, _
+                                              ByVal charindex As Integer, ByVal x As Byte, ByVal y As Byte, ByVal weapon As Integer, _
+                                              ByVal shield As Integer, ByVal Cart As Integer, ByVal FX As Integer, ByVal FXLoops As Integer, ByVal helmet As Integer, _
+                                              ByVal name As String, ByVal Status As Byte, ByVal privileges As Byte, ByVal ParticulaFx As Byte, ByVal Head_Aura As String, _
+                                              ByVal Arma_Aura As String, ByVal Body_Aura As String, ByVal DM_Aura As String, ByVal RM_Aura As String, _
+                                              ByVal Otra_Aura As String, ByVal Escudo_Aura As String, ByVal speeding As Single, ByVal EsNPC As Byte, _
+                                              ByVal appear As Byte, ByVal group_index As Integer, ByVal clan_index As Integer, ByVal clan_nivel As Byte, _
+                                              ByVal UserMinHp As Long, ByVal UserMaxHp As Long, ByVal UserMinMAN As Long, ByVal UserMaxMAN As Long, ByVal Simbolo As Byte, ByVal Idle As Boolean, _
+                                              ByVal Navegando As Boolean, ByVal tipoUsuario As e_TipoUsuario, Optional ByVal TeamCaptura As Byte = 0, Optional ByVal TieneBandera As Byte = 0, Optional ByVal AnimAtaque1 As Integer = 0)
         '<EhHeader>
         On Error GoTo PrepareMessageCharacterCreate_Err
         '</EhHeader>
@@ -5160,6 +5153,7 @@ Public Function PrepareMessageCharacterCreate(ByVal Body As Integer, _
 114     Call Writer.WriteInt16(weapon)
 116     Call Writer.WriteInt16(shield)
 118     Call Writer.WriteInt16(helmet)
+119     Call Writer.WriteInt16(Cart)
 120     Call Writer.WriteInt16(FX)
 122     Call Writer.WriteInt16(FXLoops)
 124     Call Writer.WriteString8(Name)
@@ -5223,6 +5217,7 @@ Public Function PrepareMessageCharacterChange(ByVal Body As Integer, _
                                               ByVal CharIndex As Integer, _
                                               ByVal weapon As Integer, _
                                               ByVal shield As Integer, _
+                                              ByVal Cart As Integer, _
                                               ByVal FX As Integer, _
                                               ByVal FXLoops As Integer, _
                                               ByVal helmet As Integer, _
@@ -5239,13 +5234,14 @@ Public Function PrepareMessageCharacterChange(ByVal Body As Integer, _
 110     Call Writer.WriteInt16(weapon)
 112     Call Writer.WriteInt16(shield)
 114     Call Writer.WriteInt16(helmet)
-116     Call Writer.WriteInt16(FX)
-118     Call Writer.WriteInt16(FXLoops)
+116     Call Writer.WriteInt16(Cart)
+118     Call Writer.WriteInt16(FX)
+120     Call Writer.WriteInt16(FXLoops)
         Dim flags As Byte
         flags = 0
-        If Idle Then flags = flags Or &O1
-        If Navegando Then flags = flags Or &O2
-        Call Writer.WriteInt8(flags)
+122     If Idle Then flags = flags Or &O1
+124     If Navegando Then flags = flags Or &O2
+126     Call Writer.WriteInt8(flags)
         Exit Function
 
 PrepareMessageCharacterChange_Err:

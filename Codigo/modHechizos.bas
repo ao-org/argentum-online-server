@@ -1668,6 +1668,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 214             .CharMimetizado.CascoAnim = .Char.CascoAnim
 216             .CharMimetizado.ShieldAnim = .Char.ShieldAnim
 218             .CharMimetizado.WeaponAnim = .Char.WeaponAnim
+219             .CharMimetizado.CartAnim = .char.CartAnim
                 
 220             .flags.Mimetizado = e_EstadoMimetismo.FormaUsuario
                 
@@ -1677,11 +1678,12 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 226             .Char.CascoAnim = UserList(tU).Char.CascoAnim
 228             .Char.ShieldAnim = UserList(tU).Char.ShieldAnim
 230             .Char.WeaponAnim = UserList(tU).Char.WeaponAnim
+231             .char.CartAnim = UserList(tU).char.CartAnim
 232             .NameMimetizado = UserList(tU).Name
 
 234             If UserList(tU).GuildIndex > 0 Then .NameMimetizado = .NameMimetizado & " <" & modGuilds.GuildName(UserList(tU).GuildIndex) & ">"
             
-236             Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
+236             Call ChangeUserChar(UserIndex, .char.body, .char.head, .char.Heading, .char.WeaponAnim, .char.ShieldAnim, .char.CascoAnim, .char.CartAnim)
 238             Call RefreshCharStatus(UserIndex)
             End With
            
@@ -2508,18 +2510,16 @@ Sub HechizoEstadoNPC(ByVal NpcIndex As Integer, ByVal hIndex As Integer, ByRef b
 258                 .CharMimetizado.CascoAnim = .Char.CascoAnim
 260                 .CharMimetizado.ShieldAnim = .Char.ShieldAnim
 262                 .CharMimetizado.WeaponAnim = .Char.WeaponAnim
-                    
+261                 .CharMimetizado.CartAnim = .char.CartAnim
 264                 .flags.Mimetizado = e_EstadoMimetismo.FormaBicho
                     
                     'ahora pongo lo del NPC.
 266                 .Char.Body = NpcList(NpcIndex).Char.Body
 268                 .Char.Head = NpcList(NpcIndex).Char.Head
-270                 .Char.CascoAnim = NingunCasco
-272                 .Char.ShieldAnim = NingunEscudo
-274                 .Char.WeaponAnim = NingunArma
+270                 Call ClearClothes(.char)
 276                 .NameMimetizado = IIf(NpcList(NpcIndex).showName = 1, NpcList(NpcIndex).Name, vbNullString)
 
-278                 Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
+278                 Call ChangeUserChar(UserIndex, .char.body, .char.head, .char.Heading, .char.WeaponAnim, .char.ShieldAnim, .char.CascoAnim, .char.CartAnim)
 280                 Call RefreshCharStatus(UserIndex)
                 End With
                 

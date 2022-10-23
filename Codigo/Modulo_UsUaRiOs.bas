@@ -217,6 +217,7 @@ On Error GoTo Complete_ConnectUser_Err
 155             .Char.WeaponAnim = NingunArma
 160             .Char.ShieldAnim = NingunEscudo
 165             .Char.CascoAnim = NingunCasco
+166             .Char.CartAnim = NoCart
 170             .Char.Heading = e_Heading.SOUTH
             End If
             
@@ -306,15 +307,26 @@ On Error GoTo Complete_ConnectUser_Err
             End If
 
             ' DM
-345         If .Invent.DañoMagicoEqpSlot > 0 Then
-350             If .Invent.Object(.Invent.DañoMagicoEqpSlot).ObjIndex > 0 Then
-355                 .Invent.DañoMagicoEqpObjIndex = .Invent.Object(.Invent.DañoMagicoEqpSlot).ObjIndex
+345         If .invent.DañoMagicoEqpSlot > 0 Then
+350             If .invent.Object(.invent.DañoMagicoEqpSlot).ObjIndex > 0 Then
+355                 .invent.DañoMagicoEqpObjIndex = .invent.Object(.invent.DañoMagicoEqpSlot).ObjIndex
 
 360                 If .flags.Muerto = 0 Then
-365                     .Char.DM_Aura = ObjData(.Invent.DañoMagicoEqpObjIndex).CreaGRH
+365                     .Char.DM_Aura = ObjData(.invent.DañoMagicoEqpObjIndex).CreaGRH
                     End If
                 Else
-370                 .Invent.DañoMagicoEqpSlot = 0
+370                 .invent.DañoMagicoEqpSlot = 0
+                End If
+            End If
+            
+            If .invent.MagicoSlot > 0 Then
+                .invent.MagicoObjIndex = .invent.Object(.invent.MagicoSlot).ObjIndex
+                If ObjData(.invent.MagicoObjIndex).CreaGRH <> "" Then
+                    .Char.Otra_Aura = ObjData(.invent.MagicoObjIndex).CreaGRH
+                     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageAuraToChar(.Char.charindex, .Char.Otra_Aura, False, 5))
+                End If
+                If ObjData(.invent.MagicoObjIndex).Ropaje > 0 Then
+                    .Char.CartAnim = ObjData(.invent.MagicoObjIndex).Ropaje
                 End If
             End If
             
@@ -374,6 +386,7 @@ On Error GoTo Complete_ConnectUser_Err
 505         If .Invent.EscudoEqpSlot = 0 Then .Char.ShieldAnim = NingunEscudo
 510         If .Invent.CascoEqpSlot = 0 Then .Char.CascoAnim = NingunCasco
 515         If .Invent.WeaponEqpSlot = 0 And .Invent.NudilloSlot = 0 And .Invent.HerramientaEqpSlot = 0 Then .Char.WeaponAnim = NingunArma
+516         If .invent.MagicoSlot = 0 Then .Char.CartAnim = NoCart
             ' -----------------------------------------------------------------------
             '   FIN - INFORMACION INICIAL DEL PERSONAJE
             ' -----------------------------------------------------------------------
@@ -846,9 +859,7 @@ Sub RevivirUsuario(ByVal UserIndex As Integer, Optional ByVal MedianteHechizo As
 158                 If ObjData(.Invent.EscudoEqpObjIndex).CreaGRH <> "" Then
 160                     .Char.Escudo_Aura = ObjData(.Invent.EscudoEqpObjIndex).CreaGRH
 162                     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageAuraToChar(.Char.charindex, .Char.Escudo_Aura, False, 3))
-    
                     End If
-            
                 End If
     
 164             If .Invent.CascoEqpObjIndex > 0 Then
@@ -866,9 +877,10 @@ Sub RevivirUsuario(ByVal UserIndex As Integer, Optional ByVal MedianteHechizo As
 176                 If ObjData(.Invent.MagicoObjIndex).CreaGRH <> "" Then
 178                     .Char.Otra_Aura = ObjData(.Invent.MagicoObjIndex).CreaGRH
 180                     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageAuraToChar(.Char.charindex, .Char.Otra_Aura, False, 5))
-    
                     End If
-    
+                    If ObjData(.invent.MagicoObjIndex).Ropaje > 0 Then
+                        .Char.CartAnim = ObjData(.invent.MagicoObjIndex).Ropaje
+                    End If
                 End If
     
 182             If .Invent.NudilloObjIndex > 0 Then
@@ -896,7 +908,7 @@ Sub RevivirUsuario(ByVal UserIndex As Integer, Optional ByVal MedianteHechizo As
             End If
     
 206         Call ActualizarVelocidadDeUsuario(UserIndex)
-208         Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim)
+208         Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim)
             
          Call MakeUserChar(True, UserList(UserIndex).Pos.Map, UserIndex, UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y, 0)
         End With
@@ -909,7 +921,7 @@ RevivirUsuario_Err:
         
 End Sub
 
-Sub ChangeUserChar(ByVal UserIndex As Integer, ByVal Body As Integer, ByVal Head As Integer, ByVal Heading As Byte, ByVal Arma As Integer, ByVal Escudo As Integer, ByVal Casco As Integer)
+Sub ChangeUserChar(ByVal UserIndex As Integer, ByVal body As Integer, ByVal head As Integer, ByVal Heading As Byte, ByVal Arma As Integer, ByVal Escudo As Integer, ByVal Casco As Integer, ByVal Cart As Integer)
         
         On Error GoTo ChangeUserChar_Err
         
@@ -921,16 +933,16 @@ Sub ChangeUserChar(ByVal UserIndex As Integer, ByVal Body As Integer, ByVal Head
 108         .WeaponAnim = Arma
 110         .ShieldAnim = Escudo
 112         .CascoAnim = Casco
-
+114         .CartAnim = Cart
         End With
     
-114     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCharacterChange(Body, Head, Heading, UserList(UserIndex).Char.CharIndex, Arma, Escudo, UserList(UserIndex).Char.FX, UserList(UserIndex).Char.loops, Casco, False, UserList(UserIndex).flags.Navegando))
+116     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCharacterChange(body, head, Heading, UserList(UserIndex).Char.charindex, Arma, Escudo, Cart, UserList(UserIndex).Char.FX, UserList(UserIndex).Char.loops, Casco, False, UserList(UserIndex).flags.Navegando))
 
         
         Exit Sub
 
 ChangeUserChar_Err:
-116     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.ChangeUserChar", Erl)
+118     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.ChangeUserChar", Erl)
 
         
 End Sub
@@ -1091,7 +1103,7 @@ Sub MakeUserChar(ByVal toMap As Boolean, _
                         End If
                     End If
 
-140                 Call WriteCharacterCreate(sndIndex, .Char.body, .Char.head, .Char.Heading, .Char.charindex, x, y, .Char.WeaponAnim, .Char.ShieldAnim, .Char.FX, 999, .Char.CascoAnim, TempName, .Faccion.Status, .flags.Privilegios, .Char.ParticulaFx, .Char.Head_Aura, .Char.Arma_Aura, .Char.Body_Aura, .Char.DM_Aura, .Char.RM_Aura, .Char.Otra_Aura, .Char.Escudo_Aura, .Char.speeding, 0, appear, .Grupo.Lider.ArrayIndex, .GuildIndex, clan_nivel, .Stats.MinHp, .Stats.MaxHp, .Stats.MinMAN, .Stats.MaxMAN, 0, False, .flags.Navegando, .Stats.tipoUsuario, .flags.jugando_captura_team, .flags.tiene_bandera)
+140                 Call WriteCharacterCreate(sndIndex, .Char.body, .Char.head, .Char.Heading, .Char.charindex, x, y, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CartAnim, .Char.FX, 999, .Char.CascoAnim, TempName, .Faccion.Status, .flags.Privilegios, .Char.ParticulaFx, .Char.Head_Aura, .Char.Arma_Aura, .Char.Body_Aura, .Char.DM_Aura, .Char.RM_Aura, .Char.Otra_Aura, .Char.Escudo_Aura, .Char.speeding, 0, appear, .Grupo.Lider.ArrayIndex, .GuildIndex, clan_nivel, .Stats.MinHp, .Stats.MaxHp, .Stats.MinMAN, .Stats.MaxMAN, 0, False, .flags.Navegando, .Stats.tipoUsuario, .flags.jugando_captura_team, .flags.tiene_bandera)
                     
                 Else
             
@@ -2001,8 +2013,6 @@ Sub UserDie(ByVal UserIndex As Integer)
             Call Desequipar(UserIndex, .Invent.NudilloSlot)
             Call Desequipar(UserIndex, .Invent.MagicoSlot)
             Call Desequipar(UserIndex, .Invent.ResistenciaEqpSlot)
-        
-176         .flags.CarroMineria = 0
    
             'desequipar montura
 178         If .flags.Montado > 0 Then
@@ -2039,6 +2049,7 @@ Sub UserDie(ByVal UserIndex As Integer)
 206             .Char.ShieldAnim = NingunEscudo
 208             .Char.WeaponAnim = NingunArma
 210             .Char.CascoAnim = NingunCasco
+211             .Char.CartAnim = NoCart
             Else
 212             Call EquiparBarco(UserIndex)
             End If
@@ -2078,7 +2089,7 @@ Sub UserDie(ByVal UserIndex As Integer)
                 
         
             '<< Actualizamos clientes >>
-228         Call ChangeUserChar(UserIndex, .Char.Body, .Char.Head, .Char.Heading, NingunArma, NingunEscudo, NingunCasco)
+228         Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, NingunArma, NingunEscudo, NingunCasco, NoCart)
 
 230         If MapInfo(.Pos.Map).Seguro = 0 Then
 232             Call WriteConsoleMsg(userIndex, "Escribe /HOGAR si deseas regresar rápido a tu hogar.", e_FontTypeNames.FONTTYPE_New_Naranja)
@@ -2922,18 +2933,14 @@ Public Sub LimpiarEstadosAlterados(ByVal UserIndex As Integer)
 156                     .Char.Body = iFragataFantasmal
                     End If
 
-158                 .Char.ShieldAnim = NingunEscudo
-160                 .Char.WeaponAnim = NingunArma
-162                 .Char.CascoAnim = NingunCasco
-                
+158                 Call ClearClothes(.Char)
                 Else
-            
 164                 .Char.Body = .CharMimetizado.Body
 166                 .Char.Head = .CharMimetizado.Head
 168                 .Char.CascoAnim = .CharMimetizado.CascoAnim
 170                 .Char.ShieldAnim = .CharMimetizado.ShieldAnim
 172                 .Char.WeaponAnim = .CharMimetizado.WeaponAnim
-                
+173                 .Char.CartAnim = .CharMimetizado.CartAnim
                 End If
             
 174             .Counters.Mimetismo = 0
@@ -3006,6 +3013,13 @@ ActualizarVelocidadDeUsuario_Err:
 134     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.CalcularVelocidad_Err", Erl)
 
 End Function
+
+Public Sub ClearClothes(ByRef Char As t_Char)
+    Char.ShieldAnim = NingunEscudo
+    Char.WeaponAnim = NingunArma
+    Char.CascoAnim = NingunCasco
+    Char.CartAnim = NoCart
+End Sub
 
 Public Function IsStun(ByRef flags As t_UserFlags, ByRef Counters As t_UserCounters) As Boolean
     IsStun = Counters.StunEndTime > GetTickCount()

@@ -1835,6 +1835,7 @@ Public Sub resetPj(ByVal UserIndex As Integer, Optional ByVal borrarHechizos As 
 168         .Char.WeaponAnim = NingunArma
 170         .Char.ShieldAnim = NingunEscudo
 172         .Char.CascoAnim = NingunCasco
+173         .char.CartAnim = NoCart
 
             ' WyroX: Vida inicial
 174         .Stats.MaxHp = .Stats.UserAtributos(e_Atributos.Constitucion)

@@ -526,9 +526,7 @@ Function ConnectNewUser(ByVal userindex As Integer, ByRef name As String, ByVal 
         
 166         .OrigChar = .Char
     
-168         .Char.WeaponAnim = NingunArma
-170         .Char.ShieldAnim = NingunEscudo
-172         .Char.CascoAnim = NingunCasco
+168         Call ClearClothes(.char)
 
             ' WyroX: Vida inicial
 174         .Stats.MaxHp = .Stats.UserAtributos(e_Atributos.Constitucion)
@@ -1051,6 +1049,7 @@ Sub ResetCharInfo(ByVal UserIndex As Integer)
 116         .loops = 0
 118         .ShieldAnim = 0
 120         .WeaponAnim = 0
+121         .CartAnim = 0
 122         .Arma_Aura = ""
 124         .Body_Aura = ""
 126         .Head_Aura = ""
@@ -1246,7 +1245,6 @@ Sub ResetUserFlags(ByVal UserIndex As Integer)
 188         .VecesQueMoriste = 0
 190         .MinutosRestantes = 0
 192         .SegundosPasados = 0
-194         .CarroMineria = 0
 196         .Montado = 0
 198         .Incinerado = 0
 200         .Casado = 0
@@ -1264,7 +1262,6 @@ Sub ResetUserFlags(ByVal UserIndex As Integer)
 222         .Estupidiza = 0
 224         .GolpeCertero = 0
 226         .PendienteDelExperto = 0
-228         .CarroMineria = 0
 230         .PendienteDelSacrificio = 0
 232         .AnilloOcultismo = 0
 234         .RegeneracionMana = 0
@@ -1597,6 +1594,7 @@ Sub ClearAndSaveUser(ByVal UserIndex As Integer)
 156             .Char.CascoAnim = .CharMimetizado.CascoAnim
 158             .Char.ShieldAnim = .CharMimetizado.ShieldAnim
 160             .Char.WeaponAnim = .CharMimetizado.WeaponAnim
+161             .char.CartAnim = .CharMimetizado.CartAnim
 162             .Counters.Mimetismo = 0
 164             .flags.Mimetizado = e_EstadoMimetismo.Desactivado
 
