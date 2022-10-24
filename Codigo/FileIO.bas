@@ -37,6 +37,7 @@ Attribute VB_Name = "ES"
 
 Option Explicit
 
+Const MAX_RANDOM_TELEPORT_IN_MAP = 20
 Private Type t_Position
 
     x As Integer
@@ -1741,7 +1742,7 @@ Public Sub CargarMapaFormatoCSM(ByVal map As Long, ByVal MAPFl As String)
         Dim Objetos()    As t_DatosObjs
         Dim NPCs()       As t_DatosNPC
         Dim TEs()        As t_DatosTE
-        Dim RandomTeleports(20) As Integer
+        Dim RandomTeleports(MAX_RANDOM_TELEPORT_IN_MAP) As Integer
         Dim randomTeleportCount As Integer
         Dim body         As Integer
         Dim head         As Integer
@@ -1895,7 +1896,7 @@ Public Sub CargarMapaFormatoCSM(ByVal map As Long, ByVal MAPFl As String)
 270                     Case Else
 272                         MapData(map, Objetos(i).x, Objetos(i).y).ObjInfo.amount = Objetos(i).ObjAmmount
                     End Select
-                    If .OBJType = otTeleport And .Subtipo = e_TeleportSubtipe.eTransportNetwork Then
+                    If .OBJType = otTeleport And .Subtipo = e_TeleportSubType.eTransportNetwork Then
                         RandomTeleports(randomTeleportCount) = i
                         randomTeleportCount = randomTeleportCount + 1
                     End If
@@ -1915,7 +1916,6 @@ Public Sub CargarMapaFormatoCSM(ByVal map As Long, ByVal MAPFl As String)
 288                     npcfile = DatPath & "NPCs.dat"
 290                     npcIndex = OpenNPC(NumNpc)
                         
-                        ' Jopi: Evitamos meter NPCs en el mapa que no existen o estan mal dateados.
 292                     If npcIndex > 0 Then
 294                         MapData(map, NPCs(i).x, NPCs(i).y).npcIndex = npcIndex
 296                         NpcList(npcIndex).pos.map = map

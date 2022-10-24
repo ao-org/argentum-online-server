@@ -329,7 +329,7 @@ Public Function GetTransportNextIndex(ByVal Map As Integer, ByVal PosX As Byte, 
     GetTransportNextIndex = -1
 End Function
 
-Public Function GetExitTransport(ByVal Map As Integer, excludeIndex As Integer) As Integer
+Public Function GetExitTransport(ByVal Map As Integer, ByVal ExcludeIndex As Integer) As Integer
     Dim output As Integer
     Do
         output = RandomNumber(0, UBound(MapInfo(Map).TransportNetwork))
@@ -365,7 +365,7 @@ Public Sub DoTileEvents(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal 
 106                 EsTeleport = ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex).OBJType = e_OBJType.otTeleport
                 End If
                 If EsTeleport Then
-                    If ObjData(MapData(Map, x, y).ObjInfo.objIndex).Subtipo = e_TeleportSubtipe.eTransportNetwork Then
+                    If ObjData(MapData(Map, X, y).ObjInfo.objIndex).Subtipo = e_TeleportSubType.eTransportNetwork Then
                         Dim StartTransportIndex As Integer
                         Dim ExitPortal As Integer
                         StartTransportIndex = GetTransportNextIndex(Map, x, y)
