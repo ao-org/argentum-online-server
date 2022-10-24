@@ -777,6 +777,11 @@ Public Enum e_UseOnceSubType
     eFish
 End Enum
 
+Public Enum e_TeleportSubType
+    eTeleport = 1
+    eTransportNetwork = 2
+End Enum
+
 'Estadisticas
 Public Const STAT_MAXELV              As Byte = 47
 
@@ -1889,6 +1894,12 @@ Type Tgrupo
     PropuestaDe As t_UserReference
 End Type
 
+Public Type t_LastNetworkUssage
+    Map As Integer
+    StartIdex As Integer
+    ExitIndex As Integer
+End Type
+
 'Tipo de los Usuarios
 Public Type t_User
 
@@ -1941,6 +1952,7 @@ Public Type t_User
     Stats_bk As t_UserStats
     flags As t_UserFlags
     Accion As t_AccionPendiente
+    LastTransportNetwork As t_LastNetworkUssage
 
     Faccion As t_Facciones
 
@@ -2263,6 +2275,11 @@ Public Type t_light
 
 End Type
 
+Public Type t_TransportNetworkExit
+    TileX As Byte
+    TileY As Byte
+End Type
+
 Public Type t_MapBlock
 
     Blocked As Byte
@@ -2309,7 +2326,7 @@ Type t_MapInfo
     NoMascotas As Boolean
     DropItems As Boolean
     SafeFightMap As Boolean
-
+    TransportNetwork() As t_TransportNetworkExit
 End Type
 
 Public Type t_IndexHeap

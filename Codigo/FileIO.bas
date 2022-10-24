@@ -37,6 +37,7 @@ Attribute VB_Name = "ES"
 
 Option Explicit
 
+Const MAX_RANDOM_TELEPORT_IN_MAP = 20
 Private Type t_Position
 
     x As Integer
@@ -1680,7 +1681,7 @@ Sub LoadMapData()
 
         If RunningInVB() Then
                 'VB runs out of memory when debugging
-                NumMaps = 400
+                NumMaps = 700
         Else
                 NumMaps = CountFiles(MapPath, "*.csm") - 1
         End If
@@ -1727,13 +1728,9 @@ Public Sub CargarMapaFormatoCSM(ByVal map As Long, ByVal MAPFl As String)
         On Error GoTo ErrorHandler:
 
         Dim npcfile      As String
-
         Dim fh           As Integer
-    
         Dim MH           As t_MapHeader
-
         Dim Blqs()       As t_DatosBloqueados
-
         Dim L1()         As t_DatosGrh
         Dim L2()         As t_DatosGrh
         Dim L3()         As t_DatosGrh
@@ -1745,7 +1742,8 @@ Public Sub CargarMapaFormatoCSM(ByVal map As Long, ByVal MAPFl As String)
         Dim Objetos()    As t_DatosObjs
         Dim NPCs()       As t_DatosNPC
         Dim TEs()        As t_DatosTE
-
+        Dim RandomTeleports(MAX_RANDOM_TELEPORT_IN_MAP) As Integer
+        Dim randomTeleportCount As Integer
         Dim body         As Integer
         Dim head         As Integer
         Dim Heading      As Byte
@@ -1754,7 +1752,7 @@ Public Sub CargarMapaFormatoCSM(ByVal map As Long, ByVal MAPFl As String)
         Dim j            As Long
     
         Dim x As Integer, y As Integer
-        
+        randomTeleportCount = 0
 100     If Not FileExist(MAPFl, vbNormal) Then
 102         Call TraceError(404, "Estas tratando de cargar un MAPA que NO EXISTE" & vbNewLine & "Mapa: " & MAPFl, "ES.CargarMapaFormatoCSM")
             Exit Sub
@@ -1777,30 +1775,22 @@ Public Sub CargarMapaFormatoCSM(ByVal map As Long, ByVal MAPFl As String)
 118     With MH
 
             'Cargamos Bloqueos
-        
 120         If .NumeroBloqueados > 0 Then
-
 122             ReDim Blqs(1 To .NumeroBloqueados)
 124             Get #fh, , Blqs
-
 126             For i = 1 To .NumeroBloqueados
 128                 MapData(map, Blqs(i).x, Blqs(i).y).Blocked = Blqs(i).Lados
 130             Next i
-
             End If
         
             'Cargamos Layer 1
         
 132         If .NumeroLayers(1) > 0 Then
-        
 134             ReDim L1(1 To .NumeroLayers(1))
 136             Get #fh, , L1
-
 138             For i = 1 To .NumeroLayers(1)
-                
 140                 x = L1(i).x
 142                 y = L1(i).y
-                        
 144                 MapData(map, x, y).Graphic(1) = L1(i).GrhIndex
             
                     'InitGrh MapData(L1(i).X, L1(i).Y).Graphic(1), MapData(L1(i).X, L1(i).Y).Graphic(1).GrhIndex
@@ -1808,25 +1798,18 @@ Public Sub CargarMapaFormatoCSM(ByVal map As Long, ByVal MAPFl As String)
 146                 If HayAgua(map, x, y) Then
 148                     MapData(map, x, y).Blocked = MapData(map, x, y).Blocked Or FLAG_AGUA
                     End If
-                
 150             Next i
-
             End If
         
             'Cargamos Layer 2
 152         If .NumeroLayers(2) > 0 Then
 154             ReDim L2(1 To .NumeroLayers(2))
 156             Get #fh, , L2
-
 158             For i = 1 To .NumeroLayers(2)
-                
 160                 x = L2(i).x
 162                 y = L2(i).y
-
 164                 MapData(map, x, y).Graphic(2) = L2(i).GrhIndex
-                
 166                 MapData(map, x, y).Blocked = MapData(map, x, y).Blocked And Not FLAG_AGUA
-                
 168             Next i
 
             End If
@@ -1838,7 +1821,6 @@ Public Sub CargarMapaFormatoCSM(ByVal map As Long, ByVal MAPFl As String)
 176             For i = 1 To .NumeroLayers(3)
 178                 x = L3(i).x
 180                 y = L3(i).y
-
 182                 MapData(map, x, y).Graphic(3) = L3(i).GrhIndex
                 
 184                 If EsArbol(L3(i).GrhIndex) Then
@@ -1851,7 +1833,6 @@ Public Sub CargarMapaFormatoCSM(ByVal map As Long, ByVal MAPFl As String)
 190         If .NumeroLayers(4) > 0 Then
 192             ReDim L4(1 To .NumeroLayers(4))
 194             Get #fh, , L4
-
 196             For i = 1 To .NumeroLayers(4)
 198                 MapData(map, L4(i).x, L4(i).y).Graphic(4) = L4(i).GrhIndex
 200             Next i
@@ -1865,7 +1846,6 @@ Public Sub CargarMapaFormatoCSM(ByVal map As Long, ByVal MAPFl As String)
 208             For i = 1 To .NumeroTriggers
 210                 x = Triggers(i).x
 212                 y = Triggers(i).y
-
 214                 MapData(map, x, y).trigger = Triggers(i).trigger
 
                     ' Trigger detalles en agua
@@ -1878,9 +1858,7 @@ Public Sub CargarMapaFormatoCSM(ByVal map As Long, ByVal MAPFl As String)
                         ' Vuelvo a poner flag agua
 219                     MapData(map, x, y).Blocked = MapData(map, x, y).Blocked Or FLAG_AGUA
                     End If
-                    
 220             Next i
-
             End If
 
 222         If .NumeroParticulas > 0 Then
@@ -1891,7 +1869,6 @@ Public Sub CargarMapaFormatoCSM(ByVal map As Long, ByVal MAPFl As String)
 230                 MapData(map, Particulas(i).x, Particulas(i).y).ParticulaIndex = Particulas(i).Particula
 232                 MapData(map, Particulas(i).x, Particulas(i).y).ParticulaIndex = 0
 234             Next i
-
             End If
 
 236         If .NumeroLuces > 0 Then
@@ -1904,29 +1881,27 @@ Public Sub CargarMapaFormatoCSM(ByVal map As Long, ByVal MAPFl As String)
 248                 MapData(map, Luces(i).x, Luces(i).y).Luz.Color = 0
 250                 MapData(map, Luces(i).x, Luces(i).y).Luz.Rango = 0
 252             Next i
-
             End If
             
 254         If .NumeroOBJs > 0 Then
 256             ReDim Objetos(1 To .NumeroOBJs)
 258             Get #fh, , Objetos
-
 260             For i = 1 To .NumeroOBJs
 262                 MapData(map, Objetos(i).x, Objetos(i).y).ObjInfo.objIndex = Objetos(i).objIndex
-
-264                 Select Case ObjData(Objetos(i).objIndex).OBJType
-
+                    With ObjData(Objetos(i).objIndex)
+264                 Select Case .OBJType
                         Case e_OBJType.otYacimiento, e_OBJType.otArboles
 266                         MapData(map, Objetos(i).x, Objetos(i).y).ObjInfo.amount = ObjData(Objetos(i).objIndex).VidaUtil
 268                         MapData(map, Objetos(i).x, Objetos(i).y).ObjInfo.Data = &H7FFFFFFF ' Ultimo uso = Max Long
-
 270                     Case Else
 272                         MapData(map, Objetos(i).x, Objetos(i).y).ObjInfo.amount = Objetos(i).ObjAmmount
-
                     End Select
-
+                    If .OBJType = otTeleport And .Subtipo = e_TeleportSubType.eTransportNetwork Then
+                        RandomTeleports(randomTeleportCount) = i
+                        randomTeleportCount = randomTeleportCount + 1
+                    End If
+                    End With
 274             Next i
-
             End If
 
 276         If .NumeroNPCs > 0 Then
@@ -1937,43 +1912,29 @@ Public Sub CargarMapaFormatoCSM(ByVal map As Long, ByVal MAPFl As String)
                  
 282             For i = 1 To .NumeroNPCs
 284                 NumNpc = NPCs(i).npcIndex
-                    
 286                 If NumNpc > 0 Then
 288                     npcfile = DatPath & "NPCs.dat"
 290                     npcIndex = OpenNPC(NumNpc)
                         
-                        ' Jopi: Evitamos meter NPCs en el mapa que no existen o estan mal dateados.
 292                     If npcIndex > 0 Then
-                        
 294                         MapData(map, NPCs(i).x, NPCs(i).y).npcIndex = npcIndex
-    
 296                         NpcList(npcIndex).pos.map = map
 298                         NpcList(npcIndex).pos.x = NPCs(i).x
 300                         NpcList(npcIndex).pos.y = NPCs(i).y
-    
                             ' WyroX: guardo siempre la pos original... puede sernos útil ;)
 302                         NpcList(npcIndex).Orig = NpcList(npcIndex).pos
     
 304                         If LenB(NpcList(npcIndex).Name) = 0 Then
-
 306                             MapData(map, NPCs(i).x, NPCs(i).y).npcIndex = 0
-
                             Else
-    
 308                             Call MakeNPCChar(True, 0, npcIndex, map, NPCs(i).x, NPCs(i).y)
-                            
                             End If
-                           
                         Else
-                            
                             ' Lo guardo en los logs + aparece en el Debug.Print
-310                         Call TraceError(404, "NPC no existe en los .DAT's o está mal dateado. Posicion: " & map & "-" & NPCs(i).X & "-" & NPCs(i).y, "ES.CargarMapaFormatoCSM")
-                            
+310                         Call TraceError(404, "NPC no existe en los .DAT's o está mal dateado. Posicion: " & map & "-" & NPCs(i).x & "-" & NPCs(i).y, "ES.CargarMapaFormatoCSM")
                         End If
                     End If
-
 312             Next i
-                
             End If
             
 314         If .NumeroTE > 0 Then
@@ -1985,11 +1946,8 @@ Public Sub CargarMapaFormatoCSM(ByVal map As Long, ByVal MAPFl As String)
 324                 MapData(map, TEs(i).x, TEs(i).y).TileExit.x = TEs(i).DestX
 326                 MapData(map, TEs(i).x, TEs(i).y).TileExit.y = TEs(i).DestY
 328             Next i
-
             End If
-        
         End With
-
 330     Close fh
 
         ' WyroX: Nuevo sistema de restricciones
@@ -2036,7 +1994,13 @@ Public Sub CargarMapaFormatoCSM(ByVal map As Long, ByVal MAPFl As String)
 390         MapInfo(map).Salida.x = val(Fields(1))
 392         MapInfo(map).Salida.y = val(Fields(2))
         End If
- 
+        If randomTeleportCount > 0 Then
+            ReDim MapInfo(map).TransportNetwork(randomTeleportCount - 1) As t_TransportNetworkExit
+            For i = 0 To randomTeleportCount - 1
+                MapInfo(map).TransportNetwork(i).TileX = Objetos(RandomTeleports(i)).x
+                MapInfo(map).TransportNetwork(i).TileY = Objetos(RandomTeleports(i)).y
+            Next i
+        End If
         Exit Sub
 
 ErrorHandler:
