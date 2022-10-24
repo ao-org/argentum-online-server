@@ -777,7 +777,7 @@ Public Enum e_UseOnceSubType
     eFish
 End Enum
 
-Public Enum e_TeleportSubtipe
+Public Enum e_TeleportSubType
     eTeleport = 1
     eTransportNetwork = 2
 End Enum
