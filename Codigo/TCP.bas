@@ -1130,7 +1130,7 @@ Sub ResetBasicUserInfo(ByVal UserIndex As Integer)
             End With
             
 194         .NroMascotas = 0
-
+            .LastTransportNetwork.Map = -1
         End With
 
         

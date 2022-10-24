@@ -316,6 +316,27 @@ Private Function CheckMapRestrictions(ByVal UserIndex As Integer, ByVal Map As I
 
 End Function
 
+Public Function GetTransportNextIndex(ByVal Map As Integer, ByVal PosX As Byte, ByVal PosY As Byte) As Integer
+    Dim i As Integer
+    With MapInfo(Map)
+    For i = 0 To UBound(.TransportNetwork)
+        If .TransportNetwork(i).TileX = PosX And .TransportNetwork(i).TileY = PosY Then
+            GetTransportNextIndex = i
+            Exit Function
+        End If
+    Next i
+    End With
+    GetTransportNextIndex = -1
+End Function
+
+Public Function GetExitTransport(ByVal Map As Integer, excludeIndex As Integer) As Integer
+    Dim output As Integer
+    Do
+        output = RandomNumber(0, UBound(MapInfo(Map).TransportNetwork))
+    Loop While output = excludeIndex
+    GetExitTransport = output
+End Function
+
 Public Sub DoTileEvents(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer)
 
         '***************************************************
@@ -333,19 +354,39 @@ Public Sub DoTileEvents(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal 
         Dim EsTeleport As Boolean
         Dim TelepRadio As Byte
         Dim aN As Integer
-        
+        Dim destPos As t_WorldPos
 100     With UserList(UserIndex)
-
             'Controla las salidas
 102         If InMapBounds(Map, X, Y) Then
-
                 If MapData(Map, X, Y).trigger = AUTORESU Then
                     Call ResucitarOCurar(UserIndex)
                 End If
-        
 104             If MapData(Map, X, Y).ObjInfo.ObjIndex > 0 Then
 106                 EsTeleport = ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex).OBJType = e_OBJType.otTeleport
                 End If
+                If EsTeleport Then
+                    If ObjData(MapData(Map, x, y).ObjInfo.objIndex).Subtipo = e_TeleportSubtipe.eTransportNetwork Then
+                        Dim StartTransportIndex As Integer
+                        Dim ExitPortal As Integer
+                        StartTransportIndex = GetTransportNextIndex(Map, x, y)
+                        If .LastTransportNetwork.Map = Map And .LastTransportNetwork.ExitIndex = StartTransportIndex Then
+                            ExitPortal = .LastTransportNetwork.StartIdex
+                        Else
+                            ExitPortal = GetExitTransport(Map, StartTransportIndex)
+                        End If
+                        destPos = MapData(Map, MapInfo(Map).TransportNetwork(ExitPortal).TileX, MapInfo(Map).TransportNetwork(ExitPortal).TileY).TileExit
+                        If destPos.Map > 0 And destPos.Map <= NumMaps Then
+                            .LastTransportNetwork.Map = Map
+                            .LastTransportNetwork.StartIdex = StartTransportIndex
+                            .LastTransportNetwork.ExitIndex = ExitPortal
+                            Call WarpUserChar(UserIndex, destPos.Map, destPos.x, destPos.y, EsTeleport)
+                        Else
+                            Call LogError("Invalid teleport at map: " & Map & "(" & x & ", " & y & ")")
+                        End If
+                        Exit Sub
+                    End If
+                End If
+                
     
 108             If (MapData(Map, X, Y).TileExit.Map > 0) And (MapData(Map, X, Y).TileExit.Map <= NumMaps) Then
     
@@ -354,8 +395,6 @@ Public Sub DoTileEvents(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal 
 112                     If EsMapaInterdimensional(MapData(Map, X, Y).TileExit.Map) And Not EsMapaInterdimensional(.Pos.Map) Then
 114                         .flags.ReturnPos = .Pos
                         End If
-                        
-                        Dim destPos As t_WorldPos
                         
                         destPos.map = MapData(map, X, y).TileExit.map
                         If EsTeleport Then
