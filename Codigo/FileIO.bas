@@ -38,6 +38,9 @@ Attribute VB_Name = "ES"
 Option Explicit
 
 Const MAX_RANDOM_TELEPORT_IN_MAP = 20
+Const FISHING_REQUIRED_PERCENT = 95
+Const FISHING_TILES_ON_MAP = 10
+Const FISHING_POOL_ID = 3740
 Private Type t_Position
 
     x As Integer
@@ -1747,6 +1750,8 @@ Public Sub CargarMapaFormatoCSM(ByVal map As Long, ByVal MAPFl As String)
         Dim body         As Integer
         Dim head         As Integer
         Dim Heading      As Byte
+        Dim SailingTiles As Long
+        Dim TotalTiles   As Long
 
         Dim i            As Long
         Dim j            As Long
@@ -1793,10 +1798,10 @@ Public Sub CargarMapaFormatoCSM(ByVal map As Long, ByVal MAPFl As String)
 142                 y = L1(i).y
 144                 MapData(map, x, y).Graphic(1) = L1(i).GrhIndex
             
-                    'InitGrh MapData(L1(i).X, L1(i).Y).Graphic(1), MapData(L1(i).X, L1(i).Y).Graphic(1).GrhIndex
-                    ' Call Map_Grh_Set(L2(i).X, L2(i).Y, L2(i).GrhIndex, 2)
+                    TotalTiles = TotalTiles + 1
 146                 If HayAgua(map, x, y) Then
 148                     MapData(map, x, y).Blocked = MapData(map, x, y).Blocked Or FLAG_AGUA
+                        SailingTiles = SailingTiles + 1
                     End If
 150             Next i
             End If
@@ -1931,7 +1936,7 @@ Public Sub CargarMapaFormatoCSM(ByVal map As Long, ByVal MAPFl As String)
                             End If
                         Else
                             ' Lo guardo en los logs + aparece en el Debug.Print
-310                         Call TraceError(404, "NPC no existe en los .DAT's o está mal dateado. Posicion: " & map & "-" & NPCs(i).x & "-" & NPCs(i).y, "ES.CargarMapaFormatoCSM")
+310                         Call TraceError(404, "NPC no existe en los .DAT's o está mal dateado. Posicion: " & Map & "-" & NPCs(i).x & "-" & NPCs(i).y, "ES.CargarMapaFormatoCSM")
                         End If
                     End If
 312             Next i
@@ -1958,6 +1963,10 @@ Public Sub CargarMapaFormatoCSM(ByVal map As Long, ByVal MAPFl As String)
             Else
 338             MapDat.restrict_mode = "0"
             End If
+        End If
+        
+        If SailingTiles * 100 / TotalTiles > FISHING_REQUIRED_PERCENT Then
+            Call AddFishingPoolsToMap(Map)
         End If
     
 340     MapInfo(map).map_name = MapDat.map_name
@@ -2008,6 +2017,25 @@ ErrorHandler:
 396     Call TraceError(Err.Number, Err.Description, "ES.CargarMapaFormatoCSM", Erl)
     
 End Sub
+
+Sub AddFishingPoolsToMap(ByVal Map As Integer)
+    Dim i As Integer
+    For i = 1 To FISHING_TILES_ON_MAP
+        Call CreateFishingPool(Map)
+    Next i
+End Sub
+
+Public Sub CreateFishingPool(ByVal Map As Integer)
+    Dim x, y As Integer
+    Do
+        x = RandomNumber(12, 88)
+        y = RandomNumber(12, 88)
+    Loop While MapData(Map, x, y).ObjInfo.objIndex <> 0 Or Not HayAgua(Map, x, y)
+    MapData(Map, x, y).ObjInfo.objIndex = FISHING_POOL_ID
+    MapData(Map, x, y).ObjInfo.amount = ObjData(FISHING_POOL_ID).VidaUtil
+    MapData(Map, x, y).ObjInfo.Data = &H7FFFFFFF ' Ultimo uso = Max Long
+End Sub
+
 Sub LoadPrivateKey()
     Dim MyLine As String
     Open App.Path & "\..\ao20-ComputePK\crypto-hex.txt" For Input As #1
