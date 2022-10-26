@@ -1835,6 +1835,7 @@ Public Sub CargarMapasEspeciales()
 138     Set File = Nothing
 
 End Sub
+
 Public Function EsMapaEvento(ByVal destMap As Long) As Boolean
     Dim i As Long
     
@@ -1847,6 +1848,7 @@ Public Function EsMapaEvento(ByVal destMap As Long) As Boolean
     EsMapaEvento = False
     
 End Function
+
 Public Sub resetPj(ByVal UserIndex As Integer, Optional ByVal borrarHechizos As Boolean = False)
 
 
@@ -1924,6 +1926,7 @@ Public Sub resetPj(ByVal UserIndex As Integer, Optional ByVal borrarHechizos As 
             .flags.DuracionEfecto = 0
 
             Call VaciarInventario(UserIndex)
+            Call ResetCd(UserIndex)
 
 216         Call RellenarInventario(UserIndex)
             'Agrego la poción

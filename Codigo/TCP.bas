@@ -247,7 +247,6 @@ Sub RellenarInventario(ByVal UserIndex As String)
             End If
             
             .Invent.Object(NumItems).Equipped = 0
-            .Invent.Object(NumItems).LastUseTime = 0
             Call EquiparInvItem(UserIndex, NumItems)
                         
 232         .Invent.Object(NumItems).amount = 1
@@ -1854,6 +1853,15 @@ Function ContarUsuariosMismaCuenta(ByVal AccountID As Long) As Integer
 
 End Function
 
+Sub ResetCd(ByVal UserIndex As Integer)
+    With UserList(UserIndex)
+        Dim i As Integer
+        For i = 0 To e_CdTypes.CDCount - 1
+            .CdTimes(i) = 0
+        Next i
+    End With
+End Sub
+
 Sub VaciarInventario(ByVal UserIndex As Integer)
 
     Dim i As Long
@@ -1863,7 +1871,6 @@ Sub VaciarInventario(ByVal UserIndex As Integer)
             .Invent.Object(i).amount = 0
             .Invent.Object(i).Equipped = 0
             .Invent.Object(i).ObjIndex = 0
-            .Invent.Object(i).LastUseTime = 0
         Next i
     End With
 End Sub

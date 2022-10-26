@@ -2604,6 +2604,18 @@ WriteShowPapiro_Err:
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteShowPapiro", Erl)
 End Sub
 
+Public Sub WriteUpdateCdType(ByVal UserIndex As Integer, ByVal cdType As Byte)
+On Error GoTo WriteUpdateCdType_Err
+100     Call Writer.WriteInt16(ServerPacketID.UpdateCooldownType)
+110     Call Writer.WriteInt8(cdType)
+112     Call modSendData.SendData(ToIndex, UserIndex)
+    Exit Sub
+
+WriteUpdateCdType_Err:
+        Call Writer.Clear
+        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteUpdateCdType", Erl)
+End Sub
+
 Public Sub WritePrivilegios(ByVal UserIndex As Integer)
 
         '<EhHeader>

@@ -1168,6 +1168,7 @@ Sub LoadOBJData()
 158             .TiempoRegenerar = val(Leer.GetValue(ObjKey, "TiempoRegenerar"))
                 .Jerarquia = val(Leer.GetValue(ObjKey, "Jerarquia"))
 160             .Cooldown = val(Leer.GetValue(ObjKey, "CD"))
+                .CdType = val(Leer.GetValue(ObjKey, "CDType"))
 161             .ImprovedRangedHitChance = val(Leer.GetValue(ObjKey, "ImprovedRHit"))
                 .ImprovedMeleeHitChance = val(Leer.GetValue(ObjKey, "ImprovedMHit"))
                 Dim i As Integer

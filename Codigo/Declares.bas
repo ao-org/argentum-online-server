@@ -783,6 +783,11 @@ Public Enum e_TeleportSubType
     eTransportNetwork = 2
 End Enum
 
+Public Enum e_ToolsSubtype
+    eFishingRod = 1
+    eFishingNet = 2
+End Enum
+
 'Estadisticas
 Public Const STAT_MAXELV              As Byte = 47
 
@@ -958,7 +963,6 @@ Public Type t_UserOBJ
     ObjIndex As Integer
     amount As Integer
     Equipped As Byte
-    LastUseTime As Long
 End Type
 
 Public Type t_Inventario
@@ -1277,6 +1281,7 @@ Public Type t_ObjData
     MinSta As Integer ' Minimo puntos de stamina
     
     Cooldown As Long
+    CdType As Integer
     ImprovedRangedHitChance As Integer
     ImprovedMeleeHitChance As Integer
     
@@ -1901,6 +1906,15 @@ Public Type t_LastNetworkUssage
     ExitIndex As Integer
 End Type
 
+Public Enum e_CdTypes
+    e_magic = 1
+    e_Melee = 2
+    e_potions = 3
+    e_Ranged = 4
+    e_Throwing = 5
+    [CDCount]
+End Enum
+
 'Tipo de los Usuarios
 Public Type t_User
 
@@ -1953,6 +1967,7 @@ Public Type t_User
     Stats_bk As t_UserStats
     flags As t_UserFlags
     Accion As t_AccionPendiente
+    CdTimes(e_CdTypes.CDCount) As Long
     LastTransportNetwork As t_LastNetworkUssage
 
     Faccion As t_Facciones
