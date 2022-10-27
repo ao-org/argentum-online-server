@@ -39,7 +39,62 @@ Option Explicit
 
 Public Const GOLD_OBJ_INDEX As Long = 12
 Public Const SAFE_GOLD As Long = 100001
+Public Const FISHING_NET_FX As Long = 12
+Public Const NET_INMO_DURATION = 10
 
+Function ExpectObjectTypeAt(ByVal objectType As Integer, ByVal Map As Integer, ByVal MapX As Byte, ByVal MapY As Byte) As Boolean
+    Dim objIndex As Integer
+    objIndex = MapData(Map, MapX, MapY).ObjInfo.objIndex
+    If objIndex = 0 Then
+        ExpectObjectTypeAt = False
+        Exit Function
+    End If
+    ExpectObjectTypeAt = ObjData(objIndex).OBJType = objectType
+End Function
+
+Function IsUserAtPos(ByVal map As Integer, ByVal X As Byte, ByVal y As Byte) As Boolean
+    IsUserAtPos = MapData(map, X, y).UserIndex > 0
+End Function
+
+Function IsNpcAtPos(ByVal map As Integer, ByVal X As Byte, ByVal y As Byte)
+    IsNpcAtPos = MapData(map, X, y).npcIndex > 0
+End Function
+
+Sub HandleFishingNet(ByVal UserIndex As Integer)
+On Error GoTo HandleFishingNet_Err:
+    With UserList(UserIndex)
+100 If (MapData(.pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).Blocked And FLAG_AGUA) <> 0 _
+        Or MapData(.pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).trigger = e_Trigger.PESCAINVALIDA Then
+102     If Abs(.pos.x - .Trabajo.Target_X) + Abs(.pos.y - .Trabajo.Target_Y) > 8 Then
+104         Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
+106      Call WriteWorkRequestTarget(UserIndex, 0)
+            Exit Sub
+        End If
+108     If UserList(UserIndex).Stats.UserSkills(e_Skill.Pescar) < 80 Then
+110         Call WriteConsoleMsg(UserIndex, "Para utilizar la red de pesca debes tener 80 skills en recoleccion.", e_FontTypeNames.FONTTYPE_INFO)
+112         Call WriteWorkRequestTarget(UserIndex, 0)
+            Exit Sub
+        End If
+114     If MapInfo(UserList(UserIndex).pos.Map).Seguro = 1 Then
+116         Call WriteConsoleMsg(UserIndex, "Esta prohibida la pesca masiva en las ciudades.", e_FontTypeNames.FONTTYPE_INFO)
+118         Call WriteWorkRequestTarget(UserIndex, 0)
+            Exit Sub
+        End If
+120         If UserList(UserIndex).flags.Navegando = 0 Then
+122             Call WriteConsoleMsg(UserIndex, "Necesitas estar sobre tu barca para utilizar la red de pesca.", e_FontTypeNames.FONTTYPE_INFO)
+124             Call WriteWorkRequestTarget(UserIndex, 0)
+                Exit Sub
+        End If
+        Call DoPescar(UserIndex, True)
+    Else
+132     Call WriteConsoleMsg(UserIndex, "Zona de pesca no Autorizada. Busca otro lugar para hacerlo.", e_FontTypeNames.FONTTYPE_INFO)
+142     Call WriteWorkRequestTarget(UserIndex, 0)
+    End If
+    End With
+    Exit Sub
+HandleFishingNet_Err:
+    Call TraceError(Err.Number, Err.Description, "Trabajo.HandleFishingNet", Erl)
+End Sub
 
 Public Sub Trabajar(ByVal UserIndex As Integer, ByVal Skill As e_Skill)
         Dim DummyInt As Integer
@@ -49,77 +104,36 @@ Public Sub Trabajar(ByVal UserIndex As Integer, ByVal Skill As e_Skill)
             Select Case Skill
 
                 Case e_Skill.Pescar
-
 288                 If .Invent.HerramientaEqpObjIndex = 0 Then Exit Sub
-                    
 290                 If ObjData(.Invent.HerramientaEqpObjIndex).OBJType <> e_OBJType.otHerramientas Then Exit Sub
                     
-                    'Check interval
-292                 'If Not IntervaloPermiteTrabajarExtraer(UserIndex) Then Exit Sub
+292                 If MapInfo(UserList(UserIndex).pos.map).Seguro = 0 Then
+                        If Not ExpectObjectTypeAt(e_OBJType.otFishingPool, .pos.map, .Trabajo.Target_X, .Trabajo.Target_Y) Then
+                            Call WriteConsoleMsg(UserIndex, "Necesitas un area de pesca en en el mar.", e_FontTypeNames.FONTTYPE_INFO)
+                            Call WriteWorkRequestTarget(UserIndex, 0)
+                            Call WriteMacroTrabajoToggle(UserIndex, False)
+                            Exit Sub
+                        End If
+                    End If
 
 294                 Select Case ObjData(.Invent.HerramientaEqpObjIndex).Subtipo
                 
-                        Case 1      ' Subtipo: Caña de Pescar
+                        Case e_ToolsSubtype.eFishingRod
 
 296                         If (MapData(.Pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).Blocked And FLAG_AGUA) <> 0 And Not MapData(.Pos.Map, .Pos.X, .Pos.Y).trigger = e_Trigger.PESCAINVALIDA Then
 298                             If (MapData(.Pos.Map, .Pos.X, .Pos.Y).Blocked And FLAG_AGUA) <> 0 Or (MapData(.Pos.Map, .Pos.X + 1, .Pos.Y).Blocked And FLAG_AGUA) <> 0 Or (MapData(.Pos.Map, .Pos.X, .Pos.Y + 1).Blocked And FLAG_AGUA) <> 0 Or (MapData(.Pos.Map, .Pos.X - 1, .Pos.Y).Blocked And FLAG_AGUA) <> 0 Or (MapData(.Pos.Map, .Pos.X, .Pos.Y - 1).Blocked And FLAG_AGUA) <> 0 Then
 300                                 .flags.PescandoEspecial = False
-                                    Call DoPescarNew(UserIndex, False)
-
-                                   
+                                    Call DoPescar(UserIndex, False)
                                 Else
-304                                 Call WriteConsoleMsg(userIndex, "Acércate a la costa para pescar.", e_FontTypeNames.FONTTYPE_INFO)
+304                                 Call WriteConsoleMsg(UserIndex, "Acércate a la costa para pescar.", e_FontTypeNames.FONTTYPE_INFO)
 306                                 Call WriteMacroTrabajoToggle(UserIndex, False)
-
                                 End If
-                            
                             Else
 308                             Call WriteConsoleMsg(UserIndex, "Zona de pesca no Autorizada. Busca otro lugar para hacerlo.", e_FontTypeNames.FONTTYPE_INFO)
 310                             Call WriteMacroTrabajoToggle(UserIndex, False)
-    
                             End If
-                    
-312                     Case 2      ' Subtipo: Red de Pesca
-    
-314                         If (MapData(.Pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).Blocked And FLAG_AGUA) <> 0 Or MapData(.Pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).trigger = e_Trigger.PESCAINVALIDA Then
-                            
-316                             If Abs(.Pos.X - .Trabajo.Target_X) + Abs(.Pos.Y - .Trabajo.Target_Y) > 8 Then
-318                                 Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
-                                    'Call WriteConsoleMsg(UserIndex, "Estás demasiado lejos para pescar.", e_FontTypeNames.FONTTYPE_INFO)
-320                                 Call WriteWorkRequestTarget(UserIndex, 0)
-                                    Exit Sub
-    
-                                End If
-                                
-322                             If UserList(UserIndex).Stats.UserSkills(e_Skill.Pescar) < 80 Then
-324                                 Call WriteConsoleMsg(UserIndex, "Para utilizar la red de pesca debes tener 80 skills en recoleccion.", e_FontTypeNames.FONTTYPE_INFO)
-326                                 Call WriteWorkRequestTarget(UserIndex, 0)
-                                    Exit Sub
-    
-                                End If
-                                    
-328                             If MapInfo(UserList(UserIndex).Pos.Map).Seguro = 1 Then
-330                                 Call WriteConsoleMsg(UserIndex, "Esta prohibida la pesca masiva en las ciudades.", e_FontTypeNames.FONTTYPE_INFO)
-332                                 Call WriteWorkRequestTarget(UserIndex, 0)
-                                    Exit Sub
-    
-                                End If
-                                    
-334                             If UserList(UserIndex).flags.Navegando = 0 Then
-336                                 Call WriteConsoleMsg(UserIndex, "Necesitas estar sobre tu barca para utilizar la red de pesca.", e_FontTypeNames.FONTTYPE_INFO)
-338                                 Call WriteWorkRequestTarget(UserIndex, 0)
-                                    Exit Sub
-    
-                                End If
-                                    
-340                             Call DoPescarNew(UserIndex, True)
-                        
-                            Else
-                        
-344                             Call WriteConsoleMsg(UserIndex, "Zona de pesca no Autorizada. Busca otro lugar para hacerlo.", e_FontTypeNames.FONTTYPE_INFO)
-346                             Call WriteWorkRequestTarget(UserIndex, 0)
-    
-                            End If
+312                     Case e_ToolsSubtype.eFishingNet
+                            Call HandleFishingNet(UserIndex)
                     End Select
                     
                 Case e_Skill.Carpinteria
@@ -127,8 +141,7 @@ Public Sub Trabajar(ByVal UserIndex As Integer, ByVal Skill As e_Skill)
                     Dim cantidad_maxima As Long
                     
                     If UserList(UserIndex).clase = e_Class.Trabajador Then
-                        'Si es trabajador hace skill / 10 de máximo
-                        cantidad_maxima = UserList(UserIndex).Stats.UserSkills(e_Skill.Carpinteria) \ 10
+                        cantidad_maxima = UserList(UserIndex).Stats.UserSkills(e_Skill.Carpinteria)
                         If cantidad_maxima = 0 Then cantidad_maxima = 1
                     Else
                         'Si no hace de a 1
@@ -1696,7 +1709,7 @@ TratarDeHacerFogata_Err:
         
 End Sub
 
-Public Sub DoPescarNew(ByVal UserIndex As Integer, Optional ByVal RedDePesca As Boolean = False)
+Public Sub DoPescar(ByVal UserIndex As Integer, Optional ByVal RedDePesca As Boolean = False)
 
 On Error GoTo ErrHandler
     Dim bonificacionPescaLvl(1 To 47) As Single
@@ -1712,14 +1725,6 @@ On Error GoTo ErrHandler
     
     
         With UserList(UserIndex)
-            'Dim botin As Double
-            'For i = 1 To 20
-            '    If .Invent.Object(i).objIndex > 0 Then
-            '    botin = botin + ObjData(.Invent.Object(i).objIndex).Valor / 3 * .Invent.Object(i).amount
-            '    End If
-            'Next i
-            'Debug.Print "Total: " & (botin - BotinInicial) & ", hora: " & Round(3600 * (botin - BotinInicial) / TiempoPesca)
-        
         
             RestaStamina = IIf(RedDePesca, 12, RandomNumber(2, 3))
 104         If .flags.Privilegios And (e_PlayerType.Consejero) Then
@@ -1728,17 +1733,10 @@ On Error GoTo ErrHandler
             
 106         If .Stats.MinSta > RestaStamina Then
 108             Call QuitarSta(UserIndex, RestaStamina)
-        
             Else
-            
 110             Call WriteLocaleMsg(UserIndex, "93", e_FontTypeNames.FONTTYPE_INFO)
-            
-                'Call WriteConsoleMsg(UserIndex, "Estás muy cansado para pescar.", e_FontTypeNames.FONTTYPE_INFO)
-            
 112             Call WriteMacroTrabajoToggle(UserIndex, False)
-            
                 Exit Sub
-
             End If
             
             If MapInfo(.Pos.map).Seguro = 1 Then
@@ -1864,6 +1862,19 @@ On Error GoTo ErrHandler
                     If MiObj.amount <= 0 Then
                         MiObj.amount = 1
                     End If
+                    Dim StopWorking As Boolean
+                    StopWorking = False
+                    If MapInfo(UserList(UserIndex).pos.map).Seguro = 0 Then
+134                     If MiObj.amount > MapData(.pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).ObjInfo.amount Then
+136                         MiObj.amount = MapData(.pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).ObjInfo.amount
+                            Call CreateFishingPool(.pos.Map)
+                            Call EraseObj(MapData(.pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).ObjInfo.amount, .pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y)
+137                         Call WriteConsoleMsg(UserIndex, "No hay mas peces aqui.", e_FontTypeNames.FONTTYPE_INFO)
+                            StopWorking = True
+                        End If
+                    End If
+            
+138                 MapData(.pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).ObjInfo.amount = MapData(.pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).ObjInfo.amount - MiObj.amount
     
                     If Not RedDePesca Then
                         esEspecial = False
@@ -1873,7 +1884,6 @@ On Error GoTo ErrHandler
                             End If
                         Next i
                     End If
-                    
                     
                     If Not esEspecial Then
                         Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageParticleFX(.Char.charindex, 253, 25, False, ObjData(MiObj.objIndex).GrhIndex))
@@ -1885,37 +1895,31 @@ On Error GoTo ErrHandler
                         Exit Sub
                     End If
                     
-128                 If MiObj.objIndex = 0 Then Exit Sub
+158                 If MiObj.objIndex = 0 Then Exit Sub
             
-130                 If Not MeterItemEnInventario(UserIndex, MiObj) Then
-132                     Call TirarItemAlPiso(.Pos, MiObj)
+160                 If Not MeterItemEnInventario(UserIndex, MiObj) Then
+162                     Call TirarItemAlPiso(.pos, MiObj)
                     End If
     
-134                 Call WriteTextCharDrop(UserIndex, "+" & MiObj.amount, .Char.charindex, vbWhite)
-                     
-                   '  If MapInfo(.Pos.Map).Seguro = 1 Then
-302                '     Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessagePlayWave(SND_PESCAR, .Pos.X, .Pos.Y))
-                   ' Else
-301                     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(SND_PESCAR, .Pos.x, .Pos.y))
-                   ' End If
+164                 Call WriteTextCharDrop(UserIndex, "+" & MiObj.amount, .Char.charindex, vbWhite)
+166                 Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(SND_PESCAR, .pos.x, .pos.y))
                    
                     ' Al pescar también podés sacar cosas raras (se setean desde RecursosEspeciales.dat)
-    
                     ' Por cada drop posible
                     Dim res As Long
-136                 For i = 1 To UBound(EspecialesPesca)
+168                 For i = 1 To UBound(EspecialesPesca)
                         ' Tiramos al azar entre 1 y la probabilidad
-138                     res = RandomNumber(1, IIf(RedDePesca, EspecialesPesca(i).Data * 2, EspecialesPesca(i).Data)) ' Red de pesca chance x2 (revisar)
+170                     res = RandomNumber(1, IIf(RedDePesca, EspecialesPesca(i).Data * 2, EspecialesPesca(i).Data)) ' Red de pesca chance x2 (revisar)
                 
                         ' Si tiene suerte y le pega
-140                     If res = 1 Then
-142                         MiObj.objIndex = EspecialesPesca(i).objIndex
-144                         MiObj.amount = 1 ' Solo un item por vez
+172                     If res = 1 Then
+174                         MiObj.objIndex = EspecialesPesca(i).objIndex
+176                         MiObj.amount = 1 ' Solo un item por vez
                     
-146                         If Not MeterItemEnInventario(UserIndex, MiObj) Then Call TirarItemAlPiso(.Pos, MiObj)
+178                         If Not MeterItemEnInventario(UserIndex, MiObj) Then Call TirarItemAlPiso(.pos, MiObj)
                         
                             ' Le mandamos un mensaje
-148                         Call WriteConsoleMsg(userIndex, "¡Has conseguido " & ObjData(EspecialesPesca(i).ObjIndex).name & "!", e_FontTypeNames.FONTTYPE_INFO)
+180                         Call WriteConsoleMsg(UserIndex, "¡Has conseguido " & ObjData(EspecialesPesca(i).objIndex).name & "!", e_FontTypeNames.FONTTYPE_INFO)
                         End If
     
                     Next
@@ -1924,13 +1928,18 @@ On Error GoTo ErrHandler
                      Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageParticleFX(.Char.charindex, 253, 25, False, GRH_FALLO_PESCA))
                 End If
     
-150             Call SubirSkill(UserIndex, e_Skill.Pescar)
+182             Call SubirSkill(UserIndex, e_Skill.Pescar)
+                If StopWorking Then
+184             Call WriteWorkRequestTarget(UserIndex, 0)
+186                 Call WriteMacroTrabajoToggle(UserIndex, False)
+                    Exit Sub
+                End If
     
-152             .Counters.Trabajando = .Counters.Trabajando + 1
+188             .Counters.Trabajando = .Counters.Trabajando + 1
                 .Counters.LastTrabajo = Int(IntervaloTrabajarExtraer / 1000)
     
                 'Ladder 06/07/14 Activamos el macro de trabajo
-154             If .Counters.Trabajando = 1 And Not .flags.UsandoMacro Then
+190             If .Counters.Trabajando = 1 And Not .flags.UsandoMacro Then
                     Call WriteMacroTrabajoToggle(UserIndex, True)
                 End If
         
@@ -1939,144 +1948,7 @@ On Error GoTo ErrHandler
     Exit Sub
 
 ErrHandler:
-158     Call LogError("Error en DoPescar. Error " & Err.Number & " - " & Err.Description & " Line number: " & Erl)
-
-End Sub
-
-Public Sub DoPescar(ByVal UserIndex As Integer, Optional ByVal RedDePesca As Boolean = False)
-
-        On Error GoTo ErrHandler
-
-        Dim Suerte       As Integer
-        Dim res          As Long
-        Dim RestaStamina As Byte
-        Dim esEspecial   As Boolean
-100     RestaStamina = IIf(RedDePesca, 5, 1)
-    
-102     With UserList(UserIndex)
-
-104         If .flags.Privilegios And (e_PlayerType.Consejero) Then
-                Exit Sub
-            End If
-            
-106         If .Stats.MinSta > RestaStamina Then
-108             Call QuitarSta(UserIndex, RestaStamina)
-        
-            Else
-            
-110             Call WriteLocaleMsg(UserIndex, "93", e_FontTypeNames.FONTTYPE_INFO)
-            
-                'Call WriteConsoleMsg(UserIndex, "Estás muy cansado para pescar.", e_FontTypeNames.FONTTYPE_INFO)
-            
-112             Call WriteMacroTrabajoToggle(UserIndex, False)
-            
-                Exit Sub
-
-            End If
-
-            Dim Skill As Integer
-
-114         Skill = .Stats.UserSkills(e_Skill.Pescar)
-        
-116         Suerte = Int(-0.00125 * Skill * Skill - 0.3 * Skill + 49)
-
-            
-
-
-
-
-            'HarThaoS: Le agrego más dificultad al talar en zona segura.  37% probabilidad de fallo en segura vs 16% en insegura
-118         res = RandomNumber(1, IIf(MapInfo(UserList(userindex).Pos.map).Seguro = 1, Suerte + 2, Suerte))
-
-            'HarThaoS: Movimiento de caña, lo saco. Se hace exponencial la cantidad de paquetes dependiendo la cantida de usuarios
-            If MapInfo(UserList(UserIndex).Pos.Map).Seguro = 1 Then
-120             Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageArmaMov(.Char.charindex, 0))
-            Else
-                Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageArmaMov(.Char.charindex, 0))
-            End If
-
-122         If res < 6 Then
-
-                Dim nPos  As t_WorldPos
-                Dim MiObj As t_Obj
-                
-124             MiObj.amount = IIf(.clase = Trabajador, RandomNumber(1, 3), 1) * RecoleccionMult
-126             MiObj.ObjIndex = ObtenerPezRandom(ObjData(.Invent.HerramientaEqpObjIndex).Power)
-
-                If Not RedDePesca Then
-                    esEspecial = False
-                    Dim i As Long
-                    For i = 1 To UBound(PecesEspeciales)
-                        If PecesEspeciales(i).ObjIndex = MiObj.ObjIndex Then
-                            esEspecial = True
-                        End If
-                    Next i
-                End If
-                
-                
-                If Not esEspecial Then
-                    Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, 253, 25, False, ObjData(MiObj.ObjIndex).GrhIndex))
-                ElseIf Not RedDePesca Then
-                    .flags.PescandoEspecial = True
-156                 Call WriteMacroTrabajoToggle(UserIndex, False)
-                    .Stats.NumObj_PezEspecial = MiObj.ObjIndex
-                    Call WritePelearConPezEspecial(UserIndex)
-                    Exit Sub
-                End If
-                
-128             If MiObj.ObjIndex = 0 Then Exit Sub
-        
-130             If Not MeterItemEnInventario(UserIndex, MiObj) Then
-132                 Call TirarItemAlPiso(.Pos, MiObj)
-                End If
-
-134             Call WriteTextCharDrop(UserIndex, "+" & MiObj.amount, .Char.CharIndex, vbWhite)
-                 
-               '  If MapInfo(.Pos.Map).Seguro = 1 Then
-302            '     Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessagePlayWave(SND_PESCAR, .Pos.X, .Pos.Y))
-               ' Else
-301                 Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessagePlayWave(SND_PESCAR, .Pos.X, .Pos.y))
-               ' End If
-               
-                ' Al pescar también podés sacar cosas raras (se setean desde RecursosEspeciales.dat)
-
-                ' Por cada drop posible
-136             For i = 1 To UBound(EspecialesPesca)
-                    ' Tiramos al azar entre 1 y la probabilidad
-138                 res = RandomNumber(1, IIf(RedDePesca, EspecialesPesca(i).Data * 2, EspecialesPesca(i).Data)) ' Red de pesca chance x2 (revisar)
-            
-                    ' Si tiene suerte y le pega
-140                 If res = 1 Then
-142                     MiObj.ObjIndex = EspecialesPesca(i).ObjIndex
-144                     MiObj.amount = 1 ' Solo un item por vez
-                
-146                     If Not MeterItemEnInventario(UserIndex, MiObj) Then Call TirarItemAlPiso(.Pos, MiObj)
-                    
-                        ' Le mandamos un mensaje
-148                     Call WriteConsoleMsg(userIndex, "¡Has conseguido " & ObjData(EspecialesPesca(i).ObjIndex).name & "!", e_FontTypeNames.FONTTYPE_INFO)
-                    End If
-
-                Next
-
-            Else
-                 Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, 253, 25, False, GRH_FALLO_PESCA))
-            End If
-    
-150         Call SubirSkill(UserIndex, e_Skill.Pescar)
-    
-152         .Counters.Trabajando = .Counters.Trabajando + 1
-    
-            'Ladder 06/07/14 Activamos el macro de trabajo
-154         If .Counters.Trabajando = 1 And Not .flags.UsandoMacro Then
-                Call WriteMacroTrabajoToggle(UserIndex, True)
-            End If
-    
-        End With
-    
-        Exit Sub
-
-ErrHandler:
-158     Call LogError("Error en DoPescar. Error " & Err.Number & " - " & Err.Description)
+192     Call LogError("Error en DoPescar. Error " & Err.Number & " - " & Err.Description & " Line number: " & Erl)
 
 End Sub
 
@@ -3254,3 +3126,110 @@ Public Function EntregarPezEspecial(ByVal UserIndex As Integer)
         End If
     End With
 End Function
+
+Public Sub FishOrThrowNet(ByVal UserIndex As Integer)
+On Error GoTo FishOrThrowNet_Err:
+100 With UserList(UserIndex)
+102     If ObjData(.invent.HerramientaEqpObjIndex).OBJType <> e_OBJType.otHerramientas Then Exit Sub
+104     If ObjData(.invent.HerramientaEqpObjIndex).Subtipo = e_ToolsSubtype.eFishingNet Then
+106         If MapInfo(.pos.map).Seguro = 1 Or _
+                Not ExpectObjectTypeAt(e_OBJType.otFishingPool, .pos.map, .Trabajo.Target_X, .Trabajo.Target_Y) Then
+108             If IsValidUserRef(.flags.TargetUser) Or .flags.TargetNPC > 0 Then
+110                 ThrowNetToTarget (UserIndex)
+112                 Call WriteWorkRequestTarget(UserIndex, 0)
+                    Exit Sub
+                End If
+            End If
+        End If
+114     Call Trabajar(UserIndex, e_Skill.Pescar)
+    End With
+    Exit Sub
+FishOrThrowNet_Err:
+    Call TraceError(Err.Number, Err.Description, "Trabajo.FishOrThrowNet", Erl)
+End Sub
+
+Sub ThrowNetToTarget(ByVal UserIndex As Integer)
+On Error GoTo ThrowNetToTarget_Err:
+100 With UserList(UserIndex)
+102     If .invent.HerramientaEqpObjIndex = 0 Then Exit Sub
+104     If ObjData(.invent.HerramientaEqpObjIndex).OBJType <> e_OBJType.otHerramientas Then Exit Sub
+106     If ObjData(.invent.HerramientaEqpObjIndex).Subtipo <> e_ToolsSubtype.eFishingNet Then Exit Sub
+
+        'If it's outside range log it and exit
+108     If Abs(.pos.X - .Trabajo.Target_X) > RANGO_VISION_X Or Abs(.pos.y - .Trabajo.Target_Y) > RANGO_VISION_Y Then
+110         Call LogSecurity("Ataque fuera de rango de " & .name & "(" & .pos.map & "/" & .pos.X & "/" & .pos.y & ") ip: " & .IP & " a la posicion (" & .pos.map & "/" & .Trabajo.Target_X & "/" & .Trabajo.Target_Y & ")")
+            Exit Sub
+        End If
+        
+        'Check bow's interval
+112     If Not IntervaloPermiteUsarArcos(UserIndex, False) Then Exit Sub
+        'Check attack-spell interval
+114     If Not IntervaloPermiteGolpeMagia(UserIndex, False) Then Exit Sub
+        'Check Magic interval
+116     If Not IntervaloPermiteLanzarSpell(UserIndex) Then Exit Sub
+        'check item cd
+        
+        
+118     Dim ThrowNet As Boolean
+120     ThrowNet = False
+122     If IsValidUserRef(UserList(UserIndex).flags.TargetUser) Then
+124         Dim tU As Integer
+126         tU = UserList(UserIndex).flags.TargetUser.ArrayIndex
+128         If UserIndex = tU Then
+130             Call WriteLocaleMsg(UserIndex, MsgCantAttackYourself, e_FontTypeNames.FONTTYPE_FIGHT)
+                Exit Sub
+            End If
+            
+132         If UserList(tU).flags.Paralizado = 1 Then
+134             Call WriteConsoleMsg(UserIndex, UserList(tU).name & " ya está paralizado.", e_FontTypeNames.FONTTYPE_FIGHT)
+                Exit Sub
+136         ElseIf UserList(tU).flags.Inmovilizado = 1 Then
+138             Call WriteConsoleMsg(UserIndex, UserList(tU).name & " ya está inmovilizado.", e_FontTypeNames.FONTTYPE_FIGHT)
+                Exit Sub
+            End If
+            
+140         If Not PuedeAtacar(UserIndex, tU) Then Exit Sub
+            
+142         Call UsuarioAtacadoPorUsuario(UserIndex, tU)
+            
+144         UserList(tU).Counters.Inmovilizado = NET_INMO_DURATION
+146          If UserList(tU).flags.Inmovilizado = 0 Then
+148             UserList(tU).flags.Inmovilizado = 1
+150             Call SendData(SendTarget.ToPCAliveArea, tU, PrepareMessageCreateFX(UserList(tU).Char.charindex, FISHING_NET_FX, 0, UserList(tU).pos.X, UserList(tU).pos.y))
+152             Call WriteInmovilizaOK(tU)
+154             Call WritePosUpdate(tU)
+156             ThrowNet = True
+            End If
+158         Call SetUserRef(UserList(UserIndex).flags.TargetUser, 0)
+160     ElseIf UserList(UserIndex).flags.TargetNPC > 0 Then
+162         Dim npcIndex As Integer
+164         npcIndex = UserList(UserIndex).flags.TargetNPC
+166         If NpcList(npcIndex).flags.AfectaParalisis = 0 Then
+
+168             If Not PuedeAtacarNPC(UserIndex, npcIndex) Then
+                    Exit Sub
+                End If
+170             Call NPCAtacado(npcIndex, UserIndex)
+172             NpcList(npcIndex).flags.Inmovilizado = 1
+174             NpcList(npcIndex).Contadores.Inmovilizado = (NET_INMO_DURATION * 6.5) * 6
+176             NpcList(npcIndex).flags.Paralizado = 0
+178             NpcList(npcIndex).Contadores.Paralisis = 0
+180             Call AnimacionIdle(npcIndex, True)
+182             ThrowNet = True
+184             Call SendData(SendTarget.ToNPCAliveArea, npcIndex, PrepareMessageFxPiso(FISHING_NET_FX, NpcList(npcIndex).pos.X, NpcList(npcIndex).pos.y))
+186             UserList(UserIndex).flags.TargetNPC = 0
+            Else
+188             Call WriteLocaleMsg(UserIndex, MSgNpcInmuneToEffect, e_FontTypeNames.FONTTYPE_INFOIAO)
+            End If
+        End If
+        If ThrowNet Then
+190         Call UpdateCd(UserIndex, ObjData(.invent.HerramientaEqpObjIndex).cdType)
+192         Call QuitarUserInvItem(UserIndex, .invent.HerramientaEqpSlot, 1)
+194         Call UpdateUserInv(True, UserIndex, .invent.HerramientaEqpSlot)
+196         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareCreateProjectile(UserList(UserIndex).pos.X, UserList(UserIndex).pos.y, .Trabajo.Target_X, .Trabajo.Target_Y, 3))
+        End If
+    End With
+    Exit Sub
+ThrowNetToTarget_Err:
+    Call TraceError(Err.Number, Err.Description, "Trabajo.ThrowNetToTarget", Erl)
+End Sub

@@ -96,6 +96,7 @@ Class=ScoreBoard; Codigo\ScoreBoard.cls
 Module=CharacterPersistence; Codigo\CharacterPersistence.bas
 Module=DatabaseGlobals; Codigo\DatabaseGlobals.bas
 Class=clsUserRefWrapper; Codigo\clsUserReferenceWrapper.cls
+Module=LocaleDef; Codigo\LocaleDef.bas
 IconForm="frmMain"
 Startup="Sub Main"
 HelpFile=""

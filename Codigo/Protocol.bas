@@ -120,6 +120,7 @@ Public Enum ServerPacketID
     CerrarleCliente
     Contadores
     ShowPapiro              ' SWP
+    UpdateCooldownType
     
     'GM messages
     SpawnListt               ' SPL
@@ -2304,12 +2305,9 @@ Private Sub HandleAttack(ByVal UserIndex As Integer)
                     Exit Sub
                 End If
 
-                If IsItemInCooldown(.Invent.Object(.Invent.WeaponEqpSlot)) Then
-                    Debug.Print "item is on cd"
+                If IsItemInCooldown(UserList(UserIndex), .invent.Object(.invent.WeaponEqpSlot)) Then
                     Exit Sub
-
                 End If
-
             End If
         
 112         If .Invent.HerramientaEqpObjIndex > 0 Then
@@ -3558,7 +3556,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
             
 124         Select Case Skill
 
-                    Dim consumirMunicion As Boolean
+                Dim consumirMunicion As Boolean
 
                 Case e_Skill.Proyectiles
                     Dim WeaponData As t_ObjData
@@ -3577,7 +3575,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                         If .WeaponEqpObjIndex < 1 Then Exit Sub
                         WeaponData = ObjData(.WeaponEqpObjIndex)
 
-                        If GetTickCount() - .Object(.WeaponEqpSlot).LastUseTime < WeaponData.Cooldown Then Exit Sub
+                        If IsItemInCooldown(UserList(UserIndex), .Object(.WeaponEqpSlot)) Then Exit Sub
                         ProjectileType = 1
                         If WeaponData.Proyectil = 1 And WeaponData.Municion = 0 Then
                             DummyInt = 0
@@ -3746,19 +3744,13 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 262                             Call UpdateUserInv(False, UserIndex, DummyInt)
                             End If
                         ElseIf consumirMunicion Then
-                            .Object(.WeaponEqpSlot).LastUseTime = GetTickCount()
+                            Call UpdateCd(UserIndex, WeaponData.CdType)
                         End If
                         
                     End With
                     '-----------------------------------
             
 264             Case e_Skill.Magia
-                    'Check the map allows spells to be casted.
-                    '  If MapInfo(.Pos.map).MagiaSinEfecto > 0 Then
-                    ' Call WriteConsoleMsg(UserIndex, "Una fuerza oscura te impide canalizar tu energía", e_FontTypeNames.FONTTYPE_FIGHT)
-                    '  Exit Sub
-                    ' End If
-                
                     'Target whatever is in that tile
 266                 Call LookatTile(UserIndex, .Pos.Map, X, Y)
                 
@@ -3766,15 +3758,12 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 268                 If Abs(.Pos.X - X) > RANGO_VISION_X Or Abs(.Pos.Y - Y) > RANGO_VISION_Y Then
 270                     Call LogSecurity("Ataque fuera de rango de " & .name & "(" & .Pos.map & "/" & .Pos.x & "/" & .Pos.y & ") ip: " & .IP & " a la posicion (" & .Pos.map & "/" & x & "/" & y & ")")
                         Exit Sub
-
                     End If
                 
                     'Check bow's interval
 272                 If Not IntervaloPermiteUsarArcos(UserIndex, False) Then Exit Sub
-                
                     'Check attack-spell interval
 274                 If Not IntervaloPermiteGolpeMagia(UserIndex, False) Then Exit Sub
-                
                     'Check Magic interval
 276                 If Not IntervaloPermiteLanzarSpell(UserIndex) Then Exit Sub
                 
@@ -3793,14 +3782,9 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
             
 286             Case e_Skill.Pescar
                     If .Counters.Trabajando = 0 And .Counters.LastTrabajo = 0 Then
-                        'TiempoPesca = 1
-                        'BotinInicial = 0
-                        'For x = 1 To 20
-                        '    If .Invent.Object(x).objIndex > 0 Then
-                        '    BotinInicial = BotinInicial + ObjData(.Invent.Object(x).objIndex).Valor / 3 * .Invent.Object(x).amount
-                        '    End If
-                        'Next x
-                        Call Trabajar(UserIndex, e_Skill.Pescar)
+                        If IsItemInCooldown(UserList(UserIndex), .invent.Object(.invent.HerramientaEqpSlot)) Then Exit Sub
+                        Call LookatTile(UserIndex, .pos.map, X, y)
+                        Call FishOrThrowNet(UserIndex)
                     End If
 348             Case e_Skill.Talar
                     If .Counters.Trabajando = 0 And .Counters.LastTrabajo = 0 Then

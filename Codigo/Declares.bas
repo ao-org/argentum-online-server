@@ -381,6 +381,7 @@ Public Enum e_Trigger
     PESCAINVALIDA = 10
     VALIDONADO = 11
     ESCALERA = 12
+    WORKERONLY = 13
     NADOBAJOTECHO = 16
     VALIDOPUENTE = 17
     NADOCOMBINADO = 18
@@ -770,6 +771,7 @@ Public Enum e_OBJType
     OtCofre = 48
     OtDonador = 50
     OtQuest = 51
+    otFishingPool = 52
     otCualquiera = 100
 End Enum
 
@@ -780,6 +782,11 @@ End Enum
 Public Enum e_TeleportSubType
     eTeleport = 1
     eTransportNetwork = 2
+End Enum
+
+Public Enum e_ToolsSubtype
+    eFishingRod = 1
+    eFishingNet = 2
 End Enum
 
 'Estadisticas
@@ -957,7 +964,6 @@ Public Type t_UserOBJ
     ObjIndex As Integer
     amount As Integer
     Equipped As Byte
-    LastUseTime As Long
 End Type
 
 Public Type t_Inventario
@@ -1276,6 +1282,7 @@ Public Type t_ObjData
     MinSta As Integer ' Minimo puntos de stamina
     
     Cooldown As Long
+    CdType As Integer
     ImprovedRangedHitChance As Integer
     ImprovedMeleeHitChance As Integer
     
@@ -1900,6 +1907,15 @@ Public Type t_LastNetworkUssage
     ExitIndex As Integer
 End Type
 
+Public Enum e_CdTypes
+    e_magic = 1
+    e_Melee = 2
+    e_potions = 3
+    e_Ranged = 4
+    e_Throwing = 5
+    [CDCount]
+End Enum
+
 'Tipo de los Usuarios
 Public Type t_User
 
@@ -1952,6 +1968,7 @@ Public Type t_User
     Stats_bk As t_UserStats
     flags As t_UserFlags
     Accion As t_AccionPendiente
+    CdTimes(e_CdTypes.CDCount) As Long
     LastTransportNetwork As t_LastNetworkUssage
 
     Faccion As t_Facciones

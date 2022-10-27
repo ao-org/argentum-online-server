@@ -310,7 +310,6 @@ Sub LimpiarInventario(ByVal UserIndex As Integer)
 102             UserList(UserIndex).Invent.Object(j).ObjIndex = 0
 104             UserList(UserIndex).Invent.Object(j).amount = 0
 106             UserList(UserIndex).Invent.Object(j).Equipped = 0
-                UserList(UserIndex).Invent.Object(j).LastUseTime = 0
             Next
         End If
 
@@ -331,8 +330,8 @@ Sub LimpiarInventario(ByVal UserIndex As Integer)
 126     UserList(UserIndex).Invent.EscudoEqpObjIndex = 0
 128     UserList(UserIndex).Invent.EscudoEqpSlot = 0
 
-130     UserList(UserIndex).Invent.DañoMagicoEqpObjIndex = 0
-132     UserList(UserIndex).Invent.DañoMagicoEqpSlot = 0
+130     UserList(UserIndex).invent.DañoMagicoEqpObjIndex = 0
+132     UserList(UserIndex).invent.DañoMagicoEqpSlot = 0
 
 134     UserList(UserIndex).Invent.ResistenciaEqpObjIndex = 0
 136     UserList(UserIndex).Invent.ResistenciaEqpSlot = 0
@@ -450,7 +449,7 @@ ErrHandler:
     
 End Sub
 
-Sub QuitarUserInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal Cantidad As Integer)
+Public Sub QuitarUserInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal Cantidad As Integer)
         
         On Error GoTo QuitarUserInvItem_Err
         
@@ -490,7 +489,7 @@ QuitarUserInvItem_Err:
         
 End Sub
 
-Sub UpdateUserInv(ByVal UpdateAll As Boolean, ByVal UserIndex As Integer, ByVal Slot As Byte)
+Public Sub UpdateUserInv(ByVal UpdateAll As Boolean, ByVal UserIndex As Integer, ByVal Slot As Byte)
         
         On Error GoTo UpdateUserInv_Err
         
@@ -1861,7 +1860,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
             End If
     
 104         obj = ObjData(.Invent.Object(Slot).ObjIndex)
-            Dim TimeSinceLastUse As Long: TimeSinceLastUse = GetTickCount() - .Invent.Object(Slot).LastUseTime
+            Dim TimeSinceLastUse As Long: TimeSinceLastUse = GetTickCount() - .CdTimes(obj.cdType)
             If TimeSinceLastUse < obj.Cooldown Then Exit Sub
     
 106         If obj.OBJType = e_OBJType.otWeapon Then
@@ -3472,8 +3471,8 @@ ItemNewbie_Err:
 102     Call TraceError(Err.Number, Err.Description, "InvUsuario.ItemNewbie", Erl)
 End Function
 
-Public Function IsItemInCooldown(ByRef obj As t_UserOBJ) As Boolean
+Public Function IsItemInCooldown(ByRef User As t_User, ByRef obj As t_UserOBJ) As Boolean
     Dim elapsedTime As Long
-    elapsedTime = GetTickCount() - obj.LastUseTime
+    ElapsedTime = GetTickCount() - User.CdTimes(ObjData(obj.objIndex).cdType)
     IsItemInCooldown = ElapsedTime < ObjData(obj.objIndex).Cooldown
 End Function

@@ -3042,3 +3042,8 @@ End Function
 Public Function CanUseItem(ByRef flags As t_UserFlags, ByRef Counters As t_UserCounters) As Boolean
     CanUseItem = Not IsStun(flags, Counters)
 End Function
+
+Public Sub UpdateCd(ByVal UserIndex As Integer, ByVal cdType As e_CdTypes)
+    UserList(UserIndex).CdTimes(cdType) = GetTickCount()
+    Call WriteUpdateCdType(UserIndex, cdType)
+End Sub

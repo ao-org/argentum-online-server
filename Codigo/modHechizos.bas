@@ -2655,7 +2655,7 @@ Sub HechizoPropNPC(ByVal hIndex As Integer, ByVal NpcIndex As Integer, ByVal Use
     
 192         If NpcList(NpcIndex).Stats.MinHp < 1 Then
 194             NpcList(NpcIndex).Stats.MinHp = 0
-                Call CustomScenarios.PlayerKillNpc(UserList(userIndex).pos.map, npcIndex, userIndex, e_magic, hIndex)
+                Call CustomScenarios.PlayerKillNpc(UserList(UserIndex).pos.map, npcIndex, UserIndex, e_DamageSourceType.e_magic, hIndex)
 196             Call MuereNpc(npcIndex, UserIndex)
             Else
 198             Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareMessageNpcUpdateHP(NpcIndex))
@@ -3350,7 +3350,7 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 464         If UserList(tempChr).Stats.MinHp < 1 Then
 468             Call ContarMuerte(tempChr, UserIndex)
 470             Call ActStats(tempChr, UserIndex)
-                Call CustomScenarios.PlayerKillPlayer(UserList(userIndex).pos.map, userIndex, tempChr, e_magic, h)
+                Call CustomScenarios.PlayerKillPlayer(UserList(UserIndex).pos.map, UserIndex, tempChr, e_DamageSourceType.e_magic, h)
             Else
 472             Call WriteUpdateHP(tempChr)
             End If
@@ -4447,7 +4447,7 @@ Private Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, X As Byte, Y 
 146             Call CalcularDarExp(UserIndex, NpcIndex, Daño)
                 
 148             If NpcList(NpcIndex).Stats.MinHp <= 0 Then
-                    Call CustomScenarios.PlayerKillNpc(UserList(userIndex).pos.map, npcIndex, userIndex, e_magic, h2)
+                    Call CustomScenarios.PlayerKillNpc(UserList(UserIndex).pos.map, npcIndex, UserIndex, e_DamageSourceType.e_magic, h2)
 150                 Call MuereNpc(npcIndex, UserIndex)
                     
                 Else
