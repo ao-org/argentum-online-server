@@ -444,8 +444,7 @@ Public Sub DoTileEvents(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal 
         Exit Sub
 
 ErrHandler:
-196     Call LogError("Error en DotileEvents. Error: " & Err.Number & " - Desc: " & Err.Description)
-
+    Call TraceError(Err.Number, Err.Description, ".DotileEvents", Erl)
 End Sub
 
 Public Sub ClearAttackerNpc(ByVal UserIndex As Integer)
