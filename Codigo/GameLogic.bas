@@ -971,6 +971,10 @@ Function LegalWalk(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer,
 122         If Not PuedeTierra Then
 124             If (.Blocked And FLAG_AGUA) = 0 Then Exit Function
             End If
+            
+            If .trigger = WORKERONLY Then
+                If Not UserList(WalkerIndex).clase = Trabajador Then Exit Function
+            End If
                        
             If (.Blocked And 2 ^ (Heading - 1)) <> 0 Then Exit Function
             
