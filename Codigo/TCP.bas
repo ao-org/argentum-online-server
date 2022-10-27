@@ -1853,13 +1853,11 @@ Function ContarUsuariosMismaCuenta(ByVal AccountID As Long) As Integer
 
 End Function
 
-Sub ResetCd(ByVal UserIndex As Integer)
-    With UserList(UserIndex)
-        Dim i As Integer
-        For i = 0 To e_CdTypes.CDCount - 1
-            .CdTimes(i) = 0
-        Next i
-    End With
+Sub ResetCd(ByRef user As t_User)
+    Dim i As Integer
+    For i = 0 To e_CdTypes.CDCount - 1
+        user.CdTimes(i) = 0
+    Next i
 End Sub
 
 Sub VaciarInventario(ByVal UserIndex As Integer)

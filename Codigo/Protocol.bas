@@ -2305,7 +2305,7 @@ Private Sub HandleAttack(ByVal UserIndex As Integer)
                     Exit Sub
                 End If
 
-                If IsItemInCooldown(UserIndex, .invent.Object(.invent.WeaponEqpSlot)) Then
+                If IsItemInCooldown(UserList(UserIndex), .invent.Object(.invent.WeaponEqpSlot)) Then
                     Exit Sub
                 End If
             End If
@@ -3575,7 +3575,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                         If .WeaponEqpObjIndex < 1 Then Exit Sub
                         WeaponData = ObjData(.WeaponEqpObjIndex)
 
-                        If IsItemInCooldown(UserIndex, .Object(.WeaponEqpSlot)) Then Exit Sub
+                        If IsItemInCooldown(UserList(UserIndex), .Object(.WeaponEqpSlot)) Then Exit Sub
                         ProjectileType = 1
                         If WeaponData.Proyectil = 1 And WeaponData.Municion = 0 Then
                             DummyInt = 0
@@ -3782,7 +3782,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
             
 286             Case e_Skill.Pescar
                     If .Counters.Trabajando = 0 And .Counters.LastTrabajo = 0 Then
-                        If IsItemInCooldown(UserIndex, .invent.Object(.invent.HerramientaEqpSlot)) Then Exit Sub
+                        If IsItemInCooldown(UserList(UserIndex), .invent.Object(.invent.HerramientaEqpSlot)) Then Exit Sub
                         Call LookatTile(UserIndex, .pos.map, X, y)
                         Call FishOrThrowNet(UserIndex)
                     End If
