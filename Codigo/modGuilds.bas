@@ -1919,7 +1919,14 @@ Public Sub SendDetallesPersonaje(ByVal UserIndex As Integer, ByVal Personaje As 
 100     GI = UserList(UserIndex).GuildIndex
     
 102     Personaje = UCase$(Personaje)
-    
+
+		'FIX PJ BORRADO Y BUGEADO EN LISTA DE CLAN
+		If Not PersonajeExiste(Personaje) Then
+			Call guilds(GI).ExpulsarMiembroBug(Personaje) 'NUEVA FUNCION PARA NO ROMPER NADA POR LAS DUDAS
+			Call WriteConsoleMsg(userIndex, "El personaje no existe y fue eliminado de la lista de miembros", e_FontTypeNames.FONTTYPE_INFO)
+			Exit Sub
+		End If
+
 104     If GI <= 0 Or GI > CANTIDADDECLANES Then
 106         Call WriteConsoleMsg(UserIndex, "No perteneces a ningún clan.", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
