@@ -538,6 +538,39 @@ AceptarNuevoMiembro_Err:
         
 End Sub
 
+Public Sub ExpulsarMiembroBug(ByRef nombre As String)
+		'NUEVA SUB POR LAS DUDAS PARA NO ROMPER NADA
+        On Error GoTo ExpulsarMiembroBug_Err
+        Dim OldQ      As Integer
+        Dim Temps     As String
+        Dim i         As Integer
+        Dim EsMiembro As Boolean
+        
+        OldQ = CInt(GetVar(MEMBERSFILE, "INIT", "NroMembers"))
+        i = 1
+        nombre = UCase$(nombre)
+
+        While i <= OldQ And UCase$(Trim$(GetVar(MEMBERSFILE, "Members", "Member" & i))) <> nombre
+            i = i + 1
+        Wend
+        EsMiembro = i <= OldQ
+        
+        If EsMiembro Then
+            Call SaveUserGuildIndex(nombre, 0)
+            While i < OldQ
+                Temps = GetVar(MEMBERSFILE, "Members", "Member" & i + 1)
+                Call WriteVar(MEMBERSFILE, "Members", "Member" & i, Temps)
+                i = i + 1
+            Wend
+            Call WriteVar(MEMBERSFILE, "Members", "Member" & OldQ, vbNullString)
+            Call WriteVar(MEMBERSFILE, "INIT", "NroMembers", OldQ - 1)
+        End If
+        Exit Sub
+
+ExpulsarMiembroBug_Err:
+        Call TraceError(Err.Number, Err.Description, "clsClan.ExpulsarMiembroBug", Erl)
+End Sub
+
 Public Sub ExpulsarMiembro(ByRef nombre As String)
         
         On Error GoTo ExpulsarMiembro_Err
