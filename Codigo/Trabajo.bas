@@ -2502,7 +2502,7 @@ Public Sub DoTalar(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte,
 124             MapData(.Pos.Map, X, Y).ObjInfo.Data = GetTickCount() ' Ultimo uso
     
 125             If .clase = Trabajador Then
-126                 MiObj.amount = 10 + RandomNumber(.Stats.ELV / 8, .Stats.ELV / 4)
+126                 MiObj.amount = GetExtractResourceForLevel(.Stats.ELV)
                 Else
 127                 MiObj.amount = RandomNumber(1, 2)
                 End If
@@ -2626,7 +2626,7 @@ Public Sub DoMineria(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byt
             
 128             MiObj.ObjIndex = Yacimiento.MineralIndex
 129             If .clase = Trabajador Then
-130                 MiObj.amount = 10 + RandomNumber(.Stats.ELV / 8, .Stats.ELV / 4)
+130                 MiObj.amount = GetExtractResourceForLevel(.Stats.ELV)
                 Else
 131                 MiObj.amount = RandomNumber(1, 2)
                 End If
@@ -3233,3 +3233,11 @@ On Error GoTo ThrowNetToTarget_Err:
 ThrowNetToTarget_Err:
     Call TraceError(Err.Number, Err.Description, "Trabajo.ThrowNetToTarget", Erl)
 End Sub
+
+Public Function GetExtractResourceForLevel(ByVal level As Integer) As Integer
+    Dim upper As Long
+    Dim lower As Long
+    lower = Int(CDbl(level + 0.000001) / 3.6)
+    upper = Int(CDbl(level + 0.000001) / 2)
+    GetExtractResourceForLevel = 5 + RandomNumber(lower, upper)
+End Function
