@@ -71,5 +71,8 @@ Private Function is_purchaseable_item(ByRef obj As t_ObjData) As Boolean
 End Function
 
 Private Sub RegisterTransaction(ByVal AccId As Integer, ByVal CharId As Integer, ByVal ItemId As Integer, ByVal Price As Integer, ByVal CreditLeft As Integer)
-    Call Query("insert into patreon_shop_audit (acc_id, char_id, item_id, price, credit_left, time) VALUES (?,?,?,?,?, STRFTIME('%s'));", AccId, CharId, ItemId, Price, CreditLeft)
+On Error GoTo RegisterTransaction_Err
+100 Call Execute("insert into patreon_shop_audit (acc_id, char_id, item_id, price, credit_left, time) VALUES (?,?,?,?,?, STRFTIME('%s'));", AccId, CharId, itemId, Price, CreditLeft)
+RegisterTransaction_Err:
+    Call TraceError(Err.Number, Err.Description, "ShopAo20.RegisterTransaction", Erl)
 End Sub
