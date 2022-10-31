@@ -47,6 +47,7 @@ Public Sub init_transaction(ByVal obj_num As Long, ByVal userindex As Integer)
             Call LogShopTransactions(.Name & " | Compró -> " & ObjData(obj.ObjNum).Name & " | Valor -> " & obj.Valor)
             Call Execute("update user set credits = ? where id = ?;", .Stats.Creditos, .ID)
             Call writeUpdateShopClienteCredits(userindex)
+            Call RegisterTransaction(.AccountID, .ID, obj.ObjNum, obj.Valor, .Stats.Creditos)
         End If
                 
     End With
@@ -68,3 +69,11 @@ Private Function is_purchaseable_item(ByRef obj As t_ObjData) As Boolean
     is_purchaseable_item = False
     
 End Function
+
+Private Sub RegisterTransaction(ByVal AccId As Integer, ByVal CharId As Integer, ByVal ItemId As Integer, ByVal Price As Integer, ByVal CreditLeft As Integer)
+On Error GoTo RegisterTransaction_Err
+100 Call Execute("insert into patreon_shop_audit (acc_id, char_id, item_id, price, credit_left, time) VALUES (?,?,?,?,?, STRFTIME('%s'));", AccId, CharId, itemId, Price, CreditLeft)
+    Exit Sub
+RegisterTransaction_Err:
+    Call TraceError(Err.Number, Err.Description, "ShopAo20.RegisterTransaction", Erl)
+End Sub
