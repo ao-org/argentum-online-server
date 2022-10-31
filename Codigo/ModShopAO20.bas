@@ -73,6 +73,7 @@ End Function
 Private Sub RegisterTransaction(ByVal AccId As Integer, ByVal CharId As Integer, ByVal ItemId As Integer, ByVal Price As Integer, ByVal CreditLeft As Integer)
 On Error GoTo RegisterTransaction_Err
 100 Call Execute("insert into patreon_shop_audit (acc_id, char_id, item_id, price, credit_left, time) VALUES (?,?,?,?,?, STRFTIME('%s'));", AccId, CharId, itemId, Price, CreditLeft)
+    Exit Sub
 RegisterTransaction_Err:
     Call TraceError(Err.Number, Err.Description, "ShopAo20.RegisterTransaction", Erl)
 End Sub
