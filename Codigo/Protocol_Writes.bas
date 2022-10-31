@@ -5526,7 +5526,7 @@ Public Sub writeUpdateShopClienteCredits(ByVal userindex As Integer)
     Call Writer.WriteInt32(UserList(userindex).Stats.Creditos)
     
 182 Call modSendData.SendData(ToIndex, userindex)
-    
+    Exit Sub
 writeUpdateShopClienteCredits_Err:
      Call Writer.Clear
     Call TraceError(Err.Number, Err.Description + " UI: " + UserIndex, "Argentum20Server.Protocol_Writes.writeUpdateShopClienteCredits", Erl)

@@ -679,14 +679,11 @@ Sub MakeObj(ByRef obj As t_Obj, ByVal Map As Integer, ByVal X As Integer, ByVal 
 
 MakeObj_Err:
 120     Call TraceError(Err.Number, Err.Description, "InvUsuario.MakeObj", Erl)
-
-
-        
 End Sub
 
 Function MeterItemEnInventario(ByVal UserIndex As Integer, ByRef MiObj As t_Obj) As Boolean
 
-        On Error GoTo ErrHandler
+        On Error GoTo MeterItemEnInventario_Err
 
         Dim X    As Integer
 
@@ -715,7 +712,6 @@ Function MeterItemEnInventario(ByVal UserIndex As Integer, ByRef MiObj As t_Obj)
 114             Slot = Slot + 1
 
 116             If Slot > UserList(UserIndex).CurrentInventorySlots Then
-                    'Call WriteConsoleMsg(UserIndex, "No podes cargar mAs t_Objetos.", e_FontTypeNames.FONTTYPE_FIGHT)
 118                 Call WriteLocaleMsg(UserIndex, "328", e_FontTypeNames.FONTTYPE_FIGHT)
 120                 MeterItemEnInventario = False
                     Exit Function
@@ -743,13 +739,13 @@ Function MeterItemEnInventario(ByVal UserIndex As Integer, ByRef MiObj As t_Obj)
         UserList(UserIndex).flags.ModificoInventario = True
 
         Exit Function
-ErrHandler:
-
+MeterItemEnInventario_Err:
+    Call TraceError(Err.Number, Err.Description, "InvUsuario.MeterItemEnInventario", Erl)
 End Function
 
 Function HayLugarEnInventario(ByVal UserIndex As Integer) As Boolean
 
-        On Error GoTo ErrHandler
+        On Error GoTo HayLugarEnInventario_err
  
         Dim X    As Integer
 
@@ -770,8 +766,8 @@ Function HayLugarEnInventario(ByVal UserIndex As Integer) As Boolean
 110     HayLugarEnInventario = True
 
         Exit Function
-ErrHandler:
-
+HayLugarEnInventario_err:
+    Call TraceError(Err.Number, Err.Description, "InvUsuario.HayLugarEnInventario", Erl)
 End Function
 
 Sub PickObj(ByVal UserIndex As Integer)
