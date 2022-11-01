@@ -776,7 +776,7 @@ Public Enum e_OBJType
 End Enum
 
 Public Enum e_UseOnceSubType
-    eFish
+    eFish = 1
 End Enum
 
 Public Enum e_TeleportSubType
