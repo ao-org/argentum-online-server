@@ -3694,6 +3694,31 @@ ErrHandler:
 120     Call TraceError(Err.Number, Err.Description, "Protocol.?", Erl)
 End Sub
 
+Public Sub HandleChangeMapSetting(ByVal UserIndex As Integer)
+On Error GoTo ChangeMapSetting_Err
+        Dim SettingType As Byte
+        SettingType = Reader.ReadInt8()
+100     With UserList(UserIndex)
+102         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.RoleMaster)) Then
+104             Select Case SettingType
+                    Case e_MapSetting.e_DropItems
+108                     MapInfo(UserList(UserIndex).pos.map).DropItems = Reader.ReadInt8()
+110                     Call LogGM(.name, .name & " ha cambiado la configuracion el dropeo de items en el mapa" & UserList(UserIndex).pos.map & " a " & MapInfo(UserList(UserIndex).pos.map).DropItems)
+112                     Call WriteConsoleMsg(UserIndex, "Mapa actualizado correctamente", e_FontTypeNames.FONTTYPE_INFO)
+                    Case e_MapSetting.e_SafeFight
+116                     MapInfo(UserList(UserIndex).pos.map).SafeFightMap = Reader.ReadInt8()
+118                     Call LogGM(.name, .name & " ha cambiado la configuracion el pelea segura del mapa" & UserList(UserIndex).pos.map & " a " & MapInfo(UserList(UserIndex).pos.map).DropItems)
+120                     Call WriteConsoleMsg(UserIndex, "Mapa actualizado correctamente", e_FontTypeNames.FONTTYPE_INFO)
+                    Case Else
+124                     Call WriteConsoleMsg(UserIndex, "Opcion no disponible", e_FontTypeNames.FONTTYPE_INFO)
+                End Select
+            End If
+        End With
+        Exit Sub
+ChangeMapSetting_Err:
+130     Call TraceError(Err.Number, Err.Description, "Protocol.HandleChangeMapSetting", Erl)
+End Sub
+
 Public Sub HandleSaveChars(ByVal UserIndex As Integer)
         On Error GoTo HandleSaveChars_Err
         'Author: Lucas Tavolaro Ortiz (Tavo)

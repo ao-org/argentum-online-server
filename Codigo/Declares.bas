@@ -2313,6 +2313,11 @@ Public Type t_MapBlock
 
 End Type
 
+Public Enum e_MapSetting
+    e_DropItems
+    e_SafeFight
+End Enum
+
 'Info del mapa
 Type t_MapInfo
 
