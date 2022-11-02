@@ -425,6 +425,7 @@ Public Enum ClientPacketID
     ChangeMapInfoNoResu     '/MODMAPINFO RESUSINEFECTO
     ChangeMapInfoLand       '/MODMAPINFO TERRENO
     ChangeMapInfoZone       '/MODMAPINFO ZONA
+    ChangeMapSetting        '/MODMAP setting value
     SaveChars               '/GRABAR
     CleanSOS                '/BORRAR SOS
     ShowServerForm          '/SHOW INT
@@ -1174,6 +1175,8 @@ On Error Resume Next
             Call HandleChangeMapInfoLand(UserIndex)
         Case ClientPacketID.ChangeMapInfoZone
             Call HandleChangeMapInfoZone(UserIndex)
+        Case ClientPacketID.ChangeMapSetting
+            Call HandleChangeMapSetting(UserIndex)
         Case ClientPacketID.SaveChars
             Call HandleSaveChars(UserIndex)
         Case ClientPacketID.CleanSOS
