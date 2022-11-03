@@ -171,20 +171,24 @@ Private Function sortParticipantes() As Collection
     
     For i = 1 To participantes.Count
         added = False
-        For e = 1 To sortParticipantes.Count
-            UI = participantes.Item(i).UserIndex
-            If UserList(UI).Stats.ELV > UserList(sortParticipantes.Item(e).UserIndex).Stats.ELV Then
-                Call sortParticipantes.Add(participantes.Item(i), CStr(UI), e)
-                added = True
-                Exit For
+        Dim participante As clsCapturaParticipante
+        Set participante = Participantes.Item(i)
+        If participante.IsValid Then
+            For e = 1 To sortParticipantes.count
+                UI = participante.PlayerIndex
+                If UserList(UI).Stats.ELV > UserList(sortParticipantes.Item(e).PlayerIndex).Stats.ELV Then
+                    Call sortParticipantes.Add(participante, CStr(UI), e)
+                    added = True
+                    Exit For
+                End If
+            Next e
+            If Not added Then
+                Call sortParticipantes.Add(participante, CStr(participante.PlayerIndex))
             End If
-        Next e
-        If Not added Then
-            Call sortParticipantes.Add(participantes.Item(i), CStr(UI))
         End If
     Next i
-    
 End Function
+
 Private Sub iniciarCaptura()
 
     tiempo_espera = 0
