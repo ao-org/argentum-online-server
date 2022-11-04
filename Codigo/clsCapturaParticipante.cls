@@ -24,7 +24,7 @@ Public Sub SetPlayer(ByVal UserIndex As Integer)
 End Sub
 
 Public Function PlayerIndex() As Integer
-    UserIndex = UserRef.ArrayIndex
+    PlayerIndex = UserRef.ArrayIndex
 End Function
 
 Public Function IsValid() As Boolean
