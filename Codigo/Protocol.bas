@@ -9189,7 +9189,7 @@ Private Sub HandleTransFerGold(ByVal UserIndex As Integer)
             End If
     
 130         If Not EsGM(userindex) Then
-132             If IsValidUserRef(tUser) Then
+132             If Not IsValidUserRef(tUser) Then
                     If GetTickCount() - .Counters.LastTransferGold >= 10000 Then
                         If PersonajeExiste(username) Then
 136                         If Not AddOroBancoDatabase(username, Cantidad) Then
