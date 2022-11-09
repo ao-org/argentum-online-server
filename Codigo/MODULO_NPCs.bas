@@ -76,7 +76,7 @@ On Error GoTo ErrHandler
     GetNextAvailableNpc = IdNpcLibres.IndexInfo(IdNpcLibres.currentIndex)
     IdNpcLibres.CurrentIndex = IdNpcLibres.CurrentIndex - 1
     If NpcList(GetNextAvailableNpc).flags.NPCActive Then
-        Call TraceError(Err.Number, "Trying to active the same id twice", "NPCs.ReleaseNpc", Erl)
+        Call TraceError(Err.Number, "Trying to active the same id twice", "NPCs.GetNextAvailableNpc", Erl)
     End If
     Exit Function
 ErrHandler:
@@ -575,9 +575,7 @@ Sub QuitarNPC(ByVal NpcIndex As Integer)
         Exit Sub
 
 ErrHandler:
-        ReleaseNpc (NpcIndex)
 132     Call LogError("Error en QuitarNPC")
-
 End Sub
 
 Function TestSpawnTrigger(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer) As Boolean

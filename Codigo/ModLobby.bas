@@ -325,7 +325,7 @@ On Error GoTo RegisterReconnectedUser_Err
 102        Exit Sub
 104    End If
 106    Dim i As Integer
-108    Dim userID As Integer
+108    Dim userID As Long
 110    userID = UserList(userIndex).ID
 112    For i = 0 To instance.RegisteredPlayers - 1
 114        If instance.Players(i).UserId = UserId Then

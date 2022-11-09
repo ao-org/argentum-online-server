@@ -5513,7 +5513,7 @@ Public Sub WriteShopPjsInit(ByVal UserIndex As Integer)
     Call Writer.WriteInt16(ServerPacketID.ShopPjsInit)
     
 182 Call modSendData.SendData(ToIndex, UserIndex)
-    
+    Exit Sub
 WriteShopPjsInit_Err:
      Call Writer.Clear
     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteShopPjsInit", Erl)
