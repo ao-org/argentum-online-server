@@ -703,10 +703,12 @@ Private Sub UserDañoNpc(ByVal UserIndex As Integer, ByVal npcIndex As Integer, 
 180             ObjInd = 0
 182             ArmaObjInd = .Invent.WeaponEqpObjIndex
 184             If ArmaObjInd = 0 Then ArmaObjInd = .Invent.NudilloObjIndex
-                If ObjData(ArmaObjInd).Municion = 0 Then
-188                 ObjInd = ArmaObjInd
-                Else
-190                 ObjInd = .Invent.MunicionEqpObjIndex
+                If ArmaObjInde > 0 Then
+                    If ObjData(ArmaObjInd).Municion = 0 Then
+188                     ObjInd = ArmaObjInd
+                    Else
+190                     ObjInd = .invent.MunicionEqpObjIndex
+                    End If
                 End If
                 Dim rangeStun As Boolean
                 Dim stunChance As Byte

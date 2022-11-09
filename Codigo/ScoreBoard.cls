@@ -16,7 +16,7 @@ Option Explicit
 Dim PlayersScore As New Dictionary
 Dim DisconnectedUser As New Dictionary
 
-Public Sub AddPlayer(ByVal PlayerIndex As Integer)
+Public Sub AddPlayer(ByVal PlayerIndex As Long)
     If Not PlayersScore.Exists(PlayerIndex) Then
         Call PlayersScore.Add(PlayerIndex, 0)
     End If
@@ -81,7 +81,7 @@ Public Sub PublishScoreboard(ByVal audience As Integer, ByVal audienceIndex)
     Next i
 End Sub
 
-Public Sub DisconnectUser(ByVal userIndex As Integer, ByVal userID As Integer)
+Public Sub DisconnectUser(ByVal userIndex As Integer, ByVal userID As Long)
     If Not PlayersScore.Exists(userIndex) Then
         Exit Sub
     End If
@@ -89,7 +89,7 @@ Public Sub DisconnectUser(ByVal userIndex As Integer, ByVal userID As Integer)
     PlayersScore.Remove (userIndex)
 End Sub
 
-Public Sub RestoreDisconnectUser(ByVal userIndex As Integer, ByVal userID As Integer)
+Public Sub RestoreDisconnectUser(ByVal userIndex As Integer, ByVal userID As Long)
 
     If Not DisconnectedUser.Exists(userID) Then
         Exit Sub

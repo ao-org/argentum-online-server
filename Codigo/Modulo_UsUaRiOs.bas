@@ -111,8 +111,10 @@ On Error GoTo Check_ConnectUser_Err
              
         '¿Ya esta conectado el personaje?
         Dim tIndex As t_UserReference: tIndex = NameIndex(name)
-        If IsValidUserRef(tIndex) Then
-            If IsFeatureEnabled("override_same_ip_connection") And .IP = UserList(tIndex.ArrayIndex).IP Then
+        If tIndex.ArrayIndex > 0 Then
+            If Not IsValidUserRef(tIndex) Then
+                Call CloseSocket(tIndex.ArrayIndex)
+            ElseIf IsFeatureEnabled("override_same_ip_connection") And .IP = UserList(tIndex.ArrayIndex).IP Then
                 Call WriteShowMessageBox(tIndex.ArrayIndex, "Alguien está ingresando con tu personaje. Si no has sido tú, por favor cambia la contraseña de tu cuenta.")
                 Call CloseSocket(tIndex.ArrayIndex)
             Else
