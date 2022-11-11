@@ -43,16 +43,53 @@ ErrHandler_InitizlizeNpcIndex:
     Call TraceError(Err.Number, Err.Description, "NPCs.InitializeNpcIndexHeap", Erl)
 End Sub
 
-Public Function ReleaseNpc(ByVal NpcIndex As Integer) As Boolean
+Public Function IsValidNpcRef(ByRef NpcRef As t_NpcReference) As Boolean
+    IsValidNpcRef = False
+    If NpcRef.ArrayIndex <= 0 Or NpcRef.ArrayIndex > UBound(NpcList) Then
+        Exit Function
+    End If
+    If NpcList(NpcRef.ArrayIndex).VersionId <> NpcRef.VersionId Then
+        Exit Function
+    End If
+    IsValidNpcRef = True
+End Function
 
+Public Function SetNpcRef(ByRef NpcRef As t_NpcReference, ByVal Index As Integer) As Boolean
+    SetNpcRef = False
+    NpcRef.ArrayIndex = Index
+    If Index <= 0 Or NpcRef.ArrayIndex > UBound(NpcList) Then
+        Exit Function
+    End If
+    NpcRef.VersionId = NpcList(Index).VersionId
+    SetNpcRef = True
+End Function
+
+Public Sub ClearNpcRef(ByRef NpcRef As t_NpcReference)
+    NpcRef.ArrayIndex = 0
+    NpcRef.VersionId = -1
+End Sub
+
+Public Sub IncreaseNpcVersionId(ByVal NpcIndex As Integer)
+    With NpcList(NpcIndex)
+        If .VersionId > 32760 Then
+            .VersionId = 0
+        Else
+            .VersionId = .VersionId + 1
+        End If
+    End With
+End Sub
+
+Public Function ReleaseNpc(ByVal NpcIndex As Integer, ByVal reason As e_DeleteSource) As Boolean
 On Error GoTo ErrHandler
     If Not NpcList(NpcIndex).flags.NPCActive Then
-        Call TraceError(Err.Number, "Trying to release the id twice", "NPCs.ReleaseNpc", Erl)
+        Call TraceError(Err.Number, "Trying to release the id twice, last reset reason: " & NpcList(NpcIndex).LastReset & " current reason " & reason, "NPCs.ReleaseNpc", Erl)
         ReleaseNpc = False
         Exit Function
     End If
     
     NpcList(NpcIndex).flags.NPCActive = False
+    NpcList(NpcIndex).LastReset = reason
+    Call IncreaseNpcVersionId(NpcIndex)
     IdNpcLibres.CurrentIndex = IdNpcLibres.CurrentIndex + 1
     Debug.Assert IdNpcLibres.currentIndex <= NpcIndexHeapSize
     IdNpcLibres.IndexInfo(IdNpcLibres.CurrentIndex) = NpcIndex
@@ -141,7 +178,7 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
       
 
         'Quitamos el npc
-122     Call QuitarNPC(NpcIndex)
+122     Call QuitarNPC(NpcIndex, eDie)
     
 124     If UserIndex > 0 Then ' Lo mato un usuario?
 126         If MiNPC.flags.Snd3 > 0 Then
@@ -150,18 +187,20 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
 130             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave("28", MiNPC.Pos.X, MiNPC.Pos.y))
             End If
 
-132         UserList(UserIndex).flags.TargetNPC = 0
+132         Call ClearNpcRef(UserList(UserIndex).flags.TargetNPC)
 134         UserList(UserIndex).flags.TargetNpcTipo = e_NPCType.Comun
             
             ' El user que lo mato tiene mascotas?
             If UserList(UserIndex).NroMascotas > 0 Then
-            
                 ' Me fijo si alguna de sus mascotas le estaba pegando al NPC
                 For i = 1 To UBound(UserList(UserIndex).MascotasIndex)
-                    
-                    If UserList(UserIndex).MascotasIndex(i) > 0 Then
-135                     If NpcList(UserList(UserIndex).MascotasIndex(i)).TargetNPC = NpcIndex Then
-136                         Call AllFollowAmo(UserIndex)
+                    If UserList(UserIndex).MascotasIndex(i).ArrayIndex > 0 Then
+                        If IsValidNpcRef(UserList(UserIndex).MascotasIndex(i)) Then
+135                         If NpcList(UserList(UserIndex).MascotasIndex(i).ArrayIndex).TargetNPC.ArrayIndex = NpcIndex Then
+136                             Call AllFollowAmo(UserIndex)
+                            End If
+                        Else
+                            Call ClearNpcRef(UserList(UserIndex).MascotasIndex(i))
                         End If
                     End If
                     
@@ -256,7 +295,7 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
         End If ' UserIndex > 0
         
         ' Mascotas y npcs de entrenamiento no respawnean
-208     If MiNPC.MaestroNPC > 0 Or IsValidUserRef(MiNPC.MaestroUser) Then Exit Sub
+208     If MiNPC.MaestroNPC.ArrayIndex > 0 Or IsValidUserRef(MiNPC.MaestroUser) Then Exit Sub
         
 210     If NpcIndex = npc_index_evento Then
 212         BusquedaNpcActiva = False
@@ -294,7 +333,6 @@ Sub ResetNpcFlags(ByVal NpcIndex As Integer)
 104         .AguaValida = 0
 106         .AttackedBy = vbNullString
 108         .AttackedFirstBy = vbNullString
-110         .Attacking = 0
 112         .backup = 0
 114         .Bendicion = 0
 116         .Domable = 0
@@ -318,7 +356,7 @@ Sub ResetNpcFlags(ByVal NpcIndex As Integer)
 152         .AtacaNPCs = True
 154         .AIAlineacion = e_Alineacion.ninguna
 156         .NPCIdle = False
-159         .InvocadorIndex = 0
+159         Call ClearNpcRef(.Summoner)
         End With
 
         
@@ -447,87 +485,77 @@ Sub ResetNpcMainInfo(ByVal NpcIndex As Integer)
         
         On Error GoTo ResetNpcMainInfo_Err
         
-    
-100     NpcList(NpcIndex).Attackable = 0
-102     NpcList(NpcIndex).Comercia = 0
-104     NpcList(NpcIndex).GiveEXP = 0
-106     NpcList(NpcIndex).GiveEXPClan = 0
-108     NpcList(NpcIndex).GiveGLD = 0
-110     NpcList(NpcIndex).Hostile = 0
-112     NpcList(NpcIndex).InvReSpawn = 0
-114     NpcList(NpcIndex).nivel = 0
+    With (NpcList(NpcIndex))
+100     .Attackable = 0
+102     .Comercia = 0
+104     .GiveEXP = 0
+106     .GiveEXPClan = 0
+108     .GiveGLD = 0
+110     .Hostile = 0
+112     .InvReSpawn = 0
+114     .nivel = 0
+116     Call ClearNpcRef(.MaestroNPC)
+118     .Mascotas = 0
+120     .Movement = 0
+122     .Name = "NPC SIN INICIAR"
+124     .npcType = 0
+126     .Numero = 0
+128     .Orig.map = 0
+130     .Orig.X = 0
+132     .Orig.y = 0
+134     .PoderAtaque = 0
+136     .PoderEvasion = 0
+138     .Pos.map = 0
+140     .Pos.X = 0
+142     .Pos.y = 0
+144     Call SetUserRef(.TargetUser, 0)
+146     Call ClearNpcRef(.TargetNPC)
+148     .TipoItems = 0
+150     .Veneno = 0
+152     .Desc = vbNullString
+154     .NumDropQuest = 0
+156     If IsValidUserRef(.MaestroUser) Then Call QuitarMascota(.MaestroUser.ArrayIndex, NpcIndex)
+158     If IsValidNpcRef(.MaestroNPC) Then Call QuitarMascotaNpc(.MaestroNPC.ArrayIndex)
 
-    
-116     NpcList(NpcIndex).MaestroNPC = 0
-    
-118     NpcList(NpcIndex).Mascotas = 0
-120     NpcList(NpcIndex).Movement = 0
-122     NpcList(NpcIndex).Name = "NPC SIN INICIAR"
-124     NpcList(NpcIndex).NPCtype = 0
-126     NpcList(NpcIndex).Numero = 0
-128     NpcList(NpcIndex).Orig.Map = 0
-130     NpcList(NpcIndex).Orig.X = 0
-132     NpcList(NpcIndex).Orig.Y = 0
-134     NpcList(NpcIndex).PoderAtaque = 0
-136     NpcList(NpcIndex).PoderEvasion = 0
-138     NpcList(NpcIndex).Pos.Map = 0
-140     NpcList(NpcIndex).Pos.X = 0
-142     NpcList(NpcIndex).Pos.Y = 0
-144     Call SetUserRef(NpcList(npcIndex).TargetUser, 0)
-146     NpcList(NpcIndex).TargetNPC = 0
-148     NpcList(NpcIndex).TipoItems = 0
-150     NpcList(NpcIndex).Veneno = 0
-152     NpcList(NpcIndex).Desc = vbNullString
-154     NpcList(NpcIndex).NumDropQuest = 0
-        
-156     If IsValidUserRef(NpcList(npcIndex).MaestroUser) Then Call QuitarMascota(NpcList(npcIndex).MaestroUser.ArrayIndex, npcIndex)
-158     If NpcList(NpcIndex).MaestroNPC > 0 Then Call QuitarMascotaNpc(NpcList(NpcIndex).MaestroNPC)
-
-160     Call SetUserRef(NpcList(npcIndex).MaestroUser, 0)
-162     NpcList(NpcIndex).MaestroNPC = 0
-
-164     NpcList(NpcIndex).CaminataActual = 0
-    
+160     Call SetUserRef(.MaestroUser, 0)
+162     Call ClearNpcRef(.MaestroNPC)
+164     .CaminataActual = 0
         Dim j As Integer
-
-166     For j = 1 To NpcList(NpcIndex).NroSpells
-168         NpcList(NpcIndex).Spells(j) = 0
+166     For j = 1 To .NroSpells
+168         .Spells(j) = 0
 170     Next j
+
+        End With
         
 172     Call ResetNpcCharInfo(NpcIndex)
 174     Call ResetNpcCriatures(NpcIndex)
 176     Call ResetExpresiones(NpcIndex)
 178     Call ResetDrop(NpcIndex)
-
-        
         Exit Sub
-
 ResetNpcMainInfo_Err:
 180     Call TraceError(Err.Number, Err.Description, "NPCs.ResetNpcMainInfo", Erl)
-
-        
 End Sub
 
-Sub QuitarNPC(ByVal NpcIndex As Integer)
+Sub QuitarNPC(ByVal NpcIndex As Integer, ByVal releaseReason As e_DeleteSource)
 
         On Error GoTo ErrHandler
 
-        If Not ReleaseNpc(NpcIndex) Then
+        If Not ReleaseNpc(NpcIndex, releaseReason) Then
             Exit Sub
         End If
-        If NpcList(NpcIndex).flags.InvocadorIndex > 0 Then
+        If IsValidNpcRef(NpcList(NpcIndex).flags.Summoner) Then
     
-            If NpcList(NpcList(NpcIndex).flags.InvocadorIndex).Contadores.CriaturasInvocadas > 0 Then
+            If NpcList(NpcList(NpcIndex).flags.Summoner.ArrayIndex).Contadores.CriaturasInvocadas > 0 Then
                 
                 'Resto 1 Npc invocado al invocador
-                NpcList(NpcList(NpcIndex).flags.InvocadorIndex).Contadores.CriaturasInvocadas = NpcList(NpcList(NpcIndex).flags.InvocadorIndex).Contadores.CriaturasInvocadas - 1
+                NpcList(NpcList(NpcIndex).flags.Summoner.ArrayIndex).Contadores.CriaturasInvocadas = NpcList(NpcList(NpcIndex).flags.Summoner.ArrayIndex).Contadores.CriaturasInvocadas - 1
                 
                 'También lo saco de la lista
                 Dim loopC As Long
                 
-                For loopC = 1 To NpcList(NpcList(NpcIndex).flags.InvocadorIndex).Stats.CantidadInvocaciones
-                    If NpcList(NpcList(NpcIndex).flags.InvocadorIndex).Stats.NpcsInvocados(loopC) = NpcIndex Then
-                        NpcList(NpcList(NpcIndex).flags.InvocadorIndex).Stats.NpcsInvocados(loopC) = 0
+                For LoopC = 1 To NpcList(NpcList(NpcIndex).flags.Summoner.ArrayIndex).Stats.CantidadInvocaciones
+                    If NpcList(NpcList(NpcIndex).flags.Summoner.ArrayIndex).Stats.NpcsInvocados(LoopC).ArrayIndex = NpcIndex Then
+                        Call ClearNpcRef(NpcList(NpcList(NpcIndex).flags.Summoner.ArrayIndex).Stats.NpcsInvocados(LoopC))
                         Exit For
                     End If
                 Next loopC
@@ -538,8 +566,8 @@ Sub QuitarNPC(ByVal NpcIndex As Integer)
             Dim i As Long
             
             For i = 1 To NpcList(NpcIndex).Stats.CantidadInvocaciones
-                If NpcList(NpcIndex).Stats.NpcsInvocados(i) > 0 Then
-                    Call MuereNpc(NpcList(NpcIndex).Stats.NpcsInvocados(i), 0)
+                If IsValidNpcRef(NpcList(NpcIndex).Stats.NpcsInvocados(i)) Then
+                    Call MuereNpc(NpcList(NpcIndex).Stats.NpcsInvocados(i).ArrayIndex, 0)
                 End If
             Next i
         End If
@@ -660,7 +688,7 @@ Public Function CrearNPC(NroNPC As Integer, Mapa As Integer, OrigPos As t_WorldP
                         
                         ' Si falló, borramos el NPC y salimos
 156                     If .Pos.X = 0 And .Pos.Y = 0 Then
-158                         Call QuitarNPC(NpcIndex)
+158                         Call QuitarNPC(NpcIndex, eFailToFindSpawnPos)
                             Exit Function
                         End If
                     End If
@@ -1019,7 +1047,7 @@ Function SpawnNpc(ByVal NpcIndex As Integer, Pos As t_WorldPos, ByVal FX As Bool
 118         NpcList(nIndex).Pos.Y = newpos.Y
             
         Else
-120         Call QuitarNPC(nIndex)
+120         Call QuitarNPC(nIndex, eFailToFindSpawnPos)
 122         SpawnNpc = 0
             Exit Function
         End If
@@ -1306,7 +1334,7 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
 243             ReDim .Stats.NpcsInvocados(1 To .Stats.CantidadInvocaciones)
                 
                 For loopC = 1 To .Stats.CantidadInvocaciones
-                    .Stats.NpcsInvocados(loopC) = 0
+                    Call ClearNpcRef(.Stats.NpcsInvocados(LoopC))
                 Next loopC
             End If
 242         .flags.AIAlineacion = val(Leer.GetValue("NPC" & NpcNumber, "Alineacion"))
@@ -1623,8 +1651,8 @@ Public Sub FollowAmo(ByVal NpcIndex As Integer)
 102         .flags.Follow = True
 104         .Movement = e_TipoAI.SigueAmo
 106         .Hostile = 0
-108         Call SetUserRef(.TargetUser, 0)
-110         .TargetNPC = 0
+108         Call ClearUserRef(.TargetUser)
+110         Call ClearNpcRef(.TargetNPC)
         End With
 
         Exit Sub
@@ -1639,11 +1667,14 @@ Public Sub AllFollowAmo(ByVal UserIndex As Integer)
             Dim j As Long
 
 100         For j = 1 To MAXMASCOTAS
-102             If UserList(UserIndex).MascotasIndex(j) > 0 Then
-104                 Call FollowAmo(UserList(UserIndex).MascotasIndex(j))
+102             If UserList(UserIndex).MascotasIndex(j).ArrayIndex > 0 Then
+                    If IsValidNpcRef(UserList(UserIndex).MascotasIndex(j)) Then
+104                     Call FollowAmo(UserList(UserIndex).MascotasIndex(j).ArrayIndex)
+                    Else
+                        Call ClearNpcRef(UserList(UserIndex).MascotasIndex(j))
+                    End If
                 End If
 106         Next j
-
             Exit Sub
 
 AllFollowAmo_Err:
@@ -1685,18 +1716,13 @@ Sub QuitarMascota(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
     
 100     For i = 1 To MAXMASCOTAS
 
-102         If UserList(UserIndex).MascotasIndex(i) = NpcIndex Then
-104             UserList(UserIndex).MascotasIndex(i) = 0
+102         If UserList(UserIndex).MascotasIndex(i).ArrayIndex = NpcIndex Then
+104             Call ClearNpcRef(UserList(UserIndex).MascotasIndex(i))
 106             UserList(UserIndex).MascotasType(i) = 0
-
 108             UserList(UserIndex).NroMascotas = UserList(UserIndex).NroMascotas - 1
-                
                 UserList(UserIndex).flags.ModificoMascotas = True
-                
                 Exit For
-
             End If
-
 110     Next i
 
         
@@ -1744,7 +1770,7 @@ Sub WarpNpcChar(ByVal NpcIndex As Integer, ByVal Map As Byte, ByVal X As Integer
 
 110     If NuevaPos.Map = 0 Or NuevaPos.X = 0 Or NuevaPos.Y = 0 Then
 112         Debug.Print "Error al tepear NPC"
-114         Call QuitarNPC(NpcIndex)
+114         Call QuitarNPC(NpcIndex, eFailedToWarp)
         Else
 116         NpcList(NpcIndex).Pos = NuevaPos
 118         Call MakeNPCChar(True, 0, NpcIndex, NuevaPos.Map, NuevaPos.X, NuevaPos.Y)

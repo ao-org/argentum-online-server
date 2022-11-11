@@ -15,16 +15,16 @@ Public Sub EnlistarArmadaReal(ByVal UserIndex As Integer)
             Dim charIndexStr As String
 
 100         With UserList(UserIndex)
-102             charindexstr = str$(NpcList(.flags.TargetNPC).Char.charindex)
+102             charIndexStr = str$(NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex)
                 
 104             If .Faccion.status = e_Facciones.Armada Or .Faccion.status = e_Facciones.consejo Then
-106                 Call WriteChatOverHead(UserIndex, "Ya perteneces a mi ejército jóven soldado. Ve a combatir el caos en mis tierras para subir de rango en el Ejército Real.", charindexstr, vbWhite)
+106                 Call WriteChatOverHead(UserIndex, "Ya perteneces a mi ejército jóven soldado. Ve a combatir el caos en mis tierras para subir de rango en el Ejército Real.", charIndexStr, vbWhite)
                     Exit Sub
 
                 End If
 
 108             If .Faccion.status = e_Facciones.Caos Or .Faccion.status = e_Facciones.concilio Then
-110                 Call WriteChatOverHead(UserIndex, "¡Has llegado al lugar equivocado maldita escoria! Vete de aquí antes de ser encarcelado e interrogado.", charindexstr, vbWhite)
+110                 Call WriteChatOverHead(UserIndex, "¡Has llegado al lugar equivocado maldita escoria! Vete de aquí antes de ser encarcelado e interrogado.", charIndexStr, vbWhite)
                     Exit Sub
 
                 End If
@@ -128,7 +128,7 @@ Public Sub RecompensaArmadaReal(ByVal UserIndex As Integer)
 
 100         With UserList(UserIndex)
 102             Crimis = .Faccion.CriminalesMatados
-104             npcCharIndex = str(NpcList(.flags.TargetNPC).Char.CharIndex)
+104             npcCharIndex = str(NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex)
 
 106             If .Faccion.RecompensasReal >= MaxRangoFaccion Then
 108                 Call WriteChatOverHead(UserIndex, "Has alcanzado el máximo rango dentro de mis soldados. Demuestra tu bondad y liderazgo en el campo de batalla para algún día pertenecer al Consejo de Banderbill.", npcCharIndex, vbWhite)
@@ -229,7 +229,7 @@ Public Sub EnlistarCaos(ByVal UserIndex As Integer)
             Dim charIndexStr As String
 
 100         With UserList(UserIndex)
-102             charIndexStr = str(NpcList(.flags.TargetNPC).Char.CharIndex)
+102             charIndexStr = str(NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex)
 
 104             If status(UserIndex) = e_Facciones.Caos Or status(UserIndex) = e_Facciones.concilio Then
 106                 Call WriteChatOverHead(UserIndex, "Ya perteneces a la Legión Oscura.", charindexstr, vbWhite)
@@ -326,7 +326,7 @@ Public Sub RecompensaCaos(ByVal UserIndex As Integer)
 
 100         With UserList(UserIndex)
 102             ciudadanosMatados = .Faccion.ciudadanosMatados
-104             npcCharIndex = str(NpcList(.flags.TargetNPC).Char.CharIndex)
+104             npcCharIndex = str(NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex)
 
 106             If .Faccion.RecompensasCaos >= MaxRangoFaccion Then
 108                 Call WriteChatOverHead(UserIndex, "¡Has alcanzado uno de los mejores lugares en mis filas. Mantén firme tu liderazgo y crueldad para algún día formar parte del Concilio de las Sombras.", npcCharIndex, vbWhite)

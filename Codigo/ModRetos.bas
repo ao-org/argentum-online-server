@@ -888,7 +888,7 @@ Public Sub TerminarTiempoAgarrarItems(ByVal Sala As Integer)
         Dim Ganador As e_EquipoReto
 100     With Retos.Salas(Sala)
             'Mato al banquero
-102         Call QuitarNPC(.IndexBanquero)
+102         Call QuitarNPC(.IndexBanquero, eReto)
         
 104         If .Puntaje < 0 Then
 106             Ganador = e_EquipoReto.Izquierda

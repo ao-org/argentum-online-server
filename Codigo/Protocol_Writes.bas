@@ -324,7 +324,7 @@ Public Sub WriteCommerceInit(ByVal UserIndex As Integer)
         On Error GoTo WriteCommerceInit_Err
         '</EhHeader>
 100     Call Writer.WriteInt16(ServerPacketID.CommerceInit)
-102     Call Writer.WriteString8(NpcList(UserList(UserIndex).flags.TargetNPC).Name)
+102     Call Writer.WriteString8(NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Name)
 104     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub

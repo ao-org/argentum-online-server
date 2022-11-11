@@ -585,17 +585,15 @@ Public Sub SaveCharacterDB(ByVal userIndex As Integer)
 476                 Params(ParamC + 1) = LoopC
     
 
-478                 If .MascotasIndex(LoopC) > 0 Then
+478                 If IsValidNpcRef(.MascotasIndex(LoopC)) Then
                 
-480                     If NpcList(.MascotasIndex(LoopC)).Contadores.TiempoExistencia = 0 Then
+480                     If NpcList(.MascotasIndex(LoopC).ArrayIndex).Contadores.TiempoExistencia = 0 Then
 482                         petType = .MascotasType(LoopC)
                         Else
 484                         petType = 0
                         End If
-    
                     Else
 486                     petType = .MascotasType(LoopC)
-    
                     End If
     
 488                 Params(ParamC + 2) = petType

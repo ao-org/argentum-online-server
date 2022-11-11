@@ -958,11 +958,16 @@ Public Sub TiempoInvocacion(ByVal UserIndex As Integer)
         
         Dim i As Integer
 100     For i = 1 To MAXMASCOTAS
-102         If UserList(UserIndex).MascotasIndex(i) > 0 Then
-104             If NpcList(UserList(UserIndex).MascotasIndex(i)).Contadores.TiempoExistencia > 0 Then
-106                NpcList(UserList(UserIndex).MascotasIndex(i)).Contadores.TiempoExistencia = _
-                   NpcList(UserList(UserIndex).MascotasIndex(i)).Contadores.TiempoExistencia - 1
-108                If NpcList(UserList(UserIndex).MascotasIndex(i)).Contadores.TiempoExistencia = 0 Then Call MuereNpc(UserList(UserIndex).MascotasIndex(i), 0)
+102         If UserList(UserIndex).MascotasIndex(i).ArrayIndex > 0 Then
+                If Not IsValidNpcRef(UserList(UserIndex).MascotasIndex(i)) Then
+                    Call ClearNpcRef(UserList(UserIndex).MascotasIndex(i))
+                    Call LogError("User has invalid pet reference")
+                Else
+104                If NpcList(UserList(UserIndex).MascotasIndex(i).ArrayIndex).Contadores.TiempoExistencia > 0 Then
+106                    NpcList(UserList(UserIndex).MascotasIndex(i).ArrayIndex).Contadores.TiempoExistencia = _
+                       NpcList(UserList(UserIndex).MascotasIndex(i).ArrayIndex).Contadores.TiempoExistencia - 1
+108                    If NpcList(UserList(UserIndex).MascotasIndex(i).ArrayIndex).Contadores.TiempoExistencia = 0 Then Call MuereNpc(UserList(UserIndex).MascotasIndex(i).ArrayIndex, 0)
+                   End If
                 End If
             End If
 110     Next i
@@ -1857,18 +1862,7 @@ Sub PasarSegundo()
                         End If
         
                     End If
-                    
-                     If .Counters.TimerCentinela >= 0 Then
-                        .Counters.TimerCentinela = .Counters.TimerCentinela - 1
 
-                        If .Counters.TimerCentinela = 0 Then
-                            .flags.CentinelaOK = True
-                            .Counters.TimerCentinela = -1
-                        End If
-                    End If
-
-
-                    
 136                 If .flags.Muerto = 0 Then
 138                     Call DuracionPociones(i)
 142                     If .flags.invisible = 1 Then Call EfectoInvisibilidad(i)
@@ -2120,7 +2114,7 @@ Public Sub FreeNPCs()
     
         ' Free all NPC indexes
 100     For LoopC = 1 To MaxNPCs
-            ReleaseNpc (LoopC)
+            Call ReleaseNpc(LoopC, e_DeleteSource.eReleaseAll)
 104     Next LoopC
 
         

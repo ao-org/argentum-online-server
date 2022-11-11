@@ -451,26 +451,34 @@ Public Sub ClearAttackerNpc(ByVal UserIndex As Integer)
 On Error GoTo ClearAttackerNpc_err
     With UserList(UserIndex)
         Dim aN As Integer
-100     aN = .flags.AtacadoPorNpc
+        If Not IsValidNpcRef(.flags.AtacadoPorNpc) Then
+            Call ClearNpcRef(.flags.AtacadoPorNpc)
+        Else
+100         aN = .flags.AtacadoPorNpc.ArrayIndex
 
-102     If aN > 0 Then
-104         If IsValidUserRef(NpcList(aN).TargetUser) And NpcList(aN).TargetUser.ArrayIndex = UserIndex Then
-106           NpcList(aN).Movement = NpcList(aN).flags.OldMovement
-108             NpcList(aN).Hostile = NpcList(aN).flags.OldHostil
-110             NpcList(aN).flags.AttackedBy = vbNullString
-112             Call SetUserRef(NpcList(aN).TargetUser, 0)
-114         End If
-116     End If
+102         If aN > 0 Then
+104             If IsValidUserRef(NpcList(aN).TargetUser) And NpcList(aN).TargetUser.ArrayIndex = UserIndex Then
+106                 NpcList(aN).Movement = NpcList(aN).flags.OldMovement
+108                 NpcList(aN).Hostile = NpcList(aN).flags.OldHostil
+110                 NpcList(aN).flags.AttackedBy = vbNullString
+112                 Call SetUserRef(NpcList(aN).TargetUser, 0)
+114             End If
+116         End If
+        End If
 
-118     aN = .flags.NPCAtacado
 
-120     If aN > 0 Then
-122        If NpcList(aN).flags.AttackedFirstBy = .name Then
-124            NpcList(aN).flags.AttackedFirstBy = vbNullString
-126        End If
-128     End If
-130     .flags.AtacadoPorNpc = 0
-132     .flags.NPCAtacado = 0
+        If Not IsValidNpcRef(.flags.NPCAtacado) Then
+            Call ClearNpcRef(.flags.NPCAtacado)
+        Else
+118         aN = .flags.NPCAtacado.ArrayIndex
+120         If aN > 0 Then
+122             If NpcList(aN).flags.AttackedFirstBy = .Name Then
+124                 NpcList(aN).flags.AttackedFirstBy = vbNullString
+126             End If
+128         End If
+        End If
+130        Call ClearNpcRef(.flags.AtacadoPorNpc)
+132        Call ClearNpcRef(.flags.NPCAtacado)
     End With
     Exit Sub
 ClearAttackerNpc_err:
@@ -1424,14 +1432,12 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
                         
 360                     If UserList(TempCharIndex).flags.Casado = 1 Then
 362                         Stat = Stat & " <Pareja de " & UserList(TempCharIndex).flags.Pareja & ">"
-    
                         End If
                         
 364                     If Len(UserList(TempCharIndex).Desc) > 0 Then
 366                         Stat = "Ves a " & UserList(TempCharIndex).Name & Stat & " - " & UserList(TempCharIndex).Desc
                         Else
 368                         Stat = "Ves a " & UserList(TempCharIndex).Name & Stat
-    
                         End If
                 
 370                     If LenB(Stat) > 0 Then
@@ -1442,20 +1448,18 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
 376                                 Call WriteConsoleMsg(UserIndex, Stat, ft)
                                 End If
                             End If
-                        
-                        
                         End If
                 
 378                     FoundSomething = 1
 380                     Call SetUserRef(UserList(userIndex).flags.targetUser, TempCharIndex)
-382                     UserList(UserIndex).flags.TargetNPC = 0
+382                     Call ClearNpcRef(UserList(UserIndex).flags.TargetNPC)
 384                     UserList(UserIndex).flags.TargetNpcTipo = e_NPCType.Comun
 
                     Else
 386                     Call WriteConsoleMsg(UserIndex, "Ves a ??? <Game Master>", e_FontTypeNames.FONTTYPE_GM)
     
 388                     Call SetUserRef(UserList(userIndex).flags.targetUser, TempCharIndex)
-390                     UserList(UserIndex).flags.TargetNPC = 0
+390                     Call ClearNpcRef(UserList(UserIndex).flags.TargetNPC)
 392                     UserList(UserIndex).flags.TargetNpcTipo = e_NPCType.Comun
     
                     End If
@@ -1563,7 +1567,7 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
                 
 476             FoundSomething = 1
 478             UserList(UserIndex).flags.TargetNpcTipo = NpcList(TempCharIndex).NPCtype
-480             UserList(UserIndex).flags.TargetNPC = TempCharIndex
+480             Call SetNpcRef(UserList(UserIndex).flags.TargetNPC, TempCharIndex)
 482             Call SetUserRef(UserList(userIndex).flags.targetUser, 0)
 484             UserList(UserIndex).flags.TargetObj = 0
 
@@ -1608,7 +1612,7 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
             End If
     
 516         If FoundChar = 0 Then
-518             UserList(UserIndex).flags.TargetNPC = 0
+518             Call ClearNpcRef(UserList(UserIndex).flags.TargetNPC)
 520             UserList(UserIndex).flags.TargetNpcTipo = e_NPCType.Comun
 522             Call SetUserRef(UserList(userIndex).flags.targetUser, 0)
 
@@ -1616,7 +1620,7 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
     
             '*** NO ENCONTRO NADA ***
 524         If FoundSomething = 0 Then
-526             UserList(UserIndex).flags.TargetNPC = 0
+526             Call ClearNpcRef(UserList(UserIndex).flags.TargetNPC)
 528             UserList(UserIndex).flags.TargetNpcTipo = e_NPCType.Comun
 530             Call SetUserRef(UserList(userIndex).flags.targetUser, 0)
 532             UserList(UserIndex).flags.TargetObj = 0
@@ -1630,7 +1634,7 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
         Else
 
 540         If FoundSomething = 0 Then
-542             UserList(UserIndex).flags.TargetNPC = 0
+542             Call ClearNpcRef(UserList(UserIndex).flags.TargetNPC)
 544             UserList(UserIndex).flags.TargetNpcTipo = e_NPCType.Comun
 546             Call SetUserRef(UserList(userIndex).flags.targetUser, 0)
 548             UserList(UserIndex).flags.TargetObj = 0

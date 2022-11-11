@@ -255,7 +255,7 @@ On Error GoTo MatchComplete_Err:
 108    ElapsedTime = MaxTime
 110    Dim key As Variant
 112    For Each key In SpawnedCreaturesId.Keys
-114        Call QuitarNPC(key)
+114        Call QuitarNPC(key, eClearHunt)
 116    Next key
        Exit Sub
 MatchComplete_Err:

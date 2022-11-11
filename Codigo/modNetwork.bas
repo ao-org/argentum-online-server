@@ -170,7 +170,6 @@ On Error GoTo OnServerClose_Err:
 132    UserList(UserRef.ArrayIndex).ConnIDValida = False
 134    UserList(UserRef.ArrayIndex).ConnID = 0
 136    Call ClearUserRef(Mapping(Connection))
-138    Call IncreaseVersionId(UserRef.ArrayIndex)
     
 140    Exit Sub
     
