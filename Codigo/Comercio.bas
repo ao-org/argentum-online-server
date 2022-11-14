@@ -234,7 +234,7 @@ Public Sub IniciarComercioNPC(ByVal UserIndex As Integer)
         
         On Error GoTo IniciarComercioNPC_Err
         
-        If UserList(UserIndex).flags.TargetNPC.ArrayIndex > 0 And Not IsValidNpcRef(UserList(UserIndex).flags.TargetNPC) Then
+        If Not IsValidNpcRef(UserList(UserIndex).flags.TargetNPC) Then
             Call WriteConsoleMsg(UserIndex, "El comerciante no esta disponible.", e_FontTypeNames.FONTTYPE_WARNING)
             Exit Sub
         End If

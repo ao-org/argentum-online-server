@@ -90,7 +90,7 @@ Public Enum e_DeleteSource
     eSummonNew
     eStorePets
     ePetLeave
-    eReto
+    eChallenge
     eClearInvasion
     eAiResetNpc
     eClearHunt

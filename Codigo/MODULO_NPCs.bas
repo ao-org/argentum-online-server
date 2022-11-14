@@ -45,7 +45,7 @@ End Sub
 
 Public Function IsValidNpcRef(ByRef NpcRef As t_NpcReference) As Boolean
     IsValidNpcRef = False
-    If NpcRef.ArrayIndex <= 0 Or NpcRef.ArrayIndex > UBound(NpcList) Then
+    If NpcRef.ArrayIndex < LBound(NpcList) Or NpcRef.ArrayIndex > UBound(NpcList) Then
         Exit Function
     End If
     If NpcList(NpcRef.ArrayIndex).VersionId <> NpcRef.VersionId Then
@@ -57,7 +57,7 @@ End Function
 Public Function SetNpcRef(ByRef NpcRef As t_NpcReference, ByVal Index As Integer) As Boolean
     SetNpcRef = False
     NpcRef.ArrayIndex = Index
-    If Index <= 0 Or NpcRef.ArrayIndex > UBound(NpcList) Then
+    If Index <= LBound(NpcList) Or NpcRef.ArrayIndex > UBound(NpcList) Then
         Exit Function
     End If
     NpcRef.VersionId = NpcList(Index).VersionId
