@@ -3123,46 +3123,34 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
     
 1264                 If .flags.Muerto = 1 Then
 1266                     Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
-                              'Call WriteConsoleMsg(UserIndex, "¡¡Estas muerto!! Solo podes usar items cuando estas vivo. ", e_FontTypeNames.FONTTYPE_INFO)
                               Exit Sub
-    
                           End If
             
 1268                 If .flags.TargetNpcTipo <> Pirata Then
 1270                     Call WriteConsoleMsg(UserIndex, "Primero debes hacer click sobre el pirata.", e_FontTypeNames.FONTTYPE_INFO)
                               Exit Sub
-    
                           End If
             
-1272                 If Distancia(NpcList(.flags.TargetNPC).Pos, .Pos) > 3 Then
+1272                 If Distancia(NpcList(.flags.TargetNPC.ArrayIndex).Pos, .Pos) > 3 Then
 1274                     Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
-                              'Call WriteConsoleMsg(UserIndex, "Estás demasiado lejos del vendedor.", e_FontTypeNames.FONTTYPE_INFO)
                               Exit Sub
-    
                           End If
             
 1276                 If .Pos.Map <> obj.DesdeMap Then
-                              Rem  Call WriteConsoleMsg(UserIndex, "El pasaje no lo compraste aquí! Largate!", e_FontTypeNames.FONTTYPE_INFO)
-1278                     Call WriteChatOverHead(UserIndex, "El pasaje no lo compraste aquí! Largate!", str$(NpcList(.flags.TargetNPC).Char.charindex), vbWhite)
+1278                     Call WriteChatOverHead(UserIndex, "El pasaje no lo compraste aquí! Largate!", str$(NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex), vbWhite)
                               Exit Sub
-    
                           End If
             
 1280                 If Not MapaValido(obj.HastaMap) Then
-                              Rem Call WriteConsoleMsg(UserIndex, "El pasaje lleva hacia un mapa que ya no esta disponible! Disculpa las molestias.", e_FontTypeNames.FONTTYPE_INFO)
-1282                     Call WriteChatOverHead(userindex, "El pasaje lleva hacia un mapa que ya no esta disponible! Disculpa las molestias.", str$(NpcList(.flags.TargetNPC).Char.charindex), vbWhite)
+1282                     Call WriteChatOverHead(UserIndex, "El pasaje lleva hacia un mapa que ya no esta disponible! Disculpa las molestias.", str$(NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex), vbWhite)
                               Exit Sub
-    
                           End If
     
 1284                 If obj.NecesitaNave > 0 Then
 1286                     If .Stats.UserSkills(e_Skill.Navegacion) < 80 Then
-                                  Rem Call WriteConsoleMsg(UserIndex, "Debido a la peligrosidad del viaje, no puedo llevarte, ya que al menos necesitas saber manejar una barca.", e_FontTypeNames.FONTTYPE_INFO)
-1288                         Call WriteChatOverHead(userindex, "Debido a la peligrosidad del viaje, no puedo llevarte, ya que al menos necesitas saber manejar una barca.", str$(NpcList(.flags.TargetNPC).Char.charindex), vbWhite)
+1288                         Call WriteChatOverHead(UserIndex, "Debido a la peligrosidad del viaje, no puedo llevarte, ya que al menos necesitas saber manejar una barca.", str$(NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex), vbWhite)
                                   Exit Sub
-    
                               End If
-    
                           End If
                 
 1290                 Call WarpUserChar(UserIndex, obj.HastaMap, obj.HastaX, obj.HastaY, True)

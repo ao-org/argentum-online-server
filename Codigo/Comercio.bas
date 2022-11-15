@@ -234,11 +234,14 @@ Public Sub IniciarComercioNPC(ByVal UserIndex As Integer)
         
         On Error GoTo IniciarComercioNPC_Err
         
+        If Not IsValidNpcRef(UserList(UserIndex).flags.TargetNPC) Then
+            Call WriteConsoleMsg(UserIndex, "El comerciante no esta disponible.", e_FontTypeNames.FONTTYPE_WARNING)
+            Exit Sub
+        End If
+100     Call UpdateNpcInv(True, UserIndex, UserList(UserIndex).flags.TargetNPC.ArrayIndex, 0)
 
-100     Call UpdateNpcInv(True, UserIndex, UserList(UserIndex).flags.TargetNPC, 0)
-
-102     If NpcList(UserList(UserIndex).flags.TargetNPC).SoundOpen <> 0 Then
-104         Call WritePlayWave(UserIndex, NpcList(UserList(UserIndex).flags.TargetNPC).SoundOpen, NO_3D_SOUND, NO_3D_SOUND)
+102     If NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).SoundOpen <> 0 Then
+104         Call WritePlayWave(UserIndex, NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).SoundOpen, NO_3D_SOUND, NO_3D_SOUND)
         End If
 
 106     UserList(UserIndex).flags.Comerciando = True
@@ -403,7 +406,7 @@ Public Sub UpdateNpcInvToAll(ByVal UpdateAll As Boolean, ByVal NpcIndex As Integ
 104             If .flags.Comerciando Then
             
                     ' Si el ultimo NPC que cliqueo es el que hay que actualizar
-106                 If .flags.TargetNPC = NpcIndex Then
+106                 If .flags.TargetNPC.ArrayIndex = NpcIndex Then
                         ' Actualizamos el inventario del NPC
 108                     Call UpdateNpcInv(UpdateAll, LoopC, NpcIndex, Slot)
                     End If

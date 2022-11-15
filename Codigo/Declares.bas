@@ -74,6 +74,28 @@ Public Enum e_Facciones
     consejo = 5
 End Enum
 
+Public Enum e_DeleteSource
+    eNone
+    eDie
+    eKillecByNpc
+    eKilledByPlayer
+    eGMCommand
+    eResetPos
+    eReleaseAll
+    eFailToFindSpawnPos
+    eFailedToWarp
+    eRemoveWarpPets
+    eClearPlayerPets
+    eNewPet
+    eSummonNew
+    eStorePets
+    ePetLeave
+    eChallenge
+    eClearInvasion
+    eAiResetNpc
+    eClearHunt
+End Enum
+
 Public lstUsuariosDonadores() As String
 
 Public Administradores As clsIniManager
@@ -809,9 +831,17 @@ Public Const STAT_MAXDEF              As Byte = 99
 ' ************************ TIPOS *******************************
 ' **************************************************************
 ' **************************************************************
+'these two types are basically the same but intended to be used for different array, I'll keep them like this to prevent mixing refences
 Public Type t_UserReference
     'hold and index to a UserIndex, this elements are reused all the time so we also keep a
     'versionId to track that we are refering the same user that we intended when we generated this ref
+    ArrayIndex As Integer
+    VersionId As Integer
+End Type
+
+Public Type t_NpcReference
+    'hold and index to a NpcList, this elements are reused all the time so we also keep a
+    'versionId to track that we are refering the same npc that we intended when we generated this ref
     ArrayIndex As Integer
     VersionId As Integer
 End Type
@@ -1614,7 +1644,7 @@ Public Type t_UserFlags
     SeguroResu As Boolean
 
     DuracionEfecto As Long
-    TargetNPC As Integer ' Npc señalado por el usuario
+    TargetNPC As t_NpcReference ' Npc señalado por el usuario
     TargetNpcTipo As e_NPCType ' Tipo del npc señalado
     NpcInv As Integer
     
@@ -1636,9 +1666,9 @@ Public Type t_UserFlags
     TargetObjInvIndex As Integer
     TargetObjInvSlot As Integer
     
-    AtacadoPorNpc As Integer
+    AtacadoPorNpc As t_NpcReference
     AtacadoPorUser As Integer
-    NPCAtacado As Integer
+    NPCAtacado As t_NpcReference
     
     StatsChanged As Byte
     Privilegios As e_PlayerType
@@ -1662,9 +1692,6 @@ Public Type t_UserFlags
     UltimoMensaje As Integer
     
     Silenciado As Byte
-    
-    'Centinela
-    CentinelaOK As Boolean
     
     Traveling As Byte
     
@@ -1785,7 +1812,6 @@ Public Type t_UserCounters
     TimerTirar As Long
     TimerMeditar As Long
     TiempoInicioMeditar As Long
-    TimerCentinela As Long
     'Nuevos de AoLibre
     TimerPuedeSerAtacado As Long
     TimerPerteneceNpc As Long
@@ -1992,7 +2018,7 @@ Public Type t_User
     
     NroMascotas As Integer
     MascotasType(1 To MAXMASCOTAS) As Integer
-    MascotasIndex(1 To MAXMASCOTAS) As Integer
+    MascotasIndex(1 To MAXMASCOTAS) As t_NpcReference
     
     GuildIndex As Integer   'puntero al array global de guilds
     FundandoGuildAlineacion As e_ALINEACION_GUILD     'esto esta aca hasta que se parchee el cliente y se pongan cadenas de datos distintas para cada alineacion
@@ -2045,7 +2071,7 @@ Public Type t_NPCStats
     defM As Integer
     UsuariosMatados As Integer
     CantidadInvocaciones As Byte
-    NpcsInvocados()      As Integer
+    NpcsInvocados()      As t_NpcReference
 
 End Type
 
@@ -2075,7 +2101,7 @@ Public Type t_NPCFlags
     Faccion As e_Facciones
     LanzaSpells As Byte
     NPCIdle As Boolean
-    InvocadorIndex As Integer
+    Summoner As t_NpcReference
     ' Invasiones
     InvasionIndex As Integer
     SpawnBox As Integer
@@ -2091,7 +2117,6 @@ Public Type t_NPCFlags
     
     ' UseAINow As Boolean No se usa, borrar de la DB!!!!
     Sound As Integer
-    Attacking As Integer
     AttackedBy As String
     AttackedFirstBy As String
     backup As Byte
@@ -2179,6 +2204,12 @@ End Enum
 
 Public Type t_Npc
     
+    'Npc types are created at startup and reused every time,
+    'the version id help to validate that a reference we stored is still valid,
+    'this value should be updated every time we reuse this instance
+    VersionId As Integer
+    'We experience a lot of error trying to delete the same npc more than once, we use this to keep track of kills and help debug
+    LastReset As e_DeleteSource
     Distancia As Byte
     
     NumDropQuest As Byte
@@ -2204,7 +2235,7 @@ Public Type t_Npc
     Craftea As Byte
     
     TargetUser As t_UserReference
-    TargetNPC As Long
+    TargetNPC As t_NpcReference
     TipoItems As Integer
     
     SoundOpen As Integer
@@ -2248,7 +2279,7 @@ Public Type t_Npc
     ' Entrenadores
     NroCriaturas As Integer
     Criaturas() As t_CriaturasEntrenador
-    MaestroNPC As Integer
+    MaestroNPC As t_NpcReference
     MaestroUser As t_UserReference
     Mascotas As Integer
     

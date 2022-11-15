@@ -2637,11 +2637,9 @@ Private Sub HandleCommerceEnd(ByVal UserIndex As Integer)
         On Error GoTo HandleCommerceEnd_Err
 
         'User quits commerce mode
-100     If UserList(UserIndex).flags.TargetNPC <> 0 Then
-    
-102         If NpcList(UserList(UserIndex).flags.TargetNPC).SoundClose <> 0 Then
-104             Call WritePlayWave(UserIndex, NpcList(UserList(UserIndex).flags.TargetNPC).SoundClose, NO_3D_SOUND, NO_3D_SOUND)
-
+100     If IsValidNpcRef(UserList(UserIndex).flags.TargetNPC) Then
+102         If NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).SoundClose <> 0 Then
+104             Call WritePlayWave(UserIndex, NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).SoundClose, NO_3D_SOUND, NO_3D_SOUND)
             End If
 
         End If
@@ -3628,7 +3626,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 184                 Call LookatTile(UserIndex, .Pos.Map, X, Y)
                 
 186                 tU = .flags.targetUser.ArrayIndex
-188                 tN = .flags.TargetNPC
+188                 tN = .flags.TargetNPC.ArrayIndex
 190                 consumirMunicion = False
 
                     'Validate target
@@ -3931,36 +3929,26 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                     End If
                     
 550             Case e_Skill.Domar
-                    'Modificado 25/11/02
-                    'Optimizado y solucionado el bug de la doma de criaturas hostiles.
-                    
-                    'Target whatever is that tile
 552                 Call LookatTile(UserIndex, .Pos.Map, X, Y)
-554                 tN = .flags.TargetNPC
-                    
-556                 If tN > 0 Then
+556                 If IsValidNpcRef(.flags.TargetNPC) Then
+                        tN = .flags.TargetNPC.ArrayIndex
 558                     If NpcList(tN).flags.Domable > 0 Then
 560                         If Abs(.Pos.X - X) + Abs(.Pos.Y - Y) > 4 Then
 562                             Call WriteConsoleMsg(UserIndex, "Estas demasiado lejos.", e_FontTypeNames.FONTTYPE_INFO)
                                 Exit Sub
-    
                             End If
                             
 564                         If LenB(NpcList(tN).flags.AttackedBy) <> 0 Then
 566                             Call WriteConsoleMsg(UserIndex, "No puedes domar una criatura que esta luchando con un jugador.", e_FontTypeNames.FONTTYPE_INFO)
                                 Exit Sub
-    
                             End If
                             
 568                         Call DoDomar(UserIndex, tN)
                         Else
 570                         Call WriteConsoleMsg(UserIndex, "No puedes domar a esa criatura.", e_FontTypeNames.FONTTYPE_INFO)
-    
                         End If
-    
                     Else
 572                     Call WriteConsoleMsg(UserIndex, "No hay ninguna criatura alli!", e_FontTypeNames.FONTTYPE_INFO)
-    
                     End If
                
 574             Case FundirMetal    'UGLY!!! This is a constant, not a skill!!
@@ -4431,27 +4419,21 @@ Private Sub HandleTrain(ByVal UserIndex As Integer)
         
 102         PetIndex = Reader.ReadInt8()
         
-104         If .flags.TargetNPC = 0 Then Exit Sub
+104         If Not IsValidNpcRef(.flags.TargetNPC) Then Exit Sub
+106         If NpcList(.flags.TargetNPC.ArrayIndex).npcType <> e_NPCType.Entrenador Then Exit Sub
+108         If NpcList(.flags.TargetNPC.ArrayIndex).Mascotas < MAXMASCOTASENTRENADOR Then
         
-106         If NpcList(.flags.TargetNPC).NPCtype <> e_NPCType.Entrenador Then Exit Sub
-        
-108         If NpcList(.flags.TargetNPC).Mascotas < MAXMASCOTASENTRENADOR Then
-        
-110             If PetIndex > 0 And PetIndex < NpcList(.flags.TargetNPC).NroCriaturas + 1 Then
+110             If PetIndex > 0 And PetIndex < NpcList(.flags.TargetNPC.ArrayIndex).NroCriaturas + 1 Then
                     'Create the creature
-112                 SpawnedNpc = SpawnNpc(NpcList(.flags.TargetNPC).Criaturas(PetIndex).NpcIndex, NpcList(.flags.TargetNPC).Pos, True, False)
+112                 SpawnedNpc = SpawnNpc(NpcList(.flags.TargetNPC.ArrayIndex).Criaturas(PetIndex).NpcIndex, NpcList(.flags.TargetNPC.ArrayIndex).Pos, True, False)
                 
 114                 If SpawnedNpc > 0 Then
 116                     NpcList(SpawnedNpc).MaestroNPC = .flags.TargetNPC
-118                     NpcList(.flags.TargetNPC).Mascotas = NpcList(.flags.TargetNPC).Mascotas + 1
-
+118                     NpcList(.flags.TargetNPC.ArrayIndex).Mascotas = NpcList(.flags.TargetNPC.ArrayIndex).Mascotas + 1
                     End If
-
                 End If
-
             Else
-120             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageChatOverHead("No puedo traer más criaturas, mata las existentes!", NpcList(.flags.TargetNPC).Char.charindex, vbWhite))
-
+120             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageChatOverHead("No puedo traer más criaturas, mata las existentes!", NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite))
             End If
 
         End With
@@ -4495,11 +4477,11 @@ Private Sub HandleCommerceBuy(ByVal UserIndex As Integer)
             End If
         
             'El target es un NPC valido?
-110         If .flags.TargetNPC < 1 Then Exit Sub
+110         If Not IsValidNpcRef(.flags.TargetNPC) Then Exit Sub
             
             'íEl NPC puede comerciar?
-112         If NpcList(.flags.TargetNPC).Comercia = 0 Then
-114             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageChatOverHead("No tengo ningún interés en comerciar.", NpcList(.flags.TargetNPC).Char.charindex, vbWhite))
+112         If NpcList(.flags.TargetNPC.ArrayIndex).Comercia = 0 Then
+114             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageChatOverHead("No tengo ningún interés en comerciar.", NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite))
                 Exit Sub
 
             End If
@@ -4513,7 +4495,7 @@ Private Sub HandleCommerceBuy(ByVal UserIndex As Integer)
             End If
         
             'User compra el item
-122         Call Comercio(eModoComercio.Compra, UserIndex, .flags.TargetNPC, Slot, amount)
+122         Call Comercio(eModoComercio.Compra, UserIndex, .flags.TargetNPC.ArrayIndex, Slot, amount)
 
         End With
 
@@ -4558,10 +4540,10 @@ Private Sub HandleBankExtractItem(ByVal UserIndex As Integer)
             End If
         
             '¿El target es un NPC valido?
-112         If .flags.TargetNPC < 1 Then Exit Sub
+112         If Not IsValidNpcRef(.flags.TargetNPC) Then Exit Sub
         
             '¿Es el banquero?
-114         If NpcList(.flags.TargetNPC).NPCtype <> e_NPCType.Banquero Then Exit Sub
+114         If NpcList(.flags.TargetNPC.ArrayIndex).npcType <> e_NPCType.Banquero Then Exit Sub
 
             'User retira el item del slot
 116         Call UserRetiraItem(UserIndex, Slot, amount, slotdestino)
@@ -4607,17 +4589,17 @@ Private Sub HandleCommerceSell(ByVal UserIndex As Integer)
             End If
         
             'íEl target es un NPC valido?
-110         If .flags.TargetNPC < 1 Then Exit Sub
+110         If Not IsValidNpcRef(.flags.TargetNPC) Then Exit Sub
         
             'íEl NPC puede comerciar?
-112         If NpcList(.flags.TargetNPC).Comercia = 0 Then
-114             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageChatOverHead("No tengo ningún interés en comerciar.", NpcList(.flags.TargetNPC).Char.charindex, vbWhite))
+112         If NpcList(.flags.TargetNPC.ArrayIndex).Comercia = 0 Then
+114             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageChatOverHead("No tengo ningún interés en comerciar.", NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite))
                 Exit Sub
 
             End If
         
             'User compra el item del slot
-116         Call Comercio(eModoComercio.Venta, UserIndex, .flags.TargetNPC, Slot, amount)
+116         Call Comercio(eModoComercio.Venta, UserIndex, .flags.TargetNPC.ArrayIndex, Slot, amount)
 
         End With
 
@@ -4658,23 +4640,18 @@ Private Sub HandleBankDeposit(ByVal UserIndex As Integer)
 108         If .flags.Muerto = 1 Then
 110             Call WriteConsoleMsg(UserIndex, "¡¡Estás muerto!!", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
-
             End If
         
             'íEl target es un NPC valido?
-112         If .flags.TargetNPC < 1 Then Exit Sub
-        
+112         If Not IsValidNpcRef(.flags.TargetNPC) Then Exit Sub
             'íEl NPC puede comerciar?
-114         If NpcList(.flags.TargetNPC).NPCtype <> e_NPCType.Banquero Then
+114         If NpcList(.flags.TargetNPC.ArrayIndex).npcType <> e_NPCType.Banquero Then
                 Exit Sub
-
             End If
             
-116         If Distancia(NpcList(.flags.TargetNPC).Pos, .Pos) > 10 Then
+116         If Distancia(NpcList(.flags.TargetNPC.ArrayIndex).Pos, .Pos) > 10 Then
 118             Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
-                'Call WriteConsoleMsg(UserIndex, "Estís demasiado lejos.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
-
             End If
         
             'User deposita el item del slot rdata
@@ -5696,7 +5673,7 @@ Private Sub HandleGuildOpenElections(ByVal UserIndex As Integer)
 102         If Not modGuilds.v_AbrirElecciones(UserIndex, Error) Then
 104             Call WriteConsoleMsg(UserIndex, Error, e_FontTypeNames.FONTTYPE_GUILD)
             Else
-106             Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageConsoleMsg("¡Han comenzado las elecciones del clan! Puedes votar escribiendo /VOTO seguido del nombre del personaje, por ejemplo: /VOTO " & .name, e_FontTypeNames.FONTTYPE_GUILD))
+106             Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageConsoleMsg("¡Han comenzado las elecciones del clan! Puedes votar escribiendo /VOTO seguido del nombre del personaje, por ejemplo: /VOTO " & .Name, e_FontTypeNames.FONTTYPE_GUILD))
 
             End If
 
@@ -5801,7 +5778,7 @@ Private Sub HandleQuit(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
 102         If .flags.Paralizado = 1 Then
-104             Call WriteConsoleMsg(userIndex, "No podés salir estando paralizado.", e_FontTypeNames.FONTTYPE_WARNING)
+104             Call WriteConsoleMsg(UserIndex, "No podés salir estando paralizado.", e_FontTypeNames.FONTTYPE_WARNING)
                 Exit Sub
 
             End If
@@ -5903,47 +5880,36 @@ Private Sub HandleRequestAccountState(ByVal UserIndex As Integer)
             End If
         
             'Validate target NPC
-106         If .flags.TargetNPC = 0 Then
+106         If Not IsValidNpcRef(.flags.TargetNPC) Then
 108             Call WriteConsoleMsg(UserIndex, "Primero tenes que seleccionar un personaje, hace click izquierdo sobre él.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
-
             End If
         
-110         If Distancia(NpcList(.flags.TargetNPC).Pos, .Pos) > 3 Then
+110         If Distancia(NpcList(.flags.TargetNPC.ArrayIndex).Pos, .Pos) > 3 Then
 112             Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
-                'Call WriteConsoleMsg(UserIndex, "Estís demasiado lejos del vendedor.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
-
             End If
         
-114         Select Case NpcList(.flags.TargetNPC).NPCtype
-
+114         Select Case NpcList(.flags.TargetNPC.ArrayIndex).npcType
                 Case e_NPCType.Banquero
-116                 Call WriteChatOverHead(UserIndex, "Tenes " & PonerPuntos(.Stats.Banco) & " monedas de oro en tu cuenta.", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
+116                 Call WriteChatOverHead(UserIndex, "Tenes " & PonerPuntos(.Stats.Banco) & " monedas de oro en tu cuenta.", NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
             
 118             Case e_NPCType.Timbero
-
 120                 If Not .flags.Privilegios And e_PlayerType.user Then
 122                     earnings = Apuestas.Ganancias - Apuestas.Perdidas
                     
 124                     If earnings >= 0 And Apuestas.Ganancias <> 0 Then
 126                         percentage = Int(earnings * 100 / Apuestas.Ganancias)
-
                         End If
                     
 128                     If earnings < 0 And Apuestas.Perdidas <> 0 Then
 130                         percentage = Int(earnings * 100 / Apuestas.Perdidas)
-
                         End If
                     
 132                     Call WriteConsoleMsg(UserIndex, "Entradas: " & PonerPuntos(Apuestas.Ganancias) & " Salida: " & PonerPuntos(Apuestas.Perdidas) & " Ganancia Neta: " & PonerPuntos(earnings) & " (" & percentage & "%) Jugadas: " & Apuestas.Jugadas, e_FontTypeNames.FONTTYPE_INFO)
-
                     End If
-
             End Select
-
         End With
-        
         Exit Sub
 
 HandleRequestAccountState_Err:
@@ -5976,26 +5942,24 @@ Private Sub HandlePetStand(ByVal UserIndex As Integer)
             End If
         
             'Validate target NPC
-106         If .flags.TargetNPC = 0 Then
+106         If Not IsValidNpcRef(.flags.TargetNPC) Then
 108             Call WriteConsoleMsg(UserIndex, "Primero tenés que seleccionar un personaje, hace click izquierdo sobre él.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
             End If
         
             'Make sure it's close enough
-110         If Distancia(NpcList(.flags.TargetNPC).Pos, .Pos) > 10 Then
+110         If Distancia(NpcList(.flags.TargetNPC.ArrayIndex).Pos, .Pos) > 10 Then
 112             Call WriteConsoleMsg(UserIndex, "Estás demasiado lejos.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
-
             End If
         
             'Make sure it's his pet
-114         If Not IsValidUserRef(NpcList(.flags.TargetNPC).MaestroUser) Or NpcList(.flags.TargetNPC).MaestroUser.ArrayIndex <> userIndex Then Exit Sub
+114         If Not IsValidUserRef(NpcList(.flags.TargetNPC.ArrayIndex).MaestroUser) Or NpcList(.flags.TargetNPC.ArrayIndex).MaestroUser.ArrayIndex <> UserIndex Then Exit Sub
         
             'Do it!
-116         NpcList(.flags.TargetNPC).Movement = e_TipoAI.Estatico
-        
-118         Call Expresar(.flags.TargetNPC, UserIndex)
+116         NpcList(.flags.TargetNPC.ArrayIndex).Movement = e_TipoAI.Estatico
+118         Call Expresar(.flags.TargetNPC.ArrayIndex, UserIndex)
 
         End With
         
@@ -6031,26 +5995,26 @@ Private Sub HandlePetFollow(ByVal UserIndex As Integer)
             End If
         
             'Validate target NPC
-106         If .flags.TargetNPC = 0 Then
+106         If Not IsValidNpcRef(.flags.TargetNPC) Then
 108             Call WriteConsoleMsg(UserIndex, "Primero tenés que seleccionar un personaje, hace click izquierdo sobre él.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
             End If
         
             'Make sure it's close enough
-110         If Distancia(NpcList(.flags.TargetNPC).Pos, .Pos) > 10 Then
+110         If Distancia(NpcList(.flags.TargetNPC.ArrayIndex).Pos, .Pos) > 10 Then
 112             Call WriteConsoleMsg(UserIndex, "Estás demasiado lejos.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
             End If
         
             'Make usre it's the user's pet
-114         If Not IsValidUserRef(NpcList(.flags.TargetNPC).MaestroUser) Or NpcList(.flags.TargetNPC).MaestroUser.ArrayIndex <> userIndex Then Exit Sub
+114         If Not IsValidUserRef(NpcList(.flags.TargetNPC.ArrayIndex).MaestroUser) Or NpcList(.flags.TargetNPC.ArrayIndex).MaestroUser.ArrayIndex <> UserIndex Then Exit Sub
         
             'Do it
-116         Call FollowAmo(.flags.TargetNPC)
+116         Call FollowAmo(.flags.TargetNPC.ArrayIndex)
         
-118         Call Expresar(.flags.TargetNPC, UserIndex)
+118         Call Expresar(.flags.TargetNPC.ArrayIndex, UserIndex)
 
         End With
         
@@ -6082,16 +6046,16 @@ Private Sub HandlePetLeave(ByVal UserIndex As Integer)
             End If
         
             'Validate target NPC
-106         If .flags.TargetNPC = 0 Then
+106         If Not IsValidNpcRef(.flags.TargetNPC) Then
 108             Call WriteConsoleMsg(UserIndex, "Primero tenés que seleccionar un personaje, hace click izquierdo sobre él.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
             End If
         
             'Make usre it's the user's pet
-110         If Not IsValidUserRef(NpcList(.flags.TargetNPC).MaestroUser) Or NpcList(.flags.TargetNPC).MaestroUser.ArrayIndex <> userIndex Then Exit Sub
+110         If Not IsValidUserRef(NpcList(.flags.TargetNPC.ArrayIndex).MaestroUser) Or NpcList(.flags.TargetNPC.ArrayIndex).MaestroUser.ArrayIndex <> UserIndex Then Exit Sub
 
-112         Call QuitarNPC(.flags.TargetNPC)
+112         Call QuitarNPC(.flags.TargetNPC.ArrayIndex, ePetLeave)
 
         End With
         
@@ -6135,51 +6099,33 @@ ErrHandler:
 
 End Sub
 
-''
-' Handles the "TrainList" message.
-'
-' @param    UserIndex The index of the user sending the message.
-
 Private Sub HandleTrainList(ByVal UserIndex As Integer)
-        
         On Error GoTo HandleTrainList_Err
-
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
+        
 100     With UserList(UserIndex)
-
             'Dead users can't use pets
 102         If .flags.Muerto = 1 Then
 104             Call WriteConsoleMsg(UserIndex, "¡¡Estás muerto!!", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
-
             End If
         
             'Validate target NPC
-106         If .flags.TargetNPC = 0 Then
+106         If Not IsValidNpcRef(.flags.TargetNPC) Then
 108             Call WriteConsoleMsg(UserIndex, "Primero tenés que seleccionar un personaje, hace click izquierdo sobre él.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
-
             End If
         
             'Make sure it's close enough
-110         If Distancia(NpcList(.flags.TargetNPC).Pos, .Pos) > 10 Then
+110         If Distancia(NpcList(.flags.TargetNPC.ArrayIndex).Pos, .Pos) > 10 Then
 112             Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
-                'Call WriteConsoleMsg(UserIndex, "Estís demasiado lejos.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
-
             End If
         
             'Make sure it's the trainer
-114         If NpcList(.flags.TargetNPC).NPCtype <> e_NPCType.Entrenador Then Exit Sub
-        
-116         Call WriteTrainerCreatureList(UserIndex, .flags.TargetNPC)
+114         If NpcList(.flags.TargetNPC.ArrayIndex).npcType <> e_NPCType.Entrenador Then Exit Sub
+116         Call WriteTrainerCreatureList(UserIndex, .flags.TargetNPC.ArrayIndex)
 
         End With
-
         Exit Sub
 
 HandleTrainList_Err:
@@ -6367,17 +6313,17 @@ Private Sub HandleResucitate(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             'Se asegura que el target es un npc
-102         If .flags.TargetNPC = 0 Then
+102         If Not IsValidNpcRef(.flags.TargetNPC) Then
 104             Call WriteConsoleMsg(UserIndex, "Primero tenés que seleccionar un personaje, hace click izquierdo sobre él.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
             End If
         
             'Validate NPC and make sure player is dead
-106         If (NpcList(.flags.TargetNPC).NPCtype <> e_NPCType.Revividor And (NpcList(.flags.TargetNPC).NPCtype <> e_NPCType.ResucitadorNewbie Or Not EsNewbie(UserIndex))) Or .flags.Muerto = 0 Then Exit Sub
+106         If (NpcList(.flags.TargetNPC.ArrayIndex).npcType <> e_NPCType.Revividor And (NpcList(.flags.TargetNPC.ArrayIndex).npcType <> e_NPCType.ResucitadorNewbie Or Not EsNewbie(UserIndex))) Or .flags.Muerto = 0 Then Exit Sub
         
             'Make sure it's close enough
-108         If Distancia(.Pos, NpcList(.flags.TargetNPC).Pos) > 10 Then
+108         If Distancia(.Pos, NpcList(.flags.TargetNPC.ArrayIndex).Pos) > 10 Then
 110             Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
                 'Call WriteConsoleMsg(UserIndex, "El sacerdote no puede resucitarte debido a que estás demasiado lejos.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
@@ -6400,52 +6346,30 @@ HandleResucitate_Err:
         
 End Sub
 
-''
-' Handles the "Heal" message.
-'
-' @param    UserIndex The index of the user sending the message.
-
 Private Sub HandleHeal(ByVal UserIndex As Integer)
-        
         On Error GoTo HandleHeal_Err
-
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
 100     With UserList(UserIndex)
-
             'Se asegura que el target es un npc
-102         If .flags.TargetNPC = 0 Then
+102         If Not IsValidNpcRef(.flags.TargetNPC) Then
 104             Call WriteConsoleMsg(UserIndex, "Primero tenés que seleccionar un personaje, hace click izquierdo sobre él.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
-
             End If
         
-106         If (NpcList(.flags.TargetNPC).NPCtype <> e_NPCType.Revividor And NpcList(.flags.TargetNPC).NPCtype <> e_NPCType.ResucitadorNewbie) Or .flags.Muerto <> 0 Then Exit Sub
+106         If (NpcList(.flags.TargetNPC.ArrayIndex).npcType <> e_NPCType.Revividor And NpcList(.flags.TargetNPC.ArrayIndex).npcType <> e_NPCType.ResucitadorNewbie) Or .flags.Muerto <> 0 Then Exit Sub
         
-108         If Distancia(.Pos, NpcList(.flags.TargetNPC).Pos) > 10 Then
+108         If Distancia(.Pos, NpcList(.flags.TargetNPC.ArrayIndex).Pos) > 10 Then
 110             Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
-                'Call WriteConsoleMsg(UserIndex, "El sacerdote no puede curarte debido a que estás demasiado lejos.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
-
             End If
         
 112         .Stats.MinHp = .Stats.MaxHp
-        
 114         Call WriteUpdateHP(UserIndex)
-        
 116         Call WriteConsoleMsg(UserIndex, "ííHas sido curado!!", e_FontTypeNames.FONTTYPE_INFO)
-
         End With
         
         Exit Sub
-
 HandleHeal_Err:
 118     Call TraceError(Err.Number, Err.Description, "Protocol.HandleHeal", Erl)
-120
-        
 End Sub
 
 
@@ -6481,7 +6405,7 @@ Private Sub HandleCommerceStart(ByVal UserIndex As Integer)
             End If
         
             'Validate target NPC
-110         If .flags.TargetNPC > 0 Then
+110         If IsValidNpcRef(.flags.TargetNPC) Then
                 
                 'VOS, como GM, NO podes COMERCIAR con NPCs. (excepto Admins)
 112             If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Admin)) = 0 Then
@@ -6491,26 +6415,19 @@ Private Sub HandleCommerceStart(ByVal UserIndex As Integer)
                 End If
                 
                 'Does the NPC want to trade??
-116             If NpcList(.flags.TargetNPC).Comercia = 0 Then
-118                 If LenB(NpcList(.flags.TargetNPC).Desc) <> 0 Then
-120                     Call WriteChatOverHead(UserIndex, "No tengo ningún interés en comerciar.", NpcList(.flags.TargetNPC).Char.charindex, vbWhite)
-
+116             If NpcList(.flags.TargetNPC.ArrayIndex).Comercia = 0 Then
+118                 If LenB(NpcList(.flags.TargetNPC.ArrayIndex).Desc) <> 0 Then
+120                     Call WriteChatOverHead(UserIndex, "No tengo ningún interés en comerciar.", NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
                     End If
-                
                     Exit Sub
-
                 End If
             
-122             If Distancia(NpcList(.flags.TargetNPC).Pos, .Pos) > 3 Then
+122             If Distancia(NpcList(.flags.TargetNPC.ArrayIndex).Pos, .Pos) > 3 Then
 124                 Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
-                    'Call WriteConsoleMsg(UserIndex, "Estís demasiado lejos del vendedor.", e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
-
                 End If
-            
                 'Start commerce....
 126             Call IniciarComercioNPC(UserIndex)
-                
 128         ElseIf IsValidUserRef(.flags.targetUser) Then
 
                 ' **********************  Comercio con Usuarios  *********************
@@ -6524,7 +6441,7 @@ Private Sub HandleCommerceStart(ByVal UserIndex As Integer)
                 
                 'NO podes COMERCIAR CON un GM. (excepto  Admins)
 134             If (UserList(.flags.targetUser.ArrayIndex).flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Admin)) = 0 Then
-136                 Call WriteConsoleMsg(userIndex, "No podés vender items a este usuario.", e_FontTypeNames.FONTTYPE_WARNING)
+136                 Call WriteConsoleMsg(UserIndex, "No podés vender items a este usuario.", e_FontTypeNames.FONTTYPE_WARNING)
                     Exit Sub
 
                 End If
@@ -6532,14 +6449,14 @@ Private Sub HandleCommerceStart(ByVal UserIndex As Integer)
                 'Is the other one dead??
 138             If UserList(.flags.targetUser.ArrayIndex).flags.Muerto = 1 Then
                     Call FinComerciarUsu(.flags.targetUser.ArrayIndex, True)
-140                 Call WriteConsoleMsg(userIndex, "¡¡No podés comerciar con los muertos!!", e_FontTypeNames.FONTTYPE_INFO)
+140                 Call WriteConsoleMsg(UserIndex, "¡¡No podés comerciar con los muertos!!", e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
 
                 End If
             
                 'Is it me??
 142             If .flags.targetUser.ArrayIndex = userIndex Then
-144                 Call WriteConsoleMsg(userIndex, "No podés comerciar con vos mismo...", e_FontTypeNames.FONTTYPE_INFO)
+144                 Call WriteConsoleMsg(UserIndex, "No podés comerciar con vos mismo...", e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
 
                 End If
@@ -6561,7 +6478,7 @@ Private Sub HandleCommerceStart(ByVal UserIndex As Integer)
                 'Is he already trading?? is it with me or someone else??
 150             If UserList(.flags.targetUser.ArrayIndex).flags.Comerciando = True Then
                     Call FinComerciarUsu(.flags.targetUser.ArrayIndex, True)
-152                 Call WriteConsoleMsg(userIndex, "No podés comerciar con el usuario en este momento.", e_FontTypeNames.FONTTYPE_INFO)
+152                 Call WriteConsoleMsg(UserIndex, "No podés comerciar con el usuario en este momento.", e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
 
                 End If
@@ -6591,167 +6508,100 @@ HandleCommerceStart_Err:
         
 End Sub
 
-''
-' Handles the "BankStart" message.
-'
-' @param    UserIndex The index of the user sending the message.
-
 Private Sub HandleBankStart(ByVal UserIndex As Integer)
-        
         On Error GoTo HandleBankStart_Err
-
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
 100     With UserList(UserIndex)
-
             'Dead people can't commerce
 102         If .flags.Muerto = 1 Then
 104             Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
-                'Call WriteConsoleMsg(UserIndex, "¡¡Estás muerto!!", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
-
             End If
         
 106         If .flags.Comerciando Then
 108             Call WriteConsoleMsg(UserIndex, "Ya estás comerciando", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
-
             End If
         
             'Validate target NPC
-110         If .flags.TargetNPC > 0 Then
-112             If Distancia(NpcList(.flags.TargetNPC).Pos, .Pos) > 6 Then
+110         If IsValidNpcRef(.flags.TargetNPC) Then
+112             If Distancia(NpcList(.flags.TargetNPC.ArrayIndex).Pos, .Pos) > 6 Then
 114                 Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
-                    'Call WriteConsoleMsg(UserIndex, "Estís demasiado lejos del vendedor.", e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
-
                 End If
-            
                 'If it's the banker....
-116             If NpcList(.flags.TargetNPC).NPCtype = e_NPCType.Banquero Then
+116             If NpcList(.flags.TargetNPC.ArrayIndex).npcType = e_NPCType.Banquero Then
 118                 Call IniciarDeposito(UserIndex)
-
                 End If
-
             Else
 120             Call WriteConsoleMsg(UserIndex, "Primero haz click izquierdo sobre el personaje.", e_FontTypeNames.FONTTYPE_INFO)
-
             End If
-
         End With
-        
         Exit Sub
-
 HandleBankStart_Err:
 122     Call TraceError(Err.Number, Err.Description, "Protocol.HandleBankStart", Erl)
-124
-        
 End Sub
-
-''
-' Handles the "Enlist" message.
-'
-' @param    UserIndex The index of the user sending the message.
 
 Private Sub HandleEnlist(ByVal UserIndex As Integer)
-        
         On Error GoTo HandleEnlist_Err
-
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
 100     With UserList(UserIndex)
-
 102         If (.flags.Privilegios And (e_PlayerType.Consejero Or e_PlayerType.SemiDios)) Then Exit Sub
-
             'Validate target NPC
-104         If .flags.TargetNPC = 0 Then
-106             Call WriteConsoleMsg(userIndex, "Primero tenés que seleccionar un personaje, hacé click izquierdo sobre él.", e_FontTypeNames.FONTTYPE_INFO)
+104         If Not IsValidNpcRef(.flags.TargetNPC) Then
+106             Call WriteConsoleMsg(UserIndex, "Primero tenés que seleccionar un personaje, hacé click izquierdo sobre él.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
-
             End If
         
-108         If NpcList(.flags.TargetNPC).NPCtype <> e_NPCType.Enlistador Or .flags.Muerto <> 0 Then Exit Sub
+108         If NpcList(.flags.TargetNPC.ArrayIndex).npcType <> e_NPCType.Enlistador Or .flags.Muerto <> 0 Then Exit Sub
         
-110         If Distancia(.Pos, NpcList(.flags.TargetNPC).Pos) > 4 Then
+110         If Distancia(.Pos, NpcList(.flags.TargetNPC.ArrayIndex).Pos) > 4 Then
 112             Call WriteConsoleMsg(UserIndex, "Debes acercarte más.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
-
             End If
         
-114         If NpcList(.flags.TargetNPC).flags.Faccion = 0 Then
+114         If NpcList(.flags.TargetNPC.ArrayIndex).flags.Faccion = 0 Then
 116             Call EnlistarArmadaReal(UserIndex)
-            
             Else
 118             Call EnlistarCaos(UserIndex)
-
             End If
-
         End With
-        
         Exit Sub
-
 HandleEnlist_Err:
 120     Call TraceError(Err.Number, Err.Description, "Protocol.HandleEnlist", Erl)
-122
-        
 End Sub
 
-''
-' Handles the "Information" message.
-'
-' @param    UserIndex The index of the user sending the message.
-
 Private Sub HandleInformation(ByVal UserIndex As Integer)
-        
         On Error GoTo HandleInformation_Err
-
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
 100     With UserList(UserIndex)
-
             'Validate target NPC
-102         If .flags.TargetNPC = 0 Then
+102         If Not IsValidNpcRef(.flags.TargetNPC) Then
 104             Call WriteConsoleMsg(UserIndex, "Primero tenés que seleccionar un personaje, hacé click izquierdo sobre él.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
-
             End If
         
-106         If NpcList(.flags.TargetNPC).NPCtype <> e_NPCType.Enlistador Or .flags.Muerto <> 0 Then Exit Sub
+106         If NpcList(.flags.TargetNPC.ArrayIndex).npcType <> e_NPCType.Enlistador Or .flags.Muerto <> 0 Then Exit Sub
         
-108         If Distancia(.Pos, NpcList(.flags.TargetNPC).Pos) > 4 Then
+108         If Distancia(.Pos, NpcList(.flags.TargetNPC.ArrayIndex).Pos) > 4 Then
 110             Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
-                'Call WriteConsoleMsg(UserIndex, "Estís demasiado lejos.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
-
             End If
         
-112         If NpcList(.flags.TargetNPC).flags.Faccion = 0 Then
+112         If NpcList(.flags.TargetNPC.ArrayIndex).flags.Faccion = 0 Then
 114             If .Faccion.Status <> e_Facciones.Armada Or .Faccion.Status <> e_Facciones.consejo Then
-116                 Call WriteChatOverHead(UserIndex, "No perteneces a las tropas reales!!!", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
+116                 Call WriteChatOverHead(UserIndex, "No perteneces a las tropas reales!!!", NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
                     Exit Sub
-
                 End If
 
-118             Call WriteChatOverHead(UserIndex, "Tu deber es combatir criminales, cada 100 criminales que derrotes te darí una recompensa.", NpcList(.flags.TargetNPC).Char.charindex, vbWhite)
+118             Call WriteChatOverHead(UserIndex, "Tu deber es combatir criminales, cada 100 criminales que derrotes te darí una recompensa.", NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
             
             Else
 
 120             If .Faccion.Status <> e_Facciones.Caos Or .Faccion.Status <> e_Facciones.concilio Then
-122                 Call WriteChatOverHead(UserIndex, "No perteneces a la legión oscura!!!", NpcList(.flags.TargetNPC).Char.charindex, vbWhite)
+122                 Call WriteChatOverHead(UserIndex, "No perteneces a la legión oscura!!!", NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
                     Exit Sub
 
                 End If
 
-124             Call WriteChatOverHead(UserIndex, "Tu deber es sembrar el caos y la desesperanza, cada 100 ciudadanos que derrotes te darí una recompensa.", NpcList(.flags.TargetNPC).Char.charindex, vbWhite)
+124             Call WriteChatOverHead(UserIndex, "Tu deber es sembrar el caos y la desesperanza, cada 100 ciudadanos que derrotes te darí una recompensa.", NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
 
             End If
 
@@ -6782,43 +6632,30 @@ Private Sub HandleReward(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             'Validate target NPC
-102         If .flags.TargetNPC = 0 Then
+102         If Not IsValidNpcRef(.flags.TargetNPC) Then
 104             Call WriteConsoleMsg(UserIndex, "Primero tenés que seleccionar un personaje, hacé click izquierdo sobre él.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
-
             End If
         
-106         If NpcList(.flags.TargetNPC).NPCtype <> e_NPCType.Enlistador Or .flags.Muerto <> 0 Then Exit Sub
-        
-108         If Distancia(.Pos, NpcList(.flags.TargetNPC).Pos) > 4 Then
+106         If NpcList(.flags.TargetNPC.ArrayIndex).npcType <> e_NPCType.Enlistador Or .flags.Muerto <> 0 Then Exit Sub
+108         If Distancia(.Pos, NpcList(.flags.TargetNPC.ArrayIndex).Pos) > 4 Then
 110             Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
-                'Call WriteConsoleMsg(UserIndex, "Estís demasiado lejos.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
-
             End If
         
-112         If NpcList(.flags.TargetNPC).flags.Faccion = 0 Then
-        
+112         If NpcList(.flags.TargetNPC.ArrayIndex).flags.Faccion = 0 Then
 114             If .Faccion.Status <> e_Facciones.Armada And .Faccion.Status <> e_Facciones.consejo Then
-116                 Call WriteChatOverHead(UserIndex, "No perteneces a las tropas reales!!!", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
+116                 Call WriteChatOverHead(UserIndex, "No perteneces a las tropas reales!!!", NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
                     Exit Sub
-
                 End If
-
 118             Call RecompensaArmadaReal(UserIndex)
-            
             Else
-
 120             If .Faccion.Status <> e_Facciones.Caos And .Faccion.Status <> e_Facciones.concilio Then
-122                 Call WriteChatOverHead(UserIndex, "No perteneces a la legión oscura!!!", NpcList(.flags.TargetNPC).Char.charindex, vbWhite)
+122                 Call WriteChatOverHead(UserIndex, "No perteneces a la legión oscura!!!", NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
                     Exit Sub
-
                 End If
-
 124             Call RecompensaCaos(UserIndex)
-
             End If
-
         End With
         
         Exit Sub
@@ -7087,44 +6924,33 @@ Private Sub HandleBankExtractGold(ByVal UserIndex As Integer)
             Dim amount As Long
 102             amount = Reader.ReadInt32()
         
-            'Dead people can't leave a faction.. they can't talk...
 104         If .flags.Muerto = 1 Then
 106             Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
-                'Call WriteConsoleMsg(UserIndex, "¡¡Estás muerto!!", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
-
             End If
         
             'Validate target NPC
-108         If .flags.TargetNPC = 0 Then
+108         If Not IsValidNpcRef(.flags.TargetNPC) Then
 110             Call WriteConsoleMsg(UserIndex, "Primero tenés que seleccionar un personaje, haz click izquierdo sobre él.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
-
             End If
         
-112         If NpcList(.flags.TargetNPC).NPCtype <> e_NPCType.Banquero Then Exit Sub
+112         If NpcList(.flags.TargetNPC.ArrayIndex).npcType <> e_NPCType.Banquero Then Exit Sub
         
-114         If Distancia(.Pos, NpcList(.flags.TargetNPC).Pos) > 10 Then
+114         If Distancia(.Pos, NpcList(.flags.TargetNPC.ArrayIndex).Pos) > 10 Then
 116             Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
-                'Call WriteConsoleMsg(UserIndex, "Estís demasiado lejos.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
-
             End If
         
 118         If amount > 0 And amount <= .Stats.Banco Then
 120             .Stats.Banco = .Stats.Banco - amount
 122             .Stats.GLD = .Stats.GLD + amount
-                Call WriteChatOverHead(UserIndex, "Tenés " & .Stats.Banco & " monedas de oro en tu cuenta.", NpcList(.flags.TargetNPC).Char.charindex, vbWhite)
-
+                Call WriteChatOverHead(UserIndex, "Tenés " & .Stats.Banco & " monedas de oro en tu cuenta.", NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
 124             Call WriteUpdateGold(UserIndex)
-126           '  Call WriteGoliathInit(UserIndex)
                 Call WriteUpdateBankGld(UserIndex)
-
             Else
-128             Call WriteChatOverHead(UserIndex, "No tenés esa cantidad.", NpcList(.flags.TargetNPC).Char.charindex, vbWhite)
-
+128             Call WriteChatOverHead(UserIndex, "No tenés esa cantidad.", NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
             End If
-
         End With
 
         Exit Sub
@@ -7135,29 +6961,13 @@ HandleBankExtractGold_Err:
         
 End Sub
 
-''
-' Handles the "LeaveFaction" message.
-'
-' @param    UserIndex The index of the user sending the message.
-
 Private Sub HandleLeaveFaction(ByVal UserIndex As Integer)
-        
         On Error GoTo HandleLeaveFaction_Err
-
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
-        
 100     With UserList(UserIndex)
-
             'Dead people can't leave a faction.. they can't talk...
 102         If .flags.Muerto = 1 Then
 104             Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
-                'Call WriteConsoleMsg(UserIndex, "¡¡Estás muerto!!", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
-
             End If
         
 106         If .Faccion.Status = e_Facciones.Ciudadano Then
@@ -7169,7 +6979,7 @@ Private Sub HandleLeaveFaction(ByVal UserIndex As Integer)
             End If
         
             'Validate target NPC
-114         If .flags.TargetNPC = 0 Then
+114         If Not IsValidNpcRef(.flags.TargetNPC) Then
 116             If .Faccion.Status = e_Facciones.Armada Or .Faccion.Status = e_Facciones.consejo Then
 118                 Call WriteConsoleMsg(UserIndex, "Para salir del ejercito debes ir a visitar al rey.", e_FontTypeNames.FONTTYPE_INFOIAO)
                     Exit Sub
@@ -7180,12 +6990,10 @@ Private Sub HandleLeaveFaction(ByVal UserIndex As Integer)
                 Exit Sub
             End If
         
-124         If NpcList(.flags.TargetNPC).NPCtype = e_NPCType.Enlistador Then
+124         If NpcList(.flags.TargetNPC.ArrayIndex).npcType = e_NPCType.Enlistador Then
                 'Quit the Royal Army?
 126             If .Faccion.Status = e_Facciones.Armada Or .Faccion.Status = e_Facciones.consejo Then
-128                 If NpcList(.flags.TargetNPC).flags.Faccion = 0 Then
-                
-                        'HarThaoS
+128                 If NpcList(.flags.TargetNPC.ArrayIndex).flags.Faccion = 0 Then
                         'Si tiene clan
 130                     If .GuildIndex > 0 Then
                             'Y no es leader
@@ -7198,26 +7006,22 @@ Private Sub HandleLeaveFaction(ByVal UserIndex As Integer)
                             Else
                                 'Me fijo si está en un clan armada, en ese caso no lo dejo salir de la facción
                                 If GuildAlignmentIndex(.GuildIndex) = e_ALINEACION_GUILD.ALINEACION_ARMADA Then
-138                                 Call WriteChatOverHead(UserIndex, "Para dejar la facción primero deberás ceder el liderazgo del clan", NpcList(.flags.TargetNPC).Char.charindex, vbWhite)
+138                                 Call WriteChatOverHead(UserIndex, "Para dejar la facción primero deberás ceder el liderazgo del clan", NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
                                     Exit Sub
                                 End If
                             End If
                         End If
                     
 140                     Call ExpulsarFaccionReal(UserIndex)
-142                     Call WriteChatOverHead(UserIndex, "Serás bienvenido a las fuerzas imperiales si deseas regresar.", NpcList(.flags.TargetNPC).Char.charindex, vbWhite)
-
+142                     Call WriteChatOverHead(UserIndex, "Serás bienvenido a las fuerzas imperiales si deseas regresar.", NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
                         Exit Sub
                     Else
-144                     Call WriteChatOverHead(UserIndex, "¡¡¡Sal de aquí bufón!!!", NpcList(.flags.TargetNPC).Char.charindex, vbWhite)
-                   
+144                     Call WriteChatOverHead(UserIndex, "¡¡¡Sal de aquí bufón!!!", NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
                     End If
 
                     'Quit the Chaos Legion??
 146             ElseIf .Faccion.Status = e_Facciones.Caos Or .Faccion.Status = e_Facciones.concilio Then
-
-148                 If NpcList(.flags.TargetNPC).flags.Faccion = 2 Then
-                        'HarThaoS
+148                 If NpcList(.flags.TargetNPC.ArrayIndex).flags.Faccion = 2 Then
                         'Si tiene clan
                          If .GuildIndex > 0 Then
                             'Y no es leader
@@ -7230,97 +7034,62 @@ Private Sub HandleLeaveFaction(ByVal UserIndex As Integer)
                             Else
                                 'Me fijo si está en un clan CAOS, en ese caso no lo dejo salir de la facción
                                 If GuildAlignmentIndex(.GuildIndex) = e_ALINEACION_GUILD.ALINEACION_CAOTICA Then
-                                    Call WriteChatOverHead(UserIndex, "Para dejar la facción primero deberás ceder el liderazgo del clan", NpcList(.flags.TargetNPC).Char.charindex, vbWhite)
+                                    Call WriteChatOverHead(UserIndex, "Para dejar la facción primero deberás ceder el liderazgo del clan", NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
                                     Exit Sub
                                 End If
                             End If
                         End If
                     
 160                     Call ExpulsarFaccionCaos(UserIndex)
-162                     Call WriteChatOverHead(UserIndex, "Ya volverás arrastrandote.", NpcList(.flags.TargetNPC).Char.charindex, vbWhite)
+162                     Call WriteChatOverHead(UserIndex, "Ya volverás arrastrandote.", NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
                     Else
-164                     Call WriteChatOverHead(UserIndex, "Sal de aquí maldito criminal", NpcList(.flags.TargetNPC).Char.charindex, vbWhite)
-
+164                     Call WriteChatOverHead(UserIndex, "Sal de aquí maldito criminal", NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
                     End If
-
                 Else
-166                 Call WriteChatOverHead(UserIndex, "¡No perteneces a ninguna facción!", NpcList(.flags.TargetNPC).Char.charindex, vbWhite)
-
+166                 Call WriteChatOverHead(UserIndex, "¡No perteneces a ninguna facción!", NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
                 End If
-
             End If
-    
         End With
-        
         Exit Sub
-
 HandleLeaveFaction_Err:
 168     Call TraceError(Err.Number, Err.Description, "Protocol.HandleLeaveFaction", Erl)
-170
-        
 End Sub
 
-''
-' Handles the "BankDepositGold" message.
-'
-' @param    UserIndex The index of the user sending the message.
-
 Private Sub HandleBankDepositGold(ByVal UserIndex As Integer)
-        
         On Error GoTo HandleBankDepositGold_Err
-
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
-
 100     With UserList(UserIndex)
 
             Dim amount As Long
-102             amount = Reader.ReadInt32()
-        
+102         amount = Reader.ReadInt32()
             'Dead people can't leave a faction.. they can't talk...
 104         If .flags.Muerto = 1 Then
 106             Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
-                'Call WriteConsoleMsg(UserIndex, "¡¡Estás muerto!!", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
-
             End If
         
             'Validate target NPC
-108         If .flags.TargetNPC = 0 Then
+108         If Not IsValidNpcRef(.flags.TargetNPC) Then
 110             Call WriteConsoleMsg(UserIndex, "Primero tenés que seleccionar un personaje, haz click izquierdo sobre él.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
-
             End If
-            
-112         If NpcList(.flags.TargetNPC).NPCtype <> e_NPCType.Banquero Then Exit Sub
+112         If NpcList(.flags.TargetNPC.ArrayIndex).npcType <> e_NPCType.Banquero Then Exit Sub
         
-114         If Distancia(NpcList(.flags.TargetNPC).Pos, .Pos) > 10 Then
+114         If Distancia(NpcList(.flags.TargetNPC.ArrayIndex).Pos, .Pos) > 10 Then
 116             Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
-                'Call WriteConsoleMsg(UserIndex, "Estís demasiado lejos.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
-
             End If
             
 118         If amount > 0 And amount <= .Stats.GLD Then
                 'substract first in case there is overflow we don't dup gold
                 .Stats.GLD = .Stats.GLD - amount
                 .Stats.Banco = .Stats.Banco + amount
-
-                Call WriteChatOverHead(UserIndex, "Tenés " & .Stats.Banco & " monedas de oro en tu cuenta.", NpcList(.flags.TargetNPC).Char.charindex, vbWhite)
-            
+                Call WriteChatOverHead(UserIndex, "Tenés " & .Stats.Banco & " monedas de oro en tu cuenta.", NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
 124             Call WriteUpdateGold(UserIndex)
-126            ' Call WriteGoliathInit(UserIndex)
                 Call WriteUpdateBankGld(UserIndex)
             Else
-128             Call WriteChatOverHead(UserIndex, "No tenés esa cantidad.", NpcList(.flags.TargetNPC).Char.charindex, vbWhite)
-
+128             Call WriteChatOverHead(UserIndex, "No tenés esa cantidad.", NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
             End If
-
         End With
-        
         Exit Sub
 
 HandleBankDepositGold_Err:
@@ -7760,7 +7529,7 @@ Private Sub HandlePerdonFaccion(ByVal userindex As Integer)
                 End If
                 
                 If UserList(tUser.ArrayIndex).Faccion.Status = e_Facciones.Armada Or UserList(tUser.ArrayIndex).Faccion.Status = e_Facciones.Caos Or UserList(tUser.ArrayIndex).Faccion.Status = e_Facciones.consejo Or UserList(tUser.ArrayIndex).Faccion.Status = e_Facciones.concilio Then
-                    Call WriteConsoleMsg(userIndex, "No puedes perdonar a alguien que ya pertenece a una facción", e_FontTypeNames.FONTTYPE_INFO)
+                    Call WriteConsoleMsg(UserIndex, "No puedes perdonar a alguien que ya pertenece a una facción", e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
             
@@ -7787,7 +7556,7 @@ Private Sub HandlePerdonFaccion(ByVal userindex As Integer)
                     End If
                 End If
             Else
-136             Call WriteConsoleMsg(userIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
+136             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
             End If
 
         End With
@@ -7997,7 +7766,7 @@ Private Sub HandleAcceptChaosCouncilMember(ByVal UserIndex As Integer)
                 Else
                     If UserList(tUser.ArrayIndex).GuildIndex > 0 Then
                         If GuildAlignmentIndex(UserList(tUser.ArrayIndex).GuildIndex) <> e_ALINEACION_GUILD.ALINEACION_CAOTICA Then
-                            Call WriteConsoleMsg(userIndex, "El miembro no puede ingresar al concilio porque forma parte de un clan que no es caótico.", e_FontTypeNames.FONTTYPE_INFO)
+                            Call WriteConsoleMsg(UserIndex, "El miembro no puede ingresar al concilio porque forma parte de un clan que no es caótico.", e_FontTypeNames.FONTTYPE_INFO)
                         End If
                     End If
                     
@@ -8185,7 +7954,7 @@ Private Sub HandleChaosLegionKick(ByVal UserIndex As Integer)
 118             If IsValidUserRef(tUser) Then
                     If UserList(tUser.ArrayIndex).GuildIndex > 0 Then
                         If GuildAlignmentIndex(UserList(tUser.ArrayIndex).GuildIndex) = e_ALINEACION_GUILD.ALINEACION_ARMADA Then
-                            Call WriteConsoleMsg(userIndex, "El usuario " & username & " deberá abandonar el clan para poder ser echado de las fuerzas del caos.", e_FontTypeNames.FONTTYPE_INFO)
+                            Call WriteConsoleMsg(UserIndex, "El usuario " & username & " deberá abandonar el clan para poder ser echado de las fuerzas del caos.", e_FontTypeNames.FONTTYPE_INFO)
                             Exit Sub
                         End If
                     Else
@@ -8196,7 +7965,7 @@ Private Sub HandleChaosLegionKick(ByVal UserIndex As Integer)
                     End If
                 Else
                     If PersonajeExiste(username) Then
-                        Call WriteConsoleMsg(userIndex, "Usuario offline, echando de la facción", e_FontTypeNames.FONTTYPE_INFO)
+                        Call WriteConsoleMsg(UserIndex, "Usuario offline, echando de la facción", e_FontTypeNames.FONTTYPE_INFO)
                         
                         
                         Dim Status As Integer
@@ -8266,7 +8035,7 @@ Private Sub HandleRoyalArmyKick(ByVal UserIndex As Integer)
 118             If IsValidUserRef(tUser) Then
                     If UserList(tUser.ArrayIndex).GuildIndex > 0 Then
                         If GuildAlignmentIndex(UserList(tUser.ArrayIndex).GuildIndex) = e_ALINEACION_GUILD.ALINEACION_ARMADA Then
-                            Call WriteConsoleMsg(userIndex, "El usuario " & username & " deberá abandonar el clan para poder ser echado de la armada.", e_FontTypeNames.FONTTYPE_INFO)
+                            Call WriteConsoleMsg(UserIndex, "El usuario " & username & " deberá abandonar el clan para poder ser echado de la armada.", e_FontTypeNames.FONTTYPE_INFO)
                             Exit Sub
                         End If
                     Else
@@ -8278,7 +8047,7 @@ Private Sub HandleRoyalArmyKick(ByVal UserIndex As Integer)
 
                 Else
                     If PersonajeExiste(username) Then
-                        Call WriteConsoleMsg(userIndex, "Usuario offline, echando de la facción", e_FontTypeNames.FONTTYPE_INFO)
+                        Call WriteConsoleMsg(UserIndex, "Usuario offline, echando de la facción", e_FontTypeNames.FONTTYPE_INFO)
                                                 
                         Dim Status As Integer
                         Status = GetDBValue("user", "status", "name", username)
@@ -8358,27 +8127,25 @@ Public Sub HandleDonateGold(ByVal UserIndex As Integer)
 104         If Oro <= 0 Then Exit Sub
         
             'Se asegura que el target es un npc
-106         If .flags.TargetNPC = 0 Then
-108             Call WriteConsoleMsg(userIndex, "Primero tenés que seleccionar al sacerdote.", e_FontTypeNames.FONTTYPE_INFO)
+106         If Not IsValidNpcRef(.flags.TargetNPC) Then
+108             Call WriteConsoleMsg(UserIndex, "Primero tenés que seleccionar al sacerdote.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
-
             End If
         
             Dim priest As t_Npc
-110         priest = NpcList(.flags.TargetNPC)
+110         priest = NpcList(.flags.TargetNPC.ArrayIndex)
 
             'Validate NPC is an actual priest and the player is not dead
 112         If (priest.NPCtype <> e_NPCType.Revividor And (priest.NPCtype <> e_NPCType.ResucitadorNewbie Or Not EsNewbie(UserIndex))) Or .flags.Muerto = 1 Then Exit Sub
 
             'Make sure it's close enough
-114         If Distancia(.Pos, NpcList(.flags.TargetNPC).Pos) > 3 Then
+114         If Distancia(.Pos, NpcList(.flags.TargetNPC.ArrayIndex).Pos) > 3 Then
 116             Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
-
             End If
 
 118         If .Faccion.Status = e_Facciones.Ciudadano Or .Faccion.Status = e_Facciones.Armada Or .Faccion.Status = e_Facciones.consejo Or .Faccion.Status = e_Facciones.concilio Or .Faccion.Status = e_Facciones.Caos Or .Faccion.ciudadanosMatados = 0 Then
-120             Call WriteChatOverHead(userIndex, "No puedo aceptar tu donación en este momento...", NpcList(.flags.TargetNPC).Char.charindex, vbWhite)
+120             Call WriteChatOverHead(UserIndex, "No puedo aceptar tu donación en este momento...", NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
                 Exit Sub
             End If
 
@@ -8386,15 +8153,12 @@ Public Sub HandleDonateGold(ByVal UserIndex As Integer)
 124             If modGuilds.Alineacion(.GuildIndex) = 1 Then
 126                 Call WriteChatOverHead(UserIndex, "Te encuentras en un clan criminal... no puedo aceptar tu donación.", priest.Char.charindex, vbWhite)
                     Exit Sub
-
                 End If
-
             End If
 
 128         If .Stats.GLD < Oro Then
 130             Call WriteConsoleMsg(UserIndex, "No tienes suficiente dinero.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
-
             End If
 
             Dim Donacion As Long
@@ -8405,25 +8169,18 @@ Public Sub HandleDonateGold(ByVal UserIndex As Integer)
             End If
             
 134         If Oro < Donacion Then
-136             Call WriteChatOverHead(UserIndex, "Dios no puede perdonarte si eres una persona avara.", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
+136             Call WriteChatOverHead(UserIndex, "Dios no puede perdonarte si eres una persona avara.", NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
                 Exit Sub
-
             End If
 
 138         .Stats.GLD = .Stats.GLD - Oro
-
 140         Call WriteUpdateGold(UserIndex)
-
 142         Call WriteConsoleMsg(UserIndex, "Has donado " & PonerPuntos(Oro) & " monedas de oro.", e_FontTypeNames.FONTTYPE_INFO)
-
-144         Call WriteChatOverHead(UserIndex, "¡Gracias por tu generosa donación! Con estas palabras, te libero de todo tipo de pecados. ¡Que Dios te acompañe hijo mío!", NpcList(UserList(UserIndex).flags.TargetNPC).Char.charindex, vbYellow)
-
+144         Call WriteChatOverHead(UserIndex, "¡Gracias por tu generosa donación! Con estas palabras, te libero de todo tipo de pecados. ¡Que Dios te acompañe hijo mío!", NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Char.charindex, vbYellow)
 146         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, "80", 100, False))
 148         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave("100", UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.y))
 150         Call VolverCiudadano(UserIndex)
-    
         End With
-        
         Exit Sub
 
 handle:
@@ -8912,40 +8669,32 @@ Private Sub HandleOfertaInicial(ByVal UserIndex As Integer)
         
 104         If UserList(UserIndex).flags.Muerto = 1 Then
 106             Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
-                
                 Exit Sub
-
             End If
 
-108         If .flags.TargetNPC < 1 Then
+108         If Not IsValidNpcRef(.flags.TargetNPC) Then
 110             Call WriteConsoleMsg(UserIndex, "Primero tenés que hacer click sobre el subastador.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
-
             End If
 
-112         If NpcList(.flags.TargetNPC).NPCtype <> e_NPCType.Subastador Then
+112         If NpcList(.flags.TargetNPC.ArrayIndex).npcType <> e_NPCType.Subastador Then
 114             Call WriteConsoleMsg(UserIndex, "Primero tenés que hacer click sobre el subastador.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
-
             End If
         
-116         If Distancia(NpcList(.flags.TargetNPC).Pos, .Pos) > 2 Then
+116         If Distancia(NpcList(.flags.TargetNPC.ArrayIndex).Pos, .Pos) > 2 Then
 118             Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
-                'Call WriteConsoleMsg(UserIndex, "Estís demasiado lejos del subastador.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
-
             End If
         
 120         If .flags.Subastando = False Then
-122             Call WriteChatOverHead(UserIndex, "Oye amigo, tu no podés decirme cual es la oferta inicial.", NpcList(UserList(UserIndex).flags.TargetNPC).Char.charindex, vbWhite)
+122             Call WriteChatOverHead(UserIndex, "Oye amigo, tu no podés decirme cual es la oferta inicial.", NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
                 Exit Sub
-
             End If
         
 124         If Subasta.HaySubastaActiva = False And .flags.Subastando = False Then
 126             Call WriteConsoleMsg(UserIndex, "No hay ninguna subasta en curso.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
-
             End If
         
 128         If .flags.Subastando = True Then
@@ -9026,11 +8775,11 @@ Private Sub HandleOfertaDeSubasta(ByVal UserIndex As Integer)
 132             Call WriteUpdateGold(UserIndex)
             
 134             If Subasta.TiempoRestanteSubasta < 60 Then
-136                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Oferta mejorada por: " & .name & " (Ofrece " & PonerPuntos(Oferta) & " monedas de oro) - Tiempo Extendido. Escribe /SUBASTA para mas información.", e_FontTypeNames.FONTTYPE_SUBASTA))
+136                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Oferta mejorada por: " & .Name & " (Ofrece " & PonerPuntos(Oferta) & " monedas de oro) - Tiempo Extendido. Escribe /SUBASTA para mas información.", e_FontTypeNames.FONTTYPE_SUBASTA))
 138                 Call LogearEventoDeSubasta(.Name & ": Mejoro la oferta en el ultimo minuto ofreciendo " & PonerPuntos(Oferta) & " monedas.")
 140                 Subasta.TiempoRestanteSubasta = Subasta.TiempoRestanteSubasta + 30
                 Else
-142                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Oferta mejorada por: " & .name & " (Ofrece " & PonerPuntos(Oferta) & " monedas de oro). Escribe /SUBASTA para mas información.", e_FontTypeNames.FONTTYPE_SUBASTA))
+142                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Oferta mejorada por: " & .Name & " (Ofrece " & PonerPuntos(Oferta) & " monedas de oro). Escribe /SUBASTA para mas información.", e_FontTypeNames.FONTTYPE_SUBASTA))
 144                 Call LogearEventoDeSubasta(.Name & ": Mejoro la oferta ofreciendo " & PonerPuntos(Oferta) & " monedas.")
 146                 Subasta.HuboOferta = True
 148                 Subasta.PosibleCancelo = False
@@ -9115,7 +8864,7 @@ Private Sub HandleCancelDuel(ByVal UserIndex As Integer)
 106             Call CancelarSolicitudReto(UserIndex, .Name & " ha cancelado la solicitud.")
 
 108         ElseIf IsValidUserRef(.flags.AceptoReto) Then
-110             Call CancelarSolicitudReto(.flags.AceptoReto.ArrayIndex, .name & " ha cancelado su admisión.")
+110             Call CancelarSolicitudReto(.flags.AceptoReto.ArrayIndex, .Name & " ha cancelado su admisión.")
 
             End If
 
@@ -9165,26 +8914,22 @@ Private Sub HandleTransFerGold(ByVal UserIndex As Integer)
             End If
         
             'Validate target NPC
-114         If .flags.TargetNPC = 0 Then
+114         If Not IsValidNpcRef(.flags.TargetNPC) Then
 116             Call WriteConsoleMsg(UserIndex, "Primero tenés que seleccionar un personaje, haz click izquierdo sobre él.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
             End If
 
-118         If NpcList(.flags.TargetNPC).NPCtype <> e_NPCType.Banquero Then Exit Sub
+118         If NpcList(.flags.TargetNPC.ArrayIndex).npcType <> e_NPCType.Banquero Then Exit Sub
             
-120         If Distancia(NpcList(.flags.TargetNPC).Pos, .Pos) > 10 Then
+120         If Distancia(NpcList(.flags.TargetNPC.ArrayIndex).Pos, .Pos) > 10 Then
 122             Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
-                'Call WriteConsoleMsg(UserIndex, "Estís demasiado lejos.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
-
             End If
-
 124         tUser = NameIndex(UserName)
-            
             ' Enviar a vos mismo?
 126         If tUser.ArrayIndex = userIndex Then
-128             Call WriteChatOverHead(userIndex, "¡No puedo enviarte oro a vos mismo!", NpcList(.flags.TargetNPC).Char.charindex, vbWhite)
+128             Call WriteChatOverHead(UserIndex, "¡No puedo enviarte oro a vos mismo!", NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
                 Exit Sub
             End If
     
@@ -9193,28 +8938,27 @@ Private Sub HandleTransFerGold(ByVal UserIndex As Integer)
                     If GetTickCount() - .Counters.LastTransferGold >= 10000 Then
                         If PersonajeExiste(username) Then
 136                         If Not AddOroBancoDatabase(username, Cantidad) Then
-138                             Call WriteChatOverHead(userIndex, "Error al realizar la operación.", NpcList(.flags.TargetNPC).Char.charindex, vbWhite)
+138                             Call WriteChatOverHead(UserIndex, "Error al realizar la operación.", NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
                                 Exit Sub
                             Else
 150                             UserList(UserIndex).Stats.Banco = UserList(UserIndex).Stats.Banco - val(Cantidad) 'Quitamos el oro al usuario
                             End If
                             .Counters.LastTransferGold = GetTickCount()
                         Else
-                            Call WriteChatOverHead(UserIndex, "El usuario no existe.", NpcList(.flags.TargetNPC).Char.charindex, vbWhite)
+                            Call WriteChatOverHead(UserIndex, "El usuario no existe.", NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
                             Exit Sub
                         End If
                     Else
-                        Call WriteChatOverHead(UserIndex, "Espera un momento.", NpcList(.flags.TargetNPC).Char.charindex, vbWhite)
+                        Call WriteChatOverHead(UserIndex, "Espera un momento.", NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
                         Exit Sub
                     End If
                 Else
                  UserList(UserIndex).Stats.Banco = UserList(UserIndex).Stats.Banco - val(Cantidad) 'Quitamos el oro al usuario
                  UserList(tUser.ArrayIndex).Stats.Banco = UserList(tUser.ArrayIndex).Stats.Banco + val(Cantidad) 'Se lo damos al otro.
                 End If
-152             Call WriteChatOverHead(userIndex, "¡El envío se ha realizado con éxito! Gracias por utilizar los servicios de Finanzas Goliath", NpcList(.flags.TargetNPC).Char.charindex, vbWhite)
-        
+152             Call WriteChatOverHead(UserIndex, "¡El envío se ha realizado con éxito! Gracias por utilizar los servicios de Finanzas Goliath", NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
             Else
-156             Call WriteChatOverHead(UserIndex, "Los administradores no pueden transferir oro.", NpcList(.flags.TargetNPC).Char.CharIndex, vbWhite)
+156             Call WriteChatOverHead(UserIndex, "Los administradores no pueden transferir oro.", NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
 158             Call LogGM(.Name, "Quizo transferirle oro a: " & UserName)
             End If
         End With
@@ -9415,10 +9159,10 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
                     End If
     
                     'Cambiamos si alguno es un anillo
-214                 If .Invent.DañoMagicoEqpSlot = SlotViejo Then
-216                     .Invent.DañoMagicoEqpSlot = SlotNuevo
-218                 ElseIf .Invent.DañoMagicoEqpSlot = SlotNuevo Then
-220                     .Invent.DañoMagicoEqpSlot = SlotViejo
+214                 If .invent.DañoMagicoEqpSlot = SlotViejo Then
+216                     .invent.DañoMagicoEqpSlot = SlotNuevo
+218                 ElseIf .invent.DañoMagicoEqpSlot = SlotNuevo Then
+220                     .invent.DañoMagicoEqpSlot = SlotViejo
 
                     End If
 
@@ -9641,7 +9385,7 @@ Private Sub HandleLlamadadeClan(ByVal UserIndex As Integer)
 104             clan_nivel = modGuilds.NivelDeClan(.GuildIndex)
 
 106             If clan_nivel >= 2 Then
-108                 Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageConsoleMsg("Clan> [" & .name & "] solicita apoyo de su clan en " & get_map_name(.Pos.map) & " (" & .Pos.map & "-" & .Pos.X & "-" & .Pos.y & "). Puedes ver su ubicación en el mapa del mundo.", e_FontTypeNames.FONTTYPE_GUILD))
+108                 Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageConsoleMsg("Clan> [" & .Name & "] solicita apoyo de su clan en " & get_map_name(.Pos.map) & " (" & .Pos.map & "-" & .Pos.X & "-" & .Pos.y & "). Puedes ver su ubicación en el mapa del mundo.", e_FontTypeNames.FONTTYPE_GUILD))
 110                 Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessagePlayWave("43", NO_3D_SOUND, NO_3D_SOUND))
 112                 Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageUbicacionLlamada(.Pos.Map, .Pos.X, .Pos.Y))
 
@@ -9677,17 +9421,17 @@ Private Sub HandleCasamiento(ByVal UserIndex As Integer)
             If Not IsValidUserRef(tUser) Then
                 Call WriteConsoleMsg(userIndex, "Usuario offline.", e_FontTypeNames.FONTTYPE_INFO)
             End If
-106         If .flags.TargetNPC > 0 Then
-108             If NpcList(.flags.TargetNPC).NPCtype <> e_NPCType.Revividor Then
+106         If IsValidNpcRef(.flags.TargetNPC) Then
+108             If NpcList(.flags.TargetNPC.ArrayIndex).npcType <> e_NPCType.Revividor Then
 110                 Call WriteConsoleMsg(UserIndex, "Primero haz click sobre un sacerdote.", e_FontTypeNames.FONTTYPE_INFO)
                 Else
-112                 If Distancia(.Pos, NpcList(.flags.TargetNPC).Pos) > 10 Then
+112                 If Distancia(.Pos, NpcList(.flags.TargetNPC.ArrayIndex).Pos) > 10 Then
 114                     Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
                     Else
 116                     If tUser.ArrayIndex = userIndex Then
-118                         Call WriteConsoleMsg(userIndex, "No podés casarte contigo mismo.", e_FontTypeNames.FONTTYPE_INFO)
+118                         Call WriteConsoleMsg(UserIndex, "No podés casarte contigo mismo.", e_FontTypeNames.FONTTYPE_INFO)
 120                     ElseIf .flags.Casado = 1 Then
-122                         Call WriteConsoleMsg(userIndex, "¡Ya estás casado! Debes divorciarte de tu actual pareja para casarte nuevamente.", e_FontTypeNames.FONTTYPE_INFO)
+122                         Call WriteConsoleMsg(UserIndex, "¡Ya estás casado! Debes divorciarte de tu actual pareja para casarte nuevamente.", e_FontTypeNames.FONTTYPE_INFO)
 124                     ElseIf UserList(tUser.ArrayIndex).flags.Casado = 1 Then
 126                         Call WriteConsoleMsg(UserIndex, "Tu pareja debe divorciarse antes de tomar tu mano en matrimonio.", e_FontTypeNames.FONTTYPE_INFO)
                         Else
@@ -9698,10 +9442,10 @@ Private Sub HandleCasamiento(ByVal UserIndex As Integer)
 140                             .flags.Pareja = UserList(tUser.ArrayIndex).name
 142                             Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(e_FXSound.Casamiento_sound, NO_3D_SOUND, NO_3D_SOUND))
 144                             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("El sacerdote de " & get_map_name(.pos.map) & " celebra el casamiento entre " & UserList(userIndex).name & " y " & UserList(tUser.ArrayIndex).name & ".", e_FontTypeNames.FONTTYPE_WARNING))
-146                             Call WriteChatOverHead(userIndex, "Los declaro unidos en legal matrimonio ¡Felicidades!", NpcList(.flags.TargetNPC).Char.charindex, vbWhite)
-148                             Call WriteChatOverHead(tUser.ArrayIndex, "Los declaro unidos en legal matrimonio ¡Felicidades!", NpcList(UserList(userIndex).flags.TargetNPC).Char.charindex, vbWhite)
+146                             Call WriteChatOverHead(UserIndex, "Los declaro unidos en legal matrimonio ¡Felicidades!", NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
+148                             Call WriteChatOverHead(tUser.ArrayIndex, "Los declaro unidos en legal matrimonio ¡Felicidades!", NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
                             Else
-150                             Call WriteChatOverHead(userIndex, "La solicitud de casamiento a sido enviada a " & username & ".", NpcList(.flags.TargetNPC).Char.charindex, vbWhite)
+150                             Call WriteChatOverHead(UserIndex, "La solicitud de casamiento a sido enviada a " & username & ".", NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
 152                             Call WriteConsoleMsg(tUser.ArrayIndex, .name & " desea casarse contigo, para permitirlo haz click en el sacerdote y escribe /PROPONER " & .name & ".", e_FontTypeNames.FONTTYPE_TALK)
 154                             .flags.Candidato = tUser
                             End If
@@ -9978,7 +9722,7 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
 118                             Log = "Repuesta Afirmativa 1-1 "
                         
 120                             If Not IsValidUserRef(UserList(UserList(userIndex).Grupo.PropuestaDe.ArrayIndex).Grupo.Lider) Then
-122                                 Call WriteConsoleMsg(userIndex, "¡El grupo ya no existe!", e_FontTypeNames.FONTTYPE_INFOIAO)
+122                                 Call WriteConsoleMsg(UserIndex, "¡El grupo ya no existe!", e_FontTypeNames.FONTTYPE_INFOIAO)
                                 Else
 124                                 Log = "Repuesta Afirmativa 1-2 "
 126                                 If UserList(UserList(userIndex).Grupo.PropuestaDe.ArrayIndex).Grupo.CantidadMiembros = 1 Then
@@ -10062,14 +9806,12 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
 
                         End Select
                     
-210                     If UserList(UserIndex).flags.TargetNPC <> 0 Then
-                    
-212                         Call WriteChatOverHead(userIndex, "¡Gracias " & UserList(userIndex).name & "! Ahora perteneces a la ciudad de " & DeDonde & ".", NpcList(UserList(userIndex).flags.TargetNPC).Char.charindex, vbWhite)
+210                     If IsValidNpcRef(UserList(UserIndex).flags.TargetNPC) Then
+212                         Call WriteChatOverHead(UserIndex, "¡Gracias " & UserList(UserIndex).Name & "! Ahora perteneces a la ciudad de " & DeDonde & ".", NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
                         Else
 214                         Call WriteConsoleMsg(userIndex, "¡Gracias " & UserList(userIndex).name & "! Ahora perteneces a la ciudad de " & DeDonde & ".", e_FontTypeNames.FONTTYPE_INFOIAO)
 
                         End If
-                    
 216                 Case 4
 218                     Log = "Repuesta Afirmativa 4"
                 
@@ -10103,7 +9845,7 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
                                 Next j
                             Next i
                             Dim charindexstr As Integer
-                            charindexstr = str(NpcList(UserList(UserIndex).flags.TargetNPC).Char.CharIndex)
+                            charIndexStr = str(NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Char.charindex)
                             If charindexstr > 0 Then
                                 Call WriteChatOverHead(UserIndex, "Felicitaciones! Ahora tienes un total de " & .Stats.PuntosPesca & " puntos de pesca.", charindexstr, &HFFFF00)
                             End If
@@ -10164,13 +9906,10 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
 
                         End Select
                     
-320                     If UserList(UserIndex).flags.TargetNPC <> 0 Then
-322                         Call WriteChatOverHead(UserIndex, "¡No hay problema " & UserList(UserIndex).name & "! Sos bienvenido en " & DeDonde & " cuando gustes.", NpcList(UserList(UserIndex).flags.TargetNPC).Char.charindex, vbWhite)
-
+320                     If IsValidNpcRef(UserList(UserIndex).flags.TargetNPC) Then
+322                         Call WriteChatOverHead(UserIndex, "¡No hay problema " & UserList(UserIndex).Name & "! Sos bienvenido en " & DeDonde & " cuando gustes.", NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
                         End If
-
 324                     UserList(UserIndex).PosibleHogar = UserList(UserIndex).Hogar
-                    
 326                 Case 4
 328                     Log = "Repuesta negativa 4"
                     
@@ -10514,12 +10253,10 @@ Private Sub HandleCompletarViaje(ByVal UserIndex As Integer)
 144                     Call WriteConsoleMsg(UserIndex, "Debido a la peligrosidad del viaje, no puedo llevarte, ya que al menos necesitas saber manejar una barca.", e_FontTypeNames.FONTTYPE_WARNING)
                     Else
 
-146                     If UserList(UserIndex).flags.TargetNPC <> 0 Then
-148                         If NpcList(UserList(UserIndex).flags.TargetNPC).SoundClose <> 0 Then
-150                             Call WritePlayWave(UserIndex, NpcList(UserList(UserIndex).flags.TargetNPC).SoundClose, NO_3D_SOUND, NO_3D_SOUND)
-
+146                     If IsValidNpcRef(UserList(UserIndex).flags.TargetNPC) Then
+148                         If NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).SoundClose <> 0 Then
+150                             Call WritePlayWave(UserIndex, NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).SoundClose, NO_3D_SOUND, NO_3D_SOUND)
                             End If
-
                         End If
 
 152                     Call WarpToLegalPos(UserIndex, DeDonde.MapaViaje, DeDonde.ViajeX, DeDonde.ViajeY, True)
@@ -10545,9 +10282,9 @@ Private Sub HandleCompletarViaje(ByVal UserIndex As Integer)
 172                 X = DeDonde.ViajeX
 174                 Y = DeDonde.ViajeY
 
-176                 If UserList(UserIndex).flags.TargetNPC <> 0 Then
-178                     If NpcList(UserList(UserIndex).flags.TargetNPC).SoundClose <> 0 Then
-180                         Call WritePlayWave(UserIndex, NpcList(UserList(UserIndex).flags.TargetNPC).SoundClose, NO_3D_SOUND, NO_3D_SOUND)
+176                 If IsValidNpcRef(UserList(UserIndex).flags.TargetNPC) Then
+178                     If NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).SoundClose <> 0 Then
+180                         Call WritePlayWave(UserIndex, NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).SoundClose, NO_3D_SOUND, NO_3D_SOUND)
 
                         End If
 
@@ -10580,17 +10317,10 @@ Public Sub HandleQuest(ByVal UserIndex As Integer)
         
         On Error GoTo HandleQuest_Err
 
-        '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-        'Maneja el paquete Quest.
-        'Last modified: 28/01/2010 by Amraphen
-        '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+100     If Not IsValidNpcRef(UserList(UserIndex).flags.TargetNPC) Then Exit Sub
         Dim NpcIndex As Integer
         Dim tmpByte  As Byte
-
-100     NpcIndex = UserList(UserIndex).flags.TargetNPC
-    
-102     If NpcIndex = 0 Then Exit Sub
-    
+102     NpcIndex = UserList(UserIndex).flags.TargetNPC.ArrayIndex
         'Esta el personaje en la distancia correcta?
 104     If Distancia(UserList(UserIndex).Pos, NpcList(NpcIndex).Pos) > 5 Then
 106         Call WriteConsoleMsg(UserIndex, "Estas demasiado lejos.", e_FontTypeNames.FONTTYPE_INFO)
@@ -10628,12 +10358,9 @@ Public Sub HandleQuestAccept(ByVal UserIndex As Integer)
         Dim Indice    As Byte
         
 100     Indice = Reader.ReadInt8
-        
-102     NpcIndex = UserList(UserIndex).flags.TargetNPC
+102     If Not IsValidNpcRef(UserList(UserIndex).flags.TargetNPC) And UserList(UserIndex).flags.QuestOpenByObj = False Then Exit Sub
 
-    
-104     If NpcIndex = 0 And UserList(UserIndex).flags.QuestOpenByObj = False Then Exit Sub
-        
+104     NpcIndex = UserList(UserIndex).flags.TargetNPC.ArrayIndex
         If NpcIndex > 0 Then
             If QuestList(NpcList(NpcIndex).QuestNumber(Indice)).Trabajador And UserList(UserIndex).clase <> e_Class.Trabajador Then
                 Call WriteConsoleMsg(UserIndex, "La quest es solo para trabajadores.", e_FontTypeNames.FONTTYPE_INFO)
@@ -10995,46 +10722,25 @@ End Sub
 Private Sub HandleCuentaExtractItem(ByVal UserIndex As Integer)
         
         On Error GoTo HandleCuentaExtractItem_Err
-
-        '***************************************************
-        'Author: Ladder
-        'Last Modification: 22/11/21
-        'Retirar item de cuenta
-        '***************************************************
-
 100     With UserList(UserIndex)
-
             Dim Slot        As Byte
-
             Dim slotdestino As Byte
-
             Dim amount      As Integer
         
 102         Slot = Reader.ReadInt8()
 104         amount = Reader.ReadInt16()
-        
 106         slotdestino = Reader.ReadInt8()
         
 108         If .flags.Muerto = 1 Then
 110             Call WriteConsoleMsg(UserIndex, "¡¡Estás muerto!!", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
-
             End If
         
-112         If .flags.TargetNPC < 1 Then Exit Sub
-        
-114         If NpcList(.flags.TargetNPC).NPCtype <> e_NPCType.Banquero Then
+112         If Not IsValidNpcRef(.flags.TargetNPC) Then Exit Sub
+114         If NpcList(.flags.TargetNPC.ArrayIndex).npcType <> e_NPCType.Banquero Then
                 Exit Sub
-
             End If
-        
-            'acá va el guardado en memoria
-        
-            'User retira el item del slot
-            'Call UserRetiraItem(UserIndex, slot, Amount, slotdestino)
-
         End With
-        
         Exit Sub
 
 HandleCuentaExtractItem_Err:
@@ -11044,15 +10750,7 @@ HandleCuentaExtractItem_Err:
 End Sub
 
 Private Sub HandleCuentaDeposit(ByVal UserIndex As Integer)
-        
         On Error GoTo HandleCuentaDeposit_Err
-
-        '***************************************************
-        'Author: Ladder
-        'Last Modification: 22/11/21
-        'Depositar item en cuenta
-        '***************************************************
-    
 100     With UserList(UserIndex)
 
             Dim Slot        As Byte
@@ -11069,38 +10767,24 @@ Private Sub HandleCuentaDeposit(ByVal UserIndex As Integer)
 108         If .flags.Muerto = 1 Then
 110             Call WriteConsoleMsg(userIndex, "¡¡Estás muerto!!", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
-
             End If
         
             'íEl target es un NPC valido?
-112         If .flags.TargetNPC < 1 Then Exit Sub
+112         If Not IsValidNpcRef(.flags.TargetNPC) Then Exit Sub
         
             'íEl NPC puede comerciar?
-114         If NpcList(.flags.TargetNPC).NPCtype <> e_NPCType.Banquero Then
+114         If NpcList(.flags.TargetNPC.ArrayIndex).npcType <> e_NPCType.Banquero Then
                 Exit Sub
-
             End If
             
-116         If Distancia(NpcList(.flags.TargetNPC).Pos, .Pos) > 10 Then
+116         If Distancia(NpcList(.flags.TargetNPC.ArrayIndex).Pos, .Pos) > 10 Then
 118             Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
-                'Call WriteConsoleMsg(UserIndex, "Estís demasiado lejos.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
-
             End If
-        
-            'acá va el guardado en memoria
-            
-            'User deposita el item del slot rdata
-            'Call UserDepositaItem(UserIndex, slot, Amount, slotdestino)
-
         End With
-        
         Exit Sub
-
 HandleCuentaDeposit_Err:
 120     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCuentaDeposit", Erl)
-122
-        
 End Sub
 
 Private Sub HandleCommerceSendChatMessage(ByVal UserIndex As Integer)
@@ -11505,34 +11189,27 @@ ErrHandler:
 End Sub
 
 Private Sub HandlePetLeaveAll(ByVal UserIndex As Integer)
-
         On Error GoTo ErrHandler
-    
 100     With UserList(UserIndex)
     
             Dim AlmenosUna As Boolean, i As Integer
     
 102         For i = 1 To MAXMASCOTAS
-104             If .MascotasIndex(i) > 0 Then
-106                 If NpcList(.MascotasIndex(i)).flags.NPCActive Then
-108                     Call QuitarNPC(.MascotasIndex(i))
+104             If IsValidNpcRef(.MascotasIndex(i)) Then
+106                 If NpcList(.MascotasIndex(i).ArrayIndex).flags.NPCActive Then
+108                     Call QuitarNPC(.MascotasIndex(i).ArrayIndex, ePetLeave)
 110                     AlmenosUna = True
                     End If
                 End If
 112         Next i
-        
 114         If AlmenosUna Then
                 .flags.ModificoMascotas = True
 116             Call WriteConsoleMsg(UserIndex, "Liberaste a tus mascotas.", e_FontTypeNames.FONTTYPE_INFO)
             End If
-
         End With
-    
         Exit Sub
-    
 ErrHandler:
 118     Call TraceError(Err.Number, Err.Description, "Protocol.HandlePetLeaveAll", Erl)
-120
 End Sub
 
 

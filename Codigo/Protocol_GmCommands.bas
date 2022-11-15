@@ -255,35 +255,35 @@ Public Sub HandleGamble(ByVal UserIndex As Integer)
 104         If .flags.Muerto = 1 Then
 106             Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
                 
-108         ElseIf .flags.TargetNPC = 0 Then
+108         ElseIf Not IsValidNpcRef(.flags.TargetNPC) Then
                 'Validate target NPC
 110             Call WriteConsoleMsg(UserIndex, "Primero tenés que seleccionar un personaje, haz click izquierdo sobre él.", e_FontTypeNames.FONTTYPE_INFO)
 
-112         ElseIf Distancia(NpcList(.flags.TargetNPC).Pos, .Pos) > 10 Then
+112         ElseIf Distancia(NpcList(.flags.TargetNPC.ArrayIndex).Pos, .Pos) > 10 Then
 114             Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
                 
-116         ElseIf NpcList(.flags.TargetNPC).npcType <> e_NPCType.Timbero Then
-118             Call WriteChatOverHead(UserIndex, "No tengo ningún interés en apostar.", NpcList(.flags.TargetNPC).Char.charindex, vbWhite)
+116         ElseIf NpcList(.flags.TargetNPC.ArrayIndex).npcType <> e_NPCType.Timbero Then
+118             Call WriteChatOverHead(UserIndex, "No tengo ningún interés en apostar.", NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
 
 120         ElseIf amount < 1 Then
-122             Call WriteChatOverHead(UserIndex, "El mínimo de apuesta es 1 moneda.", NpcList(.flags.TargetNPC).Char.charindex, vbWhite)
+122             Call WriteChatOverHead(UserIndex, "El mínimo de apuesta es 1 moneda.", NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
 
 124         ElseIf amount > 10000 Then
-126             Call WriteChatOverHead(UserIndex, "El máximo de apuesta es 10.000 monedas.", NpcList(.flags.TargetNPC).Char.charindex, vbWhite)
+126             Call WriteChatOverHead(UserIndex, "El máximo de apuesta es 10.000 monedas.", NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
 
 128         ElseIf .Stats.GLD < amount Then
-130             Call WriteChatOverHead(UserIndex, "No tienes esa cantidad.", NpcList(.flags.TargetNPC).Char.charindex, vbWhite)
+130             Call WriteChatOverHead(UserIndex, "No tienes esa cantidad.", NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
 
             Else
 132             If RandomNumber(1, 100) <= 45 Then
 134                 .Stats.GLD = .Stats.GLD + amount
-136                 Call WriteChatOverHead(UserIndex, "¡Felicidades! Has ganado " & PonerPuntos(amount) & " monedas de oro!", NpcList(.flags.TargetNPC).Char.charindex, vbWhite)
+136                 Call WriteChatOverHead(UserIndex, "¡Felicidades! Has ganado " & PonerPuntos(amount) & " monedas de oro!", NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
                 
 138                 Apuestas.Perdidas = Apuestas.Perdidas + amount
 140                 Call WriteVar(DatPath & "apuestas.dat", "Main", "Perdidas", CStr(Apuestas.Perdidas))
                 Else
 142                 .Stats.GLD = .Stats.GLD - amount
-144                 Call WriteChatOverHead(UserIndex, "Lo siento, has perdido " & PonerPuntos(amount) & " monedas de oro.", NpcList(.flags.TargetNPC).Char.charindex, vbWhite)
+144                 Call WriteChatOverHead(UserIndex, "Lo siento, has perdido " & PonerPuntos(amount) & " monedas de oro.", NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
                 
 146                 Apuestas.Ganancias = Apuestas.Ganancias + amount
 148                 Call WriteVar(DatPath & "apuestas.dat", "Main", "Ganancias", CStr(Apuestas.Ganancias))
@@ -1129,23 +1129,18 @@ Public Sub HandleKillNPC(ByVal UserIndex As Integer)
 104             Call WriteConsoleMsg(UserIndex, "Solo los Administradores y Dioses pueden usar este comando.", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
             End If
-        
-            Dim tNPC As Integer
-112         tNPC = .flags.TargetNPC
-        
-114         If tNPC > 0 Then
-
-116             Call WriteConsoleMsg(UserIndex, "RMatas (con posible respawn) a: " & NpcList(tNPC).name, e_FontTypeNames.FONTTYPE_INFO)
             
+        
+112         If IsValidNpcRef(.flags.TargetNPC) Then
+                Dim tNPC As Integer
+114             tNPC = .flags.TargetNPC.ArrayIndex
+116             Call WriteConsoleMsg(UserIndex, "RMatas (con posible respawn) a: " & NpcList(tNPC).name, e_FontTypeNames.FONTTYPE_INFO)
                 Dim auxNPC As t_Npc
 118             auxNPC = NpcList(tNPC)
-            
-120             Call QuitarNPC(tNPC)
+120             Call QuitarNPC(tNPC, eGMCommand)
 122             Call ReSpawnNpc(auxNPC)
-            
             Else
 124             Call WriteConsoleMsg(UserIndex, "Debes hacer click sobre el NPC antes", e_FontTypeNames.FONTTYPE_INFO)
-
             End If
 
         End With
@@ -1972,16 +1967,16 @@ Public Sub HandleForgive(ByVal UserIndex As Integer)
         'Author: Nicolas Matias Gonzalez (NIGO)
 100     With UserList(UserIndex)
             'Se asegura que el target es un npc
-102         If .flags.TargetNPC = 0 Then
-104             Call WriteConsoleMsg(userIndex, "Primero tenés que seleccionar al sacerdote.", e_FontTypeNames.FONTTYPE_INFO)
+102         If Not IsValidNpcRef(.flags.TargetNPC) Then
+104             Call WriteConsoleMsg(UserIndex, "Primero tenés que seleccionar al sacerdote.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
 
             'Validate NPC and make sure player is not dead
-106         If (NpcList(.flags.TargetNPC).npcType <> e_NPCType.Revividor And (NpcList(.flags.TargetNPC).npcType <> e_NPCType.ResucitadorNewbie Or Not EsNewbie(UserIndex))) Or .flags.Muerto = 1 Then Exit Sub
+106         If (NpcList(.flags.TargetNPC.ArrayIndex).npcType <> e_NPCType.Revividor And (NpcList(.flags.TargetNPC.ArrayIndex).npcType <> e_NPCType.ResucitadorNewbie Or Not EsNewbie(UserIndex))) Or .flags.Muerto = 1 Then Exit Sub
         
             Dim priest As t_Npc
-108         priest = NpcList(.flags.TargetNPC)
+108         priest = NpcList(.flags.TargetNPC.ArrayIndex)
 
             'Make sure it's close enough
 110         If Distancia(.Pos, priest.Pos) > 3 Then
@@ -2161,11 +2156,11 @@ Public Sub HandleNPCFollow(ByVal UserIndex As Integer)
                 Exit Sub
             End If
         
-106         If .flags.TargetNPC > 0 Then
-108             Call DoFollow(.flags.TargetNPC, .name)
-110             NpcList(.flags.TargetNPC).flags.Inmovilizado = 0
-112             NpcList(.flags.TargetNPC).flags.Paralizado = 0
-114             NpcList(.flags.TargetNPC).Contadores.Paralisis = 0
+106         If IsValidNpcRef(.flags.TargetNPC) Then
+108             Call DoFollow(.flags.TargetNPC.ArrayIndex, .Name)
+110             NpcList(.flags.TargetNPC.ArrayIndex).flags.Inmovilizado = 0
+112             NpcList(.flags.TargetNPC.ArrayIndex).flags.Paralizado = 0
+114             NpcList(.flags.TargetNPC.ArrayIndex).Contadores.Paralisis = 0
             End If
         End With
         Exit Sub
@@ -2192,9 +2187,9 @@ Public Sub HandleSummonChar(ByVal UserIndex As Integer)
 114         ElseIf IsValidUserRef(.flags.targetUser) Then
 116             tUser = .flags.TargetUser
                 ' Mover NPCs
-118         ElseIf .flags.TargetNPC > 0 Then
-120             If NpcList(.flags.TargetNPC).Pos.map = .Pos.map Then
-122                 Call WarpNpcChar(.flags.TargetNPC, .Pos.map, .Pos.X, .Pos.y + 1, True)
+118         ElseIf IsValidNpcRef(.flags.TargetNPC) Then
+120             If NpcList(.flags.TargetNPC.ArrayIndex).Pos.map = .Pos.map Then
+122                 Call WarpNpcChar(.flags.TargetNPC.ArrayIndex, .Pos.map, .Pos.X, .Pos.y + 1, True)
 124                 Call WriteConsoleMsg(UserIndex, "Has desplazado a la criatura.", e_FontTypeNames.FONTTYPE_INFO)
                 Else
 126                 Call WriteConsoleMsg(UserIndex, "Sólo puedes mover NPCs dentro del mismo mapa.", e_FontTypeNames.FONTTYPE_INFO)
@@ -2305,9 +2300,9 @@ Public Sub HandleResetNPCInventory(ByVal UserIndex As Integer)
 104             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
-106         If .flags.TargetNPC = 0 Then Exit Sub
-108         Call ResetNpcInv(.flags.TargetNPC)
-110         Call LogGM(.name, "/RESETINV " & NpcList(.flags.TargetNPC).name)
+106         If Not IsValidNpcRef(.flags.TargetNPC) Then Exit Sub
+108         Call ResetNpcInv(.flags.TargetNPC.ArrayIndex)
+110         Call LogGM(.Name, "/RESETINV " & NpcList(.flags.TargetNPC.ArrayIndex).Name)
         End With
         Exit Sub
 HandleResetNPCInventory_Err:
@@ -2668,8 +2663,8 @@ Public Sub HandleTalkAsNPC(ByVal UserIndex As Integer)
             'Solo dioses, admins y RMS
 104         If (.flags.Privilegios And (e_PlayerType.Dios Or e_PlayerType.Admin Or e_PlayerType.RoleMaster)) Then
                 'Asegurarse haya un NPC seleccionado
-106             If .flags.TargetNPC > 0 Then
-108                 Call SendData(SendTarget.ToNPCArea, .flags.TargetNPC, PrepareMessageChatOverHead(Message, NpcList(.flags.TargetNPC).Char.charindex, vbWhite))
+106             If IsValidNpcRef(.flags.TargetNPC) Then
+108                 Call SendData(SendTarget.ToNPCArea, .flags.TargetNPC.ArrayIndex, PrepareMessageChatOverHead(Message, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite))
                 Else
 110                 Call WriteConsoleMsg(UserIndex, "Debes seleccionar el NPC por el que quieres hablar antes de usar este comando", e_FontTypeNames.FONTTYPE_INFO)
                 End If
@@ -3126,9 +3121,9 @@ Public Sub HandleKillNPCNoRespawn(ByVal UserIndex As Integer)
 104             Call WriteConsoleMsg(userIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
-106         If .flags.TargetNPC = 0 Then Exit Sub
-108         Call QuitarNPC(.flags.TargetNPC)
-110         Call LogGM(.name, "/MATA " & NpcList(.flags.TargetNPC).name)
+106         If Not IsValidNpcRef(.flags.TargetNPC) Then Exit Sub
+108         Call QuitarNPC(.flags.TargetNPC.ArrayIndex, eGMCommand)
+110         Call LogGM(.Name, "/MATA " & NpcList(.flags.TargetNPC.ArrayIndex).Name)
         End With
         Exit Sub
 HandleKillNPCNoRespawn_Err:
@@ -3152,7 +3147,7 @@ Public Sub HandleKillAllNearbyNPCs(ByVal UserIndex As Integer)
 110             For X = .Pos.X - MinXBorder + 1 To .Pos.X + MinXBorder - 1
 112                 If X > 0 And y > 0 And X < 101 And y < 101 Then
 114                     If MapData(.Pos.map, X, y).npcIndex > 0 Then
-116                         Call QuitarNPC(MapData(.Pos.map, X, y).npcIndex)
+116                         Call QuitarNPC(MapData(.Pos.map, X, y).NpcIndex, eGMCommand)
                         End If
                     End If
 118             Next X

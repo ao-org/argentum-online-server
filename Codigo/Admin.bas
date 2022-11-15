@@ -188,34 +188,23 @@ VersionOK_Err:
 End Function
 
 Sub ReSpawnOrigPosNpcs()
-
         On Error GoTo Handler
-
         Dim i     As Integer
-
         Dim MiNPC As t_Npc
    
 100     For i = 1 To LastNPC
-
             'OJO
 102         If NpcList(i).flags.NPCActive Then
-        
 104             If InMapBounds(NpcList(i).Orig.Map, NpcList(i).Orig.X, NpcList(i).Orig.Y) And NpcList(i).Numero = Guardias Then
 106                 MiNPC = NpcList(i)
-108                 Call QuitarNPC(i)
+108                 Call QuitarNPC(i, eResetPos)
 110                 Call ReSpawnNpc(MiNPC)
-
                 End If
             End If
-   
 112     Next i
-
         Exit Sub
-        
 Handler:
 114 Call TraceError(Err.Number, Err.Description, "Admin.ReSpawnOrigPosNpcs", Erl)
-
-
 End Sub
 
 Sub WorldSave()

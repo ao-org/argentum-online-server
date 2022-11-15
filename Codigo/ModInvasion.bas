@@ -219,7 +219,7 @@ Sub FinalizarInvasion(ByVal Index As Integer)
             Dim i As Integer
 126         For i = 1 To UBound(.NPCsVivos)
 128             If .NPCsVivos(i) Then
-130                 Call QuitarNPC(.NPCsVivos(i))
+130                 Call QuitarNPC(.NPCsVivos(i), eClearInvasion)
 132                 .NPCsVivos(i) = 0
                 
 134                 .CantNPCs = .CantNPCs - 1

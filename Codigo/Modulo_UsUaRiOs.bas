@@ -169,7 +169,7 @@ Public Sub ConnectUser_Prepare(ByVal userIndex As Integer, ByVal name As String)
 On Error GoTo Prepare_ConnectUser_Err
     With UserList(userIndex)
         .flags.Escondido = 0
-        .flags.TargetNPC = 0
+        Call ClearNpcRef(.flags.TargetNPC)
         .flags.TargetNpcTipo = e_NPCType.Comun
         .flags.TargetObj = 0
         Call SetUserRef(.flags.targetUser, 0)
@@ -629,24 +629,15 @@ On Error GoTo Complete_ConnectUser_Err
         
 1005         If .NroMascotas > 0 And MapInfo(.Pos.Map).Seguro = 0 And .flags.MascotasGuardadas = 0 Then
                  Dim i As Integer
-
 1010             For i = 1 To MAXMASCOTAS
-
 1015                If .MascotasType(i) > 0 Then
-1020                    .MascotasIndex(i) = SpawnNpc(.MascotasType(i), .Pos, False, False, False, UserIndex)
-                    
-1025                    If .MascotasIndex(i) > 0 Then
-1030                        Call SetUserRef(NpcList(.MascotasIndex(i)).MaestroUser, userIndex)
-1035                        Call FollowAmo(.MascotasIndex(i))
-                        
-                         Else
-1040                        .MascotasIndex(i) = 0
-
+1020                    Call SetNpcRef(.MascotasIndex(i), SpawnNpc(.MascotasType(i), .Pos, False, False, False, UserIndex))
+1025                    If .MascotasIndex(i).ArrayIndex > 0 Then
+1030                        Call SetUserRef(NpcList(.MascotasIndex(i).ArrayIndex).MaestroUser, UserIndex)
+1035                        Call FollowAmo(.MascotasIndex(i).ArrayIndex)
                          End If
                      End If
-
 1045            Next i
-
              End If
         
 1050        If .flags.Navegando = 1 Then
@@ -1801,13 +1792,9 @@ Sub NPCAtacado(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
 108         NpcList(NpcIndex).Hostile = 1
 110         NpcList(NpcIndex).flags.AttackedBy = UserList(UserIndex).Name
         End If
-
-        'Npc que estabas atacando.
-        Dim LastNpcHit As Integer
-
-112     LastNpcHit = UserList(UserIndex).flags.NPCAtacado
+        
         'Guarda el NPC que estas atacando ahora.
-114     UserList(UserIndex).flags.NPCAtacado = NpcIndex
+114     Call SetNpcRef(UserList(UserIndex).flags.NPCAtacado, NpcIndex)
 
 116     If NpcList(NpcIndex).flags.Faccion = Armada And Status(UserIndex) = e_Facciones.Ciudadano Then
 118         Call VolverCriminal(UserIndex)
@@ -1816,9 +1803,6 @@ Sub NPCAtacado(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
 120     If IsValidUserRef(NpcList(npcIndex).MaestroUser) And NpcList(npcIndex).MaestroUser.ArrayIndex <> userIndex Then
 122         Call AllMascotasAtacanUser(userIndex, NpcList(npcIndex).MaestroUser.ArrayIndex)
         End If
-
-124     'Call AllMascotasAtacanNPC(NpcIndex, UserIndex)
-        
         Exit Sub
 
 NPCAtacado_Err:
@@ -2060,15 +2044,16 @@ Sub UserDie(ByVal UserIndex As Integer)
 216         Call LimpiarEstadosAlterados(UserIndex)
         
 218         For i = 1 To MAXMASCOTAS
-220             If .MascotasIndex(i) > 0 Then
-222                 Call MuereNpc(.MascotasIndex(i), 0)
-                        
+220             If .MascotasIndex(i).ArrayIndex > 0 Then
+                    If IsValidNpcRef(.MascotasIndex(i)) Then
+222                     Call MuereNpc(.MascotasIndex(i).ArrayIndex, 0)
+                    Else
+                        Call ClearNpcRef(.MascotasIndex(i))
+                    End If
                 End If
 224         Next i
             
-            
             If .clase = e_Class.Druid Then
-            
                 Dim Params() As Variant
                 Dim ParamC As Long
                 ReDim Params(MAXMASCOTAS * 3 - 1)
@@ -2697,33 +2682,33 @@ Private Sub WarpMascotas(ByVal UserIndex As Integer)
         PermiteMascotas = MapInfo(UserList(UserIndex).Pos.Map).NoMascotas = False
 
 102     For i = 1 To MAXMASCOTAS
-104         Index = UserList(UserIndex).MascotasIndex(i)
+104         Index = UserList(UserIndex).MascotasIndex(i).ArrayIndex
         
-106         If Index > 0 Then
+106         If IsValidNpcRef(UserList(UserIndex).MascotasIndex(i)) Then
 108             iMinHP = NpcList(Index).Stats.MinHp
 110             PetTiempoDeVida = NpcList(Index).Contadores.TiempoExistencia
             
 112             Call SetUserRef(NpcList(Index).MaestroUser, 0)
             
-114             Call QuitarNPC(Index)
+114             Call QuitarNPC(Index, eRemoveWarpPets)
 
 116             If PetTiempoDeVida > 0 Then
 118                 Call QuitarMascota(UserIndex, Index)
 120                 ElementalQuitado = True
 
 122             ElseIf ZonaSegura Or Not PermiteMascotas Then
-124                 UserList(UserIndex).MascotasIndex(i) = 0
+124                 Call ClearNpcRef(UserList(UserIndex).MascotasIndex(i))
 126                 MascotaQuitada = True
                 End If
-            
             Else
+                Call ClearNpcRef(UserList(UserIndex).MascotasIndex(i))
 128             iMinHP = 0
 130             PetTiempoDeVida = 0
             End If
         
 132         petType = UserList(UserIndex).MascotasType(i)
         
-134         If petType > 0 And Not ZonaSegura And PermiteMascotas And (UserList(UserIndex).flags.MascotasGuardadas = 0 Or UserList(UserIndex).MascotasIndex(i) > 0) And PetTiempoDeVida = 0 Then
+134         If petType > 0 And Not ZonaSegura And PermiteMascotas And (UserList(UserIndex).flags.MascotasGuardadas = 0 Or UserList(UserIndex).MascotasIndex(i).ArrayIndex > 0) And PetTiempoDeVida = 0 Then
         
                 Dim SpawnPos As t_WorldPos
         
@@ -2736,19 +2721,15 @@ Private Sub WarpMascotas(ByVal UserIndex As Integer)
                 'Controlamos que se sumoneo OK - should never happen. Continue to allow removal of other pets if not alone
                 ' Exception: Pets don't spawn in water if they can't swim
 144             If Index > 0 Then
-146                 UserList(UserIndex).MascotasIndex(i) = Index
-
+146                 Call SetNpcRef(UserList(UserIndex).MascotasIndex(i), Index)
                     ' Nos aseguramos de que conserve el hp, si estaba danado
 148                 If iMinHP Then NpcList(Index).Stats.MinHp = iMinHP
                     Call SetUserRef(NpcList(Index).MaestroUser, userIndex)
 150                 Call FollowAmo(Index)
-            
                 Else
 152                 SpawnInvalido = True
                 End If
-
             End If
-
 154     Next i
 
 156     If MascotaQuitada Then
@@ -2758,21 +2739,15 @@ Private Sub WarpMascotas(ByVal UserIndex As Integer)
             ElseIf Not PermiteMascotas Then
                 Call WriteConsoleMsg(userIndex, "Una fuerza superior impide que tus mascotas entren en este mapa. Estas te esperarán afuera.", e_FontTypeNames.FONTTYPE_INFO)
             End If
-
 160     ElseIf SpawnInvalido Then
 162         Call WriteConsoleMsg(UserIndex, "Tus mascotas no pueden transitar este mapa.", e_FontTypeNames.FONTTYPE_INFO)
-
 164     ElseIf ElementalQuitado Then
 166         Call WriteConsoleMsg(UserIndex, "Pierdes el control de tus mascotas invocadas.", e_FontTypeNames.FONTTYPE_INFO)
         End If
-
-        
         Exit Sub
 
 WarpMascotas_Err:
 168     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.WarpMascotas", Erl)
-
-        
 End Sub
 
 Function TieneArmaduraCazador(ByVal UserIndex As Integer) As Boolean

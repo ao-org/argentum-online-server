@@ -1197,7 +1197,6 @@ Sub ResetUserFlags(ByVal UserIndex As Integer)
         'Last modified: 03/29/2006
         'Resetea todos los valores generales y las stats
         '03/15/2006 Maraxus - Uso de With para mayor performance y claridad.
-        '03/29/2006 Maraxus - Reseteo el CentinelaOK también.
         '*************************************************
         
         On Error GoTo ResetUserFlags_Err
@@ -1211,7 +1210,7 @@ Sub ResetUserFlags(ByVal UserIndex As Integer)
 110         .DuracionEfecto = 0
 116         .NpcInv = 0
 118         .StatsChanged = 0
-120         .TargetNPC = 0
+120         Call ClearNpcRef(.TargetNPC)
 122         .TargetNpcTipo = e_NPCType.Comun
 124         .TargetObj = 0
 126         .TargetObjMap = 0
@@ -1239,7 +1238,6 @@ Sub ResetUserFlags(ByVal UserIndex As Integer)
 178         .ValCoDe = 0
 180         .Hechizo = 0
 182         .Silenciado = 0
-184         .CentinelaOK = False
 186         .AdminPerseguible = False
 188         .VecesQueMoriste = 0
 190         .MinutosRestantes = 0
@@ -1508,7 +1506,7 @@ Sub ResetUserSlot(ByVal UserIndex As Integer)
 156     Call ResetUserBanco(UserIndex)
 158     Call ResetUserSkills(UserIndex)
 160     Call ResetUserKeys(UserIndex)
-
+161     Call IncreaseVersionId(UserIndex)
 162     With UserList(UserIndex).ComUsu
 164         .Acepto = False
 166         .cant = 0
@@ -1685,10 +1683,11 @@ Sub CloseUser(ByVal UserIndex As Integer)
         
             'Borrar mascotas
 120         For i = 1 To MAXMASCOTAS
-122             If .MascotasIndex(i) > 0 Then
-124                 If NpcList(.MascotasIndex(i)).flags.NPCActive Then _
-                        Call QuitarNPC(.MascotasIndex(i))
+122             If IsValidNpcRef(.MascotasIndex(i)) Then
+124                 If NpcList(.MascotasIndex(i).ArrayIndex).flags.NPCActive Then _
+                        Call QuitarNPC(.MascotasIndex(i).ArrayIndex, eClearPlayerPets)
                 End If
+                Call ClearNpcRef(.MascotasIndex(i))
 126         Next i
         
 128         errordesc = "ERROR Update Map Users"

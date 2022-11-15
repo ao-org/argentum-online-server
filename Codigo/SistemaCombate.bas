@@ -874,12 +874,10 @@ Public Function NpcAtacaUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integ
             Call SetUserRef(NpcList(npcIndex).TargetUser, UserIndex)
         End If
     
-118     If UserList(UserIndex).flags.AtacadoPorNpc = 0 And UserList(UserIndex).flags.AtacadoPorUser = 0 Then UserList(UserIndex).flags.AtacadoPorNpc = NpcIndex
-    
+118     If Not IsValidNpcRef(UserList(UserIndex).flags.AtacadoPorNpc) And UserList(UserIndex).flags.AtacadoPorUser = 0 Then Call SetNpcRef(UserList(UserIndex).flags.AtacadoPorNpc, NpcIndex)
 120     If NpcList(NpcIndex).flags.Snd1 > 0 Then
 122         Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareMessagePlayWave(NpcList(NpcIndex).flags.Snd1, NpcList(NpcIndex).Pos.X, NpcList(NpcIndex).Pos.y))
         End If
-        
 124     Call CancelExit(UserIndex)
         
         Dim danio As Long
@@ -990,7 +988,7 @@ Public Sub NpcAtacaNpc(ByVal Atacante As Integer, ByVal Victima As Integer, Opti
         Dim Heading As e_Heading
 102     Heading = GetHeadingFromWorldPos(NpcList(Atacante).Pos, NpcList(Victima).Pos)
         If Heading <> NpcList(Atacante).Char.Heading And NpcList(Atacante).flags.Inmovilizado = 1 Then
-            NpcList(Atacante).TargetNPC = 0
+            Call ClearNpcRef(NpcList(Atacante).TargetNPC)
             NpcList(Atacante).Movement = e_TipoAI.MueveAlAzar
             Exit Sub
         End If
@@ -1004,13 +1002,12 @@ Public Sub NpcAtacaNpc(ByVal Atacante As Integer, ByVal Victima As Integer, Opti
         End If
         
 106     If cambiarMovimiento Then
-108         NpcList(Victima).TargetNPC = Atacante
+108         Call SetNpcRef(NpcList(Victima).TargetNPC, Atacante)
 110         NpcList(Victima).Movement = e_TipoAI.NpcAtacaNpc
         End If
 
 112     If NpcList(Atacante).flags.Snd1 > 0 Then
 114         Call SendData(SendTarget.ToNPCAliveArea, Atacante, PrepareMessagePlayWave(NpcList(Atacante).flags.Snd1, NpcList(Atacante).Pos.X, NpcList(Atacante).Pos.y))
-
         End If
 
 116     If NpcImpactoNpc(Atacante, Victima) Then
@@ -2489,14 +2486,18 @@ Sub AllMascotasAtacanUser(ByVal victim As Integer, ByVal Maestro As Integer)
 100     With UserList(Maestro)
     
 102         For iCount = 1 To MAXMASCOTAS
-104             mascotaIndex = .MascotasIndex(iCount)
+104             mascotaIndex = .MascotasIndex(iCount).ArrayIndex
             
 106             If mascotaIndex > 0 Then
-108                 If NpcList(mascotaIndex).flags.AtacaUsuarios Then
-110                     NpcList(mascotaIndex).flags.AttackedBy = UserList(victim).Name
-112                     Call SetUserRef(NpcList(mascotaIndex).TargetUser, victim)
-114                     NpcList(mascotaIndex).Movement = e_TipoAI.NpcDefensa
-116                     NpcList(mascotaIndex).Hostile = 1
+                    If IsValidNpcRef(.MascotasIndex(iCount)) Then
+108                     If NpcList(mascotaIndex).flags.AtacaUsuarios Then
+110                         NpcList(mascotaIndex).flags.AttackedBy = UserList(victim).Name
+112                         Call SetUserRef(NpcList(mascotaIndex).TargetUser, victim)
+114                         NpcList(mascotaIndex).Movement = e_TipoAI.NpcDefensa
+116                         NpcList(mascotaIndex).Hostile = 1
+                        End If
+                    Else
+                        Call ClearNpcRef(.MascotasIndex(iCount))
                     End If
                     
                 End If
@@ -2519,17 +2520,16 @@ Public Sub AllMascotasAtacanNPC(ByVal NpcIndex As Integer, ByVal UserIndex As In
         Dim mascotaIdx As Integer
         
 100     For j = 1 To MAXMASCOTAS
-102         mascotaIdx = UserList(UserIndex).MascotasIndex(j)
-            
-104         If mascotaIdx > 0 And mascotaIdx <> NpcIndex Then
-106             With NpcList(mascotaIdx)
-                    
-108                 If .flags.AtacaNPCs And .TargetNPC = 0 Then
-110                     .TargetNPC = NpcIndex
-112                     .Movement = e_TipoAI.NpcAtacaNpc
-                    End If
-            
-                End With
+            If IsValidNpcRef(UserList(UserIndex).MascotasIndex(j)) Then
+102             mascotaIdx = UserList(UserIndex).MascotasIndex(j).ArrayIndex
+104             If mascotaIdx > 0 And mascotaIdx <> NpcIndex Then
+106                 With NpcList(mascotaIdx)
+108                     If .flags.AtacaNPCs And Not IsValidNpcRef(.TargetNPC) Then
+110                         Call SetNpcRef(.TargetNPC, NpcIndex)
+112                         .Movement = e_TipoAI.NpcAtacaNpc
+                        End If
+                    End With
+                End If
             End If
 114     Next j
         

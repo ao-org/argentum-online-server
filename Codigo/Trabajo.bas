@@ -2996,7 +2996,7 @@ Sub DoDomar(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
             
 108         If .NroMascotas < MAXMASCOTAS And HayEspacioMascotas(UserIndex) Then
 
-110             If NpcList(npcIndex).MaestroNPC > 0 Or IsValidUserRef(NpcList(npcIndex).MaestroUser) Then
+110             If IsValidNpcRef(NpcList(NpcIndex).MaestroNPC) > 0 Or IsValidUserRef(NpcList(NpcIndex).MaestroUser) Then
 112                 Call WriteConsoleMsg(UserIndex, "La criatura ya tiene amo.", e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
@@ -3010,20 +3010,13 @@ Sub DoDomar(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
                 End If
 
 122             If NpcList(NpcIndex).flags.Domable <= puntosDomar And RandomNumber(1, 5) = 1 Then
-
                     Dim Index As Integer
-
 124                 .NroMascotas = .NroMascotas + 1
-                    
 126                 Index = FreeMascotaIndex(UserIndex)
-                    
-128                 .MascotasIndex(Index) = NpcIndex
+128                 Call SetNpcRef(.MascotasIndex(Index), NpcIndex)
 130                 .MascotasType(Index) = NpcList(NpcIndex).Numero
-
 132                 Call SetUserRef(NpcList(npcIndex).MaestroUser, userIndex)
-                    
                     .flags.ModificoMascotas = True
-                    
 134                 Call FollowAmo(NpcIndex)
 136                 Call ReSpawnNpc(NpcList(NpcIndex))
 
@@ -3033,32 +3026,22 @@ Sub DoDomar(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
 140                 If MapInfo(.Pos.Map).Seguro = 1 Then
 142                     petType = NpcList(NpcIndex).Numero
 144                     NroPets = .NroMascotas
-
-146                     Call QuitarNPC(NpcIndex)
-
+146                     Call QuitarNPC(NpcIndex, eNewPet)
 148                     .MascotasType(Index) = petType
 150                     .NroMascotas = NroPets
-
 152                     Call WriteConsoleMsg(UserIndex, "No se permiten mascotas en zona segura. estas te esperaran afuera.", e_FontTypeNames.FONTTYPE_INFO)
                     End If
-
                 Else
-
 154                 If Not .flags.UltimoMensaje = 5 Then
 156                     Call WriteConsoleMsg(UserIndex, "No has logrado domar la criatura.", e_FontTypeNames.FONTTYPE_INFO)
 158                     .flags.UltimoMensaje = 5
                     End If
-
                 End If
-
 160             Call SubirSkill(UserIndex, e_Skill.Domar)
-
             Else
 162             Call WriteConsoleMsg(UserIndex, "No puedes controlar mas criaturas.", e_FontTypeNames.FONTTYPE_INFO)
             End If
-
         End With
-    
         Exit Sub
 
 ErrHandler:
@@ -3134,7 +3117,7 @@ On Error GoTo FishOrThrowNet_Err:
 104     If ObjData(.invent.HerramientaEqpObjIndex).Subtipo = e_ToolsSubtype.eFishingNet Then
 106         If MapInfo(.pos.map).Seguro = 1 Or _
                 Not ExpectObjectTypeAt(e_OBJType.otFishingPool, .pos.map, .Trabajo.Target_X, .Trabajo.Target_Y) Then
-108             If IsValidUserRef(.flags.TargetUser) Or .flags.TargetNPC > 0 Then
+108             If IsValidUserRef(.flags.TargetUser) Or IsValidNpcRef(.flags.TargetNPC) Then
 110                 ThrowNetToTarget (UserIndex)
 112                 Call WriteWorkRequestTarget(UserIndex, 0)
                     Exit Sub
@@ -3201,9 +3184,10 @@ On Error GoTo ThrowNetToTarget_Err:
 156             ThrowNet = True
             End If
 158         Call SetUserRef(UserList(UserIndex).flags.TargetUser, 0)
-160     ElseIf UserList(UserIndex).flags.TargetNPC > 0 Then
+160     ElseIf IsValidNpcRef(UserList(UserIndex).flags.TargetNPC) Then
+
 162         Dim npcIndex As Integer
-164         npcIndex = UserList(UserIndex).flags.TargetNPC
+164         NpcIndex = UserList(UserIndex).flags.TargetNPC.ArrayIndex
 166         If NpcList(npcIndex).flags.AfectaParalisis = 0 Then
 
 168             If Not PuedeAtacarNPC(UserIndex, npcIndex) Then
@@ -3217,7 +3201,7 @@ On Error GoTo ThrowNetToTarget_Err:
 180             Call AnimacionIdle(npcIndex, True)
 182             ThrowNet = True
 184             Call SendData(SendTarget.ToNPCAliveArea, npcIndex, PrepareMessageFxPiso(FISHING_NET_FX, NpcList(npcIndex).pos.X, NpcList(npcIndex).pos.y))
-186             UserList(UserIndex).flags.TargetNPC = 0
+186             Call ClearNpcRef(UserList(UserIndex).flags.TargetNPC)
             Else
 188             Call WriteLocaleMsg(UserIndex, MSgNpcInmuneToEffect, e_FontTypeNames.FONTTYPE_INFOIAO)
             End If
