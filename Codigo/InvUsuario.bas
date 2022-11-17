@@ -2947,7 +2947,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
             
                           'Call LogError(.Name & " intento aprender el hechizo " & ObjData(.Invent.Object(slot).ObjIndex).HechizoIndex)
             
-1112                 If ClasePuedeUsarItem(UserIndex, .Invent.Object(Slot).ObjIndex, Slot) Then
+1112                 If ClasePuedeUsarItem(UserIndex, .invent.Object(Slot).objIndex, Slot) And RazaPuedeUsarItem(UserIndex, .invent.Object(Slot).objIndex, Slot) Then
     
                               'If .Stats.MaxMAN > 0 Then
 1114                     If .Stats.MinHam > 0 And .Stats.MinAGU > 0 Then
