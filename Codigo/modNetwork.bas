@@ -63,7 +63,11 @@ End Sub
 Public Sub Kick(ByVal Connection As Long, Optional ByVal message As String = vbNullString)
 On Error GoTo Kick_ErrHandler:
     If IsFeatureEnabled("debug_connections") Then
-        Call AddLogToCircularBuffer("Kick connection: " & Connection)
+        If (Message <> vbNullString) Then
+        Call AddLogToCircularBuffer("Kick connection: " & Connection & " reason: " & Message)
+        Else
+            Call AddLogToCircularBuffer("Kick connection: " & Connection)
+        End If
     End If
     If (message <> vbNullString) Then
         Dim UserRef As t_UserReference
@@ -114,7 +118,7 @@ On Error GoTo OnServerConnect_Err:
         Exit Sub
     End If
     If Mapping(Connection).ArrayIndex > 0 Then
-        Call TraceError(Err.Number, Err.Description, "OnServerConnect Mapping(Connection) > 0, connection: " & Connection & " value: " & Mapping(Connection).ArrayIndex, Erl)
+        Call TraceError(Err.Number, Err.Description, "OnServerConnect Mapping(Connection) > 0, connection: " & Connection & " value: " & Mapping(Connection).ArrayIndex & ", is valid: " & IsValidUserRef(Mapping(Connection)), Erl)
     End If
     If Connection <= MaxUsers Then
         'By Ladder y Wolfenstein
@@ -170,7 +174,8 @@ On Error GoTo OnServerClose_Err:
 132    UserList(UserRef.ArrayIndex).ConnIDValida = False
 134    UserList(UserRef.ArrayIndex).ConnID = 0
 136    Call ClearUserRef(Mapping(Connection))
-    
+138    Call IncreaseVersionId(UserRef.ArrayIndex)
+
 140    Exit Sub
     
 OnServerClose_Err:
