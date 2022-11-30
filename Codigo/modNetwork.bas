@@ -169,21 +169,19 @@ On Error GoTo OnServerClose_Err:
 114    End If
     
 116    Debug.Assert IsValidUserRef(UserRef)
-118    If IsValidUserRef(UserRef) Then
-120        If UserList(UserRef.ArrayIndex).flags.UserLogged Then
-122            Call CloseSocketSL(UserRef.ArrayIndex)
-124            Call Cerrar_Usuario(UserRef.ArrayIndex)
-126        Else
-128            Call CloseSocket(UserRef.ArrayIndex)
-130        End If
+118    If Not IsValidUserRef(UserRef) Then Exit Sub
     
-132        UserList(UserRef.ArrayIndex).ConnIDValida = False
-134        UserList(UserRef.ArrayIndex).ConnID = 0
-136        Call IncreaseVersionId(UserRef.ArrayIndex)
-       Else
-           Call TraceError(Err.Number, Err.Description, "Trying to disconnect an invalid user", Erl)
-       End If
-138    Call ClearUserRef(Mapping(Connection))
+120    If UserList(UserRef.ArrayIndex).flags.UserLogged Then
+122        Call CloseSocketSL(UserRef.ArrayIndex)
+124        Call Cerrar_Usuario(UserRef.ArrayIndex)
+126    Else
+128        Call CloseSocket(UserRef.ArrayIndex)
+130    End If
+    
+132    UserList(UserRef.ArrayIndex).ConnIDValida = False
+134    UserList(UserRef.ArrayIndex).ConnID = 0
+136    Call ClearUserRef(Mapping(Connection))
+138    Call IncreaseVersionId(UserRef.ArrayIndex)
 
 140    Exit Sub
     
