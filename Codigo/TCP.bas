@@ -866,7 +866,10 @@ Function ConnectUser(ByVal userIndex As Integer, ByRef name As String, Optional 
 On Error GoTo ErrHandler
     ConnectUser = False
     With UserList(userIndex)
-        If Not ConnectUser_Check(userIndex, name) Then Exit Function
+        If Not ConnectUser_Check(UserIndex, Name) Then
+            Call LogSecurity("ConnectUser_Check " & Name & " failed.")
+            Exit Function
+        End If
         Call ConnectUser_Prepare(userIndex, name)
         If LoadUser(userIndex) Then
             If ConnectUser_Complete(userIndex, name, newUser) Then
