@@ -63,7 +63,11 @@ End Sub
 Public Sub Kick(ByVal Connection As Long, Optional ByVal message As String = vbNullString)
 On Error GoTo Kick_ErrHandler:
     If IsFeatureEnabled("debug_connections") Then
-        Call AddLogToCircularBuffer("Kick connection: " & Connection)
+        If (Message <> vbNullString) Then
+        Call AddLogToCircularBuffer("Kick connection: " & Connection & " reason: " & Message)
+        Else
+            Call AddLogToCircularBuffer("Kick connection: " & Connection)
+        End If
     End If
     If (message <> vbNullString) Then
         Dim UserRef As t_UserReference
