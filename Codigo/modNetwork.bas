@@ -92,6 +92,7 @@ Public Function GetTimeOfNextFlush() As Single
     GetTimeOfNextFlush = max(0, TIME_SEND_FREQUENCY - Time(1))
 End Function
 
+
 Public Sub close_not_logged_sockets_if_timeout()
     Dim i As Integer
     For i = 1 To LastUser
@@ -101,7 +102,13 @@ Public Sub close_not_logged_sockets_if_timeout()
                     Ticks = GetTickCount
                     Delta = Ticks - .Counters.OnConnectTimestamp
                     If Delta > 3000 Then
-                        Call Kick(.ConnID, "Connection timeout")
+                        If Mapping(.ConnID).ArrayIndex = i Then
+                            Call Kick(.ConnID, "Connection timeout")
+                        Else
+                            .ConnID = 0
+                            .ConnIDValida = False
+                            Call TraceError(Err.Number, Err.Description, "trying to kick an invalid mapping", Erl)
+                        End If
                     End If
                 End If
             End With
@@ -173,6 +180,8 @@ On Error GoTo OnServerClose_Err:
 132        UserList(UserRef.ArrayIndex).ConnIDValida = False
 134        UserList(UserRef.ArrayIndex).ConnID = 0
 136        Call IncreaseVersionId(UserRef.ArrayIndex)
+       Else
+           Call TraceError(Err.Number, Err.Description, "Trying to disconnect an invalid user", Erl)
        End If
 138    Call ClearUserRef(Mapping(Connection))
 
