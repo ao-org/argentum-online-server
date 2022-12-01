@@ -1509,7 +1509,6 @@ Sub ResetUserSlot(ByVal UserIndex As Integer)
 156     Call ResetUserBanco(UserIndex)
 158     Call ResetUserSkills(UserIndex)
 160     Call ResetUserKeys(UserIndex)
-161     Call IncreaseVersionId(UserIndex)
 162     With UserList(UserIndex).ComUsu
 164         .Acepto = False
 166         .cant = 0

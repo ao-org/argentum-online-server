@@ -851,7 +851,7 @@ Sub HechizoInvocacion(ByVal UserIndex As Integer, ByRef b As Boolean)
         Exit Sub
     
 HechizoInvocacion_Err:
-208     Call TraceError(Err.Number, Err.Description, "modHechizos.HechizoTerrenoEstado")
+208     Call TraceError(Err.Number, Err.Description, "modHechizos.HechizoInvocacion")
 
 
 End Sub
