@@ -11,6 +11,7 @@ Public Type PlayerInLobby
     UserId As Long
     Connected As Boolean
     ReturnOnReconnect As Boolean
+    Team As Integer
 End Type
 
 Public Enum e_LobbyState
@@ -20,6 +21,11 @@ Public Enum e_LobbyState
     InProgress
     Completed
     Closed
+End Enum
+
+Public Enum e_TeamTypes
+    ePremade
+    eRandom
 End Enum
 
 Type t_Lobby
@@ -34,6 +40,9 @@ Type t_Lobby
     State As e_LobbyState
     SummonAfterInscription As Boolean
     Scenario As IBaseScenario
+    TeamCount As Integer
+    IsPublic As Boolean
+    TeamType As e_TeamTypes
 End Type
 
 Public Type t_response
@@ -65,6 +74,8 @@ Public Enum e_LobbyCommandId
     eListPlayers
     eKickPlayer
     eForceReset
+    eSetTeamCount
+    eAddPlayer
 End Enum
 Public GenericGlobalLobby As t_Lobby
 Public CurrentActiveEventType As e_EventType
@@ -78,6 +89,8 @@ Public Sub InitializeLobby(ByRef instance As t_Lobby)
     instance.RegisteredPlayers = 0
     instance.State = Initialized
     instance.SummonCoordinates.map = -1
+    instance.TeamCount = -1
+    instance.TeamType = eRandom
 End Sub
 
 Public Sub SetSummonCoordinates(ByRef instance As t_Lobby, ByVal map As Integer, ByVal posX As Integer, ByVal posY As Integer)
@@ -252,7 +265,7 @@ ListPlayers_Err:
 116    Call TraceError(Err.Number, Err.Description, "ModLobby.ListPlayers", Erl)
 End Sub
 
-Public Function OpenLobby(ByRef instance As t_Lobby) As t_response
+Public Function OpenLobby(ByRef instance As t_Lobby, ByVal IsPublic As Boolean) As t_response
 On Error GoTo OpenLobby_Err
        Dim RequiresSpawn As Boolean
 100        If Not instance.Scenario Is Nothing Then
@@ -264,6 +277,7 @@ On Error GoTo OpenLobby_Err
 112            StartLobby.Message = 400
 114            Exit Function
 116        End If
+117        instance.IsPublic = IsPublic
 118        Call UpdateLobbyState(instance, AcceptingPlayers)
 120        StartLobby.Message = 401
 124        StartLobby.Success = True
@@ -343,4 +357,33 @@ On Error GoTo RegisterReconnectedUser_Err
 138    Exit Sub
 RegisterReconnectedUser_Err:
 140     Call TraceError(Err.Number, Err.Description, "ModLobby.RegisterReconnectedUser", Erl)
+End Sub
+
+Public Function SetTeamCount(ByRef instance As t_Lobby, ByVal TeamSize As Integer, ByVal TeamType As e_TeamTypes) As t_response
+On Error GoTo SetTeamCount_Err
+100 Dim response As t_response
+102 If insance.MaxPlayers Mod TeamSize <> 0 Then
+104     response.Success = False
+106     response.Message = MsgInvalidGroupCount
+108     SetTeamCount = response
+110     Exit Function
+112 End If
+114 If instance.State <> Initialized Then
+116     reponse.Success = False
+118     response.Message = MsgCantChangeGroupSizeNow
+120     SetTeamCount = response
+122     Exit Function
+124 End If
+126 response.Message = MsgTeamConfigSuccess
+128 instance.TeamCount = TeamSize
+130 instance.TeamType = TeamType
+132 response.Success = True
+134 SetTeamCount = response
+    Exit Function
+SetTeamCount_Err:
+140     Call TraceError(Err.Number, Err.Description, "ModLobby.SetTeamCount", Erl)
+End Function
+
+Public Sub SortTeams(ByRef instance As t_Lobby)
+
 End Sub
