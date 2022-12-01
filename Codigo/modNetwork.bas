@@ -82,10 +82,10 @@ On Error GoTo Kick_ErrHandler:
         
     Call Server.Flush(Connection)
     Call Server.Kick(Connection, True)
-    
     Exit Sub
     
 Kick_ErrHandler:
+    Call TraceError(Err.Number, Err.Description, "modNetwork.Kick", Erl)
 End Sub
 
 Public Function GetTimeOfNextFlush() As Single
@@ -162,19 +162,19 @@ On Error GoTo OnServerClose_Err:
 114    End If
     
 116    Debug.Assert IsValidUserRef(UserRef)
-118    If Not IsValidUserRef(UserRef) Then Exit Sub
+118    If IsValidUserRef(UserRef) Then
+120        If UserList(UserRef.ArrayIndex).flags.UserLogged Then
+122            Call CloseSocketSL(UserRef.ArrayIndex)
+124            Call Cerrar_Usuario(UserRef.ArrayIndex)
+126        Else
+128            Call CloseSocket(UserRef.ArrayIndex)
+130        End If
     
-120    If UserList(UserRef.ArrayIndex).flags.UserLogged Then
-122        Call CloseSocketSL(UserRef.ArrayIndex)
-124        Call Cerrar_Usuario(UserRef.ArrayIndex)
-126    Else
-128        Call CloseSocket(UserRef.ArrayIndex)
-130    End If
-    
-132    UserList(UserRef.ArrayIndex).ConnIDValida = False
-134    UserList(UserRef.ArrayIndex).ConnID = 0
-136    Call ClearUserRef(Mapping(Connection))
-138    Call IncreaseVersionId(UserRef.ArrayIndex)
+132        UserList(UserRef.ArrayIndex).ConnIDValida = False
+134        UserList(UserRef.ArrayIndex).ConnID = 0
+136        Call IncreaseVersionId(UserRef.ArrayIndex)
+       End If
+138    Call ClearUserRef(Mapping(Connection))
 
 140    Exit Sub
     
