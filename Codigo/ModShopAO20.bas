@@ -51,6 +51,7 @@ On Error GoTo init_transaction_Err
         End If
                 
     End With
+    Exit Sub
 init_transaction_Err:
     Call TraceError(Err.Number, Err.Description, "ShopAo20.init_transaction", Erl)
 End Sub

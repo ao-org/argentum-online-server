@@ -3704,6 +3704,10 @@ On Error GoTo ChangeMapSetting_Err
 116                     MapInfo(UserList(UserIndex).pos.map).SafeFightMap = Reader.ReadInt8()
 118                     Call LogGM(.name, .name & " ha cambiado la configuracion el pelea segura del mapa" & UserList(UserIndex).pos.map & " a " & MapInfo(UserList(UserIndex).pos.map).DropItems)
 120                     Call WriteConsoleMsg(UserIndex, "Mapa actualizado correctamente", e_FontTypeNames.FONTTYPE_INFO)
+                    Case e_MapSetting.e_FriendlyFire
+122                     MapInfo(UserList(UserIndex).pos.map).FriendlyFire = Reader.ReadInt8()
+124                     Call LogGM(.name, .name & " ha cambiado la configuracion el friendly fire del mapa" & UserList(UserIndex).pos.map & " a " & MapInfo(UserList(UserIndex).pos.map).DropItems)
+126                     Call WriteConsoleMsg(UserIndex, "Mapa actualizado correctamente", e_FontTypeNames.FONTTYPE_INFO)
                     Case Else
 124                     Call WriteConsoleMsg(UserIndex, "Opcion no disponible", e_FontTypeNames.FONTTYPE_INFO)
                 End Select
@@ -4829,94 +4833,18 @@ Public Sub HandleLobbyCommand(ByVal UserIndex As Integer)
 On Error GoTo HandleLobbyCommand_err
     Dim Command As Byte
     Dim hasPermission As Integer
-    Dim retValue As t_response
-    Dim value As Long
+    Dim Params As String
     Command = Reader.ReadInt8()
+    Params = Reader.ReadString8()
 100 With UserList(UserIndex)
-        hasPermission = .flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios)
-        Select Case Command
-            Case e_LobbyCommandId.eSetSpawnPos
-                If hasPermission Then
-                    Call SetSummonCoordinates(GenericGlobalLobby, .Pos.map, .Pos.X, .Pos.y)
-                    Exit Sub
-                End If
-            Case e_LobbyCommandId.eEndEvent
-                If hasPermission Then
-                    Call CancelLobby(GenericGlobalLobby)
-                    Exit Sub
-                End If
-            Case e_LobbyCommandId.eReturnAllSummoned
-                If hasPermission Then
-                    Call ModLobby.ReturnAllPlayers(GenericGlobalLobby)
-                    Exit Sub
-                End If
-            Case e_LobbyCommandId.eReturnSinglePlayer
-                value = Reader.ReadInt32()
-                If hasPermission Then
-                    Call ModLobby.ReturnPlayer(GenericGlobalLobby, value)
-                    Exit Sub
-                End If
-            Case e_LobbyCommandId.eSetClassLimit
-                value = Reader.ReadInt32()
-                If hasPermission Then
-                    Call ModLobby.SetClassFilter(GenericGlobalLobby, value)
-                    Exit Sub
-                End If
-            Case e_LobbyCommandId.eSetMaxLevel
-                value = Reader.ReadInt32()
-                If hasPermission Then
-                    Call ModLobby.SetMaxLevel(GenericGlobalLobby, value)
-                    Exit Sub
-                End If
-            Case e_LobbyCommandId.eSetMinLevel
-                value = Reader.ReadInt32()
-                If hasPermission Then
-                    Call ModLobby.SetMinLevel(GenericGlobalLobby, value)
-                    Exit Sub
-                End If
-            Case e_LobbyCommandId.eOpenLobby
-                If hasPermission Then
-                    retValue = ModLobby.OpenLobby(GenericGlobalLobby)
-                    Call WriteLocaleMsg(UserIndex, retValue.Message, e_FontTypeNames.FONTTYPE_INFO)
-                    Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(.name & " creó un nuevo evento, para participar ingresá /participar", e_FontTypeNames.FONTTYPE_GUILD))
-                    Exit Sub
-                End If
-            Case e_LobbyCommandId.eStartEvent
-                If hasPermission Then
-                    Call ModLobby.UpdateLobbyState(GenericGlobalLobby, e_LobbyState.InProgress)
-                    Call WriteConsoleMsg(UserIndex, "Evento iniciado", e_FontTypeNames.FONTTYPE_INFO)
-                    Exit Sub
-                End If
-            Case e_LobbyCommandId.eSummonAll
-                If hasPermission Then
-                    Call ModLobby.SummonAll(GenericGlobalLobby)
-                    Exit Sub
-                End If
-            Case e_LobbyCommandId.eSummonSinglePlayer
-                value = Reader.ReadInt32()
-                If hasPermission Then
-                    Call ModLobby.SummonPlayer(GenericGlobalLobby, value)
-                    Exit Sub
-                End If
-            Case e_LobbyCommandId.eListPlayers
-                If hasPermission Then
-                    Call ModLobby.ListPlayers(GenericGlobalLobby, UserIndex)
-                    Exit Sub
-                End If
-            Case e_LobbyCommandId.eForceReset
-                If hasPermission Then
-                    Call ModLobby.ForceReset(GenericGlobalLobby)
-                    Call WriteConsoleMsg(userIndex, "Reset done.", e_FontTypeNames.FONTTYPE_INFO)
-                    Exit Sub
-                End If
-            Case Else
-                Exit Sub
-        End Select
-        'normally we will do this first and return but we need to evaluate all message type to read the values from the stream
-        If hasPermission Then
-            Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
-        End If
-    End With
+102     If .flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios) Then
+104         If Not HandleRemoteLobbyCommand(Command, Params, UserIndex) Then
+106             Call WriteConsoleMsg(UserIndex, "Servidor » No se pudo procesar el comando.", e_FontTypeNames.FONTTYPE_INFO)
+108         End If
+110     Else
+112         Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
+114     End If
+116 End With
     Exit Sub
 HandleLobbyCommand_err:
 138     Call TraceError(Err.Number, Err.Description, "Protocol.HandleLobbyCommand", Erl)

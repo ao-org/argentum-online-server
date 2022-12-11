@@ -162,6 +162,17 @@ End Sub
 Private Sub StartGame()
     Dim key As Variant
     Dim i As Integer
+    For i = 0 To GenericGlobalLobby.RegisteredPlayers - 1
+        Dim spawnPos As t_WorldPos
+        spawnPos.map = MapNumber
+        spawnPos.x = RandomNumber(12, 85)
+        spawnPos.y = RandomNumber(12, 85)
+        If GenericGlobalLobby.Players(i).IsSummoned Then
+            If IsValidUserRef(GenericGlobalLobby.Players(i).user) Then
+                Call WarpToLegalPos(GenericGlobalLobby.Players(i).user.ArrayIndex, MapNumber, spawnPos.x, spawnPos.y, True, True)
+            End If
+        End If
+    Next i
     For Each key In MatchNpc.Keys
         For i = 1 To MatchNpc(key).SpawnCount
             SpawnNpc (MatchNpc(key).NpcId)
@@ -220,7 +231,7 @@ Private Sub IBaseScenario_Update()
         ElapsedTime = ElapsedTime + FrameTime
         If ElapsedTime - LastScoreUpdate > 30000 Then
             LastScoreUpdate = ElapsedTime
-            Call board.PublishScoreboard(SendTarget.toMap, MapNumber)
+            Call Board.PublishScoreboard(SendTarget.toMap, MapNumber, GenericGlobalLobby, False)
         End If
         If ElapsedTime > MaxTime Then
             Call SendData(SendTarget.toMap, mapNumber, PrepareMessageConsoleMsg("Se acabo el tiempo!", e_FontTypeNames.FONTTYPE_GUILD))
@@ -251,7 +262,7 @@ On Error GoTo MatchComplete_Err:
 100    Dim i As Integer
 102    GenericGlobalLobby.State = Completed
 104    Call CustomScenarios.ClearMap(MapNumber)
-106    Call Board.PublishScoreboard(SendTarget.toMap, MapNumber)
+106    Call Board.PublishScoreboard(SendTarget.toMap, MapNumber, GenericGlobalLobby, True)
 108    ElapsedTime = MaxTime
 110    Dim key As Variant
 112    For Each key In SpawnedCreaturesId.Keys

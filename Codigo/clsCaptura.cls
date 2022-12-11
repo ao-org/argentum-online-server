@@ -74,7 +74,7 @@ Public Sub eliminarParticipante(ByRef player As clsCapturaParticipante)
         Call tirarBandera(player.PlayerIndex)
     
         UserList(player.PlayerIndex).flags.jugando_captura = 0
-        UserList(player.PlayerIndex).flags.jugando_captura_team = 0
+        UserList(player.PlayerIndex).flags.CurrentTeam = 0
         
         Call WarpUserChar(player.PlayerIndex, player.LastPosMap, player.LastPosX, player.LastPosY)
     End If
@@ -130,7 +130,7 @@ Public Sub PasarSegundo()
         For Each participante In participantes
             If participante.IsValid Then
                 With UserList(participante.PlayerIndex)
-                Team = .flags.jugando_captura_team
+                team = .flags.CurrentTeam
                 If .pos.map = mapaEquipo(Team) Then 'Si estoy en mi mapa
                     If Abs(.pos.X - xEquipo(Team)) <= 8 And Abs(.pos.y - yEquipo(Team)) <= 5 Then ' .Pos.x Distance(.Pos.X, .Pos.Y, xEquipo(Team), yEquipo(Team)) <= 8 Then 'Y estoy 5 pasos del centro
                         If TieneObjetos(objEquipo(IIf(Team = 1, 2, 1)), 1, participante.PlayerIndex) Then 'Y tengo la bandera enemgia
@@ -219,7 +219,7 @@ Private Sub iniciarCaptura()
     For Each participante In sortedParticipantes
         If participante.IsValid Then
             participante.Team = Team
-            UserList(participante.PlayerIndex).flags.jugando_captura_team = Team
+            UserList(participante.PlayerIndex).flags.CurrentTeam = team
             UserList(participante.PlayerIndex).flags.tiene_bandera = 0
              Call SendData(SendTarget.ToAll, participante.PlayerIndex, PrepareMessageUpdateFlag(UserList(participante.PlayerIndex).flags.tiene_bandera, UserList(participante.PlayerIndex).Char.charindex))
             Call WriteConsoleMsg(participante.PlayerIndex, "Te ha tocado participar en el equipo " & colorEquipo(participante.Team) & " deberás proteger a tus compañeros de equipo y capturar la bandera del equipo contrario para ganar.", e_FontTypeNames.FONTTYPE_GUILD)
@@ -238,10 +238,10 @@ Public Sub muereUsuario(ByVal UserIndex As Integer)
 
     With UserList(UserIndex)
     
-        If .flags.jugando_captura_team = 0 Then
+        If .flags.CurrentTeam <= 0 Then
             Exit Sub
         End If
-        Call SendData(SendTarget.ToJugadoresCaptura, 0, PrepareMessageConsoleMsg("Eventos» " & .name & " del equipo " & colorEquipo(.flags.jugando_captura_team) & " ha muerto en batalla.", e_FontTypeNames.FONTTYPE_GUILD))
+        Call SendData(SendTarget.ToJugadoresCaptura, 0, PrepareMessageConsoleMsg("Eventos» " & .name & " del equipo " & colorEquipo(.flags.CurrentTeam) & " ha muerto en batalla.", e_FontTypeNames.FONTTYPE_GUILD))
         
         Call tirarBandera(UserIndex)
         
@@ -273,14 +273,14 @@ Public Function tomaBandera(ByVal UserIndex As Integer, ByVal objIndex As Intege
         End If
         
         
-        If banderaTeam = .flags.jugando_captura_team Then
+        If banderaTeam = .flags.CurrentTeam Then
              If .Pos.X = xEquipo(banderaTeam) And .Pos.Y = yEquipo(banderaTeam) Then
                 tomaBandera = False
                 Exit Function
             End If
         End If
         'Si toma la bandera del equipo contrario
-        If UserList(UserIndex).flags.jugando_captura_team <> banderaTeam Then
+        If UserList(UserIndex).flags.CurrentTeam <> banderaTeam Then
             UserList(UserIndex).flags.tiene_bandera = banderaTeam
             Call SendData(SendTarget.ToAll, UserIndex, PrepareMessageUpdateFlag(UserList(UserIndex).flags.tiene_bandera, UserList(UserIndex).Char.charindex))
         Else
@@ -304,8 +304,8 @@ Public Sub quitarBandera(ByVal UserIndex As Integer, ByVal objIndex As Integer)
             Exit Sub
         End If
                 
-        If banderaTeam <> .flags.jugando_captura_team Then
-            Call SendData(SendTarget.ToJugadoresCaptura, 0, PrepareMessageConsoleMsg("Eventos» ¡Atención! " & .name & " del equipo " & colorEquipo(.flags.jugando_captura_team) & " ha tomado la bandera del equipo " & colorEquipo(banderaTeam) & ".", e_FontTypeNames.FONTTYPE_GUILD))
+        If banderaTeam <> .flags.CurrentTeam Then
+            Call SendData(SendTarget.ToJugadoresCaptura, 0, PrepareMessageConsoleMsg("Eventos» ¡Atención! " & .name & " del equipo " & colorEquipo(.flags.CurrentTeam) & " ha tomado la bandera del equipo " & colorEquipo(banderaTeam) & ".", e_FontTypeNames.FONTTYPE_GUILD))
             UserList(UserIndex).flags.tiene_bandera = banderaTeam
         Else
             UserList(UserIndex).flags.tiene_bandera = 0
@@ -346,7 +346,7 @@ Public Sub tirarBandera(ByVal UserIndex As Integer)
     Dim Team As Byte
     Dim objBandera As Integer
     With UserList(UserIndex)
-        Team = .flags.jugando_captura_team
+        team = .flags.CurrentTeam
         If Team = 0 Then
             Exit Sub
         ElseIf Team = 1 Then
@@ -379,11 +379,11 @@ Private Sub enviarUsuarioBase(ByVal UserIndex As Integer)
     Dim pos_map As Integer
     Dim pos_X As Byte
     Dim pos_Y As Byte
-    If UserList(UserIndex).flags.jugando_captura_team = 1 Then
+    If UserList(UserIndex).flags.CurrentTeam = 1 Then
         pos_map = MAP_TEAM_1
         pos_X = X_TEAM_1
         pos_Y = Y_TEAM_1
-    ElseIf UserList(UserIndex).flags.jugando_captura_team = 2 Then
+    ElseIf UserList(UserIndex).flags.CurrentTeam = 2 Then
         pos_map = MAP_TEAM_2
         pos_X = X_TEAM_2
         pos_Y = Y_TEAM_2

@@ -42,6 +42,7 @@ Dim ItemsToSpawn() As t_SpawnItems
 Dim MapDropItems As Boolean
 Dim PrevMapState As Integer
 Dim SafeFigthState As Boolean
+Dim FriendlyFireState As Boolean
 
 Private Sub Class_Initialize()
 On Error GoTo DeathMatch_Initialize_Err:
@@ -101,6 +102,7 @@ On Error GoTo CloseScenario_Err:
 110    MapInfo(MapNumber).DropItems = MapDropItems
 112    MapInfo(MapNumber).Seguro = PrevMapState
 114    MapInfo(mapNumber).SafeFightMap = SafeFigthState
+116    MapInfo(MapNumber).FriendlyFire = FriendlyFireState
     Exit Sub
 CloseScenario_Err:
     Call TraceError(Err.Number, Err.Description, "ScenarioHunt.CloseScenario ", Erl)
@@ -113,6 +115,7 @@ On Error GoTo ClearMap_Err:
 110    MapInfo(MapNumber).DropItems = MapDropItems
 112    MapInfo(MapNumber).Seguro = PrevMapState
 114    MapInfo(MapNumber).SafeFightMap = SafeFigthState
+116    MapInfo(MapNumber).FriendlyFire = FriendlyFireState
     Exit Sub
 ClearMap_Err:
     Call TraceError(Err.Number, Err.Description, "ScenarioHunt.ClearMap", Erl)
@@ -214,7 +217,7 @@ Public Sub IBaseScenario_Update()
                 Call BroadcastPendingTime(frametime)
             End If
             If UpdateTime(ScoreBroadcastTimer, frametime) Then
-                Call Board.PublishScoreboard(SendTarget.toMap, MapNumber)
+                Call Board.PublishScoreboard(SendTarget.toMap, MapNumber, GenericGlobalLobby, False)
             End If
         End If
     ElseIf GenericGlobalLobby.State = e_LobbyState.Completed Then
@@ -286,7 +289,7 @@ Private Sub MatchCompleted()
     Call SetTimer(CountdownTimer, 1000)
     GenericGlobalLobby.State = Completed
     ElapsedTime = MaxTime
-    Call Board.PublishScoreboard(SendTarget.toMap, MapNumber)
+    Call Board.PublishScoreboard(SendTarget.toMap, MapNumber, GenericGlobalLobby, True)
     Call CustomScenarios.ClearMap(MapNumber)
 End Sub
 
@@ -347,12 +350,14 @@ Private Sub ConfigMapEvent()
     MapInfo(MapNumber).Seguro = 0
     MapInfo(MapNumber).SinInviOcul = True
     MapInfo(mapNumber).SafeFightMap = True
+    MapInfo(MapNumber).FriendlyFire = False
 End Sub
 
 Private Sub ConfigMapLobby()
     PrevMapState = MapInfo(MapNumber).Seguro
     MapDropItems = MapInfo(MapNumber).DropItems
     SafeFigthState = MapInfo(mapNumber).SafeFightMap
+    FriendlyFireState = MapInfo(MapNumber).FriendlyFire
     MapInfo(MapNumber).Seguro = 1
     MapInfo(MapNumber).SinInviOcul = True
     MapInfo(MapNumber).DropItems = False

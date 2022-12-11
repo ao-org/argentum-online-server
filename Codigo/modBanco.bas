@@ -96,6 +96,9 @@ Sub UpdateBanUserInv(ByVal UpdateAll As Boolean, ByVal UserIndex As Integer, ByV
 100     If Not UpdateAll Then
 
             'Actualiza el inventario
+            If Slot = 0 Then
+                Exit Sub
+            End If
 102         If UserList(UserIndex).BancoInvent.Object(Slot).ObjIndex > 0 Then
 104             Call SendBanObj(UserIndex, Slot, UserList(UserIndex).BancoInvent.Object(Slot))
             Else
@@ -125,7 +128,7 @@ Sub UpdateBanUserInv(ByVal UpdateAll As Boolean, ByVal UserIndex As Integer, ByV
         Exit Sub
 
 UpdateBanUserInv_Err:
-118     Call TraceError(Err.Number, Err.Description + " UI: " & UserIndex & " Slot:" & Slot, "modBanco.UpdateBanUserInv" & "userID: " & UserList(UserIndex).ID & "caller: " & caller, Erl)
+118     Call TraceError(Err.Number, Err.Description + " UI: " & UserIndex & " Slot:" & Slot, "modBanco.UpdateBanUserInv " & "userID: " & UserList(UserIndex).ID & " Slot: " & Slot & " Caller: " & caller, Erl)
 
         
 End Sub

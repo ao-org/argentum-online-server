@@ -131,7 +131,10 @@ On Error GoTo OnServerConnect_Err:
         'By Ladder y Wolfenstein
         Dim FreeUser As Long
         FreeUser = NextOpenUser()
-                
+        If UserList(FreeUser).InUse Then
+           Call LogError("Trying to use an user slot marked as in use! slot: " & FreeUser)
+           FreeUser = NextOpenUser()
+        End If
         UserList(FreeUser).ConnIDValida = True
         UserList(FreeUser).IP = Address
         UserList(FreeUser).ConnID = Connection
@@ -179,7 +182,6 @@ On Error GoTo OnServerClose_Err:
     
 132        UserList(UserRef.ArrayIndex).ConnIDValida = False
 134        UserList(UserRef.ArrayIndex).ConnID = 0
-136        Call IncreaseVersionId(UserRef.ArrayIndex)
        End If
 138    Call ClearUserRef(Mapping(Connection))
 

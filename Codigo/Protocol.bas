@@ -3783,6 +3783,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
             
 286             Case e_Skill.Pescar
                     If .Counters.Trabajando = 0 And .Counters.LastTrabajo = 0 Then
+                        If .invent.HerramientaEqpSlot = 0 Then Exit Sub
                         If IsItemInCooldown(UserList(UserIndex), .invent.Object(.invent.HerramientaEqpSlot)) Then Exit Sub
                         Call LookatTile(UserIndex, .pos.map, X, y)
                         Call FishOrThrowNet(UserIndex)
@@ -8406,9 +8407,13 @@ Public Sub HandleParticipar(ByVal UserIndex As Integer)
                 End If
             Else
                 If GenericGlobalLobby.State = AcceptingPlayers Then
-                    Dim addPlayerResult As t_response
-                    addPlayerResult = ModLobby.AddPlayer(GenericGlobalLobby, UserIndex)
-                    Call WriteLocaleMsg(UserIndex, addPlayerResult.Message, e_FontTypeNames.FONTTYPE_INFO)
+                    If GenericGlobalLobby.IsPublic Then
+                        Dim addPlayerResult As t_response
+                        addPlayerResult = ModLobby.AddPlayerOrGroup(GenericGlobalLobby, UserIndex)
+                        Call WriteLocaleMsg(UserIndex, addPlayerResult.Message, e_FontTypeNames.FONTTYPE_INFO)
+                    Else
+                        Call WriteLocaleMsg(UserIndex, MsgCantJoinPrivateLobby, e_FontTypeNames.FONTTYPE_INFO)
+                    End If
                     Exit Sub
                 End If
             End If
