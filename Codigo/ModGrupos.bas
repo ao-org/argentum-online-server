@@ -131,18 +131,19 @@ Public Sub EcharMiembro(ByVal UserIndex As Integer, ByVal Indice As Byte)
                 Exit Sub
             End If
 
-116         For i = 1 To 6
+116         For i = 1 To UBound(.Miembros)
 
 118             If UserIndexEchar = .Miembros(i).ArrayIndex Then
-120                 Call SetUserRef(.Miembros(i), 0)
+120                 Call ClearUserRef(.Miembros(i))
 122                 indexviejo = i
 
 124                 For LoopC = indexviejo To 5
 126                     .Miembros(LoopC) = .Miembros(LoopC + 1)
 128                 Next LoopC
+                    i = UBound(.Miembros)
+                    Call ClearUserRef(.Miembros(i))
                     Exit For
                 End If
-
 130         Next i
             
 132         .CantidadMiembros = .CantidadMiembros - 1
@@ -206,24 +207,21 @@ Public Sub SalirDeGrupo(ByVal UserIndex As Integer)
     
 106         .Grupo.EnGrupo = False
     
-108         For i = 1 To 6
+108         For i = 1 To UBound(.Grupo.Miembros)
 
 110             If .name = UserList(UserList(.Grupo.Lider.ArrayIndex).Grupo.Miembros(i).ArrayIndex).name Then
-112                 Call SetUserRef(UserList(.Grupo.Lider.ArrayIndex).Grupo.Miembros(i), 0)
+112                 Call ClearUserRef(UserList(.Grupo.Lider.ArrayIndex).Grupo.Miembros(i))
 114                 indexviejo = i
 
 116                 For LoopC = indexviejo To 5
 118                     UserList(.Grupo.Lider.ArrayIndex).Grupo.Miembros(LoopC) = UserList(.Grupo.Lider.ArrayIndex).Grupo.Miembros(LoopC + 1)
 120                 Next LoopC
-
+                    i = UBound(.Grupo.Miembros)
+                    Call ClearUserRef(.Grupo.Miembros(i))
                     Exit For
-
                 End If
-
 122         Next i
-
 124         UserList(.Grupo.Lider.ArrayIndex).Grupo.CantidadMiembros = UserList(.Grupo.Lider.ArrayIndex).Grupo.CantidadMiembros - 1
-        
             Dim a As Long
 126         For a = 1 To UserList(.Grupo.Lider.ArrayIndex).Grupo.CantidadMiembros
 128             Call WriteUbicacion(UserList(.Grupo.Lider.ArrayIndex).Grupo.Miembros(a).ArrayIndex, indexviejo, 0)

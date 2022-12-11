@@ -1784,7 +1784,15 @@ Public Function PuedeAtacar(ByVal AttackerIndex As Integer, ByVal VictimIndex As
             Exit Function
 
         End If
-
+        
+        If Not MapInfo(UserList(VictimIndex).pos.map).FriendlyFire And _
+            UserList(VictimIndex).flags.CurrentTeam > 0 And _
+            UserList(VictimIndex).flags.CurrentTeam = UserList(attackerIndex).flags.CurrentTeam Then
+            Call WriteConsoleMsg(attackerIndex, "No podes atacar un miembro de tu equipo.", e_FontTypeNames.FONTTYPE_WARNING)
+            PuedeAtacar = False
+            Exit Function
+        End If
+        
         'Estamos en una Arena? o un trigger zona segura?
 144     T = TriggerZonaPelea(AttackerIndex, VictimIndex)
 
@@ -1872,18 +1880,14 @@ Public Function PuedeAtacar(ByVal AttackerIndex As Integer, ByVal VictimIndex As
 
         'Estas en un Mapa Seguro?
 196     If MapInfo(UserList(VictimIndex).Pos.Map).Seguro = 1 Then
-
 198         If esArmada(AttackerIndex) Then
 200             If UserList(AttackerIndex).Faccion.RecompensasReal >= 3 Then
 202                 If UserList(VictimIndex).Pos.Map = 58 Or UserList(VictimIndex).Pos.Map = 59 Or UserList(VictimIndex).Pos.Map = 60 Then
 204                     Call WriteConsoleMsg(VictimIndex, "Huye de la ciudad! estas siendo atacado y no podrás defenderte.", e_FontTypeNames.FONTTYPE_WARNING)
 206                     PuedeAtacar = True 'Beneficio de Armadas que atacan en su ciudad.
                         Exit Function
-
                     End If
-
                 End If
-
             End If
 
 208         If esCaos(AttackerIndex) Then

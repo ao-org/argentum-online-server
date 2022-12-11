@@ -5500,7 +5500,7 @@ Public Sub WriteShopInit(ByVal UserIndex As Integer)
     Next i
     
 182 Call modSendData.SendData(ToIndex, UserIndex)
-    
+   Exit Sub
 WriteShopInit_Err:
      Call Writer.Clear
     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteShopInit", Erl)

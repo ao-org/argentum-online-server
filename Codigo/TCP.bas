@@ -1310,7 +1310,7 @@ Sub ResetUserFlags(ByVal UserIndex As Integer)
 
             'HarThaoS: Captura de bandera
             .jugando_captura = 0
-            .jugando_captura_team = 0
+            .CurrentTeam = 0
             .jugando_captura_timer = 0
             .jugando_captura_muertes = 0
             Call SetUserRef(.SigueUsuario, 0)
@@ -1468,7 +1468,7 @@ Sub ResetUserSlot(ByVal UserIndex As Integer)
         
 
 100     UserList(UserIndex).ConnIDValida = False
-
+102     UserList(UserIndex).ConnID = 0
 104     If UserList(userIndex).Grupo.Lider.ArrayIndex = userIndex Then
 106         Call FinalizarGrupo(UserIndex)
 
@@ -1515,14 +1515,12 @@ Sub ResetUserSlot(ByVal UserIndex As Integer)
 168         .DestNick = vbNullString
 170         Call SetUserRef(.DestUsu, 0)
 172         .Objeto = 0
-
+174     UserList(UserIndex).InUse = False
+176        Call IncreaseVersionId(UserIndex)
         End With
-
-        
         Exit Sub
-
 ResetUserSlot_Err:
-174     Call TraceError(Err.Number, Err.Description, "TCP.ResetUserSlot", Erl)
+178     Call TraceError(Err.Number, Err.Description, "TCP.ResetUserSlot", Erl)
 
         
 End Sub
@@ -1662,9 +1660,6 @@ Sub CloseUser(ByVal UserIndex As Integer)
         Dim i   As Integer
         
 100     With UserList(UserIndex)
-            
-102         map = .Pos.map
-            Call USerDisconnected(map, userIndex)
 104         If Not .flags.YaGuardo Then
 106             Call ClearAndSaveUser(UserIndex)
             End If

@@ -1996,6 +1996,7 @@ Public Sub CargarMapaFormatoCSM(ByVal map As Long, ByVal MAPFl As String)
 380     MapInfo(map).terrain = MapDat.terrain
 382     MapInfo(map).zone = MapDat.zone
 383     MapInfo(map).DropItems = True
+        MapInfo(map).FriendlyFire = True
 
 384     If LenB(MapDat.Salida) <> 0 Then
             Dim Fields() As String
@@ -2572,7 +2573,9 @@ End Function
 
 Sub SaveUser(ByVal userIndex As Integer, Optional ByVal Logout As Boolean = False)
 On Error GoTo SaveUser_Err
-
+        If Logout Then
+            Call UserDisconnected(UserList(UserIndex).pos.map, UserIndex)
+        End If
         Call SaveCharacterDB(userIndex)
         If Logout Then
             Call SaveCreditsDatabase(userIndex)

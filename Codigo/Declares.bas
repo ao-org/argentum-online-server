@@ -1725,9 +1725,10 @@ Public Type t_UserFlags
     QuestItemSlot As Integer
     RespondiendoPregunta As Boolean
     
+    CurrentTeam As Byte
+    
     'Captura de bandera
     jugando_captura As Byte
-    jugando_captura_team As Byte
     jugando_captura_timer As Integer
     jugando_captura_muertes As Integer
     tiene_bandera As Byte
@@ -1952,6 +1953,7 @@ Public Type t_User
     'the version id help to validate that a reference we stored is still valid,
     'this value should be updated every time we reuse this instance
     VersionId As Integer
+    InUse As Boolean 'Mark if the slot is un use, should be set when players connect and clear on dc, used for debug and error handling
     ID As Long
     Trabajo As t_UserTrabajo
     AccountID As Long
@@ -2347,6 +2349,7 @@ End Type
 Public Enum e_MapSetting
     e_DropItems
     e_SafeFight
+    e_FriendlyFire
 End Enum
 
 'Info del mapa
@@ -2379,6 +2382,7 @@ Type t_MapInfo
     NoMascotas As Boolean
     DropItems As Boolean
     SafeFightMap As Boolean
+    FriendlyFire As Boolean
     TransportNetwork() As t_TransportNetworkExit
 End Type
 

@@ -63,7 +63,7 @@ Public Function LoadCharacterFromDB(ByVal userIndex As Integer) As Boolean
             End If
             
         
-            
+            .InUse = True
             'Start setting data
 106         .ID = RS!ID
 108         .Name = RS!Name
