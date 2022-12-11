@@ -1,5 +1,5 @@
 Attribute VB_Name = "ModLobby"
-    Const ForbiddenLevelMessage = 396
+Const ForbiddenLevelMessage = 396
 Const LobbyIsFullMessage = 397
 Const ForbiddenClassMessage = 398
 Const JoinSuccessMessage = 399
@@ -580,15 +580,15 @@ On Error GoTo SortTeams_Err
 106 Dim MaxPossiblePlayers As Integer
 108 TeamCount = instance.MaxPlayers / instance.TeamSize
 110 MaxPossiblePlayers = (instance.RegisteredPlayers / instance.TeamSize)
-    MaxPossiblePlayers = MaxPossiblePlayers * instance.TeamSize
-    Dim i As Integer
-    For i = instance.RegisteredPlayers - 1 To MaxPossiblePlayers Step -1
-        If IsValidUserRef(instance.Players(i).user) Then
-            Call WriteLocaleMsg(instance.Players(i).user.ArrayIndex, MsgNotEnoughPlayerForTeam, e_FontTypeNames.FONTTYPE_INFO)
-        End If
-        Call KickPlayer(instance, i)
-    Next i
-    TeamCount = instance.RegisteredPlayers / instance.TeamSize
+112 MaxPossiblePlayers = MaxPossiblePlayers * instance.TeamSize
+114 Dim i As Integer
+116 For i = instance.RegisteredPlayers - 1 To MaxPossiblePlayers Step -1
+118     If IsValidUserRef(instance.Players(i).user) Then
+120         Call WriteLocaleMsg(instance.Players(i).user.ArrayIndex, MsgNotEnoughPlayerForTeam, e_FontTypeNames.FONTTYPE_INFO)
+122     End If
+124     Call KickPlayer(instance, i)
+126 Next i
+128 TeamCount = instance.RegisteredPlayers / instance.TeamSize
 130 currentIndex = GetHigherLvlWithoutTeam(instance)
 132 Dim CurrentAssignTeam As Integer
 138 Dim Direction As Integer
@@ -625,16 +625,16 @@ End Function
 
 Public Function AllPlayersReady(ByRef instance As t_Lobby) As t_response
 On Error GoTo AllPlayersReady_Err
-    Dim Ret As t_response
-    Dim i As Integer
-    Ret.Success = True
-    For i = 0 To instance.RegisteredPlayers - 1
-        If Not IsValidUserRef(instance.Players(i).user) Then
-            Ret.Success = False
-            Ret.Message = MsgDisconnectedPlayers
-        End If
-    Next i
-    AllPlayersReady = Ret
+100 Dim Ret As t_response
+102 Dim i As Integer
+104 Ret.Success = True
+106 For i = 0 To instance.RegisteredPlayers - 1
+108     If Not IsValidUserRef(instance.Players(i).user) Then
+110         Ret.Success = False
+112         Ret.Message = MsgDisconnectedPlayers
+114     End If
+116 Next i
+118 AllPlayersReady = Ret
     Exit Function
 AllPlayersReady_Err:
     Call TraceError(Err.Number, Err.Description, "ModLobby.AllPlayersReady", Erl)
