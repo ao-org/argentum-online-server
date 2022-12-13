@@ -1578,8 +1578,8 @@ Private Sub UserDañoUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As 
             ' Muere la víctima
 240         If .Stats.MinHp <= 0 Then
 244             Call ContarMuerte(VictimaIndex, AtacanteIndex)
-246             Call ActStats(VictimaIndex, AtacanteIndex)
                 Call PlayerKillPlayer(.pos.map, AtacanteIndex, VictimaIndex, e_DamageSourceType.e_phisical, .Invent.WeaponEqpObjIndex)
+246             Call ActStats(VictimaIndex, AtacanteIndex)
             ' Si sigue vivo
             Else
                 ' Enviamos la vida
