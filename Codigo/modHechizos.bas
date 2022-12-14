@@ -3293,8 +3293,8 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
             'Muere
 464         If UserList(tempChr).Stats.MinHp < 1 Then
 468             Call ContarMuerte(tempChr, UserIndex)
-470             Call ActStats(tempChr, UserIndex)
                 Call CustomScenarios.PlayerKillPlayer(UserList(UserIndex).pos.map, UserIndex, tempChr, e_DamageSourceType.e_magic, h)
+470             Call ActStats(tempChr, UserIndex)
             Else
 472             Call WriteUpdateHP(tempChr)
             End If

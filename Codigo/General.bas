@@ -109,25 +109,27 @@ Sub Bloquear(ByVal toMap As Boolean, ByVal sndIndex As Integer, ByVal X As Integ
         'Unifique los tres parametros (sndIndex,sndMap y map) en sndIndex... pero de todas formas, el mapa jamas se indica.. eso esta bien asi?
         'Puede llegar a ser, que se quiera mandar el mapa, habria que agregar un nuevo parametro y modificar.. lo quite porque no se usaba ni aca ni en el cliente :s
         ' WyroX: Uso bloqueo parcial
-        
         On Error GoTo Bloquear_Err
-        
         ' Envío sólo los flags de bloq
 100     b = b And e_Block.ALL_SIDES
-
 102     If toMap Then
 104         Call SendData(SendTarget.toMap, sndIndex, PrepareMessage_BlockPosition(X, Y, b))
         Else
 106         Call Write_BlockPosition(sndIndex, X, Y, b)
         End If
-
-        
         Exit Sub
-
 Bloquear_Err:
 108     Call TraceError(Err.Number, Err.Description, "General.Bloquear", Erl)
+End Sub
 
+Sub BlockAndInform(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer, ByVal NewState As Integer)
+100    If NewState Then
+110        MapData(Map, X, Y).Blocked = e_Block.ALL_SIDES Or e_Block.GM
+       Else
+120        MapData(Map, X, Y).Blocked = 0
+       End If
         
+114    Call Bloquear(True, Map, X, Y, MapData(Map, X, Y).Blocked)
 End Sub
 
 Sub MostrarBloqueosPuerta(ByVal toMap As Boolean, _

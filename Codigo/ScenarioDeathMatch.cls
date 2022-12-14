@@ -20,8 +20,8 @@ Implements IBaseScenario
 Private Type t_SpawnItems
     itemId As Integer
     itemCount As Integer
-    StackCount As Integer
-    InitialStacks As Integer
+    StackCount As Single
+    InitialStacks As Single
     timer As t_Timer
 End Type
 
@@ -43,6 +43,16 @@ Dim MapDropItems As Boolean
 Dim PrevMapState As Integer
 Dim SafeFigthState As Boolean
 Dim FriendlyFireState As Boolean
+Dim FightAreaTopLeft As t_Position
+Dim FightAreaBottomRight As t_Position
+Dim PlayerAreaIncreaseModifier As Single
+Dim RingLimiterHItemID As Long
+Dim RingLimiterVItemID As Long
+Dim RingLimiterTRItemID As Long
+Dim RingLimiterTLItemID As Long
+Dim RingLimiterBRItemID As Long
+Dim RingLimiterBLItemID As Long
+Dim MinArenaSize As Integer
 
 Private Sub Class_Initialize()
 On Error GoTo DeathMatch_Initialize_Err:
@@ -55,6 +65,14 @@ On Error GoTo DeathMatch_Initialize_Err:
     PlayerRespawnTime = val(ScenarioIni.GetValue("INIT", "PlayerRespawnTime"))
     MaxTime = MaxTime * 1000
     PlayerRespawnTime = PlayerRespawnTime * 1000
+    PlayerAreaIncreaseModifier = val(ScenarioIni.GetValue("INIT", "PlayerAreaIncreaseModifier")) / 10
+    RingLimiterHItemID = val(ScenarioIni.GetValue("INIT", "RingLimiterHItemId"))
+    RingLimiterVItemID = val(ScenarioIni.GetValue("INIT", "RingLimiterVItemID"))
+    RingLimiterTRItemID = val(ScenarioIni.GetValue("INIT", "RingLimiterTRItemID"))
+    RingLimiterTLItemID = val(ScenarioIni.GetValue("INIT", "RingLimiterTLItemID"))
+    RingLimiterBRItemID = val(ScenarioIni.GetValue("INIT", "RingLimiterBRItemID"))
+    RingLimiterBLItemID = val(ScenarioIni.GetValue("INIT", "RingLimiterBLItemID"))
+    MinArenaSize = val(ScenarioIni.GetValue("INIT", "MinArenaSize"))
 116 TargetScore = val(ScenarioIni.GetValue("INIT", "TargetScore"))
 118 Call LoadForbidenItems(ScenarioIni)
 120 UpdateIndex = AddUpdateScenario(Me)
@@ -75,8 +93,8 @@ Private Sub LoadItemsToSpawn(ScenearioIni As clsIniManager)
     For i = 0 To itemCount - 1
         ItemsToSpawn(i).itemId = val(ScenearioIni.GetValue("SpawnItem" & i + 1, "ItemId"))
         ItemsToSpawn(i).itemCount = val(ScenearioIni.GetValue("SpawnItem" & i + 1, "ItemCount"))
-        ItemsToSpawn(i).StackCount = val(ScenearioIni.GetValue("SpawnItem" & i + 1, "StackCount"))
-        ItemsToSpawn(i).InitialStacks = val(ScenearioIni.GetValue("SpawnItem" & i + 1, "InitialStacks"))
+        ItemsToSpawn(i).StackCount = val(ScenearioIni.GetValue("SpawnItem" & i + 1, "StackCount")) / 10
+        ItemsToSpawn(i).InitialStacks = val(ScenearioIni.GetValue("SpawnItem" & i + 1, "InitialStacks")) / 10
         spawInterval = val(ScenearioIni.GetValue("SpawnItem" & i + 1, "SpawnInterval"))
         Call SetTimer(ItemsToSpawn(i).timer, spawInterval * 1000)
     Next i
@@ -92,6 +110,78 @@ Private Sub LoadForbidenItems(ScenearioIni As clsIniManager)
     Next i
 End Sub
 
+Private Sub UpdateFightAreaForPlayerCount()
+    Dim size As Integer
+    size = MinArenaSize + GenericGlobalLobby.RegisteredPlayers * PlayerAreaIncreaseModifier
+    FightAreaTopLeft.X = 50 - size
+    FightAreaTopLeft.y = 50 - size
+    FightAreaBottomRight.X = 50 + size
+    FightAreaBottomRight.y = 50 + size
+End Sub
+
+Private Sub RemoveForbiddenItems(ByVal UserIndex As Integer)
+    Dim i As Integer
+    With UserList(UserIndex)
+        For i = 1 To UBound(.invent.Object)
+            If IsForbidden(.invent.Object(i).objIndex) Then
+                Call QuitarUserInvItem(UserIndex, i, .invent.Object(i).amount)
+            End If
+        Next i
+        If .flags.ModificoInventario Then
+            Call UpdateUserInv(True, UserIndex, 0)
+        End If
+    End With
+End Sub
+
+Private Sub LimitFightArea()
+    Dim X As Integer
+    Dim y As Integer
+    Dim MiObj As t_Obj
+    MiObj.amount = 1
+    MiObj.objIndex = RingLimiterHItemID
+    Dim SpawnPos As t_WorldPos
+    SpawnPos.map = MapNumber
+    Call UpdateFightAreaForPlayerCount
+    For X = FightAreaTopLeft.X To FightAreaBottomRight.X
+       SpawnPos.X = X
+       SpawnPos.y = FightAreaTopLeft.y - 1
+       Call TirarItemAlPiso(SpawnPos, MiObj, 0)
+       SpawnPos.y = FightAreaBottomRight.y + 1
+       Call TirarItemAlPiso(SpawnPos, MiObj, 0)
+       Call BlockAndInform(MapNumber, X, FightAreaTopLeft.y - 1, 1)
+       Call BlockAndInform(MapNumber, X, FightAreaBottomRight.y + 1, 1)
+    Next X
+    MiObj.objIndex = RingLimiterVItemID
+    For y = FightAreaTopLeft.y To FightAreaBottomRight.y
+       SpawnPos.X = FightAreaTopLeft.X - 1
+       SpawnPos.y = y
+       Call TirarItemAlPiso(SpawnPos, MiObj, 0)
+       SpawnPos.X = FightAreaBottomRight.X + 1
+       Call TirarItemAlPiso(SpawnPos, MiObj, 0)
+       Call BlockAndInform(MapNumber, FightAreaTopLeft.X - 1, y, 1)
+       Call BlockAndInform(MapNumber, FightAreaBottomRight.X + 1, y, 1)
+    Next y
+    MiObj.objIndex = RingLimiterTLItemID
+    SpawnPos.X = FightAreaTopLeft.X - 1
+    SpawnPos.y = FightAreaTopLeft.y - 1
+    Call TirarItemAlPiso(SpawnPos, MiObj, 0)
+    
+    MiObj.objIndex = RingLimiterTRItemID
+    SpawnPos.X = FightAreaBottomRight.X + 1
+    SpawnPos.y = FightAreaTopLeft.y - 1
+    Call TirarItemAlPiso(SpawnPos, MiObj, 0)
+    
+    MiObj.objIndex = RingLimiterBLItemID
+    SpawnPos.X = FightAreaTopLeft.X - 1
+    SpawnPos.y = FightAreaBottomRight.y + 1
+    Call TirarItemAlPiso(SpawnPos, MiObj, 0)
+       
+    MiObj.objIndex = RingLimiterBRItemID
+    SpawnPos.X = FightAreaBottomRight.X + 1
+    SpawnPos.y = FightAreaBottomRight.y + 1
+    Call TirarItemAlPiso(SpawnPos, MiObj, 0)
+End Sub
+
 Private Sub CloseScenario()
 On Error GoTo CloseScenario_Err:
 100    Call ModLobby.ReturnAllPlayers(GenericGlobalLobby)
@@ -103,6 +193,7 @@ On Error GoTo CloseScenario_Err:
 112    MapInfo(MapNumber).Seguro = PrevMapState
 114    MapInfo(mapNumber).SafeFightMap = SafeFigthState
 116    MapInfo(MapNumber).FriendlyFire = FriendlyFireState
+118    Call ClearMap
     Exit Sub
 CloseScenario_Err:
     Call TraceError(Err.Number, Err.Description, "ScenarioHunt.CloseScenario ", Erl)
@@ -115,7 +206,15 @@ On Error GoTo ClearMap_Err:
 110    MapInfo(MapNumber).DropItems = MapDropItems
 112    MapInfo(MapNumber).Seguro = PrevMapState
 114    MapInfo(MapNumber).SafeFightMap = SafeFigthState
-116    MapInfo(MapNumber).FriendlyFire = FriendlyFireState
+116    Dim i As Integer
+118    For i = FightAreaTopLeft.X - 1 To FightAreaBottomRight.X + 1
+120        Call BlockAndInform(MapNumber, i, FightAreaTopLeft.y - 1, 0)
+122        Call BlockAndInform(MapNumber, i, FightAreaBottomRight.y + 1, 0)
+124    Next i
+126    For i = FightAreaTopLeft.y To FightAreaBottomRight.y
+128        Call BlockAndInform(MapNumber, FightAreaTopLeft.X - 1, i, 0)
+130        Call BlockAndInform(MapNumber, FightAreaBottomRight.X + 1, i, 0)
+132    Next i
     Exit Sub
 ClearMap_Err:
     Call TraceError(Err.Number, Err.Description, "ScenarioHunt.ClearMap", Erl)
@@ -188,7 +287,24 @@ Public Sub IBaseScenario_PlayerKillPlayer(ByVal killerIndex As Integer, ByVal de
         Call SendData(SendTarget.toMap, MapNumber, PrepareMessageConsoleMsg("Tenemos un ganador!", e_FontTypeNames.FONTTYPE_GUILD))
         Call MatchCompleted
     End If
-    Call PlayerRespawn.Add(deadIndex, GetTickCount())
+    Dim RespawnInfo As clsRespawnInfo
+    Set RespawnInfo = New clsRespawnInfo
+    RespawnInfo.RespawnTime = GetTickCount()
+    With UserList(deadIndex)
+        Dim i As Integer
+        For i = LBound(.invent.Object) To UBound(.invent.Object)
+            If .invent.Object(i).Equipped Then
+                Call RespawnInfo.AddEquipedElement(i)
+            End If
+        Next i
+        If .flags.TomoPocion Then
+            RespawnInfo.HasPowerUp = True
+            RespawnInfo.PowerUpTime = .flags.DuracionEfecto
+            RespawnInfo.Strength = .Stats.UserAtributos(1)
+            RespawnInfo.Agility = .Stats.UserAtributos(2)
+        End If
+    End With
+    Call PlayerRespawn.Add(deadIndex, RespawnInfo)
 End Sub
 
 Public Sub IBaseScenario_Update()
@@ -238,6 +354,7 @@ End Sub
 
 Public Sub IBaseScenario_OnUserDisconnected(ByVal userIndex As Integer)
     Call Board.DisconnectUser(userIndex, UserList(userIndex).ID)
+    Call RemoveForbiddenItems(UserIndex)
 End Sub
 
 Public Sub IBaseScenario_OnUserReconnect(ByVal userIndex As Integer)
@@ -250,13 +367,13 @@ Private Sub StartGame()
     LastFrameTime = GetTickCount()
     Call SendData(SendTarget.toMap, MapNumber, PrepareMessageConsoleMsg("Que inicie la masacre!!!", e_FontTypeNames.FONTTYPE_GUILD))
     ElapsedTime = 0
-    
+    Call LimitFightArea
     Dim i As Integer
     For i = 0 To GenericGlobalLobby.RegisteredPlayers - 1
         Dim spawnPos As t_WorldPos
         spawnPos.map = MapNumber
-        spawnPos.x = RandomNumber(12, 85)
-        spawnPos.y = RandomNumber(12, 85)
+        SpawnPos.X = RandomNumber(FightAreaTopLeft.X, FightAreaBottomRight.X)
+        SpawnPos.y = RandomNumber(FightAreaTopLeft.y, FightAreaBottomRight.y)
         If GenericGlobalLobby.Players(i).IsSummoned Then
             If IsValidUserRef(GenericGlobalLobby.Players(i).user) Then
                 Call WarpToLegalPos(GenericGlobalLobby.Players(i).user.ArrayIndex, MapNumber, SpawnPos.X, SpawnPos.y, True, True)
@@ -264,8 +381,10 @@ Private Sub StartGame()
         End If
     Next i
     Dim j As Integer
+    Dim InitialStacks As Integer
     For i = 0 To UBound(ItemsToSpawn) - 1
-        For j = 0 To ItemsToSpawn(i).InitialStacks - 1
+        InitialStacks = ItemsToSpawn(i).InitialStacks * GenericGlobalLobby.RegisteredPlayers
+        For j = 0 To InitialStacks
             Call SpawnItem(ItemsToSpawn(i).itemId, ItemsToSpawn(i).itemCount)
         Next j
     Next i
@@ -275,8 +394,8 @@ End Sub
 Private Sub Respawn(ByVal player As Integer)
     Dim spawnPos As t_WorldPos
     spawnPos.map = MapNumber
-    spawnPos.x = RandomNumber(12, 85)
-    spawnPos.y = RandomNumber(12, 85)
+    SpawnPos.X = RandomNumber(FightAreaTopLeft.X, FightAreaBottomRight.X)
+    SpawnPos.y = RandomNumber(FightAreaTopLeft.y, FightAreaBottomRight.y)
     Call WarpToLegalPos(player, MapNumber, spawnPos.x, spawnPos.y, True, True)
     Call RevivirUsuario(player)
     UserList(player).Counters.timeFx = 2
@@ -287,6 +406,12 @@ End Sub
 Private Sub MatchCompleted()
     MapInfo(MapNumber).Seguro = 1
     Call SetTimer(CountdownTimer, 1000)
+    Dim i As Integer
+    For i = 0 To GenericGlobalLobby.RegisteredPlayers - 1
+        If IsValidUserRef(GenericGlobalLobby.Players(i).user) Then
+            Call RemoveForbiddenItems(GenericGlobalLobby.Players(i).user.ArrayIndex)
+        End If
+    Next i
     GenericGlobalLobby.State = Completed
     ElapsedTime = MaxTime
     Call Board.PublishScoreboard(SendTarget.toMap, MapNumber, GenericGlobalLobby, True)
@@ -314,11 +439,25 @@ Private Sub RespawnPlayers()
     Dim key As Variant
     Dim Keys As Variant
     Dim currentTime As Long
+    Dim RespawnInfo As clsRespawnInfo
+    Dim i As Integer
     currentTime = GetTickCount()
     Keys = PlayerRespawn.Keys
     For Each key In Keys
-        If currentTime - PlayerRespawn.Item(key) > PlayerRespawnTime Then
+        Set RespawnInfo = PlayerRespawn.Item(key)
+        If currentTime - RespawnInfo.RespawnTime > PlayerRespawnTime Then
             Call Respawn(key)
+            For i = 0 To RespawnInfo.EquipedElementCount - 1
+                Call EquiparInvItem(key, RespawnInfo.GetActiveSlot(i))
+            Next i
+            If RespawnInfo.HasPowerUp Then
+                With UserList(key)
+                    .Stats.UserAtributos(1) = RespawnInfo.Strength
+                    .Stats.UserAtributos(2) = RespawnInfo.Agility
+                    .flags.DuracionEfecto = RespawnInfo.PowerUpTime
+                    Call WriteFYA(key)
+                End With
+            End If
             Call PlayerRespawn.Remove(key)
         End If
     Next key
@@ -326,10 +465,12 @@ End Sub
 
 Private Sub RespawnItems(ByVal frametime As Long)
     Dim i, j As Integer
+    Dim SpawnCount As Integer
     For i = 0 To UBound(ItemsToSpawn) - 1
         If UpdateTime(ItemsToSpawn(i).timer, frametime) Then
             For j = 0 To ItemsToSpawn(i).StackCount - 1
-                Call SpawnItem(ItemsToSpawn(i).itemId, ItemsToSpawn(i).itemCount)
+                SpawnCount = ItemsToSpawn(i).itemCount * GenericGlobalLobby.RegisteredPlayers
+                Call SpawnItem(ItemsToSpawn(i).itemId, SpawnCount)
             Next j
         End If
     Next i
@@ -341,8 +482,8 @@ Private Sub SpawnItem(ByVal itemId As Integer, ByVal stackSize As Integer)
     MiObj.objIndex = itemId
     Dim spawnPos As t_WorldPos
     spawnPos.map = MapNumber
-    spawnPos.x = RandomNumber(12, 85)
-    spawnPos.y = RandomNumber(12, 85)
+    SpawnPos.X = RandomNumber(FightAreaTopLeft.X, FightAreaBottomRight.X)
+    SpawnPos.y = RandomNumber(FightAreaTopLeft.y, FightAreaBottomRight.y)
     Call TirarItemAlPiso(spawnPos, MiObj, 0)
 End Sub
 
