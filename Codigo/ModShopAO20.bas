@@ -23,7 +23,7 @@ On Error GoTo init_transaction_Err
 108         Call LogShopErrors("El usuario " & .name & " intentó comprar un objeto que no es de shop (REVISAR) | " & obj.name)
             Exit Sub
         End If
-        
+        Call UpdateCharacterPatreonCredits(UserIndex)
 110     If obj.Valor > .Stats.Creditos Then
 112         Call WriteConsoleMsg(userIndex, "Error al realizar la transacción.", e_FontTypeNames.FONTTYPE_INFO)
 114         Call LogShopErrors("El usuario " & .name & " intentó editar el valor del objeto (REVISAR) | " & obj.name)
@@ -44,8 +44,8 @@ On Error GoTo init_transaction_Err
 124         .Stats.Creditos = .Stats.Creditos - obj.Valor
             
             'Genero un log de los créditos que gastó y cuantos le quedan luego de la transacción.
-126         Call LogShopTransactions(.name & " | Compró -> " & ObjData(obj.ObjNum).name & " | Valor -> " & obj.Valor)
-128         Call Execute("update user set credits = ? where id = ?;", .Stats.Creditos, .ID)
+126         Call LogShopTransactions(.Name & " | Compró -> " & ObjData(obj.ObjNum).Name & " | Valor -> " & obj.Valor)
+128         Call Execute("update account set offline_patron_credits = ? where id = ?;", .Stats.Creditos, .AccountID)
 130         Call writeUpdateShopClienteCredits(userIndex)
 132         Call RegisterTransaction(.AccountID, .ID, obj.ObjNum, obj.Valor, .Stats.Creditos)
         End If

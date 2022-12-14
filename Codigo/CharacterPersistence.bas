@@ -346,30 +346,8 @@ Public Function LoadCharacterFromDB(ByVal userIndex As Integer) As Boolean
             Call Execute("update account set last_ip = ? where id = ?", .IP, .AccountID)
             
             .Stats.Creditos = 0
-            Set RS = Query("Select is_active_patron, credits, offline_patron_credits from account where id = ?;", .AccountID)
+            Set RS = Query("Select is_active_patron, from account where id = ?;", .AccountID)
             If Not RS Is Nothing Then
-                'Patreon gateway pay to the field offline_patron_credits
-                'In-game credits are the field credits
-                'So here we add the offline_patron_credits to whatever the user had in credits already
-            
-                Dim in_game_credits As Long
-                Dim offline_credits As Long
-                in_game_credits = RS!credits
-                offline_credits = CLng(RS!offline_patron_credits)
-                .Stats.Creditos = offline_credits + in_game_credits
-                 If (offline_credits > 0) Then
-                    Call LogCreditosPatreon(.Name & " | " & .Email & " | Offline_Credits = " & offline_credits & " | Ingame_credits = " & in_game_credits)
-                End If
-                
-                'Since me moved the offline_credits into in_game_credits we need to reset the offline_credits_field to 0
-                Call Execute("update account set offline_patron_credits = 0 where id = ?;", .AccountID)
-                'And we update the DB with the new total amount in_game_credits
-                Call Execute("Update user set credits = ? where id = ?;", .Stats.Creditos, .ID)
-                
-                If (.Stats.Creditos > 0) Then
-                    Call LogCreditosPatreon(.Name & " | " & .Email & " | Logged with " & .Stats.Creditos)
-                End If
-                
                 Dim tipo_usuario_db As Long
                 tipo_usuario_db = RS!is_active_patron
                 Select Case tipo_usuario_db
@@ -401,6 +379,14 @@ ErrorHandler:
 478     Call LogDatabaseError("Error en LoadCharacterFromDB: " & UserList(userIndex).Name & ". " & Err.Number & " - " & Err.Description & ". Línea: " & Erl)
 
 End Function
+
+Public Sub UpdateCharacterPatreonCredits(ByVal UserIndex As Integer)
+    Dim RS As ADODB.Recordset
+    With UserList(UserIndex)
+        Set RS = Query("Select offline_patron_credits from account where id = ?;", .AccountID)
+        .Stats.Creditos = RS!offline_patron_credits
+    End With
+End Sub
 
 Public Sub SaveCharacterDB(ByVal userIndex As Integer)
 

@@ -2578,7 +2578,6 @@ On Error GoTo SaveUser_Err
         End If
         Call SaveCharacterDB(userIndex)
         If Logout Then
-            Call SaveCreditsDatabase(userIndex)
             Call RemoveTokenDatabase(userIndex)
         End If
         UserList(userIndex).Counters.LastSave = GetTickCount
@@ -2587,22 +2586,7 @@ On Error GoTo SaveUser_Err
 SaveUser_Err:
         Call TraceError(Err.Number, Err.Description, "ES.SaveUser", Erl)
 End Sub
-Public Sub SaveCreditsDatabase(ByVal user_index As Integer)
-    Dim RS As ADODB.Recordset
-    With UserList(user_index)
-        Debug.Assert .flags.UserLogged And .ConnID > 0
-        Call Execute("update user set credits = 0 where id = ?;", .ID)
-        Set RS = Query("select offline_patron_credits from account where id = ?;", .AccountID)
-        If Not RS Is Nothing Then
-            Dim offline_credits As Long
-            Dim toSaveCredits As Long
-            'Has the user got a payment while playing?
-            offline_credits = CLng(RS!offline_patron_credits)
-            toSaveCredits = offline_credits + .Stats.Creditos
-            Call Execute("update account set offline_patron_credits = ? where id = ?;", toSaveCredits, .AccountID)
-        End If
-    End With
-End Sub
+
 Public Sub RemoveTokenDatabase(ByVal userIndex As Integer)
     Call Execute("delete from tokens where id =  ?;", UserList(userIndex).encrypted_session_token_db_id)
 End Sub
