@@ -806,7 +806,7 @@ Sub PickObj(ByVal UserIndex As Integer)
 116             MiObj.ObjIndex = MapData(UserList(UserIndex).Pos.Map, X, Y).ObjInfo.ObjIndex
         
 118             If Not MeterItemEnInventario(UserIndex, MiObj) Then
-                    'Call WriteConsoleMsg(UserIndex, "No puedo cargar mAs t_Objetos.", e_FontTypeNames.FONTTYPE_INFO)
+                    'Call WriteConsoleMsg(UserIndex, "No puedo cargar mas objetos.", e_FontTypeNames.FONTTYPE_INFO)
                 Else
             
                     'Quitamos el objeto
