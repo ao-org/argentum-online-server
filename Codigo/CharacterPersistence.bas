@@ -384,7 +384,11 @@ Public Sub LoadPatronCreditsFromDB(ByVal UserIndex As Integer)
     Dim RS As ADODB.Recordset
     With UserList(UserIndex)
         Set RS = Query("Select offline_patron_credits from account where id = ?;", .AccountID)
-        .Stats.Creditos = RS!offline_patron_credits
+        If Not RS Is Nothing Then
+            .Stats.Creditos = RS!offline_patron_credits
+        Else
+            .Stats.Creditos = 0
+        End If
     End With
 End Sub
 
