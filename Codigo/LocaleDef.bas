@@ -1,5 +1,6 @@
 Attribute VB_Name = "LocaleDef"
 
+Public Const MsgInventoryIsFull = 328
 Public Const MsgCantAttackYourself = 380
 Public Const MSgNpcInmuneToEffect = 381
 Public Const MsgInvalidGroupCount = 406

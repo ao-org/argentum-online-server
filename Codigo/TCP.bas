@@ -1687,7 +1687,7 @@ Sub CloseUser(ByVal UserIndex As Integer)
                 Call ClearNpcRef(.MascotasIndex(i))
 126         Next i
         
-128         errordesc = "ERROR Update Map Users"
+128         errordesc = "ERROR Update Map Users map: " & map
         
             'Update Map Users
 130         MapInfo(map).NumUsers = MapInfo(map).NumUsers - 1
