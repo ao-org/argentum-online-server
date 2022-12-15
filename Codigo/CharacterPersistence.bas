@@ -380,7 +380,7 @@ ErrorHandler:
 
 End Function
 
-Public Sub UpdateCharacterPatreonCredits(ByVal UserIndex As Integer)
+Public Sub LoadPatronCreditsFromDB(ByVal UserIndex As Integer)
     Dim RS As ADODB.Recordset
     With UserList(UserIndex)
         Set RS = Query("Select offline_patron_credits from account where id = ?;", .AccountID)

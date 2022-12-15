@@ -23,7 +23,7 @@ On Error GoTo init_transaction_Err
 108         Call LogShopErrors("El usuario " & .name & " intentó comprar un objeto que no es de shop (REVISAR) | " & obj.name)
             Exit Sub
         End If
-        Call UpdateCharacterPatreonCredits(UserIndex)
+        Call LoadPatronCreditsFromDB(UserIndex)
 110     If obj.Valor > .Stats.Creditos Then
 112         Call WriteConsoleMsg(userIndex, "Error al realizar la transacción.", e_FontTypeNames.FONTTYPE_INFO)
 114         Call LogShopErrors("El usuario " & .name & " intentó editar el valor del objeto (REVISAR) | " & obj.name)
@@ -36,20 +36,19 @@ On Error GoTo init_transaction_Err
 116     objInventario.amount = 1
 118     objInventario.objIndex = obj.ObjNum
         
-120     If Not MeterItemEnInventario(userIndex, objInventario) Then
+        If GetSlotForItemInInvetory(UserIndex, objInventario) <= 0 Then
 122         Call WriteConsoleMsg(userIndex, "Asegurate de tener espacio suficiente en tu inventario.", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
-        Else
-            'Descuento los créditos
-124         .Stats.Creditos = .Stats.Creditos - obj.Valor
-            
-            'Genero un log de los créditos que gastó y cuantos le quedan luego de la transacción.
-126         Call LogShopTransactions(.Name & " | Compró -> " & ObjData(obj.ObjNum).Name & " | Valor -> " & obj.Valor)
-128         Call Execute("update account set offline_patron_credits = ? where id = ?;", .Stats.Creditos, .AccountID)
-130         Call writeUpdateShopClienteCredits(userIndex)
-132         Call RegisterTransaction(.AccountID, .ID, obj.ObjNum, obj.Valor, .Stats.Creditos)
         End If
-                
+120     'Descuento los créditos
+124     .Stats.Creditos = .Stats.Creditos - obj.Valor
+          
+        'Genero un log de los créditos que gastó y cuantos le quedan luego de la transacción.
+126     Call LogShopTransactions(.Name & " | Compró -> " & ObjData(obj.ObjNum).Name & " | Valor -> " & obj.Valor)
+128     Call Execute("update account set offline_patron_credits = ? where id = ?;", .Stats.Creditos, .AccountID)
+130     Call writeUpdateShopClienteCredits(UserIndex)
+132     Call RegisterTransaction(.AccountID, .ID, obj.ObjNum, obj.Valor, .Stats.Creditos)
+        Call MeterItemEnInventario(UserIndex, objInventario)
     End With
     Exit Sub
 init_transaction_Err:

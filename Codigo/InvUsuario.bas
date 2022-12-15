@@ -681,6 +681,25 @@ MakeObj_Err:
 120     Call TraceError(Err.Number, Err.Description, "InvUsuario.MakeObj", Erl)
 End Sub
 
+Function GetSlotForItemInInvetory(ByVal UserIndex As Integer, ByRef MyObject As t_Obj) As Integer
+On Error GoTo GetSlotForItemInInvetory_Err
+    GetSlotForItemInInvetory = -1
+100 Dim i As Integer
+    
+102 For i = 1 To UserList(UserIndex).CurrentInventorySlots
+104    If UserList(UserIndex).invent.Object(i).objIndex = 0 Then
+106        GetSlotForItemInInvetory = i 'we found a valid place but keep looking in case we can stack
+108    ElseIf UserList(UserIndex).invent.Object(i).objIndex = MyObject.objIndex And _
+              UserList(UserIndex).invent.Object(i).amount + MyObject.amount <= MAX_INVENTORY_OBJS Then
+110        GetSlotForItemInInvetory = i 'we can stack the item, let use this slot
+112        Exit Function
+       End If
+    Next i
+    Exit Function
+GetSlotForItemInInvetory_Err:
+    Call TraceError(Err.Number, Err.Description, "InvUsuario.GetSlotForItemInInvetory", Erl)
+End Function
+
 Function MeterItemEnInventario(ByVal UserIndex As Integer, ByRef MiObj As t_Obj) As Boolean
 
         On Error GoTo MeterItemEnInventario_Err
@@ -689,39 +708,18 @@ Function MeterItemEnInventario(ByVal UserIndex As Integer, ByRef MiObj As t_Obj)
 
         Dim Y    As Integer
 
-        Dim Slot As Byte
+        Dim Slot As Integer
 
         '¿el user ya tiene un objeto del mismo tipo? ?????
-100     Slot = 1
-
-102     Do Until UserList(UserIndex).Invent.Object(Slot).ObjIndex = MiObj.ObjIndex And UserList(UserIndex).Invent.Object(Slot).amount + MiObj.amount <= MAX_INVENTORY_OBJS
-104         Slot = Slot + 1
-
-106         If Slot > UserList(UserIndex).CurrentInventorySlots Then
-                Exit Do
-
-            End If
-
-        Loop
-        
-        'Sino busca un slot vacio
-108     If Slot > UserList(UserIndex).CurrentInventorySlots Then
-110         Slot = 1
-
-112         Do Until UserList(UserIndex).Invent.Object(Slot).ObjIndex = 0
-114             Slot = Slot + 1
-
-116             If Slot > UserList(UserIndex).CurrentInventorySlots Then
-118                 Call WriteLocaleMsg(UserIndex, "328", e_FontTypeNames.FONTTYPE_FIGHT)
-120                 MeterItemEnInventario = False
-                    Exit Function
-
-                End If
-
-            Loop
-122         UserList(UserIndex).Invent.NroItems = UserList(UserIndex).Invent.NroItems + 1
+100     Slot = GetSlotForItemInInvetory(UserIndex, MiObj)
+        If Slot <= 0 Then
+118        Call WriteLocaleMsg(UserIndex, MsgInventoryIsFull, e_FontTypeNames.FONTTYPE_FIGHT)
+120        MeterItemEnInventario = False
+           Exit Function
         End If
-        
+        If UserList(UserIndex).invent.Object(Slot).objIndex = 0 Then
+            UserList(UserIndex).invent.NroItems = UserList(UserIndex).invent.NroItems + 1
+        End If
         'Mete el objeto
 124     If UserList(UserIndex).Invent.Object(Slot).amount + MiObj.amount <= MAX_INVENTORY_OBJS Then
             'Menor que MAX_INV_OBJS

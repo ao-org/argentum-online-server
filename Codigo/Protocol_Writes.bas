@@ -5489,7 +5489,7 @@ Public Sub WriteShopInit(ByVal UserIndex As Integer)
     Call Writer.WriteInt16(ServerPacketID.ShopInit)
     cant_obj_shop = UBound(ObjShop)
     Call Writer.WriteInt16(cant_obj_shop)
-    Call UpdateCharacterPatreonCredits(UserIndex)
+    Call LoadPatronCreditsFromDB(UserIndex)
     Call Writer.WriteInt32(UserList(userindex).Stats.Creditos)
     
     'Envío todos los objetos.
