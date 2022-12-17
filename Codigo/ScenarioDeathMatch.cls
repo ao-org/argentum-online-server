@@ -187,12 +187,6 @@ On Error GoTo CloseScenario_Err:
 100    Call ModLobby.ReturnAllPlayers(GenericGlobalLobby)
 102    Set GenericGlobalLobby.scenario = Nothing
 104    Call ModLobby.UpdateLobbyState(GenericGlobalLobby, e_LobbyState.UnInitilized)
-106    CustomScenarios.RemoveCustomScenario (MapNumber)
-108    CustomScenarios.RemoveUpdateScenario (UpdateIndex)
-110    MapInfo(MapNumber).DropItems = MapDropItems
-112    MapInfo(MapNumber).Seguro = PrevMapState
-114    MapInfo(mapNumber).SafeFightMap = SafeFigthState
-116    MapInfo(MapNumber).FriendlyFire = FriendlyFireState
 118    Call ClearMap
     Exit Sub
 CloseScenario_Err:
@@ -206,6 +200,7 @@ On Error GoTo ClearMap_Err:
 110    MapInfo(MapNumber).DropItems = MapDropItems
 112    MapInfo(MapNumber).Seguro = PrevMapState
 114    MapInfo(MapNumber).SafeFightMap = SafeFigthState
+115    MapInfo(MapNumber).FriendlyFire = FriendlyFireState
 116    Dim i As Integer
 118    For i = FightAreaTopLeft.X - 1 To FightAreaBottomRight.X + 1
 120        Call BlockAndInform(MapNumber, i, FightAreaTopLeft.y - 1, 0)
@@ -258,8 +253,8 @@ End Function
 Public Sub IBaseScenario_WillSummonPlayer(ByVal UserIndex As Integer)
     Dim spawnPos As t_WorldPos
     spawnPos.map = MapNumber
-    spawnPos.X = RandomNumber(12, 85)
-    spawnPos.y = RandomNumber(12, 85)
+    spawnPos.X = RandomNumber(50 - MinArenaSize, 50 - MinArenaSize)
+    spawnPos.y = RandomNumber(50 - MinArenaSize, 50 - MinArenaSize)
     GenericGlobalLobby.SummonCoordinates = spawnPos
 End Sub
 
@@ -416,6 +411,8 @@ Private Sub MatchCompleted()
     ElapsedTime = MaxTime
     Call Board.PublishScoreboard(SendTarget.toMap, MapNumber, GenericGlobalLobby, True)
     Call CustomScenarios.ClearMap(MapNumber)
+    MapInfo(MapNumber).Seguro = 1
+    MapInfo(MapNumber).SafeFightMap = False
 End Sub
 
 Private Sub BroadcastPendingTime(ByVal frametime As Long)

@@ -1660,6 +1660,7 @@ Sub CloseUser(ByVal UserIndex As Integer)
         Dim i   As Integer
         
 100     With UserList(UserIndex)
+            map = .pos.map
 104         If Not .flags.YaGuardo Then
 106             Call ClearAndSaveUser(UserIndex)
             End If
