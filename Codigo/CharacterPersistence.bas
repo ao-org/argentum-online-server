@@ -346,7 +346,7 @@ Public Function LoadCharacterFromDB(ByVal userIndex As Integer) As Boolean
             Call Execute("update account set last_ip = ? where id = ?", .IP, .AccountID)
             
             .Stats.Creditos = 0
-            Set RS = Query("Select is_active_patron, from account where id = ?;", .AccountID)
+            Set RS = Query("Select is_active_patron from account where id = ?", .AccountID)
             If Not RS Is Nothing Then
                 Dim tipo_usuario_db As Long
                 tipo_usuario_db = RS!is_active_patron
