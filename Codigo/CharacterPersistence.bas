@@ -48,15 +48,15 @@ Public Function LoadCharacterFromDB(ByVal userIndex As Integer) As Boolean
                 If LenB(BanNick) = 0 Then BanNick = "*Error en la base de datos*"
                 If LenB(BaneoMotivo) = 0 Then BaneoMotivo = "*No se registra el motivo del baneo.*"
             
-                Call WriteShowMessageBox(userIndex, "Se te ha prohibido la entrada al juego debido a " & BaneoMotivo & ". Esta decisión fue tomada por " & BanNick & ".")
+                Call WriteShowMessageBox(UserIndex, "Se te ha prohibido la entrada al juego debido a " & BaneoMotivo & ". Esta decisión fue tomada por " & BanNick & ".")
             
                 Call CloseSocket(userIndex)
                 LoadCharacterFromDB = False
                 Exit Function
             End If
-            'HarThaoS: Comentado hasta que salga el MAO.
+
             If (RS!is_locked_in_mao) Then
-                Call WriteShowMessageBox(userIndex, "El personaje que estás intentando loguear se encuentra en venta, para desbloquearlo deberás hacerlo desde la página web.")
+                Call WriteShowMessageBox(UserIndex, "El personaje que estás intentando loguear se encuentra en venta, para desbloquearlo deberás hacerlo desde la página web.")
                 LoadCharacterFromDB = False
                 Call CloseSocket(userIndex)
                 Exit Function
@@ -94,7 +94,7 @@ Public Function LoadCharacterFromDB(ByVal userIndex As Integer) As Boolean
 160         .Invent.MunicionEqpSlot = SanitizeNullValue(RS!slot_ammo, 0)
 162         .Invent.BarcoSlot = SanitizeNullValue(RS!slot_ship, 0)
 164         .Invent.MonturaSlot = SanitizeNullValue(RS!slot_mount, 0)
-166         .Invent.DañoMagicoEqpSlot = SanitizeNullValue(RS!slot_dm, 0)
+166         .invent.DañoMagicoEqpSlot = SanitizeNullValue(RS!slot_dm, 0)
 168         .Invent.ResistenciaEqpSlot = SanitizeNullValue(RS!slot_rm, 0)
 170         .Invent.NudilloSlot = SanitizeNullValue(RS!slot_knuckles, 0)
 172         .Invent.HerramientaEqpSlot = SanitizeNullValue(RS!slot_tool, 0)
@@ -376,7 +376,7 @@ Public Function LoadCharacterFromDB(ByVal userIndex As Integer) As Boolean
         Exit Function
 
 ErrorHandler:
-478     Call LogDatabaseError("Error en LoadCharacterFromDB: " & UserList(userIndex).Name & ". " & Err.Number & " - " & Err.Description & ". Línea: " & Erl)
+478     Call LogDatabaseError("Error en LoadCharacterFromDB: " & UserList(UserIndex).name & ". " & Err.Number & " - " & Err.Description & ". Línea: " & Erl)
 
 End Function
 
@@ -440,7 +440,7 @@ Public Sub SaveCharacterDB(ByVal userIndex As Integer)
 156         Params(post_increment(i)) = .Invent.EscudoEqpSlot
 158         Params(post_increment(i)) = .Invent.CascoEqpSlot
 160         Params(post_increment(i)) = .Invent.MunicionEqpSlot
-162         Params(post_increment(i)) = .Invent.DañoMagicoEqpSlot
+162         Params(post_increment(i)) = .invent.DañoMagicoEqpSlot
 164         Params(post_increment(i)) = .Invent.ResistenciaEqpSlot
 166         Params(post_increment(i)) = .Invent.HerramientaEqpSlot
 168         Params(post_increment(i)) = .Invent.MagicoSlot
@@ -731,7 +731,7 @@ Public Sub SaveNewCharacterDB(ByVal userIndex As Integer)
 150         Params(post_increment(i)) = .Invent.EscudoEqpSlot
 152         Params(post_increment(i)) = .Invent.CascoEqpSlot
 154         Params(post_increment(i)) = .Invent.MunicionEqpSlot
-156         Params(post_increment(i)) = .Invent.DañoMagicoEqpSlot
+156         Params(post_increment(i)) = .invent.DañoMagicoEqpSlot
 158         Params(post_increment(i)) = .Invent.ResistenciaEqpSlot
 160         Params(post_increment(i)) = .Invent.HerramientaEqpSlot
 162         Params(post_increment(i)) = .Invent.MagicoSlot
