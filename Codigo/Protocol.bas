@@ -11411,8 +11411,8 @@ Private Sub HandlePublicarPersonajeMAO(ByVal UserIndex As Integer)
             .Stats.GLD = .Stats.GLD - 100000
             Call WriteUpdateGold(UserIndex)
         End If
-    
         Call Execute("update user set price_in_mao = ?, is_locked_in_mao = 1 where id = ?;", Valor, .ID)
+        Call modNetwork.Kick(UserList(UserIndex).ConnID, "El personaje fue publicado.")
     End With
         
     Exit Sub

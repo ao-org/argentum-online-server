@@ -465,8 +465,8 @@ Private Sub RespawnItems(ByVal frametime As Long)
     Dim SpawnCount As Integer
     For i = 0 To UBound(ItemsToSpawn) - 1
         If UpdateTime(ItemsToSpawn(i).timer, frametime) Then
-            For j = 0 To ItemsToSpawn(i).StackCount - 1
-                SpawnCount = ItemsToSpawn(i).itemCount * GenericGlobalLobby.RegisteredPlayers
+            For j = 0 To (ItemsToSpawn(i).StackCount * GenericGlobalLobby.RegisteredPlayers) - 1
+                SpawnCount = ItemsToSpawn(i).itemCount
                 Call SpawnItem(ItemsToSpawn(i).itemId, SpawnCount)
             Next j
         End If
