@@ -687,7 +687,7 @@ On Error GoTo GetSlotForItemInInvetory_Err
 100 Dim i As Integer
     
 102 For i = 1 To UserList(UserIndex).CurrentInventorySlots
-104    If UserList(UserIndex).invent.Object(i).objIndex = 0 Then
+104    If UserList(UserIndex).Invent.Object(i).objIndex = 0 And GetSlotForItemInInvetory = -1 Then
 106        GetSlotForItemInInvetory = i 'we found a valid place but keep looking in case we can stack
 108    ElseIf UserList(UserIndex).invent.Object(i).objIndex = MyObject.objIndex And _
               UserList(UserIndex).invent.Object(i).amount + MyObject.amount <= MAX_INVENTORY_OBJS Then
