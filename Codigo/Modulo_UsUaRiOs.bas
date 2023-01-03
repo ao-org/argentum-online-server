@@ -3024,3 +3024,7 @@ Public Sub UpdateCd(ByVal UserIndex As Integer, ByVal cdType As e_CdTypes)
     UserList(UserIndex).CdTimes(cdType) = GetTickCount()
     Call WriteUpdateCdType(UserIndex, cdType)
 End Sub
+
+Public Function IsVisible(ByRef User As t_User)
+    IsVisible = Not (User.flags.invisible Or User.flags.Oculto)
+End Function

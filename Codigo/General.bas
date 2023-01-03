@@ -527,14 +527,18 @@ Private Sub InicializarConstantes()
 204     MaxXBorder = XMaxMapSize - (XWindow \ 2)
 206     MinYBorder = YMinMapSize + (YWindow \ 2)
 208     MaxYBorder = YMaxMapSize - (YWindow \ 2)
-    
+
+210     RaceHeightOffset(Humano) = -35
+212     RaceHeightOffset(Elfo) = -35
+214     RaceHeightOffset(Drow) = -35
+216     RaceHeightOffset(Gnomo) = -27
+218     RaceHeightOffset(Enano) = -27
+300     RaceHeightOffset(Orco) = -35
         
         Exit Sub
 
 InicializarConstantes_Err:
-210     Call TraceError(Err.Number, Err.Description, "General.InicializarConstantes", Erl)
-
-        
+302     Call TraceError(Err.Number, Err.Description, "General.InicializarConstantes", Erl)
 End Sub
 
 Sub Main()

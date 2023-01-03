@@ -287,15 +287,15 @@ Public Enum e_Ciudad
 End Enum
 
 Public Enum e_Raza
-
     Humano = 1
     Elfo
     Drow
     Gnomo
     Enano
     Orco
-
 End Enum
+
+Public RaceHeightOffset(1 To Orco) As Integer
 
 Enum e_Genero
 
@@ -467,6 +467,8 @@ Public Const MAX_MENSAJES_FORO As Byte = 35
 Public Const MAXUSERHECHIZOS   As Byte = 40
 
 Public Const FX_TELEPORT_INDEX             As Integer = 1
+
+Public Const HiddenSpellTextTime As Integer = 500
 
 ' La utilidad de esto es casi nula, sólo se revisa si fue a la cabeza...
 Public Enum e_PartesCuerpo
@@ -1652,7 +1654,7 @@ Public Type t_UserFlags
     AdministrativeBan As Byte
     BanMotivo As String
 
-    TargetUser As t_UserReference ' Usuario señalado
+    targetUser As t_UserReference ' Usuario señalado
     
     TargetObj As Integer ' Obj señalado
     TargetObjMap As Integer

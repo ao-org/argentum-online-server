@@ -560,7 +560,11 @@ Sub DecirPalabrasMagicas(ByVal Hechizo As Byte, ByVal UserIndex As Integer)
         
         On Error GoTo DecirPalabrasMagicas_Err
         UserList(UserIndex).Counters.timeChat = 4
-100     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageChatOverHead("PMAG*" & Hechizo, UserList(UserIndex).Char.charindex, vbCyan, True, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+        If Not IsVisible(UserList(UserIndex)) And IsFeatureEnabled("invisible_cast_on_tile") Then
+            Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageTextOverTile(Hechizos(Hechizo).PalabrasMagicas, UserList(UserIndex).pos.X, UserList(UserIndex).pos.y, vbCyan, HiddenSpellTextTime, RaceHeightOffset(UserList(UserIndex).raza), False))
+        Else
+100         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageChatOverHead("PMAG*" & Hechizo, UserList(UserIndex).Char.charindex, vbCyan, True, UserList(UserIndex).pos.X, UserList(UserIndex).pos.y))
+        End If
         Exit Sub
 
 DecirPalabrasMagicas_Err:

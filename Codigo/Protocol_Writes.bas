@@ -4368,7 +4368,10 @@ End Function
 Public Function PrepareMessageTextOverTile(ByVal chat As String, _
                                            ByVal X As Integer, _
                                            ByVal Y As Integer, _
-                                           ByVal Color As Long)
+                                           ByVal Color As Long, _
+                                           Optional ByVal Duration As Integer = 1300, _
+                                           Optional ByVal OffsetY As Integer = 0, _
+                                           Optional ByVal Animated As Boolean = True)
         '<EhHeader>
         On Error GoTo PrepareMessageTextOverTile_Err
         '</EhHeader>
@@ -4377,6 +4380,9 @@ Public Function PrepareMessageTextOverTile(ByVal chat As String, _
 104     Call Writer.WriteInt16(X)
 106     Call Writer.WriteInt16(Y)
 108     Call Writer.WriteInt32(Color)
+110     Call Writer.WriteInt16(Duration)
+112     Call Writer.WriteInt16(OffsetY)
+114     Call Writer.WriteBool(Animated)
         '<EhFooter>
         Exit Function
 
