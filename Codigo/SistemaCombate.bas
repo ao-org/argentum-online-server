@@ -284,9 +284,10 @@ Private Function PoderAtaqueArma(ByVal UserIndex As Integer) As Long
         
 
         Dim PoderAtaqueTemp As Long
-100     PoderAtaqueTemp = ((UserList(UserIndex).Stats.UserSkills(e_Skill.Armas) + ((3 * UserList(UserIndex).Stats.UserSkills(e_Skill.Armas) / 100) * UserList(UserIndex).Stats.UserAtributos(e_Atributos.Agilidad))) * ModificadorPoderAtaqueArmas(UserList(UserIndex).clase))
-114     PoderAtaqueArma = (PoderAtaqueTemp + (2.5 * Maximo(CInt(UserList(UserIndex).Stats.ELV) - 12, 0)))
-
+        With UserList(UserIndex)
+100         PoderAtaqueTemp = ((.Stats.UserSkills(e_Skill.Armas) + ((3 * .Stats.UserSkills(e_Skill.Armas) / 100) * .Stats.UserAtributos(e_Atributos.Agilidad))) * ModificadorPoderAtaqueArmas(.clase))
+114         PoderAtaqueArma = (PoderAtaqueTemp + (2.5 * Maximo(CInt(.Stats.ELV) - 12, 0)))
+        End With
         
         Exit Function
 
@@ -302,10 +303,10 @@ Private Function PoderAtaqueProyectil(ByVal UserIndex As Integer) As Long
         
 
         Dim PoderAtaqueTemp As Long
-100     PoderAtaqueTemp = ((UserList(UserIndex).Stats.UserSkills(e_Skill.Proyectiles) + ((3 * UserList(UserIndex).Stats.UserSkills(e_Skill.Proyectiles) / 100) * UserList(UserIndex).Stats.UserAtributos(e_Atributos.Agilidad))) * ModificadorPoderAtaqueProyectiles(UserList(UserIndex).clase))
-
-114     PoderAtaqueProyectil = (PoderAtaqueTemp + (2.5 * Maximo(CInt(UserList(UserIndex).Stats.ELV) - 12, 0)))
-
+        With UserList(UserIndex)
+100         PoderAtaqueTemp = ((.Stats.UserSkills(e_Skill.Proyectiles) + ((3 * .Stats.UserSkills(e_Skill.Proyectiles) / 100) * .Stats.UserAtributos(e_Atributos.Agilidad))) * ModificadorPoderAtaqueProyectiles(.clase))
+114         PoderAtaqueProyectil = (PoderAtaqueTemp + (2.5 * Maximo(CInt(.Stats.ELV) - 12, 0)))
+        End With
         
         Exit Function
 
@@ -319,11 +320,11 @@ Private Function PoderAtaqueWrestling(ByVal UserIndex As Integer) As Long
         
         On Error GoTo PoderAtaqueWrestling_Err
         
-
-        Dim PoderAtaqueTemp As Long
-100     PoderAtaqueTemp = ((UserList(UserIndex).Stats.UserSkills(e_Skill.Wrestling) + ((3 * UserList(UserIndex).Stats.UserSkills(e_Skill.Wrestling)) * UserList(UserIndex).Stats.UserAtributos(e_Atributos.Agilidad))) * ModificadorPoderAtaqueArmas(UserList(UserIndex).clase))
-114     PoderAtaqueWrestling = (PoderAtaqueTemp + (2.5 * Maximo(CInt(UserList(UserIndex).Stats.ELV) - 12, 0)))
-
+        With UserList(UserIndex)
+            Dim PoderAtaqueTemp As Long
+100         PoderAtaqueTemp = ((.Stats.UserSkills(e_Skill.Wrestling) + ((3 * .Stats.UserSkills(e_Skill.Wrestling)) * .Stats.UserAtributos(e_Atributos.Agilidad))) * ModificadorPoderAtaqueArmas(.clase))
+114         PoderAtaqueWrestling = (PoderAtaqueTemp + (2.5 * Maximo(CInt(.Stats.ELV) - 12, 0)))
+        End With
         
         Exit Function
 
