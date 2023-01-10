@@ -260,20 +260,11 @@ Private Function PoderEvasion(ByVal UserIndex As Integer) As Long
         On Error GoTo PoderEvasion_Err
 
 100     With UserList(UserIndex)
-
-            Select Case .Stats.UserSkills(e_Skill.Tacticas)
-            
-                Case Is < 31
-                    PoderEvasion = .Stats.UserSkills(e_Skill.Tacticas) * ModClase(.clase).Evasion
-                Case Is < 61
-                    PoderEvasion = .Stats.UserSkills(e_Skill.Tacticas) + .Stats.UserAtributos(Agilidad) * ModClase(.clase).Evasion
-                Case Is < 91
-                    PoderEvasion = .Stats.UserSkills(e_Skill.Tacticas) + 2 * .Stats.UserAtributos(Agilidad) * ModClase(.clase).Evasion
-                Case Else
-104                 PoderEvasion = .Stats.UserSkills(e_Skill.Tacticas) + 3 * .Stats.UserAtributos(Agilidad) * ModClase(.clase).Evasion
-
-            End Select
-            
+            If IsFeatureEnabled("update-combat-formula") Then
+                PoderEvasion = (.Stats.UserSkills(e_Skill.Tacticas) + (3 * .Stats.UserSkills(e_Skill.Tacticas) / 100) * .Stats.UserAtributos(Agilidad)) * ModClase(.clase).Evasion
+            Else
+                PoderEvasion = .Stats.UserSkills(e_Skill.Tacticas) + (3 * .Stats.UserSkills(e_Skill.Tacticas) / 100) * .Stats.UserAtributos(Agilidad) * ModClase(.clase).Evasion
+            End If
             PoderEvasion = PoderEvasion + (2.5 * Maximo(.Stats.ELV - 12, 0))
 
         End With
@@ -293,20 +284,10 @@ Private Function PoderAtaqueArma(ByVal UserIndex As Integer) As Long
         
 
         Dim PoderAtaqueTemp As Long
-
-100     If UserList(UserIndex).Stats.UserSkills(e_Skill.Armas) < 31 Then
-102         PoderAtaqueTemp = (UserList(UserIndex).Stats.UserSkills(e_Skill.Armas) * ModificadorPoderAtaqueArmas(UserList(UserIndex).clase))
-104     ElseIf UserList(UserIndex).Stats.UserSkills(e_Skill.Armas) < 61 Then
-106         PoderAtaqueTemp = ((UserList(UserIndex).Stats.UserSkills(e_Skill.Armas) + UserList(UserIndex).Stats.UserAtributos(e_Atributos.Agilidad)) * ModificadorPoderAtaqueArmas(UserList(UserIndex).clase))
-108     ElseIf UserList(UserIndex).Stats.UserSkills(e_Skill.Armas) < 91 Then
-110         PoderAtaqueTemp = ((UserList(UserIndex).Stats.UserSkills(e_Skill.Armas) + (2 * UserList(UserIndex).Stats.UserAtributos(e_Atributos.Agilidad))) * ModificadorPoderAtaqueArmas(UserList(UserIndex).clase))
-        Else
-112         PoderAtaqueTemp = ((UserList(UserIndex).Stats.UserSkills(e_Skill.Armas) + (3 * UserList(UserIndex).Stats.UserAtributos(e_Atributos.Agilidad))) * ModificadorPoderAtaqueArmas(UserList(UserIndex).clase))
-
-        End If
-
-114     PoderAtaqueArma = (PoderAtaqueTemp + (2.5 * Maximo(CInt(UserList(UserIndex).Stats.ELV) - 12, 0)))
-
+        With UserList(UserIndex)
+100         PoderAtaqueTemp = ((.Stats.UserSkills(e_Skill.Armas) + ((3 * .Stats.UserSkills(e_Skill.Armas) / 100) * .Stats.UserAtributos(e_Atributos.Agilidad))) * ModificadorPoderAtaqueArmas(.clase))
+114         PoderAtaqueArma = (PoderAtaqueTemp + (2.5 * Maximo(CInt(.Stats.ELV) - 12, 0)))
+        End With
         
         Exit Function
 
@@ -322,20 +303,10 @@ Private Function PoderAtaqueProyectil(ByVal UserIndex As Integer) As Long
         
 
         Dim PoderAtaqueTemp As Long
-
-100     If UserList(UserIndex).Stats.UserSkills(e_Skill.Proyectiles) < 31 Then
-102         PoderAtaqueTemp = (UserList(UserIndex).Stats.UserSkills(e_Skill.Proyectiles) * ModificadorPoderAtaqueProyectiles(UserList(UserIndex).clase))
-104     ElseIf UserList(UserIndex).Stats.UserSkills(e_Skill.Proyectiles) < 61 Then
-106         PoderAtaqueTemp = ((UserList(UserIndex).Stats.UserSkills(e_Skill.Proyectiles) + UserList(UserIndex).Stats.UserAtributos(e_Atributos.Agilidad)) * ModificadorPoderAtaqueProyectiles(UserList(UserIndex).clase))
-108     ElseIf UserList(UserIndex).Stats.UserSkills(e_Skill.Proyectiles) < 91 Then
-110         PoderAtaqueTemp = ((UserList(UserIndex).Stats.UserSkills(e_Skill.Proyectiles) + (2 * UserList(UserIndex).Stats.UserAtributos(e_Atributos.Agilidad))) * ModificadorPoderAtaqueProyectiles(UserList(UserIndex).clase))
-        Else
-112         PoderAtaqueTemp = ((UserList(UserIndex).Stats.UserSkills(e_Skill.Proyectiles) + (3 * UserList(UserIndex).Stats.UserAtributos(e_Atributos.Agilidad))) * ModificadorPoderAtaqueProyectiles(UserList(UserIndex).clase))
-
-        End If
-
-114     PoderAtaqueProyectil = (PoderAtaqueTemp + (2.5 * Maximo(CInt(UserList(UserIndex).Stats.ELV) - 12, 0)))
-
+        With UserList(UserIndex)
+100         PoderAtaqueTemp = ((.Stats.UserSkills(e_Skill.Proyectiles) + ((3 * .Stats.UserSkills(e_Skill.Proyectiles) / 100) * .Stats.UserAtributos(e_Atributos.Agilidad))) * ModificadorPoderAtaqueProyectiles(.clase))
+114         PoderAtaqueProyectil = (PoderAtaqueTemp + (2.5 * Maximo(CInt(.Stats.ELV) - 12, 0)))
+        End With
         
         Exit Function
 
@@ -349,22 +320,11 @@ Private Function PoderAtaqueWrestling(ByVal UserIndex As Integer) As Long
         
         On Error GoTo PoderAtaqueWrestling_Err
         
-
-        Dim PoderAtaqueTemp As Long
-
-100     If UserList(UserIndex).Stats.UserSkills(e_Skill.Wrestling) < 31 Then
-102         PoderAtaqueTemp = (UserList(UserIndex).Stats.UserSkills(e_Skill.Wrestling) * ModificadorPoderAtaqueArmas(UserList(UserIndex).clase))
-104     ElseIf UserList(UserIndex).Stats.UserSkills(e_Skill.Wrestling) < 61 Then
-106         PoderAtaqueTemp = ((UserList(UserIndex).Stats.UserSkills(e_Skill.Wrestling) + UserList(UserIndex).Stats.UserAtributos(e_Atributos.Agilidad)) * ModificadorPoderAtaqueArmas(UserList(UserIndex).clase))
-108     ElseIf UserList(UserIndex).Stats.UserSkills(e_Skill.Wrestling) < 91 Then
-110         PoderAtaqueTemp = ((UserList(UserIndex).Stats.UserSkills(e_Skill.Wrestling) + (2 * UserList(UserIndex).Stats.UserAtributos(e_Atributos.Agilidad))) * ModificadorPoderAtaqueArmas(UserList(UserIndex).clase))
-        Else
-112         PoderAtaqueTemp = ((UserList(UserIndex).Stats.UserSkills(e_Skill.Wrestling) + (3 * UserList(UserIndex).Stats.UserAtributos(e_Atributos.Agilidad))) * ModificadorPoderAtaqueArmas(UserList(UserIndex).clase))
-
-        End If
-
-114     PoderAtaqueWrestling = (PoderAtaqueTemp + (2.5 * Maximo(CInt(UserList(UserIndex).Stats.ELV) - 12, 0)))
-
+        With UserList(UserIndex)
+            Dim PoderAtaqueTemp As Long
+100         PoderAtaqueTemp = ((.Stats.UserSkills(e_Skill.Wrestling) + ((3 * .Stats.UserSkills(e_Skill.Wrestling)) * .Stats.UserAtributos(e_Atributos.Agilidad))) * ModificadorPoderAtaqueArmas(.clase))
+114         PoderAtaqueWrestling = (PoderAtaqueTemp + (2.5 * Maximo(CInt(.Stats.ELV) - 12, 0)))
+        End With
         
         Exit Function
 
