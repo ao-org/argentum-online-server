@@ -1223,15 +1223,8 @@ Sub HandleHechizoUsuario(ByVal UserIndex As Integer, ByVal uh As Integer)
                     If MapInfo(UserList(UserIndex).Pos.map).Seguro = 0 Then
                         Dim costoVidaResu As Long
                         costoVidaResu = UserList(UserList(UserIndex).flags.targetUser.ArrayIndex).Stats.ELV * 1.5 + UserList(UserIndex).Stats.MinHp * 0.45
-                        
-                        If UserList(UserIndex).Stats.MinHp > costoVidaResu Then
-                            UserList(UserIndex).Stats.MinHp = UserList(UserIndex).Stats.MinHp - costoVidaResu
-                        Else
-                            UserList(UserIndex).Stats.MinHp = 1
-                        End If
-                        Call WriteUpdateHP(UserIndex)
+                        Call ModifyHealth(UserIndex, -costoVidaResu, 1)
                     End If
-                    
                 End If
                 
                 UserList(UserIndex).Stats.MinSta = 0
@@ -2226,13 +2219,8 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
                 End If
                 
                 Call SendData(SendTarget.ToPCArea, tU, PrepareMessageSetInvisible(UserList(tU).Char.charindex, False, UserList(tU).Pos.X, UserList(tU).Pos.Y))
-                
-                Call WriteConsoleMsg(tU, "¡Has sido resucitado!", e_FontTypeNames.FONTTYPE_INFO)
-                Call SendData(SendTarget.ToPCArea, tU, PrepareMessageParticleFX(UserList(tU).Char.CharIndex, e_ParticulasIndex.Resucitar, 250, True))
-                Call SendData(SendTarget.ToPCArea, tU, PrepareMessagePlayWave("117", UserList(tU).Pos.X, UserList(tU).Pos.Y))
-                Call RevivirUsuario(tU, True)
-                
-684             Call WriteUpdateHungerAndThirst(tU)
+
+684             Call ResurrectUser(tU)
 686             Call InfoHechizo(UserIndex)
 
 688             b = True

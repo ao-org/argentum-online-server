@@ -923,10 +923,7 @@ Sub Desequipar(ByVal UserIndex As Integer, ByVal Slot As Byte)
     
 156             Select Case obj.EfectoMagico
 
-                    Case 1 'Regenera Energia
-158                     UserList(UserIndex).flags.RegeneracionSta = 0
-
-160                 Case 2 'Modifica los Atributos
+                    Case 2 'Modifica los Atributos
                         If obj.QueAtributo <> 0 Then
 162                         UserList(UserIndex).Stats.UserAtributos(obj.QueAtributo) = UserList(UserIndex).Stats.UserAtributos(obj.QueAtributo) - obj.CuantoAumento
 164                         UserList(UserIndex).Stats.UserAtributosBackUP(obj.QueAtributo) = UserList(UserIndex).Stats.UserAtributosBackUP(obj.QueAtributo) - obj.CuantoAumento
@@ -1418,10 +1415,8 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
 230                 .Invent.MagicoSlot = Slot
                 
 232                 Select Case obj.EfectoMagico
-                        Case 1 ' Regenera Stamina
-234                         .flags.RegeneracionSta = 1
 
-236                     Case 2 'Modif la fuerza, agilidad, carisma, etc
+                        Case 2 'Modif la fuerza, agilidad, carisma, etc
 238                         .Stats.UserAtributosBackUP(obj.QueAtributo) = .Stats.UserAtributosBackUP(obj.QueAtributo) + obj.CuantoAumento
 240                         .Stats.UserAtributos(obj.QueAtributo) = MinimoInt(.Stats.UserAtributos(obj.QueAtributo) + obj.CuantoAumento, .Stats.UserAtributosBackUP(obj.QueAtributo) * 2)
                 
@@ -3209,8 +3204,12 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
 1348                 Call WriteShowFrmMapa(UserIndex)
                  Case e_OBJType.OtQuest
 1349                 Call WriteObjQuestSend(UserIndex, obj.QuestId, slot)
-
-                  End Select
+                 Case e_OBJType.otMagicos
+                        Select Case ObjData(objIndex).Subtipo
+                            Case e_MagicItemSubType.TargetUsable
+                                Call WriteWorkRequestTarget(UserIndex, e_Skill.TargetableItem)
+                        End Select
+                End Select
              
              End With
 
@@ -3458,3 +3457,87 @@ Public Function IsItemInCooldown(ByRef User As t_User, ByRef obj As t_UserOBJ) A
     ElapsedTime = GetTickCount() - User.CdTimes(ObjData(obj.objIndex).cdType)
     IsItemInCooldown = ElapsedTime < ObjData(obj.objIndex).Cooldown
 End Function
+
+Public Sub UserTargetableItem(ByVal UserIndex As Integer, ByVal TileX As Integer, ByVal TileY As Integer)
+On Error GoTo UserTargetableItem_Err
+    With UserList(UserIndex)
+        If IsItemInCooldown(UserList(UserIndex), .invent.Object(.flags.TargetObjInvSlot)) Then
+            Exit Sub
+        End If
+        Dim objIndex As Integer
+        objIndex = .invent.Object(.flags.TargetObjInvSlot).objIndex
+    End With
+    With ObjData(objIndex)
+        If .MinHp > UserList(UserIndex).Stats.MinHp Then
+            Call WriteLocaleMsg(UserIndex, MsgRequiresMoreHealth, e_FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+        End If
+        If .MinSta > UserList(UserIndex).Stats.MinSta Then
+            Call WriteLocaleMsg(UserIndex, MsgTiredToPerformAction, e_FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+        End If
+        Select Case .Subtipo
+            Case e_MagicItemSubType.TargetUsable
+                Select Case .EfectoMagico
+                    Case e_MagicEffect.eResurrectionItem
+                        Call ResurrectWithItem(UserIndex)
+                    Case Else
+                        Exit Sub
+                End Select
+            Case Else
+                Exit Sub
+        End Select
+    End With
+    
+    
+    Exit Sub
+UserTargetableItem_Err:
+    Call TraceError(Err.Number, Err.Description, "InvUsuario.UserTargetableItem", Erl)
+End Sub
+
+Public Sub ResurrectWithItem(ByVal UserIndex As Integer)
+On Error GoTo ResurrectWithItem_Err
+    With UserList(UserIndex)
+100     Dim CanHelpResult As e_InteractionResult
+102     If Not IsValidUserRef(.flags.TargetUser) Then
+104         Call WriteLocaleMsg(UserIndex, MsgInvalidTarget, e_FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+        End If
+        If .flags.TargetUser.ArrayIndex = UserIndex Then
+            Call WriteLocaleMsg(UserIndex, MsgInvalidTarget, e_FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+        End If
+114     Dim TargetUser As Integer
+116     TargetUser = .flags.TargetUser.ArrayIndex
+        If UserList(TargetUser).flags.Muerto = 0 Then
+            Call WriteLocaleMsg(UserIndex, MsgInvalidTarget, e_FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+        End If
+106     CanHelpResult = CanHelp(UserIndex, TargetUser)
+        Select Case CanHelpResult
+            Case eOposingFaction
+108             Call WriteLocaleMsg(UserIndex, MsgFactionForbidAction, e_FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            Case eCantHelpCriminal
+110             Call WriteLocaleMsg(UserIndex, MsgDisableAttackGuardToContinue, e_FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            Case eCantHelpCriminalClanRules
+112             Call WriteLocaleMsg(UserIndex, MsgClanForbidAction, e_FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            Case Else
+        End Select
+118     Dim costoVidaResu As Long
+120     costoVidaResu = UserList(TargetUser).Stats.ELV * 1.5 + .Stats.MinHp * 0.5
+    
+122     Call ModifyHealth(UserIndex, -costoVidaResu, 1)
+124     Call ModifyStamina(UserIndex, UserList(UserIndex).Stats.MinSta, 0)
+        Dim objIndex As Integer
+126     objIndex = .invent.Object(.flags.TargetObjInvSlot).objIndex
+128     Call UpdateCd(UserIndex, ObjData(objIndex).cdType)
+192     Call QuitarUserInvItem(UserIndex, UserList(UserIndex).flags.TargetObjInvSlot, 1)
+194     Call UpdateUserInv(True, UserIndex, UserList(UserIndex).flags.TargetObjInvSlot)
+196     Call ResurrectUser(TargetUser)
+    End With
+ResurrectWithItem_Err:
+    Call TraceError(Err.Number, Err.Description, "InvUsuario.ResurrectWithItem", Erl)
+End Sub
