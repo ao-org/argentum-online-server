@@ -1367,7 +1367,6 @@ Private Sub UserDañoUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As 
 108         Select Case Lugar
                 ' 1/6 de chances de que sea a la cabeza
                 Case e_PartesCuerpo.bCabeza
-
                     'Si tiene casco absorbe el golpe
 110                 If .Invent.CascoEqpObjIndex > 0 Then
                         Dim Casco As t_ObjData
@@ -1376,7 +1375,9 @@ Private Sub UserDañoUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As 
                     End If
 
 116             Case Else
-
+                    If Lugar > bTorso Then
+                        Lugar = RandomNumber(bPiernaIzquierda, bTorso)
+                    End If
                     'Si tiene armadura absorbe el golpe
 118                 If .Invent.ArmourEqpObjIndex > 0 Then
                         Dim Armadura As t_ObjData

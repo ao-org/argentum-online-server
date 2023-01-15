@@ -398,7 +398,7 @@ Private Sub ConstruirQuery_GuardarPersonaje()
         QueryBuilder.Append "return_map = ?,"
         QueryBuilder.Append "return_x = ?,"
         QueryBuilder.Append "return_y = ?, "
-        QueryBuilder.Append "last_logout = ? "
+        QueryBuilder.Append "last_logout = strftime('%s','now') "
 278     QueryBuilder.Append "WHERE id = ?"
     
         ' Guardo la query ensamblada

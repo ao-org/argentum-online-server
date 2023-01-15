@@ -499,7 +499,7 @@ Public Sub UpdateUserInv(ByVal UpdateAll As Boolean, ByVal UserIndex As Integer,
         Dim LoopC   As Byte
 
         'Actualiza un solo slot
-100     If Not UpdateAll Then
+100     If Not UpdateAll And Slot > 0 Then
     
             'Actualiza el inventario
 102         If UserList(UserIndex).Invent.Object(Slot).ObjIndex > 0 Then
