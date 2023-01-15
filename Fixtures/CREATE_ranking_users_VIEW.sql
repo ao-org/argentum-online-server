@@ -16,4 +16,4 @@ AS
          `u`.`deaths`                 AS `deaths`,
          `u`.`killed_npcs`            AS `killed_npcs`
   FROM   `user` `u`
-  WHERE  `u`.`deleted` <> true  
+  WHERE  `u`.`deleted` <> true AND `u`.`is_banned` <> true
