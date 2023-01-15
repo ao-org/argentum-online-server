@@ -11393,7 +11393,11 @@ Private Sub HandlePublicarPersonajeMAO(ByVal UserIndex As Integer)
         ' Para recibir el ID del user
         Dim RS As ADODB.Recordset
         Set RS = Query("select is_locked_in_mao from user where id = ?;", .ID)
-                       
+                    
+        If EsGM(UserIndex) Then
+            Call WriteConsoleMsg(UserIndex, "No podes vender un gm.", e_FontTypeNames.FONTTYPE_INFOBOLD)
+            Exit Sub
+        End If
         If CBool(RS!is_locked_in_mao) Then
             Call WriteConsoleMsg(UserIndex, "El personaje ya está publicado.", e_FontTypeNames.FONTTYPE_INFOBOLD)
             Exit Sub

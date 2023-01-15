@@ -409,7 +409,7 @@ Public Sub SaveCharacterDB(ByVal userIndex As Integer)
             End If
 
               
-104         ReDim Params(85)
+104         ReDim Params(84)
 
             Dim i As Integer
         
@@ -497,7 +497,6 @@ Public Sub SaveCharacterDB(ByVal userIndex As Integer)
 282         Params(post_increment(i)) = .flags.ReturnPos.map
 284         Params(post_increment(i)) = .flags.ReturnPos.x
 286         Params(post_increment(i)) = .flags.ReturnPos.y
-287         Params(post_increment(i)) = GetTickCount
 
             ' WHERE block
 288         Params(post_increment(i)) = .ID

@@ -2987,10 +2987,9 @@ Public Sub HandleCreateItem(ByVal UserIndex As Integer)
 140                 Call WriteConsoleMsg(UserIndex, "ATENCION: CREASTE [" & Cuantos & "] ITEMS, TIRE E INGRESE /DEST EN CONSOLA PARA DESTRUIR LOS QUE NO NECESITE!!", e_FontTypeNames.FONTTYPE_GUILD)
                 End If
             End If
-            ' Lo registro en los logs.
-            If (.flags.Privilegios And e_PlayerType.Admin) <> 0 Then
-142             Call LogGM(.name, "/CI: " & tObj & " Cantidad : " & Cuantos)
-            End If
+
+142         Call LogGM(.name, "/CI: " & tObj & " Cantidad : " & Cuantos)
+
         End With
         Exit Sub
 HandleCreateItem_Err:
@@ -4674,7 +4673,7 @@ Public Sub HandleSeguirMouse(ByVal UserIndex As Integer)
                     Call WriteConsoleMsg(UserIndex, "No puedes seguirte a vos mismo", e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
-                
+109             Call LogGM(.name, "/SM " & username)
                 If username = "" And .flags.SigueUsuario.ArrayIndex > 0 Then
                     'Me devuelvo inventario y stats
                     UserList(UserIndex).Invent = UserList(UserIndex).Invent_bk

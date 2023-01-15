@@ -354,7 +354,7 @@ Private Sub IniciarReto(ByVal Oferente As Integer, ByVal Sala As Integer)
             ' Última comprobación de si todos pueden entrar/pagar
 102         If Not TodosPuedenReto(Oferente) Then Exit Sub
         
-            Dim Apuesta As Integer, ApuestaStr As String
+            Dim Apuesta As Long, ApuestaStr As String
 104         Apuesta = .Apuesta
 106         ApuestaStr = PonerPuntos(Apuesta)
 
