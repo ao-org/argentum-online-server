@@ -884,6 +884,19 @@ Public Type t_NpcReference
     VersionId As Integer
 End Type
 
+Public Enum e_ReferenceType
+    eNpc
+    eUser
+    eNone
+End Enum
+
+'hold both a npc o user refence
+Public Type t_AnyReference
+    ArrayIndex As Integer
+    VersionId As Integer
+    RefType As e_ReferenceType
+End Type
+
 Public Type t_Hechizo
     AutoLanzar As Byte
     
@@ -2692,3 +2705,59 @@ Public Pasos()               As tPaso
 Public DBError As String
 
 Public EnEventoFaccionario As Boolean
+
+Public Type t_BaseDotInfo
+    NexEffectt As IBaseEffectOverTime
+    TargetRef As t_AnyReference
+    UniqueId As Integer
+End Type
+
+Public Function IsValidRef(ByRef Ref As t_AnyReference) As Boolean
+    IsValidRef = False
+    If Ref.ArrayIndex < LBound(UserList) Then
+        Exit Function
+    End If
+    If Ref.RefType = e_ReferenceType.eNone Then
+        Exit Function
+    ElseIf Ref.RefType = eUser Then
+        If Ref.ArrayIndex > UBound(UserList) Then
+            Exit Function
+        End If
+        If UserList(Ref.ArrayIndex).VersionId <> Ref.VersionId Then
+            Exit Function
+        End If
+    Else
+        If Ref.ArrayIndex > UBound(NpcList) Then
+            Exit Function
+        End If
+        If NpcList(Ref.ArrayIndex).VersionId <> Ref.VersionId Then
+            Exit Function
+        End If
+    End If
+    IsValidRef = True
+End Function
+
+Public Function SetRef(ByRef Ref As t_AnyReference, ByVal index As Integer, ByVal RefType As e_ReferenceType) As Boolean
+    SetRef = False
+    Ref.RefType = RefType
+    Ref.ArrayIndex = index
+    If RefType = eUser Then
+        If index <= 0 Or Ref.ArrayIndex > UBound(UserList) Then
+            Exit Function
+        End If
+        Ref.VersionId = UserList(index).VersionId
+    Else
+        If index <= 0 Or Ref.ArrayIndex > UBound(NpcList) Then
+            Exit Function
+        End If
+        Ref.VersionId = NpcList(index).VersionId
+    End If
+    
+    SetRef = True
+End Function
+
+Public Sub ClearRef(ByRef Ref As t_AnyReference)
+    Ref.ArrayIndex = 0
+    Ref.VersionId = -1
+    Ref.RefType = e_ReferenceType.eNone
+End Sub
