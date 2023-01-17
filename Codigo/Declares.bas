@@ -2710,6 +2710,7 @@ Public Type t_BaseDotInfo
     NexEffectt As IBaseEffectOverTime
     TargetRef As t_AnyReference
     UniqueId As Integer
+    RemoveEffect As Boolean
 End Type
 
 Public Function IsValidRef(ByRef Ref As t_AnyReference) As Boolean

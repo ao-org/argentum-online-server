@@ -41,10 +41,20 @@ Public Property Get IBaseEffectOverTime_UniqueId() As Integer
 End Property
 
 Public Sub IBaseEffectOverTime_Update(ByVal deltaTime As Long)
-
+    
+    If TickCount >= TargetTicks Or Not IsValidRef(DotInfo.TargetRef) Then
+        DotInfo.RemoveEffect = True
+        Exit Sub
+    End If
+    TimeSinceLastTick = TimeSinceLastTick + DeltaTime
+    If TimeSinceLastTick >= TickTime Then
+        TimeSinceLastTick = 0
+        TickCount = TickCount + 1
+        'do damage or healing
+    End Sub
 End Sub
 
 Public Function IBaseEffectOverTime_RemoveMe() As Boolean
-    IBaseEffectOverTime_RemoveMe = False
+    IBaseEffectOverTime_RemoveMe = DotInfo.RemoveEffect
 End Function
 
