@@ -3028,3 +3028,81 @@ End Sub
 Public Function IsVisible(ByRef User As t_User)
     IsVisible = Not (User.flags.invisible Or User.flags.Oculto)
 End Function
+
+Public Function CanHelpUser(ByVal UserIndex As Integer, ByVal targetUserIndex As Integer) As e_InteractionResult
+    CanHelpUser = eInteractionOk
+    If PeleaSegura(UserIndex, TargetUserIndex) Then
+        Exit Function
+    End If
+    Dim TargetStatus As e_Facciones
+    TargetStatus = Status(TargetUserIndex)
+    Select Case Status(UserIndex)
+        Case e_Facciones.Ciudadano, e_Facciones.Armada, e_Facciones.consejo
+            If TargetStatus = e_Facciones.Armada Or TargetStatus = e_Facciones.consejo Then
+                CanHelpUser = eOposingFaction
+                Exit Function
+            ElseIf TargetStatus = e_Facciones.Criminal Then
+                If UserList(UserIndex).flags.Seguro Then
+                    CanHelpUser = eCantHelpCriminal
+                Else
+                    If UserList(UserIndex).GuildIndex > 0 Then
+                        'Si el clan es de alineación ciudadana.
+                        If GuildAlignmentIndex(UserList(UserIndex).GuildIndex) = e_ALINEACION_GUILD.ALINEACION_CIUDADANA Then
+                            'No lo dejo resucitarlo
+                            CanHelpUser = eCantHelpCriminalClanRules
+                            Exit Function
+                        'Si es de alineación neutral, lo dejo resucitar y lo vuelvo criminal
+                        ElseIf GuildAlignmentIndex(UserList(UserIndex).GuildIndex) = e_ALINEACION_GUILD.ALINEACION_NEUTRAL Then
+                            Call VolverCriminal(UserIndex)
+                            Call RefreshCharStatus(UserIndex)
+                            Exit Function
+                        End If
+                    Else
+                        Call VolverCriminal(UserIndex)
+                        Call RefreshCharStatus(UserIndex)
+                        Exit Function
+                    End If
+                End If
+            End If
+        Case e_Facciones.Caos, e_Facciones.concilio
+            If Status(TargetUserIndex) <> e_Facciones.Caos And Status(TargetUserIndex) <> e_Facciones.Criminal And Status(TargetUserIndex) <> e_Facciones.concilio Then
+                CanHelpUser = eOposingFaction
+            End If
+    Case Else
+        Exit Function
+    End Select
+End Function
+
+Public Function ModifyHealth(ByVal UserIndex As Integer, ByVal amount As Integer, Optional ByVal minValue = 0) As Boolean
+    ModifyHealth = False
+    UserList(UserIndex).Stats.MinHp = UserList(UserIndex).Stats.MinHp + amount
+    If UserList(UserIndex).Stats.MinHp > UserList(UserIndex).Stats.MaxHp Then
+        UserList(UserIndex).Stats.MinHp = UserList(UserIndex).Stats.MaxHp
+    End If
+    If UserList(UserIndex).Stats.MinHp < minValue Then
+        UserList(UserIndex).Stats.MinHp = minValue
+        ModifyHealth = True
+    End If
+    Call WriteUpdateHP(UserIndex)
+End Function
+
+Public Function ModifyStamina(ByVal UserIndex As Integer, ByVal amount As Integer, Optional ByVal minValue = 0) As Boolean
+    ModifyStamina = False
+    UserList(UserIndex).Stats.MinSta = UserList(UserIndex).Stats.MinSta + amount
+    If UserList(UserIndex).Stats.MinSta > UserList(UserIndex).Stats.MaxSta Then
+        UserList(UserIndex).Stats.MinSta = UserList(UserIndex).Stats.MaxSta
+    End If
+    If UserList(UserIndex).Stats.MinSta < minValue Then
+        UserList(UserIndex).Stats.MinSta = minValue
+        ModifyStamina = True
+    End If
+    Call WriteUpdateSta(UserIndex)
+End Function
+
+Public Sub ResurrectUser(ByVal UserIndex As Integer)
+    Call WriteConsoleMsg(UserIndex, "¡Has sido resucitado!", e_FontTypeNames.FONTTYPE_INFO)
+    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, e_ParticulasIndex.Resucitar, 250, True))
+    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(117, UserList(UserIndex).pos.X, UserList(UserIndex).pos.y))
+    Call RevivirUsuario(UserIndex, True)
+684 Call WriteUpdateHungerAndThirst(UserIndex)
+End Sub

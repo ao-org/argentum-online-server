@@ -1266,7 +1266,6 @@ Sub ResetUserFlags(ByVal UserIndex As Integer)
 232         .AnilloOcultismo = 0
 234         .RegeneracionMana = 0
 236         .RegeneracionHP = 0
-238         .RegeneracionSta = 0
 
 242         .LastCrimMatado = vbNullString
 244         .LastCiudMatado = vbNullString

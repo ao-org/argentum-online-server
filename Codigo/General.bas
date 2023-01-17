@@ -1464,8 +1464,6 @@ Public Sub RecStamina(ByVal UserIndex As Integer, ByRef EnviarStats As Boolean, 
 158                     Case 100
 160                         Suerte = 25
                     End Select
-
-162                 If .flags.RegeneracionSta = 1 Then Suerte = 45
                     
                     Dim NuevaStamina As Long
                         If .clase = e_Class.Trabajador Then
@@ -1504,7 +1502,7 @@ Public Sub PierdeEnergia(ByVal UserIndex As Integer, ByRef EnviarStats As Boolea
 
 100     With UserList(UserIndex)
 
-102         If .Stats.MinSta > 0 And .flags.RegeneracionSta = 0 Then
+102         If .Stats.MinSta > 0 Then
     
 104             If .Counters.STACounter < Intervalo Then
 106                 .Counters.STACounter = .Counters.STACounter + 1

@@ -4104,7 +4104,9 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 712                     Call WriteLocaleMsg(UserIndex, "261", e_FontTypeNames.FONTTYPE_INFO)
 
                     End If
-                    
+                Case e_Skill.TargetableItem
+                    Call LookatTile(UserIndex, UserList(UserIndex).pos.map, X, y)
+                    Call UserTargetableItem(UserIndex, X, y)
             End Select
 
         End With

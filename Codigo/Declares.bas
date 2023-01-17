@@ -74,6 +74,13 @@ Public Enum e_Facciones
     consejo = 5
 End Enum
 
+Public Enum e_InteractionResult
+    eInteractionOk
+    eOposingFaction
+    eCantHelpCriminal
+    eCantHelpCriminalClanRules
+End Enum
+
 Public Enum e_DeleteSource
     eNone
     eDie
@@ -627,6 +634,7 @@ Public Enum e_Skill
     Sastreria = 23
     Domar = 24
 
+    TargetableItem = 25
     Grupo = 90
     MarcaDeClan = 91
     MarcaDeGM = 92
@@ -813,6 +821,34 @@ Public Enum e_ToolsSubtype
     eFishingNet = 2
 End Enum
 
+Public Enum e_MagicItemSubType
+    Equipable
+    Usable
+    TargetUsable
+End Enum
+
+Public Enum e_MagicEffect
+    eMagicresistance = 1
+    eAttributeModifier = 2 'Requires CuantoAumento y QueAtributo
+    eSkillModifier = 3 'Requires CuantoAumento y QueSkill
+    eHealthRecovery = 4
+    eMeditationBonus = 5
+    eNpcDamageBonus = 6 'Requires CuantoAumento
+    eNpcDamageReduction = 7 'Rquires CuantoAumento
+    eReserved = 8
+    eMagicInmuneFromNpc = 9
+    eIncinerate = 10
+    eParalize = 11
+    eProtectResources = 12
+    eWalkHidden = 13
+    eIncreaseMagicDamage = 14 'Requires CuantoAumento
+    eInventoryProtection = 15
+    eSilentCast = 16
+    ePreventDetection = 17
+    eIncreaseSkillLearningChance = 18
+    eAddPoisonEffect = 19
+    eResurrectionItem = 20
+End Enum
 'Estadisticas
 Public Const STAT_MAXELV              As Byte = 47
 
@@ -1588,7 +1624,6 @@ Public Type t_UserFlags
     NoDetectable As Byte
     RegeneracionMana As Byte
     RegeneracionHP As Byte
-    RegeneracionSta As Byte
     
     'Hechizo de Transportacion
     
@@ -1942,6 +1977,7 @@ Public Enum e_CdTypes
     e_potions = 3
     e_Ranged = 4
     e_Throwing = 5
+    e_Resurrection = 6
     [CDCount]
 End Enum
 
