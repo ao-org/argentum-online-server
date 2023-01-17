@@ -3029,8 +3029,8 @@ Public Function IsVisible(ByRef User As t_User)
     IsVisible = Not (User.flags.invisible Or User.flags.Oculto)
 End Function
 
-Public Function CanHelp(ByVal UserIndex As Integer, ByVal TargetUserIndex As Integer) As e_InteractionResult
-    CanHelp = eInteractionOk
+Public Function CanHelpUser(ByVal UserIndex As Integer, ByVal targetUserIndex As Integer) As e_InteractionResult
+    CanHelpUser = eInteractionOk
     If PeleaSegura(UserIndex, TargetUserIndex) Then
         Exit Function
     End If
@@ -3039,17 +3039,17 @@ Public Function CanHelp(ByVal UserIndex As Integer, ByVal TargetUserIndex As Int
     Select Case Status(UserIndex)
         Case e_Facciones.Ciudadano, e_Facciones.Armada, e_Facciones.consejo
             If TargetStatus = e_Facciones.Armada Or TargetStatus = e_Facciones.consejo Then
-                CanHelp = eOposingFaction
+                CanHelpUser = eOposingFaction
                 Exit Function
             ElseIf TargetStatus = e_Facciones.Criminal Then
                 If UserList(UserIndex).flags.Seguro Then
-                    CanHelp = eCantHelpCriminal
+                    CanHelpUser = eCantHelpCriminal
                 Else
                     If UserList(UserIndex).GuildIndex > 0 Then
                         'Si el clan es de alineación ciudadana.
                         If GuildAlignmentIndex(UserList(UserIndex).GuildIndex) = e_ALINEACION_GUILD.ALINEACION_CIUDADANA Then
                             'No lo dejo resucitarlo
-                            CanHelp = eCantHelpCriminalClanRules
+                            CanHelpUser = eCantHelpCriminalClanRules
                             Exit Function
                         'Si es de alineación neutral, lo dejo resucitar y lo vuelvo criminal
                         ElseIf GuildAlignmentIndex(UserList(UserIndex).GuildIndex) = e_ALINEACION_GUILD.ALINEACION_NEUTRAL Then
@@ -3066,7 +3066,7 @@ Public Function CanHelp(ByVal UserIndex As Integer, ByVal TargetUserIndex As Int
             End If
         Case e_Facciones.Caos, e_Facciones.concilio
             If Status(TargetUserIndex) <> e_Facciones.Caos And Status(TargetUserIndex) <> e_Facciones.Criminal And Status(TargetUserIndex) <> e_Facciones.concilio Then
-                CanHelp = eOposingFaction
+                CanHelpUser = eOposingFaction
             End If
     Case Else
         Exit Function

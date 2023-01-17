@@ -3513,7 +3513,7 @@ On Error GoTo ResurrectWithItem_Err
             Call WriteLocaleMsg(UserIndex, MsgInvalidTarget, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
-106     CanHelpResult = CanHelp(UserIndex, TargetUser)
+106     CanHelpResult = CanHelpUser(UserIndex, targetUser)
         Select Case CanHelpResult
             Case eOposingFaction
 108             Call WriteLocaleMsg(UserIndex, MsgFactionForbidAction, e_FontTypeNames.FONTTYPE_INFO)
@@ -3538,6 +3538,7 @@ On Error GoTo ResurrectWithItem_Err
 194     Call UpdateUserInv(True, UserIndex, UserList(UserIndex).flags.TargetObjInvSlot)
 196     Call ResurrectUser(TargetUser)
     End With
+    Exit Sub
 ResurrectWithItem_Err:
     Call TraceError(Err.Number, Err.Description, "InvUsuario.ResurrectWithItem", Erl)
 End Sub
