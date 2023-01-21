@@ -5,6 +5,7 @@ Public Enum e_DamageSourceType
     e_phisical
     e_magic
     e_pet
+    e_dot
 End Enum
 
 Public Type e_Rank

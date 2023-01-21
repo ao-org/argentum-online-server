@@ -100,6 +100,7 @@ Module=LocaleDef; Codigo\LocaleDef.bas
 Class=clsRespawnInfo; Codigo\clsRespawnInfo.cls
 Class=IBaseEffectOverTime; Codigo\IBaseEffectOverTime.cls
 Class=UpdateHpOverTime; Codigo\UpdateHpOverTime.cls
+Module=EffectsOverTime; Codigo\EffectsOverTime.bas
 IconForm="frmMain"
 Startup="Sub Main"
 HelpFile=""

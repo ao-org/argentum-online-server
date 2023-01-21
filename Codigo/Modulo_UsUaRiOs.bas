@@ -1960,7 +1960,7 @@ Sub UserDie(ByVal UserIndex As Integer)
 122         .flags.Envenena = 0
 124         .flags.Estupidiza = 0
 126         .flags.Muerto = 1
-            
+128         Call ClearEffectList(.EffectOverTime)
 130         Call WriteUpdateHP(UserIndex)
 132         Call WriteUpdateSta(UserIndex)
             
@@ -3074,29 +3074,33 @@ Public Function CanHelpUser(ByVal UserIndex As Integer, ByVal targetUserIndex As
 End Function
 
 Public Function ModifyHealth(ByVal UserIndex As Integer, ByVal amount As Integer, Optional ByVal minValue = 0) As Boolean
-    ModifyHealth = False
-    UserList(UserIndex).Stats.MinHp = UserList(UserIndex).Stats.MinHp + amount
-    If UserList(UserIndex).Stats.MinHp > UserList(UserIndex).Stats.MaxHp Then
-        UserList(UserIndex).Stats.MinHp = UserList(UserIndex).Stats.MaxHp
-    End If
-    If UserList(UserIndex).Stats.MinHp < minValue Then
-        UserList(UserIndex).Stats.MinHp = minValue
-        ModifyHealth = True
-    End If
-    Call WriteUpdateHP(UserIndex)
+    With UserList(UserIndex)
+        ModifyHealth = False
+        .Stats.MinHp = .Stats.MinHp + amount
+        If .Stats.MinHp > .Stats.MaxHp Then
+            .Stats.MinHp = .Stats.MaxHp
+        End If
+        If .Stats.MinHp < minValue Then
+            .Stats.MinHp = minValue
+            ModifyHealth = True
+        End If
+        Call WriteUpdateHP(UserIndex)
+    End With
 End Function
 
 Public Function ModifyStamina(ByVal UserIndex As Integer, ByVal amount As Integer, Optional ByVal minValue = 0) As Boolean
     ModifyStamina = False
-    UserList(UserIndex).Stats.MinSta = UserList(UserIndex).Stats.MinSta + amount
-    If UserList(UserIndex).Stats.MinSta > UserList(UserIndex).Stats.MaxSta Then
-        UserList(UserIndex).Stats.MinSta = UserList(UserIndex).Stats.MaxSta
+    With UserList(UserIndex)
+    .Stats.MinSta = .Stats.MinSta + amount
+    If .Stats.MinSta > .Stats.MaxSta Then
+        .Stats.MinSta = .Stats.MaxSta
     End If
-    If UserList(UserIndex).Stats.MinSta < minValue Then
-        UserList(UserIndex).Stats.MinSta = minValue
+    If .Stats.MinSta < minValue Then
+        .Stats.MinSta = minValue
         ModifyStamina = True
     End If
     Call WriteUpdateSta(UserIndex)
+    End With
 End Function
 
 Public Sub ResurrectUser(ByVal UserIndex As Integer)
@@ -3105,4 +3109,31 @@ Public Sub ResurrectUser(ByVal UserIndex As Integer)
     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(117, UserList(UserIndex).pos.X, UserList(UserIndex).pos.y))
     Call RevivirUsuario(UserIndex, True)
 684 Call WriteUpdateHungerAndThirst(UserIndex)
+End Sub
+
+Public Sub DoDamageOrHeal(ByVal UserIndex As Integer, ByVal sourceIndex As Integer, ByVal amount As Integer, ByVal DamageSourceType As e_DamageSourceType)
+On Error GoTo DoDamageOrHeal_Err
+    Dim DamageStr As String
+    Dim Color As Long
+    DamageStr = PonerPuntos(amount)
+    If amount > 0 Then
+        Color = vbGreen
+    Else
+        Color = vbRed
+    End If
+    With UserList(UserIndex)
+        Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageTextOverChar(DamageStr, .Char.charindex, Color))
+100     If ModifyHealth(UserIndex, amount) Then
+102         If sourceIndex > 0 Then
+244             Call ContarMuerte(UserIndex, sourceIndex)
+                Call PlayerKillPlayer(.pos.map, sourceIndex, UserIndex, DamageSourceType, .invent.WeaponEqpObjIndex)
+246             Call ActStats(UserIndex, sourceIndex)
+            Else
+                Call UserDie(sourceIndex)
+            End If
+        End If
+    End With
+    Exit Sub
+DoDamageOrHeal_Err:
+134     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.CalcularVelocidad_Err", Erl)
 End Sub

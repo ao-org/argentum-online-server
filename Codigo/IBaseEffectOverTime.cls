@@ -13,24 +13,49 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 Option Explicit
 
-
-Public Property Get NextEffect() As IBaseEffectOverTime
+Public Property Get CasterIsValid() As Boolean
 End Property
 
-Public Property Let NextEffect(ByRef NextElement As IBaseEffectOverTime)
+Public Property Get CasterArrayIndex() As Integer
 End Property
 
-Public Sub SetTarget(ByVal index As Integer, ByVal RefType As e_ReferenceType)
+Public Property Get CasterRefType() As e_ReferenceType
+End Property
 
-End Sub
+Public Property Get CasterUserId() As Long
+End Property
+
+Public Property Get TargetIsValid() As Boolean
+End Property
+
+Public Property Get TargetArrayIndex() As Integer
+End Property
+
+Public Property Get TargetRefType() As e_ReferenceType
+End Property
+
+Public Property Get TargetUserId() As Long
+End Property
 
 Public Property Get UniqueId() As Integer
 End Property
 
-Public Sub Update(ByVal deltaTime As Long)
+Public Property Get TypeId() As Integer
+End Property
 
+Public Property Get EotId() As Integer
+End Property
+
+Public Sub Update(ByVal deltaTime As Long)
 End Sub
 
-Public Function RemoveMe() As Boolean
-    RemoveMe = False
-End Function
+Public Property Get EffectType() As e_EffectType
+End Property
+
+Public Property Get RemoveMe() As Boolean
+End Property
+Public Property Let RemoveMe(ByVal value As Boolean)
+End Property
+
+Public Sub Reset()
+End Sub

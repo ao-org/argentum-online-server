@@ -759,7 +759,6 @@ Public Sub CargarHechizos()
 258         Hechizos(Hechizo).NumNpc = val(Leer.GetValue("Hechizo" & Hechizo, "NumNpc"))
 260         Hechizos(Hechizo).cant = val(Leer.GetValue("Hechizo" & Hechizo, "Cant"))
 262         Hechizos(Hechizo).Mimetiza = val(Leer.GetValue("Hechizo" & Hechizo, "Mimetiza"))
-263         Hechizos(Hechizo).Sensui = val(Leer.GetValue("Hechizo" & Hechizo, "Sensui"))
     
 264         Hechizos(Hechizo).GolpeCertero = val(Leer.GetValue("Hechizo" & Hechizo, "GolpeCertero"))
     
@@ -779,8 +778,8 @@ Public Sub CargarHechizos()
 278         frmCargando.cargar.value = frmCargando.cargar.value + 1
     
 280         Hechizos(Hechizo).NeedStaff = val(Leer.GetValue("Hechizo" & Hechizo, "NeedStaff"))
-282         Hechizos(Hechizo).StaffAffected = CBool(val(Leer.GetValue("Hechizo" & Hechizo, "StaffAffected")))
-    
+281         Hechizos(Hechizo).StaffAffected = CBool(val(Leer.GetValue("Hechizo" & Hechizo, "StaffAffected")))
+282         Hechizos(Hechizo).EotId = val(Leer.GetValue("Hechizo" & Hechizo, "EOTID"))
 284     Next Hechizo
 
 286     Set Leer = Nothing
@@ -788,7 +787,42 @@ Public Sub CargarHechizos()
 
 ErrHandler:
 288     MsgBox "Error cargando hechizos.dat " & Err.Number & ": " & Err.Description
- 
+End Sub
+
+Public Sub LoadEffectOverTime()
+On Error GoTo ErrHandler
+
+100     If frmMain.Visible Then frmMain.txStatus.Caption = "Cargando Hechizos."
+        Dim i As Integer
+        Dim Leer As New clsIniManager
+        Dim EffectCount As Integer
+
+102     Call Leer.Initialize(DatPath & "EffectsOverTime.dat")
+
+        'obtiene el numero de hechizos
+104     EffectCount = val(Leer.GetValue("INIT", "EffectCount"))
+
+106     ReDim EffectOverTime(1 To EffectCount) As t_EffectOverTime
+
+108     frmCargando.cargar.Min = 0
+110     frmCargando.cargar.max = EffectCount
+112     frmCargando.cargar.value = 0
+
+        'Llena la lista
+114     For i = 1 To EffectCount
+            EffectOverTime(i).Type = val(Leer.GetValue("EOT" & i, "Type"))
+            EffectOverTime(i).TickPower = val(Leer.GetValue("EOT" & i, "TickPower"))
+            EffectOverTime(i).Ticks = val(Leer.GetValue("EOT" & i, "Ticks"))
+            EffectOverTime(i).TickTime = val(Leer.GetValue("EOT" & i, "TickTime"))
+            EffectOverTime(i).TickFX = val(Leer.GetValue("EOT" & i, "TickFX"))
+            EffectOverTime(i).Override = val(Leer.GetValue("EOT" & i, "Override"))
+            EffectOverTime(i).Limit = val(Leer.GetValue("EOT" & i, "Limit"))
+        Next i
+        
+        Call InitializePools
+        Exit Sub
+ErrHandler:
+288     MsgBox "Error cargando EffectsOverTime.dat " & Err.Number & ": " & Err.Description
 End Sub
 
 Sub LoadMotd()
