@@ -255,37 +255,13 @@ Sub QuitarNewbieObj(ByVal UserIndex As Integer)
         End If
     
         'Si el usuario dejó de ser Newbie, y estaba en el Newbie Dungeon
-        'es transportado a su hogar de origen ;)
-112     If MapInfo(UserList(UserIndex).Pos.Map).Newbie Then
-        
-            Dim DeDonde As t_WorldPos
-        
-114         Select Case UserList(UserIndex).Hogar
 
-                Case e_Ciudad.cUllathorpe
-116                 DeDonde = Ullathorpe
-
-118             Case e_Ciudad.cNix
-120                 DeDonde = Nix
-    
-122             Case e_Ciudad.cBanderbill
-124                 DeDonde = Banderbill
+112     If MapInfo(UserList(UserIndex).pos.map).Newbie Then
+                   
+            'Mandamos a la isla de renacimiento
+            Call WarpUserChar(UserIndex, Renacimiento.map, Renacimiento.X, Renacimiento.y, True)
+            Call WriteConsoleMsg(UserIndex, "Has dejado de ser Newbie, Te orientaremos que hacer ahora.", e_FontTypeNames.FONTTYPE_INFO)
             
-126             Case e_Ciudad.cLindos
-128                 DeDonde = Lindos
-                
-130             Case e_Ciudad.cArghal
-132                 DeDonde = Arghal
-                
-134             Case e_Ciudad.cArkhein
-136                 DeDonde = Arkhein
-                
-138             Case Else
-140                 DeDonde = Ullathorpe
-
-            End Select
-        
-142         Call WarpUserChar(UserIndex, DeDonde.Map, DeDonde.X, DeDonde.Y, True)
     
         End If
 
