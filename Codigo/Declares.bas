@@ -2621,6 +2621,8 @@ Public Prision                            As t_WorldPos
 
 Public Libertad                           As t_WorldPos
 
+Public Renacimiento                       As t_WorldPos
+
 Public TotalMapasCiudades()               As String
 
 Public Ayuda                              As New cCola

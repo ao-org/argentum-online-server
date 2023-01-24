@@ -2320,6 +2320,12 @@ Sub CargarCiudades()
 250         .y = val(Lector.GetValue("Libertad", "Y"))
         End With
         
+         With Renacimiento
+            .map = val(Lector.GetValue("Renacimiento", "Mapa"))
+            .X = val(Lector.GetValue("Renacimiento", "X"))
+            .y = val(Lector.GetValue("Renacimiento", "Y"))
+        End With
+        
         TotalMapasCiudades = Split(MapasCiudades, ",")
     
 252     Set Lector = Nothing
