@@ -2664,30 +2664,44 @@ Public Type t_BaseDotInfo
     EotId As Integer
 End Type
 
-
-Public Function IsValidRef(ByRef Ref As t_AnyReference) As Boolean
-    IsValidRef = False
+Private Function ValidateUerRef(ByRef Ref As t_AnyReference) As Boolean
+    ValidateUerRef = False
     If Ref.ArrayIndex < LBound(UserList) Then
         Exit Function
     End If
-    If Ref.RefType = e_ReferenceType.eNone Then
+    If Ref.ArrayIndex > UBound(UserList) Then
+            Exit Function
+    End If
+    If UserList(Ref.ArrayIndex).VersionId <> Ref.VersionId Then
         Exit Function
-    ElseIf Ref.RefType = eUser Then
-        If Ref.ArrayIndex > UBound(UserList) Then
-            Exit Function
-        End If
-        If UserList(Ref.ArrayIndex).VersionId <> Ref.VersionId Then
-            Exit Function
-        End If
-    Else
-        If Ref.ArrayIndex > UBound(NpcList) Then
+    End If
+    ValidateUerRef = True
+End Function
+
+Private Function ValidateNpcRef(ByRef Ref As t_AnyReference) As Boolean
+     ValidateNpcRef = False
+     If Ref.ArrayIndex < LBound(NpcList) Then
+        Exit Function
+    End If
+     If Ref.ArrayIndex > UBound(NpcList) Then
             Exit Function
         End If
         If NpcList(Ref.ArrayIndex).VersionId <> Ref.VersionId Then
             Exit Function
         End If
+        ValidateNpcRef = True
+End Function
+
+Public Function IsValidRef(ByRef Ref As t_AnyReference) As Boolean
+    IsValidRef = False
+    
+    If Ref.RefType = e_ReferenceType.eNone Then
+        Exit Function
+    ElseIf Ref.RefType = eUser Then
+        IsValidRef = ValidateUerRef(Ref)
+    Else
+        IsValidRef = ValidateNpcRef(Ref)
     End If
-    IsValidRef = True
 End Function
 
 Public Function SetRef(ByRef Ref As t_AnyReference, ByVal index As Integer, ByVal RefType As e_ReferenceType) As Boolean
