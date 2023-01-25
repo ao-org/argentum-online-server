@@ -321,7 +321,7 @@ Public Enum e_ClanType
 End Enum
 
 Public Enum e_DamageType
-    eNormalHit
+    eMeleeHit
     eRangedHit
     eMagicSpell
     eDot
