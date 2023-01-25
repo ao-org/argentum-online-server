@@ -524,9 +524,8 @@ Sub ResetNpcMainInfo(ByVal NpcIndex As Integer)
 166     For j = 1 To .NroSpells
 168         .Spells(j) = 0
 170     Next j
-
+        Call ClearEffectList(.EffectOverTime)
         End With
-        
 172     Call ResetNpcCharInfo(NpcIndex)
 174     Call ResetNpcCriatures(NpcIndex)
 176     Call ResetExpresiones(NpcIndex)
@@ -582,6 +581,7 @@ Sub QuitarNPC(ByVal NpcIndex As Integer, ByVal releaseReason As e_DeleteSource)
 110     Call ResetNpcInv(NpcIndex)
 112     Call ResetNpcFlags(NpcIndex)
 114     Call ResetNpcCounters(NpcIndex)
+
     
 116     Call ResetNpcMainInfo(NpcIndex)
     
@@ -1860,4 +1860,46 @@ End Function
 
 Public Sub StunNPc(ByRef Counters As t_NpcCounters)
     Counters.StunEndTime = GetTickCount() + NpcStunTime
+End Sub
+
+Public Function ModifyHealth(ByVal npcIndex As Integer, ByVal amount As Integer, Optional ByVal minValue = 0) As Boolean
+    With NpcList(npcIndex)
+        ModifyHealth = False
+        .Stats.MinHp = .Stats.MinHp + amount
+        If .Stats.MinHp > .Stats.MaxHp Then
+            .Stats.MinHp = .Stats.MaxHp
+        End If
+        If .Stats.MinHp < minValue Then
+            .Stats.MinHp = minValue
+            ModifyHealth = True
+        End If
+        Call SendData(SendTarget.ToNPCAliveArea, npcIndex, PrepareMessageNpcUpdateHP(npcIndex))
+    End With
+End Function
+
+Public Sub DoDamageOrHeal(ByVal npcIndex As Integer, ByVal sourceIndex As Integer, ByVal amount As Integer, ByVal DamageSourceType As e_DamageSourceType)
+On Error GoTo DoDamageOrHeal_Err
+    Dim DamageStr As String
+    Dim Color As Long
+    DamageStr = PonerPuntos(Math.Abs(amount))
+    If amount > 0 Then
+        Color = vbGreen
+    Else
+        Color = vbRed
+        If sourceIndex > 0 Then
+            Call CalcularDarExp(sourceIndex, npcIndex, Math.Abs(amount))
+        End If
+    End If
+    With NpcList(npcIndex)
+        Call SendData(SendTarget.ToNPCAliveArea, npcIndex, PrepareMessageTextOverChar(DamageStr, .Char.charindex, Color))
+100     If NPCs.ModifyHealth(npcIndex, amount) Then
+102         If sourceIndex > 0 Then
+244             Call CustomScenarios.PlayerKillNpc(.pos.map, npcIndex, sourceIndex, DamageSourceType, .invent.WeaponEqpObjIndex)
+            End If
+            Call MuereNpc(npcIndex, sourceIndex)
+        End If
+    End With
+    Exit Sub
+DoDamageOrHeal_Err:
+134     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.CalcularVelocidad_Err", Erl)
 End Sub

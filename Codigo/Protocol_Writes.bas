@@ -4348,7 +4348,9 @@ End Function
 
 Public Function PrepareMessageTextCharDrop(ByVal chat As String, _
                                            ByVal CharIndex As Integer, _
-                                           ByVal Color As Long)
+                                           ByVal Color As Long, _
+                                           Optional ByVal Duration As Integer = 1300, _
+                                           Optional ByVal Animated As Boolean = True)
         '<EhHeader>
         On Error GoTo PrepareMessageTextCharDrop_Err
         '</EhHeader>
@@ -4356,6 +4358,8 @@ Public Function PrepareMessageTextCharDrop(ByVal chat As String, _
 102     Call Writer.WriteString8(chat)
 104     Call Writer.WriteInt16(CharIndex)
 106     Call Writer.WriteInt32(Color)
+110     Call Writer.WriteInt16(Duration)
+114     Call Writer.WriteBool(Animated)
         '<EhFooter>
         Exit Function
 

@@ -618,6 +618,9 @@ Sub Main()
         
 172     frmCargando.Label1(2).Caption = "Cargando Hechizos.Dat"
 174     Call CargarHechizos
+
+        frmCargando.Label1(2).Caption = "Cargando EffectsOverTime.Dat"
+175     Call LoadEffectOverTime
         
 176     frmCargando.Label1(2).Caption = "Cargando Objetos de Herrería"
 178     Call LoadArmasHerreria
@@ -758,7 +761,7 @@ Sub Main()
             Call modNetwork.close_not_logged_sockets_if_timeout
 #End If
             Call modNetwork.Tick(GetElapsed())
-            
+            Call UpdateEffectOverTime
             DoEvents
             
             ' Unlock main loop for maximum throughput but it can hog weak CPUs.

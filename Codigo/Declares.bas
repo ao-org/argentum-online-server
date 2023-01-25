@@ -320,6 +320,13 @@ Public Enum e_ClanType
 
 End Enum
 
+Public Enum e_DamageType
+    eMeleeHit
+    eRangedHit
+    eMagicSpell
+    eDot
+End Enum
+
 Public Const LimiteNewbie As Byte = 12
 
 Public Type t_Cabecera 'Cabecera de los con
@@ -884,6 +891,20 @@ Public Type t_NpcReference
     VersionId As Integer
 End Type
 
+Public Enum e_ReferenceType
+    eNpc
+    eUser
+    eNone
+End Enum
+
+'hold both a npc o user refence
+Public Type t_AnyReference
+    ArrayIndex As Integer
+    VersionId As Integer
+    UserId As Long 'sometimes we need to track the user after disconnection
+    RefType As e_ReferenceType
+End Type
+
 Public Type t_Hechizo
     AutoLanzar As Byte
     
@@ -992,7 +1013,6 @@ Public Type t_Hechizo
     '    ItemIndex As Byte
     
     Mimetiza As Byte
-    Sensui As Byte
     
     MinSkill As Integer
     ManaRequerido As Integer
@@ -1004,7 +1024,18 @@ Public Type t_Hechizo
     
     NeedStaff As Integer
     StaffAffected As Boolean
+    EotId As Integer
+End Type
 
+Public Type t_EffectOverTime
+    Type As e_EffectOverTimeType
+    Limit As e_EOTTargetLimit
+    TickPower As Integer
+    Ticks As Integer
+    TickTime As Integer
+    TickFX As Integer
+    BuffType As e_EffectType
+    Override As Boolean
 End Type
 
 Public Const MAX_PACKET_COUNTERS As Long = 15
@@ -1689,7 +1720,7 @@ Public Type t_UserFlags
     AdministrativeBan As Byte
     BanMotivo As String
 
-    targetUser As t_UserReference ' Usuario señalado
+    TargetUser As t_UserReference ' Usuario señalado
     
     TargetObj As Integer ' Obj señalado
     TargetObjMap As Integer
@@ -1981,6 +2012,18 @@ Public Enum e_CdTypes
     [CDCount]
 End Enum
 
+Public Enum e_EffectType
+    eBuff = 1
+    eDebuff
+    eAny
+End Enum
+
+Public Const ACTIVE_EFFECT_LIST_SIZE As Integer = 10
+Public Type t_EffectOverTimeList
+    EffectList() As IBaseEffectOverTime
+    EffectCount As Integer
+End Type
+
 'Tipo de los Usuarios
 Public Type t_User
 
@@ -2036,6 +2079,7 @@ Public Type t_User
     Accion As t_AccionPendiente
     CdTimes(e_CdTypes.CDCount) As Long
     LastTransportNetwork As t_LastNetworkUssage
+    EffectOverTime As t_EffectOverTimeList
 
     Faccion As t_Facciones
 
@@ -2307,6 +2351,7 @@ Public Type t_Npc
     IntervaloAtaque As Long
     IntervaloLanzarHechizo As Long
     IntervaloRespawn As Long
+    EffectOverTime As t_EffectOverTimeList
     
     Invent As t_Inventario
     
@@ -2430,213 +2475,119 @@ Public Type t_IndexHeap
 End Type
 
 '********** V A R I A B L E S     P U B L I C A S ***********
-
 Public SERVERONLINE                      As Boolean
-
 Public ULTIMAVERSION                     As String
-
 Public backup                            As Boolean ' TODO: Se usa esta variable ?
-
 Public ListaRazas(1 To NUMRAZAS)         As String
-
 Public SkillsNames(1 To NUMSKILLS)       As String
-
 Public ListaClases(1 To NUMCLASES)       As String
-
 Public ListaAtributos(1 To NUMATRIBUTOS) As String
-
 Public RecordUsuarios                    As Long
 
-'
 'Directorios
-'
-
-''
 'Ruta base del server, en donde esta el "server.ini"
 Public IniPath                           As String
-
 Public CuentasPath                       As String
-
 Public DeleteCuentasPath                 As String
-
-''
 'Ruta base para guardar los chars
 Public CharPath                          As String
-
-''
 'Ruta base para guardar los users borrados
 Public DeletePath                        As String
-
-''
 'Ruta base para los archivos de mapas
 Public MapPath                           As String
-
-''
 'Ruta base para los DATs
 Public DatPath                           As String
 
 ''
 'Bordes del mapa
 Public MinXBorder                        As Byte
-
 Public MaxXBorder                        As Byte
-
 Public MinYBorder                        As Byte
-
 Public MaxYBorder                        As Byte
-
 Public ResPos                            As t_WorldPos ' TODO: Se usa esta variable ?
 
 ''
 'Numero de usuarios actual
 Public NumCuentas                        As Long
-
 Public NumUsers                          As Integer
-
 Public LastUser                          As Integer
-
 Public LastChar                          As Integer
-
 Public NumChars                          As Integer
-
 Public LastNPC                           As Integer
-
 Public NumNPCs                           As Integer
-
 Public NumMaps                           As Long
-
 Public NumObjDatas                       As Integer
-
 Public NumeroHechizos                    As Integer
-
 Public MaxConexionesIP                   As Integer
-
 Public MaxUsersPorCuenta                 As Byte
-
 Public IdleLimit                         As Integer
-
 Public MaxUsers                          As Integer
-
 Public HideMe                            As Byte
-
 Public MaxRangoFaccion                   As Byte ' El rango maximo que se puede alcanzar
-
 Public LastBackup                        As String
-
 Public minutos                           As String
-
 Public haciendoBK                        As Boolean
-
 Public PuedeCrearPersonajes              As Integer
-
 Public ServerSoloGMs                     As Integer
-
 Public EnPausa                           As Boolean
-
 Public EnTesting                         As Boolean
 
 '*****************ARRAYS PUBLICOS*************************
 Public UserList()                         As t_User 'USUARIOS
-
 Public NpcList(1 To MaxNPCs)              As t_Npc 'NPCS
-
 Public MapData()                          As t_MapBlock
-
 Public MapInfo()                          As t_MapInfo
-
 Public Hechizos()                         As t_Hechizo
-
+Public EffectOverTime()                   As t_EffectOverTime
 Public CharList(1 To MAXCHARS)            As Integer
-
 Public ObjData()                          As t_ObjData
-
 Public ObjShop()                          As t_ObjData
-
 Public FX()                               As t_FXdata
-
 Public SpawnList()                        As t_CriaturasEntrenador
-
 Public ForbidenNames()                    As String
-
 Public ArmasHerrero()                     As Integer
-
 Public ArmadurasHerrero()                 As Integer
-
 Public ObjCarpintero()                    As Integer
-
 Public ObjAlquimista()                    As Integer
-
 Public ObjSastre()                        As Integer
-
 Public EspecialesTala()                   As t_Obj
-
 Public EspecialesPesca()                  As t_Obj
-
 Public Peces()                            As t_Obj
-
 Public PecesEspeciales()                  As t_Obj
-
 Public PesoPeces()                        As Long
-
 Public RangosFaccion()                    As t_RangoFaccion
-
 Public RecompensasFaccion()               As t_RecompensaFaccion
-
 Public ModClase(1 To NUMCLASES)           As t_ModClase
-
 Public ModRaza(1 To NUMRAZAS)             As t_ModRaza
-
 Public Crafteos                           As New Dictionary
 '*********************************************************
 
 Public Nix                                As t_WorldPos
-
 Public Ullathorpe                         As t_WorldPos
-
 Public Banderbill                         As t_WorldPos
-
 Public Lindos                             As t_WorldPos
-
 Public Arghal                             As t_WorldPos
-
 Public Arkhein                            As t_WorldPos
-
 Public CityNix                            As t_CityWorldPos
-
 Public CityUllathorpe                     As t_CityWorldPos
-
 Public CityBanderbill                     As t_CityWorldPos
-
 Public CityArghal                         As t_CityWorldPos
-
 Public CityPenthar                        As t_CityWorldPos
-
 Public CityLindos                         As t_CityWorldPos
-
 Public CityEleusis                        As t_CityWorldPos
-
 Public CityArkhein                        As t_CityWorldPos
-
 Public Prision                            As t_WorldPos
-
 Public Libertad                           As t_WorldPos
-
 Public Renacimiento                       As t_WorldPos
 
 Public TotalMapasCiudades()               As String
-
 Public Ayuda                              As New cCola
-
 Public TiempoPesca As Long
-
 Public BotinInicial As Double
-
 Public Segundos As Long
 
 Public Declare Function writeprivateprofilestring Lib "kernel32" Alias "WritePrivateProfileStringA" (ByVal lpApplicationname As String, ByVal lpKeyname As Any, ByVal lpString As String, ByVal lpfilename As String) As Long
-
 Public Declare Function GetPrivateProfileString Lib "kernel32" Alias "GetPrivateProfileStringA" (ByVal lpApplicationname As String, ByVal lpKeyname As Any, ByVal lpdefault As String, ByVal lpreturnedstring As String, ByVal nSize As Long, ByVal lpfilename As String) As Long
-
 Public Declare Sub ZeroMemory Lib "kernel32.dll" Alias "RtlZeroMemory" (ByRef destination As Any, ByVal Length As Long)
 
 ' Los Objetos Criticos nunca desaparecen del inventario de los npcs vendedores, una vez que
@@ -2692,3 +2643,91 @@ Public Pasos()               As tPaso
 Public DBError As String
 
 Public EnEventoFaccionario As Boolean
+
+
+Public Enum e_EffectOverTimeType
+    eHealthModifier = 1
+    [EffectTypeCount]
+End Enum
+
+Public Enum e_EOTTargetLimit
+    eSingle = 1 'Only one on target for this type
+    eSingleByCaster 'The target can have more than 1 effect of this type but only 1 for every caster
+    eAny 'No limits
+End Enum
+
+Public Type t_BaseDotInfo
+    TargetRef As t_AnyReference
+    UniqueId As Integer
+    RemoveEffect As Boolean
+    EotType As e_EffectOverTimeType
+    EotId As Integer
+End Type
+
+Private Function ValidateUerRef(ByRef Ref As t_AnyReference) As Boolean
+    ValidateUerRef = False
+    If Ref.ArrayIndex < LBound(UserList) Then
+        Exit Function
+    End If
+    If Ref.ArrayIndex > UBound(UserList) Then
+            Exit Function
+    End If
+    If UserList(Ref.ArrayIndex).VersionId <> Ref.VersionId Then
+        Exit Function
+    End If
+    ValidateUerRef = True
+End Function
+
+Private Function ValidateNpcRef(ByRef Ref As t_AnyReference) As Boolean
+     ValidateNpcRef = False
+     If Ref.ArrayIndex < LBound(NpcList) Then
+        Exit Function
+    End If
+     If Ref.ArrayIndex > UBound(NpcList) Then
+            Exit Function
+        End If
+        If NpcList(Ref.ArrayIndex).VersionId <> Ref.VersionId Then
+            Exit Function
+        End If
+        ValidateNpcRef = True
+End Function
+
+Public Function IsValidRef(ByRef Ref As t_AnyReference) As Boolean
+    IsValidRef = False
+    
+    If Ref.RefType = e_ReferenceType.eNone Then
+        Exit Function
+    ElseIf Ref.RefType = eUser Then
+        IsValidRef = ValidateUerRef(Ref)
+    Else
+        IsValidRef = ValidateNpcRef(Ref)
+    End If
+End Function
+
+Public Function SetRef(ByRef Ref As t_AnyReference, ByVal index As Integer, ByVal RefType As e_ReferenceType) As Boolean
+    SetRef = False
+    Ref.RefType = RefType
+    Ref.ArrayIndex = index
+    If RefType = eUser Then
+        If index <= 0 Or Ref.ArrayIndex > UBound(UserList) Then
+            Exit Function
+        End If
+        Ref.VersionId = UserList(index).VersionId
+        Ref.UserId = UserList(Index).ID
+    Else
+        If index <= 0 Or Ref.ArrayIndex > UBound(NpcList) Then
+            Exit Function
+        End If
+        Ref.VersionId = NpcList(index).VersionId
+        Ref.UserId = 0
+    End If
+    
+    SetRef = True
+End Function
+
+Public Sub ClearRef(ByRef Ref As t_AnyReference)
+    Ref.ArrayIndex = 0
+    Ref.VersionId = -1
+    Ref.RefType = e_ReferenceType.eNone
+    Ref.UserId = 0
+End Sub
