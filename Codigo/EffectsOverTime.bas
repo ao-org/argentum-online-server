@@ -26,7 +26,7 @@ InitializePools_Err:
       Call TraceError(Err.Number, Err.Description, "EffectsOverTime.InitializePools", Erl)
 End Sub
 
-Public Sub Update()
+Public Sub UpdateEffectOverTime()
 On Error GoTo Update_Err
     Dim CurrTime As Long
     Dim ElapsedTime As Long
@@ -88,7 +88,7 @@ On Error GoTo CreateEffect_Err
     Dim EffectType As e_EffectOverTimeType
 100 EffectType = EffectOverTime(EffectIndex).Type
     Select Case EffectType
-        Case e_EffectOverTimeType.eModifyHelath
+        Case e_EffectOverTimeType.eHealthModifier
 102         Dim Dot As UpdateHpOverTime
 104         Set Dot = GetEOT(EffectType)
 106         UniqueIdCounter = UniqueIdCounter + 1
@@ -107,7 +107,7 @@ End Sub
 
 Private Function InstantiateEOT(ByVal EffectType As e_EffectOverTimeType) As IBaseEffectOverTime
     Select Case EffectType
-        Case e_EffectOverTimeType.eModifyHelath
+        Case e_EffectOverTimeType.eHealthModifier
             Set InstantiateEOT = New UpdateHpOverTime
     End Select
 End Function

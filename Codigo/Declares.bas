@@ -1720,7 +1720,7 @@ Public Type t_UserFlags
     AdministrativeBan As Byte
     BanMotivo As String
 
-    targetUser As t_UserReference ' Usuario señalado
+    TargetUser As t_UserReference ' Usuario señalado
     
     TargetObj As Integer ' Obj señalado
     TargetObjMap As Integer
@@ -2646,13 +2646,13 @@ Public EnEventoFaccionario As Boolean
 
 
 Public Enum e_EffectOverTimeType
-    eModifyHelath = 1
+    eHealthModifier = 1
     [EffectTypeCount]
 End Enum
 
 Public Enum e_EOTTargetLimit
     eSingle = 1 'Only one on target for this type
-    eSingleByCaser 'The target can have more than 1 effect of this type but only 1 for every caster
+    eSingleByCaster 'The target can have more than 1 effect of this type but only 1 for every caster
     eAny 'No limits
 End Enum
 

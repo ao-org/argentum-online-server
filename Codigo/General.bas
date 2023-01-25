@@ -761,7 +761,7 @@ Sub Main()
             Call modNetwork.close_not_logged_sockets_if_timeout
 #End If
             Call modNetwork.Tick(GetElapsed())
-            Call Update
+            Call UpdateEffectOverTime
             DoEvents
             
             ' Unlock main loop for maximum throughput but it can hog weak CPUs.
