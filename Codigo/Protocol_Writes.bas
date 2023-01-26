@@ -4396,6 +4396,22 @@ PrepareMessageTextOverTile_Err:
         '</EhFooter>
 End Function
 
+
+Public Function PrepareConsoleCharText(ByVal chat As String, ByVal Color As Long, ByVal sourceName As String, _
+                                       ByVal sourceStatus As Integer, ByVal Privileges As Integer)
+On Error GoTo PrepareConsoleCharText_Err
+100     Call Writer.WriteInt16(ServerPacketID.ConsoleCharText)
+102     Call Writer.WriteString8(chat)
+104     Call Writer.WriteInt32(Color)
+106     Call Writer.WriteString8(sourceName)
+108     Call Writer.WriteInt16(sourceStatus)
+112     Call Writer.WriteInt16(Privileges)
+        Exit Function
+PrepareConsoleCharText_Err:
+        Call Writer.Clear
+        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareConsoleCharText", Erl)
+End Function
+
 ''
 ' Prepares the "ConsoleMsg" message and returns it.
 '

@@ -144,6 +144,7 @@ Public Enum ServerPacketID
     TextOverChar
     TextOverTile
     TextCharDrop
+    ConsoleCharText
     FlashScreen
     AlquimistaObj
     ShowAlquimiaForm
@@ -2050,8 +2051,8 @@ Private Sub HandleWhisper(ByVal UserIndex As Integer)
                     Next
 124                 .flags.ChatHistory(UBound(.flags.ChatHistory)) = chat
 126                 Call SendData(SendTarget.ToSuperioresArea, userIndex, PrepareMessageChatOverHead(chat, .Char.charindex, RGB(157, 226, 20), , .pos.x, .pos.y))
-128                 Call WriteChatOverHead(userIndex, chat, .Char.charindex, RGB(157, 226, 20))
-130                 Call WriteChatOverHead(targetUser.ArrayIndex, chat, .Char.charindex, RGB(157, 226, 20))
+128                 Call SendData(SendTarget.ToIndex, UserIndex, PrepareConsoleCharText(chat, RGB(157, 226, 20), UserList(UserIndex).name, UserList(UserIndex).Faccion.Status, UserList(UserIndex).flags.Privilegios))
+130                 Call SendData(SendTarget.ToIndex, TargetUser.ArrayIndex, PrepareConsoleCharText(chat, RGB(157, 226, 20), UserList(UserIndex).name, UserList(UserIndex).Faccion.Status, UserList(UserIndex).flags.Privilegios))
 132                 Call WritePlayWave(targetUser.ArrayIndex, e_FXSound.MP_SOUND, NO_3D_SOUND, NO_3D_SOUND)
                 End If
             End If
