@@ -81,6 +81,11 @@ UpdateEffect_Err:
     UpdateEffect = True
 End Function
 
+Public Function GetNextId() As Integer
+    UniqueIdCounter = (UniqueIdCounter + 1) And &H7FFFFFFF
+    GetNextId = UniqueIdCounter
+End Function
+
 Public Sub CreateEffect(ByVal sourceIndex As Integer, ByVal sourceType As e_ReferenceType, _
                                   ByVal TargetIndex As Integer, ByVal TargetType As e_ReferenceType, _
                                   ByVal EffectIndex As Integer)
@@ -91,7 +96,7 @@ On Error GoTo CreateEffect_Err
         Case e_EffectOverTimeType.eHealthModifier
 102         Dim Dot As UpdateHpOverTime
 104         Set Dot = GetEOT(EffectType)
-106         UniqueIdCounter = UniqueIdCounter + 1
+106         UniqueIdCounter = GetNextId()
 108         Call Dot.Setup(sourceIndex, sourceType, TargetIndex, TargetType, EffectIndex, UniqueIdCounter)
 110         Call AddEffectToUpdate(Dot)
 112         If TargetType = eUser Then

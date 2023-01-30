@@ -3639,7 +3639,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean)
 322         Call WriteConsoleMsg(tempChr, UserList(UserIndex).name & " te ha quitado " & Daño & " puntos de vida.", e_FontTypeNames.FONTTYPE_FIGHT)
 324         Call SubirSkill(tempChr, Resistencia)
 326         Call SendData(SendTarget.ToPCAliveArea, tempChr, PrepareMessageTextOverChar(Daño, UserList(tempChr).Char.charindex, vbRed))
-
+327         Call WriteUpdateHP(tempChr)
             'Muere
 328         If UserList(tempChr).Stats.MinHp < 1 Then
 332             Call ContarMuerte(tempChr, UserIndex)
