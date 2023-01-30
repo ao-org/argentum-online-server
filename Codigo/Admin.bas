@@ -144,6 +144,8 @@ Public Const IntervaloConsultaGM    As Long = 300000
 
 Public PorcentajeRecuperoMana       As Integer
 Public DificultadSubirSkill         As Integer
+Public RequiredSpellDisplayTime     As Integer
+Public MaxInvisibleSpellDisplayTime As Integer
 Public DesbalancePromedioVidas      As Single
 Public RangoVidas                   As Single
 Public ExpLevelUp(1 To STAT_MAXELV) As Long

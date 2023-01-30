@@ -4297,7 +4297,9 @@ Public Function PrepareMessageChatOverHead(ByVal chat As String, _
                                            ByVal Color As Long, _
                                            Optional ByVal EsSpell As Boolean = False, _
                                            Optional ByVal X As Byte = 0, _
-                                           Optional ByVal y As Byte = 0)
+                                           Optional ByVal y As Byte = 0, _
+                                           Optional ByVal RequiredMinDisplayTime As Integer = 0, _
+                                           Optional ByVal MaxDisplayTime As Integer = 0)
         '<EhHeader>
         On Error GoTo PrepareMessageChatOverHead_Err
         '</EhHeader>
@@ -4318,6 +4320,8 @@ Public Function PrepareMessageChatOverHead(ByVal chat As String, _
 119     Call Writer.WriteBool(EsSpell)
         Call Writer.WriteInt8(X)
         Call Writer.WriteInt8(y)
+        Call Writer.WriteInt16(RequiredMinDisplayTime)
+        Call Writer.WriteInt16(MaxDisplayTime)
         '<EhFooter>
         Exit Function
 

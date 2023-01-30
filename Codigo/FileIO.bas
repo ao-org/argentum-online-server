@@ -998,6 +998,8 @@ Sub LoadBalance()
 166     DesbalancePromedioVidas = val(BalanceIni.GetValue("EXTRA", "DesbalancePromedioVidas"))
 168     RangoVidas = val(BalanceIni.GetValue("EXTRA", "RangoVidas"))
 170     ModDañoGolpeCritico = 0.33
+171     RequiredSpellDisplayTime = val(BalanceIni.GetValue("EXTRA", "RequiredSpellDisplayTime"))
+172     MaxInvisibleSpellDisplayTime = val(BalanceIni.GetValue("EXTRA", "MaxInvisibleSpellDisplayTime"))
         
         'stun
         PlayerStunTime = val(BalanceIni.GetValue("STUN", "PlayerStunTime"))
@@ -1005,7 +1007,7 @@ Sub LoadBalance()
         PlayerInmuneTime = val(BalanceIni.GetValue("STUN", "PlayerInmuneTime"))
 
         ' Exp
-172     For i = 1 To STAT_MAXELV
+173     For i = 1 To STAT_MAXELV
 174         ExpLevelUp(i) = val(BalanceIni.GetValue("EXP", i))
         Next
     
