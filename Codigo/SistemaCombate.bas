@@ -278,60 +278,40 @@ PoderEvasion_Err:
         
 End Function
 
-Private Function PoderAtaqueArma(ByVal UserIndex As Integer) As Long
-        
-        On Error GoTo PoderAtaqueArma_Err
-        
-
-        Dim PoderAtaqueTemp As Long
+Private Function AttackPower(ByVal UserIndex, ByVal skill As Integer, ByVal skillModifier As Single) As Long
+On Error GoTo AttackPower_Err
+        Dim TempAttackPower As Long
         With UserList(UserIndex)
-100         PoderAtaqueTemp = ((.Stats.UserSkills(e_Skill.Armas) + ((3 * .Stats.UserSkills(e_Skill.Armas) / 100) * .Stats.UserAtributos(e_Atributos.Agilidad))) * ModificadorPoderAtaqueArmas(.clase))
-114         PoderAtaqueArma = (PoderAtaqueTemp + (2.5 * Maximo(CInt(.Stats.ELV) - 12, 0)))
+100         TempAttackPower = ((.Stats.UserSkills(skill) + ((3 * .Stats.UserSkills(skill) / 100) * .Stats.UserAtributos(e_Atributos.Agilidad))) * skillModifier)
+114         AttackPower = (TempAttackPower + (2.5 * Maximo(CInt(.Stats.ELV) - 12, 0)))
         End With
-        
         Exit Function
+AttackPower_Err:
+116     Call TraceError(Err.Number, Err.Description, "SistemaCombate.AttackPower", Erl)
+End Function
 
+Private Function PoderAtaqueArma(ByVal UserIndex As Integer) As Long
+On Error GoTo PoderAtaqueArma_Err
+        PoderAtaqueArma = AttackPower(UserIndex, e_Skill.Armas, ModificadorPoderAtaqueArmas(UserList(UserIndex).clase))
+        Exit Function
 PoderAtaqueArma_Err:
 116     Call TraceError(Err.Number, Err.Description, "SistemaCombate.PoderAtaqueArma", Erl)
-
-        
 End Function
 
 Private Function PoderAtaqueProyectil(ByVal UserIndex As Integer) As Long
-        
-        On Error GoTo PoderAtaqueProyectil_Err
-        
-
-        Dim PoderAtaqueTemp As Long
-        With UserList(UserIndex)
-100         PoderAtaqueTemp = ((.Stats.UserSkills(e_Skill.Proyectiles) + ((3 * .Stats.UserSkills(e_Skill.Proyectiles) / 100) * .Stats.UserAtributos(e_Atributos.Agilidad))) * ModificadorPoderAtaqueProyectiles(.clase))
-114         PoderAtaqueProyectil = (PoderAtaqueTemp + (2.5 * Maximo(CInt(.Stats.ELV) - 12, 0)))
-        End With
-        
-        Exit Function
-
+On Error GoTo PoderAtaqueProyectil_Err
+    PoderAtaqueProyectil = AttackPower(UserIndex, e_Skill.Proyectiles, ModificadorPoderAtaqueProyectiles(UserList(UserIndex).clase))
+    Exit Function
 PoderAtaqueProyectil_Err:
 116     Call TraceError(Err.Number, Err.Description, "SistemaCombate.PoderAtaqueProyectil", Erl)
-
-        
 End Function
 
 Private Function PoderAtaqueWrestling(ByVal UserIndex As Integer) As Long
-        
-        On Error GoTo PoderAtaqueWrestling_Err
-        
-        With UserList(UserIndex)
-            Dim PoderAtaqueTemp As Long
-100         PoderAtaqueTemp = ((.Stats.UserSkills(e_Skill.Wrestling) + ((3 * .Stats.UserSkills(e_Skill.Wrestling)) * .Stats.UserAtributos(e_Atributos.Agilidad))) * ModificadorPoderAtaqueArmas(.clase))
-114         PoderAtaqueWrestling = (PoderAtaqueTemp + (2.5 * Maximo(CInt(.Stats.ELV) - 12, 0)))
-        End With
-        
-        Exit Function
-
+On Error GoTo PoderAtaqueWrestling_Err
+        PoderAtaqueWrestling = AttackPower(UserIndex, e_Skill.Wrestling, ModificadorPoderAtaqueArmas(UserList(UserIndex).clase))
+    Exit Function
 PoderAtaqueWrestling_Err:
 116     Call TraceError(Err.Number, Err.Description, "SistemaCombate.PoderAtaqueWrestling", Erl)
-
-        
 End Function
 
 Private Function UserImpactoNpc(ByVal UserIndex As Integer, ByVal npcIndex As Integer, ByVal aType As AttackType) As Boolean

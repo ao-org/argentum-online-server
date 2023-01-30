@@ -2034,7 +2034,7 @@ Private Sub HandleWhisper(ByVal UserIndex As Integer)
             End If
             
             If Not IsValidUserRef(targetUser) Then
-                Call WriteConsoleMsg(userIndex, "Usuario invalido.", e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteConsoleMsg(UserIndex, "El usuario esta muy lejos o desconectado.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
             
@@ -2055,6 +2055,8 @@ Private Sub HandleWhisper(ByVal UserIndex As Integer)
 130                 Call SendData(SendTarget.ToIndex, TargetUser.ArrayIndex, PrepareConsoleCharText(chat, RGB(157, 226, 20), UserList(UserIndex).name, UserList(UserIndex).Faccion.Status, UserList(UserIndex).flags.Privilegios))
 132                 Call WritePlayWave(targetUser.ArrayIndex, e_FXSound.MP_SOUND, NO_3D_SOUND, NO_3D_SOUND)
                 End If
+            Else
+                Call WriteConsoleMsg(UserIndex, "El usuario esta muy lejos o desconectado.", e_FontTypeNames.FONTTYPE_INFO)
             End If
         End With
         Exit Sub
@@ -11440,6 +11442,11 @@ Private Sub HandleDeleteItem(ByVal UserIndex As Integer)
         
         If MapInfo(UserList(UserIndex).Pos.map).Seguro = 0 Then
             Call WriteConsoleMsg(UserIndex, "Solo puedes eliminar items en zona segura.", e_FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+        End If
+        
+        If UserList(UserIndex).flags.Muerto = 1 Then
+            Call WriteConsoleMsg(UserIndex, "No puede eliminar items cuando estas muerto.", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         

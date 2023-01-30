@@ -3490,6 +3490,11 @@ On Error GoTo ResurrectWithItem_Err
             Exit Sub
         End If
 106     CanHelpResult = CanHelpUser(UserIndex, targetUser)
+        If UserList(TargetUser).flags.SeguroResu Then
+            Call WriteConsoleMsg(UserIndex, "El usuario tiene el seguro de resurrección activado.", e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteConsoleMsg(TargetUser, UserList(UserIndex).name & " está intentando revivirte. Desactiva el seguro de resurrección para permitirle hacerlo.", e_FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+        End If
         Select Case CanHelpResult
             Case eOposingFaction
 108             Call WriteLocaleMsg(UserIndex, MsgFactionForbidAction, e_FontTypeNames.FONTTYPE_INFO)
