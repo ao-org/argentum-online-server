@@ -37,10 +37,10 @@ Attribute VB_Name = "General"
 
 Option Explicit
 
-Public Declare Function QueryPerformanceCounter Lib "kernel32" (lpPerformanceCount As Currency) As Long
-Public Declare Function QueryPerformanceFrequency Lib "kernel32" (lpFrequency As Currency) As Long
+Public Declare Function QueryPerformanceCounter Lib "Kernel32" (lpPerformanceCount As Currency) As Long
+Public Declare Function QueryPerformanceFrequency Lib "Kernel32" (lpFrequency As Currency) As Long
 Public Declare Sub Sleep Lib "kernel32.dll" (ByVal dwMilliseconds As Long)
-Public Declare Sub OutputDebugString Lib "kernel32" Alias "OutputDebugStringA" (ByVal lpOutputString As String)
+Public Declare Sub OutputDebugString Lib "Kernel32" Alias "OutputDebugStringA" (ByVal lpOutputString As String)
 
 Global LeerNPCs As New clsIniManager
 
@@ -100,7 +100,7 @@ Sub SetNakedBody(ByRef user As t_User)
         End Select
 End Sub
 
-Sub Bloquear(ByVal toMap As Boolean, ByVal sndIndex As Integer, ByVal X As Integer, ByVal Y As Integer, ByVal b As Byte)
+Sub Bloquear(ByVal toMap As Boolean, ByVal sndIndex As Integer, ByVal X As Integer, ByVal y As Integer, ByVal b As Byte)
         'b ahora es boolean,
         'b=true bloquea el tile en (x,y)
         'b=false desbloquea el tile en (x,y)
@@ -113,101 +113,101 @@ Sub Bloquear(ByVal toMap As Boolean, ByVal sndIndex As Integer, ByVal X As Integ
         ' Envío sólo los flags de bloq
 100     b = b And e_Block.ALL_SIDES
 102     If toMap Then
-104         Call SendData(SendTarget.toMap, sndIndex, PrepareMessage_BlockPosition(X, Y, b))
+104         Call SendData(SendTarget.toMap, sndIndex, PrepareMessage_BlockPosition(X, y, b))
         Else
-106         Call Write_BlockPosition(sndIndex, X, Y, b)
+106         Call Write_BlockPosition(sndIndex, X, y, b)
         End If
         Exit Sub
 Bloquear_Err:
 108     Call TraceError(Err.Number, Err.Description, "General.Bloquear", Erl)
 End Sub
 
-Sub BlockAndInform(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer, ByVal NewState As Integer)
-100    If NewState Then
-110        MapData(Map, X, Y).Blocked = e_Block.ALL_SIDES Or e_Block.GM
+Sub BlockAndInform(ByVal map As Integer, ByVal X As Integer, ByVal y As Integer, ByVal newState As Integer)
+100    If newState Then
+110        MapData(map, X, y).Blocked = e_Block.ALL_SIDES Or e_Block.GM
        Else
-120        MapData(Map, X, Y).Blocked = 0
+120        MapData(map, X, y).Blocked = 0
        End If
         
-114    Call Bloquear(True, Map, X, Y, MapData(Map, X, Y).Blocked)
+114    Call Bloquear(True, map, X, y, MapData(map, X, y).Blocked)
 End Sub
 
 Sub MostrarBloqueosPuerta(ByVal toMap As Boolean, _
                           ByVal sndIndex As Integer, _
                           ByVal X As Integer, _
-                          ByVal Y As Integer)
+                          ByVal y As Integer)
         
         On Error GoTo MostrarBloqueosPuerta_Err
         
-        Dim Map       As Integer
+        Dim map       As Integer
         Dim ModPuerta As Integer
         
 100     If toMap Then
-102         Map = sndIndex
+102         map = sndIndex
         Else
-104         Map = UserList(sndIndex).Pos.Map
+104         map = UserList(sndIndex).pos.map
         End If
         
-106     ModPuerta = ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex).Subtipo
+106     ModPuerta = ObjData(MapData(map, X, y).ObjInfo.objIndex).Subtipo
 
 108     Select Case ModPuerta
         
             Case 0
                 ' Bloqueos superiores
-110             Call Bloquear(toMap, sndIndex, X, Y, MapData(Map, X, Y).Blocked)
-112             Call Bloquear(toMap, sndIndex, X - 1, Y, MapData(Map, X - 1, Y).Blocked)
+110             Call Bloquear(toMap, sndIndex, X, y, MapData(map, X, y).Blocked)
+112             Call Bloquear(toMap, sndIndex, X - 1, y, MapData(map, X - 1, y).Blocked)
 
                 ' Bloqueos inferiores
-114             Call Bloquear(toMap, sndIndex, X, Y + 1, MapData(Map, X, Y + 1).Blocked)
-116             Call Bloquear(toMap, sndIndex, X - 1, Y + 1, MapData(Map, X - 1, Y + 1).Blocked)
+114             Call Bloquear(toMap, sndIndex, X, y + 1, MapData(map, X, y + 1).Blocked)
+116             Call Bloquear(toMap, sndIndex, X - 1, y + 1, MapData(map, X - 1, y + 1).Blocked)
 
 118         Case 1
                 ' para palancas o teclas sin modicar bloqueos en X,Y
                 
 120         Case 2
                 ' Bloqueos superiores
-122             Call Bloquear(toMap, sndIndex, X, Y - 1, MapData(Map, X, Y - 1).Blocked)
-124             Call Bloquear(toMap, sndIndex, X - 1, Y - 1, MapData(Map, X - 1, Y - 1).Blocked)
-126             Call Bloquear(toMap, sndIndex, X + 1, Y - 1, MapData(Map, X + 1, Y - 1).Blocked)
+122             Call Bloquear(toMap, sndIndex, X, y - 1, MapData(map, X, y - 1).Blocked)
+124             Call Bloquear(toMap, sndIndex, X - 1, y - 1, MapData(map, X - 1, y - 1).Blocked)
+126             Call Bloquear(toMap, sndIndex, X + 1, y - 1, MapData(map, X + 1, y - 1).Blocked)
                 ' Bloqueos inferiores
-128             Call Bloquear(toMap, sndIndex, X, Y, MapData(Map, X, Y).Blocked)
-130             Call Bloquear(toMap, sndIndex, X - 1, Y, MapData(Map, X - 1, Y).Blocked)
-132             Call Bloquear(toMap, sndIndex, X + 1, Y, MapData(Map, X + 1, Y).Blocked)
+128             Call Bloquear(toMap, sndIndex, X, y, MapData(map, X, y).Blocked)
+130             Call Bloquear(toMap, sndIndex, X - 1, y, MapData(map, X - 1, y).Blocked)
+132             Call Bloquear(toMap, sndIndex, X + 1, y, MapData(map, X + 1, y).Blocked)
                 
 134         Case 3
                 ' Bloqueos superiores
-136             Call Bloquear(toMap, sndIndex, X, Y, MapData(Map, X, Y).Blocked)
-138             Call Bloquear(toMap, sndIndex, X - 1, Y, MapData(Map, X - 1, Y).Blocked)
-140             Call Bloquear(toMap, sndIndex, X + 1, Y, MapData(Map, X + 1, Y).Blocked)
+136             Call Bloquear(toMap, sndIndex, X, y, MapData(map, X, y).Blocked)
+138             Call Bloquear(toMap, sndIndex, X - 1, y, MapData(map, X - 1, y).Blocked)
+140             Call Bloquear(toMap, sndIndex, X + 1, y, MapData(map, X + 1, y).Blocked)
                 ' Bloqueos inferiores
-142             Call Bloquear(toMap, sndIndex, X, Y + 1, MapData(Map, X, Y + 1).Blocked)
-144             Call Bloquear(toMap, sndIndex, X - 1, Y + 1, MapData(Map, X - 1, Y + 1).Blocked)
-146             Call Bloquear(toMap, sndIndex, X + 1, Y + 1, MapData(Map, X + 1, Y + 1).Blocked)
+142             Call Bloquear(toMap, sndIndex, X, y + 1, MapData(map, X, y + 1).Blocked)
+144             Call Bloquear(toMap, sndIndex, X - 1, y + 1, MapData(map, X - 1, y + 1).Blocked)
+146             Call Bloquear(toMap, sndIndex, X + 1, y + 1, MapData(map, X + 1, y + 1).Blocked)
 
 148         Case 4
                 ' Bloqueos superiores
-150             Call Bloquear(toMap, sndIndex, X, Y, MapData(Map, X, Y).Blocked)
+150             Call Bloquear(toMap, sndIndex, X, y, MapData(map, X, y).Blocked)
                 ' Bloqueos inferiores
-152             Call Bloquear(toMap, sndIndex, X, Y + 1, MapData(Map, X, Y + 1).Blocked)
+152             Call Bloquear(toMap, sndIndex, X, y + 1, MapData(map, X, y + 1).Blocked)
 
 154         Case 5 'Ver WyroX
                 ' Bloqueos vertical ver ReyarB
-156             Call Bloquear(toMap, sndIndex, X + 1, Y, MapData(Map, X + 1, Y).Blocked)
-158             Call Bloquear(toMap, sndIndex, X + 1, Y - 1, MapData(Map, X + 1, Y - 1).Blocked)
+156             Call Bloquear(toMap, sndIndex, X + 1, y, MapData(map, X + 1, y).Blocked)
+158             Call Bloquear(toMap, sndIndex, X + 1, y - 1, MapData(map, X + 1, y - 1).Blocked)
 
                 ' Bloqueos horizontal
-160             Call Bloquear(toMap, sndIndex, X, Y - 2, MapData(Map, X, Y - 2).Blocked)
-162             Call Bloquear(toMap, sndIndex, X - 1, Y - 2, MapData(Map, X - 1, Y - 2).Blocked)
+160             Call Bloquear(toMap, sndIndex, X, y - 2, MapData(map, X, y - 2).Blocked)
+162             Call Bloquear(toMap, sndIndex, X - 1, y - 2, MapData(map, X - 1, y - 2).Blocked)
 
 
 164         Case 6 ' Ver WyroX
                 ' Bloqueos superiores ver ReyarB
-166             Call Bloquear(toMap, sndIndex, X, Y, MapData(Map, X, Y).Blocked)
-168             Call Bloquear(toMap, sndIndex, X, Y - 1, MapData(Map, X, Y - 1).Blocked)
+166             Call Bloquear(toMap, sndIndex, X, y, MapData(map, X, y).Blocked)
+168             Call Bloquear(toMap, sndIndex, X, y - 1, MapData(map, X, y - 1).Blocked)
 
                 ' Bloqueos inferiores
-170             Call Bloquear(toMap, sndIndex, X, Y - 2, MapData(Map, X, Y - 2).Blocked)
-172             Call Bloquear(toMap, sndIndex, X + 1, Y - 2, MapData(Map, X + 1, Y - 2).Blocked)
+170             Call Bloquear(toMap, sndIndex, X, y - 2, MapData(map, X, y - 2).Blocked)
+172             Call Bloquear(toMap, sndIndex, X + 1, y - 2, MapData(map, X + 1, y - 2).Blocked)
 
         End Select
 
@@ -218,82 +218,82 @@ MostrarBloqueosPuerta_Err:
         
 End Sub
 
-Sub BloquearPuerta(ByVal Map As Integer, _
+Sub BloquearPuerta(ByVal map As Integer, _
                    ByVal X As Integer, _
-                   ByVal Y As Integer, _
+                   ByVal y As Integer, _
                    ByVal Bloquear As Boolean)
         
         On Error GoTo BloquearPuerta_Err
         Dim ModPuerta As Integer
         
         'ver reyarb
-100     ModPuerta = ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex).Subtipo
+100     ModPuerta = ObjData(MapData(map, X, y).ObjInfo.objIndex).Subtipo
 
 102     Select Case ModPuerta
         
             Case 0 'puerta 2 tiles
 
                 ' Bloqueos superiores
-104             MapData(Map, X, Y).Blocked = IIf(Bloquear, MapData(Map, X, Y).Blocked Or e_Block.NORTH, MapData(Map, X, Y).Blocked And Not e_Block.NORTH)
-106             MapData(Map, X - 1, Y).Blocked = IIf(Bloquear, MapData(Map, X - 1, Y).Blocked Or e_Block.NORTH, MapData(Map, X - 1, Y).Blocked And Not e_Block.NORTH)
+104             MapData(map, X, y).Blocked = IIf(Bloquear, MapData(map, X, y).Blocked Or e_Block.NORTH, MapData(map, X, y).Blocked And Not e_Block.NORTH)
+106             MapData(map, X - 1, y).Blocked = IIf(Bloquear, MapData(map, X - 1, y).Blocked Or e_Block.NORTH, MapData(map, X - 1, y).Blocked And Not e_Block.NORTH)
 
                 ' Cambio bloqueos inferiores
-108             MapData(Map, X, Y + 1).Blocked = IIf(Bloquear, MapData(Map, X, Y + 1).Blocked Or e_Block.SOUTH, MapData(Map, X, Y + 1).Blocked And Not e_Block.SOUTH)
-110             MapData(Map, X - 1, Y + 1).Blocked = IIf(Bloquear, MapData(Map, X - 1, Y + 1).Blocked Or e_Block.SOUTH, MapData(Map, X - 1, Y + 1).Blocked And Not e_Block.SOUTH)
+108             MapData(map, X, y + 1).Blocked = IIf(Bloquear, MapData(map, X, y + 1).Blocked Or e_Block.SOUTH, MapData(map, X, y + 1).Blocked And Not e_Block.SOUTH)
+110             MapData(map, X - 1, y + 1).Blocked = IIf(Bloquear, MapData(map, X - 1, y + 1).Blocked Or e_Block.SOUTH, MapData(map, X - 1, y + 1).Blocked And Not e_Block.SOUTH)
 
 112         Case 1
                 ' para palancas o teclas sin modicar bloqueos en X,Y
 
 114         Case 2 ' puerta 3 tiles 1 arriba
                 ' Bloqueos superiores
-116             MapData(Map, X, Y - 1).Blocked = IIf(Bloquear, MapData(Map, X, Y - 1).Blocked Or e_Block.NORTH, MapData(Map, X, Y - 1).Blocked And Not e_Block.NORTH)
-118             MapData(Map, X - 1, Y - 1).Blocked = IIf(Bloquear, MapData(Map, X - 1, Y - 1).Blocked Or e_Block.NORTH, MapData(Map, X - 1, Y - 1).Blocked And Not e_Block.NORTH)
-120             MapData(Map, X + 1, Y - 1).Blocked = IIf(Bloquear, MapData(Map, X + 1, Y - 1).Blocked Or e_Block.NORTH, MapData(Map, X + 1, Y - 1).Blocked And Not e_Block.NORTH)
+116             MapData(map, X, y - 1).Blocked = IIf(Bloquear, MapData(map, X, y - 1).Blocked Or e_Block.NORTH, MapData(map, X, y - 1).Blocked And Not e_Block.NORTH)
+118             MapData(map, X - 1, y - 1).Blocked = IIf(Bloquear, MapData(map, X - 1, y - 1).Blocked Or e_Block.NORTH, MapData(map, X - 1, y - 1).Blocked And Not e_Block.NORTH)
+120             MapData(map, X + 1, y - 1).Blocked = IIf(Bloquear, MapData(map, X + 1, y - 1).Blocked Or e_Block.NORTH, MapData(map, X + 1, y - 1).Blocked And Not e_Block.NORTH)
                 ' Cambio bloqueos inferiores
-122             MapData(Map, X, Y).Blocked = IIf(Bloquear, MapData(Map, X, Y).Blocked Or e_Block.SOUTH, MapData(Map, X, Y).Blocked And Not e_Block.SOUTH)
-124             MapData(Map, X - 1, Y).Blocked = IIf(Bloquear, MapData(Map, X - 1, Y).Blocked Or e_Block.SOUTH, MapData(Map, X - 1, Y).Blocked And Not e_Block.SOUTH)
-126             MapData(Map, X + 1, Y).Blocked = IIf(Bloquear, MapData(Map, X + 1, Y).Blocked Or e_Block.SOUTH, MapData(Map, X + 1, Y).Blocked And Not e_Block.SOUTH)
+122             MapData(map, X, y).Blocked = IIf(Bloquear, MapData(map, X, y).Blocked Or e_Block.SOUTH, MapData(map, X, y).Blocked And Not e_Block.SOUTH)
+124             MapData(map, X - 1, y).Blocked = IIf(Bloquear, MapData(map, X - 1, y).Blocked Or e_Block.SOUTH, MapData(map, X - 1, y).Blocked And Not e_Block.SOUTH)
+126             MapData(map, X + 1, y).Blocked = IIf(Bloquear, MapData(map, X + 1, y).Blocked Or e_Block.SOUTH, MapData(map, X + 1, y).Blocked And Not e_Block.SOUTH)
                 
 128         Case 3 ' puerta 3 tiles
                 ' Bloqueos superiores
-130             MapData(Map, X, Y).Blocked = IIf(Bloquear, MapData(Map, X, Y).Blocked Or e_Block.NORTH, MapData(Map, X, Y).Blocked And Not e_Block.NORTH)
-132             MapData(Map, X - 1, Y).Blocked = IIf(Bloquear, MapData(Map, X - 1, Y).Blocked Or e_Block.NORTH, MapData(Map, X - 1, Y).Blocked And Not e_Block.NORTH)
-134             MapData(Map, X + 1, Y).Blocked = IIf(Bloquear, MapData(Map, X + 1, Y).Blocked Or e_Block.NORTH, MapData(Map, X + 1, Y).Blocked And Not e_Block.NORTH)
+130             MapData(map, X, y).Blocked = IIf(Bloquear, MapData(map, X, y).Blocked Or e_Block.NORTH, MapData(map, X, y).Blocked And Not e_Block.NORTH)
+132             MapData(map, X - 1, y).Blocked = IIf(Bloquear, MapData(map, X - 1, y).Blocked Or e_Block.NORTH, MapData(map, X - 1, y).Blocked And Not e_Block.NORTH)
+134             MapData(map, X + 1, y).Blocked = IIf(Bloquear, MapData(map, X + 1, y).Blocked Or e_Block.NORTH, MapData(map, X + 1, y).Blocked And Not e_Block.NORTH)
                 ' Cambio bloqueos inferiores
-136             MapData(Map, X, Y + 1).Blocked = IIf(Bloquear, MapData(Map, X, Y + 1).Blocked Or e_Block.SOUTH, MapData(Map, X, Y + 1).Blocked And Not e_Block.SOUTH)
-138             MapData(Map, X - 1, Y + 1).Blocked = IIf(Bloquear, MapData(Map, X - 1, Y + 1).Blocked Or e_Block.SOUTH, MapData(Map, X - 1, Y + 1).Blocked And Not e_Block.SOUTH)
-140             MapData(Map, X + 1, Y + 1).Blocked = IIf(Bloquear, MapData(Map, X + 1, Y + 1).Blocked Or e_Block.SOUTH, MapData(Map, X + 1, Y + 1).Blocked And Not e_Block.SOUTH)
+136             MapData(map, X, y + 1).Blocked = IIf(Bloquear, MapData(map, X, y + 1).Blocked Or e_Block.SOUTH, MapData(map, X, y + 1).Blocked And Not e_Block.SOUTH)
+138             MapData(map, X - 1, y + 1).Blocked = IIf(Bloquear, MapData(map, X - 1, y + 1).Blocked Or e_Block.SOUTH, MapData(map, X - 1, y + 1).Blocked And Not e_Block.SOUTH)
+140             MapData(map, X + 1, y + 1).Blocked = IIf(Bloquear, MapData(map, X + 1, y + 1).Blocked Or e_Block.SOUTH, MapData(map, X + 1, y + 1).Blocked And Not e_Block.SOUTH)
         
 142         Case 4 'puerta 1 tiles
                 ' Bloqueos superiores
-144             MapData(Map, X, Y).Blocked = IIf(Bloquear, MapData(Map, X, Y).Blocked Or e_Block.NORTH, MapData(Map, X, Y).Blocked And Not e_Block.NORTH)
+144             MapData(map, X, y).Blocked = IIf(Bloquear, MapData(map, X, y).Blocked Or e_Block.NORTH, MapData(map, X, y).Blocked And Not e_Block.NORTH)
                 ' Cambio bloqueos inferiores
-146             MapData(Map, X, Y + 1).Blocked = IIf(Bloquear, MapData(Map, X, Y + 1).Blocked Or e_Block.SOUTH, MapData(Map, X, Y + 1).Blocked And Not e_Block.SOUTH)
+146             MapData(map, X, y + 1).Blocked = IIf(Bloquear, MapData(map, X, y + 1).Blocked Or e_Block.SOUTH, MapData(map, X, y + 1).Blocked And Not e_Block.SOUTH)
                 
 148         Case 5 'Ver WyroX
                 ' Bloqueos  vertical ver ReyarB
-150             MapData(Map, X + 1, Y).Blocked = IIf(Bloquear, MapData(Map, X + 1, Y).Blocked Or e_Block.ALL_SIDES, MapData(Map, X + 1, Y).Blocked And Not e_Block.ALL_SIDES)
-152             MapData(Map, X + 1, Y - 1).Blocked = IIf(Bloquear, MapData(Map, X + 1, Y - 1).Blocked Or e_Block.ALL_SIDES, MapData(Map, X + 1, Y - 1).Blocked And Not e_Block.ALL_SIDES)
+150             MapData(map, X + 1, y).Blocked = IIf(Bloquear, MapData(map, X + 1, y).Blocked Or e_Block.ALL_SIDES, MapData(map, X + 1, y).Blocked And Not e_Block.ALL_SIDES)
+152             MapData(map, X + 1, y - 1).Blocked = IIf(Bloquear, MapData(map, X + 1, y - 1).Blocked Or e_Block.ALL_SIDES, MapData(map, X + 1, y - 1).Blocked And Not e_Block.ALL_SIDES)
                 
                 ' Cambio horizontal
-154             MapData(Map, X, Y - 2).Blocked = IIf(Bloquear, MapData(Map, X, Y - 2).Blocked Or e_Block.ALL_SIDES, MapData(Map, X, Y - 2).Blocked And Not e_Block.ALL_SIDES)
-156             MapData(Map, X - 1, Y - 2).Blocked = IIf(Bloquear, MapData(Map, X - 1, Y - 2).Blocked Or e_Block.ALL_SIDES, MapData(Map, X - 1, Y - 2).Blocked And Not e_Block.ALL_SIDES)
+154             MapData(map, X, y - 2).Blocked = IIf(Bloquear, MapData(map, X, y - 2).Blocked Or e_Block.ALL_SIDES, MapData(map, X, y - 2).Blocked And Not e_Block.ALL_SIDES)
+156             MapData(map, X - 1, y - 2).Blocked = IIf(Bloquear, MapData(map, X - 1, y - 2).Blocked Or e_Block.ALL_SIDES, MapData(map, X - 1, y - 2).Blocked And Not e_Block.ALL_SIDES)
 
 
 158         Case 6 ' Ver Wyrox
                 ' Bloqueos vertical ver ReyarB
-160             MapData(Map, X - 1, Y).Blocked = IIf(Bloquear, MapData(Map, X - 1, Y).Blocked Or e_Block.ALL_SIDES, MapData(Map, X - 1, Y).Blocked And Not e_Block.ALL_SIDES)
-162             MapData(Map, X - 1, Y - 1).Blocked = IIf(Bloquear, MapData(Map, X - 1, Y - 1).Blocked Or e_Block.ALL_SIDES, MapData(Map, X - 1, Y - 1).Blocked And Not e_Block.ALL_SIDES)
+160             MapData(map, X - 1, y).Blocked = IIf(Bloquear, MapData(map, X - 1, y).Blocked Or e_Block.ALL_SIDES, MapData(map, X - 1, y).Blocked And Not e_Block.ALL_SIDES)
+162             MapData(map, X - 1, y - 1).Blocked = IIf(Bloquear, MapData(map, X - 1, y - 1).Blocked Or e_Block.ALL_SIDES, MapData(map, X - 1, y - 1).Blocked And Not e_Block.ALL_SIDES)
                 
                 ' Cambio bloqueos Puerta abierta
-164             MapData(Map, X, Y - 2).Blocked = IIf(Bloquear, MapData(Map, X, Y - 2).Blocked Or e_Block.ALL_SIDES, MapData(Map, X, Y - 2).Blocked And Not e_Block.ALL_SIDES)
-166             MapData(Map, X + 1, Y + 2).Blocked = IIf(Bloquear, MapData(Map, X + 1, Y - 2).Blocked Or e_Block.ALL_SIDES, MapData(Map, X + 1, Y - 2).Blocked And Not e_Block.ALL_SIDES)
+164             MapData(map, X, y - 2).Blocked = IIf(Bloquear, MapData(map, X, y - 2).Blocked Or e_Block.ALL_SIDES, MapData(map, X, y - 2).Blocked And Not e_Block.ALL_SIDES)
+166             MapData(map, X + 1, y + 2).Blocked = IIf(Bloquear, MapData(map, X + 1, y - 2).Blocked Or e_Block.ALL_SIDES, MapData(map, X + 1, y - 2).Blocked And Not e_Block.ALL_SIDES)
 
                 
         End Select
 
         ' Mostramos a todos
-168     Call MostrarBloqueosPuerta(True, Map, X, Y)
+168     Call MostrarBloqueosPuerta(True, map, X, y)
         
         Exit Sub
 
@@ -302,15 +302,15 @@ BloquearPuerta_Err:
         
 End Sub
 
-Function HayCosta(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer) As Boolean
+Function HayCosta(ByVal map As Integer, ByVal X As Integer, ByVal y As Integer) As Boolean
         
         On Error GoTo HayCosta_Err
         
 
         'Ladder 10 - 2 - 2010
         'Chequea si hay costa en los tiles proximos al usuario
-100     If Map > 0 And Map < NumMaps + 1 And X > 0 And X < 101 And Y > 0 And Y < 101 Then
-102         If ((MapData(Map, X, Y).Graphic(1) >= 22552 And MapData(Map, X, Y).Graphic(1) <= 22599) Or (MapData(Map, X, Y).Graphic(1) >= 7283 And MapData(Map, X, Y).Graphic(1) <= 7378) Or (MapData(Map, X, Y).Graphic(1) >= 13387 And MapData(Map, X, Y).Graphic(1) <= 13482)) And MapData(Map, X, Y).Graphic(2) = 0 Then
+100     If map > 0 And map < NumMaps + 1 And X > 0 And X < 101 And y > 0 And y < 101 Then
+102         If ((MapData(map, X, y).Graphic(1) >= 22552 And MapData(map, X, y).Graphic(1) <= 22599) Or (MapData(map, X, y).Graphic(1) >= 7283 And MapData(map, X, y).Graphic(1) <= 7378) Or (MapData(map, X, y).Graphic(1) >= 13387 And MapData(map, X, y).Graphic(1) <= 13482)) And MapData(map, X, y).Graphic(2) = 0 Then
 104             HayCosta = True
             Else
 106             HayCosta = False
@@ -331,13 +331,13 @@ HayCosta_Err:
         
 End Function
 
-Function HayAgua(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer) As Boolean
+Function HayAgua(ByVal map As Integer, ByVal X As Integer, ByVal y As Integer) As Boolean
         
         On Error GoTo HayAgua_Err
         
 
-100     With MapData(Map, X, Y)
-102         If Map > 0 And Map < NumMaps + 1 And X > 0 And X < 101 And Y > 0 And Y < 101 Then
+100     With MapData(map, X, y)
+102         If map > 0 And map < NumMaps + 1 And X > 0 And X < 101 And y > 0 And y < 101 Then
 104             HayAgua = (.Graphic(1) >= 1505 And .Graphic(1) <= 1520) Or _
                     (.Graphic(1) >= 124 And .Graphic(1) <= 139) Or _
                     (.Graphic(1) >= 24223 And .Graphic(1) <= 24238) Or _
@@ -387,7 +387,7 @@ EsArbol_Err:
         
 End Function
 
-Private Function HayLava(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer) As Boolean
+Private Function HayLava(ByVal map As Integer, ByVal X As Integer, ByVal y As Integer) As Boolean
         
         On Error GoTo HayLava_Err
         
@@ -396,8 +396,8 @@ Private Function HayLava(ByVal Map As Integer, ByVal X As Integer, ByVal Y As In
         'Autor: Nacho (Integer)
         'Last Modification: 03/12/07
         '***************************************************
-100     If Map > 0 And Map < NumMaps + 1 And X > 0 And X < 101 And Y > 0 And Y < 101 Then
-102         If MapData(Map, X, Y).Graphic(1) >= 5837 And MapData(Map, X, Y).Graphic(1) <= 5852 Then
+100     If map > 0 And map < NumMaps + 1 And X > 0 And X < 101 And y > 0 And y < 101 Then
+102         If MapData(map, X, y).Graphic(1) >= 5837 And MapData(map, X, y).Graphic(1) <= 5852 Then
 104             HayLava = True
             Else
 106             HayLava = False
@@ -424,36 +424,36 @@ Sub ApagarFogatas()
         On Error GoTo ErrHandler
 
         Dim obj As t_Obj
-100         obj.ObjIndex = FOGATA_APAG
+100         obj.objIndex = FOGATA_APAG
 102         obj.amount = 1
 
         Dim MapaActual As Long
-        Dim Y          As Long
+        Dim y          As Long
         Dim X          As Long
 
 104     For MapaActual = 1 To NumMaps
-106         For Y = YMinMapSize To YMaxMapSize
+106         For y = YMinMapSize To YMaxMapSize
 108             For X = XMinMapSize To XMaxMapSize
 
 110                 If MapInfo(MapaActual).lluvia Then
                 
-112                     If MapData(MapaActual, X, Y).ObjInfo.ObjIndex = FOGATA Then
+112                     If MapData(MapaActual, X, y).ObjInfo.objIndex = FOGATA Then
                     
-114                         Call EraseObj(MAX_INVENTORY_OBJS, MapaActual, X, Y)
-116                         Call MakeObj(obj, MapaActual, X, Y)
+114                         Call EraseObj(MAX_INVENTORY_OBJS, MapaActual, X, y)
+116                         Call MakeObj(obj, MapaActual, X, y)
 
                         End If
 
                     End If
 
 118             Next X
-120         Next Y
+120         Next y
 122     Next MapaActual
 
         Exit Sub
     
 ErrHandler:
-124     Call LogError("Error producido al apagar las fogatas de " & X & "-" & Y & " del mapa: " & MapaActual & "    -" & Err.Description)
+124     Call LogError("Error producido al apagar las fogatas de " & X & "-" & y & " del mapa: " & MapaActual & "    -" & Err.Description)
 
 End Sub
 
@@ -560,6 +560,7 @@ Sub Main()
 112     Call ChDrive(App.Path)
 
 114     Call InicializarConstantes
+        Call InitializeCircularLogBuffer
     
 116     frmCargando.Show
     
@@ -591,7 +592,6 @@ Sub Main()
 148     Call LoadMotd
 150     Call CargarListaNegraUsuarios
         Call initBase64Chars
-        Call InitializeCircularLogBuffer
         
 152     frmCargando.Label1(2).Caption = "Conectando base de datos y limpiando usuarios logueados"
     
@@ -802,7 +802,7 @@ FileExist_Err:
         
 End Function
 
-Function ReadField(ByVal Pos As Integer, ByRef Text As String, ByVal SepASCII As Byte) As String
+Function ReadField(ByVal pos As Integer, ByRef Text As String, ByVal SepASCII As Byte) As String
         
         On Error GoTo ReadField_Err
         
@@ -823,7 +823,7 @@ Function ReadField(ByVal Pos As Integer, ByRef Text As String, ByVal SepASCII As
     
 100     delimiter = Chr$(SepASCII)
     
-102     For i = 1 To Pos
+102     For i = 1 To pos
 104         LastPos = currentPos
 106         currentPos = InStr(LastPos + 1, Text, delimiter, vbBinaryCompare)
 108     Next i
@@ -844,11 +844,11 @@ ReadField_Err:
         
 End Function
 
-Function MapaValido(ByVal Map As Integer) As Boolean
+Function MapaValido(ByVal map As Integer) As Boolean
         
         On Error GoTo MapaValido_Err
         
-100     MapaValido = Map >= 1 And Map <= NumMaps
+100     MapaValido = map >= 1 And map <= NumMaps
 
         
         Exit Function
@@ -944,8 +944,8 @@ Public Function Intemperie(ByVal UserIndex As Integer) As Boolean
         On Error GoTo Intemperie_Err
         
     
-100     If MapInfo(UserList(UserIndex).Pos.Map).zone <> "DUNGEON" Then
-102         If MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).trigger <> 1 And MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).trigger <> 2 And MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).trigger < 10 Then Intemperie = True
+100     If MapInfo(UserList(UserIndex).pos.map).zone <> "DUNGEON" Then
+102         If MapData(UserList(UserIndex).pos.map, UserList(UserIndex).pos.X, UserList(UserIndex).pos.y).trigger <> 1 And MapData(UserList(UserIndex).pos.map, UserList(UserIndex).pos.X, UserList(UserIndex).pos.y).trigger <> 2 And MapData(UserList(UserIndex).pos.map, UserList(UserIndex).pos.X, UserList(UserIndex).pos.y).trigger < 10 Then Intemperie = True
         Else
 104         Intemperie = False
 
@@ -997,16 +997,16 @@ Public Sub EfectoFrio(ByVal UserIndex As Integer)
         
 102     With UserList(UserIndex)
             
-104         If .Invent.ArmourEqpObjIndex > 0 Then
+104         If .invent.ArmourEqpObjIndex > 0 Then
                 ' WyroX: Ropa invernal
-106             If ObjData(.Invent.ArmourEqpObjIndex).Invernal Then Exit Sub
+106             If ObjData(.invent.ArmourEqpObjIndex).Invernal Then Exit Sub
             End If
             
 108         If .Counters.Frio < IntervaloFrio Then
 110             .Counters.Frio = .Counters.Frio + 1
             Else
 
-112             If MapInfo(.Pos.Map).terrain = Nieve Then
+112             If MapInfo(.pos.map).terrain = Nieve Then
 114                 Call WriteConsoleMsg(UserIndex, "¡Estás muriendo de frío, abrígate o morirás!", e_FontTypeNames.FONTTYPE_INFO)
 
                     ' WyroX: Sin ropa perdés vida más rápido que con una ropa no-invernal
@@ -1115,7 +1115,7 @@ Public Sub EfectoLava(ByVal UserIndex As Integer)
         
             Else
 
-106             If HayLava(.Pos.Map, .Pos.X, .Pos.Y) Then
+106             If HayLava(.pos.map, .pos.X, .pos.y) Then
 108                 Call WriteConsoleMsg(UserIndex, "¡Quítate de la lava, te estás quemando!", e_FontTypeNames.FONTTYPE_INFO)
 110                 .Stats.MinHp = .Stats.MinHp - Porcentaje(.Stats.MaxHp, 5)
             
@@ -1173,12 +1173,12 @@ Public Sub EfectoMimetismo(ByVal UserIndex As Integer)
 108             If .flags.Navegando Then
 110                 Call EquiparBarco(UserIndex)
                 Else
-112                 .Char.Body = .CharMimetizado.Body
-114                 .Char.Head = .CharMimetizado.Head
+112                 .Char.body = .CharMimetizado.body
+114                 .Char.head = .CharMimetizado.head
 116                 .Char.CascoAnim = .CharMimetizado.CascoAnim
 118                 .Char.ShieldAnim = .CharMimetizado.ShieldAnim
 120                 .Char.WeaponAnim = .CharMimetizado.WeaponAnim
-121                 .char.CartAnim = .CharMimetizado.CartAnim
+121                 .Char.CartAnim = .CharMimetizado.CartAnim
                 End If
                 
 122             .Counters.Mimetismo = 0
@@ -1215,7 +1215,7 @@ Public Sub EfectoInvisibilidad(ByVal UserIndex As Integer)
 108         If UserList(UserIndex).flags.Oculto = 0 Then
                 ' Call WriteConsoleMsg(UserIndex, "Has vuelto a ser visible.", e_FontTypeNames.FONTTYPE_INFO)
 110             Call WriteLocaleMsg(UserIndex, "307", e_FontTypeNames.FONTTYPE_INFO)
-112             Call SendData(SendTarget.ToPCArea, userindex, PrepareMessageSetInvisible(UserList(userindex).Char.charindex, False, UserList(userindex).Pos.X, UserList(userindex).Pos.y))
+112             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(UserList(UserIndex).Char.charindex, False, UserList(UserIndex).pos.X, UserList(UserIndex).pos.y))
 114             Call WriteContadores(UserIndex)
 
             End If
@@ -1231,13 +1231,13 @@ EfectoInvisibilidad_Err:
         
 End Sub
 
-Public Sub EfectoParalisisNpc(ByVal NpcIndex As Integer)
+Public Sub EfectoParalisisNpc(ByVal npcIndex As Integer)
         On Error GoTo EfectoParalisisNpc_Err
         
-100     If NpcList(NpcIndex).Contadores.Paralisis > 0 Then
-102         NpcList(NpcIndex).Contadores.Paralisis = NpcList(NpcIndex).Contadores.Paralisis - 1
+100     If NpcList(npcIndex).Contadores.Paralisis > 0 Then
+102         NpcList(npcIndex).Contadores.Paralisis = NpcList(npcIndex).Contadores.Paralisis - 1
         Else
-104         NpcList(NpcIndex).flags.Paralizado = 0
+104         NpcList(npcIndex).flags.Paralizado = 0
 
         End If
         
@@ -1249,13 +1249,13 @@ EfectoParalisisNpc_Err:
         
 End Sub
 
-Public Sub EfectoInmovilizadoNpc(ByVal NpcIndex As Integer)
+Public Sub EfectoInmovilizadoNpc(ByVal npcIndex As Integer)
         On Error GoTo EfectoInmovilizadoNpc_Err
 
-100     If NpcList(NpcIndex).Contadores.Inmovilizado > 0 Then
-102         NpcList(NpcIndex).Contadores.Inmovilizado = NpcList(NpcIndex).Contadores.Inmovilizado - 1
+100     If NpcList(npcIndex).Contadores.Inmovilizado > 0 Then
+102         NpcList(npcIndex).Contadores.Inmovilizado = NpcList(npcIndex).Contadores.Inmovilizado - 1
         Else
-104         NpcList(NpcIndex).flags.Inmovilizado = 0
+104         NpcList(npcIndex).flags.Inmovilizado = 0
 
         End If
 
@@ -1425,7 +1425,7 @@ Public Sub RecStamina(ByVal UserIndex As Integer, ByRef EnviarStats As Boolean, 
             Dim Suerte As Integer
 
 100         With UserList(UserIndex)
-102             trigger = MapData(.Pos.Map, .Pos.X, .Pos.Y).trigger
+102             trigger = MapData(.pos.map, .pos.X, .pos.y).trigger
 
 104             If trigger = 1 And trigger = 2 And trigger = 4 Then Exit Sub
 
@@ -1552,8 +1552,8 @@ Public Sub EfectoVeneno(ByVal UserIndex As Integer)
 106         With UserList(UserIndex)
               'Call WriteConsoleMsg(UserIndex, "Estás envenenado, si no te curas morirás.", e_FontTypeNames.FONTTYPE_VENENO)
 108           Call WriteLocaleMsg(UserIndex, "47", e_FontTypeNames.FONTTYPE_VENENO)
-              UserList(userindex).Counters.timeFx = 2
-110           Call SendData(SendTarget.ToPCAliveArea, userindex, PrepareMessageParticleFX(.Char.charindex, e_ParticulasIndex.Envenena, 30, False, , UserList(userindex).Pos.X, UserList(userindex).Pos.y))
+              UserList(UserIndex).Counters.timeFx = 2
+110           Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageParticleFX(.Char.charindex, e_ParticulasIndex.Envenena, 30, False, , UserList(UserIndex).pos.X, UserList(UserIndex).pos.y))
 112           .Counters.Veneno = 0
 
               ' El veneno saca un porcentaje de vida random.
@@ -1598,8 +1598,8 @@ Public Sub EfectoIncineramiento(ByVal UserIndex As Integer)
 104                 Call WriteLocaleMsg(UserIndex, "392", e_FontTypeNames.FONTTYPE_FIGHT)
                     'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, e_ParticulasIndex.Incinerar, 30, False))
                 
-                    UserList(userindex).Counters.timeFx = 2
-106                 Call SendData(SendTarget.ToPCAliveArea, userindex, PrepareMessageCreateFX(.Char.charindex, 73, 0, .Pos.X, .Pos.y))
+                    UserList(UserIndex).Counters.timeFx = 2
+106                 Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageCreateFX(.Char.charindex, 73, 0, .pos.X, .pos.y))
 
 108                 damage = RandomNumber(35, 45)
 110                 .Stats.MinHp = .Stats.MinHp - damage
@@ -1730,7 +1730,7 @@ Public Sub Sanar(ByVal UserIndex As Integer, ByRef EnviarStats As Boolean, ByVal
         ' Desnudo no regenera vida
 100     If UserList(UserIndex).flags.Desnudo = 1 Then Exit Sub
         
-102     If MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).trigger = 1 And MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).trigger = 2 And MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).trigger = 4 Then Exit Sub
+102     If MapData(UserList(UserIndex).pos.map, UserList(UserIndex).pos.X, UserList(UserIndex).pos.y).trigger = 1 And MapData(UserList(UserIndex).pos.map, UserList(UserIndex).pos.X, UserList(UserIndex).pos.y).trigger = 2 And MapData(UserList(UserIndex).pos.map, UserList(UserIndex).pos.X, UserList(UserIndex).pos.y).trigger = 4 Then Exit Sub
 
         Dim mashit As Integer
 
@@ -1808,7 +1808,7 @@ Sub PasarSegundo()
 
         Dim X    As Byte
 
-        Dim Y    As Byte
+        Dim y    As Byte
         
         If TiempoPesca > 0 Then TiempoPesca = TiempoPesca + 1
         
@@ -1829,7 +1829,7 @@ Sub PasarSegundo()
             Call InstanciaCaptura.PasarSegundo
         End If
         
-        Segundos = Segundos + 1
+        segundos = segundos + 1
         
    
 110     For i = 1 To LastUser
@@ -1933,21 +1933,21 @@ Sub PasarSegundo()
 220                     If .flags.Portal = 1 Then
 222                         Mapa = .flags.PortalM
 224                         X = .flags.PortalX
-226                         Y = .flags.PortalY
-228                         Call SendData(SendTarget.toMap, .flags.PortalM, PrepareMessageParticleFXToFloor(X, Y, e_ParticulasIndex.TpVerde, 0))
-230                         Call SendData(SendTarget.toMap, .flags.PortalM, PrepareMessageLightFXToFloor(X, Y, 0, 105))
+226                         y = .flags.PortalY
+228                         Call SendData(SendTarget.toMap, .flags.PortalM, PrepareMessageParticleFXToFloor(X, y, e_ParticulasIndex.TpVerde, 0))
+230                         Call SendData(SendTarget.toMap, .flags.PortalM, PrepareMessageLightFXToFloor(X, y, 0, 105))
         
-232                         If MapData(Mapa, X, Y).TileExit.Map > 0 Then
-234                             MapData(Mapa, X, Y).TileExit.Map = 0
-236                             MapData(Mapa, X, Y).TileExit.X = 0
-238                             MapData(Mapa, X, Y).TileExit.Y = 0
+232                         If MapData(Mapa, X, y).TileExit.map > 0 Then
+234                             MapData(Mapa, X, y).TileExit.map = 0
+236                             MapData(Mapa, X, y).TileExit.X = 0
+238                             MapData(Mapa, X, y).TileExit.y = 0
         
                             End If
         
-240                         MapData(Mapa, X, Y).Particula = 0
-242                         MapData(Mapa, X, Y).TimeParticula = 0
-244                         MapData(Mapa, X, Y).Particula = 0
-246                         MapData(Mapa, X, Y).TimeParticula = 0
+240                         MapData(Mapa, X, y).Particula = 0
+242                         MapData(Mapa, X, y).TimeParticula = 0
+244                         MapData(Mapa, X, y).Particula = 0
+246                         MapData(Mapa, X, y).TimeParticula = 0
 248                         .flags.Portal = 0
 250                         .flags.PortalM = 0
 252                         .flags.PortalY = 0
@@ -2416,11 +2416,11 @@ Public Sub MensajeGlobal(texto As String, Fuente As e_FontTypeNames)
 End Sub
 
 ' WyroX: Devuelve si X e Y están dentro del Rectangle
-Public Function InsideRectangle(R As t_Rectangle, ByVal X As Integer, ByVal Y As Integer) As Boolean
-100     If X < R.X1 Then Exit Function
-102     If X > R.X2 Then Exit Function
-104     If Y < R.Y1 Then Exit Function
-106     If Y > R.Y2 Then Exit Function
+Public Function InsideRectangle(r As t_Rectangle, ByVal X As Integer, ByVal y As Integer) As Boolean
+100     If X < r.X1 Then Exit Function
+102     If X > r.X2 Then Exit Function
+104     If y < r.Y1 Then Exit Function
+106     If y > r.Y2 Then Exit Function
 108     InsideRectangle = True
 End Function
 
@@ -2436,7 +2436,7 @@ Public Function GetProcess(ByVal processName As String) As Byte
 
 104     For Each oService In oServices
 
-106         servicename = LCase$(Trim$(CStr(oService.Name)))
+106         servicename = LCase$(Trim$(CStr(oService.name)))
 
 108         If InStrB(1, servicename, LCase$(processName), vbBinaryCompare) > 0 Then
             
@@ -2453,10 +2453,10 @@ Public Function GetProcess(ByVal processName As String) As Byte
 
 End Function
 
-Public Function EsMapaInterdimensional(ByVal Map As Integer) As Boolean
+Public Function EsMapaInterdimensional(ByVal map As Integer) As Boolean
         Dim i As Integer
 100     For i = 1 To UBound(MapasInterdimensionales)
-102         If Map = MapasInterdimensionales(i) Then
+102         If map = MapasInterdimensionales(i) Then
 104             EsMapaInterdimensional = True
                 Exit Function
             End If
@@ -2587,8 +2587,8 @@ Public Sub LoadDBMigrations()
     Exit Sub
 
 LoadDBMigrations_Err:
-122     Call TraceError(err.Number, err.Description, "modGuilds.LoadDBMigrations", Erl)
-        Call MsgBox(DBError & vbNewLine & "Script:" & err.Description, vbCritical, "ERROR MIGRATIONS")
+122     Call TraceError(Err.Number, Err.Description, "modGuilds.LoadDBMigrations", Erl)
+        Call MsgBox(DBError & vbNewLine & "Script:" & Err.Description, vbCritical, "ERROR MIGRATIONS")
         
 End Sub
 Function FileText(filename$) As String

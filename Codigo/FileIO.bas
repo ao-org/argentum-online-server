@@ -43,7 +43,7 @@ Const FISHING_TILES_ON_MAP = 10
 Const FISHING_POOL_ID = 3740
 Private Type t_Position
 
-    x As Integer
+    X As Integer
     y As Integer
 
 End Type
@@ -59,7 +59,7 @@ End Type
 Private Type t_WorldPos
 
     map As Integer
-    x As Byte
+    X As Byte
     y As Byte
 
 End Type
@@ -106,7 +106,7 @@ End Type
 
 Private Type t_DatosBloqueados
 
-    x As Integer
+    X As Integer
     y As Integer
     Lados As Byte
 
@@ -114,7 +114,7 @@ End Type
 
 Private Type t_DatosGrh
 
-    x As Integer
+    X As Integer
     y As Integer
     GrhIndex As Long
 
@@ -122,7 +122,7 @@ End Type
 
 Private Type t_DatosTrigger
 
-    x As Integer
+    X As Integer
     y As Integer
     trigger As Integer
 
@@ -130,7 +130,7 @@ End Type
 
 Private Type t_DatosLuces
 
-    x As Integer
+    X As Integer
     y As Integer
     Color As Long
     Rango As Byte
@@ -139,7 +139,7 @@ End Type
 
 Private Type t_DatosParticulas
 
-    x As Integer
+    X As Integer
     y As Integer
     Particula As Long
 
@@ -147,7 +147,7 @@ End Type
 
 Private Type t_DatosNPC
 
-    x As Integer
+    X As Integer
     y As Integer
     npcIndex As Integer
 
@@ -155,7 +155,7 @@ End Type
 
 Private Type t_DatosObjs
 
-    x As Integer
+    X As Integer
     y As Integer
     objIndex As Integer
     ObjAmmount As Integer
@@ -164,7 +164,7 @@ End Type
 
 Private Type t_DatosTE
 
-    x As Integer
+    X As Integer
     y As Integer
     DestM As Integer
     DestX As Integer
@@ -282,7 +282,7 @@ CargarSpawnList_Err:
         
 End Sub
 
-Function EsAdmin(ByRef Name As String) As Boolean
+Function EsAdmin(ByRef name As String) As Boolean
         '***************************************************
         'Author: Unknown
         'Last Modification: 27/03/2011
@@ -291,7 +291,7 @@ Function EsAdmin(ByRef Name As String) As Boolean
         
         On Error GoTo EsAdmin_Err
         
-100     EsAdmin = (val(Administradores.GetValue("Admin", Name)) = 1)
+100     EsAdmin = (val(Administradores.GetValue("Admin", name)) = 1)
 
         
         Exit Function
@@ -302,7 +302,7 @@ EsAdmin_Err:
         
 End Function
 
-Function EsDios(ByRef Name As String) As Boolean
+Function EsDios(ByRef name As String) As Boolean
         '***************************************************
         'Author: Unknown
         'Last Modification: 27/03/2011
@@ -311,7 +311,7 @@ Function EsDios(ByRef Name As String) As Boolean
         
         On Error GoTo EsDios_Err
         
-100     EsDios = (val(Administradores.GetValue("Dios", Name)) = 1)
+100     EsDios = (val(Administradores.GetValue("Dios", name)) = 1)
 
         
         Exit Function
@@ -322,7 +322,7 @@ EsDios_Err:
         
 End Function
 
-Function EsSemiDios(ByRef Name As String) As Boolean
+Function EsSemiDios(ByRef name As String) As Boolean
         '***************************************************
         'Author: Unknown
         'Last Modification: 27/03/2011
@@ -331,7 +331,7 @@ Function EsSemiDios(ByRef Name As String) As Boolean
         
         On Error GoTo EsSemiDios_Err
         
-100     EsSemiDios = (val(Administradores.GetValue("SemiDios", Name)) = 1)
+100     EsSemiDios = (val(Administradores.GetValue("SemiDios", name)) = 1)
 
         
         Exit Function
@@ -342,7 +342,7 @@ EsSemiDios_Err:
         
 End Function
 
-Function EsConsejero(ByRef Name As String) As Boolean
+Function EsConsejero(ByRef name As String) As Boolean
         '***************************************************
         'Author: Unknown
         'Last Modification: 27/03/2011
@@ -351,7 +351,7 @@ Function EsConsejero(ByRef Name As String) As Boolean
         
         On Error GoTo EsConsejero_Err
         
-100     EsConsejero = (val(Administradores.GetValue("Consejero", Name)) = 1)
+100     EsConsejero = (val(Administradores.GetValue("Consejero", name)) = 1)
 
         
         Exit Function
@@ -362,7 +362,7 @@ EsConsejero_Err:
         
 End Function
 
-Function EsRolesMaster(ByRef Name As String) As Boolean
+Function EsRolesMaster(ByRef name As String) As Boolean
         '***************************************************
         'Author: Unknown
         'Last Modification: 27/03/2011
@@ -371,7 +371,7 @@ Function EsRolesMaster(ByRef Name As String) As Boolean
         
         On Error GoTo EsRolesMaster_Err
         
-100     EsRolesMaster = (val(Administradores.GetValue("RM", Name)) = 1)
+100     EsRolesMaster = (val(Administradores.GetValue("RM", name)) = 1)
 
         
         Exit Function
@@ -382,7 +382,7 @@ EsRolesMaster_Err:
         
 End Function
 
-Public Function EsGmChar(ByRef Name As String) As Boolean
+Public Function EsGmChar(ByRef name As String) As Boolean
         '***************************************************
         'Author: ZaMa
         'Last Modification: 27/03/2011
@@ -395,16 +395,16 @@ Public Function EsGmChar(ByRef Name As String) As Boolean
         Dim EsGM As Boolean
     
         ' Admin?
-100     EsGM = EsAdmin(Name)
+100     EsGM = EsAdmin(name)
 
         ' Dios?
-102     If Not EsGM Then EsGM = EsDios(Name)
+102     If Not EsGM Then EsGM = EsDios(name)
 
         ' Semidios?
-104     If Not EsGM Then EsGM = EsSemiDios(Name)
+104     If Not EsGM Then EsGM = EsSemiDios(name)
 
         ' Consejero?
-106     If Not EsGM Then EsGM = EsConsejero(Name)
+106     If Not EsGM Then EsGM = EsConsejero(name)
 
 108     EsGmChar = EsGM
 
@@ -431,7 +431,7 @@ Public Sub loadAdministrativeUsers()
         'Si esta mierda tuviese array asociativos el codigo seria tan lindo.
         Dim buf  As Integer
         Dim i    As Long
-        Dim Name As String
+        Dim name As String
         
         ' Anti-choreo de GM's
 100     Set AdministratorAccounts = New Dictionary
@@ -451,8 +451,8 @@ Public Sub loadAdministrativeUsers()
 108     buf = val(ServerIni.GetValue("INIT", "Admines"))
     
 110     For i = 1 To buf
-112         Name = UCase$(ServerIni.GetValue("Admines", "Admin" & i))
-114         TempName = Split(Name, "|", , vbTextCompare)
+112         name = UCase$(ServerIni.GetValue("Admines", "Admin" & i))
+114         TempName = Split(name, "|", , vbTextCompare)
         
             ' Si NO declara el mail de la cuenta en el Server.ini, NO le doy privilegios.
 116         If UBound(TempName()) > 0 Then
@@ -469,8 +469,8 @@ Public Sub loadAdministrativeUsers()
 124     buf = val(ServerIni.GetValue("INIT", "Dioses"))
     
 126     For i = 1 To buf
-128         Name = UCase$(ServerIni.GetValue("Dioses", "Dios" & i))
-130         TempName = Split(Name, "|", , vbTextCompare)
+128         name = UCase$(ServerIni.GetValue("Dioses", "Dios" & i))
+130         TempName = Split(name, "|", , vbTextCompare)
         
             ' Si NO declara el mail de la cuenta en el Server.ini, NO le doy privilegios.
 132         If UBound(TempName()) > 0 Then
@@ -487,8 +487,8 @@ Public Sub loadAdministrativeUsers()
 140     buf = val(ServerIni.GetValue("INIT", "SemiDioses"))
     
 142     For i = 1 To buf
-144         Name = UCase$(ServerIni.GetValue("SemiDioses", "SemiDios" & i))
-146         TempName = Split(Name, "|", , vbTextCompare)
+144         name = UCase$(ServerIni.GetValue("SemiDioses", "SemiDios" & i))
+146         TempName = Split(name, "|", , vbTextCompare)
         
             ' Si NO declara el mail de la cuenta en el Server.ini, NO le doy privilegios.
 148         If UBound(TempName()) > 0 Then
@@ -505,8 +505,8 @@ Public Sub loadAdministrativeUsers()
 156     buf = val(ServerIni.GetValue("INIT", "Consejeros"))
         
 158     For i = 1 To buf
-160         Name = UCase$(ServerIni.GetValue("Consejeros", "Consejero" & i))
-162         TempName = Split(Name, "|", , vbTextCompare)
+160         name = UCase$(ServerIni.GetValue("Consejeros", "Consejero" & i))
+162         TempName = Split(name, "|", , vbTextCompare)
         
             ' Si NO declara el mail de la cuenta en el Server.ini, NO le doy privilegios.
 164         If UBound(TempName()) > 0 Then
@@ -523,8 +523,8 @@ Public Sub loadAdministrativeUsers()
 172     buf = val(ServerIni.GetValue("INIT", "RolesMasters"))
         
 174     For i = 1 To buf
-176         Name = UCase$(ServerIni.GetValue("RolesMasters", "RM" & i))
-178         TempName = Split(Name, "|", , vbTextCompare)
+176         name = UCase$(ServerIni.GetValue("RolesMasters", "RM" & i))
+178         TempName = Split(name, "|", , vbTextCompare)
         
             ' Si NO declara el mail de la cuenta en el Server.ini, NO le doy privilegios.
 180         If UBound(TempName()) > 0 Then
@@ -551,7 +551,7 @@ loadAdministrativeUsers_Err:
 End Sub
 
 
-Public Function TxtDimension(ByVal Name As String) As Long
+Public Function TxtDimension(ByVal name As String) As Long
         
         On Error GoTo TxtDimension_Err
         
@@ -559,7 +559,7 @@ Public Function TxtDimension(ByVal Name As String) As Long
         Dim n As Integer, cad As String, Tam As Long
 
 100     n = FreeFile(1)
-102     Open Name For Input As #n
+102     Open name For Input As #n
 104     Tam = 0
 
 106     Do While Not EOF(n)
@@ -634,6 +634,11 @@ Public Sub CargarHechizos()
         On Error GoTo ErrHandler
 
 100     If frmMain.Visible Then frmMain.txStatus.Caption = "Cargando Hechizos."
+
+        If Not FileExist(DatPath & "Hechizos.dat", vbArchive) Then
+            MsgBox "No se encuentra " & DatPath & "Hechizos.dat", vbCritical + vbOKOnly
+            End
+        End If
 
         Dim Hechizo As Integer
 
@@ -769,7 +774,7 @@ Public Sub CargarHechizos()
 268         Hechizos(Hechizo).ManaRequerido = val(Leer.GetValue("Hechizo" & Hechizo, "ManaRequerido"))
 270         Hechizos(Hechizo).RequiredHP = val(Leer.GetValue("Hechizo" & Hechizo, "RequiredHP"))
     
-272         Hechizos(Hechizo).duration = val(Leer.GetValue("Hechizo" & Hechizo, "Duration"))
+272         Hechizos(Hechizo).Duration = val(Leer.GetValue("Hechizo" & Hechizo, "Duration"))
     
             'Barrin 30/9/03
 274         Hechizos(Hechizo).StaRequerido = val(Leer.GetValue("Hechizo" & Hechizo, "StaRequerido"))
@@ -793,6 +798,12 @@ Public Sub LoadEffectOverTime()
 On Error GoTo ErrHandler
 
 100     If frmMain.Visible Then frmMain.txStatus.Caption = "Cargando Hechizos."
+        
+        If Not FileExist(DatPath & "EffectsOverTime.dat", vbArchive) Then
+            MsgBox "No se encuentra " & DatPath & "EffectsOverTime.dat", vbCritical + vbOKOnly
+            End
+        End If
+        
         Dim i As Integer
         Dim Leer As New clsIniManager
         Dim EffectCount As Integer
@@ -1138,6 +1149,11 @@ Sub LoadOBJData()
         'Carga la lista de objetos
         '*****************************************************************
         Dim Object As Integer
+        
+        If Not FileExist(DatPath & "Obj.dat", vbArchive) Then
+            MsgBox "No se encuentra " & DatPath & "Obj.dat", vbCritical + vbOKOnly
+            End
+        End If
 
         Dim Leer   As clsIniManager
 102     Set Leer = New clsIniManager
@@ -1168,7 +1184,7 @@ Sub LoadOBJData()
 
 122             ObjKey = "OBJ" & Object
         
-124             .Name = Leer.GetValue(ObjKey, "Name")
+124             .name = Leer.GetValue(ObjKey, "Name")
     
                 ' If .Name = "" Then
                 '   Call LogError("Objeto libre:" & Object)
@@ -1204,7 +1220,7 @@ Sub LoadOBJData()
 158             .TiempoRegenerar = val(Leer.GetValue(ObjKey, "TiempoRegenerar"))
                 .Jerarquia = val(Leer.GetValue(ObjKey, "Jerarquia"))
 160             .Cooldown = val(Leer.GetValue(ObjKey, "CD"))
-                .CdType = val(Leer.GetValue(ObjKey, "CDType"))
+                .cdType = val(Leer.GetValue(ObjKey, "CDType"))
 161             .ImprovedRangedHitChance = val(Leer.GetValue(ObjKey, "ImprovedRHit"))
                 .ImprovedMeleeHitChance = val(Leer.GetValue(ObjKey, "ImprovedMHit"))
                 Dim i As Integer
@@ -1596,7 +1612,7 @@ Sub LoadOBJData()
                 .ObjDonador = NFT
                 
                 If NFT Then
-                    ObjShop(UBound(ObjShop)).Name = Leer.GetValue(ObjKey, "Name")
+                    ObjShop(UBound(ObjShop)).name = Leer.GetValue(ObjKey, "Name")
                     ObjShop(UBound(ObjShop)).Valor = val(Leer.GetValue(ObjKey, "Valor"))
                     ObjShop(UBound(ObjShop)).ObjNum = Object
                     ObjShop(UBound(ObjShop)).ObjDonador = 1
@@ -1725,6 +1741,11 @@ Sub LoadMapData()
         Else
                 NumMaps = CountFiles(MapPath, "*.csm") - 1
         End If
+        
+        If NumMaps = 0 Then
+            MsgBox "No se encontraron mapas en " & MapPath, vbCritical + vbOKOnly
+            End
+        End If
 
 #End If
 
@@ -1793,7 +1814,7 @@ Public Sub CargarMapaFormatoCSM(ByVal map As Long, ByVal MAPFl As String)
         Dim i            As Long
         Dim j            As Long
     
-        Dim x As Integer, y As Integer
+        Dim X As Integer, y As Integer
         randomTeleportCount = 0
 100     If Not FileExist(MAPFl, vbNormal) Then
 102         Call TraceError(404, "Estas tratando de cargar un MAPA que NO EXISTE" & vbNewLine & "Mapa: " & MAPFl, "ES.CargarMapaFormatoCSM")
@@ -1821,7 +1842,7 @@ Public Sub CargarMapaFormatoCSM(ByVal map As Long, ByVal MAPFl As String)
 122             ReDim Blqs(1 To .NumeroBloqueados)
 124             Get #fh, , Blqs
 126             For i = 1 To .NumeroBloqueados
-128                 MapData(map, Blqs(i).x, Blqs(i).y).Blocked = Blqs(i).Lados
+128                 MapData(map, Blqs(i).X, Blqs(i).y).Blocked = Blqs(i).Lados
 130             Next i
             End If
         
@@ -1831,13 +1852,13 @@ Public Sub CargarMapaFormatoCSM(ByVal map As Long, ByVal MAPFl As String)
 134             ReDim L1(1 To .NumeroLayers(1))
 136             Get #fh, , L1
 138             For i = 1 To .NumeroLayers(1)
-140                 x = L1(i).x
+140                 X = L1(i).X
 142                 y = L1(i).y
-144                 MapData(map, x, y).Graphic(1) = L1(i).GrhIndex
+144                 MapData(map, X, y).Graphic(1) = L1(i).GrhIndex
             
                     TotalTiles = TotalTiles + 1
-146                 If HayAgua(map, x, y) Then
-148                     MapData(map, x, y).Blocked = MapData(map, x, y).Blocked Or FLAG_AGUA
+146                 If HayAgua(map, X, y) Then
+148                     MapData(map, X, y).Blocked = MapData(map, X, y).Blocked Or FLAG_AGUA
                         SailingTiles = SailingTiles + 1
                     End If
 150             Next i
@@ -1848,10 +1869,10 @@ Public Sub CargarMapaFormatoCSM(ByVal map As Long, ByVal MAPFl As String)
 154             ReDim L2(1 To .NumeroLayers(2))
 156             Get #fh, , L2
 158             For i = 1 To .NumeroLayers(2)
-160                 x = L2(i).x
+160                 X = L2(i).X
 162                 y = L2(i).y
-164                 MapData(map, x, y).Graphic(2) = L2(i).GrhIndex
-166                 MapData(map, x, y).Blocked = MapData(map, x, y).Blocked And Not FLAG_AGUA
+164                 MapData(map, X, y).Graphic(2) = L2(i).GrhIndex
+166                 MapData(map, X, y).Blocked = MapData(map, X, y).Blocked And Not FLAG_AGUA
 168             Next i
 
             End If
@@ -1861,12 +1882,12 @@ Public Sub CargarMapaFormatoCSM(ByVal map As Long, ByVal MAPFl As String)
 174             Get #fh, , L3
 
 176             For i = 1 To .NumeroLayers(3)
-178                 x = L3(i).x
+178                 X = L3(i).X
 180                 y = L3(i).y
-182                 MapData(map, x, y).Graphic(3) = L3(i).GrhIndex
+182                 MapData(map, X, y).Graphic(3) = L3(i).GrhIndex
                 
 184                 If EsArbol(L3(i).GrhIndex) Then
-186                     MapData(map, x, y).Blocked = MapData(map, x, y).Blocked Or FLAG_ARBOL
+186                     MapData(map, X, y).Blocked = MapData(map, X, y).Blocked Or FLAG_ARBOL
                     End If
 188             Next i
 
@@ -1876,7 +1897,7 @@ Public Sub CargarMapaFormatoCSM(ByVal map As Long, ByVal MAPFl As String)
 192             ReDim L4(1 To .NumeroLayers(4))
 194             Get #fh, , L4
 196             For i = 1 To .NumeroLayers(4)
-198                 MapData(map, L4(i).x, L4(i).y).Graphic(4) = L4(i).GrhIndex
+198                 MapData(map, L4(i).X, L4(i).y).Graphic(4) = L4(i).GrhIndex
 200             Next i
 
             End If
@@ -1886,19 +1907,19 @@ Public Sub CargarMapaFormatoCSM(ByVal map As Long, ByVal MAPFl As String)
 206             Get #fh, , Triggers
 
 208             For i = 1 To .NumeroTriggers
-210                 x = Triggers(i).x
+210                 X = Triggers(i).X
 212                 y = Triggers(i).y
-214                 MapData(map, x, y).trigger = Triggers(i).trigger
+214                 MapData(map, X, y).trigger = Triggers(i).trigger
 
                     ' Trigger detalles en agua
 216                 If Triggers(i).trigger = e_Trigger.DETALLEAGUA Then
                         ' Vuelvo a poner flag agua
-218                     MapData(map, x, y).Blocked = MapData(map, x, y).Blocked Or FLAG_AGUA
+218                     MapData(map, X, y).Blocked = MapData(map, X, y).Blocked Or FLAG_AGUA
                     End If
                     
 217                 If Triggers(i).trigger = e_Trigger.VALIDONADO Or Triggers(i).trigger = e_Trigger.NADOCOMBINADO Or Triggers(i).trigger = e_Trigger.NADOBAJOTECHO Then
                         ' Vuelvo a poner flag agua
-219                     MapData(map, x, y).Blocked = MapData(map, x, y).Blocked Or FLAG_AGUA
+219                     MapData(map, X, y).Blocked = MapData(map, X, y).Blocked Or FLAG_AGUA
                     End If
 220             Next i
             End If
@@ -1908,8 +1929,8 @@ Public Sub CargarMapaFormatoCSM(ByVal map As Long, ByVal MAPFl As String)
 226             Get #fh, , Particulas
 
 228             For i = 1 To .NumeroParticulas
-230                 MapData(map, Particulas(i).x, Particulas(i).y).ParticulaIndex = Particulas(i).Particula
-232                 MapData(map, Particulas(i).x, Particulas(i).y).ParticulaIndex = 0
+230                 MapData(map, Particulas(i).X, Particulas(i).y).ParticulaIndex = Particulas(i).Particula
+232                 MapData(map, Particulas(i).X, Particulas(i).y).ParticulaIndex = 0
 234             Next i
             End If
 
@@ -1918,10 +1939,10 @@ Public Sub CargarMapaFormatoCSM(ByVal map As Long, ByVal MAPFl As String)
 240             Get #fh, , Luces
 
 242             For i = 1 To .NumeroLuces
-244                 MapData(map, Luces(i).x, Luces(i).y).Luz.Color = Luces(i).Color
-246                 MapData(map, Luces(i).x, Luces(i).y).Luz.Rango = Luces(i).Rango
-248                 MapData(map, Luces(i).x, Luces(i).y).Luz.Color = 0
-250                 MapData(map, Luces(i).x, Luces(i).y).Luz.Rango = 0
+244                 MapData(map, Luces(i).X, Luces(i).y).Luz.Color = Luces(i).Color
+246                 MapData(map, Luces(i).X, Luces(i).y).Luz.Rango = Luces(i).Rango
+248                 MapData(map, Luces(i).X, Luces(i).y).Luz.Color = 0
+250                 MapData(map, Luces(i).X, Luces(i).y).Luz.Rango = 0
 252             Next i
             End If
             
@@ -1929,14 +1950,14 @@ Public Sub CargarMapaFormatoCSM(ByVal map As Long, ByVal MAPFl As String)
 256             ReDim Objetos(1 To .NumeroOBJs)
 258             Get #fh, , Objetos
 260             For i = 1 To .NumeroOBJs
-262                 MapData(map, Objetos(i).x, Objetos(i).y).ObjInfo.objIndex = Objetos(i).objIndex
+262                 MapData(map, Objetos(i).X, Objetos(i).y).ObjInfo.objIndex = Objetos(i).objIndex
                     With ObjData(Objetos(i).objIndex)
 264                 Select Case .OBJType
                         Case e_OBJType.otYacimiento, e_OBJType.otArboles
-266                         MapData(map, Objetos(i).x, Objetos(i).y).ObjInfo.amount = ObjData(Objetos(i).objIndex).VidaUtil
-268                         MapData(map, Objetos(i).x, Objetos(i).y).ObjInfo.Data = &H7FFFFFFF ' Ultimo uso = Max Long
+266                         MapData(map, Objetos(i).X, Objetos(i).y).ObjInfo.amount = ObjData(Objetos(i).objIndex).VidaUtil
+268                         MapData(map, Objetos(i).X, Objetos(i).y).ObjInfo.Data = &H7FFFFFFF ' Ultimo uso = Max Long
 270                     Case Else
-272                         MapData(map, Objetos(i).x, Objetos(i).y).ObjInfo.amount = Objetos(i).ObjAmmount
+272                         MapData(map, Objetos(i).X, Objetos(i).y).ObjInfo.amount = Objetos(i).ObjAmmount
                     End Select
                     If .OBJType = otTeleport And .Subtipo = e_TeleportSubType.eTransportNetwork Then
                         RandomTeleports(randomTeleportCount) = i
@@ -1959,21 +1980,21 @@ Public Sub CargarMapaFormatoCSM(ByVal map As Long, ByVal MAPFl As String)
 290                     npcIndex = OpenNPC(NumNpc)
                         
 292                     If npcIndex > 0 Then
-294                         MapData(map, NPCs(i).x, NPCs(i).y).npcIndex = npcIndex
+294                         MapData(map, NPCs(i).X, NPCs(i).y).npcIndex = npcIndex
 296                         NpcList(npcIndex).pos.map = map
-298                         NpcList(npcIndex).pos.x = NPCs(i).x
+298                         NpcList(npcIndex).pos.X = NPCs(i).X
 300                         NpcList(npcIndex).pos.y = NPCs(i).y
                             ' WyroX: guardo siempre la pos original... puede sernos útil ;)
 302                         NpcList(npcIndex).Orig = NpcList(npcIndex).pos
     
-304                         If LenB(NpcList(npcIndex).Name) = 0 Then
-306                             MapData(map, NPCs(i).x, NPCs(i).y).npcIndex = 0
+304                         If LenB(NpcList(npcIndex).name) = 0 Then
+306                             MapData(map, NPCs(i).X, NPCs(i).y).npcIndex = 0
                             Else
-308                             Call MakeNPCChar(True, 0, npcIndex, map, NPCs(i).x, NPCs(i).y)
+308                             Call MakeNPCChar(True, 0, npcIndex, map, NPCs(i).X, NPCs(i).y)
                             End If
                         Else
                             ' Lo guardo en los logs + aparece en el Debug.Print
-310                         Call TraceError(404, "NPC no existe en los .DAT's o está mal dateado. Posicion: " & Map & "-" & NPCs(i).x & "-" & NPCs(i).y, "ES.CargarMapaFormatoCSM")
+310                         Call TraceError(404, "NPC no existe en los .DAT's o está mal dateado. Posicion: " & map & "-" & NPCs(i).X & "-" & NPCs(i).y, "ES.CargarMapaFormatoCSM")
                         End If
                     End If
 312             Next i
@@ -1984,9 +2005,9 @@ Public Sub CargarMapaFormatoCSM(ByVal map As Long, ByVal MAPFl As String)
 318             Get #fh, , TEs
 
 320             For i = 1 To .NumeroTE
-322                 MapData(map, TEs(i).x, TEs(i).y).TileExit.map = TEs(i).DestM
-324                 MapData(map, TEs(i).x, TEs(i).y).TileExit.x = TEs(i).DestX
-326                 MapData(map, TEs(i).x, TEs(i).y).TileExit.y = TEs(i).DestY
+322                 MapData(map, TEs(i).X, TEs(i).y).TileExit.map = TEs(i).DestM
+324                 MapData(map, TEs(i).X, TEs(i).y).TileExit.X = TEs(i).DestX
+326                 MapData(map, TEs(i).X, TEs(i).y).TileExit.y = TEs(i).DestY
 328             Next i
             End If
         End With
@@ -2003,7 +2024,7 @@ Public Sub CargarMapaFormatoCSM(ByVal map As Long, ByVal MAPFl As String)
         End If
         
         If SailingTiles * 100 / TotalTiles > FISHING_REQUIRED_PERCENT Then
-            Call AddFishingPoolsToMap(Map)
+            Call AddFishingPoolsToMap(map)
         End If
     
 340     MapInfo(map).map_name = MapDat.map_name
@@ -2038,13 +2059,13 @@ Public Sub CargarMapaFormatoCSM(ByVal map As Long, ByVal MAPFl As String)
             Dim Fields() As String
 386         Fields = Split(MapDat.Salida, "-")
 388         MapInfo(map).Salida.map = val(Fields(0))
-390         MapInfo(map).Salida.x = val(Fields(1))
+390         MapInfo(map).Salida.X = val(Fields(1))
 392         MapInfo(map).Salida.y = val(Fields(2))
         End If
         If randomTeleportCount > 0 Then
             ReDim MapInfo(map).TransportNetwork(randomTeleportCount - 1) As t_TransportNetworkExit
             For i = 0 To randomTeleportCount - 1
-                MapInfo(map).TransportNetwork(i).TileX = Objetos(RandomTeleports(i)).x
+                MapInfo(map).TransportNetwork(i).TileX = Objetos(RandomTeleports(i)).X
                 MapInfo(map).TransportNetwork(i).TileY = Objetos(RandomTeleports(i)).y
             Next i
         End If
@@ -2056,22 +2077,22 @@ ErrorHandler:
     
 End Sub
 
-Sub AddFishingPoolsToMap(ByVal Map As Integer)
+Sub AddFishingPoolsToMap(ByVal map As Integer)
     Dim i As Integer
     For i = 1 To FISHING_TILES_ON_MAP
-        Call CreateFishingPool(Map)
+        Call CreateFishingPool(map)
     Next i
 End Sub
 
-Public Sub CreateFishingPool(ByVal Map As Integer)
-    Dim x, y As Integer
+Public Sub CreateFishingPool(ByVal map As Integer)
+    Dim X, y As Integer
     Do
-        x = RandomNumber(12, 88)
+        X = RandomNumber(12, 88)
         y = RandomNumber(12, 88)
-    Loop While MapData(Map, x, y).ObjInfo.objIndex <> 0 Or Not HayAgua(Map, x, y)
-    MapData(Map, x, y).ObjInfo.objIndex = FISHING_POOL_ID
-    MapData(Map, x, y).ObjInfo.amount = ObjData(FISHING_POOL_ID).VidaUtil
-    MapData(Map, x, y).ObjInfo.Data = &H7FFFFFFF ' Ultimo uso = Max Long
+    Loop While MapData(map, X, y).ObjInfo.objIndex <> 0 Or Not HayAgua(map, X, y)
+    MapData(map, X, y).ObjInfo.objIndex = FISHING_POOL_ID
+    MapData(map, X, y).ObjInfo.amount = ObjData(FISHING_POOL_ID).VidaUtil
+    MapData(map, X, y).ObjInfo.Data = &H7FFFFFFF ' Ultimo uso = Max Long
 End Sub
 
 Sub LoadPrivateKey()
@@ -2126,7 +2147,7 @@ Sub LoadSini()
         
         'Ressurect pos
 146     ResPos.map = val(ReadField(1, Lector.GetValue("INIT", "ResPos"), 45))
-148     ResPos.x = val(ReadField(2, Lector.GetValue("INIT", "ResPos"), 45))
+148     ResPos.X = val(ReadField(2, Lector.GetValue("INIT", "ResPos"), 45))
 150     ResPos.y = val(ReadField(3, Lector.GetValue("INIT", "ResPos"), 45))
       
         'Max users
@@ -2231,7 +2252,7 @@ Sub CargarCiudades()
     
 104     With CityNix
 106         .map = val(Lector.GetValue("NIX", "Mapa"))
-108         .x = val(Lector.GetValue("NIX", "X"))
+108         .X = val(Lector.GetValue("NIX", "X"))
 110         .y = val(Lector.GetValue("NIX", "Y"))
 112         .MapaViaje = val(Lector.GetValue("NIX", "MapaViaje"))
 114         .ViajeX = val(Lector.GetValue("NIX", "ViajeX"))
@@ -2246,7 +2267,7 @@ Sub CargarCiudades()
     
 126     With CityUllathorpe
 128         .map = val(Lector.GetValue("Ullathorpe", "Mapa"))
-130         .x = val(Lector.GetValue("Ullathorpe", "X"))
+130         .X = val(Lector.GetValue("Ullathorpe", "X"))
 132         .y = val(Lector.GetValue("Ullathorpe", "Y"))
 134         .MapaViaje = val(Lector.GetValue("Ullathorpe", "MapaViaje"))
 136         .ViajeX = val(Lector.GetValue("Ullathorpe", "ViajeX"))
@@ -2260,7 +2281,7 @@ Sub CargarCiudades()
     
 148     With CityBanderbill
 150         .map = val(Lector.GetValue("Banderbill", "Mapa"))
-152         .x = val(Lector.GetValue("Banderbill", "X"))
+152         .X = val(Lector.GetValue("Banderbill", "X"))
 154         .y = val(Lector.GetValue("Banderbill", "Y"))
 156         .MapaViaje = val(Lector.GetValue("Banderbill", "MapaViaje"))
 158         .ViajeX = val(Lector.GetValue("Banderbill", "ViajeX"))
@@ -2274,7 +2295,7 @@ Sub CargarCiudades()
     
 170     With CityLindos
 172         .map = val(Lector.GetValue("Lindos", "Mapa"))
-174         .x = val(Lector.GetValue("Lindos", "X"))
+174         .X = val(Lector.GetValue("Lindos", "X"))
 176         .y = val(Lector.GetValue("Lindos", "Y"))
 178         .MapaViaje = val(Lector.GetValue("Lindos", "MapaViaje"))
 180         .ViajeX = val(Lector.GetValue("Lindos", "ViajeX"))
@@ -2288,7 +2309,7 @@ Sub CargarCiudades()
     
 192     With CityArghal
 194         .map = val(Lector.GetValue("Arghal", "Mapa"))
-196         .x = val(Lector.GetValue("Arghal", "X"))
+196         .X = val(Lector.GetValue("Arghal", "X"))
 198         .y = val(Lector.GetValue("Arghal", "Y"))
 200         .MapaViaje = val(Lector.GetValue("Arghal", "MapaViaje"))
 202         .ViajeX = val(Lector.GetValue("Arghal", "ViajeX"))
@@ -2303,7 +2324,7 @@ Sub CargarCiudades()
     
 214     With CityArkhein
 216         .map = val(Lector.GetValue("Arkhein", "Mapa"))
-218         .x = val(Lector.GetValue("Arkhein", "X"))
+218         .X = val(Lector.GetValue("Arkhein", "X"))
 220         .y = val(Lector.GetValue("Arkhein", "Y"))
 222         .MapaViaje = val(Lector.GetValue("Arkhein", "MapaViaje"))
 224         .ViajeX = val(Lector.GetValue("Arkhein", "ViajeX"))
@@ -2318,7 +2339,7 @@ Sub CargarCiudades()
     
         With CityEleusis
             .map = val(Lector.GetValue("Eleusis", "Mapa"))
-            .x = val(Lector.GetValue("Eleusis", "X"))
+            .X = val(Lector.GetValue("Eleusis", "X"))
             .y = val(Lector.GetValue("Eleusis", "Y"))
             .MapaViaje = val(Lector.GetValue("Eleusis", "MapaViaje"))
             .ViajeX = val(Lector.GetValue("Eleusis", "ViajeX"))
@@ -2332,7 +2353,7 @@ Sub CargarCiudades()
         
         With CityPenthar
             .map = val(Lector.GetValue("Penthar", "Mapa"))
-            .x = val(Lector.GetValue("Penthar", "X"))
+            .X = val(Lector.GetValue("Penthar", "X"))
             .y = val(Lector.GetValue("Penthar", "Y"))
             .MapaViaje = val(Lector.GetValue("Penthar", "MapaViaje"))
             .ViajeX = val(Lector.GetValue("Penthar", "ViajeX"))
@@ -2346,13 +2367,13 @@ Sub CargarCiudades()
     
 236     With Prision
 238         .map = val(Lector.GetValue("Prision", "Mapa"))
-240         .x = val(Lector.GetValue("Prision", "X"))
+240         .X = val(Lector.GetValue("Prision", "X"))
 242         .y = val(Lector.GetValue("Prision", "Y"))
         End With
     
 244     With Libertad
 246         .map = val(Lector.GetValue("Libertad", "Mapa"))
-248         .x = val(Lector.GetValue("Libertad", "X"))
+248         .X = val(Lector.GetValue("Libertad", "X"))
 250         .y = val(Lector.GetValue("Libertad", "Y"))
         End With
         
@@ -2367,27 +2388,27 @@ Sub CargarCiudades()
 252     Set Lector = Nothing
     
 254     Nix.map = CityNix.map
-256     Nix.x = CityNix.x
+256     Nix.X = CityNix.X
 258     Nix.y = CityNix.y
     
 260     Ullathorpe.map = CityUllathorpe.map
-262     Ullathorpe.x = CityUllathorpe.x
+262     Ullathorpe.X = CityUllathorpe.X
 264     Ullathorpe.y = CityUllathorpe.y
     
 266     Banderbill.map = CityBanderbill.map
-268     Banderbill.x = CityBanderbill.x
+268     Banderbill.X = CityBanderbill.X
 270     Banderbill.y = CityBanderbill.y
     
 272     Lindos.map = CityLindos.map
-274     Lindos.x = CityLindos.x
+274     Lindos.X = CityLindos.X
 276     Lindos.y = CityLindos.y
     
 278     Arghal.map = CityArghal.map
-280     Arghal.x = CityArghal.x
+280     Arghal.X = CityArghal.X
 282     Arghal.y = CityArghal.y
     
 284     Arkhein.map = CityArkhein.map
-286     Arkhein.x = CityArkhein.x
+286     Arkhein.X = CityArkhein.X
 288     Arkhein.y = CityArkhein.y
     
         'Esto es para el /HOGAR
@@ -2598,39 +2619,39 @@ WriteVar_Err:
         
 End Sub
 
-Function LoadUser(ByVal userIndex As Integer) As Boolean
+Function LoadUser(ByVal UserIndex As Integer) As Boolean
 
 
         On Error GoTo ErrorHandler
     
-        LoadUser = LoadCharacterFromDB(userIndex)
+        LoadUser = LoadCharacterFromDB(UserIndex)
             
         Exit Function
 
 ErrorHandler:
-        Call TraceError(Err.Number, Err.Description & " UserName: " & UserList(userIndex).Name, "ES.LoadUser", Erl)
+        Call TraceError(Err.Number, Err.Description & " UserName: " & UserList(UserIndex).name, "ES.LoadUser", Erl)
         LoadUser = False
         
 End Function
 
-Sub SaveUser(ByVal userIndex As Integer, Optional ByVal Logout As Boolean = False)
+Sub SaveUser(ByVal UserIndex As Integer, Optional ByVal Logout As Boolean = False)
 On Error GoTo SaveUser_Err
         If Logout Then
             Call UserDisconnected(UserList(UserIndex).pos.map, UserIndex)
         End If
-        Call SaveCharacterDB(userIndex)
+        Call SaveCharacterDB(UserIndex)
         If Logout Then
-            Call RemoveTokenDatabase(userIndex)
+            Call RemoveTokenDatabase(UserIndex)
         End If
-        UserList(userIndex).Counters.LastSave = GetTickCount
+        UserList(UserIndex).Counters.LastSave = GetTickCount
         Exit Sub
 
 SaveUser_Err:
         Call TraceError(Err.Number, Err.Description, "ES.SaveUser", Erl)
 End Sub
 
-Public Sub RemoveTokenDatabase(ByVal userIndex As Integer)
-    Call Execute("delete from tokens where id =  ?;", UserList(userIndex).encrypted_session_token_db_id)
+Public Sub RemoveTokenDatabase(ByVal UserIndex As Integer)
+    Call Execute("delete from tokens where id =  ?;", UserList(UserIndex).encrypted_session_token_db_id)
 End Sub
 
 Public Sub AddTokenDatabase(ByVal encrypted_token As String, ByVal decrypted_token As String, ByVal username As String)
@@ -2641,10 +2662,10 @@ Public Sub AddTokenDatabase(ByVal encrypted_token As String, ByVal decrypted_tok
 #End If
 End Sub
 
-Sub SaveNewUser(ByVal userIndex As Integer)
+Sub SaveNewUser(ByVal UserIndex As Integer)
     On Error GoTo SaveNewUser_Err
             
-    Call SaveNewCharacterDB(userIndex)
+    Call SaveNewCharacterDB(UserIndex)
     
     Exit Sub
 
@@ -2654,12 +2675,12 @@ SaveNewUser_Err:
         
 End Sub
 
-Function Status(ByVal userIndex As Integer) As e_Facciones
+Function Status(ByVal UserIndex As Integer) As e_Facciones
         
         On Error GoTo Status_Err
         
 
-100     Status = UserList(userIndex).Faccion.Status
+100     Status = UserList(UserIndex).Faccion.Status
 
         
         Exit Function
@@ -2690,7 +2711,7 @@ Sub BackUPnPc(npcIndex As Integer)
         'End If
 
         'General
-104     Call WriteVar(npcfile, "NPC" & NpcNumero, "Name", NpcList(npcIndex).Name)
+104     Call WriteVar(npcfile, "NPC" & NpcNumero, "Name", NpcList(npcIndex).name)
 106     Call WriteVar(npcfile, "NPC" & NpcNumero, "Desc", NpcList(npcIndex).Desc)
 108     Call WriteVar(npcfile, "NPC" & NpcNumero, "Head", val(NpcList(npcIndex).Char.head))
 110     Call WriteVar(npcfile, "NPC" & NpcNumero, "Body", val(NpcList(npcIndex).Char.body))
@@ -2722,12 +2743,12 @@ Sub BackUPnPc(npcIndex As Integer)
 154     Call WriteVar(npcfile, "NPC" & NpcNumero, "Domable", val(NpcList(npcIndex).flags.Domable))
 
         'Inventario
-156     Call WriteVar(npcfile, "NPC" & NpcNumero, "NroItems", val(NpcList(npcIndex).Invent.NroItems))
+156     Call WriteVar(npcfile, "NPC" & NpcNumero, "NroItems", val(NpcList(npcIndex).invent.NroItems))
 
-158     If NpcList(npcIndex).Invent.NroItems > 0 Then
+158     If NpcList(npcIndex).invent.NroItems > 0 Then
 
 160         For LoopC = 1 To MAX_INVENTORY_SLOTS
-162             Call WriteVar(npcfile, "NPC" & NpcNumero, "Obj" & LoopC, NpcList(npcIndex).Invent.Object(LoopC).objIndex & "-" & NpcList(npcIndex).Invent.Object(LoopC).amount)
+162             Call WriteVar(npcfile, "NPC" & NpcNumero, "Obj" & LoopC, NpcList(npcIndex).invent.Object(LoopC).objIndex & "-" & NpcList(npcIndex).invent.Object(LoopC).amount)
             Next
 
         End If
@@ -2758,7 +2779,7 @@ Sub CargarNpcBackUp(npcIndex As Integer, ByVal NpcNumber As Integer)
         'End If
 
 104     NpcList(npcIndex).Numero = NpcNumber
-106     NpcList(npcIndex).Name = GetVar(npcfile, "NPC" & NpcNumber, "Name")
+106     NpcList(npcIndex).name = GetVar(npcfile, "NPC" & NpcNumber, "Name")
 108     NpcList(npcIndex).Desc = GetVar(npcfile, "NPC" & NpcNumber, "Desc")
 110     NpcList(npcIndex).Movement = val(GetVar(npcfile, "NPC" & NpcNumber, "Movement"))
 112     NpcList(npcIndex).npcType = val(GetVar(npcfile, "NPC" & NpcNumber, "NpcType"))
@@ -2788,22 +2809,22 @@ Sub CargarNpcBackUp(npcIndex As Integer, ByVal NpcNumber As Integer)
 
         Dim ln    As String
 
-146     NpcList(npcIndex).Invent.NroItems = val(GetVar(npcfile, "NPC" & NpcNumber, "NROITEMS"))
+146     NpcList(npcIndex).invent.NroItems = val(GetVar(npcfile, "NPC" & NpcNumber, "NROITEMS"))
 
-148     If NpcList(npcIndex).Invent.NroItems > 0 Then
+148     If NpcList(npcIndex).invent.NroItems > 0 Then
 
 150         For LoopC = 1 To MAX_INVENTORY_SLOTS
 152             ln = GetVar(npcfile, "NPC" & NpcNumber, "Obj" & LoopC)
-154             NpcList(npcIndex).Invent.Object(LoopC).objIndex = val(ReadField(1, ln, 45))
-156             NpcList(npcIndex).Invent.Object(LoopC).amount = val(ReadField(2, ln, 45))
+154             NpcList(npcIndex).invent.Object(LoopC).objIndex = val(ReadField(1, ln, 45))
+156             NpcList(npcIndex).invent.Object(LoopC).amount = val(ReadField(2, ln, 45))
        
 158         Next LoopC
 
         Else
 
 160         For LoopC = 1 To MAX_INVENTORY_SLOTS
-162             NpcList(npcIndex).Invent.Object(LoopC).objIndex = 0
-164             NpcList(npcIndex).Invent.Object(LoopC).amount = 0
+162             NpcList(npcIndex).invent.Object(LoopC).objIndex = 0
+164             NpcList(npcIndex).invent.Object(LoopC).amount = 0
 166         Next LoopC
 
         End If
@@ -2828,12 +2849,12 @@ End Sub
 
 
 
-Sub LogBanFromName(ByVal BannedName As String, ByVal userIndex As Integer, ByVal Motivo As String)
+Sub LogBanFromName(ByVal BannedName As String, ByVal UserIndex As Integer, ByVal Motivo As String)
         
         On Error GoTo LogBanFromName_Err
         
 
-100     Call WriteVar(App.Path & "\logs\" & "BanDetail.dat", BannedName, "BannedBy", UserList(userIndex).Name)
+100     Call WriteVar(App.Path & "\logs\" & "BanDetail.dat", BannedName, "BannedBy", UserList(UserIndex).name)
 102     Call WriteVar(App.Path & "\logs\" & "BanDetail.dat", BannedName, "Reason", Motivo)
 
         'Log interno del servidor, lo usa para hacer un UNBAN general de toda la gente banned
@@ -2914,15 +2935,15 @@ Public Sub LoadRecursosEspeciales()
     
 108     Call IniFile.Initialize(DatPath & "RecursosEspeciales.dat")
     
-        Dim Count As Long, i As Long, str As String, Field() As String
+        Dim count As Long, i As Long, str As String, Field() As String
     
         ' Tala
-110     Count = val(IniFile.GetValue("Tala", "Items"))
+110     count = val(IniFile.GetValue("Tala", "Items"))
 
-112     If Count > 0 Then
-114         ReDim EspecialesTala(1 To Count) As t_Obj
+112     If count > 0 Then
+114         ReDim EspecialesTala(1 To count) As t_Obj
 
-116         For i = 1 To Count
+116         For i = 1 To count
 118             str = IniFile.GetValue("Tala", "Item" & i)
 120             Field = Split(str, "-")
             
@@ -2935,12 +2956,12 @@ Public Sub LoadRecursosEspeciales()
         End If
     
         ' Pesca
-128     Count = val(IniFile.GetValue("Pesca", "Items"))
+128     count = val(IniFile.GetValue("Pesca", "Items"))
 
-130     If Count > 0 Then
-132         ReDim EspecialesPesca(1 To Count) As t_Obj
+130     If count > 0 Then
+132         ReDim EspecialesPesca(1 To count) As t_Obj
 
-134         For i = 1 To Count
+134         For i = 1 To count
 136             str = IniFile.GetValue("Pesca", "Item" & i)
 138             Field = Split(str, "-")
             
@@ -2982,18 +3003,18 @@ Public Sub LoadPesca()
     
 108     Call IniFile.Initialize(DatPath & "pesca.dat")
     
-        Dim Count As Long, CountEspecial As Long, i As Long, j As Long, str As String, Field() As String, nivel As Integer, MaxLvlCania As Long
+        Dim count As Long, CountEspecial As Long, i As Long, j As Long, str As String, Field() As String, nivel As Integer, MaxLvlCania As Long
 
-110     Count = val(IniFile.GetValue("PECES", "NumPeces"))
+110     count = val(IniFile.GetValue("PECES", "NumPeces"))
 112     MaxLvlCania = val(IniFile.GetValue("PECES", "Maxlvlcaña"))
         CountEspecial = 1
 114     ReDim PesoPeces(0 To MaxLvlCania) As Long
     
-116     If Count > 0 Then
-118         ReDim Peces(1 To Count) As t_Obj
+116     If count > 0 Then
+118         ReDim Peces(1 To count) As t_Obj
 
             ' Cargo todos los peces
-120         For i = 1 To Count
+120         For i = 1 To count
 122             str = IniFile.GetValue("PECES", "Pez" & i)
 124             Field = Split(str, "-")
                 
@@ -3019,10 +3040,10 @@ Public Sub LoadPesca()
             Next
 
             ' Los ordeno segun nivel de caña (quick sort)
-136         Call QuickSortPeces(1, Count)
+136         Call QuickSortPeces(1, count)
 
             ' Sumo los pesos
-138         For i = 1 To Count
+138         For i = 1 To count
 140             For j = Peces(i).amount To MaxLvlCania
 142                 PesoPeces(j) = PesoPeces(j) + Peces(i).Data
 144             Next j
@@ -3236,12 +3257,12 @@ LoadRecompensasFaccion_Err:
 End Sub
 
 
-Public Sub LoadUserIntervals(ByVal userIndex As Integer)
+Public Sub LoadUserIntervals(ByVal UserIndex As Integer)
         
         On Error GoTo LoadUserIntervals_Err
         
 
-100     With UserList(userIndex)
+100     With UserList(UserIndex)
             If False Then '.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios) Then
                 .Intervals.Arco = 50
                 .Intervals.Caminar = IntervaloCaminar
@@ -3358,9 +3379,9 @@ Public Function IsFeatureEnabled(ByVal featureName As String)
     End If
 End Function
 
-Public Sub SetFeatureToggle(ByVal Name As String, ByVal State As Boolean)
-    If FeatureToggles.Exists(Name) Then
-        FeatureToggles.Remove Name
+Public Sub SetFeatureToggle(ByVal name As String, ByVal State As Boolean)
+    If FeatureToggles.Exists(name) Then
+        FeatureToggles.Remove name
     End If
-    Call FeatureToggles.Add(Name, State)
+    Call FeatureToggles.Add(name, State)
 End Sub
