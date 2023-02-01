@@ -2038,12 +2038,11 @@ Private Sub HandleWhisper(ByVal UserIndex As Integer)
                 Exit Sub
             End If
             
-            If UserList(targetUser.ArrayIndex).flags.Muerto = 1 Then
-                Call WriteConsoleMsg(userIndex, "No puedes susurrar a un muerto.", e_FontTypeNames.FONTTYPE_INFO)
-                Exit Sub
-            End If
-            
 114         If EstaPCarea(userIndex, targetUser.ArrayIndex) Then
+                If UserList(targetUser.ArrayIndex).flags.Muerto = 1 Then
+                    Call WriteConsoleMsg(UserIndex, "No puedes susurrar a un muerto.", e_FontTypeNames.FONTTYPE_INFO)
+                    Exit Sub
+                End If
 116             If LenB(chat) <> 0 Then
                     Dim i As Long
 120                 For i = 1 To UBound(.flags.ChatHistory) - 1
