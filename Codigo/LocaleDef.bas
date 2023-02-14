@@ -20,3 +20,4 @@ Public Const MsgInvalidTarget = 419
 Public Const MsgTiredToPerformAction = 420
 Public Const MsgRequiresMoreHealth = 421
 Public Const MsgTargetAlreadyAffected = 422
+Public Const MsgNotEnoughtStamina = 423

@@ -151,8 +151,8 @@ On Error GoTo Check_ConnectUser_Err
         End If
         
         If EsGM(UserIndex) Then
-            Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » " & Name & " se conecto al juego.", e_FontTypeNames.FONTTYPE_INFOBOLD))
-            Call LogGM(Name, "Se conectó con IP: " & .IP)
+            Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » " & name & " se conecto al juego.", e_FontTypeNames.FONTTYPE_INFOBOLD))
+            Call LogGM(name, "Se conectó con IP: " & .IP)
         End If
     End With
     
@@ -1961,6 +1961,7 @@ Sub UserDie(ByVal UserIndex As Integer)
 124         .flags.Estupidiza = 0
 126         .flags.Muerto = 1
 128         Call ClearEffectList(.EffectOverTime)
+129         Call ClearModifiers(.Modifiers)
 130         Call WriteUpdateHP(UserIndex)
 132         Call WriteUpdateSta(UserIndex)
             
@@ -3025,8 +3026,8 @@ Public Sub UpdateCd(ByVal UserIndex As Integer, ByVal cdType As e_CdTypes)
     Call WriteUpdateCdType(UserIndex, cdType)
 End Sub
 
-Public Function IsVisible(ByRef User As t_User)
-    IsVisible = Not (User.flags.invisible Or User.flags.Oculto)
+Public Function IsVisible(ByRef user As t_User) As Boolean
+    IsVisible = (Not (user.flags.invisible > 0 Or user.flags.Oculto > 0))
 End Function
 
 Public Function CanHelpUser(ByVal UserIndex As Integer, ByVal targetUserIndex As Integer) As e_InteractionResult
@@ -3122,7 +3123,11 @@ On Error GoTo DoDamageOrHeal_Err
         Color = vbRed
     End If
     With UserList(UserIndex)
-        Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageTextOverChar(DamageStr, .Char.charindex, Color))
+        If IsVisible(UserList(UserIndex)) Then
+            Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageTextOverChar(DamageStr, .Char.charindex, Color))
+        Else
+            Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageTextOverChar(DamageStr, .Char.charindex, Color))
+        End If
 100     If ModifyHealth(UserIndex, amount) Then
 102         If sourceIndex > 0 Then
 244             Call ContarMuerte(UserIndex, sourceIndex)
@@ -3137,3 +3142,21 @@ On Error GoTo DoDamageOrHeal_Err
 DoDamageOrHeal_Err:
 134     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.CalcularVelocidad_Err", Erl)
 End Sub
+
+Public Function GetPhysicalDamageModifier(ByRef user As t_User) As Single
+    GetPhysicalDamageModifier = 1 + user.Modifiers.PhysicalDamageBonus
+End Function
+
+Public Function GetMagicDamageModifier(ByRef user As t_User) As Single
+    GetMagicDamageModifier = 1 + user.Modifiers.MagicDamageBonus
+End Function
+
+Public Function GetMagicDamageReduction(ByRef user As t_User) As Single
+    GetMagicDamageReduction = 1 - user.Modifiers.MagicDamageReduction
+End Function
+
+Public Function GetPhysicDamageReduction(ByRef user As t_User) As Single
+    GetPhysicDamageReduction = 1 - user.Modifiers.PhysicalDamageReduction
+End Function
+
+

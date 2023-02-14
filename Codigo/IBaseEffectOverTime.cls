@@ -54,8 +54,18 @@ End Property
 
 Public Property Get RemoveMe() As Boolean
 End Property
+
 Public Property Let RemoveMe(ByVal value As Boolean)
 End Property
 
 Public Sub Reset()
+End Sub
+
+Public Sub OnRemove()
+End Sub
+
+Public Sub TargetUserMagic(ByVal MagicIndex As Integer)
+End Sub
+
+Public Sub TargetPerformAttack()
 End Sub

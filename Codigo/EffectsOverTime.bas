@@ -104,6 +104,17 @@ On Error GoTo CreateEffect_Err
 116         ElseIf TargetType = eNpc Then
 118             Call AddEffect(NpcList(TargetIndex).EffectOverTime, Dot)
             End If
+        Case e_EffectOverTimeType.eApplyModifiers
+130         Dim StatDot As StatModifier
+132         Set StatDot = GetEOT(EffectType)
+134         UniqueIdCounter = GetNextId()
+136         Call StatDot.Setup(sourceIndex, sourceType, TargetIndex, TargetType, EffectIndex, UniqueIdCounter)
+138         Call AddEffectToUpdate(StatDot)
+140         If TargetType = eUser Then
+142             Call AddEffect(UserList(TargetIndex).EffectOverTime, StatDot)
+144         ElseIf TargetType = eNpc Then
+146             Call AddEffect(NpcList(TargetIndex).EffectOverTime, StatDot)
+            End If
     End Select
     Exit Sub
 CreateEffect_Err:
@@ -114,6 +125,8 @@ Private Function InstantiateEOT(ByVal EffectType As e_EffectOverTimeType) As IBa
     Select Case EffectType
         Case e_EffectOverTimeType.eHealthModifier
             Set InstantiateEOT = New UpdateHpOverTime
+        Case e_EffectOverTimeType.eApplyModifiers
+            Set InstantiateEOT = New StatModifier
     End Select
 End Function
 
@@ -169,9 +182,10 @@ On Error GoTo RemoveEffect_Err
     Dim i As Integer
 100 For i = 0 To EffectList.EffectCount - 1
 106     If EffectList.EffectList(i).UniqueId() = Effect.UniqueId() Then
-110         Set EffectList.EffectList(i) = ActiveEffects(EffectList.EffectCount - 1)
+110         Set EffectList.EffectList(i) = EffectList.EffectList(EffectList.EffectCount - 1)
 118         Set EffectList.EffectList(EffectList.EffectCount - 1) = Nothing
 120         EffectList.EffectCount = EffectList.EffectCount - 1
+            Call Effect.OnRemove
             Exit Sub
         End If
     Next i

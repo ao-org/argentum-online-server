@@ -85,3 +85,15 @@ Public Function RandomNumber(ByVal LowerBound As Long, ByVal UpperBound As Long)
 RandomNumber_Err:
 102     Call TraceError(Err.Number, Err.Description, "Matematicas.RandomNumber", Erl)
 End Function
+
+Public Sub SetMask(ByRef mask As Long, ByVal value As Long)
+    mask = mask Or value
+End Sub
+
+Public Function IsSet(ByVal mask As Long, ByVal value As Long)
+    IsSet = (mask And value) > 0
+End Function
+
+Public Sub ResetMask(ByRef mask As Long)
+    mask = 0
+End Sub

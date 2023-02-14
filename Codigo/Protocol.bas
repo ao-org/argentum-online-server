@@ -3552,7 +3552,6 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 116             .flags.Meditando = False
 118             .Char.FX = 0
 120             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageMeditateToggle(.Char.charindex, 0))
-
             End If
         
             'If exiting, cancel
@@ -4108,6 +4107,10 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 
                     End If
                 Case e_Skill.TargetableItem
+                    If .Stats.MinSta < ObjData(.invent.Object(.flags.TargetObjInvSlot).objIndex).MinSta Then
+                        Call WriteLocaleMsg(UserIndex, MsgNotEnoughtStamina, e_FontTypeNames.FONTTYPE_INFO)
+                        Exit Sub
+                    End If
                     Call LookatTile(UserIndex, UserList(UserIndex).pos.map, X, y)
                     Call UserTargetableItem(UserIndex, X, y)
             End Select

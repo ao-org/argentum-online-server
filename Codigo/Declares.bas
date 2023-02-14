@@ -1027,15 +1027,37 @@ Public Type t_Hechizo
     EotId As Integer
 End Type
 
+Public Type t_ActiveModifiers
+    'effects on itself
+    PhysicalDamageReduction As Single
+    MagicDamageReduction As Single
+    'effect perform on others
+    PhysicalDamageBonus As Single
+    MagicDamageBonus As Single
+End Type
+
+Public Enum e_ModifierTypes
+    PhysicalReduction = 1
+    MagicReduction = 2
+    PhysiccalBonus = 4
+    MagicBonus = 8
+End Enum
+
 Public Type t_EffectOverTime
     Type As e_EffectOverTimeType
     Limit As e_EOTTargetLimit
-    TickPower As Integer
+    TickPowerMin As Integer
+    TickPowerMax As Integer
     Ticks As Integer
     TickTime As Integer
     TickFX As Integer
     BuffType As e_EffectType
     Override As Boolean
+    PhysicalDamageReduction As Single
+    MagicDamageReduction As Single
+    PhysicalDamageDone As Single
+    MagicDamageDone As Single
+    EffectModifiers As Long
 End Type
 
 Public Const MAX_PACKET_COUNTERS As Long = 15
@@ -2075,6 +2097,7 @@ Public Type t_User
     
     Stats As t_UserStats
     Stats_bk As t_UserStats
+    Modifiers As t_ActiveModifiers
     flags As t_UserFlags
     Accion As t_AccionPendiente
     CdTimes(e_CdTypes.CDCount) As Long
@@ -2647,6 +2670,7 @@ Public EnEventoFaccionario As Boolean
 
 Public Enum e_EffectOverTimeType
     eHealthModifier = 1
+    eApplyModifiers = 2
     [EffectTypeCount]
 End Enum
 
@@ -2660,7 +2684,6 @@ Public Type t_BaseDotInfo
     TargetRef As t_AnyReference
     UniqueId As Integer
     RemoveEffect As Boolean
-    EotType As e_EffectOverTimeType
     EotId As Integer
 End Type
 
@@ -2721,7 +2744,6 @@ Public Function SetRef(ByRef Ref As t_AnyReference, ByVal index As Integer, ByVa
         Ref.VersionId = NpcList(index).VersionId
         Ref.UserId = 0
     End If
-    
     SetRef = True
 End Function
 
@@ -2730,4 +2752,15 @@ Public Sub ClearRef(ByRef Ref As t_AnyReference)
     Ref.VersionId = -1
     Ref.RefType = e_ReferenceType.eNone
     Ref.UserId = 0
+End Sub
+
+Public Sub ClearModifiers(ByRef Modifiers As t_ActiveModifiers)
+    Modifiers.MagicDamageBonus = 0
+    Modifiers.MagicDamageReduction = 0
+    Modifiers.PhysicalDamageBonus = 0
+    Modifiers.PhysicalDamageReduction = 0
+End Sub
+
+Public Sub IncreaseSingle(ByRef dest As Single, ByVal amount As Single)
+    dest = dest + amount
 End Sub

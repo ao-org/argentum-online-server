@@ -1465,35 +1465,35 @@ Sub ResetUserSlot(ByVal UserIndex As Integer)
         
         On Error GoTo ResetUserSlot_Err
         
+        With UserList(UserIndex)
+100         .ConnIDValida = False
+102         .ConnID = 0
+104         If .Grupo.Lider.ArrayIndex = UserIndex Then
+106             Call FinalizarGrupo(UserIndex)
+            End If
 
-100     UserList(UserIndex).ConnIDValida = False
-102     UserList(UserIndex).ConnID = 0
-104     If UserList(userIndex).Grupo.Lider.ArrayIndex = userIndex Then
-106         Call FinalizarGrupo(UserIndex)
-
-        End If
-
-108     If UserList(UserIndex).Grupo.EnGrupo Then
-110         Call SalirDeGrupoForzado(UserIndex)
-
-        End If
+108         If .Grupo.EnGrupo Then
+110             Call SalirDeGrupoForzado(UserIndex)
+            End If
         
-        If m_NameIndex.Exists(UCase(UserList(userindex).name)) Then
-            Call m_NameIndex.Remove(UCase(UserList(userindex).name))
-        End If
-
-112     UserList(UserIndex).Grupo.CantidadMiembros = 0
-114     UserList(UserIndex).Grupo.EnGrupo = False
-116     Call SetUserRef(UserList(userIndex).Grupo.Lider, 0)
-118     Call SetUserRef(UserList(userIndex).Grupo.PropuestaDe, 0)
-120     Call SetUserRef(UserList(userIndex).Grupo.Miembros(6), 0)
-122     Call SetUserRef(UserList(userIndex).Grupo.Miembros(1), 0)
-124     Call SetUserRef(UserList(userIndex).Grupo.Miembros(2), 0)
-126     Call SetUserRef(UserList(userIndex).Grupo.Miembros(3), 0)
-128     Call SetUserRef(UserList(userIndex).Grupo.Miembros(4), 0)
-130     Call SetUserRef(UserList(userIndex).Grupo.Miembros(5), 0)
-
-132     Call ResetQuestStats(UserIndex)
+            If m_NameIndex.Exists(UCase(.name)) Then
+                Call m_NameIndex.Remove(UCase(.name))
+            End If
+        
+112         .Grupo.CantidadMiembros = 0
+114         .Grupo.EnGrupo = False
+116         Call SetUserRef(.Grupo.Lider, 0)
+118         Call SetUserRef(.Grupo.PropuestaDe, 0)
+120         Call SetUserRef(.Grupo.Miembros(6), 0)
+122         Call SetUserRef(.Grupo.Miembros(1), 0)
+124         Call SetUserRef(.Grupo.Miembros(2), 0)
+126         Call SetUserRef(.Grupo.Miembros(3), 0)
+128         Call SetUserRef(.Grupo.Miembros(4), 0)
+130         Call SetUserRef(.Grupo.Miembros(5), 0)
+131         Call ClearEffectList(.EffectOverTime)
+132         Call ClearModifiers(.Modifiers)
+        End With
+133     Call ResetQuestStats(UserIndex)
 134     Call ResetGuildInfo(UserIndex)
 136     Call LimpiarComercioSeguro(UserIndex)
 138     Call ResetFacciones(UserIndex)

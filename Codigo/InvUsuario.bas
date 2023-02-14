@@ -3507,11 +3507,12 @@ On Error GoTo ResurrectWithItem_Err
                 Exit Sub
             Case Else
         End Select
+        
 118     Dim costoVidaResu As Long
 120     costoVidaResu = UserList(TargetUser).Stats.ELV * 1.5 + .Stats.MinHp * 0.5
     
 122     Call UserMod.ModifyHealth(UserIndex, -costoVidaResu, 1)
-124     Call ModifyStamina(UserIndex, UserList(UserIndex).Stats.MinSta, 0)
+124     Call ModifyStamina(UserIndex, -UserList(UserIndex).Stats.MinSta, 0)
         Dim objIndex As Integer
 126     objIndex = .invent.Object(.flags.TargetObjInvSlot).objIndex
 128     Call UpdateCd(UserIndex, ObjData(objIndex).cdType)
