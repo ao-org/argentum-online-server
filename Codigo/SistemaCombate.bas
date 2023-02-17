@@ -440,88 +440,72 @@ NpcImpacto_Err:
         
 End Function
 
-Private Function CalcularDaño(ByVal UserIndex As Integer) As Long
-
-            ' Reescrita por WyroX - 16/01/2021
-
-            On Error GoTo CalcularDaño_Err
-
-            Dim DañoUsuario As Long, DañoArma As Long, DañoMaxArma As Long, ModifClase As Single
-
+Private Function GetUserDamge(ByVal UserIndex As Integer) As Long
+    On Error GoTo GetUserDamge_Err
+            Dim UserDamage As Long, WeaponDamage As Long, MaxWeaponDamage As Long, ClassModifier As Single
 100         With UserList(UserIndex)
-        
                 ' Daño base del usuario
-102             DañoUsuario = RandomNumber(.Stats.MinHIT, .Stats.MaxHit)
-
+102             UserDamage = RandomNumber(.Stats.MinHIT, .Stats.MaxHit)
                 ' Daño con arma
 104             If .Invent.WeaponEqpObjIndex > 0 Then
                     Dim Arma As t_ObjData
 106                 Arma = ObjData(.Invent.WeaponEqpObjIndex)
-                
                     ' Calculamos el daño del arma
-108                 DañoArma = RandomNumber(Arma.MinHIT, Arma.MaxHit)
+108                 WeaponDamage = RandomNumber(Arma.MinHIT, Arma.MaxHit)
                     ' Daño máximo del arma
-110                 DañoMaxArma = Arma.MaxHit
-
+110                 MaxWeaponDamage = Arma.MaxHit
                     ' Si lanza proyectiles
 112                 If Arma.Proyectil = 1 Then
                         ' Usamos el modificador correspondiente
-114                     ModifClase = ModicadorDañoClaseProyectiles(.clase)
-
+114                     ClassModifier = ModicadorDañoClaseProyectiles(.clase)
                         ' Si requiere munición
 116                     If Arma.Municion = 1 And .Invent.MunicionEqpObjIndex > 0 Then
                             Dim Municion As t_ObjData
 118                         Municion = ObjData(.Invent.MunicionEqpObjIndex)
                             ' Agregamos el daño de la munición al daño del arma
-120                         DañoArma = DañoArma + RandomNumber(Municion.MinHIT, Municion.MaxHit)
-122                         DañoMaxArma = Arma.MaxHit + Municion.MaxHit
+120                         WeaponDamage = WeaponDamage + RandomNumber(Municion.MinHIT, Municion.MaxHit)
+122                         MaxWeaponDamage = Arma.MaxHit + Municion.MaxHit
                         End If
                 
                     ' Arma melé
                     Else
                         ' Usamos el modificador correspondiente
-124                     ModifClase = ModicadorDañoClaseArmas(.clase)
+124                     ClassModifier = ModicadorDañoClaseArmas(.clase)
                     End If
         
                 ' Daño con puños
                 Else
                     ' Modificador de combate sin armas
-126                 ModifClase = ModClase(.clase).DañoWrestling
-            
+126                 ClassModifier = ModClase(.clase).DañoWrestling
                     ' Si tiene nudillos o guantes
 128                 If .Invent.NudilloSlot > 0 Then
 130                     Arma = ObjData(.Invent.NudilloObjIndex)
-                    
                         ' Calculamos el daño del nudillo o guante
-132                     DañoArma = RandomNumber(Arma.MinHIT, Arma.MaxHit)
+132                     WeaponDamage = RandomNumber(Arma.MinHIT, Arma.MaxHit)
                         ' Daño máximo
-134                     DañoMaxArma = Arma.MaxHit
+134                     MaxWeaponDamage = Arma.MaxHit
                     End If
                 End If
 
-                ' Calculo del daño
-136             CalcularDaño = (3 * DañoArma + DañoMaxArma * 0.2 * Maximo(0, .Stats.UserAtributos(Fuerza) - 15) + DañoUsuario) * ModifClase
-            
-                ' El pirata navegando pega un 20% más
+                ' Base damage
+136             GetUserDamge = (3 * WeaponDamage + MaxWeaponDamage * 0.2 * Maximo(0, .Stats.UserAtributos(Fuerza) - 15) + UserDamage) * ClassModifier
+                ' El pirata ship has bonus damage
 138             If .clase = e_Class.Pirat And .flags.Navegando = 1 Then
-140                 CalcularDaño = CalcularDaño * 1.2
+140                 GetUserDamge = GetUserDamge * 1.2
                 End If
-            
-                ' Daño del barco
+                ' Ship bonus
 142             If .flags.Navegando = 1 And .Invent.BarcoObjIndex > 0 Then
-144                 CalcularDaño = CalcularDaño + RandomNumber(ObjData(.Invent.BarcoObjIndex).MinHIT, ObjData(.Invent.BarcoObjIndex).MaxHit)
-
-                ' Daño de la montura
+144                 GetUserDamge = GetUserDamge + RandomNumber(ObjData(.invent.BarcoObjIndex).MinHIT, ObjData(.invent.BarcoObjIndex).MaxHit)
+                ' mount bonus
 146             ElseIf .flags.Montado = 1 And .Invent.MonturaObjIndex > 0 Then
-148                 CalcularDaño = CalcularDaño + RandomNumber(ObjData(.Invent.MonturaObjIndex).MinHIT, ObjData(.Invent.MonturaObjIndex).MaxHit)
+148                 GetUserDamge = GetUserDamge + RandomNumber(ObjData(.invent.MonturaObjIndex).MinHIT, ObjData(.invent.MonturaObjIndex).MaxHit)
                 End If
-
+                'other bonus from buff
+                GetUserDamge = GetUserDamge * GetPhysicalDamageModifier(UserList(UserIndex))
             End With
-        
             Exit Function
-
-CalcularDaño_Err:
-150      Call TraceError(Err.Number, Err.Description, "SistemaCombate.CalcularDaño", Erl)
+GetUserDamge_Err:
+150      Call TraceError(Err.Number, Err.Description, "SistemaCombate.GetUserDamge", Erl)
 
         
 End Function
@@ -545,7 +529,7 @@ Private Sub UserDañoNpc(ByVal UserIndex As Integer, ByVal npcIndex As Integer, 
                 Call LogGM(.name, " Mato un Dragon Rojo ")
             Else
                 ' Daño normal
-108             DañoBase = CalcularDaño(UserIndex)
+108             DañoBase = GetUserDamge(UserIndex)
 
                 ' NPC de pruebas
 110             If NpcList(NpcIndex).NPCtype = DummyTarget Then
@@ -675,20 +659,19 @@ UserDañoNpc_Err:
         
 End Sub
 
-Private Function NpcDaño(ByVal npcIndex As Integer, ByVal UserIndex As Integer) As Long
+Private Function NpcDamage(ByVal npcIndex As Integer, ByVal UserIndex As Integer) As Long
         
-        On Error GoTo NpcDaño_Err
+        On Error GoTo NpcDamage_Err
         
-        NpcDaño = -1
+        NpcDamage = -1
         
-        Dim Daño As Integer, Lugar As Integer, absorbido As Integer
+        Dim Damage As Integer, Lugar As Integer, absorbido As Integer
 
-        Dim antdaño As Integer, defbarco As Integer
+        Dim defbarco As Integer
 
         Dim obj As t_ObjData
     
-100     Daño = RandomNumber(NpcList(npcIndex).Stats.MinHIT, NpcList(npcIndex).Stats.MaxHit)
-102     antdaño = Daño
+100     Damage = RandomNumber(NpcList(npcIndex).Stats.MinHIT, NpcList(npcIndex).Stats.MaxHit)
     
 104     If UserList(UserIndex).flags.Navegando = 1 And UserList(UserIndex).Invent.BarcoObjIndex > 0 Then
 106         obj = ObjData(UserList(UserIndex).Invent.BarcoObjIndex)
@@ -733,20 +716,20 @@ Private Function NpcDaño(ByVal npcIndex As Integer, ByVal UserIndex As Integer)
 
         End Select
         
-140     Daño = Daño - absorbido - defbarco - defMontura
-        
-142     If Daño < 0 Then Daño = 0
+140     Damage = Damage - absorbido - defbarco - defMontura
+141     Damage = Damage * GetPhysicDamageReduction(UserList(UserIndex))
+142     If Damage < 0 Then Damage = 0
     
-144     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageTextCharDrop(PonerPuntos(Daño), UserList(UserIndex).Char.charindex, vbRed))
+144     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageTextCharDrop(PonerPuntos(Damage), UserList(UserIndex).Char.charindex, vbRed))
 
 146     If UserList(UserIndex).ChatCombate = 1 Then
-148         Call WriteNPCHitUser(UserIndex, Lugar, Daño)
+148         Call WriteNPCHitUser(UserIndex, Lugar, Damage)
         End If
 
-150     If UserList(UserIndex).flags.Privilegios And e_PlayerType.user Then UserList(UserIndex).Stats.MinHp = UserList(UserIndex).Stats.MinHp - Daño
+150     If UserList(UserIndex).flags.Privilegios And e_PlayerType.user Then UserList(UserIndex).Stats.MinHp = UserList(UserIndex).Stats.MinHp - Damage
 
 152     If UserList(UserIndex).flags.Meditando Then
-154         If Daño > Fix(UserList(UserIndex).Stats.MinHp / 100 * UserList(UserIndex).Stats.UserAtributos(e_Atributos.Inteligencia) * UserList(UserIndex).Stats.UserSkills(e_Skill.Meditar) / 100 * 12 / (RandomNumber(0, 5) + 7)) Then
+154         If Damage > Fix(UserList(UserIndex).Stats.MinHp / 100 * UserList(UserIndex).Stats.UserAtributos(e_Atributos.Inteligencia) * UserList(UserIndex).Stats.UserSkills(e_Skill.Meditar) / 100 * 12 / (RandomNumber(0, 5) + 7)) Then
 156             UserList(UserIndex).flags.Meditando = False
 158             UserList(UserIndex).Char.FX = 0
 160             Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessageMeditateToggle(UserList(UserIndex).Char.charindex, 0))
@@ -775,12 +758,12 @@ Private Function NpcDaño(ByVal npcIndex As Integer, ByVal UserIndex As Integer)
 180         Call WriteUpdateHP(UserIndex)
     
         End If
-        NpcDaño = Daño
+        NpcDamage = Damage
         
         Exit Function
 
-NpcDaño_Err:
-182     Call TraceError(Err.Number, Err.Description, "SistemaCombate.NpcDaño", Erl)
+NpcDamage_Err:
+182     Call TraceError(Err.Number, Err.Description, "SistemaCombate.NpcDamage", Erl)
 
         
 End Function
@@ -825,7 +808,7 @@ Public Function NpcAtacaUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integ
         danio = -1
 126     If NpcImpacto(NpcIndex, UserIndex) Then
 
-134         danio = NpcDaño(npcIndex, UserIndex)
+134         danio = NpcDamage(npcIndex, UserIndex)
 
             '¿Puede envenenar?
 136         If NpcList(NpcIndex).Veneno > 0 Then Call NpcEnvenenarUser(UserIndex, NpcList(NpcIndex).Veneno)
@@ -1306,7 +1289,7 @@ Public Sub UsuarioAtacaUsuario(ByVal AtacanteIndex As Integer, ByVal VictimaInde
 114             Call SendData(SendTarget.ToPCAliveArea, VictimaIndex, PrepareMessageCreateFX(UserList(VictimaIndex).Char.charindex, FXSANGRE, 0, UserList(VictimaIndex).Pos.X, UserList(VictimaIndex).Pos.y))
             End If
 
-116         Call UserDañoUser(AtacanteIndex, VictimaIndex, aType)
+116         Call UserDamageToUser(AtacanteIndex, VictimaIndex, aType)
 
         Else
 
@@ -1328,15 +1311,15 @@ UsuarioAtacaUsuario_Err:
 
 End Sub
 
-Private Sub UserDañoUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As Integer, ByVal aType As AttackType)
+Private Sub UserDamageToUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As Integer, ByVal aType As AttackType)
         On Error GoTo UserDañoUser_Err
 
 100     With UserList(VictimaIndex)
 
-            Dim Daño As Long, DañoBase As Long, DañoExtra As Long, Defensa As Long, Color As Long, DañoStr As String, Lugar As e_PartesCuerpo
+            Dim Damage As Long, BaseDamage As Long, BonusDamage As Long, Defensa As Long, Color As Long, DamageStr As String, Lugar As e_PartesCuerpo
 
             ' Daño normal
-102         DañoBase = CalcularDaño(AtacanteIndex)
+102         BaseDamage = GetUserDamge(AtacanteIndex)
 
             ' Color por defecto rojo
 104         Color = vbRed
@@ -1395,35 +1378,36 @@ Private Sub UserDañoUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As 
             End If
             
             ' Restamos la defensa
-148         Daño = DañoBase - Defensa
+148         Damage = BaseDamage - Defensa
+149         Damage = Damage * GetPhysicDamageReduction(UserList(VictimaIndex))
 
-150         If Daño < 0 Then Daño = 0
+150         If Damage < 0 Then Damage = 0
 
-152         DañoStr = PonerPuntos(Daño)
+152         DamageStr = PonerPuntos(Damage)
 
             ' Mostramos en consola el golpe al atacante solo si tiene activado el chat de combate
 154         If UserList(AtacanteIndex).ChatCombate = 1 Then
-156             Call WriteUserHittedUser(AtacanteIndex, Lugar, .Char.charindex, DañoStr)
+156             Call WriteUserHittedUser(AtacanteIndex, Lugar, .Char.charindex, DamageStr)
             End If
             ' Mostramos en consola el golpe a la victima independientemente de la configuración de chat
-160         Call WriteUserHittedByUser(VictimaIndex, Lugar, UserList(AtacanteIndex).Char.charindex, DañoStr)
+160         Call WriteUserHittedByUser(VictimaIndex, Lugar, UserList(AtacanteIndex).Char.charindex, DamageStr)
 
             ' Golpe crítico (ignora defensa)
 162         If PuedeGolpeCritico(AtacanteIndex) Then
                 ' Si acertó
 164             If RandomNumber(1, 100) <= ProbabilidadGolpeCritico(AtacanteIndex) Then
                     ' Daño del golpe crítico (usamos el daño base)
-166                 DañoExtra = Daño * ModDañoGolpeCritico
+166                 BonusDamage = Damage * ModDañoGolpeCritico
 
-168                 DañoStr = PonerPuntos(DañoExtra)
+168                 DamageStr = PonerPuntos(BonusDamage)
 
                     ' Mostramos en consola el daño al atacante
 170                 If UserList(AtacanteIndex).ChatCombate = 1 Then
-172                     Call WriteLocaleMsg(AtacanteIndex, "383", e_FontTypeNames.FONTTYPE_FIGHT, .name & "¬" & DañoStr)
+172                     Call WriteLocaleMsg(AtacanteIndex, "383", e_FontTypeNames.FONTTYPE_FIGHT, .name & "¬" & DamageStr)
                     End If
                     ' Y a la víctima
 174                 If .ChatCombate = 1 Then
-176                     Call WriteLocaleMsg(VictimaIndex, "385", e_FontTypeNames.FONTTYPE_FIGHT, UserList(AtacanteIndex).name & "¬" & DañoStr)
+176                     Call WriteLocaleMsg(VictimaIndex, "385", e_FontTypeNames.FONTTYPE_FIGHT, UserList(AtacanteIndex).name & "¬" & DamageStr)
                     End If
 178                 Call SendData(SendTarget.toPCAliveArea, AtacanteIndex, PrepareMessagePlayWave(SND_IMPACTO_CRITICO, UserList(AtacanteIndex).Pos.X, UserList(AtacanteIndex).Pos.y))
                     ' Color naranja
@@ -1434,16 +1418,16 @@ Private Sub UserDañoUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As 
 182         ElseIf PuedeApuñalar(AtacanteIndex) Then
 184             If RandomNumber(1, 100) <= ProbabilidadApuñalar(AtacanteIndex) Then
                     ' Daño del apuñalamiento
-186                 DañoExtra = Daño * ModicadorApuñalarClase(UserList(AtacanteIndex).clase)
+186                 BonusDamage = Damage * ModicadorApuñalarClase(UserList(AtacanteIndex).clase)
 
-188                 DañoStr = PonerPuntos(DañoExtra)
+188                 DamageStr = PonerPuntos(BonusDamage)
                 
                     ' Mostramos en consola el golpe al atacante solo si tiene activado el chat de combate
 190                 If UserList(AtacanteIndex).ChatCombate = 1 Then
-192                     Call WriteLocaleMsg(AtacanteIndex, "210", e_FontTypeNames.FONTTYPE_INFOBOLD, .name & "¬" & DañoStr)
+192                     Call WriteLocaleMsg(AtacanteIndex, "210", e_FontTypeNames.FONTTYPE_INFOBOLD, .name & "¬" & DamageStr)
                     End If
                     ' Mostramos en consola el golpe a la victima independientemente de la configuración de chat
-196                 Call WriteLocaleMsg(VictimaIndex, "211", e_FontTypeNames.FONTTYPE_INFOBOLD, UserList(AtacanteIndex).name & "¬" & DañoStr)
+196                 Call WriteLocaleMsg(VictimaIndex, "211", e_FontTypeNames.FONTTYPE_INFOBOLD, UserList(AtacanteIndex).name & "¬" & DamageStr)
                     
 198                 Call SendData(SendTarget.toPCAliveArea, AtacanteIndex, PrepareMessagePlayWave(SND_IMPACTO_APU, UserList(AtacanteIndex).Pos.X, UserList(AtacanteIndex).Pos.y))
 
@@ -1469,30 +1453,30 @@ Private Sub UserDañoUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As 
 
             End If
             
-218         If DañoExtra > 0 Then
-220             Daño = Daño + DañoExtra
+218         If BonusDamage > 0 Then
+220             Damage = Damage + BonusDamage
 
-222             DañoStr = PonerPuntos(Daño)
+222             DamageStr = PonerPuntos(Damage)
                 
                 ' Mostramos el daño total en consola al atacante
 224             If UserList(AtacanteIndex).ChatCombate = 1 Then
-226                 Call WriteLocaleMsg(AtacanteIndex, "384", e_FontTypeNames.FONTTYPE_FIGHT, DañoStr)
+226                 Call WriteLocaleMsg(AtacanteIndex, "384", e_FontTypeNames.FONTTYPE_FIGHT, DamageStr)
                 End If
                 ' Y a la víctima
 228             If .ChatCombate = 1 Then
-230                 Call WriteLocaleMsg(VictimaIndex, "387", e_FontTypeNames.FONTTYPE_FIGHT, UserList(AtacanteIndex).name & "¬" & DañoStr)
+230                 Call WriteLocaleMsg(VictimaIndex, "387", e_FontTypeNames.FONTTYPE_FIGHT, UserList(AtacanteIndex).name & "¬" & DamageStr)
                 End If
                 
-232             DañoStr = "¡" & PonerPuntos(Daño) & "!"
+232             DamageStr = "¡" & PonerPuntos(Damage) & "!"
 
                 ' Solo si la victima se encuentra en vida completa, generamos la condicion
                 If .Stats.MinHp = .Stats.MaxHp Then
                 
                     ' Si el daño total es superior a su vida maxima, lo dejamos en uno de vida y mostrar un mensaje por consola
-                    Select Case Daño
+                    Select Case Damage
                         Case Is >= .Stats.MaxHp * 1.1
                             .Stats.MinHp = 0
-                        Case Is < .Stats.MaxHp * 1.1 And Daño >= .Stats.MaxHp
+                        Case Is < .Stats.MaxHp * 1.1 And Damage >= .Stats.MaxHp
                             .Stats.MinHp = 1
                             'Enviamos mensaje al atacante
                             Call WriteConsoleMsg(AtacanteIndex, "Has dejado agonizando a tu oponente", e_FontTypeNames.FONTTYPE_INFOBOLD)
@@ -1500,21 +1484,21 @@ Private Sub UserDañoUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As 
                             Call WriteConsoleMsg(VictimaIndex, "Has quedado agonizando", e_FontTypeNames.FONTTYPE_INFOBOLD)
                         Case Else
                             ' Sino, restamos el daño normalmente
-                            .Stats.MinHp = .Stats.MinHp - Daño
+                            .Stats.MinHp = .Stats.MinHp - Damage
                     End Select
                 
                 Else
                     ' Restamos el daño a la víctima
-                    .Stats.MinHp = .Stats.MinHp - Daño
+                    .Stats.MinHp = .Stats.MinHp - Damage
                 End If
             Else
-234             DañoStr = PonerPuntos(Daño)
+234             DamageStr = PonerPuntos(Damage)
                 ' Restamos el daño a la víctima
-                .Stats.MinHp = .Stats.MinHp - Daño
+                .Stats.MinHp = .Stats.MinHp - Damage
             End If
 
             ' Daño sobre el tile
-236         Call SendData(SendTarget.ToPCAliveArea, VictimaIndex, PrepareMessageTextCharDrop(DañoStr, .Char.charindex, Color))
+236         Call SendData(SendTarget.ToPCAliveArea, VictimaIndex, PrepareMessageTextCharDrop(DamageStr, .Char.charindex, Color))
 
             ' Muere la víctima
 240         If .Stats.MinHp <= 0 Then

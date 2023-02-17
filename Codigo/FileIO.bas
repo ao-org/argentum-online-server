@@ -808,15 +808,31 @@ On Error GoTo ErrHandler
 110     frmCargando.cargar.max = EffectCount
 112     frmCargando.cargar.value = 0
 
-        'Llena la lista
 114     For i = 1 To EffectCount
             EffectOverTime(i).Type = val(Leer.GetValue("EOT" & i, "Type"))
-            EffectOverTime(i).TickPower = val(Leer.GetValue("EOT" & i, "TickPower"))
+            EffectOverTime(i).TickPowerMin = val(Leer.GetValue("EOT" & i, "TickPowerMin"))
+            EffectOverTime(i).TickPowerMax = val(Leer.GetValue("EOT" & i, "TickPowerMax"))
             EffectOverTime(i).Ticks = val(Leer.GetValue("EOT" & i, "Ticks"))
             EffectOverTime(i).TickTime = val(Leer.GetValue("EOT" & i, "TickTime"))
             EffectOverTime(i).TickFX = val(Leer.GetValue("EOT" & i, "TickFX"))
             EffectOverTime(i).Override = val(Leer.GetValue("EOT" & i, "Override"))
             EffectOverTime(i).Limit = val(Leer.GetValue("EOT" & i, "Limit"))
+            EffectOverTime(i).PhysicalDamageReduction = val(Leer.GetValue("EOT" & i, "PhysicalDamageReduction"))
+            EffectOverTime(i).MagicDamageReduction = val(Leer.GetValue("EOT" & i, "MagicDamageReduction"))
+            EffectOverTime(i).PhysicalDamageDone = val(Leer.GetValue("EOT" & i, "PhysicalDamageDone"))
+            EffectOverTime(i).MagicDamageDone = val(Leer.GetValue("EOT" & i, "MagicDamageDone"))
+            If val(Leer.GetValue("EOT" & i, "AffectedByMagicBonus")) > 0 Then
+                Call SetMask(EffectOverTime(i).EffectModifiers, e_ModifierTypes.MagicBonus)
+            End If
+            If val(Leer.GetValue("EOT" & i, "AffectedByMagicReduction")) > 0 Then
+                Call SetMask(EffectOverTime(i).EffectModifiers, e_ModifierTypes.MagicReduction)
+            End If
+            If val(Leer.GetValue("EOT" & i, "AffectedByPhysicalBonus")) > 0 Then
+                Call SetMask(EffectOverTime(i).EffectModifiers, e_ModifierTypes.PhysiccalBonus)
+            End If
+            If val(Leer.GetValue("EOT" & i, "AffectedByPhysicalReduction")) > 0 Then
+                Call SetMask(EffectOverTime(i).EffectModifiers, e_ModifierTypes.PhysicalReduction)
+            End If
         Next i
         
         Call InitializePools

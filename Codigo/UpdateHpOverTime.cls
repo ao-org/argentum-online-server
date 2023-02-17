@@ -16,12 +16,15 @@ Option Explicit
 Implements IBaseEffectOverTime
 
 
-Dim DotHp As Integer
+Dim DotHpMin As Integer
+Dim DotHpMax As Integer
 Dim TargetTicks As Integer
 Dim TickCount As Integer
 Dim TickTime As Long
 Dim TimeSinceLastTick As Long
 Dim TickEffect As Integer
+Dim Modifiers As Integer
+Dim EffectBonus As Single
 
 Private DotInfo As t_BaseDotInfo
 Private source As t_AnyReference
@@ -36,16 +39,26 @@ Public Sub Setup(ByVal sourceIndex As Integer, ByVal sourceType As e_ReferenceTy
     DotInfo.RemoveEffect = False
     DotInfo.EotId = EffectId
     With EffectOverTime(EffectId)
-        DotHp = .TickPower
+        DotHpMin = .TickPowerMin
+        DotHpMax = .TickPowerMax
         TargetTicks = .Ticks
         TickTime = .TickTime
-        DotInfo.EotType = .Type
         TickEffect = .TickFX
+        Modifiers = .EffectModifiers
     End With
+    EffectBonus = 1
+    If sourceType = eUser And IsValidRef(Source) Then
+        If IsSet(Modifiers, e_ModifierTypes.MagicBonus) Then
+            EffectBonus = EffectBonus + UserList(Source.ArrayIndex).Modifiers.MagicDamageBonus
+        End If
+        If IsSet(Modifiers, e_ModifierTypes.PhysiccalBonus) Then
+            EffectBonus = EffectBonus + UserList(Source.ArrayIndex).Modifiers.PhysicalDamageBonus
+        End If
+    End If
 End Sub
 
 Public Property Get IBaseEffectOverTime_TypeId() As Integer
-    IBaseEffectOverTime_TypeId = DotInfo.EotType
+    IBaseEffectOverTime_TypeId = e_EffectOverTimeType.eHealthModifier
 End Property
 
 Public Property Get IBaseEffectOverTime_UniqueId() As Integer
@@ -117,19 +130,42 @@ Public Property Get IBaseEffectOverTime_EotId() As Integer
     IBaseEffectOverTime_EotId = DotInfo.EotId
 End Property
 
+Public Sub IBaseEffectOverTime_OnRemove()
+End Sub
+
+Public Sub IBaseEffectOverTime_TargetUserMagic(ByVal MagicIndex As Integer)
+End Sub
+
+Public Sub IBaseEffectOverTime_TargetPerformAttack()
+End Sub
+
 Public Sub PerformAction()
+    Dim TickHP As Integer
+    TickHP = RandomNumber(DotHpMin, DotHpMax) * EffectBonus
     If DotInfo.TargetRef.RefType = e_ReferenceType.eUser Then
-        If IsValidRef(source) Then
-            Call UserMod.DoDamageOrHeal(DotInfo.TargetRef.ArrayIndex, source.ArrayIndex, DotHp, e_dot)
-        Else
-            Call UserMod.DoDamageOrHeal(DotInfo.TargetRef.ArrayIndex, 0, DotHp, e_dot)
+        If IsSet(Modifiers, e_ModifierTypes.MagicReduction) Then
+            TickHP = TickHP * GetMagicDamageReduction(UserList(DotInfo.TargetRef.ArrayIndex))
         End If
-        If TickEffect > 0 And IsVisible(UserList(DotInfo.TargetRef.ArrayIndex)) = 0 Then Call SendData(SendTarget.ToPCAliveArea, DotInfo.TargetRef.ArrayIndex, PrepareMessageCreateFX(UserList(DotInfo.TargetRef.ArrayIndex).Char.charindex, TickEffect, 0, UserList(DotInfo.TargetRef.ArrayIndex).pos.X, UserList(DotInfo.TargetRef.ArrayIndex).pos.y))
+        If IsSet(Modifiers, e_ModifierTypes.PhysicalReduction) Then
+            TickHP = TickHP * GetPhysicDamageReduction(UserList(DotInfo.TargetRef.ArrayIndex))
+        End If
+        If IsValidRef(source) Then
+            Call UserMod.DoDamageOrHeal(DotInfo.TargetRef.ArrayIndex, Source.ArrayIndex, TickHP, e_dot)
+        Else
+            Call UserMod.DoDamageOrHeal(DotInfo.TargetRef.ArrayIndex, 0, TickHP, e_dot)
+        End If
+        If TickEffect > 0 Then
+            If IsVisible(UserList(DotInfo.TargetRef.ArrayIndex)) Then
+                Call SendData(SendTarget.ToPCAliveArea, DotInfo.TargetRef.ArrayIndex, PrepareMessageCreateFX(UserList(DotInfo.TargetRef.ArrayIndex).Char.charindex, TickEffect, 0, UserList(DotInfo.TargetRef.ArrayIndex).pos.X, UserList(DotInfo.TargetRef.ArrayIndex).pos.y))
+            Else
+                Call SendData(SendTarget.ToIndex, DotInfo.TargetRef.ArrayIndex, PrepareMessageCreateFX(UserList(DotInfo.TargetRef.ArrayIndex).Char.charindex, TickEffect, 0, UserList(DotInfo.TargetRef.ArrayIndex).pos.X, UserList(DotInfo.TargetRef.ArrayIndex).pos.y))
+            End If
+        End If
     ElseIf DotInfo.TargetRef.RefType = e_ReferenceType.eNpc Then
         If IsValidRef(source) Then
-            Call NPCs.DoDamageOrHeal(DotInfo.TargetRef.ArrayIndex, source.ArrayIndex, DotHp, e_dot)
+            Call NPCs.DoDamageOrHeal(DotInfo.TargetRef.ArrayIndex, Source.ArrayIndex, TickHP, e_dot)
         Else
-            Call NPCs.DoDamageOrHeal(DotInfo.TargetRef.ArrayIndex, 0, DotHp, e_dot)
+            Call NPCs.DoDamageOrHeal(DotInfo.TargetRef.ArrayIndex, 0, TickHP, e_dot)
         End If
         If TickEffect > 0 Then Call SendData(SendTarget.ToNPCAliveArea, DotInfo.TargetRef.ArrayIndex, PrepareMessageCreateFX(NpcList(DotInfo.TargetRef.ArrayIndex).Char.charindex, TickEffect, 0, NpcList(DotInfo.TargetRef.ArrayIndex).pos.X, NpcList(DotInfo.TargetRef.ArrayIndex).pos.y))
     End If

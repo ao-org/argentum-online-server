@@ -101,6 +101,7 @@ Class=clsRespawnInfo; Codigo\clsRespawnInfo.cls
 Class=IBaseEffectOverTime; Codigo\IBaseEffectOverTime.cls
 Class=UpdateHpOverTime; Codigo\UpdateHpOverTime.cls
 Module=EffectsOverTime; Codigo\EffectsOverTime.bas
+Class=StatModifier; Codigo\StatModifier.cls
 IconForm="frmMain"
 Startup="Sub Main"
 HelpFile=""
