@@ -85,6 +85,7 @@ End Function
 Public Sub LogThis(nErrNo As Long, sLogMsg As String, EventType As LogEventTypeConstants)
     Dim hEvent As Long
     hEvent = RegisterEventSource("", "Argentum20")
+    Call AddLogToCircularBuffer(sLogMsg)
     Call ReportEvent(hEvent, EventType, 0, nErrNo, 0, 1, Len(sLogMsg), sLogMsg, 0)
 End Sub
 
@@ -179,7 +180,6 @@ End Sub
 Public Sub LogError(Desc As String)
 On Error GoTo ErrHandler
         Call LogThis(type_log.e_LogError, "[Errores.log] " & Desc, vbLogEventTypeError)
-        Call AddLogToCircularBuffer(Desc)
         Exit Sub
 ErrHandler:
 End Sub

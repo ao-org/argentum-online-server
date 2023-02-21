@@ -672,9 +672,9 @@ On Error Resume Next
 
     
     Dim actual_time As Long
-    
+    Dim performance_timer As Long
     actual_time = GetTickCount()
-    
+    performance_timer = actual_time
     
     If actual_time - UserList(UserIndex).Counters.TimeLastReset >= 5000 Then
         UserList(UserIndex).Counters.TimeLastReset = actual_time
@@ -1397,7 +1397,7 @@ On Error Resume Next
     If (Message.GetAvailable() > 0) Then
         Err.raise &HDEADBEEF, "HandleIncomingData", "El paquete '" & PacketID & "' se encuentra en mal estado con '" & Message.GetAvailable() & "' bytes de mas por el usuario '" & UserList(UserIndex).Name & "'"
     End If
-    
+    Call PerformTimeLimitCheck(performance_timer, "Protocol handling message " & PacketId)
 HandleIncomingData_Err:
     
     Set Reader = Nothing

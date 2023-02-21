@@ -1213,136 +1213,89 @@ Command9_Click_Err:
 End Sub
 
 Private Sub EstadoTimer_Timer()
-        
     On Error GoTo EstadoTimer_Timer_Err
-    
-        
-
-    
-
     Call GetHoraActual
-    
     Dim i As Long
-
+    Dim PerformanceTimer As Long
+    Call PerformanceTestStart(PerformanceTimer)
     For i = 1 To Baneos.Count
-
         If Baneos(i).FechaLiberacion <= Now Then
-            Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » Se ha concluido la sentencia de ban para " & Baneos(i).Name & ".", e_FontTypeNames.FONTTYPE_SERVER))
+            Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » Se ha concluido la sentencia de ban para " & Baneos(i).name & ".", e_FontTypeNames.FONTTYPE_SERVER))
             Call UnBan(Baneos(i).Name)
             Call Baneos.Remove(i)
             Call SaveBans
         End If
-
     Next
 
     Select Case frmMain.lblhora.Caption
-
         Case "0:00:00"
             HoraEvento = 0
-
         Case "1:00:00"
             HoraEvento = 1
-
         Case "2:00:00"
             HoraEvento = 2
-
         Case "3:00:00"
             HoraEvento = 3
-
         Case "4:00:00"
             HoraEvento = 4
-
         Case "5:00:00"
             HoraEvento = 5
-
         Case "6:00:00"
             HoraEvento = 6
-
         Case "7:00:00"
             HoraEvento = 7
-
         Case "8:00:00"
             HoraEvento = 8
-
         Case "9:00:00"
             HoraEvento = 9
-
         Case "10:00:00"
             HoraEvento = 10
-
         Case "11:00:00"
             HoraEvento = 11
-
         Case "12:00:00"
             HoraEvento = 12
-
         Case "13:00:00"
             HoraEvento = 13
-
         Case "14:00:00"
             HoraEvento = 14
-
         Case "15:00:00"
             HoraEvento = 15
-
         Case "16:00:00"
             HoraEvento = 16
-
         Case "17:00:00"
             HoraEvento = 17
-
         Case "18:00:00"
             HoraEvento = 18
-
         Case "19:00:00"
             HoraEvento = 19
-
         Case "20:00:00"
             HoraEvento = 20
-
         Case "21:00:00"
             HoraEvento = 21
-
         Case "22:00:00"
             HoraEvento = 22
-
         Case "23:00:00"
             HoraEvento = 23
-
         Case Else
             Exit Sub
-
     End Select
-
     Call CheckEvento(HoraEvento)
-
-        
+    Call PerformTimeLimitCheck(PerformanceTimer, "FrmMain EstadoTimer_Timer")
     Exit Sub
-
 EstadoTimer_Timer_Err:
     Call TraceError(Err.Number, Err.Description, "frmMain.EstadoTimer_Timer", Erl)
-
-        
 End Sub
 
 Private Sub Evento_Timer()
         
     On Error GoTo Evento_Timer_Err
-        
     TiempoRestanteEvento = TiempoRestanteEvento - 1
-
     If TiempoRestanteEvento = 0 Then
         Call FinalizarEvento
-
     End If
-
-        
     Exit Sub
-
 Evento_Timer_Err:
     Call TraceError(Err.Number, Err.Description, "frmMain.Evento_Timer", Erl)
-
-        
 End Sub
 
 Private Sub Form_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
@@ -1438,22 +1391,16 @@ Private Sub Form_Unload(Cancel As Integer)
 End Sub
 
 Private Sub GameTimer_Timer()
-
+On Error GoTo HayError
     Dim iUserIndex   As Long
-
-    On Error GoTo HayError
-
+    Dim PerformanceTimer As Long
+    Call PerformanceTestStart(PerformanceTimer)
     '<<<<<< Procesa eventos de los usuarios >>>>>>
     For iUserIndex = 1 To LastUser
-
         With UserList(iUserIndex)
-
             If .flags.UserLogged Then
-                
                 Call DoTileEvents(iUserIndex, .Pos.Map, .Pos.X, .Pos.Y)
-
                 If .flags.Muerto = 0 Then
-                    
                     'Efectos en mapas
                     If (.flags.Privilegios And e_PlayerType.user) <> 0 Then
                         Call EfectoLava(iUserIndex)
@@ -1461,61 +1408,43 @@ Private Sub GameTimer_Timer()
                         If .flags.Envenenado <> 0 Then Call EfectoVeneno(iUserIndex)
                         If .flags.Incinerado <> 0 Then Call EfectoIncineramiento(iUserIndex)
                     End If
-
                     If .flags.Meditando Then Call DoMeditar(iUserIndex)
-
                     If .flags.Mimetizado <> 0 Then Call EfectoMimetismo(iUserIndex)
-
                     If .flags.AdminInvisible <> 1 Then
                         If .flags.Oculto = 1 Then Call DoPermanecerOculto(iUserIndex)
                     End If
-
                     If .NroMascotas > 0 Then Call TiempoInvocacion(iUserIndex)
-
                     Call EfectoStamina(iUserIndex)
-
                 End If 'Muerto
-
             End If 'UserLogged
-
         End With
-
     Next iUserIndex
+    Call PerformTimeLimitCheck(PerformanceTimer, "GameTimer_Timer User loop")
     Call CustomScenarios.UpdateAll
+    Call PerformTimeLimitCheck(PerformanceTimer, "GameTimer_Timer customScenarios")
     Exit Sub
-
 HayError:
     Call TraceError(Err.Number, Err.Description & vbNewLine & "UserIndex:" & iUserIndex, "frmMain.GameTimer", Erl)
-
 End Sub
 
 Private Sub HoraFantasia_Timer()
         
     On Error GoTo HoraFantasia_Timer_Err
-        
-
     If Lloviendo Then
         Label6.Caption = "Lloviendo"
     Else
         Label6.Caption = "No llueve"
-
     End If
 
     If ServidorNublado Then
         Label7.Caption = "Nublado"
     Else
         Label7.Caption = "Sin nubes"
-
     End If
-
     frmMain.Label4.Caption = GetTimeFormated
-        
     Exit Sub
-
 HoraFantasia_Timer_Err:
     Call TraceError(Err.Number, Err.Description, "frmMain.HoraFantasia_Timer", Erl)
-
-        
 End Sub
 
 
@@ -1578,13 +1507,9 @@ mnuMostrar_Click_Err:
 End Sub
 
 Private Sub KillLog_Timer()
-        
     On Error GoTo KillLog_Timer_Err
-    
-        
-
-    
-
+    Dim PerformanceTimer As Long
+    Call PerformanceTestStart(PerformanceTimer)
     If FileExist(App.Path & "\logs\connect.log", vbNormal) Then Kill App.Path & "\logs\connect.log"
     If FileExist(App.Path & "\logs\haciendo.log", vbNormal) Then Kill App.Path & "\logs\haciendo.log"
     If FileExist(App.Path & "\logs\stats.log", vbNormal) Then Kill App.Path & "\logs\stats.log"
@@ -1593,14 +1518,10 @@ Private Sub KillLog_Timer()
     If Not FileExist(App.Path & "\logs\nokillwsapi.txt") Then
         If FileExist(App.Path & "\logs\wsapi.log", vbNormal) Then Kill App.Path & "\logs\wsapi.log"
     End If
-
-        
+    Call PerformTimeLimitCheck(PerformanceTimer, "KillLog_Timer")
     Exit Sub
-
 KillLog_Timer_Err:
     Call TraceError(Err.Number, Err.Description, "frmMain.KillLog_Timer", Erl)
-
-        
 End Sub
 
 Private Sub mnuServidor_Click()
@@ -1647,14 +1568,13 @@ End Sub
 Private Sub SubastaTimer_Timer()
         
     On Error GoTo SubastaTimer_Timer_Err
-        
-
+    Dim PerformanceTimer As Long
+    Call PerformanceTestStart(PerformanceTimer)
     'Si ya paso un minuto y todavia no hubo oferta, avisamos que se cancela en un minuto
     If Subasta.TiempoRestanteSubasta = 240 And Subasta.HuboOferta = False Then
         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("¡Quedan 4 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas información. La subasta será cancelada si no hay ofertas en el próximo minuto.", e_FontTypeNames.FONTTYPE_SUBASTA))
         Subasta.MinutosDeSubasta = 4
         Subasta.PosibleCancelo = True
-
     End If
     
     'Si ya pasaron dos minutos y no hubo ofertas, cancelamos la subasta
@@ -1664,49 +1584,39 @@ Private Sub SubastaTimer_Timer()
         'Devolver item antes de resetear datos
         Call DevolverItem
         Exit Sub
-
     End If
 
     If Subasta.PosibleCancelo = True Then
         Subasta.TiempoRestanteSubasta = Subasta.TiempoRestanteSubasta - 1
-
     End If
     
     If Subasta.TiempoRestanteSubasta > 0 And Subasta.PosibleCancelo = False Then
         If Subasta.TiempoRestanteSubasta = 240 Then
             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("¡Quedan 4 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas información.", e_FontTypeNames.FONTTYPE_SUBASTA))
             Subasta.MinutosDeSubasta = "4"
-
         End If
-        
         If Subasta.TiempoRestanteSubasta = 180 Then
             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("¡Quedan 3 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas información.", e_FontTypeNames.FONTTYPE_SUBASTA))
             Subasta.MinutosDeSubasta = "3"
-
         End If
 
         If Subasta.TiempoRestanteSubasta = 120 Then
             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("¡Quedan 2 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas información.", e_FontTypeNames.FONTTYPE_SUBASTA))
             Subasta.MinutosDeSubasta = "2"
-
         End If
 
         If Subasta.TiempoRestanteSubasta = 60 Then
             Subasta.MinutosDeSubasta = "1"
             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("¡Quedan 1 minuto(s) para finalizar la subasta! Escribe /SUBASTA para mas información.", e_FontTypeNames.FONTTYPE_SUBASTA))
-
         End If
-
         Subasta.TiempoRestanteSubasta = Subasta.TiempoRestanteSubasta - 1
-
     End If
     
     If Subasta.TiempoRestanteSubasta = 1 Then
         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("¡La subasta a terminado! El ganador fue: " & Subasta.Comprador, e_FontTypeNames.FONTTYPE_SUBASTA))
         Call FinalizarSubasta
-
     End If
-
+    Call PerformTimeLimitCheck(PerformanceTimer, "SubastaTimer_Timer")
         
     Exit Sub
 
@@ -1722,60 +1632,44 @@ Private Sub TIMER_AI_Timer()
 
     Dim NpcIndex As Long
     Dim Mapa     As Integer
-    
     Dim X        As Integer
     Dim Y        As Integer
-
+    Dim PerformanceTimer As Long
+    Call PerformanceTestStart(PerformanceTimer)
     'Barrin 29/9/03
     If Not haciendoBK And Not EnPausa Then
-    
         'Update NPCs
         For NpcIndex = 1 To LastNPC
-            
             With NpcList(NpcIndex)
-            
                 If .flags.NPCActive Then 'Nos aseguramos que sea INTELIGENTE!
-                
                     If .NPCtype = DummyTarget Then
                         ' Regenera vida después de X tiempo sin atacarlo
                         If .Stats.MinHp < .Stats.MaxHp Then
                             .Contadores.UltimoAtaque = .Contadores.UltimoAtaque - 1
-                            
                             If .Contadores.UltimoAtaque <= 0 Then
                                 Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageTextOverChar(.Stats.MaxHp - .Stats.MinHp, .Char.CharIndex, vbGreen))
                                 .Stats.MinHp = .Stats.MaxHp
                             End If
                         End If
-
                     Else
                         'Usamos AI si hay algun user en el mapa
                         Mapa = .Pos.Map
-                        
                         If .flags.Paralizado > 0 Then Call EfectoParalisisNpc(NpcIndex)
                         If .flags.Inmovilizado > 0 Then Call EfectoInmovilizadoNpc(NpcIndex)
-                        
                         If Mapa > 0 Then
                             'Emancu: Vamos a probar si el server se degrada moviendo TODOS los npc, con o sin users. HarThaoS / WyroX: Si, se degrada.
                             If MapInfo(Mapa).NumUsers > 0 Then ' Or NpcList(NpcIndex).NPCtype = e_NPCType.GuardiaNpc Then
-    
                                 If IntervaloPermiteMoverse(NpcIndex) Then
                                         Call NpcAI(NpcIndex)
                                 End If
-    
                             End If
-    
                         End If
-
                     End If
-
                 End If
-            
             End With
-
         Next NpcIndex
-
     End If
-
+    Call PerformTimeLimitCheck(PerformanceTimer, "TIMER_AI_Timer")
     Exit Sub
 
 ErrorHandler:
@@ -1794,12 +1688,10 @@ Private Sub TimerMeteorologia_Timer()
     If TimerMeteorologico > 7 Then
         TimerMeteorologico = TimerMeteorologico - 1
         Exit Sub
-
     End If
 
     If TimerMeteorologico = 7 Then
         ProbabilidadNublar = RandomNumber(1, 3)
-
         If ProbabilidadNublar = 1 Then
             IntensidadDeNubes = RandomNumber(10, 45)
             ServidorNublado = True
@@ -1809,7 +1701,6 @@ Private Sub TimerMeteorologia_Timer()
             Call SendData(SendTarget.ToAll, 0, PrepareMessageNieblandoToggle(IntensidadDeNubes))
             ' Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor > Empezaron las nubes con intensidad: " & IntensidadDeNubes & "%.", e_FontTypeNames.FONTTYPE_SERVER))
             Call AgregarAConsola("Servidor » Empezaron las nubes")
-            
             TimerMeteorologico = TimerMeteorologico - 1
         Else
             ServidorNublado = False
@@ -1817,9 +1708,7 @@ Private Sub TimerMeteorologia_Timer()
             Call AgregarAConsola("Servidor » Tranquilo, no hay nubes ni va a llover.")
             Call ResetMeteo
             Exit Sub
-
         End If
-
     End If
 
     If TimerMeteorologico < 7 And TimerMeteorologico > 3 Then
@@ -1829,12 +1718,10 @@ Private Sub TimerMeteorologia_Timer()
         'Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor > Envio un truenito para que te asustes.", e_FontTypeNames.FONTTYPE_SERVER))
         Call AgregarAConsola("Servidor » Truenos y nubes activados.")
         Exit Sub
-
     End If
 
     If TimerMeteorologico = 3 Then
         ProbabilidadLLuvia = RandomNumber(1, 5)
-
         If ProbabilidadLLuvia = 1 Then
             'Envia Lluvia
             Nebando = True
@@ -1842,12 +1729,8 @@ Private Sub TimerMeteorologia_Timer()
             Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(404, NO_3D_SOUND, NO_3D_SOUND)) ' Explota un trueno
             Call SendData(SendTarget.ToAll, 0, PrepareMessageFlashScreen(&HD254D6, 250)) 'Rayo
             Call SendData(SendTarget.ToAll, 0, PrepareMessageRainToggle())
-            
-        
             Call SendData(SendTarget.ToAll, 0, PrepareMessageNevarToggle())
-            '  Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor > LLuvia lluvia y mas lluvia!", e_FontTypeNames.FONTTYPE_SERVER))
             Call AgregarAConsola("Servidor » Lloviendo.")
-            
             TimerMeteorologico = TimerMeteorologico - 1
         Else
             Nieblando = False
@@ -1856,20 +1739,14 @@ Private Sub TimerMeteorologia_Timer()
             Truenos.Enabled = False
             Call SendData(SendTarget.ToAll, 0, PrepareMessageNieblandoToggle(IntensidadDeNubes))
             Call AgregarAConsola("Servidor » Truenos y nubes desactivados.")
-            ' Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor > Tranquilo, las nubes se fueron.", e_FontTypeNames.FONTTYPE_SERVER))
-           
             Call ResetMeteo
             Exit Sub
-
         End If
-
     End If
 
     If TimerMeteorologico < 3 And TimerMeteorologico > 0 Then
-
         TimerMeteorologico = TimerMeteorologico - 1
         Exit Sub
-
     End If
 
     If TimerMeteorologico = 0 Then
@@ -1880,33 +1757,22 @@ Private Sub TimerMeteorologia_Timer()
         Nebando = False
         Call SendData(SendTarget.ToAll, 0, PrepareMessageNieblandoToggle(IntensidadDeNubes))
         Call SendData(SendTarget.ToAll, 0, PrepareMessageRainToggle())
-        
         Call SendData(SendTarget.ToAll, 0, PrepareMessageNevarToggle())
-        ' Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor > Se acabo la lluvia señores.", e_FontTypeNames.FONTTYPE_SERVER))
         Call AgregarAConsola("Servidor >Lluvia desactivada.")
-        
         Call ResetMeteo
         Exit Sub
-
     End If
-
     Exit Sub
-
-        
-    Exit Sub
-
 TimerMeteorologia_Timer_Err:
     Call TraceError(Err.Number, Err.Description, "frmMain.TimerMeteorologia_Timer", Erl)
-
-        
 End Sub
 
 Private Sub TimerRespawn_Timer()
 
     On Error GoTo ErrorHandler
-
     Dim NpcIndex As Long
-
+    Dim PerformanceTimer As Long
+    Call PerformanceTestStart(PerformanceTimer)
     'Update NPCs
     For NpcIndex = 1 To MaxRespawn
         'Debug.Print RespawnList(NpcIndex).name
@@ -1915,22 +1781,15 @@ Private Sub TimerRespawn_Timer()
                 RespawnList(NpcIndex).Contadores.IntervaloRespawn = RespawnList(NpcIndex).Contadores.IntervaloRespawn - 1
             Else
                 RespawnList(NpcIndex).flags.NPCActive = False
-
                 If RespawnList(NpcIndex).InformarRespawn = 1 Then
                     Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(RespawnList(NpcIndex).Name & " ha vuelto a este mundo.", e_FontTypeNames.FONTTYPE_EXP))
                     Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(257, NO_3D_SOUND, NO_3D_SOUND)) 'Para evento de respwan
-                        
-                    'Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(246, NO_3D_SOUND, NO_3D_SOUND)) 'Para evento de respwan
                 End If
-
                 Call ReSpawnNpc(RespawnList(NpcIndex))
-
             End If
-
         End If
-
     Next NpcIndex
-
+    Call PerformTimeLimitCheck(PerformanceTimer, "TimerRespawn_Timer")
     Exit Sub
 
 ErrorHandler:
@@ -1946,24 +1805,18 @@ Private Sub tPiqueteC_Timer()
     On Error GoTo ErrHandler
 
     Static segundos As Integer
-
     Dim NuevaA      As Boolean
-
     Dim NuevoL      As Boolean
-
     Dim GI          As Integer
-
+    Dim PerformanceTimer As Long
+    Call PerformanceTestStart(PerformanceTimer)
     segundos = segundos + 6
 
     Dim i As Long
-
     For i = 1 To LastUser
-
         If UserList(i).flags.UserLogged Then
             If MapData(UserList(i).Pos.Map, UserList(i).Pos.X, UserList(i).Pos.Y).trigger = e_Trigger.ANTIPIQUETE Then
                 UserList(i).Counters.PiqueteC = UserList(i).Counters.PiqueteC + 1
-                'Call WriteConsoleMsg(i, "Estï¿½s obstruyendo la via pï¿½blica, muï¿½vete o serï¿½s encarcelado!!!", e_FontTypeNames.FONTTYPE_INFO)
-                
                 'WyroX: Le empiezo a avisar a partir de los 18 segundos, para no spamear
                 If UserList(i).Counters.PiqueteC > 3 Then
                     Call WriteLocaleMsg(i, "70", e_FontTypeNames.FONTTYPE_INFO)
@@ -1977,75 +1830,44 @@ Private Sub tPiqueteC_Timer()
                     Call WriteDisconnect(i)
                     Call CloseSocket(i)
                 End If
-
             Else
-
                 If UserList(i).Counters.PiqueteC > 0 Then UserList(i).Counters.PiqueteC = 0
-
             End If
-
             If segundos >= 18 Then
                 If segundos >= 18 Then UserList(i).Counters.Pasos = 0
-
             End If
-
         End If
-    
     Next i
-
+    Call PerformTimeLimitCheck(PerformanceTimer, "TimerRespawn_Timer")
     If segundos >= 18 Then segundos = 0
-
     Exit Sub
-
 ErrHandler:
     Call TraceError(Err.Number, Err.Description, "frmMain.tPiqueteC_Timer", Erl)
-
 End Sub
 
 Private Sub Truenos_Timer()
-        
     On Error GoTo Truenos_Timer_Err
-        
-
     Dim Enviar    As Byte
-
     Dim TruenoWav As Integer
-
     Enviar = RandomNumber(1, 15)
-
     Dim Duracion As Long
-
     If Enviar < 8 Then
         TruenoWav = 399 + Enviar
-
         If TruenoWav = 404 Then TruenoWav = 406
         Duracion = RandomNumber(80, 250)
         Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(TruenoWav, NO_3D_SOUND, NO_3D_SOUND))
         Call SendData(SendTarget.ToAll, 0, PrepareMessageFlashScreen(&HEFEECB, Duracion))
-        
     End If
-
-        
     Exit Sub
-
 Truenos_Timer_Err:
     Call TraceError(Err.Number, Err.Description, "frmMain.Truenos_Timer", Erl)
-
-        
 End Sub
 
 Private Sub UptimeTimer_Timer()
-        
     On Error GoTo UptimeTimer_Timer_Err
-        
     SERVER_UPTIME = SERVER_UPTIME + 1
-
-        
     Exit Sub
-
 UptimeTimer_Timer_Err:
     Call TraceError(Err.Number, Err.Description, "frmMain.UptimeTimer_Timer", Erl)
-
-        
 End Sub
 

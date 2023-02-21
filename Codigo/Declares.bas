@@ -2667,7 +2667,6 @@ Public DBError As String
 
 Public EnEventoFaccionario As Boolean
 
-
 Public Enum e_EffectOverTimeType
     eHealthModifier = 1
     eApplyModifiers = 2
@@ -2763,4 +2762,19 @@ End Sub
 
 Public Sub IncreaseSingle(ByRef dest As Single, ByVal amount As Single)
     dest = dest + amount
+End Sub
+
+Public Sub PerformanceTestStart(ByRef Timer As Long)
+    Timer = GetTickCount()
+End Sub
+
+' Test the time since last call and update the time
+' log if there time betwen calls exced the limit
+Public Sub PerformTimeLimitCheck(ByRef timer As Long, ByRef TestText As String, Optional ByVal TimeLimit As Long = 1000)
+    Dim CurrTime As Long
+    CurrTime = GetTickCount()
+    If CurrTime - timer > TimeLimit Then
+        Call LogPerformance("Performance warning at: " & TestText & " elapsed time: " & CurrTime - Timer)
+    End If
+    timer = GetTickCount()
 End Sub
