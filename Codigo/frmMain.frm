@@ -892,10 +892,6 @@ End Sub
 
 
 
-Private Sub Timer1_Timer()
-
-End Sub
-
 Private Sub TimerGuardarUsuarios_Timer()
 
 On Error GoTo Handler
@@ -1284,7 +1280,7 @@ Private Sub EstadoTimer_Timer()
             Exit Sub
     End Select
     Call CheckEvento(HoraEvento)
-    Call PerformTest(PerformanceTimer, "FrmMain EstadoTimer_Timer")
+    Call PerformTimeLimitCheck(PerformanceTimer, "FrmMain EstadoTimer_Timer")
     Exit Sub
 EstadoTimer_Timer_Err:
     Call TraceError(Err.Number, Err.Description, "frmMain.EstadoTimer_Timer", Erl)
@@ -1423,9 +1419,9 @@ On Error GoTo HayError
             End If 'UserLogged
         End With
     Next iUserIndex
-    Call PerformTest(PerformanceTimer, "GameTimer_Timer User loop")
+    Call PerformTimeLimitCheck(PerformanceTimer, "GameTimer_Timer User loop")
     Call CustomScenarios.UpdateAll
-    Call PerformTest(PerformanceTimer, "GameTimer_Timer customScenarios")
+    Call PerformTimeLimitCheck(PerformanceTimer, "GameTimer_Timer customScenarios")
     Exit Sub
 HayError:
     Call TraceError(Err.Number, Err.Description & vbNewLine & "UserIndex:" & iUserIndex, "frmMain.GameTimer", Erl)
@@ -1522,7 +1518,7 @@ Private Sub KillLog_Timer()
     If Not FileExist(App.Path & "\logs\nokillwsapi.txt") Then
         If FileExist(App.Path & "\logs\wsapi.log", vbNormal) Then Kill App.Path & "\logs\wsapi.log"
     End If
-    Call PerformTest(PerformanceTimer, "KillLog_Timer")
+    Call PerformTimeLimitCheck(PerformanceTimer, "KillLog_Timer")
     Exit Sub
 KillLog_Timer_Err:
     Call TraceError(Err.Number, Err.Description, "frmMain.KillLog_Timer", Erl)
@@ -1620,7 +1616,7 @@ Private Sub SubastaTimer_Timer()
         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("¡La subasta a terminado! El ganador fue: " & Subasta.Comprador, e_FontTypeNames.FONTTYPE_SUBASTA))
         Call FinalizarSubasta
     End If
-    Call PerformTest(PerformanceTimer, "SubastaTimer_Timer")
+    Call PerformTimeLimitCheck(PerformanceTimer, "SubastaTimer_Timer")
         
     Exit Sub
 
@@ -1673,7 +1669,7 @@ Private Sub TIMER_AI_Timer()
             End With
         Next NpcIndex
     End If
-    Call PerformTest(PerformanceTimer, "TIMER_AI_Timer")
+    Call PerformTimeLimitCheck(PerformanceTimer, "TIMER_AI_Timer")
     Exit Sub
 
 ErrorHandler:
@@ -1793,7 +1789,7 @@ Private Sub TimerRespawn_Timer()
             End If
         End If
     Next NpcIndex
-    Call PerformTest(PerformanceTimer, "TimerRespawn_Timer")
+    Call PerformTimeLimitCheck(PerformanceTimer, "TimerRespawn_Timer")
     Exit Sub
 
 ErrorHandler:
@@ -1842,7 +1838,7 @@ Private Sub tPiqueteC_Timer()
             End If
         End If
     Next i
-    Call PerformTest(PerformanceTimer, "TimerRespawn_Timer")
+    Call PerformTimeLimitCheck(PerformanceTimer, "TimerRespawn_Timer")
     If segundos >= 18 Then segundos = 0
     Exit Sub
 ErrHandler:

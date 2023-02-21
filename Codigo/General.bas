@@ -763,13 +763,13 @@ Sub Main()
 #If PYMMO = 1 Then
             Call modNetwork.close_not_logged_sockets_if_timeout
 #End If
-            Call PerformTest(PerformanceTimer, "General modNetwork.close_not_logged_sockets_if_timeout")
+            Call PerformTimeLimitCheck(PerformanceTimer, "General modNetwork.close_not_logged_sockets_if_timeout")
             Call modNetwork.Tick(GetElapsed())
-            Call PerformTest(PerformanceTimer, "General modNetwork.Tick")
+            Call PerformTimeLimitCheck(PerformanceTimer, "General modNetwork.Tick")
             Call UpdateEffectOverTime
-            Call PerformTest(PerformanceTimer, "General Update Effects over time")
+            Call PerformTimeLimitCheck(PerformanceTimer, "General Update Effects over time")
             DoEvents
-            Call PerformTest(PerformanceTimer, "Do events")
+            Call PerformTimeLimitCheck(PerformanceTimer, "Do events")
             ' Unlock main loop for maximum throughput but it can hog weak CPUs.
             #If UNLOCK_CPU = 0 Then
                 Call Sleep(1)

@@ -1397,7 +1397,7 @@ On Error Resume Next
     If (Message.GetAvailable() > 0) Then
         Err.raise &HDEADBEEF, "HandleIncomingData", "El paquete '" & PacketID & "' se encuentra en mal estado con '" & Message.GetAvailable() & "' bytes de mas por el usuario '" & UserList(UserIndex).Name & "'"
     End If
-    Call PerformTest(performance_timer, "Protocol handling message " & PacketId)
+    Call PerformTimeLimitCheck(performance_timer, "Protocol handling message " & PacketId)
 HandleIncomingData_Err:
     
     Set Reader = Nothing
