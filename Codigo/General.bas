@@ -757,13 +757,19 @@ Sub Main()
         
             
         While (True)
+            Dim PerformanceTimer As Long
+            Call PerformanceTestStart(PerformanceTimer)
+            
 #If PYMMO = 1 Then
             Call modNetwork.close_not_logged_sockets_if_timeout
 #End If
+            Call PerformTest(PerformanceTimer, "General modNetwork.close_not_logged_sockets_if_timeout")
             Call modNetwork.Tick(GetElapsed())
+            Call PerformTest(PerformanceTimer, "General modNetwork.Tick")
             Call UpdateEffectOverTime
+            Call PerformTest(PerformanceTimer, "General Update Effects over time")
             DoEvents
-            
+            Call PerformTest(PerformanceTimer, "Do events")
             ' Unlock main loop for maximum throughput but it can hog weak CPUs.
             #If UNLOCK_CPU = 0 Then
                 Call Sleep(1)
@@ -775,13 +781,9 @@ Sub Main()
         Wend
         
         Call LogThis(0, "Closing the server " & Now, vbLogEventTypeInformation)
-
         Exit Sub
-        
 Handler:
 334     Call TraceError(Err.Number, Err.Description, "General.Main", Erl)
-
-
 End Sub
 
 Function FileExist(ByVal File As String, Optional FileType As VbFileAttribute = vbNormal) As Boolean
