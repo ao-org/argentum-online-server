@@ -543,6 +543,7 @@ End Sub
 
 Sub Main()
         On Error GoTo Handler
+        Call InitializeCircularLogBuffer
         Call LogThis(0, "Starting the server " & Now, vbLogEventTypeInformation)
 
         Call load_stats
@@ -591,7 +592,6 @@ Sub Main()
 148     Call LoadMotd
 150     Call CargarListaNegraUsuarios
         Call initBase64Chars
-        Call InitializeCircularLogBuffer
         
 152     frmCargando.Label1(2).Caption = "Conectando base de datos y limpiando usuarios logueados"
     
