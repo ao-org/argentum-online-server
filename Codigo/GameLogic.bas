@@ -787,59 +787,90 @@ End Function
 
 
 Sub HeadtoPos(ByVal Head As e_Heading, ByRef Pos As t_WorldPos)
-        
         On Error GoTo HeadtoPos_Err
-        
-
         '*****************************************************************
         'Toma una posicion y se mueve hacia donde esta perfilado
         '*****************************************************************
         Dim X  As Integer
-
         Dim Y  As Integer
-
         Dim nX As Integer
-
         Dim nY As Integer
-
 100     X = Pos.X
 102     Y = Pos.Y
-
 104     If Head = e_Heading.NORTH Then
 106         nX = X
 108         nY = Y - 1
-
         End If
-
 110     If Head = e_Heading.SOUTH Then
 112         nX = X
 114         nY = Y + 1
-
         End If
-
 116     If Head = e_Heading.EAST Then
 118         nX = X + 1
 120         nY = Y
-
         End If
-
 122     If Head = e_Heading.WEST Then
 124         nX = X - 1
 126         nY = Y
-
         End If
-
         'Devuelve valores
 128     Pos.X = nX
 130     Pos.Y = nY
-
-        
         Exit Sub
-
 HeadtoPos_Err:
 132     Call TraceError(Err.Number, Err.Description, "Extra.HeadtoPos", Erl)
+End Sub
 
-        
+'Returns the front left positon from current heading
+Public Sub GetHeadingLeft(ByVal head As e_Heading, ByRef pos As t_WorldPos)
+        Dim X, Y, nX, nY As Integer
+100     X = pos.X
+102     Y = pos.Y
+104     If head = e_Heading.NORTH Then
+106         nX = X - 1
+108         nY = Y - 1
+        End If
+110     If head = e_Heading.SOUTH Then
+112         nX = X + 1
+114         nY = Y + 1
+        End If
+116     If head = e_Heading.EAST Then
+118         nX = X + 1
+120         nY = Y - 1
+        End If
+122     If head = e_Heading.WEST Then
+124         nX = X - 1
+126         nY = Y + 1
+        End If
+        'Devuelve valores
+128     pos.X = nX
+130     pos.Y = nY
+End Sub
+
+'Returns the front right positon from current heading
+Sub GetHeadingRight(ByVal head As e_Heading, ByRef pos As t_WorldPos)
+        Dim X, Y, nX, nY As Integer
+100     X = pos.X
+102     Y = pos.Y
+104     If head = e_Heading.NORTH Then
+106         nX = X + 1
+108         nY = Y - 1
+        End If
+110     If head = e_Heading.SOUTH Then
+112         nX = X - 1
+114         nY = Y + 1
+        End If
+116     If head = e_Heading.EAST Then
+118         nX = X + 1
+120         nY = Y + 1
+        End If
+122     If head = e_Heading.WEST Then
+124         nX = X - 1
+126         nY = Y - 1
+        End If
+        'Devuelve valores
+128     pos.X = nX
+130     pos.Y = nY
 End Sub
 
 ' Autor: WyroX - 20/01/2021

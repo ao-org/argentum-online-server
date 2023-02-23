@@ -3144,19 +3144,19 @@ DoDamageOrHeal_Err:
 End Sub
 
 Public Function GetPhysicalDamageModifier(ByRef user As t_User) As Single
-    GetPhysicalDamageModifier = 1 + user.Modifiers.PhysicalDamageBonus
+    GetPhysicalDamageModifier = max(1 + user.Modifiers.PhysicalDamageBonus, 0)
 End Function
 
 Public Function GetMagicDamageModifier(ByRef user As t_User) As Single
-    GetMagicDamageModifier = 1 + user.Modifiers.MagicDamageBonus
+    GetMagicDamageModifier = max(1 + user.Modifiers.MagicDamageBonus, 0)
 End Function
 
 Public Function GetMagicDamageReduction(ByRef user As t_User) As Single
-    GetMagicDamageReduction = 1 - user.Modifiers.MagicDamageReduction
+    GetMagicDamageReduction = max(1 - user.Modifiers.MagicDamageReduction, 0)
 End Function
 
 Public Function GetPhysicDamageReduction(ByRef user As t_User) As Single
-    GetPhysicDamageReduction = 1 - user.Modifiers.PhysicalDamageReduction
+    GetPhysicDamageReduction = max(1 - user.Modifiers.PhysicalDamageReduction, 0)
 End Function
 
 

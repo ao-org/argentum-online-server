@@ -798,7 +798,6 @@ Private Sub NpcLanzaUnSpell(ByVal NpcIndex As Integer)
         If SpellIndex = 0 Then Exit Sub
     
 108     Select Case Hechizos(SpellIndex).Target
-
             Case e_TargetType.uUsuarios
 110             If UsuarioAtacableConMagia(Target) And PuedeDanarAlUsuario Then
 112                 Call NpcLanzaSpellSobreUser(NpcIndex, Target, SpellIndex)

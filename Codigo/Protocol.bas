@@ -2967,44 +2967,18 @@ End Function
 
 ''
 ' Handles the "CastSpell" message.
-'
 ' @param    UserIndex The index of the user sending the message.
-
-Private Sub HandleCastSpell(ByVal UserIndex As Integer) ', ByVal server_crc As Long)
-        
+Private Sub HandleCastSpell(ByVal UserIndex As Integer)
         On Error GoTo HandleCastSpell_Err
-        
-        
-        
 100     With UserList(UserIndex)
-
-            
             Dim Spell As Byte
 102         Spell = Reader.ReadInt8()
-
             Dim PacketCounter As Long
             PacketCounter = Reader.ReadInt32
-                        
             Dim Packet_ID As Long
             Packet_ID = PacketNames.CastSpell
             
-            
-           ' If Not verifyTimeStamp(PacketCounter, .PacketCounters(Packet_ID), .PacketTimers(Packet_ID), .MacroIterations(Packet_ID), userindex, "CastSpell", PacketTimerThreshold(Packet_ID), MacroIterations(Packet_ID)) Then Exit Sub
-            
-           ' Dim client_packet_crc As Long
-           ' client_packet_crc = Reader.ReadInt64
-            
-            
-            'If server_crc <> client_packet_crc Then
-            '    If actualPacket_ts <= .PacketTimers.TS_CastSpell Then
-            '        Call WriteShowMessageBox(UserIndex, "Se te cerró por GordonSui")
-            '        Call CloseSocket(UserIndex)
-            '    End If
-            'End If
-            
-            
 104         If .flags.Muerto = 1 Then
-                'Call WriteConsoleMsg(UserIndex, "¡¡Estás muerto!!.", e_FontTypeNames.FONTTYPE_INFO)
 106             Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
@@ -3030,7 +3004,6 @@ Private Sub HandleCastSpell(ByVal UserIndex As Integer) ', ByVal server_crc As L
 120                     If Hechizos(.Stats.UserHechizos(Spell)).AutoLanzar = 1 Then
 122                         Call SetUserRef(UserList(userIndex).flags.targetUser, userIndex)
 124                         Call LanzarHechizo(.flags.Hechizo, UserIndex)
-    
                         Else
                             If IsValidUserRef(.flags.GMMeSigue) Then
                                 Call WriteNofiticarClienteCasteo(.flags.GMMeSigue.ArrayIndex, 1)

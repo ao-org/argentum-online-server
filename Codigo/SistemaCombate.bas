@@ -1059,6 +1059,39 @@ UsuarioAtacaNpc_Err:
         
 End Sub
 
+Public Sub UserAttackPosition(ByVal UserIndex As Integer, ByRef TargetPos As t_WorldPos)
+    'Exit if not legal
+126 If TargetPos.X >= XMinMapSize And TargetPos.X <= XMaxMapSize And TargetPos.Y >= YMinMapSize And TargetPos.Y <= YMaxMapSize Then
+128     If ((MapData(TargetPos.map, TargetPos.X, TargetPos.Y).Blocked And 2 ^ (UserList(UserIndex).Char.Heading - 1)) <> 0) Then
+130         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageCharSwing(UserList(UserIndex).Char.charindex, True, False))
+                Exit Sub
+        End If
+        Dim Index As Integer
+132     Index = MapData(TargetPos.map, TargetPos.X, TargetPos.Y).UserIndex
+        'Look for user
+134     If Index > 0 Then
+136         Call UsuarioAtacaUsuario(UserIndex, Index, Melee)
+            'Look for NPC
+138     ElseIf MapData(TargetPos.map, TargetPos.X, TargetPos.Y).npcIndex > 0 Then
+140         Index = MapData(TargetPos.map, TargetPos.X, TargetPos.Y).npcIndex
+142         If NpcList(Index).Attackable Then
+144             If IsValidUserRef(NpcList(Index).MaestroUser) And MapInfo(NpcList(Index).pos.map).Seguro = 1 Then
+146                 Call WriteConsoleMsg(UserIndex, "No podés atacar mascotas en zonas seguras", e_FontTypeNames.FONTTYPE_FIGHT)
+                Exit Sub
+                End If
+148             Call UsuarioAtacaNpc(UserIndex, Index, Melee)
+            Else
+150             Call WriteConsoleMsg(UserIndex, "No podés atacar a este NPC", e_FontTypeNames.FONTTYPE_FIGHT)
+            End If
+            Exit Sub
+        Else
+152         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageCharSwing(UserList(UserIndex).Char.charindex, True, False))
+        End If
+    Else
+154     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageCharSwing(UserList(UserIndex).Char.charindex, True, False))
+    End If
+End Sub
+
 Public Sub UsuarioAtaca(ByVal UserIndex As Integer)
         
         On Error GoTo UsuarioAtaca_Err
@@ -1066,89 +1099,53 @@ Public Sub UsuarioAtaca(ByVal UserIndex As Integer)
 
         'Check bow's interval
 100     If Not IntervaloPermiteUsarArcos(UserIndex, False) Then Exit Sub
-    
         'Check Spell-Attack interval
 102     If Not IntervaloPermiteMagiaGolpe(UserIndex, False) Then Exit Sub
-
         'Check Attack interval
 104     If Not IntervaloPermiteAtacar(UserIndex) Then Exit Sub
-
-        'Quitamos stamina
-106     If UserList(UserIndex).Stats.MinSta < 10 Then
-            'Call WriteConsoleMsg(UserIndex, "Estas muy cansado para luchar.", e_FontTypeNames.FONTTYPE_INFO)
-108         Call WriteLocaleMsg(UserIndex, "93", e_FontTypeNames.FONTTYPE_INFO)
-            Exit Sub
-
-        End If
-    
-110     Call QuitarSta(UserIndex, RandomNumber(1, 10))
-    
-112     If UserList(UserIndex).Counters.Trabajando Then
-114         Call WriteMacroTrabajoToggle(UserIndex, False)
-
-        End If
-        
-116     If UserList(UserIndex).Counters.Ocultando Then UserList(UserIndex).Counters.Ocultando = UserList(UserIndex).Counters.Ocultando - 1
-        
-        'Movimiento de arma, solo lo envio si no es GM invisible.
-118     If UserList(UserIndex).flags.AdminInvisible = 0 Then
-120         Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessageArmaMov(UserList(UserIndex).Char.charindex))
-        End If
-
-        Dim AttackPos As t_WorldPos
-122         AttackPos = UserList(UserIndex).Pos
-
-124     Call HeadtoPos(UserList(UserIndex).Char.Heading, AttackPos)
-       
-        'Exit if not legal
-126     If AttackPos.X >= XMinMapSize And AttackPos.X <= XMaxMapSize And AttackPos.Y >= YMinMapSize And AttackPos.Y <= YMaxMapSize Then
-
-128         If ((MapData(AttackPos.Map, AttackPos.X, AttackPos.Y).Blocked And 2 ^ (UserList(UserIndex).Char.Heading - 1)) <> 0) Then
-130             Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessageCharSwing(UserList(UserIndex).Char.charindex, True, False))
+        With UserList(UserIndex)
+            'Quitamos stamina
+106         If .Stats.MinSta < 10 Then
+108             Call WriteLocaleMsg(UserIndex, "93", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
+    
+110         Call QuitarSta(UserIndex, RandomNumber(1, 10))
 
-            Dim Index As Integer
+112         If .Counters.Trabajando Then
+114             Call WriteMacroTrabajoToggle(UserIndex, False)
+            End If
+        
+116         If .Counters.Ocultando Then .Counters.Ocultando = .Counters.Ocultando - 1
+            'Movimiento de arma, solo lo envio si no es GM invisible.
+118         If .flags.AdminInvisible = 0 Then
+120             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageArmaMov(.Char.charindex))
+            End If
 
-132         Index = MapData(AttackPos.Map, AttackPos.X, AttackPos.Y).UserIndex
+        
+            Dim AttackPos As t_WorldPos
+122         AttackPos = UserList(UserIndex).pos
 
-            'Look for user
-134         If Index > 0 Then
-136             Call UsuarioAtacaUsuario(UserIndex, Index, Melee)
-
-            'Look for NPC
-138         ElseIf MapData(AttackPos.Map, AttackPos.X, AttackPos.Y).NpcIndex > 0 Then
-
-140             Index = MapData(AttackPos.Map, AttackPos.X, AttackPos.Y).NpcIndex
-
-142             If NpcList(Index).Attackable Then
-144                 If IsValidUserRef(NpcList(Index).MaestroUser) And MapInfo(NpcList(Index).pos.map).Seguro = 1 Then
-146                     Call WriteConsoleMsg(userIndex, "No podés atacar mascotas en zonas seguras", e_FontTypeNames.FONTTYPE_FIGHT)
-                        Exit Sub
-                    End If
-
-148                 Call UsuarioAtacaNpc(UserIndex, Index, Melee)
-
-                Else
-150                 Call WriteConsoleMsg(UserIndex, "No podés atacar a este NPC", e_FontTypeNames.FONTTYPE_FIGHT)
-
-                End If
-
-                Exit Sub
+            If .flags.Cleave > 0 Then
+                Call IncreaseSingle(.Modifiers.PhysicalDamageBonus, -0.25) 'Front target gets 75% damage
+124             Call HeadtoPos(.Char.Heading, AttackPos)
+                Call UserAttackPosition(UserIndex, AttackPos)
+                Call IncreaseSingle(.Modifiers.PhysicalDamageBonus, -0.25) 'Side targets gets 50% damage
+                AttackPos = UserList(UserIndex).pos
+                Call GetHeadingRight(.Char.Heading, AttackPos)
+                Call UserAttackPosition(UserIndex, AttackPos)
+                AttackPos = UserList(UserIndex).pos
+                Call GetHeadingLeft(.Char.Heading, AttackPos)
+                Call UserAttackPosition(UserIndex, AttackPos)
+                Call IncreaseSingle(.Modifiers.PhysicalDamageBonus, 0.5) 'return to prev state
             Else
-152             Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessageCharSwing(UserList(UserIndex).Char.charindex, True, False))
+                Call HeadtoPos(.Char.Heading, AttackPos)
+                Call UserAttackPosition(UserIndex, AttackPos)
             End If
-
-        Else
-154         Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessageCharSwing(UserList(UserIndex).Char.charindex, True, False))
-        End If
-
+            End With
         Exit Sub
-
 UsuarioAtaca_Err:
 156     Call TraceError(Err.Number, Err.Description, "SistemaCombate.UsuarioAtaca", Erl)
-
-        
 End Sub
 
 Private Function UsuarioImpacto(ByVal AtacanteIndex As Integer, ByVal VictimaIndex As Integer, ByVal aType As AttackType) As Boolean

@@ -489,23 +489,17 @@ Private Sub PerderItemsFaccionarios(ByVal UserIndex As Integer)
 
             Dim i         As Byte
             Dim ItemIndex As Integer
-
 100         With UserList(UserIndex)
 102             For i = 1 To .CurrentInventorySlots
 104                 ItemIndex = .Invent.Object(i).ObjIndex
-
 106                 If ItemIndex > 0 Then
-
 108                     If ObjData(ItemIndex).Real = 1 Or ObjData(ItemIndex).Caos = 1 Then
-
 110                         Call QuitarUserInvItem(UserIndex, i, MAX_INVENTORY_OBJS)
 112                         Call UpdateUserInv(False, UserIndex, i)
-
                         End If
                     End If
 114             Next i
             End With
-
             Exit Sub
 
 PerderItemsFaccionarios_Err:
