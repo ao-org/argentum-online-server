@@ -5548,33 +5548,32 @@ WriteShopPjsInit_Err:
      Call Writer.Clear
     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteShopPjsInit", Erl)
 End Sub
+
 Public Sub writeUpdateShopClienteCredits(ByVal userindex As Integer)
-    On Error GoTo writeUpdateShopClienteCredits_Err
-    
+On Error GoTo WriteUpdateShopClienteCredits_Err
     Call Writer.WriteInt16(ServerPacketID.UpdateShopCliente)
-    
     Call Writer.WriteInt32(UserList(userindex).Stats.Creditos)
-    
 182 Call modSendData.SendData(ToIndex, userindex)
     Exit Sub
 writeUpdateShopClienteCredits_Err:
-     Call Writer.Clear
+    Call Writer.Clear
     Call TraceError(Err.Number, Err.Description + " UI: " + UserIndex, "Argentum20Server.Protocol_Writes.writeUpdateShopClienteCredits", Erl)
-    
 End Sub
 
-Public Sub writeSensuiRetrasado(ByVal userindex As Integer)
-    On Error GoTo writeSensuiRetrasado_Err
-    
-    Call Writer.WriteInt16(ServerPacketID.SensuiRetrasado)
-    
+Public Sub WriteSendSkillCdUpdate(ByVal UserIndex As Integer, ByVal SkillTypeId As Integer, ByVal SkillId As Long, ByVal Time As Long, ByVal SkillType As e_EffectType)
+On Error GoTo WriteSendSkillCdUpdate_Err
+    Call Writer.WriteInt16(ServerPacketID.SendSkillCdUpdate)
+    Call Writer.WriteInt16(SkillTypeId)
+    Call Writer.WriteInt32(SkillId)
+    Call Writer.WriteInt32(Time)
+    Call Writer.WriteInt8(SkillType)
 182 Call modSendData.SendData(ToIndex, userindex)
-    
-writeSensuiRetrasado_Err:
-     Call Writer.Clear
-    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.writeSensuiRetrasado", Erl)
-    
+    Exit Sub
+WriteSendSkillCdUpdate_Err:
+    Call Writer.Clear
+    Call TraceError(Err.Number, Err.Description + " UI: " + UserIndex, "Argentum20Server.Protocol_Writes.writeUpdateShopClienteCredits", Erl)
 End Sub
+
 Public Sub WriteObjQuestSend(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, ByVal Slot As Byte)
         '<EhHeader>
         On Error GoTo WriteNpcQuestListSend_Err

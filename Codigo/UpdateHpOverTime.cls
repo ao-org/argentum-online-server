@@ -45,6 +45,7 @@ Public Sub Setup(ByVal sourceIndex As Integer, ByVal sourceType As e_ReferenceTy
         TickTime = .TickTime
         TickEffect = .TickFX
         Modifiers = .EffectModifiers
+        If EffectOverTime(DotInfo.EotId).ClientEffectTypeId > 0 Then Call WriteSendSkillCdUpdate(TargetIndex, .ClientEffectTypeId, ID, .TickTime * TargetTicks, .BuffType)
     End With
     EffectBonus = 1
     If sourceType = eUser And IsValidRef(Source) Then
@@ -124,6 +125,7 @@ End Property
 
 Public Sub IBaseEffectOverTime_Reset()
     TickCount = 0
+    If EffectOverTime(DotInfo.EotId).ClientEffectTypeId > 0 Then Call WriteSendSkillCdUpdate(DotInfo.TargetRef.ArrayIndex, EffectOverTime(DotInfo.EotId).ClientEffectTypeId, DotInfo.UniqueId, (TickTime * TargetTicks) - TimeSinceLastTick, EffectOverTime(DotInfo.EotId).BuffType)
 End Sub
 
 Public Property Get IBaseEffectOverTime_EotId() As Integer
@@ -131,6 +133,7 @@ Public Property Get IBaseEffectOverTime_EotId() As Integer
 End Property
 
 Public Sub IBaseEffectOverTime_OnRemove()
+    If EffectOverTime(DotInfo.EotId).ClientEffectTypeId > 0 Then Call WriteSendSkillCdUpdate(DotInfo.TargetRef.ArrayIndex, EffectOverTime(DotInfo.EotId).ClientEffectTypeId, DotInfo.UniqueId, 0, EffectOverTime(DotInfo.EotId).BuffType)
 End Sub
 
 Public Sub IBaseEffectOverTime_TargetUserMagic(ByVal MagicIndex As Integer)

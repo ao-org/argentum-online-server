@@ -2602,12 +2602,8 @@ Function FileText(filename$) As String
 End Function
 
 Public Function IsArrayInitialized(ByRef arr) As Boolean
-
   Dim rv As Long
-
   On Error Resume Next
-
   rv = UBound(arr)
   IsArrayInitialized = (Err.Number = 0) And rv >= 0
-
 End Function
