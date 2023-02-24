@@ -695,7 +695,7 @@ Public Sub CargarHechizos()
 170         Hechizos(Hechizo).AreaAfecta = val(Leer.GetValue("Hechizo" & Hechizo, "AreaAfecta"))
             'Hechizos de area
     
-172         Hechizos(Hechizo).incinera = val(Leer.GetValue("Hechizo" & Hechizo, "Incinera"))
+172         If val(Leer.GetValue("Hechizo" & Hechizo, "Incinera")) > 0 Then Call SetMask(Hechizos(Hechizo).Effects, e_SpellEffects.Incinerate)
     
 174         Hechizos(Hechizo).AutoLanzar = val(Leer.GetValue("Hechizo" & Hechizo, "AutoLanzar"))
     
@@ -736,35 +736,30 @@ Public Sub CargarHechizos()
 222         Hechizos(Hechizo).SubeCarisma = val(Leer.GetValue("Hechizo" & Hechizo, "SubeCA"))
 224         Hechizos(Hechizo).MinCarisma = val(Leer.GetValue("Hechizo" & Hechizo, "MinCA"))
 226         Hechizos(Hechizo).MaxCarisma = val(Leer.GetValue("Hechizo" & Hechizo, "MaxCA"))
-    
-228         Hechizos(Hechizo).Invisibilidad = val(Leer.GetValue("Hechizo" & Hechizo, "Invisibilidad"))
-230         Hechizos(Hechizo).Paraliza = val(Leer.GetValue("Hechizo" & Hechizo, "Paraliza"))
-232         Hechizos(Hechizo).Inmoviliza = val(Leer.GetValue("Hechizo" & Hechizo, "Inmoviliza"))
-    
-234         Hechizos(Hechizo).RemoverParalisis = val(Leer.GetValue("Hechizo" & Hechizo, "RemoverParalisis"))
-236         Hechizos(Hechizo).RemoverEstupidez = val(Leer.GetValue("Hechizo" & Hechizo, "RemoverEstupidez"))
-238         Hechizos(Hechizo).RemueveInvisibilidadParcial = val(Leer.GetValue("Hechizo" & Hechizo, "RemueveInvisibilidadParcial"))
-    
-240         Hechizos(Hechizo).CuraVeneno = val(Leer.GetValue("Hechizo" & Hechizo, "CuraVeneno"))
+            
+            
+228         If val(Leer.GetValue("Hechizo" & Hechizo, "Invisibilidad")) > 0 Then Call SetMask(Hechizos(Hechizo).Effects, e_SpellEffects.Invisibility)
+230         If val(Leer.GetValue("Hechizo" & Hechizo, "Paraliza")) > 0 Then Call SetMask(Hechizos(Hechizo).Effects, e_SpellEffects.Paralize)
+232         If val(Leer.GetValue("Hechizo" & Hechizo, "Inmoviliza")) > 0 Then Call SetMask(Hechizos(Hechizo).Effects, e_SpellEffects.Immobilize)
+234         If val(Leer.GetValue("Hechizo" & Hechizo, "RemoverParalisis")) > 0 Then Call SetMask(Hechizos(Hechizo).Effects, e_SpellEffects.RemoveParalysis)
+236         If val(Leer.GetValue("Hechizo" & Hechizo, "RemoverEstupidez")) > 0 Then Call SetMask(Hechizos(Hechizo).Effects, e_SpellEffects.RemoveDumb)
+238         If val(Leer.GetValue("Hechizo" & Hechizo, "RemueveInvisibilidadParcial")) > 0 Then Call SetMask(Hechizos(Hechizo).Effects, e_SpellEffects.RemoveInvisibility)
+240         If val(Leer.GetValue("Hechizo" & Hechizo, "CuraVeneno")) > 0 Then Call SetMask(Hechizos(Hechizo).Effects, e_SpellEffects.CurePoison)
 242         Hechizos(Hechizo).Envenena = val(Leer.GetValue("Hechizo" & Hechizo, "Envenena"))
-244         Hechizos(Hechizo).Maldicion = val(Leer.GetValue("Hechizo" & Hechizo, "Maldicion"))
-246         Hechizos(Hechizo).RemoverMaldicion = val(Leer.GetValue("Hechizo" & Hechizo, "RemoverMaldicion"))
-248         Hechizos(Hechizo).Bendicion = val(Leer.GetValue("Hechizo" & Hechizo, "Bendicion"))
-250         Hechizos(Hechizo).Revivir = val(Leer.GetValue("Hechizo" & Hechizo, "Revivir"))
-    
-252         Hechizos(Hechizo).Ceguera = val(Leer.GetValue("Hechizo" & Hechizo, "Ceguera"))
-254         Hechizos(Hechizo).Estupidez = val(Leer.GetValue("Hechizo" & Hechizo, "Estupidez"))
-    
+244         If val(Leer.GetValue("Hechizo" & Hechizo, "Maldicion")) > 0 Then Call SetMask(Hechizos(Hechizo).Effects, e_SpellEffects.Curse)
+246         If val(Leer.GetValue("Hechizo" & Hechizo, "RemoverMaldicion")) > 0 Then Call SetMask(Hechizos(Hechizo).Effects, e_SpellEffects.RemoveCurse)
+248         If val(Leer.GetValue("Hechizo" & Hechizo, "Bendicion")) > 0 Then Call SetMask(Hechizos(Hechizo).Effects, e_SpellEffects.Blessing)
+250         If val(Leer.GetValue("Hechizo" & Hechizo, "Revivir")) > 0 Then Call SetMask(Hechizos(Hechizo).Effects, e_SpellEffects.Resurrect)
+252         If val(Leer.GetValue("Hechizo" & Hechizo, "Ceguera")) > 0 Then Call SetMask(Hechizos(Hechizo).Effects, e_SpellEffects.Blindness)
+254         If val(Leer.GetValue("Hechizo" & Hechizo, "Estupidez")) > 0 Then Call SetMask(Hechizos(Hechizo).Effects, e_SpellEffects.Dumb)
+255         If val(Leer.GetValue("Hechizo" & Hechizo, "ToggleCleave")) > 0 Then Call SetMask(Hechizos(Hechizo).Effects, e_SpellEffects.ToggleCleave)
+
 256         Hechizos(Hechizo).Invoca = val(Leer.GetValue("Hechizo" & Hechizo, "Invoca"))
 258         Hechizos(Hechizo).NumNpc = val(Leer.GetValue("Hechizo" & Hechizo, "NumNpc"))
 260         Hechizos(Hechizo).cant = val(Leer.GetValue("Hechizo" & Hechizo, "Cant"))
 262         Hechizos(Hechizo).Mimetiza = val(Leer.GetValue("Hechizo" & Hechizo, "Mimetiza"))
     
-264         Hechizos(Hechizo).GolpeCertero = val(Leer.GetValue("Hechizo" & Hechizo, "GolpeCertero"))
-    
-            '    Hechizos(Hechizo).Materializa = val(Leer.GetValue("Hechizo" & Hechizo, "Materializa"))
-            '    Hechizos(Hechizo).ItemIndex = val(Leer.GetValue("Hechizo" & Hechizo, "ItemIndex"))
-    
+264         If val(Leer.GetValue("Hechizo" & Hechizo, "GolpeCertero")) > 0 Then Call SetMask(Hechizos(Hechizo).Effects, e_SpellEffects.PreciseHit)
 266         Hechizos(Hechizo).MinSkill = val(Leer.GetValue("Hechizo" & Hechizo, "MinSkill"))
 268         Hechizos(Hechizo).ManaRequerido = val(Leer.GetValue("Hechizo" & Hechizo, "ManaRequerido"))
 270         Hechizos(Hechizo).RequiredHP = val(Leer.GetValue("Hechizo" & Hechizo, "RequiredHP"))
@@ -1989,7 +1984,7 @@ Public Sub CargarMapaFormatoCSM(ByVal map As Long, ByVal MAPFl As String)
                             End If
                         Else
                             ' Lo guardo en los logs + aparece en el Debug.Print
-310                         Call TraceError(404, "NPC no existe en los .DAT's o está mal dateado. Posicion: " & Map & "-" & NPCs(i).x & "-" & NPCs(i).y, "ES.CargarMapaFormatoCSM")
+310                         Call TraceError(404, "NPC no existe en los .DAT's o está mal dateado. Posicion: " & map & "-" & NPCs(i).X & "-" & NPCs(i).Y, "ES.CargarMapaFormatoCSM")
                         End If
                     End If
 312             Next i

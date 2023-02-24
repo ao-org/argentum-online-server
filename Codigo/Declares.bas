@@ -905,6 +905,26 @@ Public Type t_AnyReference
     RefType As e_ReferenceType
 End Type
 
+Public Enum e_SpellEffects
+    Invisibility = 1
+    Paralize = 2
+    Immobilize = 4
+    RemoveParalysis = 8
+    RemoveDumb = 16
+    CurePoison = 32
+    Incinerate = 64
+    Curse = 128
+    RemoveCurse = 256
+    PreciseHit = 512
+    Blessing = 1024
+    Dumb = 2048
+    Blindness = 4096
+    Resurrect = 8192
+    Morph = 16384
+    RemoveInvisibility = 32768
+    ToggleCleave = 65536
+End Enum
+
 Public Type t_Hechizo
     AutoLanzar As Byte
     
@@ -986,24 +1006,8 @@ Public Type t_Hechizo
     SubeCarisma As Byte
     MinCarisma As Integer
     MaxCarisma As Integer
-    
-    Invisibilidad As Byte
-    Paraliza As Byte
-    Inmoviliza As Byte
-    RemoverParalisis As Byte
-    RemoverEstupidez As Byte
-    CuraVeneno As Byte
-    incinera As Byte
     Envenena As Byte
-    Maldicion As Byte
-    RemoverMaldicion As Byte
-    GolpeCertero As Byte
-    Bendicion As Byte
-    Estupidez As Byte
-    Ceguera As Byte
-    Revivir As Byte
-    Morph As Byte
-    RemueveInvisibilidadParcial As Byte
+    Effects As Long
     
     Invoca As Byte
     NumNpc As Integer
@@ -1725,6 +1729,7 @@ Public Type t_UserFlags
     TipoPocion As Byte
     Mimetizado As e_EstadoMimetismo
     MascotasGuardadas As Byte
+    Cleave As Byte 'we might support more than one type of cleave
     
     Navegando As Byte
     
