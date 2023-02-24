@@ -933,6 +933,7 @@ Public Type t_Hechizo
     RequiredHP As Integer
     
     CoolDown As Integer
+    CdEffectId As Integer
     
     ScreenColor As Long
     TimeEfect As Long
@@ -1062,6 +1063,7 @@ Public Type t_EffectOverTime
     PhysicalDamageDone As Single
     MagicDamageDone As Single
     EffectModifiers As Long
+    ClientEffectTypeId As Integer
 End Type
 
 Public Const MAX_PACKET_COUNTERS As Long = 15
@@ -2042,6 +2044,7 @@ End Enum
 Public Enum e_EffectType
     eBuff = 1
     eDebuff
+    eCD
     eAny
 End Enum
 

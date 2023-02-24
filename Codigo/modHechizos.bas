@@ -586,13 +586,15 @@ Private Function PuedeLanzar(ByVal UserIndex As Integer, ByVal HechizoIndex As I
                 End If
             End If
 
-128         If Hechizos(HechizoIndex).CoolDown > 0 Then
+128         If Hechizos(HechizoIndex).Cooldown > 0 And .Counters.UserHechizosInterval(Slot) > 0 Then
                 Dim Actual As Long
                 Dim SegundosFaltantes As Long
 130             Actual = GetTickCount()
-
-132             If .Counters.UserHechizosInterval(Slot) + (Hechizos(HechizoIndex).CoolDown * 1000) < Actual Then
-134                 SegundosFaltantes = Int((.Counters.UserHechizosInterval(Slot) + (Hechizos(HechizoIndex).CoolDown * 1000) - Actual) / 1000)
+                Dim Cooldown As Long
+                Cooldown = Hechizos(HechizoIndex).Cooldown
+                Cooldown = Cooldown * 1000
+132             If .Counters.UserHechizosInterval(Slot) + Cooldown > Actual Then
+134                 SegundosFaltantes = Int((.Counters.UserHechizosInterval(Slot) + Cooldown - Actual) / 1000)
 136                 Call WriteConsoleMsg(UserIndex, "Debes esperar " & SegundosFaltantes & " segundos para volver a tirar este hechizo.", e_FontTypeNames.FONTTYPE_WARNING)
                     Exit Function
                 End If
@@ -1337,6 +1339,7 @@ Sub LanzarHechizo(ByVal Index As Integer, ByVal UserIndex As Integer)
         On Error GoTo LanzarHechizo_Err
 
         Dim uh As Integer
+        Dim SpellCastSuccess As Boolean
         
 100     uh = UserList(UserIndex).Stats.UserHechizos(Index)
 
@@ -1349,10 +1352,7 @@ Sub LanzarHechizo(ByVal Index As Integer, ByVal UserIndex As Integer)
 106                 If IsValidUserRef(UserList(UserIndex).flags.targetUser) Then
 108                     If Abs(UserList(UserList(UserIndex).flags.targetUser.ArrayIndex).pos.y - UserList(UserIndex).pos.y) <= RANGO_VISION_Y Then
 110                         Call HandleHechizoUsuario(UserIndex, uh)
-                    
-112                         If Hechizos(uh).CoolDown > 0 Then
-114                             UserList(UserIndex).Counters.UserHechizosInterval(Index) = GetTickCount()
-                            End If
+                            SpellCastSuccess = True
                         Else
 116                         Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
                         End If
@@ -1365,10 +1365,7 @@ Sub LanzarHechizo(ByVal Index As Integer, ByVal UserIndex As Integer)
 122                 If IsValidNpcRef(UserList(UserIndex).flags.TargetNPC) Then
 124                     If Abs(NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Pos.y - UserList(UserIndex).Pos.y) <= RANGO_VISION_Y Then
 126                         Call HandleHechizoNPC(UserIndex, uh)
-
-128                         If Hechizos(uh).CoolDown > 0 Then
-130                             UserList(UserIndex).Counters.UserHechizosInterval(Index) = GetTickCount()
-                            End If
+                            SpellCastSuccess = True
                         Else
 132                         Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
                         End If
@@ -1381,10 +1378,7 @@ Sub LanzarHechizo(ByVal Index As Integer, ByVal UserIndex As Integer)
 138                 If IsValidUserRef(UserList(UserIndex).flags.targetUser) Then
 140                     If Abs(UserList(UserList(UserIndex).flags.targetUser.ArrayIndex).pos.y - UserList(UserIndex).pos.y) <= RANGO_VISION_Y Then
 142                         Call HandleHechizoUsuario(UserIndex, uh)
-                    
-144                         If Hechizos(uh).CoolDown > 0 Then
-146                             UserList(UserIndex).Counters.UserHechizosInterval(Index) = GetTickCount()
-                            End If
+                            SpellCastSuccess = True
                         Else
 148                         Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
                         End If
@@ -1392,9 +1386,7 @@ Sub LanzarHechizo(ByVal Index As Integer, ByVal UserIndex As Integer)
 150                 ElseIf IsValidNpcRef(UserList(UserIndex).flags.TargetNPC) Then
 
 152                     If Abs(NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Pos.y - UserList(UserIndex).Pos.y) <= RANGO_VISION_Y Then
-154                         If Hechizos(uh).CoolDown > 0 Then
-156                             UserList(UserIndex).Counters.UserHechizosInterval(Index) = GetTickCount()
-                            End If
+                            SpellCastSuccess = True
 158                         Call HandleHechizoNPC(UserIndex, uh)
                         Else
 160                         Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
@@ -1404,14 +1396,16 @@ Sub LanzarHechizo(ByVal Index As Integer, ByVal UserIndex As Integer)
                     End If
         
 164             Case e_TargetType.uTerreno
-
-166                 If Hechizos(uh).CoolDown > 0 Then
-168                     UserList(UserIndex).Counters.UserHechizosInterval(Index) = GetTickCount()
-                    End If
+                    SpellCastSuccess = True
 170                 Call HandleHechizoTerreno(UserIndex, uh)
             End Select
         End If
-
+        If SpellCastSuccess Then
+112         If Hechizos(uh).Cooldown > 0 Then
+114             UserList(UserIndex).Counters.UserHechizosInterval(Index) = GetTickCount()
+                If Hechizos(uh).CdEffectId > 0 Then Call WriteSendSkillCdUpdate(UserIndex, Hechizos(uh).CdEffectId, -1, CLng(Hechizos(uh).Cooldown) * 1000, eCD)
+            End If
+        End If
 172     If UserList(UserIndex).Counters.Trabajando Then
 174         Call WriteMacroTrabajoToggle(UserIndex, False)
         End If

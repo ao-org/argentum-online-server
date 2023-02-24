@@ -196,7 +196,7 @@ Public Enum ServerPacketID
     Privilegios
     ShopInit
     UpdateShopCliente
-    SensuiRetrasado
+    SendSkillCdUpdate
     UpdateFlag
     CharAtaca
     NotificarClienteSeguido

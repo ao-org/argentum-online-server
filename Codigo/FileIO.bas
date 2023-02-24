@@ -700,11 +700,8 @@ Public Sub CargarHechizos()
 174         Hechizos(Hechizo).AutoLanzar = val(Leer.GetValue("Hechizo" & Hechizo, "AutoLanzar"))
     
 176         Hechizos(Hechizo).Cooldown = val(Leer.GetValue("Hechizo" & Hechizo, "CoolDown"))
-    
+177         Hechizos(Hechizo).CdEffectId = val(Leer.GetValue("Hechizo" & Hechizo, "CdEffectId"))
 178         Hechizos(Hechizo).loops = val(Leer.GetValue("Hechizo" & Hechizo, "Loops"))
-    
-            '    Hechizos(Hechizo).Resis = val(Leer.GetValue("Hechizo" & Hechizo, "Resis"))
-    
 180         Hechizos(Hechizo).SubeHP = val(Leer.GetValue("Hechizo" & Hechizo, "SubeHP"))
 182         Hechizos(Hechizo).MinHp = val(Leer.GetValue("Hechizo" & Hechizo, "MinHP"))
 184         Hechizos(Hechizo).MaxHp = val(Leer.GetValue("Hechizo" & Hechizo, "MaxHP"))
@@ -816,6 +813,8 @@ On Error GoTo ErrHandler
             EffectOverTime(i).MagicDamageReduction = val(Leer.GetValue("EOT" & i, "MagicDamageReduction"))
             EffectOverTime(i).PhysicalDamageDone = val(Leer.GetValue("EOT" & i, "PhysicalDamageDone"))
             EffectOverTime(i).MagicDamageDone = val(Leer.GetValue("EOT" & i, "MagicDamageDone"))
+            EffectOverTime(i).ClientEffectTypeId = val(Leer.GetValue("EOT" & i, "ClientEffectTypeId"))
+            EffectOverTime(i).BuffType = val(Leer.GetValue("EOT" & i, "BuffType"))
             If val(Leer.GetValue("EOT" & i, "AffectedByMagicBonus")) > 0 Then
                 Call SetMask(EffectOverTime(i).EffectModifiers, e_ModifierTypes.MagicBonus)
             End If

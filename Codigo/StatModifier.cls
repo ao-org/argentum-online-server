@@ -39,6 +39,7 @@ Public Sub Setup(ByVal sourceIndex As Integer, ByVal sourceType As e_ReferenceTy
         MagicDamageReduction = .MagicDamageReduction
         PhysicalDamageDone = .PhysicalDamageDone
         MagicDamageDone = .MagicDamageDone
+        If .ClientEffectTypeId > 0 Then Call WriteSendSkillCdUpdate(TargetIndex, .ClientEffectTypeId, ID, .TickTime, .BuffType)
     End With
     If IsValidRef(DotInfo.TargetRef) Then
         If DotInfo.TargetRef.RefType = eUser Then
@@ -111,6 +112,7 @@ End Property
 
 Public Sub IBaseEffectOverTime_Reset()
     TimeSinceLastTick = 0
+    If EffectOverTime(DotInfo.EotId).ClientEffectTypeId > 0 Then Call WriteSendSkillCdUpdate(DotInfo.TargetRef.ArrayIndex, EffectOverTime(DotInfo.EotId).ClientEffectTypeId, DotInfo.UniqueId, TickTime, EffectOverTime(DotInfo.EotId).BuffType)
 End Sub
 
 Public Property Get IBaseEffectOverTime_EotId() As Integer
@@ -122,6 +124,7 @@ Public Sub IBaseEffectOverTime_OnRemove()
     Call IncreaseSingle(UserList(DotInfo.TargetRef.ArrayIndex).Modifiers.PhysicalDamageBonus, -PhysicalDamageDone)
     Call IncreaseSingle(UserList(DotInfo.TargetRef.ArrayIndex).Modifiers.MagicDamageReduction, -MagicDamageReduction)
     Call IncreaseSingle(UserList(DotInfo.TargetRef.ArrayIndex).Modifiers.PhysicalDamageReduction, -PhysicalDamageReduction)
+    If EffectOverTime(DotInfo.EotId).ClientEffectTypeId > 0 Then Call WriteSendSkillCdUpdate(DotInfo.TargetRef.ArrayIndex, EffectOverTime(DotInfo.EotId).ClientEffectTypeId, DotInfo.UniqueId, 0, EffectOverTime(DotInfo.EotId).BuffType)
 End Sub
 
 Public Sub IBaseEffectOverTime_TargetUserMagic(ByVal MagicIndex As Integer)
