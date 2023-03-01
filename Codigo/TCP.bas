@@ -1276,11 +1276,9 @@ Sub ResetUserFlags(ByVal UserIndex As Integer)
             
 252         .Mimetizado = e_EstadoMimetismo.Desactivado
 254         .MascotasGuardadas = 0
-
+255         .Cleave = 0
 256         .EnConsulta = False
-
 258         .YaGuardo = False
-                        
             .ModificoAttributos = False
             .ModificoHechizos = False
             .ModificoInventario = False

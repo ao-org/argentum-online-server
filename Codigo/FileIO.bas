@@ -807,6 +807,7 @@ On Error GoTo ErrHandler
             EffectOverTime(i).Ticks = val(Leer.GetValue("EOT" & i, "Ticks"))
             EffectOverTime(i).TickTime = val(Leer.GetValue("EOT" & i, "TickTime"))
             EffectOverTime(i).TickFX = val(Leer.GetValue("EOT" & i, "TickFX"))
+            EffectOverTime(i).OnHitFx = val(Leer.GetValue("EOT" & i, "OnHitFx"))
             EffectOverTime(i).Override = val(Leer.GetValue("EOT" & i, "Override"))
             EffectOverTime(i).Limit = val(Leer.GetValue("EOT" & i, "Limit"))
             EffectOverTime(i).PhysicalDamageReduction = val(Leer.GetValue("EOT" & i, "PhysicalDamageReduction"))

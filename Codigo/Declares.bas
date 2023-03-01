@@ -1056,6 +1056,7 @@ Public Type t_EffectOverTime
     Ticks As Integer
     TickTime As Integer
     TickFX As Integer
+    OnHitFx As Integer
     BuffType As e_EffectType
     Override As Boolean
     PhysicalDamageReduction As Single
@@ -1065,6 +1066,11 @@ Public Type t_EffectOverTime
     EffectModifiers As Long
     ClientEffectTypeId As Integer
 End Type
+
+Public Enum e_DamageResult
+    eStillAlive
+    eDead
+End Enum
 
 Public Const MAX_PACKET_COUNTERS As Long = 15
 

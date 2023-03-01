@@ -1877,7 +1877,7 @@ Public Function ModifyHealth(ByVal npcIndex As Integer, ByVal amount As Integer,
     End With
 End Function
 
-Public Sub DoDamageOrHeal(ByVal npcIndex As Integer, ByVal sourceIndex As Integer, ByVal amount As Integer, ByVal DamageSourceType As e_DamageSourceType)
+Public Function DoDamageOrHeal(ByVal npcIndex As Integer, ByVal SourceIndex As Integer, ByVal SourceType As e_ReferenceType, ByVal amount As Integer, ByVal DamageSourceType As e_DamageSourceType, ByVal DamageSourceIndex As Integer) As e_DamageResult
 On Error GoTo DoDamageOrHeal_Err
     Dim DamageStr As String
     Dim Color As Long
@@ -1886,20 +1886,43 @@ On Error GoTo DoDamageOrHeal_Err
         Color = vbGreen
     Else
         Color = vbRed
-        If sourceIndex > 0 Then
-            Call CalcularDarExp(sourceIndex, npcIndex, Math.Abs(amount))
-        End If
     End If
+    If amount < 0 Then Call EffectsOverTime.TargetWasDamaged(NpcList(npcIndex).EffectOverTime, SourceIndex, SourceType, DamageSourceType)
     With NpcList(npcIndex)
         Call SendData(SendTarget.ToNPCAliveArea, npcIndex, PrepareMessageTextOverChar(DamageStr, .Char.charindex, Color))
+        ' Mascotas dan experiencia al amo
+        If SourceType = eNpc And amount < 0 Then
+138         If IsValidUserRef(NpcList(SourceIndex).MaestroUser) Then
+140             Call CalcularDarExp(NpcList(SourceIndex).MaestroUser.ArrayIndex, npcIndex, -amount)
+                ' NPC de invasión
+142             If .flags.InvasionIndex Then
+144                 Call SumarScoreInvasion(NpcList(SourceIndex).flags.InvasionIndex, NpcList(SourceIndex).MaestroUser.ArrayIndex, -amount)
+                End If
+            End If
+        ElseIf SourceType = eUser And amount < 0 Then
+            ' NPC de invasión
+172         If NpcList(npcIndex).flags.InvasionIndex Then
+174             Call SumarScoreInvasion(NpcList(npcIndex).flags.InvasionIndex, SourceIndex, -amount)
+            End If
+186         Call CalcularDarExp(SourceIndex, npcIndex, -amount)
+        End If
 100     If NPCs.ModifyHealth(npcIndex, amount) Then
-102         If sourceIndex > 0 Then
-244             Call CustomScenarios.PlayerKillNpc(.pos.map, npcIndex, sourceIndex, DamageSourceType, .invent.WeaponEqpObjIndex)
+            DoDamageOrHeal = eDead
+102         If SourceType = eUser Then
+244             Call CustomScenarios.PlayerKillNpc(.pos.map, npcIndex, SourceIndex, DamageSourceType, DamageSourceIndex)
+            Else
+                If IsValidUserRef(NpcList(SourceIndex).MaestroUser) Then
+                    Call PlayerKillNpc(NpcList(npcIndex).pos.map, npcIndex, NpcList(SourceIndex).MaestroUser.ArrayIndex, e_pet, DamageSourceIndex)
+                    Call FollowAmo(SourceIndex)
+                End If
+                SourceIndex = -1
             End If
             Call MuereNpc(npcIndex, sourceIndex)
+            Return
         End If
     End With
-    Exit Sub
+    DoDamageOrHeal = eStillAlive
+    Exit Function
 DoDamageOrHeal_Err:
-134     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.CalcularVelocidad_Err", Erl)
-End Sub
+134     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.DoDamageOrHeal_Err", Erl)
+End Function

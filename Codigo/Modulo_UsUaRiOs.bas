@@ -3039,7 +3039,7 @@ Public Function CanHelpUser(ByVal UserIndex As Integer, ByVal targetUserIndex As
     TargetStatus = Status(TargetUserIndex)
     Select Case Status(UserIndex)
         Case e_Facciones.Ciudadano, e_Facciones.Armada, e_Facciones.consejo
-            If TargetStatus = e_Facciones.Armada Or TargetStatus = e_Facciones.consejo Then
+            If TargetStatus = e_Facciones.Armada Or TargetStatus = e_Facciones.concilio Then
                 CanHelpUser = eOposingFaction
                 Exit Function
             ElseIf TargetStatus = e_Facciones.Criminal Then
@@ -3112,7 +3112,7 @@ Public Sub ResurrectUser(ByVal UserIndex As Integer)
 684 Call WriteUpdateHungerAndThirst(UserIndex)
 End Sub
 
-Public Sub DoDamageOrHeal(ByVal UserIndex As Integer, ByVal sourceIndex As Integer, ByVal amount As Integer, ByVal DamageSourceType As e_DamageSourceType)
+Public Function DoDamageOrHeal(ByVal UserIndex As Integer, ByVal SourceIndex As Integer, ByVal SourceType As e_ReferenceType, ByVal amount As Integer, ByVal DamageSourceType As e_DamageSourceType, ByVal DamageSourceIndex As Integer) As e_DamageResult
 On Error GoTo DoDamageOrHeal_Err
     Dim DamageStr As String
     Dim Color As Long
@@ -3129,19 +3129,35 @@ On Error GoTo DoDamageOrHeal_Err
             Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageTextOverChar(DamageStr, .Char.charindex, Color))
         End If
 100     If ModifyHealth(UserIndex, amount) Then
-102         If sourceIndex > 0 Then
+            Call TargetWasDamaged(UserList(UserIndex).EffectOverTime, SourceIndex, SourceType, DamageSourceType)
+102         If SourceType = eUser Then
 244             Call ContarMuerte(UserIndex, sourceIndex)
-                Call PlayerKillPlayer(.pos.map, sourceIndex, UserIndex, DamageSourceType, .invent.WeaponEqpObjIndex)
+                Call PlayerKillPlayer(.pos.map, SourceIndex, UserIndex, DamageSourceType, DamageSourceIndex)
 246             Call ActStats(UserIndex, sourceIndex)
             Else
-                Call UserDie(sourceIndex)
+                Call NPcKillPlayer(.pos.map, SourceIndex, UserIndex, DamageSourceType, DamageSourceIndex)
+                Call WriteNPCKillUser(UserIndex)
+166             If IsValidUserRef(NpcList(SourceIndex).MaestroUser) Then
+168                 Call AllFollowAmo(NpcList(SourceIndex).MaestroUser.ArrayIndex)
+                    Call PlayerKillPlayer(.pos.map, NpcList(SourceIndex).MaestroUser.ArrayIndex, UserIndex, e_DamageSourceType.e_pet, 0)
+                Else
+                    'Al matarlo no lo sigue mas
+170                 NpcList(SourceIndex).Movement = NpcList(SourceIndex).flags.OldMovement
+172                 NpcList(SourceIndex).Hostile = NpcList(SourceIndex).flags.OldHostil
+174                 NpcList(SourceIndex).flags.AttackedBy = vbNullString
+176                 Call SetUserRef(NpcList(SourceIndex).targetUser, 0)
+                End If
             End If
+            Call UserDie(UserIndex)
+            DoDamageOrHeal = eDead
+            Exit Function
         End If
     End With
-    Exit Sub
+    DoDamageOrHeal = eStillAlive
+    Exit Function
 DoDamageOrHeal_Err:
-134     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.CalcularVelocidad_Err", Erl)
-End Sub
+134     Call TraceError(Err.Number, Err.Description, "UserMod.DoDamageOrHeal", Erl)
+End Function
 
 Public Function GetPhysicalDamageModifier(ByRef user As t_User) As Single
     GetPhysicalDamageModifier = max(1 + user.Modifiers.PhysicalDamageBonus, 0)
