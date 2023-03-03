@@ -3373,8 +3373,6 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean)
             ' Prevengo daño negativo
 308         If Damage < 0 Then Damage = 0
     
-310         If Not PuedeAtacar(UserIndex, tempChr) Then Exit Sub
-    
 312         If UserIndex <> tempChr Then
 314             Call UsuarioAtacadoPorUsuario(UserIndex, tempChr)
             End If
