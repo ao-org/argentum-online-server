@@ -204,14 +204,7 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
         End If
 
 302     If IsSet(Hechizos(Spell).Effects, e_SpellEffects.RemoveInvisibility) Then
-304       If .flags.invisible + .flags.Oculto > 0 And .flags.NoDetectable = 0 Then
-306         .flags.invisible = 0
-308         .flags.Oculto = 0
-310         .Counters.Invisibilidad = 0
-312         .Counters.Ocultando = 0
-314         Call WriteConsoleMsg(UserIndex, "Tu invisibilidad ya no tiene efecto.", e_FontTypeNames.FONTTYPE_INFOIAO)
-316         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageSetInvisible(.Char.charindex, False, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
-          End If
+304         Call UserMod.RemoveInvisibility(UserIndex)
         End If
 
 318     If IsSet(Hechizos(Spell).Effects, e_SpellEffects.Dumb) Then
@@ -1485,6 +1478,15 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 174             b = False
                 Exit Sub
             End If
+            If IsSet(UserList(tU).flags.StatusMask, eTaunting) Then
+                If tU = UserIndex Then
+                    Call WriteConsoleMsg(UserIndex, "¡No podes ocultarte en este momento!", e_FontTypeNames.FONTTYPE_INFO)
+                Else
+                    Call WriteConsoleMsg(UserIndex, "¡El objetivo no puede ocultarse!", e_FontTypeNames.FONTTYPE_INFO)
+                End If
+                b = False
+                Exit Sub
+            End If
    
 176         UserList(tU).flags.invisible = 1
             'Ladder
@@ -2187,7 +2189,6 @@ End Sub
 
 Sub checkHechizosEfectividad(ByVal UserIndex As Integer, ByVal TargetUser As Integer)
     With UserList(UserIndex)
-        'If UserList(TargetUser).flags.invisible = 1 Then
         If UserList(TargetUser).flags.Inmovilizado + UserList(TargetUser).flags.Paralizado = 0 Then
             .Counters.controlHechizos.HechizosCasteados = .Counters.controlHechizos.HechizosCasteados + 1
         
@@ -2431,7 +2432,7 @@ Sub HechizoPropNPC(ByVal hIndex As Integer, ByVal NpcIndex As Integer, ByVal Use
                 
                 ' Magic Damage ring
 152             If UserList(UserIndex).invent.DañoMagicoEqpObjIndex > 0 Then
-154                 Damage = Damage + Porcentaje(Damage, ObjData(UserList(UserIndex).invent.DañoMagicoEqpObjIndex).MagicDamageBonus)
+154                 damage = damage + Porcentaje(damage, ObjData(UserList(UserIndex).invent.DañoMagicoEqpObjIndex).MagicDamageBonus)
                 End If
             End If
 
@@ -2999,7 +3000,7 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
                 
                 ' Daño mágico anillo
 418             If UserList(UserIndex).invent.DañoMagicoEqpObjIndex > 0 Then
-420                 Damage = Damage + Porcentaje(Damage, ObjData(UserList(UserIndex).invent.DañoMagicoEqpObjIndex).MagicDamageBonus)
+420                 damage = damage + Porcentaje(damage, ObjData(UserList(UserIndex).invent.DañoMagicoEqpObjIndex).MagicDamageBonus)
                 End If
             End If
             
@@ -3032,6 +3033,7 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
                 ' Resto el porcentaje total
 442             Damage = Damage - Porcentaje(Damage, PorcentajeRM)
             End If
+            Call EffectsOverTime.TartgetWillAtack(UserList(UserIndex).EffectOverTime, tempChr, eUser, e_DamageSourceType.e_magic)
             Damage = Damage * GetMagicDamageModifier(UserList(UserIndex))
             Damage = Damage * GetMagicDamageReduction(UserList(tempChr))
             ' Prevengo daño negativo
@@ -3044,6 +3046,7 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
     
 450         Call InfoHechizo(UserIndex)
 452         Call UserMod.DoDamageOrHeal(tempChr, UserIndex, eUser, -Damage, e_DamageSourceType.e_magic, h)
+453         Call EffectsOverTime.TartgetDidHit(UserList(UserIndex).EffectOverTime, tempChr, eUser, e_DamageSourceType.e_magic)
 454         DamageStr = PonerPuntos(Damage)
     
 456         Call WriteLocaleMsg(UserIndex, "389", e_FontTypeNames.FONTTYPE_FIGHT, UserList(tempChr).name & "¬" & DamageStr)
@@ -3321,7 +3324,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean)
 270             Call WriteLocaleMsg(UserIndex, "380", e_FontTypeNames.FONTTYPE_FIGHT)
                 Exit Sub
             End If
-    
+271         If Not PuedeAtacar(UserIndex, tempChr) Then Exit Sub
 272         Damage = RandomNumber(Hechizos(h).MinHp, Hechizos(h).MaxHp)
 274         Damage = Damage + Porcentaje(Damage, 3 * UserList(UserIndex).Stats.ELV)
             ' mage has 30% damage reduction
@@ -3336,7 +3339,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean)
             
             ' Magic ring bonus
 284         If UserList(UserIndex).invent.DañoMagicoEqpObjIndex > 0 Then
-286             Damage = Damage + Porcentaje(Damage, ObjData(UserList(UserIndex).invent.DañoMagicoEqpObjIndex).MagicDamageBonus)
+286             damage = damage + Porcentaje(damage, ObjData(UserList(UserIndex).invent.DañoMagicoEqpObjIndex).MagicDamageBonus)
             End If
             
             ' Si el hechizo no ignora la RM
@@ -3364,6 +3367,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean)
                 ' Resistencia mágica de la clase
 306             Damage = Damage - Damage * ModClase(UserList(tempChr).clase).ResistenciaMagica
             End If
+            Call EffectsOverTime.TartgetWillAtack(UserList(UserIndex).EffectOverTime, tempChr, eUser, e_DamageSourceType.e_magic)
             Damage = Damage * GetMagicDamageModifier(UserList(UserIndex))
             Damage = Damage * GetMagicDamageReduction(UserList(tempChr))
             ' Prevengo daño negativo
@@ -3378,6 +3382,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean)
 316         enviarInfoHechizo = True
 318         Call UserMod.DoDamageOrHeal(tempChr, UserIndex, eUser, -Damage, e_DamageSourceType.e_magic, h)
 320         Call WriteConsoleMsg(UserIndex, "Le has quitado " & Damage & " puntos de vida a " & UserList(tempChr).name, e_FontTypeNames.FONTTYPE_FIGHT)
+321         Call EffectsOverTime.TartgetDidHit(UserList(UserIndex).EffectOverTime, tempChr, eUser, e_DamageSourceType.e_magic)
 322         Call WriteConsoleMsg(tempChr, UserList(UserIndex).name & " te ha quitado " & Damage & " puntos de vida.", e_FontTypeNames.FONTTYPE_FIGHT)
 324         Call SubirSkill(tempChr, Resistencia)
 336         b = True
@@ -3403,6 +3408,11 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean)
                     Exit Sub
                 End If
             End If
+           If IsSet(UserList(tU).flags.StatusMask, eTaunting) Then
+               Call WriteConsoleMsg(UserIndex, "¡El hechizo no tiene efecto!", e_FontTypeNames.FONTTYPE_INFO)
+               b = False
+               Exit Sub
+           End If
     
            If Not PeleaSegura(UserIndex, tU) Then
                     Select Case Status(UserIndex)

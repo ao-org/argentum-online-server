@@ -9703,56 +9703,20 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
 114                         If UserList(UserList(userIndex).Grupo.PropuestaDe.ArrayIndex).Grupo.Lider.ArrayIndex <> UserList(userIndex).Grupo.PropuestaDe.ArrayIndex Then
 116                             Call WriteConsoleMsg(UserIndex, "¡El lider del grupo a cambiado, imposible unirse!", e_FontTypeNames.FONTTYPE_INFOIAO)
                             Else
-                        
 118                             Log = "Repuesta Afirmativa 1-1 "
-                        
 120                             If Not IsValidUserRef(UserList(UserList(userIndex).Grupo.PropuestaDe.ArrayIndex).Grupo.Lider) Then
 122                                 Call WriteConsoleMsg(UserIndex, "¡El grupo ya no existe!", e_FontTypeNames.FONTTYPE_INFOIAO)
                                 Else
 124                                 Log = "Repuesta Afirmativa 1-2 "
 126                                 If UserList(UserList(userIndex).Grupo.PropuestaDe.ArrayIndex).Grupo.CantidadMiembros = 1 Then
-128                                     Call WriteLocaleMsg(UserList(userIndex).Grupo.PropuestaDe.ArrayIndex, "36", e_FontTypeNames.FONTTYPE_INFOIAO)
-                                        'Call WriteConsoleMsg(UserList(UserIndex).Grupo.PropuestaDe, "íEl grupo a sido creado!", e_FontTypeNames.FONTTYPE_INFOIAO)
-130                                     UserList(UserList(userIndex).Grupo.PropuestaDe.ArrayIndex).Grupo.EnGrupo = True
+128                                     Call GroupCreateSuccess(UserList(UserIndex).Grupo.PropuestaDe.ArrayIndex)
 132                                     Log = "Repuesta Afirmativa 1-3 "
                                     End If
-                                
-134                                 Log = "Repuesta Afirmativa 1-4"
-136                                 UserList(UserList(userIndex).Grupo.PropuestaDe.ArrayIndex).Grupo.CantidadMiembros = UserList(UserList(userIndex).Grupo.PropuestaDe.ArrayIndex).Grupo.CantidadMiembros + 1
-138                                 Call SetUserRef(UserList(UserList(userIndex).Grupo.PropuestaDe.ArrayIndex).Grupo.Miembros(UserList(UserList(userIndex).Grupo.PropuestaDe.ArrayIndex).Grupo.CantidadMiembros), userIndex)
-140                                 UserList(UserIndex).Grupo.EnGrupo = True
-                                
-                                    Dim Index As Byte
-                                
-142                                 Log = "Repuesta Afirmativa 1-5 "
-                                
-144                                 For Index = 2 To UserList(UserList(userIndex).Grupo.PropuestaDe.ArrayIndex).Grupo.CantidadMiembros - 1
-146                                     Call WriteLocaleMsg(UserList(UserList(userIndex).Grupo.PropuestaDe.ArrayIndex).Grupo.Miembros(Index).ArrayIndex, "40", e_FontTypeNames.FONTTYPE_INFOIAO, UserList(userIndex).name)
-                                
-148                                 Next Index
-                                
-150                                 Log = "Repuesta Afirmativa 1-6 "
-152                                 Call WriteLocaleMsg(UserList(userIndex).Grupo.PropuestaDe.ArrayIndex, "40", e_FontTypeNames.FONTTYPE_INFOIAO, UserList(userIndex).name)
-                                
-154                                 Call WriteConsoleMsg(UserIndex, "¡Has sido añadido al grupo!", e_FontTypeNames.FONTTYPE_INFOIAO)
-                                
-156                                 Log = "Repuesta Afirmativa 1-7 "
-                                
-158                                 Call RefreshCharStatus(UserList(userIndex).Grupo.PropuestaDe.ArrayIndex)
-160                                 Call RefreshCharStatus(UserIndex)
-                                 
-162                                 Log = "Repuesta Afirmativa 1-8"
-
-164                                 Call CompartirUbicacion(UserIndex)
-
+134                                 Call AddUserToGRoup(UserIndex, UserList(UserIndex).Grupo.PropuestaDe.ArrayIndex)
                                 End If
-
                             End If
-
                         Else
-                    
 166                         Call WriteConsoleMsg(UserIndex, "Servidor » Solicitud de grupo invalida, reintente...", e_FontTypeNames.FONTTYPE_SERVER)
-                    
                         End If
 
                         'unirlo
@@ -9955,6 +9919,7 @@ Private Sub HandleAbandonarGrupo(ByVal UserIndex As Integer)
 
 114             UserList(UserIndex).Grupo.CantidadMiembros = 0
 116             UserList(UserIndex).Grupo.EnGrupo = False
+                UserList(UserIndex).Grupo.Id = -1
 118             Call SetUserRef(UserList(userIndex).Grupo.Lider, 0)
 120             Call SetUserRef(UserList(userIndex).Grupo.PropuestaDe, 0)
 122             Call WriteConsoleMsg(UserIndex, "Has disuelto el grupo.", e_FontTypeNames.FONTTYPE_INFOIAO)

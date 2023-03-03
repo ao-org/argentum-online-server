@@ -2329,6 +2329,10 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
 534                     Case 10  ' Invisibilidad
                 
 536                         If .flags.invisible = 0 Then
+                                If IsSet(.flags.StatusMask, eTaunting) Then
+                                    Call WriteConsoleMsg(UserIndex, "No tiene efecto.", e_FontTypeNames.FONTTYPE_New_Amarillo_Oscuro)
+                                    Exit Sub
+                                End If
 538                             .flags.invisible = 1
 540                             .Counters.Invisibilidad = obj.DuracionEfecto
 542                             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageSetInvisible(.Char.charindex, True, .Pos.X, .Pos.Y))
@@ -2348,7 +2352,6 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                             Else
 556                             Call WriteConsoleMsg(UserIndex, "Ya estas invisible.", e_FontTypeNames.FONTTYPE_New_Amarillo_Oscuro)
                                 Exit Sub
-    
                             End If
                             
                         ' Poción que limpia todo

@@ -199,6 +199,7 @@ On Error GoTo Complete_ConnectUser_Err
         Dim tStr As String
         
 100     With UserList(UserIndex)
+            
 105         If .flags.Paralizado = 1 Then
 110             .Counters.Paralisis = IntervaloParalizado
             End If
@@ -1787,7 +1788,7 @@ Sub NPCAtacado(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
 102     UserList(UserIndex).flags.Inmunidad = 0
 
         'Guardamos el usuario que ataco el npc.
-104     If NpcList(NpcIndex).Movement <> Estatico And NpcList(NpcIndex).flags.AttackedFirstBy = vbNullString Then
+104     If Not IsSet(NpcList(npcIndex).flags.StatusMask, eTaunted) And NpcList(npcIndex).Movement <> Estatico And NpcList(npcIndex).flags.AttackedFirstBy = vbNullString Then
 106         Call SetUserRef(NpcList(npcIndex).TargetUser, UserIndex)
 108         NpcList(NpcIndex).Hostile = 1
 110         NpcList(NpcIndex).flags.AttackedBy = UserList(UserIndex).Name
@@ -3074,6 +3075,146 @@ Public Function CanHelpUser(ByVal UserIndex As Integer, ByVal targetUserIndex As
     End Select
 End Function
 
+Public Function CanAttackUser(ByVal attackerIndex As Integer, ByVal TargetIndex As Integer) As e_AttackInteractionResult
+    If UserList(TargetIndex).flags.Muerto = 1 Then
+104     CanAttackUser = e_AttackInteractionResult.eDeathTarget
+        Exit Function
+    End If
+    
+    If UserList(attackerIndex).flags.EnReto Then
+108     If Retos.Salas(UserList(attackerIndex).flags.SalaReto).TiempoItems > 0 Then
+112         CanAttackUser = e_AttackInteractionResult.eFightActive
+            Exit Function
+        End If
+    End If
+    
+    If UserList(attackerIndex).Grupo.ID > 0 And UserList(TargetIndex).Grupo.ID > 0 And _
+       UserList(attackerIndex).Grupo.ID = UserList(TargetIndex).Grupo.ID Then
+       CanAttackUser = eSameGroup
+       Exit Function
+    End If
+    
+120 If UserList(attackerIndex).flags.EnConsulta Or UserList(TargetIndex).flags.EnConsulta Then
+         CanAttackUser = eTalkWithMaster
+         Exit Function
+    End If
+        
+132 If UserList(attackerIndex).flags.Maldicion = 1 Then
+136      CanAttackUser = eAttackerIsCursed
+         Exit Function
+    End If
+        
+138 If UserList(attackerIndex).flags.Montado = 1 Then
+142     CanAttackUser = eMounted
+        Exit Function
+    End If
+        
+    If Not MapInfo(UserList(TargetIndex).pos.map).FriendlyFire And _
+        UserList(TargetIndex).flags.CurrentTeam > 0 And _
+        UserList(TargetIndex).flags.CurrentTeam = UserList(attackerIndex).flags.CurrentTeam Then
+        CanAttackUser = eSameTeam
+    End If
+    Dim T    As e_Trigger6
+    
+    'Estamos en una Arena? o un trigger zona segura?
+144 T = TriggerZonaPelea(attackerIndex, TargetIndex)
+146 If T = e_Trigger6.TRIGGER6_PERMITE Then
+148      CanAttackUser = eCanAttack
+         Exit Function
+    ElseIf PeleaSegura(attackerIndex, TargetIndex) Then
+         CanAttackUser = eCanAttack
+         Exit Function
+150 ElseIf T = e_Trigger6.TRIGGER6_PROHIBE Then
+152      CanAttackUser = eCanAttack
+         Exit Function
+    End If
+        
+    'Solo administradores pueden atacar a usuarios (PARA TESTING)
+156 If (UserList(attackerIndex).flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Admin)) = 0 Then
+158     CanAttackUser = eNotEnougthPrivileges
+        Exit Function
+    End If
+        
+    'Estas queriendo atacar a un GM?
+    Dim rank As Integer
+160 rank = e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios Or e_PlayerType.Consejero
+
+162 If (UserList(TargetIndex).flags.Privilegios And rank) > (UserList(attackerIndex).flags.Privilegios And rank) Then
+166     CanAttackUser = eNotEnougthPrivileges
+        Exit Function
+    End If
+        
+    ' Seguro Clan
+     If UserList(attackerIndex).GuildIndex > 0 Then
+         If UserList(attackerIndex).flags.SeguroClan And NivelDeClan(UserList(attackerIndex).GuildIndex) >= 3 Then
+             If UserList(attackerIndex).GuildIndex = UserList(TargetIndex).GuildIndex Then
+                CanAttackUser = eSameClan
+                Exit Function
+            End If
+        End If
+    End If
+
+    ' Es armada?
+    If esArmada(attackerIndex) Then
+        ' Si ataca otro armada
+        If esArmada(TargetIndex) Then
+            CanAttackUser = eSameFaction
+            Exit Function
+        ' Si ataca un ciudadano
+        ElseIf esCiudadano(TargetIndex) Then
+            CanAttackUser = eSameFaction
+            Exit Function
+        End If
+    ' No es armada
+    Else
+        'Tenes puesto el seguro?
+        If (esCiudadano(attackerIndex)) Then
+            If (UserList(attackerIndex).flags.Seguro) Then
+176             If esCiudadano(TargetIndex) Then
+180                  CanAttackUser = eRemoveSafe
+                     Exit Function
+                ElseIf esArmada(TargetIndex) Then
+                    CanAttackUser = eRemoveSafe
+                    Exit Function
+                End If
+            End If
+        ElseIf esCaos(attackerIndex) And esCaos(TargetIndex) Then
+194             CanAttackUser = eSameFaction
+            Exit Function
+        End If
+    End If
+
+    'Estas en un Mapa Seguro?
+196 If MapInfo(UserList(TargetIndex).pos.map).Seguro = 1 Then
+198     If esArmada(attackerIndex) Then
+200         If UserList(attackerIndex).Faccion.RecompensasReal >= 3 Then
+202             If UserList(TargetIndex).pos.map = 58 Or UserList(TargetIndex).pos.map = 59 Or UserList(TargetIndex).pos.map = 60 Then
+206                 CanAttackUser = eCanAttack
+                    Exit Function
+                End If
+            End If
+        End If
+
+208     If esCaos(attackerIndex) Then
+210         If UserList(attackerIndex).Faccion.RecompensasCaos >= 3 Then
+212             If UserList(TargetIndex).pos.map = 195 Or UserList(TargetIndex).pos.map = 196 Then
+216                 CanAttackUser = eCanAttack
+                    Exit Function
+                End If
+            End If
+        End If
+220     CanAttackUser = eSafeArea
+        Exit Function
+    End If
+
+    'Estas atacando desde un trigger seguro? o tu victima esta en uno asi?
+222 If MapData(UserList(TargetIndex).pos.map, UserList(TargetIndex).pos.x, UserList(TargetIndex).pos.y).trigger = e_Trigger.ZonaSegura Or MapData(UserList(attackerIndex).pos.map, UserList(attackerIndex).pos.x, UserList(attackerIndex).pos.y).trigger = e_Trigger.ZonaSegura Then
+226     CanAttackUser = eSafeArea
+        Exit Function
+    End If
+228 CanAttackUser = eCanAttack
+End Function
+
 Public Function ModifyHealth(ByVal UserIndex As Integer, ByVal amount As Integer, Optional ByVal minValue = 0) As Boolean
     With UserList(UserIndex)
         ModifyHealth = False
@@ -3122,6 +3263,7 @@ On Error GoTo DoDamageOrHeal_Err
     Else
         Color = vbRed
     End If
+    If amount < 0 Then Call EffectsOverTime.TargetWasDamaged(UserList(UserIndex).EffectOverTime, SourceIndex, SourceType, DamageSourceType)
     With UserList(UserIndex)
         If IsVisible(UserList(UserIndex)) Then
             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageTextOverChar(DamageStr, .Char.charindex, Color))
@@ -3174,5 +3316,18 @@ End Function
 Public Function GetPhysicDamageReduction(ByRef user As t_User) As Single
     GetPhysicDamageReduction = max(1 - user.Modifiers.PhysicalDamageReduction, 0)
 End Function
+
+Public Sub RemoveInvisibility(ByVal UserIndex As Integer)
+    With UserList(UserIndex)
+304      If .flags.invisible + .flags.Oculto > 0 And .flags.NoDetectable = 0 Then
+306         .flags.invisible = 0
+308         .flags.Oculto = 0
+310         .Counters.Invisibilidad = 0
+312         .Counters.Ocultando = 0
+314         Call WriteConsoleMsg(UserIndex, "Tu invisibilidad ya no tiene efecto.", e_FontTypeNames.FONTTYPE_INFOIAO)
+316         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageSetInvisible(.Char.charindex, False, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
+         End If
+   End With
+End Sub
 
 

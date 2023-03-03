@@ -1926,3 +1926,121 @@ On Error GoTo DoDamageOrHeal_Err
 DoDamageOrHeal_Err:
 134     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.DoDamageOrHeal_Err", Erl)
 End Function
+
+Public Function UserCanAttackNpc(ByVal UserIndex As Integer, ByVal NpcIndex As Integer) As e_AttackInteractionResult
+On Error GoTo UserCanAttackNpc_Err
+
+     'Estas muerto?
+100  If UserList(UserIndex).flags.Muerto = 1 Then
+104      UserCanAttackNpc = eDeathAttacker
+         Exit Function
+     End If
+          
+106  If UserList(UserIndex).flags.Montado = 1 Then
+110     UserCanAttackNpc = eMounted
+        Exit Function
+     End If
+     
+112  If UserList(UserIndex).flags.Inmunidad = 1 Then
+116     UserCanAttackNpc = eCreatureInmunity
+        Exit Function
+     End If
+
+     'Solo administradores, dioses y usuarios pueden atacar a NPC's (PARA TESTING)
+118  If (UserList(UserIndex).flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Dios Or e_PlayerType.Admin)) = 0 And _
+        NpcList(NpcIndex).npcType <> e_NPCType.DummyTarget Then
+120     UserCanAttackNpc = eInvalidPrivilege
+        Exit Function
+     End If
+     
+     ' No podes atacar si estas en consulta
+122  If UserList(UserIndex).flags.EnConsulta Then
+126     UserCanAttackNpc = eTalkWithMaster
+        Exit Function
+     End If
+     
+     'Es una criatura atacable?
+128  If NpcList(NpcIndex).Attackable = 0 Then
+132     UserCanAttackNpc = eInmuneNpc
+        Exit Function
+     End If
+
+     'Es valida la distancia a la cual estamos atacando?
+134  If Distancia(UserList(UserIndex).pos, NpcList(NpcIndex).pos) >= MAXDISTANCIAARCO Then
+138     UserCanAttackNpc = eOutOfRange
+        Exit Function
+     End If
+
+     Dim IsPet As Boolean
+     IsPet = IsValidUserRef(NpcList(NpcIndex).MaestroUser)
+     'Si el usuario pertenece a una faccion
+140  If esArmada(UserIndex) Or esCaos(UserIndex) Then
+        ' Y el NPC pertenece a la misma faccion
+142     If NpcList(NpcIndex).flags.Faccion = UserList(UserIndex).Faccion.Status Then
+146         UserCanAttackNpc = eSameFaction
+            Exit Function
+        End If
+        ' Si es una mascota, checkeamos en el Maestro
+148     If IsPet Then
+150         If UserList(NpcList(NpcIndex).MaestroUser.ArrayIndex).Faccion.Status = UserList(UserIndex).Faccion.Status Then
+154             UserCanAttackNpc = eSameFaction
+                Exit Function
+            End If
+        End If
+     End If
+     
+156  If Status(UserIndex) = Ciudadano Then
+158     If IsPet And NpcList(NpcIndex).MaestroUser.ArrayIndex = UserIndex Then
+162         UserCanAttackNpc = eOwnPet
+            Exit Function
+        End If
+     End If
+     
+     ' El seguro es SOLO para ciudadanos. La armada debe desenlistarse antes de querer atacar y se checkea arriba.
+     ' Los criminales o Caos, ya estan mas alla del seguro.
+164  If Status(UserIndex) = Ciudadano Then
+166     If NpcList(NpcIndex).flags.Faccion = Armada Then
+168         If UserList(UserIndex).flags.Seguro Then
+172             UserCanAttackNpc = eRemoveSafe
+                Exit Function
+            Else
+176             Call VolverCriminal(UserIndex)
+178             UserCanAttackNpc = eCanAttack
+                Exit Function
+             End If
+        End If
+         
+        'Es el NPC mascota de alguien?
+180     If IsPet Then
+182         Select Case UserList(NpcList(NpcIndex).MaestroUser.ArrayIndex).Faccion.Status
+                Case e_Facciones.Armada
+184                 If UserList(UserIndex).flags.Seguro Then
+188                     UserCanAttackNpc = eRemoveSafe
+                        Exit Function
+                    Else
+192                     Call VolverCriminal(UserIndex)
+194                     UserCanAttackNpc = eCanAttack
+                        Exit Function
+                    End If
+                     
+196             Case e_Facciones.Ciudadano
+198                 If UserList(UserIndex).flags.Seguro Then
+202                     UserCanAttackNpc = eRemoveSafe
+                        Exit Function
+                    Else
+206                     Call VolverCriminal(UserIndex)
+208                     UserCanAttackNpc = eCanAttack
+                        Exit Function
+                    End If
+                 
+210              Case Else
+212                  UserCanAttackNpc = eCanAttack
+                     Exit Function
+             End Select
+         End If
+     End If
+220  UserCanAttackNpc = eCanAttack
+     Exit Function
+UserCanAttackNpc_Err:
+222     Call TraceError(Err.Number, Err.Description, "Npcs.UserCanAttackNpc", Erl)
+End Function

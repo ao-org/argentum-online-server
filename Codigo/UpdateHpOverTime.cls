@@ -30,7 +30,7 @@ Private DotInfo As t_BaseDotInfo
 Private source As t_AnyReference
 
 Public Sub Setup(ByVal sourceIndex As Integer, ByVal sourceType As e_ReferenceType, ByVal TargetIndex As Integer, ByVal TargetType As e_ReferenceType, _
-                 ByVal EffectId As Integer, ByVal ID As Integer)
+                 ByVal EffectId As Integer, ByVal Id As Long)
     TimeSinceLastTick = 0
     TickCount = 0
     Call SetRef(DotInfo.TargetRef, TargetIndex, TargetType)

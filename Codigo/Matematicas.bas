@@ -94,6 +94,10 @@ Public Function IsSet(ByVal mask As Long, ByVal value As Long)
     IsSet = (mask And value) > 0
 End Function
 
+Public Sub UnsetMask(ByRef mask As Long, ByVal value As Long)
+    mask = mask And Not value
+End Sub
+
 Public Sub ResetMask(ByRef mask As Long)
     mask = 0
 End Sub

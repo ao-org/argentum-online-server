@@ -351,8 +351,9 @@ Private Function UserImpactoNpc(ByVal UserIndex As Integer, ByVal npcIndex As In
 118     If UserImpactoNpc Then
 120         Call SubirSkillDeArmaActual(UserIndex)
         End If
-        
-        Call SetUserRef(NpcList(npcIndex).TargetUser, UserIndex)
+        If Not IsSet(NpcList(NpcIndex).flags.StatusMask, eTaunted) Then
+            Call SetUserRef(NpcList(NpcIndex).TargetUser, UserIndex)
+        End If
 
         Exit Function
 
@@ -500,8 +501,6 @@ Private Function GetUserDamge(ByVal UserIndex As Integer) As Long
 146             ElseIf .flags.Montado = 1 And .Invent.MonturaObjIndex > 0 Then
 148                 GetUserDamge = GetUserDamge + RandomNumber(ObjData(.invent.MonturaObjIndex).MinHIT, ObjData(.invent.MonturaObjIndex).MaxHit)
                 End If
-                'other bonus from buff
-                GetUserDamge = GetUserDamge * GetPhysicalDamageModifier(UserList(UserIndex))
             End With
             Exit Function
 GetUserDamge_Err:
@@ -536,9 +535,8 @@ On Error GoTo UserDamageNpc_Err
 
             ' Defensa del NPC
 116         Damage = DamageBase - NpcList(npcIndex).Stats.def
-
+            damage = damage * GetPhysicalDamageModifier(UserList(UserIndex))
 118         If Damage < 0 Then Damage = 0
-
             ' Mostramos en consola el golpe
 120         If .ChatCombate = 1 Then
 122             Call WriteLocaleMsg(UserIndex, "382", e_FontTypeNames.FONTTYPE_FIGHT, PonerPuntos(Damage))
@@ -588,7 +586,7 @@ On Error GoTo UserDamageNpc_Err
 158                 Call WriteLocaleMsg(UserIndex, "384", e_FontTypeNames.FONTTYPE_FIGHT, DamageStr)
                 End If
             End If
-
+            
             ' Restamos el daño al NPC
 168         If NPCs.DoDamageOrHeal(npcIndex, UserIndex, eUser, -Damage, e_phisical, .invent.WeaponEqpObjIndex) = eStillAlive Then
                 'efectos
@@ -882,7 +880,7 @@ Public Sub UsuarioAtacaNpc(ByVal UserIndex As Integer, ByVal npcIndex As Integer
 100     If Not PuedeAtacarNPC(UserIndex, NpcIndex) Then Exit Sub
 
 102     If UserList(UserIndex).flags.invisible = 0 Then Call NPCAtacado(NpcIndex, UserIndex)
-
+        Call EffectsOverTime.TartgetWillAtack(UserList(UserIndex).EffectOverTime, NpcIndex, eNpc, e_phisical)
 104     If UserImpactoNpc(UserIndex, npcIndex, aType) Then
         
             ' Suena el Golpe en el cliente.
@@ -924,7 +922,7 @@ Public Sub UsuarioAtacaNpc(ByVal UserIndex As Integer, ByVal npcIndex As Integer
             End If
             
             ' Cambiamos el objetivo del NPC si uno le pega cuerpo a cuerpo.
-132         If Not IsValidUserRef(NpcList(npcIndex).TargetUser) Or NpcList(npcIndex).TargetUser.ArrayIndex <> UserIndex Then
+132         If Not IsSet(NpcList(NpcIndex).flags.StatusMask, eTaunted) And (Not IsValidUserRef(NpcList(NpcIndex).TargetUser) Or NpcList(NpcIndex).TargetUser.ArrayIndex <> UserIndex) Then
 134             Call SetUserRef(NpcList(npcIndex).TargetUser, UserIndex)
             End If
             
@@ -957,12 +955,10 @@ Public Sub UsuarioAtacaNpc(ByVal UserIndex As Integer, ByVal npcIndex As Integer
                     End If
                 End If
             End If
-            
+            Call EffectsOverTime.TartgetDidHit(UserList(UserIndex).EffectOverTime, NpcIndex, eNpc, e_phisical)
         Else
-            
-
+            Call EffectsOverTime.TargetFailedAttack(UserList(UserIndex).EffectOverTime, NpcIndex, eNpc, e_phisical)
 168         Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessageCharSwing(UserList(UserIndex).Char.charindex, , , IIf(UserList(UserIndex).flags.invisible + UserList(UserIndex).flags.Oculto > 0, False, True)))
-
         End If
 
         
@@ -1281,6 +1277,7 @@ Private Sub UserDamageToUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex 
             
             ' Restamos la defensa
 148         Damage = BaseDamage - Defensa
+            damage = damage * GetPhysicalDamageModifier(UserList(AtacanteIndex))
 149         Damage = Damage * GetPhysicDamageReduction(UserList(VictimaIndex))
 
 150         If Damage < 0 Then Damage = 0
@@ -1299,7 +1296,7 @@ Private Sub UserDamageToUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex 
                 ' Si acertó
 164             If RandomNumber(1, 100) <= ProbabilidadGolpeCritico(AtacanteIndex) Then
                     ' Daño del golpe crítico (usamos el daño base)
-166                 BonusDamage = Damage * ModDañoGolpeCritico
+166                 BonusDamage = damage * ModDañoGolpeCritico
 
 168                 DamageStr = PonerPuntos(BonusDamage)
 
@@ -1320,7 +1317,7 @@ Private Sub UserDamageToUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex 
 182         ElseIf PuedeApuñalar(AtacanteIndex) Then
 184             If RandomNumber(1, 100) <= ProbabilidadApuñalar(AtacanteIndex) Then
                     ' Daño del apuñalamiento
-186                 BonusDamage = Damage * ModicadorApuñalarClase(UserList(AtacanteIndex).clase)
+186                 BonusDamage = damage * ModicadorApuñalarClase(UserList(AtacanteIndex).clase)
 
 188                 DamageStr = PonerPuntos(BonusDamage)
                 
@@ -1367,7 +1364,7 @@ Private Sub UserDamageToUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex 
 230                 Call WriteLocaleMsg(VictimaIndex, "387", e_FontTypeNames.FONTTYPE_FIGHT, UserList(AtacanteIndex).name & "¬" & DamageStr)
                 End If
                 
-232             DamageStr = "¡" & PonerPuntos(Damage) & "!"
+232             DamageStr = "¡" & PonerPuntos(damage) & "!"
 
                 ' Solo si la victima se encuentra en vida completa, generamos la condicion
                 If .Stats.MinHp = .Stats.MaxHp Then
@@ -1532,12 +1529,11 @@ Public Function PuedeAtacar(ByVal AttackerIndex As Integer, ByVal VictimIndex As
             'Call WriteConsoleMsg(attackerIndex, "No podés atacar porque estas muerto", e_FontTypeNames.FONTTYPE_INFO)
 104         PuedeAtacar = False
             Exit Function
-
         End If
         
 106     If UserList(AttackerIndex).flags.EnReto Then
 108         If Retos.Salas(UserList(AttackerIndex).flags.SalaReto).TiempoItems > 0 Then
-110             Call WriteConsoleMsg(attackerIndex, "No podés atacar en este momento.", e_FontTypeNames.FONTTYPE_INFO)
+110             Call WriteConsoleMsg(AttackerIndex, "No podés atacar en este momento.", e_FontTypeNames.FONTTYPE_INFO)
 112             PuedeAtacar = False
                 Exit Function
             End If
@@ -1545,10 +1541,16 @@ Public Function PuedeAtacar(ByVal AttackerIndex As Integer, ByVal VictimIndex As
 
         'No podes atacar a alguien muerto
 114     If UserList(VictimIndex).flags.Muerto = 1 Then
-116         Call WriteConsoleMsg(attackerIndex, "No podés atacar a un espiritu.", e_FontTypeNames.FONTTYPE_INFO)
+116         Call WriteConsoleMsg(AttackerIndex, "No podés atacar a un espiritu.", e_FontTypeNames.FONTTYPE_INFO)
 118         PuedeAtacar = False
             Exit Function
-
+        End If
+        
+        If UserList(AttackerIndex).Grupo.Id > 0 And UserList(VictimIndex).Grupo.Id > 0 And _
+           UserList(AttackerIndex).Grupo.Id = UserList(VictimIndex).Grupo.Id Then
+           Call WriteConsoleMsg(AttackerIndex, "No podés atacar a un miembro de tu grupo.", e_FontTypeNames.FONTTYPE_INFO)
+           PuedeAtacar = False
+           Exit Function
         End If
         
         ' No podes atacar si estas en consulta
