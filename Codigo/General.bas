@@ -992,65 +992,42 @@ TiempoInvocacion_Err:
 End Sub
 
 Public Sub EfectoFrio(ByVal UserIndex As Integer)
-        
         On Error GoTo EfectoFrio_Err
-        
 100     If Not Intemperie(UserIndex) Then Exit Sub
-        
 102     With UserList(UserIndex)
-            
 104         If .Invent.ArmourEqpObjIndex > 0 Then
                 ' WyroX: Ropa invernal
 106             If ObjData(.Invent.ArmourEqpObjIndex).Invernal Then Exit Sub
             End If
-            
 108         If .Counters.Frio < IntervaloFrio Then
 110             .Counters.Frio = .Counters.Frio + 1
             Else
-
 112             If MapInfo(.Pos.Map).terrain = Nieve Then
 114                 Call WriteConsoleMsg(UserIndex, "¡Estás muriendo de frío, abrígate o morirás!", e_FontTypeNames.FONTTYPE_INFO)
-
                     ' WyroX: Sin ropa perdés vida más rápido que con una ropa no-invernal
-                    Dim MinDaño As Integer, MaxDaño As Integer
+                    Dim MinDamage As Integer, MaxDamage As Integer
 116                 If .flags.Desnudo = 0 Then
-118                     MinDaño = 17
-120                     MaxDaño = 23
+118                     MinDamage = 17
+120                     MaxDamage = 23
                     Else
-122                     MinDaño = 27
-124                     MaxDaño = 33
+122                     MinDamage = 27
+124                     MaxDamage = 33
                     End If
 
                     ' WyroX: Agrego aleatoriedad
-                    Dim Daño As Integer
-126                 Daño = Porcentaje(.Stats.MaxHp, RandomNumber(MinDaño, MaxDaño))
-
-128                 .Stats.MinHp = .Stats.MinHp - Daño
-            
-130                 If .Stats.MinHp < 1 Then
-
+                    Dim Damage As Integer
+126                 Damage = Porcentaje(.Stats.MaxHp, RandomNumber(MinDamage, MaxDamage))
+128                 If UserMod.ModifyHealth(UserIndex, -Damage, 0) Then
 132                     Call WriteConsoleMsg(UserIndex, "¡Has muerto de frío!", e_FontTypeNames.FONTTYPE_INFO)
-
 134                     Call UserDie(UserIndex)
-
-                    Else
-136                     Call WriteUpdateHP(UserIndex)
                     End If
                 End If
-        
 138             .Counters.Frio = 0
-
             End If
-        
         End With
-        
         Exit Sub
-
 EfectoFrio_Err:
 140     Call TraceError(Err.Number, Err.Description, "General.EfectoFrio", Erl)
-
-
-        
 End Sub
 
 Public Sub EfectoStamina(ByVal UserIndex As Integer)
@@ -1101,49 +1078,24 @@ Public Sub EfectoStamina(ByVal UserIndex As Integer)
 End Sub
 
 Public Sub EfectoLava(ByVal UserIndex As Integer)
-        
         On Error GoTo EfectoLava_Err
-
-        '***************************************************
-        'Autor: Nacho (Integer)
-        'Last Modification: 03/12/07
-        'If user is standing on lava, take health points from him
-        '***************************************************
-        
 100     With UserList(UserIndex)
-        
 102         If .Counters.Lava < IntervaloFrio Then 'Usamos el mismo intervalo que el del frio
 104             .Counters.Lava = .Counters.Lava + 1
-        
             Else
-
 106             If HayLava(.Pos.Map, .Pos.X, .Pos.Y) Then
 108                 Call WriteConsoleMsg(UserIndex, "¡Quítate de la lava, te estás quemando!", e_FontTypeNames.FONTTYPE_INFO)
-110                 .Stats.MinHp = .Stats.MinHp - Porcentaje(.Stats.MaxHp, 5)
-            
-112                 If .Stats.MinHp < 1 Then
+110                 If UserMod.ModifyHealth(UserIndex, -Porcentaje(.Stats.MaxHp, 5)) Then
 114                     Call WriteConsoleMsg(UserIndex, "¡Has muerto quemado!", e_FontTypeNames.FONTTYPE_INFO)
 116                     Call UserDie(UserIndex)
-                    Else
-118                     Call WriteUpdateHP(UserIndex)
                     End If
                 End If
-        
 120             .Counters.Lava = 0
-
             End If
-        
         End With
-        
-
-        
         Exit Sub
-
 EfectoLava_Err:
 122     Call TraceError(Err.Number, Err.Description, "General.EfectoLava", Erl)
-
-
-        
 End Sub
 
 ''
@@ -1541,100 +1493,66 @@ RecStamina_Err:
 End Sub
 
 Public Sub EfectoVeneno(ByVal UserIndex As Integer)
-
-        On Error GoTo EfectoVeneno_Err
-
+    On Error GoTo EfectoVeneno_Err
         Dim damage As Long
-
 100     If UserList(UserIndex).Counters.Veneno < IntervaloVeneno Then
 102         UserList(UserIndex).Counters.Veneno = UserList(UserIndex).Counters.Veneno + 1
         Else
 104         Call CancelExit(UserIndex)
-
 106         With UserList(UserIndex)
               'Call WriteConsoleMsg(UserIndex, "Estás envenenado, si no te curas morirás.", e_FontTypeNames.FONTTYPE_VENENO)
 108           Call WriteLocaleMsg(UserIndex, "47", e_FontTypeNames.FONTTYPE_VENENO)
               UserList(userindex).Counters.timeFx = 2
 110           Call SendData(SendTarget.ToPCAliveArea, userindex, PrepareMessageParticleFX(.Char.charindex, e_ParticulasIndex.Envenena, 30, False, , UserList(userindex).Pos.X, UserList(userindex).Pos.y))
 112           .Counters.Veneno = 0
-
               ' El veneno saca un porcentaje de vida random.
 114           damage = RandomNumber(3, 5)
 116           damage = (1 + damage * .Stats.MaxHp \ 100) ' Redondea para arriba
-118           .Stats.MinHp = UserList(UserIndex).Stats.MinHp - damage
-
 120           If .ChatCombate = 1 Then
                   ' "El veneno te ha causado ¬1 puntos de daño."
 122               Call WriteLocaleMsg(UserIndex, "390", e_FontTypeNames.FONTTYPE_FIGHT, PonerPuntos(damage))
               End If
-
-124           If UserList(UserIndex).Stats.MinHp < 1 Then
+1224           If UserMod.ModifyHealth(UserIndex, -Damage) Then
 126               Call UserDie(UserIndex)
-              Else
-128               Call WriteUpdateHP(UserIndex)
               End If
             End With
-
         End If
-
         Exit Sub
-
 EfectoVeneno_Err:
 130     Call TraceError(Err.Number, Err.Description, "General.EfectoVeneno", Erl)
-
-
 End Sub
 
 
 ' El incineramiento tiene una logica particular, que es hacer daño sostenido en el tiempo.
 Public Sub EfectoIncineramiento(ByVal UserIndex As Integer)
-            On Error GoTo EfectoIncineramiento_Err
-
+    On Error GoTo EfectoIncineramiento_Err
             Dim damage As Integer
-
 100         With UserList(UserIndex)
-
                 ' 5 Mini intervalitos, dentro del intervalo total de incineracion
 102             If .Counters.Incineracion Mod (IntervaloIncineracion \ 5) = 0 Then
                     ' "Te estás incinerando, si no te curas morirás.
 104                 Call WriteLocaleMsg(UserIndex, "392", e_FontTypeNames.FONTTYPE_FIGHT)
-                    'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.CharIndex, e_ParticulasIndex.Incinerar, 30, False))
-                
                     UserList(userindex).Counters.timeFx = 2
 106                 Call SendData(SendTarget.ToPCAliveArea, userindex, PrepareMessageCreateFX(.Char.charindex, 73, 0, .Pos.X, .Pos.y))
-
-108                 damage = RandomNumber(35, 45)
-110                 .Stats.MinHp = .Stats.MinHp - damage
-
 112                 If .ChatCombate = 1 Then
-                        ' "El fuego te ha causado ¬1 puntos de daño."
 114                     Call WriteLocaleMsg(UserIndex, "391", e_FontTypeNames.FONTTYPE_FIGHT, PonerPuntos(damage))
                     End If
-
-116                 If UserList(UserIndex).Stats.MinHp < 1 Then
-118                     Call UserDie(UserIndex)
-                    Else
-120                     Call WriteUpdateHP(UserIndex)
+108                 Damage = RandomNumber(35, 45)
+110                 If UserMod.ModifyHealth(UserIndex, -Damage) Then
+                        Call UserDie(UserIndex)
                     End If
                 End If
-
 122             .Counters.Incineracion = .Counters.Incineracion + 1
-
 124             If .Counters.Incineracion > IntervaloIncineracion Then
                     ' Se termino la incineracion
 126                 .flags.Incinerado = 0
 128                 .Counters.Incineracion = 0
                     Exit Sub
-
                 End If
             End With
-
             Exit Sub
-
 EfectoIncineramiento_Err:
 130         Call TraceError(Err.Number, Err.Description, "General.EfectoIncineramiento", Erl)
-
-
 End Sub
 
 Public Sub DuracionPociones(ByVal UserIndex As Integer)
@@ -1748,19 +1666,13 @@ Public Sub Sanar(ByVal UserIndex As Integer, ByRef EnviarStats As Boolean, ByVal
 112             mashit = RandomNumber(2, Porcentaje(UserList(UserIndex).Stats.MaxSta, 5))
         
 114             UserList(UserIndex).Counters.HPCounter = 0
-116             UserList(UserIndex).Stats.MinHp = UserList(UserIndex).Stats.MinHp + mashit
-
-118             If UserList(UserIndex).Stats.MinHp > UserList(UserIndex).Stats.MaxHp Then UserList(UserIndex).Stats.MinHp = UserList(UserIndex).Stats.MaxHp
+116             Call UserMod.ModifyHealth(UserIndex, mashit)
 120             Call WriteConsoleMsg(UserIndex, "Has sanado.", e_FontTypeNames.FONTTYPE_INFO)
 122             EnviarStats = True
-
             End If
         Exit Sub
-
 Sanar_Err:
 124     Call TraceError(Err.Number, Err.Description, "General.Sanar", Erl)
-
-        
 End Sub
 
 Public Sub CargaNpcsDat(Optional ByVal ActualizarNPCsExistentes As Boolean = False)

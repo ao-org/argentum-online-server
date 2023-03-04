@@ -1068,7 +1068,7 @@ Sub ResetCharInfo(ByVal UserIndex As Integer)
         Exit Sub
 
 ResetCharInfo_Err:
-140     Call TraceError(Err.Number, Err.Description, "TCP.ResetCharInfo", Erl)
+144     Call TraceError(Err.Number, Err.Description, "TCP.ResetCharInfo", Erl)
 
         
 End Sub
@@ -1276,11 +1276,9 @@ Sub ResetUserFlags(ByVal UserIndex As Integer)
             
 252         .Mimetizado = e_EstadoMimetismo.Desactivado
 254         .MascotasGuardadas = 0
-
+255         .Cleave = 0
 256         .EnConsulta = False
-
 258         .YaGuardo = False
-                        
             .ModificoAttributos = False
             .ModificoHechizos = False
             .ModificoInventario = False
@@ -1482,6 +1480,7 @@ Sub ResetUserSlot(ByVal UserIndex As Integer)
         
 112         .Grupo.CantidadMiembros = 0
 114         .Grupo.EnGrupo = False
+115         .Grupo.Id = -1
 116         Call SetUserRef(.Grupo.Lider, 0)
 118         Call SetUserRef(.Grupo.PropuestaDe, 0)
 120         Call SetUserRef(.Grupo.Miembros(6), 0)

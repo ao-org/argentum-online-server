@@ -2075,19 +2075,13 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
 294                     Case 3 'Pocion roja, restaura HP
                     
                             'Usa el item
-296                         .Stats.MinHp = .Stats.MinHp + RandomNumber(obj.MinModificador, obj.MaxModificador)
-
-298                         If .Stats.MinHp > .Stats.MaxHp Then .Stats.MinHp = .Stats.MaxHp
-                    
+296                         Call UserMod.ModifyHealth(UserIndex, RandomNumber(obj.MinModificador, obj.MaxModificador))
                             'Quitamos del inv el item
 300                         Call QuitarUserInvItem(UserIndex, Slot, 1)
-    
 302                         If obj.Snd1 <> 0 Then
 304                             Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .Pos.X, .Pos.y))
-                        
                             Else
 306                             Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessagePlayWave(SND_BEBER, .Pos.X, .Pos.y))
-    
                             End If
                 
 308                     Case 4 'Pocion azul, restaura MANA
@@ -2335,6 +2329,10 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
 534                     Case 10  ' Invisibilidad
                 
 536                         If .flags.invisible = 0 Then
+                                If IsSet(.flags.StatusMask, eTaunting) Then
+                                    Call WriteConsoleMsg(UserIndex, "No tiene efecto.", e_FontTypeNames.FONTTYPE_New_Amarillo_Oscuro)
+                                    Exit Sub
+                                End If
 538                             .flags.invisible = 1
 540                             .Counters.Invisibilidad = obj.DuracionEfecto
 542                             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageSetInvisible(.Char.charindex, True, .Pos.X, .Pos.Y))
@@ -2354,7 +2352,6 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                             Else
 556                             Call WriteConsoleMsg(UserIndex, "Ya estas invisible.", e_FontTypeNames.FONTTYPE_New_Amarillo_Oscuro)
                                 Exit Sub
-    
                             End If
                             
                         ' Poción que limpia todo

@@ -807,6 +807,7 @@ On Error GoTo ErrHandler
             EffectOverTime(i).Ticks = val(Leer.GetValue("EOT" & i, "Ticks"))
             EffectOverTime(i).TickTime = val(Leer.GetValue("EOT" & i, "TickTime"))
             EffectOverTime(i).TickFX = val(Leer.GetValue("EOT" & i, "TickFX"))
+            EffectOverTime(i).OnHitFx = val(Leer.GetValue("EOT" & i, "OnHitFx"))
             EffectOverTime(i).Override = val(Leer.GetValue("EOT" & i, "Override"))
             EffectOverTime(i).Limit = val(Leer.GetValue("EOT" & i, "Limit"))
             EffectOverTime(i).PhysicalDamageReduction = val(Leer.GetValue("EOT" & i, "PhysicalDamageReduction"))
@@ -815,6 +816,8 @@ On Error GoTo ErrHandler
             EffectOverTime(i).MagicDamageDone = val(Leer.GetValue("EOT" & i, "MagicDamageDone"))
             EffectOverTime(i).ClientEffectTypeId = val(Leer.GetValue("EOT" & i, "ClientEffectTypeId"))
             EffectOverTime(i).BuffType = val(Leer.GetValue("EOT" & i, "BuffType"))
+            EffectOverTime(i).Area = val(Leer.GetValue("EOT" & i, "Area"))
+            EffectOverTime(i).Aura = Leer.GetValue("EOT" & i, "Aura")
             If val(Leer.GetValue("EOT" & i, "AffectedByMagicBonus")) > 0 Then
                 Call SetMask(EffectOverTime(i).EffectModifiers, e_ModifierTypes.MagicBonus)
             End If

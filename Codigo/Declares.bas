@@ -81,6 +81,29 @@ Public Enum e_InteractionResult
     eCantHelpCriminalClanRules
 End Enum
 
+Public Enum e_AttackInteractionResult
+    eCanAttack
+    eRemoveSafe
+    eSameGroup
+    eSameGuild
+    eSameFaction
+    eDeathTarget
+    eDeathAttacker
+    eFightActive
+    eTalkWithMaster
+    eAttackerIsCursed
+    eMounted
+    eSameTeam
+    eNotEnougthPrivileges
+    eSameClan
+    eSafeArea
+    eCreatureInmunity
+    eInvalidPrivilege
+    eInmuneNpc
+    eOutOfRange
+    eOwnPet
+End Enum
+
 Public Enum e_DeleteSource
     eNone
     eDie
@@ -1054,8 +1077,9 @@ Public Type t_EffectOverTime
     TickPowerMin As Integer
     TickPowerMax As Integer
     Ticks As Integer
-    TickTime As Integer
+    TickTime As Long
     TickFX As Integer
+    OnHitFx As Integer
     BuffType As e_EffectType
     Override As Boolean
     PhysicalDamageReduction As Single
@@ -1064,7 +1088,14 @@ Public Type t_EffectOverTime
     MagicDamageDone As Single
     EffectModifiers As Long
     ClientEffectTypeId As Integer
+    Area As Integer
+    Aura As String
 End Type
+
+Public Enum e_DamageResult
+    eStillAlive
+    eDead
+End Enum
 
 Public Const MAX_PACKET_COUNTERS As Long = 15
 
@@ -1645,6 +1676,12 @@ Public Type t_AccionPendiente
 
 End Type
 
+Public Enum e_StatusMask
+    eTaunting = 1
+    eTaunted = 2
+End Enum
+
+
 'Flags
 Public Type t_UserFlags
     Nadando As Byte
@@ -1732,6 +1769,7 @@ Public Type t_UserFlags
     Mimetizado As e_EstadoMimetismo
     MascotasGuardadas As Byte
     Cleave As Byte 'we might support more than one type of cleave
+    StatusMask As Long 'use the values from to set this flags e_StatusMask
     
     Navegando As Byte
     
@@ -2023,6 +2061,7 @@ Type Tgrupo
     Miembros(1 To 6) As t_UserReference
     Lider As t_UserReference
     PropuestaDe As t_UserReference
+    Id As Long
 End Type
 
 Public Type t_LastNetworkUssage
@@ -2045,6 +2084,7 @@ Public Enum e_EffectType
     eBuff = 1
     eDebuff
     eCD
+    eSelfDebuf
     eAny
 End Enum
 
@@ -2221,6 +2261,7 @@ Public Type t_NPCFlags
     InvasionIndex As Integer
     SpawnBox As Integer
     IndexInInvasion As Integer
+    StatusMask As Long 'use the values from to set this flags e_StatusMask
 
     ExpCount As Long '[ALEJO]
     
@@ -2678,6 +2719,8 @@ Public EnEventoFaccionario As Boolean
 Public Enum e_EffectOverTimeType
     eHealthModifier = 1
     eApplyModifiers = 2
+    eProvoke = 3
+    eProvoked = 4
     [EffectTypeCount]
 End Enum
 
@@ -2689,7 +2732,7 @@ End Enum
 
 Public Type t_BaseDotInfo
     TargetRef As t_AnyReference
-    UniqueId As Integer
+    UniqueId As Long
     RemoveEffect As Boolean
     EotId As Integer
 End Type

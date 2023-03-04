@@ -10,6 +10,12 @@ Attribute VB_Name = "ModGrupos"
 
 Public Grupo As Tgrupo
 
+Private UniqueIdCounter As Long
+Private Function GetNextId() As Long
+    UniqueIdCounter = (UniqueIdCounter + 1) And &H7FFFFFFF
+    GetNextId = UniqueIdCounter
+End Function
+
 Public Sub InvitarMiembro(ByVal UserIndex As Integer, ByVal InvitadoIndex As Integer)
         On Error GoTo InvitarMiembro_Err
 
@@ -87,7 +93,6 @@ Public Sub InvitarMiembro(ByVal UserIndex As Integer, ByVal InvitadoIndex As Int
 144             Call SetUserRef(.Grupo.PropuestaDe, userIndex)
 146             .flags.pregunta = 1
 148             Call SetUserRef(.Grupo.Lider, userIndex)
-                    
             End With
 150         Call WritePreguntaBox(InvitadoIndex, Remitente.Name & " te invito a unirse a su grupo. ¿Deseas unirte?")
             UserList(InvitadoIndex).flags.RespondiendoPregunta = True
@@ -167,6 +172,7 @@ Public Sub EcharMiembro(ByVal UserIndex As Integer, ByVal Indice As Byte)
 152         .Grupo.CantidadMiembros = 0
 154         Call SetUserRef(.Grupo.Miembros(1), 0)
 156         Call RefreshCharStatus(UserIndexEchar)
+            .Grupo.ID = -1
         End With
     
                             
@@ -178,6 +184,7 @@ Public Sub EcharMiembro(ByVal UserIndex As Integer, ByVal Indice As Byte)
 168             Call SetUserRef(.PropuestaDe, 0)
 170             .CantidadMiembros = 0
 172             Call SetUserRef(.Miembros(1), 0)
+                .ID = -1
             End If
         End With
 174     Call RefreshCharStatus(UserIndex)
@@ -206,7 +213,7 @@ Public Sub SalirDeGrupo(ByVal UserIndex As Integer)
             End If
     
 106         .Grupo.EnGrupo = False
-    
+            .Grupo.ID = -1
 108         For i = 1 To UBound(.Grupo.Miembros)
 
 110             If .name = UserList(UserList(.Grupo.Lider.ArrayIndex).Grupo.Miembros(i).ArrayIndex).name Then
@@ -227,9 +234,7 @@ Public Sub SalirDeGrupo(ByVal UserIndex As Integer)
 128             Call WriteUbicacion(UserList(.Grupo.Lider.ArrayIndex).Grupo.Miembros(a).ArrayIndex, indexviejo, 0)
 130         Next a
         
-            'Call WriteConsoleMsg(userindex, "Has salido del grupo.", e_FontTypeNames.FONTTYPE_INFOIAO)
-            'Call WriteConsoleMsg(.Grupo.Lider, .name & " a salido del grupo.", e_FontTypeNames.FONTTYPE_INFOIAO)
-132         Call WriteLocaleMsg(UserIndex, "37", e_FontTypeNames.FONTTYPE_New_GRUPO)
+132         Call WriteLocaleMsg(UserIndex, "37", e_FontTypeNames.FONTTYPE_New_GRUPO) 'quit group message
 134         Call WriteLocaleMsg(.Grupo.Lider.ArrayIndex, "202", e_FontTypeNames.FONTTYPE_New_GRUPO, .name)
         
 136         If UserList(.Grupo.Lider.ArrayIndex).Grupo.CantidadMiembros = 1 Then
@@ -238,7 +243,7 @@ Public Sub SalirDeGrupo(ByVal UserIndex As Integer)
 138             Call WriteLocaleMsg(.Grupo.Lider.ArrayIndex, "35", e_FontTypeNames.FONTTYPE_New_GRUPO)
             
 140             Call WriteUbicacion(.Grupo.Lider.ArrayIndex, 1, 0)
-                
+                UserList(.Grupo.Lider.ArrayIndex).Grupo.ID = -1
 142             UserList(.Grupo.Lider.ArrayIndex).Grupo.EnGrupo = False
 144             Call SetUserRef(UserList(.Grupo.Lider.ArrayIndex).Grupo.Lider, 0)
 146             Call SetUserRef(UserList(.Grupo.Lider.ArrayIndex).Grupo.PropuestaDe, 0)
@@ -276,9 +281,8 @@ Public Sub SalirDeGrupoForzado(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
     
 102         .Grupo.EnGrupo = False
-    
+            .Grupo.ID = -1
 104         For i = 1 To 6
-
 106             If .name = UserList(UserList(.Grupo.Lider.ArrayIndex).Grupo.Miembros(i).ArrayIndex).name Then
 108                 Call SetUserRef(UserList(.Grupo.Lider.ArrayIndex).Grupo.Miembros(i), 0)
 110                 indexviejo = i
@@ -286,13 +290,9 @@ Public Sub SalirDeGrupoForzado(ByVal UserIndex As Integer)
 112                 For LoopC = indexviejo To 5
 114                     UserList(.Grupo.Lider.ArrayIndex).Grupo.Miembros(LoopC) = UserList(.Grupo.Lider.ArrayIndex).Grupo.Miembros(LoopC + 1)
 116                 Next LoopC
-
                     Exit For
-
                 End If
-
 118         Next i
-
 120         UserList(.Grupo.Lider.ArrayIndex).Grupo.CantidadMiembros = UserList(.Grupo.Lider.ArrayIndex).Grupo.CantidadMiembros - 1
         
             Dim a As Long
@@ -303,25 +303,18 @@ Public Sub SalirDeGrupoForzado(ByVal UserIndex As Integer)
 128         Call WriteLocaleMsg(.Grupo.Lider.ArrayIndex, "202", e_FontTypeNames.FONTTYPE_New_GRUPO, .name)
         
 130         If UserList(.Grupo.Lider.ArrayIndex).Grupo.CantidadMiembros = 1 Then
-        
 132             Call WriteLocaleMsg(.Grupo.Lider.ArrayIndex, "35", e_FontTypeNames.FONTTYPE_New_GRUPO)
-            
 134             Call WriteUbicacion(.Grupo.Lider.ArrayIndex, 1, 0)
-                
 136             UserList(.Grupo.Lider.ArrayIndex).Grupo.EnGrupo = False
 138             Call SetUserRef(UserList(.Grupo.Lider.ArrayIndex).Grupo.Lider, 0)
 140             Call SetUserRef(UserList(.Grupo.Lider.ArrayIndex).Grupo.PropuestaDe, 0)
 142             UserList(.Grupo.Lider.ArrayIndex).Grupo.CantidadMiembros = 0
 144             Call SetUserRef(UserList(.Grupo.Lider.ArrayIndex).Grupo.Miembros(1), 0)
-                
+                UserList(.Grupo.Lider.ArrayIndex).Grupo.ID = -1
 146             Call RefreshCharStatus(.Grupo.Lider.ArrayIndex)
-
             End If
-    
         End With
-        
         Exit Sub
-
 SalirDeGrupoForzado_Err:
 148     Call TraceError(Err.Number, Err.Description, "ModGrupos.SalirDeGrupoForzado", Erl)
 
@@ -329,39 +322,25 @@ SalirDeGrupoForzado_Err:
 End Sub
 
 Public Sub FinalizarGrupo(ByVal UserIndex As Integer)
-        
-        On Error GoTo FinalizarGrupo_Err
-    
+On Error GoTo FinalizarGrupo_Err
         Dim i As Long
-    
 100     With UserList(UserIndex)
-
 102         For i = 2 To .Grupo.CantidadMiembros
-        
 104             UserList(.Grupo.Miembros(i).ArrayIndex).Grupo.EnGrupo = False
 106             Call SetUserRef(UserList(.Grupo.Miembros(i).ArrayIndex).Grupo.Lider, 0)
 108             Call SetUserRef(UserList(.Grupo.Miembros(i).ArrayIndex).Grupo.PropuestaDe, 0)
-            
 110             Call WriteUbicacion(UserList(.Grupo.Lider.ArrayIndex).Grupo.Miembros(i).ArrayIndex, i, 0)
-    
 112             Call WriteConsoleMsg(.Grupo.Miembros(i).ArrayIndex, "El líder ha abandonado el grupo. El grupo se disuelve.", e_FontTypeNames.FONTTYPE_New_GRUPO)
-            
 114             Call RefreshCharStatus(.Grupo.Miembros(i).ArrayIndex)
-            
 116             Call WriteUbicacion(UserList(.Grupo.Lider.ArrayIndex).Grupo.Miembros(i).ArrayIndex, 1, 0)
-    
 118             .Grupo.EnGrupo = False
-            
+                .Grupo.ID = -1
 120         Next i
-    
         End With
-        
         Exit Sub
 
 FinalizarGrupo_Err:
 122     Call TraceError(Err.Number, Err.Description, "ModGrupos.FinalizarGrupo", Erl)
-
-        
 End Sub
 
 Public Sub CompartirUbicacion(ByVal UserIndex As Integer)
@@ -374,49 +353,62 @@ Public Sub CompartirUbicacion(ByVal UserIndex As Integer)
         Dim Lider   As t_User
     
 100     With UserList(UserIndex)
-        
 102         Lider = UserList(.Grupo.Lider.ArrayIndex)
-        
 104         For a = 1 To Lider.Grupo.CantidadMiembros
-
 106             If Lider.Grupo.Miembros(a).ArrayIndex = userIndex Then
 108                 indexpj = a
                 End If
-
 110         Next a
 
 112         For i = 1 To Lider.Grupo.CantidadMiembros
-
 114             If Lider.Grupo.Miembros(i).ArrayIndex <> userIndex Then
-            
 116                 If UserList(Lider.Grupo.Miembros(i).ArrayIndex).pos.map = .pos.map Then
-                
 118                     Call WriteUbicacion(Lider.Grupo.Miembros(i).ArrayIndex, indexpj, userIndex)
-
                         'Si va al mapa del compañero
 120                     Call WriteUbicacion(userIndex, i, Lider.Grupo.Miembros(i).ArrayIndex)
-                    
                     Else
-                    
                         ' Le borro la ubicacion a ellos
 122                     Call WriteUbicacion(Lider.Grupo.Miembros(i).ArrayIndex, indexpj, 0)
-                    
                         ' Le borro la ubicacion a mi
 124                     Call WriteUbicacion(UserIndex, i, 0)
-                    
                     End If
-                
                 End If
-            
 126         Next i
-    
         End With
-        
         Exit Sub
-
 CompartirUbicacion_Err:
 128     Call TraceError(Err.Number, Err.Description, "ModGrupos.CompartirUbicacion", Erl)
-
-        
 End Sub
+
+Public Sub GroupCreateSuccess(ByVal LiderIndex As Integer)
+    Call WriteLocaleMsg(LiderIndex, "36", e_FontTypeNames.FONTTYPE_INFOIAO)
+    With UserList(LiderIndex)
+        .Grupo.EnGrupo = True
+        .Grupo.ID = GetNextId()
+    End With
+End Sub
+
+Public Sub AddUserToGRoup(ByVal UserIndex As Integer, ByVal GroupLiderIndex As Integer)
+On Error GoTo AddUserToGRoup_Err
+100 UserList(GroupLiderIndex).Grupo.CantidadMiembros = UserList(GroupLiderIndex).Grupo.CantidadMiembros + 1
+102 Call SetUserRef(UserList(GroupLiderIndex).Grupo.Miembros(UserList(GroupLiderIndex).Grupo.CantidadMiembros), UserIndex)
+104 UserList(UserIndex).Grupo.EnGrupo = True
+106 UserList(UserIndex).Grupo.ID = UserList(GroupLiderIndex).Grupo.ID
+    
+    Dim Index As Byte
+110 For Index = 2 To UserList(GroupLiderIndex).Grupo.CantidadMiembros - 1
+114     Call WriteLocaleMsg(UserList(GroupLiderIndex).Grupo.Miembros(Index).ArrayIndex, "40", e_FontTypeNames.FONTTYPE_INFOIAO, UserList(UserIndex).name)
+116 Next Index
+    
+120 Call WriteLocaleMsg(UserList(UserIndex).Grupo.PropuestaDe.ArrayIndex, "40", e_FontTypeNames.FONTTYPE_INFOIAO, UserList(UserIndex).name)
+    
+130 Call WriteConsoleMsg(UserIndex, "¡Has sido añadido al grupo!", e_FontTypeNames.FONTTYPE_INFOIAO)
+140 Call RefreshCharStatus(GroupLiderIndex)
+150 Call RefreshCharStatus(UserIndex)
+160 Call CompartirUbicacion(UserIndex)
+    Exit Sub
+AddUserToGRoup_Err:
+122     Call TraceError(Err.Number, Err.Description, "ModGrupos.AddUserToGRoup", Erl)
+End Sub
+
 

@@ -90,61 +90,63 @@ Private Sub PerseguirUsuarioCercano(ByVal NpcIndex As Integer)
 
 104     With NpcList(NpcIndex)
 106         npcEraPasivo = .flags.OldHostil = 0
-108         Call SetUserRef(.TargetUser, 0)
-110         Call ClearNpcRef(.TargetNPC)
+            If Not IsSet(.flags.StatusMask, eTaunted) Then
+108             Call SetUserRef(.targetUser, 0)
+110             Call ClearNpcRef(.TargetNPC)
 
-112         If .flags.AttackedBy <> vbNullString Then
-114           agresor = NameIndex(.flags.AttackedBy)
-            End If
-            
-            If UserIndex > 0 And UserIndexFront > 0 Then
-            
-                If NPCHasAUserInFront(NpcIndex, UserIndexFront) And EsEnemigo(NpcIndex, UserIndexFront) Then
-                    enemigoAtacableMasCercano = UserIndexFront
-                    minDistanciaAtacable = 1
-                    minDistancia = 1
+
+112             If .flags.AttackedBy <> vbNullString Then
+114                 agresor = NameIndex(.flags.AttackedBy)
                 End If
-            Else
-                ' Busco algun objetivo en el area.
-116             For i = 1 To ModAreas.ConnGroups(.Pos.Map).CountEntrys
-118                 UserIndex = ModAreas.ConnGroups(.Pos.Map).UserEntrys(i)
-    
-120                 If EsObjetivoValido(NpcIndex, UserIndex) Then
-                        ' Busco el mas cercano, sea atacable o no.
-122                     If Distancia(UserList(UserIndex).Pos, .Pos) < minDistancia And Not (UserList(UserIndex).flags.invisible > 0 Or UserList(UserIndex).flags.Oculto) Then
-124                         enemigoCercano = UserIndex
-126                         minDistancia = Distancia(UserList(UserIndex).Pos, .Pos)
+            
+                If UserIndex > 0 And UserIndexFront > 0 Then
+                
+                    If NPCHasAUserInFront(npcIndex, UserIndexFront) And EsEnemigo(npcIndex, UserIndexFront) Then
+                        enemigoAtacableMasCercano = UserIndexFront
+                        minDistanciaAtacable = 1
+                        minDistancia = 1
+                    End If
+                Else
+                    ' Busco algun objetivo en el area.
+116                 For i = 1 To ModAreas.ConnGroups(.pos.map).CountEntrys
+118                     UserIndex = ModAreas.ConnGroups(.pos.map).UserEntrys(i)
+        
+120                     If EsObjetivoValido(npcIndex, UserIndex) Then
+                            ' Busco el mas cercano, sea atacable o no.
+122                         If Distancia(UserList(UserIndex).pos, .pos) < minDistancia And Not (UserList(UserIndex).flags.invisible > 0 Or UserList(UserIndex).flags.Oculto) Then
+124                             enemigoCercano = UserIndex
+126                             minDistancia = Distancia(UserList(UserIndex).pos, .pos)
+                            End If
+                            
+                            ' Busco el mas cercano que sea atacable.
+128                         If (UsuarioAtacableConMagia(UserIndex) Or UsuarioAtacableConMelee(npcIndex, UserIndex)) And Distancia(UserList(UserIndex).pos, .pos) < minDistanciaAtacable Then
+130                             enemigoAtacableMasCercano = UserIndex
+132                             minDistanciaAtacable = Distancia(UserList(UserIndex).pos, .pos)
+                            End If
+        
                         End If
-                        
-                        ' Busco el mas cercano que sea atacable.
-128                     If (UsuarioAtacableConMagia(UserIndex) Or UsuarioAtacableConMelee(NpcIndex, UserIndex)) And Distancia(UserList(UserIndex).Pos, .Pos) < minDistanciaAtacable Then
-130                         enemigoAtacableMasCercano = UserIndex
-132                         minDistanciaAtacable = Distancia(UserList(UserIndex).Pos, .Pos)
-                        End If
+        
+134                 Next i
+                End If
     
+                ' Al terminar el `for`, puedo tener un maximo de tres objetivos distintos.
+                ' Por prioridad, vamos a decidir estas cosas en orden.
+    
+136             If npcEraPasivo Then
+                    ' Significa que alguien le pego, y esta en modo agresivo trantando de darle.
+                    ' El unico objetivo que importa aca es el atacante; los demas son ignorados.
+138                 If EnRangoVision(npcIndex, agresor.ArrayIndex) Then Call SetUserRef(.targetUser, agresor.ArrayIndex)
+    
+                Else ' El NPC es hostil siempre, le quiere pegar a alguien.
+    
+140                 If minDistanciaAtacable > 0 And enemigoAtacableMasCercano > 0 Then ' Hay alguien atacable cerca
+142                     Call SetUserRef(.targetUser, enemigoAtacableMasCercano)
+144                 ElseIf enemigoCercano > 0 Then ' Hay alguien cerca, pero no es atacable
+146                     Call SetUserRef(.targetUser, enemigoCercano)
                     End If
     
-134             Next i
-            End If
-
-            ' Al terminar el `for`, puedo tener un maximo de tres objetivos distintos.
-            ' Por prioridad, vamos a decidir estas cosas en orden.
-
-136         If npcEraPasivo Then
-                ' Significa que alguien le pego, y esta en modo agresivo trantando de darle.
-                ' El unico objetivo que importa aca es el atacante; los demas son ignorados.
-138             If EnRangoVision(npcIndex, agresor.ArrayIndex) Then Call SetUserRef(.targetUser, agresor.ArrayIndex)
-
-            Else ' El NPC es hostil siempre, le quiere pegar a alguien.
-
-140             If minDistanciaAtacable > 0 And enemigoAtacableMasCercano > 0 Then ' Hay alguien atacable cerca
-142                 Call SetUserRef(.TargetUser, enemigoAtacableMasCercano)
-144             ElseIf enemigoCercano > 0 Then ' Hay alguien cerca, pero no es atacable
-146                 Call SetUserRef(.TargetUser, enemigoCercano)
                 End If
-
             End If
-
             ' Si el NPC tiene un objetivo
 148         If IsValidUserRef(.TargetUser) Then
                 'asignamos heading nuevo al NPC según el Target del nuevo usuario: .Char.Heading, si la distancia es <= 1

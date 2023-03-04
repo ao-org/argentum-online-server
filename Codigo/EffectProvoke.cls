@@ -6,7 +6,7 @@ BEGIN
   DataSourceBehavior  = 0  'vbNone
   MTSTransactionMode  = 0  'NotAnMTSObject
 END
-Attribute VB_Name = "StatModifier"
+Attribute VB_Name = "EffectProvoke"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
@@ -19,40 +19,40 @@ Dim TickTime As Long
 Dim TimeSinceLastTick As Long
 Private DotInfo As t_BaseDotInfo
 Private Source As t_AnyReference
-Private PhysicalDamageReduction As Single
-Private MagicDamageReduction As Single
-Private PhysicalDamageDone As Single
-Private MagicDamageDone As Single
+Private PhysicalDamageModfier As Single
+Private MagicDamageModifier As Single
+Private ReductionActive As Boolean
+Const TaunteffectId As Integer = 4
 
-Public Sub Setup(ByVal sourceIndex As Integer, ByVal sourceType As e_ReferenceType, ByVal TargetIndex As Integer, ByVal TargetType As e_ReferenceType, _
+
+Public Sub Setup(ByVal SourceIndex As Integer, ByVal SourceType As e_ReferenceType, ByVal TargetIndex As Integer, ByVal TargetType As e_ReferenceType, _
                  ByVal EffectId As Integer, ByVal ID As Integer)
     Call SetRef(DotInfo.TargetRef, TargetIndex, TargetType)
-    Call SetRef(Source, sourceIndex, sourceType)
-    Debug.Print "setting new id: " & ID & " to: " & DotInfo.UniqueId & " on target: " & TargetIndex
+    Call SetRef(Source, SourceIndex, SourceType)
     DotInfo.UniqueId = ID
     DotInfo.RemoveEffect = False
     DotInfo.EotId = EffectId
     TimeSinceLastTick = 0
+    ReductionActive = False
+    If SourceType = eUser Then
+        Call UserMod.RemoveInvisibility(SourceIndex)
+        Call SetMask(UserList(SourceIndex).flags.StatusMask, eTaunting)
+    Else
+        Call SetMask(NpcList(SourceIndex).flags.StatusMask, eTaunting)
+    End If
     With EffectOverTime(EffectId)
         TickTime = .TickTime
-        PhysicalDamageReduction = .PhysicalDamageReduction
-        MagicDamageReduction = .MagicDamageReduction
-        PhysicalDamageDone = .PhysicalDamageDone
-        MagicDamageDone = .MagicDamageDone
-        If .ClientEffectTypeId > 0 Then Call WriteSendSkillCdUpdate(TargetIndex, .ClientEffectTypeId, ID, .TickTime, .BuffType)
-    End With
-    If IsValidRef(DotInfo.TargetRef) Then
-        If DotInfo.TargetRef.RefType = eUser Then
-            Call IncreaseSingle(UserList(DotInfo.TargetRef.ArrayIndex).Modifiers.MagicDamageBonus, MagicDamageDone)
-            Call IncreaseSingle(UserList(DotInfo.TargetRef.ArrayIndex).Modifiers.PhysicalDamageBonus, PhysicalDamageDone)
-            Call IncreaseSingle(UserList(DotInfo.TargetRef.ArrayIndex).Modifiers.MagicDamageReduction, MagicDamageReduction)
-            Call IncreaseSingle(UserList(DotInfo.TargetRef.ArrayIndex).Modifiers.PhysicalDamageReduction, PhysicalDamageReduction)
+        If TargetType = eUser Then
+            If .ClientEffectTypeId > 0 Then Call WriteSendSkillCdUpdate(TargetIndex, .ClientEffectTypeId, ID, .TickTime, .BuffType)
         End If
-    End If
+        Call ApplyEffectToArea(.Area)
+        UserList(SourceIndex).Char.Otra_Aura = .Aura
+    End With
+    Call SendData(SendTarget.ToPCAliveArea, SourceIndex, PrepareMessageAuraToChar(UserList(SourceIndex).Char.charindex, UserList(SourceIndex).Char.Otra_Aura, False, 5))
 End Sub
 
 Public Property Get IBaseEffectOverTime_TypeId() As Integer
-    IBaseEffectOverTime_TypeId = e_EffectOverTimeType.eApplyModifiers
+    IBaseEffectOverTime_TypeId = e_EffectOverTimeType.eProvoke
 End Property
 
 Public Property Get IBaseEffectOverTime_UniqueId() As Integer
@@ -111,8 +111,6 @@ Public Property Let IBaseEffectOverTime_RemoveMe(ByVal value As Boolean)
 End Property
 
 Public Sub IBaseEffectOverTime_Reset()
-    TimeSinceLastTick = 0
-    If EffectOverTime(DotInfo.EotId).ClientEffectTypeId > 0 Then Call WriteSendSkillCdUpdate(DotInfo.TargetRef.ArrayIndex, EffectOverTime(DotInfo.EotId).ClientEffectTypeId, DotInfo.UniqueId, TickTime, EffectOverTime(DotInfo.EotId).BuffType)
 End Sub
 
 Public Property Get IBaseEffectOverTime_EotId() As Integer
@@ -120,11 +118,13 @@ Public Property Get IBaseEffectOverTime_EotId() As Integer
 End Property
 
 Public Sub IBaseEffectOverTime_OnRemove()
-    Call IncreaseSingle(UserList(DotInfo.TargetRef.ArrayIndex).Modifiers.MagicDamageBonus, -MagicDamageDone)
-    Call IncreaseSingle(UserList(DotInfo.TargetRef.ArrayIndex).Modifiers.PhysicalDamageBonus, -PhysicalDamageDone)
-    Call IncreaseSingle(UserList(DotInfo.TargetRef.ArrayIndex).Modifiers.MagicDamageReduction, -MagicDamageReduction)
-    Call IncreaseSingle(UserList(DotInfo.TargetRef.ArrayIndex).Modifiers.PhysicalDamageReduction, -PhysicalDamageReduction)
-    If EffectOverTime(DotInfo.EotId).ClientEffectTypeId > 0 Then Call WriteSendSkillCdUpdate(DotInfo.TargetRef.ArrayIndex, EffectOverTime(DotInfo.EotId).ClientEffectTypeId, DotInfo.UniqueId, 0, EffectOverTime(DotInfo.EotId).BuffType)
+    If Source.RefType = eUser Then
+        Call UnsetMask(UserList(Source.ArrayIndex).flags.StatusMask, eTaunting)
+    Else
+        Call UnsetMask(NpcList(Source.ArrayIndex).flags.StatusMask, eTaunting)
+    End If
+    UserList(Source.ArrayIndex).Char.Otra_Aura = ""
+    Call SendData(SendTarget.ToPCAliveArea, Source.ArrayIndex, PrepareMessageAuraToChar(UserList(Source.ArrayIndex).Char.charindex, UserList(Source.ArrayIndex).Char.Body_Aura, True, 5))
 End Sub
 
 Public Sub IBaseEffectOverTime_TargetUseMagic(ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal MagicId As Integer)
@@ -140,12 +140,43 @@ Public Sub IBaseEffectOverTime_TargetFailedAttack(ByVal TargetUserId As Integer,
 End Sub
 
 Public Sub IBaseEffectOverTime_TargetWasDamaged(ByVal SourceUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
-    If EffectOverTime(DotInfo.EotId).OnHitFx > 0 Then
-        If IsVisible(UserList(DotInfo.TargetRef.ArrayIndex)) Then
-            Call SendData(SendTarget.ToPCAliveArea, DotInfo.TargetRef.ArrayIndex, PrepareMessageCreateFX(UserList(DotInfo.TargetRef.ArrayIndex).Char.charindex, EffectOverTime(DotInfo.EotId).OnHitFx, 0, UserList(DotInfo.TargetRef.ArrayIndex).pos.X, UserList(DotInfo.TargetRef.ArrayIndex).pos.y))
-        Else
-            Call SendData(SendTarget.ToIndex, DotInfo.TargetRef.ArrayIndex, PrepareMessageCreateFX(UserList(DotInfo.TargetRef.ArrayIndex).Char.charindex, EffectOverTime(DotInfo.EotId).OnHitFx, 0, UserList(DotInfo.TargetRef.ArrayIndex).pos.X, UserList(DotInfo.TargetRef.ArrayIndex).pos.y))
-        End If
-    End If
 End Sub
 
+
+Private Sub ApplyEffectToArea(ByVal Area As Integer)
+    Debug.Assert Area > 0
+    Dim x, y, w, h, map As Integer
+    If Source.RefType = eUser Then
+        x = UserList(Source.ArrayIndex).pos.x - Area / 2
+        y = UserList(Source.ArrayIndex).pos.y - Area / 2
+        map = UserList(Source.ArrayIndex).pos.map
+    Else
+        x = NpcList(Source.ArrayIndex).pos.x - Area / 2
+        y = NpcList(Source.ArrayIndex).pos.y - Area / 2
+        map = NpcList(Source.ArrayIndex).pos.map
+    End If
+    w = x + Area
+    h = y + Area
+    x = max(1, x)
+    y = max(1, y)
+    w = Min(w, 99)
+    h = Min(h, 99)
+    Dim i, j As Integer
+    Dim Effect As IBaseEffectOverTime
+    For i = y To h
+        For j = x To w
+            'we can't taunt someone already taunted
+            If MapData(map, j, i).UserIndex > 0 Then
+                If CanAttackUser(Source.ArrayIndex, MapData(map, j, i).UserIndex) = eCanAttack Then
+                    Set Effect = FindEffectOnTarget(0, UserList(MapData(map, j, i).UserIndex).EffectOverTime, TaunteffectId)
+                    If Effect Is Nothing Then Call CreateEffect(Source.ArrayIndex, Source.RefType, MapData(map, j, i).UserIndex, eUser, TaunteffectId)
+                End If
+            ElseIf MapData(map, j, i).npcIndex > 0 Then
+                If UserCanAttackNpc(Source.ArrayIndex, MapData(map, j, i).npcIndex) = eCanAttack Then
+                    Set Effect = FindEffectOnTarget(0, NpcList(MapData(map, j, i).npcIndex).EffectOverTime, TaunteffectId)
+                    If Effect Is Nothing Then Call CreateEffect(Source.ArrayIndex, Source.RefType, MapData(map, j, i).npcIndex, eNpc, TaunteffectId)
+                End If
+            End If
+        Next j
+    Next i
+End Sub

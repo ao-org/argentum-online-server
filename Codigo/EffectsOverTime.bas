@@ -81,7 +81,7 @@ UpdateEffect_Err:
     UpdateEffect = True
 End Function
 
-Public Function GetNextId() As Integer
+Private Function GetNextId() As Long
     UniqueIdCounter = (UniqueIdCounter + 1) And &H7FFFFFFF
     GetNextId = UniqueIdCounter
 End Function
@@ -115,6 +115,30 @@ On Error GoTo CreateEffect_Err
 144         ElseIf TargetType = eNpc Then
 146             Call AddEffect(NpcList(TargetIndex).EffectOverTime, StatDot)
             End If
+        Case e_EffectOverTimeType.eProvoke
+150         Dim Provoke As EffectProvoke
+152         Set Provoke = GetEOT(EffectType)
+154         UniqueIdCounter = GetNextId()
+156         Call Provoke.Setup(SourceIndex, SourceType, TargetIndex, TargetType, EffectIndex, UniqueIdCounter)
+158         Call AddEffectToUpdate(Provoke)
+160         If TargetType = eUser Then
+162             Call AddEffect(UserList(TargetIndex).EffectOverTime, Provoke)
+164         ElseIf TargetType = eNpc Then
+166             Call AddEffect(NpcList(TargetIndex).EffectOverTime, Provoke)
+            End If
+        Case e_EffectOverTimeType.eProvoked
+170         Dim StatProvoked As EffectProvoked
+172         Set StatProvoked = GetEOT(EffectType)
+174         UniqueIdCounter = GetNextId()
+176         Call StatProvoked.Setup(SourceIndex, SourceType, TargetIndex, TargetType, EffectIndex, UniqueIdCounter)
+178         Call AddEffectToUpdate(StatProvoked)
+180         If TargetType = eUser Then
+182             Call AddEffect(UserList(TargetIndex).EffectOverTime, StatProvoked)
+184         ElseIf TargetType = eNpc Then
+186             Call AddEffect(NpcList(TargetIndex).EffectOverTime, StatProvoked)
+            End If
+        Case Else
+            Debug.Assert False
     End Select
     Exit Sub
 CreateEffect_Err:
@@ -127,6 +151,12 @@ Private Function InstantiateEOT(ByVal EffectType As e_EffectOverTimeType) As IBa
             Set InstantiateEOT = New UpdateHpOverTime
         Case e_EffectOverTimeType.eApplyModifiers
             Set InstantiateEOT = New StatModifier
+        Case e_EffectOverTimeType.eProvoke
+            Set InstantiateEOT = New EffectProvoke
+        Case e_EffectOverTimeType.eProvoked
+            Set InstantiateEOT = New EffectProvoked
+        Case Else
+            Debug.Assert False
     End Select
 End Function
 
@@ -246,3 +276,37 @@ ClearEffectList_Err:
       Call TraceError(Err.Number, Err.Description, "EffectsOverTime.ClearEffectList", Erl)
 End Sub
 
+Public Sub TargetUseMagic(ByRef EffectList As t_EffectOverTimeList, ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal MagicId As Integer)
+    Dim i As Integer
+    For i = 0 To EffectList.EffectCount - 1
+         Call EffectList.EffectList(i).TargetUseMagic(TargetUserId, SourceType, MagicId)
+    Next i
+End Sub
+
+Public Sub TartgetWillAtack(ByRef EffectList As t_EffectOverTimeList, ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
+    Dim i As Integer
+    For i = 0 To EffectList.EffectCount - 1
+         Call EffectList.EffectList(i).TartgetWillAtack(TargetUserId, SourceType, AttackType)
+    Next i
+End Sub
+
+Public Sub TartgetDidHit(ByRef EffectList As t_EffectOverTimeList, ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
+    Dim i As Integer
+    For i = 0 To EffectList.EffectCount - 1
+         Call EffectList.EffectList(i).TartgetDidHit(TargetUserId, SourceType, AttackType)
+    Next i
+End Sub
+
+Public Sub TargetFailedAttack(ByRef EffectList As t_EffectOverTimeList, ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
+    Dim i As Integer
+    For i = 0 To EffectList.EffectCount - 1
+         Call EffectList.EffectList(i).TargetFailedAttack(TargetUserId, SourceType, AttackType)
+    Next i
+End Sub
+
+Public Sub TargetWasDamaged(ByRef EffectList As t_EffectOverTimeList, ByVal SourceUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
+    Dim i As Integer
+    For i = 0 To EffectList.EffectCount - 1
+         Call EffectList.EffectList(i).TargetWasDamaged(SourceUserId, SourceType, AttackType)
+    Next i
+End Sub
