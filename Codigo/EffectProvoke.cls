@@ -144,7 +144,7 @@ End Sub
 
 
 Private Sub ApplyEffectToArea(ByVal Area As Integer)
-    
+    Debug.Assert Area > 0
     Dim x, y, w, h, map As Integer
     If Source.RefType = eUser Then
         x = UserList(Source.ArrayIndex).pos.x - Area / 2

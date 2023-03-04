@@ -1079,11 +1079,6 @@ End Sub
 
 Public Sub EfectoLava(ByVal UserIndex As Integer)
         On Error GoTo EfectoLava_Err
-        '***************************************************
-        'Autor: Nacho (Integer)
-        'Last Modification: 03/12/07
-        'If user is standing on lava, take health points from him
-        '***************************************************
 100     With UserList(UserIndex)
 102         If .Counters.Lava < IntervaloFrio Then 'Usamos el mismo intervalo que el del frio
 104             .Counters.Lava = .Counters.Lava + 1

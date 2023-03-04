@@ -137,6 +137,8 @@ On Error GoTo CreateEffect_Err
 184         ElseIf TargetType = eNpc Then
 186             Call AddEffect(NpcList(TargetIndex).EffectOverTime, StatProvoked)
             End If
+        Case Else
+            Debug.Assert False
     End Select
     Exit Sub
 CreateEffect_Err:
@@ -153,6 +155,8 @@ Private Function InstantiateEOT(ByVal EffectType As e_EffectOverTimeType) As IBa
             Set InstantiateEOT = New EffectProvoke
         Case e_EffectOverTimeType.eProvoked
             Set InstantiateEOT = New EffectProvoked
+        Case Else
+            Debug.Assert False
     End Select
 End Function
 
