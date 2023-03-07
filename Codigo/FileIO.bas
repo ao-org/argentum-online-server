@@ -772,13 +772,22 @@ Public Sub CargarHechizos()
 280         Hechizos(Hechizo).NeedStaff = val(Leer.GetValue("Hechizo" & Hechizo, "NeedStaff"))
 281         Hechizos(Hechizo).StaffAffected = CBool(val(Leer.GetValue("Hechizo" & Hechizo, "StaffAffected")))
 282         Hechizos(Hechizo).EotId = val(Leer.GetValue("Hechizo" & Hechizo, "EOTID"))
-284     Next Hechizo
 
-286     Set Leer = Nothing
+290         If val(Leer.GetValue("Hechizo" & Hechizo, "RequireArmor")) > 0 Then Call SetMask(Hechizos(Hechizo).RequireEquipedSlot, e_EquipedSlotMask.eArmor)
+292         If val(Leer.GetValue("Hechizo" & Hechizo, "RequireShip")) > 0 Then Call SetMask(Hechizos(Hechizo).RequireEquipedSlot, e_EquipedSlotMask.eShip)
+294         If val(Leer.GetValue("Hechizo" & Hechizo, "RequireHelm")) > 0 Then Call SetMask(Hechizos(Hechizo).RequireEquipedSlot, e_EquipedSlotMask.eHelm)
+296         If val(Leer.GetValue("Hechizo" & Hechizo, "RequireKnucle")) > 0 Then Call SetMask(Hechizos(Hechizo).RequireEquipedSlot, e_EquipedSlotMask.eKnucle)
+298         If val(Leer.GetValue("Hechizo" & Hechizo, "RequireMagicItem")) > 0 Then Call SetMask(Hechizos(Hechizo).RequireEquipedSlot, e_EquipedSlotMask.eMagicItem)
+300         If val(Leer.GetValue("Hechizo" & Hechizo, "RequireProjectile")) > 0 Then Call SetMask(Hechizos(Hechizo).RequireEquipedSlot, e_EquipedSlotMask.eProjectile)
+302         If val(Leer.GetValue("Hechizo" & Hechizo, "RequireShield")) > 0 Then Call SetMask(Hechizos(Hechizo).RequireEquipedSlot, e_EquipedSlotMask.eShield)
+304         If val(Leer.GetValue("Hechizo" & Hechizo, "RequireWeapon")) > 0 Then Call SetMask(Hechizos(Hechizo).RequireEquipedSlot, e_EquipedSlotMask.eWeapon)
+306     Next Hechizo
+
+400     Set Leer = Nothing
         Exit Sub
 
 ErrHandler:
-288     MsgBox "Error cargando hechizos.dat " & Err.Number & ": " & Err.Description
+402     MsgBox "Error cargando hechizos.dat " & Err.Number & ": " & Err.Description
 End Sub
 
 Public Sub LoadEffectOverTime()
@@ -830,6 +839,14 @@ On Error GoTo ErrHandler
             If val(Leer.GetValue("EOT" & i, "AffectedByPhysicalReduction")) > 0 Then
                 Call SetMask(EffectOverTime(i).EffectModifiers, e_ModifierTypes.PhysicalReduction)
             End If
+290         If val(Leer.GetValue("EOT" & i, "RequireArmor")) > 0 Then Call SetMask(EffectOverTime(i).RequireEquipedSlot, e_EquipedSlotMask.eArmor)
+292         If val(Leer.GetValue("EOT" & i, "RequireShip")) > 0 Then Call SetMask(EffectOverTime(i).RequireEquipedSlot, e_EquipedSlotMask.eShip)
+294         If val(Leer.GetValue("EOT" & i, "RequireHelm")) > 0 Then Call SetMask(EffectOverTime(i).RequireEquipedSlot, e_EquipedSlotMask.eHelm)
+296         If val(Leer.GetValue("EOT" & i, "RequireKnucle")) > 0 Then Call SetMask(EffectOverTime(i).RequireEquipedSlot, e_EquipedSlotMask.eKnucle)
+298         If val(Leer.GetValue("EOT" & i, "RequireMagicItem")) > 0 Then Call SetMask(EffectOverTime(i).RequireEquipedSlot, e_EquipedSlotMask.eMagicItem)
+300         If val(Leer.GetValue("EOT" & i, "RequireProjectile")) > 0 Then Call SetMask(EffectOverTime(i).RequireEquipedSlot, e_EquipedSlotMask.eProjectile)
+302         If val(Leer.GetValue("EOT" & i, "RequireShield")) > 0 Then Call SetMask(EffectOverTime(i).RequireEquipedSlot, e_EquipedSlotMask.eShield)
+304         If val(Leer.GetValue("EOT" & i, "RequireWeapon")) > 0 Then Call SetMask(EffectOverTime(i).RequireEquipedSlot, e_EquipedSlotMask.eWeapon)
         Next i
         
         Call InitializePools
@@ -1986,7 +2003,7 @@ Public Sub CargarMapaFormatoCSM(ByVal map As Long, ByVal MAPFl As String)
                             End If
                         Else
                             ' Lo guardo en los logs + aparece en el Debug.Print
-310                         Call TraceError(404, "NPC no existe en los .DAT's o está mal dateado. Posicion: " & map & "-" & NPCs(i).X & "-" & NPCs(i).Y, "ES.CargarMapaFormatoCSM")
+310                         Call TraceError(404, "NPC no existe en los .DAT's o está mal dateado. Posicion: " & map & "-" & NPCs(i).X & "-" & NPCs(i).y, "ES.CargarMapaFormatoCSM")
                         End If
                     End If
 312             Next i

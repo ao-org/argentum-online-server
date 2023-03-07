@@ -928,6 +928,19 @@ Public Type t_AnyReference
     RefType As e_ReferenceType
 End Type
 
+Public Enum e_EquipedSlotMask
+    eNone = 0
+    eWeapon = 1
+    eShield = 2
+    eArmor = 4
+    eHelm = 8
+    eMagicItem = 16
+    eProjectile = 32
+    eShip = 64
+    eTool = 128
+    eKnucle = 256
+End Enum
+
 Public Enum e_SpellEffects
     Invisibility = 1
     Paralize = 2
@@ -1053,6 +1066,7 @@ Public Type t_Hechizo
     NeedStaff As Integer
     StaffAffected As Boolean
     EotId As Integer
+    RequireEquipedSlot As Long
 End Type
 
 Public Type t_ActiveModifiers
@@ -1090,6 +1104,7 @@ Public Type t_EffectOverTime
     ClientEffectTypeId As Integer
     Area As Integer
     Aura As String
+    RequireEquipedSlot As Long
 End Type
 
 Public Enum e_DamageResult

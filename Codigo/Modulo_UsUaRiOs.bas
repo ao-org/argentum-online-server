@@ -3040,7 +3040,7 @@ Public Function CanHelpUser(ByVal UserIndex As Integer, ByVal targetUserIndex As
     TargetStatus = Status(TargetUserIndex)
     Select Case Status(UserIndex)
         Case e_Facciones.Ciudadano, e_Facciones.Armada, e_Facciones.consejo
-            If TargetStatus = e_Facciones.Armada Or TargetStatus = e_Facciones.concilio Then
+            If TargetStatus = e_Facciones.Caos Or TargetStatus = e_Facciones.concilio Then
                 CanHelpUser = eOposingFaction
                 Exit Function
             ElseIf TargetStatus = e_Facciones.Criminal Then
@@ -3067,7 +3067,7 @@ Public Function CanHelpUser(ByVal UserIndex As Integer, ByVal targetUserIndex As
                 End If
             End If
         Case e_Facciones.Caos, e_Facciones.concilio
-            If Status(TargetUserIndex) <> e_Facciones.Caos And Status(TargetUserIndex) <> e_Facciones.Criminal And Status(TargetUserIndex) <> e_Facciones.concilio Then
+            If Status(targetUserIndex) = e_Facciones.Armada Or Status(targetUserIndex) = e_Facciones.consejo Or Status(targetUserIndex) = e_Facciones.Ciudadano Then
                 CanHelpUser = eOposingFaction
             End If
     Case Else
@@ -3215,14 +3215,14 @@ Public Function CanAttackUser(ByVal attackerIndex As Integer, ByVal TargetIndex 
 228 CanAttackUser = eCanAttack
 End Function
 
-Public Function ModifyHealth(ByVal UserIndex As Integer, ByVal amount As Integer, Optional ByVal minValue = 0) As Boolean
+Public Function ModifyHealth(ByVal UserIndex As Integer, ByVal amount As Long, Optional ByVal minValue = 0) As Boolean
     With UserList(UserIndex)
         ModifyHealth = False
         .Stats.MinHp = .Stats.MinHp + amount
         If .Stats.MinHp > .Stats.MaxHp Then
             .Stats.MinHp = .Stats.MaxHp
         End If
-        If .Stats.MinHp < minValue Then
+        If .Stats.MinHp <= minValue Then
             .Stats.MinHp = minValue
             ModifyHealth = True
         End If
@@ -3253,7 +3253,7 @@ Public Sub ResurrectUser(ByVal UserIndex As Integer)
 684 Call WriteUpdateHungerAndThirst(UserIndex)
 End Sub
 
-Public Function DoDamageOrHeal(ByVal UserIndex As Integer, ByVal SourceIndex As Integer, ByVal SourceType As e_ReferenceType, ByVal amount As Integer, ByVal DamageSourceType As e_DamageSourceType, ByVal DamageSourceIndex As Integer) As e_DamageResult
+Public Function DoDamageOrHeal(ByVal UserIndex As Integer, ByVal SourceIndex As Integer, ByVal SourceType As e_ReferenceType, ByVal amount As Long, ByVal DamageSourceType As e_DamageSourceType, ByVal DamageSourceIndex As Integer) As e_DamageResult
 On Error GoTo DoDamageOrHeal_Err
     Dim DamageStr As String
     Dim Color As Long

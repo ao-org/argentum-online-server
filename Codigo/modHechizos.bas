@@ -581,7 +581,14 @@ Private Function PuedeLanzar(ByVal UserIndex As Integer, ByVal HechizoIndex As I
                     End If
                 End If
             End If
-
+            
+            Dim RequiredItemResult As e_EquipedSlotMask
+            RequiredItemResult = TestRequiredEquipedItem(.invent, Hechizos(HechizoIndex).RequireEquipedSlot)
+            If RequiredItemResult > 0 Then
+                Call SendrequiredItemMessage(UserIndex, RequiredItemResult, "para usar este hechizo.")
+                Exit Function
+            End If
+            
 166         PuedeLanzar = True
 
         End With
