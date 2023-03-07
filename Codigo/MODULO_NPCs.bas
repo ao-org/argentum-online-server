@@ -1862,14 +1862,14 @@ Public Sub StunNPc(ByRef Counters As t_NpcCounters)
     Counters.StunEndTime = GetTickCount() + NpcStunTime
 End Sub
 
-Public Function ModifyHealth(ByVal npcIndex As Integer, ByVal amount As Integer, Optional ByVal minValue = 0) As Boolean
+Public Function ModifyHealth(ByVal npcIndex As Integer, ByVal amount As Long, Optional ByVal minValue = 0) As Boolean
     With NpcList(npcIndex)
         ModifyHealth = False
         .Stats.MinHp = .Stats.MinHp + amount
         If .Stats.MinHp > .Stats.MaxHp Then
             .Stats.MinHp = .Stats.MaxHp
         End If
-        If .Stats.MinHp < minValue Then
+        If .Stats.MinHp <= minValue Then
             .Stats.MinHp = minValue
             ModifyHealth = True
         End If
@@ -1877,7 +1877,7 @@ Public Function ModifyHealth(ByVal npcIndex As Integer, ByVal amount As Integer,
     End With
 End Function
 
-Public Function DoDamageOrHeal(ByVal npcIndex As Integer, ByVal SourceIndex As Integer, ByVal SourceType As e_ReferenceType, ByVal amount As Integer, ByVal DamageSourceType As e_DamageSourceType, ByVal DamageSourceIndex As Integer) As e_DamageResult
+Public Function DoDamageOrHeal(ByVal npcIndex As Integer, ByVal SourceIndex As Integer, ByVal SourceType As e_ReferenceType, ByVal amount As Long, ByVal DamageSourceType As e_DamageSourceType, ByVal DamageSourceIndex As Integer) As e_DamageResult
 On Error GoTo DoDamageOrHeal_Err
     Dim DamageStr As String
     Dim Color As Long

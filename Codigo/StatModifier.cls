@@ -99,7 +99,15 @@ Public Sub IBaseEffectOverTime_Update(ByVal deltaTime As Long)
     TimeSinceLastTick = TimeSinceLastTick + deltaTime
     If TimeSinceLastTick >= TickTime Or Not IsValidRef(DotInfo.TargetRef) Then
         DotInfo.RemoveEffect = True
+        Exit Sub
     End If
+    If DotInfo.TargetRef.RefType = eUser Then
+        If TestRequiredEquipedItem(UserList(DotInfo.TargetRef.ArrayIndex).invent, EffectOverTime(DotInfo.EotId).RequireEquipedSlot) <> e_EquipedSlotMask.eNone Then
+            DotInfo.RemoveEffect = True
+            Exit Sub
+        End If
+    End If
+    
 End Sub
 
 Public Property Get IBaseEffectOverTime_RemoveMe() As Boolean
