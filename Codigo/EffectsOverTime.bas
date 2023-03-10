@@ -66,6 +66,7 @@ On Error GoTo UpdateEffect_Err
 116             Call RemoveEffect(NpcList(ActiveEffects(Index).TargetArrayIndex).EffectOverTime, ActiveEffects(Index))
             End If
         End If
+        Call ActiveEffects(index).OnRemove
 120     Call ReleaseEffect(ActiveEffects(Index))
 124     Set ActiveEffects(Index) = ActiveEffects(ActiveEffectCount - 1)
 130     Set ActiveEffects(ActiveEffectCount - 1) = Nothing
@@ -145,6 +146,25 @@ CreateEffect_Err:
       Call TraceError(Err.Number, Err.Description, "EffectsOverTime.CreateEffect", Erl)
 End Sub
 
+Public Sub CreateTrap(ByVal SourceIndex As Integer, ByVal SourceType As e_ReferenceType, ByVal map As Integer, ByVal TileX As Integer, ByVal TileY As Integer, ByVal EffectTypeId As Integer)
+On Error GoTo CreateTrap_Err
+    Dim EffectType As e_EffectOverTimeType
+100 EffectType = e_EffectOverTimeType.eTrap
+    Dim Trap As clsTrap
+104 Set Trap = GetEOT(EffectType)
+106 UniqueIdCounter = GetNextId()
+108 Call Trap.Setup(SourceIndex, SourceType, EffectTypeId, UniqueIdCounter, map, TileX, TileY)
+110 Call AddEffectToUpdate(Trap)
+112 If SourceType = eUser Then
+114     Call AddEffect(UserList(SourceIndex).EffectOverTime, Trap)
+116 ElseIf SourceType = eNpc Then
+118     Call AddEffect(NpcList(SourceIndex).EffectOverTime, Trap)
+    End If
+    Exit Sub
+CreateTrap_Err:
+      Call TraceError(Err.Number, Err.Description, "EffectsOverTime.CreateTrap", Erl)
+End Sub
+
 Private Function InstantiateEOT(ByVal EffectType As e_EffectOverTimeType) As IBaseEffectOverTime
     Select Case EffectType
         Case e_EffectOverTimeType.eHealthModifier
@@ -155,6 +175,8 @@ Private Function InstantiateEOT(ByVal EffectType As e_EffectOverTimeType) As IBa
             Set InstantiateEOT = New EffectProvoke
         Case e_EffectOverTimeType.eProvoked
             Set InstantiateEOT = New EffectProvoked
+        Case e_EffectOverTimeType.eTrap
+            Set InstantiateEOT = New clsTrap
         Case Else
             Debug.Assert False
     End Select
@@ -215,7 +237,6 @@ On Error GoTo RemoveEffect_Err
 110         Set EffectList.EffectList(i) = EffectList.EffectList(EffectList.EffectCount - 1)
 118         Set EffectList.EffectList(EffectList.EffectCount - 1) = Nothing
 120         EffectList.EffectCount = EffectList.EffectCount - 1
-            Call Effect.OnRemove
             Exit Sub
         End If
     Next i
@@ -310,3 +331,14 @@ Public Sub TargetWasDamaged(ByRef EffectList As t_EffectOverTimeList, ByVal Sour
          Call EffectList.EffectList(i).TargetWasDamaged(SourceUserId, SourceType, AttackType)
     Next i
 End Sub
+
+Public Function ConvertToClientBuff(ByVal buffType As e_EffectType) As e_EffectType
+    Select Case buffType
+        Case e_EffectType.eInformativeBuff
+            ConvertToClientBuff = eBuff
+        Case e_EffectType.eInformativeDebuff
+            ConvertToClientBuff = eDebuff
+        Case Else
+        ConvertToClientBuff = buffType
+    End Select
+End Function

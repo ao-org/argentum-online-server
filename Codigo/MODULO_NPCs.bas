@@ -958,7 +958,9 @@ Public Function MoveNPCChar(ByVal NpcIndex As Integer, ByVal nHeading As Byte) A
 156             MapData(.Pos.Map, nPos.X, nPos.Y).NpcIndex = NpcIndex
             
 158             Call CheckUpdateNeededNpc(NpcIndex, nHeading)
-        
+                If Not MapData(.pos.map, nPos.x, nPos.y).Trap Is Nothing Then
+                     Call ModMap.ActivateTrap(npcIndex, eNpc, .pos.map, nPos.x, nPos.y)
+                End If
                 ' Npc has moved
 160             MoveNPCChar = True
 
@@ -1918,7 +1920,7 @@ On Error GoTo DoDamageOrHeal_Err
                 SourceIndex = -1
             End If
             Call MuereNpc(npcIndex, sourceIndex)
-            Return
+            Exit Function
         End If
     End With
     DoDamageOrHeal = eStillAlive
@@ -2043,4 +2045,17 @@ On Error GoTo UserCanAttackNpc_Err
      Exit Function
 UserCanAttackNpc_Err:
 222     Call TraceError(Err.Number, Err.Description, "Npcs.UserCanAttackNpc", Erl)
+End Function
+
+Public Function Inmovilize(ByVal SourceIndex As Integer, ByVal TargetIndex As Integer, ByVal Time As Integer, ByVal FX As Integer) As Boolean
+    With NpcList(TargetIndex)
+142     Call NPCAtacado(TargetIndex, SourceIndex)
+172     .flags.Inmovilizado = 1
+174     .Contadores.Inmovilizado = Time
+176     .flags.Paralizado = 0
+178     .Contadores.Paralisis = 0
+180     Call AnimacionIdle(TargetIndex, True)
+184     Call SendData(SendTarget.ToNPCAliveArea, TargetIndex, PrepareMessageCreateFX(.Char.charindex, FX, 0, .pos.x, .pos.y))
+    Inmovilize = True
+    End With
 End Function

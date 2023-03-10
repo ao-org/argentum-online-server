@@ -364,6 +364,9 @@ Public Sub DoTileEvents(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal 
 104             If MapData(Map, X, Y).ObjInfo.ObjIndex > 0 Then
 106                 EsTeleport = ObjData(MapData(Map, X, Y).ObjInfo.ObjIndex).OBJType = e_OBJType.otTeleport
                 End If
+                If Not MapData(map, X, y).Trap Is Nothing Then
+                    Call ModMap.ActivateTrap(UserIndex, eUser, map, X, y)
+                End If
                 If EsTeleport Then
 108                 If ObjData(MapData(map, X, y).ObjInfo.objIndex).Subtipo = e_TeleportSubType.eTransportNetwork Then
 110                     Dim StartTransportIndex As Integer

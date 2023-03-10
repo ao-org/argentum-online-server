@@ -600,6 +600,7 @@ Public Const MAXSKILLPOINTS As Byte = 100
 ''
 ' Cantidad maxima de mascotas
 Public Const MAXMASCOTAS    As Byte = 3
+Public Const MAXUSERTRAP    As Byte = 3
 
 ''
 'Direccion
@@ -835,6 +836,7 @@ Public Enum e_OBJType
     OtDonador = 50
     OtQuest = 51
     otFishingPool = 52
+    otUsableOntarget = 53
     otCualquiera = 100
 End Enum
 
@@ -879,6 +881,11 @@ Public Enum e_MagicEffect
     eIncreaseSkillLearningChance = 18
     eAddPoisonEffect = 19
     eResurrectionItem = 20
+End Enum
+
+Public Enum e_UssableOnTarget
+    eRessurectionItem = 1
+    eTrap
 End Enum
 'Estadisticas
 Public Const STAT_MAXELV              As Byte = 47
@@ -1089,12 +1096,14 @@ End Enum
 Public Type t_EffectOverTime
     Type As e_EffectOverTimeType
     Limit As e_EOTTargetLimit
+    SubType As Integer
     TickPowerMin As Integer
     TickPowerMax As Integer
     Ticks As Integer
     TickTime As Long
     TickFX As Integer
     OnHitFx As Integer
+    OnHitWav As Integer
     BuffType As e_EffectType
     Override As Boolean
     PhysicalDamageReduction As Single
@@ -1183,6 +1192,10 @@ Public Type t_Position
     Y As Integer
 
 End Type
+
+Public Enum e_TrapEffect
+    eInmovilize = 1
+End Enum
 
 Public Type t_CityWorldPos
 
@@ -2096,6 +2109,7 @@ Public Enum e_CdTypes
     e_Ranged = 4
     e_Throwing = 5
     e_Resurrection = 6
+    e_Traps = 7
     [CDCount]
 End Enum
 
@@ -2103,7 +2117,8 @@ Public Enum e_EffectType
     eBuff = 1
     eDebuff
     eCD
-    eSelfDebuf
+    eInformativeDebuff
+    eInformativeBuff
     eAny
 End Enum
 
@@ -2517,7 +2532,7 @@ Public Type t_MapBlock
     trigger As e_Trigger
     ParticulaIndex As Integer
     Luz As t_light
-
+    Trap As clsTrap
 End Type
 
 Public Enum e_MapSetting
@@ -2740,6 +2755,7 @@ Public Enum e_EffectOverTimeType
     eApplyModifiers = 2
     eProvoke = 3
     eProvoked = 4
+    eTrap = 5
     [EffectTypeCount]
 End Enum
 
