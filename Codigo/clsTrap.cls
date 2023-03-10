@@ -22,6 +22,12 @@ Private mDotInfo As t_BaseDotInfo
 Private mElapsedTime As Long
 Private mTimeLimit As Long
 
+Private Enum e_TrapTypes
+    eInmovilize = 1
+    eExplosive
+    ePoison
+End Enum
+
 Const ACTIVATE_TRAOP_WAW_FILE = 210
 
 Public Sub Setup(ByVal SourceIndex As Integer, ByVal SourceType As e_ReferenceType, ByVal EffectId As Integer, ByVal ID As Long, _
@@ -163,34 +169,45 @@ Public Function trigger(ByVal TargetIndex, ByVal TargetType As e_ReferenceType)
     If mDotInfo.RemoveEffect Then Exit Function
     mDotInfo.RemoveEffect = True
     Select Case EffectOverTime(mDotInfo.EotId).SubType
-        Case 1
+        Case e_TrapTypes.eInmovilize
             If mDotInfo.TargetRef.RefType = eUser Then
                 If TargetType = eUser Then
                     Call UserMod.Inmovilize(mDotInfo.TargetRef.ArrayIndex, TargetIndex, NET_INMO_DURATION, EffectOverTime(mDotInfo.EotId).OnHitFx)
+                    If EffectOverTime(mDotInfo.EotId).OnHitFx > 0 Then Call SendData(SendTarget.ToPCAliveArea, TargetIndex, PrepareMessageCreateFX(UserList(TargetIndex).Char.charindex, EffectOverTime(mDotInfo.EotId).OnHitFx, 0, mWorldPosition.x, mWorldPosition.y))
                     trigger = True
                     Exit Function
                 End If
                 If TargetType = eNpc Then
                     Call NPCs.Inmovilize(mDotInfo.TargetRef.ArrayIndex, TargetIndex, NET_INMO_DURATION * 10, EffectOverTime(mDotInfo.EotId).OnHitFx)
+                    If EffectOverTime(mDotInfo.EotId).OnHitFx > 0 Then Call SendData(SendTarget.ToNPCAliveArea, TargetIndex, PrepareMessageCreateFX(NpcList(TargetIndex).Char.charindex, EffectOverTime(mDotInfo.EotId).OnHitFx, 0, mWorldPosition.x, mWorldPosition.y))
                     trigger = True
                     Exit Function
                 End If
             End If
-        Case 2
+        Case e_TrapTypes.eExplosive
             If mDotInfo.TargetRef.RefType = eUser Then
                 If TargetType = eUser Then
                     Call UserMod.DoDamageOrHeal(TargetIndex, mDotInfo.TargetRef.ArrayIndex, eUser, RandomNumber(EffectOverTime(mDotInfo.EotId).TickPowerMin, EffectOverTime(mDotInfo.EotId).TickPowerMax), e_DamageSourceType.e_trap, mDotInfo.EotId)
-                    Call SendData(SendTarget.ToPCAliveArea, TargetIndex, PrepareMessageCreateFX(UserList(TargetIndex).Char.charindex, EffectOverTime(mDotInfo.EotId).OnHitFx, 0, mWorldPosition.x, mWorldPosition.y))
+                    If EffectOverTime(mDotInfo.EotId).OnHitFx > 0 Then Call SendData(SendTarget.ToPCAliveArea, TargetIndex, PrepareMessageCreateFX(UserList(TargetIndex).Char.charindex, EffectOverTime(mDotInfo.EotId).OnHitFx, 0, mWorldPosition.x, mWorldPosition.y))
                     trigger = True
                     Exit Function
                 End If
                 If TargetType = eNpc Then
                     Call NPCs.DoDamageOrHeal(TargetIndex, mDotInfo.TargetRef.ArrayIndex, eUser, RandomNumber(EffectOverTime(mDotInfo.EotId).TickPowerMin, EffectOverTime(mDotInfo.EotId).TickPowerMax), e_DamageSourceType.e_trap, mDotInfo.EotId)
-                    Call SendData(SendTarget.ToNPCAliveArea, TargetIndex, PrepareMessageCreateFX(NpcList(TargetIndex).Char.charindex, EffectOverTime(mDotInfo.EotId).OnHitFx, 0, mWorldPosition.x, mWorldPosition.y))
+                    If EffectOverTime(mDotInfo.EotId).OnHitFx > 0 Then Call SendData(SendTarget.ToNPCAliveArea, TargetIndex, PrepareMessageCreateFX(NpcList(TargetIndex).Char.charindex, EffectOverTime(mDotInfo.EotId).OnHitFx, 0, mWorldPosition.x, mWorldPosition.y))
                     trigger = True
                     Exit Function
                 End If
             End If
+        Case e_TrapTypes.ePoison
+            Call EffectsOverTime.CreateEffect(mDotInfo.TargetRef.ArrayIndex, mDotInfo.TargetRef.RefType, TargetIndex, TargetType, EffectOverTime(mDotInfo.EotId).ApplyeffectID)
+            If TargetType = eNpc Then
+                If EffectOverTime(mDotInfo.EotId).OnHitFx > 0 Then Call SendData(SendTarget.ToNPCAliveArea, TargetIndex, PrepareMessageCreateFX(NpcList(TargetIndex).Char.charindex, EffectOverTime(mDotInfo.EotId).OnHitFx, 0, mWorldPosition.x, mWorldPosition.y))
+            Else
+                If EffectOverTime(mDotInfo.EotId).OnHitFx > 0 Then Call SendData(SendTarget.ToPCAliveArea, TargetIndex, PrepareMessageCreateFX(UserList(TargetIndex).Char.charindex, EffectOverTime(mDotInfo.EotId).OnHitFx, 0, mWorldPosition.x, mWorldPosition.y))
+            End If
+            trigger = True
+            Exit Function
         End Select
 End Function
 

@@ -1114,6 +1114,7 @@ Public Type t_EffectOverTime
     ClientEffectTypeId As Integer
     Area As Integer
     Aura As String
+    ApplyeffectID As Integer
     RequireEquipedSlot As Long
 End Type
 

@@ -829,6 +829,7 @@ On Error GoTo ErrHandler
             EffectOverTime(i).BuffType = val(Leer.GetValue("EOT" & i, "BuffType"))
             EffectOverTime(i).Area = val(Leer.GetValue("EOT" & i, "Area"))
             EffectOverTime(i).Aura = Leer.GetValue("EOT" & i, "Aura")
+            EffectOverTime(i).ApplyeffectID = val(Leer.GetValue("EOT" & i, "ApplyeffectID"))
             If val(Leer.GetValue("EOT" & i, "AffectedByMagicBonus")) > 0 Then
                 Call SetMask(EffectOverTime(i).EffectModifiers, e_ModifierTypes.MagicBonus)
             End If
