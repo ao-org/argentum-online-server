@@ -794,9 +794,7 @@ Sub CarpinteroQuitarMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As In
         Exit Sub
 
 CarpinteroQuitarMateriales_Err:
-104     Call TraceError(Err.Number, Err.Description, "Trabajo.CarpinteroQuitarMateriales", Erl)
-106
-        
+106     Call TraceError(Err.Number, Err.Description, "Trabajo.CarpinteroQuitarMateriales", Erl)
 End Sub
 
 Sub AlquimistaQuitarMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As Integer)
@@ -859,7 +857,7 @@ Function CarpinteroTieneMateriales(ByVal UserIndex As Integer, ByVal ItemIndex A
 
         End If
         
-120             If ObjData(ItemIndex).MaderaPino > 0 Then
+120     If ObjData(ItemIndex).MaderaPino > 0 Then
 122         If Not TieneObjetos(PinoWood, ObjData(ItemIndex).MaderaPino * Cantidad, UserIndex) Then
 124             Call WriteConsoleMsg(UserIndex, "No tenes suficiente madera pino nudoso.", e_FontTypeNames.FONTTYPE_INFO)
 126             CarpinteroTieneMateriales = False
@@ -869,14 +867,12 @@ Function CarpinteroTieneMateriales(ByVal UserIndex As Integer, ByVal ItemIndex A
 
         End If
     
-120     CarpinteroTieneMateriales = True
-
+        CarpinteroTieneMateriales = True
         
         Exit Function
 
 CarpinteroTieneMateriales_Err:
-122     Call TraceError(Err.Number, Err.Description + " UI:" + UserIndex + " Item: " + ItemIndex, "Trabajo.CarpinteroTieneMateriales", Erl)
-124
+        Call TraceError(Err.Number, Err.Description + " UI:" + UserIndex + " Item: " + ItemIndex, "Trabajo.CarpinteroTieneMateriales", Erl)
         
 End Function
 
