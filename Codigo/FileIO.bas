@@ -1444,7 +1444,6 @@ Sub LoadOBJData()
 436             .MinSkill = val(Leer.GetValue(ObjKey, "MinSkill"))
 
 438             .Elfico = val(Leer.GetValue(ObjKey, "Elfico"))
-439             .Pino = val(Leer.GetValue(ObjKey, "Pino"))
 
 440             .Snd1 = val(Leer.GetValue(ObjKey, "SND1"))
 442             .Snd2 = val(Leer.GetValue(ObjKey, "SND2"))
@@ -1574,8 +1573,6 @@ Sub LoadOBJData()
 586             .Madera = val(Leer.GetValue(ObjKey, "Madera"))
 
 588             .MaderaElfica = val(Leer.GetValue(ObjKey, "MaderaElfica"))
-                
-                .MaderaPino = val(Leer.GetValue(ObjKey, "Maderapino"))
     
                 'Bebidas
 590             .MinSta = val(Leer.GetValue(ObjKey, "MinST"))

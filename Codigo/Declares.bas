@@ -522,30 +522,29 @@ End Enum
 Public Const Guardias As Integer = 6
 Public Const MAX_PERSONAJES = 10
 Public Const MAXORO         As Long = 90000000
-Public Const MAXEXP             As Long = 1999999999
-Public Const MAXUSERMATADOS     As Long = 65000
-Public Const MINATRIBUTOS       As Byte = 6
-Public Const LingoteHierro      As Integer = 386 'OK
-Public Const LingotePlata       As Integer = 387 'OK
-Public Const LingoteOro         As Integer = 388 'OK
-Public Const Wood               As Integer = 58 'OK
-Public Const ElvenWood          As Integer = 2781 'OK
-Public Const Raices             As Integer = 888 'OK
-Public Const PieldeLobo         As Integer = 414 'OK
-Public Const PieldeOsoPardo     As Integer = 415 'OK
-Public Const PieldeOsoPolar     As Integer = 416 'OK
-Public Const MaxNPCs            As Integer = 10000
-Public Const MAXCHARS           As Integer = 10000
-Public Const DAGA               As Integer = 15 'OK
-Public Const FOGATA_APAG        As Integer = 136 'OK
-Public Const FOGATA             As Integer = 63 'OK
-Public Const ORO_MINA           As Integer = 194 'OK
-Public Const PLATA_MINA         As Integer = 193 'OK
-Public Const HIERRO_MINA        As Integer = 192 'OK
-Public Const ObjArboles         As Integer = 4 'OK
-Public Const FishSubType        As Integer = 1
-Public Const PinoWood           As Integer = 3788 'OK
-Public Const Blodium            As Integer = 3787 'OK
+Public Const MAXEXP         As Long = 1999999999
+Public Const MAXUSERMATADOS As Long = 65000
+Public Const MINATRIBUTOS   As Byte = 6
+Public Const LingoteHierro  As Integer = 386 'OK
+Public Const LingotePlata   As Integer = 387 'OK
+Public Const LingoteOro     As Integer = 388 'OK
+Public Const Wood           As Integer = 58 'OK
+Public Const ElvenWood      As Integer = 2781 'OK
+Public Const Raices         As Integer = 888 'OK
+Public Const PieldeLobo     As Integer = 414 'OK
+Public Const PieldeOsoPardo As Integer = 415 'OK
+Public Const PieldeOsoPolar As Integer = 416 'OK
+Public Const MaxNPCs        As Integer = 10000
+Public Const MAXCHARS       As Integer = 10000
+Public Const DAGA                As Integer = 15 'OK
+Public Const FOGATA_APAG         As Integer = 136 'OK
+Public Const FOGATA              As Integer = 63 'OK
+Public Const ORO_MINA            As Integer = 194 'OK
+Public Const PLATA_MINA          As Integer = 193 'OK
+Public Const HIERRO_MINA         As Integer = 192 'OK
+Public Const ObjArboles          As Integer = 4 'OK
+Public Const FishSubType         As Integer = 1
+
 
 Public Enum e_NPCType
 
@@ -1361,7 +1360,6 @@ End Type
 
 'Tipos de objetos
 Public Type t_ObjData
-    Pino As Byte
     Elfico As Byte
     velocidad As Single
     CantEntrega As Byte
@@ -1514,7 +1512,6 @@ Public Type t_ObjData
     LingP As Integer
     Madera As Integer
     MaderaElfica As Integer
-    MaderaPino As Integer
     
     Raices As Integer
     SkPociones As Byte
