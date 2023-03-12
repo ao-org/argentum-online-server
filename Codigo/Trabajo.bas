@@ -252,7 +252,12 @@ Public Sub Trabajar(ByVal UserIndex As Integer, ByVal Skill As e_Skill)
                                     Exit Sub
 
                                 End If
+379                             If ObjData(DummyInt).Pino <> ObjData(.invent.HerramientaEqpObjIndex).Pino Then
+                                    Call WriteConsoleMsg(UserIndex, "Sólo puedes talar árboles de pino nudoso con un hacha de pino.", e_FontTypeNames.FONTTYPE_INFO)
+                                    Call WriteWorkRequestTarget(UserIndex, 0)
+                                    Exit Sub
 
+                                End If
 380                             If MapData(.Pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).ObjInfo.amount <= 0 Then
 382                                 Call WriteConsoleMsg(userIndex, "El árbol ya no te puede entregar mas leña.", e_FontTypeNames.FONTTYPE_INFO)
 384                                 Call WriteWorkRequestTarget(UserIndex, 0)
@@ -783,6 +788,8 @@ Sub CarpinteroQuitarMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As In
 100     If ObjData(ItemIndex).Madera > 0 Then Call QuitarObjetos(Wood, Cantidad, UserIndex)
 
 102     If ObjData(ItemIndex).MaderaElfica > 0 Then Call QuitarObjetos(ElvenWood, Cantidad, UserIndex)
+
+104     If ObjData(ItemIndex).MaderaPino > 0 Then Call QuitarObjetos(PinoWood, Cantidad, UserIndex)
         
         Exit Sub
 
@@ -847,6 +854,16 @@ Function CarpinteroTieneMateriales(ByVal UserIndex As Integer, ByVal ItemIndex A
 114             Call WriteConsoleMsg(UserIndex, "No tenes suficiente madera elfica.", e_FontTypeNames.FONTTYPE_INFO)
 116             CarpinteroTieneMateriales = False
 118             Call WriteMacroTrabajoToggle(UserIndex, False)
+                Exit Function
+            End If
+
+        End If
+        
+120             If ObjData(ItemIndex).MaderaPino > 0 Then
+122         If Not TieneObjetos(PinoWood, ObjData(ItemIndex).MaderaPino * Cantidad, UserIndex) Then
+124             Call WriteConsoleMsg(UserIndex, "No tenes suficiente madera pino nudoso.", e_FontTypeNames.FONTTYPE_INFO)
+126             CarpinteroTieneMateriales = False
+128             Call WriteMacroTrabajoToggle(UserIndex, False)
                 Exit Function
             End If
 
@@ -1235,6 +1252,8 @@ Public Sub CarpinteroConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
                 madera_requerida = ObjData(ItemIndex).Madera
             ElseIf ObjData(ItemIndex).MaderaElfica > 0 Then
                 madera_requerida = ObjData(ItemIndex).MaderaElfica
+            ElseIf ObjData(ItemIndex).MaderaPino > 0 Then
+                madera_requerida = ObjData(ItemIndex).MaderaPino
             End If
             
     
@@ -2490,8 +2509,14 @@ Public Sub DoTalar(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte,
             'HarThaoS: Le agrego más dificultad al talar en zona segura.  37% probabilidad de fallo en segura vs 16% en insegura
 116         res = RandomNumber(1, IIf(MapInfo(UserList(userindex).Pos.map).Seguro = 1, Suerte + 4, Suerte))
 
+            'ReyarB: aumento chances solamente si es el arbol de pino nudoso.
+            If ObjData(MapData(.pos.map, x, y).ObjInfo.objIndex).Pino = 1 Then
+                res = 1
+                Suerte = 100
+            End If
+
 '118         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageArmaMov(.Char.CharIndex))
-            
+
 120         If res < 6 Then
 
                 Dim nPos  As t_WorldPos
@@ -2508,13 +2533,16 @@ Public Sub DoTalar(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte,
                 End If
 128             MiObj.amount = MiObj.amount * RecoleccionMult
 
-129             If ObjData(MapData(.pos.map, X, y).ObjInfo.objIndex).Elfico = 0 Then
-130                 MiObj.ObjIndex = Wood
+129             If ObjData(MapData(.pos.map, x, y).ObjInfo.objIndex).Elfico = 1 Then
+130                 MiObj.objIndex = ElvenWood
+                        
+                ElseIf ObjData(MapData(.pos.map, x, y).ObjInfo.objIndex).Pino = 1 Then
+                    MiObj.objIndex = PinoWood
+                
                 Else
-132                 MiObj.ObjIndex = ElvenWood
+132                 MiObj.objIndex = Wood
                 End If
-
-
+                
 134             If MiObj.amount > MapData(.Pos.Map, X, Y).ObjInfo.amount Then
 136                 MiObj.amount = MapData(.Pos.Map, X, Y).ObjInfo.amount
                 End If
