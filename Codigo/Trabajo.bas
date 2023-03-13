@@ -184,11 +184,17 @@ Public Sub Trabajar(ByVal UserIndex As Integer, ByVal Skill As e_Skill)
 
                                     ' Si el Yacimiento requiere herramienta `Dorada` y la herramienta no lo es, o vice versa.
                                     ' Se usa para el yacimiento de Oro.
-476                                 If ObjData(DummyInt).Dorada <> ObjData(.Invent.HerramientaEqpObjIndex).Dorada Then
-478                                     Call WriteConsoleMsg(UserIndex, "El pico dorado solo puede extraer minerales del yacimiento de Oro.", e_FontTypeNames.FONTTYPE_INFO)
-480                                     Call WriteWorkRequestTarget(UserIndex, 0)
-                                        Exit Sub
-
+476                                 If ObjData(DummyInt).Dorada <> ObjData(.invent.HerramientaEqpObjIndex).Dorada Or ObjData(DummyInt).Blodium <> ObjData(.invent.HerramientaEqpObjIndex).Blodium Then
+478
+                                        If ObjData(DummyInt).Blodium <> ObjData(.invent.HerramientaEqpObjIndex).Blodium Then
+                                            Call WriteConsoleMsg(UserIndex, "El pico minero especial solo puede extraer minerales del yacimiento de Blodium.", e_FontTypeNames.FONTTYPE_INFO)
+                                            Call WriteWorkRequestTarget(UserIndex, 0)
+                                            Exit Sub
+                                        Else
+                                            Call WriteConsoleMsg(UserIndex, "El pico dorado solo puede extraer minerales del yacimiento de Oro.", e_FontTypeNames.FONTTYPE_INFO)
+480                                         Call WriteWorkRequestTarget(UserIndex, 0)
+                                            Exit Sub
+                                        End If
                                     End If
 
 482                                 If MapData(.Pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).ObjInfo.amount <= 0 Then

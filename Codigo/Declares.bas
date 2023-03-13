@@ -545,7 +545,7 @@ Public Const HIERRO_MINA        As Integer = 192 'OK
 Public Const ObjArboles         As Integer = 4 'OK
 Public Const FishSubType        As Integer = 1
 Public Const PinoWood           As Integer = 3788 'OK
-Public Const Blodium            As Integer = 3787 'OK
+Public Const BLODIUM_MINA       As Integer = 3787 'OK
 
 Public Enum e_NPCType
 
@@ -1444,7 +1444,8 @@ Public Type t_ObjData
     
     Subtipo As Byte ' 0: -, 1: Paraliza, 2: Incinera, 3: Envenena, 4: Explosiva
     
-    Dorada As Byte
+    Dorada  As Byte
+    Blodium As Byte
     
     VidaUtil As Integer
     TiempoRegenerar As Integer
