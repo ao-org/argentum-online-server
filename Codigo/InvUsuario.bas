@@ -3403,6 +3403,8 @@ Function DropAmmount(ByRef invent As t_Inventario, ByVal objectIndex As Integer)
 124             unprotected = CSng(1) - (CSng(.MaderaElfica) / 100)
 129         ElseIf invent.Object(objectIndex).objIndex = PinoWood Then
 130             unprotected = CSng(1) - (CSng(.MaderaPino) / 100)
+131         ElseIf invent.Object(objectIndex).objIndex = BLODIUM_MINA Then
+132             unprotected = CSng(1) - (CSng(.Blodium) / 100)
             ElseIf invent.Object(objectIndex).ObjIndex > 0 Then 'fish types
                 If ObjData(invent.Object(objectIndex).ObjIndex).OBJType = otUseOnce And _
                    ObjData(invent.Object(objectIndex).ObjIndex).Subtipo = e_UseOnceSubType.eFish Then
