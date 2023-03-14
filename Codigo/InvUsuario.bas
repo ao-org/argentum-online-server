@@ -1640,7 +1640,7 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
                     Else
 
 476                     If .Invent.WeaponEqpObjIndex > 0 Then
-478                         If ObjData(.Invent.WeaponEqpObjIndex).Proyectil = 1 Then
+478                         If ObjData(.invent.WeaponEqpObjIndex).Proyectil = 1 And ObjData(.invent.WeaponEqpObjIndex).Municion > 0 Then
 480                             Call Desequipar(UserIndex, .Invent.WeaponEqpSlot)
 482                             Call WriteConsoleMsg(UserIndex, "No podes sostener el escudo si tenes que tirar flechas. Tu arco fue desequipado.", e_FontTypeNames.FONTTYPE_INFOIAO)
                             End If
@@ -3182,8 +3182,14 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                             Case e_MagicItemSubType.TargetUsable
                                 Call WriteWorkRequestTarget(UserIndex, e_Skill.TargetableItem)
                         End Select
+                 Case e_OBJType.otUsableOntarget
+                    Select Case ObjData(objIndex).Subtipo
+                        Case e_UssableOnTarget.eRessurectionItem
+                            Call WriteWorkRequestTarget(UserIndex, e_Skill.TargetableItem)
+                        Case e_UssableOnTarget.eTrap
+                            Call WriteWorkRequestTarget(UserIndex, e_Skill.TargetableItem)
+                    End Select
                 End Select
-             
              End With
 
              Exit Sub
@@ -3454,15 +3460,10 @@ On Error GoTo UserTargetableItem_Err
             Exit Sub
         End If
         Select Case .Subtipo
-            Case e_MagicItemSubType.TargetUsable
-                Select Case .EfectoMagico
-                    Case e_MagicEffect.eResurrectionItem
-                        Call ResurrectWithItem(UserIndex)
-                    Case Else
-                        Exit Sub
-                End Select
-            Case Else
-                Exit Sub
+            Case e_UssableOnTarget.eRessurectionItem
+                Call ResurrectWithItem(UserIndex)
+            Case e_UssableOnTarget.eTrap
+                Call PlaceTrap(UserIndex, TileX, TileY)
         End Select
     End With
     
@@ -3517,11 +3518,53 @@ On Error GoTo ResurrectWithItem_Err
         Dim objIndex As Integer
 126     objIndex = .invent.Object(.flags.TargetObjInvSlot).objIndex
 128     Call UpdateCd(UserIndex, ObjData(objIndex).cdType)
-192     Call QuitarUserInvItem(UserIndex, UserList(UserIndex).flags.TargetObjInvSlot, 1)
-194     Call UpdateUserInv(True, UserIndex, UserList(UserIndex).flags.TargetObjInvSlot)
+192     Call RemoveItemFromInventory(UserIndex, UserList(UserIndex).flags.TargetObjInvSlot)
 196     Call ResurrectUser(TargetUser)
     End With
     Exit Sub
 ResurrectWithItem_Err:
     Call TraceError(Err.Number, Err.Description, "InvUsuario.ResurrectWithItem", Erl)
+End Sub
+
+Public Sub RemoveItemFromInventory(ByVal UserIndex As Integer, ByVal Slot As Integer)
+    Call QuitarUserInvItem(UserIndex, Slot, 1)
+    Call UpdateUserInv(True, UserIndex, Slot)
+End Sub
+
+Public Sub PlaceTrap(ByVal UserIndex As Integer, ByVal TileX As Integer, ByVal TileY As Integer)
+    With UserList(UserIndex)
+        If Distance(TileX, TileY, .pos.x, .pos.y) > 3 Then
+            Call WriteLocaleMsg(UserIndex, MsgToFar, e_FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+        End If
+        If Not CanAddTrapAt(.pos.map, TileX, TileY) Then
+            Call WriteLocaleMsg(UserIndex, MsgInvalidTile, e_FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+        End If
+        Dim i As Integer
+        Dim OlderTrapTime As Long
+        Dim OlderTrapIndex As Integer
+        OlderTrapTime = 0
+        Dim TrapCount As Integer
+        Dim Trap As clsTrap
+        For i = 0 To .EffectOverTime.EffectCount - 1
+            If .EffectOverTime.EffectList(i).TypeId = e_EffectOverTimeType.eTrap Then
+                TrapCount = TrapCount + 1
+                Set Trap = .EffectOverTime.EffectList(i)
+                If Trap.ElapsedTime > OlderTrapTime Then
+                    OlderTrapIndex = i
+                    OlderTrapTime = Trap.ElapsedTime
+                End If
+            End If
+        Next i
+        If TrapCount >= 3 Then
+            Set Trap = .EffectOverTime.EffectList(OlderTrapIndex)
+            Call Trap.Disable
+        End If
+        Dim objIndex As Integer
+        objIndex = UserList(UserIndex).invent.Object(UserList(UserIndex).flags.TargetObjInvSlot).objIndex
+        Call UpdateCd(UserIndex, ObjData(objIndex).cdType)
+        Call EffectsOverTime.CreateTrap(UserIndex, eUser, .pos.map, TileX, TileY, ObjData(objIndex).EfectoMagico)
+        Call RemoveItemFromInventory(UserIndex, UserList(UserIndex).flags.TargetObjInvSlot)
+    End With
 End Sub

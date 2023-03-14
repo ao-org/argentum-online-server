@@ -6,6 +6,7 @@ Public Enum e_DamageSourceType
     e_magic
     e_pet
     e_dot
+    e_trap
 End Enum
 
 Public Type e_Rank

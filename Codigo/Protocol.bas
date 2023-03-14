@@ -212,6 +212,7 @@ Public Enum ServerPacketID
     ShopPjsInit
     DebugDataResponse
     CreateProjectile
+    UpdateTrap
     #If PYMMO = 0 Then
     AccountCharacterList
     #End If

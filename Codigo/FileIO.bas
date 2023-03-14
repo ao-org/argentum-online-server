@@ -811,12 +811,14 @@ On Error GoTo ErrHandler
 
 114     For i = 1 To EffectCount
             EffectOverTime(i).Type = val(Leer.GetValue("EOT" & i, "Type"))
+            EffectOverTime(i).SubType = val(Leer.GetValue("EOT" & i, "SubType"))
             EffectOverTime(i).TickPowerMin = val(Leer.GetValue("EOT" & i, "TickPowerMin"))
             EffectOverTime(i).TickPowerMax = val(Leer.GetValue("EOT" & i, "TickPowerMax"))
             EffectOverTime(i).Ticks = val(Leer.GetValue("EOT" & i, "Ticks"))
             EffectOverTime(i).TickTime = val(Leer.GetValue("EOT" & i, "TickTime"))
             EffectOverTime(i).TickFX = val(Leer.GetValue("EOT" & i, "TickFX"))
             EffectOverTime(i).OnHitFx = val(Leer.GetValue("EOT" & i, "OnHitFx"))
+            EffectOverTime(i).OnHitWav = val(Leer.GetValue("EOT" & i, "OnHitWav"))
             EffectOverTime(i).Override = val(Leer.GetValue("EOT" & i, "Override"))
             EffectOverTime(i).Limit = val(Leer.GetValue("EOT" & i, "Limit"))
             EffectOverTime(i).PhysicalDamageReduction = val(Leer.GetValue("EOT" & i, "PhysicalDamageReduction"))
@@ -827,6 +829,7 @@ On Error GoTo ErrHandler
             EffectOverTime(i).BuffType = val(Leer.GetValue("EOT" & i, "BuffType"))
             EffectOverTime(i).Area = val(Leer.GetValue("EOT" & i, "Area"))
             EffectOverTime(i).Aura = Leer.GetValue("EOT" & i, "Aura")
+            EffectOverTime(i).ApplyeffectID = val(Leer.GetValue("EOT" & i, "ApplyeffectID"))
             If val(Leer.GetValue("EOT" & i, "AffectedByMagicBonus")) > 0 Then
                 Call SetMask(EffectOverTime(i).EffectModifiers, e_ModifierTypes.MagicBonus)
             End If
@@ -1439,7 +1442,8 @@ Sub LoadOBJData()
 
 432                 Case e_OBJType.otMinerales
 434                     .LingoteIndex = val(Leer.GetValue(ObjKey, "LingoteIndex"))
-            
+                    Case e_OBJType.otUsableOntarget
+                        .EfectoMagico = val(Leer.GetValue(ObjKey, "efectomagico"))
                 End Select
     
 436             .MinSkill = val(Leer.GetValue(ObjKey, "MinSkill"))

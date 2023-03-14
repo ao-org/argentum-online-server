@@ -3075,9 +3075,14 @@ Public Function CanHelpUser(ByVal UserIndex As Integer, ByVal targetUserIndex As
     End Select
 End Function
 
-Public Function CanAttackUser(ByVal attackerIndex As Integer, ByVal TargetIndex As Integer) As e_AttackInteractionResult
+Public Function CanAttackUser(ByVal AttackerIndex As Integer, ByVal AttackerVersionID As Integer, ByVal TargetIndex As Integer, ByVal TargetVersionID As Integer) As e_AttackInteractionResult
     If UserList(TargetIndex).flags.Muerto = 1 Then
 104     CanAttackUser = e_AttackInteractionResult.eDeathTarget
+        Exit Function
+    End If
+    
+    If AttackerIndex = TargetIndex And AttackerVersionID = TargetVersionID Then
+        CanAttackUser = e_AttackInteractionResult.eDeathTarget
         Exit Function
     End If
     
@@ -3330,4 +3335,14 @@ Public Sub RemoveInvisibility(ByVal UserIndex As Integer)
    End With
 End Sub
 
-
+Public Function Inmovilize(ByVal SourceIndex As Integer, ByVal TargetIndex As Integer, ByVal Time As Integer, ByVal Fx As Integer) As Boolean
+142 Call UsuarioAtacadoPorUsuario(SourceIndex, TargetIndex)
+144 If UserList(TargetIndex).flags.Inmovilizado = 0 Then
+146     UserList(TargetIndex).Counters.Inmovilizado = Time
+148     UserList(TargetIndex).flags.Inmovilizado = 1
+150     Call SendData(SendTarget.ToPCAliveArea, TargetIndex, PrepareMessageCreateFX(UserList(TargetIndex).Char.charindex, Fx, 0, UserList(TargetIndex).pos.x, UserList(TargetIndex).pos.y))
+152     Call WriteInmovilizaOK(TargetIndex)
+154     Call WritePosUpdate(TargetIndex)
+        Inmovilize = True
+    End If
+End Function

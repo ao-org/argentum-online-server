@@ -253,20 +253,16 @@ Public Sub CheckUpdateNeededUser(ByVal UserIndex As Integer, ByVal head As Byte,
                     '<<< Item >>>
 216                 If MapData(Map, X, Y).ObjInfo.ObjIndex Then
 218                     TempInt = MapData(Map, X, Y).ObjInfo.ObjIndex
-
 220                     If Not EsObjetoFijo(ObjData(TempInt).OBJType) Then
 222                         Call WriteObjectCreate(UserIndex, TempInt, MapData(Map, X, Y).ObjInfo.amount, X, Y)
-                           ' If tmpGM > 0 Then Call WriteObjectCreate(tmpGM, TempInt, MapData(map, X, Y).ObjInfo.amount, X, Y)
-                            
 224                         If ObjData(TempInt).OBJType = e_OBJType.otPuertas And InMapBounds(Map, X, Y) Then
 226                             Call MostrarBloqueosPuerta(False, UserIndex, X, Y)
-                                'If tmpGM > 0 Then Call MostrarBloqueosPuerta(False, tmpGM, X, Y)
                             End If
-                            
                         End If
-
                     End If
-
+                    If Not MapData(map, X, Y).Trap Is Nothing Then
+                        Call WriteUpdateTrapState(UserIndex, 1, X, Y)
+                    End If
                     ' Bloqueo GM
 228                 If (MapData(Map, X, Y).Blocked And e_Block.GM) <> 0 Then
 230                     Call Bloquear(False, UserIndex, X, Y, e_Block.ALL_SIDES)

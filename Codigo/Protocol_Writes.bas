@@ -1409,6 +1409,16 @@ WriteObjectCreate_Err:
         '</EhFooter>
 End Sub
 
+Public Sub WriteUpdateTrapState(ByVal UserIndex As Integer, State As Integer, ByVal x As Integer, ByVal y As Integer)
+On Error GoTo WriteUpdateTrapState_Err
+100     Call modSendData.SendData(ToIndex, UserIndex, PrepareTrapUpdate(State, x, y))
+        Exit Sub
+
+WriteUpdateTrapState_Err:
+        Call Writer.Clear
+        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteUpdateTrapState", Erl)
+End Sub
+
 Public Sub WriteParticleFloorCreate(ByVal UserIndex As Integer, _
                                     ByVal Particula As Integer, _
                                     ByVal ParticulaTime As Integer, _
@@ -5059,6 +5069,18 @@ PrepareMessage_BlockPosition_Err:
         '</EhFooter>
 End Function
 
+Public Function PrepareTrapUpdate(ByVal State As Byte, ByVal x As Byte, ByVal y As Byte)
+    On Error GoTo PrepareTrapUpdate_Err
+100     Call Writer.WriteInt16(ServerPacketID.UpdateTrap)
+102     Call Writer.WriteInt8(State)
+104     Call Writer.WriteInt8(x)
+106     Call Writer.WriteInt8(y)
+
+        Exit Function
+PrepareTrapUpdate_Err:
+        Call Writer.Clear
+        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareTrapUpdate", Erl)
+End Function
 ''
 ' Prepares the "ObjectCreate" message and returns it.
 '
@@ -5566,7 +5588,7 @@ On Error GoTo WriteSendSkillCdUpdate_Err
     Call Writer.WriteInt16(SkillTypeId)
     Call Writer.WriteInt32(SkillId)
     Call Writer.WriteInt32(Time)
-    Call Writer.WriteInt8(SkillType)
+    Call Writer.WriteInt8(ConvertToClientBuff(SkillType))
 182 Call modSendData.SendData(ToIndex, userindex)
     Exit Sub
 WriteSendSkillCdUpdate_Err:
