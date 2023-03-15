@@ -2638,6 +2638,13 @@ Public Sub DoMineria(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byt
 116         res = RandomNumber(1, IIf(MapInfo(UserList(userindex).Pos.map).Seguro = 1, Suerte + 2, Suerte))
         
 '118         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageArmaMov(.Char.CharIndex))
+
+
+            'ReyarB: aumento chances solamente si es mineria de blodium.
+            If ObjData(MapData(.pos.map, x, y).ObjInfo.objIndex).MineralIndex = 3787 Then
+                res = 1
+                Suerte = 100
+            End If
         
 120         If res <= 5 Then
     
