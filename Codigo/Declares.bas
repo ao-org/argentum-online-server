@@ -1291,6 +1291,7 @@ Public Type t_Quest
     NextQuest As String
     DescFinal As String
     RequiredLevel As Byte
+    RequiredClass As Byte
     
     RequiredQuest As Byte
     Trabajador As Boolean
