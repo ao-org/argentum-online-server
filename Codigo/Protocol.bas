@@ -10347,6 +10347,13 @@ Public Sub HandleQuestAccept(ByVal UserIndex As Integer)
     
             End If
             
+            'El personaje no es la clase requerida?
+125         If UserList(UserIndex).clase <> QuestList(NpcList(npcIndex).QuestNumber(Indice)).RequiredClass And _
+                QuestList(NpcList(npcIndex).QuestNumber(Indice)).RequiredClass > 0 Then
+                 Call WriteChatOverHead(UserIndex, "Debes ser " & ListaClases(QuestList(NpcList(npcIndex).QuestNumber(Indice)).RequiredClass) & " para emprender esta misión.", NpcList(npcIndex).Char.charindex, vbYellow)
+                Exit Sub
+
+            End If
             'La quest no es repetible?
             If QuestList(NpcList(NpcIndex).QuestNumber(Indice)).Repetible = 0 Then
                 'El personaje ya hizo la quest?
