@@ -679,7 +679,7 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
                     End If
                 ElseIf NpcList(TempCharIndex).NPCtype = e_NPCType.EntregaPesca Then
                     Dim i As Integer, j As Integer
-                    Dim PuntosTotales As Integer
+                    Dim PuntosTotales As Long
                                                             
                     Dim CantPecesEspeciales As Long
                     Dim OroTotal As Long
