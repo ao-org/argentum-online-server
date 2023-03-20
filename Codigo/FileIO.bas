@@ -1241,6 +1241,7 @@ Sub LoadOBJData()
                 .CdType = val(Leer.GetValue(ObjKey, "CDType"))
 161             .ImprovedRangedHitChance = val(Leer.GetValue(ObjKey, "ImprovedRHit"))
                 .ImprovedMeleeHitChance = val(Leer.GetValue(ObjKey, "ImprovedMHit"))
+                .ApplyEffectId = val(Leer.GetValue(ObjKey, "ApplyEffectId"))
                 Dim i As Integer
 
 162             Select Case .OBJType

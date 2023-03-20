@@ -2679,7 +2679,9 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                             End If
                     
                     End Select
-    
+                    If obj.ApplyEffectId > 0 Then
+                        Call AddOrResetEffect(UserIndex, obj.ApplyEffectId)
+                    End If
 974                 Call WriteUpdateUserStats(UserIndex)
 976                 Call UpdateUserInv(False, UserIndex, Slot)
     
@@ -2687,7 +2689,6 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
     
 980                 If .flags.Muerto = 1 Then
 982                     Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
-                        'Call WriteConsoleMsg(UserIndex, "¡¡Estas muerto!! Solo podes usar items cuando estas vivo. ", e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
     
                     End If
@@ -2699,6 +2700,9 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
             
                     'Quitamos del inv el item
 992                 Call QuitarUserInvItem(UserIndex, Slot, 1)
+                    If obj.ApplyEffectId > 0 Then
+                        Call AddOrResetEffect(UserIndex, obj.ApplyEffectId)
+                    End If
             
 994                 If obj.Snd1 <> 0 Then
 996                     Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .Pos.X, .Pos.y))
@@ -3566,5 +3570,19 @@ Public Sub PlaceTrap(ByVal UserIndex As Integer, ByVal TileX As Integer, ByVal T
         Call UpdateCd(UserIndex, ObjData(objIndex).cdType)
         Call EffectsOverTime.CreateTrap(UserIndex, eUser, .pos.map, TileX, TileY, ObjData(objIndex).EfectoMagico)
         Call RemoveItemFromInventory(UserIndex, UserList(UserIndex).flags.TargetObjInvSlot)
+    End With
+End Sub
+
+Public Sub AddOrResetEffect(ByVal UserIndex As Integer, ByVal EffectId As Integer)
+    With UserList(UserIndex)
+        Dim Effect As IBaseEffectOverTime
+        Set Effect = EffectsOverTime.FindEffectOnTarget(UserIndex, .EffectOverTime, EffectId)
+        If Effect Is Nothing Then
+            Call CreateEffect(UserIndex, eUser, UserIndex, eUser, EffectId)
+        Else
+            If EffectOverTime(EffectId).Override Then
+                Call Effect.Reset
+            End If
+        End If
     End With
 End Sub
