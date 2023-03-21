@@ -138,6 +138,17 @@ On Error GoTo CreateEffect_Err
 184         ElseIf TargetType = eNpc Then
 186             Call AddEffect(NpcList(TargetIndex).EffectOverTime, StatProvoked)
             End If
+        Case e_EffectOverTimeType.eDrunk
+190         Dim Drunk As DrunkEffect
+192         Set Drunk = GetEOT(EffectType)
+194         UniqueIdCounter = GetNextId()
+196         Call Drunk.Setup(SourceIndex, SourceType, EffectIndex, UniqueIdCounter)
+198         Call AddEffectToUpdate(Drunk)
+200         If TargetType = eUser Then
+202             Call AddEffect(UserList(TargetIndex).EffectOverTime, Drunk)
+204         ElseIf TargetType = eNpc Then
+206             Call AddEffect(NpcList(TargetIndex).EffectOverTime, Drunk)
+            End If
         Case Else
             Debug.Assert False
     End Select
@@ -177,6 +188,8 @@ Private Function InstantiateEOT(ByVal EffectType As e_EffectOverTimeType) As IBa
             Set InstantiateEOT = New EffectProvoked
         Case e_EffectOverTimeType.eTrap
             Set InstantiateEOT = New clsTrap
+        Case e_EffectOverTimeType.eDrunk
+            Set InstantiateEOT = New DrunkEffect
         Case Else
             Debug.Assert False
     End Select

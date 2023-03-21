@@ -1574,7 +1574,7 @@ Public Type t_ObjData
     
     CatalizadorTipo As Byte
     CatalizadorAumento As Single
-
+    ApplyEffectId As Integer
     Log As Byte 'es un objeto que queremos loguear? Pablo (ToxicWaste) 07/09/07
     NoLog As Byte 'es un objeto que esta prohibido loguear?
     QuestId As Integer
@@ -2758,6 +2758,7 @@ Public Enum e_EffectOverTimeType
     eProvoke = 3
     eProvoked = 4
     eTrap = 5
+    eDrunk = 6
     [EffectTypeCount]
 End Enum
 
