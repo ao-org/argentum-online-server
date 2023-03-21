@@ -2787,6 +2787,7 @@ Public Enum e_EffectOverTimeType
     eProvoke = 3
     eProvoked = 4
     eTrap = 5
+    eTranslation = 7
     eDrunk = 6
     [EffectTypeCount]
 End Enum
