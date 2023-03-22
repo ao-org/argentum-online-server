@@ -55,11 +55,11 @@ Public Property Get IBaseEffectOverTime_CasterArrayIndex() As Integer
 End Property
 
 Public Property Get IBaseEffectOverTime_CasterRefType() As e_ReferenceType
-    IBaseEffectOverTime_CasterRefType = Source.RefType
+    IBaseEffectOverTime_CasterRefType = DotInfo.TargetRef.RefType
 End Property
 
 Public Property Get IBaseEffectOverTime_CasterUserId() As Long
-    IBaseEffectOverTime_CasterUserId = Source.userID
+    IBaseEffectOverTime_CasterUserId = DotInfo.TargetRef.userID
 End Property
 
 Public Property Get IBaseEffectOverTime_TargetIsValid() As Boolean
