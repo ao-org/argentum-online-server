@@ -1249,6 +1249,8 @@ Public Type t_Char
     BodyIdle As Integer
     Ataque1 As Integer
     Animation() As Integer
+    CastAnimation As Integer
+    
 
 End Type
 
