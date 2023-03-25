@@ -60,6 +60,7 @@ Public Enum ServerPacketID
     CharacterCreate         ' CC
     CharacterRemove         ' BP
     CharacterMove           ' MP, +, * and _ '
+    CharacterTranslate
     UserIndexInServer       ' IU
     UserCharIndexInServer   ' IP
     ForceCharMove

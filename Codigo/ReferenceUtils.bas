@@ -11,3 +11,14 @@ Public Function GetPosition(ByRef Reference As t_AnyReference) As t_WorldPos
         GetPosition = UserList(Reference.ArrayIndex).pos
     End If
 End Function
+
+Public Sub SetTranslationState(ByRef Reference As t_AnyReference, ByVal NewState As Boolean)
+    If Not IsValidRef(Reference) Then
+        Exit Sub
+    End If
+    If Reference.RefType = eNpc Then
+        NpcList(Reference.ArrayIndex).flags.TranslationActive = NewState
+    ElseIf Reference.RefType = eUser Then
+        UserList(Reference.ArrayIndex).flags.TranslationActive = NewState
+    End If
+End Sub

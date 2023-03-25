@@ -1307,6 +1307,68 @@ ErrHandler:
 
 End Sub
 
+Public Sub SwapTargetUserPos(ByVal TargetUser As Integer, ByRef NewTargetPos As t_WorldPos)
+    Dim Heading As e_Heading
+    Heading = UserList(TargetUser).Char.Heading
+    UserList(TargetUser).pos = NewTargetPos
+    Call WritePosUpdate(TargetUser)
+    If UserList(TargetUser).flags.AdminInvisible = 0 Then
+        Call SendData(SendTarget.ToPCAreaButIndex, TargetUser, PrepareMessageCharacterMove(UserList(TargetUser).Char.charindex, UserList(TargetUser).pos.x, UserList(TargetUser).pos.y), True)
+    Else
+        Call SendData(SendTarget.ToAdminAreaButIndex, TargetUser, PrepareMessageCharacterMove(UserList(TargetUser).Char.charindex, UserList(TargetUser).pos.x, UserList(TargetUser).pos.y))
+    End If
+    If IsValidUserRef(UserList(TargetUser).flags.GMMeSigue) Then
+        Call WriteForceCharMoveSiguiendo(UserList(TargetUser).flags.GMMeSigue.ArrayIndex, Heading)
+    End If
+    Call WriteForceCharMove(TargetUser, Heading)
+    'Update map and char
+    UserList(TargetUser).Char.Heading = Heading
+    MapData(UserList(TargetUser).pos.map, UserList(TargetUser).pos.x, UserList(TargetUser).pos.y).UserIndex = TargetUser
+    'Actualizamos las areas de ser necesario
+    Call ModAreas.CheckUpdateNeededUser(TargetUser, Heading, 0)
+End Sub
+
+Function TranslateUserPos(ByVal UserIndex As Integer, ByRef NewPos As t_WorldPos, ByVal Speed As Long)
+On Error GoTo TranslateUserPos_Err
+    Dim OriginalPos As t_WorldPos
+    
+    With UserList(UserIndex)
+        OriginalPos = .pos
+        
+        If MapInfo(.pos.map).NumUsers > 1 Or IsValidUserRef(.flags.GMMeSigue) Then
+            If MapData(NewPos.map, NewPos.x, NewPos.y).UserIndex > 0 Then
+                Call SwapTargetUserPos(MapData(NewPos.map, NewPos.x, NewPos.y).UserIndex, .pos)
+            End If
+        End If
+        If .flags.AdminInvisible = 0 Then
+            If IsValidUserRef(.flags.GMMeSigue) Then
+                Call SendData(SendTarget.ToPCAreaButFollowerAndIndex, UserIndex, PrepareCharacterTranslate(.Char.charindex, NewPos.x, NewPos.y, Speed))
+                Call WriteForceCharMoveSiguiendo(.flags.GMMeSigue.ArrayIndex, .Char.Heading)
+            Else
+                'Mando a todos menos a mi donde estoy
+                Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareCharacterTranslate(.Char.charindex, NewPos.x, NewPos.y, Speed), True)
+            End If
+        Else
+            Call SendData(SendTarget.ToAdminAreaButIndex, UserIndex, PrepareCharacterTranslate(.Char.charindex, NewPos.x, NewPos.y, Speed))
+        End If
+        'Update map and user pos
+        If MapData(.pos.map, .pos.x, .pos.y).UserIndex = UserIndex Then
+            MapData(.pos.map, .pos.x, .pos.y).UserIndex = 0
+        End If
+        .pos = NewPos
+        MapData(.pos.map, .pos.x, .pos.y).UserIndex = UserIndex
+        Call WritePosUpdate(UserIndex)
+        'Actualizamos las áreas de ser necesario
+        Call ModAreas.CheckUpdateNeededUser(UserIndex, .Char.Heading, 0)
+
+        If .Counters.Trabajando Then
+            Call WriteMacroTrabajoToggle(UserIndex, False)
+        End If
+    End With
+TranslateUserPos_Err:
+    Call LogError("Error en la subrutina TranslateUserPos - Error : " & Err.Number & " - Description : " & Err.Description)
+End Function
+
 Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As e_Heading) As Boolean
         ' 20/01/2021 - WyroX: Lo convierto a función y saco los WritePosUpdate, ahora están en el paquete
 
@@ -3005,7 +3067,7 @@ Public Function IsStun(ByRef flags As t_UserFlags, ByRef Counters As t_UserCount
 End Function
 
 Public Function CanMove(ByRef flags As t_UserFlags, ByRef Counters As t_UserCounters) As Boolean
-    CanMove = flags.Paralizado = 0 And flags.Inmovilizado = 0 And Not IsStun(flags, Counters)
+    CanMove = flags.Paralizado = 0 And flags.Inmovilizado = 0 And Not IsStun(flags, Counters) And Not flags.TranslationActive
 End Function
 
 Public Function StunPlayer(ByRef counter As t_UserCounters) As Boolean

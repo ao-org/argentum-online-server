@@ -149,6 +149,17 @@ On Error GoTo CreateEffect_Err
 204         ElseIf TargetType = eNpc Then
 206             Call AddEffect(NpcList(TargetIndex).EffectOverTime, Drunk)
             End If
+        Case e_EffectOverTimeType.eTranslation
+230      Dim TE As TranslationEffect
+232         Set TE = GetEOT(EffectType)
+236         UniqueIdCounter = GetNextId()
+238         Call TE.Setup(SourceIndex, SourceType, TargetIndex, TargetType, EffectIndex, UniqueIdCounter)
+240         Call AddEffectToUpdate(TE)
+242         If TargetType = eUser Then
+244             Call AddEffect(UserList(TargetIndex).EffectOverTime, TE)
+246         ElseIf TargetType = eNpc Then
+248             Call AddEffect(NpcList(TargetIndex).EffectOverTime, TE)
+            End If
         Case Else
             Debug.Assert False
     End Select
@@ -190,6 +201,8 @@ Private Function InstantiateEOT(ByVal EffectType As e_EffectOverTimeType) As IBa
             Set InstantiateEOT = New clsTrap
         Case e_EffectOverTimeType.eDrunk
             Set InstantiateEOT = New DrunkEffect
+        Case e_EffectOverTimeType.eTranslation
+            Set InstantiateEOT = New TranslationEffect
         Case Else
             Debug.Assert False
     End Select

@@ -893,6 +893,25 @@ EraseNPCChar_Err:
         
 End Sub
 
+Public Sub TranslateNpcChar(ByVal npcIndex As Integer, ByRef NewPos As t_WorldPos, ByVal Speed As Long)
+On Error GoTo TranslateNpcChar_Err
+    With NpcList(npcIndex)
+        If MapData(.pos.map, NewPos.x, NewPos.y).UserIndex Then
+            Call SwapTargetUserPos(MapData(.pos.map, NewPos.x, NewPos.y).UserIndex, .pos)
+        End If
+        'Update map and user pos
+        MapData(.pos.map, .pos.x, .pos.y).npcIndex = 0
+        Dim PrevPos As t_WorldPos
+        PrevPos = .pos
+        .pos = NewPos
+        MapData(.pos.map, NewPos.x, NewPos.y).npcIndex = npcIndex
+        Call SendData(SendTarget.ToNPCArea, npcIndex, PrepareCharacterTranslate(.Char.charindex, NewPos.x, NewPos.y, Speed))
+        Call CheckUpdateNeededNpc(npcIndex, GetHeadingFromWorldPos(PrevPos, NewPos))
+    End With
+TranslateNpcChar_Err:
+    Call TraceError(Err.Number, Err.Description, "NPCs.TranslateNpcChar", Erl)
+End Sub
+
 Public Function MoveNPCChar(ByVal NpcIndex As Integer, ByVal nHeading As Byte) As Boolean
         On Error GoTo errh
 
@@ -950,7 +969,7 @@ Public Function MoveNPCChar(ByVal NpcIndex As Integer, ByVal nHeading As Byte) A
                 
 146             Call AnimacionIdle(NpcIndex, False)
                 
-148                 Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageCharacterMove(.Char.charindex, nPos.X, nPos.y))
+148             Call SendData(SendTarget.ToNPCArea, npcIndex, PrepareMessageCharacterMove(.Char.charindex, nPos.x, nPos.y))
                 'Update map and user pos
 150             MapData(.Pos.Map, .Pos.X, .Pos.Y).NpcIndex = 0
 152             .Pos = nPos
@@ -1854,7 +1873,7 @@ Public Sub KillRandomNpc()
 End Sub
 
 Public Function CanMove(ByRef counter As t_NpcCounters, ByRef flags As t_NPCFlags) As Boolean
-    CanMove = flags.Inmovilizado + flags.Paralizado = 0 And counter.StunEndTime < GetTickCount()
+    CanMove = flags.Inmovilizado + flags.Paralizado = 0 And counter.StunEndTime < GetTickCount() And Not flags.TranslationActive
 End Function
 
 Public Function CanAttack(ByRef counter As t_NpcCounters, ByRef flags As t_NPCFlags) As Boolean

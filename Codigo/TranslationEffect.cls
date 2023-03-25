@@ -23,7 +23,8 @@ Dim TimeSinceLastTick As Long
 Private DotInfo As t_BaseDotInfo
 Private Source As t_AnyReference
 Private StartPos As t_WorldPos
-Private Direction As t_Position
+Private CurrentStep As Double
+Dim Direction As t_Vector
 
 Public Sub Setup(ByVal SourceIndex As Integer, ByVal SourceType As e_ReferenceType, ByVal TargetIndex As Integer, ByVal TargetType As e_ReferenceType, _
                  ByVal EffectId As Integer, ByVal ID As Long)
@@ -34,15 +35,25 @@ Public Sub Setup(ByVal SourceIndex As Integer, ByVal SourceType As e_ReferenceTy
     DotInfo.UniqueId = ID
     DotInfo.RemoveEffect = False
     DotInfo.EotId = EffectId
+    With EffectOverTime(EffectId)
+        TargetTicks = .Ticks - 1 ' we perform the first translation right away
+        TickTime = .TickTime
+        'to prevent user throwing creatures to other players to kill them lets add a provoke effect on hit so it target the caster
+        If TargetType = eNpc And .ApplyEffectId > 0 Then
+            Dim Effect As IBaseEffectOverTime
+            Set Effect = FindEffectOnTarget(0, NpcList(TargetIndex).EffectOverTime, .ApplyEffectId)
+            If Effect Is Nothing Then Call CreateEffect(SourceIndex, SourceType, TargetIndex, eNpc, .ApplyEffectId)
+        End If
+    End With
+    CurrentStep = 0
     StartPos = GetPosition(DotInfo.TargetRef)
     Dim CasterPos As t_WorldPos
     CasterPos = GetPosition(Source)
-    Direction.x = StartPos.x - CasterPos.x
-    Direction.y = StartPos.y - CasterPos.y
-    With EffectOverTime(EffectId)
-        TargetTicks = .Ticks
-        TickTime = .TickTime
-    End With
+    Call SetTranslationState(DotInfo.TargetRef, True)
+    Direction.x = (StartPos.x - CasterPos.x)
+    Direction.y = (StartPos.y - CasterPos.y)
+    Direction = GetNormal(Direction)
+    Call PerformAction
 End Sub
 
 Public Property Get IBaseEffectOverTime_TypeId() As Integer
@@ -119,6 +130,7 @@ Public Property Get IBaseEffectOverTime_EotId() As Integer
 End Property
 
 Public Sub IBaseEffectOverTime_OnRemove()
+    Call SetTranslationState(DotInfo.TargetRef, False)
 End Sub
 
 Public Sub IBaseEffectOverTime_TargetUseMagic(ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal MagicId As Integer)
@@ -136,8 +148,62 @@ End Sub
 Public Sub IBaseEffectOverTime_TargetWasDamaged(ByVal SourceUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
 End Sub
 
-Public Sub PerformAction()
-    
+Public Function IsValidPos(ByVal map As Integer, ByVal TileX As Integer, ByVal TileY As Integer) As Boolean
+    IsValidPos = False
+    Dim CanGoWater As Boolean
+    Dim Mounted As Boolean
+    If DotInfo.TargetRef.RefType = eUser Then
+        CanGoWater = UserList(DotInfo.TargetRef.ArrayIndex).flags.Navegando
+        Mounted = UserList(DotInfo.TargetRef.ArrayIndex).flags.Montado
+    Else
+        CanGoWater = NpcList(DotInfo.TargetRef.ArrayIndex).flags.AguaValida
+    End If
+    IsValidPos = LegalPos(map, TileX, TileY, CanGoWater, Not CanGoWater, Mounted, False, False)
+End Function
+
+Private Sub PerformAction()
+    Dim currentPos As t_WorldPos
+    Dim TargetPoint As t_Vector
+    Dim TargetTranslation As t_Vector
+    Dim TargetPos As t_WorldPos
+    Dim TranslationDiff As Double
+    Dim Tanslation As Integer
+    CurrentStep = CurrentStep + 1
+    currentPos = GetPosition(DotInfo.TargetRef)
+    TargetPoint.x = Direction.x * (CurrentStep) + StartPos.x
+    TargetPoint.y = Direction.y * (CurrentStep) + StartPos.y
+    TargetTranslation.x = TargetPoint.x - currentPos.x
+    TargetTranslation.y = TargetPoint.y - currentPos.y
+    TranslationDiff = Abs(TargetTranslation.x) - Abs(TargetTranslation.y)
+    TargetPos.map = currentPos.map
+    If Abs(TranslationDiff) < 0.3 Then 'if they are similar we are close to 45% let move in both directions
+        TargetPos.x = currentPos.x + Sgn(TargetTranslation.x)
+        TargetPos.y = currentPos.y + Sgn(TargetTranslation.y)
+    ElseIf TranslationDiff > 0 Then 'x axis is bigger than
+        TargetPos.x = currentPos.x + Sgn(TargetTranslation.x)
+        TargetPos.y = currentPos.y
+    Else
+        TargetPos.x = currentPos.x
+        TargetPos.y = currentPos.y + Sgn(TargetTranslation.y)
+    End If
+    If IsValidPos(TargetPos.map, TargetPos.x, TargetPos.y) Then
+        Call TranslateTo(TargetPos)
+    Else
+        DotInfo.RemoveEffect = True
+    End If
+End Sub
+
+Private Sub TranslateTo(ByRef TargetPos As t_WorldPos)
+    If DotInfo.TargetRef.RefType = eUser Then
+        Call TranslateUserPos(DotInfo.TargetRef.ArrayIndex, TargetPos, TickTime)
+    Else
+        Call TranslateNpcChar(DotInfo.TargetRef.ArrayIndex, TargetPos, TickTime)
+    End If
+    Dim currentPos As t_WorldPos
+    currentPos = GetPosition(DotInfo.TargetRef)
+    If Not MapData(currentPos.map, currentPos.x, currentPos.y).Trap Is Nothing Then
+         Call ModMap.ActivateTrap(DotInfo.TargetRef.ArrayIndex, DotInfo.TargetRef.RefType, currentPos.map, currentPos.x, currentPos.y)
+    End If
 End Sub
 
 
