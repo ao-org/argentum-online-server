@@ -705,6 +705,12 @@ Sub Main()
             .t_Extraer.Interval = IntervaloTrabajarExtraer
             .tControlHechizos.Enabled = True
             .tControlHechizos.Interval = 60000
+            If IsFeatureEnabled("ShipTravelEnabled") Then
+                .TimerBarco.Enabled = True
+                MapInfo(BarcoNavegando.map).ForceUpdate = True
+            End If
+            
+            
         End With
     
 290     Subasta.SubastaHabilitada = True
