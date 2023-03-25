@@ -98,6 +98,7 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
 157       DamageStr = PonerPuntos(Damage)
 158       Call WriteConsoleMsg(UserIndex, NpcList(npcIndex).name & " te ha quitado " & DamageStr & " puntos de vida.", e_FontTypeNames.FONTTYPE_FIGHT)
 162       Call SubirSkill(UserIndex, Resistencia)
+          Call SendData(SendTarget.ToNPCAliveArea, npcIndex, PrepareMessageCharAtaca(NpcList(npcIndex).Char.charindex, UserList(UserIndex).Char.charindex, DamageStr, NpcList(npcIndex).Char.CastAnimation))
         End If
 
         'Mana
