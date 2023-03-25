@@ -1381,6 +1381,7 @@ Sub LoadOBJData()
 364                     .incinera = val(Leer.GetValue(ObjKey, "Incinera"))
 366                     .WeaponAnim = val(Leer.GetValue(ObjKey, "Anim"))
 368                     .SkHerreria = val(Leer.GetValue(ObjKey, "SkHerreria"))
+                        .WeaponType = val(Leer.GetValue(ObjKey, "WeaponType"))
             
 370                 Case e_OBJType.otTeleport
                         .Radio = val(Leer.GetValue(ObjKey, "Radio"))
