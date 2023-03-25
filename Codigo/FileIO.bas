@@ -2256,7 +2256,6 @@ LoadPacketRatePolicy_Err:
         
 End Sub
 
-
 Sub CargarCiudades()
         
         On Error GoTo CargarCiudades_Err
@@ -2338,7 +2337,6 @@ Sub CargarCiudades()
 212         .NecesitaNave = val(Lector.GetValue("Arghal", "NecesitaNave"))
             MapasCiudades = MapasCiudades & Lector.GetValue("Arghal", "Mapas") & ","
         End With
-        
     
 214     With CityArkhein
 216         .map = val(Lector.GetValue("Arkhein", "Mapa"))
@@ -2353,7 +2351,6 @@ Sub CargarCiudades()
 234         .NecesitaNave = val(Lector.GetValue("Arkhein", "NecesitaNave"))
             MapasCiudades = MapasCiudades & Lector.GetValue("Arkhein", "Mapas") & ","
         End With
-        
     
         With CityEleusis
             .map = val(Lector.GetValue("Eleusis", "Mapa"))
@@ -2401,6 +2398,46 @@ Sub CargarCiudades()
             .y = val(Lector.GetValue("Renacimiento", "Y"))
         End With
         
+        With BarcoNavegando
+            .Map = val(Lector.GetValue("BarcoNavegando", "Mapa"))
+            .StartX = val(Lector.GetValue("BarcoNavegando", "StartX"))
+            .StartY = val(Lector.GetValue("BarcoNavegando", "StartY"))
+            .EndX = val(Lector.GetValue("BarcoNavegando", "EndX"))
+            .EndY = val(Lector.GetValue("BarcoNavegando", "EndY"))
+            .DestX = val(Lector.GetValue("BarcoNavegando", "DestX"))
+            .DestY = val(Lector.GetValue("BarcoNavegando", "DestY"))
+            .DockX = val(Lector.GetValue("BarcoNavegando", "DockX"))
+            .DockY = val(Lector.GetValue("BarcoNavegando", "DockY"))
+            .RequiredPassID = val(Lector.GetValue("BarcoNavegando", "RequiredPassID"))
+        End With
+        
+        With BarcoPeninsula
+            .Map = val(Lector.GetValue("BarcoPeninsula", "Mapa"))
+            .StartX = val(Lector.GetValue("BarcoPeninsula", "StartX"))
+            .StartY = val(Lector.GetValue("BarcoPeninsula", "StartY"))
+            .EndX = val(Lector.GetValue("BarcoPeninsula", "EndX"))
+            .EndY = val(Lector.GetValue("BarcoPeninsula", "EndY"))
+            .DestX = val(Lector.GetValue("BarcoPeninsula", "DestX"))
+            .DestY = val(Lector.GetValue("BarcoPeninsula", "DestY"))
+            .DockX = val(Lector.GetValue("BarcoPeninsula", "DockX"))
+            .DockY = val(Lector.GetValue("BarcoPeninsula", "DockY"))
+            .RequiredPassID = val(Lector.GetValue("BarcoNavegando", "RequiredPassID"))
+        End With
+        
+        With BarcoDestino
+            .Map = val(Lector.GetValue("BarcoDestino", "Mapa"))
+            .StartX = val(Lector.GetValue("BarcoDestino", "StartX"))
+            .StartY = val(Lector.GetValue("BarcoDestino", "StartY"))
+            .EndX = val(Lector.GetValue("BarcoDestino", "EndX"))
+            .EndY = val(Lector.GetValue("BarcoDestino", "EndY"))
+            .DestX = val(Lector.GetValue("BarcoDestino", "DestX"))
+            .DestY = val(Lector.GetValue("BarcoDestino", "DestY"))
+            .DockX = val(Lector.GetValue("BarcoDestino", "DockX"))
+            .DockY = val(Lector.GetValue("BarcoDestino", "DockY"))
+            .RequiredPassID = val(Lector.GetValue("BarcoNavegando", "RequiredPassID"))
+        End With
+        
+        
         TotalMapasCiudades = Split(MapasCiudades, ",")
     
 252     Set Lector = Nothing
@@ -2436,13 +2473,11 @@ Sub CargarCiudades()
 296     Ciudades(e_Ciudad.cLindos) = Lindos
 298     Ciudades(e_Ciudad.cArghal) = Arghal
 300     Ciudades(e_Ciudad.cArkhein) = Arkhein
-    
         
         Exit Sub
 
 CargarCiudades_Err:
 302     Call TraceError(Err.Number, Err.Description, "ES.CargarCiudades", Erl)
-
         
 End Sub
 

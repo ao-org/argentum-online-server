@@ -26,6 +26,12 @@ Begin VB.Form frmMain
    ScaleHeight     =   6255
    ScaleWidth      =   8595
    StartUpPosition =   2  'CenterScreen
+   Begin VB.Timer TimerBarco 
+      Enabled         =   0   'False
+      Interval        =   12000
+      Left            =   7200
+      Top             =   4560
+   End
    Begin VB.Timer tControlHechizos 
       Left            =   4440
       Top             =   4800
@@ -890,6 +896,99 @@ Handler:
     
 End Sub
 
+Private Sub TimerBarco_Timer()
+ Call UpdateDock
+
+End Sub
+
+Private Sub UpdateDock()
+
+    Dim TileX, TileY As Integer
+    Dim user As Integer
+    Dim PassFound As Boolean
+    
+    If MapData(BarcoNavegando.map, BarcoNavegando.DockX, BarcoNavegando.DockY).npcIndex = 0 Then
+        BarcoNavegando.IsSailing = True
+        Exit Sub
+    End If
+    
+    If Not BarcoNavegando.IsSailing Then
+        Exit Sub
+    End If
+    
+    BarcoNavegando.IsSailing = False
+
+    For TileX = BarcoNavegando.startX To BarcoNavegando.EndX
+        For TileY = BarcoNavegando.startY To BarcoNavegando.EndY
+            Debug.Print "Miro en " & TileX & "," & TileY
+            user = MapData(BarcoNavegando.map, TileX, TileY).UserIndex
+            If user > 0 Then
+                If BarcoNavegando.CurrenDest = e_TripState.eForgatToNix Then
+                    Call WarpUserChar(user, BarcoDestino.map, BarcoDestino.DestX, BarcoDestino.DestY, True)
+                    Call WriteLocaleMsg(user, MsgThanksForTravelNix, e_FontTypeNames.FONTTYPE_GUILD)
+                Else
+                    Call WarpUserChar(user, BarcoPeninsula.map, BarcoPeninsula.DestX, BarcoPeninsula.DestY, True)
+                    Call WriteLocaleMsg(user, MsgThanksForTravelForgat, e_FontTypeNames.FONTTYPE_GUILD)
+                End If
+            End If
+        Next TileY
+    Next TileX
+    
+    If BarcoNavegando.CurrenDest = e_TripState.eForgatToNix Then
+    
+        For TileX = BarcoDestino.startX To BarcoDestino.EndX
+            For TileY = BarcoDestino.startY To BarcoDestino.EndY
+                Debug.Print "Miro en " & TileX & "," & TileY
+                user = MapData(BarcoDestino.map, TileX, TileY).UserIndex
+                If user > 0 Then
+                    Dim i As Integer
+                    With UserList(user)
+                        For i = 1 To UBound(.invent.Object)
+                            If .invent.Object(i).objIndex = BarcoNavegando.RequiredPassID Then
+                                Call WriteLocaleMsg(user, MsgPassNix, e_FontTypeNames.FONTTYPE_GUILD)
+                                Call QuitarUserInvItem(user, i, 1)
+                                Call UpdateUserInv(False, user, i)
+                                Call WarpUserChar(user, BarcoNavegando.map, BarcoNavegando.DestX, BarcoNavegando.DestY, True)
+                                PassFound = True
+                                Exit For
+                              End If
+                        Next
+                        If Not PassFound Then Call WriteLocaleMsg(user, MsgInvalidPass, e_FontTypeNames.FONTTYPE_GUILD)
+                    End With
+                End If
+            Next TileY
+        Next TileX
+        BarcoNavegando.CurrenDest = e_TripState.eNixToForgat
+    Else
+        For TileX = BarcoPeninsula.startX To BarcoPeninsula.EndX
+            For TileY = BarcoPeninsula.startY To BarcoPeninsula.EndY
+                Debug.Print "Miro en " & TileX & "," & TileY
+                user = MapData(BarcoPeninsula.map, TileX, TileY).UserIndex
+                If user > 0 Then
+                    With UserList(user)
+                        For i = 1 To UBound(.invent.Object)
+                            If .invent.Object(i).objIndex = BarcoNavegando.RequiredPassID Then
+                                Call WriteLocaleMsg(user, MsgPassForgat, e_FontTypeNames.FONTTYPE_GUILD)
+                                Call QuitarUserInvItem(user, i, 1)
+                                Call UpdateUserInv(False, user, i)
+                                Call WarpUserChar(user, BarcoNavegando.map, BarcoNavegando.DestX, BarcoNavegando.DestY, True)
+                                PassFound = True
+                                Exit For
+                            End If
+                        Next
+                        If Not PassFound Then Call WriteLocaleMsg(user, MsgInvalidPass, e_FontTypeNames.FONTTYPE_GUILD)
+                    End With
+
+                End If
+            Next TileY
+        Next TileX
+        BarcoNavegando.CurrenDest = e_TripState.eForgatToNix
+    
+    End If
+
+
+End Sub
+
 
 
 Private Sub TimerGuardarUsuarios_Timer()
@@ -1658,7 +1757,7 @@ Private Sub TIMER_AI_Timer()
                         If .flags.Inmovilizado > 0 Then Call EfectoInmovilizadoNpc(NpcIndex)
                         If Mapa > 0 Then
                             'Emancu: Vamos a probar si el server se degrada moviendo TODOS los npc, con o sin users. HarThaoS / WyroX: Si, se degrada.
-                            If MapInfo(Mapa).NumUsers > 0 Then ' Or NpcList(NpcIndex).NPCtype = e_NPCType.GuardiaNpc Then
+                            If MapInfo(Mapa).NumUsers > 0 Or MapInfo(Mapa).ForceUpdate Then  ' Or NpcList(NpcIndex).NPCtype = e_NPCType.GuardiaNpc Then
                                 If IntervaloPermiteMoverse(NpcIndex) Then
                                         Call NpcAI(NpcIndex)
                                 End If

@@ -1198,6 +1198,29 @@ Public Enum e_TrapEffect
     eInmovilize = 1
 End Enum
 
+Public Enum e_TripState
+    eNixToForgat = 1
+    eForgatToNix
+    
+End Enum
+
+Public Type t_Transport
+    Map As Integer
+    StartX As Integer
+    StartY As Integer
+    EndX As Integer
+    EndY As Integer
+    DestX As Byte
+    DestY As Byte
+    DockX As Byte
+    DockY As Byte
+    IsSailing As Boolean
+    RequiredPassID As Integer
+
+    CurrenDest As e_TripState
+    
+End Type
+    
 Public Type t_CityWorldPos
 
     Map As Integer
@@ -2569,6 +2592,7 @@ Type t_MapInfo
     Nieve As Byte
     niebla As Byte
     NumUsers As Long
+    ForceUpdate As Boolean
     MinLevel As Integer
     MaxLevel As Integer
     Salida As t_WorldPos
@@ -2689,6 +2713,9 @@ Public CityArkhein                        As t_CityWorldPos
 Public Prision                            As t_WorldPos
 Public Libertad                           As t_WorldPos
 Public Renacimiento                       As t_WorldPos
+Public BarcoDestino                       As t_Transport
+Public BarcoPeninsula                     As t_Transport
+Public BarcoNavegando                     As t_Transport
 
 Public TotalMapasCiudades()               As String
 Public Ayuda                              As New cCola
