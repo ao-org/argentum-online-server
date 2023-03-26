@@ -897,15 +897,53 @@ Handler:
 End Sub
 
 Private Sub TimerBarco_Timer()
- Call UpdateDock
-
+    Call UpdateDock
+    Call MsnEnbarque(ForgatDock)
+    Call MsnEnbarque(NixDock)
 End Sub
+Private Function GetPassSlot(ByVal UserIndex As Integer) As Integer
 
+Dim i As Integer
+    With UserList(UserIndex)
+        For i = 1 To UBound(.invent.Object)
+            If .invent.Object(i).objIndex = BarcoNavegando.RequiredPassID Then
+                GetPassSlot = i
+                Exit Function
+            End If
+        Next
+    End With
+    GetPassSlot = -1
+End Function
+
+Private Sub MsnEnbarque(ByRef ShipInfo As t_Transport)
+    On Error GoTo SendToMap_Err
+    Dim LoopC     As Long
+    Dim tempIndex As Integer
+
+100     If Not MapaValido(ShipInfo.map) Then Exit Sub
+
+102     For LoopC = 1 To ConnGroups(ShipInfo.map).CountEntrys
+104         tempIndex = ConnGroups(ShipInfo.map).UserEntrys(LoopC)
+106         If UserList(tempIndex).ConnIDValida And UserList(tempIndex).pos.x > ShipInfo.startX And UserList(tempIndex).pos.x < ShipInfo.EndX And UserList(tempIndex).pos.y > ShipInfo.startY And UserList(tempIndex).pos.y < ShipInfo.EndY Then
+                Debug.Print "encontre uno"
+                If Not GetPassSlot(tempIndex) > 0 Then
+                    Call WriteLocaleMsg(tempIndex, MsgInvalidPass, e_FontTypeNames.FONTTYPE_GUILD)
+                Else
+                    Call WriteLocaleMsg(tempIndex, MsgStartingTrip, e_FontTypeNames.FONTTYPE_GUILD)
+                End If
+            End If
+110     Next LoopC
+        Exit Sub
+
+SendToMap_Err:
+112     Call TraceError(Err.Number, Err.Description, "modSendData.SendToMap", Erl)
+End Sub
 Private Sub UpdateDock()
 
     Dim TileX, TileY As Integer
     Dim user As Integer
     Dim PassFound As Boolean
+    Dim PassSlot As Integer
     
     If MapData(BarcoNavegando.map, BarcoNavegando.DockX, BarcoNavegando.DockY).npcIndex = 0 Then
         BarcoNavegando.IsSailing = True
@@ -924,10 +962,10 @@ Private Sub UpdateDock()
             user = MapData(BarcoNavegando.map, TileX, TileY).UserIndex
             If user > 0 Then
                 If BarcoNavegando.CurrenDest = e_TripState.eForgatToNix Then
-                    Call WarpToLegalPos(user, BarcoDestino.map, BarcoDestino.DestX, BarcoDestino.DestY, True)
+                    Call WarpToLegalPos(user, NixDock.map, NixDock.DestX, NixDock.DestY, True)
                     Call WriteLocaleMsg(user, MsgThanksForTravelNix, e_FontTypeNames.FONTTYPE_GUILD)
                 Else
-                    Call WarpToLegalPos(user, BarcoPeninsula.map, BarcoPeninsula.DestX, BarcoPeninsula.DestY, True)
+                    Call WarpToLegalPos(user, ForgatDock.map, ForgatDock.DestX, ForgatDock.DestY, True)
                     Call WriteLocaleMsg(user, MsgThanksForTravelForgat, e_FontTypeNames.FONTTYPE_GUILD)
                 End If
             End If
@@ -936,49 +974,37 @@ Private Sub UpdateDock()
     
     If BarcoNavegando.CurrenDest = e_TripState.eForgatToNix Then
     
-        For TileX = BarcoDestino.startX To BarcoDestino.EndX
-            For TileY = BarcoDestino.startY To BarcoDestino.EndY
-                Debug.Print "Miro en " & TileX & "," & TileY
-                user = MapData(BarcoDestino.map, TileX, TileY).UserIndex
+        For TileX = NixDock.startX To NixDock.EndX
+            For TileY = NixDock.startY To NixDock.EndY
+                user = MapData(NixDock.map, TileX, TileY).UserIndex
                 If user > 0 Then
-                    Dim i As Integer
-                    With UserList(user)
-                        For i = 1 To UBound(.invent.Object)
-                            If .invent.Object(i).objIndex = BarcoNavegando.RequiredPassID Then
-                                Call WriteLocaleMsg(user, MsgPassNix, e_FontTypeNames.FONTTYPE_GUILD)
-                                Call QuitarUserInvItem(user, i, 1)
-                                Call UpdateUserInv(False, user, i)
-                                Call WarpToLegalPos(user, BarcoNavegando.map, BarcoNavegando.DestX, BarcoNavegando.DestY, True)
-                                PassFound = True
-                                Exit For
-                              End If
-                        Next
-                        If Not PassFound Then Call WriteLocaleMsg(user, MsgInvalidPass, e_FontTypeNames.FONTTYPE_GUILD)
-                    End With
+                    PassSlot = GetPassSlot(user)
+                    If PassSlot > 0 Then
+                       Call WriteLocaleMsg(user, MsgPassNix, e_FontTypeNames.FONTTYPE_GUILD)
+                       Call QuitarUserInvItem(user, PassSlot, 1)
+                       Call UpdateUserInv(False, user, PassSlot)
+                       Call WarpToLegalPos(user, BarcoNavegando.map, BarcoNavegando.DestX, BarcoNavegando.DestY, True)
+                    Else
+                       Call WriteLocaleMsg(user, MsgInvalidPass, e_FontTypeNames.FONTTYPE_GUILD)
+                    End If
                 End If
             Next TileY
         Next TileX
         BarcoNavegando.CurrenDest = e_TripState.eNixToForgat
     Else
-        For TileX = BarcoPeninsula.startX To BarcoPeninsula.EndX
-            For TileY = BarcoPeninsula.startY To BarcoPeninsula.EndY
-                Debug.Print "Miro en " & TileX & "," & TileY
-                user = MapData(BarcoPeninsula.map, TileX, TileY).UserIndex
+        For TileX = ForgatDock.startX To ForgatDock.EndX
+            For TileY = ForgatDock.startY To ForgatDock.EndY
+                user = MapData(ForgatDock.map, TileX, TileY).UserIndex
                 If user > 0 Then
-                    With UserList(user)
-                        For i = 1 To UBound(.invent.Object)
-                            If .invent.Object(i).objIndex = BarcoNavegando.RequiredPassID Then
-                                Call WriteLocaleMsg(user, MsgPassForgat, e_FontTypeNames.FONTTYPE_GUILD)
-                                Call QuitarUserInvItem(user, i, 1)
-                                Call UpdateUserInv(False, user, i)
-                                Call WarpToLegalPos(user, BarcoNavegando.map, BarcoNavegando.DestX, BarcoNavegando.DestY, True)
-                                PassFound = True
-                                Exit For
-                            End If
-                        Next
-                        If Not PassFound Then Call WriteLocaleMsg(user, MsgInvalidPass, e_FontTypeNames.FONTTYPE_GUILD)
-                    End With
-
+                    PassSlot = GetPassSlot(user)
+                    If PassSlot > 0 Then
+                       Call WriteLocaleMsg(user, MsgPassForgat, e_FontTypeNames.FONTTYPE_GUILD)
+                       Call QuitarUserInvItem(user, PassSlot, 1)
+                       Call UpdateUserInv(False, user, PassSlot)
+                       Call WarpToLegalPos(user, BarcoNavegando.map, BarcoNavegando.DestX, BarcoNavegando.DestY, True)
+                    Else
+                       Call WriteLocaleMsg(user, MsgInvalidPass, e_FontTypeNames.FONTTYPE_GUILD)
+                    End If
                 End If
             Next TileY
         Next TileX
