@@ -2713,8 +2713,8 @@ Public CityArkhein                        As t_CityWorldPos
 Public Prision                            As t_WorldPos
 Public Libertad                           As t_WorldPos
 Public Renacimiento                       As t_WorldPos
-Public BarcoDestino                       As t_Transport
-Public BarcoPeninsula                     As t_Transport
+Public NixDock                       As t_Transport
+Public ForgatDock                     As t_Transport
 Public BarcoNavegando                     As t_Transport
 
 Public TotalMapasCiudades()               As String

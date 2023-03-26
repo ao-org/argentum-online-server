@@ -28,3 +28,4 @@ Public Const MsgPassForgat = 434
 Public Const MsgPassNix = 435
 Public Const MsgThanksForTravelNix = 436
 Public Const MsgThanksForTravelForgat = 437
+Public Const MsgStartingTrip = 438
