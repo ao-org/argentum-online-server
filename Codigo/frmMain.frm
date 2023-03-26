@@ -924,9 +924,11 @@ Private Sub UpdateDock()
             user = MapData(BarcoNavegando.map, TileX, TileY).UserIndex
             If user > 0 Then
                 If BarcoNavegando.CurrenDest = e_TripState.eForgatToNix Then
+                    Call FindLegalPos(user, BarcoDestino.map, BarcoDestino.DestX, BarcoDestino.DestY)
                     Call WarpUserChar(user, BarcoDestino.map, BarcoDestino.DestX, BarcoDestino.DestY, True)
                     Call WriteLocaleMsg(user, MsgThanksForTravelNix, e_FontTypeNames.FONTTYPE_GUILD)
                 Else
+                    Call FindLegalPos(user, BarcoPeninsula.map, BarcoPeninsula.DestX, BarcoPeninsula.DestY)
                     Call WarpUserChar(user, BarcoPeninsula.map, BarcoPeninsula.DestX, BarcoPeninsula.DestY, True)
                     Call WriteLocaleMsg(user, MsgThanksForTravelForgat, e_FontTypeNames.FONTTYPE_GUILD)
                 End If
@@ -948,6 +950,7 @@ Private Sub UpdateDock()
                                 Call WriteLocaleMsg(user, MsgPassNix, e_FontTypeNames.FONTTYPE_GUILD)
                                 Call QuitarUserInvItem(user, i, 1)
                                 Call UpdateUserInv(False, user, i)
+                                Call FindLegalPos(user, BarcoNavegando.map, BarcoNavegando.DestX, BarcoNavegando.DestY)
                                 Call WarpUserChar(user, BarcoNavegando.map, BarcoNavegando.DestX, BarcoNavegando.DestY, True)
                                 PassFound = True
                                 Exit For
@@ -971,6 +974,7 @@ Private Sub UpdateDock()
                                 Call WriteLocaleMsg(user, MsgPassForgat, e_FontTypeNames.FONTTYPE_GUILD)
                                 Call QuitarUserInvItem(user, i, 1)
                                 Call UpdateUserInv(False, user, i)
+                                Call FindLegalPos(user, BarcoNavegando.map, BarcoNavegando.DestX, BarcoNavegando.DestY)
                                 Call WarpUserChar(user, BarcoNavegando.map, BarcoNavegando.DestX, BarcoNavegando.DestY, True)
                                 PassFound = True
                                 Exit For
