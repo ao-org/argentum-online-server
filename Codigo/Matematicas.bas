@@ -89,6 +89,7 @@ Function GetNormal(ByRef Vector As t_Vector) As t_Vector
     Dim Length As Double
     Dim ret As t_Vector
     Length = distance(0, 0, Vector.X, Vector.Y)
+    Debug.Assert length <> 0
     ret.X = Vector.X / Length
     ret.Y = Vector.Y / Length
     GetNormal = ret

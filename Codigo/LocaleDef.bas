@@ -46,6 +46,8 @@ Public Function GetRequiredWeaponLocaleId(ByVal WeaponType As e_WeaponType) As I
             GetRequiredWeaponLocaleId = 431
         Case e_WeaponType.eThrowableAxe
             GetRequiredWeaponLocaleId = 432
+        Case Else
+            Debug.Assert False
     End Select
 End Function
 

@@ -1365,6 +1365,7 @@ On Error GoTo TranslateUserPos_Err
             Call WriteMacroTrabajoToggle(UserIndex, False)
         End If
     End With
+    Exit Sub
 TranslateUserPos_Err:
     Call LogError("Error en la subrutina TranslateUserPos - Error : " & Err.Number & " - Description : " & Err.Description)
 End Function

@@ -908,6 +908,7 @@ On Error GoTo TranslateNpcChar_Err
         Call SendData(SendTarget.ToNPCArea, npcIndex, PrepareCharacterTranslate(.Char.charindex, NewPos.x, NewPos.y, Speed))
         Call CheckUpdateNeededNpc(npcIndex, GetHeadingFromWorldPos(PrevPos, NewPos))
     End With
+    Exit Sub
 TranslateNpcChar_Err:
     Call TraceError(Err.Number, Err.Description, "NPCs.TranslateNpcChar", Erl)
 End Sub
