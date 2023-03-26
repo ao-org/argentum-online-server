@@ -924,10 +924,10 @@ Private Sub UpdateDock()
             user = MapData(BarcoNavegando.map, TileX, TileY).UserIndex
             If user > 0 Then
                 If BarcoNavegando.CurrenDest = e_TripState.eForgatToNix Then
-                    Call WarpUserChar(user, BarcoDestino.map, BarcoDestino.DestX, BarcoDestino.DestY, True)
+                    Call WarpToLegalPos(user, BarcoDestino.map, BarcoDestino.DestX, BarcoDestino.DestY, True)
                     Call WriteLocaleMsg(user, MsgThanksForTravelNix, e_FontTypeNames.FONTTYPE_GUILD)
                 Else
-                    Call WarpUserChar(user, BarcoPeninsula.map, BarcoPeninsula.DestX, BarcoPeninsula.DestY, True)
+                    Call WarpToLegalPos(user, BarcoPeninsula.map, BarcoPeninsula.DestX, BarcoPeninsula.DestY, True)
                     Call WriteLocaleMsg(user, MsgThanksForTravelForgat, e_FontTypeNames.FONTTYPE_GUILD)
                 End If
             End If
@@ -948,7 +948,7 @@ Private Sub UpdateDock()
                                 Call WriteLocaleMsg(user, MsgPassNix, e_FontTypeNames.FONTTYPE_GUILD)
                                 Call QuitarUserInvItem(user, i, 1)
                                 Call UpdateUserInv(False, user, i)
-                                Call WarpUserChar(user, BarcoNavegando.map, BarcoNavegando.DestX, BarcoNavegando.DestY, True)
+                                Call WarpToLegalPos(user, BarcoNavegando.map, BarcoNavegando.DestX, BarcoNavegando.DestY, True)
                                 PassFound = True
                                 Exit For
                               End If
@@ -971,7 +971,7 @@ Private Sub UpdateDock()
                                 Call WriteLocaleMsg(user, MsgPassForgat, e_FontTypeNames.FONTTYPE_GUILD)
                                 Call QuitarUserInvItem(user, i, 1)
                                 Call UpdateUserInv(False, user, i)
-                                Call WarpUserChar(user, BarcoNavegando.map, BarcoNavegando.DestX, BarcoNavegando.DestY, True)
+                                Call WarpToLegalPos(user, BarcoNavegando.map, BarcoNavegando.DestX, BarcoNavegando.DestY, True)
                                 PassFound = True
                                 Exit For
                             End If
