@@ -924,7 +924,7 @@ Private Sub MsnEnbarque(ByRef ShipInfo As t_Transport)
 
 102     For LoopC = 1 To ConnGroups(ShipInfo.map).CountEntrys
 104         tempIndex = ConnGroups(ShipInfo.map).UserEntrys(LoopC)
-106         If UserList(tempIndex).ConnIDValida And UserList(tempIndex).pos.x > ShipInfo.startX And UserList(tempIndex).pos.x < ShipInfo.EndX And UserList(tempIndex).pos.y > ShipInfo.startY And UserList(tempIndex).pos.y < ShipInfo.EndY Then
+106         If UserList(tempIndex).ConnIDValida And UserList(tempIndex).pos.x >= ShipInfo.startX And UserList(tempIndex).pos.x <= ShipInfo.EndX And UserList(tempIndex).pos.y >= ShipInfo.startY And UserList(tempIndex).pos.y <= ShipInfo.EndY Then
                 Debug.Print "encontre uno"
                 If Not GetPassSlot(tempIndex) > 0 Then
                     Call WriteLocaleMsg(tempIndex, MsgInvalidPass, e_FontTypeNames.FONTTYPE_GUILD)

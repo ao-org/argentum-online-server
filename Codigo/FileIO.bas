@@ -2412,9 +2412,9 @@ Sub CargarCiudades()
         End With
         
         With ForgatDock
-            .map = val(Lector.GetValue("ForgatDock", "Mapa"))
-            .startX = val(Lector.GetValue("ForgatDock", "StartX"))
-            .startY = val(Lector.GetValue("ForgatDock", "StartY"))
+            .Map = val(Lector.GetValue("ForgatDock", "Mapa"))
+            .StartX = val(Lector.GetValue("ForgatDock", "StartX"))
+            .StartY = val(Lector.GetValue("ForgatDock", "StartY"))
             .EndX = val(Lector.GetValue("ForgatDock", "EndX"))
             .EndY = val(Lector.GetValue("ForgatDock", "EndY"))
             .DestX = val(Lector.GetValue("ForgatDock", "DestX"))
@@ -2425,9 +2425,9 @@ Sub CargarCiudades()
         End With
         
         With NixDock
-            .map = val(Lector.GetValue("NixDock", "Mapa"))
-            .startX = val(Lector.GetValue("NixDock", "StartX"))
-            .startY = val(Lector.GetValue("NixDock", "StartY"))
+            .Map = val(Lector.GetValue("NixDock", "Mapa"))
+            .StartX = val(Lector.GetValue("NixDock", "StartX"))
+            .StartY = val(Lector.GetValue("NixDock", "StartY"))
             .EndX = val(Lector.GetValue("NixDock", "EndX"))
             .EndY = val(Lector.GetValue("NixDock", "EndY"))
             .DestX = val(Lector.GetValue("NixDock", "DestX"))
