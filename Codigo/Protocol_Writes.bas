@@ -5370,6 +5370,20 @@ PrepareMessageCharacterMove_Err:
         '</EhFooter>
 End Function
 
+Public Function PrepareCharacterTranslate(ByVal CharIndexm As Integer, ByVal NewX As Byte, ByVal NewY As Byte, ByVal TranslationTime As Long)
+    On Error GoTo PrepareMessageCharacterMove_Err
+        Call Writer.WriteInt16(ServerPacketID.CharacterTranslate)
+        Call Writer.WriteInt16(CharIndexm)
+        Call Writer.WriteInt8(NewX)
+        Call Writer.WriteInt8(NewY)
+        Call Writer.WriteInt32(TranslationTime)
+    Exit Function
+PrepareMessageCharacterMove_Err:
+        Call Writer.Clear
+        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageCharacterMove", Erl)
+End Function
+
+
 Public Function PrepareMessageForceCharMove(ByVal Direccion As e_Heading)
         '<EhHeader>
         On Error GoTo PrepareMessageForceCharMove_Err

@@ -781,6 +781,7 @@ Public Sub CargarHechizos()
 300         If val(Leer.GetValue("Hechizo" & Hechizo, "RequireProjectile")) > 0 Then Call SetMask(Hechizos(Hechizo).RequireEquipedSlot, e_EquipedSlotMask.eProjectile)
 302         If val(Leer.GetValue("Hechizo" & Hechizo, "RequireShield")) > 0 Then Call SetMask(Hechizos(Hechizo).RequireEquipedSlot, e_EquipedSlotMask.eShield)
 304         If val(Leer.GetValue("Hechizo" & Hechizo, "RequireWeapon")) > 0 Then Call SetMask(Hechizos(Hechizo).RequireEquipedSlot, e_EquipedSlotMask.eWeapon)
+305         Hechizos(Hechizo).RequireWeaponType = val(Leer.GetValue("Hechizo" & Hechizo, "RequireWeaponType"))
 306     Next Hechizo
 
 400     Set Leer = Nothing
@@ -1290,6 +1291,7 @@ Sub LoadOBJData()
 232                     .Revive = val(Leer.GetValue(ObjKey, "Revive")) <> 0
 234                     .DosManos = val(Leer.GetValue(ObjKey, "DosManos"))
                         .Porcentaje = val(Leer.GetValue(ObjKey, "Porcentaje"))
+                        .WeaponType = val(Leer.GetValue(ObjKey, "WeaponType"))
                         
 236                 Case e_OBJType.otInstrumentos
         
@@ -1379,6 +1381,7 @@ Sub LoadOBJData()
 364                     .incinera = val(Leer.GetValue(ObjKey, "Incinera"))
 366                     .WeaponAnim = val(Leer.GetValue(ObjKey, "Anim"))
 368                     .SkHerreria = val(Leer.GetValue(ObjKey, "SkHerreria"))
+                        .WeaponType = val(Leer.GetValue(ObjKey, "WeaponType"))
             
 370                 Case e_OBJType.otTeleport
                         .Radio = val(Leer.GetValue(ObjKey, "Radio"))

@@ -64,6 +64,16 @@ Public Enum tMacro
     borrarCartel = 4
 End Enum
 
+Public Enum e_WeaponType
+    eSword = 1
+    eDagger = 2
+    eBow = 3
+    eStaff = 4
+    eMace = 5
+    eThrowableAxe = 6
+    eAxe = 7
+    eKnuckle = 8
+End Enum
 
 Public Enum e_Facciones
     Criminal = 0
@@ -1075,6 +1085,7 @@ Public Type t_Hechizo
     StaffAffected As Boolean
     EotId As Integer
     RequireEquipedSlot As Long
+    RequireWeaponType As e_WeaponType
 End Type
 
 Public Type t_ActiveModifiers
@@ -1606,6 +1617,7 @@ Public Type t_ObjData
     PuntosPesca As Long
     ObjNum As Long
     ObjDonador As Long
+    WeaponType As e_WeaponType
 End Type
 
 '[Pablo ToxicWaste]
@@ -1795,6 +1807,7 @@ Public Type t_UserFlags
     Inmunidad As Byte
     
     Inmovilizado As Byte
+    TranslationActive As Boolean
     
     Montado As Byte
     Subastando As Boolean
@@ -2345,6 +2358,7 @@ Public Type t_NPCFlags
     Incinerado As Byte
     invisible As Byte
     Bendicion As Byte
+    TranslationActive As Boolean
 
     Snd1 As Integer
     Snd2 As Integer
@@ -2788,6 +2802,7 @@ Public Enum e_EffectOverTimeType
     eProvoked = 4
     eTrap = 5
     eDrunk = 6
+    eTranslation = 7
     [EffectTypeCount]
 End Enum
 

@@ -323,7 +323,7 @@ Private Sub SendToUserAliveArea(ByVal UserIndex As Integer, ByVal Buffer As Netw
 118                 If UserList(tempIndex).ConnIDValida Then
                         If UserList(tempIndex).flags.Muerto = 0 Or MapInfo(UserList(tempIndex).Pos.map).Seguro = 1 Or (UserList(UserIndex).GuildIndex > 0 And UserList(UserIndex).GuildIndex = UserList(tempIndex).GuildIndex) Then
                             enviaDatos = True
-                            If Not EsGM(UserIndex) Then
+                            If Not EsGM(tempIndex) Then
                                 If UserList(UserIndex).flags.invisible + UserList(UserIndex).flags.Oculto > 0 And validateInvi And Not (UserList(tempIndex).GuildIndex > 0 And UserList(tempIndex).GuildIndex = UserList(UserIndex).GuildIndex And modGuilds.NivelDeClan(UserList(tempIndex).GuildIndex) >= 6) And UserList(UserIndex).flags.Navegando = 0 Then
                                     If Distancia(UserList(UserIndex).Pos, UserList(tempIndex).Pos) > DISTANCIA_ENVIO_DATOS And UserList(UserIndex).Counters.timeFx + UserList(UserIndex).Counters.timeChat = 0 Then
                                         enviaDatos = False
@@ -389,7 +389,7 @@ Private Sub SendToUserArea(ByVal UserIndex As Integer, ByVal Buffer As Network.W
 
 118                 If UserList(tempIndex).ConnIDValida Then
                         enviaDatos = True
-                        If Not EsGM(UserIndex) Then
+                        If Not EsGM(tempIndex) Then
                             If UserList(UserIndex).flags.invisible + UserList(UserIndex).flags.Oculto > 0 And validateInvi Then
                                 If Distancia(UserList(UserIndex).Pos, UserList(tempIndex).Pos) > DISTANCIA_ENVIO_DATOS And UserList(UserIndex).Counters.timeFx + UserList(UserIndex).Counters.timeChat = 0 Then
                                     enviaDatos = False
@@ -623,7 +623,7 @@ Private Sub SendToUserAreaButindex(ByVal UserIndex As Integer, ByVal Buffer As N
 124                     If UserList(tempIndex).ConnIDValida Then
 126                         enviaDatos = True
                             
-                            If Not EsGM(UserIndex) Then
+                            If Not EsGM(tempIndex) Then
                                 If UserList(UserIndex).flags.invisible + UserList(UserIndex).flags.Oculto > 0 And validateInvi Then
                                     If Distancia(UserList(UserIndex).Pos, UserList(tempIndex).Pos) > DISTANCIA_ENVIO_DATOS And UserList(UserIndex).Counters.timeFx + UserList(UserIndex).Counters.timeChat = 0 Then
                                         enviaDatos = False
@@ -699,7 +699,7 @@ Private Sub SendToUserAliveAreaButindex(ByVal UserIndex As Integer, ByVal Buffer
                             If UserList(tempIndex).flags.Muerto = 0 Or MapInfo(UserList(tempIndex).Pos.map).Seguro = 1 Or (UserList(UserIndex).GuildIndex > 0 And UserList(UserIndex).GuildIndex = UserList(tempIndex).GuildIndex) Then
                                 enviaDatos = True
                                 
-                                If Not EsGM(UserIndex) Then
+                                If Not EsGM(tempIndex) Then
                                     If UserList(UserIndex).flags.invisible + UserList(UserIndex).flags.Oculto > 0 And validateInvi And Not (UserList(tempIndex).GuildIndex > 0 And UserList(tempIndex).GuildIndex = UserList(UserIndex).GuildIndex And modGuilds.NivelDeClan(UserList(tempIndex).GuildIndex) >= 6) And UserList(UserIndex).flags.Navegando = 0 Then
                                         If Distancia(UserList(UserIndex).Pos, UserList(tempIndex).Pos) > DISTANCIA_ENVIO_DATOS And UserList(UserIndex).Counters.timeFx + UserList(UserIndex).Counters.timeChat = 0 Then
                                             enviaDatos = False

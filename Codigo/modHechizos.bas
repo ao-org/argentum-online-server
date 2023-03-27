@@ -582,6 +582,16 @@ Private Function PuedeLanzar(ByVal UserIndex As Integer, ByVal HechizoIndex As I
                     End If
                 End If
             End If
+            If Hechizos(HechizoIndex).RequireWeaponType > 0 Then
+                If .invent.WeaponEqpObjIndex = 0 Then
+                    Call WriteLocaleMsg(UserIndex, GetRequiredWeaponLocaleId(Hechizos(HechizoIndex).RequireWeaponType), e_FontTypeNames.FONTTYPE_INFO)
+                    Exit Function
+                End If
+                If ObjData(.invent.WeaponEqpObjIndex).WeaponType <> Hechizos(HechizoIndex).RequireWeaponType Then
+                    Call WriteLocaleMsg(UserIndex, GetRequiredWeaponLocaleId(Hechizos(HechizoIndex).RequireWeaponType), e_FontTypeNames.FONTTYPE_INFO)
+                    Exit Function
+                End If
+            End If
             
             Dim RequiredItemResult As e_EquipedSlotMask
             RequiredItemResult = TestRequiredEquipedItem(.invent, Hechizos(HechizoIndex).RequireEquipedSlot)
@@ -1100,7 +1110,8 @@ Sub HandleHechizoUsuario(ByVal UserIndex As Integer, ByVal uh As Integer)
         
         On Error GoTo HandleHechizoUsuario_Err
         
-
+        Dim IsAlive As Boolean
+        IsAlive = True
         Dim b As Boolean
         Dim Effect As IBaseEffectOverTime
         If Hechizos(uh).EotId > 0 And IsValidUserRef(UserList(UserIndex).flags.targetUser) Then
@@ -1118,15 +1129,15 @@ Sub HandleHechizoUsuario(ByVal UserIndex As Integer, ByVal uh As Integer)
 102             Call HechizoEstadoUsuario(UserIndex, b)
 
 104         Case e_TipoHechizo.uPropiedades ' Afectan HP,MANA,STAMINA,ETC
-106             Call HechizoPropUsuario(UserIndex, b)
+106             Call HechizoPropUsuario(UserIndex, b, IsAlive)
 
 108         Case e_TipoHechizo.uCombinados
-110             Call HechizoCombinados(UserIndex, b)
+110             Call HechizoCombinados(UserIndex, b, IsAlive)
     
         End Select
 
 112     If b Then
-            If Hechizos(uh).EotId > 0 Then
+            If Hechizos(uh).EotId > 0 And IsAlive Then
                 If Effect Is Nothing Then
                     Call CreateEffect(UserIndex, eUser, UserList(UserIndex).flags.targetUser.ArrayIndex, eUser, Hechizos(uh).EotId)
                 Else
@@ -1233,6 +1244,8 @@ Sub HandleHechizoNPC(ByVal UserIndex As Integer, ByVal uh As Integer)
         '***************************************************
         Dim b As Boolean
         Dim Effect As IBaseEffectOverTime
+        Dim IsAlive As Boolean
+        IsAlive = True
         If Hechizos(uh).EotId > 0 And IsValidNpcRef(UserList(UserIndex).flags.TargetNPC) Then
             Set Effect = FindEffectOnTarget(UserIndex, NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).EffectOverTime, Hechizos(uh).EotId)
             If Not Effect Is Nothing Then
@@ -1247,11 +1260,11 @@ Sub HandleHechizoNPC(ByVal UserIndex As Integer, ByVal uh As Integer)
 102             Call HechizoEstadoNPC(UserList(UserIndex).flags.TargetNPC.ArrayIndex, uh, b, UserIndex)
 
 104         Case e_TipoHechizo.uPropiedades ' Afectan HP,MANA,STAMINA,ETC
-106             Call HechizoPropNPC(uh, UserList(UserIndex).flags.TargetNPC.ArrayIndex, UserIndex, b)
+106             Call HechizoPropNPC(uh, UserList(UserIndex).flags.TargetNPC.ArrayIndex, UserIndex, b, IsAlive)
         End Select
 
 108     If b Then
-            If Hechizos(uh).EotId > 0 Then
+            If Hechizos(uh).EotId > 0 And IsAlive Then
                 If Effect Is Nothing Then
                     Call CreateEffect(UserIndex, eUser, UserList(UserIndex).flags.TargetNPC.ArrayIndex, eNpc, Hechizos(uh).EotId)
                 Else
@@ -1869,7 +1882,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
             End If
     
 508         If UserList(tU).flags.Paralizado = 1 Then
-510             Call WriteConsoleMsg(UserIndex, UserList(tU).Name & " ya está paralizado.", e_FontTypeNames.FONTTYPE_FIGHT)
+510             Call WriteConsoleMsg(UserIndex, UserList(tU).name & " ya está paralizado.", e_FontTypeNames.FONTTYPE_FIGHT)
                 Exit Sub
 512         ElseIf UserList(tU).flags.Inmovilizado = 1 Then
 514             Call WriteConsoleMsg(UserIndex, UserList(tU).name & " ya está inmovilizado.", e_FontTypeNames.FONTTYPE_FIGHT)
@@ -2380,7 +2393,7 @@ HechizoEstadoNPC_Err:
         
 End Sub
 
-Sub HechizoPropNPC(ByVal hIndex As Integer, ByVal NpcIndex As Integer, ByVal UserIndex As Integer, ByRef b As Boolean)
+Sub HechizoPropNPC(ByVal hIndex As Integer, ByVal npcIndex As Integer, ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAlive As Boolean)
         '***************************************************
         'Autor: Unknown (orginal version)
         'Last Modification: 14/08/2007
@@ -2440,7 +2453,7 @@ Sub HechizoPropNPC(ByVal hIndex As Integer, ByVal NpcIndex As Integer, ByVal Use
                 
                 ' Magic Damage ring
 152             If UserList(UserIndex).invent.DañoMagicoEqpObjIndex > 0 Then
-154                 damage = damage + Porcentaje(damage, ObjData(UserList(UserIndex).invent.DañoMagicoEqpObjIndex).MagicDamageBonus)
+154                 Damage = Damage + Porcentaje(Damage, ObjData(UserList(UserIndex).invent.DañoMagicoEqpObjIndex).MagicDamageBonus)
                 End If
             End If
 
@@ -2455,7 +2468,7 @@ Sub HechizoPropNPC(ByVal hIndex As Integer, ByVal NpcIndex As Integer, ByVal Use
             End If
         
 166         If Damage < 0 Then Damage = 0
-            Call NPCs.DoDamageOrHeal(npcIndex, UserIndex, eUser, -Damage, e_DamageSourceType.e_magic, hIndex)
+            IsAlive = NPCs.DoDamageOrHeal(npcIndex, UserIndex, eUser, -Damage, e_DamageSourceType.e_magic, hIndex) = eStillAlive
 170         Call InfoHechizo(UserIndex)
 176         If NpcList(NpcIndex).NPCtype = DummyTarget Then
 178             Call DummyTargetAttacked(NpcIndex)
@@ -2527,7 +2540,7 @@ Private Sub InfoHechizo(ByVal UserIndex As Integer)
 
         End If
 
-106     If IsValidUserRef(UserList(UserIndex).flags.targetUser) Then '¿El Hechizo fue tirado sobre un usuario?
+106     If IsValidUserRef(UserList(UserIndex).flags.TargetUser) Then '¿El Hechizo fue tirado sobre un usuario?
 108         If Hechizos(h).FXgrh > 0 Then '¿Envio FX?
 110             If Hechizos(h).ParticleViaje > 0 Then
                     UserList(UserList(UserIndex).flags.targetUser.ArrayIndex).Counters.timeFx = 2
@@ -2638,7 +2651,7 @@ InfoHechizo_Err:
         
 End Sub
 
-Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
+Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAlive As Boolean)
         On Error GoTo HechizoPropUsuario_Err
         
 
@@ -3008,7 +3021,7 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
                 
                 ' Daño mágico anillo
 418             If UserList(UserIndex).invent.DañoMagicoEqpObjIndex > 0 Then
-420                 damage = damage + Porcentaje(damage, ObjData(UserList(UserIndex).invent.DañoMagicoEqpObjIndex).MagicDamageBonus)
+420                 Damage = Damage + Porcentaje(Damage, ObjData(UserList(UserIndex).invent.DañoMagicoEqpObjIndex).MagicDamageBonus)
                 End If
             End If
             
@@ -3053,7 +3066,7 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
             End If
     
 450         Call InfoHechizo(UserIndex)
-452         Call UserMod.DoDamageOrHeal(tempChr, UserIndex, eUser, -Damage, e_DamageSourceType.e_magic, h)
+452         IsAlive = UserMod.DoDamageOrHeal(tempChr, UserIndex, eUser, -Damage, e_DamageSourceType.e_magic, h) = eStillAlive
 453         Call EffectsOverTime.TartgetDidHit(UserList(UserIndex).EffectOverTime, tempChr, eUser, e_DamageSourceType.e_magic)
 454         DamageStr = PonerPuntos(Damage)
     
@@ -3156,7 +3169,7 @@ HechizoPropUsuario_Err:
         
 End Sub
 
-Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean)
+Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAlive As Boolean)
         '***************************************************
         'Autor: Unknown (orginal version)
         'Last Modification: 02/01/2008
@@ -3347,7 +3360,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean)
             
             ' Magic ring bonus
 284         If UserList(UserIndex).invent.DañoMagicoEqpObjIndex > 0 Then
-286             damage = damage + Porcentaje(damage, ObjData(UserList(UserIndex).invent.DañoMagicoEqpObjIndex).MagicDamageBonus)
+286             Damage = Damage + Porcentaje(Damage, ObjData(UserList(UserIndex).invent.DañoMagicoEqpObjIndex).MagicDamageBonus)
             End If
             
             ' Si el hechizo no ignora la RM
@@ -3386,7 +3399,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean)
             End If
     
 316         enviarInfoHechizo = True
-318         Call UserMod.DoDamageOrHeal(tempChr, UserIndex, eUser, -Damage, e_DamageSourceType.e_magic, h)
+318         IsAlive = UserMod.DoDamageOrHeal(tempChr, UserIndex, eUser, -Damage, e_DamageSourceType.e_magic, h) = eStillAlive
 320         Call WriteConsoleMsg(UserIndex, "Le has quitado " & Damage & " puntos de vida a " & UserList(tempChr).name, e_FontTypeNames.FONTTYPE_FIGHT)
 321         Call EffectsOverTime.TartgetDidHit(UserList(UserIndex).EffectOverTime, tempChr, eUser, e_DamageSourceType.e_magic)
 322         Call WriteConsoleMsg(tempChr, UserList(UserIndex).name & " te ha quitado " & Damage & " puntos de vida.", e_FontTypeNames.FONTTYPE_FIGHT)

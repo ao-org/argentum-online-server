@@ -29,3 +29,27 @@ Public Const MsgPassNix = 435
 Public Const MsgThanksForTravelNix = 436
 Public Const MsgThanksForTravelForgat = 437
 Public Const MsgStartingTrip = 438
+
+Public Function GetRequiredWeaponLocaleId(ByVal WeaponType As e_WeaponType) As Integer
+    Select Case WeaponType
+        Case e_WeaponType.eAxe
+            GetRequiredWeaponLocaleId = 426
+        Case e_WeaponType.eBow
+            GetRequiredWeaponLocaleId = 427
+        Case e_WeaponType.eDagger
+            GetRequiredWeaponLocaleId = 428
+        Case e_WeaponType.eMace
+            GetRequiredWeaponLocaleId = 429
+        Case e_WeaponType.eStaff
+            GetRequiredWeaponLocaleId = 430
+        Case e_WeaponType.eSword
+            GetRequiredWeaponLocaleId = 431
+        Case e_WeaponType.eThrowableAxe
+            GetRequiredWeaponLocaleId = 432
+        Case Else
+            Debug.Assert False
+    End Select
+End Function
+
+
+

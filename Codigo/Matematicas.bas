@@ -35,6 +35,12 @@ Attribute VB_Name = "Matematicas"
 'Código Postal 1900
 'Pablo Ignacio Márquez
 Option Explicit
+
+Public Type t_Vector
+    X As Double
+    Y As Double
+End Type
+
 Function max(ByVal a As Double, ByVal b As Double) As Double
         On Error GoTo max_Err
 100     If a > b Then
@@ -78,6 +84,17 @@ Function Distance(ByVal X1 As Long, ByVal Y1 As Long, ByVal X2 As Long, ByVal Y2
 Distance_Err:
 102     Call TraceError(Err.Number, Err.Description, "Matematicas.Distance", Erl)
 End Function
+
+Function GetNormal(ByRef Vector As t_Vector) As t_Vector
+    Dim Length As Double
+    Dim ret As t_Vector
+    Length = distance(0, 0, Vector.X, Vector.Y)
+    Debug.Assert length <> 0
+    ret.X = Vector.X / Length
+    ret.Y = Vector.Y / Length
+    GetNormal = ret
+End Function
+
 Public Function RandomNumber(ByVal LowerBound As Long, ByVal UpperBound As Long) As Long
         On Error GoTo RandomNumber_Err
 100     RandomNumber = Fix(Rnd * (UpperBound - LowerBound + 1)) + LowerBound
