@@ -36,6 +36,7 @@ Attribute VB_Name = "Matematicas"
 'Pablo Ignacio Márquez
 Option Explicit
 
+Const PI As Double = 3.14159265
 Public Type t_Vector
     X As Double
     Y As Double
@@ -93,6 +94,26 @@ Function GetNormal(ByRef Vector As t_Vector) As t_Vector
     ret.X = Vector.X / Length
     ret.Y = Vector.Y / Length
     GetNormal = ret
+End Function
+
+Public Function ToRadians(ByVal degree As Double) As Double
+    ToRadians = degree * PI / 180
+End Function
+
+Public Function RotateVector(ByRef v As t_Vector, ByVal angle As Double) As t_Vector
+    Dim cosAngle As Double
+    Dim sinAngle As Double
+    Dim newX As Double
+    Dim newY As Double
+    
+    cosAngle = Cos(angle)
+    sinAngle = Sin(angle)
+    
+    newX = v.x * cosAngle - v.y * sinAngle
+    newY = v.x * sinAngle + v.y * cosAngle
+    
+    RotateVector.x = newX
+    RotateVector.y = newY
 End Function
 
 Public Function RandomNumber(ByVal LowerBound As Long, ByVal UpperBound As Long) As Long

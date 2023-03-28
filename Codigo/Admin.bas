@@ -155,6 +155,7 @@ Public MinutosWs                    As Long
 Public PlayerStunTime               As Long
 Public NpcStunTime                  As Long
 Public PlayerInmuneTime             As Long
+Public MultiShotReduction           As Single
 
 Public Puerto                       As Long
 
