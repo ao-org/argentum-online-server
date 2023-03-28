@@ -1034,6 +1034,7 @@ Sub LoadBalance()
 170     ModDañoGolpeCritico = 0.33
 171     RequiredSpellDisplayTime = val(BalanceIni.GetValue("EXTRA", "RequiredSpellDisplayTime"))
 172     MaxInvisibleSpellDisplayTime = val(BalanceIni.GetValue("EXTRA", "MaxInvisibleSpellDisplayTime"))
+        MultiShotReduction = val(BalanceIni.GetValue("EXTRA", "MultiShotReduction"))
         
         'stun
         PlayerStunTime = val(BalanceIni.GetValue("STUN", "PlayerStunTime"))
@@ -1292,6 +1293,7 @@ Sub LoadOBJData()
 234                     .DosManos = val(Leer.GetValue(ObjKey, "DosManos"))
                         .Porcentaje = val(Leer.GetValue(ObjKey, "Porcentaje"))
                         .WeaponType = val(Leer.GetValue(ObjKey, "WeaponType"))
+                        .ProjectileType = val(Leer.GetValue(ObjKey, "ProjectileType"))
                         
 236                 Case e_OBJType.otInstrumentos
         
@@ -1341,6 +1343,7 @@ Sub LoadOBJData()
             
 308                     .Snd1 = val(Leer.GetValue(ObjKey, "SND1"))
 310                     .Snd2 = val(Leer.GetValue(ObjKey, "SND2"))
+                        .ProjectileType = val(Leer.GetValue(ObjKey, "ProjectileType"))
             
                         'Pasajes Ladder 05-05-08
 312                 Case e_OBJType.otpasajes

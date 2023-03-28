@@ -506,6 +506,7 @@ Public Enum e_TipoHechizo
     uArea = 5
     uPortal = 6
     uCombinados = 8
+    uMultiShoot = 9
     
 End Enum
 
@@ -1618,6 +1619,7 @@ Public Type t_ObjData
     ObjNum As Long
     ObjDonador As Long
     WeaponType As e_WeaponType
+    ProjectileType As Integer
 End Type
 
 '[Pablo ToxicWaste]

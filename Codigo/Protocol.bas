@@ -3553,10 +3553,9 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                         WeaponData = ObjData(.WeaponEqpObjIndex)
 
                         If IsItemInCooldown(UserList(UserIndex), .Object(.WeaponEqpSlot)) Then Exit Sub
-                        ProjectileType = 1
+                        ProjectileType = GetProjectileView(UserList(UserIndex))
                         If WeaponData.Proyectil = 1 And WeaponData.Municion = 0 Then
                             DummyInt = 0
-                            ProjectileType = 2
                         ElseIf .WeaponEqpObjIndex = 0 Then
 136                         DummyInt = 1
 138                     ElseIf .WeaponEqpSlot < 1 Or .WeaponEqpSlot > UserList(UserIndex).CurrentInventorySlots Then
@@ -3571,21 +3570,19 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 156                         DummyInt = 1
 158                     ElseIf .Object(.MunicionEqpSlot).amount < 1 Then
 160                         DummyInt = 1
+                        ElseIf ObjData(.MunicionEqpObjIndex).Subtipo <> WeaponData.Municion Then
+161                         DummyInt = 1
 
                         End If
                     
 162                     If DummyInt <> 0 Then
 164                         If DummyInt = 1 Then
 166                             Call WriteConsoleMsg(UserIndex, "No tenés municiones.", e_FontTypeNames.FONTTYPE_INFO)
-
                             End If
-                        
 168                         Call Desequipar(UserIndex, .MunicionEqpSlot)
 170                         Call WriteWorkRequestTarget(UserIndex, 0)
                             Exit Sub
-
                         End If
-
                     End With
                 
                     'Quitamos stamina
@@ -3596,25 +3593,20 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                         ' Call WriteConsoleMsg(UserIndex, "Estís muy cansado para luchar.", e_FontTypeNames.FONTTYPE_INFO)
 182                     Call WriteWorkRequestTarget(UserIndex, 0)
                         Exit Sub
-
                     End If
                 
 184                 Call LookatTile(UserIndex, .Pos.Map, X, Y)
-                
 186                 tU = .flags.targetUser.ArrayIndex
 188                 tN = .flags.TargetNPC.ArrayIndex
 190                 consumirMunicion = False
-
                     'Validate target
 192                 If IsValidUserRef(.flags.targetUser) Then
-
                         'Only allow to atack if the other one can retaliate (can see us)
 194                     If Abs(UserList(tU).Pos.Y - .Pos.Y) > RANGO_VISION_Y Then
 196                         Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
                             'Call WriteConsoleMsg(UserIndex, "Estís demasiado lejos para atacar.", e_FontTypeNames.FONTTYPE_WARNING)
 198                         Call WriteWorkRequestTarget(UserIndex, 0)
                             Exit Sub
-
                         End If
                     
                         'Prevent from hitting self
@@ -3622,7 +3614,6 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 202                         Call WriteConsoleMsg(UserIndex, "¡No podés atacarte a vos mismo!", e_FontTypeNames.FONTTYPE_INFO)
 204                         Call WriteWorkRequestTarget(UserIndex, 0)
                             Exit Sub
-
                         End If
                     
                         'Attack!
@@ -3643,7 +3634,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                             UserList(tU).Counters.timeFx = 2
 212                         Call SendData(SendTarget.ToPCAliveArea, tU, PrepareMessageCreateFX(UserList(tU).Char.charindex, FX, 0, UserList(tU).Pos.X, UserList(tU).Pos.y))
                         End If
-                        If IsFeatureEnabled("proyectile_visible") And .flags.Oculto = 0 Then
+                        If ProjectileType > 0 And .flags.Oculto = 0 Then
                             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareCreateProjectile(UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.y, X, y, ProjectileType))
                         End If
                         'Si no es GM invisible, le envio el movimiento del arma.
@@ -3670,7 +3661,6 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 230                         Call WriteWorkRequestTarget(UserIndex, 0)
                             'Call WriteConsoleMsg(UserIndex, "Estas demasiado lejos para atacar.", e_FontTypeNames.FONTTYPE_WARNING)
                             Exit Sub
-
                         End If
                     
                         'Is it attackable???
@@ -3678,7 +3668,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 234                         If PuedeAtacarNPC(UserIndex, tN) Then
 236                             Call UsuarioAtacaNpc(UserIndex, tN, Ranged)
 238                             consumirMunicion = True
-                                If IsFeatureEnabled("proyectile_visible") And .flags.Oculto = 0 Then
+                                If ProjectileType > 0 And .flags.Oculto = 0 Then
                                     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareCreateProjectile(UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.y, X, y, ProjectileType))
                                 End If
                                 'Si no es GM invisible, le envio el movimiento del arma.
@@ -3687,11 +3677,8 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                                 End If
                             Else
 240                             consumirMunicion = False
-
                             End If
-
                         End If
-
                     End If
                 
 242                 With .Invent
@@ -3699,31 +3686,25 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 244                         DummyInt = .MunicionEqpSlot
 
                             If DummyInt <> 0 Then
-                        
                                 'Take 1 arrow away - we do it AFTER hitting, since if Ammo Slot is 0 it gives a rt9 and kicks players
 246                             If consumirMunicion Then
 248                                 Call QuitarUserInvItem(UserIndex, DummyInt, 1)
                                 End If
                             
 250                             If .Object(DummyInt).amount > 0 Then
-    
                                     'QuitarUserInvItem unequipps the ammo, so we equip it again
 252                                 .MunicionEqpSlot = DummyInt
 254                                 .MunicionEqpObjIndex = .Object(DummyInt).objIndex
 256                                 .Object(DummyInt).Equipped = 1
-        
                                 Else
 258                                 .MunicionEqpSlot = 0
 260                                 .MunicionEqpObjIndex = 0
-        
                                 End If
-        
 262                             Call UpdateUserInv(False, UserIndex, DummyInt)
                             End If
                         ElseIf consumirMunicion Then
                             Call UpdateCd(UserIndex, WeaponData.CdType)
                         End If
-                        
                     End With
                     '-----------------------------------
             

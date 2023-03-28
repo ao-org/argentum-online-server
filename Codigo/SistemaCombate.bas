@@ -460,7 +460,7 @@ Private Function GetUserDamge(ByVal UserIndex As Integer) As Long
                         ' Usamos el modificador correspondiente
 114                     ClassModifier = ModicadorDañoClaseProyectiles(.clase)
                         ' Si requiere munición
-116                     If Arma.Municion = 1 And .Invent.MunicionEqpObjIndex > 0 Then
+116                     If Arma.Municion > 0 And .invent.MunicionEqpObjIndex > 0 Then
                             Dim Municion As t_ObjData
 118                         Municion = ObjData(.Invent.MunicionEqpObjIndex)
                             ' Agregamos el daño de la munición al daño del arma
@@ -2493,15 +2493,238 @@ End Function
 ' Helper function to simplify the code. Keep private!
 Private Sub WriteCombatConsoleMsg(ByVal UserIndex As Integer, ByVal Message As String)
             On Error GoTo WriteCombatConsoleMsg_Err
-
 100         If UserList(UserIndex).ChatCombate = 1 Then
 102             Call WriteConsoleMsg(UserIndex, Message, e_FontTypeNames.FONTTYPE_FIGHT)
             End If
-
             Exit Sub
-
 WriteCombatConsoleMsg_Err:
 104         Call TraceError(Err.Number, Err.Description, "SistemaCombate.WriteCombatConsoleMsg", Erl)
+End Sub
 
+Public Function MultiShot(ByVal UserIndex As Integer, ByRef targetPos As t_WorldPos) As Boolean
+On Error GoTo MultiShot_Err
+    With UserList(UserIndex)
+        Dim ArrowSlot As Integer
+        ArrowSlot = .invent.MunicionEqpSlot
+        If ArrowSlot = 0 Then
+            Call WriteLocaleMsg(UserIndex, MsgEquipedArrowRequired, FONTTYPE_INFO)
+            Exit Function
+        End If
+        If ArrowSlot = 0 Then
+            Call WriteLocaleMsg(UserIndex, MsgEquipedArrowRequired, FONTTYPE_INFO)
+            Exit Function
+        End If
+        If ObjData(.invent.Object(ArrowSlot).objIndex).Subtipo <> ObjData(.invent.WeaponEqpObjIndex).Municion Then
+            Call WriteLocaleMsg(UserIndex, MsgEquipedArrowRequired, FONTTYPE_INFO)
+            Exit Function
+        End If
+        If .invent.Object(ArrowSlot).amount < 5 Then
+            Call WriteLocaleMsg(UserIndex, MsgNotEnoughtAmunitions, FONTTYPE_INFO)
+            Exit Function
+        End If
+        Dim Direction As t_Vector
+        Dim RotatedDir As t_Vector
+        Direction.x = targetPos.x - .pos.x
+        Direction.y = targetPos.y - .pos.y
+        If Direction.x = 0 And Direction.y = 0 Then
+            Call WriteLocaleMsg(UserIndex, MsgCantAttackYourself, FONTTYPE_INFO)
+            Exit Function
+        End If
+        Direction = GetNormal(Direction)
+        Call IncreaseSingle(.Modifiers.PhysicalDamageBonus, -MultiShotReduction) 'reduce the damage we deal for each arrow (we can hit multiple time the same target)
+        Call ThrowArrowToTargetDir(UserIndex, Direction, 10)
+        RotatedDir = RotateVector(Direction, ToRadians(-15))
+        Call ThrowArrowToTargetDir(UserIndex, RotatedDir, 10)
+        RotatedDir = RotateVector(Direction, ToRadians(-30))
+        Call ThrowArrowToTargetDir(UserIndex, RotatedDir, 10)
+        RotatedDir = RotateVector(Direction, ToRadians(15))
+        Call ThrowArrowToTargetDir(UserIndex, RotatedDir, 10)
+        RotatedDir = RotateVector(Direction, ToRadians(30))
+        Call ThrowArrowToTargetDir(UserIndex, RotatedDir, 10)
+        Call IncreaseSingle(.Modifiers.PhysicalDamageBonus, MultiShotReduction)  'back to normal
+    End With
+    MultiShot = True
+    Exit Function
+MultiShot_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.MultiShot", Erl)
+End Function
 
+Public Sub ThrowArrowToTargetDir(ByVal UserIndex As Integer, ByRef Direction As t_Vector, ByVal distance As Integer)
+On Error GoTo ThrowArrowToTargetDir_Err
+    Dim currentPos As t_WorldPos
+    Dim TargetPoint As t_Vector
+    Dim TargetTranslation As t_Vector
+    Dim targetPos As t_WorldPos
+    Dim TranslationDiff As Double
+    Dim Tanslation As Integer
+100    currentPos = UserList(UserIndex).pos
+102    targetPos.map = currentPos.map
+104    Dim step As Integer
+106    For step = 1 To distance
+108        TargetPoint.x = Direction.x * (step) + UserList(UserIndex).pos.x
+110        TargetPoint.y = Direction.y * (step) + UserList(UserIndex).pos.y
+112        TargetTranslation.x = TargetPoint.x - currentPos.x
+114        TargetTranslation.y = TargetPoint.y - currentPos.y
+116        TranslationDiff = Abs(TargetTranslation.x) - Abs(TargetTranslation.y)
+118        If Abs(TranslationDiff) < 0.3 Then 'if they are similar we are close to 45% let move in both directions
+120            targetPos.x = currentPos.x + Sgn(TargetTranslation.x)
+122            targetPos.y = currentPos.y + Sgn(TargetTranslation.y)
+124        ElseIf TranslationDiff > 0 Then 'x axis is bigger than
+126            targetPos.x = currentPos.x + Sgn(TargetTranslation.x)
+128            targetPos.y = currentPos.y
+130        Else
+132            targetPos.x = currentPos.x
+134            targetPos.y = currentPos.y + Sgn(TargetTranslation.y)
+136        End If
+138        If ThrowArrowToTile(UserIndex, targetPos) Then
+140            Exit Sub
+142        End If
+144        currentPos = targetPos
+146    Next step
+148    Call ConsumeAmunition(UserIndex)
+150    Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareCreateProjectile(UserList(UserIndex).pos.x, UserList(UserIndex).pos.y, targetPos.x, targetPos.y, GetProjectileView(UserList(UserIndex))))
+    Exit Sub
+ThrowArrowToTargetDir_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.ThrowArrowToTargetDir", Erl)
+End Sub
+
+Public Function ThrowArrowToTile(ByVal UserIndex As Integer, ByRef targetPos As t_WorldPos) As Boolean
+On Error GoTo ThrowArrowToTile_Err
+100    ThrowArrowToTile = False
+102    If MapData(targetPos.map, targetPos.x, targetPos.y).UserIndex > 0 Then
+104        If UserMod.CanAttackUser(UserIndex, UserList(UserIndex).VersionId, MapData(targetPos.map, targetPos.x, targetPos.y).UserIndex, _
+                                 UserList(MapData(targetPos.map, targetPos.x, targetPos.y).UserIndex).VersionId) = eCanAttack Then
+106            Call ThrowProjectileToTarget(UserIndex, MapData(targetPos.map, targetPos.x, targetPos.y).UserIndex, eUser)
+108            ThrowArrowToTile = True
+110        End If
+112    ElseIf MapData(targetPos.map, targetPos.x, targetPos.y).npcIndex > 0 Then
+114        If UserCanAttackNpc(UserIndex, MapData(targetPos.map, targetPos.x, targetPos.y).npcIndex) = eCanAttack Then
+116            Call ThrowProjectileToTarget(UserIndex, MapData(targetPos.map, targetPos.x, targetPos.y).npcIndex, eNpc)
+118            ThrowArrowToTile = True
+120        End If
+122    End If
+ThrowArrowToTile_Err:
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.ThrowArrowToTile", Erl)
+End Function
+
+Public Sub ThrowProjectileToTarget(ByVal UserIndex As Integer, ByVal TargetIndex As Integer, ByVal TargetType As e_ReferenceType)
+    Dim WeaponData As t_ObjData
+    Dim ProjectileType As Byte
+    Dim AmunitionState As Integer
+    Dim DidConsumeAmunition As Boolean
+    With UserList(UserIndex).invent
+        If .WeaponEqpObjIndex < 1 Then Exit Sub
+        WeaponData = ObjData(.WeaponEqpObjIndex)
+        
+        ProjectileType = GetProjectileView(UserList(UserIndex))
+        If WeaponData.Proyectil = 1 And WeaponData.Municion = 0 Then
+            AmunitionState = 0
+        ElseIf .WeaponEqpObjIndex = 0 Then
+            AmunitionState = 1
+        ElseIf .WeaponEqpSlot < 1 Or .WeaponEqpSlot > UserList(UserIndex).CurrentInventorySlots Then
+            AmunitionState = 1
+        ElseIf .MunicionEqpSlot < 1 Or .MunicionEqpSlot > UserList(UserIndex).CurrentInventorySlots Then
+            AmunitionState = 1
+        ElseIf .MunicionEqpObjIndex = 0 Then
+            AmunitionState = 1
+        ElseIf ObjData(.WeaponEqpObjIndex).Proyectil <> 1 Then
+            AmunitionState = 2
+        ElseIf ObjData(.MunicionEqpObjIndex).OBJType <> e_OBJType.otFlechas Then
+            AmunitionState = 1
+        ElseIf .Object(.MunicionEqpSlot).amount < 1 Then
+            AmunitionState = 1
+        End If
+    
+        If AmunitionState <> 0 Then
+            If AmunitionState = 1 Then
+                Call WriteConsoleMsg(UserIndex, "No tenés municiones.", e_FontTypeNames.FONTTYPE_INFO)
+            End If
+            Call Desequipar(UserIndex, .MunicionEqpSlot)
+            Call WriteWorkRequestTarget(UserIndex, 0)
+            Exit Sub
+        End If
+    
+    
+        If TargetType = eUser Then
+            Dim backup    As Byte
+            Dim envie     As Boolean
+            Dim Particula As Integer
+            Dim Tiempo    As Long
+            
+            ' Porque no es HandleAttack ???
+            Call UsuarioAtacaUsuario(UserIndex, TargetIndex, Ranged)
+            Dim FX As Integer
+            If .MunicionEqpObjIndex Then
+                FX = ObjData(.MunicionEqpObjIndex).CreaFX
+            End If
+            If FX <> 0 Then
+                UserList(TargetIndex).Counters.timeFx = 2
+                Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageCreateFX(UserList(TargetIndex).Char.charindex, FX, 0, UserList(TargetIndex).pos.x, UserList(TargetIndex).pos.y))
+            End If
+            If ProjectileType > 0 And UserList(UserIndex).flags.Oculto = 0 Then
+                Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareCreateProjectile(UserList(UserIndex).pos.x, UserList(UserIndex).pos.y, UserList(TargetIndex).pos.x, UserList(TargetIndex).pos.y, ProjectileType))
+            End If
+            'Si no es GM invisible, le envio el movimiento del arma.
+            If UserList(UserIndex).flags.AdminInvisible = 0 Then
+                Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageArmaMov(UserList(UserIndex).Char.charindex, 1))
+            End If
+            
+            If .MunicionEqpObjIndex > 0 Then
+                If ObjData(.MunicionEqpObjIndex).CreaParticula <> "" Then
+                    Particula = val(ReadField(1, ObjData(.MunicionEqpObjIndex).CreaParticula, Asc(":")))
+                    Tiempo = val(ReadField(2, ObjData(.MunicionEqpObjIndex).CreaParticula, Asc(":")))
+                    UserList(TargetIndex).Counters.timeFx = 2
+                    Call SendData(SendTarget.ToPCAliveArea, TargetIndex, PrepareMessageParticleFX(UserList(TargetIndex).Char.charindex, Particula, Tiempo, False, , UserList(TargetIndex).pos.x, UserList(TargetIndex).pos.y))
+                End If
+            End If
+            DidConsumeAmunition = True
+        Else
+            Call UsuarioAtacaNpc(UserIndex, TargetIndex, Ranged)
+            DidConsumeAmunition = True
+            If ProjectileType > 0 And UserList(UserIndex).flags.Oculto = 0 Then
+                Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareCreateProjectile(UserList(UserIndex).pos.x, UserList(UserIndex).pos.y, NpcList(TargetIndex).pos.x, NpcList(TargetIndex).pos.y, ProjectileType))
+            End If
+            'Si no es GM invisible, le envio el movimiento del arma.
+            If UserList(UserIndex).flags.AdminInvisible = 0 Then
+                Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageArmaMov(UserList(UserIndex).Char.charindex, 1))
+            End If
+        End If
+    End With
+    If DidConsumeAmunition Then
+        Call ConsumeAmunition(UserIndex)
+    End If
+End Sub
+
+Public Function GetProjectileView(ByRef user As t_User) As Integer
+    Dim WeaponData As t_ObjData
+    Dim ProjectileType As Byte
+    With user.invent
+        If .WeaponEqpObjIndex < 1 Then Exit Function
+        WeaponData = ObjData(.WeaponEqpObjIndex)
+        If WeaponData.Proyectil = 1 And WeaponData.Municion = 0 Then
+            GetProjectileView = WeaponData.ProjectileType
+        ElseIf .MunicionEqpObjIndex > 0 Then
+            GetProjectileView = ObjData(.MunicionEqpObjIndex).ProjectileType
+        End If
+    End With
+End Function
+
+Public Sub ConsumeAmunition(ByVal UserIndex As Integer)
+    With UserList(UserIndex).invent
+        Dim AmunitionSlot As Integer
+        AmunitionSlot = .MunicionEqpSlot
+        If AmunitionSlot > 0 Then
+            Call QuitarUserInvItem(UserIndex, AmunitionSlot, 1)
+            If .Object(AmunitionSlot).amount > 0 Then
+                'QuitarUserInvItem unequipps the ammo, so we equip it again
+                .MunicionEqpSlot = AmunitionSlot
+                .MunicionEqpObjIndex = .Object(AmunitionSlot).objIndex
+                .Object(AmunitionSlot).Equipped = 1
+            Else
+                .MunicionEqpSlot = 0
+                .MunicionEqpObjIndex = 0
+            End If
+            Call UpdateUserInv(False, UserIndex, AmunitionSlot)
+        End If
+    End With
 End Sub

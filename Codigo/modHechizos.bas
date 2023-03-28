@@ -1073,7 +1073,13 @@ Sub HandleHechizoTerreno(ByVal UserIndex As Integer, ByVal uh As Integer)
             
 116         Case e_TipoHechizo.uPortal 'Tipo 6
 118             Call HechizoPortal(UserIndex, b)
-                
+
+            Case e_TipoHechizo.uMultiShoot
+                Dim targetPos As t_WorldPos
+                targetPos.map = UserList(UserIndex).pos.map
+                targetPos.x = UserList(UserIndex).flags.targetX
+                targetPos.y = UserList(UserIndex).flags.targetY
+                b = MultiShot(UserIndex, targetPos)
         End Select
 
 124     If b Then
