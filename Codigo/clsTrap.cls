@@ -33,14 +33,11 @@ Const ACTIVATE_TRAOP_WAW_FILE = 210
 Public Sub Setup(ByVal SourceIndex As Integer, ByVal SourceType As e_ReferenceType, ByVal EffectId As Integer, ByVal ID As Long, _
                  ByVal map As Integer, ByVal TileX As Integer, ByVal TileY As Integer)
     mElapsedTime = 0
-    Call SetRef(mDotInfo.TargetRef, SourceIndex, SourceType)
-    mDotInfo.UniqueId = ID
-    mDotInfo.RemoveEffect = False
-    mDotInfo.EotId = EffectId
+    Call SetBaseDot(mDotInfo, SourceIndex, SourceType, ID, EffectId)
     Call SetPosition(map, TileX, TileY)
     With EffectOverTime(EffectId)
         mTimeLimit = .TickTime
-        If EffectOverTime(mDotInfo.EotId).ClientEffectTypeId > 0 Then Call WriteSendSkillCdUpdate(SourceIndex, .ClientEffectTypeId, ID, .TickTime, .buffType)
+        If mDotInfo.TargetRef.RefType = eUser And EffectOverTime(mDotInfo.EotId).ClientEffectTypeId > 0 Then Call WriteSendSkillCdUpdate(SourceIndex, .ClientEffectTypeId, ID, .TickTime, .buffType)
     End With
 End Sub
 
@@ -104,7 +101,7 @@ Public Property Let IBaseEffectOverTime_RemoveMe(ByVal value As Boolean)
     mDotInfo.RemoveEffect = value
 End Property
 
-Public Sub IBaseEffectOverTime_Reset()
+Public Sub IBaseEffectOverTime_Reset(ByVal SourceUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal NewEffectId As Integer)
 End Sub
 
 Public Property Get IBaseEffectOverTime_EotId() As Integer
@@ -112,7 +109,10 @@ Public Property Get IBaseEffectOverTime_EotId() As Integer
 End Property
 
 Public Sub IBaseEffectOverTime_OnRemove()
-    If EffectOverTime(mDotInfo.EotId).ClientEffectTypeId > 0 Then
+    If mDotInfo.Removed Then Exit Sub
+    mDotInfo.Removed = True
+    mDotInfo.RemoveEffect = True
+    If mDotInfo.TargetRef.RefType = eUser And EffectOverTime(mDotInfo.EotId).ClientEffectTypeId > 0 Then
         Call WriteSendSkillCdUpdate(mDotInfo.TargetRef.ArrayIndex, EffectOverTime(mDotInfo.EotId).ClientEffectTypeId, _
                                     mDotInfo.UniqueId, 0, EffectOverTime(mDotInfo.EotId).buffType)
     End If

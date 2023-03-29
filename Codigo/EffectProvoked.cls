@@ -26,11 +26,8 @@ Private ReductionActive As Boolean
 
 Public Sub Setup(ByVal SourceIndex As Integer, ByVal SourceType As e_ReferenceType, ByVal TargetIndex As Integer, ByVal TargetType As e_ReferenceType, _
                  ByVal EffectId As Integer, ByVal ID As Integer)
-    Call SetRef(DotInfo.TargetRef, TargetIndex, TargetType)
+    Call SetBaseDot(DotInfo, TargetIndex, TargetType, ID, EffectId)
     Call SetRef(Source, SourceIndex, SourceType)
-    DotInfo.UniqueId = ID
-    DotInfo.RemoveEffect = False
-    DotInfo.EotId = EffectId
     TimeSinceLastTick = 0
     ReductionActive = False
     With EffectOverTime(EffectId)
@@ -112,7 +109,7 @@ Public Property Let IBaseEffectOverTime_RemoveMe(ByVal value As Boolean)
     DotInfo.RemoveEffect = value
 End Property
 
-Public Sub IBaseEffectOverTime_Reset()
+Public Sub IBaseEffectOverTime_Reset(ByVal SourceUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal NewEffectId As Integer)
 End Sub
 
 Public Property Get IBaseEffectOverTime_EotId() As Integer
@@ -120,6 +117,9 @@ Public Property Get IBaseEffectOverTime_EotId() As Integer
 End Property
 
 Public Sub IBaseEffectOverTime_OnRemove()
+    If DotInfo.Removed Then Exit Sub
+    DotInfo.Removed = True
+    DotInfo.RemoveEffect = True
     If DotInfo.TargetRef.RefType = eNpc Then
         Call UnsetMask(NpcList(DotInfo.TargetRef.ArrayIndex).flags.StatusMask, eTaunted)
     End If

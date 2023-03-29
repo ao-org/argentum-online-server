@@ -3133,8 +3133,8 @@ Public Function CanHelpUser(ByVal UserIndex As Integer, ByVal targetUserIndex As
             If Status(targetUserIndex) = e_Facciones.Armada Or Status(targetUserIndex) = e_Facciones.consejo Or Status(targetUserIndex) = e_Facciones.Ciudadano Then
                 CanHelpUser = eOposingFaction
             End If
-    Case Else
-        Exit Function
+        Case Else
+            Exit Function
     End Select
 End Function
 

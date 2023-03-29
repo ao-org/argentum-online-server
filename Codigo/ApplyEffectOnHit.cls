@@ -6,7 +6,7 @@ BEGIN
   DataSourceBehavior  = 0  'vbNone
   MTSTransactionMode  = 0  'NotAnMTSObject
 END
-Attribute VB_Name = "DrunkEffect"
+Attribute VB_Name = "ApplyEffectOnHit"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
@@ -17,18 +17,15 @@ Implements IBaseEffectOverTime
 
 Dim TickTime As Long
 Dim TimeSinceLastTick As Long
+Dim ApplyEffectId As Integer
 Private DotInfo As t_BaseDotInfo
-Private StackCount As Integer
-Private DumbActive As Boolean
-
 
 Public Sub Setup(ByVal TargetIndex As Integer, ByVal TargetType As e_ReferenceType, ByVal EffectId As Integer, ByVal ID As Integer)
-    Call SetBaseDot(DotInfo, TargetIndex, TargetType, ID, EffectId)
     TimeSinceLastTick = 0
-    StackCount = 1
-    DumbActive = False
+    Call SetBaseDot(DotInfo, TargetIndex, TargetType, ID, EffectId)
     With EffectOverTime(EffectId)
         TickTime = .TickTime
+        ApplyEffectId = .ApplyEffectId
         If TargetType = eUser Then
             If .ClientEffectTypeId > 0 Then Call WriteSendSkillCdUpdate(TargetIndex, .ClientEffectTypeId, ID, .TickTime, .buffType)
         End If
@@ -36,7 +33,7 @@ Public Sub Setup(ByVal TargetIndex As Integer, ByVal TargetType As e_ReferenceTy
 End Sub
 
 Public Property Get IBaseEffectOverTime_TypeId() As Integer
-    IBaseEffectOverTime_TypeId = e_EffectOverTimeType.eDrunk
+    IBaseEffectOverTime_TypeId = e_EffectOverTimeType.eApplyEffectOnHit
 End Property
 
 Public Property Get IBaseEffectOverTime_UniqueId() As Integer
@@ -81,18 +78,7 @@ End Property
 
 Public Sub IBaseEffectOverTime_Update(ByVal deltaTime As Long)
     TimeSinceLastTick = TimeSinceLastTick + deltaTime
-    If TimeSinceLastTick >= TickTime Then
-        StackCount = StackCount - 1
-        TimeSinceLastTick = 0
-        If DotInfo.TargetRef.RefType = eUser Then
-            Call WriteSendSkillCdUpdate(DotInfo.TargetRef.ArrayIndex, EffectOverTime(DotInfo.EotId).ClientEffectTypeId, DotInfo.UniqueId, TickTime, EffectOverTime(DotInfo.EotId).buffType, StackCount)
-        End If
-        If DumbActive And StackCount <= 3 Then
-            DumbActive = False
-            Call WriteDumbNoMore(DotInfo.TargetRef.ArrayIndex)
-        End If
-    End If
-    If StackCount = 0 Or Not IsValidRef(DotInfo.TargetRef) Then
+    If TimeSinceLastTick >= TickTime Or Not IsValidRef(DotInfo.TargetRef) Then
         DotInfo.RemoveEffect = True
     End If
 End Sub
@@ -106,15 +92,17 @@ Public Property Let IBaseEffectOverTime_RemoveMe(ByVal value As Boolean)
 End Property
 
 Public Sub IBaseEffectOverTime_Reset(ByVal SourceUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal NewEffectId As Integer)
-    StackCount = StackCount + 1
     TimeSinceLastTick = 0
     If DotInfo.TargetRef.RefType = eUser Then
-        Call WriteSendSkillCdUpdate(DotInfo.TargetRef.ArrayIndex, EffectOverTime(DotInfo.EotId).ClientEffectTypeId, DotInfo.UniqueId, TickTime, EffectOverTime(DotInfo.EotId).buffType, StackCount)
+        If DotInfo.EotId = NewEffectId Then
+            If EffectOverTime(DotInfo.EotId).ClientEffectTypeId > 0 Then Call WriteSendSkillCdUpdate(DotInfo.TargetRef.ArrayIndex, EffectOverTime(DotInfo.EotId).ClientEffectTypeId, DotInfo.UniqueId, TickTime, EffectOverTime(DotInfo.EotId).buffType)
+        Else
+            If EffectOverTime(DotInfo.EotId).ClientEffectTypeId > 0 Then Call WriteSendSkillCdUpdate(DotInfo.TargetRef.ArrayIndex, EffectOverTime(DotInfo.EotId).ClientEffectTypeId, DotInfo.UniqueId, 0, EffectOverTime(DotInfo.EotId).buffType)
+            If EffectOverTime(DotInfo.EotId).ClientEffectTypeId > 0 Then Call WriteSendSkillCdUpdate(DotInfo.TargetRef.ArrayIndex, EffectOverTime(NewEffectId).ClientEffectTypeId, DotInfo.UniqueId, TickTime, EffectOverTime(NewEffectId).buffType)
+        End If
     End If
-    If Not DumbActive And StackCount >= 5 Then
-        Call WriteDumb(DotInfo.TargetRef.ArrayIndex)
-        DumbActive = True
-    End If
+    DotInfo.EotId = NewEffectId
+    ApplyEffectId = EffectOverTime(DotInfo.EotId).ApplyEffectId
 End Sub
 
 Public Property Get IBaseEffectOverTime_EotId() As Integer
@@ -125,10 +113,8 @@ Public Sub IBaseEffectOverTime_OnRemove()
     If DotInfo.Removed Then Exit Sub
     DotInfo.Removed = True
     DotInfo.RemoveEffect = True
-    If DumbActive Then
-        DumbActive = False
-        Call WriteDumbNoMore(DotInfo.TargetRef.ArrayIndex)
-        Call WriteSendSkillCdUpdate(DotInfo.TargetRef.ArrayIndex, EffectOverTime(DotInfo.EotId).ClientEffectTypeId, DotInfo.UniqueId, 0, EffectOverTime(DotInfo.EotId).buffType, StackCount)
+    If DotInfo.TargetRef.RefType = eUser Then
+        If EffectOverTime(DotInfo.EotId).ClientEffectTypeId > 0 Then Call WriteSendSkillCdUpdate(DotInfo.TargetRef.ArrayIndex, DotInfo.EotId, DotInfo.UniqueId, 0, EffectOverTime(DotInfo.EotId).buffType)
     End If
 End Sub
 
@@ -139,6 +125,24 @@ Public Sub IBaseEffectOverTime_TartgetWillAtack(ByVal TargetUserId As Integer, B
 End Sub
 
 Public Sub IBaseEffectOverTime_TartgetDidHit(ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
+    Dim Effect As IBaseEffectOverTime
+    If SourceType = eUser Then
+        If UserList(TargetUserId).Stats.MinHp > 0 Then
+            Set Effect = FindEffectOnTarget(DotInfo.TargetRef.ArrayIndex, UserList(TargetUserId).EffectOverTime, ApplyEffectId)
+            If Effect Is Nothing Then
+                Call CreateEffect(DotInfo.TargetRef.ArrayIndex, DotInfo.TargetRef.RefType, TargetUserId, SourceType, ApplyEffectId)
+            ElseIf EffectOverTime(DotInfo.EotId).Override Then
+                Call Effect.Reset(DotInfo.TargetRef.ArrayIndex, DotInfo.TargetRef.RefType, ApplyEffectId)
+            End If
+        End If
+    Else
+        Set Effect = FindEffectOnTarget(DotInfo.TargetRef.ArrayIndex, NpcList(TargetUserId).EffectOverTime, ApplyEffectId)
+        If Effect Is Nothing Then
+            Call CreateEffect(DotInfo.TargetRef.ArrayIndex, DotInfo.TargetRef.RefType, TargetUserId, SourceType, ApplyEffectId)
+        ElseIf EffectOverTime(DotInfo.EotId).Override Then
+            Call Effect.Reset(DotInfo.TargetRef.ArrayIndex, DotInfo.TargetRef.RefType, ApplyEffectId)
+        End If
+    End If
 End Sub
 
 Public Sub IBaseEffectOverTime_TargetFailedAttack(ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
