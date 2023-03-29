@@ -58,7 +58,7 @@ End Property
 Public Property Let RemoveMe(ByVal value As Boolean)
 End Property
 
-Public Sub Reset()
+Public Sub Reset(ByVal SourceUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal NewEffectId As Integer)
 End Sub
 
 Public Sub OnRemove()

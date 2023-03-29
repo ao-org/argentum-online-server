@@ -2152,6 +2152,7 @@ Public Enum e_CdTypes
     e_Throwing = 5
     e_Resurrection = 6
     e_Traps = 7
+    e_WeaponPoison = 8
     [CDCount]
 End Enum
 
@@ -2805,6 +2806,9 @@ Public Enum e_EffectOverTimeType
     eTrap = 5
     eDrunk = 6
     eTranslation = 7
+    eApplyEffectOnHit = 8
+    eManaModifier = 9
+    ePartyBonus = 10
     [EffectTypeCount]
 End Enum
 
@@ -2812,6 +2816,7 @@ Public Enum e_EOTTargetLimit
     eSingle = 1 'Only one on target for this type
     eSingleByCaster 'The target can have more than 1 effect of this type but only 1 for every caster
     eAny 'No limits
+    eSingleByType 'can only have one effect of given type active at the time (like weapon poison)
 End Enum
 
 Public Type t_BaseDotInfo
@@ -2819,7 +2824,16 @@ Public Type t_BaseDotInfo
     UniqueId As Long
     RemoveEffect As Boolean
     EotId As Integer
+    Removed As Boolean
 End Type
+
+Public Sub SetBaseDot(ByRef DotInfo As t_BaseDotInfo, ByVal TargetIndex As Integer, ByVal RefType As e_ReferenceType, ByVal UniqueId As Integer, ByVal EotId As Integer)
+    Call SetRef(DotInfo.TargetRef, TargetIndex, RefType)
+    DotInfo.RemoveEffect = False
+    DotInfo.Removed = False
+    DotInfo.EotId = EotId
+    DotInfo.UniqueId = UniqueId
+End Sub
 
 Private Function ValidateUerRef(ByRef Ref As t_AnyReference) As Boolean
     ValidateUerRef = False

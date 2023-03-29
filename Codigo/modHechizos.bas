@@ -1147,7 +1147,7 @@ Sub HandleHechizoUsuario(ByVal UserIndex As Integer, ByVal uh As Integer)
                 If Effect Is Nothing Then
                     Call CreateEffect(UserIndex, eUser, UserList(UserIndex).flags.targetUser.ArrayIndex, eUser, Hechizos(uh).EotId)
                 Else
-                    Call Effect.Reset
+                    Call Effect.Reset(UserIndex, eUser, Hechizos(uh).EotId)
                 End If
             End If
 114         Call SubirSkill(UserIndex, Magia)
@@ -1274,7 +1274,7 @@ Sub HandleHechizoNPC(ByVal UserIndex As Integer, ByVal uh As Integer)
                 If Effect Is Nothing Then
                     Call CreateEffect(UserIndex, eUser, UserList(UserIndex).flags.TargetNPC.ArrayIndex, eNpc, Hechizos(uh).EotId)
                 Else
-                    Call Effect.Reset
+                    Call Effect.Reset(UserIndex, eUser, Hechizos(uh).EotId)
                 End If
             End If
 110         Call SubirSkill(UserIndex, Magia)

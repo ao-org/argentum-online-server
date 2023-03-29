@@ -1823,7 +1823,9 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                 Call WriteLocaleMsg(UserIndex, "395", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
-    
+            If PuedeUsarObjeto(UserIndex, .invent.Object(Slot).objIndex, True) > 0 Then
+                Exit Sub
+            End If
 104         obj = ObjData(.Invent.Object(Slot).ObjIndex)
             Dim TimeSinceLastUse As Long: TimeSinceLastUse = GetTickCount() - .CdTimes(obj.cdType)
             If TimeSinceLastUse < obj.Cooldown Then Exit Sub
@@ -2677,7 +2679,15 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                             Else
                                 Call WriteConsoleMsg(UserIndex, "Debes esperar unos momentos para tomar esta poción.", e_FontTypeNames.FONTTYPE_INFO)
                             End If
-                    
+                        Case 23
+                             If obj.ApplyEffectId > 0 Then
+                                Call AddOrResetEffect(UserIndex, obj.ApplyEffectId)
+                            End If
+                            Call UpdateCd(UserIndex, ObjData(objIndex).cdType)
+                            'Quitamos del inv el item
+                            Call QuitarUserInvItem(UserIndex, Slot, 1)
+                            Call UpdateUserInv(False, UserIndex, Slot)
+                            Exit Sub
                     End Select
                     If obj.ApplyEffectId > 0 Then
                         Call AddOrResetEffect(UserIndex, obj.ApplyEffectId)
@@ -3581,7 +3591,7 @@ Public Sub AddOrResetEffect(ByVal UserIndex As Integer, ByVal EffectId As Intege
             Call CreateEffect(UserIndex, eUser, UserIndex, eUser, EffectId)
         Else
             If EffectOverTime(EffectId).Override Then
-                Call Effect.Reset
+                Call Effect.Reset(UserIndex, eUser, EffectId)
             End If
         End If
     End With
