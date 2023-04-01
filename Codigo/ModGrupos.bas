@@ -398,6 +398,7 @@ On Error GoTo AddUserToGRoup_Err
     Next Index
 100 UserList(GroupLiderIndex).Grupo.CantidadMiembros = UserList(GroupLiderIndex).Grupo.CantidadMiembros + 1
 102 Call SetUserRef(UserList(GroupLiderIndex).Grupo.Miembros(UserList(GroupLiderIndex).Grupo.CantidadMiembros), UserIndex)
+103 Call SetUserRef(UserList(UserIndex).Grupo.Lider, GroupLiderIndex)
 104 UserList(UserIndex).Grupo.EnGrupo = True
 106 UserList(UserIndex).Grupo.ID = UserList(GroupLiderIndex).Grupo.ID
 110 For Index = 2 To UserList(GroupLiderIndex).Grupo.CantidadMiembros - 1
@@ -414,5 +415,4 @@ On Error GoTo AddUserToGRoup_Err
 AddUserToGRoup_Err:
 122     Call TraceError(Err.Number, Err.Description, "ModGrupos.AddUserToGRoup", Erl)
 End Sub
-
 
