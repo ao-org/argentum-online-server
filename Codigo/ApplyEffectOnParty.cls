@@ -142,17 +142,19 @@ End Sub
 Public Sub PerformAction()
     If DotInfo.TargetRef.RefType <> eUser Then Exit Sub
     With UserList(DotInfo.TargetRef.ArrayIndex)
-        If .Grupo.EnGrupo Then
+        If .Grupo.EnGrupo And IsValidUserRef(.Grupo.Lider) Then
             Dim i As Integer
-            For i = 1 To .Grupo.CantidadMiembros
-                If IsValidUserRef(.Grupo.Miembros(i)) Then
-                    If distance(.pos.x, .pos.y, UserList(.Grupo.Miembros(i).ArrayIndex).pos.x, UserList(.Grupo.Miembros(i).ArrayIndex).pos.y) < AreaOfEffect Then
-                        If CanHelpUser(DotInfo.TargetRef.ArrayIndex, .Grupo.Miembros(i).ArrayIndex) = eInteractionOk Then
-                            Call ApplyEffectTo(.Grupo.Miembros(i).ArrayIndex, eUser)
+            With UserList(.Grupo.Lider.ArrayIndex).Grupo
+                For i = 1 To .CantidadMiembros
+                    If IsValidUserRef(.Miembros(i)) Then
+                        If distance(UserList(DotInfo.TargetRef.ArrayIndex).pos.x, UserList(DotInfo.TargetRef.ArrayIndex).pos.y, UserList(.Miembros(i).ArrayIndex).pos.x, UserList(.Miembros(i).ArrayIndex).pos.y) < AreaOfEffect Then
+                            If CanHelpUser(DotInfo.TargetRef.ArrayIndex, .Miembros(i).ArrayIndex) = eInteractionOk Then
+                                Call ApplyEffectTo(.Miembros(i).ArrayIndex, eUser)
+                            End If
                         End If
                     End If
-                End If
-            Next i
+                Next i
+            End With
         Else
             Call ApplyEffectTo(DotInfo.TargetRef.ArrayIndex, eUser)
         End If
