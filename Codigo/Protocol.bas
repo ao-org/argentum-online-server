@@ -9680,9 +9680,11 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
 
                     Case 1
 110                     Log = "Repuesta Afirmativa 1"
-
+                        If UserList(UserIndex).Grupo.EnGrupo Then
+                            Call WriteLocaleMsg(UserIndex, MsgYouAreAlreadyInGroup, e_FontTypeNames.FONTTYPE_INFOIAO)
+                            Exit Sub
+                        End If
 112                     If IsValidUserRef(UserList(userIndex).Grupo.PropuestaDe) Then
-                
 114                         If UserList(UserList(userIndex).Grupo.PropuestaDe.ArrayIndex).Grupo.Lider.ArrayIndex <> UserList(userIndex).Grupo.PropuestaDe.ArrayIndex Then
 116                             Call WriteConsoleMsg(UserIndex, "¡El lider del grupo a cambiado, imposible unirse!", e_FontTypeNames.FONTTYPE_INFOIAO)
                             Else

@@ -19,6 +19,7 @@ Dim TickTime As Long
 Dim TimeSinceLastTick As Long
 Dim ApplyEffectId As Integer
 Private DotInfo As t_BaseDotInfo
+Private AttackedNpcVersion As Integer
 
 Public Sub Setup(ByVal TargetIndex As Integer, ByVal TargetType As e_ReferenceType, ByVal EffectId As Integer, ByVal ID As Integer)
     TimeSinceLastTick = 0
@@ -122,6 +123,9 @@ Public Sub IBaseEffectOverTime_TargetUseMagic(ByVal TargetUserId As Integer, ByV
 End Sub
 
 Public Sub IBaseEffectOverTime_TartgetWillAtack(ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
+    If SourceType = eNpc Then
+        AttackedNpcVersion = NpcList(TargetUserId).VersionId
+    End If
 End Sub
 
 Public Sub IBaseEffectOverTime_TartgetDidHit(ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
@@ -136,11 +140,13 @@ Public Sub IBaseEffectOverTime_TartgetDidHit(ByVal TargetUserId As Integer, ByVa
             End If
         End If
     Else
-        Set Effect = FindEffectOnTarget(DotInfo.TargetRef.ArrayIndex, NpcList(TargetUserId).EffectOverTime, ApplyEffectId)
-        If Effect Is Nothing Then
-            Call CreateEffect(DotInfo.TargetRef.ArrayIndex, DotInfo.TargetRef.RefType, TargetUserId, SourceType, ApplyEffectId)
-        ElseIf EffectOverTime(DotInfo.EotId).Override Then
-            Call Effect.Reset(DotInfo.TargetRef.ArrayIndex, DotInfo.TargetRef.RefType, ApplyEffectId)
+        If AttackedNpcVersion = NpcList(TargetUserId).VersionId Then
+            Set Effect = FindEffectOnTarget(DotInfo.TargetRef.ArrayIndex, NpcList(TargetUserId).EffectOverTime, ApplyEffectId)
+            If Effect Is Nothing Then
+                Call CreateEffect(DotInfo.TargetRef.ArrayIndex, DotInfo.TargetRef.RefType, TargetUserId, SourceType, ApplyEffectId)
+            ElseIf EffectOverTime(DotInfo.EotId).Override Then
+                Call Effect.Reset(DotInfo.TargetRef.ArrayIndex, DotInfo.TargetRef.RefType, ApplyEffectId)
+            End If
         End If
     End If
 End Sub
