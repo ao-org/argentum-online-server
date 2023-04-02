@@ -1933,14 +1933,16 @@ On Error GoTo DoDamageOrHeal_Err
             DoDamageOrHeal = eDead
 102         If SourceType = eUser Then
 244             Call CustomScenarios.PlayerKillNpc(.pos.map, npcIndex, SourceIndex, DamageSourceType, DamageSourceIndex)
+                Call MuereNpc(npcIndex, SourceIndex)
             Else
                 If IsValidUserRef(NpcList(SourceIndex).MaestroUser) Then
                     Call PlayerKillNpc(NpcList(npcIndex).pos.map, npcIndex, NpcList(SourceIndex).MaestroUser.ArrayIndex, e_pet, DamageSourceIndex)
                     Call FollowAmo(SourceIndex)
+                    Call MuereNpc(npcIndex, NpcList(SourceIndex).MaestroUser.ArrayIndex)
+                Else
+                    Call MuereNpc(npcIndex, -1)
                 End If
-                SourceIndex = -1
             End If
-            Call MuereNpc(npcIndex, sourceIndex)
             Exit Function
         End If
     End With

@@ -361,6 +361,7 @@ On Error GoTo RemoveEffectAtPos_Err
 106 Set EffectList.EffectList(position) = EffectList.EffectList(EffectList.EffectCount - 1)
 108 Set EffectList.EffectList(EffectList.EffectCount - 1) = Nothing
 110 EffectList.EffectCount = EffectList.EffectCount - 1
+    Exit Sub
 RemoveEffectAtPos_Err:
       Call TraceError(Err.Number, Err.Description, "EffectsOverTime.RemoveEffectAtPos", Erl)
 End Sub
