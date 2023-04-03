@@ -1900,7 +1900,8 @@ Public Function ModifyHealth(ByVal npcIndex As Integer, ByVal amount As Long, Op
     End With
 End Function
 
-Public Function DoDamageOrHeal(ByVal npcIndex As Integer, ByVal SourceIndex As Integer, ByVal SourceType As e_ReferenceType, ByVal amount As Long, ByVal DamageSourceType As e_DamageSourceType, ByVal DamageSourceIndex As Integer) As e_DamageResult
+Public Function DoDamageOrHeal(ByVal npcIndex As Integer, ByVal SourceIndex As Integer, ByVal SourceType As e_ReferenceType, ByVal amount As Long, _
+                               ByVal DamageSourceType As e_DamageSourceType, ByVal DamageSourceIndex As Integer, Optional ByVal DamageColor As Long = vbRed) As e_DamageResult
 On Error GoTo DoDamageOrHeal_Err
     Dim DamageStr As String
     Dim Color As Long
@@ -1908,7 +1909,7 @@ On Error GoTo DoDamageOrHeal_Err
     If amount > 0 Then
         Color = vbGreen
     Else
-        Color = vbRed
+        Color = DamageColor
     End If
     If amount < 0 Then Call EffectsOverTime.TargetWasDamaged(NpcList(npcIndex).EffectOverTime, SourceIndex, SourceType, DamageSourceType)
     With NpcList(npcIndex)
