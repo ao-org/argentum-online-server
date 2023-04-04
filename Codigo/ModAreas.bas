@@ -468,7 +468,6 @@ Public Sub QuitarUser(ByVal UserIndex As Integer, ByVal Map As Integer)
    
         'Search for the user
 100     For LoopC = 1 To ConnGroups(Map).CountEntrys
-
 102         If ConnGroups(Map).UserEntrys(LoopC) = UserIndex Then Exit For
 104     Next LoopC
    
@@ -483,19 +482,10 @@ Public Sub QuitarUser(ByVal UserIndex As Integer, ByVal Map As Integer)
 112     For LoopC = LoopC To TempVal
 114         ConnGroups(Map).UserEntrys(LoopC) = ConnGroups(Map).UserEntrys(LoopC + 1)
 116     Next LoopC
-   
-118     If TempVal > ConnGroups(Map).OptValue Then 'Nescesito Redim?
-120         ReDim Preserve ConnGroups(Map).UserEntrys(1 To TempVal) As Long
-
-        End If
-
         
         Exit Sub
-
 QuitarUser_Err:
 122     Call TraceError(Err.Number, Err.Description, "ModAreas.QuitarUser", Erl)
-
-        
 End Sub
  
 Public Sub AgregarUser(ByVal UserIndex As Integer, ByVal Map As Integer, Optional ByVal appear As Byte = 0)

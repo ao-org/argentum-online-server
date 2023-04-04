@@ -141,6 +141,13 @@ End Sub
 
 Public Sub PerformAction()
     If DotInfo.TargetRef.RefType <> eUser Then Exit Sub
+    If TickEffect > 0 Then
+        If IsVisible(UserList(DotInfo.TargetRef.ArrayIndex)) Then
+            Call SendData(SendTarget.ToPCAliveArea, DotInfo.TargetRef.ArrayIndex, PrepareMessageCreateFX(UserList(DotInfo.TargetRef.ArrayIndex).Char.charindex, TickEffect, 0, UserList(DotInfo.TargetRef.ArrayIndex).pos.x, UserList(DotInfo.TargetRef.ArrayIndex).pos.y))
+        Else
+            Call SendData(SendTarget.ToIndex, DotInfo.TargetRef.ArrayIndex, PrepareMessageCreateFX(UserList(DotInfo.TargetRef.ArrayIndex).Char.charindex, TickEffect, 0, UserList(DotInfo.TargetRef.ArrayIndex).pos.x, UserList(DotInfo.TargetRef.ArrayIndex).pos.y))
+        End If
+    End If
     With UserList(DotInfo.TargetRef.ArrayIndex)
         If .Grupo.EnGrupo And IsValidUserRef(.Grupo.Lider) Then
             Dim i As Integer
