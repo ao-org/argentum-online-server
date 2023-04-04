@@ -1087,11 +1087,6 @@ Private Sub Minuto_Timer()
     
     minutos = minutos + 1
     
-
-    '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-    Call ModAreas.AreasOptimizacion
-    '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
     If MinutosLatsClean >= 15 Then
         MinutosLatsClean = 0
         Call ReSpawnOrigPosNpcs 'respawn de los guardias en las pos originales
@@ -1116,13 +1111,7 @@ ErrHandler:
 End Sub
 
 Private Sub CMDDUMP_Click()
-        
-        On Error GoTo CMDDUMP_Click_Err
-    
-        
-
-        
-
+On Error GoTo CMDDUMP_Click_Err
         Dim i As Integer
 
 100     For i = 1 To MaxUsers
@@ -1130,14 +1119,10 @@ Private Sub CMDDUMP_Click()
 104     Next i
 
 106     Call LogCriticEvent("Lastuser: " & LastUser & " NextOpenUser: " & NextOpenUser)
-
-        
         Exit Sub
 
 CMDDUMP_Click_Err:
 108     Call TraceError(Err.Number, Err.Description, "frmMain.CMDDUMP_Click", Erl)
-
-        
 End Sub
 
 Private Sub Command1_Click()

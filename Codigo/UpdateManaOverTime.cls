@@ -150,6 +150,13 @@ Public Sub PerformAction()
             TickMana = CurrentMana + MaxMana * TickMana / 100
             .Stats.MinMAN = Min(max(0, TickMana), MaxMana)
             Call WriteUpdateMana(DotInfo.TargetRef.ArrayIndex)
+            If TickEffect > 0 Then
+                If IsVisible(UserList(DotInfo.TargetRef.ArrayIndex)) Then
+                    Call SendData(SendTarget.ToPCAliveArea, DotInfo.TargetRef.ArrayIndex, PrepareMessageCreateFX(UserList(DotInfo.TargetRef.ArrayIndex).Char.charindex, TickEffect, 0, UserList(DotInfo.TargetRef.ArrayIndex).pos.x, UserList(DotInfo.TargetRef.ArrayIndex).pos.y))
+                Else
+                    Call SendData(SendTarget.ToIndex, DotInfo.TargetRef.ArrayIndex, PrepareMessageCreateFX(UserList(DotInfo.TargetRef.ArrayIndex).Char.charindex, TickEffect, 0, UserList(DotInfo.TargetRef.ArrayIndex).pos.x, UserList(DotInfo.TargetRef.ArrayIndex).pos.y))
+                End If
+            End If
         End With
     ElseIf DotInfo.TargetRef.RefType = e_ReferenceType.eNpc Then
     End If
