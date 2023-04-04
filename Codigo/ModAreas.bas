@@ -115,7 +115,8 @@ Public Sub AreasOptimizacion()
         Dim tCurHour   As Byte
 
         Dim EntryValue As Long
-    
+        Dim PerformanceTimer As Long
+        Call PerformanceTestStart(PerformanceTimer)
 100     If (CurDay <> IIf(Weekday(Date) > 6, 1, 2)) Or (CurHour <> Fix(Hour(Time) \ 3)) Then
         
 102         tCurDay = IIf(Weekday(Date) > 6, 1, 2) 'A ke tipo de dia pertenece?
@@ -136,7 +137,7 @@ Public Sub AreasOptimizacion()
 
         End If
 
-        
+        Call PerformTimeLimitCheck(PerformanceTimer, "ModAreas.AreasOptimizacion")
         Exit Sub
 
 AreasOptimizacion_Err:
