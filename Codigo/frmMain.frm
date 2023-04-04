@@ -1065,7 +1065,8 @@ Private Sub Minuto_Timer()
     Dim i                   As Integer
 
     Dim Num                 As Long
-
+    Dim PerformanceTimer As Long
+    Call PerformanceTestStart(PerformanceTimer)
     MinsRunning = MinsRunning + 1
 
     If MinsRunning = 60 Then
@@ -1106,7 +1107,7 @@ Private Sub Minuto_Timer()
 
 
     Call dump_stats
-
+    Call PerformTimeLimitCheck(PerformanceTimer, "ModAreas.AreasOptimizacion")
     Exit Sub
         
 ErrHandler:
