@@ -1468,9 +1468,7 @@ Public Type t_ObjData
     
     'By Ladder
     CreaParticula As String
-    
     CreaFX As Integer
-    
     CreaLuz As String
     
     MinELV As Byte
@@ -1525,6 +1523,8 @@ Public Type t_ObjData
     
     MinHIT As Integer 'Minimo golpe
     MaxHit As Integer 'Maximo golpe
+    IgnoreArmorAmmount As Integer
+    IgnoreArmorPercent As Single
     
     MinHam As Integer
     MinSed As Integer
@@ -1605,7 +1605,6 @@ Public Type t_ObjData
     MagicDamageBonus As Integer
     ResistenciaMagica As Integer
     Revive As Boolean
-    Refuerzo As Byte
 
     Invernal As Boolean
     

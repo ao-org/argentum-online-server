@@ -3358,8 +3358,8 @@ On Error GoTo DoDamageOrHeal_Err
 174                 NpcList(SourceIndex).flags.AttackedBy = vbNullString
 176                 Call SetUserRef(NpcList(SourceIndex).targetUser, 0)
                 End If
+                Call UserDie(UserIndex)
             End If
-            Call UserDie(UserIndex)
             DoDamageOrHeal = eDead
             Exit Function
         End If

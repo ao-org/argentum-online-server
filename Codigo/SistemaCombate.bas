@@ -1270,7 +1270,7 @@ Private Sub UserDamageToUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex 
             
             ' Refuerzo de la espada - Ignora parte de la armadura
 142         If UserList(AtacanteIndex).Invent.WeaponEqpObjIndex > 0 Then
-144             Defensa = Defensa - ObjData(UserList(AtacanteIndex).Invent.WeaponEqpObjIndex).Refuerzo
+144
 
 146             If Defensa < 0 Then Defensa = 0
             End If
