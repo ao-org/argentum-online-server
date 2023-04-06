@@ -541,7 +541,7 @@ On Error GoTo UserDamageNpc_Err
             ' Color por defecto rojo
 114         Color = vbRed
             Dim NpcDef As Integer
-            NpcDef = max(0, NpcList(npcIndex).Stats.def - GetArmorPenetration(AtacanteIndex, NpcList(npcIndex).Stats.def))
+            NpcDef = max(0, NpcList(npcIndex).Stats.def - GetArmorPenetration(UserIndex, NpcList(npcIndex).Stats.def))
             ' Defensa del NPC
 116         damage = DamageBase - NpcDef
             Damage = Damage * UserMod.GetPhysicalDamageModifier(UserList(UserIndex))
