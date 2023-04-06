@@ -3410,3 +3410,17 @@ Public Function Inmovilize(ByVal SourceIndex As Integer, ByVal TargetIndex As In
         Inmovilize = True
     End If
 End Function
+
+Public Function GetArmorPenetration(ByVal UserIndex As Integer, ByVal TargetArmor As Integer) As Integer
+    Dim ArmorPenetration As Integer
+    If Not IsFeatureEnabled("armor_penetration_feature") Then Exit Function
+    With UserList(UserIndex)
+        If .invent.WeaponEqpObjIndex > 0 Then
+            ArmorPenetration = ObjData(.invent.WeaponEqpObjIndex).IgnoreArmorAmmount
+            If ObjData(.invent.WeaponEqpObjIndex).IgnoreArmorPercent > 0 Then
+                ArmorPenetration = ArmorPenetration + TargetArmor * ObjData(.invent.WeaponEqpObjIndex).IgnoreArmorPercent
+            End If
+        End If
+    End With
+    GetArmorPenetration = ArmorPenetration
+End Function

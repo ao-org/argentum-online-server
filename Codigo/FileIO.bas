@@ -1280,7 +1280,10 @@ Sub LoadOBJData()
 210                     .incinera = val(Leer.GetValue(ObjKey, "Incinera"))
         
 212                     .MaxHit = val(Leer.GetValue(ObjKey, "MaxHIT"))
-214                     .MinHIT = val(Leer.GetValue(ObjKey, "MinHIT"))
+213                     .MinHIT = val(Leer.GetValue(ObjKey, "MinHIT"))
+
+214                     .IgnoreArmorAmmount = val(Leer.GetValue(ObjKey, "IgnoreArmorAmmount"))
+215                     .IgnoreArmorPercent = val(Leer.GetValue(ObjKey, "IgnoreArmorPercent"))
 216                     .Proyectil = val(Leer.GetValue(ObjKey, "Proyectil"))
 218                     .Municion = val(Leer.GetValue(ObjKey, "Municiones"))
 220                     .Power = val(Leer.GetValue(ObjKey, "StaffPower"))

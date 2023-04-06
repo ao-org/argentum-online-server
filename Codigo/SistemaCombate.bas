@@ -532,9 +532,10 @@ On Error GoTo UserDamageNpc_Err
             
             ' Color por defecto rojo
 114         Color = vbRed
-
+            Dim NpcDef As Integer
+            NpcDef = max(0, NpcList(npcIndex).Stats.def - GetArmorPenetration(AtacanteIndex, NpcList(npcIndex).Stats.def))
             ' Defensa del NPC
-116         Damage = DamageBase - NpcList(npcIndex).Stats.def
+116         damage = DamageBase - NpcDef
             damage = damage * GetPhysicalDamageModifier(UserList(UserIndex))
 118         If Damage < 0 Then Damage = 0
             ' Mostramos en consola el golpe
@@ -1268,12 +1269,7 @@ Private Sub UserDamageToUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex 
 140             Defensa = Defensa + RandomNumber(Montura.MinDef, Montura.MaxDef)
             End If
             
-            ' Refuerzo de la espada - Ignora parte de la armadura
-142         If UserList(AtacanteIndex).Invent.WeaponEqpObjIndex > 0 Then
-144
-
-146             If Defensa < 0 Then Defensa = 0
-            End If
+142         Defensa = max(0, Defensa - GetArmorPenetration(AtacanteIndex, Defensa))
             
             ' Restamos la defensa
 148         Damage = BaseDamage - Defensa
