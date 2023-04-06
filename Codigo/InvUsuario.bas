@@ -3197,12 +3197,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                                 Call WriteWorkRequestTarget(UserIndex, e_Skill.TargetableItem)
                         End Select
                  Case e_OBJType.otUsableOntarget
-                    Select Case ObjData(objIndex).Subtipo
-                        Case e_UssableOnTarget.eRessurectionItem
-                            Call WriteWorkRequestTarget(UserIndex, e_Skill.TargetableItem)
-                        Case e_UssableOnTarget.eTrap
-                            Call WriteWorkRequestTarget(UserIndex, e_Skill.TargetableItem)
-                    End Select
+                    Call WriteWorkRequestTarget(UserIndex, e_Skill.TargetableItem)
                 End Select
              End With
 
@@ -3478,10 +3473,10 @@ On Error GoTo UserTargetableItem_Err
                 Call ResurrectWithItem(UserIndex)
             Case e_UssableOnTarget.eTrap
                 Call PlaceTrap(UserIndex, TileX, TileY)
+            Case e_UssableOnTarget.eArpon
+                Call UseArpon(UserIndex)
         End Select
     End With
-    
-    
     Exit Sub
 UserTargetableItem_Err:
     Call TraceError(Err.Number, Err.Description, "InvUsuario.UserTargetableItem", Erl)
@@ -3580,6 +3575,49 @@ Public Sub PlaceTrap(ByVal UserIndex As Integer, ByVal TileX As Integer, ByVal T
         Call UpdateCd(UserIndex, ObjData(objIndex).cdType)
         Call EffectsOverTime.CreateTrap(UserIndex, eUser, .pos.map, TileX, TileY, ObjData(objIndex).EfectoMagico)
         Call RemoveItemFromInventory(UserIndex, UserList(UserIndex).flags.TargetObjInvSlot)
+    End With
+End Sub
+
+Public Sub UseArpon(ByVal UserIndex As Integer)
+    With UserList(UserIndex)
+100     Dim CanAttackResult As e_AttackInteractionResult
+        Dim TargetRef As t_AnyReference
+        If IsValidUserRef(.flags.targetUser) Then
+            Call CastUserToAnyRef(.flags.targetUser, TargetRef)
+        Else
+            Call CastNpcToAnyRef(.flags.TargetNPC, TargetRef)
+        End If
+102     If Not IsValidRef(TargetRef) Then
+104         Call WriteLocaleMsg(UserIndex, MsgInvalidTarget, e_FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+        End If
+        If TargetRef.RefType = eUser Then
+            If UserList(TargetRef.ArrayIndex).flags.Muerto <> 0 Then
+                Call WriteLocaleMsg(UserIndex, MsgInvalidTarget, e_FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
+            If TargetRef.RefType = eUser And TargetRef.ArrayIndex = UserIndex Then
+                Call WriteLocaleMsg(UserIndex, MsgInvalidTarget, e_FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+        End If
+        End If
+        CanAttackResult = UserCanAttack(UserIndex, UserList(UserIndex).VersionId, TargetRef)
+        If CanAttackResult <> e_AttackInteractionResult.eCanAttack Then
+            Call WriteLocaleMsg(UserIndex, MsgInvalidTarget, e_FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+        End If
+        Dim ObjIndex As Integer
+        ObjIndex = .invent.Object(.flags.TargetObjInvSlot).ObjIndex
+        Call UpdateCd(UserIndex, ObjData(ObjIndex).cdType)
+        Dim Damage As Integer
+        Damage = GetUserDamageWithItem(UserIndex, ObjIndex, 0)
+        Call DoDamageToTarget(UserIndex, TargetRef, Damage, e_phisical, ObjIndex)
+        Call CreateEffect(UserIndex, eUser, TargetRef.ArrayIndex, TargetRef.RefType, ObjData(ObjIndex).ApplyEffectId)
+        If .flags.Oculto = 0 Then
+            Dim TargetPos As t_WorldPos
+            TargetPos = GetPosition(TargetRef)
+            Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareCreateProjectile(.pos.x, .pos.y, TargetPos.x, TargetPos.y, ObjData(ObjIndex).ProjectileType))
+        End If
     End With
 End Sub
 

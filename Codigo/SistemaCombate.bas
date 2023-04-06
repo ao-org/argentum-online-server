@@ -441,28 +441,38 @@ NpcImpacto_Err:
         
 End Function
 
-Private Function GetUserDamge(ByVal UserIndex As Integer) As Long
-    On Error GoTo GetUserDamge_Err
+Private Function GetUserDamage(ByVal UserIndex As Integer) As Long
+On Error GoTo GetUserDamge_Err
+100 With UserList(UserIndex)
+        GetUserDamage = GetUserDamageWithItem(UserIndex, .invent.WeaponEqpObjIndex, .invent.MunicionEqpObjIndex)
+    End With
+    Exit Function
+GetUserDamge_Err:
+150      Call TraceError(Err.Number, Err.Description, "SistemaCombate.GetUserDamge", Erl)
+End Function
+
+Public Function GetUserDamageWithItem(ByVal UserIndex As Integer, ByVal WeaponObjIndex As Integer, ByVal AmunitionObjIndex As Integer) As Long
+On Error GoTo GetUserDamageWithItem_Err
             Dim UserDamage As Long, WeaponDamage As Long, MaxWeaponDamage As Long, ClassModifier As Single
 100         With UserList(UserIndex)
                 ' Daño base del usuario
 102             UserDamage = RandomNumber(.Stats.MinHIT, .Stats.MaxHit)
                 ' Daño con arma
-104             If .Invent.WeaponEqpObjIndex > 0 Then
+104             If WeaponObjIndex > 0 Then
                     Dim Arma As t_ObjData
-106                 Arma = ObjData(.Invent.WeaponEqpObjIndex)
+106                 Arma = ObjData(WeaponObjIndex)
                     ' Calculamos el daño del arma
 108                 WeaponDamage = RandomNumber(Arma.MinHIT, Arma.MaxHit)
                     ' Daño máximo del arma
 110                 MaxWeaponDamage = Arma.MaxHit
                     ' Si lanza proyectiles
-112                 If Arma.Proyectil = 1 Then
+112                 If Arma.Proyectil > 0 Then
                         ' Usamos el modificador correspondiente
 114                     ClassModifier = ModicadorDañoClaseProyectiles(.clase)
                         ' Si requiere munición
-116                     If Arma.Municion > 0 And .invent.MunicionEqpObjIndex > 0 Then
+116                     If Arma.Municion > 0 And AmunitionObjIndex > 0 Then
                             Dim Municion As t_ObjData
-118                         Municion = ObjData(.Invent.MunicionEqpObjIndex)
+118                         Municion = ObjData(AmunitionObjIndex)
                             ' Agregamos el daño de la munición al daño del arma
 120                         WeaponDamage = WeaponDamage + RandomNumber(Municion.MinHIT, Municion.MaxHit)
 122                         MaxWeaponDamage = Arma.MaxHit + Municion.MaxHit
@@ -489,24 +499,22 @@ Private Function GetUserDamge(ByVal UserIndex As Integer) As Long
                 End If
 
                 ' Base damage
-136             GetUserDamge = (3 * WeaponDamage + MaxWeaponDamage * 0.2 * Maximo(0, .Stats.UserAtributos(Fuerza) - 15) + UserDamage) * ClassModifier
+136             GetUserDamageWithItem = (3 * WeaponDamage + MaxWeaponDamage * 0.2 * Maximo(0, .Stats.UserAtributos(Fuerza) - 15) + UserDamage) * ClassModifier
                 ' El pirata ship has bonus damage
 138             If .clase = e_Class.Pirat And .flags.Navegando = 1 Then
-140                 GetUserDamge = GetUserDamge * 1.2
+140                 GetUserDamageWithItem = GetUserDamageWithItem * 1.2
                 End If
                 ' Ship bonus
 142             If .flags.Navegando = 1 And .Invent.BarcoObjIndex > 0 Then
-144                 GetUserDamge = GetUserDamge + RandomNumber(ObjData(.invent.BarcoObjIndex).MinHIT, ObjData(.invent.BarcoObjIndex).MaxHit)
+144                 GetUserDamageWithItem = GetUserDamageWithItem + RandomNumber(ObjData(.invent.BarcoObjIndex).MinHIT, ObjData(.invent.BarcoObjIndex).MaxHit)
                 ' mount bonus
 146             ElseIf .flags.Montado = 1 And .Invent.MonturaObjIndex > 0 Then
-148                 GetUserDamge = GetUserDamge + RandomNumber(ObjData(.invent.MonturaObjIndex).MinHIT, ObjData(.invent.MonturaObjIndex).MaxHit)
+148                 GetUserDamageWithItem = GetUserDamageWithItem + RandomNumber(ObjData(.invent.MonturaObjIndex).MinHIT, ObjData(.invent.MonturaObjIndex).MaxHit)
                 End If
             End With
             Exit Function
-GetUserDamge_Err:
-150      Call TraceError(Err.Number, Err.Description, "SistemaCombate.GetUserDamge", Erl)
-
-        
+GetUserDamageWithItem_Err:
+150      Call TraceError(Err.Number, Err.Description, "SistemaCombate.GetUserDamageWithItem", Erl)
 End Function
 
 Private Sub UserDamageNpc(ByVal UserIndex As Integer, ByVal npcIndex As Integer, ByVal aType As AttackType)
@@ -522,7 +530,7 @@ On Error GoTo UserDamageNpc_Err
                 Call LogGM(.name, " Mato un Dragon Rojo ")
             Else
                 ' Daño normal
-108             DamageBase = GetUserDamge(UserIndex)
+108             DamageBase = GetUserDamage(UserIndex)
 
                 ' NPC de pruebas
 110             If NpcList(NpcIndex).NPCtype = DummyTarget Then
@@ -533,10 +541,10 @@ On Error GoTo UserDamageNpc_Err
             ' Color por defecto rojo
 114         Color = vbRed
             Dim NpcDef As Integer
-            NpcDef = max(0, NpcList(npcIndex).Stats.def - GetArmorPenetration(AtacanteIndex, NpcList(npcIndex).Stats.def))
+            NpcDef = max(0, NpcList(npcIndex).Stats.def - GetArmorPenetration(UserIndex, NpcList(npcIndex).Stats.def))
             ' Defensa del NPC
 116         damage = DamageBase - NpcDef
-            damage = damage * GetPhysicalDamageModifier(UserList(UserIndex))
+            Damage = Damage * UserMod.GetPhysicalDamageModifier(UserList(UserIndex))
 118         If Damage < 0 Then Damage = 0
             ' Mostramos en consola el golpe
 120         If .ChatCombate = 1 Then
@@ -621,9 +629,19 @@ On Error GoTo UserDamageNpc_Err
         Exit Sub
 
 UserDamageNpc_Err:
-194     Call TraceError(Err.Number, Err.Description, "SistemaCombate.UserDañoNpc", Erl)
+     Call TraceError(Err.Number, Err.Description, "SistemaCombate.UserDañoNpc", Erl)
+End Sub
 
-        
+Public Sub UserDamageToNpc(ByVal AttackerIndex As Integer, ByVal TargetIndex As Integer, ByVal Damage As Long, ByVal Source As e_DamageSourceType, ByVal ObjIndex As Integer)
+    Damage = Damage * UserMod.GetPhysicalDamageModifier(UserList(AttackerIndex))
+149 Damage = Damage * NPCs.GetPhysicDamageReduction(NpcList(TargetIndex))
+240 If NPCs.DoDamageOrHeal(TargetIndex, AttackerIndex, e_ReferenceType.eUser, -Damage, Source, ObjIndex) = eStillAlive Then
+        If NpcList(TargetIndex).flags.Snd2 > 0 Then
+            Call SendData(SendTarget.ToNPCAliveArea, TargetIndex, PrepareMessagePlayWave(NpcList(TargetIndex).flags.Snd2, NpcList(TargetIndex).pos.x, NpcList(TargetIndex).pos.y))
+        Else
+            Call SendData(SendTarget.ToNPCAliveArea, TargetIndex, PrepareMessagePlayWave(SND_IMPACTO2, NpcList(TargetIndex).pos.x, NpcList(TargetIndex).pos.y))
+        End If
+    End If
 End Sub
 
 Private Function NpcDamage(ByVal npcIndex As Integer, ByVal UserIndex As Integer) As Long
@@ -684,10 +702,8 @@ Private Function NpcDamage(ByVal npcIndex As Integer, ByVal UserIndex As Integer
         End Select
         
 140     Damage = Damage - absorbido - defbarco - defMontura
-141     Damage = Damage * GetPhysicDamageReduction(UserList(UserIndex))
+141     Damage = Damage * UserMod.GetPhysicDamageReduction(UserList(UserIndex))
 142     If Damage < 0 Then Damage = 0
-    
-144     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageTextCharDrop(PonerPuntos(Damage), UserList(UserIndex).Char.charindex, vbRed))
 
 146     If UserList(UserIndex).ChatCombate = 1 Then
 148         Call WriteNPCHitUser(UserIndex, Lugar, Damage)
@@ -1218,7 +1234,7 @@ Private Sub UserDamageToUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex 
             Dim Damage As Long, BaseDamage As Long, BonusDamage As Long, Defensa As Long, Color As Long, DamageStr As String, Lugar As e_PartesCuerpo
 
             ' Daño normal
-102         BaseDamage = GetUserDamge(AtacanteIndex)
+102         BaseDamage = GetUserDamage(AtacanteIndex)
 
             ' Color por defecto rojo
 104         Color = vbRed
@@ -1273,8 +1289,8 @@ Private Sub UserDamageToUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex 
             
             ' Restamos la defensa
 148         Damage = BaseDamage - Defensa
-            damage = damage * GetPhysicalDamageModifier(UserList(AtacanteIndex))
-149         Damage = Damage * GetPhysicDamageReduction(UserList(VictimaIndex))
+            Damage = Damage * UserMod.GetPhysicalDamageModifier(UserList(AtacanteIndex))
+149         Damage = Damage * UserMod.GetPhysicDamageReduction(UserList(VictimaIndex))
 
 150         If Damage < 0 Then Damage = 0
 
@@ -1313,7 +1329,7 @@ Private Sub UserDamageToUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex 
 182         ElseIf PuedeApuñalar(AtacanteIndex) Then
 184             If RandomNumber(1, 100) <= ProbabilidadApuñalar(AtacanteIndex) Then
                     ' Daño del apuñalamiento
-186                 BonusDamage = damage * ModicadorApuñalarClase(UserList(AtacanteIndex).clase)
+186                 BonusDamage = Damage * ModicadorApuñalarClase(UserList(AtacanteIndex).clase)
 
 188                 DamageStr = PonerPuntos(BonusDamage)
                 
@@ -1388,6 +1404,14 @@ Private Sub UserDamageToUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex 
         Exit Sub
 UserDañoUser_Err:
 254     Call TraceError(Err.Number, Err.Description, "SistemaCombate.UserDañoUser", Erl)
+End Sub
+
+Public Sub DamagePlayer(ByVal AttackerIndex As Integer, ByVal TargetIndex As Integer, ByVal Damage As Long, ByVal Source As e_DamageSourceType, ByVal ObjIndex As Integer)
+    Damage = Damage * UserMod.GetPhysicalDamageModifier(UserList(AttackerIndex))
+149 Damage = Damage * UserMod.GetPhysicDamageReduction(UserList(TargetIndex))
+240 If UserMod.DoDamageOrHeal(TargetIndex, AttackerIndex, e_ReferenceType.eUser, -Damage, Source, ObjIndex) = eStillAlive Then
+444     Call SendData(SendTarget.ToPCAliveArea, TargetIndex, PrepareMessagePlayWave(SND_IMPACTO, UserList(TargetIndex).pos.x, UserList(TargetIndex).pos.y))
+    End If
 End Sub
 
 Private Sub DesequiparObjetoDeUnGolpe(ByVal AttackerIndex As Integer, ByVal VictimIndex As Integer, ByVal parteDelCuerpo As e_PartesCuerpo)

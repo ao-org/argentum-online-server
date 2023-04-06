@@ -897,6 +897,7 @@ End Enum
 Public Enum e_UssableOnTarget
     eRessurectionItem = 1
     eTrap
+    eArpon
 End Enum
 'Estadisticas
 Public Const STAT_MAXELV              As Byte = 47
@@ -1093,9 +1094,11 @@ Public Type t_ActiveModifiers
     'effects on itself
     PhysicalDamageReduction As Single
     MagicDamageReduction As Single
+    MovementSpeed As Single
     'effect perform on others
     PhysicalDamageBonus As Single
     MagicDamageBonus As Single
+    
 End Type
 
 Public Enum e_ModifierTypes
@@ -1103,6 +1106,7 @@ Public Enum e_ModifierTypes
     MagicReduction = 2
     PhysiccalBonus = 4
     MagicBonus = 8
+    MovementSpeed = 16
 End Enum
 
 Public Type t_EffectOverTime
@@ -1122,6 +1126,7 @@ Public Type t_EffectOverTime
     MagicDamageReduction As Single
     PhysicalDamageDone As Single
     MagicDamageDone As Single
+    SpeedModifier As Single
     EffectModifiers As Long
     ClientEffectTypeId As Integer
     Area As Integer
@@ -2152,6 +2157,7 @@ Public Enum e_CdTypes
     e_Resurrection = 6
     e_Traps = 7
     e_WeaponPoison = 8
+    e_Arpon = 9
     [CDCount]
 End Enum
 
@@ -2500,6 +2506,7 @@ Public Type t_Npc
     IntervaloAtaque As Long
     IntervaloLanzarHechizo As Long
     IntervaloRespawn As Long
+    Modifiers As t_ActiveModifiers
     EffectOverTime As t_EffectOverTimeList
     
     Invent As t_Inventario
@@ -2808,6 +2815,7 @@ Public Enum e_EffectOverTimeType
     eApplyEffectOnHit = 8
     eManaModifier = 9
     ePartyBonus = 10
+    ePullTarget = 11
     [EffectTypeCount]
 End Enum
 
@@ -2894,6 +2902,31 @@ Public Function SetRef(ByRef Ref As t_AnyReference, ByVal index As Integer, ByVa
     SetRef = True
 End Function
 
+Public Function CastUserToAnyRef(ByRef UserRef As t_UserReference, ByRef AnyRef As t_AnyReference) As Boolean
+    CastUserToAnyRef = False
+    If Not IsValidUserRef(UserRef) Then
+        Call ClearRef(AnyRef)
+        Exit Function
+    End If
+    AnyRef.ArrayIndex = UserRef.ArrayIndex
+    AnyRef.RefType = eUser
+    AnyRef.VersionId = UserRef.VersionId
+    AnyRef.userID = UserList(UserRef.ArrayIndex).ID
+    CastUserToAnyRef = True
+End Function
+
+Public Function CastNpcToAnyRef(ByRef NpcRef As t_NpcReference, ByRef AnyRef As t_AnyReference) As Boolean
+    CastNpcToAnyRef = False
+    If Not IsValidNpcRef(NpcRef) Then
+        Call ClearRef(AnyRef)
+        Exit Function
+    End If
+    AnyRef.ArrayIndex = NpcRef.ArrayIndex
+    AnyRef.RefType = eNpc
+    AnyRef.VersionId = NpcRef.VersionId
+    CastNpcToAnyRef = True
+End Function
+
 Public Sub ClearRef(ByRef Ref As t_AnyReference)
     Ref.ArrayIndex = 0
     Ref.VersionId = -1
@@ -2906,6 +2939,7 @@ Public Sub ClearModifiers(ByRef Modifiers As t_ActiveModifiers)
     Modifiers.MagicDamageReduction = 0
     Modifiers.PhysicalDamageBonus = 0
     Modifiers.PhysicalDamageReduction = 0
+    Modifiers.MovementSpeed = 0
 End Sub
 
 Public Sub IncreaseSingle(ByRef dest As Single, ByVal amount As Single)

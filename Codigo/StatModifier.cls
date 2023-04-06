@@ -23,6 +23,7 @@ Private PhysicalDamageReduction As Single
 Private MagicDamageReduction As Single
 Private PhysicalDamageDone As Single
 Private MagicDamageDone As Single
+Private SpeedModifier As Single
 
 Public Sub Setup(ByVal sourceIndex As Integer, ByVal sourceType As e_ReferenceType, ByVal TargetIndex As Integer, ByVal TargetType As e_ReferenceType, _
                  ByVal EffectId As Integer, ByVal ID As Integer)
@@ -36,15 +37,15 @@ Public Sub Setup(ByVal sourceIndex As Integer, ByVal sourceType As e_ReferenceTy
         MagicDamageReduction = .MagicDamageReduction
         PhysicalDamageDone = .PhysicalDamageDone
         MagicDamageDone = .MagicDamageDone
+        SpeedModifier = .SpeedModifier
         If DotInfo.TargetRef.RefType = eUser And .ClientEffectTypeId > 0 Then Call WriteSendSkillCdUpdate(TargetIndex, .ClientEffectTypeId, ID, .TickTime, .buffType)
     End With
     If IsValidRef(DotInfo.TargetRef) Then
-        If DotInfo.TargetRef.RefType = eUser Then
-            Call IncreaseSingle(UserList(DotInfo.TargetRef.ArrayIndex).Modifiers.MagicDamageBonus, MagicDamageDone)
-            Call IncreaseSingle(UserList(DotInfo.TargetRef.ArrayIndex).Modifiers.PhysicalDamageBonus, PhysicalDamageDone)
-            Call IncreaseSingle(UserList(DotInfo.TargetRef.ArrayIndex).Modifiers.MagicDamageReduction, MagicDamageReduction)
-            Call IncreaseSingle(UserList(DotInfo.TargetRef.ArrayIndex).Modifiers.PhysicalDamageReduction, PhysicalDamageReduction)
-        End If
+        Call UpdateIncreaseModifier(DotInfo.TargetRef, MagicBonus, MagicDamageDone)
+        Call UpdateIncreaseModifier(DotInfo.TargetRef, PhysiccalBonus, PhysicalDamageDone)
+        Call UpdateIncreaseModifier(DotInfo.TargetRef, MagicReduction, MagicDamageReduction)
+        Call UpdateIncreaseModifier(DotInfo.TargetRef, PhysicalReduction, PhysicalDamageReduction)
+        Call UpdateIncreaseModifier(DotInfo.TargetRef, MovementSpeed, SpeedModifier)
     End If
 End Sub
 
@@ -128,10 +129,13 @@ Public Sub IBaseEffectOverTime_OnRemove()
     If DotInfo.Removed Then Exit Sub
     DotInfo.Removed = True
     DotInfo.RemoveEffect = True
-    Call IncreaseSingle(UserList(DotInfo.TargetRef.ArrayIndex).Modifiers.MagicDamageBonus, -MagicDamageDone)
-    Call IncreaseSingle(UserList(DotInfo.TargetRef.ArrayIndex).Modifiers.PhysicalDamageBonus, -PhysicalDamageDone)
-    Call IncreaseSingle(UserList(DotInfo.TargetRef.ArrayIndex).Modifiers.MagicDamageReduction, -MagicDamageReduction)
-    Call IncreaseSingle(UserList(DotInfo.TargetRef.ArrayIndex).Modifiers.PhysicalDamageReduction, -PhysicalDamageReduction)
+    If IsValidRef(DotInfo.TargetRef) Then
+        Call UpdateIncreaseModifier(DotInfo.TargetRef, MagicBonus, -MagicDamageDone)
+        Call UpdateIncreaseModifier(DotInfo.TargetRef, PhysiccalBonus, -PhysicalDamageDone)
+        Call UpdateIncreaseModifier(DotInfo.TargetRef, MagicReduction, -MagicDamageReduction)
+        Call UpdateIncreaseModifier(DotInfo.TargetRef, PhysicalReduction, -PhysicalDamageReduction)
+        Call UpdateIncreaseModifier(DotInfo.TargetRef, MovementSpeed, -SpeedModifier)
+    End If
     If DotInfo.TargetRef.RefType = eUser And EffectOverTime(DotInfo.EotId).ClientEffectTypeId > 0 Then Call WriteSendSkillCdUpdate(DotInfo.TargetRef.ArrayIndex, EffectOverTime(DotInfo.EotId).ClientEffectTypeId, DotInfo.UniqueId, 0, EffectOverTime(DotInfo.EotId).buffType)
 End Sub
 

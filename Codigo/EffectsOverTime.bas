@@ -189,6 +189,17 @@ On Error GoTo CreateEffect_Err
 464             Call AddEffect(UserList(TargetIndex).EffectOverTime, PartyEffect)
 468             'npc doesn't have groups
             End If
+        Case e_EffectOverTimeType.ePullTarget
+490         Dim PullEffect As AttrackEffect
+492         Set PullEffect = GetEOT(EffectType)
+494         UniqueIdCounter = GetNextId()
+496         Call PullEffect.Setup(SourceIndex, SourceType, TargetIndex, TargetType, EffectIndex, UniqueIdCounter)
+498         Call AddEffectToUpdate(PullEffect)
+500         If TargetType = eUser Then
+502             Call AddEffect(UserList(TargetIndex).EffectOverTime, PullEffect)
+504         ElseIf TargetType = eNpc Then
+506             Call AddEffect(NpcList(TargetIndex).EffectOverTime, PullEffect)
+            End If
         Case Else
             Debug.Assert False
     End Select
@@ -238,6 +249,8 @@ Private Function InstantiateEOT(ByVal EffectType As e_EffectOverTimeType) As IBa
             Set InstantiateEOT = New UpdateManaOverTime
         Case e_EffectOverTimeType.ePartyBonus
             Set InstantiateEOT = New ApplyEffectToParty
+        Case e_EffectOverTimeType.ePullTarget
+            Set InstantiateEOT = New AttrackEffect
         Case Else
             Debug.Assert False
     End Select

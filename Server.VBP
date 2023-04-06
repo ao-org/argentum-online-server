@@ -112,6 +112,7 @@ Class=DrunkEffect; Codigo\DrunkEffect.cls
 Class=ApplyEffectOnHit; Codigo\ApplyEffectOnHit.cls
 Class=UpdateManaOverTime; Codigo\UpdateManaOverTime.cls
 Class=ApplyEffectToParty; Codigo\ApplyEffectOnParty.cls
+Class=AttrackEffect; Codigo\EffectOverTime\AttrackEffect.cls
 IconForm="frmMain"
 Startup="Sub Main"
 HelpFile=""

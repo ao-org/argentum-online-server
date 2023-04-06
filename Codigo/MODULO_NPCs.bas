@@ -525,7 +525,8 @@ Sub ResetNpcMainInfo(ByVal NpcIndex As Integer)
 168         .Spells(j) = 0
 170     Next j
         Call ClearEffectList(.EffectOverTime)
-        End With
+        Call ClearModifiers(.Modifiers)
+    End With
 172     Call ResetNpcCharInfo(NpcIndex)
 174     Call ResetNpcCriatures(NpcIndex)
 176     Call ResetExpresiones(NpcIndex)
@@ -1196,6 +1197,19 @@ NPCTirarOro_Err:
 
         
 End Sub
+
+Function UpdateNpcSpeed(ByVal npcIndex As Integer)
+    With NpcList(npcIndex)
+214     If .IntervaloMovimiento = 0 Then
+216         .IntervaloMovimiento = 380
+218         .Char.speeding = frmMain.TIMER_AI.Interval / 330
+        Else
+220         .Char.speeding = 210 / .IntervaloMovimiento
+        End If
+        .Char.speeding = .Char.speeding * max(0, (1 + .Modifiers.MovementSpeed))
+        Call SendData(SendTarget.ToNPCArea, npcIndex, PrepareMessageSpeedingACT(.Char.charindex, .Char.speeding))
+    End With
+End Function
 
 Function OpenNPC(ByVal NpcNumber As Integer, _
                  Optional ByVal Respawn As Boolean = True, _
@@ -2082,4 +2096,20 @@ Public Function Inmovilize(ByVal SourceIndex As Integer, ByVal TargetIndex As In
 184     Call SendData(SendTarget.ToNPCAliveArea, TargetIndex, PrepareMessageCreateFX(.Char.charindex, FX, 0, .pos.x, .pos.y))
     Inmovilize = True
     End With
+End Function
+
+Public Function GetPhysicalDamageModifier(ByRef npc As t_Npc) As Single
+    GetPhysicalDamageModifier = max(1 + npc.Modifiers.PhysicalDamageBonus, 0)
+End Function
+
+Public Function GetMagicDamageModifier(ByRef npc As t_Npc) As Single
+    GetMagicDamageModifier = max(1 + npc.Modifiers.MagicDamageBonus, 0)
+End Function
+
+Public Function GetMagicDamageReduction(ByRef npc As t_Npc) As Single
+    GetMagicDamageReduction = max(1 - npc.Modifiers.MagicDamageReduction, 0)
+End Function
+
+Public Function GetPhysicDamageReduction(ByRef npc As t_Npc) As Single
+    GetPhysicDamageReduction = max(1 - npc.Modifiers.PhysicalDamageReduction, 0)
 End Function
