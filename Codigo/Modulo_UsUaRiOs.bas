@@ -3039,7 +3039,7 @@ Public Function ActualizarVelocidadDeUsuario(ByVal UserIndex As Integer) As Sing
 124             modificadorHechizo = .flags.VelocidadHechizada
             End If
         
-126         velocidad = VelocidadNormal * modificadorItem * modificadorHechizo
+126         velocidad = VelocidadNormal * modificadorItem * modificadorHechizo * max(0, (1 + .Modifiers.MovementSpeed))
         
 UpdateSpeed:
 128         .Char.speeding = velocidad

@@ -156,10 +156,10 @@ Public Sub PerformAction()
     TickHP = RandomNumber(DotHpMin, DotHpMax) * EffectBonus
     If DotInfo.TargetRef.RefType = e_ReferenceType.eUser Then
         If IsSet(Modifiers, e_ModifierTypes.MagicReduction) Then
-            TickHP = TickHP * GetMagicDamageReduction(UserList(DotInfo.TargetRef.ArrayIndex))
+            TickHP = TickHP * UserMod.GetMagicDamageReduction(UserList(DotInfo.TargetRef.ArrayIndex))
         End If
         If IsSet(Modifiers, e_ModifierTypes.PhysicalReduction) Then
-            TickHP = TickHP * GetPhysicDamageReduction(UserList(DotInfo.TargetRef.ArrayIndex))
+            TickHP = TickHP * UserMod.GetPhysicDamageReduction(UserList(DotInfo.TargetRef.ArrayIndex))
         End If
         If IsValidRef(source) Then
             Call UserMod.DoDamageOrHeal(DotInfo.TargetRef.ArrayIndex, Source.ArrayIndex, Source.RefType, TickHP, e_dot, DotInfo.EotId)

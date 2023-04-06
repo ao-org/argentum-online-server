@@ -92,7 +92,7 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
             ' Resto el porcentaje total
 152         Damage = Damage - Porcentaje(Damage, PorcentajeRM)
           End If
-          Damage = Damage * GetMagicDamageReduction(UserList(UserIndex))
+          Damage = Damage * UserMod.GetMagicDamageReduction(UserList(UserIndex))
 154       If Damage < 0 Then Damage = 0
 156       Call UserMod.DoDamageOrHeal(UserIndex, npcIndex, eNpc, -Damage, e_DamageSourceType.e_magic, Spell)
 157       DamageStr = PonerPuntos(Damage)
@@ -3061,8 +3061,8 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsA
 442             Damage = Damage - Porcentaje(Damage, PorcentajeRM)
             End If
             Call EffectsOverTime.TartgetWillAtack(UserList(UserIndex).EffectOverTime, tempChr, eUser, e_DamageSourceType.e_magic)
-            Damage = Damage * GetMagicDamageModifier(UserList(UserIndex))
-            Damage = Damage * GetMagicDamageReduction(UserList(tempChr))
+            Damage = Damage * UserMod.GetMagicDamageModifier(UserList(UserIndex))
+            Damage = Damage * UserMod.GetMagicDamageReduction(UserList(tempChr))
             ' Prevengo daño negativo
 444         If Damage < 0 Then Damage = 0
     
@@ -3395,8 +3395,8 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
 306             Damage = Damage - Damage * ModClase(UserList(tempChr).clase).ResistenciaMagica
             End If
             Call EffectsOverTime.TartgetWillAtack(UserList(UserIndex).EffectOverTime, tempChr, eUser, e_DamageSourceType.e_magic)
-            Damage = Damage * GetMagicDamageModifier(UserList(UserIndex))
-            Damage = Damage * GetMagicDamageReduction(UserList(tempChr))
+            Damage = Damage * UserMod.GetMagicDamageModifier(UserList(UserIndex))
+            Damage = Damage * UserMod.GetMagicDamageReduction(UserList(tempChr))
             ' Prevengo daño negativo
 308         If Damage < 0 Then Damage = 0
     

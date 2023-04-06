@@ -825,6 +825,7 @@ On Error GoTo ErrHandler
             EffectOverTime(i).PhysicalDamageReduction = val(Leer.GetValue("EOT" & i, "PhysicalDamageReduction"))
             EffectOverTime(i).MagicDamageReduction = val(Leer.GetValue("EOT" & i, "MagicDamageReduction"))
             EffectOverTime(i).PhysicalDamageDone = val(Leer.GetValue("EOT" & i, "PhysicalDamageDone"))
+            EffectOverTime(i).SpeedModifier = val(Leer.GetValue("EOT" & i, "SpeedModifier"))
             EffectOverTime(i).MagicDamageDone = val(Leer.GetValue("EOT" & i, "MagicDamageDone"))
             EffectOverTime(i).ClientEffectTypeId = val(Leer.GetValue("EOT" & i, "ClientEffectTypeId"))
             EffectOverTime(i).BuffType = val(Leer.GetValue("EOT" & i, "BuffType"))
@@ -842,6 +843,9 @@ On Error GoTo ErrHandler
             End If
             If val(Leer.GetValue("EOT" & i, "AffectedByPhysicalReduction")) > 0 Then
                 Call SetMask(EffectOverTime(i).EffectModifiers, e_ModifierTypes.PhysicalReduction)
+            End If
+            If val(Leer.GetValue("EOT" & i, "AffectedBySpeedModifier")) > 0 Then
+                Call SetMask(EffectOverTime(i).EffectModifiers, e_ModifierTypes.MovementSpeed)
             End If
 290         If val(Leer.GetValue("EOT" & i, "RequireArmor")) > 0 Then Call SetMask(EffectOverTime(i).RequireEquipedSlot, e_EquipedSlotMask.eArmor)
 292         If val(Leer.GetValue("EOT" & i, "RequireShip")) > 0 Then Call SetMask(EffectOverTime(i).RequireEquipedSlot, e_EquipedSlotMask.eShip)
@@ -1295,7 +1299,6 @@ Sub LoadOBJData()
 234                     .DosManos = val(Leer.GetValue(ObjKey, "DosManos"))
                         .Porcentaje = val(Leer.GetValue(ObjKey, "Porcentaje"))
                         .WeaponType = val(Leer.GetValue(ObjKey, "WeaponType"))
-                        .ProjectileType = val(Leer.GetValue(ObjKey, "ProjectileType"))
                         
 236                 Case e_OBJType.otInstrumentos
         
@@ -1344,7 +1347,6 @@ Sub LoadOBJData()
             
 308                     .Snd1 = val(Leer.GetValue(ObjKey, "SND1"))
 310                     .Snd2 = val(Leer.GetValue(ObjKey, "SND2"))
-                        .ProjectileType = val(Leer.GetValue(ObjKey, "ProjectileType"))
             
                         'Pasajes Ladder 05-05-08
 312                 Case e_OBJType.otpasajes
@@ -1453,7 +1455,7 @@ Sub LoadOBJData()
                     Case e_OBJType.otUsableOntarget
                         .EfectoMagico = val(Leer.GetValue(ObjKey, "efectomagico"))
                 End Select
-    
+                .ProjectileType = val(Leer.GetValue(ObjKey, "ProjectileType"))
 436             .MinSkill = val(Leer.GetValue(ObjKey, "MinSkill"))
 
 438             .Elfico = val(Leer.GetValue(ObjKey, "Elfico"))
