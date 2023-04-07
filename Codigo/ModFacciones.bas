@@ -48,8 +48,8 @@ Public Sub EnlistarArmadaReal(ByVal UserIndex As Integer)
 
                 End If
                 
-128             If Not HayLugarEnInventario(UserIndex) Then
-130                 Call WriteChatOverHead(UserIndex, "¡No tienes lugar suficiente en el inventario.", charIndexStr, vbWhite)
+128             If Not HayLugarEnInventario(UserIndex, -1, 999) Then
+130                 Call WriteChatOverHead(UserIndex, "¡No tienes lugar suficiente en el inventario.", charindexstr, vbWhite)
                     Exit Sub
                 End If
                 
@@ -135,7 +135,7 @@ Public Sub RecompensaArmadaReal(ByVal UserIndex As Integer)
                     Exit Sub
                 End If
                 
-110             If Not HayLugarEnInventario(UserIndex) Then
+110             If Not HayLugarEnInventario(UserIndex, -1, 999) Then
 112                 Call WriteChatOverHead(UserIndex, "¡No tienes lugar suficiente en el inventario.", npcCharIndex, vbWhite)
                     Exit Sub
                 End If
@@ -243,8 +243,8 @@ Public Sub EnlistarCaos(ByVal UserIndex As Integer)
 
                 End If
                 
-120             If Not HayLugarEnInventario(UserIndex) Then
-122                 Call WriteChatOverHead(UserIndex, "¡No tienes lugar suficiente en el inventario.", charIndexStr, vbWhite)
+120             If Not HayLugarEnInventario(UserIndex, -1, 999) Then
+122                 Call WriteChatOverHead(UserIndex, "¡No tienes lugar suficiente en el inventario.", charindexstr, vbWhite)
                     Exit Sub
                 End If
 
