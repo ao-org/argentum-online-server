@@ -2327,6 +2327,10 @@ Public Type t_NpcCounters
     
 End Type
 
+Public Enum e_Inmunities
+    eTranslation = 1
+End Enum
+
 Public Type t_NPCFlags
 
     AfectaParalisis As Byte
@@ -2339,6 +2343,7 @@ Public Type t_NPCFlags
     LanzaSpells As Byte
     NPCIdle As Boolean
     Summoner As t_NpcReference
+    EffectInmunity As Long
     ' Invasiones
     InvasionIndex As Integer
     SpawnBox As Integer

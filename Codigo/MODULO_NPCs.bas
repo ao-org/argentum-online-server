@@ -1435,6 +1435,7 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
 312         .flags.RespawnOrigPos = val(Leer.GetValue("NPC" & NpcNumber, "OrigPos"))
 314         .flags.AfectaParalisis = val(Leer.GetValue("NPC" & NpcNumber, "AfectaParalisis"))
 316         .flags.GolpeExacto = val(Leer.GetValue("NPC" & NpcNumber, "GolpeExacto"))
+            If val(Leer.GetValue("NPC" & NpcNumber, "TranslationInmune")) > 0 Then Call SetMask(.flags.EffectInmunity, e_Inmunities.eTranslation)
     
 318         .flags.Snd1 = val(Leer.GetValue("NPC" & NpcNumber, "Snd1"))
 320         .flags.Snd2 = val(Leer.GetValue("NPC" & NpcNumber, "Snd2"))
