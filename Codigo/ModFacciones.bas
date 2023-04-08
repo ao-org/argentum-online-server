@@ -333,7 +333,7 @@ Public Sub RecompensaCaos(ByVal UserIndex As Integer)
                     Exit Sub
                 End If
                 
-110             If Not HayLugarEnInventario(UserIndex) Then
+110             If Not HayLugarEnInventario(UserIndex, -1, 999) Then
 112                 Call WriteChatOverHead(UserIndex, "¡No tienes lugar suficiente en el inventario.", npcCharIndex, vbWhite)
                     Exit Sub
                 End If
