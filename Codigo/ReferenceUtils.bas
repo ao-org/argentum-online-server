@@ -63,13 +63,14 @@ Public Sub UpdateIncreaseModifier(ByRef Reference As t_AnyReference, ByVal Modif
     End If
 End Sub
 
-Public Sub DoDamageToTarget(ByVal UserIndex As Integer, ByRef TargetRef As t_AnyReference, ByVal Damage As Integer, ByVal DamageType As e_DamageSourceType, ByVal ObjIndex As Integer)
+Public Function DoDamageToTarget(ByVal UserIndex As Integer, ByRef TargetRef As t_AnyReference, ByVal Damage As Integer, _
+                                 ByVal DamageType As e_DamageSourceType, ByVal ObjIndex As Integer) As e_DamageResult
     If Not IsValidRef(TargetRef) Then
-        Exit Sub
+        Exit Function
     End If
     If TargetRef.RefType = eNpc Then
-        Call UserDamageToNpc(UserIndex, TargetRef.ArrayIndex, Damage, DamageType, ObjIndex)
+        DoDamageToTarget = UserDamageToNpc(UserIndex, TargetRef.ArrayIndex, Damage, DamageType, ObjIndex)
     ElseIf TargetRef.RefType = eUser Then
-        Call DamagePlayer(UserIndex, TargetRef.ArrayIndex, Damage, DamageType, ObjIndex)
+        DoDamageToTarget = UserDoDamageToUser(UserIndex, TargetRef.ArrayIndex, Damage, DamageType, ObjIndex)
     End If
-End Sub
+End Function

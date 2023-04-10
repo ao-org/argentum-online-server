@@ -143,6 +143,10 @@ End Sub
 Public Sub IBaseEffectOverTime_TargetWasDamaged(ByVal SourceUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
 End Sub
 
+Public Property Get IBaseEffectOverTime_KeepAfterDead() As Boolean
+    IBaseEffectOverTime_KeepAfterDead = False
+End Property
+
 Private Sub ApplyReduction(ByVal TargetUserId As Integer)
     If TargetUserId <> Source.ArrayIndex And DotInfo.TargetRef.RefType = eUser Then
         Call IncreaseSingle(UserList(DotInfo.TargetRef.ArrayIndex).Modifiers.MagicDamageBonus, MagicDamageModifier)

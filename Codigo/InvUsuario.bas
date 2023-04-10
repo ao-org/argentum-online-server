@@ -3469,6 +3469,8 @@ On Error GoTo UserTargetableItem_Err
                 Call PlaceTrap(UserIndex, TileX, TileY)
             Case e_UssableOnTarget.eArpon
                 Call UseArpon(UserIndex)
+            Case e_UssableOnTarget.eHandCannon
+                Call UseHandCannon(UserIndex, TileX, TileY)
         End Select
     End With
     Exit Sub
@@ -3605,13 +3607,46 @@ Public Sub UseArpon(ByVal UserIndex As Integer)
         Call UpdateCd(UserIndex, ObjData(ObjIndex).cdType)
         Dim Damage As Integer
         Damage = GetUserDamageWithItem(UserIndex, ObjIndex, 0)
-        Call DoDamageToTarget(UserIndex, TargetRef, Damage, e_phisical, ObjIndex)
+        If DoDamageToTarget(UserIndex, TargetRef, Damage, e_phisical, ObjIndex) = eStillAlive Then
+            If TargetRef.RefType = eUser Then
+                UserList(TargetRef.ArrayIndex).Counters.timeFx = 2
+                Call SendData(SendTarget.ToPCAliveArea, TargetRef.ArrayIndex, PrepareMessageCreateFX(UserList(TargetRef.ArrayIndex).Char.charindex, FXSANGRE, 0, UserList(TargetRef.ArrayIndex).pos.x, UserList(TargetRef.ArrayIndex).pos.y))
+                Call SendData(SendTarget.ToPCAliveArea, TargetRef.ArrayIndex, PrepareMessagePlayWave(SND_IMPACTO, UserList(TargetRef.ArrayIndex).pos.x, UserList(TargetRef.ArrayIndex).pos.y))
+            Else
+                If NpcList(TargetRef.ArrayIndex).flags.Snd2 > 0 Then
+                    Call SendData(SendTarget.ToNPCAliveArea, TargetRef.ArrayIndex, PrepareMessagePlayWave(NpcList(TargetRef.ArrayIndex).flags.Snd2, NpcList(TargetRef.ArrayIndex).pos.x, NpcList(TargetRef.ArrayIndex).pos.y))
+                Else
+                    Call SendData(SendTarget.ToNPCAliveArea, TargetRef.ArrayIndex, PrepareMessagePlayWave(SND_IMPACTO2, NpcList(TargetRef.ArrayIndex).pos.x, NpcList(TargetRef.ArrayIndex).pos.y))
+                End If
+            End If
+        End If
         Call CreateEffect(UserIndex, eUser, TargetRef.ArrayIndex, TargetRef.RefType, ObjData(ObjIndex).ApplyEffectId)
         If .flags.Oculto = 0 Then
             Dim TargetPos As t_WorldPos
             TargetPos = GetPosition(TargetRef)
             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareCreateProjectile(.pos.x, .pos.y, TargetPos.x, TargetPos.y, ObjData(ObjIndex).ProjectileType))
         End If
+    End With
+End Sub
+
+Public Sub UseHandCannon(ByVal UserIndex As Integer, ByVal TileX As Integer, ByVal TileY As Integer)
+    With UserList(UserIndex)
+        If Distance(TileX, TileY, .pos.x, .pos.y) > 10 Then
+            Call WriteLocaleMsg(UserIndex, MsgToFar, e_FontTypeNames.FONTTYPE_INFO)
+            Exit Sub
+        End If
+        Dim ObjIndex As Integer
+        ObjIndex = .invent.Object(.flags.TargetObjInvSlot).ObjIndex
+        Call UpdateCd(UserIndex, ObjData(ObjIndex).cdType)
+        Dim Particula As Integer
+        Dim Tiempo    As Long
+        Particula = val(ReadField(1, ObjData(ObjIndex).CreaParticula, Asc(":")))
+        Tiempo = val(ReadField(2, ObjData(ObjIndex).CreaParticula, Asc(":")))
+        UserList(UserIndex).Counters.timeFx = 2
+        Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, Particula, Tiempo, False, , UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
+        Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareCreateProjectile(.pos.x, .pos.y, TileX, TileY, ObjData(ObjIndex).ProjectileType))
+        Call CreateDelayedBlast(UserIndex, eUser, .pos.Map, TileX, TileY, ObjData(ObjIndex).ApplyEffectId, ObjIndex)
+        If ObjData(ObjIndex).Snd1 <> 0 Then Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(ObjData(ObjIndex).Snd1, .pos.x, .pos.y))
     End With
 End Sub
 

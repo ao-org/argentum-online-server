@@ -898,6 +898,7 @@ Public Enum e_UssableOnTarget
     eRessurectionItem = 1
     eTrap
     eArpon
+    eHandCannon
 End Enum
 'Estadisticas
 Public Const STAT_MAXELV              As Byte = 47
@@ -2158,6 +2159,7 @@ Public Enum e_CdTypes
     e_Traps = 7
     e_WeaponPoison = 8
     e_Arpon = 9
+    e_HandCannon = 10
     [CDCount]
 End Enum
 
@@ -2821,6 +2823,7 @@ Public Enum e_EffectOverTimeType
     eManaModifier = 9
     ePartyBonus = 10
     ePullTarget = 11
+    eDelayedBlast = 12
     [EffectTypeCount]
 End Enum
 

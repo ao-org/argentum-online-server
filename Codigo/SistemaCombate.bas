@@ -634,39 +634,29 @@ UserDamageNpc_Err:
      Call TraceError(Err.Number, Err.Description, "SistemaCombate.UserDañoNpc", Erl)
 End Sub
 
-Public Sub UserDamageToNpc(ByVal AttackerIndex As Integer, ByVal TargetIndex As Integer, ByVal Damage As Long, ByVal Source As e_DamageSourceType, ByVal ObjIndex As Integer)
+Public Function UserDamageToNpc(ByVal attackerIndex As Integer, ByVal TargetIndex As Integer, ByVal Damage As Long, ByVal Source As e_DamageSourceType, ByVal ObjIndex As Integer) As e_DamageResult
     Damage = Damage * UserMod.GetPhysicalDamageModifier(UserList(AttackerIndex))
 149 Damage = Damage * NPCs.GetPhysicDamageReduction(NpcList(TargetIndex))
-240 If NPCs.DoDamageOrHeal(TargetIndex, AttackerIndex, e_ReferenceType.eUser, -Damage, Source, ObjIndex) = eStillAlive Then
-        If NpcList(TargetIndex).flags.Snd2 > 0 Then
-            Call SendData(SendTarget.ToNPCAliveArea, TargetIndex, PrepareMessagePlayWave(NpcList(TargetIndex).flags.Snd2, NpcList(TargetIndex).pos.x, NpcList(TargetIndex).pos.y))
-        Else
-            Call SendData(SendTarget.ToNPCAliveArea, TargetIndex, PrepareMessagePlayWave(SND_IMPACTO2, NpcList(TargetIndex).pos.x, NpcList(TargetIndex).pos.y))
-        End If
+240 UserDamageToNpc = NPCs.DoDamageOrHeal(TargetIndex, attackerIndex, e_ReferenceType.eUser, -Damage, Source, ObjIndex)
+120 If .ChatCombate = 1 Then
+122     Call WriteLocaleMsg(UserIndex, 382, e_FontTypeNames.FONTTYPE_FIGHT, PonerPuntos(Damage))
     End If
-End Sub
+End Function
 
 Private Function NpcDamage(ByVal npcIndex As Integer, ByVal UserIndex As Integer) As Long
-        
-        On Error GoTo NpcDamage_Err
+    On Error GoTo NpcDamage_Err
         
         NpcDamage = -1
-        
         Dim Damage As Integer, Lugar As Integer, absorbido As Integer
-
         Dim defbarco As Integer
-
         Dim obj As t_ObjData
-    
 100     Damage = RandomNumber(NpcList(npcIndex).Stats.MinHIT, NpcList(npcIndex).Stats.MaxHit)
-    
 104     If UserList(UserIndex).flags.Navegando = 1 And UserList(UserIndex).Invent.BarcoObjIndex > 0 Then
 106         obj = ObjData(UserList(UserIndex).Invent.BarcoObjIndex)
 108         defbarco = RandomNumber(obj.MinDef, obj.MaxDef)
         End If
     
         Dim defMontura As Integer
-
 110     If UserList(UserIndex).flags.Montado = 1 And UserList(UserIndex).Invent.MonturaObjIndex > 0 Then
 112         obj = ObjData(UserList(UserIndex).Invent.MonturaObjIndex)
 114         defMontura = RandomNumber(obj.MinDef, obj.MaxDef)
@@ -677,7 +667,6 @@ Private Function NpcDamage(ByVal npcIndex As Integer, ByVal UserIndex As Integer
 118     Select Case Lugar
             ' 1/6 de chances de que sea a la cabeza
             Case e_PartesCuerpo.bCabeza
-
                 'Si tiene casco absorbe el golpe
 120             If UserList(UserIndex).Invent.CascoEqpObjIndex > 0 Then
                     Dim Casco As t_ObjData
@@ -686,7 +675,6 @@ Private Function NpcDamage(ByVal npcIndex As Integer, ByVal UserIndex As Integer
                 End If
 
 126         Case Else
-
                 'Si tiene armadura absorbe el golpe
 128             If UserList(UserIndex).Invent.ArmourEqpObjIndex > 0 Then
                     Dim Armadura As t_ObjData
@@ -700,7 +688,6 @@ Private Function NpcDamage(ByVal npcIndex As Integer, ByVal UserIndex As Integer
 136                 Escudo = ObjData(UserList(UserIndex).Invent.EscudoEqpObjIndex)
 138                 absorbido = absorbido + RandomNumber(Escudo.MinDef, Escudo.MaxDef)
                 End If
-
         End Select
         
 140     Damage = Damage - absorbido - defbarco - defMontura
@@ -726,6 +713,12 @@ Private Function NpcDamage(ByVal npcIndex As Integer, ByVal UserIndex As Integer
 NpcDamage_Err:
 182     Call TraceError(Err.Number, Err.Description, "SistemaCombate.NpcDamage", Erl)
 End Function
+
+Public Sub NpcDoDamageToUser(ByVal attackerIndex As Integer, ByVal TargetIndex As Integer, ByVal Damage As Long, ByVal Source As e_DamageSourceType, ByVal ObjIndex As Integer)
+    Damage = Damage * NPCs.GetPhysicalDamageModifier(NpcList(attackerIndex))
+149 Damage = Damage * UserMod.GetPhysicDamageReduction(UserList(TargetIndex))
+    Call UserMod.DoDamageOrHeal(TargetIndex, attackerIndex, e_ReferenceType.eNpc, -Damage, Source, ObjIndex)
+End Sub
 
 Public Function NpcAtacaUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer, ByVal Heading As e_Heading) As Boolean
         
@@ -817,25 +810,28 @@ NpcImpactoNpc_Err:
 End Function
 
 Private Sub NpcDamageNpc(ByVal Atacante As Integer, ByVal Victima As Integer)
-            On Error GoTo NpcDamageNpc_Err
-            Dim Damage As Integer
-    
-100         With NpcList(Atacante)
-102             Damage = RandomNumber(.Stats.MinHIT, .Stats.MaxHit)
-                Damage = Damage * NPCs.GetPhysicalDamageModifier(NpcList(Atacante))
-                Damage = Damage * NPCs.GetPhysicDamageReduction(NpcList(Victima))
-                If NPCs.DoDamageOrHeal(Victima, Atacante, eNpc, -Damage, e_phisical, 0) = eDead Then
-                    If Not IsValidUserRef(NpcList(Atacante).MaestroUser) Then
-                        .Movement = .flags.OldMovement
-116                     If LenB(.flags.AttackedBy) <> 0 Then
-118                         .Hostile = .flags.OldHostil
-                        End If
-                    End If
+    With NpcList(Atacante)
+        Call NpcDamageToNpc(Atacante, Victima, RandomNumber(.Stats.MinHIT, .Stats.MaxHit))
+    End With
+End Sub
+
+Public Sub NpcDamageToNpc(ByVal attackerIndex As Integer, ByVal TargetIndex As Integer, ByVal Damage As Integer)
+On Error GoTo NpcDamageNpc_Err
+100 With NpcList(attackerIndex)
+106     Damage = Damage * NPCs.GetPhysicalDamageModifier(NpcList(attackerIndex))
+110     Damage = Damage * NPCs.GetPhysicDamageReduction(NpcList(TargetIndex))
+        If NPCs.DoDamageOrHeal(TargetIndex, attackerIndex, eNpc, -Damage, e_phisical, 0) = eDead Then
+            If Not IsValidUserRef(NpcList(attackerIndex).MaestroUser) Then
+                .Movement = .flags.OldMovement
+116             If LenB(.flags.AttackedBy) <> 0 Then
+118                 .Hostile = .flags.OldHostil
                 End If
-            End With
-            Exit Sub
+            End If
+        End If
+    End With
+    Exit Sub
 NpcDamageNpc_Err:
-128         Call TraceError(Err.Number, Err.Description, "SistemaCombate.NpcDamageNpc")
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.NpcDamageNpc")
 End Sub
 
 Public Sub NpcAtacaNpc(ByVal Atacante As Integer, ByVal Victima As Integer, Optional ByVal cambiarMovimiento As Boolean = True)
@@ -1411,13 +1407,15 @@ UserDañoUser_Err:
 254     Call TraceError(Err.Number, Err.Description, "SistemaCombate.UserDañoUser", Erl)
 End Sub
 
-Public Sub DamagePlayer(ByVal AttackerIndex As Integer, ByVal TargetIndex As Integer, ByVal Damage As Long, ByVal Source As e_DamageSourceType, ByVal ObjIndex As Integer)
+Public Function UserDoDamageToUser(ByVal attackerIndex As Integer, ByVal TargetIndex As Integer, ByVal Damage As Long, ByVal Source As e_DamageSourceType, _
+                                    ByVal ObjIndex As Integer) As e_DamageResult
     Damage = Damage * UserMod.GetPhysicalDamageModifier(UserList(AttackerIndex))
 149 Damage = Damage * UserMod.GetPhysicDamageReduction(UserList(TargetIndex))
-240 If UserMod.DoDamageOrHeal(TargetIndex, AttackerIndex, e_ReferenceType.eUser, -Damage, Source, ObjIndex) = eStillAlive Then
-444     Call SendData(SendTarget.ToPCAliveArea, TargetIndex, PrepareMessagePlayWave(SND_IMPACTO, UserList(TargetIndex).pos.x, UserList(TargetIndex).pos.y))
+240 UserDoDamageToUser = UserMod.DoDamageOrHeal(TargetIndex, attackerIndex, e_ReferenceType.eUser, -Damage, Source, ObjIndex)
+154 If UserList(AtacanteIndex).ChatCombate = 1 Then
+156     Call WriteUserHittedUser(attackerIndex, RandomNumber(bCabeza, bTorso), UserList(TargetIndex).Char.charindex, PonerPuntos(Damage))
     End If
-End Sub
+End Function
 
 Private Sub DesequiparObjetoDeUnGolpe(ByVal AttackerIndex As Integer, ByVal VictimIndex As Integer, ByVal parteDelCuerpo As e_PartesCuerpo)
         On Error GoTo DesequiparObjetoDeUnGolpe_Err
@@ -1929,7 +1927,7 @@ Sub CalcularDarExp(ByVal UserIndex As Integer, ByVal npcIndex As Integer, ByVal 
         End If
 
 102     If UserList(UserIndex).Grupo.EnGrupo Then
-104         Call CalcularDarExpGrupal(userIndex, npcIndex, ElDaño)
+104         Call CalcularDarExpGrupal(UserIndex, npcIndex, ElDaño)
         Else
 
             Dim ExpaDar As Double
