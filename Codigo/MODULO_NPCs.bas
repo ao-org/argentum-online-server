@@ -1564,6 +1564,11 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
 424             Call AnimacionIdle(NpcIndex, True)
             End If
     
+            ' Si Moviment = 1 cargo animacion Idle si tiene
+            If .Movement = 1 And .Char.BodyIdle > 0 Then
+                Call AnimacionIdle(npcIndex, True)
+            End If
+            
             ' Si el tipo de movimiento es Caminata
 426         If .Movement = Caminata Then
                 ' Leemos la cantidad de indicaciones
