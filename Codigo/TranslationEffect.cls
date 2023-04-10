@@ -30,6 +30,13 @@ Public Sub Setup(ByVal SourceIndex As Integer, ByVal SourceType As e_ReferenceTy
                  ByVal EffectId As Integer, ByVal ID As Long)
     TimeSinceLastTick = 0
     TickCount = 0
+    If TargetType = eNpc Then
+        If IsSet(NpcList(TargetIndex).flags.EffectInmunity, e_Inmunities.eTranslation) Then
+            DotInfo.Removed = True
+            DotInfo.RemoveEffect = True
+            Exit Sub
+        End If
+    End If
     Call SetBaseDot(DotInfo, TargetIndex, TargetType, ID, EffectId)
     Call SetRef(Source, SourceIndex, SourceType)
     With EffectOverTime(EffectId)

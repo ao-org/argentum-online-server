@@ -47,7 +47,8 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
       Dim DamageStr As String
 
 100   If Spell = 0 Then Exit Sub
-
+      Dim IsAlive As Boolean
+      IsAlive = True
 102   With UserList(UserIndex)
 104     If .flags.Muerto Then Exit Sub
     
@@ -92,15 +93,26 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
             ' Resto el porcentaje total
 152         Damage = Damage - Porcentaje(Damage, PorcentajeRM)
           End If
+          Damage = Damage * NPCs.GetMagicDamageModifier(NpcList(npcIndex))
           Damage = Damage * UserMod.GetMagicDamageReduction(UserList(UserIndex))
 154       If Damage < 0 Then Damage = 0
-156       Call UserMod.DoDamageOrHeal(UserIndex, npcIndex, eNpc, -Damage, e_DamageSourceType.e_magic, Spell)
+156       IsAlive = UserMod.DoDamageOrHeal(UserIndex, npcIndex, eNpc, -Damage, e_DamageSourceType.e_magic, Spell) = eStillAlive
 157       DamageStr = PonerPuntos(Damage)
 158       Call WriteConsoleMsg(UserIndex, NpcList(npcIndex).name & " te ha quitado " & DamageStr & " puntos de vida.", e_FontTypeNames.FONTTYPE_FIGHT)
 162       Call SubirSkill(UserIndex, Resistencia)
           If NpcList(npcIndex).Char.CastAnimation > 0 Then Call SendData(SendTarget.ToNPCAliveArea, npcIndex, PrepareMessageCharAtaca(NpcList(npcIndex).Char.charindex, UserList(UserIndex).Char.charindex, DamageStr, NpcList(npcIndex).Char.CastAnimation))
         End If
-
+        If IsAlive Then
+            Dim Effect As IBaseEffectOverTime
+            If Hechizos(Spell).EotId > 0 Then
+                Set Effect = FindEffectOnTarget(npcIndex, UserList(UserIndex).EffectOverTime, Hechizos(Spell).EotId)
+                If Effect Is Nothing Then
+                    Call CreateEffect(npcIndex, eNpc, UserIndex, eUser, Hechizos(Spell).EotId)
+                Else
+                    Call Effect.Reset(npcIndex, eNpc, Hechizos(Spell).EotId)
+                End If
+            End If
+        End If
         'Mana
 170     If Hechizos(Spell).SubeMana = 1 Then
 172       Damage = RandomNumber(Hechizos(Spell).MinMana, Hechizos(Spell).MaxMana)
@@ -245,7 +257,8 @@ Sub NpcLanzaSpellSobreNpc(ByVal NpcIndex As Integer, ByVal TargetNPC As Integer,
 
       Dim Damage As Integer
       Dim DamageStr As String
-
+      Dim IsAlive As Boolean
+      IsAlive = True
 100   With NpcList(TargetNPC)
   
 102     .Contadores.IntervaloLanzarHechizo = GetTickCount()
@@ -267,9 +280,11 @@ Sub NpcLanzaSpellSobreNpc(ByVal NpcIndex As Integer, ByVal TargetNPC As Integer,
 
 122     ElseIf Hechizos(Spell).SubeHP = 2 Then
 124       Damage = RandomNumber(Hechizos(Spell).MinHp, Hechizos(Spell).MaxHp)
+          Damage = Damage * NPCs.GetMagicDamageModifier(NpcList(npcIndex))
+          Damage = Damage * NPCs.GetMagicDamageReduction(NpcList(TargetNPC))
 126       Call SendData(SendTarget.ToNPCAliveArea, TargetNPC, PrepareMessagePlayWave(Hechizos(Spell).wav, .Pos.X, .Pos.y))
 128       Call SendData(SendTarget.ToNPCAliveArea, TargetNPC, PrepareMessageCreateFX(.Char.charindex, Hechizos(Spell).FXgrh, Hechizos(Spell).loops))
-130       Call NPCs.DoDamageOrHeal(TargetNPC, npcIndex, eNpc, -Damage, e_DamageSourceType.e_magic, Spell)
+130       IsAlive = NPCs.DoDamageOrHeal(TargetNPC, npcIndex, eNpc, -Damage, e_DamageSourceType.e_magic, Spell) = eStillAlive
 134       If .NPCtype = DummyTarget Then
 136         Call DummyTargetAttacked(TargetNPC)
           End If
@@ -310,6 +325,17 @@ Sub NpcLanzaSpellSobreNpc(ByVal NpcIndex As Integer, ByVal TargetNPC As Integer,
 
 204         .flags.Incinerado = 1
           End If
+        End If
+        If IsAlive Then
+            Dim Effect As IBaseEffectOverTime
+            If Hechizos(Spell).EotId > 0 Then
+                Set Effect = FindEffectOnTarget(npcIndex, NpcList(TargetNPC).EffectOverTime, Hechizos(Spell).EotId)
+                If Effect Is Nothing Then
+                    Call CreateEffect(npcIndex, eNpc, TargetNPC, eNpc, Hechizos(Spell).EotId)
+                Else
+                    Call Effect.Reset(npcIndex, eNpc, Hechizos(Spell).EotId)
+                End If
+            End If
         End If
       End With
 

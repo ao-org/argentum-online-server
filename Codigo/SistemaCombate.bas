@@ -544,7 +544,9 @@ On Error GoTo UserDamageNpc_Err
             NpcDef = max(0, NpcList(npcIndex).Stats.def - GetArmorPenetration(UserIndex, NpcList(npcIndex).Stats.def))
             ' Defensa del NPC
 116         damage = DamageBase - NpcDef
+149
             Damage = Damage * UserMod.GetPhysicalDamageModifier(UserList(UserIndex))
+            Damage = Damage * NPCs.GetPhysicDamageReduction(NpcList(npcIndex))
 118         If Damage < 0 Then Damage = 0
             ' Mostramos en consola el golpe
 120         If .ChatCombate = 1 Then
@@ -702,6 +704,7 @@ Private Function NpcDamage(ByVal npcIndex As Integer, ByVal UserIndex As Integer
         End Select
         
 140     Damage = Damage - absorbido - defbarco - defMontura
+        Damage = Damage * NPCs.GetPhysicalDamageModifier(NpcList(npcIndex))
 141     Damage = Damage * UserMod.GetPhysicDamageReduction(UserList(UserIndex))
 142     If Damage < 0 Then Damage = 0
 
@@ -819,6 +822,8 @@ Private Sub NpcDamageNpc(ByVal Atacante As Integer, ByVal Victima As Integer)
     
 100         With NpcList(Atacante)
 102             Damage = RandomNumber(.Stats.MinHIT, .Stats.MaxHit)
+                Damage = Damage * NPCs.GetPhysicalDamageModifier(NpcList(Atacante))
+                Damage = Damage * NPCs.GetPhysicDamageReduction(NpcList(Victima))
                 If NPCs.DoDamageOrHeal(Victima, Atacante, eNpc, -Damage, e_phisical, 0) = eDead Then
                     If Not IsValidUserRef(NpcList(Atacante).MaestroUser) Then
                         .Movement = .flags.OldMovement
@@ -1308,7 +1313,7 @@ Private Sub UserDamageToUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex 
                 ' Si acertó
 164             If RandomNumber(1, 100) <= ProbabilidadGolpeCritico(AtacanteIndex) Then
                     ' Daño del golpe crítico (usamos el daño base)
-166                 BonusDamage = damage * ModDañoGolpeCritico
+166                 BonusDamage = Damage * ModDañoGolpeCritico
 
 168                 DamageStr = PonerPuntos(BonusDamage)
 

@@ -125,7 +125,7 @@ Public Sub CrearReto(ByVal UserIndex As Integer, JugadoresStr As String, ByVal A
 156                     tIndex = NameIndex(Jugadores(i))
                                                                                 
 158                     If Not IsValidUserRef(tIndex) Then
-160                         Call WriteConsoleMsg(UserIndex, "El usuario " & Jugadores(i) & " no está conectado.", e_FontTypeNames.FONTTYPE_INFO)
+160                         Call WriteConsoleMsg(UserIndex, "El usuario " & Jugadores(i) & " no puede jugar un reto en este momento.", e_FontTypeNames.FONTTYPE_INFO)
                             Exit Sub
                         End If
                     
