@@ -139,6 +139,10 @@ End Sub
 Public Sub IBaseEffectOverTime_TargetWasDamaged(ByVal SourceUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
 End Sub
 
+Public Property Get IBaseEffectOverTime_KeepAfterDead() As Boolean
+    IBaseEffectOverTime_KeepAfterDead = False
+End Property
+
 Public Sub PerformAction()
     Dim TickMana As Long
     TickMana = RandomNumber(DotManaMin, DotManaMax)

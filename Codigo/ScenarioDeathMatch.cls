@@ -278,9 +278,11 @@ End Sub
 
 Public Sub IBaseScenario_PlayerKillPlayer(ByVal killerIndex As Integer, ByVal deadIndex As Integer, ByVal sourceType As e_DamageSourceType, ByVal sourceIndex As Integer)
     Call Board.UpdatePlayerScore(deadIndex, -1)
-    If Board.UpdatePlayerScore(killerIndex, 3) >= TargetScore Then
-        Call SendData(SendTarget.toMap, MapNumber, PrepareMessageConsoleMsg("Tenemos un ganador!", e_FontTypeNames.FONTTYPE_GUILD))
-        Call MatchCompleted
+    If killerIndex <> deadIndex Then
+        If Board.UpdatePlayerScore(killerIndex, 3) >= TargetScore Then
+            Call SendData(SendTarget.toMap, MapNumber, PrepareMessageConsoleMsg("Tenemos un ganador!", e_FontTypeNames.FONTTYPE_GUILD))
+            Call MatchCompleted
+        End If
     End If
     Dim RespawnInfo As clsRespawnInfo
     Set RespawnInfo = New clsRespawnInfo

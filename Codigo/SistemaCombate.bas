@@ -634,39 +634,29 @@ UserDamageNpc_Err:
      Call TraceError(Err.Number, Err.Description, "SistemaCombate.UserDañoNpc", Erl)
 End Sub
 
-Public Sub UserDamageToNpc(ByVal AttackerIndex As Integer, ByVal TargetIndex As Integer, ByVal Damage As Long, ByVal Source As e_DamageSourceType, ByVal ObjIndex As Integer)
+Public Function UserDamageToNpc(ByVal attackerIndex As Integer, ByVal TargetIndex As Integer, ByVal Damage As Long, ByVal Source As e_DamageSourceType, ByVal ObjIndex As Integer) As e_DamageResult
     Damage = Damage * UserMod.GetPhysicalDamageModifier(UserList(AttackerIndex))
 149 Damage = Damage * NPCs.GetPhysicDamageReduction(NpcList(TargetIndex))
-240 If NPCs.DoDamageOrHeal(TargetIndex, AttackerIndex, e_ReferenceType.eUser, -Damage, Source, ObjIndex) = eStillAlive Then
-        If NpcList(TargetIndex).flags.Snd2 > 0 Then
-            Call SendData(SendTarget.ToNPCAliveArea, TargetIndex, PrepareMessagePlayWave(NpcList(TargetIndex).flags.Snd2, NpcList(TargetIndex).pos.x, NpcList(TargetIndex).pos.y))
-        Else
-            Call SendData(SendTarget.ToNPCAliveArea, TargetIndex, PrepareMessagePlayWave(SND_IMPACTO2, NpcList(TargetIndex).pos.x, NpcList(TargetIndex).pos.y))
-        End If
+240 UserDamageToNpc = NPCs.DoDamageOrHeal(TargetIndex, attackerIndex, e_ReferenceType.eUser, -Damage, Source, ObjIndex)
+120 If UserList(AttackerIndex).ChatCombate = 1 Then
+122     Call WriteLocaleMsg(AttackerIndex, 382, e_FontTypeNames.FONTTYPE_FIGHT, PonerPuntos(Damage))
     End If
-End Sub
+End Function
 
 Private Function NpcDamage(ByVal npcIndex As Integer, ByVal UserIndex As Integer) As Long
-        
-        On Error GoTo NpcDamage_Err
+    On Error GoTo NpcDamage_Err
         
         NpcDamage = -1
-        
         Dim Damage As Integer, Lugar As Integer, absorbido As Integer
-
         Dim defbarco As Integer
-
         Dim obj As t_ObjData
-    
 100     Damage = RandomNumber(NpcList(npcIndex).Stats.MinHIT, NpcList(npcIndex).Stats.MaxHit)
-    
 104     If UserList(UserIndex).flags.Navegando = 1 And UserList(UserIndex).Invent.BarcoObjIndex > 0 Then
 106         obj = ObjData(UserList(UserIndex).Invent.BarcoObjIndex)
 108         defbarco = RandomNumber(obj.MinDef, obj.MaxDef)
         End If
     
         Dim defMontura As Integer
-
 110     If UserList(UserIndex).flags.Montado = 1 And UserList(UserIndex).Invent.MonturaObjIndex > 0 Then
 112         obj = ObjData(UserList(UserIndex).Invent.MonturaObjIndex)
 114         defMontura = RandomNumber(obj.MinDef, obj.MaxDef)
@@ -677,7 +667,6 @@ Private Function NpcDamage(ByVal npcIndex As Integer, ByVal UserIndex As Integer
 118     Select Case Lugar
             ' 1/6 de chances de que sea a la cabeza
             Case e_PartesCuerpo.bCabeza
-
                 'Si tiene casco absorbe el golpe
 120             If UserList(UserIndex).Invent.CascoEqpObjIndex > 0 Then
                     Dim Casco As t_ObjData
@@ -686,7 +675,6 @@ Private Function NpcDamage(ByVal npcIndex As Integer, ByVal UserIndex As Integer
                 End If
 
 126         Case Else
-
                 'Si tiene armadura absorbe el golpe
 128             If UserList(UserIndex).Invent.ArmourEqpObjIndex > 0 Then
                     Dim Armadura As t_ObjData
@@ -700,7 +688,6 @@ Private Function NpcDamage(ByVal npcIndex As Integer, ByVal UserIndex As Integer
 136                 Escudo = ObjData(UserList(UserIndex).Invent.EscudoEqpObjIndex)
 138                 absorbido = absorbido + RandomNumber(Escudo.MinDef, Escudo.MaxDef)
                 End If
-
         End Select
         
 140     Damage = Damage - absorbido - defbarco - defMontura
@@ -726,6 +713,12 @@ Private Function NpcDamage(ByVal npcIndex As Integer, ByVal UserIndex As Integer
 NpcDamage_Err:
 182     Call TraceError(Err.Number, Err.Description, "SistemaCombate.NpcDamage", Erl)
 End Function
+
+Public Sub NpcDoDamageToUser(ByVal attackerIndex As Integer, ByVal TargetIndex As Integer, ByVal Damage As Long, ByVal Source As e_DamageSourceType, ByVal ObjIndex As Integer)
+    Damage = Damage * NPCs.GetPhysicalDamageModifier(NpcList(attackerIndex))
+149 Damage = Damage * UserMod.GetPhysicDamageReduction(UserList(TargetIndex))
+    Call UserMod.DoDamageOrHeal(TargetIndex, attackerIndex, e_ReferenceType.eNpc, -Damage, Source, ObjIndex)
+End Sub
 
 Public Function NpcAtacaUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer, ByVal Heading As e_Heading) As Boolean
         
@@ -817,25 +810,28 @@ NpcImpactoNpc_Err:
 End Function
 
 Private Sub NpcDamageNpc(ByVal Atacante As Integer, ByVal Victima As Integer)
-            On Error GoTo NpcDamageNpc_Err
-            Dim Damage As Integer
-    
-100         With NpcList(Atacante)
-102             Damage = RandomNumber(.Stats.MinHIT, .Stats.MaxHit)
-                Damage = Damage * NPCs.GetPhysicalDamageModifier(NpcList(Atacante))
-                Damage = Damage * NPCs.GetPhysicDamageReduction(NpcList(Victima))
-                If NPCs.DoDamageOrHeal(Victima, Atacante, eNpc, -Damage, e_phisical, 0) = eDead Then
-                    If Not IsValidUserRef(NpcList(Atacante).MaestroUser) Then
-                        .Movement = .flags.OldMovement
-116                     If LenB(.flags.AttackedBy) <> 0 Then
-118                         .Hostile = .flags.OldHostil
-                        End If
-                    End If
+    With NpcList(Atacante)
+        Call NpcDamageToNpc(Atacante, Victima, RandomNumber(.Stats.MinHIT, .Stats.MaxHit))
+    End With
+End Sub
+
+Public Sub NpcDamageToNpc(ByVal attackerIndex As Integer, ByVal TargetIndex As Integer, ByVal Damage As Integer)
+On Error GoTo NpcDamageNpc_Err
+100 With NpcList(attackerIndex)
+106     Damage = Damage * NPCs.GetPhysicalDamageModifier(NpcList(attackerIndex))
+110     Damage = Damage * NPCs.GetPhysicDamageReduction(NpcList(TargetIndex))
+        If NPCs.DoDamageOrHeal(TargetIndex, attackerIndex, eNpc, -Damage, e_phisical, 0) = eDead Then
+            If Not IsValidUserRef(NpcList(attackerIndex).MaestroUser) Then
+                .Movement = .flags.OldMovement
+116             If LenB(.flags.AttackedBy) <> 0 Then
+118                 .Hostile = .flags.OldHostil
                 End If
-            End With
-            Exit Sub
+            End If
+        End If
+    End With
+    Exit Sub
 NpcDamageNpc_Err:
-128         Call TraceError(Err.Number, Err.Description, "SistemaCombate.NpcDamageNpc")
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.NpcDamageNpc")
 End Sub
 
 Public Sub NpcAtacaNpc(ByVal Atacante As Integer, ByVal Victima As Integer, Optional ByVal cambiarMovimiento As Boolean = True)
@@ -1411,13 +1407,15 @@ UserDañoUser_Err:
 254     Call TraceError(Err.Number, Err.Description, "SistemaCombate.UserDañoUser", Erl)
 End Sub
 
-Public Sub DamagePlayer(ByVal AttackerIndex As Integer, ByVal TargetIndex As Integer, ByVal Damage As Long, ByVal Source As e_DamageSourceType, ByVal ObjIndex As Integer)
+Public Function UserDoDamageToUser(ByVal attackerIndex As Integer, ByVal TargetIndex As Integer, ByVal Damage As Long, ByVal Source As e_DamageSourceType, _
+                                    ByVal ObjIndex As Integer) As e_DamageResult
     Damage = Damage * UserMod.GetPhysicalDamageModifier(UserList(AttackerIndex))
 149 Damage = Damage * UserMod.GetPhysicDamageReduction(UserList(TargetIndex))
-240 If UserMod.DoDamageOrHeal(TargetIndex, AttackerIndex, e_ReferenceType.eUser, -Damage, Source, ObjIndex) = eStillAlive Then
-444     Call SendData(SendTarget.ToPCAliveArea, TargetIndex, PrepareMessagePlayWave(SND_IMPACTO, UserList(TargetIndex).pos.x, UserList(TargetIndex).pos.y))
+240 UserDoDamageToUser = UserMod.DoDamageOrHeal(TargetIndex, attackerIndex, e_ReferenceType.eUser, -Damage, Source, ObjIndex)
+154 If UserList(AttackerIndex).ChatCombate = 1 Then
+156     Call WriteUserHittedUser(attackerIndex, RandomNumber(bCabeza, bTorso), UserList(TargetIndex).Char.charindex, PonerPuntos(Damage))
     End If
-End Sub
+End Function
 
 Private Sub DesequiparObjetoDeUnGolpe(ByVal AttackerIndex As Integer, ByVal VictimIndex As Integer, ByVal parteDelCuerpo As e_PartesCuerpo)
         On Error GoTo DesequiparObjetoDeUnGolpe_Err
@@ -1580,7 +1578,7 @@ Public Function PuedeAtacar(ByVal AttackerIndex As Integer, ByVal VictimIndex As
         
         ' No podes atacar si estas en consulta
 120     If UserList(AttackerIndex).flags.EnConsulta Then
-122         Call WriteConsoleMsg(attackerIndex, "No podés atacar usuarios mientras estás en consulta.", e_FontTypeNames.FONTTYPE_INFO)
+122         Call WriteConsoleMsg(AttackerIndex, "No podés atacar usuarios mientras estás en consulta.", e_FontTypeNames.FONTTYPE_INFO)
 124         PuedeAtacar = False
             Exit Function
     
@@ -1588,21 +1586,21 @@ Public Function PuedeAtacar(ByVal AttackerIndex As Integer, ByVal VictimIndex As
         
         ' No podes atacar si esta en consulta
 126     If UserList(VictimIndex).flags.EnConsulta Then
-128         Call WriteConsoleMsg(attackerIndex, "No podés atacar usuarios mientras estan en consulta.", e_FontTypeNames.FONTTYPE_INFO)
+128         Call WriteConsoleMsg(AttackerIndex, "No podés atacar usuarios mientras estan en consulta.", e_FontTypeNames.FONTTYPE_INFO)
 130         PuedeAtacar = False
             Exit Function
     
         End If
         
 132     If UserList(AttackerIndex).flags.Maldicion = 1 Then
-134         Call WriteConsoleMsg(attackerIndex, "¡Estás maldito! No podes atacar.", e_FontTypeNames.FONTTYPE_INFO)
+134         Call WriteConsoleMsg(AttackerIndex, "¡Estás maldito! No podes atacar.", e_FontTypeNames.FONTTYPE_INFO)
 136         PuedeAtacar = False
             Exit Function
 
         End If
         
 138     If UserList(AttackerIndex).flags.Montado = 1 Then
-140         Call WriteConsoleMsg(attackerIndex, "No podés atacar usando una montura.", e_FontTypeNames.FONTTYPE_INFO)
+140         Call WriteConsoleMsg(AttackerIndex, "No podés atacar usando una montura.", e_FontTypeNames.FONTTYPE_INFO)
 142         PuedeAtacar = False
             Exit Function
 
@@ -1669,7 +1667,7 @@ Public Function PuedeAtacar(ByVal AttackerIndex As Integer, ByVal VictimIndex As
         If esArmada(AttackerIndex) Then
             ' Si ataca otro armada
             If esArmada(VictimIndex) Then
-                Call WriteConsoleMsg(attackerIndex, "Los miembros del Ejercito Real tienen prohibido atacarse entre sí.", e_FontTypeNames.FONTTYPE_WARNING)
+                Call WriteConsoleMsg(AttackerIndex, "Los miembros del Ejercito Real tienen prohibido atacarse entre sí.", e_FontTypeNames.FONTTYPE_WARNING)
                 PuedeAtacar = False
                 Exit Function
             ' Si ataca un ciudadano
@@ -1685,17 +1683,17 @@ Public Function PuedeAtacar(ByVal AttackerIndex As Integer, ByVal VictimIndex As
             If (esCiudadano(AttackerIndex)) Then
                 If (UserList(AttackerIndex).flags.Seguro) Then
 176                 If esCiudadano(VictimIndex) Then
-178                     Call WriteConsoleMsg(attackerIndex, "No podés atacar ciudadanos, para hacerlo debes desactivar el seguro.", e_FontTypeNames.FONTTYPE_WARNING)
+178                     Call WriteConsoleMsg(AttackerIndex, "No podés atacar ciudadanos, para hacerlo debes desactivar el seguro.", e_FontTypeNames.FONTTYPE_WARNING)
 180                     PuedeAtacar = False
                         Exit Function
                     ElseIf esArmada(VictimIndex) Then
-                        Call WriteConsoleMsg(attackerIndex, "No podés atacar miembros del Ejercito Real, para hacerlo debes desactivar el seguro.", e_FontTypeNames.FONTTYPE_WARNING)
+                        Call WriteConsoleMsg(AttackerIndex, "No podés atacar miembros del Ejercito Real, para hacerlo debes desactivar el seguro.", e_FontTypeNames.FONTTYPE_WARNING)
                         PuedeAtacar = False
                         Exit Function
                     End If
                 End If
             ElseIf esCaos(AttackerIndex) And esCaos(VictimIndex) Then
-192             Call WriteConsoleMsg(attackerIndex, "Los miembros de las Fuerzas del Caos no se pueden atacar entre sí.", e_FontTypeNames.FONTTYPE_WARNING)
+192             Call WriteConsoleMsg(AttackerIndex, "Los miembros de las Fuerzas del Caos no se pueden atacar entre sí.", e_FontTypeNames.FONTTYPE_WARNING)
 194             PuedeAtacar = False
                 Exit Function
             End If
@@ -1774,7 +1772,7 @@ Public Function PuedeAtacarNPC(ByVal AttackerIndex As Integer, ByVal NpcIndex As
         End If
              
 106     If UserList(AttackerIndex).flags.Montado = 1 Then
-108         Call WriteConsoleMsg(attackerIndex, "No podés atacar usando una montura.", e_FontTypeNames.FONTTYPE_INFO)
+108         Call WriteConsoleMsg(AttackerIndex, "No podés atacar usando una montura.", e_FontTypeNames.FONTTYPE_INFO)
 110         PuedeAtacarNPC = False
             Exit Function
 
@@ -1805,7 +1803,7 @@ Public Function PuedeAtacarNPC(ByVal AttackerIndex As Integer, ByVal NpcIndex As
         'Es una criatura atacable?
 128     If NpcList(NpcIndex).Attackable = 0 Then
             'No es una criatura atacable
-130         Call WriteConsoleMsg(attackerIndex, "No podés atacar esta criatura.", e_FontTypeNames.FONTTYPE_INFO)
+130         Call WriteConsoleMsg(AttackerIndex, "No podés atacar esta criatura.", e_FontTypeNames.FONTTYPE_INFO)
 132         PuedeAtacarNPC = False
             Exit Function
 
@@ -1826,7 +1824,7 @@ Public Function PuedeAtacarNPC(ByVal AttackerIndex As Integer, ByVal NpcIndex As
 140     If esArmada(AttackerIndex) Or esCaos(AttackerIndex) Then
             ' Y el NPC pertenece a la misma faccion
 142         If NpcList(NpcIndex).flags.Faccion = UserList(AttackerIndex).Faccion.Status Then
-144             Call WriteConsoleMsg(attackerIndex, "No podés atacar NPCs de tu misma facción, para hacerlo debes desenlistarte.", e_FontTypeNames.FONTTYPE_INFO)
+144             Call WriteConsoleMsg(AttackerIndex, "No podés atacar NPCs de tu misma facción, para hacerlo debes desenlistarte.", e_FontTypeNames.FONTTYPE_INFO)
 146             PuedeAtacarNPC = False
                 Exit Function
             End If
@@ -1834,7 +1832,7 @@ Public Function PuedeAtacarNPC(ByVal AttackerIndex As Integer, ByVal NpcIndex As
             ' Si es una mascota, checkeamos en el Maestro
 148         If IsPet Then
 150             If UserList(NpcList(npcIndex).MaestroUser.ArrayIndex).Faccion.Status = UserList(attackerIndex).Faccion.Status Then
-152                 Call WriteConsoleMsg(attackerIndex, "No podés atacar NPCs de tu misma facción, para hacerlo debes desenlistarte.", e_FontTypeNames.FONTTYPE_INFO)
+152                 Call WriteConsoleMsg(AttackerIndex, "No podés atacar NPCs de tu misma facción, para hacerlo debes desenlistarte.", e_FontTypeNames.FONTTYPE_INFO)
 154                 PuedeAtacarNPC = False
                     Exit Function
                 End If
@@ -1929,7 +1927,7 @@ Sub CalcularDarExp(ByVal UserIndex As Integer, ByVal npcIndex As Integer, ByVal 
         End If
 
 102     If UserList(UserIndex).Grupo.EnGrupo Then
-104         Call CalcularDarExpGrupal(userIndex, npcIndex, ElDaño)
+104         Call CalcularDarExpGrupal(UserIndex, npcIndex, ElDaño)
         Else
 
             Dim ExpaDar As Double

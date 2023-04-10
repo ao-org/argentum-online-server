@@ -197,4 +197,7 @@ Private Sub TranslateTo(ByRef TargetPos As t_WorldPos)
     End If
 End Sub
 
+Public Property Get IBaseEffectOverTime_KeepAfterDead() As Boolean
+    IBaseEffectOverTime_KeepAfterDead = False
+End Property
 

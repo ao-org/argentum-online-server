@@ -13,10 +13,16 @@ Public Sub InitializePools()
 On Error GoTo InitializePools_Err
     Dim i As Integer
     Dim j As Integer
+    Dim InitialSize As Integer
+    If RunningInVB() Then
+        InitialSize = 20
+    Else
+        InitialSize = INITIAL_POOL_SIZE
+    End If
 100 ReDim EffectPools(1 To e_EffectOverTimeType.EffectTypeCount - 1) As t_EffectOverTimeList
 102 For i = 1 To e_EffectOverTimeType.EffectTypeCount - 1
-104     ReDim EffectPools(i).EffectList(INITIAL_POOL_SIZE) As IBaseEffectOverTime
-106     For j = 0 To INITIAL_POOL_SIZE
+104     ReDim EffectPools(i).EffectList(InitialSize) As IBaseEffectOverTime
+106     For j = 0 To InitialSize
 108         Call AddEffect(EffectPools(i), InstantiateEOT(i))
 110     Next j
     Next i
@@ -227,6 +233,26 @@ CreateTrap_Err:
       Call TraceError(Err.Number, Err.Description, "EffectsOverTime.CreateTrap", Erl)
 End Sub
 
+Public Sub CreateDelayedBlast(ByVal SourceIndex As Integer, ByVal SourceType As e_ReferenceType, ByVal Map As Integer, ByVal TileX As Integer, _
+                              ByVal TileY As Integer, ByVal EffectTypeId As Integer, ByVal SourceObjIndex As Integer)
+On Error GoTo CreateDelayedBlast_Err
+    Dim EffectType As e_EffectOverTimeType
+100 EffectType = e_EffectOverTimeType.eDelayedBlast
+    Dim Blast As DelayedBlast
+104 Set Blast = GetEOT(EffectType)
+106 UniqueIdCounter = GetNextId()
+108 Call Blast.Setup(SourceIndex, SourceType, EffectTypeId, UniqueIdCounter, Map, TileX, TileY, SourceObjIndex)
+110 Call AddEffectToUpdate(Blast)
+112 If SourceType = eUser Then
+114     Call AddEffect(UserList(SourceIndex).EffectOverTime, Blast)
+116 ElseIf SourceType = eNpc Then
+118     Call AddEffect(NpcList(SourceIndex).EffectOverTime, Blast)
+    End If
+    Exit Sub
+CreateDelayedBlast_Err:
+      Call TraceError(Err.Number, Err.Description, "EffectsOverTime.CreateTrap", Erl)
+End Sub
+
 Private Function InstantiateEOT(ByVal EffectType As e_EffectOverTimeType) As IBaseEffectOverTime
     Select Case EffectType
         Case e_EffectOverTimeType.eHealthModifier
@@ -251,6 +277,8 @@ Private Function InstantiateEOT(ByVal EffectType As e_EffectOverTimeType) As IBa
             Set InstantiateEOT = New ApplyEffectToParty
         Case e_EffectOverTimeType.ePullTarget
             Set InstantiateEOT = New AttrackEffect
+        Case e_EffectOverTimeType.eDelayedBlast
+            Set InstantiateEOT = New DelayedBlast
         Case Else
             Debug.Assert False
     End Select
@@ -352,11 +380,12 @@ FindEffectOnTarget_Err:
       Call TraceError(Err.Number, Err.Description, "EffectsOverTime.FindEffectOnTarget", Erl)
 End Function
 
-Public Sub ClearEffectList(ByRef EffectList As t_EffectOverTimeList, Optional ByVal Filter As e_EffectType = e_EffectType.eAny)
+Public Sub ClearEffectList(ByRef EffectList As t_EffectOverTimeList, Optional ByVal Filter As e_EffectType = e_EffectType.eAny, Optional ByVal ClearForDeath As Boolean = False)
 On Error GoTo ClearEffectList_Err
     Dim i As Integer
 100 Do While i < EffectList.EffectCount
-102     If Filter = e_EffectType.eAny Or Filter = EffectList.EffectList(i).EffectType Then
+102     If (Filter = e_EffectType.eAny Or Filter = EffectList.EffectList(i).EffectType) And _
+           Not (ClearForDeath And EffectList.EffectList(i).KeepAfterDead()) Then
 104         EffectList.EffectList(i).RemoveMe = True
             Call RemoveEffectAtPos(EffectList, i)
         Else

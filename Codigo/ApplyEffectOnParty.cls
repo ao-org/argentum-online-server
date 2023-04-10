@@ -188,3 +188,7 @@ Private Sub ApplyEffectTo(ByVal TargetId As Integer, ByVal TargetType As e_Refer
         End If
     End If
 End Sub
+
+Public Property Get IBaseEffectOverTime_KeepAfterDead() As Boolean
+    IBaseEffectOverTime_KeepAfterDead = False
+End Property

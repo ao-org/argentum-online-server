@@ -25,7 +25,7 @@ Attribute VB_Name = "ES"
 'Argentum Online is based on Baronsoft's VB6 Online RPG
 'You can contact the original creator of ORE at aaron@baronsoft.com
 'for more information about ORE please visit http://www.baronsoft.com/
-'
+'MinHIT
 '
 'You can contact me at:
 'morgolock@speedy.com.ar
@@ -1441,6 +1441,10 @@ Sub LoadOBJData()
 420                         Next i
 
                         End If
+                    Case e_OBJType.otUsableOntarget
+                        .MaxHit = val(Leer.GetValue(ObjKey, "MaxHIT"))
+                        .MinHIT = val(Leer.GetValue(ObjKey, "MinHIT"))
+                        .Proyectil = val(Leer.GetValue(ObjKey, "Proyectil"))
                 
 422                 Case e_OBJType.otDañoMagico
 424                     .MagicDamageBonus = val(Leer.GetValue(ObjKey, "MagicDamageBonus"))

@@ -142,6 +142,10 @@ Private Sub SetPosition(ByVal map As Integer, ByVal posX As Integer, ByVal posY 
     Call modSendData.SendToAreaByPos(map, posX, posY, PrepareTrapUpdate(1, posX, posY))
 End Sub
 
+Public Property Get IBaseEffectOverTime_KeepAfterDead() As Boolean
+    IBaseEffectOverTime_KeepAfterDead = True
+End Property
+
 Private Sub RemoveFromMap()
     Set MapData(mWorldPosition.map, mWorldPosition.x, mWorldPosition.y).Trap = Nothing
     Call modSendData.SendToAreaByPos(mWorldPosition.map, mWorldPosition.x, mWorldPosition.y, PrepareTrapUpdate(0, mWorldPosition.x, mWorldPosition.y))
@@ -218,3 +222,4 @@ End Property
 Public Sub Disable()
     mDotInfo.RemoveEffect = True
 End Sub
+

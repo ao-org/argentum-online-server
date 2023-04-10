@@ -79,3 +79,6 @@ End Sub
 Public Sub TargetWasDamaged(ByVal SourceUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
 End Sub
 
+Public Property Get KeepAfterDead() As Boolean
+End Property
+
