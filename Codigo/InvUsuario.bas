@@ -717,28 +717,22 @@ MeterItemEnInventario_Err:
     Call TraceError(Err.Number, Err.Description, "InvUsuario.MeterItemEnInventario", Erl)
 End Function
 
-Function HayLugarEnInventario(ByVal UserIndex As Integer) As Boolean
-
-        On Error GoTo HayLugarEnInventario_err
- 
+Function HayLugarEnInventario(ByVal UserIndex As Integer, ByVal TargetItemIndex As Integer, ByVal ItemCount) As Boolean
+On Error GoTo HayLugarEnInventario_err
         Dim X    As Integer
-
         Dim Y    As Integer
-
         Dim Slot As Byte
-
 100     Slot = 1
 
-102     Do Until UserList(UserIndex).Invent.Object(Slot).ObjIndex = 0
+102     Do Until UserList(UserIndex).invent.Object(Slot).ObjIndex = 0 Or _
+            (UserList(UserIndex).invent.Object(Slot).ObjIndex = TargetItemIndex And UserList(UserIndex).invent.Object(Slot).amount + ItemCount < 10000)
 104         Slot = Slot + 1
 106         If Slot > UserList(UserIndex).CurrentInventorySlots Then
 108             HayLugarEnInventario = False
                 Exit Function
             End If
         Loop
-        
 110     HayLugarEnInventario = True
-
         Exit Function
 HayLugarEnInventario_err:
     Call TraceError(Err.Number, Err.Description, "InvUsuario.HayLugarEnInventario", Erl)
