@@ -89,6 +89,13 @@ Public Property Get IBaseEffectOverTime_EffectType() As e_EffectType
     IBaseEffectOverTime_EffectType = EffectOverTime(DotInfo.EotId).buffType
 End Property
 
+Public Sub IBaseEffectOverTime_TargetWillAttackPosition(ByVal Map As Integer, ByVal PosX As Integer, ByVal PosY As Integer)
+End Sub
+
+Public Property Get IBaseEffectOverTime_CallBacksMask() As Long
+    IBaseEffectOverTime_CallBacksMask = 0
+End Property
+
 Public Sub IBaseEffectOverTime_Update(ByVal deltaTime As Long)
     If TickCount >= TargetTicks Or Not IsValidRef(DotInfo.TargetRef) Or Not IsValidRef(Source) Then
         DotInfo.RemoveEffect = True

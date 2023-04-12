@@ -64,21 +64,32 @@ End Sub
 Public Sub OnRemove()
 End Sub
 
+'called when the owner of the effect cast any spell
 Public Sub TargetUseMagic(ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal MagicId As Integer)
 End Sub
 
+'called when the owner of the effect is attacking some target it should handle a ditHit or FailedAttack after this call
 Public Sub TartgetWillAtack(ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
 End Sub
 
+'called when the owner of the effect hit something
 Public Sub TartgetDidHit(ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
 End Sub
 
+'called when the owner of the effect fails and attacks
 Public Sub TargetFailedAttack(ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
 End Sub
 
+'called when the owner of the effect is damaged
 Public Sub TargetWasDamaged(ByVal SourceUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
+End Sub
+
+'called when the owner of the effect attack a position (like a player attack anything infornt of him)
+Public Sub TargetWillAttackPosition(ByVal Map As Integer, ByVal PosX As Integer, ByVal PosY As Integer)
 End Sub
 
 Public Property Get KeepAfterDead() As Boolean
 End Property
 
+Public Property Get CallBacksMask() As Long
+End Property

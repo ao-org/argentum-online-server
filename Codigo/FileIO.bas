@@ -1459,6 +1459,7 @@ Sub LoadOBJData()
                     Case e_OBJType.otUsableOntarget
                         .EfectoMagico = val(Leer.GetValue(ObjKey, "efectomagico"))
                 End Select
+                .EfectoMagico = val(Leer.GetValue(ObjKey, "EfectoMagico"))
                 .ProjectileType = val(Leer.GetValue(ObjKey, "ProjectileType"))
 436             .MinSkill = val(Leer.GetValue(ObjKey, "MinSkill"))
 
@@ -1773,7 +1774,7 @@ Sub LoadMapData()
 
         If RunningInVB() Then
                 'VB runs out of memory when debugging
-                NumMaps = 600
+                NumMaps = 500
         Else
                 NumMaps = CountFiles(MapPath, "*.csm") - 1
         End If

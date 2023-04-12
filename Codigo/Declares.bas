@@ -1759,6 +1759,16 @@ Public Enum e_StatusMask
     eTaunted = 2
 End Enum
 
+Public Enum e_InventorySlotMask
+    eWeapon = 1
+    eShiled = 2
+    eHelm = 4
+    eAmunition = 8
+    eArmor = 16
+    eMagicItem = 32
+    eKnuckles = 64
+    eTool = 128
+End Enum
 
 'Flags
 Public Type t_UserFlags
@@ -1798,6 +1808,7 @@ Public Type t_UserFlags
     NoDetectable As Byte
     RegeneracionMana As Byte
     RegeneracionHP As Byte
+    DisabledSlot As Long
     
     'Hechizo de Transportacion
     
@@ -2174,6 +2185,7 @@ End Enum
 
 Public Const ACTIVE_EFFECT_LIST_SIZE As Integer = 10
 Public Type t_EffectOverTimeList
+    CallbaclMask As Long
     EffectList() As IBaseEffectOverTime
     EffectCount As Integer
 End Type
@@ -2824,6 +2836,8 @@ Public Enum e_EffectOverTimeType
     ePartyBonus = 10
     ePullTarget = 11
     eDelayedBlast = 12
+    eUnequip = 13
+    eMultipleAttacks = 14
     [EffectTypeCount]
 End Enum
 
