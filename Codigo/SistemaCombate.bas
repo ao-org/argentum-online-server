@@ -643,6 +643,9 @@ Public Function UserDamageToNpc(ByVal attackerIndex As Integer, ByVal TargetInde
     End If
 End Function
 
+Public Function GetNpcDamage(ByVal npcIndex As Integer) As Long
+    GetNpcDamage = RandomNumber(NpcList(npcIndex).Stats.MinHIT, NpcList(npcIndex).Stats.MaxHit)
+End Function
 Private Function NpcDamage(ByVal npcIndex As Integer, ByVal UserIndex As Integer) As Long
     On Error GoTo NpcDamage_Err
         
@@ -650,7 +653,7 @@ Private Function NpcDamage(ByVal npcIndex As Integer, ByVal UserIndex As Integer
         Dim Damage As Integer, Lugar As Integer, absorbido As Integer
         Dim defbarco As Integer
         Dim obj As t_ObjData
-100     Damage = RandomNumber(NpcList(npcIndex).Stats.MinHIT, NpcList(npcIndex).Stats.MaxHit)
+100     Damage = GetNpcDamage(npcIndex)
 104     If UserList(UserIndex).flags.Navegando = 1 And UserList(UserIndex).Invent.BarcoObjIndex > 0 Then
 106         obj = ObjData(UserList(UserIndex).Invent.BarcoObjIndex)
 108         defbarco = RandomNumber(obj.MinDef, obj.MaxDef)
@@ -1054,10 +1057,10 @@ Public Sub UsuarioAtaca(ByVal UserIndex As Integer)
         
             Dim AttackPos As t_WorldPos
 122         AttackPos = UserList(UserIndex).pos
-
+124         Call HeadtoPos(.Char.Heading, AttackPos)
+            Call EffectsOverTime.TargetWillAttackPosition(UserList(UserIndex).EffectOverTime, AttackPos)
             If .flags.Cleave > 0 Then
                 Call IncreaseSingle(.Modifiers.PhysicalDamageBonus, -0.25) 'Front target gets 75% damage
-124             Call HeadtoPos(.Char.Heading, AttackPos)
                 Call UserAttackPosition(UserIndex, AttackPos)
                 Call IncreaseSingle(.Modifiers.PhysicalDamageBonus, -0.25) 'Side targets gets 50% damage
                 AttackPos = UserList(UserIndex).pos
@@ -1068,7 +1071,6 @@ Public Sub UsuarioAtaca(ByVal UserIndex As Integer)
                 Call UserAttackPosition(UserIndex, AttackPos)
                 Call IncreaseSingle(.Modifiers.PhysicalDamageBonus, 0.5) 'return to prev state
             Else
-                Call HeadtoPos(.Char.Heading, AttackPos)
                 Call UserAttackPosition(UserIndex, AttackPos)
             End If
             End With
@@ -1377,7 +1379,7 @@ Private Sub UserDamageToUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex 
 230                 Call WriteLocaleMsg(VictimaIndex, "387", e_FontTypeNames.FONTTYPE_FIGHT, UserList(AtacanteIndex).name & "¬" & DamageStr)
                 End If
                 
-232             DamageStr = "¡" & PonerPuntos(damage) & "!"
+232             DamageStr = "¡" & PonerPuntos(Damage) & "!"
 
                 ' Solo si la victima se encuentra en vida completa, generamos la condicion
                 If .Stats.MinHp = .Stats.MaxHp Then
@@ -1450,18 +1452,19 @@ Private Sub DesequiparObjetoDeUnGolpe(ByVal AttackerIndex As Integer, ByVal Vict
             
 130             Call WriteCombatConsoleMsg(AttackerIndex, "Has logrado desequipar el casco de tu oponente!")
 132             Call WriteCombatConsoleMsg(VictimIndex, UserList(AttackerIndex).Name & " te ha desequipado el casco.")
-            
+                Call CreateUnequip(VictimIndex, eUser, e_InventorySlotMask.eHelm)
 134         ElseIf desequiparArma Then
 136             Call Desequipar(VictimIndex, .Invent.WeaponEqpSlot)
                 
 138             Call WriteCombatConsoleMsg(AttackerIndex, "Has logrado desarmar a tu oponente!")
 140             Call WriteCombatConsoleMsg(VictimIndex, UserList(AttackerIndex).Name & " te ha desarmado.")
-
+                Call CreateUnequip(VictimIndex, eUser, e_InventorySlotMask.eWeapon)
 142         ElseIf desequiparEscudo Then
 144             Call Desequipar(VictimIndex, .Invent.EscudoEqpSlot)
                 
 146             Call WriteCombatConsoleMsg(AttackerIndex, "Has logrado desequipar el escudo de " & .Name & ".")
 148             Call WriteCombatConsoleMsg(VictimIndex, UserList(AttackerIndex).Name & " te ha desequipado el escudo.")
+                Call CreateUnequip(VictimIndex, eUser, e_InventorySlotMask.eShiled)
             Else
 150             Call WriteCombatConsoleMsg(AttackerIndex, "No has logrado desequipar ningun item a tu oponente!")
             End If
@@ -2492,8 +2495,11 @@ Private Function ProbabilidadDesequipar(ByVal UserIndex As Integer) As Integer
 102         Select Case .clase
     
             Case e_Class.Bandit
-104             ProbabilidadDesequipar = 0.2 * 100
-    
+                If IsFeatureEnabled("bandit_unequip_bonus") Then
+                    ProbabilidadDesequipar = 0.25 * 100
+                Else
+104                 ProbabilidadDesequipar = 0.2 * 100
+                End If
 106         Case e_Class.Thief
 108             ProbabilidadDesequipar = 0.33 * 100
     

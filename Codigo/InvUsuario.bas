@@ -1244,7 +1244,10 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
 112         Select Case obj.OBJType
                 Case e_OBJType.otWeapon
 114                 errordesc = "Arma"
-
+                    If IsSet(.flags.DisabledSlot, e_InventorySlotMask.eWeapon) Then
+                        Call WriteLocaleMsg(UserIndex, MsgCantEquipYet, e_FontTypeNames.FONTTYPE_INFO)
+                        Exit Sub
+                    End If
                     'Si esta equipado lo quita
 116                 If .Invent.Object(Slot).Equipped Then
                         'Quitamos del inv el item
@@ -1332,7 +1335,10 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
                     End If
       
 186             Case e_OBJType.otHerramientas
-
+                    If IsSet(.flags.DisabledSlot, e_InventorySlotMask.eTool) Then
+                        Call WriteLocaleMsg(UserIndex, MsgCantEquipYet, e_FontTypeNames.FONTTYPE_INFO)
+                        Exit Sub
+                    End If
                     'Si esta equipado lo quita
 188                 If .Invent.Object(Slot).Equipped Then
 
@@ -1367,7 +1373,10 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
        
 214             Case e_OBJType.otMagicos
 216                 errordesc = "Magico"
-
+                    If IsSet(.flags.DisabledSlot, e_InventorySlotMask.eMagicItem) Then
+                        Call WriteLocaleMsg(UserIndex, MsgCantEquipYet, e_FontTypeNames.FONTTYPE_INFO)
+                        Exit Sub
+                    End If
                     'Si esta equipado lo quita
 218                 If .Invent.Object(Slot).Equipped Then
                         'Quitamos del inv el item
@@ -1455,6 +1464,10 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
                     End If
                     
 314             Case e_OBJType.otNudillos
+                    If IsSet(.flags.DisabledSlot, e_InventorySlotMask.eWeapon) Then
+                        Call WriteLocaleMsg(UserIndex, MsgCantEquipYet, e_FontTypeNames.FONTTYPE_INFO)
+                        Exit Sub
+                    End If
 316                 If .Invent.WeaponEqpObjIndex > 0 Then
 318                     Call Desequipar(UserIndex, .Invent.WeaponEqpSlot)
 
@@ -1498,6 +1511,10 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
                     End If
     
 354             Case e_OBJType.otFlechas
+                    If IsSet(.flags.DisabledSlot, e_InventorySlotMask.eAmunition) Then
+                        Call WriteLocaleMsg(UserIndex, MsgCantEquipYet, e_FontTypeNames.FONTTYPE_INFO)
+                        Exit Sub
+                    End If
                     'Si esta equipado lo quita
 356                 If .Invent.Object(Slot).Equipped Then
                         'Quitamos del inv el item
@@ -1515,6 +1532,10 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
 368                 .Invent.MunicionEqpSlot = Slot
 
 370             Case e_OBJType.otArmadura
+                    If IsSet(.flags.DisabledSlot, e_InventorySlotMask.eArmor) Then
+                        Call WriteLocaleMsg(UserIndex, MsgCantEquipYet, e_FontTypeNames.FONTTYPE_INFO)
+                        Exit Sub
+                    End If
 372                 If obj.Ropaje = 0 Then
 374                     Call WriteConsoleMsg(UserIndex, "Hay un error con este objeto. Infórmale a un administrador.", e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
@@ -1567,6 +1588,10 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
                     End If
     
 420             Case e_OBJType.otCasco
+                    If IsSet(.flags.DisabledSlot, e_InventorySlotMask.eHelm) Then
+                        Call WriteLocaleMsg(UserIndex, MsgCantEquipYet, e_FontTypeNames.FONTTYPE_INFO)
+                        Exit Sub
+                    End If
                     'Si esta equipado lo quita
 422                 If .Invent.Object(Slot).Equipped Then
 424                     Call Desequipar(UserIndex, Slot)
@@ -1604,6 +1629,10 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
                     End If
 
 458             Case e_OBJType.otEscudo
+                    If IsSet(.flags.DisabledSlot, e_InventorySlotMask.eShiled) Then
+                        Call WriteLocaleMsg(UserIndex, MsgCantEquipYet, e_FontTypeNames.FONTTYPE_INFO)
+                        Exit Sub
+                    End If
                     'Si esta equipado lo quita
 460                 If .Invent.Object(Slot).Equipped Then
 462                     Call Desequipar(UserIndex, Slot)
@@ -1692,8 +1721,8 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
                         .Invent.ResistenciaEqpObjIndex = .Invent.Object(Slot).ObjIndex
 530                     .Invent.ResistenciaEqpSlot = Slot
                         Call WriteUpdateRM(userindex)
-                    ElseIf ObjData(.Invent.Object(Slot).objIndex).OBJType = e_OBJType.otDañoMagico Then
-528                     .Invent.DañoMagicoEqpObjIndex = .Invent.Object(Slot).objIndex
+                    ElseIf ObjData(.Invent.Object(Slot).ObjIndex).OBJType = e_OBJType.otDañoMagico Then
+528                     .Invent.DañoMagicoEqpObjIndex = .Invent.Object(Slot).ObjIndex
                         .Invent.DañoMagicoEqpSlot = Slot
 538                     Call WriteUpdateDM(userindex)
                         

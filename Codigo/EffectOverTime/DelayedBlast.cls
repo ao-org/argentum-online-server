@@ -127,6 +127,13 @@ End Sub
 Public Sub IBaseEffectOverTime_TargetWasDamaged(ByVal SourceUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
 End Sub
 
+Public Sub IBaseEffectOverTime_TargetWillAttackPosition(ByVal Map As Integer, ByVal PosX As Integer, ByVal PosY As Integer)
+End Sub
+
+Public Property Get IBaseEffectOverTime_CallBacksMask() As Long
+    IBaseEffectOverTime_CallBacksMask = 0
+End Property
+
 Public Property Get IBaseEffectOverTime_KeepAfterDead() As Boolean
     IBaseEffectOverTime_KeepAfterDead = False
 End Property
@@ -154,24 +161,24 @@ Private Sub DoBlast()
             If MapData(TargetMap, j, i).UserIndex > 0 Then
                 If CanAttackUser(DotInfo.TargetRef.ArrayIndex, DotInfo.TargetRef.VersionId, MapData(TargetMap, j, i).UserIndex, UserList(MapData(TargetMap, j, i).UserIndex).VersionId) = eCanAttack Then
                     If DotInfo.TargetRef.RefType = eUser Then
-                        Call UserDoDamageToUser(DotInfo.TargetRef.ArrayIndex, MapData(TargetMap, j, i).UserIndex, GetDamageForTile(j, i), e_phisical, SourceObjIndex)
+                        Call UserDoDamageToUser(DotInfo.TargetRef.ArrayIndex, MapData(TargetMap, j, i).UserIndex, GetDamageForTile(j, i, GetUserDamageWithItem(DotInfo.TargetRef.ArrayIndex, SourceObjIndex, 0)), e_phisical, SourceObjIndex)
                     Else
-                        Call NpcDoDamageToUser(DotInfo.TargetRef.ArrayIndex, MapData(TargetMap, j, i).UserIndex, GetDamageForTile(j, i), e_phisical, SourceObjIndex)
+                        Call NpcDoDamageToUser(DotInfo.TargetRef.ArrayIndex, MapData(TargetMap, j, i).UserIndex, GetDamageForTile(j, i, GetNpcDamage(DotInfo.TargetRef.ArrayIndex)), e_phisical, SourceObjIndex)
                     End If
                 End If
             ElseIf MapData(TargetMap, j, i).npcIndex > 0 Then
                 If UserCanAttackNpc(DotInfo.TargetRef.ArrayIndex, MapData(TargetMap, j, i).npcIndex) = eCanAttack Then
                     If DotInfo.TargetRef.RefType = eUser Then
-                        Call UserDamageToNpc(DotInfo.TargetRef.ArrayIndex, MapData(TargetMap, j, i).npcIndex, GetDamageForTile(j, i), e_phisical, SourceObjIndex)
+                        Call UserDamageToNpc(DotInfo.TargetRef.ArrayIndex, MapData(TargetMap, j, i).npcIndex, GetDamageForTile(j, i, GetUserDamageWithItem(DotInfo.TargetRef.ArrayIndex, SourceObjIndex, 0)), e_phisical, SourceObjIndex)
                     Else
-                        Call NpcDamageToNpc(DotInfo.TargetRef.ArrayIndex, MapData(TargetMap, j, i).npcIndex, GetDamageForTile(j, i))
+                        Call NpcDamageToNpc(DotInfo.TargetRef.ArrayIndex, MapData(TargetMap, j, i).npcIndex, GetDamageForTile(j, i, GetNpcDamage(DotInfo.TargetRef.ArrayIndex)))
                     End If
                 End If
             End If
             'add dama to itself (only for user as ia can't avoid this)
             If DotInfo.TargetRef.RefType = eUser Then
                 If MapData(TargetMap, j, i).UserIndex = DotInfo.TargetRef.ArrayIndex Then
-                    Call UserDoDamageToUser(DotInfo.TargetRef.ArrayIndex, MapData(TargetMap, j, i).UserIndex, GetDamageForTile(j, i), e_phisical, SourceObjIndex)
+                    Call UserDoDamageToUser(DotInfo.TargetRef.ArrayIndex, MapData(TargetMap, j, i).UserIndex, GetDamageForTile(j, i, GetUserDamageWithItem(DotInfo.TargetRef.ArrayIndex, SourceObjIndex, 0)), e_phisical, SourceObjIndex)
                 End If
             End If
             
@@ -179,14 +186,14 @@ Private Sub DoBlast()
     Next i
 End Sub
 
-Private Function GetDamageForTile(ByVal TileX As Integer, ByVal TileY As Integer) As Integer
+Private Function GetDamageForTile(ByVal TileX As Integer, ByVal TileY As Integer, ByVal BaseDamage As Long) As Integer
     Dim Distance As Double
     Dim BlastArea As Double
     Dim Percent As Double
     BlastArea = max(EffectOverTime(DotInfo.EotId).Area / 2, 1) * 2
     Distance = Matematicas.Distance(TileX, TileY, TargetX, TargetY)
     Percent = (BlastArea - Distance) / BlastArea
-    GetDamageForTile = max(0, GetUserDamageWithItem(DotInfo.TargetRef.ArrayIndex, SourceObjIndex, 0) * Percent)
+    GetDamageForTile = max(0, BaseDamage * Percent)
 End Function
 
 

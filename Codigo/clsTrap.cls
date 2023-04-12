@@ -134,6 +134,13 @@ End Sub
 Public Sub IBaseEffectOverTime_TargetWasDamaged(ByVal SourceUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
 End Sub
 
+Public Sub IBaseEffectOverTime_TargetWillAttackPosition(ByVal Map As Integer, ByVal PosX As Integer, ByVal PosY As Integer)
+End Sub
+
+Public Property Get IBaseEffectOverTime_CallBacksMask() As Long
+    IBaseEffectOverTime_CallBacksMask = 0
+End Property
+
 Private Sub SetPosition(ByVal map As Integer, ByVal posX As Integer, ByVal posY As Integer)
     mWorldPosition.map = map
     mWorldPosition.x = posX
@@ -143,7 +150,7 @@ Private Sub SetPosition(ByVal map As Integer, ByVal posX As Integer, ByVal posY 
 End Sub
 
 Public Property Get IBaseEffectOverTime_KeepAfterDead() As Boolean
-    IBaseEffectOverTime_KeepAfterDead = True
+    IBaseEffectOverTime_KeepAfterDead = False
 End Property
 
 Private Sub RemoveFromMap()

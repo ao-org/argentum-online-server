@@ -5,9 +5,18 @@ Private LastUpdateTime As Long
 Private UniqueIdCounter As Long
 Const ACTIVE_EFFECTS_MIN_SIZE As Integer = 500
 Private ActiveEffects As t_EffectOverTimeList
-
+Const UnequipEffectId = 23
 Const INITIAL_POOL_SIZE = 200
 Private EffectPools() As t_EffectOverTimeList
+
+Public Enum e_EffectCallbackMask
+    eTargetUseMagic = 1
+    eTartgetWillAtack = 2
+    eTartgetDidHit = 4
+    eTargetFailedAttack = 8
+    eTargetWasDamaged = 16
+    eTargetWillAttackPosition = 32
+End Enum
 
 Public Sub InitializePools()
 On Error GoTo InitializePools_Err
@@ -206,6 +215,17 @@ On Error GoTo CreateEffect_Err
 504         ElseIf TargetType = eNpc Then
 506             Call AddEffect(NpcList(TargetIndex).EffectOverTime, PullEffect)
             End If
+        Case e_EffectOverTimeType.eMultipleAttacks
+590         Dim MultiAttacks As MultipleAttacks
+592         Set MultiAttacks = GetEOT(EffectType)
+594         UniqueIdCounter = GetNextId()
+596         Call MultiAttacks.Setup(SourceIndex, SourceType, EffectIndex, UniqueIdCounter)
+598         Call AddEffectToUpdate(MultiAttacks)
+600         If TargetType = eUser Then
+602             Call AddEffect(UserList(TargetIndex).EffectOverTime, MultiAttacks)
+604         ElseIf TargetType = eNpc Then
+606             Call AddEffect(NpcList(TargetIndex).EffectOverTime, MultiAttacks)
+            End If
         Case Else
             Debug.Assert False
     End Select
@@ -253,6 +273,24 @@ CreateDelayedBlast_Err:
       Call TraceError(Err.Number, Err.Description, "EffectsOverTime.CreateTrap", Erl)
 End Sub
 
+Public Sub CreateUnequip(ByVal TargetIndex As Integer, ByVal TargetType As e_ReferenceType, ByVal ItemSlotType As Long)
+On Error GoTo CreateDelayedBlast_Err
+    If Not IsFeatureEnabled("bandit_unequip_bonus") Then Exit Sub
+    Dim EffectType As e_EffectOverTimeType
+100 EffectType = e_EffectOverTimeType.eUnequip
+    Dim Unequip As UnequipItem
+104 Set Unequip = GetEOT(EffectType)
+106 UniqueIdCounter = GetNextId()
+108 Call Unequip.Setup(TargetIndex, TargetType, UnequipEffectId, UniqueIdCounter, ItemSlotType)
+110 Call AddEffectToUpdate(Unequip)
+112 If TargetType = eUser Then
+114     Call AddEffect(UserList(TargetIndex).EffectOverTime, Unequip)
+    End If
+    Exit Sub
+CreateDelayedBlast_Err:
+      Call TraceError(Err.Number, Err.Description, "EffectsOverTime.CreateTrap", Erl)
+End Sub
+
 Private Function InstantiateEOT(ByVal EffectType As e_EffectOverTimeType) As IBaseEffectOverTime
     Select Case EffectType
         Case e_EffectOverTimeType.eHealthModifier
@@ -279,6 +317,10 @@ Private Function InstantiateEOT(ByVal EffectType As e_EffectOverTimeType) As IBa
             Set InstantiateEOT = New AttrackEffect
         Case e_EffectOverTimeType.eDelayedBlast
             Set InstantiateEOT = New DelayedBlast
+        Case e_EffectOverTimeType.eUnequip
+            Set InstantiateEOT = New UnequipItem
+        Case e_EffectOverTimeType.eMultipleAttacks
+            Set InstantiateEOT = New MultipleAttacks
         Case Else
             Debug.Assert False
     End Select
@@ -319,6 +361,7 @@ On Error GoTo AddEffect_Err
 108     ReDim Preserve EffectList.EffectList(EffectList.EffectCount * 1.2) As IBaseEffectOverTime
     End If
 116 Set EffectList.EffectList(EffectList.EffectCount) = Effect
+    Call SetMask(EffectList.CallbaclMask, Effect.CallBacksMask)
 120 EffectList.EffectCount = EffectList.EffectCount + 1
     Exit Sub
 AddEffect_Err:
@@ -399,10 +442,19 @@ End Sub
 
 Public Sub RemoveEffectAtPos(ByRef EffectList As t_EffectOverTimeList, ByVal position As Integer)
 On Error GoTo RemoveEffectAtPos_Err
+    Dim RegenerateMask As Boolean
+    RegenerateMask = EffectList.EffectList(Position).CallBacksMask > 0
     Call EffectList.EffectList(position).OnRemove
 106 Set EffectList.EffectList(position) = EffectList.EffectList(EffectList.EffectCount - 1)
 108 Set EffectList.EffectList(EffectList.EffectCount - 1) = Nothing
 110 EffectList.EffectCount = EffectList.EffectCount - 1
+    If RegenerateMask Then
+        EffectList.CallbaclMask = 0
+        Dim i As Integer
+        For i = 0 To EffectList.EffectCount - 1
+            Call SetMask(EffectList.CallbaclMask, EffectList.EffectList(i).CallBacksMask)
+        Next i
+    End If
     Exit Sub
 RemoveEffectAtPos_Err:
       Call TraceError(Err.Number, Err.Description, "EffectsOverTime.RemoveEffectAtPos", Erl)
@@ -410,6 +462,7 @@ End Sub
 
 
 Public Sub TargetUseMagic(ByRef EffectList As t_EffectOverTimeList, ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal MagicId As Integer)
+    If Not IsSet(EffectList.CallbaclMask, e_EffectCallbackMask.eTargetUseMagic) Then Exit Sub
     Dim i As Integer
     For i = 0 To EffectList.EffectCount - 1
          Call EffectList.EffectList(i).TargetUseMagic(TargetUserId, SourceType, MagicId)
@@ -417,6 +470,7 @@ Public Sub TargetUseMagic(ByRef EffectList As t_EffectOverTimeList, ByVal Target
 End Sub
 
 Public Sub TartgetWillAtack(ByRef EffectList As t_EffectOverTimeList, ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
+    If Not IsSet(EffectList.CallbaclMask, e_EffectCallbackMask.eTartgetWillAtack) Then Exit Sub
     Dim i As Integer
     For i = 0 To EffectList.EffectCount - 1
          Call EffectList.EffectList(i).TartgetWillAtack(TargetUserId, SourceType, AttackType)
@@ -424,6 +478,7 @@ Public Sub TartgetWillAtack(ByRef EffectList As t_EffectOverTimeList, ByVal Targ
 End Sub
 
 Public Sub TartgetDidHit(ByRef EffectList As t_EffectOverTimeList, ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
+    If Not IsSet(EffectList.CallbaclMask, e_EffectCallbackMask.eTartgetDidHit) Then Exit Sub
     Dim i As Integer
     For i = 0 To EffectList.EffectCount - 1
          Call EffectList.EffectList(i).TartgetDidHit(TargetUserId, SourceType, AttackType)
@@ -431,6 +486,7 @@ Public Sub TartgetDidHit(ByRef EffectList As t_EffectOverTimeList, ByVal TargetU
 End Sub
 
 Public Sub TargetFailedAttack(ByRef EffectList As t_EffectOverTimeList, ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
+    If Not IsSet(EffectList.CallbaclMask, e_EffectCallbackMask.eTargetFailedAttack) Then Exit Sub
     Dim i As Integer
     For i = 0 To EffectList.EffectCount - 1
          Call EffectList.EffectList(i).TargetFailedAttack(TargetUserId, SourceType, AttackType)
@@ -438,9 +494,18 @@ Public Sub TargetFailedAttack(ByRef EffectList As t_EffectOverTimeList, ByVal Ta
 End Sub
 
 Public Sub TargetWasDamaged(ByRef EffectList As t_EffectOverTimeList, ByVal SourceUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
+    If Not IsSet(EffectList.CallbaclMask, e_EffectCallbackMask.eTargetWasDamaged) Then Exit Sub
     Dim i As Integer
     For i = 0 To EffectList.EffectCount - 1
          Call EffectList.EffectList(i).TargetWasDamaged(SourceUserId, SourceType, AttackType)
+    Next i
+End Sub
+
+Public Sub TargetWillAttackPosition(ByRef EffectList As t_EffectOverTimeList, ByRef Position As t_WorldPos)
+    If Not IsSet(EffectList.CallbaclMask, e_EffectCallbackMask.eTargetWillAttackPosition) Then Exit Sub
+    Dim i As Integer
+    For i = 0 To EffectList.EffectCount - 1
+         Call EffectList.EffectList(i).TargetWillAttackPosition(Position.Map, Position.x, Position.y)
     Next i
 End Sub
 

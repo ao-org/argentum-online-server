@@ -139,6 +139,13 @@ End Sub
 Public Sub IBaseEffectOverTime_TargetWasDamaged(ByVal SourceUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
 End Sub
 
+Public Sub IBaseEffectOverTime_TargetWillAttackPosition(ByVal Map As Integer, ByVal PosX As Integer, ByVal PosY As Integer)
+End Sub
+
+Public Property Get IBaseEffectOverTime_CallBacksMask() As Long
+    IBaseEffectOverTime_CallBacksMask = 0
+End Property
+
 Public Sub PerformAction()
     If DotInfo.TargetRef.RefType <> eUser Then Exit Sub
     If TickEffect > 0 Then
