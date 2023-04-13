@@ -1099,7 +1099,8 @@ Public Type t_ActiveModifiers
     'effect perform on others
     PhysicalDamageBonus As Single
     MagicDamageBonus As Single
-    
+    HitBonus As Integer
+    EvasionBonus As Integer
 End Type
 
 Public Enum e_ModifierTypes
@@ -1108,6 +1109,8 @@ Public Enum e_ModifierTypes
     PhysiccalBonus = 4
     MagicBonus = 8
     MovementSpeed = 16
+    HitBonus = 32
+    EvasionBonus = 64
 End Enum
 
 Public Type t_EffectOverTime
@@ -1128,6 +1131,8 @@ Public Type t_EffectOverTime
     PhysicalDamageDone As Single
     MagicDamageDone As Single
     SpeedModifier As Single
+    HitModifier As Integer
+    EvasionModifier As Integer
     EffectModifiers As Long
     ClientEffectTypeId As Integer
     Area As Integer
@@ -2965,6 +2970,10 @@ Public Sub ClearModifiers(ByRef Modifiers As t_ActiveModifiers)
 End Sub
 
 Public Sub IncreaseSingle(ByRef dest As Single, ByVal amount As Single)
+    dest = dest + amount
+End Sub
+
+Public Sub IncreaseInteger(ByRef dest As Integer, ByVal amount As Integer)
     dest = dest + amount
 End Sub
 

@@ -3859,25 +3859,12 @@ UpdateUserHechizos_Err:
 End Sub
 
 Sub ChangeUserHechizo(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal Hechizo As Integer)
-        
-        On Error GoTo ChangeUserHechizo_Err
-
+    On Error GoTo ChangeUserHechizo_Err
 100     UserList(UserIndex).Stats.UserHechizos(Slot) = Hechizo
-    
-102     If Hechizo > 0 And Hechizo < NumeroHechizos + 1 Then
-104         Call WriteChangeSpellSlot(UserIndex, Slot)
-        Else
-106         Call WriteChangeSpellSlot(UserIndex, Slot)
-
-        End If
-
-        
+        Call WriteChangeSpellSlot(UserIndex, Slot)
         Exit Sub
-
 ChangeUserHechizo_Err:
-108     Call TraceError(Err.Number, Err.Description, "modHechizos.ChangeUserHechizo", Erl)
-
-        
+    Call TraceError(Err.Number, Err.Description, "modHechizos.ChangeUserHechizo", Erl)
 End Sub
 
 Public Sub DesplazarHechizo(ByVal UserIndex As Integer, ByVal Dire As Integer, ByVal CualHechizo As Integer)
