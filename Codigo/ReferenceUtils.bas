@@ -82,3 +82,28 @@ Public Function DoDamageToTarget(ByVal UserIndex As Integer, ByRef TargetRef As 
         DoDamageToTarget = UserDoDamageToUser(UserIndex, TargetRef.ArrayIndex, Damage, DamageType, ObjIndex)
     End If
 End Function
+
+Public Function NpcDoDamageToTarget(ByVal NpcIndex As Integer, ByRef TargetRef As t_AnyReference, ByVal Damage As Integer, _
+                                 ByVal DamageType As e_DamageSourceType, ByVal ObjIndex As Integer) As e_DamageResult
+    If Not IsValidRef(TargetRef) Then
+        Exit Function
+    End If
+    If TargetRef.RefType = eNpc Then
+        NpcDoDamageToTarget = NpcDamageToNpc(NpcIndex, TargetRef.ArrayIndex, Damage)
+    ElseIf TargetRef.RefType = eUser Then
+        NpcDoDamageToTarget = NpcDoDamageToUser(NpcIndex, TargetRef.ArrayIndex, Damage, DamageType, ObjIndex)
+    End If
+End Function
+
+Public Function RefDoDamageToTarget(ByRef SourceRef As t_AnyReference, ByRef TargetRef As t_AnyReference, ByVal Damage As Integer, _
+                                 ByVal DamageType As e_DamageSourceType, ByVal ObjIndex As Integer) As e_DamageResult
+    If Not IsValidRef(SourceRef) Then
+        Exit Function
+    End If
+    If SourceRef.RefType = eNpc Then
+        RefDoDamageToTarget = NpcDoDamageToTarget(SourceRef.ArrayIndex, TargetRef, Damage, DamageType, ObjIndex)
+    ElseIf SourceRef.RefType = eUser Then
+        RefDoDamageToTarget = DoDamageToTarget(SourceRef.ArrayIndex, TargetRef, Damage, DamageType, ObjIndex)
+    End If
+End Function
+

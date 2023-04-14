@@ -218,16 +218,25 @@ esArmada_Err:
 End Function
 
 Public Function esCaos(ByVal UserIndex As Integer) As Boolean
-        On Error GoTo esCaos_Err
-        
-100     If UserIndex > 0 Then esCaos = (UserList(UserIndex).Faccion.status = e_Facciones.Caos Or UserList(UserIndex).Faccion.status = e_Facciones.concilio)
-     
-        Exit Function
-
+    On Error GoTo esCaos_Err
+100 If UserIndex > 0 Then esCaos = (UserList(UserIndex).Faccion.Status = e_Facciones.Caos Or UserList(UserIndex).Faccion.Status = e_Facciones.concilio)
+    Exit Function
 esCaos_Err:
-102     Call TraceError(Err.Number, Err.Description, "Extra.esCaos", Erl)
+    Call TraceError(Err.Number, Err.Description, "Extra.esCaos", Erl)
+End Function
 
-        
+Public Function FactionCanAttackFaction(ByVal AttackerFaction As e_Facciones, ByVal TargetFaction As e_Facciones)
+    Select Case AttackerFaction
+        Case e_Facciones.Ciudadano, e_Facciones.Armada, e_Facciones.consejo
+            If TargetFaction = e_Facciones.Armada Or TargetFaction = e_Facciones.Ciudadano Or TargetFaction = e_Facciones.consejo Then
+                Exit Function
+            End If
+        Case e_Facciones.Caos, e_Facciones.concilio
+            If TargetFaction = e_Facciones.Caos Or TargetFaction = e_Facciones.concilio Then
+                Exit Function
+            End If
+    End Select
+    FactionCanAttackFaction = True
 End Function
 
 Public Function EsGM(ByVal UserIndex As Integer) As Boolean
@@ -304,7 +313,7 @@ Private Function CheckMapRestrictions(ByVal UserIndex As Integer, ByVal Map As I
 
 146         If MapInfo(Map).MaxLevel <> 0 And .Stats.ELV >= MapInfo(Map).MaxLevel Then
 148             If .flags.UltimoMensaje <> 106 Then
-150                 Call WriteConsoleMsg(UserIndex, "Sólo los personajes inferiores a nivel " & MapInfo(map).MaxLevel & " pueden entrar a este mapa.", e_FontTypeNames.FONTTYPE_INFO)
+150                 Call WriteConsoleMsg(UserIndex, "Sólo los personajes inferiores a nivel " & MapInfo(Map).MaxLevel & " pueden entrar a este mapa.", e_FontTypeNames.FONTTYPE_INFO)
 152                 .flags.UltimoMensaje = 106
                 End If
                 Exit Function
@@ -2190,23 +2199,23 @@ End Function
 Public Sub SendrequiredItemMessage(ByVal UserIndex As Integer, ByVal itemMask As e_EquipedSlotMask, ByVal message As String)
     Select Case itemMask
         Case e_EquipedSlotMask.eArmor
-             Call WriteConsoleMsg(UserIndex, "Necesitás una armadura " + message, e_FontTypeNames.FONTTYPE_INFO)
+             Call WriteConsoleMsg(UserIndex, "Necesitás una armadura " + Message, e_FontTypeNames.FONTTYPE_INFO)
         Case e_EquipedSlotMask.eHelm
-             Call WriteConsoleMsg(UserIndex, "Necesitás un casco " + message, e_FontTypeNames.FONTTYPE_INFO)
+             Call WriteConsoleMsg(UserIndex, "Necesitás un casco " + Message, e_FontTypeNames.FONTTYPE_INFO)
         Case e_EquipedSlotMask.eKnucle
-             Call WriteConsoleMsg(UserIndex, "Necesitás unos nudillos " + message, e_FontTypeNames.FONTTYPE_INFO)
+             Call WriteConsoleMsg(UserIndex, "Necesitás unos nudillos " + Message, e_FontTypeNames.FONTTYPE_INFO)
         Case e_EquipedSlotMask.eMagicItem
-             Call WriteConsoleMsg(UserIndex, "Necesitás un objeto magico " + message, e_FontTypeNames.FONTTYPE_INFO)
+             Call WriteConsoleMsg(UserIndex, "Necesitás un objeto magico " + Message, e_FontTypeNames.FONTTYPE_INFO)
         Case e_EquipedSlotMask.eProjectile
-             Call WriteConsoleMsg(UserIndex, "Necesitás municiones " + message, e_FontTypeNames.FONTTYPE_INFO)
+             Call WriteConsoleMsg(UserIndex, "Necesitás municiones " + Message, e_FontTypeNames.FONTTYPE_INFO)
         Case e_EquipedSlotMask.eShield
-             Call WriteConsoleMsg(UserIndex, "Necesitás un escudo " + message, e_FontTypeNames.FONTTYPE_INFO)
+             Call WriteConsoleMsg(UserIndex, "Necesitás un escudo " + Message, e_FontTypeNames.FONTTYPE_INFO)
         Case e_EquipedSlotMask.eShip
-             Call WriteConsoleMsg(UserIndex, "Necesitás un barco " + message, e_FontTypeNames.FONTTYPE_INFO)
+             Call WriteConsoleMsg(UserIndex, "Necesitás un barco " + Message, e_FontTypeNames.FONTTYPE_INFO)
         Case e_EquipedSlotMask.eTool
-             Call WriteConsoleMsg(UserIndex, "Necesitás una herramienta " + message, e_FontTypeNames.FONTTYPE_INFO)
+             Call WriteConsoleMsg(UserIndex, "Necesitás una herramienta " + Message, e_FontTypeNames.FONTTYPE_INFO)
         Case e_EquipedSlotMask.eWeapon
-             Call WriteConsoleMsg(UserIndex, "Necesitás un arma " + message, e_FontTypeNames.FONTTYPE_INFO)
+             Call WriteConsoleMsg(UserIndex, "Necesitás un arma " + Message, e_FontTypeNames.FONTTYPE_INFO)
     End Select
 End Sub
 

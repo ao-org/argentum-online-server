@@ -57,14 +57,19 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
 108       If .flags.invisible = 1 Or .flags.Oculto = 1 Or .flags.Inmunidad = 1 Then Exit Sub
         End If
 
-110     Call InfoHechizoDeNpcSobreUser(NpcIndex, UserIndex, Spell)
-112     NpcList(NpcIndex).Contadores.IntervaloLanzarHechizo = GetTickCount()
 
+110     NpcList(NpcIndex).Contadores.IntervaloLanzarHechizo = GetTickCount()
+        If Hechizos(Spell).Tipo = uPhysicalSkill Then
+          If Not HandlePhysicalSkill(NpcIndex, eNpc, UserIndex, eUser, Spell, IsAlive) Then
+              Exit Sub
+          End If
+        End If
+112     Call InfoHechizoDeNpcSobreUser(NpcIndex, UserIndex, Spell)
 114     If Hechizos(Spell).SubeHP = 1 Then
 116       Call UserMod.DoDamageOrHeal(UserIndex, npcIndex, eNpc, Damage, e_DamageSourceType.e_magic, Spell)
 
 120       DamageStr = PonerPuntos(Damage)
-122       Call WriteLocaleMsg(UserIndex, "32", e_FontTypeNames.FONTTYPE_FIGHT, NpcList(npcIndex).name & "¬" & DamageStr)
+122       Call WriteLocaleMsg(UserIndex, "32", e_FontTypeNames.FONTTYPE_FIGHT, NpcList(NpcIndex).name & "¬" & DamageStr)
 
 128     ElseIf Hechizos(Spell).SubeHP = 2 Then
 130       Damage = RandomNumber(Hechizos(Spell).MinHp, Hechizos(Spell).MaxHp)
@@ -259,6 +264,11 @@ Sub NpcLanzaSpellSobreNpc(ByVal NpcIndex As Integer, ByVal TargetNPC As Integer,
       Dim DamageStr As String
       Dim IsAlive As Boolean
       IsAlive = True
+      If Hechizos(Spell).Tipo = uPhysicalSkill Then
+        If Not HandlePhysicalSkill(NpcIndex, eNpc, TargetNPC, eNpc, Spell, IsAlive) Then
+            Exit Sub
+        End If
+      End If
 100   With NpcList(TargetNPC)
   
 102     .Contadores.IntervaloLanzarHechizo = GetTickCount()
@@ -1131,6 +1141,78 @@ HandleHechizoTerreno_Err:
         
 End Sub
 
+Function HandlePhysicalSkill(ByVal SourceIndex As Integer, ByVal SourceType As e_ReferenceType, ByVal TargetIndex As Integer, ByVal TargetType As e_ReferenceType, _
+                        ByVal SpellIndex As Integer, IsAlive As Boolean) As Boolean
+    
+    Dim TargetRef As t_AnyReference
+    Dim SourceRef As t_AnyReference
+    Call SetRef(SourceRef, SourceIndex, SourceType)
+    Call SetRef(TargetRef, TargetIndex, TargetType)
+    Dim TargetPos As t_WorldPos
+    Dim SourcePos As t_WorldPos
+    SourcePos = GetPosition(SourceRef)
+    TargetPos = GetPosition(TargetRef)
+    Select Case Hechizos(SpellIndex).SkillType
+        Case e_SkillType.ePushingArrow
+            Dim Damage As Integer
+            Dim ObjectIndex As Integer
+            Dim Proyectile As Integer
+            If SourceType = eUser Then
+            With UserList(SourceIndex)
+                If .invent.MunicionEqpObjIndex = 0 Then
+                    Exit Function
+                End If
+                Damage = GetUserDamageWithItem(SourceIndex, .invent.WeaponEqpObjIndex, .invent.MunicionEqpObjIndex)
+                ObjectIndex = .invent.WeaponEqpObjIndex
+                Proyectile = ObjData(.invent.MunicionEqpObjIndex).ProjectileType
+            End With
+            Else
+                Damage = RandomNumber(NpcList(SourceIndex).Stats.MinHIT, NpcList(SourceIndex).Stats.MaxHit)
+                ObjectIndex = -1
+                Proyectile = 1
+            End If
+            If RefDoDamageToTarget(SourceRef, TargetRef, Damage, e_phisical, ObjectIndex) = eStillAlive Then
+                IsAlive = True
+                If TargetRef.RefType = eUser Then
+                    UserList(TargetRef.ArrayIndex).Counters.timeFx = 2
+                    Call SendData(SendTarget.ToPCAliveArea, TargetRef.ArrayIndex, PrepareMessageCreateFX(UserList(TargetRef.ArrayIndex).Char.charindex, FXSANGRE, 0, UserList(TargetRef.ArrayIndex).pos.x, UserList(TargetRef.ArrayIndex).pos.y))
+                    Call SendData(SendTarget.ToPCAliveArea, TargetRef.ArrayIndex, PrepareMessagePlayWave(SND_IMPACTO, UserList(TargetRef.ArrayIndex).pos.x, UserList(TargetRef.ArrayIndex).pos.y))
+                Else
+                    If NpcList(TargetRef.ArrayIndex).flags.Snd2 > 0 Then
+                        Call SendData(SendTarget.ToNPCAliveArea, TargetRef.ArrayIndex, PrepareMessagePlayWave(NpcList(TargetRef.ArrayIndex).flags.Snd2, NpcList(TargetRef.ArrayIndex).pos.x, NpcList(TargetRef.ArrayIndex).pos.y))
+                    Else
+                        Call SendData(SendTarget.ToNPCAliveArea, TargetRef.ArrayIndex, PrepareMessagePlayWave(SND_IMPACTO2, NpcList(TargetRef.ArrayIndex).pos.x, NpcList(TargetRef.ArrayIndex).pos.y))
+                    End If
+                End If
+            Else
+                IsAlive = False
+            End If
+            If SourceRef.RefType = eUser Then
+                Call SendData(SendTarget.ToPCAliveArea, SourceIndex, PrepareCreateProjectile(SourcePos.x, SourcePos.y, TargetPos.x, TargetPos.y, Proyectile))
+            Else
+                Call SendData(SendTarget.ToNPCAliveArea, SourceIndex, PrepareCreateProjectile(SourcePos.x, SourcePos.y, TargetPos.x, TargetPos.y, Proyectile))
+            End If
+            HandlePhysicalSkill = True
+            Exit Function
+        Case e_SkillType.eCannon
+            If SourceType = eUser Then
+                Debug.Assert "User cannot use this spell"
+            End If
+            Dim Particula As Integer
+            Dim Tiempo    As Long
+            Dim CannonProyectile As Integer
+            CannonProyectile = 4
+            Particula = Hechizos(SpellIndex).Particle
+            Tiempo = Hechizos(SpellIndex).TimeParticula
+            Call SendData(SendTarget.ToNPCAliveArea, SourceIndex, PrepareMessageParticleFX(NpcList(SourceIndex).Char.charindex, Particula, Tiempo, False, , SourcePos.x, SourcePos.y))
+            Call SendData(SendTarget.ToNPCAliveArea, SourceIndex, PrepareCreateProjectile(SourcePos.x, SourcePos.y, TargetPos.x, TargetPos.y, CannonProyectile))
+            If Hechizos(SpellIndex).wav <> 0 Then Call SendData(SendTarget.ToNPCAliveArea, SourceIndex, PrepareMessagePlayWave(Hechizos(SpellIndex).wav, SourcePos.x, SourcePos.y))
+            Call CreateDelayedBlast(SourceIndex, SourceType, TargetPos.Map, TargetPos.x, TargetPos.y, Hechizos(SpellIndex).EotId, -1)
+            HandlePhysicalSkill = False
+            Exit Function
+    End Select
+End Function
+
 Sub HandleHechizoUsuario(ByVal UserIndex As Integer, ByVal uh As Integer)
         '***************************************************
         'Author: Unknown
@@ -1165,7 +1247,9 @@ Sub HandleHechizoUsuario(ByVal UserIndex As Integer, ByVal uh As Integer)
 
 108         Case e_TipoHechizo.uCombinados
 110             Call HechizoCombinados(UserIndex, b, IsAlive)
-    
+            Case e_TipoHechizo.uPhysicalSkill
+                b = HandlePhysicalSkill(UserIndex, eUser, UserList(UserIndex).flags.targetUser.ArrayIndex, eUser, _
+                                        UserList(UserIndex).Stats.UserHechizos(UserList(UserIndex).flags.Hechizo), IsAlive)
         End Select
 
 112     If b Then
@@ -1293,6 +1377,9 @@ Sub HandleHechizoNPC(ByVal UserIndex As Integer, ByVal uh As Integer)
 
 104         Case e_TipoHechizo.uPropiedades ' Afectan HP,MANA,STAMINA,ETC
 106             Call HechizoPropNPC(uh, UserList(UserIndex).flags.TargetNPC.ArrayIndex, UserIndex, b, IsAlive)
+            Case e_TipoHechizo.uPhysicalSkill
+                b = HandlePhysicalSkill(UserIndex, eUser, UserList(UserIndex).flags.TargetNPC.ArrayIndex, eNpc, _
+                                        UserList(UserIndex).Stats.UserHechizos(UserList(UserIndex).flags.Hechizo), IsAlive)
         End Select
 
 108     If b Then
@@ -3993,7 +4080,7 @@ Private Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, X As Byte, Y 
 140             Call NPCs.DoDamageOrHeal(npcIndex, UserIndex, eUser, -Damage, e_DamageSourceType.e_magic, h2)
             
 142             If UserList(UserIndex).ChatCombate = 1 Then
-144                 Call WriteConsoleMsg(UserIndex, "Le has causado " & Damage & " puntos de daño a " & NpcList(npcIndex).name, e_FontTypeNames.FONTTYPE_FIGHT)
+144                 Call WriteConsoleMsg(UserIndex, "Le has causado " & Damage & " puntos de daño a " & NpcList(NpcIndex).name, e_FontTypeNames.FONTTYPE_FIGHT)
                 End If
             End If
             Exit Sub

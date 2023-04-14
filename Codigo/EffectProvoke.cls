@@ -180,7 +180,7 @@ Private Sub ApplyEffectToArea(ByVal Area As Integer)
         For j = x To w
             'we can't taunt someone already taunted
             If MapData(map, j, i).UserIndex > 0 Then
-                If CanAttackUser(Source.ArrayIndex, Source.VersionId, MapData(map, j, i).UserIndex, UserList(MapData(map, j, i).UserIndex).VersionId) = eCanAttack Then
+                If UserMod.CanAttackUser(Source.ArrayIndex, Source.VersionId, MapData(Map, j, i).UserIndex, UserList(MapData(Map, j, i).UserIndex).VersionId) = eCanAttack Then
                     Set Effect = FindEffectOnTarget(0, UserList(MapData(map, j, i).UserIndex).EffectOverTime, TaunteffectId)
                     If Effect Is Nothing Then Call CreateEffect(Source.ArrayIndex, Source.RefType, MapData(map, j, i).UserIndex, eUser, TaunteffectId)
                 End If

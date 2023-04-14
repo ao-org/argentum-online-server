@@ -496,6 +496,10 @@ Public Enum e_TargetType
 
 End Enum
 
+Public Enum e_SkillType
+    ePushingArrow = 1
+    eCannon = 2
+End Enum
 ' <<<<<< Acciona sobre >>>>>>
 Public Enum e_TipoHechizo
 
@@ -507,7 +511,7 @@ Public Enum e_TipoHechizo
     uPortal = 6
     uCombinados = 8
     uMultiShoot = 9
-    
+    uPhysicalSkill = 10
 End Enum
 
 Public Const MAX_MENSAJES_FORO As Byte = 35
@@ -1029,6 +1033,7 @@ Public Type t_Hechizo
     PropioMsg As String
 
     Tipo As e_TipoHechizo
+    SkillType As e_SkillType
     wav As Integer
     FXgrh As Integer
     loops As Byte
