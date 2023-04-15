@@ -94,7 +94,7 @@ End Function
 Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, ByVal QuestSlot As Byte)
         On Error GoTo FinishQuest_Err
         'Maneja el evento de terminar una quest.
-        Dim i              As Integer
+        Dim i, j           As Integer
         Dim InvSlotsLibres As Byte
         Dim NpcIndex       As Integer
 100     NpcIndex = UserList(UserIndex).flags.TargetNPC.ArrayIndex
@@ -136,6 +136,21 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
                 'Nos fijamos si entra
 142             If InvSlotsLibres < .RewardOBJs Then
 144                 Call WriteChatOverHead(UserIndex, "No tienes suficiente espacio en el inventario para recibir la recompensa. Vuelve cuando hayas hecho mas espacio.", NpcList(NpcIndex).Char.CharIndex, vbYellow)
+                    Exit Sub
+                End If
+            End If
+            
+            Dim KnownSkills As Integer
+            If .RewardSkillCount > 0 Then
+                For i = 1 To .RewardSkillCount
+                    For j = 1 To UBound(UserList(UserIndex).Stats.UserHechizos)
+                        If UserList(UserIndex).Stats.UserHechizos(j) = .RewardSkillList(i) Then
+                            KnownSkills = KnownSkills + 1
+                        End If
+                    Next j
+                Next i
+                If KnownSkills = .RewardSkillCount Then
+                    Call WriteLocaleChatOverHead(UserIndex, MsgSkillAlreadyKnown, vbNullString, NpcList(npcIndex).Char.charindex, vbYellow)
                     Exit Sub
                 End If
             End If
@@ -185,20 +200,38 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
                     End If
 188             Next i
             End If
+            
+            If .RewardSkillCount > 0 Then
+                For i = 1 To .RewardSkillCount
+                    If Not TieneHechizo(.RewardSkillList(i), UserIndex) Then
+                        'Buscamos un slot vacio
+204                      For j = 1 To MAXUSERHECHIZOS
+206                          If UserList(UserIndex).Stats.UserHechizos(j) = 0 Then Exit For
+208                      Next j
+210                      If UserList(UserIndex).Stats.UserHechizos(j) <> 0 Then
+212                          Call WriteConsoleMsg(UserIndex, "No tenes espacio para mas hechizos.", e_FontTypeNames.FONTTYPE_INFO)
+                         Else
+214                          UserList(UserIndex).Stats.UserHechizos(j) = .RewardSkillList(i)
+216                          Call UpdateUserHechizos(False, UserIndex, CByte(j))
+                         End If
+                         UserList(UserIndex).flags.ModificoHechizos = True
+                    End If
+                Next i
+            End If
     
             'Actualizamos el personaje
-190         Call UpdateUserInv(True, UserIndex, 0)
+290         Call UpdateUserInv(True, UserIndex, 0)
     
             'Limpiamos el slot de quest.
-192         Call CleanQuestSlot(UserIndex, QuestSlot)
+292         Call CleanQuestSlot(UserIndex, QuestSlot)
         
             'Ordenamos las quests
-194         Call ArrangeUserQuests(UserIndex)
+294         Call ArrangeUserQuests(UserIndex)
 
             'Se agrega que el usuario ya hizo esta quest. - WyroX: La agrego aunque sea repetible, para llevar el control
-198         Call AddDoneQuest(UserIndex, QuestIndex)
+298         Call AddDoneQuest(UserIndex, QuestIndex)
 
-200         If .Repetible = 0 Then
+300         If .Repetible = 0 Then
                 Call WriteUpdateNPCSimbolo(UserIndex, NpcIndex, 2)
             Else
                 Call WriteUpdateNPCSimbolo(UserIndex, NpcIndex, 1)
@@ -207,7 +240,7 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
         Exit Sub
 
 FinishQuest_Err:
-202     Call TraceError(Err.Number, Err.Description, "ModQuest.FinishQuest", Erl)
+    Call TraceError(Err.Number, Err.Description, "ModQuest.FinishQuest", Erl)
 End Sub
  
 Public Sub AddDoneQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer)
@@ -459,30 +492,30 @@ Public Sub LoadQuests()
             
                 'CARGAMOS OBJETOS DE RECOMPENSA
 178             .RewardOBJs = val(Reader.GetValue("QUEST" & i, "RewardOBJs"))
-
 180             If .RewardOBJs > 0 Then
 182                 ReDim .RewardOBJ(1 To .RewardOBJs)
-
 184                 For j = 1 To .RewardOBJs
 186                     tmpStr = Reader.GetValue("QUEST" & i, "RewardOBJ" & j)
-                    
 188                     .RewardOBJ(j).ObjIndex = val(ReadField(1, tmpStr, 45))
 190                     .RewardOBJ(j).amount = val(ReadField(2, tmpStr, 45))
 192                 Next j
-
                 End If
-
+                .RewardSkillCount = val(Reader.GetValue("QUEST" & i, "RewardSkills"))
+200             If .RewardSkillCount > 0 Then
+202                 ReDim .RewardSkillList(1 To .RewardSkillCount)
+204                 For j = 1 To .RewardSkillCount
+206                     .RewardSkillList(j) = val(Reader.GetValue("QUEST" & i, "RewardSkill" & j))
+208                 Next j
+                End If
             End With
-
-194     Next i
+220     Next i
     
         'Eliminamos la clase
-196     Set Reader = Nothing
+230     Set Reader = Nothing
         Exit Sub
                     
 ErrorHandler:
-198     MsgBox "Error cargando el archivo QUESTS.DAT.", vbOKOnly + vbCritical
-
+    MsgBox "Error cargando el archivo QUESTS.DAT.", vbOKOnly + vbCritical
 End Sub
  
 Public Sub ArrangeUserQuests(ByVal UserIndex As Integer)
@@ -545,7 +578,7 @@ Public Sub EnviarQuest(ByVal UserIndex As Integer)
     
         'El NPC hace quests?
 108     If NpcList(NpcIndex).NumQuest = 0 Then
-110         Call WriteChatOverHead(UserIndex, "No tengo ninguna misión para ti.", NpcList(NpcIndex).Char.charindex, vbYellow)
+110         Call WriteChatOverHead(UserIndex, "No tengo ninguna misión para ti.", NpcList(npcIndex).Char.charindex, vbYellow)
             Exit Sub
         End If
         

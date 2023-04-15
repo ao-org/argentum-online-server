@@ -34,6 +34,7 @@ Public Const MsgNotEnoughtAmunitions = 439
 Public Const MsgEquipedArrowRequired = 440
 Public Const MsgYouAreAlreadyInGroup = 441
 Public Const MsgCantEquipYet = 442
+Public Const MsgSkillAlreadyKnown = 443
 
 Public Function GetRequiredWeaponLocaleId(ByVal WeaponType As e_WeaponType) As Integer
     Select Case WeaponType

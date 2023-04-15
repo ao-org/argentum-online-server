@@ -1051,6 +1051,33 @@ WriteChatOverHead_Err:
         '</EhFooter>
 End Sub
 
+''
+' Writes the "ChatOverHead" message to the given user's outgoing data .incomingData.
+'
+' @param    UserIndex User to which the message is intended.
+' @param    Chat Text to be displayed over the char's head.
+' @param    CharIndex The character uppon which the chat will be displayed.
+' @param    Color The color to be used when displaying the chat.
+' @remarks  The data is not actually sent until the buffer is properly flushed.
+Public Sub WriteLocaleChatOverHead(ByVal UserIndex As Integer, _
+                             ByVal ChatId As Integer, _
+                             ByVal Params As String, _
+                             ByVal charindex As Integer, _
+                             ByVal Color As Long)
+        '<EhHeader>
+        On Error GoTo WriteChatOverHead_Err
+        '</EhHeader>
+100     Call modSendData.SendData(ToIndex, UserIndex, PrepareLocaleChatOverHead(ChatId, Params, _
+                charindex, Color, , UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
+        '<EhFooter>
+        Exit Sub
+
+WriteChatOverHead_Err:
+        Call Writer.Clear
+        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteChatOverHead", Erl)
+        '</EhFooter>
+End Sub
+
 Public Sub WriteTextOverChar(ByVal UserIndex As Integer, _
                              ByVal chat As String, _
                              ByVal CharIndex As Integer, _
@@ -3901,15 +3928,18 @@ Public Sub WriteQuestDetails(ByVal UserIndex As Integer, _
 144     Call Writer.WriteInt8(QuestList(QuestIndex).RewardOBJs)
 
 146     If QuestList(QuestIndex).RewardOBJs Then
-
             'si hay objs entonces enviamos la lista
 148         For i = 1 To QuestList(QuestIndex).RewardOBJs
 150             Call Writer.WriteInt16(QuestList(QuestIndex).RewardOBJ(i).amount)
 152             Call Writer.WriteInt16(QuestList(QuestIndex).RewardOBJ(i).ObjIndex)
 154         Next i
-
         End If
-
+        
+        Call Writer.WriteInt8(QuestList(QuestIndex).RewardSkillCount)
+        For i = 1 To QuestList(QuestIndex).RewardSkillCount
+            Writer.WriteInt16 (QuestList(QuestIndex).RewardSkillList(i))
+        Next i
+        
 156     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub
@@ -4019,14 +4049,16 @@ Public Sub WriteNpcQuestListSend(ByVal UserIndex As Integer, ByVal NpcIndex As I
 142         Call Writer.WriteInt8(QuestList(QuestIndex).RewardOBJs)
 
 144         If QuestList(QuestIndex).RewardOBJs Then
-
                 'si hay objs entonces enviamos la lista
 146             For i = 1 To QuestList(QuestIndex).RewardOBJs
 148                 Call Writer.WriteInt16(QuestList(QuestIndex).RewardOBJ(i).amount)
 150                 Call Writer.WriteInt16(QuestList(QuestIndex).RewardOBJ(i).ObjIndex)
 152             Next i
-
             End If
+            Call Writer.WriteInt8(QuestList(QuestIndex).RewardSkillCount)
+            For i = 1 To QuestList(QuestIndex).RewardSkillCount
+                Call Writer.WriteInt16(QuestList(QuestIndex).RewardSkillList(i))
+            Next i
 
             'Enviamos el estado de la QUEST
             '0 Disponible
@@ -4294,6 +4326,33 @@ PrepareMessageSetInvisible_Err:
         '</EhFooter>
 End Function
 
+Public Function PrepareLocaleChatOverHead(ByVal chat As Integer, _
+                                         ByVal Params As String, _
+                                         ByVal charindex As Integer, _
+                                         ByVal Color As Long, _
+                                         Optional ByVal EsSpell As Boolean = False, _
+                                         Optional ByVal x As Byte = 0, _
+                                         Optional ByVal y As Byte = 0, _
+                                         Optional ByVal RequiredMinDisplayTime As Integer = 0, _
+                                         Optional ByVal MaxDisplayTime As Integer = 0)
+    On Error GoTo PrepareMessageChatOverHead_Err
+
+106     Call Writer.WriteInt16(ServerPacketID.LocaleChatOverHead)
+108     Call Writer.WriteInt16(chat)
+109     Call Writer.WriteString8(Params)
+110     Call Writer.WriteInt16(charindex)
+118     Call Writer.WriteInt32(Color)
+119     Call Writer.WriteBool(EsSpell)
+        Call Writer.WriteInt8(x)
+        Call Writer.WriteInt8(y)
+        Call Writer.WriteInt16(RequiredMinDisplayTime)
+        Call Writer.WriteInt16(MaxDisplayTime)
+        Exit Function
+
+PrepareMessageChatOverHead_Err:
+        Call Writer.Clear
+        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageChatOverHead", Erl)
+End Function
 ''
 ' Prepares the "ChatOverHead" message and returns it.
 '
@@ -4310,29 +4369,16 @@ Public Function PrepareMessageChatOverHead(ByVal chat As String, _
                                            Optional ByVal y As Byte = 0, _
                                            Optional ByVal RequiredMinDisplayTime As Integer = 0, _
                                            Optional ByVal MaxDisplayTime As Integer = 0)
-        '<EhHeader>
-        On Error GoTo PrepareMessageChatOverHead_Err
-        '</EhHeader>
-
-        Dim R As Long, g As Long, b As Long
-
-100     b = (Color And 16711680) / 65536
-102     g = (Color And 65280) / 256
-104     R = Color And 255
+    On Error GoTo PrepareMessageChatOverHead_Err
 106     Call Writer.WriteInt16(ServerPacketID.ChatOverHead)
 108     Call Writer.WriteString8(chat)
 110     Call Writer.WriteInt16(CharIndex)
-        ' Write rgb channels and save one byte from long :D
-112     Call Writer.WriteInt8(R)
-114     Call Writer.WriteInt8(g)
-116     Call Writer.WriteInt8(b)
 118     Call Writer.WriteInt32(Color)
 119     Call Writer.WriteBool(EsSpell)
         Call Writer.WriteInt8(X)
         Call Writer.WriteInt8(y)
         Call Writer.WriteInt16(RequiredMinDisplayTime)
         Call Writer.WriteInt16(MaxDisplayTime)
-        '<EhFooter>
         Exit Function
 
 PrepareMessageChatOverHead_Err:
