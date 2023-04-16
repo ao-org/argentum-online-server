@@ -45,6 +45,10 @@ Public Sub UpdateIncreaseModifier(ByRef Reference As t_AnyReference, ByVal Modif
                 Call IncreaseSingle(UserList(Reference.ArrayIndex).Modifiers.PhysicalDamageReduction, Value)
             Case e_ModifierTypes.PhysiccalBonus
                 Call IncreaseSingle(UserList(Reference.ArrayIndex).Modifiers.PhysicalDamageBonus, Value)
+            Case e_ModifierTypes.HitBonus
+                Call IncreaseInteger(UserList(Reference.ArrayIndex).Modifiers.HitBonus, Value)
+            Case e_ModifierTypes.EvasionBonus
+                Call IncreaseInteger(UserList(Reference.ArrayIndex).Modifiers.EvasionBonus, Value)
         End Select
     Else
         Select Case Modifier
@@ -59,6 +63,10 @@ Public Sub UpdateIncreaseModifier(ByRef Reference As t_AnyReference, ByVal Modif
                 Call IncreaseSingle(NpcList(Reference.ArrayIndex).Modifiers.PhysicalDamageReduction, Value)
             Case e_ModifierTypes.PhysiccalBonus
                 Call IncreaseSingle(NpcList(Reference.ArrayIndex).Modifiers.PhysicalDamageBonus, Value)
+            Case e_ModifierTypes.HitBonus
+                Call IncreaseInteger(NpcList(Reference.ArrayIndex).Modifiers.HitBonus, Value)
+            Case e_ModifierTypes.EvasionBonus
+                Call IncreaseInteger(NpcList(Reference.ArrayIndex).Modifiers.EvasionBonus, Value)
         End Select
     End If
 End Sub

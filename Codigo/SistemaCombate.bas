@@ -266,7 +266,7 @@ Private Function PoderEvasion(ByVal UserIndex As Integer) As Long
                 PoderEvasion = .Stats.UserSkills(e_Skill.Tacticas) + (3 * .Stats.UserSkills(e_Skill.Tacticas) / 100) * .Stats.UserAtributos(Agilidad) * ModClase(.clase).Evasion
             End If
             PoderEvasion = PoderEvasion + (2.5 * Maximo(.Stats.ELV - 12, 0))
-
+            PoderEvasion = PoderEvasion + UserMod.GetEvasionBonus(UserList(UserIndex))
         End With
 
         
@@ -284,6 +284,7 @@ On Error GoTo AttackPower_Err
         With UserList(UserIndex)
 100         TempAttackPower = ((.Stats.UserSkills(skill) + ((3 * .Stats.UserSkills(skill) / 100) * .Stats.UserAtributos(e_Atributos.Agilidad))) * skillModifier)
 114         AttackPower = (TempAttackPower + (2.5 * Maximo(CInt(.Stats.ELV) - 12, 0)))
+            AttackPower = AttackPower + UserMod.GetHitBonus(UserList(UserIndex))
         End With
         Exit Function
 AttackPower_Err:
@@ -317,19 +318,12 @@ End Function
 Private Function UserImpactoNpc(ByVal UserIndex As Integer, ByVal npcIndex As Integer, ByVal aType As AttackType) As Boolean
         
         On Error GoTo UserImpactoNpc_Err
-
         Dim PoderAtaque As Long
-
         Dim Arma        As Integer
-
         Dim Proyectil   As Boolean
-
         Dim ProbExito   As Long
-
 100     Arma = UserList(UserIndex).Invent.WeaponEqpObjIndex
-
 102     If Arma = 0 Then Proyectil = False Else Proyectil = ObjData(Arma).Proyectil = 1
-
 104     If Arma > 0 Then 'Usando un arma
             Proyectil = ObjData(Arma).Proyectil = 1
 106         If aType = Ranged Then
@@ -338,23 +332,19 @@ Private Function UserImpactoNpc(ByVal UserIndex As Integer, ByVal npcIndex As In
 110             PoderAtaque = PoderAtaqueArma(UserIndex)
 
             End If
-
         Else 'Peleando con puños
 112         PoderAtaque = PoderAtaqueWrestling(UserIndex)
             Proyectil = False
         End If
 
 114     ProbExito = MaximoInt(10, MinimoInt(90, 50 + ((PoderAtaque - NpcList(NpcIndex).PoderEvasion) * 0.4)))
-
 116     UserImpactoNpc = (RandomNumber(1, 100) <= ProbExito)
-
 118     If UserImpactoNpc Then
 120         Call SubirSkillDeArmaActual(UserIndex)
         End If
         If Not IsSet(NpcList(NpcIndex).flags.StatusMask, eTaunted) Then
             Call SetUserRef(NpcList(NpcIndex).TargetUser, UserIndex)
         End If
-
         Exit Function
 
 UserImpactoNpc_Err:
@@ -364,44 +354,25 @@ UserImpactoNpc_Err:
 End Function
 
 Private Function NpcImpacto(ByVal NpcIndex As Integer, ByVal UserIndex As Integer) As Boolean
-        
-        On Error GoTo NpcImpacto_Err
-        
-
-        '*************************************************
-        'Author: Unknown
-        'Last modified: 03/15/2006
-        'Revisa si un NPC logra impactar a un user o no
-        '03/15/2006 Maraxus - Evité una división por cero que eliminaba NPCs
-        '*************************************************
+    On Error GoTo NpcImpacto_Err
         Dim Rechazo           As Boolean
-
         Dim ProbRechazo       As Long
-
         Dim ProbExito         As Long
-
         Dim UserEvasion       As Long
-
         Dim NpcPoderAtaque    As Long
-
         Dim PoderEvasioEscudo As Long
-
         Dim SkillTacticas     As Long
-
         Dim SkillDefensa      As Long
 
 100     UserEvasion = PoderEvasion(UserIndex)
-102     NpcPoderAtaque = NpcList(NpcIndex).PoderAtaque
+102     NpcPoderAtaque = NpcList(NpcIndex).PoderAtaque + NPCs.GetHitBonus(NpcList(NpcIndex))
 104     PoderEvasioEscudo = PoderEvasionEscudo(UserIndex)
-
 106     SkillTacticas = UserList(UserIndex).Stats.UserSkills(e_Skill.Tacticas)
 108     SkillDefensa = UserList(UserIndex).Stats.UserSkills(e_Skill.Defensa)
 
         'Esta usando un escudo ???
 110     If UserList(UserIndex).Invent.EscudoEqpObjIndex > 0 Then UserEvasion = UserEvasion + PoderEvasioEscudo
-
 112     ProbExito = Maximo(10, Minimo(90, 50 + ((NpcPoderAtaque - UserEvasion) * 0.4)))
-
 114     NpcImpacto = (RandomNumber(1, 100) <= ProbExito)
 
         ' el usuario esta usando un escudo ???
@@ -415,30 +386,19 @@ Private Function NpcImpacto(ByVal NpcIndex As Integer, ByVal UserIndex As Intege
 126                     If Rechazo = True Then
                             'Se rechazo el ataque con el escudo
 128                         Call SendData(SendTarget.ToPCAliveArea, userIndex, PrepareMessagePlayWave(SND_ESCUDO, UserList(userIndex).pos.x, UserList(userIndex).pos.y))
-    
 130                         If UserList(userIndex).ChatCombate = 1 Then
 132                             Call Write_BlockedWithShieldUser(userIndex)
-    
                             End If
-    
-                            'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(UserList(UserIndex).Char.CharIndex, 88, 0))
                         End If
-    
                     End If
-    
                 End If
-                
 134             Call SubirSkill(userIndex, Defensa)
             End If
         End If
-
-        
         Exit Function
 
 NpcImpacto_Err:
-136     Call TraceError(Err.Number, Err.Description, "SistemaCombate.NpcImpacto", Erl)
-
-        
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.NpcImpacto", Erl)
 End Function
 
 Private Function GetUserDamage(ByVal UserIndex As Integer) As Long
@@ -1559,7 +1519,7 @@ Public Function PuedeAtacar(ByVal AttackerIndex As Integer, ByVal VictimIndex As
         
 106     If UserList(AttackerIndex).flags.EnReto Then
 108         If Retos.Salas(UserList(AttackerIndex).flags.SalaReto).TiempoItems > 0 Then
-110             Call WriteConsoleMsg(AttackerIndex, "No podés atacar en este momento.", e_FontTypeNames.FONTTYPE_INFO)
+110             Call WriteConsoleMsg(attackerIndex, "No podés atacar en este momento.", e_FontTypeNames.FONTTYPE_INFO)
 112             PuedeAtacar = False
                 Exit Function
             End If
@@ -1574,14 +1534,14 @@ Public Function PuedeAtacar(ByVal AttackerIndex As Integer, ByVal VictimIndex As
         
         If UserList(AttackerIndex).Grupo.Id > 0 And UserList(VictimIndex).Grupo.Id > 0 And _
            UserList(AttackerIndex).Grupo.Id = UserList(VictimIndex).Grupo.Id Then
-           Call WriteConsoleMsg(AttackerIndex, "No podés atacar a un miembro de tu grupo.", e_FontTypeNames.FONTTYPE_INFO)
+           Call WriteConsoleMsg(attackerIndex, "No podés atacar a un miembro de tu grupo.", e_FontTypeNames.FONTTYPE_INFO)
            PuedeAtacar = False
            Exit Function
         End If
         
         ' No podes atacar si estas en consulta
 120     If UserList(AttackerIndex).flags.EnConsulta Then
-122         Call WriteConsoleMsg(AttackerIndex, "No podés atacar usuarios mientras estás en consulta.", e_FontTypeNames.FONTTYPE_INFO)
+122         Call WriteConsoleMsg(attackerIndex, "No podés atacar usuarios mientras estás en consulta.", e_FontTypeNames.FONTTYPE_INFO)
 124         PuedeAtacar = False
             Exit Function
     
@@ -1915,7 +1875,7 @@ PuedeAtacarNPC_Err:
         
 End Function
 
-Sub CalcularDarExp(ByVal UserIndex As Integer, ByVal npcIndex As Integer, ByVal ElDaño As Long)
+Sub CalcularDarExp(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal ElDaño As Long)
         '***************************************************
         'Autor: Nacho (Integer)
         'Last Modification: 03/09/06 Nacho
@@ -1930,7 +1890,7 @@ Sub CalcularDarExp(ByVal UserIndex As Integer, ByVal npcIndex As Integer, ByVal 
         End If
 
 102     If UserList(UserIndex).Grupo.EnGrupo Then
-104         Call CalcularDarExpGrupal(UserIndex, npcIndex, ElDaño)
+104         Call CalcularDarExpGrupal(UserIndex, NpcIndex, ElDaño)
         Else
 
             Dim ExpaDar As Double
@@ -1941,7 +1901,7 @@ Sub CalcularDarExp(ByVal UserIndex As Integer, ByVal npcIndex As Integer, ByVal 
 
             '[Nacho] La experiencia a dar es la porcion de vida quitada * toda la experiencia
             
-110         ExpaDar = CDbl(ElDaño) * CDbl(NpcList(npcIndex).GiveEXP) / NpcList(npcIndex).Stats.MaxHp
+110         ExpaDar = CDbl(ElDaño) * CDbl(NpcList(NpcIndex).GiveEXP) / NpcList(NpcIndex).Stats.MaxHp
 
 112         If ExpaDar <= 0 Then Exit Sub
 
@@ -1996,7 +1956,7 @@ CalcularDarExp_Err:
         
 End Sub
 
-Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal npcIndex As Integer, ByVal ElDaño As Long)
+Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal ElDaño As Long)
         
         On Error GoTo CalcularDarExpGrupal_Err
         
@@ -2019,10 +1979,10 @@ Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal npcIndex As I
 102     If UserIndex = 0 Then Exit Sub
 104     If ElDaño <= 0 Then ElDaño = 0
 106     If NpcList(NpcIndex).Stats.MaxHp <= 0 Then Exit Sub
-108     If ElDaño > NpcList(npcIndex).Stats.MinHp Then ElDaño = NpcList(npcIndex).Stats.MinHp
+108     If ElDaño > NpcList(NpcIndex).Stats.MinHp Then ElDaño = NpcList(NpcIndex).Stats.MinHp
     
         '[Nacho] La experiencia a dar es la porcion de vida quitada * toda la experiencia
-110     ExpaDar = CLng((ElDaño) * (NpcList(npcIndex).GiveEXP / NpcList(npcIndex).Stats.MaxHp))
+110     ExpaDar = CLng((ElDaño) * (NpcList(NpcIndex).GiveEXP / NpcList(NpcIndex).Stats.MaxHp))
 
 112     If ExpaDar <= 0 Then Exit Sub
 

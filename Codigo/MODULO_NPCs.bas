@@ -1095,7 +1095,7 @@ Function SpawnNpc(ByVal NpcIndex As Integer, Pos As t_WorldPos, ByVal FX As Bool
         End If
 
 142     If Avisar Then
-144         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(NpcList(nIndex).name & " ha aparecido en " & get_map_name(map) & " , todo indica que puede tener una gran recompensa para el que logre sobrevivir a él.", e_FontTypeNames.FONTTYPE_CITIZEN))
+144         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(NpcList(nIndex).name & " ha aparecido en " & get_map_name(Map) & " , todo indica que puede tener una gran recompensa para el que logre sobrevivir a él.", e_FontTypeNames.FONTTYPE_CITIZEN))
         End If
 
 146     SpawnNpc = nIndex
@@ -2118,4 +2118,12 @@ End Function
 
 Public Function GetPhysicDamageReduction(ByRef npc As t_Npc) As Single
     GetPhysicDamageReduction = max(1 - npc.Modifiers.PhysicalDamageReduction, 0)
+End Function
+
+Public Function GetEvasionBonus(ByRef Npc As t_Npc) As Integer
+    GetEvasionBonus = Npc.Modifiers.EvasionBonus
+End Function
+
+Public Function GetHitBonus(ByRef Npc As t_Npc) As Integer
+    GetHitBonus = Npc.Modifiers.HitBonus
 End Function

@@ -24,6 +24,8 @@ Private MagicDamageReduction As Single
 Private PhysicalDamageDone As Single
 Private MagicDamageDone As Single
 Private SpeedModifier As Single
+Private HitModifier As Integer
+Private EvasionModifier As Integer
 
 Public Sub Setup(ByVal sourceIndex As Integer, ByVal sourceType As e_ReferenceType, ByVal TargetIndex As Integer, ByVal TargetType As e_ReferenceType, _
                  ByVal EffectId As Integer, ByVal ID As Integer)
@@ -38,6 +40,8 @@ Public Sub Setup(ByVal sourceIndex As Integer, ByVal sourceType As e_ReferenceTy
         PhysicalDamageDone = .PhysicalDamageDone
         MagicDamageDone = .MagicDamageDone
         SpeedModifier = .SpeedModifier
+        HitModifier = .HitModifier
+        EvasionModifier = .EvasionModifier
         If DotInfo.TargetRef.RefType = eUser And .ClientEffectTypeId > 0 Then Call WriteSendSkillCdUpdate(TargetIndex, .ClientEffectTypeId, ID, .TickTime, .buffType)
     End With
     If IsValidRef(DotInfo.TargetRef) Then
@@ -46,6 +50,8 @@ Public Sub Setup(ByVal sourceIndex As Integer, ByVal sourceType As e_ReferenceTy
         Call UpdateIncreaseModifier(DotInfo.TargetRef, MagicReduction, MagicDamageReduction)
         Call UpdateIncreaseModifier(DotInfo.TargetRef, PhysicalReduction, PhysicalDamageReduction)
         Call UpdateIncreaseModifier(DotInfo.TargetRef, MovementSpeed, SpeedModifier)
+        Call UpdateIncreaseModifier(DotInfo.TargetRef, e_ModifierTypes.HitBonus, HitModifier)
+        Call UpdateIncreaseModifier(DotInfo.TargetRef, e_ModifierTypes.EvasionBonus, EvasionModifier)
     End If
 End Sub
 
@@ -135,6 +141,8 @@ Public Sub IBaseEffectOverTime_OnRemove()
         Call UpdateIncreaseModifier(DotInfo.TargetRef, MagicReduction, -MagicDamageReduction)
         Call UpdateIncreaseModifier(DotInfo.TargetRef, PhysicalReduction, -PhysicalDamageReduction)
         Call UpdateIncreaseModifier(DotInfo.TargetRef, MovementSpeed, -SpeedModifier)
+        Call UpdateIncreaseModifier(DotInfo.TargetRef, e_ModifierTypes.HitBonus, -HitModifier)
+        Call UpdateIncreaseModifier(DotInfo.TargetRef, e_ModifierTypes.EvasionBonus, -EvasionModifier)
     End If
     If DotInfo.TargetRef.RefType = eUser And EffectOverTime(DotInfo.EotId).ClientEffectTypeId > 0 Then Call WriteSendSkillCdUpdate(DotInfo.TargetRef.ArrayIndex, EffectOverTime(DotInfo.EotId).ClientEffectTypeId, DotInfo.UniqueId, 0, EffectOverTime(DotInfo.EotId).buffType)
 End Sub

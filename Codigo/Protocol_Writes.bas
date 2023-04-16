@@ -2049,9 +2049,9 @@ Public Sub WriteChangeSpellSlot(ByVal UserIndex As Integer, ByVal Slot As Intege
 104     Call Writer.WriteInt16(UserList(UserIndex).Stats.UserHechizos(Slot))
 
 106     If UserList(UserIndex).Stats.UserHechizos(Slot) > 0 Then
-108         Call Writer.WriteInt8(UserList(UserIndex).Stats.UserHechizos(Slot))
+108         Call Writer.WriteInt16(UserList(UserIndex).Stats.UserHechizos(Slot))
         Else
-110         Call Writer.WriteInt8(255)
+110         Call Writer.WriteInt16(-1)
         End If
 
 112     Call modSendData.SendData(ToIndex, UserIndex)
