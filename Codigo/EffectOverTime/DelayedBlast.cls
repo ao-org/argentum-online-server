@@ -142,8 +142,13 @@ Private Sub DoBlast()
     Dim Area As Integer
     Area = EffectOverTime(DotInfo.EotId).Area
     Debug.Assert Area > 0
-    If EffectOverTime(DotInfo.EotId).OnHitFx > 0 Then Call SendData(SendTarget.ToPCAliveArea, DotInfo.TargetRef.ArrayIndex, PrepareMessageFxPiso(EffectOverTime(DotInfo.EotId).OnHitFx, TargetX, TargetY))
-    If EffectOverTime(DotInfo.EotId).OnHitWav > 0 Then Call modSendData.SendToAreaByPos(TargetMap, TargetX, TargetY, PrepareMessagePlayWave(EffectOverTime(DotInfo.EotId).OnHitWav, TargetX, TargetY, False))
+    If DotInfo.TargetRef.RefType = eUser Then
+        If EffectOverTime(DotInfo.EotId).OnHitFx > 0 Then Call SendData(SendTarget.ToPCAliveArea, DotInfo.TargetRef.ArrayIndex, PrepareMessageFxPiso(EffectOverTime(DotInfo.EotId).OnHitFx, TargetX, TargetY))
+        If EffectOverTime(DotInfo.EotId).OnHitWav > 0 Then Call modSendData.SendToAreaByPos(TargetMap, TargetX, TargetY, PrepareMessagePlayWave(EffectOverTime(DotInfo.EotId).OnHitWav, TargetX, TargetY, False))
+    Else
+        If EffectOverTime(DotInfo.EotId).OnHitFx > 0 Then Call SendData(SendTarget.ToNPCAliveArea, DotInfo.TargetRef.ArrayIndex, PrepareMessageFxPiso(EffectOverTime(DotInfo.EotId).OnHitFx, TargetX, TargetY))
+        If EffectOverTime(DotInfo.EotId).OnHitWav > 0 Then Call modSendData.SendToAreaByPos(TargetMap, TargetX, TargetY, PrepareMessagePlayWave(EffectOverTime(DotInfo.EotId).OnHitWav, TargetX, TargetY, False))
+    End If
     Dim x, y, w, h, Map As Integer
     x = TargetX - Area \ 2
     y = TargetY - Area \ 2
@@ -159,18 +164,22 @@ Private Sub DoBlast()
         For j = x To w
             'we can't taunt someone already taunted
             If MapData(TargetMap, j, i).UserIndex > 0 Then
-                If CanAttackUser(DotInfo.TargetRef.ArrayIndex, DotInfo.TargetRef.VersionId, MapData(TargetMap, j, i).UserIndex, UserList(MapData(TargetMap, j, i).UserIndex).VersionId) = eCanAttack Then
-                    If DotInfo.TargetRef.RefType = eUser Then
+                If DotInfo.TargetRef.RefType = eUser Then
+                    If UserMod.CanAttackUser(DotInfo.TargetRef.ArrayIndex, DotInfo.TargetRef.VersionId, MapData(TargetMap, j, i).UserIndex, UserList(MapData(TargetMap, j, i).UserIndex).VersionId) = eCanAttack Then
                         Call UserDoDamageToUser(DotInfo.TargetRef.ArrayIndex, MapData(TargetMap, j, i).UserIndex, GetDamageForTile(j, i, GetUserDamageWithItem(DotInfo.TargetRef.ArrayIndex, SourceObjIndex, 0)), e_phisical, SourceObjIndex)
-                    Else
+                    End If
+                Else
+                    If NPCs.CanAttackUser(DotInfo.TargetRef.ArrayIndex, MapData(TargetMap, j, i).UserIndex) = eCanAttack Then
                         Call NpcDoDamageToUser(DotInfo.TargetRef.ArrayIndex, MapData(TargetMap, j, i).UserIndex, GetDamageForTile(j, i, GetNpcDamage(DotInfo.TargetRef.ArrayIndex)), e_phisical, SourceObjIndex)
                     End If
                 End If
             ElseIf MapData(TargetMap, j, i).npcIndex > 0 Then
-                If UserCanAttackNpc(DotInfo.TargetRef.ArrayIndex, MapData(TargetMap, j, i).npcIndex) = eCanAttack Then
-                    If DotInfo.TargetRef.RefType = eUser Then
+                If DotInfo.TargetRef.RefType = eUser Then
+                    If UserCanAttackNpc(DotInfo.TargetRef.ArrayIndex, MapData(TargetMap, j, i).NpcIndex) = eCanAttack Then
                         Call UserDamageToNpc(DotInfo.TargetRef.ArrayIndex, MapData(TargetMap, j, i).npcIndex, GetDamageForTile(j, i, GetUserDamageWithItem(DotInfo.TargetRef.ArrayIndex, SourceObjIndex, 0)), e_phisical, SourceObjIndex)
-                    Else
+                    End If
+                Else
+                    If NPCs.CanAttackNpc(DotInfo.TargetRef.ArrayIndex, MapData(TargetMap, j, i).NpcIndex) = eCanAttack Then
                         Call NpcDamageToNpc(DotInfo.TargetRef.ArrayIndex, MapData(TargetMap, j, i).npcIndex, GetDamageForTile(j, i, GetNpcDamage(DotInfo.TargetRef.ArrayIndex)))
                     End If
                 End If

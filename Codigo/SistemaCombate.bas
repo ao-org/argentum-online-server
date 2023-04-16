@@ -677,11 +677,15 @@ NpcDamage_Err:
 182     Call TraceError(Err.Number, Err.Description, "SistemaCombate.NpcDamage", Erl)
 End Function
 
-Public Sub NpcDoDamageToUser(ByVal attackerIndex As Integer, ByVal TargetIndex As Integer, ByVal Damage As Long, ByVal Source As e_DamageSourceType, ByVal ObjIndex As Integer)
+Public Function NpcDoDamageToUser(ByVal AttackerIndex As Integer, ByVal TargetIndex As Integer, ByVal Damage As Long, _
+                                  ByVal Source As e_DamageSourceType, ByVal ObjIndex As Integer) As e_DamageResult
     Damage = Damage * NPCs.GetPhysicalDamageModifier(NpcList(attackerIndex))
 149 Damage = Damage * UserMod.GetPhysicDamageReduction(UserList(TargetIndex))
-    Call UserMod.DoDamageOrHeal(TargetIndex, attackerIndex, e_ReferenceType.eNpc, -Damage, Source, ObjIndex)
-End Sub
+    NpcDoDamageToUser = UserMod.DoDamageOrHeal(TargetIndex, AttackerIndex, e_ReferenceType.eNpc, -Damage, Source, ObjIndex)
+    If UserList(TargetIndex).ChatCombate = 1 Then
+        Call WriteNPCHitUser(TargetIndex, bTorso, Damage)
+    End If
+End Function
 
 Public Function NpcAtacaUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer, ByVal Heading As e_Heading) As Boolean
         
@@ -778,12 +782,13 @@ Private Sub NpcDamageNpc(ByVal Atacante As Integer, ByVal Victima As Integer)
     End With
 End Sub
 
-Public Sub NpcDamageToNpc(ByVal attackerIndex As Integer, ByVal TargetIndex As Integer, ByVal Damage As Integer)
+Public Function NpcDamageToNpc(ByVal AttackerIndex As Integer, ByVal TargetIndex As Integer, ByVal Damage As Integer) As e_DamageResult
 On Error GoTo NpcDamageNpc_Err
 100 With NpcList(attackerIndex)
 106     Damage = Damage * NPCs.GetPhysicalDamageModifier(NpcList(attackerIndex))
 110     Damage = Damage * NPCs.GetPhysicDamageReduction(NpcList(TargetIndex))
-        If NPCs.DoDamageOrHeal(TargetIndex, attackerIndex, eNpc, -Damage, e_phisical, 0) = eDead Then
+        NpcDamageToNpc = NPCs.DoDamageOrHeal(TargetIndex, AttackerIndex, eNpc, -Damage, e_phisical, 0)
+        If NpcDamageToNpc = eDead Then
             If Not IsValidUserRef(NpcList(attackerIndex).MaestroUser) Then
                 .Movement = .flags.OldMovement
 116             If LenB(.flags.AttackedBy) <> 0 Then
@@ -792,10 +797,10 @@ On Error GoTo NpcDamageNpc_Err
             End If
         End If
     End With
-    Exit Sub
+    Exit Function
 NpcDamageNpc_Err:
     Call TraceError(Err.Number, Err.Description, "SistemaCombate.NpcDamageNpc")
-End Sub
+End Function
 
 Public Sub NpcAtacaNpc(ByVal Atacante As Integer, ByVal Victima As Integer, Optional ByVal cambiarMovimiento As Boolean = True)
         
@@ -1374,9 +1379,12 @@ Public Function UserDoDamageToUser(ByVal attackerIndex As Integer, ByVal TargetI
     Damage = Damage * UserMod.GetPhysicalDamageModifier(UserList(AttackerIndex))
 149 Damage = Damage * UserMod.GetPhysicDamageReduction(UserList(TargetIndex))
 240 UserDoDamageToUser = UserMod.DoDamageOrHeal(TargetIndex, attackerIndex, e_ReferenceType.eUser, -Damage, Source, ObjIndex)
+    Dim DamageStr As String
+    DamageStr = PonerPuntos(Damage)
 154 If UserList(AttackerIndex).ChatCombate = 1 Then
-156     Call WriteUserHittedUser(attackerIndex, RandomNumber(bCabeza, bTorso), UserList(TargetIndex).Char.charindex, PonerPuntos(Damage))
+156     Call WriteUserHittedUser(AttackerIndex, bTorso, UserList(TargetIndex).Char.charindex, DamageStr)
     End If
+    Call WriteUserHittedByUser(TargetIndex, bTorso, UserList(AttackerIndex).Char.charindex, DamageStr)
 End Function
 
 Private Sub DesequiparObjetoDeUnGolpe(ByVal AttackerIndex As Integer, ByVal VictimIndex As Integer, ByVal parteDelCuerpo As e_PartesCuerpo)

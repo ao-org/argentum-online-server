@@ -154,7 +154,7 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
         
         ' Objetivo de pruebas nunca muere
 100     If NpcList(NpcIndex).NPCtype = DummyTarget Then
-102         Call SendData(SendTarget.ToNPCAliveArea, npcIndex, PrepareMessageChatOverHead("¡¡Auch!!", NpcList(npcIndex).Char.charindex, vbRed))
+102         Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareMessageChatOverHead("¡¡Auch!!", NpcList(NpcIndex).Char.charindex, vbRed))
 
 104         If UBound(NpcList(NpcIndex).Char.Animation) > 0 Then
 106             Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareMessageDoAnimation(NpcList(NpcIndex).Char.charindex, NpcList(NpcIndex).Char.Animation(1)))
@@ -2120,6 +2120,95 @@ Public Function GetPhysicDamageReduction(ByRef npc As t_Npc) As Single
     GetPhysicDamageReduction = max(1 - npc.Modifiers.PhysicalDamageReduction, 0)
 End Function
 
+Public Function CanAttackUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer) As e_AttackInteractionResult
+    With NpcList(NpcIndex)
+        If Not .flags.AtacaUsuarios Then
+            CanAttackUser = eNotEnougthPrivileges
+            Exit Function
+        End If
+        
+        If EsGM(UserIndex) Then
+            If UserList(UserIndex).flags.EnConsulta Then
+                CanAttackUser = eNotEnougthPrivileges
+                Exit Function
+            End If
+            If Not UserList(UserIndex).flags.AdminPerseguible Then
+                CanAttackUser = eNotEnougthPrivileges
+                Exit Function
+            End If
+            If UserList(UserIndex).flags.invisible Then
+                CanAttackUser = eNotEnougthPrivileges
+                Exit Function
+            End If
+        End If
+        Dim AttackerFaction As e_Facciones
+        If IsValidUserRef(.MaestroUser) Then
+            AttackerFaction = UserList(.MaestroUser.ArrayIndex).Faccion.Status
+        Else
+            AttackerFaction = .flags.Faccion
+        End If
+        If FactionCanAttackFaction(AttackerFaction, UserList(UserIndex).Faccion.Status) Then
+            CanAttackUser = eSameFaction
+            Exit Function
+        End If
+    End With
+    CanAttackUser = eCanAttack
+End Function
+
+Public Function CanAttackNpc(ByVal NpcIndex As Integer, ByVal TargetIndex As Integer) As e_AttackInteractionResult
+
+    If NpcIndex = TargetIndex Then
+        CanAttackNpc = eSameFaction
+        Exit Function
+    End If
+    With NpcList(NpcIndex)
+        If NpcList(TargetIndex).Attackable = 0 Then
+            CanAttackNpc = eNotEnougthPrivileges
+            Exit Function
+        End If
+        If Not NpcList(TargetIndex).flags.NPCActive Then
+            CanAttackNpc = eNotEnougthPrivileges
+            Exit Function
+        End If
+        If Not .flags.AtacaNPCs Then
+            CanAttackNpc = eNotEnougthPrivileges
+            Exit Function
+        End If
+        
+        Dim TargetFaction As e_Facciones
+        Dim AttackerFaction As e_Facciones
+        Dim AttackerIsFreeCrature As Boolean
+        Dim TargetIsFreeCrature As Boolean
+        If IsValidUserRef(NpcList(TargetIndex).MaestroUser) Then
+            TargetFaction = UserList(NpcList(TargetIndex).MaestroUser.ArrayIndex).Faccion.Status
+            TargetIsFreeCrature = False
+        Else
+            TargetFaction = NpcList(TargetIndex).flags.Faccion
+            TargetIsFreeCrature = True
+        End If
+        If IsValidUserRef(.MaestroUser) Then
+            AttackerFaction = UserList(.MaestroUser.ArrayIndex).Faccion.Status
+            AttackerIsFreeCrature = False
+        Else
+            AttackerFaction = .flags.Faccion
+            AttackerIsFreeCrature = True
+        End If
+        
+        If Not FactionCanAttackFaction(AttackerFaction, TargetFaction) Then
+            CanAttackNpc = eSameFaction
+            Exit Function
+        End If
+        
+        If AttackerIsFreeCrature And TargetIsFreeCrature Then
+            CanAttackNpc = eSameFaction
+            Exit Function
+        End If
+    
+        
+    End With
+    
+    CanAttackNpc = eCanAttack
+End Function
 Public Function GetEvasionBonus(ByRef Npc As t_Npc) As Integer
     GetEvasionBonus = Npc.Modifiers.EvasionBonus
 End Function
