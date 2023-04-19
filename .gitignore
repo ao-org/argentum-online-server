@@ -26,3 +26,4 @@ Database.db-wal
 Logs/numusers.log
 feature_toggle.ini
 Logs/numusers.log
+Database.db
