@@ -171,9 +171,11 @@ Public Sub PerformAction()
             With UserList(.Grupo.Lider.ArrayIndex).Grupo
                 For i = 1 To .CantidadMiembros
                     If IsValidUserRef(.Miembros(i)) Then
-                        If distance(UserList(DotInfo.TargetRef.ArrayIndex).pos.x, UserList(DotInfo.TargetRef.ArrayIndex).pos.y, UserList(.Miembros(i).ArrayIndex).pos.x, UserList(.Miembros(i).ArrayIndex).pos.y) < AreaOfEffect Then
-                            If CanHelpUser(DotInfo.TargetRef.ArrayIndex, .Miembros(i).ArrayIndex) = eInteractionOk Then
-                                Call ApplyEffectTo(.Miembros(i).ArrayIndex, eUser)
+                        If UserList(DotInfo.TargetRef.ArrayIndex).pos.Map = UserList(.Miembros(i).ArrayIndex).pos.Map Then
+                            If Distance(UserList(DotInfo.TargetRef.ArrayIndex).pos.x, UserList(DotInfo.TargetRef.ArrayIndex).pos.y, UserList(.Miembros(i).ArrayIndex).pos.x, UserList(.Miembros(i).ArrayIndex).pos.y) < AreaOfEffect Then
+                                If CanHelpUser(DotInfo.TargetRef.ArrayIndex, .Miembros(i).ArrayIndex) = eInteractionOk Then
+                                    Call ApplyEffectTo(.Miembros(i).ArrayIndex, eUser)
+                                End If
                             End If
                         End If
                     End If

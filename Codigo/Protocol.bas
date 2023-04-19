@@ -214,6 +214,7 @@ Public Enum ServerPacketID
     DebugDataResponse
     CreateProjectile
     UpdateTrap
+    UpdateGroupInfo
     #If PYMMO = 0 Then
     AccountCharacterList
     #End If
@@ -540,6 +541,7 @@ Public Enum ClientPacketID
     RequestDebug '/RequestDebug consulta info debug al server, para gms
     LobbyCommand
     FeatureToggle
+    ActionOnGroupFrame
     #If PYMMO = 0 Then
     CreateAccount
     LoginAccount
@@ -1384,6 +1386,8 @@ On Error Resume Next
             Call HandleLobbyCommand(UserIndex)
         Case ClientPacketID.FeatureToggle
             Call HandleFeatureToggle(UserIndex)
+        Case ClientPacketID.ActionOnGroupFrame
+            Call HandleActionOnGroupFrame(UserIndex)
 #If PYMMO = 0 Then
         Case ClientPacketID.CreateAccount
             Call HandleCreateAccount(userindex)
@@ -9909,6 +9913,7 @@ Private Sub HandleAbandonarGrupo(ByVal UserIndex As Integer)
 120             Call SetUserRef(UserList(userIndex).Grupo.PropuestaDe, 0)
 122             Call WriteConsoleMsg(UserIndex, "Has disuelto el grupo.", e_FontTypeNames.FONTTYPE_INFOIAO)
 124             Call RefreshCharStatus(UserIndex)
+                Call modSendData.SendData(ToIndex, UserIndex, PrepareUpdateGroupInfo(UserIndex))
             Else
 126             Call SalirDeGrupo(UserIndex)
             End If
@@ -11398,4 +11403,45 @@ Private Sub HandleDeleteItem(ByVal UserIndex As Integer)
 
 HandleDeleteItem_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleDeleteItem", Erl)
+End Sub
+
+Public Sub HandleActionOnGroupFrame(ByVal UserIndex As Integer)
+On Error GoTo HandleActionOnGroupFrame_Err:
+    Dim TargetGroupMember As Byte
+    TargetGroupMember = Reader.ReadInt8
+    
+    With UserList(UserIndex)
+        If Not .Grupo.EnGrupo Then Exit Sub
+        If UserList(.Grupo.Lider.ArrayIndex).Grupo.CantidadMiembros < TargetGroupMember Then Exit Sub
+        If Not IsValidUserRef(UserList(.Grupo.Lider.ArrayIndex).Grupo.Miembros(TargetGroupMember)) Then Exit Sub
+        If UserList(.Grupo.Lider.ArrayIndex).Grupo.Miembros(TargetGroupMember).ArrayIndex = UserIndex Then Exit Sub
+        If UserMod.IsStun(.flags, .Counters) Then Exit Sub
+        If .flags.Muerto = 1 Or .flags.Descansar Then Exit Sub
+        Dim TargetUserIndex As Integer
+        TargetUserIndex = UserList(.Grupo.Lider.ArrayIndex).Grupo.Miembros(TargetGroupMember).ArrayIndex
+        If Abs(.pos.Map <> UserList(TargetUserIndex).pos.Map) Then Exit Sub
+        If Abs(.pos.x - UserList(TargetUserIndex).pos.x) > RANGO_VISION_X Or Abs(.pos.y - UserList(TargetUserIndex).pos.y) > RANGO_VISION_Y Then Exit Sub
+        If Not IntervaloPermiteUsarArcos(UserIndex, False) Then Exit Sub
+        If Not IntervaloPermiteGolpeMagia(UserIndex, False) Then Exit Sub
+        If Not IntervaloPermiteLanzarSpell(UserIndex) Then Exit Sub
+        If .flags.Meditando Then
+            .flags.Meditando = False
+            .Char.FX = 0
+            Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageMeditateToggle(.Char.charindex, 0))
+        End If
+        .flags.targetUser = UserList(.Grupo.Lider.ArrayIndex).Grupo.Miembros(TargetGroupMember)
+        If .flags.Hechizo > 0 Then
+            .Counters.controlHechizos.HechizosTotales = .Counters.controlHechizos.HechizosTotales + 1
+            Call LanzarHechizo(.flags.Hechizo, UserIndex)
+        If IsValidUserRef(.flags.GMMeSigue) Then
+            Call WriteNofiticarClienteCasteo(.flags.GMMeSigue.ArrayIndex, 0)
+        End If
+        .flags.Hechizo = 0
+        Else
+            Call WriteConsoleMsg(UserIndex, "¡Primero selecciona el hechizo que quieres lanzar!", e_FontTypeNames.FONTTYPE_INFO)
+        End If
+    End With
+    
+HandleActionOnGroupFrame_Err:
+102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleActionOnGroupFrame", Erl)
 End Sub

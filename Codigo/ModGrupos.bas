@@ -115,9 +115,10 @@ Public Sub EcharMiembro(ByVal UserIndex As Integer, ByVal Indice As Byte)
         Dim LoopC          As Long
         Dim indexviejo     As Byte
         Dim UserIndexEchar As Integer
+        Dim GroupLider     As Integer
     
 100     With UserList(UserIndex).Grupo
-    
+            GroupLider = .Lider.ArrayIndex
 102         If Not .EnGrupo Then
 104             Call WriteConsoleMsg(userindex, "No estás en ningun grupo", e_FontTypeNames.FONTTYPE_New_GRUPO)
                 Exit Sub
@@ -185,9 +186,12 @@ Public Sub EcharMiembro(ByVal UserIndex As Integer, ByVal Indice As Byte)
 170             .CantidadMiembros = 0
 172             Call SetUserRef(.Miembros(1), 0)
                 .ID = -1
+                Call modSendData.SendData(ToIndex, UserIndex, PrepareUpdateGroupInfo(UserIndex))
             End If
         End With
 174     Call RefreshCharStatus(UserIndex)
+        Call modSendData.SendData(ToGroup, GroupLider, PrepareUpdateGroupInfo(GroupLider))
+        Call modSendData.SendData(ToIndex, UserIndexEchar, PrepareUpdateGroupInfo(UserIndexEchar))
         Exit Sub
 
 EcharMiembro_Err:
@@ -249,15 +253,15 @@ Public Sub SalirDeGrupo(ByVal UserIndex As Integer)
 146             Call SetUserRef(UserList(.Grupo.Lider.ArrayIndex).Grupo.PropuestaDe, 0)
 148             UserList(.Grupo.Lider.ArrayIndex).Grupo.CantidadMiembros = 0
 150             Call SetUserRef(UserList(.Grupo.Lider.ArrayIndex).Grupo.Miembros(1), 0)
-                
 152             Call RefreshCharStatus(.Grupo.Lider.ArrayIndex)
-
+                Call modSendData.SendData(ToIndex, .Grupo.Lider.ArrayIndex, PrepareUpdateGroupInfo(.Grupo.Lider.ArrayIndex))
             End If
 
 154         Call WriteUbicacion(UserIndex, 1, 0)
-    
+            Call modSendData.SendData(ToGroup, .Grupo.Lider.ArrayIndex, PrepareUpdateGroupInfo(.Grupo.Lider.ArrayIndex))
 156         Call SetUserRef(.Grupo.Lider, 0)
-    
+            
+            Call modSendData.SendData(ToIndex, UserIndex, PrepareUpdateGroupInfo(UserIndex))
         End With
     
 158     Call RefreshCharStatus(UserIndex)
@@ -277,9 +281,9 @@ Public Sub SalirDeGrupoForzado(ByVal UserIndex As Integer)
         Dim i          As Long
         Dim LoopC      As Long
         Dim indexviejo As Byte
+        Dim GroupLider As Integer
     
 100     With UserList(UserIndex)
-    
 102         .Grupo.EnGrupo = False
             .Grupo.ID = -1
 104         For i = 1 To 6
@@ -294,7 +298,8 @@ Public Sub SalirDeGrupoForzado(ByVal UserIndex As Integer)
                 End If
 118         Next i
 120         UserList(.Grupo.Lider.ArrayIndex).Grupo.CantidadMiembros = UserList(.Grupo.Lider.ArrayIndex).Grupo.CantidadMiembros - 1
-        
+            Call modSendData.SendData(ToGroup, .Grupo.Lider.ArrayIndex, PrepareUpdateGroupInfo(.Grupo.Lider.ArrayIndex))
+            Call modSendData.SendData(ToIndex, UserIndex, PrepareUpdateGroupInfo(UserIndex))
             Dim a As Long
 122         For a = 1 To UserList(.Grupo.Lider.ArrayIndex).Grupo.CantidadMiembros
 124             Call WriteUbicacion(UserList(.Grupo.Lider.ArrayIndex).Grupo.Miembros(a).ArrayIndex, indexviejo, 0)
@@ -335,6 +340,7 @@ On Error GoTo FinalizarGrupo_Err
 116             Call WriteUbicacion(UserList(.Grupo.Lider.ArrayIndex).Grupo.Miembros(i).ArrayIndex, 1, 0)
 118             .Grupo.EnGrupo = False
                 .Grupo.ID = -1
+                Call modSendData.SendData(ToIndex, .Grupo.Miembros(i).ArrayIndex, PrepareUpdateGroupInfo(.Grupo.Miembros(i).ArrayIndex))
 120         Next i
         End With
         Exit Sub
@@ -411,6 +417,7 @@ On Error GoTo AddUserToGRoup_Err
 140 Call RefreshCharStatus(GroupLiderIndex)
 150 Call RefreshCharStatus(UserIndex)
 160 Call CompartirUbicacion(UserIndex)
+    Call modSendData.SendData(ToGroup, UserIndex, PrepareUpdateGroupInfo(UserIndex))
     Exit Sub
 AddUserToGRoup_Err:
 122     Call TraceError(Err.Number, Err.Description, "ModGrupos.AddUserToGRoup", Erl)

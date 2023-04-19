@@ -742,6 +742,8 @@ Public Sub WriteUpdateHP(ByVal UserIndex As Integer)
                 PrepareMessageCharUpdateHP(userindex))
 101     Call SendData(SendTarget.ToClanArea, UserList(userindex).GuildIndex, _
                 PrepareMessageCharUpdateHP(UserIndex))
+        Call SendData(SendTarget.ToGroupButIndex, UserIndex, _
+                PrepareMessageCharUpdateHP(UserIndex))
 102     Call Writer.WriteInt16(ServerPacketID.UpdateHP)
 104     Call Writer.WriteInt16(UserList(UserIndex).Stats.MinHp)
 
@@ -5123,6 +5125,30 @@ Public Function PrepareTrapUpdate(ByVal State As Byte, ByVal x As Byte, ByVal y 
 106     Call Writer.WriteInt8(y)
 
         Exit Function
+PrepareTrapUpdate_Err:
+        Call Writer.Clear
+        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareTrapUpdate", Erl)
+End Function
+
+Public Function PrepareUpdateGroupInfo(ByVal UserIndex As Integer)
+    On Error GoTo PrepareTrapUpdate_Err
+100 Call Writer.WriteInt16(ServerPacketID.UpdateGroupInfo)
+    If IsValidUserRef(UserList(UserIndex).Grupo.Lider) Then
+        With UserList(UserList(UserIndex).Grupo.Lider.ArrayIndex).Grupo
+            Dim i As Integer
+            Writer.WriteInt8 (.CantidadMiembros)
+            For i = 1 To .CantidadMiembros
+                Writer.WriteString8 (UserList(.Miembros(i).ArrayIndex).name)
+                Writer.WriteInt16 (UserList(.Miembros(i).ArrayIndex).Char.charindex)
+                Writer.WriteInt16 (UserList(.Miembros(i).ArrayIndex).Char.head)
+                Writer.WriteInt16 (UserList(.Miembros(i).ArrayIndex).Stats.MinHp)
+                Writer.WriteInt16 (UserList(.Miembros(i).ArrayIndex).Stats.MaxHp)
+            Next i
+        End With
+    Else
+        Writer.WriteInt8 (0)
+    End If
+    Exit Function
 PrepareTrapUpdate_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareTrapUpdate", Erl)
