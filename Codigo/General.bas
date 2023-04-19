@@ -594,16 +594,18 @@ Sub Main()
         Call initBase64Chars
         
 152     frmCargando.Label1(2).Caption = "Conectando base de datos y limpiando usuarios logueados"
-    
+        
+        If Not FileExist(App.Path & "/" & DatabaseFileName) Then
+            Call FileSystem.FileCopy(App.Path & "/Empty_db.db", App.Path & "/" & DatabaseFileName)
+        End If
         ' ************************* Base de Datos ********************
         'Conecto base de datos
 154     Call Database_Connect
         
         Call Database_Connect_Async
-    
+        
         ' Construimos las querys grandes
 156     Call Contruir_Querys
-
 113     Call LoadDBMigrations
         ' ******************* FIN - Base de Datos ********************
 
@@ -2455,6 +2457,20 @@ Private Function GetElapsed() As Single
     Call QueryPerformanceCounter(sTime2)
 End Function
 
+Public Function RunScriptInFile(ByVal FilePath As String) As Boolean
+    Dim Script As String
+    Script = FileText(FilePath)
+    Script = Replace(Replace(Script, Chr(10), ""), Chr(13), "")
+    Dim RS As Recordset
+    If Script <> vbNullString Then
+        Set RS = Query(Script)
+        If RS Is Nothing Then
+            RunScriptInFile = False
+            Exit Function
+        End If
+    End If
+    RunScriptInFile = True
+End Function
 'Reads the files inside the ScriptsDB folder, it can be a create table, alter, etc.
 'we are calling this files dbmigrations, this function check this
 'folder and the db, and run all the files that are not registered in the db migration table
@@ -2486,18 +2502,12 @@ Public Sub LoadDBMigrations()
             If LastScript < date_ Then
                 'Leemos el archivo
                 Dim script As String
-                script = FileText(App.Path & "/ScriptsDB/" & sFilename)
-                script = Replace(Replace(script, Chr(10), ""), Chr(13), "")
-                
-                If script <> vbNullString Then
-                    Set RS = Query(script)
-                    Dim Description As String
-                    Description = mid(sFilename, 13, Len(sFilename) - 16)
-                    If RS Is Nothing Then
-                        Call Err.raise(5, , "invalid - " & Description)
-                    Else
-                        Call Query("insert into migrations (date, description) values (?,?);", date_, Description)
-                    End If
+                Dim Description As String
+                Description = mid(sFilename, 13, Len(sFilename) - 16)
+                If RunScriptInFile(App.Path & "/ScriptsDB/" & sFilename) Then
+                    Call Query("insert into migrations (date, description) values (?,?);", Date_, Description)
+                Else
+                    Call Err.raise(5, , "invalid - " & Description)
                 End If
             End If
         End If
