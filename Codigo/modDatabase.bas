@@ -16,7 +16,7 @@ Attribute VB_Name = "Database"
 'Rewrited for Argentum20 by Alexis Caraballo (WyroX)
 'October 2020
 
-
+Public Const DatabaseFileName = "Database.db"
 
 Public Sub Database_Connect_Async()
         On Error GoTo Database_Connect_AsyncErr
@@ -55,7 +55,7 @@ Public Sub Database_Connect()
         If Len(Database_Source) <> 0 Then
 104         ConnectionID = "DATA SOURCE=" & Database_Source & ";"
         Else
-106         ConnectionID = "DRIVER={SQLite3 ODBC Driver};" & "DATABASE=" & App.Path & "/Database.db"
+106         ConnectionID = "DRIVER={SQLite3 ODBC Driver};" & "DATABASE=" & App.Path & "/" & DatabaseFileName
         End If
                 
         Set Connection = New ADODB.Connection
