@@ -74,6 +74,8 @@ Public Enum SendTarget
     ToAdminsYDioses
     ToJugadoresCaptura
     ToPCAreaButFollowerAndIndex
+    ToGroup
+    ToGroupButIndex
 End Enum
 
 Public Sub SendData(ByVal sndRoute As SendTarget, ByVal sndIndex As Integer, Optional Args As Variant, Optional ByVal validateInvi As Boolean = False)
@@ -280,6 +282,10 @@ Public Sub SendData(ByVal sndRoute As SendTarget, ByVal sndIndex As Integer, Opt
                         End If
                     End If
 364             Next LoopC
+            Case SendTarget.ToGroup
+                Call SendToGroup(sndIndex, Buffer)
+            Case SendTarget.ToGroupButIndex
+                Call SendToGroupButIndex(sndIndex, Buffer)
         End Select
 
 SendData_Err:
@@ -1154,3 +1160,36 @@ SendToMapButIndex_Err:
         
 End Sub
 
+Private Sub SendToGroup(ByVal UserIndex As Integer, ByVal Buffer As Network.Writer)
+On Error GoTo SendToGroup_Err
+        Dim LoopC     As Long
+100     If UserIndex = 0 Then Exit Sub
+        If Not UserList(UserIndex).Grupo.EnGrupo Then Exit Sub
+        With UserList(UserList(UserIndex).Grupo.Lider.ArrayIndex).Grupo
+106         For LoopC = 1 To .CantidadMiembros
+                If IsValidUserRef(.Miembros(LoopC)) Then
+                    Call modNetwork.Send(.Miembros(LoopC).ArrayIndex, Buffer)
+                End If
+            Next LoopC
+        End With
+        Exit Sub
+SendToGroup_Err:
+    Call TraceError(Err.Number, Err.Description, "modSendData.SendToGroup", Erl)
+End Sub
+
+Private Sub SendToGroupButIndex(ByVal UserIndex As Integer, ByVal Buffer As Network.Writer)
+On Error GoTo SendToGroupButIndex_Err
+        Dim LoopC     As Long
+100     If UserIndex = 0 Then Exit Sub
+        If Not UserList(UserIndex).Grupo.EnGrupo Then Exit Sub
+        With UserList(UserList(UserIndex).Grupo.Lider.ArrayIndex).Grupo
+106         For LoopC = 1 To .CantidadMiembros
+                If IsValidUserRef(.Miembros(LoopC)) And .Miembros(LoopC).ArrayIndex <> UserIndex Then
+                    Call modNetwork.Send(.Miembros(LoopC).ArrayIndex, Buffer)
+                End If
+            Next LoopC
+        End With
+        Exit Sub
+SendToGroupButIndex_Err:
+    Call TraceError(Err.Number, Err.Description, "modSendData.SendToGroupButIndex", Erl)
+End Sub
