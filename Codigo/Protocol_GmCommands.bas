@@ -4764,6 +4764,7 @@ Public Sub HandleSeguirMouse(ByVal UserIndex As Integer)
                         Call WriteUserCharIndexInServer(tUser.ArrayIndex)
                         UserList(userIndex).AreasInfo = UserList(tUser.ArrayIndex).AreasInfo
                         Call ModAreas.CheckUpdateNeededUser(UserIndex, 5, 0)
+                        Call WriteAreaChanged(UserIndex, UserList(tUser.ArrayIndex).pos.x, UserList(tUser.ArrayIndex).pos.y)
                     Else
                         If UserList(userIndex).flags.SigueUsuario.ArrayIndex <> tUser.ArrayIndex Then
                             Call WriteConsoleMsg(userIndex, "Ya te encuentras siguiendo a un usuario, para dejar de seguirlo escribe /SM " & UserList(UserList(userIndex).flags.SigueUsuario.ArrayIndex).name & ".", e_FontTypeNames.FONTTYPE_INFO)
