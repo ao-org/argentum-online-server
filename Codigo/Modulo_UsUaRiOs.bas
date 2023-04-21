@@ -2017,6 +2017,7 @@ Sub UserDie(ByVal UserIndex As Integer)
         
 112         .Stats.MinHp = 0
 114         .Stats.MinSta = 0
+115         .Stats.Shield = 0
 116         .flags.AtacadoPorUser = 0
 
 118         .flags.incinera = 0
@@ -3332,7 +3333,10 @@ On Error GoTo DoDamageOrHeal_Err
     Else
         Color = DamageColor
     End If
-    If amount < 0 Then Call EffectsOverTime.TargetWasDamaged(UserList(UserIndex).EffectOverTime, SourceIndex, SourceType, DamageSourceType)
+    If amount < 0 Then
+        amount = EffectsOverTime.TargetApplyDamageReduction(UserList(UserIndex).EffectOverTime, amount, SourceIndex, SourceType, DamageSourceType)
+        Call EffectsOverTime.TargetWasDamaged(UserList(UserIndex).EffectOverTime, SourceIndex, SourceType, DamageSourceType)
+    End If
     With UserList(UserIndex)
         If IsVisible(UserList(UserIndex)) Then
             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageTextOverChar(DamageStr, .Char.charindex, Color))

@@ -180,3 +180,6 @@ Public Sub IBaseEffectOverTime_TargetWasDamaged(ByVal SourceUserId As Integer, B
     End If
 End Sub
 
+Public Function IBaseEffectOverTime_ApplyDamageReduction(ByVal Damage As Long, ByVal SourceUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType) As Long
+    IBaseEffectOverTime_ApplyDamageReduction = Damage
+End Function

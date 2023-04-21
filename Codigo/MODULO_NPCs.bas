@@ -161,6 +161,7 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
             End If
 
 108         NpcList(NpcIndex).Stats.MinHp = NpcList(NpcIndex).Stats.MaxHp
+            NpcList(NpcIndex).Stats.Shield = 0
             Exit Sub
         End If
 
@@ -1927,7 +1928,10 @@ On Error GoTo DoDamageOrHeal_Err
     Else
         Color = DamageColor
     End If
-    If amount < 0 Then Call EffectsOverTime.TargetWasDamaged(NpcList(npcIndex).EffectOverTime, SourceIndex, SourceType, DamageSourceType)
+    If amount < 0 Then
+        amount = EffectsOverTime.TargetApplyDamageReduction(NpcList(NpcIndex).EffectOverTime, amount, SourceIndex, SourceType, DamageSourceType)
+        Call EffectsOverTime.TargetWasDamaged(NpcList(NpcIndex).EffectOverTime, SourceIndex, SourceType, DamageSourceType)
+    End If
     With NpcList(npcIndex)
         Call SendData(SendTarget.ToNPCAliveArea, npcIndex, PrepareMessageTextOverChar(DamageStr, .Char.charindex, Color))
         ' Mascotas dan experiencia al amo

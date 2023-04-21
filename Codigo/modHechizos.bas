@@ -513,7 +513,7 @@ AgregarHechizo_Err:
         
 End Sub
             
-Sub DecirPalabrasMagicas(ByVal Hechizo As Byte, ByVal UserIndex As Integer)
+Sub DecirPalabrasMagicas(ByVal Hechizo As Integer, ByVal UserIndex As Integer)
 On Error GoTo DecirPalabrasMagicas_Err
         UserList(UserIndex).Counters.timeChat = 4
         If Not IsVisible(UserList(UserIndex)) Then
@@ -2503,13 +2503,14 @@ Sub HechizoEstadoNPC(ByVal NpcIndex As Integer, ByVal hIndex As Integer, ByRef b
 284        Call InfoHechizo(UserIndex)
 286        b = True
         End If
-        
+        If Hechizos(hIndex).EotId Then
+294        Call InfoHechizo(UserIndex)
+296        b = True
+        End If
         Exit Sub
 
 HechizoEstadoNPC_Err:
-288     Call TraceError(Err.Number, Err.Description, "modHechizos.HechizoEstadoNPC", Erl)
-
-        
+    Call TraceError(Err.Number, Err.Description, "modHechizos.HechizoEstadoNPC", Erl)
 End Sub
 
 Sub HechizoPropNPC(ByVal hIndex As Integer, ByVal npcIndex As Integer, ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAlive As Boolean)
@@ -2659,7 +2660,7 @@ Private Sub InfoHechizo(ByVal UserIndex As Integer)
 
         End If
 
-106     If IsValidUserRef(UserList(UserIndex).flags.TargetUser) Then '¿El Hechizo fue tirado sobre un usuario?
+106     If IsValidUserRef(UserList(UserIndex).flags.targetUser) Then '¿El Hechizo fue tirado sobre un usuario?
 108         If Hechizos(h).FXgrh > 0 Then '¿Envio FX?
 110             If Hechizos(h).ParticleViaje > 0 Then
                     UserList(UserList(UserIndex).flags.targetUser.ArrayIndex).Counters.timeFx = 2

@@ -16,6 +16,7 @@ Public Enum e_EffectCallbackMask
     eTargetFailedAttack = 8
     eTargetWasDamaged = 16
     eTargetWillAttackPosition = 32
+    eTargetApplyDamageReduction
 End Enum
 
 Public Sub InitializePools()
@@ -226,6 +227,17 @@ On Error GoTo CreateEffect_Err
 604         ElseIf TargetType = eNpc Then
 606             Call AddEffect(NpcList(TargetIndex).EffectOverTime, MultiAttacks)
             End If
+        Case e_EffectOverTimeType.eProtection
+610         Dim Protect As ProtectEffect
+612         Set Protect = GetEOT(EffectType)
+614         UniqueIdCounter = GetNextId()
+616         Call Protect.Setup(SourceIndex, SourceType, TargetIndex, TargetType, EffectIndex, UniqueIdCounter)
+618         Call AddEffectToUpdate(Protect)
+620         If TargetType = eUser Then
+622             Call AddEffect(UserList(TargetIndex).EffectOverTime, Protect)
+624         ElseIf TargetType = eNpc Then
+626             Call AddEffect(NpcList(TargetIndex).EffectOverTime, Protect)
+            End If
         Case Else
             Debug.Assert False
     End Select
@@ -321,6 +333,8 @@ Private Function InstantiateEOT(ByVal EffectType As e_EffectOverTimeType) As IBa
             Set InstantiateEOT = New UnequipItem
         Case e_EffectOverTimeType.eMultipleAttacks
             Set InstantiateEOT = New MultipleAttacks
+        Case e_EffectOverTimeType.eProtection
+            Set InstantiateEOT = New ProtectEffect
         Case Else
             Debug.Assert False
     End Select
@@ -445,12 +459,14 @@ On Error GoTo RemoveEffectAtPos_Err
     Dim RegenerateMask As Boolean
     RegenerateMask = EffectList.EffectList(Position).CallBacksMask > 0
     Call EffectList.EffectList(position).OnRemove
-106 Set EffectList.EffectList(position) = EffectList.EffectList(EffectList.EffectCount - 1)
+    Dim i As Integer
+    For i = Position To EffectList.EffectCount - 1
+106     Set EffectList.EffectList(i) = EffectList.EffectList(i + 1)
+    Next i
 108 Set EffectList.EffectList(EffectList.EffectCount - 1) = Nothing
 110 EffectList.EffectCount = EffectList.EffectCount - 1
     If RegenerateMask Then
         EffectList.CallbaclMask = 0
-        Dim i As Integer
         For i = 0 To EffectList.EffectCount - 1
             Call SetMask(EffectList.CallbaclMask, EffectList.EffectList(i).CallBacksMask)
         Next i
@@ -492,6 +508,21 @@ Public Sub TargetFailedAttack(ByRef EffectList As t_EffectOverTimeList, ByVal Ta
          Call EffectList.EffectList(i).TargetFailedAttack(TargetUserId, SourceType, AttackType)
     Next i
 End Sub
+
+Public Function TargetApplyDamageReduction(ByRef EffectList As t_EffectOverTimeList, ByVal Damage As Long, ByVal SourceUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType) As Long
+    If Not IsSet(EffectList.CallbaclMask, e_EffectCallbackMask.eTargetApplyDamageReduction) Then
+        TargetApplyDamageReduction = Damage
+        Exit Function
+    End If
+    Dim i As Integer
+    For i = 0 To EffectList.EffectCount - 1
+         Damage = EffectList.EffectList(i).ApplyDamageReduction(Damage, SourceUserId, SourceType, AttackType)
+         If Damage >= 0 Then
+            Exit Function
+         End If
+    Next i
+    TargetApplyDamageReduction = Damage
+End Function
 
 Public Sub TargetWasDamaged(ByRef EffectList As t_EffectOverTimeList, ByVal SourceUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
     If Not IsSet(EffectList.CallbaclMask, e_EffectCallbackMask.eTargetWasDamaged) Then Exit Sub

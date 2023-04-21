@@ -107,3 +107,12 @@ Public Function RefDoDamageToTarget(ByRef SourceRef As t_AnyReference, ByRef Tar
     End If
 End Function
 
+Public Function AddShieldToReference(ByRef SourceRef As t_AnyReference, ByVal ShieldSize As Long)
+    If SourceRef.RefType = eUser Then
+        Call IncreaseLong(UserList(SourceRef.ArrayIndex).Stats.Shield, ShieldSize)
+        WriteUpdateHP (SourceRef.ArrayIndex)
+    Else
+        Call IncreaseLong(NpcList(SourceRef.ArrayIndex).Stats.Shield, ShieldSize)
+        Call SendData(SendTarget.ToNPCAliveArea, SourceRef.ArrayIndex, PrepareMessageNpcUpdateHP(SourceRef.ArrayIndex))
+    End If
+End Function

@@ -61,7 +61,7 @@ Public Function LoadCharacterFromDB(ByVal userIndex As Integer) As Boolean
                 Call CloseSocket(userIndex)
                 Exit Function
             End If
-            
+            .Stats.Shield = 0
         
             .InUse = True
             'Start setting data

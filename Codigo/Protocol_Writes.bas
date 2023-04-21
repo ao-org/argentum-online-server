@@ -746,6 +746,7 @@ Public Sub WriteUpdateHP(ByVal UserIndex As Integer)
                 PrepareMessageCharUpdateHP(UserIndex))
 102     Call Writer.WriteInt16(ServerPacketID.UpdateHP)
 104     Call Writer.WriteInt16(UserList(UserIndex).Stats.MinHp)
+        Call Writer.WriteInt32(UserList(UserIndex).Stats.Shield)
 
 106     Call modSendData.SendData(ToIndex, UserIndex)
 
@@ -1797,6 +1798,7 @@ Public Sub WriteUpdateUserStats(ByVal UserIndex As Integer)
 104     Call Writer.WriteInt16(ServerPacketID.UpdateUserStats)
 106     Call Writer.WriteInt16(UserList(UserIndex).Stats.MaxHp)
 108     Call Writer.WriteInt16(UserList(UserIndex).Stats.MinHp)
+109     Call Writer.WriteInt32(UserList(UserIndex).Stats.Shield)
 110     Call Writer.WriteInt16(UserList(UserIndex).Stats.MaxMAN)
 112     Call Writer.WriteInt16(UserList(UserIndex).Stats.MinMAN)
 114     Call Writer.WriteInt16(UserList(UserIndex).Stats.MaxSta)
@@ -4818,6 +4820,7 @@ Public Function PrepareMessageCharUpdateHP(ByVal UserIndex As Integer)
 102     Call Writer.WriteInt16(UserList(UserIndex).Char.CharIndex)
 104     Call Writer.WriteInt32(UserList(UserIndex).Stats.MinHp)
 106     Call Writer.WriteInt32(UserList(UserIndex).Stats.MaxHp)
+        Call Writer.WriteInt32(UserList(UserIndex).Stats.Shield)
         '<EhFooter>
         Exit Function
 
@@ -4852,6 +4855,7 @@ Public Function PrepareMessageNpcUpdateHP(ByVal NpcIndex As Integer)
 102     Call Writer.WriteInt16(NpcList(NpcIndex).Char.CharIndex)
 104     Call Writer.WriteInt32(NpcList(NpcIndex).Stats.MinHp)
 106     Call Writer.WriteInt32(NpcList(NpcIndex).Stats.MaxHp)
+        Call Writer.WriteInt32(NpcList(NpcIndex).Stats.Shield)
         '<EhFooter>
         Exit Function
 
