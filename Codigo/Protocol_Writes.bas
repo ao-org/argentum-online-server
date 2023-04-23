@@ -525,28 +525,6 @@ Write_BlockedWithShieldOther_Err:
         '</EhFooter>
 End Sub
 
-''
-' Writes the "CharSwing" message to the given user's outgoing data .incomingData.
-'
-' @param    UserIndex User to which the message is intended.
-' @remarks  The data is not actually sent until the buffer is properly flushed.
-Public Sub WriteCharSwing(ByVal UserIndex As Integer, _
-                          ByVal CharIndex As Integer, _
-                          Optional ByVal FX As Boolean = True, _
-                          Optional ByVal ShowText As Boolean = True)
-        '<EhHeader>
-        On Error GoTo WriteCharSwing_Err
-        '</EhHeader>
-100     Call modSendData.SendData(ToIndex, UserIndex, PrepareMessageCharSwing(CharIndex, _
-                FX, ShowText))
-        '<EhFooter>
-        Exit Sub
-
-WriteCharSwing_Err:
-        Call Writer.Clear
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteCharSwing", Erl)
-        '</EhFooter>
-End Sub
 
 ''
 ' Writes the "SafeModeOn" message to the given user's outgoing data .incomingData.
@@ -925,51 +903,7 @@ WriteNPCHitUser_Err:
         '</EhFooter>
 End Sub
 
-''
-' Writes the "UserHitNPC" message to the given user's outgoing data .incomingData.
-'
-' @param    UserIndex User to which the message is intended.
-' @param    damage The number of HP lost by the target creature.
-' @remarks  The data is not actually sent until the buffer is properly flushed.
-Public Sub WriteUserHitNPC(ByVal UserIndex As Integer, ByVal damage As Long)
-        '<EhHeader>
-        On Error GoTo WriteUserHitNPC_Err
-        '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.UserHitNPC)
-102     Call Writer.WriteInt32(damage)
-104     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
-        Exit Sub
-
-WriteUserHitNPC_Err:
-        Call Writer.Clear
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteUserHitNPC", Erl)
-        '</EhFooter>
-End Sub
-
-''
-' Writes the "UserAttackedSwing" message to the given user's outgoing data .incomingData.
-'
-' @param    UserIndex       User to which the message is intended.
-' @param    attackerIndex   The user index of the user that attacked.
-' @remarks  The data is not actually sent until the buffer is properly flushed.
-Public Sub WriteUserAttackedSwing(ByVal UserIndex As Integer, _
-                                  ByVal AttackerIndex As Integer)
-        '<EhHeader>
-        On Error GoTo WriteUserAttackedSwing_Err
-        '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.UserAttackedSwing)
-102     Call Writer.WriteInt16(UserList(AttackerIndex).Char.CharIndex)
-104     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
-        Exit Sub
-
-WriteUserAttackedSwing_Err:
-        Call Writer.Clear
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteUserAttackedSwing", Erl)
-        '</EhFooter>
-End Sub
-
+ 
 ''
 ' Writes the "UserHittedByUser" message to the given user's outgoing data .incomingData.
 '
