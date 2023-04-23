@@ -1721,6 +1721,7 @@ Public Type t_UserStats
     
     MaxHp As Integer
     MinHp As Integer
+    Shield As Long
     
     MaxSta As Integer
     MinSta As Integer
@@ -2330,6 +2331,7 @@ Public Type t_NPCStats
     MinHp As Long
     MaxHit As Integer
     MinHIT As Integer
+    Shield As Long
     def As Integer
     defM As Integer
     UsuariosMatados As Integer
@@ -2850,6 +2852,7 @@ Public Enum e_EffectOverTimeType
     eDelayedBlast = 12
     eUnequip = 13
     eMultipleAttacks = 14
+    eProtection = 15
     [EffectTypeCount]
 End Enum
 
@@ -2981,6 +2984,10 @@ Public Sub IncreaseSingle(ByRef dest As Single, ByVal amount As Single)
 End Sub
 
 Public Sub IncreaseInteger(ByRef dest As Integer, ByVal amount As Integer)
+    dest = dest + amount
+End Sub
+
+Public Sub IncreaseLong(ByRef dest As Long, ByVal amount As Long)
     dest = dest + amount
 End Sub
 

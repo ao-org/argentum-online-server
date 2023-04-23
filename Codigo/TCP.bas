@@ -530,6 +530,7 @@ Function ConnectNewUser(ByVal userindex As Integer, ByRef name As String, ByVal 
             ' WyroX: Vida inicial
 174         .Stats.MaxHp = .Stats.UserAtributos(e_Atributos.Constitucion)
 176         .Stats.MinHp = .Stats.MaxHp
+177         .Stats.Shield = 0
 
             ' WyroX: Maná inicial
 178         .Stats.MaxMAN = .Stats.UserAtributos(e_Atributos.Inteligencia) * ModClase(.clase).ManaInicial
@@ -1466,6 +1467,7 @@ Sub ResetUserSlot(ByVal UserIndex As Integer)
         With UserList(UserIndex)
 100         .ConnIDValida = False
 102         .ConnID = 0
+113         .Stats.Shield = 0
 104         If .Grupo.Lider.ArrayIndex = UserIndex Then
 106             Call FinalizarGrupo(UserIndex)
             End If

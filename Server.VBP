@@ -116,6 +116,7 @@ Class=AttrackEffect; Codigo\EffectOverTime\AttrackEffect.cls
 Class=DelayedBlast; Codigo\EffectOverTime\DelayedBlast.cls
 Class=UnequipItem; Codigo\EffectOverTime\UnequipItem.cls
 Class=MultipleAttacks; Codigo\EffectOverTime\MultipleAttacks.cls
+Class=ProtectEffect; Codigo\EffectOverTime\ProtectEffect.cls
 IconForm="frmMain"
 Startup="Sub Main"
 HelpFile=""
