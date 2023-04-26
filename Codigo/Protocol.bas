@@ -47,8 +47,6 @@ Public Enum ServerPacketID
     changeMap               ' CM
     PosUpdate               ' PU
     NPCHitUser              ' N2
-    UserHitNPC              ' U2
-    UserAttackedSwing       ' U3
     UserHittedByUser        ' N4
     UserHittedUser          ' N5
     ChatOverHead            ' ||
