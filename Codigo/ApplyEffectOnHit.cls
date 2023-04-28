@@ -92,7 +92,7 @@ Public Property Let IBaseEffectOverTime_RemoveMe(ByVal value As Boolean)
     DotInfo.RemoveEffect = value
 End Property
 
-Public Sub IBaseEffectOverTime_Reset(ByVal SourceUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal NewEffectId As Integer)
+Public Function IBaseEffectOverTime_Reset(ByVal SourceUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal NewEffectId As Integer) As Boolean
     TimeSinceLastTick = 0
     If DotInfo.TargetRef.RefType = eUser Then
         If DotInfo.EotId = NewEffectId Then
@@ -104,7 +104,8 @@ Public Sub IBaseEffectOverTime_Reset(ByVal SourceUserId As Integer, ByVal Source
     End If
     DotInfo.EotId = NewEffectId
     ApplyEffectId = EffectOverTime(DotInfo.EotId).ApplyEffectId
-End Sub
+    IBaseEffectOverTime_Reset = True
+End Function
 
 Public Property Get IBaseEffectOverTime_EotId() As Integer
     IBaseEffectOverTime_EotId = DotInfo.EotId
@@ -172,6 +173,7 @@ Public Property Get IBaseEffectOverTime_KeepAfterDead() As Boolean
     IBaseEffectOverTime_KeepAfterDead = False
 End Property
 
-
+Public Sub IBaseEffectOverTime_TargetChangeTerrain()
+End Sub
 
 

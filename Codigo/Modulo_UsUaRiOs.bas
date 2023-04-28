@@ -918,8 +918,7 @@ End Sub
 Sub ChangeUserChar(ByVal UserIndex As Integer, ByVal body As Integer, ByVal head As Integer, ByVal Heading As Byte, ByVal Arma As Integer, ByVal Escudo As Integer, ByVal Casco As Integer, ByVal Cart As Integer)
         
         On Error GoTo ChangeUserChar_Err
-        
-
+        If IsSet(UserList(UserIndex).flags.StatusMask, e_StatusMask.eTransformed) Then Exit Sub
 100     With UserList(UserIndex).Char
 102         .Body = Body
 104         .Head = Head
@@ -3311,6 +3310,24 @@ Public Function ModifyStamina(ByVal UserIndex As Integer, ByVal amount As Intege
         ModifyStamina = True
     End If
     Call WriteUpdateSta(UserIndex)
+    End With
+End Function
+
+Public Function ModifyMana(ByVal UserIndex As Integer, ByVal Amount As Integer, ByVal CancelIfNotEnought As Boolean, Optional ByVal MinValue = 0) As Boolean
+    ModifyMana = False
+    With UserList(UserIndex)
+    If CancelIfNotEnought And Amount < 0 And .Stats.MinMAN < Abs(Amount) Then
+        Exit Function
+    End If
+    .Stats.MinMAN = .Stats.MinMAN + Amount
+    If .Stats.MinMAN > .Stats.MaxMAN Then
+        .Stats.MinMAN = .Stats.MaxMAN
+    End If
+    If .Stats.MinMAN < MinValue Then
+        .Stats.MinMAN = MinValue
+        ModifyMana = True
+    End If
+    Call WriteUpdateMana(UserIndex)
     End With
 End Function
 

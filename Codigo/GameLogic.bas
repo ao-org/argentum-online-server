@@ -2147,74 +2147,74 @@ Public Sub TimerQuestOrco()
     Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(156, NO_3D_SOUND, NO_3D_SOUND))
 End Sub
 
-Public Function TestRequiredEquipedItem(ByRef inventory As t_Inventario, ByVal requiredItemsFlag As Long) As e_EquipedSlotMask
-    If IsSet(requiredItemsFlag, e_EquipedSlotMask.eArmor) And _
+Public Function TestRequiredEquipedItem(ByRef inventory As t_Inventario, ByVal requiredItemsFlag As Long) As e_SpellRequirementMask
+    If IsSet(requiredItemsFlag, e_SpellRequirementMask.eArmor) And _
       inventory.ArmourEqpObjIndex = 0 Then
-        TestRequiredEquipedItem = e_EquipedSlotMask.eArmor
+        TestRequiredEquipedItem = e_SpellRequirementMask.eArmor
         Exit Function
     End If
-    If IsSet(requiredItemsFlag, e_EquipedSlotMask.eHelm) And _
+    If IsSet(requiredItemsFlag, e_SpellRequirementMask.eHelm) And _
       inventory.CascoEqpObjIndex = 0 Then
-        TestRequiredEquipedItem = e_EquipedSlotMask.eHelm
+        TestRequiredEquipedItem = e_SpellRequirementMask.eHelm
         Exit Function
     End If
-    If IsSet(requiredItemsFlag, e_EquipedSlotMask.eKnucle) And _
+    If IsSet(requiredItemsFlag, e_SpellRequirementMask.eKnucle) And _
       inventory.NudilloObjIndex = 0 Then
-        TestRequiredEquipedItem = e_EquipedSlotMask.eKnucle
+        TestRequiredEquipedItem = e_SpellRequirementMask.eKnucle
         Exit Function
     End If
-    If IsSet(requiredItemsFlag, e_EquipedSlotMask.eMagicItem) And _
+    If IsSet(requiredItemsFlag, e_SpellRequirementMask.eMagicItem) And _
       inventory.MagicoObjIndex = 0 Then
-        TestRequiredEquipedItem = e_EquipedSlotMask.eMagicItem
+        TestRequiredEquipedItem = e_SpellRequirementMask.eMagicItem
         Exit Function
     End If
-    If IsSet(requiredItemsFlag, e_EquipedSlotMask.eProjectile) And _
+    If IsSet(requiredItemsFlag, e_SpellRequirementMask.eProjectile) And _
       inventory.MunicionEqpObjIndex = 0 Then
-        TestRequiredEquipedItem = e_EquipedSlotMask.eProjectile
+        TestRequiredEquipedItem = e_SpellRequirementMask.eProjectile
         Exit Function
     End If
-    If IsSet(requiredItemsFlag, e_EquipedSlotMask.eShield) And _
+    If IsSet(requiredItemsFlag, e_SpellRequirementMask.eShield) And _
       inventory.EscudoEqpObjIndex = 0 Then
-        TestRequiredEquipedItem = e_EquipedSlotMask.eShield
+        TestRequiredEquipedItem = e_SpellRequirementMask.eShield
         Exit Function
     End If
-    If IsSet(requiredItemsFlag, e_EquipedSlotMask.eShip) And _
+    If IsSet(requiredItemsFlag, e_SpellRequirementMask.eShip) And _
       inventory.BarcoObjIndex = 0 Then
-        TestRequiredEquipedItem = e_EquipedSlotMask.eShip
+        TestRequiredEquipedItem = e_SpellRequirementMask.eShip
         Exit Function
     End If
-    If IsSet(requiredItemsFlag, e_EquipedSlotMask.eTool) And _
+    If IsSet(requiredItemsFlag, e_SpellRequirementMask.eTool) And _
       inventory.HerramientaEqpObjIndex = 0 Then
-        TestRequiredEquipedItem = e_EquipedSlotMask.eTool
+        TestRequiredEquipedItem = e_SpellRequirementMask.eTool
         Exit Function
     End If
-    If IsSet(requiredItemsFlag, e_EquipedSlotMask.eWeapon) And _
+    If IsSet(requiredItemsFlag, e_SpellRequirementMask.eWeapon) And _
       inventory.WeaponEqpObjIndex = 0 Then
-        TestRequiredEquipedItem = e_EquipedSlotMask.eWeapon
+        TestRequiredEquipedItem = e_SpellRequirementMask.eWeapon
         Exit Function
     End If
-    TestRequiredEquipedItem = e_EquipedSlotMask.eNone
+    TestRequiredEquipedItem = e_SpellRequirementMask.eNone
 End Function
 
-Public Sub SendrequiredItemMessage(ByVal UserIndex As Integer, ByVal itemMask As e_EquipedSlotMask, ByVal message As String)
+Public Sub SendrequiredItemMessage(ByVal UserIndex As Integer, ByVal itemMask As e_SpellRequirementMask, ByVal Message As String)
     Select Case itemMask
-        Case e_EquipedSlotMask.eArmor
+        Case e_SpellRequirementMask.eArmor
              Call WriteConsoleMsg(UserIndex, "Necesitás una armadura " + Message, e_FontTypeNames.FONTTYPE_INFO)
-        Case e_EquipedSlotMask.eHelm
+        Case e_SpellRequirementMask.eHelm
              Call WriteConsoleMsg(UserIndex, "Necesitás un casco " + Message, e_FontTypeNames.FONTTYPE_INFO)
-        Case e_EquipedSlotMask.eKnucle
+        Case e_SpellRequirementMask.eKnucle
              Call WriteConsoleMsg(UserIndex, "Necesitás unos nudillos " + Message, e_FontTypeNames.FONTTYPE_INFO)
-        Case e_EquipedSlotMask.eMagicItem
+        Case e_SpellRequirementMask.eMagicItem
              Call WriteConsoleMsg(UserIndex, "Necesitás un objeto magico " + Message, e_FontTypeNames.FONTTYPE_INFO)
-        Case e_EquipedSlotMask.eProjectile
+        Case e_SpellRequirementMask.eProjectile
              Call WriteConsoleMsg(UserIndex, "Necesitás municiones " + Message, e_FontTypeNames.FONTTYPE_INFO)
-        Case e_EquipedSlotMask.eShield
+        Case e_SpellRequirementMask.eShield
              Call WriteConsoleMsg(UserIndex, "Necesitás un escudo " + Message, e_FontTypeNames.FONTTYPE_INFO)
-        Case e_EquipedSlotMask.eShip
+        Case e_SpellRequirementMask.eShip
              Call WriteConsoleMsg(UserIndex, "Necesitás un barco " + Message, e_FontTypeNames.FONTTYPE_INFO)
-        Case e_EquipedSlotMask.eTool
+        Case e_SpellRequirementMask.eTool
              Call WriteConsoleMsg(UserIndex, "Necesitás una herramienta " + Message, e_FontTypeNames.FONTTYPE_INFO)
-        Case e_EquipedSlotMask.eWeapon
+        Case e_SpellRequirementMask.eWeapon
              Call WriteConsoleMsg(UserIndex, "Necesitás un arma " + Message, e_FontTypeNames.FONTTYPE_INFO)
     End Select
 End Sub

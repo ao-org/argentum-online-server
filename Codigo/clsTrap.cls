@@ -101,8 +101,9 @@ Public Property Let IBaseEffectOverTime_RemoveMe(ByVal value As Boolean)
     mDotInfo.RemoveEffect = value
 End Property
 
-Public Sub IBaseEffectOverTime_Reset(ByVal SourceUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal NewEffectId As Integer)
-End Sub
+Public Function IBaseEffectOverTime_Reset(ByVal SourceUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal NewEffectId As Integer) As Boolean
+    IBaseEffectOverTime_Reset = True
+End Function
 
 Public Property Get IBaseEffectOverTime_EotId() As Integer
     IBaseEffectOverTime_EotId = mDotInfo.EotId
@@ -156,6 +157,9 @@ End Sub
 Public Property Get IBaseEffectOverTime_KeepAfterDead() As Boolean
     IBaseEffectOverTime_KeepAfterDead = False
 End Property
+
+Public Sub IBaseEffectOverTime_TargetChangeTerrain()
+End Sub
 
 Private Sub RemoveFromMap()
     Set MapData(mWorldPosition.map, mWorldPosition.x, mWorldPosition.y).Trap = Nothing
