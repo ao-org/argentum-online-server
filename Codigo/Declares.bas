@@ -1103,9 +1103,11 @@ Public Type t_ActiveModifiers
     PhysicalDamageReduction As Single
     MagicDamageReduction As Single
     MovementSpeed As Single
+    SelfHealingBonus As Single
     'effect perform on others
     PhysicalDamageBonus As Single
     MagicDamageBonus As Single
+    MagicHealingBonus As Single
     HitBonus As Integer
     EvasionBonus As Integer
 End Type
@@ -2985,6 +2987,10 @@ Public Sub ClearModifiers(ByRef Modifiers As t_ActiveModifiers)
     Modifiers.PhysicalDamageBonus = 0
     Modifiers.PhysicalDamageReduction = 0
     Modifiers.MovementSpeed = 0
+    Modifiers.EvasionBonus = 0
+    Modifiers.HitBonus = 0
+    Modifiers.MagicHealingBonus = 0
+    Modifiers.SelfHealingBonus = 0
 End Sub
 
 Public Sub IncreaseSingle(ByRef dest As Single, ByVal amount As Single)
