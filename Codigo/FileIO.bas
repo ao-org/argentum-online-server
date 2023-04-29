@@ -774,14 +774,16 @@ Public Sub CargarHechizos()
 281         Hechizos(Hechizo).StaffAffected = CBool(val(Leer.GetValue("Hechizo" & Hechizo, "StaffAffected")))
 282         Hechizos(Hechizo).EotId = val(Leer.GetValue("Hechizo" & Hechizo, "EOTID"))
 
-290         If val(Leer.GetValue("Hechizo" & Hechizo, "RequireArmor")) > 0 Then Call SetMask(Hechizos(Hechizo).RequireEquipedSlot, e_EquipedSlotMask.eArmor)
-292         If val(Leer.GetValue("Hechizo" & Hechizo, "RequireShip")) > 0 Then Call SetMask(Hechizos(Hechizo).RequireEquipedSlot, e_EquipedSlotMask.eShip)
-294         If val(Leer.GetValue("Hechizo" & Hechizo, "RequireHelm")) > 0 Then Call SetMask(Hechizos(Hechizo).RequireEquipedSlot, e_EquipedSlotMask.eHelm)
-296         If val(Leer.GetValue("Hechizo" & Hechizo, "RequireKnucle")) > 0 Then Call SetMask(Hechizos(Hechizo).RequireEquipedSlot, e_EquipedSlotMask.eKnucle)
-298         If val(Leer.GetValue("Hechizo" & Hechizo, "RequireMagicItem")) > 0 Then Call SetMask(Hechizos(Hechizo).RequireEquipedSlot, e_EquipedSlotMask.eMagicItem)
-300         If val(Leer.GetValue("Hechizo" & Hechizo, "RequireProjectile")) > 0 Then Call SetMask(Hechizos(Hechizo).RequireEquipedSlot, e_EquipedSlotMask.eProjectile)
-302         If val(Leer.GetValue("Hechizo" & Hechizo, "RequireShield")) > 0 Then Call SetMask(Hechizos(Hechizo).RequireEquipedSlot, e_EquipedSlotMask.eShield)
-304         If val(Leer.GetValue("Hechizo" & Hechizo, "RequireWeapon")) > 0 Then Call SetMask(Hechizos(Hechizo).RequireEquipedSlot, e_EquipedSlotMask.eWeapon)
+290         If val(Leer.GetValue("Hechizo" & Hechizo, "RequireArmor")) > 0 Then Call SetMask(Hechizos(Hechizo).SpellRequirementMask, e_SpellRequirementMask.eArmor)
+292         If val(Leer.GetValue("Hechizo" & Hechizo, "RequireShip")) > 0 Then Call SetMask(Hechizos(Hechizo).SpellRequirementMask, e_SpellRequirementMask.eShip)
+294         If val(Leer.GetValue("Hechizo" & Hechizo, "RequireHelm")) > 0 Then Call SetMask(Hechizos(Hechizo).SpellRequirementMask, e_SpellRequirementMask.eHelm)
+296         If val(Leer.GetValue("Hechizo" & Hechizo, "RequireKnucle")) > 0 Then Call SetMask(Hechizos(Hechizo).SpellRequirementMask, e_SpellRequirementMask.eKnucle)
+298         If val(Leer.GetValue("Hechizo" & Hechizo, "RequireMagicItem")) > 0 Then Call SetMask(Hechizos(Hechizo).SpellRequirementMask, e_SpellRequirementMask.eMagicItem)
+300         If val(Leer.GetValue("Hechizo" & Hechizo, "RequireProjectile")) > 0 Then Call SetMask(Hechizos(Hechizo).SpellRequirementMask, e_SpellRequirementMask.eProjectile)
+302         If val(Leer.GetValue("Hechizo" & Hechizo, "RequireShield")) > 0 Then Call SetMask(Hechizos(Hechizo).SpellRequirementMask, e_SpellRequirementMask.eShield)
+304         If val(Leer.GetValue("Hechizo" & Hechizo, "RequireWeapon")) > 0 Then Call SetMask(Hechizos(Hechizo).SpellRequirementMask, e_SpellRequirementMask.eWeapon)
+            If val(Leer.GetValue("Hechizo" & Hechizo, "RequireTargetOnLand")) > 0 Then Call SetMask(Hechizos(Hechizo).SpellRequirementMask, e_SpellRequirementMask.eRequireTargetOnLand)
+            If val(Leer.GetValue("Hechizo" & Hechizo, "RequireTargetOnWater")) > 0 Then Call SetMask(Hechizos(Hechizo).SpellRequirementMask, e_SpellRequirementMask.eRequireTargetOnWater)
 305         Hechizos(Hechizo).RequireWeaponType = val(Leer.GetValue("Hechizo" & Hechizo, "RequireWeaponType"))
 306     Next Hechizo
 
@@ -819,6 +821,7 @@ On Error GoTo ErrHandler
             EffectOverTime(i).Ticks = val(Leer.GetValue("EOT" & i, "Ticks"))
             EffectOverTime(i).TickTime = val(Leer.GetValue("EOT" & i, "TickTime"))
             EffectOverTime(i).TickFX = val(Leer.GetValue("EOT" & i, "TickFX"))
+            EffectOverTime(i).TickSumption = val(Leer.GetValue("EOT" & i, "TickSumption"))
             EffectOverTime(i).OnHitFx = val(Leer.GetValue("EOT" & i, "OnHitFx"))
             EffectOverTime(i).OnHitWav = val(Leer.GetValue("EOT" & i, "OnHitWav"))
             EffectOverTime(i).Override = val(Leer.GetValue("EOT" & i, "Override"))
@@ -850,14 +853,21 @@ On Error GoTo ErrHandler
             If val(Leer.GetValue("EOT" & i, "AffectedBySpeedModifier")) > 0 Then
                 Call SetMask(EffectOverTime(i).EffectModifiers, e_ModifierTypes.MovementSpeed)
             End If
-290         If val(Leer.GetValue("EOT" & i, "RequireArmor")) > 0 Then Call SetMask(EffectOverTime(i).RequireEquipedSlot, e_EquipedSlotMask.eArmor)
-292         If val(Leer.GetValue("EOT" & i, "RequireShip")) > 0 Then Call SetMask(EffectOverTime(i).RequireEquipedSlot, e_EquipedSlotMask.eShip)
-294         If val(Leer.GetValue("EOT" & i, "RequireHelm")) > 0 Then Call SetMask(EffectOverTime(i).RequireEquipedSlot, e_EquipedSlotMask.eHelm)
-296         If val(Leer.GetValue("EOT" & i, "RequireKnucle")) > 0 Then Call SetMask(EffectOverTime(i).RequireEquipedSlot, e_EquipedSlotMask.eKnucle)
-298         If val(Leer.GetValue("EOT" & i, "RequireMagicItem")) > 0 Then Call SetMask(EffectOverTime(i).RequireEquipedSlot, e_EquipedSlotMask.eMagicItem)
-300         If val(Leer.GetValue("EOT" & i, "RequireProjectile")) > 0 Then Call SetMask(EffectOverTime(i).RequireEquipedSlot, e_EquipedSlotMask.eProjectile)
-302         If val(Leer.GetValue("EOT" & i, "RequireShield")) > 0 Then Call SetMask(EffectOverTime(i).RequireEquipedSlot, e_EquipedSlotMask.eShield)
-304         If val(Leer.GetValue("EOT" & i, "RequireWeapon")) > 0 Then Call SetMask(EffectOverTime(i).RequireEquipedSlot, e_EquipedSlotMask.eWeapon)
+290         If val(Leer.GetValue("EOT" & i, "RequireArmor")) > 0 Then Call SetMask(EffectOverTime(i).SpellRequirementMask, e_SpellRequirementMask.eArmor)
+292         If val(Leer.GetValue("EOT" & i, "RequireShip")) > 0 Then Call SetMask(EffectOverTime(i).SpellRequirementMask, e_SpellRequirementMask.eShip)
+294         If val(Leer.GetValue("EOT" & i, "RequireHelm")) > 0 Then Call SetMask(EffectOverTime(i).SpellRequirementMask, e_SpellRequirementMask.eHelm)
+296         If val(Leer.GetValue("EOT" & i, "RequireKnucle")) > 0 Then Call SetMask(EffectOverTime(i).SpellRequirementMask, e_SpellRequirementMask.eKnucle)
+298         If val(Leer.GetValue("EOT" & i, "RequireMagicItem")) > 0 Then Call SetMask(EffectOverTime(i).SpellRequirementMask, e_SpellRequirementMask.eMagicItem)
+300         If val(Leer.GetValue("EOT" & i, "RequireProjectile")) > 0 Then Call SetMask(EffectOverTime(i).SpellRequirementMask, e_SpellRequirementMask.eProjectile)
+302         If val(Leer.GetValue("EOT" & i, "RequireShield")) > 0 Then Call SetMask(EffectOverTime(i).SpellRequirementMask, e_SpellRequirementMask.eShield)
+304         If val(Leer.GetValue("EOT" & i, "RequireWeapon")) > 0 Then Call SetMask(EffectOverTime(i).SpellRequirementMask, e_SpellRequirementMask.eWeapon)
+316         EffectOverTime(i).npcId = val(Leer.GetValue("EOT" & i, "NpcId"))
+            If val(Leer.GetValue("EOT" & i, "LimitCastOnlyOnSelf")) > 0 Then
+                Call SetMask(EffectOverTime(i).ApplyStatusMask, e_StatusMask.eCastOnlyOnSelf)
+            End If
+            If val(Leer.GetValue("EOT" & i, "Transform")) > 0 Then
+                Call SetMask(EffectOverTime(i).ApplyStatusMask, e_StatusMask.eTransformed)
+            End If
         Next i
         
         Call InitializePools

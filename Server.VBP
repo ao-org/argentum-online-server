@@ -117,6 +117,7 @@ Class=DelayedBlast; Codigo\EffectOverTime\DelayedBlast.cls
 Class=UnequipItem; Codigo\EffectOverTime\UnequipItem.cls
 Class=MultipleAttacks; Codigo\EffectOverTime\MultipleAttacks.cls
 Class=ProtectEffect; Codigo\EffectOverTime\ProtectEffect.cls
+Class=TransformEffect; Codigo\EffectOverTime\TransformEffect.cls
 IconForm="frmMain"
 Startup="Sub Main"
 HelpFile=""

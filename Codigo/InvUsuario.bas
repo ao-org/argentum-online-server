@@ -3059,21 +3059,21 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
 1176                If .flags.Navegando = 0 Then
 1178                    If LegalWalk(.Pos.Map, .Pos.X - 1, .Pos.Y, e_Heading.WEST, True, False) Or LegalWalk(.Pos.Map, .Pos.X, .Pos.Y - 1, e_Heading.NORTH, True, False) Or LegalWalk(.Pos.Map, .Pos.X + 1, .Pos.Y, e_Heading.EAST, True, False) Or LegalWalk(.Pos.Map, .Pos.X, .Pos.Y + 1, e_Heading.SOUTH, True, False) Then
 1180                        Call DoNavega(UserIndex, obj, Slot)
-                             Else
+                        Else
 1182                        Call WriteConsoleMsg(UserIndex, "¡Debes aproximarte al agua para usar el barco o traje de baño!", e_FontTypeNames.FONTTYPE_INFO)
-                             End If
+                        End If
                     
-                         Else
-1184                     If .Invent.BarcoObjIndex <> .Invent.Object(Slot).ObjIndex Then
+                    Else
+1184                    If .invent.BarcoObjIndex <> .invent.Object(Slot).ObjIndex Then
 1186                        Call DoNavega(UserIndex, obj, Slot)
-                             Else
+                        Else
 1188                        If LegalWalk(.Pos.Map, .Pos.X - 1, .Pos.Y, e_Heading.WEST, False, True) Or LegalWalk(.Pos.Map, .Pos.X, .Pos.Y - 1, e_Heading.NORTH, False, True) Or LegalWalk(.Pos.Map, .Pos.X + 1, .Pos.Y, e_Heading.EAST, False, True) Or LegalWalk(.Pos.Map, .Pos.X, .Pos.Y + 1, e_Heading.SOUTH, False, True) Then
 1190                            Call DoNavega(UserIndex, obj, Slot)
-                                 Else
+                            Else
 1192                            Call WriteConsoleMsg(UserIndex, "¡Debes aproximarte a la costa para dejar la barca!", e_FontTypeNames.FONTTYPE_INFO)
-                                 End If
-                             End If
-                         End If
+                            End If
+                        End If
+                    End If
             
 1194             Case e_OBJType.otMonturas
                           'Verifica todo lo que requiere la montura
@@ -3690,5 +3690,61 @@ Public Sub AddOrResetEffect(ByVal UserIndex As Integer, ByVal EffectId As Intege
                 Call Effect.Reset(UserIndex, eUser, EffectId)
             End If
         End If
+    End With
+End Sub
+
+Public Sub UpdateCharWithEquipedItems(ByVal UserIndex As Integer)
+    With UserList(UserIndex)
+        If .flags.Muerto = 1 Then
+            .Char.body = iCuerpoMuerto
+204         .Char.head = 0
+206         .Char.ShieldAnim = NingunEscudo
+208         .Char.WeaponAnim = NingunArma
+210         .Char.CascoAnim = NingunCasco
+211         .Char.CartAnim = NoCart
+            Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, UserList(UserIndex).Char.CartAnim)
+        Exit Sub
+        End If
+        If .flags.Navegando > 0 Then
+            Call EquiparBarco(UserIndex)
+            .Char.CascoAnim = 0
+            .Char.CartAnim = 0
+            .Char.ShieldAnim = 0
+            .Char.WeaponAnim = 0
+            'TODO place ship body
+            Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, UserList(UserIndex).Char.CartAnim)
+            Exit Sub
+        End If
+        .Char.head = .OrigChar.head
+        If .invent.WeaponEqpObjIndex > 0 Then
+            .Char.WeaponAnim = ObjData(.invent.WeaponEqpObjIndex).WeaponAnim
+        ElseIf .invent.HerramientaEqpObjIndex > 0 Then
+            .Char.WeaponAnim = ObjData(.invent.HerramientaEqpObjIndex).WeaponAnim
+        ElseIf .invent.NudilloObjIndex > 0 Then
+            .Char.WeaponAnim = ObjData(.invent.NudilloObjIndex).WeaponAnim
+        Else
+            .Char.WeaponAnim = 0
+        End If
+        If .invent.ArmourEqpObjIndex > 0 Then
+            .Char.body = ObjData(.invent.ArmourEqpObjIndex).Ropaje
+        Else
+            Call SetNakedBody(UserList(UserIndex))
+        End If
+        If .invent.CascoEqpObjIndex > 0 Then
+            .Char.CascoAnim = ObjData(.invent.CascoEqpObjIndex).CascoAnim
+        Else
+            .Char.CascoAnim = 0
+        End If
+        If .invent.MagicoObjIndex > 0 Then
+            .Char.CartAnim = ObjData(.invent.MagicoObjIndex).Ropaje
+        Else
+            .Char.CartAnim = 0
+        End If
+        If .invent.EscudoEqpObjIndex > 0 Then
+            .Char.ShieldAnim = ObjData(.invent.ArmourEqpObjIndex).ShieldAnim
+        Else
+            .Char.ShieldAnim = 0
+        End If
+        Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, UserList(UserIndex).Char.CartAnim)
     End With
 End Sub

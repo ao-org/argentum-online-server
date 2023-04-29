@@ -58,8 +58,8 @@ End Property
 Public Property Let RemoveMe(ByVal value As Boolean)
 End Property
 
-Public Sub Reset(ByVal SourceUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal NewEffectId As Integer)
-End Sub
+Public Function Reset(ByVal SourceUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal NewEffectId As Integer) As Boolean
+End Function
 
 Public Sub OnRemove()
 End Sub
@@ -97,3 +97,6 @@ End Property
 
 Public Property Get CallBacksMask() As Long
 End Property
+
+Public Sub TargetChangeTerrain()
+End Sub

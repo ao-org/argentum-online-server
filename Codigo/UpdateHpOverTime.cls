@@ -120,10 +120,13 @@ Public Property Let IBaseEffectOverTime_RemoveMe(ByVal value As Boolean)
     DotInfo.RemoveEffect = value
 End Property
 
-Public Sub IBaseEffectOverTime_Reset(ByVal SourceUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal NewEffectId As Integer)
+Public Function IBaseEffectOverTime_Reset(ByVal SourceUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal NewEffectId As Integer) As Boolean
+    IBaseEffectOverTime_Reset = True
     TickCount = 0
-    If DotInfo.TargetRef.RefType = eUser And EffectOverTime(DotInfo.EotId).ClientEffectTypeId > 0 Then Call WriteSendSkillCdUpdate(DotInfo.TargetRef.ArrayIndex, EffectOverTime(DotInfo.EotId).ClientEffectTypeId, DotInfo.UniqueId, (TickTime * TargetTicks) - TimeSinceLastTick, EffectOverTime(DotInfo.EotId).buffType)
-End Sub
+    If DotInfo.TargetRef.RefType = eUser And EffectOverTime(DotInfo.EotId).ClientEffectTypeId > 0 Then
+        Call WriteSendSkillCdUpdate(DotInfo.TargetRef.ArrayIndex, EffectOverTime(DotInfo.EotId).ClientEffectTypeId, DotInfo.UniqueId, (TickTime * TargetTicks) - TimeSinceLastTick, EffectOverTime(DotInfo.EotId).buffType)
+    End If
+End Function
 
 Public Property Get IBaseEffectOverTime_EotId() As Integer
     IBaseEffectOverTime_EotId = DotInfo.EotId
@@ -165,6 +168,8 @@ End Property
 Public Property Get IBaseEffectOverTime_KeepAfterDead() As Boolean
     IBaseEffectOverTime_KeepAfterDead = False
 End Property
+Public Sub IBaseEffectOverTime_TargetChangeTerrain()
+End Sub
 
 Public Sub PerformAction()
     Dim TickHP As Integer

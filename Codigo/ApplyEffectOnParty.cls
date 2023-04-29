@@ -112,16 +112,18 @@ Public Property Let IBaseEffectOverTime_RemoveMe(ByVal value As Boolean)
     DotInfo.RemoveEffect = value
 End Property
 
-Public Sub IBaseEffectOverTime_Reset(ByVal SourceUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal NewEffectId As Integer)
+Public Function IBaseEffectOverTime_Reset(ByVal SourceUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal NewEffectId As Integer) As Boolean
     TickCount = 0
+    IBaseEffectOverTime_Reset = True
     If NewEffectId <> DotInfo.EotId Then
         If DotInfo.TargetRef.RefType = eUser And EffectOverTime(DotInfo.EotId).ClientEffectTypeId > 0 Then Call WriteSendSkillCdUpdate(DotInfo.TargetRef.ArrayIndex, EffectOverTime(DotInfo.EotId).ClientEffectTypeId, DotInfo.UniqueId, 0, EffectOverTime(DotInfo.EotId).buffType)
         DotInfo.EotId = NewEffectId
         Call SetActiveEffect
     Else
-        If DotInfo.TargetRef.RefType = eUser And EffectOverTime(DotInfo.EotId).ClientEffectTypeId > 0 Then Call WriteSendSkillCdUpdate(DotInfo.TargetRef.ArrayIndex, EffectOverTime(DotInfo.EotId).ClientEffectTypeId, DotInfo.UniqueId, (TickTime * TargetTicks) - TimeSinceLastTick, EffectOverTime(DotInfo.EotId).buffType)
+        IBaseEffectOverTime_Reset = False
+        DotInfo.RemoveEffect = True
     End If
-End Sub
+End Function
 
 Public Property Get IBaseEffectOverTime_EotId() As Integer
     IBaseEffectOverTime_EotId = DotInfo.EotId
@@ -215,3 +217,6 @@ End Sub
 Public Property Get IBaseEffectOverTime_KeepAfterDead() As Boolean
     IBaseEffectOverTime_KeepAfterDead = False
 End Property
+
+Public Sub IBaseEffectOverTime_TargetChangeTerrain()
+End Sub

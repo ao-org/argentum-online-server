@@ -1016,7 +1016,13 @@ Public Sub UsuarioAtaca(ByVal UserIndex As Integer)
 116         If .Counters.Ocultando Then .Counters.Ocultando = .Counters.Ocultando - 1
             'Movimiento de arma, solo lo envio si no es GM invisible.
 118         If .flags.AdminInvisible = 0 Then
-120             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageArmaMov(.Char.charindex))
+                If IsSet(.flags.StatusMask, e_StatusMask.eTransformed) Then
+                    If .Char.Ataque1 > 0 Then
+                        Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageDoAnimation(.Char.charindex, .Char.Ataque1))
+                    End If
+                Else
+120                 Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageArmaMov(.Char.charindex))
+                End If
             End If
 
         

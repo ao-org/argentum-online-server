@@ -1596,7 +1596,7 @@ Sub ClearAndSaveUser(ByVal UserIndex As Integer)
 164             .flags.Mimetizado = e_EstadoMimetismo.Desactivado
 
             End If
-            
+            Call ClearEffectList(.EffectOverTime, e_EffectType.eAny, False)
 166         errordesc = "ERROR AL LIMPIAR INVENTARIO DE CRAFTEO"
 168         If .flags.Crafteando <> 0 Then
 170             Call ReturnCraftingItems(UserIndex)

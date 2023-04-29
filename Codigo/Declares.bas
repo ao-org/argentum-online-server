@@ -953,7 +953,7 @@ Public Type t_AnyReference
     RefType As e_ReferenceType
 End Type
 
-Public Enum e_EquipedSlotMask
+Public Enum e_SpellRequirementMask
     eNone = 0
     eWeapon = 1
     eShield = 2
@@ -964,6 +964,8 @@ Public Enum e_EquipedSlotMask
     eShip = 64
     eTool = 128
     eKnucle = 256
+    eRequireTargetOnLand = 512
+    eRequireTargetOnWater = 1024
 End Enum
 
 Public Enum e_SpellEffects
@@ -1092,7 +1094,7 @@ Public Type t_Hechizo
     NeedStaff As Integer
     StaffAffected As Boolean
     EotId As Integer
-    RequireEquipedSlot As Long
+    SpellRequirementMask As Long
     RequireWeaponType As e_WeaponType
 End Type
 
@@ -1126,6 +1128,7 @@ Public Type t_EffectOverTime
     TickPowerMax As Integer
     Ticks As Integer
     TickTime As Long
+    TickSumption As Integer
     TickFX As Integer
     OnHitFx As Integer
     OnHitWav As Integer
@@ -1143,7 +1146,9 @@ Public Type t_EffectOverTime
     Area As Integer
     Aura As String
     ApplyeffectID As Integer
-    RequireEquipedSlot As Long
+    SpellRequirementMask As Long
+    npcId As Integer
+    ApplyStatusMask As Long
 End Type
 
 Public Enum e_DamageResult
@@ -1770,6 +1775,8 @@ End Type
 Public Enum e_StatusMask
     eTaunting = 1
     eTaunted = 2
+    eTransformed = 4
+    eCastOnlyOnSelf = 8
 End Enum
 
 Public Enum e_InventorySlotMask
@@ -2853,6 +2860,7 @@ Public Enum e_EffectOverTimeType
     eUnequip = 13
     eMultipleAttacks = 14
     eProtection = 15
+    eTransform = 16
     [EffectTypeCount]
 End Enum
 

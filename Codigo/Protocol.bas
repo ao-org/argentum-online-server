@@ -4273,7 +4273,7 @@ Private Sub HandleChange_Heading(ByVal UserIndex As Integer)
             'Validate heading (VB won't say invalid cast if not a valid index like .Net languages would do... *sigh*)
 104         If Heading > 0 And Heading < 5 Then
 106             .Char.Heading = Heading
-108             Call ChangeUserChar(UserIndex, .char.body, .char.head, .char.Heading, .char.WeaponAnim, .char.ShieldAnim, .char.CascoAnim, .char.CartAnim)
+                Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCharacterChange(.Char.body, .Char.head, .Char.Heading, .Char.charindex, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CartAnim, .Char.FX, .Char.loops, .Char.CascoAnim, False, .flags.Navegando))
 
             End If
 

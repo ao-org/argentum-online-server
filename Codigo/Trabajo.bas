@@ -547,6 +547,7 @@ Public Sub DoNavega(ByVal UserIndex As Integer, _
 124             If .Invent.BarcoObjIndex = 0 Then
 126                 Call WriteNavigateToggle(UserIndex)
 128                 .flags.Navegando = 1
+                    Call TargetUpdateTerrain(.EffectOverTime)
                 End If
     
 130             .Invent.BarcoObjIndex = .Invent.Object(Slot).ObjIndex
@@ -572,6 +573,7 @@ Public Sub DoNavega(ByVal UserIndex As Integer, _
 150             Call WriteNavigateToggle(UserIndex)
     
 152             .flags.Navegando = 0
+                Call TargetUpdateTerrain(.EffectOverTime)
 154             .Invent.BarcoObjIndex = 0
 156             .Invent.BarcoSlot = 0
     
@@ -2837,10 +2839,11 @@ Public Sub DoMontar(ByVal UserIndex As Integer, ByRef Montura As t_ObjData, ByVa
 148             .Char.CascoAnim = .Char.CascoAnim
 149             .Char.CartAnim = NoCart
 150             .flags.Montado = 1
+                Call TargetUpdateTerrain(.EffectOverTime)
             Else
 152             .flags.Montado = 0
 154             .Char.Head = .OrigChar.Head
-
+                Call TargetUpdateTerrain(.EffectOverTime)
 156             If .Invent.ArmourEqpObjIndex > 0 Then
 158                 .Char.Body = ObjData(.Invent.ArmourEqpObjIndex).Ropaje
 

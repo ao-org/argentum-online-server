@@ -544,9 +544,14 @@ Private Function PuedeLanzar(ByVal UserIndex As Integer, ByVal HechizoIndex As I
             If Hechizos(HechizoIndex).AutoLanzar And .flags.TargetUser.ArrayIndex <> UserIndex Then
                 Exit Function
             End If
-
+            
+            If IsSet(.flags.StatusMask, eCastOnlyOnSelf) And .flags.targetUser.ArrayIndex <> UserIndex Then
+                Call WriteLocaleMsg(UserIndex, MsgCastOnlyOnSelf, e_FontTypeNames.FONTTYPE_INFO)
+                Exit Function
+            End If
+            
 108         If .flags.Muerto = 1 Then
-110             Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
+110             Call WriteLocaleMsg(UserIndex, 77, e_FontTypeNames.FONTTYPE_INFO)
                 Exit Function
             End If
         
@@ -629,15 +634,39 @@ Private Function PuedeLanzar(ByVal UserIndex As Integer, ByVal HechizoIndex As I
                 End If
             End If
             
-            Dim RequiredItemResult As e_EquipedSlotMask
-            RequiredItemResult = TestRequiredEquipedItem(.invent, Hechizos(HechizoIndex).RequireEquipedSlot)
+            Dim RequiredItemResult As e_SpellRequirementMask
+            RequiredItemResult = TestRequiredEquipedItem(.invent, Hechizos(HechizoIndex).SpellRequirementMask)
             If RequiredItemResult > 0 Then
                 Call SendrequiredItemMessage(UserIndex, RequiredItemResult, "para usar este hechizo.")
                 Exit Function
             End If
-            
+            Dim TargetRef As t_AnyReference
+            If IsValidUserRef(.flags.targetUser) Then
+                Call CastUserToAnyRef(.flags.targetUser, TargetRef)
+            ElseIf IsValidNpcRef(.flags.TargetNPC) Then
+                Call CastNpcToAnyRef(.flags.TargetNPC, TargetRef)
+            End If
+            If IsSet(Hechizos(HechizoIndex).SpellRequirementMask, e_SpellRequirementMask.eRequireTargetOnLand) And _
+               IsValidRef(TargetRef) Then
+                If TargetRef.RefType = eUser Then
+                    If UserList(TargetRef.ArrayIndex).flags.Nadando > 0 Or _
+                       .flags.Navegando > 0 Or .flags.Montado > 0 Then
+                        Call WriteLocaleMsg(UserIndex, MsgLandRequiredToUseSpell, e_FontTypeNames.FONTTYPE_INFO)
+                        Exit Function
+                    End If
+                End If
+            End If
+            If IsSet(Hechizos(HechizoIndex).SpellRequirementMask, e_SpellRequirementMask.eRequireTargetOnWater) And _
+               IsValidRef(TargetRef) Then
+               If TargetRef.RefType = eUser Then
+                    If UserList(TargetRef.ArrayIndex).flags.Nadando = 0 And _
+                       .flags.Navegando = 0 Then
+                        Call WriteLocaleMsg(UserIndex, MsgWaterRequiredToUseSpell, e_FontTypeNames.FONTTYPE_INFO)
+                        Exit Function
+                    End If
+                End If
+            End If
 166         PuedeLanzar = True
-
         End With
 
         Exit Function
@@ -1257,7 +1286,9 @@ Sub HandleHechizoUsuario(ByVal UserIndex As Integer, ByVal uh As Integer)
                 If Effect Is Nothing Then
                     Call CreateEffect(UserIndex, eUser, UserList(UserIndex).flags.targetUser.ArrayIndex, eUser, Hechizos(uh).EotId)
                 Else
-                    Call Effect.Reset(UserIndex, eUser, Hechizos(uh).EotId)
+                    If Not Effect.Reset(UserIndex, eUser, Hechizos(uh).EotId) Then
+                        Exit Sub
+                    End If
                 End If
             End If
 114         Call SubirSkill(UserIndex, Magia)
@@ -1387,7 +1418,9 @@ Sub HandleHechizoNPC(ByVal UserIndex As Integer, ByVal uh As Integer)
                 If Effect Is Nothing Then
                     Call CreateEffect(UserIndex, eUser, UserList(UserIndex).flags.TargetNPC.ArrayIndex, eNpc, Hechizos(uh).EotId)
                 Else
-                    Call Effect.Reset(UserIndex, eUser, Hechizos(uh).EotId)
+                    If Not Effect.Reset(UserIndex, eUser, Hechizos(uh).EotId) Then
+                        Exit Sub
+                    End If
                 End If
             End If
 110         Call SubirSkill(UserIndex, Magia)
@@ -2586,7 +2619,8 @@ Sub HechizoPropNPC(ByVal hIndex As Integer, ByVal npcIndex As Integer, ByVal Use
 162         If Hechizos(hIndex).AntiRm = 0 Then
 164             Damage = Damage - NpcList(npcIndex).Stats.defM
             End If
-        
+            Damage = Damage * UserMod.GetMagicDamageModifier(UserList(UserIndex))
+            Damage = Damage * NPCs.GetMagicDamageReduction(NpcList(NpcIndex))
 166         If Damage < 0 Then Damage = 0
             IsAlive = NPCs.DoDamageOrHeal(npcIndex, UserIndex, eUser, -Damage, e_DamageSourceType.e_magic, hIndex) = eStillAlive
 170         Call InfoHechizo(UserIndex)

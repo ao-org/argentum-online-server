@@ -98,8 +98,9 @@ Public Property Let IBaseEffectOverTime_RemoveMe(ByVal Value As Boolean)
     DotInfo.RemoveEffect = Value
 End Property
 
-Public Sub IBaseEffectOverTime_Reset(ByVal SourceUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal NewEffectId As Integer)
-End Sub
+Public Function IBaseEffectOverTime_Reset(ByVal SourceUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal NewEffectId As Integer) As Boolean
+    IBaseEffectOverTime_Reset = True
+End Function
 
 Public Property Get IBaseEffectOverTime_EotId() As Integer
     IBaseEffectOverTime_EotId = DotInfo.EotId
@@ -141,6 +142,9 @@ End Property
 Public Property Get IBaseEffectOverTime_KeepAfterDead() As Boolean
     IBaseEffectOverTime_KeepAfterDead = False
 End Property
+
+Public Sub IBaseEffectOverTime_TargetChangeTerrain()
+End Sub
 
 Private Sub DoBlast()
     Dim Area As Integer
