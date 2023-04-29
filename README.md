@@ -28,7 +28,7 @@ Código fuente del servidor de Argentum20
 
 ## Database
 - http://www.ch-werner.de/sqliteodbc/
-- https://dev.mysql.com/get/Downloads/Connector-ODBC/8.0/mysql-connector-odbc-8.0.22-win32.msi
+- http://artfiles.org/mysql.com/Downloads/Connector-ODBC/8.0/mysql-connector-odbc-8.0.22-win32.msi
 
 ## Networking
 - Liberia de networking - https://github.com/Wolftein/Aurora.Network
