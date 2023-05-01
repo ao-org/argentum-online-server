@@ -3463,7 +3463,7 @@ Public Function GetHitBonus(ByRef User As t_User) As Integer
     GetHitBonus = User.Modifiers.HitBonus + GetWeaponHitBonus(User.invent.WeaponEqpObjIndex, User.clase)
 End Function
 
-'Defines bonus that heald the user when its healed with something, a spell potion anything
+'Defines the healing bonus when using a potion, a spell or any other healing source
 Public Function GetSelfHealingBonus(ByRef user As t_User) As Single
     GetSelfHealingBonus = max(1 + user.Modifiers.SelfHealingBonus, 0)
 End Function

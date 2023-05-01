@@ -2223,7 +2223,7 @@ Public Function GetHitBonus(ByRef Npc As t_Npc) As Integer
     GetHitBonus = Npc.Modifiers.HitBonus
 End Function
 
-'Defines bonus that heald the user when its healed with something, a spell potion anything
+'Defines the healing bonus when using a potion, a spell or any other healing source
 Public Function GetSelfHealingBonus(ByRef Npc As t_Npc) As Single
     GetSelfHealingBonus = max(1 + Npc.Modifiers.SelfHealingBonus, 0)
 End Function
