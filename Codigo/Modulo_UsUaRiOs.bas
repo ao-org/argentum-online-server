@@ -3351,6 +3351,15 @@ On Error GoTo DoDamageOrHeal_Err
         Color = DamageColor
     End If
     If amount < 0 Then
+        DamageStr = PonerPuntos(Math.Abs(Amount))
+        If SourceType = eUser Then
+            If UserList(SourceIndex).ChatCombate = 1 Then
+                Call WriteLocaleMsg(SourceIndex, 389, e_FontTypeNames.FONTTYPE_FIGHT, UserList(UserIndex).name & "¬" & DamageStr)
+            End If
+            If UserList(UserIndex).ChatCombate = 1 Then
+                Call WriteLocaleMsg(UserIndex, 34, e_FontTypeNames.FONTTYPE_FIGHT, UserList(SourceIndex).name & "¬" & DamageStr)
+            End If
+        End If
         amount = EffectsOverTime.TargetApplyDamageReduction(UserList(UserIndex).EffectOverTime, amount, SourceIndex, SourceType, DamageSourceType)
         Call EffectsOverTime.TargetWasDamaged(UserList(UserIndex).EffectOverTime, SourceIndex, SourceType, DamageSourceType)
     End If
@@ -3452,6 +3461,16 @@ End Function
 
 Public Function GetHitBonus(ByRef User As t_User) As Integer
     GetHitBonus = User.Modifiers.HitBonus + GetWeaponHitBonus(User.invent.WeaponEqpObjIndex, User.clase)
+End Function
+
+'Defines bonus that heald the user when its healed with something, a spell potion anything
+Public Function GetSelfHealingBonus(ByRef user As t_User) As Single
+    GetSelfHealingBonus = max(1 + user.Modifiers.SelfHealingBonus, 0)
+End Function
+
+'Defines bonus when healing someone with magic
+Public Function GetMagicHealingBonus(ByRef user As t_User) As Single
+    GetMagicHealingBonus = max(1 + user.Modifiers.MagicHealingBonus, 0)
 End Function
 
 Public Function GetWeaponHitBonus(ByVal WeaponIndex As Integer, ByVal UserClass As e_Class)

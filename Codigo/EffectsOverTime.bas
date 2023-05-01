@@ -250,6 +250,17 @@ On Error GoTo CreateEffect_Err
 644         ElseIf TargetType = eNpc Then
 646             Call AddEffect(NpcList(TargetIndex).EffectOverTime, Transform)
             End If
+        Case e_EffectOverTimeType.eBonusDamage
+650         Dim BonusDamage As BonusDamageEffect
+652         Set BonusDamage = GetEOT(EffectType)
+654         UniqueIdCounter = GetNextId()
+656         Call BonusDamage.Setup(SourceIndex, SourceType, TargetIndex, TargetType, EffectIndex, UniqueIdCounter)
+658         Call AddEffectToUpdate(BonusDamage)
+660         If TargetType = eUser Then
+662             Call AddEffect(UserList(TargetIndex).EffectOverTime, BonusDamage)
+664         ElseIf TargetType = eNpc Then
+666             Call AddEffect(NpcList(TargetIndex).EffectOverTime, BonusDamage)
+            End If
         Case Else
             Debug.Assert False
     End Select
@@ -349,6 +360,8 @@ Private Function InstantiateEOT(ByVal EffectType As e_EffectOverTimeType) As IBa
             Set InstantiateEOT = New ProtectEffect
         Case e_EffectOverTimeType.eTransform
             Set InstantiateEOT = New TransformEffect
+        Case e_EffectOverTimeType.eBonusDamage
+            Set InstantiateEOT = New BonusDamageEffect
         Case Else
             Debug.Assert False
     End Select
@@ -582,6 +595,8 @@ Public Function ApplyEotModifier(ByRef TargetRef As t_AnyReference, ByRef Effect
         Call UpdateIncreaseModifier(TargetRef, MovementSpeed, EffectStats.SpeedModifier)
         Call UpdateIncreaseModifier(TargetRef, e_ModifierTypes.HitBonus, EffectStats.HitModifier)
         Call UpdateIncreaseModifier(TargetRef, e_ModifierTypes.EvasionBonus, EffectStats.EvasionModifier)
+        Call UpdateIncreaseModifier(TargetRef, e_ModifierTypes.SelfHealingBonus, EffectStats.SelfHealingBonus)
+        Call UpdateIncreaseModifier(TargetRef, e_ModifierTypes.MagicHealingBonus, EffectStats.MagicHealingBonus)
     End If
 End Function
 
@@ -594,5 +609,7 @@ Public Function RemoveEotModifier(ByRef TargetRef As t_AnyReference, ByRef Effec
         Call UpdateIncreaseModifier(TargetRef, MovementSpeed, -EffectStats.SpeedModifier)
         Call UpdateIncreaseModifier(TargetRef, e_ModifierTypes.HitBonus, -EffectStats.HitModifier)
         Call UpdateIncreaseModifier(TargetRef, e_ModifierTypes.EvasionBonus, -EffectStats.EvasionModifier)
+        Call UpdateIncreaseModifier(TargetRef, e_ModifierTypes.SelfHealingBonus, -EffectStats.SelfHealingBonus)
+        Call UpdateIncreaseModifier(TargetRef, e_ModifierTypes.MagicHealingBonus, -EffectStats.MagicHealingBonus)
     End If
 End Function

@@ -1120,6 +1120,8 @@ Public Enum e_ModifierTypes
     MovementSpeed = 16
     HitBonus = 32
     EvasionBonus = 64
+    SelfHealingBonus = 128
+    MagicHealingBonus = 256
 End Enum
 
 Public Type t_EffectOverTime
@@ -1144,6 +1146,8 @@ Public Type t_EffectOverTime
     HitModifier As Integer
     EvasionModifier As Integer
     EffectModifiers As Long
+    SelfHealingBonus As Single
+    MagicHealingBonus As Single
     ClientEffectTypeId As Integer
     Area As Integer
     Aura As String
@@ -2863,6 +2867,7 @@ Public Enum e_EffectOverTimeType
     eMultipleAttacks = 14
     eProtection = 15
     eTransform = 16
+    eBonusDamage = 17
     [EffectTypeCount]
 End Enum
 

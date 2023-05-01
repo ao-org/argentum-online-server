@@ -66,10 +66,11 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
         End If
 112     Call InfoHechizoDeNpcSobreUser(NpcIndex, UserIndex, Spell)
 114     If Hechizos(Spell).SubeHP = 1 Then
+          Damage = Damage * NPCs.GetMagicHealingBonus(NpcList(NpcIndex))
+          Damage = Damage * UserMod.GetSelfHealingBonus(UserList(UserIndex))
 116       Call UserMod.DoDamageOrHeal(UserIndex, npcIndex, eNpc, Damage, e_DamageSourceType.e_magic, Spell)
-
 120       DamageStr = PonerPuntos(Damage)
-122       Call WriteLocaleMsg(UserIndex, "32", e_FontTypeNames.FONTTYPE_FIGHT, NpcList(NpcIndex).name & "¬" & DamageStr)
+122       Call WriteLocaleMsg(UserIndex, 32, e_FontTypeNames.FONTTYPE_FIGHT, NpcList(NpcIndex).name & "¬" & DamageStr)
 
 128     ElseIf Hechizos(Spell).SubeHP = 2 Then
 130       Damage = RandomNumber(Hechizos(Spell).MinHp, Hechizos(Spell).MaxHp)
@@ -275,6 +276,8 @@ Sub NpcLanzaSpellSobreNpc(ByVal NpcIndex As Integer, ByVal TargetNPC As Integer,
   
 104     If Hechizos(Spell).SubeHP = 1 Then ' Cura
 106       Damage = RandomNumber(Hechizos(Spell).MinHp, Hechizos(Spell).MaxHp)
+          Damage = Damage * NPCs.GetMagicHealingBonus(NpcList(NpcIndex))
+          Damage = Damage * NPCs.GetSelfHealingBonus(NpcList(TargetNPC))
 108       DamageStr = PonerPuntos(Damage)
           If Hechizos(Spell).wav > 0 Then
 110           Call SendData(SendTarget.ToNPCAliveArea, TargetNPC, PrepareMessagePlayWave(Hechizos(Spell).wav, .pos.X, .pos.y))
@@ -2565,6 +2568,8 @@ Sub HechizoPropNPC(ByVal hIndex As Integer, ByVal npcIndex As Integer, ByVal Use
 100     If Hechizos(hIndex).SubeHP = 1 Then
 102         If NpcList(NpcIndex).Stats.MinHp < NpcList(NpcIndex).Stats.MaxHp Then
 104             Damage = RandomNumber(Hechizos(hIndex).MinHp, Hechizos(hIndex).MaxHp)
+105             Damage = Damage * UserMod.GetMagicHealingBonus(UserList(UserIndex))
+                Damage = Damage * NPCs.GetSelfHealingBonus(NpcList(NpcIndex))
 106             Call InfoHechizo(UserIndex)
 108             Call NPCs.DoDamageOrHeal(npcIndex, UserIndex, eUser, Damage, e_DamageSourceType.e_magic, hIndex)
                 
@@ -2622,16 +2627,10 @@ Sub HechizoPropNPC(ByVal hIndex As Integer, ByVal npcIndex As Integer, ByVal Use
             Damage = Damage * UserMod.GetMagicDamageModifier(UserList(UserIndex))
             Damage = Damage * NPCs.GetMagicDamageReduction(NpcList(NpcIndex))
 166         If Damage < 0 Then Damage = 0
-            IsAlive = NPCs.DoDamageOrHeal(npcIndex, UserIndex, eUser, -Damage, e_DamageSourceType.e_magic, hIndex) = eStillAlive
 170         Call InfoHechizo(UserIndex)
+            IsAlive = NPCs.DoDamageOrHeal(NpcIndex, UserIndex, eUser, -Damage, e_DamageSourceType.e_magic, hIndex) = eStillAlive
 176         If NpcList(NpcIndex).NPCtype = DummyTarget Then
 178             Call DummyTargetAttacked(NpcIndex)
-            End If
-            If Damage > 0 Then
-180             DamageStr = PonerPuntos(Damage)
-182             If UserList(UserIndex).ChatCombate = 1 Then
-184                 Call WriteLocaleMsg(UserIndex, 389, e_FontTypeNames.FONTTYPE_FIGHT, "la criatura¬" & DamageStr)
-                End If
             End If
         End If
         Exit Sub
@@ -3136,6 +3135,8 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsA
                 Exit Sub
             End If
 368         Damage = RandomNumber(Hechizos(h).MinHp, Hechizos(h).MaxHp)
+            Damage = Damage * UserMod.GetMagicHealingBonus(UserList(UserIndex))
+            Damage = Damage * UserMod.GetSelfHealingBonus(UserList(tempChr))
 370         Call InfoHechizo(UserIndex)
             Call UserMod.DoDamageOrHeal(tempChr, UserIndex, eUser, Damage, e_DamageSourceType.e_magic, h)
 376         DamageStr = PonerPuntos(Damage)
@@ -3222,10 +3223,6 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsA
 450         Call InfoHechizo(UserIndex)
 452         IsAlive = UserMod.DoDamageOrHeal(tempChr, UserIndex, eUser, -Damage, e_DamageSourceType.e_magic, h) = eStillAlive
 453         Call EffectsOverTime.TartgetDidHit(UserList(UserIndex).EffectOverTime, tempChr, eUser, e_DamageSourceType.e_magic)
-454         DamageStr = PonerPuntos(Damage)
-    
-456         Call WriteLocaleMsg(UserIndex, "389", e_FontTypeNames.FONTTYPE_FIGHT, UserList(tempChr).name & "¬" & DamageStr)
-458         Call WriteLocaleMsg(tempChr, "34", e_FontTypeNames.FONTTYPE_FIGHT, UserList(UserIndex).name & "¬" & DamageStr)
 460         Call SubirSkill(tempChr, Resistencia)
 474         b = True
 
@@ -3471,18 +3468,20 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
 230         If Not PeleaSegura(UserIndex, tempChr) Then
 232             If Status(tempChr) = 0 And Status(UserIndex) = 1 Or Status(tempChr) = 2 And Status(UserIndex) = 1 Then
 234                 If esArmada(UserIndex) Then
-236                     Call WriteLocaleMsg(UserIndex, "379", e_FontTypeNames.FONTTYPE_INFO)
+236                     Call WriteLocaleMsg(UserIndex, 379, e_FontTypeNames.FONTTYPE_INFO)
 238                     b = False
                         Exit Sub
                     End If
 240                 If UserList(UserIndex).flags.Seguro Then
-242                     Call WriteLocaleMsg(UserIndex, "378", e_FontTypeNames.FONTTYPE_INFO)
+242                     Call WriteLocaleMsg(UserIndex, 378, e_FontTypeNames.FONTTYPE_INFO)
 244                     b = False
                         Exit Sub
                     End If
                 End If
             End If
 246         Damage = RandomNumber(Hechizos(h).MinHp, Hechizos(h).MaxHp)
+            Damage = Damage * UserMod.GetMagicHealingBonus(UserList(UserIndex))
+            Damage = Damage * UserMod.GetSelfHealingBonus(UserList(tempChr))
 248         enviarInfoHechizo = True
 250         Call UserMod.DoDamageOrHeal(tempChr, UserIndex, eUser, Damage, e_DamageSourceType.e_magic, h)
     
@@ -3554,9 +3553,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
     
 316         enviarInfoHechizo = True
 318         IsAlive = UserMod.DoDamageOrHeal(tempChr, UserIndex, eUser, -Damage, e_DamageSourceType.e_magic, h) = eStillAlive
-320         Call WriteConsoleMsg(UserIndex, "Le has quitado " & Damage & " puntos de vida a " & UserList(tempChr).name, e_FontTypeNames.FONTTYPE_FIGHT)
 321         Call EffectsOverTime.TartgetDidHit(UserList(UserIndex).EffectOverTime, tempChr, eUser, e_DamageSourceType.e_magic)
-322         Call WriteConsoleMsg(tempChr, UserList(UserIndex).name & " te ha quitado " & Damage & " puntos de vida.", e_FontTypeNames.FONTTYPE_FIGHT)
 324         Call SubirSkill(tempChr, Resistencia)
 336         b = True
         End If
@@ -4180,8 +4177,6 @@ Private Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, X As Byte, Y 
                 ' Prevengo daño negativo
 210             If Damage < 0 Then Damage = 0
 212             Call UserMod.DoDamageOrHeal(npcIndex, UserIndex, eUser, -Damage, e_DamageSourceType.e_magic, h2)
-214             Call WriteConsoleMsg(UserIndex, "Le has quitado " & Damage & " puntos de vida a " & UserList(npcIndex).name, e_FontTypeNames.FONTTYPE_FIGHT)
-216             Call WriteConsoleMsg(npcIndex, UserList(UserIndex).name & " te ha quitado " & Damage & " puntos de vida.", e_FontTypeNames.FONTTYPE_FIGHT)
 218             Call SubirSkill(NpcIndex, Resistencia)
 220             Call WriteUpdateUserStats(NpcIndex)
             End If
@@ -4202,7 +4197,8 @@ Private Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, X As Byte, Y 
                 Else
 246                 Damage = Hit
                 End If
- 
+                Damage = Damage * UserMod.GetMagicHealingBonus(UserList(UserIndex))
+                Damage = Damage * NPCs.GetSelfHealingBonus(NpcList(NpcIndex))
 248             Call UserMod.DoDamageOrHeal(npcIndex, UserIndex, eUser, Damage, e_DamageSourceType.e_magic, h2)
 252             If UserIndex <> NpcIndex Then
 254                 Call WriteConsoleMsg(UserIndex, "Le has restaurado " & Damage & " puntos de vida a " & UserList(npcIndex).name, e_FontTypeNames.FONTTYPE_FIGHT)

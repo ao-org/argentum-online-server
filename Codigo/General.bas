@@ -1671,7 +1671,7 @@ Public Sub Sanar(ByVal UserIndex As Integer, ByRef EnviarStats As Boolean, ByVal
 108         If UserList(UserIndex).Counters.HPCounter < Intervalo Then
 110             UserList(UserIndex).Counters.HPCounter = UserList(UserIndex).Counters.HPCounter + 1
             Else
-112             mashit = RandomNumber(2, Porcentaje(UserList(UserIndex).Stats.MaxSta, 5))
+112             mashit = RandomNumber(2, Porcentaje(UserList(UserIndex).Stats.MaxSta, 5)) * UserMod.GetSelfHealingBonus(UserList(UserIndex))
         
 114             UserList(UserIndex).Counters.HPCounter = 0
 116             Call UserMod.ModifyHealth(UserIndex, mashit)

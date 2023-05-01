@@ -833,6 +833,8 @@ On Error GoTo ErrHandler
             EffectOverTime(i).HitModifier = val(Leer.GetValue("EOT" & i, "HitModifier"))
             EffectOverTime(i).EvasionModifier = val(Leer.GetValue("EOT" & i, "EvasionModifier"))
             EffectOverTime(i).MagicDamageDone = val(Leer.GetValue("EOT" & i, "MagicDamageDone"))
+            EffectOverTime(i).SelfHealingBonus = val(Leer.GetValue("EOT" & i, "SelfHealingBonus"))
+            EffectOverTime(i).MagicHealingBonus = val(Leer.GetValue("EOT" & i, "MagicHealingBonus"))
             EffectOverTime(i).ClientEffectTypeId = val(Leer.GetValue("EOT" & i, "ClientEffectTypeId"))
             EffectOverTime(i).BuffType = val(Leer.GetValue("EOT" & i, "BuffType"))
             EffectOverTime(i).Area = val(Leer.GetValue("EOT" & i, "Area"))
@@ -852,6 +854,12 @@ On Error GoTo ErrHandler
             End If
             If val(Leer.GetValue("EOT" & i, "AffectedBySpeedModifier")) > 0 Then
                 Call SetMask(EffectOverTime(i).EffectModifiers, e_ModifierTypes.MovementSpeed)
+            End If
+            If val(Leer.GetValue("EOT" & i, "AffectedByMagicHealing")) > 0 Then
+                Call SetMask(EffectOverTime(i).EffectModifiers, e_ModifierTypes.MagicHealingBonus)
+            End If
+            If val(Leer.GetValue("EOT" & i, "AffectedBySelfHealing")) > 0 Then
+                Call SetMask(EffectOverTime(i).EffectModifiers, e_ModifierTypes.SelfHealingBonus)
             End If
 290         If val(Leer.GetValue("EOT" & i, "RequireArmor")) > 0 Then Call SetMask(EffectOverTime(i).SpellRequirementMask, e_SpellRequirementMask.eArmor)
 292         If val(Leer.GetValue("EOT" & i, "RequireShip")) > 0 Then Call SetMask(EffectOverTime(i).SpellRequirementMask, e_SpellRequirementMask.eShip)

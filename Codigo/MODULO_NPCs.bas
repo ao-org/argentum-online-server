@@ -1922,16 +1922,22 @@ Public Function DoDamageOrHeal(ByVal npcIndex As Integer, ByVal SourceIndex As I
 On Error GoTo DoDamageOrHeal_Err
     Dim DamageStr As String
     Dim Color As Long
-    DamageStr = PonerPuntos(Math.Abs(amount))
     If amount > 0 Then
         Color = vbGreen
     Else
         Color = DamageColor
     End If
     If amount < 0 Then
+        If SourceType = eUser Then
+            DamageStr = PonerPuntos(Math.Abs(Amount))
+            If UserList(SourceIndex).ChatCombate = 1 Then
+                Call WriteLocaleMsg(SourceIndex, 382, e_FontTypeNames.FONTTYPE_FIGHT, DamageStr)
+            End If
+        End If
         amount = EffectsOverTime.TargetApplyDamageReduction(NpcList(NpcIndex).EffectOverTime, amount, SourceIndex, SourceType, DamageSourceType)
         Call EffectsOverTime.TargetWasDamaged(NpcList(NpcIndex).EffectOverTime, SourceIndex, SourceType, DamageSourceType)
     End If
+    DamageStr = PonerPuntos(Math.Abs(Amount))
     With NpcList(npcIndex)
         Call SendData(SendTarget.ToNPCAliveArea, npcIndex, PrepareMessageTextOverChar(DamageStr, .Char.charindex, Color))
         ' Mascotas dan experiencia al amo
@@ -2215,4 +2221,14 @@ End Function
 
 Public Function GetHitBonus(ByRef Npc As t_Npc) As Integer
     GetHitBonus = Npc.Modifiers.HitBonus
+End Function
+
+'Defines bonus that heald the user when its healed with something, a spell potion anything
+Public Function GetSelfHealingBonus(ByRef Npc As t_Npc) As Single
+    GetSelfHealingBonus = max(1 + Npc.Modifiers.SelfHealingBonus, 0)
+End Function
+
+'Defines bonus when healing someone with magic
+Public Function GetMagicHealingBonus(ByRef Npc As t_Npc) As Single
+    GetMagicHealingBonus = max(1 + Npc.Modifiers.MagicHealingBonus, 0)
 End Function
