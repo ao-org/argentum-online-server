@@ -49,6 +49,10 @@ Public Sub UpdateIncreaseModifier(ByRef Reference As t_AnyReference, ByVal Modif
                 Call IncreaseInteger(UserList(Reference.ArrayIndex).Modifiers.HitBonus, Value)
             Case e_ModifierTypes.EvasionBonus
                 Call IncreaseInteger(UserList(Reference.ArrayIndex).Modifiers.EvasionBonus, Value)
+            Case e_ModifierTypes.SelfHealingBonus
+                Call IncreaseSingle(UserList(Reference.ArrayIndex).Modifiers.SelfHealingBonus, Value)
+            Case e_ModifierTypes.MagicHealingBonus
+                Call IncreaseSingle(UserList(Reference.ArrayIndex).Modifiers.MagicHealingBonus, Value)
         End Select
     Else
         Select Case Modifier
@@ -67,6 +71,10 @@ Public Sub UpdateIncreaseModifier(ByRef Reference As t_AnyReference, ByVal Modif
                 Call IncreaseInteger(NpcList(Reference.ArrayIndex).Modifiers.HitBonus, Value)
             Case e_ModifierTypes.EvasionBonus
                 Call IncreaseInteger(NpcList(Reference.ArrayIndex).Modifiers.EvasionBonus, Value)
+            Case e_ModifierTypes.SelfHealingBonus
+                Call IncreaseSingle(NpcList(Reference.ArrayIndex).Modifiers.SelfHealingBonus, Value)
+            Case e_ModifierTypes.MagicHealingBonus
+                Call IncreaseSingle(NpcList(Reference.ArrayIndex).Modifiers.MagicHealingBonus, Value)
         End Select
     End If
 End Sub

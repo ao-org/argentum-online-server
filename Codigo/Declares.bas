@@ -1103,9 +1103,11 @@ Public Type t_ActiveModifiers
     PhysicalDamageReduction As Single
     MagicDamageReduction As Single
     MovementSpeed As Single
+    SelfHealingBonus As Single
     'effect perform on others
     PhysicalDamageBonus As Single
     MagicDamageBonus As Single
+    MagicHealingBonus As Single
     HitBonus As Integer
     EvasionBonus As Integer
 End Type
@@ -1118,6 +1120,8 @@ Public Enum e_ModifierTypes
     MovementSpeed = 16
     HitBonus = 32
     EvasionBonus = 64
+    SelfHealingBonus = 128
+    MagicHealingBonus = 256
 End Enum
 
 Public Type t_EffectOverTime
@@ -1142,6 +1146,8 @@ Public Type t_EffectOverTime
     HitModifier As Integer
     EvasionModifier As Integer
     EffectModifiers As Long
+    SelfHealingBonus As Single
+    MagicHealingBonus As Single
     ClientEffectTypeId As Integer
     Area As Integer
     Aura As String
@@ -2861,6 +2867,7 @@ Public Enum e_EffectOverTimeType
     eMultipleAttacks = 14
     eProtection = 15
     eTransform = 16
+    eBonusDamage = 17
     [EffectTypeCount]
 End Enum
 
@@ -2985,6 +2992,10 @@ Public Sub ClearModifiers(ByRef Modifiers As t_ActiveModifiers)
     Modifiers.PhysicalDamageBonus = 0
     Modifiers.PhysicalDamageReduction = 0
     Modifiers.MovementSpeed = 0
+    Modifiers.EvasionBonus = 0
+    Modifiers.HitBonus = 0
+    Modifiers.MagicHealingBonus = 0
+    Modifiers.SelfHealingBonus = 0
 End Sub
 
 Public Sub IncreaseSingle(ByRef dest As Single, ByVal amount As Single)

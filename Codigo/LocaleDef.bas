@@ -38,6 +38,8 @@ Public Const MsgSkillAlreadyKnown = 443
 Public Const MsgLandRequiredToUseSpell = 444
 Public Const MsgWaterRequiredToUseSpell = 445
 Public Const MsgCastOnlyOnSelf = 446
+Public Const MsgExtraDamageDone = 447
+Public Const MsgExtraDamageReceive = 448
 
 Public Function GetRequiredWeaponLocaleId(ByVal WeaponType As e_WeaponType) As Integer
     Select Case WeaponType

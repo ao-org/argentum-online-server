@@ -2100,7 +2100,9 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
 294                     Case 3 'Pocion roja, restaura HP
                     
                             'Usa el item
-296                         Call UserMod.ModifyHealth(UserIndex, RandomNumber(obj.MinModificador, obj.MaxModificador))
+                            Dim HealingAmount As Long
+                            HealingAmount = RandomNumber(obj.MinModificador, obj.MaxModificador) * UserMod.GetSelfHealingBonus(UserList(UserIndex))
+296                         Call UserMod.ModifyHealth(UserIndex, HealingAmount)
                             'Quitamos del inv el item
 300                         Call QuitarUserInvItem(UserIndex, Slot, 1)
 302                         If obj.Snd1 <> 0 Then
