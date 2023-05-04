@@ -697,9 +697,10 @@ Public Sub CargarHechizos()
             'Hechizos de area
     
 172         If val(Leer.GetValue("Hechizo" & Hechizo, "Incinera")) > 0 Then Call SetMask(Hechizos(Hechizo).Effects, e_SpellEffects.Incinerate)
-    
+            If val(Leer.GetValue("Hechizo" & Hechizo, "RemoveDebuff")) > 0 Then Call SetMask(Hechizos(Hechizo).Effects, e_SpellEffects.RemoveDebuff)
+            If val(Leer.GetValue("Hechizo" & Hechizo, "StealBuff")) > 0 Then Call SetMask(Hechizos(Hechizo).Effects, e_SpellEffects.StealBuff)
 174         Hechizos(Hechizo).AutoLanzar = val(Leer.GetValue("Hechizo" & Hechizo, "AutoLanzar"))
-    
+175         Hechizos(Hechizo).TargetEffectType = val(Leer.GetValue("Hechizo" & Hechizo, "TargetEffectType"))
 176         Hechizos(Hechizo).Cooldown = val(Leer.GetValue("Hechizo" & Hechizo, "CoolDown"))
 177         Hechizos(Hechizo).CdEffectId = val(Leer.GetValue("Hechizo" & Hechizo, "CdEffectId"))
 178         Hechizos(Hechizo).loops = val(Leer.GetValue("Hechizo" & Hechizo, "Loops"))

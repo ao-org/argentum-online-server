@@ -92,6 +92,9 @@ End Function
 Public Sub TargetWillAttackPosition(ByVal Map As Integer, ByVal PosX As Integer, ByVal PosY As Integer)
 End Sub
 
+Public Function ChangeTarget(ByVal NewTargetIndex As Integer, ByVal NewTargetType As e_ReferenceType) As Boolean
+End Function
+
 Public Property Get KeepAfterDead() As Boolean
 End Property
 

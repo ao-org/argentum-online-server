@@ -154,6 +154,22 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
 
 212       Call WriteFYA(UserIndex)
         End If
+        If IsSet(Hechizos(Spell).Effects, e_SpellEffects.RemoveDebuff) Then
+            Dim NegativeEffect As IBaseEffectOverTime
+            Set NegativeEffect = EffectsOverTime.FindEffectOfTypeOnTarget(UserList(UserIndex).EffectOverTime, eDebuff)
+            If Not NegativeEffect Is Nothing Then
+                NegativeEffect.RemoveMe = True
+                Exit Sub
+            End If
+        End If
+        If IsSet(Hechizos(Spell).Effects, e_SpellEffects.StealBuff) Then
+            Dim TargetBuff As IBaseEffectOverTime
+            Set TargetBuff = EffectsOverTime.FindEffectOfTypeOnTarget(UserList(UserIndex).EffectOverTime, eBuff)
+            If Not TargetBuff Is Nothing Then
+                Call EffectsOverTime.ChangeOwner(UserIndex, eUser, NpcIndex, eNpc, TargetBuff)
+            End If
+            Exit Sub
+        End If
 
 214     If Hechizos(Spell).SubeFuerza = 1 Then
 216       Damage = RandomNumber(Hechizos(Spell).MinFuerza, Hechizos(Spell).MaxFuerza)
@@ -557,7 +573,8 @@ Private Function PuedeLanzar(ByVal UserIndex As Integer, ByVal HechizoIndex As I
 110             Call WriteLocaleMsg(UserIndex, 77, e_FontTypeNames.FONTTYPE_INFO)
                 Exit Function
             End If
-        
+            
+            
 112         If .flags.Privilegios And e_PlayerType.Consejero Then
                 Exit Function
             End If
@@ -576,6 +593,29 @@ Private Function PuedeLanzar(ByVal UserIndex As Integer, ByVal HechizoIndex As I
 124             If Not TieneObjEnInv(UserIndex, Hechizos(HechizoIndex).NecesitaObj, Hechizos(HechizoIndex).NecesitaObj2) Then
 126                 Call WriteConsoleMsg(UserIndex, "Necesitas un " & ObjData(Hechizos(HechizoIndex).NecesitaObj).Name & " para lanzar el hechizo.", e_FontTypeNames.FONTTYPE_INFO)
                     Exit Function
+                End If
+            End If
+            Dim UserAttackInteractionResult As e_AttackInteractionResult
+            If IsValidUserRef(.flags.targetUser) Then
+                If Hechizos(HechizoIndex).TargetEffectType = e_TargetEffectType.ePositive Then
+                    Dim UserInteractionResult As e_InteractionResult
+                    UserInteractionResult = UserMod.CanHelpUser(UserIndex, .flags.targetUser.ArrayIndex)
+                    If UserInteractionResult <> e_InteractionResult.eInteractionOk Then
+                        Call SendHelpInteractionMessage(UserIndex, UserInteractionResult)
+                    End If
+                End If
+                If Hechizos(HechizoIndex).TargetEffectType = e_TargetEffectType.eNegative Then
+                    UserAttackInteractionResult = UserMod.CanAttackUser(UserIndex, UserList(UserIndex).VersionId, .flags.targetUser.ArrayIndex, .flags.targetUser.VersionId)
+                    If UserAttackInteractionResult <> e_AttackInteractionResult.eCanAttack Then
+                        Call SendAttackInteractionMessage(UserIndex, UserAttackInteractionResult)
+                    End If
+                End If
+            ElseIf IsValidNpcRef(.flags.TargetNPC) Then
+                If Hechizos(HechizoIndex).TargetEffectType = e_TargetEffectType.eNegative Then
+                    UserAttackInteractionResult = UserCanAttackNpc(UserIndex, .flags.TargetNPC.ArrayIndex)
+                    If UserAttackInteractionResult <> e_AttackInteractionResult.eCanAttack Then
+                        Call SendAttackInteractionMessage(UserIndex, UserAttackInteractionResult)
+                    End If
                 End If
             End If
 
@@ -1522,7 +1562,7 @@ Sub LanzarHechizo(ByVal Index As Integer, ByVal UserIndex As Integer)
         If SpellCastSuccess Then
 112         If Hechizos(uh).Cooldown > 0 Then
 114             UserList(UserIndex).Counters.UserHechizosInterval(Index) = GetTickCount()
-                If Hechizos(uh).CdEffectId > 0 Then Call WriteSendSkillCdUpdate(UserIndex, Hechizos(uh).CdEffectId, -1, CLng(Hechizos(uh).Cooldown) * 1000, eCD)
+                If Hechizos(uh).CdEffectId > 0 Then Call WriteSendSkillCdUpdate(UserIndex, Hechizos(uh).CdEffectId, -1, CLng(Hechizos(uh).Cooldown) * 1000, CLng(Hechizos(uh).Cooldown) * 1000, eCD)
             End If
         End If
 172     If UserList(UserIndex).Counters.Trabajando Then
@@ -1819,7 +1859,26 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 330         Call InfoHechizo(UserIndex)
 332         b = True
         End If
-
+        If IsSet(Hechizos(h).Effects, e_SpellEffects.RemoveDebuff) Then
+            Dim NegativeEffect As IBaseEffectOverTime
+            Set NegativeEffect = EffectsOverTime.FindEffectOfTypeOnTarget(UserList(tU).EffectOverTime, eDebuff)
+            If Not NegativeEffect Is Nothing Then
+                NegativeEffect.RemoveMe = True
+                Call InfoHechizo(UserIndex)
+                b = True
+                Exit Sub
+            End If
+        End If
+        If IsSet(Hechizos(h).Effects, e_SpellEffects.StealBuff) Then
+            Dim TargetBuff As IBaseEffectOverTime
+            Set TargetBuff = EffectsOverTime.FindEffectOfTypeOnTarget(UserList(tU).EffectOverTime, eBuff)
+            If Not TargetBuff Is Nothing Then
+                Call EffectsOverTime.ChangeOwner(tU, eUser, UserIndex, eUser, TargetBuff)
+            End If
+            Call InfoHechizo(UserIndex)
+            b = True
+            Exit Sub
+        End If
 334     If IsSet(Hechizos(h).Effects, e_SpellEffects.CurePoison) Then
 
             'Verificamos que el usuario no este muerto
@@ -2347,10 +2406,10 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 738     If IsSet(Hechizos(h).Effects, e_SpellEffects.ToggleCleave) Then
             If UserList(UserIndex).flags.Cleave Then
 740             UserList(UserIndex).flags.Cleave = 0
-                If Hechizos(h).CdEffectId > 0 Then Call WriteSendSkillCdUpdate(UserIndex, Hechizos(h).CdEffectId, -1, 0, eBuff)
+                If Hechizos(h).CdEffectId > 0 Then Call WriteSendSkillCdUpdate(UserIndex, Hechizos(h).CdEffectId, -1, 0, 0, eBuff)
             Else
 742             UserList(UserIndex).flags.Cleave = 1
-                If Hechizos(h).CdEffectId > 0 Then Call WriteSendSkillCdUpdate(UserIndex, Hechizos(h).CdEffectId, -1, -1, eBuff)
+                If Hechizos(h).CdEffectId > 0 Then Call WriteSendSkillCdUpdate(UserIndex, Hechizos(h).CdEffectId, -1, -1, -1, eBuff)
             End If
 744         b = True
         End If
@@ -2401,6 +2460,26 @@ Sub HechizoEstadoNPC(ByVal NpcIndex As Integer, ByVal hIndex As Integer, ByRef b
 116         Call InfoHechizo(UserIndex)
 118         NpcList(NpcIndex).flags.Envenenado = Hechizos(hIndex).Envenena
 120         b = True
+        End If
+        If IsSet(Hechizos(hIndex).Effects, e_SpellEffects.RemoveDebuff) Then
+            Dim NegativeEffect As IBaseEffectOverTime
+            Set NegativeEffect = EffectsOverTime.FindEffectOfTypeOnTarget(NpcList(NpcIndex).EffectOverTime, eDebuff)
+            If Not NegativeEffect Is Nothing Then
+                NegativeEffect.RemoveMe = True
+                Call InfoHechizo(UserIndex)
+                b = True
+                Exit Sub
+            End If
+        End If
+        If IsSet(Hechizos(hIndex).Effects, e_SpellEffects.StealBuff) Then
+            Dim TargetBuff As IBaseEffectOverTime
+            Set TargetBuff = EffectsOverTime.FindEffectOfTypeOnTarget(NpcList(NpcIndex).EffectOverTime, eBuff)
+            If Not TargetBuff Is Nothing Then
+                Call EffectsOverTime.ChangeOwner(NpcIndex, eNpc, UserIndex, eUser, TargetBuff)
+            End If
+            Call InfoHechizo(UserIndex)
+            b = True
+            Exit Sub
         End If
 
 122     If IsSet(Hechizos(hIndex).Effects, e_SpellEffects.CurePoison) Then

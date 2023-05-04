@@ -37,7 +37,9 @@ Public Sub Setup(ByVal TargetIndex As Integer, ByVal TargetType As e_ReferenceTy
     End Select
     With EffectOverTime(EffectId)
         mTimeLimit = .TickTime
-        If mDotInfo.TargetRef.RefType = eUser And EffectOverTime(mDotInfo.EotId).ClientEffectTypeId > 0 Then Call WriteSendSkillCdUpdate(TargetIndex, .ClientEffectTypeId, ID, .TickTime, .buffType)
+        If mDotInfo.TargetRef.RefType = eUser And EffectOverTime(mDotInfo.EotId).ClientEffectTypeId > 0 Then
+            Call WriteSendSkillCdUpdate(TargetIndex, .ClientEffectTypeId, ID, .TickTime, .TickTime, .buffType)
+        End If
     End With
 End Sub
 
@@ -123,7 +125,7 @@ Public Sub IBaseEffectOverTime_OnRemove()
     Call UnsetMask(UserList(mDotInfo.TargetRef.ArrayIndex).flags.DisabledSlot, mUnequipedslotMask)
     If mDotInfo.TargetRef.RefType = eUser And EffectOverTime(mDotInfo.EotId).ClientEffectTypeId > 0 Then
         Call WriteSendSkillCdUpdate(mDotInfo.TargetRef.ArrayIndex, EffectOverTime(mDotInfo.EotId).ClientEffectTypeId, _
-                                    mDotInfo.UniqueId, 0, EffectOverTime(mDotInfo.EotId).buffType)
+                                    mDotInfo.UniqueId, 0, 0, EffectOverTime(mDotInfo.EotId).buffType)
     End If
 End Sub
 
@@ -132,6 +134,10 @@ End Sub
 
 Public Sub IBaseEffectOverTime_TartgetWillAtack(ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
 End Sub
+
+Public Function IBaseEffectOverTime_ChangeTarget(ByVal NewTargetIndex As Integer, ByVal NewTargetType As e_ReferenceType) As Boolean
+    IBaseEffectOverTime_ChangeTarget = False
+End Function
 
 Public Sub IBaseEffectOverTime_TartgetDidHit(ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
 End Sub

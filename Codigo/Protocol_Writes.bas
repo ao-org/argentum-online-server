@@ -5606,12 +5606,13 @@ writeUpdateShopClienteCredits_Err:
     Call TraceError(Err.Number, Err.Description + " UI: " + UserIndex, "Argentum20Server.Protocol_Writes.writeUpdateShopClienteCredits", Erl)
 End Sub
 
-Public Sub WriteSendSkillCdUpdate(ByVal UserIndex As Integer, ByVal SkillTypeId As Integer, ByVal SkillId As Long, ByVal Time As Long, ByVal SkillType As e_EffectType, Optional ByVal Stacks As Integer = 1)
+Public Sub WriteSendSkillCdUpdate(ByVal UserIndex As Integer, ByVal SkillTypeId As Integer, ByVal SkillId As Long, ByVal TimeLeft As Long, ByVal TotalTime As Long, ByVal SkillType As e_EffectType, Optional ByVal Stacks As Integer = 1)
 On Error GoTo WriteSendSkillCdUpdate_Err
     Call Writer.WriteInt16(ServerPacketID.SendSkillCdUpdate)
     Call Writer.WriteInt16(SkillTypeId)
     Call Writer.WriteInt32(SkillId)
-    Call Writer.WriteInt32(Time)
+    Call Writer.WriteInt32(TimeLeft)
+    Call Writer.WriteInt32(TotalTime)
     Call Writer.WriteInt8(ConvertToClientBuff(SkillType))
     Call Writer.WriteInt16(Stacks)
 182 Call modSendData.SendData(ToIndex, userindex)

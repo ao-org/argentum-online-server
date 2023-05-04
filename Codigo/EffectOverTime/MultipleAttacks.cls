@@ -34,7 +34,7 @@ Public Sub Setup(ByVal SourceIndex As Integer, ByVal SourceType As e_ReferenceTy
         mPhysicalDamageDone = .PhysicalDamageDone
         mBlowCount = .SubType
         mTicks = .Ticks
-        If mDotInfo.TargetRef.RefType = eUser And EffectOverTime(mDotInfo.EotId).ClientEffectTypeId > 0 Then Call WriteSendSkillCdUpdate(SourceIndex, .ClientEffectTypeId, ID, .TickTime, .buffType, mTicks)
+        If mDotInfo.TargetRef.RefType = eUser And EffectOverTime(mDotInfo.EotId).ClientEffectTypeId > 0 Then Call WriteSendSkillCdUpdate(SourceIndex, .ClientEffectTypeId, ID, .TickTime, .TickTime, .buffType, mTicks)
     End With
     Call UpdateIncreaseModifier(mDotInfo.TargetRef, PhysiccalBonus, mPhysicalDamageDone)
 End Sub
@@ -126,7 +126,7 @@ Public Sub IBaseEffectOverTime_OnRemove()
     End If
     If mDotInfo.TargetRef.RefType = eUser And EffectOverTime(mDotInfo.EotId).ClientEffectTypeId > 0 Then
         Call WriteSendSkillCdUpdate(mDotInfo.TargetRef.ArrayIndex, EffectOverTime(mDotInfo.EotId).ClientEffectTypeId, _
-                                    mDotInfo.UniqueId, 0, EffectOverTime(mDotInfo.EotId).buffType)
+                                    mDotInfo.UniqueId, 0, 0, EffectOverTime(mDotInfo.EotId).buffType)
     End If
 End Sub
 
@@ -141,6 +141,10 @@ End Sub
 
 Public Sub IBaseEffectOverTime_TargetFailedAttack(ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
 End Sub
+
+Public Function IBaseEffectOverTime_ChangeTarget(ByVal NewTargetIndex As Integer, ByVal NewTargetType As e_ReferenceType) As Boolean
+    IBaseEffectOverTime_ChangeTarget = False
+End Function
 
 Public Sub IBaseEffectOverTime_TargetWasDamaged(ByVal SourceUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
 End Sub
@@ -163,7 +167,7 @@ Public Sub IBaseEffectOverTime_TargetWillAttackPosition(ByVal Map As Integer, By
      mTicks = mTicks - 1
      If mDotInfo.TargetRef.RefType = eUser And EffectOverTime(mDotInfo.EotId).ClientEffectTypeId > 0 Then
         Call WriteSendSkillCdUpdate(mDotInfo.TargetRef.ArrayIndex, EffectOverTime(mDotInfo.EotId).ClientEffectTypeId, _
-                                    mDotInfo.UniqueId, mTimeLimit - mElapsedTime, EffectOverTime(mDotInfo.EotId).buffType, mTicks)
+                                    mDotInfo.UniqueId, mTimeLimit - mElapsedTime, mTimeLimit, EffectOverTime(mDotInfo.EotId).buffType, mTicks)
     End If
 End Sub
 

@@ -3533,18 +3533,9 @@ On Error GoTo ResurrectWithItem_Err
             Call WriteConsoleMsg(TargetUser, UserList(UserIndex).name & " está intentando revivirte. Desactiva el seguro de resurrección para permitirle hacerlo.", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
-        Select Case CanHelpResult
-            Case eOposingFaction
-108             Call WriteLocaleMsg(UserIndex, MsgFactionForbidAction, e_FontTypeNames.FONTTYPE_INFO)
-                Exit Sub
-            Case eCantHelpCriminal
-110             Call WriteLocaleMsg(UserIndex, MsgDisableAttackGuardToContinue, e_FontTypeNames.FONTTYPE_INFO)
-                Exit Sub
-            Case eCantHelpCriminalClanRules
-112             Call WriteLocaleMsg(UserIndex, MsgClanForbidAction, e_FontTypeNames.FONTTYPE_INFO)
-                Exit Sub
-            Case Else
-        End Select
+        If CanHelpResult <> eInteractionOk Then
+            Call SendHelpInteractionMessage(UserIndex, CanHelpResult)
+        End If
         
 118     Dim costoVidaResu As Long
 120     costoVidaResu = UserList(TargetUser).Stats.ELV * 1.5 + .Stats.MinHp * 0.5

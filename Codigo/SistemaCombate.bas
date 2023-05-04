@@ -1501,7 +1501,7 @@ Public Function PuedeAtacar(ByVal AttackerIndex As Integer, ByVal VictimIndex As
 
         'Estas muerto no podes atacar
 100     If UserList(AttackerIndex).flags.Muerto = 1 Then
-102         Call WriteLocaleMsg(AttackerIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
+102         Call WriteLocaleMsg(attackerIndex, 77, e_FontTypeNames.FONTTYPE_INFO)
             'Call WriteConsoleMsg(attackerIndex, "No podés atacar porque estas muerto", e_FontTypeNames.FONTTYPE_INFO)
 104         PuedeAtacar = False
             Exit Function
@@ -1670,17 +1670,12 @@ Public Function PuedeAtacar(ByVal AttackerIndex As Integer, ByVal VictimIndex As
 214                     Call WriteConsoleMsg(VictimIndex, "Huye de la ciudad! estas siendo atacado y no podrás defenderte.", e_FontTypeNames.FONTTYPE_WARNING)
 216                     PuedeAtacar = True 'Beneficio de Caos que atacan en su ciudad.
                         Exit Function
-
                     End If
-
                 End If
-
             End If
-
 218         Call WriteConsoleMsg(AttackerIndex, "Esta es una zona segura, aqui no podes atacar otros usuarios.", e_FontTypeNames.FONTTYPE_WARNING)
 220         PuedeAtacar = False
             Exit Function
-
         End If
 
         'Estas atacando desde un trigger seguro? o tu victima esta en uno asi?
@@ -1688,7 +1683,6 @@ Public Function PuedeAtacar(ByVal AttackerIndex As Integer, ByVal VictimIndex As
 224         Call WriteConsoleMsg(AttackerIndex, "No podes pelear aqui.", e_FontTypeNames.FONTTYPE_WARNING)
 226         PuedeAtacar = False
             Exit Function
-
         End If
 
 228     PuedeAtacar = True
