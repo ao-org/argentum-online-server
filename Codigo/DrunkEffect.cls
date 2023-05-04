@@ -30,7 +30,7 @@ Public Sub Setup(ByVal TargetIndex As Integer, ByVal TargetType As e_ReferenceTy
     With EffectOverTime(EffectId)
         TickTime = .TickTime
         If TargetType = eUser Then
-            If .ClientEffectTypeId > 0 Then Call WriteSendSkillCdUpdate(TargetIndex, .ClientEffectTypeId, ID, .TickTime, .buffType)
+            If .ClientEffectTypeId > 0 Then Call WriteSendSkillCdUpdate(TargetIndex, .ClientEffectTypeId, ID, .TickTime, .TickTime, .buffType)
         End If
     End With
 End Sub
@@ -154,6 +154,10 @@ End Function
 
 Public Sub IBaseEffectOverTime_TargetWillAttackPosition(ByVal Map As Integer, ByVal PosX As Integer, ByVal PosY As Integer)
 End Sub
+
+Public Function IBaseEffectOverTime_ChangeTarget(ByVal NewTargetIndex As Integer, ByVal NewTargetType As e_ReferenceType) As Boolean
+    IBaseEffectOverTime_ChangeTarget = False
+End Function
 
 Public Property Get IBaseEffectOverTime_CallBacksMask() As Long
     IBaseEffectOverTime_CallBacksMask = 0

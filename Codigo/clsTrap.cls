@@ -37,7 +37,9 @@ Public Sub Setup(ByVal SourceIndex As Integer, ByVal SourceType As e_ReferenceTy
     Call SetPosition(map, TileX, TileY)
     With EffectOverTime(EffectId)
         mTimeLimit = .TickTime
-        If mDotInfo.TargetRef.RefType = eUser And EffectOverTime(mDotInfo.EotId).ClientEffectTypeId > 0 Then Call WriteSendSkillCdUpdate(SourceIndex, .ClientEffectTypeId, ID, .TickTime, .buffType)
+        If mDotInfo.TargetRef.RefType = eUser And EffectOverTime(mDotInfo.EotId).ClientEffectTypeId > 0 Then
+            Call WriteSendSkillCdUpdate(SourceIndex, .ClientEffectTypeId, ID, .TickTime, .TickTime, .buffType)
+        End If
     End With
 End Sub
 
@@ -115,7 +117,7 @@ Public Sub IBaseEffectOverTime_OnRemove()
     mDotInfo.RemoveEffect = True
     If mDotInfo.TargetRef.RefType = eUser And EffectOverTime(mDotInfo.EotId).ClientEffectTypeId > 0 Then
         Call WriteSendSkillCdUpdate(mDotInfo.TargetRef.ArrayIndex, EffectOverTime(mDotInfo.EotId).ClientEffectTypeId, _
-                                    mDotInfo.UniqueId, 0, EffectOverTime(mDotInfo.EotId).buffType)
+                                    mDotInfo.UniqueId, 0, 0, EffectOverTime(mDotInfo.EotId).buffType)
     End If
     Call RemoveFromMap
 End Sub
@@ -142,6 +144,10 @@ End Function
 Public Sub IBaseEffectOverTime_TargetWillAttackPosition(ByVal Map As Integer, ByVal PosX As Integer, ByVal PosY As Integer)
 End Sub
 
+Public Function IBaseEffectOverTime_ChangeTarget(ByVal NewTargetIndex As Integer, ByVal NewTargetType As e_ReferenceType) As Boolean
+    IBaseEffectOverTime_ChangeTarget = False
+End Function
+
 Public Property Get IBaseEffectOverTime_CallBacksMask() As Long
     IBaseEffectOverTime_CallBacksMask = 0
 End Property
@@ -160,6 +166,7 @@ End Property
 
 Public Sub IBaseEffectOverTime_TargetChangeTerrain()
 End Sub
+
 
 Private Sub RemoveFromMap()
     Set MapData(mWorldPosition.map, mWorldPosition.x, mWorldPosition.y).Trap = Nothing

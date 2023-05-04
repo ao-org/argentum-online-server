@@ -409,12 +409,12 @@ AddEffect_Err:
       Call TraceError(Err.Number, Err.Description, "EffectsOverTime.AddEffect", Erl)
 End Sub
 
-Public Sub RemoveEffect(ByRef EffectList As t_EffectOverTimeList, ByRef Effect As IBaseEffectOverTime)
+Public Sub RemoveEffect(ByRef EffectList As t_EffectOverTimeList, ByRef Effect As IBaseEffectOverTime, Optional ByVal CallRemove As Boolean = True)
 On Error GoTo RemoveEffect_Err
     Dim i As Integer
 100 For i = 0 To EffectList.EffectCount - 1
 106     If EffectList.EffectList(i).UniqueId() = Effect.UniqueId() Then
-            Call RemoveEffectAtPos(EffectList, i)
+            Call RemoveEffectAtPos(EffectList, i, CallRemove)
             Exit Sub
         End If
     Next i
@@ -422,6 +422,21 @@ On Error GoTo RemoveEffect_Err
 RemoveEffect_Err:
       Call TraceError(Err.Number, Err.Description, "EffectsOverTime.RemoveEffect", Erl)
 End Sub
+
+Public Function FindEffectOfTypeOnTarget(ByRef EffectList As t_EffectOverTimeList, ByVal TargetType As e_EffectType) As IBaseEffectOverTime
+On Error GoTo FindEffectOfTypeOnTarget_Err
+    Set FindEffectOfTypeOnTarget = Nothing
+    Dim i As Integer
+    For i = 0 To EffectList.EffectCount - 1
+        If EffectList.EffectList(i).EffectType = TargetType Then
+            Set FindEffectOfTypeOnTarget = EffectList.EffectList(i)
+            Exit Function
+        End If
+    Next i
+    Exit Function
+FindEffectOfTypeOnTarget_Err:
+      Call TraceError(Err.Number, Err.Description, "EffectsOverTime.FindEffectOnTarget", Erl)
+End Function
 
 Public Function FindEffectOnTarget(ByVal CasterIndex As Integer, ByRef EffectList As t_EffectOverTimeList, ByVal EffectId As Integer) As IBaseEffectOverTime
 On Error GoTo FindEffectOnTarget_Err
@@ -481,11 +496,11 @@ ClearEffectList_Err:
       Call TraceError(Err.Number, Err.Description, "EffectsOverTime.ClearEffectList", Erl)
 End Sub
 
-Public Sub RemoveEffectAtPos(ByRef EffectList As t_EffectOverTimeList, ByVal position As Integer)
+Public Sub RemoveEffectAtPos(ByRef EffectList As t_EffectOverTimeList, ByVal position As Integer, Optional ByVal CallRemove As Boolean = True)
 On Error GoTo RemoveEffectAtPos_Err
     Dim RegenerateMask As Boolean
     RegenerateMask = EffectList.EffectList(Position).CallBacksMask > 0
-    Call EffectList.EffectList(position).OnRemove
+    If CallRemove Then Call EffectList.EffectList(position).OnRemove
     Dim i As Integer
     For i = Position To EffectList.EffectCount - 1
 106     Set EffectList.EffectList(i) = EffectList.EffectList(i + 1)
@@ -573,6 +588,40 @@ Public Sub TargetUpdateTerrain(ByRef EffectList As t_EffectOverTimeList)
     For i = 0 To EffectList.EffectCount - 1
          Call EffectList.EffectList(i).TargetChangeTerrain
     Next i
+End Sub
+
+Public Sub ChangeOwner(ByVal CurrentOwner As Integer, ByVal CurrentOwnerType As e_ReferenceType, ByVal NewOwner As Integer, _
+                       ByVal NewOwnerType As e_ReferenceType, ByRef Effect As IBaseEffectOverTime)
+    If CurrentOwnerType = eUser Then
+        Call RemoveEffect(UserList(CurrentOwner).EffectOverTime, Effect, False)
+    Else
+        Call RemoveEffect(NpcList(CurrentOwner).EffectOverTime, Effect, False)
+    End If
+    Dim PrevEffect As IBaseEffectOverTime
+    If NewOwnerType = eUser Then
+        Set PrevEffect = FindEffectOnTarget(Effect.CasterArrayIndex, UserList(NewOwner).EffectOverTime, Effect.EotId)
+        If Not PrevEffect Is Nothing Then
+            PrevEffect.RemoveMe = True
+        End If
+        If Effect.ChangeTarget(NewOwner, NewOwnerType) Then
+            Call AddEffect(UserList(NewOwner).EffectOverTime, Effect)
+        Else
+            Effect.RemoveMe = True
+        End If
+    Else
+        Set PrevEffect = FindEffectOnTarget(Effect.CasterArrayIndex, NpcList(NewOwner).EffectOverTime, Effect.EotId)
+        If Not PrevEffect Is Nothing Then
+            If Not EffectOverTime(Effect.EotId).Override Then
+                Effect.RemoveMe = True
+                Exit Sub
+            End If
+        End If
+        If Effect.ChangeTarget(NewOwner, NewOwnerType) Then
+            Call AddEffect(NpcList(NewOwner).EffectOverTime, Effect)
+        Else
+            Effect.RemoveMe = True
+        End If
+    End If
 End Sub
 
 Public Function ConvertToClientBuff(ByVal buffType As e_EffectType) As e_EffectType

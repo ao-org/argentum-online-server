@@ -40,7 +40,7 @@ Public Sub Setup(ByVal SourceIndex As Integer, ByVal SourceType As e_ReferenceTy
     With EffectOverTime(EffectId)
         TickTime = .TickTime
         If TargetType = eUser Then
-            If .ClientEffectTypeId > 0 Then Call WriteSendSkillCdUpdate(TargetIndex, .ClientEffectTypeId, ID, .TickTime, .BuffType)
+            If .ClientEffectTypeId > 0 Then Call WriteSendSkillCdUpdate(TargetIndex, .ClientEffectTypeId, ID, .TickTime, .TickTime, .buffType)
         End If
         Call ApplyEffectToArea(.Area)
         UserList(SourceIndex).Char.Otra_Aura = .Aura
@@ -125,7 +125,9 @@ Public Sub IBaseEffectOverTime_OnRemove()
         Call UnsetMask(NpcList(Source.ArrayIndex).flags.StatusMask, eTaunting)
     End If
     If DotInfo.TargetRef.RefType = eUser Then
-        If EffectOverTime(DotInfo.EotId).ClientEffectTypeId > 0 Then Call WriteSendSkillCdUpdate(DotInfo.TargetRef.ArrayIndex, DotInfo.EotId, DotInfo.UniqueId, 0, EffectOverTime(DotInfo.EotId).buffType)
+        If EffectOverTime(DotInfo.EotId).ClientEffectTypeId > 0 Then
+            Call WriteSendSkillCdUpdate(DotInfo.TargetRef.ArrayIndex, DotInfo.EotId, DotInfo.UniqueId, 0, 0, EffectOverTime(DotInfo.EotId).buffType)
+        End If
     End If
     UserList(Source.ArrayIndex).Char.Otra_Aura = ""
     Call SendData(SendTarget.ToPCAliveArea, Source.ArrayIndex, PrepareMessageAuraToChar(UserList(Source.ArrayIndex).Char.charindex, UserList(Source.ArrayIndex).Char.Body_Aura, True, 5))
@@ -152,6 +154,10 @@ End Function
 
 Public Sub IBaseEffectOverTime_TargetWillAttackPosition(ByVal Map As Integer, ByVal PosX As Integer, ByVal PosY As Integer)
 End Sub
+
+Public Function IBaseEffectOverTime_ChangeTarget(ByVal NewTargetIndex As Integer, ByVal NewTargetType As e_ReferenceType) As Boolean
+    IBaseEffectOverTime_ChangeTarget = False
+End Function
 
 Public Property Get IBaseEffectOverTime_CallBacksMask() As Long
     IBaseEffectOverTime_CallBacksMask = 0

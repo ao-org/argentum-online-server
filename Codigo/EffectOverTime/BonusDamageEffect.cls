@@ -106,12 +106,12 @@ Public Function IBaseEffectOverTime_Reset(ByVal SourceUserId As Integer, ByVal S
         If EffectInfo.EotId = NewEffectId Then
             If EffectOverTime(EffectInfo.EotId).ClientEffectTypeId > 0 Then
                 Call WriteSendSkillCdUpdate(EffectInfo.TargetRef.ArrayIndex, EffectOverTime(EffectInfo.EotId).ClientEffectTypeId, EffectInfo.UniqueId, _
-                                            TickTime, EffectOverTime(EffectInfo.EotId).buffType)
+                                            TickTime, TickTime, EffectOverTime(EffectInfo.EotId).buffType)
             End If
         Else
             If EffectOverTime(EffectInfo.EotId).ClientEffectTypeId > 0 Then
                 Call WriteSendSkillCdUpdate(EffectInfo.TargetRef.ArrayIndex, EffectOverTime(EffectInfo.EotId).ClientEffectTypeId, _
-                                            EffectInfo.UniqueId, 0, EffectOverTime(EffectInfo.EotId).buffType)
+                                            EffectInfo.UniqueId, 0, 0, EffectOverTime(EffectInfo.EotId).buffType)
             End If
         End If
     End If
@@ -132,7 +132,8 @@ Public Sub IBaseEffectOverTime_OnRemove()
     Call EffectsOverTime.RemoveEotModifier(EffectInfo.TargetRef, EffectOverTime(EffectInfo.EotId))
     If EffectInfo.TargetRef.RefType = eUser Then
         If EffectOverTime(EffectInfo.EotId).ClientEffectTypeId > 0 Then
-            Call WriteSendSkillCdUpdate(EffectInfo.TargetRef.ArrayIndex, EffectInfo.EotId, EffectInfo.UniqueId, 0, EffectOverTime(EffectInfo.EotId).buffType)
+            Call WriteSendSkillCdUpdate(EffectInfo.TargetRef.ArrayIndex, EffectOverTime(EffectInfo.EotId).ClientEffectTypeId, _
+                                        EffectInfo.UniqueId, 0, 0, EffectOverTime(EffectInfo.EotId).buffType)
         End If
     End If
 End Sub
@@ -162,6 +163,10 @@ End Function
 
 Public Sub IBaseEffectOverTime_TargetWillAttackPosition(ByVal Map As Integer, ByVal PosX As Integer, ByVal PosY As Integer)
 End Sub
+
+Public Function IBaseEffectOverTime_ChangeTarget(ByVal NewTargetIndex As Integer, ByVal NewTargetType As e_ReferenceType) As Boolean
+    IBaseEffectOverTime_ChangeTarget = False
+End Function
 
 Public Property Get IBaseEffectOverTime_CallBacksMask() As Long
     IBaseEffectOverTime_CallBacksMask = e_EffectCallbackMask.eTargetApplyDamageReduction

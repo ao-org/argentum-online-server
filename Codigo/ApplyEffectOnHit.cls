@@ -28,7 +28,7 @@ Public Sub Setup(ByVal TargetIndex As Integer, ByVal TargetType As e_ReferenceTy
         TickTime = .TickTime
         ApplyEffectId = .ApplyEffectId
         If TargetType = eUser Then
-            If .ClientEffectTypeId > 0 Then Call WriteSendSkillCdUpdate(TargetIndex, .ClientEffectTypeId, ID, .TickTime, .buffType)
+            If .ClientEffectTypeId > 0 Then Call WriteSendSkillCdUpdate(TargetIndex, .ClientEffectTypeId, ID, .TickTime, .TickTime, .buffType)
         End If
     End With
 End Sub
@@ -96,10 +96,18 @@ Public Function IBaseEffectOverTime_Reset(ByVal SourceUserId As Integer, ByVal S
     TimeSinceLastTick = 0
     If DotInfo.TargetRef.RefType = eUser Then
         If DotInfo.EotId = NewEffectId Then
-            If EffectOverTime(DotInfo.EotId).ClientEffectTypeId > 0 Then Call WriteSendSkillCdUpdate(DotInfo.TargetRef.ArrayIndex, EffectOverTime(DotInfo.EotId).ClientEffectTypeId, DotInfo.UniqueId, TickTime, EffectOverTime(DotInfo.EotId).buffType)
+            If EffectOverTime(DotInfo.EotId).ClientEffectTypeId > 0 Then
+            Call WriteSendSkillCdUpdate(DotInfo.TargetRef.ArrayIndex, EffectOverTime(DotInfo.EotId).ClientEffectTypeId, DotInfo.UniqueId, _
+                                        TickTime, TickTime, EffectOverTime(DotInfo.EotId).buffType)
+            End If
         Else
-            If EffectOverTime(DotInfo.EotId).ClientEffectTypeId > 0 Then Call WriteSendSkillCdUpdate(DotInfo.TargetRef.ArrayIndex, EffectOverTime(DotInfo.EotId).ClientEffectTypeId, DotInfo.UniqueId, 0, EffectOverTime(DotInfo.EotId).buffType)
-            If EffectOverTime(DotInfo.EotId).ClientEffectTypeId > 0 Then Call WriteSendSkillCdUpdate(DotInfo.TargetRef.ArrayIndex, EffectOverTime(NewEffectId).ClientEffectTypeId, DotInfo.UniqueId, TickTime, EffectOverTime(NewEffectId).buffType)
+            If EffectOverTime(DotInfo.EotId).ClientEffectTypeId > 0 Then
+                Call WriteSendSkillCdUpdate(DotInfo.TargetRef.ArrayIndex, EffectOverTime(DotInfo.EotId).ClientEffectTypeId, DotInfo.UniqueId, 0, 0, EffectOverTime(DotInfo.EotId).buffType)
+            End If
+            If EffectOverTime(NewEffectId).ClientEffectTypeId > 0 Then
+                Call WriteSendSkillCdUpdate(DotInfo.TargetRef.ArrayIndex, EffectOverTime(NewEffectId).ClientEffectTypeId, DotInfo.UniqueId, TickTime, TickTime, EffectOverTime(NewEffectId).buffType)
+            End If
+            
         End If
     End If
     DotInfo.EotId = NewEffectId
@@ -116,7 +124,9 @@ Public Sub IBaseEffectOverTime_OnRemove()
     DotInfo.Removed = True
     DotInfo.RemoveEffect = True
     If DotInfo.TargetRef.RefType = eUser Then
-        If EffectOverTime(DotInfo.EotId).ClientEffectTypeId > 0 Then Call WriteSendSkillCdUpdate(DotInfo.TargetRef.ArrayIndex, DotInfo.EotId, DotInfo.UniqueId, 0, EffectOverTime(DotInfo.EotId).buffType)
+        If EffectOverTime(DotInfo.EotId).ClientEffectTypeId > 0 Then
+            Call WriteSendSkillCdUpdate(DotInfo.TargetRef.ArrayIndex, DotInfo.EotId, DotInfo.UniqueId, 0, 0, EffectOverTime(DotInfo.EotId).buffType)
+        End If
     End If
 End Sub
 
@@ -131,6 +141,9 @@ End Sub
 
 Public Sub IBaseEffectOverTime_TartgetDidHit(ByVal TargetUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal AttackType As e_DamageSourceType)
     Dim Effect As IBaseEffectOverTime
+    If AttackType <> e_phisical Then
+        Exit Sub
+    End If
     If SourceType = eUser Then
         If UserList(TargetUserId).Stats.MinHp > 0 Then
             Set Effect = FindEffectOnTarget(DotInfo.TargetRef.ArrayIndex, UserList(TargetUserId).EffectOverTime, ApplyEffectId)
@@ -164,6 +177,21 @@ End Function
 
 Public Sub IBaseEffectOverTime_TargetWillAttackPosition(ByVal Map As Integer, ByVal PosX As Integer, ByVal PosY As Integer)
 End Sub
+
+Public Function IBaseEffectOverTime_ChangeTarget(ByVal NewTargetIndex As Integer, ByVal NewTargetType As e_ReferenceType) As Boolean
+    If DotInfo.TargetRef.RefType = eUser Then
+        If EffectOverTime(DotInfo.EotId).ClientEffectTypeId > 0 Then
+            Call WriteSendSkillCdUpdate(DotInfo.TargetRef.ArrayIndex, DotInfo.EotId, DotInfo.UniqueId, 0, 0, EffectOverTime(DotInfo.EotId).buffType)
+        End If
+    End If
+    Call SetRef(DotInfo.TargetRef, NewTargetIndex, NewTargetType)
+    If DotInfo.TargetRef.RefType = eUser Then
+        If EffectOverTime(DotInfo.EotId).ClientEffectTypeId > 0 Then
+            Call WriteSendSkillCdUpdate(DotInfo.TargetRef.ArrayIndex, DotInfo.EotId, DotInfo.UniqueId, TickTime - TimeSinceLastTick, TickTime, EffectOverTime(DotInfo.EotId).buffType)
+        End If
+    End If
+    IBaseEffectOverTime_ChangeTarget = True
+End Function
 
 Public Property Get IBaseEffectOverTime_CallBacksMask() As Long
     IBaseEffectOverTime_CallBacksMask = e_EffectCallbackMask.eTartgetDidHit Or e_EffectCallbackMask.eTartgetWillAtack

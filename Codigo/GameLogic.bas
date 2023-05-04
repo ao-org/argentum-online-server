@@ -2219,5 +2219,49 @@ Public Sub SendrequiredItemMessage(ByVal UserIndex As Integer, ByVal itemMask As
     End Select
 End Sub
 
+Public Sub SendHelpInteractionMessage(ByVal UserIndex As Integer, ByVal CanHelpResult As e_InteractionResult)
+    Select Case CanHelpResult
+            Case eOposingFaction
+108             Call WriteLocaleMsg(UserIndex, MsgFactionForbidAction, e_FontTypeNames.FONTTYPE_INFO)
+            Case eCantHelpCriminal
+110             Call WriteLocaleMsg(UserIndex, MsgDisableAttackGuardToContinue, e_FontTypeNames.FONTTYPE_INFO)
+            Case eCantHelpCriminalClanRules
+112             Call WriteLocaleMsg(UserIndex, MsgClanForbidAction, e_FontTypeNames.FONTTYPE_INFO)
+            Case Else
+                Debug.Assert "Invalid message"
+        End Select
+End Sub
 
+Public Sub SendAttackInteractionMessage(ByVal UserIndex As Integer, ByVal CanAttackResult As e_AttackInteractionResult)
+    Select Case CanAttackResult
+            Case e_AttackInteractionResult.eDeathAttacker
+102             Call WriteLocaleMsg(UserIndex, 77, e_FontTypeNames.FONTTYPE_INFO)
+            Case e_AttackInteractionResult.eFightActive
+                Call WriteConsoleMsg(UserIndex, "No podés atacar en este momento.", e_FontTypeNames.FONTTYPE_INFO)
+            Case e_AttackInteractionResult.eDeathTarget
+                Call WriteConsoleMsg(UserIndex, "No podés atacar a un espiritu.", e_FontTypeNames.FONTTYPE_INFO)
+            Case e_AttackInteractionResult.eSameGroup
+                Call WriteConsoleMsg(UserIndex, "No podés atacar a un miembro de tu grupo.", e_FontTypeNames.FONTTYPE_INFO)
+            Case e_AttackInteractionResult.eTalkWithMaster
+                Call WriteConsoleMsg(UserIndex, "No podés atacar usuarios mientras estás en consulta.", e_FontTypeNames.FONTTYPE_INFO)
+            Case e_AttackInteractionResult.eAttackerIsCursed
+                Call WriteConsoleMsg(UserIndex, "No podés atacar usuarios mientras estás en consulta.", e_FontTypeNames.FONTTYPE_INFO)
+            Case e_AttackInteractionResult.eMounted
+                Call WriteConsoleMsg(UserIndex, "No podés atacar usando una montura.", e_FontTypeNames.FONTTYPE_INFO)
+            Case e_AttackInteractionResult.eSameTeam
+                Call WriteConsoleMsg(UserIndex, "No podes atacar un miembro de tu equipo.", e_FontTypeNames.FONTTYPE_WARNING)
+            Case e_AttackInteractionResult.eNotEnougthPrivileges
+                Call WriteConsoleMsg(UserIndex, "El ser es demasiado poderoso", e_FontTypeNames.FONTTYPE_WARNING)
+            Case e_AttackInteractionResult.eSameClan
+                Call WriteConsoleMsg(UserIndex, "No podes atacar a un miembro de tu clan.", e_FontTypeNames.FONTTYPE_INFOIAO)
+            Case e_AttackInteractionResult.eSameFaction
+                Call WriteLocaleMsg(UserIndex, MsgFacctionForbidAttack, e_FontTypeNames.FONTTYPE_INFOIAO)
+            Case e_AttackInteractionResult.eRemoveSafe
+                Call WriteLocaleMsg(UserIndex, MsgRemoveSafeToAttack, e_FontTypeNames.FONTTYPE_INFOIAO)
+            Case e_AttackInteractionResult.eSafeArea
+                Call WriteConsoleMsg(UserIndex, "Esta es una zona segura, aqui no podes atacar otros usuarios.", e_FontTypeNames.FONTTYPE_WARNING)
+            Case Else
+                Call WriteLocaleMsg(UserIndex, MsgInvalidTarget, e_FontTypeNames.FONTTYPE_INFOIAO)
+        End Select
+End Sub
 

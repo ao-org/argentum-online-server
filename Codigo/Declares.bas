@@ -986,11 +986,18 @@ Public Enum e_SpellEffects
     Morph = 16384
     RemoveInvisibility = 32768
     ToggleCleave = 65536
+    RemoveDebuff = 131072
+    StealBuff = 262144
+End Enum
+
+Public Enum e_TargetEffectType
+    ePositive = 1 '
+    eNegative = 2
 End Enum
 
 Public Type t_Hechizo
     AutoLanzar As Byte
-    
+    TargetEffectType As e_TargetEffectType
     velocidad As Single
     Duration As Integer
     RequiredHP As Integer

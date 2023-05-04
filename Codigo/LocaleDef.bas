@@ -1,6 +1,8 @@
 Attribute VB_Name = "LocaleDef"
 Public Const MsgToFarToAttack = 8
+Public Const MsgYouAreDeathAndCantAttack = 77
 Public Const MsgToTired = 93
+Public Const MsgRemoveSafeToAttack = 126
 Public Const MsgInventoryIsFull = 328
 Public Const MsgCantAttackYourself = 380
 Public Const MSgNpcInmuneToEffect = 381
@@ -40,6 +42,7 @@ Public Const MsgWaterRequiredToUseSpell = 445
 Public Const MsgCastOnlyOnSelf = 446
 Public Const MsgExtraDamageDone = 447
 Public Const MsgExtraDamageReceive = 448
+Public Const MsgFacctionForbidAttack = 449
 
 Public Function GetRequiredWeaponLocaleId(ByVal WeaponType As e_WeaponType) As Integer
     Select Case WeaponType

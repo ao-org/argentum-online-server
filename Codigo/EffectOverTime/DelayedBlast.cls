@@ -135,6 +135,10 @@ End Function
 Public Sub IBaseEffectOverTime_TargetWillAttackPosition(ByVal Map As Integer, ByVal PosX As Integer, ByVal PosY As Integer)
 End Sub
 
+Public Function IBaseEffectOverTime_ChangeTarget(ByVal NewTargetIndex As Integer, ByVal NewTargetType As e_ReferenceType) As Boolean
+    IBaseEffectOverTime_ChangeTarget = False
+End Function
+
 Public Property Get IBaseEffectOverTime_CallBacksMask() As Long
     IBaseEffectOverTime_CallBacksMask = 0
 End Property
@@ -192,7 +196,7 @@ Private Sub DoBlast()
                     End If
                 End If
             End If
-            'add dama to itself (only for user as ia can't avoid this)
+            'add damage to itself (only for user as IA can't avoid this)
             If DotInfo.TargetRef.RefType = eUser Then
                 If MapData(TargetMap, j, i).UserIndex = DotInfo.TargetRef.ArrayIndex Then
                     Call UserDoDamageToUser(DotInfo.TargetRef.ArrayIndex, MapData(TargetMap, j, i).UserIndex, GetDamageForTile(j, i, GetUserDamageWithItem(DotInfo.TargetRef.ArrayIndex, SourceObjIndex, 0)), e_phisical, SourceObjIndex)
