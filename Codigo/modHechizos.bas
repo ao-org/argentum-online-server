@@ -1564,6 +1564,13 @@ Sub LanzarHechizo(ByVal Index As Integer, ByVal UserIndex As Integer)
 114             UserList(UserIndex).Counters.UserHechizosInterval(Index) = GetTickCount()
                 If Hechizos(uh).CdEffectId > 0 Then Call WriteSendSkillCdUpdate(UserIndex, Hechizos(uh).CdEffectId, -1, CLng(Hechizos(uh).Cooldown) * 1000, CLng(Hechizos(uh).Cooldown) * 1000, eCD)
             End If
+            If IsSet(UserList(UserIndex).flags.StatusMask, e_StatusMask.eTransformed) Then
+                If UserList(UserIndex).Char.CastAnimation > 0 Then
+                    Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageDoAnimation(UserList(UserIndex).Char.charindex, UserList(UserIndex).Char.CastAnimation))
+                ElseIf UserList(UserIndex).Char.Ataque1 > 0 Then
+                    Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageDoAnimation(UserList(UserIndex).Char.charindex, UserList(UserIndex).Char.Ataque1))
+                End If
+            End If
         End If
 172     If UserList(UserIndex).Counters.Trabajando Then
 174         Call WriteMacroTrabajoToggle(UserIndex, False)

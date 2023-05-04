@@ -231,6 +231,7 @@ Private Sub ReturnCharToNormal()
     If DotInfo.TargetRef.RefType = eUser Then
         Call UnsetMask(UserList(DotInfo.TargetRef.ArrayIndex).flags.StatusMask, StatusMask)
         Call UpdateCharWithEquipedItems(DotInfo.TargetRef.ArrayIndex)
+        Call WriteSendSkillCdUpdate(DotInfo.TargetRef.ArrayIndex, EffectOverTime(DotInfo.EotId).ClientEffectTypeId, DotInfo.UniqueId, 0, 0, EffectOverTime(DotInfo.EotId).buffType)
     End If
 End Sub
 
