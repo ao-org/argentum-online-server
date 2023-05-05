@@ -1,4 +1,4 @@
-## Por favor considera apoyarnos en https://www.patreon.com/nolandstudios
+test## Por favor considera apoyarnos en https://www.patreon.com/nolandstudios
 
 Como correr mi server:
 Crear una nueva carpeta llamada AO20 y entrar a la misma, en ella seguir lo siguientes pasos:
