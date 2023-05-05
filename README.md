@@ -36,6 +36,7 @@ Código fuente del servidor de Argentum20
 Registrar manualmente libreria Aurora.Network.dll 
 Abrir CMD como Administrador `regsvr32 Aurora.Network.dll`
 
+
 ## Cryptography
 CryptoSys is used in AO20 to cipher sensitive data.
 
