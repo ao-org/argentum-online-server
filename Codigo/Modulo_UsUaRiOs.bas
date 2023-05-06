@@ -716,7 +716,9 @@ On Error GoTo Complete_ConnectUser_Err
         
 1225        Call WriteContadores(UserIndex)
 1227        Call WritePrivilegios(UserIndex)
-            
+            If EnableTelemetry Then
+                Call WriteRequestTelemetry(UserIndex)
+            End If
             Call CustomScenarios.UserConnected(userIndex)
          End With
 

@@ -2198,6 +2198,7 @@ Sub LoadSini()
 140     DisconnectTimeout = val(Lector.GetValue("INIT", "DisconnectTimeout"))
     
 144     EnTesting = val(Lector.GetValue("INIT", "Testing"))
+145     EnableTelemetry = val(Lector.GetValue("INIT", "EnableTelemetry"))
         
         'Ressurect pos
 146     ResPos.map = val(ReadField(1, Lector.GetValue("INIT", "ResPos"), 45))

@@ -5762,3 +5762,25 @@ WriteDebugLogResponse_Err:
     Call Writer.Clear
     Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteDebugLogResponse", Erl)
 End Sub
+
+Public Sub WriteRequestTelemetry(ByVal UserIndex As Integer)
+    On Error GoTo WriteRequestTelemetry_Err
+        Dim CodeSize As Long
+        Dim Code(8) As Byte
+        Dim ErrorBuff(512) As Byte
+        CodeSize = AOT_CheckIdErrors(UserList(UserIndex).ID, ErrorBuff(0), 512)
+        If CodeSize > 0 Then
+            Call AddLogToCircularBuffer(StrConv(ErrorBuff, vbUnicode))
+        End If
+        Call Writer.WriteInt16(ServerPacketID.RequestTelemetry)
+        CodeSize = AOT_GetTelemetryCode(UserList(UserIndex).ID, UserList(UserIndex).name, Code(0), 8)
+        Dim i As Integer
+        For i = 0 To 7
+            Call Writer.WriteInt(Code(i))
+        Next i
+        Call modSendData.SendData(ToIndex, UserIndex)
+        Exit Sub
+WriteRequestTelemetry_Err:
+        Call Writer.Clear
+        Call TraceError(Err.Number, Err.Description, "Argentum20.Protocol_Writes.WriteRequestTelemetry", Erl)
+End Sub
