@@ -2741,6 +2741,7 @@ Public PuedeCrearPersonajes              As Integer
 Public ServerSoloGMs                     As Integer
 Public EnPausa                           As Boolean
 Public EnTesting                         As Boolean
+Public EnableTelemetry                   As Boolean
 
 '*****************ARRAYS PUBLICOS*************************
 Public UserList()                         As t_User 'USUARIOS
@@ -2802,7 +2803,9 @@ Public Segundos As Long
 Public Declare Function writeprivateprofilestring Lib "kernel32" Alias "WritePrivateProfileStringA" (ByVal lpApplicationname As String, ByVal lpKeyname As Any, ByVal lpString As String, ByVal lpfilename As String) As Long
 Public Declare Function GetPrivateProfileString Lib "kernel32" Alias "GetPrivateProfileStringA" (ByVal lpApplicationname As String, ByVal lpKeyname As Any, ByVal lpdefault As String, ByVal lpreturnedstring As String, ByVal nSize As Long, ByVal lpfilename As String) As Long
 Public Declare Sub ZeroMemory Lib "kernel32.dll" Alias "RtlZeroMemory" (ByRef destination As Any, ByVal Length As Long)
-
+Public Declare Function AOT_CheckIdErrors Lib "AoServerTools.dll" (ByVal TelemetryId As Long, ByRef OutBuffer As Byte, ByVal BuffLength As Long) As Long
+Public Declare Function AOT_GetTelemetryCode Lib "AoServerTools.dll" (ByVal TelemetryId As Long, ByVal name As String, ByRef OutBuffer As Byte, ByVal BuffLength As Long) As Long
+Public Declare Function AOT_GetTelemetryResult Lib "AoServerTools.dll" (ByRef Data As Byte, ByVal DataSize As Long, ByVal TelemetryId As Long, ByRef OutBuffer As Byte, ByVal BuffLength As Long) As Long
 ' Los Objetos Criticos nunca desaparecen del inventario de los npcs vendedores, una vez que
 ' se venden los 10.000 (max. cantidad de items x slot) vuelven a reabastecer.
 Public Enum e_ObjetosCriticos

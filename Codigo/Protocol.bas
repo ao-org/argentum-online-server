@@ -213,6 +213,7 @@ Public Enum ServerPacketID
     CreateProjectile
     UpdateTrap
     UpdateGroupInfo
+    RequestTelemetry
     #If PYMMO = 0 Then
     AccountCharacterList
     #End If
@@ -540,6 +541,7 @@ Public Enum ClientPacketID
     LobbyCommand
     FeatureToggle
     ActionOnGroupFrame
+    SendTelemetry
     #If PYMMO = 0 Then
     CreateAccount
     LoginAccount
@@ -1386,6 +1388,8 @@ On Error Resume Next
             Call HandleFeatureToggle(UserIndex)
         Case ClientPacketID.ActionOnGroupFrame
             Call HandleActionOnGroupFrame(UserIndex)
+        Case ClientPacketID.SendTelemetry
+            Call HandleSendTelemetry(UserIndex)
 #If PYMMO = 0 Then
         Case ClientPacketID.CreateAccount
             Call HandleCreateAccount(userindex)
@@ -11442,4 +11446,24 @@ On Error GoTo HandleActionOnGroupFrame_Err:
     
 HandleActionOnGroupFrame_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleActionOnGroupFrame", Erl)
+End Sub
+
+Public Sub HandleSendTelemetry(ByVal UserIndex As Integer)
+On Error GoTo HandleSendTelemetry_Err:
+    Dim TelemetryData(256) As Byte
+    Dim TelemetrySize As Long
+    Dim TelemetryIndex As Long
+    TelemetrySize = Reader.ReadInt32
+    Dim i As Long
+    For i = 0 To TelemetrySize - 1
+        TelemetryData(i) = Reader.ReadInt8
+    Next i
+    Dim TelemetryErrors(512) As Byte
+    TelemetrySize = AOT_GetTelemetryResult(TelemetryData(0), TelemetrySize, UserList(UserIndex).ID, TelemetryErrors(0), 512)
+    If TelemetrySize > 0 Then
+        Call AddLogToCircularBuffer(StrConv(TelemetryErrors, vbUnicode))
+    End If
+    Exit Sub
+HandleSendTelemetry_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleSendTelemetry", Erl)
 End Sub
