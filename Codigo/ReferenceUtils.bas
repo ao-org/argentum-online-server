@@ -124,3 +124,11 @@ Public Function AddShieldToReference(ByRef SourceRef As t_AnyReference, ByVal Sh
         Call SendData(SendTarget.ToNPCAliveArea, SourceRef.ArrayIndex, PrepareMessageNpcUpdateHP(SourceRef.ArrayIndex))
     End If
 End Function
+
+Public Function GetName(ByRef SourceRef As t_AnyReference) As String
+    If SourceRef.RefType = eUser Then
+        GetName = UserList(SourceRef.ArrayIndex).name
+    Else
+        GetName = NpcList(SourceRef.ArrayIndex).name
+    End If
+End Function

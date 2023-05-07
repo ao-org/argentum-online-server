@@ -3340,7 +3340,8 @@ Public Sub ResurrectUser(ByVal UserIndex As Integer)
 End Sub
 
 Public Function DoDamageOrHeal(ByVal UserIndex As Integer, ByVal SourceIndex As Integer, ByVal SourceType As e_ReferenceType, _
-                             ByVal amount As Long, ByVal DamageSourceType As e_DamageSourceType, ByVal DamageSourceIndex As Integer, Optional ByVal DamageColor As Long = vbRed) As e_DamageResult
+                             ByVal amount As Long, ByVal DamageSourceType As e_DamageSourceType, ByVal DamageSourceIndex As Integer, _
+                             Optional DoDamageText As Integer = 389, Optional GotDamageText As Integer = 34, Optional ByVal DamageColor As Long = vbRed) As e_DamageResult
 On Error GoTo DoDamageOrHeal_Err
     Dim DamageStr As String
     Dim Color As Long
@@ -3353,11 +3354,11 @@ On Error GoTo DoDamageOrHeal_Err
     If amount < 0 Then
         DamageStr = PonerPuntos(Math.Abs(Amount))
         If SourceType = eUser Then
-            If UserList(SourceIndex).ChatCombate = 1 Then
-                Call WriteLocaleMsg(SourceIndex, 389, e_FontTypeNames.FONTTYPE_FIGHT, UserList(UserIndex).name & "¬" & DamageStr)
+            If UserList(SourceIndex).ChatCombate = 1 And DoDamageText > 0 Then
+                Call WriteLocaleMsg(SourceIndex, DoDamageText, e_FontTypeNames.FONTTYPE_FIGHT, UserList(UserIndex).name & "¬" & DamageStr)
             End If
-            If UserList(UserIndex).ChatCombate = 1 Then
-                Call WriteLocaleMsg(UserIndex, 34, e_FontTypeNames.FONTTYPE_FIGHT, UserList(SourceIndex).name & "¬" & DamageStr)
+            If UserList(UserIndex).ChatCombate = 1 And GotDamageText > 0 Then
+                Call WriteLocaleMsg(UserIndex, GotDamageText, e_FontTypeNames.FONTTYPE_FIGHT, UserList(SourceIndex).name & "¬" & DamageStr)
             End If
         End If
         amount = EffectsOverTime.TargetApplyDamageReduction(UserList(UserIndex).EffectOverTime, amount, SourceIndex, SourceType, DamageSourceType)

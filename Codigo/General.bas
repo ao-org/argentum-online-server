@@ -1541,11 +1541,11 @@ Public Sub EfectoIncineramiento(ByVal UserIndex As Integer)
                     ' "Te estás incinerando, si no te curas morirás.
 104                 Call WriteLocaleMsg(UserIndex, "392", e_FontTypeNames.FONTTYPE_FIGHT)
                     UserList(userindex).Counters.timeFx = 2
-106                 Call SendData(SendTarget.ToPCAliveArea, userindex, PrepareMessageCreateFX(.Char.charindex, 73, 0, .Pos.X, .Pos.y))
+106                 Damage = RandomNumber(35, 45)
+108                 Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageCreateFX(.Char.charindex, 73, 0, .pos.x, .pos.y))
 112                 If .ChatCombate = 1 Then
 114                     Call WriteLocaleMsg(UserIndex, "391", e_FontTypeNames.FONTTYPE_FIGHT, PonerPuntos(damage))
                     End If
-108                 Damage = RandomNumber(35, 45)
 110                 If UserMod.ModifyHealth(UserIndex, -Damage) Then
                         Call UserDie(UserIndex)
                     End If

@@ -1345,7 +1345,7 @@ Private Sub UserDamageToUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex 
                     End Select
                 End If
             End If
-240         If UserMod.DoDamageOrHeal(VictimaIndex, AtacanteIndex, e_ReferenceType.eUser, -damage, e_DamageSourceType.e_phisical, .invent.WeaponEqpObjIndex, Color) = eStillAlive Then
+240         If UserMod.DoDamageOrHeal(VictimaIndex, AtacanteIndex, e_ReferenceType.eUser, -Damage, e_DamageSourceType.e_phisical, .invent.WeaponEqpObjIndex, -1, -1, Color) = eStillAlive Then
 444             Call SendData(SendTarget.ToPCAliveArea, AtacanteIndex, PrepareMessagePlayWave(SND_IMPACTO, UserList(AtacanteIndex).pos.X, UserList(AtacanteIndex).pos.y))
                 ' Intentamos aplicar algún efecto de estado
 252             Call UserDañoEspecial(AtacanteIndex, VictimaIndex, aType)

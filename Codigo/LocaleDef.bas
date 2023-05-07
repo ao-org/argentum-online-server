@@ -43,6 +43,11 @@ Public Const MsgCastOnlyOnSelf = 446
 Public Const MsgExtraDamageDone = 447
 Public Const MsgExtraDamageReceive = 448
 Public Const MsgFacctionForbidAttack = 449
+Public Const MsgYourTrapDidDamangeTo = 450
+Public Const MsgTrapDidDamageToYou = 451
+Public Const MsgTrapInmo = 452
+Public Const MsgTrapPoison = 453
+Public Const MsgFallIntoTrap = 454
 
 Public Function GetRequiredWeaponLocaleId(ByVal WeaponType As e_WeaponType) As Integer
     Select Case WeaponType
