@@ -379,6 +379,11 @@ Private Sub AI_AtacarUsuarioObjetivo(ByVal AtackerNpcIndex As Integer)
                 If NpcLanzaSpellInmovilizado(AtackerNpcIndex, .TargetUser.ArrayIndex) Then
                     Call ChangeNPCChar(AtackerNpcIndex, .Char.Body, .Char.Head, tHeading)
 112                 Call NpcLanzaUnSpell(AtackerNpcIndex)
+
+                    If IsFeatureEnabled("Magic_and_Punch") And EstaPegadoAlUsuario And (RandomNumber(1, 100) <= 50) Then
+                        Call NpcAtacaUser(AtackerNpcIndex, MapData(ComputeNextHeadingPos(AtackerNpcIndex).Map, ComputeNextHeadingPos(AtackerNpcIndex).x, ComputeNextHeadingPos(AtackerNpcIndex).y).UserIndex, tHeading)
+                    End If
+
                 End If
 114         ElseIf AtacaMelee Then
                 Dim ChangeHeading As Boolean
