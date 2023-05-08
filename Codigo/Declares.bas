@@ -2543,6 +2543,8 @@ Public Type t_Npc
     Hostile As Byte
     PoderAtaque As Long
     PoderEvasion As Long
+    AttackRange As Byte
+    ProjectileType As Byte
     
     GiveEXPClan As Long
     
