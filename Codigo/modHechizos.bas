@@ -4080,7 +4080,7 @@ Public Sub DesplazarHechizo(ByVal UserIndex As Integer, ByVal Dire As Integer, B
 102     If Not (CualHechizo >= 1 And CualHechizo <= MAXUSERHECHIZOS) Then Exit Sub
 
         Dim TempHechizo As Integer
-        
+        Dim SpellInterval As Long
         With UserList(UserIndex)
         
 104         If Dire = 1 Then 'Mover arriba
