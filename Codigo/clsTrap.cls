@@ -194,6 +194,11 @@ Public Function trigger(ByVal TargetIndex, ByVal TargetType As e_ReferenceType)
     If EffectOverTime(mDotInfo.EotId).OnHitWav > 0 Then Call modSendData.SendToAreaByPos(mWorldPosition.map, mWorldPosition.x, mWorldPosition.y, PrepareMessagePlayWave(EffectOverTime(mDotInfo.EotId).OnHitWav, mWorldPosition.x, mWorldPosition.y, False))
     If mDotInfo.RemoveEffect Then Exit Function
     mDotInfo.RemoveEffect = True
+    If mDotInfo.TargetRef.RefType = eUser Then
+        If UserList(mDotInfo.TargetRef.ArrayIndex).ChatCombate = 1 Then
+            Call WriteLocaleMsg(mDotInfo.TargetRef.ArrayIndex, MsgFallIntoTrap, e_FontTypeNames.FONTTYPE_FIGHT)
+        End If
+    End If
     Select Case EffectOverTime(mDotInfo.EotId).SubType
         Case e_TrapTypes.eInmovilize
             If mDotInfo.TargetRef.RefType = eUser Then
@@ -201,6 +206,9 @@ Public Function trigger(ByVal TargetIndex, ByVal TargetType As e_ReferenceType)
                     Call UserMod.Inmovilize(mDotInfo.TargetRef.ArrayIndex, TargetIndex, NET_INMO_DURATION, EffectOverTime(mDotInfo.EotId).OnHitFx)
                     If EffectOverTime(mDotInfo.EotId).OnHitFx > 0 Then Call SendData(SendTarget.ToPCAliveArea, TargetIndex, PrepareMessageCreateFX(UserList(TargetIndex).Char.charindex, EffectOverTime(mDotInfo.EotId).OnHitFx, 0, mWorldPosition.x, mWorldPosition.y))
                     trigger = True
+                    If UserList(TargetIndex).ChatCombate = 1 Then
+                        Call WriteLocaleMsg(TargetIndex, MsgTrapInmo, e_FontTypeNames.FONTTYPE_FIGHT, GetName(mDotInfo.TargetRef))
+                    End If
                     Exit Function
                 End If
                 If TargetType = eNpc Then
@@ -213,7 +221,7 @@ Public Function trigger(ByVal TargetIndex, ByVal TargetType As e_ReferenceType)
         Case e_TrapTypes.eExplosive
             If mDotInfo.TargetRef.RefType = eUser Then
                 If TargetType = eUser Then
-                    Call UserMod.DoDamageOrHeal(TargetIndex, mDotInfo.TargetRef.ArrayIndex, eUser, RandomNumber(EffectOverTime(mDotInfo.EotId).TickPowerMin, EffectOverTime(mDotInfo.EotId).TickPowerMax), e_DamageSourceType.e_trap, mDotInfo.EotId)
+                    Call UserMod.DoDamageOrHeal(TargetIndex, mDotInfo.TargetRef.ArrayIndex, eUser, RandomNumber(EffectOverTime(mDotInfo.EotId).TickPowerMin, EffectOverTime(mDotInfo.EotId).TickPowerMax), e_DamageSourceType.e_trap, mDotInfo.EotId, MsgYourTrapDidDamangeTo, MsgTrapDidDamageToYou)
                     If EffectOverTime(mDotInfo.EotId).OnHitFx > 0 Then Call SendData(SendTarget.ToPCAliveArea, TargetIndex, PrepareMessageCreateFX(UserList(TargetIndex).Char.charindex, EffectOverTime(mDotInfo.EotId).OnHitFx, 0, mWorldPosition.x, mWorldPosition.y))
                     trigger = True
                     Exit Function
@@ -231,6 +239,9 @@ Public Function trigger(ByVal TargetIndex, ByVal TargetType As e_ReferenceType)
                 If EffectOverTime(mDotInfo.EotId).OnHitFx > 0 Then Call SendData(SendTarget.ToNPCAliveArea, TargetIndex, PrepareMessageCreateFX(NpcList(TargetIndex).Char.charindex, EffectOverTime(mDotInfo.EotId).OnHitFx, 0, mWorldPosition.x, mWorldPosition.y))
             Else
                 If EffectOverTime(mDotInfo.EotId).OnHitFx > 0 Then Call SendData(SendTarget.ToPCAliveArea, TargetIndex, PrepareMessageCreateFX(UserList(TargetIndex).Char.charindex, EffectOverTime(mDotInfo.EotId).OnHitFx, 0, mWorldPosition.x, mWorldPosition.y))
+                If UserList(TargetIndex).ChatCombate = 1 Then
+                    Call WriteLocaleMsg(TargetIndex, MsgTrapPoison, e_FontTypeNames.FONTTYPE_FIGHT, GetName(mDotInfo.TargetRef))
+                End If
             End If
             trigger = True
             Exit Function
