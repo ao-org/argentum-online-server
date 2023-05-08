@@ -86,6 +86,13 @@ Distance_Err:
 102     Call TraceError(Err.Number, Err.Description, "Matematicas.Distance", Erl)
 End Function
 
+Function GetDirection(ByRef From As t_WorldPos, ByRef ToPos As t_WorldPos) As t_Vector
+    Dim Ret As t_Vector
+    Ret.x = From.x - ToPos.x
+    Ret.y = From.y - ToPos.y
+    GetDirection = Ret
+End Function
+
 Function GetNormal(ByRef Vector As t_Vector) As t_Vector
     Dim Length As Double
     Dim ret As t_Vector

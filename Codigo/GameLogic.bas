@@ -2265,3 +2265,36 @@ Public Sub SendAttackInteractionMessage(ByVal UserIndex As Integer, ByVal CanAtt
         End Select
 End Sub
 
+Public Function PreferedTileForDirection(ByRef Direction As t_Vector, ByRef CurrentPosition As t_WorldPos) As t_WorldPos
+    Dim Ret As t_WorldPos
+    Dim Normal As t_Vector
+    Ret.Map = CurrentPosition.Map
+    Normal = GetNormal(Direction)
+    If Abs(Normal.x) > Abs(Normal.y) Then
+        Ret.x = CurrentPosition.x + 1 * Sgn(Normal.x)
+        Ret.y = CurrentPosition.y
+    Else
+        Ret.x = CurrentPosition.x
+        Ret.y = CurrentPosition.y + 1 * Sgn(Normal.y)
+    End If
+    With MapData(Ret.Map, Ret.x, Ret.y)
+        'try the other axis
+        If .Blocked Or .UserIndex > 0 Or .NpcIndex > 0 Then
+            If Abs(Normal.x) < Abs(Normal.y) Then
+                Ret.x = CurrentPosition.x + 1 * Sgn(Normal.x)
+                Ret.y = CurrentPosition.y
+            Else
+                Ret.x = CurrentPosition.x
+                Ret.y = CurrentPosition.y + 1 * Sgn(Normal.y)
+            End If
+        End If
+    End With
+    With MapData(Ret.Map, Ret.x, Ret.y)
+        'try the other axis
+        If .Blocked Or .UserIndex > 0 Or .NpcIndex > 0 Then
+            PreferedTileForDirection = CurrentPosition
+        Else
+            PreferedTileForDirection = Ret
+        End If
+    End With
+End Function
