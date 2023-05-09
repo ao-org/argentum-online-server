@@ -2273,28 +2273,19 @@ Public Function PreferedTileForDirection(ByRef Direction As t_Vector, ByRef Curr
     If Abs(Normal.x) > Abs(Normal.y) Then
         Ret.x = CurrentPosition.x + 1 * Sgn(Normal.x)
         Ret.y = CurrentPosition.y
-    Else
+    ElseIf Abs(Normal.x) < Abs(Normal.y) Then
         Ret.x = CurrentPosition.x
         Ret.y = CurrentPosition.y + 1 * Sgn(Normal.y)
+    Else
+        Ret.y = CurrentPosition.y + 1 * Sgn(Normal.y)
+        Ret.x = CurrentPosition.x + 1 * Sgn(Normal.x)
     End If
-    With MapData(Ret.Map, Ret.x, Ret.y)
-        'try the other axis
-        If .Blocked Or .UserIndex > 0 Or .NpcIndex > 0 Then
-            If Abs(Normal.x) < Abs(Normal.y) Then
-                Ret.x = CurrentPosition.x + 1 * Sgn(Normal.x)
-                Ret.y = CurrentPosition.y
-            Else
-                Ret.x = CurrentPosition.x
-                Ret.y = CurrentPosition.y + 1 * Sgn(Normal.y)
-            End If
-        End If
-    End With
-    With MapData(Ret.Map, Ret.x, Ret.y)
-        'try the other axis
-        If .Blocked Or .UserIndex > 0 Or .NpcIndex > 0 Then
-            PreferedTileForDirection = CurrentPosition
-        Else
-            PreferedTileForDirection = Ret
-        End If
-    End With
+    If Not LegalPos(Ret.Map, Ret.x, Ret.y, False, True) Then
+        Call ClosestStablePos(Ret, Ret)
+    End If
+    If Ret.x = 0 And Ret.y = 0 Then
+        PreferedTileForDirection = CurrentPosition
+    Else
+        PreferedTileForDirection = Ret
+    End If
 End Function

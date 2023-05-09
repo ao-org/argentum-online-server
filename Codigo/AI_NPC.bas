@@ -184,58 +184,63 @@ ErrorHandler:
 
 End Sub
 
-Public Function SelectNearestUser(ByVal NpcIndex As Integer, ByRef CloserTaget As t_AnyReference) As Integer
+Public Function SelectNearestUser(ByVal NpcIndex As Integer, ByRef NearestTargetDistance As Single) As Integer
     Dim i As Integer
     Dim UserIndex As Integer
-    Dim NearestUserDistance As Double
+    NearestTargetDistance = 0
     With NpcList(NpcIndex)
         For i = 1 To ModAreas.ConnGroups(.pos.Map).CountEntrys
             UserIndex = ModAreas.ConnGroups(.pos.Map).UserEntrys(i)
             ' Find nearest user
-            If UserMod.IsVisible(UserList(UserIndex)) And UserCanAttackNpc(UserIndex, NpcIndex) = eCanAttack Then
+            If UserMod.IsVisible(UserList(UserIndex)) And UserCanAttackNpc(UserIndex, NpcIndex) = eCanAttack And _
+                NPCs.CanAttackUser(NpcIndex, UserIndex) Then
                 Dim UserDistance As Double
                 UserDistance = Distance(UserList(UserIndex).pos.x, UserList(UserIndex).pos.y, .pos.x, .pos.y)
-                If SelectNearestUser = 0 Or UserDistance < NearestUserDistance Then
+                If SelectNearestUser = 0 Or UserDistance < NearestTargetDistance Then
                     SelectNearestUser = UserIndex
-                    NearestUserDistance = UserDistance
+                    NearestTargetDistance = UserDistance
                 End If
             End If
         Next i
     End With
 End Function
 
+Public Function SelectCurrentTarget(ByVal NpcIndex, ByVal NearestUser As Integer) As t_AnyReference
+    Dim CurrentTarget As t_AnyReference
+    With NpcList(NpcIndex)
+        If IsSet(.flags.StatusMask, eTaunted) Then
+            Exit Function
+        End If
+        Call ClearUserRef(.targetUser)
+        If .flags.AttackedBy <> vbNullString Then
+            .targetUser = NameIndex(.flags.AttackedBy)
+            If Not IsValidUserRef(.targetUser) Then
+                Call ClearUserRef(.targetUser)
+            ElseIf Not EnRangoVision(NpcIndex, .targetUser.ArrayIndex) Then
+                Call ClearUserRef(.targetUser)
+            End If
+        End If
+        If NearestUser > 0 And Not IsValidUserRef(.targetUser) Then
+            Call SetUserRef(.targetUser, NearestUser)
+        End If
+        If Not CastUserToAnyRef(.targetUser, CurrentTarget) Then
+            Call CastNpcToAnyRef(.TargetNPC, CurrentTarget)
+        End If
+    End With
+    SelectCurrentTarget = CurrentTarget
+End Function
+
 Public Sub AI_RangeAttack(ByVal NpcIndex As Integer)
     On Error GoTo AI_RangeAttack_Err
     
         Dim CurrentTarget As t_AnyReference
-        Dim HasTarget As Boolean
         Dim TargetPos As t_WorldPos
 100     With NpcList(NpcIndex)
-            
-            If .flags.AttackedBy <> vbNullString Then
-                .TargetUser = NameIndex(.flags.AttackedBy)
-                If IsValidUserRef(.TargetUser) Then
-                    If Not EnRangoVision(NpcIndex, CurrentAttacker.ArrayIndex) Then
-                        Call ClearUserRef(.TargetUser)
-                    End If
-                Else
-                    Call ClearUserRef(.TargetUser)
-                End If
-            Else
-                Call ClearUserRef(.TargetUser)
-            End If
-            If CloserUserIndex > 0 And Not IsSet(.flags.StatusMask, eTaunted) Then
-                Call SetUserRef(.TargetUser, CloserUserIndex)
-                Call ClearNpcRef(.TargetNPC)
-            Else
-                Call ClearUserRef(.TargetUser)
-            End If
-122         If CastUserToAnyRef(.TargetUser, CurrentTarget) Then
-124             HasTarget = True
-            Else
-126             HasTarget = CastNpcToAnyRef(.TargetNPC, CurrentTarget)
-            End If
-128         If HasTarget And NPCs.CanAttack(.Contadores, .flags) Then
+            Dim NearestUser As Integer
+            Dim NearestTargetDistance As Single
+            NearestUser = SelectNearestUser(NpcIndex, NearestTargetDistance)
+            CurrentTarget = SelectCurrentTarget(NpcIndex, NearestUser)
+128         If IsValidRef(CurrentTarget) And NPCs.CanAttack(.Contadores, .flags) Then
 130             TargetPos = GetPosition(CurrentTarget)
 132             If .pos.Map <> TargetPos.Map Then
                     'request new target
@@ -254,11 +259,11 @@ Public Sub AI_RangeAttack(ByVal NpcIndex As Integer)
                     Call AI_CaminarConRumbo(NpcIndex, TargetPos)
                 End If
             End If
-            If CloserUserIndex > 0 And CloserUserDistance < .PreferedRange Then
+            If NearestUser > 0 And NearestTargetDistance < .PreferedRange Then
                 'TODO: get away from closest enemy if is inside preferred range
                 Dim Direction As t_Vector
                 Dim TargetMapPos As t_WorldPos
-                Direction = GetDirection(.pos, UserList(CloserUserIndex).pos)
+                Direction = GetDirection(.pos, UserList(NearestUser).pos)
                 TargetMapPos = PreferedTileForDirection(Direction, .pos)
                 Call MoveNPCChar(NpcIndex, GetHeadingFromWorldPos(.pos, TargetMapPos))
             End If
