@@ -555,13 +555,13 @@ On Error GoTo Complete_ConnectUser_Err
                 Case e_Facciones.armada
                     .flags.ChatColor = vbWhite
                 Case e_Facciones.consejo
-                    .flags.ChatColor = RGB(62, 239, 253)
+                    .flags.ChatColor = RGB(66, 201, 255)
                 Case e_Facciones.Criminal
                     .flags.ChatColor = vbWhite
                 Case e_Facciones.Caos
                     .flags.ChatColor = vbWhite
                 Case e_Facciones.concilio
-                    .flags.ChatColor = RGB(253, 143, 63)
+                    .flags.ChatColor = RGB(255, 102, 102)
             End Select
             
             ' Jopi: Te saco de los mapas de retos (si logueas ahi) 324 372 389 390
