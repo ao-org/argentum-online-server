@@ -1910,7 +1910,7 @@ Public Type t_UserFlags
     AdministrativeBan As Byte
     BanMotivo As String
 
-    targetUser As t_UserReference ' Usuario señalado
+    TargetUser As t_UserReference ' Usuario señalado
     
     TargetObj As Integer ' Obj señalado
     TargetObjMap As Integer
@@ -2543,6 +2543,9 @@ Public Type t_Npc
     Hostile As Byte
     PoderAtaque As Long
     PoderEvasion As Long
+    AttackRange As Byte
+    ProjectileType As Byte
+    PreferedRange As Byte
     
     GiveEXPClan As Long
     

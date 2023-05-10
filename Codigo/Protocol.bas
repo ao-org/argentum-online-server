@@ -11443,9 +11443,9 @@ On Error GoTo HandleActionOnGroupFrame_Err:
             Call WriteConsoleMsg(UserIndex, "¡Primero selecciona el hechizo que quieres lanzar!", e_FontTypeNames.FONTTYPE_INFO)
         End If
     End With
-    
+    Exit Sub
 HandleActionOnGroupFrame_Err:
-102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleActionOnGroupFrame", Erl)
+102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleActionOnGroupFrame UserId:" & UserIndex, Erl)
 End Sub
 
 Public Sub HandleSendTelemetry(ByVal UserIndex As Integer)

@@ -1302,6 +1302,9 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
 166         .Craftea = val(Leer.GetValue("NPC" & NpcNumber, "Craftea"))
 168         .Hostile = val(Leer.GetValue("NPC" & NpcNumber, "Hostile"))
 170         .flags.OldHostil = .Hostile
+            .AttackRange = val(Leer.GetValue("NPC" & NpcNumber, "AttackRange"))
+            .ProjectileType = val(Leer.GetValue("NPC" & NpcNumber, "ProjectileType"))
+            .PreferedRange = val(Leer.GetValue("NPC" & NpcNumber, "PreferedRange"))
     
 172         .GiveEXP = val(Leer.GetValue("NPC" & NpcNumber, "GiveEXP"))
     
@@ -1461,23 +1464,14 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
             End If
     
             '<<<<<<<<<<<<<< Sistema de Dropeo NUEVO >>>>>>>>>>>>>>>>
-340         aux = Leer.GetValue("NPC" & NpcNumber, "NumQuiza")
+340         .NumQuiza = val(Leer.GetValue("NPC" & NpcNumber, "NumQuiza"))
     
-342         If LenB(aux) = 0 Then
-344             .NumQuiza = 0
-            
-            Else
-        
-346             .NumQuiza = val(aux)
-            
+342         If .NumQuiza > 0 Then
 348             ReDim .QuizaDropea(1 To .NumQuiza) As String
-    
 350             For LoopC = 1 To .NumQuiza
 352                 .QuizaDropea(LoopC) = Leer.GetValue("NPC" & NpcNumber, "QuizaDropea" & LoopC)
 354             Next LoopC
-    
             End If
-    
     
         'Ladder
         'Nuevo sistema de Quest
@@ -1503,24 +1497,16 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
     
         'Nuevo sistema de Drop Quest
             
-372         aux = Leer.GetValue("NPC" & NpcNumber, "NumDropQuest")
+372         .NumDropQuest = val(Leer.GetValue("NPC" & NpcNumber, "NumDropQuest"))
     
-374         If LenB(aux) = 0 Then
-376             .NumDropQuest = 0
-            
-            Else
-        
-378             .NumDropQuest = val(aux)
-                
+374         If .NumDropQuest Then
 380             ReDim .DropQuest(1 To .NumDropQuest) As t_QuestObj
-                
 382             For LoopC = 1 To .NumDropQuest
 384                 .DropQuest(LoopC).QuestIndex = val(ReadField(1, Leer.GetValue("NPC" & NpcNumber, "DropQuest" & LoopC), Asc("-")))
 386                 .DropQuest(LoopC).ObjIndex = val(ReadField(2, Leer.GetValue("NPC" & NpcNumber, "DropQuest" & LoopC), Asc("-")))
 388                 .DropQuest(LoopC).amount = val(ReadField(3, Leer.GetValue("NPC" & NpcNumber, "DropQuest" & LoopC), Asc("-")))
 390                 .DropQuest(LoopC).Probabilidad = val(ReadField(4, Leer.GetValue("NPC" & NpcNumber, "DropQuest" & LoopC), Asc("-")))
 392             Next LoopC
-    
             End If
         
             '<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< PATHFINDING >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>

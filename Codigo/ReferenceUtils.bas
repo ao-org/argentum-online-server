@@ -31,6 +31,14 @@ Public Function UserCanAttack(ByVal UserIndex As Integer, ByVal UserVersionId, B
     End If
 End Function
 
+Public Function NpcCanAttack(ByVal NpcIndex As Integer, ByRef Reference As t_AnyReference) As e_AttackInteractionResult
+    If Reference.RefType = eUser Then
+        NpcCanAttack = NPCs.CanAttackUser(NpcIndex, Reference.ArrayIndex)
+    Else
+        NpcCanAttack = NPCs.CanAttackNpc(NpcIndex, Reference.ArrayIndex)
+    End If
+End Function
+
 Public Sub UpdateIncreaseModifier(ByRef Reference As t_AnyReference, ByVal Modifier As e_ModifierTypes, ByVal Value As Single)
     If Reference.RefType = eUser Then
         Select Case Modifier

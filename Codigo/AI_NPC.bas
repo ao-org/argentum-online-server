@@ -30,7 +30,11 @@ Public Sub NpcAI(ByVal NpcIndex As Integer)
 
 104             Case e_TipoAI.MueveAlAzar
 106                 If .Hostile = 1 Then
-108                     Call PerseguirUsuarioCercano(NpcIndex)
+                        If .AttackRange <= 1 Then
+108                         Call PerseguirUsuarioCercano(NpcIndex)
+                        Else
+                            Call AI_RangeAttack(NpcIndex)
+                        End If
                     Else
 110                     Call AI_CaminarSinRumboCercaDeOrigen(NpcIndex)
                     End If
@@ -180,6 +184,94 @@ ErrorHandler:
 
 End Sub
 
+Public Function SelectNearestUser(ByVal NpcIndex As Integer, ByRef NearestTargetDistance As Single) As Integer
+    Dim i As Integer
+    Dim UserIndex As Integer
+    NearestTargetDistance = 0
+    With NpcList(NpcIndex)
+        For i = 1 To ModAreas.ConnGroups(.pos.Map).CountEntrys
+            UserIndex = ModAreas.ConnGroups(.pos.Map).UserEntrys(i)
+            ' Find nearest user
+            If UserMod.IsVisible(UserList(UserIndex)) And UserCanAttackNpc(UserIndex, NpcIndex) = eCanAttack And _
+                NPCs.CanAttackUser(NpcIndex, UserIndex) Then
+                Dim UserDistance As Double
+                UserDistance = Distance(UserList(UserIndex).pos.x, UserList(UserIndex).pos.y, .pos.x, .pos.y)
+                If SelectNearestUser = 0 Or UserDistance < NearestTargetDistance Then
+                    SelectNearestUser = UserIndex
+                    NearestTargetDistance = UserDistance
+                End If
+            End If
+        Next i
+    End With
+End Function
+
+Public Function SelectCurrentTarget(ByVal NpcIndex, ByVal NearestUser As Integer) As t_AnyReference
+    Dim CurrentTarget As t_AnyReference
+    With NpcList(NpcIndex)
+        If IsSet(.flags.StatusMask, eTaunted) Then
+            Exit Function
+        End If
+        Call ClearUserRef(.targetUser)
+        If .flags.AttackedBy <> vbNullString Then
+            .targetUser = NameIndex(.flags.AttackedBy)
+            If Not IsValidUserRef(.targetUser) Then
+                Call ClearUserRef(.targetUser)
+            ElseIf Not EnRangoVision(NpcIndex, .targetUser.ArrayIndex) Then
+                Call ClearUserRef(.targetUser)
+            End If
+        End If
+        If NearestUser > 0 And Not IsValidUserRef(.targetUser) Then
+            Call SetUserRef(.targetUser, NearestUser)
+        End If
+        If Not CastUserToAnyRef(.targetUser, CurrentTarget) Then
+            Call CastNpcToAnyRef(.TargetNPC, CurrentTarget)
+        End If
+    End With
+    SelectCurrentTarget = CurrentTarget
+End Function
+
+Public Sub AI_RangeAttack(ByVal NpcIndex As Integer)
+    On Error GoTo AI_RangeAttack_Err
+    
+        Dim CurrentTarget As t_AnyReference
+        Dim TargetPos As t_WorldPos
+100     With NpcList(NpcIndex)
+            Dim NearestUser As Integer
+            Dim NearestTargetDistance As Single
+            NearestUser = SelectNearestUser(NpcIndex, NearestTargetDistance)
+            CurrentTarget = SelectCurrentTarget(NpcIndex, NearestUser)
+128         If IsValidRef(CurrentTarget) And NPCs.CanAttack(.Contadores, .flags) Then
+130             TargetPos = GetPosition(CurrentTarget)
+132             If .pos.Map <> TargetPos.Map Then
+                    'request new target
+134             ElseIf Distance(.pos.x, .pos.y, TargetPos.x, TargetPos.y) <= .AttackRange Then
+136                 If NpcCanAttack(NpcIndex, CurrentTarget) Then
+                        If CurrentTarget.RefType = eUser Then
+                            If NpcAtacaUser(NpcIndex, CurrentTarget.ArrayIndex, .Char.Heading) Then
+                                If .ProjectileType > 0 Then
+                                    Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, _
+                                              PrepareCreateProjectile(.pos.x, .pos.y, TargetPos.x, TargetPos.y, .ProjectileType))
+                                End If
+                            End If
+                        End If
+                    End If
+                Else
+                    Call AI_CaminarConRumbo(NpcIndex, TargetPos)
+                End If
+            End If
+            If NearestUser > 0 And NearestTargetDistance < .PreferedRange Then
+                'TODO: get away from closest enemy if is inside preferred range
+                Dim Direction As t_Vector
+                Dim TargetMapPos As t_WorldPos
+                Direction = GetDirection(.pos, UserList(NearestUser).pos)
+                TargetMapPos = PreferedTileForDirection(Direction, .pos)
+                Call MoveNPCChar(NpcIndex, GetHeadingFromWorldPos(.pos, TargetMapPos))
+            End If
+    End With
+    Exit Sub
+AI_RangeAttack_Err:
+    Call TraceError(Err.Number, Err.Description, "AI_NPC.AI_RangeAttack", Erl)
+End Sub
 ' Cuando un NPC no tiene target y se puede mover libremente pero cerca de su lugar de origen.
 ' La mayoria de los NPC deberian mantenerse cerca de su posicion de origen, algunos quedaran quietos
 ' en su posicion y otros se moveran libremente cerca de su posicion de origen.
