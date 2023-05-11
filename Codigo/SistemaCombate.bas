@@ -256,26 +256,15 @@ PoderEvasionEscudo_Err:
 End Function
 
 Private Function PoderEvasion(ByVal UserIndex As Integer) As Long
-        
-        On Error GoTo PoderEvasion_Err
-
+    On Error GoTo PoderEvasion_Err
 100     With UserList(UserIndex)
-            If IsFeatureEnabled("update-combat-formula") Then
-                PoderEvasion = (.Stats.UserSkills(e_Skill.Tacticas) + (3 * .Stats.UserSkills(e_Skill.Tacticas) / 100) * .Stats.UserAtributos(Agilidad)) * ModClase(.clase).Evasion
-            Else
-                PoderEvasion = .Stats.UserSkills(e_Skill.Tacticas) + (3 * .Stats.UserSkills(e_Skill.Tacticas) / 100) * .Stats.UserAtributos(Agilidad) * ModClase(.clase).Evasion
-            End If
+            PoderEvasion = (.Stats.UserSkills(e_Skill.Tacticas) + (3 * .Stats.UserSkills(e_Skill.Tacticas) / 100) * .Stats.UserAtributos(Agilidad)) * ModClase(.clase).Evasion
             PoderEvasion = PoderEvasion + (2.5 * Maximo(.Stats.ELV - 12, 0))
             PoderEvasion = PoderEvasion + UserMod.GetEvasionBonus(UserList(UserIndex))
         End With
-
-        
         Exit Function
-
 PoderEvasion_Err:
 106     Call TraceError(Err.Number, Err.Description, "SistemaCombate.PoderEvasion", Erl)
-
-        
 End Function
 
 Private Function AttackPower(ByVal UserIndex, ByVal skill As Integer, ByVal skillModifier As Single) As Long

@@ -10272,7 +10272,7 @@ Public Sub HandleQuest(ByVal UserIndex As Integer)
     
         'El NPC hace quests?
 108     If NpcList(NpcIndex).NumQuest = 0 Then
-110         Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageChatOverHead("No tengo ninguna misión para ti.", NpcList(npcIndex).Char.charindex, vbWhite))
+110         Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageChatOverHead("No tengo ninguna misión para ti.", NpcList(NpcIndex).Char.charindex, vbWhite))
             Exit Sub
 
         End If
@@ -10324,7 +10324,7 @@ Public Sub HandleQuestAccept(ByVal UserIndex As Integer)
             'El personaje completo la quest que requiere?
 116         If QuestList(NpcList(NpcIndex).QuestNumber(Indice)).RequiredQuest > 0 Then
 118             If Not UserDoneQuest(UserIndex, QuestList(NpcList(NpcIndex).QuestNumber(Indice)).RequiredQuest) Then
-120                 Call WriteChatOverHead(UserIndex, "Debes completar la quest " & QuestList(QuestList(NpcList(npcIndex).QuestNumber(Indice)).RequiredQuest).nombre & " para emprender esta misión.", NpcList(npcIndex).Char.charindex, vbYellow)
+120                 Call WriteChatOverHead(UserIndex, "Debes completar la quest " & QuestList(QuestList(NpcList(NpcIndex).QuestNumber(Indice)).RequiredQuest).nombre & " para emprender esta misión.", NpcList(NpcIndex).Char.charindex, vbYellow)
                     Exit Sub
     
                 End If
@@ -10333,7 +10333,7 @@ Public Sub HandleQuestAccept(ByVal UserIndex As Integer)
     
             'El personaje tiene suficiente nivel?
 122         If UserList(UserIndex).Stats.ELV < QuestList(NpcList(NpcIndex).QuestNumber(Indice)).RequiredLevel Then
-124             Call WriteChatOverHead(UserIndex, "Debes ser por lo menos nivel " & QuestList(NpcList(npcIndex).QuestNumber(Indice)).RequiredLevel & " para emprender esta misión.", NpcList(npcIndex).Char.charindex, vbYellow)
+124             Call WriteChatOverHead(UserIndex, "Debes ser por lo menos nivel " & QuestList(NpcList(NpcIndex).QuestNumber(Indice)).RequiredLevel & " para emprender esta misión.", NpcList(NpcIndex).Char.charindex, vbYellow)
                 Exit Sub
     
             End If
@@ -10341,7 +10341,7 @@ Public Sub HandleQuestAccept(ByVal UserIndex As Integer)
             'El personaje no es la clase requerida?
 125         If UserList(UserIndex).clase <> QuestList(NpcList(npcIndex).QuestNumber(Indice)).RequiredClass And _
                 QuestList(NpcList(npcIndex).QuestNumber(Indice)).RequiredClass > 0 Then
-                 Call WriteChatOverHead(UserIndex, "Debes ser " & ListaClases(QuestList(NpcList(npcIndex).QuestNumber(Indice)).RequiredClass) & " para emprender esta misión.", NpcList(npcIndex).Char.charindex, vbYellow)
+                 Call WriteChatOverHead(UserIndex, "Debes ser " & ListaClases(QuestList(NpcList(NpcIndex).QuestNumber(Indice)).RequiredClass) & " para emprender esta misión.", NpcList(NpcIndex).Char.charindex, vbYellow)
                 Exit Sub
 
             End If
@@ -10358,7 +10358,7 @@ Public Sub HandleQuestAccept(ByVal UserIndex As Integer)
 130         QuestSlot = FreeQuestSlot(UserIndex)
     
 132         If QuestSlot = 0 Then
-134             Call WriteChatOverHead(UserIndex, "Debes completar las misiones en curso para poder aceptar más misiones.", NpcList(npcIndex).Char.charindex, vbYellow)
+134             Call WriteChatOverHead(UserIndex, "Debes completar las misiones en curso para poder aceptar más misiones.", NpcList(NpcIndex).Char.charindex, vbYellow)
                 Exit Sub
     
             End If
@@ -11414,6 +11414,7 @@ On Error GoTo HandleActionOnGroupFrame_Err:
     
     With UserList(UserIndex)
         If Not .Grupo.EnGrupo Then Exit Sub
+        If Not IsFeatureEnabled("target_group_frames") Then Exit Sub
         If UserList(.Grupo.Lider.ArrayIndex).Grupo.CantidadMiembros < TargetGroupMember Then Exit Sub
         If Not IsValidUserRef(UserList(.Grupo.Lider.ArrayIndex).Grupo.Miembros(TargetGroupMember)) Then Exit Sub
         If UserList(.Grupo.Lider.ArrayIndex).Grupo.Miembros(TargetGroupMember).ArrayIndex = UserIndex Then Exit Sub

@@ -240,32 +240,35 @@ Public Sub AI_RangeAttack(ByVal NpcIndex As Integer)
             Dim NearestTargetDistance As Single
             NearestUser = SelectNearestUser(NpcIndex, NearestTargetDistance)
             CurrentTarget = SelectCurrentTarget(NpcIndex, NearestUser)
+            'perform attack
 128         If IsValidRef(CurrentTarget) And NPCs.CanAttack(.Contadores, .flags) Then
 130             TargetPos = GetPosition(CurrentTarget)
-132             If .pos.Map <> TargetPos.Map Then
-                    'request new target
-134             ElseIf Distance(.pos.x, .pos.y, TargetPos.x, TargetPos.y) <= .AttackRange Then
-136                 If NpcCanAttack(NpcIndex, CurrentTarget) Then
-                        If CurrentTarget.RefType = eUser Then
-                            If NpcAtacaUser(NpcIndex, CurrentTarget.ArrayIndex, .Char.Heading) Then
-                                If .ProjectileType > 0 Then
-                                    Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, _
-                                              PrepareCreateProjectile(.pos.x, .pos.y, TargetPos.x, TargetPos.y, .ProjectileType))
-                                End If
-                            End If
+132             If Distance(.pos.x, .pos.y, TargetPos.x, TargetPos.y) <= .AttackRange Then
+136                 If NpcCanAttack(NpcIndex, CurrentTarget) And CurrentTarget.RefType = eUser Then
+                        If NpcAtacaUser(NpcIndex, CurrentTarget.ArrayIndex, .Char.Heading) And .ProjectileType > 0 Then
+                            Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, _
+                                          PrepareCreateProjectile(.pos.x, .pos.y, TargetPos.x, TargetPos.y, .ProjectileType))
                         End If
                     End If
                 Else
                     Call AI_CaminarConRumbo(NpcIndex, TargetPos)
                 End If
             End If
-            If NearestUser > 0 And NearestTargetDistance < .PreferedRange Then
-                'TODO: get away from closest enemy if is inside preferred range
-                Dim Direction As t_Vector
-                Dim TargetMapPos As t_WorldPos
-                Direction = GetDirection(.pos, UserList(NearestUser).pos)
-                TargetMapPos = PreferedTileForDirection(Direction, .pos)
-                Call MoveNPCChar(NpcIndex, GetHeadingFromWorldPos(.pos, TargetMapPos))
+            'perform movement
+            If NPCs.CanMove(.Contadores, .flags) Then
+                If NearestUser > 0 And NearestTargetDistance < .PreferedRange Then
+                    Dim Direction As t_Vector
+                    Dim TargetMapPos As t_WorldPos
+                    Direction = GetDirection(.pos, UserList(NearestUser).pos)
+                    TargetMapPos = PreferedTileForDirection(Direction, .pos)
+                    Call MoveNPCChar(NpcIndex, GetHeadingFromWorldPos(.pos, TargetMapPos))
+                ElseIf IsValidRef(CurrentTarget) And Distance(.pos.x, .pos.y, TargetPos.x, TargetPos.y) > .PreferedRange Then
+                    Call AI_CaminarConRumbo(NpcIndex, TargetPos)
+                ElseIf Distancia(.pos, .Orig) > 0 Then 'return to origin
+160                 Call AI_CaminarConRumbo(NpcIndex, .Orig)
+                ElseIf .Char.Heading <> e_Heading.SOUTH Then
+164                 Call ChangeNPCChar(NpcIndex, .Char.body, .Char.head, e_Heading.SOUTH)
+                End If
             End If
     End With
     Exit Sub
@@ -891,7 +894,7 @@ Private Sub NpcLanzaUnSpell(ByVal NpcIndex As Integer)
 
         If Not IsValidUserRef(NpcList(npcIndex).TargetUser) Then Exit Sub
 102     Target = NpcList(npcIndex).TargetUser.ArrayIndex
-104     SpellIndex = NpcList(NpcIndex).Spells(RandomNumber(1, NpcList(NpcIndex).flags.LanzaSpells))
+104     SpellIndex = NpcList(NpcIndex).Spells(RandomNumber(1, NpcList(NpcIndex).flags.LanzaSpells)).SpellIndex
 106     PuedeDanarAlUsuario = UserList(Target).flags.NoMagiaEfecto = 0 And NpcList(NpcIndex).flags.Paralizado = 0
         
         If SpellIndex = 0 Then Exit Sub
@@ -949,7 +952,7 @@ Private Sub NpcLanzaUnSpellSobreNpc(ByVal NpcIndex As Integer, ByVal TargetNPC A
             Dim K As Integer
 106             K = RandomNumber(1, .flags.LanzaSpells)
 
-108         Call NpcLanzaSpellSobreNpc(NpcIndex, TargetNPC, .Spells(K))
+108         Call NpcLanzaSpellSobreNpc(NpcIndex, TargetNPC, .Spells(K).SpellIndex)
     
         End With
      
