@@ -1978,12 +1978,6 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
 
         End If
 
-414     If IsSet(Hechizos(h).Effects, e_SpellEffects.Blessing) Then
-416         UserList(tU).flags.Bendicion = 1
-418         Call InfoHechizo(UserIndex)
-420         b = True
-        End If
-
 422     If IsSet(Hechizos(h).Effects, e_SpellEffects.Paralize) Then
 424         If UserIndex = tU Then
                 'Call WriteConsoleMsg(UserIndex, "No podés atacarte a vos mismo.", e_FontTypeNames.FONTTYPE_FIGHT)
@@ -2503,12 +2497,6 @@ Sub HechizoEstadoNPC(ByVal NpcIndex As Integer, ByVal hIndex As Integer, ByRef b
 136     If IsSet(Hechizos(hIndex).Effects, e_SpellEffects.RemoveCurse) Then
 138         Call InfoHechizo(UserIndex)
 140         b = True
-        End If
-
-142     If IsSet(Hechizos(hIndex).Effects, e_SpellEffects.Blessing) Then
-144         Call InfoHechizo(UserIndex)
-146         NpcList(NpcIndex).flags.Bendicion = 1
-148         b = True
         End If
 
 150     If IsSet(Hechizos(hIndex).Effects, e_SpellEffects.Paralize) Then
@@ -3863,12 +3851,6 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
 552         b = True
         End If
 
-554     If IsSet(Hechizos(h).Effects, e_SpellEffects.Blessing) Then
-556         UserList(tU).flags.Bendicion = 1
-558         enviarInfoHechizo = True
-560         b = True
-        End If
-
 562     If IsSet(Hechizos(h).Effects, e_SpellEffects.Paralize) Then
 564         If UserIndex = tU Then
 566             Call WriteLocaleMsg(UserIndex, "380", e_FontTypeNames.FONTTYPE_FIGHT)
@@ -4421,11 +4403,6 @@ Private Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, X As Byte, Y 
 376     If IsSet(Hechizos(h2).Effects, e_SpellEffects.PreciseHit) Then
 378         Call WriteConsoleMsg(NpcIndex, "Tu proximo golpe sera certero.", e_FontTypeNames.FONTTYPE_INFO)
 380         UserList(NpcIndex).flags.GolpeCertero = 1
-        End If
-                
-382     If IsSet(Hechizos(h2).Effects, e_SpellEffects.Blessing) Then
-384         Call WriteConsoleMsg(NpcIndex, "Has sido bendecido.", e_FontTypeNames.FONTTYPE_INFO)
-386         UserList(NpcIndex).flags.Bendicion = 1
         End If
                   
 388     If IsSet(Hechizos(h2).Effects, e_SpellEffects.Incinerate) Then

@@ -463,7 +463,7 @@ Function ConnectNewUser(ByVal userindex As Integer, ByRef name As String, ByVal 
             End If
             
 112         If Not NombrePermitido(name) Then
-114             Call WriteShowMessageBox(userIndex, "El nombre no está permitido.")
+114             Call WriteShowMessageBox(UserIndex, "El nombre no está permitido.")
                 Exit Function
             End If
     
@@ -849,7 +849,7 @@ Function EntrarCuenta(ByVal UserIndex As Integer, ByVal CuentaEmail As String, B
         #End If
 
 128     If Not CheckMailString(CuentaEmail) Then
-130         Call WriteShowMessageBox(userIndex, "Email inválido.")
+130         Call WriteShowMessageBox(UserIndex, "Email inválido.")
             Exit Function
         End If
     
@@ -888,7 +888,7 @@ On Error GoTo ErrHandler
     
 ErrHandler:
      Call TraceError(Err.Number, Err.Description, "TCP.ConnectUser", Erl)
-     Call WriteShowMessageBox(userIndex, "El personaje contiene un error. Comuníquese con un miembro del staff.")
+     Call WriteShowMessageBox(UserIndex, "El personaje contiene un error. Comuníquese con un miembro del staff.")
      Call CloseSocket(UserIndex)
 
 End Function
@@ -1232,7 +1232,6 @@ Sub ResetUserFlags(ByVal UserIndex As Integer)
 156         .Paralizado = 0
 158         .Inmovilizado = 0
 160         .Maldicion = 0
-162         .Bendicion = 0
 164         .Meditando = 0
 168         .Privilegios = 0
 170         .PuedeMoverse = 0
@@ -1568,7 +1567,7 @@ Sub ClearAndSaveUser(ByVal UserIndex As Integer)
                 Call WriteUserCharIndexInServer(.flags.GMMeSigue.ArrayIndex)
                 Call UpdateUserInv(True, .flags.GMMeSigue.ArrayIndex, 1)
                 Call WriteUpdateUserStats(.flags.GMMeSigue.ArrayIndex)
-                Call WriteConsoleMsg(.flags.GMMeSigue.ArrayIndex, "El usuario " & UserList(userIndex).name & " que estabas siguiendo se desconectó.", e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteConsoleMsg(.flags.GMMeSigue.ArrayIndex, "El usuario " & UserList(UserIndex).name & " que estabas siguiendo se desconectó.", e_FontTypeNames.FONTTYPE_INFO)
                 Call SetUserRef(.flags.GMMeSigue, 0)
                 'Falta revertir inventario del GM
             End If

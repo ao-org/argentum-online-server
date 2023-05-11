@@ -979,7 +979,7 @@ Public Enum e_SpellEffects
     Curse = 128
     RemoveCurse = 256
     PreciseHit = 512
-    Blessing = 1024
+    eFreeFlag = 1024 ' this flags is free to use with another value, old meaning was removed
     Dumb = 2048
     Blindness = 4096
     Resurrect = 8192
@@ -1882,7 +1882,6 @@ Public Type t_UserFlags
     Ceguera As Byte
     invisible As Byte
     Maldicion As Byte
-    Bendicion As Byte
     Oculto As Byte
     Desnudo As Byte
     Descansar As Boolean
@@ -1910,7 +1909,7 @@ Public Type t_UserFlags
     AdministrativeBan As Byte
     BanMotivo As String
 
-    TargetUser As t_UserReference ' Usuario señalado
+    targetUser As t_UserReference ' Usuario señalado
     
     TargetObj As Integer ' Obj señalado
     TargetObjMap As Integer
@@ -2396,7 +2395,7 @@ Public Type t_NPCFlags
     InvasionIndex As Integer
     SpawnBox As Integer
     IndexInInvasion As Integer
-    StatusMask As Long 'use the values from to set this flags e_StatusMask
+    StatusMask As Long 'use the values from e_StatusMask to set this flags
 
     ExpCount As Long '[ALEJO]
     
@@ -2418,7 +2417,6 @@ Public Type t_NPCFlags
     Inmovilizado As Byte
     Incinerado As Byte
     invisible As Byte
-    Bendicion As Byte
     TranslationActive As Boolean
 
     Snd1 As Integer
@@ -2493,6 +2491,11 @@ Public Enum e_Alineacion
     Real = 1
     Caos = 2
 End Enum
+
+Public Type t_NpcSpellEntry
+    SpellIndex As Integer
+    LastUse As Integer
+End Type
 
 Public Type t_Npc
     
@@ -2571,7 +2574,7 @@ Public Type t_Npc
     Expresiones() As String ' le da vida ;)
     
     NroSpells As Byte
-    Spells() As Integer  ' le da vida ;)
+    Spells() As t_NpcSpellEntry  ' le da vida ;)
     
     ' Entrenadores
     NroCriaturas As Integer

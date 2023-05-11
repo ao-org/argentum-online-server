@@ -335,7 +335,6 @@ Sub ResetNpcFlags(ByVal NpcIndex As Integer)
 106         .AttackedBy = vbNullString
 108         .AttackedFirstBy = vbNullString
 112         .backup = 0
-114         .Bendicion = 0
 116         .Domable = 0
 118         .Envenenado = 0
 120         .Faccion = 0
@@ -523,7 +522,7 @@ Sub ResetNpcMainInfo(ByVal NpcIndex As Integer)
 164     .CaminataActual = 0
         Dim j As Integer
 166     For j = 1 To .NroSpells
-168         .Spells(j) = 0
+168         .Spells(j).SpellIndex = 0
 170     Next j
         Call ClearEffectList(.EffectOverTime)
         Call ClearModifiers(.Modifiers)
@@ -1397,7 +1396,8 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
             End If
     
 262         For LoopC = 1 To .flags.LanzaSpells
-264             .Spells(LoopC) = val(Leer.GetValue("NPC" & NpcNumber, "Sp" & LoopC))
+264             .Spells(LoopC).SpellIndex = val(Leer.GetValue("NPC" & NpcNumber, "Sp" & LoopC))
+                .Spells(LoopC).LastUse = 0
 266         Next LoopC
     
 268         If .NPCtype = e_NPCType.Entrenador Then
