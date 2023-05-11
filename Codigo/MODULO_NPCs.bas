@@ -2139,7 +2139,7 @@ Public Function CanAttackUser(ByVal NpcIndex As Integer, ByVal UserIndex As Inte
         Else
             AttackerFaction = .flags.Faccion
         End If
-        If FactionCanAttackFaction(AttackerFaction, UserList(UserIndex).Faccion.Status) Then
+        If Not FactionCanAttackFaction(AttackerFaction, UserList(UserIndex).Faccion.Status) Then
             CanAttackUser = eSameFaction
             Exit Function
         End If
