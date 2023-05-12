@@ -125,7 +125,8 @@ Public Sub IBaseEffectOverTime_OnRemove()
     DotInfo.RemoveEffect = True
     If DotInfo.TargetRef.RefType = eUser Then
         If EffectOverTime(DotInfo.EotId).ClientEffectTypeId > 0 Then
-            Call WriteSendSkillCdUpdate(DotInfo.TargetRef.ArrayIndex, DotInfo.EotId, DotInfo.UniqueId, 0, 0, EffectOverTime(DotInfo.EotId).buffType)
+            Call WriteSendSkillCdUpdate(DotInfo.TargetRef.ArrayIndex, EffectOverTime(DotInfo.EotId).ClientEffectTypeId, DotInfo.UniqueId, _
+                                        0, 0, EffectOverTime(DotInfo.EotId).buffType)
         End If
     End If
 End Sub

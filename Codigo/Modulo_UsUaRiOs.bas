@@ -1058,6 +1058,9 @@ Sub MakeUserChar(ByVal toMap As Boolean, _
 106                 CharIndex = NextOpenCharIndex
 108                 .Char.CharIndex = CharIndex
 110                 CharList(CharIndex) = UserIndex
+                    If .Grupo.EnGrupo Then
+                        Call modSendData.SendData(ToGroup, UserIndex, PrepareUpdateGroupInfo(UserIndex))
+                    End If
                 End If
 
                 'Place character on map if needed
@@ -2825,7 +2828,7 @@ Function TieneArmaduraCazador(ByVal UserIndex As Integer) As Boolean
 
 100     If UserList(UserIndex).Invent.ArmourEqpObjIndex > 0 Then
         
-102         If ObjData(UserList(userIndex).Invent.ArmourEqpObjIndex).Subtipo = 3 Then ' Aguante hardcodear números :D
+102         If ObjData(UserList(UserIndex).invent.ArmourEqpObjIndex).Subtipo = 3 Then ' Aguante hardcodear números :D
 104             TieneArmaduraCazador = True
             End If
         
