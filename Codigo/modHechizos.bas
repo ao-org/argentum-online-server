@@ -65,14 +65,15 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
           End If
         End If
 112     Call InfoHechizoDeNpcSobreUser(NpcIndex, UserIndex, Spell)
-114     If Hechizos(Spell).SubeHP = 1 Then
+114     If IsSet(Hechizos(Spell).Effects, e_SpellEffects.eDoHeal) Then
           Damage = Damage * NPCs.GetMagicHealingBonus(NpcList(NpcIndex))
           Damage = Damage * UserMod.GetSelfHealingBonus(UserList(UserIndex))
-116       Call UserMod.DoDamageOrHeal(UserIndex, npcIndex, eNpc, Damage, e_DamageSourceType.e_magic, Spell)
-120       DamageStr = PonerPuntos(Damage)
-122       Call WriteLocaleMsg(UserIndex, 32, e_FontTypeNames.FONTTYPE_FIGHT, NpcList(NpcIndex).name & "¬" & DamageStr)
-
-128     ElseIf Hechizos(Spell).SubeHP = 2 Then
+          If Damage > 0 Then
+116         Call UserMod.DoDamageOrHeal(UserIndex, NpcIndex, eNpc, Damage, e_DamageSourceType.e_magic, Spell)
+120         DamageStr = PonerPuntos(Damage)
+122         Call WriteLocaleMsg(UserIndex, 32, e_FontTypeNames.FONTTYPE_FIGHT, NpcList(NpcIndex).name & "¬" & DamageStr)
+          End If
+128     ElseIf IsSet(Hechizos(Spell).Effects, e_SpellEffects.eDoDamage) Then
 130       Damage = RandomNumber(Hechizos(Spell).MinHp, Hechizos(Spell).MaxHp)
 
           ' Si el hechizo no ignora la RM
@@ -168,7 +169,6 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
             If Not TargetBuff Is Nothing Then
                 Call EffectsOverTime.ChangeOwner(UserIndex, eUser, NpcIndex, eNpc, TargetBuff)
             End If
-            Exit Sub
         End If
 
 214     If Hechizos(Spell).SubeFuerza = 1 Then
@@ -265,7 +265,24 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
 350         Call ActualizarVelocidadDeUsuario(UserIndex)
           End If
         End If
+        If NpcList(NpcIndex).Char.CastAnimation > 0 Then
+            Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareMessageDoAnimation(NpcList(NpcIndex).Char.charindex, NpcList(NpcIndex).Char.CastAnimation))
+        ElseIf NpcList(NpcIndex).Char.Ataque1 > 0 Then
+            Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareMessageDoAnimation(NpcList(NpcIndex).Char.charindex, NpcList(NpcIndex).Char.Ataque1))
+        End If
       End With
+      
+      With NpcList(NpcIndex)
+        If IsSet(.flags.BehaviorFlags, e_BehaviorFlags.eDisplayCastMessage) Then
+          Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, _
+                        PrepareMessageChatOverHead("PMAG*" & Spell, .Char.charindex, vbCyan, True, _
+                                                   .pos.x, .pos.y, RequiredSpellDisplayTime, MaxInvisibleSpellDisplayTime))
+        End If
+        If UserList(UserIndex).ChatCombate = 1 Then
+            Call WriteConsoleMsg(UserIndex, "HecMSGA*" & Spell & "*" & .name, e_FontTypeNames.FONTTYPE_FIGHT)
+        End If
+      End With
+      
       Exit Sub
 
 NpcLanzaSpellSobreUser_Err:
@@ -290,7 +307,7 @@ Sub NpcLanzaSpellSobreNpc(ByVal NpcIndex As Integer, ByVal TargetNPC As Integer,
   
 102     .Contadores.IntervaloLanzarHechizo = GetTickCount()
   
-104     If Hechizos(Spell).SubeHP = 1 Then ' Cura
+104     If IsSet(Hechizos(Spell).Effects, e_SpellEffects.eDoHeal) Then ' Cura
 106       Damage = RandomNumber(Hechizos(Spell).MinHp, Hechizos(Spell).MaxHp)
           Damage = Damage * NPCs.GetMagicHealingBonus(NpcList(NpcIndex))
           Damage = Damage * NPCs.GetSelfHealingBonus(NpcList(TargetNPC))
@@ -307,7 +324,7 @@ Sub NpcLanzaSpellSobreNpc(ByVal NpcIndex As Integer, ByVal TargetNPC As Integer,
 116       Call NPCs.DoDamageOrHeal(TargetNPC, npcIndex, eNpc, Damage, e_DamageSourceType.e_magic, Spell)
 120       Call SendData(SendTarget.ToNPCArea, TargetNPC, PrepareMessageNpcUpdateHP(TargetNPC))
 
-122     ElseIf Hechizos(Spell).SubeHP = 2 Then
+122     ElseIf IsSet(Hechizos(Spell).Effects, e_SpellEffects.eDoDamage) Then
 124       Damage = RandomNumber(Hechizos(Spell).MinHp, Hechizos(Spell).MaxHp)
           Damage = Damage * NPCs.GetMagicDamageModifier(NpcList(npcIndex))
           Damage = Damage * NPCs.GetMagicDamageReduction(NpcList(TargetNPC))
@@ -367,7 +384,18 @@ Sub NpcLanzaSpellSobreNpc(ByVal NpcIndex As Integer, ByVal TargetNPC As Integer,
             End If
         End If
       End With
-
+      With NpcList(NpcIndex)
+        If .Char.CastAnimation > 0 Then
+            Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareMessageDoAnimation(.Char.charindex, .Char.CastAnimation))
+        ElseIf .Char.Ataque1 > 0 Then
+            Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareMessageDoAnimation(.Char.charindex, .Char.Ataque1))
+        End If
+        If IsSet(.flags.BehaviorFlags, e_BehaviorFlags.eDisplayCastMessage) Then
+          Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, _
+                        PrepareMessageChatOverHead("PMAG*" & Spell, .Char.charindex, vbCyan, True, _
+                                                   .pos.x, .pos.y, RequiredSpellDisplayTime, MaxInvisibleSpellDisplayTime))
+        End If
+      End With
       Exit Sub
 
 NpcLanzaSpellSobreNpc_Err:
@@ -455,7 +483,18 @@ Public Sub NpcLanzaSpellSobreArea(ByVal NpcIndex As Integer, ByVal SpellIndex As
             End If
 
         End With
-        
+        With NpcList(NpcIndex)
+          If .Char.CastAnimation > 0 Then
+              Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareMessageDoAnimation(.Char.charindex, .Char.CastAnimation))
+          ElseIf .Char.Ataque1 > 0 Then
+              Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareMessageDoAnimation(.Char.charindex, .Char.Ataque1))
+          End If
+          If IsSet(.flags.BehaviorFlags, e_BehaviorFlags.eDisplayCastMessage) Then
+            Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, _
+                          PrepareMessageChatOverHead("PMAG*" & SpellIndex, .Char.charindex, vbCyan, True, _
+                                                     .pos.x, .pos.y, RequiredSpellDisplayTime, MaxInvisibleSpellDisplayTime))
+          End If
+        End With
         Exit Sub
 
 NpcLanzaSpellSobreArea_Err:
@@ -2639,7 +2678,7 @@ Sub HechizoPropNPC(ByVal hIndex As Integer, ByVal npcIndex As Integer, ByVal Use
         Dim DamageStr As String
     
         'Salud
-100     If Hechizos(hIndex).SubeHP = 1 Then
+100     If IsSet(Hechizos(hIndex).Effects, e_SpellEffects.eDoHeal) Then
 102         If NpcList(NpcIndex).Stats.MinHp < NpcList(NpcIndex).Stats.MaxHp Then
 104             Damage = RandomNumber(Hechizos(hIndex).MinHp, Hechizos(hIndex).MaxHp)
 105             Damage = Damage * UserMod.GetMagicHealingBonus(UserList(UserIndex))
@@ -2657,7 +2696,7 @@ Sub HechizoPropNPC(ByVal hIndex As Integer, ByVal npcIndex As Integer, ByVal Use
 124             b = False
             End If
         
-126     ElseIf Hechizos(hIndex).SubeHP = 2 Then
+126     ElseIf IsSet(Hechizos(hIndex).Effects, e_SpellEffects.eDoDamage) Then
 
 128         If Not PuedeAtacarNPC(UserIndex, NpcIndex) Then
 130             b = False
@@ -2800,7 +2839,7 @@ Private Sub InfoHechizo(ByVal UserIndex As Integer)
 
             End If
 
-132     ElseIf IsValidNpcRef(UserList(UserIndex).flags.TargetNPC) Then '¿El Hechizo fue tirado sobre un npc?
+132     ElseIf IsValidNpcRef(UserList(UserIndex).flags.TargetNpc) Then '¿El Hechizo fue tirado sobre un npc?
 
 134         If Hechizos(h).FXgrh > 0 Then '¿Envio FX?
 136             If NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Stats.MinHp < 1 Then
@@ -3170,7 +3209,7 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsA
         End If
 
         'Salud
-332     If Hechizos(h).SubeHP = 1 Then
+332     If IsSet(Hechizos(h).Effects, e_SpellEffects.eDoHeal) Then
     
             'Verifica que el usuario no este muerto
 334         If UserList(tempChr).flags.Muerto = 1 Then
@@ -3222,7 +3261,7 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsA
             End If
 390         b = True
 
-392     ElseIf Hechizos(h).SubeHP = 2 Then
+392     ElseIf IsSet(Hechizos(h).Effects, e_SpellEffects.eDoDamage) Then
     
 394         If UserIndex = tempChr Then
 396             Call WriteLocaleMsg(UserIndex, "380", e_FontTypeNames.FONTTYPE_FIGHT)
@@ -3531,7 +3570,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
         End If
 
         'Salud
-222     If Hechizos(h).SubeHP = 1 Then
+222     If IsSet(Hechizos(h).Effects, e_SpellEffects.eDoHeal) Then
             'Verifica que el usuario no este muerto
 224         If UserList(tempChr).flags.Muerto = 1 Then
 226             Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
@@ -3567,7 +3606,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
             End If
 264         b = True
 
-266     ElseIf Hechizos(h).SubeHP = 2 Then ' Damage
+266     ElseIf IsSet(Hechizos(h).Effects, e_SpellEffects.eDoDamage) Then ' Damage
 268         If UserIndex = tempChr Then
 270             Call WriteLocaleMsg(UserIndex, "380", e_FontTypeNames.FONTTYPE_FIGHT)
                 Exit Sub
@@ -4142,7 +4181,7 @@ Private Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, X As Byte, Y 
 102     TilesDifUser = X + Y
 
 104     If npc Then
-106         If Hechizos(h2).SubeHP = 2 Then
+106         If IsSet(Hechizos(h2).Effects, e_SpellEffects.eDoDamage) Then
 108             TilesDifNpc = NpcList(NpcIndex).Pos.X + NpcList(NpcIndex).Pos.Y
             
 110             tilDif = TilesDifUser - TilesDifNpc
@@ -4188,7 +4227,7 @@ Private Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, X As Byte, Y 
 
 154         TilesDifNpc = UserList(NpcIndex).Pos.X + UserList(NpcIndex).Pos.Y
 156         tilDif = TilesDifUser - TilesDifNpc
-158         If Hechizos(h2).SubeHP = 2 Then
+158         If IsSet(Hechizos(h2).Effects, e_SpellEffects.eDoDamage) Then
 160             If UserIndex = NpcIndex Then
                     Exit Sub
                 End If
@@ -4249,7 +4288,7 @@ Private Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, X As Byte, Y 
 220             Call WriteUpdateUserStats(NpcIndex)
             End If
                 
-230         If Hechizos(h2).SubeHP = 1 Then
+230         If IsSet(Hechizos(h2).Effects, e_SpellEffects.eDoHeal) Then
 232             If Not PeleaSegura(UserIndex, npcIndex) Then
 234                 If Status(UserIndex) = 1 And Status(NpcIndex) <> 1 Then
                         Exit Sub

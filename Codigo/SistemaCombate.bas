@@ -1609,7 +1609,6 @@ Public Function PuedeAtacar(ByVal AttackerIndex As Integer, ByVal VictimIndex As
         If esArmada(AttackerIndex) Then
             ' Si ataca otro armada
             If esArmada(VictimIndex) Then
-                Call WriteConsoleMsg(AttackerIndex, "Los miembros del Ejercito Real tienen prohibido atacarse entre sí.", e_FontTypeNames.FONTTYPE_WARNING)
                 PuedeAtacar = False
                 Exit Function
             ' Si ataca un ciudadano
@@ -2251,7 +2250,7 @@ Sub AllMascotasAtacanUser(ByVal victim As Integer, ByVal Maestro As Integer)
             
 106             If mascotaIndex > 0 Then
                     If IsValidNpcRef(.MascotasIndex(iCount)) Then
-108                     If NpcList(mascotaIndex).flags.AtacaUsuarios Then
+108                     If IsSet(NpcList(mascotaIndex).flags.BehaviorFlags, e_BehaviorFlags.eAttackUsers) Then
 110                         NpcList(mascotaIndex).flags.AttackedBy = UserList(victim).Name
 112                         Call SetUserRef(NpcList(mascotaIndex).TargetUser, victim)
 114                         NpcList(mascotaIndex).Movement = e_TipoAI.NpcDefensa
@@ -2285,7 +2284,7 @@ Public Sub AllMascotasAtacanNPC(ByVal NpcIndex As Integer, ByVal UserIndex As In
 102             mascotaIdx = UserList(UserIndex).MascotasIndex(j).ArrayIndex
 104             If mascotaIdx > 0 And mascotaIdx <> NpcIndex Then
 106                 With NpcList(mascotaIdx)
-108                     If .flags.AtacaNPCs And Not IsValidNpcRef(.TargetNPC) Then
+108                     If IsSet(.flags.BehaviorFlags, e_BehaviorFlags.eAttackNpc) And Not IsValidNpcRef(.TargetNpc) Then
 110                         Call SetNpcRef(.TargetNPC, NpcIndex)
 112                         .Movement = e_TipoAI.NpcAtacaNpc
                         End If

@@ -48,6 +48,9 @@ Public Sub NpcAI(ByVal NpcIndex As Integer)
 120             Case e_TipoAI.SigueAmo
 122                 Call SeguirAmo(NpcIndex)
 
+                Case e_TipoAI.SupportAndAttack
+                    Call AI_SupportAndAttackNpc(NpcIndex)
+
 124             Case e_TipoAI.Caminata
 126                 Call HacerCaminata(NpcIndex)
 
@@ -475,7 +478,7 @@ Private Sub AI_AtacarUsuarioObjetivo(ByVal AtackerNpcIndex As Integer)
                     Call ChangeNPCChar(AtackerNpcIndex, .Char.Body, .Char.Head, tHeading)
 112                 Call NpcLanzaUnSpell(AtackerNpcIndex)
 
-                    If IsFeatureEnabled("Magic_and_Punch") And EstaPegadoAlUsuario And (RandomNumber(1, 100) <= 50) Then
+                    If IsFeatureEnabled("Magic_and_Punch") And EstaPegadoAlUsuario And CanPerformAttackAction(AtackerNpcIndex, 1000) Then
                         Call NpcAtacaUser(AtackerNpcIndex, MapData(ComputeNextHeadingPos(AtackerNpcIndex).Map, ComputeNextHeadingPos(AtackerNpcIndex).x, ComputeNextHeadingPos(AtackerNpcIndex).y).UserIndex, tHeading)
                     End If
 
@@ -565,6 +568,20 @@ ErrorHandler:
 136     Call TraceError(Err.Number, Err.Description, "AIv2.AI_GuardiaAtacaNpc", Erl)
 
 
+End Sub
+
+Public Sub AI_SupportAndAttackNpc(ByVal NpcIndex As Integer)
+        On Error GoTo ErrorHandler
+        
+100     With NpcList(NpcIndex)
+            If IntervaloPermiteLanzarHechizo(NpcIndex) Then
+                Call TrySupportThenAttackSpells(NpcIndex)
+            End If
+            Call AI_CaminarSinRumboCercaDeOrigen(NpcIndex)
+        End With
+        Exit Sub
+ErrorHandler:
+136     Call TraceError(Err.Number, Err.Description, "AIv2.AI_SupportAndAttackNpc", Erl)
 End Sub
 
 Private Function DistanciaRadial(OrigenPos As t_WorldPos, DestinoPos As t_WorldPos) As Long
@@ -1106,3 +1123,260 @@ UsuarioAtacableConMelee_Err:
 
 End Function
 
+Private Function CanCastSpell(ByRef npc As t_Npc, ByVal Slot As Integer) As Boolean
+     CanCastSpell = GlobalFrameTime - npc.Spells(Slot).LastUse > (npc.Spells(Slot).Cd * 1000)
+End Function
+
+Public Function GetAvailableSpellEffects(ByVal NpcIndex As Integer) As Long
+    Dim SpellIndex As Integer
+    With NpcList(NpcIndex)
+        For SpellIndex = 1 To .flags.LanzaSpells
+            If CanCastSpell(NpcList(NpcIndex), SpellIndex) Then
+                Call SetMask(GetAvailableSpellEffects, Hechizos(.Spells(SpellIndex).SpellIndex).Effects)
+            End If
+        Next SpellIndex
+    End With
+End Function
+
+' To help npc they need to be listed in the map for ai with the setting: AddToMapAiList=1
+Private Function SelectSupportSpellAndTarget(ByVal NpcIndex As Integer, ByRef Target As t_AnyReference, ByVal AvailableSpellEffect As Long) As Integer
+    With NpcList(NpcIndex)
+        If Not IsSet(.flags.BehaviorFlags, e_BehaviorFlags.eHelpUsers Or e_BehaviorFlags.eHelpNpc) Then
+            Call ClearRef(Target)
+            Exit Function
+        End If
+        Dim i As Integer
+        Dim SpellIndex As Integer
+        Dim TargetIndex As Integer
+        Dim UserDistance As Double
+        If IsSet(AvailableSpellEffect, e_SpellEffects.RemoveParalysis) Then
+            If IsSet(.flags.BehaviorFlags, e_BehaviorFlags.eHelpUsers) Then
+                For i = 1 To ModAreas.ConnGroups(.pos.Map).CountEntrys
+                    TargetIndex = ModAreas.ConnGroups(.pos.Map).UserEntrys(i)
+                    ' Find nearest user
+                    If CanSeeUser(NpcIndex, TargetIndex) And _
+                        NPCs.CanHelpUser(NpcIndex, TargetIndex) = eInteractionOk And _
+                        (UserList(TargetIndex).flags.Inmovilizado Or UserList(TargetIndex).flags.Paralizado) Then
+                        UserDistance = Distance(UserList(TargetIndex).pos.x, UserList(TargetIndex).pos.y, .pos.x, .pos.y)
+                        If UserDistance < .SpellRange Then
+                            For SpellIndex = 1 To .flags.LanzaSpells
+                                If CanCastSpell(NpcList(NpcIndex), SpellIndex) And _
+                                   IsSet(Hechizos(.Spells(SpellIndex).SpellIndex).Effects, e_SpellEffects.RemoveParalysis) Then
+                                    SelectSupportSpellAndTarget = SpellIndex
+                                    Call SetRef(Target, TargetIndex, eUser)
+                                    Exit Function
+                                End If
+                            Next SpellIndex
+                        End If
+                    End If
+                Next i
+            End If
+            If IsSet(.flags.BehaviorFlags, e_BehaviorFlags.eHelpNpc) And Not IsValidRef(Target) Then
+                For i = 0 To ModAreas.ConnGroups(.pos.Map).RegisteredNpc - 1
+                    TargetIndex = ModAreas.ConnGroups(.pos.Map).NpcForAi(i)
+                    ' Find nearest npc
+                    If NPCs.CanHelpNpc(NpcIndex, TargetIndex) = eInteractionOk And _
+                        (NpcList(TargetIndex).flags.Inmovilizado Or NpcList(TargetIndex).flags.Paralizado) Then
+                        UserDistance = Distance(NpcList(TargetIndex).pos.x, NpcList(TargetIndex).pos.y, .pos.x, .pos.y)
+                        If UserDistance < .SpellRange Then
+                            For SpellIndex = 1 To .flags.LanzaSpells
+                                If CanCastSpell(NpcList(NpcIndex), SpellIndex) And _
+                                   IsSet(Hechizos(.Spells(SpellIndex).SpellIndex).Effects, e_SpellEffects.RemoveParalysis) Then
+                                    SelectSupportSpellAndTarget = SpellIndex
+                                    Call SetRef(Target, TargetIndex, eNpc)
+                                    Exit Function
+                                End If
+                            Next SpellIndex
+                        End If
+                    End If
+                Next i
+            End If
+        End If
+        
+        If IsSet(AvailableSpellEffect, e_SpellEffects.eDoHeal) Then
+            If IsSet(.flags.BehaviorFlags, e_BehaviorFlags.eHelpUsers) Then
+                For i = 1 To ModAreas.ConnGroups(.pos.Map).CountEntrys
+                    TargetIndex = ModAreas.ConnGroups(.pos.Map).UserEntrys(i)
+                    ' Find nearest user
+                    If CanSeeUser(NpcIndex, TargetIndex) And _
+                        UserList(TargetIndex).Stats.MinHp < UserList(TargetIndex).Stats.MaxHp And _
+                        NPCs.CanHelpUser(NpcIndex, TargetIndex) = eInteractionOk Then
+                        UserDistance = Distance(UserList(TargetIndex).pos.x, UserList(TargetIndex).pos.y, .pos.x, .pos.y)
+                        If UserDistance < .SpellRange Then
+                            For SpellIndex = 1 To .flags.LanzaSpells
+                                If CanCastSpell(NpcList(NpcIndex), SpellIndex) And _
+                                   IsSet(Hechizos(.Spells(SpellIndex).SpellIndex).Effects, e_SpellEffects.eDoHeal) Then
+                                    SelectSupportSpellAndTarget = SpellIndex
+                                    Call SetRef(Target, TargetIndex, eUser)
+                                    Exit Function
+                                End If
+                            Next SpellIndex
+                        End If
+                    End If
+                Next i
+            End If
+            If IsSet(.flags.BehaviorFlags, e_BehaviorFlags.eHelpNpc) Then
+                For i = 0 To ModAreas.ConnGroups(.pos.Map).RegisteredNpc - 1
+                    TargetIndex = ModAreas.ConnGroups(.pos.Map).NpcForAi(i)
+                    ' Find nearest user
+                    If NpcList(TargetIndex).Stats.MinHp < NpcList(TargetIndex).Stats.MaxHp And _
+                        NPCs.CanHelpNpc(NpcIndex, TargetIndex) = eInteractionOk Then
+                        UserDistance = Distance(NpcList(TargetIndex).pos.x, NpcList(TargetIndex).pos.y, .pos.x, .pos.y)
+                        If UserDistance < .SpellRange Then
+                            For SpellIndex = 1 To .flags.LanzaSpells
+                                If CanCastSpell(NpcList(NpcIndex), SpellIndex) And _
+                                   IsSet(Hechizos(.Spells(SpellIndex).SpellIndex).Effects, e_SpellEffects.eDoHeal) Then
+                                    SelectSupportSpellAndTarget = SpellIndex
+                                    Call SetRef(Target, TargetIndex, eNpc)
+                                    Exit Function
+                                End If
+                            Next SpellIndex
+                        End If
+                    End If
+                Next i
+            End If
+        End If
+    End With
+End Function
+
+Private Function SelectAttackSpellAndTarget(ByVal NpcIndex As Integer, ByRef Target As t_AnyReference, ByVal AvailableSpellEffect As Long) As Integer
+    With NpcList(NpcIndex)
+        If Not IsSet(.flags.BehaviorFlags, e_BehaviorFlags.eAttackUsers Or e_BehaviorFlags.eAttackNpc) Then
+            Exit Function
+        End If
+        Dim TargetIndex As Integer
+        Dim i As Integer
+        Dim UserDistance As Double
+        Dim SpellIndex As Integer
+        If IsSet(AvailableSpellEffect, e_SpellEffects.Paralize Or e_SpellEffects.Immobilize) Then
+            If IsSet(.flags.BehaviorFlags, e_BehaviorFlags.eAttackUsers) Then
+                If Not IsValidRef(Target) Then
+                    For i = 1 To ModAreas.ConnGroups(.pos.Map).CountEntrys
+                        TargetIndex = ModAreas.ConnGroups(.pos.Map).UserEntrys(i)
+                        ' Find nearest user
+                        If CanSeeUser(NpcIndex, TargetIndex) And _
+                            NPCs.CanAttackUser(NpcIndex, TargetIndex) = eInteractionOk Then
+                            UserDistance = Distance(UserList(TargetIndex).pos.x, UserList(TargetIndex).pos.y, .pos.x, .pos.y)
+                            If UserDistance < .SpellRange Then
+                                Call SetRef(Target, TargetIndex, eUser)
+                                Exit For
+                            End If
+                        End If
+                    Next i
+                End If
+            End If
+            If IsSet(.flags.BehaviorFlags, e_BehaviorFlags.eAttackNpc) Then
+                If Not IsValidRef(Target) Then
+                    For i = 0 To ModAreas.ConnGroups(.pos.Map).RegisteredNpc - 1
+                        TargetIndex = ModAreas.ConnGroups(.pos.Map).NpcForAi(i)
+                        ' Find nearest user
+                        If NPCs.CanAttackNpc(NpcIndex, TargetIndex) = eInteractionOk Then
+                            UserDistance = Distance(NpcList(TargetIndex).pos.x, NpcList(TargetIndex).pos.y, .pos.x, .pos.y)
+                            If UserDistance < .SpellRange Then
+                                Call SetRef(Target, TargetIndex, eNpc)
+                                Exit For
+                            End If
+                        End If
+                    Next i
+                End If
+            End If
+            If IsValidRef(Target) Then
+                For SpellIndex = 1 To .flags.LanzaSpells
+                    If CanCastSpell(NpcList(NpcIndex), SpellIndex) And _
+                       IsSet(Hechizos(.Spells(SpellIndex).SpellIndex).Effects, e_SpellEffects.Paralize Or e_SpellEffects.Immobilize) Then
+                        SelectAttackSpellAndTarget = SpellIndex
+                        Exit Function
+                    End If
+                Next SpellIndex
+            End If
+        End If
+        If IsSet(AvailableSpellEffect, e_SpellEffects.eDoDamage) Then
+            If IsSet(.flags.BehaviorFlags, e_BehaviorFlags.eAttackUsers) Then
+                If Not IsValidRef(Target) Then
+                    For i = 1 To ModAreas.ConnGroups(.pos.Map).CountEntrys
+                        TargetIndex = ModAreas.ConnGroups(.pos.Map).UserEntrys(i)
+                        ' Find nearest user
+                        If CanSeeUser(NpcIndex, TargetIndex) And _
+                            NPCs.CanAttackUser(NpcIndex, TargetIndex) = eInteractionOk Then
+                            UserDistance = Distance(UserList(TargetIndex).pos.x, UserList(TargetIndex).pos.y, .pos.x, .pos.y)
+                            If UserDistance < .SpellRange Then
+                                Call SetRef(Target, TargetIndex, eUser)
+                                Exit For
+                            End If
+                        End If
+                    Next i
+                End If
+            End If
+            If IsSet(.flags.BehaviorFlags, e_BehaviorFlags.eAttackNpc) Then
+                If Not IsValidRef(Target) Then
+                    For i = 0 To ModAreas.ConnGroups(.pos.Map).RegisteredNpc - 1
+                        TargetIndex = ModAreas.ConnGroups(.pos.Map).NpcForAi(i)
+                        ' Find nearest user
+                        If NPCs.CanAttackNpc(NpcIndex, TargetIndex) = eInteractionOk Then
+                            UserDistance = Distance(NpcList(TargetIndex).pos.x, NpcList(TargetIndex).pos.y, .pos.x, .pos.y)
+                            If UserDistance < .SpellRange Then
+                                Call SetRef(Target, TargetIndex, eNpc)
+                                Exit For
+                            End If
+                        End If
+                    Next i
+                End If
+            End If
+            If IsValidRef(Target) Then
+                For SpellIndex = 1 To .flags.LanzaSpells
+                    If CanCastSpell(NpcList(NpcIndex), SpellIndex) And _
+                       IsSet(Hechizos(.Spells(SpellIndex).SpellIndex).Effects, e_SpellEffects.eDoDamage) Then
+                        SelectAttackSpellAndTarget = SpellIndex
+                        Exit Function
+                    End If
+                Next SpellIndex
+            End If
+        End If
+    End With
+End Function
+
+Public Function TryCastHelpSpell(ByVal NpcIndex As Integer, ByVal AvailableSpellEffect As Long) As Boolean
+    Dim CurrentTarget As t_AnyReference
+    Dim SpellIndex As Integer
+    SpellIndex = SelectSupportSpellAndTarget(NpcIndex, CurrentTarget, AvailableSpellEffect)
+    If SpellIndex > 0 And IsValidRef(CurrentTarget) Then
+        If CurrentTarget.RefType = eUser Then
+            Call NpcLanzaSpellSobreUser(NpcIndex, CurrentTarget.ArrayIndex, NpcList(NpcIndex).Spells(SpellIndex).SpellIndex)
+        Else
+            Call NpcLanzaSpellSobreNpc(NpcIndex, CurrentTarget.ArrayIndex, NpcList(NpcIndex).Spells(SpellIndex).SpellIndex)
+        End If
+        NpcList(NpcIndex).Spells(SpellIndex).LastUse = GlobalFrameTime
+        TryCastHelpSpell = True
+    End If
+End Function
+
+Public Function TryCastAttackSpell(ByVal NpcIndex As Integer, ByVal AvailableSpellEffect As Long) As Boolean
+    Dim CurrentTarget As t_AnyReference
+    Dim SpellIndex As Integer
+    CurrentTarget = SelectCurrentTarget(NpcIndex, 0)
+    SpellIndex = SelectAttackSpellAndTarget(NpcIndex, CurrentTarget, AvailableSpellEffect)
+    If SpellIndex > 0 And IsValidRef(CurrentTarget) Then
+        If CurrentTarget.RefType = eUser Then
+            Call NpcLanzaSpellSobreUser(NpcIndex, CurrentTarget.ArrayIndex, NpcList(NpcIndex).Spells(SpellIndex).SpellIndex)
+        Else
+            Call NpcLanzaSpellSobreNpc(NpcIndex, CurrentTarget.ArrayIndex, NpcList(NpcIndex).Spells(SpellIndex).SpellIndex)
+        End If
+        NpcList(NpcIndex).Spells(SpellIndex).LastUse = GlobalFrameTime
+        TryCastAttackSpell = True
+    End If
+End Function
+
+Public Function TrySupportThenAttackSpells(ByVal NpcIndex As Integer) As Boolean
+    Dim AvailableSpellEffects As Long
+    AvailableSpellEffects = GetAvailableSpellEffects(NpcIndex)
+    With NpcList(NpcIndex)
+        If IsSet(.flags.StatusMask, eTaunted) Then
+            TrySupportThenAttackSpells = TryCastAttackSpell(NpcIndex, AvailableSpellEffects)
+            Exit Function
+        End If
+        TrySupportThenAttackSpells = TryCastHelpSpell(NpcIndex, AvailableSpellEffects)
+        If Not TrySupportThenAttackSpells Then
+            TrySupportThenAttackSpells = TryCastAttackSpell(NpcIndex, AvailableSpellEffects)
+        End If
+    End With
+End Function

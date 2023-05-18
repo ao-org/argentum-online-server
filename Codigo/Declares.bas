@@ -89,6 +89,7 @@ Public Enum e_InteractionResult
     eOposingFaction
     eCantHelpCriminal
     eCantHelpCriminalClanRules
+    eCantHelpUsers
 End Enum
 
 Public Enum e_AttackInteractionResult
@@ -152,49 +153,29 @@ Public Enum e_SoundIndex
 End Enum
 
 Public Md5Cliente           As String
-
 Public PrivateKey           As String
-
 Public HoraMundo            As Long
-
 Public HoraActual           As Integer
-
 Public UltimoChar           As String
-
 Public ExpMult              As Integer
-
 Public OroMult              As Integer
-
 Public DropMult             As Integer
-
 Public RecoleccionMult      As Double
-
 Public OroPorNivelBilletera As Long
-
 Public EventoExpMult        As Integer
-
 Public EventoOroMult        As Integer
-
 Public EstadoGlobal         As Boolean
-
 Public TimerLimpiarObjetos  As Byte
-
 Public DuracionDia          As Long
-
 Public OroPorNivel          As Integer
-
 Public DropActive           As Byte
-
 Public CuentaRegresivaTimer As Byte
 Public cuentaregresivaOrcos As Integer
-
 Public PENDIENTE            As Integer
-
 Public CostoPerdonPorCiudadano As Long
-
 Public MaximoSpeedHack      As Integer
-
 Public LastRecordUsuarios   As Integer
+Public GlobalFrameTime      As Long
 
 Type t_EstadisticasDiarias
 
@@ -979,7 +960,7 @@ Public Enum e_SpellEffects
     Curse = 128
     RemoveCurse = 256
     PreciseHit = 512
-    eFreeFlag = 1024 ' this flags is free to use with another value, old meaning was removed
+    eDoHeal = 1024
     Dumb = 2048
     Blindness = 4096
     Resurrect = 8192
@@ -988,6 +969,7 @@ Public Enum e_SpellEffects
     ToggleCleave = 65536
     RemoveDebuff = 131072
     StealBuff = 262144
+    eDoDamage = 524288
 End Enum
 
 Public Enum e_TargetEffectType
@@ -1047,7 +1029,6 @@ Public Type t_Hechizo
     FXgrh As Integer
     loops As Byte
     
-    SubeHP As Byte
     MinHp As Integer
     MaxHp As Integer
     
@@ -1901,7 +1882,7 @@ Public Type t_UserFlags
     SeguroResu As Boolean
 
     DuracionEfecto As Long
-    TargetNPC As t_NpcReference ' Npc señalado por el usuario
+    TargetNpc As t_NpcReference ' Npc señalado por el usuario
     TargetNpcTipo As e_NPCType ' Tipo del npc señalado
     NpcInv As Integer
     
@@ -2378,6 +2359,15 @@ Public Enum e_Inmunities
     eTranslation = 1
 End Enum
 
+Public Enum e_BehaviorFlags
+    eAttackUsers = 1
+    eAttackNpc = 2
+    eHelpUsers = 4
+    eHelpNpc = 8
+    eConsideredByMapAi = 16
+    eDisplayCastMessage = 32
+End Enum
+
 Public Type t_NPCFlags
 
     AfectaParalisis As Byte
@@ -2423,10 +2413,9 @@ Public Type t_NPCFlags
     Snd2 As Integer
     Snd3 As Integer
 
-    AtacaUsuarios As Boolean ' Si el NPC puede atacar usuarios
-    AtacaNPCs As Boolean     ' Si el NPC puede atacar otros NPC
+    BehaviorFlags As Long 'Use with e_BehaviorFlags mask
     AIAlineacion As e_Alineacion
-
+    Team As Byte
 End Type
 
 Public Type t_CriaturasEntrenador
@@ -2471,14 +2460,8 @@ Public Enum e_TipoAI
     SigueAmo = 8
     NpcAtacaNpc = 9
     GuardiaPersigueNpc = 10
-
-    'Pretorianos
-    SacerdotePretorianoAi = 11
-    GuerreroPretorianoAi = 12
-    MagoPretorianoAi = 13
-    CazadorPretorianoAi = 14
-    ReyPretoriano = 15
-
+    
+    SupportAndAttack = 11
     ' Animado
     Caminata = 20
     
@@ -2494,7 +2477,8 @@ End Enum
 
 Public Type t_NpcSpellEntry
     SpellIndex As Integer
-    LastUse As Integer
+    Cd As Byte
+    LastUse As Long
 End Type
 
 Public Type t_Npc
@@ -2573,7 +2557,7 @@ Public Type t_Npc
     NroExpresiones As Byte
     Expresiones() As String ' le da vida ;)
     
-    NroSpells As Byte
+    SpellRange As Byte
     Spells() As t_NpcSpellEntry  ' le da vida ;)
     
     ' Entrenadores

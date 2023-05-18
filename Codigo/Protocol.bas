@@ -2866,7 +2866,10 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
                 Exit Sub
 
             End If
-
+            If UserList(UserIndex).flags.SigueUsuario.ArrayIndex > 0 Then
+                Call WriteConsoleMsg(UserIndex, "No podes tirar items cuando estas siguiendo a alguien.", e_FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
             'Are we dropping gold or other items??
 122         If Slot = FLAGORO Then
                 If amount > 100000 Then amount = 100000

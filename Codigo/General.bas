@@ -765,9 +765,9 @@ Sub Main()
         
             
         While (True)
+            GlobalFrameTime = GetTickCount()
             Dim PerformanceTimer As Long
             Call PerformanceTestStart(PerformanceTimer)
-            
 #If PYMMO = 1 Then
             Call modNetwork.close_not_logged_sockets_if_timeout
 #End If

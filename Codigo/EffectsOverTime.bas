@@ -460,7 +460,7 @@ On Error GoTo FindEffectOnTarget_Err
                             Exit Function
                         End If
 150                 ElseIf EffectList.EffectList(i).CasterRefType = eNpc Then
-152                     If EffectList.EffectList(i).CasterIsValid Then
+152                     If EffectList.EffectList(i).CasterIsValid And EffectList.EffectList(i).CasterArrayIndex = CasterIndex Then
 154                         Set FindEffectOnTarget = EffectList.EffectList(i)
                             Exit Function
                         End If
