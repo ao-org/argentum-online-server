@@ -1,4 +1,4 @@
-## Por favor considera apoyarnos en [https://www.patreon.com/nolandstudios](https://www.patreon.com/nolandstudios)
+## ⚔️ Por favor considera apoyarnos en [https://www.patreon.com/nolandstudios](https://www.patreon.com/nolandstudios)
 
 ![ao20 logo](https://www.ao20.com.ar/_nuxt/img/ao20_logo_sm.d4333ec.png)
 
