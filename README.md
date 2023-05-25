@@ -2,7 +2,7 @@
 
 ![ao20 logo](https://www.ao20.com.ar/_nuxt/img/ao20_logo_sm.d4333ec.png)
 
-Cómo correr mi server:
+## 🛡️ Cómo correr mi server:
 Crear una nueva carpeta llamada AO20 y entrar a la misma, en ella seguir lo siguientes pasos:
 
 1. Clonar `argentum20-server`
