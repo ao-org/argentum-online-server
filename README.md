@@ -2,7 +2,7 @@
 
 ![ao20 logo](https://www.ao20.com.ar/_nuxt/img/ao20_logo_sm.d4333ec.png)
 
-## 🛡️ Cómo correr mi server:
+# 🛡️ Cómo correr mi server:
 Crear una nueva carpeta llamada AO20 y entrar a la misma, en ella seguir lo siguientes pasos:
 
 1. Clonar `argentum20-server`
@@ -26,7 +26,7 @@ Código fuente del servidor de Argentum20
 
 ![image](https://i.ibb.co/gFDn3SG/AO20-drawio-2.png)
 
-# Requisitos
+# 🛡️ Requisitos
 
 ## Database
 - [http://www.ch-werner.de/sqliteodbc/](http://www.ch-werner.de/sqliteodbc/)
@@ -48,5 +48,5 @@ Please note this is not free software and you will have to buy your own license 
 ## Microsoft Visual C++ Redistributable
 - [https://docs.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170](https://docs.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170)
 
-# Logs
+# 🛡️ Logs
 Los logs están en la carpeta de Logs, Errores y en Windows Events.
