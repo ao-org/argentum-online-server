@@ -2,6 +2,9 @@
 
 ![ao20 logo](https://www.ao20.com.ar/_nuxt/img/ao20_logo_sm.d4333ec.png)
 
+# 🛡️ Server AO20
+Código fuente del servidor de Argentum20
+
 # 🛡️ Cómo correr mi server:
 Crear una nueva carpeta llamada `C:\AO20` y entrar a la misma, en ella seguir lo siguientes pasos:
 
@@ -20,11 +23,6 @@ Crear una nueva carpeta llamada `C:\AO20` y entrar a la misma, en ella seguir lo
 # 🛡️ Pull Requests
 
 Before make a `git commit` please run the file `git_ignore_case.sh` to avoid false changes in the PR.
-
-# 🛡️ Server AO20
-Código fuente del servidor de Argentum20
-
-![image](https://i.ibb.co/gFDn3SG/AO20-drawio-2.png)
 
 # 🛡️ Requisitos
 
