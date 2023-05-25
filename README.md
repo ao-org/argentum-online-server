@@ -5,7 +5,7 @@
 # 🛡️ Cómo correr mi server:
 Crear una nueva carpeta llamada AO20 y entrar a la misma, en ella seguir lo siguientes pasos:
 
-1. Clonar `argentum20-server`
+1. Clonar repositorio `git clone https://github.com/ao-org/argentum20-server.git`
 
 2. Renombrar carpeta `argentum20-server` a `re20-server`.
 
