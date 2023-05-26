@@ -28,6 +28,11 @@ Public Enum e_TeamTypes
     eRandom
 End Enum
 
+Public Enum e_SortType
+    eFixedTeamSize
+    eFixedTeamCount
+End Enum
+
 Type t_Lobby
     MinLevel As Byte
     MaxLevel As Byte
@@ -43,6 +48,7 @@ Type t_Lobby
     TeamSize As Integer
     IsPublic As Boolean
     TeamType As e_TeamTypes
+    SortType As e_SortType
     TeamSortDone As Boolean
     NextTeamId As Integer
 End Type
@@ -57,6 +63,7 @@ Public Enum e_EventType
     CaptureTheFlag = 1
     NpcHunt = 2
     DeathMatch = 3
+    NavalBattle = 4
 End Enum
 
 Public Enum e_LobbyCommandId
@@ -188,29 +195,32 @@ End Function
 
 Public Function AddPlayer(ByRef instance As t_Lobby, ByVal UserIndex As Integer, Optional Team As Integer = 0) As t_response
 On Error GoTo AddPlayer_Err
-100    With UserList(UserIndex)
-150        AddPlayer = CanPlayerJoin(instance, UserIndex)
-152        If Not AddPlayer.Success Then
-154            Exit Function
-156        End If
-162        Dim playerPos As Integer: playerPos = instance.RegisteredPlayers
-164        Call SetUserRef(instance.Players(playerPos).user, UserIndex)
-165        instance.Players(playerPos).UserId = UserList(UserIndex).ID
-166        instance.Players(playerPos).IsSummoned = False
-168        instance.Players(playerPos).Connected = True
-170        UserList(UserIndex).flags.CurrentTeam = Team
-172        instance.Players(playerPos).ReturnOnReconnect = False
-173        instance.Players(playerPos).Team = Team
-174        instance.RegisteredPlayers = instance.RegisteredPlayers + 1
-176        AddPlayer.Message = JoinSuccessMessage
-178        AddPlayer.Success = True
-180        If instance.SummonAfterInscription Then
-182            Call SummonPlayer(instance, playerPos)
-184        End If
-186    End With
-188    Exit Function
+   With UserList(UserIndex)
+       AddPlayer = CanPlayerJoin(instance, UserIndex)
+       If Not AddPlayer.Success Then
+           Exit Function
+       End If
+       Dim playerPos As Integer: playerPos = instance.RegisteredPlayers
+       Call SetUserRef(instance.Players(playerPos).user, UserIndex)
+       instance.Players(playerPos).userID = UserList(UserIndex).id
+       instance.Players(playerPos).IsSummoned = False
+       instance.Players(playerPos).Connected = True
+       UserList(UserIndex).flags.CurrentTeam = team
+       instance.Players(playerPos).ReturnOnReconnect = False
+       instance.Players(playerPos).team = team
+       instance.RegisteredPlayers = instance.RegisteredPlayers + 1
+       AddPlayer.Message = JoinSuccessMessage
+       AddPlayer.Success = True
+       If Not instance.Scenario Is Nothing Then
+           Call instance.Scenario.SendRules(UserIndex)
+       End If
+       If instance.SummonAfterInscription Then
+           Call SummonPlayer(instance, playerPos)
+       End If
+   End With
+   Exit Function
 AddPlayer_Err:
-190    Call TraceError(Err.Number, Err.Description, "ModLobby.AddPlayer", Erl)
+   Call TraceError(Err.Number, Err.Description, "ModLobby.AddPlayer", Erl)
 End Function
 
 Public Function AddPlayerOrGroup(ByRef instance As t_Lobby, ByVal UserIndex As Integer) As t_response
@@ -287,12 +297,12 @@ End Sub
 Public Sub SummonAll(ByRef instance As t_Lobby)
 On Error GoTo ReturnAllPlayer_Err
 100    Dim i As Integer
-102    For i = 0 To instance.RegisteredPlayers
+102    For i = 0 To instance.RegisteredPlayers - 1
 104        Call SummonPlayer(instance, i)
 106    Next i
 108    Exit Sub
 ReturnAllPlayer_Err:
-110     Call TraceError(Err.Number, Err.Description, "ModLobby.ReturnAllPlayer", Erl)
+110     Call TraceError(Err.Number, Err.Description, "ModLobby.SummonAll", Erl)
 End Sub
 
 Public Sub ReturnPlayer(ByRef instance As t_Lobby, ByVal user As Integer)
@@ -350,28 +360,38 @@ ListPlayers_Err:
 116    Call TraceError(Err.Number, Err.Description, "ModLobby.ListPlayers", Erl)
 End Sub
 
-Public Function OpenLobby(ByRef instance As t_Lobby, ByVal IsPublic As Boolean) As t_response
+Public Function OpenLobby(ByRef instance As t_Lobby, ByVal IsPublic As Boolean, ByVal UserIndex As Integer) As t_response
 On Error GoTo OpenLobby_Err
-       Dim Ret As t_response
-       Dim RequiresSpawn As Boolean
-100        If Not instance.Scenario Is Nothing Then
-102            RequiresSpawn = instance.Scenario.RequiresSpawn
-104        End If
-106        RequiresSpawn = RequiresSpawn Or instance.SummonCoordinates.map > 0
-108        If RequiresSpawn Then
-110            Ret.Success = False
-112            Ret.Message = 400
-               OpenLobby = Ret
-114            Exit Function
-116        End If
-117        instance.IsPublic = IsPublic
-118        Call UpdateLobbyState(instance, AcceptingPlayers)
-120        Ret.Message = 401
-124        Ret.Success = True
-           OpenLobby = Ret
-126    Exit Function
+    Dim Ret As t_response
+    Dim RequiresSpawn As Boolean
+    If Not instance.Scenario Is Nothing Then
+        RequiresSpawn = instance.Scenario.RequiresSpawn
+    End If
+    RequiresSpawn = RequiresSpawn Or instance.SummonCoordinates.Map > 0
+    If RequiresSpawn Then
+        Ret.Success = False
+        Ret.Message = 400
+        OpenLobby = Ret
+        Exit Function
+    End If
+    instance.IsPublic = IsPublic
+    Call UpdateLobbyState(instance, AcceptingPlayers)
+    If IsPublic Then
+        Dim EventName As String: EventName = "Evento"
+        If Not instance.Scenario Is Nothing Then
+             EventName = instance.Scenario.GetScenarioName()
+        End If
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MsgCreateEventRoom, UserList(UserIndex).name & "¬" & EventName, e_FontTypeNames.FONTTYPE_GUILD))
+        If Not instance.Scenario Is Nothing Then
+             Call instance.Scenario.BroadcastOpenScenario(UserIndex)
+        End If
+    End If
+    Ret.Message = 401
+    Ret.Success = True
+    OpenLobby = Ret
+   Exit Function
 OpenLobby_Err:
-128     Call TraceError(Err.Number, Err.Description, "ModLobby.OpenLobby", Erl)
+    Call TraceError(Err.Number, Err.Description, "ModLobby.OpenLobby", Erl)
 End Function
 
 Public Sub ForceReset(ByRef instance As t_Lobby)
@@ -406,13 +426,14 @@ On Error GoTo RegisterDisconnectedUser_Err
 108    For i = 0 To instance.RegisteredPlayers - 1
 110        If instance.Players(i).User.ArrayIndex = DisconnectedUserIndex And IsValidUserRef(instance.Players(i).User) Then
 112            instance.Players(i).connected = False
-114            If instance.Players(i).IsSummoned Then
-116                instance.Players(i).ReturnOnReconnect = True
-118                Call ReturnPlayer(instance, i)
-120            End If
-122            If Not instance.scenario Is Nothing Then
-124                instance.scenario.OnUserDisconnected (DisconnectedUserIndex)
+114            If Not instance.Scenario Is Nothing Then
+116                instance.Scenario.OnUserDisconnected (DisconnectedUserIndex)
+118            End If
+120            If instance.Players(i).IsSummoned Then
+122                instance.Players(i).ReturnOnReconnect = True
+124                Call ReturnPlayer(instance, i)
 126            End If
+
 128            Exit Sub
 130        End If
 132    Next i
@@ -466,8 +487,35 @@ On Error GoTo SetTeamSize_Err
 126 response.Message = MsgTeamConfigSuccess
 128 instance.TeamSize = TeamSize
 130 instance.TeamType = TeamType
+    instance.SortType = eFixedTeamSize
 132 response.Success = True
 134 SetTeamSize = response
+    Exit Function
+SetTeamSize_Err:
+140     Call TraceError(Err.Number, Err.Description, "ModLobby.SetTeamSize", Erl)
+End Function
+
+Public Function SetTeamCount(ByRef instance As t_Lobby, ByVal TeamCount As Integer, ByVal TeamType As e_TeamTypes) As t_response
+On Error GoTo SetTeamSize_Err
+100 Dim response As t_response
+102 If instance.MaxPlayers Mod TeamCount <> 0 Then
+104     response.Success = False
+106     response.Message = MsgInvalidGroupCount
+108     SetTeamCount = response
+110     Exit Function
+112 End If
+114 If instance.State <> Initialized Then
+116     reponse.Success = False
+118     response.Message = MsgCantChangeGroupSizeNow
+120     SetTeamCount = response
+122     Exit Function
+124 End If
+126 response.Message = MsgTeamConfigSuccess
+128 instance.TeamSize = instance.MaxPlayers / TeamCount
+130 instance.TeamType = TeamType
+    instance.SortType = eFixedTeamCount
+132 response.Success = True
+134 SetTeamCount = response
     Exit Function
 SetTeamSize_Err:
 140     Call TraceError(Err.Number, Err.Description, "ModLobby.SetTeamSize", Erl)
@@ -509,10 +557,7 @@ On Error GoTo HandleRemoteLobbyCommand_Err
              Case e_LobbyCommandId.eSetMinLevel
 144              Call ModLobby.SetMinLevel(GenericGlobalLobby, Arguments(0))
              Case e_LobbyCommandId.eOpenLobby
-148             RetValue = ModLobby.OpenLobby(GenericGlobalLobby, Arguments(0))
-150             If Arguments(0) And RetValue.Success Then
-152                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(.name & " creó un nuevo evento, para participar ingresá /participar", e_FontTypeNames.FONTTYPE_GUILD))
-154             End If
+148             RetValue = ModLobby.OpenLobby(GenericGlobalLobby, Arguments(0), UserIndex)
             Case e_LobbyCommandId.eStartEvent
 158             Call StartLobby(GenericGlobalLobby, UserIndex)
             Case e_LobbyCommandId.eSummonAll
@@ -579,8 +624,13 @@ On Error GoTo SortTeams_Err
 104 Dim TeamCount As Integer
 106 Dim MaxPossiblePlayers As Integer
 108 TeamCount = instance.MaxPlayers / instance.TeamSize
-110 MaxPossiblePlayers = (instance.RegisteredPlayers / instance.TeamSize)
-112 MaxPossiblePlayers = MaxPossiblePlayers * instance.TeamSize
+    If instance.SortType = eFixedTeamSize Then
+110     MaxPossiblePlayers = (instance.RegisteredPlayers / instance.TeamSize)
+112     MaxPossiblePlayers = MaxPossiblePlayers * instance.TeamSize
+    Else
+        MaxPossiblePlayers = instance.RegisteredPlayers / TeamCount
+        MaxPossiblePlayers = MaxPossiblePlayers * TeamCount
+    End If
 114 Dim i As Integer
 116 For i = instance.RegisteredPlayers - 1 To MaxPossiblePlayers Step -1
 118     If IsValidUserRef(instance.Players(i).user) Then

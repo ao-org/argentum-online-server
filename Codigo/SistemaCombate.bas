@@ -780,6 +780,25 @@ NpcDamageNpc_Err:
     Call TraceError(Err.Number, Err.Description, "SistemaCombate.NpcDamageNpc")
 End Function
 
+Public Function NpcPerformAttackNpc(ByVal AttackerIndex As Integer, ByVal TargetIndex As Integer) As Boolean
+    If NpcList(AttackerIndex).flags.Snd1 > 0 Then
+        Call SendData(SendTarget.ToNPCAliveArea, AttackerIndex, PrepareMessagePlayWave(NpcList(AttackerIndex).flags.Snd1, NpcList(AttackerIndex).pos.x, NpcList(AttackerIndex).pos.y))
+    End If
+    If NpcImpactoNpc(AttackerIndex, TargetIndex) Then
+        
+        If NpcList(AttackerIndex).flags.Snd2 > 0 Then
+            Call SendData(SendTarget.ToNPCAliveArea, TargetIndex, PrepareMessagePlayWave(NpcList(TargetIndex).flags.Snd2, NpcList(TargetIndex).pos.x, NpcList(TargetIndex).pos.y))
+        Else
+            Call SendData(SendTarget.ToNPCAliveArea, TargetIndex, PrepareMessagePlayWave(SND_IMPACTO2, NpcList(TargetIndex).pos.x, NpcList(TargetIndex).pos.y))
+        End If
+    
+        Call SendData(SendTarget.ToNPCAliveArea, TargetIndex, PrepareMessagePlayWave(SND_IMPACTO, NpcList(TargetIndex).pos.x, NpcList(TargetIndex).pos.y))
+        Call NpcDamageNpc(AttackerIndex, TargetIndex)
+    Else
+        Call SendData(SendTarget.ToNPCAliveArea, AttackerIndex, PrepareMessageCharSwing(NpcList(AttackerIndex).Char.charindex, False, True))
+    End If
+End Function
+
 Public Sub NpcAtacaNpc(ByVal Atacante As Integer, ByVal Victima As Integer, Optional ByVal cambiarMovimiento As Boolean = True)
         
         On Error GoTo NpcAtacaNpc_Err
@@ -810,24 +829,7 @@ Public Sub NpcAtacaNpc(ByVal Atacante As Integer, ByVal Victima As Integer, Opti
 114         Call SendData(SendTarget.ToNPCAliveArea, Atacante, PrepareMessagePlayWave(NpcList(Atacante).flags.Snd1, NpcList(Atacante).Pos.X, NpcList(Atacante).Pos.y))
         End If
 
-116     If NpcImpactoNpc(Atacante, Victima) Then
-    
-118         If NpcList(Victima).flags.Snd2 > 0 Then
-120             Call SendData(SendTarget.ToNPCAliveArea, Victima, PrepareMessagePlayWave(NpcList(Victima).flags.Snd2, NpcList(Victima).Pos.X, NpcList(Victima).Pos.y))
-            Else
-122             Call SendData(SendTarget.ToNPCAliveArea, Victima, PrepareMessagePlayWave(SND_IMPACTO2, NpcList(Victima).Pos.X, NpcList(Victima).Pos.y))
-
-            End If
-
-124         Call SendData(SendTarget.ToNPCAliveArea, Victima, PrepareMessagePlayWave(SND_IMPACTO, NpcList(Victima).Pos.X, NpcList(Victima).Pos.y))
-    
-126         Call NpcDamageNpc(Atacante, Victima)
-    
-        Else
-128         Call SendData(SendTarget.ToNPCAliveArea, Atacante, PrepareMessageCharSwing(NpcList(Atacante).Char.charindex, False, True))
-
-        End If
-
+        Call NpcPerformAttackNpc(Atacante, Victima)
         
         Exit Sub
 
@@ -1498,7 +1500,7 @@ Public Function PuedeAtacar(ByVal AttackerIndex As Integer, ByVal VictimIndex As
         
 106     If UserList(AttackerIndex).flags.EnReto Then
 108         If Retos.Salas(UserList(AttackerIndex).flags.SalaReto).TiempoItems > 0 Then
-110             Call WriteConsoleMsg(attackerIndex, "No podés atacar en este momento.", e_FontTypeNames.FONTTYPE_INFO)
+110             Call WriteConsoleMsg(AttackerIndex, "No podés atacar en este momento.", e_FontTypeNames.FONTTYPE_INFO)
 112             PuedeAtacar = False
                 Exit Function
             End If
@@ -1513,14 +1515,14 @@ Public Function PuedeAtacar(ByVal AttackerIndex As Integer, ByVal VictimIndex As
         
         If UserList(AttackerIndex).Grupo.Id > 0 And UserList(VictimIndex).Grupo.Id > 0 And _
            UserList(AttackerIndex).Grupo.Id = UserList(VictimIndex).Grupo.Id Then
-           Call WriteConsoleMsg(attackerIndex, "No podés atacar a un miembro de tu grupo.", e_FontTypeNames.FONTTYPE_INFO)
+           Call WriteConsoleMsg(AttackerIndex, "No podés atacar a un miembro de tu grupo.", e_FontTypeNames.FONTTYPE_INFO)
            PuedeAtacar = False
            Exit Function
         End If
         
         ' No podes atacar si estas en consulta
 120     If UserList(AttackerIndex).flags.EnConsulta Then
-122         Call WriteConsoleMsg(attackerIndex, "No podés atacar usuarios mientras estás en consulta.", e_FontTypeNames.FONTTYPE_INFO)
+122         Call WriteConsoleMsg(AttackerIndex, "No podés atacar usuarios mientras estás en consulta.", e_FontTypeNames.FONTTYPE_INFO)
 124         PuedeAtacar = False
             Exit Function
     
@@ -1609,7 +1611,7 @@ Public Function PuedeAtacar(ByVal AttackerIndex As Integer, ByVal VictimIndex As
         If esArmada(AttackerIndex) Then
             ' Si ataca otro armada
             If esArmada(VictimIndex) Then
-                Call WriteConsoleMsg(attackerIndex, "Los miembros del Ejercito Real tienen prohibido atacarse entre sí.", e_FontTypeNames.FONTTYPE_WARNING)
+                Call WriteConsoleMsg(AttackerIndex, "Los miembros del Ejercito Real tienen prohibido atacarse entre sí.", e_FontTypeNames.FONTTYPE_WARNING)
                 PuedeAtacar = False
                 Exit Function
             ' Si ataca un ciudadano

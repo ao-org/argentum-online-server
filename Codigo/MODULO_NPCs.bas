@@ -1953,6 +1953,7 @@ On Error GoTo DoDamageOrHeal_Err
         End If
 100     If NPCs.ModifyHealth(npcIndex, amount) Then
             DoDamageOrHeal = eDead
+            CustomScenarios.NpcDie (NpcIndex)
 102         If SourceType = eUser Then
 244             Call CustomScenarios.PlayerKillNpc(.pos.map, npcIndex, SourceIndex, DamageSourceType, DamageSourceIndex)
                 Call MuereNpc(npcIndex, SourceIndex)
@@ -2043,6 +2044,12 @@ On Error GoTo UserCanAttackNpc_Err
         End If
      End If
      
+     If UserList(UserIndex).flags.CurrentTeam <> 0 Then
+        If UserList(UserIndex).flags.CurrentTeam = NpcList(NpcIndex).flags.Team Then
+            UserCanAttackNpc = eSameTeam
+            Exit Function
+        End If
+     End If
      ' El seguro es SOLO para ciudadanos. La armada debe desenlistarse antes de querer atacar y se checkea arriba.
      ' Los criminales o Caos, ya estan mas alla del seguro.
 164  If Status(UserIndex) = Ciudadano Then
@@ -2152,6 +2159,12 @@ Public Function CanAttackUser(ByVal NpcIndex As Integer, ByVal UserIndex As Inte
             CanAttackUser = eSameFaction
             Exit Function
         End If
+        If .flags.Team <> 0 Then
+            If .flags.Team = UserList(UserIndex).flags.CurrentTeam Then
+                CanAttackUser = eSameTeam
+                Exit Function
+            End If
+        End If
     End With
     CanAttackUser = eCanAttack
 End Function
@@ -2191,6 +2204,7 @@ Public Function CanHelpNpc(ByVal NpcIndex As Integer, ByVal TargetNpc As Integer
         Exit Function
     End If
 End Function
+
 Public Function CanAttackNpc(ByVal NpcIndex As Integer, ByVal TargetIndex As Integer) As e_AttackInteractionResult
 
     If NpcIndex = TargetIndex Then

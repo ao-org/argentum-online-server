@@ -1027,7 +1027,7 @@ Public Sub EfectoFrio(ByVal UserIndex As Integer)
 126                 Damage = Porcentaje(.Stats.MaxHp, RandomNumber(MinDamage, MaxDamage))
 128                 If UserMod.ModifyHealth(UserIndex, -Damage, 0) Then
 132                     Call WriteConsoleMsg(UserIndex, "¡Has muerto de frío!", e_FontTypeNames.FONTTYPE_INFO)
-134                     Call UserDie(UserIndex)
+134                     Call UserMod.UserDie(UserIndex)
                     End If
                 End If
 138             .Counters.Frio = 0
@@ -1095,7 +1095,8 @@ Public Sub EfectoLava(ByVal UserIndex As Integer)
 108                 Call WriteConsoleMsg(UserIndex, "¡Quítate de la lava, te estás quemando!", e_FontTypeNames.FONTTYPE_INFO)
 110                 If UserMod.ModifyHealth(UserIndex, -Porcentaje(.Stats.MaxHp, 5)) Then
 114                     Call WriteConsoleMsg(UserIndex, "¡Has muerto quemado!", e_FontTypeNames.FONTTYPE_INFO)
-116                     Call UserDie(UserIndex)
+                        Call CustomScenarios.UserDie(UserIndex)
+116                     Call UserMod.UserDie(UserIndex)
                     End If
                 End If
 120             .Counters.Lava = 0
@@ -1521,7 +1522,8 @@ Public Sub EfectoVeneno(ByVal UserIndex As Integer)
 122               Call WriteLocaleMsg(UserIndex, "390", e_FontTypeNames.FONTTYPE_FIGHT, PonerPuntos(damage))
               End If
 1224           If UserMod.ModifyHealth(UserIndex, -Damage) Then
-126               Call UserDie(UserIndex)
+                  Call CustomScenarios.UserDie(UserIndex)
+126               Call UserMod.UserDie(UserIndex)
               End If
             End With
         End If
@@ -1547,7 +1549,8 @@ Public Sub EfectoIncineramiento(ByVal UserIndex As Integer)
 114                     Call WriteLocaleMsg(UserIndex, "391", e_FontTypeNames.FONTTYPE_FIGHT, PonerPuntos(damage))
                     End If
 110                 If UserMod.ModifyHealth(UserIndex, -Damage) Then
-                        Call UserDie(UserIndex)
+                        Call CustomScenarios.UserDie(UserIndex)
+                        Call UserMod.UserDie(UserIndex)
                     End If
                 End If
 122             .Counters.Incineracion = .Counters.Incineracion + 1

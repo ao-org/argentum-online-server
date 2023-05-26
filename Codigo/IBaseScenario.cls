@@ -13,6 +13,17 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 Option Explicit
 
+Public Function GetScenarioName() As String
+End Function
+Public Sub BroadcastOpenScenario(ByVal CreatorIndex As Integer)
+End Sub
+
+Public Sub SendRules(ByVal UserIndex As Integer)
+End Sub
+
+Public Function GetExtraInterfaces() As Long
+End Function
+
 Public Sub Reset()
     'empty interface
 End Sub
@@ -45,6 +56,14 @@ Public Sub PlayerKillPlayer(ByVal killerIndex As Integer, ByVal deadIndex As Int
     'empty interface
 End Sub
 
+Public Sub NpcDie(ByVal NpcIndex)
+
+End Sub
+
+Public Sub UserDie(ByVal UserIndex)
+
+End Sub
+
 Public Sub Update()
     'empty interface
 End Sub
@@ -57,6 +76,7 @@ Public Sub OnUserReconnect(ByVal userIndex As Integer)
 
 End Sub
 
+Public Sub GetNextWaypointForNpc(ByVal NpcIndex As Integer, ByRef PosX As Integer, ByRef PosY As Integer)
 
-
+End Sub
 

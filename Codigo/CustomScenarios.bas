@@ -9,6 +9,10 @@ Public Enum e_DamageSourceType
     e_trap
 End Enum
 
+Public Enum e_ScenarioInterfaces
+    eInventoryInterface = 1
+End Enum
+
 Public Type e_Rank
     PlayerIndex As Integer
     Score As Integer
@@ -125,6 +129,108 @@ PlayerKillPlayer_Err:
     Call TraceError(Err.Number, Err.Description, "CustomScenarios.PlayerKillPlayer", Erl)
 End Sub
 
+Public Sub UserDie(ByVal UserIndex As Integer)
+On Error GoTo UserDie_Err:
+    Dim Scenario As IBaseScenario
+    Set Scenario = GetMap(UserList(UserIndex).pos.Map)
+    If Scenario Is Nothing Then
+        Exit Sub
+    End If
+    Call Scenario.UserDie(UserIndex)
+    Exit Sub
+UserDie_Err:
+    Call TraceError(Err.Number, Err.Description, "CustomScenarios.UserDie", Erl)
+End Sub
+
+Public Sub NpcDie(ByVal NpcIndex As Integer)
+On Error GoTo NpcDie_Err:
+    Dim Scenario As IBaseScenario
+    Set Scenario = GetMap(NpcList(NpcIndex).pos.Map)
+    If Scenario Is Nothing Then
+        Exit Sub
+    End If
+    Call Scenario.NpcDie(NpcIndex)
+    Exit Sub
+NpcDie_Err:
+    Call TraceError(Err.Number, Err.Description, "CustomScenarios.NpcDie", Erl)
+End Sub
+
+'inform that user want to pickup an item, return false if user can't pick up item at pos
+Public Function UserCanPickUpItem(ByVal UserIndex As Integer) As Boolean
+  On Error GoTo UserPickUpItem_Err:
+    UserCanPickUpItem = True
+    Dim Scenario As IBaseScenario
+    Dim InventoryInterface As IInventoryInterface
+    Set Scenario = GetMap(UserList(UserIndex).pos.Map)
+    If Scenario Is Nothing Then
+        Exit Function
+    End If
+    If Not IsSet(Scenario.GetExtraInterfaces(), eInventoryInterface) Then
+        Exit Function
+    End If
+    Set InventoryInterface = Scenario
+    UserCanPickUpItem = InventoryInterface.UserCanPickUpItem(UserIndex)
+    Exit Function
+UserPickUpItem_Err:
+    Call TraceError(Err.Number, Err.Description, "CustomScenarios.UserCanPickUpItem", Erl)
+End Function
+
+Public Sub UserDidPickupItem(ByVal UserIndex As Integer, ByVal ItemId As Integer)
+On Error GoTo UserDidPickupItem_Err:
+    Dim Scenario As IBaseScenario
+    Dim InventoryInterface As IInventoryInterface
+    Set Scenario = GetMap(UserList(UserIndex).pos.Map)
+    If Scenario Is Nothing Then
+        Exit Sub
+    End If
+    If Not IsSet(Scenario.GetExtraInterfaces(), eInventoryInterface) Then
+        Exit Sub
+    End If
+    Set InventoryInterface = Scenario
+    Call InventoryInterface.UserDidPickupItem(UserIndex, ItemId)
+    Exit Sub
+UserDidPickupItem_Err:
+    Call TraceError(Err.Number, Err.Description, "CustomScenarios.UserDidPickupItem", Erl)
+End Sub
+
+'inform that user want to drop an item
+Public Sub UserDropItem(ByVal UserIndex As Integer, ByVal Slot As Integer, ByVal Map As Integer, ByVal TileX As Integer, ByVal TileY As Integer)
+  On Error GoTo UserDropItem_Err:
+    Dim Scenario As IBaseScenario
+    Dim InventoryInterface As IInventoryInterface
+    Set Scenario = GetMap(Map)
+    If Scenario Is Nothing Then
+        Exit Sub
+    End If
+    If Not IsSet(Scenario.GetExtraInterfaces(), eInventoryInterface) Then
+        Exit Sub
+    End If
+    Set InventoryInterface = Scenario
+    Call InventoryInterface.UserDropItem(UserIndex, Slot, Map, TileX, TileY)
+    Exit Sub
+UserDropItem_Err:
+    Call TraceError(Err.Number, Err.Description, "CustomScenarios.UserDropItem", Erl)
+End Sub
+
+Public Function UserCanDropItem(ByVal UserIndex As Integer, ByVal Slot As Integer, ByVal Map As Integer, ByVal TileX As Integer, ByVal TileY As Integer) As Boolean
+  On Error GoTo UserCanDropItem_Err:
+    UserCanDropItem = True
+    Dim Scenario As IBaseScenario
+    Dim InventoryInterface As IInventoryInterface
+    Set Scenario = GetMap(Map)
+    If Scenario Is Nothing Then
+        Exit Function
+    End If
+    If Not IsSet(Scenario.GetExtraInterfaces(), eInventoryInterface) Then
+        Exit Function
+    End If
+    Set InventoryInterface = Scenario
+    UserCanDropItem = InventoryInterface.UserCanDropItemAt(UserIndex, Slot, Map, TileX, TileY)
+    Exit Function
+UserCanDropItem_Err:
+    Call TraceError(Err.Number, Err.Description, "CustomScenarios.UserCanDropItem", Erl)
+End Function
+
 Public Sub PrepareNewEvent(ByVal eventType As e_EventType)
 On Error GoTo PrepareNewEvent_Err:
     Select Case EventType
@@ -132,6 +238,8 @@ On Error GoTo PrepareNewEvent_Err:
             Set GenericGlobalLobby.scenario = New ScenarioHunt
         Case e_EventType.DeathMatch
             Set GenericGlobalLobby.scenario = New ScenarioDeathMatch
+        Case e_EventType.NavalBattle
+            Set GenericGlobalLobby.Scenario = New NavalBoarding
     End Select
     Exit Sub
 PrepareNewEvent_Err:
@@ -172,4 +280,14 @@ End Sub
 
 Public Sub UserConnected(ByVal userIndex)
     Call RegisterReconnectedUser(GenericGlobalLobby, userIndex)
+End Sub
+
+Public Sub GetNextWaypointForNpc(ByVal NpcIndex As Integer, ByRef PosX As Integer, ByRef PosY As Integer)
+    Dim Scenario As IBaseScenario
+    Set Scenario = GetMap(NpcList(NpcIndex).pos.Map)
+    If Scenario Is Nothing Then
+        Exit Sub
+    End If
+    Call Scenario.GetNextWaypointForNpc(NpcIndex, PosX, PosY)
+    Exit Sub
 End Sub

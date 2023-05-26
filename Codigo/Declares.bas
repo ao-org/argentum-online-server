@@ -90,6 +90,7 @@ Public Enum e_InteractionResult
     eCantHelpCriminal
     eCantHelpCriminalClanRules
     eCantHelpUsers
+    eDifferentTeam
 End Enum
 
 Public Enum e_AttackInteractionResult
@@ -2462,6 +2463,13 @@ Public Enum e_TipoAI
     GuardiaPersigueNpc = 10
     
     SupportAndAttack = 11
+    
+    'Ships Bg
+    BGTankBehavior = 12
+    BGSupportBehavior = 13
+    BGRangedBehavior = 14
+    BGBossBehavior = 15
+    
     ' Animado
     Caminata = 20
     

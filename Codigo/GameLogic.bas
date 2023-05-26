@@ -542,7 +542,7 @@ InRangoVision_Err:
         
 End Function
 
-Function InRangoVisionNPC(ByVal NpcIndex As Integer, X As Integer, Y As Integer) As Boolean
+Function InRangoVisionNPC(ByVal NpcIndex As Integer, ByVal x As Integer, ByVal y As Integer) As Boolean
         
         On Error GoTo InRangoVisionNPC_Err
         

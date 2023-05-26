@@ -745,41 +745,29 @@ Sub ActStats(ByVal VictimIndex As Integer, ByVal AttackerIndex As Integer)
     
 102     If UserList(AttackerIndex).Stats.ELV < STAT_MAXELV Then
 104         UserList(AttackerIndex).Stats.Exp = UserList(AttackerIndex).Stats.Exp + DaExp
-
 106         If UserList(AttackerIndex).Stats.Exp > MAXEXP Then UserList(AttackerIndex).Stats.Exp = MAXEXP
 
 108         Call WriteUpdateExp(AttackerIndex)
 110         Call CheckUserLevel(AttackerIndex)
-
         End If
-    
-        'Lo mata
-        'Call WriteConsoleMsg(attackerIndex, "Has matado a " & UserList(VictimIndex).name & "!", e_FontTypeNames.FONTTYPE_FIGHT)
     
 112     Call WriteLocaleMsg(AttackerIndex, "184", e_FontTypeNames.FONTTYPE_FIGHT, UserList(VictimIndex).Name)
 114     Call WriteLocaleMsg(AttackerIndex, "140", e_FontTypeNames.FONTTYPE_EXP, DaExp)
-          
-        'Call WriteConsoleMsg(VictimIndex, UserList(attackerIndex).name & " te ha matado!", e_FontTypeNames.FONTTYPE_FIGHT)
 116     Call WriteLocaleMsg(VictimIndex, "185", e_FontTypeNames.FONTTYPE_FIGHT, UserList(AttackerIndex).Name)
     
 118     If Not PeleaSegura(VictimIndex, attackerIndex) Then
 120         EraCriminal = Status(AttackerIndex)
-        
 122         If EraCriminal = 2 And Status(AttackerIndex) < 2 Then
 124             Call RefreshCharStatus(AttackerIndex)
 126         ElseIf EraCriminal < 2 And Status(AttackerIndex) = 2 Then
 128             Call RefreshCharStatus(AttackerIndex)
-
             End If
-
         End If
     
-130     Call UserDie(VictimIndex)
-        
+130     Call UserMod.UserDie(VictimIndex)
 132     If UserList(AttackerIndex).Stats.UsuariosMatados < MAXUSERMATADOS Then
 134         UserList(AttackerIndex).Stats.UsuariosMatados = UserList(AttackerIndex).Stats.UsuariosMatados + 1
         End If
-        
         Exit Sub
 
 ActStats_Err:
@@ -3098,6 +3086,11 @@ End Function
 
 Public Function CanHelpUser(ByVal UserIndex As Integer, ByVal targetUserIndex As Integer) As e_InteractionResult
     CanHelpUser = eInteractionOk
+    If UserList(UserIndex).flags.CurrentTeam > 0 And _
+       UserList(UserIndex).flags.CurrentTeam <> UserList(TargetUserIndex).flags.CurrentTeam Then
+        CanHelpUser = eDifferentTeam
+        Exit Function
+    End If
     If PeleaSegura(UserIndex, TargetUserIndex) Then
         Exit Function
     End If
@@ -3374,6 +3367,7 @@ On Error GoTo DoDamageOrHeal_Err
         End If
 100     If ModifyHealth(UserIndex, amount) Then
             Call TargetWasDamaged(UserList(UserIndex).EffectOverTime, SourceIndex, SourceType, DamageSourceType)
+            Call CustomScenarios.UserDie(UserIndex)
 102         If SourceType = eUser Then
 244             Call ContarMuerte(UserIndex, sourceIndex)
                 Call PlayerKillPlayer(.pos.map, SourceIndex, UserIndex, DamageSourceType, DamageSourceIndex)
@@ -3391,7 +3385,7 @@ On Error GoTo DoDamageOrHeal_Err
 174                 NpcList(SourceIndex).flags.AttackedBy = vbNullString
 176                 Call SetUserRef(NpcList(SourceIndex).targetUser, 0)
                 End If
-                Call UserDie(UserIndex)
+                Call UserMod.UserDie(UserIndex)
             End If
             DoDamageOrHeal = eDead
             Exit Function

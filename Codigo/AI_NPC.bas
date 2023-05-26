@@ -50,7 +50,16 @@ Public Sub NpcAI(ByVal NpcIndex As Integer)
 
                 Case e_TipoAI.SupportAndAttack
                     Call AI_SupportAndAttackNpc(NpcIndex)
-
+                
+                Case e_TipoAI.BGTankBehavior
+                    Call AI_BgTankBehavior(NpcIndex)
+                Case e_TipoAI.BGSupportBehavior
+                    Call AI_BGSupportBehavior(NpcIndex)
+                Case e_TipoAI.BGRangedBehavior
+                    Call AI_BGRangedBehavior(NpcIndex)
+                Case e_TipoAI.BGBossBehavior
+                    Call AI_BGBossBehavior(NpcIndex)
+                    
 124             Case e_TipoAI.Caminata
 126                 Call HacerCaminata(NpcIndex)
 
@@ -196,12 +205,31 @@ Public Function SelectNearestUser(ByVal NpcIndex As Integer, ByRef NearestTarget
             UserIndex = ModAreas.ConnGroups(.pos.Map).UserEntrys(i)
             ' Find nearest user
             If UserMod.IsVisible(UserList(UserIndex)) And UserCanAttackNpc(UserIndex, NpcIndex) = eCanAttack And _
-                NPCs.CanAttackUser(NpcIndex, UserIndex) Then
+                NPCs.CanAttackUser(NpcIndex, UserIndex) = e_AttackInteractionResult.eCanAttack Then
                 Dim UserDistance As Double
                 UserDistance = Distance(UserList(UserIndex).pos.x, UserList(UserIndex).pos.y, .pos.x, .pos.y)
                 If SelectNearestUser = 0 Or UserDistance < NearestTargetDistance Then
                     SelectNearestUser = UserIndex
                     NearestTargetDistance = UserDistance
+                End If
+            End If
+        Next i
+    End With
+End Function
+
+Public Function SelectNearestNpc(ByVal NpcIndex, ByRef NearestTargetDistance As Single) As Integer
+    Dim i As Integer
+    Dim TargetIndex As Integer
+    With NpcList(NpcIndex)
+        For i = 0 To ModAreas.ConnGroups(.pos.Map).RegisteredNpc - 1
+            TargetIndex = ModAreas.ConnGroups(.pos.Map).NpcForAi(i)
+            ' Find nearest user
+            If NPCs.CanAttackNpc(NpcIndex, TargetIndex) = eCanAttack Then
+                Dim NpcDistance As Double
+                NpcDistance = Distance(NpcList(TargetIndex).pos.x, NpcList(TargetIndex).pos.y, .pos.x, .pos.y)
+                If NearestTargetDistance = 0 Or NpcDistance < NearestTargetDistance Then
+                    SelectNearestNpc = TargetIndex
+                    NearestTargetDistance = NpcDistance
                 End If
             End If
         Next i
@@ -582,6 +610,133 @@ Public Sub AI_SupportAndAttackNpc(ByVal NpcIndex As Integer)
         Exit Sub
 ErrorHandler:
 136     Call TraceError(Err.Number, Err.Description, "AIv2.AI_SupportAndAttackNpc", Erl)
+End Sub
+
+Public Sub AI_BgTankBehavior(ByVal NpcIndex As Integer)
+On Error GoTo ErrorHandler
+    With NpcList(NpcIndex)
+        Dim CurrentTarget As t_AnyReference
+        Dim NearestTarget As Integer
+        Dim NearestTargetDistance As Single
+        NearestTarget = SelectNearestUser(NpcIndex, NearestTargetDistance)
+        If NearestTarget > 0 Then Call SetRef(CurrentTarget, NearestTarget, eUser)
+        NearestTarget = SelectNearestNpc(NpcIndex, NearestTargetDistance)
+        If NearestTarget > 0 Then Call SetRef(CurrentTarget, NearestTarget, eNpc)
+        Dim TargetPos As t_WorldPos
+        TargetPos = ModReferenceUtils.GetPosition(CurrentTarget)
+        If IsValidRef(CurrentTarget) And InRangoVisionNPC(NpcIndex, TargetPos.x, TargetPos.y) Then
+            If CurrentTarget.RefType = eUser Then
+                Call SetUserRef(.targetUser, CurrentTarget.ArrayIndex)
+                AI_AtacarUsuarioObjetivo (NpcIndex)
+            Else
+                Call SetNpcRef(.TargetNPC, CurrentTarget.ArrayIndex)
+                AI_NpcAtacaNpc (NpcIndex)
+            End If
+        Else
+            Call AI_CaminarConRumbo(NpcIndex, GoToNextWp(NpcIndex))
+        End If
+    End With
+    Exit Sub
+ErrorHandler:
+    Call TraceError(Err.Number, Err.Description, "AIv2.AI_BgTankBehavior", Erl)
+End Sub
+
+Public Sub AI_BGSupportBehavior(ByVal NpcIndex As Integer)
+On Error GoTo ErrorHandler
+    With NpcList(NpcIndex)
+        If IntervaloPermiteLanzarHechizo(NpcIndex) Then
+            Call TrySupportThenAttackSpells(NpcIndex)
+        End If
+        Dim CurrentTarget As t_AnyReference
+        Dim NearestTarget As Integer
+        Dim NearestTargetDistance As Single
+        NearestTarget = SelectNearestUser(NpcIndex, NearestTargetDistance)
+        If NearestTarget > 0 Then Call SetRef(CurrentTarget, NearestTarget, eUser)
+        NearestTarget = SelectNearestNpc(NpcIndex, NearestTargetDistance)
+        If NearestTarget > 0 Then Call SetRef(CurrentTarget, NearestTarget, eNpc)
+        Dim TargetPos As t_WorldPos
+        TargetPos = ModReferenceUtils.GetPosition(CurrentTarget)
+        If NPCs.CanMove(.Contadores, .flags) Then
+            If CurrentTarget.ArrayIndex > 0 And NearestTargetDistance < .PreferedRange Then
+                Dim Direction As t_Vector
+                Dim TargetMapPos As t_WorldPos
+                Direction = GetDirection(.pos, TargetPos)
+                TargetMapPos = PreferedTileForDirection(Direction, .pos)
+                Call MoveNPCChar(NpcIndex, GetHeadingFromWorldPos(.pos, TargetMapPos))
+            Else
+                If IsValidRef(CurrentTarget) And InRangoVisionNPC(NpcIndex, TargetPos.x, TargetPos.y) Then
+                Else
+                    Call AI_CaminarConRumbo(NpcIndex, GoToNextWp(NpcIndex))
+                End If
+            End If
+        End If
+    End With
+    Exit Sub
+ErrorHandler:
+    Call TraceError(Err.Number, Err.Description, "AIv2.AI_BGSupportBehavior", Erl)
+End Sub
+
+Public Sub AI_BGRangedBehavior(ByVal NpcIndex As Integer)
+On Error GoTo ErrorHandler
+    With NpcList(NpcIndex)
+        Dim CurrentTarget As t_AnyReference
+        Dim NearestTarget As Integer
+        Dim NearestTargetDistance As Single
+        NearestTarget = SelectNearestUser(NpcIndex, NearestTargetDistance)
+        If NearestTarget > 0 Then Call SetRef(CurrentTarget, NearestTarget, eUser)
+        NearestTarget = SelectNearestNpc(NpcIndex, NearestTargetDistance)
+        If NearestTarget > 0 Then Call SetRef(CurrentTarget, NearestTarget, eNpc)
+        Dim TargetPos As t_WorldPos
+        TargetPos = ModReferenceUtils.GetPosition(CurrentTarget)
+        'perform attack
+        If CanPerformAttackAction(NpcIndex, .IntervaloAtaque) Then
+            If IsValidRef(CurrentTarget) And NPCs.CanAttack(.Contadores, .flags) Then
+                If Distance(.pos.x, .pos.y, TargetPos.x, TargetPos.y) <= .AttackRange Then
+                    If NpcCanAttack(NpcIndex, CurrentTarget) = eCanAttack Then
+                        If CurrentTarget.RefType = eUser Then
+                            Call NpcAtacaUser(NpcIndex, CurrentTarget.ArrayIndex, .Char.Heading)
+                        Else
+                            Call NpcPerformAttackNpc(NpcIndex, CurrentTarget.ArrayIndex)
+                        End If
+                        If .ProjectileType > 0 Then
+                            Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, _
+                                          PrepareCreateProjectile(.pos.x, .pos.y, TargetPos.x, TargetPos.y, .ProjectileType))
+                        End If
+                    End If
+                Else
+                    Call AI_CaminarConRumbo(NpcIndex, TargetPos)
+                End If
+            End If
+        End If
+        'perform movement
+        If NPCs.CanMove(.Contadores, .flags) Then
+            If CurrentTarget.ArrayIndex > 0 And NearestTargetDistance < .PreferedRange Then
+                Dim Direction As t_Vector
+                Dim TargetMapPos As t_WorldPos
+                Direction = GetDirection(.pos, TargetPos)
+                TargetMapPos = PreferedTileForDirection(Direction, .pos)
+                Call MoveNPCChar(NpcIndex, GetHeadingFromWorldPos(.pos, TargetMapPos))
+            Else
+                If IsValidRef(CurrentTarget) And InRangoVisionNPC(NpcIndex, TargetPos.x, TargetPos.y) Then
+                Else
+                    Call AI_CaminarConRumbo(NpcIndex, GoToNextWp(NpcIndex))
+                End If
+            End If
+        End If
+        
+    End With
+    Exit Sub
+ErrorHandler:
+    Call TraceError(Err.Number, Err.Description, "AIv2.AI_BGRangedBehavior", Erl)
+End Sub
+
+Public Sub AI_BGBossBehavior(ByVal NpcIndex As Integer)
+On Error GoTo ErrorHandler
+    With NpcList(NpcIndex)
+    End With
+    Exit Sub
+ErrorHandler:
+    Call TraceError(Err.Number, Err.Description, "AIv2.AI_BGBossBehavior", Erl)
 End Sub
 
 Private Function DistanciaRadial(OrigenPos As t_WorldPos, DestinoPos As t_WorldPos) As Long
@@ -1379,4 +1534,11 @@ Public Function TrySupportThenAttackSpells(ByVal NpcIndex As Integer) As Boolean
             TrySupportThenAttackSpells = TryCastAttackSpell(NpcIndex, AvailableSpellEffects)
         End If
     End With
+End Function
+
+Public Function GoToNextWp(ByVal NpcIndex As Integer) As t_WorldPos
+    Dim TargetPos As t_WorldPos
+    TargetPos = NpcList(NpcIndex).pos
+    Call GetNextWaypointForNpc(NpcIndex, TargetPos.x, TargetPos.y)
+    GoToNextWp = TargetPos
 End Function

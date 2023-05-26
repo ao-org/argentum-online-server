@@ -226,7 +226,6 @@ Public Sub PerformAction()
             End If
         End If
     ElseIf DotInfo.TargetRef.RefType = e_ReferenceType.eNpc Then
-        Debug.Print "original tickamount " & TickHP
         If IsSet(Modifiers, e_ModifierTypes.MagicReduction) Then
             TickHP = TickHP * NPCs.GetMagicDamageReduction(NpcList(DotInfo.TargetRef.ArrayIndex))
         End If
@@ -236,7 +235,6 @@ Public Sub PerformAction()
         If IsSet(Modifiers, e_ModifierTypes.SelfHealingBonus) Then
             TickHP = TickHP * NPCs.GetSelfHealingBonus(NpcList(DotInfo.TargetRef.ArrayIndex))
         End If
-        Debug.Print "final tickamount " & TickHP
         If IsValidRef(source) Then
             Call NPCs.DoDamageOrHeal(DotInfo.TargetRef.ArrayIndex, Source.ArrayIndex, Source.RefType, TickHP, e_dot, DotInfo.EotId)
         Else
