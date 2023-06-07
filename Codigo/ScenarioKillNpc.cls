@@ -15,7 +15,7 @@ Option Explicit
 
 Const RequiredWeaponId = 1848
 Const MaxActiveNpc = 30
-Const configPath = "../init/Scenarios/Snakes.ini"
+Const configPath = "../dat/Scenarios/Snakes.ini"
 Const RequireItemMessage = 403
 Const MillisecondInSecond = 1000
 
@@ -45,6 +45,9 @@ Dim board As New ScoreBoard
 Dim StartTimer As t_Timer
 Dim PrevMapState As Integer
 Dim MapDropItems As Boolean
+Dim PlayerRespawn As New Dictionary
+Dim PlayerRespawnTime As Long
+
 
 
 Friend Sub RegisterNpc(ByVal Tag, ByVal sectionSize, ByRef registry As Dictionary, ByRef File As clsIniManager)
@@ -71,17 +74,19 @@ End Sub
 Private Sub Class_Initialize()
 On Error GoTo Hunt_Initialize_Err:
         Dim validNpcCount As Integer
-        Dim ScenearioIni As clsIniManager
-104     Set ScenearioIni = New clsIniManager
+        Dim ScenarioIni As clsIniManager
+104     Set ScenarioIni = New clsIniManager
         Debug.Assert FileExist(DatPath & configPath)
         
-106     Call ScenearioIni.Initialize(DatPath & configPath)
-108     validNpcCount = val(ScenearioIni.GetValue("INIT", "TargetNpc"))
-112     mapNumber = val(ScenearioIni.GetValue("INIT", "MapNumber"))
-114     MaxTime = val(ScenearioIni.GetValue("INIT", "MaxTime"))
+106     Call ScenarioIni.Initialize(DatPath & configPath)
+108     validNpcCount = val(ScenarioIni.GetValue("INIT", "TargetNpc"))
+112     MapNumber = val(ScenarioIni.GetValue("INIT", "MapNumber"))
+114     MaxTime = val(ScenarioIni.GetValue("INIT", "MaxTime"))
         MaxTime = MaxTime * 1000
-116     TargetScore = val(ScenearioIni.GetValue("INIT", "TargetScore"))
-118     Call RegisterNpc("TARGET", validNpcCount, MatchNpc, ScenearioIni)
+        PlayerRespawnTime = val(ScenarioIni.GetValue("INIT", "PlayerRespawnTime"))
+        PlayerRespawnTime = PlayerRespawnTime * 1000
+116     TargetScore = val(ScenarioIni.GetValue("INIT", "TargetScore"))
+118     Call RegisterNpc("TARGET", validNpcCount, MatchNpc, ScenarioIni)
 120     UpdateIndex = AddUpdateScenario(Me)
 122     Call CustomScenarios.SetCustomScenario(mapNumber, Me)
 124     LastBroadCastTime = 0
@@ -112,6 +117,22 @@ On Error GoTo ClearMap_Err:
 ClearMap_Err:
     Call TraceError(Err.Number, Err.Description, "ScenarioHunt.ClearMap", Erl)
 End Sub
+
+Public Function IBaseScenario_GetScenarioName() As String
+    IBaseScenario_GetScenarioName = "Dia del garrote"
+End Function
+
+Public Sub IBaseScenario_BroadcastOpenScenario(ByVal CreatorIndex As Integer)
+    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MsgHuntScenearioIntro, "", e_FontTypeNames.FONTTYPE_GUILD))
+End Sub
+
+Public Sub IBaseScenario_SendRules(ByVal UserIndex As Integer)
+    Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageLocaleMsg(MsgHuntScenarioInstructions, "", e_FontTypeNames.FONTTYPE_GUILD))
+End Sub
+
+Public Function IBaseScenario_GetExtraInterfaces() As Long
+    IBaseScenario_GetExtraInterfaces = 0
+End Function
 
 Public Sub IBaseScenario_Reset()
 106        Call ClearMap
@@ -237,6 +258,7 @@ Private Sub IBaseScenario_Update()
             Call SendData(SendTarget.toMap, mapNumber, PrepareMessageConsoleMsg("Se acabo el tiempo!", e_FontTypeNames.FONTTYPE_GUILD))
             Call MatchComplete
         End If
+        Call RespawnPlayers
         Call BroadCastTimeUpdate
     ElseIf GenericGlobalLobby.State = e_LobbyState.Completed Then
         ElapsedTime = ElapsedTime + frametime
@@ -318,3 +340,71 @@ Private Sub BroadCastTimeUpdate()
     End If
 End Sub
 
+Public Sub IBaseScenario_GetNextWaypointForNpc(ByVal NpcIndex As Integer, ByRef PosX As Integer, ByRef PosY As Integer)
+
+End Sub
+
+Public Sub IBaseScenario_NpcDie(ByVal NpcIndex)
+
+End Sub
+
+Public Sub IBaseScenario_UserDie(ByVal UserIndex)
+    Dim RespawnInfo As clsRespawnInfo
+    Set RespawnInfo = New clsRespawnInfo
+    RespawnInfo.RespawnTime = GetTickCount()
+    With UserList(UserIndex)
+        Dim i As Integer
+        For i = LBound(.invent.Object) To UBound(.invent.Object)
+            If .invent.Object(i).Equipped Then
+                Call RespawnInfo.AddEquipedElement(i)
+            End If
+        Next i
+        If .flags.TomoPocion Then
+            RespawnInfo.HasPowerUp = True
+            RespawnInfo.PowerUpTime = .flags.DuracionEfecto
+            RespawnInfo.Strength = .Stats.UserAtributos(1)
+            RespawnInfo.Agility = .Stats.UserAtributos(2)
+        End If
+    End With
+    Call PlayerRespawn.Add(UserIndex, RespawnInfo)
+End Sub
+
+Private Sub Respawn(ByVal player As Integer)
+    Dim SpawnPos As t_WorldPos
+    SpawnPos.Map = MapNumber
+    SpawnPos.x = RandomNumber(12, 85)
+    SpawnPos.y = RandomNumber(12, 85)
+    Call WarpToLegalPos(player, MapNumber, SpawnPos.x, SpawnPos.y, True, True)
+    Call RevivirUsuario(player)
+    UserList(player).Counters.timeFx = 2
+114 Call SendData(SendTarget.ToPCAliveArea, player, PrepareMessageParticleFX(UserList(player).Char.charindex, e_ParticulasIndex.Curar, 100, False, , UserList(player).pos.x, UserList(player).pos.y))
+116 Call SendData(SendTarget.ToPCAliveArea, player, PrepareMessagePlayWave("104", UserList(player).pos.x, UserList(player).pos.y))
+End Sub
+
+Private Sub RespawnPlayers()
+    Dim key As Variant
+    Dim Keys As Variant
+    Dim currentTime As Long
+    Dim RespawnInfo As clsRespawnInfo
+    Dim i As Integer
+    currentTime = GetTickCount()
+    Keys = PlayerRespawn.Keys
+    For Each key In Keys
+        Set RespawnInfo = PlayerRespawn.Item(key)
+        If currentTime - RespawnInfo.RespawnTime > PlayerRespawnTime Then
+            Call Respawn(key)
+            For i = 0 To RespawnInfo.EquipedElementCount - 1
+                Call EquiparInvItem(key, RespawnInfo.GetActiveSlot(i))
+            Next i
+            If RespawnInfo.HasPowerUp Then
+                With UserList(key)
+                    .Stats.UserAtributos(1) = RespawnInfo.Strength
+                    .Stats.UserAtributos(2) = RespawnInfo.Agility
+                    .flags.DuracionEfecto = RespawnInfo.PowerUpTime
+                    Call WriteFYA(key)
+                End With
+            End If
+            Call PlayerRespawn.Remove(key)
+        End If
+    Next key
+End Sub

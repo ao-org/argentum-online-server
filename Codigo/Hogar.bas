@@ -30,7 +30,7 @@ Public Sub goHome(ByVal UserIndex As Integer)
 104             If EsGM(UserIndex) Then
 106                 .Counters.TimerBarra = 5
                 Else
-108                 .Counters.TimerBarra = 210
+108                 .Counters.TimerBarra = HomeTimer
                 End If
 110             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageParticleFX(.Char.charindex, e_ParticulasIndex.Runa, .Counters.TimerBarra * 100, False, , .Pos.X, .Pos.y))
 112             Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageBarFx(.Char.charindex, .Counters.TimerBarra, e_AccionBarra.Hogar))

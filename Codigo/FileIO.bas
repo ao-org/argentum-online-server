@@ -704,7 +704,6 @@ Public Sub CargarHechizos()
 176         Hechizos(Hechizo).Cooldown = val(Leer.GetValue("Hechizo" & Hechizo, "CoolDown"))
 177         Hechizos(Hechizo).CdEffectId = val(Leer.GetValue("Hechizo" & Hechizo, "CdEffectId"))
 178         Hechizos(Hechizo).loops = val(Leer.GetValue("Hechizo" & Hechizo, "Loops"))
-180         Hechizos(Hechizo).SubeHP = val(Leer.GetValue("Hechizo" & Hechizo, "SubeHP"))
 182         Hechizos(Hechizo).MinHp = val(Leer.GetValue("Hechizo" & Hechizo, "MinHP"))
 184         Hechizos(Hechizo).MaxHp = val(Leer.GetValue("Hechizo" & Hechizo, "MaxHP"))
     
@@ -785,6 +784,10 @@ Public Sub CargarHechizos()
             If val(Leer.GetValue("Hechizo" & Hechizo, "RequireTargetOnLand")) > 0 Then Call SetMask(Hechizos(Hechizo).SpellRequirementMask, e_SpellRequirementMask.eRequireTargetOnLand)
             If val(Leer.GetValue("Hechizo" & Hechizo, "RequireTargetOnWater")) > 0 Then Call SetMask(Hechizos(Hechizo).SpellRequirementMask, e_SpellRequirementMask.eRequireTargetOnWater)
 305         Hechizos(Hechizo).RequireWeaponType = val(Leer.GetValue("Hechizo" & Hechizo, "RequireWeaponType"))
+            Dim SubeHP As Byte
+            SubeHP = val(Leer.GetValue("Hechizo" & Hechizo, "SubeHP"))
+            If SubeHP = 1 Then Call SetMask(Hechizos(Hechizo).Effects, e_SpellEffects.eDoHeal)
+            If SubeHP = 2 Then Call SetMask(Hechizos(Hechizo).Effects, e_SpellEffects.eDoDamage)
 306     Next Hechizo
 
 400     Set Leer = Nothing
@@ -1056,10 +1059,11 @@ Sub LoadBalance()
 164     InfluenciaPromedioVidas = val(BalanceIni.GetValue("EXTRA", "InfluenciaPromedioVidas"))
 166     DesbalancePromedioVidas = val(BalanceIni.GetValue("EXTRA", "DesbalancePromedioVidas"))
 168     RangoVidas = val(BalanceIni.GetValue("EXTRA", "RangoVidas"))
-170     ModDañoGolpeCritico = 0.33
+170     ModDañoGolpeCritico = val(BalanceIni.GetValue("EXTRA", "ModDañoGolpeCritico"))
 171     RequiredSpellDisplayTime = val(BalanceIni.GetValue("EXTRA", "RequiredSpellDisplayTime"))
 172     MaxInvisibleSpellDisplayTime = val(BalanceIni.GetValue("EXTRA", "MaxInvisibleSpellDisplayTime"))
         MultiShotReduction = val(BalanceIni.GetValue("EXTRA", "MultiShotReduction"))
+        HomeTimer = val(BalanceIni.GetValue("EXTRA", "HomeTimer"))
         
         'stun
         PlayerStunTime = val(BalanceIni.GetValue("STUN", "PlayerStunTime"))

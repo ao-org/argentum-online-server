@@ -239,6 +239,26 @@ Public Function FactionCanAttackFaction(ByVal AttackerFaction As e_Facciones, By
     FactionCanAttackFaction = True
 End Function
 
+Public Function FactionCanHelpFaction(ByVal SourceFaction As e_Facciones, ByVal TargetFaction As e_Facciones) As e_InteractionResult
+Select Case SourceFaction
+    Case e_Facciones.Ciudadano, e_Facciones.Armada, e_Facciones.consejo
+        If TargetFaction = e_Facciones.Caos Or TargetFaction = e_Facciones.concilio Then
+            FactionCanHelpFaction = eOposingFaction
+            Exit Function
+        ElseIf TargetFaction = e_Facciones.Criminal Then
+            FactionCanHelpFaction = eCantHelpCriminal
+            Exit Function
+        End If
+    Case e_Facciones.Caos, e_Facciones.concilio
+        If TargetFaction = e_Facciones.Armada Or TargetFaction = e_Facciones.consejo Or TargetFaction = e_Facciones.Ciudadano Then
+            FactionCanHelpFaction = eOposingFaction
+            Exit Function
+        End If
+    Case Else
+End Select
+    FactionCanHelpFaction = eInteractionOk
+End Function
+
 Public Function EsGM(ByVal UserIndex As Integer) As Boolean
         '***************************************************
         'Autor: Pablo (ToxicWaste)
@@ -522,7 +542,7 @@ InRangoVision_Err:
         
 End Function
 
-Function InRangoVisionNPC(ByVal NpcIndex As Integer, X As Integer, Y As Integer) As Boolean
+Function InRangoVisionNPC(ByVal NpcIndex As Integer, ByVal x As Integer, ByVal y As Integer) As Boolean
         
         On Error GoTo InRangoVisionNPC_Err
         

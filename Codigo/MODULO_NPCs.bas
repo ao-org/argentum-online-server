@@ -352,8 +352,8 @@ Sub ResetNpcFlags(ByVal NpcIndex As Integer)
 144         .Snd2 = 0
 146         .Snd3 = 0
 148         .TierraInvalida = 0
-150         .AtacaUsuarios = True
-152         .AtacaNPCs = True
+150         Call ResetMask(.BehaviorFlags)
+152         Call SetMask(.BehaviorFlags, e_BehaviorFlags.eAttackNpc Or e_BehaviorFlags.eAttackUsers)
 154         .AIAlineacion = e_Alineacion.ninguna
 156         .NPCIdle = False
 159         Call ClearNpcRef(.Summoner)
@@ -521,7 +521,7 @@ Sub ResetNpcMainInfo(ByVal NpcIndex As Integer)
 162     Call ClearNpcRef(.MaestroNPC)
 164     .CaminataActual = 0
         Dim j As Integer
-166     For j = 1 To .NroSpells
+166     For j = 1 To .flags.LanzaSpells
 168         .Spells(j).SpellIndex = 0
 170     Next j
         Call ClearEffectList(.EffectOverTime)
@@ -872,7 +872,7 @@ Sub EraseNPCChar(ByVal NpcIndex As Integer)
             Loop
 
         End If
-
+        Call RemoveNpc(NpcIndex)
         'Quitamos del mapa
 110     MapData(NpcList(NpcIndex).Pos.Map, NpcList(NpcIndex).Pos.X, NpcList(NpcIndex).Pos.Y).NpcIndex = 0
 
@@ -1393,10 +1393,12 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
     
 258         If .flags.LanzaSpells > 0 Then
 260             ReDim .Spells(1 To .flags.LanzaSpells)
+                .SpellRange = val(Leer.GetValue("NPC" & NpcNumber, "RangoSpell"))
             End If
     
 262         For LoopC = 1 To .flags.LanzaSpells
 264             .Spells(LoopC).SpellIndex = val(Leer.GetValue("NPC" & NpcNumber, "Sp" & LoopC))
+265             .Spells(LoopC).Cd = val(Leer.GetValue("NPC" & NpcNumber, "Cd" & LoopC))
                 .Spells(LoopC).LastUse = 0
 266         Next LoopC
     
@@ -1415,26 +1417,33 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
             End If
     
 284         .flags.NPCActive = True
-
+            Call ResetMask(.flags.BehaviorFlags)
 286         Select Case val(Leer.GetValue("NPC" & NpcNumber, "RestriccionDeAtaque"))
                 Case 0 ' Todos
-288                 .flags.AtacaNPCs = True
-290                 .flags.AtacaUsuarios = True
+288                 Call SetMask(.flags.BehaviorFlags, e_BehaviorFlags.eAttackNpc)
+290                 Call SetMask(.flags.BehaviorFlags, e_BehaviorFlags.eAttackUsers)
 292             Case 1 ' Usuarios solamente
-294                 .flags.AtacaNPCs = False
-296                 .flags.AtacaUsuarios = True
+296                 Call SetMask(.flags.BehaviorFlags, e_BehaviorFlags.eAttackUsers)
 298             Case 2 ' NPCs solamente
-300                 .flags.AtacaNPCs = True
-302                 .flags.AtacaUsuarios = False
-                    
+300                 Call SetMask(.flags.BehaviorFlags, e_BehaviorFlags.eAttackNpc)
             End Select
-    
+            Select Case val(Leer.GetValue("NPC" & NpcNumber, "RestriccionDeAyuda"))
+                Case 1
+                    Call SetMask(.flags.BehaviorFlags, e_BehaviorFlags.eHelpNpc)
+                Case 2
+                    Call SetMask(.flags.BehaviorFlags, e_BehaviorFlags.eHelpUsers)
+                Case 3
+                    Call SetMask(.flags.BehaviorFlags, e_BehaviorFlags.eHelpNpc)
+                    Call SetMask(.flags.BehaviorFlags, e_BehaviorFlags.eHelpUsers)
+            End Select
 304         If Respawn Then
 306             .flags.Respawn = val(Leer.GetValue("NPC" & NpcNumber, "ReSpawn"))
             Else
 308             .flags.Respawn = 1
             End If
-    
+            If val(Leer.GetValue("NPC" & NpcNumber, "AddToMapAiList")) > 0 Then Call SetMask(.flags.BehaviorFlags, e_BehaviorFlags.eConsideredByMapAi)
+            If val(Leer.GetValue("NPC" & NpcNumber, "DisplayCastMessage")) > 0 Then Call SetMask(.flags.BehaviorFlags, e_BehaviorFlags.eDisplayCastMessage)
+            .flags.Team = val(Leer.GetValue("NPC" & NpcNumber, "Team"))
 310         .flags.backup = val(Leer.GetValue("NPC" & NpcNumber, "BackUp"))
 312         .flags.RespawnOrigPos = val(Leer.GetValue("NPC" & NpcNumber, "OrigPos"))
 314         .flags.AfectaParalisis = val(Leer.GetValue("NPC" & NpcNumber, "AfectaParalisis"))
@@ -1944,6 +1953,7 @@ On Error GoTo DoDamageOrHeal_Err
         End If
 100     If NPCs.ModifyHealth(npcIndex, amount) Then
             DoDamageOrHeal = eDead
+            CustomScenarios.NpcDie (NpcIndex)
 102         If SourceType = eUser Then
 244             Call CustomScenarios.PlayerKillNpc(.pos.map, npcIndex, SourceIndex, DamageSourceType, DamageSourceIndex)
                 Call MuereNpc(npcIndex, SourceIndex)
@@ -2034,6 +2044,12 @@ On Error GoTo UserCanAttackNpc_Err
         End If
      End If
      
+     If UserList(UserIndex).flags.CurrentTeam <> 0 Then
+        If UserList(UserIndex).flags.CurrentTeam = NpcList(NpcIndex).flags.Team Then
+            UserCanAttackNpc = eSameTeam
+            Exit Function
+        End If
+     End If
      ' El seguro es SOLO para ciudadanos. La armada debe desenlistarse antes de querer atacar y se checkea arriba.
      ' Los criminales o Caos, ya estan mas alla del seguro.
 164  If Status(UserIndex) = Ciudadano Then
@@ -2114,7 +2130,7 @@ End Function
 
 Public Function CanAttackUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer) As e_AttackInteractionResult
     With NpcList(NpcIndex)
-        If Not .flags.AtacaUsuarios Then
+        If Not IsSet(.flags.BehaviorFlags, e_BehaviorFlags.eAttackUsers) Then
             CanAttackUser = eNotEnougthPrivileges
             Exit Function
         End If
@@ -2143,8 +2159,50 @@ Public Function CanAttackUser(ByVal NpcIndex As Integer, ByVal UserIndex As Inte
             CanAttackUser = eSameFaction
             Exit Function
         End If
+        If .flags.Team <> 0 Then
+            If .flags.Team = UserList(UserIndex).flags.CurrentTeam Then
+                CanAttackUser = eSameTeam
+                Exit Function
+            End If
+        End If
     End With
     CanAttackUser = eCanAttack
+End Function
+
+Public Function CanHelpUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer) As e_InteractionResult
+    With NpcList(NpcIndex)
+        If Not IsSet(.flags.BehaviorFlags, e_BehaviorFlags.eHelpUsers) Then
+            CanHelpUser = eCantHelpUsers
+            Exit Function
+        End If
+        Dim SourceFaction As e_Facciones
+        If IsValidUserRef(.MaestroUser) Then
+            SourceFaction = UserList(.MaestroUser.ArrayIndex).Faccion.Status
+        Else
+            SourceFaction = .flags.Faccion
+        End If
+        CanHelpUser = FactionCanHelpFaction(SourceFaction, UserList(UserIndex).Faccion.Status)
+        If CanHelpUser <> e_InteractionResult.eInteractionOk Then
+            Exit Function
+        End If
+        If UserList(UserIndex).flags.CurrentTeam > 0 Then
+            Dim NpcTeam As Byte
+            NpcTeam = .flags.Team
+            If NpcTeam <> UserList(UserIndex).flags.CurrentTeam Then
+                CanHelpUser = eCantHelpUsers
+                Exit Function
+            End If
+        End If
+        CanHelpUser = eInteractionOk
+    End With
+End Function
+
+Public Function CanHelpNpc(ByVal NpcIndex As Integer, ByVal TargetNpc As Integer) As e_InteractionResult
+    CanHelpNpc = eInteractionOk
+    If NpcList(NpcIndex).flags.Team > 0 And NpcList(NpcIndex).flags.Team <> NpcList(TargetNpc).flags.Team Then
+        CanHelpNpc = eOposingFaction
+        Exit Function
+    End If
 End Function
 
 Public Function CanAttackNpc(ByVal NpcIndex As Integer, ByVal TargetIndex As Integer) As e_AttackInteractionResult
@@ -2162,7 +2220,7 @@ Public Function CanAttackNpc(ByVal NpcIndex As Integer, ByVal TargetIndex As Int
             CanAttackNpc = eNotEnougthPrivileges
             Exit Function
         End If
-        If Not .flags.AtacaNPCs Then
+        If Not IsSet(.flags.BehaviorFlags, e_BehaviorFlags.eAttackNpc) Then
             CanAttackNpc = eNotEnougthPrivileges
             Exit Function
         End If
@@ -2191,11 +2249,10 @@ Public Function CanAttackNpc(ByVal NpcIndex As Integer, ByVal TargetIndex As Int
             Exit Function
         End If
         
-        If AttackerIsFreeCrature And TargetIsFreeCrature Then
-            CanAttackNpc = eSameFaction
+        If .flags.Team = NpcList(TargetIndex).flags.Team Then
+            CanAttackNpc = eSameTeam
             Exit Function
         End If
-    
         
     End With
     
@@ -2217,4 +2274,14 @@ End Function
 'Defines bonus when healing someone with magic
 Public Function GetMagicHealingBonus(ByRef Npc As t_Npc) As Single
     GetMagicHealingBonus = max(1 + Npc.Modifiers.MagicHealingBonus, 0)
+End Function
+
+Public Function CanSeeUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
+    CanSeeUser = UserMod.IsVisible(UserList(UserIndex))
+End Function
+
+Public Function CanPerformAttackAction(ByVal NpcIndex As Integer, ByVal AttackInterval As Long)
+    With NpcList(NpcIndex)
+        CanPerformAttackAction = GlobalFrameTime - .Contadores.IntervaloLanzarHechizo > AttackInterval And GlobalFrameTime - .Contadores.IntervaloAtaque > AttackInterval
+    End With
 End Function

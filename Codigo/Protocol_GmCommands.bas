@@ -433,7 +433,7 @@ Public Sub HandleGoNearby(ByVal UserIndex As Integer)
 112                 If CompararPrivilegios(.flags.Privilegios, UserDarPrivilegioLevel(username)) >= 0 Then
 114                     Call WriteConsoleMsg(UserIndex, "Usuario offline.", e_FontTypeNames.FONTTYPE_INFO)
                     Else
-116                     Call WriteConsoleMsg(userIndex, "No podés ir cerca de un GM de mayor jerarquía.", e_FontTypeNames.FONTTYPE_INFO)
+116                     Call WriteConsoleMsg(UserIndex, "No podés ir cerca de un GM de mayor jerarquía.", e_FontTypeNames.FONTTYPE_INFO)
                     End If
                 Else
 118                 If CompararPrivilegiosUser(userIndex, tUser.ArrayIndex) >= 0 Then
@@ -484,12 +484,12 @@ Public Sub HandleWhere(ByVal UserIndex As Integer)
 110                 Call WriteConsoleMsg(UserIndex, "Usuario offline.", e_FontTypeNames.FONTTYPE_INFO)
                 Else
 112                 If CompararPrivilegiosUser(userIndex, tUser.ArrayIndex) >= 0 Then
-114                     Call WriteConsoleMsg(userIndex, "Ubicación  " & username & ": " & UserList(tUser.ArrayIndex).pos.map & ", " & UserList(tUser.ArrayIndex).pos.x & ", " & UserList(tUser.ArrayIndex).pos.y & ".", e_FontTypeNames.FONTTYPE_INFO)
+114                     Call WriteConsoleMsg(UserIndex, "Ubicación  " & username & ": " & UserList(tUser.ArrayIndex).pos.Map & ", " & UserList(tUser.ArrayIndex).pos.x & ", " & UserList(tUser.ArrayIndex).pos.y & ".", e_FontTypeNames.FONTTYPE_INFO)
 116                     Call LogGM(.name, "/Donde " & username)
                     End If
                 End If
             Else
-118             Call WriteConsoleMsg(userIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
+118             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
             End If
         End With
         Exit Sub
@@ -681,7 +681,7 @@ Public Sub HandleWarpChar(ByVal UserIndex As Integer)
 140                     Call WarpUserChar(tUser.ArrayIndex, map, x, y, True)
                     End If
 142                 If tUser.ArrayIndex <> userIndex Then
-144                     Call LogGM(.name, "Transportó a " & UserList(tUser.ArrayIndex).name & " hacia " & "Mapa" & map & " X:" & x & " Y:" & y)
+144                     Call LogGM(.name, "Transportó a " & UserList(tUser.ArrayIndex).name & " hacia " & "Mapa" & Map & " X:" & x & " Y:" & y)
                     End If
                 End If
             End If
@@ -841,7 +841,7 @@ Public Sub HandleGoToChar(ByVal UserIndex As Integer)
 108                 tUser = NameIndex(username)
                     
 110                 If Not IsValidUserRef(tUser) Then
-112                     Call WriteConsoleMsg(userIndex, "El jugador no está online.", e_FontTypeNames.FONTTYPE_INFO)
+112                     Call WriteConsoleMsg(UserIndex, "El jugador no está online.", e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
 
                     End If
@@ -854,7 +854,7 @@ Public Sub HandleGoToChar(ByVal UserIndex As Integer)
                 End If
       
 118             If CompararPrivilegiosUser(tUser.ArrayIndex, userIndex) > 0 Then
-120                 Call WriteConsoleMsg(userIndex, "Se le ha avisado a " & UserList(tUser.ArrayIndex).name & " que quieres ir a su posición.", e_FontTypeNames.FONTTYPE_INFO)
+120                 Call WriteConsoleMsg(UserIndex, "Se le ha avisado a " & UserList(tUser.ArrayIndex).name & " que quieres ir a su posición.", e_FontTypeNames.FONTTYPE_INFO)
 122                 Call WriteConsoleMsg(tUser.ArrayIndex, .name & " quiere transportarse a tu ubicación. Escribe /sum " & .name & " para traerlo.", e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
 
@@ -872,7 +872,7 @@ Public Sub HandleGoToChar(ByVal UserIndex As Integer)
 136             Call WriteConsoleMsg(userIndex, "Te has transportado hacia " & UserList(tUser.ArrayIndex).name & ".", e_FontTypeNames.FONTTYPE_INFO)
 138             Call LogGM(.name, "/IRA " & username & " Mapa:" & UserList(tUser.ArrayIndex).pos.map & " X:" & UserList(tUser.ArrayIndex).pos.x & " Y:" & UserList(tUser.ArrayIndex).pos.y)
             Else
-140             Call WriteConsoleMsg(userIndex, "Servidor » Comando deshabilitado para tu cargo. solo puedes ir a Usuarios que piden SOS.", e_FontTypeNames.FONTTYPE_INFO)
+140             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo. solo puedes ir a Usuarios que piden SOS.", e_FontTypeNames.FONTTYPE_INFO)
             End If
         End With
         Exit Sub
@@ -970,7 +970,7 @@ Public Sub HandleWorking(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
 102         If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero)) Then
-104             Call WriteConsoleMsg(userIndex, "Servidor » /TRABAJANDO es un comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
+104             Call WriteConsoleMsg(UserIndex, "Servidor » /TRABAJANDO es un comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
         
@@ -1013,7 +1013,7 @@ Public Sub HandleHiding(ByVal UserIndex As Integer)
         
         
 102         If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.RoleMaster)) Then
-104             Call WriteConsoleMsg(userIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
+104             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
         
@@ -1078,7 +1078,7 @@ Public Sub HandleJail(ByVal UserIndex As Integer)
 118                 tUser = NameIndex(username)
                 
 120                 If Not IsValidUserRef(tUser) Then
-122                     Call WriteConsoleMsg(userIndex, "El usuario no está online.", e_FontTypeNames.FONTTYPE_INFO)
+122                     Call WriteConsoleMsg(UserIndex, "El usuario no está online.", e_FontTypeNames.FONTTYPE_INFO)
                     Else
 
 124                     If EsGM(tUser.ArrayIndex) Then
@@ -2082,7 +2082,8 @@ Public Sub HandleExecute(ByVal UserIndex As Integer)
 104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios)) Then
 106             tUser = NameIndex(username)
 108             If IsValidUserRef(tUser) Then
-110                 Call UserDie(tUser.ArrayIndex)
+                    Call CustomScenarios.UserDie(UserIndex)
+110                 Call UserMod.UserDie(tUser.ArrayIndex)
 112                 Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(.name & " ha ejecutado a " & UserList(tUser.ArrayIndex).name, e_FontTypeNames.FONTTYPE_EJECUCION))
 114                 Call LogGM(.name, " ejecuto a " & username)
                 Else

@@ -26,11 +26,14 @@ Public Type t_AreaInfo
 End Type
  
 Public Type t_ConnGroup
-
-    CountEntrys As Long
+    CountEntrys As Integer
     OptValue As Long
-    UserEntrys() As Long
-
+    UserEntrys() As Integer
+    ' Ai uses user entry to search for nearby players in map
+    'We cant to do the same with Npc that can be targeted by an AI becasue
+    'looping about 10 char to se if they are in range is faster than lopping for 18x18 squares of vision
+    RegisteredNpc As Integer
+    NpcForAi() As Integer
 End Type
  
 Public Const USER_NUEVO               As Byte = 255
@@ -87,7 +90,8 @@ Public Sub InitAreas()
 124         ConnGroups(LoopC).OptValue = val(GetVar(DatPath & "AreasStats.ini", "Mapa" & LoopC, CurDay & "-" & CurHour))
         
 126         If ConnGroups(LoopC).OptValue = 0 Then ConnGroups(LoopC).OptValue = 1
-128         ReDim ConnGroups(LoopC).UserEntrys(1 To ConnGroups(LoopC).OptValue) As Long
+128         ReDim ConnGroups(LoopC).UserEntrys(1 To ConnGroups(LoopC).OptValue) As Integer
+            ReDim ConnGroups(LoopC).NpcForAi(0 To 1) As Integer
 130     Next LoopC
         
         Exit Sub
@@ -129,7 +133,7 @@ Public Sub AreasOptimizacion()
 112             ConnGroups(LoopC).OptValue = val(GetVar(DatPath & "AreasStats.ini", "Mapa" & LoopC, tCurDay & "-" & tCurHour))
 
 114             If ConnGroups(LoopC).OptValue = 0 Then ConnGroups(LoopC).OptValue = 1
-116             If ConnGroups(LoopC).OptValue >= MapInfo(LoopC).NumUsers Then ReDim Preserve ConnGroups(LoopC).UserEntrys(1 To ConnGroups(LoopC).OptValue) As Long
+116             If ConnGroups(LoopC).OptValue >= MapInfo(LoopC).NumUsers Then ReDim Preserve ConnGroups(LoopC).UserEntrys(1 To ConnGroups(LoopC).OptValue) As Integer
 118         Next LoopC
         
 120         CurDay = tCurDay
@@ -527,7 +531,7 @@ Public Sub AgregarUser(ByVal UserIndex As Integer, ByVal Map As Integer, Optiona
 116         TempVal = ConnGroups(Map).CountEntrys
        
 118         If TempVal > ConnGroups(Map).OptValue Then 'Nescesito Redim
-120             ReDim Preserve ConnGroups(Map).UserEntrys(1 To TempVal) As Long
+120             ReDim Preserve ConnGroups(Map).UserEntrys(1 To TempVal) As Integer
 
             End If
        
@@ -560,29 +564,42 @@ AgregarUser_Err:
 End Sub
  
 Public Sub AgregarNpc(ByVal NpcIndex As Integer)
-        '**************************************************************
-        'Author: Lucio N. Tourrilhes (DuNga)
-        'Last Modify Date: Unknow
-        '
-        '**************************************************************
-        
         On Error GoTo AgregarNpc_Err
+        With NpcList(NpcIndex)
+100     .AreasInfo.AreaID = 0
+102     .AreasInfo.AreaPerteneceX = 0
+104     .AreasInfo.AreaPerteneceY = 0
+106     .AreasInfo.AreaReciveX = 0
+108     .AreasInfo.AreaReciveY = 0
+        If IsSet(.flags.BehaviorFlags, e_BehaviorFlags.eConsideredByMapAi) Then
+            If ConnGroups(.pos.Map).RegisteredNpc = UBound(ConnGroups(.pos.Map).NpcForAi) Then
+                ReDim Preserve ConnGroups(.pos.Map).NpcForAi(0 To ConnGroups(.pos.Map).RegisteredNpc + 1) As Integer
+            End If
+            ConnGroups(.pos.Map).NpcForAi(ConnGroups(.pos.Map).RegisteredNpc) = NpcIndex
+            ConnGroups(.pos.Map).RegisteredNpc = ConnGroups(.pos.Map).RegisteredNpc + 1
+        End If
         
-100     NpcList(NpcIndex).AreasInfo.AreaID = 0
-   
-102     NpcList(NpcIndex).AreasInfo.AreaPerteneceX = 0
-104     NpcList(NpcIndex).AreasInfo.AreaPerteneceY = 0
-106     NpcList(NpcIndex).AreasInfo.AreaReciveX = 0
-108     NpcList(NpcIndex).AreasInfo.AreaReciveY = 0
-   
-110     Call CheckUpdateNeededNpc(NpcIndex, USER_NUEVO)
+        End With
 
-        
+110     Call CheckUpdateNeededNpc(NpcIndex, USER_NUEVO)
         Exit Sub
 
 AgregarNpc_Err:
 112     Call TraceError(Err.Number, Err.Description, "ModAreas.AgregarNpc", Erl)
-
-        
 End Sub
 
+Public Sub RemoveNpc(ByVal NpcIndex As Integer)
+    Dim i As Integer
+    With NpcList(NpcIndex)
+        If IsSet(.flags.BehaviorFlags, e_BehaviorFlags.eConsideredByMapAi) Then
+            For i = 0 To ConnGroups(.pos.Map).RegisteredNpc
+                If ConnGroups(.pos.Map).NpcForAi(i) = NpcIndex Then
+                    ConnGroups(.pos.Map).NpcForAi(i) = ConnGroups(.pos.Map).NpcForAi(ConnGroups(.pos.Map).RegisteredNpc - 1)
+                    ConnGroups(.pos.Map).NpcForAi(ConnGroups(.pos.Map).RegisteredNpc - 1) = 0
+                    ConnGroups(.pos.Map).RegisteredNpc = ConnGroups(.pos.Map).RegisteredNpc - 1
+                End If
+            Next i
+        End If
+    End With
+    
+End Sub

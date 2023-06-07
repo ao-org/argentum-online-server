@@ -519,40 +519,33 @@ Sub DropObj(ByVal UserIndex As Integer, _
             ByVal Y As Integer)
         
         On Error GoTo DropObj_Err
-
         Dim obj As t_Obj
 
 100     If num > 0 Then
-            
 102         With UserList(UserIndex)
-
 104             If num > .Invent.Object(Slot).amount Then
 106                 num = .Invent.Object(Slot).amount
                 End If
-    
 108             obj.ObjIndex = .Invent.Object(Slot).ObjIndex
 110             obj.amount = num
-    
+                If Not CustomScenarios.UserCanDropItem(UserIndex, Slot, Map, x, y) Then
+                    Exit Sub
+                End If
+                
 112             If ObjData(obj.ObjIndex).Destruye = 0 Then
-
                     Dim Suma As Long
                     Suma = num + MapData(.Pos.Map, X, Y).ObjInfo.amount
-    
                     'Check objeto en el suelo
 114                 If MapData(.Pos.Map, X, Y).ObjInfo.ObjIndex = 0 Or (MapData(.Pos.Map, X, Y).ObjInfo.ObjIndex = obj.ObjIndex And Suma <= MAX_INVENTORY_OBJS) Then
-                      
 116                     If Suma > MAX_INVENTORY_OBJS Then
 118                         num = MAX_INVENTORY_OBJS - MapData(.Pos.Map, X, Y).ObjInfo.amount
                         End If
-                        
                         ' Si sos Admin, Dios o Usuario, crea el objeto en el piso.
 120                     If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Admin Or e_PlayerType.Dios)) <> 0 Then
-
                             ' Tiramos el item al piso
 122                         Call MakeObj(obj, Map, X, Y)
-
                         End If
-                        
+                        Call CustomScenarios.UserDropItem(UserIndex, Slot, Map, x, y)
 124                     Call QuitarUserInvItem(UserIndex, Slot, num)
 126                     Call UpdateUserInv(False, UserIndex, Slot)
 
@@ -567,31 +560,18 @@ Sub DropObj(ByVal UserIndex As Integer, _
 130                             Call LogGM(.Name, "Tiro cantidad:" & num & " Objeto:" & ObjData(obj.ObjIndex).Name)
                             End If
                         End If
-    
                     Else
-                    
-                        'Call WriteConsoleMsg(UserIndex, "No hay espacio en el piso.", e_FontTypeNames.FONTTYPE_INFO)
 132                     Call WriteLocaleMsg(UserIndex, "262", e_FontTypeNames.FONTTYPE_INFO)
-    
                     End If
-    
                 Else
 134                 Call QuitarUserInvItem(UserIndex, Slot, num)
 136                 Call UpdateUserInv(False, UserIndex, Slot)
-    
                 End If
-            
             End With
-
         End If
-        
         Exit Sub
-
 DropObj_Err:
 138     Call TraceError(Err.Number, Err.Description, "InvUsuario.DropObj", Erl)
-
-
-        
 End Sub
 
 Sub EraseObj(ByVal num As Integer, ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer)
@@ -708,7 +688,7 @@ Function MeterItemEnInventario(ByVal UserIndex As Integer, ByRef MiObj As t_Obj)
         End If
         
 132     Call UpdateUserInv(False, UserIndex, Slot)
-     
+        
 134     MeterItemEnInventario = True
         UserList(UserIndex).flags.ModificoInventario = True
 
@@ -758,7 +738,9 @@ Sub PickObj(ByVal UserIndex As Integer)
 106                 Call WriteConsoleMsg(UserIndex, "Debes descender de tu montura para agarrar objetos del suelo.", e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
-                
+                If Not UserCanPickUpItem(UserIndex) Then
+                    Exit Sub
+                End If
 108             X = UserList(UserIndex).Pos.X
 110             Y = UserList(UserIndex).Pos.Y
 
@@ -769,8 +751,8 @@ Sub PickObj(ByVal UserIndex As Integer)
                         End If
                     End If
                 End If
-        
-
+                
+                
 112             obj = ObjData(MapData(UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y).ObjInfo.ObjIndex)
 114             MiObj.amount = MapData(UserList(UserIndex).Pos.Map, X, Y).ObjInfo.amount
 116             MiObj.ObjIndex = MapData(UserList(UserIndex).Pos.Map, X, Y).ObjInfo.ObjIndex
@@ -783,7 +765,8 @@ Sub PickObj(ByVal UserIndex As Integer)
 120                 Call EraseObj(MapData(UserList(UserIndex).Pos.Map, X, Y).ObjInfo.amount, UserList(UserIndex).Pos.Map, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y)
 
 122                 If Not UserList(UserIndex).flags.Privilegios And e_PlayerType.user Then Call LogGM(UserList(UserIndex).Name, "Agarro:" & MiObj.amount & " Objeto:" & ObjData(MiObj.ObjIndex).Name)
-    
+                    
+                    Call UserDidPickupItem(UserIndex, MiObj.ObjIndex)
                     If UserList(UserIndex).flags.jugando_captura = 1 Then
                     If Not InstanciaCaptura Is Nothing Then
                             Call InstanciaCaptura.quitarBandera(UserIndex, MiObj.objIndex)
@@ -1706,8 +1689,8 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
                     End If
      
                     'Quita el anterior
-522                 If .Invent.DañoMagicoEqpSlot > 0 Then
-524                     Call Desequipar(UserIndex, .Invent.DañoMagicoEqpSlot)
+522                 If .invent.DañoMagicoEqpSlot > 0 Then
+524                     Call Desequipar(UserIndex, .invent.DañoMagicoEqpSlot)
                     End If
 
 546                 If .Invent.ResistenciaEqpSlot > 0 Then
@@ -1721,9 +1704,9 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
                         .Invent.ResistenciaEqpObjIndex = .Invent.Object(Slot).ObjIndex
 530                     .Invent.ResistenciaEqpSlot = Slot
                         Call WriteUpdateRM(userindex)
-                    ElseIf ObjData(.Invent.Object(Slot).ObjIndex).OBJType = e_OBJType.otDañoMagico Then
-528                     .Invent.DañoMagicoEqpObjIndex = .Invent.Object(Slot).ObjIndex
-                        .Invent.DañoMagicoEqpSlot = Slot
+                    ElseIf ObjData(.invent.Object(Slot).ObjIndex).OBJType = e_OBJType.otDañoMagico Then
+528                     .invent.DañoMagicoEqpObjIndex = .invent.Object(Slot).ObjIndex
+                        .invent.DañoMagicoEqpSlot = Slot
 538                     Call WriteUpdateDM(userindex)
                         
                     End If
@@ -2695,7 +2678,8 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                             End If
 
 970                         Call WriteConsoleMsg(UserIndex, "Te has suicidado.", e_FontTypeNames.FONTTYPE_EJECUCION)
-972                         Call UserDie(UserIndex)
+                            Call CustomScenarios.UserDie(UserIndex)
+972                         Call UserMod.UserDie(UserIndex)
                         'Poción de reset (resetea el personaje)
                         Case 22
                             If GetTickCount - .Counters.LastResetTick > 3000 Then
@@ -3527,7 +3511,7 @@ On Error GoTo ResurrectWithItem_Err
             Call WriteLocaleMsg(UserIndex, MsgInvalidTarget, e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
-106     CanHelpResult = CanHelpUser(UserIndex, targetUser)
+106     CanHelpResult = UserMod.CanHelpUser(UserIndex, targetUser)
         If UserList(TargetUser).flags.SeguroResu Then
             Call WriteConsoleMsg(UserIndex, "El usuario tiene el seguro de resurrección activado.", e_FontTypeNames.FONTTYPE_INFO)
             Call WriteConsoleMsg(TargetUser, UserList(UserIndex).name & " está intentando revivirte. Desactiva el seguro de resurrección para permitirle hacerlo.", e_FontTypeNames.FONTTYPE_INFO)

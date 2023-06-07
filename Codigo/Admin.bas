@@ -156,6 +156,7 @@ Public PlayerStunTime               As Long
 Public NpcStunTime                  As Long
 Public PlayerInmuneTime             As Long
 Public MultiShotReduction           As Single
+Public HomeTimer                    As Integer
 
 Public Puerto                       As Long
 

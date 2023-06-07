@@ -48,6 +48,22 @@ Public Const MsgTrapDidDamageToYou = 451
 Public Const MsgTrapInmo = 452
 Public Const MsgTrapPoison = 453
 Public Const MsgFallIntoTrap = 454
+Public Const MsgCaptainIsDeath = 455
+Public Const MsgTeamNumberWin = 456
+Public Const MsgCantPickFromYourStorage = 457
+Public Const MsgCantCarryMoreThanOne = 458
+Public Const MsgTeamGotAllCargo = 459
+Public Const MsgBothTeamCargo = 460
+Public Const MsgNavalConquestWinnerTeam = 461
+Public Const MsgNavalConquestEvenMatch = 462
+Public Const MsgCreateEventRoom = 463
+Public Const MsgDeathMatchInstructions = 464
+Public Const MsgHuntScenearioIntro = 465
+Public Const MsgNavalConquestIntro = 466
+Public Const MsgDeathMathInstructions = 467
+Public Const MsgHuntScenarioInstructions = 468
+Public Const MsgNavalConquestInstructions = 469
+Public Const MsgCantDropCargoAtPos = 470
 
 Public Function GetRequiredWeaponLocaleId(ByVal WeaponType As e_WeaponType) As Integer
     Select Case WeaponType
