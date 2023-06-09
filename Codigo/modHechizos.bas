@@ -4101,7 +4101,7 @@ Public Sub DesplazarHechizo(ByVal UserIndex As Integer, ByVal Dire As Integer, B
 102     If Not (CualHechizo >= 1 And CualHechizo <= MAXUSERHECHIZOS) Then Exit Sub
 
         Dim TempHechizo As Integer
-        
+        Dim SpellInterval As Long
         With UserList(UserIndex)
         
 104         If Dire = 1 Then 'Mover arriba
@@ -4115,9 +4115,11 @@ Public Sub DesplazarHechizo(ByVal UserIndex As Integer, ByVal Dire As Integer, B
 110                 TempHechizo = .Stats.UserHechizos(CualHechizo)
 112                 .Stats.UserHechizos(CualHechizo) = .Stats.UserHechizos(CualHechizo - 1)
 114                 .Stats.UserHechizos(CualHechizo - 1) = TempHechizo
-
+                    SpellInterval = .Counters.UserHechizosInterval(CualHechizo)
+115                 .Counters.UserHechizosInterval(CualHechizo) = .Counters.UserHechizosInterval(CualHechizo - 1)
+116                 .Counters.UserHechizosInterval(CualHechizo - 1) = SpellInterval
                     'Prevent the user from casting other spells than the one he had selected when he hitted "cast".
-116                 If .flags.Hechizo = CualHechizo Then
+117                 If .flags.Hechizo = CualHechizo Then
 118                     .flags.Hechizo = .flags.Hechizo - 1
 
 120                 ElseIf .flags.Hechizo = CualHechizo - 1 Then
@@ -4139,9 +4141,11 @@ Public Sub DesplazarHechizo(ByVal UserIndex As Integer, ByVal Dire As Integer, B
 128                 TempHechizo = .Stats.UserHechizos(CualHechizo)
 130                 .Stats.UserHechizos(CualHechizo) = .Stats.UserHechizos(CualHechizo + 1)
 132                 .Stats.UserHechizos(CualHechizo + 1) = TempHechizo
-
+                    SpellInterval = .Counters.UserHechizosInterval(CualHechizo)
+133                 .Counters.UserHechizosInterval(CualHechizo) = .Counters.UserHechizosInterval(CualHechizo + 1)
+134                 .Counters.UserHechizosInterval(CualHechizo + 1) = SpellInterval
                     'Prevent the user from casting other spells than the one he had selected when he hitted "cast".
-134                 If .flags.Hechizo = CualHechizo Then
+135                 If .flags.Hechizo = CualHechizo Then
 136                     .flags.Hechizo = .flags.Hechizo + 1
 
 138                 ElseIf .flags.Hechizo = CualHechizo + 1 Then
