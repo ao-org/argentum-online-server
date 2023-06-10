@@ -613,7 +613,12 @@ Private Function PuedeLanzar(ByVal UserIndex As Integer, ByVal HechizoIndex As I
                 Exit Function
             End If
             
-            
+            If Hechizos(HechizoIndex).RequireTransform > 0 Then
+                If .flags.ActiveTransform <> Hechizos(HechizoIndex).RequireTransform Then
+                    Call WriteLocaleMsg(UserIndex, MsgSpellRequiresTransform, e_FontTypeNames.FONTTYPE_INFO, GetNpcName(Hechizos(HechizoIndex).RequireTransform))
+                    Exit Function
+                End If
+            End If
 112         If .flags.Privilegios And e_PlayerType.Consejero Then
                 Exit Function
             End If
@@ -2839,7 +2844,7 @@ Private Sub InfoHechizo(ByVal UserIndex As Integer)
 
             End If
 
-132     ElseIf IsValidNpcRef(UserList(UserIndex).flags.TargetNpc) Then '¿El Hechizo fue tirado sobre un npc?
+132     ElseIf IsValidNpcRef(UserList(UserIndex).flags.TargetNPC) Then '¿El Hechizo fue tirado sobre un npc?
 
 134         If Hechizos(h).FXgrh > 0 Then '¿Envio FX?
 136             If NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Stats.MinHp < 1 Then

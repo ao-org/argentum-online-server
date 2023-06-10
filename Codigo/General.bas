@@ -1402,7 +1402,7 @@ Public Sub RecStamina(ByVal UserIndex As Integer, ByRef EnviarStats As Boolean, 
 
 112                 .Counters.STACounter = 0
 
-114                 If .Counters.Trabajando > 0 Then Exit Sub  'Trabajando no sube energía. (ToxicWaste)
+114                 If .Counters.Trabajando > 0 Or IsSet(.flags.StatusMask, ePreventEnergyRestore) Then Exit Sub  'Trabajando no sube energía. (ToxicWaste)
 
 116                 EnviarStats = True
 

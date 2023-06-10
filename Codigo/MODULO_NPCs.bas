@@ -1211,6 +1211,10 @@ Function UpdateNpcSpeed(ByVal npcIndex As Integer)
     End With
 End Function
 
+Function GetNpcName(ByVal NpcNumber As Integer) As String
+   GetNpcName = LeerNPCs.GetValue("NPC" & NpcNumber, "Name")
+End Function
+
 Function OpenNPC(ByVal NpcNumber As Integer, _
                  Optional ByVal Respawn As Boolean = True, _
                  Optional ByVal Reload As Boolean = False) As Integer

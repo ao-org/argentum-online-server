@@ -1079,7 +1079,7 @@ Public Type t_Hechizo
     StaRequerido As Integer
 
     Target As e_TargetType
-    
+    RequireTransform As Integer
     NeedStaff As Integer
     StaffAffected As Boolean
     EotId As Integer
@@ -1121,7 +1121,8 @@ Public Type t_EffectOverTime
     TickPowerMax As Integer
     Ticks As Integer
     TickTime As Long
-    TickSumption As Integer
+    TickManaConsumption As Integer
+    TickStaminaConsumption As Integer
     TickFX As Integer
     OnHitFx As Integer
     OnHitWav As Integer
@@ -1772,6 +1773,7 @@ Public Enum e_StatusMask
     eTaunted = 2
     eTransformed = 4
     eCastOnlyOnSelf = 8
+    ePreventEnergyRestore = 16
 End Enum
 
 Public Enum e_InventorySlotMask
@@ -1841,11 +1843,12 @@ Public Type t_UserFlags
     
     Inmovilizado As Byte
     TranslationActive As Boolean
+    ActiveTransform As Integer
     
     Montado As Byte
     Subastando As Boolean
     Incinerado As Byte
-    'Ladder
+
     Muerto As Byte '¿Esta muerto?
     Escondido As Byte '¿Esta escondido?
     Comerciando As Boolean '¿Esta comerciando?
@@ -1883,7 +1886,7 @@ Public Type t_UserFlags
     SeguroResu As Boolean
 
     DuracionEfecto As Long
-    TargetNpc As t_NpcReference ' Npc señalado por el usuario
+    TargetNPC As t_NpcReference ' Npc señalado por el usuario
     TargetNpcTipo As e_NPCType ' Tipo del npc señalado
     NpcInv As Integer
     
@@ -1935,9 +1938,6 @@ Public Type t_UserFlags
     Traveling As Byte
     
     EnConsulta As Boolean
-    
-    ProcesosPara As String
-    ScreenShotPara As String
 
     ChatHistory(1 To 15) As String
     

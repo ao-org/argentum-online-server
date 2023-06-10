@@ -17,6 +17,7 @@ Implements IBaseEffectOverTime
 
 Dim TickTime As Long
 Dim TimeSinceLastTick As Long
+Dim HitLimit As Integer
 Dim ApplyEffectId As Integer
 Private DotInfo As t_BaseDotInfo
 Private AttackedNpcVersion As Integer
@@ -27,6 +28,7 @@ Public Sub Setup(ByVal TargetIndex As Integer, ByVal TargetType As e_ReferenceTy
     With EffectOverTime(EffectId)
         TickTime = .TickTime
         ApplyEffectId = .ApplyEffectId
+        HitLimit = .Ticks
         If TargetType = eUser Then
             If .ClientEffectTypeId > 0 Then Call WriteSendSkillCdUpdate(TargetIndex, .ClientEffectTypeId, ID, .TickTime, .TickTime, .buffType)
         End If
@@ -110,6 +112,7 @@ Public Function IBaseEffectOverTime_Reset(ByVal SourceUserId As Integer, ByVal S
             
         End If
     End If
+    HitLimit = EffectOverTime(DotInfo.EotId).Ticks
     DotInfo.EotId = NewEffectId
     ApplyEffectId = EffectOverTime(DotInfo.EotId).ApplyEffectId
     IBaseEffectOverTime_Reset = True
@@ -162,6 +165,12 @@ Public Sub IBaseEffectOverTime_TartgetDidHit(ByVal TargetUserId As Integer, ByVa
             ElseIf EffectOverTime(DotInfo.EotId).Override Then
                 Call Effect.Reset(DotInfo.TargetRef.ArrayIndex, DotInfo.TargetRef.RefType, ApplyEffectId)
             End If
+        End If
+    End If
+    If HitLimit > 0 Then
+        HitLimit = HitLimit - 1
+        If HitLimit = 0 Then
+            DotInfo.RemoveEffect = True
         End If
     End If
 End Sub
