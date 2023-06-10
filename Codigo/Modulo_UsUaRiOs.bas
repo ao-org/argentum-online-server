@@ -3296,9 +3296,13 @@ Public Function ModifyHealth(ByVal UserIndex As Integer, ByVal amount As Long, O
     End With
 End Function
 
-Public Function ModifyStamina(ByVal UserIndex As Integer, ByVal amount As Integer, Optional ByVal minValue = 0) As Boolean
+Public Function ModifyStamina(ByVal UserIndex As Integer, ByVal Amount As Integer, ByVal CancelIfNotEnought As Boolean, Optional ByVal MinValue = 0) As Boolean
     ModifyStamina = False
     With UserList(UserIndex)
+    If CancelIfNotEnought And Amount < 0 And .Stats.MinSta < Abs(Amount) Then
+        ModifyStamina = True
+        Exit Function
+    End If
     .Stats.MinSta = .Stats.MinSta + amount
     If .Stats.MinSta > .Stats.MaxSta Then
         .Stats.MinSta = .Stats.MaxSta
@@ -3315,6 +3319,7 @@ Public Function ModifyMana(ByVal UserIndex As Integer, ByVal Amount As Integer, 
     ModifyMana = False
     With UserList(UserIndex)
     If CancelIfNotEnought And Amount < 0 And .Stats.MinMAN < Abs(Amount) Then
+        ModifyMana = True
         Exit Function
     End If
     .Stats.MinMAN = .Stats.MinMAN + Amount

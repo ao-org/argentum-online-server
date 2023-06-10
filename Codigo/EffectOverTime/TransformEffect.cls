@@ -20,7 +20,8 @@ Dim DotHpMin As Integer
 Dim DotHpMax As Integer
 Dim TargetTicks As Integer
 Dim TickCount As Integer
-Dim TickSumption As Integer
+Dim TickManaConsumption As Integer
+Dim TickStaminaConsumption As Integer
 Dim TickTime As Long
 Dim TimeSinceLastTick As Long
 Dim TickEffect As Integer
@@ -47,7 +48,8 @@ Public Sub SetEffect(ByVal EffectId As Integer)
         TickTime = .TickTime
         TickEffect = .TickFX
         TargetTicks = .Ticks
-        TickSumption = .TickSumption
+        TickManaConsumption = .TickManaConsumption
+        TickStaminaConsumption = .TickStaminaConsumption
         npcId = .npcId
         StatusMask = .ApplyStatusMask
         If DotInfo.TargetRef.RefType = eUser And EffectOverTime(DotInfo.EotId).ClientEffectTypeId > 0 Then
@@ -111,7 +113,12 @@ Public Sub IBaseEffectOverTime_Update(ByVal deltaTime As Long)
         TimeSinceLastTick = 0
         TickCount = TickCount + 1
         If DotInfo.TargetRef.RefType = eUser Then
-            If UserMod.ModifyMana(DotInfo.TargetRef.ArrayIndex, -TickSumption, True) Then
+            If UserMod.ModifyMana(DotInfo.TargetRef.ArrayIndex, -TickManaConsumption, True) Then
+                DotInfo.RemoveEffect = True
+            End If
+        End If
+        If DotInfo.TargetRef.RefType = eUser Then
+            If UserMod.ModifyStamina(DotInfo.TargetRef.ArrayIndex, -TickStaminaConsumption, True) Then
                 DotInfo.RemoveEffect = True
             End If
         End If
@@ -217,6 +224,7 @@ Private Sub TransformChacter()
 160         .Char.CascoAnim = val(LeerNPCs.GetValue(NpcIndex, "Casco"))
 161         .Char.CartAnim = val(LeerNPCs.GetValue(NpcIndex, "Cart"))
             .Char.CastAnimation = val(LeerNPCs.GetValue(NpcIndex, "CastAnimation"))
+            .flags.ActiveTransform = NpcId
             Dim CantidadAnimaciones As Integer
 144         CantidadAnimaciones = val(LeerNPCs.GetValue(NpcIndex, "Animaciones"))
 128         Call ChangeUserChar(DotInfo.TargetRef.ArrayIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim)
@@ -229,6 +237,7 @@ End Sub
 Private Sub ReturnCharToNormal()
     Call EffectsOverTime.RemoveEotModifier(DotInfo.TargetRef, EffectOverTime(DotInfo.EotId))
     If DotInfo.TargetRef.RefType = eUser Then
+        UserList(DotInfo.TargetRef.ArrayIndex).flags.ActiveTransform = 0
         Call UnsetMask(UserList(DotInfo.TargetRef.ArrayIndex).flags.StatusMask, StatusMask)
         Call UpdateCharWithEquipedItems(DotInfo.TargetRef.ArrayIndex)
         Call WriteSendSkillCdUpdate(DotInfo.TargetRef.ArrayIndex, EffectOverTime(DotInfo.EotId).ClientEffectTypeId, DotInfo.UniqueId, 0, 0, EffectOverTime(DotInfo.EotId).buffType)

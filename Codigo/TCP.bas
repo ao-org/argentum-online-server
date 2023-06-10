@@ -1247,6 +1247,7 @@ Sub ResetUserFlags(ByVal UserIndex As Integer)
 192         .SegundosPasados = 0
 196         .Montado = 0
 198         .Incinerado = 0
+199         .ActiveTransform = 0
 200         .Casado = 0
 202         .Pareja = ""
 204         Call SetUserRef(.Candidato, 0)
@@ -1288,9 +1289,6 @@ Sub ResetUserFlags(ByVal UserIndex As Integer)
             .ModificoQuests = False
             .ModificoQuestsHechas = False
             .RespondiendoPregunta = False
-         
-260         .ProcesosPara = vbNullString
-262         .ScreenShotPara = vbNullString
 
             Dim i As Integer
 266         For i = LBound(.ChatHistory) To UBound(.ChatHistory)

@@ -22,6 +22,8 @@ Dim TimeSinceLastTick As Long
 Dim TickEffect As Integer
 Dim ApplyEffectId As Integer
 Dim AreaOfEffect As Integer
+Dim TickManaConsumption As Integer
+Dim TickStaminaConsumption As Integer
 
 Private DotInfo As t_BaseDotInfo
 Private Source As t_AnyReference
@@ -33,6 +35,7 @@ Public Sub Setup(ByVal SourceIndex As Integer, ByVal SourceType As e_ReferenceTy
     Call SetBaseDot(DotInfo, TargetIndex, TargetType, ID, EffectId)
     Call SetRef(Source, SourceIndex, SourceType)
     Call SetActiveEffect
+    
 End Sub
 
 Private Sub SetActiveEffect()
@@ -41,9 +44,14 @@ Private Sub SetActiveEffect()
         TickTime = .TickTime
         TickEffect = .TickFX
         AreaOfEffect = .Area
+        TickManaConsumption = .TickManaConsumption
+        TickStaminaConsumption = .TickStaminaConsumption
         ApplyEffectId = .ApplyEffectId
         If DotInfo.TargetRef.RefType = eUser And EffectOverTime(DotInfo.EotId).ClientEffectTypeId > 0 Then
             Call WriteSendSkillCdUpdate(DotInfo.TargetRef.ArrayIndex, .ClientEffectTypeId, DotInfo.UniqueId, .TickTime * TargetTicks, .TickTime * TargetTicks, .buffType)
+        End If
+        If DotInfo.TargetRef.RefType = eUser And TickStaminaConsumption > 0 Then
+            Call SetMask(UserList(DotInfo.TargetRef.ArrayIndex).flags.StatusMask, ePreventEnergyRestore)
         End If
     End With
     Call PerformAction
@@ -121,6 +129,9 @@ Public Function IBaseEffectOverTime_Reset(ByVal SourceUserId As Integer, ByVal S
         If DotInfo.TargetRef.RefType = eUser And EffectOverTime(DotInfo.EotId).ClientEffectTypeId > 0 Then
             Call WriteSendSkillCdUpdate(DotInfo.TargetRef.ArrayIndex, EffectOverTime(DotInfo.EotId).ClientEffectTypeId, DotInfo.UniqueId, 0, 0, EffectOverTime(DotInfo.EotId).buffType)
         End If
+        If DotInfo.TargetRef.RefType = eUser Then
+            Call UnsetMask(UserList(DotInfo.TargetRef.ArrayIndex).flags.StatusMask, ePreventEnergyRestore)
+        End If
         DotInfo.EotId = NewEffectId
         Call SetActiveEffect
     Else
@@ -139,6 +150,9 @@ Public Sub IBaseEffectOverTime_OnRemove()
     DotInfo.RemoveEffect = True
     If DotInfo.TargetRef.RefType = eUser And EffectOverTime(DotInfo.EotId).ClientEffectTypeId > 0 Then
         Call WriteSendSkillCdUpdate(DotInfo.TargetRef.ArrayIndex, EffectOverTime(DotInfo.EotId).ClientEffectTypeId, DotInfo.UniqueId, 0, 0, EffectOverTime(DotInfo.EotId).buffType)
+    End If
+    If DotInfo.TargetRef.RefType = eUser Then
+        Call UnsetMask(UserList(DotInfo.TargetRef.ArrayIndex).flags.StatusMask, ePreventEnergyRestore)
     End If
 End Sub
 
@@ -201,6 +215,14 @@ Public Sub PerformAction()
             Call ApplyEffectTo(DotInfo.TargetRef.ArrayIndex, eUser)
         End If
     End With
+    If DotInfo.TargetRef.RefType = eUser Then
+        If UserMod.ModifyMana(DotInfo.TargetRef.ArrayIndex, -TickManaConsumption, True) Then
+            DotInfo.RemoveEffect = True
+        End If
+        If UserMod.ModifyStamina(DotInfo.TargetRef.ArrayIndex, -TickStaminaConsumption, True) Then
+            DotInfo.RemoveEffect = True
+        End If
+    End If
 End Sub
 
 Private Sub ApplyEffectTo(ByVal TargetId As Integer, ByVal TargetType As e_ReferenceType)

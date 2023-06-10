@@ -767,6 +767,7 @@ Public Sub CargarHechizos()
 274         Hechizos(Hechizo).StaRequerido = val(Leer.GetValue("Hechizo" & Hechizo, "StaRequerido"))
     
 276         Hechizos(Hechizo).Target = val(Leer.GetValue("Hechizo" & Hechizo, "Target"))
+277         Hechizos(Hechizo).RequireTransform = val(Leer.GetValue("Hechizo" & Hechizo, "RequireTransform"))
 278         frmCargando.cargar.value = frmCargando.cargar.value + 1
     
 280         Hechizos(Hechizo).NeedStaff = val(Leer.GetValue("Hechizo" & Hechizo, "NeedStaff"))
@@ -824,7 +825,8 @@ On Error GoTo ErrHandler
             EffectOverTime(i).Ticks = val(Leer.GetValue("EOT" & i, "Ticks"))
             EffectOverTime(i).TickTime = val(Leer.GetValue("EOT" & i, "TickTime"))
             EffectOverTime(i).TickFX = val(Leer.GetValue("EOT" & i, "TickFX"))
-            EffectOverTime(i).TickSumption = val(Leer.GetValue("EOT" & i, "TickSumption"))
+            EffectOverTime(i).TickManaConsumption = val(Leer.GetValue("EOT" & i, "TickManaConsumption"))
+            EffectOverTime(i).TickStaminaConsumption = val(Leer.GetValue("EOT" & i, "TickStaminaConsumption"))
             EffectOverTime(i).OnHitFx = val(Leer.GetValue("EOT" & i, "OnHitFx"))
             EffectOverTime(i).OnHitWav = val(Leer.GetValue("EOT" & i, "OnHitWav"))
             EffectOverTime(i).Override = val(Leer.GetValue("EOT" & i, "Override"))
