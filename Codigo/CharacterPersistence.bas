@@ -96,7 +96,6 @@ Public Function LoadCharacterFromDB(ByVal userIndex As Integer) As Boolean
 164         .Invent.MonturaSlot = SanitizeNullValue(RS!slot_mount, 0)
 166         .invent.DañoMagicoEqpSlot = SanitizeNullValue(RS!slot_dm, 0)
 168         .Invent.ResistenciaEqpSlot = SanitizeNullValue(RS!slot_rm, 0)
-170         .Invent.NudilloSlot = SanitizeNullValue(RS!slot_knuckles, 0)
 172         .Invent.HerramientaEqpSlot = SanitizeNullValue(RS!slot_tool, 0)
 174         .Invent.MagicoSlot = SanitizeNullValue(RS!slot_magic, 0)
 176         .Stats.MinHp = RS!min_hp
@@ -444,7 +443,6 @@ Public Sub SaveCharacterDB(ByVal userIndex As Integer)
 164         Params(post_increment(i)) = .Invent.ResistenciaEqpSlot
 166         Params(post_increment(i)) = .Invent.HerramientaEqpSlot
 168         Params(post_increment(i)) = .Invent.MagicoSlot
-170         Params(post_increment(i)) = .Invent.NudilloSlot
 172         Params(post_increment(i)) = .Invent.BarcoSlot
 174         Params(post_increment(i)) = .Invent.MonturaSlot
 176         Params(post_increment(i)) = .Stats.MinHp
@@ -734,7 +732,6 @@ Public Sub SaveNewCharacterDB(ByVal userIndex As Integer)
 158         Params(post_increment(i)) = .Invent.ResistenciaEqpSlot
 160         Params(post_increment(i)) = .Invent.HerramientaEqpSlot
 162         Params(post_increment(i)) = .Invent.MagicoSlot
-164         Params(post_increment(i)) = .Invent.NudilloSlot
 166         Params(post_increment(i)) = .Invent.BarcoSlot
 168         Params(post_increment(i)) = .Invent.MonturaSlot
 170         Params(post_increment(i)) = .Stats.MinHp

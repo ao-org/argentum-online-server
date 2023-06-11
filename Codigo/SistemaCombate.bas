@@ -400,6 +400,16 @@ GetUserDamge_Err:
 150      Call TraceError(Err.Number, Err.Description, "SistemaCombate.GetUserDamge", Erl)
 End Function
 
+Public Function GetClassAttackModifier(ByRef ObjData As t_ObjData, ByVal Class As e_Class) As Single
+    If ObjData.Proyectil > 0 Then
+        GetClassAttackModifier = ModicadorDañoClaseProyectiles(Class)
+    ElseIf ObjData.WeaponType = eKnuckle Then
+        GetClassAttackModifier = ModClase(Class).DañoWrestling
+    Else
+        GetClassAttackModifier = ModicadorDañoClaseArmas(Class)
+    End If
+End Function
+
 Public Function GetUserDamageWithItem(ByVal UserIndex As Integer, ByVal WeaponObjIndex As Integer, ByVal AmunitionObjIndex As Integer) As Long
 On Error GoTo GetUserDamageWithItem_Err
             Dim UserDamage As Long, WeaponDamage As Long, MaxWeaponDamage As Long, ClassModifier As Single
@@ -410,14 +420,13 @@ On Error GoTo GetUserDamageWithItem_Err
 104             If WeaponObjIndex > 0 Then
                     Dim Arma As t_ObjData
 106                 Arma = ObjData(WeaponObjIndex)
+                    ClassModifier = GetClassAttackModifier(Arma, .clase)
                     ' Calculamos el daño del arma
 108                 WeaponDamage = RandomNumber(Arma.MinHIT, Arma.MaxHit)
                     ' Daño máximo del arma
 110                 MaxWeaponDamage = Arma.MaxHit
                     ' Si lanza proyectiles
 112                 If Arma.Proyectil > 0 Then
-                        ' Usamos el modificador correspondiente
-114                     ClassModifier = ModicadorDañoClaseProyectiles(.clase)
                         ' Si requiere munición
 116                     If Arma.Municion > 0 And AmunitionObjIndex > 0 Then
                             Dim Municion As t_ObjData
@@ -426,25 +435,11 @@ On Error GoTo GetUserDamageWithItem_Err
 120                         WeaponDamage = WeaponDamage + RandomNumber(Municion.MinHIT, Municion.MaxHit)
 122                         MaxWeaponDamage = Arma.MaxHit + Municion.MaxHit
                         End If
-                
-                    ' Arma melé
-                    Else
-                        ' Usamos el modificador correspondiente
-124                     ClassModifier = ModicadorDañoClaseArmas(.clase)
                     End If
-        
                 ' Daño con puños
                 Else
                     ' Modificador de combate sin armas
 126                 ClassModifier = ModClase(.clase).DañoWrestling
-                    ' Si tiene nudillos o guantes
-128                 If .Invent.NudilloSlot > 0 Then
-130                     Arma = ObjData(.Invent.NudilloObjIndex)
-                        ' Calculamos el daño del nudillo o guante
-132                     WeaponDamage = RandomNumber(Arma.MinHIT, Arma.MaxHit)
-                        ' Daño máximo
-134                     MaxWeaponDamage = Arma.MaxHit
-                    End If
                 End If
 
                 ' Base damage
@@ -542,7 +537,6 @@ On Error GoTo UserDamageNpc_Err
                 Dim ArmaObjInd, ObjInd As Integer
 180             ObjInd = 0
 182             ArmaObjInd = .Invent.WeaponEqpObjIndex
-184             If ArmaObjInd = 0 Then ArmaObjInd = .Invent.NudilloObjIndex
                 If ArmaObjInd > 0 Then
                     If ObjData(ArmaObjInd).Municion = 0 Then
 188                     ObjInd = ArmaObjInd
@@ -2138,12 +2132,6 @@ Private Sub UserDañoEspecial(ByVal AtacanteIndex As Integer, ByVal VictimaIndex
         Dim ArmaObjInd As Integer, ObjInd As Integer
 100     ArmaObjInd = UserList(AtacanteIndex).Invent.WeaponEqpObjIndex
 102     ObjInd = 0
-
-104     If ArmaObjInd = 0 Then
-106      ArmaObjInd = UserList(AtacanteIndex).Invent.NudilloObjIndex
-
-        End If
-
         ' Preguntamos una vez mas, si no tiene Nudillos o Arma, no tiene sentido seguir.
 108     If ArmaObjInd = 0 Then
           Exit Sub
@@ -2305,12 +2293,17 @@ End Sub
 
 Private Function PuedeDesequiparDeUnGolpe(ByVal UserIndex As Integer) As Boolean
         On Error GoTo PuedeDesequiparDeUnGolpe_Err
-    
 100     With UserList(UserIndex)
+            If .invent.WeaponEqpObjIndex > 0 Then
+                If ObjData(.invent.WeaponEqpObjIndex).WeaponType <> eKnuckle Then
+                    PuedeDesequiparDeUnGolpe = False
+                    Exit Function
+                End If
+            End If
 102         Select Case .clase
     
             Case e_Class.Bandit, e_Class.Thief
-104             PuedeDesequiparDeUnGolpe = (.Stats.UserSkills(e_Skill.Wrestling) >= 100) And (.Invent.WeaponEqpObjIndex = 0)
+104             PuedeDesequiparDeUnGolpe = (.Stats.UserSkills(e_Skill.Wrestling) >= 100)
 
 106         Case Else
 108             PuedeDesequiparDeUnGolpe = False

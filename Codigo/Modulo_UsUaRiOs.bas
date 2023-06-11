@@ -362,18 +362,6 @@ On Error GoTo Complete_ConnectUser_Err
                 End If
             End If
         
-445         If .Invent.NudilloSlot > 0 Then
-450             If .Invent.Object(.Invent.NudilloSlot).ObjIndex > 0 Then
-455                 .Invent.NudilloObjIndex = .Invent.Object(.Invent.NudilloSlot).ObjIndex
-
-460                 If .flags.Muerto = 0 Then
-465                     .Char.Arma_Aura = ObjData(.Invent.NudilloObjIndex).CreaGRH
-                    End If
-                Else
-470                 .Invent.NudilloSlot = 0
-                End If
-            End If
-        
 475         If .Invent.MagicoSlot > 0 Then
 480             If .Invent.Object(.Invent.MagicoSlot).ObjIndex Then
 485                 .Invent.MagicoObjIndex = .Invent.Object(.Invent.MagicoSlot).ObjIndex
@@ -388,7 +376,7 @@ On Error GoTo Complete_ConnectUser_Err
             
 505         If .Invent.EscudoEqpSlot = 0 Then .Char.ShieldAnim = NingunEscudo
 510         If .Invent.CascoEqpSlot = 0 Then .Char.CascoAnim = NingunCasco
-515         If .Invent.WeaponEqpSlot = 0 And .Invent.NudilloSlot = 0 And .Invent.HerramientaEqpSlot = 0 Then .Char.WeaponAnim = NingunArma
+515         If .invent.WeaponEqpSlot = 0 And .invent.HerramientaEqpSlot = 0 Then .Char.WeaponAnim = NingunArma
 516         If .invent.MagicoSlot = 0 Then .Char.CartAnim = NoCart
             ' -----------------------------------------------------------------------
             '   FIN - INFORMACION INICIAL DEL PERSONAJE
@@ -866,18 +854,10 @@ Sub RevivirUsuario(ByVal UserIndex As Integer, Optional ByVal MedianteHechizo As
                         .Char.CartAnim = ObjData(.invent.MagicoObjIndex).Ropaje
                     End If
                 End If
-    
-182             If .Invent.NudilloObjIndex > 0 Then
-184                 If ObjData(.Invent.NudilloObjIndex).CreaGRH <> "" Then
-186                     .Char.Arma_Aura = ObjData(.Invent.NudilloObjIndex).CreaGRH
-188                     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageAuraToChar(.Char.charindex, .Char.Arma_Aura, False, 1))
-    
-                    End If
-                End If
                 
-190             If .Invent.DañoMagicoEqpObjIndex > 0 Then
-192                 If ObjData(.Invent.DañoMagicoEqpObjIndex).CreaGRH <> "" Then
-194                     .Char.DM_Aura = ObjData(.Invent.DañoMagicoEqpObjIndex).CreaGRH
+190             If .invent.DañoMagicoEqpObjIndex > 0 Then
+192                 If ObjData(.invent.DañoMagicoEqpObjIndex).CreaGRH <> "" Then
+194                     .Char.DM_Aura = ObjData(.invent.DañoMagicoEqpObjIndex).CreaGRH
 196                     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageAuraToChar(.Char.charindex, .Char.DM_Aura, False, 6))
                     End If
                 End If
@@ -2054,7 +2034,6 @@ Sub UserDie(ByVal UserIndex As Integer)
             Call Desequipar(UserIndex, .Invent.HerramientaEqpSlot)
             Call Desequipar(UserIndex, .Invent.MonturaSlot)
             Call Desequipar(UserIndex, .Invent.MunicionEqpSlot)
-            Call Desequipar(UserIndex, .Invent.NudilloSlot)
             Call Desequipar(UserIndex, .Invent.MagicoSlot)
             Call Desequipar(UserIndex, .Invent.ResistenciaEqpSlot)
    
@@ -3480,12 +3459,5 @@ End Function
 
 Public Function GetWeaponHitBonus(ByVal WeaponIndex As Integer, ByVal UserClass As e_Class)
     If Not IsFeatureEnabled("class_weapon_bonus") Then Exit Function
-    Dim Bonus As Integer
-    Select Case UserClass
-        Case e_Class.Assasin
-            If ObjData(WeaponIndex).WeaponType = eDagger Then
-                Bonus = Bonus + 20
-            End If
-    End Select
-    GetWeaponHitBonus = Bonus
+    GetWeaponHitBonus = ModClase(UserClass).WeaponHitBonus(ObjData(WeaponIndex).WeaponType)
 End Function

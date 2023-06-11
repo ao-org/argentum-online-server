@@ -588,7 +588,6 @@ Public Sub DoNavega(ByVal UserIndex As Integer, _
         
 168                 If .Invent.EscudoEqpObjIndex > 0 Then .Char.ShieldAnim = ObjData(.Invent.EscudoEqpObjIndex).ShieldAnim
 170                 If .Invent.WeaponEqpObjIndex > 0 Then .Char.WeaponAnim = ObjData(.Invent.WeaponEqpObjIndex).WeaponAnim
-172                 If .Invent.NudilloObjIndex > 0 Then .Char.WeaponAnim = ObjData(.Invent.NudilloObjIndex).WeaponAnim
 174                 If .Invent.HerramientaEqpObjIndex > 0 Then .Char.WeaponAnim = ObjData(.Invent.HerramientaEqpObjIndex).WeaponAnim
 176                 If .Invent.CascoEqpObjIndex > 0 Then .Char.CascoAnim = ObjData(.Invent.CascoEqpObjIndex).CascoAnim
 177                 If .invent.MagicoObjIndex > 0 Then
@@ -2156,24 +2155,18 @@ Public Sub DoRobar(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
                             End Select
                             
 238                         If .clase = e_Class.Thief Then
-
                                 'Si no tiene puestos los guantes de hurto roba un 50% menos.
-240                             If .Invent.NudilloObjIndex > 0 Then
-242                                 If ObjData(.Invent.NudilloObjIndex).Subtipo = 5 Then
+240                             If .invent.WeaponEqpObjIndex > 0 Then
+242                                 If ObjData(.invent.WeaponEqpObjIndex).Subtipo = 5 Then
 244                                     n = RandomNumber(.Stats.ELV * 50 * Extra, .Stats.ELV * 100 * Extra) * OroMult
                                     Else
 246                                     n = RandomNumber(.Stats.ELV * 25 * Extra, .Stats.ELV * 50 * Extra) * OroMult
-
                                     End If
-
                                 Else
 248                                 n = RandomNumber(.Stats.ELV * 25 * Extra, .Stats.ELV * 50 * Extra) * OroMult
-
                                 End If
-    
                             Else
 250                             n = RandomNumber(1, 100) * OroMult
-    
                             End If
 
 252                         If n > UserList(VictimaIndex).Stats.GLD Then n = UserList(VictimaIndex).Stats.GLD
