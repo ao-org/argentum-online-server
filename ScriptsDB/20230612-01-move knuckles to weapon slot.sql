@@ -1,0 +1,1 @@
+UPDATE user SET slot_weapon=slot_knuckles, slot_knuckles=0 WHERE slot_knuckles>0;
