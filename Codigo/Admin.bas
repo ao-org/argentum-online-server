@@ -157,6 +157,8 @@ Public NpcStunTime                  As Long
 Public PlayerInmuneTime             As Long
 Public MultiShotReduction           As Single
 Public HomeTimer                    As Integer
+Public MagicSkillBonusDamageModifier As Single
+Public MRSkillProtectionModifier As Single
 
 Public Puerto                       As Long
 

@@ -1066,7 +1066,8 @@ Sub LoadBalance()
 172     MaxInvisibleSpellDisplayTime = val(BalanceIni.GetValue("EXTRA", "MaxInvisibleSpellDisplayTime"))
         MultiShotReduction = val(BalanceIni.GetValue("EXTRA", "MultiShotReduction"))
         HomeTimer = val(BalanceIni.GetValue("EXTRA", "HomeTimer"))
-        
+        MagicSkillBonusDamageModifier = val(BalanceIni.GetValue("EXTRA", "MagicSkillBonusDamageModifier"))
+        MRSkillProtectionModifier = val(BalanceIni.GetValue("EXTRA", "MagicResistanceSkillProtectionModifier"))
         'stun
         PlayerStunTime = val(BalanceIni.GetValue("STUN", "PlayerStunTime"))
         NpcStunTime = val(BalanceIni.GetValue("STUN", "NpcStunTime"))
