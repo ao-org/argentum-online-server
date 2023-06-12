@@ -9073,12 +9073,6 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
 
                         End If
                         
-                        'Cambiamos si alguno es un nudillo
-168                     If .Invent.NudilloSlot = SlotViejo Then
-170                         .Invent.NudilloSlot = SlotNuevo
-
-                        End If
-                        
                         'Cambiamos si alguno es un magico
 172                     If .Invent.MagicoSlot = SlotViejo Then
 174                         .Invent.MagicoSlot = SlotNuevo
@@ -9203,14 +9197,6 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
 280                     .Invent.WeaponEqpSlot = SlotNuevo
 282                 ElseIf .Invent.WeaponEqpSlot = SlotNuevo Then
 284                     .Invent.WeaponEqpSlot = SlotViejo
-    
-                    End If
-                     
-                    'Cambiamos si alguno es un nudillo
-286                 If .Invent.NudilloSlot = SlotViejo Then
-288                     .Invent.NudilloSlot = SlotNuevo
-290                 ElseIf .Invent.NudilloSlot = SlotNuevo Then
-292                     .Invent.NudilloSlot = SlotViejo
     
                     End If
                      

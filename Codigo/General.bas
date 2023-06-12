@@ -534,7 +534,15 @@ Private Sub InicializarConstantes()
 216     RaceHeightOffset(Gnomo) = -27
 218     RaceHeightOffset(Enano) = -27
 300     RaceHeightOffset(Orco) = -35
-        
+
+        WeaponTypeNames(eSword) = "Sword"
+        WeaponTypeNames(eDagger) = "Dagger"
+        WeaponTypeNames(eBow) = "Bow"
+        WeaponTypeNames(eStaff) = "Staff"
+        WeaponTypeNames(eMace) = "Mace"
+        WeaponTypeNames(eThrowableAxe) = "ThrowableAxe"
+        WeaponTypeNames(eAxe) = "Axe"
+        WeaponTypeNames(eKnuckle) = "Knuckle"
         Exit Sub
 
 InicializarConstantes_Err:

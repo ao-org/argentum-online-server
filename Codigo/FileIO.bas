@@ -1009,10 +1009,12 @@ Sub LoadBalance()
         Dim BalanceIni As clsIniManager
 
 100     Set BalanceIni = New clsIniManager
-    
-102     BalanceIni.Initialize DatPath & "Balance.dat"
-    
-        Dim i         As Long
+        If IsFeatureEnabled("balance-2") Then
+101         BalanceIni.Initialize DatPath & "Balance2.dat"
+        Else
+102         BalanceIni.Initialize DatPath & "Balance.dat"
+        End If
+        Dim i, j As Long
 
         Dim SearchVar As String
 
@@ -1024,7 +1026,6 @@ Sub LoadBalance()
 110             .Evasion = val(BalanceIni.GetValue("MODEVASION", SearchVar))
 112             .AtaqueArmas = val(BalanceIni.GetValue("MODATAQUEARMAS", SearchVar))
 114             .AtaqueProyectiles = val(BalanceIni.GetValue("MODATAQUEPROYECTILES", SearchVar))
-                '.DañoWrestling = val(BalanceIni.GetValue("MODATAQUEWRESTLING", SearchVar))
 116             .DañoArmas = val(BalanceIni.GetValue("MODDANOARMAS", SearchVar))
 118             .DañoProyectiles = val(BalanceIni.GetValue("MODDANOPROYECTILES", SearchVar))
 120             .DañoWrestling = val(BalanceIni.GetValue("MODDANOWRESTLING", SearchVar))
@@ -1037,6 +1038,9 @@ Sub LoadBalance()
 134             .HitPre36 = val(BalanceIni.GetValue("GOLPE_PRE_36", SearchVar))
 136             .HitPost36 = val(BalanceIni.GetValue("GOLPE_POST_36", SearchVar))
 138             .ResistenciaMagica = val(BalanceIni.GetValue("MODRESISTENCIAMAGICA", SearchVar))
+                For j = 1 To eWeaponTypeCount - 1
+                    .WeaponHitBonus(j) = val(BalanceIni.GetValue(SearchVar, WeaponTypeNames(j)))
+                Next j
             End With
 
 140     Next i
@@ -1404,17 +1408,6 @@ Sub LoadOBJData()
 346                     .HastaMap = val(Leer.GetValue(ObjKey, "Map"))
 348                     .HastaX = val(Leer.GetValue(ObjKey, "X"))
 350                     .HastaY = val(Leer.GetValue(ObjKey, "Y"))
-                    
-352                 Case e_OBJType.otNudillos
-354                     .MinHIT = val(Leer.GetValue(ObjKey, "MinHIT"))
-356                     .MaxHit = val(Leer.GetValue(ObjKey, "MaxHit"))
-358                     .Envenena = val(Leer.GetValue(ObjKey, "Envenena"))
-360                     .Paraliza = val(Leer.GetValue(ObjKey, "Paraliza"))
-362                     .Estupidiza = val(Leer.GetValue(ObjKey, "Estupidiza"))
-364                     .incinera = val(Leer.GetValue(ObjKey, "Incinera"))
-366                     .WeaponAnim = val(Leer.GetValue(ObjKey, "Anim"))
-368                     .SkHerreria = val(Leer.GetValue(ObjKey, "SkHerreria"))
-                        .WeaponType = val(Leer.GetValue(ObjKey, "WeaponType"))
             
 370                 Case e_OBJType.otTeleport
                         .Radio = val(Leer.GetValue(ObjKey, "Radio"))

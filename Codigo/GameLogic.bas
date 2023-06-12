@@ -2178,11 +2178,6 @@ Public Function TestRequiredEquipedItem(ByRef inventory As t_Inventario, ByVal r
         TestRequiredEquipedItem = e_SpellRequirementMask.eHelm
         Exit Function
     End If
-    If IsSet(requiredItemsFlag, e_SpellRequirementMask.eKnucle) And _
-      inventory.NudilloObjIndex = 0 Then
-        TestRequiredEquipedItem = e_SpellRequirementMask.eKnucle
-        Exit Function
-    End If
     If IsSet(requiredItemsFlag, e_SpellRequirementMask.eMagicItem) And _
       inventory.MagicoObjIndex = 0 Then
         TestRequiredEquipedItem = e_SpellRequirementMask.eMagicItem

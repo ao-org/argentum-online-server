@@ -73,6 +73,8 @@ Public Enum e_WeaponType
     eThrowableAxe = 6
     eAxe = 7
     eKnuckle = 8
+    
+    eWeaponTypeCount
 End Enum
 
 Public Enum e_Facciones
@@ -827,7 +829,6 @@ Public Enum e_OBJType
     OtPozos = 40
     otMonturas = 44
     otRunas = 45
-    otNudillos = 46
     OtCorreo = 47
     OtCofre = 48
     OtDonador = 50
@@ -1205,8 +1206,6 @@ Public Type t_Inventario
     MonturaSlot As Byte
     MagicoObjIndex As Integer
     MagicoSlot As Byte
-    NudilloObjIndex As Integer
-    NudilloSlot As Byte
     
 End Type
 
@@ -1643,7 +1642,6 @@ End Type
 '[Pablo ToxicWaste]
 ' Mod. by WyroX
 Public Type t_ModClase
-
     Vida As Double
     Evasion As Double
     AtaqueArmas As Double
@@ -1659,7 +1657,7 @@ Public Type t_ModClase
     HitPre36 As Integer
     HitPost36 As Integer
     ResistenciaMagica As Double
-
+    WeaponHitBonus(1 To e_WeaponType.eWeaponTypeCount) As Integer
 End Type
 
 Public Type t_ModRaza
@@ -1783,8 +1781,7 @@ Public Enum e_InventorySlotMask
     eAmunition = 8
     eArmor = 16
     eMagicItem = 32
-    eKnuckles = 64
-    eTool = 128
+    eTool = 64
 End Enum
 
 'Flags
@@ -2689,6 +2686,7 @@ Public backup                            As Boolean ' TODO: Se usa esta variable
 Public ListaRazas(1 To NUMRAZAS)         As String
 Public SkillsNames(1 To NUMSKILLS)       As String
 Public ListaClases(1 To NUMCLASES)       As String
+Public WeaponTypeNames(1 To eWeaponTypeCount)  As String
 Public ListaAtributos(1 To NUMATRIBUTOS) As String
 Public RecordUsuarios                    As Long
 

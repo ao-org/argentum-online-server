@@ -312,9 +312,6 @@ Sub LimpiarInventario(ByVal UserIndex As Integer)
 134     UserList(UserIndex).Invent.ResistenciaEqpObjIndex = 0
 136     UserList(UserIndex).Invent.ResistenciaEqpSlot = 0
 
-138     UserList(UserIndex).Invent.NudilloObjIndex = 0
-140     UserList(UserIndex).Invent.NudilloSlot = 0
-
 142     UserList(UserIndex).Invent.MunicionEqpObjIndex = 0
 144     UserList(UserIndex).Invent.MunicionEqpSlot = 0
 
@@ -945,20 +942,6 @@ Sub Desequipar(ByVal UserIndex As Integer, ByVal Slot As Byte)
 236             UserList(UserIndex).Invent.MagicoObjIndex = 0
 238             UserList(UserIndex).Invent.MagicoSlot = 0
         
-240         Case e_OBJType.otNudillos
-    
-                'falta mandar animacion
-            
-242             UserList(UserIndex).Invent.Object(Slot).Equipped = 0
-244             UserList(UserIndex).Invent.NudilloObjIndex = 0
-246             UserList(UserIndex).Invent.NudilloSlot = 0
-        
-248             UserList(UserIndex).Char.Arma_Aura = ""
-250             Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessageAuraToChar(UserList(UserIndex).Char.charindex, 0, True, 1))
-        
-252             UserList(UserIndex).Char.WeaponAnim = NingunArma
-254             Call ChangeUserChar(UserIndex, UserList(UserIndex).Char.body, UserList(UserIndex).Char.head, UserList(UserIndex).Char.Heading, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.CascoAnim, UserList(UserIndex).Char.CartAnim)
-        
 256         Case e_OBJType.otArmadura
 258             UserList(UserIndex).Invent.Object(Slot).Equipped = 0
 260             UserList(UserIndex).Invent.ArmourEqpObjIndex = 0
@@ -1255,10 +1238,6 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
 130                 If .Invent.HerramientaEqpObjIndex > 0 Then
 132                     Call Desequipar(UserIndex, .Invent.HerramientaEqpSlot)
                     End If
-            
-134                 If .Invent.NudilloObjIndex > 0 Then
-136                     Call Desequipar(UserIndex, .Invent.NudilloSlot)
-                    End If
 
 138                 .Invent.Object(Slot).Equipped = 1
 140                 .Invent.WeaponEqpObjIndex = .Invent.Object(Slot).ObjIndex
@@ -1444,53 +1423,6 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
 308                 If Len(obj.CreaGRH) <> 0 Then
 310                     .Char.Otra_Aura = obj.CreaGRH
 312                     Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessageAuraToChar(.Char.charindex, .Char.Otra_Aura, False, 5))
-                    End If
-                    
-314             Case e_OBJType.otNudillos
-                    If IsSet(.flags.DisabledSlot, e_InventorySlotMask.eWeapon) Then
-                        Call WriteLocaleMsg(UserIndex, MsgCantEquipYet, e_FontTypeNames.FONTTYPE_INFO)
-                        Exit Sub
-                    End If
-316                 If .Invent.WeaponEqpObjIndex > 0 Then
-318                     Call Desequipar(UserIndex, .Invent.WeaponEqpSlot)
-
-                    End If
-
-320                 If .Invent.Object(Slot).Equipped Then
-322                     Call Desequipar(UserIndex, Slot)
-                        Exit Sub
-                    End If
-
-                    'Quitamos el elemento anterior
-324                 If .Invent.NudilloObjIndex > 0 Then
-326                     Call Desequipar(UserIndex, .Invent.NudilloSlot)
-
-                    End If
-
-328                 .Invent.Object(Slot).Equipped = 1
-330                 .Invent.NudilloObjIndex = .Invent.Object(Slot).ObjIndex
-332                 .Invent.NudilloSlot = Slot
-
-                    'Falta enviar anim
-334                 If .flags.Montado = 0 Then
-                
-336                     If .flags.Navegando = 0 Then
-338                         .Char.WeaponAnim = obj.WeaponAnim
-340                         Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, UserList(UserIndex).Char.CartAnim)
-
-                        End If
-
-                    End If
-
-342                 If obj.SndAura = 0 Then
-344                     Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessagePlayWave(SND_SACARARMA, .Pos.X, .Pos.y))
-                    Else
-346                     Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessagePlayWave(obj.SndAura, .Pos.X, .Pos.y))
-                    End If
-                 
-348                 If Len(obj.CreaGRH) <> 0 Then
-350                     .Char.Arma_Aura = obj.CreaGRH
-352                     Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessageAuraToChar(.Char.charindex, .Char.Arma_Aura, False, 1))
                     End If
     
 354             Case e_OBJType.otFlechas
@@ -3697,8 +3629,6 @@ Public Sub UpdateCharWithEquipedItems(ByVal UserIndex As Integer)
             .Char.WeaponAnim = ObjData(.invent.WeaponEqpObjIndex).WeaponAnim
         ElseIf .invent.HerramientaEqpObjIndex > 0 Then
             .Char.WeaponAnim = ObjData(.invent.HerramientaEqpObjIndex).WeaponAnim
-        ElseIf .invent.NudilloObjIndex > 0 Then
-            .Char.WeaponAnim = ObjData(.invent.NudilloObjIndex).WeaponAnim
         Else
             .Char.WeaponAnim = 0
         End If

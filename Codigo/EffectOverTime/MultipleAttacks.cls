@@ -154,9 +154,11 @@ Public Function IBaseEffectOverTime_ApplyDamageReduction(ByVal Damage As Long, B
 End Function
 
 Public Sub IBaseEffectOverTime_TargetWillAttackPosition(ByVal Map As Integer, ByVal PosX As Integer, ByVal PosY As Integer)
-     If UserList(mDotInfo.TargetRef.ArrayIndex).Invent.WeaponEqpSlot > 0 Then
-        mDotInfo.RemoveEffect = True
-        Exit Sub
+     If UserList(mDotInfo.TargetRef.ArrayIndex).invent.WeaponEqpObjIndex > 0 Then
+        If ObjData(UserList(mDotInfo.TargetRef.ArrayIndex).invent.WeaponEqpObjIndex).WeaponType <> eKnuckle Then
+            mDotInfo.RemoveEffect = True
+            Exit Sub
+        End If
      End If
      Dim i As Integer
      mPendingBlowPos.Map = Map
