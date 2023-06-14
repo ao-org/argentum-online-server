@@ -73,9 +73,10 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
 120         DamageStr = PonerPuntos(Damage)
 122         Call WriteLocaleMsg(UserIndex, 32, e_FontTypeNames.FONTTYPE_FIGHT, NpcList(NpcIndex).name & "¬" & DamageStr)
           End If
+          
 128     ElseIf IsSet(Hechizos(Spell).Effects, e_SpellEffects.eDoDamage) Then
 130       Damage = RandomNumber(Hechizos(Spell).MinHp, Hechizos(Spell).MaxHp)
-
+          Damage = Damage * (1 + NpcList(NpcIndex).Stats.MagicBonus)
           ' Si el hechizo no ignora la RM
 132       If Hechizos(Spell).AntiRm = 0 Then
             Dim PorcentajeRM As Integer
@@ -99,6 +100,9 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
 150         PorcentajeRM = PorcentajeRM + 100 * ModClase(.clase).ResistenciaMagica
             ' Resto el porcentaje total
 152         Damage = Damage - Porcentaje(Damage, PorcentajeRM)
+            If IsFeatureEnabled("mr-magic-bonus-damage") Then
+                Damage = max(1, Damage - .Stats.UserSkills(Resistencia) * MRSkillProtectionModifier)
+            End If
           End If
           Damage = Damage * NPCs.GetMagicDamageModifier(NpcList(npcIndex))
           Damage = Damage * UserMod.GetMagicDamageReduction(UserList(UserIndex))
@@ -696,8 +700,8 @@ Private Function PuedeLanzar(ByVal UserIndex As Integer, ByVal HechizoIndex As I
 152             Call WriteLocaleMsg(UserIndex, "93", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Function
             End If
-        
-154         If .clase = e_Class.Mage Then
+            
+154         If .clase = e_Class.Mage And Not IsFeatureEnabled("remove-staff-requirements") Then
 156             If Hechizos(HechizoIndex).NeedStaff > 0 Then
 158                 If .Invent.WeaponEqpObjIndex = 0 Then
 160                     Call WriteConsoleMsg(UserIndex, "Necesitás un báculo para lanzar este hechizo.", e_FontTypeNames.FONTTYPE_INFO)
@@ -797,8 +801,6 @@ Sub HechizoInvocacion(ByVal UserIndex As Integer, ByRef b As Boolean)
 112         h = .Stats.UserHechizos(.flags.Hechizo)
     
 114         If Hechizos(h).Invoca = 1 Then
-    
-'116             If .NroMascotas >= MAXMASCOTAS Then Exit Sub
         
                 'No deja invocar mas de 1 fatuo
 118             If Hechizos(h).NumNpc = FUEGOFATUO And .NroMascotas >= 1 Then
@@ -872,6 +874,9 @@ Sub HechizoInvocacion(ByVal UserIndex As Integer, ByRef b As Boolean)
 150                         Call SetUserRef(NpcList(ind).MaestroUser, userIndex)
 152                         NpcList(ind).Contadores.TiempoExistencia = IntervaloInvocacion
 154                         NpcList(ind).GiveGLD = 0
+                            If IsFeatureEnabled("addjust-npc-with-caster") And IsSet(Hechizos(h).Effects, AdjustStatsWithCaster) Then
+                                Call AdjustNpcStatWithCasterLevel(UserIndex, ind)
+                            End If
 156                         Call FollowAmo(ind)
                         Else
                             Exit Sub
@@ -2732,7 +2737,9 @@ Sub HechizoPropNPC(ByVal hIndex As Integer, ByVal npcIndex As Integer, ByVal Use
 154                 Damage = Damage + Porcentaje(Damage, ObjData(UserList(UserIndex).invent.DañoMagicoEqpObjIndex).MagicDamageBonus)
                 End If
             End If
-
+            If IsFeatureEnabled("mr-magic-bonus-damage") Then
+                Damage = Damage + UserList(UserIndex).Stats.UserSkills(Magia) * MagicSkillBonusDamageModifier
+            End If
 156         b = True
 158         If NpcList(NpcIndex).flags.Snd2 > 0 Then
 160             Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareMessagePlayWave(NpcList(NpcIndex).flags.Snd2, NpcList(NpcIndex).Pos.X, NpcList(NpcIndex).Pos.y))
@@ -3297,7 +3304,9 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsA
 420                 Damage = Damage + Porcentaje(Damage, ObjData(UserList(UserIndex).invent.DañoMagicoEqpObjIndex).MagicDamageBonus)
                 End If
             End If
-            
+            If IsFeatureEnabled("mr-magic-bonus-damage") Then
+                Damage = Damage + UserList(UserIndex).Stats.UserSkills(Magia) * MagicSkillBonusDamageModifier
+            End If
             ' Si el hechizo no ignora la RM
 422         If Hechizos(h).AntiRm = 0 Then
                 Dim PorcentajeRM As Integer
@@ -3326,6 +3335,9 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsA
                 
                 ' Resto el porcentaje total
 442             Damage = Damage - Porcentaje(Damage, PorcentajeRM)
+                If IsFeatureEnabled("mr-magic-bonus-damage") Then
+                    Damage = max(1, Damage - UserList(tempChr).Stats.UserSkills(Resistencia) * MRSkillProtectionModifier)
+                End If
             End If
             Call EffectsOverTime.TartgetWillAtack(UserList(UserIndex).EffectOverTime, tempChr, eUser, e_DamageSourceType.e_magic)
             Damage = Damage * UserMod.GetMagicDamageModifier(UserList(UserIndex))
@@ -3633,7 +3645,9 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
 284         If UserList(UserIndex).invent.DañoMagicoEqpObjIndex > 0 Then
 286             Damage = Damage + Porcentaje(Damage, ObjData(UserList(UserIndex).invent.DañoMagicoEqpObjIndex).MagicDamageBonus)
             End If
-            
+            If IsFeatureEnabled("mr-magic-bonus-damage") Then
+                Damage = Damage + UserList(UserIndex).Stats.UserSkills(Magia) * MagicSkillBonusDamageModifier
+            End If
             ' Si el hechizo no ignora la RM
 288         If Hechizos(h).AntiRm = 0 Then
                 ' Resistencia mágica armadura
@@ -3658,6 +3672,9 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
                 
                 ' Resistencia mágica de la clase
 306             Damage = Damage - Damage * ModClase(UserList(tempChr).clase).ResistenciaMagica
+                If IsFeatureEnabled("mr-magic-bonus-damage") Then
+                    Damage = Damage + UserList(tempChr).Stats.UserSkills(Resistencia) * MRSkillProtectionModifier
+                End If
             End If
             Call EffectsOverTime.TartgetWillAtack(UserList(UserIndex).EffectOverTime, tempChr, eUser, e_DamageSourceType.e_magic)
             Damage = Damage * UserMod.GetMagicDamageModifier(UserList(UserIndex))
@@ -4540,5 +4557,15 @@ Private Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, X As Byte, Y 
         Exit Sub
 AreaHechizo_Err:
 482     Call TraceError(Err.Number, Err.Description, "modHechizos.AreaHechizo", Erl)
+End Sub
 
+Private Sub AdjustNpcStatWithCasterLevel(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
+    Dim BaseHit As Integer
+    'get natural skill for user lvl and apply hit chance for a cleric of that level with agility buff to 36
+    BaseHit = UserList(UserIndex).Stats.ELV * 2.5
+    BaseHit = ((BaseHit + ((3 * BaseHit / 100) * 36))) * ModClase(e_Class.Cleric).AtaqueArmas
+    BaseHit = (BaseHit + (2.5 * max(CInt(UserList(UserIndex).Stats.ELV) - 12, 0)))
+    With NpcList(NpcIndex)
+        .PoderAtaque = BaseHit
+    End With
 End Sub
