@@ -408,7 +408,7 @@ Public Sub SaveCharacterDB(ByVal userIndex As Integer)
             End If
 
               
-104         ReDim Params(84)
+104         ReDim Params(83)
 
             Dim i As Integer
         
@@ -701,7 +701,7 @@ Public Sub SaveNewCharacterDB(ByVal userIndex As Integer)
         
             Dim i As Integer
             i = 0
-104         ReDim Params(0 To 44)
+104         ReDim Params(0 To 43)
 
             '  ************ Basic user data *******************
 106         Params(post_increment(i)) = .Name
