@@ -971,6 +971,7 @@ Public Enum e_SpellEffects
     RemoveDebuff = 131072
     StealBuff = 262144
     eDoDamage = 524288
+    AdjustStatsWithCaster = 1048576
 End Enum
 
 Public Enum e_TargetEffectType
@@ -1065,10 +1066,7 @@ Public Type t_Hechizo
     
     Invoca As Byte
     NumNpc As Integer
-    cant As Integer
-
-    '    Materializa As Byte
-    '    ItemIndex As Byte
+    cant As Byte
     
     Mimetiza As Byte
     
@@ -2335,6 +2333,7 @@ Public Type t_NPCStats
     Shield As Long
     def As Integer
     defM As Integer
+    MagicBonus As Single
     UsuariosMatados As Integer
     CantidadInvocaciones As Byte
     NpcsInvocados()      As t_NpcReference

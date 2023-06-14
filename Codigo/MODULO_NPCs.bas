@@ -1373,7 +1373,7 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
 238         .Stats.def = val(Leer.GetValue("NPC" & NpcNumber, "DEF"))
 240         .Stats.defM = val(Leer.GetValue("NPC" & NpcNumber, "DEFm"))
 241         .Stats.CantidadInvocaciones = val(Leer.GetValue("NPC" & NpcNumber, "CantidadInvocaciones"))
-
+242         .Stats.MagicBonus = val(Leer.GetValue("NPC" & NpcNumber, "MagicBonus"))
             If .Stats.CantidadInvocaciones > 0 Then
 243             ReDim .Stats.NpcsInvocados(1 To .Stats.CantidadInvocaciones)
                 
@@ -1381,13 +1381,13 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
                     Call ClearNpcRef(.Stats.NpcsInvocados(LoopC))
                 Next loopC
             End If
-242         .flags.AIAlineacion = val(Leer.GetValue("NPC" & NpcNumber, "Alineacion"))
+244         .flags.AIAlineacion = val(Leer.GetValue("NPC" & NpcNumber, "Alineacion"))
     
-244         .Invent.NroItems = val(Leer.GetValue("NPC" & NpcNumber, "NROITEMS"))
+245         .invent.NroItems = val(Leer.GetValue("NPC" & NpcNumber, "NROITEMS"))
             
-245         .Humanoide = CBool(val(Leer.GetValue("NPC" & NpcNumber, "Humanoide")))
+246         .Humanoide = CBool(val(Leer.GetValue("NPC" & NpcNumber, "Humanoide")))
             
-246         For LoopC = 1 To .Invent.NroItems
+247         For LoopC = 1 To .invent.NroItems
 248             ln = Leer.GetValue("NPC" & NpcNumber, "Obj" & LoopC)
 250             .Invent.Object(LoopC).ObjIndex = val(ReadField(1, ln, 45))
 252             .Invent.Object(LoopC).amount = val(ReadField(2, ln, 45))

@@ -750,6 +750,7 @@ Public Sub CargarHechizos()
 252         If val(Leer.GetValue("Hechizo" & Hechizo, "Ceguera")) > 0 Then Call SetMask(Hechizos(Hechizo).Effects, e_SpellEffects.Blindness)
 254         If val(Leer.GetValue("Hechizo" & Hechizo, "Estupidez")) > 0 Then Call SetMask(Hechizos(Hechizo).Effects, e_SpellEffects.Dumb)
 255         If val(Leer.GetValue("Hechizo" & Hechizo, "ToggleCleave")) > 0 Then Call SetMask(Hechizos(Hechizo).Effects, e_SpellEffects.ToggleCleave)
+            If val(Leer.GetValue("Hechizo" & Hechizo, "AdjustStatsWithCaster")) > 0 Then Call SetMask(Hechizos(Hechizo).Effects, e_SpellEffects.AdjustStatsWithCaster)
 
 256         Hechizos(Hechizo).Invoca = val(Leer.GetValue("Hechizo" & Hechizo, "Invoca"))
 258         Hechizos(Hechizo).NumNpc = val(Leer.GetValue("Hechizo" & Hechizo, "NumNpc"))
