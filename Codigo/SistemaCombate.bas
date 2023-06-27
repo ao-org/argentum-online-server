@@ -2348,7 +2348,6 @@ Private Function PuedeGolpeCritico(ByVal UserIndex As Integer) As Boolean
 100     With UserList(UserIndex)
     
 102         If .Invent.WeaponEqpObjIndex > 0 Then
-                ' Esto me parece que esta MAL; subtipo 2 es incinera :/
 104             PuedeGolpeCritico = .clase = e_Class.Bandit And ObjData(.Invent.WeaponEqpObjIndex).Subtipo = 2
             End If
             
@@ -2402,10 +2401,24 @@ ProbabilidadApuñalar_Err:
         
 End Function
 
+Private Function GetSkillRequiredForWeapon(ByVal ObjId As Integer) As e_Skill
+    If ObjId = 0 Then
+        GetSkillRequiredForWeapon = e_Skill.Wrestling
+    Else
+        If ObjData(ObjId).WeaponType = eKnuckle Then
+            GetSkillRequiredForWeapon = e_Skill.Wrestling
+        ElseIf ObjData(ObjId).WeaponType = eBow Then
+            GetSkillRequiredForWeapon = e_Skill.Proyectiles
+        Else
+            GetSkillRequiredForWeapon = e_Skill.Armas
+        End If
+    End If
+End Function
+
 Private Function ProbabilidadGolpeCritico(ByVal UserIndex As Integer) As Integer
         On Error GoTo ProbabilidadGolpeCritico_Err
 
-100     ProbabilidadGolpeCritico = 0.2 * UserList(UserIndex).Stats.UserSkills(e_Skill.Wrestling)
+100     ProbabilidadGolpeCritico = 0.2 * UserList(UserIndex).Stats.UserSkills(GetSkillRequiredForWeapon(UserList(UserIndex).invent.WeaponEqpObjIndex))
 
         Exit Function
 

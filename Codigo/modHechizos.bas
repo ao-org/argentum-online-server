@@ -1620,6 +1620,11 @@ Sub LanzarHechizo(ByVal Index As Integer, ByVal UserIndex As Integer)
                     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageDoAnimation(UserList(UserIndex).Char.charindex, UserList(UserIndex).Char.Ataque1))
                 End If
             End If
+            If Hechizos(uh).TargetEffectType = e_TargetEffectType.eNegative And IsFeatureEnabled("remove-inv-on-attack") Then
+                If UserList(UserIndex).flags.targetUser.ArrayIndex <> UserIndex Then
+                    Call RemoveUserInvisibility(UserIndex)
+                End If
+            End If
         End If
 172     If UserList(UserIndex).Counters.Trabajando Then
 174         Call WriteMacroTrabajoToggle(UserIndex, False)

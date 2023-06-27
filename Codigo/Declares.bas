@@ -2678,6 +2678,14 @@ Public Type t_IndexHeap
     IndexInfo() As Integer
 End Type
 
+Public Type t_GlobalDrop
+    ObjectNumber As Integer
+    MaxPercent As Single
+    MinPercent As Single
+    RequiredHPForMaxChance As Long
+    Amount As Integer
+End Type
+
 '********** V A R I A B L E S     P U B L I C A S ***********
 Public SERVERONLINE                      As Boolean
 Public ULTIMAVERSION                     As String
@@ -2766,6 +2774,7 @@ Public RecompensasFaccion()               As t_RecompensaFaccion
 Public ModClase(1 To NUMCLASES)           As t_ModClase
 Public ModRaza(1 To NUMRAZAS)             As t_ModRaza
 Public Crafteos                           As New Dictionary
+Public GlobalDropTable()                  As t_GlobalDrop
 '*********************************************************
 
 Public Nix                                As t_WorldPos

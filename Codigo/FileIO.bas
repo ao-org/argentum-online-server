@@ -2217,6 +2217,7 @@ Sub LoadSini()
 
 164     Call CargarCiudades
 166     Call LoadFeatureToggles
+167     Call LoadGlobalDropTable
 
 168     Set Lector = Nothing
 
@@ -2225,8 +2226,36 @@ Sub LoadSini()
 LoadSini_Err:
 170     Set Lector = Nothing
 172     Call TraceError(Err.Number, Err.Description, "ES.LoadSini", Erl)
+End Sub
 
-        
+Sub LoadGlobalDropTable()
+    
+    Dim Lector   As clsIniManager
+
+    Dim Temporal As Long
+    Set FeatureToggles = New Dictionary
+    If Not FileExist("feature_toggle.ini") Then
+        Exit Sub
+    End If
+    If frmMain.Visible Then frmMain.txStatus.Caption = "Cargando tabla de drop globales."
+    
+    Set Lector = New clsIniManager
+    Call Lector.Initialize(DatPath & "GlobalDropTable.dat")
+    If Lector.NodesCount = 0 Then
+        Exit Sub
+    End If
+    Dim DropCount, i As Integer
+    DropCount = val(Lector.GetValue("INIT", "DROPCOUNT"))
+    
+    ReDim GlobalDropTable(1 To DropCount) As t_GlobalDrop
+    For i = 1 To DropCount
+        GlobalDropTable(i).MaxPercent = val(Lector.GetValue("DROP" & i, "MAXPERCENT"))
+        GlobalDropTable(i).MinPercent = val(Lector.GetValue("DROP" & i, "MINPERCENT"))
+        GlobalDropTable(i).ObjectNumber = val(Lector.GetValue("DROP" & i, "OBJECTNUMBER"))
+        GlobalDropTable(i).RequiredHPForMaxChance = val(Lector.GetValue("DROP" & i, "HPFORMAXCHANCE"))
+        GlobalDropTable(i).Amount = val(Lector.GetValue("DROP" & i, "AMOUNT"))
+    Next i
+    Set Lector = Nothing
 End Sub
 
 Sub LoadFeatureToggles()

@@ -2341,36 +2341,7 @@ Private Sub HandleAttack(ByVal UserIndex As Integer)
         
             'Attack!
 126         Call UsuarioAtaca(UserIndex)
-            
-            'I see you...
-128         If .flags.Oculto > 0 And .flags.AdminInvisible = 0 Then
-        
-130             .flags.Oculto = 0
-132             .Counters.TiempoOculto = 0
-                
-134             If .flags.Navegando = 1 Then
-
-136                 If .clase = e_Class.Pirat Then
-                        ' Pierde la apariencia de fragata fantasmal
-138                     Call EquiparBarco(UserIndex)
-140                     Call WriteConsoleMsg(UserIndex, "¡Has recuperado tu apariencia normal!", e_FontTypeNames.FONTTYPE_INFO)
-142                     Call ChangeUserChar(UserIndex, .char.body, .char.head, .char.Heading, NingunArma, NingunEscudo, NingunCasco, NoCart)
-144                     Call RefreshCharStatus(UserIndex)
-                    End If
-    
-                Else
-    
-146                 If .flags.invisible = 0 Then
-148                     Call SendData(SendTarget.ToPCAliveArea, userindex, PrepareMessageSetInvisible(.Char.charindex, False, UserList(userindex).Pos.X, UserList(userindex).Pos.y))
-                        'Call WriteConsoleMsg(UserIndex, "¡Has vuelto a ser visible!", e_FontTypeNames.FONTTYPE_INFO)
-150                     Call WriteLocaleMsg(UserIndex, "307", e_FontTypeNames.FONTTYPE_INFOIAO)
-    
-                    End If
-    
-                End If
-    
-            End If
-
+            Call RemoveUserInvisibility(UserIndex)
         End With
 
         Exit Sub
@@ -3632,8 +3603,9 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                         Dim envie     As Boolean
                         Dim Particula As Integer
                         Dim Tiempo    As Long
-
-                        ' Porque no es HandleAttack ???
+                        If IsFeatureEnabled("remove-inv-on-attack") Then
+                            Call RemoveUserInvisibility(UserIndex)
+                        End If
 208                     Call UsuarioAtacaUsuario(UserIndex, tU, Ranged)
                         Dim FX As Integer
                         If .Invent.MunicionEqpObjIndex Then
@@ -3668,13 +3640,15 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 226                     If Abs(NpcList(tN).Pos.Y - .Pos.Y) > RANGO_VISION_Y And Abs(NpcList(tN).Pos.X - .Pos.X) > RANGO_VISION_X Then
 228                         Call WriteLocaleMsg(UserIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
 230                         Call WriteWorkRequestTarget(UserIndex, 0)
-                            'Call WriteConsoleMsg(UserIndex, "Estas demasiado lejos para atacar.", e_FontTypeNames.FONTTYPE_WARNING)
                             Exit Sub
                         End If
                     
                         'Is it attackable???
 232                     If NpcList(tN).Attackable <> 0 Then
 234                         If PuedeAtacarNPC(UserIndex, tN) Then
+                                If IsFeatureEnabled("remove-inv-on-attack") Then
+                                    Call RemoveUserInvisibility(UserIndex)
+                                End If
 236                             Call UsuarioAtacaNpc(UserIndex, tN, Ranged)
 238                             consumirMunicion = True
                                 If ProjectileType > 0 And .flags.Oculto = 0 Then
@@ -3689,7 +3663,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                             End If
                         End If
                     End If
-                
+                    
 242                 With .Invent
                         If WeaponData.Proyectil = 1 And WeaponData.Municion > 0 Then
 244                         DummyInt = .MunicionEqpSlot
