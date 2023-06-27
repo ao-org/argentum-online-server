@@ -359,7 +359,7 @@ ErrHandler:
 
 End Sub
 
-Public Sub DropGlobalTable(ByRef Npc As t_Npc, ByVal UserIndex As Integer)
+Public Sub DropFromGlobalDropTable(ByRef Npc As t_Npc, ByVal UserIndex As Integer)
     Dim i As Integer
     Dim DropChance As Single
     Dim RandomValue As Long

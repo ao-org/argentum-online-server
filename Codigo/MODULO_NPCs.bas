@@ -271,7 +271,7 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
 202         Call DropObjQuest(MiNPC, UserIndex)
             'Item Magico!
 204         Call NpcDropeo(MiNPC, UserIndex)
-            Call DropGlobalTable(MiNPC, UserIndex)
+            Call DropFromGlobalDropTable(MiNPC, UserIndex)
             'Tiramos el inventario
 206         Call NPC_TIRAR_ITEMS(MiNPC)
             
