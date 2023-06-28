@@ -1931,30 +1931,24 @@ Public Sub SubirSkillDeArmaActual(ByVal UserIndex As Integer)
         On Error GoTo SubirSkillDeArmaActual_Err
 
 100     With UserList(UserIndex)
-
 102         If .Invent.WeaponEqpObjIndex > 0 Then
                 ' Arma con proyectiles, subimos armas a distancia
 104             If ObjData(.Invent.WeaponEqpObjIndex).Proyectil Then
 106                 Call SubirSkill(UserIndex, e_Skill.Proyectiles)
-
+                ElseIf ObjData(.invent.WeaponEqpObjIndex).WeaponType = eKnuckle Then
+                    Call SubirSkill(UserIndex, e_Skill.Wrestling)
                 ' Sino, subimos combate con armas
                 Else
 108                 Call SubirSkill(UserIndex, e_Skill.Armas)
                 End If
-
             ' Si no está usando un arma, subimos combate sin armas
             Else
 110             Call SubirSkill(UserIndex, e_Skill.Wrestling)
             End If
-
         End With
-
         Exit Sub
-
 SubirSkillDeArmaActual_Err:
 112         Call TraceError(Err.Number, Err.Description, "UsUaRiOs.SubirSkillDeArmaActual", Erl)
-
-
 End Sub
 
 ''
@@ -3461,3 +3455,36 @@ Public Function GetWeaponHitBonus(ByVal WeaponIndex As Integer, ByVal UserClass 
     If Not IsFeatureEnabled("class_weapon_bonus") Then Exit Function
     GetWeaponHitBonus = ModClase(UserClass).WeaponHitBonus(ObjData(WeaponIndex).WeaponType)
 End Function
+
+Public Sub RemoveUserInvisibility(ByVal UserIndex As Integer)
+    With UserList(UserIndex)
+        Dim RemoveHiddenState As Boolean
+        If IsFeatureEnabled("remove-inv-on-attack") Then
+            RemoveHiddenState = .flags.Oculto > 0 Or .flags.invisible > 0
+        Else
+            RemoveHiddenState = .flags.Oculto > 0
+        End If
+            'I see you...
+         If RemoveHiddenState And .flags.AdminInvisible = 0 Then
+             .flags.Oculto = 0
+             .flags.invisible = 0
+             .Counters.TiempoOculto = 0
+             If .flags.Navegando = 1 Then
+                 If .clase = e_Class.Pirat Then
+                        ' Pierde la apariencia de fragata fantasmal
+                     Call EquiparBarco(UserIndex)
+                     Call WriteConsoleMsg(UserIndex, "¡Has recuperado tu apariencia normal!", e_FontTypeNames.FONTTYPE_INFO)
+                     Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, NingunArma, NingunEscudo, NingunCasco, NoCart)
+                     Call RefreshCharStatus(UserIndex)
+                    End If
+    
+                Else
+                 If .flags.invisible = 0 Then
+                     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageSetInvisible(.Char.charindex, False, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
+                     Call WriteLocaleMsg(UserIndex, "307", e_FontTypeNames.FONTTYPE_INFOIAO)
+                End If
+            End If
+        End If
+    End With
+End Sub
+

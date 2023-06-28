@@ -3463,6 +3463,9 @@ On Error GoTo ResurrectWithItem_Err
 128     Call UpdateCd(UserIndex, ObjData(objIndex).cdType)
 192     Call RemoveItemFromInventory(UserIndex, UserList(UserIndex).flags.TargetObjInvSlot)
 196     Call ResurrectUser(TargetUser)
+        If IsFeatureEnabled("remove-inv-on-attack") Then
+            Call RemoveUserInvisibility(UserIndex)
+        End If
     End With
     Exit Sub
 ResurrectWithItem_Err:
@@ -3564,6 +3567,7 @@ Public Sub UseArpon(ByVal UserIndex As Integer)
             TargetPos = GetPosition(TargetRef)
             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareCreateProjectile(.pos.x, .pos.y, TargetPos.x, TargetPos.y, ObjData(ObjIndex).ProjectileType))
         End If
+        Call RemoveUserInvisibility(UserIndex)
     End With
 End Sub
 
@@ -3585,6 +3589,7 @@ Public Sub UseHandCannon(ByVal UserIndex As Integer, ByVal TileX As Integer, ByV
         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareCreateProjectile(.pos.x, .pos.y, TileX, TileY, ObjData(ObjIndex).ProjectileType))
         Call CreateDelayedBlast(UserIndex, eUser, .pos.Map, TileX, TileY, ObjData(ObjIndex).ApplyEffectId, ObjIndex)
         If ObjData(ObjIndex).Snd1 <> 0 Then Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(ObjData(ObjIndex).Snd1, .pos.x, .pos.y))
+        Call RemoveUserInvisibility(UserIndex)
     End With
 End Sub
 

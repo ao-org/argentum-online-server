@@ -359,6 +359,24 @@ ErrHandler:
 
 End Sub
 
+Public Sub DropFromGlobalDropTable(ByRef Npc As t_Npc, ByVal UserIndex As Integer)
+    Dim i As Integer
+    Dim DropChance As Single
+    Dim RandomValue As Long
+    For i = LBound(GlobalDropTable) To UBound(GlobalDropTable)
+        DropChance = Npc.Stats.MaxHp / GlobalDropTable(i).RequiredHPForMaxChance
+        DropChance = Min(max(DropChance, GlobalDropTable(i).MinPercent), GlobalDropTable(i).MaxPercent)
+        RandomValue = RandomNumber(1, 100000)
+        DropChance = DropChance * 1000
+        If RandomValue < (DropChance) Then
+            Dim DropInfo       As t_Obj
+            DropInfo.Amount = GlobalDropTable(i).Amount
+            DropInfo.ObjIndex = GlobalDropTable(i).ObjectNumber
+            Call TirarItemAlPiso(Npc.Pos, DropInfo, Npc.flags.AguaValida = 1)
+            Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessagePlayWave(e_FXSound.Dropeo_Sound, Npc.Pos.x, Npc.Pos.y))
+        End If
+    Next i
+End Sub
 
 Public Sub DropObjQuest(ByRef npc As t_Npc, ByRef UserIndex As Integer)
     'Dropeo por Quest

@@ -38,7 +38,6 @@ Module=PathFinding; Codigo\PathFinding.bas
 Module=mdlCOmercioConUsuario; Codigo\mdlCOmercioConUsuario.bas
 Module=modBanco; Codigo\modBanco.bas
 Form=Codigo\frmAdmin.frm
-Module=modInvisibles; Codigo\modInvisibles.bas
 Module=modNuevoTimer; Codigo\modNuevoTimer.bas
 Form=Codigo\frmUserList.frm
 Class=clsClan; Codigo\clsClan.cls

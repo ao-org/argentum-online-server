@@ -241,55 +241,37 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
 166         If MiNPC.GiveEXPClan > 0 Then
 168             If UserList(UserIndex).GuildIndex > 0 Then
 170                 Call modGuilds.CheckClanExp(UserIndex, MiNPC.GiveEXPClan)
-
-                    ' Else
-                    ' Call WriteConsoleMsg(UserIndex, "No perteneces a ningún clan, experiencia perdida.", e_FontTypeNames.FONTTYPE_INFOIAO)
                 End If
-
             End If
         
 172         For i = 1 To MAXUSERQUESTS
-        
 174             With UserList(UserIndex).QuestStats.Quests(i)
-        
 176                 If .QuestIndex Then
 178                     If QuestList(.QuestIndex).RequiredNPCs Then
-        
 180                         For j = 1 To QuestList(.QuestIndex).RequiredNPCs
-        
 182                             If QuestList(.QuestIndex).RequiredNPC(j).NpcIndex = MiNPC.Numero Then
-       
 184                                 If QuestList(.QuestIndex).RequiredNPC(j).amount >= .NPCsKilled(j) Then
 186                                     .NPCsKilled(j) = .NPCsKilled(j) + 1 '
-        
 188                                     Call WriteConsoleMsg(UserIndex, MiNPC.Name & " matados/as: " & .NPCsKilled(j) & " de " & QuestList(.QuestIndex).RequiredNPC(j).amount, e_FontTypeNames.FONTTYPE_INFOIAO)
 190                                     Call WriteChatOverHead(UserIndex, "NOCONSOLA*" & .NPCsKilled(j) & "/" & QuestList(.QuestIndex).RequiredNPC(j).amount & " " & MiNPC.Name, UserList(UserIndex).Char.CharIndex, RGB(180, 180, 180))
-
                                     Else
 192                                     Call WriteConsoleMsg(UserIndex, "Ya has matado todos los " & MiNPC.name & " que la misión " & QuestList(.QuestIndex).nombre & " requería. Revisa si ya estás listo para recibir la recompensa.", e_FontTypeNames.FONTTYPE_INFOIAO)
 194                                     Call WriteChatOverHead(UserIndex, "NOCONSOLA*" & QuestList(.QuestIndex).RequiredNPC(j).amount & "/" & QuestList(.QuestIndex).RequiredNPC(j).amount & " " & MiNPC.Name, UserList(UserIndex).Char.CharIndex, RGB(180, 180, 180))
                                     End If
-        
                                 End If
-        
 196                         Next j
-        
                         End If
                         UserList(UserIndex).flags.ModificoQuests = True
                     End If
-        
                 End With
-        
 198         Next i
 
             'Tiramos el oro
 200         Call NPCTirarOro(MiNPC, UserIndex)
-
 202         Call DropObjQuest(MiNPC, UserIndex)
-    
             'Item Magico!
 204         Call NpcDropeo(MiNPC, UserIndex)
-            
+            Call DropFromGlobalDropTable(MiNPC, UserIndex)
             'Tiramos el inventario
 206         Call NPC_TIRAR_ITEMS(MiNPC)
             
