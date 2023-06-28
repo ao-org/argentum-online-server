@@ -1266,6 +1266,9 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
 142         .Char.BodyIdle = val(Leer.GetValue("NPC" & NpcNumber, "BodyIdle"))
 143         .Char.Ataque1 = val(Leer.GetValue("NPC" & NpcNumber, "Ataque1"))
             .Char.CastAnimation = val(Leer.GetValue("NPC" & NpcNumber, "CastAnimation"))
+            If .Char.BodyIdle > 0 Then
+                .flags.NPCIdle = True
+            End If
 
             Dim CantidadAnimaciones As Integer
 144         CantidadAnimaciones = val(Leer.GetValue("NPC" & NpcNumber, "Animaciones"))

@@ -2453,6 +2453,7 @@ End Type
 Public Enum e_TipoAI
     Estatico = 1
     MueveAlAzar = 2
+    FixedInPos = 3
     NpcDefensa = 4
     SigueAmo = 8
     NpcAtacaNpc = 9
