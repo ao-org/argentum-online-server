@@ -1246,7 +1246,9 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
 104         OpenNPC = 0
             Exit Function
         End If
-
+#If DEBUGGING = 0 Then
+        If val(Leer.GetValue("NPC" & NpcNumber, "TESTONLY")) > 0 Then Exit Function
+#End If
 106     NpcIndex = GetNextAvailableNpc
 
 108     If NpcIndex > MaxNPCs Then 'Limite de npcs

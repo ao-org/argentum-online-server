@@ -303,9 +303,14 @@ Private Sub SpawnNpc(ByVal npcType As Integer)
     SpawnPos.X = RandomNumber(12, 85)
     SpawnPos.y = RandomNumber(12, 85)
     npcId = CrearNPC(npcType, MapNumber, spawnPos)
-    NpcList(NpcId).flags.Respawn = 1
-    NpcList(NpcId).Contadores.IntervaloRespawn = 0
-    Call SpawnedCreaturesId.Add(NpcId, 0)
+    If NpcId > 0 Then
+        NpcList(NpcId).flags.Respawn = 1
+        NpcList(NpcId).Contadores.IntervaloRespawn = 0
+        Call SpawnedCreaturesId.Add(NpcId, 0)
+    Else
+        Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("No se pudo spawnear el npc " & npcType & ", revisar.", e_FontTypeNames.FONTTYPE_TALK))
+        Call TraceError(Err.Number, "failed to spawn Npc " & npcType, "ScenarioHunt.SpawnNpc ", Erl)
+    End If
 End Sub
 
 Private Sub CloseCountDown()
