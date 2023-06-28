@@ -537,9 +537,13 @@ Private Sub SpawnNpc(ByRef NpcInfo As t_NpcSpawnInfo, ByRef Waypoints() As t_Way
     SpawnPos.x = Waypoints(NpcInfo.Waypoint).PosX
     SpawnPos.y = Waypoints(NpcInfo.Waypoint).PosY
     NpcId = CrearNPC(NpcInfo.NpcId, MapNumbers(0), SpawnPos)
-    NpcList(NpcId).flags.Respawn = 1
-    NpcList(NpcId).flags.team = team
-    
+    If NpcId > 0 Then
+        NpcList(NpcId).flags.Respawn = 1
+        NpcList(NpcId).flags.team = team
+    Else
+        Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("No se pudo spawnear el npc " & NpcInfo.NpcId & ", revisar.", e_FontTypeNames.FONTTYPE_TALK))
+        Call TraceError(Err.Number, "failed to spawn Npc " & NpcInfo.NpcId, "NavalBoarding.SpawnNpc ", Erl)
+    End If
 End Sub
 Private Sub ConfigMapLobby()
     Dim i As Integer
