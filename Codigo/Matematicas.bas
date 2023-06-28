@@ -88,8 +88,8 @@ End Function
 
 Function GetDirection(ByRef From As t_WorldPos, ByRef ToPos As t_WorldPos) As t_Vector
     Dim Ret As t_Vector
-    Ret.x = From.x - ToPos.x
-    Ret.y = From.y - ToPos.y
+    Ret.x = ToPos.x - From.x
+    Ret.y = ToPos.y - From.y
     GetDirection = Ret
 End Function
 

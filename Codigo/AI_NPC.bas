@@ -38,7 +38,10 @@ Public Sub NpcAI(ByVal NpcIndex As Integer)
                     Else
 110                     Call AI_CaminarSinRumboCercaDeOrigen(NpcIndex)
                     End If
-
+                Case e_TipoAI.FixedInPos
+                    If .Hostile = 1 Then
+                        Call AttackFromPos(NpcIndex)
+                    End If
 112             Case e_TipoAI.NpcDefensa
 114                 Call SeguirAgresor(NpcIndex)
 
@@ -194,6 +197,41 @@ Private Sub PerseguirUsuarioCercano(ByVal NpcIndex As Integer)
 ErrorHandler:
 166     Call TraceError(Err.Number, Err.Description, "AI_NPC.PerseguirUsuarioCercano", Erl)
 
+End Sub
+
+Private Sub AttackFromPos(ByVal NpcIndex As Integer)
+
+    With NpcList(NpcIndex)
+        Dim NearTarget As Integer
+        If Not IsSet(.flags.StatusMask, eTaunted) Or Not IsValidUserRef(.targetUser) Then
+            Dim Distance As Single
+            NearTarget = SelectNearestUser(NpcIndex, Distance)
+        Else
+            NearTarget = .targetUser.ArrayIndex
+        End If
+        If NearTarget > 0 Then
+            Call SetUserRef(.targetUser, NearTarget)
+            Dim Direction As t_Vector
+            Dim TargetMapPos As t_WorldPos
+            Direction = GetDirection(.pos, UserList(NearTarget).pos)
+            TargetMapPos = PreferedTileForDirection(Direction, .pos)
+            Call ChangeNPCChar(NpcIndex, .Char.body, .Char.head, GetHeadingFromWorldPos(.pos, UserList(NearTarget).pos))
+            If .flags.LanzaSpells And _
+                IntervaloPermiteLanzarHechizo(NpcIndex) Then
+                If NpcLanzaSpellInmovilizado(NpcIndex, .targetUser.ArrayIndex) Then
+                    Call NpcLanzaUnSpell(NpcIndex)
+                End If
+            ElseIf NPCHasAUserInFront(NpcIndex, NearTarget) Then
+                Call NpcAtacaUser(NpcIndex, NearTarget, .Char.Heading)
+            End If
+        Else
+            Call AnimacionIdle(NpcIndex, True)
+            If .flags.OldHostil = 0 Then
+                Call RestoreOldMovement(NpcIndex)
+            End If
+        End If
+    End With
+    
 End Sub
 
 Public Function SelectNearestUser(ByVal NpcIndex As Integer, ByRef NearestTargetDistance As Single) As Integer
