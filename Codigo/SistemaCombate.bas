@@ -707,7 +707,9 @@ Public Function NpcAtacaUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integ
         End If
         
 139     Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareMessageCharAtaca(NpcList(NpcIndex).Char.charindex, UserList(UserIndex).Char.charindex, danio, NpcList(NpcIndex).Char.Ataque1))
-        
+        If NpcList(NpcIndex).Char.WeaponAnim > 0 Then
+            Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareMessageArmaMov(NpcList(NpcIndex).Char.charindex, 0))
+        End If
             
 
         '-----Tal vez suba los skills------
@@ -778,6 +780,9 @@ Public Function NpcPerformAttackNpc(ByVal AttackerIndex As Integer, ByVal Target
     If NpcList(AttackerIndex).flags.Snd1 > 0 Then
         Call SendData(SendTarget.ToNPCAliveArea, AttackerIndex, PrepareMessagePlayWave(NpcList(AttackerIndex).flags.Snd1, NpcList(AttackerIndex).pos.x, NpcList(AttackerIndex).pos.y))
     End If
+    If NpcList(attackerIndex).Char.WeaponAnim > 0 Then
+        Call SendData(SendTarget.ToNPCAliveArea, attackerIndex, PrepareMessageArmaMov(NpcList(attackerIndex).Char.charindex, 0))
+    End If
     If NpcImpactoNpc(AttackerIndex, TargetIndex) Then
         
         If NpcList(AttackerIndex).flags.Snd2 > 0 Then
@@ -788,6 +793,7 @@ Public Function NpcPerformAttackNpc(ByVal AttackerIndex As Integer, ByVal Target
     
         Call SendData(SendTarget.ToNPCAliveArea, TargetIndex, PrepareMessagePlayWave(SND_IMPACTO, NpcList(TargetIndex).pos.x, NpcList(TargetIndex).pos.y))
         Call NpcDamageNpc(AttackerIndex, TargetIndex)
+        
     Else
         Call SendData(SendTarget.ToNPCAliveArea, AttackerIndex, PrepareMessageCharSwing(NpcList(AttackerIndex).Char.charindex, False, True))
     End If
