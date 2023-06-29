@@ -117,6 +117,14 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
                     End If
 122             Next i
             End If
+            If .RequiredSpellCount > 0 Then
+                For i = 1 To .RequiredSpellCount
+                    If Not UserHasSpell(UserIndex, .RequiredSpellList(i)) Then
+                        Call WriteLocaleChatOverHead(UserIndex, MsgRequiredSpell, Hechizos(.RequiredSpellList(i)).nombre, NpcList(NpcIndex).Char.charindex, vbYellow)
+                        Exit Sub
+                    End If
+                Next i
+            End If
             'Comprobamos que haya targeteado todos los npc
 124          If .RequiredTargetNPCs > 0 Then
 126              For i = 1 To .RequiredTargetNPCs
@@ -141,15 +149,15 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
             End If
             
             Dim KnownSkills As Integer
-            If .RewardSkillCount > 0 Then
-                For i = 1 To .RewardSkillCount
+            If .RewardSpellCount > 0 Then
+                For i = 1 To .RewardSpellCount
                     For j = 1 To UBound(UserList(UserIndex).Stats.UserHechizos)
-                        If UserList(UserIndex).Stats.UserHechizos(j) = .RewardSkillList(i) Then
+                        If UserList(UserIndex).Stats.UserHechizos(j) = .RewardSpellList(i) Then
                             KnownSkills = KnownSkills + 1
                         End If
                     Next j
                 Next i
-                If KnownSkills = .RewardSkillCount Then
+                If KnownSkills = .RewardSpellCount Then
                     Call WriteLocaleChatOverHead(UserIndex, MsgSkillAlreadyKnown, vbNullString, NpcList(npcIndex).Char.charindex, vbYellow)
                     Exit Sub
                 End If
@@ -163,6 +171,18 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
 150             For i = 1 To .RequiredOBJs
 152                 Call QuitarObjetos(.RequiredOBJ(i).ObjIndex, .RequiredOBJ(i).amount, UserIndex)
 154             Next i
+            End If
+            
+            If .RequiredSpellCount > 0 Then
+                For i = 1 To .RequiredSpellCount
+                    For j = 1 To UBound(UserList(UserIndex).Stats.UserHechizos)
+                        If UserList(UserIndex).Stats.UserHechizos(j) = .RequiredSpellList(i) Then
+                            UserList(UserIndex).Stats.UserHechizos(j) = 0
+                            Call UpdateUserHechizos(False, UserIndex, CByte(j))
+                        End If
+                    Next j
+                Next i
+                UserList(UserIndex).flags.ModificoHechizos = True
             End If
         
             'Se entrega la experiencia.
@@ -201,9 +221,9 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
 188             Next i
             End If
             
-            If .RewardSkillCount > 0 Then
-                For i = 1 To .RewardSkillCount
-                    If Not TieneHechizo(.RewardSkillList(i), UserIndex) Then
+            If .RewardSpellCount > 0 Then
+                For i = 1 To .RewardSpellCount
+                    If Not TieneHechizo(.RewardSpellList(i), UserIndex) Then
                         'Buscamos un slot vacio
 204                      For j = 1 To MAXUSERHECHIZOS
 206                          If UserList(UserIndex).Stats.UserHechizos(j) = 0 Then Exit For
@@ -211,7 +231,7 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
 210                      If UserList(UserIndex).Stats.UserHechizos(j) <> 0 Then
 212                          Call WriteConsoleMsg(UserIndex, "No tenes espacio para mas hechizos.", e_FontTypeNames.FONTTYPE_INFO)
                          Else
-214                          UserList(UserIndex).Stats.UserHechizos(j) = .RewardSkillList(i)
+214                          UserList(UserIndex).Stats.UserHechizos(j) = .RewardSpellList(i)
 216                          Call UpdateUserHechizos(False, UserIndex, CByte(j))
                          End If
                          UserList(UserIndex).flags.ModificoHechizos = True
@@ -449,6 +469,14 @@ Public Sub LoadQuests()
 138                 Next j
 
                 End If
+                .RequiredSpellCount = val(Reader.GetValue("QUEST" & i, "RequiredSpellCount"))
+                If .RequiredSpellCount > 0 Then
+                    ReDim .RequiredSpellList(1 To .RequiredSpellCount) As Integer
+                    For j = 1 To .RequiredSpellCount
+                        .RequiredSpellList(j) = val(Reader.GetValue("QUEST" & i, "RequiredSpell" & j))
+                    Next j
+                End If
+    
             
                 'CARGAMOS NPCS REQUERIDOS
 140             .RequiredNPCs = val(Reader.GetValue("QUEST" & i, "RequiredNPCs"))
@@ -500,11 +528,11 @@ Public Sub LoadQuests()
 190                     .RewardOBJ(j).amount = val(ReadField(2, tmpStr, 45))
 192                 Next j
                 End If
-                .RewardSkillCount = val(Reader.GetValue("QUEST" & i, "RewardSkills"))
-200             If .RewardSkillCount > 0 Then
-202                 ReDim .RewardSkillList(1 To .RewardSkillCount)
-204                 For j = 1 To .RewardSkillCount
-206                     .RewardSkillList(j) = val(Reader.GetValue("QUEST" & i, "RewardSkill" & j))
+                .RewardSpellCount = val(Reader.GetValue("QUEST" & i, "RewardSkills"))
+200             If .RewardSpellCount > 0 Then
+202                 ReDim .RewardSpellList(1 To .RewardSpellCount)
+204                 For j = 1 To .RewardSpellCount
+206                     .RewardSpellList(j) = val(Reader.GetValue("QUEST" & i, "RewardSkill" & j))
 208                 Next j
                 End If
             End With
@@ -578,7 +606,7 @@ Public Sub EnviarQuest(ByVal UserIndex As Integer)
     
         'El NPC hace quests?
 108     If NpcList(NpcIndex).NumQuest = 0 Then
-110         Call WriteChatOverHead(UserIndex, "No tengo ninguna misión para ti.", NpcList(npcIndex).Char.charindex, vbYellow)
+110         Call WriteChatOverHead(UserIndex, "No tengo ninguna misión para ti.", NpcList(NpcIndex).Char.charindex, vbYellow)
             Exit Sub
         End If
         
@@ -642,6 +670,15 @@ Public Function FinishQuestCheck(ByVal UserIndex As Integer, ByVal QuestIndex As
                         Exit Function
                     End If
 122             Next i
+            End If
+            'Check required skills
+            If .RequiredSpellCount > 0 Then
+                For i = 1 To .RequiredSpellCount
+                    If Not UserHasSpell(UserIndex, .RequiredSpellList(i)) Then
+                        FinishQuestCheck = False
+                        Exit Function
+                    End If
+                Next i
             End If
             
             'Comprobamos que haya targeteado todas las criaturas.
