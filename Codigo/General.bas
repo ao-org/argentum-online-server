@@ -365,21 +365,17 @@ End Function
 Function EsArbol(ByVal GrhIndex As Long) As Boolean
         
         On Error GoTo EsArbol_Err
-    
         
-100     EsArbol = GrhIndex = 641 Or GrhIndex = 26075 Or GrhIndex = 643 Or GrhIndex = 644 Or GrhIndex = 647 Or GrhIndex = 26076 Or GrhIndex = 7020 Or _
-           GrhIndex = 11903 Or GrhIndex = 11904 Or GrhIndex = 11905 Or GrhIndex = 11906 Or GrhIndex = 12160 Or _
-           GrhIndex = 26077 Or GrhIndex = 26079 Or GrhIndex = 735 Or GrhIndex = 32343 Or GrhIndex = 32344 Or GrhIndex = 26080 Or GrhIndex = 26081 Or _
-           GrhIndex = 32345 Or GrhIndex = 32346 Or GrhIndex = 32347 Or GrhIndex = 32348 Or GrhIndex = 32349 Or GrhIndex = 32350 Or GrhIndex = 32351 Or _
-           GrhIndex = 32352 Or GrhIndex = 26078 Or GrhIndex = 26192 Or _
-           GrhIndex = 15698 Or GrhIndex = 14504 Or GrhIndex = 15697 Or GrhIndex = 6597 Or GrhIndex = 6598 Or GrhIndex = 2548 Or GrhIndex = 2549 Or _
-           GrhIndex = 15110 Or GrhIndex = 15109 Or GrhIndex = 15108 Or GrhIndex = 11904 Or GrhIndex = 11905 Or GrhIndex = 11906 Or GrhIndex = 12160 Or _
-           GrhIndex = 7220 Or GrhIndex = 50990 Or GrhIndex = 55626 Or GrhIndex = 55627 Or GrhIndex = 55630 Or GrhIndex = 55632 Or GrhIndex = 55633 Or GrhIndex = 55635 Or GrhIndex = 55638 Or _
-           GrhIndex = 463 Or GrhIndex = 1880 Or GrhIndex = 1121 Or GrhIndex = 1878 Or GrhIndex = 12584 Or GrhIndex = 50985 Or GrhIndex = 15510 Or GrhIndex = 14775 Or GrhIndex = 14687 Or _
-           GrhIndex = 9513 Or GrhIndex = 9514 Or GrhIndex = 9515 Or GrhIndex = 9518 Or GrhIndex = 9519 Or GrhIndex = 9520 Or GrhIndex = 9529
-
-        
+100     EsArbol = GrhIndex = 11905 Or GrhIndex = 644 Or GrhIndex = 1880 Or GrhIndex = 11906 Or GrhIndex = 12160 Or GrhIndex = 6597 Or GrhIndex = 2548 Or GrhIndex = 2549 Or _
+           GrhIndex = 15110 Or GrhIndex = 15109 Or GrhIndex = 15108 Or GrhIndex = 11904 Or _
+           GrhIndex = 7220 Or GrhIndex = 50990 Or GrhIndex = 55626 Or GrhIndex = 55627 Or GrhIndex = 55630 Or GrhIndex = 55632 Or GrhIndex = 55633 Or _
+           GrhIndex = 55635 Or GrhIndex = 55638 Or GrhIndex = 12584 Or GrhIndex = 50985 Or GrhIndex = 15510 Or GrhIndex = 14775 Or GrhIndex = 14687 Or _
+           GrhIndex = 11903 Or GrhIndex = 735 Or GrhIndex = 15698 Or GrhIndex = 14504 Or GrhIndex = 15697 Or _
+           GrhIndex = 6598 Or GrhIndex = 1121 Or GrhIndex = 1878 Or GrhIndex = 9513 Or GrhIndex = 9514 Or _
+           GrhIndex = 9515 Or GrhIndex = 9518 Or GrhIndex = 9519 Or GrhIndex = 9520 Or GrhIndex = 9529
+           
         Exit Function
+
 
 EsArbol_Err:
 102     Call TraceError(Err.Number, Err.Description, "General.EsArbol", Erl)
