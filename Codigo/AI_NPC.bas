@@ -211,11 +211,11 @@ Private Sub AttackFromPos(ByVal NpcIndex As Integer)
         End If
         If NearTarget > 0 Then
             Call SetUserRef(.targetUser, NearTarget)
-            Dim Direction As t_Vector
-            Dim TargetMapPos As t_WorldPos
-            Direction = GetDirection(.pos, UserList(NearTarget).pos)
-            TargetMapPos = PreferedTileForDirection(Direction, .pos)
-            Call ChangeNPCChar(NpcIndex, .Char.body, .Char.head, GetHeadingFromWorldPos(.pos, UserList(NearTarget).pos))
+            Dim TargetHeading As Integer
+            TargetHeading = GetHeadingFromWorldPos(.pos, UserList(NearTarget).pos)
+            If TargetHeading <> .Char.Heading Then
+                Call ChangeNPCChar(NpcIndex, .Char.body, .Char.head, TargetHeading)
+            End If
             If .flags.LanzaSpells And _
                 IntervaloPermiteLanzarHechizo(NpcIndex) Then
                 If NpcLanzaSpellInmovilizado(NpcIndex, .targetUser.ArrayIndex) Then

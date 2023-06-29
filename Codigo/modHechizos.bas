@@ -273,6 +273,8 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
             Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareMessageDoAnimation(NpcList(NpcIndex).Char.charindex, NpcList(NpcIndex).Char.CastAnimation))
         ElseIf NpcList(NpcIndex).Char.Ataque1 > 0 Then
             Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareMessageDoAnimation(NpcList(NpcIndex).Char.charindex, NpcList(NpcIndex).Char.Ataque1))
+        ElseIf NpcList(NpcIndex).Char.WeaponAnim > 0 Then
+            Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareMessageArmaMov(NpcList(NpcIndex).Char.charindex, 0))
         End If
       End With
       
@@ -393,6 +395,8 @@ Sub NpcLanzaSpellSobreNpc(ByVal NpcIndex As Integer, ByVal TargetNPC As Integer,
             Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareMessageDoAnimation(.Char.charindex, .Char.CastAnimation))
         ElseIf .Char.Ataque1 > 0 Then
             Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareMessageDoAnimation(.Char.charindex, .Char.Ataque1))
+        ElseIf .Char.WeaponAnim > 0 Then
+            Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareMessageArmaMov(.Char.charindex, 0))
         End If
         If IsSet(.flags.BehaviorFlags, e_BehaviorFlags.eDisplayCastMessage) Then
           Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, _
@@ -492,6 +496,8 @@ Public Sub NpcLanzaSpellSobreArea(ByVal NpcIndex As Integer, ByVal SpellIndex As
               Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareMessageDoAnimation(.Char.charindex, .Char.CastAnimation))
           ElseIf .Char.Ataque1 > 0 Then
               Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareMessageDoAnimation(.Char.charindex, .Char.Ataque1))
+          ElseIf .Char.WeaponAnim > 0 Then
+            Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareMessageArmaMov(.Char.charindex, 0))
           End If
           If IsSet(.flags.BehaviorFlags, e_BehaviorFlags.eDisplayCastMessage) Then
             Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, _
