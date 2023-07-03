@@ -65,6 +65,7 @@ Public Const MsgHuntScenarioInstructions = 468
 Public Const MsgNavalConquestInstructions = 469
 Public Const MsgCantDropCargoAtPos = 470
 Public Const MsgSpellRequiresTransform = 471
+Public Const MsgRequiredSpell = 472
 
 Public Function GetRequiredWeaponLocaleId(ByVal WeaponType As e_WeaponType) As Integer
     Select Case WeaponType

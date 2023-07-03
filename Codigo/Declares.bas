@@ -1350,6 +1350,8 @@ Public Type t_Quest
     
     RequiredOBJs As Byte
     RequiredOBJ() As t_Obj
+    RequiredSpellCount As Byte
+    RequiredSpellList() As Integer
     
     RequiredNPCs As Byte
     RequiredNPC() As t_QuestNpc
@@ -1363,8 +1365,8 @@ Public Type t_Quest
     
     RewardOBJs As Byte
     RewardOBJ() As t_Obj
-    RewardSkillCount As Byte
-    RewardSkillList() As Integer
+    RewardSpellCount As Byte
+    RewardSpellList() As Integer
     Repetible As Byte
 
 End Type

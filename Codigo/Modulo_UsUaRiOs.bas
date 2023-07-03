@@ -3488,3 +3488,14 @@ Public Sub RemoveUserInvisibility(ByVal UserIndex As Integer)
     End With
 End Sub
 
+Public Function UserHasSpell(ByVal UserIndex As Integer, ByVal SpellId As Integer) As Boolean
+    With UserList(UserIndex)
+        Dim i As Integer
+        For i = LBound(.Stats.UserHechizos) To UBound(.Stats.UserHechizos)
+            If .Stats.UserHechizos(i) = SpellId Then
+                UserHasSpell = True
+                Exit Function
+            End If
+        Next i
+    End With
+End Function
