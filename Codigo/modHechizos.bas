@@ -1629,7 +1629,7 @@ Sub LanzarHechizo(ByVal Index As Integer, ByVal UserIndex As Integer)
         If SpellCastSuccess Then
 112         If Hechizos(uh).Cooldown > 0 Then
 114             UserList(UserIndex).Counters.UserHechizosInterval(Index) = GetTickCount()
-                If Hechizos(uh).CdEffectId > 0 Then Call WriteSendSkillCdUpdate(UserIndex, Hechizos(uh).CdEffectId, -1, CLng(Hechizos(uh).Cooldown) * 1000, CLng(Hechizos(uh).Cooldown) * 1000, eCD)
+                If Hechizos(uh).CdEffectId > 0 Then Call WriteSendSkillCdUpdate(UserIndex, Hechizos(uh).CdEffectId, -uh, CLng(Hechizos(uh).Cooldown) * 1000, CLng(Hechizos(uh).Cooldown) * 1000, eCD)
             End If
             If IsSet(UserList(UserIndex).flags.StatusMask, e_StatusMask.eTransformed) Then
                 If UserList(UserIndex).Char.CastAnimation > 0 Then
