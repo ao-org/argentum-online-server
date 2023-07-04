@@ -973,6 +973,7 @@ Public Enum e_SpellEffects
     StealBuff = 262144
     eDoDamage = 524288
     AdjustStatsWithCaster = 1048576
+    CancelActiveEffect = 2097152
 End Enum
 
 Public Enum e_TargetEffectType

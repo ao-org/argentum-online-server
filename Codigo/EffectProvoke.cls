@@ -37,6 +37,7 @@ Public Sub Setup(ByVal SourceIndex As Integer, ByVal SourceType As e_ReferenceTy
     Else
         Call SetMask(NpcList(SourceIndex).flags.StatusMask, eTaunting)
     End If
+    Call EffectsOverTime.ApplyEotModifier(DotInfo.TargetRef, EffectOverTime(DotInfo.EotId))
     With EffectOverTime(EffectId)
         TickTime = .TickTime
         If TargetType = eUser Then
@@ -119,6 +120,7 @@ Public Sub IBaseEffectOverTime_OnRemove()
     If DotInfo.Removed Then Exit Sub
     DotInfo.Removed = True
     DotInfo.RemoveEffect = True
+    Call EffectsOverTime.RemoveEotModifier(DotInfo.TargetRef, EffectOverTime(DotInfo.EotId))
     If Source.RefType = eUser Then
         Call UnsetMask(UserList(Source.ArrayIndex).flags.StatusMask, eTaunting)
     Else

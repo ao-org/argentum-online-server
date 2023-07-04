@@ -623,6 +623,18 @@ Private Function PuedeLanzar(ByVal UserIndex As Integer, ByVal HechizoIndex As I
                 Exit Function
             End If
             
+            If IsSet(Hechizos(HechizoIndex).Effects, e_SpellEffects.CancelActiveEffect) And _
+                Hechizos(HechizoIndex).EotId > 0 And _
+                IsValidUserRef(UserList(UserIndex).flags.targetUser) Then
+                Dim Effect As IBaseEffectOverTime
+                Set Effect = FindEffectOnTarget(UserIndex, UserList(UserList(UserIndex).flags.targetUser.ArrayIndex).EffectOverTime, Hechizos(HechizoIndex).EotId)
+                If Not Effect Is Nothing Then
+                    If Effect.EotId = Hechizos(HechizoIndex).EotId Then
+                        Effect.RemoveMe = True
+                        Exit Function
+                    End If
+                End If
+            End If
             If Hechizos(HechizoIndex).RequireTransform > 0 Then
                 If .flags.ActiveTransform <> Hechizos(HechizoIndex).RequireTransform Then
                     Call WriteLocaleMsg(UserIndex, MsgSpellRequiresTransform, e_FontTypeNames.FONTTYPE_INFO, GetNpcName(Hechizos(HechizoIndex).RequireTransform))
