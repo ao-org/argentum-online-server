@@ -2234,7 +2234,7 @@ Sub LoadGlobalDropTable()
     Dim Lector   As clsIniManager
 
     Dim Temporal As Long
-    If Not FileExist("GlobalDropTable.dat") Then
+    If Not FileExist(DatPath & "GlobalDropTable.dat") Then
         Exit Sub
     End If
     If frmMain.Visible Then frmMain.txStatus.Caption = "Cargando tabla de drop globales."
@@ -2242,11 +2242,16 @@ Sub LoadGlobalDropTable()
     Set Lector = New clsIniManager
     Call Lector.Initialize(DatPath & "GlobalDropTable.dat")
     If Lector.NodesCount = 0 Then
+        Set Lector = Nothing
         Exit Sub
     End If
     Dim DropCount, i As Integer
     DropCount = val(Lector.GetValue("INIT", "DROPCOUNT"))
-    
+    If DropCount = 0 Then
+        ReDim GlobalDropTable(0) As t_GlobalDrop
+        Set Lector = Nothing
+        Exit Sub
+    End If
     ReDim GlobalDropTable(1 To DropCount) As t_GlobalDrop
     For i = 1 To DropCount
         GlobalDropTable(i).MaxPercent = val(Lector.GetValue("DROP" & i, "MAXPERCENT"))
