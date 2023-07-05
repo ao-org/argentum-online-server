@@ -2234,8 +2234,7 @@ Sub LoadGlobalDropTable()
     Dim Lector   As clsIniManager
 
     Dim Temporal As Long
-    Set FeatureToggles = New Dictionary
-    If Not FileExist("feature_toggle.ini") Then
+    If Not FileExist("GlobalDropTable.dat") Then
         Exit Sub
     End If
     If frmMain.Visible Then frmMain.txStatus.Caption = "Cargando tabla de drop globales."
