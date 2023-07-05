@@ -3452,7 +3452,7 @@ Public Function GetMagicHealingBonus(ByRef user As t_User) As Single
 End Function
 
 Public Function GetWeaponHitBonus(ByVal WeaponIndex As Integer, ByVal UserClass As e_Class)
-    If Not IsFeatureEnabled("class_weapon_bonus") Then Exit Function
+    If Not IsFeatureEnabled("class_weapon_bonus") Or ObjData(WeaponIndex).WeaponType = 0 Then Exit Function
     GetWeaponHitBonus = ModClase(UserClass).WeaponHitBonus(ObjData(WeaponIndex).WeaponType)
 End Function
 
