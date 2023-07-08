@@ -843,6 +843,7 @@ On Error GoTo ErrHandler
             EffectOverTime(i).SelfHealingBonus = val(Leer.GetValue("EOT" & i, "SelfHealingBonus"))
             EffectOverTime(i).MagicHealingBonus = val(Leer.GetValue("EOT" & i, "MagicHealingBonus"))
             EffectOverTime(i).ClientEffectTypeId = val(Leer.GetValue("EOT" & i, "ClientEffectTypeId"))
+            EffectOverTime(i).PhysicalLinearBonus = val(Leer.GetValue("EOT" & i, "PhysicalLinearBonus"))
             EffectOverTime(i).BuffType = val(Leer.GetValue("EOT" & i, "BuffType"))
             EffectOverTime(i).Area = val(Leer.GetValue("EOT" & i, "Area"))
             EffectOverTime(i).Aura = Leer.GetValue("EOT" & i, "Aura")

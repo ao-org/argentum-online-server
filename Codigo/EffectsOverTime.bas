@@ -635,30 +635,32 @@ Public Function ConvertToClientBuff(ByVal buffType As e_EffectType) As e_EffectT
     End Select
 End Function
 
-Public Function ApplyEotModifier(ByRef TargetRef As t_AnyReference, ByRef EffectStats As t_EffectOverTime)
+Public Function ApplyEotModifier(ByRef TargetRef As t_AnyReference, ByRef EffectStats As t_EffectOverTime, Optional ByVal Modifier As Single = 0)
     If IsValidRef(TargetRef) Then
-        Call UpdateIncreaseModifier(TargetRef, MagicBonus, EffectStats.MagicDamageDone)
-        Call UpdateIncreaseModifier(TargetRef, PhysiccalBonus, EffectStats.PhysicalDamageDone)
-        Call UpdateIncreaseModifier(TargetRef, MagicReduction, EffectStats.MagicDamageReduction)
-        Call UpdateIncreaseModifier(TargetRef, PhysicalReduction, EffectStats.PhysicalDamageReduction)
-        Call UpdateIncreaseModifier(TargetRef, MovementSpeed, EffectStats.SpeedModifier)
-        Call UpdateIncreaseModifier(TargetRef, e_ModifierTypes.HitBonus, EffectStats.HitModifier)
-        Call UpdateIncreaseModifier(TargetRef, e_ModifierTypes.EvasionBonus, EffectStats.EvasionModifier)
-        Call UpdateIncreaseModifier(TargetRef, e_ModifierTypes.SelfHealingBonus, EffectStats.SelfHealingBonus)
-        Call UpdateIncreaseModifier(TargetRef, e_ModifierTypes.MagicHealingBonus, EffectStats.MagicHealingBonus)
+        Call UpdateIncreaseModifier(TargetRef, MagicBonus, EffectStats.MagicDamageDone + EffectStats.MagicDamageDone * Modifier)
+        Call UpdateIncreaseModifier(TargetRef, PhysiccalBonus, EffectStats.PhysicalDamageDone + EffectStats.PhysicalDamageDone * Modifier)
+        Call UpdateIncreaseModifier(TargetRef, MagicReduction, EffectStats.MagicDamageReduction + EffectStats.MagicDamageReduction * Modifier)
+        Call UpdateIncreaseModifier(TargetRef, PhysicalReduction, EffectStats.PhysicalDamageReduction + EffectStats.PhysicalDamageReduction * Modifier)
+        Call UpdateIncreaseModifier(TargetRef, MovementSpeed, EffectStats.SpeedModifier + EffectStats.SpeedModifier * Modifier)
+        Call UpdateIncreaseModifier(TargetRef, e_ModifierTypes.HitBonus, EffectStats.HitModifier + EffectStats.HitModifier * Modifier)
+        Call UpdateIncreaseModifier(TargetRef, e_ModifierTypes.EvasionBonus, EffectStats.EvasionModifier + EffectStats.EvasionModifier * Modifier)
+        Call UpdateIncreaseModifier(TargetRef, e_ModifierTypes.SelfHealingBonus, EffectStats.SelfHealingBonus + EffectStats.SelfHealingBonus * Modifier)
+        Call UpdateIncreaseModifier(TargetRef, e_ModifierTypes.MagicHealingBonus, EffectStats.MagicHealingBonus + EffectStats.MagicHealingBonus * Modifier)
+        Call UpdateIncreaseModifier(TargetRef, e_ModifierTypes.PhysicalLinearBonus, EffectStats.PhysicalLinearBonus + EffectStats.PhysicalLinearBonus * Modifier)
     End If
 End Function
 
-Public Function RemoveEotModifier(ByRef TargetRef As t_AnyReference, ByRef EffectStats As t_EffectOverTime)
+Public Function RemoveEotModifier(ByRef TargetRef As t_AnyReference, ByRef EffectStats As t_EffectOverTime, Optional ByVal Modifier As Single = 0)
     If IsValidRef(TargetRef) Then
-        Call UpdateIncreaseModifier(TargetRef, MagicBonus, -EffectStats.MagicDamageDone)
-        Call UpdateIncreaseModifier(TargetRef, PhysiccalBonus, -EffectStats.PhysicalDamageDone)
-        Call UpdateIncreaseModifier(TargetRef, MagicReduction, -EffectStats.MagicDamageReduction)
-        Call UpdateIncreaseModifier(TargetRef, PhysicalReduction, -EffectStats.PhysicalDamageReduction)
-        Call UpdateIncreaseModifier(TargetRef, MovementSpeed, -EffectStats.SpeedModifier)
-        Call UpdateIncreaseModifier(TargetRef, e_ModifierTypes.HitBonus, -EffectStats.HitModifier)
-        Call UpdateIncreaseModifier(TargetRef, e_ModifierTypes.EvasionBonus, -EffectStats.EvasionModifier)
-        Call UpdateIncreaseModifier(TargetRef, e_ModifierTypes.SelfHealingBonus, -EffectStats.SelfHealingBonus)
-        Call UpdateIncreaseModifier(TargetRef, e_ModifierTypes.MagicHealingBonus, -EffectStats.MagicHealingBonus)
+        Call UpdateIncreaseModifier(TargetRef, MagicBonus, -(EffectStats.MagicDamageDone + EffectStats.MagicDamageDone * Modifier))
+        Call UpdateIncreaseModifier(TargetRef, PhysiccalBonus, -(EffectStats.PhysicalDamageDone + EffectStats.PhysicalDamageDone * Modifier))
+        Call UpdateIncreaseModifier(TargetRef, MagicReduction, -(EffectStats.MagicDamageReduction + EffectStats.MagicDamageReduction * Modifier))
+        Call UpdateIncreaseModifier(TargetRef, PhysicalReduction, -(EffectStats.PhysicalDamageReduction + EffectStats.PhysicalDamageReduction * Modifier))
+        Call UpdateIncreaseModifier(TargetRef, MovementSpeed, -(EffectStats.SpeedModifier + EffectStats.SpeedModifier * Modifier))
+        Call UpdateIncreaseModifier(TargetRef, e_ModifierTypes.HitBonus, -(EffectStats.HitModifier + EffectStats.HitModifier * Modifier))
+        Call UpdateIncreaseModifier(TargetRef, e_ModifierTypes.EvasionBonus, -(EffectStats.EvasionModifier + EffectStats.EvasionModifier * Modifier))
+        Call UpdateIncreaseModifier(TargetRef, e_ModifierTypes.SelfHealingBonus, -(EffectStats.SelfHealingBonus + EffectStats.SelfHealingBonus * Modifier))
+        Call UpdateIncreaseModifier(TargetRef, e_ModifierTypes.MagicHealingBonus, -(EffectStats.MagicHealingBonus + EffectStats.MagicHealingBonus * Modifier))
+        Call UpdateIncreaseModifier(TargetRef, e_ModifierTypes.PhysicalLinearBonus, -(EffectStats.PhysicalLinearBonus + EffectStats.PhysicalLinearBonus * Modifier))
     End If
 End Function

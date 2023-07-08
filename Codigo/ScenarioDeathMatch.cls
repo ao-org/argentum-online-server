@@ -78,7 +78,7 @@ On Error GoTo DeathMatch_Initialize_Err:
 120 UpdateIndex = AddUpdateScenario(Me)
 122 Call CustomScenarios.SetCustomScenario(MapNumber, Me)
 124 Call LoadItemsToSpawn(ScenarioIni)
-    Call ConfigMapLobby
+126 Call ConfigMapLobby
     Exit Sub
 DeathMatch_Initialize_Err:
     Call TraceError(Err.Number, Err.Description, "DeathMatch.Initialize ", Erl)

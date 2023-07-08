@@ -835,12 +835,6 @@ Sub HechizoInvocacion(ByVal UserIndex As Integer, ByRef b As Boolean)
 128                 Call WriteConsoleMsg(UserIndex, "Solo puedes invocar una sola criatura de este tipo", e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 End If
-        
-                'No permitimos se invoquen criaturas en zonas seguras
-130             If MapInfo(.Pos.Map).Seguro = 1 Or MapData(.Pos.Map, .Pos.X, .Pos.Y).trigger = e_Trigger.ZonaSegura Then
-132                 Call WriteConsoleMsg(UserIndex, "En zona segura no puedes invocar criaturas.", e_FontTypeNames.FONTTYPE_INFO)
-                    Exit Sub
-                End If
                 
                 ' No puede invocar en este mapa
                 If MapInfo(.Pos.Map).NoMascotas Then
@@ -1276,9 +1270,47 @@ Sub HandleHechizoTerreno(ByVal UserIndex As Integer, ByVal uh As Integer)
 
 HandleHechizoTerreno_Err:
 140     Call TraceError(Err.Number, Err.Description, "modHechizos.HandleHechizoTerreno", Erl)
-
-        
 End Sub
+
+Function HandlePetSpell(ByVal UserIndex As Integer, ByVal uh As Integer) As Boolean
+    With UserList(UserIndex)
+        If .NroMascotas = 0 Then
+            Exit Function
+        End If
+        If Hechizos(uh).EotId = 0 Then
+            Exit Function
+        End If
+    
+    Dim j As Integer
+    For j = 1 To MAXMASCOTAS
+        If IsValidNpcRef(.MascotasIndex(j)) Then
+            Dim Effect As IBaseEffectOverTime
+            Set Effect = FindEffectOnTarget(UserIndex, NpcList(.MascotasIndex(j).ArrayIndex).EffectOverTime, Hechizos(uh).EotId)
+            If Not Effect Is Nothing Then
+                If Not EffectOverTime(Hechizos(uh).EotId).Override Then
+                    Exit For
+                End If
+            End If
+            If Effect Is Nothing Then
+                Call CreateEffect(UserIndex, eUser, .MascotasIndex(j).ArrayIndex, eNpc, Hechizos(uh).EotId)
+            Else
+                If Not Effect.Reset(UserIndex, eUser, Hechizos(uh).EotId) Then
+                    Exit For
+                End If
+            End If
+        End If
+    Next j
+    End With
+    
+    Call SubirSkill(UserIndex, Magia)
+    UserList(UserIndex).Stats.MinMAN = UserList(UserIndex).Stats.MinMAN - Hechizos(uh).ManaRequerido
+    If UserList(UserIndex).Stats.MinMAN < 0 Then UserList(UserIndex).Stats.MinMAN = 0
+    UserList(UserIndex).Stats.MinSta = UserList(UserIndex).Stats.MinSta - Hechizos(uh).StaRequerido
+    If UserList(UserIndex).Stats.MinSta < 0 Then UserList(UserIndex).Stats.MinSta = 0
+    Call WriteUpdateMana(UserIndex)
+    Call WriteUpdateSta(UserIndex)
+    HandlePetSpell = True
+End Function
 
 Function HandlePhysicalSkill(ByVal SourceIndex As Integer, ByVal SourceType As e_ReferenceType, ByVal TargetIndex As Integer, ByVal TargetType As e_ReferenceType, _
                         ByVal SpellIndex As Integer, IsAlive As Boolean) As Boolean
@@ -1624,6 +1656,8 @@ Sub LanzarHechizo(ByVal Index As Integer, ByVal UserIndex As Integer)
 164             Case e_TargetType.uTerreno
                     SpellCastSuccess = True
 170                 Call HandleHechizoTerreno(UserIndex, uh)
+                Case e_TargetType.uPets
+                    SpellCastSuccess = HandlePetSpell(UserIndex, uh)
             End Select
         End If
         If SpellCastSuccess Then
@@ -4584,11 +4618,18 @@ End Sub
 
 Private Sub AdjustNpcStatWithCasterLevel(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
     Dim BaseHit As Integer
+    Dim BonusDamage As Single
     'get natural skill for user lvl and apply hit chance for a cleric of that level with agility buff to 36
     BaseHit = UserList(UserIndex).Stats.ELV * 2.5
     BaseHit = ((BaseHit + ((3 * BaseHit / 100) * 36))) * ModClase(e_Class.Cleric).AtaqueArmas
     BaseHit = (BaseHit + (2.5 * max(CInt(UserList(UserIndex).Stats.ELV) - 12, 0)))
+    If UserList(UserIndex).invent.WeaponEqpObjIndex > 0 Then
+        BonusDamage = ObjData(UserList(UserIndex).invent.WeaponEqpObjIndex).MagicDamageBonus / 100
+    End If
+    
     With NpcList(NpcIndex)
         .PoderAtaque = BaseHit
+        .Stats.MinHIT = .Stats.MinHIT + .Stats.MinHIT * BonusDamage
+        .Stats.MaxHit = .Stats.MaxHit + .Stats.MaxHit * BonusDamage
     End With
 End Sub

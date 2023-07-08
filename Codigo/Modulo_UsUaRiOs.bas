@@ -2678,56 +2678,30 @@ getMaxInventorySlots_Err:
 End Function
 
 Private Sub WarpMascotas(ByVal UserIndex As Integer)
-        
-        On Error GoTo WarpMascotas_Err
-    
-        
-
-        '************************************************
-        'Author: Uknown
-        'Last Modified: 26/10/2010
-        '13/02/2009: ZaMa - Arreglado respawn de mascotas al cambiar de mapa.
-        '13/02/2009: ZaMa - Las mascotas no regeneran su vida al cambiar de mapa (Solo entre mapas inseguros).
-        '11/05/2009: ZaMa - Chequeo si la mascota pueden spawnear para asiganrle los stats.
-        '26/10/2010: ZaMa - Ahora las mascotas respawnean de forma aleatoria.
-        '************************************************
+On Error GoTo WarpMascotas_Err
         Dim i                As Integer
-
         Dim petType          As Integer
-
-        Dim ZonaSegura       As Boolean
-        
         Dim PermiteMascotas  As Boolean
-
         Dim Index            As Integer
-
         Dim iMinHP           As Integer
-        
         Dim PetTiempoDeVida  As Integer
-    
         Dim MascotaQuitada   As Boolean
         Dim ElementalQuitado As Boolean
         Dim SpawnInvalido    As Boolean
 
-100     ZonaSegura = MapInfo(UserList(UserIndex).Pos.Map).Seguro = 1
         PermiteMascotas = MapInfo(UserList(UserIndex).Pos.Map).NoMascotas = False
 
 102     For i = 1 To MAXMASCOTAS
 104         Index = UserList(UserIndex).MascotasIndex(i).ArrayIndex
-        
 106         If IsValidNpcRef(UserList(UserIndex).MascotasIndex(i)) Then
 108             iMinHP = NpcList(Index).Stats.MinHp
 110             PetTiempoDeVida = NpcList(Index).Contadores.TiempoExistencia
-            
 112             Call SetUserRef(NpcList(Index).MaestroUser, 0)
-            
 114             Call QuitarNPC(Index, eRemoveWarpPets)
-
 116             If PetTiempoDeVida > 0 Then
 118                 Call QuitarMascota(UserIndex, Index)
 120                 ElementalQuitado = True
-
-122             ElseIf ZonaSegura Or Not PermiteMascotas Then
+122             ElseIf Not PermiteMascotas Then
 124                 Call ClearNpcRef(UserList(UserIndex).MascotasIndex(i))
 126                 MascotaQuitada = True
                 End If
@@ -2739,7 +2713,7 @@ Private Sub WarpMascotas(ByVal UserIndex As Integer)
         
 132         petType = UserList(UserIndex).MascotasType(i)
         
-134         If petType > 0 And Not ZonaSegura And PermiteMascotas And (UserList(UserIndex).flags.MascotasGuardadas = 0 Or UserList(UserIndex).MascotasIndex(i).ArrayIndex > 0) And PetTiempoDeVida = 0 Then
+134         If petType > 0 And PermiteMascotas And (UserList(UserIndex).flags.MascotasGuardadas = 0 Or UserList(UserIndex).MascotasIndex(i).ArrayIndex > 0) And PetTiempoDeVida = 0 Then
         
                 Dim SpawnPos As t_WorldPos
         
@@ -2764,10 +2738,7 @@ Private Sub WarpMascotas(ByVal UserIndex As Integer)
 154     Next i
 
 156     If MascotaQuitada Then
-            If ZonaSegura Then
-158             Call WriteConsoleMsg(UserIndex, "No se permiten mascotas en zona segura. Estas te esperarán afuera.", e_FontTypeNames.FONTTYPE_INFO)
-            
-            ElseIf Not PermiteMascotas Then
+            If Not PermiteMascotas Then
                 Call WriteConsoleMsg(UserIndex, "Una fuerza superior impide que tus mascotas entren en este mapa. Estas te esperarán afuera.", e_FontTypeNames.FONTTYPE_INFO)
             End If
 160     ElseIf SpawnInvalido Then
@@ -2775,7 +2746,7 @@ Private Sub WarpMascotas(ByVal UserIndex As Integer)
 164     ElseIf ElementalQuitado Then
 166         Call WriteConsoleMsg(UserIndex, "Pierdes el control de tus mascotas invocadas.", e_FontTypeNames.FONTTYPE_INFO)
         End If
-        Exit Sub
+    Exit Sub
 
 WarpMascotas_Err:
 168     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.WarpMascotas", Erl)
@@ -3498,4 +3469,8 @@ Public Function UserHasSpell(ByVal UserIndex As Integer, ByVal SpellId As Intege
             End If
         Next i
     End With
+End Function
+
+Public Function GetLinearDamageBonus(ByVal UserIndex As Integer) As Integer
+    GetLinearDamageBonus = UserList(UserIndex).Modifiers.PhysicalDamageLinearBonus
 End Function
