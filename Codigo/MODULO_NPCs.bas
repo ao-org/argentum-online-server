@@ -1193,6 +1193,10 @@ Function UpdateNpcSpeed(ByVal npcIndex As Integer)
     End With
 End Function
 
+Function GetNpcSpeedModifiers(ByVal NpcIndex As Integer) As Single
+    GetNpcSpeedModifiers = max(0, (1 + NpcList(NpcIndex).Modifiers.MovementSpeed))
+End Function
+
 Function GetNpcName(ByVal NpcNumber As Integer) As String
    GetNpcName = LeerNPCs.GetValue("NPC" & NpcNumber, "Name")
 End Function
@@ -2275,4 +2279,8 @@ Public Function CanPerformAttackAction(ByVal NpcIndex As Integer, ByVal AttackIn
     With NpcList(NpcIndex)
         CanPerformAttackAction = GlobalFrameTime - .Contadores.IntervaloLanzarHechizo > AttackInterval And GlobalFrameTime - .Contadores.IntervaloAtaque > AttackInterval
     End With
+End Function
+
+Public Function GetLinearDamageBonus(ByVal NpcIndex As Integer) As Integer
+    GetLinearDamageBonus = NpcList(NpcIndex).Modifiers.PhysicalDamageLinearBonus
 End Function

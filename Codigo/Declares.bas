@@ -472,12 +472,11 @@ Public Const Dungeon = "DUNGEON"
 
 ' <<<<<< Targets >>>>>>
 Public Enum e_TargetType
-
     uUsuarios = 1
     uNPC = 2
     uUsuariosYnpc = 3
     uTerreno = 4
-
+    uPets = 5
 End Enum
 
 Public Enum e_SkillType
@@ -1093,10 +1092,12 @@ Public Type t_ActiveModifiers
     MagicDamageReduction As Single
     MovementSpeed As Single
     SelfHealingBonus As Single
+    BonusDefense As Integer
     'effect perform on others
-    PhysicalDamageBonus As Single
+    PhysicalDamageBonus As Single 'apply percent bonus like 10%
     MagicDamageBonus As Single
     MagicHealingBonus As Single
+    PhysicalDamageLinearBonus As Integer 'apply direct bonus like +10
     HitBonus As Integer
     EvasionBonus As Integer
 End Type
@@ -1111,6 +1112,7 @@ Public Enum e_ModifierTypes
     EvasionBonus = 64
     SelfHealingBonus = 128
     MagicHealingBonus = 256
+    PhysicalLinearBonus = 512
 End Enum
 
 Public Type t_EffectOverTime
@@ -1138,6 +1140,7 @@ Public Type t_EffectOverTime
     EffectModifiers As Long
     SelfHealingBonus As Single
     MagicHealingBonus As Single
+    PhysicalLinearBonus As Integer
     ClientEffectTypeId As Integer
     Area As Integer
     Aura As String

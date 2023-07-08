@@ -400,7 +400,7 @@ Public Function IntervaloPermiteMoverse(ByVal NpcIndex As Integer) As Boolean
 
 100     TActual = GetTickCount()
 
-102     If TActual - NpcList(NpcIndex).Contadores.IntervaloMovimiento >= NpcList(NpcIndex).IntervaloMovimiento Then
+102     If TActual - NpcList(NpcIndex).Contadores.IntervaloMovimiento >= (NpcList(NpcIndex).IntervaloMovimiento / GetNpcSpeedModifiers(NpcIndex)) Then
     
             '  Call AddtoRichTextBox(frmMain.RecTxt, "Usar OK.", 255, 0, 0, True, False, False)
 104         NpcList(NpcIndex).Contadores.IntervaloMovimiento = TActual

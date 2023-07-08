@@ -393,7 +393,8 @@ End Function
 Private Function GetUserDamage(ByVal UserIndex As Integer) As Long
 On Error GoTo GetUserDamge_Err
 100 With UserList(UserIndex)
-        GetUserDamage = GetUserDamageWithItem(UserIndex, .invent.WeaponEqpObjIndex, .invent.MunicionEqpObjIndex)
+        GetUserDamage = GetUserDamageWithItem(UserIndex, .invent.WeaponEqpObjIndex, .invent.MunicionEqpObjIndex) _
+                        + UserMod.GetLinearDamageBonus(UserIndex)
     End With
     Exit Function
 GetUserDamge_Err:
@@ -515,7 +516,11 @@ On Error GoTo UserDamageNpc_Err
                 ' Si acertó - Doble chance contra NPCs
 138             If RandomNumber(1, 100) <= ProbabilidadApuñalar(UserIndex) Then
                     ' Daño del apuñalamiento
-140                 DamageExtra = Damage * 2
+                    If IsFeatureEnabled("balance-2") Then
+                        DamageExtra = Damage * ModicadorApuñalarClase(UserList(UserIndex).clase)
+                    Else
+140                     DamageExtra = Damage * 2
+                    End If
                     ' Mostramos en consola el daño
 142                 If .ChatCombate = 1 Then
 144                     Call WriteLocaleMsg(UserIndex, 212, e_FontTypeNames.FONTTYPE_INFOBOLD, PonerPuntos(Damage) & "¬" & PonerPuntos(DamageExtra))
@@ -576,7 +581,7 @@ Public Function UserDamageToNpc(ByVal attackerIndex As Integer, ByVal TargetInde
 End Function
 
 Public Function GetNpcDamage(ByVal npcIndex As Integer) As Long
-    GetNpcDamage = RandomNumber(NpcList(npcIndex).Stats.MinHIT, NpcList(npcIndex).Stats.MaxHit)
+    GetNpcDamage = RandomNumber(NpcList(NpcIndex).Stats.MinHIT, NpcList(NpcIndex).Stats.MaxHit) + NPCs.GetLinearDamageBonus(NpcIndex)
 End Function
 Private Function NpcDamage(ByVal npcIndex As Integer, ByVal UserIndex As Integer) As Long
     On Error GoTo NpcDamage_Err
@@ -752,7 +757,7 @@ End Function
 
 Private Sub NpcDamageNpc(ByVal Atacante As Integer, ByVal Victima As Integer)
     With NpcList(Atacante)
-        Call NpcDamageToNpc(Atacante, Victima, RandomNumber(.Stats.MinHIT, .Stats.MaxHit))
+        Call NpcDamageToNpc(Atacante, Victima, RandomNumber(.Stats.MinHIT, .Stats.MaxHit) + NPCs.GetLinearDamageBonus(Atacante))
     End With
 End Sub
 
@@ -1379,12 +1384,13 @@ Private Sub DesequiparObjetoDeUnGolpe(ByVal AttackerIndex As Integer, ByVal Vict
 110         Case e_PartesCuerpo.bBrazoDerecho, e_PartesCuerpo.bBrazoIzquierdo, e_PartesCuerpo.bTorso
 112             desequiparArma = (.Invent.WeaponEqpObjIndex > 0)
 114             desequiparEscudo = (Not desequiparArma) And (.Invent.EscudoEqpObjIndex > 0)
-116             desequiparCasco = False
+116             desequiparCasco = (Not desequiparEscudo) And (Not desequiparArma) And (.invent.CascoEqpObjIndex > 0)
             
 118         Case e_PartesCuerpo.bPiernaDerecha, e_PartesCuerpo.bPiernaIzquierda
 120             desequiparEscudo = (.Invent.EscudoEqpObjIndex > 0)
-122             desequiparCasco = False
-124             desequiparArma = False
+122             desequiparArma = (Not desequiparEscudo) And (.invent.WeaponEqpObjIndex > 0)
+124             desequiparCasco = (Not desequiparEscudo) And (Not desequiparArma) And (.invent.CascoEqpObjIndex > 0)
+
             
             End Select
         
@@ -1538,6 +1544,7 @@ Public Function PuedeAtacar(ByVal AttackerIndex As Integer, ByVal VictimIndex As
         
 132     If UserList(AttackerIndex).flags.Maldicion = 1 Then
 134         Call WriteConsoleMsg(AttackerIndex, "¡Estás maldito! No podes atacar.", e_FontTypeNames.FONTTYPE_INFO)
+134         Call WriteConsoleMsg(attackerIndex, "¡Estás maldito! No podes atacar.", e_FontTypeNames.FONTTYPE_INFO)
 136         PuedeAtacar = False
             Exit Function
 
@@ -1741,7 +1748,6 @@ Public Function PuedeAtacarNPC(ByVal AttackerIndex As Integer, ByVal NpcIndex As
         'Es una criatura atacable?
 128     If NpcList(NpcIndex).Attackable = 0 Then
             'No es una criatura atacable
-130         Call WriteConsoleMsg(AttackerIndex, "No podés atacar esta criatura.", e_FontTypeNames.FONTTYPE_INFO)
 132         PuedeAtacarNPC = False
             Exit Function
 

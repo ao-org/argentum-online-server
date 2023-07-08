@@ -509,11 +509,7 @@ Public Sub LoadQuests()
 170                 Next j
 
                 End If
-            
-            
-            
-            
-            
+
 172             .RewardGLD = val(Reader.GetValue("QUEST" & i, "RewardGLD"))
 174             .RewardEXP = val(Reader.GetValue("QUEST" & i, "RewardEXP"))
 176             .Repetible = val(Reader.GetValue("QUEST" & i, "Repetible"))

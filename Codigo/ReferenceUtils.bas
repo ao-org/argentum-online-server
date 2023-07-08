@@ -61,6 +61,8 @@ Public Sub UpdateIncreaseModifier(ByRef Reference As t_AnyReference, ByVal Modif
                 Call IncreaseSingle(UserList(Reference.ArrayIndex).Modifiers.SelfHealingBonus, Value)
             Case e_ModifierTypes.MagicHealingBonus
                 Call IncreaseSingle(UserList(Reference.ArrayIndex).Modifiers.MagicHealingBonus, Value)
+            Case e_ModifierTypes.PhysicalLinearBonus
+                Call IncreaseInteger(UserList(Reference.ArrayIndex).Modifiers.PhysicalDamageLinearBonus, Value)
         End Select
     Else
         Select Case Modifier
@@ -83,6 +85,8 @@ Public Sub UpdateIncreaseModifier(ByRef Reference As t_AnyReference, ByVal Modif
                 Call IncreaseSingle(NpcList(Reference.ArrayIndex).Modifiers.SelfHealingBonus, Value)
             Case e_ModifierTypes.MagicHealingBonus
                 Call IncreaseSingle(NpcList(Reference.ArrayIndex).Modifiers.MagicHealingBonus, Value)
+            Case e_ModifierTypes.PhysicalLinearBonus
+                Call IncreaseInteger(NpcList(Reference.ArrayIndex).Modifiers.PhysicalDamageLinearBonus, Value)
         End Select
     End If
 End Sub
