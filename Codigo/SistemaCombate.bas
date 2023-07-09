@@ -1543,7 +1543,6 @@ Public Function PuedeAtacar(ByVal AttackerIndex As Integer, ByVal VictimIndex As
         End If
         
 132     If UserList(AttackerIndex).flags.Maldicion = 1 Then
-134         Call WriteConsoleMsg(AttackerIndex, "¡Estás maldito! No podes atacar.", e_FontTypeNames.FONTTYPE_INFO)
 134         Call WriteConsoleMsg(attackerIndex, "¡Estás maldito! No podes atacar.", e_FontTypeNames.FONTTYPE_INFO)
 136         PuedeAtacar = False
             Exit Function
@@ -1748,6 +1747,7 @@ Public Function PuedeAtacarNPC(ByVal AttackerIndex As Integer, ByVal NpcIndex As
         'Es una criatura atacable?
 128     If NpcList(NpcIndex).Attackable = 0 Then
             'No es una criatura atacable
+130         Call WriteConsoleMsg(attackerIndex, "No podés atacar esta criatura.", e_FontTypeNames.FONTTYPE_INFO)
 132         PuedeAtacarNPC = False
             Exit Function
 
