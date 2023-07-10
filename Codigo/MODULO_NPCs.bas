@@ -793,7 +793,10 @@ Sub MakeNPCChar(ByVal toMap As Boolean, sndIndex As Integer, NpcIndex As Integer
 158                 Call WriteCharacterCreate(sndIndex, body, .Char.head, .Char.Heading, .Char.charindex, x, y, .Char.WeaponAnim, .Char.ShieldAnim, 0, 0, .Char.CascoAnim, .Char.CartAnim, GG, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, .Char.speeding, IIf(.MaestroUser.ArrayIndex = sndIndex, 2, 1), 0, 0, 0, 0, .Stats.MinHp, .Stats.MaxHp, 0, 0, Simbolo, .flags.NPCIdle, , , , , .Char.Ataque1)
                 Else
 160                 Call WriteCharacterCreate(sndIndex, body, .Char.head, .Char.Heading, .Char.charindex, x, y, .Char.WeaponAnim, .Char.ShieldAnim, 0, 0, .Char.CascoAnim, .Char.CartAnim, GG, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, .Char.speeding, IIf(.MaestroUser.ArrayIndex = sndIndex, 2, 1), 0, 0, 0, 0, 0, 0, 0, 0, Simbolo, .flags.NPCIdle, , , , , .Char.Ataque1)
+                End If
                 
+                If IsSet(.flags.StatusMask, e_StatusMask.eDontBlockTile) Then
+                    Call SendData(ToIndex, sndIndex, PrepareUpdateCharValue(.Char.Charindex, e_CharValue.eDontBlockTile, True))
                 End If
             Else
 162             Call AgregarNpc(NpcIndex)
@@ -1255,7 +1258,7 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
 120         .Desc = Leer.GetValue("NPC" & NpcNumber, "Desc")
 122         .nivel = val(Leer.GetValue("NPC" & NpcNumber, "Nivel"))
     
-124         .Movement = val(Leer.GetValue("NPC" & NpcNumber, "Movement"))
+124         Call SetMovement(NpcIndex, val(Leer.GetValue("NPC" & NpcNumber, "Movement")))
 126         .flags.OldMovement = .Movement
     
 128         .flags.AguaValida = val(Leer.GetValue("NPC" & NpcNumber, "AguaValida"))
@@ -1410,7 +1413,7 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
                 End If
     
             End If
-    
+            Call ResetMask(.flags.StatusMask)
 284         .flags.NPCActive = True
             Call ResetMask(.flags.BehaviorFlags)
 286         Select Case val(Leer.GetValue("NPC" & NpcNumber, "RestriccionDeAtaque"))
@@ -1564,7 +1567,7 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
 428             cant = val(Leer.GetValue("NPC" & NpcNumber, "CaminataLen"))
                 ' Prevengo NPCs rotos
 430             If cant = 0 Then
-432                 .Movement = Estatico
+432                 Call SetMovement(NpcIndex, Estatico)
                 Else
                     ' Redimenciono el array
 434                 ReDim .Caminata(1 To cant)
@@ -1638,6 +1641,7 @@ NpcSellsItem_Err:
 
         
 End Function
+
 Sub DoFollow(ByVal NpcIndex As Integer, ByVal UserName As String)
         
         On Error GoTo DoFollow_Err
@@ -1649,9 +1653,8 @@ Sub DoFollow(ByVal NpcIndex As Integer, ByVal UserName As String)
 104             .flags.AttackedBy = vbNullString
 106             Call SetUserRef(.TargetUser, 0)
 108             .flags.Follow = False
-110             .Movement = .flags.OldMovement
+110             Call SetMovement(NpcIndex, .flags.OldMovement)
 112             .Hostile = .flags.OldHostil
-   
             Else
                 Dim player As t_UserReference
                 player = NameIndex(username)
@@ -1659,7 +1662,7 @@ Sub DoFollow(ByVal NpcIndex As Integer, ByVal UserName As String)
 114                 .flags.AttackedBy = username
 116                 .targetUser = player
 118                 .flags.Follow = True
-120                 .Movement = e_TipoAI.NpcDefensa
+120                 Call SetMovement(NpcIndex, e_TipoAI.NpcDefensa)
 122                 .Hostile = 0
                 End If
             End If
@@ -1679,7 +1682,7 @@ Public Sub FollowAmo(ByVal NpcIndex As Integer)
 
 100     With NpcList(NpcIndex)
 102         .flags.Follow = True
-104         .Movement = e_TipoAI.SigueAmo
+104         Call SetMovement(NpcIndex, e_TipoAI.SigueAmo)
 106         .Hostile = 0
 108         Call ClearUserRef(.TargetUser)
 110         Call ClearNpcRef(.TargetNPC)
@@ -2284,3 +2287,17 @@ End Function
 Public Function GetLinearDamageBonus(ByVal NpcIndex As Integer) As Integer
     GetLinearDamageBonus = NpcList(NpcIndex).Modifiers.PhysicalDamageLinearBonus
 End Function
+
+Public Sub SetBlockTileState(ByVal NpcIndex As Integer, ByVal Block As Boolean)
+    Dim CurrentValue As Boolean
+    With NpcList(NpcIndex)
+        CurrentValue = IsSet(.flags.StatusMask, e_StatusMask.eDontBlockTile)
+        If CurrentValue = Block Then Exit Sub
+        If Block Then
+            Call SetMask(.flags.StatusMask, e_StatusMask.eDontBlockTile)
+        Else
+            Call UnsetMask(.flags.StatusMask, e_StatusMask.eDontBlockTile)
+        End If
+        Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareUpdateCharValue(.Char.Charindex, e_CharValue.eDontBlockTile, Block))
+    End With
+End Sub

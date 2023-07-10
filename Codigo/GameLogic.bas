@@ -490,7 +490,7 @@ On Error GoTo ClearAttackerNpc_err
 
 102         If aN > 0 Then
 104             If IsValidUserRef(NpcList(aN).TargetUser) And NpcList(aN).TargetUser.ArrayIndex = UserIndex Then
-106                 NpcList(aN).Movement = NpcList(aN).flags.OldMovement
+106                 Call SetMovement(aN, NpcList(aN).flags.OldMovement)
 108                 NpcList(aN).Hostile = NpcList(aN).flags.OldHostil
 110                 NpcList(aN).flags.AttackedBy = vbNullString
 112                 Call SetUserRef(NpcList(aN).TargetUser, 0)
@@ -1022,7 +1022,9 @@ Function LegalWalk(ByVal Map As Integer, ByVal X As Integer, ByVal Y As Integer,
         
 106     With MapData(Map, X, Y)
         
-108         If .NpcIndex <> 0 Then Exit Function
+108         If .NpcIndex <> 0 Then
+              If Not IsSet(NpcList(.NpcIndex).flags.StatusMask, e_StatusMask.eDontBlockTile) Then Exit Function
+            End If
 
 110         If .UserIndex <> 0 Then
 112             If UserList(.UserIndex).flags.AdminInvisible = 0 And UserList(.UserIndex).flags.Muerto = 0 Then

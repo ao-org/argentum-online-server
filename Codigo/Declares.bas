@@ -1275,6 +1275,10 @@ Public Type t_FXdata
 
 End Type
 
+Public Enum e_CharValue
+    eDontBlockTile = 1
+End Enum
+
 'Datos de user o npc
 Public Type t_Char
 
@@ -1303,8 +1307,6 @@ Public Type t_Char
     Ataque1 As Integer
     Animation() As Integer
     CastAnimation As Integer
-    
-
 End Type
 
 Public Type t_Obj
@@ -1776,6 +1778,7 @@ Public Enum e_StatusMask
     eTransformed = 4
     eCastOnlyOnSelf = 8
     ePreventEnergyRestore = 16
+    eDontBlockTile = 32
 End Enum
 
 Public Enum e_InventorySlotMask

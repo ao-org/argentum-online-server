@@ -5791,3 +5791,22 @@ WriteRequestTelemetry_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20.Protocol_Writes.WriteRequestTelemetry", Erl)
 End Sub
+
+Public Function PrepareUpdateCharValue(ByVal Charindex As Integer, _
+                                       ByVal CharValueType As e_CharValue, _
+                                       ByVal NewValue As Long)
+
+        On Error GoTo PrepareMessageDoAnimation_Err
+
+100     Call Writer.WriteInt16(ServerPacketID.UpdateCharValue)
+102     Call Writer.WriteInt16(Charindex)
+104     Call Writer.WriteInt16(CharValueType)
+106     Call Writer.WriteInt32(NewValue)
+
+        Exit Function
+
+PrepareMessageDoAnimation_Err:
+        Call Writer.Clear
+        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageDoAnimation", Erl)
+End Function
+

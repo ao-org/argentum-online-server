@@ -214,6 +214,7 @@ Public Enum ServerPacketID
     UpdateTrap
     UpdateGroupInfo
     RequestTelemetry
+    UpdateCharValue
     #If PYMMO = 0 Then
     AccountCharacterList
     #End If
@@ -5905,9 +5906,8 @@ Private Sub HandlePetStand(ByVal UserIndex As Integer)
 114         If Not IsValidUserRef(NpcList(.flags.TargetNPC.ArrayIndex).MaestroUser) Or NpcList(.flags.TargetNPC.ArrayIndex).MaestroUser.ArrayIndex <> UserIndex Then Exit Sub
         
             'Do it!
-116         NpcList(.flags.TargetNPC.ArrayIndex).Movement = e_TipoAI.Estatico
+116         Call SetMovement(.flags.TargetNPC.ArrayIndex, e_TipoAI.Estatico)
 118         Call Expresar(.flags.TargetNPC.ArrayIndex, UserIndex)
-
         End With
         
         Exit Sub
@@ -5962,7 +5962,6 @@ Private Sub HandlePetFollow(ByVal UserIndex As Integer)
 116         Call FollowAmo(.flags.TargetNPC.ArrayIndex)
         
 118         Call Expresar(.flags.TargetNPC.ArrayIndex, UserIndex)
-
         End With
         
         Exit Sub
@@ -6598,7 +6597,7 @@ Private Sub HandleReward(ByVal UserIndex As Integer)
 118             Call RecompensaArmadaReal(UserIndex)
             Else
 120             If .Faccion.Status <> e_Facciones.Caos And .Faccion.Status <> e_Facciones.concilio Then
-122                 Call WriteChatOverHead(UserIndex, "No perteneces a la legión oscura!!!", NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
+122                 Call WriteChatOverHead(UserIndex, "No perteneces a la legión oscura!!!", NpcList(.flags.TargetNPC.ArrayIndex).Char.Charindex, vbWhite)
                     Exit Sub
                 End If
 124             Call RecompensaCaos(UserIndex)
@@ -10304,7 +10303,7 @@ Public Sub HandleQuestAccept(ByVal UserIndex As Integer)
             'El personaje no es la clase requerida?
 125         If UserList(UserIndex).clase <> QuestList(NpcList(npcIndex).QuestNumber(Indice)).RequiredClass And _
                 QuestList(NpcList(npcIndex).QuestNumber(Indice)).RequiredClass > 0 Then
-                 Call WriteChatOverHead(UserIndex, "Debes ser " & ListaClases(QuestList(NpcList(NpcIndex).QuestNumber(Indice)).RequiredClass) & " para emprender esta misión.", NpcList(NpcIndex).Char.charindex, vbYellow)
+                 Call WriteChatOverHead(UserIndex, "Debes ser " & ListaClases(QuestList(NpcList(NpcIndex).QuestNumber(Indice)).RequiredClass) & " para emprender esta misión.", NpcList(NpcIndex).Char.Charindex, vbYellow)
                 Exit Sub
 
             End If

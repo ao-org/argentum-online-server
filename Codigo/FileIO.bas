@@ -2906,7 +2906,7 @@ Sub CargarNpcBackUp(npcIndex As Integer, ByVal NpcNumber As Integer)
 104     NpcList(npcIndex).Numero = NpcNumber
 106     NpcList(npcIndex).Name = GetVar(npcfile, "NPC" & NpcNumber, "Name")
 108     NpcList(npcIndex).Desc = GetVar(npcfile, "NPC" & NpcNumber, "Desc")
-110     NpcList(npcIndex).Movement = val(GetVar(npcfile, "NPC" & NpcNumber, "Movement"))
+110     Call SetMovement(NpcIndex, val(GetVar(npcfile, "NPC" & NpcNumber, "Movement")))
 112     NpcList(npcIndex).npcType = val(GetVar(npcfile, "NPC" & NpcNumber, "NpcType"))
 
 114     NpcList(npcIndex).Char.body = val(GetVar(npcfile, "NPC" & NpcNumber, "Body"))
