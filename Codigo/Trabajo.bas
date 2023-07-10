@@ -3051,7 +3051,7 @@ Sub DoDomar(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
 138                 Call WriteConsoleMsg(UserIndex, "La criatura te ha aceptado como su amo.", e_FontTypeNames.FONTTYPE_INFO)
 
                     ' Es zona segura?
-140                 If MapInfo(.Pos.Map).Seguro = 1 Then
+140                 If MapInfo(.pos.Map).NoMascotas = 1 Then
 142                     petType = NpcList(NpcIndex).Numero
 144                     NroPets = .NroMascotas
 146                     Call QuitarNPC(NpcIndex, eNewPet)

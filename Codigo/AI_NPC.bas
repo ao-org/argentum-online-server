@@ -911,7 +911,7 @@ Private Sub RestoreOldMovement(ByVal NpcIndex As Integer)
         
             ' Si el NPC no tiene maestro, reseteamos el movimiento que tenia antes.
 106         If Not IsValidUserRef(.MaestroUser) Then
-108             .Movement = .flags.OldMovement
+108             Call SetMovement(NpcIndex, .flags.OldMovement)
 110             .Hostile = .flags.OldHostil
 112             .flags.AttackedBy = vbNullString
             Else
@@ -1579,3 +1579,14 @@ Public Function GoToNextWp(ByVal NpcIndex As Integer) As t_WorldPos
     Call GetNextWaypointForNpc(NpcIndex, TargetPos.x, TargetPos.y)
     GoToNextWp = TargetPos
 End Function
+
+Public Sub SetMovement(ByVal NpcIndex As Integer, ByVal NewMovement As e_TipoAI)
+    NpcList(NpcIndex).Movement = NewMovement
+    If IsValidUserRef(NpcList(NpcIndex).MaestroUser) Then
+        If NewMovement = e_TipoAI.Estatico Or NewMovement = SigueAmo Then
+            Call SetBlockTileState(NpcIndex, True)
+        Else
+            Call SetBlockTileState(NpcIndex, False)
+        End If
+    End If
+End Sub

@@ -614,9 +614,9 @@ On Error GoTo Complete_ConnectUser_Err
 990         Call SendData(SendTarget.ToIndex, userindex, PrepareMessageOnlineUser(NumUsers))
 
 995         Call WriteFYA(UserIndex)
-1000         Call WriteBindKeys(UserIndex)
+1000        Call WriteBindKeys(UserIndex)
         
-1005         If .NroMascotas > 0 And MapInfo(.Pos.Map).Seguro = 0 And .flags.MascotasGuardadas = 0 Then
+1005         If .NroMascotas > 0 And MapInfo(.pos.Map).NoMascotas = 0 And .flags.MascotasGuardadas = 0 Then
                  Dim i As Integer
 1010             For i = 1 To MAXMASCOTAS
 1015                If .MascotasType(i) > 0 Then
@@ -1342,6 +1342,20 @@ TranslateUserPos_Err:
     Call LogError("Error en la subrutina TranslateUserPos - Error : " & Err.Number & " - Description : " & Err.Description)
 End Function
 
+Public Sub SwapNpcPos(ByVal UserIndex As Integer, ByRef TargetPos As t_WorldPos, ByVal nHeading As e_Heading)
+    Dim NpcIndex As Integer
+    Dim Opposite_Heading As e_Heading
+    NpcIndex = MapData(TargetPos.Map, TargetPos.x, TargetPos.y).NpcIndex
+    If NpcIndex <= 0 Then Exit Sub
+    
+    Opposite_Heading = InvertHeading(nHeading)
+    Call HeadtoPos(Opposite_Heading, NpcList(NpcIndex).pos)
+    Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareMessageCharacterMove(NpcList(NpcIndex).Char.charindex, NpcList(NpcIndex).pos.x, NpcList(NpcIndex).pos.y), False)
+    MapData(NpcList(NpcIndex).pos.Map, NpcList(NpcIndex).pos.x, NpcList(NpcIndex).pos.y).NpcIndex = NpcIndex
+    MapData(TargetPos.Map, TargetPos.x, TargetPos.y).NpcIndex = 0
+    Call CheckUpdateNeededNpc(NpcIndex, Opposite_Heading)
+End Sub
+
 Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As e_Heading) As Boolean
         ' 20/01/2021 - WyroX: Lo convierto a función y saco los WritePosUpdate, ahora están en el paquete
 
@@ -1378,7 +1392,7 @@ Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As e_Heading) A
 126             .Accion.ObjSlot = 0
 128             .Accion.AccionPendiente = False
             End If
-
+            Call SwapNpcPos(UserIndex, nPos, nHeading)
             'Si no estoy solo en el mapa...
 130         If MapInfo(.pos.map).NumUsers > 1 Or IsValidUserRef(.flags.GMMeSigue) Then
 
@@ -2102,7 +2116,7 @@ Sub UserDie(ByVal UserIndex As Integer)
                 Call Execute(QUERY_UPSERT_PETS, Params)
             End If
             If (.flags.MascotasGuardadas = 0) Then
-                .NroMascotas = 0
+                .NroMascotas = 1
             End If
                 
         
@@ -3332,7 +3346,7 @@ On Error GoTo DoDamageOrHeal_Err
                     Call PlayerKillPlayer(.pos.map, NpcList(SourceIndex).MaestroUser.ArrayIndex, UserIndex, e_DamageSourceType.e_pet, 0)
                 Else
                     'Al matarlo no lo sigue mas
-170                 NpcList(SourceIndex).Movement = NpcList(SourceIndex).flags.OldMovement
+170                 Call SetMovement(SourceIndex, NpcList(SourceIndex).flags.OldMovement)
 172                 NpcList(SourceIndex).Hostile = NpcList(SourceIndex).flags.OldHostil
 174                 NpcList(SourceIndex).flags.AttackedBy = vbNullString
 176                 Call SetUserRef(NpcList(SourceIndex).targetUser, 0)
