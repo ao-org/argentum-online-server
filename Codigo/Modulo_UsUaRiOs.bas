@@ -1236,13 +1236,6 @@ Sub CheckUserLevel(ByVal UserIndex As Integer)
 182                     Call WriteLocaleMsg(UserIndex, "29", e_FontTypeNames.FONTTYPE_INFO, PonerPuntos(OroRecompenza))
                     End If
                 End If
-            
-184             If Not EsNewbie(UserIndex) And WasNewbie Then
-        
-186                 Call QuitarNewbieObj(UserIndex)
-            
-                End If
-        
             Loop
         
 188         If PasoDeNivel Then
@@ -1261,7 +1254,9 @@ Sub CheckUserLevel(ByVal UserIndex As Integer)
                     'Call WriteConsoleMsg(UserIndex, "Has ganado un total de " & Pts & " skillpoints.", e_FontTypeNames.FONTTYPE_INFO)
                 End If
                 
-204             If .Stats.ELV >= MapInfo(.Pos.Map).MaxLevel And Not EsGM(UserIndex) Then
+                If Not EsNewbie(UserIndex) And WasNewbie Then
+203                 Call QuitarNewbieObj(UserIndex)
+204             ElseIf .Stats.ELV >= MapInfo(.pos.Map).MaxLevel And Not EsGM(UserIndex) Then
 206                 If MapInfo(.Pos.Map).Salida.Map <> 0 Then
 208                     Call WriteConsoleMsg(UserIndex, "Tu nivel no te permite seguir en el mapa.", e_FontTypeNames.FONTTYPE_INFO)
 210                     Call WarpUserChar(UserIndex, MapInfo(.Pos.Map).Salida.Map, MapInfo(.Pos.Map).Salida.X, MapInfo(.Pos.Map).Salida.Y, True)
