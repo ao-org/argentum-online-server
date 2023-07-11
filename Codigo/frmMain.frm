@@ -876,13 +876,11 @@ On Error GoTo Handler
             If .EnUso Then
                 .TiempoRestante = .TiempoRestante - IntervaloTimerRetosEnSegundos
                 
-                If .TiempoRestante <= 0 Then
-                    Call FinalizarReto(Sala, True)
-                End If
-                
                 If .TiempoItems > 0 Then
                     .TiempoItems = .TiempoItems - IntervaloTimerRetosEnSegundos
                     If .TiempoItems <= 0 Then Call TerminarTiempoAgarrarItems(Sala)
+                ElseIf .TiempoRestante <= 0 Then
+                    Call FinalizarReto(Sala, True)
                 End If
             End If
         End With
