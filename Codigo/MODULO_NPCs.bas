@@ -1238,6 +1238,13 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
 #If DEBUGGING = 0 Then
         If val(Leer.GetValue("NPC" & NpcNumber, "TESTONLY")) > 0 Then Exit Function
 #End If
+        Dim RequireToggle As String
+        RequireToggle = Leer.GetValue("NPC" & NpcNumber, "REQUIRETOGGLE")
+        If RequireToggle <> "" Then
+            If Not IsFeatureEnabled(RequireToggle) Then Exit Function
+        End If
+        
+        
 106     NpcIndex = GetNextAvailableNpc
 
 108     If NpcIndex > MaxNPCs Then 'Limite de npcs
