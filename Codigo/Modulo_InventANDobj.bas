@@ -377,6 +377,7 @@ On Error GoTo ErrHandler
             Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessagePlayWave(e_FXSound.Dropeo_Sound, Npc.Pos.x, Npc.Pos.y))
         End If
     Next i
+    Exit Sub
 ErrHandler:
 126     Call LogError("Error DropFromGlobalDropTable al dropear el item " & i & ", al usuario " & UserList(UserIndex).name & ". " & Err.Description & ".")
 End Sub
