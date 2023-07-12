@@ -2111,7 +2111,7 @@ Sub UserDie(ByVal UserIndex As Integer)
                 Call Execute(QUERY_UPSERT_PETS, Params)
             End If
             If (.flags.MascotasGuardadas = 0) Then
-                .NroMascotas = 1
+                .NroMascotas = 0
             End If
                 
         

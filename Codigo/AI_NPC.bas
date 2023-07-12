@@ -313,7 +313,7 @@ Public Sub AI_RangeAttack(ByVal NpcIndex As Integer)
 128         If IsValidRef(CurrentTarget) And NPCs.CanAttack(.Contadores, .flags) Then
 130             TargetPos = GetPosition(CurrentTarget)
 132             If Distance(.pos.x, .pos.y, TargetPos.x, TargetPos.y) <= .AttackRange Then
-136                 If NpcCanAttack(NpcIndex, CurrentTarget) And CurrentTarget.RefType = eUser Then
+136                 If NpcCanAttack(NpcIndex, CurrentTarget) = eCanAttack And CurrentTarget.RefType = eUser Then
                         If NpcAtacaUser(NpcIndex, CurrentTarget.ArrayIndex, .Char.Heading) And .ProjectileType > 0 Then
                             Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, _
                                           PrepareCreateProjectile(.pos.x, .pos.y, TargetPos.x, TargetPos.y, .ProjectileType))
@@ -328,9 +328,11 @@ Public Sub AI_RangeAttack(ByVal NpcIndex As Integer)
                 If NearestUser > 0 And NearestTargetDistance < .PreferedRange Then
                     Dim Direction As t_Vector
                     Dim TargetMapPos As t_WorldPos
-                    Direction = GetDirection(.pos, UserList(NearestUser).pos)
+                    Direction = GetDirection(UserList(NearestUser).pos, .pos)
                     TargetMapPos = PreferedTileForDirection(Direction, .pos)
                     Call MoveNPCChar(NpcIndex, GetHeadingFromWorldPos(.pos, TargetMapPos))
+                ElseIf Math.Round(NearestTargetDistance) = .PreferedRange Then
+                    'do nothing, look at pos?
                 ElseIf IsValidRef(CurrentTarget) And Distance(.pos.x, .pos.y, TargetPos.x, TargetPos.y) > .PreferedRange Then
                     Call AI_CaminarConRumbo(NpcIndex, TargetPos)
                 ElseIf Distancia(.pos, .Orig) > 0 Then 'return to origin
@@ -698,7 +700,7 @@ On Error GoTo ErrorHandler
             If CurrentTarget.ArrayIndex > 0 And NearestTargetDistance < .PreferedRange Then
                 Dim Direction As t_Vector
                 Dim TargetMapPos As t_WorldPos
-                Direction = GetDirection(.pos, TargetPos)
+                Direction = GetDirection(TargetPos, .pos)
                 TargetMapPos = PreferedTileForDirection(Direction, .pos)
                 Call MoveNPCChar(NpcIndex, GetHeadingFromWorldPos(.pos, TargetMapPos))
             Else
@@ -751,7 +753,9 @@ On Error GoTo ErrorHandler
             If CurrentTarget.ArrayIndex > 0 And NearestTargetDistance < .PreferedRange Then
                 Dim Direction As t_Vector
                 Dim TargetMapPos As t_WorldPos
-                Direction = GetDirection(.pos, TargetPos)
+                Direction = GetDirection(TargetPos, .pos)
+                Direction.x = Direction.x * -1
+                Direction.y = Direction.y * -1
                 TargetMapPos = PreferedTileForDirection(Direction, .pos)
                 Call MoveNPCChar(NpcIndex, GetHeadingFromWorldPos(.pos, TargetMapPos))
             Else
