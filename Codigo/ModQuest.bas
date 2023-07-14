@@ -134,7 +134,13 @@ Public Sub FinishQuest(ByVal UserIndex As Integer, ByVal QuestIndex As Integer, 
                         End If
 132              Next i
             End If
-    
+            'Check required skill
+            If .RequiredSkill.SkillType > 0 Then
+                If UserList(UserIndex).Stats.UserSkills(.RequiredSkill.SkillType) < .RequiredSkill.RequiredValue Then
+                    Call WriteLocaleChatOverHead(UserIndex, MsgRequiredSkill, SkillsNames(.RequiredSkill.SkillType), NpcList(NpcIndex).Char.charindex, vbYellow)
+                    Exit Sub
+                End If
+            End If
             'Comprobamos que el usuario tenga espacio para recibir los items.
 134         If .RewardOBJs > 0 Then
                 'Buscamos la cantidad de slots de inventario libres.
@@ -492,8 +498,9 @@ Public Sub LoadQuests()
 154                 Next j
 
                 End If
-            
-            
+                .RequiredSkill.SkillType = val(Reader.GetValue("QUEST" & i, "RequiredSkill"))
+                .RequiredSkill.RequiredValue = val(Reader.GetValue("QUEST" & i, "RequiredValue"))
+                
             
                 'CARGAMOS NPCS TARGET REQUERIDOS
 156             .RequiredTargetNPCs = val(Reader.GetValue("QUEST" & i, "RequiredTargetNPCs"))
@@ -667,7 +674,7 @@ Public Function FinishQuestCheck(ByVal UserIndex As Integer, ByVal QuestIndex As
                     End If
 122             Next i
             End If
-            'Check required skills
+            'Check required spells
             If .RequiredSpellCount > 0 Then
                 For i = 1 To .RequiredSpellCount
                     If Not UserHasSpell(UserIndex, .RequiredSpellList(i)) Then
@@ -676,7 +683,13 @@ Public Function FinishQuestCheck(ByVal UserIndex As Integer, ByVal QuestIndex As
                     End If
                 Next i
             End If
-            
+            'Check required skill
+            If .RequiredSkill.SkillType > 0 Then
+                If UserList(UserIndex).Stats.UserSkills(.RequiredSkill.SkillType) < .RequiredSkill.RequiredValue Then
+                    FinishQuestCheck = False
+                    Exit Function
+                End If
+            End If
             'Comprobamos que haya targeteado todas las criaturas.
 124         If .RequiredTargetNPCs > 0 Then
 126             For i = 1 To .RequiredTargetNPCs

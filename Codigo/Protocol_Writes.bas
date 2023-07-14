@@ -3837,16 +3837,12 @@ Public Sub WriteQuestDetails(ByVal UserIndex As Integer, _
 122                 Call Writer.WriteInt16(UserList(UserIndex).QuestStats.Quests( _
                             QuestSlot).NPCsKilled(i))
                 End If
-
 124         Next i
-
         End If
 
         'Enviamos la cantidad de objs requeridos
 126     Call Writer.WriteInt8(QuestList(QuestIndex).RequiredOBJs)
-
 128     If QuestList(QuestIndex).RequiredOBJs Then
-
             'Si hay objs entonces enviamos la lista
 130         For i = 1 To QuestList(QuestIndex).RequiredOBJs
 132             Call Writer.WriteInt16(QuestList(QuestIndex).RequiredOBJ(i).amount)
@@ -3856,8 +3852,9 @@ Public Sub WriteQuestDetails(ByVal UserIndex As Integer, _
                         QuestIndex).RequiredOBJ(i).ObjIndex))
                 ' Call Writer.WriteInt16(0)
 138         Next i
-
         End If
+139     Call Writer.WriteInt8(QuestList(QuestIndex).RequiredSkill.SkillType)
+        Call Writer.WriteInt8(QuestList(QuestIndex).RequiredSkill.RequiredValue)
 
         'Enviamos la recompensa de oro y experiencia.
 140     Call Writer.WriteInt32((QuestList(QuestIndex).RewardGLD * OroMult))
@@ -3954,7 +3951,6 @@ Public Sub WriteNpcQuestListSend(ByVal UserIndex As Integer, ByVal NpcIndex As I
 114         Call Writer.WriteInt8(QuestList(QuestIndex).RequiredNPCs)
 
 116         If QuestList(QuestIndex).RequiredNPCs Then
-
                 'Si hay npcs entonces enviamos la lista
 118             For i = 1 To QuestList(QuestIndex).RequiredNPCs
 120                 Call Writer.WriteInt16(QuestList(QuestIndex).RequiredNPC(i).amount)
@@ -3964,12 +3960,9 @@ Public Sub WriteNpcQuestListSend(ByVal UserIndex As Integer, ByVal NpcIndex As I
                     ' Call Writer.WriteInt16(UserList(UserIndex).QuestStats.Quests(QuestSlot).NPCsKilled(i))
                     ' End If
 124             Next i
-
             End If
-
             'Enviamos la cantidad de objs requeridos
 126         Call Writer.WriteInt8(QuestList(QuestIndex).RequiredOBJs)
-
 128         If QuestList(QuestIndex).RequiredOBJs Then
                 'Si hay objs entonces enviamos la lista
 130             For i = 1 To QuestList(QuestIndex).RequiredOBJs
@@ -3983,7 +3976,8 @@ Public Sub WriteNpcQuestListSend(ByVal UserIndex As Integer, ByVal NpcIndex As I
                     Call Writer.WriteInt16(QuestList(QuestIndex).RequiredSpellList(i))
                 Next i
             End If
-
+137         Call Writer.WriteInt8(QuestList(QuestIndex).RequiredSkill.SkillType)
+            Call Writer.WriteInt8(QuestList(QuestIndex).RequiredSkill.RequiredValue)
             'Enviamos la recompensa de oro y experiencia.
 138         Call Writer.WriteInt32(QuestList(QuestIndex).RewardGLD * OroMult)
 140         Call Writer.WriteInt32(QuestList(QuestIndex).RewardEXP * ExpMult)
@@ -5664,6 +5658,8 @@ Public Sub WriteObjQuestSend(ByVal UserIndex As Integer, ByVal QuestIndex As Int
                 Call Writer.WriteInt16(QuestList(QuestIndex).RequiredSpellList(i))
             Next i
         End If
+137     Call Writer.WriteInt8(QuestList(QuestIndex).RequiredSkill.SkillType)
+        Call Writer.WriteInt8(QuestList(QuestIndex).RequiredSkill.RequiredValue)
             'Enviamos la recompensa de oro y experiencia.
 138     Call Writer.WriteInt32(QuestList(QuestIndex).RewardGLD * OroMult)
 140     Call Writer.WriteInt32(QuestList(QuestIndex).RewardEXP * ExpMult)

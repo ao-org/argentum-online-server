@@ -1339,6 +1339,11 @@ Public Type t_UserQuest
     QuestIndex As Integer
 End Type
 
+Public Type t_QuestSkill
+    SkillType As e_Skill
+    RequiredValue As Byte
+End Type
+
 Public QuestList() As t_Quest
 
 Public Type t_Quest
@@ -1361,6 +1366,7 @@ Public Type t_Quest
     
     RequiredNPCs As Byte
     RequiredNPC() As t_QuestNpc
+    RequiredSkill As t_QuestSkill
     
     
     RequiredTargetNPCs As Byte
