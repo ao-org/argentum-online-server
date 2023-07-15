@@ -3483,3 +3483,7 @@ End Function
 Public Function GetLinearDamageBonus(ByVal UserIndex As Integer) As Integer
     GetLinearDamageBonus = UserList(UserIndex).Modifiers.PhysicalDamageLinearBonus
 End Function
+
+Public Function GetDefenseBonus(ByVal UserIndex As Integer) As Integer
+    GetDefenseBonus = UserList(UserIndex).Modifiers.DefenseBonus
+End Function

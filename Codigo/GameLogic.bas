@@ -2169,7 +2169,7 @@ Public Sub TimerQuestOrco()
     Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(156, NO_3D_SOUND, NO_3D_SOUND))
 End Sub
 
-Public Function TestRequiredEquipedItem(ByRef inventory As t_Inventario, ByVal requiredItemsFlag As Long) As e_SpellRequirementMask
+Public Function TestRequiredEquipedItem(ByRef inventory As t_Inventario, ByVal RequiredItemsFlag As Long, ByVal RequiredWeaponMask As Integer) As e_SpellRequirementMask
     If IsSet(requiredItemsFlag, e_SpellRequirementMask.eArmor) And _
       inventory.ArmourEqpObjIndex = 0 Then
         TestRequiredEquipedItem = e_SpellRequirementMask.eArmor
@@ -2205,10 +2205,18 @@ Public Function TestRequiredEquipedItem(ByRef inventory As t_Inventario, ByVal r
         TestRequiredEquipedItem = e_SpellRequirementMask.eTool
         Exit Function
     End If
-    If IsSet(requiredItemsFlag, e_SpellRequirementMask.eWeapon) And _
-      inventory.WeaponEqpObjIndex = 0 Then
-        TestRequiredEquipedItem = e_SpellRequirementMask.eWeapon
-        Exit Function
+    If IsSet(RequiredItemsFlag, e_SpellRequirementMask.eWeapon) Then
+        If inventory.WeaponEqpObjIndex = 0 Then
+            If Not IsIntSet(RequiredWeaponMask, e_WeaponType.eFist) Then
+                TestRequiredEquipedItem = e_SpellRequirementMask.eWeapon
+                Exit Function
+            End If
+        ElseIf RequiredWeaponMask > 0 Then
+            If Not IsIntSet(RequiredWeaponMask, ShiftLeft(1, ObjData(inventory.WeaponEqpObjIndex).WeaponType)) Then
+                TestRequiredEquipedItem = e_SpellRequirementMask.eWeapon
+                Exit Function
+            End If
+        End If
     End If
     TestRequiredEquipedItem = e_SpellRequirementMask.eNone
 End Function

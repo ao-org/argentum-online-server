@@ -744,7 +744,7 @@ Private Function PuedeLanzar(ByVal UserIndex As Integer, ByVal HechizoIndex As I
             End If
             
             Dim RequiredItemResult As e_SpellRequirementMask
-            RequiredItemResult = TestRequiredEquipedItem(.invent, Hechizos(HechizoIndex).SpellRequirementMask)
+            RequiredItemResult = TestRequiredEquipedItem(.invent, Hechizos(HechizoIndex).SpellRequirementMask, 0)
             If RequiredItemResult > 0 Then
                 Call SendrequiredItemMessage(UserIndex, RequiredItemResult, "para usar este hechizo.")
                 Exit Function

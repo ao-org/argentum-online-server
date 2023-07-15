@@ -486,7 +486,8 @@ On Error GoTo UserDamageNpc_Err
             ' Color por defecto rojo
 114         Color = vbRed
             Dim NpcDef As Integer
-            NpcDef = max(0, NpcList(npcIndex).Stats.def - GetArmorPenetration(UserIndex, NpcList(npcIndex).Stats.def))
+            NpcDef = NpcList(NpcIndex).Stats.def + NPCs.GetDefenseBonus(NpcIndex)
+            NpcDef = max(0, NpcDef - GetArmorPenetration(UserIndex, NpcDef))
             ' Defensa del NPC
 116         damage = DamageBase - NpcDef
 149
@@ -630,7 +631,7 @@ Private Function NpcDamage(ByVal npcIndex As Integer, ByVal UserIndex As Integer
                 End If
         End Select
         
-140     Damage = Damage - absorbido - defbarco - defMontura
+140     Damage = Damage - absorbido - defbarco - defMontura - UserMod.GetDefenseBonus()
         Damage = Damage * NPCs.GetPhysicalDamageModifier(NpcList(npcIndex))
 141     Damage = Damage * UserMod.GetPhysicDamageReduction(UserList(UserIndex))
 142     If Damage < 0 Then Damage = 0
@@ -757,7 +758,7 @@ End Function
 
 Private Sub NpcDamageNpc(ByVal Atacante As Integer, ByVal Victima As Integer)
     With NpcList(Atacante)
-        Call NpcDamageToNpc(Atacante, Victima, RandomNumber(.Stats.MinHIT, .Stats.MaxHit) + NPCs.GetLinearDamageBonus(Atacante))
+        Call NpcDamageToNpc(Atacante, Victima, RandomNumber(.Stats.MinHIT, .Stats.MaxHit) + NPCs.GetLinearDamageBonus(Atacante) - NPCs.GetDefenseBonus())
     End With
 End Sub
 
@@ -1210,7 +1211,6 @@ Private Sub UserDamageToUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex 
 112                     Casco = ObjData(.Invent.CascoEqpObjIndex)
 114                     Defensa = Defensa + RandomNumber(Casco.MinDef, Casco.MaxDef)
                     End If
-
 116             Case Else
                     If Lugar > bTorso Then
                         Lugar = RandomNumber(bPiernaIzquierda, bTorso)
@@ -1221,14 +1221,12 @@ Private Sub UserDamageToUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex 
 120                     Armadura = ObjData(.Invent.ArmourEqpObjIndex)
 122                     Defensa = Defensa + RandomNumber(Armadura.MinDef, Armadura.MaxDef)
                     End If
-                    
                     'Si tiene escudo absorbe el golpe
 124                 If .Invent.EscudoEqpObjIndex > 0 Then
                         Dim Escudo As t_ObjData
 126                     Escudo = ObjData(.Invent.EscudoEqpObjIndex)
 128                     Defensa = Defensa + RandomNumber(Escudo.MinDef, Escudo.MaxDef)
                     End If
-    
             End Select
 
             ' Defensa del barco de la víctima
@@ -1243,7 +1241,7 @@ Private Sub UserDamageToUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex 
 138             Montura = ObjData(.Invent.MonturaObjIndex)
 140             Defensa = Defensa + RandomNumber(Montura.MinDef, Montura.MaxDef)
             End If
-            
+            Defensa = Defensa + UserMod.GetDefenseBonus()
 142         Defensa = max(0, Defensa - GetArmorPenetration(AtacanteIndex, Defensa))
             
             ' Restamos la defensa
@@ -1514,7 +1512,7 @@ Public Function PuedeAtacar(ByVal AttackerIndex As Integer, ByVal VictimIndex As
 
         'No podes atacar a alguien muerto
 114     If UserList(VictimIndex).flags.Muerto = 1 Then
-116         Call WriteConsoleMsg(AttackerIndex, "No podés atacar a un espiritu.", e_FontTypeNames.FONTTYPE_INFO)
+116         Call WriteConsoleMsg(attackerIndex, "No podés atacar a un espiritu.", e_FontTypeNames.FONTTYPE_INFO)
 118         PuedeAtacar = False
             Exit Function
         End If
