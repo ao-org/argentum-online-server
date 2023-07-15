@@ -2310,6 +2310,6 @@ Public Sub SetBlockTileState(ByVal NpcIndex As Integer, ByVal Block As Boolean)
 End Sub
 
 Public Function GetDefenseBonus(ByVal NpcIndex As Integer) As Integer
-    GetDefenseBonus = NpcList(UserIndex).Modifiers.DefenseBonus
+    GetDefenseBonus = NpcList(NpcIndex).Modifiers.DefenseBonus
 End Function
 
