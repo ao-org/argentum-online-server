@@ -146,3 +146,27 @@ End Sub
 Public Sub ResetMask(ByRef mask As Long)
     mask = 0
 End Sub
+
+Public Sub SetIntMask(ByRef Mask As Integer, ByVal Value As Integer)
+    Mask = Mask Or Value
+End Sub
+
+Public Function IsIntSet(ByVal Mask As Integer, ByVal Value As Integer)
+    IsIntSet = (Mask And Value) > 0
+End Function
+
+Public Sub UnsetIntMask(ByRef Mask As Integer, ByVal Value As Integer)
+    Mask = Mask And Not Value
+End Sub
+
+Public Sub ResetIntMask(ByRef Mask As Integer)
+    Mask = 0
+End Sub
+
+Public Function ShiftRight(ByVal Number As Long, ByVal BitCount As Byte) As Long
+    ShiftRight = Number \ 2 ^ BitCount
+End Function
+
+Public Function ShiftLeft(ByVal Number As Long, ByVal BitCount As Byte) As Long
+    ShiftLeft = Number * 2 ^ BitCount
+End Function

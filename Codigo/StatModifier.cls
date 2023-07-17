@@ -91,7 +91,7 @@ Public Sub IBaseEffectOverTime_Update(ByVal deltaTime As Long)
         Exit Sub
     End If
     If DotInfo.TargetRef.RefType = eUser Then
-        If TestRequiredEquipedItem(UserList(DotInfo.TargetRef.ArrayIndex).invent, EffectOverTime(DotInfo.EotId).SpellRequirementMask) <> e_SpellRequirementMask.eNone Then
+        If TestRequiredEquipedItem(UserList(DotInfo.TargetRef.ArrayIndex).invent, EffectOverTime(DotInfo.EotId).SpellRequirementMask, EffectOverTime(DotInfo.EotId).RequireWeaponType) <> e_SpellRequirementMask.eNone Then
             DotInfo.RemoveEffect = True
             Exit Sub
         End If

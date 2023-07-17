@@ -73,7 +73,9 @@ Public Enum e_WeaponType
     eThrowableAxe = 6
     eAxe = 7
     eKnuckle = 8
-    
+    eFist = 9
+    eSpear = 10
+    eGunPowder = 11
     eWeaponTypeCount
 End Enum
 
@@ -1092,7 +1094,7 @@ Public Type t_ActiveModifiers
     MagicDamageReduction As Single
     MovementSpeed As Single
     SelfHealingBonus As Single
-    BonusDefense As Integer
+    DefenseBonus As Integer 'bonus armor, used when
     'effect perform on others
     PhysicalDamageBonus As Single 'apply percent bonus like 10%
     MagicDamageBonus As Single
@@ -1113,6 +1115,7 @@ Public Enum e_ModifierTypes
     SelfHealingBonus = 128
     MagicHealingBonus = 256
     PhysicalLinearBonus = 512
+    DefenseBonus = 1024
 End Enum
 
 Public Type t_EffectOverTime
@@ -1141,11 +1144,13 @@ Public Type t_EffectOverTime
     SelfHealingBonus As Single
     MagicHealingBonus As Single
     PhysicalLinearBonus As Integer
+    DefenseBonus As Integer
     ClientEffectTypeId As Integer
     Area As Integer
     Aura As String
     ApplyeffectID As Integer
     SpellRequirementMask As Long
+    RequireWeaponType As Integer
     npcId As Integer
     ApplyStatusMask As Long
 End Type

@@ -844,6 +844,7 @@ On Error GoTo ErrHandler
             EffectOverTime(i).MagicHealingBonus = val(Leer.GetValue("EOT" & i, "MagicHealingBonus"))
             EffectOverTime(i).ClientEffectTypeId = val(Leer.GetValue("EOT" & i, "ClientEffectTypeId"))
             EffectOverTime(i).PhysicalLinearBonus = val(Leer.GetValue("EOT" & i, "PhysicalLinearBonus"))
+            EffectOverTime(i).DefenseBonus = val(Leer.GetValue("EOT" & i, "DefenseBonus"))
             EffectOverTime(i).BuffType = val(Leer.GetValue("EOT" & i, "BuffType"))
             EffectOverTime(i).Area = val(Leer.GetValue("EOT" & i, "Area"))
             EffectOverTime(i).Aura = Leer.GetValue("EOT" & i, "Aura")
@@ -884,6 +885,19 @@ On Error GoTo ErrHandler
             If val(Leer.GetValue("EOT" & i, "Transform")) > 0 Then
                 Call SetMask(EffectOverTime(i).ApplyStatusMask, e_StatusMask.eTransformed)
             End If
+            
+            If val(Leer.GetValue("EOT" & i, "RequireSword")) > 0 Then Call SetIntMask(EffectOverTime(i).RequireWeaponType, ShiftLeft(1, eSword))
+            If val(Leer.GetValue("EOT" & i, "RequireDagger")) > 0 Then Call SetIntMask(EffectOverTime(i).RequireWeaponType, ShiftLeft(1, eDagger))
+            If val(Leer.GetValue("EOT" & i, "RequireBow")) > 0 Then Call SetIntMask(EffectOverTime(i).RequireWeaponType, ShiftLeft(1, eBow))
+            If val(Leer.GetValue("EOT" & i, "RequireStaff")) > 0 Then Call SetIntMask(EffectOverTime(i).RequireWeaponType, ShiftLeft(1, eStaff))
+            If val(Leer.GetValue("EOT" & i, "RequireMace")) > 0 Then Call SetIntMask(EffectOverTime(i).RequireWeaponType, ShiftLeft(1, eMace))
+            If val(Leer.GetValue("EOT" & i, "RequireThrowableAxe")) > 0 Then Call SetIntMask(EffectOverTime(i).RequireWeaponType, ShiftLeft(1, eThrowableAxe))
+            If val(Leer.GetValue("EOT" & i, "RequireAxe")) > 0 Then Call SetIntMask(EffectOverTime(i).RequireWeaponType, ShiftLeft(1, eAxe))
+            If val(Leer.GetValue("EOT" & i, "RequireKnucle")) > 0 Then Call SetIntMask(EffectOverTime(i).RequireWeaponType, ShiftLeft(1, eKnuckle))
+            If val(Leer.GetValue("EOT" & i, "RequireFist")) > 0 Then Call SetIntMask(EffectOverTime(i).RequireWeaponType, ShiftLeft(1, eFist))
+            If val(Leer.GetValue("EOT" & i, "RequireSpear")) > 0 Then Call SetIntMask(EffectOverTime(i).RequireWeaponType, ShiftLeft(1, eSpear))
+            If val(Leer.GetValue("EOT" & i, "RequireGunpowder")) > 0 Then Call SetIntMask(EffectOverTime(i).RequireWeaponType, ShiftLeft(1, eGunPowder))
+            
         Next i
         
         Call InitializePools

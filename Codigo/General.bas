@@ -539,6 +539,10 @@ Private Sub InicializarConstantes()
         WeaponTypeNames(eThrowableAxe) = "ThrowableAxe"
         WeaponTypeNames(eAxe) = "Axe"
         WeaponTypeNames(eKnuckle) = "Knuckle"
+        WeaponTypeNames(e_WeaponType.eFist) = "Fist"
+        WeaponTypeNames(e_WeaponType.eSpear) = "Spear"
+        WeaponTypeNames(e_WeaponType.eGunPowder) = "GunPowder"
+        
         Exit Sub
 
 InicializarConstantes_Err:
