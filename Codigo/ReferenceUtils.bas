@@ -149,18 +149,18 @@ Public Function GetName(ByRef SourceRef As t_AnyReference) As String
     End If
 End Function
 
-Public Function SetStatusMask(ByRef TargetRef As t_AnyReference, ByVal Mask As Long)
+Public Sub SetStatusMask(ByRef TargetRef As t_AnyReference, ByVal Mask As Long)
     If TargetRef.RefType = eUser Then
         Call SetMask(UserList(TargetRef.ArrayIndex).flags.StatusMask, Mask)
     Else
         Call SetMask(NpcList(TargetRef.ArrayIndex).flags.StatusMask, Mask)
     End If
-End Function
+End Sub
 
-Public Function UnsetStatusMask(ByRef TargetRef As t_AnyReference, ByVal Mask As Long)
+Public Sub UnsetStatusMask(ByRef TargetRef As t_AnyReference, ByVal Mask As Long)
     If TargetRef.RefType = eUser Then
         Call UnsetMask(UserList(TargetRef.ArrayIndex).flags.StatusMask, Mask)
     Else
         Call UnsetMask(NpcList(TargetRef.ArrayIndex).flags.StatusMask, Mask)
     End If
-End Function
+End Sub
