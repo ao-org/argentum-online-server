@@ -203,11 +203,12 @@ Public Function trigger(ByVal TargetIndex, ByVal TargetType As e_ReferenceType)
         Case e_TrapTypes.eInmovilize
             If mDotInfo.TargetRef.RefType = eUser Then
                 If TargetType = eUser Then
-                    Call UserMod.Inmovilize(mDotInfo.TargetRef.ArrayIndex, TargetIndex, NET_INMO_DURATION, EffectOverTime(mDotInfo.EotId).OnHitFx)
-                    If EffectOverTime(mDotInfo.EotId).OnHitFx > 0 Then Call SendData(SendTarget.ToPCAliveArea, TargetIndex, PrepareMessageCreateFX(UserList(TargetIndex).Char.charindex, EffectOverTime(mDotInfo.EotId).OnHitFx, 0, mWorldPosition.x, mWorldPosition.y))
-                    trigger = True
-                    If UserList(TargetIndex).ChatCombate = 1 Then
-                        Call WriteLocaleMsg(TargetIndex, MsgTrapInmo, e_FontTypeNames.FONTTYPE_FIGHT, GetName(mDotInfo.TargetRef))
+                    If UserMod.Inmovilize(mDotInfo.TargetRef.ArrayIndex, TargetIndex, NET_INMO_DURATION, EffectOverTime(mDotInfo.EotId).OnHitFx) Then
+                        If EffectOverTime(mDotInfo.EotId).OnHitFx > 0 Then Call SendData(SendTarget.ToPCAliveArea, TargetIndex, PrepareMessageCreateFX(UserList(TargetIndex).Char.charindex, EffectOverTime(mDotInfo.EotId).OnHitFx, 0, mWorldPosition.x, mWorldPosition.y))
+                        trigger = True
+                        If UserList(TargetIndex).ChatCombate = 1 Then
+                            Call WriteLocaleMsg(TargetIndex, MsgTrapInmo, e_FontTypeNames.FONTTYPE_FIGHT, GetName(mDotInfo.TargetRef))
+                        End If
                     End If
                     Exit Function
                 End If

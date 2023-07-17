@@ -859,6 +859,29 @@ Public Enum e_MagicItemSubType
     TargetUsable
 End Enum
 
+Public Enum e_MagicItemEffect
+    MagicResistance = 1
+    MofifyAttributes = 2
+    ModifySkills = 3
+    HpRegeneration = 4
+    ImproveMetitation = 5
+    IncreaseDamageToNpc = 6
+    ReduceDamageToNpc = 7
+    InmunityToNpcMagic = 9
+    Incinerate = 10
+    Paralize = 11
+    ProtectedResources = 12
+    WalkHidden = 13
+    IncreaseMagicDamage = 14
+    ProtectedInventory = 15
+    PreventMagicWords = 16
+    PreventInvisibleDetection = 17
+    IncreaseSkillLearning = 18
+    AddPoisonOnHit = 19
+    ResurrectionItem = 20
+End Enum
+
+
 Public Enum e_MagicEffect
     eMagicresistance = 1
     eAttributeModifier = 2 'Requires CuantoAumento y QueAtributo
@@ -1790,6 +1813,7 @@ Public Enum e_StatusMask
     eCastOnlyOnSelf = 8
     ePreventEnergyRestore = 16
     eDontBlockTile = 32
+    eCCInmunity = 64
 End Enum
 
 Public Enum e_InventorySlotMask
@@ -2200,6 +2224,7 @@ Public Enum e_CdTypes
     e_WeaponPoison = 8
     e_Arpon = 9
     e_HandCannon = 10
+    e_CartBuff = 11
     [CDCount]
 End Enum
 

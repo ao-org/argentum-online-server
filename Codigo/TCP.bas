@@ -567,7 +567,7 @@ Function ConnectNewUser(ByVal userindex As Integer, ByRef name As String, ByVal 
 218             .LogOnTime = Now
 220             .UpTime = 0
             #End If
-        
+            Call ResetCd(UserList(UserIndex))
             'Valores Default de facciones al Activar nuevo usuario
 222         Call ResetFacciones(UserIndex)
         
@@ -1506,6 +1506,7 @@ Sub ResetUserSlot(ByVal UserIndex As Integer)
 156     Call ResetUserBanco(UserIndex)
 158     Call ResetUserSkills(UserIndex)
 160     Call ResetUserKeys(UserIndex)
+161     Call ResetCd(UserList(UserIndex))
 162     With UserList(UserIndex).ComUsu
 164         .Acepto = False
 166         .cant = 0

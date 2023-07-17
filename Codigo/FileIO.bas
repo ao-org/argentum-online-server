@@ -885,6 +885,9 @@ On Error GoTo ErrHandler
             If val(Leer.GetValue("EOT" & i, "Transform")) > 0 Then
                 Call SetMask(EffectOverTime(i).ApplyStatusMask, e_StatusMask.eTransformed)
             End If
+            If val(Leer.GetValue("EOT" & i, "CCInmunity")) > 0 Then
+                Call SetMask(EffectOverTime(i).ApplyStatusMask, e_StatusMask.eCCInmunity)
+            End If
             
             If val(Leer.GetValue("EOT" & i, "RequireSword")) > 0 Then Call SetIntMask(EffectOverTime(i).RequireWeaponType, ShiftLeft(1, eSword))
             If val(Leer.GetValue("EOT" & i, "RequireDagger")) > 0 Then Call SetIntMask(EffectOverTime(i).RequireWeaponType, ShiftLeft(1, eDagger))

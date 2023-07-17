@@ -3190,7 +3190,10 @@ On Error GoTo ThrowNetToTarget_Err:
 130             Call WriteLocaleMsg(UserIndex, MsgCantAttackYourself, e_FontTypeNames.FONTTYPE_FIGHT)
                 Exit Sub
             End If
-            
+            If IsSet(UserList(tU).flags.StatusMask, eCCInmunity) Then
+                Call WriteLocaleMsg(UserIndex, MsgCCInunity, e_FontTypeNames.FONTTYPE_FIGHT)
+                Exit Sub
+            End If
 132         If UserList(tU).flags.Paralizado = 1 Then
 134             Call WriteConsoleMsg(UserIndex, UserList(tU).name & " ya está paralizado.", e_FontTypeNames.FONTTYPE_FIGHT)
                 Exit Sub

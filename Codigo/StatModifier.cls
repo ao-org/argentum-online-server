@@ -34,7 +34,6 @@ Public Sub Setup(ByVal sourceIndex As Integer, ByVal sourceType As e_ReferenceTy
                 Modifier = ObjData(UserList(SourceIndex).invent.WeaponEqpObjIndex).MagicDamageBonus / 100
             End If
         End If
-        
         If DotInfo.TargetRef.RefType = eUser And .ClientEffectTypeId > 0 Then Call WriteSendSkillCdUpdate(TargetIndex, .ClientEffectTypeId, ID, .TickTime, .TickTime, .buffType)
     End With
     Call EffectsOverTime.ApplyEotModifier(DotInfo.TargetRef, EffectOverTime(EffectId), Modifier)

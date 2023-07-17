@@ -3137,6 +3137,14 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                             Case e_MagicItemSubType.TargetUsable
                                 Call WriteWorkRequestTarget(UserIndex, e_Skill.TargetableItem)
                         End Select
+                        Select Case ObjData(ObjIndex).EfectoMagico
+                            Case e_MagicItemEffect.ProtectedResources
+                                If ObjData(ObjIndex).ApplyEffectId <= 0 Then
+                                    Exit Sub
+                                End If
+                                Call UpdateCd(UserIndex, ObjData(ObjIndex).cdType)
+                                Call AddOrResetEffect(UserIndex, ObjData(ObjIndex).ApplyEffectId)
+                        End Select
                  Case e_OBJType.otUsableOntarget
                     Call WriteWorkRequestTarget(UserIndex, e_Skill.TargetableItem)
                 End Select

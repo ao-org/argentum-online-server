@@ -3389,6 +3389,10 @@ End Sub
 
 Public Function Inmovilize(ByVal SourceIndex As Integer, ByVal TargetIndex As Integer, ByVal Time As Integer, ByVal Fx As Integer) As Boolean
 142 Call UsuarioAtacadoPorUsuario(SourceIndex, TargetIndex)
+    If IsSet(UserList(TargetIndex).flags.StatusMask, eCCInmunity) Then
+        Call WriteLocaleMsg(SourceIndex, MsgCCInunity, e_FontTypeNames.FONTTYPE_FIGHT)
+        Exit Function
+    End If
 144 If UserList(TargetIndex).flags.Inmovilizado = 0 Then
 146     UserList(TargetIndex).Counters.Inmovilizado = Time
 148     UserList(TargetIndex).flags.Inmovilizado = 1

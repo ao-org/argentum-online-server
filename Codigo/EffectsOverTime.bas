@@ -647,6 +647,16 @@ Public Function ApplyEotModifier(ByRef TargetRef As t_AnyReference, ByRef Effect
         Call UpdateIncreaseModifier(TargetRef, e_ModifierTypes.SelfHealingBonus, EffectStats.SelfHealingBonus + EffectStats.SelfHealingBonus * Modifier)
         Call UpdateIncreaseModifier(TargetRef, e_ModifierTypes.MagicHealingBonus, EffectStats.MagicHealingBonus + EffectStats.MagicHealingBonus * Modifier)
         Call UpdateIncreaseModifier(TargetRef, e_ModifierTypes.PhysicalLinearBonus, EffectStats.PhysicalLinearBonus + EffectStats.PhysicalLinearBonus * Modifier)
+        If IsSet(EffectStats.ApplyStatusMask, eCCInmunity) Then
+            If TargetRef.RefType = eUser Then
+                 UserList(TargetRef.ArrayIndex).flags.Inmovilizado = 0
+                 UserList(TargetRef.ArrayIndex).Counters.Inmovilizado = 0
+                 UserList(TargetRef.ArrayIndex).Counters.Paralisis = 0
+                 UserList(TargetRef.ArrayIndex).flags.Paralizado = 0
+                 Call WriteInmovilizaOK(TargetRef.ArrayIndex)
+            End If
+            Call SetStatusMask(TargetRef, eCCInmunity)
+        End If
         Call UpdateIncreaseModifier(TargetRef, e_ModifierTypes.DefenseBonus, EffectStats.DefenseBonus + EffectStats.DefenseBonus * Modifier)
     End If
 End Function
@@ -663,6 +673,9 @@ Public Function RemoveEotModifier(ByRef TargetRef As t_AnyReference, ByRef Effec
         Call UpdateIncreaseModifier(TargetRef, e_ModifierTypes.SelfHealingBonus, -(EffectStats.SelfHealingBonus + EffectStats.SelfHealingBonus * Modifier))
         Call UpdateIncreaseModifier(TargetRef, e_ModifierTypes.MagicHealingBonus, -(EffectStats.MagicHealingBonus + EffectStats.MagicHealingBonus * Modifier))
         Call UpdateIncreaseModifier(TargetRef, e_ModifierTypes.PhysicalLinearBonus, -(EffectStats.PhysicalLinearBonus + EffectStats.PhysicalLinearBonus * Modifier))
+        If IsSet(EffectStats.ApplyStatusMask, eCCInmunity) Then
+            Call UnsetStatusMask(TargetRef, eCCInmunity)
+        End If
         Call UpdateIncreaseModifier(TargetRef, e_ModifierTypes.DefenseBonus, -(EffectStats.DefenseBonus + EffectStats.DefenseBonus * Modifier))
     End If
 End Function
