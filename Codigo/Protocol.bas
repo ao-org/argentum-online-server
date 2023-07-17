@@ -10297,7 +10297,13 @@ Public Sub HandleQuestAccept(ByVal UserIndex As Integer)
 122         If UserList(UserIndex).Stats.ELV < QuestList(NpcList(NpcIndex).QuestNumber(Indice)).RequiredLevel Then
 124             Call WriteChatOverHead(UserIndex, "Debes ser por lo menos nivel " & QuestList(NpcList(NpcIndex).QuestNumber(Indice)).RequiredLevel & " para emprender esta misión.", NpcList(NpcIndex).Char.charindex, vbYellow)
                 Exit Sub
-    
+            End If
+            
+            If QuestList(NpcList(NpcIndex).QuestNumber(Indice)).RequiredSkill.SkillType > 0 Then
+                If UserList(UserIndex).Stats.UserSkills(QuestList(NpcList(NpcIndex).QuestNumber(Indice)).RequiredSkill.SkillType) < QuestList(NpcList(NpcIndex).QuestNumber(Indice)).RequiredSkill.RequiredValue Then
+                    Call WriteLocaleChatOverHead(UserIndex, MsgRequiredSkill, SkillsNames(QuestList(NpcList(NpcIndex).QuestNumber(Indice)).RequiredSkill.SkillType), NpcList(NpcIndex).Char.charindex, vbYellow)
+                    Exit Sub
+                End If
             End If
             
             'El personaje no es la clase requerida?
