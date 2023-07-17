@@ -2184,7 +2184,7 @@ Private Sub UserDañoEspecial(ByVal AtacanteIndex As Integer, ByVal VictimaIndex
             End If
         End If
 
-146     If puedeParalizar And (UserList(VictimaIndex).flags.Paralizado = 0) Then
+146     If puedeParalizar And (UserList(VictimaIndex).flags.Paralizado = 0) And Not IsSet(UserList(VictimaIndex).flags.StatusMask, eCCInmunity) Then
 148         If RandomNumber(1, 100) < 10 Then
 150             UserList(VictimaIndex).flags.Paralizado = 1
 152             UserList(VictimaIndex).Counters.Paralisis = 6
@@ -2216,7 +2216,7 @@ Private Sub UserDañoEspecial(ByVal AtacanteIndex As Integer, ByVal VictimaIndex
             End If
         End If
         
-        If rangeStun And IsFeatureEnabled("enable_stun") Then
+        If rangeStun And IsFeatureEnabled("enable_stun") And Not IsSet(UserList(VictimaIndex).flags.StatusMask, eCCInmunity) Then
             If (RandomNumber(1, 100) < stunChance) Then
                 With UserList(VictimaIndex)
                     If StunPlayer(.Counters) Then
