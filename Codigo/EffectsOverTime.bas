@@ -647,6 +647,9 @@ Public Function ApplyEotModifier(ByRef TargetRef As t_AnyReference, ByRef Effect
         Call UpdateIncreaseModifier(TargetRef, e_ModifierTypes.SelfHealingBonus, EffectStats.SelfHealingBonus + EffectStats.SelfHealingBonus * Modifier)
         Call UpdateIncreaseModifier(TargetRef, e_ModifierTypes.MagicHealingBonus, EffectStats.MagicHealingBonus + EffectStats.MagicHealingBonus * Modifier)
         Call UpdateIncreaseModifier(TargetRef, e_ModifierTypes.PhysicalLinearBonus, EffectStats.PhysicalLinearBonus + EffectStats.PhysicalLinearBonus * Modifier)
+        If IsSet(EffectStats.ApplyStatusMask, eCCInmunity) Then
+            Call SetStatusMask(TargetRef, eCCInmunity)
+        End If
         Call UpdateIncreaseModifier(TargetRef, e_ModifierTypes.DefenseBonus, EffectStats.DefenseBonus + EffectStats.DefenseBonus * Modifier)
     End If
 End Function
@@ -663,6 +666,9 @@ Public Function RemoveEotModifier(ByRef TargetRef As t_AnyReference, ByRef Effec
         Call UpdateIncreaseModifier(TargetRef, e_ModifierTypes.SelfHealingBonus, -(EffectStats.SelfHealingBonus + EffectStats.SelfHealingBonus * Modifier))
         Call UpdateIncreaseModifier(TargetRef, e_ModifierTypes.MagicHealingBonus, -(EffectStats.MagicHealingBonus + EffectStats.MagicHealingBonus * Modifier))
         Call UpdateIncreaseModifier(TargetRef, e_ModifierTypes.PhysicalLinearBonus, -(EffectStats.PhysicalLinearBonus + EffectStats.PhysicalLinearBonus * Modifier))
+        If IsSet(EffectStats.ApplyStatusMask, eCCInmunity) Then
+            Call UnsetStatusMask(TargetRef, eCCInmunity)
+        End If
         Call UpdateIncreaseModifier(TargetRef, e_ModifierTypes.DefenseBonus, -(EffectStats.DefenseBonus + EffectStats.DefenseBonus * Modifier))
     End If
 End Function

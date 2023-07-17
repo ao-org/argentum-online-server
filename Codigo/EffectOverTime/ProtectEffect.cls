@@ -35,6 +35,7 @@ Public Sub Setup(ByVal SourceIndex As Integer, ByVal SourceType As e_ReferenceTy
         End If
     End With
     Call AddShieldToReference(DotInfo.TargetRef, DamageProtection)
+    Call EffectsOverTime.ApplyEotModifier(DotInfo.TargetRef, EffectOverTime(EffectId), 0)
 End Sub
 
 Public Property Get IBaseEffectOverTime_TypeId() As Integer
@@ -114,6 +115,7 @@ Public Sub IBaseEffectOverTime_OnRemove()
     If DotInfo.Removed Then Exit Sub
     DotInfo.Removed = True
     DotInfo.RemoveEffect = True
+    Call EffectsOverTime.RemoveEotModifier(DotInfo.TargetRef, EffectOverTime(DotInfo.EotId), 0)
     Call AddShieldToReference(DotInfo.TargetRef, -DamageProtection)
     If DotInfo.TargetRef.RefType = eUser And EffectOverTime(DotInfo.EotId).ClientEffectTypeId > 0 Then
         Call WriteSendSkillCdUpdate(DotInfo.TargetRef.ArrayIndex, EffectOverTime(DotInfo.EotId).ClientEffectTypeId, DotInfo.UniqueId, 0, 0, EffectOverTime(DotInfo.EotId).buffType)
@@ -166,6 +168,7 @@ Public Function IBaseEffectOverTime_ChangeTarget(ByVal NewTargetIndex As Integer
             Call WriteSendSkillCdUpdate(DotInfo.TargetRef.ArrayIndex, DotInfo.EotId, DotInfo.UniqueId, 0, 0, EffectOverTime(DotInfo.EotId).buffType)
         End If
     End If
+    Call EffectsOverTime.RemoveEotModifier(DotInfo.TargetRef, EffectOverTime(DotInfo.EotId), 0)
     Call AddShieldToReference(DotInfo.TargetRef, -DamageProtection)
     Call SetRef(DotInfo.TargetRef, NewTargetIndex, NewTargetType)
     If DotInfo.TargetRef.RefType = eUser Then
@@ -173,6 +176,7 @@ Public Function IBaseEffectOverTime_ChangeTarget(ByVal NewTargetIndex As Integer
                                     TickTime - TimeSinceLastTick, TickTime, EffectOverTime(DotInfo.EotId).buffType)
     End If
     Call AddShieldToReference(DotInfo.TargetRef, DamageProtection)
+    Call EffectsOverTime.ApplyEotModifier(DotInfo.TargetRef, EffectOverTime(DotInfo.EotId), 0)
     IBaseEffectOverTime_ChangeTarget = True
 End Function
 

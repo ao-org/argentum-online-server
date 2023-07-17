@@ -2103,6 +2103,10 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
                 Call WriteConsoleMsg(UserIndex, UserList(tU).name & " ya está inmovilizado.", e_FontTypeNames.FONTTYPE_FIGHT)
                 Exit Sub
             End If
+            If IsSet(UserList(tU).flags.StatusMask, eCCInmunity) Then
+                Call WriteLocaleMsg(UserIndex, MsgCCInunity, e_FontTypeNames.FONTTYPE_FIGHT)
+                Exit Sub
+            End If
     
 432         If Not PuedeAtacar(UserIndex, tU) Then Exit Sub
             
@@ -2212,6 +2216,11 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
             
             If UserList(tU).Counters.TiempoDeInmunidadParalisisNoMagicas > 0 Then
 515             Call WriteConsoleMsg(UserIndex, UserList(tU).name & " no puede volver a ser inmovilizado tan rápido.", e_FontTypeNames.FONTTYPE_FIGHT)
+                Exit Sub
+            End If
+            
+            If IsSet(UserList(tU).flags.StatusMask, eCCInmunity) Then
+                Call WriteLocaleMsg(UserIndex, MsgCCInunity, e_FontTypeNames.FONTTYPE_FIGHT)
                 Exit Sub
             End If
     
