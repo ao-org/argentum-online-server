@@ -36,6 +36,23 @@ Attribute VB_Name = "UserMod"
 'Pablo Ignacio Márquez
 
 Option Explicit
+Private UserNameCache As New Dictionary
+
+Public Function GetUserName(ByVal UserId As Long) As String
+    If UserNameCache.Exists(UserId) Then
+        GetUserName = UserNameCache.Item(UserId)
+        Exit Function
+    End If
+    Dim UserName As String
+    UserName = GetCharacterName(UserId)
+    Call RegisterUserName(UserId, UserName)
+    GetUserName = UserName
+    Exit Function
+End Function
+
+Public Sub RegisterUserName(ByVal UserId As Long, ByVal UserName As String)
+    Call UserNameCache.Add(UserId, UserName)
+End Sub
 
 Public Function IsValidUserRef(ByRef UserRef As t_UserReference) As Boolean
     IsValidUserRef = False

@@ -22,6 +22,13 @@ Private Function db_load_house_key(ByRef user As t_User) As Boolean
     End With
 End Function
 
+Public Function GetCharacterName(ByVal UserId As Long) As String
+    Dim RS As ADODB.Recordset
+    Set RS = Query("select name from user where id=?", UserId)
+    If RS Is Nothing Then Exit Function
+    GetCharacterName = RS!name
+End Function
+
 Public Function LoadCharacterFromDB(ByVal userIndex As Integer) As Boolean
         Dim counter As Long
         On Error GoTo ErrorHandler
