@@ -610,18 +610,7 @@ Public Sub ExpulsarMiembro(ByRef nombre As String)
                 'seteo la cantidad de miembros nueva
 128             Call WriteVar(MEMBERSFILE, "INIT", "NroMembers", OldQ - 1)
                 'lo echo a el
-130             MiembroDe = GetUserGuildMember(nombre)
-
-132             If Not InStr(1, MiembroDe, p_GuildName, vbTextCompare) > 0 Then
-134                 If LenB(MiembroDe) <> 0 Then
-136                     MiembroDe = MiembroDe & ","
-
-                    End If
-
-138                 MiembroDe = MiembroDe & p_GuildName
-140                 Call SaveUserGuildMember(nombre, MiembroDe)
-
-                End If
+130             Call SaveUserGuildMember(nombre, p_GuildName)
 
             End If
 
@@ -809,19 +798,7 @@ Public Sub RetirarAspirante(ByRef nombre As String, ByRef NroAspirante As Intege
         End If
 
 108     Call SaveUserGuildAspirant(nombre, 0)
-110     Pedidos = GetUserGuildPedidos(nombre)
-
-112     If Not InStr(1, Pedidos, p_GuildName, vbTextCompare) > 0 Then
-114         If LenB(Pedidos) <> 0 Then
-116             Pedidos = Pedidos & ","
-
-            End If
-
-118         Pedidos = Pedidos & p_GuildName
-120         Call SaveUserGuildPedidos(nombre, Pedidos)
-
-        End If
-    
+        Call SaveUserGuildPedidos(nombre, p_GuildName)
 122     Call WriteVar(SOLICITUDESFILE, "INIT", "CantSolicitudes", OldQI - 1)
 
 124     For i = NroAspirante To modGuilds.MAXASPIRANTES - 1

@@ -39,6 +39,10 @@ Option Explicit
 Private UserNameCache As New Dictionary
 
 Public Function GetUserName(ByVal UserId As Long) As String
+    If UserId <= 0 Then
+        GetUserName = ""
+        Exit Function
+    End If
     If UserNameCache.Exists(UserId) Then
         GetUserName = UserNameCache.Item(UserId)
         Exit Function
@@ -252,7 +256,14 @@ On Error GoTo Complete_ConnectUser_Err
             .Stats.UserAtributosBackUP(e_Atributos.Inteligencia) = .Stats.UserAtributos(e_Atributos.Inteligencia)
             .Stats.UserAtributosBackUP(e_Atributos.Constitucion) = .Stats.UserAtributos(e_Atributos.Constitucion)
             .Stats.UserAtributosBackUP(e_Atributos.Carisma) = .Stats.UserAtributos(e_Atributos.Carisma)
-                    
+            
+            .Stats.MaxMAN = UserMod.GetMaxMana(UserIndex)
+            .Stats.MaxSta = UserMod.GetMaxStamina(UserIndex)
+            .Stats.MinHIT = UserMod.GetHitModifier(UserIndex) + 1
+            .Stats.MaxHit = UserMod.GetHitModifier(UserIndex) + 2
+            .Stats.MaxHp = UserMod.GetMaxHp(UserIndex)
+            .Stats.MinHp = Min(.Stats.MinHp, UserMod.GetMaxHp(UserIndex))
+            .Stats.MinMAN = Min(.Stats.MinMAN, UserMod.GetMaxMana(UserIndex))
             'Obtiene el indice-objeto del arma
 175         If .Invent.WeaponEqpSlot > 0 Then
 180             If .Invent.Object(.Invent.WeaponEqpSlot).ObjIndex > 0 Then
@@ -1174,43 +1185,23 @@ Sub CheckUserLevel(ByVal UserIndex As Integer)
 116             .Stats.Exp = .Stats.Exp - experienceToLevelUp
                 
 118             Pts = Pts + 5
-            
-                ' Calculo subida de vida by WyroX
-                ' Obtengo el promedio según clase y constitución
-120             PromedioObjetivo = ModClase(.clase).Vida - (21 - .Stats.UserAtributos(e_Atributos.Constitucion)) * 0.5
-                ' Obtengo el promedio actual del user
-122             PromedioUser = CalcularPromedioVida(UserIndex)
-                ' Lo modifico para compensar si está muy bajo o muy alto
-124             Promedio = PromedioObjetivo + (PromedioObjetivo - PromedioUser) * DesbalancePromedioVidas
-                ' Obtengo un entero al azar con más tendencia al promedio
-126             AumentoHP = RandomIntBiased(PromedioObjetivo - RangoVidas, PromedioObjetivo + RangoVidas, Promedio, InfluenciaPromedioVidas)
-
-                ' WyroX: Aumento del resto de stats
-128             AumentoSta = ModClase(.clase).AumentoSta
-130             AumentoMANA = ModClase(.clase).MultMana * .Stats.UserAtributos(e_Atributos.Inteligencia)
-132             AumentoHIT = IIf(.Stats.ELV < 36, ModClase(.clase).HitPre36, ModClase(.clase).HitPost36)
 
 134             .Stats.ELV = .Stats.ELV + 1
 136             experienceToLevelUp = ExpLevelUp(.Stats.ELV)
-                
-                'Actualizamos HitPoints
-138             .Stats.MaxHp = .Stats.MaxHp + AumentoHP
 
-140             If .Stats.MaxHp > STAT_MAXHP Then .Stats.MaxHp = STAT_MAXHP
-                'Actualizamos Stamina
-142             .Stats.MaxSta = .Stats.MaxSta + AumentoSta
-
-144             If .Stats.MaxSta > STAT_MAXSTA Then .Stats.MaxSta = STAT_MAXSTA
-                'Actualizamos Mana
-146             .Stats.MaxMAN = .Stats.MaxMAN + AumentoMANA
-
-148             If .Stats.MaxMAN > STAT_MAXMAN Then .Stats.MaxMAN = STAT_MAXMAN
-
-                'Actualizamos Golpe Máximo
-150             .Stats.MaxHit = .Stats.MaxHit + AumentoHIT
-            
-                'Actualizamos Golpe Mínimo
-152             .Stats.MinHIT = .Stats.MinHIT + AumentoHIT
+                AumentoHP = .Stats.MaxHp
+                AumentoSta = .Stats.MaxSta
+                AumentoMANA = .Stats.MaxMAN
+                AumentoHIT = .Stats.MaxHit
+                .Stats.MaxMAN = UserMod.GetMaxMana(UserIndex)
+                .Stats.MaxSta = UserMod.GetMaxStamina(UserIndex)
+                .Stats.MinHIT = UserMod.GetHitModifier(UserIndex) + 1
+                .Stats.MaxHit = UserMod.GetHitModifier(UserIndex) + 2
+                .Stats.MaxHp = UserMod.GetMaxHp(UserIndex)
+                AumentoHP = .Stats.MaxHp - AumentoHP
+                AumentoSta = .Stats.MaxSta - AumentoSta
+                AumentoMANA = .Stats.MaxMAN - AumentoMANA
+                AumentoHIT = .Stats.MaxHit - AumentoHIT
         
                 'Notificamos al user
 154             If AumentoHP > 0 Then
@@ -3507,4 +3498,42 @@ End Function
 
 Public Function GetDefenseBonus(ByVal UserIndex As Integer) As Integer
     GetDefenseBonus = UserList(UserIndex).Modifiers.DefenseBonus
+End Function
+
+Public Function GetMaxMana(ByVal UserIndex As Integer) As Long
+    With UserList(UserIndex)
+        GetMaxMana = .Stats.UserAtributos(e_Atributos.Inteligencia) * ModClase(.clase).ManaInicial
+        GetMaxMana = GetMaxMana + (ModClase(.clase).MultMana * .Stats.UserAtributos(e_Atributos.Inteligencia)) * (.Stats.ELV - 1)
+    End With
+End Function
+
+Public Function GetHitModifier(ByVal UserIndex As Integer) As Long
+    With UserList(UserIndex)
+        If .Stats.ELV <= 36 Then
+            GetHitModifier = (.Stats.ELV - 1) * ModClase(.clase).HitPre36
+        Else
+            GetHitModifier = (.Stats.ELV - 1) * ModClase(.clase).HitPost36
+        End If
+    End With
+End Function
+
+Public Function GetMaxStamina(ByVal UserIndex As Integer) As Integer
+    With UserList(UserIndex)
+        GetMaxStamina = 60 + (.Stats.ELV - 1) * ModClase(.clase).AumentoSta
+    End With
+End Function
+
+Public Function GetMaxHp(ByVal UserIndex As Integer) As Integer
+    With UserList(UserIndex)
+        GetMaxHp = (ModClase(.clase).Vida - (21 - .Stats.UserAtributos(e_Atributos.Constitucion)) * 0.5) * (.Stats.ELV - 1) + .Stats.UserAtributos(e_Atributos.Constitucion)
+    End With
+End Function
+
+Public Function GetUserSpouse(ByVal UserIndex As Integer) As String
+    With UserList(UserIndex)
+        If .flags.SpouseId = 0 Then
+            Exit Function
+        End If
+        GetUserSpouse = GetUserName(.flags.SpouseId)
+    End With
 End Function

@@ -450,21 +450,6 @@ GetPersonajesCuentaDatabase_Err:
         
 End Function
 
-
-Public Sub SaveVotoDatabase(ByVal ID As Long, ByVal Encuestas As Integer)
-        
-        On Error GoTo SaveVotoDatabase_Err
-        
-100     Call SetUserValueByID(ID, "votes_amount", Encuestas)
-        
-        Exit Sub
-
-SaveVotoDatabase_Err:
-102     Call TraceError(Err.Number, Err.Description, "modDatabase.SaveVotoDatabase", Erl)
-
-        
-End Sub
-
 Public Sub SaveUserBodyDatabase(username As String, ByVal body As Integer)
         
         On Error GoTo SaveUserBodyDatabase_Err
@@ -761,13 +746,23 @@ Public Function GetUserGuildMemberDatabase(username As String) As String
         'Last Modification: 11/10/2018
         '***************************************************
         On Error GoTo ErrorHandler
-
-100     GetUserGuildMemberDatabase = SanitizeNullValue(GetUserValue(LCase$(username), "guild_member_history"), vbNullString)
+        Dim user_id As Long
+        user_id = GetCharacterIdWithName(username)
+        Dim RS As ADODB.Recordset
+        Dim History As String
+100     Set RS = Query("SELECT guild_name FROM guild_member_history where iuser_id = ? order by request_time", user_id)
+102     If RS Is Nothing Then Exit Function
+104     If Not RS.RecordCount = 0 Then
+108         While Not RS.EOF
+110             History = History + SanitizeNullValue(RS!guild_name, "")
+            Wend
+        End If
+112     GetUserGuildMemberDatabase = History
 
         Exit Function
 
 ErrorHandler:
-102     Call LogDatabaseError("Error in GetUserGuildMemberDatabase: " & username & ". " & Err.Number & " - " & Err.Description)
+114     Call LogDatabaseError("Error in GetUserGuildMemberDatabase: " & username & ". " & Err.Number & " - " & Err.Description)
 
 End Function
 
@@ -795,13 +790,23 @@ Public Function GetUserGuildPedidosDatabase(username As String) As String
         'Last Modification: 11/10/2018
         '***************************************************
         On Error GoTo ErrorHandler
-
-100     GetUserGuildPedidosDatabase = SanitizeNullValue(GetUserValue(LCase$(username), "guild_requests_history"), vbNullString)
+        Dim user_id As Long
+        user_id = GetCharacterIdWithName(username)
+        Dim RS As ADODB.Recordset
+        Dim History As String
+100     Set RS = Query("SELECT guild_name FROM guild_request_history where iuser_id = ? order by request_time", user_id)
+102     If RS Is Nothing Then Exit Function
+104     If Not RS.RecordCount = 0 Then
+108         While Not RS.EOF
+110             History = History + SanitizeNullValue(RS!guild_name, "")
+            Wend
+        End If
+112     GetUserGuildPedidosDatabase = History
 
         Exit Function
 
 ErrorHandler:
-102     Call LogDatabaseError("Error in GetUserGuildPedidosDatabase: " & username & ". " & Err.Number & " - " & Err.Description)
+114     Call LogDatabaseError("Error in GetUserGuildPedidosDatabase: " & username & ". " & Err.Number & " - " & Err.Description)
 
 End Function
 
@@ -860,8 +865,9 @@ Public Sub SaveUserGuildMemberDatabase(ByVal username As String, ByVal guilds As
         'Last Modification: 11/10/2018
         '***************************************************
         On Error GoTo ErrorHandler
-
-100     Call SetUserValue(username, "guild_member_history", guilds)
+        Dim user_id As Long
+        user_id = GetCharacterIdWithName(username)
+        Call Execute("INSERT INTO guild_member_history (user_id, guild_name) VALUES (?, ?)", user_id, Pedidos)
 
         Exit Sub
 ErrorHandler:
@@ -876,8 +882,9 @@ Public Sub SaveUserGuildPedidosDatabase(ByVal username As String, ByVal Pedidos 
         'Last Modification: 11/10/2018
         '***************************************************
         On Error GoTo ErrorHandler
-
-100     Call SetUserValue(username, "guild_requests_history", Pedidos)
+        Dim user_id As Long
+        user_id = GetCharacterIdWithName(username)
+        Call Execute("INSERT INTO guild_request_history (user_id, guild_name) VALUES (?, ?)", user_id, Pedidos)
 
         Exit Sub
 ErrorHandler:
@@ -900,14 +907,16 @@ Public Sub SendCharacterInfoDatabase(ByVal userIndex As Integer, ByVal username 
         Dim GuildActual As Integer
 
         Dim RS As ADODB.Recordset
-100     Set RS = Query("SELECT race_id, class_id, genre_id, level, gold, bank_gold, guild_requests_history, guild_index, guild_member_history, pertenece_real, pertenece_caos, ciudadanos_matados, criminales_matados FROM user WHERE UPPER(name) = ?;", UCase$(username))
-
+100     Set RS = Query("SELECT race_id, class_id, genre_id, level, gold, bank_gold, guild_indexguild_member_history, status, ciudadanos_matados, criminales_matados FROM user WHERE UPPER(name) = ?;", UCase$(username))
+        Dim GuildRequestHistory As String
+        Dim GuildHistory As String
 102     If RS Is Nothing Then
 104         Call WriteConsoleMsg(userIndex, "Pj Inexistente", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
 
         End If
-
+        GuildRequestHistory = GetUserGuildPedidosDatabase(username)
+        GuilldHistory = GetUserGuildMemberDatabase(username)
         ' Get the character's current guild
 106     GuildActual = SanitizeNullValue(RS!Guild_Index, 0)
 
@@ -919,14 +928,17 @@ Public Sub SendCharacterInfoDatabase(ByVal userIndex As Integer, ByVal username 
         End If
 
         'Get previous guilds
-114     Miembro = SanitizeNullValue(RS!guild_member_history, vbNullString)
+114     Miembro = SanitizeNullValue(GuilldHistory, vbNullString)
 
 116     If Len(Miembro) > 400 Then
 118         Miembro = ".." & Right$(Miembro, 400)
 
         End If
-
-120     Call WriteCharacterInfo(userIndex, username, RS!race_id, RS!class_id, RS!genre_id, RS!level, RS!gold, RS!bank_gold, SanitizeNullValue(RS!guild_requests_history, vbNullString), gName, Miembro, RS!pertenece_real, RS!pertenece_caos, RS!ciudadanos_matados, RS!criminales_matados)
+        Dim IsLegion As Boolean
+        Dim IsArmy As Boolean
+        IsLegion = RS!Status = e_Facciones.concilio Or RS!Status = e_Facciones.Caos
+        IsArmy = RS!Status = e_Facciones.consejo Or RS!Status = e_Facciones.Armada
+120     Call WriteCharacterInfo(UserIndex, username, RS!race_id, RS!class_id, RS!genre_id, RS!level, RS!gold, RS!bank_gold, GuildRequestHistory, gName, Miembro, IsArmy, IsLegion, RS!ciudadanos_matados, RS!criminales_matados)
 
         Exit Sub
 ErrorHandler:
@@ -971,6 +983,22 @@ Public Function PersonajePerteneceID(ByVal username As String, ByVal AccountID A
     
 106     PersonajePerteneceID = True
     
+End Function
+
+Public Function GetCharacterIdWithName(ByVal username As String) As Long
+        Dim tUser    As t_UserReference
+        tUser = NameIndex(username)
+        If IsValidUserRef(tUser) Then
+            GetCharacterIdWithName = UserList(tUser.ArrayIndex).id
+            Exit Function
+        End If
+        Dim RS As ADODB.Recordset
+100     Set RS = Query("SELECT id FROM user WHERE name = ?;", username)
+102     If RS Is Nothing Then
+104         GetCharacterIdWithName = RS!id
+            Exit Function
+        End If
+106     GetCharacterIdWithName = 0
 End Function
 
 Public Function SetPositionDatabase(username As String, ByVal map As Integer, ByVal x As Integer, ByVal y As Integer) As Boolean

@@ -1496,7 +1496,7 @@ Sub LookatTile(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Inte
                         End If
                         
 360                     If UserList(TempCharIndex).flags.Casado = 1 Then
-362                         Stat = Stat & " <Pareja de " & UserList(TempCharIndex).flags.Pareja & ">"
+362                         Stat = Stat & " <Pareja de " & GetUserSpouse(TempCharIndex) & ">"
                         End If
                         
 364                     If Len(UserList(TempCharIndex).Desc) > 0 Then
@@ -1930,7 +1930,7 @@ Public Sub resetPj(ByVal UserIndex As Integer, Optional ByVal borrarHechizos As 
 142         .flags.Escondido = 0
 
 144         .flags.Casado = 0
-146         .flags.Pareja = ""
+146         .flags.SpouseId = 0
 
             '%%%%%%%%%%%%% PREVENIR HACKEO DE LOS SKILLS %%%%%%%%%%%%%
             .Stats.SkillPts = 10

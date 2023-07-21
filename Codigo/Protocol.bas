@@ -9375,7 +9375,7 @@ Private Sub HandleCasamiento(ByVal UserIndex As Integer)
 134                             UserList(tUser.ArrayIndex).flags.Casado = 1
 136                             UserList(tUser.ArrayIndex).flags.Pareja = UserList(userIndex).name
 138                             .flags.Casado = 1
-140                             .flags.Pareja = UserList(tUser.ArrayIndex).name
+140                             .flags.SpouseId = UserList(tUser.ArrayIndex).id
 142                             Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(e_FXSound.Casamiento_sound, NO_3D_SOUND, NO_3D_SOUND))
 144                             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("El sacerdote de " & get_map_name(.pos.map) & " celebra el casamiento entre " & UserList(userIndex).name & " y " & UserList(tUser.ArrayIndex).name & ".", e_FontTypeNames.FONTTYPE_WARNING))
 146                             Call WriteChatOverHead(UserIndex, "Los declaro unidos en legal matrimonio ¡Felicidades!", NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
@@ -11156,19 +11156,6 @@ Private Sub HandleResetChar(ByVal UserIndex As Integer)
                         .Stats.UserSkills(i) = 0
                     Next
 
-                    .Stats.MaxHp = .Stats.UserAtributos(e_Atributos.Constitucion)
-                    .Stats.MinHp = .Stats.MaxHp
-
-                    .Stats.MaxMAN = .Stats.UserAtributos(e_Atributos.Inteligencia) * ModClase(.clase).ManaInicial
-                    .Stats.MinMAN = .Stats.MaxMAN
-
-                    Dim MiInt As Integer
-                    MiInt = RandomNumber(1, .Stats.UserAtributosBackUP(e_Atributos.Agilidad) \ 6)
-
-                    If MiInt = 1 Then MiInt = 2
-                
-                    .Stats.MaxSta = 20 * MiInt
-                    .Stats.MinSta = 20 * MiInt
                 
                     .Stats.MaxAGU = 100
                     .Stats.MinAGU = 100
@@ -11178,6 +11165,13 @@ Private Sub HandleResetChar(ByVal UserIndex As Integer)
             
                     .Stats.MaxHit = 2
                     .Stats.MinHIT = 1
+                    .Stats.MaxMAN = UserMod.GetMaxMana(UserIndex)
+                    .Stats.MaxSta = UserMod.GetMaxStamina(UserIndex)
+                    .Stats.MaxHp = UserMod.GetMaxHp(UserIndex)
+                    
+                    .Stats.MinHp = .Stats.MaxHp
+                    .Stats.MinMAN = .Stats.MaxMAN
+                    .Stats.MinSta = .Stats.MaxSta
                     
                     .flags.ModificoSkills = True
                     
