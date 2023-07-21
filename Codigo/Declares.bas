@@ -2947,6 +2947,7 @@ Public Type t_BaseDotInfo
 End Type
 
 Public Sub UpdateUserTelemetryKey(ByVal UserIndex As Integer)
+    If Not EnableTelemetry Then Exit Sub
     With UserList(UserIndex)
         Dim TelemetryOut(128) As Byte
         Dim TelemetryLen As Long
@@ -2957,6 +2958,7 @@ Public Sub UpdateUserTelemetryKey(ByVal UserIndex As Integer)
 End Sub
 
 Public Sub SetUserTelemetryKey(ByVal UserIndex As Integer)
+    If Not EnableTelemetry Then Exit Sub
     With UserList(UserIndex)
         Dim TelemetryOut(128) As Byte
         Dim TelemetryLen As Long
