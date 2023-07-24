@@ -3464,6 +3464,7 @@ Public Sub RemoveUserInvisibility(ByVal UserIndex As Integer)
          If RemoveHiddenState And .flags.AdminInvisible = 0 Then
              .flags.Oculto = 0
              .flags.invisible = 0
+             .Counters.DisabledInvisibility = 2
              .Counters.TiempoOculto = 0
              If .flags.Navegando = 1 Then
                  If .clase = e_Class.Pirat Then
@@ -3477,7 +3478,6 @@ Public Sub RemoveUserInvisibility(ByVal UserIndex As Integer)
                 Else
                  If .flags.invisible = 0 Then
                      Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageSetInvisible(.Char.charindex, False, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
-                     Call WriteLocaleMsg(UserIndex, "307", e_FontTypeNames.FONTTYPE_INFOIAO)
                 End If
             End If
         End If

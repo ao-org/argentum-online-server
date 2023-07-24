@@ -2063,6 +2063,7 @@ Public Type t_UserCounters
     LastStep As Long
     
     Invisibilidad As Integer
+    DisabledInvisibility As Integer
     TiempoOculto As Integer
     
     PiqueteC As Long
