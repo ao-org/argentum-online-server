@@ -323,6 +323,7 @@ Public Function GetAspirantes() As String()
 108         i = 0
 110         While Not RS.EOF
 112             list(i) = GetUserName(RS!user_id)
+                i = i + 1
                 RS.MoveNext
             Wend
         Else
