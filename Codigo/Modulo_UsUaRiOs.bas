@@ -55,7 +55,11 @@ Public Function GetUserName(ByVal UserId As Long) As String
 End Function
 
 Public Sub RegisterUserName(ByVal UserId As Long, ByVal UserName As String)
-    Call UserNameCache.Add(UserId, UserName)
+    If UserNameCache.Exists(UserId) Then
+        UserNameCache.Item(UserId) = username
+    Else
+        UserNameCache.Add UserId, username
+    End If
 End Sub
 
 Public Function IsValidUserRef(ByRef UserRef As t_UserReference) As Boolean

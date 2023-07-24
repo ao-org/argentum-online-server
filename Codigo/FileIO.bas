@@ -941,23 +941,13 @@ Public Sub DoBackUp()
 100     haciendoBK = True
 
         Dim i As Integer
-
 102     Call SendData(SendTarget.ToAll, 0, PrepareMessagePauseToggle())
-
-        'Call WorldSave
-104     Call modGuilds.v_RutinaElecciones
-
 108     Call SendData(SendTarget.ToAll, 0, PrepareMessagePauseToggle())
-
 110     haciendoBK = False
-
         Call LogThis(0, "[BackUps.log] DoBackUp", vbLogEventTypeInformation)
         Exit Sub
-
 DoBackUp_Err:
 120     Call TraceError(Err.Number, Err.Description, "ES.DoBackUp", Erl)
-
-        
 End Sub
 
 

@@ -291,6 +291,20 @@ GetUserValue_Err:
 102     Call TraceError(Err.Number, Err.Description, "modDatabase.GetUserValue", Erl)
 End Function
 
+Public Function GetUserValueById(CharId As Long, Columna As String) As Variant
+        On Error GoTo GetUserValue_Err
+100     Dim RS As ADODB.Recordset
+        Set RS = Query("SELECT " & Columna & " FROM user WHERE id = ?;", CharId)
+
+        'Revisamos si recibio un resultado
+102     If RS Is Nothing Then Exit Function
+        If RS.BOF Or RS.EOF Then Exit Function
+104     GetUserValueById = RS.Fields(Columna).Value
+        Exit Function
+GetUserValue_Err:
+106     Call TraceError(Err.Number, Err.Description, "modDatabase.GetUserValue", Erl)
+End Function
+
 Public Sub SetDBValue(Tabla As String, ColumnaSet As String, ByVal ValueSet As Variant, ColumnaTest As String, ByVal ValueTest As Variant)
         On Error GoTo ErrorHandler
 
@@ -722,21 +736,12 @@ ErrorHandler:
 
 End Sub
 
-Public Function GetUserGuildIndexDatabase(username As String) As Integer
-
-        '***************************************************
-        'Author: Juan Andres Dalmasso (CHOTS)
-        'Last Modification: 09/10/2018
-        '***************************************************
+Public Function GetUserGuildIndexDatabase(ByVal CharId As Long) As Integer
         On Error GoTo ErrorHandler
-
-100     GetUserGuildIndexDatabase = SanitizeNullValue(GetUserValue(LCase$(username), "guild_index"), 0)
-
+100     GetUserGuildIndexDatabase = SanitizeNullValue(GetUserValueById(CharId, "guild_index"), 0)
         Exit Function
-
 ErrorHandler:
 102     Call LogDatabaseError("Error in GetUserGuildIndexDatabase: " & username & ". " & Err.Number & " - " & Err.Description)
-
 End Function
 
 Public Function GetUserGuildMemberDatabase(username As String) As String
@@ -750,11 +755,18 @@ Public Function GetUserGuildMemberDatabase(username As String) As String
         user_id = GetCharacterIdWithName(username)
         Dim RS As ADODB.Recordset
         Dim History As String
-100     Set RS = Query("SELECT guild_name FROM guild_member_history where iuser_id = ? order by request_time", user_id)
+100     Set RS = Query("SELECT guild_name FROM guild_member_history where user_id = ? order by request_time", user_id)
 102     If RS Is Nothing Then Exit Function
 104     If Not RS.RecordCount = 0 Then
+            Dim i As Integer
+            i = 0
 108         While Not RS.EOF
-110             History = History + SanitizeNullValue(RS!guild_name, "")
+110             History = History & SanitizeNullValue(RS!guild_name, "")
+                i = i + 1
+                If i < RS.RecordCount Then
+                    History = History & ", "
+                End If
+                RS.MoveNext
             Wend
         End If
 112     GetUserGuildMemberDatabase = History
@@ -794,11 +806,18 @@ Public Function GetUserGuildPedidosDatabase(username As String) As String
         user_id = GetCharacterIdWithName(username)
         Dim RS As ADODB.Recordset
         Dim History As String
-100     Set RS = Query("SELECT guild_name FROM guild_request_history where iuser_id = ? order by request_time", user_id)
+100     Set RS = Query("SELECT guild_name FROM guild_request_history where user_id = ? order by request_time", user_id)
 102     If RS Is Nothing Then Exit Function
 104     If Not RS.RecordCount = 0 Then
+            Dim i As Integer
+            i = 0
 108         While Not RS.EOF
-110             History = History + SanitizeNullValue(RS!guild_name, "")
+110             History = History & SanitizeNullValue(RS!guild_name, "")
+                i = i + 1
+                If i < RS.RecordCount Then
+                    History = History & ", "
+                End If
+                RS.MoveNext
             Wend
         End If
 112     GetUserGuildPedidosDatabase = History
@@ -826,53 +845,27 @@ ErrorHandler:
 
 End Sub
 
-Public Sub SaveUserGuildIndexDatabase(ByVal username As String, ByVal GuildIndex As Integer)
-
-        '***************************************************
-        'Author: Juan Andres Dalmasso (CHOTS)
-        'Last Modification: 11/10/2018
-        '***************************************************
+Public Sub SaveUserGuildIndexDatabase(ByVal UserId As Long, ByVal GuildIndex As Integer)
         On Error GoTo ErrorHandler
-
-100     Call SetUserValue(username, "guild_index", GuildIndex)
-
+100     Call SetUserValueByID(UserId, "guild_index", GuildIndex)
         Exit Sub
 ErrorHandler:
 102     Call LogDatabaseError("Error in SaveUserGuildIndexDatabase: " & username & ". " & Err.Number & " - " & Err.Description)
-
 End Sub
 
-Public Sub SaveUserGuildAspirantDatabase(ByVal username As String, ByVal AspirantIndex As Integer)
-
-        '***************************************************
-        'Author: Juan Andres Dalmasso (CHOTS)
-        'Last Modification: 11/10/2018
-        '***************************************************
+Public Sub SaveUserGuildAspirantDatabase(ByVal UserId As Long, ByVal AspirantIndex As Integer)
         On Error GoTo ErrorHandler
-
-100     Call SetUserValue(username, "guild_aspirant_index", AspirantIndex)
-
+100     Call SetUserValueByID(UserId, "guild_aspirant_index", AspirantIndex)
         Exit Sub
 ErrorHandler:
 102     Call LogDatabaseError("Error in SaveUserGuildAspirantDatabase: " & username & ". " & Err.Number & " - " & Err.Description)
-
 End Sub
 
-Public Sub SaveUserGuildMemberDatabase(ByVal username As String, ByVal guilds As String)
-
-        '***************************************************
-        'Author: Juan Andres Dalmasso (CHOTS)
-        'Last Modification: 11/10/2018
-        '***************************************************
-        On Error GoTo ErrorHandler
-        Dim user_id As Long
-        user_id = GetCharacterIdWithName(username)
-        Call Execute("INSERT INTO guild_member_history (user_id, guild_name) VALUES (?, ?)", user_id, Pedidos)
-
+Public Sub SaveUserGuildMemberDatabase(ByVal user_id As Long, ByVal guilds As String)
+        Call Execute("INSERT INTO guild_member_history (user_id, guild_name) VALUES (?, ?)", user_id, guilds)
         Exit Sub
 ErrorHandler:
 102     Call LogDatabaseError("Error in SaveUserGuildMemberDatabase: " & username & ". " & Err.Number & " - " & Err.Description)
-
 End Sub
 
 Public Sub SaveUserGuildPedidosDatabase(ByVal username As String, ByVal Pedidos As String)
@@ -907,7 +900,7 @@ Public Sub SendCharacterInfoDatabase(ByVal userIndex As Integer, ByVal username 
         Dim GuildActual As Integer
 
         Dim RS As ADODB.Recordset
-100     Set RS = Query("SELECT race_id, class_id, genre_id, level, gold, bank_gold, guild_indexguild_member_history, status, ciudadanos_matados, criminales_matados FROM user WHERE UPPER(name) = ?;", UCase$(username))
+100     Set RS = Query("SELECT race_id, class_id, genre_id, level, gold, bank_gold, guild_index, status, ciudadanos_matados, criminales_matados FROM user WHERE UPPER(name) = ?;", UCase$(username))
         Dim GuildRequestHistory As String
         Dim GuildHistory As String
 102     If RS Is Nothing Then
@@ -954,7 +947,7 @@ Public Function EnterAccountDatabase(ByVal userIndex As Integer, ByVal CuentaEma
 100     Set RS = Query("SELECT id from account WHERE email = ?", UCase$(CuentaEmail))
     
 102     If Connection.State = adStateClosed Then
-104         Call WriteShowMessageBox(userIndex, "Ha ocurrido un error interno en el servidor. ¡Estamos tratando de resolverlo!")
+104         Call WriteShowMessageBox(UserIndex, "Ha ocurrido un error interno en el servidor. ¡Estamos tratando de resolverlo!")
             Exit Function
         End If
     
@@ -993,8 +986,9 @@ Public Function GetCharacterIdWithName(ByVal username As String) As Long
             Exit Function
         End If
         Dim RS As ADODB.Recordset
-100     Set RS = Query("SELECT id FROM user WHERE name = ?;", username)
-102     If RS Is Nothing Then
+100     Set RS = Query("SELECT id FROM user WHERE name = ? COLLATE NOCASE;", username)
+102     If Not RS Is Nothing Then
+            If RS.EOF Then Exit Function
 104         GetCharacterIdWithName = RS!id
             Exit Function
         End If

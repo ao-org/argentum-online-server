@@ -54,6 +54,7 @@ CREATE TABLE IF NOT EXISTS "user_new" (
 	"recibio_armadura_caos"	integer NOT NULL DEFAULT '0',
 	"recompensas_real"	integer DEFAULT '0',
 	"recompensas_caos"	integer DEFAULT '0',
+	"faction_score"	integer DEFAULT '0',
 	"reenlistadas"	integer NOT NULL DEFAULT '0',
 	"fecha_ingreso"	timestamp NOT NULL DEFAULT current_timestamp,
 	"nivel_ingreso"	integer DEFAULT NULL,

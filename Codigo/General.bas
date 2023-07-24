@@ -577,8 +577,6 @@ Sub Main()
 120     frmCargando.Label1(2).Caption = "Iniciando Arrays..."
 
         Call InitializeNpcIndexHeap
-        
-122     Call LoadGuildsDB
     
 126     Call loadAdministrativeUsers
 
@@ -614,9 +612,9 @@ Sub Main()
         
         ' Construimos las querys grandes
 156     Call Contruir_Querys
-113     Call LoadDBMigrations
+158     Call LoadDBMigrations
         ' ******************* FIN - Base de Datos ********************
-
+160     Call LoadGuildsDB
         '*************************************************
 164     frmCargando.Label1(2).Caption = "Cargando NPCs.Dat"
 166     Call CargaNpcsDat

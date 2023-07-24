@@ -356,7 +356,7 @@ Public Function LoadCharacterFromDB(ByVal userIndex As Integer) As Boolean
             
             If Not LoadCharacterInventory(UserIndex) Then Exit Function
             If Not LoadCharacterBank(UserIndex) Then Exit Function
-            
+            Call RegisterUserName(.id, .name)
             Call Execute("update account set last_ip = ? where id = ?", .IP, .AccountID)
             .Stats.Creditos = 0
             Set RS = Query("Select is_active_patron from account where id = ?", .AccountID)

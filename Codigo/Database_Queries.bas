@@ -31,6 +31,7 @@ Public QUERY_UPSERT_SKILLS As String
 Public QUERY_UPSERT_PETS As String
 
 
+
 Public Sub Contruir_Querys()
         Call ConstruirQuery_CargarPersonaje
 100     Call ConstruirQuery_CrearPersonaje
