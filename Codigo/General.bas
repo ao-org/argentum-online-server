@@ -577,8 +577,6 @@ Sub Main()
 120     frmCargando.Label1(2).Caption = "Iniciando Arrays..."
 
         Call InitializeNpcIndexHeap
-        
-122     Call LoadGuildsDB
     
 126     Call loadAdministrativeUsers
 
@@ -614,9 +612,9 @@ Sub Main()
         
         ' Construimos las querys grandes
 156     Call Contruir_Querys
-113     Call LoadDBMigrations
+158     Call LoadDBMigrations
         ' ******************* FIN - Base de Datos ********************
-
+160     Call LoadGuildsDB
         '*************************************************
 164     frmCargando.Label1(2).Caption = "Cargando NPCs.Dat"
 166     Call CargaNpcsDat
@@ -1174,30 +1172,35 @@ End Sub
 
 Public Sub EfectoInvisibilidad(ByVal UserIndex As Integer)
         
-        On Error GoTo EfectoInvisibilidad_Err
+    On Error GoTo EfectoInvisibilidad_Err
         
-
-100     If UserList(UserIndex).Counters.Invisibilidad > 0 Then
-102         UserList(UserIndex).Counters.Invisibilidad = UserList(UserIndex).Counters.Invisibilidad - 1
-        Else
-104         UserList(UserIndex).Counters.Invisibilidad = 0
-106         UserList(UserIndex).flags.invisible = 0
-
-108         If UserList(UserIndex).flags.Oculto = 0 Then
-                ' Call WriteConsoleMsg(UserIndex, "Has vuelto a ser visible.", e_FontTypeNames.FONTTYPE_INFO)
-110             Call WriteLocaleMsg(UserIndex, "307", e_FontTypeNames.FONTTYPE_INFO)
-112             Call SendData(SendTarget.ToPCArea, userindex, PrepareMessageSetInvisible(UserList(userindex).Char.charindex, False, UserList(userindex).Pos.X, UserList(userindex).Pos.y))
-114             Call WriteContadores(UserIndex)
-
+    With UserList(UserIndex)
+        If .Counters.Invisibilidad > 0 Then
+            .Counters.Invisibilidad = UserList(UserIndex).Counters.Invisibilidad - 1
+            If .Counters.DisabledInvisibility > 0 Then
+                .Counters.DisabledInvisibility = .Counters.DisabledInvisibility - 1
+                If .Counters.DisabledInvisibility = 0 And .Counters.Invisibilidad > 0 Then
+                    .flags.invisible = 1
+                    Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(.Char.charindex, True, .pos.x, .pos.y))
+                End If
             End If
-
+        Else
+            .Counters.Invisibilidad = 0
+            .flags.invisible = 0
+            .Counters.DisabledInvisibility = 0
+            If .flags.Oculto = 0 Then
+                ' Call WriteConsoleMsg(UserIndex, "Has vuelto a ser visible.", e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, "307", e_FontTypeNames.FONTTYPE_INFO)
+                Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageSetInvisible(.Char.charindex, False, .pos.x, .pos.y))
+                Call WriteContadores(UserIndex)
+            End If
         End If
-
+    End With
         
-        Exit Sub
+    Exit Sub
 
 EfectoInvisibilidad_Err:
-116     Call TraceError(Err.Number, Err.Description, "General.EfectoInvisibilidad", Erl)
+    Call TraceError(Err.Number, Err.Description, "General.EfectoInvisibilidad", Erl)
 
         
 End Sub
@@ -1805,7 +1808,7 @@ Sub PasarSegundo()
 
 136                 If .flags.Muerto = 0 Then
 138                     Call DuracionPociones(i)
-142                     If .flags.invisible = 1 Then Call EfectoInvisibilidad(i)
+142                     If .flags.invisible = 1 Or .Counters.DisabledInvisibility > 0 Then Call EfectoInvisibilidad(i)
 144                     If .flags.Paralizado = 1 Then Call EfectoParalisisUser(i)
 146                     If .flags.Inmovilizado = 1 Then Call EfectoInmoUser(i)
 148                     If .flags.Ceguera = 1 Then Call EfectoCeguera(i)

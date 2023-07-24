@@ -36,6 +36,31 @@ Attribute VB_Name = "UserMod"
 'Pablo Ignacio Márquez
 
 Option Explicit
+Private UserNameCache As New Dictionary
+
+Public Function GetUserName(ByVal UserId As Long) As String
+    If UserId <= 0 Then
+        GetUserName = ""
+        Exit Function
+    End If
+    If UserNameCache.Exists(UserId) Then
+        GetUserName = UserNameCache.Item(UserId)
+        Exit Function
+    End If
+    Dim UserName As String
+    UserName = GetCharacterName(UserId)
+    Call RegisterUserName(UserId, UserName)
+    GetUserName = UserName
+    Exit Function
+End Function
+
+Public Sub RegisterUserName(ByVal UserId As Long, ByVal UserName As String)
+    If UserNameCache.Exists(UserId) Then
+        UserNameCache.Item(UserId) = username
+    Else
+        UserNameCache.Add UserId, username
+    End If
+End Sub
 
 Public Function IsValidUserRef(ByRef UserRef As t_UserReference) As Boolean
     IsValidUserRef = False
@@ -235,7 +260,14 @@ On Error GoTo Complete_ConnectUser_Err
             .Stats.UserAtributosBackUP(e_Atributos.Inteligencia) = .Stats.UserAtributos(e_Atributos.Inteligencia)
             .Stats.UserAtributosBackUP(e_Atributos.Constitucion) = .Stats.UserAtributos(e_Atributos.Constitucion)
             .Stats.UserAtributosBackUP(e_Atributos.Carisma) = .Stats.UserAtributos(e_Atributos.Carisma)
-                    
+            
+            .Stats.MaxMAN = UserMod.GetMaxMana(UserIndex)
+            .Stats.MaxSta = UserMod.GetMaxStamina(UserIndex)
+            .Stats.MinHIT = UserMod.GetHitModifier(UserIndex) + 1
+            .Stats.MaxHit = UserMod.GetHitModifier(UserIndex) + 2
+            .Stats.MaxHp = UserMod.GetMaxHp(UserIndex)
+            .Stats.MinHp = Min(.Stats.MinHp, UserMod.GetMaxHp(UserIndex))
+            .Stats.MinMAN = Min(.Stats.MinMAN, UserMod.GetMaxMana(UserIndex))
             'Obtiene el indice-objeto del arma
 175         If .Invent.WeaponEqpSlot > 0 Then
 180             If .Invent.Object(.Invent.WeaponEqpSlot).ObjIndex > 0 Then
@@ -1157,43 +1189,23 @@ Sub CheckUserLevel(ByVal UserIndex As Integer)
 116             .Stats.Exp = .Stats.Exp - experienceToLevelUp
                 
 118             Pts = Pts + 5
-            
-                ' Calculo subida de vida by WyroX
-                ' Obtengo el promedio según clase y constitución
-120             PromedioObjetivo = ModClase(.clase).Vida - (21 - .Stats.UserAtributos(e_Atributos.Constitucion)) * 0.5
-                ' Obtengo el promedio actual del user
-122             PromedioUser = CalcularPromedioVida(UserIndex)
-                ' Lo modifico para compensar si está muy bajo o muy alto
-124             Promedio = PromedioObjetivo + (PromedioObjetivo - PromedioUser) * DesbalancePromedioVidas
-                ' Obtengo un entero al azar con más tendencia al promedio
-126             AumentoHP = RandomIntBiased(PromedioObjetivo - RangoVidas, PromedioObjetivo + RangoVidas, Promedio, InfluenciaPromedioVidas)
-
-                ' WyroX: Aumento del resto de stats
-128             AumentoSta = ModClase(.clase).AumentoSta
-130             AumentoMANA = ModClase(.clase).MultMana * .Stats.UserAtributos(e_Atributos.Inteligencia)
-132             AumentoHIT = IIf(.Stats.ELV < 36, ModClase(.clase).HitPre36, ModClase(.clase).HitPost36)
 
 134             .Stats.ELV = .Stats.ELV + 1
 136             experienceToLevelUp = ExpLevelUp(.Stats.ELV)
-                
-                'Actualizamos HitPoints
-138             .Stats.MaxHp = .Stats.MaxHp + AumentoHP
 
-140             If .Stats.MaxHp > STAT_MAXHP Then .Stats.MaxHp = STAT_MAXHP
-                'Actualizamos Stamina
-142             .Stats.MaxSta = .Stats.MaxSta + AumentoSta
-
-144             If .Stats.MaxSta > STAT_MAXSTA Then .Stats.MaxSta = STAT_MAXSTA
-                'Actualizamos Mana
-146             .Stats.MaxMAN = .Stats.MaxMAN + AumentoMANA
-
-148             If .Stats.MaxMAN > STAT_MAXMAN Then .Stats.MaxMAN = STAT_MAXMAN
-
-                'Actualizamos Golpe Máximo
-150             .Stats.MaxHit = .Stats.MaxHit + AumentoHIT
-            
-                'Actualizamos Golpe Mínimo
-152             .Stats.MinHIT = .Stats.MinHIT + AumentoHIT
+                AumentoHP = .Stats.MaxHp
+                AumentoSta = .Stats.MaxSta
+                AumentoMANA = .Stats.MaxMAN
+                AumentoHIT = .Stats.MaxHit
+                .Stats.MaxMAN = UserMod.GetMaxMana(UserIndex)
+                .Stats.MaxSta = UserMod.GetMaxStamina(UserIndex)
+                .Stats.MinHIT = UserMod.GetHitModifier(UserIndex) + 1
+                .Stats.MaxHit = UserMod.GetHitModifier(UserIndex) + 2
+                .Stats.MaxHp = UserMod.GetMaxHp(UserIndex)
+                AumentoHP = .Stats.MaxHp - AumentoHP
+                AumentoSta = .Stats.MaxSta - AumentoSta
+                AumentoMANA = .Stats.MaxMAN - AumentoMANA
+                AumentoHIT = .Stats.MaxHit - AumentoHIT
         
                 'Notificamos al user
 154             If AumentoHP > 0 Then
@@ -2425,11 +2437,11 @@ Sub WarpUserChar(ByVal UserIndex As Integer, _
 
                 ' Si el mapa lo permite
 192             If MapInfo(Map).SinInviOcul Then
-            
 194                 .flags.invisible = 0
 196                 .flags.Oculto = 0
 198                 .Counters.TiempoOculto = 0
                     .Counters.Invisibilidad = 0
+                    .Counters.DisabledInvisibility = 0
                     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageSetInvisible(UserList(UserIndex).Char.charindex, False))
 200                 Call WriteConsoleMsg(UserIndex, "Una fuerza divina que vigila esta zona te ha vuelto visible.", e_FontTypeNames.FONTTYPE_INFO)
                 
@@ -2497,6 +2509,7 @@ Sub Cerrar_Usuario(ByVal UserIndex As Integer, Optional ByVal forceClose As Bool
                 If .flags.invisible + .flags.Oculto > 0 Then
                     .flags.invisible = 0
                     .flags.Oculto = 0
+                    .Counters.DisabledInvisibility = 0
                     Call SendData(SendTarget.ToPCAliveArea, userindex, PrepareMessageSetInvisible(.Char.charindex, False, UserList(userindex).Pos.X, UserList(userindex).Pos.y))
                     Call WriteConsoleMsg(userindex, "Has vuelto a ser visible", e_FontTypeNames.FONTTYPE_INFO)
                 End If
@@ -2907,6 +2920,7 @@ Public Sub LimpiarEstadosAlterados(ByVal UserIndex As Integer)
 140             .flags.invisible = 0
 142             .Counters.TiempoOculto = 0
 144             .Counters.Invisibilidad = 0
+                .Counters.DisabledInvisibility = 0
 146             Call SendData(SendTarget.ToPCAliveArea, userindex, PrepareMessageSetInvisible(.Char.charindex, False, UserList(userindex).Pos.X, UserList(userindex).Pos.y))
             End If
         
@@ -3381,6 +3395,7 @@ Public Sub RemoveInvisibility(ByVal UserIndex As Integer)
 308         .flags.Oculto = 0
 310         .Counters.Invisibilidad = 0
 312         .Counters.Ocultando = 0
+            .Counters.DisabledInvisibility = 0
 314         Call WriteConsoleMsg(UserIndex, "Tu invisibilidad ya no tiene efecto.", e_FontTypeNames.FONTTYPE_INFOIAO)
 316         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageSetInvisible(.Char.charindex, False, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
          End If
@@ -3452,6 +3467,7 @@ Public Sub RemoveUserInvisibility(ByVal UserIndex As Integer)
          If RemoveHiddenState And .flags.AdminInvisible = 0 Then
              .flags.Oculto = 0
              .flags.invisible = 0
+             .Counters.DisabledInvisibility = 2
              .Counters.TiempoOculto = 0
              If .flags.Navegando = 1 Then
                  If .clase = e_Class.Pirat Then
@@ -3465,7 +3481,6 @@ Public Sub RemoveUserInvisibility(ByVal UserIndex As Integer)
                 Else
                  If .flags.invisible = 0 Then
                      Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageSetInvisible(.Char.charindex, False, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
-                     Call WriteLocaleMsg(UserIndex, "307", e_FontTypeNames.FONTTYPE_INFOIAO)
                 End If
             End If
         End If
@@ -3490,4 +3505,42 @@ End Function
 
 Public Function GetDefenseBonus(ByVal UserIndex As Integer) As Integer
     GetDefenseBonus = UserList(UserIndex).Modifiers.DefenseBonus
+End Function
+
+Public Function GetMaxMana(ByVal UserIndex As Integer) As Long
+    With UserList(UserIndex)
+        GetMaxMana = .Stats.UserAtributos(e_Atributos.Inteligencia) * ModClase(.clase).ManaInicial
+        GetMaxMana = GetMaxMana + (ModClase(.clase).MultMana * .Stats.UserAtributos(e_Atributos.Inteligencia)) * (.Stats.ELV - 1)
+    End With
+End Function
+
+Public Function GetHitModifier(ByVal UserIndex As Integer) As Long
+    With UserList(UserIndex)
+        If .Stats.ELV <= 36 Then
+            GetHitModifier = (.Stats.ELV - 1) * ModClase(.clase).HitPre36
+        Else
+            GetHitModifier = (.Stats.ELV - 1) * ModClase(.clase).HitPost36
+        End If
+    End With
+End Function
+
+Public Function GetMaxStamina(ByVal UserIndex As Integer) As Integer
+    With UserList(UserIndex)
+        GetMaxStamina = 60 + (.Stats.ELV - 1) * ModClase(.clase).AumentoSta
+    End With
+End Function
+
+Public Function GetMaxHp(ByVal UserIndex As Integer) As Integer
+    With UserList(UserIndex)
+        GetMaxHp = (ModClase(.clase).Vida - (21 - .Stats.UserAtributos(e_Atributos.Constitucion)) * 0.5) * (.Stats.ELV - 1) + .Stats.UserAtributos(e_Atributos.Constitucion)
+    End With
+End Function
+
+Public Function GetUserSpouse(ByVal UserIndex As Integer) As String
+    With UserList(UserIndex)
+        If .flags.SpouseId = 0 Then
+            Exit Function
+        End If
+        GetUserSpouse = GetUserName(.flags.SpouseId)
+    End With
 End Function

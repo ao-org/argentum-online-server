@@ -700,10 +700,6 @@ Public Function FinishQuestCheck(ByVal UserIndex As Integer, ByVal QuestIndex As
 132             Next i
             End If
         End With
-        
-        If QuestIndex = 142 Then
-            Call Execute("update user set quest_belthor = 1 where id = ?;", UserList(UserIndex).ID)
-        End If
 134     FinishQuestCheck = True
         Exit Function
 FinishQuestCheck_Err:

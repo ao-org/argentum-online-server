@@ -2270,7 +2270,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                     
 534                     Case 10  ' Invisibilidad
                 
-536                         If .flags.invisible = 0 Then
+536                         If .flags.invisible = 0 And .Counters.DisabledInvisibility = 0 Then
                                 If IsSet(.flags.StatusMask, eTaunting) Then
                                     Call WriteConsoleMsg(UserIndex, "No tiene efecto.", e_FontTypeNames.FONTTYPE_New_Amarillo_Oscuro)
                                     Exit Sub
@@ -2416,7 +2416,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                                 Dim tUser As t_UserReference
     
                                 '.flags.Pareja
-778                             tUser = NameIndex(.flags.Pareja)
+778                             tUser = NameIndex(GetUserSpouse(.flags.SpouseId))
 
                             
 782                             If Not IsValidUserRef(tUser) Then
@@ -2424,9 +2424,9 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                                 Else
 780                                 Call QuitarUserInvItem(UserIndex, Slot, 1)
 794                                 UserList(tUser.ArrayIndex).flags.Casado = 0
-796                                 UserList(tUser.ArrayIndex).flags.Pareja = ""
+796                                 UserList(tUser.ArrayIndex).flags.SpouseId = 0
 798                                 .flags.Casado = 0
-800                                 .flags.Pareja = ""
+800                                 .flags.SpouseId = 0
 802                                 Call WriteConsoleMsg(UserIndex, "Te has divorciado.", e_FontTypeNames.FONTTYPE_INFOIAO)
 804                                 Call WriteConsoleMsg(tUser.ArrayIndex, .name & " se ha divorciado de ti.", e_FontTypeNames.FONTTYPE_INFOIAO)
 

@@ -309,21 +309,18 @@ Private Function UserImpactoNpc(ByVal UserIndex As Integer, ByVal npcIndex As In
         On Error GoTo UserImpactoNpc_Err
         Dim PoderAtaque As Long
         Dim Arma        As Integer
-        Dim Proyectil   As Boolean
         Dim ProbExito   As Long
 100     Arma = UserList(UserIndex).Invent.WeaponEqpObjIndex
-102     If Arma = 0 Then Proyectil = False Else Proyectil = ObjData(Arma).Proyectil = 1
-104     If Arma > 0 Then 'Usando un arma
-            Proyectil = ObjData(Arma).Proyectil = 1
-106         If aType = Ranged Then
-108             PoderAtaque = PoderAtaqueProyectil(UserIndex)
-            Else
-110             PoderAtaque = PoderAtaqueArma(UserIndex)
-
-            End If
-        Else 'Peleando con puños
-112         PoderAtaque = PoderAtaqueWrestling(UserIndex)
-            Proyectil = False
+        Dim RequiredSkill As e_Skill
+        RequiredSkill = GetSkillRequiredForWeapon(Arma)
+        If RequiredSkill = Wrestling Then
+            PoderAtaque = PoderAtaqueWrestling(UserIndex)
+        ElseIf RequiredSkill = Armas Then
+            PoderAtaque = PoderAtaqueArma(UserIndex)
+        ElseIf RequiredSkill = Proyectiles Then
+            PoderAtaque = PoderAtaqueProyectil(UserIndex)
+        Else
+            PoderAtaque = PoderAtaqueWrestling(UserIndex)
         End If
 
 114     ProbExito = MaximoInt(10, MinimoInt(90, 50 + ((PoderAtaque - NpcList(NpcIndex).PoderEvasion) * 0.4)))
@@ -1046,7 +1043,6 @@ Private Function UsuarioImpacto(ByVal AtacanteIndex As Integer, ByVal VictimaInd
         Dim PoderAtaque            As Long
         Dim UserPoderEvasion       As Long
         Dim Arma                   As Integer
-        Dim Proyectil              As Boolean
         Dim SkillTacticas          As Long
         Dim SkillDefensa           As Long
         Dim ProbEvadir             As Long
@@ -1063,17 +1059,16 @@ Private Function UsuarioImpacto(ByVal AtacanteIndex As Integer, ByVal VictimaInd
 
 110     Arma = UserList(AtacanteIndex).Invent.WeaponEqpObjIndex
 
-112     If Arma > 0 Then
-114         Proyectil = ObjData(Arma).Proyectil = 1
-
-116         If aType = Ranged Then
-118             PoderAtaque = PoderAtaqueProyectil(AtacanteIndex)
-            Else
-120             PoderAtaque = PoderAtaqueArma(AtacanteIndex)
-            End If
+112     Dim RequiredSkill As e_Skill
+        RequiredSkill = GetSkillRequiredForWeapon(Arma)
+        If RequiredSkill = Wrestling Then
+            PoderAtaque = PoderAtaqueWrestling(AtacanteIndex)
+        ElseIf RequiredSkill = Armas Then
+            PoderAtaque = PoderAtaqueArma(AtacanteIndex)
+        ElseIf RequiredSkill = Proyectiles Then
+            PoderAtaque = PoderAtaqueProyectil(AtacanteIndex)
         Else
-122         Proyectil = False
-124         PoderAtaque = PoderAtaqueWrestling(AtacanteIndex)
+            PoderAtaque = PoderAtaqueWrestling(AtacanteIndex)
         End If
 
         'Calculamos el poder de evasion...
@@ -2417,7 +2412,7 @@ Private Function GetSkillRequiredForWeapon(ByVal ObjId As Integer) As e_Skill
     Else
         If ObjData(ObjId).WeaponType = eKnuckle Then
             GetSkillRequiredForWeapon = e_Skill.Wrestling
-        ElseIf ObjData(ObjId).WeaponType = eBow Then
+        ElseIf ObjData(ObjId).WeaponType = eBow Or ObjData(ObjId).WeaponType = eGunPowder Then
             GetSkillRequiredForWeapon = e_Skill.Proyectiles
         Else
             GetSkillRequiredForWeapon = e_Skill.Armas

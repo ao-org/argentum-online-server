@@ -1798,7 +1798,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
                 Exit Sub
             End If
             
-166         If UserList(tU).flags.invisible = 1 Then
+166         If UserList(tU).flags.invisible = 1 Or UserList(tU).Counters.DisabledInvisibility > 0 Then
 168             If tU = UserIndex Then
 170                 Call WriteConsoleMsg(UserIndex, "¡Ya estás invisible!", e_FontTypeNames.FONTTYPE_INFO)
                 Else

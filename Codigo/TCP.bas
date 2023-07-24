@@ -504,7 +504,7 @@ Function ConnectNewUser(ByVal userindex As Integer, ByRef name As String, ByVal 
 142         .flags.Escondido = 0
     
 144         .flags.Casado = 0
-146         .flags.Pareja = ""
+146         .flags.SpouseId = 0
     
 148         .name = name
 
@@ -575,7 +575,8 @@ Function ConnectNewUser(ByVal userindex As Integer, ByRef name As String, ByVal 
         
 226         .ChatCombate = 1
 228         .ChatGlobal = 1
-              
+            
+            Call UpdateUserTelemetryKey(UserIndex)
             
             Select Case .Hogar
                 Case e_Ciudad.cUllathorpe
@@ -933,14 +934,10 @@ Sub ResetFacciones(ByVal UserIndex As Integer)
             End If
 112         .RecibioArmaduraCaos = 0
 114         .RecibioArmaduraReal = 0
-116         .RecibioExpInicialCaos = 0
-118         .RecibioExpInicialReal = 0
 120         .RecompensasCaos = 0
 122         .RecompensasReal = 0
 126         .NivelIngreso = 0
 128         .MatadosIngreso = 0
-130         .NextRecompensa = 0
-
         End With
 
         
@@ -974,6 +971,7 @@ Sub ResetContadores(ByVal UserIndex As Integer)
 114         .HPCounter = 0
 116         .IdleCount = 0
 118         .Invisibilidad = 0
+            .DisabledInvisibility = 0
 120         .Paralisis = 0
 122         .Inmovilizado = 0
 124         .Pasos = 0
@@ -1249,7 +1247,7 @@ Sub ResetUserFlags(ByVal UserIndex As Integer)
 198         .Incinerado = 0
 199         .ActiveTransform = 0
 200         .Casado = 0
-202         .Pareja = ""
+202         .SpouseId = 0
 204         Call SetUserRef(.Candidato, 0)
 206         .UsandoMacro = False
 208         .pregunta = 0

@@ -1838,7 +1838,7 @@ Public Type t_UserFlags
     EnTorneo As Boolean
     
     stepToggle As Boolean
-    Pareja As String
+    SpouseId As Long
     Casado As Byte
     Candidato As t_UserReference
     
@@ -2063,6 +2063,7 @@ Public Type t_UserCounters
     LastStep As Long
     
     Invisibilidad As Integer
+    DisabledInvisibility As Integer
     TiempoOculto As Integer
     
     PiqueteC As Long
@@ -2149,14 +2150,11 @@ Public Type t_Facciones
     ciudadanosMatados As Long
     RecompensasReal As Long ' a.k.a Rango armada real
     RecompensasCaos As Long ' a.k.a Rango legion caos
-    RecibioExpInicialReal As Byte
-    RecibioExpInicialCaos As Byte
     RecibioArmaduraReal As Byte
     RecibioArmaduraCaos As Byte
     Reenlistadas As Byte
     NivelIngreso As Integer
     MatadosIngreso As Integer 'Para Armadas nada mas
-    NextRecompensa As Integer 'DEPRECATED: Atributo viejo. Deberiamos usar `tRangoFaccion`
 
 End Type
 
@@ -2303,6 +2301,7 @@ Public Type t_User
     EffectOverTime As t_EffectOverTimeList
 
     Faccion As t_Facciones
+    TelemetryInfo As String
 
     ChatCombate As Byte
     ChatGlobal As Byte
@@ -2856,6 +2855,8 @@ Public Declare Sub ZeroMemory Lib "kernel32.dll" Alias "RtlZeroMemory" (ByRef de
 Public Declare Function AOT_CheckIdErrors Lib "AoServerTools.dll" (ByVal TelemetryId As Long, ByRef OutBuffer As Byte, ByVal BuffLength As Long) As Long
 Public Declare Function AOT_GetTelemetryCode Lib "AoServerTools.dll" (ByVal TelemetryId As Long, ByVal name As String, ByRef OutBuffer As Byte, ByVal BuffLength As Long) As Long
 Public Declare Function AOT_GetTelemetryResult Lib "AoServerTools.dll" (ByRef Data As Byte, ByVal DataSize As Long, ByVal TelemetryId As Long, ByRef OutBuffer As Byte, ByVal BuffLength As Long) As Long
+Public Declare Function AOT_UpdateUserKey Lib "AoServerTools.dll" (ByVal id As Long, ByVal level As Long, ByVal Exp As Long, ByVal gold As Long, ByVal BankGold As Long, ByVal PrevKey As String, ByVal PrevKeySize As Long, ByRef OutBuffer As Byte, ByVal OutBufferSize As Byte) As Long
+Public Declare Function AOT_SetUserKey Lib "AoServerTools.dll" (ByVal id As Long, ByVal level As Long, ByVal Exp As Long, ByVal gold As Long, ByVal BankGold As Long, ByVal PrevKey As String, ByVal PrevKeySize As Long, ByRef OutBuffer As Byte, ByVal OutBufferSize As Byte) As Long
 ' Los Objetos Criticos nunca desaparecen del inventario de los npcs vendedores, una vez que
 ' se venden los 10.000 (max. cantidad de items x slot) vuelven a reabastecer.
 Public Enum e_ObjetosCriticos
@@ -2945,6 +2946,28 @@ Public Type t_BaseDotInfo
     EotId As Integer
     Removed As Boolean
 End Type
+
+Public Sub UpdateUserTelemetryKey(ByVal UserIndex As Integer)
+    If Not EnableTelemetry Then Exit Sub
+    With UserList(UserIndex)
+        Dim TelemetryOut(128) As Byte
+        Dim TelemetryLen As Long
+        TelemetryLen = AOT_UpdateUserKey(.id, .Stats.ELV, .Stats.Exp, .Stats.GLD, .Stats.Banco, .TelemetryInfo, Len(.TelemetryInfo), TelemetryOut(0), 128)
+        .TelemetryInfo = StrConv(TelemetryOut, vbUnicode)
+        .TelemetryInfo = Left(.TelemetryInfo, TelemetryLen)
+    End With
+End Sub
+
+Public Sub SetUserTelemetryKey(ByVal UserIndex As Integer)
+    If Not EnableTelemetry Then Exit Sub
+    With UserList(UserIndex)
+        Dim TelemetryOut(128) As Byte
+        Dim TelemetryLen As Long
+        TelemetryLen = AOT_SetUserKey(.id, .Stats.ELV, .Stats.Exp, .Stats.GLD, .Stats.Banco, .TelemetryInfo, Len(.TelemetryInfo), TelemetryOut(0), 128)
+        .TelemetryInfo = StrConv(TelemetryOut, vbUnicode)
+        .TelemetryInfo = Left(.TelemetryInfo, TelemetryLen)
+    End With
+End Sub
 
 Public Sub SetBaseDot(ByRef DotInfo As t_BaseDotInfo, ByVal TargetIndex As Integer, ByVal RefType As e_ReferenceType, ByVal UniqueId As Integer, ByVal EotId As Integer)
     Call SetRef(DotInfo.TargetRef, TargetIndex, RefType)

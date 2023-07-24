@@ -22,6 +22,81 @@ Private Function db_load_house_key(ByRef user As t_User) As Boolean
     End With
 End Function
 
+Public Function GetCharacterName(ByVal UserId As Long) As String
+    Dim RS As ADODB.Recordset
+    Set RS = Query("select name from user where id=?", UserId)
+    If RS Is Nothing Then Exit Function
+    GetCharacterName = RS!name
+End Function
+
+Public Function LoadCharacterBank(ByVal UserIndex As Integer) As Boolean
+    On Error GoTo LoadCharacterInventory_Err
+100     With UserList(UserIndex)
+            Dim RS As ADODB.Recordset
+            Dim counter As Long
+            Set RS = Query("SELECT number, item_id, amount FROM bank_item WHERE user_id = ?;", .id)
+            counter = 0
+368         If Not RS Is Nothing Then
+372             While Not RS.EOF
+374                 With .BancoInvent.Object(RS!Number)
+376                     .ObjIndex = RS!item_id
+378                     If .ObjIndex <> 0 Then
+380                         If LenB(ObjData(.ObjIndex).name) Then
+                                counter = counter + 1
+382                             .amount = RS!amount
+                            Else
+384                             .ObjIndex = 0
+                            End If
+                        End If
+                    End With
+386                 RS.MoveNext
+                Wend
+                .BancoInvent.NroItems = counter
+            End If
+        End With
+        LoadCharacterBank = True
+        Exit Function
+
+LoadCharacterInventory_Err:
+    Call LogDatabaseError("Error en LoadCharacterFromDB LoadCharacterBank: " & UserList(UserIndex).name & ". " & Err.Number & " - " & Err.Description & ". Línea: " & Erl)
+End Function
+
+Public Function LoadCharacterInventory(ByVal UserIndex As Integer) As Boolean
+    On Error GoTo LoadCharacterInventory_Err
+100     With UserList(UserIndex)
+            Dim RS As ADODB.Recordset
+            Dim counter As Long
+102         Set RS = Query("SELECT number, item_id, is_equipped, amount FROM inventory_item WHERE user_id = ?;", .id)
+104         counter = 0
+106         If Not RS Is Nothing Then
+108             While Not RS.EOF
+110                 With .invent.Object(RS!Number)
+112                     .ObjIndex = RS!item_id
+114                     If .ObjIndex <> 0 Then
+116                         If LenB(ObjData(.ObjIndex).name) Then
+118                             counter = counter + 1
+120                             .amount = RS!amount
+122                             .Equipped = False
+124                             If RS!is_equipped Then
+126                                 Call EquiparInvItem(UserIndex, RS!Number)
+                                End If
+                            Else
+128                             .ObjIndex = 0
+                            End If
+                        End If
+                    End With
+130                 RS.MoveNext
+                Wend
+132             .invent.NroItems = counter
+            End If
+        End With
+        LoadCharacterInventory = True
+        Exit Function
+
+LoadCharacterInventory_Err:
+    Call LogDatabaseError("Error en LoadCharacterFromDB LoadCharacterInventory: " & UserList(UserIndex).name & ". " & Err.Number & " - " & Err.Description & ". Línea: " & Erl)
+End Function
+
 Public Function LoadCharacterFromDB(ByVal userIndex As Integer) As Boolean
         Dim counter As Long
         On Error GoTo ErrorHandler
@@ -87,29 +162,13 @@ Public Function LoadCharacterFromDB(ByVal userIndex As Integer) As Boolean
 144         .OrigChar.CascoAnim = RS!helmet_id
 146         .OrigChar.ShieldAnim = RS!shield_id
 148         .OrigChar.Heading = RS!Heading
-152         .Invent.ArmourEqpSlot = SanitizeNullValue(RS!slot_armour, 0)
-154         .Invent.WeaponEqpSlot = SanitizeNullValue(RS!slot_weapon, 0)
-156         .Invent.CascoEqpSlot = SanitizeNullValue(RS!slot_helmet, 0)
-158         .Invent.EscudoEqpSlot = SanitizeNullValue(RS!slot_shield, 0)
-160         .Invent.MunicionEqpSlot = SanitizeNullValue(RS!slot_ammo, 0)
-162         .Invent.BarcoSlot = SanitizeNullValue(RS!slot_ship, 0)
-164         .Invent.MonturaSlot = SanitizeNullValue(RS!slot_mount, 0)
-166         .invent.DañoMagicoEqpSlot = SanitizeNullValue(RS!slot_dm, 0)
-168         .Invent.ResistenciaEqpSlot = SanitizeNullValue(RS!slot_rm, 0)
-172         .Invent.HerramientaEqpSlot = SanitizeNullValue(RS!slot_tool, 0)
-174         .Invent.MagicoSlot = SanitizeNullValue(RS!slot_magic, 0)
 176         .Stats.MinHp = RS!min_hp
-178         .Stats.MaxHp = RS!max_hp
 180         .Stats.MinMAN = RS!min_man
-182         .Stats.MaxMAN = RS!max_man
 184         .Stats.MinSta = RS!min_sta
-186         .Stats.MaxSta = RS!max_sta
 188         .Stats.MinHam = RS!min_ham
-190         .Stats.MaxHam = RS!max_ham
+190         .Stats.MaxHam = 100
 192         .Stats.MinAGU = RS!min_sed
-194         .Stats.MaxAGU = RS!max_sed
-196         .Stats.MinHIT = RS!min_hit
-198         .Stats.MaxHit = RS!max_hit
+194         .Stats.MaxAGU = 100
 200         .Stats.NPCsMuertos = RS!killed_npcs
 202         .Stats.UsuariosMatados = RS!killed_users
 203         .Stats.PuntosPesca = RS!puntos_pesca
@@ -125,8 +184,8 @@ Public Function LoadCharacterFromDB(ByVal userIndex As Integer) As Boolean
 224         .flags.Paralizado = RS!is_paralyzed
 226         .flags.VecesQueMoriste = RS!deaths
 228         .flags.Montado = RS!is_mounted
-230         .flags.Pareja = RS!spouse
-232         .flags.Casado = IIf(Len(.flags.Pareja) > 0, 1, 0)
+230         .flags.SpouseId = RS!spouse
+232         .flags.Casado = IIf(.flags.SpouseId > 0, 1, 0)
 234         .flags.Silenciado = RS!is_silenced
 236         .flags.MinutosRestantes = RS!silence_minutes_left
 238         .flags.SegundosPasados = RS!silence_elapsed_seconds
@@ -147,20 +206,19 @@ Public Function LoadCharacterFromDB(ByVal userIndex As Integer) As Boolean
 272         .Faccion.CriminalesMatados = RS!criminales_matados
 274         .Faccion.RecibioArmaduraReal = RS!recibio_armadura_real
 276         .Faccion.RecibioArmaduraCaos = RS!recibio_armadura_caos
-278         .Faccion.RecibioExpInicialReal = RS!recibio_exp_real
-280         .Faccion.RecibioExpInicialCaos = RS!recibio_exp_caos
 282         .Faccion.RecompensasReal = RS!recompensas_real
 284         .Faccion.RecompensasCaos = RS!recompensas_caos
 286         .Faccion.Reenlistadas = RS!Reenlistadas
 288         .Faccion.NivelIngreso = SanitizeNullValue(RS!nivel_ingreso, 0)
 290         .Faccion.MatadosIngreso = SanitizeNullValue(RS!matados_ingreso, 0)
-292         .Faccion.NextRecompensa = SanitizeNullValue(RS!siguiente_recompensa, 0)
 294         .Faccion.Status = RS!Status
 
 296         .GuildIndex = SanitizeNullValue(RS!Guild_Index, 0)
             .LastGuildRejection = SanitizeNullValue(RS!guild_rejected_because, vbNullString)
  
 298         .Stats.Advertencias = RS!warnings
+            .TelemetryInfo = RS!user_key
+            Call UpdateUserTelemetryKey(UserIndex)
 
             'User spells
             Set RS = Query("SELECT number, spell_id FROM spell WHERE user_id = ?;", .ID)
@@ -195,68 +253,24 @@ Public Function LoadCharacterFromDB(ByVal userIndex As Integer) As Boolean
 
             End If
 
-            'User inventory
-            Set RS = Query("SELECT number, item_id, is_equipped, amount FROM inventory_item WHERE user_id = ?;", .ID)
-
-            counter = 0
-            
-344         If Not RS Is Nothing Then
-
-348             While Not RS.EOF
-
-350                 With .Invent.Object(RS!Number)
-352                     .objIndex = RS!item_id
-                
-354                     If .objIndex <> 0 Then
-356                         If LenB(ObjData(.objIndex).Name) Then
-                                counter = counter + 1
-                                
-358                             .amount = RS!amount
-360                             .Equipped = RS!is_equipped
-                            Else
-362                             .objIndex = 0
-
-                            End If
-
-                        End If
-
-                    End With
-
-364                 RS.MoveNext
-                Wend
-                
-                .Invent.NroItems = counter
-            End If
-
             'User bank inventory
             Set RS = Query("SELECT number, item_id, amount FROM bank_item WHERE user_id = ?;", .ID)
-            
             counter = 0
-            
 368         If Not RS Is Nothing Then
-
 372             While Not RS.EOF
-
 374                 With .BancoInvent.Object(RS!Number)
 376                     .objIndex = RS!item_id
-                
 378                     If .objIndex <> 0 Then
 380                         If LenB(ObjData(.objIndex).Name) Then
                                 counter = counter + 1
-                                
 382                             .amount = RS!amount
                             Else
 384                             .objIndex = 0
-
                             End If
-
                         End If
-
                     End With
-
 386                 RS.MoveNext
                 Wend
-                
                 .BancoInvent.NroItems = counter
             End If
             
@@ -339,11 +353,11 @@ Public Function LoadCharacterFromDB(ByVal userIndex As Integer) As Boolean
                     Wend
                 End If
             End If
-
-
             
+            If Not LoadCharacterInventory(UserIndex) Then Exit Function
+            If Not LoadCharacterBank(UserIndex) Then Exit Function
+            Call RegisterUserName(.id, .name)
             Call Execute("update account set last_ip = ? where id = ?", .IP, .AccountID)
-            
             .Stats.Creditos = 0
             Set RS = Query("Select is_active_patron from account where id = ?", .AccountID)
             If Not RS Is Nothing Then
@@ -406,9 +420,9 @@ Public Sub SaveCharacterDB(ByVal userIndex As Integer)
                 Call LogDatabaseError("Error trying to save an user not logged in SaveCharacterDB")
                 Exit Sub
             End If
-
+            Call SetUserTelemetryKey(UserIndex)
               
-104         ReDim Params(83)
+104         ReDim Params(63)
 
             Dim i As Integer
         
@@ -434,29 +448,11 @@ Public Sub SaveCharacterDB(ByVal userIndex As Integer)
 144         Params(post_increment(i)) = .Char.CascoAnim
 146         Params(post_increment(i)) = .Char.ShieldAnim
 148         Params(post_increment(i)) = .Char.Heading
-152         Params(post_increment(i)) = .Invent.ArmourEqpSlot
-154         Params(post_increment(i)) = .Invent.WeaponEqpSlot
-156         Params(post_increment(i)) = .Invent.EscudoEqpSlot
-158         Params(post_increment(i)) = .Invent.CascoEqpSlot
-160         Params(post_increment(i)) = .Invent.MunicionEqpSlot
-162         Params(post_increment(i)) = .invent.DañoMagicoEqpSlot
-164         Params(post_increment(i)) = .Invent.ResistenciaEqpSlot
-166         Params(post_increment(i)) = .Invent.HerramientaEqpSlot
-168         Params(post_increment(i)) = .Invent.MagicoSlot
-172         Params(post_increment(i)) = .Invent.BarcoSlot
-174         Params(post_increment(i)) = .Invent.MonturaSlot
 176         Params(post_increment(i)) = .Stats.MinHp
-178         Params(post_increment(i)) = .Stats.MaxHp
 180         Params(post_increment(i)) = .Stats.MinMAN
-182         Params(post_increment(i)) = .Stats.MaxMAN
 184         Params(post_increment(i)) = .Stats.MinSta
-186         Params(post_increment(i)) = .Stats.MaxSta
 188         Params(post_increment(i)) = .Stats.MinHam
-190         Params(post_increment(i)) = .Stats.MaxHam
 192         Params(post_increment(i)) = .Stats.MinAGU
-194         Params(post_increment(i)) = .Stats.MaxAGU
-196         Params(post_increment(i)) = .Stats.MinHIT
-198         Params(post_increment(i)) = .Stats.MaxHit
 200         Params(post_increment(i)) = .Stats.NPCsMuertos
 202         Params(post_increment(i)) = .Stats.UsuariosMatados
 203         Params(post_increment(i)) = .Stats.PuntosPesca
@@ -472,21 +468,18 @@ Public Sub SaveCharacterDB(ByVal userIndex As Integer)
 226         Params(post_increment(i)) = .flags.Silenciado
 228         Params(post_increment(i)) = .flags.MinutosRestantes
 230         Params(post_increment(i)) = .flags.SegundosPasados
-232         Params(post_increment(i)) = .flags.Pareja
+232         Params(post_increment(i)) = .flags.SpouseId
 234         Params(post_increment(i)) = .Counters.Pena
 236         Params(post_increment(i)) = .flags.VecesQueMoriste
 246         Params(post_increment(i)) = .Faccion.ciudadanosMatados
 248         Params(post_increment(i)) = .Faccion.CriminalesMatados
 250         Params(post_increment(i)) = .Faccion.RecibioArmaduraReal
 252         Params(post_increment(i)) = .Faccion.RecibioArmaduraCaos
-254         Params(post_increment(i)) = .Faccion.RecibioExpInicialReal
-256         Params(post_increment(i)) = .Faccion.RecibioExpInicialCaos
 258         Params(post_increment(i)) = .Faccion.RecompensasReal
 260         Params(post_increment(i)) = .Faccion.RecompensasCaos
 262         Params(post_increment(i)) = .Faccion.Reenlistadas
 264         Params(post_increment(i)) = .Faccion.NivelIngreso
 266         Params(post_increment(i)) = .Faccion.MatadosIngreso
-268         Params(post_increment(i)) = .Faccion.NextRecompensa
 270         Params(post_increment(i)) = .Faccion.Status
 272         Params(post_increment(i)) = .GuildIndex
 274         Params(post_increment(i)) = .ChatCombate
@@ -495,6 +488,7 @@ Public Sub SaveCharacterDB(ByVal userIndex As Integer)
 282         Params(post_increment(i)) = .flags.ReturnPos.map
 284         Params(post_increment(i)) = .flags.ReturnPos.x
 286         Params(post_increment(i)) = .flags.ReturnPos.y
+287         Params(post_increment(i)) = .TelemetryInfo
 
             ' WHERE block
 288         Params(post_increment(i)) = .ID
@@ -701,7 +695,7 @@ Public Sub SaveNewCharacterDB(ByVal userIndex As Integer)
         
             Dim i As Integer
             i = 0
-104         ReDim Params(0 To 43)
+104         ReDim Params(0 To 26)
 
             '  ************ Basic user data *******************
 106         Params(post_increment(i)) = .Name
@@ -723,33 +717,14 @@ Public Sub SaveNewCharacterDB(ByVal userIndex As Integer)
 138         Params(post_increment(i)) = .Char.WeaponAnim
 140         Params(post_increment(i)) = .Char.CascoAnim
 142         Params(post_increment(i)) = .Char.ShieldAnim
-146         Params(post_increment(i)) = .Invent.ArmourEqpSlot
-148         Params(post_increment(i)) = .Invent.WeaponEqpSlot
-150         Params(post_increment(i)) = .Invent.EscudoEqpSlot
-152         Params(post_increment(i)) = .Invent.CascoEqpSlot
-154         Params(post_increment(i)) = .Invent.MunicionEqpSlot
-156         Params(post_increment(i)) = .invent.DañoMagicoEqpSlot
-158         Params(post_increment(i)) = .Invent.ResistenciaEqpSlot
-160         Params(post_increment(i)) = .Invent.HerramientaEqpSlot
-162         Params(post_increment(i)) = .Invent.MagicoSlot
-166         Params(post_increment(i)) = .Invent.BarcoSlot
-168         Params(post_increment(i)) = .Invent.MonturaSlot
 170         Params(post_increment(i)) = .Stats.MinHp
-172         Params(post_increment(i)) = .Stats.MaxHp
 174         Params(post_increment(i)) = .Stats.MinMAN
-176         Params(post_increment(i)) = .Stats.MaxMAN
 178         Params(post_increment(i)) = .Stats.MinSta
-180         Params(post_increment(i)) = .Stats.MaxSta
 182         Params(post_increment(i)) = .Stats.MinHam
-184         Params(post_increment(i)) = .Stats.MaxHam
 186         Params(post_increment(i)) = .Stats.MinAGU
-188         Params(post_increment(i)) = .Stats.MaxAGU
-190         Params(post_increment(i)) = .Stats.MinHIT
-192         Params(post_increment(i)) = .Stats.MaxHit
 194         Params(post_increment(i)) = .flags.Desnudo
 196         Params(post_increment(i)) = .Faccion.Status
-           
-        
+197         Params(post_increment(i)) = .TelemetryInfo
 198         Call Query(QUERY_SAVE_MAINPJ, Params)
 
             ' Para recibir el ID del user

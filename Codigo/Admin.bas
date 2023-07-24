@@ -332,17 +332,15 @@ BANCheck_Err:
 End Function
 
 Public Function PersonajeExiste(ByVal Name As String) As Boolean
-        
         On Error GoTo PersonajeExiste_Err
-
 102         PersonajeExiste = GetUserValue(LCase$(Name), "COUNT(*)") > 0
-
         Exit Function
-
 PersonajeExiste_Err:
 106     Call TraceError(Err.Number, Err.Description, "Admin.PersonajeExiste", Erl)
+End Function
 
-        
+Public Function IsValidUserId(ByVal UserId As Long) As Boolean
+    IsValidUserId = GetUserValueById(UserId, "COUNT(*)") > 0
 End Function
 
 Public Function UnBan(ByVal Name As String) As Boolean

@@ -4906,19 +4906,7 @@ HandleUserCommerceOffer_Err:
         
 End Sub
 
-''
-' Handles the "GuildAcceptPeace" message.
-'
-' @param    UserIndex The index of the user sending the message.
-
 Private Sub HandleGuildAcceptPeace(ByVal UserIndex As Integer)
-
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
-    
         On Error GoTo ErrHandler
 
 100     With UserList(UserIndex)
@@ -4928,25 +4916,19 @@ Private Sub HandleGuildAcceptPeace(ByVal UserIndex As Integer)
             Dim otherClanIndex As String
         
 102         guild = Reader.ReadString8()
-        
-104         otherClanIndex = modGuilds.r_AceptarPropuestaDePaz(UserIndex, guild, errorStr)
+            Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageConsoleMsg("No se pueden actualizar relaciones.", e_FontTypeNames.FONTTYPE_GUILD))
+            Exit Sub
         
 106         If otherClanIndex = 0 Then
 108             Call WriteConsoleMsg(UserIndex, errorStr, e_FontTypeNames.FONTTYPE_GUILD)
             Else
 110             Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageConsoleMsg("Tu clan ha firmado la paz con " & guild, e_FontTypeNames.FONTTYPE_GUILD))
 112             Call SendData(SendTarget.ToGuildMembers, otherClanIndex, PrepareMessageConsoleMsg("Tu clan ha firmado la paz con " & modGuilds.GuildName(.GuildIndex), e_FontTypeNames.FONTTYPE_GUILD))
-
             End If
-
         End With
-        
         Exit Sub
-
 ErrHandler:
 114     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildAcceptPeace", Erl)
-116
-
 End Sub
 
 ''
@@ -4971,8 +4953,8 @@ Private Sub HandleGuildRejectAlliance(ByVal UserIndex As Integer)
             Dim otherClanIndex As String
         
 102         guild = Reader.ReadString8()
-        
-104         otherClanIndex = modGuilds.r_RechazarPropuestaDeAlianza(UserIndex, guild, errorStr)
+            Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageConsoleMsg("Relaciones de clan desactivadas por el momento.", e_FontTypeNames.FONTTYPE_GUILD))
+            Exit Sub
         
 106         If otherClanIndex = 0 Then
 108             Call WriteConsoleMsg(UserIndex, errorStr, e_FontTypeNames.FONTTYPE_GUILD)
@@ -5016,7 +4998,8 @@ Private Sub HandleGuildRejectPeace(ByVal UserIndex As Integer)
         
 102         guild = Reader.ReadString8()
         
-104         otherClanIndex = modGuilds.r_RechazarPropuestaDePaz(UserIndex, guild, errorStr)
+            Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageConsoleMsg("Relaciones de clan desactivadas por el momento.", e_FontTypeNames.FONTTYPE_GUILD))
+            Exit Sub
         
 106         If otherClanIndex = 0 Then
 108             Call WriteConsoleMsg(UserIndex, errorStr, e_FontTypeNames.FONTTYPE_GUILD)
@@ -5059,8 +5042,8 @@ Private Sub HandleGuildAcceptAlliance(ByVal UserIndex As Integer)
             Dim otherClanIndex As String
         
 102         guild = Reader.ReadString8()
-        
-104         otherClanIndex = modGuilds.r_AceptarPropuestaDeAlianza(UserIndex, guild, errorStr)
+            Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageConsoleMsg("Relaciones de clan desactivadas por el momento.", e_FontTypeNames.FONTTYPE_GUILD))
+            Exit Sub
         
 106         If otherClanIndex = 0 Then
 108             Call WriteConsoleMsg(UserIndex, errorStr, e_FontTypeNames.FONTTYPE_GUILD)
@@ -5104,15 +5087,8 @@ Private Sub HandleGuildOfferPeace(ByVal UserIndex As Integer)
         
 102         guild = Reader.ReadString8()
 104         proposal = Reader.ReadString8()
-        
-106         If modGuilds.r_ClanGeneraPropuesta(UserIndex, guild, e_RELACIONES_GUILD.PAZ, proposal, errorStr) Then
-108             Call WriteConsoleMsg(UserIndex, "Propuesta de paz enviada", e_FontTypeNames.FONTTYPE_GUILD)
-
-            Else
-110             Call WriteConsoleMsg(UserIndex, errorStr, e_FontTypeNames.FONTTYPE_GUILD)
-
-            End If
-
+            Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageConsoleMsg("Relaciones de clan desactivadas por el momento.", e_FontTypeNames.FONTTYPE_GUILD))
+            Exit Sub
         End With
         
         Exit Sub
@@ -5146,14 +5122,8 @@ Private Sub HandleGuildOfferAlliance(ByVal UserIndex As Integer)
         
 102         guild = Reader.ReadString8()
 104         proposal = Reader.ReadString8()
-        
-106         If modGuilds.r_ClanGeneraPropuesta(UserIndex, guild, e_RELACIONES_GUILD.ALIADOS, proposal, errorStr) Then
-108             Call WriteConsoleMsg(UserIndex, "Propuesta de alianza enviada", e_FontTypeNames.FONTTYPE_GUILD)
-
-            Else
-110             Call WriteConsoleMsg(UserIndex, errorStr, e_FontTypeNames.FONTTYPE_GUILD)
-
-            End If
+            Call WriteConsoleMsg(UserIndex, "Relaciones de clan desactivadas por el momento.", e_FontTypeNames.FONTTYPE_GUILD)
+            Exit Sub
 
         End With
         
@@ -5187,9 +5157,9 @@ Private Sub HandleGuildAllianceDetails(ByVal UserIndex As Integer)
             Dim details  As String
         
 102         guild = Reader.ReadString8()
-        
-104         details = modGuilds.r_VerPropuesta(UserIndex, guild, e_RELACIONES_GUILD.ALIADOS, errorStr)
-        
+            
+            Call WriteConsoleMsg(UserIndex, "Relaciones de clan desactivadas por el momento.", e_FontTypeNames.FONTTYPE_GUILD)
+            Exit Sub
 106         If LenB(details) = 0 Then
 108             Call WriteConsoleMsg(UserIndex, errorStr, e_FontTypeNames.FONTTYPE_GUILD)
             Else
@@ -5229,16 +5199,7 @@ Private Sub HandleGuildPeaceDetails(ByVal UserIndex As Integer)
             Dim details  As String
         
 102         guild = Reader.ReadString8()
-        
-104         details = modGuilds.r_VerPropuesta(UserIndex, guild, e_RELACIONES_GUILD.PAZ, errorStr)
-        
-106         If LenB(details) = 0 Then
-108             Call WriteConsoleMsg(UserIndex, errorStr, e_FontTypeNames.FONTTYPE_GUILD)
-
-            Else
-110             Call WriteOfferDetails(UserIndex, details)
-
-            End If
+108         Call WriteConsoleMsg(UserIndex, "Relaciones de clan desactivadas por el momento.", e_FontTypeNames.FONTTYPE_GUILD)
             
         End With
         
@@ -5305,7 +5266,7 @@ Private Sub HandleGuildAlliancePropList(ByVal UserIndex As Integer)
         
         On Error GoTo HandleGuildAlliancePropList_Err
     
-100     Call WriteAlianceProposalsList(UserIndex, r_ListaDePropuestas(UserIndex, e_RELACIONES_GUILD.ALIADOS))
+        Call WriteConsoleMsg(UserIndex, "Relaciones de clan desactivadas por el momento.", e_FontTypeNames.FONTTYPE_GUILD)
         
         Exit Sub
 
@@ -5329,7 +5290,7 @@ Private Sub HandleGuildPeacePropList(ByVal UserIndex As Integer)
       
         On Error GoTo HandleGuildPeacePropList_Err
 
-100     Call WritePeaceProposalsList(UserIndex, r_ListaDePropuestas(UserIndex, e_RELACIONES_GUILD.PAZ))
+        Call WriteConsoleMsg(UserIndex, "Relaciones de clan desactivadas por el momento.", e_FontTypeNames.FONTTYPE_GUILD)
         
         Exit Sub
 
@@ -5362,8 +5323,8 @@ Private Sub HandleGuildDeclareWar(ByVal UserIndex As Integer)
         
 102         guild = Reader.ReadString8()
         
-104         otherGuildIndex = modGuilds.r_DeclararGuerra(UserIndex, guild, errorStr)
-        
+            Call WriteConsoleMsg(UserIndex, "Relaciones de clan desactivadas por el momento.", e_FontTypeNames.FONTTYPE_GUILD)
+            Exit Sub
 106         If otherGuildIndex = 0 Then
 108             Call WriteConsoleMsg(UserIndex, errorStr, e_FontTypeNames.FONTTYPE_GUILD)
 
@@ -5529,8 +5490,12 @@ Private Sub HandleGuildKickMember(ByVal UserIndex As Integer)
             Dim GuildIndex As Integer
         
 102         UserName = Reader.ReadString8()
-        
-104         GuildIndex = modGuilds.m_EcharMiembroDeClan(UserIndex, UserName)
+        Dim CharId As Long
+        CharId = GetCharacterIdWithName(username)
+        If CharId <= 0 Then
+            Exit Sub
+        End If
+104         GuildIndex = modGuilds.m_EcharMiembroDeClan(UserIndex, CharId)
         
 106         If GuildIndex > 0 Then
                 Dim expulsado As t_UserReference
@@ -5617,14 +5582,7 @@ Private Sub HandleGuildOpenElections(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             Dim Error As String
-        
-102         If Not modGuilds.v_AbrirElecciones(UserIndex, Error) Then
-104             Call WriteConsoleMsg(UserIndex, Error, e_FontTypeNames.FONTTYPE_GUILD)
-            Else
-106             Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageConsoleMsg("¡Han comenzado las elecciones del clan! Puedes votar escribiendo /VOTO seguido del nombre del personaje, por ejemplo: /VOTO " & .name, e_FontTypeNames.FONTTYPE_GUILD))
-
-            End If
-
+            Call WriteConsoleMsg(UserIndex, "Elecciones de clan desactivadas por el momento.", e_FontTypeNames.FONTTYPE_GUILD)
         End With
         
         Exit Sub
@@ -5781,7 +5739,7 @@ Private Sub HandleGuildLeave(ByVal UserIndex As Integer)
 100     With UserList(UserIndex)
 
             'obtengo el guildindex
-102         GuildIndex = m_EcharMiembroDeClan(UserIndex, .Name)
+102         GuildIndex = m_EcharMiembroDeClan(UserIndex, .id)
         
 104         If GuildIndex > 0 Then
 106             Call WriteConsoleMsg(UserIndex, "Dejas el clan.", e_FontTypeNames.FONTTYPE_GUILD)
@@ -6597,7 +6555,7 @@ Private Sub HandleReward(ByVal UserIndex As Integer)
 118             Call RecompensaArmadaReal(UserIndex)
             Else
 120             If .Faccion.Status <> e_Facciones.Caos And .Faccion.Status <> e_Facciones.concilio Then
-122                 Call WriteChatOverHead(UserIndex, "No perteneces a la legión oscura!!!", NpcList(.flags.TargetNPC.ArrayIndex).Char.Charindex, vbWhite)
+122                 Call WriteChatOverHead(UserIndex, "No perteneces a la legión oscura!!!", NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
                     Exit Sub
                 End If
 124             Call RecompensaCaos(UserIndex)
@@ -6831,15 +6789,8 @@ Private Sub HandleGuildVote(ByVal UserIndex As Integer)
             Dim errorStr As String
         
 102         vote = Reader.ReadString8()
-        
-104         If Not modGuilds.v_UsuarioVota(UserIndex, vote, errorStr) Then
-106             Call WriteConsoleMsg(UserIndex, "Voto NO contabilizado: " & errorStr, e_FontTypeNames.FONTTYPE_GUILD)
-
-            Else
-108             Call WriteConsoleMsg(UserIndex, "Voto contabilizado.", e_FontTypeNames.FONTTYPE_GUILD)
-
-            End If
- 
+            Call WriteConsoleMsg(UserIndex, "Elecciones de clan desactivadas por el momento.", e_FontTypeNames.FONTTYPE_GUILD)
+            Exit Sub
         End With
         
         Exit Sub
@@ -7044,12 +6995,7 @@ HandleBankDepositGold_Err:
         
 End Sub
 
-
-
-' Handles the "GuildMemberList" message.
-'
 ' @param    UserIndex The index of the user sending the message.
-
 Private Sub HandleGuildMemberList(ByVal UserIndex As Integer)
 
         '***************************************************
@@ -7067,44 +7013,28 @@ Private Sub HandleGuildMemberList(ByVal UserIndex As Integer)
             Dim UserName    As String
         
 102         guild = Reader.ReadString8()
-        
 104         If .flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios) Then
-
 106             If (InStrB(guild, "\") <> 0) Then
 108                 guild = Replace(guild, "\", "")
-
                 End If
 
 110             If (InStrB(guild, "/") <> 0) Then
 112                 guild = Replace(guild, "/", "")
-
                 End If
-            
-114             If Not FileExist(App.Path & "\guilds\" & guild & "-members.mem") Then
-116                 Call WriteConsoleMsg(UserIndex, "No existe el clan: " & guild, e_FontTypeNames.FONTTYPE_INFO)
-
-                Else
-                
-118                 memberCount = val(GetVar(App.Path & "\Guilds\" & guild & "-Members" & ".mem", "INIT", "NroMembers"))
-                
-120                 For i = 1 To memberCount
-122                     UserName = GetVar(App.Path & "\Guilds\" & guild & "-Members" & ".mem", "Members", "Member" & i)
-                    
-124                     Call WriteConsoleMsg(UserIndex, UserName & "<" & guild & ">", e_FontTypeNames.FONTTYPE_INFO)
-126                 Next i
-
+                If Not modGuilds.YaExiste(guild) Then
+                    Call WriteConsoleMsg(UserIndex, "No existe el clan: " & guild, e_FontTypeNames.FONTTYPE_INFO)
+                    Exit Sub
                 End If
-        
+                Dim MembersId() As Long
+                MembersId = GetGuildMemberList(guild)
+                For i = LBound(MembersId) To UBound(MembersId)
+                    Call WriteConsoleMsg(UserIndex, GetUserName(MembersId(i)) & "<" & guild & ">", e_FontTypeNames.FONTTYPE_INFO)
+                Next i
             End If
-            
         End With
-        
         Exit Sub
-        
 ErrHandler:
 128     Call TraceError(Err.Number, Err.Description, "Protocol.HandleGuildMemberList", Erl)
-130
-
 End Sub
 
 ''
@@ -8205,7 +8135,7 @@ Public Sub HandleShowGuildMessages(ByVal UserIndex As Integer)
         
 104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.RoleMaster)) Then
 106             Call modGuilds.GMEscuchaClan(UserIndex, guild)
-
+                Call LogGM(.name, .name & " espia a " & guild)
             End If
 
         End With
@@ -9373,9 +9303,9 @@ Private Sub HandleCasamiento(ByVal UserIndex As Integer)
                         Else
 132                         If UserList(tUser.ArrayIndex).flags.Candidato.ArrayIndex = userIndex Then
 134                             UserList(tUser.ArrayIndex).flags.Casado = 1
-136                             UserList(tUser.ArrayIndex).flags.Pareja = UserList(userIndex).name
+136                             UserList(tUser.ArrayIndex).flags.SpouseId = UserList(UserIndex).id
 138                             .flags.Casado = 1
-140                             .flags.Pareja = UserList(tUser.ArrayIndex).name
+140                             .flags.SpouseId = UserList(tUser.ArrayIndex).id
 142                             Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(e_FXSound.Casamiento_sound, NO_3D_SOUND, NO_3D_SOUND))
 144                             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("El sacerdote de " & get_map_name(.pos.map) & " celebra el casamiento entre " & UserList(userIndex).name & " y " & UserList(tUser.ArrayIndex).name & ".", e_FontTypeNames.FONTTYPE_WARNING))
 146                             Call WriteChatOverHead(UserIndex, "Los declaro unidos en legal matrimonio ¡Felicidades!", NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
@@ -10309,7 +10239,7 @@ Public Sub HandleQuestAccept(ByVal UserIndex As Integer)
             'El personaje no es la clase requerida?
 125         If UserList(UserIndex).clase <> QuestList(NpcList(npcIndex).QuestNumber(Indice)).RequiredClass And _
                 QuestList(NpcList(npcIndex).QuestNumber(Indice)).RequiredClass > 0 Then
-                 Call WriteChatOverHead(UserIndex, "Debes ser " & ListaClases(QuestList(NpcList(NpcIndex).QuestNumber(Indice)).RequiredClass) & " para emprender esta misión.", NpcList(NpcIndex).Char.Charindex, vbYellow)
+                 Call WriteChatOverHead(UserIndex, "Debes ser " & ListaClases(QuestList(NpcList(NpcIndex).QuestNumber(Indice)).RequiredClass) & " para emprender esta misión.", NpcList(NpcIndex).Char.charindex, vbYellow)
                 Exit Sub
 
             End If
@@ -10567,6 +10497,7 @@ Private Sub HandleConsulta(ByVal UserIndex As Integer)
 164                     .flags.invisible = 0
 166                     .Counters.TiempoOculto = 0
 168                     .Counters.Invisibilidad = 0
+                        .Counters.DisabledInvisibility = 0
                     
 170                     If UserList(UserConsulta.ArrayIndex).flags.Navegando = 0 Then
                             
@@ -11156,19 +11087,6 @@ Private Sub HandleResetChar(ByVal UserIndex As Integer)
                         .Stats.UserSkills(i) = 0
                     Next
 
-                    .Stats.MaxHp = .Stats.UserAtributos(e_Atributos.Constitucion)
-                    .Stats.MinHp = .Stats.MaxHp
-
-                    .Stats.MaxMAN = .Stats.UserAtributos(e_Atributos.Inteligencia) * ModClase(.clase).ManaInicial
-                    .Stats.MinMAN = .Stats.MaxMAN
-
-                    Dim MiInt As Integer
-                    MiInt = RandomNumber(1, .Stats.UserAtributosBackUP(e_Atributos.Agilidad) \ 6)
-
-                    If MiInt = 1 Then MiInt = 2
-                
-                    .Stats.MaxSta = 20 * MiInt
-                    .Stats.MinSta = 20 * MiInt
                 
                     .Stats.MaxAGU = 100
                     .Stats.MinAGU = 100
@@ -11178,6 +11096,13 @@ Private Sub HandleResetChar(ByVal UserIndex As Integer)
             
                     .Stats.MaxHit = 2
                     .Stats.MinHIT = 1
+                    .Stats.MaxMAN = UserMod.GetMaxMana(UserIndex)
+                    .Stats.MaxSta = UserMod.GetMaxStamina(UserIndex)
+                    .Stats.MaxHp = UserMod.GetMaxHp(UserIndex)
+                    
+                    .Stats.MinHp = .Stats.MaxHp
+                    .Stats.MinMAN = .Stats.MaxMAN
+                    .Stats.MinSta = .Stats.MaxSta
                     
                     .flags.ModificoSkills = True
                     

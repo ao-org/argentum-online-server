@@ -2982,7 +2982,7 @@ End Sub
 Public Sub WriteGuildNews(ByVal UserIndex As Integer, _
                           ByVal guildNews As String, _
                           ByRef guildList() As String, _
-                          ByRef MemberList() As String, _
+                          ByRef MemberList() As Long, _
                           ByVal ClanNivel As Byte, _
                           ByVal ExpAcu As Integer, _
                           ByVal ExpNe As Integer)
@@ -3008,7 +3008,7 @@ Public Sub WriteGuildNews(ByVal UserIndex As Integer, _
 114     Tmp = vbNullString
 
 116     For i = LBound(MemberList()) To UBound(MemberList())
-118         Tmp = Tmp & MemberList(i) & SEPARATOR
+118         Tmp = Tmp & GetUserName(MemberList(i)) & SEPARATOR
 120     Next i
 
 122     If Len(Tmp) Then Tmp = Left$(Tmp, Len(Tmp) - 1)
@@ -3181,7 +3181,7 @@ End Sub
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteGuildLeaderInfo(ByVal UserIndex As Integer, _
                                 ByRef guildList() As String, _
-                                ByRef MemberList() As String, _
+                                ByRef MemberList() As Long, _
                                 ByVal guildNews As String, _
                                 ByRef joinRequests() As String, _
                                 ByVal NivelDeClan As Byte, _
@@ -3208,7 +3208,7 @@ Public Sub WriteGuildLeaderInfo(ByVal UserIndex As Integer, _
 112     Tmp = vbNullString
 
 114     For i = LBound(MemberList()) To UBound(MemberList())
-116         Tmp = Tmp & MemberList(i) & SEPARATOR
+116         Tmp = Tmp & GetUserName(MemberList(i)) & SEPARATOR
 118     Next i
 
 120     If Len(Tmp) Then Tmp = Left$(Tmp, Len(Tmp) - 1)
@@ -3723,7 +3723,7 @@ Public Sub WriteDatosGrupo(ByVal UserIndex As Integer)
 
 124                     If i = 1 Then
 126                         Call Writer.WriteString8(UserList(UserList( _
-                                    .Grupo.Lider.ArrayIndex).Grupo.Miembros(i).ArrayIndex).name & "(Líder)")
+                                    .Grupo.Lider.ArrayIndex).Grupo.Miembros(i).ArrayIndex).Name & "(Líder)")
                         Else
 128                         Call Writer.WriteString8(UserList(UserList( _
                                     .Grupo.Lider.ArrayIndex).Grupo.Miembros(i).ArrayIndex).name)

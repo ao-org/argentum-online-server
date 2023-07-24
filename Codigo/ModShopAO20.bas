@@ -44,8 +44,8 @@ On Error GoTo init_transaction_Err
 124     .Stats.Creditos = .Stats.Creditos - obj.Valor
           
         'Genero un log de los créditos que gastó y cuantos le quedan luego de la transacción.
-126     Call LogShopTransactions(.Name & " | Compró -> " & ObjData(obj.ObjNum).Name & " | Valor -> " & obj.Valor)
-128     Call Execute("update account set offline_patron_credits = ? where id = ?;", .Stats.Creditos, .AccountID)
+126     Call LogShopTransactions(.name & " | Compró -> " & ObjData(obj.ObjNum).name & " | Valor -> " & obj.Valor)
+128     Call Query("update account set offline_patron_credits = ? where id = ?;", .Stats.Creditos, .AccountID)
 130     Call writeUpdateShopClienteCredits(UserIndex)
 132     Call RegisterTransaction(.AccountID, .ID, obj.ObjNum, obj.Valor, .Stats.Creditos)
         Call MeterItemEnInventario(UserIndex, objInventario)
