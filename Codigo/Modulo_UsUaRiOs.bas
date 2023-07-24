@@ -2437,11 +2437,11 @@ Sub WarpUserChar(ByVal UserIndex As Integer, _
 
                 ' Si el mapa lo permite
 192             If MapInfo(Map).SinInviOcul Then
-            
 194                 .flags.invisible = 0
 196                 .flags.Oculto = 0
 198                 .Counters.TiempoOculto = 0
                     .Counters.Invisibilidad = 0
+                    .Counters.DisabledInvisibility = 0
                     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageSetInvisible(UserList(UserIndex).Char.charindex, False))
 200                 Call WriteConsoleMsg(UserIndex, "Una fuerza divina que vigila esta zona te ha vuelto visible.", e_FontTypeNames.FONTTYPE_INFO)
                 
@@ -2509,6 +2509,7 @@ Sub Cerrar_Usuario(ByVal UserIndex As Integer, Optional ByVal forceClose As Bool
                 If .flags.invisible + .flags.Oculto > 0 Then
                     .flags.invisible = 0
                     .flags.Oculto = 0
+                    .Counters.DisabledInvisibility = 0
                     Call SendData(SendTarget.ToPCAliveArea, userindex, PrepareMessageSetInvisible(.Char.charindex, False, UserList(userindex).Pos.X, UserList(userindex).Pos.y))
                     Call WriteConsoleMsg(userindex, "Has vuelto a ser visible", e_FontTypeNames.FONTTYPE_INFO)
                 End If
@@ -2919,6 +2920,7 @@ Public Sub LimpiarEstadosAlterados(ByVal UserIndex As Integer)
 140             .flags.invisible = 0
 142             .Counters.TiempoOculto = 0
 144             .Counters.Invisibilidad = 0
+                .Counters.DisabledInvisibility = 0
 146             Call SendData(SendTarget.ToPCAliveArea, userindex, PrepareMessageSetInvisible(.Char.charindex, False, UserList(userindex).Pos.X, UserList(userindex).Pos.y))
             End If
         
@@ -3393,6 +3395,7 @@ Public Sub RemoveInvisibility(ByVal UserIndex As Integer)
 308         .flags.Oculto = 0
 310         .Counters.Invisibilidad = 0
 312         .Counters.Ocultando = 0
+            .Counters.DisabledInvisibility = 0
 314         Call WriteConsoleMsg(UserIndex, "Tu invisibilidad ya no tiene efecto.", e_FontTypeNames.FONTTYPE_INFOIAO)
 316         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageSetInvisible(.Char.charindex, False, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
          End If

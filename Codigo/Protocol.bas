@@ -10497,6 +10497,7 @@ Private Sub HandleConsulta(ByVal UserIndex As Integer)
 164                     .flags.invisible = 0
 166                     .Counters.TiempoOculto = 0
 168                     .Counters.Invisibilidad = 0
+                        .Counters.DisabledInvisibility = 0
                     
 170                     If UserList(UserConsulta.ArrayIndex).flags.Navegando = 0 Then
                             

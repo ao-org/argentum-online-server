@@ -2270,7 +2270,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                     
 534                     Case 10  ' Invisibilidad
                 
-536                         If .flags.invisible = 0 Then
+536                         If .flags.invisible = 0 And .Counters.DisabledInvisibility = 0 Then
                                 If IsSet(.flags.StatusMask, eTaunting) Then
                                     Call WriteConsoleMsg(UserIndex, "No tiene efecto.", e_FontTypeNames.FONTTYPE_New_Amarillo_Oscuro)
                                     Exit Sub

@@ -971,6 +971,7 @@ Sub ResetContadores(ByVal UserIndex As Integer)
 114         .HPCounter = 0
 116         .IdleCount = 0
 118         .Invisibilidad = 0
+            .DisabledInvisibility = 0
 120         .Paralisis = 0
 122         .Inmovilizado = 0
 124         .Pasos = 0
