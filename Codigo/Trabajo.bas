@@ -38,7 +38,6 @@ Attribute VB_Name = "Trabajo"
 Option Explicit
 
 Public Const GOLD_OBJ_INDEX As Long = 12
-Public Const SAFE_GOLD As Long = 100001
 Public Const FISHING_NET_FX As Long = 12
 Public Const NET_INMO_DURATION = 10
 
@@ -2172,9 +2171,11 @@ Public Sub DoRobar(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
 252                         If n > UserList(VictimaIndex).Stats.GLD Then n = UserList(VictimaIndex).Stats.GLD
                             Dim prevGold As Long: prevGold = UserList(VictimaIndex).Stats.GLD
 254                         UserList(VictimaIndex).Stats.GLD = UserList(VictimaIndex).Stats.GLD - n
-                            If prevGold >= SAFE_GOLD And UserList(VictimaIndex).Stats.GLD < SAFE_GOLD Then
-                                n = prevGold - SAFE_GOLD
-                                UserList(VictimaIndex).Stats.GLD = SAFE_GOLD
+                            Dim ProtectedGold As Long
+                            ProtectedGold = OroPorNivelBilletera * .Stats.ELV
+                            If prevGold >= ProtectedGold And UserList(VictimaIndex).Stats.GLD < ProtectedGold Then
+                                n = prevGold - ProtectedGold
+                                UserList(VictimaIndex).Stats.GLD = ProtectedGold
                             End If
 256                         .Stats.GLD = .Stats.GLD + n
 

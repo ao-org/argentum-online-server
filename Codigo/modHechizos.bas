@@ -80,29 +80,10 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
           ' Si el hechizo no ignora la RM
 132       If Hechizos(Spell).AntiRm = 0 Then
             Dim PorcentajeRM As Integer
-            ' Resistencia mágica armadura
-134         If .Invent.ArmourEqpObjIndex > 0 Then
-136           PorcentajeRM = PorcentajeRM + ObjData(.Invent.ArmourEqpObjIndex).ResistenciaMagica
-            End If
-            ' Resistencia mágica anillo
-138         If .Invent.ResistenciaEqpObjIndex > 0 Then
-140           PorcentajeRM = PorcentajeRM + ObjData(.Invent.ResistenciaEqpObjIndex).ResistenciaMagica
-            End If
-            ' Resistencia mágica escudo
-142         If .Invent.EscudoEqpObjIndex > 0 Then
-144           PorcentajeRM = PorcentajeRM + ObjData(.Invent.EscudoEqpObjIndex).ResistenciaMagica
-            End If
-
-            ' Resistencia mágica casco
-146         If .Invent.CascoEqpObjIndex > 0 Then
-148           PorcentajeRM = PorcentajeRM + ObjData(.Invent.CascoEqpObjIndex).ResistenciaMagica
-            End If
-150         PorcentajeRM = PorcentajeRM + 100 * ModClase(.clase).ResistenciaMagica
+            PorcentajeRM = GetUserMR(UserIndex)
             ' Resto el porcentaje total
 152         Damage = Damage - Porcentaje(Damage, PorcentajeRM)
-            If IsFeatureEnabled("mr-magic-bonus-damage") Then
-                Damage = max(1, Damage - .Stats.UserSkills(Resistencia) * MRSkillProtectionModifier)
-            End If
+            
           End If
           Damage = Damage * NPCs.GetMagicDamageModifier(NpcList(npcIndex))
           Damage = Damage * UserMod.GetMagicDamageReduction(UserList(UserIndex))
@@ -2782,35 +2763,26 @@ Sub HechizoPropNPC(ByVal hIndex As Integer, ByVal npcIndex As Integer, ByVal Use
 132         Call NPCAtacado(NpcIndex, UserIndex)
 134         Damage = RandomNumber(Hechizos(hIndex).MinHp, Hechizos(hIndex).MaxHp)
 136         Damage = Damage + Porcentaje(Damage, 3 * UserList(UserIndex).Stats.ELV)
-            ' Si al hechizo le afecta el daño mágico
-138         If Hechizos(hIndex).StaffAffected Then
-                ' Daño mágico arma
-140             If UserList(UserIndex).clase = e_Class.Mage Then
-                    ' El mago tiene un 30% de daño reducido
-142                 If UserList(UserIndex).Invent.WeaponEqpObjIndex > 0 Then
-144                     Damage = Porcentaje(Damage, 70 + ObjData(UserList(UserIndex).invent.WeaponEqpObjIndex).MagicDamageBonus)
-                    Else
-146                     Damage = Damage * 0.7
-                    End If
-                Else
-148                 If UserList(UserIndex).Invent.WeaponEqpObjIndex > 0 Then
-150                     Damage = Damage + Porcentaje(Damage, ObjData(UserList(UserIndex).invent.WeaponEqpObjIndex).MagicDamageBonus)
-                    End If
-                End If
-                
-                ' Magic Damage ring
-152             If UserList(UserIndex).invent.DañoMagicoEqpObjIndex > 0 Then
-154                 Damage = Damage + Porcentaje(Damage, ObjData(UserList(UserIndex).invent.DañoMagicoEqpObjIndex).MagicDamageBonus)
-                End If
+148         If UserList(UserIndex).invent.WeaponEqpObjIndex > 0 Then
+150             Damage = Damage + Porcentaje(Damage, ObjData(UserList(UserIndex).invent.WeaponEqpObjIndex).MagicDamageBonus)
             End If
-            If IsFeatureEnabled("mr-magic-bonus-damage") Then
-                Damage = Damage + UserList(UserIndex).Stats.UserSkills(Magia) * MagicSkillBonusDamageModifier
+            ' Magic Damage ring
+152         If UserList(UserIndex).invent.DañoMagicoEqpObjIndex > 0 Then
+154             Damage = Damage + Porcentaje(Damage, ObjData(UserList(UserIndex).invent.DañoMagicoEqpObjIndex).MagicDamageBonus)
             End If
 156         b = True
 158         If NpcList(NpcIndex).flags.Snd2 > 0 Then
 160             Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareMessagePlayWave(NpcList(NpcIndex).flags.Snd2, NpcList(NpcIndex).Pos.X, NpcList(NpcIndex).Pos.y))
             End If
-        
+            If NpcList(NpcIndex).Stats.MagicResistance > 0 Then
+                Dim DiffSkill As Integer
+                DiffSkill = NpcList(NpcIndex).Stats.MagicResistance - UserList(UserIndex).Stats.UserSkills(e_Skill.Magia)
+                If DiffSkill > 0 Then
+                    Damage = Damage - Porcentaje(Damage, NpcList(NpcIndex).Stats.MagicDef + DiffSkill * 2)
+                Else
+                    Damage = Damage - Porcentaje(Damage, NpcList(NpcIndex).Stats.MagicDef)
+                End If
+            End If
             'Quizas tenga defenza magica el NPC.
 162         If Hechizos(hIndex).AntiRm = 0 Then
 164             Damage = Damage - NpcList(npcIndex).Stats.defM
@@ -3350,60 +3322,19 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsA
 400         Damage = RandomNumber(Hechizos(h).MinHp, Hechizos(h).MaxHp)
 402         Damage = Damage + Porcentaje(Damage, 3 * UserList(UserIndex).Stats.ELV)
             ' Si al hechizo le afecta el daño mágico
-404         If Hechizos(h).StaffAffected Then
-                ' Daño mágico arma
-406             If UserList(UserIndex).clase = e_Class.Mage Then
-                    ' El mago tiene un 30% de daño reducido
-408                 If UserList(UserIndex).Invent.WeaponEqpObjIndex > 0 Then
-410                     Damage = Porcentaje(Damage, 70 + ObjData(UserList(UserIndex).invent.WeaponEqpObjIndex).MagicDamageBonus)
-                    Else
-412                     Damage = Damage * 0.7
-                    End If
-                Else
-414                 If UserList(UserIndex).Invent.WeaponEqpObjIndex > 0 Then
-416                     Damage = Damage + Porcentaje(Damage, ObjData(UserList(UserIndex).invent.WeaponEqpObjIndex).MagicDamageBonus)
-                    End If
-                End If
-                
-                ' Daño mágico anillo
-418             If UserList(UserIndex).invent.DañoMagicoEqpObjIndex > 0 Then
-420                 Damage = Damage + Porcentaje(Damage, ObjData(UserList(UserIndex).invent.DañoMagicoEqpObjIndex).MagicDamageBonus)
-                End If
+            If UserList(UserIndex).invent.WeaponEqpObjIndex > 0 Then
+                Damage = Damage + Porcentaje(Damage, ObjData(UserList(UserIndex).invent.WeaponEqpObjIndex).MagicDamageBonus)
             End If
-            If IsFeatureEnabled("mr-magic-bonus-damage") Then
-                Damage = Damage + UserList(UserIndex).Stats.UserSkills(Magia) * MagicSkillBonusDamageModifier
+418         If UserList(UserIndex).invent.DañoMagicoEqpObjIndex > 0 Then
+420             Damage = Damage + Porcentaje(Damage, ObjData(UserList(UserIndex).invent.DañoMagicoEqpObjIndex).MagicDamageBonus)
             End If
+
             ' Si el hechizo no ignora la RM
 422         If Hechizos(h).AntiRm = 0 Then
                 Dim PorcentajeRM As Integer
-
-                ' Resistencia mágica armadura
-424             If UserList(tempChr).Invent.ArmourEqpObjIndex > 0 Then
-426                 PorcentajeRM = PorcentajeRM + ObjData(UserList(tempChr).Invent.ArmourEqpObjIndex).ResistenciaMagica
-                End If
-                
-                ' Resistencia mágica anillo
-428             If UserList(tempChr).Invent.ResistenciaEqpObjIndex > 0 Then
-430                 PorcentajeRM = PorcentajeRM + ObjData(UserList(tempChr).Invent.ResistenciaEqpObjIndex).ResistenciaMagica
-                End If
-                
-                ' Resistencia mágica escudo
-432             If UserList(tempChr).Invent.EscudoEqpObjIndex > 0 Then
-434                 PorcentajeRM = PorcentajeRM + ObjData(UserList(tempChr).Invent.EscudoEqpObjIndex).ResistenciaMagica
-                End If
-                
-                ' Resistencia mágica casco
-436             If UserList(tempChr).Invent.CascoEqpObjIndex > 0 Then
-438                 PorcentajeRM = PorcentajeRM + ObjData(UserList(tempChr).Invent.CascoEqpObjIndex).ResistenciaMagica
-                End If
-                
-440             PorcentajeRM = PorcentajeRM + 100 * ModClase(UserList(tempChr).clase).ResistenciaMagica
-                
+                PorcentajeRM = GetUserMR(tempChr)
                 ' Resto el porcentaje total
 442             Damage = Damage - Porcentaje(Damage, PorcentajeRM)
-                If IsFeatureEnabled("mr-magic-bonus-damage") Then
-                    Damage = max(1, Damage - UserList(tempChr).Stats.UserSkills(Resistencia) * MRSkillProtectionModifier)
-                End If
             End If
             Call EffectsOverTime.TartgetWillAtack(UserList(UserIndex).EffectOverTime, tempChr, eUser, e_DamageSourceType.e_magic)
             Damage = Damage * UserMod.GetMagicDamageModifier(UserList(UserIndex))
@@ -3711,35 +3642,13 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
 284         If UserList(UserIndex).invent.DañoMagicoEqpObjIndex > 0 Then
 286             Damage = Damage + Porcentaje(Damage, ObjData(UserList(UserIndex).invent.DañoMagicoEqpObjIndex).MagicDamageBonus)
             End If
-            If IsFeatureEnabled("mr-magic-bonus-damage") Then
-                Damage = Damage + UserList(UserIndex).Stats.UserSkills(Magia) * MagicSkillBonusDamageModifier
-            End If
             ' Si el hechizo no ignora la RM
 288         If Hechizos(h).AntiRm = 0 Then
                 ' Resistencia mágica armadura
-290             If UserList(tempChr).Invent.ArmourEqpObjIndex > 0 Then
-292                 Damage = Damage - Porcentaje(Damage, ObjData(UserList(tempChr).invent.ArmourEqpObjIndex).ResistenciaMagica)
-                End If
-                
-                ' Resistencia mágica anillo
-294             If UserList(tempChr).Invent.ResistenciaEqpObjIndex > 0 Then
-296                 Damage = Damage - Porcentaje(Damage, ObjData(UserList(tempChr).invent.ResistenciaEqpObjIndex).ResistenciaMagica)
-                End If
-                
-                ' Resistencia mágica escudo
-298             If UserList(tempChr).Invent.EscudoEqpObjIndex > 0 Then
-300                 Damage = Damage - Porcentaje(Damage, ObjData(UserList(tempChr).invent.EscudoEqpObjIndex).ResistenciaMagica)
-                End If
-                
-                ' Resistencia mágica casco
-302             If UserList(tempChr).Invent.CascoEqpObjIndex > 0 Then
-304                 Damage = Damage - Porcentaje(Damage, ObjData(UserList(tempChr).invent.CascoEqpObjIndex).ResistenciaMagica)
-                End If
-                
-                ' Resistencia mágica de la clase
-306             Damage = Damage - Damage * ModClase(UserList(tempChr).clase).ResistenciaMagica
-                If IsFeatureEnabled("mr-magic-bonus-damage") Then
-                    Damage = Damage + UserList(tempChr).Stats.UserSkills(Resistencia) * MRSkillProtectionModifier
+                Dim MR As Integer
+                MR = GetUserMR(tempChr)
+290             If MR > 0 Then
+292                 Damage = Damage - Porcentaje(Damage, MR)
                 End If
             End If
             Call EffectsOverTime.TartgetWillAtack(UserList(UserIndex).EffectOverTime, tempChr, eUser, e_DamageSourceType.e_magic)
