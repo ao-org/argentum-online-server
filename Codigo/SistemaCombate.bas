@@ -573,9 +573,6 @@ Public Function UserDamageToNpc(ByVal attackerIndex As Integer, ByVal TargetInde
     Damage = Damage * UserMod.GetPhysicalDamageModifier(UserList(AttackerIndex))
 149 Damage = Damage * NPCs.GetPhysicDamageReduction(NpcList(TargetIndex))
 240 UserDamageToNpc = NPCs.DoDamageOrHeal(TargetIndex, attackerIndex, e_ReferenceType.eUser, -Damage, Source, ObjIndex)
-120 If UserList(AttackerIndex).ChatCombate = 1 Then
-122     Call WriteLocaleMsg(AttackerIndex, 382, e_FontTypeNames.FONTTYPE_FIGHT, PonerPuntos(Damage))
-    End If
 End Function
 
 Public Function GetNpcDamage(ByVal npcIndex As Integer) As Long

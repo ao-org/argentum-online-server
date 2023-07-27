@@ -2373,7 +2373,9 @@ Public Type t_NPCStats
     MinHIT As Integer
     Shield As Long
     def As Integer
-    defM As Integer
+    defM As Integer 'direct magic reduction
+    MagicResistance As Integer 'magic skill required to do full damage to npc
+    MagicDef As Integer 'magic reduction in percent
     MagicBonus As Single
     UsuariosMatados As Integer
     CantidadInvocaciones As Byte

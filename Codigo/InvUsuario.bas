@@ -3302,8 +3302,10 @@ Sub TirarTodosLosItems(ByVal UserIndex As Integer)
             
             If ((.Pos.map = 58 Or .Pos.map = 59 Or .Pos.map = 60 Or .Pos.map = 61) And EnEventoFaccionario) Then Exit Sub
             ' Tambien se cae el oro de la billetera
-102         If .Stats.GLD <= 100000 Then
-104             Call TirarOro(.Stats.GLD, UserIndex)
+            Dim GoldToDrop As Long
+            GoldToDrop = .Stats.GLD - (OroPorNivelBilletera * .Stats.ELV)
+102         If GoldToDrop > 0 And Not EsGM(UserIndex) Then
+104             Call TirarOro(GoldToDrop, UserIndex)
             End If
             
 106         For i = 1 To .CurrentInventorySlots
