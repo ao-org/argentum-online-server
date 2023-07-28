@@ -1161,6 +1161,7 @@ Public Sub UsuarioAtacaUsuario(ByVal AtacanteIndex As Integer, ByVal VictimaInde
             End If
 116         Call UserDamageToUser(AtacanteIndex, VictimaIndex, aType)
             Call EffectsOverTime.TartgetDidHit(UserList(AtacanteIndex).EffectOverTime, VictimaIndex, eUser, e_phisical)
+            Call RegisterNewAttack(VictimaIndex, AtacanteIndex)
         Else
             Call EffectsOverTime.TargetFailedAttack(UserList(AtacanteIndex).EffectOverTime, VictimaIndex, eUser, e_phisical)
 118         If UserList(AtacanteIndex).flags.invisible Or UserList(AtacanteIndex).flags.Oculto Then

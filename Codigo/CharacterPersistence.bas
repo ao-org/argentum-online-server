@@ -212,6 +212,7 @@ Public Function LoadCharacterFromDB(ByVal userIndex As Integer) As Boolean
 288         .Faccion.NivelIngreso = SanitizeNullValue(RS!nivel_ingreso, 0)
 290         .Faccion.MatadosIngreso = SanitizeNullValue(RS!matados_ingreso, 0)
 294         .Faccion.Status = RS!Status
+295         .Faccion.FactionScore = RS!faction_score
 
 296         .GuildIndex = SanitizeNullValue(RS!Guild_Index, 0)
             .LastGuildRejection = SanitizeNullValue(RS!guild_rejected_because, vbNullString)
@@ -422,7 +423,7 @@ Public Sub SaveCharacterDB(ByVal userIndex As Integer)
             End If
             Call SetUserTelemetryKey(UserIndex)
               
-104         ReDim Params(63)
+104         ReDim Params(64)
 
             Dim i As Integer
         
@@ -476,6 +477,7 @@ Public Sub SaveCharacterDB(ByVal userIndex As Integer)
 250         Params(post_increment(i)) = .Faccion.RecibioArmaduraReal
 252         Params(post_increment(i)) = .Faccion.RecibioArmaduraCaos
 258         Params(post_increment(i)) = .Faccion.RecompensasReal
+259         Params(post_increment(i)) = .Faccion.FactionScore
 260         Params(post_increment(i)) = .Faccion.RecompensasCaos
 262         Params(post_increment(i)) = .Faccion.Reenlistadas
 264         Params(post_increment(i)) = .Faccion.NivelIngreso

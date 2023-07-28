@@ -179,6 +179,7 @@ Private Sub DoBlast()
                 If DotInfo.TargetRef.RefType = eUser Then
                     If UserMod.CanAttackUser(DotInfo.TargetRef.ArrayIndex, DotInfo.TargetRef.VersionId, MapData(TargetMap, j, i).UserIndex, UserList(MapData(TargetMap, j, i).UserIndex).VersionId) = eCanAttack Then
                         Call UserDoDamageToUser(DotInfo.TargetRef.ArrayIndex, MapData(TargetMap, j, i).UserIndex, GetDamageForTile(j, i, GetUserDamageWithItem(DotInfo.TargetRef.ArrayIndex, SourceObjIndex, 0)), e_phisical, SourceObjIndex)
+                        Call RegisterNewAttack(MapData(TargetMap, j, i).UserIndex, DotInfo.TargetRef.ArrayIndex)
                     End If
                 Else
                     If NPCs.CanAttackUser(DotInfo.TargetRef.ArrayIndex, MapData(TargetMap, j, i).UserIndex) = eCanAttack Then

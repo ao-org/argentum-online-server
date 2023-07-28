@@ -938,6 +938,7 @@ Sub ResetFacciones(ByVal UserIndex As Integer)
 122         .RecompensasReal = 0
 126         .NivelIngreso = 0
 128         .MatadosIngreso = 0
+            .FactionScore = 0
         End With
 
         
@@ -1266,8 +1267,7 @@ Sub ResetUserFlags(ByVal UserIndex As Integer)
 234         .RegeneracionMana = 0
 236         .RegeneracionHP = 0
 
-242         .LastCrimMatado = vbNullString
-244         .LastCiudMatado = vbNullString
+244         .LastKillerIndex = 0
         
 246         .UserLogged = False
 248         .FirstPacket = False
@@ -1287,6 +1287,10 @@ Sub ResetUserFlags(ByVal UserIndex As Integer)
             .ModificoQuests = False
             .ModificoQuestsHechas = False
             .RespondiendoPregunta = False
+            Call ClearUserRef(.LastAttacker)
+            .LastAttackedByUserTime = 0
+            Call ClearUserRef(.LastHelpUser)
+            .LastHelpByTime = 0
 
             Dim i As Integer
 266         For i = LBound(.ChatHistory) To UBound(.ChatHistory)
@@ -1456,9 +1460,8 @@ LimpiarComercioSeguro_Err:
 End Sub
 
 Sub ResetUserSlot(ByVal UserIndex As Integer)
-        
         On Error GoTo ResetUserSlot_Err
-        
+        Call SaveDCUserCache(UserIndex)
         With UserList(UserIndex)
 100         .ConnIDValida = False
 102         .ConnID = 0

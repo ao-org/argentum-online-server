@@ -739,6 +739,7 @@ On Error GoTo Complete_ConnectUser_Err
             If EnableTelemetry Then
                 Call WriteRequestTelemetry(UserIndex)
             End If
+            Call RestoreDCUserCache(UserIndex)
             Call CustomScenarios.UserConnected(userIndex)
          End With
 
@@ -2193,42 +2194,100 @@ ErrorHandler:
 
 End Sub
 
+Public Function AlreadyKilledBy(ByVal TargetIndex As Integer, ByVal KillerIndex As Integer) As Boolean
+    Dim TargetPos As Integer
+    With UserList(TargetIndex)
+        TargetPos = Min(.flags.LastKillerIndex, MaxRecentKillToStore)
+        Dim i As Integer
+        For i = 0 To TargetPos
+            If .flags.RecentKillers(i) = UserList(KillerIndex).id Then
+                AlreadyKilledBy = True
+                Exit Function
+            End If
+        Next i
+    End With
+    
+End Function
+
+Public Sub RegisterRecentKiller(ByVal TargetIndex As Integer, ByVal KillerIndex As Integer)
+    Dim InsertIndex As Integer
+    With UserList(TargetIndex)
+        InsertIndex = .flags.LastKillerIndex Mod MaxRecentKillToStore
+        .flags.RecentKillers(InsertIndex) = UserList(KillerIndex).id
+        .flags.LastKillerIndex = .flags.LastKillerIndex + 1
+        If .flags.LastKillerIndex > MaxRecentKillToStore * 10 Then 'prevent overflow
+            .flags.LastKillerIndex = .flags.LastKillerIndex \ 10
+        End If
+    End With
+End Sub
 Sub ContarMuerte(ByVal Muerto As Integer, ByVal Atacante As Integer)
             On Error GoTo ContarMuerte_Err
-
 
 100         If EsNewbie(Muerto) Then Exit Sub
 102         If PeleaSegura(Atacante, Muerto) Then Exit Sub
             'Si se llevan más de 10 niveles no le cuento la muerte.
             If CInt(UserList(Atacante).Stats.ELV) - CInt(UserList(Muerto).Stats.ELV) > 10 Then Exit Sub
-106         If Status(Muerto) = 0 Or Status(Muerto) = 2 Then
-108             If UserList(Atacante).flags.LastCrimMatado <> UserList(Muerto).Name Then
-110                 UserList(Atacante).flags.LastCrimMatado = UserList(Muerto).Name
-
+            Dim AttackerStatus As e_Facciones
+            AttackerStatus = Status(Atacante)
+106         If Status(Muerto) = e_Facciones.Criminal Or Status(Muerto) = e_Facciones.Caos Or Status(Muerto) = e_Facciones.concilio Then
+108             If Not AlreadyKilledBy(Muerto, Atacante) Then
+110                 Call RegisterRecentKiller(Muerto, Atacante)
 112                 If UserList(Atacante).Faccion.CriminalesMatados < MAXUSERMATADOS Then
 114                     UserList(Atacante).Faccion.CriminalesMatados = UserList(Atacante).Faccion.CriminalesMatados + 1
                     End If
+                    If AttackerStatus = e_Facciones.Ciudadano Or AttackerStatus = e_Facciones.Armada Or AttackerStatus = e_Facciones.consejo Then
+                        Call HandleFactionScoreForKill(Atacante, Muerto)
+                    End If
                 End If
 
-116         ElseIf Status(Muerto) = 1 Or Status(Muerto) = 3 Then
-
-118             If UserList(Atacante).flags.LastCiudMatado <> UserList(Muerto).Name Then
-120                 UserList(Atacante).flags.LastCiudMatado = UserList(Muerto).Name
-
+116         ElseIf Status(Muerto) = e_Facciones.Ciudadano Or Status(Muerto) = e_Facciones.Armada Or Status(Muerto) = e_Facciones.consejo Then
+118              If Not AlreadyKilledBy(Muerto, Atacante) Then
+120                 Call RegisterRecentKiller(Muerto, Atacante)
 122                 If UserList(Atacante).Faccion.ciudadanosMatados < MAXUSERMATADOS Then
 124                     UserList(Atacante).Faccion.ciudadanosMatados = UserList(Atacante).Faccion.ciudadanosMatados + 1
                     End If
-
+                    If AttackerStatus = e_Facciones.Criminal Or AttackerStatus = e_Facciones.Caos Or AttackerStatus = e_Facciones.concilio Then
+                        Call HandleFactionScoreForKill(Atacante, Muerto)
+                    End If
                 End If
-
             End If
-
             Exit Sub
-
 ContarMuerte_Err:
 126         Call TraceError(Err.Number, Err.Description, "UsUaRiOs.ContarMuerte", Erl)
+End Sub
 
+Sub HandleFactionScoreForKill(ByVal UserIndex As Integer, ByVal TargetIndex As Integer)
+    Dim Score As Integer
+    With UserList(UserIndex)
+        Score = 10 - max(CInt(.Stats.ELV) - CInt(UserList(TargetIndex).Stats.ELV), 0)
+        If GlobalFrameTime - .flags.LastHelpByTime < AssistHelpValidTime Then
+            If IsValidUserRef(.flags.LastHelpUser) And .flags.LastHelpUser.ArrayIndex <> UserIndex Then
+                Score = Score - 1
+                Call HandleFactionScoreForAssist(.flags.LastHelpUser.ArrayIndex, TargetIndex)
+            End If
+            
+        End If
+        If GlobalFrameTime - UserList(TargetIndex).flags.LastAttackedByUserTime < AssistHelpValidTime Then
+            If IsValidUserRef(UserList(TargetIndex).flags.LastAttacker) And UserList(TargetIndex).flags.LastAttacker.ArrayIndex <> UserIndex Then
+                Score = Score - 1
+                Call HandleFactionScoreForAssist(UserList(TargetIndex).flags.LastAttacker.ArrayIndex, TargetIndex)
+            End If
+            Score = Score - 1
+        End If
+        .Faccion.FactionScore = .Faccion.FactionScore + Score
+    End With
+    
+    
+End Sub
 
+Sub HandleFactionScoreForAssist(ByVal UserIndex As Integer, ByVal TargetIndex As Integer)
+    Dim Score As Integer
+    
+    With UserList(UserIndex)
+        Score = 10 - max(CInt(.Stats.ELV) - CInt(UserList(TargetIndex).Stats.ELV), 0)
+        Score = Score / 2
+        .Faccion.FactionScore = .Faccion.FactionScore + Score
+    End With
 End Sub
 
 Sub Tilelibre(ByRef Pos As t_WorldPos, ByRef nPos As t_WorldPos, ByRef obj As t_Obj, ByRef Agua As Boolean, ByRef Tierra As Boolean, Optional ByVal InitialPos As Boolean = True)
@@ -2618,7 +2677,9 @@ Sub VolverCriminal(ByVal UserIndex As Integer)
         End If
 
 108     If .Faccion.Status = e_Facciones.Caos Or .Faccion.Status = e_Facciones.concilio Then Exit Sub
-
+        If .Faccion.Status = e_Facciones.Ciudadano Then
+            .Faccion.FactionScore = 0
+        End If
 110     .Faccion.Status = 0
         
 112     If MapInfo(.Pos.Map).NoPKs And Not EsGM(UserIndex) And MapInfo(.Pos.Map).Salida.Map <> 0 Then
@@ -2650,8 +2711,10 @@ Sub VolverCiudadano(ByVal UserIndex As Integer)
 100 With UserList(UserIndex)
 
 102     If MapData(.Pos.Map, .Pos.X, .Pos.Y).trigger = 6 Then Exit Sub
-
-104     .Faccion.Status = 1
+        If .Faccion.Status = e_Facciones.Criminal Or .Faccion.Status = e_Facciones.Caos Or .Faccion.Status = e_Facciones.concilio Then
+            .Faccion.FactionScore = 0
+        End If
+104     .Faccion.Status = e_Facciones.Ciudadano
 
 106     If MapInfo(.Pos.Map).NoCiudadanos And Not EsGM(UserIndex) And MapInfo(.Pos.Map).Salida.Map <> 0 Then
 108         Call WriteConsoleMsg(UserIndex, "En este mapa no se admiten ciudadanos.", e_FontTypeNames.FONTTYPE_INFO)
@@ -3110,7 +3173,7 @@ Public Function CanAttackUser(ByVal AttackerIndex As Integer, ByVal AttackerVers
     End If
     
     If AttackerIndex = TargetIndex And AttackerVersionID = TargetVersionID Then
-        CanAttackUser = e_AttackInteractionResult.eDeathTarget
+        CanAttackUser = e_AttackInteractionResult.eCantAttackYourself
         Exit Function
     End If
     
@@ -3545,6 +3608,60 @@ Public Function GetUserSpouse(ByVal UserIndex As Integer) As String
     End With
 End Function
 
+Public Sub RegisterNewAttack(ByVal targetUser As Integer, ByVal attackerIndex As Integer)
+    With UserList(targetUser)
+        If .Stats.MinHp > 0 Then
+            Call SetUserRef(.flags.LastAttacker, attackerIndex)
+            .flags.LastAttackedByUserTime = GlobalFrameTime
+        End If
+    End With
+End Sub
+
+Public Sub RegisterNewHelp(ByVal targetUser As Integer, ByVal attackerIndex As Integer)
+    With UserList(targetUser)
+        Call SetUserRef(.flags.LastHelpUser, attackerIndex)
+        .flags.LastHelpByTime = GlobalFrameTime
+    End With
+End Sub
+
+Public Sub SaveDCUserCache(ByVal UserIndex As Integer)
+ With UserList(UserIndex)
+    Dim InsertIndex As Integer
+    InsertIndex = RecentDCUserCache.LastIndex Mod UBound(RecentDCUserCache.LastDisconnectionInfo)
+    Dim i As Integer
+    For i = 0 To MaxRecentKillToStore
+        RecentDCUserCache.LastDisconnectionInfo(InsertIndex).RecentKillers(i) = .flags.RecentKillers(i)
+    Next i
+    RecentDCUserCache.LastDisconnectionInfo(InsertIndex).RecentKillersIndex = .flags.LastKillerIndex
+    RecentDCUserCache.LastDisconnectionInfo(InsertIndex).UserId = .id
+    RecentDCUserCache.LastIndex = RecentDCUserCache.LastIndex + 1
+    If RecentDCUserCache.LastIndex > UBound(RecentDCUserCache.LastDisconnectionInfo) * 10 Then 'prevent overflow
+        RecentDCUserCache.LastIndex = RecentDCUserCache.LastIndex \ 10
+    End If
+ End With
+End Sub
+
+Public Sub RestoreDCUserCache(ByVal UserIndex As Integer)
+    With UserList(UserIndex)
+        Dim StartIndex As Integer
+        Dim EndIndex As Integer
+        Dim ArraySize As Integer
+        ArraySize = UBound(RecentDCUserCache.LastDisconnectionInfo)
+        StartIndex = max(0, (RecentDCUserCache.LastIndex - ArraySize) Mod ArraySize)
+        EndIndex = ((RecentDCUserCache.LastIndex - 1) Mod ArraySize)
+        Dim i As Integer
+        Dim j As Integer
+        For i = StartIndex To EndIndex
+            If RecentDCUserCache.LastDisconnectionInfo(i Mod ArraySize).UserId = .id Then
+                For j = 0 To MaxRecentKillToStore
+                    .flags.RecentKillers(j) = RecentDCUserCache.LastDisconnectionInfo(i Mod ArraySize).RecentKillers(j)
+                Next j
+                .flags.LastKillerIndex = RecentDCUserCache.LastDisconnectionInfo(i Mod ArraySize).RecentKillersIndex
+                Exit Sub
+            End If
+        Next i
+    End With
+End Sub
 Public Function GetUserMR(ByVal UserIndex As Integer) As Integer
     With UserList(UserIndex)
         Dim MR As Integer

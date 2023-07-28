@@ -63,8 +63,8 @@ Public Sub EnlistarArmadaReal(ByVal UserIndex As Integer)
                 Dim primerRango As t_RangoFaccion
 136                 primerRango = RangosFaccion(1)
 
-138             If .Faccion.CriminalesMatados < primerRango.AsesinatosRequeridos Then
-140                 Call WriteChatOverHead(UserIndex, "Para unirte a nuestras fuerzas debes matar al menos " & primerRango.AsesinatosRequeridos & " criminales, solo has matado " & .Faccion.CriminalesMatados, charIndexStr, vbWhite)
+138             If .Faccion.FactionScore < primerRango.RequiredScore Then
+140                 Call WriteChatOverHead(UserIndex, "Para unirte a nuestras fuerzas debes tener al menos " & primerRango.RequiredScore & " puntos de faccion, solo tienes " & .Faccion.FactionScore, charindexstr, vbWhite)
                     Exit Sub
 
                 End If
@@ -123,11 +123,10 @@ End Sub
 Public Sub RecompensaArmadaReal(ByVal UserIndex As Integer)
             On Error GoTo RecompensaArmadaReal_Err
 
-            Dim Crimis As Long, npcCharIndex As String
+            Dim npcCharIndex As String
             Dim proxRango As t_RangoFaccion
 
 100         With UserList(UserIndex)
-102             Crimis = .Faccion.CriminalesMatados
 104             npcCharIndex = str(NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex)
 
 106             If .Faccion.RecompensasReal >= MaxRangoFaccion Then
@@ -142,8 +141,8 @@ Public Sub RecompensaArmadaReal(ByVal UserIndex As Integer)
 
 114             proxRango = ProximoRango(UserIndex)
 
-116             If Crimis < proxRango.AsesinatosRequeridos Then
-118                 Call WriteChatOverHead(UserIndex, "Mata " & proxRango.AsesinatosRequeridos - Crimis & " Criminales más para recibir la próxima Recompensa", npcCharIndex, vbWhite)
+116             If .Faccion.FactionScore < proxRango.RequiredScore Then
+118                 Call WriteChatOverHead(UserIndex, "Te faltan " & proxRango.RequiredScore - .Faccion.FactionScore & " Puntos de faccion para subir de rango.", npcCharIndex, vbWhite)
                     Exit Sub
 
                 End If
@@ -173,10 +172,9 @@ Public Sub ExpulsarFaccionReal(ByVal UserIndex As Integer)
 
 102         UserList(UserIndex).Faccion.status = e_Facciones.Ciudadano
 104         Call RefreshCharStatus(UserIndex)
-
 106         Call PerderItemsFaccionarios(UserIndex)
 108         Call WriteConsoleMsg(UserIndex, "Has sido expulsado del Ejercito Real.", e_FontTypeNames.FONTTYPE_INFOIAO)
-            
+            UserList(UserIndex).Faccion.FactionScore = 0
 
             Exit Sub
 
@@ -192,10 +190,9 @@ Public Sub ExpulsarFaccionCaos(ByVal UserIndex As Integer)
 
 102         UserList(UserIndex).Faccion.status = e_Facciones.Criminal
 104         Call RefreshCharStatus(UserIndex)
-
 106         Call PerderItemsFaccionarios(UserIndex)
 108         Call WriteConsoleMsg(UserIndex, "Has sido expulsado de la Legión Oscura.", e_FontTypeNames.FONTTYPE_INFOIAO)
-
+            UserList(UserIndex).Faccion.FactionScore = 0
             Exit Sub
 
 ExpulsarFaccionCaos_Err:
@@ -264,8 +261,8 @@ Public Sub EnlistarCaos(ByVal UserIndex As Integer)
                 Dim primerRango As t_RangoFaccion
 132                 primerRango = RangosFaccion(2) ' 2 es el primer rango del caos
 
-134             If .Faccion.ciudadanosMatados < primerRango.AsesinatosRequeridos Then
-136                 Call WriteChatOverHead(UserIndex, "Para unirte a nuestras fuerzas debes matar al menos " & primerRango.AsesinatosRequeridos & " ciudadanos, solo has matado " & .Faccion.ciudadanosMatados, charIndexStr, vbWhite)
+134             If .Faccion.FactionScore < primerRango.RequiredScore Then
+136                 Call WriteChatOverHead(UserIndex, "Para unirte a nuestras fuerzas debes tener al menos " & primerRango.RequiredScore & " puntos de faccion, solo tienes " & .Faccion.FactionScore, charindexstr, vbWhite)
                     Exit Sub
 
                 End If
@@ -339,9 +336,8 @@ Public Sub RecompensaCaos(ByVal UserIndex As Integer)
                 End If
 
 114             proxRango = ProximoRango(UserIndex)
-
-116             If ciudadanosMatados < proxRango.AsesinatosRequeridos Then
-118                 Call WriteChatOverHead(UserIndex, "Mata " & proxRango.AsesinatosRequeridos - ciudadanosMatados & " Ciudadanos más para recibir la próxima Recompensa", npcCharIndex, vbWhite)
+116             If .Faccion.FactionScore < proxRango.RequiredScore Then
+118                 Call WriteChatOverHead(UserIndex, "Te faltan " & proxRango.RequiredScore - .Faccion.FactionScore & " Puntos de faccion para subir de rango.", npcCharIndex, vbWhite)
                     Exit Sub
                 End If
 

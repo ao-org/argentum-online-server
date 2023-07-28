@@ -786,6 +786,8 @@ Public Sub CargarHechizos()
 304         If val(Leer.GetValue("Hechizo" & Hechizo, "RequireWeapon")) > 0 Then Call SetMask(Hechizos(Hechizo).SpellRequirementMask, e_SpellRequirementMask.eWeapon)
             If val(Leer.GetValue("Hechizo" & Hechizo, "RequireTargetOnLand")) > 0 Then Call SetMask(Hechizos(Hechizo).SpellRequirementMask, e_SpellRequirementMask.eRequireTargetOnLand)
             If val(Leer.GetValue("Hechizo" & Hechizo, "RequireTargetOnWater")) > 0 Then Call SetMask(Hechizos(Hechizo).SpellRequirementMask, e_SpellRequirementMask.eRequireTargetOnWater)
+            If val(Leer.GetValue("Hechizo" & Hechizo, "WorkOnDead")) > 0 Then Call SetMask(Hechizos(Hechizo).SpellRequirementMask, e_SpellRequirementMask.eWorkOnDead)
+            If val(Leer.GetValue("Hechizo" & Hechizo, "IsSkill")) > 0 Then Call SetMask(Hechizos(Hechizo).SpellRequirementMask, e_SpellRequirementMask.eIsSkill)
 305         Hechizos(Hechizo).RequireWeaponType = val(Leer.GetValue("Hechizo" & Hechizo, "RequireWeaponType"))
             Dim SubeHP As Byte
             SubeHP = val(Leer.GetValue("Hechizo" & Hechizo, "SubeHP"))
@@ -1082,6 +1084,8 @@ Sub LoadBalance()
         HomeTimer = val(BalanceIni.GetValue("EXTRA", "HomeTimer"))
         MagicSkillBonusDamageModifier = val(BalanceIni.GetValue("EXTRA", "MagicSkillBonusDamageModifier"))
         MRSkillProtectionModifier = val(BalanceIni.GetValue("EXTRA", "MagicResistanceSkillProtectionModifier"))
+        AssistDamageValidTime = val(BalanceIni.GetValue("EXTRA", "AssistDamageValidTime"))
+        AssistHelpValidTime = val(BalanceIni.GetValue("EXTRA", "AssistHelpValidTime"))
         'stun
         PlayerStunTime = val(BalanceIni.GetValue("STUN", "PlayerStunTime"))
         NpcStunTime = val(BalanceIni.GetValue("STUN", "NpcStunTime"))
@@ -2808,19 +2812,11 @@ SaveNewUser_Err:
 End Sub
 
 Function Status(ByVal userIndex As Integer) As e_Facciones
-        
         On Error GoTo Status_Err
-        
-
 100     Status = UserList(userIndex).Faccion.Status
-
-        
         Exit Function
-
 Status_Err:
 102     Call TraceError(Err.Number, Err.Description, "ES.Status", Erl)
-
-        
 End Function
 
 Sub BackUPnPc(npcIndex As Integer)
@@ -3327,13 +3323,13 @@ Public Sub LoadRangosFaccion()
 118                 RangosFaccion(2 * i - 1).rank = i
 120                 RangosFaccion(2 * i - 1).Titulo = rankData(2)
 122                 RangosFaccion(2 * i - 1).NivelRequerido = val(rankData(0))
-124                 RangosFaccion(2 * i - 1).AsesinatosRequeridos = val(rankData(1))
+124                 RangosFaccion(2 * i - 1).RequiredScore = val(rankData(1))
 
 126                 rankData = Split(IniFile.GetValue("LegionCaos", i & "Rango"), "-", , vbTextCompare)
 128                 RangosFaccion(2 * i).rank = i
 130                 RangosFaccion(2 * i).Titulo = rankData(2)
 132                 RangosFaccion(2 * i).NivelRequerido = val(rankData(0))
-134                 RangosFaccion(2 * i).AsesinatosRequeridos = val(rankData(1))
+134                 RangosFaccion(2 * i).RequiredScore = val(rankData(1))
 136             Next i
 
             End If

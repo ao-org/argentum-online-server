@@ -626,7 +626,7 @@ Private Function PuedeLanzar(ByVal UserIndex As Integer, ByVal HechizoIndex As I
                 Exit Function
             End If
 
-114         If MapInfo(.Pos.Map).SinMagia Then
+114         If MapInfo(.pos.Map).SinMagia And Not IsSet(Hechizos(HechizoIndex).SpellRequirementMask, eIsSkill) Then
 116             Call WriteConsoleMsg(UserIndex, "Una fuerza mística te impide lanzar hechizos en esta zona.", e_FontTypeNames.FONTTYPE_FIGHT)
                 Exit Function
             End If
@@ -649,12 +649,14 @@ Private Function PuedeLanzar(ByVal UserIndex As Integer, ByVal HechizoIndex As I
                     UserInteractionResult = UserMod.CanHelpUser(UserIndex, .flags.targetUser.ArrayIndex)
                     If UserInteractionResult <> e_InteractionResult.eInteractionOk Then
                         Call SendHelpInteractionMessage(UserIndex, UserInteractionResult)
+                        Exit Function
                     End If
                 End If
                 If Hechizos(HechizoIndex).TargetEffectType = e_TargetEffectType.eNegative Then
                     UserAttackInteractionResult = UserMod.CanAttackUser(UserIndex, UserList(UserIndex).VersionId, .flags.targetUser.ArrayIndex, .flags.targetUser.VersionId)
                     If UserAttackInteractionResult <> e_AttackInteractionResult.eCanAttack Then
                         Call SendAttackInteractionMessage(UserIndex, UserAttackInteractionResult)
+                        Exit Function
                     End If
                 End If
             ElseIf IsValidNpcRef(.flags.TargetNPC) Then
@@ -662,6 +664,7 @@ Private Function PuedeLanzar(ByVal UserIndex As Integer, ByVal HechizoIndex As I
                     UserAttackInteractionResult = UserCanAttackNpc(UserIndex, .flags.TargetNPC.ArrayIndex)
                     If UserAttackInteractionResult <> e_AttackInteractionResult.eCanAttack Then
                         Call SendAttackInteractionMessage(UserIndex, UserAttackInteractionResult)
+                        Exit Function
                     End If
                 End If
             End If
@@ -736,6 +739,14 @@ Private Function PuedeLanzar(ByVal UserIndex As Integer, ByVal HechizoIndex As I
             ElseIf IsValidNpcRef(.flags.TargetNPC) Then
                 Call CastNpcToAnyRef(.flags.TargetNPC, TargetRef)
             End If
+            
+            If IsValidRef(TargetRef) Then
+                If IsDead(TargetRef) And Not IsSet(Hechizos(HechizoIndex).SpellRequirementMask, e_SpellRequirementMask.eWorkOnDead) Then
+                    Call WriteLocaleMsg(UserIndex, 7, e_FontTypeNames.FONTTYPE_INFO)
+                    Exit Function
+                End If
+            End If
+            
             If IsSet(Hechizos(HechizoIndex).SpellRequirementMask, e_SpellRequirementMask.eRequireTargetOnLand) And _
                IsValidRef(TargetRef) Then
                 If TargetRef.RefType = eUser Then
@@ -1443,17 +1454,10 @@ Sub HandleHechizoUsuario(ByVal UserIndex As Integer, ByVal uh As Integer)
 132         Call WriteUpdateMana(UserIndex)
             Call WriteUpdateHP(UserIndex)
 134         Call WriteUpdateSta(UserIndex)
-136         Call SetUserRef(UserList(UserIndex).flags.targetUser, 0)
-
         End If
-
-        
         Exit Sub
-
 HandleHechizoUsuario_Err:
 138     Call TraceError(Err.Number, Err.Description, "modHechizos.HandleHechizoUsuario", Erl)
-
-        
 End Sub
 
 Public Function ManaHechizoPorClase(ByVal userindex As Integer, Hechizo As t_Hechizo, Optional ByVal HechizoIndex As Long) As Integer
@@ -1547,8 +1551,6 @@ Sub HandleHechizoNPC(ByVal UserIndex As Integer, ByVal uh As Integer)
                 End If
             End If
 110         Call SubirSkill(UserIndex, Magia)
-112         Call ClearNpcRef(UserList(UserIndex).flags.TargetNPC)
-            
             UserList(userindex).Stats.MinMAN = UserList(userindex).Stats.MinMAN - ManaHechizoPorClase(userindex, Hechizos(uh), uh)
         
 116         If Hechizos(uh).RequiredHP > 0 Then
@@ -1653,16 +1655,20 @@ Sub LanzarHechizo(ByVal Index As Integer, ByVal UserIndex As Integer)
                     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageDoAnimation(UserList(UserIndex).Char.charindex, UserList(UserIndex).Char.Ataque1))
                 End If
             End If
-            If Hechizos(uh).TargetEffectType = e_TargetEffectType.eNegative And IsFeatureEnabled("remove-inv-on-attack") Then
-                If UserList(UserIndex).flags.targetUser.ArrayIndex <> UserIndex Then
+            If Hechizos(uh).TargetEffectType = e_TargetEffectType.eNegative Then
+                If IsFeatureEnabled("remove-inv-on-attack") Then
                     Call RemoveUserInvisibility(UserIndex)
                 End If
+                If IsValidUserRef(UserList(UserIndex).flags.targetUser) Then Call RegisterNewAttack(UserList(UserIndex).flags.targetUser.ArrayIndex, UserIndex)
+            ElseIf Hechizos(uh).TargetEffectType = ePositive Then
+                If IsValidUserRef(UserList(UserIndex).flags.targetUser) Then Call RegisterNewHelp(UserList(UserIndex).flags.targetUser.ArrayIndex, UserIndex)
             End If
+            Call ClearUserRef(UserList(UserIndex).flags.targetUser)
+            Call ClearNpcRef(UserList(UserIndex).flags.TargetNPC)
         End If
 172     If UserList(UserIndex).Counters.Trabajando Then
 174         Call WriteMacroTrabajoToggle(UserIndex, False)
         End If
-
 176     If UserList(UserIndex).Counters.Ocultando Then UserList(UserIndex).Counters.Ocultando = UserList(UserIndex).Counters.Ocultando - 1
         Exit Sub
 LanzarHechizo_Err:

@@ -235,6 +235,7 @@ Private Sub ApplyEffectTo(ByVal TargetId As Integer, ByVal TargetType As e_Refer
             ElseIf EffectOverTime(DotInfo.EotId).Override Then
                 Call Effect.Reset(DotInfo.TargetRef.ArrayIndex, DotInfo.TargetRef.RefType, ApplyEffectId)
             End If
+            Call RegisterNewHelp(TargetId, DotInfo.TargetRef.ArrayIndex)
         End If
     Else
         Set Effect = FindEffectOnTarget(DotInfo.TargetRef.ArrayIndex, NpcList(TargetId).EffectOverTime, ApplyEffectId)

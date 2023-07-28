@@ -209,6 +209,9 @@ Public Function trigger(ByVal TargetIndex, ByVal TargetType As e_ReferenceType)
                         If UserList(TargetIndex).ChatCombate = 1 Then
                             Call WriteLocaleMsg(TargetIndex, MsgTrapInmo, e_FontTypeNames.FONTTYPE_FIGHT, GetName(mDotInfo.TargetRef))
                         End If
+                        If TargetType = eUser Then
+                           Call RegisterNewAttack(TargetIndex, mDotInfo.TargetRef.ArrayIndex)
+                        End If
                     End If
                     Exit Function
                 End If
@@ -225,6 +228,9 @@ Public Function trigger(ByVal TargetIndex, ByVal TargetType As e_ReferenceType)
                     Call UserMod.DoDamageOrHeal(TargetIndex, mDotInfo.TargetRef.ArrayIndex, eUser, RandomNumber(EffectOverTime(mDotInfo.EotId).TickPowerMin, EffectOverTime(mDotInfo.EotId).TickPowerMax), e_DamageSourceType.e_trap, mDotInfo.EotId, MsgYourTrapDidDamangeTo, MsgTrapDidDamageToYou)
                     If EffectOverTime(mDotInfo.EotId).OnHitFx > 0 Then Call SendData(SendTarget.ToPCAliveArea, TargetIndex, PrepareMessageCreateFX(UserList(TargetIndex).Char.charindex, EffectOverTime(mDotInfo.EotId).OnHitFx, 0, mWorldPosition.x, mWorldPosition.y))
                     trigger = True
+                    If TargetType = eUser Then
+                        Call RegisterNewAttack(TargetIndex, mDotInfo.TargetRef.ArrayIndex)
+                    End If
                     Exit Function
                 End If
                 If TargetType = eNpc Then
@@ -242,6 +248,9 @@ Public Function trigger(ByVal TargetIndex, ByVal TargetType As e_ReferenceType)
                 If EffectOverTime(mDotInfo.EotId).OnHitFx > 0 Then Call SendData(SendTarget.ToPCAliveArea, TargetIndex, PrepareMessageCreateFX(UserList(TargetIndex).Char.charindex, EffectOverTime(mDotInfo.EotId).OnHitFx, 0, mWorldPosition.x, mWorldPosition.y))
                 If UserList(TargetIndex).ChatCombate = 1 Then
                     Call WriteLocaleMsg(TargetIndex, MsgTrapPoison, e_FontTypeNames.FONTTYPE_FIGHT, GetName(mDotInfo.TargetRef))
+                End If
+                If TargetType = eUser Then
+                    Call RegisterNewAttack(TargetIndex, mDotInfo.TargetRef.ArrayIndex)
                 End If
             End If
             trigger = True
