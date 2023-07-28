@@ -3625,42 +3625,52 @@ Public Sub RegisterNewHelp(ByVal targetUser As Integer, ByVal attackerIndex As I
 End Sub
 
 Public Sub SaveDCUserCache(ByVal UserIndex As Integer)
- With UserList(UserIndex)
-    Dim InsertIndex As Integer
-    InsertIndex = RecentDCUserCache.LastIndex Mod UBound(RecentDCUserCache.LastDisconnectionInfo)
-    Dim i As Integer
-    For i = 0 To MaxRecentKillToStore
-        RecentDCUserCache.LastDisconnectionInfo(InsertIndex).RecentKillers(i) = .flags.RecentKillers(i)
-    Next i
-    RecentDCUserCache.LastDisconnectionInfo(InsertIndex).RecentKillersIndex = .flags.LastKillerIndex
-    RecentDCUserCache.LastDisconnectionInfo(InsertIndex).UserId = .id
-    RecentDCUserCache.LastIndex = RecentDCUserCache.LastIndex + 1
-    If RecentDCUserCache.LastIndex > UBound(RecentDCUserCache.LastDisconnectionInfo) * 10 Then 'prevent overflow
-        RecentDCUserCache.LastIndex = RecentDCUserCache.LastIndex \ 10
-    End If
- End With
+    On Error GoTo SaveDCUserCache_Err
+100  With UserList(UserIndex)
+        Dim InsertIndex As Integer
+102     InsertIndex = RecentDCUserCache.LastIndex Mod UBound(RecentDCUserCache.LastDisconnectionInfo)
+        Dim i As Integer
+104     For i = 0 To MaxRecentKillToStore
+106         RecentDCUserCache.LastDisconnectionInfo(InsertIndex).RecentKillers(i) = .flags.RecentKillers(i)
+108     Next i
+110     RecentDCUserCache.LastDisconnectionInfo(InsertIndex).RecentKillersIndex = .flags.LastKillerIndex
+112     RecentDCUserCache.LastDisconnectionInfo(InsertIndex).UserId = .id
+114     RecentDCUserCache.LastIndex = RecentDCUserCache.LastIndex + 1
+116     If RecentDCUserCache.LastIndex > UBound(RecentDCUserCache.LastDisconnectionInfo) * 10 Then 'prevent overflow
+118         RecentDCUserCache.LastIndex = RecentDCUserCache.LastIndex \ 10
+        End If
+     End With
+        Exit Sub
+SaveDCUserCache_Err:
+        Call TraceError(Err.Number, Err.Description, "UsUaRiOs.SaveDCUserCache_Err", Erl)
+        Resume Next
 End Sub
 
 Public Sub RestoreDCUserCache(ByVal UserIndex As Integer)
-    With UserList(UserIndex)
-        Dim StartIndex As Integer
-        Dim EndIndex As Integer
-        Dim ArraySize As Integer
-        ArraySize = UBound(RecentDCUserCache.LastDisconnectionInfo)
-        StartIndex = max(0, (RecentDCUserCache.LastIndex - ArraySize) Mod ArraySize)
-        EndIndex = ((RecentDCUserCache.LastIndex - 1) Mod ArraySize)
-        Dim i As Integer
-        Dim j As Integer
-        For i = StartIndex To EndIndex
-            If RecentDCUserCache.LastDisconnectionInfo(i Mod ArraySize).UserId = .id Then
-                For j = 0 To MaxRecentKillToStore
-                    .flags.RecentKillers(j) = RecentDCUserCache.LastDisconnectionInfo(i Mod ArraySize).RecentKillers(j)
-                Next j
-                .flags.LastKillerIndex = RecentDCUserCache.LastDisconnectionInfo(i Mod ArraySize).RecentKillersIndex
-                Exit Sub
-            End If
-        Next i
-    End With
+    On Error GoTo RestoreDCUserCache_Err
+100     With UserList(UserIndex)
+            Dim StartIndex As Integer
+            Dim EndIndex As Integer
+            Dim ArraySize As Integer
+102         ArraySize = UBound(RecentDCUserCache.LastDisconnectionInfo)
+104         StartIndex = max(0, (RecentDCUserCache.LastIndex - ArraySize) Mod ArraySize)
+106         EndIndex = ((RecentDCUserCache.LastIndex - 1) Mod ArraySize)
+            Dim i As Integer
+            Dim j As Integer
+108         For i = StartIndex To EndIndex
+110             If RecentDCUserCache.LastDisconnectionInfo(i Mod ArraySize).UserId = .id Then
+112                 For j = 0 To MaxRecentKillToStore
+114                     .flags.RecentKillers(j) = RecentDCUserCache.LastDisconnectionInfo(i Mod ArraySize).RecentKillers(j)
+116                 Next j
+118                 .flags.LastKillerIndex = RecentDCUserCache.LastDisconnectionInfo(i Mod ArraySize).RecentKillersIndex
+                    Exit Sub
+                End If
+120         Next i
+        End With
+        Exit Sub
+RestoreDCUserCache_Err:
+        Call TraceError(Err.Number, Err.Description, "UsUaRiOs.RestoreDCUserCache", Erl)
+        Resume Next
 End Sub
 Public Function GetUserMR(ByVal UserIndex As Integer) As Integer
     With UserList(UserIndex)
