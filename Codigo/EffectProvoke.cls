@@ -199,6 +199,7 @@ Private Sub ApplyEffectToArea(ByVal Area As Integer)
                 If UserMod.CanAttackUser(Source.ArrayIndex, Source.VersionId, MapData(Map, j, i).UserIndex, UserList(MapData(Map, j, i).UserIndex).VersionId) = eCanAttack Then
                     Set Effect = FindEffectOnTarget(0, UserList(MapData(map, j, i).UserIndex).EffectOverTime, TaunteffectId)
                     If Effect Is Nothing Then Call CreateEffect(Source.ArrayIndex, Source.RefType, MapData(map, j, i).UserIndex, eUser, TaunteffectId)
+                    Call RegisterNewAttack(MapData(Map, j, i).UserIndex, Source.ArrayIndex)
                 End If
             ElseIf MapData(map, j, i).npcIndex > 0 Then
                 If UserCanAttackNpc(Source.ArrayIndex, MapData(map, j, i).npcIndex) = eCanAttack Then

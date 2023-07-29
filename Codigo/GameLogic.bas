@@ -2285,6 +2285,8 @@ Public Sub SendAttackInteractionMessage(ByVal UserIndex As Integer, ByVal CanAtt
                 Call WriteLocaleMsg(UserIndex, MsgRemoveSafeToAttack, e_FontTypeNames.FONTTYPE_INFOIAO)
             Case e_AttackInteractionResult.eSafeArea
                 Call WriteConsoleMsg(UserIndex, "Esta es una zona segura, aqui no podes atacar otros usuarios.", e_FontTypeNames.FONTTYPE_WARNING)
+            Case e_AttackInteractionResult.eCantAttackYourself
+                Call WriteLocaleMsg(UserIndex, MsgCantAttackYourself, e_FontTypeNames.FONTTYPE_WARNING)
             Case Else
                 Call WriteLocaleMsg(UserIndex, MsgInvalidTarget, e_FontTypeNames.FONTTYPE_INFOIAO)
         End Select

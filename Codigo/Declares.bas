@@ -118,6 +118,7 @@ Public Enum e_AttackInteractionResult
     eInmuneNpc
     eOutOfRange
     eOwnPet
+    eCantAttackYourself
 End Enum
 
 Public Enum e_DeleteSource
@@ -973,6 +974,8 @@ Public Enum e_SpellRequirementMask
     eKnucle = 256
     eRequireTargetOnLand = 512
     eRequireTargetOnWater = 1024
+    eWorkOnDead = 2048
+    eIsSkill = 4096
 End Enum
 
 Public Enum e_SpellEffects
@@ -1738,8 +1741,21 @@ Public Enum e_TipoUsuario
     tLeyenda
 End Enum
 
-'[/KEVIN]
+Public Const MaxRecentKillToStore = 5
 
+Public Type t_RecentKillRecord
+    UserId As Long
+    RecentKillers(MaxRecentKillToStore) As Long
+    RecentKillersIndex As Long
+End Type
+
+'keep record from alst 50 dc users in memory to prevent relog abuse that dont belong to the db
+Public Type t_RecentKillCache
+    LastDisconnectionInfo(50) As t_RecentKillRecord 'Use a circular buffer for this
+    LastIndex As Integer 'circular buffer index
+End Type
+
+Public RecentDCUserCache As t_RecentKillCache
 '*********************************************************
 '*********************************************************
 '*********************************************************
@@ -1826,6 +1842,7 @@ Public Enum e_InventorySlotMask
     eTool = 64
 End Enum
 
+
 'Flags
 Public Type t_UserFlags
     Nadando As Byte
@@ -1866,6 +1883,12 @@ Public Type t_UserFlags
     RegeneracionHP As Byte
     DisabledSlot As Long
     
+    'to track assist
+    LastAttackedByUserTime As Long
+    LastAttacker As t_UserReference
+    
+    LastHelpByTime As Long
+    LastHelpUser As t_UserReference
     'Hechizo de Transportacion
     
     Portal As Integer
@@ -1956,8 +1979,8 @@ Public Type t_UserFlags
     
     ValCoDe As Integer
     
-    LastCrimMatado As String
-    LastCiudMatado As String
+    RecentKillers(MaxRecentKillToStore) As Long 'Circular buffer to store recent killers to this user
+    LastKillerIndex As Integer 'Last killer index of the circular buffer
     
     OldBody As Integer
     OldHead As Integer
@@ -2155,7 +2178,7 @@ Public Type t_Facciones
     Reenlistadas As Byte
     NivelIngreso As Integer
     MatadosIngreso As Integer 'Para Armadas nada mas
-
+    FactionScore As Long
 End Type
 
 Public Type t_RangoFaccion
@@ -2163,8 +2186,7 @@ Public Type t_RangoFaccion
     rank As Byte
     Titulo As String
     NivelRequerido As Byte
-    AsesinatosRequeridos As Integer
-
+    RequiredScore As Long
 End Type
 
 Public Type t_RecompensaFaccion

@@ -164,3 +164,11 @@ Public Sub UnsetStatusMask(ByRef TargetRef As t_AnyReference, ByVal Mask As Long
         Call UnsetMask(NpcList(TargetRef.ArrayIndex).flags.StatusMask, Mask)
     End If
 End Sub
+
+Public Function IsDead(ByRef TargetRef As t_AnyReference)
+    If TargetRef.RefType = eUser Then
+        IsDead = UserList(TargetRef.ArrayIndex).flags.Muerto = 1
+    Else
+        IsDead = NpcList(TargetRef.ArrayIndex).Stats.MinHp = 0
+    End If
+End Function
