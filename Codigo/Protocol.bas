@@ -2342,7 +2342,6 @@ Private Sub HandleAttack(ByVal UserIndex As Integer)
         
             'Attack!
 126         Call UsuarioAtaca(UserIndex)
-            Call RemoveUserInvisibility(UserIndex)
         End With
 
         Exit Sub
