@@ -947,6 +947,7 @@ Public Sub UserAttackPosition(ByVal UserIndex As Integer, ByRef TargetPos As t_W
 132     Index = MapData(TargetPos.map, TargetPos.X, TargetPos.Y).UserIndex
         'Look for user
 134     If Index > 0 Then
+            Call RemoveUserInvisibility(UserIndex)
 136         Call UsuarioAtacaUsuario(UserIndex, Index, Melee)
             'Look for NPC
 138     ElseIf MapData(TargetPos.map, TargetPos.X, TargetPos.Y).npcIndex > 0 Then
