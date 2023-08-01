@@ -21,7 +21,7 @@ Borrar errores.log (los que hayan en carpeta logs) ☑️
 
 ### Hay que correr la siguiente query, esto no borra las cuentas de SQLITE.
 - Database.db
-```Utilizar Empty_Database.db y migrarla con comando `argentums20-assets\tools\MigratePatreonAccounts.exe Database.db Empty_Database.db` ```
+Utilizar Empty_Database.db y migrarla con comando `argentums20-assets\tools\MigratePatreonAccounts.exe Database.db Empty_Database.db`
 
 - ao20_gameserver_clone (MySql)
 ```
