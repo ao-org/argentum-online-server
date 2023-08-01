@@ -1700,7 +1700,7 @@ Public Type t_ModClase
     HitPre36 As Integer
     HitPost36 As Integer
     ResistenciaMagica As Double
-    WeaponHitBonus(1 To e_WeaponType.eWeaponTypeCount) As Integer
+    WeaponHitBonus(0 To e_WeaponType.eWeaponTypeCount) As Integer
 End Type
 
 Public Type t_ModRaza

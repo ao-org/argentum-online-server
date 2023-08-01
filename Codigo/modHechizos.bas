@@ -66,6 +66,7 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
         End If
 112     Call InfoHechizoDeNpcSobreUser(NpcIndex, UserIndex, Spell)
 114     If IsSet(Hechizos(Spell).Effects, e_SpellEffects.eDoHeal) Then
+          Damage = RandomNumber(Hechizos(Spell).MinHp, Hechizos(Spell).MaxHp)
           Damage = Damage * NPCs.GetMagicHealingBonus(NpcList(NpcIndex))
           Damage = Damage * UserMod.GetSelfHealingBonus(UserList(UserIndex))
           If Damage > 0 Then
