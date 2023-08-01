@@ -1,6 +1,29 @@
-### Para resetear el servidor hay que correr la siguiente query, esto no borra las cuentas.
+## Reset de server:
 
-- Database.db (Sqlite) & ao20_gameserver_clone (MySql)
+Cambio archivo Configuracion.ini en repositorio de argentum20-server con exp y oro x1 ☑️ 
+
+Borrar Clanes y dejar guilds.inf default☑️ 
+
+Borrar Clanes FTP ☑️ 
+
+Borrar viejos backup FTP ☑️ 
+
+ToggleFeatures ☑️ 
+
+RecordUsers.log puesto en 0 ☑️ 
+
+NumUsers.log puesto en 0 ☑️ 
+
+Borrar contenido de GenteBanned.log y BanDetailed.dat  ☑️ 
+
+Borrar errores.log (los que hayan en carpeta logs) ☑️ 
+
+
+### Hay que correr la siguiente query, esto no borra las cuentas de SQLITE.
+- Database.db
+```Utilizar Empty_Database.db y migrarla con comando `argentums20-assets\tools\MigratePatreonAccounts.exe Database.db Empty_Database.db` ```
+
+- ao20_gameserver_clone (MySql)
 ```
 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 DROP TABLE `attribute`;
