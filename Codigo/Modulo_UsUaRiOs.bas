@@ -3515,6 +3515,7 @@ End Function
 
 Public Function GetWeaponHitBonus(ByVal WeaponIndex As Integer, ByVal UserClass As e_Class)
     On Error GoTo GetWeaponHitBonus_Err
+        If WeaponIndex = 0 Then Exit Function
 100     If Not IsFeatureEnabled("class_weapon_bonus") Or ObjData(WeaponIndex).WeaponType = 0 Then Exit Function
 102     GetWeaponHitBonus = ModClase(UserClass).WeaponHitBonus(ObjData(WeaponIndex).WeaponType)
         Exit Function
