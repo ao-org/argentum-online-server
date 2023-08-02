@@ -899,10 +899,6 @@ Sub HechizoInvocacion(ByVal UserIndex As Integer, ByRef b As Boolean)
                 ' Si tiene mascotas
 166             If .NroMascotas > 0 Then
                     ' Tiene que estar en zona insegura
-168                 If MapInfo(.Pos.Map).Seguro = 1 Then
-                        Call WriteConsoleMsg(UserIndex, "No puedes invocar tus mascotas en un mapa seguro.", e_FontTypeNames.FONTTYPE_INFO)
-                        Exit Sub
-                    End If
                     
                     ' No puede invocar en este mapa
                     If MapInfo(.Pos.Map).NoMascotas Then
