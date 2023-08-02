@@ -3514,8 +3514,12 @@ Public Function GetMagicHealingBonus(ByRef user As t_User) As Single
 End Function
 
 Public Function GetWeaponHitBonus(ByVal WeaponIndex As Integer, ByVal UserClass As e_Class)
-    If Not IsFeatureEnabled("class_weapon_bonus") Or ObjData(WeaponIndex).WeaponType = 0 Then Exit Function
-    GetWeaponHitBonus = ModClase(UserClass).WeaponHitBonus(ObjData(WeaponIndex).WeaponType)
+    On Error GoTo GetWeaponHitBonus_Err
+100     If Not IsFeatureEnabled("class_weapon_bonus") Or ObjData(WeaponIndex).WeaponType = 0 Then Exit Function
+102     GetWeaponHitBonus = ModClase(UserClass).WeaponHitBonus(ObjData(WeaponIndex).WeaponType)
+        Exit Function
+GetWeaponHitBonus_Err:
+134     Call TraceError(Err.Number, Err.Description, "UserMod.GetWeaponHitBonus WeaponIndex: " & WeaponIndex & " for class: " & UserClass, Erl)
 End Function
 
 Public Sub RemoveUserInvisibility(ByVal UserIndex As Integer)
