@@ -273,11 +273,11 @@ On Error GoTo AttackPower_Err
         With UserList(UserIndex)
 100         TempAttackPower = ((.Stats.UserSkills(skill) + ((3 * .Stats.UserSkills(skill) / 100) * .Stats.UserAtributos(e_Atributos.Agilidad))) * skillModifier)
 114         AttackPower = (TempAttackPower + (2.5 * Maximo(CInt(.Stats.ELV) - 12, 0)))
-            AttackPower = AttackPower + UserMod.GetHitBonus(UserList(UserIndex))
+116         AttackPower = AttackPower + UserMod.GetHitBonus(UserList(UserIndex))
         End With
         Exit Function
 AttackPower_Err:
-116     Call TraceError(Err.Number, Err.Description, "SistemaCombate.AttackPower", Erl)
+    Call TraceError(Err.Number, Err.Description, "SistemaCombate.AttackPower", Erl)
 End Function
 
 Private Function PoderAtaqueArma(ByVal UserIndex As Integer) As Long
