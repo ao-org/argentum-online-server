@@ -2088,6 +2088,7 @@ Public Type t_UserCounters
     Invisibilidad As Integer
     DisabledInvisibility As Integer
     TiempoOculto As Integer
+    LastAttackTime As Long
     
     PiqueteC As Long
     Pena As Long
@@ -2739,6 +2740,7 @@ Type t_MapInfo
     DropItems As Boolean
     SafeFightMap As Boolean
     FriendlyFire As Boolean
+    KeepInviOnAttack As Boolean
     TransportNetwork() As t_TransportNetworkExit
 End Type
 

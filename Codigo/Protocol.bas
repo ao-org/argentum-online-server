@@ -3646,9 +3646,6 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                         'Is it attackable???
 232                     If NpcList(tN).Attackable <> 0 Then
 234                         If PuedeAtacarNPC(UserIndex, tN) Then
-                                If IsFeatureEnabled("remove-inv-on-attack") Then
-                                    Call RemoveUserInvisibility(UserIndex)
-                                End If
 236                             Call UsuarioAtacaNpc(UserIndex, tN, Ranged)
 238                             consumirMunicion = True
                                 If ProjectileType > 0 And .flags.Oculto = 0 Then

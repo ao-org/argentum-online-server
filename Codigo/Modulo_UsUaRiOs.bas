@@ -3526,7 +3526,7 @@ End Function
 Public Sub RemoveUserInvisibility(ByVal UserIndex As Integer)
     With UserList(UserIndex)
         Dim RemoveHiddenState As Boolean
-        If IsFeatureEnabled("remove-inv-on-attack") Then
+        If IsFeatureEnabled("remove-inv-on-attack") And Not MapInfo(.pos.Map).KeepInviOnAttack Then
             RemoveHiddenState = .flags.Oculto > 0 Or .flags.invisible > 0
         Else
             RemoveHiddenState = .flags.Oculto > 0
@@ -3535,8 +3535,9 @@ Public Sub RemoveUserInvisibility(ByVal UserIndex As Integer)
          If RemoveHiddenState And .flags.AdminInvisible = 0 Then
              .flags.Oculto = 0
              .flags.invisible = 0
-             .Counters.DisabledInvisibility = 2
+             .Counters.Invisibilidad = 0
              .Counters.TiempoOculto = 0
+             .Counters.LastAttackTime = GlobalFrameTime
              If .flags.Navegando = 1 Then
                  If .clase = e_Class.Pirat Then
                         ' Pierde la apariencia de fragata fantasmal
@@ -3545,11 +3546,11 @@ Public Sub RemoveUserInvisibility(ByVal UserIndex As Integer)
                      Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, NingunArma, NingunEscudo, NingunCasco, NoCart)
                      Call RefreshCharStatus(UserIndex)
                     End If
-    
                 Else
-                 If .flags.invisible = 0 Then
-                     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageSetInvisible(.Char.charindex, False, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
-                End If
+                    If .flags.invisible = 0 Then
+                        Call WriteLocaleMsg(UserIndex, "307", e_FontTypeNames.FONTTYPE_INFO)
+                        Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageSetInvisible(.Char.charindex, False, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
+                    End If
             End If
         End If
     End With
