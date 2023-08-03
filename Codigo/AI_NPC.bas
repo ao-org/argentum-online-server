@@ -532,10 +532,11 @@ Private Sub AI_AtacarUsuarioObjetivo(ByVal AtackerNpcIndex As Integer)
                             IntervaloPermiteLanzarHechizo(AtackerNpcIndex) And _
                             (RandomNumber(1, 100) <= 50)
              
-108         AtacaMelee = EstaPegadoAlUsuario And UsuarioAtacableConMelee(AtackerNpcIndex, .TargetUser.ArrayIndex) And NPCs.CanAttack(.Contadores, .flags)
+108         AtacaMelee = EstaPegadoAlUsuario And UsuarioAtacableConMelee(AtackerNpcIndex, .targetUser.ArrayIndex)
             AtacaMelee = AtacaMelee And (.flags.LanzaSpells > 0 And _
                         ((UserList(.targetUser.ArrayIndex).flags.invisible > 0 Or UserList(.targetUser.ArrayIndex).flags.Oculto > 0)) Or IsFeatureEnabled("Magic_and_Punch"))
             AtacaMelee = AtacaMelee Or .flags.LanzaSpells = 0
+            AtacaMelee = AtacaMelee And NPCs.CanAttack(.Contadores, .flags)
             
             
             ' Se da vuelta y enfrenta al Usuario
@@ -546,11 +547,6 @@ Private Sub AI_AtacarUsuarioObjetivo(ByVal AtackerNpcIndex As Integer)
                 If NpcLanzaSpellInmovilizado(AtackerNpcIndex, .TargetUser.ArrayIndex) Then
                     Call ChangeNPCChar(AtackerNpcIndex, .Char.Body, .Char.Head, tHeading)
 112                 Call NpcLanzaUnSpell(AtackerNpcIndex)
-
-                    If IsFeatureEnabled("Magic_and_Punch") And EstaPegadoAlUsuario And CanPerformAttackAction(AtackerNpcIndex, 1000) Then
-                        Call NpcAtacaUser(AtackerNpcIndex, MapData(ComputeNextHeadingPos(AtackerNpcIndex).Map, ComputeNextHeadingPos(AtackerNpcIndex).x, ComputeNextHeadingPos(AtackerNpcIndex).y).UserIndex, tHeading)
-                    End If
-
                 End If
 114         ElseIf AtacaMelee Then
                 Dim ChangeHeading As Boolean

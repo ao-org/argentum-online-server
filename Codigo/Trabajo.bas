@@ -431,7 +431,9 @@ Public Sub DoOcultarse(ByVal UserIndex As Integer)
 104             Call WriteLocaleMsg(UserIndex, "56", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
-    
+            If GlobalFrameTime - .Counters.LastAttackTime < HideAfterHitTime Then
+                Exit Sub
+            End If
           
     
 106         Skill = .Stats.UserSkills(e_Skill.Ocultarse)

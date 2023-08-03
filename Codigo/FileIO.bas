@@ -1086,6 +1086,7 @@ Sub LoadBalance()
         MRSkillProtectionModifier = val(BalanceIni.GetValue("EXTRA", "MagicResistanceSkillProtectionModifier"))
         AssistDamageValidTime = val(BalanceIni.GetValue("EXTRA", "AssistDamageValidTime"))
         AssistHelpValidTime = val(BalanceIni.GetValue("EXTRA", "AssistHelpValidTime"))
+        HideAfterHitTime = val(BalanceIni.GetValue("EXTRA", "HideAfterHitTime"))
         'stun
         PlayerStunTime = val(BalanceIni.GetValue("STUN", "PlayerStunTime"))
         NpcStunTime = val(BalanceIni.GetValue("STUN", "NpcStunTime"))
@@ -2121,6 +2122,7 @@ Public Sub CargarMapaFormatoCSM(ByVal map As Long, ByVal MAPFl As String)
 382     MapInfo(map).zone = MapDat.zone
 383     MapInfo(map).DropItems = True
         MapInfo(map).FriendlyFire = True
+        MapInfo(Map).KeepInviOnAttack = val(GetVar(DatPath & "Map.dat", "KeepInviOnAttack", Map)) <> 0
 
 384     If LenB(MapDat.Salida) <> 0 Then
             Dim Fields() As String

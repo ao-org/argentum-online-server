@@ -1653,10 +1653,12 @@ Sub LanzarHechizo(ByVal Index As Integer, ByVal UserIndex As Integer)
                 End If
             End If
             If Hechizos(uh).TargetEffectType = e_TargetEffectType.eNegative Then
-                If IsFeatureEnabled("remove-inv-on-attack") Then
-                    Call RemoveUserInvisibility(UserIndex)
+                If IsValidUserRef(UserList(UserIndex).flags.targetUser) Then
+                    Call RegisterNewAttack(UserList(UserIndex).flags.targetUser.ArrayIndex, UserIndex)
+                    If IsFeatureEnabled("remove-inv-on-attack") Then
+                        Call RemoveUserInvisibility(UserIndex)
+                    End If
                 End If
-                If IsValidUserRef(UserList(UserIndex).flags.targetUser) Then Call RegisterNewAttack(UserList(UserIndex).flags.targetUser.ArrayIndex, UserIndex)
             ElseIf Hechizos(uh).TargetEffectType = ePositive Then
                 If IsValidUserRef(UserList(UserIndex).flags.targetUser) Then Call RegisterNewHelp(UserList(UserIndex).flags.targetUser.ArrayIndex, UserIndex)
             End If

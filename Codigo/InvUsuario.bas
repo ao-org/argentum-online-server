@@ -3561,6 +3561,7 @@ Public Sub UseArpon(ByVal UserIndex As Integer)
         If DoDamageToTarget(UserIndex, TargetRef, Damage, e_phisical, ObjIndex) = eStillAlive Then
             If TargetRef.RefType = eUser Then
                 UserList(TargetRef.ArrayIndex).Counters.timeFx = 2
+                Call RemoveUserInvisibility(UserIndex)
                 Call SendData(SendTarget.ToPCAliveArea, TargetRef.ArrayIndex, PrepareMessageCreateFX(UserList(TargetRef.ArrayIndex).Char.charindex, FXSANGRE, 0, UserList(TargetRef.ArrayIndex).pos.x, UserList(TargetRef.ArrayIndex).pos.y))
                 Call SendData(SendTarget.ToPCAliveArea, TargetRef.ArrayIndex, PrepareMessagePlayWave(SND_IMPACTO, UserList(TargetRef.ArrayIndex).pos.x, UserList(TargetRef.ArrayIndex).pos.y))
             Else
@@ -3577,7 +3578,6 @@ Public Sub UseArpon(ByVal UserIndex As Integer)
             TargetPos = GetPosition(TargetRef)
             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareCreateProjectile(.pos.x, .pos.y, TargetPos.x, TargetPos.y, ObjData(ObjIndex).ProjectileType))
         End If
-        Call RemoveUserInvisibility(UserIndex)
     End With
 End Sub
 
