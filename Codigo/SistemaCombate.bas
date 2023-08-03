@@ -2577,6 +2577,7 @@ On Error GoTo ThrowArrowToTile_Err
 118            ThrowArrowToTile = True
 120        End If
 122    End If
+    Exit Function
 ThrowArrowToTile_Err:
     Call TraceError(Err.Number, Err.Description, "SistemaCombate.ThrowArrowToTile", Erl)
 End Function

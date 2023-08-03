@@ -3587,7 +3587,8 @@ Public Function GetHitModifier(ByVal UserIndex As Integer) As Long
         If .Stats.ELV <= 36 Then
             GetHitModifier = (.Stats.ELV - 1) * ModClase(.clase).HitPre36
         Else
-            GetHitModifier = (.Stats.ELV - 1) * ModClase(.clase).HitPost36
+            GetHitModifier = 35 * ModClase(.clase).HitPre36
+            GetHitModifier = GetHitModifier + (.Stats.ELV - 36) * ModClase(.clase).HitPost36
         End If
     End With
 End Function
