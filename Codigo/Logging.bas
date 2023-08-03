@@ -237,11 +237,5 @@ End Sub
 
 Public Sub TraceError(ByVal Numero As Long, ByVal Descripcion As String, ByVal Componente As String, Optional ByVal Linea As Integer)
     'Start append text to file
-    Dim filenum As Integer
-    filenum = FreeFile
-    Open App.Path & "\Logs\errores.log" For Append As filenum
-    Print #FileNum, "Error number: " & Numero & " | Description: " & Descripcion & vbNewLine & "Component: " & Componente & " | Line number: " & Linea
-    Close filenum
-    Call AddLogToCircularBuffer("Error number: " & Numero & " | Description: " & Descripcion & "|||" & "Component: " & Componente & " | Line number: " & Linea)
-
+    Call LogThis(Numero, "Error number: " & Numero & " | Description: " & Descripcion & vbNewLine & "Component: " & Componente & " | Line number: " & Linea, vbLogEventTypeError)
 End Sub
