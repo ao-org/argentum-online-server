@@ -1309,7 +1309,7 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
             .AttackRange = val(Leer.GetValue("NPC" & NpcNumber, "AttackRange"))
             .ProjectileType = val(Leer.GetValue("NPC" & NpcNumber, "ProjectileType"))
             .PreferedRange = val(Leer.GetValue("NPC" & NpcNumber, "PreferedRange"))
-    
+            
 172         .GiveEXP = val(Leer.GetValue("NPC" & NpcNumber, "GiveEXP"))
     
 174         .Distancia = val(Leer.GetValue("NPC" & NpcNumber, "Distancia"))
@@ -1448,6 +1448,7 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
             Else
 308             .flags.Respawn = 1
             End If
+            If val(Leer.GetValue("NPC" & NpcNumber, "DontHitVisiblePlayers")) > 0 Then Call SetMask(.flags.BehaviorFlags, e_BehaviorFlags.eDontHitVisiblePlayers)
             If val(Leer.GetValue("NPC" & NpcNumber, "AddToMapAiList")) > 0 Then Call SetMask(.flags.BehaviorFlags, e_BehaviorFlags.eConsideredByMapAi)
             If val(Leer.GetValue("NPC" & NpcNumber, "DisplayCastMessage")) > 0 Then Call SetMask(.flags.BehaviorFlags, e_BehaviorFlags.eDisplayCastMessage)
             .flags.Team = val(Leer.GetValue("NPC" & NpcNumber, "Team"))

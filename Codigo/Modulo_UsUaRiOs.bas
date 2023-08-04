@@ -3221,8 +3221,8 @@ Public Function CanAttackUser(ByVal AttackerIndex As Integer, ByVal AttackerVers
          CanAttackUser = eCanAttack
          Exit Function
 150 ElseIf T = e_Trigger6.TRIGGER6_PROHIBE Then
-152      CanAttackUser = eCanAttack
-         Exit Function
+152      'CanAttackUser = eCanAttack
+         'Exit Function
     End If
         
     'Solo administradores pueden atacar a usuarios (PARA TESTING)

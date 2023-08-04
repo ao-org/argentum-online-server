@@ -534,7 +534,7 @@ Private Sub AI_AtacarUsuarioObjetivo(ByVal AtackerNpcIndex As Integer)
              
 108         AtacaMelee = EstaPegadoAlUsuario And UsuarioAtacableConMelee(AtackerNpcIndex, .targetUser.ArrayIndex)
             AtacaMelee = AtacaMelee And (.flags.LanzaSpells > 0 And _
-                        ((UserList(.targetUser.ArrayIndex).flags.invisible > 0 Or UserList(.targetUser.ArrayIndex).flags.Oculto > 0)) Or IsFeatureEnabled("Magic_and_Punch"))
+                        ((UserList(.targetUser.ArrayIndex).flags.invisible > 0 Or UserList(.targetUser.ArrayIndex).flags.Oculto > 0)) Or (IsFeatureEnabled("Magic_and_Punch") And Not IsSet(.flags.BehaviorFlags, e_BehaviorFlags.eDontHitVisiblePlayers)))
             AtacaMelee = AtacaMelee Or .flags.LanzaSpells = 0
             AtacaMelee = AtacaMelee And NPCs.CanAttack(.Contadores, .flags)
             

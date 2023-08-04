@@ -1241,8 +1241,9 @@ Sub HandleHechizoTerreno(ByVal UserIndex As Integer, ByVal uh As Integer)
         End Select
 
 124     If b Then
-126         Call SubirSkill(UserIndex, Magia)
-
+            If Not IsSet(Hechizos(uh).SpellRequirementMask, eIsSkill) Then
+126             Call SubirSkill(UserIndex, Magia)
+            End If
 128         UserList(UserIndex).Stats.MinMAN = UserList(UserIndex).Stats.MinMAN - Hechizos(uh).ManaRequerido
 
 130         If UserList(UserIndex).Stats.MinMAN < 0 Then UserList(UserIndex).Stats.MinMAN = 0
@@ -1290,8 +1291,9 @@ Function HandlePetSpell(ByVal UserIndex As Integer, ByVal uh As Integer) As Bool
         End If
     Next j
     End With
-    
-    Call SubirSkill(UserIndex, Magia)
+    If Not IsSet(Hechizos(uh).SpellRequirementMask, eIsSkill) Then
+        Call SubirSkill(UserIndex, Magia)
+    End If
     UserList(UserIndex).Stats.MinMAN = UserList(UserIndex).Stats.MinMAN - Hechizos(uh).ManaRequerido
     If UserList(UserIndex).Stats.MinMAN < 0 Then UserList(UserIndex).Stats.MinMAN = 0
     UserList(UserIndex).Stats.MinSta = UserList(UserIndex).Stats.MinSta - Hechizos(uh).StaRequerido
@@ -1422,7 +1424,9 @@ Sub HandleHechizoUsuario(ByVal UserIndex As Integer, ByVal uh As Integer)
                     End If
                 End If
             End If
-114         Call SubirSkill(UserIndex, Magia)
+            If Not IsSet(Hechizos(uh).SpellRequirementMask, eIsSkill) Then
+114             Call SubirSkill(UserIndex, Magia)
+            End If
                     
 116         UserList(UserIndex).Stats.MinMAN = UserList(UserIndex).Stats.MinMAN - ManaHechizoPorClase(UserIndex, Hechizos(uh), uh)
            
@@ -1547,7 +1551,9 @@ Sub HandleHechizoNPC(ByVal UserIndex As Integer, ByVal uh As Integer)
                     End If
                 End If
             End If
-110         Call SubirSkill(UserIndex, Magia)
+            If Not IsSet(Hechizos(uh).SpellRequirementMask, eIsSkill) Then
+110             Call SubirSkill(UserIndex, Magia)
+            End If
             UserList(userindex).Stats.MinMAN = UserList(userindex).Stats.MinMAN - ManaHechizoPorClase(userindex, Hechizos(uh), uh)
         
 116         If Hechizos(uh).RequiredHP > 0 Then
