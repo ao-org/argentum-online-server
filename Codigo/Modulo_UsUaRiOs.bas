@@ -3220,10 +3220,7 @@ Public Function CanAttackUser(ByVal AttackerIndex As Integer, ByVal AttackerVers
     ElseIf PeleaSegura(attackerIndex, TargetIndex) Then
          CanAttackUser = eCanAttack
          Exit Function
-150 ElseIf T = e_Trigger6.TRIGGER6_PROHIBE Then
-152      'CanAttackUser = eCanAttack
-         'Exit Function
-    End If
+150 End If
         
     'Solo administradores pueden atacar a usuarios (PARA TESTING)
 156 If (UserList(attackerIndex).flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Admin)) = 0 Then
