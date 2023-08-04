@@ -2432,6 +2432,7 @@ Public Enum e_BehaviorFlags
     eHelpNpc = 8
     eConsideredByMapAi = 16
     eDisplayCastMessage = 32
+    eDontHitVisiblePlayers = 64
 End Enum
 
 Public Type t_NPCFlags

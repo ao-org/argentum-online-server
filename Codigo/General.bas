@@ -986,7 +986,6 @@ Public Sub TiempoInvocacion(ByVal UserIndex As Integer)
 102         If UserList(UserIndex).MascotasIndex(i).ArrayIndex > 0 Then
                 If Not IsValidNpcRef(UserList(UserIndex).MascotasIndex(i)) Then
                     Call ClearNpcRef(UserList(UserIndex).MascotasIndex(i))
-                    Call LogError("User has invalid pet reference")
                 Else
 104                If NpcList(UserList(UserIndex).MascotasIndex(i).ArrayIndex).Contadores.TiempoExistencia > 0 Then
 106                    NpcList(UserList(UserIndex).MascotasIndex(i).ArrayIndex).Contadores.TiempoExistencia = _

@@ -3131,7 +3131,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
 1346             Case e_OBJType.otmapa
 1348                 Call WriteShowFrmMapa(UserIndex)
                  Case e_OBJType.OtQuest
-1349                 Call WriteObjQuestSend(UserIndex, obj.QuestId, slot)
+1349                 If obj.QuestId > 0 Then Call WriteObjQuestSend(UserIndex, obj.QuestId, Slot)
                  Case e_OBJType.otMagicos
                         Select Case ObjData(objIndex).Subtipo
                             Case e_MagicItemSubType.TargetUsable
