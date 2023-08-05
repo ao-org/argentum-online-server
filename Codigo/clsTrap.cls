@@ -45,7 +45,7 @@ Public Sub Setup(ByVal SourceIndex As Integer, ByVal SourceType As e_ReferenceTy
         End With
         Exit Sub
 Setup_Err:
-        Call TraceError(Err.Number, Err.Description, clsTrap.Setup, Erl)
+        Call TraceError(Err.Number, Err.Description, "clsTrap.Setup", Erl)
 End Sub
 
 Public Property Get IBaseEffectOverTime_TypeId() As Integer
