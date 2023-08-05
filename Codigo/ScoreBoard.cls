@@ -23,6 +23,7 @@ Public Sub AddPlayer(ByVal PlayerIndex As Long)
 End Sub
 
 Public Function UpdatePlayerScore(ByVal PlayerIndex As Integer, ByVal modifyValue As Integer) As Integer
+    If Not PlayersScore.Exists(PlayerIndex) Then Exit Function
     UpdatePlayerScore = max(PlayersScore.Item(PlayerIndex) + modifyValue, 0)
     PlayersScore.Item(PlayerIndex) = UpdatePlayerScore
 End Function

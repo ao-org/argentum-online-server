@@ -1021,14 +1021,28 @@ End Function
 
 Public Function AddOroBancoDatabase(username As String, ByVal OroGanado As Long) As Boolean
         On Error GoTo ErrorHandler
-
-102     AddOroBancoDatabase = Execute("UPDATE user SET bank_gold = bank_gold + ? WHERE UPPER(name) = ?;", OroGanado, UCase$(username))
-
+        
+        If EnableTelemetry Then
+            Dim RS As ADODB.Recordset
+            Set RS = Query("SELECT id, level, exp, gold, bankgold, user_key FROM user WHERE UPPER(name) = ?", UCase$(username))
+            If RS Is Nothing Then
+                AddOroBancoDatabase = False
+                Exit Function
+            End If
+            Dim TelemetryOut(128) As Byte
+            Dim TelemetryLen As Long
+            Dim TelemetryInfo As String
+            TelemetryInfo = RS!user_key
+            TelemetryLen = AOT_SetUserKey(RS!id, RS!level, RS!Exp, RS!gold, RS!BankGold + OroGanado, TelemetryInfo, Len(TelemetryInfo), TelemetryOut(0), 128)
+            TelemetryInfo = StrConv(TelemetryOut, vbUnicode)
+            TelemetryInfo = Left(TelemetryInfo, TelemetryLen)
+            AddOroBancoDatabase = Execute("UPDATE user SET bank_gold = bank_gold + ?, user_key = ? WHERE UPPER(name) = ?;", OroGanado, TelemetryInfo, UCase$(username))
+        Else
+102         AddOroBancoDatabase = Execute("UPDATE user SET bank_gold = bank_gold + ? WHERE UPPER(name) = ?;", OroGanado, UCase$(username))
+        End If
         Exit Function
-
 ErrorHandler:
-104     Call LogDatabaseError("Error in AddOroBancoDatabase. UserName: " & username & ". " & Err.Number & " - " & Err.Description)
-
+    Call LogDatabaseError("Error in AddOroBancoDatabase. UserName: " & username & ". " & Err.Number & " - " & Err.Description)
 End Function
 
 
