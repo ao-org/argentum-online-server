@@ -2996,7 +2996,7 @@ Public Sub SetUserTelemetryKey(ByVal UserIndex As Integer)
     End With
 End Sub
 
-Public Sub SetBaseDot(ByRef DotInfo As t_BaseDotInfo, ByVal TargetIndex As Integer, ByVal RefType As e_ReferenceType, ByVal UniqueId As Integer, ByVal EotId As Integer)
+Public Sub SetBaseDot(ByRef DotInfo As t_BaseDotInfo, ByVal TargetIndex As Integer, ByVal RefType As e_ReferenceType, ByVal UniqueId As Long, ByVal EotId As Integer)
     Call SetRef(DotInfo.TargetRef, TargetIndex, RefType)
     DotInfo.RemoveEffect = False
     DotInfo.Removed = False
