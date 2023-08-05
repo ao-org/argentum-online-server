@@ -2267,7 +2267,7 @@ Sub HandleFactionScoreForKill(ByVal UserIndex As Integer, ByVal TargetIndex As I
             End If
             
         End If
-        If GlobalFrameTime - UserList(TargetIndex).flags.LastAttackedByUserTime < AssistHelpValidTime Then
+        If GlobalFrameTime - UserList(TargetIndex).flags.LastAttackedByUserTime < AssistDamageValidTime Then
             If IsValidUserRef(UserList(TargetIndex).flags.LastAttacker) And UserList(TargetIndex).flags.LastAttacker.ArrayIndex <> UserIndex Then
                 Score = Score - 1
                 Call HandleFactionScoreForAssist(UserList(TargetIndex).flags.LastAttacker.ArrayIndex, TargetIndex)
@@ -2276,8 +2276,6 @@ Sub HandleFactionScoreForKill(ByVal UserIndex As Integer, ByVal TargetIndex As I
         End If
         .Faccion.FactionScore = .Faccion.FactionScore + Score
     End With
-    
-    
 End Sub
 
 Sub HandleFactionScoreForAssist(ByVal UserIndex As Integer, ByVal TargetIndex As Integer)

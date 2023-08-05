@@ -299,6 +299,14 @@ Public Sub IBaseScenario_PlayerKillPlayer(ByVal killerIndex As Integer, ByVal de
             Call SendData(SendTarget.toMap, MapNumber, PrepareMessageConsoleMsg("Tenemos un ganador!", e_FontTypeNames.FONTTYPE_GUILD))
             Call MatchCompleted
         End If
+        If GlobalFrameTime - UserList(deadIndex).flags.LastAttackedByUserTime < AssistDamageValidTime Then
+            If IsValidUserRef(UserList(deadIndex).flags.LastAttacker) And UserList(deadIndex).flags.LastAttacker.ArrayIndex <> killerIndex Then
+                If Board.UpdatePlayerScore(UserList(deadIndex).flags.LastAttacker.ArrayIndex, 1) >= TargetScore Then
+                    Call SendData(SendTarget.toMap, MapNumber, PrepareMessageConsoleMsg("Tenemos un ganador!", e_FontTypeNames.FONTTYPE_GUILD))
+                    Call MatchCompleted
+                End If
+            End If
+        End If
     End If
 End Sub
 
