@@ -25,6 +25,23 @@ Private Type t_SpawnItems
     timer As t_Timer
 End Type
 
+Private Type t_RemoveItem
+    ItemId As Integer
+    ItemCount As Integer
+End Type
+
+Private Type t_UserItemInfo
+    RemovedItems(10) As t_RemoveItem
+    RemovedItemCount As Integer
+    UserId As Long
+End Type
+
+Private Type t_UserList
+    UserList(100) As t_UserItemInfo
+    RegisteredUserCount As Integer
+End Type
+
+Dim SpawnedUserList As t_UserList
 Dim MapNumber As Integer
 Dim TargetScore As Integer
 Dim MaxTime As Long
@@ -119,8 +136,22 @@ Private Sub UpdateFightAreaForPlayerCount()
     FightAreaBottomRight.y = 50 + size
 End Sub
 
+Private Sub AddItemToUser(ByVal UserIndex As Integer, ByVal ItemId As Integer, ByVal ItemCount As Integer)
+    With UserList(UserIndex)
+        Dim Slot As Integer
+        For Slot = 1 To UBound(.invent.Object)
+            If .invent.Object(Slot).ObjIndex = 0 Then
+                .invent.Object(Slot).ObjIndex = ItemId
+                .invent.Object(Slot).amount = ItemCount
+                Exit Sub
+            End If
+        Next Slot
+    End With
+End Sub
+
 Private Sub RemoveForbiddenItems(ByVal UserIndex As Integer)
     Dim i As Integer
+    Dim j As Integer
     With UserList(UserIndex)
         For i = 1 To UBound(.invent.Object)
             If IsForbidden(.invent.Object(i).objIndex) Then
@@ -128,6 +159,24 @@ Private Sub RemoveForbiddenItems(ByVal UserIndex As Integer)
             End If
         Next i
         If .flags.ModificoInventario Then
+            Call UpdateUserInv(True, UserIndex, 0)
+        End If
+        
+        For i = 0 To SpawnedUserList.RegisteredUserCount - 1
+            If SpawnedUserList.UserList(i).UserId = .id Then
+                Exit For
+            End If
+        Next i
+        If i < SpawnedUserList.RegisteredUserCount Then
+            For j = 0 To SpawnedUserList.UserList(i).RemovedItemCount - 1
+                If SpawnedUserList.UserList(i).RemovedItems(j).ItemId > 0 Then
+                    Call AddItemToUser(UserIndex, _
+                                       SpawnedUserList.UserList(i).RemovedItems(j).ItemId, _
+                                       SpawnedUserList.UserList(i).RemovedItems(j).ItemCount)
+                End If
+            Next j
+            SpawnedUserList.UserList(i) = SpawnedUserList.UserList(SpawnedUserList.RegisteredUserCount - 1)
+            SpawnedUserList.RegisteredUserCount = SpawnedUserList.RegisteredUserCount - 1
             Call UpdateUserInv(True, UserIndex, 0)
         End If
     End With
@@ -235,7 +284,6 @@ Public Function IBaseScenario_GetScenarioName() As String
 End Function
 
 Public Sub IBaseScenario_BroadcastOpenScenario(ByVal CreatorIndex As Integer)
-    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MsgDeathMatchInstructions, "", e_FontTypeNames.FONTTYPE_GUILD))
 End Sub
 
 Public Sub IBaseScenario_SendRules(ByVal UserIndex As Integer)
@@ -254,16 +302,6 @@ Public Function IBaseScenario_RequiresSpawn() As Boolean
 End Function
 
 Public Function IBaseScenario_ValidateUser(ByVal UserIndex As Integer) As Integer
-    Dim i As Integer
-    With UserList(UserIndex)
-        For i = 1 To UBound(.Invent.Object)
-            If IsForbidden(.Invent.Object(i).objIndex) Then
-                IBaseScenario_ValidateUser = 404
-                Exit Function
-            End If
-        Next i
-        IBaseScenario_ValidateUser = 0
-    End With
 End Function
 
 Public Sub IBaseScenario_WillSummonPlayer(ByVal UserIndex As Integer)
@@ -272,6 +310,28 @@ Public Sub IBaseScenario_WillSummonPlayer(ByVal UserIndex As Integer)
     spawnPos.X = RandomNumber(50 - MinArenaSize, 50 - MinArenaSize)
     spawnPos.y = RandomNumber(50 - MinArenaSize, 50 - MinArenaSize)
     GenericGlobalLobby.SummonCoordinates = spawnPos
+    
+    Dim UserItemInfo As t_UserItemInfo
+    Dim i As Integer
+    With UserList(UserIndex)
+        For i = 1 To UBound(.invent.Object)
+            If IsForbidden(.invent.Object(i).ObjIndex) Then
+                UserItemInfo.RemovedItems(UserItemInfo.RemovedItemCount).ItemId = .invent.Object(i).ObjIndex
+                UserItemInfo.RemovedItems(UserItemInfo.RemovedItemCount).ItemCount = .invent.Object(i).amount
+                UserItemInfo.RemovedItemCount = UserItemInfo.RemovedItemCount + 1
+                .invent.Object(i).ObjIndex = 0
+                .invent.Object(i).amount = 0
+                .invent.Object(i).Equipped = 0
+            End If
+        Next i
+        If UserItemInfo.RemovedItemCount > 0 Then
+            SpawnedUserList.UserList(SpawnedUserList.RegisteredUserCount) = UserItemInfo
+            SpawnedUserList.UserList(SpawnedUserList.RegisteredUserCount).UserId = .id
+            SpawnedUserList.RegisteredUserCount = SpawnedUserList.RegisteredUserCount + 1
+            Call UpdateUserInv(True, UserIndex, 0)
+        End If
+    End With
+    
 End Sub
 
 Public Sub IBaseScenario_UpdateLobbyState(ByVal oldState As e_LobbyState, ByRef newState As e_LobbyState)

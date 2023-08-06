@@ -30,17 +30,22 @@ End Enum
 
 Const ACTIVATE_TRAOP_WAW_FILE = 210
 
+
 Public Sub Setup(ByVal SourceIndex As Integer, ByVal SourceType As e_ReferenceType, ByVal EffectId As Integer, ByVal ID As Long, _
                  ByVal map As Integer, ByVal TileX As Integer, ByVal TileY As Integer)
-    mElapsedTime = 0
-    Call SetBaseDot(mDotInfo, SourceIndex, SourceType, ID, EffectId)
-    Call SetPosition(map, TileX, TileY)
-    With EffectOverTime(EffectId)
-        mTimeLimit = .TickTime
-        If mDotInfo.TargetRef.RefType = eUser And EffectOverTime(mDotInfo.EotId).ClientEffectTypeId > 0 Then
-            Call WriteSendSkillCdUpdate(SourceIndex, .ClientEffectTypeId, ID, .TickTime, .TickTime, .buffType)
-        End If
-    End With
+    On Error GoTo Setup_Err
+100     mElapsedTime = 0
+102     Call SetBaseDot(mDotInfo, SourceIndex, SourceType, id, EffectId)
+104     Call SetPosition(Map, TileX, TileY)
+106     With EffectOverTime(EffectId)
+108         mTimeLimit = .TickTime
+110         If mDotInfo.TargetRef.RefType = eUser And EffectOverTime(mDotInfo.EotId).ClientEffectTypeId > 0 Then
+112             Call WriteSendSkillCdUpdate(SourceIndex, .ClientEffectTypeId, id, .TickTime, .TickTime, .buffType)
+            End If
+        End With
+        Exit Sub
+Setup_Err:
+        Call TraceError(Err.Number, Err.Description, "clsTrap.Setup", Erl)
 End Sub
 
 Public Property Get IBaseEffectOverTime_TypeId() As Integer
