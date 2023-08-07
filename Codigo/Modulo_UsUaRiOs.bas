@@ -543,7 +543,17 @@ On Error GoTo Complete_ConnectUser_Err
 760         If .Invent.BarcoObjIndex > 0 And (MapData(.Pos.Map, .Pos.X, .Pos.Y).Blocked And FLAG_AGUA) <> 0 Then
 765             .flags.Navegando = 1
 770             Call EquiparBarco(UserIndex)
-
+            ElseIf .flags.Navegando = 1 And (MapData(.pos.Map, .pos.x, .pos.y).Blocked And FLAG_AGUA) <> 0 Then
+                Dim iSlot As Integer
+                For iSlot = 1 To UBound(.invent.Object)
+                    If .invent.Object(iSlot).ObjIndex > 0 Then
+                        If ObjData(.invent.Object(iSlot).ObjIndex).OBJType = otBarcos And ObjData(.invent.Object(iSlot).ObjIndex).Subtipo > 0 Then
+                            .invent.BarcoObjIndex = .invent.Object(iSlot).ObjIndex
+                            .invent.BarcoSlot = iSlot
+                            Exit For
+                        End If
+                    End If
+                Next
             End If
             
 775         If .Invent.MagicoObjIndex <> 0 Then
@@ -554,7 +564,7 @@ On Error GoTo Complete_ConnectUser_Err
         
 795         Call WriteHora(UserIndex)
 800         Call WriteChangeMap(UserIndex, .Pos.Map) 'Carga el mapa
-            
+            Call UpdateCharWithEquipedItems(UserIndex)
 805         Select Case .flags.Privilegios
             
                 Case e_PlayerType.Admin
@@ -662,7 +672,7 @@ On Error GoTo Complete_ConnectUser_Err
              End If
         
 1050        If .flags.Navegando = 1 Then
-1055            Call WriteNavigateToggle(UserIndex)
+1055            Call WriteNavigateToggle(UserIndex, .flags.Navegando)
 1060            Call EquiparBarco(UserIndex)
 
              End If

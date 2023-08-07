@@ -546,7 +546,7 @@ Public Sub DoNavega(ByVal UserIndex As Integer, _
                 End If
             
 124             If .Invent.BarcoObjIndex = 0 Then
-126                 Call WriteNavigateToggle(UserIndex)
+126                 Call WriteNavigateToggle(UserIndex, True)
 128                 .flags.Navegando = 1
                     Call TargetUpdateTerrain(.EffectOverTime)
                 End If
@@ -570,10 +570,10 @@ Public Sub DoNavega(ByVal UserIndex As Integer, _
             
             Else
 148             Call WriteNadarToggle(UserIndex, False)
-            
-150             Call WriteNavigateToggle(UserIndex)
+                .flags.Navegando = 0
+150             Call WriteNavigateToggle(UserIndex, False)
     
-152             .flags.Navegando = 0
+152
                 Call TargetUpdateTerrain(.EffectOverTime)
 154             .Invent.BarcoObjIndex = 0
 156             .Invent.BarcoSlot = 0

@@ -3635,6 +3635,7 @@ Public Sub UpdateCharWithEquipedItems(ByVal UserIndex As Integer)
             .Char.CartAnim = 0
             .Char.ShieldAnim = 0
             .Char.WeaponAnim = 0
+            .Char.head = 0
             'TODO place ship body
             Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, UserList(UserIndex).Char.CartAnim)
             Exit Sub

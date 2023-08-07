@@ -8207,7 +8207,7 @@ Public Sub HandleNavigateToggle(ByVal UserIndex As Integer)
             End If
         
             'Tell the client that we are navigating.
-112         Call WriteNavigateToggle(UserIndex)
+112         Call WriteNavigateToggle(UserIndex, .flags.Navegando)
 
         End With
         
