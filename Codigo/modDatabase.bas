@@ -1024,7 +1024,7 @@ Public Function AddOroBancoDatabase(username As String, ByVal OroGanado As Long)
         
         If EnableTelemetry Then
             Dim RS As ADODB.Recordset
-            Set RS = Query("SELECT id, level, exp, gold, bankgold, user_key FROM user WHERE UPPER(name) = ?", UCase$(username))
+            Set RS = Query("SELECT id, level, exp, gold, bank_gold, user_key FROM user WHERE UPPER(name) = ?", UCase$(username))
             If RS Is Nothing Then
                 AddOroBancoDatabase = False
                 Exit Function
@@ -1033,7 +1033,7 @@ Public Function AddOroBancoDatabase(username As String, ByVal OroGanado As Long)
             Dim TelemetryLen As Long
             Dim TelemetryInfo As String
             TelemetryInfo = RS!user_key
-            TelemetryLen = AOT_SetUserKey(RS!id, RS!level, RS!Exp, RS!gold, RS!BankGold + OroGanado, TelemetryInfo, Len(TelemetryInfo), TelemetryOut(0), 128)
+            TelemetryLen = AOT_SetUserKey(RS!id, RS!level, RS!Exp, RS!gold, RS!bank_gold + OroGanado, TelemetryInfo, Len(TelemetryInfo), TelemetryOut(0), 128)
             TelemetryInfo = StrConv(TelemetryOut, vbUnicode)
             TelemetryInfo = Left(TelemetryInfo, TelemetryLen)
             AddOroBancoDatabase = Execute("UPDATE user SET bank_gold = bank_gold + ?, user_key = ? WHERE UPPER(name) = ?;", OroGanado, TelemetryInfo, UCase$(username))

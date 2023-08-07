@@ -153,11 +153,12 @@ End Sub
 '
 ' @param    UserIndex User to which the message is intended.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
-Public Sub WriteNavigateToggle(ByVal UserIndex As Integer)
+Public Sub WriteNavigateToggle(ByVal UserIndex As Integer, ByVal NewState As Boolean)
         '<EhHeader>
         On Error GoTo WriteNavigateToggle_Err
         '</EhHeader>
 100     Call Writer.WriteInt16(ServerPacketID.NavigateToggle)
+        Call Writer.WriteBool(NewState)
 102     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub

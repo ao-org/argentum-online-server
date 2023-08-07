@@ -117,7 +117,7 @@ Public Sub HomeArrival(ByVal UserIndex As Integer)
             
 114             .flags.Navegando = 0
             
-116             Call WriteNavigateToggle(UserIndex)
+116             Call WriteNavigateToggle(UserIndex, .flags.Navegando)
 
                 'Le sacamos el navegando, pero no le mostramos a los demas porque va a ser sumoneado hasta ulla.
             End If
