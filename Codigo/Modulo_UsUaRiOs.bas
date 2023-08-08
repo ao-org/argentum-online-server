@@ -205,6 +205,7 @@ On Error GoTo Prepare_ConnectUser_Err
         UserRef.SetFromIndex (UserIndex)
         Set m_NameIndex(UCase$(name)) = UserRef
         .showName = True
+        .NroMascotas = 0
     End With
     Exit Sub
 Prepare_ConnectUser_Err:

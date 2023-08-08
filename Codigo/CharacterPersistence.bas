@@ -237,7 +237,6 @@ Public Function LoadCharacterFromDB(ByVal userIndex As Integer) As Boolean
 
             'User pets
             Set RS = Query("SELECT number, pet_id FROM pet WHERE user_id = ?;", .ID)
-            .NroMascotas = 0
 328         If Not RS Is Nothing Then
 332             While Not RS.EOF
 334                 .MascotasType(RS!Number) = RS!pet_id
