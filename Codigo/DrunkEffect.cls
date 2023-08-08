@@ -22,7 +22,7 @@ Private StackCount As Integer
 Private DumbActive As Boolean
 
 
-Public Sub Setup(ByVal TargetIndex As Integer, ByVal TargetType As e_ReferenceType, ByVal EffectId As Integer, ByVal ID As Integer)
+Public Sub Setup(ByVal TargetIndex As Integer, ByVal TargetType As e_ReferenceType, ByVal EffectId As Integer, ByVal id As Long)
     Call SetBaseDot(DotInfo, TargetIndex, TargetType, ID, EffectId)
     TimeSinceLastTick = 0
     StackCount = 1
@@ -39,7 +39,7 @@ Public Property Get IBaseEffectOverTime_TypeId() As Integer
     IBaseEffectOverTime_TypeId = e_EffectOverTimeType.eDrunk
 End Property
 
-Public Property Get IBaseEffectOverTime_UniqueId() As Integer
+Public Property Get IBaseEffectOverTime_UniqueId() As Long
     IBaseEffectOverTime_UniqueId = DotInfo.UniqueId
 End Property
 

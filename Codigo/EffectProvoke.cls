@@ -26,7 +26,7 @@ Const TaunteffectId As Integer = 4
 
 
 Public Sub Setup(ByVal SourceIndex As Integer, ByVal SourceType As e_ReferenceType, ByVal TargetIndex As Integer, ByVal TargetType As e_ReferenceType, _
-                 ByVal EffectId As Integer, ByVal ID As Integer)
+                 ByVal EffectId As Integer, ByVal id As Long)
     Call SetBaseDot(DotInfo, TargetIndex, TargetType, ID, EffectId)
     Call SetRef(Source, SourceIndex, SourceType)
     TimeSinceLastTick = 0
@@ -53,7 +53,7 @@ Public Property Get IBaseEffectOverTime_TypeId() As Integer
     IBaseEffectOverTime_TypeId = e_EffectOverTimeType.eProvoke
 End Property
 
-Public Property Get IBaseEffectOverTime_UniqueId() As Integer
+Public Property Get IBaseEffectOverTime_UniqueId() As Long
     IBaseEffectOverTime_UniqueId = DotInfo.UniqueId
 End Property
 

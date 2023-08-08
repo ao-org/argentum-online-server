@@ -51,7 +51,7 @@ Public Property Get IBaseEffectOverTime_TypeId() As Integer
     IBaseEffectOverTime_TypeId = e_EffectOverTimeType.ePullTarget
 End Property
 
-Public Property Get IBaseEffectOverTime_UniqueId() As Integer
+Public Property Get IBaseEffectOverTime_UniqueId() As Long
     IBaseEffectOverTime_UniqueId = DotInfo.UniqueId
 End Property
 

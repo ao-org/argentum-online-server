@@ -3707,7 +3707,7 @@ Public Function GetUserMRForNpc(ByVal UserIndex As Integer) As Integer
         If IsFeatureEnabled("mr-magic-bonus-damage") Then
             MR = MR + .Stats.UserSkills(Resistencia) * MRSkillNpcProtectionModifier
         End If
-        GetUserMR = MR + 100 * ModClase(.clase).ResistenciaMagica
+        GetUserMRForNpc = MR + 100 * ModClase(.clase).ResistenciaMagica
     End With
 End Function
 

@@ -23,7 +23,7 @@ Private TargetY As Integer
 Private TargetMap As Integer
 Private SourceObjIndex As Integer
 
-Public Sub Setup(ByVal SourceIndex As Integer, ByVal SourceType As e_ReferenceType, ByVal EffectId As Integer, ByVal ID As Integer, _
+Public Sub Setup(ByVal SourceIndex As Integer, ByVal SourceType As e_ReferenceType, ByVal EffectId As Integer, ByVal id As Long, _
                  ByVal Map As Integer, ByVal TileX As Integer, ByVal TileY As Integer, ByVal SourceObj As Integer)
     Call SetBaseDot(DotInfo, SourceIndex, SourceType, ID, EffectId)
     TimeSinceLastTick = 0
@@ -43,7 +43,7 @@ Public Property Get IBaseEffectOverTime_TypeId() As Integer
     IBaseEffectOverTime_TypeId = e_EffectOverTimeType.eDelayedBlast
 End Property
 
-Public Property Get IBaseEffectOverTime_UniqueId() As Integer
+Public Property Get IBaseEffectOverTime_UniqueId() As Long
     IBaseEffectOverTime_UniqueId = DotInfo.UniqueId
 End Property
 
