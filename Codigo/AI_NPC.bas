@@ -17,7 +17,18 @@ Public Const ELEMENTAL_FUEGO      As Integer = 962
 'Damos a los NPCs el mismo rango de vison que un PJ
 Public Const RANGO_VISION_X  As Byte = 11
 Public Const RANGO_VISION_Y  As Byte = 9
-
+Public Sub NpcDummyUpdate(ByVal NpcIndex As Integer)
+    With NpcList(NpcIndex)
+        Debug.Assert .npcType = DummyTarget
+        If .Stats.MinHp < .Stats.MaxHp Then
+            .Contadores.UltimoAtaque = .Contadores.UltimoAtaque - 1
+            If .Contadores.UltimoAtaque <= 0 Then
+                Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageTextOverChar(.Stats.MaxHp - .Stats.MinHp, .Char.charindex, vbGreen))
+                .Stats.MinHp = .Stats.MaxHp
+            End If
+        End If
+    End With
+End Sub
 
 Public Sub NpcAI(ByVal NpcIndex As Integer)
         On Error GoTo ErrorHandler
