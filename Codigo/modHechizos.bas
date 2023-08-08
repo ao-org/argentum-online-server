@@ -81,7 +81,7 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
           ' Si el hechizo no ignora la RM
 132       If Hechizos(Spell).AntiRm = 0 Then
             Dim PorcentajeRM As Integer
-            PorcentajeRM = GetUserMR(UserIndex)
+            PorcentajeRM = GetUserMRForNpc(UserIndex)
             ' Resto el porcentaje total
 152         Damage = Damage - Porcentaje(Damage, PorcentajeRM)
             
@@ -3333,8 +3333,10 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsA
 400         Damage = RandomNumber(Hechizos(h).MinHp, Hechizos(h).MaxHp)
 402         Damage = Damage + Porcentaje(Damage, 3 * UserList(UserIndex).Stats.ELV)
             ' Si al hechizo le afecta el daño mágico
+            Dim PorcentajeRM As Integer
             If UserList(UserIndex).invent.WeaponEqpObjIndex > 0 Then
                 Damage = Damage + Porcentaje(Damage, ObjData(UserList(UserIndex).invent.WeaponEqpObjIndex).MagicDamageBonus)
+                PorcentajeRM = PorcentajeRM - ObjData(UserList(UserIndex).invent.WeaponEqpObjIndex).MagicPenetration
             End If
 418         If UserList(UserIndex).invent.DañoMagicoEqpObjIndex > 0 Then
 420             Damage = Damage + Porcentaje(Damage, ObjData(UserList(UserIndex).invent.DañoMagicoEqpObjIndex).MagicDamageBonus)
@@ -3342,8 +3344,8 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsA
 
             ' Si el hechizo no ignora la RM
 422         If Hechizos(h).AntiRm = 0 Then
-                Dim PorcentajeRM As Integer
-                PorcentajeRM = GetUserMR(tempChr)
+                
+                PorcentajeRM = max(0, PorcentajeRM + GetUserMR(tempChr))
                 ' Resto el porcentaje total
 442             Damage = Damage - Porcentaje(Damage, PorcentajeRM)
             End If
@@ -3643,10 +3645,11 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
 276         If UserList(UserIndex).clase = e_Class.Mage Then
 278             Damage = Damage * 0.7
             End If
-            
+            Dim MR As Integer
             ' Weapon Magic bonus
 280         If UserList(UserIndex).Invent.WeaponEqpObjIndex > 0 Then
 282             Damage = Damage + Porcentaje(Damage, ObjData(UserList(UserIndex).invent.WeaponEqpObjIndex).MagicDamageBonus)
+                MR = MR - ObjData(UserList(UserIndex).invent.WeaponEqpObjIndex).MagicPenetration
             End If
             
             ' Magic ring bonus
@@ -3656,8 +3659,7 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
             ' Si el hechizo no ignora la RM
 288         If Hechizos(h).AntiRm = 0 Then
                 ' Resistencia mágica armadura
-                Dim MR As Integer
-                MR = GetUserMR(tempChr)
+                MR = max(0, MR + GetUserMR(tempChr))
 290             If MR > 0 Then
 292                 Damage = Damage - Porcentaje(Damage, MR)
                 End If

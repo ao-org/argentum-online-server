@@ -1132,6 +1132,10 @@ Sub ResetBasicUserInfo(ByVal UserIndex As Integer)
             End With
             
 194         .NroMascotas = 0
+            Dim i As Integer
+            For i = LBound(.MascotasType) To UBound(.MascotasType)
+                .MascotasType(i) = 0
+            Next i
             .LastTransportNetwork.Map = -1
         End With
 

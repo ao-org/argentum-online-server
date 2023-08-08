@@ -240,7 +240,7 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
         
 166         If MiNPC.GiveEXPClan > 0 Then
 168             If UserList(UserIndex).GuildIndex > 0 Then
-170                 Call modGuilds.CheckClanExp(UserIndex, MiNPC.GiveEXPClan)
+170                 Call modGuilds.CheckClanExp(UserIndex, MiNPC.GiveEXPClan * ExpMult)
                 End If
             End If
         

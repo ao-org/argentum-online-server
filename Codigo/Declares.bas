@@ -1664,6 +1664,7 @@ Public Type t_ObjData
     
     Power As Integer
     MagicDamageBonus As Integer
+    MagicPenetration As Integer
     ResistenciaMagica As Integer
     Revive As Boolean
 

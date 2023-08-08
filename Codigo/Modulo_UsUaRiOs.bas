@@ -205,6 +205,7 @@ On Error GoTo Prepare_ConnectUser_Err
         UserRef.SetFromIndex (UserIndex)
         Set m_NameIndex(UCase$(name)) = UserRef
         .showName = True
+        .NroMascotas = 0
     End With
     Exit Sub
 Prepare_ConnectUser_Err:
@@ -564,7 +565,7 @@ On Error GoTo Complete_ConnectUser_Err
         
 795         Call WriteHora(UserIndex)
 800         Call WriteChangeMap(UserIndex, .Pos.Map) 'Carga el mapa
-            Call UpdateCharWithEquipedItems(UserIndex)
+802         Call UpdateCharWithEquipedItems(UserIndex)
 805         Select Case .flags.Privilegios
             
                 Case e_PlayerType.Admin
@@ -3684,6 +3685,33 @@ RestoreDCUserCache_Err:
         Call TraceError(Err.Number, Err.Description, "UsUaRiOs.RestoreDCUserCache", Erl)
         Resume Next
 End Sub
+
+Public Function GetUserMRForNpc(ByVal UserIndex As Integer) As Integer
+    With UserList(UserIndex)
+        Dim MR As Integer
+        MR = 0
+        If .invent.ArmourEqpObjIndex > 0 Then
+            MR = MR + ObjData(.invent.ArmourEqpObjIndex).ResistenciaMagica
+        End If
+        ' Resistencia mágica anillo
+        If .invent.ResistenciaEqpObjIndex > 0 Then
+            MR = MR + ObjData(.invent.ResistenciaEqpObjIndex).ResistenciaMagica
+        End If
+        ' Resistencia mágica escudo
+        If .invent.EscudoEqpObjIndex > 0 Then
+            MR = MR + ObjData(.invent.EscudoEqpObjIndex).ResistenciaMagica
+        End If
+        ' Resistencia mágica casco
+        If .invent.CascoEqpObjIndex > 0 Then
+            MR = MR + ObjData(.invent.CascoEqpObjIndex).ResistenciaMagica
+        End If
+        If IsFeatureEnabled("mr-magic-bonus-damage") Then
+            MR = MR + .Stats.UserSkills(Resistencia) * MRSkillNpcProtectionModifier
+        End If
+        GetUserMRForNpc = MR + 100 * ModClase(.clase).ResistenciaMagica
+    End With
+End Function
+
 Public Function GetUserMR(ByVal UserIndex As Integer) As Integer
     With UserList(UserIndex)
         Dim MR As Integer

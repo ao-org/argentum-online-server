@@ -37,7 +37,7 @@ End Property
 Public Property Get TargetUserId() As Long
 End Property
 
-Public Property Get UniqueId() As Integer
+Public Property Get UniqueId() As Long
 End Property
 
 Public Property Get TypeId() As Integer

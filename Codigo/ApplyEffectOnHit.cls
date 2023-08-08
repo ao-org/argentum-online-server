@@ -22,7 +22,7 @@ Dim ApplyEffectId As Integer
 Private DotInfo As t_BaseDotInfo
 Private AttackedNpcVersion As Integer
 
-Public Sub Setup(ByVal TargetIndex As Integer, ByVal TargetType As e_ReferenceType, ByVal EffectId As Integer, ByVal ID As Integer)
+Public Sub Setup(ByVal TargetIndex As Integer, ByVal TargetType As e_ReferenceType, ByVal EffectId As Integer, ByVal id As Long)
     TimeSinceLastTick = 0
     Call SetBaseDot(DotInfo, TargetIndex, TargetType, ID, EffectId)
     With EffectOverTime(EffectId)
@@ -39,7 +39,7 @@ Public Property Get IBaseEffectOverTime_TypeId() As Integer
     IBaseEffectOverTime_TypeId = e_EffectOverTimeType.eApplyEffectOnHit
 End Property
 
-Public Property Get IBaseEffectOverTime_UniqueId() As Integer
+Public Property Get IBaseEffectOverTime_UniqueId() As Long
     IBaseEffectOverTime_UniqueId = DotInfo.UniqueId
 End Property
 
