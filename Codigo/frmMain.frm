@@ -1329,7 +1329,7 @@ Private Sub EstadoTimer_Timer()
     Call PerformanceTestStart(PerformanceTimer)
     For i = 1 To Baneos.Count
         If Baneos(i).FechaLiberacion <= Now Then
-            Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » Se ha concluido la sentencia de ban para " & Baneos(i).name & ".", e_FontTypeNames.FONTTYPE_SERVER))
+            Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » Se ha concluido la sentencia de ban para " & Baneos(i).Name & ".", e_FontTypeNames.FONTTYPE_SERVER))
             Call UnBan(Baneos(i).Name)
             Call Baneos.Remove(i)
             Call SaveBans
@@ -1735,46 +1735,32 @@ SubastaTimer_Timer_Err:
         
 End Sub
 
+
+
+
+
+
 Private Sub TIMER_AI_Timer()
-
     On Error GoTo ErrorHandler
-
     Dim NpcIndex As Long
-    Dim Mapa     As Integer
-    Dim X        As Integer
-    Dim Y        As Integer
     Dim PerformanceTimer As Long
     Call PerformanceTestStart(PerformanceTimer)
-    'Barrin 29/9/03
     If Not haciendoBK And Not EnPausa Then
-        'Update NPCs
         For NpcIndex = 1 To LastNPC
             With NpcList(NpcIndex)
-                If .flags.NPCActive Then 'Nos aseguramos que sea INTELIGENTE!
-                    If .NPCtype = DummyTarget Then
-                        ' Regenera vida después de X tiempo sin atacarlo
-                        If .Stats.MinHp < .Stats.MaxHp Then
-                            .Contadores.UltimoAtaque = .Contadores.UltimoAtaque - 1
-                            If .Contadores.UltimoAtaque <= 0 Then
-                                Call SendData(SendTarget.ToNPCArea, NpcIndex, PrepareMessageTextOverChar(.Stats.MaxHp - .Stats.MinHp, .Char.CharIndex, vbGreen))
-                                .Stats.MinHp = .Stats.MaxHp
-                            End If
-                        End If
-                    Else
-                        'Usamos AI si hay algun user en el mapa
-                        Mapa = .Pos.Map
-                        If .flags.Paralizado > 0 Then Call EfectoParalisisNpc(NpcIndex)
-                        If .flags.Inmovilizado > 0 Then Call EfectoInmovilizadoNpc(NpcIndex)
-                        If Mapa > 0 Then
-                            'Emancu: Vamos a probar si el server se degrada moviendo TODOS los npc, con o sin users. HarThaoS / WyroX: Si, se degrada.
-                            If MapInfo(Mapa).NumUsers > 0 Or MapInfo(Mapa).ForceUpdate Then  ' Or NpcList(NpcIndex).NPCtype = e_NPCType.GuardiaNpc Then
-                                If IntervaloPermiteMoverse(NpcIndex) Then
-                                        Call NpcAI(NpcIndex)
-                                End If
-                            End If
-                        End If
-                    End If
-                End If
+                If .Pos.Map > 0 Then
+                    If MapInfo(.Pos.Map).NumUsers > 0 Then
+                                If .flags.NPCActive Then
+                                    If .npcType = DummyTarget Then
+                                        Call NpcDummyUpdate(NpcIndex)
+                                     Else
+                                        If .flags.Paralizado > 0 Then Call EfectoParalisisNpc(NpcIndex)
+                                        If .flags.Inmovilizado > 0 Then Call EfectoInmovilizadoNpc(NpcIndex)
+                                        If IntervaloPermiteMoverse(NpcIndex) Then Call NpcAI(NpcIndex)
+                                    End If 'If .npcType = DummyTarget Then
+                                End If 'If .flags.NPCActive Then
+                    End If 'If MapInfo(.Pos.Map).NumUsers > 0 Then
+                End If 'If .Pos.Map > 0 Then
             End With
         Next NpcIndex
     End If
@@ -1788,6 +1774,7 @@ ErrorHandler:
     Call MuereNpc(NpcIndex, 0)
 
 End Sub
+
 Private Sub TimerMeteorologia_Timer()
     'Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor > Timer de lluvia en :" & TimerMeteorologico, e_FontTypeNames.FONTTYPE_SERVER))
         
