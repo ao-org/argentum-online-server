@@ -1878,7 +1878,10 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                     End If
             
 188                 If ObjData(ObjIndex).Proyectil = 1 Then
-                        'liquid: muevo esto aca adentro, para que solo pida modo combate si estamos por usar el arco
+                        If IsSet(.flags.StatusMask, e_StatusMask.eTransformed) Then
+                            Call WriteLocaleMsg(UserIndex, MsgCantUseBowTransformed, e_FontTypeNames.FONTTYPE_INFO)
+                            Exit Sub
+                        End If
 190                     Call WriteWorkRequestTarget(UserIndex, Proyectiles)
                     Else
 192                     If .flags.TargetObj = Wood Then
@@ -3664,7 +3667,7 @@ Public Sub UpdateCharWithEquipedItems(ByVal UserIndex As Integer)
             .Char.CartAnim = 0
         End If
         If .invent.EscudoEqpObjIndex > 0 Then
-            .Char.ShieldAnim = ObjData(.invent.ArmourEqpObjIndex).ShieldAnim
+            .Char.ShieldAnim = ObjData(.invent.EscudoEqpObjIndex).ShieldAnim
         Else
             .Char.ShieldAnim = 0
         End If

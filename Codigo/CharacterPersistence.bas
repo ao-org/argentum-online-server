@@ -237,21 +237,15 @@ Public Function LoadCharacterFromDB(ByVal userIndex As Integer) As Boolean
 
             'User pets
             Set RS = Query("SELECT number, pet_id FROM pet WHERE user_id = ?;", .ID)
-
+            .NroMascotas = 0
 328         If Not RS Is Nothing Then
-
 332             While Not RS.EOF
-
 334                 .MascotasType(RS!Number) = RS!pet_id
-                
 336                 If val(RS!pet_id) <> 0 Then
 338                     .NroMascotas = .NroMascotas + 1
-
                     End If
-
 340                 RS.MoveNext
                 Wend
-
             End If
 
             'User bank inventory
@@ -297,38 +291,38 @@ Public Function LoadCharacterFromDB(ByVal userIndex As Integer) As Boolean
 402         If Not RS Is Nothing Then
 
 406             While Not RS.EOF
-
-408                 .QuestStats.Quests(RS!Number).QuestIndex = RS!quest_id
+                    If Not IsNull(RS!Number) Then
+408                     .QuestStats.Quests(RS!Number).QuestIndex = RS!quest_id
                 
-410                 If .QuestStats.Quests(RS!Number).QuestIndex > 0 Then
-412                     If QuestList(.QuestStats.Quests(RS!Number).QuestIndex).RequiredNPCs Then
+410                     If .QuestStats.Quests(RS!Number).QuestIndex > 0 Then
+412                         If QuestList(.QuestStats.Quests(RS!Number).QuestIndex).RequiredNPCs Then
 
-                            Dim NPCs() As String
+                                Dim NPCs() As String
 
-414                         NPCs = Split(RS!NPCs, "-")
-416                         ReDim .QuestStats.Quests(RS!Number).NPCsKilled(1 To QuestList(.QuestStats.Quests(RS!Number).QuestIndex).RequiredNPCs)
+414                             NPCs = Split(RS!NPCs, "-")
+416                             ReDim .QuestStats.Quests(RS!Number).NPCsKilled(1 To QuestList(.QuestStats.Quests(RS!Number).QuestIndex).RequiredNPCs)
 
-418                         For LoopC = 1 To QuestList(.QuestStats.Quests(RS!Number).QuestIndex).RequiredNPCs
-420                             .QuestStats.Quests(RS!Number).NPCsKilled(LoopC) = val(NPCs(LoopC - 1))
-422                         Next LoopC
+418                             For LoopC = 1 To QuestList(.QuestStats.Quests(RS!Number).QuestIndex).RequiredNPCs
+420                                 .QuestStats.Quests(RS!Number).NPCsKilled(LoopC) = val(NPCs(LoopC - 1))
+422                             Next LoopC
 
-                        End If
+                            End If
                     
-424                     If QuestList(.QuestStats.Quests(RS!Number).QuestIndex).RequiredTargetNPCs Then
+424                         If QuestList(.QuestStats.Quests(RS!Number).QuestIndex).RequiredTargetNPCs Then
 
-                            Dim NPCsTarget() As String
+                                Dim NPCsTarget() As String
 
-426                         NPCsTarget = Split(RS!NPCsTarget, "-")
-428                         ReDim .QuestStats.Quests(RS!Number).NPCsTarget(1 To QuestList(.QuestStats.Quests(RS!Number).QuestIndex).RequiredTargetNPCs)
+426                             NPCsTarget = Split(RS!NPCsTarget, "-")
+428                             ReDim .QuestStats.Quests(RS!Number).NPCsTarget(1 To QuestList(.QuestStats.Quests(RS!Number).QuestIndex).RequiredTargetNPCs)
 
-430                         For LoopC = 1 To QuestList(.QuestStats.Quests(RS!Number).QuestIndex).RequiredTargetNPCs
-432                             .QuestStats.Quests(RS!Number).NPCsTarget(LoopC) = val(NPCsTarget(LoopC - 1))
-434                         Next LoopC
+430                             For LoopC = 1 To QuestList(.QuestStats.Quests(RS!Number).QuestIndex).RequiredTargetNPCs
+432                                 .QuestStats.Quests(RS!Number).NPCsTarget(LoopC) = val(NPCsTarget(LoopC - 1))
+434                             Next LoopC
+
+                            End If
 
                         End If
-
                     End If
-
 436                 RS.MoveNext
                 Wend
 

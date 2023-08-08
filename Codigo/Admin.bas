@@ -159,6 +159,7 @@ Public MultiShotReduction           As Single
 Public HomeTimer                    As Integer
 Public MagicSkillBonusDamageModifier As Single
 Public MRSkillProtectionModifier As Single
+Public MRSkillNpcProtectionModifier As Single
 Public AssistDamageValidTime        As Long 'valid time for damage to count as assit
 Public AssistHelpValidTime          As Long 'valid time for helpful spell to count as assist
 Public HideAfterHitTime             As Long 'required time to hide again after a hit remove us from this state

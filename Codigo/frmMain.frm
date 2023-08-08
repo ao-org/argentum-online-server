@@ -1389,7 +1389,7 @@ Private Sub EstadoTimer_Timer()
             Exit Sub
     End Select
     Call CheckEvento(HoraEvento)
-    Call PerformTimeLimitCheck(PerformanceTimer, "FrmMain EstadoTimer_Timer")
+    Call PerformTimeLimitCheck(PerformanceTimer, "FrmMain EstadoTimer_Timer", 100)
     Exit Sub
 EstadoTimer_Timer_Err:
     Call TraceError(Err.Number, Err.Description, "frmMain.EstadoTimer_Timer", Erl)
@@ -1528,9 +1528,9 @@ On Error GoTo HayError
             End If 'UserLogged
         End With
     Next iUserIndex
-    Call PerformTimeLimitCheck(PerformanceTimer, "GameTimer_Timer User loop")
+    Call PerformTimeLimitCheck(PerformanceTimer, "GameTimer_Timer User loop", 400)
     Call CustomScenarios.UpdateAll
-    Call PerformTimeLimitCheck(PerformanceTimer, "GameTimer_Timer customScenarios")
+    Call PerformTimeLimitCheck(PerformanceTimer, "GameTimer_Timer customScenarios", 100)
     Exit Sub
 HayError:
     Call TraceError(Err.Number, Err.Description & vbNewLine & "UserIndex:" & iUserIndex, "frmMain.GameTimer", Erl)
@@ -1764,7 +1764,7 @@ Private Sub TIMER_AI_Timer()
             End With
         Next NpcIndex
     End If
-    Call PerformTimeLimitCheck(PerformanceTimer, "TIMER_AI_Timer")
+    Call PerformTimeLimitCheck(PerformanceTimer, "TIMER_AI_Timer", 600)
     Exit Sub
 
 ErrorHandler:
