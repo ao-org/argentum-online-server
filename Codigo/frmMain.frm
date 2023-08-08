@@ -1749,7 +1749,7 @@ Private Sub TIMER_AI_Timer()
         For NpcIndex = 1 To LastNPC
             With NpcList(NpcIndex)
                 If .Pos.Map > 0 Then
-                    If MapInfo(.Pos.Map).NumUsers > 0 Then
+                    If MapInfo(.Pos.Map).NumUsers > 0 Or MapInfo(.Pos.Map).ForceUpdate Then
                                 If .flags.NPCActive Then
                                     If .npcType = DummyTarget Then
                                         Call NpcDummyUpdate(NpcIndex)
