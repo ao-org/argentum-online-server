@@ -15,6 +15,8 @@ Private Const TIME_SEND_FREQUENCY As Long = 0 ' In milliseconds
 Private Server  As Network.Server
 Private Time(2) As Single
 Private Mapping() As t_UserReference
+Private FramePacketCount As Long
+Private NewFrameConnections As Long
 Public DisconnectTimeout As Long
 
 Public Sub Listen(ByVal Limit As Long, ByVal Address As String, ByVal Service As String)
@@ -33,18 +35,21 @@ End Sub
 Public Sub Tick(ByVal Delta As Single)
     Time(0) = Time(0) + Delta
     Time(1) = Time(1) + Delta
-    
+    Dim PerformanceTimer As Long
+    FramePacketCount = 0
+    NewFrameConnections = 0
+    Call PerformanceTestStart(PerformanceTimer)
     If (Time(0) >= TIME_RECV_FREQUENCY) Then
         Time(0) = 0
-        
         Call Server.Poll
     End If
-        
+    Call PerformTimeLimitCheck(PerformanceTimer, "modNetwork Poll, packets: " & FramePacketCount & " new connections: " & NewFrameConnections, 200)
     If (Time(1) >= TIME_SEND_FREQUENCY) Then
         Time(1) = 0
         
         Call Server.Flush
     End If
+    Call PerformTimeLimitCheck(PerformanceTimer, "modNetwork flush", 200)
 End Sub
 
 Public Sub Poll()
@@ -116,7 +121,7 @@ Public Sub close_not_logged_sockets_if_timeout()
 End Sub
 Private Sub OnServerConnect(ByVal Connection As Long, ByVal Address As String)
 On Error GoTo OnServerConnect_Err:
-  
+    NewFrameConnections = NewFrameConnections + 1
     If IsFeatureEnabled("debug_connections") Then
         Call AddLogToCircularBuffer("OnServerConnect connecting new user on id: " & Connection & " ip: " & Address)
     End If
@@ -207,7 +212,7 @@ On Error GoTo OnServerRecv_Err:
     
     Dim UserRef As t_UserReference
     UserRef = Mapping(Connection)
-
+    FramePacketCount = FramePacketCount + 1
     Call Protocol.HandleIncomingData(UserRef.ArrayIndex, Message)
     
     Exit Sub

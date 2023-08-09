@@ -13,7 +13,6 @@ Option Explicit
 'When we have a list of strings, we use this to separate them and prevent
 'having too many string lengths in the queue. Yes, each string is NULL-terminated :P
 Public Const SEPARATOR             As String * 1 = vbNullChar
-
 Public Enum ServerPacketID
     Connected
     logged                  ' LOGGED  0
@@ -1406,7 +1405,7 @@ On Error Resume Next
     If (Message.GetAvailable() > 0) Then
         Err.raise &HDEADBEEF, "HandleIncomingData", "El paquete '" & PacketID & "' se encuentra en mal estado con '" & Message.GetAvailable() & "' bytes de mas por el usuario '" & UserList(UserIndex).Name & "'"
     End If
-    Call PerformTimeLimitCheck(performance_timer, "Protocol handling message " & PacketId)
+    Call PerformTimeLimitCheck(performance_timer, "Protocol handling message " & PacketId, 100)
 HandleIncomingData_Err:
     
     Set Reader = Nothing
