@@ -57,7 +57,7 @@ Public Sub Poll()
     Call Server.Flush
 End Sub
 
-Public Sub Send(ByVal UserIndex As Long, ByVal Buffer As Network.Writer)
+Public Sub Send(ByVal UserIndex As Long, ByRef Buffer As Network.Writer)
     Call Server.Send(UserList(UserIndex).ConnID, False, Buffer)
 End Sub
 

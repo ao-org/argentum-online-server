@@ -3129,8 +3129,8 @@ End Sub
 ' log if there time betwen calls exced the limit
 Public Sub PerformTimeLimitCheck(ByRef timer As Long, ByRef TestText As String, Optional ByVal TimeLimit As Long = 1000)
     Dim CurrTime As Long
-    CurrTime = GetTickCount()
-    If CurrTime - timer > TimeLimit Then
+    CurrTime = GetTickCount() - timer
+    If CurrTime > TimeLimit Then
         Call LogPerformance("Performance warning at: " & TestText & " elapsed time: " & CurrTime - Timer)
     End If
     timer = GetTickCount()

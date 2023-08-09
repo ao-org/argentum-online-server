@@ -664,7 +664,25 @@ SendToUserAreaButindex_Err:
         
 End Sub
 
-Private Sub SendToUserAliveAreaButindex(ByVal UserIndex As Integer, ByVal Buffer As Network.Writer, Optional ByVal validateInvi As Boolean = False)
+Private Function CanSendToUser(ByRef SourceUser As t_User, ByRef TargetUser As t_User, ByVal TargetIndex As Integer, ByRef Buffer As Network.Writer, ByVal ValidateInvi As Boolean) As Boolean
+    If (TargetUser.AreasInfo.AreaReciveX And SourceUser.AreasInfo.AreaPerteneceX) = 0 Then Exit Function
+    If (TargetUser.AreasInfo.AreaReciveY And SourceUser.AreasInfo.AreaPerteneceY) = 0 Then Exit Function
+    If Not TargetUser.ConnIDValida Then Exit Function
+    If Not (TargetUser.flags.Muerto = 0 Or MapInfo(TargetUser.pos.Map).Seguro = 1 Or (SourceUser.GuildIndex > 0 And SourceUser.GuildIndex = TargetUser.GuildIndex)) Then Exit Function
+    If IsValidUserRef(TargetUser.flags.GMMeSigue) Then
+            Call modNetwork.Send(TargetUser.flags.GMMeSigue.ArrayIndex, Buffer)
+    End If
+    If Not EsGM(TargetIndex) Then
+        If SourceUser.flags.invisible + SourceUser.flags.Oculto > 0 And ValidateInvi And Not (TargetUser.GuildIndex > 0 And TargetUser.GuildIndex = SourceUser.GuildIndex And modGuilds.NivelDeClan(TargetUser.GuildIndex) >= 6) And SourceUser.flags.Navegando = 0 Then
+            If Distancia(SourceUser.pos, TargetUser.pos) > DISTANCIA_ENVIO_DATOS And SourceUser.Counters.timeFx + SourceUser.Counters.timeChat = 0 Then
+                Exit Function
+            End If
+        End If
+    End If
+    CanSendToUser = True
+End Function
+
+Private Sub SendToUserAliveAreaButindex(ByVal UserIndex As Integer, ByRef Buffer As Network.Writer, Optional ByVal ValidateInvi As Boolean = False)
         
         On Error GoTo SendToUserAliveAreaButindex_Err
         
@@ -675,69 +693,31 @@ Private Sub SendToUserAliveAreaButindex(ByVal UserIndex As Integer, ByVal Buffer
         '
         '**************************************************************
         Dim LoopC     As Long
-        Dim TempInt   As Integer
         Dim tempIndex As Integer
         Dim Map       As Integer
-        Dim AreaX     As Integer
-        Dim AreaY     As Integer
         Dim enviaDatos As Boolean
         
 100     If UserIndex = 0 Then Exit Sub
         
 102     Map = UserList(UserIndex).Pos.Map
-104     AreaX = UserList(UserIndex).AreasInfo.AreaPerteneceX
-106     AreaY = UserList(UserIndex).AreasInfo.AreaPerteneceY
-
-
-108     If Not MapaValido(Map) Then Exit Sub
-    
-110     For LoopC = 1 To ConnGroups(Map).CountEntrys
-112         tempIndex = ConnGroups(Map).UserEntrys(LoopC)
-            
-114         TempInt = UserList(tempIndex).AreasInfo.AreaReciveX And AreaX
-
-116         If TempInt Then  'Esta en el area?
-118             TempInt = UserList(tempIndex).AreasInfo.AreaReciveY And AreaY
-
-120             If TempInt Then
-122                 If tempIndex <> UserIndex Then
-124                     If UserList(tempIndex).ConnIDValida Then
-                            If UserList(tempIndex).flags.Muerto = 0 Or MapInfo(UserList(tempIndex).Pos.map).Seguro = 1 Or (UserList(UserIndex).GuildIndex > 0 And UserList(UserIndex).GuildIndex = UserList(tempIndex).GuildIndex) Then
-                                enviaDatos = True
-                                
-                                If Not EsGM(tempIndex) Then
-                                    If UserList(UserIndex).flags.invisible + UserList(UserIndex).flags.Oculto > 0 And validateInvi And Not (UserList(tempIndex).GuildIndex > 0 And UserList(tempIndex).GuildIndex = UserList(UserIndex).GuildIndex And modGuilds.NivelDeClan(UserList(tempIndex).GuildIndex) >= 6) And UserList(UserIndex).flags.Navegando = 0 Then
-                                        If Distancia(UserList(UserIndex).Pos, UserList(tempIndex).Pos) > DISTANCIA_ENVIO_DATOS And UserList(UserIndex).Counters.timeFx + UserList(UserIndex).Counters.timeChat = 0 Then
-                                            enviaDatos = False
-                                        End If
-                                    End If
-                                End If
-                                
-                                If IsValidUserRef(UserList(tempIndex).flags.GMMeSigue) Then
-                                        Call modNetwork.Send(UserList(tempIndex).flags.GMMeSigue.ArrayIndex, Buffer)
-                                End If
-                                
-                                If enviaDatos Then
-                                    Call modNetwork.Send(tempIndex, Buffer)
-                                End If
-                            End If
-                        End If
-
+        Dim PerformanceTimer As Long
+104     Call PerformanceTestStart(PerformanceTimer)
+106     If Not MapaValido(Map) Then Exit Sub
+108     With UserList(UserIndex)
+110         For LoopC = 1 To ConnGroups(Map).CountEntrys
+112             tempIndex = ConnGroups(Map).UserEntrys(LoopC)
+114             If tempIndex <> UserIndex Then
+116                 If CanSendToUser(UserList(UserIndex), UserList(tempIndex), tempIndex, Buffer, ValidateInvi) Then
+118                      Call modNetwork.Send(tempIndex, Buffer)
                     End If
-
                 End If
-
-            End If
-
-128     Next LoopC
-
-        
+120         Next LoopC
+122         Call PerformTimeLimitCheck(PerformanceTimer, "send to alive but index", 3)
+        End With
         Exit Sub
 
 SendToUserAliveAreaButindex_Err:
-130     Call TraceError(Err.Number, Err.Description, "modSendData.SendToUserAliveAreaButindex", Erl)
-
-        
+124     Call TraceError(Err.Number, Err.Description, "modSendData.SendToUserAliveAreaButindex", Erl)
 End Sub
 Private Sub SendToAdminAreaButIndex(ByVal UserIndex As Integer, ByVal Buffer As Network.Writer)
         
