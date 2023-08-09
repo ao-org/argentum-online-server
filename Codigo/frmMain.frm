@@ -714,7 +714,8 @@ End Sub
 Private Sub Segundo_Timer()
 
     On Error GoTo errhand
-
+    Dim PerformanceTimer As Long
+    Call PerformanceTestStart(PerformanceTimer)
     ' WyroX - Control de estabilidad del servidor
     Static LastTime As Currency
     Static Frequency As Currency
@@ -736,6 +737,7 @@ Private Sub Segundo_Timer()
 
     Call PasarSegundo 'sistema de desconexion de 10 segs
     Call CheckDisconnectedUsers
+    Call PerformTimeLimitCheck(PerformanceTimer, "Segundo_Timer", 100)
     Exit Sub
 
 errhand:
@@ -823,12 +825,14 @@ End Sub
 
 Private Sub t_Extraer_Timer()
     Dim i As Long
-    
+    Dim PerformanceTimer As Long
+    Call PerformanceTestStart(PerformanceTimer)
     For i = 1 To LastUser
         If UserList(i).Counters.Trabajando > 0 Then
             Call Trabajar(i, UserList(i).Trabajo.TargetSkill)
         End If
     Next i
+    Call PerformTimeLimitCheck(PerformanceTimer, "Segundo_Timer", 100)
 End Sub
 
 Private Sub T_UsersOnline_Timer()
@@ -895,12 +899,15 @@ Handler:
 End Sub
 
 Private Sub TimerBarco_Timer()
+    Dim PerformanceTimer As Long
+    Call PerformanceTestStart(PerformanceTimer)
     Call UpdateDock
     Call MsnEnbarque(ForgatDock)
     Call MsnEnbarque(NixDock)
+    Call PerformTimeLimitCheck(PerformanceTimer, "TimerBarco_Timer", 100)
 End Sub
-Private Function GetPassSlot(ByVal UserIndex As Integer) As Integer
 
+Private Function GetPassSlot(ByVal UserIndex As Integer) As Integer
 Dim i As Integer
     With UserList(UserIndex)
         For i = 1 To UBound(.invent.Object)
@@ -923,7 +930,6 @@ Private Sub MsnEnbarque(ByRef ShipInfo As t_Transport)
 102     For LoopC = 1 To ConnGroups(ShipInfo.map).CountEntrys
 104         tempIndex = ConnGroups(ShipInfo.map).UserEntrys(LoopC)
 106         If UserList(tempIndex).ConnIDValida And UserList(tempIndex).pos.x >= ShipInfo.startX And UserList(tempIndex).pos.x <= ShipInfo.EndX And UserList(tempIndex).pos.y >= ShipInfo.startY And UserList(tempIndex).pos.y <= ShipInfo.EndY Then
-                Debug.Print "encontre uno"
                 If Not GetPassSlot(tempIndex) > 0 Then
                     Call WriteLocaleMsg(tempIndex, MsgInvalidPass, e_FontTypeNames.FONTTYPE_GUILD)
                 Else
@@ -956,7 +962,6 @@ Private Sub UpdateDock()
 
     For TileX = BarcoNavegando.startX To BarcoNavegando.EndX
         For TileY = BarcoNavegando.startY To BarcoNavegando.EndY
-            Debug.Print "Miro en " & TileX & "," & TileY
             user = MapData(BarcoNavegando.map, TileX, TileY).UserIndex
             If user > 0 Then
                 If BarcoNavegando.CurrenDest = e_TripState.eForgatToNix Then
@@ -1021,7 +1026,8 @@ On Error GoTo Handler
     
     ' Guardar usuarios (solo si pasó el tiempo mínimo para guardar)
     Dim UserIndex As Integer, UserGuardados As Integer
-
+    Dim PerformanceTimer As Long
+    Call PerformanceTestStart(PerformanceTimer)
     For UserIndex = 1 To LastUser
     
         With UserList(UserIndex)
@@ -1042,7 +1048,7 @@ On Error GoTo Handler
         End With
 
     Next
-    
+    Call PerformTimeLimitCheck(PerformanceTimer, "TimerGuardarUsuarios_Timer", 100)
     Exit Sub
     
 Handler:
@@ -1100,7 +1106,7 @@ Private Sub Minuto_Timer()
 
 
     Call dump_stats
-    Call PerformTimeLimitCheck(PerformanceTimer, "ModAreas.AreasOptimizacion")
+    Call PerformTimeLimitCheck(PerformanceTimer, "Minuto_Timer", 500)
     Exit Sub
         
 ErrHandler:
@@ -1329,7 +1335,7 @@ Private Sub EstadoTimer_Timer()
     Call PerformanceTestStart(PerformanceTimer)
     For i = 1 To Baneos.Count
         If Baneos(i).FechaLiberacion <= Now Then
-            Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » Se ha concluido la sentencia de ban para " & Baneos(i).Name & ".", e_FontTypeNames.FONTTYPE_SERVER))
+            Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » Se ha concluido la sentencia de ban para " & Baneos(i).name & ".", e_FontTypeNames.FONTTYPE_SERVER))
             Call UnBan(Baneos(i).Name)
             Call Baneos.Remove(i)
             Call SaveBans
@@ -1627,7 +1633,7 @@ Private Sub KillLog_Timer()
     If Not FileExist(App.Path & "\logs\nokillwsapi.txt") Then
         If FileExist(App.Path & "\logs\wsapi.log", vbNormal) Then Kill App.Path & "\logs\wsapi.log"
     End If
-    Call PerformTimeLimitCheck(PerformanceTimer, "KillLog_Timer")
+    Call PerformTimeLimitCheck(PerformanceTimer, "KillLog_Timer", 100)
     Exit Sub
 KillLog_Timer_Err:
     Call TraceError(Err.Number, Err.Description, "frmMain.KillLog_Timer", Erl)
@@ -1934,7 +1940,7 @@ Private Sub tPiqueteC_Timer()
             End If
         End If
     Next i
-    Call PerformTimeLimitCheck(PerformanceTimer, "TimerRespawn_Timer")
+    Call PerformTimeLimitCheck(PerformanceTimer, "tPiqueteC_Timer", 100)
     If segundos >= 18 Then segundos = 0
     Exit Sub
 ErrHandler:

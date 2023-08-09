@@ -2774,8 +2774,11 @@ Sub HechizoPropNPC(ByVal hIndex As Integer, ByVal npcIndex As Integer, ByVal Use
 132         Call NPCAtacado(NpcIndex, UserIndex)
 134         Damage = RandomNumber(Hechizos(hIndex).MinHp, Hechizos(hIndex).MaxHp)
 136         Damage = Damage + Porcentaje(Damage, 3 * UserList(UserIndex).Stats.ELV)
+            Dim MagicPenetration As Integer
+            
 148         If UserList(UserIndex).invent.WeaponEqpObjIndex > 0 Then
 150             Damage = Damage + Porcentaje(Damage, ObjData(UserList(UserIndex).invent.WeaponEqpObjIndex).MagicDamageBonus)
+                MagicPenetration = ObjData(UserList(UserIndex).invent.WeaponEqpObjIndex).MagicPenetration
             End If
             ' Magic Damage ring
 152         If UserList(UserIndex).invent.DañoMagicoEqpObjIndex > 0 Then
@@ -2789,9 +2792,9 @@ Sub HechizoPropNPC(ByVal hIndex As Integer, ByVal npcIndex As Integer, ByVal Use
                 Dim DiffSkill As Integer
                 DiffSkill = NpcList(NpcIndex).Stats.MagicResistance - UserList(UserIndex).Stats.UserSkills(e_Skill.Magia)
                 If DiffSkill > 0 Then
-                    Damage = Damage - Porcentaje(Damage, NpcList(NpcIndex).Stats.MagicDef + DiffSkill * 2)
+                    Damage = Damage - Porcentaje(Damage, max(0, (NpcList(NpcIndex).Stats.MagicDef + DiffSkill * 2) - MagicPenetration))
                 Else
-                    Damage = Damage - Porcentaje(Damage, NpcList(NpcIndex).Stats.MagicDef)
+                    Damage = Damage - Porcentaje(Damage, max(0, NpcList(NpcIndex).Stats.MagicDef - MagicPenetration))
                 End If
             End If
             'Quizas tenga defenza magica el NPC.
