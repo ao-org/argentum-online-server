@@ -52,6 +52,10 @@ Private p_IteradorPropuesta     As Integer
 Private p_IteradorOnlineGMs     As Integer
 Private p_GuildNumber           As Integer      'Numero de guild en el mundo
 Private p_GuildId               As Long
+Private p_GuildLevel            As Integer
+Private p_CurrentExp            As Integer
+Private p_RequiredExp           As Integer
+Private p_GuildNews             As String
 Private Const NEWSLENGTH        As Integer = 1024
 Private Const DESCLENGTH        As Integer = 256
 Private Const CODEXLENGTH       As Integer = 256
@@ -448,12 +452,19 @@ SetNivelDeClan_Err:
 102     Call TraceError(Err.Number, Err.Description, "clsClan.SetNivelDeClan", Erl)
 End Sub
 
-Public Function GetNivelDeClan() As Byte
+Public Function GetNivelDeClan() As Integer
+    If p_GuildLevel = 0 Then
+        p_GuildLevel = GetStoredClanLevel
+    End If
+    GetNivelDeClan = p_GuildLevel
+End Function
+
+Public Function GetStoredClanLevel() As Byte
     On Error GoTo GetNivelDeClan_Err
         Dim RS As ADODB.Recordset
 100     Set RS = Query("SELECT level FROM guilds where id = ?", p_GuildId)
 102     If RS Is Nothing Then Exit Function
-104     GetNivelDeClan = RS.Fields(0).Value
+104     GetStoredClanLevel = RS.Fields(0).Value
         Exit Function
 GetNivelDeClan_Err:
     Call TraceError(Err.Number, Err.Description, "clsClan.GetNivelDeClan", Erl)
@@ -462,6 +473,7 @@ End Function
 Public Sub SetExpActual(ByRef Exp As Integer)
     On Error GoTo SetExpActual_Err
         Call UpdateGuildValue("current_exp", Exp)
+        p_CurrentExp = Exp
     Exit Sub
 SetExpActual_Err:
 102     Call TraceError(Err.Number, Err.Description, "clsClan.SetExpActual", Erl)
@@ -469,10 +481,13 @@ End Sub
 
 Public Function GetExpActual() As Integer
     On Error GoTo GetExpActual_Err
-        Dim RS As ADODB.Recordset
-100     Set RS = Query("SELECT current_exp FROM guilds where id = ?", p_GuildId)
-102     If RS Is Nothing Then Exit Function
-104     GetExpActual = RS.Fields(0).Value
+        If p_CurrentExp = 0 Then
+            Dim RS As ADODB.Recordset
+100         Set RS = Query("SELECT current_exp FROM guilds where id = ?", p_GuildId)
+102         If RS Is Nothing Then Exit Function
+104         p_CurrentExp = RS.Fields(0).Value
+        End If
+        GetExpActual = p_CurrentExp
         Exit Function
 GetExpActual_Err:
     Call TraceError(Err.Number, Err.Description, "clsClan.GetExpActual", Erl)
@@ -491,10 +506,13 @@ End Sub
 
 Public Function GetGuildNews() As String
     On Error GoTo GetGuildNews_Err
-        Dim RS As ADODB.Recordset
-100     Set RS = Query("SELECT news FROM guilds where id = ?", p_GuildId)
-102     If RS Is Nothing Then Exit Function
-104     GetGuildNews = RS.Fields(0).Value
+        If p_GuildNews = "" Then
+            Dim RS As ADODB.Recordset
+100         Set RS = Query("SELECT news FROM guilds where id = ?", p_GuildId)
+102         If RS Is Nothing Then Exit Function
+104         p_GuildNews = RS.Fields(0).Value
+        End If
+        GetGuildNews = p_GuildNews
         Exit Function
 GetGuildNews_Err:
     Call TraceError(Err.Number, Err.Description, "clsClan.GetGuildNews", Erl)

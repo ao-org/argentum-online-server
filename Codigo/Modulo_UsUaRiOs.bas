@@ -1387,7 +1387,7 @@ Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As e_Heading) A
         Dim Opposite_Heading As e_Heading
 
 100     With UserList(UserIndex)
-
+            
 102         nPos = .Pos
 104         Call HeadtoPos(nHeading, nPos)
 
@@ -1414,10 +1414,9 @@ Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As e_Heading) A
             Call SwapNpcPos(UserIndex, nPos, nHeading)
             'Si no estoy solo en el mapa...
 130         If MapInfo(.pos.map).NumUsers > 1 Or IsValidUserRef(.flags.GMMeSigue) Then
-
+                
                 ' Intercambia posición si hay un casper o gm invisible
 132             IndexMover = MapData(nPos.Map, nPos.X, nPos.Y).UserIndex
-            
 134             If IndexMover <> 0 Then
                     ' Sólo puedo patear caspers/gms invisibles si no es él un gm invisible
 136                ' If UserList(UserIndex).flags.AdminInvisible = 1 Then Exit Function
@@ -1446,7 +1445,6 @@ Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As e_Heading) A
                     'Actualizamos las areas de ser necesario
 156                 Call ModAreas.CheckUpdateNeededUser(IndexMover, Opposite_Heading, 0)
                 End If
-
 158             If .flags.AdminInvisible = 0 Then
                     If IsValidUserRef(.flags.GMMeSigue) Then
                         Call SendData(SendTarget.ToPCAreaButFollowerAndIndex, UserIndex, PrepareMessageCharacterMove(.Char.charindex, nPos.X, nPos.Y))
@@ -1454,7 +1452,6 @@ Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As e_Heading) A
                     Else
                         'Mando a todos menos a mi donde estoy
 160                     Call SendData(SendTarget.ToPCAliveAreaButIndex, userindex, PrepareMessageCharacterMove(.Char.charindex, nPos.X, nPos.y), True)
-                        
                         Dim LoopC As Integer
                         Dim tempIndex As Integer
                         
@@ -1462,14 +1459,14 @@ Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As e_Heading) A
                         .flags.stepToggle = Not .flags.stepToggle
                         
                         If Not EsGM(UserIndex) Then
-                            For LoopC = 1 To ConnGroups(UserList(UserIndex).Pos.map).CountEntrys
-                                tempIndex = ConnGroups(UserList(UserIndex).Pos.map).UserEntrys(LoopC)
-                                If tempIndex <> UserIndex Then
-                                    If UserList(tempIndex).AreasInfo.AreaReciveX And UserList(UserIndex).AreasInfo.AreaPerteneceX Then  'Esta en el area?
-                                        If UserList(tempIndex).AreasInfo.AreaReciveY And UserList(UserIndex).AreasInfo.AreaPerteneceY Then
-                                            If UserList(tempIndex).ConnIDValida Then
-                                                If UserList(tempIndex).flags.Muerto = 0 Or MapInfo(UserList(tempIndex).Pos.map).Seguro = 1 Then
-                                                    If .flags.invisible + .flags.Oculto > 0 Then
+                            If .flags.invisible + .flags.Oculto > 0 Then
+                                For LoopC = 1 To ConnGroups(UserList(UserIndex).pos.Map).CountEntrys
+                                    tempIndex = ConnGroups(UserList(UserIndex).pos.Map).UserEntrys(LoopC)
+                                    If tempIndex <> UserIndex Then
+                                        If UserList(tempIndex).AreasInfo.AreaReciveX And UserList(UserIndex).AreasInfo.AreaPerteneceX Then  'Esta en el area?
+                                            If UserList(tempIndex).AreasInfo.AreaReciveY And UserList(UserIndex).AreasInfo.AreaPerteneceY Then
+                                                If UserList(tempIndex).ConnIDValida Then
+                                                    If UserList(tempIndex).flags.Muerto = 0 Or MapInfo(UserList(tempIndex).pos.Map).Seguro = 1 Then
                                                         If Distancia(.Pos, UserList(tempIndex).Pos) > DISTANCIA_ENVIO_DATOS And .Counters.timeFx + .Counters.timeChat = 0 Then
                                                             If Abs(.Pos.X - UserList(tempIndex).Pos.X) <= RANGO_VISION_X And Abs(.Pos.y - UserList(tempIndex).Pos.y) <= RANGO_VISION_Y Then
                                                                 'Mandamos los pasos para los pjs q estan lejos para que simule que caminen.
@@ -1482,8 +1479,8 @@ Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As e_Heading) A
                                             End If
                                         End If
                                     End If
-                                End If
-123                         Next LoopC
+123                             Next LoopC
+                            End If
                             
                             Dim X As Byte, y As Byte
                             'Esto es para q si me acerco a un usuario que esta invisible y no se mueve me notifique su posicion
@@ -1496,10 +1493,7 @@ Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As e_Heading) A
                                     End If
                                 Next y
                             Next X
-                            
                         End If
-                        
-                        
                     End If
                 Else
 162                 Call SendData(SendTarget.ToAdminAreaButIndex, UserIndex, PrepareMessageCharacterMove(.Char.CharIndex, nPos.X, nPos.Y))
@@ -1525,7 +1519,6 @@ Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As e_Heading) A
 180         If .Counters.Ocultando Then .Counters.Ocultando = .Counters.Ocultando - 1
     
         End With
-    
 182     MoveUserChar = True
     
         Exit Function
