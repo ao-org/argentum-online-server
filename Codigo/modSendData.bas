@@ -695,13 +695,10 @@ Private Sub SendToUserAliveAreaButindex(ByVal UserIndex As Integer, ByRef Buffer
         Dim LoopC     As Long
         Dim tempIndex As Integer
         Dim Map       As Integer
-        Dim enviaDatos As Boolean
         
 100     If UserIndex = 0 Then Exit Sub
         
 102     Map = UserList(UserIndex).Pos.Map
-        Dim PerformanceTimer As Long
-104     Call PerformanceTestStart(PerformanceTimer)
 106     If Not MapaValido(Map) Then Exit Sub
 108     With UserList(UserIndex)
 110         For LoopC = 1 To ConnGroups(Map).CountEntrys
@@ -712,7 +709,6 @@ Private Sub SendToUserAliveAreaButindex(ByVal UserIndex As Integer, ByRef Buffer
                     End If
                 End If
 120         Next LoopC
-122         Call PerformTimeLimitCheck(PerformanceTimer, "send to alive but index", 3)
         End With
         Exit Sub
 
