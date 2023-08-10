@@ -1039,8 +1039,9 @@ On Error GoTo Handler
                     
                     UserGuardados = UserGuardados + 1
                     
-                    If UserGuardados > NumUsers / IntervaloGuardarUsuarios * IntervaloTimerGuardarUsuarios Then Exit For
-    
+                    If UserGuardados > NumUsers Then Exit For
+                    'limit the amount of time we block the only thread we have here, lets save some user on the next loop
+                    If (GetTickCount - PerformanceTimer) > IntervaloGuardarUsuarios Then Exit For
                 End If
     
             End If

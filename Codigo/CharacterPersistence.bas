@@ -402,7 +402,8 @@ End Sub
 Public Sub SaveCharacterDB(ByVal userIndex As Integer)
 
         On Error GoTo ErrorHandler
-    
+        Dim PerformanceTimer As Long
+        Call PerformanceTestStart(PerformanceTimer)
         Dim Params() As Variant
         Dim LoopC As Long
         Dim ParamC As Long
@@ -670,9 +671,9 @@ Public Sub SaveCharacterDB(ByVal userIndex As Integer)
 
 626                 Call Builder.Clear
                 End If
-                
+        Call PerformTimeLimitCheck(PerformanceTimer, "save character id:" & .id, 50)
         End With
-    
+        
         Exit Sub
 
 ErrorHandler:
