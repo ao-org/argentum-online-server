@@ -447,6 +447,7 @@ End Function
 Public Sub SetNivelDeClan(ByRef nivel As Byte)
     On Error GoTo SetNivelDeClan_Err
         Call UpdateGuildValue("level", nivel)
+        p_GuildLevel = nivel
         Exit Sub
 SetNivelDeClan_Err:
 102     Call TraceError(Err.Number, Err.Description, "clsClan.SetNivelDeClan", Erl)
