@@ -561,34 +561,32 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
-'Argentum Online 0.11.6
-'Copyright (C) 2002 Márquez Pablo Ignacio
+' Argentum 20 Game Server
 '
-'This program is free software; you can redistribute it and/or modify
-'it under the terms of the Affero General Public License;
-'either version 1 of the License, or any later version.
+'    Copyright (C) 2023 Noland Studios LTD
 '
-'This program is distributed in the hope that it will be useful,
-'but WITHOUT ANY WARRANTY; without even the implied warranty of
-'MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-'Affero General Public License for more details.
+'    This program is free software: you can redistribute it and/or modify
+'    it under the terms of the GNU Affero General Public License as published by
+'    the Free Software Foundation, either version 3 of the License, or
+'    (at your option) any later version.
 '
-'You should have received a copy of the Affero General Public License
-'along with this program; if not, you can find it at http://www.affero.org/oagpl.html
+'    This program is distributed in the hope that it will be useful,
+'    but WITHOUT ANY WARRANTY; without even the implied warranty of
+'    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+'    GNU Affero General Public License for more details.
 '
-'Argentum Online is based on Baronsoft's VB6 Online RPG
-'You can contact the original creator of ORE at aaron@baronsoft.com
-'for more information about ORE please visit http://www.baronsoft.com/
+'    You should have received a copy of the GNU Affero General Public License
+'    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+'
+'    This program was based on Argentum Online 0.11.6
+'    Copyright (C) 2002 Márquez Pablo Ignacio
+'
+'    Argentum Online is based on Baronsoft's VB6 Online RPG
+'    You can contact the original creator of ORE at aaron@baronsoft.com
+'    for more information about ORE please visit http://www.baronsoft.com/
 '
 '
-'You can contact me at:
-'morgolock@speedy.com.ar
-'www.geocities.com/gmorgolock
-'Calle 3 número 983 piso 7 dto A
-'La Plata - Pcia, Buenos Aires - Republica Argentina
-'Código Postal 1900
-'Pablo Ignacio Márquez
-
+'
 Option Explicit
 
 Public ESCUCHADAS As Long
@@ -1336,7 +1334,7 @@ Private Sub EstadoTimer_Timer()
     Call PerformanceTestStart(PerformanceTimer)
     For i = 1 To Baneos.Count
         If Baneos(i).FechaLiberacion <= Now Then
-            Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » Se ha concluido la sentencia de ban para " & Baneos(i).name & ".", e_FontTypeNames.FONTTYPE_SERVER))
+            Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » Se ha concluido la sentencia de ban para " & Baneos(i).Name & ".", e_FontTypeNames.FONTTYPE_SERVER))
             Call UnBan(Baneos(i).Name)
             Call Baneos.Remove(i)
             Call SaveBans

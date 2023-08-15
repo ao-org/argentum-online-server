@@ -1,11 +1,29 @@
 Attribute VB_Name = "ModRetos"
-'********************* COPYRIGHT NOTICE*********************
-' Copyright (c) 2021-22 Martin Trionfetti, Pablo Marquez
-' www.ao20.com.ar
-' All rights reserved.
-' Refer to licence for conditions of use.
-' This copyright notice must always be left intact.
-'****************** END OF COPYRIGHT NOTICE*****************
+' Argentum 20 Game Server
+'
+'    Copyright (C) 2023 Noland Studios LTD
+'
+'    This program is free software: you can redistribute it and/or modify
+'    it under the terms of the GNU Affero General Public License as published by
+'    the Free Software Foundation, either version 3 of the License, or
+'    (at your option) any later version.
+'
+'    This program is distributed in the hope that it will be useful,
+'    but WITHOUT ANY WARRANTY; without even the implied warranty of
+'    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+'    GNU Affero General Public License for more details.
+'
+'    You should have received a copy of the GNU Affero General Public License
+'    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+'
+'    This program was based on Argentum Online 0.11.6
+'    Copyright (C) 2002 Márquez Pablo Ignacio
+'
+'    Argentum Online is based on Baronsoft's VB6 Online RPG
+'    You can contact the original creator of ORE at aaron@baronsoft.com
+'    for more information about ORE please visit http://www.baronsoft.com/
+'
+'
 '
 Option Explicit
 
@@ -72,7 +90,7 @@ Public Sub CrearReto(ByVal UserIndex As Integer, JugadoresStr As String, ByVal A
 104             Call CancelarSolicitudReto(UserIndex, .Name & " ha cancelado la solicitud.")
 
 106         ElseIf IsValidUserRef(.flags.AceptoReto) Then
-108             Call CancelarSolicitudReto(.flags.AceptoReto.ArrayIndex, .name & " ha cancelado su admisión.")
+108             Call CancelarSolicitudReto(.flags.AceptoReto.ArrayIndex, .Name & " ha cancelado su admisión.")
             End If
         
 110         Dim TamanoReal As Byte: TamanoReal = Retos.TamañoMaximoEquipo * 2 - 1
@@ -194,7 +212,7 @@ Public Sub AceptarReto(ByVal UserIndex As Integer, OferenteName As String)
 106             Call CancelarSolicitudReto(UserIndex, .Name & " ha cancelado la solicitud.")
             
 108         ElseIf IsValidUserRef(.flags.AceptoReto) Then
-110             Call CancelarSolicitudReto(.flags.AceptoReto.ArrayIndex, .name & " ha cancelado su admisión.")
+110             Call CancelarSolicitudReto(.flags.AceptoReto.ArrayIndex, .Name & " ha cancelado su admisión.")
             End If
         End With
     
@@ -219,7 +237,7 @@ Public Sub AceptarReto(ByVal UserIndex As Integer, OferenteName As String)
 124     JugadorIndex = IndiceJugadorEnSolicitud(UserIndex, Oferente.ArrayIndex)
 
 126     If JugadorIndex < 0 Then
-128         Call WriteConsoleMsg(UserIndex, UserList(Oferente.ArrayIndex).name & " no te ha invitado a ningún reto o ha sido cancelado.", e_FontTypeNames.FONTTYPE_INFO)
+128         Call WriteConsoleMsg(UserIndex, UserList(Oferente.ArrayIndex).Name & " no te ha invitado a ningún reto o ha sido cancelado.", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
 
@@ -643,13 +661,13 @@ Public Sub FinalizarReto(ByVal Sala As Integer, Optional ByVal TiempoAgotado As 
                         ' Nombres
 150                     If i Mod 2 Then
 152                         If LenB(Equipo2) > 0 Then
-154                             Equipo2 = Equipo2 & IIf((i + 1) \ 2 < .TamañoEquipoDer - 2, ", ", " y ") & UserList(tUser.ArrayIndex).name
+154                             Equipo2 = Equipo2 & IIf((i + 1) \ 2 < .TamañoEquipoDer - 2, ", ", " y ") & UserList(tUser.ArrayIndex).Name
                             Else
 156                             Equipo2 = UserList(tUser.ArrayIndex).name
                             End If
                         Else
 158                         If LenB(Equipo1) > 0 Then
-160                             Equipo1 = Equipo2 & IIf(i \ 2 < .TamañoEquipoIzq - 2, ", ", " y ") & UserList(tUser.ArrayIndex).name
+160                             Equipo1 = Equipo2 & IIf(i \ 2 < .TamañoEquipoIzq - 2, ", ", " y ") & UserList(tUser.ArrayIndex).Name
                             Else
 162                             Equipo1 = UserList(tUser.ArrayIndex).name
                             End If
@@ -717,13 +735,13 @@ Public Sub FinalizarReto(ByVal Sala As Integer, Optional ByVal TiempoAgotado As 
 228                     If i Mod 2 Then
                     
 230                         If LenB(Equipo2) > 0 Then
-232                             Equipo2 = Equipo2 & IIf((i + 1) \ 2 < .TamañoEquipoDer - 2, ", ", " y ") & UserList(tUser.ArrayIndex).name
+232                             Equipo2 = Equipo2 & IIf((i + 1) \ 2 < .TamañoEquipoDer - 2, ", ", " y ") & UserList(tUser.ArrayIndex).Name
                             Else
 234                             Equipo2 = UserList(tUser.ArrayIndex).name
                             End If
                         Else
 236                         If LenB(Equipo1) > 0 Then
-238                             Equipo1 = Equipo1 & IIf(i \ 2 < .TamañoEquipoIzq - 2, ", ", " y ") & UserList(tUser.ArrayIndex).name
+238                             Equipo1 = Equipo1 & IIf(i \ 2 < .TamañoEquipoIzq - 2, ", ", " y ") & UserList(tUser.ArrayIndex).Name
                             Else
 240                             Equipo1 = UserList(tUser.ArrayIndex).name
                             End If
@@ -1136,7 +1154,7 @@ Private Function TodosPuedenReto(ByVal Oferente As Integer) As Boolean
 
 110         ElseIf .PocionesMaximas >= 0 Then
 112             If TieneObjetos(38, .PocionesMaximas + 1, Oferente) Then
-114                 Call CancelarSolicitudReto(Oferente, UserList(Oferente).name & " tiene demasiadas pociones rojas (Cantidad máxima: " & .PocionesMaximas & ").")
+114                 Call CancelarSolicitudReto(Oferente, UserList(Oferente).Name & " tiene demasiadas pociones rojas (Cantidad máxima: " & .PocionesMaximas & ").")
                     Exit Function
                 End If
             End If
@@ -1155,7 +1173,7 @@ Private Function TodosPuedenReto(ByVal Oferente As Integer) As Boolean
                 
 126             ElseIf .PocionesMaximas >= 0 Then
 128                 If TieneObjetos(38, .PocionesMaximas + 1, Oferente) Then
-130                     Call CancelarSolicitudReto(Oferente, UserList(.Jugadores(i).CurIndex.ArrayIndex).name & " tiene demasiadas pociones rojas (Cantidad máxima: " & .PocionesMaximas & ").")
+130                     Call CancelarSolicitudReto(Oferente, UserList(.Jugadores(i).CurIndex.ArrayIndex).Name & " tiene demasiadas pociones rojas (Cantidad máxima: " & .PocionesMaximas & ").")
                         Exit Function
                     End If
                 End If

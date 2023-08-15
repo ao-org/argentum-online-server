@@ -1,11 +1,29 @@
 Attribute VB_Name = "ModGrupos"
-'********************* COPYRIGHT NOTICE*********************
-' Copyright (c) 2021-22 Martin Trionfetti, Pablo Marquez
-' www.ao20.com.ar
-' All rights reserved.
-' Refer to licence for conditions of use.
-' This copyright notice must always be left intact.
-'****************** END OF COPYRIGHT NOTICE*****************
+' Argentum 20 Game Server
+'
+'    Copyright (C) 2023 Noland Studios LTD
+'
+'    This program is free software: you can redistribute it and/or modify
+'    it under the terms of the GNU Affero General Public License as published by
+'    the Free Software Foundation, either version 3 of the License, or
+'    (at your option) any later version.
+'
+'    This program is distributed in the hope that it will be useful,
+'    but WITHOUT ANY WARRANTY; without even the implied warranty of
+'    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+'    GNU Affero General Public License for more details.
+'
+'    You should have received a copy of the GNU Affero General Public License
+'    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+'
+'    This program was based on Argentum Online 0.11.6
+'    Copyright (C) 2002 Márquez Pablo Ignacio
+'
+'    Argentum Online is based on Baronsoft's VB6 Online RPG
+'    You can contact the original creator of ORE at aaron@baronsoft.com
+'    for more information about ORE please visit http://www.baronsoft.com/
+'
+'
 '
 
 Public Grupo As Tgrupo
@@ -120,20 +138,20 @@ Public Sub EcharMiembro(ByVal UserIndex As Integer, ByVal Indice As Byte)
 100     With UserList(UserIndex).Grupo
             GroupLider = .Lider.ArrayIndex
 102         If Not .EnGrupo Then
-104             Call WriteConsoleMsg(userindex, "No estás en ningun grupo", e_FontTypeNames.FONTTYPE_New_GRUPO)
+104             Call WriteConsoleMsg(UserIndex, "No estás en ningun grupo", e_FontTypeNames.FONTTYPE_New_GRUPO)
                 Exit Sub
         
             End If
     
 106         If .Lider.ArrayIndex <> userIndex Then
-108             Call WriteConsoleMsg(userIndex, "No podés echar a usuarios del grupo", e_FontTypeNames.FONTTYPE_New_GRUPO)
+108             Call WriteConsoleMsg(UserIndex, "No podés echar a usuarios del grupo", e_FontTypeNames.FONTTYPE_New_GRUPO)
                 Exit Sub
             End If
         
 110         UserIndexEchar = UserList(.Lider.ArrayIndex).Grupo.Miembros(Indice + 1).ArrayIndex
 
 112         If UserIndexEchar = userIndex Then
-114             Call WriteConsoleMsg(userIndex, "No podés expulsarte a ti mismo.", e_FontTypeNames.FONTTYPE_New_GRUPO)
+114             Call WriteConsoleMsg(UserIndex, "No podés expulsarte a ti mismo.", e_FontTypeNames.FONTTYPE_New_GRUPO)
                 Exit Sub
             End If
 

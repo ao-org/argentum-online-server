@@ -1,40 +1,30 @@
 Attribute VB_Name = "Trabajo"
-'********************* COPYRIGHT NOTICE*********************
-' Copyright (c) 2021-22 Martin Trionfetti, Pablo Marquez
-' www.ao20.com.ar
-' All rights reserved.
-' Refer to licence for conditions of use.
-' This copyright notice must always be left intact.
-'****************** END OF COPYRIGHT NOTICE*****************
+' Argentum 20 Game Server
 '
-'Argentum Online 0.11.6
-'Copyright (C) 2002 Márquez Pablo Ignacio
+'    Copyright (C) 2023 Noland Studios LTD
 '
-'This program is free software; you can redistribute it and/or modify
-'it under the terms of the Affero General Public License;
-'either version 1 of the License, or any later version.
+'    This program is free software: you can redistribute it and/or modify
+'    it under the terms of the GNU Affero General Public License as published by
+'    the Free Software Foundation, either version 3 of the License, or
+'    (at your option) any later version.
 '
-'This program is distributed in the hope that it will be useful,
-'but WITHOUT ANY WARRANTY; without even the implied warranty of
-'MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-'Affero General Public License for more details.
+'    This program is distributed in the hope that it will be useful,
+'    but WITHOUT ANY WARRANTY; without even the implied warranty of
+'    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+'    GNU Affero General Public License for more details.
 '
-'You should have received a copy of the Affero General Public License
-'along with this program; if not, you can find it at http://www.affero.org/oagpl.html
+'    You should have received a copy of the GNU Affero General Public License
+'    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '
-'Argentum Online is based on Baronsoft's VB6 Online RPG
-'You can contact the original creator of ORE at aaron@baronsoft.com
-'for more information about ORE please visit http://www.baronsoft.com/
+'    This program was based on Argentum Online 0.11.6
+'    Copyright (C) 2002 Márquez Pablo Ignacio
+'
+'    Argentum Online is based on Baronsoft's VB6 Online RPG
+'    You can contact the original creator of ORE at aaron@baronsoft.com
+'    for more information about ORE please visit http://www.baronsoft.com/
 '
 '
-'You can contact me at:
-'morgolock@speedy.com.ar
-'www.geocities.com/gmorgolock
-'Calle 3 número 983 piso 7 dto A
-'La Plata - Pcia, Buenos Aires - Republica Argentina
-'Código Postal 1900
-'Pablo Ignacio Márquez
-
+'
 Option Explicit
 
 Public Const GOLD_OBJ_INDEX As Long = 12
@@ -1937,7 +1927,7 @@ On Error GoTo ErrHandler
 178                         If Not MeterItemEnInventario(UserIndex, MiObj) Then Call TirarItemAlPiso(.pos, MiObj)
                         
                             ' Le mandamos un mensaje
-180                         Call WriteConsoleMsg(UserIndex, "¡Has conseguido " & ObjData(EspecialesPesca(i).ObjIndex).name & "!", e_FontTypeNames.FONTTYPE_INFO)
+180                         Call WriteConsoleMsg(UserIndex, "¡Has conseguido " & ObjData(EspecialesPesca(i).ObjIndex).Name & "!", e_FontTypeNames.FONTTYPE_INFO)
                         End If
     
                     Next
@@ -2199,7 +2189,7 @@ Public Sub DoRobar(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
             
                 Else
 272                 Call WriteConsoleMsg(LadronIndex, "¡No has logrado robar nada!", e_FontTypeNames.FONTTYPE_INFO)
-274                 Call WriteConsoleMsg(VictimaIndex, "¡" & .name & " ha intentado robarte!", e_FontTypeNames.FONTTYPE_INFO)
+274                 Call WriteConsoleMsg(VictimaIndex, "¡" & .Name & " ha intentado robarte!", e_FontTypeNames.FONTTYPE_INFO)
                 
 276                 Call SubirSkill(LadronIndex, e_Skill.Robar)
 
@@ -2698,7 +2688,7 @@ Public Sub DoMineria(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byt
 154                     If Not MeterItemEnInventario(UserIndex, MiObj) Then Call TirarItemAlPiso(.Pos, MiObj)
 
                         ' Le mandamos un mensaje
-156                     Call WriteConsoleMsg(UserIndex, "¡Has conseguido " & ObjData(Yacimiento.Item(i).ObjIndex).name & "!", e_FontTypeNames.FONTTYPE_INFO)
+156                     Call WriteConsoleMsg(UserIndex, "¡Has conseguido " & ObjData(Yacimiento.Item(i).ObjIndex).Name & "!", e_FontTypeNames.FONTTYPE_INFO)
                     End If
     
                 Next
@@ -3198,10 +3188,10 @@ On Error GoTo ThrowNetToTarget_Err:
                 Exit Sub
             End If
 132         If UserList(tU).flags.Paralizado = 1 Then
-134             Call WriteConsoleMsg(UserIndex, UserList(tU).name & " ya está paralizado.", e_FontTypeNames.FONTTYPE_FIGHT)
+134             Call WriteConsoleMsg(UserIndex, UserList(tU).Name & " ya está paralizado.", e_FontTypeNames.FONTTYPE_FIGHT)
                 Exit Sub
 136         ElseIf UserList(tU).flags.Inmovilizado = 1 Then
-138             Call WriteConsoleMsg(UserIndex, UserList(tU).name & " ya está inmovilizado.", e_FontTypeNames.FONTTYPE_FIGHT)
+138             Call WriteConsoleMsg(UserIndex, UserList(tU).Name & " ya está inmovilizado.", e_FontTypeNames.FONTTYPE_FIGHT)
                 Exit Sub
             End If
             

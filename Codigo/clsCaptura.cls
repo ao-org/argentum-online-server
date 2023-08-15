@@ -11,6 +11,32 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
+' Argentum 20 Game Server
+'
+'    Copyright (C) 2023 Noland Studios LTD
+'
+'    This program is free software: you can redistribute it and/or modify
+'    it under the terms of the GNU Affero General Public License as published by
+'    the Free Software Foundation, either version 3 of the License, or
+'    (at your option) any later version.
+'
+'    This program is distributed in the hope that it will be useful,
+'    but WITHOUT ANY WARRANTY; without even the implied warranty of
+'    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+'    GNU Affero General Public License for more details.
+'
+'    You should have received a copy of the GNU Affero General Public License
+'    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+'
+'    This program was based on Argentum Online 0.11.6
+'    Copyright (C) 2002 Márquez Pablo Ignacio
+'
+'    Argentum Online is based on Baronsoft's VB6 Online RPG
+'    You can contact the original creator of ORE at aaron@baronsoft.com
+'    for more information about ORE please visit http://www.baronsoft.com/
+'
+'
+'
 Option Explicit
 
 Private participantes As Collection
@@ -139,7 +165,7 @@ Public Sub PasarSegundo()
                             If contadorBandera(Team) >= CAPTURA_TIEMPO_BANDERA Then
                                 Call finalizarRonda(Team)
                             Else
-                                Call SendData(SendTarget.ToJugadoresCaptura, 0, PrepareMessageConsoleMsg("Eventos» ¡Atención! " & .name & " del equipo " & colorEquipo(Team) & " tiene la bandera enemiga en su base, si aguanta " & CAPTURA_TIEMPO_BANDERA - contadorBandera(Team) & " segundos más ganará la ronda.", e_FontTypeNames.FONTTYPE_GUILD))
+                                Call SendData(SendTarget.ToJugadoresCaptura, 0, PrepareMessageConsoleMsg("Eventos» ¡Atención! " & .Name & " del equipo " & colorEquipo(team) & " tiene la bandera enemiga en su base, si aguanta " & CAPTURA_TIEMPO_BANDERA - contadorBandera(team) & " segundos más ganará la ronda.", e_FontTypeNames.FONTTYPE_GUILD))
                             End If
                             
                         End If
@@ -222,7 +248,7 @@ Private Sub iniciarCaptura()
             UserList(participante.PlayerIndex).flags.CurrentTeam = team
             UserList(participante.PlayerIndex).flags.tiene_bandera = 0
              Call SendData(SendTarget.ToAll, participante.PlayerIndex, PrepareMessageUpdateFlag(UserList(participante.PlayerIndex).flags.tiene_bandera, UserList(participante.PlayerIndex).Char.charindex))
-            Call WriteConsoleMsg(participante.PlayerIndex, "Te ha tocado participar en el equipo " & colorEquipo(participante.Team) & " deberás proteger a tus compañeros de equipo y capturar la bandera del equipo contrario para ganar.", e_FontTypeNames.FONTTYPE_GUILD)
+            Call WriteConsoleMsg(participante.PlayerIndex, "Te ha tocado participar en el equipo " & colorEquipo(participante.team) & " deberás proteger a tus compañeros de equipo y capturar la bandera del equipo contrario para ganar.", e_FontTypeNames.FONTTYPE_GUILD)
             counter = counter + 1
             If counter = 2 Then
                 Team = IIf(Team = 1, 2, 1)
@@ -241,7 +267,7 @@ Public Sub muereUsuario(ByVal UserIndex As Integer)
         If .flags.CurrentTeam <= 0 Then
             Exit Sub
         End If
-        Call SendData(SendTarget.ToJugadoresCaptura, 0, PrepareMessageConsoleMsg("Eventos» " & .name & " del equipo " & colorEquipo(.flags.CurrentTeam) & " ha muerto en batalla.", e_FontTypeNames.FONTTYPE_GUILD))
+        Call SendData(SendTarget.ToJugadoresCaptura, 0, PrepareMessageConsoleMsg("Eventos» " & .Name & " del equipo " & colorEquipo(.flags.CurrentTeam) & " ha muerto en batalla.", e_FontTypeNames.FONTTYPE_GUILD))
         
         Call tirarBandera(UserIndex)
         
@@ -305,7 +331,7 @@ Public Sub quitarBandera(ByVal UserIndex As Integer, ByVal objIndex As Integer)
         End If
                 
         If banderaTeam <> .flags.CurrentTeam Then
-            Call SendData(SendTarget.ToJugadoresCaptura, 0, PrepareMessageConsoleMsg("Eventos» ¡Atención! " & .name & " del equipo " & colorEquipo(.flags.CurrentTeam) & " ha tomado la bandera del equipo " & colorEquipo(banderaTeam) & ".", e_FontTypeNames.FONTTYPE_GUILD))
+            Call SendData(SendTarget.ToJugadoresCaptura, 0, PrepareMessageConsoleMsg("Eventos» ¡Atención! " & .Name & " del equipo " & colorEquipo(.flags.CurrentTeam) & " ha tomado la bandera del equipo " & colorEquipo(banderaTeam) & ".", e_FontTypeNames.FONTTYPE_GUILD))
             UserList(UserIndex).flags.tiene_bandera = banderaTeam
         Else
             UserList(UserIndex).flags.tiene_bandera = 0
@@ -336,7 +362,7 @@ Public Sub tiraBandera(ByVal UserIndex As Integer, ByVal objIndex As Integer)
         UserList(UserIndex).flags.tiene_bandera = 0
         
         Call SendData(SendTarget.ToAll, UserIndex, PrepareMessageUpdateFlag(UserList(UserIndex).flags.tiene_bandera, UserList(UserIndex).Char.charindex))
-        Call SendData(SendTarget.ToJugadoresCaptura, 0, PrepareMessageConsoleMsg("Eventos» ¡Atención! la bandera del equipo " & colorEquipo(Team) & " se encuentra en (" & .pos.map & "," & .pos.X & "," & .pos.y & ")", e_FontTypeNames.FONTTYPE_GUILD))
+        Call SendData(SendTarget.ToJugadoresCaptura, 0, PrepareMessageConsoleMsg("Eventos» ¡Atención! la bandera del equipo " & colorEquipo(team) & " se encuentra en (" & .Pos.Map & "," & .Pos.X & "," & .Pos.Y & ")", e_FontTypeNames.FONTTYPE_GUILD))
         
     End With
 End Sub
@@ -368,7 +394,7 @@ Public Sub tirarBandera(ByVal UserIndex As Integer)
                 MiObj.objIndex = objBandera
             
                 Call TirarItemAlPiso(.Pos, MiObj, False)
-                Call SendData(SendTarget.ToJugadoresCaptura, 0, PrepareMessageConsoleMsg("Eventos» ¡Atención! la bandera del equipo " & colorEquipo(Team) & " se encuentra en (" & .pos.map & "," & .pos.X & "," & .pos.y & ")", e_FontTypeNames.FONTTYPE_GUILD))
+                Call SendData(SendTarget.ToJugadoresCaptura, 0, PrepareMessageConsoleMsg("Eventos» ¡Atención! la bandera del equipo " & colorEquipo(team) & " se encuentra en (" & .Pos.Map & "," & .Pos.X & "," & .Pos.Y & ")", e_FontTypeNames.FONTTYPE_GUILD))
             End If
             
         End If
@@ -467,7 +493,7 @@ Public Sub finalizarCaptura(Optional Team As Integer = -1)
     
         'Hay premios???
     
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos» ¡El evento de captura la bandera ha terminado! Ganador el equipo " & colorEquipo(Team) & ".", e_FontTypeNames.FONTTYPE_GUILD))
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos» ¡El evento de captura la bandera ha terminado! Ganador el equipo " & colorEquipo(team) & ".", e_FontTypeNames.FONTTYPE_GUILD))
     End If
 
     
@@ -481,7 +507,7 @@ End Sub
 
 Public Sub finalizarRonda(ByVal Team As Byte)
 
-    Call SendData(SendTarget.ToJugadoresCaptura, 0, PrepareMessageConsoleMsg("Eventos» ¡El equipo " & colorEquipo(Team) & " ha ganado la ronda " & ronda_actual & "!", e_FontTypeNames.FONTTYPE_GUILD))
+    Call SendData(SendTarget.ToJugadoresCaptura, 0, PrepareMessageConsoleMsg("Eventos» ¡El equipo " & colorEquipo(team) & " ha ganado la ronda " & ronda_actual & "!", e_FontTypeNames.FONTTYPE_GUILD))
     'El sonido de fundar clan para hacerlo mas magestuoso, mirar si hay un sonido mejor
     Call SendData(SendTarget.ToJugadoresCaptura, 0, PrepareMessagePlayWave(44, NO_3D_SOUND, NO_3D_SOUND))
     

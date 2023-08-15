@@ -1,26 +1,39 @@
 Attribute VB_Name = "Hogar"
-'********************* COPYRIGHT NOTICE*********************
-' Copyright (c) 2021-22 Martin Trionfetti, Pablo Marquez
-' www.ao20.com.ar
-' All rights reserved.
-' Refer to licence for conditions of use.
-' This copyright notice must always be left intact.
-'****************** END OF COPYRIGHT NOTICE*****************
+' Argentum 20 Game Server
+'
+'    Copyright (C) 2023 Noland Studios LTD
+'
+'    This program is free software: you can redistribute it and/or modify
+'    it under the terms of the GNU Affero General Public License as published by
+'    the Free Software Foundation, either version 3 of the License, or
+'    (at your option) any later version.
+'
+'    This program is distributed in the hope that it will be useful,
+'    but WITHOUT ANY WARRANTY; without even the implied warranty of
+'    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+'    GNU Affero General Public License for more details.
+'
+'    You should have received a copy of the GNU Affero General Public License
+'    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+'
+'    This program was based on Argentum Online 0.11.6
+'    Copyright (C) 2002 Márquez Pablo Ignacio
+'
+'    Argentum Online is based on Baronsoft's VB6 Online RPG
+'    You can contact the original creator of ORE at aaron@baronsoft.com
+'    for more information about ORE please visit http://www.baronsoft.com/
+'
+'
+'
 '
 Option Explicit
 
-'Cantidad de Ciudades
 Public Const NUMCIUDADES    As Byte = 6
 
 Public Ciudades(1 To NUMCIUDADES)         As t_WorldPos
 
 Public Sub goHome(ByVal UserIndex As Integer)
-        '***************************************************
-        'Author: Budi
-        'Last Modification: 01/06/2010
-        '01/06/2010: ZaMa - Ahora usa otro tipo de intervalo
-        '***************************************************
-        
+      
         On Error GoTo goHome_Err
         
 100     With UserList(UserIndex)

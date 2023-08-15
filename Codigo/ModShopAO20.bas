@@ -1,11 +1,29 @@
 Attribute VB_Name = "ModShopAO20"
-'********************* COPYRIGHT NOTICE*********************
-' Copyright (c) 2021-22 Martin Trionfetti, Pablo Marquez
-' www.ao20.com.ar
-' All rights reserved.
-' Refer to licence for conditions of use.
-' This copyright notice must always be left intact.
-'****************** END OF COPYRIGHT NOTICE*****************
+' Argentum 20 Game Server
+'
+'    Copyright (C) 2023 Noland Studios LTD
+'
+'    This program is free software: you can redistribute it and/or modify
+'    it under the terms of the GNU Affero General Public License as published by
+'    the Free Software Foundation, either version 3 of the License, or
+'    (at your option) any later version.
+'
+'    This program is distributed in the hope that it will be useful,
+'    but WITHOUT ANY WARRANTY; without even the implied warranty of
+'    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+'    GNU Affero General Public License for more details.
+'
+'    You should have received a copy of the GNU Affero General Public License
+'    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+'
+'    This program was based on Argentum Online 0.11.6
+'    Copyright (C) 2002 Márquez Pablo Ignacio
+'
+'    Argentum Online is based on Baronsoft's VB6 Online RPG
+'    You can contact the original creator of ORE at aaron@baronsoft.com
+'    for more information about ORE please visit http://www.baronsoft.com/
+'
+'
 '
 Option Explicit
 
@@ -19,14 +37,14 @@ On Error GoTo init_transaction_Err
         
         'Me fijo si es un item de shop
 104     If Not is_purchaseable_item(obj) Then
-106         Call WriteConsoleMsg(userIndex, "Error al realizar la transacción", e_FontTypeNames.FONTTYPE_INFO)
-108         Call LogShopErrors("El usuario " & .name & " intentó comprar un objeto que no es de shop (REVISAR) | " & obj.name)
+106         Call WriteConsoleMsg(UserIndex, "Error al realizar la transacción", e_FontTypeNames.FONTTYPE_INFO)
+108         Call LogShopErrors("El usuario " & .Name & " intentó comprar un objeto que no es de shop (REVISAR) | " & obj.Name)
             Exit Sub
         End If
         Call LoadPatronCreditsFromDB(UserIndex)
 110     If obj.Valor > .Stats.Creditos Then
-112         Call WriteConsoleMsg(userIndex, "Error al realizar la transacción.", e_FontTypeNames.FONTTYPE_INFO)
-114         Call LogShopErrors("El usuario " & .name & " intentó editar el valor del objeto (REVISAR) | " & obj.name)
+112         Call WriteConsoleMsg(UserIndex, "Error al realizar la transacción.", e_FontTypeNames.FONTTYPE_INFO)
+114         Call LogShopErrors("El usuario " & .Name & " intentó editar el valor del objeto (REVISAR) | " & obj.Name)
             Exit Sub
         End If
         
@@ -44,7 +62,7 @@ On Error GoTo init_transaction_Err
 124     .Stats.Creditos = .Stats.Creditos - obj.Valor
           
         'Genero un log de los créditos que gastó y cuantos le quedan luego de la transacción.
-126     Call LogShopTransactions(.name & " | Compró -> " & ObjData(obj.ObjNum).name & " | Valor -> " & obj.Valor)
+126     Call LogShopTransactions(.Name & " | Compró -> " & ObjData(obj.ObjNum).Name & " | Valor -> " & obj.Valor)
 128     Call Query("update account set offline_patron_credits = ? where id = ?;", .Stats.Creditos, .AccountID)
 130     Call writeUpdateShopClienteCredits(UserIndex)
 132     Call RegisterTransaction(.AccountID, .ID, obj.ObjNum, obj.Valor, .Stats.Creditos)

@@ -1,39 +1,30 @@
 Attribute VB_Name = "UserMod"
-'********************* COPYRIGHT NOTICE*********************
-' Copyright (c) 2021-22 Martin Trionfetti, Pablo Marquez
-' www.ao20.com.ar
-' All rights reserved.
-' Refer to licence for conditions of use.
-' This copyright notice must always be left intact.
-'****************** END OF COPYRIGHT NOTICE*****************
+' Argentum 20 Game Server
 '
-'Argentum Online 0.11.6
-'Copyright (C) 2002 Márquez Pablo Ignacio
+'    Copyright (C) 2023 Noland Studios LTD
 '
-'This program is free software; you can redistribute it and/or modify
-'it under the terms of the Affero General Public License;
-'either version 1 of the License, or any later version.
+'    This program is free software: you can redistribute it and/or modify
+'    it under the terms of the GNU Affero General Public License as published by
+'    the Free Software Foundation, either version 3 of the License, or
+'    (at your option) any later version.
 '
-'This program is distributed in the hope that it will be useful,
-'but WITHOUT ANY WARRANTY; without even the implied warranty of
-'MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-'Affero General Public License for more details.
+'    This program is distributed in the hope that it will be useful,
+'    but WITHOUT ANY WARRANTY; without even the implied warranty of
+'    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+'    GNU Affero General Public License for more details.
 '
-'You should have received a copy of the Affero General Public License
-'along with this program; if not, you can find it at http://www.affero.org/oagpl.html
+'    You should have received a copy of the GNU Affero General Public License
+'    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '
-'Argentum Online is based on Baronsoft's VB6 Online RPG
-'You can contact the original creator of ORE at aaron@baronsoft.com
-'for more information about ORE please visit http://www.baronsoft.com/
+'    This program was based on Argentum Online 0.11.6
+'    Copyright (C) 2002 Márquez Pablo Ignacio
+'
+'    Argentum Online is based on Baronsoft's VB6 Online RPG
+'    You can contact the original creator of ORE at aaron@baronsoft.com
+'    for more information about ORE please visit http://www.baronsoft.com/
 '
 '
-'You can contact me at:
-'morgolock@speedy.com.ar
-'www.geocities.com/gmorgolock
-'Calle 3 número 983 piso 7 dto A
-'La Plata - Pcia, Buenos Aires - Republica Argentina
-'Código Postal 1900
-'Pablo Ignacio Márquez
+'
 
 Option Explicit
 Private UserNameCache As New Dictionary
@@ -176,8 +167,8 @@ On Error GoTo Check_ConnectUser_Err
         End If
         
         If EsGM(UserIndex) Then
-            Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » " & name & " se conecto al juego.", e_FontTypeNames.FONTTYPE_INFOBOLD))
-            Call LogGM(name, "Se conectó con IP: " & .IP)
+            Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » " & Name & " se conecto al juego.", e_FontTypeNames.FONTTYPE_INFOBOLD))
+            Call LogGM(Name, "Se conectó con IP: " & .IP)
         End If
     End With
     
@@ -709,10 +700,10 @@ On Error GoTo Complete_ConnectUser_Err
 1120        Call WriteLoggedMessage(UserIndex, newUser)
         
 1125        If .Stats.ELV = 1 Then
-1130            Call WriteConsoleMsg(UserIndex, "¡Bienvenido a las tierras de AO20! ¡" & .name & " que tengas buen viaje y mucha suerte!", e_FontTypeNames.FONTTYPE_GUILD)
+1130            Call WriteConsoleMsg(UserIndex, "¡Bienvenido a las tierras de AO20! ¡" & .Name & " que tengas buen viaje y mucha suerte!", e_FontTypeNames.FONTTYPE_GUILD)
 
 1135        ElseIf .Stats.ELV < 14 Then
-1140            Call WriteConsoleMsg(UserIndex, "¡Bienvenido de nuevo " & .name & "! Actualmente estas en el nivel " & .Stats.ELV & " en " & get_map_name(.pos.Map) & ", ¡buen viaje y mucha suerte!", e_FontTypeNames.FONTTYPE_GUILD)
+1140            Call WriteConsoleMsg(UserIndex, "¡Bienvenido de nuevo " & .Name & "! Actualmente estas en el nivel " & .Stats.ELV & " en " & get_map_name(.Pos.Map) & ", ¡buen viaje y mucha suerte!", e_FontTypeNames.FONTTYPE_GUILD)
 
              End If
 
@@ -3387,10 +3378,10 @@ On Error GoTo DoDamageOrHeal_Err
         DamageStr = PonerPuntos(Math.Abs(Amount))
         If SourceType = eUser Then
             If UserList(SourceIndex).ChatCombate = 1 And DoDamageText > 0 Then
-                Call WriteLocaleMsg(SourceIndex, DoDamageText, e_FontTypeNames.FONTTYPE_FIGHT, UserList(UserIndex).name & "¬" & DamageStr)
+                Call WriteLocaleMsg(SourceIndex, DoDamageText, e_FontTypeNames.FONTTYPE_FIGHT, UserList(UserIndex).Name & "¬" & DamageStr)
             End If
             If UserList(UserIndex).ChatCombate = 1 And GotDamageText > 0 Then
-                Call WriteLocaleMsg(UserIndex, GotDamageText, e_FontTypeNames.FONTTYPE_FIGHT, UserList(SourceIndex).name & "¬" & DamageStr)
+                Call WriteLocaleMsg(UserIndex, GotDamageText, e_FontTypeNames.FONTTYPE_FIGHT, UserList(SourceIndex).Name & "¬" & DamageStr)
             End If
         End If
         amount = EffectsOverTime.TargetApplyDamageReduction(UserList(UserIndex).EffectOverTime, amount, SourceIndex, SourceType, DamageSourceType)

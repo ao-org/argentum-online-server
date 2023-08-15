@@ -75,24 +75,32 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
-'**************************************************************
-' frmAdmin.frm
+' Argentum 20 Game Server
 '
-'**************************************************************
-
-'**************************************************************************
-'This program is free software; you can redistribute it and/or modify
-'it under the terms of the Affero General Public License;
-'either version 1 of the License, or any later version.
+'    Copyright (C) 2023 Noland Studios LTD
 '
-'This program is distributed in the hope that it will be useful,
-'but WITHOUT ANY WARRANTY; without even the implied warranty of
-'MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-'Affero General Public License for more details.
+'    This program is free software: you can redistribute it and/or modify
+'    it under the terms of the GNU Affero General Public License as published by
+'    the Free Software Foundation, either version 3 of the License, or
+'    (at your option) any later version.
 '
-'You should have received a copy of the Affero General Public License
-'along with this program; if not, you can find it at http://www.affero.org/oagpl.html
-'**************************************************************************
+'    This program is distributed in the hope that it will be useful,
+'    but WITHOUT ANY WARRANTY; without even the implied warranty of
+'    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+'    GNU Affero General Public License for more details.
+'
+'    You should have received a copy of the GNU Affero General Public License
+'    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+'
+'    This program was based on Argentum Online 0.11.6
+'    Copyright (C) 2002 Márquez Pablo Ignacio
+'
+'    Argentum Online is based on Baronsoft's VB6 Online RPG
+'    You can contact the original creator of ORE at aaron@baronsoft.com
+'    for more information about ORE please visit http://www.baronsoft.com/
+'
+'
+'
 
 Option Explicit
 
@@ -106,7 +114,7 @@ Private Sub Command1_Click()
 100     uUser = NameIndex(cboPjs.Text)
 
 102     If IsValidUserRef(uUser) Then
-104         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor » " & UserList(uUser.ArrayIndex).name & " ha sido hechado. ", e_FontTypeNames.FONTTYPE_SERVER))
+104         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Servidor » " & UserList(uUser.ArrayIndex).Name & " ha sido hechado. ", e_FontTypeNames.FONTTYPE_SERVER))
 106         Call CloseSocket(uUser.ArrayIndex)
 
         End If
@@ -167,4 +175,8 @@ Command3_Click_Err:
 102     Call TraceError(Err.Number, Err.Description, "frmAdmin.Command3_Click", Erl)
 104
         
+End Sub
+
+Private Sub Form_Load()
+
 End Sub

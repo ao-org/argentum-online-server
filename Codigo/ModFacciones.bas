@@ -1,11 +1,30 @@
 Attribute VB_Name = "ModFacciones"
-'********************* COPYRIGHT NOTICE*********************
-' Copyright (c) 2021-22 Martin Trionfetti, Pablo Marquez
-' www.ao20.com.ar
-' All rights reserved.
-' Refer to licence for conditions of use.
-' This copyright notice must always be left intact.
-'****************** END OF COPYRIGHT NOTICE*****************
+' Argentum 20 Game Server
+'
+'    Copyright (C) 2023 Noland Studios LTD
+'
+'    This program is free software: you can redistribute it and/or modify
+'    it under the terms of the GNU Affero General Public License as published by
+'    the Free Software Foundation, either version 3 of the License, or
+'    (at your option) any later version.
+'
+'    This program is distributed in the hope that it will be useful,
+'    but WITHOUT ANY WARRANTY; without even the implied warranty of
+'    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+'    GNU Affero General Public License for more details.
+'
+'    You should have received a copy of the GNU Affero General Public License
+'    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+'
+'    This program was based on Argentum Online 0.11.6
+'    Copyright (C) 2002 Márquez Pablo Ignacio
+'
+'    Argentum Online is based on Baronsoft's VB6 Online RPG
+'    You can contact the original creator of ORE at aaron@baronsoft.com
+'    for more information about ORE please visit http://www.baronsoft.com/
+'
+'
+'
 '
 Option Explicit
 
@@ -30,7 +49,7 @@ Public Sub EnlistarArmadaReal(ByVal UserIndex As Integer)
                 End If
 
 112             If status(UserIndex) = e_Facciones.Criminal Then
-114                 Call WriteChatOverHead(UserIndex, "No se permiten criminales en el Ejército Real.", charindexstr, vbWhite)
+114                 Call WriteChatOverHead(UserIndex, "No se permiten criminales en el Ejército Real.", charIndexStr, vbWhite)
                     Exit Sub
                 End If
                 
@@ -49,7 +68,7 @@ Public Sub EnlistarArmadaReal(ByVal UserIndex As Integer)
                 End If
                 
 128             If Not HayLugarEnInventario(UserIndex, -1, 999) Then
-130                 Call WriteChatOverHead(UserIndex, "¡No tienes lugar suficiente en el inventario.", charindexstr, vbWhite)
+130                 Call WriteChatOverHead(UserIndex, "¡No tienes lugar suficiente en el inventario.", charIndexStr, vbWhite)
                     Exit Sub
                 End If
                 
@@ -80,7 +99,7 @@ Public Sub EnlistarArmadaReal(ByVal UserIndex As Integer)
 148                 If PersonajeEsLeader(.Name) Then
                         'Si el clan es neutral no lo dejo, le digo que tiene que salir del clan para poder enlistarse
                         If GuildAlignmentIndex(.GuildIndex) = e_ALINEACION_GUILD.ALINEACION_NEUTRAL Then
-                            Call WriteChatOverHead(UserIndex, "No puedes integrar nuestras fuerzas si perteneces a un clan neutral, deberás abandonarlo si tu deseo es integrar el Ejército Real.", charindexstr, vbWhite)
+                            Call WriteChatOverHead(UserIndex, "No puedes integrar nuestras fuerzas si perteneces a un clan neutral, deberás abandonarlo si tu deseo es integrar el Ejército Real.", charIndexStr, vbWhite)
                             Exit Sub
                         End If
                     Else
@@ -148,7 +167,7 @@ Public Sub RecompensaArmadaReal(ByVal UserIndex As Integer)
                 End If
 
 120             If proxRango.NivelRequerido > .Stats.ELV Then
-122               Call WriteChatOverHead(userindex, "Has matado suficientes criminales pero, te faltan " & (proxRango.NivelRequerido - .Stats.ELV) & " niveles para poder recibir la próxima recompensa.", npcCharIndex, vbWhite)
+122               Call WriteChatOverHead(UserIndex, "Has matado suficientes criminales pero, te faltan " & (proxRango.NivelRequerido - .Stats.ELV) & " niveles para poder recibir la próxima recompensa.", npcCharIndex, vbWhite)
 
                 Else ' El usuario cumple con los requerimientos de nivel, se le asigna la recomenza.
 124               .Faccion.RecompensasReal = proxRango.rank
@@ -229,19 +248,19 @@ Public Sub EnlistarCaos(ByVal UserIndex As Integer)
 102             charIndexStr = str(NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex)
 
 104             If status(UserIndex) = e_Facciones.Caos Or status(UserIndex) = e_Facciones.concilio Then
-106                 Call WriteChatOverHead(UserIndex, "Ya perteneces a la Legión Oscura.", charindexstr, vbWhite)
+106                 Call WriteChatOverHead(UserIndex, "Ya perteneces a la Legión Oscura.", charIndexStr, vbWhite)
                     Exit Sub
 
                 End If
 
 116             If status(UserIndex) = e_Facciones.Armada Or status(UserIndex) = e_Facciones.Ciudadano Or status(UserIndex) = e_Facciones.consejo Then
-118                 Call WriteChatOverHead(UserIndex, "¡¡Ja ja ja!! Tu no eres bienvenido aquí asqueroso Ciudadano", charindexstr, vbWhite)
+118                 Call WriteChatOverHead(UserIndex, "¡¡Ja ja ja!! Tu no eres bienvenido aquí asqueroso Ciudadano", charIndexStr, vbWhite)
                     Exit Sub
 
                 End If
                 
 120             If Not HayLugarEnInventario(UserIndex, -1, 999) Then
-122                 Call WriteChatOverHead(UserIndex, "¡No tienes lugar suficiente en el inventario.", charindexstr, vbWhite)
+122                 Call WriteChatOverHead(UserIndex, "¡No tienes lugar suficiente en el inventario.", charIndexStr, vbWhite)
                     Exit Sub
                 End If
 
@@ -278,7 +297,7 @@ Public Sub EnlistarCaos(ByVal UserIndex As Integer)
 148                 If PersonajeEsLeader(.name) Then
                         'Si el clan es neutral no lo dejo, le digo que tiene que salir del clan para poder enlistarse
                         If GuildAlignmentIndex(.GuildIndex) = e_ALINEACION_GUILD.ALINEACION_NEUTRAL Then
-                            Call WriteChatOverHead(UserIndex, "No puedes integrar nuestras fuerzas si perteneces a un clan neutral, deberás abandonarlo si tu deseo es integrar la Legión Oscura.", charindexstr, vbWhite)
+                            Call WriteChatOverHead(UserIndex, "No puedes integrar nuestras fuerzas si perteneces a un clan neutral, deberás abandonarlo si tu deseo es integrar la Legión Oscura.", charIndexStr, vbWhite)
                             Exit Sub
                         End If
                     Else

@@ -1,33 +1,30 @@
 Attribute VB_Name = "mdlCOmercioConUsuario"
-'********************* COPYRIGHT NOTICE*********************
-' Copyright (c) 2021-22 Martin Trionfetti, Pablo Marquez
-' www.ao20.com.ar
-' All rights reserved.
-' Refer to licence for conditions of use.
-' This copyright notice must always be left intact.
-'****************** END OF COPYRIGHT NOTICE*****************
+' Argentum 20 Game Server
 '
-'**************************************************************
-' mdlComercioConUsuarios.bas - Allows players to commerce between themselves.
+'    Copyright (C) 2023 Noland Studios LTD
 '
-' Designed and implemented by Alejandro Santos (AlejoLP)
-'**************************************************************
-
-'**************************************************************************
-'This program is free software; you can redistribute it and/or modify
-'it under the terms of the Affero General Public License;
-'either version 1 of the License, or any later version.
+'    This program is free software: you can redistribute it and/or modify
+'    it under the terms of the GNU Affero General Public License as published by
+'    the Free Software Foundation, either version 3 of the License, or
+'    (at your option) any later version.
 '
-'This program is distributed in the hope that it will be useful,
-'but WITHOUT ANY WARRANTY; without even the implied warranty of
-'MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-'Affero General Public License for more details.
+'    This program is distributed in the hope that it will be useful,
+'    but WITHOUT ANY WARRANTY; without even the implied warranty of
+'    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+'    GNU Affero General Public License for more details.
 '
-'You should have received a copy of the Affero General Public License
-'along with this program; if not, you can find it at http://www.affero.org/oagpl.html
-'**************************************************************************
-
-'[Alejo]
+'    You should have received a copy of the GNU Affero General Public License
+'    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+'
+'    This program was based on Argentum Online 0.11.6
+'    Copyright (C) 2002 Márquez Pablo Ignacio
+'
+'    Argentum Online is based on Baronsoft's VB6 Online RPG
+'    You can contact the original creator of ORE at aaron@baronsoft.com
+'    for more information about ORE please visit http://www.baronsoft.com/
+'
+'
+'
 Option Explicit
 
 Private Const MAX_ORO_LOGUEABLE As Long = 50000
@@ -68,7 +65,7 @@ Public Function IniciarComercioConUsuario(ByVal Origen As Integer, ByVal Destino
 128         Call SetUserRef(UserList(Destino).flags.targetUser, Origen)
     
 130         UserList(Destino).flags.pregunta = 4
-132         Call WritePreguntaBox(Destino, UserList(Origen).name & " desea comerciar contigo. ¿Aceptás?")
+132         Call WritePreguntaBox(Destino, UserList(Origen).Name & " desea comerciar contigo. ¿Aceptás?")
     
         End If
 

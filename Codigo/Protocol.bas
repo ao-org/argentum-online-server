@@ -1,11 +1,29 @@
 Attribute VB_Name = "Protocol"
-'********************* COPYRIGHT NOTICE*********************
-' Copyright (c) 2021-22 Martin Trionfetti, Pablo Marquez
-' www.ao20.com.ar
-' All rights reserved.
-' Refer to licence for conditions of use.
-' This copyright notice must always be left intact.
-'****************** END OF COPYRIGHT NOTICE*****************
+' Argentum 20 Game Server
+'
+'    Copyright (C) 2023 Noland Studios LTD
+'
+'    This program is free software: you can redistribute it and/or modify
+'    it under the terms of the GNU Affero General Public License as published by
+'    the Free Software Foundation, either version 3 of the License, or
+'    (at your option) any later version.
+'
+'    This program is distributed in the hope that it will be useful,
+'    but WITHOUT ANY WARRANTY; without even the implied warranty of
+'    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+'    GNU Affero General Public License for more details.
+'
+'    You should have received a copy of the GNU Affero General Public License
+'    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+'
+'    This program was based on Argentum Online 0.11.6
+'    Copyright (C) 2002 Márquez Pablo Ignacio
+'
+'    Argentum Online is based on Baronsoft's VB6 Online RPG
+'    You can contact the original creator of ORE at aaron@baronsoft.com
+'    for more information about ORE please visit http://www.baronsoft.com/
+'
+'
 '
 Option Explicit
 
@@ -692,7 +710,7 @@ On Error Resume Next
     
     If UserList(UserIndex).Counters.PacketCount > 100 Then
         'Lo kickeo
-        Call SendData(SendTarget.ToAdmins, UserIndex, PrepareMessageConsoleMsg("Control de paquetes -> El usuario " & UserList(UserIndex).name & " | Iteración paquetes | Último paquete: " & PacketId & ".", e_FontTypeNames.FONTTYPE_FIGHT))
+        Call SendData(SendTarget.ToAdmins, UserIndex, PrepareMessageConsoleMsg("Control de paquetes -> El usuario " & UserList(UserIndex).Name & " | Iteración paquetes | Último paquete: " & PacketId & ".", e_FontTypeNames.FONTTYPE_FIGHT))
         UserList(userindex).Counters.PacketCount = 0
         'Call CloseSocket(userindex)
         Exit Function
@@ -703,7 +721,7 @@ On Error Resume Next
         If IP_Blacklist.Exists(UserList(UserIndex).IP) = 0 Then
             Call IP_Blacklist.Add(UserList(UserIndex).IP, "FAKE")
         End If
-        Call SendData(SendTarget.ToGM, UserIndex, PrepareMessageConsoleMsg("EL USUARIO " & UserList(UserIndex).name & " | IP: " & UserList(UserIndex).IP & " ESTÁ ENVIANDO PAQUETES INVÁLIDOS", e_FontTypeNames.FONTTYPE_GUILD))
+        Call SendData(SendTarget.ToGM, UserIndex, PrepareMessageConsoleMsg("EL USUARIO " & UserList(UserIndex).Name & " | IP: " & UserList(UserIndex).IP & " ESTÁ ENVIANDO PAQUETES INVÁLIDOS", e_FontTypeNames.FONTTYPE_GUILD))
         Call CloseSocket(UserIndex)
         Exit Function
     End If
@@ -2880,7 +2898,7 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
                 Else
                     'ver de banear al usuario
                     'Call BanearIP(0, UserList(UserIndex).name, UserList(UserIndex).IP, UserList(UserIndex).Cuenta)
-                    Call LogEdicionPaquete("El usuario " & UserList(UserIndex).name & " editó el slot del inventario | Valor: " & Slot & ".")
+                    Call LogEdicionPaquete("El usuario " & UserList(UserIndex).Name & " editó el slot del inventario | Valor: " & Slot & ".")
                 End If
         
                 '04-05-08 Ladder
@@ -2916,7 +2934,7 @@ Public Function verifyTimeStamp(ByVal ActualCount As Long, ByRef LastCount As Lo
     'Controlamos secuencia para ver que no haya paquetes duplicados.
     If ActualCount <= LastCount Then
         Call SendData(SendTarget.ToGM, UserIndex, PrepareMessageConsoleMsg("Paquete grabado: " & PacketName & " | Cuenta: " & UserList(UserIndex).Cuenta & " | Ip: " & UserList(UserIndex).IP & " (Baneado automaticamente)", e_FontTypeNames.FONTTYPE_INFOBOLD))
-        Call LogEdicionPaquete("El usuario " & UserList(UserIndex).name & " editó el paquete " & PacketName & ".")
+        Call LogEdicionPaquete("El usuario " & UserList(UserIndex).Name & " editó el paquete " & PacketName & ".")
         LastCount = ActualCount
         Call CloseSocket(UserIndex)
         Exit Function
@@ -2929,7 +2947,7 @@ Public Function verifyTimeStamp(ByVal ActualCount As Long, ByRef LastCount As Lo
             'Call WriteShowMessageBox(UserIndex, "Relajate andá a tomarte un té con Gulfas.")
             verifyTimeStamp = False
             'Call LogMacroServidor("El usuario " & UserList(UserIndex).name & " iteró el paquete " & PacketName & " " & MaxIterations & " veces.")
-            Call SendData(SendTarget.ToAdmins, UserIndex, PrepareMessageConsoleMsg("Control de macro---> El usuario " & UserList(UserIndex).name & "| Revisar --> " & PacketName & " (Envíos: " & MaxIterations & ").", e_FontTypeNames.FONTTYPE_INFOBOLD))
+            Call SendData(SendTarget.ToAdmins, UserIndex, PrepareMessageConsoleMsg("Control de macro---> El usuario " & UserList(UserIndex).Name & "| Revisar --> " & PacketName & " (Envíos: " & MaxIterations & ").", e_FontTypeNames.FONTTYPE_INFOBOLD))
             'Call WriteCerrarleCliente(UserIndex)
             'Call CloseSocket(UserIndex)
             LastCount = ActualCount
@@ -3261,7 +3279,7 @@ Private Sub HandleUseItem(ByVal UserIndex As Integer)
             DesdeInventario = Reader.ReadInt8
             
             If Not DesdeInventario Then
-                Call SendData(SendTarget.ToAdmins, UserIndex, PrepareMessageConsoleMsg("El usuario " & .name & " está tomando pociones con click estando en hechizos... raaaaaro, poleeeeemico. BAN?", e_FontTypeNames.FONTTYPE_INFOBOLD))
+                Call SendData(SendTarget.ToAdmins, UserIndex, PrepareMessageConsoleMsg("El usuario " & .Name & " está tomando pociones con click estando en hechizos... raaaaaro, poleeeeemico. BAN?", e_FontTypeNames.FONTTYPE_INFOBOLD))
             End If
             
             Dim PacketCounter As Long
@@ -3977,7 +3995,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 650                         If UserList(userIndex).Grupo.Lider.ArrayIndex = userIndex Then
 652                             Call InvitarMiembro(UserIndex, tU)
                             Else
-654                             Call WriteConsoleMsg(UserIndex, "Tu no podés invitar usuarios, debe hacerlo " & UserList(UserList(UserIndex).Grupo.Lider.ArrayIndex).name & ".", e_FontTypeNames.FONTTYPE_INFOIAO)
+654                             Call WriteConsoleMsg(UserIndex, "Tu no podés invitar usuarios, debe hacerlo " & UserList(UserList(UserIndex).Grupo.Lider.ArrayIndex).Name & ".", e_FontTypeNames.FONTTYPE_INFOIAO)
 656                             Call WriteWorkRequestTarget(UserIndex, 0)
                             End If
                         End If
@@ -4035,7 +4053,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 704                 Call LookatTile(UserIndex, UserList(UserIndex).Pos.Map, X, Y)
 706                 tU = .flags.targetUser.ArrayIndex
 708                 If IsValidUserRef(.flags.targetUser) Then
-710                     Call WriteConsoleMsg(UserIndex, "Servidor » [" & UserList(tU).name & "] seleccionado.", e_FontTypeNames.FONTTYPE_SERVER)
+710                     Call WriteConsoleMsg(UserIndex, "Servidor » [" & UserList(tU).Name & "] seleccionado.", e_FontTypeNames.FONTTYPE_SERVER)
                     Else
 712                     Call WriteLocaleMsg(UserIndex, "261", e_FontTypeNames.FONTTYPE_INFO)
 
@@ -4094,7 +4112,7 @@ Private Sub HandleCreateNewGuild(ByVal UserIndex As Integer)
             
             
                 
-118             Call SendData(SendTarget.ToAll, UserIndex, PrepareMessageConsoleMsg(.name & " ha fundado el clan <" & GuildName & "> de alineación " & GuildAlignment(.GuildIndex) & ".", e_FontTypeNames.FONTTYPE_GUILD))
+118             Call SendData(SendTarget.ToAll, UserIndex, PrepareMessageConsoleMsg(.Name & " ha fundado el clan <" & GuildName & "> de alineación " & GuildAlignment(.GuildIndex) & ".", e_FontTypeNames.FONTTYPE_GUILD))
 120             Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(44, NO_3D_SOUND, NO_3D_SOUND))
                 'Update tag
 122             Call RefreshCharStatus(UserIndex)
@@ -4291,7 +4309,7 @@ Private Sub HandleModifySkills(ByVal UserIndex As Integer)
 104             points(i) = Reader.ReadInt8()
             
 106             If points(i) < 0 Then
-108                 Call LogSecurity(.name & " IP:" & .IP & " trató de hackear los skills.")
+108                 Call LogSecurity(.Name & " IP:" & .IP & " trató de hackear los skills.")
 110                 .Stats.SkillPts = 0
 112                 Call CloseSocket(UserIndex)
                     Exit Sub
@@ -4302,7 +4320,7 @@ Private Sub HandleModifySkills(ByVal UserIndex As Integer)
 116         Next i
         
 118         If Count > .Stats.SkillPts Then
-120             Call LogSecurity(.name & " IP:" & .IP & " trató de hackear los skills.")
+120             Call LogSecurity(.Name & " IP:" & .IP & " trató de hackear los skills.")
 122             Call CloseSocket(UserIndex)
                 Exit Sub
 
@@ -7259,7 +7277,7 @@ Private Sub HandleMensajeUser(ByVal UserIndex As Integer)
                     End If
 
 124                 Call WriteConsoleMsg(UserIndex, "Mensaje enviado a " & UserName & ": " & Mensaje, e_FontTypeNames.FONTTYPE_INFO)
-126                 Call LogGM(.name, "Envió mensaje como GM a " & username & ": " & mensaje)
+126                 Call LogGM(.Name, "Envió mensaje como GM a " & username & ": " & mensaje)
 
                 End If
 
@@ -8576,7 +8594,7 @@ Private Sub HandleOfertaInicial(ByVal UserIndex As Integer)
 130             UserList(UserIndex).Counters.TiempoParaSubastar = 0
 132             Subasta.OfertaInicial = Oferta
 134             Subasta.MejorOferta = 0
-136             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(.name & " está subastando: " & ObjData(Subasta.ObjSubastado).name & " (Cantidad: " & Subasta.ObjSubastadoCantidad & " ) - con un precio inicial de " & PonerPuntos(Subasta.OfertaInicial) & " monedas. Escribe /OFERTAR (cantidad) para participar.", e_FontTypeNames.FONTTYPE_SUBASTA))
+136             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(.Name & " está subastando: " & ObjData(Subasta.ObjSubastado).Name & " (Cantidad: " & Subasta.ObjSubastadoCantidad & " ) - con un precio inicial de " & PonerPuntos(Subasta.OfertaInicial) & " monedas. Escribe /OFERTAR (cantidad) para participar.", e_FontTypeNames.FONTTYPE_SUBASTA))
 138             .flags.Subastando = False
 140             Subasta.HaySubastaActiva = True
 142             Subasta.Subastador = .Name
@@ -8650,11 +8668,11 @@ Private Sub HandleOfertaDeSubasta(ByVal UserIndex As Integer)
 132             Call WriteUpdateGold(UserIndex)
             
 134             If Subasta.TiempoRestanteSubasta < 60 Then
-136                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Oferta mejorada por: " & .name & " (Ofrece " & PonerPuntos(Oferta) & " monedas de oro) - Tiempo Extendido. Escribe /SUBASTA para mas información.", e_FontTypeNames.FONTTYPE_SUBASTA))
+136                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Oferta mejorada por: " & .Name & " (Ofrece " & PonerPuntos(Oferta) & " monedas de oro) - Tiempo Extendido. Escribe /SUBASTA para mas información.", e_FontTypeNames.FONTTYPE_SUBASTA))
 138                 Call LogearEventoDeSubasta(.Name & ": Mejoro la oferta en el ultimo minuto ofreciendo " & PonerPuntos(Oferta) & " monedas.")
 140                 Subasta.TiempoRestanteSubasta = Subasta.TiempoRestanteSubasta + 30
                 Else
-142                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Oferta mejorada por: " & .name & " (Ofrece " & PonerPuntos(Oferta) & " monedas de oro). Escribe /SUBASTA para mas información.", e_FontTypeNames.FONTTYPE_SUBASTA))
+142                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Oferta mejorada por: " & .Name & " (Ofrece " & PonerPuntos(Oferta) & " monedas de oro). Escribe /SUBASTA para mas información.", e_FontTypeNames.FONTTYPE_SUBASTA))
 144                 Call LogearEventoDeSubasta(.Name & ": Mejoro la oferta ofreciendo " & PonerPuntos(Oferta) & " monedas.")
 146                 Subasta.HuboOferta = True
 148                 Subasta.PosibleCancelo = False
@@ -8739,7 +8757,7 @@ Private Sub HandleCancelDuel(ByVal UserIndex As Integer)
 106             Call CancelarSolicitudReto(UserIndex, .Name & " ha cancelado la solicitud.")
 
 108         ElseIf IsValidUserRef(.flags.AceptoReto) Then
-110             Call CancelarSolicitudReto(.flags.AceptoReto.ArrayIndex, .name & " ha cancelado su admisión.")
+110             Call CancelarSolicitudReto(.flags.AceptoReto.ArrayIndex, .Name & " ha cancelado su admisión.")
 
             End If
 
@@ -9246,7 +9264,7 @@ Private Sub HandleLlamadadeClan(ByVal UserIndex As Integer)
 104             clan_nivel = modGuilds.NivelDeClan(.GuildIndex)
 
 106             If clan_nivel >= 2 Then
-108                 Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageConsoleMsg("Clan> [" & .name & "] solicita apoyo de su clan en " & get_map_name(.pos.Map) & " (" & .pos.Map & "-" & .pos.x & "-" & .pos.y & "). Puedes ver su ubicación en el mapa del mundo.", e_FontTypeNames.FONTTYPE_GUILD))
+108                 Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageConsoleMsg("Clan> [" & .Name & "] solicita apoyo de su clan en " & get_map_name(.Pos.Map) & " (" & .Pos.Map & "-" & .Pos.X & "-" & .Pos.Y & "). Puedes ver su ubicación en el mapa del mundo.", e_FontTypeNames.FONTTYPE_GUILD))
 110                 Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessagePlayWave("43", NO_3D_SOUND, NO_3D_SOUND))
 112                 Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageUbicacionLlamada(.Pos.Map, .Pos.X, .Pos.Y))
 
@@ -9408,7 +9426,7 @@ Private Sub HandleBusquedaTesoro(ByVal UserIndex As Integer)
                         Else
 
 148                         If BusquedaNpcActiva Then
-150                             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos> Todavía nadie logró matar el NPC que se encuentra en el mapa " & NpcList(npc_index_evento).pos.Map & ".", e_FontTypeNames.FONTTYPE_TALK))
+150                             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos> Todavía nadie logró matar el NPC que se encuentra en el mapa " & NpcList(npc_index_evento).Pos.Map & ".", e_FontTypeNames.FONTTYPE_TALK))
 152                             Call WriteConsoleMsg(UserIndex, "Ya hay una busqueda de npc activo. El tesoro se encuentra en: " & NpcList(npc_index_evento).Pos.Map & "-" & NpcList(npc_index_evento).Pos.X & "-" & NpcList(npc_index_evento).Pos.Y, e_FontTypeNames.FONTTYPE_INFO)
                             Else
 154                             Call WriteConsoleMsg(UserIndex, "Ya hay una busqueda del tesoro activa.", e_FontTypeNames.FONTTYPE_INFO)
@@ -9634,9 +9652,9 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
                         End Select
                     
 210                     If IsValidNpcRef(UserList(UserIndex).flags.TargetNPC) Then
-212                         Call WriteChatOverHead(UserIndex, "¡Gracias " & UserList(UserIndex).name & "! Ahora perteneces a la ciudad de " & DeDonde & ".", NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
+212                         Call WriteChatOverHead(UserIndex, "¡Gracias " & UserList(UserIndex).Name & "! Ahora perteneces a la ciudad de " & DeDonde & ".", NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
                         Else
-214                         Call WriteConsoleMsg(UserIndex, "¡Gracias " & UserList(UserIndex).name & "! Ahora perteneces a la ciudad de " & DeDonde & ".", e_FontTypeNames.FONTTYPE_INFOIAO)
+214                         Call WriteConsoleMsg(UserIndex, "¡Gracias " & UserList(UserIndex).Name & "! Ahora perteneces a la ciudad de " & DeDonde & ".", e_FontTypeNames.FONTTYPE_INFOIAO)
 
                         End If
 216                 Case 4
@@ -9734,7 +9752,7 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
                         End Select
                     
 320                     If IsValidNpcRef(UserList(UserIndex).flags.TargetNPC) Then
-322                         Call WriteChatOverHead(UserIndex, "¡No hay problema " & UserList(UserIndex).name & "! Sos bienvenido en " & DeDonde & " cuando gustes.", NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
+322                         Call WriteChatOverHead(UserIndex, "¡No hay problema " & UserList(UserIndex).Name & "! Sos bienvenido en " & DeDonde & " cuando gustes.", NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
                         End If
 324                     UserList(UserIndex).PosibleHogar = UserList(UserIndex).Hogar
 326                 Case 4
@@ -10669,16 +10687,16 @@ Private Sub HandleLogMacroClickHechizo(ByVal UserIndex As Integer)
             Select Case tipoMacro
             
                 Case tMacro.Coordenadas
-102                 mensaje = "AntiCheat> El usuario " & UserList(UserIndex).name & " está utilizando macro de COORDENADAS."
+102                 mensaje = "AntiCheat> El usuario " & UserList(UserIndex).Name & " está utilizando macro de COORDENADAS."
                     Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(mensaje, e_FontTypeNames.FONTTYPE_INFO))
                 Case tMacro.dobleclick
-                    mensaje = "AntiCheat> El usuario " & UserList(UserIndex).name & " está utilizando macro de DOBLE CLICK (CANTIDAD DE CLICKS: " & clicks & " )."
+                    mensaje = "AntiCheat> El usuario " & UserList(UserIndex).Name & " está utilizando macro de DOBLE CLICK (CANTIDAD DE CLICKS: " & clicks & " )."
                     Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(mensaje, e_FontTypeNames.FONTTYPE_INFO))
                 Case tMacro.inasistidoPosFija
-                    mensaje = "AntiCheat> El usuario " & UserList(UserIndex).name & " está utilizando macro de INASISTIDO."
+                    mensaje = "AntiCheat> El usuario " & UserList(UserIndex).Name & " está utilizando macro de INASISTIDO."
                     Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(mensaje, e_FontTypeNames.FONTTYPE_INFO))
                 Case tMacro.borrarCartel
-                    mensaje = "AntiCheat> El usuario " & UserList(UserIndex).name & " está utilizando macro de CARTELEO."
+                    mensaje = "AntiCheat> El usuario " & UserList(UserIndex).Name & " está utilizando macro de CARTELEO."
                     Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(mensaje, e_FontTypeNames.FONTTYPE_INFO))
             End Select
             

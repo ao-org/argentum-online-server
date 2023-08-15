@@ -1,39 +1,30 @@
 Attribute VB_Name = "InvUsuario"
-'********************* COPYRIGHT NOTICE*********************
-' Copyright (c) 2021-22 Martin Trionfetti, Pablo Marquez
-' www.ao20.com.ar
-' All rights reserved.
-' Refer to licence for conditions of use.
-' This copyright notice must always be left intact.
-'****************** END OF COPYRIGHT NOTICE*****************
+' Argentum 20 Game Server
 '
-'Argentum Online 0.11.6
-'Copyright (C) 2002 Márquez Pablo Ignacio
+'    Copyright (C) 2023 Noland Studios LTD
 '
-'This program is free software; you can redistribute it and/or modify
-'it under the terms of the Affero General Public License;
-'either version 1 of the License, or any later version.
+'    This program is free software: you can redistribute it and/or modify
+'    it under the terms of the GNU Affero General Public License as published by
+'    the Free Software Foundation, either version 3 of the License, or
+'    (at your option) any later version.
 '
-'This program is distributed in the hope that it will be useful,
-'but WITHOUT ANY WARRANTY; without even the implied warranty of
-'MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-'Affero General Public License for more details.
+'    This program is distributed in the hope that it will be useful,
+'    but WITHOUT ANY WARRANTY; without even the implied warranty of
+'    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+'    GNU Affero General Public License for more details.
 '
-'You should have received a copy of the Affero General Public License
-'along with this program; if not, you can find it at http://www.affero.org/oagpl.html
+'    You should have received a copy of the GNU Affero General Public License
+'    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '
-'Argentum Online is based on Baronsoft's VB6 Online RPG
-'You can contact the original creator of ORE at aaron@baronsoft.com
-'for more information about ORE please visit http://www.baronsoft.com/
+'    This program was based on Argentum Online 0.11.6
+'    Copyright (C) 2002 Márquez Pablo Ignacio
+'
+'    Argentum Online is based on Baronsoft's VB6 Online RPG
+'    You can contact the original creator of ORE at aaron@baronsoft.com
+'    for more information about ORE please visit http://www.baronsoft.com/
 '
 '
-'You can contact me at:
-'morgolock@speedy.com.ar
-'www.geocities.com/gmorgolock
-'Calle 3 número 983 piso 7 dto A
-'La Plata - Pcia, Buenos Aires - Republica Argentina
-'Código Postal 1900
-'Pablo Ignacio Márquez
+'
 
 Option Explicit
 
@@ -346,7 +337,7 @@ Sub TirarOro(ByVal Cantidad As Long, ByVal UserIndex As Integer)
         
             ' GM's (excepto Dioses y Admins) no pueden tirar oro
 102         If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Admin Or e_PlayerType.Dios)) = 0 Then
-104             Call LogGM(.name, " trató de tirar " & PonerPuntos(Cantidad) & " de oro en " & .Pos.map & "-" & .Pos.X & "-" & .Pos.y)
+104             Call LogGM(.Name, " trató de tirar " & PonerPuntos(Cantidad) & " de oro en " & .Pos.Map & "-" & .Pos.X & "-" & .Pos.Y)
                 Exit Sub
             End If
          
@@ -773,7 +764,7 @@ Sub PickObj(ByVal UserIndex As Integer)
 124                 If BusquedaTesoroActiva Then
 126                     If UserList(UserIndex).Pos.Map = TesoroNumMapa And UserList(UserIndex).Pos.X = TesoroX And UserList(UserIndex).Pos.Y = TesoroY Then
     
-128                         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos> " & UserList(UserIndex).name & " encontro el tesoro ¡Felicitaciones!", e_FontTypeNames.FONTTYPE_TALK))
+128                         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos> " & UserList(UserIndex).Name & " encontro el tesoro ¡Felicitaciones!", e_FontTypeNames.FONTTYPE_TALK))
 130                         BusquedaTesoroActiva = False
 
                         End If
@@ -782,7 +773,7 @@ Sub PickObj(ByVal UserIndex As Integer)
                 
 132                 If BusquedaRegaloActiva Then
 134                     If UserList(UserIndex).Pos.Map = RegaloNumMapa And UserList(UserIndex).Pos.X = RegaloX And UserList(UserIndex).Pos.Y = RegaloY Then
-136                         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos> " & UserList(UserIndex).name & " fue el valiente que encontro el gran item magico ¡Felicitaciones!", e_FontTypeNames.FONTTYPE_TALK))
+136                         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos> " & UserList(UserIndex).Name & " fue el valiente que encontro el gran item magico ¡Felicitaciones!", e_FontTypeNames.FONTTYPE_TALK))
 138                         BusquedaRegaloActiva = False
 
                         End If
@@ -995,8 +986,8 @@ Sub Desequipar(ByVal UserIndex As Integer, ByVal Slot As Byte)
                 
 322         Case e_OBJType.otDañoMagico
 324             UserList(UserIndex).Invent.Object(Slot).Equipped = 0
-326             UserList(UserIndex).Invent.DañoMagicoEqpObjIndex = 0
-328             UserList(UserIndex).Invent.DañoMagicoEqpSlot = 0
+326             UserList(UserIndex).invent.DañoMagicoEqpObjIndex = 0
+328             UserList(UserIndex).invent.DañoMagicoEqpSlot = 0
 330             UserList(UserIndex).Char.DM_Aura = 0
 332             Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessageAuraToChar(UserList(UserIndex).Char.charindex, 0, True, 6))
 334             Call WriteUpdateDM(UserIndex)
@@ -3459,7 +3450,7 @@ On Error GoTo ResurrectWithItem_Err
 106     CanHelpResult = UserMod.CanHelpUser(UserIndex, targetUser)
         If UserList(TargetUser).flags.SeguroResu Then
             Call WriteConsoleMsg(UserIndex, "El usuario tiene el seguro de resurrección activado.", e_FontTypeNames.FONTTYPE_INFO)
-            Call WriteConsoleMsg(TargetUser, UserList(UserIndex).name & " está intentando revivirte. Desactiva el seguro de resurrección para permitirle hacerlo.", e_FontTypeNames.FONTTYPE_INFO)
+            Call WriteConsoleMsg(TargetUser, UserList(UserIndex).Name & " está intentando revivirte. Desactiva el seguro de resurrección para permitirle hacerlo.", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
         If CanHelpResult <> eInteractionOk Then

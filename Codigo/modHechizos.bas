@@ -1,39 +1,30 @@
 Attribute VB_Name = "modHechizos"
-'********************* COPYRIGHT NOTICE*********************
-' Copyright (c) 2021-22 Martin Trionfetti, Pablo Marquez
-' www.ao20.com.ar
-' All rights reserved.
-' Refer to licence for conditions of use.
-' This copyright notice must always be left intact.
-'****************** END OF COPYRIGHT NOTICE*****************
+' Argentum 20 Game Server
 '
-'Argentum Online 0.11.6
-'Copyright (C) 2002 Márquez Pablo Ignacio
+'    Copyright (C) 2023 Noland Studios LTD
 '
-'This program is free software; you can redistribute it and/or modify
-'it under the terms of the Affero General Public License;
-'either version 1 of the License, or any later version.
+'    This program is free software: you can redistribute it and/or modify
+'    it under the terms of the GNU Affero General Public License as published by
+'    the Free Software Foundation, either version 3 of the License, or
+'    (at your option) any later version.
 '
-'This program is distributed in the hope that it will be useful,
-'but WITHOUT ANY WARRANTY; without even the implied warranty of
-'MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-'Affero General Public License for more details.
+'    This program is distributed in the hope that it will be useful,
+'    but WITHOUT ANY WARRANTY; without even the implied warranty of
+'    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+'    GNU Affero General Public License for more details.
 '
-'You should have received a copy of the Affero General Public License
-'along with this program; if not, you can find it at http://www.affero.org/oagpl.html
+'    You should have received a copy of the GNU Affero General Public License
+'    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '
-'Argentum Online is based on Baronsoft's VB6 Online RPG
-'You can contact the original creator of ORE at aaron@baronsoft.com
-'for more information about ORE please visit http://www.baronsoft.com/C
+'    This program was based on Argentum Online 0.11.6
+'    Copyright (C) 2002 Márquez Pablo Ignacio
+'
+'    Argentum Online is based on Baronsoft's VB6 Online RPG
+'    You can contact the original creator of ORE at aaron@baronsoft.com
+'    for more information about ORE please visit http://www.baronsoft.com/
 '
 '
-'You can contact me at:
-'morgolock@speedy.com.ar
-'www.geocities.com/gmorgolock
-'Calle 3 número 983 piso 7 dto A
-'La Plata - Pcia, Buenos Aires - Republica Argentina
-'Código Postal 1900
-'Pablo Ignacio Márquez
+'
 
 Option Explicit
 
@@ -72,7 +63,7 @@ Sub NpcLanzaSpellSobreUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
           If Damage > 0 Then
 116         Call UserMod.DoDamageOrHeal(UserIndex, NpcIndex, eNpc, Damage, e_DamageSourceType.e_magic, Spell)
 120         DamageStr = PonerPuntos(Damage)
-122         Call WriteLocaleMsg(UserIndex, 32, e_FontTypeNames.FONTTYPE_FIGHT, NpcList(NpcIndex).name & "¬" & DamageStr)
+122         Call WriteLocaleMsg(UserIndex, 32, e_FontTypeNames.FONTTYPE_FIGHT, NpcList(NpcIndex).Name & "¬" & DamageStr)
           End If
           
 128     ElseIf IsSet(Hechizos(Spell).Effects, e_SpellEffects.eDoDamage) Then
@@ -1996,7 +1987,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
             
             ' Si no esta envenenado, no hay nada mas que hacer
 342         If UserList(tU).flags.Envenenado = 0 Then
-344             Call WriteConsoleMsg(UserIndex, UserList(tU).name & " no está envenenado, el hechizo no tiene efecto.", e_FontTypeNames.FONTTYPE_INFOIAO)
+344             Call WriteConsoleMsg(UserIndex, UserList(tU).Name & " no está envenenado, el hechizo no tiene efecto.", e_FontTypeNames.FONTTYPE_INFOIAO)
 346             b = False
                 Exit Sub
             End If
@@ -2084,15 +2075,15 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
             End If
             
             If UserList(tU).Counters.TiempoDeInmunidadParalisisNoMagicas > 0 Then
-                Call WriteConsoleMsg(UserIndex, UserList(tU).name & " no puede volver a ser paralizado tan rápido.", e_FontTypeNames.FONTTYPE_FIGHT)
+                Call WriteConsoleMsg(UserIndex, UserList(tU).Name & " no puede volver a ser paralizado tan rápido.", e_FontTypeNames.FONTTYPE_FIGHT)
                 Exit Sub
             End If
 
             If UserList(tU).flags.Paralizado = 1 Then
-                Call WriteConsoleMsg(UserIndex, UserList(tU).name & " ya está paralizado.", e_FontTypeNames.FONTTYPE_FIGHT)
+                Call WriteConsoleMsg(UserIndex, UserList(tU).Name & " ya está paralizado.", e_FontTypeNames.FONTTYPE_FIGHT)
                 Exit Sub
             ElseIf UserList(tU).flags.Inmovilizado = 1 Then
-                Call WriteConsoleMsg(UserIndex, UserList(tU).name & " ya está inmovilizado.", e_FontTypeNames.FONTTYPE_FIGHT)
+                Call WriteConsoleMsg(UserIndex, UserList(tU).Name & " ya está inmovilizado.", e_FontTypeNames.FONTTYPE_FIGHT)
                 Exit Sub
             End If
             If IsSet(UserList(tU).flags.StatusMask, eCCInmunity) Then
@@ -2199,15 +2190,15 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
             End If
     
 508         If UserList(tU).flags.Paralizado = 1 Then
-510             Call WriteConsoleMsg(UserIndex, UserList(tU).name & " ya está paralizado.", e_FontTypeNames.FONTTYPE_FIGHT)
+510             Call WriteConsoleMsg(UserIndex, UserList(tU).Name & " ya está paralizado.", e_FontTypeNames.FONTTYPE_FIGHT)
                 Exit Sub
 512         ElseIf UserList(tU).flags.Inmovilizado = 1 Then
-514             Call WriteConsoleMsg(UserIndex, UserList(tU).name & " ya está inmovilizado.", e_FontTypeNames.FONTTYPE_FIGHT)
+514             Call WriteConsoleMsg(UserIndex, UserList(tU).Name & " ya está inmovilizado.", e_FontTypeNames.FONTTYPE_FIGHT)
                 Exit Sub
             End If
             
             If UserList(tU).Counters.TiempoDeInmunidadParalisisNoMagicas > 0 Then
-515             Call WriteConsoleMsg(UserIndex, UserList(tU).name & " no puede volver a ser inmovilizado tan rápido.", e_FontTypeNames.FONTTYPE_FIGHT)
+515             Call WriteConsoleMsg(UserIndex, UserList(tU).Name & " no puede volver a ser inmovilizado tan rápido.", e_FontTypeNames.FONTTYPE_FIGHT)
                 Exit Sub
             End If
             
@@ -2414,7 +2405,7 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
                     
                     If UserList(tU).flags.SeguroResu Then
                         Call WriteConsoleMsg(UserIndex, "El usuario tiene el seguro de resurrección activado.", e_FontTypeNames.FONTTYPE_INFO)
-                        Call WriteConsoleMsg(tU, UserList(UserIndex).name & " está intentando revivirte. Desactiva el seguro de resurrección para permitirle hacerlo.", e_FontTypeNames.FONTTYPE_INFO)
+                        Call WriteConsoleMsg(tU, UserList(UserIndex).Name & " está intentando revivirte. Desactiva el seguro de resurrección para permitirle hacerlo.", e_FontTypeNames.FONTTYPE_INFO)
                         b = False
                         Exit Sub
                     End If
@@ -2540,10 +2531,10 @@ Sub checkHechizosEfectividad(ByVal UserIndex As Integer, ByVal TargetUser As Int
             efectividad = (100 * .Counters.controlHechizos.HechizosCasteados) / .Counters.controlHechizos.HechizosTotales
             
             If efectividad >= 50 And .Counters.controlHechizos.HechizosTotales >= 6 Then
-                Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("El usuario " & .name & " está lanzando hechizos con una efectividad de " & efectividad & "% (Casteados: " & .Counters.controlHechizos.HechizosCasteados & "/" & .Counters.controlHechizos.HechizosTotales & "), revisar.", e_FontTypeNames.FONTTYPE_TALK))
+                Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("El usuario " & .Name & " está lanzando hechizos con una efectividad de " & efectividad & "% (Casteados: " & .Counters.controlHechizos.HechizosCasteados & "/" & .Counters.controlHechizos.HechizosTotales & "), revisar.", e_FontTypeNames.FONTTYPE_TALK))
             End If
             
-            Debug.Print "El usuario " & .name & " está lanzando hechizos con una efectividad de " & efectividad & "% (Casteados: " & .Counters.controlHechizos.HechizosCasteados & "/" & .Counters.controlHechizos.HechizosTotales & "), revisar."
+            Debug.Print "El usuario " & .Name & " está lanzando hechizos con una efectividad de " & efectividad & "% (Casteados: " & .Counters.controlHechizos.HechizosCasteados & "/" & .Counters.controlHechizos.HechizosTotales & "), revisar."
         Else
             .Counters.controlHechizos.HechizosTotales = .Counters.controlHechizos.HechizosTotales - 1
         End If
@@ -2870,7 +2861,7 @@ Private Sub InfoHechizo(ByVal UserIndex As Integer)
 
         End If
 
-106     If IsValidUserRef(UserList(UserIndex).flags.targetUser) Then '¿El Hechizo fue tirado sobre un usuario?
+106     If IsValidUserRef(UserList(UserIndex).flags.TargetUser) Then '¿El Hechizo fue tirado sobre un usuario?
 108         If Hechizos(h).FXgrh > 0 Then '¿Envio FX?
 110             If Hechizos(h).ParticleViaje > 0 Then
                     UserList(UserList(UserIndex).flags.targetUser.ArrayIndex).Counters.timeFx = 2
@@ -3318,8 +3309,8 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsA
             Call UserMod.DoDamageOrHeal(tempChr, UserIndex, eUser, Damage, e_DamageSourceType.e_magic, h)
 376         DamageStr = PonerPuntos(Damage)
 378         If UserIndex <> tempChr Then
-380             Call WriteLocaleMsg(UserIndex, "388", e_FontTypeNames.FONTTYPE_FIGHT, UserList(tempChr).name & "¬" & DamageStr)
-382             Call WriteLocaleMsg(tempChr, "32", e_FontTypeNames.FONTTYPE_FIGHT, UserList(UserIndex).name & "¬" & DamageStr)
+380             Call WriteLocaleMsg(UserIndex, "388", e_FontTypeNames.FONTTYPE_FIGHT, UserList(tempChr).Name & "¬" & DamageStr)
+382             Call WriteLocaleMsg(tempChr, "32", e_FontTypeNames.FONTTYPE_FIGHT, UserList(UserIndex).Name & "¬" & DamageStr)
             Else
 384             Call WriteLocaleMsg(UserIndex, "33", e_FontTypeNames.FONTTYPE_FIGHT, DamageStr)
             End If
@@ -4236,7 +4227,7 @@ Private Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, X As Byte, Y 
 140             Call NPCs.DoDamageOrHeal(npcIndex, UserIndex, eUser, -Damage, e_DamageSourceType.e_magic, h2)
             
 142             If UserList(UserIndex).ChatCombate = 1 Then
-144                 Call WriteConsoleMsg(UserIndex, "Le has causado " & Damage & " puntos de daño a " & NpcList(NpcIndex).name, e_FontTypeNames.FONTTYPE_FIGHT)
+144                 Call WriteConsoleMsg(UserIndex, "Le has causado " & Damage & " puntos de daño a " & NpcList(NpcIndex).Name, e_FontTypeNames.FONTTYPE_FIGHT)
                 End If
             End If
             Exit Sub
