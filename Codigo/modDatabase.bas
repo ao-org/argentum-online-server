@@ -17,7 +17,7 @@ Attribute VB_Name = "Database"
 '    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '
 '    This program was based on Argentum Online 0.11.6
-'    Copyright (C) 2002 Márquez Pablo Ignacio
+'    Copyright (C) 2002 MÃ¡rquez Pablo Ignacio
 '
 '    Argentum Online is based on Baronsoft's VB6 Online RPG
 '    You can contact the original creator of ORE at aaron@baronsoft.com
@@ -544,6 +544,9 @@ Public Sub SaveBanDatabase(username As String, Reason As String, BannedBy As Str
         
 102     Call SavePenaDatabase(username, "Baneado por: " & BannedBy & " debido a " & Reason)
 
+        'Added call to api to replicate in MySql
+        ApiEndpointBanUser(username)
+
         Exit Sub
 
 ErrorHandler:
@@ -631,6 +634,9 @@ Public Sub SaveBanCuentaDatabase(ByVal AccountID As Long, Reason As String, Bann
         On Error GoTo ErrorHandler
         
         Call Execute("UPDATE account SET is_banned = TRUE, banned_by = ?, ban_reason = ? WHERE id = ?;", BannedBy, Reason, AccountID)
+
+        'Added call to api to replicate in MySql
+        ApiEndpointBanAccount(AccountID)
 
         Exit Sub
 
@@ -956,7 +962,7 @@ Public Function EnterAccountDatabase(ByVal userIndex As Integer, ByVal CuentaEma
 100     Set RS = Query("SELECT id from account WHERE email = ?", UCase$(CuentaEmail))
     
 102     If Connection.State = adStateClosed Then
-104         Call WriteShowMessageBox(UserIndex, "Ha ocurrido un error interno en el servidor. ¡Estamos tratando de resolverlo!")
+104         Call WriteShowMessageBox(UserIndex, "Ha ocurrido un error interno en el servidor. Estamos tratando de resolverlo")
             Exit Function
         End If
     

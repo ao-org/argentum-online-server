@@ -17,7 +17,7 @@ Attribute VB_Name = "Declaraciones"
 '    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '
 '    This program was based on Argentum Online 0.11.6
-'    Copyright (C) 2002 Márquez Pablo Ignacio
+'    Copyright (C) 2002 MÃ¡rquez Pablo Ignacio
 '
 '    Argentum Online is based on Baronsoft's VB6 Online RPG
 '    You can contact the original creator of ORE at aaron@baronsoft.com
@@ -279,12 +279,12 @@ End Enum
 Public Enum e_Class
 
     Mage = 1    'Mago
-    Cleric      'Clérigo
+    Cleric      'ClÃ©rigo
     Warrior     'Guerrero
     Assasin     'Asesino
     Bard        'Bardo
     Druid       'Druida
-    Paladin     'Paladín
+    Paladin     'PaladÃ­n
     Hunter      'Cazador
     Trabajador  'Trabajador
     Pirat       'Pirata
@@ -499,7 +499,7 @@ Public Const FX_TELEPORT_INDEX             As Integer = 1
 
 Public Const HiddenSpellTextTime As Integer = 500
 
-' La utilidad de esto es casi nula, sólo se revisa si fue a la cabeza...
+' La utilidad de esto es casi nula, sÃ³lo se revisa si fue a la cabeza...
 Public Enum e_PartesCuerpo
 
     bCabeza = 1
@@ -565,7 +565,7 @@ Public Enum e_NPCType
     
 End Enum
 
-Public Const MIN_APUÑALAR As Byte = 10
+Public Const MIN_APUÃ‘ALAR As Byte = 10
 
 '********** CONSTANTANTES ***********
 
@@ -637,7 +637,7 @@ Public Enum e_Skill
     Tacticas = 3
     Armas = 4
     Meditar = 5
-    Apuñalar = 6
+    ApuÃ±alar = 6
     Ocultarse = 7
     Supervivencia = 8
     Comerciar = 9
@@ -689,7 +689,7 @@ Public Const AumentoSTMago       As Byte = AumentoSTDef - 1
 
 Public Const AumentoStBandido    As Byte = AumentoSTDef + 3
 
-'Tamaño del mapa
+'TamaÃ±o del mapa
 Public Const XMaxMapSize         As Byte = 100
 
 Public Const XMinMapSize         As Byte = 1
@@ -698,12 +698,12 @@ Public Const YMaxMapSize         As Byte = 100
 
 Public Const YMinMapSize         As Byte = 1
 
-'Tamaño del tileset
+'TamaÃ±o del tileset
 Public Const TileSizeX           As Byte = 32
 
 Public Const TileSizeY           As Byte = 32
 
-'Tamaño en Tiles de la pantalla de visualizacion
+'TamaÃ±o en Tiles de la pantalla de visualizacion
 Public Const XWindow             As Byte = 23
 
 Public Const YWindow             As Byte = 18
@@ -739,7 +739,7 @@ Public Const SND_IMPACTO2        As Byte = 12
 
 Public Const SND_DOPA As Byte = 77
 
-Public Const SND_LEÑADOR         As Byte = 13
+Public Const SND_LEÃ‘ADOR         As Byte = 13
 
 Public Const SND_FOGATA          As Byte = 116
 
@@ -755,7 +755,7 @@ Public Const SND_BEBER           As Byte = 135
 
 Public Const GRH_FALLO_PESCA     As Long = 48974
 
-'Numero de objeto de la poción de reset
+'Numero de objeto de la pociÃ³n de reset
 Public Const POCION_RESET       As Long = 3378
 
 ''
@@ -766,13 +766,13 @@ Public Const MAX_INVENTORY_OBJS      As Integer = 10000
 ' Cantidad de "slots" en el inventario con todos los slots desbloqueados
 Public Const MAX_INVENTORY_SLOTS     As Byte = 42
 
-' Cantidad de "slots" en el inventario básico
+' Cantidad de "slots" en el inventario bÃ¡sico
 Public Const MAX_USERINVENTORY_SLOTS As Byte = 24
 
 ' Cantidad de "slots" en el inventario por fila
 Public Const SLOTS_PER_ROW_INVENTORY As Byte = 6
 
-' Cantidad máxima de filas a desbloquear en el inventario
+' Cantidad mÃ¡xima de filas a desbloquear en el inventario
 Public Const INVENTORY_EXTRA_ROWS    As Byte = 3
 
 ''
@@ -797,7 +797,7 @@ Public Enum e_OBJType
     otLlaves = 9
     otPociones = 11
     otBebidas = 13
-    otLeña = 14
+    otLeÃ±a = 14
     otFogata = 15
     otEscudo = 16
     otCasco = 17
@@ -811,7 +811,7 @@ Public Enum e_OBJType
     otInstrumentos = 26
     otYunque = 27
     otFragua = 28
-    otDañoMagico = 30
+    otDaÃ±oMagico = 30
     otBarcos = 31
     otFlechas = 32
     otBotellaVacia = 33
@@ -1018,7 +1018,7 @@ Public Type t_Hechizo
     TeleportXX As Integer
     TeleportXY As Integer
 
-    'Hechizo de Materialización
+    'Hechizo de MaterializaciÃ³n
     MaterializaObj As Integer
     MaterializaCant As Integer
     
@@ -1217,8 +1217,8 @@ Public Type t_Inventario
     CascoEqpSlot As Byte
     MunicionEqpObjIndex As Integer
     MunicionEqpSlot As Byte
-    DañoMagicoEqpObjIndex As Integer
-    DañoMagicoEqpSlot As Byte
+    DaÃ±oMagicoEqpObjIndex As Integer
+    DaÃ±oMagicoEqpSlot As Byte
     ResistenciaEqpObjIndex As Integer
     ResistenciaEqpSlot As Byte
     HerramientaEqpObjIndex As Integer
@@ -1444,13 +1444,13 @@ Public Type t_SalaReto
     CaenItems As Boolean
     TiempoRestante As Long
     TiempoItems As Integer
-    TamañoEquipoIzq As Byte
-    TamañoEquipoDer As Byte
+    TamaÃ±oEquipoIzq As Byte
+    TamaÃ±oEquipoDer As Byte
     Jugadores() As t_UserReference
 End Type
 
 Public Type t_Retos
-    TamañoMaximoEquipo As Byte
+    TamaÃ±oMaximoEquipo As Byte
     ApuestaMinima As Long
     ImpuestoApuesta As Single
     DuracionMaxima As Long
@@ -1490,7 +1490,7 @@ Public Type t_ObjData
     'Solo contenedores
     MaxItems As Integer
     Conte As t_Inventario
-    Apuñala As Byte
+    ApuÃ±ala As Byte
     
     Paraliza As Byte
     Estupidiza As Byte
@@ -1681,10 +1681,10 @@ Public Type t_ModClase
     Evasion As Double
     AtaqueArmas As Double
     AtaqueProyectiles As Double
-    DañoArmas As Double
-    DañoProyectiles As Double
-    DañoWrestling As Double
-    ModApuñalar As Double
+    DaÃ±oArmas As Double
+    DaÃ±oProyectiles As Double
+    DaÃ±oWrestling As Double
+    ModApuÃ±alar As Double
     Escudo As Double
     ManaInicial As Double
     AumentoSta As Integer
@@ -1903,11 +1903,11 @@ Public Type t_UserFlags
     Subastando As Boolean
     Incinerado As Byte
 
-    Muerto As Byte '¿Esta muerto?
-    Escondido As Byte '¿Esta escondido?
-    Comerciando As Boolean '¿Esta comerciando?
-    UserLogged As Boolean '¿Esta online?
-    FirstPacket As Boolean ' ¿El socket envió algun paquete válido?
+    Muerto As Byte 'Â¿Esta muerto?
+    Escondido As Byte 'Â¿Esta escondido?
+    Comerciando As Boolean 'Â¿Esta comerciando?
+    UserLogged As Boolean 'Â¿Esta online?
+    FirstPacket As Boolean ' Â¿El socket enviÃ³ algun paquete vÃ¡lido?
     Meditando As Boolean
     Crafteando As Byte
 
@@ -1940,17 +1940,17 @@ Public Type t_UserFlags
     SeguroResu As Boolean
 
     DuracionEfecto As Long
-    TargetNPC As t_NpcReference ' Npc señalado por el usuario
-    TargetNpcTipo As e_NPCType ' Tipo del npc señalado
+    TargetNPC As t_NpcReference ' Npc seÃ±alado por el usuario
+    TargetNpcTipo As e_NPCType ' Tipo del npc seÃ±alado
     NpcInv As Integer
     
     Ban As Byte
     AdministrativeBan As Byte
     BanMotivo As String
 
-    TargetUser As t_UserReference ' Usuario señalado
+    TargetUser As t_UserReference ' Usuario seÃ±alado
     
-    TargetObj As Integer ' Obj señalado
+    TargetObj As Integer ' Obj seÃ±alado
     TargetObjMap As Integer
     TargetObjX As Integer
     TargetObjY As Integer
@@ -2206,7 +2206,7 @@ Public Type t_UserTrabajo
     TargetSkill As e_Skill
     Target_X As Integer
     Target_Y As Integer
-    'Para macro de Carpinteria, Herrería y Sastrería
+    'Para macro de Carpinteria, HerrerÃ­a y SastrerÃ­a
     Item As Integer
     Cantidad As Long
 End Type
@@ -2433,7 +2433,7 @@ Public Type t_NPCFlags
     GolpeExacto As Byte
     Domable As Integer
     Respawn As Byte
-    NPCActive As Boolean '¿Esta vivo?
+    NPCActive As Boolean 'Â¿Esta vivo?
     Follow As Boolean
     Faccion As e_Facciones
     LanzaSpells As Byte
@@ -2965,6 +2965,8 @@ Public Type t_BaseDotInfo
     EotId As Integer
     Removed As Boolean
 End Type
+
+Public Const API_URL_SERVER As String = "https://localhost:9090"
 
 Public Sub UpdateUserTelemetryKey(ByVal UserIndex As Integer)
     If Not EnableTelemetry Then Exit Sub
