@@ -28,6 +28,8 @@ Attribute VB_Name = "Declaraciones"
 
 Option Explicit
 
+Public Const API_URL_SERVER As String = "https://localhost:9090"
+
 ''
 ' Modulo de declaraciones. Aca hay de todo.
 '
