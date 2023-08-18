@@ -17,7 +17,7 @@ Attribute VB_Name = "Database"
 '    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '
 '    This program was based on Argentum Online 0.11.6
-'    Copyright (C) 2002 MÃ¡rquez Pablo Ignacio
+'    Copyright (C) 2002 Marquez Pablo Ignacio
 '
 '    Argentum Online is based on Baronsoft's VB6 Online RPG
 '    You can contact the original creator of ORE at aaron@baronsoft.com
@@ -545,7 +545,7 @@ Public Sub SaveBanDatabase(username As String, Reason As String, BannedBy As Str
 102     Call SavePenaDatabase(username, "Baneado por: " & BannedBy & " debido a " & Reason)
 
         'Added call to api to replicate in MySql
-        ApiEndpointBanUser(username)
+        ApiEndpointBanUser (username)
 
         Exit Sub
 
@@ -636,7 +636,7 @@ Public Sub SaveBanCuentaDatabase(ByVal AccountID As Long, Reason As String, Bann
         Call Execute("UPDATE account SET is_banned = TRUE, banned_by = ?, ban_reason = ? WHERE id = ?;", BannedBy, Reason, AccountID)
 
         'Added call to api to replicate in MySql
-        ApiEndpointBanAccount(AccountID)
+        ApiEndpointBanAccount (AccountID)
 
         Exit Sub
 
