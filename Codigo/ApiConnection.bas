@@ -37,12 +37,12 @@ Private XmlHttp As Object
 Private Endpoint As String
 Private Parameters As String
 
-Public Sub ApiEndpointBanUser(username)
+Public Sub ApiEndpointBanUser(ByVal username As String)
     Endpoint = API_URL_SERVER & "/banUserInMysql/" & username
     Call SendGETRequest(Endpoint)
 End Sub
 
-Public Sub ApiEndpointBanAccount(account)
+Public Sub ApiEndpointBanAccount(ByVal account As String)
     Endpoint = API_URL_SERVER & "/banAccountInMysql/" & account
     Call SendGETRequest(Endpoint)
 End Sub
