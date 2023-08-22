@@ -4288,7 +4288,7 @@ Public Sub HandleCerrarCliente(ByVal UserIndex As Integer)
 108             If Not IsValidUserRef(tUser) Then
 110                 Call WriteConsoleMsg(UserIndex, "El usuario no esta online.", e_FontTypeNames.FONTTYPE_INFO)
                 Else
-112                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(.name & " cerro el cliente de " & username & ".", e_FontTypeNames.FONTTYPE_INFO))
+112                 Call SendData(SendTarget.ToAdminsYDioses, 0, PrepareMessageConsoleMsg(.name & " cerro el cliente de " & username & ".", e_FontTypeNames.FONTTYPE_INFO))
 114                 Call WriteCerrarleCliente(tUser.ArrayIndex)
 116                 Call LogGM(.name, "Cerro el cliene de:" & username)
                 End If
