@@ -127,7 +127,7 @@ Public Sub SetMask(ByRef mask As Long, ByVal value As Long)
     mask = mask Or value
 End Sub
 
-Public Function IsSet(ByVal mask As Long, ByVal value As Long)
+Public Function IsSet(ByVal Mask As Long, ByVal Value As Long) As Boolean
     IsSet = (mask And value) > 0
 End Function
 

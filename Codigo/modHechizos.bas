@@ -4558,3 +4558,49 @@ Private Sub AdjustNpcStatWithCasterLevel(ByVal UserIndex As Integer, ByVal NpcIn
         .Stats.MaxHit = .Stats.MaxHit + .Stats.MaxHit * BonusDamage
     End With
 End Sub
+
+Public Sub UseSpellSlot(ByVal UserIndex As Integer, ByVal SpellSlot As Integer)
+    On Error GoTo UseSpellSlot_Err
+100     With UserList(UserIndex)
+            
+104         If .flags.Muerto = 1 Then
+106             Call WriteLocaleMsg(UserIndex, 77, e_FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+
+            End If
+        
+108         .flags.Hechizo = SpellSlot
+            If UserMod.IsStun(.flags, .Counters) Then
+                Call WriteLocaleMsg(UserIndex, 394, e_FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
+            
+        
+110         If .flags.Hechizo < 1 Or .flags.Hechizo > MAXUSERHECHIZOS Then
+112             .flags.Hechizo = 0
+            End If
+        
+114         If .flags.Hechizo <> 0 Then
+116             If (.flags.Privilegios And e_PlayerType.Consejero) = 0 Then
+                    If .Stats.UserHechizos(SpellSlot) <> 0 Then
+120                     If Hechizos(.Stats.UserHechizos(SpellSlot)).AutoLanzar = 1 Then
+122                         Call SetUserRef(UserList(UserIndex).flags.TargetUser, UserIndex)
+124                         Call LanzarHechizo(.flags.Hechizo, UserIndex)
+                        Else
+                            If IsValidUserRef(.flags.GMMeSigue) Then
+                                Call WriteNofiticarClienteCasteo(.flags.GMMeSigue.ArrayIndex, 1)
+                            End If
+                            If Hechizos(.Stats.UserHechizos(SpellSlot)).AreaAfecta > 0 Then
+126                             Call WriteWorkRequestTarget(UserIndex, e_Skill.Magia, True, Hechizos(.Stats.UserHechizos(SpellSlot)).AreaRadio)
+                            Else
+                                Call WriteWorkRequestTarget(UserIndex, e_Skill.Magia)
+                            End If
+                        End If
+                    End If
+                End If
+            End If
+        End With
+    Exit Sub
+UseSpellSlot_Err:
+128     Call TraceError(Err.Number, Err.Description, "Protocol.UseSpellSlot", Erl)
+End Sub

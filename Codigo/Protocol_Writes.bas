@@ -1967,6 +1967,11 @@ Public Sub WriteChangeInventorySlot(ByVal UserIndex As Integer, ByVal Slot As By
 114     Call Writer.WriteBool(UserList(UserIndex).Invent.Object(Slot).Equipped)
 116     Call Writer.WriteReal32(SalePrice(ObjIndex))
 118     Call Writer.WriteInt8(PodraUsarlo)
+        If ObjIndex > 0 Then
+119         Call Writer.WriteBool(IsSet(ObjData(ObjIndex).ObjFlags, e_ObjFlags.e_Bindable))
+        Else
+            Call Writer.WriteBool(False)
+        End If
 120     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub
@@ -2033,10 +2038,12 @@ Public Sub WriteChangeSpellSlot(ByVal UserIndex As Integer, ByVal Slot As Intege
 
 106     If UserList(UserIndex).Stats.UserHechizos(Slot) > 0 Then
 108         Call Writer.WriteInt16(UserList(UserIndex).Stats.UserHechizos(Slot))
+            Call Writer.WriteBool(IsSet(Hechizos(UserList(UserIndex).Stats.UserHechizos(Slot)).SpellRequirementMask, e_SpellRequirementMask.eIsBindable))
         Else
 110         Call Writer.WriteInt16(-1)
+            Call Writer.WriteBool(False)
         End If
-
+        
 112     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub
@@ -5822,5 +5829,22 @@ Public Function PrepareUpdateCharValue(ByVal Charindex As Integer, _
 PrepareMessageDoAnimation_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareMessageDoAnimation", Erl)
+End Function
+
+Public Function PrepareActiveToggles()
+    On Error GoTo PrepareActiveToggles_Err
+100     Call Writer.WriteInt16(ServerPacketID.SendClientToggles)
+        Dim ActiveToggles() As String
+        Dim ActiveToggleCount As Integer
+        ActiveToggles = GetActiveToggles(ActiveToggleCount)
+        Call Writer.WriteInt16(ActiveToggleCount)
+        Dim i As Integer
+        For i = 0 To ActiveToggleCount - 1
+            Call Writer.WriteString8(ActiveToggles(i))
+        Next i
+        Exit Function
+PrepareActiveToggles_Err:
+        Call Writer.Clear
+        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareActiveToggles", Erl)
 End Function
 

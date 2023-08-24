@@ -292,7 +292,7 @@ On Error GoTo CreateEffect_Err
     End Select
     Exit Sub
 CreateEffect_Err:
-      Call TraceError(Err.Number, Err.Description, "EffectsOverTime.CreateEffect", Erl)
+      Call TraceError(Err.Number, Err.Description, "EffectsOverTime.CreateEffect EffectIndex:" & EffectIndex, Erl)
 End Sub
 
 Public Sub CreateTrap(ByVal SourceIndex As Integer, ByVal SourceType As e_ReferenceType, ByVal map As Integer, ByVal TileX As Integer, ByVal TileY As Integer, ByVal EffectTypeId As Integer)

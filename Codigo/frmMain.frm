@@ -1039,7 +1039,7 @@ On Error GoTo Handler
                     
                     If UserGuardados > NumUsers Then Exit For
                     'limit the amount of time we block the only thread we have here, lets save some user on the next loop
-                    If (GetTickCount - PerformanceTimer) > IntervaloGuardarUsuarios Then Exit For
+                    If (GetTickCount - PerformanceTimer) > 100 Then Exit For
                 End If
     
             End If
