@@ -232,6 +232,7 @@ Public Enum ServerPacketID
     UpdateGroupInfo
     RequestTelemetry
     UpdateCharValue
+    SendClientToggles
     #If PYMMO = 0 Then
     AccountCharacterList
     #End If
@@ -560,6 +561,8 @@ Public Enum ClientPacketID
     FeatureToggle
     ActionOnGroupFrame
     SendTelemetry
+    SetHotkeySlot
+    UseHKeySlot
     #If PYMMO = 0 Then
     CreateAccount
     LoginAccount
@@ -1408,6 +1411,10 @@ On Error Resume Next
             Call HandleActionOnGroupFrame(UserIndex)
         Case ClientPacketID.SendTelemetry
             Call HandleSendTelemetry(UserIndex)
+        Case ClientPacketID.SetHotkeySlot
+            Call HandleSetHotkeySlot(UserIndex)
+        Case ClientPacketID.UseHKeySlot
+            Call HandleUseHKeySlot(UserIndex)
 #If PYMMO = 0 Then
         Case ClientPacketID.CreateAccount
             Call HandleCreateAccount(userindex)
@@ -2968,67 +2975,17 @@ End Function
 ' Handles the "CastSpell" message.
 ' @param    UserIndex The index of the user sending the message.
 Private Sub HandleCastSpell(ByVal UserIndex As Integer)
-        On Error GoTo HandleCastSpell_Err
-100     With UserList(UserIndex)
-            Dim Spell As Byte
-102         Spell = Reader.ReadInt8()
-            Dim PacketCounter As Long
-            PacketCounter = Reader.ReadInt32
-            Dim Packet_ID As Long
-            Packet_ID = PacketNames.CastSpell
-            
-104         If .flags.Muerto = 1 Then
-106             Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
-                Exit Sub
-
-            End If
-        
-108         .flags.Hechizo = Spell
-            If UserMod.IsStun(.flags, .Counters) Then
-                Call WriteLocaleMsg(UserIndex, "394", e_FontTypeNames.FONTTYPE_INFO)
-                Exit Sub
-            End If
-            
-        
-110         If .flags.Hechizo < 1 Or .flags.Hechizo > MAXUSERHECHIZOS Then
-112             .flags.Hechizo = 0
-            End If
-        
-114         If .flags.Hechizo <> 0 Then
-
-116             If (.flags.Privilegios And e_PlayerType.Consejero) = 0 Then
-                    
-                    If .Stats.UserHechizos(Spell) <> 0 Then
-                    
-120                     If Hechizos(.Stats.UserHechizos(Spell)).AutoLanzar = 1 Then
-122                         Call SetUserRef(UserList(userIndex).flags.targetUser, userIndex)
-124                         Call LanzarHechizo(.flags.Hechizo, UserIndex)
-                        Else
-                            If IsValidUserRef(.flags.GMMeSigue) Then
-                                Call WriteNofiticarClienteCasteo(.flags.GMMeSigue.ArrayIndex, 1)
-                            End If
-                            
-                            If Hechizos(.Stats.UserHechizos(Spell)).AreaAfecta > 0 Then
-126                             Call WriteWorkRequestTarget(UserIndex, e_Skill.Magia, True, Hechizos(.Stats.UserHechizos(Spell)).AreaRadio)
-                            Else
-                                Call WriteWorkRequestTarget(UserIndex, e_Skill.Magia)
-                            End If
-                        End If
-                    
-                    End If
-                    
-                End If
-
-            End If
-        
-        End With
-        
+    On Error GoTo HandleCastSpell_Err
+        Dim Spell As Byte
+        Spell = Reader.ReadInt8()
+        Dim PacketCounter As Long
+        PacketCounter = Reader.ReadInt32
+        Dim Packet_ID As Long
+        Packet_ID = PacketNames.CastSpell
+        Call UseSpellSlot(UserIndex, Spell)
         Exit Sub
-
 HandleCastSpell_Err:
 128     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCastSpell", Erl)
-130
-        
 End Sub
 
 ''
@@ -11374,3 +11331,66 @@ On Error GoTo HandleSendTelemetry_Err:
 HandleSendTelemetry_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleSendTelemetry", Erl)
 End Sub
+
+Public Sub HandleSetHotkeySlot(ByVal UserIndex As Integer)
+On Error GoTo HandleSetHotkeySlot_Err:
+    
+    With UserList(UserIndex)
+        Dim SlotIndex As Byte
+        Dim TargetIndex As Integer
+        Dim LastKnownSlot As Integer
+        Dim HkType As Byte
+        SlotIndex = Reader.ReadInt8
+        TargetIndex = Reader.ReadInt16
+        LastKnownSlot = Reader.ReadInt16
+        HkType = Reader.ReadInt8
+        
+        .HotkeyList(SlotIndex).Index = TargetIndex
+        .HotkeyList(SlotIndex).LastKnownSlot = LastKnownSlot
+        .HotkeyList(SlotIndex).Type = HkType
+    End With
+    Exit Sub
+HandleSetHotkeySlot_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleSetHotkeySlot", Erl)
+End Sub
+
+Public Sub HandleUseHKeySlot(ByVal UserIndex As Integer)
+On Error GoTo HandleUseHKeySlot_Err:
+    Dim SlotIndex As Byte
+    SlotIndex = Reader.ReadInt8
+    If Not IsFeatureEnabled("hotokey-enabled") Then Exit Sub
+    Dim CurrentSlotIndex As Integer
+    Dim i As Integer
+    With UserList(UserIndex)
+        If .HotkeyList(SlotIndex).Index > 0 Then
+            If .HotkeyList(SlotIndex).Type = Item Then
+            ElseIf .HotkeyList(SlotIndex).Type = Spell Then
+                If .HotkeyList(SlotIndex).LastKnownSlot > 0 And .HotkeyList(SlotIndex).LastKnownSlot < UBound(.Stats.UserHechizos) Then
+                    If .Stats.UserHechizos(.HotkeyList(SlotIndex).LastKnownSlot) = .HotkeyList(SlotIndex).Index Then
+                        CurrentSlotIndex = .HotkeyList(SlotIndex).LastKnownSlot
+                    End If
+                End If
+                If CurrentSlotIndex = 0 Then
+                    For i = LBound(.Stats.UserHechizos) To UBound(.Stats.UserHechizos)
+                        If .Stats.UserHechizos(i) = .HotkeyList(SlotIndex).Index Then
+                            CurrentSlotIndex = i
+                            Exit For
+                        End If
+                    Next i
+                End If
+                If CurrentSlotIndex > 0 Then
+                    If .Stats.UserHechizos(CurrentSlotIndex) > 0 Then
+                        If IsSet(Hechizos(UserList(UserIndex).Stats.UserHechizos(CurrentSlotIndex)).SpellRequirementMask, e_SpellRequirementMask.eIsBindable) Then
+                            Call UseSpellSlot(UserIndex, CurrentSlotIndex)
+                        End If
+                    End If
+                End If
+            End If
+        End If
+    End With
+    Exit Sub
+HandleUseHKeySlot_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleUseHKeySlot", Erl)
+End Sub
+
+

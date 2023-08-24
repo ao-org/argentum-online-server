@@ -779,6 +779,7 @@ Public Sub CargarHechizos()
             If val(Leer.GetValue("Hechizo" & Hechizo, "RequireTargetOnWater")) > 0 Then Call SetMask(Hechizos(Hechizo).SpellRequirementMask, e_SpellRequirementMask.eRequireTargetOnWater)
             If val(Leer.GetValue("Hechizo" & Hechizo, "WorkOnDead")) > 0 Then Call SetMask(Hechizos(Hechizo).SpellRequirementMask, e_SpellRequirementMask.eWorkOnDead)
             If val(Leer.GetValue("Hechizo" & Hechizo, "IsSkill")) > 0 Then Call SetMask(Hechizos(Hechizo).SpellRequirementMask, e_SpellRequirementMask.eIsSkill)
+            If val(Leer.GetValue("Hechizo" & Hechizo, "IsBindable")) > 0 Then Call SetMask(Hechizos(Hechizo).SpellRequirementMask, e_SpellRequirementMask.eIsBindable)
 305         Hechizos(Hechizo).RequireWeaponType = val(Leer.GetValue("Hechizo" & Hechizo, "RequireWeaponType"))
             Dim SubeHP As Byte
             SubeHP = val(Leer.GetValue("Hechizo" & Hechizo, "SubeHP"))
@@ -1287,6 +1288,7 @@ Sub LoadOBJData()
 161             .ImprovedRangedHitChance = val(Leer.GetValue(ObjKey, "ImprovedRHit"))
                 .ImprovedMeleeHitChance = val(Leer.GetValue(ObjKey, "ImprovedMHit"))
                 .ApplyEffectId = val(Leer.GetValue(ObjKey, "ApplyEffectId"))
+                If val(Leer.GetValue(ObjKey, "Bindable")) > 0 Then Call SetMask(.ObjFlags, e_ObjFlags.e_Bindable)
                 Dim i As Integer
 
 162             Select Case .OBJType
@@ -3508,3 +3510,17 @@ Public Sub SetFeatureToggle(ByVal Name As String, ByVal State As Boolean)
     End If
     Call FeatureToggles.Add(Name, State)
 End Sub
+
+Public Function GetActiveToggles(ByRef ActiveCount As Integer) As String()
+    Dim key As Variant
+    Dim ActiveKeys() As String
+    ReDim ActiveKeys(FeatureToggles.count) As String
+    ActiveCount = 0
+    For Each key In FeatureToggles.Keys
+        If FeatureToggles.Item(key) Then
+            ActiveKeys(ActiveCount) = key
+            ActiveCount = ActiveCount + 1
+        End If
+    Next key
+    GetActiveToggles = ActiveKeys
+End Function
