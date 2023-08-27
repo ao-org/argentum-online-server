@@ -1265,7 +1265,7 @@ Private Sub UserDamageToUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex 
 182         ElseIf PuedeApuñalar(AtacanteIndex) Then
 184             If RandomNumber(1, 100) <= ProbabilidadApuñalar(AtacanteIndex) Then
                     ' Daño del apuñalamiento
-186                 BonusDamage = Damage * ModicadorApuñalarClase(UserList(AtacanteIndex).clase)
+186                 BonusDamage = Damage * ModicadorApuñalarClase(UserList(AtacanteIndex).clase) + Defensa
 
 188                 DamageStr = PonerPuntos(BonusDamage)
                 

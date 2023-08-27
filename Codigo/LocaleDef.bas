@@ -95,6 +95,8 @@ Public Const MsgRequiredSpell = 472
 Public Const MsgCCInunity = 475
 Public Const MsgRequiredSkill = 473
 Public Const MsgCantUseBowTransformed = 476
+Public Const MsgBindableHotkeysOnly = 477
+
 
 Public Function GetRequiredWeaponLocaleId(ByVal WeaponType As e_WeaponType) As Integer
     Select Case WeaponType

@@ -1307,6 +1307,7 @@ Function HandlePhysicalSkill(ByVal SourceIndex As Integer, ByVal SourceType As e
     TargetPos = GetPosition(TargetRef)
     Select Case Hechizos(SpellIndex).SkillType
         Case e_SkillType.ePushingArrow
+            If Not IntervaloPermiteUsarArcos(SourceIndex, False) Then Exit Function
             Dim Damage As Integer
             Dim ObjectIndex As Integer
             Dim Proyectile As Integer

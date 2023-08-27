@@ -1749,7 +1749,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
 
 102         If .Invent.Object(Slot).amount = 0 Then Exit Sub
             If Not CanUseItem(.flags, .Counters) Then
-                Call WriteLocaleMsg(UserIndex, "395", e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteLocaleMsg(UserIndex, 395, e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
             If PuedeUsarObjeto(UserIndex, .invent.Object(Slot).objIndex, True) > 0 Then
