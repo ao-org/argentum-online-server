@@ -3106,7 +3106,7 @@ Public Function StunPlayer(ByRef counter As t_UserCounters) As Boolean
 End Function
 
 Public Function CanUseItem(ByRef flags As t_UserFlags, ByRef Counters As t_UserCounters) As Boolean
-    CanUseItem = Not IsStun(flags, Counters)
+    CanUseItem = True
 End Function
 
 Public Sub UpdateCd(ByVal UserIndex As Integer, ByVal cdType As e_CdTypes)

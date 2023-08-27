@@ -11297,12 +11297,18 @@ On Error GoTo HandleActionOnGroupFrame_Err:
         End If
         .flags.targetUser = UserList(.Grupo.Lider.ArrayIndex).Grupo.Miembros(TargetGroupMember)
         If .flags.Hechizo > 0 Then
+            If Not IsSet(Hechizos(UserList(UserIndex).Stats.UserHechizos(.flags.Hechizo)).SpellRequirementMask, e_SpellRequirementMask.eIsBindable) Then
+                Call WriteLocaleMsg(UserIndex, MsgBindableHotkeysOnly, e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteWorkRequestTarget(UserIndex, 0)
+                Exit Sub
+            End If
             .Counters.controlHechizos.HechizosTotales = .Counters.controlHechizos.HechizosTotales + 1
             Call LanzarHechizo(.flags.Hechizo, UserIndex)
-        If IsValidUserRef(.flags.GMMeSigue) Then
-            Call WriteNofiticarClienteCasteo(.flags.GMMeSigue.ArrayIndex, 0)
-        End If
-        .flags.Hechizo = 0
+            Call WriteWorkRequestTarget(UserIndex, 0)
+            If IsValidUserRef(.flags.GMMeSigue) Then
+                Call WriteNofiticarClienteCasteo(.flags.GMMeSigue.ArrayIndex, 0)
+            End If
+            .flags.Hechizo = 0
         Else
             Call WriteConsoleMsg(UserIndex, "¡Primero selecciona el hechizo que quieres lanzar!", e_FontTypeNames.FONTTYPE_INFO)
         End If
@@ -11334,7 +11340,6 @@ End Sub
 
 Public Sub HandleSetHotkeySlot(ByVal UserIndex As Integer)
 On Error GoTo HandleSetHotkeySlot_Err:
-    
     With UserList(UserIndex)
         Dim SlotIndex As Byte
         Dim TargetIndex As Integer
