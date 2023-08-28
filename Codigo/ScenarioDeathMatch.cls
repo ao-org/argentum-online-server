@@ -336,7 +336,7 @@ Public Sub IBaseScenario_WillSummonPlayer(ByVal UserIndex As Integer)
     spawnPos.X = RandomNumber(50 - MinArenaSize, 50 - MinArenaSize)
     spawnPos.y = RandomNumber(50 - MinArenaSize, 50 - MinArenaSize)
     GenericGlobalLobby.SummonCoordinates = spawnPos
-    
+    Call Board.AddPlayer(UserIndex)
     Dim UserItemInfo As t_UserItemInfo
     Dim i As Integer
     With UserList(UserIndex)

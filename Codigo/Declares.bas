@@ -969,6 +969,7 @@ Public Enum e_SpellRequirementMask
     eRequireTargetOnWater = 1024
     eWorkOnDead = 2048
     eIsSkill = 4096
+    eIsBindable = 8192
 End Enum
 
 Public Enum e_SpellEffects
@@ -1465,6 +1466,9 @@ Public Type t_Retos
 End Type
 ' **************************************************
 
+Public Enum e_ObjFlags
+    e_Bindable = 1
+End Enum
 'Tipos de objetos
 Public Type t_ObjData
     Pino As Byte
@@ -1477,15 +1481,10 @@ Public Type t_ObjData
     ParticulaGolpe As Integer
     ParticulaViaje As Integer
     Jerarquia As Long
-
     ClaseTipo As Byte
-
     TipoRuna As Byte
-
     Name As String 'Nombre del obj
-    
     OBJType As e_OBJType 'Tipo enum que determina cuales son las caract del obj
-    
     GrhIndex As Long ' Indice del grafico que representa el obj
     GrhSecundario As Integer
     
@@ -1674,6 +1673,7 @@ Public Type t_ObjData
     ObjDonador As Long
     WeaponType As e_WeaponType
     ProjectileType As Integer
+    ObjFlags As Long 'use bitmask from enum e_ObjFlags
 End Type
 
 '[Pablo ToxicWaste]
@@ -2259,6 +2259,19 @@ Public Type t_EffectOverTimeList
     EffectCount As Integer
 End Type
 
+Public Enum e_HotkeyType
+    Item = 1
+    Spell = 2
+    Unknown = 3
+End Enum
+
+Public Type t_HotkeyEntry
+    Type As e_HotkeyType
+    Index As Integer
+    LastKnownSlot As Integer
+End Type
+
+Public Const HotKeyCount As Integer = 10
 'Tipo de los Usuarios
 Public Type t_User
 
@@ -2354,7 +2367,7 @@ Public Type t_User
     QuestStats As t_QuestStats
 
     Keys(1 To MAXKEYS) As Integer
-    
+    HotkeyList(HotKeyCount) As t_HotkeyEntry
     CraftInventory(1 To MAX_SLOTS_CRAFTEO) As Integer
     CraftCatalyst As t_Obj
     CraftResult As clsCrafteo

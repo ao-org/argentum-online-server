@@ -214,7 +214,7 @@ On Error GoTo Complete_ConnectUser_Err
         
         Dim n    As Integer
         Dim tStr As String
-        
+98      Call SendData(SendTarget.ToIndex, UserIndex, PrepareActiveToggles)
 100     With UserList(UserIndex)
             
 105         If .flags.Paralizado = 1 Then
@@ -272,7 +272,13 @@ On Error GoTo Complete_ConnectUser_Err
 200                 .Invent.WeaponEqpSlot = 0
                 End If
             End If
-
+            
+            ' clear hotkey settings, the client should set this
+            For n = 0 To HotKeyCount - 1
+                .HotkeyList(n).Index = -1
+                .HotkeyList(n).LastKnownSlot = -1
+                .HotkeyList(n).Type = Unknown
+            Next n
             'Obtiene el indice-objeto del armadura
 205         If .Invent.ArmourEqpSlot > 0 Then
 210             If .Invent.Object(.Invent.ArmourEqpSlot).ObjIndex > 0 Then
@@ -649,6 +655,8 @@ On Error GoTo Complete_ConnectUser_Err
 
 995         Call WriteFYA(UserIndex)
 1000        Call WriteBindKeys(UserIndex)
+            
+            
         
 1005         If .NroMascotas > 0 And MapInfo(.pos.Map).NoMascotas = 0 And .flags.MascotasGuardadas = 0 Then
                  Dim i As Integer
@@ -3098,7 +3106,7 @@ Public Function StunPlayer(ByRef counter As t_UserCounters) As Boolean
 End Function
 
 Public Function CanUseItem(ByRef flags As t_UserFlags, ByRef Counters As t_UserCounters) As Boolean
-    CanUseItem = Not IsStun(flags, Counters)
+    CanUseItem = True
 End Function
 
 Public Sub UpdateCd(ByVal UserIndex As Integer, ByVal cdType As e_CdTypes)
