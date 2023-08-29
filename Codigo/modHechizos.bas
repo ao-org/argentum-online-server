@@ -1312,14 +1312,14 @@ Function HandlePhysicalSkill(ByVal SourceIndex As Integer, ByVal SourceType As e
             Dim ObjectIndex As Integer
             Dim Proyectile As Integer
             If SourceType = eUser Then
-            With UserList(SourceIndex)
-                If .invent.MunicionEqpObjIndex = 0 Then
-                    Exit Function
-                End If
-                Damage = GetUserDamageWithItem(SourceIndex, .invent.WeaponEqpObjIndex, .invent.MunicionEqpObjIndex)
-                ObjectIndex = .invent.WeaponEqpObjIndex
-                Proyectile = ObjData(.invent.MunicionEqpObjIndex).ProjectileType
-            End With
+                With UserList(SourceIndex)
+                    If .invent.MunicionEqpObjIndex = 0 Then
+                        Exit Function
+                    End If
+                    Damage = GetUserDamageWithItem(SourceIndex, .invent.WeaponEqpObjIndex, .invent.MunicionEqpObjIndex) / 2
+                    objectIndex = .invent.WeaponEqpObjIndex
+                    Proyectile = ObjData(.invent.MunicionEqpObjIndex).ProjectileType
+                End With
             Else
                 Damage = RandomNumber(NpcList(SourceIndex).Stats.MinHIT, NpcList(SourceIndex).Stats.MaxHit)
                 ObjectIndex = -1

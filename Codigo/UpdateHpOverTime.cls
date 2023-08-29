@@ -51,6 +51,7 @@ Dim TimeSinceLastTick As Long
 Dim TickEffect As Integer
 Dim Modifiers As Integer
 Dim EffectBonus As Single
+Dim SecondTargetModifier As Single
 
 Private DotInfo As t_BaseDotInfo
 Private source As t_AnyReference
@@ -68,6 +69,7 @@ Public Sub Setup(ByVal sourceIndex As Integer, ByVal sourceType As e_ReferenceTy
         TickTime = .TickTime
         TickEffect = .TickFX
         Modifiers = .EffectModifiers
+        SecondTargetModifier = 1 - .SecondaryTargetModifier
         If DotInfo.TargetRef.RefType = eUser And EffectOverTime(DotInfo.EotId).ClientEffectTypeId > 0 Then Call WriteSendSkillCdUpdate(TargetIndex, .ClientEffectTypeId, ID, .TickTime * TargetTicks, .TickTime * TargetTicks, .buffType)
     End With
     EffectBonus = 1
@@ -261,6 +263,7 @@ Public Sub PerformAction()
         If IsSet(Modifiers, e_ModifierTypes.SelfHealingBonus) Then
             TickHP = TickHP * NPCs.GetSelfHealingBonus(NpcList(DotInfo.TargetRef.ArrayIndex))
         End If
+        TickHP = TickHP * SecondTargetModifier
         If IsValidRef(source) Then
             Call NPCs.DoDamageOrHeal(DotInfo.TargetRef.ArrayIndex, Source.ArrayIndex, Source.RefType, TickHP, e_dot, DotInfo.EotId)
         Else

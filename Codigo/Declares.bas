@@ -1171,6 +1171,7 @@ Public Type t_EffectOverTime
     RequireWeaponType As Integer
     npcId As Integer
     ApplyStatusMask As Long
+    SecondaryTargetModifier As Single
 End Type
 
 Public Enum e_DamageResult
@@ -1961,6 +1962,7 @@ Public Type t_UserFlags
     
     TargetObjInvIndex As Integer
     TargetObjInvSlot As Integer
+    UsingItemSlot As Integer
     
     AtacadoPorNpc As t_NpcReference
     AtacadoPorUser As Integer

@@ -894,7 +894,7 @@ On Error GoTo ErrHandler
             If val(Leer.GetValue("EOT" & i, "RequireFist")) > 0 Then Call SetIntMask(EffectOverTime(i).RequireWeaponType, ShiftLeft(1, eFist))
             If val(Leer.GetValue("EOT" & i, "RequireSpear")) > 0 Then Call SetIntMask(EffectOverTime(i).RequireWeaponType, ShiftLeft(1, eSpear))
             If val(Leer.GetValue("EOT" & i, "RequireGunpowder")) > 0 Then Call SetIntMask(EffectOverTime(i).RequireWeaponType, ShiftLeft(1, eGunPowder))
-            
+            EffectOverTime(i).SecondaryTargetModifier = val(Leer.GetValue("EOT" & i, "SecondaryTargetModifier"))
         Next i
         
         Call InitializePools
