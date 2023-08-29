@@ -1812,8 +1812,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                 Case e_OBJType.otUseOnce
     
 142                 If .flags.Muerto = 1 Then
-144                     Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
-                        ' Call WriteConsoleMsg(UserIndex, "¡¡Estas muerto!! Solo podes usar items cuando estas vivo. ", e_FontTypeNames.FONTTYPE_INFO)
+144                     Call WriteLocaleMsg(UserIndex, 77, e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
     
                     End If
@@ -1883,13 +1882,8 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
     
                     End If
             
-                    'REVISAR LADDER
-                    'Solo si es herramienta ;) (en realidad si no es ni proyectil ni daga)
 198                 If .Invent.Object(Slot).Equipped = 0 Then
-                        'Call WriteConsoleMsg(UserIndex, "Antes de usar la herramienta deberias equipartela.", e_FontTypeNames.FONTTYPE_INFO)
-                        'Call WriteLocaleMsg(UserIndex, "376", e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
-    
                     End If
             
 200             Case e_OBJType.otHerramientas
@@ -3140,6 +3134,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                                 Call AddOrResetEffect(UserIndex, ObjData(ObjIndex).ApplyEffectId)
                         End Select
                  Case e_OBJType.otUsableOntarget
+                    .flags.UsingItemSlot = .flags.TargetObjInvSlot
                     Call WriteWorkRequestTarget(UserIndex, e_Skill.TargetableItem)
                 End Select
              End With
@@ -3398,31 +3393,33 @@ End Function
 Public Sub UserTargetableItem(ByVal UserIndex As Integer, ByVal TileX As Integer, ByVal TileY As Integer)
 On Error GoTo UserTargetableItem_Err
     With UserList(UserIndex)
-        If IsItemInCooldown(UserList(UserIndex), .invent.Object(.flags.TargetObjInvSlot)) Then
+        If IsItemInCooldown(UserList(UserIndex), .invent.Object(.flags.UsingItemSlot)) Then
             Exit Sub
         End If
+        If .flags.UsingItemSlot = 0 Then Exit Sub
         Dim objIndex As Integer
-        objIndex = .invent.Object(.flags.TargetObjInvSlot).objIndex
-    End With
-    With ObjData(objIndex)
-        If .MinHp > UserList(UserIndex).Stats.MinHp Then
-            Call WriteLocaleMsg(UserIndex, MsgRequiresMoreHealth, e_FontTypeNames.FONTTYPE_INFO)
-            Exit Sub
-        End If
-        If .MinSta > UserList(UserIndex).Stats.MinSta Then
-            Call WriteLocaleMsg(UserIndex, MsgTiredToPerformAction, e_FontTypeNames.FONTTYPE_INFO)
-            Exit Sub
-        End If
-        Select Case .Subtipo
-            Case e_UssableOnTarget.eRessurectionItem
-                Call ResurrectWithItem(UserIndex)
-            Case e_UssableOnTarget.eTrap
-                Call PlaceTrap(UserIndex, TileX, TileY)
-            Case e_UssableOnTarget.eArpon
-                Call UseArpon(UserIndex)
-            Case e_UssableOnTarget.eHandCannon
-                Call UseHandCannon(UserIndex, TileX, TileY)
-        End Select
+        ObjIndex = .invent.Object(.flags.UsingItemSlot).ObjIndex
+        With ObjData(ObjIndex)
+            If .MinHp > UserList(UserIndex).Stats.MinHp Then
+                Call WriteLocaleMsg(UserIndex, MsgRequiresMoreHealth, e_FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
+            If .MinSta > UserList(UserIndex).Stats.MinSta Then
+                Call WriteLocaleMsg(UserIndex, MsgTiredToPerformAction, e_FontTypeNames.FONTTYPE_INFO)
+                Exit Sub
+            End If
+            Select Case .Subtipo
+                Case e_UssableOnTarget.eRessurectionItem
+                    Call ResurrectWithItem(UserIndex)
+                Case e_UssableOnTarget.eTrap
+                    Call PlaceTrap(UserIndex, TileX, TileY)
+                Case e_UssableOnTarget.eArpon
+                    Call UseArpon(UserIndex)
+                Case e_UssableOnTarget.eHandCannon
+                    Call UseHandCannon(UserIndex, TileX, TileY)
+            End Select
+        End With
+        .flags.UsingItemSlot = 0
     End With
     Exit Sub
 UserTargetableItem_Err:
@@ -3463,9 +3460,9 @@ On Error GoTo ResurrectWithItem_Err
 122     Call UserMod.ModifyHealth(UserIndex, -costoVidaResu, 1)
 124     Call ModifyStamina(UserIndex, -UserList(UserIndex).Stats.MinSta, False, 0)
         Dim objIndex As Integer
-126     objIndex = .invent.Object(.flags.TargetObjInvSlot).objIndex
+126     ObjIndex = .invent.Object(.flags.UsingItemSlot).ObjIndex
 128     Call UpdateCd(UserIndex, ObjData(objIndex).cdType)
-192     Call RemoveItemFromInventory(UserIndex, UserList(UserIndex).flags.TargetObjInvSlot)
+192     Call RemoveItemFromInventory(UserIndex, UserList(UserIndex).flags.UsingItemSlot)
 196     Call ResurrectUser(TargetUser)
         If IsFeatureEnabled("remove-inv-on-attack") Then
             Call RemoveUserInvisibility(UserIndex)
@@ -3512,10 +3509,10 @@ Public Sub PlaceTrap(ByVal UserIndex As Integer, ByVal TileX As Integer, ByVal T
             Call Trap.Disable
         End If
         Dim objIndex As Integer
-        objIndex = UserList(UserIndex).invent.Object(UserList(UserIndex).flags.TargetObjInvSlot).objIndex
+        ObjIndex = UserList(UserIndex).invent.Object(UserList(UserIndex).flags.UsingItemSlot).ObjIndex
         Call UpdateCd(UserIndex, ObjData(objIndex).cdType)
         Call EffectsOverTime.CreateTrap(UserIndex, eUser, .pos.map, TileX, TileY, ObjData(objIndex).EfectoMagico)
-        Call RemoveItemFromInventory(UserIndex, UserList(UserIndex).flags.TargetObjInvSlot)
+        Call RemoveItemFromInventory(UserIndex, UserList(UserIndex).flags.UsingItemSlot)
     End With
 End Sub
 
@@ -3548,7 +3545,7 @@ Public Sub UseArpon(ByVal UserIndex As Integer)
             Exit Sub
         End If
         Dim ObjIndex As Integer
-        ObjIndex = .invent.Object(.flags.TargetObjInvSlot).ObjIndex
+        ObjIndex = .invent.Object(.flags.UsingItemSlot).ObjIndex
         Call UpdateCd(UserIndex, ObjData(ObjIndex).cdType)
         Dim Damage As Integer
         Damage = GetUserDamageWithItem(UserIndex, ObjIndex, 0)
@@ -3582,7 +3579,7 @@ Public Sub UseHandCannon(ByVal UserIndex As Integer, ByVal TileX As Integer, ByV
             Exit Sub
         End If
         Dim ObjIndex As Integer
-        ObjIndex = .invent.Object(.flags.TargetObjInvSlot).ObjIndex
+        ObjIndex = .invent.Object(.flags.UsingItemSlot).ObjIndex
         Call UpdateCd(UserIndex, ObjData(ObjIndex).cdType)
         Dim Particula As Integer
         Dim Tiempo    As Long
