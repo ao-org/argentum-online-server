@@ -3335,6 +3335,7 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsA
             End If
 418         If UserList(UserIndex).invent.DañoMagicoEqpObjIndex > 0 Then
 420             Damage = Damage + Porcentaje(Damage, ObjData(UserList(UserIndex).invent.DañoMagicoEqpObjIndex).MagicDamageBonus)
+                PorcentajeRM = PorcentajeRM - ObjData(UserList(UserIndex).invent.DañoMagicoEqpObjIndex).MagicPenetration
             End If
 
             ' Si el hechizo no ignora la RM
