@@ -93,6 +93,10 @@ Public Property Get IBaseEffectOverTime_UniqueId() As Long
     IBaseEffectOverTime_UniqueId = DotInfo.UniqueId
 End Property
 
+Public Property Get IBaseEffectOverTime_SharedTypeId() As Integer
+    IBaseEffectOverTime_SharedTypeId = EffectOverTime(DotInfo.EotId).SharedTypeId
+End Property
+
 Public Property Get IBaseEffectOverTime_CasterIsValid() As Boolean
     IBaseEffectOverTime_CasterIsValid = IsValidRef(Source)
 End Property
@@ -268,7 +272,9 @@ Private Sub ApplyEffectTo(ByVal TargetId As Integer, ByVal TargetType As e_Refer
             Set Effect = FindEffectOnTarget(DotInfo.TargetRef.ArrayIndex, UserList(TargetId).EffectOverTime, EffectIdToApply)
             If Effect Is Nothing Then
                 Call CreateEffect(DotInfo.TargetRef.ArrayIndex, DotInfo.TargetRef.RefType, TargetId, TargetType, EffectIdToApply)
-            ElseIf EffectOverTime(DotInfo.EotId).Override Then
+            ElseIf EffectOverTime(EffectIdToApply).Override And _
+                (Effect.EotId = EffectIdToApply Or EffectIdToApply = ApplyEffectId) Then
+                'either we don't override personal buff with other bard buff or we override anohter bard buff with ours on ourself
                 Call Effect.Reset(DotInfo.TargetRef.ArrayIndex, DotInfo.TargetRef.RefType, EffectIdToApply)
             End If
             Call RegisterNewHelp(TargetId, DotInfo.TargetRef.ArrayIndex)

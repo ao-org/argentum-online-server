@@ -316,16 +316,6 @@ Public Sub NpcDropeo(ByRef npc As t_Npc, ByRef UserIndex As Integer)
 
         End If
 
-110     If UserList(UserIndex).Invent.MagicoObjIndex = 383 Then
-112         If npc.QuizaProb = 0 Then
-114             Probabilidad = RandomNumber(1, DropMult / 2) 'Tiro Item?
-            Else
-116             Probabilidad = RandomNumber(1, npc.QuizaProb / 2) 'Tiro Item?
-
-            End If
-
-        End If
-
 118     If Probabilidad <> 1 Then Exit Sub
 
 120     objRandom = RandomNumber(1, npc.NumQuiza) 'Que item puede ser que tire?

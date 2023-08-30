@@ -71,6 +71,10 @@ Public Property Get IBaseEffectOverTime_TypeId() As Integer
     IBaseEffectOverTime_TypeId = e_EffectOverTimeType.eBonusDamage
 End Property
 
+Public Property Get IBaseEffectOverTime_SharedTypeId() As Integer
+    IBaseEffectOverTime_SharedTypeId = EffectOverTime(EffectInfo.EotId).SharedTypeId
+End Property
+
 Public Property Get IBaseEffectOverTime_UniqueId() As Long
     IBaseEffectOverTime_UniqueId = EffectInfo.UniqueId
 End Property

@@ -69,6 +69,9 @@ End Property
 Public Property Get TypeId() As Integer
 End Property
 
+Public Property Get SharedTypeId() As Integer
+End Property
+
 Public Property Get EotId() As Integer
 End Property
 
