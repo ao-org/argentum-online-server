@@ -1140,8 +1140,8 @@ Public Type t_EffectOverTime
     Type As e_EffectOverTimeType
     Limit As e_EOTTargetLimit
     SubType As Integer
-    TickPowerMin As Integer
-    TickPowerMax As Integer
+    TickPowerMin As Single
+    TickPowerMax As Single
     Ticks As Integer
     TickTime As Long
     TickManaConsumption As Integer
@@ -1167,6 +1167,7 @@ Public Type t_EffectOverTime
     Area As Integer
     Aura As String
     ApplyeffectID As Integer
+    SecondaryEffectId As Integer
     SpellRequirementMask As Long
     RequireWeaponType As Integer
     npcId As Integer

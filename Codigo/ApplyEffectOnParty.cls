@@ -50,6 +50,7 @@ Dim ApplyEffectId As Integer
 Dim AreaOfEffect As Integer
 Dim TickManaConsumption As Integer
 Dim TickStaminaConsumption As Integer
+Dim SecondaryEffect As Integer
 
 Private DotInfo As t_BaseDotInfo
 Private Source As t_AnyReference
@@ -61,7 +62,6 @@ Public Sub Setup(ByVal SourceIndex As Integer, ByVal SourceType As e_ReferenceTy
     Call SetBaseDot(DotInfo, TargetIndex, TargetType, ID, EffectId)
     Call SetRef(Source, SourceIndex, SourceType)
     Call SetActiveEffect
-    
 End Sub
 
 Private Sub SetActiveEffect()
@@ -73,12 +73,14 @@ Private Sub SetActiveEffect()
         TickManaConsumption = .TickManaConsumption
         TickStaminaConsumption = .TickStaminaConsumption
         ApplyEffectId = .ApplyEffectId
+        SecondaryEffect = .SecondaryEffectId
         If DotInfo.TargetRef.RefType = eUser And EffectOverTime(DotInfo.EotId).ClientEffectTypeId > 0 Then
             Call WriteSendSkillCdUpdate(DotInfo.TargetRef.ArrayIndex, .ClientEffectTypeId, DotInfo.UniqueId, .TickTime * TargetTicks, .TickTime * TargetTicks, .buffType)
         End If
         If DotInfo.TargetRef.RefType = eUser And TickStaminaConsumption > 0 Then
             Call SetMask(UserList(DotInfo.TargetRef.ArrayIndex).flags.StatusMask, ePreventEnergyRestore)
         End If
+        Call EffectsOverTime.ApplyEotModifier(DotInfo.TargetRef, EffectOverTime(DotInfo.EotId))
     End With
     Call PerformAction
 End Sub
@@ -152,6 +154,7 @@ Public Function IBaseEffectOverTime_Reset(ByVal SourceUserId As Integer, ByVal S
     TickCount = 0
     IBaseEffectOverTime_Reset = True
     If NewEffectId <> DotInfo.EotId Then
+        Call EffectsOverTime.RemoveEotModifier(DotInfo.TargetRef, EffectOverTime(DotInfo.EotId), 0)
         If DotInfo.TargetRef.RefType = eUser And EffectOverTime(DotInfo.EotId).ClientEffectTypeId > 0 Then
             Call WriteSendSkillCdUpdate(DotInfo.TargetRef.ArrayIndex, EffectOverTime(DotInfo.EotId).ClientEffectTypeId, DotInfo.UniqueId, 0, 0, EffectOverTime(DotInfo.EotId).buffType)
         End If
@@ -174,6 +177,7 @@ Public Sub IBaseEffectOverTime_OnRemove()
     If DotInfo.Removed Then Exit Sub
     DotInfo.Removed = True
     DotInfo.RemoveEffect = True
+    Call EffectsOverTime.RemoveEotModifier(DotInfo.TargetRef, EffectOverTime(DotInfo.EotId), 0)
     If DotInfo.TargetRef.RefType = eUser And EffectOverTime(DotInfo.EotId).ClientEffectTypeId > 0 Then
         Call WriteSendSkillCdUpdate(DotInfo.TargetRef.ArrayIndex, EffectOverTime(DotInfo.EotId).ClientEffectTypeId, DotInfo.UniqueId, 0, 0, EffectOverTime(DotInfo.EotId).buffType)
     End If
@@ -253,22 +257,28 @@ End Sub
 
 Private Sub ApplyEffectTo(ByVal TargetId As Integer, ByVal TargetType As e_ReferenceType)
     Dim Effect As IBaseEffectOverTime
+    Dim EffectIdToApply As Integer
+    If TargetId = DotInfo.TargetRef.ArrayIndex And TargetType = DotInfo.TargetRef.RefType Then
+        EffectIdToApply = ApplyEffectId
+    Else
+        EffectIdToApply = SecondaryEffect
+    End If
     If TargetType = eUser Then
         If UserList(TargetId).Stats.MinHp > 0 Then
-            Set Effect = FindEffectOnTarget(DotInfo.TargetRef.ArrayIndex, UserList(TargetId).EffectOverTime, ApplyEffectId)
+            Set Effect = FindEffectOnTarget(DotInfo.TargetRef.ArrayIndex, UserList(TargetId).EffectOverTime, EffectIdToApply)
             If Effect Is Nothing Then
-                Call CreateEffect(DotInfo.TargetRef.ArrayIndex, DotInfo.TargetRef.RefType, TargetId, TargetType, ApplyEffectId)
+                Call CreateEffect(DotInfo.TargetRef.ArrayIndex, DotInfo.TargetRef.RefType, TargetId, TargetType, EffectIdToApply)
             ElseIf EffectOverTime(DotInfo.EotId).Override Then
-                Call Effect.Reset(DotInfo.TargetRef.ArrayIndex, DotInfo.TargetRef.RefType, ApplyEffectId)
+                Call Effect.Reset(DotInfo.TargetRef.ArrayIndex, DotInfo.TargetRef.RefType, EffectIdToApply)
             End If
             Call RegisterNewHelp(TargetId, DotInfo.TargetRef.ArrayIndex)
         End If
     Else
-        Set Effect = FindEffectOnTarget(DotInfo.TargetRef.ArrayIndex, NpcList(TargetId).EffectOverTime, ApplyEffectId)
+        Set Effect = FindEffectOnTarget(DotInfo.TargetRef.ArrayIndex, NpcList(TargetId).EffectOverTime, EffectIdToApply)
         If Effect Is Nothing Then
-            Call CreateEffect(DotInfo.TargetRef.ArrayIndex, DotInfo.TargetRef.RefType, TargetId, TargetType, ApplyEffectId)
+            Call CreateEffect(DotInfo.TargetRef.ArrayIndex, DotInfo.TargetRef.RefType, TargetId, TargetType, EffectIdToApply)
         ElseIf EffectOverTime(DotInfo.EotId).Override Then
-            Call Effect.Reset(DotInfo.TargetRef.ArrayIndex, DotInfo.TargetRef.RefType, ApplyEffectId)
+            Call Effect.Reset(DotInfo.TargetRef.ArrayIndex, DotInfo.TargetRef.RefType, EffectIdToApply)
         End If
     End If
 End Sub

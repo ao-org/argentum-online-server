@@ -42,8 +42,8 @@ Option Explicit
 Implements IBaseEffectOverTime
 
 
-Dim DotManaMin As Integer
-Dim DotManaMax As Integer
+Dim DotManaMin As Single
+Dim DotManaMax As Single
 Dim TargetTicks As Integer
 Dim TickCount As Integer
 Dim TickTime As Long
