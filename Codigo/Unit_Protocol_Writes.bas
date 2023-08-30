@@ -81,7 +81,11 @@ Public Sub WriteLong(ByVal value_to_send As Long)
     Call Writer.WriteInt16(value_to_send)
     Call UnitClient.Send(Writer)
 End Sub
-
+Public Sub HandleErrorMessageBox(ByRef Reader As Network.Reader)
+    Dim mensaje As String
+    mensaje = Reader.ReadString8()
+    Debug.Print "HandleErrorMessageBox " & mensaje
+End Sub
 Public Sub HandleShowMessageBox(ByRef Reader As Network.Reader)
     Dim mensaje As String
     mensaje = Reader.ReadString8()

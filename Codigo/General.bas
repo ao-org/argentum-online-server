@@ -757,6 +757,7 @@ Sub Main()
                     Debug.Assert (suite_passed_ok)
                     
                     Debug.Print "Running proto suite, trying to connect to 127.0.0.1:7667"
+                    Call UnitClient.Init
                     Call UnitClient.Connect("127.0.0.1", "7667")
         #End If
         
