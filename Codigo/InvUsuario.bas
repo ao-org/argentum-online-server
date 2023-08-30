@@ -653,9 +653,15 @@ Function MeterItemEnInventario(ByVal UserIndex As Integer, ByRef MiObj As t_Obj)
         Dim Y    As Integer
 
         Dim Slot As Integer
-
+        If MiObj.ObjIndex = 12 Then
+            UserList(UserIndex).Stats.GLD = UserList(UserIndex).Stats.GLD + MiObj.amount
+            MeterItemEnInventario = True
+            Call WriteUpdateGold(UserIndex)
+            Exit Function
+        End If
         '¿el user ya tiene un objeto del mismo tipo? ?????
 100     Slot = GetSlotForItemInInvetory(UserIndex, MiObj)
+        
         If Slot <= 0 Then
 118        Call WriteLocaleMsg(UserIndex, MsgInventoryIsFull, e_FontTypeNames.FONTTYPE_FIGHT)
 120        MeterItemEnInventario = False

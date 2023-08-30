@@ -54,6 +54,7 @@ Public Sub Setup(ByVal SourceIndex As Integer, ByVal SourceType As e_ReferenceTy
     Call SetBaseDot(EffectInfo, TargetIndex, TargetType, ID, EffectId)
     Call SetRef(Source, SourceIndex, SourceType)
     Call SetEotEffect
+    Call EffectsOverTime.ApplyEotModifier(EffectInfo.TargetRef, EffectOverTime(EffectInfo.EotId))
 End Sub
 
 Private Sub SetEotEffect()
@@ -64,11 +65,14 @@ Private Sub SetEotEffect()
             If .ClientEffectTypeId > 0 Then Call WriteSendSkillCdUpdate(EffectInfo.TargetRef.ArrayIndex, .ClientEffectTypeId, EffectInfo.UniqueId, .TickTime, .buffType, TickCount)
         End If
     End With
-    Call EffectsOverTime.ApplyEotModifier(EffectInfo.TargetRef, EffectOverTime(EffectInfo.EotId))
 End Sub
 
 Public Property Get IBaseEffectOverTime_TypeId() As Integer
     IBaseEffectOverTime_TypeId = e_EffectOverTimeType.eBonusDamage
+End Property
+
+Public Property Get IBaseEffectOverTime_SharedTypeId() As Integer
+    IBaseEffectOverTime_SharedTypeId = EffectOverTime(EffectInfo.EotId).SharedTypeId
 End Property
 
 Public Property Get IBaseEffectOverTime_UniqueId() As Long
@@ -142,7 +146,6 @@ Public Function IBaseEffectOverTime_Reset(ByVal SourceUserId As Integer, ByVal S
         End If
     End If
     EffectInfo.EotId = NewEffectId
-    Call EffectsOverTime.ApplyEotModifier(EffectInfo.TargetRef, EffectOverTime(EffectInfo.EotId))
     Call SetEotEffect
     IBaseEffectOverTime_Reset = True
 End Function

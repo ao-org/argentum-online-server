@@ -73,6 +73,10 @@ Public Property Get IBaseEffectOverTime_UniqueId() As Long
     IBaseEffectOverTime_UniqueId = mDotInfo.UniqueId
 End Property
 
+Public Property Get IBaseEffectOverTime_SharedTypeId() As Integer
+    IBaseEffectOverTime_SharedTypeId = EffectOverTime(mDotInfo.EotId).SharedTypeId
+End Property
+
 Public Property Get IBaseEffectOverTime_CasterIsValid() As Boolean
     IBaseEffectOverTime_CasterIsValid = IsValidRef(mDotInfo.TargetRef)
 End Property

@@ -42,8 +42,8 @@ Option Explicit
 Implements IBaseEffectOverTime
 
 
-Dim DotManaMin As Integer
-Dim DotManaMax As Integer
+Dim DotManaMin As Single
+Dim DotManaMax As Single
 Dim TargetTicks As Integer
 Dim TickCount As Integer
 Dim TickTime As Long
@@ -59,14 +59,18 @@ Public Sub Setup(ByVal SourceIndex As Integer, ByVal SourceType As e_ReferenceTy
     TickCount = 0
     Call SetBaseDot(DotInfo, TargetIndex, TargetType, ID, EffectId)
     Call SetRef(Source, SourceIndex, SourceType)
-    With EffectOverTime(EffectId)
+    Call ConfigEffect
+End Sub
+
+Private Sub ConfigEffect()
+    With EffectOverTime(DotInfo.EotId)
         DotManaMin = .TickPowerMin
         DotManaMax = .TickPowerMax
         TargetTicks = .Ticks
         TickTime = .TickTime
         TickEffect = .TickFX
         If DotInfo.TargetRef.RefType = eUser And EffectOverTime(DotInfo.EotId).ClientEffectTypeId > 0 Then
-            Call WriteSendSkillCdUpdate(TargetIndex, .ClientEffectTypeId, ID, .TickTime * TargetTicks, .TickTime * TargetTicks, .buffType)
+            Call WriteSendSkillCdUpdate(DotInfo.TargetRef.ArrayIndex, .ClientEffectTypeId, DotInfo.UniqueId, .TickTime * TargetTicks, .TickTime * TargetTicks, .buffType)
         End If
     End With
 End Sub
@@ -85,6 +89,10 @@ End Property
 
 Public Property Get IBaseEffectOverTime_CasterArrayIndex() As Integer
     IBaseEffectOverTime_CasterArrayIndex = Source.ArrayIndex
+End Property
+
+Public Property Get IBaseEffectOverTime_SharedTypeId() As Integer
+    IBaseEffectOverTime_SharedTypeId = EffectOverTime(DotInfo.EotId).SharedTypeId
 End Property
 
 Public Property Get IBaseEffectOverTime_CasterRefType() As e_ReferenceType
@@ -139,9 +147,18 @@ End Property
 Public Function IBaseEffectOverTime_Reset(ByVal SourceUserId As Integer, ByVal SourceType As e_ReferenceType, ByVal NewEffectId As Integer) As Boolean
     IBaseEffectOverTime_Reset = True
     TickCount = 0
-    If DotInfo.TargetRef.RefType = eUser And EffectOverTime(DotInfo.EotId).ClientEffectTypeId > 0 Then
-        Call WriteSendSkillCdUpdate(DotInfo.TargetRef.ArrayIndex, EffectOverTime(DotInfo.EotId).ClientEffectTypeId, _
-                                    DotInfo.UniqueId, (TickTime * TargetTicks) - TimeSinceLastTick, TickTime * TargetTicks, EffectOverTime(DotInfo.EotId).buffType)
+    If NewEffectId <> DotInfo.EotId Then
+        DotInfo.EotId = NewEffectId
+        If DotInfo.TargetRef.RefType = eUser And EffectOverTime(DotInfo.EotId).ClientEffectTypeId > 0 Then
+            Call WriteSendSkillCdUpdate(DotInfo.TargetRef.ArrayIndex, EffectOverTime(DotInfo.EotId).ClientEffectTypeId, DotInfo.UniqueId, _
+                                        0, 0, EffectOverTime(DotInfo.EotId).buffType)
+        End If
+        Call ConfigEffect
+    Else
+        If DotInfo.TargetRef.RefType = eUser And EffectOverTime(DotInfo.EotId).ClientEffectTypeId > 0 Then
+            Call WriteSendSkillCdUpdate(DotInfo.TargetRef.ArrayIndex, EffectOverTime(DotInfo.EotId).ClientEffectTypeId, _
+                                        DotInfo.UniqueId, (TickTime * TargetTicks) - TimeSinceLastTick, TickTime * TargetTicks, EffectOverTime(DotInfo.EotId).buffType)
+        End If
     End If
 End Function
 
@@ -202,8 +219,8 @@ Public Property Get IBaseEffectOverTime_KeepAfterDead() As Boolean
 End Property
 
 Public Sub PerformAction()
-    Dim TickMana As Long
-    TickMana = RandomNumber(DotManaMin, DotManaMax)
+    Dim TickMana As Single
+    TickMana = RandomRange(DotManaMin, DotManaMax)
     If DotInfo.TargetRef.RefType = e_ReferenceType.eUser Then
         With UserList(DotInfo.TargetRef.ArrayIndex)
             Dim CurrentMana, MaxMana As Long

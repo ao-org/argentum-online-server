@@ -816,6 +816,7 @@ On Error GoTo ErrHandler
 114     For i = 1 To EffectCount
             EffectOverTime(i).Type = val(Leer.GetValue("EOT" & i, "Type"))
             EffectOverTime(i).SubType = val(Leer.GetValue("EOT" & i, "SubType"))
+            EffectOverTime(i).SharedTypeId = val(Leer.GetValue("EOT" & i, "SharedTypeId"))
             EffectOverTime(i).TickPowerMin = val(Leer.GetValue("EOT" & i, "TickPowerMin"))
             EffectOverTime(i).TickPowerMax = val(Leer.GetValue("EOT" & i, "TickPowerMax"))
             EffectOverTime(i).Ticks = val(Leer.GetValue("EOT" & i, "Ticks"))
@@ -843,6 +844,8 @@ On Error GoTo ErrHandler
             EffectOverTime(i).Area = val(Leer.GetValue("EOT" & i, "Area"))
             EffectOverTime(i).Aura = Leer.GetValue("EOT" & i, "Aura")
             EffectOverTime(i).ApplyeffectID = val(Leer.GetValue("EOT" & i, "ApplyeffectID"))
+            EffectOverTime(i).SecondaryEffectId = val(Leer.GetValue("EOT" & i, "SecondaryEffectId"))
+            
             If val(Leer.GetValue("EOT" & i, "AffectedByMagicBonus")) > 0 Then
                 Call SetMask(EffectOverTime(i).EffectModifiers, e_ModifierTypes.MagicBonus)
             End If

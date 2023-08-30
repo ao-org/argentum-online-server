@@ -3526,8 +3526,6 @@ Public Sub RemoveUserInvisibility(ByVal UserIndex As Integer)
         Dim RemoveHiddenState As Boolean
         If IsFeatureEnabled("remove-inv-on-attack") And Not MapInfo(.pos.Map).KeepInviOnAttack Then
             RemoveHiddenState = .flags.Oculto > 0 Or .flags.invisible > 0
-        Else
-            RemoveHiddenState = .flags.Oculto > 0
         End If
             'I see you...
          If RemoveHiddenState And .flags.AdminInvisible = 0 Then

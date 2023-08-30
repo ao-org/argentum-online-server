@@ -1138,10 +1138,11 @@ End Enum
 
 Public Type t_EffectOverTime
     Type As e_EffectOverTimeType
+    SharedTypeId As e_EotTypeId
     Limit As e_EOTTargetLimit
     SubType As Integer
-    TickPowerMin As Integer
-    TickPowerMax As Integer
+    TickPowerMin As Single
+    TickPowerMax As Single
     Ticks As Integer
     TickTime As Long
     TickManaConsumption As Integer
@@ -1167,6 +1168,7 @@ Public Type t_EffectOverTime
     Area As Integer
     Aura As String
     ApplyeffectID As Integer
+    SecondaryEffectId As Integer
     SpellRequirementMask As Long
     RequireWeaponType As Integer
     npcId As Integer
@@ -2966,11 +2968,23 @@ Public Enum e_EffectOverTimeType
     [EffectTypeCount]
 End Enum
 
+Public Enum e_EotTypeId
+    eNone = 0
+    eHealingDot = 1
+    eManaSong = 2
+    eSpeedSong = 3
+    eHitSing = 4
+    eEvasionSong = 5
+    eDivineProtection = 6
+    [EotTypeIdCount]
+End Enum
+
 Public Enum e_EOTTargetLimit
     eSingle = 1 'Only one on target for this type
     eSingleByCaster 'The target can have more than 1 effect of this type but only 1 for every caster
     eAny 'No limits
     eSingleByType 'can only have one effect of given type active at the time (like weapon poison)
+    eSingleByTypeId 'only one by TypeId (so we can have different buff that share the same id and can't stack like different lvls of the same buff)
 End Enum
 
 Public Type t_BaseDotInfo

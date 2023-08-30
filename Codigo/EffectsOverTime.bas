@@ -498,6 +498,11 @@ On Error GoTo FindEffectOnTarget_Err
                 Set FindEffectOnTarget = EffectList.EffectList(i)
                 Exit Function
             End If
+        ElseIf EffectLimit = eSingleByTypeId Then
+            If EffectList.EffectList(i).SharedTypeId = EffectOverTime(EffectId).SharedTypeId Then
+                Set FindEffectOnTarget = EffectList.EffectList(i)
+                Exit Function
+            End If
         End If
     Next i
     Exit Function

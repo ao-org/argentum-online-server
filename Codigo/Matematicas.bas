@@ -123,6 +123,15 @@ RandomNumber_Err:
 102     Call TraceError(Err.Number, Err.Description, "Matematicas.RandomNumber", Erl)
 End Function
 
+Public Function RandomRange(ByVal LowerBound As Single, ByVal UpperBound As Single) As Single
+        On Error GoTo RandomNumber_Err
+100     RandomRange = Rnd
+        RandomRange = RandomRange * (UpperBound - LowerBound) + LowerBound
+        Exit Function
+RandomNumber_Err:
+102     Call TraceError(Err.Number, Err.Description, "Matematicas.RandomNumber", Erl)
+End Function
+
 Public Sub SetMask(ByRef mask As Long, ByVal value As Long)
     mask = mask Or value
 End Sub
