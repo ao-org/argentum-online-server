@@ -1659,6 +1659,7 @@ Public Type t_ObjData
     MagicDamageBonus As Integer
     MagicPenetration As Integer
     ResistenciaMagica As Integer
+    MagicAbsoluteBonus As Integer
     Revive As Boolean
 
     Invernal As Boolean
@@ -1738,11 +1739,17 @@ End Enum
 
 Public Const MaxRecentKillToStore = 5
 
+Public Type t_RecentKiller
+    UserId As Long
+    KillTime As Long
+End Type
+
 Public Type t_RecentKillRecord
     UserId As Long
-    RecentKillers(MaxRecentKillToStore) As Long
+    RecentKillers(MaxRecentKillToStore) As t_RecentKiller
     RecentKillersIndex As Long
 End Type
+
 
 'keep record from alst 50 dc users in memory to prevent relog abuse that dont belong to the db
 Public Type t_RecentKillCache
@@ -1836,7 +1843,6 @@ Public Enum e_InventorySlotMask
     eMagicItem = 32
     eTool = 64
 End Enum
-
 
 'Flags
 Public Type t_UserFlags
@@ -1975,7 +1981,7 @@ Public Type t_UserFlags
     
     ValCoDe As Integer
     
-    RecentKillers(MaxRecentKillToStore) As Long 'Circular buffer to store recent killers to this user
+    RecentKillers(MaxRecentKillToStore) As t_RecentKiller 'Circular buffer to store recent killers to this user
     LastKillerIndex As Integer 'Last killer index of the circular buffer
     
     OldBody As Integer

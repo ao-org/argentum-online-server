@@ -2771,10 +2771,13 @@ Sub HechizoPropNPC(ByVal hIndex As Integer, ByVal npcIndex As Integer, ByVal Use
 148         If UserList(UserIndex).invent.WeaponEqpObjIndex > 0 Then
 150             Damage = Damage + Porcentaje(Damage, ObjData(UserList(UserIndex).invent.WeaponEqpObjIndex).MagicDamageBonus)
                 MagicPenetration = ObjData(UserList(UserIndex).invent.WeaponEqpObjIndex).MagicPenetration
+                Damage = Damage + ObjData(UserList(UserIndex).invent.WeaponEqpObjIndex).MagicAbsoluteBonus
             End If
             ' Magic Damage ring
 152         If UserList(UserIndex).invent.DañoMagicoEqpObjIndex > 0 Then
 154             Damage = Damage + Porcentaje(Damage, ObjData(UserList(UserIndex).invent.DañoMagicoEqpObjIndex).MagicDamageBonus)
+                Damage = Damage + ObjData(UserList(UserIndex).invent.DañoMagicoEqpObjIndex).MagicAbsoluteBonus
+                MagicPenetration = MagicPenetration + ObjData(UserList(UserIndex).invent.DañoMagicoEqpObjIndex).MagicPenetration
             End If
 156         b = True
 158         If NpcList(NpcIndex).flags.Snd2 > 0 Then
@@ -3332,9 +3335,11 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsA
             If UserList(UserIndex).invent.WeaponEqpObjIndex > 0 Then
                 Damage = Damage + Porcentaje(Damage, ObjData(UserList(UserIndex).invent.WeaponEqpObjIndex).MagicDamageBonus)
                 PorcentajeRM = PorcentajeRM - ObjData(UserList(UserIndex).invent.WeaponEqpObjIndex).MagicPenetration
+                Damage = Damage + ObjData(UserList(UserIndex).invent.WeaponEqpObjIndex).MagicAbsoluteBonus
             End If
 418         If UserList(UserIndex).invent.DañoMagicoEqpObjIndex > 0 Then
 420             Damage = Damage + Porcentaje(Damage, ObjData(UserList(UserIndex).invent.DañoMagicoEqpObjIndex).MagicDamageBonus)
+                Damage = Damage + ObjData(UserList(UserIndex).invent.DañoMagicoEqpObjIndex).MagicAbsoluteBonus
                 PorcentajeRM = PorcentajeRM - ObjData(UserList(UserIndex).invent.DañoMagicoEqpObjIndex).MagicPenetration
             End If
 
@@ -3645,12 +3650,15 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
             ' Weapon Magic bonus
 280         If UserList(UserIndex).Invent.WeaponEqpObjIndex > 0 Then
 282             Damage = Damage + Porcentaje(Damage, ObjData(UserList(UserIndex).invent.WeaponEqpObjIndex).MagicDamageBonus)
+                Damage = Damage + ObjData(UserList(UserIndex).invent.WeaponEqpObjIndex).MagicAbsoluteBonus
                 MR = MR - ObjData(UserList(UserIndex).invent.WeaponEqpObjIndex).MagicPenetration
             End If
             
             ' Magic ring bonus
 284         If UserList(UserIndex).invent.DañoMagicoEqpObjIndex > 0 Then
 286             Damage = Damage + Porcentaje(Damage, ObjData(UserList(UserIndex).invent.DañoMagicoEqpObjIndex).MagicDamageBonus)
+                Damage = Damage + ObjData(UserList(UserIndex).invent.DañoMagicoEqpObjIndex).MagicAbsoluteBonus
+                MR = MR - ObjData(UserList(UserIndex).invent.DañoMagicoEqpObjIndex).MagicPenetration
             End If
             ' Si el hechizo no ignora la RM
 288         If Hechizos(h).AntiRm = 0 Then
@@ -4546,18 +4554,31 @@ End Sub
 Private Sub AdjustNpcStatWithCasterLevel(ByVal UserIndex As Integer, ByVal NpcIndex As Integer)
     Dim BaseHit As Integer
     Dim BonusDamage As Single
+    Dim BonusFromItem As Integer
     'get natural skill for user lvl and apply hit chance for a cleric of that level with agility buff to 36
     BaseHit = UserList(UserIndex).Stats.ELV * 2.5
     BaseHit = ((BaseHit + ((3 * BaseHit / 100) * 36))) * ModClase(e_Class.Cleric).AtaqueArmas
     BaseHit = (BaseHit + (2.5 * max(CInt(UserList(UserIndex).Stats.ELV) - 12, 0)))
     If UserList(UserIndex).invent.WeaponEqpObjIndex > 0 Then
-        BonusDamage = ObjData(UserList(UserIndex).invent.WeaponEqpObjIndex).MagicDamageBonus / 100
+        BonusFromItem = ObjData(UserList(UserIndex).invent.WeaponEqpObjIndex).MagicDamageBonus
+        If BonusFromItem = 0 Then
+            BonusFromItem = ObjData(UserList(UserIndex).invent.WeaponEqpObjIndex).MagicAbsoluteBonus \ 2
+        End If
     End If
-    
+    If BonusFromItem = 0 And UserList(UserIndex).invent.DañoMagicoEqpObjIndex Then
+        BonusFromItem = ObjData(UserList(UserIndex).invent.DañoMagicoEqpObjIndex).MagicDamageBonus
+        If BonusFromItem = 0 Then
+            BonusFromItem = ObjData(UserList(UserIndex).invent.DañoMagicoEqpObjIndex).MagicAbsoluteBonus \ 3
+        End If
+    End If
+    BonusDamage = BonusFromItem / 100
     With NpcList(NpcIndex)
         .PoderAtaque = BaseHit
-        .Stats.MinHIT = .Stats.MinHIT + .Stats.MinHIT * BonusDamage
-        .Stats.MaxHit = .Stats.MaxHit + .Stats.MaxHit * BonusDamage
+        Dim HitBonus As Integer
+        HitBonus = .Stats.MaxHit * BonusDamage
+        HitBonus = max(HitBonus, BonusFromItem / 2)
+        .Stats.MinHIT = .Stats.MinHIT + HitBonus
+        .Stats.MaxHit = .Stats.MaxHit + HitBonus
     End With
 End Sub
 

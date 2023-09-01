@@ -153,6 +153,7 @@ Public MRSkillNpcProtectionModifier As Single
 Public AssistDamageValidTime        As Long 'valid time for damage to count as assit
 Public AssistHelpValidTime          As Long 'valid time for helpful spell to count as assist
 Public HideAfterHitTime             As Long 'required time to hide again after a hit remove us from this state
+Public FactionReKillTime            As Long 'required time between killing the same user to get factions points
 
 Public Puerto                       As Long
 

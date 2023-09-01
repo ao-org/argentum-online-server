@@ -1644,7 +1644,6 @@ Sub SendUserStatsTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
 100     Call WriteConsoleMsg(sendIndex, "Estadisticas de: " & UserList(UserIndex).Name, e_FontTypeNames.FONTTYPE_INFO)
 102     Call WriteConsoleMsg(sendIndex, "Nivel: " & UserList(UserIndex).Stats.ELV & "  EXP: " & UserList(UserIndex).Stats.Exp & "/" & ExpLevelUp(UserList(UserIndex).Stats.ELV), e_FontTypeNames.FONTTYPE_INFO)
 104     Call WriteConsoleMsg(sendIndex, "Salud: " & UserList(UserIndex).Stats.MinHp & "/" & UserList(UserIndex).Stats.MaxHp & "  Mana: " & UserList(UserIndex).Stats.MinMAN & "/" & UserList(UserIndex).Stats.MaxMAN & "  Vitalidad: " & UserList(UserIndex).Stats.MinSta & "/" & UserList(UserIndex).Stats.MaxSta, e_FontTypeNames.FONTTYPE_INFO)
-    
 106     If UserList(UserIndex).Invent.WeaponEqpObjIndex > 0 Then
 108         Call WriteConsoleMsg(sendIndex, "Menor Golpe/Mayor Golpe: " & UserList(UserIndex).Stats.MinHIT & "/" & UserList(UserIndex).Stats.MaxHit & " (" & ObjData(UserList(UserIndex).Invent.WeaponEqpObjIndex).MinHIT & "/" & ObjData(UserList(UserIndex).Invent.WeaponEqpObjIndex).MaxHit & ")", e_FontTypeNames.FONTTYPE_INFO)
         Else
@@ -1703,11 +1702,11 @@ Sub SendUserStatsTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)
 148     Call WriteConsoleMsg(sendIndex, "Oro: " & UserList(UserIndex).Stats.GLD & "  Posicion: " & UserList(UserIndex).Pos.X & "," & UserList(UserIndex).Pos.Y & " en mapa " & UserList(UserIndex).Pos.Map, e_FontTypeNames.FONTTYPE_INFO)
 150     Call WriteConsoleMsg(sendIndex, "Dados: " & UserList(UserIndex).Stats.UserAtributos(e_Atributos.Fuerza) & ", " & UserList(UserIndex).Stats.UserAtributos(e_Atributos.Agilidad) & ", " & UserList(UserIndex).Stats.UserAtributos(e_Atributos.Inteligencia) & ", " & UserList(UserIndex).Stats.UserAtributos(e_Atributos.Constitucion) & ", " & UserList(UserIndex).Stats.UserAtributos(e_Atributos.Carisma), e_FontTypeNames.FONTTYPE_INFO)
 152     Call WriteConsoleMsg(sendIndex, "Veces que Moriste: " & UserList(UserIndex).flags.VecesQueMoriste, e_FontTypeNames.FONTTYPE_INFO)
-
+154     Call WriteLocaleMsg(sendIndex, MsgFactionScore, e_FontTypeNames.FONTTYPE_INFO, UserList(UserIndex).Faccion.FactionScore)
         Exit Sub
 
 SendUserStatsTxt_Err:
-154     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.SendUserStatsTxt", Erl)
+156     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.SendUserStatsTxt", Erl)
 
         
 End Sub
@@ -2030,19 +2029,12 @@ Sub UserDie(ByVal UserIndex As Integer)
 162                 If .flags.PendienteDelSacrificio = 0 Then
 164                         Call TirarTodosLosItems(UserIndex)
                     Else
-                
                         Dim MiObj As t_Obj
-
 166                     MiObj.amount = 1
 168                     MiObj.ObjIndex = PENDIENTE
 170                     Call QuitarObjetos(PENDIENTE, 1, UserIndex)
-172                     Call MakeObj(MiObj, .Pos.Map, .Pos.X, .Pos.Y)
-174                     Call WriteConsoleMsg(UserIndex, "Has perdido tu pendiente del sacrificio.", e_FontTypeNames.FONTTYPE_INFO)
-
                     End If
-    
                 End If
-    
             End If
             
             Call Desequipar(UserIndex, .Invent.ArmourEqpSlot)
@@ -2203,7 +2195,7 @@ Public Function AlreadyKilledBy(ByVal TargetIndex As Integer, ByVal KillerIndex 
         TargetPos = Min(.flags.LastKillerIndex, MaxRecentKillToStore)
         Dim i As Integer
         For i = 0 To TargetPos
-            If .flags.RecentKillers(i) = UserList(KillerIndex).id Then
+            If .flags.RecentKillers(i).UserId = UserList(killerIndex).id And (GlobalFrameTime - .flags.RecentKillers(i).KillTime) < FactionReKillTime Then
                 AlreadyKilledBy = True
                 Exit Function
             End If
@@ -2216,7 +2208,8 @@ Public Sub RegisterRecentKiller(ByVal TargetIndex As Integer, ByVal KillerIndex 
     Dim InsertIndex As Integer
     With UserList(TargetIndex)
         InsertIndex = .flags.LastKillerIndex Mod MaxRecentKillToStore
-        .flags.RecentKillers(InsertIndex) = UserList(KillerIndex).id
+        .flags.RecentKillers(InsertIndex).UserId = UserList(killerIndex).id
+        .flags.RecentKillers(InsertIndex).KillTime = GlobalFrameTime
         .flags.LastKillerIndex = .flags.LastKillerIndex + 1
         If .flags.LastKillerIndex > MaxRecentKillToStore * 10 Then 'prevent overflow
             .flags.LastKillerIndex = .flags.LastKillerIndex \ 10
@@ -2268,14 +2261,12 @@ Sub HandleFactionScoreForKill(ByVal UserIndex As Integer, ByVal TargetIndex As I
                 Score = Score - 1
                 Call HandleFactionScoreForAssist(.flags.LastHelpUser.ArrayIndex, TargetIndex)
             End If
-            
         End If
         If GlobalFrameTime - UserList(TargetIndex).flags.LastAttackedByUserTime < AssistDamageValidTime Then
             If IsValidUserRef(UserList(TargetIndex).flags.LastAttacker) And UserList(TargetIndex).flags.LastAttacker.ArrayIndex <> UserIndex Then
                 Score = Score - 1
                 Call HandleFactionScoreForAssist(UserList(TargetIndex).flags.LastAttacker.ArrayIndex, TargetIndex)
             End If
-            Score = Score - 1
         End If
         .Faccion.FactionScore = .Faccion.FactionScore + Score
     End With
