@@ -1083,6 +1083,7 @@ Sub LoadBalance()
         AssistDamageValidTime = val(BalanceIni.GetValue("EXTRA", "AssistDamageValidTime"))
         AssistHelpValidTime = val(BalanceIni.GetValue("EXTRA", "AssistHelpValidTime"))
         HideAfterHitTime = val(BalanceIni.GetValue("EXTRA", "HideAfterHitTime"))
+        FactionReKillTime = val(BalanceIni.GetValue("EXTRA", "FactionReKillTime"))
         'stun
         PlayerStunTime = val(BalanceIni.GetValue("STUN", "PlayerStunTime"))
         NpcStunTime = val(BalanceIni.GetValue("STUN", "NpcStunTime"))
@@ -1336,6 +1337,7 @@ Sub LoadOBJData()
 218                     .Municion = val(Leer.GetValue(ObjKey, "Municiones"))
 220                     .Power = val(Leer.GetValue(ObjKey, "StaffPower"))
 222                     .MagicDamageBonus = val(Leer.GetValue(ObjKey, "MagicDamageBonus"))
+224                     .MagicAbsoluteBonus = val(Leer.GetValue(ObjKey, "MagicAbsoluteBonus"))
 226                     .Real = val(Leer.GetValue(ObjKey, "Real"))
 228                     .Caos = val(Leer.GetValue(ObjKey, "Caos"))
 230                     .EfectoMagico = val(Leer.GetValue(ObjKey, "efectomagico"))
@@ -1481,6 +1483,7 @@ Sub LoadOBJData()
                 
 422                 Case e_OBJType.otDañoMagico
 424                     .MagicDamageBonus = val(Leer.GetValue(ObjKey, "MagicDamageBonus"))
+425                     .MagicAbsoluteBonus = val(Leer.GetValue(ObjKey, "MagicAbsoluteBonus"))
 426                     .Revive = val(Leer.GetValue(ObjKey, "Revive")) <> 0
 
 428                 Case e_OBJType.otResistencia
