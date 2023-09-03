@@ -1764,6 +1764,13 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
 104         obj = ObjData(.Invent.Object(Slot).ObjIndex)
             Dim TimeSinceLastUse As Long: TimeSinceLastUse = GetTickCount() - .CdTimes(obj.cdType)
             If TimeSinceLastUse < obj.Cooldown Then Exit Sub
+            
+            If IsSet(obj.ObjFlags, e_ObjFlags.e_UseOnSafeAreaOnly) Then
+                If MapInfo(.pos.Map).Seguro = 0 Then
+                    Call WriteConsoleMsg(UserIndex, "Solo podes usar este objeto en mapas seguros.", e_FontTypeNames.FONTTYPE_INFO)
+                    Exit Sub
+                End If
+            End If
     
 106         If obj.OBJType = e_OBJType.otWeapon Then
 108             If obj.Proyectil = 1 Then
