@@ -1199,7 +1199,7 @@ Sub CheckUserLevel(ByVal UserIndex As Integer)
             
 116             .Stats.Exp = .Stats.Exp - experienceToLevelUp
                 
-118             Pts = Pts + 5
+118             Pts = Pts + ModClase(.clase).LevelSkillPoints
 
 134             .Stats.ELV = .Stats.ELV + 1
 136             experienceToLevelUp = ExpLevelUp(.Stats.ELV)

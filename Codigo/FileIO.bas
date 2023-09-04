@@ -845,6 +845,7 @@ On Error GoTo ErrHandler
             EffectOverTime(i).Aura = Leer.GetValue("EOT" & i, "Aura")
             EffectOverTime(i).ApplyeffectID = val(Leer.GetValue("EOT" & i, "ApplyeffectID"))
             EffectOverTime(i).SecondaryEffectId = val(Leer.GetValue("EOT" & i, "SecondaryEffectId"))
+            EffectOverTime(i).RequireTransform = val(Leer.GetValue("EOT" & i, "RequireTransform"))
             
             If val(Leer.GetValue("EOT" & i, "AffectedByMagicBonus")) > 0 Then
                 Call SetMask(EffectOverTime(i).EffectModifiers, e_ModifierTypes.MagicBonus)
@@ -1045,12 +1046,13 @@ Sub LoadBalance()
 134             .HitPre36 = val(BalanceIni.GetValue("GOLPE_PRE_36", SearchVar))
 136             .HitPost36 = val(BalanceIni.GetValue("GOLPE_POST_36", SearchVar))
 138             .ResistenciaMagica = val(BalanceIni.GetValue("MODRESISTENCIAMAGICA", SearchVar))
+140             .LevelSkillPoints = val(BalanceIni.GetValue("MODSKILLPOINTS", SearchVar))
                 For j = 1 To eWeaponTypeCount - 1
                     .WeaponHitBonus(j) = val(BalanceIni.GetValue(SearchVar, WeaponTypeNames(j)))
                 Next j
             End With
 
-140     Next i
+141     Next i
     
         'Modificadores de Raza
 142     For i = 1 To NUMRAZAS
