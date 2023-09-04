@@ -177,6 +177,3 @@ Command3_Click_Err:
         
 End Sub
 
-Private Sub Form_Load()
-
-End Sub

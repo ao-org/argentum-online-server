@@ -1469,7 +1469,9 @@ End Type
 
 Public Enum e_ObjFlags
     e_Bindable = 1
+    e_UseOnSafeAreaOnly = 2
 End Enum
+
 'Tipos de objetos
 Public Type t_ObjData
     Pino As Byte

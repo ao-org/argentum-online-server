@@ -246,7 +246,6 @@ Private Sub TransformChacter()
             NpcIndex = "NPC" & npcId
 136         .Char.body = val(LeerNPCs.GetValue(NpcIndex, "Body"))
 138         .Char.head = val(LeerNPCs.GetValue(NpcIndex, "Head"))
-140         .Char.Heading = val(LeerNPCs.GetValue(NpcIndex, "Heading"))
 142         .Char.BodyIdle = val(LeerNPCs.GetValue(NpcIndex, "BodyIdle"))
 143         .Char.Ataque1 = val(LeerNPCs.GetValue(NpcIndex, "Ataque1"))
 156         .Char.WeaponAnim = val(LeerNPCs.GetValue(NpcIndex, "Arma"))

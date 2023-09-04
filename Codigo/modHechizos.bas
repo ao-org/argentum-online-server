@@ -2773,6 +2773,11 @@ Sub HechizoPropNPC(ByVal hIndex As Integer, ByVal npcIndex As Integer, ByVal Use
                 MagicPenetration = ObjData(UserList(UserIndex).invent.WeaponEqpObjIndex).MagicPenetration
                 Damage = Damage + ObjData(UserList(UserIndex).invent.WeaponEqpObjIndex).MagicAbsoluteBonus
             End If
+151         If UserList(UserIndex).invent.MagicoObjIndex > 0 Then
+                Damage = Damage + Porcentaje(Damage, ObjData(UserList(UserIndex).invent.MagicoObjIndex).MagicDamageBonus)
+                Damage = Damage + ObjData(UserList(UserIndex).invent.MagicoObjIndex).MagicAbsoluteBonus
+                MagicPenetration = MagicPenetration + ObjData(UserList(UserIndex).invent.MagicoObjIndex).MagicPenetration
+            End If
             ' Magic Damage ring
 152         If UserList(UserIndex).invent.DañoMagicoEqpObjIndex > 0 Then
 154             Damage = Damage + Porcentaje(Damage, ObjData(UserList(UserIndex).invent.DañoMagicoEqpObjIndex).MagicDamageBonus)
@@ -3337,6 +3342,11 @@ Sub HechizoPropUsuario(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsA
                 PorcentajeRM = PorcentajeRM - ObjData(UserList(UserIndex).invent.WeaponEqpObjIndex).MagicPenetration
                 Damage = Damage + ObjData(UserList(UserIndex).invent.WeaponEqpObjIndex).MagicAbsoluteBonus
             End If
+410         If UserList(UserIndex).invent.MagicoObjIndex > 0 Then
+412             Damage = Damage + Porcentaje(Damage, ObjData(UserList(UserIndex).invent.MagicoObjIndex).MagicDamageBonus)
+                Damage = Damage + ObjData(UserList(UserIndex).invent.MagicoObjIndex).MagicAbsoluteBonus
+                PorcentajeRM = PorcentajeRM - ObjData(UserList(UserIndex).invent.MagicoObjIndex).MagicPenetration
+            End If
 418         If UserList(UserIndex).invent.DañoMagicoEqpObjIndex > 0 Then
 420             Damage = Damage + Porcentaje(Damage, ObjData(UserList(UserIndex).invent.DañoMagicoEqpObjIndex).MagicDamageBonus)
                 Damage = Damage + ObjData(UserList(UserIndex).invent.DañoMagicoEqpObjIndex).MagicAbsoluteBonus
@@ -3491,7 +3501,6 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
 108         If Not PeleaSegura(UserIndex, tempChr) Then
 110             If Status(tempChr) = 0 And Status(UserIndex) = 1 Or Status(tempChr) = 2 And Status(UserIndex) = 1 Then
 112                 If esArmada(UserIndex) Then
-                        'Call WriteConsoleMsg(UserIndex, "Los Armadas no pueden ayudar a los Criminales", e_FontTypeNames.FONTTYPE_INFO)
 114                     Call WriteLocaleMsg(UserIndex, "379", e_FontTypeNames.FONTTYPE_INFO)
 116                     b = False
                         Exit Sub
@@ -3499,13 +3508,10 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
                     End If
 
 118                 If UserList(UserIndex).flags.Seguro Then
-                        'Call WriteConsoleMsg(UserIndex, "Para ayudar criminales debes sacarte el seguro ya que te volverás criminal como ellos", e_FontTypeNames.FONTTYPE_INFO)
 120                     Call WriteLocaleMsg(UserIndex, "378", e_FontTypeNames.FONTTYPE_INFO)
 122                     b = False
                         Exit Sub
                     Else
-
-                        ' Call DisNobAuBan(UserIndex, UserList(UserIndex).Reputacion.NobleRep * 0.5, 10000)
                     End If
 
                 End If
@@ -3516,9 +3522,6 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
 126         Damage = RandomNumber(Hechizos(h).MinAgilidad, Hechizos(h).MaxAgilidad)
     
 128         UserList(tempChr).flags.DuracionEfecto = Hechizos(h).Duration
-            'UserList(tempChr).Stats.UserAtributos(e_Atributos.Agilidad) = UserList(tempChr).Stats.UserAtributos(e_Atributos.Agilidad) + daño
-            'If UserList(tempChr).Stats.UserAtributos(e_Atributos.Agilidad) > MinimoInt(MAXATRIBUTOS, UserList(tempChr).Stats.UserAtributosBackUP(Agilidad) * 2) Then _
-             UserList(tempChr).Stats.UserAtributos(e_Atributos.Agilidad) = MinimoInt(MAXATRIBUTOS, UserList(tempChr).Stats.UserAtributosBackUP(Agilidad) * 2)
 
 130         UserList(tempChr).Stats.UserAtributos(e_Atributos.Agilidad) = MinimoInt(UserList(tempChr).Stats.UserAtributos(e_Atributos.Agilidad) + Damage, UserList(tempChr).Stats.UserAtributosBackUP(e_Atributos.Agilidad) * 2)
         
@@ -3655,6 +3658,11 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
             End If
             
             ' Magic ring bonus
+283         If UserList(UserIndex).invent.MagicoObjIndex > 0 Then
+                Damage = Damage + Porcentaje(Damage, ObjData(UserList(UserIndex).invent.MagicoObjIndex).MagicDamageBonus)
+                Damage = Damage + ObjData(UserList(UserIndex).invent.MagicoObjIndex).MagicAbsoluteBonus
+                MR = MR - ObjData(UserList(UserIndex).invent.MagicoObjIndex).MagicPenetration
+            End If
 284         If UserList(UserIndex).invent.DañoMagicoEqpObjIndex > 0 Then
 286             Damage = Damage + Porcentaje(Damage, ObjData(UserList(UserIndex).invent.DañoMagicoEqpObjIndex).MagicDamageBonus)
                 Damage = Damage + ObjData(UserList(UserIndex).invent.DañoMagicoEqpObjIndex).MagicAbsoluteBonus

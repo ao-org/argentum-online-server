@@ -303,6 +303,3 @@ Private Sub Command2_Click()
     Call getData("select * from user")
 End Sub
 
-Private Sub DataGrid1_Click()
-
-End Sub

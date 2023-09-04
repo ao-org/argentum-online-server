@@ -1293,6 +1293,8 @@ Sub LoadOBJData()
                 .ImprovedMeleeHitChance = val(Leer.GetValue(ObjKey, "ImprovedMHit"))
                 .ApplyEffectId = val(Leer.GetValue(ObjKey, "ApplyEffectId"))
                 If val(Leer.GetValue(ObjKey, "Bindable")) > 0 Then Call SetMask(.ObjFlags, e_ObjFlags.e_Bindable)
+                If val(Leer.GetValue(ObjKey, "UseOnSafeAreaOnly")) > 0 Then Call SetMask(.ObjFlags, e_ObjFlags.e_UseOnSafeAreaOnly)
+                
                 Dim i As Integer
 
 162             Select Case .OBJType
@@ -1336,8 +1338,6 @@ Sub LoadOBJData()
 216                     .Proyectil = val(Leer.GetValue(ObjKey, "Proyectil"))
 218                     .Municion = val(Leer.GetValue(ObjKey, "Municiones"))
 220                     .Power = val(Leer.GetValue(ObjKey, "StaffPower"))
-222                     .MagicDamageBonus = val(Leer.GetValue(ObjKey, "MagicDamageBonus"))
-224                     .MagicAbsoluteBonus = val(Leer.GetValue(ObjKey, "MagicAbsoluteBonus"))
 226                     .Real = val(Leer.GetValue(ObjKey, "Real"))
 228                     .Caos = val(Leer.GetValue(ObjKey, "Caos"))
 230                     .EfectoMagico = val(Leer.GetValue(ObjKey, "efectomagico"))
@@ -1482,19 +1482,19 @@ Sub LoadOBJData()
                         .Proyectil = val(Leer.GetValue(ObjKey, "Proyectil"))
                 
 422                 Case e_OBJType.otDañoMagico
-424                     .MagicDamageBonus = val(Leer.GetValue(ObjKey, "MagicDamageBonus"))
-425                     .MagicAbsoluteBonus = val(Leer.GetValue(ObjKey, "MagicAbsoluteBonus"))
+
 426                     .Revive = val(Leer.GetValue(ObjKey, "Revive")) <> 0
 
 428                 Case e_OBJType.otResistencia
 430                     .ResistenciaMagica = val(Leer.GetValue(ObjKey, "ResistenciaMagica"))
-
 
 432                 Case e_OBJType.otMinerales
 434                     .LingoteIndex = val(Leer.GetValue(ObjKey, "LingoteIndex"))
                     Case e_OBJType.otUsableOntarget
                         .EfectoMagico = val(Leer.GetValue(ObjKey, "efectomagico"))
                 End Select
+424             .MagicDamageBonus = val(Leer.GetValue(ObjKey, "MagicDamageBonus"))
+425             .MagicAbsoluteBonus = val(Leer.GetValue(ObjKey, "MagicAbsoluteBonus"))
 235             .MagicPenetration = val(Leer.GetValue(ObjKey, "MagicPenetration"))
                 .EfectoMagico = val(Leer.GetValue(ObjKey, "EfectoMagico"))
                 .ProjectileType = val(Leer.GetValue(ObjKey, "ProjectileType"))
