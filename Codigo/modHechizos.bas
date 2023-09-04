@@ -1487,13 +1487,6 @@ Public Function ManaHechizoPorClase(ByVal userindex As Integer, Hechizo As t_Hec
                ManaHechizoPorClase = 250
                Exit Function
            End If
-                
-        Case e_Class.Druid
-            'Si es druida y tiene equipada una flauta élfica, pido 10% menos para apoca.
-            If HechizoIndex = 53 And UserList(UserIndex).invent.DañoMagicoEqpObjIndex = FLAUTA_ELFICA Then
-                ManaHechizoPorClase = 900
-            End If
-            
     End Select
 End Function
 
