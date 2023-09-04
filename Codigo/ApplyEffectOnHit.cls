@@ -47,6 +47,7 @@ Dim HitLimit As Integer
 Dim ApplyEffectId As Integer
 Private DotInfo As t_BaseDotInfo
 Private AttackedNpcVersion As Integer
+Private RequireTransform As Integer
 
 Public Sub Setup(ByVal TargetIndex As Integer, ByVal TargetType As e_ReferenceType, ByVal EffectId As Integer, ByVal id As Long)
     TimeSinceLastTick = 0
@@ -54,6 +55,7 @@ Public Sub Setup(ByVal TargetIndex As Integer, ByVal TargetType As e_ReferenceTy
     With EffectOverTime(EffectId)
         TickTime = .TickTime
         ApplyEffectId = .ApplyEffectId
+        RequireTransform = .RequireTransform
         HitLimit = .Ticks
         If TargetType = eUser Then
             If .ClientEffectTypeId > 0 Then Call WriteSendSkillCdUpdate(TargetIndex, .ClientEffectTypeId, ID, .TickTime, .TickTime, .buffType)
@@ -114,6 +116,11 @@ Public Sub IBaseEffectOverTime_Update(ByVal deltaTime As Long)
     If TimeSinceLastTick >= TickTime Or Not IsValidRef(DotInfo.TargetRef) Then
         DotInfo.RemoveEffect = True
     End If
+    If RequireTransform > 0 And DotInfo.TargetRef.RefType = eUser Then
+        If RequireTransform <> UserList(DotInfo.TargetRef.ArrayIndex).flags.ActiveTransform Then
+            DotInfo.RemoveEffect = True
+        End If
+    End If
 End Sub
 
 Public Property Get IBaseEffectOverTime_RemoveMe() As Boolean
@@ -139,7 +146,6 @@ Public Function IBaseEffectOverTime_Reset(ByVal SourceUserId As Integer, ByVal S
             If EffectOverTime(NewEffectId).ClientEffectTypeId > 0 Then
                 Call WriteSendSkillCdUpdate(DotInfo.TargetRef.ArrayIndex, EffectOverTime(NewEffectId).ClientEffectTypeId, DotInfo.UniqueId, TickTime, TickTime, EffectOverTime(NewEffectId).buffType)
             End If
-            
         End If
     End If
     HitLimit = EffectOverTime(DotInfo.EotId).Ticks

@@ -1174,6 +1174,7 @@ Public Type t_EffectOverTime
     npcId As Integer
     ApplyStatusMask As Long
     SecondaryTargetModifier As Single
+    RequireTransform As Integer
 End Type
 
 Public Enum e_DamageResult
@@ -1698,6 +1699,7 @@ Public Type t_ModClase
     HitPre36 As Integer
     HitPost36 As Integer
     ResistenciaMagica As Double
+    LevelSkillPoints As Integer
     WeaponHitBonus(0 To e_WeaponType.eWeaponTypeCount) As Integer
 End Type
 

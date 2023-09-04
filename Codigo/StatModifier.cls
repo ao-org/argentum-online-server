@@ -46,6 +46,7 @@ Dim TimeSinceLastTick As Long
 Private DotInfo As t_BaseDotInfo
 Private Source As t_AnyReference
 Dim Modifier As Single
+Private RequireTransform As Integer
 
 Public Sub Setup(ByVal sourceIndex As Integer, ByVal sourceType As e_ReferenceType, ByVal TargetIndex As Integer, ByVal TargetType As e_ReferenceType, _
                  ByVal EffectId As Integer, ByVal id As Long)
@@ -55,6 +56,7 @@ Public Sub Setup(ByVal sourceIndex As Integer, ByVal sourceType As e_ReferenceTy
     TimeSinceLastTick = 0
     With EffectOverTime(EffectId)
         TickTime = .TickTime
+        RequireTransform = .RequireTransform
         If IsSet(.EffectModifiers, e_ModifierTypes.MagicBonus) And SourceType = eUser Then
             If UserList(SourceIndex).invent.WeaponEqpObjIndex > 0 Then
                 Modifier = ObjData(UserList(SourceIndex).invent.WeaponEqpObjIndex).MagicDamageBonus / 100
@@ -123,6 +125,11 @@ Public Sub IBaseEffectOverTime_Update(ByVal deltaTime As Long)
         If TestRequiredEquipedItem(UserList(DotInfo.TargetRef.ArrayIndex).invent, EffectOverTime(DotInfo.EotId).SpellRequirementMask, EffectOverTime(DotInfo.EotId).RequireWeaponType) <> e_SpellRequirementMask.eNone Then
             DotInfo.RemoveEffect = True
             Exit Sub
+        End If
+        If RequireTransform > 0 Then
+            If RequireTransform <> UserList(DotInfo.TargetRef.ArrayIndex).flags.ActiveTransform Then
+                DotInfo.RemoveEffect = True
+            End If
         End If
     End If
 End Sub
