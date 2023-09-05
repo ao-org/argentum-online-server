@@ -154,6 +154,7 @@ Public AssistDamageValidTime        As Long 'valid time for damage to count as a
 Public AssistHelpValidTime          As Long 'valid time for helpful spell to count as assist
 Public HideAfterHitTime             As Long 'required time to hide again after a hit remove us from this state
 Public FactionReKillTime            As Long 'required time between killing the same user to get factions points
+Public AirHitReductParalisisTime    As Integer 'you can hit to the air to reduce inmo/paralisis time
 
 Public Puerto                       As Long
 

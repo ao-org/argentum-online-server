@@ -122,7 +122,7 @@ Public Sub IBaseEffectOverTime_Update(ByVal deltaTime As Long)
     If mPendingBlow > 0 Then
         mPendingBlowTime = mPendingBlowTime + deltaTime
         If mPendingBlowTime > 100 Then
-            Call UserAttackPosition(mDotInfo.TargetRef.ArrayIndex, mPendingBlowPos)
+            Call UserAttackPosition(mDotInfo.TargetRef.ArrayIndex, mPendingBlowPos, True)
             mPendingBlow = mPendingBlow - 1
             If mPendingBlow = 0 And mTicks = 0 Then
                mDotInfo.RemoveEffect = True

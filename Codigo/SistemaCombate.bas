@@ -921,7 +921,7 @@ UsuarioAtacaNpc_Err:
         
 End Sub
 
-Public Sub UserAttackPosition(ByVal UserIndex As Integer, ByRef TargetPos As t_WorldPos)
+Public Sub UserAttackPosition(ByVal UserIndex As Integer, ByRef TargetPos As t_WorldPos, Optional ByVal IsExtraHit As Boolean = False)
     'Exit if not legal
 126 If TargetPos.X >= XMinMapSize And TargetPos.X <= XMaxMapSize And TargetPos.Y >= YMinMapSize And TargetPos.Y <= YMaxMapSize Then
 128     If ((MapData(TargetPos.map, TargetPos.X, TargetPos.Y).Blocked And 2 ^ (UserList(UserIndex).Char.Heading - 1)) <> 0) Then
@@ -949,6 +949,12 @@ Public Sub UserAttackPosition(ByVal UserIndex As Integer, ByRef TargetPos As t_W
             Exit Sub
         Else
 152         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageCharSwing(UserList(UserIndex).Char.charindex, True, False))
+            With UserList(UserIndex)
+                If Not IsExtraHit And .flags.Inmovilizado + .flags.Paralizado > 0 Then
+                    .Counters.Inmovilizado = max(0, .Counters.Inmovilizado - PlayerInmuneTime)
+                    .Counters.Paralisis = max(0, .Counters.Paralisis - PlayerInmuneTime)
+                End If
+            End With
         End If
     Else
 154     Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageCharSwing(UserList(UserIndex).Char.charindex, True, False))
@@ -1002,10 +1008,10 @@ Public Sub UsuarioAtaca(ByVal UserIndex As Integer)
                 Call IncreaseSingle(.Modifiers.PhysicalDamageBonus, -0.25) 'Side targets gets 50% damage
                 AttackPos = UserList(UserIndex).pos
                 Call GetHeadingRight(.Char.Heading, AttackPos)
-                Call UserAttackPosition(UserIndex, AttackPos)
+                Call UserAttackPosition(UserIndex, AttackPos, True)
                 AttackPos = UserList(UserIndex).pos
                 Call GetHeadingLeft(.Char.Heading, AttackPos)
-                Call UserAttackPosition(UserIndex, AttackPos)
+                Call UserAttackPosition(UserIndex, AttackPos, True)
                 Call IncreaseSingle(.Modifiers.PhysicalDamageBonus, 0.5) 'return to prev state
             Else
                 Call UserAttackPosition(UserIndex, AttackPos)
