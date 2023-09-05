@@ -1084,6 +1084,7 @@ Sub LoadBalance()
         AssistHelpValidTime = val(BalanceIni.GetValue("EXTRA", "AssistHelpValidTime"))
         HideAfterHitTime = val(BalanceIni.GetValue("EXTRA", "HideAfterHitTime"))
         FactionReKillTime = val(BalanceIni.GetValue("EXTRA", "FactionReKillTime"))
+        AirHitReductParalisisTime = val(BalanceIni.GetValue("EXTRA", "AirHitReductParalisisTime"))
         'stun
         PlayerStunTime = val(BalanceIni.GetValue("STUN", "PlayerStunTime"))
         NpcStunTime = val(BalanceIni.GetValue("STUN", "NpcStunTime"))

@@ -3577,9 +3577,6 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                         Dim envie     As Boolean
                         Dim Particula As Integer
                         Dim Tiempo    As Long
-                        If IsFeatureEnabled("remove-inv-on-attack") Then
-                            Call RemoveUserInvisibility(UserIndex)
-                        End If
 208                     Call UsuarioAtacaUsuario(UserIndex, tU, Ranged)
                         Dim FX As Integer
                         If .Invent.MunicionEqpObjIndex Then
@@ -3589,7 +3586,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                             UserList(tU).Counters.timeFx = 2
 212                         Call SendData(SendTarget.ToPCAliveArea, tU, PrepareMessageCreateFX(UserList(tU).Char.charindex, FX, 0, UserList(tU).Pos.X, UserList(tU).Pos.y))
                         End If
-                        If ProjectileType > 0 And .flags.Oculto = 0 Then
+                        If ProjectileType > 0 And (.flags.Oculto = 0 Or Not MapInfo(.pos.Map).KeepInviOnAttack) Then
                             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareCreateProjectile(UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.y, X, y, ProjectileType))
                         End If
                         'Si no es GM invisible, le envio el movimiento del arma.
