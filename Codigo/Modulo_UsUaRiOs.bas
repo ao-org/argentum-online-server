@@ -30,19 +30,22 @@ Option Explicit
 Private UserNameCache As New Dictionary
 
 Public Function GetUserName(ByVal UserId As Long) As String
-    If UserId <= 0 Then
-        GetUserName = ""
+    On Error GoTo GetUserName_Err
+100     If UserId <= 0 Then
+102         GetUserName = ""
+            Exit Function
+        End If
+104     If UserNameCache.Exists(UserId) Then
+106         GetUserName = UserNameCache.Item(UserId)
+            Exit Function
+        End If
+        Dim username As String
+108     username = GetCharacterName(UserId)
+110     Call RegisterUserName(UserId, username)
+112     GetUserName = username
         Exit Function
-    End If
-    If UserNameCache.Exists(UserId) Then
-        GetUserName = UserNameCache.Item(UserId)
-        Exit Function
-    End If
-    Dim UserName As String
-    UserName = GetCharacterName(UserId)
-    Call RegisterUserName(UserId, UserName)
-    GetUserName = UserName
-    Exit Function
+GetUserName_Err:
+114     Call TraceError(Err.Number, Err.Description, "UserMod.GetUserName", Erl)
 End Function
 
 Public Sub RegisterUserName(ByVal UserId As Long, ByVal UserName As String)

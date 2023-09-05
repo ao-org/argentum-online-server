@@ -332,7 +332,8 @@ Sub TirarOro(ByVal Cantidad As Long, ByVal UserIndex As Integer)
         '23/01/2007 -> Pablo (ToxicWaste): Billetera invertida y explotar oro en el agua.
         '***************************************************
         On Error GoTo ErrHandler
-        
+        Dim OriginalAmount As Long
+        OriginalAmount = Cantidad
 100     With UserList(UserIndex)
         
             ' GM's (excepto Dioses y Admins) no pueden tirar oro
@@ -387,17 +388,13 @@ Sub TirarOro(ByVal Cantidad As Long, ByVal UserIndex As Integer)
             
                 Loop
                 
-                ' Si es GM, registramos lo q hizo incluso si es Horacio
+                ' Si es GM, registramos lo q hizo
 146             If EsGM(UserIndex) Then
-
 148                 If MiObj.ObjIndex = iORO Then
-150                     Call LogGM(.Name, "Tiro: " & PonerPuntos(Cantidad) & " monedas de oro.")
-
+150                     Call LogGM(.name, "Tiro: " & PonerPuntos(OriginalAmount) & " monedas de oro.")
                     Else
-152                     Call LogGM(.Name, "Tiro cantidad:" & PonerPuntos(Cantidad) & " Objeto:" & ObjData(MiObj.ObjIndex).Name)
-
+152                     Call LogGM(.name, "Tiro cantidad:" & PonerPuntos(OriginalAmount) & " Objeto:" & ObjData(MiObj.ObjIndex).name)
                     End If
-
                 End If
     
 160             Call WriteUpdateGold(UserIndex)
