@@ -49,10 +49,14 @@ Private Function db_load_house_key(ByRef user As t_User) As Boolean
 End Function
 
 Public Function GetCharacterName(ByVal UserId As Long) As String
-    Dim RS As ADODB.Recordset
-    Set RS = Query("select name from user where id=?", UserId)
-    If RS Is Nothing Then Exit Function
-    GetCharacterName = RS!name
+    On Error GoTo GetCharacterName_Err
+        Dim RS As ADODB.Recordset
+100     Set RS = Query("select name from user where id=?", UserId)
+102     If RS Is Nothing Then Exit Function
+104     GetCharacterName = RS!name
+        Exit Function
+GetCharacterName_Err:
+    Call LogDatabaseError("Error en GetCharacterName: " & UserId & ". " & Err.Number & " - " & Err.Description & ". Línea: " & Erl)
 End Function
 
 Public Function LoadCharacterBank(ByVal UserIndex As Integer) As Boolean
