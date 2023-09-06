@@ -951,8 +951,8 @@ Public Sub UserAttackPosition(ByVal UserIndex As Integer, ByRef TargetPos As t_W
 152         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageCharSwing(UserList(UserIndex).Char.charindex, True, False))
             With UserList(UserIndex)
                 If Not IsExtraHit And .flags.Inmovilizado + .flags.Paralizado > 0 Then
-                    .Counters.Inmovilizado = max(0, .Counters.Inmovilizado - PlayerInmuneTime)
-                    .Counters.Paralisis = max(0, .Counters.Paralisis - PlayerInmuneTime)
+                    .Counters.Inmovilizado = max(0, .Counters.Inmovilizado - AirHitReductParalisisTime)
+                    .Counters.Paralisis = max(0, .Counters.Paralisis - AirHitReductParalisisTime)
                 End If
             End With
         End If
