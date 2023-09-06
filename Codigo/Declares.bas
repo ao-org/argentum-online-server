@@ -526,6 +526,7 @@ Public Const Raices             As Integer = 888 'OK
 Public Const PieldeLobo         As Integer = 414 'OK
 Public Const PieldeOsoPardo     As Integer = 415 'OK
 Public Const PieldeOsoPolar     As Integer = 416 'OK
+Public Const PielLoboNegro      As Integer = 1146
 Public Const MaxNPCs            As Integer = 10000
 Public Const MAXCHARS           As Integer = 10000
 Public Const DAGA               As Integer = 15 'OK
@@ -1632,6 +1633,7 @@ Public Type t_ObjData
     PielLobo As Integer
     PielOsoPardo As Integer
     PielOsoPolaR As Integer
+    PielLoboNegro As Integer
     SkMAGOria As Byte
     
     Radio As Byte

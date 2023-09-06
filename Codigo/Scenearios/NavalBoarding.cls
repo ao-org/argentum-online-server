@@ -109,39 +109,39 @@ Dim UserLoot As New Dictionary
 Dim TeamCargo(1 To 2) As t_Cargo
 
 Private Sub Class_Initialize()
-On Error GoTo NavalBoarding_Initialize_Err:
-    Debug.Assert FileExist(DatPath & configPath)
-    Dim ScenarioIni As clsIniManager
-    Dim WpCount As Byte
-    Set ScenarioIni = New clsIniManager
-    Call ScenarioIni.Initialize(DatPath & configPath)
-    MapNumbers(0) = val(ScenarioIni.GetValue("INIT", "MapNumber1"))
-    MapNumbers(1) = val(ScenarioIni.GetValue("INIT", "MapNumber2"))
-    MaxTime = val(ScenarioIni.GetValue("INIT", "MaxTime"))
-    Team1SpawnX = val(ScenarioIni.GetValue("INIT", "Team1SpawnX"))
-    Team2SpawnX = val(ScenarioIni.GetValue("INIT", "Team2SpawnX"))
-    RespawnWp = val(ScenarioIni.GetValue("RESPAWN", "Waypoint"))
-    PlayerMinRespawnTime = val(ScenarioIni.GetValue("RESPAWN", "PlayerMinRespawnTime"))
-    RespawnInterval = val(ScenarioIni.GetValue("RESPAWN", "RespawnInterval"))
-    MaxTime = MaxTime * 1000
-    RespawnInterval = RespawnInterval * 1000
-    PlayerMinRespawnTime = PlayerMinRespawnTime * 1000
-    WpCount = val(ScenarioIni.GetValue("INIT", "WaypointCount"))
-    CaptianNpcId = val(ScenarioIni.GetValue("CaptainNpc", "NpcId"))
-    Call LoadTeamWeapoints(1, Team1Waypoints, WpCount, ScenarioIni)
-    Call LoadTeamWeapoints(2, Team2Waypoints, WpCount, ScenarioIni)
-    Call LoadForbidenItems(ScenarioIni)
-    Call LoadTileBlock(TileBlocks, ScenarioIni)
-    UpdateIndex = AddUpdateScenario(Me)
-    Call CustomScenarios.SetCustomScenario(MapNumbers(0), Me)
-    Call CustomScenarios.SetCustomScenario(MapNumbers(1), Me)
-    Call ConfigMapLobby
-    Call LoadNpcSpawnInfo(NpcSpawnList, ScenarioIni)
-    Call LoadTeamCargo(TeamCargo(1), 1, ScenarioIni)
-    Call LoadTeamCargo(TeamCargo(2), 2, ScenarioIni)
-    Exit Sub
+    On Error GoTo NavalBoarding_Initialize_Err:
+100     Debug.Assert FileExist(DatPath & configPath)
+        Dim ScenarioIni As clsIniManager
+        Dim WpCount As Byte
+102     Set ScenarioIni = New clsIniManager
+104     Call ScenarioIni.Initialize(DatPath & configPath)
+106     MapNumbers(0) = val(ScenarioIni.GetValue("INIT", "MapNumber1"))
+108     MapNumbers(1) = val(ScenarioIni.GetValue("INIT", "MapNumber2"))
+110     MaxTime = val(ScenarioIni.GetValue("INIT", "MaxTime"))
+112     Team1SpawnX = val(ScenarioIni.GetValue("INIT", "Team1SpawnX"))
+114     Team2SpawnX = val(ScenarioIni.GetValue("INIT", "Team2SpawnX"))
+116     RespawnWp = val(ScenarioIni.GetValue("RESPAWN", "Waypoint"))
+118     PlayerMinRespawnTime = val(ScenarioIni.GetValue("RESPAWN", "PlayerMinRespawnTime"))
+120     RespawnInterval = val(ScenarioIni.GetValue("RESPAWN", "RespawnInterval"))
+122     MaxTime = MaxTime * 1000
+124     RespawnInterval = RespawnInterval * 1000
+126     PlayerMinRespawnTime = PlayerMinRespawnTime * 1000
+128     WpCount = val(ScenarioIni.GetValue("INIT", "WaypointCount"))
+130     CaptianNpcId = val(ScenarioIni.GetValue("CaptainNpc", "NpcId"))
+132     Call LoadTeamWeapoints(1, Team1Waypoints, WpCount, ScenarioIni)
+134     Call LoadTeamWeapoints(2, Team2Waypoints, WpCount, ScenarioIni)
+136     Call LoadForbidenItems(ScenarioIni)
+138     Call LoadTileBlock(TileBlocks, ScenarioIni)
+140     UpdateIndex = AddUpdateScenario(Me)
+142     Call CustomScenarios.SetCustomScenario(MapNumbers(0), Me)
+144     Call CustomScenarios.SetCustomScenario(MapNumbers(1), Me)
+146     Call ConfigMapLobby
+148     Call LoadNpcSpawnInfo(NpcSpawnList, ScenarioIni)
+150     Call LoadTeamCargo(TeamCargo(1), 1, ScenarioIni)
+152     Call LoadTeamCargo(TeamCargo(2), 2, ScenarioIni)
+        Exit Sub
 NavalBoarding_Initialize_Err:
-    Call TraceError(Err.Number, Err.Description, "DeathMatch.Initialize ", Erl)
+   Call TraceError(Err.Number, Err.Description, "DeathMatch.Initialize ", Erl)
 End Sub
 
 Private Sub LoadTileBlock(ByRef Tiles() As t_TilePos, ScenearioIni As clsIniManager)

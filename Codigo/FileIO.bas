@@ -1532,6 +1532,7 @@ Sub LoadOBJData()
 470             .PielLobo = val(Leer.GetValue(ObjKey, "PielLobo"))
 472             .PielOsoPardo = val(Leer.GetValue(ObjKey, "PielOsoPardo"))
 474             .PielOsoPolaR = val(Leer.GetValue(ObjKey, "PielOsoPolaR"))
+475             .PielLoboNegro = val(Leer.GetValue(ObjKey, "PielLoboNegro"))
 476             .SkMAGOria = val(Leer.GetValue(ObjKey, "SKSastreria"))
 
 478             .LingH = val(Leer.GetValue(ObjKey, "LingH"))
