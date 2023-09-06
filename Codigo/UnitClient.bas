@@ -27,22 +27,36 @@ Attribute VB_Name = "UnitClient"
 '
 Option Explicit
 
+Public Enum ClientTests
+    TestInvalidBigPacketID = 100
+    TestInvalidNegativePacketID
+    TestWriteLoginExistingChar
+    TestEnd
+End Enum
+
+Private NextTest As ClientTests
+
 Private Client As Network.Client
 
 Public connected As Boolean
 
+Public Function GetNextTest() As ClientTests
+GetNextTest = NextTest
+End Function
+
+
+
+Public Sub Init()
+    NextTest = ClientTests.TestInvalidBigPacketID
+    Set Client = New Network.Client
+    Call Unit_Protocol_Writes.Initialize
+    Call Client.Attach(AddressOf OnClientConnect, AddressOf OnClientClose, AddressOf OnClientSend, AddressOf OnClientRecv)
+End Sub
 
 Public Sub Connect(ByVal Address As String, ByVal Service As String)
-    connected = False
-    
-    If (Address = vbNullString Or Service = vbNullString) Then
-        Exit Sub
-    End If
-    
-    Call Unit_Protocol_Writes.Initialize
-    
-    Set Client = New Network.Client
-    Call Client.Attach(AddressOf OnClientConnect, AddressOf OnClientClose, AddressOf OnClientSend, AddressOf OnClientRecv)
+    Debug.Assert Not Client Is Nothing
+    Debug.Assert Address <> vbNullString And Service <> vbNullString
+    Connected = False
     Call Client.Connect(Address, Service)
 End Sub
 
@@ -50,12 +64,13 @@ Public Sub Disconnect()
     connected = False
     If Not Client Is Nothing Then
         Call Client.Close(True)
-        Set Client = Nothing
     End If
 End Sub
 
+
 Public Sub Poll()
-    If (Client Is Nothing) Then
+    
+    If (Client Is Nothing Or NextTest = TestEnd) Then
         Exit Sub
     End If
     
@@ -71,19 +86,24 @@ Public Sub Send(ByVal Buffer As Network.Writer)
     Call Buffer.Clear
 End Sub
 
-Private Sub TestInvalidPacketID()
+Private Sub fTestInvalidBigPacketID()
+    Debug.Print "Running TestInvalidBigPacketID()"
     Call Unit_Protocol_Writes.WriteLong(ClientPacketID.PacketCount + 1)
-    
 End Sub
 
-Private Sub TestWriteLoginExcistingChar()
+Private Sub fTestInvalidNegativePacketID()
+    Debug.Print "Running TestInvalidNegativePacketID()"
+    Call Unit_Protocol_Writes.WriteLong(-1)
+End Sub
+Private Sub fTestWriteLoginExcistingChar()
+    Debug.Print "Running TestWriteLoginExcistingChar"
  Dim good_md5, md5 As String
     good_md5 = "a944087c826163c4ed658b1ea00594be"
     Call WriteLoginExistingChar(UnitTesting.encrypted_token, UnitTesting.public_key, _
         "zeno", 2, 0, 4, good_md5)
 End Sub
 
-Private Sub TestWriteLoginNewChar()
+Private Sub fTestWriteLoginNewChar()
     Dim good_md5, md5 As String
     good_md5 = "a944087c826163c4ed658b1ea00594be"
     md5 = good_md5
@@ -106,24 +126,40 @@ Private Sub TestWriteLoginNewChar()
 End Sub
 
 
-
 Private Sub OnClientConnect()
     Debug.Print ("UnitClient.OnClientConnect")
     connected = True
    
-    'Call TestInvalidPacketID
-    'Call TestWriteLoginNewCharFail
-    Call TestWriteLoginExcistingChar
-    'Call TestWriteLoginNewChar
-    
+    Select Case NextTest
+        Case ClientTests.TestInvalidBigPacketID
+            Call fTestInvalidBigPacketID
+        Case ClientTests.TestInvalidNegativePacketID
+            Call fTestInvalidNegativePacketID
+        Case ClientTests.TestWriteLoginExistingChar
+            Call fTestWriteLoginExcistingChar
+        Case ClientTests.TestEnd
+            Debug.Print "Executed all Client tests"
+        Case Else
+            Debug.Assert False
+    End Select
     
 End Sub
 
 Private Sub OnClientClose(ByVal Code As Long)
+On Error GoTo OnClientClose_Err:
+    
     Call Unit_Protocol_Writes.Clear
-    Debug.Print "OnClientClose " & Code
-    Call Client.Close(True)
-    connected = False
+
+    Debug.Print "UnitClient.OnClientClose"
+
+    If NextTest <> TestEnd Then
+        NextTest = NextTest + 1
+        Call UnitClient.Connect("127.0.0.1", "7667")
+    End If
+    Exit Sub
+    
+OnClientClose_Err:
+    
 End Sub
 
 Private Sub OnClientSend(ByVal Message As Network.Reader)
@@ -133,27 +169,22 @@ End Sub
 Private Sub OnClientRecv(ByVal Message As Network.Reader)
     Dim Reader As Network.Reader
     Set Reader = Message
-    Dim PacketId As Long:
+    Dim PacketId As Long
     PacketId = Reader.ReadInt16
-    Debug.Print "UnitTesting recv PacketId" & PacketId
+    Debug.Print "UnitTesting recv PacketId " & PacketId
     Select Case PacketId
         Case ServerPacketID.connected
             Debug.Print "ServerPacketID.connected"
-            
         Case ServerPacketID.logged
             Debug.Print "ServerPacketID.logged"
-            
-            
         Case ServerPacketID.Disconnect
             Debug.Print "ServerPacketID.Disconnect"
-            
-            
         Case ServerPacketID.CharacterChange
             Call Unit_Protocol_Writes.HandleCharacterChange(Reader)
-      
         Case ServerPacketID.ShowMessageBox
             Call Unit_Protocol_Writes.HandleShowMessageBox(Reader)
-            
+        Case ServerPacketID.ErrorMsg
+            Call Unit_Protocol_Writes.HandleErrorMessageBox(Reader)
         Case Else
             While Reader.GetAvailable() > 0
                 Reader.ReadBool
