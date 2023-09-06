@@ -3577,6 +3577,12 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                         Dim envie     As Boolean
                         Dim Particula As Integer
                         Dim Tiempo    As Long
+                        
+                        If .flags.invisible > 0 Then
+                            If IsFeatureEnabled("remove-inv-on-attack") Then
+                                Call RemoveUserInvisibility(UserIndex)
+                            End If
+                        End If
 208                     Call UsuarioAtacaUsuario(UserIndex, tU, Ranged)
                         Dim FX As Integer
                         If .Invent.MunicionEqpObjIndex Then
