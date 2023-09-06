@@ -815,14 +815,13 @@ Sub SastreQuitarMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As Intege
 100     If ObjData(ItemIndex).PielLobo > 0 Then Call QuitarObjetos(PieldeLobo, ObjData(ItemIndex).PielLobo, UserIndex)
 102     If ObjData(ItemIndex).PielOsoPardo > 0 Then Call QuitarObjetos(PieldeOsoPardo, ObjData(ItemIndex).PielOsoPardo, UserIndex)
 104     If ObjData(ItemIndex).PielOsoPolaR > 0 Then Call QuitarObjetos(PieldeOsoPolar, ObjData(ItemIndex).PielOsoPolaR, UserIndex)
+106     If ObjData(ItemIndex).PielLoboNegro > 0 Then Call QuitarObjetos(PielLoboNegro, ObjData(ItemIndex).PielLoboNegro, UserIndex)
 
         
         Exit Sub
 
 SastreQuitarMateriales_Err:
-106     Call TraceError(Err.Number, Err.Description, "Trabajo.SastreQuitarMateriales", Erl)
-108
-        
+    Call TraceError(Err.Number, Err.Description, "Trabajo.SastreQuitarMateriales", Erl)
 End Sub
 
 Function CarpinteroTieneMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As Integer, ByVal cantidad As Long) As Boolean
@@ -899,7 +898,6 @@ End Function
 Function SastreTieneMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As Integer) As Boolean
         
         On Error GoTo SastreTieneMateriales_Err
-        
     
 100     If ObjData(ItemIndex).PielLobo > 0 Then
 102         If Not TieneObjetos(PieldeLobo, ObjData(ItemIndex).PielLobo, UserIndex) Then
@@ -907,9 +905,7 @@ Function SastreTieneMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As In
 106             SastreTieneMateriales = False
 108             Call WriteMacroTrabajoToggle(UserIndex, False)
                 Exit Function
-
             End If
-
         End If
     
 110     If ObjData(ItemIndex).PielOsoPardo > 0 Then
@@ -918,9 +914,7 @@ Function SastreTieneMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As In
 116             SastreTieneMateriales = False
 118             Call WriteMacroTrabajoToggle(UserIndex, False)
                 Exit Function
-
             End If
-
         End If
     
 120     If ObjData(ItemIndex).PielOsoPolaR > 0 Then
@@ -929,20 +923,24 @@ Function SastreTieneMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As In
 126             SastreTieneMateriales = False
 128             Call WriteMacroTrabajoToggle(UserIndex, False)
                 Exit Function
-
             End If
-
         End If
-    
-130     SastreTieneMateriales = True
+        
+130     If ObjData(ItemIndex).PielLoboNegro > 0 Then
+132         If Not TieneObjetos(PielLoboNegro, ObjData(ItemIndex).PielLoboNegro, UserIndex) Then
+134             Call WriteConsoleMsg(UserIndex, "No tenes suficientes pieles de lobo negro.", e_FontTypeNames.FONTTYPE_INFO)
+136             SastreTieneMateriales = False
+138             Call WriteMacroTrabajoToggle(UserIndex, False)
+                Exit Function
+            End If
+        End If
+140     SastreTieneMateriales = True
 
         
         Exit Function
 
 SastreTieneMateriales_Err:
-132     Call TraceError(Err.Number, Err.Description, "Trabajo.SastreTieneMateriales", Erl)
-134
-        
+    Call TraceError(Err.Number, Err.Description, "Trabajo.SastreTieneMateriales", Erl)
 End Function
 
 Function HerreroTieneMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As Integer) As Boolean
