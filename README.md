@@ -28,6 +28,9 @@ Before make a `git commit` please run the file `git_ignore_case.sh` to avoid fal
 
 ## Database
 - [http://www.ch-werner.de/sqliteodbc/](http://www.ch-werner.de/sqliteodbc/)
+Mejorar velocidad de la base de datos con `PRAGMA journal_mode=WAL;`
+Para mas detalles visiten https://www.sqlite.org/wal.html
+
 - [https://dev.mysql.com/get/Downloads/Connector-ODBC/8.0/mysql-connector-odbc-8.0.22-win32.msi](https://dev.mysql.com/get/Downloads/Connector-ODBC/8.0/mysql-connector-odbc-8.0.22-win32.msi)
 
 ## Networking
