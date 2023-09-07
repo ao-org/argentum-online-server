@@ -427,10 +427,6 @@ On Error GoTo GetUserDamageWithItem_Err
 
                 ' Base damage
 136             GetUserDamageWithItem = (3 * WeaponDamage + MaxWeaponDamage * 0.2 * Maximo(0, .Stats.UserAtributos(Fuerza) - 15) + UserDamage) * ClassModifier
-                ' El pirata ship has bonus damage
-138             If .clase = e_Class.Pirat And .flags.Navegando = 1 Then
-140                 GetUserDamageWithItem = GetUserDamageWithItem * 1.2
-                End If
                 ' Ship bonus
 142             If .flags.Navegando = 1 And .Invent.BarcoObjIndex > 0 Then
 144                 GetUserDamageWithItem = GetUserDamageWithItem + RandomNumber(ObjData(.invent.BarcoObjIndex).MinHIT, ObjData(.invent.BarcoObjIndex).MaxHit)
