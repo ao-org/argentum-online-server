@@ -2062,6 +2062,10 @@ On Error GoTo UserCanAttackNpc_Err
             Exit Function
         End If
      End If
+     If IsPet And MapInfo(UserList(UserIndex).pos.Map).Seguro Then
+        UserCanAttackNpc = eSafeArea
+        Exit Function
+     End If
      ' El seguro es SOLO para ciudadanos. La armada debe desenlistarse antes de querer atacar y se checkea arriba.
      ' Los criminales o Caos, ya estan mas alla del seguro.
 164  If Status(UserIndex) = Ciudadano Then
