@@ -3592,9 +3592,6 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                             UserList(tU).Counters.timeFx = 2
 212                         Call SendData(SendTarget.ToPCAliveArea, tU, PrepareMessageCreateFX(UserList(tU).Char.charindex, FX, 0, UserList(tU).Pos.X, UserList(tU).Pos.y))
                         End If
-                        If ObjData(.invent.MunicionEqpObjIndex).CreaFX > 0 Then
-                            Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(ObjData(.invent.MunicionEqpObjIndex).CreaFX, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
-                        End If
                         If ProjectileType > 0 And (.flags.Oculto = 0 Or Not MapInfo(.pos.Map).KeepInviOnAttack) Then
                             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareCreateProjectile(UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.y, X, y, ProjectileType))
                         End If
@@ -3644,7 +3641,9 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 242                 With .Invent
                         If WeaponData.Proyectil = 1 And WeaponData.Municion > 0 Then
 244                         DummyInt = .MunicionEqpSlot
-
+                            If ObjData(.WeaponEqpObjIndex).CreaWav > 0 Then
+                                Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(ObjData(.WeaponEqpObjIndex).CreaWav, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
+                            End If
                             If DummyInt <> 0 Then
                                 'Take 1 arrow away - we do it AFTER hitting, since if Ammo Slot is 0 it gives a rt9 and kicks players
 246                             If consumirMunicion Then
