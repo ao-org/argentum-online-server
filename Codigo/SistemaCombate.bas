@@ -1743,6 +1743,10 @@ Public Function PuedeAtacarNPC(ByVal AttackerIndex As Integer, ByVal NpcIndex As
 
         Dim IsPet As Boolean
         IsPet = IsValidUserRef(NpcList(npcIndex).MaestroUser)
+        If IsPet And MapInfo(UserList(attackerIndex).pos.Map).Seguro Then
+           Call WriteConsoleMsg(attackerIndex, "No podés atacar mascotas en zona segura.", e_FontTypeNames.FONTTYPE_INFO)
+           Exit Function
+        End If
         'Si el usuario pertenece a una faccion
 140     If esArmada(AttackerIndex) Or esCaos(AttackerIndex) Then
             ' Y el NPC pertenece a la misma faccion

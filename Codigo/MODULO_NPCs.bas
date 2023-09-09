@@ -2049,6 +2049,10 @@ On Error GoTo UserCanAttackNpc_Err
         End If
      End If
      
+     If IsPet And UserList(NpcList(NpcIndex).MaestroUser.ArrayIndex).Grupo.id = UserList(UserIndex).Grupo.id Then
+        UserCanAttackNpc = eSameGroup
+        Exit Function
+     End If
 156  If Status(UserIndex) = Ciudadano Then
 158     If IsPet And NpcList(NpcIndex).MaestroUser.ArrayIndex = UserIndex Then
 162         UserCanAttackNpc = eOwnPet
