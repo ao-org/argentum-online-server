@@ -1528,6 +1528,7 @@ Public Type t_ObjData
     CreaParticula As String
     CreaFX As Integer
     CreaLuz As String
+    CreaWav As Integer
     
     MinELV As Byte
     SkillIndex As Byte     ' El indice de Skill para equipar el item

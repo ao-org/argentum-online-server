@@ -1544,6 +1544,7 @@ Sub LoadOBJData()
 488             .CreaFX = val(Leer.GetValue(ObjKey, "CreaFX"))
 490             .CreaGRH = Leer.GetValue(ObjKey, "CreaGRH")
 492             .CreaLuz = Leer.GetValue(ObjKey, "CreaLuz")
+493             .CreaWav = Leer.GetValue(ObjKey, "CreaWav")
     
 494             .MinHam = val(Leer.GetValue(ObjKey, "MinHam"))
 496             .MinSed = val(Leer.GetValue(ObjKey, "MinAgu"))
