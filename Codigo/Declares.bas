@@ -249,7 +249,7 @@ Public MapasInterdimensionales() As Integer
 Public MapasEventos() As Integer
 
 Public Enum e_Minerales
-
+    Coal = 3391
     HierroCrudo = 192
     PlataCruda = 193
     OroCrudo = 194
@@ -1621,6 +1621,7 @@ Public Type t_ObjData
     
     Agarrable As Byte
     
+    Coal As Integer
     LingH As Integer
     LingO As Integer
     LingP As Integer
