@@ -1538,6 +1538,7 @@ Sub LoadOBJData()
 478             .LingH = val(Leer.GetValue(ObjKey, "LingH"))
 480             .LingP = val(Leer.GetValue(ObjKey, "LingP"))
 482             .LingO = val(Leer.GetValue(ObjKey, "LingO"))
+483             .Coal = val(Leer.GetValue(ObjKey, "Coal"))
 484             .SkHerreria = val(Leer.GetValue(ObjKey, "SkHerreria"))
     
 486             .CreaParticula = Leer.GetValue(ObjKey, "CreaParticula")

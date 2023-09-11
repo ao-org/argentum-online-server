@@ -768,14 +768,10 @@ Sub HerreroQuitarMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As Integ
 100     If ObjData(ItemIndex).LingH > 0 Then Call QuitarObjetos(LingoteHierro, ObjData(ItemIndex).LingH, UserIndex)
 102     If ObjData(ItemIndex).LingP > 0 Then Call QuitarObjetos(LingotePlata, ObjData(ItemIndex).LingP, UserIndex)
 104     If ObjData(ItemIndex).LingO > 0 Then Call QuitarObjetos(LingoteOro, ObjData(ItemIndex).LingO, UserIndex)
-
-        
+106     If ObjData(ItemIndex).Coal > 0 Then Call QuitarObjetos(e_Minerales.Coal, ObjData(ItemIndex).Coal, UserIndex)
         Exit Sub
-
 HerreroQuitarMateriales_Err:
-106     Call TraceError(Err.Number, Err.Description, "Trabajo.HerreroQuitarMateriales", Erl)
-108
-        
+    Call TraceError(Err.Number, Err.Description, "Trabajo.HerreroQuitarMateriales", Erl)
 End Sub
 
 Sub CarpinteroQuitarMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As Integer, ByVal cantidad As Integer)
@@ -980,16 +976,23 @@ Function HerreroTieneMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As I
             End If
 
         End If
+        
+130     If ObjData(ItemIndex).Coal > 0 Then
+132         If Not TieneObjetos(e_Minerales.Coal, ObjData(ItemIndex).Coal, UserIndex) Then
+134             Call WriteConsoleMsg(UserIndex, "No tenes suficientes carbon.", e_FontTypeNames.FONTTYPE_INFO)
+136             HerreroTieneMateriales = False
+138             Call WriteMacroTrabajoToggle(UserIndex, False)
+                Exit Function
+            End If
+        End If
 
-130     HerreroTieneMateriales = True
+140     HerreroTieneMateriales = True
 
         
         Exit Function
 
 HerreroTieneMateriales_Err:
-132     Call TraceError(Err.Number, Err.Description, "Trabajo.HerreroTieneMateriales", Erl)
-134
-        
+    Call TraceError(Err.Number, Err.Description, "Trabajo.HerreroTieneMateriales", Erl)
 End Function
 
 Public Function PuedeConstruir(ByVal UserIndex As Integer, ByVal ItemIndex As Integer) As Boolean
@@ -2162,7 +2165,7 @@ Public Sub DoRobar(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
                             Dim prevGold As Long: prevGold = UserList(VictimaIndex).Stats.GLD
 254                         UserList(VictimaIndex).Stats.GLD = UserList(VictimaIndex).Stats.GLD - n
                             Dim ProtectedGold As Long
-                            ProtectedGold = OroPorNivelBilletera * .Stats.ELV
+                            ProtectedGold = OroPorNivelBilletera * UserList(VictimaIndex).Stats.ELV
                             If prevGold >= ProtectedGold And UserList(VictimaIndex).Stats.GLD < ProtectedGold Then
                                 n = prevGold - ProtectedGold
                                 UserList(VictimaIndex).Stats.GLD = ProtectedGold

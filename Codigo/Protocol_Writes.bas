@@ -2124,6 +2124,7 @@ Public Sub WriteBlacksmithWeapons(ByVal UserIndex As Integer)
 122         Call Writer.WriteInt16(obj.LingH)
 124         Call Writer.WriteInt16(obj.LingP)
 126         Call Writer.WriteInt16(obj.LingO)
+127         Call Writer.WriteInt16(obj.Coal)
 128     Next i
 
 130     Call modSendData.SendData(ToIndex, UserIndex)
@@ -2179,6 +2180,7 @@ Public Sub WriteBlacksmithArmors(ByVal UserIndex As Integer)
 122         Call Writer.WriteInt16(obj.LingH)
 124         Call Writer.WriteInt16(obj.LingP)
 126         Call Writer.WriteInt16(obj.LingO)
+127         Call Writer.WriteInt16(obj.Coal)
 128         Call Writer.WriteInt16(ArmadurasHerrero(validIndexes(i)))
 130     Next i
 

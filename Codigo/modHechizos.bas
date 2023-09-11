@@ -4558,7 +4558,7 @@ Private Sub AdjustNpcStatWithCasterLevel(ByVal UserIndex As Integer, ByVal NpcIn
     Dim BonusFromItem As Integer
     'get natural skill for user lvl and apply hit chance for a cleric of that level with agility buff to 36
     BaseHit = UserList(UserIndex).Stats.ELV * 2.5
-    BaseHit = ((BaseHit + ((3 * BaseHit / 100) * 36))) * ModClase(e_Class.Cleric).AtaqueArmas
+    BaseHit = ((BaseHit + ((3 * BaseHit / 100) * 38))) * ModClase(e_Class.Warrior).AtaqueArmas
     BaseHit = (BaseHit + (2.5 * max(CInt(UserList(UserIndex).Stats.ELV) - 12, 0)))
     If UserList(UserIndex).invent.WeaponEqpObjIndex > 0 Then
         BonusFromItem = ObjData(UserList(UserIndex).invent.WeaponEqpObjIndex).MagicDamageBonus
