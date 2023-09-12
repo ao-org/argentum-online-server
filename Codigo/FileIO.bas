@@ -2221,9 +2221,12 @@ Sub LoadSini()
     
 144     EnTesting = val(Lector.GetValue("INIT", "Testing"))
 145     EnableTelemetry = val(Lector.GetValue("INIT", "EnableTelemetry"))
-        
+146     PendingConnectionTimeout = val(Lector.GetValue("INIT", "PendingConnectionTimeout"))
+        If PendingConnectionTimeout = 0 Then
+            PendingConnectionTimeout = 1000
+        End If
         'Ressurect pos
-146     ResPos.map = val(ReadField(1, Lector.GetValue("INIT", "ResPos"), 45))
+147     ResPos.Map = val(ReadField(1, Lector.GetValue("INIT", "ResPos"), 45))
 148     ResPos.x = val(ReadField(2, Lector.GetValue("INIT", "ResPos"), 45))
 150     ResPos.y = val(ReadField(3, Lector.GetValue("INIT", "ResPos"), 45))
       
@@ -2234,7 +2237,7 @@ Sub LoadSini()
 
 160         MaxUsers = Temporal
 162         ReDim UserList(1 To MaxUsers) As t_User
-
+            InitializeUserIndexHeap (MaxUsers)
         End If
 
 164     Call CargarCiudades

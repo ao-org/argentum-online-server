@@ -124,12 +124,13 @@ Public Sub close_not_logged_sockets_if_timeout()
                     Dim Ticks As Long, Delta As Long
                     Ticks = GetTickCount
                     Delta = Ticks - .Counters.OnConnectTimestamp
-                    If Delta > 3000 Then
+                    If Delta > PendingConnectionTimeout Then
                         If Mapping(.ConnID).ArrayIndex = i Then
                             Call Kick(.ConnID, "Connection timeout")
                         Else
                             .ConnID = 0
                             .ConnIDValida = False
+                            Call ReleaseUser(i)
                             Call TraceError(Err.Number, Err.Description, "trying to kick an invalid mapping", Erl)
                         End If
                     End If
@@ -205,6 +206,7 @@ On Error GoTo OnServerClose_Err:
     
 132        UserList(UserRef.ArrayIndex).ConnIDValida = False
 134        UserList(UserRef.ArrayIndex).ConnID = 0
+136        Call ReleaseUser(UserRef.ArrayIndex)
        End If
 138    Call ClearUserRef(Mapping(Connection))
 
@@ -248,6 +250,7 @@ On Error GoTo ForcedClose_Err:
 106     Call Server.Kick(Connection, True)
 108     Call ClearUserRef(Mapping(Connection))
 110     Call IncreaseVersionId(userIndex)
+112     Call ReleaseUser(UserIndex)
         Exit Sub
 ForcedClose_Err:
     Call TraceError(Err.Number, Err.Description, "modNetwork.ForcedClose", Erl)

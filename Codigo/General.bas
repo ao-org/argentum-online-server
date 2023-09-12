@@ -911,6 +911,7 @@ Sub Restart()
 
 118     For LoopC = 1 To MaxUsers
 122         UserList(LoopC).ConnIDValida = False
+            Call ReleaseUser(LoopC)
 128     Next LoopC
 
 130     LastUser = 0

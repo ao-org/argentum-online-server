@@ -1927,6 +1927,7 @@ Public Type t_UserFlags
     FirstPacket As Boolean ' ¿El socket envió algun paquete válido?
     Meditando As Boolean
     Crafteando As Byte
+    IsSlotFree As Boolean
 
     Descuento As String
     PuedeMoverse As Byte
@@ -2840,6 +2841,7 @@ Public ServerSoloGMs                     As Integer
 Public EnPausa                           As Boolean
 Public EnTesting                         As Boolean
 Public EnableTelemetry                   As Boolean
+Public PendingConnectionTimeout          As Long
 
 '*****************ARRAYS PUBLICOS*************************
 Public UserList()                         As t_User 'USUARIOS
