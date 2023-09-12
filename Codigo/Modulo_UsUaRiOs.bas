@@ -28,6 +28,60 @@ Attribute VB_Name = "UserMod"
 
 Option Explicit
 Private UserNameCache As New Dictionary
+Private AvailableUserSlot As t_IndexHeap
+
+Public Sub InitializeUserIndexHeap(Optional ByVal size As Integer = NpcIndexHeapSize)
+On Error GoTo ErrHandler_InitializeUserIndexHeap
+    ReDim AvailableUserSlot.IndexInfo(size)
+    Dim i As Integer
+    For i = 1 To size
+        AvailableUserSlot.IndexInfo(i) = size - (i - 1)
+    Next i
+    AvailableUserSlot.currentIndex = size
+    Exit Sub
+ErrHandler_InitializeUserIndexHeap:
+    Call TraceError(Err.Number, Err.Description, "UserMod.InitializeUserIndexHeap", Erl)
+End Sub
+
+Public Function ReleaseUser(ByVal UserIndex As Integer) As Boolean
+On Error GoTo ErrHandler
+    If UserList(UserIndex).ConnIDValida Or _
+       UserList(UserIndex).flags.UserLogged Or _
+       UserList(UserIndex).flags.IsSlotFree Then
+        ReleaseUser = False
+        Exit Function
+    End If
+    AvailableUserSlot.currentIndex = AvailableUserSlot.currentIndex + 1
+    Debug.Assert AvailableUserSlot.currentIndex <= UBound(AvailableUserSlot.IndexInfo)
+    AvailableUserSlot.IndexInfo(AvailableUserSlot.currentIndex) = UserIndex
+    UserList(UserIndex).flags.IsSlotFree = True
+    ReleaseUser = True
+    Exit Function
+ErrHandler:
+    ReleaseUser = False
+    Call TraceError(Err.Number, Err.Description, "UserMod.ReleaseUser", Erl)
+End Function
+
+Public Function GetAvailableUserSlot() As Integer
+    GetAvailableUserSlot = AvailableUserSlot.currentIndex
+End Function
+
+Public Function GetNextAvailableUserSlot() As Integer
+On Error GoTo ErrHandler
+    If (AvailableUserSlot.currentIndex = 0) Then
+        GetNextAvailableUserSlot = 0
+        Return
+    End If
+    GetNextAvailableUserSlot = AvailableUserSlot.IndexInfo(AvailableUserSlot.currentIndex)
+    AvailableUserSlot.currentIndex = AvailableUserSlot.currentIndex - 1
+    UserList(GetNextAvailableUserSlot).flags.IsSlotFree = False
+    If Not UserList(GetNextAvailableUserSlot).ConnIDValida And UserList(GetNextAvailableUserSlot).flags.UserLogged = False Then
+        Call TraceError(Err.Number, "Trying to active the same user slot twice", "UserMod.GetNextAvailableUserSlot", Erl)
+    End If
+    Exit Function
+ErrHandler:
+    Call TraceError(Err.Number, Err.Description, "UserMod.GetNextAvailableUserSlot", Erl)
+End Function
 
 Public Function GetUserName(ByVal UserId As Long) As String
     On Error GoTo GetUserName_Err
@@ -1619,22 +1673,18 @@ Function NextOpenUser() As Integer
         
 
         Dim LoopC As Long
-   
-100     For LoopC = 1 To MaxUsers + 1
-
-102         If LoopC > MaxUsers Then Exit For
-104         If (Not UserList(LoopC).ConnIDValida And UserList(LoopC).flags.UserLogged = False) Then Exit For
-106     Next LoopC
-   
-108     NextOpenUser = LoopC
-
-        
+        If IsFeatureEnabled("use_old_user_slot_check") Then
+100         For LoopC = 1 To MaxUsers + 1
+102             If LoopC > MaxUsers Then Exit For
+104             If (Not UserList(LoopC).ConnIDValida And UserList(LoopC).flags.UserLogged = False) Then Exit For
+106         Next LoopC
+108         NextOpenUser = LoopC
+        Else
+            NextOpenUser = GetNextAvailableUserSlot
+        End If
         Exit Function
-
 NextOpenUser_Err:
-110     Call TraceError(Err.Number, Err.Description, "UsUaRiOs.NextOpenUser", Erl)
-
-        
+    Call TraceError(Err.Number, Err.Description, "UsUaRiOs.NextOpenUser", Erl)
 End Function
 
 Sub SendUserStatsTxt(ByVal sendIndex As Integer, ByVal UserIndex As Integer)

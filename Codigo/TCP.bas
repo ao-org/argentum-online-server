@@ -661,7 +661,7 @@ Sub CloseSocket(ByVal UserIndex As Integer)
             End If
     
 140         .ConnIDValida = False
-    
+142         Call ReleaseUser(UserIndex)
         End With
     
 
@@ -671,7 +671,7 @@ ErrHandler:
 
 144     UserList(UserIndex).ConnIDValida = False
 146     Call ResetUserSlot(UserIndex)
-
+        Call ReleaseUser(UserIndex)
 148     Call TraceError(Err.Number, Err.Description, "TCP.CloseSocket", Erl)
 
 
@@ -686,6 +686,7 @@ Sub CloseSocketSL(ByVal UserIndex As Integer)
 102         Call modNetwork.Kick(UserIndex)
 
 106         UserList(UserIndex).ConnIDValida = False
+            Call ReleaseUser(UserIndex)
         End If
         
         Exit Sub
@@ -1508,14 +1509,13 @@ Sub ResetUserSlot(ByVal UserIndex As Integer)
 168         .DestNick = vbNullString
 170         Call SetUserRef(.DestUsu, 0)
 172         .Objeto = 0
-174     UserList(UserIndex).InUse = False
-176        Call IncreaseVersionId(UserIndex)
         End With
+174     UserList(UserIndex).InUse = False
+176     Call IncreaseVersionId(UserIndex)
+178     Call ReleaseUser(UserIndex)
         Exit Sub
 ResetUserSlot_Err:
-178     Call TraceError(Err.Number, Err.Description, "TCP.ResetUserSlot", Erl)
-
-        
+    Call TraceError(Err.Number, Err.Description, "TCP.ResetUserSlot", Erl)
 End Sub
 
 Sub ClearAndSaveUser(ByVal UserIndex As Integer)
