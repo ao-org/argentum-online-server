@@ -721,7 +721,7 @@ Sub Main()
         ' ----------------------------------------------------
 296     Call InitializePacketList
 
-302     Call modNetwork.Listen(MaxUsers, "0.0.0.0", CStr(Puerto))
+302     Call modNetwork.Listen(MaxUsers, ListenIp, CStr(Puerto))
 
 312     If frmMain.Visible Then frmMain.txStatus.Caption = "Escuchando conexiones entrantes ..."
         ' ----------------------------------------------------
@@ -932,7 +932,7 @@ Sub Restart()
 
 150     Call CargarHechizos
         
-        Call modNetwork.Listen(MaxUsers, "0.0.0.0", CStr(Puerto))
+        Call modNetwork.Listen(MaxUsers, ListenIp, CStr(Puerto))
         
 152     If frmMain.Visible Then frmMain.txStatus.Caption = "Escuchando conexiones entrantes ..."
 

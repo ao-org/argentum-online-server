@@ -157,6 +157,7 @@ Public FactionReKillTime            As Long 'required time between killing the s
 Public AirHitReductParalisisTime    As Integer 'you can hit to the air to reduce inmo/paralisis time
 
 Public Puerto                       As Long
+Public ListenIp                     As String
 
 Public MAXPASOS                     As Long
 
