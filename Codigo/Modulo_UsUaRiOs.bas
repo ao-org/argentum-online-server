@@ -36,6 +36,7 @@ On Error GoTo ErrHandler_InitializeUserIndexHeap
     Dim i As Integer
     For i = 1 To size
         AvailableUserSlot.IndexInfo(i) = size - (i - 1)
+        UserList(AvailableUserSlot.IndexInfo(i)).flags.IsSlotFree = True
     Next i
     AvailableUserSlot.currentIndex = size
     Exit Sub
@@ -74,10 +75,10 @@ On Error GoTo ErrHandler
     End If
     GetNextAvailableUserSlot = AvailableUserSlot.IndexInfo(AvailableUserSlot.currentIndex)
     AvailableUserSlot.currentIndex = AvailableUserSlot.currentIndex - 1
-    UserList(GetNextAvailableUserSlot).flags.IsSlotFree = False
-    If Not UserList(GetNextAvailableUserSlot).ConnIDValida And UserList(GetNextAvailableUserSlot).flags.UserLogged = False Then
+    If Not UserList(GetNextAvailableUserSlot).flags.IsSlotFree Then
         Call TraceError(Err.Number, "Trying to active the same user slot twice", "UserMod.GetNextAvailableUserSlot", Erl)
     End If
+    UserList(GetNextAvailableUserSlot).flags.IsSlotFree = False
     Exit Function
 ErrHandler:
     Call TraceError(Err.Number, Err.Description, "UserMod.GetNextAvailableUserSlot", Erl)
