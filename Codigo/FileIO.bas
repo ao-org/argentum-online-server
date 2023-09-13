@@ -2208,6 +2208,8 @@ Sub LoadSini()
         'Directorios
     
 122     Puerto = val(Lector.GetValue("INIT", "StartPort"))
+124     ListenIp = Lector.GetValue("INIT", "ListenIp")
+        If ListenIp = "" Then ListenIp = "0.0.0.0"
 126     HideMe = val(Lector.GetValue("INIT", "Hide"))
 128     MaxConexionesIP = val(Lector.GetValue("INIT", "MaxConexionesIP"))
 130     MaxUsersPorCuenta = val(Lector.GetValue("INIT", "MaxUsersPorCuenta"))

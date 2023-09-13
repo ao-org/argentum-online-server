@@ -767,7 +767,7 @@ Private Sub Command20_Click()
 106             Call CloseSocket(LoopC)
             Next
             
-            Call modNetwork.Listen(MaxUsers, "0.0.0.0", CStr(Puerto))
+            Call modNetwork.Listen(MaxUsers, ListenIp, CStr(Puerto))
         End If
 
         
@@ -958,7 +958,7 @@ Private Sub Command5_Click()
 136     Call LoadPesca
 138     Call LoadRecursosEspeciales
 
-140     Call modNetwork.Listen(MaxUsers, "0.0.0.0", CStr(Puerto))
+140     Call modNetwork.Listen(MaxUsers, ListenIp, CStr(Puerto))
 
 142     If frmMain.Visible Then frmMain.txStatus.Caption = "Escuchando conexiones entrantes ..."
 
