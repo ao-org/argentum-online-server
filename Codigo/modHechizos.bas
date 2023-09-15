@@ -2072,8 +2072,6 @@ Sub HechizoEstadoUsuario(ByVal UserIndex As Integer, ByRef b As Boolean)
                 Call WriteConsoleMsg(UserIndex, UserList(tU).Name & " no puede volver a ser paralizado tan rápido.", e_FontTypeNames.FONTTYPE_FIGHT)
                 Exit Sub
             End If
-
-            If UserList(tU).flags.Paralizado = 1 Then
             If Not UserMod.CanMove(UserList(tU).flags, UserList(tU).Counters) Then
 428             Call WriteConsoleMsg(UserIndex, "No podes inmovilizar un objetivo que no puede moverse.", e_FontTypeNames.FONTTYPE_FIGHT)
                 Exit Sub
