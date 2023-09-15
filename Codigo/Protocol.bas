@@ -406,12 +406,8 @@ Public Enum ClientPacketID
     CouncilKick             '/KICKCONSE
     SetTrigger              '/TRIGGER
     AskTrigger              '/TRIGGER with no args
-    BannedIPList            '/BANIPLIST
-    BannedIPReload          '/BANIPRELOAD
     GuildMemberList         '/MIEMBROSCLAN
     GuildBan                '/BANCLAN
-    banip                   '/BANIP
-    UnBanIp                 '/UNBANIP
     CreateItem              '/CI
     DestroyItems            '/DEST
     ChaosLegionKick         '/NOCAOS
@@ -721,10 +717,7 @@ On Error Resume Next
 
     If PacketId < 0 Or PacketId >= ClientPacketID.PacketCount Then
         Call LogEdicionPaquete("El usuario " & UserList(UserIndex).IP & " mando fake paquet " & PacketId)
-        If IP_Blacklist.Exists(UserList(UserIndex).IP) = 0 Then
-            Call IP_Blacklist.Add(UserList(UserIndex).IP, "FAKE")
-        End If
-        Call SendData(SendTarget.ToGM, UserIndex, PrepareMessageConsoleMsg("EL USUARIO " & UserList(UserIndex).Name & " | IP: " & UserList(UserIndex).IP & " ESTÁ ENVIANDO PAQUETES INVÁLIDOS", e_FontTypeNames.FONTTYPE_GUILD))
+        Call SendData(SendTarget.ToGM, UserIndex, PrepareMessageConsoleMsg("EL USUARIO " & UserList(UserIndex).name & " | IP: " & UserList(UserIndex).IP & " ESTÁ ENVIANDO PAQUETES INVÁLIDOS", e_FontTypeNames.FONTTYPE_GUILD))
         Call CloseSocket(UserIndex)
         Exit Function
     End If
@@ -1119,18 +1112,10 @@ On Error Resume Next
             Call HandleSetTrigger(UserIndex)
         Case ClientPacketID.AskTrigger
             Call HandleAskTrigger(UserIndex)
-        Case ClientPacketID.BannedIPList
-            Call HandleBannedIPList(UserIndex)
-        Case ClientPacketID.BannedIPReload
-            Call HandleBannedIPReload(UserIndex)
         Case ClientPacketID.GuildMemberList
             Call HandleGuildMemberList(UserIndex)
         Case ClientPacketID.GuildBan
             Call HandleGuildBan(UserIndex)
-        Case ClientPacketID.banip
-            Call HandleBanIP(UserIndex)
-        Case ClientPacketID.UnBanIp
-            Call HandleUnbanIP(UserIndex)
         Case ClientPacketID.CreateItem
             Call HandleCreateItem(UserIndex)
         Case ClientPacketID.DestroyItems

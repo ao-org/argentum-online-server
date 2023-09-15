@@ -151,7 +151,8 @@ On Error GoTo OnClientClose_Err:
     Call Unit_Protocol_Writes.Clear
 
     Debug.Print "UnitClient.OnClientClose"
-
+    
+    
     If NextTest <> TestEnd Then
         NextTest = NextTest + 1
         Call UnitClient.Connect("127.0.0.1", "7667")
@@ -180,6 +181,7 @@ Private Sub OnClientRecv(ByVal Message As Network.Reader)
         Case ServerPacketID.Disconnect
             Debug.Print "ServerPacketID.Disconnect"
         Case ServerPacketID.CharacterChange
+            Debug.Print "CharacterChange"
             Call Unit_Protocol_Writes.HandleCharacterChange(Reader)
         Case ServerPacketID.ShowMessageBox
             Call Unit_Protocol_Writes.HandleShowMessageBox(Reader)

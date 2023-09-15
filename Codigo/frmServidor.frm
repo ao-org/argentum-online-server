@@ -707,37 +707,6 @@ Command18_Click_Err:
         
 End Sub
 
-Private Sub Command19_Click()
-        
-        On Error GoTo Command19_Click_Err
-        
-
-        Dim i        As Long, n As Long
-
-        Dim sENtrada As String
-
-100     sENtrada = InputBox("Escribe ""estoy DE acuerdo"" sin comillas y con distición de mayusculas minusculas para desbanear a todos los personajes", "UnBan", "hola")
-
-102     If sENtrada = "estoy DE acuerdo" Then
-    
-104         n = IP_Blacklist.Count
-
-106         For i = 1 To n
-108             IP_Blacklist.Remove (0)
-110         Next i
-    
-112         MsgBox "Se han habilitado " & n & " ipes"
-
-        End If
-
-        
-        Exit Sub
-
-Command19_Click_Err:
-114     Call TraceError(Err.Number, Err.Description, "frmServidor.Command19_Click", Erl)
-
-        
-End Sub
 
 Private Sub Command2_Click()
         

@@ -144,15 +144,10 @@ On Error GoTo OnServerConnect_Err:
     If IsFeatureEnabled("debug_connections") Then
         Call AddLogToCircularBuffer("OnServerConnect connecting new user on id: " & Connection & " ip: " & Address)
     End If
-    If IP_Blacklist.Exists(Address) <> 0 Then 'Busca si esta banneada la ip
-        Call Kick(Connection, "Se te ha prohibido la entrada al servidor. Cod: #0003")
-        Exit Sub
-    End If
     If Mapping(Connection).ArrayIndex > 0 Then
         Call TraceError(Err.Number, Err.Description, "OnServerConnect Mapping(Connection) > 0, connection: " & Connection & " value: " & Mapping(Connection).ArrayIndex & ", is valid: " & IsValidUserRef(Mapping(Connection)), Erl)
     End If
     If Connection <= MaxUsers Then
-        'By Ladder y Wolfenstein
         Dim FreeUser As Long
         FreeUser = NextOpenUser()
         If UserList(FreeUser).InUse Then
