@@ -27,32 +27,6 @@ Attribute VB_Name = "Penas"
 '
 Option Explicit
 
-Public IP_Blacklist As New Dictionary
-
-Public Sub CargarListaNegraUsuarios()
-#If DEVELOPER = 0 Then
-On Error GoTo CargarListaNegraUsuarios_Err
-        Dim File   As clsIniManager
-        Dim i      As Long
-        Dim iKey   As String
-        Dim iValue As String
-100     If Not FileExist(DatPath & "Baneos.dat") Then Exit Sub
-102     Set File = New clsIniManager
-104     Call File.Initialize(DatPath & "Baneos.dat")
-        Call IP_Blacklist.RemoveAll
-108     For i = 0 To File.EntriesCount("IP") - 1
-110        Call File.GetPair("IP", i, iKey, iValue)
-            If Not IP_Blacklist.Exists(iKey) Then
-112             Call IP_Blacklist.Add(iKey, iValue)
-            End If
-        Next
-
-        Exit Sub
-CargarListaNegraUsuarios_Err:
-        Set File = Nothing
-        Call TraceError(Err.Number, Err.Description, "Penas.CargarListaNegraUsuarios", Erl)
-#End If
-End Sub
 
 Private Function GlobalChecks(ByVal BannerIndex As Integer, ByRef username As String) As Integer
         
@@ -132,7 +106,7 @@ Public Sub BanPJ(ByVal BannerIndex As Integer, ByVal UserName As String, ByRef R
 112     Call LogBanFromName(UserName, BannerIndex, Razon)
 
         ' Le buchoneamos al mundo.
-114     Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » " & UserList(BannerIndex).Name & " ha baneado a " & username & " debido a: " & LCase$(Razon) & ".", e_FontTypeNames.FONTTYPE_SERVER))
+114     Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » " & UserList(BannerIndex).name & " ha baneado a " & username & " debido a: " & LCase$(Razon) & ".", e_FontTypeNames.FONTTYPE_SERVER))
 
         ' Si estaba online, lo echamos.
 116     Dim tUser As t_UserReference: tUser = NameIndex(username)
@@ -202,10 +176,10 @@ Public Sub BanearCuenta(ByVal BannerIndex As Integer, ByVal UserName As String, 
 112     Call SaveBanCuentaDatabase(CuentaID, Reason, UserList(BannerIndex).Name)
 
         ' Le buchoneamos al mundo.
-114     Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » " & UserList(BannerIndex).Name & " ha baneado la cuenta de " & username & " debido a: " & Reason & ".", e_FontTypeNames.FONTTYPE_SERVER))
+114     Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » " & UserList(BannerIndex).name & " ha baneado la cuenta de " & username & " debido a: " & Reason & ".", e_FontTypeNames.FONTTYPE_SERVER))
 
         ' Registramos el baneo en los logs.
-116     Call LogGM(UserList(BannerIndex).Name, "Baneó la cuenta de " & username & " por: " & Reason)
+116     Call LogGM(UserList(BannerIndex).name, "Baneó la cuenta de " & username & " por: " & Reason)
 
         ' Echo a todos los logueados en esta cuenta
         Dim i As Long
@@ -245,47 +219,4 @@ DesbanearCuenta_Err:
         Call TraceError(Err.Number, Err.Description, "Penas.DesbanearCuenta", Erl)
 End Function
 
-Public Sub BanearIP(ByVal BannerIndex As Integer, ByVal UserName As String, ByVal IP As String, Optional ByVal Email As String)
-        On Error GoTo BanearIP_Err
-        
-#If STRESSER = 1 Then
-    Exit Sub
-#End If
-        ' Lo guardo en Baneos.dat
-100     Call WriteVar(DatPath & "Baneos.dat", "IP", IP, UserName)
 
-        If LenB(UserName) > 0 Then
-            If Not (val(mid(UserName, 1, 1)) > 0) Then
-                Call Execute("UPDATE account set is_banned = true where UPPER(email) = ?;", UCase$(Email))
-                Call BanPJWithoutGM(UserName, "Por ban IP.")
-            End If
-        End If
-        
-        ' Lo guardo en memoria.
-102     Call IP_Blacklist.Add(IP, UserName)
-
-        ' Registramos el des-baneo en los logs.
-104     Call LogGM(UserList(BannerIndex).Name, "Baneó la IP: " & IP & " de " & username)
-
-        Exit Sub
-
-BanearIP_Err:
-        Call TraceError(Err.Number, Err.Description, "Penas.BanearIP", Erl)
-End Sub
-
-Public Sub DesbanearIP(ByVal IP As String, ByVal UnbannerIndex As Integer)
-        On Error GoTo DesbanearIP_Err
-
-        ' Lo saco de la memoria.
-100     If IP_Blacklist.Exists(IP) Then Call IP_Blacklist.Remove(IP)
-
-        ' Lo saco del archivo.
-102     Call WriteVar(DatPath & "Baneos.dat", "IP", IP, vbNullString)
-
-        ' Registramos el des-baneo en los logs.
-
-        Exit Sub
-
-DesbanearIP_Err:
-        Call TraceError(Err.Number, Err.Description, "Penas.DesbanearIP", Erl)
-End Sub

@@ -587,7 +587,6 @@ Sub Main()
 144     Call CargaApuestas
 146     Call CargarSpawnList
 148     Call LoadMotd
-150     Call CargarListaNegraUsuarios
         Call initBase64Chars
         
 152     frmCargando.Label1(2).Caption = "Conectando base de datos y limpiando usuarios logueados"

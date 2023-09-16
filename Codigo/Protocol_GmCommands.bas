@@ -2844,120 +2844,7 @@ HandleAskTrigger_Err:
 110     Call TraceError(Err.Number, Err.Description, "Protocol.HandleAskTrigger", Erl)
 End Sub
 
-Public Sub HandleBannedIPList(ByVal UserIndex As Integer)
-    On Error GoTo HandleBannedIPList_Err
-100 With UserList(UserIndex)
-102     If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero Or e_PlayerType.SemiDios Or e_PlayerType.RoleMaster)) Then Exit Sub
 
-        Dim lista As String
-        Dim LoopC As Long
-
-104     Call LogGM(.name, "/BANIPLIST")
-106         For LoopC = 1 To IP_Blacklist.count
-108             lista = lista & IP_Blacklist.Item(LoopC) & ", "
-110         Next LoopC
-        
-112     If LenB(lista) <> 0 Then lista = Left$(lista, Len(lista) - 2)
-114     Call WriteConsoleMsg(UserIndex, lista, e_FontTypeNames.FONTTYPE_INFO)
-    End With
-    Exit Sub
-HandleBannedIPList_Err:
-116 Call TraceError(Err.Number, Err.Description, "Protocol.HandleBannedIPList", Erl)
-End Sub
-
-Public Sub HandleBannedIPReload(ByVal UserIndex As Integer)
-    On Error GoTo HandleBannedIPReload_Err
-100     With UserList(UserIndex)
-102         If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero Or e_PlayerType.SemiDios Or e_PlayerType.RoleMaster)) Then Exit Sub
-104         Call CargarListaNegraUsuarios
-106         Call WriteConsoleMsg(UserIndex, "Lista de IPs recargada.", e_FontTypeNames.FONTTYPE_INFO)
-    End With
-    Exit Sub
-HandleBannedIPReload_Err:
-108 Call TraceError(Err.Number, Err.Description, "Protocol.HandleBannedIPReload", Erl)
-End Sub
-
-Public Sub HandleBanIP(ByVal UserIndex As Integer)
-        On Error GoTo ErrHandler
-        Dim tUser As t_UserReference
-        Dim bannedip As String
-        
-100     With UserList(UserIndex)
-102         Dim NickOrIP As String: NickOrIP = Reader.ReadString8()
-104         Dim Reason As String: Reason = Reader.ReadString8()
-            ' Si el 4to caracter es un ".", de "XXX.XXX.XXX.XXX", entonces es IP.
-106         If mid$(NickOrIP, 4, 1) = "." Then
-                ' Me fijo que tenga formato valido
-108             If IsValidIPAddress(NickOrIP) Then
-110                 bannedip = NickOrIP
-                Else
-112                 Call WriteConsoleMsg(UserIndex, "La IP " & NickOrIP & " no tiene un formato válido.", e_FontTypeNames.FONTTYPE_INFO)
-                    Exit Sub
-                End If
-            Else ' Es un Nick
-114             tUser = NameIndex(NickOrIP)
-                
-116             If Not IsValidUserRef(tUser) Then
-118                 Call WriteConsoleMsg(UserIndex, "El personaje no está online.", e_FontTypeNames.FONTTYPE_INFO)
-                    Exit Sub
-                Else
-120                 bannedip = UserList(tUser.ArrayIndex).IP
-                End If
-            End If
-         
-122         If LenB(bannedip) = 0 Then Exit Sub
-        
-124         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios)) = 0 Then
-126             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
-                Exit Sub
-            End If
-      
-128         If IP_Blacklist.Exists(bannedip) Then
-130             Call WriteConsoleMsg(UserIndex, "La IP " & bannedip & " ya se encuentra en la lista negra de IPs.", e_FontTypeNames.FONTTYPE_INFO)
-                Exit Sub
-            End If
-132         Call BanearIP(UserIndex, NickOrIP, bannedip, UserList(UserIndex).Cuenta)
-134         Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(.Name & " baneó la IP " & bannedip & " por " & Reason, e_FontTypeNames.FONTTYPE_FIGHT))
-            'Find every player with that ip and ban him!
-            Dim i As Long
-136         For i = 1 To LastUser
-138             If UserList(i).ConnIDValida Then
-140                 If UserList(i).IP = bannedip Then
-142                     Call WriteCerrarleCliente(i)
-144                     Call CloseSocket(i)
-                    End If
-                End If
-146         Next i
-        End With
-        Exit Sub
-ErrHandler:
-148     Call TraceError(Err.Number, Err.Description, "Protocol.HandleBanIP", Erl)
-End Sub
-
-Public Sub HandleUnbanIP(ByVal UserIndex As Integer)
-        On Error GoTo HandleUnbanIP_Err
-100     With UserList(UserIndex)
-            Dim bannedip As String
-        
-102         bannedip = Reader.ReadInt8() & "."
-104         bannedip = bannedip & Reader.ReadInt8() & "."
-106         bannedip = bannedip & Reader.ReadInt8() & "."
-108         bannedip = bannedip & Reader.ReadInt8()
-        
-110         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios)) = 0 Then Exit Sub
-        
-112         If IP_Blacklist.Exists(bannedip) Then
-114             Call DesbanearIP(bannedip, UserIndex)
-116             Call WriteConsoleMsg(UserIndex, "La IP """ & bannedip & """ se ha quitado de la lista de bans.", e_FontTypeNames.FONTTYPE_INFO)
-            Else
-118             Call WriteConsoleMsg(UserIndex, "La IP """ & bannedip & """ NO se encuentra en la lista de bans.", e_FontTypeNames.FONTTYPE_INFO)
-            End If
-        End With
-        Exit Sub
-
-HandleUnbanIP_Err:
-120     Call TraceError(Err.Number, Err.Description, "Protocol.HandleUnbanIP", Erl)
-End Sub
 
 Public Sub HandleCreateItem(ByVal UserIndex As Integer)
         On Error GoTo HandleCreateItem_Err
@@ -4102,8 +3989,6 @@ Public Sub HandleQuestionGM(ByVal UserIndex As Integer)
             If .Counters.CounterGmMessages >= 20 Then
                 Dim bannedip As String
                 bannedip = UserList(UserIndex).IP
-132             Call BanearIP(0, UserList(UserIndex).name, bannedip, UserList(UserIndex).Cuenta)
-134             Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Se baneó la IP  " & bannedip & " del personaje " & UserList(UserIndex).Name & " por bot.", e_FontTypeNames.FONTTYPE_FIGHT))
                 'Find every player with that ip and ban him!
                 Dim i As Long
 136             For i = 1 To LastUser
