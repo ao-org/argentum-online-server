@@ -1183,7 +1183,7 @@ Public Enum e_DamageResult
     eDead
 End Enum
 
-Public Const MAX_PACKET_COUNTERS As Long = 15
+Public Const MAX_PACKET_COUNTERS As Long = 16
 
 Public Enum PacketNames
     CastSpell = 1
@@ -1201,6 +1201,7 @@ Public Enum PacketNames
     GuildMessage
     QuestionGM
     ChangeHeading
+    Hide
 End Enum
 
 Public Type t_UserOBJ

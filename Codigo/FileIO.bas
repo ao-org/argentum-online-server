@@ -2130,6 +2130,7 @@ Public Sub CargarMapaFormatoCSM(ByVal map As Long, ByVal MAPFl As String)
 383     MapInfo(map).DropItems = True
         MapInfo(map).FriendlyFire = True
         MapInfo(Map).KeepInviOnAttack = val(GetVar(DatPath & "Map.dat", "KeepInviOnAttack", Map)) <> 0
+        MapInfo(Map).ForceUpdate = val(GetVar(DatPath & "Map.dat", "ForceUpdateAi", Map)) <> 0
 
 384     If LenB(MapDat.Salida) <> 0 Then
             Dim Fields() As String

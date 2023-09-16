@@ -2204,7 +2204,7 @@ Private Sub UserDañoEspecial(ByVal AtacanteIndex As Integer, ByVal VictimaIndex
         If rangeStun And IsFeatureEnabled("enable_stun") And Not IsSet(UserList(VictimaIndex).flags.StatusMask, eCCInmunity) Then
             If (RandomNumber(1, 100) < stunChance) Then
                 With UserList(VictimaIndex)
-                    If StunPlayer(.Counters) Then
+                    If StunPlayer(VictimaIndex, .Counters) Then
                         Call WriteStunStart(VictimaIndex, PlayerStunTime)
                         Call WritePosUpdate(VictimaIndex)
 178                     Call SendData(SendTarget.ToPCAliveArea, VictimaIndex, PrepareMessageCreateFX(.Char.charindex, 142, 1))

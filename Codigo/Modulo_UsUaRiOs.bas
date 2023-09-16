@@ -3140,12 +3140,14 @@ Public Function CanMove(ByRef flags As t_UserFlags, ByRef Counters As t_UserCoun
     CanMove = flags.Paralizado = 0 And flags.Inmovilizado = 0 And Not IsStun(flags, Counters) And Not flags.TranslationActive
 End Function
 
-Public Function StunPlayer(ByRef counter As t_UserCounters) As Boolean
+Public Function StunPlayer(ByVal UserIndex As Integer, ByRef Counters As t_UserCounters) As Boolean
     Dim currTime As Long
     StunPlayer = False
+    If Not CanMove(UserList(UserIndex).flags, Counters) Then Exit Function
+    If IsSet(UserList(UserIndex).flags.StatusMask, eCCInmunity) Then Exit Function
     currTime = GetTickCount()
-    If currTime > counter.StunEndTime + PlayerInmuneTime Then
-        counter.StunEndTime = GetTickCount() + PlayerStunTime
+    If CurrTime > Counters.StunEndTime + PlayerInmuneTime Then
+        Counters.StunEndTime = GetTickCount() + PlayerStunTime
         StunPlayer = True
     End If
 End Function
@@ -3514,7 +3516,7 @@ Public Function Inmovilize(ByVal SourceIndex As Integer, ByVal TargetIndex As In
         Call WriteLocaleMsg(SourceIndex, MsgCCInunity, e_FontTypeNames.FONTTYPE_FIGHT)
         Exit Function
     End If
-144 If UserList(TargetIndex).flags.Inmovilizado = 0 Then
+144 If Not CanMove(UserList(TargetIndex).flags, UserList(TargetIndex).Counters) Then
 146     UserList(TargetIndex).Counters.Inmovilizado = Time
 148     UserList(TargetIndex).flags.Inmovilizado = 1
 150     Call SendData(SendTarget.ToPCAliveArea, TargetIndex, PrepareMessageCreateFX(UserList(TargetIndex).Char.charindex, Fx, 0, UserList(TargetIndex).pos.x, UserList(TargetIndex).pos.y))

@@ -3193,11 +3193,8 @@ On Error GoTo ThrowNetToTarget_Err:
                 Call WriteLocaleMsg(UserIndex, MsgCCInunity, e_FontTypeNames.FONTTYPE_FIGHT)
                 Exit Sub
             End If
-132         If UserList(tU).flags.Paralizado = 1 Then
-134             Call WriteConsoleMsg(UserIndex, UserList(tU).Name & " ya está paralizado.", e_FontTypeNames.FONTTYPE_FIGHT)
-                Exit Sub
-136         ElseIf UserList(tU).flags.Inmovilizado = 1 Then
-138             Call WriteConsoleMsg(UserIndex, UserList(tU).Name & " ya está inmovilizado.", e_FontTypeNames.FONTTYPE_FIGHT)
+            If Not UserMod.CanMove(UserList(tU).flags, UserList(tU).Counters) Then
+136             Call WriteConsoleMsg(UserIndex, "No podes inmovilizar un objetivo que no puede moverse.", e_FontTypeNames.FONTTYPE_FIGHT)
                 Exit Sub
             End If
             
