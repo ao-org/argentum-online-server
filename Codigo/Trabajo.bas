@@ -1988,6 +1988,11 @@ Public Sub DoRobar(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
 100     If UserList(LadronIndex).flags.Privilegios And (e_PlayerType.Consejero) Then Exit Sub
 
 102     If MapInfo(UserList(VictimaIndex).Pos.Map).Seguro = 1 Then Exit Sub
+        
+        If Not UserMod.CanMove(UserList(VictimaIndex).flags, UserList(VictimaIndex).Counters) Then
+            Call WriteConsoleMsg(LadronIndex, "No podes robarle a objetivos inmovilizados.", e_FontTypeNames.FONTTYPE_FIGHT)
+            Exit Sub
+        End If
     
 104     If UserList(VictimaIndex).flags.EnConsulta Then
 106         Call WriteConsoleMsg(LadronIndex, "¡No puedes robar a usuarios en consulta!", e_FontTypeNames.FONTTYPE_INFO)
