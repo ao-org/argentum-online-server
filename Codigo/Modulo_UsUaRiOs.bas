@@ -46,9 +46,7 @@ End Sub
 
 Public Function ReleaseUser(ByVal UserIndex As Integer) As Boolean
 On Error GoTo ErrHandler
-    If UserList(UserIndex).ConnIDValida Or _
-       UserList(UserIndex).flags.UserLogged Or _
-       UserList(UserIndex).flags.IsSlotFree Then
+    If UserList(UserIndex).flags.IsSlotFree Then
         ReleaseUser = False
         Exit Function
     End If
@@ -77,6 +75,7 @@ On Error GoTo ErrHandler
     AvailableUserSlot.currentIndex = AvailableUserSlot.currentIndex - 1
     If Not UserList(GetNextAvailableUserSlot).flags.IsSlotFree Then
         Call TraceError(Err.Number, "Trying to active the same user slot twice", "UserMod.GetNextAvailableUserSlot", Erl)
+        GetNextAvailableUserSlot = -1
     End If
     UserList(GetNextAvailableUserSlot).flags.IsSlotFree = False
     Exit Function
@@ -225,8 +224,8 @@ On Error GoTo Check_ConnectUser_Err
         End If
         
         If EsGM(UserIndex) Then
-            Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » " & Name & " se conecto al juego.", e_FontTypeNames.FONTTYPE_INFOBOLD))
-            Call LogGM(Name, "Se conectó con IP: " & .IP)
+            Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » " & name & " se conecto al juego.", e_FontTypeNames.FONTTYPE_INFOBOLD))
+            Call LogGM(name, "Se conectó con IP: " & .IP)
         End If
     End With
     
@@ -766,10 +765,10 @@ On Error GoTo Complete_ConnectUser_Err
 1120        Call WriteLoggedMessage(UserIndex, newUser)
         
 1125        If .Stats.ELV = 1 Then
-1130            Call WriteConsoleMsg(UserIndex, "¡Bienvenido a las tierras de AO20! ¡" & .Name & " que tengas buen viaje y mucha suerte!", e_FontTypeNames.FONTTYPE_GUILD)
+1130            Call WriteConsoleMsg(UserIndex, "¡Bienvenido a las tierras de AO20! ¡" & .name & " que tengas buen viaje y mucha suerte!", e_FontTypeNames.FONTTYPE_GUILD)
 
 1135        ElseIf .Stats.ELV < 14 Then
-1140            Call WriteConsoleMsg(UserIndex, "¡Bienvenido de nuevo " & .Name & "! Actualmente estas en el nivel " & .Stats.ELV & " en " & get_map_name(.Pos.Map) & ", ¡buen viaje y mucha suerte!", e_FontTypeNames.FONTTYPE_GUILD)
+1140            Call WriteConsoleMsg(UserIndex, "¡Bienvenido de nuevo " & .name & "! Actualmente estas en el nivel " & .Stats.ELV & " en " & get_map_name(.pos.Map) & ", ¡buen viaje y mucha suerte!", e_FontTypeNames.FONTTYPE_GUILD)
 
              End If
 
@@ -3433,10 +3432,10 @@ On Error GoTo DoDamageOrHeal_Err
         DamageStr = PonerPuntos(Math.Abs(Amount))
         If SourceType = eUser Then
             If UserList(SourceIndex).ChatCombate = 1 And DoDamageText > 0 Then
-                Call WriteLocaleMsg(SourceIndex, DoDamageText, e_FontTypeNames.FONTTYPE_FIGHT, UserList(UserIndex).Name & "¬" & DamageStr)
+                Call WriteLocaleMsg(SourceIndex, DoDamageText, e_FontTypeNames.FONTTYPE_FIGHT, UserList(UserIndex).name & "¬" & DamageStr)
             End If
             If UserList(UserIndex).ChatCombate = 1 And GotDamageText > 0 Then
-                Call WriteLocaleMsg(UserIndex, GotDamageText, e_FontTypeNames.FONTTYPE_FIGHT, UserList(SourceIndex).Name & "¬" & DamageStr)
+                Call WriteLocaleMsg(UserIndex, GotDamageText, e_FontTypeNames.FONTTYPE_FIGHT, UserList(SourceIndex).name & "¬" & DamageStr)
             End If
         End If
         amount = EffectsOverTime.TargetApplyDamageReduction(UserList(UserIndex).EffectOverTime, amount, SourceIndex, SourceType, DamageSourceType)
