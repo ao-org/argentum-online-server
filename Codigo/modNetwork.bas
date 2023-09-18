@@ -130,7 +130,6 @@ Public Sub close_not_logged_sockets_if_timeout()
                         Else
                             .ConnID = 0
                             .ConnIDValida = False
-                            Call ReleaseUser(i)
                             Call TraceError(Err.Number, Err.Description, "trying to kick an invalid mapping", Erl)
                         End If
                     End If
@@ -201,7 +200,6 @@ On Error GoTo OnServerClose_Err:
     
 132        UserList(UserRef.ArrayIndex).ConnIDValida = False
 134        UserList(UserRef.ArrayIndex).ConnID = 0
-136        Call ReleaseUser(UserRef.ArrayIndex)
        End If
 138    Call ClearUserRef(Mapping(Connection))
 

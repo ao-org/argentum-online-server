@@ -657,11 +657,10 @@ Sub CloseSocket(ByVal UserIndex As Integer)
         
             Else
 136             Call ResetUserSlot(UserIndex)
-    
             End If
     
 140         .ConnIDValida = False
-142         Call ReleaseUser(UserIndex)
+
         End With
     
 
@@ -671,7 +670,6 @@ ErrHandler:
 
 144     UserList(UserIndex).ConnIDValida = False
 146     Call ResetUserSlot(UserIndex)
-        Call ReleaseUser(UserIndex)
 148     Call TraceError(Err.Number, Err.Description, "TCP.CloseSocket", Erl)
 
 
@@ -686,7 +684,6 @@ Sub CloseSocketSL(ByVal UserIndex As Integer)
 102         Call modNetwork.Kick(UserIndex)
 
 106         UserList(UserIndex).ConnIDValida = False
-            Call ReleaseUser(UserIndex)
         End If
         
         Exit Sub
