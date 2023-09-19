@@ -50,6 +50,9 @@ On Error GoTo ErrHandler
         ReleaseUser = False
         Exit Function
     End If
+    If IsFeatureEnabled("debug_id_assign") Then
+        Call LogError("Releasing usedid: " & UserIndex)
+    End If
     AvailableUserSlot.currentIndex = AvailableUserSlot.currentIndex + 1
     Debug.Assert AvailableUserSlot.currentIndex <= UBound(AvailableUserSlot.IndexInfo)
     AvailableUserSlot.IndexInfo(AvailableUserSlot.currentIndex) = UserIndex

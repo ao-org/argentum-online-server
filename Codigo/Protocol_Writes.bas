@@ -5778,15 +5778,13 @@ Public Sub WriteDebugLogResponse(ByVal UserIndex As Integer, ByVal debugType, By
                 timeSinceLastReset = GetTickCount() - .Counters.TimeLastReset
                 Call Writer.WriteString8("validConnection: " & .ConnIDValida & " connectionID: " & .ConnID & " UserIndex: " & tIndex & " charNmae" & .name & " UserLogged state: " & .flags.UserLogged & ", time since last message: " & timeSinceLastReset & " timeout setting: " & DisconnectTimeout)
             End With
-        ElseIf debugType = 2 Then
-            Call Writer.WriteInt16(1)
-            Call Writer.WriteString8("remote DEBUG: avialable user slots: " & GetAvailableUserSlot)
         Else
             Call Writer.WriteInt16(1)
         Call Writer.WriteString8("DEBUG: failed to find user: " & args(0))
         End If
-        
-        
+    ElseIf debugType = 2 Then
+            Call Writer.WriteInt16(1)
+            Call Writer.WriteString8("remote DEBUG: avialable user slots: " & GetAvailableUserSlot & ", LastUser: " & LastUser)
     End If
     
     Call modSendData.SendData(ToIndex, UserIndex)
