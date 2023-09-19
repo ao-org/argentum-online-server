@@ -68,7 +68,7 @@ End Function
 Public Function GetNextAvailableUserSlot() As Integer
 On Error GoTo ErrHandler
     If (AvailableUserSlot.currentIndex = 0) Then
-        GetNextAvailableUserSlot = 0
+        GetNextAvailableUserSlot = -1
         Return
     End If
     GetNextAvailableUserSlot = AvailableUserSlot.IndexInfo(AvailableUserSlot.currentIndex)

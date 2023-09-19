@@ -92,9 +92,14 @@ On Error GoTo Kick_ErrHandler:
             Call AddLogToCircularBuffer("Kick connection: " & Connection)
         End If
     End If
+    Dim UserRef As t_UserReference
+    UserRef = Mapping(Connection)
+    If IsValidUserRef(UserRef) Then
+        If Not UserList(UserRef.ArrayIndex).flags.UserLogged Then
+            Call ReleaseUser(UserRef.ArrayIndex)
+        End If
+    End If
     If (message <> vbNullString) Then
-        Dim UserRef As t_UserReference
-        UserRef = Mapping(Connection)
         If UserRef.ArrayIndex > 0 Then
             Call Protocol_Writes.WriteErrorMsg(UserRef.ArrayIndex, Message)
             If UserList(UserRef.ArrayIndex).flags.UserLogged Then
@@ -149,6 +154,9 @@ On Error GoTo OnServerConnect_Err:
     If Connection <= MaxUsers Then
         Dim FreeUser As Long
         FreeUser = NextOpenUser()
+        If FreeUser < 0 Then
+            Call Kick(Connection, "El server se encuentra lleno en este momento. Disculpe las molestias ocasionadas.")
+        End If
         If UserList(FreeUser).InUse Then
            Call LogError("Trying to use an user slot marked as in use! slot: " & FreeUser)
            FreeUser = NextOpenUser()

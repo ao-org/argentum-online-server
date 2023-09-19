@@ -826,7 +826,7 @@ Private Sub t_Extraer_Timer()
             Call Trabajar(i, UserList(i).Trabajo.TargetSkill)
         End If
     Next i
-    Call PerformTimeLimitCheck(PerformanceTimer, "Segundo_Timer", 100)
+    Call PerformTimeLimitCheck(PerformanceTimer, "t_Extraer_Timer", 100)
 End Sub
 
 Private Sub T_UsersOnline_Timer()

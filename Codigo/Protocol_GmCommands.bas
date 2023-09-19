@@ -4728,6 +4728,8 @@ On Error GoTo HandleDebugRequest_Err:
     ElseIf debugType = 1 Then
         ReDim Args(1) As String
         Args(0) = Reader.ReadString8()
+    ElseIf debugType = 2 Then
+        ReDim Args(0) As String
     Else
         Exit Sub
     End If
