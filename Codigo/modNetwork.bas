@@ -154,8 +154,15 @@ On Error GoTo OnServerConnect_Err:
     If Connection <= MaxUsers Then
         Dim FreeUser As Long
         FreeUser = NextOpenUser()
+        If IsFeatureEnabled("debug_id_assign") Then
+            Call LogError("Assign userId: " & FreeUser & " to connection: " & Connection)
+        End If
         If FreeUser < 0 Then
+            If IsFeatureEnabled("debug_connections") Then
+                Call LogError("Failed to find slot for new user, connection: " & Connection & " LastUser: " & LastUser)
+            End If
             Call Kick(Connection, "El server se encuentra lleno en este momento. Disculpe las molestias ocasionadas.")
+            Exit Sub
         End If
         If UserList(FreeUser).InUse Then
            Call LogError("Trying to use an user slot marked as in use! slot: " & FreeUser)
