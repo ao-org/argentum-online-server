@@ -656,7 +656,7 @@ Sub CheckIdleUser()
 100     For iUserIndex = 1 To MaxUsers
 
             'Conexion activa? y es un usuario loggeado?
-102         If UserList(iUserIndex).ConnIDValida And UserList(iUserIndex).flags.UserLogged Then
+102         If UserList(iUserIndex).ConnectionDetails.ConnIDValida And UserList(iUserIndex).flags.UserLogged Then
                 'Actualiza el contador de inactividad
 104             UserList(iUserIndex).Counters.IdleCount = UserList(iUserIndex).Counters.IdleCount + 1
 
@@ -1114,7 +1114,7 @@ On Error GoTo CMDDUMP_Click_Err
         Dim i As Integer
 
 100     For i = 1 To MaxUsers
-102         Call LogCriticEvent(i & ") ConnIDValida: " & UserList(i).ConnIDValida & " Name: " & UserList(i).Name & " UserLogged: " & UserList(i).flags.UserLogged)
+102         Call LogCriticEvent(i & ") ConnIDValida: " & UserList(i).ConnectionDetails.ConnIDValida & " Name: " & UserList(i).name & " UserLogged: " & UserList(i).flags.UserLogged)
 104     Next i
 
 106     Call LogCriticEvent("Lastuser: " & LastUser & " NextOpenUser: " & NextOpenUser)

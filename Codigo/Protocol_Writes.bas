@@ -75,20 +75,14 @@ End Sub
 #End If
 ' \Begin: [Writes]
 
-Public Sub WriteConnected(ByVal UserIndex As Integer)
-        '<EhHeader>
+Public Function PrepareConnected()
         On Error GoTo WriteConnected_Err
-        '</EhHeader>
 100     Call Writer.WriteInt16(ServerPacketID.connected)
-102     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
-        Exit Sub
-
+        Exit Function
 WriteConnected_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteConnected", Erl)
-        '</EhFooter>
-End Sub
+End Function
 
 ''
 ' Writes the "Logged" message to the given user's outgoing data .incomingData.
@@ -1159,20 +1153,26 @@ End Sub
 ' @param    Message Text to be displayed in the message box.
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteShowMessageBox(ByVal UserIndex As Integer, ByVal Message As String)
-        '<EhHeader>
         On Error GoTo WriteShowMessageBox_Err
-        '</EhHeader>
 100     Call Writer.WriteInt16(ServerPacketID.ShowMessageBox)
 102     Call Writer.WriteString8(Message)
 104     Call modSendData.SendData(ToIndex, UserIndex)
-        '<EhFooter>
         Exit Sub
 
 WriteShowMessageBox_Err:
         Call Writer.Clear
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteShowMessageBox", Erl)
-        '</EhFooter>
 End Sub
+
+Public Function PrepareShowMessageBox(ByVal Message As String)
+        On Error GoTo WriteShowMessageBox_Err
+100     Call Writer.WriteInt16(ServerPacketID.ShowMessageBox)
+102     Call Writer.WriteString8(Message)
+        Exit Function
+WriteShowMessageBox_Err:
+        Call Writer.Clear
+        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.WriteShowMessageBox", Erl)
+End Function
 
 Public Sub WriteMostrarCuenta(ByVal UserIndex As Integer)
         '<EhHeader>
@@ -5775,8 +5775,8 @@ Public Sub WriteDebugLogResponse(ByVal UserIndex As Integer, ByVal debugType, By
             Call Writer.WriteString8("remote DEBUG: " & " user name: " & args(0))
             With UserList(tIndex)
                 Dim timeSinceLastReset As Long
-                timeSinceLastReset = GetTickCount() - .Counters.TimeLastReset
-                Call Writer.WriteString8("validConnection: " & .ConnIDValida & " connectionID: " & .ConnID & " UserIndex: " & tIndex & " charNmae" & .name & " UserLogged state: " & .flags.UserLogged & ", time since last message: " & timeSinceLastReset & " timeout setting: " & DisconnectTimeout)
+                timeSinceLastReset = GetTickCount() - Mapping(.ConnectionDetails.ConnID).TimeLastReset
+                Call Writer.WriteString8("validConnection: " & .ConnectionDetails.ConnIDValida & " connectionID: " & .ConnectionDetails.ConnID & " UserIndex: " & tIndex & " charNmae" & .name & " UserLogged state: " & .flags.UserLogged & ", time since last message: " & timeSinceLastReset & " timeout setting: " & DisconnectTimeout)
             End With
         Else
             Call Writer.WriteInt16(1)

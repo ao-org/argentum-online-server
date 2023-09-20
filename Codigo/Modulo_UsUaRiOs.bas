@@ -179,7 +179,7 @@ On Error GoTo Check_ConnectUser_Err
         
     With UserList(userIndex)
         If .flags.UserLogged Then
-            Call LogSecurity("User " & .Name & " trying to log and already an already logged character from IP: " & .IP)
+            Call LogSecurity("User " & .name & " trying to log and already an already logged character from IP: " & .ConnectionDetails.IP)
             Call CloseSocketSL(UserIndex)
             Call Cerrar_Usuario(UserIndex)
             Exit Function
@@ -190,7 +190,7 @@ On Error GoTo Check_ConnectUser_Err
         If tIndex.ArrayIndex > 0 Then
             If Not IsValidUserRef(tIndex) Then
                 Call CloseSocket(tIndex.ArrayIndex)
-            ElseIf IsFeatureEnabled("override_same_ip_connection") And .IP = UserList(tIndex.ArrayIndex).IP Then
+            ElseIf IsFeatureEnabled("override_same_ip_connection") And .ConnectionDetails.IP = UserList(tIndex.ArrayIndex).ConnectionDetails.IP Then
                 Call WriteShowMessageBox(tIndex.ArrayIndex, "Alguien está ingresando con tu personaje. Si no has sido tú, por favor cambia la contraseña de tu cuenta.")
                 Call CloseSocket(tIndex.ArrayIndex)
             Else
@@ -228,7 +228,7 @@ On Error GoTo Check_ConnectUser_Err
         
         If EsGM(UserIndex) Then
             Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg("Servidor » " & name & " se conecto al juego.", e_FontTypeNames.FONTTYPE_INFOBOLD))
-            Call LogGM(name, "Se conectó con IP: " & .IP)
+            Call LogGM(name, "Se conectó con IP: " & .ConnectionDetails.IP)
         End If
     End With
     
@@ -1524,7 +1524,7 @@ Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As e_Heading) A
                                     If tempIndex <> UserIndex Then
                                         If UserList(tempIndex).AreasInfo.AreaReciveX And UserList(UserIndex).AreasInfo.AreaPerteneceX Then  'Esta en el area?
                                             If UserList(tempIndex).AreasInfo.AreaReciveY And UserList(UserIndex).AreasInfo.AreaPerteneceY Then
-                                                If UserList(tempIndex).ConnIDValida Then
+                                                If UserList(tempIndex).ConnectionDetails.ConnIDValida Then
                                                     If UserList(tempIndex).flags.Muerto = 0 Or MapInfo(UserList(tempIndex).pos.Map).Seguro = 1 Then
                                                         If Distancia(.Pos, UserList(tempIndex).Pos) > DISTANCIA_ENVIO_DATOS And .Counters.timeFx + .Counters.timeChat = 0 Then
                                                             If Abs(.Pos.X - UserList(tempIndex).Pos.X) <= RANGO_VISION_X And Abs(.Pos.y - UserList(tempIndex).Pos.y) <= RANGO_VISION_Y Then
@@ -1679,7 +1679,7 @@ Function NextOpenUser() As Integer
         If IsFeatureEnabled("use_old_user_slot_check") Then
 100         For LoopC = 1 To MaxUsers + 1
 102             If LoopC > MaxUsers Then Exit For
-104             If (Not UserList(LoopC).ConnIDValida And UserList(LoopC).flags.UserLogged = False) Then Exit For
+104             If (Not UserList(LoopC).ConnectionDetails.ConnIDValida And UserList(LoopC).flags.UserLogged = False) Then Exit For
 106         Next LoopC
 108         NextOpenUser = LoopC
         Else
@@ -2215,7 +2215,7 @@ Sub UserDie(ByVal UserIndex As Integer)
         
                 If UserList(tempIndex).AreasInfo.AreaReciveX And AreaX Then  'Esta en el area?
                     If UserList(tempIndex).AreasInfo.AreaReciveY And AreaY Then
-                        If UserList(tempIndex).ConnIDValida Then
+                        If UserList(tempIndex).ConnectionDetails.ConnIDValida Then
                             'Si no soy el que se murió
                             If UserIndex <> tempIndex And (Not EsGM(UserIndex)) And MapInfo(UserList(UserIndex).Pos.map).Seguro = 0 And UserList(tempIndex).flags.AdminInvisible = 1 Then
                                 If UserList(UserIndex).GuildIndex = 0 Then
@@ -2665,10 +2665,10 @@ Public Sub CancelExit(ByVal UserIndex As Integer)
         'Last Modification: 04/02/08
         '
         '***************************************************
-100     If UserList(UserIndex).Counters.Saliendo And UserList(UserIndex).ConnIDValida Then
+100     If UserList(UserIndex).Counters.Saliendo And UserList(UserIndex).ConnectionDetails.ConnIDValida Then
 
             ' Is the user still connected?
-102         If UserList(UserIndex).ConnIDValida Then
+102         If UserList(UserIndex).ConnectionDetails.ConnIDValida Then
 104             UserList(UserIndex).Counters.Saliendo = False
 106             UserList(UserIndex).Counters.Salir = 0
 108             Call WriteConsoleMsg(UserIndex, "/salir cancelado.", e_FontTypeNames.FONTTYPE_WARNING)

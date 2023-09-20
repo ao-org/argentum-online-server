@@ -439,7 +439,7 @@ Function ConnectNewUser(ByVal userindex As Integer, ByRef name As String, ByVal 
             Dim LoopC As Long
         
 102         If .flags.UserLogged Then
-104             Call LogSecurity("El usuario " & .name & " ha intentado crear a " & name & " desde la IP " & .IP)
+104             Call LogSecurity("El usuario " & .name & " ha intentado crear a " & name & " desde la IP " & .ConnectionDetails.IP)
 106             Call CloseSocketSL(UserIndex)
 108             Call Cerrar_Usuario(UserIndex)
                 Exit Function
@@ -447,7 +447,7 @@ Function ConnectNewUser(ByVal userindex As Integer, ByRef name As String, ByVal 
             
             ' Nombre válido
             If Not ValidarNombre(name) Then
-                Call LogSecurity("ValidarNombre failed in ConnectNewUser for " & name & " desde la IP " & .IP)
+                Call LogSecurity("ValidarNombre failed in ConnectNewUser for " & name & " desde la IP " & .ConnectionDetails.IP)
                 Call CloseSocketSL(UserIndex)
                 Exit Function
             End If
@@ -632,7 +632,7 @@ Sub CloseSocket(ByVal UserIndex As Integer)
     
             'Call SecurityIp.IpRestarConexion(api_inetaddr(.ip))
 
-112         If .ConnIDValida Then Call CloseSocketSL(UserIndex)
+112         If .ConnectionDetails.ConnIDValida Then Call CloseSocketSL(UserIndex)
     
             'mato los comercios seguros
 116         If IsValidUserRef(.ComUsu.DestUsu) Then
@@ -659,7 +659,7 @@ Sub CloseSocket(ByVal UserIndex As Integer)
 136             Call ResetUserSlot(UserIndex)
             End If
     
-140         .ConnIDValida = False
+140         .ConnectionDetails.ConnIDValida = False
 
         End With
     
@@ -668,7 +668,7 @@ Sub CloseSocket(ByVal UserIndex As Integer)
 
 ErrHandler:
 
-144     UserList(UserIndex).ConnIDValida = False
+144     UserList(UserIndex).ConnectionDetails.ConnIDValida = False
 146     Call ResetUserSlot(UserIndex)
 148     Call TraceError(Err.Number, Err.Description, "TCP.CloseSocket", Erl)
 
@@ -680,10 +680,10 @@ Sub CloseSocketSL(ByVal UserIndex As Integer)
         
         On Error GoTo CloseSocketSL_Err
 
-100     If UserList(UserIndex).ConnIDValida Then
+100     If UserList(UserIndex).ConnectionDetails.ConnIDValida Then
 102         Call modNetwork.Kick(UserIndex)
 
-106         UserList(UserIndex).ConnIDValida = False
+106         UserList(UserIndex).ConnectionDetails.ConnIDValida = False
         End If
         
         Exit Sub
@@ -1000,8 +1000,6 @@ Sub ResetContadores(ByVal UserIndex As Integer)
             .LastResetTick = 0
             .CounterGmMessages = 0
             .LastTransferGold = 0
-            .TimeLastReset = 0
-            .PacketCount = 0
             .controlHechizos.HechizosCasteados = 0
             .controlHechizos.HechizosTotales = 0
             .timeChat = 0
@@ -1085,7 +1083,7 @@ Sub ResetBasicUserInfo(ByVal UserIndex As Integer)
 114         .Pos.map = 0
 116         .Pos.X = 0
 118         .Pos.y = 0
-120         .IP = vbNullString
+120         .ConnectionDetails.IP = vbNullString
 122         .clase = 0
 124         .Email = vbNullString
 126         .genero = 0
@@ -1455,8 +1453,8 @@ Sub ResetUserSlot(ByVal UserIndex As Integer)
         On Error GoTo ResetUserSlot_Err
         Call SaveDCUserCache(UserIndex)
         With UserList(UserIndex)
-100         .ConnIDValida = False
-102         .ConnID = 0
+100         .ConnectionDetails.ConnIDValida = False
+102         .ConnectionDetails.ConnID = 0
 113         .Stats.Shield = 0
 104         If .Grupo.Lider.ArrayIndex = UserIndex Then
 106             Call FinalizarGrupo(UserIndex)
@@ -1558,7 +1556,7 @@ Sub ClearAndSaveUser(ByVal UserIndex As Integer)
                 Call WriteUserCharIndexInServer(.flags.GMMeSigue.ArrayIndex)
                 Call UpdateUserInv(True, .flags.GMMeSigue.ArrayIndex, 1)
                 Call WriteUpdateUserStats(.flags.GMMeSigue.ArrayIndex)
-                Call WriteConsoleMsg(.flags.GMMeSigue.ArrayIndex, "El usuario " & UserList(UserIndex).Name & " que estabas siguiendo se desconectó.", e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteConsoleMsg(.flags.GMMeSigue.ArrayIndex, "El usuario " & UserList(UserIndex).name & " que estabas siguiendo se desconectó.", e_FontTypeNames.FONTTYPE_INFO)
                 Call SetUserRef(.flags.GMMeSigue, 0)
                 'Falta revertir inventario del GM
             End If
@@ -1722,7 +1720,7 @@ Public Sub EcharPjsNoPrivilegiados()
 
 100     For LoopC = 1 To LastUser
 
-102         If UserList(LoopC).flags.UserLogged And UserList(LoopC).ConnIDValida Then
+102         If UserList(LoopC).flags.UserLogged And UserList(LoopC).ConnectionDetails.ConnIDValida Then
 104             If UserList(LoopC).flags.Privilegios And e_PlayerType.user Then
 106                 Call CloseSocket(LoopC)
 

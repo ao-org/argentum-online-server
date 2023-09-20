@@ -2144,10 +2144,6 @@ Public Type t_UserCounters
     TimerBarra As Integer
     LastResetTick As Long
     LastTransferGold As Long
-    TimeLastReset As Long
-    PacketCount As Long
-    
-    OnConnectTimestamp As Long
     
 End Type
 
@@ -2289,6 +2285,13 @@ Public Type t_HotkeyEntry
     LastKnownSlot As Integer
 End Type
 
+Public Type t_ConnectionInfo
+    IP As String
+    ConnIDValida As Boolean
+    ConnID As Long
+    OnConnectTimestamp As Long
+End Type
+
 Public Const HotKeyCount As Integer = 10
 'Tipo de los Usuarios
 Public Type t_User
@@ -2330,8 +2333,8 @@ Public Type t_User
     
     Pos As t_WorldPos
     
-    ConnIDValida As Boolean
-    ConnID As Long
+    ConnectionDetails As t_ConnectionInfo
+    
     CurrentInventorySlots As Byte
     
     BancoInvent As t_BancoInventario
@@ -2359,8 +2362,6 @@ Public Type t_User
         LogOnTime As Date
         UpTime As Long
     #End If
-
-    IP As String
     
     '[Alejo]
     ComUsu As t_ComercioUsuario

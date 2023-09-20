@@ -140,7 +140,7 @@ Public Sub ActualizaListaPjs()
     
 104         For LoopC = 1 To LastUser
 
-106             If UserList(LoopC).flags.UserLogged And UserList(LoopC).ConnIDValida Then
+106             If UserList(LoopC).flags.UserLogged And UserList(LoopC).ConnectionDetails.ConnIDValida Then
 108                 If UserList(LoopC).flags.Privilegios And e_PlayerType.user Then
 110                     .AddItem UserList(LoopC).Name
 112                     .ItemData(.NewIndex) = LoopC

@@ -679,7 +679,7 @@ End Sub
 '
 ' @param    UserIndex The index of the user sending the message.
 
-Public Function HandleIncomingData(ByVal UserIndex As Integer, ByVal Message As Network.Reader) As Boolean
+Public Function HandleIncomingData(ByVal UserIndex As Integer, ByVal ConnectionId As Long, ByVal Message As Network.Reader) As Boolean
 
 On Error Resume Next
     Set Reader = Message
@@ -697,60 +697,45 @@ On Error Resume Next
     actual_time = GetTickCount()
     performance_timer = actual_time
     
-    If actual_time - UserList(UserIndex).Counters.TimeLastReset >= 5000 Then
-        UserList(UserIndex).Counters.TimeLastReset = actual_time
-        UserList(UserIndex).Counters.PacketCount = 0
+    If actual_time - Mapping(ConnectionId).TimeLastReset >= 5000 Then
+        Mapping(ConnectionId).TimeLastReset = actual_time
+        Mapping(ConnectionId).PacketCount = 0
     End If
     
     If PacketId <> ClientPacketID.SendPosMovimiento Then
       '  Debug.Print PacketId
-        UserList(UserIndex).Counters.PacketCount = UserList(UserIndex).Counters.PacketCount + 1
+        Mapping(ConnectionId).PacketCount = Mapping(ConnectionId).PacketCount + 1
     End If
     
-    If UserList(UserIndex).Counters.PacketCount > 100 Then
+    If Mapping(ConnectionId).PacketCount > 100 Then
         'Lo kickeo
-        Call SendData(SendTarget.ToAdmins, UserIndex, PrepareMessageConsoleMsg("Control de paquetes -> El usuario " & UserList(UserIndex).Name & " | Iteración paquetes | Último paquete: " & PacketId & ".", e_FontTypeNames.FONTTYPE_FIGHT))
-        UserList(userindex).Counters.PacketCount = 0
-        'Call CloseSocket(userindex)
+        If UserIndex > 0 Then
+            Call SendData(SendTarget.ToAdmins, UserIndex, PrepareMessageConsoleMsg("Control de paquetes -> El usuario " & UserList(UserIndex).name & " | Iteración paquetes | Último paquete: " & PacketId & ".", e_FontTypeNames.FONTTYPE_FIGHT))
+            Mapping(ConnectionId).PacketCount = 0
+            If IsFeatureEnabled("kick_packet_overflow") Then
+                Call CloseSocket(UserIndex)
+            End If
+        Else
+            Call SendData(SendTarget.ToAdmins, UserIndex, PrepareMessageConsoleMsg("Control de paquetes -> Usuario desconocido | Iteración paquetes | Último paquete: " & PacketId & ".", e_FontTypeNames.FONTTYPE_FIGHT))
+            Mapping(ConnectionId).PacketCount = 0
+            If IsFeatureEnabled("kick_packet_overflow") Then
+                Call KickConnection(ConnectionId)
+            End If
+        End If
         Exit Function
     End If
 
     If PacketId < 0 Or PacketId >= ClientPacketID.PacketCount Then
-        Call LogEdicionPaquete("El usuario " & UserList(UserIndex).IP & " mando fake paquet " & PacketId)
-        Call SendData(SendTarget.ToGM, UserIndex, PrepareMessageConsoleMsg("EL USUARIO " & UserList(UserIndex).name & " | IP: " & UserList(UserIndex).IP & " ESTÁ ENVIANDO PAQUETES INVÁLIDOS", e_FontTypeNames.FONTTYPE_GUILD))
+        Call LogEdicionPaquete("El usuario " & UserList(UserIndex).ConnectionDetails.IP & " mando fake paquet " & PacketId)
+        Call SendData(SendTarget.ToGM, UserIndex, PrepareMessageConsoleMsg("EL USUARIO " & UserList(UserIndex).name & " | IP: " & UserList(UserIndex).ConnectionDetails.IP & " ESTÁ ENVIANDO PAQUETES INVÁLIDOS", e_FontTypeNames.FONTTYPE_GUILD))
         Call CloseSocket(UserIndex)
         Exit Function
     End If
     
     #If PYMMO = 1 Then
-    'Does the packet requires a logged user??
-    If Not (PacketID = ClientPacketID.LoginExistingChar Or _
-            PacketID = ClientPacketID.LoginNewChar) Then
-               
-        'Is the user actually logged?
-        If Not UserList(UserIndex).flags.UserLogged Then
-            Call CloseSocket(UserIndex)
-            Exit Function
-        
-        'He is logged. Reset idle counter if id is valid.
-        ElseIf PacketID <= ClientPacketID.[PacketCount] Then
-            UserList(UserIndex).Counters.IdleCount = 0
-        End If
-    ElseIf PacketID <= ClientPacketID.[PacketCount] Then
-        UserList(UserIndex).Counters.IdleCount = 0
-    End If
-    #ElseIf PYMMO = 0 Then
-     'Does the packet requires a logged account??
-    If Not (PacketId = ClientPacketID.CreateAccount Or _
-            PacketId = ClientPacketID.LoginAccount) Then
-               
-        'Is the account actually logged?
-        If UserList(userindex).AccountID = 0 Then
-            Call CloseSocket(userindex)
-            Exit Function
-        End If
-        
-        If Not (PacketId = ClientPacketID.LoginExistingChar Or PacketId = ClientPacketID.LoginNewChar) Then
+        'Does the packet requires a logged user??
+        If Not (PacketId = ClientPacketID.LoginExistingChar Or _
+                PacketId = ClientPacketID.LoginNewChar) Then
                    
             'Is the user actually logged?
             If Not UserList(userindex).flags.UserLogged Then
@@ -761,17 +746,38 @@ On Error Resume Next
             ElseIf PacketId <= ClientPacketID.[PacketCount] Then
                 UserList(userindex).Counters.IdleCount = 0
             End If
-        ElseIf PacketId <= ClientPacketID.[PacketCount] Then
-            UserList(userindex).Counters.IdleCount = 0
         End If
-    End If
+    #ElseIf PYMMO = 0 Then
+        'Does the packet requires a logged account??
+        If Not (PacketId = ClientPacketID.CreateAccount Or _
+                PacketId = ClientPacketID.LoginAccount) Then
+                   
+            'Is the account actually logged?
+            If UserList(UserIndex).AccountID = 0 Then
+                Call CloseSocket(UserIndex)
+                Exit Function
+            End If
+            
+            If Not (PacketId = ClientPacketID.LoginExistingChar Or PacketId = ClientPacketID.LoginNewChar) Then
+                       
+                'Is the user actually logged?
+                If Not UserList(UserIndex).flags.UserLogged Then
+                    Call CloseSocket(UserIndex)
+                    Exit Function
+                
+                'He is logged. Reset idle counter if id is valid.
+                ElseIf PacketId <= ClientPacketID.[PacketCount] Then
+                    UserList(UserIndex).Counters.IdleCount = 0
+                End If
+            End If
+        End If
     #End If
     
     Select Case PacketID
         Case ClientPacketID.LoginExistingChar
-            Call HandleLoginExistingChar(UserIndex)
+            Call HandleLoginExistingChar(ConnectionId)
         Case ClientPacketID.LoginNewChar
-            Call HandleLoginNewChar(UserIndex)
+            Call HandleLoginNewChar(ConnectionId)
         Case ClientPacketID.Walk
             Call HandleWalk(UserIndex)
         Case ClientPacketID.Attack
@@ -1402,11 +1408,11 @@ On Error Resume Next
             Call HandleUseHKeySlot(UserIndex)
 #If PYMMO = 0 Then
         Case ClientPacketID.CreateAccount
-            Call HandleCreateAccount(userindex)
+            Call HandleCreateAccount(ConnectionId)
         Case ClientPacketID.LoginAccount
-            Call HandleLoginAccount(userindex)
+            Call HandleLoginAccount(ConnectionId)
         Case ClientPacketID.DeleteCharacter
-            Call HandleDeleteCharacter(userindex)
+            Call HandleDeleteCharacter(ConnectionId)
 #End If
         Case Else
             Err.raise -1, "Invalid Message"
@@ -1430,14 +1436,20 @@ End Function
 
 #If PYMMO = 0 Then
 
-Private Sub HandleCreateAccount(ByVal userindex As Integer)
+Private Sub HandleCreateAccount(ByVal ConnectionId As Long)
     On Error GoTo HandleCreateAccount_Err:
     
     Dim username As String
     Dim Password As String
     username = Reader.ReadString8
     Password = Reader.ReadString8
-    
+    Dim UserIndex As Integer
+    UserIndex = MapConnectionToUser(ConnectionId)
+    If UserIndex < 1 Then
+        Call modSendData.SendToConnection(ConnectionId, PrepareShowMessageBox("No hay slot disponibles para el usuario."))
+        Call KickConnection(ConnectionId)
+        Exit Sub
+    End If
     If (username = "" Or Password = "" Or LenB(Password) <= 3) Then
         Call WriteErrorMsg(userindex, "Parametros incorrectos")
         Call CloseSocket(userindex)
@@ -1464,14 +1476,20 @@ HandleCreateAccount_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleCreateAccount", Erl)
 End Sub
 
-Private Sub HandleLoginAccount(ByVal userindex As Integer)
+Private Sub HandleLoginAccount(ByVal ConnectionId As Long)
     On Error GoTo LoginAccount_Err:
     
     Dim username As String
     Dim Password As String
     username = Reader.ReadString8
     Password = Reader.ReadString8
-        
+    Dim UserIndex As Integer
+    UserIndex = MapConnectionToUser(ConnectionId)
+    If UserIndex < 1 Then
+        Call modSendData.SendToConnection(ConnectionId, PrepareShowMessageBox("No hay slot disponibles para el usuario."))
+        Call KickConnection(ConnectionId)
+        Exit Sub
+    End If
     If (username = "" Or Password = "" Or LenB(Password) <= 3) Then
         Call WriteErrorMsg(userindex, "Parametros incorrectos")
         Call CloseSocket(userindex)
@@ -1500,39 +1518,24 @@ LoginAccount_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleLoginAccount", Erl)
 End Sub
 
-Private Sub HandleDeleteCharacter(ByVal userindex As Integer)
+Private Sub HandleDeleteCharacter(ByVal ConnectionId As Long)
     On Error GoTo DeleteCharacter_Err:
 
 DeleteCharacter_Err:
 102     Call TraceError(Err.Number, Err.Description, "Protocol.HandleDeleteCharacter", Erl)
 End Sub
 
-
-''
-' Handles the "LoginExistingChar" message.
-'
-' @param    UserIndex The index of the user sending the message.
-
-Private Sub HandleLoginExistingChar(ByVal userindex As Integer)
-
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        ''Last Modification: 01/12/08 Ladder
-        '***************************************************
-
+Private Sub HandleLoginExistingChar(ByVal ConnectionId As Long)
         On Error GoTo ErrHandler
 
         Dim user_name    As String
-
+        Dim UserIndex As Integer
+        UserIndex = Mapping(ConnectionId).UserRef.ArrayIndex
         user_name = Reader.ReadString8
-
         Call ConnectUser(userindex, user_name)
-
         Exit Sub
-    
 ErrHandler:
         Call TraceError(Err.Number, Err.Description, "Protocol.HandleLoginExistingChar", Erl)
-
 End Sub
 
 #End If
@@ -1542,7 +1545,7 @@ End Sub
 '
 ' @param    UserIndex The index of the user sending the message.
 
-Private Sub HandleLoginExistingChar(ByVal UserIndex As Integer)
+Private Sub HandleLoginExistingChar(ByVal ConnectionId As Long)
 
         '***************************************************
         'Author: Juan Martín Sotuyo Dodero (Maraxus)
@@ -1564,7 +1567,8 @@ Private Sub HandleLoginExistingChar(ByVal UserIndex As Integer)
         MD5 = Reader.ReadString8()
 
         If Len(encrypted_session_token) <> 88 Then
-            Call WriteShowMessageBox(UserIndex, "Cliente inválido, por favor realice una actualización.")
+            Call modSendData.SendToConnection(ConnectionId, PrepareShowMessageBox("Cliente inválido, por favor realice una actualización."))
+            Call KickConnection(ConnectionId)
             Exit Sub
         End If
                 
@@ -1576,8 +1580,8 @@ Private Sub HandleLoginExistingChar(ByVal UserIndex As Integer)
         decrypted_session_token = AO20CryptoSysWrapper.DECRYPT(PrivateKey, cnvStringFromHexStr(cnvToHex(encrypted_session_token_byte)))
                 
         If Not IsBase64(decrypted_session_token) Then
-            Call WriteShowMessageBox(UserIndex, "Cliente inválido, por favor realice una actualización")
-            Call CloseSocket(UserIndex)
+            Call modSendData.SendToConnection(ConnectionId, PrepareShowMessageBox("Cliente inválido, por favor realice una actualización"))
+            Call KickConnection(ConnectionId)
             Exit Sub
         End If
         
@@ -1586,52 +1590,45 @@ Private Sub HandleLoginExistingChar(ByVal UserIndex As Integer)
         Set RS = Query("select * from tokens where decrypted_token = '" & decrypted_session_token & "'")
                 
         If RS Is Nothing Or RS.RecordCount = 0 Then
-            Call WriteShowMessageBox(UserIndex, "Sesión inválida, conéctese nuevamente.")
-            Call CloseSocket(UserIndex)
+            Call modSendData.SendToConnection(ConnectionId, PrepareShowMessageBox("Sesión inválida, conéctese nuevamente."))
+            Call KickConnection(ConnectionId)
             Exit Sub
         End If
         
-            CuentaEmail = CStr(RS!UserName)
-            If RS!encrypted_token = encrypted_session_token Then
-                UserList(userindex).encrypted_session_token_db_id = RS!ID
-                UserList(UserIndex).encrypted_session_token = encrypted_session_token
-                UserList(UserIndex).decrypted_session_token = decrypted_session_token
-                UserList(userindex).public_key = mid$(decrypted_session_token, 1, 16)
-            Else
-                Call WriteShowMessageBox(UserIndex, "Cliente inválido, por favor realice una actualización.")
-                Call CloseSocket(UserIndex)
-                Exit Sub
-            End If
         CuentaEmail = CStr(RS!UserName)
-        If RS!encrypted_token = encrypted_session_token Then
-            UserList(UserIndex).encrypted_session_token = encrypted_session_token
-            UserList(UserIndex).decrypted_session_token = decrypted_session_token
-            UserList(userindex).public_key = mid$(decrypted_session_token, 1, 16)
-        Else
-            Call WriteShowMessageBox(UserIndex, "Cliente inválido, por favor realice una actualización.")
-            Call CloseSocket(UserIndex)
+                    
+        If RS!encrypted_token <> encrypted_session_token Then
+            Call modSendData.SendToConnection(ConnectionId, PrepareShowMessageBox("Cliente inválido, por favor realice una actualización."))
+            Call KickConnection(ConnectionId)
             Exit Sub
         End If
+        Dim UserIndex As Integer
+        UserIndex = MapConnectionToUser(ConnectionId)
+        If UserIndex < 1 Then
+            Call modSendData.SendToConnection(ConnectionId, PrepareShowMessageBox("No hay slot disponibles para el usuario."))
+            Call KickConnection(ConnectionId)
+            Exit Sub
+        End If
+        
+        UserList(UserIndex).encrypted_session_token_db_id = RS!id
+        UserList(UserIndex).encrypted_session_token = encrypted_session_token
+        UserList(UserIndex).decrypted_session_token = decrypted_session_token
+        UserList(UserIndex).public_key = mid$(decrypted_session_token, 1, 16)
         
         user_name = AO20CryptoSysWrapper.DECRYPT(cnvHexStrFromString(UserList(UserIndex).public_key), encrypted_username)
         #If DEBUGGING = False Then
-
             If Not VersionOK(Version) Then
                 Call WriteShowMessageBox(UserIndex, "Esta versión del juego es obsoleta, la versión correcta es la " & ULTIMAVERSION & ". Ejecute el launcher por favor.")
                 Call CloseSocket(UserIndex)
                 Exit Sub
-
             End If
-
         #End If
          
         If Not EntrarCuenta(UserIndex, CuentaEmail, MD5) Then
             Call CloseSocket(UserIndex)
             Exit Sub
         End If
-    
         Call ConnectUser(UserIndex, user_name, False)
-
         Exit Sub
     
 ErrHandler:
@@ -1642,7 +1639,7 @@ End Sub
 '
 ' @param    UserIndex The index of the user sending the message.
 
-Private Sub HandleLoginNewChar(ByVal UserIndex As Integer)
+Private Sub HandleLoginNewChar(ByVal ConnectionId As Long)
         '***************************************************
         'Author: Juan Martín Sotuyo Dodero (Maraxus)
         'Last Modification: 05/17/06
@@ -1689,8 +1686,8 @@ Private Sub HandleLoginNewChar(ByVal UserIndex As Integer)
         decrypted_session_token = AO20CryptoSysWrapper.DECRYPT(PrivateKey, cnvStringFromHexStr(cnvToHex(encrypted_session_token_byte)))
                 
         If Not IsBase64(decrypted_session_token) Then
-            Call WriteShowMessageBox(UserIndex, "Cliente inválido, por favor realice una actualización")
-            Call CloseSocket(UserIndex)
+            Call modSendData.SendToConnection(ConnectionId, PrepareShowMessageBox("Cliente inválido, por favor realice una actualización."))
+            Call KickConnection(ConnectionId)
             Exit Sub
         End If
             ' Para recibir el ID del user
@@ -1698,23 +1695,31 @@ Private Sub HandleLoginNewChar(ByVal UserIndex As Integer)
         Set RS = Query("select * from tokens where decrypted_token = '" & decrypted_session_token & "'")
                 
        If RS Is Nothing Or RS.RecordCount = 0 Then
-            Call WriteShowMessageBox(UserIndex, "Sesión inválida, conectese nuevamente.")
-120             Call CloseSocket(UserIndex)
+            Call modSendData.SendToConnection(ConnectionId, PrepareShowMessageBox("Sesión inválida, conectese nuevamente."))
+            Call KickConnection(ConnectionId)
             Exit Sub
         End If
         
         CuentaEmail = CStr(RS!UserName)
-        
-        If RS!encrypted_token = encrypted_session_token Then
-            UserList(userindex).encrypted_session_token_db_id = RS!ID
-            UserList(UserIndex).encrypted_session_token = encrypted_session_token
-            UserList(UserIndex).decrypted_session_token = decrypted_session_token
-            UserList(userindex).public_key = mid$(decrypted_session_token, 1, 16)
-        Else
-            Call WriteShowMessageBox(UserIndex, "Cliente inválido, por favor realice una actualización.")
-121             Call CloseSocket(UserIndex)
+        If RS!encrypted_token <> encrypted_session_token Then
+            Call modSendData.SendToConnection(ConnectionId, PrepareShowMessageBox("Cliente inválido, por favor realice una actualización."))
+            Call KickConnection(ConnectionId)
             Exit Sub
         End If
+        
+        Dim UserIndex As Integer
+        UserIndex = MapConnectionToUser(ConnectionId)
+        If UserIndex < 1 Then
+            Call modSendData.SendToConnection(ConnectionId, PrepareShowMessageBox("No hay slot disponibles para el usuario."))
+            Call KickConnection(ConnectionId)
+            Exit Sub
+        End If
+        
+        UserList(UserIndex).encrypted_session_token_db_id = RS!id
+        UserList(UserIndex).encrypted_session_token = encrypted_session_token
+        UserList(UserIndex).decrypted_session_token = decrypted_session_token
+        UserList(UserIndex).public_key = mid$(decrypted_session_token, 1, 16)
+        If RS!encrypted_token = encrypted_session_token Then
         
         UserName = AO20CryptoSysWrapper.DECRYPT(cnvHexStrFromString(UserList(UserIndex).public_key), encrypted_username)
     
@@ -1725,7 +1730,7 @@ Private Sub HandleLoginNewChar(ByVal UserIndex As Integer)
 
         End If
 
-132     If aClon.MaxPersonajes(UserList(UserIndex).IP) Then
+132     If aClon.MaxPersonajes(UserList(UserIndex).ConnectionDetails.IP) Then
 134         Call WriteShowMessageBox(UserIndex, "Has creado demasiados personajes.")
 136         Call CloseSocket(UserIndex)
             Exit Sub
@@ -1813,7 +1818,7 @@ Private Sub HandleLoginNewChar(ByVal userindex As Integer)
 
         End If
 
-132     If aClon.MaxPersonajes(UserList(userindex).IP) Then
+132     If aClon.MaxPersonajes(UserList(UserIndex).ConnectionDetails.IP) Then
 134         Call WriteShowMessageBox(userindex, "Has creado demasiados personajes.")
 136         Call CloseSocket(userindex)
             Exit Sub
@@ -2890,7 +2895,7 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
                 Else
                     'ver de banear al usuario
                     'Call BanearIP(0, UserList(UserIndex).name, UserList(UserIndex).IP, UserList(UserIndex).Cuenta)
-                    Call LogEdicionPaquete("El usuario " & UserList(UserIndex).Name & " editó el slot del inventario | Valor: " & Slot & ".")
+                    Call LogEdicionPaquete("El usuario " & UserList(UserIndex).name & " editó el slot del inventario | Valor: " & Slot & ".")
                 End If
         
                 '04-05-08 Ladder
@@ -2925,8 +2930,8 @@ Public Function verifyTimeStamp(ByVal ActualCount As Long, ByRef LastCount As Lo
 
     'Controlamos secuencia para ver que no haya paquetes duplicados.
     If ActualCount <= LastCount Then
-        Call SendData(SendTarget.ToGM, UserIndex, PrepareMessageConsoleMsg("Paquete grabado: " & PacketName & " | Cuenta: " & UserList(UserIndex).Cuenta & " | Ip: " & UserList(UserIndex).IP & " (Baneado automaticamente)", e_FontTypeNames.FONTTYPE_INFOBOLD))
-        Call LogEdicionPaquete("El usuario " & UserList(UserIndex).Name & " editó el paquete " & PacketName & ".")
+        Call SendData(SendTarget.ToGM, UserIndex, PrepareMessageConsoleMsg("Paquete grabado: " & PacketName & " | Cuenta: " & UserList(UserIndex).Cuenta & " | Ip: " & UserList(UserIndex).ConnectionDetails.IP & " (Baneado automaticamente)", e_FontTypeNames.FONTTYPE_INFOBOLD))
+        Call LogEdicionPaquete("El usuario " & UserList(UserIndex).name & " editó el paquete " & PacketName & ".")
         LastCount = ActualCount
         Call CloseSocket(UserIndex)
         Exit Function
@@ -2939,7 +2944,7 @@ Public Function verifyTimeStamp(ByVal ActualCount As Long, ByRef LastCount As Lo
             'Call WriteShowMessageBox(UserIndex, "Relajate andá a tomarte un té con Gulfas.")
             verifyTimeStamp = False
             'Call LogMacroServidor("El usuario " & UserList(UserIndex).name & " iteró el paquete " & PacketName & " " & MaxIterations & " veces.")
-            Call SendData(SendTarget.ToAdmins, UserIndex, PrepareMessageConsoleMsg("Control de macro---> El usuario " & UserList(UserIndex).Name & "| Revisar --> " & PacketName & " (Envíos: " & MaxIterations & ").", e_FontTypeNames.FONTTYPE_INFOBOLD))
+            Call SendData(SendTarget.ToAdmins, UserIndex, PrepareMessageConsoleMsg("Control de macro---> El usuario " & UserList(UserIndex).name & "| Revisar --> " & PacketName & " (Envíos: " & MaxIterations & ").", e_FontTypeNames.FONTTYPE_INFOBOLD))
             'Call WriteCerrarleCliente(UserIndex)
             'Call CloseSocket(UserIndex)
             LastCount = ActualCount
@@ -3221,7 +3226,7 @@ Private Sub HandleUseItem(ByVal UserIndex As Integer)
             DesdeInventario = Reader.ReadInt8
             
             If Not DesdeInventario Then
-                Call SendData(SendTarget.ToAdmins, UserIndex, PrepareMessageConsoleMsg("El usuario " & .Name & " está tomando pociones con click estando en hechizos... raaaaaro, poleeeeemico. BAN?", e_FontTypeNames.FONTTYPE_INFOBOLD))
+                Call SendData(SendTarget.ToAdmins, UserIndex, PrepareMessageConsoleMsg("El usuario " & .name & " está tomando pociones con click estando en hechizos... raaaaaro, poleeeeemico. BAN?", e_FontTypeNames.FONTTYPE_INFOBOLD))
             End If
             
             Dim PacketCounter As Long
@@ -3658,7 +3663,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                 
                     'If it's outside range log it and exit
 268                 If Abs(.Pos.X - X) > RANGO_VISION_X Or Abs(.Pos.Y - Y) > RANGO_VISION_Y Then
-270                     Call LogSecurity("Ataque fuera de rango de " & .name & "(" & .Pos.map & "/" & .Pos.x & "/" & .Pos.y & ") ip: " & .IP & " a la posicion (" & .Pos.map & "/" & x & "/" & y & ")")
+270                     Call LogSecurity("Ataque fuera de rango de " & .name & "(" & .pos.Map & "/" & .pos.x & "/" & .pos.y & ") ip: " & .ConnectionDetails.IP & " a la posicion (" & .pos.Map & "/" & x & "/" & y & ")")
                         Exit Sub
                     End If
                 
@@ -4256,7 +4261,7 @@ Private Sub HandleModifySkills(ByVal UserIndex As Integer)
 104             points(i) = Reader.ReadInt8()
             
 106             If points(i) < 0 Then
-108                 Call LogSecurity(.Name & " IP:" & .IP & " trató de hackear los skills.")
+108                 Call LogSecurity(.name & " IP:" & .ConnectionDetails.IP & " trató de hackear los skills.")
 110                 .Stats.SkillPts = 0
 112                 Call CloseSocket(UserIndex)
                     Exit Sub
@@ -4267,7 +4272,7 @@ Private Sub HandleModifySkills(ByVal UserIndex As Integer)
 116         Next i
         
 118         If Count > .Stats.SkillPts Then
-120             Call LogSecurity(.Name & " IP:" & .IP & " trató de hackear los skills.")
+120             Call LogSecurity(.name & " IP:" & .ConnectionDetails.IP & " trató de hackear los skills.")
 122             Call CloseSocket(UserIndex)
                 Exit Sub
 
@@ -7020,7 +7025,7 @@ Private Sub HandleOnlineRoyalArmy(ByVal UserIndex As Integer)
 
 104         For i = 1 To LastUser
 
-106             If UserList(i).ConnIDValida Then
+106             If UserList(i).ConnectionDetails.ConnIDValida Then
 108                 If UserList(i).Faccion.Status = e_Facciones.Armada Or UserList(i).Faccion.Status = e_Facciones.consejo Then
 110                     If UserList(i).flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero Or e_PlayerType.SemiDios) Or .flags.Privilegios And (e_PlayerType.Dios Or e_PlayerType.Admin) Then
 112                         list = list & UserList(i).Name & ", "
@@ -7073,7 +7078,7 @@ Private Sub HandleOnlineChaosLegion(ByVal UserIndex As Integer)
 
 104         For i = 1 To LastUser
 
-106             If UserList(i).ConnIDValida Then
+106             If UserList(i).ConnectionDetails.ConnIDValida Then
 108                 If UserList(i).Faccion.Status = e_Facciones.Caos Or UserList(i).Faccion.Status = e_Facciones.concilio Then
 110                     If UserList(i).flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero Or e_PlayerType.SemiDios) Or .flags.Privilegios And (e_PlayerType.Dios Or e_PlayerType.Admin) Then
 112                         list = list & UserList(i).Name & ", "
@@ -8541,7 +8546,7 @@ Private Sub HandleOfertaInicial(ByVal UserIndex As Integer)
 130             UserList(UserIndex).Counters.TiempoParaSubastar = 0
 132             Subasta.OfertaInicial = Oferta
 134             Subasta.MejorOferta = 0
-136             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(.Name & " está subastando: " & ObjData(Subasta.ObjSubastado).Name & " (Cantidad: " & Subasta.ObjSubastadoCantidad & " ) - con un precio inicial de " & PonerPuntos(Subasta.OfertaInicial) & " monedas. Escribe /OFERTAR (cantidad) para participar.", e_FontTypeNames.FONTTYPE_SUBASTA))
+136             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(.name & " está subastando: " & ObjData(Subasta.ObjSubastado).name & " (Cantidad: " & Subasta.ObjSubastadoCantidad & " ) - con un precio inicial de " & PonerPuntos(Subasta.OfertaInicial) & " monedas. Escribe /OFERTAR (cantidad) para participar.", e_FontTypeNames.FONTTYPE_SUBASTA))
 138             .flags.Subastando = False
 140             Subasta.HaySubastaActiva = True
 142             Subasta.Subastador = .Name
@@ -9600,6 +9605,7 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
                     
 210                     If IsValidNpcRef(UserList(UserIndex).flags.TargetNPC) Then
 212                         Call WriteChatOverHead(UserIndex, "¡Gracias " & UserList(UserIndex).Name & "! Ahora perteneces a la ciudad de " & DeDonde & ".", NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
+212                         Call WriteChatOverHead(UserIndex, "¡Gracias " & UserList(UserIndex).name & "! Ahora perteneces a la ciudad de " & DeDonde & ".", NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
                         Else
 214                         Call WriteConsoleMsg(UserIndex, "¡Gracias " & UserList(UserIndex).Name & "! Ahora perteneces a la ciudad de " & DeDonde & ".", e_FontTypeNames.FONTTYPE_INFOIAO)
 
@@ -11213,7 +11219,7 @@ Private Sub HandlePublicarPersonajeMAO(ByVal UserIndex As Integer)
             Call WriteUpdateGold(UserIndex)
         End If
         Call Execute("update user set price_in_mao = ?, is_locked_in_mao = 1 where id = ?;", Valor, .ID)
-        Call modNetwork.Kick(UserList(UserIndex).ConnID, "El personaje fue publicado.")
+        Call modNetwork.Kick(UserList(UserIndex).ConnectionDetails.ConnID, "El personaje fue publicado.")
     End With
         
     Exit Sub
