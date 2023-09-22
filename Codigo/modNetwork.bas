@@ -343,7 +343,7 @@ Public Function MapConnectionToUser(ByVal ConnectionId As Long) As Integer
         
 124     Call PendingConnections.Remove(ConnectionId)
 126     UserList(FreeUser).ConnectionDetails = Mapping(ConnectionId).ConnectionDetails
-128     Call SetUserRef(Mapping(FreeUser).UserRef, FreeUser)
+128     Call SetUserRef(Mapping(ConnectionId).UserRef, FreeUser)
 130     MapConnectionToUser = FreeUser
 132     If FreeUser > LastUser Then
 134         LastUser = FreeUser
