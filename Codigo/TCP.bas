@@ -629,8 +629,6 @@ Sub CloseSocket(ByVal UserIndex As Integer)
         End If
     
 110     With UserList(UserIndex)
-    
-            'Call SecurityIp.IpRestarConexion(api_inetaddr(.ip))
 
 112         If .ConnectionDetails.ConnIDValida Then Call CloseSocketSL(UserIndex)
     

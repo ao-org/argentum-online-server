@@ -43,7 +43,7 @@ Public Mapping() As t_ConnectionMapping
 Private FramePacketCount As Long
 Private NewFrameConnections As Long
 Public DisconnectTimeout As Long
-Const MaxActiveConnections = 20000
+Const MaxActiveConnections = 10000
 
 Private PendingConnections As New Dictionary
 
@@ -150,6 +150,7 @@ On Error GoTo close_not_logged_sockets_if_timeout_ErrHandler:
                 End If
             End With
 118     Next key
+        Exit Sub
 close_not_logged_sockets_if_timeout_ErrHandler:
     Call TraceError(Err.Number, Err.Description, "modNetwork.Kick", Erl)
 End Sub
