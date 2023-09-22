@@ -684,7 +684,7 @@ Sub Main()
     
         'Resetea las conexiones de los usuarios
 258     For LoopC = 1 To MaxUsers
-262         UserList(LoopC).ConnIDValida = False
+262         UserList(LoopC).ConnectionDetails.ConnIDValida = False
 268     Next LoopC
     
         '¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿?¿
@@ -909,10 +909,9 @@ Sub Restart()
 116     ReDim UserList(1 To MaxUsers) As t_User
 
 118     For LoopC = 1 To MaxUsers
-122         UserList(LoopC).ConnIDValida = False
-            Call ReleaseUser(LoopC)
+122         UserList(LoopC).ConnectionDetails.ConnIDValida = False
 128     Next LoopC
-
+        Call InitializeUserIndexHeap(MaxUsers)
 130     LastUser = 0
 132     NumUsers = 0
 
@@ -1981,7 +1980,7 @@ Sub ForzarActualizar()
 
 100     For i = 1 To LastUser
 
-102         If UserList(i).ConnIDValida Then
+102         If UserList(i).ConnectionDetails.ConnIDValida Then
         
 104             Call WriteForceUpdate(i)
     
@@ -2240,7 +2239,7 @@ Public Sub CerrarServidor()
     
         Dim LoopC As Long
 106     For LoopC = 1 To MaxUsers
-108         If UserList(LoopC).ConnIDValida Then
+108         If UserList(LoopC).ConnectionDetails.ConnIDValida Then
 110             Call CloseSocket(LoopC)
             End If
         Next

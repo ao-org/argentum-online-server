@@ -2397,13 +2397,13 @@ Public Sub HandleNickToIP(ByVal UserIndex As Integer)
             
 116             If IsValidUserRef(tUser) Then
 118                 If UserList(tUser.ArrayIndex).flags.Privilegios And priv Then
-120                     Call WriteConsoleMsg(userIndex, "El ip de " & username & " es " & UserList(tUser.ArrayIndex).IP, e_FontTypeNames.FONTTYPE_INFO)
+120                     Call WriteConsoleMsg(UserIndex, "El ip de " & username & " es " & UserList(tUser.ArrayIndex).ConnectionDetails.IP, e_FontTypeNames.FONTTYPE_INFO)
                         Dim IP    As String
                         Dim lista As String
                         Dim LoopC As Long
-122                     IP = UserList(tUser.ArrayIndex).IP
+122                     IP = UserList(tUser.ArrayIndex).ConnectionDetails.IP
 124                     For LoopC = 1 To LastUser
-126                         If UserList(LoopC).IP = IP Then
+126                         If UserList(LoopC).ConnectionDetails.IP = IP Then
 128                             If LenB(UserList(LoopC).name) <> 0 And UserList(LoopC).flags.UserLogged Then
 130                                 If UserList(LoopC).flags.Privilegios And priv Then
 132                                     lista = lista & UserList(LoopC).name & ", "
@@ -2454,7 +2454,7 @@ Public Sub HandleIPToNick(ByVal UserIndex As Integer)
             End If
 
 122         For LoopC = 1 To LastUser
-124             If UserList(LoopC).IP = IP Then
+124             If UserList(LoopC).ConnectionDetails.IP = IP Then
 126                 If LenB(UserList(LoopC).name) <> 0 And UserList(LoopC).flags.UserLogged Then
 128                     If UserList(LoopC).flags.Privilegios And priv Then
 130                         lista = lista & UserList(LoopC).name & ", "
@@ -3988,12 +3988,12 @@ Public Sub HandleQuestionGM(ByVal UserIndex As Integer)
             .Counters.CounterGmMessages = .Counters.CounterGmMessages + 1
             If .Counters.CounterGmMessages >= 20 Then
                 Dim bannedip As String
-                bannedip = UserList(UserIndex).IP
+                bannedip = UserList(UserIndex).ConnectionDetails.IP
                 'Find every player with that ip and ban him!
                 Dim i As Long
 136             For i = 1 To LastUser
-138                 If UserList(i).ConnIDValida Then
-140                     If UserList(i).IP = bannedip Then
+138                 If UserList(i).ConnectionDetails.ConnIDValida Then
+140                     If UserList(i).ConnectionDetails.IP = bannedip Then
 142                         Call WriteCerrarleCliente(i)
 144                         Call CloseSocket(i)
                         End If

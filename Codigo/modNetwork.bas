@@ -30,16 +30,26 @@ Option Explicit
 Private Const TIME_RECV_FREQUENCY As Long = 0  ' In milliseconds
 Private Const TIME_SEND_FREQUENCY As Long = 0 ' In milliseconds
 
+Public Type t_ConnectionMapping
+    UserRef As t_UserReference
+    ConnectionDetails As t_ConnectionInfo
+    TimeLastReset As Long
+    PacketCount As Long
+End Type
+
 Private Server  As Network.Server
 Private Time(2) As Single
-Private Mapping() As t_UserReference
+Public Mapping() As t_ConnectionMapping
 Private FramePacketCount As Long
 Private NewFrameConnections As Long
 Public DisconnectTimeout As Long
+Const MaxActiveConnections = 10000
+
+Private PendingConnections As New Dictionary
 
 Public Sub Listen(ByVal Limit As Long, ByVal Address As String, ByVal Service As String)
     Set Server = New Network.Server
-    ReDim Mapping(1 To MaxUsers) As t_UserReference
+    ReDim Mapping(1 To MaxActiveConnections) As t_ConnectionMapping
     
     Call Server.Attach(AddressOf OnServerConnect, AddressOf OnServerClose, AddressOf OnServerSend, AddressOf OnServerRecv)
     
@@ -76,11 +86,15 @@ Public Sub Poll()
 End Sub
 
 Public Sub Send(ByVal UserIndex As Long, ByRef Buffer As Network.Writer)
-    Call Server.Send(UserList(UserIndex).ConnID, False, Buffer)
+    Call Server.Send(UserList(UserIndex).ConnectionDetails.ConnID, False, Buffer)
+End Sub
+
+Public Sub SendToConnection(ByVal ConnectionId As Long, ByRef Buffer As Network.Writer)
+    Call Server.Send(ConnectionId, False, Buffer)
 End Sub
 
 Public Sub Flush(ByVal UserIndex As Long)
-    Call Server.Flush(UserList(UserIndex).ConnID)
+    Call Server.Flush(UserList(UserIndex).ConnectionDetails.ConnID)
 End Sub
 
 Public Sub Kick(ByVal Connection As Long, Optional ByVal message As String = vbNullString)
@@ -93,12 +107,7 @@ On Error GoTo Kick_ErrHandler:
         End If
     End If
     Dim UserRef As t_UserReference
-    UserRef = Mapping(Connection)
-    If IsValidUserRef(UserRef) Then
-        If Not UserList(UserRef.ArrayIndex).flags.UserLogged Then
-            Call ReleaseUser(UserRef.ArrayIndex)
-        End If
-    End If
+    UserRef = Mapping(Connection).UserRef
     If (message <> vbNullString) Then
         If UserRef.ArrayIndex > 0 Then
             Call Protocol_Writes.WriteErrorMsg(UserRef.ArrayIndex, Message)
@@ -122,89 +131,83 @@ End Function
 
 
 Public Sub close_not_logged_sockets_if_timeout()
-    Dim i As Integer
-    For i = 1 To LastUser
-         With UserList(i)
-                If Not .flags.UserLogged And .ConnID > 0 Then
-                    Dim Ticks As Long, Delta As Long
-                    Ticks = GetTickCount
-                    Delta = Ticks - .Counters.OnConnectTimestamp
-                    If Delta > PendingConnectionTimeout Then
-                        If Mapping(.ConnID).ArrayIndex = i Then
-                            Call Kick(.ConnID, "Connection timeout")
-                        Else
-                            .ConnID = 0
-                            .ConnIDValida = False
-                            Call TraceError(Err.Number, Err.Description, "trying to kick an invalid mapping", Erl)
-                        End If
+On Error GoTo close_not_logged_sockets_if_timeout_ErrHandler:
+        Dim i As Integer
+        Dim key As Variant
+        Dim Ticks As Long, Delta As Long
+100     Ticks = GetTickCount
+102     For Each key In PendingConnections.Keys
+104         With Mapping(key)
+                Dim ConnectionId As Long
+106             ConnectionId = key
+108             Delta = Ticks - Mapping(ConnectionId).ConnectionDetails.OnConnectTimestamp
+110             If Delta > PendingConnectionTimeout Then
+112                 If IsValidUserRef(.UserRef) Then
+114                     LogError ("trying to kick an assigned connection: " & ConnectionId & " assigned to: " & .UserRef.ArrayIndex)
+                    Else
+116                     Call KickConnection(ConnectionId)
                     End If
                 End If
             End With
-    Next i
+118     Next key
+        Exit Sub
+close_not_logged_sockets_if_timeout_ErrHandler:
+    Call TraceError(Err.Number, Err.Description, "modNetwork.Kick", Erl)
 End Sub
+
 Private Sub OnServerConnect(ByVal Connection As Long, ByVal Address As String)
-On Error GoTo OnServerConnect_Err:
-    NewFrameConnections = NewFrameConnections + 1
-    If IsFeatureEnabled("debug_connections") Then
-        Call AddLogToCircularBuffer("OnServerConnect connecting new user on id: " & Connection & " ip: " & Address)
-    End If
-    If Mapping(Connection).ArrayIndex > 0 Then
-        Call TraceError(Err.Number, Err.Description, "OnServerConnect Mapping(Connection) > 0, connection: " & Connection & " value: " & Mapping(Connection).ArrayIndex & ", is valid: " & IsValidUserRef(Mapping(Connection)), Erl)
-    End If
-    If Connection <= MaxUsers Then
-        Dim FreeUser As Long
-        FreeUser = NextOpenUser()
-        If IsFeatureEnabled("debug_id_assign") Then
-            Call LogError("Assign userId: " & FreeUser & " to connection: " & Connection)
+    On Error GoTo OnServerConnect_Err:
+100     NewFrameConnections = NewFrameConnections + 1
+102     If IsFeatureEnabled("debug_connections") Then
+104         Call AddLogToCircularBuffer("OnServerConnect connecting new user on id: " & Connection & " ip: " & Address)
         End If
-        If FreeUser < 0 Then
-            If IsFeatureEnabled("debug_connections") Then
-                Call LogError("Failed to find slot for new user, connection: " & Connection & " LastUser: " & LastUser)
+106     If Mapping(Connection).UserRef.ArrayIndex > 0 Then
+108         Call TraceError(Err.Number, Err.Description, "OnServerConnect Mapping(Connection).UserRef.ArrayIndex > 0, connection: " & Connection & " value: " & Mapping(Connection).UserRef.ArrayIndex & ", is valid: " & IsValidUserRef(Mapping(Connection).UserRef), Erl)
+        End If
+        
+110     If Connection <= MaxActiveConnections Then
+112         If IsValidUserRef(Mapping(Connection).UserRef) Then
+114             LogError ("opening a new connection: " & Connection & " to a connection mapped to a user " & Mapping(Connection).UserRef.ArrayIndex)
             End If
-            Call Kick(Connection, "El server se encuentra lleno en este momento. Disculpe las molestias ocasionadas.")
-            Exit Sub
+116         If PendingConnections.Exists(Connection) Then
+118             LogError ("opening a new connection id " & Connection & " with ip: " & Address & " but there already a pending connection with this id and ip: " & Mapping(Connection).ConnectionDetails.IP)
+120             PendingConnections.Remove (Connection)
+            End If
+122         With Mapping(Connection)
+124             .ConnectionDetails.ConnIDValida = True
+126             .ConnectionDetails.IP = Address
+128             .ConnectionDetails.ConnID = Connection
+130             .ConnectionDetails.OnConnectTimestamp = GetTickCount()
+132             .PacketCount = 0
+134             .TimeLastReset = 0
+            End With
+136         Call PendingConnections.Add(Connection, Connection)
+138         Call modSendData.SendToConnection(Connection, PrepareConnected())
+140         Debug.Print "Handle new connection"
+        Else
+142         Call Kick(Connection, "El server se encuentra lleno en este momento. Disculpe las molestias ocasionadas.")
         End If
-        If UserList(FreeUser).InUse Then
-           Call LogError("Trying to use an user slot marked as in use! slot: " & FreeUser)
-           FreeUser = NextOpenUser()
-        End If
-        UserList(FreeUser).ConnIDValida = True
-        UserList(FreeUser).IP = Address
-        UserList(FreeUser).ConnID = Connection
-        UserList(FreeUser).Counters.OnConnectTimestamp = GetTickCount()
-        
-        If FreeUser >= LastUser Then LastUser = FreeUser
-        Debug.Assert Not IsValidUserRef(Mapping(Connection))
-        If Not SetUserRef(Mapping(Connection), FreeUser) Then
-            Call TraceError(Err.Number, Err.Description, "OnServerConnect failed to map connection (" & Connection & ") to user: " & FreeUser, Erl)
-        End If
-        
-        Call WriteConnected(Mapping(Connection).ArrayIndex)
-    Else
-        Call Kick(Connection, "El server se encuentra lleno en este momento. Disculpe las molestias ocasionadas.")
-    End If
     
-    Exit Sub
+        Exit Sub
     
 OnServerConnect_Err:
-    Call Kick(Connection)
-    Call TraceError(Err.Number, Err.Description, "modNetwork.OnServerConnect", Erl)
+144     Call Kick(Connection)
+146     Call TraceError(Err.Number, Err.Description, "modNetwork.OnServerConnect", Erl)
 End Sub
 
 Private Sub OnServerClose(ByVal Connection As Long)
 On Error GoTo OnServerClose_Err:
     
     Dim UserRef As t_UserReference
-100    UserRef = Mapping(Connection)
+100    UserRef = Mapping(Connection).UserRef
 102    If IsFeatureEnabled("debug_connections") Then
 104        If UserRef.ArrayIndex > 0 Then
-106            Call AddLogToCircularBuffer("OnServerClose disconnected user index: " & UserRef.ArrayIndex & " With connection id: " & Connection & " with name: " & UserList(UserRef.ArrayIndex).name & " and ip" & UserList(UserRef.ArrayIndex).IP)
+106            Call AddLogToCircularBuffer("OnServerClose disconnected user index: " & UserRef.ArrayIndex & " With connection id: " & Connection & " with name: " & UserList(UserRef.ArrayIndex).name & " and ip" & UserList(UserRef.ArrayIndex).ConnectionDetails.IP)
 108        Else
 110            Call AddLogToCircularBuffer("OnServerClose disconnected user index: " & UserRef.ArrayIndex & " With connection id: " & Connection)
 112        End If
 114    End If
     
-116    Debug.Assert IsValidUserRef(UserRef)
 118    If IsValidUserRef(UserRef) Then
 120        If UserList(UserRef.ArrayIndex).flags.UserLogged Then
 122            Call CloseSocketSL(UserRef.ArrayIndex)
@@ -213,11 +216,11 @@ On Error GoTo OnServerClose_Err:
 128            Call CloseSocket(UserRef.ArrayIndex)
 130        End If
     
-132        UserList(UserRef.ArrayIndex).ConnIDValida = False
-134        UserList(UserRef.ArrayIndex).ConnID = 0
+132        UserList(UserRef.ArrayIndex).ConnectionDetails.ConnIDValida = False
+134        UserList(UserRef.ArrayIndex).ConnectionDetails.ConnID = 0
        End If
-138    Call ClearUserRef(Mapping(Connection))
-
+138    Call ClearConnection(Connection)
+        
 140    Exit Sub
     
 OnServerClose_Err:
@@ -239,9 +242,9 @@ Private Sub OnServerRecv(ByVal Connection As Long, ByVal Message As Network.Read
 On Error GoTo OnServerRecv_Err:
     
     Dim UserRef As t_UserReference
-    UserRef = Mapping(Connection)
+    UserRef = Mapping(Connection).UserRef
     FramePacketCount = FramePacketCount + 1
-    Call Protocol.HandleIncomingData(UserRef.ArrayIndex, Message)
+    Call Protocol.HandleIncomingData(UserRef.ArrayIndex, Connection, Message)
     
     Exit Sub
     
@@ -252,45 +255,108 @@ End Sub
 
 Private Sub ForcedClose(ByVal UserIndex As Integer, Connection As Long)
 On Error GoTo ForcedClose_Err:
-100     UserList(UserIndex).ConnIDValida = False
-102     UserList(UserIndex).ConnID = 0
+100     UserList(UserIndex).ConnectionDetails.ConnIDValida = False
+102     UserList(UserIndex).ConnectionDetails.ConnID = 0
 104     Call Server.Flush(Connection)
 106     Call Server.Kick(Connection, True)
-108     Call ClearUserRef(Mapping(Connection))
+108     Call ClearUserRef(Mapping(Connection).UserRef)
 110     Call IncreaseVersionId(userIndex)
-112     Call ReleaseUser(UserIndex)
         Exit Sub
 ForcedClose_Err:
     Call TraceError(Err.Number, Err.Description, "modNetwork.ForcedClose", Erl)
 End Sub
 
-Public Sub CheckDisconnectedUsers()
-On Error GoTo CheckDisconnectedUsers_Err:
-    If DisconnectTimeout <= 0 Then
-        Exit Sub
-    End If
-    Dim currentTime As Long
-    Dim iUserIndex As Integer
-    currentTime = GetTickCount()
-    For iUserIndex = 1 To MaxUsers
-        'Conexion activa? y es un usuario loggeado?
-102     If UserList(iUserIndex).ConnIDValida = 0 And UserList(iUserIndex).flags.UserLogged And currentTime - UserList(iUserIndex).Counters.TimeLastReset > DisconnectTimeout Then
-106         'mato los comercios seguros
-110         If UserList(iUserIndex).ComUsu.DestUsu.ArrayIndex > 0 Then
-112             If IsValidUserRef(UserList(iUserIndex).ComUsu.DestUsu) And UserList(UserList(iUserIndex).ComUsu.DestUsu.ArrayIndex).flags.UserLogged Then
-114                 If UserList(UserList(iUserIndex).ComUsu.DestUsu.ArrayIndex).ComUsu.DestUsu.ArrayIndex = iUserIndex Then
-116                     Call WriteConsoleMsg(UserList(iUserIndex).ComUsu.DestUsu.ArrayIndex, "Comercio cancelado por el otro usuario.", e_FontTypeNames.FONTTYPE_TALK)
-118                     Call FinComerciarUsu(UserList(iUserIndex).ComUsu.DestUsu.ArrayIndex)
-                    End If
-                End If
-120             Call FinComerciarUsu(iUserIndex)
-            End If
-122         Call Cerrar_Usuario(iUserIndex, True)
+Public Sub KickConnection(Connection As Long)
+On Error GoTo ForcedClose_Err:
+104     Call Server.Flush(Connection)
+106     Call Server.Kick(Connection, True)
+108     Call ClearConnection(Connection)
+110     If PendingConnections.Exists(Connection) Then
+112         Call PendingConnections.Remove(Connection)
         End If
-
-124 Next iUserIndex
-    Exit Sub
-CheckDisconnectedUsers_Err:
-    Call TraceError(Err.Number, Err.Description, "modNetwork.CheckDisconnectedUsers", Erl)
+        Exit Sub
+ForcedClose_Err:
+    Call TraceError(Err.Number, Err.Description, "modNetwork.KickConnection", Erl)
 End Sub
 
+Public Sub CheckDisconnectedUsers()
+    On Error GoTo CheckDisconnectedUsers_Err:
+100     If DisconnectTimeout <= 0 Then
+            Exit Sub
+        End If
+        Dim currentTime As Long
+        Dim iUserIndex As Integer
+102     currentTime = GetTickCount()
+104     For iUserIndex = 1 To MaxUsers
+106         With UserList(iUserIndex)
+                'Conexion activa? y es un usuario loggeado?
+108             If .ConnectionDetails.ConnIDValida = 0 And .flags.UserLogged Then
+110                 If .ConnectionDetails.ConnID > 0 Then
+112                     If currentTime - Mapping(.ConnectionDetails.ConnID).TimeLastReset > DisconnectTimeout Then
+                            'mato los comercios seguros
+114                         If .ComUsu.DestUsu.ArrayIndex > 0 Then
+116                             If IsValidUserRef(.ComUsu.DestUsu) And UserList(.ComUsu.DestUsu.ArrayIndex).flags.UserLogged Then
+118                                 If UserList(.ComUsu.DestUsu.ArrayIndex).ComUsu.DestUsu.ArrayIndex = iUserIndex Then
+120                                     Call WriteConsoleMsg(.ComUsu.DestUsu.ArrayIndex, "Comercio cancelado por el otro usuario.", e_FontTypeNames.FONTTYPE_TALK)
+122                                     Call FinComerciarUsu(.ComUsu.DestUsu.ArrayIndex)
+                                    End If
+                                End If
+124                             Call FinComerciarUsu(iUserIndex)
+                            End If
+126                         Call Cerrar_Usuario(iUserIndex, True)
+                        End If
+                    End If
+                End If
+           End With
+128     Next iUserIndex
+    
+        Exit Sub
+CheckDisconnectedUsers_Err:
+130     Call TraceError(Err.Number, Err.Description, "modNetwork.CheckDisconnectedUsers", Erl)
+End Sub
+
+Public Function MapConnectionToUser(ByVal ConnectionId As Long) As Integer
+     On Error GoTo CheckDisconnectedUsers_Err:
+        Dim FreeUser As Long
+100     If Not PendingConnections.Exists(ConnectionId) Then
+102         Call LogError("Connection " & ConnectionId & " is not waiting for assign")
+            Exit Function
+        End If
+        
+104     FreeUser = NextOpenUser()
+106     If IsFeatureEnabled("debug_id_assign") Then
+108         Call LogError("Assign userId: " & FreeUser & " to connection: " & Connection)
+        End If
+        
+110     If FreeUser < 0 Then
+112         If IsFeatureEnabled("debug_connections") Then
+114             Call LogError("Failed to find slot for new user, connection: " & Connection & " LastUser: " & LastUser)
+            End If
+116         Call Kick(ConnectionId, "El server se encuentra lleno en este momento. Disculpe las molestias ocasionadas.")
+            Exit Function
+        End If
+        
+118     If UserList(FreeUser).InUse Then
+120        Call LogError("Trying to use an user slot marked as in use! slot: " & FreeUser)
+122        FreeUser = NextOpenUser()
+        End If
+        
+124     Call PendingConnections.Remove(ConnectionId)
+126     UserList(FreeUser).ConnectionDetails = Mapping(ConnectionId).ConnectionDetails
+128     Call SetUserRef(Mapping(FreeUser).UserRef, FreeUser)
+130     MapConnectionToUser = FreeUser
+132     If FreeUser > LastUser Then
+134         LastUser = FreeUser
+        End If
+        Exit Function
+CheckDisconnectedUsers_Err:
+136     Call TraceError(Err.Number, Err.Description, "modNetwork.MapConnectionToUser", Erl)
+End Function
+
+Public Sub ClearConnection(ByVal Connection)
+    With Mapping(Connection)
+        .TimeLastReset = 0
+        .PacketCount = 0
+        Call ClearUserRef(.UserRef)
+    End With
+End Sub

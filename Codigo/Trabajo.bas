@@ -3167,7 +3167,7 @@ On Error GoTo ThrowNetToTarget_Err:
 
         'If it's outside range log it and exit
 108     If Abs(.pos.X - .Trabajo.Target_X) > RANGO_VISION_X Or Abs(.pos.y - .Trabajo.Target_Y) > RANGO_VISION_Y Then
-110         Call LogSecurity("Ataque fuera de rango de " & .name & "(" & .pos.map & "/" & .pos.X & "/" & .pos.y & ") ip: " & .IP & " a la posicion (" & .pos.map & "/" & .Trabajo.Target_X & "/" & .Trabajo.Target_Y & ")")
+110         Call LogSecurity("Ataque fuera de rango de " & .name & "(" & .pos.Map & "/" & .pos.x & "/" & .pos.y & ") ip: " & .ConnectionDetails.IP & " a la posicion (" & .pos.Map & "/" & .Trabajo.Target_X & "/" & .Trabajo.Target_Y & ")")
             Exit Sub
         End If
         

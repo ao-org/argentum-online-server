@@ -783,7 +783,7 @@ Function IP_Index(ByVal inIP As String) As Integer
   
 104     UserIndex = 1
 
-106     Do Until UserList(UserIndex).IP = inIP
+106     Do Until UserList(UserIndex).ConnectionDetails.IP = inIP
     
 108         UserIndex = UserIndex + 1
     
