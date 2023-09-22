@@ -1675,7 +1675,7 @@ Private Sub HandleLoginNewChar(ByVal ConnectionId As Long)
 118     Hogar = Reader.ReadInt8()
 
         If Len(encrypted_session_token) <> 88 Then
-            Call WriteShowMessageBox(UserIndex, "Cliente inválido, por favor realice una actualización.")
+            Call modSendData.SendToConnection(ConnectionId, PrepareShowMessageBox("Cliente inválido, por favor realice una actualización."))
             Exit Sub
         End If
 
@@ -1694,7 +1694,7 @@ Private Sub HandleLoginNewChar(ByVal ConnectionId As Long)
         Dim RS As ADODB.Recordset
         Set RS = Query("select * from tokens where decrypted_token = '" & decrypted_session_token & "'")
                 
-       If RS Is Nothing Or RS.RecordCount = 0 Then
+        If RS Is Nothing Or RS.RecordCount = 0 Then
             Call modSendData.SendToConnection(ConnectionId, PrepareShowMessageBox("Sesión inválida, conectese nuevamente."))
             Call KickConnection(ConnectionId)
             Exit Sub
@@ -1719,8 +1719,7 @@ Private Sub HandleLoginNewChar(ByVal ConnectionId As Long)
         UserList(UserIndex).encrypted_session_token = encrypted_session_token
         UserList(UserIndex).decrypted_session_token = decrypted_session_token
         UserList(UserIndex).public_key = mid$(decrypted_session_token, 1, 16)
-        If RS!encrypted_token = encrypted_session_token Then
-        
+
         UserName = AO20CryptoSysWrapper.DECRYPT(cnvHexStrFromString(UserList(UserIndex).public_key), encrypted_username)
     
 126     If PuedeCrearPersonajes = 0 Then
