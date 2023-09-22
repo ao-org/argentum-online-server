@@ -679,7 +679,7 @@ Sub CloseSocketSL(ByVal UserIndex As Integer)
         On Error GoTo CloseSocketSL_Err
 
 100     If UserList(UserIndex).ConnectionDetails.ConnIDValida Then
-102         Call modNetwork.Kick(UserIndex)
+102         Call modNetwork.Kick(UserList(UserIndex).ConnectionDetails.ConnID)
 
 106         UserList(UserIndex).ConnectionDetails.ConnIDValida = False
         End If

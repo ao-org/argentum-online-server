@@ -325,7 +325,7 @@ Public Function MapConnectionToUser(ByVal ConnectionId As Long) As Integer
         
 104     FreeUser = NextOpenUser()
 106     If IsFeatureEnabled("debug_id_assign") Then
-108         Call LogError("Assign userId: " & FreeUser & " to connection: " & Connection)
+108         Call LogError("Assign userId: " & FreeUser & " to connection: " & ConnectionID)
         End If
         
 110     If FreeUser < 0 Then
