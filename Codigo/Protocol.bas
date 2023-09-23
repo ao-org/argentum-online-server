@@ -3101,6 +3101,7 @@ Private Sub HandleWork(ByVal UserIndex As Integer)
 112                 Call WriteWorkRequestTarget(UserIndex, Skill)
 
 114             Case Ocultarse
+                    Packet_ID = PacketNames.Hide
                     If Not verifyTimeStamp(PacketCounter, .PacketCounters(Packet_ID), .PacketTimers(Packet_ID), .MacroIterations(Packet_ID), userindex, "Ocultar", PacketTimerThreshold(Packet_ID), MacroIterations(Packet_ID)) Then Exit Sub
 116                 If .flags.Montado = 1 Then
 
@@ -10647,6 +10648,7 @@ Private Sub HandleLogMacroClickHechizo(ByVal UserIndex As Integer)
                     Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(mensaje, e_FontTypeNames.FONTTYPE_INFO))
                 Case tMacro.borrarCartel
                     mensaje = "AntiCheat> El usuario " & UserList(UserIndex).Name & " está utilizando macro de CARTELEO."
+                    mensaje = "AntiCheat> El usuario " & UserList(UserIndex).name & " está utilizando macro de CARTELEO."
                     Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(mensaje, e_FontTypeNames.FONTTYPE_INFO))
             End Select
             
