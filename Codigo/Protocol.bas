@@ -10648,7 +10648,6 @@ Private Sub HandleLogMacroClickHechizo(ByVal UserIndex As Integer)
                     Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(mensaje, e_FontTypeNames.FONTTYPE_INFO))
                 Case tMacro.borrarCartel
                     mensaje = "AntiCheat> El usuario " & UserList(UserIndex).Name & " está utilizando macro de CARTELEO."
-                    mensaje = "AntiCheat> El usuario " & UserList(UserIndex).name & " está utilizando macro de CARTELEO."
                     Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(mensaje, e_FontTypeNames.FONTTYPE_INFO))
             End Select
             
