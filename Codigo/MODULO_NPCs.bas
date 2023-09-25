@@ -2049,10 +2049,22 @@ On Error GoTo UserCanAttackNpc_Err
         End If
      End If
      
-     If IsPet And UserList(NpcList(NpcIndex).MaestroUser.ArrayIndex).Grupo.id = UserList(UserIndex).Grupo.id Then
-        UserCanAttackNpc = eSameGroup
-        Exit Function
+     If IsPet Then
+        If UserList(NpcList(NpcIndex).MaestroUser.ArrayIndex).Grupo.id = UserList(UserIndex).Grupo.id And UserList(UserIndex).Grupo.id > 0 Then
+            UserCanAttackNpc = eSameGroup
+            Exit Function
+        End If
+        
+        If esArmada(UserIndex) Then
+            If UserList(NpcList(NpcIndex).MaestroUser.ArrayIndex).Faccion.Status = Ciudadano Or _
+               UserList(NpcList(NpcIndex).MaestroUser.ArrayIndex).Faccion.Status = Armada Then
+                UserCanAttackNpc = eSameFaction
+                Exit Function
+            End If
+        End If
      End If
+     
+     
 156  If Status(UserIndex) = Ciudadano Then
 158     If IsPet And NpcList(NpcIndex).MaestroUser.ArrayIndex = UserIndex Then
 162         UserCanAttackNpc = eOwnPet
