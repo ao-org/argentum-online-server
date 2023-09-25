@@ -1774,6 +1774,15 @@ Public Function PuedeAtacarNPC(ByVal AttackerIndex As Integer, ByVal NpcIndex As
             End If
         End If
         
+        If IsPet Then
+            If esArmada(attackerIndex) Then
+                If NpcList(NpcIndex).flags.Faccion = Armada Or NpcList(NpcIndex).flags.Faccion = Ciudadano Then
+                    Call WriteConsoleMsg(attackerIndex, "Como armada no podes atacar mascotas de un otro armada o un ciudadano", e_FontTypeNames.FONTTYPE_INFO)
+                    PuedeAtacarNPC = False
+                    Exit Function
+                End If
+            End If
+        End If
         
         ' El seguro es SOLO para ciudadanos. La armada debe desenlistarse antes de querer atacar y se checkea arriba.
         ' Los criminales o Caos, ya estan mas alla del seguro.
