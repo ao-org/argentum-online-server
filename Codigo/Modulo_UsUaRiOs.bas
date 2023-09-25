@@ -3518,7 +3518,7 @@ Public Function Inmovilize(ByVal SourceIndex As Integer, ByVal TargetIndex As In
         Call WriteLocaleMsg(SourceIndex, MsgCCInunity, e_FontTypeNames.FONTTYPE_FIGHT)
         Exit Function
     End If
-144 If Not CanMove(UserList(TargetIndex).flags, UserList(TargetIndex).Counters) Then
+144 If CanMove(UserList(TargetIndex).flags, UserList(TargetIndex).Counters) Then
 146     UserList(TargetIndex).Counters.Inmovilizado = Time
 148     UserList(TargetIndex).flags.Inmovilizado = 1
 150     Call SendData(SendTarget.ToPCAliveArea, TargetIndex, PrepareMessageCreateFX(UserList(TargetIndex).Char.charindex, Fx, 0, UserList(TargetIndex).pos.x, UserList(TargetIndex).pos.y))
