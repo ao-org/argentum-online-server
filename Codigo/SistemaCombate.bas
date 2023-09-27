@@ -1112,7 +1112,7 @@ Private Function UsuarioImpacto(ByVal AtacanteIndex As Integer, ByVal VictimaInd
 162             Call SendData(SendTarget.ToPCAliveArea, VictimaIndex, PrepareMessageCreateFX(UserList(VictimaIndex).Char.charindex, 88, 0, UserList(VictimaIndex).Pos.X, UserList(VictimaIndex).Pos.y))
 164             Call SubirSkill(VictimaIndex, e_Skill.Defensa)
             Else
-166             Call WriteConsoleMsg(VictimaIndex, "¡" & UserList(AtacanteIndex).Name & " te atacó y falló! ", e_FontTypeNames.FONTTYPE_FIGHT)
+166             Call WriteConsoleMsg(VictimaIndex, "¡" & UserList(AtacanteIndex).name & " te atacó y falló! ", e_FontTypeNames.FONTTYPE_FIGHT)
                 Call WriteConsoleMsg(AtacanteIndex, "¡Has fallado el golpe!", e_FontTypeNames.FONTTYPE_FIGHT)
             End If
         End If
@@ -1256,7 +1256,7 @@ Private Sub UserDamageToUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex 
                     End If
                     ' Y a la víctima
 174                 If .ChatCombate = 1 Then
-176                     Call WriteLocaleMsg(VictimaIndex, 385, e_FontTypeNames.FONTTYPE_FIGHT, UserList(AtacanteIndex).Name & "¬" & DamageStr)
+176                     Call WriteLocaleMsg(VictimaIndex, 385, e_FontTypeNames.FONTTYPE_FIGHT, UserList(AtacanteIndex).name & "¬" & DamageStr)
                     End If
 178                 Call SendData(SendTarget.toPCAliveArea, AtacanteIndex, PrepareMessagePlayWave(SND_IMPACTO_CRITICO, UserList(AtacanteIndex).Pos.X, UserList(AtacanteIndex).Pos.y))
                     ' Color naranja
@@ -1273,10 +1273,10 @@ Private Sub UserDamageToUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex 
                 
                     ' Mostramos en consola el golpe al atacante solo si tiene activado el chat de combate
 190                 If UserList(AtacanteIndex).ChatCombate = 1 Then
-192                     Call WriteLocaleMsg(AtacanteIndex, "210", e_FontTypeNames.FONTTYPE_INFOBOLD, .Name & "¬" & DamageStr)
+192                     Call WriteLocaleMsg(AtacanteIndex, "210", e_FontTypeNames.FONTTYPE_INFOBOLD, .name & "¬" & DamageStr)
                     End If
                     ' Mostramos en consola el golpe a la victima independientemente de la configuración de chat
-196                 Call WriteLocaleMsg(VictimaIndex, "211", e_FontTypeNames.FONTTYPE_INFOBOLD, UserList(AtacanteIndex).Name & "¬" & DamageStr)
+196                 Call WriteLocaleMsg(VictimaIndex, "211", e_FontTypeNames.FONTTYPE_INFOBOLD, UserList(AtacanteIndex).name & "¬" & DamageStr)
                     
 198                 Call SendData(SendTarget.toPCAliveArea, AtacanteIndex, PrepareMessagePlayWave(SND_IMPACTO_APU, UserList(AtacanteIndex).Pos.X, UserList(AtacanteIndex).Pos.y))
 
@@ -1836,41 +1836,41 @@ Public Function PuedeAtacarNPC(ByVal AttackerIndex As Integer, ByVal NpcIndex As
             
             
             If NpcList(NpcIndex).flags.AttackedBy <> "" Then
-                Dim AttackedBy As t_UserReference
-                Dim AttackedByIndex As Integer
+                Dim CurrentOwner As t_UserReference
+                Dim CurrentOwnerIndex As Integer
+                Dim AttackedNpcIndex As Integer
+                
                 Dim Lider As t_User
                 Dim a As Integer
-                
-
-                    AttackedBy = NameIndex(NpcList(NpcIndex).flags.AttackedBy)
-                    If IsValidUserRef(AttackedBy) Then
-                        AttackedByIndex = AttackedBy.ArrayIndex
-                        If AttackedByIndex <> attackerIndex Then
-                            If UserList(AttackedByIndex).flags.AttackedNpc = NpcIndex And UserList(AttackedByIndex).flags.Muerto = 0 And Status(AttackedByIndex) = Ciudadano And (UserList(attackerIndex).GuildIndex = 0 Or UserList(attackerIndex).GuildIndex <> UserList(AttackedByIndex).GuildIndex) Then
-                                
-                                If UserList(attackerIndex).Grupo.EnGrupo Then
-                                    Lider = UserList(UserList(attackerIndex).Grupo.Lider.ArrayIndex)
-                                    For a = 1 To Lider.Grupo.CantidadMiembros
-                                        If Lider.Grupo.Miembros(a).ArrayIndex = AttackedByIndex Then
-                                            PuedeAtacarNPC = True
-                                            Exit Function
-                                        End If
-                                    Next a
-                                End If
-                                
-                                If UserList(attackerIndex).flags.Seguro Then
-                                    Call WriteConsoleMsg(attackerIndex, "Debes quitarte el seguro para atacar una criatura que esta siendo atacada por otro ciudadano.", e_FontTypeNames.FONTTYPE_WARNING)
-                                    PuedeAtacarNPC = False
-                                    Exit Function
-                                Else
-                                    Call WriteConsoleMsg(attackerIndex, "¡Atacaste una criatura de otro usuario! Te has convertido en un Criminal.", e_FontTypeNames.FONTTYPE_WARNING)
-                                    Call VolverCriminal(attackerIndex)
-                                    PuedeAtacarNPC = True
-                                    Exit Function
-                                End If
+                CurrentOwner = NameIndex(NpcList(NpcIndex).flags.AttackedBy)
+                If IsValidUserRef(CurrentOwner) Then
+                    CurrentOwnerIndex = CurrentOwner.ArrayIndex
+                    If CurrentOwnerIndex <> attackerIndex And IsValidNpcRef(UserList(CurrentOwnerIndex).flags.NPCAtacado) Then
+                        If UserList(CurrentOwnerIndex).flags.NPCAtacado.ArrayIndex = NpcIndex And UserList(CurrentOwnerIndex).flags.Muerto = 0 And Status(CurrentOwnerIndex) = Ciudadano And (UserList(attackerIndex).GuildIndex = 0 Or UserList(attackerIndex).GuildIndex <> UserList(CurrentOwnerIndex).GuildIndex) Then
+                            
+                            If UserList(attackerIndex).Grupo.EnGrupo Then
+                                Lider = UserList(UserList(attackerIndex).Grupo.Lider.ArrayIndex)
+                                For a = 1 To Lider.Grupo.CantidadMiembros
+                                    If Lider.Grupo.Miembros(a).ArrayIndex = CurrentOwnerIndex Then
+                                        PuedeAtacarNPC = True
+                                        Exit Function
+                                    End If
+                                Next a
+                            End If
+                            
+                            If UserList(attackerIndex).flags.Seguro Then
+                                Call WriteConsoleMsg(attackerIndex, "Debes quitarte el seguro para atacar una criatura que esta siendo atacada por otro ciudadano.", e_FontTypeNames.FONTTYPE_WARNING)
+                                PuedeAtacarNPC = False
+                                Exit Function
+                            Else
+                                Call WriteConsoleMsg(attackerIndex, "¡Atacaste una criatura de otro usuario! Te has convertido en un Criminal.", e_FontTypeNames.FONTTYPE_WARNING)
+                                Call VolverCriminal(attackerIndex)
+                                PuedeAtacarNPC = True
+                                Exit Function
                             End If
                         End If
                     End If
+                End If
             End If
         End If
         
