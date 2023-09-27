@@ -1968,8 +1968,7 @@ Public Type t_UserFlags
     BanMotivo As String
 
     TargetUser As t_UserReference ' Usuario señalado
-    
-    AttackedNpc As Integer
+
     
     TargetObj As Integer ' Obj señalado
     TargetObjMap As Integer

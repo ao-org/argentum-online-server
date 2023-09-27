@@ -1207,7 +1207,6 @@ Sub ResetUserFlags(ByVal UserIndex As Integer)
 126         .TargetObjMap = 0
 128         .TargetObjX = 0
 130         .TargetObjY = 0
-            .AttackedNpc = 0
 132         Call SetUserRef(.targetUser, 0)
 134         .TipoPocion = 0
 136         .TomoPocion = False
