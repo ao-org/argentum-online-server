@@ -2147,7 +2147,7 @@ On Error GoTo UserCanAttackNpc_Err
                             Exit Function
                         Else
                             Call VolverCriminal(UserIndex)
-                            PuedeAtacarNPC = eCanAttack
+                            UserCanAttackNpc = eCanAttack
                             Exit Function
                         End If
                     End If
