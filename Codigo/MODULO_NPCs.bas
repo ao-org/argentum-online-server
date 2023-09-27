@@ -2124,6 +2124,37 @@ On Error GoTo UserCanAttackNpc_Err
                      Exit Function
              End Select
          End If
+         
+         
+         If NpcList(NpcIndex).flags.AttackedBy <> "" Then
+            Dim CurrentOwner As t_UserReference
+            Dim CurrentOwnerIndex As Integer
+            Dim AttackedNpcIndex As Integer
+            
+            CurrentOwner = NameIndex(NpcList(NpcIndex).flags.AttackedBy)
+            If IsValidUserRef(CurrentOwner) Then
+                CurrentOwnerIndex = CurrentOwner.ArrayIndex
+                If CurrentOwnerIndex <> UserIndex And IsValidNpcRef(UserList(CurrentOwnerIndex).flags.NPCAtacado) Then
+                    If UserList(CurrentOwnerIndex).flags.NPCAtacado.ArrayIndex = NpcIndex And _
+                       UserList(CurrentOwnerIndex).flags.Muerto = 0 And _
+                       Status(CurrentOwnerIndex) = Ciudadano And _
+                       (UserList(UserIndex).GuildIndex = 0 Or UserList(UserIndex).GuildIndex <> UserList(CurrentOwnerIndex).GuildIndex) And _
+                       (UserList(UserIndex).Grupo.EnGrupo = False Or UserList(UserIndex).Grupo.id <> UserList(CurrentOwnerIndex).Grupo.id) Then
+                        
+                        
+                        If UserList(UserIndex).flags.Seguro Then
+                            UserCanAttackNpc = eRemoveSafe
+                            Exit Function
+                        Else
+                            Call VolverCriminal(UserIndex)
+                            PuedeAtacarNPC = eCanAttack
+                            Exit Function
+                        End If
+                    End If
+                End If
+            End If
+        End If
+         
      End If
 220  UserCanAttackNpc = eCanAttack
      Exit Function
