@@ -1846,17 +1846,10 @@ Public Function PuedeAtacarNPC(ByVal AttackerIndex As Integer, ByVal NpcIndex As
                 If IsValidUserRef(CurrentOwner) Then
                     CurrentOwnerIndex = CurrentOwner.ArrayIndex
                     If CurrentOwnerIndex <> attackerIndex And IsValidNpcRef(UserList(CurrentOwnerIndex).flags.NPCAtacado) Then
-                        If UserList(CurrentOwnerIndex).flags.NPCAtacado.ArrayIndex = NpcIndex And UserList(CurrentOwnerIndex).flags.Muerto = 0 And Status(CurrentOwnerIndex) = Ciudadano And (UserList(attackerIndex).GuildIndex = 0 Or UserList(attackerIndex).GuildIndex <> UserList(CurrentOwnerIndex).GuildIndex) Then
+                        If UserList(CurrentOwnerIndex).flags.NPCAtacado.ArrayIndex = NpcIndex And _
+                           (UserList(attackerIndex).GuildIndex = 0 Or UserList(attackerIndex).GuildIndex <> UserList(CurrentOwnerIndex).GuildIndex) And _
+                           (UserList(attackerIndex).Grupo.EnGrupo = False Or UserList(attackerIndex).Grupo.id <> UserList(CurrentOwnerIndex).Grupo.id) Then
                             
-                            If UserList(attackerIndex).Grupo.EnGrupo Then
-                                Lider = UserList(UserList(attackerIndex).Grupo.Lider.ArrayIndex)
-                                For a = 1 To Lider.Grupo.CantidadMiembros
-                                    If Lider.Grupo.Miembros(a).ArrayIndex = CurrentOwnerIndex Then
-                                        PuedeAtacarNPC = True
-                                        Exit Function
-                                    End If
-                                Next a
-                            End If
                             
                             If UserList(attackerIndex).flags.Seguro Then
                                 Call WriteConsoleMsg(attackerIndex, "Debes quitarte el seguro para atacar una criatura que esta siendo atacada por otro ciudadano.", e_FontTypeNames.FONTTYPE_WARNING)
