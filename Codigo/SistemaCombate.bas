@@ -1840,13 +1840,13 @@ Public Function PuedeAtacarNPC(ByVal AttackerIndex As Integer, ByVal NpcIndex As
                 Dim CurrentOwnerIndex As Integer
                 Dim AttackedNpcIndex As Integer
                 
-                Dim Lider As t_User
-                Dim a As Integer
                 CurrentOwner = NameIndex(NpcList(NpcIndex).flags.AttackedBy)
                 If IsValidUserRef(CurrentOwner) Then
                     CurrentOwnerIndex = CurrentOwner.ArrayIndex
                     If CurrentOwnerIndex <> attackerIndex And IsValidNpcRef(UserList(CurrentOwnerIndex).flags.NPCAtacado) Then
                         If UserList(CurrentOwnerIndex).flags.NPCAtacado.ArrayIndex = NpcIndex And _
+                           UserList(CurrentOwnerIndex).flags.Muerto = 0 And _
+                           Status(CurrentOwnerIndex) = Ciudadano And _
                            (UserList(attackerIndex).GuildIndex = 0 Or UserList(attackerIndex).GuildIndex <> UserList(CurrentOwnerIndex).GuildIndex) And _
                            (UserList(attackerIndex).Grupo.EnGrupo = False Or UserList(attackerIndex).Grupo.id <> UserList(CurrentOwnerIndex).Grupo.id) Then
                             
