@@ -1833,6 +1833,45 @@ Public Function PuedeAtacarNPC(ByVal AttackerIndex As Integer, ByVal NpcIndex As
                         Exit Function
                 End Select
             End If
+            
+            
+            If NpcList(NpcIndex).flags.AttackedBy <> "" Then
+                Dim AttackedBy As t_UserReference
+                Dim AttackedByIndex As Integer
+                Dim Lider As t_User
+                Dim a As Integer
+                
+
+                    AttackedBy = NameIndex(NpcList(NpcIndex).flags.AttackedBy)
+                    If IsValidUserRef(AttackedBy) Then
+                        AttackedByIndex = AttackedBy.ArrayIndex
+                        If AttackedByIndex <> attackerIndex Then
+                            If UserList(AttackedByIndex).flags.AttackedNpc = NpcIndex And UserList(AttackedByIndex).flags.Muerto = 0 And Status(AttackedByIndex) = Ciudadano And (UserList(attackerIndex).GuildIndex = 0 Or UserList(attackerIndex).GuildIndex <> UserList(AttackedByIndex).GuildIndex) Then
+                                
+                                If UserList(attackerIndex).Grupo.EnGrupo Then
+                                    Lider = UserList(UserList(attackerIndex).Grupo.Lider.ArrayIndex)
+                                    For a = 1 To Lider.Grupo.CantidadMiembros
+                                        If Lider.Grupo.Miembros(a).ArrayIndex = AttackedByIndex Then
+                                            PuedeAtacarNPC = True
+                                            Exit Function
+                                        End If
+                                    Next a
+                                End If
+                                
+                                If UserList(attackerIndex).flags.Seguro Then
+                                    Call WriteConsoleMsg(attackerIndex, "Debes quitarte el seguro para atacar una criatura que esta siendo atacada por otro ciudadano.", e_FontTypeNames.FONTTYPE_WARNING)
+                                    PuedeAtacarNPC = False
+                                    Exit Function
+                                Else
+                                    Call WriteConsoleMsg(attackerIndex, "¡Atacaste una criatura de otro usuario! Te has convertido en un Criminal.", e_FontTypeNames.FONTTYPE_WARNING)
+                                    Call VolverCriminal(attackerIndex)
+                                    PuedeAtacarNPC = True
+                                    Exit Function
+                                End If
+                            End If
+                        End If
+                    End If
+            End If
         End If
         
        

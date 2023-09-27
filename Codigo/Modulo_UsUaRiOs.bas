@@ -1907,6 +1907,7 @@ Sub NPCAtacado(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
 106         Call SetUserRef(NpcList(npcIndex).TargetUser, UserIndex)
 108         NpcList(NpcIndex).Hostile = 1
 110         NpcList(NpcIndex).flags.AttackedBy = UserList(UserIndex).Name
+            UserList(UserIndex).flags.AttackedNpc = NpcIndex
         End If
         
         'Guarda el NPC que estas atacando ahora.
