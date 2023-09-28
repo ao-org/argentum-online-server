@@ -2459,6 +2459,7 @@ Public Enum e_BehaviorFlags
     eConsideredByMapAi = 16
     eDisplayCastMessage = 32
     eDontHitVisiblePlayers = 64
+    eDebugAi = 128
 End Enum
 
 Public Type t_NPCFlags
@@ -2562,7 +2563,7 @@ Public Enum e_TipoAI
     BGSupportBehavior = 13
     BGRangedBehavior = 14
     BGBossBehavior = 15
-    
+    BGBossReturnToOrigin = 16
     ' Animado
     Caminata = 20
     

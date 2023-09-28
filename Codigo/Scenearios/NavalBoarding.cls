@@ -46,6 +46,7 @@ Implements IInventoryInterface
 
 Const TopMapNumber = 0
 Const CargoMapNumber = 1
+Const CannonSpell = 256
 
 Private Type t_Waypoint
     PosX As Byte
@@ -83,6 +84,14 @@ Private Type t_Cargo
     ItemList() As t_CargoElement
 End Type
 
+Private Type t_CaptinState
+    LastShotTime As Long
+    NpcRef As t_NpcReference
+    TimeSinceLastFire As Long
+    NextFireTime As Long
+    TargetLocations(3) As t_WorldPos
+End Type
+
 Dim MapNumbers(1) As Integer
 Dim TileBlocks() As t_TilePos
 
@@ -97,6 +106,10 @@ Dim Team1Waypoints() As t_Waypoint
 Dim Team2Waypoints() As t_Waypoint
 Dim PlayerRespawn As New Dictionary
 Dim ForbbidenItemId() As Integer
+Dim CaptainState(1 To 2) As t_CaptinState
+Dim MinFireTime As Long
+Dim MaxFireTime As Long
+Dim FireStartTime As Long
 Dim Team1SpawnX As Byte
 Dim Team2SpawnX As Byte
 Dim NpcSpawnList() As t_NpcSpawnInfo
@@ -128,20 +141,23 @@ Private Sub Class_Initialize()
 126     PlayerMinRespawnTime = PlayerMinRespawnTime * 1000
 128     WpCount = val(ScenarioIni.GetValue("INIT", "WaypointCount"))
 130     CaptianNpcId = val(ScenarioIni.GetValue("CaptainNpc", "NpcId"))
-132     Call LoadTeamWeapoints(1, Team1Waypoints, WpCount, ScenarioIni)
-134     Call LoadTeamWeapoints(2, Team2Waypoints, WpCount, ScenarioIni)
-136     Call LoadForbidenItems(ScenarioIni)
-138     Call LoadTileBlock(TileBlocks, ScenarioIni)
-140     UpdateIndex = AddUpdateScenario(Me)
-142     Call CustomScenarios.SetCustomScenario(MapNumbers(0), Me)
-144     Call CustomScenarios.SetCustomScenario(MapNumbers(1), Me)
-146     Call ConfigMapLobby
-148     Call LoadNpcSpawnInfo(NpcSpawnList, ScenarioIni)
-150     Call LoadTeamCargo(TeamCargo(1), 1, ScenarioIni)
-152     Call LoadTeamCargo(TeamCargo(2), 2, ScenarioIni)
+132     MinFireTime = val(ScenarioIni.GetValue("INIT", "MinFireTime"))
+134     MaxFireTime = val(ScenarioIni.GetValue("INIT", "MaxFireTime"))
+136     FireStartTime = val(ScenarioIni.GetValue("INIT", "FireStartTime"))
+138     Call LoadTeamWeapoints(1, Team1Waypoints, WpCount, ScenarioIni)
+140     Call LoadTeamWeapoints(2, Team2Waypoints, WpCount, ScenarioIni)
+142     Call LoadForbidenItems(ScenarioIni)
+144     Call LoadTileBlock(TileBlocks, ScenarioIni)
+146     UpdateIndex = AddUpdateScenario(Me)
+148     Call CustomScenarios.SetCustomScenario(MapNumbers(0), Me)
+150     Call CustomScenarios.SetCustomScenario(MapNumbers(1), Me)
+152     Call ConfigMapLobby
+154     Call LoadNpcSpawnInfo(NpcSpawnList, ScenarioIni)
+156     Call LoadTeamCargo(TeamCargo(1), 1, ScenarioIni)
+158     Call LoadTeamCargo(TeamCargo(2), 2, ScenarioIni)
         Exit Sub
 NavalBoarding_Initialize_Err:
-   Call TraceError(Err.Number, Err.Description, "DeathMatch.Initialize ", Erl)
+    Call TraceError(Err.Number, Err.Description, "DeathMatch.Initialize ", Erl)
 End Sub
 
 Private Sub LoadTileBlock(ByRef Tiles() As t_TilePos, ScenearioIni As clsIniManager)
@@ -375,6 +391,7 @@ Public Sub IBaseScenario_Update()
         End If
         ElapsedTime = ElapsedTime + frametime
         ElapsedResapwnTime = ElapsedResapwnTime + frametime
+        Call UpdateCaptains(frametime)
         If ElapsedResapwnTime > RespawnInterval Then
             Call RespawnPlayers
             ElapsedResapwnTime = 0
@@ -411,7 +428,6 @@ Public Sub IBaseScenario_Update()
 End Sub
 
 Public Sub IBaseScenario_OnUserDisconnected(ByVal UserIndex As Integer)
-    'Call Board.DisconnectUser(UserIndex, UserList(UserIndex).ID)
     With UserList(UserIndex)
         If UserLoot.Exists(UserIndex) Then
             Dim i, ItemTeam As Integer
@@ -428,7 +444,6 @@ Public Sub IBaseScenario_OnUserDisconnected(ByVal UserIndex As Integer)
 End Sub
 
 Public Sub IBaseScenario_OnUserReconnect(ByVal UserIndex As Integer)
-    'Call Board.RestoreDisconnectUser(UserIndex, UserList(UserIndex).ID)
 End Sub
 
 Private Sub StartGame()
@@ -564,6 +579,11 @@ Private Sub SpawnNpc(ByRef NpcInfo As t_NpcSpawnInfo, ByRef Waypoints() As t_Way
     SpawnPos.y = Waypoints(NpcInfo.Waypoint).PosY
     NpcId = CrearNPC(NpcInfo.NpcId, MapNumbers(0), SpawnPos)
     If NpcId > 0 Then
+        If CaptianNpcId = NpcInfo.NpcId Then
+            Call SetNpcRef(CaptainState(team).NpcRef, NpcId)
+            Call IncreaseSingle(NpcList(NpcId).Modifiers.MovementSpeed, 0.2)
+            Call UpdateNpcSpeed(NpcId)
+        End If
         NpcList(NpcId).flags.Respawn = 1
         NpcList(NpcId).flags.team = team
     Else
@@ -619,10 +639,18 @@ Public Sub IBaseScenario_GetNextWaypointForNpc(ByVal NpcIndex As Integer, ByRef 
         Dim TargetWp As Byte
         If .flags.team = 1 Then
             TargetWp = GetClosestWp(NpcList(NpcIndex), Team1Waypoints)
+            If TargetWp <= 0 Then
+                PosX = NpcList(NpcIndex).pos.x
+                PosY = NpcList(NpcIndex).pos.y
+            End If
             PosX = Team1Waypoints(TargetWp).PosX
             PosY = Team1Waypoints(TargetWp).PosY
         ElseIf .flags.team = 2 Then
             TargetWp = GetClosestWp(NpcList(NpcIndex), Team2Waypoints)
+            If TargetWp <= 0 Then
+                PosX = NpcList(NpcIndex).pos.x
+                PosY = NpcList(NpcIndex).pos.y
+            End If
             PosX = Team2Waypoints(TargetWp).PosX
             PosY = Team2Waypoints(TargetWp).PosY
         End If
@@ -777,9 +805,9 @@ Private Function GetCargoItemTeam(ByVal ItemIndex As Integer) As Integer
     End If
 End Function
 
-Private Function GetCargoOposingTeam(ByVal TeamIndex As Integer) As Integer
-    If TeamIndex = 1 Then GetCargoOposingTeam = 2
-    If TeamIndex = 2 Then GetCargoOposingTeam = 1
+Private Function GetOposingTeam(ByVal TeamIndex As Integer) As Integer
+    If TeamIndex = 1 Then GetOposingTeam = 2
+    If TeamIndex = 2 Then GetOposingTeam = 1
 End Function
 
 Private Function TryPickupItemAt(ByVal UserIndex As Integer) As Boolean
@@ -871,3 +899,71 @@ Private Sub CheckWinner()
         Call SendData(SendTarget.toMap, MapNumbers(CargoMapNumber), PrepareMessageLocaleMsg(MsgNavalConquestEvenMatch, "", e_FontTypeNames.FONTTYPE_GUILD))
     End If
 End Sub
+
+Private Sub UpdateCaptains(ByVal DeltaTime As Long)
+    If ElapsedTime <= FireStartTime Then Exit Sub
+    Call HandleCaptain(DeltaTime, 1)
+    Call HandleCaptain(DeltaTime, 2)
+End Sub
+
+Private Sub HandleCaptain(ByVal DeltaTime As Long, ByVal CaptainIndex As Integer)
+    With CaptainState(CaptainIndex)
+        If Not IsValidNpcRef(CaptainState(CaptainIndex).NpcRef) Then Exit Sub
+        .TimeSinceLastFire = .TimeSinceLastFire + DeltaTime
+        If .TimeSinceLastFire > .NextFireTime Then
+            .TimeSinceLastFire = 0
+            .NextFireTime = RandomNumber(MinFireTime, MaxFireTime)
+            If Not CaptainFire(CaptainIndex) Then
+                .NextFireTime = .NextFireTime / 2
+            Else
+                Call SendData(SendTarget.toMap, NpcList(.NpcRef.ArrayIndex).pos.Map, PrepareMessageLocaleMsg(MsgCaptainFire, CaptainIndex, e_FontTypeNames.FONTTYPE_WARNING))
+                Call SendData(SendTarget.toMap, NpcList(.NpcRef.ArrayIndex).pos.Map, PrepareLocaleChatOverHead(MsgFire, "", NpcList(.NpcRef.ArrayIndex).Char.charindex, vbRed, , NpcList(.NpcRef.ArrayIndex).pos.x, NpcList(.NpcRef.ArrayIndex).pos.y))
+            End If
+        End If
+    End With
+End Sub
+
+Private Function CaptainFire(ByVal CaptainIndex As Integer) As Boolean
+    With CaptainState(CaptainIndex)
+        Dim TargetTeam As Integer
+        TargetTeam = GetOposingTeam(CaptainIndex)
+        Dim PossibleTargets(10) As Integer
+        Dim PossibleTargetCount As Integer
+        Dim UserIndex As Integer
+        Dim i As Integer
+        For i = 1 To ModAreas.ConnGroups(NpcList(.NpcRef.ArrayIndex).pos.Map).CountEntrys
+            UserIndex = ModAreas.ConnGroups(NpcList(.NpcRef.ArrayIndex).pos.Map).UserEntrys(i)
+            If UserList(UserIndex).flags.CurrentTeam = TargetTeam Then
+                If UserList(UserIndex).Stats.MinHp > 0 Then
+                    PossibleTargets(PossibleTargetCount) = UserIndex
+                    PossibleTargetCount = PossibleTargetCount + 1
+                End If
+            End If
+        Next i
+        If PossibleTargetCount = 0 Then
+            Exit Function
+        End If
+        Dim CannonCount As Integer
+        Dim TargetIndex As Integer
+        CannonCount = Min(3, PossibleTargetCount)
+        Dim Particula As Integer
+        Dim Tiempo    As Long
+        Dim CannonProyectile As Integer
+        Dim TargetPos As t_WorldPos
+        CannonProyectile = 4
+        Particula = Hechizos(CannonSpell).Particle
+        Tiempo = Hechizos(CannonSpell).TimeParticula
+        For i = 0 To CannonCount - 1
+            TargetIndex = RandomNumber(0, PossibleTargetCount - 1)
+            UserIndex = PossibleTargets(TargetIndex)
+            TargetPos = UserList(UserIndex).pos
+            Call SendData(SendTarget.toMap, NpcList(.NpcRef.ArrayIndex).pos.Map, PrepareMessageParticleFX(NpcList(.NpcRef.ArrayIndex).Char.charindex, Particula, Tiempo, False, , NpcList(.NpcRef.ArrayIndex).pos.x, NpcList(.NpcRef.ArrayIndex).pos.y))
+            Call SendData(SendTarget.toMap, NpcList(.NpcRef.ArrayIndex).pos.Map, PrepareCreateProjectile(NpcList(.NpcRef.ArrayIndex).pos.x, NpcList(.NpcRef.ArrayIndex).pos.y, TargetPos.x, TargetPos.y, CannonProyectile))
+            If Hechizos(CannonSpell).wav <> 0 Then Call SendData(SendTarget.ToNPCAliveArea, .NpcRef.ArrayIndex, PrepareMessagePlayWave(Hechizos(CannonSpell).wav, NpcList(.NpcRef.ArrayIndex).pos.x, NpcList(.NpcRef.ArrayIndex).pos.y))
+            Call CreateDelayedBlast(.NpcRef.ArrayIndex, eNpc, TargetPos.Map, TargetPos.x, TargetPos.y, Hechizos(CannonSpell).EotId, -1)
+            PossibleTargets(TargetIndex) = PossibleTargets(PossibleTargetCount - 1)
+            PossibleTargetCount = PossibleTargetCount - 1
+        Next i
+    End With
+    CaptainFire = True
+End Function

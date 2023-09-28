@@ -794,9 +794,9 @@ Sub MakeNPCChar(ByVal toMap As Boolean, sndIndex As Integer, NpcIndex As Integer
                 End If
                 
 156             If UserList(sndIndex).Stats.UserSkills(e_Skill.Supervivencia) >= 90 Then
-158                 Call WriteCharacterCreate(sndIndex, body, .Char.head, .Char.Heading, .Char.charindex, x, y, .Char.WeaponAnim, .Char.ShieldAnim, 0, 0, .Char.CascoAnim, .Char.CartAnim, GG, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, .Char.speeding, IIf(.MaestroUser.ArrayIndex = sndIndex, 2, 1), 0, 0, 0, 0, .Stats.MinHp, .Stats.MaxHp, 0, 0, Simbolo, .flags.NPCIdle, , , , , .Char.Ataque1)
+158                 Call WriteCharacterCreate(sndIndex, body, .Char.head, .Char.Heading, .Char.charindex, x, y, .Char.WeaponAnim, .Char.ShieldAnim, 0, 0, .Char.CascoAnim, .Char.CartAnim, GG, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, .Char.speeding, IIf(.MaestroUser.ArrayIndex = sndIndex, 2, 1), 0, 0, 0, 0, .Stats.MinHp, .Stats.MaxHp, 0, 0, Simbolo, .flags.NPCIdle, , , .flags.team, , .Char.Ataque1)
                 Else
-160                 Call WriteCharacterCreate(sndIndex, body, .Char.head, .Char.Heading, .Char.charindex, x, y, .Char.WeaponAnim, .Char.ShieldAnim, 0, 0, .Char.CascoAnim, .Char.CartAnim, GG, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, .Char.speeding, IIf(.MaestroUser.ArrayIndex = sndIndex, 2, 1), 0, 0, 0, 0, 0, 0, 0, 0, Simbolo, .flags.NPCIdle, , , , , .Char.Ataque1)
+160                 Call WriteCharacterCreate(sndIndex, body, .Char.head, .Char.Heading, .Char.charindex, x, y, .Char.WeaponAnim, .Char.ShieldAnim, 0, 0, .Char.CascoAnim, .Char.CartAnim, GG, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, .Char.speeding, IIf(.MaestroUser.ArrayIndex = sndIndex, 2, 1), 0, 0, 0, 0, 0, 0, 0, 0, Simbolo, .flags.NPCIdle, , , , .flags.team, .Char.Ataque1)
                 End If
                 
                 If IsSet(.flags.StatusMask, e_StatusMask.eDontBlockTile) Then
@@ -830,9 +830,9 @@ Sub ChangeNPCChar(ByVal NpcIndex As Integer, ByVal Body As Integer, ByVal Head A
     
 108             .Char.Head = Head
 110             .Char.Heading = Heading
-                
-112             Call SendData(SendTarget.ToNPCAliveArea, npcIndex, PrepareMessageCharacterChange(body, head, Heading, .Char.charindex, 0, 0, 0, 0, 0, 0, .flags.NPCIdle, False))
-
+                If .Char.charindex > 0 Then
+112                 Call SendData(SendTarget.ToNPCAliveArea, NpcIndex, PrepareMessageCharacterChange(body, head, Heading, .Char.charindex, 0, 0, 0, 0, 0, 0, .flags.NPCIdle, False))
+                End If
             End If
         
         End With
@@ -2166,7 +2166,10 @@ Public Function CanAttackUser(ByVal NpcIndex As Integer, ByVal UserIndex As Inte
             CanAttackUser = eNotEnougthPrivileges
             Exit Function
         End If
-        
+        If UserList(UserIndex).Stats.MinHp = 0 Then
+            CanAttackUser = eDeathTarget
+            Exit Function
+        End If
         If EsGM(UserIndex) Then
             If UserList(UserIndex).flags.EnConsulta Then
                 CanAttackUser = eNotEnougthPrivileges

@@ -733,7 +733,7 @@ End Function
 
 Private Sub NpcDamageNpc(ByVal Atacante As Integer, ByVal Victima As Integer)
     With NpcList(Atacante)
-        Call NpcDamageToNpc(Atacante, Victima, RandomNumber(.Stats.MinHIT, .Stats.MaxHit) + NPCs.GetLinearDamageBonus(Atacante) - NPCs.GetDefenseBonus(Victima))
+        Call NpcDamageToNpc(Atacante, Victima, RandomNumber(.Stats.MinHIT, .Stats.MaxHit) + NPCs.GetLinearDamageBonus(Atacante) - NPCs.GetDefenseBonus(Victima) - NpcList(Victima).Stats.def)
     End With
 End Sub
 

@@ -91,6 +91,8 @@ Public Sub NpcAI(ByVal NpcIndex As Integer)
                     Call AI_BGRangedBehavior(NpcIndex)
                 Case e_TipoAI.BGBossBehavior
                     Call AI_BGBossBehavior(NpcIndex)
+                Case e_TipoAI.BGBossReturnToOrigin
+                    Call AI_BGBossReturnToOrigin(NpcIndex)
                     
 124             Case e_TipoAI.Caminata
 126                 Call HacerCaminata(NpcIndex)
@@ -433,7 +435,11 @@ Private Sub AI_CaminarConRumbo(ByVal NpcIndex As Integer, ByRef rumbo As t_World
 102         Call AnimacionIdle(NpcIndex, True)
             Exit Sub
         End If
-    
+        If NpcList(NpcIndex).pos.x = rumbo.x And NpcList(NpcIndex).pos.y = rumbo.y Then
+            NpcList(NpcIndex).pathFindingInfo.PathLength = 0
+            Call AnimacionIdle(NpcIndex, True)
+            Exit Sub
+        End If
 104     With NpcList(NpcIndex).pathFindingInfo
             ' Si no tiene un camino calculado o si el destino cambio
 106         If .PathLength = 0 Or .destination.X <> rumbo.X Or .destination.Y <> rumbo.Y Then
@@ -696,7 +702,7 @@ On Error GoTo ErrorHandler
                 AI_AtacarUsuarioObjetivo (NpcIndex)
             Else
                 Call SetNpcRef(.TargetNPC, CurrentTarget.ArrayIndex)
-                AI_NpcAtacaNpc (NpcIndex)
+                Call AI_NpcAtacaNpc(NpcIndex, False)
             End If
         Else
             Call AI_CaminarConRumbo(NpcIndex, GoToNextWp(NpcIndex))
@@ -780,15 +786,10 @@ On Error GoTo ErrorHandler
                 Dim Direction As t_Vector
                 Dim TargetMapPos As t_WorldPos
                 Direction = GetDirection(TargetPos, .pos)
-                Direction.x = Direction.x * -1
-                Direction.y = Direction.y * -1
                 TargetMapPos = PreferedTileForDirection(Direction, .pos)
                 Call MoveNPCChar(NpcIndex, GetHeadingFromWorldPos(.pos, TargetMapPos))
-            Else
-                If IsValidRef(CurrentTarget) And InRangoVisionNPC(NpcIndex, TargetPos.x, TargetPos.y) Then
-                Else
-                    Call AI_CaminarConRumbo(NpcIndex, GoToNextWp(NpcIndex))
-                End If
+            ElseIf Not IsValidRef(CurrentTarget) Then
+                Call AI_CaminarConRumbo(NpcIndex, GoToNextWp(NpcIndex))
             End If
         End If
         
@@ -801,6 +802,51 @@ End Sub
 Public Sub AI_BGBossBehavior(ByVal NpcIndex As Integer)
 On Error GoTo ErrorHandler
     With NpcList(NpcIndex)
+        Dim CurrentTarget As t_AnyReference
+        Dim NearestTarget As Integer
+        Dim NearestTargetDistance As Single
+        NearestTarget = SelectNearestUser(NpcIndex, NearestTargetDistance)
+        If NearestTarget > 0 Then Call SetRef(CurrentTarget, NearestTarget, eUser)
+        NearestTarget = SelectNearestNpc(NpcIndex, NearestTargetDistance)
+        If NearestTarget > 0 Then Call SetRef(CurrentTarget, NearestTarget, eNpc)
+        Dim TargetPos As t_WorldPos
+        TargetPos = ModReferenceUtils.GetPosition(CurrentTarget)
+        Dim DistanceFromOrigin As Integer
+        DistanceFromOrigin = distance(.Orig.x, .Orig.y, .pos.x, .pos.y)
+        If DistanceFromOrigin > 10 Then
+            .Movement = BGBossReturnToOrigin
+            Call IncreaseSingle(NpcList(NpcIndex).Modifiers.MovementSpeed, 0.5)
+            Call UpdateNpcSpeed(NpcIndex)
+            Exit Sub
+        End If
+        If IsValidRef(CurrentTarget) And InRangoVisionNPC(NpcIndex, TargetPos.x, TargetPos.y) Then
+            If CurrentTarget.RefType = eUser Then
+                Call SetUserRef(.TargetUser, CurrentTarget.ArrayIndex)
+                AI_AtacarUsuarioObjetivo (NpcIndex)
+            Else
+                Call SetNpcRef(.TargetNPC, CurrentTarget.ArrayIndex)
+                Call AI_NpcAtacaNpc(NpcIndex, False)
+            End If
+        Else
+            Call AI_CaminarConRumbo(NpcIndex, .Orig)
+        End If
+    End With
+    Exit Sub
+ErrorHandler:
+    Call TraceError(Err.Number, Err.Description, "AIv2.AI_BGBossBehavior", Erl)
+End Sub
+
+Public Sub AI_BGBossReturnToOrigin(ByVal NpcIndex As Integer)
+On Error GoTo ErrorHandler
+    With NpcList(NpcIndex)
+        Call AI_CaminarConRumbo(NpcIndex, .Orig)
+        
+        If .pathFindingInfo.PathLength = 0 Then
+           .pos = .Orig
+           .Movement = BGBossBehavior
+           Call IncreaseSingle(NpcList(NpcIndex).Modifiers.MovementSpeed, -0.5)
+           Call UpdateNpcSpeed(NpcIndex)
+        End If
     End With
     Exit Sub
 ErrorHandler:
@@ -851,7 +897,7 @@ BuscarNpcEnArea:
 End Function
 
 
-Public Sub AI_NpcAtacaNpc(ByVal NpcIndex As Integer)
+Public Sub AI_NpcAtacaNpc(ByVal NpcIndex As Integer, Optional ByVal ChangeTargetMovement As Boolean = True)
         On Error GoTo ErrorHandler
         Dim targetPos As t_WorldPos
     
@@ -862,7 +908,7 @@ Public Sub AI_NpcAtacaNpc(ByVal NpcIndex As Integer)
 106             If InRangoVisionNPC(NpcIndex, targetPos.X, targetPos.Y) Then
                    ' Me fijo si el NPC esta al lado del Objetivo
 108                If Distancia(.Pos, targetPos) = 1 And NPCs.CanAttack(.Contadores, .flags) Then
-110                    Call SistemaCombate.NpcAtacaNpc(NpcIndex, .TargetNPC.ArrayIndex)
+110                    Call SistemaCombate.NpcAtacaNpc(NpcIndex, .TargetNPC.ArrayIndex, ChangeTargetMovement)
                    End If
                
 112                If IsValidNpcRef(.TargetNPC) Then

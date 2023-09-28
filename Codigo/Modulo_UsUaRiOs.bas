@@ -1001,9 +1001,9 @@ Sub ChangeUserChar(ByVal UserIndex As Integer, ByVal body As Integer, ByVal head
 112         .CascoAnim = Casco
 114         .CartAnim = Cart
         End With
-    
-116     Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCharacterChange(body, head, Heading, UserList(UserIndex).Char.charindex, Arma, Escudo, Cart, UserList(UserIndex).Char.FX, UserList(UserIndex).Char.loops, Casco, False, UserList(UserIndex).flags.Navegando))
-
+        If UserList(UserIndex).Char.charindex > 0 Then
+116         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCharacterChange(body, head, Heading, UserList(UserIndex).Char.charindex, Arma, Escudo, Cart, UserList(UserIndex).Char.FX, UserList(UserIndex).Char.loops, Casco, False, UserList(UserIndex).flags.Navegando))
+        End If
         
         Exit Sub
 
