@@ -2074,7 +2074,8 @@ Sub AllMascotasAtacanUser(ByVal victim As Integer, ByVal Maestro As Integer)
 110                         NpcList(mascotaIndex).flags.AttackedBy = UserList(victim).Name
 112                         Call SetUserRef(NpcList(mascotaIndex).TargetUser, victim)
 114                         Call SetMovement(mascotaIndex, e_TipoAI.NpcDefensa)
-116                         NpcList(mascotaIndex).Hostile = 1
+116                         NpcList(mascotaIndex).Hostile = 0
+                            NpcList(mascotaIndex).flags.OldHostil = 0
                         End If
                     Else
                         Call ClearNpcRef(.MascotasIndex(iCount))
