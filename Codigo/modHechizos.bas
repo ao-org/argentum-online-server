@@ -804,22 +804,6 @@ Sub HechizoInvocacion(ByVal UserIndex As Integer, ByRef b As Boolean)
     
 114         If Hechizos(h).Invoca = 1 Then
         
-                'No deja invocar mas de 1 fatuo
-118             If Hechizos(h).NumNpc = FUEGOFATUO And .NroMascotas >= 1 Then
-120                 Call WriteConsoleMsg(UserIndex, "Solo puedes invocar una sola criatura de este tipo.", e_FontTypeNames.FONTTYPE_INFO)
-                    Exit Sub
-                End If
-                
-122             If Hechizos(h).NumNpc = ELEMENTAL_VIENTO And .NroMascotas >= 1 Then
-124                 Call WriteConsoleMsg(UserIndex, "Solo puedes invocar una sola criatura de este tipo.", e_FontTypeNames.FONTTYPE_INFO)
-                    Exit Sub
-                End If
-                
-126             If Hechizos(h).NumNpc = ELEMENTAL_FUEGO And .NroMascotas >= 1 Then
-128                 Call WriteConsoleMsg(UserIndex, "Solo puedes invocar una sola criatura de este tipo", e_FontTypeNames.FONTTYPE_INFO)
-                    Exit Sub
-                End If
-                
                 ' No puede invocar en este mapa
                 If MapInfo(.Pos.Map).NoMascotas Then
                     Call WriteConsoleMsg(UserIndex, "Un gran poder te impide invocar criaturas en este mapa.", e_FontTypeNames.FONTTYPE_INFO)
@@ -829,13 +813,21 @@ Sub HechizoInvocacion(ByVal UserIndex As Integer, ByRef b As Boolean)
                 Dim MinTiempo As Integer
                 Dim i As Integer
                 
-                For i = 1 To .NroMascotas - MAXMASCOTAS + Hechizos(h).cant
+                For i = 1 To Hechizos(h).cant
                     Index = -1
                     MinTiempo = IntervaloInvocacion
                     For j = 1 To MAXMASCOTAS
                         If .MascotasIndex(j).ArrayIndex > 0 Then
                             If IsValidNpcRef(.MascotasIndex(j)) Then
                                 If NpcList(.MascotasIndex(j).ArrayIndex).flags.NPCActive Then
+                                    
+                                    'Si se quiere invocar un elemental de fuego, fatuo o viento, se reemplaza uno ya existente, asi solo se permite 1.
+                                    If (Hechizos(h).NumNpc = ELEMENTAL_FUEGO Or Hechizos(h).NumNpc = ELEMENTAL_VIENTO Or Hechizos(h).NumNpc = FUEGOFATUO) And _
+                                       (NpcList(.MascotasIndex(j).ArrayIndex).Numero = ELEMENTAL_FUEGO Or NpcList(.MascotasIndex(j).ArrayIndex).Numero = ELEMENTAL_VIENTO Or NpcList(.MascotasIndex(j).ArrayIndex).Numero = FUEGOFATUO) Then
+                                        Index = j
+                                        Exit For
+                                    End If
+                                
                                     If NpcList(.MascotasIndex(j).ArrayIndex).Contadores.TiempoExistencia < MinTiempo Then
                                         Index = j
                                         MinTiempo = NpcList(.MascotasIndex(j).ArrayIndex).Contadores.TiempoExistencia
@@ -845,7 +837,13 @@ Sub HechizoInvocacion(ByVal UserIndex As Integer, ByRef b As Boolean)
                                     Index = -1
                                     Exit For
                                 End If
+                            Else
+                                Index = -1
+                                MinTiempo = 0
                             End If
+                        Else
+                            Index = -1
+                            MinTiempo = 0
                         End If
                     Next j
                     If Index > -1 Then
