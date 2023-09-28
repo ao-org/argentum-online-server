@@ -3055,20 +3055,9 @@ HandleDoubleClick_Err:
         
 End Sub
 
-''
-' Handles the "Work" message.
-'
-' @param    UserIndex The index of the user sending the message.
-
 Private Sub HandleWork(ByVal UserIndex As Integer)
         
         On Error GoTo HandleWork_Err
-
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 13/01/2010
-        '13/01/2010: ZaMa - El pirata se puede ocultar en barca
-        '***************************************************
 
 100     With UserList(UserIndex)
 
@@ -3078,15 +3067,8 @@ Private Sub HandleWork(ByVal UserIndex As Integer)
             
             Dim PacketCounter As Long
             PacketCounter = Reader.ReadInt32
-                        
-            Dim Packet_ID As Long
-            Packet_ID = PacketNames.Work
-            
-            
-            
-            
+
 104         If UserList(UserIndex).flags.Muerto = 1 Then
-                'Call WriteConsoleMsg(UserIndex, "¡¡Estás muerto!!.", e_FontTypeNames.FONTTYPE_INFO)
 106             Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
 
@@ -3101,7 +3083,8 @@ Private Sub HandleWork(ByVal UserIndex As Integer)
 112                 Call WriteWorkRequestTarget(UserIndex, Skill)
 
 114             Case Ocultarse
-                    If Not verifyTimeStamp(PacketCounter, .PacketCounters(Packet_ID), .PacketTimers(Packet_ID), .MacroIterations(Packet_ID), userindex, "Ocultar", PacketTimerThreshold(Packet_ID), MacroIterations(Packet_ID)) Then Exit Sub
+                    If Not verifyTimeStamp(PacketCounter, .PacketCounters(PacketNames.Hide), .PacketTimers(PacketNames.Hide), .MacroIterations(PacketNames.Hide), _
+                                            UserIndex, "Ocultar", PacketTimerThreshold(PacketNames.Hide), MacroIterations(PacketNames.Hide)) Then Exit Sub
 116                 If .flags.Montado = 1 Then
 
                         '[CDT 17-02-2004]

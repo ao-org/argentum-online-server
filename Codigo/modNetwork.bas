@@ -218,6 +218,8 @@ On Error GoTo OnServerClose_Err:
     
 132        UserList(UserRef.ArrayIndex).ConnectionDetails.ConnIDValida = False
 134        UserList(UserRef.ArrayIndex).ConnectionDetails.ConnID = 0
+       ElseIf PendingConnections.Exists(Connection) Then
+136        PendingConnections.Remove (Connection)
        End If
 138    Call ClearConnection(Connection)
         
