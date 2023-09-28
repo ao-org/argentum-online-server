@@ -3067,8 +3067,6 @@ Private Sub HandleWork(ByVal UserIndex As Integer)
             
             Dim PacketCounter As Long
             PacketCounter = Reader.ReadInt32
-                        
-            Dim Packet_ID As Long
 
 104         If UserList(UserIndex).flags.Muerto = 1 Then
 106             Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
@@ -3085,8 +3083,8 @@ Private Sub HandleWork(ByVal UserIndex As Integer)
 112                 Call WriteWorkRequestTarget(UserIndex, Skill)
 
 114             Case Ocultarse
-                    Packet_ID = PacketNames.Hide
-                    If Not verifyTimeStamp(PacketCounter, .PacketCounters(Packet_ID), .PacketTimers(Packet_ID), .MacroIterations(Packet_ID), userindex, "Ocultar", PacketTimerThreshold(Packet_ID), MacroIterations(Packet_ID)) Then Exit Sub
+                    If Not verifyTimeStamp(PacketCounter, .PacketCounters(PacketNames.Hide), .PacketTimers(PacketNames.Hide), .MacroIterations(PacketNames.Hide), _
+                                            UserIndex, "Ocultar", PacketTimerThreshold(PacketNames.Hide), MacroIterations(PacketNames.Hide)) Then Exit Sub
 116                 If .flags.Montado = 1 Then
 
                         '[CDT 17-02-2004]
