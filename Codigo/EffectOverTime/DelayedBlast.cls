@@ -184,13 +184,8 @@ Private Sub DoBlast()
     Dim Area As Integer
     Area = EffectOverTime(DotInfo.EotId).Area
     Debug.Assert Area > 0
-    If DotInfo.TargetRef.RefType = eUser Then
-        If EffectOverTime(DotInfo.EotId).OnHitFx > 0 Then Call SendData(SendTarget.ToPCAliveArea, DotInfo.TargetRef.ArrayIndex, PrepareMessageFxPiso(EffectOverTime(DotInfo.EotId).OnHitFx, TargetX, TargetY))
-        If EffectOverTime(DotInfo.EotId).OnHitWav > 0 Then Call modSendData.SendToAreaByPos(TargetMap, TargetX, TargetY, PrepareMessagePlayWave(EffectOverTime(DotInfo.EotId).OnHitWav, TargetX, TargetY, False))
-    Else
-        If EffectOverTime(DotInfo.EotId).OnHitFx > 0 Then Call SendData(SendTarget.ToNPCAliveArea, DotInfo.TargetRef.ArrayIndex, PrepareMessageFxPiso(EffectOverTime(DotInfo.EotId).OnHitFx, TargetX, TargetY))
-        If EffectOverTime(DotInfo.EotId).OnHitWav > 0 Then Call modSendData.SendToAreaByPos(TargetMap, TargetX, TargetY, PrepareMessagePlayWave(EffectOverTime(DotInfo.EotId).OnHitWav, TargetX, TargetY, False))
-    End If
+    If EffectOverTime(DotInfo.EotId).OnHitFx > 0 Then Call modSendData.SendToAreaByPos(TargetMap, TargetX, TargetY, PrepareMessageFxPiso(EffectOverTime(DotInfo.EotId).OnHitFx, TargetX, TargetY))
+    If EffectOverTime(DotInfo.EotId).OnHitWav > 0 Then Call modSendData.SendToAreaByPos(TargetMap, TargetX, TargetY, PrepareMessagePlayWave(EffectOverTime(DotInfo.EotId).OnHitWav, TargetX, TargetY, False))
     Dim x, y, w, h, Map As Integer
     x = TargetX - Area \ 2
     y = TargetY - Area \ 2

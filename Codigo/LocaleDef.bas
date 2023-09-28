@@ -97,6 +97,8 @@ Public Const MsgRequiredSkill = 473
 Public Const MsgCantUseBowTransformed = 476
 Public Const MsgBindableHotkeysOnly = 477
 Public Const MsgFactionScore = 478
+Public Const MsgCaptainFire = 479
+Public Const MsgFire = 480
 
 
 Public Function GetRequiredWeaponLocaleId(ByVal WeaponType As e_WeaponType) As Integer
