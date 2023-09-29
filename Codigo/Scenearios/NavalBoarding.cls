@@ -128,8 +128,8 @@ Private Sub Class_Initialize()
         Dim WpCount As Byte
 102     Set ScenarioIni = New clsIniManager
 104     Call ScenarioIni.Initialize(DatPath & configPath)
-106     MapNumbers(0) = val(ScenarioIni.GetValue("INIT", "MapNumber1"))
-108     MapNumbers(1) = val(ScenarioIni.GetValue("INIT", "MapNumber2"))
+106     MapNumbers(TopMapNumber) = val(ScenarioIni.GetValue("INIT", "MapNumber1"))
+108     MapNumbers(CargoMapNumber) = val(ScenarioIni.GetValue("INIT", "MapNumber2"))
 110     MaxTime = val(ScenarioIni.GetValue("INIT", "MaxTime"))
 112     Team1SpawnX = val(ScenarioIni.GetValue("INIT", "Team1SpawnX"))
 114     Team2SpawnX = val(ScenarioIni.GetValue("INIT", "Team2SpawnX"))
@@ -161,15 +161,19 @@ NavalBoarding_Initialize_Err:
 End Sub
 
 Private Sub LoadTileBlock(ByRef Tiles() As t_TilePos, ScenearioIni As clsIniManager)
-    Dim TileCount As Integer
-    TileCount = val(ScenearioIni.GetValue("LOBBY-BLOCK", "Count"))
-    ReDim Tiles(1 To TileCount) As t_TilePos
-    Dim i As Integer
-    For i = 1 To TileCount
-        Tiles(i).PosX = val(ScenearioIni.GetValue("LOBBY-BLOCK", "TileX" & i))
-        Tiles(i).PosY = val(ScenearioIni.GetValue("LOBBY-BLOCK", "TileY" & i))
-        Call BlockAndInform(MapNumbers(1), Tiles(i).PosX, Tiles(i).PosY, 1)
-    Next i
+    On Error GoTo LoadTileBlock_Err:
+        Dim TileCount As Integer
+100     TileCount = val(ScenearioIni.GetValue("LOBBY-BLOCK", "Count"))
+102     ReDim Tiles(1 To TileCount) As t_TilePos
+        Dim i As Integer
+104     For i = 1 To TileCount
+106         Tiles(i).PosX = val(ScenearioIni.GetValue("LOBBY-BLOCK", "TileX" & i))
+108         Tiles(i).PosY = val(ScenearioIni.GetValue("LOBBY-BLOCK", "TileY" & i))
+110         Call BlockAndInform(MapNumbers(CargoMapNumber), Tiles(i).PosX, Tiles(i).PosY, 1)
+112     Next i
+        Exit Sub
+LoadTileBlock_Err:
+114    Call TraceError(Err.Number, Err.Description, "NavalBoarding.LoadTileBlock ", Erl)
 End Sub
 
 Private Sub LoadTeamCargo(ByRef TeamCargo As t_Cargo, ByVal team As Integer, ScenearioIni As clsIniManager)
@@ -325,16 +329,21 @@ Public Function IBaseScenario_RequiresSpawn() As Boolean
 End Function
 
 Public Function IBaseScenario_ValidateUser(ByVal UserIndex As Integer) As Integer
-    Dim i As Integer
-    With UserList(UserIndex)
-        For i = 1 To UBound(.invent.Object)
-            If IsForbidden(.invent.Object(i).ObjIndex) Then
-                IBaseScenario_ValidateUser = 404
-                Exit Function
-            End If
-        Next i
-        IBaseScenario_ValidateUser = 0
-    End With
+    On Error GoTo ValidateUser_Err:
+        Dim i As Integer
+100     With UserList(UserIndex)
+102         For i = 1 To UBound(.invent.Object)
+104             If IsForbidden(.invent.Object(i).ObjIndex) Then
+106                 IBaseScenario_ValidateUser = 404
+                    Exit Function
+                End If
+108         Next i
+110         IBaseScenario_ValidateUser = 0
+        End With
+        Exit Function
+ValidateUser_Err:
+112     IBaseScenario_ValidateUser = 404
+114     Call TraceError(Err.Number, Err.Description, "ScenarioHunt.ClearMap", Erl)
 End Function
 
 Public Sub IBaseScenario_WillSummonPlayer(ByVal UserIndex As Integer)
