@@ -253,7 +253,7 @@ Private Sub LoadTeamWeapoints(ByVal team As Integer, ByRef WpArray() As t_Waypoi
 120     Next i
         Exit Sub
 LoadTeamWeapoints_Err:
-122     Call TraceError(Err.Number, Err.Description, "NavalBoarding.LoadTeamWeapoints ", Erl)
+122     Call TraceError(Err.Number, Err.Description, "NavalBoarding.LoadTeamWeapoints " & team & " and wpCount: " & WpCount, Erl)
 End Sub
 
 Private Sub LoadForbidenItems(ScenearioIni As clsIniManager)
