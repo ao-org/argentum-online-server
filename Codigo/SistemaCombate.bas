@@ -534,7 +534,7 @@ On Error GoTo UserDamageNpc_Err
                     rangeStun = ObjData(ObjInd).Subtipo = 2 And aType = Ranged
                     stunChance = ObjData(ObjInd).Porcentaje
                 End If
-                If rangeStun Then
+                If rangeStun And NpcList(NpcIndex).flags.AfectaParalisis = 0 Then
                     If (RandomNumber(1, 100) < stunChance) Then
                         With NpcList(npcIndex)
                             Call StunNPc(.Contadores)
@@ -2210,7 +2210,7 @@ Private Sub UserDañoEspecial(ByVal AtacanteIndex As Integer, ByVal VictimaIndex
             End If
         End If
         
-        If rangeStun And IsFeatureEnabled("enable_stun") And Not IsSet(UserList(VictimaIndex).flags.StatusMask, eCCInmunity) Then
+        If rangeStun And Not IsSet(UserList(VictimaIndex).flags.StatusMask, eCCInmunity) Then
             If (RandomNumber(1, 100) < stunChance) Then
                 With UserList(VictimaIndex)
                     If StunPlayer(VictimaIndex, .Counters) Then
