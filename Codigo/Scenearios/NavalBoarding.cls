@@ -157,7 +157,7 @@ Private Sub Class_Initialize()
 158     Call LoadTeamCargo(TeamCargo(2), 2, ScenarioIni)
         Exit Sub
 NavalBoarding_Initialize_Err:
-    Call TraceError(Err.Number, Err.Description, "DeathMatch.Initialize ", Erl)
+    Call TraceError(Err.Number, Err.Description, "NavalBoarding.Initialize ", Erl)
 End Sub
 
 Private Sub LoadTileBlock(ByRef Tiles() As t_TilePos, ScenearioIni As clsIniManager)
@@ -177,43 +177,51 @@ LoadTileBlock_Err:
 End Sub
 
 Private Sub LoadTeamCargo(ByRef TeamCargo As t_Cargo, ByVal team As Integer, ScenearioIni As clsIniManager)
-    TeamCargo.CargoItemId = val(ScenearioIni.GetValue("Team" & team & "Cargo", "CargoItemId"))
-    TeamCargo.OriginalCargoArea.TopLeft.PosX = val(ScenearioIni.GetValue("Team" & team & "Cargo", "TopLeftX"))
-    TeamCargo.OriginalCargoArea.TopLeft.PosY = val(ScenearioIni.GetValue("Team" & team & "Cargo", "TopLeftY"))
-    TeamCargo.OriginalCargoArea.BottomRight.PosX = val(ScenearioIni.GetValue("Team" & team & "Cargo", "BottomLeftX"))
-    TeamCargo.OriginalCargoArea.BottomRight.PosY = val(ScenearioIni.GetValue("Team" & team & "Cargo", "BottomLeftY"))
-    TeamCargo.DropArea.TopLeft.PosX = val(ScenearioIni.GetValue("Team" & team & "Storage", "TopLeftX"))
-    TeamCargo.DropArea.TopLeft.PosY = val(ScenearioIni.GetValue("Team" & team & "Storage", "TopLeftY"))
-    TeamCargo.DropArea.BottomRight.PosX = val(ScenearioIni.GetValue("Team" & team & "Storage", "BottomLeftX"))
-    TeamCargo.DropArea.BottomRight.PosY = val(ScenearioIni.GetValue("Team" & team & "Storage", "BottomLeftY"))
-    Dim CargoCount As Integer
-    Dim Width, Height As Integer
-    Width = TeamCargo.OriginalCargoArea.BottomRight.PosX - TeamCargo.OriginalCargoArea.TopLeft.PosX + 1
-    Height = TeamCargo.OriginalCargoArea.BottomRight.PosY - TeamCargo.OriginalCargoArea.TopLeft.PosY + 1
-    CargoCount = Width * Height
-    ReDim TeamCargo.ItemList(1 To CargoCount) As t_CargoElement
-    Dim i As Integer
-    For i = 1 To CargoCount
-        TeamCargo.ItemList(i).ItemIndex = TeamCargo.CargoItemId
-        TeamCargo.ItemList(i).CarrierIndex = 0
-        TeamCargo.ItemList(i).id = team * 1000 + i
-        TeamCargo.ItemList(i).WorldPos.x = TeamCargo.OriginalCargoArea.TopLeft.PosX + ((i - 1) Mod Width)
-        TeamCargo.ItemList(i).WorldPos.y = TeamCargo.OriginalCargoArea.TopLeft.PosY + ((i - 1) \ Width)
-        TeamCargo.ItemList(i).WorldPos.Map = MapNumbers(1)
-    Next i
+    On Error GoTo LoadTeamCargo_Err:
+100     TeamCargo.CargoItemId = val(ScenearioIni.GetValue("Team" & team & "Cargo", "CargoItemId"))
+102     TeamCargo.OriginalCargoArea.TopLeft.PosX = val(ScenearioIni.GetValue("Team" & team & "Cargo", "TopLeftX"))
+104     TeamCargo.OriginalCargoArea.TopLeft.PosY = val(ScenearioIni.GetValue("Team" & team & "Cargo", "TopLeftY"))
+106     TeamCargo.OriginalCargoArea.BottomRight.PosX = val(ScenearioIni.GetValue("Team" & team & "Cargo", "BottomLeftX"))
+108     TeamCargo.OriginalCargoArea.BottomRight.PosY = val(ScenearioIni.GetValue("Team" & team & "Cargo", "BottomLeftY"))
+110     TeamCargo.DropArea.TopLeft.PosX = val(ScenearioIni.GetValue("Team" & team & "Storage", "TopLeftX"))
+112     TeamCargo.DropArea.TopLeft.PosY = val(ScenearioIni.GetValue("Team" & team & "Storage", "TopLeftY"))
+114     TeamCargo.DropArea.BottomRight.PosX = val(ScenearioIni.GetValue("Team" & team & "Storage", "BottomLeftX"))
+116     TeamCargo.DropArea.BottomRight.PosY = val(ScenearioIni.GetValue("Team" & team & "Storage", "BottomLeftY"))
+        Dim CargoCount As Integer
+        Dim Width, Height As Integer
+118     Width = TeamCargo.OriginalCargoArea.BottomRight.PosX - TeamCargo.OriginalCargoArea.TopLeft.PosX + 1
+120     Height = TeamCargo.OriginalCargoArea.BottomRight.PosY - TeamCargo.OriginalCargoArea.TopLeft.PosY + 1
+122     CargoCount = Width * Height
+124     ReDim TeamCargo.ItemList(1 To CargoCount) As t_CargoElement
+        Dim i As Integer
+126     For i = 1 To CargoCount
+128         TeamCargo.ItemList(i).ItemIndex = TeamCargo.CargoItemId
+130         TeamCargo.ItemList(i).CarrierIndex = 0
+132         TeamCargo.ItemList(i).id = team * 1000 + i
+134         TeamCargo.ItemList(i).WorldPos.x = TeamCargo.OriginalCargoArea.TopLeft.PosX + ((i - 1) Mod Width)
+136         TeamCargo.ItemList(i).WorldPos.y = TeamCargo.OriginalCargoArea.TopLeft.PosY + ((i - 1) \ Width)
+138         TeamCargo.ItemList(i).WorldPos.Map = MapNumbers(1)
+140     Next i
+        Exit Sub
+LoadTeamCargo_Err:
+142     Call TraceError(Err.Number, Err.Description, "NavalBoarding.LoadTeamCargo ", Erl)
 End Sub
 
 Private Sub LoadNpcSpawnInfo(ByRef NpcSpawnList() As t_NpcSpawnInfo, ScenarioIni As clsIniManager)
-    Dim StartIndex, TankCount, SupportCount, RandgedCount, CaptainCount As Integer
-    TankCount = val(ScenarioIni.GetValue("TankNpc", "Count"))
-    SupportCount = val(ScenarioIni.GetValue("SupportNpc", "Count"))
-    RandgedCount = val(ScenarioIni.GetValue("RangedNpc", "Count"))
-    CaptainCount = val(ScenarioIni.GetValue("CaptainNpc", "Count"))
-    ReDim NpcSpawnList(1 To TankCount + SupportCount + RandgedCount + CaptainCount) As t_NpcSpawnInfo
-    StartIndex = LoadNpcData(NpcSpawnList, ScenarioIni, "TankNpc", 0, TankCount)
-    StartIndex = LoadNpcData(NpcSpawnList, ScenarioIni, "SupportNpc", StartIndex, SupportCount)
-    StartIndex = LoadNpcData(NpcSpawnList, ScenarioIni, "RangedNpc", StartIndex, RandgedCount)
-    StartIndex = LoadNpcData(NpcSpawnList, ScenarioIni, "CaptainNpc", StartIndex, CaptainCount)
+    On Error GoTo LoadNpcSpawnInfo_Err:
+        Dim StartIndex, TankCount, SupportCount, RandgedCount, CaptainCount As Integer
+100     TankCount = val(ScenarioIni.GetValue("TankNpc", "Count"))
+102     SupportCount = val(ScenarioIni.GetValue("SupportNpc", "Count"))
+104     RandgedCount = val(ScenarioIni.GetValue("RangedNpc", "Count"))
+106     CaptainCount = val(ScenarioIni.GetValue("CaptainNpc", "Count"))
+108     ReDim NpcSpawnList(1 To TankCount + SupportCount + RandgedCount + CaptainCount) As t_NpcSpawnInfo
+110     StartIndex = LoadNpcData(NpcSpawnList, ScenarioIni, "TankNpc", 0, TankCount)
+112     StartIndex = LoadNpcData(NpcSpawnList, ScenarioIni, "SupportNpc", StartIndex, SupportCount)
+114     StartIndex = LoadNpcData(NpcSpawnList, ScenarioIni, "RangedNpc", StartIndex, RandgedCount)
+116     StartIndex = LoadNpcData(NpcSpawnList, ScenarioIni, "CaptainNpc", StartIndex, CaptainCount)
+        Exit Sub
+LoadNpcSpawnInfo_Err:
+118     Call TraceError(Err.Number, Err.Description, "NavalBoarding.LoadNpcSpawnInfo ", Erl)
 End Sub
 
 Private Function LoadNpcData(ByRef NpcSpawnList() As t_NpcSpawnInfo, ScenearioIni As clsIniManager, ByVal SectionName As String, _
@@ -228,20 +236,24 @@ Private Function LoadNpcData(ByRef NpcSpawnList() As t_NpcSpawnInfo, ScenearioIn
 End Function
 
 Private Sub LoadTeamWeapoints(ByVal team As Integer, ByRef WpArray() As t_Waypoint, ByVal WpCount As Byte, ScenearioIni As clsIniManager)
-    Dim i, j As Integer
-    ReDim WpArray(1 To WpCount) As t_Waypoint
-    Dim NextWpCount As Byte
-    For i = 1 To WpCount
-        WpArray(i).PosX = val(ScenearioIni.GetValue("T" & team & "WP" & i, "X"))
-        WpArray(i).PosY = val(ScenearioIni.GetValue("T" & team & "WP" & i, "Y"))
-        WpArray(i).NextWpCount = val(ScenearioIni.GetValue("T" & team & "WP" & i, "NextWpSize"))
-        If WpArray(i).NextWpCount > 0 Then
-            ReDim WpArray(i).NextWp(1 To WpArray(i).NextWpCount) As Byte
-            For j = 1 To WpArray(i).NextWpCount
-                WpArray(i).NextWp(j) = val(ScenearioIni.GetValue("T" & team & "WP" & i, "NextWp" & j))
-            Next j
-        End If
-    Next i
+    On Error GoTo LoadTeamWeapoints_Err:
+        Dim i, j As Integer
+100     ReDim WpArray(1 To WpCount) As t_Waypoint
+        Dim NextWpCount As Byte
+102     For i = 1 To WpCount
+104         WpArray(i).PosX = val(ScenearioIni.GetValue("T" & team & "WP" & i, "X"))
+106         WpArray(i).PosY = val(ScenearioIni.GetValue("T" & team & "WP" & i, "Y"))
+108         WpArray(i).NextWpCount = val(ScenearioIni.GetValue("T" & team & "WP" & i, "NextWpSize"))
+110         If WpArray(i).NextWpCount > 0 Then
+112             ReDim WpArray(i).NextWp(1 To WpArray(i).NextWpCount) As Byte
+114             For j = 1 To WpArray(i).NextWpCount
+116                 WpArray(i).NextWp(j) = val(ScenearioIni.GetValue("T" & team & "WP" & i, "NextWp" & j))
+118             Next j
+            End If
+120     Next i
+        Exit Sub
+LoadTeamWeapoints_Err:
+122     Call TraceError(Err.Number, Err.Description, "NavalBoarding.LoadTeamWeapoints ", Erl)
 End Sub
 
 Private Sub LoadForbidenItems(ScenearioIni As clsIniManager)
@@ -276,7 +288,7 @@ On Error GoTo CloseScenario_Err:
 118    Call ClearMap
     Exit Sub
 CloseScenario_Err:
-    Call TraceError(Err.Number, Err.Description, "ScenarioHunt.CloseScenario ", Erl)
+    Call TraceError(Err.Number, Err.Description, "NavalBoarding.CloseScenario ", Erl)
 End Sub
 
 Private Sub ClearMap()
@@ -287,7 +299,7 @@ On Error GoTo ClearMap_Err:
        MapInfo(MapNumbers(TopMapNumber)).ForceUpdate = False
     Exit Sub
 ClearMap_Err:
-    Call TraceError(Err.Number, Err.Description, "ScenarioHunt.ClearMap", Erl)
+    Call TraceError(Err.Number, Err.Description, "NavalBoarding.ClearMap", Erl)
 End Sub
 
 Private Function IsForbidden(ByVal ItemId As Integer) As Boolean
