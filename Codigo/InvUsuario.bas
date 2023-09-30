@@ -3559,21 +3559,26 @@ Public Sub UseArpon(ByVal UserIndex As Integer)
         Call UpdateCd(UserIndex, ObjData(ObjIndex).cdType)
         Dim Damage As Integer
         Damage = GetUserDamageWithItem(UserIndex, ObjIndex, 0)
+        If TargetRef.RefType = eUser Then
+            UserList(TargetRef.ArrayIndex).Counters.timeFx = 2
+            Call RemoveUserInvisibility(UserIndex)
+            Call SendData(SendTarget.ToPCAliveArea, TargetRef.ArrayIndex, PrepareMessageCreateFX(UserList(TargetRef.ArrayIndex).Char.charindex, FXSANGRE, 0, UserList(TargetRef.ArrayIndex).pos.x, UserList(TargetRef.ArrayIndex).pos.y))
+            Call SendData(SendTarget.ToPCAliveArea, TargetRef.ArrayIndex, PrepareMessagePlayWave(SND_IMPACTO, UserList(TargetRef.ArrayIndex).pos.x, UserList(TargetRef.ArrayIndex).pos.y))
+        Else
+            If NpcList(TargetRef.ArrayIndex).flags.Snd2 > 0 Then
+                Call SendData(SendTarget.ToNPCAliveArea, TargetRef.ArrayIndex, PrepareMessagePlayWave(NpcList(TargetRef.ArrayIndex).flags.Snd2, NpcList(TargetRef.ArrayIndex).pos.x, NpcList(TargetRef.ArrayIndex).pos.y))
+            Else
+                Call SendData(SendTarget.ToNPCAliveArea, TargetRef.ArrayIndex, PrepareMessagePlayWave(SND_IMPACTO2, NpcList(TargetRef.ArrayIndex).pos.x, NpcList(TargetRef.ArrayIndex).pos.y))
+            End If
+        End If
         If DoDamageToTarget(UserIndex, TargetRef, Damage, e_phisical, ObjIndex) = eStillAlive Then
             If TargetRef.RefType = eUser Then
-                UserList(TargetRef.ArrayIndex).Counters.timeFx = 2
-                Call RemoveUserInvisibility(UserIndex)
-                Call SendData(SendTarget.ToPCAliveArea, TargetRef.ArrayIndex, PrepareMessageCreateFX(UserList(TargetRef.ArrayIndex).Char.charindex, FXSANGRE, 0, UserList(TargetRef.ArrayIndex).pos.x, UserList(TargetRef.ArrayIndex).pos.y))
-                Call SendData(SendTarget.ToPCAliveArea, TargetRef.ArrayIndex, PrepareMessagePlayWave(SND_IMPACTO, UserList(TargetRef.ArrayIndex).pos.x, UserList(TargetRef.ArrayIndex).pos.y))
-            Else
-                If NpcList(TargetRef.ArrayIndex).flags.Snd2 > 0 Then
-                    Call SendData(SendTarget.ToNPCAliveArea, TargetRef.ArrayIndex, PrepareMessagePlayWave(NpcList(TargetRef.ArrayIndex).flags.Snd2, NpcList(TargetRef.ArrayIndex).pos.x, NpcList(TargetRef.ArrayIndex).pos.y))
-                Else
-                    Call SendData(SendTarget.ToNPCAliveArea, TargetRef.ArrayIndex, PrepareMessagePlayWave(SND_IMPACTO2, NpcList(TargetRef.ArrayIndex).pos.x, NpcList(TargetRef.ArrayIndex).pos.y))
+                If Not IsSet(UserList(TargetRef.ArrayIndex).flags.StatusMask, eCCInmunity) Then
+                    Call CreateEffect(UserIndex, eUser, TargetRef.ArrayIndex, TargetRef.RefType, ObjData(ObjIndex).ApplyEffectId)
                 End If
             End If
         End If
-        Call CreateEffect(UserIndex, eUser, TargetRef.ArrayIndex, TargetRef.RefType, ObjData(ObjIndex).ApplyEffectId)
+        
         If .flags.Oculto = 0 Then
             Dim TargetPos As t_WorldPos
             TargetPos = GetPosition(TargetRef)
