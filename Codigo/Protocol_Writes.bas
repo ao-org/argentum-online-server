@@ -2308,7 +2308,7 @@ Public Sub WriteSastreObjects(ByVal UserIndex As Integer)
 104     For i = 1 To UBound(ObjSastre())
 
             ' Can the user create this object? If so add it to the list....
-106         If ObjData(ObjSastre(i)).SkMAGOria <= UserList(UserIndex).Stats.UserSkills( _
+106         If ObjData(ObjSastre(i)).SkSastreria <= UserList(UserIndex).Stats.UserSkills( _
                     e_Skill.Sastreria) Then
 108             Count = Count + 1
 110             validIndexes(Count) = i
