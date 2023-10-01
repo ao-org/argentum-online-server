@@ -1352,9 +1352,12 @@ Public Sub SastreConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex As In
             Exit Sub
 
         End If
-
+        If ItemIndex = 0 Then Exit Sub
+        If UserList(UserIndex).invent.HerramientaEqpObjIndex = 0 Then
+            Exit Sub
+        End If
 106     If SastreTieneMateriales(UserIndex, ItemIndex) _
-                And UserList(UserIndex).Stats.UserSkills(e_Skill.Sastreria) >= ObjData(ItemIndex).SkMAGOria _
+                And UserList(UserIndex).Stats.UserSkills(e_Skill.Sastreria) >= ObjData(ItemIndex).SkSastreria _
                 And PuedeConstruirSastre(ItemIndex) _
                 And ObjData(UserList(UserIndex).Invent.HerramientaEqpObjIndex).OBJType = e_OBJType.otHerramientas _
                 And ObjData(UserList(UserIndex).Invent.HerramientaEqpObjIndex).Subtipo = 9 Then
