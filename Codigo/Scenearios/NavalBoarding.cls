@@ -47,6 +47,7 @@ Implements IInventoryInterface
 Const TopMapNumber = 0
 Const CargoMapNumber = 1
 Const CannonSpell = 256
+Const ShieldEffectIndex = 60
 
 Private Type t_Waypoint
     PosX As Byte
@@ -92,12 +93,30 @@ Private Type t_CaptinState
     TargetLocations(3) As t_WorldPos
 End Type
 
+Private Type t_RemoveItem
+    ItemId As Integer
+    ItemCount As Integer
+End Type
+
+Private Type t_UserItemInfo
+    RemovedItems(10) As t_RemoveItem
+    RemovedItemCount As Integer
+    UserId As Long
+End Type
+
+Private Type t_UserList
+    UserList(100) As t_UserItemInfo
+    RegisteredUserCount As Integer
+End Type
+
 Dim MapNumbers(1) As Integer
 Dim TileBlocks() As t_TilePos
 
+Dim SpawnedUserList As t_UserList
 Dim MaxTime As Long
 Dim CountdownTimer As t_Timer
 Dim BroadCastTimer As t_Timer
+Dim BroadOpenEvent As t_Timer
 Dim ScoreBroadcastTimer As t_Timer
 Dim UpdateIndex As Integer
 Dim LastFrameTime As Long
@@ -120,6 +139,10 @@ Dim ElapsedResapwnTime As Long
 Dim CaptianNpcId As Integer
 Dim UserLoot As New Dictionary
 Dim TeamCargo(1 To 2) As t_Cargo
+Dim ManaPotId As Integer
+Dim HpPotId As Integer
+Dim RespawnManaPotAmount As Integer
+Dim RespawnHPPotAmount As Integer
 
 Private Sub Class_Initialize()
     On Error GoTo NavalBoarding_Initialize_Err:
@@ -144,20 +167,25 @@ Private Sub Class_Initialize()
 132     MinFireTime = val(ScenarioIni.GetValue("INIT", "MinFireTime"))
 134     MaxFireTime = val(ScenarioIni.GetValue("INIT", "MaxFireTime"))
 136     FireStartTime = val(ScenarioIni.GetValue("INIT", "FireStartTime"))
-138     Call LoadTeamWeapoints(1, Team1Waypoints, WpCount, ScenarioIni)
-140     Call LoadTeamWeapoints(2, Team2Waypoints, WpCount, ScenarioIni)
-142     Call LoadForbidenItems(ScenarioIni)
-144     Call LoadTileBlock(TileBlocks, ScenarioIni)
-146     UpdateIndex = AddUpdateScenario(Me)
-148     Call CustomScenarios.SetCustomScenario(MapNumbers(0), Me)
-150     Call CustomScenarios.SetCustomScenario(MapNumbers(1), Me)
-152     Call ConfigMapLobby
-154     Call LoadNpcSpawnInfo(NpcSpawnList, ScenarioIni)
-156     Call LoadTeamCargo(TeamCargo(1), 1, ScenarioIni)
-158     Call LoadTeamCargo(TeamCargo(2), 2, ScenarioIni)
+138     ManaPotId = val(ScenarioIni.GetValue("INIT", "ManaPotionsId"))
+140     HpPotId = val(ScenarioIni.GetValue("INIT", "HPPotionId"))
+142     RespawnHPPotAmount = val(ScenarioIni.GetValue("INIT", "RespawnHPPotAmount"))
+144     RespawnManaPotAmount = val(ScenarioIni.GetValue("INIT", "RespawnManaPotAmount"))
+146     Call LoadTeamWeapoints(1, Team1Waypoints, WpCount, ScenarioIni)
+148     Call LoadTeamWeapoints(2, Team2Waypoints, WpCount, ScenarioIni)
+150     Call LoadForbidenItems(ScenarioIni)
+152     Call LoadTileBlock(TileBlocks, ScenarioIni)
+154     UpdateIndex = AddUpdateScenario(Me)
+156     Call CustomScenarios.SetCustomScenario(MapNumbers(0), Me)
+158     Call CustomScenarios.SetCustomScenario(MapNumbers(1), Me)
+160     Call ConfigMapLobby
+162     Call LoadNpcSpawnInfo(NpcSpawnList, ScenarioIni)
+164     Call LoadTeamCargo(TeamCargo(1), 1, ScenarioIni)
+166     Call LoadTeamCargo(TeamCargo(2), 2, ScenarioIni)
+        Call SetTimer(BroadOpenEvent, 15000)
         Exit Sub
 NavalBoarding_Initialize_Err:
-    Call TraceError(Err.Number, Err.Description, "NavalBoarding.Initialize ", Erl)
+168 Call TraceError(Err.Number, Err.Description, "NavalBoarding.Initialize ", Erl)
 End Sub
 
 Private Sub LoadTileBlock(ByRef Tiles() As t_TilePos, ScenearioIni As clsIniManager)
@@ -266,8 +294,22 @@ Private Sub LoadForbidenItems(ScenearioIni As clsIniManager)
     Next i
 End Sub
 
+Private Sub AddItemToUser(ByVal UserIndex As Integer, ByVal ItemId As Integer, ByVal ItemCount As Integer)
+    With UserList(UserIndex)
+        Dim Slot As Integer
+        For Slot = 1 To UBound(.invent.Object)
+            If .invent.Object(Slot).ObjIndex = 0 Then
+                .invent.Object(Slot).ObjIndex = ItemId
+                .invent.Object(Slot).amount = ItemCount
+                Exit Sub
+            End If
+        Next Slot
+    End With
+End Sub
+
 Private Sub RemoveForbiddenItems(ByVal UserIndex As Integer)
     Dim i As Integer
+    Dim j As Integer
     With UserList(UserIndex)
         For i = 1 To UBound(.invent.Object)
             If IsForbidden(.invent.Object(i).ObjIndex) Then
@@ -275,6 +317,24 @@ Private Sub RemoveForbiddenItems(ByVal UserIndex As Integer)
             End If
         Next i
         If .flags.ModificoInventario Then
+            Call UpdateUserInv(True, UserIndex, 0)
+        End If
+        
+        For i = 0 To SpawnedUserList.RegisteredUserCount - 1
+            If SpawnedUserList.UserList(i).UserId = .id Then
+                Exit For
+            End If
+        Next i
+        If i < SpawnedUserList.RegisteredUserCount Then
+            For j = 0 To SpawnedUserList.UserList(i).RemovedItemCount - 1
+                If SpawnedUserList.UserList(i).RemovedItems(j).ItemId > 0 Then
+                    Call AddItemToUser(UserIndex, _
+                                       SpawnedUserList.UserList(i).RemovedItems(j).ItemId, _
+                                       SpawnedUserList.UserList(i).RemovedItems(j).ItemCount)
+                End If
+            Next j
+            SpawnedUserList.UserList(i) = SpawnedUserList.UserList(SpawnedUserList.RegisteredUserCount - 1)
+            SpawnedUserList.RegisteredUserCount = SpawnedUserList.RegisteredUserCount - 1
             Call UpdateUserInv(True, UserIndex, 0)
         End If
     End With
@@ -341,21 +401,6 @@ Public Function IBaseScenario_RequiresSpawn() As Boolean
 End Function
 
 Public Function IBaseScenario_ValidateUser(ByVal UserIndex As Integer) As Integer
-    On Error GoTo ValidateUser_Err:
-        Dim i As Integer
-100     With UserList(UserIndex)
-102         For i = 1 To UBound(.invent.Object)
-104             If IsForbidden(.invent.Object(i).ObjIndex) Then
-106                 IBaseScenario_ValidateUser = 404
-                    Exit Function
-                End If
-108         Next i
-110         IBaseScenario_ValidateUser = 0
-        End With
-        Exit Function
-ValidateUser_Err:
-112     IBaseScenario_ValidateUser = 404
-114     Call TraceError(Err.Number, Err.Description, "ScenarioHunt.ClearMap", Erl)
 End Function
 
 Public Sub IBaseScenario_WillSummonPlayer(ByVal UserIndex As Integer)
@@ -369,7 +414,35 @@ Public Sub IBaseScenario_WillSummonPlayer(ByVal UserIndex As Integer)
         SpawnPos.x = Team1SpawnX
     End If
     SpawnPos.y = 50
+    Dim UserItemInfo As t_UserItemInfo
+    Dim i As Integer
+    With UserList(UserIndex)
+        For i = 0 To SpawnedUserList.RegisteredUserCount - 1
+            If SpawnedUserList.UserList(i).UserId = .id Then
+                Exit For
+            End If
+        Next i
+        If i >= SpawnedUserList.RegisteredUserCount Then
+            For i = 1 To UBound(.invent.Object)
+                If IsForbidden(.invent.Object(i).ObjIndex) Then
+                    UserItemInfo.RemovedItems(UserItemInfo.RemovedItemCount).ItemId = .invent.Object(i).ObjIndex
+                    UserItemInfo.RemovedItems(UserItemInfo.RemovedItemCount).ItemCount = .invent.Object(i).amount
+                    UserItemInfo.RemovedItemCount = UserItemInfo.RemovedItemCount + 1
+                    .invent.Object(i).ObjIndex = 0
+                    .invent.Object(i).amount = 0
+                    .invent.Object(i).Equipped = 0
+                End If
+            Next i
+            If UserItemInfo.RemovedItemCount > 0 Then
+                SpawnedUserList.UserList(SpawnedUserList.RegisteredUserCount) = UserItemInfo
+                SpawnedUserList.UserList(SpawnedUserList.RegisteredUserCount).UserId = .id
+                SpawnedUserList.RegisteredUserCount = SpawnedUserList.RegisteredUserCount + 1
+                Call UpdateUserInv(True, UserIndex, 0)
+            End If
+        End If
+    End With
     GenericGlobalLobby.SummonCoordinates = SpawnPos
+    Call RefillPotions(UserIndex)
 End Sub
 
 Public Sub IBaseScenario_UpdateLobbyState(ByVal oldState As e_LobbyState, ByRef NewState As e_LobbyState)
@@ -443,6 +516,11 @@ Public Sub IBaseScenario_Update()
             End If
             Exit Sub
         End If
+    ElseIf GenericGlobalLobby.State = e_LobbyState.AcceptingPlayers And GenericGlobalLobby.IsPublic Then
+        If UpdateTime(BroadOpenEvent, frametime) Then
+            Call BroadcastOpenEvent
+        End If
+        
     ElseIf GenericGlobalLobby.State = e_LobbyState.Closed Then
         Call CloseScenario
     End If
@@ -454,7 +532,8 @@ Public Sub IBaseScenario_OnUserDisconnected(ByVal UserIndex As Integer)
             Dim i, ItemTeam As Integer
             ItemTeam = UserLoot.Item(UserIndex) \ 1000
             For i = LBound(.invent.Object) To UBound(.invent.Object)
-                If .invent.Object(i).ObjIndex = TeamCargo(ItemTeam).CargoItemId Then
+                If .invent.Object(i).ObjIndex = TeamCargo(1).CargoItemId Or _
+                   .invent.Object(i).ObjIndex = TeamCargo(2).CargoItemId Then
                     Call DropObj(UserIndex, i, .invent.Object(i).amount, .pos.Map, .pos.x, .pos.y)
                     Exit For
                 End If
@@ -465,6 +544,7 @@ Public Sub IBaseScenario_OnUserDisconnected(ByVal UserIndex As Integer)
 End Sub
 
 Public Sub IBaseScenario_OnUserReconnect(ByVal UserIndex As Integer)
+
 End Sub
 
 Private Sub StartGame()
@@ -481,17 +561,26 @@ Private Sub Respawn(ByVal player As Integer)
     SpawnPos.Map = MapNumbers(0)
     SpawnPos.x = 10
     SpawnPos.y = 10
-    If UserList(player).flags.CurrentTeam = 1 Then
-        SpawnPos.x = Team1Waypoints(RespawnWp).PosX
-        SpawnPos.y = Team1Waypoints(RespawnWp).PosY
-    ElseIf UserList(player).flags.CurrentTeam = 2 Then
-        SpawnPos.x = Team2Waypoints(RespawnWp).PosX
-        SpawnPos.y = Team2Waypoints(RespawnWp).PosY
-    End If
+    With UserList(player)
+        If UserList(player).flags.CurrentTeam = 1 Then
+            SpawnPos.x = Team1Waypoints(RespawnWp).PosX
+            SpawnPos.y = Team1Waypoints(RespawnWp).PosY
+        ElseIf UserList(player).flags.CurrentTeam = 2 Then
+            SpawnPos.x = Team2Waypoints(RespawnWp).PosX
+            SpawnPos.y = Team2Waypoints(RespawnWp).PosY
+        End If
+        
+        Call WarpToLegalPos(player, SpawnPos.Map, SpawnPos.x, SpawnPos.y, True, True)
+        Call RevivirUsuario(player)
+        .Stats.MinMAN = .Stats.MaxMAN
+        .Counters.timeFx = 2
+        .Stats.MinSta = .Stats.MaxSta
+        Call WriteUpdateMana(player)
+        Call WriteUpdateSta(player)
+    End With
     
-    Call WarpToLegalPos(player, SpawnPos.Map, SpawnPos.x, SpawnPos.y, True, True)
-    Call RevivirUsuario(player)
-    UserList(player).Counters.timeFx = 2
+    Call CreateEffect(0, e_ReferenceType.eNone, player, eUser, ShieldEffectIndex)
+    Call RefillPotions(player)
 114 Call SendData(SendTarget.ToPCAliveArea, player, PrepareMessageParticleFX(UserList(player).Char.charindex, e_ParticulasIndex.Curar, 100, False, , UserList(player).pos.x, UserList(player).pos.y))
 116 Call SendData(SendTarget.ToPCAliveArea, player, PrepareMessagePlayWave("104", UserList(player).pos.x, UserList(player).pos.y))
 End Sub
@@ -519,6 +608,10 @@ Private Sub MatchCompleted()
         NpcIndex = ModAreas.ConnGroups(MapNumbers(0)).NpcForAi(0)
         Call QuitarNPC(NpcIndex, eClearHunt)
     Loop
+End Sub
+
+Private Sub BroadcastOpenEvent()
+    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MsgNavanlConquestBroadcast, "", e_FontTypeNames.FONTTYPE_GUILD))
 End Sub
 
 Private Sub BroadcastPendingTime(ByVal frametime As Long)
@@ -681,6 +774,7 @@ End Sub
 Public Function GetOposingFaction(ByVal team As Integer) As Integer
     GetOposingFaction = IIf(team = 1, 2, 1)
 End Function
+
 Public Sub IBaseScenario_NpcDie(ByVal NpcIndex)
     If NpcList(NpcIndex).Numero = CaptianNpcId Then
         Call SendData(SendTarget.toMap, MapNumbers(0), PrepareMessageLocaleMsg(MsgCaptainIsDeath, NpcList(NpcIndex).flags.team, e_FontTypeNames.FONTTYPE_GUILD))
@@ -713,7 +807,8 @@ Public Sub IBaseScenario_UserDie(ByVal UserIndex)
             ItemTeam = UserLoot.Item(UserIndex) \ 1000
             
             For i = LBound(.invent.Object) To UBound(.invent.Object)
-                If .invent.Object(i).ObjIndex = TeamCargo(ItemTeam).CargoItemId Then
+                If .invent.Object(i).ObjIndex = TeamCargo(1).CargoItemId Or _
+                   .invent.Object(i).ObjIndex = TeamCargo(2).CargoItemId Then
                     Call DropObj(UserIndex, i, .invent.Object(i).amount, .pos.Map, .pos.x, .pos.y)
                     Exit For
                 End If
@@ -764,6 +859,11 @@ Public Function IInventoryInterface_UserCanDropItemAt(ByVal UserIndex As Integer
         ItemTeam = GetCargoItemTeam(.invent.Object(Slot).ObjIndex)
         If ItemTeam > 0 Then
             If MapData(Map, TileX, TileY).ObjInfo.ObjIndex > 0 Then
+                Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageLocaleMsg(MsgCantDropCargoAtPos, "", e_FontTypeNames.FONTTYPE_GUILD))
+                Exit Function
+            End If
+        Else
+            If IsForbidden(.invent.Object(Slot).ObjIndex) Then
                 Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageLocaleMsg(MsgCantDropCargoAtPos, "", e_FontTypeNames.FONTTYPE_GUILD))
                 Exit Function
             End If
@@ -988,3 +1088,46 @@ Private Function CaptainFire(ByVal CaptainIndex As Integer) As Boolean
     End With
     CaptainFire = True
 End Function
+
+Sub RefillPotions(ByVal UserIndex As Integer)
+    Dim FillBluePots As Integer
+    Dim FillRedPots As Integer
+    FillBluePots = RespawnManaPotAmount
+    FillRedPots = RespawnHPPotAmount
+    With UserList(UserIndex)
+        Dim Slot As Integer
+        For Slot = 1 To UBound(.invent.Object)
+            If .invent.Object(Slot).ObjIndex = ManaPotId Then
+                .invent.Object(Slot).amount = FillBluePots
+                FillBluePots = 0
+            End If
+            If .invent.Object(Slot).ObjIndex = HpPotId Then
+                .invent.Object(Slot).amount = FillRedPots
+                FillRedPots = 0
+            End If
+        Next Slot
+        Dim LastSlot As Integer
+        LastSlot = 1
+        If FillBluePots > 0 Then
+            For LastSlot = 1 To UBound(.invent.Object)
+                If .invent.Object(LastSlot).ObjIndex = 0 Then
+                    .invent.Object(LastSlot).ObjIndex = ManaPotId
+                    .invent.Object(LastSlot).amount = FillBluePots
+                    FillBluePots = 0
+                    Exit For
+                End If
+            Next LastSlot
+        End If
+        If FillRedPots > 0 Then
+            For LastSlot = 1 To UBound(.invent.Object)
+                If .invent.Object(LastSlot).ObjIndex = 0 Then
+                    .invent.Object(LastSlot).ObjIndex = HpPotId
+                    .invent.Object(LastSlot).amount = FillRedPots
+                    FillRedPots = 0
+                    Exit For
+                End If
+            Next LastSlot
+        End If
+        Call UpdateUserInv(True, UserIndex, 0)
+    End With
+End Sub

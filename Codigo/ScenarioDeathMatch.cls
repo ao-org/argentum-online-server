@@ -340,21 +340,28 @@ Public Sub IBaseScenario_WillSummonPlayer(ByVal UserIndex As Integer)
     Dim UserItemInfo As t_UserItemInfo
     Dim i As Integer
     With UserList(UserIndex)
-        For i = 1 To UBound(.invent.Object)
-            If IsForbidden(.invent.Object(i).ObjIndex) Then
-                UserItemInfo.RemovedItems(UserItemInfo.RemovedItemCount).ItemId = .invent.Object(i).ObjIndex
-                UserItemInfo.RemovedItems(UserItemInfo.RemovedItemCount).ItemCount = .invent.Object(i).amount
-                UserItemInfo.RemovedItemCount = UserItemInfo.RemovedItemCount + 1
-                .invent.Object(i).ObjIndex = 0
-                .invent.Object(i).amount = 0
-                .invent.Object(i).Equipped = 0
+        For i = 0 To SpawnedUserList.RegisteredUserCount - 1
+            If SpawnedUserList.UserList(i).UserId = .id Then
+                Exit For
             End If
         Next i
-        If UserItemInfo.RemovedItemCount > 0 Then
-            SpawnedUserList.UserList(SpawnedUserList.RegisteredUserCount) = UserItemInfo
-            SpawnedUserList.UserList(SpawnedUserList.RegisteredUserCount).UserId = .id
-            SpawnedUserList.RegisteredUserCount = SpawnedUserList.RegisteredUserCount + 1
-            Call UpdateUserInv(True, UserIndex, 0)
+        If i >= SpawnedUserList.RegisteredUserCount Then
+            For i = 1 To UBound(.invent.Object)
+                If IsForbidden(.invent.Object(i).ObjIndex) Then
+                    UserItemInfo.RemovedItems(UserItemInfo.RemovedItemCount).ItemId = .invent.Object(i).ObjIndex
+                    UserItemInfo.RemovedItems(UserItemInfo.RemovedItemCount).ItemCount = .invent.Object(i).amount
+                    UserItemInfo.RemovedItemCount = UserItemInfo.RemovedItemCount + 1
+                    .invent.Object(i).ObjIndex = 0
+                    .invent.Object(i).amount = 0
+                    .invent.Object(i).Equipped = 0
+                End If
+            Next i
+            If UserItemInfo.RemovedItemCount > 0 Then
+                SpawnedUserList.UserList(SpawnedUserList.RegisteredUserCount) = UserItemInfo
+                SpawnedUserList.UserList(SpawnedUserList.RegisteredUserCount).UserId = .id
+                SpawnedUserList.RegisteredUserCount = SpawnedUserList.RegisteredUserCount + 1
+                Call UpdateUserInv(True, UserIndex, 0)
+            End If
         End If
     End With
     

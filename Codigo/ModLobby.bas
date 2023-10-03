@@ -179,44 +179,75 @@ Private Sub ClearUserSocket(ByRef instance As t_Lobby, ByVal index As Integer)
 End Sub
 
 Public Function CanPlayerJoin(ByRef instance As t_Lobby, ByVal UserIndex As Integer) As t_response
-On Error GoTo CanPlayerJoin_Err
+    On Error GoTo CanPlayerJoin_Err
 100    With UserList(userIndex)
 102        If .Stats.ELV < instance.MinLevel Or .Stats.ELV > instance.MaxLevel Then
 104            CanPlayerJoin.Success = False
 106            CanPlayerJoin.Message = ForbiddenLevelMessage
-108            Exit Function
-110        End If
-112        If instance.RegisteredPlayers >= instance.MaxPlayers Then
-114            CanPlayerJoin.Success = False
-116            CanPlayerJoin.Message = LobbyIsFullMessage
-118            Exit Function
-120        End If
-122        If instance.ClassFilter > 0 And .clase <> instance.ClassFilter Then
-124            CanPlayerJoin.Success = False
-126            CanPlayerJoin.Message = ForbiddenClassMessage
-128            Exit Function
-130        End If
-132        If Not instance.scenario Is Nothing Then
-134            CanPlayerJoin.Message = instance.scenario.ValidateUser(UserIndex)
-136            If CanPlayerJoin.Message > 0 Then
-138                CanPlayerJoin.Success = False
-140                Exit Function
-142            End If
-144        End If
-146        Dim i As Integer
-148        For i = 0 To instance.RegisteredPlayers - 1
-150            If instance.Players(i).UserId = .ID Then
-152                CanPlayerJoin.Success = False
-154                CanPlayerJoin.Message = AlreadyRegisteredMessage
-156                Exit Function
-158            End If
-160        Next i
-        CanPlayerJoin.Success = True
-        CanPlayerJoin.Message = 0
+               Exit Function
+           End If
+108        If instance.RegisteredPlayers >= instance.MaxPlayers Then
+110            CanPlayerJoin.Success = False
+112            CanPlayerJoin.Message = LobbyIsFullMessage
+               Exit Function
+           End If
+114        If instance.ClassFilter > 0 And .clase <> instance.ClassFilter Then
+116            CanPlayerJoin.Success = False
+118            CanPlayerJoin.Message = ForbiddenClassMessage
+               Exit Function
+           End If
+120     If .flags.Muerto = 1 Then
+122          CanPlayerJoin.Success = False
+124          CanPlayerJoin.Message = MsgCantJoinEventDeath
+             Exit Function
+        End If
+126     If .flags.EnReto Then
+128         CanPlayerJoin.Success = False
+130         CanPlayerJoin.Message = MsgCantJoinWhileAnotherEvent
+            Exit Function
+        End If
+132     If .flags.EnConsulta Then
+134        CanPlayerJoin.Success = False
+136        CanPlayerJoin.Message = MsgCantJoinWhileAnotherEvent
+           Exit Function
+        End If
+138     If .pos.Map = 0 Or .pos.x = 0 Or .pos.y = 0 Then
+140         CanPlayerJoin.Success = False
+142         CanPlayerJoin.Message = MsgCantJoinWhileAnotherEvent
+            Exit Function
+        End If
+144     If .flags.EnTorneo Then
+146         CanPlayerJoin.Success = False
+148         CanPlayerJoin.Message = MsgCantJoinWhileAnotherEvent
+            Exit Function
+        End If
+            
+150     If MapData(.pos.Map, .pos.x, .pos.y).trigger = CARCEL Then
+152         CanPlayerJoin.Success = False
+154         CanPlayerJoin.Message = MsgYouAreInJail
+            Exit Function
+        End If
+156        If Not instance.Scenario Is Nothing Then
+158            CanPlayerJoin.Message = instance.Scenario.ValidateUser(UserIndex)
+160            If CanPlayerJoin.Message > 0 Then
+162                CanPlayerJoin.Success = False
+                   Exit Function
+               End If
+           End If
+           Dim i As Integer
+164        For i = 0 To instance.RegisteredPlayers - 1
+166            If instance.Players(i).UserId = .id Then
+168                CanPlayerJoin.Success = False
+170                CanPlayerJoin.Message = AlreadyRegisteredMessage
+                   Exit Function
+               End If
+172        Next i
+174     CanPlayerJoin.Success = True
+176     CanPlayerJoin.Message = 0
         End With
         Exit Function
 CanPlayerJoin_Err:
-190    Call TraceError(Err.Number, Err.Description, "ModLobby.CanPlayerJoin", Erl)
+178    Call TraceError(Err.Number, Err.Description, "ModLobby.CanPlayerJoin", Erl)
 End Function
 
 Public Function AddPlayer(ByRef instance As t_Lobby, ByVal UserIndex As Integer, Optional Team As Integer = 0) As t_response

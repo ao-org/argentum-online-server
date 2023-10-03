@@ -224,7 +224,7 @@ Function UserReciveObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, By
 132                 Slot = Slot + 1
 
 134                 If Slot > UserList(UserIndex).CurrentInventorySlots Then
-136                     Call WriteConsoleMsg(UserIndex, "No podés tener mAs t_Objetos.", e_FontTypeNames.FONTTYPE_INFO)
+136                     Call WriteConsoleMsg(UserIndex, "No podés tener mas objetos.", e_FontTypeNames.FONTTYPE_INFO)
                         Exit Function
 
                     End If
@@ -253,7 +253,7 @@ Function UserReciveObj(ByVal UserIndex As Integer, ByVal ObjIndex As Integer, By
     
 152         Call QuitarBancoInvItem(UserIndex, CByte(ObjIndex), Cantidad)
         Else
-154         Call WriteConsoleMsg(UserIndex, "No podés tener mAs t_Objetos.", e_FontTypeNames.FONTTYPE_INFO)
+154         Call WriteConsoleMsg(UserIndex, "No podés tener mas objetos.", e_FontTypeNames.FONTTYPE_INFO)
 
         End If
 

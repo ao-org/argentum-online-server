@@ -760,6 +760,9 @@ On Error GoTo ErrorHandler
         If NearestTarget > 0 Then Call SetRef(CurrentTarget, NearestTarget, eNpc)
         Dim TargetPos As t_WorldPos
         TargetPos = ModReferenceUtils.GetPosition(CurrentTarget)
+        If Not InRangoVisionNPC(NpcIndex, TargetPos.x, TargetPos.y) Then
+            Call ClearRef(CurrentTarget)
+        End If
         'perform attack
         If CanPerformAttackAction(NpcIndex, .IntervaloAtaque) Then
             If IsValidRef(CurrentTarget) And NPCs.CanAttack(.Contadores, .flags) Then
@@ -775,7 +778,7 @@ On Error GoTo ErrorHandler
                                           PrepareCreateProjectile(.pos.x, .pos.y, TargetPos.x, TargetPos.y, .ProjectileType))
                         End If
                     End If
-                Else
+                ElseIf InRangoVisionNPC(NpcIndex, TargetPos.x, TargetPos.y) Then
                     Call AI_CaminarConRumbo(NpcIndex, TargetPos)
                 End If
             End If
