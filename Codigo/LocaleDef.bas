@@ -29,7 +29,9 @@ Public Const MsgToFarToAttack = 8
 Public Const MsgYouAreDeathAndCantAttack = 77
 Public Const MsgToTired = 93
 Public Const MsgRemoveSafeToAttack = 126
+Public Const MsgYouAreInJail = 146
 Public Const MsgInventoryIsFull = 328
+Public Const MsgCantJoinEventDeath = 368
 Public Const MsgCantAttackYourself = 380
 Public Const MSgNpcInmuneToEffect = 381
 Public Const MsgInvalidGroupCount = 406
@@ -99,6 +101,8 @@ Public Const MsgBindableHotkeysOnly = 477
 Public Const MsgFactionScore = 478
 Public Const MsgCaptainFire = 479
 Public Const MsgFire = 480
+Public Const MsgCantJoinWhileAnotherEvent = 481
+Public Const MsgNavanlConquestBroadcast = 482
 
 
 Public Function GetRequiredWeaponLocaleId(ByVal WeaponType As e_WeaponType) As Integer

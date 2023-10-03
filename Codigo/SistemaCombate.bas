@@ -1485,7 +1485,7 @@ Public Function PuedeAtacar(ByVal AttackerIndex As Integer, ByVal VictimIndex As
         
 106     If UserList(AttackerIndex).flags.EnReto Then
 108         If Retos.Salas(UserList(AttackerIndex).flags.SalaReto).TiempoItems > 0 Then
-110             Call WriteConsoleMsg(attackerIndex, "No podés atacar en este momento.", e_FontTypeNames.FONTTYPE_INFO)
+110             Call WriteConsoleMsg(AttackerIndex, "No podés atacar en este momento.", e_FontTypeNames.FONTTYPE_INFO)
 112             PuedeAtacar = False
                 Exit Function
             End If
@@ -1493,21 +1493,21 @@ Public Function PuedeAtacar(ByVal AttackerIndex As Integer, ByVal VictimIndex As
 
         'No podes atacar a alguien muerto
 114     If UserList(VictimIndex).flags.Muerto = 1 Then
-116         Call WriteConsoleMsg(attackerIndex, "No podés atacar a un espiritu.", e_FontTypeNames.FONTTYPE_INFO)
+116         Call WriteConsoleMsg(AttackerIndex, "No podés atacar a un espiritu.", e_FontTypeNames.FONTTYPE_INFO)
 118         PuedeAtacar = False
             Exit Function
         End If
         
         If UserList(AttackerIndex).Grupo.Id > 0 And UserList(VictimIndex).Grupo.Id > 0 And _
            UserList(AttackerIndex).Grupo.Id = UserList(VictimIndex).Grupo.Id Then
-           Call WriteConsoleMsg(attackerIndex, "No podés atacar a un miembro de tu grupo.", e_FontTypeNames.FONTTYPE_INFO)
+           Call WriteConsoleMsg(AttackerIndex, "No podés atacar a un miembro de tu grupo.", e_FontTypeNames.FONTTYPE_INFO)
            PuedeAtacar = False
            Exit Function
         End If
         
         ' No podes atacar si estas en consulta
 120     If UserList(AttackerIndex).flags.EnConsulta Then
-122         Call WriteConsoleMsg(attackerIndex, "No podés atacar usuarios mientras estás en consulta.", e_FontTypeNames.FONTTYPE_INFO)
+122         Call WriteConsoleMsg(AttackerIndex, "No podés atacar usuarios mientras estás en consulta.", e_FontTypeNames.FONTTYPE_INFO)
 124         PuedeAtacar = False
             Exit Function
     
@@ -1515,21 +1515,21 @@ Public Function PuedeAtacar(ByVal AttackerIndex As Integer, ByVal VictimIndex As
         
         ' No podes atacar si esta en consulta
 126     If UserList(VictimIndex).flags.EnConsulta Then
-128         Call WriteConsoleMsg(attackerIndex, "No podés atacar usuarios mientras estan en consulta.", e_FontTypeNames.FONTTYPE_INFO)
+128         Call WriteConsoleMsg(AttackerIndex, "No podés atacar usuarios mientras estan en consulta.", e_FontTypeNames.FONTTYPE_INFO)
 130         PuedeAtacar = False
             Exit Function
     
         End If
         
 132     If UserList(AttackerIndex).flags.Maldicion = 1 Then
-134         Call WriteConsoleMsg(attackerIndex, "¡Estás maldito! No podes atacar.", e_FontTypeNames.FONTTYPE_INFO)
+134         Call WriteConsoleMsg(AttackerIndex, "¡Estás maldito! No podes atacar.", e_FontTypeNames.FONTTYPE_INFO)
 136         PuedeAtacar = False
             Exit Function
 
         End If
         
 138     If UserList(AttackerIndex).flags.Montado = 1 Then
-140         Call WriteConsoleMsg(attackerIndex, "No podés atacar usando una montura.", e_FontTypeNames.FONTTYPE_INFO)
+140         Call WriteConsoleMsg(AttackerIndex, "No podés atacar usando una montura.", e_FontTypeNames.FONTTYPE_INFO)
 142         PuedeAtacar = False
             Exit Function
 
@@ -1596,7 +1596,7 @@ Public Function PuedeAtacar(ByVal AttackerIndex As Integer, ByVal VictimIndex As
         If esArmada(AttackerIndex) Then
             ' Si ataca otro armada
             If esArmada(VictimIndex) Then
-                Call WriteConsoleMsg(attackerIndex, "Los miembros del Ejercito Real tienen prohibido atacarse entre sí.", e_FontTypeNames.FONTTYPE_WARNING)
+                Call WriteConsoleMsg(AttackerIndex, "Los miembros del Ejercito Real tienen prohibido atacarse entre sí.", e_FontTypeNames.FONTTYPE_WARNING)
                 PuedeAtacar = False
                 Exit Function
             ' Si ataca un ciudadano
@@ -1612,17 +1612,17 @@ Public Function PuedeAtacar(ByVal AttackerIndex As Integer, ByVal VictimIndex As
             If (esCiudadano(AttackerIndex)) Then
                 If (UserList(AttackerIndex).flags.Seguro) Then
 176                 If esCiudadano(VictimIndex) Then
-178                     Call WriteConsoleMsg(attackerIndex, "No podés atacar ciudadanos, para hacerlo debes desactivar el seguro.", e_FontTypeNames.FONTTYPE_WARNING)
+178                     Call WriteConsoleMsg(AttackerIndex, "No podés atacar ciudadanos, para hacerlo debes desactivar el seguro.", e_FontTypeNames.FONTTYPE_WARNING)
 180                     PuedeAtacar = False
                         Exit Function
                     ElseIf esArmada(VictimIndex) Then
-                        Call WriteConsoleMsg(attackerIndex, "No podés atacar miembros del Ejercito Real, para hacerlo debes desactivar el seguro.", e_FontTypeNames.FONTTYPE_WARNING)
+                        Call WriteConsoleMsg(AttackerIndex, "No podés atacar miembros del Ejercito Real, para hacerlo debes desactivar el seguro.", e_FontTypeNames.FONTTYPE_WARNING)
                         PuedeAtacar = False
                         Exit Function
                     End If
                 End If
             ElseIf esCaos(AttackerIndex) And esCaos(VictimIndex) Then
-192             Call WriteConsoleMsg(attackerIndex, "Los miembros de las Fuerzas del Caos no se pueden atacar entre sí.", e_FontTypeNames.FONTTYPE_WARNING)
+192             Call WriteConsoleMsg(AttackerIndex, "Los miembros de las Fuerzas del Caos no se pueden atacar entre sí.", e_FontTypeNames.FONTTYPE_WARNING)
 194             PuedeAtacar = False
                 Exit Function
             End If
@@ -1673,179 +1673,17 @@ PuedeAtacar_Err:
 End Function
 
 Public Function PuedeAtacarNPC(ByVal AttackerIndex As Integer, ByVal NpcIndex As Integer) As Boolean
-        '***************************************************
-        'Autor: Unknown Author (Original version)
-        'Returns True if AttackerIndex can attack the NpcIndex
-        'Last Modification: 24/01/2007
-        '24/01/2007 Pablo (ToxicWaste) - Orden y corrección de ataque sobre una mascota y guardias
-        '14/08/2007 Pablo (ToxicWaste) - Reescribo y agrego TODOS los casos posibles cosa de usar
-        'esta función para todo lo referente a ataque a un NPC. Ya sea Magia, Físico o a Distancia.
-        '***************************************************
-        
-        On Error GoTo PuedeAtacarNPC_Err
-        
-
-        'Estas muerto?
-100     If UserList(AttackerIndex).flags.Muerto = 1 Then
-            'Call WriteConsoleMsg(attackerIndex, "No podés atacar porque estas muerto", e_FontTypeNames.FONTTYPE_INFO)
-102         Call WriteLocaleMsg(AttackerIndex, "77", e_FontTypeNames.FONTTYPE_INFO)
-104         PuedeAtacarNPC = False
-            Exit Function
-
-        End If
-             
-106     If UserList(AttackerIndex).flags.Montado = 1 Then
-108         Call WriteConsoleMsg(attackerIndex, "No podés atacar usando una montura.", e_FontTypeNames.FONTTYPE_INFO)
-110         PuedeAtacarNPC = False
-            Exit Function
-
-        End If
-        
-112     If UserList(AttackerIndex).flags.Inmunidad = 1 Then
-114         Call WriteConsoleMsg(AttackerIndex, "Espera un momento antes de atacar a la criatura.", e_FontTypeNames.FONTTYPE_INFO)
-116         PuedeAtacarNPC = False
+    On Error GoTo PuedeAtacarNPC_Err
+        Dim UserAttackInteractionResult As e_AttackInteractionResult
+        UserAttackInteractionResult = UserCanAttackNpc(AttackerIndex, NpcIndex)
+        If UserAttackInteractionResult <> e_AttackInteractionResult.eCanAttack Then
+            Call SendAttackInteractionMessage(AttackerIndex, UserAttackInteractionResult)
             Exit Function
         End If
-
-        'Solo administradores, dioses y usuarios pueden atacar a NPC's (PARA TESTING)
-118     If (UserList(AttackerIndex).flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Dios Or e_PlayerType.Admin)) = 0 And _
-            NpcList(NpcIndex).NPCtype <> e_NPCType.DummyTarget Then
-            
-120         PuedeAtacarNPC = False
-            Exit Function
-        End If
-        
-        ' No podes atacar si estas en consulta
-122     If UserList(AttackerIndex).flags.EnConsulta Then
-124         Call WriteConsoleMsg(AttackerIndex, "No puedes atacar npcs mientras estas en consulta.", e_FontTypeNames.FONTTYPE_INFO)
-126         PuedeAtacarNPC = False
-            Exit Function
-
-        End If
-        
-        'Es una criatura atacable?
-128     If NpcList(NpcIndex).Attackable = 0 Then
-            'No es una criatura atacable
-130         Call WriteConsoleMsg(attackerIndex, "No podés atacar esta criatura.", e_FontTypeNames.FONTTYPE_INFO)
-132         PuedeAtacarNPC = False
-            Exit Function
-
-        End If
-
-        'Es valida la distancia a la cual estamos atacando?
-134     If Distancia(UserList(AttackerIndex).Pos, NpcList(NpcIndex).Pos) >= MAXDISTANCIAARCO Then
-136         Call WriteLocaleMsg(AttackerIndex, "8", e_FontTypeNames.FONTTYPE_INFO)
-            'Call WriteConsoleMsg(attackerIndex, "Estás muy lejos para disparar.", e_FontTypeNames.FONTTYPE_FIGHT)
-138         PuedeAtacarNPC = False
-            Exit Function
-
-        End If
-
-        Dim IsPet As Boolean
-        IsPet = IsValidUserRef(NpcList(npcIndex).MaestroUser)
-        If IsPet And MapInfo(UserList(attackerIndex).pos.Map).Seguro Then
-           Call WriteConsoleMsg(attackerIndex, "No podés atacar mascotas en zona segura.", e_FontTypeNames.FONTTYPE_INFO)
-           Exit Function
-        End If
-        'Si el usuario pertenece a una faccion
-140     If esArmada(AttackerIndex) Or esCaos(AttackerIndex) Then
-            ' Y el NPC pertenece a la misma faccion
-142         If NpcList(NpcIndex).flags.Faccion = UserList(AttackerIndex).Faccion.Status Then
-144             Call WriteConsoleMsg(attackerIndex, "No podés atacar NPCs de tu misma facción, para hacerlo debes desenlistarte.", e_FontTypeNames.FONTTYPE_INFO)
-146             PuedeAtacarNPC = False
-                Exit Function
-            End If
-            
-            ' Si es una mascota, checkeamos en el Maestro
-148         If IsPet Then
-150             If UserList(NpcList(npcIndex).MaestroUser.ArrayIndex).Faccion.Status = UserList(attackerIndex).Faccion.Status Then
-152                 Call WriteConsoleMsg(attackerIndex, "No podés atacar NPCs de tu misma facción, para hacerlo debes desenlistarte.", e_FontTypeNames.FONTTYPE_INFO)
-154                 PuedeAtacarNPC = False
-                    Exit Function
-                End If
-            End If
-        End If
-        
-156     If Status(AttackerIndex) = Ciudadano Then
-158         If IsPet And NpcList(npcIndex).MaestroUser.ArrayIndex = attackerIndex Then
-160             Call WriteConsoleMsg(AttackerIndex, "No puedes atacar a tus mascotas siendo un ciudadano.", e_FontTypeNames.FONTTYPE_INFO)
-162             PuedeAtacarNPC = False
-                Exit Function
-            End If
-        End If
-        
-        If IsPet Then
-            If esArmada(attackerIndex) Then
-                If NpcList(NpcIndex).flags.Faccion = Armada Or NpcList(NpcIndex).flags.Faccion = Ciudadano Then
-                    Call WriteConsoleMsg(attackerIndex, "Como armada no podes atacar mascotas de un otro armada o un ciudadano", e_FontTypeNames.FONTTYPE_INFO)
-                    PuedeAtacarNPC = False
-                    Exit Function
-                End If
-            End If
-        End If
-        
-        ' El seguro es SOLO para ciudadanos. La armada debe desenlistarse antes de querer atacar y se checkea arriba.
-        ' Los criminales o Caos, ya estan mas alla del seguro.
-164     If Status(AttackerIndex) = Ciudadano Then
-            
-166         If NpcList(NpcIndex).flags.Faccion = Armada Then
-168             If UserList(AttackerIndex).flags.Seguro Then
-170                 Call WriteConsoleMsg(AttackerIndex, "Debes quitar el seguro para atacar miembros de la Armada Real (/seg)", e_FontTypeNames.FONTTYPE_INFO)
-172                 PuedeAtacarNPC = False
-                    Exit Function
-                Else
-174                 Call WriteConsoleMsg(AttackerIndex, "Atacaste un miembro de la Armada Real! Te has convertido en un Criminal.", e_FontTypeNames.FONTTYPE_INFO)
-176                 Call VolverCriminal(AttackerIndex)
-178                 PuedeAtacarNPC = True
-                    Exit Function
-                End If
-            End If
-            
-            'Es el NPC mascota de alguien?
-180         If IsPet Then
-182             Select Case UserList(NpcList(npcIndex).MaestroUser.ArrayIndex).Faccion.Status
-                    Case e_Facciones.Armada
-184                     If UserList(AttackerIndex).flags.Seguro Then
-186                         Call WriteConsoleMsg(AttackerIndex, "Debes quitar el seguro para atacar mascotas de la Armada Real (/seg)", e_FontTypeNames.FONTTYPE_INFO)
-188                         PuedeAtacarNPC = False
-                            Exit Function
-                        Else
-190                         Call WriteConsoleMsg(AttackerIndex, "Atacaste una mascota de la Armada Real! Te has convertido en un Criminal.", e_FontTypeNames.FONTTYPE_INFO)
-192                         Call VolverCriminal(AttackerIndex)
-194                         PuedeAtacarNPC = True
-                            Exit Function
-                        End If
-                        
-196                 Case e_Facciones.Ciudadano
-198                     If UserList(AttackerIndex).flags.Seguro Then
-200                         Call WriteConsoleMsg(AttackerIndex, "Debes quitar el seguro para atacar mascotas de otros ciudadanos(/seg)", e_FontTypeNames.FONTTYPE_INFO)
-202                         PuedeAtacarNPC = False
-                            Exit Function
-                        Else
-204                         Call WriteConsoleMsg(AttackerIndex, "Atacaste un la mascota de un ciudadano! Te has convertido en un Criminal.", e_FontTypeNames.FONTTYPE_INFO)
-206                         Call VolverCriminal(AttackerIndex)
-208                         PuedeAtacarNPC = True
-                            Exit Function
-                        End If
-                    
-210                 Case Else
-212                     PuedeAtacarNPC = True
-                        Exit Function
-                End Select
-            End If
-        End If
-        
-       
-
 220     PuedeAtacarNPC = True
-
-        
         Exit Function
-
 PuedeAtacarNPC_Err:
 222     Call TraceError(Err.Number, Err.Description, "SistemaCombate.PuedeAtacarNPC", Erl)
-
-        
 End Function
 
 Sub CalcularDarExp(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal ElDaño As Long)
@@ -2160,8 +1998,8 @@ Private Sub UserDañoEspecial(ByVal AtacanteIndex As Integer, ByVal VictimaIndex
 124     If puedeEnvenenar And (UserList(VictimaIndex).flags.Envenenado = 0) Then
 126         If RandomNumber(1, 100) < 30 Then
 128             UserList(VictimaIndex).flags.Envenenado = ObjData(ObjInd).Envenena
-130             Call WriteCombatConsoleMsg(VictimaIndex, "¡" & UserList(AtacanteIndex).Name & " te ha envenenado!")
-132             Call WriteCombatConsoleMsg(AtacanteIndex, "¡Has envenenado a " & UserList(VictimaIndex).Name & "!")
+130             Call WriteCombatConsoleMsg(VictimaIndex, "¡" & UserList(AtacanteIndex).name & " te ha envenenado!")
+132             Call WriteCombatConsoleMsg(AtacanteIndex, "¡Has envenenado a " & UserList(VictimaIndex).name & "!")
             
                 Exit Sub
             End If
@@ -2171,8 +2009,8 @@ Private Sub UserDañoEspecial(ByVal AtacanteIndex As Integer, ByVal VictimaIndex
 136         If RandomNumber(1, 100) < 10 Then
 138             UserList(VictimaIndex).flags.Incinerado = 1
 140             UserList(VictimaIndex).Counters.Incineracion = 1
-142             Call WriteCombatConsoleMsg(VictimaIndex, "¡" & UserList(AtacanteIndex).Name & " te ha Incinerado!")
-144             Call WriteCombatConsoleMsg(AtacanteIndex, "¡Has Incinerado a " & UserList(VictimaIndex).Name & "!")
+142             Call WriteCombatConsoleMsg(VictimaIndex, "¡" & UserList(AtacanteIndex).name & " te ha Incinerado!")
+144             Call WriteCombatConsoleMsg(AtacanteIndex, "¡Has Incinerado a " & UserList(VictimaIndex).name & "!")
             
                 Exit Sub
             End If
@@ -2187,8 +2025,8 @@ Private Sub UserDañoEspecial(ByVal AtacanteIndex As Integer, ByVal VictimaIndex
                 UserList(VictimaIndex).Counters.timeFx = 2
 156             Call SendData(SendTarget.ToPCAliveArea, VictimaIndex, PrepareMessageCreateFX(UserList(VictimaIndex).Char.charindex, 8, 0, UserList(VictimaIndex).Pos.X, UserList(VictimaIndex).Pos.y))
 
-158             Call WriteCombatConsoleMsg(VictimaIndex, "¡" & UserList(AtacanteIndex).Name & " te ha paralizado!")
-160             Call WriteCombatConsoleMsg(AtacanteIndex, "¡Has paralizado a " & UserList(VictimaIndex).Name & "!")
+158             Call WriteCombatConsoleMsg(VictimaIndex, "¡" & UserList(AtacanteIndex).name & " te ha paralizado!")
+160             Call WriteCombatConsoleMsg(AtacanteIndex, "¡Has paralizado a " & UserList(VictimaIndex).name & "!")
 
                 Exit Sub
             End If
@@ -2203,8 +2041,8 @@ Private Sub UserDañoEspecial(ByVal AtacanteIndex As Integer, ByVal VictimaIndex
                 UserList(VictimaIndex).Counters.timeFx = 2
 172             Call SendData(SendTarget.ToPCAliveArea, VictimaIndex, PrepareMessageParticleFX(UserList(VictimaIndex).Char.charindex, 30, 30, False, , UserList(VictimaIndex).Pos.X, UserList(VictimaIndex).Pos.y))
 
-174             Call WriteCombatConsoleMsg(VictimaIndex, "¡" & UserList(AtacanteIndex).Name & " te ha estupidizado!")
-176             Call WriteCombatConsoleMsg(AtacanteIndex, "¡Has estupidizado a " & UserList(VictimaIndex).Name & "!")
+174             Call WriteCombatConsoleMsg(VictimaIndex, "¡" & UserList(AtacanteIndex).name & " te ha estupidizado!")
+176             Call WriteCombatConsoleMsg(AtacanteIndex, "¡Has estupidizado a " & UserList(VictimaIndex).name & "!")
 
                 Exit Sub
             End If
