@@ -273,7 +273,7 @@ Public Function SelectNearestUser(ByVal NpcIndex As Integer, ByRef NearestTarget
         For i = 1 To ModAreas.ConnGroups(.pos.Map).CountEntrys
             UserIndex = ModAreas.ConnGroups(.pos.Map).UserEntrys(i)
             ' Find nearest user
-            If UserMod.IsVisible(UserList(UserIndex)) And UserCanAttackNpc(UserIndex, NpcIndex) = eCanAttack And _
+            If UserMod.IsVisible(UserList(UserIndex)) And UserCanAttackNpc(UserIndex, NpcIndex).CanAttack And _
                 NPCs.CanAttackUser(NpcIndex, UserIndex) = e_AttackInteractionResult.eCanAttack Then
                 Dim UserDistance As Double
                 UserDistance = Distance(UserList(UserIndex).pos.x, UserList(UserIndex).pos.y, .pos.x, .pos.y)

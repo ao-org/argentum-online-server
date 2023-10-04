@@ -110,6 +110,9 @@ Public Enum e_AttackInteractionResult
     eOutOfRange
     eOwnPet
     eCantAttackYourself
+    eAttackCitizenNpc
+    eAttackSameFaction
+    eAttackPetSameFaction
 End Enum
 
 Public Enum e_DeleteSource
@@ -266,6 +269,11 @@ Public Type t_LlamadaGM
 
 End Type
 
+Public Type t_AttackInteractionResult
+    Result As e_AttackInteractionResult
+    TurnPK As Boolean
+    CanAttack As Boolean
+End Type
 
 Public Enum e_PlayerType
     user = &H1

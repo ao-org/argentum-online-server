@@ -3220,7 +3220,12 @@ On Error GoTo ThrowNetToTarget_Err:
 164         NpcIndex = UserList(UserIndex).flags.TargetNPC.ArrayIndex
 166         If NpcList(npcIndex).flags.AfectaParalisis = 0 Then
 
-168             If Not PuedeAtacarNPC(UserIndex, npcIndex) Then
+                Dim UserAttackInteractionResult As t_AttackInteractionResult
+                UserAttackInteractionResult = UserCanAttackNpc(UserIndex, NpcIndex)
+                Call SendAttackInteractionMessage(UserIndex, UserAttackInteractionResult.Result)
+                If UserAttackInteractionResult.CanAttack Then
+                    If UserAttackInteractionResult.TurnPK Then Call VolverCriminal(UserIndex)
+                Else
                     Exit Sub
                 End If
 170             Call NPCAtacado(npcIndex, UserIndex)

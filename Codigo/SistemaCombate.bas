@@ -824,8 +824,15 @@ Public Sub UsuarioAtacaNpc(ByVal UserIndex As Integer, ByVal npcIndex As Integer
         
         On Error GoTo UsuarioAtacaNpc_Err
         
-100     If Not PuedeAtacarNPC(UserIndex, NpcIndex) Then Exit Sub
-
+        Dim UserAttackInteractionResult As t_AttackInteractionResult
+        UserAttackInteractionResult = UserCanAttackNpc(UserIndex, NpcIndex)
+        Call SendAttackInteractionMessage(UserIndex, UserAttackInteractionResult.Result)
+        If UserAttackInteractionResult.CanAttack Then
+            If UserAttackInteractionResult.TurnPK Then Call VolverCriminal(UserIndex)
+        Else
+            Exit Sub
+        End If
+        
 102     If UserList(UserIndex).flags.invisible = 0 Then Call NPCAtacado(NpcIndex, UserIndex)
         Call EffectsOverTime.TartgetWillAtack(UserList(UserIndex).EffectOverTime, NpcIndex, eNpc, e_phisical)
 104     If UserImpactoNpc(UserIndex, npcIndex, aType) Then
@@ -2398,10 +2405,16 @@ On Error GoTo ThrowArrowToTile_Err
 108            ThrowArrowToTile = True
 110        End If
 112    ElseIf MapData(targetPos.map, targetPos.x, targetPos.y).npcIndex > 0 Then
-114        If UserCanAttackNpc(UserIndex, MapData(targetPos.map, targetPos.x, targetPos.y).npcIndex) = eCanAttack Then
-116            Call ThrowProjectileToTarget(UserIndex, MapData(targetPos.map, targetPos.x, targetPos.y).npcIndex, eNpc)
-118            ThrowArrowToTile = True
-120        End If
+            Dim UserAttackInteractionResult As t_AttackInteractionResult
+            UserAttackInteractionResult = UserCanAttackNpc(UserIndex, MapData(TargetPos.Map, TargetPos.X, TargetPos.y).NpcIndex)
+            Call SendAttackInteractionMessage(UserIndex, UserAttackInteractionResult.Result)
+            If UserAttackInteractionResult.CanAttack Then
+                If UserAttackInteractionResult.TurnPK Then Call VolverCriminal(UserIndex)
+                Call ThrowProjectileToTarget(UserIndex, MapData(TargetPos.Map, TargetPos.X, TargetPos.y).NpcIndex, eNpc)
+                ThrowArrowToTile = True
+            Else
+                Exit Function
+            End If
 122    End If
     Exit Function
 ThrowArrowToTile_Err:

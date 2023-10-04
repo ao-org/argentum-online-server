@@ -634,7 +634,7 @@ Private Function PuedeLanzar(ByVal UserIndex As Integer, ByVal HechizoIndex As I
                     Exit Function
                 End If
             End If
-            Dim UserAttackInteractionResult As e_AttackInteractionResult
+            
             If IsValidUserRef(.flags.targetUser) Then
                 If Hechizos(HechizoIndex).TargetEffectType = e_TargetEffectType.ePositive Then
                     Dim UserInteractionResult As e_InteractionResult
@@ -645,17 +645,21 @@ Private Function PuedeLanzar(ByVal UserIndex As Integer, ByVal HechizoIndex As I
                     End If
                 End If
                 If Hechizos(HechizoIndex).TargetEffectType = e_TargetEffectType.eNegative Then
-                    UserAttackInteractionResult = UserMod.CanAttackUser(UserIndex, UserList(UserIndex).VersionId, .flags.targetUser.ArrayIndex, .flags.targetUser.VersionId)
-                    If UserAttackInteractionResult <> e_AttackInteractionResult.eCanAttack Then
-                        Call SendAttackInteractionMessage(UserIndex, UserAttackInteractionResult)
+                    Dim UserAttackInteractionResultUser As e_AttackInteractionResult
+                    UserAttackInteractionResultUser = UserMod.CanAttackUser(UserIndex, UserList(UserIndex).VersionId, .flags.TargetUser.ArrayIndex, .flags.TargetUser.VersionId)
+                    If UserAttackInteractionResultUser <> e_AttackInteractionResult.eCanAttack Then
+                        Call SendAttackInteractionMessage(UserIndex, UserAttackInteractionResultUser)
                         Exit Function
                     End If
                 End If
             ElseIf IsValidNpcRef(.flags.TargetNPC) Then
                 If Hechizos(HechizoIndex).TargetEffectType = e_TargetEffectType.eNegative Then
+                    Dim UserAttackInteractionResult As t_AttackInteractionResult
                     UserAttackInteractionResult = UserCanAttackNpc(UserIndex, .flags.TargetNPC.ArrayIndex)
-                    If UserAttackInteractionResult <> e_AttackInteractionResult.eCanAttack Then
-                        Call SendAttackInteractionMessage(UserIndex, UserAttackInteractionResult)
+                    Call SendAttackInteractionMessage(UserIndex, UserAttackInteractionResult.Result)
+                    If UserAttackInteractionResult.CanAttack Then
+                        If UserAttackInteractionResult.TurnPK Then VolverCriminal (UserIndex)
+                    Else
                         Exit Function
                     End If
                 End If
@@ -2528,6 +2532,8 @@ End Sub
 Sub HechizoEstadoNPC(ByVal NpcIndex As Integer, ByVal hIndex As Integer, ByRef b As Boolean, ByVal UserIndex As Integer)
         On Error GoTo HechizoEstadoNPC_Err
         
+        Dim UserAttackInteractionResult As t_AttackInteractionResult
+        
 100     If IsSet(Hechizos(hIndex).Effects, e_SpellEffects.Invisibility) Then
 102         Call InfoHechizo(UserIndex)
 104         NpcList(NpcIndex).flags.invisible = 1
@@ -2535,8 +2541,13 @@ Sub HechizoEstadoNPC(ByVal NpcIndex As Integer, ByVal hIndex As Integer, ByRef b
         End If
 
 108     If Hechizos(hIndex).Envenena > 0 Then
-110         If Not PuedeAtacarNPC(UserIndex, NpcIndex) Then
-112             b = False
+
+            UserAttackInteractionResult = UserCanAttackNpc(UserIndex, NpcIndex)
+            Call SendAttackInteractionMessage(UserIndex, UserAttackInteractionResult.Result)
+            If UserAttackInteractionResult.CanAttack Then
+                If UserAttackInteractionResult.TurnPK Then Call VolverCriminal(UserIndex)
+            Else
+                b = False
                 Exit Sub
             End If
 114         Call NPCAtacado(NpcIndex, UserIndex)
@@ -2583,8 +2594,14 @@ Sub HechizoEstadoNPC(ByVal NpcIndex As Integer, ByVal hIndex As Integer, ByRef b
 
 150     If IsSet(Hechizos(hIndex).Effects, e_SpellEffects.Paralize) Then
 152         If NpcList(NpcIndex).flags.AfectaParalisis = 0 Then
-154             If Not PuedeAtacarNPC(UserIndex, NpcIndex) Then
-156                 b = False
+
+                
+                UserAttackInteractionResult = UserCanAttackNpc(UserIndex, NpcIndex)
+                Call SendAttackInteractionMessage(UserIndex, UserAttackInteractionResult.Result)
+                If UserAttackInteractionResult.CanAttack Then
+                    If UserAttackInteractionResult.TurnPK Then Call VolverCriminal(UserIndex)
+                Else
+                    b = False
                     Exit Sub
                 End If
 
@@ -2633,8 +2650,13 @@ Sub HechizoEstadoNPC(ByVal NpcIndex As Integer, ByVal hIndex As Integer, ByRef b
  
 208     If IsSet(Hechizos(hIndex).Effects, e_SpellEffects.Immobilize) Then
 210         If NpcList(NpcIndex).flags.AfectaParalisis = 0 Then
-216             If Not PuedeAtacarNPC(UserIndex, NpcIndex) Then
-218                 b = False
+
+                UserAttackInteractionResult = UserCanAttackNpc(UserIndex, NpcIndex)
+                Call SendAttackInteractionMessage(UserIndex, UserAttackInteractionResult.Result)
+                If UserAttackInteractionResult.CanAttack Then
+                    If UserAttackInteractionResult.TurnPK Then Call VolverCriminal(UserIndex)
+                Else
+                    b = False
                     Exit Sub
                 End If
 220             Call NPCAtacado(NpcIndex, UserIndex)
@@ -2715,7 +2737,7 @@ Sub HechizoPropNPC(ByVal hIndex As Integer, ByVal npcIndex As Integer, ByVal Use
         
         On Error GoTo HechizoPropNPC_Err
         
-
+        Dim UserAttackInteractionResult As t_AttackInteractionResult
         Dim Damage As Long
         
         Dim DamageStr As String
@@ -2741,11 +2763,15 @@ Sub HechizoPropNPC(ByVal hIndex As Integer, ByVal npcIndex As Integer, ByVal Use
         
 126     ElseIf IsSet(Hechizos(hIndex).Effects, e_SpellEffects.eDoDamage) Then
 
-128         If Not PuedeAtacarNPC(UserIndex, NpcIndex) Then
-130             b = False
+            UserAttackInteractionResult = UserCanAttackNpc(UserIndex, NpcIndex)
+            Call SendAttackInteractionMessage(UserIndex, UserAttackInteractionResult.Result)
+            If UserAttackInteractionResult.CanAttack Then
+                If UserAttackInteractionResult.TurnPK Then Call VolverCriminal(UserIndex)
+            Else
+                b = False
                 Exit Sub
             End If
-        
+                    
 132         Call NPCAtacado(NpcIndex, UserIndex)
 134         Damage = RandomNumber(Hechizos(hIndex).MinHp, Hechizos(hIndex).MaxHp)
 136         Damage = Damage + Porcentaje(Damage, 3 * UserList(UserIndex).Stats.ELV)

@@ -3594,7 +3594,13 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                     
                         'Is it attackable???
 232                     If NpcList(tN).Attackable <> 0 Then
-234                         If PuedeAtacarNPC(UserIndex, tN) Then
+
+
+                            Dim UserAttackInteractionResult As t_AttackInteractionResult
+                            UserAttackInteractionResult = UserCanAttackNpc(UserIndex, tN)
+                            Call SendAttackInteractionMessage(UserIndex, UserAttackInteractionResult.Result)
+                            If UserAttackInteractionResult.CanAttack Then
+                                If UserAttackInteractionResult.TurnPK Then Call VolverCriminal(UserIndex)
 236                             Call UsuarioAtacaNpc(UserIndex, tN, Ranged)
 238                             consumirMunicion = True
                                 If ProjectileType > 0 And .flags.Oculto = 0 Then

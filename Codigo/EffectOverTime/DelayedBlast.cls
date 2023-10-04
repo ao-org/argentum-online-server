@@ -213,7 +213,10 @@ Private Sub DoBlast()
                 End If
             ElseIf MapData(TargetMap, j, i).npcIndex > 0 Then
                 If DotInfo.TargetRef.RefType = eUser Then
-                    If UserCanAttackNpc(DotInfo.TargetRef.ArrayIndex, MapData(TargetMap, j, i).NpcIndex) = eCanAttack Then
+                    Dim UserAttackInteractionResult As t_AttackInteractionResult
+                    UserAttackInteractionResult = UserCanAttackNpc(DotInfo.TargetRef.ArrayIndex, MapData(TargetMap, j, i).NpcIndex)
+                    If UserAttackInteractionResult.CanAttack Then
+                        If UserAttackInteractionResult.TurnPK Then Call VolverCriminal(DotInfo.TargetRef.ArrayIndex)
                         Call UserDamageToNpc(DotInfo.TargetRef.ArrayIndex, MapData(TargetMap, j, i).npcIndex, GetDamageForTile(j, i, GetUserDamageWithItem(DotInfo.TargetRef.ArrayIndex, SourceObjIndex, 0)), e_phisical, SourceObjIndex)
                     End If
                 Else

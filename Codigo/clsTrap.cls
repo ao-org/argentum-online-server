@@ -215,7 +215,7 @@ Public Function CanAffectTarget(ByVal TargetIndex, ByVal TargetType As e_Referen
             Exit Function
         End If
         If TargetType = eNpc Then
-            CanAffectTarget = UserCanAttackNpc(mDotInfo.TargetRef.ArrayIndex, TargetIndex) = eCanAttack
+            CanAffectTarget = UserCanAttackNpc(mDotInfo.TargetRef.ArrayIndex, TargetIndex).CanAttack
             Exit Function
         End If
     Else
