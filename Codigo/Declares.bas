@@ -110,6 +110,7 @@ Public Enum e_AttackInteractionResult
     eOutOfRange
     eOwnPet
     eCantAttackYourself
+    eRemoveSafeCitizenNpc
     eAttackCitizenNpc
     eAttackSameFaction
     eAttackPetSameFaction

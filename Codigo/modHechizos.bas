@@ -2598,14 +2598,18 @@ Sub HechizoEstadoNPC(ByVal NpcIndex As Integer, ByVal hIndex As Integer, ByRef b
                 
                 UserAttackInteractionResult = UserCanAttackNpc(UserIndex, NpcIndex)
                 Call SendAttackInteractionMessage(UserIndex, UserAttackInteractionResult.Result)
-                If UserAttackInteractionResult.CanAttack Then
-                    If UserAttackInteractionResult.TurnPK Then Call VolverCriminal(UserIndex)
-                Else
-                    b = False
-                    Exit Sub
+                
+                'Permitimos que puedan inmovilziar a los bichos.
+                If UserAttackInteractionResult.result <> eAttackCitizenNpc And UserAttackInteractionResult.result <> eRemoveSafeCitizenNpc Then
+                    If UserAttackInteractionResult.CanAttack Then
+                        If UserAttackInteractionResult.TurnPK Then Call VolverCriminal(UserIndex)
+                    Else
+                        b = False
+                        Exit Sub
+                    End If
                 End If
 
-158             Call NPCAtacado(NpcIndex, UserIndex)
+158             Call NPCAtacado(NpcIndex, UserIndex, False)
 160             Call InfoHechizo(UserIndex)
 162             NpcList(NpcIndex).flags.Paralizado = 1
 164             NpcList(NpcIndex).Contadores.Paralisis = (Hechizos(hIndex).Duration * 6.5) * 6
@@ -2653,13 +2657,16 @@ Sub HechizoEstadoNPC(ByVal NpcIndex As Integer, ByVal hIndex As Integer, ByRef b
 
                 UserAttackInteractionResult = UserCanAttackNpc(UserIndex, NpcIndex)
                 Call SendAttackInteractionMessage(UserIndex, UserAttackInteractionResult.Result)
-                If UserAttackInteractionResult.CanAttack Then
-                    If UserAttackInteractionResult.TurnPK Then Call VolverCriminal(UserIndex)
-                Else
-                    b = False
-                    Exit Sub
+                'Permitimos que puedan inmovilziar a los bichos.
+                If UserAttackInteractionResult.result <> eAttackCitizenNpc And UserAttackInteractionResult.result <> eRemoveSafeCitizenNpc Then
+                    If UserAttackInteractionResult.CanAttack Then
+                        If UserAttackInteractionResult.TurnPK Then Call VolverCriminal(UserIndex)
+                    Else
+                        b = False
+                        Exit Sub
+                    End If
                 End If
-220             Call NPCAtacado(NpcIndex, UserIndex)
+220             Call NPCAtacado(NpcIndex, UserIndex, False)
 222             NpcList(NpcIndex).flags.Inmovilizado = 1
 224             NpcList(NpcIndex).Contadores.Inmovilizado = (Hechizos(hIndex).Duration * 6.5) * 6
 226             NpcList(NpcIndex).flags.Paralizado = 0

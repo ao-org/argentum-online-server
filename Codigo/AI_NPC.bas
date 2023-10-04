@@ -185,7 +185,11 @@ Private Sub PerseguirUsuarioCercano(ByVal NpcIndex As Integer)
 136             If npcEraPasivo Then
                     ' Significa que alguien le pego, y esta en modo agresivo trantando de darle.
                     ' El unico objetivo que importa aca es el atacante; los demas son ignorados.
-138                 If EnRangoVision(npcIndex, agresor.ArrayIndex) Then Call SetUserRef(.targetUser, agresor.ArrayIndex)
+138                 If EnRangoVision(NpcIndex, agresor.ArrayIndex) Then
+                        Call SetUserRef(.TargetUser, agresor.ArrayIndex)
+                    Else
+                        .flags.AttackedBy = vbNullString
+                    End If
     
                 Else ' El NPC es hostil siempre, le quiere pegar a alguien.
     

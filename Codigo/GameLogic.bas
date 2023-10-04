@@ -2286,6 +2286,8 @@ Public Sub SendAttackInteractionMessage(ByVal UserIndex As Integer, ByVal CanAtt
             Call WriteLocaleMsg(UserIndex, "¡Atacaste un ciudadano! Te has convertido en un Criminal.", e_FontTypeNames.FONTTYPE_WARNING)
         Case e_AttackInteractionResult.eAttackPetSameFaction
             Call WriteLocaleMsg(UserIndex, "¡Atacaste una mascota de un ciudadano! Te has convertido en un Criminal.", e_FontTypeNames.FONTTYPE_WARNING)
+        Case e_AttackInteractionResult.eRemoveSafeCitizenNpc
+            Call WriteConsoleMsg(UserIndex, "Debes quitar el seguro para poder atacar la criatura que esta luchando con otro usuario.", e_FontTypeNames.FONTTYPE_WARNING)
         Case e_AttackInteractionResult.eAttackCitizenNpc
             Call WriteConsoleMsg(UserIndex, "¡Atacaste una criatura de otro usuario! Te has convertido en un Criminal.", e_FontTypeNames.FONTTYPE_WARNING)
         Case Else

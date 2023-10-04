@@ -1895,7 +1895,7 @@ DameUserIndexConNombre_Err:
         
 End Function
 
-Sub NPCAtacado(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
+Sub NPCAtacado(ByVal NpcIndex As Integer, ByVal UserIndex As Integer, Optional ByVal AffectsOwner As Boolean = True)
         On Error GoTo NPCAtacado_Err
         
         ' WyroX: El usuario pierde la protección
@@ -1906,11 +1906,11 @@ Sub NPCAtacado(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
 104     If Not IsSet(NpcList(npcIndex).flags.StatusMask, eTaunted) And NpcList(npcIndex).Movement <> Estatico And NpcList(npcIndex).flags.AttackedFirstBy = vbNullString Then
 106         Call SetUserRef(NpcList(npcIndex).TargetUser, UserIndex)
 108         NpcList(NpcIndex).Hostile = 1
-110         NpcList(NpcIndex).flags.AttackedBy = UserList(UserIndex).Name
+110         If AffectsOwner Then NpcList(NpcIndex).flags.AttackedBy = UserList(UserIndex).name
         End If
         
         'Guarda el NPC que estas atacando ahora.
-114     Call SetNpcRef(UserList(UserIndex).flags.NPCAtacado, NpcIndex)
+114     If AffectsOwner Then Call SetNpcRef(UserList(UserIndex).flags.NPCAtacado, NpcIndex)
 
 116     If NpcList(NpcIndex).flags.Faccion = Armada And Status(UserIndex) = e_Facciones.Ciudadano Then
 118         Call VolverCriminal(UserIndex)

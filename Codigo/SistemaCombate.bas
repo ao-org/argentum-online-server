@@ -675,6 +675,10 @@ Public Function NpcAtacaUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integ
         End If
 124     Call CancelExit(UserIndex)
         
+        If NpcList(NpcIndex).flags.Inmovilizado = 0 And NpcList(NpcIndex).flags.AttackedBy <> UserList(UserIndex).name Then
+            NpcList(NpcIndex).flags.AttackedBy = vbNullString
+        End If
+        
         Dim danio As Long
 
         danio = -1

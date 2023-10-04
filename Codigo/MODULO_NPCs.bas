@@ -2151,7 +2151,7 @@ UserCanAttackNpc.TurnPK = False
                         
                         
                         If UserList(UserIndex).flags.Seguro Then
-                            UserCanAttackNpc.Result = eRemoveSafe
+                            UserCanAttackNpc.result = eRemoveSafeCitizenNpc
                             Exit Function
                         Else
                             UserCanAttackNpc.TurnPK = True
