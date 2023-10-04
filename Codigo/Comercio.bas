@@ -161,8 +161,19 @@ Public Sub Comercio(ByVal Modo As eModoComercio, ByVal UserIndex As Integer, ByV
                 Exit Sub
           
 178         ElseIf (NpcList(NpcIndex).TipoItems <> ObjData(Objeto.ObjIndex).OBJType And NpcList(NpcIndex).TipoItems <> e_OBJType.otCualquiera) Or Objeto.ObjIndex = iORO Then
-180             Call WriteConsoleMsg(UserIndex, "Lo siento, no estoy interesado en este tipo de objetos.", e_FontTypeNames.FONTTYPE_TALK)
-                Exit Sub
+
+                'Agrego que si vende el item, lo compre tambien.
+                Dim LoVende As Boolean
+                Dim i As Integer
+                For i = 1 To NpcList(NpcIndex).invent.NroItems
+                    If NpcList(NpcIndex).invent.Object(i).objIndex = Objeto.objIndex Then
+                        LoVende = True
+                    End If
+                Next i
+                If Not LoVende Then
+180                 Call WriteConsoleMsg(UserIndex, "Lo siento, no estoy interesado en este tipo de objetos.", e_FontTypeNames.FONTTYPE_TALK)
+                    Exit Sub
+                End If
 
 182         ElseIf UserList(UserIndex).Invent.Object(Slot).amount < 0 Or Cantidad = 0 Then
                 Exit Sub
