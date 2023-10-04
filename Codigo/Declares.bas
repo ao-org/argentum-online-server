@@ -31,6 +31,8 @@ Option Explicit
 ''
 ' Modulo de declaraciones. Aca hay de todo.
 '
+Public Const API_URL_SERVER As String = "https://localhost:9090"
+
 Public Enum e_AccionBarra
     Runa = 1
     Resucitar = 2
