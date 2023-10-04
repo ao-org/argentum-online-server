@@ -1017,39 +1017,29 @@ End Sub
 Private Sub TimerGuardarUsuarios_Timer()
 
 On Error GoTo Handler
-    
-    ' Guardar usuarios (solo si pasó el tiempo mínimo para guardar)
-    Dim UserIndex As Integer, UserGuardados As Integer
-    Dim PerformanceTimer As Long
-    Call PerformanceTestStart(PerformanceTimer)
-    For UserIndex = 1 To LastUser
-    
-        With UserList(UserIndex)
-
-            If .flags.UserLogged Then
-                If GetTickCount - .Counters.LastSave > IntervaloGuardarUsuarios Then
-                
-                    Call SaveUser(UserIndex)
-                    
-                    UserGuardados = UserGuardados + 1
-                    
-                    If UserGuardados > NumUsers Then Exit For
-                    'limit the amount of time we block the only thread we have here, lets save some user on the next loop
-                    If (GetTickCount - PerformanceTimer) > 100 Then Exit For
+    If IsFeatureEnabled("auto_save_chars") Then
+        ' Guardar usuarios (solo si pasó el tiempo mínimo para guardar)
+        Dim UserIndex As Integer, UserGuardados As Integer
+        Dim PerformanceTimer As Long
+        Call PerformanceTestStart(PerformanceTimer)
+        For UserIndex = 1 To LastUser
+            With UserList(UserIndex)
+                If .flags.UserLogged Then
+                    If GetTickCount - .Counters.LastSave > IntervaloGuardarUsuarios Then
+                        Call SaveUser(UserIndex)
+                        UserGuardados = UserGuardados + 1
+                        If UserGuardados > NumUsers Then Exit For
+                        'limit the amount of time we block the only thread we have here, lets save some user on the next loop
+                        If (GetTickCount - PerformanceTimer) > 100 Then Exit For
+                    End If
                 End If
-    
-            End If
-        
-        End With
-
-    Next
-    Call PerformTimeLimitCheck(PerformanceTimer, "TimerGuardarUsuarios_Timer", 100)
+            End With
+        Next
+        Call PerformTimeLimitCheck(PerformanceTimer, "TimerGuardarUsuarios_Timer", 100)
+    End If
     Exit Sub
-    
 Handler:
     Call TraceError(Err.Number, Err.Description, "frmMain.TimreGuardarUsuarios_Timer")
-
-    
 End Sub
 
 Private Sub Minuto_Timer()
