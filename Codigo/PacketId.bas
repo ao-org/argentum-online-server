@@ -1,536 +1,540 @@
 Attribute VB_Name = "PacketId"
 Public Enum ServerPacketID
-    Connected 'xx
-    logged  'xx           ' LOGGED  0
-    RemoveDialogs           ' QTDL
-    RemoveCharDialog        ' QDL
-    NavigateToggle          ' NAVEG
-    EquiteToggle
-    Disconnect              ' FINOK
-    CommerceEnd             ' FINCOMOK
-    BankEnd                 ' FINBANOK
-    CommerceInit            ' INITCOM
-    BankInit                ' INITBANCO
-    UserCommerceInit        ' INITCOMUSU   10
-    UserCommerceEnd         ' FINCOMUSUOK
-    ShowBlacksmithForm      ' SFH
-    ShowCarpenterForm       ' SFC
-    NPCKillUser             ' 6
-    BlockedWithShieldUser   ' 7
-    BlockedWithShieldOther  ' 8
-    CharSwing               ' U1
-    SafeModeOn              ' SEGON
-    SafeModeOff             ' SEGOFF 20
-    PartySafeOn
-    PartySafeOff
-    CantUseWhileMeditating  ' M!
-    UpdateSta               ' ASS
-    UpdateMana              ' ASM
-    UpdateHP                ' ASH
-    UpdateGold              ' ASG
-    UpdateExp               ' ASE 30
-    changeMap               ' CM
-    PosUpdate               ' PU
-    NPCHitUser              ' N2
-    UserHittedByUser        ' N4
-    UserHittedUser          ' N5
-    ChatOverHead            ' ||
-    LocaleChatOverHead
-    ConsoleMsg              ' || - Beware!! its the same as above, but it was properly splitted
-    GuildChat               ' |+   40
-    ShowMessageBox          ' !!
-    MostrarCuenta
-    CharacterCreate         ' CC
-    CharacterRemove         ' BP
-    CharacterMove           ' MP, +, * and _ '
-    CharacterTranslate
-    UserIndexInServer       ' IU
-    UserCharIndexInServer   ' IP
-    ForceCharMove
-    CharacterChange         ' CP
-    ObjectCreate            ' HO
-    fxpiso
-    ObjectDelete            ' BO  50
-    BlockPosition           ' BQ
-    PlayMIDI                ' TM
-    PlayWave                ' TW
-    guildList               ' GL
-    AreaChanged             ' CA
-    PauseToggle             ' BKW
-    RainToggle              ' LLU
-    CreateFX                ' CFX
-    UpdateUserStats         ' EST
-    WorkRequestTarget       ' T01 60
-    ChangeInventorySlot     ' CSI
-    InventoryUnlockSlots
-    ChangeBankSlot          ' SBO
-    ChangeSpellSlot         ' SHS
-    Atributes               ' ATR
-    BlacksmithWeapons       ' LAH
-    BlacksmithArmors        ' LAR
-    CarpenterObjects        ' OBR
-    RestOK                  ' DOK
-    ErrorMsg                ' ERR
-    Blind                   ' CEGU 70
-    Dumb                    ' DUMB
-    ShowSignal              ' MCAR
-    ChangeNPCInventorySlot  ' NPCI
-    UpdateHungerAndThirst   ' EHYS
-    MiniStats               ' MEST
-    LevelUp                 ' SUNI
-    AddForumMsg             ' FMSG
-    ShowForumForm           ' MFOR
-    SetInvisible            ' NOVER 80
-    MeditateToggle          ' MEDOK
-    BlindNoMore             ' NSEGUE
-    DumbNoMore              ' NESTUP
-    SendSkills              ' SKILLS
-    TrainerCreatureList     ' LSTCRI
-    guildNews               ' GUILDNE
-    OfferDetails            ' PEACEDE & ALLIEDE
-    AlianceProposalsList    ' ALLIEPR
-    PeaceProposalsList      ' PEACEPR 90
-    CharacterInfo           ' CHRINFO
-    GuildLeaderInfo         ' LEADERI
-    GuildDetails            ' CLANDET
-    ShowGuildFundationForm  ' SHOWFUN
-    ParalizeOK              ' PARADOK
-    StunStart               ' Stun start time
-    ShowUserRequest         ' PETICIO
-    ChangeUserTradeSlot     ' COMUSUINV
-    'SendNight              ' NOC
-    UpdateTagAndStatus
-    FYA
-    CerrarleCliente
-    Contadores
-    ShowPapiro              ' SWP
-    UpdateCooldownType
+
+    eConnected
+    elogged                  ' LOGGED  0
+    eRemoveDialogs           ' QTDL
+    eRemoveCharDialog        ' QDL
+    eNavigateToggle          ' NAVEG
+    eEquiteToggle
+    eDisconnect              ' FINOK
+    eCommerceEnd             ' FINCOMOK
+    eBankEnd                 ' FINBANOK
+    eCommerceInit            ' INITCOM
+    eBankInit                ' INITBANCO
+    eUserCommerceInit        ' INITCOMUSU   10
+    eUserCommerceEnd         ' FINCOMUSUOK
+    eShowBlacksmithForm      ' SFH
+    eShowCarpenterForm       ' SFC
+    eNPCKillUser             ' 6
+    eBlockedWithShieldUser   ' 7
+    eBlockedWithShieldOther  ' 8
+    eCharSwing               ' U1
+    eSafeModeOn              ' SEGON
+    eSafeModeOff             ' SEGOFF 20
+    ePartySafeOn
+    ePartySafeOff
+    eCantUseWhileMeditating  ' M!
+    eUpdateSta               ' ASS
+    eUpdateMana              ' ASM
+    eUpdateHP                ' ASH
+    eUpdateGold              ' ASG
+    eUpdateExp               ' ASE 30
+    eChangeMap               ' CM
+    ePosUpdate               ' PU
+    eNPCHitUser              ' N2
+    eUserHittedByUser        ' N4
+    eUserHittedUser          ' N5
+    eChatOverHead            ' ||
+    eLocaleChatOverHead
+    eConsoleMsg              ' || - Beware!! its the same as above, but it was properly splitted
+    eGuildChat               ' |+   40
+    eShowMessageBox          ' !!
+    eMostrarCuenta
+    eCharacterCreate         ' CC
+    eCharacterRemove         ' BP
+    eCharacterMove           ' MP, +, * and _ '
+    eCharacterTranslate
+    eUserIndexInServer       ' IU
+    eUserCharIndexInServer   ' IP
+    eForceCharMove
+    eCharacterChange         ' CP
+    eObjectCreate            ' HO
+    efxpiso
+    eObjectDelete            ' BO  50
+    eBlockPosition           ' BQ
+    ePlayMIDI                ' TM
+    ePlayWave                ' TW
+    eguildList               ' GL
+    eAreaChanged             ' CA
+    ePauseToggle             ' BKW
+    eRainToggle              ' LLU
+    eCreateFX                ' CFX
+    eUpdateUserStats         ' EST
+    eWorkRequestTarget       ' T01 60
+    eChangeInventorySlot     ' CSI
+    eInventoryUnlockSlots
+    eChangeBankSlot          ' SBO
+    eChangeSpellSlot         ' SHS
+    eAtributes               ' ATR
+    eBlacksmithWeapons       ' LAH
+    eBlacksmithArmors        ' LAR
+    eCarpenterObjects        ' OBR
+    eRestOK                  ' DOK
+    eErrorMsg                ' ERR
+    eBlind                   ' CEGU 70
+    eDumb                    ' DUMB
+    eShowSignal              ' MCAR
+    eChangeNPCInventorySlot  ' NPCI
+    eUpdateHungerAndThirst   ' EHYS
+    eMiniStats               ' MEST
+    eLevelUp                 ' SUNI
+    eAddForumMsg             ' FMSG
+    eShowForumForm           ' MFOR
+    eSetInvisible            ' NOVER 80
+    eMeditateToggle          ' MEDOK
+    eBlindNoMore             ' NSEGUE
+    eDumbNoMore              ' NESTUP
+    eSendSkills              ' SKILLS
+    eTrainerCreatureList     ' LSTCRI
+    eguildNews               ' GUILDNE
+    eOfferDetails            ' PEACEDE & ALLIEDE
+    eAlianceProposalsList    ' ALLIEPR
+    ePeaceProposalsList      ' PEACEPR 90
+    eCharacterInfo           ' CHRINFO
+    eGuildLeaderInfo         ' LEADERI
+    eGuildDetails            ' CLANDET
+    eShowGuildFundationForm  ' SHOWFUN
+    eParalizeOK              ' PARADOK
+    eStunStart               ' Stun start time
+    eShowUserRequest         ' PETICIO
+    eChangeUserTradeSlot     ' COMUSUINV
+     'SendNight              ' NOC
+    eUpdateTagAndStatus
+    eFYA
+    eCerrarleCliente
+    eContadores
+    eShowPapiro
+    eUpdateCooldownType
     
     'GM messages
-    SpawnListt               ' SPL
-    ShowSOSForm             ' MSOS
-    ShowMOTDEditionForm     ' ZMOTD
-    ShowGMPanelForm         ' ABPANEL
-    UserNameList            ' LISTUSU
-    UserOnline '110
-    ParticleFX
-    ParticleFXToFloor
-    ParticleFXWithDestino
-    ParticleFXWithDestinoXY
-    Hora
-    light
-    AuraToChar
-    SpeedToChar
-    LightToFloor
-    NieveToggle
-    NieblaToggle
-    Goliath
-    TextOverChar
-    TextOverTile
-    TextCharDrop
-    ConsoleCharText
-    FlashScreen
-    AlquimistaObj
-    ShowAlquimiaForm
-    SastreObj
-    ShowSastreForm ' 126
-    VelocidadToggle
-    MacroTrabajoToggle
-    BindKeys
-    ShowFrmLogear
-    ShowFrmMapa
-    InmovilizadoOK
-    BarFx
-    LocaleMsg
-    ShowPregunta
-    DatosGrupo
-    ubicacion
-    ArmaMov
-    EscudoMov
-    ViajarForm
-    NadarToggle
-    ShowFundarClanForm
-    CharUpdateHP
-    CharUpdateMAN
-    PosLLamadaDeClan
-    QuestDetails
-    QuestListSend
-    NpcQuestListSend
-    UpdateNPCSimbolo
-    ClanSeguro
-    Intervals
-    UpdateUserKey
-    UpdateRM
-    UpdateDM
-    SeguroResu
-    Stopped
-    InvasionInfo
-    CommerceRecieveChatMessage
-    DoAnimation
-    OpenCrafting
-    CraftingItem
-    CraftingCatalyst
-    CraftingResult
-    ForceUpdate
-    GuardNotice
-    AnswerReset
-    ObjQuestListSend
-    UpdateBankGld
-    PelearConPezEspecial
-    Privilegios
-    ShopInit
-    UpdateShopCliente
-    SendSkillCdUpdate
-    UpdateFlag
-    CharAtaca
-    NotificarClienteSeguido
-    RecievePosSeguimiento
-    CancelarSeguimiento
-    GetInventarioHechizos
-    NotificarClienteCasteo
-    SendFollowingCharIndex
-    ForceCharMoveSiguiendo
-    PosUpdateCharindex
-    PosUpdateChar
-    PlayWaveStep
-    ShopPjsInit
-    DebugDataResponse
-    CreateProjectile
-    UpdateTrap
-    UpdateGroupInfo
-    RequestTelemetry
-    UpdateCharValue
-    SendClientToggles
-    #If PYMMO = 0 Then
-    AccountCharacterList
-    #End If
+    eSpawnListt               ' SPL
+    eShowSOSForm             ' MSOS
+    eShowMOTDEditionForm     ' ZMOTD
+    eShowGMPanelForm         ' ABPANEL
+    eUserNameList            ' LISTUSU
+    eUserOnline '110
+    eParticleFX
+    eParticleFXToFloor
+    eParticleFXWithDestino
+    eParticleFXWithDestinoXY
+    ehora
+    eLight
+    eAuraToChar
+    eSpeedToChar
+    eLightToFloor
+    eNieveToggle
+    eNieblaToggle
+    eGoliath
+    eTextOverChar
+    eTextOverTile
+    eTextCharDrop
+    eConsoleCharText
+    eFlashScreen
+    eAlquimistaObj
+    eShowAlquimiaForm
+    eSastreObj
+    eShowSastreForm ' 126
+    eVelocidadToggle
+    eMacroTrabajoToggle
+    eBindKeys
+    eShowFrmLogear
+    eShowFrmMapa
+    eInmovilizadoOK
+    eBarFx
+    eLocaleMsg
+    eShowPregunta
+    eDatosGrupo
+    eubicacion
+    eArmaMov
+    eEscudoMov
+    eViajarForm
+    eNadarToggle
+    eShowFundarClanForm
+    eCharUpdateHP
+    eCharUpdateMAN
+    ePosLLamadaDeClan
+    eQuestDetails
+    eQuestListSend
+    eNpcQuestListSend
+    eUpdateNPCSimbolo
+    eClanSeguro
+    eIntervals
+    eUpdateUserKey
+    eUpdateRM
+    eUpdateDM
+    eSeguroResu
+    eStopped
+    eInvasionInfo
+    eCommerceRecieveChatMessage
+    eDoAnimation
+    eOpenCrafting
+    eCraftingItem
+    eCraftingCatalyst
+    eCraftingResult
+    eForceUpdate
+    eGuardNotice
+    eAnswerReset
+    eObjQuestListSend
+    eUpdateBankGld
+    ePelearConPezEspecial
+    ePrivilegios
+    eShopInit
+    eUpdateShopClienteCredits
+    eSendSkillCdUpdate
+    eUpdateFlag
+    eCharAtaca
+    eNotificarClienteSeguido
+    eRecievePosSeguimiento
+    eCancelarSeguimiento
+    eGetInventarioHechizos
+    eNotificarClienteCasteo
+    eSendFollowingCharindex
+    eForceCharMoveSiguiendo
+    ePosUpdateUserChar
+    ePosUpdateChar
+    ePlayWaveStep
+    eShopPjsInit
+    eDebugDataResponse
+    eCreateProjectile
+    eUpdateTrap
+    eUpdateGroupInfo
+    eRequestTelemetry
+    eUpdateCharValue 'updates some char index value based on enum
+    eSendClientToggles 'Get active feature Toggles from server
+#If PYMMO = 0 Then
+    eAccountCharacterList
+#End If
     [PacketCount]
 End Enum
 
 Public Enum ClientPacketID
-    CraftCarpenter          'CNC
-    WorkLeftClick           'WLC
-    CreateNewGuild          'CIG
-    SpellInfo               'INFS
-    EquipItem               'EQUI
-    Change_Heading           'CHEA
-    ModifySkills            'SKSE
-    Train                   'ENTR
-    CommerceBuy             'COMP
-    BankExtractItem         'RETI
-    CommerceSell            'VEND
-    BankDeposit             'DEPO
-    ForumPost               'DEMSG
-    MoveSpell               'DESPHE
-    ClanCodexUpdate         'DESCOD
-    UserCommerceOffer       'OFRECER
-    GuildAcceptPeace        'ACEPPEAT
-    GuildRejectAlliance     'RECPALIA
-    GuildRejectPeace        'RECPPEAT
-    GuildAcceptAlliance     'ACEPALIA
-    GuildOfferPeace         'PEACEOFF
-    GuildOfferAlliance      'ALLIEOFF
-    GuildAllianceDetails    'ALLIEDET
-    GuildPeaceDetails       'PEACEDET
-    GuildRequestJoinerInfo  'ENVCOMEN
-    GuildAlliancePropList   'ENVALPRO
-    GuildPeacePropList      'ENVPROPP
-    GuildDeclareWar         'DECGUERR
-    GuildNewWebsite         'NEWWEBSI
-    GuildAcceptNewMember    'ACEPTARI
-    GuildRejectNewMember    'RECHAZAR
-    GuildKickMember         'ECHARCLA
-    GuildUpdateNews         'ACTGNEWS
-    GuildMemberInfo         '1HRINFO<
-    GuildOpenElections      'ABREELEC
-    GuildRequestMembership  'SOLICITUD
-    GuildRequestDetails     'CLANDETAILS
-    Online                  '/ONLINE
-    Quit                    '/SALIR
-    GuildLeave              '/SALIRCLAN
-    RequestAccountState     '/BALANCE
-    PetStand                '/QUIETO
-    PetFollow               '/ACOMPAÑAR
-    PetLeave                '/LIBERAR
-    GrupoMsg                '/GrupoMsg
-    TrainList               '/ENTRENAR
-    Rest                    '/DESCANSAR
-    Meditate                '/MEDITAR
-    Resucitate              '/RESUCITAR
-    Heal                    '/CURAR
-    Help                    '/AYUDA
-    RequestStats            '/EST
-    CommerceStart           '/COMERCIAR
-    BankStart               '/BOVEDA
-    Enlist                  '/ENLISTAR
-    Information             '/INFORMACION
-    Reward                  '/RECOMPENSA
-    RequestMOTD             '/MOTD
-    UpTime                  '/UPTIME
-    GuildMessage            '/CMSG
-    GuildOnline             '/ONLINECLAN
-    CouncilMessage          '/BMSG
-    RoleMasterRequest       '/ROL
-    ChangeDescription       '/DESC
-    GuildVote               '/VOTO
-    punishments             '/PENAS
-    Gamble                  '/APOSTAR
-    LeaveFaction            '/RETIRAR ( with no arguments )
-    BankExtractGold         '/RETIRAR ( with arguments )
-    BankDepositGold         '/DEPOSITAR
-    Denounce                '/DENUNCIAR
-    LoginExistingChar       'OLOGIN
-    LoginNewChar            'NLOGIN
-    Talk                    ';
-    Yell                    '-
-    Whisper                 '\
-    Walk                    'M
-    RequestPositionUpdate   'RPU
-    Attack                  'AT
-    PickUp                  'AG
-    SafeToggle              '/SEG & SEG  (SEG's behaviour has to be coded in the client)
-    PartySafeToggle
-    RequestGuildLeaderInfo  'GLINFO
-    RequestAtributes        'ATR
-    RequestSkills           'ESKI
-    RequestMiniStats        'FEST
-    CommerceEnd             'FINCOM
-    UserCommerceEnd         'FINCOMUSU
-    BankEnd                 'FINBAN
-    UserCommerceOk          'COMUSUOK
-    UserCommerceReject      'COMUSUNO
-    Drop                    'TI
-    CastSpell               'LH
-    LeftClick               'LC
-    DoubleClick             'RC
-    Work                    'UK
-    UseSpellMacro           'UMH
-    UseItem                 'USA
-    CraftBlacksmith         'CNS
+    '--------------------
+    eCraftCarpenter          'CNC
+    eWorkLeftClick           'WLC
+    eCreateNewGuild          'CIG
+    eSpellInfo               'INFS
+    eEquipItem               'EQUI
+    eChangeHeading           'CHEA
+    eModifySkills            'SKSE
+    eTrain                   'ENTR
+    eCommerceBuy             'COMP
+    eBankExtractItem         'RETI
+    eCommerceSell            'VEND
+    eBankDeposit             'DEPO
+    eForumPost               'DEMSG
+    eMoveSpell               'DESPHE
+    eClanCodexUpdate         'DESCOD
+    eUserCommerceOffer       'OFRECER
+    eGuildAcceptPeace        'ACEPPEAT
+    eGuildRejectAlliance     'RECPALIA
+    eGuildRejectPeace        'RECPPEAT
+    eGuildAcceptAlliance     'ACEPALIA
+    eGuildOfferPeace         'PEACEOFF
+    eGuildOfferAlliance      'ALLIEOFF
+    eGuildAllianceDetails    'ALLIEDET
+    eGuildPeaceDetails       'PEACEDET
+    eGuildRequestJoinerInfo  'ENVCOMEN
+    eGuildAlliancePropList   'ENVALPRO
+    eGuildPeacePropList      'ENVPROPP
+    eGuildDeclareWar         'DECGUERR
+    eGuildNewWebsite         'NEWWEBSI
+    eGuildAcceptNewMember    'ACEPTARI
+    eGuildRejectNewMember    'RECHAZAR
+    eGuildKickMember         'ECHARCLA
+    eGuildUpdateNews         'ACTGNEWS
+    eGuildMemberInfo         '1HRINFO<
+    eGuildOpenElections      'ABREELEC
+    eGuildRequestMembership  'SOLICITUD
+    eGuildRequestDetails     'CLANDETAILS
+    eOnline                  '/ONLINE
+    eQuit                    '/SALIR
+    eGuildLeave              '/SALIRCLAN
+    eRequestAccountState     '/BALANCE
+    ePetStand                '/QUIETO
+    ePetFollow               '/ACOMPAÑAR
+    ePetLeave                '/LIBERAR
+    eGrupoMsg                '/GrupoMsg
+    eTrainList               '/ENTRENAR
+    eRest                    '/DESCANSAR
+    eMeditate                '/MEDITAR
+    eResucitate              '/RESUCITAR
+    eHeal                    '/CURAR
+    eHelp                    '/AYUDA
+    eRequestStats            '/EST
+    eCommerceStart           '/COMERCIAR
+    eBankStart               '/BOVEDA
+    eEnlist                  '/ENLISTAR
+    eInformation             '/INFORMACION
+    eReward                  '/RECOMPENSA
+    eRequestMOTD             '/MOTD
+    eUpTime                  '/UPTIME
+    eGuildMessage            '/CMSG
+    eGuildOnline             '/ONLINECLAN
+    eCouncilMessage          '/BMSG
+    eRoleMasterRequest       '/ROL
+    eChangeDescription       '/DESC
+    eGuildVote               '/VOTO
+    epunishments             '/PENAS
+    eGamble                  '/APOSTAR
+    eLeaveFaction            '/RETIRAR ( with no arguments )
+    eBankExtractGold         '/RETIRAR ( with arguments )
+    eBankDepositGold         '/DEPOSITAR
+    eDenounce                '/DENUNCIAR
+    eLoginExistingChar       'OLOGIN
+    eLoginNewChar            'NLOGIN
+    eTalk                    ';
+    eYell                    '-
+    eWhisper                 '\
+    eWalk                    'M
+    eRequestPositionUpdate   'RPU
+    eAttack                  'AT
+    ePickUp                  'AG
+    eSafeToggle              '/SEG & SEG  (SEG's behaviour has to be coded in the client)
+    ePartySafeToggle
+    eRequestGuildLeaderInfo  'GLINFO
+    eRequestAtributes        'ATR
+    eRequestSkills           'ESKI
+    eRequestMiniStats        'FEST
+    eCommerceEnd             'FINCOM
+    eUserCommerceEnd         'FINCOMUSU
+    eBankEnd                 'FINBAN
+    eUserCommerceOk          'COMUSUOK
+    eUserCommerceReject      'COMUSUNO
+    eDrop                    'TI
+    eCastSpell               'LH
+    eLeftClick               'LC
+    eDoubleClick             'RC
+    eWork                    'UK
+    eUseSpellMacro           'UMH
+    eUseItem                 'USA
+    eCraftBlacksmith         'CNS
+    
     'GM messages
-    GMMessage               '/GMSG
-    showName                '/SHOWNAME
-    OnlineRoyalArmy         '/ONLINEREAL
-    OnlineChaosLegion       '/ONLINECAOS
-    GoNearby                '/IRCERCA
-    comment                 '/REM
-    serverTime              '/HORA
-    Where                   '/DONDE
-    CreaturesInMap          '/NENE
-    WarpMeToTarget          '/TELEPLOC
-    WarpChar                '/TELEP
-    Silence                 '/SILENCIAR
-    SOSShowList             '/SHOW SOS
-    SOSRemove               'SOSDONE
-    GoToChar                '/IRA
-    invisible               '/INVISIBLE
-    GMPanel                 '/PANELGM
-    RequestUserList         'LISTUSU
-    Working                 '/TRABAJANDO
-    Hiding                  '/OCULTANDO
-    Jail                    '/CARCEL
-    KillNPC                 '/RMATA
-    WarnUser                '/ADVERTENCIA
-    EditChar                '/MOD
-    RequestCharInfo         '/INFO
-    RequestCharStats        '/STAT
-    RequestCharGold         '/BAL
-    RequestCharInventory    '/INV
-    RequestCharBank         '/BOV
-    RequestCharSkills       '/SKILLS
-    ReviveChar              '/REVIVIR
-    OnlineGM                '/ONLINEGM
-    OnlineMap               '/ONLINEMAP
-    Forgive                 '/PERDON
-    Kick                    '/ECHAR
-    ExecuteCmd              '/EJECUTAR
-    BanChar                 '/BAN
-    UnbanChar               '/UNBAN
-    NPCFollow               '/SEGUIR
-    SummonChar              '/SUM
-    SpawnListRequest        '/CC
-    SpawnCreature           'SPA
-    ResetNPCInventory       '/RESETINV
-    CleanWorld              '/LIMPIAR
-    ServerMessage           '/RMSG
-    NickToIP                '/NICK2IP
-    IPToNick                '/IP2NICK
-    GuildOnlineMembers      '/ONCLAN
-    TeleportCreate          '/CT
-    TeleportDestroy         '/DT
-    RainToggle              '/LLUVIA
-    SetCharDescription      '/SETDESC
-    ForceMIDIToMap          '/FORCEMIDIMAP
-    ForceWAVEToMap          '/FORCEWAVMAP
-    RoyalArmyMessage        '/REALMSG
-    ChaosLegionMessage      '/CAOSMSG
-    TalkAsNPC               '/TALKAS
-    DestroyAllItemsInArea   '/MASSDEST
-    AcceptRoyalCouncilMember '/ACEPTCONSE
-    AcceptChaosCouncilMember '/ACEPTCONSECAOS
-    ItemsInTheFloor         '/PISO
-    MakeDumb                '/ESTUPIDO
-    MakeDumbNoMore          '/NOESTUPIDO
-    CouncilKick             '/KICKCONSE
-    SetTrigger              '/TRIGGER
-    AskTrigger              '/TRIGGER with no args
-    GuildMemberList         '/MIEMBROSCLAN
-    GuildBan                '/BANCLAN
-    CreateItem              '/CI
-    DestroyItems            '/DEST
-    ChaosLegionKick         '/NOCAOS
-    RoyalArmyKick           '/NOREAL
-    ForceMIDIAll            '/FORCEMIDI
-    ForceWAVEAll            '/FORCEWAV
-    RemovePunishment        '/BORRARPENA
-    Tile_BlockedToggle       '/BLOQ
-    KillNPCNoRespawn        '/MATA
-    KillAllNearbyNPCs       '/MASSKILL
-    LastIP                  '/LASTIP
-    ChangeMOTD              '/MOTDCAMBIA
-    SetMOTD                 'ZMOTD
-    SystemMessage           '/SMSG
-    CreateNPC               '/ACC
-    CreateNPCWithRespawn    '/RACC
-    ImperialArmour          '/AI1 - 4
-    ChaosArmour             '/AC1 - 4
-    NavigateToggle          '/NAVE
-    ServerOpenToUsersToggle '/HABILITAR
-    Participar              '/Participar
-    TurnCriminal            '/CONDEN
-    ResetFactions           '/RAJAR
-    RemoveCharFromGuild     '/RAJARCLAN
-    AlterName               '/ANAME
-    DoBackUpCmd             '/DOBACKUP
-    ShowGuildMessages       '/SHOWCMSG
-    ChangeMapInfoPK         '/MODMAPINFO PK
-    ChangeMapInfoBackup     '/MODMAPINFO BACKUP
-    ChangeMapInfoRestricted '/MODMAPINFO RESTRINGIR
-    ChangeMapInfoNoMagic    '/MODMAPINFO MAGIASINEFECTO
-    ChangeMapInfoNoInvi     '/MODMAPINFO INVISINEFECTO
-    ChangeMapInfoNoResu     '/MODMAPINFO RESUSINEFECTO
-    ChangeMapInfoLand       '/MODMAPINFO TERRENO
-    ChangeMapInfoZone       '/MODMAPINFO ZONA
-    ChangeMapSetting        '/MODMAP setting value
-    SaveChars               '/GRABAR
-    CleanSOS                '/BORRAR SOS
-    ShowServerForm          '/SHOW INT
-    night                   '/NOCHE
-    KickAllChars            '/ECHARTODOSPJS
-    ReloadNPCs              '/RELOADNPCS
-    ReloadServerIni         '/RELOADSINI
-    ReloadSpells            '/RELOADHECHIZOS
-    ReloadObjects           '/RELOADOBJ
-    ChatColor               '/CHATCOLOR
-    Ignored                 '/IGNORADO
-    CheckSlot               '/SLOT
+    eGMMessage               '/GMSG
+    eshowName                '/SHOWNAME
+    eOnlineRoyalArmy         '/ONLINEREAL
+    eOnlineChaosLegion       '/ONLINECAOS
+    eGoNearby                '/IRCERCA
+    ecomment                 '/REM
+    eserverTime              '/HORA
+    eWhere                   '/DONDE
+    eCreaturesInMap          '/NENE
+    eWarpMeToTarget          '/TELEPLOC
+    eWarpChar                '/TELEP
+    eSilence                 '/SILENCIAR
+    eSOSShowList             '/SHOW SOS
+    eSOSRemove               'SOSDONE
+    eGoToChar                '/IRA
+    einvisible               '/INVISIBLE
+    eGMPanel                 '/PANELGM
+    eRequestUserList         'LISTUSU
+    eWorking                 '/TRABAJANDO
+    eHiding                  '/OCULTANDO
+    eJail                    '/CARCEL
+    eKillNPC                 '/RMATA
+    eWarnUser                '/ADVERTENCIA
+    eEditChar                '/MOD
+    eRequestCharInfo         '/INFO
+    eRequestCharStats        '/STAT
+    eRequestCharGold         '/BAL
+    eRequestCharInventory    '/INV
+    eRequestCharBank         '/BOV
+    eRequestCharSkills       '/SKILLS
+    eReviveChar              '/REVIVIR
+    eOnlineGM                '/ONLINEGM
+    eOnlineMap               '/ONLINEMAP
+    eForgive                 '/PERDON
+    eKick                    '/ECHAR
+    eExecute                 '/EJECUTAR
+    eBanChar                 '/BAN
+    eUnbanChar               '/UNBAN
+    eNPCFollow               '/SEGUIR
+    eSummonChar              '/SUM
+    eSpawnListRequest        '/CC
+    eSpawnCreature           'SPA
+    eResetNPCInventory       '/RESETINV
+    eCleanWorld              '/LIMPIAR
+    eServerMessage           '/RMSG
+    eNickToIP                '/NICK2IP
+    eIPToNick                '/IP2NICK
+    eGuildOnlineMembers      '/ONCLAN
+    eTeleportCreate          '/CT
+    eTeleportDestroy         '/DT
+    eRainToggle              '/LLUVIA
+    eSetCharDescription      '/SETDESC
+    eForceMIDIToMap          '/FORCEMIDIMAP
+    eForceWAVEToMap          '/FORCEWAVMAP
+    eRoyalArmyMessage        '/REALMSG
+    eChaosLegionMessage      '/CAOSMSG
+    eTalkAsNPC               '/TALKAS
+    eDestroyAllItemsInArea   '/MASSDEST
+    eAcceptRoyalCouncilMember '/ACEPTCONSE
+    eAcceptChaosCouncilMember '/ACEPTCONSECAOS
+    eItemsInTheFloor         '/PISO
+    eMakeDumb                '/ESTUPIDO
+    eMakeDumbNoMore          '/NOESTUPIDO
+    eCouncilKick             '/KICKCONSE
+    eSetTrigger              '/TRIGGER
+    eAskTrigger              '/TRIGGER with no args
+    eGuildMemberList         '/MIEMBROSCLAN
+    eGuildBan                '/BANCLAN
+    eCreateItem              '/CI
+    eDestroyItems            '/DEST
+    eChaosLegionKick         '/NOCAOS
+    eRoyalArmyKick           '/NOREAL
+    eForceMIDIAll            '/FORCEMIDI
+    eForceWAVEAll            '/FORCEWAV
+    eRemovePunishment        '/BORRARPENA
+    eTileBlockedToggle       '/BLOQ
+    eKillNPCNoRespawn        '/MATA
+    eKillAllNearbyNPCs       '/MASSKILL
+    eLastIP                  '/LASTIP
+    eChangeMOTD              '/MOTDCAMBIA
+    eSetMOTD                 'ZMOTD
+    eSystemMessage           '/SMSG
+    eCreateNPC               '/ACC
+    eCreateNPCWithRespawn    '/RACC
+    eImperialArmour          '/AI1 - 4
+    eChaosArmour             '/AC1 - 4
+    eNavigateToggle          '/NAVE
+    eServerOpenToUsersToggle '/HABILITAR
+    eParticipar              '/PARTICIPAR
+    eTurnCriminal            '/CONDEN
+    eResetFactions           '/RAJAR
+    eRemoveCharFromGuild     '/RAJARCLAN
+    eAlterName               '/ANAME
+    eDoBackUp                '/DOBACKUP
+    eShowGuildMessages       '/SHOWCMSG
+    eChangeMapInfoPK         '/MODMAPINFO PK
+    eChangeMapInfoBackup     '/MODMAPINFO BACKUP
+    eChangeMapInfoRestricted '/MODMAPINFO RESTRINGIR
+    eChangeMapInfoNoMagic    '/MODMAPINFO MAGIASINEFECTO
+    eChangeMapInfoNoInvi     '/MODMAPINFO INVISINEFECTO
+    eChangeMapInfoNoResu     '/MODMAPINFO RESUSINEFECTO
+    eChangeMapInfoLand       '/MODMAPINFO TERRENO
+    eChangeMapInfoZone       '/MODMAPINFO ZONA
+    eChangeMapSetting        '/MODSETTING setting value
+    eSaveChars               '/GRABAR
+    eCleanSOS                '/BORRAR SOS
+    eShowServerForm          '/SHOW INT
+    enight                   '/NOCHE
+    eKickAllChars            '/ECHARTODOSPJS
+    eReloadNPCs              '/RELOADNPCS
+    eReloadServerIni         '/RELOADSINI
+    eReloadSpells            '/RELOADHECHIZOS
+    eReloadObjects           '/RELOADOBJ
+    eChatColor               '/CHATCOLOR
+    eIgnored                 '/IGNORADO
+    eCheckSlot               '/SLOT
     
     'Nuevas Ladder
-    SetSpeed
-    GlobalMessage           '/CONSOLA
-    GlobalOnOff
-    UseKey
-    DayCmd
-    SetTime
-    DonateGold              '/DONAR
-    Promedio                '/PROMEDIO
-    GiveItem                '/DAR
-    OfertaInicial
-    OfertaDeSubasta
-    QuestionGM
-    CuentaRegresiva
-    PossUser
-    Duel
-    AcceptDuel
-    CancelDuel
-    QuitDuel
-    NieveToggle
-    NieblaToggle
-    TransFerGold
-    Moveitem
-    Genio
-    Casarse
-    CraftAlquimista
-    FlagTrabajar
-    CraftSastre
-    MensajeUser
-    TraerBoveda
-    CompletarAccion
-    InvitarGrupo
-    ResponderPregunta
-    RequestGrupo
-    AbandonarGrupo
-    HecharDeGrupo
-    MacroPossent
-    SubastaInfo
-    BanCuenta
-    UnbanCuenta
-    CerrarCliente
-    EventoInfo
-    CrearEvento
-    BanTemporal
-    CancelarExit
-    CrearTorneo
-    ComenzarTorneo
-    CancelarTorneo
-    BusquedaTesoro
-    CompletarViaje
-    BovedaMoveItem
-    QuieroFundarClan
-    llamadadeclan
-    MarcaDeClanPack
-    MarcaDeGMPack
-    Quest
-    QuestAccept
-    QuestListRequest
-    QuestDetailsRequest
-    QuestAbandon
-    SeguroClan
-    home                    '/HOGAR
-    Consulta                '/CONSULTA
-    GetMapInfo              '/MAPINFO
-    FinEvento
-    SeguroResu
-    CuentaExtractItem
-    CuentaDeposit
-    CreateEvent
-    CommerceSendChatMessage
-    LogMacroClickHechizo
-    AddItemCrafting
-    RemoveItemCrafting
-    AddCatalyst
-    RemoveCatalyst
-    CraftItem
-    CloseCrafting
-    MoveCraftItem
-    PetLeaveAll
-    ResetChar               '/RESET NICK
-    resetearPersonaje
-    DeleteItem
-    FinalizarPescaEspecial
-    RomperCania
-    UseItemU
-    RepeatMacro
-    BuyShopItem
-    PerdonFaccion          '/PERDONFACCION NAME
-    StartEvent
-    CancelarEvento       '/CANCELAR
-    SeguirMouse
-    SendPosMovimiento
-    NotifyInventarioHechizos
-    PublicarPersonajeMAO
-    EventoFaccionario    '/EVENTOFACCIONARIO
-    RequestDebug '/RequestDebug consulta info debug al server, para gms
-    LobbyCommand
-    FeatureToggle
-    ActionOnGroupFrame
-    SendTelemetry
-    SetHotkeySlot
-    UseHKeySlot
+    eSetSpeed                '/SPEED
+    eGlobalMessage           '/CONSOLA
+    eGlobalOnOff
+    eUseKey
+    eDay
+    eSetTime
+    eDonateGold              '/DONAR
+    ePromedio                '/PROMEDIO
+    eGiveItem                '/DAR
+    eOfertaInicial
+    eOfertaDeSubasta
+    eQuestionGM
+    eCuentaRegresiva
+    ePossUser
+    eDuel
+    eAcceptDuel
+    eCancelDuel
+    eQuitDuel
+    eNieveToggle
+    eNieblaToggle
+    eTransFerGold
+    eMoveitem
+    eGenio
+    eCasarse
+    eCraftAlquimista
+    eFlagTrabajar
+    eCraftSastre
+    eMensajeUser
+    eTraerBoveda
+    eCompletarAccion
+    eInvitarGrupo
+    eResponderPregunta
+    eRequestGrupo
+    eAbandonarGrupo
+    eHecharDeGrupo
+    eMacroPossent
+    eSubastaInfo
+    eBanCuenta
+    eUnbanCuenta
+    eCerrarCliente
+    eEventoInfo
+    eCrearEvento
+    eBanTemporal
+    eCancelarExit
+    eCrearTorneo
+    eComenzarTorneo
+    eCancelarTorneo
+    eBusquedaTesoro
+    eCompletarViaje
+    eBovedaMoveItem
+    eQuieroFundarClan
+    ellamadadeclan
+    eMarcaDeClanPack
+    eMarcaDeGMPack
+    eQuest
+    eQuestAccept
+    eQuestListRequest
+    eQuestDetailsRequest
+    eQuestAbandon
+    eSeguroClan
+    ehome                    '/HOGAR
+    eConsulta                '/CONSULTA
+    eGetMapInfo              '/MAPINFO
+    eFinEvento
+    eSeguroResu
+    eCuentaExtractItem
+    eCuentaDeposit
+    eCreateEvent
+    eCommerceSendChatMessage
+    eLogMacroClickHechizo
+    eAddItemCrafting
+    eRemoveItemCrafting
+    eAddCatalyst
+    eRemoveCatalyst
+    eCraftItem
+    eCloseCrafting
+    eMoveCraftItem
+    ePetLeaveAll
+    eResetChar              '/RESET NICK
+    eResetearPersonaje
+    eDeleteItem
+    eFinalizarPescaEspecial
+    eRomperCania
+    eUseItemU
+    eRepeatMacro
+    eBuyShopItem
+    ePerdonFaccion              '/PERDONFACCION NAME
+    eStartEvent           '/EVENTO CAPTURA/LOBBY
+    eCancelarEvento          '/CANCELAREVENTO
+    eSeguirMouse
+    eSendPosSeguimiento
+    eNotifyInventarioHechizos
+    ePublicarPersonajeMAO
+    eEventoFaccionario
+    eRequestDebug '/RequestDebug consulta info debug al server, para gms
+    eLobbyCommand
+    eFeatureToggle
+    eActionOnGroupFrame
+    eSendTelemetry
+    eSetHotkeySlot
+    eUseHKeySlot
     #If PYMMO = 0 Then
-    CreateAccount
-    LoginAccount
-    DeleteCharacter
+    eCreateAccount
+    eLoginAccount
+    eDeleteCharacter
     #End If
     [PacketCount]
 End Enum
+

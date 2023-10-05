@@ -41,7 +41,7 @@ Public Sub WriteAccountCharacterList(ByVal UserIndex As Integer, ByRef Personaje
         '<EhHeader>
         On Error GoTo WriteAccountCharacterList_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.AccountCharacterList)
+100     Call Writer.WriteInt16(ServerPacketID.eAccountCharacterList)
         
         Call Writer.WriteInt(Count)
         
@@ -77,7 +77,7 @@ End Sub
 
 Public Function PrepareConnected()
         On Error GoTo WriteConnected_Err
-100     Call Writer.WriteInt16(ServerPacketID.connected)
+100     Call Writer.WriteInt16(ServerPacketID.eConnected)
         Exit Function
 WriteConnected_Err:
         Call Writer.Clear
@@ -93,7 +93,7 @@ Public Sub WriteLoggedMessage(ByVal UserIndex As Integer, Optional ByVal newUser
         '<EhHeader>
         On Error GoTo WriteLoggedMessage_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.logged)
+100     Call Writer.WriteInt16(ServerPacketID.elogged)
 101     Call Writer.WriteBool(newUser)
 102     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
@@ -128,7 +128,7 @@ Public Sub WriteRemoveAllDialogs(ByVal UserIndex As Integer)
         '<EhHeader>
         On Error GoTo WriteRemoveAllDialogs_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.RemoveDialogs)
+100     Call Writer.WriteInt16(ServerPacketID.eRemoveDialogs)
 102     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub
@@ -168,7 +168,7 @@ Public Sub WriteNavigateToggle(ByVal UserIndex As Integer, ByVal NewState As Boo
         '<EhHeader>
         On Error GoTo WriteNavigateToggle_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.NavigateToggle)
+100     Call Writer.WriteInt16(ServerPacketID.eNavigateToggle)
         Call Writer.WriteBool(NewState)
 102     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
@@ -186,7 +186,7 @@ Public Sub WriteNadarToggle(ByVal UserIndex As Integer, _
         '<EhHeader>
         On Error GoTo WriteNadarToggle_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.NadarToggle)
+100     Call Writer.WriteInt16(ServerPacketID.eNadarToggle)
 102     Call Writer.WriteBool(Puede)
 104     Call Writer.WriteBool(esTrajeCaucho)
 106     Call modSendData.SendData(ToIndex, UserIndex)
@@ -203,7 +203,7 @@ Public Sub WriteEquiteToggle(ByVal UserIndex As Integer)
         '<EhHeader>
         On Error GoTo WriteEquiteToggle_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.EquiteToggle)
+100     Call Writer.WriteInt16(ServerPacketID.eEquiteToggle)
 102     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub
@@ -218,7 +218,7 @@ Public Sub WriteVelocidadToggle(ByVal UserIndex As Integer)
         '<EhHeader>
         On Error GoTo WriteVelocidadToggle_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.VelocidadToggle)
+100     Call Writer.WriteInt16(ServerPacketID.eVelocidadToggle)
 102     Call Writer.WriteReal32(UserList(UserIndex).Char.speeding)
 104     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
@@ -249,7 +249,7 @@ Public Sub WriteMacroTrabajoToggle(ByVal UserIndex As Integer, ByVal Activar As 
 116         UserList(UserIndex).flags.UsandoMacro = True
         End If
 
-118     Call Writer.WriteInt16(ServerPacketID.MacroTrabajoToggle)
+118     Call Writer.WriteInt16(ServerPacketID.eMacroTrabajoToggle)
 120     Call Writer.WriteBool(Activar)
 122     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
@@ -274,7 +274,7 @@ Public Sub WriteDisconnect(ByVal UserIndex As Integer, _
 100     Call ClearAndSaveUser(UserIndex)
 102     UserList(UserIndex).flags.YaGuardo = True
 
-110     Call Writer.WriteInt16(ServerPacketID.Disconnect)
+110     Call Writer.WriteInt16(ServerPacketID.eDisconnect)
         Call Writer.WriteBool(FullLogout)
 112     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
@@ -295,7 +295,7 @@ Public Sub WriteCommerceEnd(ByVal UserIndex As Integer)
         '<EhHeader>
         On Error GoTo WriteCommerceEnd_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.CommerceEnd)
+100     Call Writer.WriteInt16(ServerPacketID.eCommerceEnd)
 102     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub
@@ -315,7 +315,7 @@ Public Sub WriteBankEnd(ByVal UserIndex As Integer)
         '<EhHeader>
         On Error GoTo WriteBankEnd_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.BankEnd)
+100     Call Writer.WriteInt16(ServerPacketID.eBankEnd)
 102     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub
@@ -335,7 +335,7 @@ Public Sub WriteCommerceInit(ByVal UserIndex As Integer)
         '<EhHeader>
         On Error GoTo WriteCommerceInit_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.CommerceInit)
+100     Call Writer.WriteInt16(ServerPacketID.eCommerceInit)
 102     Call Writer.WriteString8(NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Name)
 104     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
@@ -356,7 +356,7 @@ Public Sub WriteBankInit(ByVal UserIndex As Integer)
         '<EhHeader>
         On Error GoTo WriteBankInit_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.BankInit)
+100     Call Writer.WriteInt16(ServerPacketID.eBankInit)
 102     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub
@@ -376,7 +376,7 @@ Public Sub WriteUserCommerceInit(ByVal UserIndex As Integer)
         '<EhHeader>
         On Error GoTo WriteUserCommerceInit_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.UserCommerceInit)
+100     Call Writer.WriteInt16(ServerPacketID.eUserCommerceInit)
 102     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub
@@ -396,7 +396,7 @@ Public Sub WriteUserCommerceEnd(ByVal UserIndex As Integer)
         '<EhHeader>
         On Error GoTo WriteUserCommerceEnd_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.UserCommerceEnd)
+100     Call Writer.WriteInt16(ServerPacketID.eUserCommerceEnd)
 102     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub
@@ -416,7 +416,7 @@ Public Sub WriteShowBlacksmithForm(ByVal UserIndex As Integer)
         '<EhHeader>
         On Error GoTo WriteShowBlacksmithForm_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.ShowBlacksmithForm)
+100     Call Writer.WriteInt16(ServerPacketID.eShowBlacksmithForm)
 102     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub
@@ -436,7 +436,7 @@ Public Sub WriteShowCarpenterForm(ByVal UserIndex As Integer)
         '<EhHeader>
         On Error GoTo WriteShowCarpenterForm_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.ShowCarpenterForm)
+100     Call Writer.WriteInt16(ServerPacketID.eShowCarpenterForm)
 102     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub
@@ -451,7 +451,7 @@ Public Sub WriteShowAlquimiaForm(ByVal UserIndex As Integer)
         '<EhHeader>
         On Error GoTo WriteShowAlquimiaForm_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.ShowAlquimiaForm)
+100     Call Writer.WriteInt16(ServerPacketID.eShowAlquimiaForm)
 102     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub
@@ -466,7 +466,7 @@ Public Sub WriteShowSastreForm(ByVal UserIndex As Integer)
         '<EhHeader>
         On Error GoTo WriteShowSastreForm_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.ShowSastreForm)
+100     Call Writer.WriteInt16(ServerPacketID.eShowSastreForm)
 102     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub
@@ -486,7 +486,7 @@ Public Sub WriteNPCKillUser(ByVal UserIndex As Integer)
         '<EhHeader>
         On Error GoTo WriteNPCKillUser_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.NPCKillUser)
+100     Call Writer.WriteInt16(ServerPacketID.eNPCKillUser)
 102     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub
@@ -506,7 +506,7 @@ Public Sub Write_BlockedWithShieldUser(ByVal UserIndex As Integer)
         '<EhHeader>
         On Error GoTo Write_BlockedWithShieldUser_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.BlockedWithShieldUser)
+100     Call Writer.WriteInt16(ServerPacketID.eBlockedWithShieldUser)
 102     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub
@@ -526,7 +526,7 @@ Public Sub Write_BlockedWithShieldOther(ByVal UserIndex As Integer)
         '<EhHeader>
         On Error GoTo Write_BlockedWithShieldOther_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.BlockedWithShieldOther)
+100     Call Writer.WriteInt16(ServerPacketID.eBlockedWithShieldOther)
 102     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub
@@ -547,7 +547,7 @@ Public Sub WriteSafeModeOn(ByVal UserIndex As Integer)
         '<EhHeader>
         On Error GoTo WriteSafeModeOn_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.SafeModeOn)
+100     Call Writer.WriteInt16(ServerPacketID.eSafeModeOn)
 102     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub
@@ -567,7 +567,7 @@ Public Sub WriteSafeModeOff(ByVal UserIndex As Integer)
         '<EhHeader>
         On Error GoTo WriteSafeModeOff_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.SafeModeOff)
+100     Call Writer.WriteInt16(ServerPacketID.eSafeModeOff)
 102     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub
@@ -587,7 +587,7 @@ Public Sub WritePartySafeOn(ByVal UserIndex As Integer)
         '<EhHeader>
         On Error GoTo WritePartySafeOn_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.PartySafeOn)
+100     Call Writer.WriteInt16(ServerPacketID.ePartySafeOn)
 102     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub
@@ -607,7 +607,7 @@ Public Sub WritePartySafeOff(ByVal UserIndex As Integer)
         '<EhHeader>
         On Error GoTo WritePartySafeOff_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.PartySafeOff)
+100     Call Writer.WriteInt16(ServerPacketID.ePartySafeOff)
 102     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub
@@ -622,7 +622,7 @@ Public Sub WriteClanSeguro(ByVal UserIndex As Integer, ByVal estado As Boolean)
         '<EhHeader>
         On Error GoTo WriteClanSeguro_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.ClanSeguro)
+100     Call Writer.WriteInt16(ServerPacketID.eClanSeguro)
 102     Call Writer.WriteBool(estado)
 104     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
@@ -638,7 +638,7 @@ Public Sub WriteSeguroResu(ByVal UserIndex As Integer, ByVal estado As Boolean)
         '<EhHeader>
         On Error GoTo WriteSeguroResu_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.SeguroResu)
+100     Call Writer.WriteInt16(ServerPacketID.eSeguroResu)
 102     Call Writer.WriteBool(estado)
 104     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
@@ -659,7 +659,7 @@ Public Sub WriteCantUseWhileMeditating(ByVal UserIndex As Integer)
         '<EhHeader>
         On Error GoTo WriteCantUseWhileMeditating_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.CantUseWhileMeditating)
+100     Call Writer.WriteInt16(ServerPacketID.eCantUseWhileMeditating)
 102     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub
@@ -679,7 +679,7 @@ Public Sub WriteUpdateSta(ByVal UserIndex As Integer)
         '<EhHeader>
         On Error GoTo WriteUpdateSta_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.UpdateSta)
+100     Call Writer.WriteInt16(ServerPacketID.eUpdateSta)
 102     Call Writer.WriteInt16(UserList(UserIndex).Stats.MinSta)
 104     Call modSendData.SendData(ToIndex, UserIndex)
 
@@ -705,7 +705,7 @@ Public Sub WriteUpdateMana(ByVal UserIndex As Integer)
                 PrepareMessageCharUpdateMAN(userindex))
 10     Call SendData(SendTarget.ToClanArea, UserList(userindex).GuildIndex, _
                 PrepareMessageCharUpdateMAN(UserIndex))
-102     Call Writer.WriteInt16(ServerPacketID.UpdateMana)
+102     Call Writer.WriteInt16(ServerPacketID.eUpdateMana)
 104     Call Writer.WriteInt16(UserList(UserIndex).Stats.MinMAN)
 106     Call modSendData.SendData(ToIndex, UserIndex)
 
@@ -734,7 +734,7 @@ Public Sub WriteUpdateHP(ByVal UserIndex As Integer)
                 PrepareMessageCharUpdateHP(UserIndex))
         Call SendData(SendTarget.ToGroupButIndex, UserIndex, _
                 PrepareMessageCharUpdateHP(UserIndex))
-102     Call Writer.WriteInt16(ServerPacketID.UpdateHP)
+102     Call Writer.WriteInt16(ServerPacketID.eUpdateHP)
 104     Call Writer.WriteInt16(UserList(UserIndex).Stats.MinHp)
         Call Writer.WriteInt32(UserList(UserIndex).Stats.Shield)
 
@@ -758,7 +758,7 @@ Public Sub WriteUpdateGold(ByVal UserIndex As Integer)
         '<EhHeader>
         On Error GoTo WriteUpdateGold_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.UpdateGold)
+100     Call Writer.WriteInt16(ServerPacketID.eUpdateGold)
 102     Call Writer.WriteInt32(UserList(UserIndex).Stats.GLD)
 103     Call Writer.WriteInt32(OroPorNivelBilletera)
 104     Call modSendData.SendData(ToIndex, UserIndex)
@@ -780,7 +780,7 @@ Public Sub WriteUpdateExp(ByVal UserIndex As Integer)
         '<EhHeader>
         On Error GoTo WriteUpdateExp_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.UpdateExp)
+100     Call Writer.WriteInt16(ServerPacketID.eUpdateExp)
 102     Call Writer.WriteInt32(UserList(UserIndex).Stats.Exp)
 104     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
@@ -803,7 +803,7 @@ Public Sub WriteChangeMap(ByVal UserIndex As Integer, ByVal Map As Integer)
         '<EhHeader>
         On Error GoTo WriteChangeMap_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.changeMap)
+100     Call Writer.WriteInt16(ServerPacketID.echangeMap)
 102     Call Writer.WriteInt16(Map)
 106     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
@@ -824,7 +824,7 @@ Public Sub WritePosUpdate(ByVal UserIndex As Integer)
         '<EhHeader>
         On Error GoTo WritePosUpdate_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.PosUpdate)
+100     Call Writer.WriteInt16(ServerPacketID.ePosUpdate)
 102     Call Writer.WriteInt8(UserList(UserIndex).Pos.X)
 104     Call Writer.WriteInt8(UserList(UserIndex).Pos.Y)
 106     Call modSendData.SendData(ToIndex, UserIndex)
@@ -850,7 +850,7 @@ Public Sub WritePosUpdateCharIndex(ByVal UserIndex As Integer, ByVal X As Byte, 
         '<EhHeader>
         On Error GoTo WritePosUpdateCharIndex_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.PosUpdateCharindex)
+100     Call Writer.WriteInt16(ServerPacketID.ePosUpdateUserChar)
 102     Call Writer.WriteInt8(X)
 104     Call Writer.WriteInt8(Y)
 105     Call Writer.WriteInt16(charindex)
@@ -874,7 +874,7 @@ Public Sub WritePosUpdateChar(ByVal UserIndex As Integer, ByVal X As Byte, ByVal
         '<EhHeader>
         On Error GoTo WritePosUpdateChar_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.PosUpdateChar)
+100     Call Writer.WriteInt16(ServerPacketID.ePosUpdateChar)
 105     Call Writer.WriteInt16(charindex)
 102     Call Writer.WriteInt8(X)
 104     Call Writer.WriteInt8(y)
@@ -902,7 +902,7 @@ Public Sub WriteNPCHitUser(ByVal UserIndex As Integer, _
         '<EhHeader>
         On Error GoTo WriteNPCHitUser_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.NPCHitUser)
+100     Call Writer.WriteInt16(ServerPacketID.eNPCHitUser)
 102     Call Writer.WriteInt8(Target)
 104     Call Writer.WriteInt16(damage)
 106     Call modSendData.SendData(ToIndex, UserIndex)
@@ -931,7 +931,7 @@ Public Sub WriteUserHittedByUser(ByVal UserIndex As Integer, _
         '<EhHeader>
         On Error GoTo WriteUserHittedByUser_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.UserHittedByUser)
+100     Call Writer.WriteInt16(ServerPacketID.eUserHittedByUser)
 102     Call Writer.WriteInt16(attackerChar)
 104     Call Writer.WriteInt8(Target)
 106     Call Writer.WriteInt16(damage)
@@ -960,7 +960,7 @@ Public Sub WriteUserHittedUser(ByVal UserIndex As Integer, _
         '<EhHeader>
         On Error GoTo WriteUserHittedUser_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.UserHittedUser)
+100     Call Writer.WriteInt16(ServerPacketID.eUserHittedUser)
 102     Call Writer.WriteInt16(attackedChar)
 104     Call Writer.WriteInt8(Target)
 106     Call Writer.WriteInt16(damage)
@@ -1154,7 +1154,7 @@ End Sub
 ' @remarks  The data is not actually sent until the buffer is properly flushed.
 Public Sub WriteShowMessageBox(ByVal UserIndex As Integer, ByVal Message As String)
         On Error GoTo WriteShowMessageBox_Err
-100     Call Writer.WriteInt16(ServerPacketID.ShowMessageBox)
+100     Call Writer.WriteInt16(ServerPacketID.eShowMessageBox)
 102     Call Writer.WriteString8(Message)
 104     Call modSendData.SendData(ToIndex, UserIndex)
         Exit Sub
@@ -1166,7 +1166,7 @@ End Sub
 
 Public Function PrepareShowMessageBox(ByVal Message As String)
         On Error GoTo WriteShowMessageBox_Err
-100     Call Writer.WriteInt16(ServerPacketID.ShowMessageBox)
+100     Call Writer.WriteInt16(ServerPacketID.eShowMessageBox)
 102     Call Writer.WriteString8(Message)
         Exit Function
 WriteShowMessageBox_Err:
@@ -1178,7 +1178,7 @@ Public Sub WriteMostrarCuenta(ByVal UserIndex As Integer)
         '<EhHeader>
         On Error GoTo WriteMostrarCuenta_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.MostrarCuenta)
+100     Call Writer.WriteInt16(ServerPacketID.eMostrarCuenta)
 102     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub
@@ -1198,7 +1198,7 @@ Public Sub WriteUserIndexInServer(ByVal UserIndex As Integer)
         '<EhHeader>
         On Error GoTo WriteUserIndexInServer_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.UserIndexInServer)
+100     Call Writer.WriteInt16(ServerPacketID.eUserIndexInServer)
 102     Call Writer.WriteInt16(UserIndex)
 104     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
@@ -1219,7 +1219,7 @@ Public Sub WriteUserCharIndexInServer(ByVal UserIndex As Integer)
         '<EhHeader>
         On Error GoTo WriteUserCharIndexInServer_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.UserCharIndexInServer)
+100     Call Writer.WriteInt16(ServerPacketID.eUserCharIndexInServer)
 102     Call Writer.WriteInt16(UserList(UserIndex).Char.CharIndex)
 104     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
@@ -1310,7 +1310,7 @@ Public Sub WriteForceCharMoveSiguiendo(ByVal UserIndex As Integer, ByVal Direcci
         '<EhHeader>
         On Error GoTo WriteForceCharMoveSiguiendo_Err
         '</EhHeader>
-98      Call Writer.WriteInt16(ServerPacketID.ForceCharMoveSiguiendo)
+98      Call Writer.WriteInt16(ServerPacketID.eForceCharMoveSiguiendo)
 100     Call Writer.WriteInt8(Direccion)
 102     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
@@ -1504,7 +1504,7 @@ Public Sub Write_BlockPosition(ByVal UserIndex As Integer, _
         '<EhHeader>
         On Error GoTo Write_BlockPosition_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.BlockPosition)
+100     Call Writer.WriteInt16(ServerPacketID.eBlockPosition)
 102     Call Writer.WriteInt8(X)
 104     Call Writer.WriteInt8(Y)
 106     Call Writer.WriteInt8(Blocked)
@@ -1574,7 +1574,7 @@ Public Sub WritePlayWaveStep(ByVal UserIndex As Integer, _
         '<EhHeader>
         On Error GoTo WritePlayWaveStep_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.PlayWaveStep)
+100     Call Writer.WriteInt16(ServerPacketID.ePlayWaveStep)
 102     Call Writer.WriteInt32(grh)
 108     Call Writer.WriteInt8(distance)
 109     Call Writer.WriteInt16(balance)
@@ -1604,7 +1604,7 @@ Public Sub WriteGuildList(ByVal UserIndex As Integer, ByRef guildList() As Strin
 
         Dim i   As Long
 
-100     Call Writer.WriteInt16(ServerPacketID.guildList)
+100     Call Writer.WriteInt16(ServerPacketID.eguildList)
 
         ' Prepare guild name's list
 102     For i = LBound(guildList()) To UBound(guildList())
@@ -1632,7 +1632,7 @@ Public Sub WriteAreaChanged(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y
         '<EhHeader>
         On Error GoTo WriteAreaChanged_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.AreaChanged)
+100     Call Writer.WriteInt16(ServerPacketID.eAreaChanged)
 102     Call Writer.WriteInt8(X)
 104     Call Writer.WriteInt8(Y)
 106     Call modSendData.SendData(ToIndex, UserIndex)
@@ -1747,7 +1747,7 @@ Public Sub WriteUpdateUserStats(ByVal UserIndex As Integer)
                 PrepareMessageCharUpdateHP(UserIndex))
 102     Call SendData(SendTarget.ToDiosesYclan, UserList(UserIndex).GuildIndex, _
                 PrepareMessageCharUpdateMAN(UserIndex))
-104     Call Writer.WriteInt16(ServerPacketID.UpdateUserStats)
+104     Call Writer.WriteInt16(ServerPacketID.eUpdateUserStats)
 106     Call Writer.WriteInt16(UserList(UserIndex).Stats.MaxHp)
 108     Call Writer.WriteInt16(UserList(UserIndex).Stats.MinHp)
 109     Call Writer.WriteInt32(UserList(UserIndex).Stats.Shield)
@@ -1778,7 +1778,7 @@ Public Sub WriteUpdateUserKey(ByVal UserIndex As Integer, _
         '<EhHeader>
         On Error GoTo WriteUpdateUserKey_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.UpdateUserKey)
+100     Call Writer.WriteInt16(ServerPacketID.eUpdateUserKey)
 102     Call Writer.WriteInt16(Slot)
 104     Call Writer.WriteInt16(Llave)
 106     Call modSendData.SendData(ToIndex, UserIndex)
@@ -1811,7 +1811,7 @@ Public Sub WriteUpdateDM(ByVal UserIndex As Integer)
 108             Valor = Valor + ObjData(.DañoMagicoEqpObjIndex).MagicDamageBonus
             End If
 
-110         Call Writer.WriteInt16(ServerPacketID.UpdateDM)
+110         Call Writer.WriteInt16(ServerPacketID.eUpdateDM)
 112         Call Writer.WriteInt16(Valor)
         End With
 
@@ -1856,7 +1856,7 @@ Public Sub WriteUpdateRM(ByVal UserIndex As Integer)
             End If
 
 118         Valor = Valor + 100 * ModClase(UserList(UserIndex).clase).ResistenciaMagica
-120         Call Writer.WriteInt16(ServerPacketID.UpdateRM)
+120         Call Writer.WriteInt16(ServerPacketID.eUpdateRM)
 122         Call Writer.WriteInt16(Valor)
         End With
 
@@ -1880,7 +1880,7 @@ Public Sub WriteWorkRequestTarget(ByVal UserIndex As Integer, ByVal Skill As e_S
         '<EhHeader>
         On Error GoTo WriteWorkRequestTarget_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.WorkRequestTarget)
+100     Call Writer.WriteInt16(ServerPacketID.eWorkRequestTarget)
 102     Call Writer.WriteInt8(Skill)
         Call Writer.WriteBool(CasteaArea)
         Call Writer.WriteInt8(Radio)
@@ -1902,7 +1902,7 @@ Public Sub WriteInventoryUnlockSlots(ByVal UserIndex As Integer)
         '<EhHeader>
         On Error GoTo WriteInventoryUnlockSlots_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.InventoryUnlockSlots)
+100     Call Writer.WriteInt16(ServerPacketID.eInventoryUnlockSlots)
 102     Call Writer.WriteInt8(UserList(UserIndex).Stats.InventLevel)
 104     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
@@ -1920,7 +1920,7 @@ Public Sub WriteIntervals(ByVal UserIndex As Integer)
         '</EhHeader>
 
 100     With UserList(UserIndex)
-102         Call Writer.WriteInt16(ServerPacketID.Intervals)
+102         Call Writer.WriteInt16(ServerPacketID.eIntervals)
 104         Call Writer.WriteInt32(.Intervals.Arco)
 106         Call Writer.WriteInt32(.Intervals.Caminar)
 108         Call Writer.WriteInt32(.Intervals.Golpe)
@@ -1954,7 +1954,7 @@ Public Sub WriteChangeInventorySlot(ByVal UserIndex As Integer, ByVal Slot As By
 
         Dim PodraUsarlo As Byte
 
-100     Call Writer.WriteInt16(ServerPacketID.ChangeInventorySlot)
+100     Call Writer.WriteInt16(ServerPacketID.eChangeInventorySlot)
 102     Call Writer.WriteInt8(Slot)
 104     ObjIndex = UserList(UserIndex).Invent.Object(Slot).ObjIndex
 
@@ -1999,7 +1999,7 @@ Public Sub WriteChangeBankSlot(ByVal UserIndex As Integer, ByVal Slot As Byte)
 
         Dim PodraUsarlo As Byte
 
-100     Call Writer.WriteInt16(ServerPacketID.ChangeBankSlot)
+100     Call Writer.WriteInt16(ServerPacketID.eChangeBankSlot)
 102     Call Writer.WriteInt8(Slot)
 104     ObjIndex = UserList(UserIndex).BancoInvent.Object(Slot).ObjIndex
 106     Call Writer.WriteInt16(ObjIndex)
@@ -2032,7 +2032,7 @@ Public Sub WriteChangeSpellSlot(ByVal UserIndex As Integer, ByVal Slot As Intege
         '<EhHeader>
         On Error GoTo WriteChangeSpellSlot_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.ChangeSpellSlot)
+100     Call Writer.WriteInt16(ServerPacketID.eChangeSpellSlot)
 102     Call Writer.WriteInt8(Slot)
 104     Call Writer.WriteInt16(UserList(UserIndex).Stats.UserHechizos(Slot))
 
@@ -2063,7 +2063,7 @@ Public Sub WriteAttributes(ByVal UserIndex As Integer)
         '<EhHeader>
         On Error GoTo WriteAttributes_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.Atributes)
+100     Call Writer.WriteInt16(ServerPacketID.eAtributes)
 102     Call Writer.WriteInt8(UserList(UserIndex).Stats.UserAtributos(e_Atributos.Fuerza))
 104     Call Writer.WriteInt8(UserList(UserIndex).Stats.UserAtributos(e_Atributos.Agilidad))
 106     Call Writer.WriteInt8(UserList(UserIndex).Stats.UserAtributos( _
@@ -2100,7 +2100,7 @@ Public Sub WriteBlacksmithWeapons(ByVal UserIndex As Integer)
         Dim Count          As Integer
 
 100     ReDim validIndexes(1 To UBound(ArmasHerrero()))
-102     Call Writer.WriteInt16(ServerPacketID.BlacksmithWeapons)
+102     Call Writer.WriteInt16(ServerPacketID.eBlacksmithWeapons)
 
 104     For i = 1 To UBound(ArmasHerrero())
 
@@ -2156,7 +2156,7 @@ Public Sub WriteBlacksmithArmors(ByVal UserIndex As Integer)
         Dim Count          As Integer
 
 100     ReDim validIndexes(1 To UBound(ArmadurasHerrero()))
-102     Call Writer.WriteInt16(ServerPacketID.BlacksmithArmors)
+102     Call Writer.WriteInt16(ServerPacketID.eBlacksmithArmors)
 
 104     For i = 1 To UBound(ArmadurasHerrero())
 
@@ -2211,7 +2211,7 @@ Public Sub WriteCarpenterObjects(ByVal UserIndex As Integer)
         Dim Count          As Byte
 
 100     ReDim validIndexes(1 To UBound(ObjCarpintero()))
-102     Call Writer.WriteInt16(ServerPacketID.CarpenterObjects)
+102     Call Writer.WriteInt16(ServerPacketID.eCarpenterObjects)
 
 104     For i = 1 To UBound(ObjCarpintero())
 
@@ -2260,7 +2260,7 @@ Public Sub WriteAlquimistaObjects(ByVal UserIndex As Integer)
         Dim Count          As Integer
 
 100     ReDim validIndexes(1 To UBound(ObjAlquimista()))
-102     Call Writer.WriteInt16(ServerPacketID.AlquimistaObj)
+102     Call Writer.WriteInt16(ServerPacketID.eAlquimistaObj)
 
 104     For i = 1 To UBound(ObjAlquimista())
 
@@ -2303,7 +2303,7 @@ Public Sub WriteSastreObjects(ByVal UserIndex As Integer)
         Dim Count          As Integer
 
 100     ReDim validIndexes(1 To UBound(ObjSastre()))
-102     Call Writer.WriteInt16(ServerPacketID.SastreObj)
+102     Call Writer.WriteInt16(ServerPacketID.eSastreObj)
 
 104     For i = 1 To UBound(ObjSastre())
 
@@ -2343,7 +2343,7 @@ Public Sub WriteRestOK(ByVal UserIndex As Integer)
         '<EhHeader>
         On Error GoTo WriteRestOK_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.RestOK)
+100     Call Writer.WriteInt16(ServerPacketID.eRestOK)
 102     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub
@@ -2388,7 +2388,7 @@ Public Sub WriteBlind(ByVal UserIndex As Integer)
         '<EhHeader>
         On Error GoTo WriteBlind_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.Blind)
+100     Call Writer.WriteInt16(ServerPacketID.eBlind)
 102     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub
@@ -2408,7 +2408,7 @@ Public Sub WriteDumb(ByVal UserIndex As Integer)
         '<EhHeader>
         On Error GoTo WriteDumb_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.Dumb)
+100     Call Writer.WriteInt16(ServerPacketID.eDumb)
 102     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub
@@ -2430,7 +2430,7 @@ Public Sub WriteShowSignal(ByVal UserIndex As Integer, ByVal ObjIndex As Integer
         '<EhHeader>
         On Error GoTo WriteShowSignal_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.ShowSignal)
+100     Call Writer.WriteInt16(ServerPacketID.eShowSignal)
 102     Call Writer.WriteInt16(ObjIndex)
 104     Call Writer.WriteInt16(ObjData(ObjIndex).GrhSecundario)
 106     Call modSendData.SendData(ToIndex, UserIndex)
@@ -2465,7 +2465,7 @@ Public Sub WriteChangeNPCInventorySlot(ByVal UserIndex As Integer, _
 102         PodraUsarlo = PuedeUsarObjeto(UserIndex, obj.ObjIndex)
         End If
 
-104     Call Writer.WriteInt16(ServerPacketID.ChangeNPCInventorySlot)
+104     Call Writer.WriteInt16(ServerPacketID.eChangeNPCInventorySlot)
 106     Call Writer.WriteInt8(Slot)
 108     Call Writer.WriteInt16(obj.ObjIndex)
 110     Call Writer.WriteInt16(obj.amount)
@@ -2490,7 +2490,7 @@ Public Sub WriteUpdateHungerAndThirst(ByVal UserIndex As Integer)
         '<EhHeader>
         On Error GoTo WriteUpdateHungerAndThirst_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.UpdateHungerAndThirst)
+100     Call Writer.WriteInt16(ServerPacketID.eUpdateHungerAndThirst)
 102     Call Writer.WriteInt8(UserList(UserIndex).Stats.MaxAGU)
 104     Call Writer.WriteInt8(UserList(UserIndex).Stats.MinAGU)
 106     Call Writer.WriteInt8(UserList(UserIndex).Stats.MaxHam)
@@ -2509,7 +2509,7 @@ Public Sub WriteLight(ByVal UserIndex As Integer, ByVal Map As Integer)
         '<EhHeader>
         On Error GoTo WriteLight_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.light)
+100     Call Writer.WriteInt16(ServerPacketID.elight)
 102     Call Writer.WriteString8(MapInfo(Map).base_light)
 104     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
@@ -2528,7 +2528,7 @@ Public Sub WriteFlashScreen(ByVal UserIndex As Integer, _
         '<EhHeader>
         On Error GoTo WriteFlashScreen_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.FlashScreen)
+100     Call Writer.WriteInt16(ServerPacketID.eFlashScreen)
 102     Call Writer.WriteInt32(Color)
 104     Call Writer.WriteInt32(Time)
 106     Call Writer.WriteBool(Ignorar)
@@ -2546,7 +2546,7 @@ Public Sub WriteFYA(ByVal UserIndex As Integer)
         '<EhHeader>
         On Error GoTo WriteFYA_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.FYA)
+100     Call Writer.WriteInt16(ServerPacketID.eFYA)
 102     Call Writer.WriteInt8(UserList(UserIndex).Stats.UserAtributos(1))
 104     Call Writer.WriteInt8(UserList(UserIndex).Stats.UserAtributos(2))
 106     Call Writer.WriteInt16(UserList(UserIndex).flags.DuracionEfecto)
@@ -2564,7 +2564,7 @@ Public Sub WriteCerrarleCliente(ByVal UserIndex As Integer)
         '<EhHeader>
         On Error GoTo WriteCerrarleCliente_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.CerrarleCliente)
+100     Call Writer.WriteInt16(ServerPacketID.eCerrarleCliente)
 102     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub
@@ -2580,7 +2580,7 @@ Public Sub WriteContadores(ByVal UserIndex As Integer)
  '<EhHeader>
         On Error GoTo WriteContadores_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.Contadores)
+100     Call Writer.WriteInt16(ServerPacketID.eContadores)
 102     Call Writer.WriteInt16(UserList(UserIndex).Counters.Invisibilidad)
 110     Call Writer.WriteInt16(UserList(UserIndex).flags.DuracionEfecto)
         
@@ -2597,7 +2597,7 @@ End Sub
 
 Public Sub WriteShowPapiro(ByVal UserIndex As Integer)
     On Error GoTo WriteShowPapiro_Err
-100     Call Writer.WriteInt16(ServerPacketID.ShowPapiro)
+100     Call Writer.WriteInt16(ServerPacketID.eShowPapiro)
 112     Call modSendData.SendData(ToIndex, UserIndex)
     Exit Sub
 
@@ -2608,7 +2608,7 @@ End Sub
 
 Public Sub WriteUpdateCdType(ByVal UserIndex As Integer, ByVal cdType As Byte)
 On Error GoTo WriteUpdateCdType_Err
-100     Call Writer.WriteInt16(ServerPacketID.UpdateCooldownType)
+100     Call Writer.WriteInt16(ServerPacketID.eUpdateCooldownType)
 110     Call Writer.WriteInt8(cdType)
 112     Call modSendData.SendData(ToIndex, UserIndex)
     Exit Sub
@@ -2623,7 +2623,7 @@ Public Sub WritePrivilegios(ByVal UserIndex As Integer)
         '<EhHeader>
         On Error GoTo WritePrivilegios_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.Privilegios)
+100     Call Writer.WriteInt16(ServerPacketID.ePrivilegios)
         
         If UserList(UserIndex).flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios Or e_PlayerType.Consejero) Then
             Call Writer.WriteBool(True)
@@ -2645,7 +2645,7 @@ Public Sub WriteBindKeys(ByVal UserIndex As Integer)
         '<EhHeader>
         On Error GoTo WriteBindKeys_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.BindKeys)
+100     Call Writer.WriteInt16(ServerPacketID.eBindKeys)
 102     Call Writer.WriteInt8(UserList(UserIndex).ChatCombate)
 104     Call Writer.WriteInt8(UserList(UserIndex).ChatGlobal)
 106     Call modSendData.SendData(ToIndex, UserIndex)
@@ -2662,7 +2662,7 @@ Public Sub WriteNotificarClienteSeguido(ByVal UserIndex As Integer, ByVal siguie
         '<EhHeader>
         On Error GoTo WriteNotificarClienteSeguido_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.NotificarClienteSeguido)
+100     Call Writer.WriteInt16(ServerPacketID.eNotificarClienteSeguido)
 102     Call Writer.WriteInt8(siguiendo)
 120     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
@@ -2678,7 +2678,7 @@ Public Sub WriteRecievePosSeguimiento(ByVal UserIndex As Integer, ByVal PosX As 
         '<EhHeader>
         On Error GoTo WriteNotificarClienteSeguido_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.RecievePosSeguimiento)
+100     Call Writer.WriteInt16(ServerPacketID.eRecievePosSeguimiento)
 102     Call Writer.WriteInt16(PosX)
 103     Call Writer.WriteInt16(PosY)
 120     Call modSendData.SendData(ToIndex, UserIndex)
@@ -2695,7 +2695,7 @@ Public Sub WriteGetInventarioHechizos(ByVal UserIndex As Integer, ByVal Value As
         '<EhHeader>
         On Error GoTo GetInventarioHechizos_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.GetInventarioHechizos)
+100     Call Writer.WriteInt16(ServerPacketID.eGetInventarioHechizos)
 101     Call Writer.WriteInt8(Value)
         Call Writer.WriteInt8(hechiSel)
         Call Writer.WriteInt8(scrollSel)
@@ -2714,7 +2714,7 @@ Public Sub WriteNofiticarClienteCasteo(ByVal UserIndex As Integer, ByVal Value A
         '<EhHeader>
         On Error GoTo NofiticarClienteCasteo_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.NotificarClienteCasteo)
+100     Call Writer.WriteInt16(ServerPacketID.eNotificarClienteCasteo)
 101     Call Writer.WriteInt8(Value)
 120     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
@@ -2731,7 +2731,7 @@ Public Sub WriteCancelarSeguimiento(ByVal UserIndex As Integer)
         '<EhHeader>
         On Error GoTo WriteCancelarSeguimiento_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.CancelarSeguimiento)
+100     Call Writer.WriteInt16(ServerPacketID.eCancelarSeguimiento)
 120     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub
@@ -2745,7 +2745,7 @@ Public Sub WriteSendFollowingCharindex(ByVal UserIndex As Integer, ByVal charind
         '<EhHeader>
         On Error GoTo WriteSendFollowingCharindex_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.SendFollowingCharIndex)
+100     Call Writer.WriteInt16(ServerPacketID.eSendFollowingCharIndex)
 102     Call Writer.WriteInt16(charindex)
         
 120     Call modSendData.SendData(ToIndex, UserIndex)
@@ -2765,7 +2765,7 @@ Public Sub WriteMiniStats(ByVal UserIndex As Integer)
         '<EhHeader>
         On Error GoTo WriteMiniStats_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.MiniStats)
+100     Call Writer.WriteInt16(ServerPacketID.eMiniStats)
 102     Call Writer.WriteInt32(UserList(UserIndex).Faccion.ciudadanosMatados)
 104     Call Writer.WriteInt32(UserList(UserIndex).Faccion.CriminalesMatados)
 106     Call Writer.WriteInt8(UserList(UserIndex).Faccion.Status)
@@ -2795,7 +2795,7 @@ Public Sub WriteLevelUp(ByVal UserIndex As Integer, ByVal skillPoints As Integer
         '<EhHeader>
         On Error GoTo WriteLevelUp_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.LevelUp)
+100     Call Writer.WriteInt16(ServerPacketID.eLevelUp)
 102     Call Writer.WriteInt16(skillPoints)
 104     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
@@ -2819,7 +2819,7 @@ Public Sub WriteAddForumMsg(ByVal UserIndex As Integer, _
         '<EhHeader>
         On Error GoTo WriteAddForumMsg_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.AddForumMsg)
+100     Call Writer.WriteInt16(ServerPacketID.eAddForumMsg)
 102     Call Writer.WriteString8(title)
 104     Call Writer.WriteString8(Message)
 106     Call modSendData.SendData(ToIndex, UserIndex)
@@ -2841,7 +2841,7 @@ Public Sub WriteShowForumForm(ByVal UserIndex As Integer)
         '<EhHeader>
         On Error GoTo WriteShowForumForm_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.ShowForumForm)
+100     Call Writer.WriteInt16(ServerPacketID.eShowForumForm)
 102     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub
@@ -2886,7 +2886,7 @@ Public Sub WriteMeditateToggle(ByVal UserIndex As Integer)
         '<EhHeader>
         On Error GoTo WriteMeditateToggle_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.MeditateToggle)
+100     Call Writer.WriteInt16(ServerPacketID.eMeditateToggle)
 102     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub
@@ -2906,7 +2906,7 @@ Public Sub WriteBlindNoMore(ByVal UserIndex As Integer)
         '<EhHeader>
         On Error GoTo WriteBlindNoMore_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.BlindNoMore)
+100     Call Writer.WriteInt16(ServerPacketID.eBlindNoMore)
 102     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub
@@ -2926,7 +2926,7 @@ Public Sub WriteDumbNoMore(ByVal UserIndex As Integer)
         '<EhHeader>
         On Error GoTo WriteDumbNoMore_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.DumbNoMore)
+100     Call Writer.WriteInt16(ServerPacketID.eDumbNoMore)
 102     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub
@@ -2949,7 +2949,7 @@ Public Sub WriteSendSkills(ByVal UserIndex As Integer)
 
         Dim i As Long
 
-100     Call Writer.WriteInt16(ServerPacketID.SendSkills)
+100     Call Writer.WriteInt16(ServerPacketID.eSendSkills)
 
 102     For i = 1 To NUMSKILLS
 104         Call Writer.WriteInt8(UserList(UserIndex).Stats.UserSkills(i))
@@ -2980,7 +2980,7 @@ Public Sub WriteTrainerCreatureList(ByVal UserIndex As Integer, ByVal NpcIndex A
 
         Dim str As String
 
-100     Call Writer.WriteInt16(ServerPacketID.TrainerCreatureList)
+100     Call Writer.WriteInt16(ServerPacketID.eTrainerCreatureList)
 
 102     For i = 1 To NpcList(NpcIndex).NroCriaturas
 104         str = str & NpcList(NpcIndex).Criaturas(i).NpcName & SEPARATOR
@@ -3021,7 +3021,7 @@ Public Sub WriteGuildNews(ByVal UserIndex As Integer, _
 
         Dim Tmp As String
 
-100     Call Writer.WriteInt16(ServerPacketID.guildNews)
+100     Call Writer.WriteInt16(ServerPacketID.eguildNews)
 102     Call Writer.WriteString8(guildNews)
 
         ' Prepare guild name's list
@@ -3064,7 +3064,7 @@ Public Sub WriteOfferDetails(ByVal UserIndex As Integer, ByVal details As String
         On Error GoTo WriteOfferDetails_Err
         '</EhHeader>
 
-100     Call Writer.WriteInt16(ServerPacketID.OfferDetails)
+100     Call Writer.WriteInt16(ServerPacketID.eOfferDetails)
 102     Call Writer.WriteString8(details)
 104     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
@@ -3091,7 +3091,7 @@ Public Sub WriteAlianceProposalsList(ByVal UserIndex As Integer, ByRef guilds() 
 
         Dim Tmp As String
 
-100     Call Writer.WriteInt16(ServerPacketID.AlianceProposalsList)
+100     Call Writer.WriteInt16(ServerPacketID.eAlianceProposalsList)
 
         ' Prepare guild's list
 102     For i = LBound(guilds()) To UBound(guilds())
@@ -3125,7 +3125,7 @@ Public Sub WritePeaceProposalsList(ByVal UserIndex As Integer, ByRef guilds() As
 
         Dim Tmp As String
 
-100     Call Writer.WriteInt16(ServerPacketID.PeaceProposalsList)
+100     Call Writer.WriteInt16(ServerPacketID.ePeaceProposalsList)
 
         ' Prepare guilds' list
 102     For i = LBound(guilds()) To UBound(guilds())
@@ -3172,7 +3172,7 @@ Public Sub WriteCharacterInfo(ByVal UserIndex As Integer, ByVal CharName As Stri
         '<EhHeader>
         On Error GoTo WriteCharacterInfo_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.CharacterInfo)
+100     Call Writer.WriteInt16(ServerPacketID.eCharacterInfo)
 102     Call Writer.WriteInt8(gender)
 104     Call Writer.WriteString8(CharName)
 106     Call Writer.WriteInt8(race)
@@ -3222,7 +3222,7 @@ Public Sub WriteGuildLeaderInfo(ByVal UserIndex As Integer, _
 
         Dim Tmp As String
 
-100     Call Writer.WriteInt16(ServerPacketID.GuildLeaderInfo)
+100     Call Writer.WriteInt16(ServerPacketID.eGuildLeaderInfo)
 
         ' Prepare guild name's list
 102     For i = LBound(guildList()) To UBound(guildList())
@@ -3294,7 +3294,7 @@ Public Sub WriteGuildDetails(ByVal UserIndex As Integer, _
         '<EhHeader>
         On Error GoTo WriteGuildDetails_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.GuildDetails)
+100     Call Writer.WriteInt16(ServerPacketID.eGuildDetails)
 102     Call Writer.WriteString8(GuildName)
 104     Call Writer.WriteString8(founder)
 106     Call Writer.WriteString8(foundationDate)
@@ -3322,7 +3322,7 @@ Public Sub WriteShowGuildFundationForm(ByVal UserIndex As Integer)
         '<EhHeader>
         On Error GoTo WriteShowGuildFundationForm_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.ShowGuildFundationForm)
+100     Call Writer.WriteInt16(ServerPacketID.eShowGuildFundationForm)
 102     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub
@@ -3342,7 +3342,7 @@ Public Sub WriteParalizeOK(ByVal UserIndex As Integer)
         '<EhHeader>
         On Error GoTo WriteParalizeOK_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.ParalizeOK)
+100     Call Writer.WriteInt16(ServerPacketID.eParalizeOK)
 102     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub
@@ -3355,7 +3355,7 @@ End Sub
 
 Public Sub WriteStunStart(ByVal userIndex As Integer, ByVal duration As Integer)
     On Error GoTo WriteStunStart_Err
-100     Call Writer.WriteInt16(ServerPacketID.StunStart)
+100     Call Writer.WriteInt16(ServerPacketID.eStunStart)
         Call Writer.WriteInt16(duration)
 102     Call modSendData.SendData(ToIndex, UserIndex)
     Exit Sub
@@ -3368,7 +3368,7 @@ Public Sub WriteInmovilizaOK(ByVal UserIndex As Integer)
         '<EhHeader>
         On Error GoTo WriteInmovilizaOK_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.InmovilizadoOK)
+100     Call Writer.WriteInt16(ServerPacketID.eInmovilizadoOK)
 102     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub
@@ -3383,7 +3383,7 @@ Public Sub WriteStopped(ByVal UserIndex As Integer, ByVal Stopped As Boolean)
         '<EhHeader>
         On Error GoTo WriteStopped_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.Stopped)
+100     Call Writer.WriteInt16(ServerPacketID.eStopped)
 102     Call Writer.WriteBool(Stopped)
 104     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
@@ -3405,7 +3405,7 @@ Public Sub WriteShowUserRequest(ByVal UserIndex As Integer, ByVal details As Str
         '<EhHeader>
         On Error GoTo WriteShowUserRequest_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.ShowUserRequest)
+100     Call Writer.WriteInt16(ServerPacketID.eShowUserRequest)
 102     Call Writer.WriteString8(details)
 104     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
@@ -3431,7 +3431,7 @@ Public Sub WriteChangeUserTradeSlot(ByVal UserIndex As Integer, _
         '<EhHeader>
         On Error GoTo WriteChangeUserTradeSlot_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.ChangeUserTradeSlot)
+100     Call Writer.WriteInt16(ServerPacketID.eChangeUserTradeSlot)
 102     Call Writer.WriteBool(miOferta)
 104     Call Writer.WriteInt32(gold)
 
@@ -3475,7 +3475,7 @@ Public Sub WriteSpawnList(ByVal UserIndex As Integer, ByVal ListaCompleta As Boo
         '<EhHeader>
         On Error GoTo WriteSpawnList_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.SpawnListt)
+100     Call Writer.WriteInt16(ServerPacketID.eSpawnListt)
 102     Call Writer.WriteBool(ListaCompleta)
 104     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
@@ -3501,7 +3501,7 @@ Public Sub WriteShowSOSForm(ByVal UserIndex As Integer)
 
         Dim Tmp As String
 
-100     Call Writer.WriteInt16(ServerPacketID.ShowSOSForm)
+100     Call Writer.WriteInt16(ServerPacketID.eShowSOSForm)
 
 102     For i = 1 To Ayuda.Longitud
 104         Tmp = Tmp & Ayuda.VerElemento(i) & SEPARATOR
@@ -3530,7 +3530,7 @@ Public Sub WriteShowMOTDEditionForm(ByVal UserIndex As Integer, _
         '<EhHeader>
         On Error GoTo WriteShowMOTDEditionForm_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.ShowMOTDEditionForm)
+100     Call Writer.WriteInt16(ServerPacketID.eShowMOTDEditionForm)
 102     Call Writer.WriteString8(currentMOTD)
 104     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
@@ -3551,7 +3551,7 @@ Public Sub WriteShowGMPanelForm(ByVal UserIndex As Integer)
         '<EhHeader>
         On Error GoTo WriteShowGMPanelForm_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.ShowGMPanelForm)
+100     Call Writer.WriteInt16(ServerPacketID.eShowGMPanelForm)
 102     Call Writer.WriteInt16(UserList(UserIndex).Char.Head)
 104     Call Writer.WriteInt16(UserList(UserIndex).Char.Body)
 106     Call Writer.WriteInt16(UserList(UserIndex).Char.CascoAnim)
@@ -3571,7 +3571,7 @@ Public Sub WriteShowFundarClanForm(ByVal UserIndex As Integer)
         '<EhHeader>
         On Error GoTo WriteShowFundarClanForm_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.ShowFundarClanForm)
+100     Call Writer.WriteInt16(ServerPacketID.eShowFundarClanForm)
 102     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub
@@ -3600,7 +3600,7 @@ Public Sub WriteUserNameList(ByVal UserIndex As Integer, _
 
         Dim Tmp As String
 
-100     Call Writer.WriteInt16(ServerPacketID.UserNameList)
+100     Call Writer.WriteInt16(ServerPacketID.eUserNameList)
 
         ' Prepare user's names list
 102     For i = 1 To cant
@@ -3624,7 +3624,7 @@ Public Sub WriteGoliathInit(ByVal UserIndex As Integer)
         '<EhHeader>
         On Error GoTo WriteGoliathInit_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.Goliath)
+100     Call Writer.WriteInt16(ServerPacketID.eGoliath)
 102     Call Writer.WriteInt32(UserList(UserIndex).Stats.Banco)
 104     Call Writer.WriteInt8(UserList(UserIndex).BancoInvent.NroItems)
 106     Call modSendData.SendData(ToIndex, UserIndex)
@@ -3641,7 +3641,7 @@ Public Sub WritePelearConPezEspecial(ByVal UserIndex As Integer)
         On Error GoTo WritePelearConPezEspecial_Err
         '</EhHeader>
         
-100     Call Writer.WriteInt16(ServerPacketID.PelearConPezEspecial)
+100     Call Writer.WriteInt16(ServerPacketID.ePelearConPezEspecial)
 106     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub
@@ -3656,7 +3656,7 @@ Public Sub WriteUpdateBankGld(ByVal UserIndex As Integer)
         '<EhHeader>
         On Error GoTo WriteUpdateBankGld_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.UpdateBankGld)
+100     Call Writer.WriteInt16(ServerPacketID.eUpdateBankGld)
 102     Call Writer.WriteInt32(UserList(UserIndex).Stats.Banco)
 106     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
@@ -3672,7 +3672,7 @@ Public Sub WriteShowFrmLogear(ByVal UserIndex As Integer)
         '<EhHeader>
         On Error GoTo WriteShowFrmLogear_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.ShowFrmLogear)
+100     Call Writer.WriteInt16(ServerPacketID.eShowFrmLogear)
 102     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub
@@ -3687,7 +3687,7 @@ Public Sub WriteShowFrmMapa(ByVal UserIndex As Integer)
         '<EhHeader>
         On Error GoTo WriteShowFrmMapa_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.ShowFrmMapa)
+100     Call Writer.WriteInt16(ServerPacketID.eShowFrmMapa)
 102     Call Writer.WriteInt16(ExpMult)
 104     Call Writer.WriteInt16(OroMult)
 106     Call modSendData.SendData(ToIndex, UserIndex)
@@ -3705,7 +3705,7 @@ Public Sub WritePreguntaBox(ByVal UserIndex As Integer, ByVal Message As String)
         '<EhHeader>
         On Error GoTo WritePreguntaBox_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.ShowPregunta)
+100     Call Writer.WriteInt16(ServerPacketID.eShowPregunta)
 102     Call Writer.WriteString8(Message)
 104     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
@@ -3725,7 +3725,7 @@ Public Sub WriteDatosGrupo(ByVal UserIndex As Integer)
         Dim i As Byte
 
 100     With UserList(UserIndex)
-102         Call Writer.WriteInt16(ServerPacketID.DatosGrupo)
+102         Call Writer.WriteInt16(ServerPacketID.eDatosGrupo)
 104         Call Writer.WriteBool(.Grupo.EnGrupo)
 
 106         If .Grupo.EnGrupo = True Then
@@ -3779,7 +3779,7 @@ Public Sub WriteUbicacion(ByVal UserIndex As Integer, _
         '<EhHeader>
         On Error GoTo WriteUbicacion_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.ubicacion)
+100     Call Writer.WriteInt16(ServerPacketID.eubicacion)
 102     Call Writer.WriteInt8(Miembro)
 
 104     If GPS > 0 Then
@@ -3806,7 +3806,7 @@ Public Sub WriteViajarForm(ByVal UserIndex As Integer, ByVal NpcIndex As Integer
         '<EhHeader>
         On Error GoTo WriteViajarForm_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.ViajarForm)
+100     Call Writer.WriteInt16(ServerPacketID.eViajarForm)
 
         Dim destinos As Byte
 
@@ -3840,7 +3840,7 @@ Public Sub WriteQuestDetails(ByVal UserIndex As Integer, _
         Dim i As Integer
 
         'ID del paquete
-100     Call Writer.WriteInt16(ServerPacketID.QuestDetails)
+100     Call Writer.WriteInt16(ServerPacketID.eQuestDetails)
         'Se usa la variable QuestSlot para saber si enviamos la info de una quest ya empezada o la info de una quest que no se aceptí todavía (1 para el primer caso y 0 para el segundo)
 102     Call Writer.WriteInt8(IIf(QuestSlot, 1, 0))
         'Enviamos nombre, descripción y nivel requerido de la quest
@@ -3924,7 +3924,7 @@ Public Sub WriteQuestListSend(ByVal UserIndex As Integer)
         Dim tmpByte As Byte
 
 100     With UserList(UserIndex)
-102         Call Writer.WriteInt16(ServerPacketID.QuestListSend)
+102         Call Writer.WriteInt16(ServerPacketID.eQuestListSend)
 
 104         For i = 1 To MAXUSERQUESTS
 
@@ -3966,7 +3966,7 @@ Public Sub WriteNpcQuestListSend(ByVal UserIndex As Integer, ByVal NpcIndex As I
 
         Dim QuestIndex As Integer
 
-100     Call Writer.WriteInt16(ServerPacketID.NpcQuestListSend)
+100     Call Writer.WriteInt16(ServerPacketID.eNpcQuestListSend)
 102     Call Writer.WriteInt8(NpcList(NpcIndex).NumQuest) 'Escribimos primero cuantas quest tiene el NPC
 
 104     For j = 1 To NpcList(NpcIndex).NumQuest
@@ -4076,7 +4076,7 @@ Sub WriteCommerceRecieveChatMessage(ByVal UserIndex As Integer, ByVal Message As
         '<EhHeader>
         On Error GoTo WriteCommerceRecieveChatMessage_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.CommerceRecieveChatMessage)
+100     Call Writer.WriteInt16(ServerPacketID.eCommerceRecieveChatMessage)
 102     Call Writer.WriteString8(Message)
 104     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
@@ -4095,7 +4095,7 @@ Sub WriteInvasionInfo(ByVal UserIndex As Integer, _
         '<EhHeader>
         On Error GoTo WriteInvasionInfo_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.InvasionInfo)
+100     Call Writer.WriteInt16(ServerPacketID.eInvasionInfo)
 102     Call Writer.WriteInt8(Invasion)
 104     Call Writer.WriteInt8(PorcentajeVida)
 106     Call Writer.WriteInt8(PorcentajeTiempo)
@@ -4113,7 +4113,7 @@ Sub WriteOpenCrafting(ByVal UserIndex As Integer, ByVal Tipo As Byte)
         '<EhHeader>
         On Error GoTo WriteOpenCrafting_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.OpenCrafting)
+100     Call Writer.WriteInt16(ServerPacketID.eOpenCrafting)
 102     Call Writer.WriteInt8(Tipo)
 104     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
@@ -4131,7 +4131,7 @@ Sub WriteCraftingItem(ByVal UserIndex As Integer, _
         '<EhHeader>
         On Error GoTo WriteCraftingItem_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.CraftingItem)
+100     Call Writer.WriteInt16(ServerPacketID.eCraftingItem)
 102     Call Writer.WriteInt8(Slot)
 104     Call Writer.WriteInt16(ObjIndex)
 106     Call modSendData.SendData(ToIndex, UserIndex)
@@ -4151,7 +4151,7 @@ Sub WriteCraftingCatalyst(ByVal UserIndex As Integer, _
         '<EhHeader>
         On Error GoTo WriteCraftingCatalyst_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.CraftingCatalyst)
+100     Call Writer.WriteInt16(ServerPacketID.eCraftingCatalyst)
 102     Call Writer.WriteInt16(ObjIndex)
 104     Call Writer.WriteInt16(amount)
 106     Call Writer.WriteInt8(Porcentaje)
@@ -4172,7 +4172,7 @@ Sub WriteCraftingResult(ByVal UserIndex As Integer, _
         '<EhHeader>
         On Error GoTo WriteCraftingResult_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.CraftingResult)
+100     Call Writer.WriteInt16(ServerPacketID.eCraftingResult)
 102     Call Writer.WriteInt16(Result)
 
 104     If Result <> 0 Then
@@ -4194,7 +4194,7 @@ Sub WriteForceUpdate(ByVal UserIndex As Integer)
         '<EhHeader>
         On Error GoTo WriteForceUpdate_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.ForceUpdate)
+100     Call Writer.WriteInt16(ServerPacketID.eForceUpdate)
 102     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub
@@ -4211,7 +4211,7 @@ Public Sub WriteUpdateNPCSimbolo(ByVal UserIndex As Integer, _
         '<EhHeader>
         On Error GoTo WriteUpdateNPCSimbolo_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.UpdateNPCSimbolo)
+100     Call Writer.WriteInt16(ServerPacketID.eUpdateNPCSimbolo)
 102     Call Writer.WriteInt16(NpcList(NpcIndex).Char.CharIndex)
 104     Call Writer.WriteInt8(Simbolo)
 106     Call modSendData.SendData(ToIndex, UserIndex)
@@ -4228,7 +4228,7 @@ Public Sub WriteGuardNotice(ByVal UserIndex As Integer)
         '<EhHeader>
         On Error GoTo WriteGuardNotice_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.GuardNotice)
+100     Call Writer.WriteInt16(ServerPacketID.eGuardNotice)
 102     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub
@@ -4247,7 +4247,7 @@ Public Function PrepareMessageCharSwing(ByVal CharIndex As Integer, _
         '<EhHeader>
         On Error GoTo PrepareMessageCharSwing_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.CharSwing)
+100     Call Writer.WriteInt16(ServerPacketID.eCharSwing)
 102     Call Writer.WriteInt16(CharIndex)
 104     Call Writer.WriteBool(FX)
 106     Call Writer.WriteBool(ShowText)
@@ -4275,7 +4275,7 @@ Public Function PrepareMessageSetInvisible(ByVal CharIndex As Integer, _
         '<EhHeader>
         On Error GoTo PrepareMessageSetInvisible_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.SetInvisible)
+100     Call Writer.WriteInt16(ServerPacketID.eSetInvisible)
 102     Call Writer.WriteInt16(CharIndex)
 104     Call Writer.WriteBool(invisible)
 105     Call Writer.WriteInt8(X)
@@ -4300,7 +4300,7 @@ Public Function PrepareLocaleChatOverHead(ByVal chat As Integer, _
                                          Optional ByVal MaxDisplayTime As Integer = 0)
     On Error GoTo PrepareMessageChatOverHead_Err
 
-106     Call Writer.WriteInt16(ServerPacketID.LocaleChatOverHead)
+106     Call Writer.WriteInt16(ServerPacketID.eLocaleChatOverHead)
 108     Call Writer.WriteInt16(chat)
 109     Call Writer.WriteString8(Params)
 110     Call Writer.WriteInt16(charindex)
@@ -4333,7 +4333,7 @@ Public Function PrepareMessageChatOverHead(ByVal chat As String, _
                                            Optional ByVal RequiredMinDisplayTime As Integer = 0, _
                                            Optional ByVal MaxDisplayTime As Integer = 0)
     On Error GoTo PrepareMessageChatOverHead_Err
-106     Call Writer.WriteInt16(ServerPacketID.ChatOverHead)
+106     Call Writer.WriteInt16(ServerPacketID.eChatOverHead)
 108     Call Writer.WriteString8(chat)
 110     Call Writer.WriteInt16(CharIndex)
 118     Call Writer.WriteInt32(Color)
@@ -4356,7 +4356,7 @@ Public Function PrepareMessageTextOverChar(ByVal chat As String, _
         '<EhHeader>
         On Error GoTo PrepareMessageTextOverChar_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.TextOverChar)
+100     Call Writer.WriteInt16(ServerPacketID.eTextOverChar)
 102     Call Writer.WriteString8(chat)
 104     Call Writer.WriteInt16(CharIndex)
 106     Call Writer.WriteInt32(Color)
@@ -4377,7 +4377,7 @@ Public Function PrepareMessageTextCharDrop(ByVal chat As String, _
         '<EhHeader>
         On Error GoTo PrepareMessageTextCharDrop_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.TextCharDrop)
+100     Call Writer.WriteInt16(ServerPacketID.eTextCharDrop)
 102     Call Writer.WriteString8(chat)
 104     Call Writer.WriteInt16(CharIndex)
 106     Call Writer.WriteInt32(Color)
@@ -4402,7 +4402,7 @@ Public Function PrepareMessageTextOverTile(ByVal chat As String, _
         '<EhHeader>
         On Error GoTo PrepareMessageTextOverTile_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.TextOverTile)
+100     Call Writer.WriteInt16(ServerPacketID.eTextOverTile)
 102     Call Writer.WriteString8(chat)
 104     Call Writer.WriteInt16(X)
 106     Call Writer.WriteInt16(Y)
@@ -4423,7 +4423,7 @@ End Function
 Public Function PrepareConsoleCharText(ByVal chat As String, ByVal Color As Long, ByVal sourceName As String, _
                                        ByVal sourceStatus As Integer, ByVal Privileges As Integer)
 On Error GoTo PrepareConsoleCharText_Err
-100     Call Writer.WriteInt16(ServerPacketID.ConsoleCharText)
+100     Call Writer.WriteInt16(ServerPacketID.eConsoleCharText)
 102     Call Writer.WriteString8(chat)
 104     Call Writer.WriteInt32(Color)
 106     Call Writer.WriteString8(sourceName)
@@ -4447,7 +4447,7 @@ Public Function PrepareMessageConsoleMsg(ByVal chat As String, _
         '<EhHeader>
         On Error GoTo PrepareMessageConsoleMsg_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.ConsoleMsg)
+100     Call Writer.WriteInt16(ServerPacketID.eConsoleMsg)
 102     Call Writer.WriteString8(chat)
 104     Call Writer.WriteInt8(FontIndex)
         '<EhFooter>
@@ -4465,7 +4465,7 @@ Public Function PrepareMessageLocaleMsg(ByVal ID As Integer, _
         '<EhHeader>
         On Error GoTo PrepareMessageLocaleMsg_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.LocaleMsg)
+100     Call Writer.WriteInt16(ServerPacketID.eLocaleMsg)
 102     Call Writer.WriteInt16(ID)
 104     Call Writer.WriteString8(chat)
 106     Call Writer.WriteInt8(FontIndex)
@@ -4486,7 +4486,7 @@ Public Function PrepareMessageCharAtaca(ByVal charindex As Integer, ByVal attack
         On Error GoTo PrepareMessageCharAtaca_Err
         '</EhHeader>
         
-100     Call Writer.WriteInt16(ServerPacketID.CharAtaca)
+100     Call Writer.WriteInt16(ServerPacketID.eCharAtaca)
 102     Call Writer.WriteInt16(charindex)
 104     Call Writer.WriteInt16(attackerIndex)
 106     Call Writer.WriteInt32(danio)
@@ -4518,7 +4518,7 @@ Public Function PrepareMessageCreateFX(ByVal CharIndex As Integer, _
         '<EhHeader>
         On Error GoTo PrepareMessageCreateFX_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.CreateFX)
+100     Call Writer.WriteInt16(ServerPacketID.eCreateFX)
 102     Call Writer.WriteInt16(CharIndex)
 104     Call Writer.WriteInt16(FX)
 106     Call Writer.WriteInt16(FXLoops)
@@ -4540,7 +4540,7 @@ Public Function PrepareMessageMeditateToggle(ByVal CharIndex As Integer, _
         '<EhHeader>
         On Error GoTo PrepareMessageMeditateToggle_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.MeditateToggle)
+100     Call Writer.WriteInt16(ServerPacketID.eMeditateToggle)
 102     Call Writer.WriteInt16(CharIndex)
 104     Call Writer.WriteInt16(FX)
 105     Call Writer.WriteInt8(X)
@@ -4564,7 +4564,7 @@ Public Function PrepareMessageParticleFX(ByVal CharIndex As Integer, _
         '<EhHeader>
         On Error GoTo PrepareMessageParticleFX_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.ParticleFX)
+100     Call Writer.WriteInt16(ServerPacketID.eParticleFX)
 102     Call Writer.WriteInt16(CharIndex)
 104     Call Writer.WriteInt16(Particula)
 106     Call Writer.WriteInt32(Time)
@@ -4593,7 +4593,7 @@ Public Function PrepareMessageParticleFXWithDestino(ByVal Emisor As Integer, _
         '<EhHeader>
         On Error GoTo PrepareMessageParticleFXWithDestino_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.ParticleFXWithDestino)
+100     Call Writer.WriteInt16(ServerPacketID.eParticleFXWithDestino)
 102     Call Writer.WriteInt16(Emisor)
 104     Call Writer.WriteInt16(Receptor)
 106     Call Writer.WriteInt16(ParticulaViaje)
@@ -4624,7 +4624,7 @@ Public Function PrepareMessageParticleFXWithDestinoXY(ByVal Emisor As Integer, _
         '<EhHeader>
         On Error GoTo PrepareMessageParticleFXWithDestinoXY_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.ParticleFXWithDestinoXY)
+100     Call Writer.WriteInt16(ServerPacketID.eParticleFXWithDestinoXY)
 102     Call Writer.WriteInt16(Emisor)
 104     Call Writer.WriteInt16(ParticulaViaje)
 106     Call Writer.WriteInt16(ParticulaFinal)
@@ -4649,7 +4649,7 @@ Public Function PrepareMessageAuraToChar(ByVal CharIndex As Integer, _
         '<EhHeader>
         On Error GoTo PrepareMessageAuraToChar_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.AuraToChar)
+100     Call Writer.WriteInt16(ServerPacketID.eAuraToChar)
 102     Call Writer.WriteInt16(CharIndex)
 104     Call Writer.WriteString8(Aura)
 106     Call Writer.WriteBool(Remove)
@@ -4668,7 +4668,7 @@ Public Function PrepareMessageSpeedingACT(ByVal CharIndex As Integer, _
         '<EhHeader>
         On Error GoTo PrepareMessageSpeedingACT_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.SpeedToChar)
+100     Call Writer.WriteInt16(ServerPacketID.eSpeedToChar)
 102     Call Writer.WriteInt16(CharIndex)
 104     Call Writer.WriteReal32(speeding)
         '<EhFooter>
@@ -4687,7 +4687,7 @@ Public Function PrepareMessageParticleFXToFloor(ByVal X As Byte, _
         '<EhHeader>
         On Error GoTo PrepareMessageParticleFXToFloor_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.ParticleFXToFloor)
+100     Call Writer.WriteInt16(ServerPacketID.eParticleFXToFloor)
 102     Call Writer.WriteInt8(X)
 104     Call Writer.WriteInt8(Y)
 106     Call Writer.WriteInt16(Particula)
@@ -4708,7 +4708,7 @@ Public Function PrepareMessageLightFXToFloor(ByVal X As Byte, _
         '<EhHeader>
         On Error GoTo PrepareMessageLightFXToFloor_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.LightToFloor)
+100     Call Writer.WriteInt16(ServerPacketID.eLightToFloor)
 102     Call Writer.WriteInt8(X)
 104     Call Writer.WriteInt8(Y)
 106     Call Writer.WriteInt32(LuzColor)
@@ -4737,7 +4737,7 @@ Public Function PrepareMessagePlayWave(ByVal wave As Integer, _
         '<EhHeader>
         On Error GoTo PrepareMessagePlayWave_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.PlayWave)
+100     Call Writer.WriteInt16(ServerPacketID.ePlayWave)
 102     Call Writer.WriteInt16(wave)
 104     Call Writer.WriteInt8(X)
 106     Call Writer.WriteInt8(Y)
@@ -4758,7 +4758,7 @@ Public Function PrepareMessageUbicacionLlamada(ByVal Mapa As Integer, _
         '<EhHeader>
         On Error GoTo PrepareMessageUbicacionLlamada_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.PosLLamadaDeClan)
+100     Call Writer.WriteInt16(ServerPacketID.ePosLLamadaDeClan)
 102     Call Writer.WriteInt16(Mapa)
 104     Call Writer.WriteInt8(X)
 106     Call Writer.WriteInt8(Y)
@@ -4775,7 +4775,7 @@ Public Function PrepareMessageCharUpdateHP(ByVal UserIndex As Integer)
         '<EhHeader>
         On Error GoTo PrepareMessageCharUpdateHP_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.CharUpdateHP)
+100     Call Writer.WriteInt16(ServerPacketID.eCharUpdateHP)
 102     Call Writer.WriteInt16(UserList(UserIndex).Char.CharIndex)
 104     Call Writer.WriteInt32(UserList(UserIndex).Stats.MinHp)
 106     Call Writer.WriteInt32(UserList(UserIndex).Stats.MaxHp)
@@ -4793,7 +4793,7 @@ Public Function PrepareMessageCharUpdateMAN(ByVal UserIndex As Integer)
         '<EhHeader>
         On Error GoTo PrepareMessageCharUpdateMAN_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.CharUpdateMAN)
+100     Call Writer.WriteInt16(ServerPacketID.eCharUpdateMAN)
 102     Call Writer.WriteInt16(UserList(UserIndex).Char.CharIndex)
 104     Call Writer.WriteInt32(UserList(UserIndex).Stats.MinMAN)
 106     Call Writer.WriteInt32(UserList(UserIndex).Stats.MaxMAN)
@@ -4810,7 +4810,7 @@ Public Function PrepareMessageNpcUpdateHP(ByVal NpcIndex As Integer)
         '<EhHeader>
         On Error GoTo PrepareMessageNpcUpdateHP_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.CharUpdateHP)
+100     Call Writer.WriteInt16(ServerPacketID.eCharUpdateHP)
 102     Call Writer.WriteInt16(NpcList(NpcIndex).Char.CharIndex)
 104     Call Writer.WriteInt32(NpcList(NpcIndex).Stats.MinHp)
 106     Call Writer.WriteInt32(NpcList(NpcIndex).Stats.MaxHp)
@@ -4828,7 +4828,7 @@ Public Function PrepareMessageArmaMov(ByVal charindex As Integer, Optional ByVal
         '<EhHeader>
         On Error GoTo PrepareMessageArmaMov_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.ArmaMov)
+100     Call Writer.WriteInt16(ServerPacketID.eArmaMov)
 102     Call Writer.WriteInt16(CharIndex)
 104     Call Writer.WriteInt8(isRanged)
         '<EhFooter>
@@ -4844,7 +4844,7 @@ Public Function PrepareCreateProjectile(ByVal startX As Byte, ByVal startY As By
     '<EhHeader>
         On Error GoTo PrepareCreateProjectile_Err
         '</EhHeader>
-        Call Writer.WriteInt16(ServerPacketID.CreateProjectile)
+        Call Writer.WriteInt16(ServerPacketID.eCreateProjectile)
         Call Writer.WriteInt8(startX)
         Call Writer.WriteInt8(startY)
         Call Writer.WriteInt8(targetX)
@@ -4863,7 +4863,7 @@ Public Function PrepareMessageEscudoMov(ByVal CharIndex As Integer)
         '<EhHeader>
         On Error GoTo PrepareMessageEscudoMov_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.EscudoMov)
+100     Call Writer.WriteInt16(ServerPacketID.eEscudoMov)
 102     Call Writer.WriteInt16(CharIndex)
         '<EhFooter>
         Exit Function
@@ -4880,7 +4880,7 @@ Public Function PrepareMessageFlashScreen(ByVal Color As Long, _
         '<EhHeader>
         On Error GoTo PrepareMessageFlashScreen_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.FlashScreen)
+100     Call Writer.WriteInt16(ServerPacketID.eFlashScreen)
 102     Call Writer.WriteInt32(Color)
 104     Call Writer.WriteInt32(Duracion)
 106     Call Writer.WriteBool(Ignorar)
@@ -4903,7 +4903,7 @@ Public Function PrepareMessageGuildChat(ByVal chat As String, ByVal Status As By
         '<EhHeader>
         On Error GoTo PrepareMessageGuildChat_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.GuildChat)
+100     Call Writer.WriteInt16(ServerPacketID.eGuildChat)
 102     Call Writer.WriteInt8(Status)
 104     Call Writer.WriteString8(chat)
         '<EhFooter>
@@ -4925,7 +4925,7 @@ Public Function PrepareMessageShowMessageBox(ByVal chat As String)
         '<EhHeader>
         On Error GoTo PrepareMessageShowMessageBox_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.ShowMessageBox)
+100     Call Writer.WriteInt16(ServerPacketID.eShowMessageBox)
 102     Call Writer.WriteString8(chat)
         '<EhFooter>
         Exit Function
@@ -4948,7 +4948,7 @@ Public Function PrepareMessagePlayMidi(ByVal midi As Byte, _
         '<EhHeader>
         On Error GoTo PrepareMessagePlayMidi_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.PlayMIDI)
+100     Call Writer.WriteInt16(ServerPacketID.ePlayMIDI)
 102     Call Writer.WriteInt8(midi)
 104     Call Writer.WriteInt16(loops)
         '<EhFooter>
@@ -4964,7 +4964,7 @@ Public Function PrepareMessageOnlineUser(ByVal UserOnline As Integer)
         '<EhHeader>
         On Error GoTo PrepareMessageOnlineUser_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.UserOnline)
+100     Call Writer.WriteInt16(ServerPacketID.eUserOnline)
 102     Call Writer.WriteInt16(UserOnline)
         '<EhFooter>
         Exit Function
@@ -4984,7 +4984,7 @@ Public Function PrepareMessagePauseToggle()
         '<EhHeader>
         On Error GoTo PrepareMessagePauseToggle_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.PauseToggle)
+100     Call Writer.WriteInt16(ServerPacketID.ePauseToggle)
         '<EhFooter>
         Exit Function
 
@@ -5003,7 +5003,7 @@ Public Function PrepareMessageRainToggle()
         '<EhHeader>
         On Error GoTo PrepareMessageRainToggle_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.RainToggle)
+100     Call Writer.WriteInt16(ServerPacketID.eRainToggle)
         Call Writer.WriteBool(Lloviendo)
         '<EhFooter>
         Exit Function
@@ -5018,7 +5018,7 @@ Public Function PrepareMessageHora()
         '<EhHeader>
         On Error GoTo PrepareMessageHora_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.Hora)
+100     Call Writer.WriteInt16(ServerPacketID.eHora)
 102     Call Writer.WriteInt32((GetTickCount() - HoraMundo) Mod DuracionDia)
 104     Call Writer.WriteInt32(DuracionDia)
         '<EhFooter>
@@ -5041,7 +5041,7 @@ Public Function PrepareMessageObjectDelete(ByVal X As Byte, ByVal Y As Byte)
         '<EhHeader>
         On Error GoTo PrepareMessageObjectDelete_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.ObjectDelete)
+100     Call Writer.WriteInt16(ServerPacketID.eObjectDelete)
 102     Call Writer.WriteInt8(X)
 104     Call Writer.WriteInt8(Y)
         '<EhFooter>
@@ -5067,7 +5067,7 @@ Public Function PrepareMessage_BlockPosition(ByVal X As Byte, _
         '<EhHeader>
         On Error GoTo PrepareMessage_BlockPosition_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.BlockPosition)
+100     Call Writer.WriteInt16(ServerPacketID.eBlockPosition)
 102     Call Writer.WriteInt8(X)
 104     Call Writer.WriteInt8(Y)
 106     Call Writer.WriteInt8(Blocked)
@@ -5082,7 +5082,7 @@ End Function
 
 Public Function PrepareTrapUpdate(ByVal State As Byte, ByVal x As Byte, ByVal y As Byte)
     On Error GoTo PrepareTrapUpdate_Err
-100     Call Writer.WriteInt16(ServerPacketID.UpdateTrap)
+100     Call Writer.WriteInt16(ServerPacketID.eUpdateTrap)
 102     Call Writer.WriteInt8(State)
 104     Call Writer.WriteInt8(x)
 106     Call Writer.WriteInt8(y)
@@ -5095,7 +5095,7 @@ End Function
 
 Public Function PrepareUpdateGroupInfo(ByVal UserIndex As Integer)
     On Error GoTo PrepareTrapUpdate_Err
-100 Call Writer.WriteInt16(ServerPacketID.UpdateGroupInfo)
+100 Call Writer.WriteInt16(ServerPacketID.eUpdateGroupInfo)
     If IsValidUserRef(UserList(UserIndex).Grupo.Lider) Then
         With UserList(UserList(UserIndex).Grupo.Lider.ArrayIndex).Grupo
             Dim i As Integer
@@ -5132,7 +5132,7 @@ Public Function PrepareMessageObjectCreate(ByVal ObjIndex As Integer, _
         '<EhHeader>
         On Error GoTo PrepareMessageObjectCreate_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.ObjectCreate)
+100     Call Writer.WriteInt16(ServerPacketID.eObjectCreate)
 102     Call Writer.WriteInt8(X)
 104     Call Writer.WriteInt8(Y)
 106     Call Writer.WriteInt16(ObjIndex)
@@ -5152,7 +5152,7 @@ Public Function PrepareMessageFxPiso(ByVal GrhIndex As Integer, _
         '<EhHeader>
         On Error GoTo PrepareMessageFxPiso_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.fxpiso)
+100     Call Writer.WriteInt16(ServerPacketID.efxpiso)
 102     Call Writer.WriteInt8(X)
 104     Call Writer.WriteInt8(Y)
 106     Call Writer.WriteInt16(GrhIndex)
@@ -5177,7 +5177,7 @@ Public Function PrepareMessageCharacterRemove(ByVal dbgid As Integer, ByVal Char
         '<EhHeader>
         On Error GoTo PrepareMessageCharacterRemove_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.CharacterRemove)
+100     Call Writer.WriteInt16(ServerPacketID.eCharacterRemove)
 102     Call Writer.WriteInt16(CharIndex)
 104     Call Writer.WriteBool(Desvanecido)
 106     Call Writer.WriteBool(FueWarp)
@@ -5200,7 +5200,7 @@ Public Function PrepareMessageRemoveCharDialog(ByVal CharIndex As Integer)
         '<EhHeader>
         On Error GoTo PrepareMessageRemoveCharDialog_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.RemoveCharDialog)
+100     Call Writer.WriteInt16(ServerPacketID.eRemoveCharDialog)
 102     Call Writer.WriteInt16(CharIndex)
         '<EhFooter>
         Exit Function
@@ -5242,7 +5242,7 @@ Public Function PrepareMessageCharacterCreate(ByVal body As Integer, ByVal head 
         '<EhHeader>
         On Error GoTo PrepareMessageCharacterCreate_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.CharacterCreate)
+100     Call Writer.WriteInt16(ServerPacketID.eCharacterCreate)
 102     Call Writer.WriteInt16(CharIndex)
 104     Call Writer.WriteInt16(Body)
 106     Call Writer.WriteInt16(Head)
@@ -5325,7 +5325,7 @@ Public Function PrepareMessageCharacterChange(ByVal Body As Integer, _
 
         On Error GoTo PrepareMessageCharacterChange_Err
 
-100     Call Writer.WriteInt16(ServerPacketID.CharacterChange)
+100     Call Writer.WriteInt16(ServerPacketID.eCharacterChange)
 102     Call Writer.WriteInt16(CharIndex)
 104     Call Writer.WriteInt16(Body)
 106     Call Writer.WriteInt16(Head)
@@ -5368,7 +5368,7 @@ Public Function PrepareMessageUpdateFlag(ByVal Flag As Byte, ByVal charindex As 
 
         On Error GoTo PrepareMessageUpdateFlag_Err
 
-100     Call Writer.WriteInt16(ServerPacketID.UpdateFlag)
+100     Call Writer.WriteInt16(ServerPacketID.eUpdateFlag)
         Call Writer.WriteInt16(charindex)
 102     Call Writer.WriteInt8(Flag)
         Exit Function
@@ -5392,7 +5392,7 @@ Public Function PrepareMessageCharacterMove(ByVal CharIndex As Integer, _
         '<EhHeader>
         On Error GoTo PrepareMessageCharacterMove_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.CharacterMove)
+100     Call Writer.WriteInt16(ServerPacketID.eCharacterMove)
 102     Call Writer.WriteInt16(CharIndex)
 104     Call Writer.WriteInt8(X)
 106     Call Writer.WriteInt8(Y)
@@ -5407,7 +5407,7 @@ End Function
 
 Public Function PrepareCharacterTranslate(ByVal CharIndexm As Integer, ByVal NewX As Byte, ByVal NewY As Byte, ByVal TranslationTime As Long)
     On Error GoTo PrepareMessageCharacterMove_Err
-        Call Writer.WriteInt16(ServerPacketID.CharacterTranslate)
+        Call Writer.WriteInt16(ServerPacketID.eCharacterTranslate)
         Call Writer.WriteInt16(CharIndexm)
         Call Writer.WriteInt8(NewX)
         Call Writer.WriteInt8(NewY)
@@ -5423,7 +5423,7 @@ Public Function PrepareMessageForceCharMove(ByVal Direccion As e_Heading)
         '<EhHeader>
         On Error GoTo PrepareMessageForceCharMove_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.ForceCharMove)
+100     Call Writer.WriteInt16(ServerPacketID.eForceCharMove)
 102     Call Writer.WriteInt8(Direccion)
         '<EhFooter>
         Exit Function
@@ -5438,7 +5438,7 @@ Public Function PrepareMessageForceCharMoveSiguiendo(ByVal Direccion As e_Headin
         '<EhHeader>
         On Error GoTo PrepareMessageForceCharMoveSiguiendo_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.ForceCharMoveSiguiendo)
+100     Call Writer.WriteInt16(ServerPacketID.eForceCharMoveSiguiendo)
 102     Call Writer.WriteInt8(Direccion)
         '<EhFooter>
         Exit Function
@@ -5462,7 +5462,7 @@ Public Function PrepareMessageUpdateTagAndStatus(ByVal UserIndex As Integer, _
         '<EhHeader>
         On Error GoTo PrepareMessageUpdateTagAndStatus_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.UpdateTagAndStatus)
+100     Call Writer.WriteInt16(ServerPacketID.eUpdateTagAndStatus)
 102     Call Writer.WriteInt16(UserList(UserIndex).Char.CharIndex)
 104     Call Writer.WriteInt8(Status)
 106     Call Writer.WriteString8(Tag)
@@ -5485,7 +5485,7 @@ Public Function PrepareMessageErrorMsg(ByVal Message As String)
         '<EhHeader>
         On Error GoTo PrepareMessageErrorMsg_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.ErrorMsg)
+100     Call Writer.WriteInt16(ServerPacketID.eErrorMsg)
 102     Call Writer.WriteString8(Message)
         '<EhFooter>
         Exit Function
@@ -5502,7 +5502,7 @@ Public Function PrepareMessageBarFx(ByVal CharIndex As Integer, _
         '<EhHeader>
         On Error GoTo PrepareMessageBarFx_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.BarFx)
+100     Call Writer.WriteInt16(ServerPacketID.eBarFx)
 102     Call Writer.WriteInt16(CharIndex)
 104     Call Writer.WriteInt16(BarTime)
 106     Call Writer.WriteInt8(BarAccion)
@@ -5519,7 +5519,7 @@ Public Function PrepareMessageNieblandoToggle(ByVal IntensidadMax As Byte)
         '<EhHeader>
         On Error GoTo PrepareMessageNieblandoToggle_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.NieblaToggle)
+100     Call Writer.WriteInt16(ServerPacketID.eNieblaToggle)
 102     Call Writer.WriteInt8(IntensidadMax)
         '<EhFooter>
         Exit Function
@@ -5534,7 +5534,7 @@ Public Function PrepareMessageNevarToggle()
         '<EhHeader>
         On Error GoTo PrepareMessageNevarToggle_Err
         '</EhHeader>
-100     Call Writer.WriteInt16(ServerPacketID.NieveToggle)
+100     Call Writer.WriteInt16(ServerPacketID.eNieveToggle)
         Call Writer.WriteBool(Nebando)
         '<EhFooter>
         Exit Function
@@ -5550,7 +5550,7 @@ Public Function PrepareMessageDoAnimation(ByVal CharIndex As Integer, _
 
         On Error GoTo PrepareMessageDoAnimation_Err
 
-100     Call Writer.WriteInt16(ServerPacketID.DoAnimation)
+100     Call Writer.WriteInt16(ServerPacketID.eDoAnimation)
 102     Call Writer.WriteInt16(CharIndex)
 104     Call Writer.WriteInt16(Animation)
 
@@ -5574,7 +5574,7 @@ End Function
 Public Sub writeAnswerReset(ByVal UserIndex As Integer)
     On Error GoTo writeAnswerReset_Err
 
-    Call Writer.WriteInt16(ServerPacketID.AnswerReset)
+    Call Writer.WriteInt16(ServerPacketID.eAnswerReset)
 
 182     Call modSendData.SendData(ToIndex, UserIndex)
     Exit Sub
@@ -5587,7 +5587,7 @@ End Sub
 Public Sub WriteShopInit(ByVal UserIndex As Integer)
     On Error GoTo WriteShopInit_Err
     Dim i As Long, cant_obj_shop As Integer
-    Call Writer.WriteInt16(ServerPacketID.ShopInit)
+    Call Writer.WriteInt16(ServerPacketID.eShopInit)
     cant_obj_shop = UBound(ObjShop)
     Call Writer.WriteInt16(cant_obj_shop)
     Call LoadPatronCreditsFromDB(UserIndex)
@@ -5611,7 +5611,7 @@ End Sub
 Public Sub WriteShopPjsInit(ByVal UserIndex As Integer)
     On Error GoTo WriteShopPjsInit_Err
    
-    Call Writer.WriteInt16(ServerPacketID.ShopPjsInit)
+    Call Writer.WriteInt16(ServerPacketID.eShopPjsInit)
     
 182 Call modSendData.SendData(ToIndex, UserIndex)
     Exit Sub
@@ -5622,7 +5622,7 @@ End Sub
 
 Public Sub writeUpdateShopClienteCredits(ByVal userindex As Integer)
 On Error GoTo WriteUpdateShopClienteCredits_Err
-    Call Writer.WriteInt16(ServerPacketID.UpdateShopCliente)
+    Call Writer.WriteInt16(ServerPacketID.eUpdateShopClienteCredits)
     Call Writer.WriteInt32(UserList(userindex).Stats.Creditos)
 182 Call modSendData.SendData(ToIndex, userindex)
     Exit Sub
@@ -5633,7 +5633,7 @@ End Sub
 
 Public Sub WriteSendSkillCdUpdate(ByVal UserIndex As Integer, ByVal SkillTypeId As Integer, ByVal SkillId As Long, ByVal TimeLeft As Long, ByVal TotalTime As Long, ByVal SkillType As e_EffectType, Optional ByVal Stacks As Integer = 1)
 On Error GoTo WriteSendSkillCdUpdate_Err
-    Call Writer.WriteInt16(ServerPacketID.SendSkillCdUpdate)
+    Call Writer.WriteInt16(ServerPacketID.eSendSkillCdUpdate)
     Call Writer.WriteInt16(SkillTypeId)
     Call Writer.WriteInt32(SkillId)
     Call Writer.WriteInt32(TimeLeft)
@@ -5653,7 +5653,7 @@ Public Sub WriteObjQuestSend(ByVal UserIndex As Integer, ByVal QuestIndex As Int
         '</EhHeader>
         Dim i As Integer
 
-100     Call Writer.WriteInt16(ServerPacketID.ObjQuestListSend)
+100     Call Writer.WriteInt16(ServerPacketID.eObjQuestListSend)
 102     Call Writer.WriteInt16(QuestIndex) 'Escribimos primero cuantas quest tiene el NPC
 
 110     Call Writer.WriteInt8(QuestList(QuestIndex).RequiredLevel)
@@ -5754,7 +5754,7 @@ End Sub
 
 Public Sub WriteDebugLogResponse(ByVal UserIndex As Integer, ByVal debugType, ByRef args() As String, ByVal argc As Integer)
     On Error GoTo WriteDebugLogResponse_Err:
-    Call Writer.WriteInt16(ServerPacketID.DebugDataResponse)
+    Call Writer.WriteInt16(ServerPacketID.eDebugDataResponse)
     
     If debugType = 0 Then
         Dim messageList() As String
@@ -5803,7 +5803,7 @@ Public Sub WriteRequestTelemetry(ByVal UserIndex As Integer)
         If CodeSize > 0 Then
             Call AddLogToCircularBuffer(StrConv(ErrorBuff, vbUnicode))
         End If
-        Call Writer.WriteInt16(ServerPacketID.RequestTelemetry)
+        Call Writer.WriteInt16(ServerPacketID.eRequestTelemetry)
         CodeSize = AOT_GetTelemetryCode(UserList(UserIndex).ID, UserList(UserIndex).name, Code(0), 8)
         Dim i As Integer
         For i = 0 To 7
@@ -5822,7 +5822,7 @@ Public Function PrepareUpdateCharValue(ByVal Charindex As Integer, _
 
         On Error GoTo PrepareMessageDoAnimation_Err
 
-100     Call Writer.WriteInt16(ServerPacketID.UpdateCharValue)
+100     Call Writer.WriteInt16(ServerPacketID.eUpdateCharValue)
 102     Call Writer.WriteInt16(Charindex)
 104     Call Writer.WriteInt16(CharValueType)
 106     Call Writer.WriteInt32(NewValue)
@@ -5836,7 +5836,7 @@ End Function
 
 Public Function PrepareActiveToggles()
     On Error GoTo PrepareActiveToggles_Err
-100     Call Writer.WriteInt16(ServerPacketID.SendClientToggles)
+100     Call Writer.WriteInt16(ServerPacketID.eSendClientToggles)
         Dim ActiveToggles() As String
         Dim ActiveToggleCount As Integer
         ActiveToggles = GetActiveToggles(ActiveToggleCount)
