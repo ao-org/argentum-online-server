@@ -232,7 +232,7 @@ Private Sub ApplyEffectToArea(ByVal Area As Integer)
                     Call RegisterNewAttack(MapData(Map, j, i).UserIndex, Source.ArrayIndex)
                 End If
             ElseIf MapData(map, j, i).npcIndex > 0 Then
-                If UserCanAttackNpc(Source.ArrayIndex, MapData(map, j, i).npcIndex) = eCanAttack Then
+                If UserCanAttackNpc(Source.ArrayIndex, MapData(Map, j, i).NpcIndex).CanAttack = True Then
                     Set Effect = FindEffectOnTarget(0, NpcList(MapData(map, j, i).npcIndex).EffectOverTime, TaunteffectId)
                     If Effect Is Nothing Then Call CreateEffect(Source.ArrayIndex, Source.RefType, MapData(map, j, i).npcIndex, eNpc, TaunteffectId)
                 End If

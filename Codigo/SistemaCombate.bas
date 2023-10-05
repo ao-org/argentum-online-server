@@ -675,6 +675,10 @@ Public Function NpcAtacaUser(ByVal NpcIndex As Integer, ByVal UserIndex As Integ
         End If
 124     Call CancelExit(UserIndex)
         
+        If NpcList(NpcIndex).flags.Inmovilizado = 0 And NpcList(NpcIndex).flags.AttackedBy <> UserList(UserIndex).name Then
+            NpcList(NpcIndex).flags.AttackedBy = vbNullString
+        End If
+        
         Dim danio As Long
 
         danio = -1
@@ -824,7 +828,14 @@ Public Sub UsuarioAtacaNpc(ByVal UserIndex As Integer, ByVal npcIndex As Integer
         
         On Error GoTo UsuarioAtacaNpc_Err
         
-100     If Not PuedeAtacarNPC(UserIndex, NpcIndex) Then Exit Sub
+        Dim UserAttackInteractionResult As t_AttackInteractionResult
+        UserAttackInteractionResult = UserCanAttackNpc(UserIndex, NpcIndex)
+        Call SendAttackInteractionMessage(UserIndex, UserAttackInteractionResult.Result)
+        If UserAttackInteractionResult.CanAttack Then
+            If UserAttackInteractionResult.TurnPK Then Call VolverCriminal(UserIndex)
+        Else
+            Exit Sub
+        End If
 
 102     If UserList(UserIndex).flags.invisible = 0 Then Call NPCAtacado(NpcIndex, UserIndex)
         Call EffectsOverTime.TartgetWillAtack(UserList(UserIndex).EffectOverTime, NpcIndex, eNpc, e_phisical)
@@ -1112,7 +1123,7 @@ Private Function UsuarioImpacto(ByVal AtacanteIndex As Integer, ByVal VictimaInd
 162             Call SendData(SendTarget.ToPCAliveArea, VictimaIndex, PrepareMessageCreateFX(UserList(VictimaIndex).Char.charindex, 88, 0, UserList(VictimaIndex).Pos.X, UserList(VictimaIndex).Pos.y))
 164             Call SubirSkill(VictimaIndex, e_Skill.Defensa)
             Else
-166             Call WriteConsoleMsg(VictimaIndex, "¡" & UserList(AtacanteIndex).Name & " te atacó y falló! ", e_FontTypeNames.FONTTYPE_FIGHT)
+166             Call WriteConsoleMsg(VictimaIndex, "¡" & UserList(AtacanteIndex).name & " te atacó y falló! ", e_FontTypeNames.FONTTYPE_FIGHT)
                 Call WriteConsoleMsg(AtacanteIndex, "¡Has fallado el golpe!", e_FontTypeNames.FONTTYPE_FIGHT)
             End If
         End If
@@ -1256,7 +1267,7 @@ Private Sub UserDamageToUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex 
                     End If
                     ' Y a la víctima
 174                 If .ChatCombate = 1 Then
-176                     Call WriteLocaleMsg(VictimaIndex, 385, e_FontTypeNames.FONTTYPE_FIGHT, UserList(AtacanteIndex).Name & "¬" & DamageStr)
+176                     Call WriteLocaleMsg(VictimaIndex, 385, e_FontTypeNames.FONTTYPE_FIGHT, UserList(AtacanteIndex).name & "¬" & DamageStr)
                     End If
 178                 Call SendData(SendTarget.toPCAliveArea, AtacanteIndex, PrepareMessagePlayWave(SND_IMPACTO_CRITICO, UserList(AtacanteIndex).Pos.X, UserList(AtacanteIndex).Pos.y))
                     ' Color naranja
@@ -1273,10 +1284,10 @@ Private Sub UserDamageToUser(ByVal AtacanteIndex As Integer, ByVal VictimaIndex 
                 
                     ' Mostramos en consola el golpe al atacante solo si tiene activado el chat de combate
 190                 If UserList(AtacanteIndex).ChatCombate = 1 Then
-192                     Call WriteLocaleMsg(AtacanteIndex, "210", e_FontTypeNames.FONTTYPE_INFOBOLD, .Name & "¬" & DamageStr)
+192                     Call WriteLocaleMsg(AtacanteIndex, "210", e_FontTypeNames.FONTTYPE_INFOBOLD, .name & "¬" & DamageStr)
                     End If
                     ' Mostramos en consola el golpe a la victima independientemente de la configuración de chat
-196                 Call WriteLocaleMsg(VictimaIndex, "211", e_FontTypeNames.FONTTYPE_INFOBOLD, UserList(AtacanteIndex).Name & "¬" & DamageStr)
+196                 Call WriteLocaleMsg(VictimaIndex, "211", e_FontTypeNames.FONTTYPE_INFOBOLD, UserList(AtacanteIndex).name & "¬" & DamageStr)
                     
 198                 Call SendData(SendTarget.toPCAliveArea, AtacanteIndex, PrepareMessagePlayWave(SND_IMPACTO_APU, UserList(AtacanteIndex).Pos.X, UserList(AtacanteIndex).Pos.y))
 
@@ -1672,19 +1683,6 @@ PuedeAtacar_Err:
         
 End Function
 
-Public Function PuedeAtacarNPC(ByVal AttackerIndex As Integer, ByVal NpcIndex As Integer) As Boolean
-    On Error GoTo PuedeAtacarNPC_Err
-        Dim UserAttackInteractionResult As e_AttackInteractionResult
-        UserAttackInteractionResult = UserCanAttackNpc(AttackerIndex, NpcIndex)
-        If UserAttackInteractionResult <> e_AttackInteractionResult.eCanAttack Then
-            Call SendAttackInteractionMessage(AttackerIndex, UserAttackInteractionResult)
-            Exit Function
-        End If
-220     PuedeAtacarNPC = True
-        Exit Function
-PuedeAtacarNPC_Err:
-222     Call TraceError(Err.Number, Err.Description, "SistemaCombate.PuedeAtacarNPC", Erl)
-End Function
 
 Sub CalcularDarExp(ByVal UserIndex As Integer, ByVal NpcIndex As Integer, ByVal ElDaño As Long)
         '***************************************************
@@ -2087,7 +2085,8 @@ Sub AllMascotasAtacanUser(ByVal victim As Integer, ByVal Maestro As Integer)
 110                         NpcList(mascotaIndex).flags.AttackedBy = UserList(victim).Name
 112                         Call SetUserRef(NpcList(mascotaIndex).TargetUser, victim)
 114                         Call SetMovement(mascotaIndex, e_TipoAI.NpcDefensa)
-116                         NpcList(mascotaIndex).Hostile = 1
+116                         NpcList(mascotaIndex).Hostile = 0
+                            NpcList(mascotaIndex).flags.OldHostil = 0
                         End If
                     Else
                         Call ClearNpcRef(.MascotasIndex(iCount))
@@ -2410,10 +2409,16 @@ On Error GoTo ThrowArrowToTile_Err
 108            ThrowArrowToTile = True
 110        End If
 112    ElseIf MapData(targetPos.map, targetPos.x, targetPos.y).npcIndex > 0 Then
-114        If UserCanAttackNpc(UserIndex, MapData(targetPos.map, targetPos.x, targetPos.y).npcIndex) = eCanAttack Then
-116            Call ThrowProjectileToTarget(UserIndex, MapData(targetPos.map, targetPos.x, targetPos.y).npcIndex, eNpc)
-118            ThrowArrowToTile = True
-120        End If
+114        Dim UserAttackInteractionResult As t_AttackInteractionResult
+            UserAttackInteractionResult = UserCanAttackNpc(UserIndex, MapData(TargetPos.Map, TargetPos.X, TargetPos.y).NpcIndex)
+            Call SendAttackInteractionMessage(UserIndex, UserAttackInteractionResult.Result)
+            If UserAttackInteractionResult.CanAttack Then
+                If UserAttackInteractionResult.TurnPK Then Call VolverCriminal(UserIndex)
+                Call ThrowProjectileToTarget(UserIndex, MapData(TargetPos.Map, TargetPos.X, TargetPos.y).NpcIndex, eNpc)
+                ThrowArrowToTile = True
+            Else
+                Exit Function
+            End If
 122    End If
     Exit Function
 ThrowArrowToTile_Err:
@@ -2541,3 +2546,4 @@ Public Sub ConsumeAmunition(ByVal UserIndex As Integer)
         End If
     End With
 End Sub
+

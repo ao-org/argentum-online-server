@@ -634,7 +634,7 @@ Private Function PuedeLanzar(ByVal UserIndex As Integer, ByVal HechizoIndex As I
                     Exit Function
                 End If
             End If
-            Dim UserAttackInteractionResult As e_AttackInteractionResult
+            
             If IsValidUserRef(.flags.targetUser) Then
                 If Hechizos(HechizoIndex).TargetEffectType = e_TargetEffectType.ePositive Then
                     Dim UserInteractionResult As e_InteractionResult
@@ -645,18 +645,27 @@ Private Function PuedeLanzar(ByVal UserIndex As Integer, ByVal HechizoIndex As I
                     End If
                 End If
                 If Hechizos(HechizoIndex).TargetEffectType = e_TargetEffectType.eNegative Then
-                    UserAttackInteractionResult = UserMod.CanAttackUser(UserIndex, UserList(UserIndex).VersionId, .flags.targetUser.ArrayIndex, .flags.targetUser.VersionId)
-                    If UserAttackInteractionResult <> e_AttackInteractionResult.eCanAttack Then
-                        Call SendAttackInteractionMessage(UserIndex, UserAttackInteractionResult)
+                    Dim UserAttackInteractionResultUser As e_AttackInteractionResult
+                    UserAttackInteractionResultUser = UserMod.CanAttackUser(UserIndex, UserList(UserIndex).VersionId, .flags.TargetUser.ArrayIndex, .flags.TargetUser.VersionId)
+                    If UserAttackInteractionResultUser <> e_AttackInteractionResult.eCanAttack Then
+                        Call SendAttackInteractionMessage(UserIndex, UserAttackInteractionResultUser)
                         Exit Function
                     End If
                 End If
             ElseIf IsValidNpcRef(.flags.TargetNPC) Then
                 If Hechizos(HechizoIndex).TargetEffectType = e_TargetEffectType.eNegative Then
+                    Dim UserAttackInteractionResult As t_AttackInteractionResult
+                    Dim Paraliza As Boolean
                     UserAttackInteractionResult = UserCanAttackNpc(UserIndex, .flags.TargetNPC.ArrayIndex)
-                    If UserAttackInteractionResult <> e_AttackInteractionResult.eCanAttack Then
-                        Call SendAttackInteractionMessage(UserIndex, UserAttackInteractionResult)
-                        Exit Function
+                    
+                    Paraliza = IsSet(Hechizos(HechizoIndex).Effects, e_SpellEffects.Paralize) Or IsSet(Hechizos(HechizoIndex).Effects, e_SpellEffects.Immobilize)
+                    If Not Paraliza Or (Paraliza And UserAttackInteractionResult.result <> eAttackCitizenNpc And UserAttackInteractionResult.result <> eRemoveSafeCitizenNpc) Then
+                        Call SendAttackInteractionMessage(UserIndex, UserAttackInteractionResult.result)
+                        If UserAttackInteractionResult.CanAttack Then
+                            If UserAttackInteractionResult.TurnPK Then VolverCriminal (UserIndex)
+                        Else
+                            Exit Function
+                        End If
                     End If
                 End If
             End If
@@ -804,22 +813,6 @@ Sub HechizoInvocacion(ByVal UserIndex As Integer, ByRef b As Boolean)
     
 114         If Hechizos(h).Invoca = 1 Then
         
-                'No deja invocar mas de 1 fatuo
-118             If Hechizos(h).NumNpc = FUEGOFATUO And .NroMascotas >= 1 Then
-120                 Call WriteConsoleMsg(UserIndex, "Solo puedes invocar una sola criatura de este tipo.", e_FontTypeNames.FONTTYPE_INFO)
-                    Exit Sub
-                End If
-                
-122             If Hechizos(h).NumNpc = ELEMENTAL_VIENTO And .NroMascotas >= 1 Then
-124                 Call WriteConsoleMsg(UserIndex, "Solo puedes invocar una sola criatura de este tipo.", e_FontTypeNames.FONTTYPE_INFO)
-                    Exit Sub
-                End If
-                
-126             If Hechizos(h).NumNpc = ELEMENTAL_FUEGO And .NroMascotas >= 1 Then
-128                 Call WriteConsoleMsg(UserIndex, "Solo puedes invocar una sola criatura de este tipo", e_FontTypeNames.FONTTYPE_INFO)
-                    Exit Sub
-                End If
-                
                 ' No puede invocar en este mapa
                 If MapInfo(.Pos.Map).NoMascotas Then
                     Call WriteConsoleMsg(UserIndex, "Un gran poder te impide invocar criaturas en este mapa.", e_FontTypeNames.FONTTYPE_INFO)
@@ -829,13 +822,21 @@ Sub HechizoInvocacion(ByVal UserIndex As Integer, ByRef b As Boolean)
                 Dim MinTiempo As Integer
                 Dim i As Integer
                 
-                For i = 1 To .NroMascotas - MAXMASCOTAS + Hechizos(h).cant
+                For i = 1 To Hechizos(h).cant
                     Index = -1
                     MinTiempo = IntervaloInvocacion
                     For j = 1 To MAXMASCOTAS
                         If .MascotasIndex(j).ArrayIndex > 0 Then
                             If IsValidNpcRef(.MascotasIndex(j)) Then
                                 If NpcList(.MascotasIndex(j).ArrayIndex).flags.NPCActive Then
+                                    
+                                    'Si se quiere invocar un elemental de fuego, fatuo o viento, se reemplaza uno ya existente, asi solo se permite 1.
+                                    If (Hechizos(h).NumNpc = ELEMENTAL_FUEGO Or Hechizos(h).NumNpc = ELEMENTAL_VIENTO Or Hechizos(h).NumNpc = FUEGOFATUO) And _
+                                       (NpcList(.MascotasIndex(j).ArrayIndex).Numero = ELEMENTAL_FUEGO Or NpcList(.MascotasIndex(j).ArrayIndex).Numero = ELEMENTAL_VIENTO Or NpcList(.MascotasIndex(j).ArrayIndex).Numero = FUEGOFATUO) Then
+                                        Index = j
+                                        Exit For
+                                    End If
+                                
                                     If NpcList(.MascotasIndex(j).ArrayIndex).Contadores.TiempoExistencia < MinTiempo Then
                                         Index = j
                                         MinTiempo = NpcList(.MascotasIndex(j).ArrayIndex).Contadores.TiempoExistencia
@@ -845,7 +846,13 @@ Sub HechizoInvocacion(ByVal UserIndex As Integer, ByRef b As Boolean)
                                     Index = -1
                                     Exit For
                                 End If
+                            Else
+                                Index = -1
+                                MinTiempo = 0
                             End If
+                        Else
+                            Index = -1
+                            MinTiempo = 0
                         End If
                     Next j
                     If Index > -1 Then
@@ -2530,6 +2537,8 @@ End Sub
 Sub HechizoEstadoNPC(ByVal NpcIndex As Integer, ByVal hIndex As Integer, ByRef b As Boolean, ByVal UserIndex As Integer)
         On Error GoTo HechizoEstadoNPC_Err
         
+        Dim UserAttackInteractionResult As t_AttackInteractionResult
+        
 100     If IsSet(Hechizos(hIndex).Effects, e_SpellEffects.Invisibility) Then
 102         Call InfoHechizo(UserIndex)
 104         NpcList(NpcIndex).flags.invisible = 1
@@ -2537,8 +2546,13 @@ Sub HechizoEstadoNPC(ByVal NpcIndex As Integer, ByVal hIndex As Integer, ByRef b
         End If
 
 108     If Hechizos(hIndex).Envenena > 0 Then
-110         If Not PuedeAtacarNPC(UserIndex, NpcIndex) Then
-112             b = False
+
+            UserAttackInteractionResult = UserCanAttackNpc(UserIndex, NpcIndex)
+            Call SendAttackInteractionMessage(UserIndex, UserAttackInteractionResult.Result)
+            If UserAttackInteractionResult.CanAttack Then
+                If UserAttackInteractionResult.TurnPK Then Call VolverCriminal(UserIndex)
+            Else
+                b = False
                 Exit Sub
             End If
 114         Call NPCAtacado(NpcIndex, UserIndex)
@@ -2585,12 +2599,7 @@ Sub HechizoEstadoNPC(ByVal NpcIndex As Integer, ByVal hIndex As Integer, ByRef b
 
 150     If IsSet(Hechizos(hIndex).Effects, e_SpellEffects.Paralize) Then
 152         If NpcList(NpcIndex).flags.AfectaParalisis = 0 Then
-154             If Not PuedeAtacarNPC(UserIndex, NpcIndex) Then
-156                 b = False
-                    Exit Sub
-                End If
-
-158             Call NPCAtacado(NpcIndex, UserIndex)
+158             Call NPCAtacado(NpcIndex, UserIndex, False)
 160             Call InfoHechizo(UserIndex)
 162             NpcList(NpcIndex).flags.Paralizado = 1
 164             NpcList(NpcIndex).Contadores.Paralisis = (Hechizos(hIndex).Duration * 6.5) * 6
@@ -2635,11 +2644,7 @@ Sub HechizoEstadoNPC(ByVal NpcIndex As Integer, ByVal hIndex As Integer, ByRef b
  
 208     If IsSet(Hechizos(hIndex).Effects, e_SpellEffects.Immobilize) Then
 210         If NpcList(NpcIndex).flags.AfectaParalisis = 0 Then
-216             If Not PuedeAtacarNPC(UserIndex, NpcIndex) Then
-218                 b = False
-                    Exit Sub
-                End If
-220             Call NPCAtacado(NpcIndex, UserIndex)
+220             Call NPCAtacado(NpcIndex, UserIndex, False)
 222             NpcList(NpcIndex).flags.Inmovilizado = 1
 224             NpcList(NpcIndex).Contadores.Inmovilizado = (Hechizos(hIndex).Duration * 6.5) * 6
 226             NpcList(NpcIndex).flags.Paralizado = 0
@@ -2717,7 +2722,7 @@ Sub HechizoPropNPC(ByVal hIndex As Integer, ByVal npcIndex As Integer, ByVal Use
         
         On Error GoTo HechizoPropNPC_Err
         
-
+        Dim UserAttackInteractionResult As t_AttackInteractionResult
         Dim Damage As Long
         
         Dim DamageStr As String
@@ -2743,11 +2748,15 @@ Sub HechizoPropNPC(ByVal hIndex As Integer, ByVal npcIndex As Integer, ByVal Use
         
 126     ElseIf IsSet(Hechizos(hIndex).Effects, e_SpellEffects.eDoDamage) Then
 
-128         If Not PuedeAtacarNPC(UserIndex, NpcIndex) Then
-130             b = False
+            UserAttackInteractionResult = UserCanAttackNpc(UserIndex, NpcIndex)
+            Call SendAttackInteractionMessage(UserIndex, UserAttackInteractionResult.Result)
+            If UserAttackInteractionResult.CanAttack Then
+                If UserAttackInteractionResult.TurnPK Then Call VolverCriminal(UserIndex)
+            Else
+                b = False
                 Exit Sub
             End If
-        
+                    
 132         Call NPCAtacado(NpcIndex, UserIndex)
 134         Damage = RandomNumber(Hechizos(hIndex).MinHp, Hechizos(hIndex).MaxHp)
 136         Damage = Damage + Porcentaje(Damage, 3 * UserList(UserIndex).Stats.ELV)
