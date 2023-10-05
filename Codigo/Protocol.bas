@@ -5371,7 +5371,7 @@ Private Sub HandlePetLeave(ByVal UserIndex As Integer)
             'Make usre it's the user's pet
 110         If Not IsValidUserRef(NpcList(.flags.TargetNPC.ArrayIndex).MaestroUser) Or NpcList(.flags.TargetNPC.ArrayIndex).MaestroUser.ArrayIndex <> UserIndex Then Exit Sub
 
-112         Call QuitarNPC(.flags.TargetNPC.ArrayIndex, ePetLeave)
+112         Call QuitarNPC(.flags.TargetNPC.ArrayIndex, e_DeleteSource.ePetLeave)
 
         End With
         
