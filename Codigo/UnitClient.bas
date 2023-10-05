@@ -174,18 +174,18 @@ Private Sub OnClientRecv(ByVal Message As Network.Reader)
     PacketId = Reader.ReadInt16
     Debug.Print "UnitTesting recv PacketId " & PacketId
     Select Case PacketId
-        Case ServerPacketID.connected
-            Debug.Print "ServerPacketID.connected"
-        Case ServerPacketID.logged
-            Debug.Print "ServerPacketID.logged"
-        Case ServerPacketID.Disconnect
-            Debug.Print "ServerPacketID.Disconnect"
-        Case ServerPacketID.CharacterChange
+        Case ServerPacketID.eConnected
+            Debug.Print "ServerPacketID.econnected"
+        Case ServerPacketID.elogged
+            Debug.Print "ServerPacketID.elogged"
+        Case ServerPacketID.eDisconnect
+            Debug.Print "ServerPacketID.eDisconnect"
+        Case ServerPacketID.eCharacterChange
             Debug.Print "CharacterChange"
             Call Unit_Protocol_Writes.HandleCharacterChange(Reader)
-        Case ServerPacketID.ShowMessageBox
+        Case ServerPacketID.eShowMessageBox
             Call Unit_Protocol_Writes.HandleShowMessageBox(Reader)
-        Case ServerPacketID.ErrorMsg
+        Case ServerPacketID.eErrorMsg
             Call Unit_Protocol_Writes.HandleErrorMessageBox(Reader)
         Case Else
             While Reader.GetAvailable() > 0

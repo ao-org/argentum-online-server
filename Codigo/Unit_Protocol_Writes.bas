@@ -43,7 +43,7 @@ End Sub
 Public Sub WriteLoginExistingChar(ByVal encrypted_session_token As String, ByVal public_key As String, ByVal username As String, _
     ByVal app_major As Byte, ByVal app_minor As Byte, ByVal app_revision As Byte, ByVal md5 As String)
     
-    Call Writer.WriteInt16(ClientPacketID.LoginExistingChar)
+    Call Writer.WriteInt16(ClientPacketID.eLoginExistingChar)
     Call Writer.WriteString8(encrypted_session_token)
     Dim encrypted_username_b64 As String
     encrypted_username_b64 = AO20CryptoSysWrapper.ENCRYPT(cnvHexStrFromString(public_key), username)
@@ -62,7 +62,7 @@ Public Sub WriteLoginNewChar(ByVal public_key As String, ByVal username As Strin
      
      Dim encrypted_username_b64 As String
      encrypted_username_b64 = AO20CryptoSysWrapper.ENCRYPT(cnvHexStrFromString(public_key), username)
-     Call Writer.WriteInt16(ClientPacketID.LoginNewChar)
+     Call Writer.WriteInt16(ClientPacketID.eLoginNewChar)
      Call Writer.WriteString8(UnitTesting.encrypted_token)
      Call Writer.WriteString8(encrypted_username_b64)
      Call Writer.WriteInt8(App.Major)

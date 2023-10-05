@@ -31,542 +31,7 @@ Option Explicit
 'When we have a list of strings, we use this to separate them and prevent
 'having too many string lengths in the queue. Yes, each string is NULL-terminated :P
 Public Const SEPARATOR             As String * 1 = vbNullChar
-Public Enum ServerPacketID
-    Connected
-    logged                  ' LOGGED  0
-    RemoveDialogs           ' QTDL
-    RemoveCharDialog        ' QDL
-    NavigateToggle          ' NAVEG
-    EquiteToggle
-    Disconnect              ' FINOK
-    CommerceEnd             ' FINCOMOK
-    BankEnd                 ' FINBANOK
-    CommerceInit            ' INITCOM
-    BankInit                ' INITBANCO
-    UserCommerceInit        ' INITCOMUSU   10
-    UserCommerceEnd         ' FINCOMUSUOK
-    ShowBlacksmithForm      ' SFH
-    ShowCarpenterForm       ' SFC
-    NPCKillUser             ' 6
-    BlockedWithShieldUser   ' 7
-    BlockedWithShieldOther  ' 8
-    CharSwing               ' U1
-    SafeModeOn              ' SEGON
-    SafeModeOff             ' SEGOFF 20
-    PartySafeOn
-    PartySafeOff
-    CantUseWhileMeditating  ' M!
-    UpdateSta               ' ASS
-    UpdateMana              ' ASM
-    UpdateHP                ' ASH
-    UpdateGold              ' ASG
-    UpdateExp               ' ASE 30
-    changeMap               ' CM
-    PosUpdate               ' PU
-    NPCHitUser              ' N2
-    UserHittedByUser        ' N4
-    UserHittedUser          ' N5
-    ChatOverHead            ' ||
-    LocaleChatOverHead
-    ConsoleMsg              ' || - Beware!! its the same as above, but it was properly splitted
-    GuildChat               ' |+   40
-    ShowMessageBox          ' !!
-    MostrarCuenta
-    CharacterCreate         ' CC
-    CharacterRemove         ' BP
-    CharacterMove           ' MP, +, * and _ '
-    CharacterTranslate
-    UserIndexInServer       ' IU
-    UserCharIndexInServer   ' IP
-    ForceCharMove
-    CharacterChange         ' CP
-    ObjectCreate            ' HO
-    fxpiso
-    ObjectDelete            ' BO  50
-    BlockPosition           ' BQ
-    PlayMIDI                ' TM
-    PlayWave                ' TW
-    guildList               ' GL
-    AreaChanged             ' CA
-    PauseToggle             ' BKW
-    RainToggle              ' LLU
-    CreateFX                ' CFX
-    UpdateUserStats         ' EST
-    WorkRequestTarget       ' T01 60
-    ChangeInventorySlot     ' CSI
-    InventoryUnlockSlots
-    ChangeBankSlot          ' SBO
-    ChangeSpellSlot         ' SHS
-    Atributes               ' ATR
-    BlacksmithWeapons       ' LAH
-    BlacksmithArmors        ' LAR
-    CarpenterObjects        ' OBR
-    RestOK                  ' DOK
-    ErrorMsg                ' ERR
-    Blind                   ' CEGU 70
-    Dumb                    ' DUMB
-    ShowSignal              ' MCAR
-    ChangeNPCInventorySlot  ' NPCI
-    UpdateHungerAndThirst   ' EHYS
-    MiniStats               ' MEST
-    LevelUp                 ' SUNI
-    AddForumMsg             ' FMSG
-    ShowForumForm           ' MFOR
-    SetInvisible            ' NOVER 80
-    MeditateToggle          ' MEDOK
-    BlindNoMore             ' NSEGUE
-    DumbNoMore              ' NESTUP
-    SendSkills              ' SKILLS
-    TrainerCreatureList     ' LSTCRI
-    guildNews               ' GUILDNE
-    OfferDetails            ' PEACEDE & ALLIEDE
-    AlianceProposalsList    ' ALLIEPR
-    PeaceProposalsList      ' PEACEPR 90
-    CharacterInfo           ' CHRINFO
-    GuildLeaderInfo         ' LEADERI
-    GuildDetails            ' CLANDET
-    ShowGuildFundationForm  ' SHOWFUN
-    ParalizeOK              ' PARADOK
-    StunStart               ' Stun start time
-    ShowUserRequest         ' PETICIO
-    ChangeUserTradeSlot     ' COMUSUINV
-    'SendNight              ' NOC
-    UpdateTagAndStatus
-    FYA
-    CerrarleCliente
-    Contadores
-    ShowPapiro              ' SWP
-    UpdateCooldownType
-    
-    'GM messages
-    SpawnListt               ' SPL
-    ShowSOSForm             ' MSOS
-    ShowMOTDEditionForm     ' ZMOTD
-    ShowGMPanelForm         ' ABPANEL
-    UserNameList            ' LISTUSU
-    UserOnline '110
-    ParticleFX
-    ParticleFXToFloor
-    ParticleFXWithDestino
-    ParticleFXWithDestinoXY
-    Hora
-    light
-    AuraToChar
-    SpeedToChar
-    LightToFloor
-    NieveToggle
-    NieblaToggle
-    Goliath
-    TextOverChar
-    TextOverTile
-    TextCharDrop
-    ConsoleCharText
-    FlashScreen
-    AlquimistaObj
-    ShowAlquimiaForm
-    SastreObj
-    ShowSastreForm ' 126
-    VelocidadToggle
-    MacroTrabajoToggle
-    BindKeys
-    ShowFrmLogear
-    ShowFrmMapa
-    InmovilizadoOK
-    BarFx
-    LocaleMsg
-    ShowPregunta
-    DatosGrupo
-    ubicacion
-    ArmaMov
-    EscudoMov
-    ViajarForm
-    NadarToggle
-    ShowFundarClanForm
-    CharUpdateHP
-    CharUpdateMAN
-    PosLLamadaDeClan
-    QuestDetails
-    QuestListSend
-    NpcQuestListSend
-    UpdateNPCSimbolo
-    ClanSeguro
-    Intervals
-    UpdateUserKey
-    UpdateRM
-    UpdateDM
-    SeguroResu
-    Stopped
-    InvasionInfo
-    CommerceRecieveChatMessage
-    DoAnimation
-    OpenCrafting
-    CraftingItem
-    CraftingCatalyst
-    CraftingResult
-    ForceUpdate
-    GuardNotice
-    AnswerReset
-    ObjQuestListSend
-    UpdateBankGld
-    PelearConPezEspecial
-    Privilegios
-    ShopInit
-    UpdateShopCliente
-    SendSkillCdUpdate
-    UpdateFlag
-    CharAtaca
-    NotificarClienteSeguido
-    RecievePosSeguimiento
-    CancelarSeguimiento
-    GetInventarioHechizos
-    NotificarClienteCasteo
-    SendFollowingCharIndex
-    ForceCharMoveSiguiendo
-    PosUpdateCharindex
-    PosUpdateChar
-    PlayWaveStep
-    ShopPjsInit
-    DebugDataResponse
-    CreateProjectile
-    UpdateTrap
-    UpdateGroupInfo
-    RequestTelemetry
-    UpdateCharValue
-    SendClientToggles
-    #If PYMMO = 0 Then
-    AccountCharacterList
-    #End If
-    [PacketCount]
-End Enum
 
-Public Enum ClientPacketID
-    CraftCarpenter          'CNC
-    WorkLeftClick           'WLC
-    CreateNewGuild          'CIG
-    SpellInfo               'INFS
-    EquipItem               'EQUI
-    Change_Heading           'CHEA
-    ModifySkills            'SKSE
-    Train                   'ENTR
-    CommerceBuy             'COMP
-    BankExtractItem         'RETI
-    CommerceSell            'VEND
-    BankDeposit             'DEPO
-    ForumPost               'DEMSG
-    MoveSpell               'DESPHE
-    ClanCodexUpdate         'DESCOD
-    UserCommerceOffer       'OFRECER
-    GuildAcceptPeace        'ACEPPEAT
-    GuildRejectAlliance     'RECPALIA
-    GuildRejectPeace        'RECPPEAT
-    GuildAcceptAlliance     'ACEPALIA
-    GuildOfferPeace         'PEACEOFF
-    GuildOfferAlliance      'ALLIEOFF
-    GuildAllianceDetails    'ALLIEDET
-    GuildPeaceDetails       'PEACEDET
-    GuildRequestJoinerInfo  'ENVCOMEN
-    GuildAlliancePropList   'ENVALPRO
-    GuildPeacePropList      'ENVPROPP
-    GuildDeclareWar         'DECGUERR
-    GuildNewWebsite         'NEWWEBSI
-    GuildAcceptNewMember    'ACEPTARI
-    GuildRejectNewMember    'RECHAZAR
-    GuildKickMember         'ECHARCLA
-    GuildUpdateNews         'ACTGNEWS
-    GuildMemberInfo         '1HRINFO<
-    GuildOpenElections      'ABREELEC
-    GuildRequestMembership  'SOLICITUD
-    GuildRequestDetails     'CLANDETAILS
-    Online                  '/ONLINE
-    Quit                    '/SALIR
-    GuildLeave              '/SALIRCLAN
-    RequestAccountState     '/BALANCE
-    PetStand                '/QUIETO
-    PetFollow               '/ACOMPAÑAR
-    PetLeave                '/LIBERAR
-    GrupoMsg                '/GrupoMsg
-    TrainList               '/ENTRENAR
-    Rest                    '/DESCANSAR
-    Meditate                '/MEDITAR
-    Resucitate              '/RESUCITAR
-    Heal                    '/CURAR
-    Help                    '/AYUDA
-    RequestStats            '/EST
-    CommerceStart           '/COMERCIAR
-    BankStart               '/BOVEDA
-    Enlist                  '/ENLISTAR
-    Information             '/INFORMACION
-    Reward                  '/RECOMPENSA
-    RequestMOTD             '/MOTD
-    UpTime                  '/UPTIME
-    GuildMessage            '/CMSG
-    GuildOnline             '/ONLINECLAN
-    CouncilMessage          '/BMSG
-    RoleMasterRequest       '/ROL
-    ChangeDescription       '/DESC
-    GuildVote               '/VOTO
-    punishments             '/PENAS
-    Gamble                  '/APOSTAR
-    LeaveFaction            '/RETIRAR ( with no arguments )
-    BankExtractGold         '/RETIRAR ( with arguments )
-    BankDepositGold         '/DEPOSITAR
-    Denounce                '/DENUNCIAR
-    LoginExistingChar       'OLOGIN
-    LoginNewChar            'NLOGIN
-    Talk                    ';
-    Yell                    '-
-    Whisper                 '\
-    Walk                    'M
-    RequestPositionUpdate   'RPU
-    Attack                  'AT
-    PickUp                  'AG
-    SafeToggle              '/SEG & SEG  (SEG's behaviour has to be coded in the client)
-    PartySafeToggle
-    RequestGuildLeaderInfo  'GLINFO
-    RequestAtributes        'ATR
-    RequestSkills           'ESKI
-    RequestMiniStats        'FEST
-    CommerceEnd             'FINCOM
-    UserCommerceEnd         'FINCOMUSU
-    BankEnd                 'FINBAN
-    UserCommerceOk          'COMUSUOK
-    UserCommerceReject      'COMUSUNO
-    Drop                    'TI
-    CastSpell               'LH
-    LeftClick               'LC
-    DoubleClick             'RC
-    Work                    'UK
-    UseSpellMacro           'UMH
-    UseItem                 'USA
-    CraftBlacksmith         'CNS
-    'GM messages
-    GMMessage               '/GMSG
-    showName                '/SHOWNAME
-    OnlineRoyalArmy         '/ONLINEREAL
-    OnlineChaosLegion       '/ONLINECAOS
-    GoNearby                '/IRCERCA
-    comment                 '/REM
-    serverTime              '/HORA
-    Where                   '/DONDE
-    CreaturesInMap          '/NENE
-    WarpMeToTarget          '/TELEPLOC
-    WarpChar                '/TELEP
-    Silence                 '/SILENCIAR
-    SOSShowList             '/SHOW SOS
-    SOSRemove               'SOSDONE
-    GoToChar                '/IRA
-    invisible               '/INVISIBLE
-    GMPanel                 '/PANELGM
-    RequestUserList         'LISTUSU
-    Working                 '/TRABAJANDO
-    Hiding                  '/OCULTANDO
-    Jail                    '/CARCEL
-    KillNPC                 '/RMATA
-    WarnUser                '/ADVERTENCIA
-    EditChar                '/MOD
-    RequestCharInfo         '/INFO
-    RequestCharStats        '/STAT
-    RequestCharGold         '/BAL
-    RequestCharInventory    '/INV
-    RequestCharBank         '/BOV
-    RequestCharSkills       '/SKILLS
-    ReviveChar              '/REVIVIR
-    OnlineGM                '/ONLINEGM
-    OnlineMap               '/ONLINEMAP
-    Forgive                 '/PERDON
-    Kick                    '/ECHAR
-    ExecuteCmd              '/EJECUTAR
-    BanChar                 '/BAN
-    UnbanChar               '/UNBAN
-    NPCFollow               '/SEGUIR
-    SummonChar              '/SUM
-    SpawnListRequest        '/CC
-    SpawnCreature           'SPA
-    ResetNPCInventory       '/RESETINV
-    CleanWorld              '/LIMPIAR
-    ServerMessage           '/RMSG
-    NickToIP                '/NICK2IP
-    IPToNick                '/IP2NICK
-    GuildOnlineMembers      '/ONCLAN
-    TeleportCreate          '/CT
-    TeleportDestroy         '/DT
-    RainToggle              '/LLUVIA
-    SetCharDescription      '/SETDESC
-    ForceMIDIToMap          '/FORCEMIDIMAP
-    ForceWAVEToMap          '/FORCEWAVMAP
-    RoyalArmyMessage        '/REALMSG
-    ChaosLegionMessage      '/CAOSMSG
-    TalkAsNPC               '/TALKAS
-    DestroyAllItemsInArea   '/MASSDEST
-    AcceptRoyalCouncilMember '/ACEPTCONSE
-    AcceptChaosCouncilMember '/ACEPTCONSECAOS
-    ItemsInTheFloor         '/PISO
-    MakeDumb                '/ESTUPIDO
-    MakeDumbNoMore          '/NOESTUPIDO
-    CouncilKick             '/KICKCONSE
-    SetTrigger              '/TRIGGER
-    AskTrigger              '/TRIGGER with no args
-    GuildMemberList         '/MIEMBROSCLAN
-    GuildBan                '/BANCLAN
-    CreateItem              '/CI
-    DestroyItems            '/DEST
-    ChaosLegionKick         '/NOCAOS
-    RoyalArmyKick           '/NOREAL
-    ForceMIDIAll            '/FORCEMIDI
-    ForceWAVEAll            '/FORCEWAV
-    RemovePunishment        '/BORRARPENA
-    Tile_BlockedToggle       '/BLOQ
-    KillNPCNoRespawn        '/MATA
-    KillAllNearbyNPCs       '/MASSKILL
-    LastIP                  '/LASTIP
-    ChangeMOTD              '/MOTDCAMBIA
-    SetMOTD                 'ZMOTD
-    SystemMessage           '/SMSG
-    CreateNPC               '/ACC
-    CreateNPCWithRespawn    '/RACC
-    ImperialArmour          '/AI1 - 4
-    ChaosArmour             '/AC1 - 4
-    NavigateToggle          '/NAVE
-    ServerOpenToUsersToggle '/HABILITAR
-    Participar              '/Participar
-    TurnCriminal            '/CONDEN
-    ResetFactions           '/RAJAR
-    RemoveCharFromGuild     '/RAJARCLAN
-    AlterName               '/ANAME
-    DoBackUpCmd             '/DOBACKUP
-    ShowGuildMessages       '/SHOWCMSG
-    ChangeMapInfoPK         '/MODMAPINFO PK
-    ChangeMapInfoBackup     '/MODMAPINFO BACKUP
-    ChangeMapInfoRestricted '/MODMAPINFO RESTRINGIR
-    ChangeMapInfoNoMagic    '/MODMAPINFO MAGIASINEFECTO
-    ChangeMapInfoNoInvi     '/MODMAPINFO INVISINEFECTO
-    ChangeMapInfoNoResu     '/MODMAPINFO RESUSINEFECTO
-    ChangeMapInfoLand       '/MODMAPINFO TERRENO
-    ChangeMapInfoZone       '/MODMAPINFO ZONA
-    ChangeMapSetting        '/MODMAP setting value
-    SaveChars               '/GRABAR
-    CleanSOS                '/BORRAR SOS
-    ShowServerForm          '/SHOW INT
-    night                   '/NOCHE
-    KickAllChars            '/ECHARTODOSPJS
-    ReloadNPCs              '/RELOADNPCS
-    ReloadServerIni         '/RELOADSINI
-    ReloadSpells            '/RELOADHECHIZOS
-    ReloadObjects           '/RELOADOBJ
-    ChatColor               '/CHATCOLOR
-    Ignored                 '/IGNORADO
-    CheckSlot               '/SLOT
-    
-    'Nuevas Ladder
-    SetSpeed
-    GlobalMessage           '/CONSOLA
-    GlobalOnOff
-    UseKey
-    DayCmd
-    SetTime
-    DonateGold              '/DONAR
-    Promedio                '/PROMEDIO
-    GiveItem                '/DAR
-    OfertaInicial
-    OfertaDeSubasta
-    QuestionGM
-    CuentaRegresiva
-    PossUser
-    Duel
-    AcceptDuel
-    CancelDuel
-    QuitDuel
-    NieveToggle
-    NieblaToggle
-    TransFerGold
-    Moveitem
-    Genio
-    Casarse
-    CraftAlquimista
-    FlagTrabajar
-    CraftSastre
-    MensajeUser
-    TraerBoveda
-    CompletarAccion
-    InvitarGrupo
-    ResponderPregunta
-    RequestGrupo
-    AbandonarGrupo
-    HecharDeGrupo
-    MacroPossent
-    SubastaInfo
-    BanCuenta
-    UnbanCuenta
-    CerrarCliente
-    EventoInfo
-    CrearEvento
-    BanTemporal
-    CancelarExit
-    CrearTorneo
-    ComenzarTorneo
-    CancelarTorneo
-    BusquedaTesoro
-    CompletarViaje
-    BovedaMoveItem
-    QuieroFundarClan
-    llamadadeclan
-    MarcaDeClanPack
-    MarcaDeGMPack
-    Quest
-    QuestAccept
-    QuestListRequest
-    QuestDetailsRequest
-    QuestAbandon
-    SeguroClan
-    Home                    '/HOGAR
-    Consulta                '/CONSULTA
-    GetMapInfo              '/MAPINFO
-    FinEvento
-    SeguroResu
-    CuentaExtractItem
-    CuentaDeposit
-    CreateEvent
-    CommerceSendChatMessage
-    LogMacroClickHechizo
-    AddItemCrafting
-    RemoveItemCrafting
-    AddCatalyst
-    RemoveCatalyst
-    CraftItem
-    CloseCrafting
-    MoveCraftItem
-    PetLeaveAll
-    ResetChar               '/RESET NICK
-    resetearPersonaje
-    DeleteItem
-    FinalizarPescaEspecial
-    RomperCania
-    UseItemU
-    RepeatMacro
-    BuyShopItem
-    PerdonFaccion          '/PERDONFACCION NAME
-    StartEvent
-    CancelarEvento       '/CANCELAR
-    SeguirMouse
-    SendPosMovimiento
-    NotifyInventarioHechizos
-    PublicarPersonajeMAO
-    EventoFaccionario    '/EVENTOFACCIONARIO
-    RequestDebug '/RequestDebug consulta info debug al server, para gms
-    LobbyCommand
-    FeatureToggle
-    ActionOnGroupFrame
-    SendTelemetry
-    SetHotkeySlot
-    UseHKeySlot
-    #If PYMMO = 0 Then
-    CreateAccount
-    LoginAccount
-    DeleteCharacter
-    #End If
-    [PacketCount]
-
-End Enum
 Public Enum e_EditOptions
 
     eo_Gold = 1
@@ -702,7 +167,7 @@ On Error Resume Next
         Mapping(ConnectionId).PacketCount = 0
     End If
     
-    If PacketId <> ClientPacketID.SendPosMovimiento Then
+    If PacketId <> ClientPacketID.eSendPosSeguimiento Then
       '  Debug.Print PacketId
         Mapping(ConnectionId).PacketCount = Mapping(ConnectionId).PacketCount + 1
     End If
@@ -725,7 +190,7 @@ On Error Resume Next
         Exit Function
     End If
 
-    If PacketId < 0 Or PacketId >= ClientPacketID.PacketCount Then
+    If PacketId < ClientPacketID.eMinPacket Or PacketId >= ClientPacketID.PacketCount Then
         Call LogEdicionPaquete("El usuario " & UserList(UserIndex).ConnectionDetails.IP & " mando fake paquet " & PacketId)
         Call SendData(SendTarget.ToGM, UserIndex, PrepareMessageConsoleMsg("EL USUARIO " & UserList(UserIndex).name & " | IP: " & UserList(UserIndex).ConnectionDetails.IP & " ESTÁ ENVIANDO PAQUETES INVÁLIDOS", e_FontTypeNames.FONTTYPE_GUILD))
         Call CloseSocket(UserIndex)
@@ -734,8 +199,8 @@ On Error Resume Next
     
     #If PYMMO = 1 Then
         'Does the packet requires a logged user??
-        If Not (PacketId = ClientPacketID.LoginExistingChar Or _
-                PacketId = ClientPacketID.LoginNewChar) Then
+        If Not (PacketId = ClientPacketID.eLoginExistingChar Or _
+                PacketId = ClientPacketID.eLoginNewChar) Then
                    
             'Is the user actually logged?
             If Not UserList(userindex).flags.UserLogged Then
@@ -749,8 +214,8 @@ On Error Resume Next
         End If
     #ElseIf PYMMO = 0 Then
         'Does the packet requires a logged account??
-        If Not (PacketId = ClientPacketID.CreateAccount Or _
-                PacketId = ClientPacketID.LoginAccount) Then
+        If Not (PacketId = ClientPacketID.eCreateAccount Or _
+                PacketId = ClientPacketID.eLoginAccount) Then
                    
             'Is the account actually logged?
             If UserList(UserIndex).AccountID = 0 Then
@@ -758,7 +223,7 @@ On Error Resume Next
                 Exit Function
             End If
             
-            If Not (PacketId = ClientPacketID.LoginExistingChar Or PacketId = ClientPacketID.LoginNewChar) Then
+            If Not (PacketId = ClientPacketID.eLoginExistingChar Or PacketId = ClientPacketID.eLoginNewChar) Then
                        
                 'Is the user actually logged?
                 If Not UserList(UserIndex).flags.UserLogged Then
@@ -774,644 +239,644 @@ On Error Resume Next
     #End If
     
     Select Case PacketID
-        Case ClientPacketID.LoginExistingChar
+        Case ClientPacketID.eLoginExistingChar
             Call HandleLoginExistingChar(ConnectionId)
-        Case ClientPacketID.LoginNewChar
+        Case ClientPacketID.eLoginNewChar
             Call HandleLoginNewChar(ConnectionId)
-        Case ClientPacketID.Walk
+        Case ClientPacketID.eWalk
             Call HandleWalk(UserIndex)
-        Case ClientPacketID.Attack
+        Case ClientPacketID.eAttack
             Call HandleAttack(UserIndex)
-        Case ClientPacketID.Talk
+        Case ClientPacketID.eTalk
             Call HandleTalk(UserIndex)
-        Case ClientPacketID.Yell
+        Case ClientPacketID.eYell
             Call HandleYell(UserIndex)
-        Case ClientPacketID.Whisper
+        Case ClientPacketID.eWhisper
             Call HandleWhisper(UserIndex)
-        Case ClientPacketID.RequestPositionUpdate
+        Case ClientPacketID.eRequestPositionUpdate
             Call HandleRequestPositionUpdate(UserIndex)
-        Case ClientPacketID.PickUp
+        Case ClientPacketID.ePickUp
             Call HandlePickUp(UserIndex)
-        Case ClientPacketID.SafeToggle
+        Case ClientPacketID.eSafeToggle
             Call HandleSafeToggle(UserIndex)
-        Case ClientPacketID.PartySafeToggle
+        Case ClientPacketID.ePartySafeToggle
             Call HandlePartyToggle(UserIndex)
-        Case ClientPacketID.RequestGuildLeaderInfo
+        Case ClientPacketID.eRequestGuildLeaderInfo
             Call HandleRequestGuildLeaderInfo(UserIndex)
-        Case ClientPacketID.RequestAtributes
+        Case ClientPacketID.eRequestAtributes
             Call HandleRequestAtributes(UserIndex)
-        Case ClientPacketID.RequestSkills
+        Case ClientPacketID.eRequestSkills
             Call HandleRequestSkills(UserIndex)
-        Case ClientPacketID.RequestMiniStats
+        Case ClientPacketID.eRequestMiniStats
             Call HandleRequestMiniStats(UserIndex)
-        Case ClientPacketID.CommerceEnd
+        Case ClientPacketID.eCommerceEnd
             Call HandleCommerceEnd(UserIndex)
-        Case ClientPacketID.UserCommerceEnd
+        Case ClientPacketID.eUserCommerceEnd
             Call HandleUserCommerceEnd(UserIndex)
-        Case ClientPacketID.BankEnd
+        Case ClientPacketID.eBankEnd
             Call HandleBankEnd(UserIndex)
-        Case ClientPacketID.UserCommerceOk
+        Case ClientPacketID.eUserCommerceOk
             Call HandleUserCommerceOk(UserIndex)
-        Case ClientPacketID.UserCommerceReject
+        Case ClientPacketID.eUserCommerceReject
             Call HandleUserCommerceReject(UserIndex)
-        Case ClientPacketID.Drop
+        Case ClientPacketID.eDrop
             Call HandleDrop(UserIndex)
-        Case ClientPacketID.CastSpell
+        Case ClientPacketID.eCastSpell
             Call HandleCastSpell(UserIndex) ', crc)
-        Case ClientPacketID.LeftClick
+        Case ClientPacketID.eLeftClick
             Call HandleLeftClick(UserIndex)
-        Case ClientPacketID.DoubleClick
+        Case ClientPacketID.eDoubleClick
             Call HandleDoubleClick(UserIndex)
-        Case ClientPacketID.Work
+        Case ClientPacketID.eWork
             Call HandleWork(UserIndex)
-        Case ClientPacketID.UseSpellMacro
+        Case ClientPacketID.eUseSpellMacro
             Call HandleUseSpellMacro(UserIndex)
-        Case ClientPacketID.UseItem
+        Case ClientPacketID.eUseItem
             Call HandleUseItem(UserIndex)
-        Case ClientPacketID.UseItemU
+        Case ClientPacketID.eUseItemU
             Call HandleUseItemU(UserIndex)
-        Case ClientPacketID.CraftBlacksmith
+        Case ClientPacketID.eCraftBlacksmith
             Call HandleCraftBlacksmith(UserIndex)
-        Case ClientPacketID.CraftCarpenter
+        Case ClientPacketID.eCraftCarpenter
             Call HandleCraftCarpenter(UserIndex)
-        Case ClientPacketID.WorkLeftClick
+        Case ClientPacketID.eWorkLeftClick
             Call HandleWorkLeftClick(UserIndex)
-        Case ClientPacketID.CreateNewGuild
+        Case ClientPacketID.eCreateNewGuild
             Call HandleCreateNewGuild(UserIndex)
-        Case ClientPacketID.SpellInfo
+        Case ClientPacketID.eSpellInfo
             Call HandleSpellInfo(UserIndex)
-        Case ClientPacketID.EquipItem
+        Case ClientPacketID.eEquipItem
             Call HandleEquipItem(UserIndex)
-        Case ClientPacketID.Change_Heading
+        Case ClientPacketID.eChangeHeading
             Call HandleChange_Heading(UserIndex)
-        Case ClientPacketID.ModifySkills
+        Case ClientPacketID.eModifySkills
             Call HandleModifySkills(UserIndex)
-        Case ClientPacketID.Train
+        Case ClientPacketID.eTrain
             Call HandleTrain(UserIndex)
-        Case ClientPacketID.CommerceBuy
+        Case ClientPacketID.eCommerceBuy
             Call HandleCommerceBuy(UserIndex)
-        Case ClientPacketID.BankExtractItem
+        Case ClientPacketID.eBankExtractItem
             Call HandleBankExtractItem(UserIndex)
-        Case ClientPacketID.CommerceSell
+        Case ClientPacketID.eCommerceSell
             Call HandleCommerceSell(UserIndex)
-        Case ClientPacketID.BankDeposit
+        Case ClientPacketID.eBankDeposit
             Call HandleBankDeposit(UserIndex)
-        Case ClientPacketID.ForumPost
+        Case ClientPacketID.eForumPost
             Call HandleForumPost(UserIndex)
-        Case ClientPacketID.MoveSpell
+        Case ClientPacketID.eMoveSpell
             Call HandleMoveSpell(UserIndex)
-        Case ClientPacketID.ClanCodexUpdate
+        Case ClientPacketID.eClanCodexUpdate
             Call HandleClanCodexUpdate(UserIndex)
-        Case ClientPacketID.UserCommerceOffer
+        Case ClientPacketID.eUserCommerceOffer
             Call HandleUserCommerceOffer(UserIndex)
-        Case ClientPacketID.GuildAcceptPeace
+        Case ClientPacketID.eGuildAcceptPeace
             Call HandleGuildAcceptPeace(UserIndex)
-        Case ClientPacketID.GuildRejectAlliance
+        Case ClientPacketID.eGuildRejectAlliance
             Call HandleGuildRejectAlliance(UserIndex)
-        Case ClientPacketID.GuildRejectPeace
+        Case ClientPacketID.eGuildRejectPeace
             Call HandleGuildRejectPeace(UserIndex)
-        Case ClientPacketID.GuildAcceptAlliance
+        Case ClientPacketID.eGuildAcceptAlliance
             Call HandleGuildAcceptAlliance(UserIndex)
-        Case ClientPacketID.GuildOfferPeace
+        Case ClientPacketID.eGuildOfferPeace
             Call HandleGuildOfferPeace(UserIndex)
-        Case ClientPacketID.GuildOfferAlliance
+        Case ClientPacketID.eGuildOfferAlliance
             Call HandleGuildOfferAlliance(UserIndex)
-        Case ClientPacketID.GuildAllianceDetails
+        Case ClientPacketID.eGuildAllianceDetails
             Call HandleGuildAllianceDetails(UserIndex)
-        Case ClientPacketID.GuildPeaceDetails
+        Case ClientPacketID.eGuildPeaceDetails
             Call HandleGuildPeaceDetails(UserIndex)
-        Case ClientPacketID.GuildRequestJoinerInfo
+        Case ClientPacketID.eGuildRequestJoinerInfo
             Call HandleGuildRequestJoinerInfo(UserIndex)
-        Case ClientPacketID.GuildAlliancePropList
+        Case ClientPacketID.eGuildAlliancePropList
             Call HandleGuildAlliancePropList(UserIndex)
-        Case ClientPacketID.GuildPeacePropList
+        Case ClientPacketID.eGuildPeacePropList
             Call HandleGuildPeacePropList(UserIndex)
-        Case ClientPacketID.GuildDeclareWar
+        Case ClientPacketID.eGuildDeclareWar
             Call HandleGuildDeclareWar(UserIndex)
-        Case ClientPacketID.GuildNewWebsite
+        Case ClientPacketID.eGuildNewWebsite
             Call HandleGuildNewWebsite(UserIndex)
-        Case ClientPacketID.GuildAcceptNewMember
+        Case ClientPacketID.eGuildAcceptNewMember
             Call HandleGuildAcceptNewMember(UserIndex)
-        Case ClientPacketID.GuildRejectNewMember
+        Case ClientPacketID.eGuildRejectNewMember
             Call HandleGuildRejectNewMember(UserIndex)
-        Case ClientPacketID.GuildKickMember
+        Case ClientPacketID.eGuildKickMember
             Call HandleGuildKickMember(UserIndex)
-        Case ClientPacketID.GuildUpdateNews
+        Case ClientPacketID.eGuildUpdateNews
             Call HandleGuildUpdateNews(UserIndex)
-        Case ClientPacketID.GuildMemberInfo
+        Case ClientPacketID.eGuildMemberInfo
             Call HandleGuildMemberInfo(UserIndex)
-        Case ClientPacketID.GuildOpenElections
+        Case ClientPacketID.eGuildOpenElections
             Call HandleGuildOpenElections(UserIndex)
-        Case ClientPacketID.GuildRequestMembership
+        Case ClientPacketID.eGuildRequestMembership
             Call HandleGuildRequestMembership(UserIndex)
-        Case ClientPacketID.GuildRequestDetails
+        Case ClientPacketID.eGuildRequestDetails
             Call HandleGuildRequestDetails(UserIndex)
-        Case ClientPacketID.Online
+        Case ClientPacketID.eOnline
             Call HandleOnline(UserIndex)
-        Case ClientPacketID.Quit
+        Case ClientPacketID.eQuit
             Call HandleQuit(UserIndex)
-        Case ClientPacketID.GuildLeave
+        Case ClientPacketID.eGuildLeave
             Call HandleGuildLeave(UserIndex)
-        Case ClientPacketID.RequestAccountState
+        Case ClientPacketID.eRequestAccountState
             Call HandleRequestAccountState(UserIndex)
-        Case ClientPacketID.PetStand
+        Case ClientPacketID.ePetStand
             Call HandlePetStand(UserIndex)
-        Case ClientPacketID.PetFollow
+        Case ClientPacketID.ePetFollow
             Call HandlePetFollow(UserIndex)
-        Case ClientPacketID.PetLeave
+        Case ClientPacketID.ePetLeave
             Call HandlePetLeave(UserIndex)
-        Case ClientPacketID.GrupoMsg
+        Case ClientPacketID.eGrupoMsg
             Call HandleGrupoMsg(UserIndex)
-        Case ClientPacketID.TrainList
+        Case ClientPacketID.eTrainList
             Call HandleTrainList(UserIndex)
-        Case ClientPacketID.Rest
+        Case ClientPacketID.eRest
             Call HandleRest(UserIndex)
-        Case ClientPacketID.Meditate
+        Case ClientPacketID.eMeditate
             Call HandleMeditate(UserIndex)
-        Case ClientPacketID.Resucitate
+        Case ClientPacketID.eResucitate
             Call HandleResucitate(UserIndex)
-        Case ClientPacketID.Heal
+        Case ClientPacketID.eHeal
             Call HandleHeal(UserIndex)
-        Case ClientPacketID.Help
+        Case ClientPacketID.eHelp
             Call HandleHelp(UserIndex)
-        Case ClientPacketID.RequestStats
+        Case ClientPacketID.eRequestStats
             Call HandleRequestStats(UserIndex)
-        Case ClientPacketID.CommerceStart
+        Case ClientPacketID.eCommerceStart
             Call HandleCommerceStart(UserIndex)
-        Case ClientPacketID.BankStart
+        Case ClientPacketID.eBankStart
             Call HandleBankStart(UserIndex)
-        Case ClientPacketID.Enlist
+        Case ClientPacketID.eEnlist
             Call HandleEnlist(UserIndex)
-        Case ClientPacketID.Information
+        Case ClientPacketID.eInformation
             Call HandleInformation(UserIndex)
-        Case ClientPacketID.Reward
+        Case ClientPacketID.eReward
             Call HandleReward(UserIndex)
-        Case ClientPacketID.RequestMOTD
+        Case ClientPacketID.eRequestMOTD
             Call HandleRequestMOTD(UserIndex)
-        Case ClientPacketID.UpTime
+        Case ClientPacketID.eUpTime
             Call HandleUpTime(UserIndex)
-        Case ClientPacketID.GuildMessage
+        Case ClientPacketID.eGuildMessage
             Call HandleGuildMessage(UserIndex)
-        Case ClientPacketID.GuildOnline
+        Case ClientPacketID.eGuildOnline
             Call HandleGuildOnline(UserIndex)
-        Case ClientPacketID.CouncilMessage
+        Case ClientPacketID.eCouncilMessage
             Call HandleCouncilMessage(UserIndex)
-        Case ClientPacketID.RoleMasterRequest
+        Case ClientPacketID.eRoleMasterRequest
             Call HandleRoleMasterRequest(UserIndex)
-        Case ClientPacketID.ChangeDescription
+        Case ClientPacketID.eChangeDescription
             Call HandleChangeDescription(UserIndex)
-        Case ClientPacketID.GuildVote
+        Case ClientPacketID.eGuildVote
             Call HandleGuildVote(UserIndex)
-        Case ClientPacketID.punishments
+        Case ClientPacketID.epunishments
             Call HandlePunishments(UserIndex)
-        Case ClientPacketID.Gamble
+        Case ClientPacketID.eGamble
             Call HandleGamble(UserIndex)
-        Case ClientPacketID.LeaveFaction
+        Case ClientPacketID.eLeaveFaction
             Call HandleLeaveFaction(UserIndex)
-        Case ClientPacketID.BankExtractGold
+        Case ClientPacketID.eBankExtractGold
             Call HandleBankExtractGold(UserIndex)
-        Case ClientPacketID.BankDepositGold
+        Case ClientPacketID.eBankDepositGold
             Call HandleBankDepositGold(UserIndex)
-        Case ClientPacketID.Denounce
+        Case ClientPacketID.eDenounce
             Call HandleDenounce(UserIndex)
-        Case ClientPacketID.GMMessage
+        Case ClientPacketID.eGMMessage
             Call HandleGMMessage(UserIndex)
-        Case ClientPacketID.showName
+        Case ClientPacketID.eshowName
             Call HandleShowName(UserIndex)
-        Case ClientPacketID.OnlineRoyalArmy
+        Case ClientPacketID.eOnlineRoyalArmy
             Call HandleOnlineRoyalArmy(UserIndex)
-        Case ClientPacketID.OnlineChaosLegion
+        Case ClientPacketID.eOnlineChaosLegion
             Call HandleOnlineChaosLegion(UserIndex)
-        Case ClientPacketID.GoNearby
+        Case ClientPacketID.eGoNearby
             Call HandleGoNearby(UserIndex)
-        Case ClientPacketID.comment
+        Case ClientPacketID.ecomment
             Call HandleComment(UserIndex)
-        Case ClientPacketID.serverTime
+        Case ClientPacketID.eserverTime
             Call HandleServerTime(UserIndex)
-        Case ClientPacketID.Where
+        Case ClientPacketID.eWhere
             Call HandleWhere(UserIndex)
-        Case ClientPacketID.CreaturesInMap
+        Case ClientPacketID.eCreaturesInMap
             Call HandleCreaturesInMap(UserIndex)
-        Case ClientPacketID.WarpMeToTarget
+        Case ClientPacketID.eWarpMeToTarget
             Call HandleWarpMeToTarget(UserIndex)
-        Case ClientPacketID.WarpChar
+        Case ClientPacketID.eWarpChar
             Call HandleWarpChar(UserIndex)
-        Case ClientPacketID.Silence
+        Case ClientPacketID.eSilence
             Call HandleSilence(UserIndex)
-        Case ClientPacketID.SOSShowList
+        Case ClientPacketID.eSOSShowList
             Call HandleSOSShowList(UserIndex)
-        Case ClientPacketID.SOSRemove
+        Case ClientPacketID.eSOSRemove
             Call HandleSOSRemove(UserIndex)
-        Case ClientPacketID.GoToChar
+        Case ClientPacketID.eGoToChar
             Call HandleGoToChar(UserIndex)
-        Case ClientPacketID.invisible
+        Case ClientPacketID.einvisible
             Call HandleInvisible(UserIndex)
-        Case ClientPacketID.GMPanel
+        Case ClientPacketID.eGMPanel
             Call HandleGMPanel(UserIndex)
-        Case ClientPacketID.RequestUserList
+        Case ClientPacketID.eRequestUserList
             Call HandleRequestUserList(UserIndex)
-        Case ClientPacketID.Working
+        Case ClientPacketID.eWorking
             Call HandleWorking(UserIndex)
-        Case ClientPacketID.Hiding
+        Case ClientPacketID.eHiding
             Call HandleHiding(UserIndex)
-        Case ClientPacketID.Jail
+        Case ClientPacketID.eJail
             Call HandleJail(UserIndex)
-        Case ClientPacketID.KillNPC
+        Case ClientPacketID.eKillNPC
             Call HandleKillNPC(UserIndex)
-        Case ClientPacketID.WarnUser
+        Case ClientPacketID.eWarnUser
             Call HandleWarnUser(UserIndex)
-        Case ClientPacketID.EditChar
+        Case ClientPacketID.eEditChar
             Call HandleEditChar(UserIndex)
-        Case ClientPacketID.RequestCharInfo
+        Case ClientPacketID.eRequestCharInfo
             Call HandleRequestCharInfo(UserIndex)
-        Case ClientPacketID.RequestCharStats
+        Case ClientPacketID.eRequestCharStats
             Call HandleRequestCharStats(UserIndex)
-        Case ClientPacketID.RequestCharGold
+        Case ClientPacketID.eRequestCharGold
             Call HandleRequestCharGold(UserIndex)
-        Case ClientPacketID.RequestCharInventory
+        Case ClientPacketID.eRequestCharInventory
             Call HandleRequestCharInventory(UserIndex)
-        Case ClientPacketID.RequestCharBank
+        Case ClientPacketID.eRequestCharBank
             Call HandleRequestCharBank(UserIndex)
-        Case ClientPacketID.RequestCharSkills
+        Case ClientPacketID.eRequestCharSkills
             Call HandleRequestCharSkills(UserIndex)
-        Case ClientPacketID.ReviveChar
+        Case ClientPacketID.eReviveChar
             Call HandleReviveChar(UserIndex)
-        Case ClientPacketID.SeguirMouse
+        Case ClientPacketID.eSeguirMouse
             Call HandleSeguirMouse(UserIndex)
-        Case ClientPacketID.SendPosMovimiento
+        Case ClientPacketID.eSendPosSeguimiento
             Call HandleSendPosMovimiento(UserIndex)
-        Case ClientPacketID.NotifyInventarioHechizos
+        Case ClientPacketID.eNotifyInventarioHechizos
             Call HandleNotifyInventariohechizos(UserIndex)
-        Case ClientPacketID.OnlineGM
+        Case ClientPacketID.eOnlineGM
             Call HandleOnlineGM(UserIndex)
-        Case ClientPacketID.OnlineMap
+        Case ClientPacketID.eOnlineMap
             Call HandleOnlineMap(UserIndex)
-        Case ClientPacketID.Forgive
+        Case ClientPacketID.eForgive
             Call HandleForgive(UserIndex)
-        Case ClientPacketID.PerdonFaccion
+        Case ClientPacketID.ePerdonFaccion
             Call HandlePerdonFaccion(userindex)
-        Case ClientPacketID.StartEvent
+        Case ClientPacketID.eStartEvent
             Call HandleStartEvent(UserIndex)
-        Case ClientPacketID.CancelarEvento
+        Case ClientPacketID.eCancelarEvento
             Call HandleCancelarEvento(UserIndex)
-        Case ClientPacketID.Kick
+        Case ClientPacketID.eKick
             Call HandleKick(UserIndex)
-        Case ClientPacketID.ExecuteCmd
+        Case ClientPacketID.eExecute
             Call HandleExecute(UserIndex)
-        Case ClientPacketID.BanChar
+        Case ClientPacketID.eBanChar
             Call HandleBanChar(UserIndex)
-        Case ClientPacketID.UnbanChar
+        Case ClientPacketID.eUnbanChar
             Call HandleUnbanChar(UserIndex)
-        Case ClientPacketID.NPCFollow
+        Case ClientPacketID.eNPCFollow
             Call HandleNPCFollow(UserIndex)
-        Case ClientPacketID.SummonChar
+        Case ClientPacketID.eSummonChar
             Call HandleSummonChar(UserIndex)
-        Case ClientPacketID.SpawnListRequest
+        Case ClientPacketID.eSpawnListRequest
             Call HandleSpawnListRequest(UserIndex)
-        Case ClientPacketID.SpawnCreature
+        Case ClientPacketID.eSpawnCreature
             Call HandleSpawnCreature(UserIndex)
-        Case ClientPacketID.ResetNPCInventory
+        Case ClientPacketID.eResetNPCInventory
             Call HandleResetNPCInventory(UserIndex)
-        Case ClientPacketID.CleanWorld
+        Case ClientPacketID.eCleanWorld
             Call HandleCleanWorld(UserIndex)
-        Case ClientPacketID.ServerMessage
+        Case ClientPacketID.eServerMessage
             Call HandleServerMessage(UserIndex)
-        Case ClientPacketID.NickToIP
+        Case ClientPacketID.eNickToIP
             Call HandleNickToIP(UserIndex)
-        Case ClientPacketID.IPToNick
+        Case ClientPacketID.eIPToNick
             Call HandleIPToNick(UserIndex)
-        Case ClientPacketID.GuildOnlineMembers
+        Case ClientPacketID.eGuildOnlineMembers
             Call HandleGuildOnlineMembers(UserIndex)
-        Case ClientPacketID.TeleportCreate
+        Case ClientPacketID.eTeleportCreate
             Call HandleTeleportCreate(UserIndex)
-        Case ClientPacketID.TeleportDestroy
+        Case ClientPacketID.eTeleportDestroy
             Call HandleTeleportDestroy(UserIndex)
-        Case ClientPacketID.RainToggle
+        Case ClientPacketID.eRainToggle
             Call HandleRainToggle(UserIndex)
-        Case ClientPacketID.SetCharDescription
+        Case ClientPacketID.eSetCharDescription
             Call HandleSetCharDescription(UserIndex)
-        Case ClientPacketID.ForceMIDIToMap
+        Case ClientPacketID.eForceMIDIToMap
             Call HanldeForceMIDIToMap(UserIndex)
-        Case ClientPacketID.ForceWAVEToMap
+        Case ClientPacketID.eForceWAVEToMap
             Call HandleForceWAVEToMap(UserIndex)
-        Case ClientPacketID.RoyalArmyMessage
+        Case ClientPacketID.eRoyalArmyMessage
             Call HandleRoyalArmyMessage(UserIndex)
-        Case ClientPacketID.ChaosLegionMessage
+        Case ClientPacketID.eChaosLegionMessage
             Call HandleChaosLegionMessage(UserIndex)
-        Case ClientPacketID.TalkAsNPC
+        Case ClientPacketID.eTalkAsNPC
             Call HandleTalkAsNPC(UserIndex)
-        Case ClientPacketID.DestroyAllItemsInArea
+        Case ClientPacketID.eDestroyAllItemsInArea
             Call HandleDestroyAllItemsInArea(UserIndex)
-        Case ClientPacketID.AcceptRoyalCouncilMember
+        Case ClientPacketID.eAcceptRoyalCouncilMember
             Call HandleAcceptRoyalCouncilMember(UserIndex)
-        Case ClientPacketID.AcceptChaosCouncilMember
+        Case ClientPacketID.eAcceptChaosCouncilMember
             Call HandleAcceptChaosCouncilMember(UserIndex)
-        Case ClientPacketID.ItemsInTheFloor
+        Case ClientPacketID.eItemsInTheFloor
             Call HandleItemsInTheFloor(UserIndex)
-        Case ClientPacketID.MakeDumb
+        Case ClientPacketID.eMakeDumb
             Call HandleMakeDumb(UserIndex)
-        Case ClientPacketID.MakeDumbNoMore
+        Case ClientPacketID.eMakeDumbNoMore
             Call HandleMakeDumbNoMore(UserIndex)
-        Case ClientPacketID.CouncilKick
+        Case ClientPacketID.eCouncilKick
             Call HandleCouncilKick(UserIndex)
-        Case ClientPacketID.SetTrigger
+        Case ClientPacketID.eSetTrigger
             Call HandleSetTrigger(UserIndex)
-        Case ClientPacketID.AskTrigger
+        Case ClientPacketID.eAskTrigger
             Call HandleAskTrigger(UserIndex)
-        Case ClientPacketID.GuildMemberList
+        Case ClientPacketID.eGuildMemberList
             Call HandleGuildMemberList(UserIndex)
-        Case ClientPacketID.GuildBan
+        Case ClientPacketID.eGuildBan
             Call HandleGuildBan(UserIndex)
-        Case ClientPacketID.CreateItem
+        Case ClientPacketID.eCreateItem
             Call HandleCreateItem(UserIndex)
-        Case ClientPacketID.DestroyItems
+        Case ClientPacketID.eDestroyItems
             Call HandleDestroyItems(UserIndex)
-        Case ClientPacketID.ChaosLegionKick
+        Case ClientPacketID.eChaosLegionKick
             Call HandleChaosLegionKick(UserIndex)
-        Case ClientPacketID.RoyalArmyKick
+        Case ClientPacketID.eRoyalArmyKick
             Call HandleRoyalArmyKick(UserIndex)
-        Case ClientPacketID.ForceMIDIAll
+        Case ClientPacketID.eForceMIDIAll
             Call HandleForceMIDIAll(UserIndex)
-        Case ClientPacketID.ForceWAVEAll
+        Case ClientPacketID.eForceWAVEAll
             Call HandleForceWAVEAll(UserIndex)
-        Case ClientPacketID.RemovePunishment
+        Case ClientPacketID.eRemovePunishment
             Call HandleRemovePunishment(UserIndex)
-        Case ClientPacketID.Tile_BlockedToggle
+        Case ClientPacketID.eTileBlockedToggle
             Call HandleTile_BlockedToggle(UserIndex)
-        Case ClientPacketID.KillNPCNoRespawn
+        Case ClientPacketID.eKillNPCNoRespawn
             Call HandleKillNPCNoRespawn(UserIndex)
-        Case ClientPacketID.KillAllNearbyNPCs
+        Case ClientPacketID.eKillAllNearbyNPCs
             Call HandleKillAllNearbyNPCs(UserIndex)
-        Case ClientPacketID.LastIP
+        Case ClientPacketID.eLastIP
             Call HandleLastIP(UserIndex)
-        Case ClientPacketID.ChangeMOTD
+        Case ClientPacketID.eChangeMOTD
             Call HandleChangeMOTD(UserIndex)
-        Case ClientPacketID.SetMOTD
+        Case ClientPacketID.eSetMOTD
             Call HandleSetMOTD(UserIndex)
-        Case ClientPacketID.SystemMessage
+        Case ClientPacketID.eSystemMessage
             Call HandleSystemMessage(UserIndex)
-        Case ClientPacketID.CreateNPC
+        Case ClientPacketID.eCreateNPC
             Call HandleCreateNPC(UserIndex)
-        Case ClientPacketID.CreateNPCWithRespawn
+        Case ClientPacketID.eCreateNPCWithRespawn
             Call HandleCreateNPCWithRespawn(UserIndex)
-        Case ClientPacketID.ImperialArmour
+        Case ClientPacketID.eImperialArmour
             Call HandleImperialArmour(UserIndex)
-        Case ClientPacketID.ChaosArmour
+        Case ClientPacketID.eChaosArmour
             Call HandleChaosArmour(UserIndex)
-        Case ClientPacketID.NavigateToggle
+        Case ClientPacketID.eNavigateToggle
             Call HandleNavigateToggle(UserIndex)
-        Case ClientPacketID.ServerOpenToUsersToggle
+        Case ClientPacketID.eServerOpenToUsersToggle
             Call HandleServerOpenToUsersToggle(UserIndex)
-        Case ClientPacketID.Participar
+        Case ClientPacketID.eParticipar
             Call HandleParticipar(UserIndex)
-        Case ClientPacketID.TurnCriminal
+        Case ClientPacketID.eTurnCriminal
             Call HandleTurnCriminal(UserIndex)
-        Case ClientPacketID.ResetFactions
+        Case ClientPacketID.eResetFactions
             Call HandleResetFactions(UserIndex)
-        Case ClientPacketID.RemoveCharFromGuild
+        Case ClientPacketID.eRemoveCharFromGuild
             Call HandleRemoveCharFromGuild(UserIndex)
-        Case ClientPacketID.AlterName
+        Case ClientPacketID.eAlterName
             Call HandleAlterName(UserIndex)
-        Case ClientPacketID.DoBackUpCmd
+        Case ClientPacketID.eDoBackUp
             Call HandleDoBackUp(UserIndex)
-        Case ClientPacketID.ShowGuildMessages
+        Case ClientPacketID.eShowGuildMessages
             Call HandleShowGuildMessages(UserIndex)
-        Case ClientPacketID.ChangeMapInfoPK
+        Case ClientPacketID.eChangeMapInfoPK
             Call HandleChangeMapInfoPK(UserIndex)
-        Case ClientPacketID.ChangeMapInfoBackup
+        Case ClientPacketID.eChangeMapInfoBackup
             Call HandleChangeMapInfoBackup(UserIndex)
-        Case ClientPacketID.ChangeMapInfoRestricted
+        Case ClientPacketID.eChangeMapInfoRestricted
             Call HandleChangeMapInfoRestricted(UserIndex)
-        Case ClientPacketID.ChangeMapInfoNoMagic
+        Case ClientPacketID.eChangeMapInfoNoMagic
             Call HandleChangeMapInfoNoMagic(UserIndex)
-        Case ClientPacketID.ChangeMapInfoNoInvi
+        Case ClientPacketID.eChangeMapInfoNoInvi
             Call HandleChangeMapInfoNoInvi(UserIndex)
-        Case ClientPacketID.ChangeMapInfoNoResu
+        Case ClientPacketID.eChangeMapInfoNoResu
             Call HandleChangeMapInfoNoResu(UserIndex)
-        Case ClientPacketID.ChangeMapInfoLand
+        Case ClientPacketID.eChangeMapInfoLand
             Call HandleChangeMapInfoLand(UserIndex)
-        Case ClientPacketID.ChangeMapInfoZone
+        Case ClientPacketID.eChangeMapInfoZone
             Call HandleChangeMapInfoZone(UserIndex)
-        Case ClientPacketID.ChangeMapSetting
+        Case ClientPacketID.eChangeMapSetting
             Call HandleChangeMapSetting(UserIndex)
-        Case ClientPacketID.SaveChars
+        Case ClientPacketID.eSaveChars
             Call HandleSaveChars(UserIndex)
-        Case ClientPacketID.CleanSOS
+        Case ClientPacketID.eCleanSOS
             Call HandleCleanSOS(UserIndex)
-        Case ClientPacketID.ShowServerForm
+        Case ClientPacketID.eShowServerForm
             Call HandleShowServerForm(UserIndex)
-        Case ClientPacketID.night
+        Case ClientPacketID.enight
             Call HandleNight(UserIndex)
-        Case ClientPacketID.KickAllChars
+        Case ClientPacketID.eKickAllChars
             Call HandleKickAllChars(UserIndex)
-        Case ClientPacketID.ReloadNPCs
+        Case ClientPacketID.eReloadNPCs
             Call HandleReloadNPCs(UserIndex)
-        Case ClientPacketID.ReloadServerIni
+        Case ClientPacketID.eReloadServerIni
             Call HandleReloadServerIni(UserIndex)
-        Case ClientPacketID.ReloadSpells
+        Case ClientPacketID.eReloadSpells
             Call HandleReloadSpells(UserIndex)
-        Case ClientPacketID.ReloadObjects
+        Case ClientPacketID.eReloadObjects
             Call HandleReloadObjects(UserIndex)
-        Case ClientPacketID.ChatColor
+        Case ClientPacketID.eChatColor
             Call HandleChatColor(UserIndex)
-        Case ClientPacketID.Ignored
+        Case ClientPacketID.eIgnored
             Call HandleIgnored(UserIndex)
-        Case ClientPacketID.CheckSlot
+        Case ClientPacketID.eCheckSlot
             Call HandleCheckSlot(UserIndex)
-        Case ClientPacketID.SetSpeed
+        Case ClientPacketID.eSetSpeed
             Call HandleSetSpeed(UserIndex)
-        Case ClientPacketID.GlobalMessage
+        Case ClientPacketID.eGlobalMessage
             Call HandleGlobalMessage(UserIndex)
-        Case ClientPacketID.GlobalOnOff
+        Case ClientPacketID.eGlobalOnOff
             Call HandleGlobalOnOff(UserIndex)
-        Case ClientPacketID.UseKey
+        Case ClientPacketID.eUseKey
             Call HandleUseKey(UserIndex)
-        Case ClientPacketID.DayCmd
+        Case ClientPacketID.eDay
             Call HandleDay(UserIndex)
-        Case ClientPacketID.SetTime
+        Case ClientPacketID.eSetTime
             Call HandleSetTime(UserIndex)
-        Case ClientPacketID.DonateGold
+        Case ClientPacketID.eDonateGold
             Call HandleDonateGold(UserIndex)
-        Case ClientPacketID.Promedio
+        Case ClientPacketID.ePromedio
             Call HandlePromedio(UserIndex)
-        Case ClientPacketID.GiveItem
+        Case ClientPacketID.eGiveItem
             Call HandleGiveItem(UserIndex)
-        Case ClientPacketID.OfertaInicial
+        Case ClientPacketID.eOfertaInicial
             Call HandleOfertaInicial(UserIndex)
-        Case ClientPacketID.OfertaDeSubasta
+        Case ClientPacketID.eOfertaDeSubasta
             Call HandleOfertaDeSubasta(UserIndex)
-        Case ClientPacketID.QuestionGM
+        Case ClientPacketID.eQuestionGM
             Call HandleQuestionGM(UserIndex)
-        Case ClientPacketID.CuentaRegresiva
+        Case ClientPacketID.eCuentaRegresiva
             Call HandleCuentaRegresiva(UserIndex)
-        Case ClientPacketID.PossUser
+        Case ClientPacketID.ePossUser
             Call HandlePossUser(UserIndex)
-        Case ClientPacketID.Duel
+        Case ClientPacketID.eDuel
             Call HandleDuel(UserIndex)
-        Case ClientPacketID.AcceptDuel
+        Case ClientPacketID.eAcceptDuel
             Call HandleAcceptDuel(UserIndex)
-        Case ClientPacketID.CancelDuel
+        Case ClientPacketID.eCancelDuel
             Call HandleCancelDuel(UserIndex)
-        Case ClientPacketID.QuitDuel
+        Case ClientPacketID.eQuitDuel
             Call HandleQuitDuel(UserIndex)
-        Case ClientPacketID.NieveToggle
+        Case ClientPacketID.eNieveToggle
             Call HandleNieveToggle(UserIndex)
-        Case ClientPacketID.NieblaToggle
+        Case ClientPacketID.eNieblaToggle
             Call HandleNieblaToggle(UserIndex)
-        Case ClientPacketID.TransFerGold
+        Case ClientPacketID.eTransFerGold
             Call HandleTransFerGold(UserIndex)
-        Case ClientPacketID.Moveitem
+        Case ClientPacketID.eMoveitem
             Call HandleMoveItem(UserIndex)
-        Case ClientPacketID.Genio
+        Case ClientPacketID.eGenio
             Call HandleGenio(UserIndex)
-        Case ClientPacketID.Casarse
+        Case ClientPacketID.eCasarse
             Call HandleCasamiento(UserIndex)
-        Case ClientPacketID.CraftAlquimista
+        Case ClientPacketID.eCraftAlquimista
             Call HandleCraftAlquimia(UserIndex)
-        Case ClientPacketID.FlagTrabajar
+        Case ClientPacketID.eFlagTrabajar
             Call HandleFlagTrabajar(UserIndex)
-        Case ClientPacketID.CraftSastre
+        Case ClientPacketID.eCraftSastre
             Call HandleCraftSastre(UserIndex)
-        Case ClientPacketID.MensajeUser
+        Case ClientPacketID.eMensajeUser
             Call HandleMensajeUser(UserIndex)
-        Case ClientPacketID.TraerBoveda
+        Case ClientPacketID.eTraerBoveda
             Call HandleTraerBoveda(UserIndex)
-        Case ClientPacketID.CompletarAccion
+        Case ClientPacketID.eCompletarAccion
             Call HandleCompletarAccion(UserIndex)
-        Case ClientPacketID.InvitarGrupo
+        Case ClientPacketID.eInvitarGrupo
             Call HandleInvitarGrupo(UserIndex)
-        Case ClientPacketID.ResponderPregunta
+        Case ClientPacketID.eResponderPregunta
             Call HandleResponderPregunta(UserIndex)
-        Case ClientPacketID.RequestGrupo
+        Case ClientPacketID.eRequestGrupo
             Call HandleRequestGrupo(UserIndex)
-        Case ClientPacketID.AbandonarGrupo
+        Case ClientPacketID.eAbandonarGrupo
             Call HandleAbandonarGrupo(UserIndex)
-        Case ClientPacketID.HecharDeGrupo
+        Case ClientPacketID.eHecharDeGrupo
             Call HandleHecharDeGrupo(UserIndex)
-        Case ClientPacketID.MacroPossent
+        Case ClientPacketID.eMacroPossent
             Call HandleMacroPos(UserIndex)
-        Case ClientPacketID.SubastaInfo
+        Case ClientPacketID.eSubastaInfo
             Call HandleSubastaInfo(UserIndex)
-        Case ClientPacketID.BanCuenta
+        Case ClientPacketID.eBanCuenta
             Call HandleBanCuenta(UserIndex)
-        Case ClientPacketID.UnbanCuenta
+        Case ClientPacketID.eUnbanCuenta
             Call HandleUnBanCuenta(UserIndex)
-        Case ClientPacketID.CerrarCliente
+        Case ClientPacketID.eCerrarCliente
             Call HandleCerrarCliente(UserIndex)
-        Case ClientPacketID.EventoInfo
+        Case ClientPacketID.eEventoInfo
             Call HandleEventoInfo(UserIndex)
-        Case ClientPacketID.CrearEvento
+        Case ClientPacketID.eCrearEvento
             Call HandleCrearEvento(UserIndex)
-        Case ClientPacketID.BanTemporal
+        Case ClientPacketID.eBanTemporal
             Call HandleBanTemporal(UserIndex)
-        Case ClientPacketID.CancelarExit
+        Case ClientPacketID.eCancelarExit
             Call HandleCancelarExit(UserIndex)
-        Case ClientPacketID.CrearTorneo
+        Case ClientPacketID.eCrearTorneo
             Call HandleCrearTorneo(UserIndex)
-        Case ClientPacketID.ComenzarTorneo
+        Case ClientPacketID.eComenzarTorneo
             Call HandleComenzarTorneo(UserIndex)
-        Case ClientPacketID.CancelarTorneo
+        Case ClientPacketID.eCancelarTorneo
             Call HandleCancelarTorneo(UserIndex)
-        Case ClientPacketID.BusquedaTesoro
+        Case ClientPacketID.eBusquedaTesoro
             Call HandleBusquedaTesoro(UserIndex)
-        Case ClientPacketID.CompletarViaje
+        Case ClientPacketID.eCompletarViaje
             Call HandleCompletarViaje(UserIndex)
-        Case ClientPacketID.BovedaMoveItem
+        Case ClientPacketID.eBovedaMoveItem
             Call HandleBovedaMoveItem(UserIndex)
-        Case ClientPacketID.QuieroFundarClan
+        Case ClientPacketID.eQuieroFundarClan
             Call HandleQuieroFundarClan(UserIndex)
-        Case ClientPacketID.llamadadeclan
+        Case ClientPacketID.ellamadadeclan
             Call HandleLlamadadeClan(UserIndex)
-        Case ClientPacketID.MarcaDeClanPack
+        Case ClientPacketID.eMarcaDeClanPack
             Call HandleMarcaDeClan(UserIndex)
-        Case ClientPacketID.MarcaDeGMPack
+        Case ClientPacketID.eMarcaDeGMPack
             Call HandleMarcaDeGM(UserIndex)
-        Case ClientPacketID.Quest
+        Case ClientPacketID.eQuest
             Call HandleQuest(UserIndex)
-        Case ClientPacketID.QuestAccept
+        Case ClientPacketID.eQuestAccept
             Call HandleQuestAccept(UserIndex)
-        Case ClientPacketID.QuestListRequest
+        Case ClientPacketID.eQuestListRequest
             Call HandleQuestListRequest(UserIndex)
-        Case ClientPacketID.QuestDetailsRequest
+        Case ClientPacketID.eQuestDetailsRequest
             Call HandleQuestDetailsRequest(UserIndex)
-        Case ClientPacketID.QuestAbandon
+        Case ClientPacketID.eQuestAbandon
             Call HandleQuestAbandon(UserIndex)
-        Case ClientPacketID.SeguroClan
+        Case ClientPacketID.eSeguroClan
             Call HandleSeguroClan(UserIndex)
-        Case ClientPacketID.Home
+        Case ClientPacketID.ehome
             Call HandleHome(UserIndex)
-        Case ClientPacketID.Consulta
+        Case ClientPacketID.eConsulta
             Call HandleConsulta(UserIndex)
-        Case ClientPacketID.GetMapInfo
+        Case ClientPacketID.eGetMapInfo
             Call HandleGetMapInfo(UserIndex)
-        Case ClientPacketID.FinEvento
+        Case ClientPacketID.eFinEvento
             Call HandleFinEvento(UserIndex)
-        Case ClientPacketID.SeguroResu
+        Case ClientPacketID.eSeguroResu
             Call HandleSeguroResu(UserIndex)
-        Case ClientPacketID.CuentaExtractItem
+        Case ClientPacketID.eCuentaExtractItem
             Call HandleCuentaExtractItem(UserIndex)
-        Case ClientPacketID.CuentaDeposit
+        Case ClientPacketID.eCuentaDeposit
             Call HandleCuentaDeposit(UserIndex)
-        Case ClientPacketID.CreateEvent
+        Case ClientPacketID.eCreateEvent
             Call HandleCreateEvent(UserIndex)
-        Case ClientPacketID.CommerceSendChatMessage
+        Case ClientPacketID.eCommerceSendChatMessage
             Call HandleCommerceSendChatMessage(UserIndex)
-        Case ClientPacketID.LogMacroClickHechizo
+        Case ClientPacketID.eLogMacroClickHechizo
             Call HandleLogMacroClickHechizo(UserIndex)
-        Case ClientPacketID.AddItemCrafting
+        Case ClientPacketID.eAddItemCrafting
             Call HandleAddItemCrafting(UserIndex)
-        Case ClientPacketID.RemoveItemCrafting
+        Case ClientPacketID.eRemoveItemCrafting
             Call HandleRemoveItemCrafting(UserIndex)
-        Case ClientPacketID.AddCatalyst
+        Case ClientPacketID.eAddCatalyst
             Call HandleAddCatalyst(UserIndex)
-        Case ClientPacketID.RemoveCatalyst
+        Case ClientPacketID.eRemoveCatalyst
             Call HandleRemoveCatalyst(UserIndex)
-        Case ClientPacketID.CraftItem
+        Case ClientPacketID.eCraftItem
             Call HandleCraftItem(UserIndex)
-        Case ClientPacketID.CloseCrafting
+        Case ClientPacketID.eCloseCrafting
             Call HandleCloseCrafting(UserIndex)
-        Case ClientPacketID.MoveCraftItem
+        Case ClientPacketID.eMoveCraftItem
             Call HandleMoveCraftItem(UserIndex)
-        Case ClientPacketID.PetLeaveAll
+        Case ClientPacketID.ePetLeaveAll
             Call HandlePetLeaveAll(UserIndex)
-        Case ClientPacketID.ResetChar
+        Case ClientPacketID.eResetChar
             Call HandleResetChar(UserIndex)
-        Case ClientPacketID.resetearPersonaje
+        Case ClientPacketID.eResetearPersonaje
             Call HandleResetearPersonaje(UserIndex)
-        Case ClientPacketID.DeleteItem
+        Case ClientPacketID.eDeleteItem
             Call HandleDeleteItem(UserIndex)
-        Case ClientPacketID.FinalizarPescaEspecial
+        Case ClientPacketID.eFinalizarPescaEspecial
             Call HandleFinalizarPescaEspecial(UserIndex)
-        Case ClientPacketID.RomperCania
+        Case ClientPacketID.eRomperCania
             Call HandleRomperCania(UserIndex)
-        Case ClientPacketID.RepeatMacro
+        Case ClientPacketID.eRepeatMacro
             Call HandleRepeatMacro(UserIndex)
-        Case ClientPacketID.BuyShopItem
+        Case ClientPacketID.eBuyShopItem
             Call HandleBuyShopItem(userindex)
-        Case ClientPacketID.PublicarPersonajeMAO
+        Case ClientPacketID.ePublicarPersonajeMAO
             Call HandlePublicarPersonajeMAO(userindex)
-        Case ClientPacketID.EventoFaccionario
+        Case ClientPacketID.eEventoFaccionario
             Call HandleEventoFaccionario(UserIndex)
-        Case ClientPacketID.RequestDebug
+        Case ClientPacketID.eRequestDebug
             Call HandleDebugRequest(UserIndex)
-        Case ClientPacketID.LobbyCommand
+        Case ClientPacketID.eLobbyCommand
             Call HandleLobbyCommand(UserIndex)
-        Case ClientPacketID.FeatureToggle
+        Case ClientPacketID.eFeatureToggle
             Call HandleFeatureToggle(UserIndex)
-        Case ClientPacketID.ActionOnGroupFrame
+        Case ClientPacketID.eActionOnGroupFrame
             Call HandleActionOnGroupFrame(UserIndex)
-        Case ClientPacketID.SendTelemetry
+        Case ClientPacketID.eSendTelemetry
             Call HandleSendTelemetry(UserIndex)
-        Case ClientPacketID.SetHotkeySlot
+        Case ClientPacketID.eSetHotkeySlot
             Call HandleSetHotkeySlot(UserIndex)
-        Case ClientPacketID.UseHKeySlot
+        Case ClientPacketID.eUseHKeySlot
             Call HandleUseHKeySlot(UserIndex)
 #If PYMMO = 0 Then
-        Case ClientPacketID.CreateAccount
+        Case ClientPacketID.eCreateAccount
             Call HandleCreateAccount(ConnectionId)
-        Case ClientPacketID.LoginAccount
+        Case ClientPacketID.eLoginAccount
             Call HandleLoginAccount(ConnectionId)
-        Case ClientPacketID.DeleteCharacter
+        Case ClientPacketID.eDeleteCharacter
             Call HandleDeleteCharacter(ConnectionId)
 #End If
         Case Else
@@ -3929,7 +3394,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 650                         If UserList(userIndex).Grupo.Lider.ArrayIndex = userIndex Then
 652                             Call InvitarMiembro(UserIndex, tU)
                             Else
-654                             Call WriteConsoleMsg(UserIndex, "Tu no podés invitar usuarios, debe hacerlo " & UserList(UserList(UserIndex).Grupo.Lider.ArrayIndex).Name & ".", e_FontTypeNames.FONTTYPE_INFOIAO)
+654                             Call WriteConsoleMsg(UserIndex, "Tu no podés invitar usuarios, debe hacerlo " & UserList(UserList(UserIndex).Grupo.Lider.ArrayIndex).name & ".", e_FontTypeNames.FONTTYPE_INFOIAO)
 656                             Call WriteWorkRequestTarget(UserIndex, 0)
                             End If
                         End If
@@ -3987,7 +3452,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 704                 Call LookatTile(UserIndex, UserList(UserIndex).Pos.Map, X, Y)
 706                 tU = .flags.targetUser.ArrayIndex
 708                 If IsValidUserRef(.flags.targetUser) Then
-710                     Call WriteConsoleMsg(UserIndex, "Servidor » [" & UserList(tU).Name & "] seleccionado.", e_FontTypeNames.FONTTYPE_SERVER)
+710                     Call WriteConsoleMsg(UserIndex, "Servidor » [" & UserList(tU).name & "] seleccionado.", e_FontTypeNames.FONTTYPE_SERVER)
                     Else
 712                     Call WriteLocaleMsg(UserIndex, "261", e_FontTypeNames.FONTTYPE_INFO)
 
@@ -4046,7 +3511,7 @@ Private Sub HandleCreateNewGuild(ByVal UserIndex As Integer)
             
             
                 
-118             Call SendData(SendTarget.ToAll, UserIndex, PrepareMessageConsoleMsg(.Name & " ha fundado el clan <" & GuildName & "> de alineación " & GuildAlignment(.GuildIndex) & ".", e_FontTypeNames.FONTTYPE_GUILD))
+118             Call SendData(SendTarget.ToAll, UserIndex, PrepareMessageConsoleMsg(.name & " ha fundado el clan <" & GuildName & "> de alineación " & GuildAlignment(.GuildIndex) & ".", e_FontTypeNames.FONTTYPE_GUILD))
 120             Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(44, NO_3D_SOUND, NO_3D_SOUND))
                 'Update tag
 122             Call RefreshCharStatus(UserIndex)
@@ -5906,7 +5371,7 @@ Private Sub HandlePetLeave(ByVal UserIndex As Integer)
             'Make usre it's the user's pet
 110         If Not IsValidUserRef(NpcList(.flags.TargetNPC.ArrayIndex).MaestroUser) Or NpcList(.flags.TargetNPC.ArrayIndex).MaestroUser.ArrayIndex <> UserIndex Then Exit Sub
 
-112         Call QuitarNPC(.flags.TargetNPC.ArrayIndex, ePetLeave)
+112         Call QuitarNPC(.flags.TargetNPC.ArrayIndex, e_DeleteSource.ePetLeave)
 
         End With
         
@@ -7211,7 +6676,7 @@ Private Sub HandleMensajeUser(ByVal UserIndex As Integer)
                     End If
 
 124                 Call WriteConsoleMsg(UserIndex, "Mensaje enviado a " & UserName & ": " & Mensaje, e_FontTypeNames.FONTTYPE_INFO)
-126                 Call LogGM(.Name, "Envió mensaje como GM a " & username & ": " & mensaje)
+126                 Call LogGM(.name, "Envió mensaje como GM a " & username & ": " & mensaje)
 
                 End If
 
@@ -8602,7 +8067,7 @@ Private Sub HandleOfertaDeSubasta(ByVal UserIndex As Integer)
 132             Call WriteUpdateGold(UserIndex)
             
 134             If Subasta.TiempoRestanteSubasta < 60 Then
-136                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Oferta mejorada por: " & .Name & " (Ofrece " & PonerPuntos(Oferta) & " monedas de oro) - Tiempo Extendido. Escribe /SUBASTA para mas información.", e_FontTypeNames.FONTTYPE_SUBASTA))
+136                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Oferta mejorada por: " & .name & " (Ofrece " & PonerPuntos(Oferta) & " monedas de oro) - Tiempo Extendido. Escribe /SUBASTA para mas información.", e_FontTypeNames.FONTTYPE_SUBASTA))
 138                 Call LogearEventoDeSubasta(.Name & ": Mejoro la oferta en el ultimo minuto ofreciendo " & PonerPuntos(Oferta) & " monedas.")
 140                 Subasta.TiempoRestanteSubasta = Subasta.TiempoRestanteSubasta + 30
                 Else
@@ -8690,7 +8155,7 @@ Private Sub HandleCancelDuel(ByVal UserIndex As Integer)
 106             Call CancelarSolicitudReto(UserIndex, .Name & " ha cancelado la solicitud.")
 
 108         ElseIf IsValidUserRef(.flags.AceptoReto) Then
-110             Call CancelarSolicitudReto(.flags.AceptoReto.ArrayIndex, .Name & " ha cancelado su admisión.")
+110             Call CancelarSolicitudReto(.flags.AceptoReto.ArrayIndex, .name & " ha cancelado su admisión.")
 
             End If
 
@@ -9197,7 +8662,7 @@ Private Sub HandleLlamadadeClan(ByVal UserIndex As Integer)
 104             clan_nivel = modGuilds.NivelDeClan(.GuildIndex)
 
 106             If clan_nivel >= 2 Then
-108                 Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageConsoleMsg("Clan> [" & .Name & "] solicita apoyo de su clan en " & get_map_name(.Pos.Map) & " (" & .Pos.Map & "-" & .Pos.X & "-" & .Pos.Y & "). Puedes ver su ubicación en el mapa del mundo.", e_FontTypeNames.FONTTYPE_GUILD))
+108                 Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageConsoleMsg("Clan> [" & .name & "] solicita apoyo de su clan en " & get_map_name(.pos.Map) & " (" & .pos.Map & "-" & .pos.x & "-" & .pos.y & "). Puedes ver su ubicación en el mapa del mundo.", e_FontTypeNames.FONTTYPE_GUILD))
 110                 Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessagePlayWave("43", NO_3D_SOUND, NO_3D_SOUND))
 112                 Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageUbicacionLlamada(.Pos.Map, .Pos.X, .Pos.Y))
 
@@ -9359,7 +8824,7 @@ Private Sub HandleBusquedaTesoro(ByVal UserIndex As Integer)
                         Else
 
 148                         If BusquedaNpcActiva Then
-150                             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos> Todavía nadie logró matar el NPC que se encuentra en el mapa " & NpcList(npc_index_evento).Pos.Map & ".", e_FontTypeNames.FONTTYPE_TALK))
+150                             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos> Todavía nadie logró matar el NPC que se encuentra en el mapa " & NpcList(npc_index_evento).pos.Map & ".", e_FontTypeNames.FONTTYPE_TALK))
 152                             Call WriteConsoleMsg(UserIndex, "Ya hay una busqueda de npc activo. El tesoro se encuentra en: " & NpcList(npc_index_evento).Pos.Map & "-" & NpcList(npc_index_evento).Pos.X & "-" & NpcList(npc_index_evento).Pos.Y, e_FontTypeNames.FONTTYPE_INFO)
                             Else
 154                             Call WriteConsoleMsg(UserIndex, "Ya hay una busqueda del tesoro activa.", e_FontTypeNames.FONTTYPE_INFO)
@@ -9587,7 +9052,7 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
 210                     If IsValidNpcRef(UserList(UserIndex).flags.TargetNPC) Then
 212                         Call WriteChatOverHead(UserIndex, "¡Gracias " & UserList(UserIndex).name & "! Ahora perteneces a la ciudad de " & DeDonde & ".", NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
                         Else
-214                         Call WriteConsoleMsg(UserIndex, "¡Gracias " & UserList(UserIndex).Name & "! Ahora perteneces a la ciudad de " & DeDonde & ".", e_FontTypeNames.FONTTYPE_INFOIAO)
+214                         Call WriteConsoleMsg(UserIndex, "¡Gracias " & UserList(UserIndex).name & "! Ahora perteneces a la ciudad de " & DeDonde & ".", e_FontTypeNames.FONTTYPE_INFOIAO)
 
                         End If
 216                 Case 4
@@ -9685,7 +9150,7 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
                         End Select
                     
 320                     If IsValidNpcRef(UserList(UserIndex).flags.TargetNPC) Then
-322                         Call WriteChatOverHead(UserIndex, "¡No hay problema " & UserList(UserIndex).Name & "! Sos bienvenido en " & DeDonde & " cuando gustes.", NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
+322                         Call WriteChatOverHead(UserIndex, "¡No hay problema " & UserList(UserIndex).name & "! Sos bienvenido en " & DeDonde & " cuando gustes.", NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
                         End If
 324                     UserList(UserIndex).PosibleHogar = UserList(UserIndex).Hogar
 326                 Case 4
@@ -10620,16 +10085,16 @@ Private Sub HandleLogMacroClickHechizo(ByVal UserIndex As Integer)
             Select Case tipoMacro
             
                 Case tMacro.Coordenadas
-102                 mensaje = "AntiCheat> El usuario " & UserList(UserIndex).Name & " está utilizando macro de COORDENADAS."
+102                 mensaje = "AntiCheat> El usuario " & UserList(UserIndex).name & " está utilizando macro de COORDENADAS."
                     Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(mensaje, e_FontTypeNames.FONTTYPE_INFO))
                 Case tMacro.dobleclick
-                    mensaje = "AntiCheat> El usuario " & UserList(UserIndex).Name & " está utilizando macro de DOBLE CLICK (CANTIDAD DE CLICKS: " & clicks & " )."
+                    mensaje = "AntiCheat> El usuario " & UserList(UserIndex).name & " está utilizando macro de DOBLE CLICK (CANTIDAD DE CLICKS: " & clicks & " )."
                     Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(mensaje, e_FontTypeNames.FONTTYPE_INFO))
                 Case tMacro.inasistidoPosFija
-                    mensaje = "AntiCheat> El usuario " & UserList(UserIndex).Name & " está utilizando macro de INASISTIDO."
+                    mensaje = "AntiCheat> El usuario " & UserList(UserIndex).name & " está utilizando macro de INASISTIDO."
                     Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(mensaje, e_FontTypeNames.FONTTYPE_INFO))
                 Case tMacro.borrarCartel
-                    mensaje = "AntiCheat> El usuario " & UserList(UserIndex).Name & " está utilizando macro de CARTELEO."
+                    mensaje = "AntiCheat> El usuario " & UserList(UserIndex).name & " está utilizando macro de CARTELEO."
                     Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(mensaje, e_FontTypeNames.FONTTYPE_INFO))
             End Select
             
@@ -10991,7 +10456,7 @@ Private Sub HandlePetLeaveAll(ByVal UserIndex As Integer)
 102         For i = 1 To MAXMASCOTAS
 104             If IsValidNpcRef(.MascotasIndex(i)) Then
 106                 If NpcList(.MascotasIndex(i).ArrayIndex).flags.NPCActive Then
-108                     Call QuitarNPC(.MascotasIndex(i).ArrayIndex, ePetLeave)
+108                     Call QuitarNPC(.MascotasIndex(i).ArrayIndex, e_DeleteSource.ePetLeave)
 110                     AlmenosUna = True
                     End If
                 End If
@@ -11218,7 +10683,7 @@ Private Sub HandleDeleteItem(ByVal UserIndex As Integer)
     With UserList(UserIndex)
         If Slot >= getMaxInventorySlots(UserIndex) Or Slot <= 0 Then Exit Sub
         
-        If MapInfo(UserList(UserIndex).Pos.map).Seguro = 0 Then
+        If MapInfo(UserList(UserIndex).pos.Map).Seguro = 0 Or EsMapaEvento(.pos.Map) Then
             Call WriteConsoleMsg(UserIndex, "Solo puedes eliminar items en zona segura.", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
