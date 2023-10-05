@@ -655,12 +655,17 @@ Private Function PuedeLanzar(ByVal UserIndex As Integer, ByVal HechizoIndex As I
             ElseIf IsValidNpcRef(.flags.TargetNPC) Then
                 If Hechizos(HechizoIndex).TargetEffectType = e_TargetEffectType.eNegative Then
                     Dim UserAttackInteractionResult As t_AttackInteractionResult
+                    Dim Paraliza As Boolean
                     UserAttackInteractionResult = UserCanAttackNpc(UserIndex, .flags.TargetNPC.ArrayIndex)
-                    Call SendAttackInteractionMessage(UserIndex, UserAttackInteractionResult.Result)
-                    If UserAttackInteractionResult.CanAttack Then
-                        If UserAttackInteractionResult.TurnPK Then VolverCriminal (UserIndex)
-                    Else
-                        Exit Function
+                    
+                    Paraliza = IsSet(Hechizos(HechizoIndex).Effects, e_SpellEffects.Paralize) Or IsSet(Hechizos(HechizoIndex).Effects, e_SpellEffects.Immobilize)
+                    If Not Paraliza Or (Paraliza And UserAttackInteractionResult.result <> eAttackCitizenNpc And UserAttackInteractionResult.result <> eRemoveSafeCitizenNpc) Then
+                        Call SendAttackInteractionMessage(UserIndex, UserAttackInteractionResult.result)
+                        If UserAttackInteractionResult.CanAttack Then
+                            If UserAttackInteractionResult.TurnPK Then VolverCriminal (UserIndex)
+                        Else
+                            Exit Function
+                        End If
                     End If
                 End If
             End If
@@ -2594,21 +2599,6 @@ Sub HechizoEstadoNPC(ByVal NpcIndex As Integer, ByVal hIndex As Integer, ByRef b
 
 150     If IsSet(Hechizos(hIndex).Effects, e_SpellEffects.Paralize) Then
 152         If NpcList(NpcIndex).flags.AfectaParalisis = 0 Then
-
-                
-                UserAttackInteractionResult = UserCanAttackNpc(UserIndex, NpcIndex)
-                Call SendAttackInteractionMessage(UserIndex, UserAttackInteractionResult.Result)
-                
-                'Permitimos que puedan inmovilziar a los bichos.
-                If UserAttackInteractionResult.result <> eAttackCitizenNpc And UserAttackInteractionResult.result <> eRemoveSafeCitizenNpc Then
-                    If UserAttackInteractionResult.CanAttack Then
-                        If UserAttackInteractionResult.TurnPK Then Call VolverCriminal(UserIndex)
-                    Else
-                        b = False
-                        Exit Sub
-                    End If
-                End If
-
 158             Call NPCAtacado(NpcIndex, UserIndex, False)
 160             Call InfoHechizo(UserIndex)
 162             NpcList(NpcIndex).flags.Paralizado = 1
@@ -2654,18 +2644,6 @@ Sub HechizoEstadoNPC(ByVal NpcIndex As Integer, ByVal hIndex As Integer, ByRef b
  
 208     If IsSet(Hechizos(hIndex).Effects, e_SpellEffects.Immobilize) Then
 210         If NpcList(NpcIndex).flags.AfectaParalisis = 0 Then
-
-                UserAttackInteractionResult = UserCanAttackNpc(UserIndex, NpcIndex)
-                Call SendAttackInteractionMessage(UserIndex, UserAttackInteractionResult.Result)
-                'Permitimos que puedan inmovilziar a los bichos.
-                If UserAttackInteractionResult.result <> eAttackCitizenNpc And UserAttackInteractionResult.result <> eRemoveSafeCitizenNpc Then
-                    If UserAttackInteractionResult.CanAttack Then
-                        If UserAttackInteractionResult.TurnPK Then Call VolverCriminal(UserIndex)
-                    Else
-                        b = False
-                        Exit Sub
-                    End If
-                End If
 220             Call NPCAtacado(NpcIndex, UserIndex, False)
 222             NpcList(NpcIndex).flags.Inmovilizado = 1
 224             NpcList(NpcIndex).Contadores.Inmovilizado = (Hechizos(hIndex).Duration * 6.5) * 6
