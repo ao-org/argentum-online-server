@@ -31,542 +31,7 @@ Option Explicit
 'When we have a list of strings, we use this to separate them and prevent
 'having too many string lengths in the queue. Yes, each string is NULL-terminated :P
 Public Const SEPARATOR             As String * 1 = vbNullChar
-Public Enum ServerPacketID
-    Connected
-    logged                  ' LOGGED  0
-    RemoveDialogs           ' QTDL
-    RemoveCharDialog        ' QDL
-    NavigateToggle          ' NAVEG
-    EquiteToggle
-    Disconnect              ' FINOK
-    CommerceEnd             ' FINCOMOK
-    BankEnd                 ' FINBANOK
-    CommerceInit            ' INITCOM
-    BankInit                ' INITBANCO
-    UserCommerceInit        ' INITCOMUSU   10
-    UserCommerceEnd         ' FINCOMUSUOK
-    ShowBlacksmithForm      ' SFH
-    ShowCarpenterForm       ' SFC
-    NPCKillUser             ' 6
-    BlockedWithShieldUser   ' 7
-    BlockedWithShieldOther  ' 8
-    CharSwing               ' U1
-    SafeModeOn              ' SEGON
-    SafeModeOff             ' SEGOFF 20
-    PartySafeOn
-    PartySafeOff
-    CantUseWhileMeditating  ' M!
-    UpdateSta               ' ASS
-    UpdateMana              ' ASM
-    UpdateHP                ' ASH
-    UpdateGold              ' ASG
-    UpdateExp               ' ASE 30
-    changeMap               ' CM
-    PosUpdate               ' PU
-    NPCHitUser              ' N2
-    UserHittedByUser        ' N4
-    UserHittedUser          ' N5
-    ChatOverHead            ' ||
-    LocaleChatOverHead
-    ConsoleMsg              ' || - Beware!! its the same as above, but it was properly splitted
-    GuildChat               ' |+   40
-    ShowMessageBox          ' !!
-    MostrarCuenta
-    CharacterCreate         ' CC
-    CharacterRemove         ' BP
-    CharacterMove           ' MP, +, * and _ '
-    CharacterTranslate
-    UserIndexInServer       ' IU
-    UserCharIndexInServer   ' IP
-    ForceCharMove
-    CharacterChange         ' CP
-    ObjectCreate            ' HO
-    fxpiso
-    ObjectDelete            ' BO  50
-    BlockPosition           ' BQ
-    PlayMIDI                ' TM
-    PlayWave                ' TW
-    guildList               ' GL
-    AreaChanged             ' CA
-    PauseToggle             ' BKW
-    RainToggle              ' LLU
-    CreateFX                ' CFX
-    UpdateUserStats         ' EST
-    WorkRequestTarget       ' T01 60
-    ChangeInventorySlot     ' CSI
-    InventoryUnlockSlots
-    ChangeBankSlot          ' SBO
-    ChangeSpellSlot         ' SHS
-    Atributes               ' ATR
-    BlacksmithWeapons       ' LAH
-    BlacksmithArmors        ' LAR
-    CarpenterObjects        ' OBR
-    RestOK                  ' DOK
-    ErrorMsg                ' ERR
-    Blind                   ' CEGU 70
-    Dumb                    ' DUMB
-    ShowSignal              ' MCAR
-    ChangeNPCInventorySlot  ' NPCI
-    UpdateHungerAndThirst   ' EHYS
-    MiniStats               ' MEST
-    LevelUp                 ' SUNI
-    AddForumMsg             ' FMSG
-    ShowForumForm           ' MFOR
-    SetInvisible            ' NOVER 80
-    MeditateToggle          ' MEDOK
-    BlindNoMore             ' NSEGUE
-    DumbNoMore              ' NESTUP
-    SendSkills              ' SKILLS
-    TrainerCreatureList     ' LSTCRI
-    guildNews               ' GUILDNE
-    OfferDetails            ' PEACEDE & ALLIEDE
-    AlianceProposalsList    ' ALLIEPR
-    PeaceProposalsList      ' PEACEPR 90
-    CharacterInfo           ' CHRINFO
-    GuildLeaderInfo         ' LEADERI
-    GuildDetails            ' CLANDET
-    ShowGuildFundationForm  ' SHOWFUN
-    ParalizeOK              ' PARADOK
-    StunStart               ' Stun start time
-    ShowUserRequest         ' PETICIO
-    ChangeUserTradeSlot     ' COMUSUINV
-    'SendNight              ' NOC
-    UpdateTagAndStatus
-    FYA
-    CerrarleCliente
-    Contadores
-    ShowPapiro              ' SWP
-    UpdateCooldownType
-    
-    'GM messages
-    SpawnListt               ' SPL
-    ShowSOSForm             ' MSOS
-    ShowMOTDEditionForm     ' ZMOTD
-    ShowGMPanelForm         ' ABPANEL
-    UserNameList            ' LISTUSU
-    UserOnline '110
-    ParticleFX
-    ParticleFXToFloor
-    ParticleFXWithDestino
-    ParticleFXWithDestinoXY
-    Hora
-    light
-    AuraToChar
-    SpeedToChar
-    LightToFloor
-    NieveToggle
-    NieblaToggle
-    Goliath
-    TextOverChar
-    TextOverTile
-    TextCharDrop
-    ConsoleCharText
-    FlashScreen
-    AlquimistaObj
-    ShowAlquimiaForm
-    SastreObj
-    ShowSastreForm ' 126
-    VelocidadToggle
-    MacroTrabajoToggle
-    BindKeys
-    ShowFrmLogear
-    ShowFrmMapa
-    InmovilizadoOK
-    BarFx
-    LocaleMsg
-    ShowPregunta
-    DatosGrupo
-    ubicacion
-    ArmaMov
-    EscudoMov
-    ViajarForm
-    NadarToggle
-    ShowFundarClanForm
-    CharUpdateHP
-    CharUpdateMAN
-    PosLLamadaDeClan
-    QuestDetails
-    QuestListSend
-    NpcQuestListSend
-    UpdateNPCSimbolo
-    ClanSeguro
-    Intervals
-    UpdateUserKey
-    UpdateRM
-    UpdateDM
-    SeguroResu
-    Stopped
-    InvasionInfo
-    CommerceRecieveChatMessage
-    DoAnimation
-    OpenCrafting
-    CraftingItem
-    CraftingCatalyst
-    CraftingResult
-    ForceUpdate
-    GuardNotice
-    AnswerReset
-    ObjQuestListSend
-    UpdateBankGld
-    PelearConPezEspecial
-    Privilegios
-    ShopInit
-    UpdateShopCliente
-    SendSkillCdUpdate
-    UpdateFlag
-    CharAtaca
-    NotificarClienteSeguido
-    RecievePosSeguimiento
-    CancelarSeguimiento
-    GetInventarioHechizos
-    NotificarClienteCasteo
-    SendFollowingCharIndex
-    ForceCharMoveSiguiendo
-    PosUpdateCharindex
-    PosUpdateChar
-    PlayWaveStep
-    ShopPjsInit
-    DebugDataResponse
-    CreateProjectile
-    UpdateTrap
-    UpdateGroupInfo
-    RequestTelemetry
-    UpdateCharValue
-    SendClientToggles
-    #If PYMMO = 0 Then
-    AccountCharacterList
-    #End If
-    [PacketCount]
-End Enum
 
-Public Enum ClientPacketID
-    CraftCarpenter          'CNC
-    WorkLeftClick           'WLC
-    CreateNewGuild          'CIG
-    SpellInfo               'INFS
-    EquipItem               'EQUI
-    Change_Heading           'CHEA
-    ModifySkills            'SKSE
-    Train                   'ENTR
-    CommerceBuy             'COMP
-    BankExtractItem         'RETI
-    CommerceSell            'VEND
-    BankDeposit             'DEPO
-    ForumPost               'DEMSG
-    MoveSpell               'DESPHE
-    ClanCodexUpdate         'DESCOD
-    UserCommerceOffer       'OFRECER
-    GuildAcceptPeace        'ACEPPEAT
-    GuildRejectAlliance     'RECPALIA
-    GuildRejectPeace        'RECPPEAT
-    GuildAcceptAlliance     'ACEPALIA
-    GuildOfferPeace         'PEACEOFF
-    GuildOfferAlliance      'ALLIEOFF
-    GuildAllianceDetails    'ALLIEDET
-    GuildPeaceDetails       'PEACEDET
-    GuildRequestJoinerInfo  'ENVCOMEN
-    GuildAlliancePropList   'ENVALPRO
-    GuildPeacePropList      'ENVPROPP
-    GuildDeclareWar         'DECGUERR
-    GuildNewWebsite         'NEWWEBSI
-    GuildAcceptNewMember    'ACEPTARI
-    GuildRejectNewMember    'RECHAZAR
-    GuildKickMember         'ECHARCLA
-    GuildUpdateNews         'ACTGNEWS
-    GuildMemberInfo         '1HRINFO<
-    GuildOpenElections      'ABREELEC
-    GuildRequestMembership  'SOLICITUD
-    GuildRequestDetails     'CLANDETAILS
-    Online                  '/ONLINE
-    Quit                    '/SALIR
-    GuildLeave              '/SALIRCLAN
-    RequestAccountState     '/BALANCE
-    PetStand                '/QUIETO
-    PetFollow               '/ACOMPAÑAR
-    PetLeave                '/LIBERAR
-    GrupoMsg                '/GrupoMsg
-    TrainList               '/ENTRENAR
-    Rest                    '/DESCANSAR
-    Meditate                '/MEDITAR
-    Resucitate              '/RESUCITAR
-    Heal                    '/CURAR
-    Help                    '/AYUDA
-    RequestStats            '/EST
-    CommerceStart           '/COMERCIAR
-    BankStart               '/BOVEDA
-    Enlist                  '/ENLISTAR
-    Information             '/INFORMACION
-    Reward                  '/RECOMPENSA
-    RequestMOTD             '/MOTD
-    UpTime                  '/UPTIME
-    GuildMessage            '/CMSG
-    GuildOnline             '/ONLINECLAN
-    CouncilMessage          '/BMSG
-    RoleMasterRequest       '/ROL
-    ChangeDescription       '/DESC
-    GuildVote               '/VOTO
-    punishments             '/PENAS
-    Gamble                  '/APOSTAR
-    LeaveFaction            '/RETIRAR ( with no arguments )
-    BankExtractGold         '/RETIRAR ( with arguments )
-    BankDepositGold         '/DEPOSITAR
-    Denounce                '/DENUNCIAR
-    LoginExistingChar       'OLOGIN
-    LoginNewChar            'NLOGIN
-    Talk                    ';
-    Yell                    '-
-    Whisper                 '\
-    Walk                    'M
-    RequestPositionUpdate   'RPU
-    Attack                  'AT
-    PickUp                  'AG
-    SafeToggle              '/SEG & SEG  (SEG's behaviour has to be coded in the client)
-    PartySafeToggle
-    RequestGuildLeaderInfo  'GLINFO
-    RequestAtributes        'ATR
-    RequestSkills           'ESKI
-    RequestMiniStats        'FEST
-    CommerceEnd             'FINCOM
-    UserCommerceEnd         'FINCOMUSU
-    BankEnd                 'FINBAN
-    UserCommerceOk          'COMUSUOK
-    UserCommerceReject      'COMUSUNO
-    Drop                    'TI
-    CastSpell               'LH
-    LeftClick               'LC
-    DoubleClick             'RC
-    Work                    'UK
-    UseSpellMacro           'UMH
-    UseItem                 'USA
-    CraftBlacksmith         'CNS
-    'GM messages
-    GMMessage               '/GMSG
-    showName                '/SHOWNAME
-    OnlineRoyalArmy         '/ONLINEREAL
-    OnlineChaosLegion       '/ONLINECAOS
-    GoNearby                '/IRCERCA
-    comment                 '/REM
-    serverTime              '/HORA
-    Where                   '/DONDE
-    CreaturesInMap          '/NENE
-    WarpMeToTarget          '/TELEPLOC
-    WarpChar                '/TELEP
-    Silence                 '/SILENCIAR
-    SOSShowList             '/SHOW SOS
-    SOSRemove               'SOSDONE
-    GoToChar                '/IRA
-    invisible               '/INVISIBLE
-    GMPanel                 '/PANELGM
-    RequestUserList         'LISTUSU
-    Working                 '/TRABAJANDO
-    Hiding                  '/OCULTANDO
-    Jail                    '/CARCEL
-    KillNPC                 '/RMATA
-    WarnUser                '/ADVERTENCIA
-    EditChar                '/MOD
-    RequestCharInfo         '/INFO
-    RequestCharStats        '/STAT
-    RequestCharGold         '/BAL
-    RequestCharInventory    '/INV
-    RequestCharBank         '/BOV
-    RequestCharSkills       '/SKILLS
-    ReviveChar              '/REVIVIR
-    OnlineGM                '/ONLINEGM
-    OnlineMap               '/ONLINEMAP
-    Forgive                 '/PERDON
-    Kick                    '/ECHAR
-    ExecuteCmd              '/EJECUTAR
-    BanChar                 '/BAN
-    UnbanChar               '/UNBAN
-    NPCFollow               '/SEGUIR
-    SummonChar              '/SUM
-    SpawnListRequest        '/CC
-    SpawnCreature           'SPA
-    ResetNPCInventory       '/RESETINV
-    CleanWorld              '/LIMPIAR
-    ServerMessage           '/RMSG
-    NickToIP                '/NICK2IP
-    IPToNick                '/IP2NICK
-    GuildOnlineMembers      '/ONCLAN
-    TeleportCreate          '/CT
-    TeleportDestroy         '/DT
-    RainToggle              '/LLUVIA
-    SetCharDescription      '/SETDESC
-    ForceMIDIToMap          '/FORCEMIDIMAP
-    ForceWAVEToMap          '/FORCEWAVMAP
-    RoyalArmyMessage        '/REALMSG
-    ChaosLegionMessage      '/CAOSMSG
-    TalkAsNPC               '/TALKAS
-    DestroyAllItemsInArea   '/MASSDEST
-    AcceptRoyalCouncilMember '/ACEPTCONSE
-    AcceptChaosCouncilMember '/ACEPTCONSECAOS
-    ItemsInTheFloor         '/PISO
-    MakeDumb                '/ESTUPIDO
-    MakeDumbNoMore          '/NOESTUPIDO
-    CouncilKick             '/KICKCONSE
-    SetTrigger              '/TRIGGER
-    AskTrigger              '/TRIGGER with no args
-    GuildMemberList         '/MIEMBROSCLAN
-    GuildBan                '/BANCLAN
-    CreateItem              '/CI
-    DestroyItems            '/DEST
-    ChaosLegionKick         '/NOCAOS
-    RoyalArmyKick           '/NOREAL
-    ForceMIDIAll            '/FORCEMIDI
-    ForceWAVEAll            '/FORCEWAV
-    RemovePunishment        '/BORRARPENA
-    Tile_BlockedToggle       '/BLOQ
-    KillNPCNoRespawn        '/MATA
-    KillAllNearbyNPCs       '/MASSKILL
-    LastIP                  '/LASTIP
-    ChangeMOTD              '/MOTDCAMBIA
-    SetMOTD                 'ZMOTD
-    SystemMessage           '/SMSG
-    CreateNPC               '/ACC
-    CreateNPCWithRespawn    '/RACC
-    ImperialArmour          '/AI1 - 4
-    ChaosArmour             '/AC1 - 4
-    NavigateToggle          '/NAVE
-    ServerOpenToUsersToggle '/HABILITAR
-    Participar              '/Participar
-    TurnCriminal            '/CONDEN
-    ResetFactions           '/RAJAR
-    RemoveCharFromGuild     '/RAJARCLAN
-    AlterName               '/ANAME
-    DoBackUpCmd             '/DOBACKUP
-    ShowGuildMessages       '/SHOWCMSG
-    ChangeMapInfoPK         '/MODMAPINFO PK
-    ChangeMapInfoBackup     '/MODMAPINFO BACKUP
-    ChangeMapInfoRestricted '/MODMAPINFO RESTRINGIR
-    ChangeMapInfoNoMagic    '/MODMAPINFO MAGIASINEFECTO
-    ChangeMapInfoNoInvi     '/MODMAPINFO INVISINEFECTO
-    ChangeMapInfoNoResu     '/MODMAPINFO RESUSINEFECTO
-    ChangeMapInfoLand       '/MODMAPINFO TERRENO
-    ChangeMapInfoZone       '/MODMAPINFO ZONA
-    ChangeMapSetting        '/MODMAP setting value
-    SaveChars               '/GRABAR
-    CleanSOS                '/BORRAR SOS
-    ShowServerForm          '/SHOW INT
-    night                   '/NOCHE
-    KickAllChars            '/ECHARTODOSPJS
-    ReloadNPCs              '/RELOADNPCS
-    ReloadServerIni         '/RELOADSINI
-    ReloadSpells            '/RELOADHECHIZOS
-    ReloadObjects           '/RELOADOBJ
-    ChatColor               '/CHATCOLOR
-    Ignored                 '/IGNORADO
-    CheckSlot               '/SLOT
-    
-    'Nuevas Ladder
-    SetSpeed
-    GlobalMessage           '/CONSOLA
-    GlobalOnOff
-    UseKey
-    DayCmd
-    SetTime
-    DonateGold              '/DONAR
-    Promedio                '/PROMEDIO
-    GiveItem                '/DAR
-    OfertaInicial
-    OfertaDeSubasta
-    QuestionGM
-    CuentaRegresiva
-    PossUser
-    Duel
-    AcceptDuel
-    CancelDuel
-    QuitDuel
-    NieveToggle
-    NieblaToggle
-    TransFerGold
-    Moveitem
-    Genio
-    Casarse
-    CraftAlquimista
-    FlagTrabajar
-    CraftSastre
-    MensajeUser
-    TraerBoveda
-    CompletarAccion
-    InvitarGrupo
-    ResponderPregunta
-    RequestGrupo
-    AbandonarGrupo
-    HecharDeGrupo
-    MacroPossent
-    SubastaInfo
-    BanCuenta
-    UnbanCuenta
-    CerrarCliente
-    EventoInfo
-    CrearEvento
-    BanTemporal
-    CancelarExit
-    CrearTorneo
-    ComenzarTorneo
-    CancelarTorneo
-    BusquedaTesoro
-    CompletarViaje
-    BovedaMoveItem
-    QuieroFundarClan
-    llamadadeclan
-    MarcaDeClanPack
-    MarcaDeGMPack
-    Quest
-    QuestAccept
-    QuestListRequest
-    QuestDetailsRequest
-    QuestAbandon
-    SeguroClan
-    Home                    '/HOGAR
-    Consulta                '/CONSULTA
-    GetMapInfo              '/MAPINFO
-    FinEvento
-    SeguroResu
-    CuentaExtractItem
-    CuentaDeposit
-    CreateEvent
-    CommerceSendChatMessage
-    LogMacroClickHechizo
-    AddItemCrafting
-    RemoveItemCrafting
-    AddCatalyst
-    RemoveCatalyst
-    CraftItem
-    CloseCrafting
-    MoveCraftItem
-    PetLeaveAll
-    ResetChar               '/RESET NICK
-    resetearPersonaje
-    DeleteItem
-    FinalizarPescaEspecial
-    RomperCania
-    UseItemU
-    RepeatMacro
-    BuyShopItem
-    PerdonFaccion          '/PERDONFACCION NAME
-    StartEvent
-    CancelarEvento       '/CANCELAR
-    SeguirMouse
-    SendPosMovimiento
-    NotifyInventarioHechizos
-    PublicarPersonajeMAO
-    EventoFaccionario    '/EVENTOFACCIONARIO
-    RequestDebug '/RequestDebug consulta info debug al server, para gms
-    LobbyCommand
-    FeatureToggle
-    ActionOnGroupFrame
-    SendTelemetry
-    SetHotkeySlot
-    UseHKeySlot
-    #If PYMMO = 0 Then
-    CreateAccount
-    LoginAccount
-    DeleteCharacter
-    #End If
-    [PacketCount]
-
-End Enum
 Public Enum e_EditOptions
 
     eo_Gold = 1
@@ -3929,7 +3394,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 650                         If UserList(userIndex).Grupo.Lider.ArrayIndex = userIndex Then
 652                             Call InvitarMiembro(UserIndex, tU)
                             Else
-654                             Call WriteConsoleMsg(UserIndex, "Tu no podés invitar usuarios, debe hacerlo " & UserList(UserList(UserIndex).Grupo.Lider.ArrayIndex).Name & ".", e_FontTypeNames.FONTTYPE_INFOIAO)
+654                             Call WriteConsoleMsg(UserIndex, "Tu no podés invitar usuarios, debe hacerlo " & UserList(UserList(UserIndex).Grupo.Lider.ArrayIndex).name & ".", e_FontTypeNames.FONTTYPE_INFOIAO)
 656                             Call WriteWorkRequestTarget(UserIndex, 0)
                             End If
                         End If
@@ -3987,7 +3452,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 704                 Call LookatTile(UserIndex, UserList(UserIndex).Pos.Map, X, Y)
 706                 tU = .flags.targetUser.ArrayIndex
 708                 If IsValidUserRef(.flags.targetUser) Then
-710                     Call WriteConsoleMsg(UserIndex, "Servidor » [" & UserList(tU).Name & "] seleccionado.", e_FontTypeNames.FONTTYPE_SERVER)
+710                     Call WriteConsoleMsg(UserIndex, "Servidor » [" & UserList(tU).name & "] seleccionado.", e_FontTypeNames.FONTTYPE_SERVER)
                     Else
 712                     Call WriteLocaleMsg(UserIndex, "261", e_FontTypeNames.FONTTYPE_INFO)
 
@@ -4046,7 +3511,7 @@ Private Sub HandleCreateNewGuild(ByVal UserIndex As Integer)
             
             
                 
-118             Call SendData(SendTarget.ToAll, UserIndex, PrepareMessageConsoleMsg(.Name & " ha fundado el clan <" & GuildName & "> de alineación " & GuildAlignment(.GuildIndex) & ".", e_FontTypeNames.FONTTYPE_GUILD))
+118             Call SendData(SendTarget.ToAll, UserIndex, PrepareMessageConsoleMsg(.name & " ha fundado el clan <" & GuildName & "> de alineación " & GuildAlignment(.GuildIndex) & ".", e_FontTypeNames.FONTTYPE_GUILD))
 120             Call SendData(SendTarget.ToAll, 0, PrepareMessagePlayWave(44, NO_3D_SOUND, NO_3D_SOUND))
                 'Update tag
 122             Call RefreshCharStatus(UserIndex)
@@ -7211,7 +6676,7 @@ Private Sub HandleMensajeUser(ByVal UserIndex As Integer)
                     End If
 
 124                 Call WriteConsoleMsg(UserIndex, "Mensaje enviado a " & UserName & ": " & Mensaje, e_FontTypeNames.FONTTYPE_INFO)
-126                 Call LogGM(.Name, "Envió mensaje como GM a " & username & ": " & mensaje)
+126                 Call LogGM(.name, "Envió mensaje como GM a " & username & ": " & mensaje)
 
                 End If
 
@@ -8602,7 +8067,7 @@ Private Sub HandleOfertaDeSubasta(ByVal UserIndex As Integer)
 132             Call WriteUpdateGold(UserIndex)
             
 134             If Subasta.TiempoRestanteSubasta < 60 Then
-136                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Oferta mejorada por: " & .Name & " (Ofrece " & PonerPuntos(Oferta) & " monedas de oro) - Tiempo Extendido. Escribe /SUBASTA para mas información.", e_FontTypeNames.FONTTYPE_SUBASTA))
+136                 Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Oferta mejorada por: " & .name & " (Ofrece " & PonerPuntos(Oferta) & " monedas de oro) - Tiempo Extendido. Escribe /SUBASTA para mas información.", e_FontTypeNames.FONTTYPE_SUBASTA))
 138                 Call LogearEventoDeSubasta(.Name & ": Mejoro la oferta en el ultimo minuto ofreciendo " & PonerPuntos(Oferta) & " monedas.")
 140                 Subasta.TiempoRestanteSubasta = Subasta.TiempoRestanteSubasta + 30
                 Else
@@ -8690,7 +8155,7 @@ Private Sub HandleCancelDuel(ByVal UserIndex As Integer)
 106             Call CancelarSolicitudReto(UserIndex, .Name & " ha cancelado la solicitud.")
 
 108         ElseIf IsValidUserRef(.flags.AceptoReto) Then
-110             Call CancelarSolicitudReto(.flags.AceptoReto.ArrayIndex, .Name & " ha cancelado su admisión.")
+110             Call CancelarSolicitudReto(.flags.AceptoReto.ArrayIndex, .name & " ha cancelado su admisión.")
 
             End If
 
@@ -9197,7 +8662,7 @@ Private Sub HandleLlamadadeClan(ByVal UserIndex As Integer)
 104             clan_nivel = modGuilds.NivelDeClan(.GuildIndex)
 
 106             If clan_nivel >= 2 Then
-108                 Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageConsoleMsg("Clan> [" & .Name & "] solicita apoyo de su clan en " & get_map_name(.Pos.Map) & " (" & .Pos.Map & "-" & .Pos.X & "-" & .Pos.Y & "). Puedes ver su ubicación en el mapa del mundo.", e_FontTypeNames.FONTTYPE_GUILD))
+108                 Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageConsoleMsg("Clan> [" & .name & "] solicita apoyo de su clan en " & get_map_name(.pos.Map) & " (" & .pos.Map & "-" & .pos.x & "-" & .pos.y & "). Puedes ver su ubicación en el mapa del mundo.", e_FontTypeNames.FONTTYPE_GUILD))
 110                 Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessagePlayWave("43", NO_3D_SOUND, NO_3D_SOUND))
 112                 Call SendData(SendTarget.ToGuildMembers, .GuildIndex, PrepareMessageUbicacionLlamada(.Pos.Map, .Pos.X, .Pos.Y))
 
@@ -9359,7 +8824,7 @@ Private Sub HandleBusquedaTesoro(ByVal UserIndex As Integer)
                         Else
 
 148                         If BusquedaNpcActiva Then
-150                             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos> Todavía nadie logró matar el NPC que se encuentra en el mapa " & NpcList(npc_index_evento).Pos.Map & ".", e_FontTypeNames.FONTTYPE_TALK))
+150                             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos> Todavía nadie logró matar el NPC que se encuentra en el mapa " & NpcList(npc_index_evento).pos.Map & ".", e_FontTypeNames.FONTTYPE_TALK))
 152                             Call WriteConsoleMsg(UserIndex, "Ya hay una busqueda de npc activo. El tesoro se encuentra en: " & NpcList(npc_index_evento).Pos.Map & "-" & NpcList(npc_index_evento).Pos.X & "-" & NpcList(npc_index_evento).Pos.Y, e_FontTypeNames.FONTTYPE_INFO)
                             Else
 154                             Call WriteConsoleMsg(UserIndex, "Ya hay una busqueda del tesoro activa.", e_FontTypeNames.FONTTYPE_INFO)
@@ -9587,7 +9052,7 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
 210                     If IsValidNpcRef(UserList(UserIndex).flags.TargetNPC) Then
 212                         Call WriteChatOverHead(UserIndex, "¡Gracias " & UserList(UserIndex).name & "! Ahora perteneces a la ciudad de " & DeDonde & ".", NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
                         Else
-214                         Call WriteConsoleMsg(UserIndex, "¡Gracias " & UserList(UserIndex).Name & "! Ahora perteneces a la ciudad de " & DeDonde & ".", e_FontTypeNames.FONTTYPE_INFOIAO)
+214                         Call WriteConsoleMsg(UserIndex, "¡Gracias " & UserList(UserIndex).name & "! Ahora perteneces a la ciudad de " & DeDonde & ".", e_FontTypeNames.FONTTYPE_INFOIAO)
 
                         End If
 216                 Case 4
@@ -9685,7 +9150,7 @@ Private Sub HandleResponderPregunta(ByVal UserIndex As Integer)
                         End Select
                     
 320                     If IsValidNpcRef(UserList(UserIndex).flags.TargetNPC) Then
-322                         Call WriteChatOverHead(UserIndex, "¡No hay problema " & UserList(UserIndex).Name & "! Sos bienvenido en " & DeDonde & " cuando gustes.", NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
+322                         Call WriteChatOverHead(UserIndex, "¡No hay problema " & UserList(UserIndex).name & "! Sos bienvenido en " & DeDonde & " cuando gustes.", NpcList(UserList(UserIndex).flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite)
                         End If
 324                     UserList(UserIndex).PosibleHogar = UserList(UserIndex).Hogar
 326                 Case 4
@@ -10620,16 +10085,16 @@ Private Sub HandleLogMacroClickHechizo(ByVal UserIndex As Integer)
             Select Case tipoMacro
             
                 Case tMacro.Coordenadas
-102                 mensaje = "AntiCheat> El usuario " & UserList(UserIndex).Name & " está utilizando macro de COORDENADAS."
+102                 mensaje = "AntiCheat> El usuario " & UserList(UserIndex).name & " está utilizando macro de COORDENADAS."
                     Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(mensaje, e_FontTypeNames.FONTTYPE_INFO))
                 Case tMacro.dobleclick
-                    mensaje = "AntiCheat> El usuario " & UserList(UserIndex).Name & " está utilizando macro de DOBLE CLICK (CANTIDAD DE CLICKS: " & clicks & " )."
+                    mensaje = "AntiCheat> El usuario " & UserList(UserIndex).name & " está utilizando macro de DOBLE CLICK (CANTIDAD DE CLICKS: " & clicks & " )."
                     Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(mensaje, e_FontTypeNames.FONTTYPE_INFO))
                 Case tMacro.inasistidoPosFija
-                    mensaje = "AntiCheat> El usuario " & UserList(UserIndex).Name & " está utilizando macro de INASISTIDO."
+                    mensaje = "AntiCheat> El usuario " & UserList(UserIndex).name & " está utilizando macro de INASISTIDO."
                     Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(mensaje, e_FontTypeNames.FONTTYPE_INFO))
                 Case tMacro.borrarCartel
-                    mensaje = "AntiCheat> El usuario " & UserList(UserIndex).Name & " está utilizando macro de CARTELEO."
+                    mensaje = "AntiCheat> El usuario " & UserList(UserIndex).name & " está utilizando macro de CARTELEO."
                     Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(mensaje, e_FontTypeNames.FONTTYPE_INFO))
             End Select
             
