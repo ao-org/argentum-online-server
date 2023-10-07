@@ -96,6 +96,7 @@ Dim RingLimiterTLItemID As Long
 Dim RingLimiterBRItemID As Long
 Dim RingLimiterBLItemID As Long
 Dim MinArenaSize As Integer
+Dim BroadOpenEvent As t_Timer
 
 Private Sub Class_Initialize()
 On Error GoTo DeathMatch_Initialize_Err:
@@ -122,6 +123,7 @@ On Error GoTo DeathMatch_Initialize_Err:
 122 Call CustomScenarios.SetCustomScenario(MapNumber, Me)
 124 Call LoadItemsToSpawn(ScenarioIni)
 126 Call ConfigMapLobby
+    Call SetTimer(BroadOpenEvent, 15000)
     Exit Sub
 DeathMatch_Initialize_Err:
     Call TraceError(Err.Number, Err.Description, "DeathMatch.Initialize ", Erl)
@@ -443,6 +445,10 @@ Public Sub IBaseScenario_Update()
             End If
             Exit Sub
         End If
+    ElseIf GenericGlobalLobby.State = e_LobbyState.AcceptingPlayers And GenericGlobalLobby.IsPublic Then
+        If UpdateTime(BroadOpenEvent, frametime) Then
+            Call BroadcastOpenLobby(GenericGlobalLobby)
+        End If
     ElseIf GenericGlobalLobby.State = e_LobbyState.Closed Then
         Call CloseScenario
     End If
@@ -508,9 +514,11 @@ Private Sub MatchCompleted()
             Call RemoveForbiddenItems(GenericGlobalLobby.Players(i).user.ArrayIndex)
         End If
     Next i
+    
     GenericGlobalLobby.State = Completed
     ElapsedTime = MaxTime
     Call Board.PublishScoreboard(SendTarget.toMap, MapNumber, GenericGlobalLobby, True)
+    Call GiveRewards
     Call CustomScenarios.ClearMap(MapNumber)
     MapInfo(MapNumber).Seguro = 1
     MapInfo(MapNumber).SafeFightMap = False
@@ -633,3 +641,64 @@ Public Sub IBaseScenario_UserDie(ByVal UserIndex)
     Call PlayerRespawn.Add(UserIndex, RespawnInfo)
 End Sub
 
+Sub GiveRewards()
+    On Error GoTo GiveRewards_Err:
+        Dim Teams() As String
+        Dim Rewards(1 To 3) As Long
+        Dim Reward As Long
+        Dim Ranking() As e_Rank
+        Dim RewardStr As String
+        Dim i As Integer
+        Dim j As Integer
+100     If (GenericGlobalLobby.RegisteredPlayers / GenericGlobalLobby.TeamSize) = 2 Then
+102         Rewards(1) = GenericGlobalLobby.AvailableInscriptionMoney * 0.55
+104         Rewards(2) = GenericGlobalLobby.AvailableInscriptionMoney * 0.35
+        Else
+106         Rewards(1) = GenericGlobalLobby.AvailableInscriptionMoney * 0.4
+108         Rewards(2) = GenericGlobalLobby.AvailableInscriptionMoney * 0.3
+110         Rewards(3) = GenericGlobalLobby.AvailableInscriptionMoney * 0.2
+        End If
+112     Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MsgMatchComplete, Me.IBaseScenario_GetScenarioName(), e_FontTypeNames.FONTTYPE_GUILD))
+114     If GenericGlobalLobby.TeamSize >= 1 Then
+116         ReDim Teams(0 To GenericGlobalLobby.RegisteredPlayers / GenericGlobalLobby.TeamSize) As String
+118         Ranking = Board.GetTeamRanking(GenericGlobalLobby)
+120         For i = 0 To GenericGlobalLobby.RegisteredPlayers - 1
+122             If IsValidUserRef(GenericGlobalLobby.Players(i).user) Then
+124                 Teams(GenericGlobalLobby.Players(i).team) = Teams(GenericGlobalLobby.Players(i).team) & UserList(GenericGlobalLobby.Players(i).user.ArrayIndex).name & " "
+                End If
+126         Next i
+128         For i = 1 To 3
+130             If GenericGlobalLobby.AvailableInscriptionMoney > 0 Then
+132                 Reward = Rewards(i) / GenericGlobalLobby.TeamSize
+134                 For j = 0 To GenericGlobalLobby.RegisteredPlayers - 1
+136                     If IsValidUserRef(GenericGlobalLobby.Players(j).user) Then
+138                         If GenericGlobalLobby.Players(j).team = Ranking(i).PlayerIndex Then
+140                             Call GiveGoldToPlayer(GenericGlobalLobby, j, Reward)
+                            End If
+                        End If
+142                 Next j
+144                 RewardStr = ", ganaron " & PonerPuntos(Reward) & " Modenas de oro cada uno."
+                End If
+146             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg(i & ") " & Teams(Ranking(i).PlayerIndex) & ": " & Ranking(i).Score & " puntos" & RewardStr, e_FontTypeNames.FONTTYPE_GUILD))
+148         Next i
+        Else
+150         Ranking = Board.GetRanking(3)
+152         For i = 0 To UBound(Ranking) - 1
+154             If GenericGlobalLobby.AvailableInscriptionMoney > 0 Then
+156                 For j = 0 To GenericGlobalLobby.RegisteredPlayers - 1
+158                     If IsValidUserRef(GenericGlobalLobby.Players(j).user) Then
+160                         If GenericGlobalLobby.Players(j).user.ArrayIndex = Ranking(i).PlayerIndex Then
+162                             Call GiveGoldToPlayer(GenericGlobalLobby, j, Rewards(i + 1))
+                                Exit For
+                            End If
+                        End If
+164                 Next j
+166                 RewardStr = ", gano " & PonerPuntos(Rewards(i + 1)) & " Modenas de oro."
+                End If
+168             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg((i + 1) & ") " & UserList(Ranking(i).PlayerIndex).name & ": " & Ranking(i).Score & " puntos" & RewardStr, e_FontTypeNames.FONTTYPE_GUILD))
+170         Next i
+        End If
+        Exit Sub
+GiveRewards_Err:
+    Call TraceError(Err.Number, Err.Description, "DeathMatch.GiveRewards ", Erl)
+End Sub

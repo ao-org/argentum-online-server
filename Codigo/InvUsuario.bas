@@ -3677,3 +3677,19 @@ Public Sub UpdateCharWithEquipedItems(ByVal UserIndex As Integer)
         Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, UserList(UserIndex).Char.CartAnim)
     End With
 End Sub
+
+Function RemoveGold(ByVal UserIndex As Integer, ByVal Amount As Long) As Boolean
+    With UserList(UserIndex)
+        If .Stats.GLD < Amount Then Exit Function
+        .Stats.GLD = .Stats.GLD - Amount
+        Call WriteUpdateGold(UserIndex)
+        RemoveGold = True
+    End With
+End Function
+
+Sub AddGold(ByVal UserIndex As Integer, ByVal Amount As Long)
+    With UserList(UserIndex)
+        .Stats.GLD = .Stats.GLD + Amount
+        Call WriteUpdateGold(UserIndex)
+    End With
+End Sub

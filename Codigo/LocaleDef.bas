@@ -102,7 +102,13 @@ Public Const MsgFactionScore = 478
 Public Const MsgCaptainFire = 479
 Public Const MsgFire = 480
 Public Const MsgCantJoinWhileAnotherEvent = 481
-Public Const MsgNavanlConquestBroadcast = 482
+Public Const MsgOpenEventBroadcast = 482
+Public Const MsgNotEnouthMoneyToParticipate = 483
+Public Const MsgNavalBattleEvenBroadcast = 484
+Public Const MsgNavalBattleWinBroadcast = 485
+Public Const MsgNavalBattleRewardBroadcast = 486
+Public Const MsgBoardcastInscriptionPrice = 487
+Public Const MsgMatchComplete = 488
 
 
 Public Function GetRequiredWeaponLocaleId(ByVal WeaponType As e_WeaponType) As Integer

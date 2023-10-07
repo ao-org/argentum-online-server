@@ -125,7 +125,6 @@ Private Sub SortRank(ByRef rank() As e_Rank)
             rank(currentPos) = Temp
         End If
     Next i
-    
 End Sub
 
 Private Sub ShiftElement(ByVal position As Integer, ByRef rank() As e_Rank)
