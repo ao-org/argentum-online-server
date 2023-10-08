@@ -202,7 +202,7 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
                     If UserList(UserIndex).MascotasIndex(i).ArrayIndex > 0 Then
                         If IsValidNpcRef(UserList(UserIndex).MascotasIndex(i)) Then
 135                         If NpcList(UserList(UserIndex).MascotasIndex(i).ArrayIndex).TargetNPC.ArrayIndex = NpcIndex Then
-136                             Call AllFollowAmo(UserIndex)
+136                             Call FollowAmo(UserIndex)
                             End If
                         Else
                             Call ClearNpcRef(UserList(UserIndex).MascotasIndex(i))
