@@ -2029,7 +2029,7 @@ UserCanAttackNpc.TurnPK = False
      End If
 
      'Es valida la distancia a la cual estamos atacando?
-134  If Distancia(UserList(UserIndex).pos, NpcList(NpcIndex).pos) >= MAXDISTANCIAARCO Then
+     If Abs(UserList(UserIndex).pos.X - NpcList(NpcIndex).pos.X) > RANGO_VISION_X Or Abs(UserList(UserIndex).pos.y - NpcList(NpcIndex).pos.y) > RANGO_VISION_Y Then
 138     UserCanAttackNpc.Result = eOutOfRange
         Exit Function
      End If
