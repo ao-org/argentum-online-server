@@ -1812,10 +1812,8 @@ Private Sub CalcularDarExpGrupal(ByVal UserIndex As Integer, ByVal NpcIndex As I
 124             Index = UserList(LiderIndex).Grupo.Miembros(i).ArrayIndex
 126             If UserList(Index).flags.Muerto = 0 Then
 128                 If UserList(userIndex).pos.map = UserList(Index).pos.map Then
-130                     If Abs(UserList(userIndex).pos.x - UserList(Index).pos.x) < 20 Then
-132                         If Abs(UserList(userIndex).pos.y - UserList(Index).pos.y) < 20 Then
-134                             CantidadMiembrosValidos = CantidadMiembrosValidos + 1
-                            End If
+130                     If Distancia(UserList(UserIndex).pos, UserList(Index).pos) < 20 Then
+134                         CantidadMiembrosValidos = CantidadMiembrosValidos + 1
                         End If
                     End If
                 End If
