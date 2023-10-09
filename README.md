@@ -51,4 +51,3 @@ Please note this is not free software and you will have to buy your own license 
 
 # 🛡️ Logs
 Los logs están en la carpeta de Logs, Errores y en Windows Events.
-
