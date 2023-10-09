@@ -31,7 +31,7 @@ Option Explicit
 Const MAX_RANDOM_TELEPORT_IN_MAP = 20
 Const FISHING_REQUIRED_PERCENT = 90
 Const FISHING_TILES_ON_MAP = 10
-Const FISHING_POOL_ID = 3740
+Public Const FISHING_POOL_ID = 3740
 Private Type t_Position
 
     x As Integer

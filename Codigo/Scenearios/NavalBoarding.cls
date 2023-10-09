@@ -143,6 +143,7 @@ Dim ManaPotId As Integer
 Dim HpPotId As Integer
 Dim RespawnManaPotAmount As Integer
 Dim RespawnHPPotAmount As Integer
+Dim Winner As Integer
 
 Private Sub Class_Initialize()
     On Error GoTo NavalBoarding_Initialize_Err:
@@ -499,10 +500,6 @@ Public Sub IBaseScenario_Update()
             If UpdateTime(BroadCastTimer, frametime) Then
                 Call BroadcastPendingTime(frametime)
             End If
-            If UpdateTime(ScoreBroadcastTimer, frametime) Then
-                'Call Board.PublishScoreboard(SendTarget.toMap, MapNumbers(0), GenericGlobalLobby, False)
-                'Call Board.PublishScoreboard(SendTarget.toMap, MapNumbers(1), GenericGlobalLobby, False)
-            End If
         End If
     ElseIf GenericGlobalLobby.State = e_LobbyState.Completed Then
         If CountdownTimer.Occurrences < 10 Then
@@ -586,6 +583,7 @@ Private Sub Respawn(ByVal player As Integer)
 End Sub
 
 Private Sub MatchCompleted()
+    Call GiveRewards
     MapInfo(MapNumbers(0)).Seguro = 1
     MapInfo(MapNumbers(1)).Seguro = 1
     Call SetTimer(CountdownTimer, 1000)
@@ -597,8 +595,6 @@ Private Sub MatchCompleted()
     Next i
     GenericGlobalLobby.State = Completed
     ElapsedTime = MaxTime
-    'Call Board.PublishScoreboard(SendTarget.toMap, MapNumbers(0), GenericGlobalLobby, True)
-    'Call Board.PublishScoreboard(SendTarget.toMap, MapNumbers(1), GenericGlobalLobby, True)
     Call CustomScenarios.ClearMap(MapNumbers(0))
     Call CustomScenarios.ClearMap(MapNumbers(1))
     MapInfo(MapNumbers(0)).SafeFightMap = False
@@ -611,7 +607,7 @@ Private Sub MatchCompleted()
 End Sub
 
 Private Sub BroadcastOpenEvent()
-    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MsgNavanlConquestBroadcast, "", e_FontTypeNames.FONTTYPE_GUILD))
+    Call BroadcastOpenLobby(GenericGlobalLobby)
 End Sub
 
 Private Sub BroadcastPendingTime(ByVal frametime As Long)
@@ -705,6 +701,7 @@ Private Sub SpawnNpc(ByRef NpcInfo As t_NpcSpawnInfo, ByRef Waypoints() As t_Way
         Call TraceError(Err.Number, "failed to spawn Npc " & NpcInfo.NpcId, "NavalBoarding.SpawnNpc ", Erl)
     End If
 End Sub
+
 Private Sub ConfigMapLobby()
     Dim i As Integer
     Call ModLobby.SetTeamCount(GenericGlobalLobby, 2, GenericGlobalLobby.TeamType)
@@ -777,6 +774,7 @@ End Function
 
 Public Sub IBaseScenario_NpcDie(ByVal NpcIndex)
     If NpcList(NpcIndex).Numero = CaptianNpcId Then
+        Winner = GetOposingFaction(NpcList(NpcIndex).flags.team)
         Call SendData(SendTarget.toMap, MapNumbers(0), PrepareMessageLocaleMsg(MsgCaptainIsDeath, NpcList(NpcIndex).flags.team, e_FontTypeNames.FONTTYPE_GUILD))
         Call SendData(SendTarget.toMap, MapNumbers(0), PrepareMessageLocaleMsg(MsgTeamNumberWin, GetOposingFaction(NpcList(NpcIndex).flags.team), e_FontTypeNames.FONTTYPE_GUILD))
         Call SendData(SendTarget.toMap, MapNumbers(1), PrepareMessageLocaleMsg(MsgCaptainIsDeath, NpcList(NpcIndex).flags.team, e_FontTypeNames.FONTTYPE_GUILD))
@@ -974,6 +972,7 @@ Private Sub ValidateCargoAreasForTeam(ByVal team As Integer)
     End If
     Call SendData(SendTarget.toMap, MapNumbers(0), PrepareMessageLocaleMsg(MsgTeamGotAllCargo, team, e_FontTypeNames.FONTTYPE_GUILD))
     Call SendData(SendTarget.toMap, MapNumbers(1), PrepareMessageLocaleMsg(MsgTeamGotAllCargo, team, e_FontTypeNames.FONTTYPE_GUILD))
+    Winner = team
     Call MatchCompleted
 End Sub
 
@@ -1010,12 +1009,15 @@ Private Sub CheckWinner()
     Call SendData(SendTarget.toMap, MapNumbers(TopMapNumber), PrepareMessageLocaleMsg(MsgBothTeamCargo, Team1Cargo & "¬" & Team2Cargo, e_FontTypeNames.FONTTYPE_GUILD))
     Call SendData(SendTarget.toMap, MapNumbers(CargoMapNumber), PrepareMessageLocaleMsg(MsgBothTeamCargo, Team1Cargo & "¬" & Team2Cargo, e_FontTypeNames.FONTTYPE_GUILD))
     If Team1Cargo > Team2Cargo Then
+        Winner = 1
         Call SendData(SendTarget.toMap, MapNumbers(TopMapNumber), PrepareMessageLocaleMsg(MsgNavalConquestWinnerTeam, 1, e_FontTypeNames.FONTTYPE_GUILD))
         Call SendData(SendTarget.toMap, MapNumbers(CargoMapNumber), PrepareMessageLocaleMsg(MsgNavalConquestWinnerTeam, 1, e_FontTypeNames.FONTTYPE_GUILD))
     ElseIf Team2Cargo > Team1Cargo Then
+        Winner = 2
         Call SendData(SendTarget.toMap, MapNumbers(TopMapNumber), PrepareMessageLocaleMsg(MsgNavalConquestWinnerTeam, 2, e_FontTypeNames.FONTTYPE_GUILD))
         Call SendData(SendTarget.toMap, MapNumbers(CargoMapNumber), PrepareMessageLocaleMsg(MsgNavalConquestWinnerTeam, 2, e_FontTypeNames.FONTTYPE_GUILD))
     Else
+        Winner = -1
         Call SendData(SendTarget.toMap, MapNumbers(TopMapNumber), PrepareMessageLocaleMsg(MsgNavalConquestEvenMatch, "", e_FontTypeNames.FONTTYPE_GUILD))
         Call SendData(SendTarget.toMap, MapNumbers(CargoMapNumber), PrepareMessageLocaleMsg(MsgNavalConquestEvenMatch, "", e_FontTypeNames.FONTTYPE_GUILD))
     End If
@@ -1130,4 +1132,50 @@ Sub RefillPotions(ByVal UserIndex As Integer)
         End If
         Call UpdateUserInv(True, UserIndex, 0)
     End With
+End Sub
+
+Sub GiveRewards()
+    Dim Team1 As String
+    Dim Team2 As String
+    Dim Reward As Long
+    Dim TeamSize As Integer
+    If GenericGlobalLobby.AvailableInscriptionMoney > 0 Then
+        GenericGlobalLobby.AvailableInscriptionMoney = GenericGlobalLobby.AvailableInscriptionMoney * 0.95
+    End If
+    Dim i As Integer
+    For i = 0 To GenericGlobalLobby.RegisteredPlayers - 1
+        If IsValidUserRef(GenericGlobalLobby.Players(i).user) Then
+            If GenericGlobalLobby.Players(i).team = 1 Then
+                Team1 = Team1 & UserList(GenericGlobalLobby.Players(i).user.ArrayIndex).name & " "
+            ElseIf GenericGlobalLobby.Players(i).team = 2 Then
+                Team2 = Team2 & UserList(GenericGlobalLobby.Players(i).user.ArrayIndex).name & " "
+            End If
+            If GenericGlobalLobby.Players(i).team = Winner Then
+                TeamSize = TeamSize + 1
+            End If
+        End If
+    Next i
+    If GenericGlobalLobby.AvailableInscriptionMoney > 0 Then
+        Reward = GenericGlobalLobby.AvailableInscriptionMoney / TeamSize
+    End If
+    For i = 0 To GenericGlobalLobby.RegisteredPlayers - 1
+        If IsValidUserRef(GenericGlobalLobby.Players(i).user) Then
+            If GenericGlobalLobby.Players(i).team = Winner Then
+                Call GiveGoldToPlayer(GenericGlobalLobby, i, Reward)
+            End If
+        End If
+    Next i
+    If Winner = -1 Then
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MsgNavalBattleEvenBroadcast, Team1 & "¬" & Team2, e_FontTypeNames.FONTTYPE_GUILD))
+    ElseIf Winner = 1 Then
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MsgNavalBattleWinBroadcast, Team1 & "¬" & Team2, e_FontTypeNames.FONTTYPE_GUILD))
+        If Reward > 0 Then
+            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MsgNavalBattleRewardBroadcast, Reward, e_FontTypeNames.FONTTYPE_GUILD))
+        End If
+    ElseIf Winner = 2 Then
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MsgNavalBattleWinBroadcast, Team2 & "¬" & Team1, e_FontTypeNames.FONTTYPE_GUILD))
+        If Reward > 0 Then
+            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MsgNavalBattleRewardBroadcast, Reward, e_FontTypeNames.FONTTYPE_GUILD))
+        End If
+    End If
 End Sub

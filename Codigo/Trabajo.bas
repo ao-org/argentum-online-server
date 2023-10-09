@@ -1885,9 +1885,9 @@ On Error GoTo ErrHandler
                             StopWorking = True
                         End If
                     End If
-            
-138                 MapData(.pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).ObjInfo.amount = MapData(.pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).ObjInfo.amount - MiObj.amount
-    
+                    If FISHING_POOL_ID = MapData(.pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).ObjInfo.ObjIndex Then
+138                     MapData(.pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).ObjInfo.amount = MapData(.pos.Map, .Trabajo.Target_X, .Trabajo.Target_Y).ObjInfo.amount - MiObj.amount
+                    End If
                     If Not RedDePesca Then
                         esEspecial = False
                         For i = 1 To UBound(PecesEspeciales)
@@ -1931,7 +1931,7 @@ On Error GoTo ErrHandler
 178                         If Not MeterItemEnInventario(UserIndex, MiObj) Then Call TirarItemAlPiso(.pos, MiObj)
                         
                             ' Le mandamos un mensaje
-180                         Call WriteConsoleMsg(UserIndex, "¡Has conseguido " & ObjData(EspecialesPesca(i).ObjIndex).Name & "!", e_FontTypeNames.FONTTYPE_INFO)
+180                         Call WriteConsoleMsg(UserIndex, "¡Has conseguido " & ObjData(EspecialesPesca(i).ObjIndex).name & "!", e_FontTypeNames.FONTTYPE_INFO)
                         End If
     
                     Next
@@ -2198,7 +2198,7 @@ Public Sub DoRobar(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
             
                 Else
 272                 Call WriteConsoleMsg(LadronIndex, "¡No has logrado robar nada!", e_FontTypeNames.FONTTYPE_INFO)
-274                 Call WriteConsoleMsg(VictimaIndex, "¡" & .Name & " ha intentado robarte!", e_FontTypeNames.FONTTYPE_INFO)
+274                 Call WriteConsoleMsg(VictimaIndex, "¡" & .name & " ha intentado robarte!", e_FontTypeNames.FONTTYPE_INFO)
                 
 276                 Call SubirSkill(LadronIndex, e_Skill.Robar)
 
@@ -2697,7 +2697,7 @@ Public Sub DoMineria(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byt
 154                     If Not MeterItemEnInventario(UserIndex, MiObj) Then Call TirarItemAlPiso(.Pos, MiObj)
 
                         ' Le mandamos un mensaje
-156                     Call WriteConsoleMsg(UserIndex, "¡Has conseguido " & ObjData(Yacimiento.Item(i).ObjIndex).Name & "!", e_FontTypeNames.FONTTYPE_INFO)
+156                     Call WriteConsoleMsg(UserIndex, "¡Has conseguido " & ObjData(Yacimiento.Item(i).ObjIndex).name & "!", e_FontTypeNames.FONTTYPE_INFO)
                     End If
     
                 Next

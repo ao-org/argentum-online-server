@@ -77,6 +77,8 @@ Type t_Lobby
     SortType As e_SortType
     TeamSortDone As Boolean
     NextTeamId As Integer
+    InscriptionPrice As Long
+    AvailableInscriptionMoney As Long
 End Type
 
 Public Type t_response
@@ -111,6 +113,7 @@ Public Enum e_LobbyCommandId
     eForceReset
     eSetTeamSize
     eAddPlayer
+    eSetInscriptionPrice
 End Enum
 Public GenericGlobalLobby As t_Lobby
 Public CurrentActiveEventType As e_EventType
@@ -128,6 +131,8 @@ Public Sub InitializeLobby(ByRef instance As t_Lobby)
     instance.TeamType = eRandom
     instance.TeamSortDone = False
     instance.NextTeamId = 1
+    instance.AvailableInscriptionMoney = 0
+    instance.InscriptionPrice = 0
 End Sub
 
 Public Sub SetSummonCoordinates(ByRef instance As t_Lobby, ByVal map As Integer, ByVal posX As Integer, ByVal posY As Integer)
@@ -221,33 +226,37 @@ Public Function CanPlayerJoin(ByRef instance As t_Lobby, ByVal UserIndex As Inte
 148         CanPlayerJoin.Message = MsgCantJoinWhileAnotherEvent
             Exit Function
         End If
-            
-150     If MapData(.pos.Map, .pos.x, .pos.y).trigger = CARCEL Then
+150     If .Stats.GLD < instance.InscriptionPrice Then
 152         CanPlayerJoin.Success = False
-154         CanPlayerJoin.Message = MsgYouAreInJail
+154         CanPlayerJoin.Message = MsgNotEnouthMoneyToParticipate
             Exit Function
         End If
-156        If Not instance.Scenario Is Nothing Then
-158            CanPlayerJoin.Message = instance.Scenario.ValidateUser(UserIndex)
-160            If CanPlayerJoin.Message > 0 Then
-162                CanPlayerJoin.Success = False
+156     If MapData(.pos.Map, .pos.x, .pos.y).trigger = CARCEL Then
+158         CanPlayerJoin.Success = False
+160         CanPlayerJoin.Message = MsgYouAreInJail
+            Exit Function
+        End If
+162        If Not instance.Scenario Is Nothing Then
+164            CanPlayerJoin.Message = instance.Scenario.ValidateUser(UserIndex)
+166            If CanPlayerJoin.Message > 0 Then
+168                CanPlayerJoin.Success = False
                    Exit Function
                End If
            End If
            Dim i As Integer
-164        For i = 0 To instance.RegisteredPlayers - 1
-166            If instance.Players(i).UserId = .id Then
-168                CanPlayerJoin.Success = False
-170                CanPlayerJoin.Message = AlreadyRegisteredMessage
+170        For i = 0 To instance.RegisteredPlayers - 1
+172            If instance.Players(i).UserId = .id Then
+174                CanPlayerJoin.Success = False
+176                CanPlayerJoin.Message = AlreadyRegisteredMessage
                    Exit Function
                End If
-172        Next i
-174     CanPlayerJoin.Success = True
-176     CanPlayerJoin.Message = 0
+178        Next i
+180     CanPlayerJoin.Success = True
+182     CanPlayerJoin.Message = 0
         End With
         Exit Function
 CanPlayerJoin_Err:
-178    Call TraceError(Err.Number, Err.Description, "ModLobby.CanPlayerJoin", Erl)
+184    Call TraceError(Err.Number, Err.Description, "ModLobby.CanPlayerJoin", Erl)
 End Function
 
 Public Function AddPlayer(ByRef instance As t_Lobby, ByVal UserIndex As Integer, Optional Team As Integer = 0) As t_response
@@ -256,6 +265,15 @@ On Error GoTo AddPlayer_Err
        AddPlayer = CanPlayerJoin(instance, UserIndex)
        If Not AddPlayer.Success Then
            Exit Function
+       End If
+       If instance.InscriptionPrice > 0 Then
+        If Not RemoveGold(UserIndex, instance.InscriptionPrice) Then
+            AddPlayer.Success = False
+            AddPlayer.Message = MsgNotEnouthMoneyToParticipate
+            Exit Function
+        Else
+            instance.AvailableInscriptionMoney = instance.AvailableInscriptionMoney + instance.InscriptionPrice
+        End If
        End If
        Dim playerPos As Integer: playerPos = instance.RegisteredPlayers
        Call SetUserRef(instance.Players(playerPos).user, UserIndex)
@@ -394,6 +412,12 @@ End Sub
 
 Public Sub CancelLobby(ByRef instance As t_Lobby)
 On Error GoTo CancelLobby_Err
+       If instance.InscriptionPrice > 0 Then
+            Dim i As Integer
+            For i = 0 To instance.RegisteredPlayers - 1
+                Call GiveGoldToPlayer(instance, i, instance.InscriptionPrice)
+            Next i
+       End If
 100    Call ReturnAllPlayers(instance)
 104    Call UpdateLobbyState(instance, Closed)
 105    instance.RegisteredPlayers = 0
@@ -401,6 +425,20 @@ On Error GoTo CancelLobby_Err
 CancelLobby_Err:
 108     Call TraceError(Err.Number, Err.Description, "ModLobby.CancelLobby", Erl)
 End Sub
+
+Public Function GiveGoldToPlayer(ByRef instance As t_Lobby, ByVal UserSlotIndex As Integer, ByVal amount As Long) As Boolean
+On Error GoTo GiveMoneyToPlayer_Err
+    If amount > instance.AvailableInscriptionMoney Then
+        Call LogError("Instance is trying to give gold to " & instance.Players(UserSlotIndex).UserId & " but there is not enought gold collected")
+        Exit Function
+    End If
+    If IsValidUserRef(instance.Players(UserSlotIndex).user) Then
+        Call AddGold(instance.Players(UserSlotIndex).user.ArrayIndex, amount)
+        instance.AvailableInscriptionMoney = instance.AvailableInscriptionMoney - amount
+    End If
+GiveMoneyToPlayer_Err:
+    Call TraceError(Err.Number, Err.Description, "ModLobby.CancelLobby", Erl)
+End Function
 
 Public Sub ListPlayers(ByRef instance As t_Lobby, ByVal UserIndex As Integer)
 On Error GoTo ListPlayers_Err
@@ -438,9 +476,12 @@ On Error GoTo OpenLobby_Err
         If Not instance.Scenario Is Nothing Then
              EventName = instance.Scenario.GetScenarioName()
         End If
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MsgCreateEventRoom, UserList(UserIndex).Name & "¬" & EventName, e_FontTypeNames.FONTTYPE_GUILD))
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MsgCreateEventRoom, UserList(UserIndex).name & "¬" & EventName, e_FontTypeNames.FONTTYPE_GUILD))
         If Not instance.Scenario Is Nothing Then
              Call instance.Scenario.BroadcastOpenScenario(UserIndex)
+        End If
+        If instance.InscriptionPrice > 0 Then
+            Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MsgBoardcastInscriptionPrice, instance.InscriptionPrice, e_FontTypeNames.FONTTYPE_GUILD))
         End If
     End If
     Ret.Message = 401
@@ -450,6 +491,17 @@ On Error GoTo OpenLobby_Err
 OpenLobby_Err:
     Call TraceError(Err.Number, Err.Description, "ModLobby.OpenLobby", Erl)
 End Function
+
+Public Sub BroadcastOpenLobby(ByRef instance As t_Lobby)
+    Dim EventName As String: EventName = "Evento"
+        If Not instance.Scenario Is Nothing Then
+             EventName = instance.Scenario.GetScenarioName()
+        End If
+    Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MsgOpenEventBroadcast, EventName, e_FontTypeNames.FONTTYPE_GUILD))
+    If GenericGlobalLobby.InscriptionPrice > 0 Then
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MsgBoardcastInscriptionPrice, GenericGlobalLobby.InscriptionPrice, e_FontTypeNames.FONTTYPE_GUILD))
+    End If
+End Sub
 
 Public Sub ForceReset(ByRef instance As t_Lobby)
 On Error GoTo ForceReset_Err
@@ -644,6 +696,12 @@ On Error GoTo HandleRemoteLobbyCommand_Err
 208                 Call WriteConsoleMsg(UserIndex, "Player has been registered", e_FontTypeNames.FONTTYPE_INFO)
 210             End If
 212             Call WriteLocaleMsg(tUser.ArrayIndex, RetValue.Message, e_FontTypeNames.FONTTYPE_INFO)
+            Case e_LobbyCommandId.eSetInscriptionPrice
+                If SetIncriptionPrice(GenericGlobalLobby, Arguments(0)) Then
+                    Call WriteConsoleMsg(UserIndex, "Inscription Price updated", e_FontTypeNames.FONTTYPE_INFO)
+                Else
+                    Call WriteConsoleMsg(UserIndex, "Failed to update insription price", e_FontTypeNames.FONTTYPE_INFO)
+                End If
 214         Case Else
 216             HandleRemoteLobbyCommand = False
 218             Exit Function
@@ -652,6 +710,14 @@ On Error GoTo HandleRemoteLobbyCommand_Err
     Exit Function
 HandleRemoteLobbyCommand_Err:
     Call TraceError(Err.Number, Err.Description, "ModLobby.HandleRemoteLobbyCommand", Erl)
+End Function
+
+Function SetIncriptionPrice(ByRef instance As t_Lobby, ByVal price As Long) As Boolean
+    If instance.State <> Initialized Then
+        Exit Function
+    End If
+    instance.InscriptionPrice = price
+    SetIncriptionPrice = True
 End Function
 
 Private Function GetHigherLvlWithoutTeam(ByRef instance As t_Lobby) As Integer

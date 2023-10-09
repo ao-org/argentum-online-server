@@ -3259,6 +3259,7 @@ Public Function CanAttackUser(ByVal AttackerIndex As Integer, ByVal AttackerVers
         UserList(TargetIndex).flags.CurrentTeam > 0 And _
         UserList(TargetIndex).flags.CurrentTeam = UserList(attackerIndex).flags.CurrentTeam Then
         CanAttackUser = eSameTeam
+        Exit Function
     End If
     Dim T    As e_Trigger6
     
