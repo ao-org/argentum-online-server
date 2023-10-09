@@ -861,29 +861,6 @@ Public Enum e_MagicItemSubType
     TargetUsable
 End Enum
 
-Public Enum e_MagicItemEffect
-    MagicResistance = 1
-    MofifyAttributes = 2
-    ModifySkills = 3
-    HpRegeneration = 4
-    ImproveMetitation = 5
-    IncreaseDamageToNpc = 6
-    ReduceDamageToNpc = 7
-    InmunityToNpcMagic = 9
-    Incinerate = 10
-    Paralize = 11
-    ProtectedResources = 12
-    WalkHidden = 13
-    IncreaseMagicDamage = 14
-    ProtectedInventory = 15
-    PreventMagicWords = 16
-    PreventInvisibleDetection = 17
-    IncreaseSkillLearning = 18
-    AddPoisonOnHit = 19
-    ResurrectionItem = 20
-End Enum
-
-
 Public Enum e_MagicEffect
     eMagicresistance = 1
     eAttributeModifier = 2 'Requires CuantoAumento y QueAtributo
@@ -1841,6 +1818,26 @@ Public Type t_AccionPendiente
     HechizoPendiente As Integer
 
 End Type
+
+Public Enum e_MagicItemEffect
+    eMagicResistance = 1
+    eChangesAttributes = 2
+    eChangesSkills = 3
+    eRegeneratesHealth = 4
+    eRegeneratesMana = 5
+    eIncreasesHit = 6
+    eNoMagicEffect = 9
+    eIncinerates = 10
+    eParalizes = 11
+    eProtectedResources = 12
+    ePendantOfSacrifice = 15
+    eSilentMagic = 16
+    eRingOfTruth = 17
+    ePendantOfExpert = 18
+    ePoison = 19
+    eRingOfShadows = 20
+    eTalismanOfDead = 21
+End Enum
 
 Public Enum e_StatusMask
     eTaunting = 1
