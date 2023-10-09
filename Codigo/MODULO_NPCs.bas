@@ -202,7 +202,7 @@ Sub MuereNpc(ByVal NpcIndex As Integer, ByVal UserIndex As Integer)
                     If UserList(UserIndex).MascotasIndex(i).ArrayIndex > 0 Then
                         If IsValidNpcRef(UserList(UserIndex).MascotasIndex(i)) Then
 135                         If NpcList(UserList(UserIndex).MascotasIndex(i).ArrayIndex).TargetNPC.ArrayIndex = NpcIndex Then
-136                             Call AllFollowAmo(UserIndex)
+136                             Call FollowAmo(UserList(UserIndex).MascotasIndex(i).ArrayIndex)
                             End If
                         Else
                             Call ClearNpcRef(UserList(UserIndex).MascotasIndex(i))
@@ -2029,7 +2029,7 @@ UserCanAttackNpc.TurnPK = False
      End If
 
      'Es valida la distancia a la cual estamos atacando?
-134  If Distancia(UserList(UserIndex).pos, NpcList(NpcIndex).pos) >= MAXDISTANCIAARCO Then
+     If Abs(UserList(UserIndex).pos.X - NpcList(NpcIndex).pos.X) > RANGO_VISION_X Or Abs(UserList(UserIndex).pos.y - NpcList(NpcIndex).pos.y) > RANGO_VISION_Y Then
 138     UserCanAttackNpc.Result = eOutOfRange
         Exit Function
      End If
