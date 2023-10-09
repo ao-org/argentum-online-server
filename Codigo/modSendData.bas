@@ -333,7 +333,7 @@ Private Sub SendToUserAliveArea(ByVal UserIndex As Integer, ByVal Buffer As Netw
 114         If UserList(tempIndex).AreasInfo.AreaReciveX And AreaX Then  'Esta en el area?
 116             If UserList(tempIndex).AreasInfo.AreaReciveY And AreaY Then
 118                 If UserList(tempIndex).ConnectionDetails.ConnIDValida Then
-                        If UserList(tempIndex).flags.Muerto = 0 Or MapInfo(UserList(tempIndex).pos.Map).Seguro = 1 Or (UserList(UserIndex).GuildIndex > 0 And UserList(UserIndex).GuildIndex = UserList(tempIndex).GuildIndex) Or UserList(UserIndex).flags.TalismanDeLosMuertos = 1 Or UserList(tempIndex).flags.TalismanDeLosMuertos = 1 Then
+                        If UserList(tempIndex).flags.Muerto = 0 Or MapInfo(UserList(tempIndex).pos.Map).Seguro = 1 Or (UserList(UserIndex).GuildIndex > 0 And UserList(UserIndex).GuildIndex = UserList(tempIndex).GuildIndex) Or IsSet(UserList(UserIndex).flags.StatusMask, e_StatusMask.eTalismanOfDead) Or IsSet(UserList(tempIndex).flags.StatusMask, e_StatusMask.eTalismanOfDead) Then
                             enviaDatos = True
                             If Not EsGM(tempIndex) Then
                                 If UserList(UserIndex).flags.invisible + UserList(UserIndex).flags.Oculto > 0 And validateInvi And Not (UserList(tempIndex).GuildIndex > 0 And UserList(tempIndex).GuildIndex = UserList(UserIndex).GuildIndex And modGuilds.NivelDeClan(UserList(tempIndex).GuildIndex) >= 6) And UserList(UserIndex).flags.Navegando = 0 Then
@@ -519,7 +519,7 @@ Private Sub SendToPCDeadArea(ByVal UserIndex As Integer, ByVal Buffer As Network
                         
                         ' Envio a los que estan MUERTOS y a los GMs cercanos.
 
-120                     If UserList(tempIndex).flags.Muerto = 1 Or EsGM(tempIndex) Or UserList(tempIndex).flags.TalismanDeLosMuertos = 1 Then
+120                     If UserList(tempIndex).flags.Muerto = 1 Or EsGM(tempIndex) Or IsSet(UserList(tempIndex).flags.StatusMask, e_StatusMask.eTalismanOfDead) Then
                         
 122                         Call modNetwork.Send(tempIndex, Buffer)
                             
@@ -572,7 +572,7 @@ Private Sub SendToPCDeadAreaButIndex(ByVal UserIndex As Integer, ByVal Buffer As
 118                 If UserList(tempIndex).ConnectionDetails.ConnIDValida Then
                         ' Envio a los que estan MUERTOS y a los GMs cercanos.
                         If tempIndex <> UserIndex Then
-120                         If UserList(tempIndex).flags.Muerto = 1 Or UserList(tempIndex).flags.TalismanDeLosMuertos = 1 Then
+120                         If UserList(tempIndex).flags.Muerto = 1 Or IsSet(UserList(tempIndex).flags.StatusMask, e_StatusMask.eTalismanOfDead) Then
 122                             Call modNetwork.Send(tempIndex, Buffer)
                             End If
                         End If
@@ -726,7 +726,7 @@ Private Function CanSendToUser(ByRef SourceUser As t_User, ByRef TargetUser As t
     If (TargetUser.AreasInfo.AreaReciveX And SourceUser.AreasInfo.AreaPerteneceX) = 0 Then Exit Function
     If (TargetUser.AreasInfo.AreaReciveY And SourceUser.AreasInfo.AreaPerteneceY) = 0 Then Exit Function
     If Not TargetUser.ConnectionDetails.ConnIDValida Then Exit Function
-    If Not (TargetUser.flags.Muerto = 0 Or MapInfo(TargetUser.pos.Map).Seguro = 1 Or (SourceUser.GuildIndex > 0 And SourceUser.GuildIndex = TargetUser.GuildIndex) Or TargetUser.flags.TalismanDeLosMuertos = 1 Or SourceUser.flags.TalismanDeLosMuertos = 1) Then Exit Function
+    If Not (TargetUser.flags.Muerto = 0 Or MapInfo(TargetUser.pos.Map).Seguro = 1 Or (SourceUser.GuildIndex > 0 And SourceUser.GuildIndex = TargetUser.GuildIndex) Or IsSet(TargetUser.flags.StatusMask, e_StatusMask.eTalismanOfDead) Or IsSet(SourceUser.flags.StatusMask, e_StatusMask.eTalismanOfDead)) Then Exit Function
     If IsValidUserRef(TargetUser.flags.GMMeSigue) Then
         Call modNetwork.Send(TargetUser.flags.GMMeSigue.ArrayIndex, Buffer)
     End If

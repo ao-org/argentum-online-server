@@ -1250,11 +1250,11 @@ Sub ResetUserFlags(ByVal UserIndex As Integer)
 222         .Estupidiza = 0
 224         .GolpeCertero = 0
 226         .PendienteDelExperto = 0
-            .TalismanDeLosMuertos = 0
 230         .PendienteDelSacrificio = 0
 232         .AnilloOcultismo = 0
 234         .RegeneracionMana = 0
 236         .RegeneracionHP = 0
+            .StatusMask = 0
 
 244         .LastKillerIndex = 0
         
