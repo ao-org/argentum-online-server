@@ -867,7 +867,7 @@ Sub Desequipar(ByVal UserIndex As Integer, ByVal Slot As Byte)
     
 156             Select Case obj.EfectoMagico
 
-                    Case e_MagicItemEffect.eChangesAttributes
+                    Case e_MagicItemEffect.eModifyAttributes
                         If obj.QueAtributo <> 0 Then
 162                         UserList(UserIndex).Stats.UserAtributos(obj.QueAtributo) = UserList(UserIndex).Stats.UserAtributos(obj.QueAtributo) - obj.CuantoAumento
 164                         UserList(UserIndex).Stats.UserAtributosBackUP(obj.QueAtributo) = UserList(UserIndex).Stats.UserAtributosBackUP(obj.QueAtributo) - obj.CuantoAumento
@@ -876,28 +876,28 @@ Sub Desequipar(ByVal UserIndex As Integer, ByVal Slot As Byte)
 166                         Call WriteFYA(UserIndex)
                         End If
 
-168                 Case e_MagicItemEffect.eChangesSkills
+168                 Case e_MagicItemEffect.eModifySkills
                         If obj.Que_Skill <> 0 Then
 170                         UserList(UserIndex).Stats.UserSkills(obj.Que_Skill) = UserList(UserIndex).Stats.UserSkills(obj.Que_Skill) - obj.CuantoAumento
                         End If
                         
-172                 Case e_MagicItemEffect.eRegeneratesHealth
+172                 Case e_MagicItemEffect.eRegenerateHealth
 174                     UserList(UserIndex).flags.RegeneracionHP = 0
 
-176                 Case e_MagicItemEffect.eRegeneratesMana
+176                 Case e_MagicItemEffect.eRegenerateMana
 178                     UserList(UserIndex).flags.RegeneracionMana = 0
 
-180                 Case e_MagicItemEffect.eIncreasesHit
+180                 Case e_MagicItemEffect.eIncreaseDamageToNpc
 182                     UserList(UserIndex).Stats.MaxHit = UserList(UserIndex).Stats.MaxHit - obj.CuantoAumento
 184                     UserList(UserIndex).Stats.MinHIT = UserList(UserIndex).Stats.MinHIT - obj.CuantoAumento
 
-188                 Case e_MagicItemEffect.eNoMagicEffect 'Orbe ignea
+188                 Case e_MagicItemEffect.eInmunityToNpcMagic 'Orbe ignea
 190                     UserList(UserIndex).flags.NoMagiaEfecto = 0
 
-192                 Case e_MagicItemEffect.eIncinerates
+192                 Case e_MagicItemEffect.eIncinerate
 194                     UserList(UserIndex).flags.incinera = 0
 
-196                 Case e_MagicItemEffect.eParalizes
+196                 Case e_MagicItemEffect.eParalize
 198                     UserList(UserIndex).flags.Paraliza = 0
 
 200                 Case e_MagicItemEffect.eProtectedResources
@@ -906,16 +906,16 @@ Sub Desequipar(ByVal UserIndex As Integer, ByVal Slot As Byte)
 203                         Call ChangeUserChar(UserIndex, UserList(UserIndex).Char.body, UserList(UserIndex).Char.head, UserList(UserIndex).Char.Heading, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.CascoAnim, UserList(UserIndex).Char.CartAnim)
                         End If
                         
-206                 Case e_MagicItemEffect.ePendantOfSacrifice
+206                 Case e_MagicItemEffect.eProtectedInventory
 208                     UserList(UserIndex).flags.PendienteDelSacrificio = 0
                  
-210                 Case e_MagicItemEffect.eSilentMagic
+210                 Case e_MagicItemEffect.ePreventMagicWords
 212                     UserList(UserIndex).flags.NoPalabrasMagicas = 0
 
-214                 Case e_MagicItemEffect.eRingOfTruth
+214                 Case e_MagicItemEffect.ePreventInvisibleDetection
 216                     UserList(UserIndex).flags.NoDetectable = 0
 
-218                 Case e_MagicItemEffect.ePendantOfExpert
+218                 Case e_MagicItemEffect.eIncreaseLearningSkills
 220                     UserList(UserIndex).flags.PendienteDelExperto = 0
 
 222                 Case e_MagicItemEffect.ePoison
@@ -924,8 +924,8 @@ Sub Desequipar(ByVal UserIndex As Integer, ByVal Slot As Byte)
 226                 Case e_MagicItemEffect.eRingOfShadows
 228                     UserList(UserIndex).flags.AnilloOcultismo = 0
 
-                    Case e_MagicItemEffect.eTalismanOfDead
-                        Call UnsetMask(UserList(UserIndex).flags.StatusMask, e_StatusMask.eTalismanOfDead)
+                    Case e_MagicItemEffect.eTalkToDead
+                        Call UnsetMask(UserList(UserIndex).flags.StatusMask, e_StatusMask.eTalkToDead)
                         Call WriteConsoleMsg(UserIndex, "Dejas el mundo de los muertos, ya no podrás comunicarte con ellos.", e_FontTypeNames.FONTTYPE_WARNING)
                         Call SendData(SendTarget.ToPCDeadAreaButIndex, UserIndex, PrepareMessageCharacterRemove(4, UserList(UserIndex).Char.charindex, False, True))
                 End Select
@@ -1350,33 +1350,33 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
 230                 .Invent.MagicoSlot = Slot
                 
 232                 Select Case obj.EfectoMagico
-                        Case e_MagicItemEffect.eChangesAttributes 'Modif la fuerza, agilidad, carisma, etc
+                        Case e_MagicItemEffect.eModifyAttributes 'Modif la fuerza, agilidad, carisma, etc
 238                         .Stats.UserAtributosBackUP(obj.QueAtributo) = .Stats.UserAtributosBackUP(obj.QueAtributo) + obj.CuantoAumento
 240                         .Stats.UserAtributos(obj.QueAtributo) = MinimoInt(.Stats.UserAtributos(obj.QueAtributo) + obj.CuantoAumento, .Stats.UserAtributosBackUP(obj.QueAtributo) * 2)
                 
 242                         Call WriteFYA(UserIndex)
 
-244                     Case e_MagicItemEffect.eChangesSkills
+244                     Case e_MagicItemEffect.eModifySkills
             
 246                         .Stats.UserSkills(obj.Que_Skill) = .Stats.UserSkills(obj.Que_Skill) + obj.CuantoAumento
 
-248                     Case e_MagicItemEffect.eRegeneratesHealth
+248                     Case e_MagicItemEffect.eRegenerateHealth
 250                         .flags.RegeneracionHP = 1
 
-252                     Case e_MagicItemEffect.eRegeneratesMana
+252                     Case e_MagicItemEffect.eRegenerateMana
 254                         .flags.RegeneracionMana = 1
 
-256                     Case e_MagicItemEffect.eIncreasesHit
+256                     Case e_MagicItemEffect.eIncreaseDamageToNpc
 258                         .Stats.MaxHit = .Stats.MaxHit + obj.CuantoAumento
 260                         .Stats.MinHIT = .Stats.MinHIT + obj.CuantoAumento
 
-262                     Case e_MagicItemEffect.eNoMagicEffect
+262                     Case e_MagicItemEffect.eInmunityToNpcMagic
 264                         .flags.NoMagiaEfecto = 1
 
-266                     Case e_MagicItemEffect.eIncinerates
+266                     Case e_MagicItemEffect.eIncinerate
 268                         .flags.incinera = 1
 
-270                     Case e_MagicItemEffect.eParalizes
+270                     Case e_MagicItemEffect.eParalize
 272                         .flags.Paraliza = 1
 
 274                     Case e_MagicItemEffect.eProtectedResources
@@ -1385,16 +1385,16 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
                                  Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, UserList(UserIndex).Char.CartAnim)
                             End If
                         
-280                     Case e_MagicItemEffect.ePendantOfSacrifice
+280                     Case e_MagicItemEffect.eProtectedInventory
 282                         .flags.PendienteDelSacrificio = 1
 
-284                     Case e_MagicItemEffect.eSilentMagic
+284                     Case e_MagicItemEffect.ePreventMagicWords
 286                         .flags.NoPalabrasMagicas = 1
 
-288                     Case e_MagicItemEffect.eRingOfTruth
+288                     Case e_MagicItemEffect.ePreventInvisibleDetection
 290                         .flags.NoDetectable = 1
                    
-292                     Case e_MagicItemEffect.ePendantOfExpert
+292                     Case e_MagicItemEffect.eIncreaseLearningSkills
 294                         .flags.PendienteDelExperto = 1
 
 296                     Case e_MagicItemEffect.ePoison
@@ -1403,8 +1403,8 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
 300                     Case e_MagicItemEffect.eRingOfShadows
 302                         .flags.AnilloOcultismo = 1
 
-                        Case e_MagicItemEffect.eTalismanOfDead
-                            Call SetMask(.flags.StatusMask, e_StatusMask.eTalismanOfDead)
+                        Case e_MagicItemEffect.eTalkToDead
+                            Call SetMask(.flags.StatusMask, e_StatusMask.eTalkToDead)
                             Call WriteConsoleMsg(UserIndex, "Entras al mundo de los muertos, ahora podrás comunicarte con ellos.", e_FontTypeNames.FONTTYPE_WARNING)
                             Call CheckUpdateNeededUser(UserIndex, USER_NUEVO, True, 1)
                     End Select

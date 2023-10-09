@@ -1821,22 +1821,24 @@ End Type
 
 Public Enum e_MagicItemEffect
     eMagicResistance = 1
-    eChangesAttributes = 2
-    eChangesSkills = 3
-    eRegeneratesHealth = 4
-    eRegeneratesMana = 5
-    eIncreasesHit = 6
-    eNoMagicEffect = 9
-    eIncinerates = 10
-    eParalizes = 11
+    eModifyAttributes = 2
+    eModifySkills = 3
+    eRegenerateHealth = 4
+    eRegenerateMana = 5
+    eIncreaseDamageToNpc = 6
+    eReduceDamageToNpc = 7
+    eInmunityToNpcMagic = 9
+    eIncinerate = 10
+    eParalize = 11
     eProtectedResources = 12
-    ePendantOfSacrifice = 15
-    eSilentMagic = 16
-    eRingOfTruth = 17
-    ePendantOfExpert = 18
+    eWalkHidden = 13
+    eProtectedInventory = 15
+    ePreventMagicWords = 16
+    ePreventInvisibleDetection = 17
+    eIncreaseLearningSkills = 18
     ePoison = 19
     eRingOfShadows = 20
-    eTalismanOfDead = 21
+    eTalkToDead = 21
 End Enum
 
 Public Enum e_StatusMask
@@ -1847,7 +1849,7 @@ Public Enum e_StatusMask
     ePreventEnergyRestore = 16
     eDontBlockTile = 32
     eCCInmunity = 64
-    eTalismanOfDead = 128
+    eTalkToDead = 128
 End Enum
 
 Public Enum e_InventorySlotMask
