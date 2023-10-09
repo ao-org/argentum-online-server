@@ -928,6 +928,10 @@ Sub Desequipar(ByVal UserIndex As Integer, ByVal Slot As Byte)
 226                 Case 20 ' anillo de las sombras
 228                     UserList(UserIndex).flags.AnilloOcultismo = 0
                 
+                    Case 21 ' Talisman de los muertos
+                        UserList(UserIndex).flags.TalismanDeLosMuertos = 0
+                        Call WriteConsoleMsg(UserIndex, "Dejas el mundo de los muertos, ya no podrás comunicarte con ellos.", e_FontTypeNames.FONTTYPE_WARNING)
+                        Call SendData(SendTarget.ToPCDeadAreaButIndex, UserIndex, PrepareMessageCharacterRemove(4, UserList(UserIndex).Char.charindex, False, True))
                 End Select
         
 230             Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessageAuraToChar(UserList(UserIndex).Char.charindex, 0, True, 5))
@@ -1407,6 +1411,10 @@ Sub EquiparInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte)
 300                     Case 20 'Anillo ocultismo
 302                         .flags.AnilloOcultismo = 1
     
+                        Case 21 'Talisman de los muertos
+                            .flags.TalismanDeLosMuertos = 1
+                            Call WriteConsoleMsg(UserIndex, "Entras al mundo de los muertos, ahora podrás comunicarte con ellos.", e_FontTypeNames.FONTTYPE_WARNING)
+                            Call CheckUpdateNeededUser(UserIndex, USER_NUEVO, True, 1)
                     End Select
             
                     'Sonido

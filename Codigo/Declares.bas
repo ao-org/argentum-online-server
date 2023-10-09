@@ -1889,6 +1889,7 @@ Public Type t_UserFlags
     UsandoMacro As Boolean
     PendienteDelSacrificio As Byte
     PendienteDelExperto As Byte
+    TalismanDeLosMuertos As Byte
     NoPalabrasMagicas As Byte
     incinera As Byte
     Envenena As Byte
