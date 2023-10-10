@@ -39,6 +39,9 @@ Attribute VB_Exposed = False
 '
 Option Explicit
 
+Public Sub SetLobbyIndex(ByVal Value As Integer)
+End Sub
+
 Public Function GetScenarioName() As String
 End Function
 Public Sub BroadcastOpenScenario(ByVal CreatorIndex As Integer)

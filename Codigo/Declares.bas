@@ -2854,6 +2854,7 @@ Public EnPausa                           As Boolean
 Public EnTesting                         As Boolean
 Public EnableTelemetry                   As Boolean
 Public PendingConnectionTimeout          As Long
+Public InstanceMapCount                  As Integer
 
 '*****************ARRAYS PUBLICOS*************************
 Public UserList()                         As t_User 'USUARIOS

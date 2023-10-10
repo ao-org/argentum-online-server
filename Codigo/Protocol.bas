@@ -7699,10 +7699,10 @@ Public Sub HandleParticipar(ByVal UserIndex As Integer)
                     Exit Sub
                 End If
             Else
-                If GenericGlobalLobby.State = AcceptingPlayers Then
-                    If GenericGlobalLobby.IsPublic Then
+                If LobbyList(GlobalLobbyIndex).State = AcceptingPlayers Then
+                    If LobbyList(GlobalLobbyIndex).IsPublic Then
                         Dim addPlayerResult As t_response
-                        addPlayerResult = ModLobby.AddPlayerOrGroup(GenericGlobalLobby, UserIndex)
+                        addPlayerResult = ModLobby.AddPlayerOrGroup(LobbyList(GlobalLobbyIndex), UserIndex)
                         Call WriteLocaleMsg(UserIndex, addPlayerResult.Message, e_FontTypeNames.FONTTYPE_INFO)
                     Else
                         Call WriteLocaleMsg(UserIndex, MsgCantJoinPrivateLobby, e_FontTypeNames.FONTTYPE_INFO)

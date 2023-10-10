@@ -144,6 +144,7 @@ Dim HpPotId As Integer
 Dim RespawnManaPotAmount As Integer
 Dim RespawnHPPotAmount As Integer
 Dim Winner As Integer
+Dim LobbyIndex As Integer
 
 Private Sub Class_Initialize()
     On Error GoTo NavalBoarding_Initialize_Err:
@@ -343,9 +344,9 @@ End Sub
 
 Private Sub CloseScenario()
 On Error GoTo CloseScenario_Err:
-100    Call ModLobby.ReturnAllPlayers(GenericGlobalLobby)
-102    Set GenericGlobalLobby.Scenario = Nothing
-104    Call ModLobby.UpdateLobbyState(GenericGlobalLobby, e_LobbyState.UnInitilized)
+100    Call ModLobby.ReturnAllPlayers(LobbyList(LobbyIndex))
+102    Set LobbyList(LobbyIndex).Scenario = Nothing
+104    Call ModLobby.UpdateLobbyState(LobbyList(LobbyIndex), e_LobbyState.UnInitilized)
 118    Call ClearMap
     Exit Sub
 CloseScenario_Err:
@@ -377,6 +378,10 @@ Private Function IsForbidden(ByVal ItemId As Integer) As Boolean
     Next i
     IsForbidden = False
 End Function
+
+Public Sub IBaseScenario_SetLobbyIndex(ByVal Value As Integer)
+    LobbyIndex = Value
+End Sub
 
 Public Function IBaseScenario_GetScenarioName() As String
     IBaseScenario_GetScenarioName = "Abordaje"
@@ -442,7 +447,7 @@ Public Sub IBaseScenario_WillSummonPlayer(ByVal UserIndex As Integer)
             End If
         End If
     End With
-    GenericGlobalLobby.SummonCoordinates = SpawnPos
+    LobbyList(LobbyIndex).SummonCoordinates = SpawnPos
     Call RefillPotions(UserIndex)
 End Sub
 
@@ -451,7 +456,7 @@ Public Sub IBaseScenario_UpdateLobbyState(ByVal oldState As e_LobbyState, ByRef 
         Exit Sub
     End If
     If NewState = InProgress Then
-        Call ModLobby.SummonAll(GenericGlobalLobby)
+        Call ModLobby.SummonAll(LobbyList(LobbyIndex))
         Call SetTimer(CountdownTimer, 1000)
     End If
     If NewState = Closed Then
@@ -473,7 +478,7 @@ Public Sub IBaseScenario_Update()
     Dim frametime As Long
     frametime = GetTickCount() - LastFrameTime
     LastFrameTime = GetTickCount()
-    If GenericGlobalLobby.State = e_LobbyState.InProgress Then
+    If LobbyList(LobbyIndex).State = e_LobbyState.InProgress Then
         If CountdownTimer.Occurrences < 10 Then
             If UpdateTime(CountdownTimer, frametime) Then
                 If CountdownTimer.Occurrences >= 10 Then
@@ -501,7 +506,7 @@ Public Sub IBaseScenario_Update()
                 Call BroadcastPendingTime(frametime)
             End If
         End If
-    ElseIf GenericGlobalLobby.State = e_LobbyState.Completed Then
+    ElseIf LobbyList(LobbyIndex).State = e_LobbyState.Completed Then
         If CountdownTimer.Occurrences < 10 Then
             If UpdateTime(CountdownTimer, frametime) Then
                 If CountdownTimer.Occurrences >= 10 Then
@@ -513,12 +518,12 @@ Public Sub IBaseScenario_Update()
             End If
             Exit Sub
         End If
-    ElseIf GenericGlobalLobby.State = e_LobbyState.AcceptingPlayers And GenericGlobalLobby.IsPublic Then
+    ElseIf LobbyList(LobbyIndex).State = e_LobbyState.AcceptingPlayers And LobbyList(LobbyIndex).IsPublic Then
         If UpdateTime(BroadOpenEvent, frametime) Then
             Call BroadcastOpenEvent
         End If
         
-    ElseIf GenericGlobalLobby.State = e_LobbyState.Closed Then
+    ElseIf LobbyList(LobbyIndex).State = e_LobbyState.Closed Then
         Call CloseScenario
     End If
 End Sub
@@ -583,17 +588,19 @@ Private Sub Respawn(ByVal player As Integer)
 End Sub
 
 Private Sub MatchCompleted()
-    Call GiveRewards
+    If Not LobbyList(LobbyIndex).Canceled Then
+        Call GiveRewards
+    End If
     MapInfo(MapNumbers(0)).Seguro = 1
     MapInfo(MapNumbers(1)).Seguro = 1
     Call SetTimer(CountdownTimer, 1000)
     Dim i As Integer
-    For i = 0 To GenericGlobalLobby.RegisteredPlayers - 1
-        If IsValidUserRef(GenericGlobalLobby.Players(i).user) Then
-            Call RemoveForbiddenItems(GenericGlobalLobby.Players(i).user.ArrayIndex)
+    For i = 0 To LobbyList(LobbyIndex).RegisteredPlayers - 1
+        If IsValidUserRef(LobbyList(LobbyIndex).Players(i).user) Then
+            Call RemoveForbiddenItems(LobbyList(LobbyIndex).Players(i).user.ArrayIndex)
         End If
     Next i
-    GenericGlobalLobby.State = Completed
+    LobbyList(LobbyIndex).State = Completed
     ElapsedTime = MaxTime
     Call CustomScenarios.ClearMap(MapNumbers(0))
     Call CustomScenarios.ClearMap(MapNumbers(1))
@@ -607,7 +614,7 @@ Private Sub MatchCompleted()
 End Sub
 
 Private Sub BroadcastOpenEvent()
-    Call BroadcastOpenLobby(GenericGlobalLobby)
+    Call BroadcastOpenLobby(LobbyList(LobbyIndex))
 End Sub
 
 Private Sub BroadcastPendingTime(ByVal frametime As Long)
@@ -704,7 +711,7 @@ End Sub
 
 Private Sub ConfigMapLobby()
     Dim i As Integer
-    Call ModLobby.SetTeamCount(GenericGlobalLobby, 2, GenericGlobalLobby.TeamType)
+    Call ModLobby.SetTeamCount(LobbyList(LobbyIndex), 2, LobbyList(LobbyIndex).TeamType)
     For i = 0 To UBound(MapNumbers)
         MapInfo(MapNumbers(i)).Seguro = 1
         MapInfo(MapNumbers(i)).SinInviOcul = True
@@ -1139,29 +1146,29 @@ Sub GiveRewards()
     Dim Team2 As String
     Dim Reward As Long
     Dim TeamSize As Integer
-    If GenericGlobalLobby.AvailableInscriptionMoney > 0 Then
-        GenericGlobalLobby.AvailableInscriptionMoney = GenericGlobalLobby.AvailableInscriptionMoney * 0.95
+    If LobbyList(LobbyIndex).AvailableInscriptionMoney > 0 Then
+        LobbyList(LobbyIndex).AvailableInscriptionMoney = LobbyList(LobbyIndex).AvailableInscriptionMoney * 0.95
     End If
     Dim i As Integer
-    For i = 0 To GenericGlobalLobby.RegisteredPlayers - 1
-        If IsValidUserRef(GenericGlobalLobby.Players(i).user) Then
-            If GenericGlobalLobby.Players(i).team = 1 Then
-                Team1 = Team1 & UserList(GenericGlobalLobby.Players(i).user.ArrayIndex).name & " "
-            ElseIf GenericGlobalLobby.Players(i).team = 2 Then
-                Team2 = Team2 & UserList(GenericGlobalLobby.Players(i).user.ArrayIndex).name & " "
+    For i = 0 To LobbyList(LobbyIndex).RegisteredPlayers - 1
+        If IsValidUserRef(LobbyList(LobbyIndex).Players(i).user) Then
+            If LobbyList(LobbyIndex).Players(i).team = 1 Then
+                Team1 = Team1 & UserList(LobbyList(LobbyIndex).Players(i).user.ArrayIndex).name & " "
+            ElseIf LobbyList(LobbyIndex).Players(i).team = 2 Then
+                Team2 = Team2 & UserList(LobbyList(LobbyIndex).Players(i).user.ArrayIndex).name & " "
             End If
-            If GenericGlobalLobby.Players(i).team = Winner Then
+            If LobbyList(LobbyIndex).Players(i).team = Winner Then
                 TeamSize = TeamSize + 1
             End If
         End If
     Next i
-    If GenericGlobalLobby.AvailableInscriptionMoney > 0 Then
-        Reward = GenericGlobalLobby.AvailableInscriptionMoney / TeamSize
+    If LobbyList(LobbyIndex).AvailableInscriptionMoney > 0 Then
+        Reward = LobbyList(LobbyIndex).AvailableInscriptionMoney / TeamSize
     End If
-    For i = 0 To GenericGlobalLobby.RegisteredPlayers - 1
-        If IsValidUserRef(GenericGlobalLobby.Players(i).user) Then
-            If GenericGlobalLobby.Players(i).team = Winner Then
-                Call GiveGoldToPlayer(GenericGlobalLobby, i, Reward)
+    For i = 0 To LobbyList(LobbyIndex).RegisteredPlayers - 1
+        If IsValidUserRef(LobbyList(LobbyIndex).Players(i).user) Then
+            If LobbyList(LobbyIndex).Players(i).team = Winner Then
+                Call GiveGoldToPlayer(LobbyList(LobbyIndex), i, Reward)
             End If
         End If
     Next i

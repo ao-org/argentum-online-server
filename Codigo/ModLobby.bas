@@ -79,6 +79,7 @@ Type t_Lobby
     NextTeamId As Integer
     InscriptionPrice As Long
     AvailableInscriptionMoney As Long
+    Canceled As Boolean
 End Type
 
 Public Type t_response
@@ -115,8 +116,10 @@ Public Enum e_LobbyCommandId
     eAddPlayer
     eSetInscriptionPrice
 End Enum
-Public GenericGlobalLobby As t_Lobby
+Public GlobalLobbyIndex As Integer
 Public CurrentActiveEventType As e_EventType
+Const LobbyCount = 200
+Public LobbyList(0 To LobbyCount) As t_Lobby
 
 Public Sub InitializeLobby(ByRef instance As t_Lobby)
     instance.MinLevel = 1
@@ -133,6 +136,7 @@ Public Sub InitializeLobby(ByRef instance As t_Lobby)
     instance.NextTeamId = 1
     instance.AvailableInscriptionMoney = 0
     instance.InscriptionPrice = 0
+    instance.Canceled = False
 End Sub
 
 Public Sub SetSummonCoordinates(ByRef instance As t_Lobby, ByVal map As Integer, ByVal posX As Integer, ByVal posY As Integer)
@@ -412,6 +416,7 @@ End Sub
 
 Public Sub CancelLobby(ByRef instance As t_Lobby)
 On Error GoTo CancelLobby_Err
+       instance.Canceled = True
        If instance.InscriptionPrice > 0 Then
             Dim i As Integer
             For i = 0 To instance.RegisteredPlayers - 1
@@ -498,8 +503,8 @@ Public Sub BroadcastOpenLobby(ByRef instance As t_Lobby)
              EventName = instance.Scenario.GetScenarioName()
         End If
     Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MsgOpenEventBroadcast, EventName, e_FontTypeNames.FONTTYPE_GUILD))
-    If GenericGlobalLobby.InscriptionPrice > 0 Then
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MsgBoardcastInscriptionPrice, GenericGlobalLobby.InscriptionPrice, e_FontTypeNames.FONTTYPE_GUILD))
+    If LobbyList(LobbyIndex).InscriptionPrice > 0 Then
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MsgBoardcastInscriptionPrice, LobbyList(LobbyIndex).InscriptionPrice, e_FontTypeNames.FONTTYPE_GUILD))
     End If
 End Sub
 
@@ -638,7 +643,7 @@ Public Sub StartLobby(ByRef instance As t_Lobby, ByVal UserIndex As Integer)
     If instance.TeamSize > 0 And instance.TeamType = eRandom Then
         Call SortTeams(instance)
     End If
-    Call ModLobby.UpdateLobbyState(GenericGlobalLobby, e_LobbyState.InProgress)
+    Call ModLobby.UpdateLobbyState(LobbyList(LobbyIndex), e_LobbyState.InProgress)
     Call WriteConsoleMsg(UserIndex, "Evento iniciado", e_FontTypeNames.FONTTYPE_INFO)
 End Sub
 
@@ -652,34 +657,34 @@ On Error GoTo HandleRemoteLobbyCommand_Err
     With UserList(UserIndex)
     Select Case Command
             Case e_LobbyCommandId.eSetSpawnPos
-110             Call SetSummonCoordinates(GenericGlobalLobby, .pos.map, .pos.x, .pos.y)
+110             Call SetSummonCoordinates(LobbyList(LobbyIndex), .pos.Map, .pos.x, .pos.y)
             Case e_LobbyCommandId.eEndEvent
-120             Call CancelLobby(GenericGlobalLobby)
+120             Call CancelLobby(LobbyList(LobbyIndex))
             Case e_LobbyCommandId.eReturnAllSummoned
-128             Call ModLobby.ReturnAllPlayers(GenericGlobalLobby)
+128             Call ModLobby.ReturnAllPlayers(LobbyList(LobbyIndex))
             Case e_LobbyCommandId.eReturnSinglePlayer
-132             Call ModLobby.ReturnPlayer(GenericGlobalLobby, Arguments(0))
+132             Call ModLobby.ReturnPlayer(LobbyList(LobbyIndex), Arguments(0))
              Case e_LobbyCommandId.eSetClassLimit
-136             Call ModLobby.SetClassFilter(GenericGlobalLobby, Arguments(0))
+136             Call ModLobby.SetClassFilter(LobbyList(LobbyIndex), Arguments(0))
              Case e_LobbyCommandId.eSetMaxLevel
-140             Call ModLobby.SetMaxLevel(GenericGlobalLobby, Arguments(0))
+140             Call ModLobby.SetMaxLevel(LobbyList(LobbyIndex), Arguments(0))
              Case e_LobbyCommandId.eSetMinLevel
-144              Call ModLobby.SetMinLevel(GenericGlobalLobby, Arguments(0))
+144              Call ModLobby.SetMinLevel(LobbyList(LobbyIndex), Arguments(0))
              Case e_LobbyCommandId.eOpenLobby
-148             RetValue = ModLobby.OpenLobby(GenericGlobalLobby, Arguments(0), UserIndex)
+148             RetValue = ModLobby.OpenLobby(LobbyList(LobbyIndex), Arguments(0), UserIndex)
             Case e_LobbyCommandId.eStartEvent
-158             Call StartLobby(GenericGlobalLobby, UserIndex)
+158             Call StartLobby(LobbyList(LobbyIndex), UserIndex)
             Case e_LobbyCommandId.eSummonAll
-164             Call ModLobby.SummonAll(GenericGlobalLobby)
+164             Call ModLobby.SummonAll(LobbyList(LobbyIndex))
             Case e_LobbyCommandId.eSummonSinglePlayer
-168            Call ModLobby.SummonPlayer(GenericGlobalLobby, Arguments(0))
+168            Call ModLobby.SummonPlayer(LobbyList(LobbyIndex), Arguments(0))
             Case e_LobbyCommandId.eListPlayers
-172             Call ModLobby.ListPlayers(GenericGlobalLobby, UserIndex)
+172             Call ModLobby.ListPlayers(LobbyList(LobbyIndex), UserIndex)
             Case e_LobbyCommandId.eForceReset
-176             Call ModLobby.ForceReset(GenericGlobalLobby)
+176             Call ModLobby.ForceReset(LobbyList(LobbyIndex))
 178             Call WriteConsoleMsg(UserIndex, "Reset done.", e_FontTypeNames.FONTTYPE_INFO)
             Case e_LobbyCommandId.eSetTeamSize
-182             Call ModLobby.SetTeamSize(GenericGlobalLobby, Arguments(0), Arguments(1))
+182             Call ModLobby.SetTeamSize(LobbyList(LobbyIndex), Arguments(0), Arguments(1))
 184             Call WriteConsoleMsg(UserIndex, "Team size set.", e_FontTypeNames.FONTTYPE_INFO)
             Case e_LobbyCommandId.eAddPlayer
 186             tUser = NameIndex(Params)
@@ -688,7 +693,7 @@ On Error GoTo HandleRemoteLobbyCommand_Err
 192                 HandleRemoteLobbyCommand = False
 194                 Exit Function
 196             End If
-198             RetValue = ModLobby.AddPlayerOrGroup(GenericGlobalLobby, tUser.ArrayIndex)
+198             RetValue = ModLobby.AddPlayerOrGroup(LobbyList(LobbyIndex), tUser.ArrayIndex)
 200             If Not RetValue.Success Then
 202                 Call WriteConsoleMsg(UserIndex, "Failed to add player with message:", e_FontTypeNames.FONTTYPE_INFO)
 204                 Call WriteLocaleMsg(UserIndex, RetValue.Message, e_FontTypeNames.FONTTYPE_INFO)
@@ -697,7 +702,7 @@ On Error GoTo HandleRemoteLobbyCommand_Err
 210             End If
 212             Call WriteLocaleMsg(tUser.ArrayIndex, RetValue.Message, e_FontTypeNames.FONTTYPE_INFO)
             Case e_LobbyCommandId.eSetInscriptionPrice
-                If SetIncriptionPrice(GenericGlobalLobby, Arguments(0)) Then
+                If SetIncriptionPrice(LobbyList(LobbyIndex), Arguments(0)) Then
                     Call WriteConsoleMsg(UserIndex, "Inscription Price updated", e_FontTypeNames.FONTTYPE_INFO)
                 Else
                     Call WriteConsoleMsg(UserIndex, "Failed to update insription price", e_FontTypeNames.FONTTYPE_INFO)

@@ -257,16 +257,19 @@ UserCanDropItem_Err:
     Call TraceError(Err.Number, Err.Description, "CustomScenarios.UserCanDropItem", Erl)
 End Function
 
-Public Sub PrepareNewEvent(ByVal eventType As e_EventType)
+Public Sub PrepareNewEvent(ByVal eventType As e_EventType, ByVal LobbyIndex As Integer)
 On Error GoTo PrepareNewEvent_Err:
     Select Case EventType
         Case e_EventType.NpcHunt
-            Set GenericGlobalLobby.scenario = New ScenarioHunt
+            Set LobbyList(LobbyIndex).Scenario = New ScenarioHunt
         Case e_EventType.DeathMatch
-            Set GenericGlobalLobby.scenario = New ScenarioDeathMatch
+            Set LobbyList(LobbyIndex).Scenario = New ScenarioDeathMatch
         Case e_EventType.NavalBattle
-            Set GenericGlobalLobby.Scenario = New NavalBoarding
+            Set LobbyList(LobbyIndex).Scenario = New NavalBoarding
     End Select
+    If Not LobbyList(LobbyIndex).Scenario Is Nothing Then
+        LobbyList(LobbyIndex).Scenario.SetLobbyIndex (LobbyIndex)
+    End If
     Exit Sub
 PrepareNewEvent_Err:
     Call TraceError(Err.Number, Err.Description, "CustomScenarios.PrepareNewEvent", Erl)
@@ -296,16 +299,16 @@ Public Function IsEventActive() As Boolean
     If CurrentActiveEventType = CaptureTheFlag Then
         IsEventActive = Not InstanciaCaptura Is Nothing
     Else
-        IsEventActive = GenericGlobalLobby.State > e_LobbyState.UnInitilized And GenericGlobalLobby.State < Completed
+        IsEventActive = LobbyList(GlobalLobbyIndex).State > e_LobbyState.UnInitilized And LobbyList(GlobalLobbyIndex).State < Completed
     End If
 End Function
 
 Public Sub UserDisconnected(ByVal mapNumber As Integer, ByVal userIndex As Integer)
-    Call RegisterDisconnectedUser(GenericGlobalLobby, userIndex)
+    Call RegisterDisconnectedUser(LobbyList(GlobalLobbyIndex), UserIndex)
 End Sub
 
 Public Sub UserConnected(ByVal userIndex)
-    Call RegisterReconnectedUser(GenericGlobalLobby, userIndex)
+    Call RegisterReconnectedUser(LobbyList(GlobalLobbyIndex), UserIndex)
 End Sub
 
 Public Sub GetNextWaypointForNpc(ByVal NpcIndex As Integer, ByRef PosX As Integer, ByRef PosY As Integer)

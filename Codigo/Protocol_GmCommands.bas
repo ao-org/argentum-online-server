@@ -4559,7 +4559,7 @@ Public Sub HandleCancelarEvento(ByVal UserIndex As Integer)
             Call InstanciaCaptura.finalizarCaptura
         End If
     Else
-        Call CancelLobby(GenericGlobalLobby)
+        Call CancelLobby(LobbyList(GlobalLobbyIndex))
         Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos» El evento ha sido cancelado.", e_FontTypeNames.FONTTYPE_GUILD))
     End If
     Exit Sub
@@ -4882,11 +4882,11 @@ On Error GoTo ErrHandler
                 Call WriteConsoleMsg(UserIndex, "El nivel minimo debe ser menor al maximo.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
-            Call InitializeLobby(GenericGlobalLobby)
-            Call ModLobby.SetMinLevel(GenericGlobalLobby, MinLevel)
-            Call ModLobby.SetMaxLevel(GenericGlobalLobby, MaxLevel)
-            Call ModLobby.SetMaxPlayers(GenericGlobalLobby, MaxPlayers)
-            Call CustomScenarios.PrepareNewEvent(eventType)
+            Call InitializeLobby(LobbyList(GlobalLobbyIndex))
+            Call ModLobby.SetMinLevel(LobbyList(GlobalLobbyIndex), MinLevel)
+            Call ModLobby.SetMaxLevel(LobbyList(GlobalLobbyIndex), MaxLevel)
+            Call ModLobby.SetMaxPlayers(LobbyList(GlobalLobbyIndex), MaxPlayers)
+            Call CustomScenarios.PrepareNewEvent(eventType, GlobalLobbyIndex)
             Call WriteConsoleMsg(UserIndex, "Se creo el lobby, recorda que tenes que abrirlo para que se pueda anotar gente.", e_FontTypeNames.FONTTYPE_INFO)
             Call LogGM(.name, "Inicio un Lobby")
         End If
