@@ -850,7 +850,7 @@ Sub HechizoInvocacion(ByVal UserIndex As Integer, ByRef b As Boolean)
                                 Index = -1
                                 MinTiempo = 0
                             End If
-                        Else
+                        ElseIf .MascotasType(j) = 0 Then
                             Index = -1
                             MinTiempo = 0
                         End If
