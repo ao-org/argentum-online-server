@@ -53,7 +53,7 @@ Public Function UserCanAttack(ByVal UserIndex As Integer, ByVal UserVersionId, B
     If Reference.RefType = eUser Then
         UserCanAttack = UserMod.CanAttackUser(UserIndex, UserVersionId, Reference.ArrayIndex, Reference.VersionId)
     Else
-        UserCanAttack = UserCanAttackNpc(UserIndex, Reference.ArrayIndex).CanAttack
+        UserCanAttack = UserCanAttackNpc(UserIndex, Reference.ArrayIndex).result
     End If
 End Function
 
