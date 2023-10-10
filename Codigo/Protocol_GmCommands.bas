@@ -2035,7 +2035,6 @@ Public Sub HandleForgive(ByVal UserIndex As Integer)
                 Exit Sub
             Else
                 Call WriteChatOverHead(UserIndex, "Para volver a ser un ciudadano deberás donar 10.000 monedas de oro.", priest.Char.charindex, vbWhite)
-                Exit Sub
             End If
                         
             Dim permitePerdon As Boolean
