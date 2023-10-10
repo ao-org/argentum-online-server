@@ -837,7 +837,7 @@ Sub HechizoInvocacion(ByVal UserIndex As Integer, ByRef b As Boolean)
                                         Exit For
                                     End If
                                 
-                                    If NpcList(.MascotasIndex(j).ArrayIndex).Contadores.TiempoExistencia < MinTiempo Then
+                                    If NpcList(.MascotasIndex(j).ArrayIndex).Contadores.TiempoExistencia > 0 And NpcList(.MascotasIndex(j).ArrayIndex).Contadores.TiempoExistencia < MinTiempo Then
                                         Index = j
                                         MinTiempo = NpcList(.MascotasIndex(j).ArrayIndex).Contadores.TiempoExistencia
                                     End If
