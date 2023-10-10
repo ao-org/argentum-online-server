@@ -860,34 +860,30 @@ Sub HechizoInvocacion(ByVal UserIndex As Integer, ByRef b As Boolean)
                             Call QuitarNPC(.MascotasIndex(Index).ArrayIndex, eSummonNew)
                         End If
                     End If
-                Next i
-        
-134             For j = 1 To Hechizos(h).cant
-
-136                 If .NroMascotas < MAXMASCOTAS Then
-138                     ind = SpawnNpc(Hechizos(h).NumNpc, targetPos, True, False, False, UserIndex)
-140                     If ind > 0 Then
-142                         .NroMascotas = .NroMascotas + 1
-                        
-144                         Index = FreeMascotaIndex(UserIndex)
-                        
-146                         Call SetNpcRef(.MascotasIndex(Index), ind)
-148                         .MascotasType(Index) = NpcList(ind).Numero
-                        
-150                         Call SetUserRef(NpcList(ind).MaestroUser, userIndex)
-152                         NpcList(ind).Contadores.TiempoExistencia = IntervaloInvocacion
-154                         NpcList(ind).GiveGLD = 0
+                    If .NroMascotas < MAXMASCOTAS Then
+                        ind = SpawnNpc(Hechizos(h).NumNpc, TargetPos, True, False, False, UserIndex)
+                        If ind > 0 Then
+                            .NroMascotas = .NroMascotas + 1
+                            
+                            Index = FreeMascotaIndex(UserIndex)
+                            
+                            Call SetNpcRef(.MascotasIndex(Index), ind)
+                            .MascotasType(Index) = NpcList(ind).Numero
+                            
+                            Call SetUserRef(NpcList(ind).MaestroUser, UserIndex)
+                            NpcList(ind).Contadores.TiempoExistencia = IntervaloInvocacion
+                            NpcList(ind).GiveGLD = 0
                             If IsFeatureEnabled("addjust-npc-with-caster") And IsSet(Hechizos(h).Effects, AdjustStatsWithCaster) Then
                                 Call AdjustNpcStatWithCasterLevel(UserIndex, ind)
                             End If
-156                         Call FollowAmo(ind)
+                            Call FollowAmo(ind)
                         Else
                             Exit Sub
                         End If
                     Else
                         Exit For
                     End If
-158             Next j
+                Next i
             
 160             Call InfoHechizo(UserIndex)
 162             b = True
