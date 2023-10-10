@@ -2088,7 +2088,7 @@ UserCanAttackNpc.TurnPK = False
      ' El seguro es SOLO para ciudadanos. La armada debe desenlistarse antes de querer atacar y se checkea arriba.
      ' Los criminales o Caos, ya estan mas alla del seguro.
 164  If Status(UserIndex) = Ciudadano Then
-166     If NpcList(NpcIndex).flags.Faccion = Armada Then
+166     If NpcList(NpcIndex).flags.Faccion = Armada Or NpcList(NpcIndex).flags.Faccion = Consejo Then
 168         If UserList(UserIndex).flags.Seguro Then
 172             UserCanAttackNpc.Result = eRemoveSafe
                 Exit Function
@@ -2099,7 +2099,8 @@ UserCanAttackNpc.TurnPK = False
                 Exit Function
              End If
         End If
-         
+    End If
+    If Status(UserIndex) = Ciudadano Or Status(UserIndex) = Armada Or Status(UserIndex) = Consejo Then
         'Es el NPC mascota de alguien?
 180     If IsPet Then
 182         Select Case UserList(NpcList(NpcIndex).MaestroUser.ArrayIndex).Faccion.Status
@@ -2145,7 +2146,8 @@ UserCanAttackNpc.TurnPK = False
                    If CurrentOwnerIndex <> UserIndex And IsValidNpcRef(UserList(CurrentOwnerIndex).flags.NPCAtacado) Then
                        If UserList(CurrentOwnerIndex).flags.NPCAtacado.ArrayIndex = NpcIndex And _
                           UserList(CurrentOwnerIndex).flags.Muerto = 0 And _
-                          Status(CurrentOwnerIndex) = Ciudadano And _
+                          (Status(CurrentOwnerIndex) = Ciudadano Or Status(CurrentOwnerIndex) = Armada Or Status(CurrentOwnerIndex) = Consejo) And _
+                          Distancia(UserList(CurrentOwnerIndex).pos, UserList(UserIndex).pos) < 20 And _
                           (UserList(UserIndex).GuildIndex = 0 Or UserList(UserIndex).GuildIndex <> UserList(CurrentOwnerIndex).GuildIndex) And _
                           (UserList(UserIndex).Grupo.EnGrupo = False Or UserList(UserIndex).Grupo.id <> UserList(CurrentOwnerIndex).Grupo.id) Then
                            
