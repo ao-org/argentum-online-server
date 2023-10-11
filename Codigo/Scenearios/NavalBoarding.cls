@@ -146,48 +146,59 @@ Dim RespawnHPPotAmount As Integer
 Dim Winner As Integer
 Dim LobbyIndex As Integer
 
-Private Sub Class_Initialize()
+Friend Sub Class_Initialize()
     On Error GoTo NavalBoarding_Initialize_Err:
 100     Debug.Assert FileExist(DatPath & configPath)
         Dim ScenarioIni As clsIniManager
         Dim WpCount As Byte
+        Dim OriginalTop As Integer
+        Dim OriginalBottom As Integer
+        Dim Translations(1) As t_TranslationMapping
 102     Set ScenarioIni = New clsIniManager
 104     Call ScenarioIni.Initialize(DatPath & configPath)
-106     MapNumbers(TopMapNumber) = val(ScenarioIni.GetValue("INIT", "MapNumber1"))
-108     MapNumbers(CargoMapNumber) = val(ScenarioIni.GetValue("INIT", "MapNumber2"))
-110     MaxTime = val(ScenarioIni.GetValue("INIT", "MaxTime"))
-112     Team1SpawnX = val(ScenarioIni.GetValue("INIT", "Team1SpawnX"))
-114     Team2SpawnX = val(ScenarioIni.GetValue("INIT", "Team2SpawnX"))
-116     RespawnWp = val(ScenarioIni.GetValue("RESPAWN", "Waypoint"))
-118     PlayerMinRespawnTime = val(ScenarioIni.GetValue("RESPAWN", "PlayerMinRespawnTime"))
-120     RespawnInterval = val(ScenarioIni.GetValue("RESPAWN", "RespawnInterval"))
-122     MaxTime = MaxTime * 1000
-124     RespawnInterval = RespawnInterval * 1000
-126     PlayerMinRespawnTime = PlayerMinRespawnTime * 1000
-128     WpCount = val(ScenarioIni.GetValue("INIT", "WaypointCount"))
-130     CaptianNpcId = val(ScenarioIni.GetValue("CaptainNpc", "NpcId"))
-132     MinFireTime = val(ScenarioIni.GetValue("INIT", "MinFireTime"))
-134     MaxFireTime = val(ScenarioIni.GetValue("INIT", "MaxFireTime"))
-136     FireStartTime = val(ScenarioIni.GetValue("INIT", "FireStartTime"))
-138     ManaPotId = val(ScenarioIni.GetValue("INIT", "ManaPotionsId"))
-140     HpPotId = val(ScenarioIni.GetValue("INIT", "HPPotionId"))
-142     RespawnHPPotAmount = val(ScenarioIni.GetValue("INIT", "RespawnHPPotAmount"))
-144     RespawnManaPotAmount = val(ScenarioIni.GetValue("INIT", "RespawnManaPotAmount"))
-146     Call LoadTeamWeapoints(1, Team1Waypoints, WpCount, ScenarioIni)
-148     Call LoadTeamWeapoints(2, Team2Waypoints, WpCount, ScenarioIni)
-150     Call LoadForbidenItems(ScenarioIni)
-152     Call LoadTileBlock(TileBlocks, ScenarioIni)
-154     UpdateIndex = AddUpdateScenario(Me)
-156     Call CustomScenarios.SetCustomScenario(MapNumbers(0), Me)
-158     Call CustomScenarios.SetCustomScenario(MapNumbers(1), Me)
-160     Call ConfigMapLobby
-162     Call LoadNpcSpawnInfo(NpcSpawnList, ScenarioIni)
-164     Call LoadTeamCargo(TeamCargo(1), 1, ScenarioIni)
-166     Call LoadTeamCargo(TeamCargo(2), 2, ScenarioIni)
-        Call SetTimer(BroadOpenEvent, 15000)
+106     OriginalTop = val(ScenarioIni.GetValue("INIT", "MapNumber1"))
+108     OriginalBottom = val(ScenarioIni.GetValue("INIT", "MapNumber2"))
+110     MapNumbers(TopMapNumber) = InstanceManager.GetNextAvailableInstance
+112     MapNumbers(CargoMapNumber) = InstanceManager.GetNextAvailableInstance
+114     Translations(0).OriginalTarget = OriginalBottom
+116     Translations(0).NewTarget = MapNumbers(CargoMapNumber)
+118     Call InstanceManager.CloneMapWithTranslations(OriginalTop, MapNumbers(TopMapNumber), Translations)
+120     Translations(0).OriginalTarget = OriginalTop
+122     Translations(0).NewTarget = MapNumbers(TopMapNumber)
+124     Call InstanceManager.CloneMapWithTranslations(OriginalBottom, MapNumbers(CargoMapNumber), Translations)
+126     MaxTime = val(ScenarioIni.GetValue("INIT", "MaxTime"))
+128     Team1SpawnX = val(ScenarioIni.GetValue("INIT", "Team1SpawnX"))
+130     Team2SpawnX = val(ScenarioIni.GetValue("INIT", "Team2SpawnX"))
+132     RespawnWp = val(ScenarioIni.GetValue("RESPAWN", "Waypoint"))
+134     PlayerMinRespawnTime = val(ScenarioIni.GetValue("RESPAWN", "PlayerMinRespawnTime"))
+136     RespawnInterval = val(ScenarioIni.GetValue("RESPAWN", "RespawnInterval"))
+138     MaxTime = MaxTime * 1000
+140     RespawnInterval = RespawnInterval * 1000
+142     PlayerMinRespawnTime = PlayerMinRespawnTime * 1000
+144     WpCount = val(ScenarioIni.GetValue("INIT", "WaypointCount"))
+146     CaptianNpcId = val(ScenarioIni.GetValue("CaptainNpc", "NpcId"))
+148     MinFireTime = val(ScenarioIni.GetValue("INIT", "MinFireTime"))
+150     MaxFireTime = val(ScenarioIni.GetValue("INIT", "MaxFireTime"))
+152     FireStartTime = val(ScenarioIni.GetValue("INIT", "FireStartTime"))
+154     ManaPotId = val(ScenarioIni.GetValue("INIT", "ManaPotionsId"))
+156     HpPotId = val(ScenarioIni.GetValue("INIT", "HPPotionId"))
+158     RespawnHPPotAmount = val(ScenarioIni.GetValue("INIT", "RespawnHPPotAmount"))
+160     RespawnManaPotAmount = val(ScenarioIni.GetValue("INIT", "RespawnManaPotAmount"))
+162     Call LoadTeamWeapoints(1, Team1Waypoints, WpCount, ScenarioIni)
+164     Call LoadTeamWeapoints(2, Team2Waypoints, WpCount, ScenarioIni)
+166     Call LoadForbidenItems(ScenarioIni)
+168     Call LoadTileBlock(TileBlocks, ScenarioIni)
+170     UpdateIndex = AddUpdateScenario(Me)
+172     Call CustomScenarios.SetCustomScenario(MapNumbers(0), Me)
+174     Call CustomScenarios.SetCustomScenario(MapNumbers(1), Me)
+176     Call ConfigMapLobby
+178     Call LoadNpcSpawnInfo(NpcSpawnList, ScenarioIni)
+180     Call LoadTeamCargo(TeamCargo(1), 1, ScenarioIni)
+182     Call LoadTeamCargo(TeamCargo(2), 2, ScenarioIni)
+184     Call SetTimer(BroadOpenEvent, 15000)
         Exit Sub
 NavalBoarding_Initialize_Err:
-168 Call TraceError(Err.Number, Err.Description, "NavalBoarding.Initialize ", Erl)
+186 Call TraceError(Err.Number, Err.Description, "NavalBoarding.Initialize ", Erl)
 End Sub
 
 Private Sub LoadTileBlock(ByRef Tiles() As t_TilePos, ScenearioIni As clsIniManager)
@@ -347,7 +358,11 @@ On Error GoTo CloseScenario_Err:
 100    Call ModLobby.ReturnAllPlayers(LobbyList(LobbyIndex))
 102    Set LobbyList(LobbyIndex).Scenario = Nothing
 104    Call ModLobby.UpdateLobbyState(LobbyList(LobbyIndex), e_LobbyState.UnInitilized)
-118    Call ClearMap
+106    Call ClearMap
+108    If MapNumbers(TopMapNumber) > 0 Then Call ReleaseInstance(MapNumbers(TopMapNumber))
+110    MapNumbers(TopMapNumber) = 0
+112    If MapNumbers(CargoMapNumber) > 0 Then Call ReleaseInstance(MapNumbers(CargoMapNumber))
+114    MapNumbers(CargoMapNumber) = 0
     Exit Sub
 CloseScenario_Err:
     Call TraceError(Err.Number, Err.Description, "NavalBoarding.CloseScenario ", Erl)

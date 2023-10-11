@@ -805,6 +805,7 @@ Public Sub WriteChangeMap(ByVal UserIndex As Integer, ByVal Map As Integer)
         '</EhHeader>
 100     Call Writer.WriteInt16(ServerPacketID.echangeMap)
 102     Call Writer.WriteInt16(Map)
+104     Call Writer.WriteInt16(MapInfo(Map).MapResource)
 106     Call modSendData.SendData(ToIndex, UserIndex)
         '<EhFooter>
         Exit Sub
@@ -3750,7 +3751,7 @@ Public Sub WriteDatosGrupo(ByVal UserIndex As Integer)
 
 124                     If i = 1 Then
 126                         Call Writer.WriteString8(UserList(UserList( _
-                                    .Grupo.Lider.ArrayIndex).Grupo.Miembros(i).ArrayIndex).Name & "(Líder)")
+                                    .Grupo.Lider.ArrayIndex).Grupo.Miembros(i).ArrayIndex).name & "(Líder)")
                         Else
 128                         Call Writer.WriteString8(UserList(UserList( _
                                     .Grupo.Lider.ArrayIndex).Grupo.Miembros(i).ArrayIndex).name)

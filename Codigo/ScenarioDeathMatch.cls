@@ -268,32 +268,38 @@ On Error GoTo CloseScenario_Err:
 100    Call ModLobby.ReturnAllPlayers(LobbyList(LobbyIndex))
 102    Set LobbyList(LobbyIndex).Scenario = Nothing
 104    Call ModLobby.UpdateLobbyState(LobbyList(LobbyIndex), e_LobbyState.UnInitilized)
-118    Call ClearMap
+106    Call ClearMap
+108    If MapNumber > 0 Then
+110         Call ReleaseInstance(MapNumber)
+112         MapNumber = 0
+       End If
     Exit Sub
 CloseScenario_Err:
     Call TraceError(Err.Number, Err.Description, "ScenarioHunt.CloseScenario ", Erl)
 End Sub
 
 Private Sub ClearMap()
-On Error GoTo ClearMap_Err:
-106    CustomScenarios.RemoveCustomScenario (MapNumber)
-108    CustomScenarios.RemoveUpdateScenario (UpdateIndex)
-110    MapInfo(MapNumber).DropItems = MapDropItems
-112    MapInfo(MapNumber).Seguro = PrevMapState
-114    MapInfo(MapNumber).SafeFightMap = SafeFigthState
-115    MapInfo(MapNumber).FriendlyFire = FriendlyFireState
-116    Dim i As Integer
-118    For i = FightAreaTopLeft.X - 1 To FightAreaBottomRight.X + 1
-120        Call BlockAndInform(MapNumber, i, FightAreaTopLeft.y - 1, 0)
-122        Call BlockAndInform(MapNumber, i, FightAreaBottomRight.y + 1, 0)
-124    Next i
-126    For i = FightAreaTopLeft.y To FightAreaBottomRight.y
-128        Call BlockAndInform(MapNumber, FightAreaTopLeft.X - 1, i, 0)
-130        Call BlockAndInform(MapNumber, FightAreaBottomRight.X + 1, i, 0)
-132    Next i
+    On Error GoTo ClearMap_Err:
+100     CustomScenarios.RemoveCustomScenario (MapNumber)
+102     CustomScenarios.RemoveUpdateScenario (UpdateIndex)
+104     MapInfo(MapNumber).DropItems = MapDropItems
+106     MapInfo(MapNumber).Seguro = PrevMapState
+108     MapInfo(MapNumber).SafeFightMap = SafeFigthState
+110     MapInfo(MapNumber).FriendlyFire = FriendlyFireState
+        Dim i As Integer
+112     If FightAreaTopLeft.x < FightAreaBottomRight.x Then
+114         For i = FightAreaTopLeft.x - 1 To FightAreaBottomRight.x + 1
+116             Call BlockAndInform(MapNumber, i, FightAreaTopLeft.y - 1, 0)
+118             Call BlockAndInform(MapNumber, i, FightAreaBottomRight.y + 1, 0)
+120         Next i
+122         For i = FightAreaTopLeft.y To FightAreaBottomRight.y
+124             Call BlockAndInform(MapNumber, FightAreaTopLeft.x - 1, i, 0)
+126             Call BlockAndInform(MapNumber, FightAreaBottomRight.x + 1, i, 0)
+128         Next i
+        End If
     Exit Sub
 ClearMap_Err:
-    Call TraceError(Err.Number, Err.Description, "ScenarioHunt.ClearMap", Erl)
+130 Call TraceError(Err.Number, Err.Description, "ScenarioHunt.ClearMap", Erl)
 End Sub
 
 Private Function IsForbidden(ByVal itemId As Integer) As Boolean

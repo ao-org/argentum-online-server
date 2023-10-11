@@ -503,8 +503,8 @@ Public Sub BroadcastOpenLobby(ByRef instance As t_Lobby)
              EventName = instance.Scenario.GetScenarioName()
         End If
     Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MsgOpenEventBroadcast, EventName, e_FontTypeNames.FONTTYPE_GUILD))
-    If LobbyList(LobbyIndex).InscriptionPrice > 0 Then
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MsgBoardcastInscriptionPrice, LobbyList(LobbyIndex).InscriptionPrice, e_FontTypeNames.FONTTYPE_GUILD))
+    If instance.InscriptionPrice > 0 Then
+        Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MsgBoardcastInscriptionPrice, instance.InscriptionPrice, e_FontTypeNames.FONTTYPE_GUILD))
     End If
 End Sub
 
@@ -643,11 +643,11 @@ Public Sub StartLobby(ByRef instance As t_Lobby, ByVal UserIndex As Integer)
     If instance.TeamSize > 0 And instance.TeamType = eRandom Then
         Call SortTeams(instance)
     End If
-    Call ModLobby.UpdateLobbyState(LobbyList(LobbyIndex), e_LobbyState.InProgress)
+    Call ModLobby.UpdateLobbyState(instance, e_LobbyState.InProgress)
     Call WriteConsoleMsg(UserIndex, "Evento iniciado", e_FontTypeNames.FONTTYPE_INFO)
 End Sub
 
-Public Function HandleRemoteLobbyCommand(ByVal Command, ByVal Params As String, ByVal UserIndex As Integer) As Boolean
+Public Function HandleRemoteLobbyCommand(ByVal Command, ByVal Params As String, ByVal UserIndex As Integer, ByVal LobbyIndex As Integer) As Boolean
 On Error GoTo HandleRemoteLobbyCommand_Err
 100 Dim Arguments()    As String
     Dim RetValue As t_response

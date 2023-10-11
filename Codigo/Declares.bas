@@ -2749,6 +2749,7 @@ End Enum
 Type t_MapInfo
 
     map_name As String
+    MapResource As Integer
     backup_mode As Byte
     music_numberHi As Long
     music_numberLow As Long

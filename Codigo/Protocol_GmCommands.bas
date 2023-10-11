@@ -4751,7 +4751,7 @@ On Error GoTo HandleLobbyCommand_err
     Params = Reader.ReadString8()
 100 With UserList(UserIndex)
 102     If .flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios) Then
-104         If Not HandleRemoteLobbyCommand(Command, Params, UserIndex) Then
+104         If Not HandleRemoteLobbyCommand(Command, Params, UserIndex, GlobalLobbyIndex) Then
 106             Call WriteConsoleMsg(UserIndex, "Servidor » No se pudo procesar el comando.", e_FontTypeNames.FONTTYPE_INFO)
 108         End If
 110     Else

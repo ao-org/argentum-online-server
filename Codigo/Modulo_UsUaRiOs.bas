@@ -511,7 +511,12 @@ On Error GoTo Complete_ConnectUser_Err
             'Ladder Inmunidad
             
             .Counters.TiempoDeInmunidadParalisisNoMagicas = 0
-        
+            If MapInfo(.pos.Map).MapResource = 0 Then
+                 .pos.Map = Ciudades(.Hogar).Map
+                 .pos.x = Ciudades(.Hogar).x
+                 .pos.y = Ciudades(.Hogar).y
+            End If
+            
             'Mapa válido
 620         If Not MapaValido(.Pos.Map) Then
 625             Call WriteErrorMsg(UserIndex, "EL PJ se encuenta en un mapa invalido.")

@@ -93,40 +93,46 @@ Private Sub ConfigMapLobby()
 End Sub
 
 Private Sub Class_Initialize()
-On Error GoTo Hunt_Initialize_Err:
+    On Error GoTo Hunt_Initialize_Err:
         Dim validNpcCount As Integer
         Dim ScenarioIni As clsIniManager
-104     Set ScenarioIni = New clsIniManager
-        Debug.Assert FileExist(DatPath & configPath)
-        
-106     Call ScenarioIni.Initialize(DatPath & configPath)
-108     validNpcCount = val(ScenarioIni.GetValue("INIT", "TargetNpc"))
-112     MapNumber = val(ScenarioIni.GetValue("INIT", "MapNumber"))
+100     Set ScenarioIni = New clsIniManager
+102     Debug.Assert FileExist(DatPath & configPath)
+        Dim OriginalMap As Integer
+104     Call ScenarioIni.Initialize(DatPath & configPath)
+106     validNpcCount = val(ScenarioIni.GetValue("INIT", "TargetNpc"))
+108     OriginalMap = val(ScenarioIni.GetValue("INIT", "MapNumber"))
+110     MapNumber = InstanceManager.GetNextAvailableInstance
+112     Call InstanceManager.CloneMap(OriginalMap, MapNumber)
 114     MaxTime = val(ScenarioIni.GetValue("INIT", "MaxTime"))
-        MaxTime = MaxTime * 1000
-        PlayerRespawnTime = val(ScenarioIni.GetValue("INIT", "PlayerRespawnTime"))
-        PlayerRespawnTime = PlayerRespawnTime * 1000
-116     TargetScore = val(ScenarioIni.GetValue("INIT", "TargetScore"))
-118     Call RegisterNpc("TARGET", validNpcCount, MatchNpc, ScenarioIni)
-120     UpdateIndex = AddUpdateScenario(Me)
-122     Call CustomScenarios.SetCustomScenario(mapNumber, Me)
-124     LastBroadCastTime = 0
-        Call ConfigMapLobby
-        Call SetTimer(BroadOpenEvent, 15000)
+116     MaxTime = MaxTime * 1000
+118     PlayerRespawnTime = val(ScenarioIni.GetValue("INIT", "PlayerRespawnTime"))
+120     PlayerRespawnTime = PlayerRespawnTime * 1000
+122     TargetScore = val(ScenarioIni.GetValue("INIT", "TargetScore"))
+124     Call RegisterNpc("TARGET", validNpcCount, MatchNpc, ScenarioIni)
+126     UpdateIndex = AddUpdateScenario(Me)
+128     Call CustomScenarios.SetCustomScenario(MapNumber, Me)
+130     LastBroadCastTime = 0
+132     Call ConfigMapLobby
+134     Call SetTimer(BroadOpenEvent, 15000)
         Exit Sub
 Hunt_Initialize_Err:
-    Call TraceError(Err.Number, Err.Description, "ScenarioHunt.Initialize ", Erl)
+136 Call TraceError(Err.Number, Err.Description, "ScenarioHunt.Initialize ", Erl)
 End Sub
 
 Private Sub CloseScenario()
-On Error GoTo CloseScenario_Err:
+    On Error GoTo CloseScenario_Err:
 100    Call ModLobby.ReturnAllPlayers(LobbyList(LobbyIndex))
 102    Set LobbyList(LobbyIndex).Scenario = Nothing
 104    Call ModLobby.UpdateLobbyState(LobbyList(LobbyIndex), e_LobbyState.UnInitilized)
 106    Call ClearMap
+108    If MapNumber > 0 Then
+110         Call ReleaseInstance(MapNumber)
+112         MapNumber = 0
+       End If
     Exit Sub
 CloseScenario_Err:
-    Call TraceError(Err.Number, Err.Description, "ScenarioHunt.CloseScenario ", Erl)
+114 Call TraceError(Err.Number, Err.Description, "ScenarioHunt.CloseScenario ", Erl)
 End Sub
 
 Private Sub ClearMap()

@@ -2099,6 +2099,7 @@ Public Sub CargarMapaFormatoCSM(ByVal map As Long, ByVal MAPFl As String)
         End If
     
 340     MapInfo(map).map_name = MapDat.map_name
+341     MapInfo(Map).MapResource = Map
 342     MapInfo(map).ambient = MapDat.ambient
 344     MapInfo(map).backup_mode = MapDat.backup_mode
 346     MapInfo(map).base_light = MapDat.base_light
