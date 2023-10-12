@@ -175,13 +175,13 @@ On Error Resume Next
     If Mapping(ConnectionId).PacketCount > 100 Then
         'Lo kickeo
         If UserIndex > 0 Then
-            Call SendData(SendTarget.ToAdmins, UserIndex, PrepareMessageConsoleMsg("Control de paquetes -> El usuario " & UserList(UserIndex).name & " | Iteración paquetes | Último paquete: " & PacketId & ".", e_FontTypeNames.FONTTYPE_FIGHT))
+            Call SendData(SendTarget.ToAdmins, UserIndex, PrepareMessageConsoleMsg("Control Paquetes---> El usuario " & UserList(UserIndex).name & " | Iteración paquetes | Último paquete: " & PacketId & ".", e_FontTypeNames.FONTTYPE_FIGHT))
             Mapping(ConnectionId).PacketCount = 0
             If IsFeatureEnabled("kick_packet_overflow") Then
                 Call CloseSocket(UserIndex)
             End If
         Else
-            Call SendData(SendTarget.ToAdmins, UserIndex, PrepareMessageConsoleMsg("Control de paquetes -> Usuario desconocido | Iteración paquetes | Último paquete: " & PacketId & ".", e_FontTypeNames.FONTTYPE_FIGHT))
+            Call SendData(SendTarget.ToAdmins, UserIndex, PrepareMessageConsoleMsg("Control Paquetes---> Usuario desconocido | Iteración paquetes | Último paquete: " & PacketId & ".", e_FontTypeNames.FONTTYPE_FIGHT))
             Mapping(ConnectionId).PacketCount = 0
             If IsFeatureEnabled("kick_packet_overflow") Then
                 Call KickConnection(ConnectionId)
@@ -192,7 +192,7 @@ On Error Resume Next
 
     If PacketId < ClientPacketID.eMinPacket Or PacketId >= ClientPacketID.PacketCount Then
         Call LogEdicionPaquete("El usuario " & UserList(UserIndex).ConnectionDetails.IP & " mando fake paquet " & PacketId)
-        Call SendData(SendTarget.ToGM, UserIndex, PrepareMessageConsoleMsg("EL USUARIO " & UserList(UserIndex).name & " | IP: " & UserList(UserIndex).ConnectionDetails.IP & " ESTÁ ENVIANDO PAQUETES INVÁLIDOS", e_FontTypeNames.FONTTYPE_GUILD))
+        Call SendData(SendTarget.ToGM, UserIndex, PrepareMessageConsoleMsg("Control Paquetes---> El usuario " & UserList(UserIndex).name & " | IP: " & UserList(UserIndex).ConnectionDetails.IP & " ESTÁ ENVIANDO PAQUETES INVÁLIDOS", e_FontTypeNames.FONTTYPE_GUILD))
         Call CloseSocket(UserIndex)
         Exit Function
     End If
@@ -10091,16 +10091,16 @@ Private Sub HandleLogMacroClickHechizo(ByVal UserIndex As Integer)
             Select Case tipoMacro
             
                 Case tMacro.Coordenadas
-102                 mensaje = "AntiCheat> El usuario " & UserList(UserIndex).name & " está utilizando macro de COORDENADAS."
+102                 mensaje = "Control AntiCheat--> El usuario " & UserList(UserIndex).name & "| está utilizando macro de COORDENADAS."
                     Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(mensaje, e_FontTypeNames.FONTTYPE_INFO))
                 Case tMacro.dobleclick
-                    mensaje = "AntiCheat> El usuario " & UserList(UserIndex).name & " está utilizando macro de DOBLE CLICK (CANTIDAD DE CLICKS: " & clicks & " )."
+                    mensaje = "Control AntiCheat--> El usuario " & UserList(UserIndex).name & "| está utilizando macro de DOBLE CLICK (CANTIDAD DE CLICKS: " & clicks & " )."
                     Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(mensaje, e_FontTypeNames.FONTTYPE_INFO))
                 Case tMacro.inasistidoPosFija
-                    mensaje = "AntiCheat> El usuario " & UserList(UserIndex).name & " está utilizando macro de INASISTIDO."
+                    mensaje = "Control AntiCheat--> El usuario " & UserList(UserIndex).name & "| está utilizando macro de INASISTIDO."
                     Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(mensaje, e_FontTypeNames.FONTTYPE_INFO))
                 Case tMacro.borrarCartel
-                    mensaje = "AntiCheat> El usuario " & UserList(UserIndex).name & " está utilizando macro de CARTELEO."
+                    mensaje = "Control AntiCheat--> El usuario " & UserList(UserIndex).name & "| está utilizando macro de CARTELEO."
                     Call SendData(SendTarget.ToAdmins, 0, PrepareMessageConsoleMsg(mensaje, e_FontTypeNames.FONTTYPE_INFO))
             End Select
             
