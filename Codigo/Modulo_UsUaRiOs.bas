@@ -598,6 +598,35 @@ On Error GoTo Complete_ConnectUser_Err
             End If
         
             'If in the water, and has a boat, equip it!
+            Dim Trigger As Integer
+            Dim slotBarco As Integer
+            Dim itemBuscado As Integer
+            
+            Trigger = MapData(.pos.Map, .pos.X, .pos.y).Trigger
+
+            If Trigger = e_Trigger.DETALLEAGUA Then 'Esta en zona de caucho obj 199, 200
+
+                If .raza = e_Raza.Enano Or .raza = e_Raza.Gnomo Then
+                    itemBuscado = iObjTrajeBajoNw
+                Else
+                    itemBuscado = iObjTrajeAltoNw
+                End If
+                slotBarco = GetSlotInInvetory(UserIndex, itemBuscado)
+                If slotBarco > -1 Then
+                    .invent.BarcoObjIndex = itemBuscado
+                    .invent.BarcoSlot = slotBarco
+                End If
+                
+            ElseIf Trigger = e_Trigger.VALIDONADO Or Trigger = e_Trigger.NADOCOMBINADO Then  'Esta en zona de nado comun obj 197
+                
+                itemBuscado = iObjTraje
+                slotBarco = GetSlotInInvetory(UserIndex, itemBuscado)
+                If slotBarco > -1 Then
+                    .invent.BarcoObjIndex = itemBuscado
+                    .invent.BarcoSlot = slotBarco
+                End If
+            End If
+            
 760         If .Invent.BarcoObjIndex > 0 And (MapData(.Pos.Map, .Pos.X, .Pos.Y).Blocked And FLAG_AGUA) <> 0 Then
 765             .flags.Navegando = 1
 770             Call EquiparBarco(UserIndex)
@@ -731,11 +760,10 @@ On Error GoTo Complete_ConnectUser_Err
 1045            Next i
              End If
         
-1050        If .flags.Navegando = 1 Then
-1055            Call WriteNavigateToggle(UserIndex, .flags.Navegando)
-1060            Call EquiparBarco(UserIndex)
-
-             End If
+1050        'If .flags.Navegando = 1 Then
+1055        '    Call WriteNavigateToggle(UserIndex, .flags.Navegando)
+1060        '    Call EquiparBarco(UserIndex)
+            ' End If
                      
 1065        If .flags.Montado = 1 Then
 1070            Call WriteEquiteToggle(UserIndex)
@@ -1454,7 +1482,7 @@ Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As e_Heading) A
                 Exit Function
             End If
             
-            If .flags.Navegando And .Invent.BarcoObjIndex = 197 And Not (MapData(.pos.map, nPos.X, nPos.y).trigger = e_Trigger.DETALLEAGUA Or MapData(.pos.map, nPos.X, nPos.y).trigger = e_Trigger.NADOCOMBINADO Or MapData(.pos.map, nPos.X, nPos.y).trigger = e_Trigger.VALIDONADO Or MapData(.pos.map, nPos.X, nPos.y).trigger = e_Trigger.NADOBAJOTECHO) Then
+            If .flags.Navegando And .invent.BarcoObjIndex = iObjTraje And Not (MapData(.pos.Map, nPos.X, nPos.y).Trigger = e_Trigger.DETALLEAGUA Or MapData(.pos.Map, nPos.X, nPos.y).Trigger = e_Trigger.NADOCOMBINADO Or MapData(.pos.Map, nPos.X, nPos.y).Trigger = e_Trigger.VALIDONADO Or MapData(.pos.Map, nPos.X, nPos.y).Trigger = e_Trigger.NADOBAJOTECHO) Then
                 Exit Function
             End If
 

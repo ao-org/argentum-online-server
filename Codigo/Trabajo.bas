@@ -524,11 +524,8 @@ Public Sub DoNavega(ByVal UserIndex As Integer, _
             
                 Dim SkillNecesario As Byte
                 
-                If .Invent.Object(Slot).ObjIndex = 200 Or .Invent.Object(Slot).ObjIndex = 199 Then 'Traje nw alto y bajo
-                    SkillNecesario = 0
-                Else
-118                 SkillNecesario = IIf(.clase = e_Class.Trabajador Or .clase = e_Class.Pirat, Barco.MinSkill \ 2, Barco.MinSkill)
-                End If
+118             SkillNecesario = IIf(.clase = e_Class.Trabajador Or .clase = e_Class.Pirat, Barco.MinSkill \ 2, Barco.MinSkill)
+                
                 ' Tiene el skill necesario?
 120             If .Stats.UserSkills(e_Skill.Navegacion) < SkillNecesario Then
 122                 Call WriteConsoleMsg(UserIndex, "Necesitas al menos " & SkillNecesario & " puntos en navegación para poder usar este " & IIf(Barco.Subtipo = 0, "traje", "barco") & ".", e_FontTypeNames.FONTTYPE_INFO)
@@ -590,10 +587,9 @@ Public Sub DoNavega(ByVal UserIndex As Integer, _
 182                 Call ClearClothes(.Char)
 
                 End If
+                Call ActualizarVelocidadDeUsuario(UserIndex)
 
             End If
-            
-188         Call ActualizarVelocidadDeUsuario(UserIndex)
         
             ' Volver visible
 190         If .flags.Oculto = 1 And .flags.AdminInvisible = 0 And .flags.invisible = 0 Then
