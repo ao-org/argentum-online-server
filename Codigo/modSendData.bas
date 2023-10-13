@@ -60,7 +60,8 @@ Public Enum SendTarget
     ToCaosYRMs
     ToSuperiores
     ToSuperioresArea
-    ToUsuariosMuertos
+    ToPCDeadArea
+    ToPCDeadAreaButIndex
     ToAdminsYDioses
     ToJugadoresCaptura
     ToPCAreaButFollowerAndIndex
@@ -118,8 +119,11 @@ Public Sub SendData(ByVal sndRoute As SendTarget, ByVal sndIndex As Integer, Opt
 108         Case SendTarget.ToPCAreaButGMs
 110             Call SendToUserAreaButGMs(sndIndex, Buffer)
 
-112         Case SendTarget.ToUsuariosMuertos
-114             Call SendToUsersMuertosArea(sndIndex, Buffer)
+112         Case SendTarget.ToPCDeadArea
+114             Call SendToPCDeadArea(sndIndex, Buffer)
+            
+            Case SendTarget.ToPCDeadAreaButIndex
+                Call SendToPCDeadAreaButIndex(sndIndex, Buffer)
 
 116         Case SendTarget.ToAdmins
 118             For LoopC = 1 To LastUser
@@ -329,7 +333,7 @@ Private Sub SendToUserAliveArea(ByVal UserIndex As Integer, ByVal Buffer As Netw
 114         If UserList(tempIndex).AreasInfo.AreaReciveX And AreaX Then  'Esta en el area?
 116             If UserList(tempIndex).AreasInfo.AreaReciveY And AreaY Then
 118                 If UserList(tempIndex).ConnectionDetails.ConnIDValida Then
-                        If UserList(tempIndex).flags.Muerto = 0 Or MapInfo(UserList(tempIndex).Pos.map).Seguro = 1 Or (UserList(UserIndex).GuildIndex > 0 And UserList(UserIndex).GuildIndex = UserList(tempIndex).GuildIndex) Then
+                        If UserList(tempIndex).flags.Muerto = 0 Or MapInfo(UserList(tempIndex).pos.Map).Seguro = 1 Or (UserList(UserIndex).GuildIndex > 0 And UserList(UserIndex).GuildIndex = UserList(tempIndex).GuildIndex) Or IsSet(UserList(UserIndex).flags.StatusMask, e_StatusMask.eTalkToDead) Then
                             enviaDatos = True
                             If Not EsGM(tempIndex) Then
                                 If UserList(UserIndex).flags.invisible + UserList(UserIndex).flags.Oculto > 0 And validateInvi And Not (UserList(tempIndex).GuildIndex > 0 And UserList(tempIndex).GuildIndex = UserList(UserIndex).GuildIndex And modGuilds.NivelDeClan(UserList(tempIndex).GuildIndex) >= 6) And UserList(UserIndex).flags.Navegando = 0 Then
@@ -482,7 +486,7 @@ SendToUserAreaButFollower_Err:
         
 End Sub
 
-Private Sub SendToUsersMuertosArea(ByVal UserIndex As Integer, ByVal Buffer As Network.Writer)
+Private Sub SendToPCDeadArea(ByVal UserIndex As Integer, ByVal Buffer As Network.Writer)
         
         On Error GoTo SendToUserArea_Err
         
@@ -515,7 +519,7 @@ Private Sub SendToUsersMuertosArea(ByVal UserIndex As Integer, ByVal Buffer As N
                         
                         ' Envio a los que estan MUERTOS y a los GMs cercanos.
 
-120                     If UserList(tempIndex).flags.Muerto = 1 Or EsGM(tempIndex) Then
+120                     If UserList(tempIndex).flags.Muerto = 1 Or EsGM(tempIndex) Or IsSet(UserList(tempIndex).flags.StatusMask, e_StatusMask.eTalkToDead) Then
                         
 122                         Call modNetwork.Send(tempIndex, Buffer)
                             
@@ -530,10 +534,62 @@ Private Sub SendToUsersMuertosArea(ByVal UserIndex As Integer, ByVal Buffer As N
         Exit Sub
 
 SendToUserArea_Err:
-126     Call TraceError(Err.Number, Err.Description, "modSendData.SendToUsersMuertosArea", Erl)
+126     Call TraceError(Err.Number, Err.Description, "modSendData.SendToPCDeadArea", Erl)
 
         
 End Sub
+
+
+Private Sub SendToPCDeadAreaButIndex(ByVal UserIndex As Integer, ByVal Buffer As Network.Writer)
+        
+        On Error GoTo SendToUserArea_Err
+        
+
+        '**************************************************************
+        'Author: Jopi
+        'Last Modify Date: 23/06/2021
+        'Envio la data a los que estan muertos y a los GMs en el area.
+        '**************************************************************
+        Dim LoopC     As Long
+        Dim tempIndex As Integer
+        Dim Map       As Integer
+        Dim AreaX     As Integer
+        Dim AreaY     As Integer
+        
+100     If UserIndex = 0 Then Exit Sub
+        
+102     Map = UserList(UserIndex).pos.Map
+104     AreaX = UserList(UserIndex).AreasInfo.AreaPerteneceX
+106     AreaY = UserList(UserIndex).AreasInfo.AreaPerteneceY
+        
+108     If Not MapaValido(Map) Then Exit Sub
+    
+110     For LoopC = 1 To ConnGroups(Map).CountEntrys
+112         tempIndex = ConnGroups(Map).UserEntrys(LoopC)
+
+114         If UserList(tempIndex).AreasInfo.AreaReciveX And AreaX Then  'Esta en el area?
+116             If UserList(tempIndex).AreasInfo.AreaReciveY And AreaY Then
+118                 If UserList(tempIndex).ConnectionDetails.ConnIDValida Then
+                        ' Envio a los que estan MUERTOS y a los GMs cercanos.
+                        If tempIndex <> UserIndex Then
+120                         If UserList(tempIndex).flags.Muerto = 1 Or IsSet(UserList(tempIndex).flags.StatusMask, e_StatusMask.eTalkToDead) Then
+122                             Call modNetwork.Send(tempIndex, Buffer)
+                            End If
+                        End If
+                    End If
+                End If
+            End If
+
+124     Next LoopC
+        
+        Exit Sub
+
+SendToUserArea_Err:
+126     Call TraceError(Err.Number, Err.Description, "modSendData.SendToPCDeadArea", Erl)
+
+        
+End Sub
+
 
 Private Sub SendToSuperioresArea(ByVal UserIndex As Integer, ByVal Buffer As Network.Writer)
         
@@ -670,9 +726,9 @@ Private Function CanSendToUser(ByRef SourceUser As t_User, ByRef TargetUser As t
     If (TargetUser.AreasInfo.AreaReciveX And SourceUser.AreasInfo.AreaPerteneceX) = 0 Then Exit Function
     If (TargetUser.AreasInfo.AreaReciveY And SourceUser.AreasInfo.AreaPerteneceY) = 0 Then Exit Function
     If Not TargetUser.ConnectionDetails.ConnIDValida Then Exit Function
-    If Not (TargetUser.flags.Muerto = 0 Or MapInfo(TargetUser.pos.Map).Seguro = 1 Or (SourceUser.GuildIndex > 0 And SourceUser.GuildIndex = TargetUser.GuildIndex)) Then Exit Function
+    If Not (TargetUser.flags.Muerto = 0 Or MapInfo(TargetUser.pos.Map).Seguro = 1 Or (SourceUser.GuildIndex > 0 And SourceUser.GuildIndex = TargetUser.GuildIndex) Or IsSet(TargetUser.flags.StatusMask, e_StatusMask.eTalkToDead) Or IsSet(SourceUser.flags.StatusMask, e_StatusMask.eTalkToDead)) Then Exit Function
     If IsValidUserRef(TargetUser.flags.GMMeSigue) Then
-            Call modNetwork.Send(TargetUser.flags.GMMeSigue.ArrayIndex, Buffer)
+        Call modNetwork.Send(TargetUser.flags.GMMeSigue.ArrayIndex, Buffer)
     End If
     If Not EsGM(TargetIndex) Then
         If SourceUser.flags.invisible + SourceUser.flags.Oculto > 0 And ValidateInvi And Not (TargetUser.GuildIndex > 0 And TargetUser.GuildIndex = SourceUser.GuildIndex And modGuilds.NivelDeClan(TargetUser.GuildIndex) >= 6) And SourceUser.flags.Navegando = 0 Then

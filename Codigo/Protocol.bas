@@ -1359,7 +1359,7 @@ Private Sub HandleTalk(ByVal UserIndex As Integer)
                 
                 
 146                 If .flags.Muerto = 1 Then
-148                     Call SendData(SendTarget.ToUsuariosMuertos, UserIndex, PrepareMessageChatOverHead(chat, .Char.CharIndex, CHAT_COLOR_DEAD_CHAR))
+148                     Call SendData(SendTarget.ToPCDeadArea, UserIndex, PrepareMessageChatOverHead(chat, .Char.charindex, CHAT_COLOR_DEAD_CHAR))
                       
                     
                     Else
