@@ -611,7 +611,7 @@ On Error GoTo Complete_ConnectUser_Err
                 Else
                     itemBuscado = iObjTrajeAltoNw
                 End If
-                slotBarco = GetSlotInInvetory(UserIndex, itemBuscado)
+                slotBarco = GetSlotInInventory(UserIndex, itemBuscado)
                 If slotBarco > -1 Then
                     .invent.BarcoObjIndex = itemBuscado
                     .invent.BarcoSlot = slotBarco
@@ -620,7 +620,7 @@ On Error GoTo Complete_ConnectUser_Err
             ElseIf Trigger = e_Trigger.VALIDONADO Or Trigger = e_Trigger.NADOCOMBINADO Then  'Esta en zona de nado comun obj 197
                 
                 itemBuscado = iObjTraje
-                slotBarco = GetSlotInInvetory(UserIndex, itemBuscado)
+                slotBarco = GetSlotInInventory(UserIndex, itemBuscado)
                 If slotBarco > -1 Then
                     .invent.BarcoObjIndex = itemBuscado
                     .invent.BarcoSlot = slotBarco

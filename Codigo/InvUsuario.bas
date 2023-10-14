@@ -622,39 +622,39 @@ MakeObj_Err:
 120     Call TraceError(Err.Number, Err.Description, "InvUsuario.MakeObj", Erl)
 End Sub
 
-Function GetSlotForItemInInvetory(ByVal UserIndex As Integer, ByRef MyObject As t_Obj) As Integer
-On Error GoTo GetSlotForItemInInvetory_Err
-    GetSlotForItemInInvetory = -1
+Function GetSlotForItemInInventory(ByVal UserIndex As Integer, ByRef MyObject As t_Obj) As Integer
+On Error GoTo GetSlotForItemInInventory_Err
+    GetSlotForItemInInventory = -1
 100 Dim i As Integer
     
 102 For i = 1 To UserList(UserIndex).CurrentInventorySlots
-104    If UserList(UserIndex).Invent.Object(i).objIndex = 0 And GetSlotForItemInInvetory = -1 Then
-106        GetSlotForItemInInvetory = i 'we found a valid place but keep looking in case we can stack
+104    If UserList(UserIndex).invent.Object(i).objIndex = 0 And GetSlotForItemInInventory = -1 Then
+106        GetSlotForItemInInventory = i 'we found a valid place but keep looking in case we can stack
 108    ElseIf UserList(UserIndex).invent.Object(i).objIndex = MyObject.objIndex And _
               UserList(UserIndex).invent.Object(i).amount + MyObject.amount <= MAX_INVENTORY_OBJS Then
-110        GetSlotForItemInInvetory = i 'we can stack the item, let use this slot
+110        GetSlotForItemInInventory = i 'we can stack the item, let use this slot
 112        Exit Function
        End If
     Next i
     Exit Function
-GetSlotForItemInInvetory_Err:
-    Call TraceError(Err.Number, Err.Description, "InvUsuario.GetSlotForItemInInvetory", Erl)
+GetSlotForItemInInventory_Err:
+    Call TraceError(Err.Number, Err.Description, "InvUsuario.GetSlotForItemInInventory", Erl)
 End Function
 
-Function GetSlotInInvetory(ByVal UserIndex As Integer, ByVal objIndex As Integer) As Integer
-On Error GoTo GetSlotInInvetory_Err
-    GetSlotInInvetory = -1
-100 Dim i As Integer
+Function GetSlotInInventory(ByVal UserIndex As Integer, ByVal objIndex As Integer) As Integer
+    On Error GoTo GetSlotInInventory_Err
+    GetSlotInInventory = -1
+    Dim i As Integer
     
-102 For i = 1 To UserList(UserIndex).CurrentInventorySlots
-104    If UserList(UserIndex).invent.Object(i).objIndex = objIndex Then
-110        GetSlotInInvetory = i
-112        Exit Function
-       End If
+    For i = 1 To UserList(UserIndex).CurrentInventorySlots
+        If UserList(UserIndex).invent.Object(i).objIndex = objIndex Then
+            GetSlotInInventory = i
+            Exit Function
+        End If
     Next i
     Exit Function
-GetSlotInInvetory_Err:
-    Call TraceError(Err.Number, Err.Description, "InvUsuario.GetSlotInInvetory", Erl)
+GetSlotInInventory_Err:
+    Call TraceError(Err.Number, Err.Description, "InvUsuario.GetSlotInInventory", Erl)
 End Function
 
 Function MeterItemEnInventario(ByVal UserIndex As Integer, ByRef MiObj As t_Obj) As Boolean
@@ -673,7 +673,7 @@ Function MeterItemEnInventario(ByVal UserIndex As Integer, ByRef MiObj As t_Obj)
             Exit Function
         End If
         '¿el user ya tiene un objeto del mismo tipo? ?????
-100     Slot = GetSlotForItemInInvetory(UserIndex, MiObj)
+100     Slot = GetSlotForItemInInventory(UserIndex, MiObj)
         
         If Slot <= 0 Then
 118        Call WriteLocaleMsg(UserIndex, MsgInventoryIsFull, e_FontTypeNames.FONTTYPE_FIGHT)

@@ -54,7 +54,7 @@ On Error GoTo init_transaction_Err
 116     objInventario.amount = 1
 118     objInventario.objIndex = obj.ObjNum
         
-        If GetSlotForItemInInvetory(UserIndex, objInventario) <= 0 Then
+        If GetSlotForItemInInventory(UserIndex, objInventario) <= 0 Then
 122         Call WriteConsoleMsg(userIndex, "Asegurate de tener espacio suficiente en tu inventario.", e_FontTypeNames.FONTTYPE_INFO)
             Exit Sub
         End If
