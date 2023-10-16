@@ -2324,6 +2324,7 @@ Sub HandleFactionScoreForKill(ByVal UserIndex As Integer, ByVal TargetIndex As I
                 Call HandleFactionScoreForAssist(UserList(TargetIndex).flags.LastAttacker.ArrayIndex, TargetIndex)
             End If
         End If
+        If Score < 1 Then Score = 1
         .Faccion.FactionScore = .Faccion.FactionScore + Score
     End With
 End Sub
@@ -2334,6 +2335,7 @@ Sub HandleFactionScoreForAssist(ByVal UserIndex As Integer, ByVal TargetIndex As
     With UserList(UserIndex)
         Score = 10 - max(CInt(.Stats.ELV) - CInt(UserList(TargetIndex).Stats.ELV), 0)
         Score = Score / 2
+        If Score < 1 Then Score = 1
         .Faccion.FactionScore = .Faccion.FactionScore + Score
     End With
 End Sub
