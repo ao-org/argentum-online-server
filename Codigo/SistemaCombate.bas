@@ -2109,6 +2109,14 @@ Public Sub AllMascotasAtacanNPC(ByVal NpcIndex As Integer, ByVal UserIndex As In
         Dim j As Long
         Dim mascotaIdx As Integer
         
+        Dim UserAttackInteractionResult As t_AttackInteractionResult
+        UserAttackInteractionResult = UserCanAttackNpc(UserIndex, NpcIndex)
+        Call SendAttackInteractionMessage(UserIndex, UserAttackInteractionResult.result)
+        If UserAttackInteractionResult.CanAttack Then
+            If UserAttackInteractionResult.TurnPK Then Call VolverCriminal(UserIndex)
+        Else
+            Exit Sub
+        End If
 100     For j = 1 To MAXMASCOTAS
             If IsValidNpcRef(UserList(UserIndex).MascotasIndex(j)) Then
 102             mascotaIdx = UserList(UserIndex).MascotasIndex(j).ArrayIndex
@@ -2117,6 +2125,8 @@ Public Sub AllMascotasAtacanNPC(ByVal NpcIndex As Integer, ByVal UserIndex As In
 108                     If IsSet(.flags.BehaviorFlags, e_BehaviorFlags.eAttackNpc) And Not IsValidNpcRef(.TargetNpc) Then
 110                         Call SetNpcRef(.TargetNPC, NpcIndex)
 112                         Call SetMovement(mascotaIdx, e_TipoAI.NpcAtacaNpc)
+                            NpcList(NpcIndex).flags.AttackedBy = UserList(UserIndex).name
+                            Call SetNpcRef(UserList(UserIndex).flags.NPCAtacado, NpcIndex)
                         End If
                     End With
                 End If
