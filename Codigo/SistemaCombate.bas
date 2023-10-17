@@ -2122,6 +2122,8 @@ Public Sub AllMascotasAtacanNPC(ByVal NpcIndex As Integer, ByVal UserIndex As In
 108                     If IsSet(.flags.BehaviorFlags, e_BehaviorFlags.eAttackNpc) And Not IsValidNpcRef(.TargetNpc) Then
 110                         Call SetNpcRef(.TargetNPC, NpcIndex)
 112                         Call SetMovement(mascotaIdx, e_TipoAI.NpcAtacaNpc)
+                            NpcList(NpcIndex).flags.AttackedBy = UserList(UserIndex).name
+                            Call SetNpcRef(UserList(UserIndex).flags.NPCAtacado, NpcIndex)
                         End If
                     End With
                 End If
