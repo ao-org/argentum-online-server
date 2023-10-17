@@ -2147,7 +2147,7 @@ UserCanAttackNpc.TurnPK = False
                        If UserList(CurrentOwnerIndex).flags.NPCAtacado.ArrayIndex = NpcIndex And _
                           UserList(CurrentOwnerIndex).flags.Muerto = 0 And _
                           (Status(CurrentOwnerIndex) = Ciudadano Or Status(CurrentOwnerIndex) = Armada Or Status(CurrentOwnerIndex) = Consejo) And _
-                          Distancia(UserList(CurrentOwnerIndex).pos, UserList(UserIndex).pos) < 12 And _
+                          Distancia(UserList(CurrentOwnerIndex).pos, UserList(UserIndex).pos) <= 12 And _
                           (UserList(UserIndex).GuildIndex = 0 Or UserList(UserIndex).GuildIndex <> UserList(CurrentOwnerIndex).GuildIndex) And _
                           (UserList(UserIndex).Grupo.EnGrupo = False Or UserList(UserIndex).Grupo.id <> UserList(CurrentOwnerIndex).Grupo.id) Then
                            
