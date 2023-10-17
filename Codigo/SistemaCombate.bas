@@ -2109,6 +2109,11 @@ Public Sub AllMascotasAtacanNPC(ByVal NpcIndex As Integer, ByVal UserIndex As In
         Dim j As Long
         Dim mascotaIdx As Integer
         
+        Dim AttackInteractionResult As t_AttackInteractionResult
+        AttackInteractionResult = UserCanAttackNpc(UserIndex, NpcIndex)
+        If AttackInteractionResult.result <> e_AttackInteractionResult.eCanAttack Then
+            Exit Sub
+        End If
 100     For j = 1 To MAXMASCOTAS
             If IsValidNpcRef(UserList(UserIndex).MascotasIndex(j)) Then
 102             mascotaIdx = UserList(UserIndex).MascotasIndex(j).ArrayIndex
