@@ -2109,9 +2109,12 @@ Public Sub AllMascotasAtacanNPC(ByVal NpcIndex As Integer, ByVal UserIndex As In
         Dim j As Long
         Dim mascotaIdx As Integer
         
-        Dim AttackInteractionResult As t_AttackInteractionResult
-        AttackInteractionResult = UserCanAttackNpc(UserIndex, NpcIndex)
-        If AttackInteractionResult.result <> e_AttackInteractionResult.eCanAttack Then
+        Dim UserAttackInteractionResult As t_AttackInteractionResult
+        UserAttackInteractionResult = UserCanAttackNpc(UserIndex, NpcIndex)
+        Call SendAttackInteractionMessage(UserIndex, UserAttackInteractionResult.result)
+        If UserAttackInteractionResult.CanAttack Then
+            If UserAttackInteractionResult.TurnPK Then Call VolverCriminal(UserIndex)
+        Else
             Exit Sub
         End If
 100     For j = 1 To MAXMASCOTAS
