@@ -2166,20 +2166,13 @@ End Sub
 Private Sub HandleBankEnd(ByVal UserIndex As Integer)
         
         On Error GoTo HandleBankEnd_Err
-
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
-100     With UserList(UserIndex)
-
-            'User exits banking mode
-102         .flags.Comerciando = False
-        
-104         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave("171", UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.y))
-106         Call WriteBankEnd(UserIndex)
-
+       
+100      With UserList(UserIndex)
+            If .flags.Comerciando Then
+102             .flags.Comerciando = False
+104             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave("171", UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
+106             Call WriteBankEnd(UserIndex)
+            End If
         End With
         
         Exit Sub
