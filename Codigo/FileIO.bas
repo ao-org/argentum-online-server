@@ -2219,7 +2219,10 @@ Sub LoadSini()
 134     ULTIMAVERSION = Lector.GetValue("INIT", "Version")
     
 136     PuedeCrearPersonajes = val(Lector.GetValue("INIT", "PuedeCrearPersonajes"))
-138     ServerSoloGMs = val(Lector.GetValue("init", "ServerSoloGMs"))
+137     MinimumPriceMao = val(Lector.GetValue("INIT", "MinimumPriceMao"))
+138     GoldPriceMao = val(Lector.GetValue("INIT", "GoldPriceMao"))
+        MinimumLevelMao = val(Lector.GetValue("INIT", "MinimumLevelMao"))
+        ServerSoloGMs = val(Lector.GetValue("init", "ServerSoloGMs"))
 140     DisconnectTimeout = val(Lector.GetValue("INIT", "DisconnectTimeout"))
     
 144     EnTesting = val(Lector.GetValue("INIT", "Testing"))
