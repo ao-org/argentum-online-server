@@ -6424,7 +6424,7 @@ Private Sub HandleGuildMemberList(ByVal UserIndex As Integer)
             Dim UserName    As String
         
 102         guild = Reader.ReadString8()
-104         If .flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios) Then
+104         If .flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios) Then
 106             If (InStrB(guild, "\") <> 0) Then
 108                 guild = Replace(guild, "\", "")
                 End If
@@ -7544,7 +7544,7 @@ Public Sub HandleShowGuildMessages(ByVal UserIndex As Integer)
             Dim guild As String
 102             guild = Reader.ReadString8()
         
-104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.RoleMaster)) Then
+104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios)) Then
 106             Call modGuilds.GMEscuchaClan(UserIndex, guild)
                 Call LogGM(.name, .name & " espia a " & guild)
             End If

@@ -504,7 +504,7 @@ Public Sub HandleWhere(ByVal UserIndex As Integer)
             Dim tUser    As t_UserReference
         
 102         username = Reader.ReadString8()
-104         If (.flags.Privilegios And (e_PlayerType.SemiDios Or e_PlayerType.Consejero Or e_PlayerType.user)) = 0 Then
+104         If (.flags.Privilegios And (e_PlayerType.RoleMaster Or e_PlayerType.Consejero Or e_PlayerType.user)) = 0 Then
 106             tUser = NameIndex(username)
 108             If Not IsValidUserRef(tUser) Then
 110                 Call WriteConsoleMsg(UserIndex, "Usuario offline.", e_FontTypeNames.FONTTYPE_INFO)
@@ -1038,7 +1038,7 @@ Public Sub HandleHiding(ByVal UserIndex As Integer)
         
         
         
-102         If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.RoleMaster)) Then
+102         If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero Or e_PlayerType.RoleMaster)) Then
 104             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
@@ -2687,7 +2687,7 @@ Public Sub HandleTalkAsNPC(ByVal UserIndex As Integer)
             Dim Message As String
 102             Message = Reader.ReadString8()
             'Solo dioses, admins y RMS
-104         If (.flags.Privilegios And (e_PlayerType.Dios Or e_PlayerType.Admin Or e_PlayerType.RoleMaster)) Then
+104         If (.flags.Privilegios And (e_PlayerType.Dios Or e_PlayerType.Admin Or e_PlayerType.SemiDios)) Then
                 'Asegurarse haya un NPC seleccionado
 106             If IsValidNpcRef(.flags.TargetNPC) Then
 108                 Call SendData(SendTarget.ToNPCArea, .flags.TargetNPC.ArrayIndex, PrepareMessageChatOverHead(Message, NpcList(.flags.TargetNPC.ArrayIndex).Char.charindex, vbWhite))
@@ -2705,7 +2705,7 @@ Public Sub HandleDestroyAllItemsInArea(ByVal UserIndex As Integer)
         On Error GoTo HandleDestroyAllItemsInArea_Err
         'Author: Nicolas Matias Gonzalez (NIGO)
 100     With UserList(UserIndex)
-102         If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero)) Then
+102         If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero Or e_PlayerType.SemiDios Or e_PlayerType.RoleMaster)) Then
 104             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
@@ -3634,7 +3634,7 @@ Public Sub HandleSaveChars(ByVal UserIndex As Integer)
         On Error GoTo HandleSaveChars_Err
         'Author: Lucas Tavolaro Ortiz (Tavo)
 100     With UserList(UserIndex)
-102         If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero Or e_PlayerType.RoleMaster)) Then
+102         If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero Or e_PlayerType.SemiDios Or e_PlayerType.RoleMaster)) Then
 104             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
@@ -3679,7 +3679,7 @@ Public Sub HandleNight(ByVal UserIndex As Integer)
         'Author: Lucas Tavolaro Ortiz (Tavo)
         'Last modified by: Juan Martín Sotuyo Dodero (Maraxus)
 100     With UserList(UserIndex)
-102         If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero Or e_PlayerType.SemiDios)) Then
+102         If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero Or e_PlayerType.RoleMaster)) Then
 104             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
