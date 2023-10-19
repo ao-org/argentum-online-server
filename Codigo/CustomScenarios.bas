@@ -335,16 +335,20 @@ Public Function IsEventActive() As Boolean
     If CurrentActiveEventType = CaptureTheFlag Then
         IsEventActive = Not InstanciaCaptura Is Nothing
     Else
-        IsEventActive = LobbyList(GlobalLobbyIndex).State > e_LobbyState.UnInitilized And LobbyList(GlobalLobbyIndex).State < InProgress
+        If GlobalLobbyIndex >= 0 Then
+            IsEventActive = LobbyList(GlobalLobbyIndex).State > e_LobbyState.UnInitilized And LobbyList(GlobalLobbyIndex).State < InProgress
+        Else
+            IsEventActive = False
+        End If
     End If
 End Function
 
 Public Sub UserDisconnected(ByVal mapNumber As Integer, ByVal userIndex As Integer)
-    Call RegisterDisconnectedUser(LobbyList(GlobalLobbyIndex), UserIndex)
+    Call RegisterDisconnectedUser(UserIndex)
 End Sub
 
 Public Sub UserConnected(ByVal userIndex)
-    Call RegisterReconnectedUser(LobbyList(GlobalLobbyIndex), UserIndex)
+    Call RegisterReconnectedUser(UserIndex)
 End Sub
 
 Public Sub GetNextWaypointForNpc(ByVal NpcIndex As Integer, ByRef PosX As Integer, ByRef PosY As Integer)

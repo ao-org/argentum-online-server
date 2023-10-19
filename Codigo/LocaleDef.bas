@@ -34,6 +34,11 @@ Public Const MsgInventoryIsFull = 328
 Public Const MsgCantJoinEventDeath = 368
 Public Const MsgCantAttackYourself = 380
 Public Const MSgNpcInmuneToEffect = 381
+Public Const ForbiddenLevelMessage = 396
+Public Const LobbyIsFullMessage = 397
+Public Const ForbiddenClassMessage = 398
+Public Const JoinSuccessMessage = 399
+Public Const AlreadyRegisteredMessage = 405
 Public Const MsgInvalidGroupCount = 406
 Public Const MsgCantChangeGroupSizeNow = 407
 Public Const MsgInvalidUserState = 408
@@ -109,7 +114,7 @@ Public Const MsgNavalBattleWinBroadcast = 485
 Public Const MsgNavalBattleRewardBroadcast = 486
 Public Const MsgBoardcastInscriptionPrice = 487
 Public Const MsgMatchComplete = 488
-
+Public Const MsgInvalidPassword = 489
 
 Public Function GetRequiredWeaponLocaleId(ByVal WeaponType As e_WeaponType) As Integer
     Select Case WeaponType

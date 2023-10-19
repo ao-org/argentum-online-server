@@ -68,7 +68,6 @@ Dim PrevMapState As Integer
 Dim MapDropItems As Boolean
 Dim PlayerRespawn As New Dictionary
 Dim PlayerRespawnTime As Long
-Dim BroadOpenEvent As t_Timer
 Dim LobbyIndex As Integer
 
 Friend Sub RegisterNpc(ByVal Tag, ByVal sectionSize, ByRef registry As Dictionary, ByRef File As clsIniManager)
@@ -113,8 +112,6 @@ Private Sub Class_Initialize()
 126     UpdateIndex = AddUpdateScenario(Me)
 128     Call CustomScenarios.SetCustomScenario(MapNumber, Me)
 130     LastBroadCastTime = 0
-132     Call ConfigMapLobby
-134     Call SetTimer(BroadOpenEvent, 15000)
         Exit Sub
 Hunt_Initialize_Err:
 136 Call TraceError(Err.Number, Err.Description, "ScenarioHunt.Initialize ", Erl)
@@ -127,12 +124,13 @@ Private Sub CloseScenario()
 104    Call ModLobby.UpdateLobbyState(LobbyList(LobbyIndex), e_LobbyState.UnInitilized)
 106    Call ClearMap
 108    If MapNumber > 0 Then
-110         Call ReleaseInstance(MapNumber)
-112         MapNumber = 0
+110         Call ReleaseLobby(LobbyIndex)
+112         Call ReleaseInstance(MapNumber)
+114         MapNumber = 0
        End If
     Exit Sub
 CloseScenario_Err:
-114 Call TraceError(Err.Number, Err.Description, "ScenarioHunt.CloseScenario ", Erl)
+    Call TraceError(Err.Number, Err.Description, "ScenarioHunt.CloseScenario ", Erl)
 End Sub
 
 Private Sub ClearMap()
@@ -148,6 +146,7 @@ End Sub
 
 Public Sub IBaseScenario_SetLobbyIndex(ByVal Value As Integer)
     LobbyIndex = Value
+    Call ConfigMapLobby
 End Sub
 
 Public Function IBaseScenario_GetScenarioName() As String
@@ -298,10 +297,8 @@ Private Sub IBaseScenario_Update()
             LastScoreUpdate = ElapsedTime
             Call CloseCountDown
         End If
-    ElseIf LobbyList(LobbyIndex).State = e_LobbyState.AcceptingPlayers And LobbyList(LobbyIndex).IsPublic Then
-        If UpdateTime(BroadOpenEvent, frametime) Then
-            Call BroadcastOpenLobby(LobbyList(LobbyIndex))
-        End If
+    ElseIf LobbyList(LobbyIndex).State = e_LobbyState.AcceptingPlayers Then
+        Call UpdateWaitingForPlayers(FrameTime, LobbyList(LobbyIndex))
     ElseIf LobbyList(LobbyIndex).State = e_LobbyState.Closed Then
         Call CloseScenario
     End If
@@ -472,7 +469,7 @@ Sub GiveRewards()
 110         Rewards(3) = LobbyList(LobbyIndex).AvailableInscriptionMoney * 0.2
         End If
 112     Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MsgMatchComplete, Me.IBaseScenario_GetScenarioName(), e_FontTypeNames.FONTTYPE_GUILD))
-114     If LobbyList(LobbyIndex).TeamSize >= 1 Then
+114     If LobbyList(LobbyIndex).TeamSize > 1 Then
 116         ReDim Teams(0 To LobbyList(LobbyIndex).RegisteredPlayers / LobbyList(LobbyIndex).TeamSize) As String
 118         Ranking = Board.GetTeamRanking(LobbyList(LobbyIndex))
 120         For i = 0 To LobbyList(LobbyIndex).RegisteredPlayers - 1

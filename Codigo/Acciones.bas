@@ -709,7 +709,17 @@ Sub Accion(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal X As Integer,
                     End If
                
                     Call WriteShopPjsInit(UserIndex)
-                
+                ElseIf NpcList(TempCharIndex).npcType = e_NPCType.EventMaster Then
+                    If UserList(UserIndex).flags.Muerto = 1 Then
+                        Call WriteLocaleMsg(UserIndex, 77, e_FontTypeNames.FONTTYPE_INFO)
+                        Exit Sub
+                    End If
+
+                    If Distancia(NpcList(TempCharIndex).pos, UserList(UserIndex).pos) > 4 Then
+                        Call WriteLocaleMsg(UserIndex, 8, e_FontTypeNames.FONTTYPE_INFO)
+                        Exit Sub
+                    End If
+                    Call WriteUpdateLobbyList(UserIndex)
 320             ElseIf NpcList(TempCharIndex).Craftea > 0 Then
                     If UserList(UserIndex).flags.Muerto = 1 Then
                         Call WriteLocaleMsg(UserIndex, "77", e_FontTypeNames.FONTTYPE_INFOIAO)

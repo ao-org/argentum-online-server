@@ -550,7 +550,6 @@ Public Const PinoWood           As Integer = 3788 'OK
 Public Const BLODIUM_MINA       As Integer = 3787 'OK
 
 Public Enum e_NPCType
-
     Comun = 0
     Revividor = 1
     GuardiaReal = 2
@@ -572,7 +571,7 @@ Public Enum e_NPCType
     EntregaPesca = 20
     AO20Shop = 21
     AO20ShopPjs = 22
-    
+    EventMaster = 23
 End Enum
 
 Public Const MIN_APUÑALAR As Byte = 10

@@ -24,12 +24,8 @@ Attribute VB_Name = "ModLobby"
 '    for more information about ORE please visit http://www.baronsoft.com/
 '
 '
-'
-Const ForbiddenLevelMessage = 396
-Const LobbyIsFullMessage = 397
-Const ForbiddenClassMessage = 398
-Const JoinSuccessMessage = 399
-Const AlreadyRegisteredMessage = 405
+
+Const WaitingForPlayersTime = 300000 '5 minutes
 Public Type PlayerInLobby
     SummonedFrom As t_WorldPos
     IsSummoned As Boolean
@@ -59,6 +55,20 @@ Public Enum e_SortType
     eFixedTeamCount
 End Enum
 
+Public Type t_NewScenearioSettings
+    MinLevel As Byte
+    MaxLevel As Byte
+    MinPlayers As Byte
+    MaxPlayers As Byte
+    TeamSize As Byte
+    InscriptionFee As Long
+    ScenearioType As Byte
+    TeamType As Byte
+    RoundNumber As Byte
+    Description As String
+    Password As String
+End Type
+
 Type t_Lobby
     MinLevel As Byte
     MaxLevel As Byte
@@ -80,6 +90,11 @@ Type t_Lobby
     InscriptionPrice As Long
     AvailableInscriptionMoney As Long
     Canceled As Boolean
+    Description As String
+    Password As String
+    IsGlobal As Boolean
+    MapOpenTime As Long
+    BroadOpenEvent As t_Timer
 End Type
 
 Public Type t_response
@@ -120,6 +135,52 @@ Public GlobalLobbyIndex As Integer
 Public CurrentActiveEventType As e_EventType
 Const LobbyCount = 200
 Public LobbyList(0 To LobbyCount) As t_Lobby
+Private AvailableLobby As t_IndexHeap
+Private ActiveLobby As t_IndexHeap
+
+Public Sub InitializeLobbyList()
+    ReDim AvailableLobby.IndexInfo(0 To LobbyCount) As Integer
+    ReDim ActiveLobby.IndexInfo(0 To LobbyCount) As Integer
+    For i = 0 To LobbyCount
+        AvailableLobby.IndexInfo(i) = LobbyCount - i
+    Next i
+    AvailableLobby.currentIndex = LobbyCount
+    ActiveLobby.currentIndex = -1
+    GlobalLobbyIndex = -1
+End Sub
+
+Public Sub ReleaseLobby(ByVal LobbyIndex As Integer)
+    Dim i As Integer
+    Dim FoundActiveLobby As Boolean
+    For i = 0 To ActiveLobby.currentIndex
+        If ActiveLobby.IndexInfo(i) = LobbyIndex Then
+            ActiveLobby.IndexInfo(i) = ActiveLobby.IndexInfo(ActiveLobby.currentIndex)
+            ActiveLobby.currentIndex = ActiveLobby.currentIndex - 1
+            FoundActiveLobby = True
+            Exit For
+        End If
+    Next i
+    If Not FoundActiveLobby Then
+        LogError ("Trying to release a lobby twice")
+        Exit Sub
+    End If
+    AvailableLobby.currentIndex = AvailableLobby.currentIndex + 1
+    AvailableLobby.IndexInfo(AvailableLobby.currentIndex) = LobbyIndex
+    If GlobalLobbyIndex = LobbyIndex Then
+        GlobalLobbyIndex = -1
+    End If
+End Sub
+
+Public Function GetAvailableLobby() As Integer
+    If AvailableLobby.currentIndex < 0 Then
+        GetAvailableLobby = -1
+        Exit Function
+    End If
+    GetAvailableLobby = AvailableLobby.IndexInfo(AvailableLobby.currentIndex)
+    AvailableLobby.currentIndex = AvailableLobby.currentIndex - 1
+    ActiveLobby.currentIndex = ActiveLobby.currentIndex + 1
+    ActiveLobby.IndexInfo(ActiveLobby.currentIndex) = GetAvailableLobby
+End Function
 
 Public Sub InitializeLobby(ByRef instance As t_Lobby)
     instance.MinLevel = 1
@@ -137,8 +198,23 @@ Public Sub InitializeLobby(ByRef instance As t_Lobby)
     instance.AvailableInscriptionMoney = 0
     instance.InscriptionPrice = 0
     instance.Canceled = False
+    Instance.Password = ""
+    Instance.Description = ""
+    Instance.MapOpenTime = 0
+    Instance.IsGlobal = False
 End Sub
 
+Public Sub SetupLobby(ByRef Instance As t_Lobby, ByRef LobbySettings As t_NewScenearioSettings)
+    Instance.MinLevel = LobbySettings.MinLevel
+    Instance.MaxLevel = LobbySettings.MaxLevel
+    Instance.MinPlayers = LobbySettings.MinPlayers
+    Call SetMaxPlayers(Instance, LobbySettings.MaxPlayers)
+    Instance.TeamSize = LobbySettings.TeamSize
+    Instance.TeamType = LobbySettings.TeamType
+    Instance.Description = LobbySettings.Description
+    Instance.Password = LobbySettings.Password
+    Instance.InscriptionPrice = LobbySettings.InscriptionFee
+End Sub
 Public Sub SetSummonCoordinates(ByRef instance As t_Lobby, ByVal map As Integer, ByVal posX As Integer, ByVal posY As Integer)
     instance.SummonCoordinates.map = map
     instance.SummonCoordinates.X = posX
@@ -302,10 +378,15 @@ AddPlayer_Err:
    Call TraceError(Err.Number, Err.Description, "ModLobby.AddPlayer", Erl)
 End Function
 
-Public Function AddPlayerOrGroup(ByRef instance As t_Lobby, ByVal UserIndex As Integer) As t_response
+Public Function AddPlayerOrGroup(ByRef Instance As t_Lobby, ByVal UserIndex As Integer, ByVal Password As String) As t_response
 On Error GoTo AddPlayerOrGroup_Err
 100    With UserList(UserIndex)
-102        If instance.TeamSize > 0 And instance.TeamType = ePremade Then
+            If Password <> Instance.Password Then
+                AddPlayerOrGroup.Message = MsgInvalidPassword
+                AddPlayerOrGroup.Success = False
+                Exit Function
+            End If
+102        If Instance.TeamSize > 1 And Instance.TeamType = ePremade Then
 104             If Not .Grupo.EnGrupo Then
 106                 AddPlayerOrGroup.Message = MsgTeamRequiredToJoin
 108                 AddPlayerOrGroup.Success = False
@@ -442,7 +523,7 @@ On Error GoTo GiveMoneyToPlayer_Err
         instance.AvailableInscriptionMoney = instance.AvailableInscriptionMoney - amount
     End If
 GiveMoneyToPlayer_Err:
-    Call TraceError(Err.Number, Err.Description, "ModLobby.CancelLobby", Erl)
+    Call TraceError(Err.Number, Err.Description, "ModLobby.GiveGoldToPlayer", Erl)
 End Function
 
 Public Sub ListPlayers(ByRef instance As t_Lobby, ByVal UserIndex As Integer)
@@ -489,6 +570,8 @@ On Error GoTo OpenLobby_Err
             Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MsgBoardcastInscriptionPrice, instance.InscriptionPrice, e_FontTypeNames.FONTTYPE_GUILD))
         End If
     End If
+    Call SetTimer(Instance.BroadOpenEvent, 30000)
+    Instance.MapOpenTime = GlobalFrameTime
     Ret.Message = 401
     Ret.Success = True
     OpenLobby = Ret
@@ -497,7 +580,57 @@ OpenLobby_Err:
     Call TraceError(Err.Number, Err.Description, "ModLobby.OpenLobby", Erl)
 End Function
 
+Public Function WaitForPlayersTimeUp(ByRef Instance As t_Lobby) As Boolean
+   'global events waiting time is handled by game masters
+   If Instance.IsGlobal Then Exit Function
+   WaitForPlayersTimeUp = GlobalFrameTime - Instance.MapOpenTime > WaitingForPlayersTime
+End Function
+
+Public Sub UpdateWaitingForPlayers(ByVal FrameTime As Long, ByRef Instance As t_Lobby)
+    Dim i As Integer
+    If Instance.IsPublic Then
+        If UpdateTime(Instance.BroadOpenEvent, FrameTime) Then
+            If Instance.IsGlobal Then
+                Call BroadcastOpenLobby(Instance)
+            Else
+                For i = 0 To Instance.RegisteredPlayers - 1
+                    If IsValidUserRef(Instance.Players(i).user) Then
+                        Dim Seconds As Long
+                        Dim Minutes As Long
+                        Seconds = (WaitingForPlayersTime - (GlobalFrameTime - Instance.MapOpenTime)) / 1000
+                        Minutes = Seconds / 60
+                        Seconds = Seconds - (Minutes * 60)
+                        Call SendData(SendTarget.ToIndex, Instance.Players(i).user.ArrayIndex, _
+                                      PrepareMessageConsoleMsg("Esperando jugadores, La partida iniciara en " & GetTimeString(Minutes, Seconds) & " o cuando se llene la sala", e_FontTypeNames.FONTTYPE_GUILD))
+                        Call SendData(SendTarget.ToIndex, Instance.Players(i).user.ArrayIndex, _
+                                      PrepareMessageConsoleMsg("En este momento hay " & Instance.RegisteredPlayers & " / " & Instance.MaxPlayers & " y se requiere un minimo de " & Instance.MinPlayers & " para que pueda iniciar", e_FontTypeNames.FONTTYPE_GUILD))
+                    End If
+                Next i
+            End If
+        End If
+    End If
+    
+    If WaitForPlayersTimeUp(Instance) Then
+        If Instance.RegisteredPlayers >= Instance.MinPlayers Then
+            Call StartLobby(Instance, -1)
+        Else
+            
+            For i = 0 To Instance.RegisteredPlayers - 1
+                If IsValidUserRef(Instance.Players(i).user) Then
+                    Call SendData(SendTarget.ToIndex, Instance.Players(i).user.ArrayIndex, PrepareMessageConsoleMsg("Evento cancelador por falta de jugadores", e_FontTypeNames.FONTTYPE_GUILD))
+                End If
+            Next i
+            Call CancelLobby(Instance)
+        End If
+    Else
+        If Instance.RegisteredPlayers >= Instance.MaxPlayers Then
+            Call StartLobby(Instance, -1)
+        End If
+    End If
+End Sub
+
 Public Sub BroadcastOpenLobby(ByRef instance As t_Lobby)
+    If Not Instance.IsGlobal Then Exit Sub
     Dim EventName As String: EventName = "Evento"
         If Not instance.Scenario Is Nothing Then
              EventName = instance.Scenario.GetScenarioName()
@@ -531,7 +664,14 @@ ForceReset_Err:
         Resume Next
 End Sub
 
-Public Sub RegisterDisconnectedUser(ByRef instance As t_Lobby, ByVal DisconnectedUserIndex As Integer)
+Public Sub RegisterDisconnectedUser(ByVal DisconnectedUserIndex As Integer)
+    Dim i As Integer
+    For i = 0 To ActiveLobby.currentIndex
+        Call RegisterDisconnectedUserOnLobby(LobbyList(i), DisconnectedUserIndex)
+    Next i
+End Sub
+
+Public Sub RegisterDisconnectedUserOnLobby(ByRef Instance As t_Lobby, ByVal DisconnectedUserIndex As Integer)
 On Error GoTo RegisterDisconnectedUser_Err
 100    If instance.State < AcceptingPlayers Then
 102        Exit Sub
@@ -556,7 +696,14 @@ RegisterDisconnectedUser_Err:
 136     Call TraceError(Err.Number, Err.Description, "ModLobby.RegisterDisconnectedUser", Erl)
 End Sub
 
-Public Sub RegisterReconnectedUser(ByRef instance As t_Lobby, ByVal userIndex As Integer)
+Public Sub RegisterReconnectedUser(ByVal DisconnectedUserIndex As Integer)
+    Dim i As Integer
+    For i = 0 To ActiveLobby.currentIndex
+        Call RegisterReconnectedUserOnLobby(LobbyList(i), DisconnectedUserIndex)
+    Next i
+End Sub
+
+Public Sub RegisterReconnectedUserOnLobby(ByRef Instance As t_Lobby, ByVal UserIndex As Integer)
 On Error GoTo RegisterReconnectedUser_Err
 100    If instance.State < AcceptingPlayers Or instance.State >= Closed Then
 102        Exit Sub
@@ -636,15 +783,15 @@ SetTeamSize_Err:
 End Function
 
 Public Sub StartLobby(ByRef instance As t_Lobby, ByVal UserIndex As Integer)
-    If instance.State = Initialized Then
+    If Instance.State = Initialized And UserIndex >= 0 Then
         Call WriteConsoleMsg(UserIndex, "El evento ya fue iniciado.", e_FontTypeNames.FONTTYPE_INFO)
         Exit Sub
     End If
-    If instance.TeamSize > 0 And instance.TeamType = eRandom Then
+    If (Instance.TeamSize > 1 Or Instance.TeamType = eFixedTeamCount) And Instance.TeamType = eRandom Then
         Call SortTeams(instance)
     End If
     Call ModLobby.UpdateLobbyState(instance, e_LobbyState.InProgress)
-    Call WriteConsoleMsg(UserIndex, "Evento iniciado", e_FontTypeNames.FONTTYPE_INFO)
+    If UserIndex >= 0 Then Call WriteConsoleMsg(UserIndex, "Evento iniciado", e_FontTypeNames.FONTTYPE_INFO)
 End Sub
 
 Public Function HandleRemoteLobbyCommand(ByVal Command, ByVal Params As String, ByVal UserIndex As Integer, ByVal LobbyIndex As Integer) As Boolean
@@ -693,7 +840,7 @@ On Error GoTo HandleRemoteLobbyCommand_Err
 192                 HandleRemoteLobbyCommand = False
 194                 Exit Function
 196             End If
-198             RetValue = ModLobby.AddPlayerOrGroup(LobbyList(LobbyIndex), tUser.ArrayIndex)
+198             RetValue = ModLobby.AddPlayerOrGroup(LobbyList(LobbyIndex), tUser.ArrayIndex, "")
 200             If Not RetValue.Success Then
 202                 Call WriteConsoleMsg(UserIndex, "Failed to add player with message:", e_FontTypeNames.FONTTYPE_INFO)
 204                 Call WriteLocaleMsg(UserIndex, RetValue.Message, e_FontTypeNames.FONTTYPE_INFO)
@@ -817,3 +964,62 @@ On Error GoTo AllPlayersReady_Err
 AllPlayersReady_Err:
     Call TraceError(Err.Number, Err.Description, "ModLobby.AllPlayersReady", Erl)
 End Function
+
+Public Function GetOpenLobbyList(ByRef IdList() As Integer) As Integer
+    Dim i As Integer
+    Dim OpenCount As Integer
+    If ActiveLobby.currentIndex < 0 Then
+        GetOpenLobbyList = 0
+        Exit Function
+    End If
+    ReDim IdList(ActiveLobby.currentIndex) As Integer
+    For i = 0 To ActiveLobby.currentIndex
+        If LobbyList(ActiveLobby.IndexInfo(i)).State = AcceptingPlayers And _
+           LobbyList(ActiveLobby.IndexInfo(i)).IsPublic Then
+            IdList(OpenCount) = ActiveLobby.IndexInfo(i)
+            OpenCount = OpenCount + 1
+        End If
+    Next i
+    GetOpenLobbyList = OpenCount
+End Function
+
+Public Function ValidateLobbySettings(ByVal UserIndex As Integer, ByRef LobbySettings As t_NewScenearioSettings)
+    If LobbySettings.MaxPlayers > NumUsers Then
+        Call WriteConsoleMsg(UserIndex, "Hay pocos jugadores en el servidor, intenta con una cantidad menor de participantes.", e_FontTypeNames.FONTTYPE_INFO)
+        Exit Function
+    End If
+    
+    If LobbySettings.MinLevel < 1 Or LobbySettings.MaxLevel > 47 Then
+        Call WriteConsoleMsg(UserIndex, "El nivel para el evento debe ser entre 1 y 47.", e_FontTypeNames.FONTTYPE_INFO)
+        Exit Function
+    End If
+    
+    If LobbySettings.MinLevel > LobbySettings.MaxLevel Then
+        Call WriteConsoleMsg(UserIndex, "El nivel minimo debe ser menor al maximo.", e_FontTypeNames.FONTTYPE_INFO)
+        Exit Function
+    End If
+    ValidateLobbySettings = True
+End Function
+
+Public Sub CreatePublicEvent(ByVal UserIndex As Integer, ByRef LobbySettings As t_NewScenearioSettings)
+    Dim LobbyId As Integer
+    
+    LobbyId = GetAvailableLobby()
+    If LobbyId < 0 Then
+        Call WriteConsoleMsg(UserIndex, "No se pudo encontrar una sala disponible.", e_FontTypeNames.FONTTYPE_INFO)
+        Exit Sub
+    End If
+    If Not ValidateLobbySettings(UserIndex, LobbySettings) Then
+        Exit Sub
+    End If
+    Call InitializeLobby(LobbyList(LobbyId))
+    Call ModLobby.SetupLobby(LobbyList(LobbyId), LobbySettings)
+    Call CustomScenarios.PrepareNewEvent(LobbySettings.ScenearioType, LobbyId)
+    Call OpenLobby(LobbyList(LobbyId), True, UserIndex)
+    Dim addPlayerResult As t_response
+    addPlayerResult = ModLobby.AddPlayerOrGroup(LobbyList(LobbyId), UserIndex, LobbySettings.Password)
+    If Not addPlayerResult.Success Then
+        Call CancelLobby(LobbyList(LobbyId))
+        Call WriteConsoleMsg(UserIndex, "Se cancelo la sala que creaste porque no cumples los requisitos para participar.", e_FontTypeNames.FONTTYPE_INFO)
+    End If
+End Sub
