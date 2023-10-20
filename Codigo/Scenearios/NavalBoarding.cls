@@ -116,7 +116,6 @@ Dim SpawnedUserList As t_UserList
 Dim MaxTime As Long
 Dim CountdownTimer As t_Timer
 Dim BroadCastTimer As t_Timer
-Dim BroadOpenEvent As t_Timer
 Dim ScoreBroadcastTimer As t_Timer
 Dim UpdateIndex As Integer
 Dim LastFrameTime As Long
@@ -191,11 +190,9 @@ Friend Sub Class_Initialize()
 170     UpdateIndex = AddUpdateScenario(Me)
 172     Call CustomScenarios.SetCustomScenario(MapNumbers(0), Me)
 174     Call CustomScenarios.SetCustomScenario(MapNumbers(1), Me)
-176     Call ConfigMapLobby
 178     Call LoadNpcSpawnInfo(NpcSpawnList, ScenarioIni)
 180     Call LoadTeamCargo(TeamCargo(1), 1, ScenarioIni)
 182     Call LoadTeamCargo(TeamCargo(2), 2, ScenarioIni)
-184     Call SetTimer(BroadOpenEvent, 15000)
         Exit Sub
 NavalBoarding_Initialize_Err:
 186 Call TraceError(Err.Number, Err.Description, "NavalBoarding.Initialize ", Erl)
@@ -359,6 +356,7 @@ On Error GoTo CloseScenario_Err:
 102    Set LobbyList(LobbyIndex).Scenario = Nothing
 104    Call ModLobby.UpdateLobbyState(LobbyList(LobbyIndex), e_LobbyState.UnInitilized)
 106    Call ClearMap
+107    If MapNumbers(TopMapNumber) > 0 Then Call ReleaseLobby(LobbyIndex)
 108    If MapNumbers(TopMapNumber) > 0 Then Call ReleaseInstance(MapNumbers(TopMapNumber))
 110    MapNumbers(TopMapNumber) = 0
 112    If MapNumbers(CargoMapNumber) > 0 Then Call ReleaseInstance(MapNumbers(CargoMapNumber))
@@ -396,6 +394,7 @@ End Function
 
 Public Sub IBaseScenario_SetLobbyIndex(ByVal Value As Integer)
     LobbyIndex = Value
+    Call ConfigMapLobby
 End Sub
 
 Public Function IBaseScenario_GetScenarioName() As String
@@ -533,11 +532,8 @@ Public Sub IBaseScenario_Update()
             End If
             Exit Sub
         End If
-    ElseIf LobbyList(LobbyIndex).State = e_LobbyState.AcceptingPlayers And LobbyList(LobbyIndex).IsPublic Then
-        If UpdateTime(BroadOpenEvent, frametime) Then
-            Call BroadcastOpenEvent
-        End If
-        
+    ElseIf LobbyList(LobbyIndex).State = e_LobbyState.AcceptingPlayers Then
+        Call UpdateWaitingForPlayers(FrameTime, LobbyList(LobbyIndex))
     ElseIf LobbyList(LobbyIndex).State = e_LobbyState.Closed Then
         Call CloseScenario
     End If
@@ -563,6 +559,8 @@ End Sub
 Public Sub IBaseScenario_OnUserReconnect(ByVal UserIndex As Integer)
 
 End Sub
+
+
 
 Private Sub StartGame()
     Call SetTimer(BroadCastTimer, 60000)
@@ -626,10 +624,6 @@ Private Sub MatchCompleted()
         NpcIndex = ModAreas.ConnGroups(MapNumbers(0)).NpcForAi(0)
         Call QuitarNPC(NpcIndex, eClearHunt)
     Loop
-End Sub
-
-Private Sub BroadcastOpenEvent()
-    Call BroadcastOpenLobby(LobbyList(LobbyIndex))
 End Sub
 
 Private Sub BroadcastPendingTime(ByVal frametime As Long)

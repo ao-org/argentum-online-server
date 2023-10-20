@@ -5852,3 +5852,38 @@ PrepareActiveToggles_Err:
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareActiveToggles", Erl)
 End Function
 
+Public Sub WriteUpdateLobbyList(ByVal UserIndex As Integer)
+On Error GoTo WriteUpdateLobbyList_Err
+    Dim IdList() As Integer
+    Dim OpenLobbyCount As Integer
+    OpenLobbyCount = GetOpenLobbyList(IdList)
+    Dim i As Integer
+    Call Writer.WriteInt16(ServerPacketID.eReportLobbyList)
+    Call Writer.WriteInt16(OpenLobbyCount)
+    For i = 0 To OpenLobbyCount - 1
+        Call Writer.WriteInt16(IdList(i))
+        With LobbyList(IdList(i))
+            Call Writer.WriteString8(.Description)
+            If .Scenario Is Nothing Then
+                Call Writer.WriteString8("")
+            Else
+                Call Writer.WriteString8(.Scenario.GetScenarioName())
+            End If
+            Call Writer.WriteInt16(.MinLevel)
+            Call Writer.WriteInt16(.MaxLevel)
+            Call Writer.WriteInt16(.MinPlayers)
+            Call Writer.WriteInt16(.MaxPlayers)
+            Call Writer.WriteInt16(.RegisteredPlayers)
+            Call Writer.WriteInt16(.TeamSize)
+            Call Writer.WriteInt16(.TeamType)
+            Call Writer.WriteInt32(.InscriptionPrice)
+            Call Writer.WriteInt8(IIf(Len(.Password) > 0, 1, 0))
+        End With
+        
+    Next i
+    
+    Call modSendData.SendData(ToIndex, UserIndex)
+WriteUpdateLobbyList_Err:
+        Call Writer.Clear
+        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareActiveToggles", Erl)
+End Sub

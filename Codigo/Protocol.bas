@@ -7681,154 +7681,41 @@ HandleServerOpenToUsersToggle_Err:
         
 End Sub
 
-''
-' Handle the "Participar" message
-'
-' @param UserIndex The index of the user sending the message
-
 Public Sub HandleParticipar(ByVal UserIndex As Integer)
         On Error GoTo HandleParticipar_Err
 
         Dim handle As Integer
+        Dim RoomId As Integer
+        Dim Password As String
+100     RoomId = Reader.ReadInt16
+102     Password = Reader.ReadString8
     
-100     With UserList(UserIndex)
-            
-            If CurrentActiveEventType = CaptureTheFlag Then
-                If Not InstanciaCaptura Is Nothing Then
-                    Call InstanciaCaptura.inscribirse(UserIndex)
-                    Exit Sub
-                End If
-            Else
-                If LobbyList(GlobalLobbyIndex).State = AcceptingPlayers Then
-                    If LobbyList(GlobalLobbyIndex).IsPublic Then
-                        Dim addPlayerResult As t_response
-                        addPlayerResult = ModLobby.AddPlayerOrGroup(LobbyList(GlobalLobbyIndex), UserIndex)
-                        Call WriteLocaleMsg(UserIndex, addPlayerResult.Message, e_FontTypeNames.FONTTYPE_INFO)
-                    Else
-                        Call WriteLocaleMsg(UserIndex, MsgCantJoinPrivateLobby, e_FontTypeNames.FONTTYPE_INFO)
+104     With UserList(UserIndex)
+106         If RoomId = -1 Then
+108             If CurrentActiveEventType = CaptureTheFlag Then
+110                 If Not InstanciaCaptura Is Nothing Then
+112                     Call InstanciaCaptura.inscribirse(UserIndex)
+                        Exit Sub
                     End If
-                    Exit Sub
+                Else
+114                 RoomId = GlobalLobbyIndex
                 End If
             End If
-            
-102         If Torneo.HayTorneoaActivo = False Then
-104             Call WriteConsoleMsg(UserIndex, "No hay ningún evento disponible.", e_FontTypeNames.FONTTYPE_INFO)
-                Exit Sub
-
-            End If
-                   
-106         If .flags.EnTorneo Then
-108             Call WriteConsoleMsg(UserIndex, "Ya estás participando.", e_FontTypeNames.FONTTYPE_INFO)
-                Exit Sub
-
-            End If
-    
-110         If .Stats.ELV > Torneo.nivelmaximo Then
-112             Call WriteConsoleMsg(UserIndex, "El nivel máximo para participar es " & Torneo.NivelMaximo & ".", e_FontTypeNames.FONTTYPE_INFO)
-                Exit Sub
-
-            End If
-    
-114         If .Stats.ELV < Torneo.NivelMinimo Then
-116             Call WriteConsoleMsg(UserIndex, "El nivel mínimo para participar es " & Torneo.NivelMinimo & ".", e_FontTypeNames.FONTTYPE_INFO)
-                Exit Sub
-
-            End If
-    
-118         If .Stats.GLD < Torneo.costo Then
-120             Call WriteConsoleMsg(UserIndex, "No tienes suficiente oro para ingresar.", e_FontTypeNames.FONTTYPE_INFO)
-                Exit Sub
-
-            End If
         
-122         If .clase = Mage And Torneo.mago = 0 Then
-124             Call WriteConsoleMsg(UserIndex, "Tu clase no participa de este evento.", e_FontTypeNames.FONTTYPE_INFO)
+116         If LobbyList(RoomId).State = AcceptingPlayers Then
+118             If LobbyList(RoomId).IsPublic Then
+                    Dim addPlayerResult As t_response
+120                 addPlayerResult = ModLobby.AddPlayerOrGroup(LobbyList(RoomId), UserIndex, Password)
+122                 Call WriteLocaleMsg(UserIndex, addPlayerResult.Message, e_FontTypeNames.FONTTYPE_INFO)
+                Else
+124                 Call WriteLocaleMsg(UserIndex, MsgCantJoinPrivateLobby, e_FontTypeNames.FONTTYPE_INFO)
+                End If
                 Exit Sub
-
             End If
-        
-126         If .clase = Cleric And Torneo.clerico = 0 Then
-128             Call WriteConsoleMsg(UserIndex, "Tu clase no participa de este evento.", e_FontTypeNames.FONTTYPE_INFO)
-                Exit Sub
-
-            End If
-        
-130         If .clase = Warrior And Torneo.guerrero = 0 Then
-132             Call WriteConsoleMsg(UserIndex, "Tu clase no participa de este evento.", e_FontTypeNames.FONTTYPE_INFO)
-                Exit Sub
-
-            End If
-        
-134         If .clase = Bard And Torneo.bardo = 0 Then
-136             Call WriteConsoleMsg(UserIndex, "Tu clase no participa de este evento.", e_FontTypeNames.FONTTYPE_INFO)
-                Exit Sub
-
-            End If
-        
-138         If .clase = Assasin And Torneo.asesino = 0 Then
-140             Call WriteConsoleMsg(UserIndex, "Tu clase no participa de este evento.", e_FontTypeNames.FONTTYPE_INFO)
-                Exit Sub
-
-            End If
-   
-142         If .clase = Druid And Torneo.druido = 0 Then
-144             Call WriteConsoleMsg(UserIndex, "Tu clase no participa de este evento.", e_FontTypeNames.FONTTYPE_INFO)
-                Exit Sub
-
-            End If
-        
-146         If .clase = Paladin And Torneo.Paladin = 0 Then
-148             Call WriteConsoleMsg(UserIndex, "Tu clase no participa de este evento.", e_FontTypeNames.FONTTYPE_INFO)
-                Exit Sub
-
-            End If
-        
-150         If .clase = Hunter And Torneo.cazador = 0 Then
-152             Call WriteConsoleMsg(UserIndex, "Tu clase no participa de este evento.", e_FontTypeNames.FONTTYPE_INFO)
-                Exit Sub
-
-            End If
-        
-154         If .clase = Trabajador And Torneo.Trabajador = 0 Then
-156             Call WriteConsoleMsg(UserIndex, "Tu clase no participa de este evento.", e_FontTypeNames.FONTTYPE_INFO)
-                Exit Sub
-
-            End If
-        
-158         If .clase = e_Class.Thief And Torneo.Ladron = 0 Then
-160             Call WriteConsoleMsg(UserIndex, "Tu clase no participa de este evento.", e_FontTypeNames.FONTTYPE_INFO)
-                Exit Sub
-
-            End If
-   
-162         If .clase = e_Class.Bandit And Torneo.Bandido = 0 Then
-164             Call WriteConsoleMsg(UserIndex, "Tu clase no participa de este evento.", e_FontTypeNames.FONTTYPE_INFO)
-                Exit Sub
-
-            End If
-        
-166         If .clase = e_Class.Pirat And Torneo.Pirata = 0 Then
-168             Call WriteConsoleMsg(UserIndex, "Tu clase no participa de este evento.", e_FontTypeNames.FONTTYPE_INFO)
-                Exit Sub
-
-            End If
-   
-170         If Torneo.Participantes = Torneo.cupos Then
-172             Call WriteConsoleMsg(UserIndex, "Los cupos ya estan llenos.", e_FontTypeNames.FONTTYPE_INFO)
-                Exit Sub
-
-            End If
-  
-174         Call ParticiparTorneo(UserIndex)
-
         End With
-        
         Exit Sub
-
 HandleParticipar_Err:
-176     Call TraceError(Err.Number, Err.Description, "Protocol.HandleParticipar", Erl)
-178
-        
+    Call TraceError(Err.Number, Err.Description, "Protocol.HandleParticipar", Erl)
 End Sub
 
 ''
@@ -10845,4 +10732,11 @@ HandleUseHKeySlot_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleUseHKeySlot", Erl)
 End Sub
 
-
+Public Sub HendleRequestLobbyList(ByVal UserIndex As Integer)
+On Error GoTo HendleRequestLobbyList_Err:
+    
+    Call WriteUpdateLobbyList(UserIndex)
+    Exit Sub
+HendleRequestLobbyList_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.HendleRequestLobbyList", Erl)
+End Sub

@@ -96,7 +96,6 @@ Dim RingLimiterTLItemID As Long
 Dim RingLimiterBRItemID As Long
 Dim RingLimiterBLItemID As Long
 Dim MinArenaSize As Integer
-Dim BroadOpenEvent As t_Timer
 Dim LobbyIndex As Integer
 
 Private Sub Class_Initialize()
@@ -126,8 +125,6 @@ On Error GoTo DeathMatch_Initialize_Err:
 120 UpdateIndex = AddUpdateScenario(Me)
 122 Call CustomScenarios.SetCustomScenario(MapNumber, Me)
 124 Call LoadItemsToSpawn(ScenarioIni)
-126 Call ConfigMapLobby
-    Call SetTimer(BroadOpenEvent, 15000)
     Exit Sub
 DeathMatch_Initialize_Err:
     Call TraceError(Err.Number, Err.Description, "DeathMatch.Initialize ", Erl)
@@ -272,6 +269,7 @@ On Error GoTo CloseScenario_Err:
 108    If MapNumber > 0 Then
 110         Call ReleaseInstance(MapNumber)
 112         MapNumber = 0
+114         Call ReleaseLobby(LobbyIndex)
        End If
     Exit Sub
 CloseScenario_Err:
@@ -319,6 +317,7 @@ End Function
 
 Public Sub IBaseScenario_SetLobbyIndex(ByVal Value As Integer)
     LobbyIndex = Value
+    Call ConfigMapLobby
 End Sub
 
 Public Function IBaseScenario_GetScenarioName() As String
@@ -459,10 +458,8 @@ Public Sub IBaseScenario_Update()
             End If
             Exit Sub
         End If
-    ElseIf LobbyList(LobbyIndex).State = e_LobbyState.AcceptingPlayers And LobbyList(LobbyIndex).IsPublic Then
-        If UpdateTime(BroadOpenEvent, frametime) Then
-            Call BroadcastOpenLobby(LobbyList(LobbyIndex))
-        End If
+    ElseIf LobbyList(LobbyIndex).State = e_LobbyState.AcceptingPlayers Then
+        Call UpdateWaitingForPlayers(FrameTime, LobbyList(LobbyIndex))
     ElseIf LobbyList(LobbyIndex).State = e_LobbyState.Closed Then
         Call CloseScenario
     End If
@@ -675,7 +672,7 @@ Sub GiveRewards()
 110         Rewards(3) = LobbyList(LobbyIndex).AvailableInscriptionMoney * 0.2
         End If
 112     Call SendData(SendTarget.ToAll, 0, PrepareMessageLocaleMsg(MsgMatchComplete, Me.IBaseScenario_GetScenarioName(), e_FontTypeNames.FONTTYPE_GUILD))
-114     If LobbyList(LobbyIndex).TeamSize >= 1 Then
+114     If LobbyList(LobbyIndex).TeamSize > 1 Then
 116         ReDim Teams(0 To LobbyList(LobbyIndex).RegisteredPlayers / LobbyList(LobbyIndex).TeamSize) As String
 118         Ranking = Board.GetTeamRanking(LobbyList(LobbyIndex))
 120         For i = 0 To LobbyList(LobbyIndex).RegisteredPlayers - 1
@@ -711,7 +708,7 @@ Sub GiveRewards()
 164                 Next j
 166                 RewardStr = ", gano " & PonerPuntos(Rewards(i + 1)) & " Modenas de oro."
                 End If
-168             Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg((i + 1) & ") " & UserList(Ranking(i).PlayerIndex).name & ": " & Ranking(i).Score & " puntos" & RewardStr, e_FontTypeNames.FONTTYPE_GUILD))
+168             If Ranking(i).PlayerIndex > 0 Then Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg((i + 1) & ") " & UserList(Ranking(i).PlayerIndex).name & ": " & Ranking(i).Score & " puntos" & RewardStr, e_FontTypeNames.FONTTYPE_GUILD))
 170         Next i
         End If
         Exit Sub
