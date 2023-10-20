@@ -622,23 +622,39 @@ MakeObj_Err:
 120     Call TraceError(Err.Number, Err.Description, "InvUsuario.MakeObj", Erl)
 End Sub
 
-Function GetSlotForItemInInvetory(ByVal UserIndex As Integer, ByRef MyObject As t_Obj) As Integer
-On Error GoTo GetSlotForItemInInvetory_Err
-    GetSlotForItemInInvetory = -1
+Function GetSlotForItemInInventory(ByVal UserIndex As Integer, ByRef MyObject As t_Obj) As Integer
+On Error GoTo GetSlotForItemInInventory_Err
+    GetSlotForItemInInventory = -1
 100 Dim i As Integer
     
 102 For i = 1 To UserList(UserIndex).CurrentInventorySlots
-104    If UserList(UserIndex).Invent.Object(i).objIndex = 0 And GetSlotForItemInInvetory = -1 Then
-106        GetSlotForItemInInvetory = i 'we found a valid place but keep looking in case we can stack
+104    If UserList(UserIndex).invent.Object(i).objIndex = 0 And GetSlotForItemInInventory = -1 Then
+106        GetSlotForItemInInventory = i 'we found a valid place but keep looking in case we can stack
 108    ElseIf UserList(UserIndex).invent.Object(i).objIndex = MyObject.objIndex And _
               UserList(UserIndex).invent.Object(i).amount + MyObject.amount <= MAX_INVENTORY_OBJS Then
-110        GetSlotForItemInInvetory = i 'we can stack the item, let use this slot
+110        GetSlotForItemInInventory = i 'we can stack the item, let use this slot
 112        Exit Function
        End If
     Next i
     Exit Function
-GetSlotForItemInInvetory_Err:
-    Call TraceError(Err.Number, Err.Description, "InvUsuario.GetSlotForItemInInvetory", Erl)
+GetSlotForItemInInventory_Err:
+    Call TraceError(Err.Number, Err.Description, "InvUsuario.GetSlotForItemInInventory", Erl)
+End Function
+
+Function GetSlotInInventory(ByVal UserIndex As Integer, ByVal objIndex As Integer) As Integer
+    On Error GoTo GetSlotInInventory_Err
+    GetSlotInInventory = -1
+    Dim i As Integer
+    
+    For i = 1 To UserList(UserIndex).CurrentInventorySlots
+        If UserList(UserIndex).invent.Object(i).objIndex = objIndex Then
+            GetSlotInInventory = i
+            Exit Function
+        End If
+    Next i
+    Exit Function
+GetSlotInInventory_Err:
+    Call TraceError(Err.Number, Err.Description, "InvUsuario.GetSlotInInventory", Erl)
 End Function
 
 Function MeterItemEnInventario(ByVal UserIndex As Integer, ByRef MiObj As t_Obj) As Boolean
@@ -657,7 +673,7 @@ Function MeterItemEnInventario(ByVal UserIndex As Integer, ByRef MiObj As t_Obj)
             Exit Function
         End If
         '¿el user ya tiene un objeto del mismo tipo? ?????
-100     Slot = GetSlotForItemInInvetory(UserIndex, MiObj)
+100     Slot = GetSlotForItemInInventory(UserIndex, MiObj)
         
         If Slot <= 0 Then
 118        Call WriteLocaleMsg(UserIndex, MsgInventoryIsFull, e_FontTypeNames.FONTTYPE_FIGHT)
@@ -1167,7 +1183,9 @@ Sub EquiparBarco(ByVal UserIndex As Integer)
 152         .Char.ShieldAnim = NingunEscudo
 154         .Char.WeaponAnim = NingunArma
     
+            Call WriteNavigateToggle(UserIndex, .flags.Navegando)
 156         Call WriteNadarToggle(UserIndex, (Barco.Ropaje = iTraje Or Barco.Ropaje = iTrajeAltoNw Or Barco.Ropaje = iTrajeBajoNw), (Barco.Ropaje = iTrajeAltoNw Or Barco.Ropaje = iTrajeBajoNw))
+            Call ActualizarVelocidadDeUsuario(UserIndex)
         End With
   
         Exit Sub
@@ -2948,7 +2966,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
 1164             Case e_OBJType.otBarcos
                 
                         ' Piratas y trabajadores navegan al nivel 23
-                     If .Invent.Object(Slot).ObjIndex <> 199 And .Invent.Object(Slot).ObjIndex <> 200 And .Invent.Object(Slot).ObjIndex <> 197 Then
+                     If .invent.Object(Slot).objIndex <> iObjTrajeAltoNw And .invent.Object(Slot).objIndex <> iObjTrajeBajoNw And .invent.Object(Slot).objIndex <> iObjTraje Then
 1166                     If .clase = e_Class.Trabajador Or .clase = e_Class.Pirat Then
 1168                         If .Stats.ELV < 23 Then
 1170                             Call WriteConsoleMsg(UserIndex, "Para recorrer los mares debes ser nivel 23 o superior.", e_FontTypeNames.FONTTYPE_INFO)
@@ -2959,13 +2977,13 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
 1174                        Call WriteConsoleMsg(UserIndex, "Para recorrer los mares debes ser nivel 25 o superior.", e_FontTypeNames.FONTTYPE_INFO)
                             Exit Sub
                         End If
-                    ElseIf .Invent.Object(Slot).ObjIndex = 199 Or .Invent.Object(Slot).ObjIndex = 200 Then
-                        If MapData(.Pos.Map, .Pos.X + 1, .Pos.Y).trigger <> e_Trigger.DETALLEAGUA And MapData(.Pos.Map, .Pos.X - 1, .Pos.Y).trigger <> e_Trigger.DETALLEAGUA And MapData(.Pos.Map, .Pos.X, .Pos.Y + 1).trigger <> e_Trigger.DETALLEAGUA And MapData(.Pos.Map, .Pos.X, .Pos.Y - 1).trigger <> e_Trigger.DETALLEAGUA Then
+                    ElseIf .invent.Object(Slot).objIndex = iObjTrajeAltoNw Or .invent.Object(Slot).objIndex = iObjTrajeBajoNw Then
+                        If (.flags.Navegando = 0 Or (.invent.BarcoObjIndex <> iObjTrajeAltoNw And .invent.BarcoObjIndex <> iObjTrajeBajoNw)) And MapData(.pos.Map, .pos.X + 1, .pos.y).trigger <> e_Trigger.DETALLEAGUA And MapData(.pos.Map, .pos.X - 1, .pos.y).trigger <> e_Trigger.DETALLEAGUA And MapData(.pos.Map, .pos.X, .pos.y + 1).trigger <> e_Trigger.DETALLEAGUA And MapData(.pos.Map, .pos.X, .pos.y - 1).trigger <> e_Trigger.DETALLEAGUA Then
                             Call WriteConsoleMsg(UserIndex, "Este traje es para aguas contaminadas.", e_FontTypeNames.FONTTYPE_INFO)
                             Exit Sub
                         End If
-                    ElseIf .Invent.Object(Slot).ObjIndex = 197 Then
-                          If MapData(.pos.map, .pos.X + 1, .pos.y).trigger <> e_Trigger.NADOCOMBINADO And MapData(.pos.map, .pos.X - 1, .pos.y).trigger <> e_Trigger.NADOCOMBINADO And MapData(.pos.map, .pos.X, .pos.y + 1).trigger <> e_Trigger.NADOCOMBINADO And MapData(.pos.map, .pos.X, .pos.y - 1).trigger <> e_Trigger.NADOCOMBINADO And MapData(.pos.map, .pos.X + 1, .pos.y).trigger <> e_Trigger.VALIDONADO And MapData(.pos.map, .pos.X - 1, .pos.y).trigger <> e_Trigger.VALIDONADO And MapData(.pos.map, .pos.X, .pos.y + 1).trigger <> e_Trigger.VALIDONADO And MapData(.pos.map, .pos.X, .pos.y - 1).trigger <> e_Trigger.VALIDONADO And MapData(.pos.map, .pos.X + 1, .pos.y).trigger <> e_Trigger.NADOBAJOTECHO And MapData(.pos.map, .pos.X - 1, .pos.y).trigger <> e_Trigger.NADOBAJOTECHO And MapData(.pos.map, .pos.X, .pos.y + 1).trigger <> e_Trigger.NADOBAJOTECHO And MapData(.pos.map, .pos.X, .pos.y - 1).trigger <> e_Trigger.NADOBAJOTECHO Then
+                    ElseIf .invent.Object(Slot).objIndex = iObjTraje Then
+                          If (.flags.Navegando = 0 Or .invent.BarcoObjIndex <> iObjTraje) And MapData(.pos.Map, .pos.X + 1, .pos.y).trigger <> e_Trigger.NADOCOMBINADO And MapData(.pos.Map, .pos.X - 1, .pos.y).trigger <> e_Trigger.NADOCOMBINADO And MapData(.pos.Map, .pos.X, .pos.y + 1).trigger <> e_Trigger.NADOCOMBINADO And MapData(.pos.Map, .pos.X, .pos.y - 1).trigger <> e_Trigger.NADOCOMBINADO And MapData(.pos.Map, .pos.X + 1, .pos.y).trigger <> e_Trigger.VALIDONADO And MapData(.pos.Map, .pos.X - 1, .pos.y).trigger <> e_Trigger.VALIDONADO And MapData(.pos.Map, .pos.X, .pos.y + 1).trigger <> e_Trigger.VALIDONADO And MapData(.pos.Map, .pos.X, .pos.y - 1).trigger <> e_Trigger.VALIDONADO And MapData(.pos.Map, .pos.X + 1, .pos.y).trigger <> e_Trigger.NADOBAJOTECHO And MapData(.pos.Map, .pos.X - 1, .pos.y).trigger <> e_Trigger.NADOBAJOTECHO And MapData(.pos.Map, .pos.X, .pos.y + 1).trigger <> e_Trigger.NADOBAJOTECHO And MapData(.pos.Map, .pos.X, .pos.y - 1).trigger <> e_Trigger.NADOBAJOTECHO Then
                             Call WriteConsoleMsg(UserIndex, "Este traje es para zonas poco profundas.", e_FontTypeNames.FONTTYPE_INFO)
                             Exit Sub
                         End If
@@ -3641,7 +3659,6 @@ Public Sub UpdateCharWithEquipedItems(ByVal UserIndex As Integer)
             .Char.CartAnim = 0
             .Char.ShieldAnim = 0
             .Char.WeaponAnim = 0
-            .Char.head = 0
             'TODO place ship body
             Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, UserList(UserIndex).Char.CartAnim)
             Exit Sub

@@ -216,6 +216,10 @@ Public Const iTraje = 694 'Traje +25
 Public Const iTrajeAltoNw = 1295 'Traje -25 alto
 Public Const iTrajeBajoNw = 1296 'Traje -25 enano
 
+Public Const iObjTraje = 197
+Public Const iObjTrajeAltoNw = 199
+Public Const iObjTrajeBajoNw = 200
+
 Public Const iBarca = 84
 
 Public Const iBarcaCiuda = 1265
