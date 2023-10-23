@@ -72,6 +72,7 @@ Private Sub IncreaseArraySize(ByVal ExtraSlots As Integer)
     For i = 1 To ExtraSlots
         AvailableUpdateSlots.IndexInfo(i) = NewSize - (i - 1)
     Next i
+    AvailableUpdateSlots.currentIndex = ExtraSlots
 End Sub
 Public Function GetMap(ByVal mapIndex As Integer) As IBaseScenario
 On Error GoTo GetMap_Err:
@@ -99,7 +100,7 @@ On Error GoTo AddUpdateScenario_Err:
 102       Call InitializeUpdateStacks
        End If
        If AvailableUpdateSlots.currentIndex = 0 Then
-        'increase buffers
+           Call IncreaseArraySize(InitialUpdateSize)
        End If
        pos = AvailableUpdateSlots.IndexInfo(AvailableUpdateSlots.currentIndex)
        AvailableUpdateSlots.currentIndex = AvailableUpdateSlots.currentIndex - 1
