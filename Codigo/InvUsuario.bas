@@ -3643,16 +3643,6 @@ End Sub
 
 Public Sub UpdateCharWithEquipedItems(ByVal UserIndex As Integer)
     With UserList(UserIndex)
-        If .flags.Muerto = 1 Then
-            .Char.body = iCuerpoMuerto
-204         .Char.head = 0
-206         .Char.ShieldAnim = NingunEscudo
-208         .Char.WeaponAnim = NingunArma
-210         .Char.CascoAnim = NingunCasco
-211         .Char.CartAnim = NoCart
-            Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, UserList(UserIndex).Char.CartAnim)
-        Exit Sub
-        End If
         If .flags.Navegando > 0 Then
             Call EquiparBarco(UserIndex)
             .Char.CascoAnim = 0
@@ -3663,6 +3653,17 @@ Public Sub UpdateCharWithEquipedItems(ByVal UserIndex As Integer)
             Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, UserList(UserIndex).Char.CartAnim)
             Exit Sub
         End If
+        If .flags.Muerto = 1 Then
+            .Char.body = iCuerpoMuerto
+204         .Char.head = 0
+206         .Char.ShieldAnim = NingunEscudo
+208         .Char.WeaponAnim = NingunArma
+210         .Char.CascoAnim = NingunCasco
+211         .Char.CartAnim = NoCart
+            Call ChangeUserChar(UserIndex, .Char.body, .Char.head, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, UserList(UserIndex).Char.CartAnim)
+        Exit Sub
+        End If
+        
         .Char.head = .OrigChar.head
         If .invent.WeaponEqpObjIndex > 0 Then
             .Char.WeaponAnim = ObjData(.invent.WeaponEqpObjIndex).WeaponAnim
