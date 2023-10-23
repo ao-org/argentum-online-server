@@ -1773,7 +1773,9 @@ Private Sub HandleAttack(ByVal UserIndex As Integer)
         
             
             Dim PacketCounter As Long
+            Dim Heading As e_Heading
             PacketCounter = Reader.ReadInt32
+            Heading = Reader.ReadInt8
                         
             Dim Packet_ID As Long
             Packet_ID = PacketNames.Attack
@@ -1808,11 +1810,15 @@ Private Sub HandleAttack(ByVal UserIndex As Integer)
 
             End If
         
-116         If UserList(UserIndex).flags.Meditando Then
-118             UserList(UserIndex).flags.Meditando = False
-120             UserList(UserIndex).Char.FX = 0
-122             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageMeditateToggle(UserList(UserIndex).Char.charindex, 0))
-
+116         If .flags.Meditando Then
+118             .flags.Meditando = False
+120             .Char.FX = 0
+122             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageMeditateToggle(.Char.charindex, 0))
+            End If
+            
+            If Heading <> .Char.Heading Then
+                .Char.Heading = Heading
+                Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCharacterChange(.Char.body, .Char.head, .Char.Heading, .Char.charindex, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CartAnim, .Char.FX, .Char.loops, .Char.CascoAnim, False, .flags.Navegando))
             End If
         
             'If exiting, cancel
