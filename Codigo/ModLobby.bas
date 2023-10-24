@@ -521,7 +521,9 @@ On Error GoTo GiveMoneyToPlayer_Err
     If IsValidUserRef(instance.Players(UserSlotIndex).user) Then
         Call AddGold(instance.Players(UserSlotIndex).user.ArrayIndex, amount)
         instance.AvailableInscriptionMoney = instance.AvailableInscriptionMoney - amount
+        GiveGoldToPlayer = True
     End If
+    Exit Function
 GiveMoneyToPlayer_Err:
     Call TraceError(Err.Number, Err.Description, "ModLobby.GiveGoldToPlayer", Erl)
 End Function
