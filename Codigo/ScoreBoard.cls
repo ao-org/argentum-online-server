@@ -137,11 +137,11 @@ End Sub
 Friend Sub PublishScoreboard(ByVal Audience As Integer, ByVal AudienceIndex, ByRef Lobby As t_Lobby, ByVal IsFinal As Boolean)
     Dim i As Integer
     Dim rank() As e_Rank
-    If IsFinal And Lobby.TeamSize > 0 Then
+    If IsFinal And Lobby.TeamSize > 1 Then
         Call PublishTeamScore(Audience, AudienceIndex, Lobby)
         Exit Sub
     End If
-    If Lobby.TeamSize >= 1 Then
+    If Lobby.TeamSize > 1 Then
         rank = GetTeamRanking(Lobby)
         Call SendData(Audience, AudienceIndex, PrepareMessageConsoleMsg("Posiciones:", e_FontTypeNames.FONTTYPE_GUILD))
         For i = 1 To UBound(rank)

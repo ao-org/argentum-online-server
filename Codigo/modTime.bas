@@ -124,3 +124,21 @@ Public Function UpdateTime(ByRef timer As t_Timer, ByVal deltaTime As Long) As B
         timer.Occurrences = timer.Occurrences + 1
     End If
 End Function
+
+Public Function GetTimeString(ByVal Minutes As Integer, ByVal Seconds As Integer)
+    Dim Output As String
+    If Minutes > 1 Then
+        Output = Minutes & " minutos"
+    ElseIf Minutes = 1 Then
+        Output = "1 minuto"
+    End If
+    If Seconds > 0 And Minutes > 0 Then
+        Output = Output & " y "
+    End If
+    If Seconds > 1 Then
+        Output = Output & Seconds & " segundos"
+    ElseIf Seconds = 1 Then
+        Output = Output & "1 segundo"
+    End If
+    GetTimeString = Output
+End Function

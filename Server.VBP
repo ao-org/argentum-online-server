@@ -121,6 +121,7 @@ Class=BonusDamageEffect; Codigo\EffectOverTime\BonusDamageEffect.cls
 Class=NavalBoarding; Codigo\Scenearios\NavalBoarding.cls
 Class=IInventoryInterface; Codigo\Scenearios\IInventoryInterface.cls
 Module=PacketId; Codigo\PacketId.bas
+Module=InstanceManager; Codigo\InstanceManager.bas
 IconForm="frmMain"
 Startup="Sub Main"
 HelpFile=""

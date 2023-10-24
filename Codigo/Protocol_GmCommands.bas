@@ -4533,14 +4533,35 @@ Public Sub HandleStartEvent(ByVal UserIndex As Integer)
 On Error GoTo ErrHandler
     Dim eventType As Byte
     eventType = Reader.ReadInt8()
-    CurrentActiveEventType = eventType
-    Select Case eventType
-        Case e_EventType.CaptureTheFlag
-            Call HandleIniciarCaptura(UserIndex)
-        Case Else
-            Call HandleStartGenericLobby(UserIndex, eventType)
-    End Select
-    
+    Dim LobbySettings As t_NewScenearioSettings
+    LobbySettings.ScenearioType = Reader.ReadInt8
+    LobbySettings.MinLevel = Reader.ReadInt8
+    LobbySettings.MaxLevel = Reader.ReadInt8
+    LobbySettings.MinPlayers = Reader.ReadInt8
+    LobbySettings.MaxPlayers = Reader.ReadInt8
+    LobbySettings.TeamSize = Reader.ReadInt8
+    LobbySettings.TeamType = Reader.ReadInt8
+    LobbySettings.RoundNumber = Reader.ReadInt8
+    LobbySettings.InscriptionFee = Reader.ReadInt32
+    LobbySettings.Description = Reader.ReadString8
+    LobbySettings.Password = Reader.ReadString8
+    If eventType = 0 Then
+        CurrentActiveEventType = LobbySettings.ScenearioType
+        Select Case LobbySettings.ScenearioType
+            Case e_EventType.CaptureTheFlag
+                Call HandleIniciarCaptura(UserIndex, LobbySettings)
+            Case Else
+                Call HandleStartGenericLobby(UserIndex, LobbySettings)
+        End Select
+    Else
+        With UserList(UserIndex)
+            If IsValidNpcRef(.flags.TargetNPC) Then
+                If NpcList(.flags.TargetNPC.ArrayIndex).npcType = e_NPCType.EventMaster And .flags.Muerto = 0 Then
+                    Call CreatePublicEvent(UserIndex, LobbySettings)
+                End If
+            End If
+        End With
+    End If
     Exit Sub
 ErrHandler:
 138     Call TraceError(Err.Number, Err.Description, "Protocol.HandleStartEvent", Erl)
@@ -4559,8 +4580,13 @@ Public Sub HandleCancelarEvento(ByVal UserIndex As Integer)
             Call InstanciaCaptura.finalizarCaptura
         End If
     Else
-        Call CancelLobby(GenericGlobalLobby)
-        Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos» El evento ha sido cancelado.", e_FontTypeNames.FONTTYPE_GUILD))
+        If GlobalLobbyIndex >= 0 Then
+            Call CancelLobby(LobbyList(GlobalLobbyIndex))
+            If LobbyList(GlobalLobbyIndex).Scenario Is Nothing Then Call ReleaseLobby(GlobalLobbyIndex)
+            Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("Eventos» El evento ha sido cancelado.", e_FontTypeNames.FONTTYPE_GUILD))
+        Else
+            Call SendData(SendTarget.ToAll, 0, PrepareMessageConsoleMsg("No se encontro ningun evento activo.", e_FontTypeNames.FONTTYPE_GUILD))
+        End If
     End If
     Exit Sub
 ErrHandler:
@@ -4751,7 +4777,7 @@ On Error GoTo HandleLobbyCommand_err
     Params = Reader.ReadString8()
 100 With UserList(UserIndex)
 102     If .flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios) Then
-104         If Not HandleRemoteLobbyCommand(Command, Params, UserIndex) Then
+104         If Not HandleRemoteLobbyCommand(Command, Params, UserIndex, GlobalLobbyIndex) Then
 106             Call WriteConsoleMsg(UserIndex, "Servidor » No se pudo procesar el comando.", e_FontTypeNames.FONTTYPE_INFO)
 108         End If
 110     Else
@@ -4787,60 +4813,51 @@ HandleFeatureToggle_Err:
 End Sub
 
 'HarThaoS: Iniciar captura de bandera
-Public Sub HandleIniciarCaptura(ByVal UserIndex As Integer)
+Public Sub HandleIniciarCaptura(ByVal UserIndex As Integer, EventSettings As t_NewScenearioSettings)
         On Error GoTo ErrHandler
 100     With UserList(UserIndex)
-            Dim cantidad_participantes As Integer
-            Dim cantidad_rondas As Byte
-            Dim nivel_minimo, nivel_maximo As Byte
-            Dim precio As Long
 
-            cantidad_participantes = Reader.ReadInt16()
-            cantidad_rondas = Reader.ReadInt8()
-            nivel_minimo = Reader.ReadInt8()
-            nivel_maximo = Reader.ReadInt8()
-            precio = Reader.ReadInt32()
 104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios)) Then
                 If Not InstanciaCaptura Is Nothing Then
                     Call WriteConsoleMsg(UserIndex, "Ya hay un evento de captura de bandera en curso.", e_FontTypeNames.FONTTYPE_INFO)
                     Exit Sub
                 Else
                     'El precio no puede ser negativo
-                    If precio < 0 Then
+                    If EventSettings.InscriptionFee < 0 Then
                         Call WriteConsoleMsg(UserIndex, "El valor de la entrada al evento no podrá ser menor que 0.", e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
                     End If
                 
                     'Me fijo si que la cantidad de participantes sea par
-                    If cantidad_participantes Mod 2 <> 0 Then
+                    If EventSettings.MaxPlayers Mod 2 <> 0 Then
                         Call WriteConsoleMsg(UserIndex, "La cantidad de participantes debe ser un número par.", e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
                     End If
                     
                     'Permito un máximo de 48 participantes
-                    If cantidad_participantes > 48 Then 'Leer de una variable de configuración
+                    If EventSettings.MaxPlayers > 48 Then 'Leer de una variable de configuración
                         Call WriteConsoleMsg(UserIndex, "La cantidad de participantes no podrá ser mayor que 48.", e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
                     End If
                     
                     'Me fijo si hay más participantes conectados que el cupo para jugar
-                    If cantidad_participantes > NumUsers Then
+                    If EventSettings.MaxPlayers > NumUsers Then
                         Call WriteConsoleMsg(UserIndex, "Hay pocos jugadores en el servidor, intenta con una cantidad menor de participantes.", e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
                     End If
                     
-                    If nivel_minimo < 1 Or nivel_minimo > 47 Then
+                    If EventSettings.MinLevel < 1 Or EventSettings.MinLevel > 47 Then
                         Call WriteConsoleMsg(UserIndex, "El nivel para el evento debe ser entre 1 y 47.", e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
                     End If
                     
-                    If nivel_minimo > nivel_maximo Then
+                    If EventSettings.MinLevel > EventSettings.MaxLevel Then
                         Call WriteConsoleMsg(UserIndex, "El nivel minimo debe ser menor al maximo.", e_FontTypeNames.FONTTYPE_INFO)
                         Exit Sub
                     End If
                 
                     Set InstanciaCaptura = New clsCaptura
-                    Call InstanciaCaptura.inicializar(cantidad_participantes, cantidad_rondas, nivel_minimo, nivel_maximo, precio)
+                    Call InstanciaCaptura.inicializar(EventSettings.MaxPlayers, EventSettings.RoundNumber, EventSettings.MinLevel, EventSettings.MaxLevel, EventSettings.InscriptionFee)
                 End If
             Else
 136             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
@@ -4851,16 +4868,16 @@ ErrHandler:
 138     Call TraceError(Err.Number, Err.Description, "Protocol.HandleIniciarCaptura", Erl)
 End Sub
 
-Private Sub HandleStartGenericLobby(ByVal UserIndex As Integer, ByVal eventType As Integer)
+Private Sub HandleStartGenericLobby(ByVal UserIndex As Integer, ByRef LobbySettings As t_NewScenearioSettings)
 On Error GoTo ErrHandler
-    Dim MaxPlayers As Integer
-    Dim MinLevel, MaxLevel As Byte
-    MaxPlayers = Reader.ReadInt16()
-    MinLevel = Reader.ReadInt8()
-    MaxLevel = Reader.ReadInt8()
-    
+
     If IsEventActive Then
         Call WriteConsoleMsg(UserIndex, "Ya hay un evento activo, debes cancelarlo primero.", e_FontTypeNames.FONTTYPE_INFO)
+        Exit Sub
+    End If
+    GlobalLobbyIndex = GetAvailableLobby()
+    If GlobalLobbyIndex < 0 Then
+        Call WriteConsoleMsg(UserIndex, "No se pudo encontrar una sala activa.", e_FontTypeNames.FONTTYPE_INFO)
         Exit Sub
     End If
     With UserList(UserIndex)
@@ -4868,25 +4885,15 @@ On Error GoTo ErrHandler
             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
         Else
 136         'Me fijo si hay más participantes conectados que el cupo para jugar
-            If MaxPlayers > NumUsers Then
-                Call WriteConsoleMsg(UserIndex, "Hay pocos jugadores en el servidor, intenta con una cantidad menor de participantes.", e_FontTypeNames.FONTTYPE_INFO)
+            If Not ValidateLobbySettings(UserIndex, LobbySettings) Then
                 Exit Sub
             End If
-            
-            If MinLevel < 1 Or MaxLevel > 47 Then
-                Call WriteConsoleMsg(UserIndex, "El nivel para el evento debe ser entre 1 y 47.", e_FontTypeNames.FONTTYPE_INFO)
-                Exit Sub
-            End If
-            
-            If MinLevel > MaxLevel Then
-                Call WriteConsoleMsg(UserIndex, "El nivel minimo debe ser menor al maximo.", e_FontTypeNames.FONTTYPE_INFO)
-                Exit Sub
-            End If
-            Call InitializeLobby(GenericGlobalLobby)
-            Call ModLobby.SetMinLevel(GenericGlobalLobby, MinLevel)
-            Call ModLobby.SetMaxLevel(GenericGlobalLobby, MaxLevel)
-            Call ModLobby.SetMaxPlayers(GenericGlobalLobby, MaxPlayers)
-            Call CustomScenarios.PrepareNewEvent(eventType)
+            Call InitializeLobby(LobbyList(GlobalLobbyIndex))
+            LobbyList(GlobalLobbyIndex).IsGlobal = True
+            Call ModLobby.SetMinLevel(LobbyList(GlobalLobbyIndex), LobbySettings.MinLevel)
+            Call ModLobby.SetMaxLevel(LobbyList(GlobalLobbyIndex), LobbySettings.MaxLevel)
+            Call ModLobby.SetMaxPlayers(LobbyList(GlobalLobbyIndex), LobbySettings.MaxPlayers)
+            Call CustomScenarios.PrepareNewEvent(LobbySettings.ScenearioType, GlobalLobbyIndex)
             Call WriteConsoleMsg(UserIndex, "Se creo el lobby, recorda que tenes que abrirlo para que se pueda anotar gente.", e_FontTypeNames.FONTTYPE_INFO)
             Call LogGM(.name, "Inicio un Lobby")
         End If

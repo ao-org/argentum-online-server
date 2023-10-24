@@ -568,7 +568,7 @@ Sub Main()
 120     frmCargando.Label1(2).Caption = "Iniciando Arrays..."
 
         Call InitializeNpcIndexHeap
-    
+        Call InitializeLobbyList
 126     Call loadAdministrativeUsers
 
         '¿?¿?¿?¿?¿?¿?¿?¿ CARGAMOS DATOS DESDE ARCHIVOS ¿??¿?¿?¿?¿?¿?¿?¿

@@ -46,7 +46,34 @@ End Type
 
 Private CustomScenarioList As New Dictionary
 Private ScenarioUpdateList() As IBaseScenario
+Private AvailableUpdateSlots As t_IndexHeap
+Private ActiveUpdateSlots As t_IndexHeap
+Const InitialUpdateSize = 20
 
+Private Sub InitializeUpdateStacks()
+    ReDim ScenarioUpdateList(InitialUpdateSize) As IBaseScenario
+    ReDim AvailableUpdateSlots.IndexInfo(InitialUpdateSize)
+    ReDim ActiveUpdateSlots.IndexInfo(InitialUpdateSize)
+    Dim i As Integer
+    For i = 1 To InitialUpdateSize
+        AvailableUpdateSlots.IndexInfo(i) = InitialUpdateSize - (i - 1)
+    Next i
+    AvailableUpdateSlots.currentIndex = InitialUpdateSize
+    ActiveUpdateSlots.currentIndex = 0
+End Sub
+
+Private Sub IncreaseArraySize(ByVal ExtraSlots As Integer)
+    Dim NewSize As Integer
+    NewSize = UBound(ScenarioUpdateList) + ExtraSlots
+    ReDim Preserve ScenarioUpdateList(NewSize) As IBaseScenario
+    ReDim Preserve AvailableUpdateSlots.IndexInfo(NewSize)
+    ReDim Preserve ActiveUpdateSlots.IndexInfo(NewSize)
+    Dim i As Integer
+    For i = 1 To ExtraSlots
+        AvailableUpdateSlots.IndexInfo(i) = NewSize - (i - 1)
+    Next i
+    AvailableUpdateSlots.currentIndex = ExtraSlots
+End Sub
 Public Function GetMap(ByVal mapIndex As Integer) As IBaseScenario
 On Error GoTo GetMap_Err:
     Set GetMap = Nothing
@@ -69,12 +96,16 @@ End Sub
 Public Function AddUpdateScenario(ByRef scenario As IBaseScenario) As Integer
 On Error GoTo AddUpdateScenario_Err:
        Dim Pos As Integer
-100    If IsArrayInitialized(ScenarioUpdateList) Then
-102       Pos = UBound(ScenarioUpdateList)
-       Else
-           Pos = 0
+100    If AvailableUpdateSlots.currentIndex = 0 And ActiveUpdateSlots.currentIndex = 0 Then
+102       Call InitializeUpdateStacks
        End If
-104    ReDim Preserve ScenarioUpdateList(Pos + 1) As IBaseScenario
+       If AvailableUpdateSlots.currentIndex = 0 Then
+           Call IncreaseArraySize(InitialUpdateSize)
+       End If
+       pos = AvailableUpdateSlots.IndexInfo(AvailableUpdateSlots.currentIndex)
+       AvailableUpdateSlots.currentIndex = AvailableUpdateSlots.currentIndex - 1
+       ActiveUpdateSlots.IndexInfo(ActiveUpdateSlots.currentIndex) = pos
+       ActiveUpdateSlots.currentIndex = ActiveUpdateSlots.currentIndex + 1
 106    Set ScenarioUpdateList(Pos) = scenario
        AddUpdateScenario = Pos
        Exit Function
@@ -85,17 +116,23 @@ End Function
 Public Sub RemoveUpdateScenario(ByRef Index As Integer)
     Debug.Assert Index < UBound(ScenarioUpdateList)
     Set ScenarioUpdateList(Index) = Nothing
+    Dim i As Integer
+    For i = 0 To ActiveUpdateSlots.currentIndex - 1
+        If ActiveUpdateSlots.IndexInfo(i) = Index Then
+            ActiveUpdateSlots.IndexInfo(i) = ActiveUpdateSlots.IndexInfo(ActiveUpdateSlots.currentIndex - 1)
+            ActiveUpdateSlots.currentIndex = ActiveUpdateSlots.currentIndex - 1
+            AvailableUpdateSlots.currentIndex = AvailableUpdateSlots.currentIndex + 1
+            AvailableUpdateSlots.IndexInfo(AvailableUpdateSlots.currentIndex) = Index
+        End If
+    Next
 End Sub
 
 Public Sub UpdateAll()
 On Error GoTo UpdateAll_Err:
-    If Not IsArrayInitialized(ScenarioUpdateList) Then
-        Exit Sub
-    End If
     Dim i As Integer
-    For i = 0 To UBound(ScenarioUpdateList)
-        If Not ScenarioUpdateList(i) Is Nothing Then
-            Call ScenarioUpdateList(i).Update
+    For i = 0 To ActiveUpdateSlots.currentIndex - 1
+        If Not ScenarioUpdateList(ActiveUpdateSlots.IndexInfo(i)) Is Nothing Then
+            Call ScenarioUpdateList(ActiveUpdateSlots.IndexInfo(i)).Update
         End If
     Next
     Exit Sub
@@ -257,16 +294,20 @@ UserCanDropItem_Err:
     Call TraceError(Err.Number, Err.Description, "CustomScenarios.UserCanDropItem", Erl)
 End Function
 
-Public Sub PrepareNewEvent(ByVal eventType As e_EventType)
+Public Sub PrepareNewEvent(ByVal eventType As e_EventType, ByVal LobbyIndex As Integer)
 On Error GoTo PrepareNewEvent_Err:
+    Debug.Assert LobbyIndex < UBound(LobbyList)
     Select Case EventType
         Case e_EventType.NpcHunt
-            Set GenericGlobalLobby.scenario = New ScenarioHunt
+            Set LobbyList(LobbyIndex).Scenario = New ScenarioHunt
         Case e_EventType.DeathMatch
-            Set GenericGlobalLobby.scenario = New ScenarioDeathMatch
+            Set LobbyList(LobbyIndex).Scenario = New ScenarioDeathMatch
         Case e_EventType.NavalBattle
-            Set GenericGlobalLobby.Scenario = New NavalBoarding
+            Set LobbyList(LobbyIndex).Scenario = New NavalBoarding
     End Select
+    If Not LobbyList(LobbyIndex).Scenario Is Nothing Then
+        LobbyList(LobbyIndex).Scenario.SetLobbyIndex (LobbyIndex)
+    End If
     Exit Sub
 PrepareNewEvent_Err:
     Call TraceError(Err.Number, Err.Description, "CustomScenarios.PrepareNewEvent", Erl)
@@ -296,16 +337,20 @@ Public Function IsEventActive() As Boolean
     If CurrentActiveEventType = CaptureTheFlag Then
         IsEventActive = Not InstanciaCaptura Is Nothing
     Else
-        IsEventActive = GenericGlobalLobby.State > e_LobbyState.UnInitilized And GenericGlobalLobby.State < Completed
+        If GlobalLobbyIndex >= 0 Then
+            IsEventActive = LobbyList(GlobalLobbyIndex).State > e_LobbyState.UnInitilized And LobbyList(GlobalLobbyIndex).State < InProgress
+        Else
+            IsEventActive = False
+        End If
     End If
 End Function
 
 Public Sub UserDisconnected(ByVal mapNumber As Integer, ByVal userIndex As Integer)
-    Call RegisterDisconnectedUser(GenericGlobalLobby, userIndex)
+    Call RegisterDisconnectedUser(UserIndex)
 End Sub
 
 Public Sub UserConnected(ByVal userIndex)
-    Call RegisterReconnectedUser(GenericGlobalLobby, userIndex)
+    Call RegisterReconnectedUser(UserIndex)
 End Sub
 
 Public Sub GetNextWaypointForNpc(ByVal NpcIndex As Integer, ByRef PosX As Integer, ByRef PosY As Integer)

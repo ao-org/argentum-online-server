@@ -116,7 +116,6 @@ Dim SpawnedUserList As t_UserList
 Dim MaxTime As Long
 Dim CountdownTimer As t_Timer
 Dim BroadCastTimer As t_Timer
-Dim BroadOpenEvent As t_Timer
 Dim ScoreBroadcastTimer As t_Timer
 Dim UpdateIndex As Integer
 Dim LastFrameTime As Long
@@ -144,49 +143,59 @@ Dim HpPotId As Integer
 Dim RespawnManaPotAmount As Integer
 Dim RespawnHPPotAmount As Integer
 Dim Winner As Integer
+Dim LobbyIndex As Integer
 
-Private Sub Class_Initialize()
+Friend Sub Class_Initialize()
     On Error GoTo NavalBoarding_Initialize_Err:
 100     Debug.Assert FileExist(DatPath & configPath)
         Dim ScenarioIni As clsIniManager
         Dim WpCount As Byte
+        Dim OriginalTop As Integer
+        Dim OriginalBottom As Integer
+        Dim Translations(1) As t_TranslationMapping
 102     Set ScenarioIni = New clsIniManager
 104     Call ScenarioIni.Initialize(DatPath & configPath)
-106     MapNumbers(TopMapNumber) = val(ScenarioIni.GetValue("INIT", "MapNumber1"))
-108     MapNumbers(CargoMapNumber) = val(ScenarioIni.GetValue("INIT", "MapNumber2"))
-110     MaxTime = val(ScenarioIni.GetValue("INIT", "MaxTime"))
-112     Team1SpawnX = val(ScenarioIni.GetValue("INIT", "Team1SpawnX"))
-114     Team2SpawnX = val(ScenarioIni.GetValue("INIT", "Team2SpawnX"))
-116     RespawnWp = val(ScenarioIni.GetValue("RESPAWN", "Waypoint"))
-118     PlayerMinRespawnTime = val(ScenarioIni.GetValue("RESPAWN", "PlayerMinRespawnTime"))
-120     RespawnInterval = val(ScenarioIni.GetValue("RESPAWN", "RespawnInterval"))
-122     MaxTime = MaxTime * 1000
-124     RespawnInterval = RespawnInterval * 1000
-126     PlayerMinRespawnTime = PlayerMinRespawnTime * 1000
-128     WpCount = val(ScenarioIni.GetValue("INIT", "WaypointCount"))
-130     CaptianNpcId = val(ScenarioIni.GetValue("CaptainNpc", "NpcId"))
-132     MinFireTime = val(ScenarioIni.GetValue("INIT", "MinFireTime"))
-134     MaxFireTime = val(ScenarioIni.GetValue("INIT", "MaxFireTime"))
-136     FireStartTime = val(ScenarioIni.GetValue("INIT", "FireStartTime"))
-138     ManaPotId = val(ScenarioIni.GetValue("INIT", "ManaPotionsId"))
-140     HpPotId = val(ScenarioIni.GetValue("INIT", "HPPotionId"))
-142     RespawnHPPotAmount = val(ScenarioIni.GetValue("INIT", "RespawnHPPotAmount"))
-144     RespawnManaPotAmount = val(ScenarioIni.GetValue("INIT", "RespawnManaPotAmount"))
-146     Call LoadTeamWeapoints(1, Team1Waypoints, WpCount, ScenarioIni)
-148     Call LoadTeamWeapoints(2, Team2Waypoints, WpCount, ScenarioIni)
-150     Call LoadForbidenItems(ScenarioIni)
-152     Call LoadTileBlock(TileBlocks, ScenarioIni)
-154     UpdateIndex = AddUpdateScenario(Me)
-156     Call CustomScenarios.SetCustomScenario(MapNumbers(0), Me)
-158     Call CustomScenarios.SetCustomScenario(MapNumbers(1), Me)
-160     Call ConfigMapLobby
-162     Call LoadNpcSpawnInfo(NpcSpawnList, ScenarioIni)
-164     Call LoadTeamCargo(TeamCargo(1), 1, ScenarioIni)
-166     Call LoadTeamCargo(TeamCargo(2), 2, ScenarioIni)
-        Call SetTimer(BroadOpenEvent, 15000)
+106     OriginalTop = val(ScenarioIni.GetValue("INIT", "MapNumber1"))
+108     OriginalBottom = val(ScenarioIni.GetValue("INIT", "MapNumber2"))
+110     MapNumbers(TopMapNumber) = InstanceManager.GetNextAvailableInstance
+112     MapNumbers(CargoMapNumber) = InstanceManager.GetNextAvailableInstance
+114     Translations(0).OriginalTarget = OriginalBottom
+116     Translations(0).NewTarget = MapNumbers(CargoMapNumber)
+118     Call InstanceManager.CloneMapWithTranslations(OriginalTop, MapNumbers(TopMapNumber), Translations)
+120     Translations(0).OriginalTarget = OriginalTop
+122     Translations(0).NewTarget = MapNumbers(TopMapNumber)
+124     Call InstanceManager.CloneMapWithTranslations(OriginalBottom, MapNumbers(CargoMapNumber), Translations)
+126     MaxTime = val(ScenarioIni.GetValue("INIT", "MaxTime"))
+128     Team1SpawnX = val(ScenarioIni.GetValue("INIT", "Team1SpawnX"))
+130     Team2SpawnX = val(ScenarioIni.GetValue("INIT", "Team2SpawnX"))
+132     RespawnWp = val(ScenarioIni.GetValue("RESPAWN", "Waypoint"))
+134     PlayerMinRespawnTime = val(ScenarioIni.GetValue("RESPAWN", "PlayerMinRespawnTime"))
+136     RespawnInterval = val(ScenarioIni.GetValue("RESPAWN", "RespawnInterval"))
+138     MaxTime = MaxTime * 1000
+140     RespawnInterval = RespawnInterval * 1000
+142     PlayerMinRespawnTime = PlayerMinRespawnTime * 1000
+144     WpCount = val(ScenarioIni.GetValue("INIT", "WaypointCount"))
+146     CaptianNpcId = val(ScenarioIni.GetValue("CaptainNpc", "NpcId"))
+148     MinFireTime = val(ScenarioIni.GetValue("INIT", "MinFireTime"))
+150     MaxFireTime = val(ScenarioIni.GetValue("INIT", "MaxFireTime"))
+152     FireStartTime = val(ScenarioIni.GetValue("INIT", "FireStartTime"))
+154     ManaPotId = val(ScenarioIni.GetValue("INIT", "ManaPotionsId"))
+156     HpPotId = val(ScenarioIni.GetValue("INIT", "HPPotionId"))
+158     RespawnHPPotAmount = val(ScenarioIni.GetValue("INIT", "RespawnHPPotAmount"))
+160     RespawnManaPotAmount = val(ScenarioIni.GetValue("INIT", "RespawnManaPotAmount"))
+162     Call LoadTeamWeapoints(1, Team1Waypoints, WpCount, ScenarioIni)
+164     Call LoadTeamWeapoints(2, Team2Waypoints, WpCount, ScenarioIni)
+166     Call LoadForbidenItems(ScenarioIni)
+168     Call LoadTileBlock(TileBlocks, ScenarioIni)
+170     UpdateIndex = AddUpdateScenario(Me)
+172     Call CustomScenarios.SetCustomScenario(MapNumbers(0), Me)
+174     Call CustomScenarios.SetCustomScenario(MapNumbers(1), Me)
+178     Call LoadNpcSpawnInfo(NpcSpawnList, ScenarioIni)
+180     Call LoadTeamCargo(TeamCargo(1), 1, ScenarioIni)
+182     Call LoadTeamCargo(TeamCargo(2), 2, ScenarioIni)
         Exit Sub
 NavalBoarding_Initialize_Err:
-168 Call TraceError(Err.Number, Err.Description, "NavalBoarding.Initialize ", Erl)
+186 Call TraceError(Err.Number, Err.Description, "NavalBoarding.Initialize ", Erl)
 End Sub
 
 Private Sub LoadTileBlock(ByRef Tiles() As t_TilePos, ScenearioIni As clsIniManager)
@@ -343,10 +352,15 @@ End Sub
 
 Private Sub CloseScenario()
 On Error GoTo CloseScenario_Err:
-100    Call ModLobby.ReturnAllPlayers(GenericGlobalLobby)
-102    Set GenericGlobalLobby.Scenario = Nothing
-104    Call ModLobby.UpdateLobbyState(GenericGlobalLobby, e_LobbyState.UnInitilized)
-118    Call ClearMap
+100    Call ModLobby.ReturnAllPlayers(LobbyList(LobbyIndex))
+102    Set LobbyList(LobbyIndex).Scenario = Nothing
+104    Call ModLobby.UpdateLobbyState(LobbyList(LobbyIndex), e_LobbyState.UnInitilized)
+106    Call ClearMap
+107    If MapNumbers(TopMapNumber) > 0 Then Call ReleaseLobby(LobbyIndex)
+108    If MapNumbers(TopMapNumber) > 0 Then Call ReleaseInstance(MapNumbers(TopMapNumber))
+110    MapNumbers(TopMapNumber) = 0
+112    If MapNumbers(CargoMapNumber) > 0 Then Call ReleaseInstance(MapNumbers(CargoMapNumber))
+114    MapNumbers(CargoMapNumber) = 0
     Exit Sub
 CloseScenario_Err:
     Call TraceError(Err.Number, Err.Description, "NavalBoarding.CloseScenario ", Erl)
@@ -377,6 +391,11 @@ Private Function IsForbidden(ByVal ItemId As Integer) As Boolean
     Next i
     IsForbidden = False
 End Function
+
+Public Sub IBaseScenario_SetLobbyIndex(ByVal Value As Integer)
+    LobbyIndex = Value
+    Call ConfigMapLobby
+End Sub
 
 Public Function IBaseScenario_GetScenarioName() As String
     IBaseScenario_GetScenarioName = "Abordaje"
@@ -442,7 +461,7 @@ Public Sub IBaseScenario_WillSummonPlayer(ByVal UserIndex As Integer)
             End If
         End If
     End With
-    GenericGlobalLobby.SummonCoordinates = SpawnPos
+    LobbyList(LobbyIndex).SummonCoordinates = SpawnPos
     Call RefillPotions(UserIndex)
 End Sub
 
@@ -451,7 +470,7 @@ Public Sub IBaseScenario_UpdateLobbyState(ByVal oldState As e_LobbyState, ByRef 
         Exit Sub
     End If
     If NewState = InProgress Then
-        Call ModLobby.SummonAll(GenericGlobalLobby)
+        Call ModLobby.SummonAll(LobbyList(LobbyIndex))
         Call SetTimer(CountdownTimer, 1000)
     End If
     If NewState = Closed Then
@@ -473,7 +492,7 @@ Public Sub IBaseScenario_Update()
     Dim frametime As Long
     frametime = GetTickCount() - LastFrameTime
     LastFrameTime = GetTickCount()
-    If GenericGlobalLobby.State = e_LobbyState.InProgress Then
+    If LobbyList(LobbyIndex).State = e_LobbyState.InProgress Then
         If CountdownTimer.Occurrences < 10 Then
             If UpdateTime(CountdownTimer, frametime) Then
                 If CountdownTimer.Occurrences >= 10 Then
@@ -501,7 +520,7 @@ Public Sub IBaseScenario_Update()
                 Call BroadcastPendingTime(frametime)
             End If
         End If
-    ElseIf GenericGlobalLobby.State = e_LobbyState.Completed Then
+    ElseIf LobbyList(LobbyIndex).State = e_LobbyState.Completed Then
         If CountdownTimer.Occurrences < 10 Then
             If UpdateTime(CountdownTimer, frametime) Then
                 If CountdownTimer.Occurrences >= 10 Then
@@ -513,12 +532,9 @@ Public Sub IBaseScenario_Update()
             End If
             Exit Sub
         End If
-    ElseIf GenericGlobalLobby.State = e_LobbyState.AcceptingPlayers And GenericGlobalLobby.IsPublic Then
-        If UpdateTime(BroadOpenEvent, frametime) Then
-            Call BroadcastOpenEvent
-        End If
-        
-    ElseIf GenericGlobalLobby.State = e_LobbyState.Closed Then
+    ElseIf LobbyList(LobbyIndex).State = e_LobbyState.AcceptingPlayers Then
+        Call UpdateWaitingForPlayers(FrameTime, LobbyList(LobbyIndex))
+    ElseIf LobbyList(LobbyIndex).State = e_LobbyState.Closed Then
         Call CloseScenario
     End If
 End Sub
@@ -543,6 +559,8 @@ End Sub
 Public Sub IBaseScenario_OnUserReconnect(ByVal UserIndex As Integer)
 
 End Sub
+
+
 
 Private Sub StartGame()
     Call SetTimer(BroadCastTimer, 60000)
@@ -583,17 +601,19 @@ Private Sub Respawn(ByVal player As Integer)
 End Sub
 
 Private Sub MatchCompleted()
-    Call GiveRewards
+    If Not LobbyList(LobbyIndex).Canceled Then
+        Call GiveRewards
+    End If
     MapInfo(MapNumbers(0)).Seguro = 1
     MapInfo(MapNumbers(1)).Seguro = 1
     Call SetTimer(CountdownTimer, 1000)
     Dim i As Integer
-    For i = 0 To GenericGlobalLobby.RegisteredPlayers - 1
-        If IsValidUserRef(GenericGlobalLobby.Players(i).user) Then
-            Call RemoveForbiddenItems(GenericGlobalLobby.Players(i).user.ArrayIndex)
+    For i = 0 To LobbyList(LobbyIndex).RegisteredPlayers - 1
+        If IsValidUserRef(LobbyList(LobbyIndex).Players(i).user) Then
+            Call RemoveForbiddenItems(LobbyList(LobbyIndex).Players(i).user.ArrayIndex)
         End If
     Next i
-    GenericGlobalLobby.State = Completed
+    LobbyList(LobbyIndex).State = Completed
     ElapsedTime = MaxTime
     Call CustomScenarios.ClearMap(MapNumbers(0))
     Call CustomScenarios.ClearMap(MapNumbers(1))
@@ -604,10 +624,6 @@ Private Sub MatchCompleted()
         NpcIndex = ModAreas.ConnGroups(MapNumbers(0)).NpcForAi(0)
         Call QuitarNPC(NpcIndex, eClearHunt)
     Loop
-End Sub
-
-Private Sub BroadcastOpenEvent()
-    Call BroadcastOpenLobby(GenericGlobalLobby)
 End Sub
 
 Private Sub BroadcastPendingTime(ByVal frametime As Long)
@@ -704,7 +720,7 @@ End Sub
 
 Private Sub ConfigMapLobby()
     Dim i As Integer
-    Call ModLobby.SetTeamCount(GenericGlobalLobby, 2, GenericGlobalLobby.TeamType)
+    Call ModLobby.SetTeamCount(LobbyList(LobbyIndex), 2, LobbyList(LobbyIndex).TeamType)
     For i = 0 To UBound(MapNumbers)
         MapInfo(MapNumbers(i)).Seguro = 1
         MapInfo(MapNumbers(i)).SinInviOcul = True
@@ -1139,29 +1155,29 @@ Sub GiveRewards()
     Dim Team2 As String
     Dim Reward As Long
     Dim TeamSize As Integer
-    If GenericGlobalLobby.AvailableInscriptionMoney > 0 Then
-        GenericGlobalLobby.AvailableInscriptionMoney = GenericGlobalLobby.AvailableInscriptionMoney * 0.95
+    If LobbyList(LobbyIndex).AvailableInscriptionMoney > 0 Then
+        LobbyList(LobbyIndex).AvailableInscriptionMoney = LobbyList(LobbyIndex).AvailableInscriptionMoney * 0.95
     End If
     Dim i As Integer
-    For i = 0 To GenericGlobalLobby.RegisteredPlayers - 1
-        If IsValidUserRef(GenericGlobalLobby.Players(i).user) Then
-            If GenericGlobalLobby.Players(i).team = 1 Then
-                Team1 = Team1 & UserList(GenericGlobalLobby.Players(i).user.ArrayIndex).name & " "
-            ElseIf GenericGlobalLobby.Players(i).team = 2 Then
-                Team2 = Team2 & UserList(GenericGlobalLobby.Players(i).user.ArrayIndex).name & " "
+    For i = 0 To LobbyList(LobbyIndex).RegisteredPlayers - 1
+        If IsValidUserRef(LobbyList(LobbyIndex).Players(i).user) Then
+            If LobbyList(LobbyIndex).Players(i).team = 1 Then
+                Team1 = Team1 & UserList(LobbyList(LobbyIndex).Players(i).user.ArrayIndex).name & " "
+            ElseIf LobbyList(LobbyIndex).Players(i).team = 2 Then
+                Team2 = Team2 & UserList(LobbyList(LobbyIndex).Players(i).user.ArrayIndex).name & " "
             End If
-            If GenericGlobalLobby.Players(i).team = Winner Then
+            If LobbyList(LobbyIndex).Players(i).team = Winner Then
                 TeamSize = TeamSize + 1
             End If
         End If
     Next i
-    If GenericGlobalLobby.AvailableInscriptionMoney > 0 Then
-        Reward = GenericGlobalLobby.AvailableInscriptionMoney / TeamSize
+    If LobbyList(LobbyIndex).AvailableInscriptionMoney > 0 Then
+        Reward = LobbyList(LobbyIndex).AvailableInscriptionMoney / TeamSize
     End If
-    For i = 0 To GenericGlobalLobby.RegisteredPlayers - 1
-        If IsValidUserRef(GenericGlobalLobby.Players(i).user) Then
-            If GenericGlobalLobby.Players(i).team = Winner Then
-                Call GiveGoldToPlayer(GenericGlobalLobby, i, Reward)
+    For i = 0 To LobbyList(LobbyIndex).RegisteredPlayers - 1
+        If IsValidUserRef(LobbyList(LobbyIndex).Players(i).user) Then
+            If LobbyList(LobbyIndex).Players(i).team = Winner Then
+                Call GiveGoldToPlayer(LobbyList(LobbyIndex), i, Reward)
             End If
         End If
     Next i

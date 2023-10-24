@@ -554,7 +554,6 @@ Public Const PinoWood           As Integer = 3788 'OK
 Public Const BLODIUM_MINA       As Integer = 3787 'OK
 
 Public Enum e_NPCType
-
     Comun = 0
     Revividor = 1
     GuardiaReal = 2
@@ -576,7 +575,7 @@ Public Enum e_NPCType
     EntregaPesca = 20
     AO20Shop = 21
     AO20ShopPjs = 22
-    
+    EventMaster = 23
 End Enum
 
 Public Const MIN_APUÑALAR As Byte = 10
@@ -2753,6 +2752,7 @@ End Enum
 Type t_MapInfo
 
     map_name As String
+    MapResource As Integer
     backup_mode As Byte
     music_numberHi As Long
     music_numberLow As Long
@@ -2861,6 +2861,7 @@ Public EnPausa                           As Boolean
 Public EnTesting                         As Boolean
 Public EnableTelemetry                   As Boolean
 Public PendingConnectionTimeout          As Long
+Public InstanceMapCount                  As Integer
 
 '*****************ARRAYS PUBLICOS*************************
 Public UserList()                         As t_User 'USUARIOS
