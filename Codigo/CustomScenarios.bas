@@ -296,6 +296,7 @@ End Function
 
 Public Sub PrepareNewEvent(ByVal eventType As e_EventType, ByVal LobbyIndex As Integer)
 On Error GoTo PrepareNewEvent_Err:
+    Debug.Assert LobbyIndex < UBound(LobbyList)
     Select Case EventType
         Case e_EventType.NpcHunt
             Set LobbyList(LobbyIndex).Scenario = New ScenarioHunt

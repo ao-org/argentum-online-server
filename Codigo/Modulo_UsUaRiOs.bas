@@ -505,10 +505,8 @@ On Error GoTo Complete_ConnectUser_Err
 605             Call WriteDumbNoMore(UserIndex)
             End If
         
-            'Ladder Inmunidad
 610         .flags.Inmunidad = 1
 615         .Counters.TiempoDeInmunidad = IntervaloPuedeSerAtacado
-            'Ladder Inmunidad
             
             .Counters.TiempoDeInmunidadParalisisNoMagicas = 0
             If MapInfo(.pos.Map).MapResource = 0 Then

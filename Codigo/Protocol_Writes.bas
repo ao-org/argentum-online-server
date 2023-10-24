@@ -5879,11 +5879,11 @@ On Error GoTo WriteUpdateLobbyList_Err
             Call Writer.WriteInt32(.InscriptionPrice)
             Call Writer.WriteInt8(IIf(Len(.Password) > 0, 1, 0))
         End With
-        
     Next i
     
     Call modSendData.SendData(ToIndex, UserIndex)
+    Exit Sub
 WriteUpdateLobbyList_Err:
-        Call Writer.Clear
-        Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareActiveToggles", Erl)
+    Call Writer.Clear
+    Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareActiveToggles", Erl)
 End Sub

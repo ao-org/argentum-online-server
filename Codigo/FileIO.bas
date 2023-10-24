@@ -1844,7 +1844,7 @@ Sub LoadMapData()
         
 128     Next map
 130     frmCargando.ToMapLbl.Visible = False
-        Call InitializeInstanceHeap(InstanceMapCount, NumMaps + 1)
+        Call InstanceManager.InitializeInstanceHeap(InstanceMapCount, NumMaps + 1)
         NumMaps = NumMaps + InstanceMapCount
 132     Call InitAreas
         Exit Sub

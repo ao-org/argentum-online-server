@@ -2,7 +2,7 @@ Attribute VB_Name = "InstanceManager"
 Option Explicit
 
 
-Private AvaibleInstanceMap As t_IndexHeap
+Private AvailableInstanceMap As t_IndexHeap
 Public Type t_TranslationMapping
     OriginalTarget As Integer
     NewTarget As Integer
@@ -10,12 +10,12 @@ End Type
 
 Public Sub InitializeInstanceHeap(ByVal Size As Integer, ByVal MapIndexStart As Integer)
 On Error GoTo ErrHandler_InitializeInstanceHeap
-    ReDim AvaibleInstanceMap.IndexInfo(Size)
+    ReDim AvailableInstanceMap.IndexInfo(Size)
     Dim i As Integer
     For i = 1 To Size
-        AvaibleInstanceMap.IndexInfo(i) = Size - (i - 1) + MapIndexStart
+        AvailableInstanceMap.IndexInfo(i) = Size - (i - 1) + MapIndexStart
     Next i
-    AvaibleInstanceMap.currentIndex = Size
+    AvailableInstanceMap.currentIndex = Size
     Exit Sub
 ErrHandler_InitializeInstanceHeap:
     Call TraceError(Err.Number, Err.Description, "InstanceManager.InitializeInstanceHeap", Erl)
@@ -23,9 +23,9 @@ End Sub
 
 Public Function ReleaseInstance(ByVal InstanceMapIndex As Integer) As Boolean
 On Error GoTo ErrHandler
-    AvaibleInstanceMap.currentIndex = AvaibleInstanceMap.currentIndex + 1
-    Debug.Assert AvaibleInstanceMap.currentIndex <= UBound(AvaibleInstanceMap.IndexInfo)
-    AvaibleInstanceMap.IndexInfo(AvaibleInstanceMap.currentIndex) = InstanceMapIndex
+    AvailableInstanceMap.currentIndex = AvailableInstanceMap.currentIndex + 1
+    Debug.Assert AvailableInstanceMap.currentIndex <= UBound(AvailableInstanceMap.IndexInfo)
+    AvailableInstanceMap.IndexInfo(AvailableInstanceMap.currentIndex) = InstanceMapIndex
     ReleaseInstance = True
     MapInfo(InstanceMapIndex).MapResource = 0
     Exit Function
@@ -35,17 +35,17 @@ ErrHandler:
 End Function
 
 Public Function GetAvailableInstanceCount() As Integer
-    GetAvailableInstanceCount = AvaibleInstanceMap.currentIndex
+    GetAvailableInstanceCount = AvailableInstanceMap.currentIndex
 End Function
 
 Public Function GetNextAvailableInstance() As Integer
 On Error GoTo ErrHandler
-    If (AvaibleInstanceMap.currentIndex = 0) Then
+    If (AvailableInstanceMap.currentIndex = 0) Then
         GetNextAvailableInstance = -1
-        Return
+        Exit Function
     End If
-    GetNextAvailableInstance = AvaibleInstanceMap.IndexInfo(AvaibleInstanceMap.currentIndex)
-    AvaibleInstanceMap.currentIndex = AvaibleInstanceMap.currentIndex - 1
+    GetNextAvailableInstance = AvailableInstanceMap.IndexInfo(AvailableInstanceMap.currentIndex)
+    AvailableInstanceMap.currentIndex = AvailableInstanceMap.currentIndex - 1
     Exit Function
 ErrHandler:
     Call TraceError(Err.Number, Err.Description, "InstanceManager.GetNextAvailableInstance", Erl)
@@ -61,9 +61,9 @@ Public Sub CloneMapWithTranslations(ByVal SourceMapIndex As Integer, ByVal DestM
     MapInfo(DestMapIndex).MapResource = SourceMapIndex
     Dim PosX As Integer
     Dim PosY As Integer
-    Dim Time As Long
+    Dim PerformanceTimer As Long
     Dim i As Integer
-    Time = GetTickCount()
+    Call PerformanceTestStart(PerformanceTimer)
     For PosY = YMinMapSize To YMaxMapSize
         For PosX = XMinMapSize To XMaxMapSize
             MapData(DestMapIndex, PosX, PosY) = MapData(SourceMapIndex, PosX, PosY)
@@ -76,6 +76,5 @@ Public Sub CloneMapWithTranslations(ByVal SourceMapIndex As Integer, ByVal DestM
             End If
         Next PosX
     Next PosY
-    Time = GetTickCount() - Time
-    
+    Call PerformTimeLimitCheck(PerformanceTimer, "CloneMapWithTranslations time", 50)
 End Sub
