@@ -773,7 +773,7 @@ Sub Main()
             Call PerformTimeLimitCheck(PerformanceTimer, "General Update Effects over time")
             DoEvents
             Call PerformTimeLimitCheck(PerformanceTimer, "Do events")
-            Call AntiCheat.Update
+            Call AntiCheatUpdate
             Call PerformTimeLimitCheck(PerformanceTimer, "Update anti cheat")
             ' Unlock main loop for maximum throughput but it can hog weak CPUs.
             #If UNLOCK_CPU = 0 Then
@@ -2242,7 +2242,7 @@ Public Sub CerrarServidor()
 110             Call CloseSocket(LoopC)
             End If
         Next
-        AntiCheat.UnloadAC
+        Call UnloadAntiCheat
 112     If Database_Enabled Then Database_Close
  
 124     End

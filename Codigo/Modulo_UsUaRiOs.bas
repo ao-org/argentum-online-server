@@ -836,6 +836,7 @@ On Error GoTo Complete_ConnectUser_Err
             End If
             Call RestoreDCUserCache(UserIndex)
             Call CustomScenarios.UserConnected(userIndex)
+            Call AntiCheat.OnNewPlayerConnect(UserIndex)
          End With
 
             

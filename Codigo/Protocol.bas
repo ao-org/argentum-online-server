@@ -871,6 +871,8 @@ On Error Resume Next
             Call HandleSetHotkeySlot(UserIndex)
         Case ClientPacketID.eUseHKeySlot
             Call HandleUseHKeySlot(UserIndex)
+        Case ClientPacketID.eAntiCheatMessage
+            Call HandleAntiCheatMessage(UserIndex)
 #If PYMMO = 0 Then
         Case ClientPacketID.eCreateAccount
             Call HandleCreateAccount(ConnectionId)
@@ -10725,11 +10727,20 @@ HandleUseHKeySlot_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HandleUseHKeySlot", Erl)
 End Sub
 
+
+Public Sub HandleAntiCheatMessage(ByVal UserIndex As Integer)
+On Error GoTo AntiCheatMessage_Err:
+    Dim Data() As Byte
+    Call Reader.ReadSafeArrayInt8(Data)
+    Call HandleAntiCheatServerMessage(UserIndex, Data)
+    Exit Sub
+AntiCheatMessage_Err:
+    Call TraceError(Err.Number, Err.Description, "Protocol.AntiCheatMessage", Erl)
+End Sub
+
 Public Sub HendleRequestLobbyList(ByVal UserIndex As Integer)
 On Error GoTo HendleRequestLobbyList_Err:
-    
     Call WriteUpdateLobbyList(UserIndex)
-    Exit Sub
 HendleRequestLobbyList_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HendleRequestLobbyList", Erl)
 End Sub
