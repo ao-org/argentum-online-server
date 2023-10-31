@@ -1554,7 +1554,7 @@ Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As e_Heading) A
                                                         If Distancia(nPos, UserList(tempIndex).pos) > DISTANCIA_ENVIO_DATOS And .Counters.timeFx + .Counters.timeChat = 0 Then
                                                             If Abs(nPos.X - UserList(tempIndex).pos.X) <= RANGO_VISION_X And Abs(nPos.y - UserList(tempIndex).pos.y) <= RANGO_VISION_Y Then
                                                                 'Mandamos los pasos para los pjs q estan lejos para que simule que caminen.
-                                                                Call WritePlayWaveStep(tempIndex, MapData(nPos.Map, nPos.X, nPos.y).Graphic(1), Abs(nPos.X - UserList(tempIndex).pos.X) + Abs(nPos.y - UserList(tempIndex).pos.y), _
+                                                                Call WritePlayWaveStep(tempIndex, MapData(nPos.Map, nPos.X, nPos.y).Graphic(1), MapData(nPos.Map, nPos.X, nPos.y).Graphic(2), Abs(nPos.X - UserList(tempIndex).pos.X) + Abs(nPos.y - UserList(tempIndex).pos.y), _
                                                                                              Sgn(nPos.X - UserList(tempIndex).pos.X), .flags.stepToggle)
                                                             End If
                                                         End If

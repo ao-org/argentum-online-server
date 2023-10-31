@@ -1569,6 +1569,7 @@ WritePlayWave_Err:
 End Sub
 Public Sub WritePlayWaveStep(ByVal UserIndex As Integer, _
                          ByVal grh As Long, _
+                         ByVal grh2 As Long, _
                          ByVal distance As Byte, _
                          ByVal balance As Integer, _
                          ByVal step As Boolean)
@@ -1577,6 +1578,7 @@ Public Sub WritePlayWaveStep(ByVal UserIndex As Integer, _
         '</EhHeader>
 100     Call Writer.WriteInt16(ServerPacketID.ePlayWaveStep)
 102     Call Writer.WriteInt32(grh)
+        Call Writer.WriteInt32(grh2)
 108     Call Writer.WriteInt8(distance)
 109     Call Writer.WriteInt16(balance)
 110     Call Writer.WriteBool(step)
