@@ -39,6 +39,16 @@ Public Enum e_ActionRequiredReason
     eEOS_ACCCAR_PermanentBanned = 10
 End Enum
 
+Public Enum EOS_ELogLevel
+    EOS_LOG_Off = 0
+    EOS_LOG_Fatal = 100
+    EOS_LOG_Error = 200
+    EOS_LOG_Warning = 300
+    EOS_LOG_Info = 400
+    EOS_LOG_Verbose = 500
+    EOS_LOG_VeryVerbose = 600
+End Enum
+
 Private Declare Function InitializeAC Lib "AOACServer.dll" (ByRef Callbacks As t_AntiCheatCallbacks) As Long
 Private Declare Sub UnloadAC Lib "AOACServer.dll" ()
 Private Declare Sub Update Lib "AOACServer.dll" ()
@@ -46,6 +56,8 @@ Private Declare Sub AddPendingRegister Lib "AOACServer.dll" (ByRef UserReference
 Private Declare Function QueryAndRemoveOldPendingRegistey Lib "AOACServer.dll" (ByRef UserReference As t_UserReference, ByVal ElapsedThreshold As Long) As Long
 Private Declare Sub UnRegisterClient Lib "AOACServer.dll" (ByVal UserIndex As Integer)
 Private Declare Sub HandleRemoteMessage Lib "AOACServer.dll" (ByRef UserReference As t_UserReference, ByRef Data As Byte, ByVal DataSize As Integer)
+
+Dim EnableAnticheat As Boolean
 
 Private Function GetStringFromPtr(ByVal Ptr As Long, ByVal size As Long) As String
     Dim Buffer() As Byte
@@ -60,15 +72,18 @@ End Function
 
 Public Sub InitializeAntiCheat()
 On Error GoTo InitializeAC_Err
-    Dim InitResult As e_ACInitResult
-    Dim Callbacks As t_AntiCheatCallbacks
-    Callbacks.SendToClient = FARPROC(AddressOf SendToClientCB)
-    Callbacks.LogMessage = FARPROC(AddressOf LogMessageCB)
-    Callbacks.RegisterRemoteUserId = FARPROC(AddressOf RegisterRemoteUserIdCb)
-    Callbacks.ActionRequired = FARPROC(AddressOf ClientActionRequired)
-    InitResult = InitializeAC(Callbacks)
-    If InitResult <> eOk Then
-        Call MsgBox("El juego se inicio sin activar el anti cheat, debe activarlo para poder conectarse a los servidores.")
+    EnableAnticheat = True 'IsFeatureEnabled("anti-cheat")
+    If EnableAnticheat Then
+        Dim InitResult As e_ACInitResult
+        Dim Callbacks As t_AntiCheatCallbacks
+        Callbacks.SendToClient = FARPROC(AddressOf SendToClientCB)
+        Callbacks.LogMessage = FARPROC(AddressOf LogMessageCB)
+        Callbacks.RegisterRemoteUserId = FARPROC(AddressOf RegisterRemoteUserIdCb)
+        Callbacks.ActionRequired = FARPROC(AddressOf ClientActionRequired)
+        InitResult = InitializeAC(Callbacks)
+        If InitResult <> eOk Then
+            Call MsgBox("El juego se inicio sin activar el anti cheat, debe activarlo para poder conectarse a los servidores.")
+        End If
     End If
     Exit Sub
 InitializeAC_Err:
@@ -76,53 +91,72 @@ InitializeAC_Err:
 End Sub
 
 Public Sub OnNewPlayerConnect(ByVal UserIndex As Integer)
-    Dim UserRef As t_UserReference
-    Call SetUserRef(UserRef, UserIndex)
-    Call AddPendingRegister(UserRef)
-    Call WriteAntiCheatStartSeassion(UserIndex)
+    If EnableAnticheat Then
+        Dim UserRef As t_UserReference
+        Call SetUserRef(UserRef, UserIndex)
+        Call AddPendingRegister(UserRef)
+        Call WriteAntiCheatStartSeassion(UserIndex)
+    End If
 End Sub
 
 Public Sub KickUnregisteredPlayers()
-    Dim UserRef As t_UserReference
-    Dim Result As Long
-    Result = QueryAndRemoveOldPendingRegistey(UserRef, 10000)
-    If Result > 0 And IsValidUserRef(UserRef) Then
-        Call modNetwork.Kick(UserList(UserRef.ArrayIndex).ConnectionDetails.ConnID, "Anticheat detection timeout")
+    If EnableAnticheat Then
+        Dim UserRef As t_UserReference
+        Dim Result As Long
+        Result = QueryAndRemoveOldPendingRegistey(UserRef, 10000)
+        If Result > 0 And IsValidUserRef(UserRef) Then
+            Call modNetwork.Kick(UserList(UserRef.ArrayIndex).ConnectionDetails.ConnID, "Anticheat detection timeout")
+        End If
     End If
 End Sub
 
 Public Sub AntiCheatUpdate()
-    Call Update
-    Call KickUnregisteredPlayers
+    If EnableAnticheat Then
+        Call Update
+        Call KickUnregisteredPlayers
+    End If
 End Sub
 
 Public Sub UnloadAntiCheat()
-    Call UnloadAC
+    If EnableAnticheat Then
+        Call UnloadAC
+    End If
 End Sub
 Public Sub SendToClientCB(ByRef TargetUser As t_UserReference, ByVal Data As Long, ByVal DataSize As Long)
-    If IsValidUserRef(TargetUser) Then
-        Call WriteAntiCheatMessage(TargetUser.ArrayIndex, Data, DataSize)
+    If EnableAnticheat Then
+        If IsValidUserRef(TargetUser) Then
+            Call WriteAntiCheatMessage(TargetUser.ArrayIndex, Data, DataSize)
+        End If
     End If
 End Sub
 
 Public Sub HandleAntiCheatServerMessage(ByVal UserIndex As Integer, ByRef Data() As Byte)
-    Dim UserRef As t_UserReference
-    Call SetUserRef(UserRef, UserIndex)
-    Call HandleRemoteMessage(UserRef, Data(0), UBound(Data))
+    If EnableAnticheat Then
+        Dim UserRef As t_UserReference
+        Call SetUserRef(UserRef, UserIndex)
+        Call HandleRemoteMessage(UserRef, Data(0), UBound(Data))
+    End If
 End Sub
 
-Public Sub LogMessageCB(ByRef Message As SINGLESTRINGPARAM)
+Public Sub LogMessageCB(ByRef Message As SINGLESTRINGPARAM, ByVal LogLevel As Long)
     Dim MessageStr As String
     If Message.Len > 0 Then
         MessageStr = GetStringFromPtr(Message.Ptr, Message.Len)
     End If
-    Debug.Print MessageStr
+    If LogLevel Then
+    End If
+    If LogLevel < EOS_LOG_Warning Then
+        Call LogThis(0, "Anticheat: " & MessageStr, vbLogEventTypeError)
+    End If
 End Sub
 
 Public Sub RegisterRemoteUserIdCb(ByRef UserRef As t_UserReference, ByRef Id As SINGLESTRINGPARAM)
     Dim IdStr As String
     If Id.Len > 0 Then
         IdStr = GetStringFromPtr(Id.Ptr, Id.Len)
+    End If
+    If IsValidUserRef(UserRef) Then
+        Call SaveEpicLogin(IdStr, UserRef.ArrayIndex)
     End If
 End Sub
 
@@ -137,5 +171,7 @@ Public Sub ClientActionRequired(ByRef UserRef As t_UserReference, ByVal Action A
 End Sub
 
 Public Sub OnPlayerDisconnect(ByVal UserIndex As Integer)
-    Call UnRegisterClient(UserIndex)
+    If EnableAnticheat Then
+        Call UnRegisterClient(UserIndex)
+    End If
 End Sub

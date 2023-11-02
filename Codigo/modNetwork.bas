@@ -183,7 +183,6 @@ Private Sub OnServerConnect(ByVal Connection As Long, ByVal Address As String)
             End With
 136         Call PendingConnections.Add(Connection, Connection)
 138         Call modSendData.SendToConnection(Connection, PrepareConnected())
-140         Debug.Print "Handle new connection"
         Else
 142         Call Kick(Connection, "El server se encuentra lleno en este momento. Disculpe las molestias ocasionadas.")
         End If
