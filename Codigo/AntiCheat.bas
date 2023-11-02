@@ -72,7 +72,7 @@ End Function
 
 Public Sub InitializeAntiCheat()
 On Error GoTo InitializeAC_Err
-    EnableAnticheat = True 'IsFeatureEnabled("anti-cheat")
+    EnableAnticheat = IsFeatureEnabled("anti-cheat")
     If EnableAnticheat Then
         Dim InitResult As e_ACInitResult
         Dim Callbacks As t_AntiCheatCallbacks
