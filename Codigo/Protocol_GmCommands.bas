@@ -504,7 +504,7 @@ Public Sub HandleWhere(ByVal UserIndex As Integer)
             Dim tUser    As t_UserReference
         
 102         username = Reader.ReadString8()
-104         If (.flags.Privilegios And (e_PlayerType.RoleMaster Or e_PlayerType.Consejero Or e_PlayerType.user)) = 0 Then
+104         If (.flags.Privilegios And (e_PlayerType.RoleMaster Or e_PlayerType.Consejero Or e_PlayerType.user Or e_PlayerType.SemiDios)) = 0 Then
 106             tUser = NameIndex(username)
 108             If Not IsValidUserRef(tUser) Then
 110                 Call WriteConsoleMsg(UserIndex, "Usuario offline.", e_FontTypeNames.FONTTYPE_INFO)
@@ -995,7 +995,7 @@ Public Sub HandleWorking(ByVal UserIndex As Integer)
     
 100     With UserList(UserIndex)
 
-102         If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero)) Then
+102         If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero Or e_PlayerType.RoleMaster Or e_PlayerType.SemiDios)) Then
 104             Call WriteConsoleMsg(UserIndex, "Servidor » /TRABAJANDO es un comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
