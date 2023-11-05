@@ -865,18 +865,20 @@ Sub Desequipar(ByVal UserIndex As Integer, ByVal Slot As Byte)
                 ' UserList(UserIndex).Invent.AnilloEqpSlot = 0
             
 136         Case e_OBJType.otHerramientas
-138             UserList(UserIndex).Invent.Object(Slot).Equipped = 0
-140             UserList(UserIndex).Invent.HerramientaEqpObjIndex = 0
-142             UserList(UserIndex).Invent.HerramientaEqpSlot = 0
-
-144             If UserList(UserIndex).flags.UsandoMacro = True Then
-146                 Call WriteMacroTrabajoToggle(UserIndex, False)
-                End If
-        
-148             UserList(UserIndex).Char.WeaponAnim = NingunArma
+137             If UserList(UserIndex).flags.PescandoEspecial = False Then
+138                 UserList(UserIndex).invent.Object(Slot).Equipped = 0
+140                 UserList(UserIndex).invent.HerramientaEqpObjIndex = 0
+142                 UserList(UserIndex).invent.HerramientaEqpSlot = 0
+    
+144                 If UserList(UserIndex).flags.UsandoMacro = True Then
+146                     Call WriteMacroTrabajoToggle(UserIndex, False)
+                    End If
             
-150             If UserList(UserIndex).flags.Montado = 0 Then
-152                 Call ChangeUserChar(UserIndex, UserList(UserIndex).Char.body, UserList(UserIndex).Char.head, UserList(UserIndex).Char.Heading, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.CascoAnim, UserList(UserIndex).Char.CartAnim)
+148                 UserList(UserIndex).Char.WeaponAnim = NingunArma
+                
+150                 If UserList(UserIndex).flags.Montado = 0 Then
+152                     Call ChangeUserChar(UserIndex, UserList(UserIndex).Char.body, UserList(UserIndex).Char.head, UserList(UserIndex).Char.Heading, UserList(UserIndex).Char.WeaponAnim, UserList(UserIndex).Char.ShieldAnim, UserList(UserIndex).Char.CascoAnim, UserList(UserIndex).Char.CartAnim)
+                    End If
                 End If
        
 154         Case e_OBJType.otMagicos
