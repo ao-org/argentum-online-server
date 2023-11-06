@@ -10741,6 +10741,7 @@ End Sub
 Public Sub HendleRequestLobbyList(ByVal UserIndex As Integer)
 On Error GoTo HendleRequestLobbyList_Err:
     Call WriteUpdateLobbyList(UserIndex)
+    Exit Sub
 HendleRequestLobbyList_Err:
     Call TraceError(Err.Number, Err.Description, "Protocol.HendleRequestLobbyList", Erl)
 End Sub
