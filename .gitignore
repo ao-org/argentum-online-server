@@ -28,3 +28,4 @@ feature_toggle.ini
 Logs/numusers.log
 Database.db
 AoServerTools.dll
+AOACServer.pdb

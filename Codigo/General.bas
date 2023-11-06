@@ -737,9 +737,7 @@ Sub Main()
         'Ocultar
 330     Call frmMain.InitMain(HideMe)
 
-
-    
-
+        Call InitializeAntiCheat
     
     
 332     tInicioServer = GetTickCount()
@@ -775,6 +773,8 @@ Sub Main()
             Call PerformTimeLimitCheck(PerformanceTimer, "General Update Effects over time")
             DoEvents
             Call PerformTimeLimitCheck(PerformanceTimer, "Do events")
+            Call AntiCheatUpdate
+            Call PerformTimeLimitCheck(PerformanceTimer, "Update anti cheat")
             ' Unlock main loop for maximum throughput but it can hog weak CPUs.
             #If UNLOCK_CPU = 0 Then
                 Call Sleep(1)
@@ -784,7 +784,6 @@ Sub Main()
                 Call UnitClient.Poll
             #End If
         Wend
-        
         Call LogThis(0, "Closing the server " & Now, vbLogEventTypeInformation)
         Exit Sub
 Handler:
@@ -2243,7 +2242,7 @@ Public Sub CerrarServidor()
 110             Call CloseSocket(LoopC)
             End If
         Next
-    
+        Call UnloadAntiCheat
 112     If Database_Enabled Then Database_Close
  
 124     End

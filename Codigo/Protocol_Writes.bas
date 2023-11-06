@@ -5854,6 +5854,30 @@ PrepareActiveToggles_Err:
         Call TraceError(Err.Number, Err.Description, "Argentum20Server.Protocol_Writes.PrepareActiveToggles", Erl)
 End Function
 
+Public Sub WriteAntiCheatMessage(ByVal UserIndex As Integer, ByVal Data As Long, ByVal DataSize As Long)
+    On Error GoTo WriteAntiCheatMessage_Err
+        Dim Buffer() As Byte
+        ReDim Buffer(0 To (DataSize - 1)) As Byte
+        CopyMemory Buffer(0), ByVal Data, DataSize
+        Call Writer.WriteInt16(ServerPacketID.eAntiCheatMessage)
+        Call Writer.WriteSafeArrayInt8(Buffer)
+        Call modSendData.SendData(ToIndex, UserIndex)
+        Exit Sub
+WriteAntiCheatMessage_Err:
+        Call Writer.Clear
+        Call TraceError(Err.Number, Err.Description, "Argentum20.Protocol_Writes.WriteAntiCheatMessage", Erl)
+End Sub
+
+Public Sub WriteAntiCheatStartSeassion(ByVal UserIndex As Integer)
+    On Error GoTo WriteAntiStartSeassion_Err
+        Call Writer.WriteInt16(ServerPacketID.eAntiCheatStartSession)
+        Call modSendData.SendData(ToIndex, UserIndex)
+        Exit Sub
+WriteAntiStartSeassion_Err:
+        Call Writer.Clear
+        Call TraceError(Err.Number, Err.Description, "Argentum20.Protocol_Writes.WriteAntiStartSeassion", Erl)
+End Sub
+
 Public Sub WriteUpdateLobbyList(ByVal UserIndex As Integer)
 On Error GoTo WriteUpdateLobbyList_Err
     Dim IdList() As Integer

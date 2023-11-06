@@ -1451,6 +1451,7 @@ End Sub
 Sub ResetUserSlot(ByVal UserIndex As Integer)
         On Error GoTo ResetUserSlot_Err
         Call SaveDCUserCache(UserIndex)
+        Call AntiCheat.OnPlayerDisconnect(UserIndex)
         With UserList(UserIndex)
 100         .ConnectionDetails.ConnIDValida = False
 102         .ConnectionDetails.ConnID = 0
