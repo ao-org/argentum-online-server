@@ -2289,6 +2289,7 @@ Private Sub HandleDrop(ByVal UserIndex As Integer)
             'If Not verifyTimeStamp(PacketCounter, .PacketCounters(Packet_ID), .PacketTimers(Packet_ID), .MacroIterations(Packet_ID), userindex, "Drop", PacketTimerThreshold(Packet_ID), MacroIterations(Packet_ID)) Then Exit Sub
             
 106         If Not IntervaloPermiteTirar(UserIndex) Then Exit Sub
+            If .flags.PescandoEspecial = True Then Exit Sub
 
 108         If amount <= 0 Then Exit Sub
 
