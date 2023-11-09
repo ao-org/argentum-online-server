@@ -6925,7 +6925,7 @@ Private Sub HandleRoyalArmyMessage(ByVal UserIndex As Integer)
 102             Message = Reader.ReadString8()
         
             'Solo dioses, admins y RMS
-104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios)) Or .Faccion.Status = e_Facciones.consejo Then
+104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios Or e_PlayerType.RoleMaster)) Or .Faccion.Status = e_Facciones.consejo Then
 106             Call SendData(SendTarget.ToRealYRMs, 0, PrepareMessageConsoleMsg("[ARMADA REAL] " & UserList(UserIndex).name & "> " & message, e_FontTypeNames.FONTTYPE_CONSEJO))
             End If
 
@@ -6960,7 +6960,7 @@ Private Sub HandleChaosLegionMessage(ByVal UserIndex As Integer)
 102             Message = Reader.ReadString8()
         
             'Solo dioses, admins y RMS
-104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios)) Or .Faccion.Status = e_Facciones.concilio Then
+104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios Or e_PlayerType.RoleMaster)) Or .Faccion.Status = e_Facciones.concilio Then
 106             Call SendData(SendTarget.ToCaosYRMs, 0, PrepareMessageConsoleMsg("[FUERZAS DEL CAOS] " & UserList(UserIndex).name & "> " & message, e_FontTypeNames.FONTTYPE_CONSEJOCAOS))
             End If
 

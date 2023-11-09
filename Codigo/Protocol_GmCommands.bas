@@ -412,7 +412,7 @@ Public Sub HandleShowName(ByVal UserIndex As Integer)
         'Author: Juan Martín Sotuyo Dodero (Maraxus)
 100     With UserList(UserIndex)
 
-102         If (.flags.Privilegios And (e_PlayerType.Dios Or e_PlayerType.Admin Or e_PlayerType.RoleMaster)) Then
+102         If (.flags.Privilegios And (e_PlayerType.Dios Or e_PlayerType.Admin)) Then
         
 104             .showName = Not .showName 'Show / Hide the name
             
@@ -1129,7 +1129,7 @@ Public Sub HandleJail(ByVal UserIndex As Integer)
                             End If
                         
 152                         Call Encarcelar(tUser.ArrayIndex, jailTime, .name)
-154                         Call LogGM(.Name, " encarceló a " & username)
+154                         Call LogGM(.name, " encarceló a " & username)
                         End If
                     End If
                 End If
@@ -1787,7 +1787,7 @@ Public Sub HandleRequestCharInventory(ByVal UserIndex As Integer)
 102         username = Reader.ReadString8()
 104         tUser = NameIndex(username)
         
-106         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios)) Then
+106         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios Or e_PlayerType.RoleMaster)) Then
 108             Call LogGM(.name, "/INV " & username)
 110             If IsValidUserRef(tUser) Then
 116                 Call SendUserInvTxt(userIndex, tUser.ArrayIndex)
@@ -1877,7 +1877,7 @@ Public Sub HandleReviveChar(ByVal UserIndex As Integer)
             Dim LoopC    As Byte
         
 102         username = Reader.ReadString8()
-104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios)) Then
+104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios Or e_PlayerType.RoleMaster)) Then
 106             If UCase$(username) <> "YO" Then
 108                 tUser = NameIndex(username)
                 Else
@@ -2105,7 +2105,7 @@ Public Sub HandleExecute(ByVal UserIndex As Integer)
             Dim username As String
             Dim tUser    As t_UserReference
 102         username = Reader.ReadString8()
-104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios)) Then
+104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios Or e_PlayerType.RoleMaster)) Then
 106             tUser = NameIndex(username)
 108             If IsValidUserRef(tUser) Then
                     Call CustomScenarios.UserDie(UserIndex)
@@ -2203,7 +2203,7 @@ Public Sub HandleSummonChar(ByVal UserIndex As Integer)
         Dim tUser    As t_UserReference
         
 102     username = Reader.ReadString8()
-104     If .flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios) Then
+104     If .flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios Or e_PlayerType.RoleMaster) Then
 106         If LenB(username) <> 0 Then
 108             tUser = NameIndex(username)
 110             If Not IsValidUserRef(tUser) Then
@@ -2607,7 +2607,7 @@ Public Sub HandleSetCharDescription(ByVal UserIndex As Integer)
             Dim tUser As t_UserReference
             Dim Desc  As String
 102         Desc = Reader.ReadString8()
-104         If (.flags.Privilegios And (e_PlayerType.Dios Or e_PlayerType.Admin Or e_PlayerType.RoleMaster)) Then
+104         If (.flags.Privilegios And (e_PlayerType.Dios Or e_PlayerType.Admin)) Then
 106             tUser = .flags.TargetUser
 108             If IsValidUserRef(tUser) Then
 110                 UserList(tUser.ArrayIndex).DescRM = Desc
@@ -2631,7 +2631,7 @@ Public Sub HanldeForceMIDIToMap(ByVal UserIndex As Integer)
 102         midiID = Reader.ReadInt8
 104         Mapa = Reader.ReadInt16
             'Solo dioses, admins y RMS
-106         If (.flags.Privilegios And (e_PlayerType.Dios Or e_PlayerType.Admin Or e_PlayerType.RoleMaster)) Then
+106         If (.flags.Privilegios And (e_PlayerType.Dios Or e_PlayerType.Admin)) Then
                 'Si el mapa no fue enviado tomo el actual
 108             If Not InMapBounds(Mapa, 50, 50) Then
 110                 Mapa = .Pos.map
@@ -2664,7 +2664,7 @@ Public Sub HandleForceWAVEToMap(ByVal UserIndex As Integer)
 106         X = Reader.ReadInt8()
 108         y = Reader.ReadInt8()
             'Solo dioses, admins y RMS
-110         If (.flags.Privilegios And (e_PlayerType.Dios Or e_PlayerType.Admin Or e_PlayerType.RoleMaster)) Then
+110         If (.flags.Privilegios And (e_PlayerType.Dios Or e_PlayerType.Admin)) Then
                 'Si el mapa no fue enviado tomo el actual
 112             If Not InMapBounds(Mapa, X, y) Then
 114                 Mapa = .Pos.map
@@ -2768,7 +2768,7 @@ Public Sub HandleMakeDumb(ByVal UserIndex As Integer)
             Dim tUser    As t_UserReference
         
 102         username = Reader.ReadString8()
-104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.RoleMaster)) Then
+104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios)) Then
 106             tUser = NameIndex(username)
                 'para deteccion de aoice
 108             If Not IsValidUserRef(tUser) Then
@@ -2791,7 +2791,7 @@ Public Sub HandleMakeDumbNoMore(ByVal UserIndex As Integer)
             Dim tUser    As t_UserReference
         
 102         username = Reader.ReadString8()
-104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.RoleMaster)) Then
+104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios)) Then
 106             tUser = NameIndex(username)
                 'para deteccion de aoice
 108             If Not IsValidUserRef(tUser) Then
@@ -2976,7 +2976,7 @@ Public Sub HandleRemovePunishment(ByVal UserIndex As Integer)
 104         punishment = Reader.ReadInt8
 106         NewText = Reader.ReadString8()
         
-108         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.RoleMaster)) Then
+108         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios)) Then
 110             If LenB(username) = 0 Then
 112                 Call WriteConsoleMsg(UserIndex, "Utilice /borrarpena Nick@NumeroDePena@NuevaPena", e_FontTypeNames.FONTTYPE_INFO)
                 Else
@@ -3185,7 +3185,7 @@ Public Sub HandleSetMOTD(ByVal UserIndex As Integer)
 102         newMOTD = Reader.ReadString8()
 104         auxiliaryString = Split(newMOTD, vbCrLf)
         
-106         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.RoleMaster)) Then
+106         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios)) Then
 108             Call LogGM(.name, "Ha fijado un nuevo MOTD")
             
 110             MaxLines = UBound(auxiliaryString()) + 1
@@ -3326,7 +3326,7 @@ Public Sub HandleTurnCriminal(ByVal UserIndex As Integer)
             Dim tUser    As t_UserReference
         
 102         username = Reader.ReadString8()
-104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.RoleMaster)) Then
+104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios)) Then
 106             Call LogGM(.name, "/CONDEN " & username)
 108             tUser = NameIndex(username)
 110             If IsValidUserRef(tUser) Then Call VolverCriminal(tUser.ArrayIndex)
@@ -3466,7 +3466,7 @@ Public Sub HandleChangeMapInfoRestricted(ByVal UserIndex As Integer)
     
 100     With UserList(UserIndex)
 102         tStr = Reader.ReadString8()
-104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.RoleMaster)) <> 0 Then
+104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios)) <> 0 Then
 106             Select Case UCase$(tStr)
                     Case "NEWBIE"
 108                     MapInfo(.Pos.map).Newbie = Not MapInfo(.Pos.map).Newbie
@@ -3511,7 +3511,7 @@ Public Sub HandleChangeMapInfoNoMagic(ByVal UserIndex As Integer)
         Dim nomagic As Boolean
 100     With UserList(UserIndex)
 102         nomagic = Reader.ReadBool
-104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.RoleMaster)) Then
+104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios)) Then
 106             Call LogGM(.name, .name & " ha cambiado la informacion sobre si esta permitido usar la Magia el mapa.")
             End If
         End With
@@ -3528,7 +3528,7 @@ Public Sub HandleChangeMapInfoNoInvi(ByVal UserIndex As Integer)
     
 100     With UserList(UserIndex)
 102         noinvi = Reader.ReadBool()
-104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.RoleMaster)) Then
+104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios)) Then
 106             Call LogGM(.name, .name & " ha cambiado la informacion sobre si esta permitido usar Invisibilidad el mapa.")
             End If
         End With
@@ -3543,7 +3543,7 @@ Public Sub HandleChangeMapInfoNoResu(ByVal UserIndex As Integer)
     
 100     With UserList(UserIndex)
 102         noresu = Reader.ReadBool()
-104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.RoleMaster)) Then
+104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios)) Then
 106             Call LogGM(.name, .name & " ha cambiado la informacion sobre si esta permitido usar Resucitar el mapa.")
             End If
         End With
@@ -3559,7 +3559,7 @@ Public Sub HandleChangeMapInfoLand(ByVal UserIndex As Integer)
         Dim tStr As String
 100     With UserList(UserIndex)
 102         tStr = Reader.ReadString8()
-104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.RoleMaster)) Then
+104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios)) Then
 106             If tStr = "BOSQUE" Or tStr = "NIEVE" Or tStr = "DESIERTO" Or tStr = "CIUDAD" Or tStr = "CAMPO" Or tStr = "DUNGEON" Then
 108                 Call LogGM(.name, .name & " ha cambiado la informacion del Terreno del mapa.")
 110                 MapInfo(UserList(UserIndex).Pos.map).terrain = tStr
@@ -3584,7 +3584,7 @@ Public Sub HandleChangeMapInfoZone(ByVal UserIndex As Integer)
     
 100     With UserList(UserIndex)
 102         tStr = Reader.ReadString8()
-104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.RoleMaster)) Then
+104         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios)) Then
 106             If tStr = "BOSQUE" Or tStr = "NIEVE" Or tStr = "DESIERTO" Or tStr = "CIUDAD" Or tStr = "CAMPO" Or tStr = "DUNGEON" Then
 108                 Call LogGM(.name, .name & " ha cambiado la informacion de la Zona del mapa.")
 110                 MapInfo(UserList(UserIndex).Pos.map).zone = tStr
@@ -3606,7 +3606,7 @@ On Error GoTo ChangeMapSetting_Err
         Dim SettingType As Byte
         SettingType = Reader.ReadInt8()
 100     With UserList(UserIndex)
-102         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.RoleMaster)) Then
+102         If (.flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios)) Then
 104             Select Case SettingType
                     Case e_MapSetting.e_DropItems
 108                     MapInfo(UserList(UserIndex).pos.map).DropItems = Reader.ReadInt8()
@@ -4487,7 +4487,7 @@ Public Sub HandleFinEvento(ByVal UserIndex As Integer)
         On Error GoTo HandleDenounce_Err
         'Author: Juan Martín Sotuyo Dodero (Maraxus)
 100     With UserList(UserIndex)
-102         If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero Or e_PlayerType.RoleMaster)) Then
+102         If (.flags.Privilegios And (e_PlayerType.user Or e_PlayerType.Consejero)) Then
 104             Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
                 Exit Sub
             End If
@@ -4569,7 +4569,7 @@ End Sub
 
 Public Sub HandleCancelarEvento(ByVal UserIndex As Integer)
     On Error GoTo ErrHandler
-    If (UserList(userIndex).flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios)) = 0 Then
+    If (UserList(UserIndex).flags.Privilegios And (e_PlayerType.Admin Or e_PlayerType.Dios Or e_PlayerType.SemiDios) Or e_PlayerType.RoleMaster) = 0 Then
         Call WriteConsoleMsg(UserIndex, "Servidor » Comando deshabilitado para tu cargo.", e_FontTypeNames.FONTTYPE_INFO)
         Exit Sub
     End If
