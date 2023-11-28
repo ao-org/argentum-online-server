@@ -2654,7 +2654,7 @@ Public Type t_Npc
     GiveGLD As Long
     
     NumQuest As Integer
-    QuestNumber() As Byte
+    QuestNumber() As Integer
 
     Stats As t_NPCStats
     flags As t_NPCFlags

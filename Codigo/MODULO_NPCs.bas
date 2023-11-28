@@ -1506,7 +1506,7 @@ Function OpenNPC(ByVal NpcNumber As Integer, _
         
 362             .NumQuest = val(aux)
                 
-364             ReDim .QuestNumber(1 To .NumQuest) As Byte
+364             ReDim .QuestNumber(1 To .NumQuest) As Integer
                 
 366             For LoopC = 1 To .NumQuest
 368                 .QuestNumber(LoopC) = val(Leer.GetValue("NPC" & NpcNumber, "QuestNumber" & LoopC))
