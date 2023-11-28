@@ -1395,7 +1395,7 @@ Public Type t_Quest
     RequiredLevel As Byte
     RequiredClass As Byte
     
-    RequiredQuest As Integer 'Changed from Byte in order to develop more than 255 quests
+    RequiredQuest As Integer 'Changed in order to develop more than 255 quests
     Trabajador As Boolean
     TalkTo As Integer
     
