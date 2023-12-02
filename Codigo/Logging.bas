@@ -65,7 +65,7 @@ Private Declare Function ReportEvent _
 Private Type t_CircularBuffer
     currentIndex As Integer
     Messages() As String
-    size As Integer
+    Size As Integer
 End Type
 Public CircularLogBuffer As t_CircularBuffer
 
@@ -74,25 +74,25 @@ Private Declare Function RegisterEventSource Lib "advapi32.dll" Alias "RegisterE
  ByVal lpSourceName As String) As Long
 
 
-Public Sub InitializeCircularLogBuffer(Optional ByVal size As Integer = 30)
-    CircularLogBuffer.size = size
+Public Sub InitializeCircularLogBuffer(Optional ByVal Size As Integer = 30)
+    CircularLogBuffer.Size = Size
     CircularLogBuffer.currentIndex = 0
-    ReDim CircularLogBuffer.Messages(0 To size)
+    ReDim CircularLogBuffer.Messages(0 To Size)
 End Sub
 
 Public Sub AddLogToCircularBuffer(Message As String)
     CircularLogBuffer.currentIndex = CircularLogBuffer.currentIndex + 1
-    CircularLogBuffer.currentIndex = (CircularLogBuffer.currentIndex Mod CircularLogBuffer.size)
+    CircularLogBuffer.currentIndex = (CircularLogBuffer.currentIndex Mod CircularLogBuffer.Size)
     CircularLogBuffer.Messages(CircularLogBuffer.currentIndex) = Message
 End Sub
 
 Public Function GetLastMessages() As String()
     Dim errorList() As String
-    ReDim errorList(CircularLogBuffer.size)
+    ReDim errorList(CircularLogBuffer.Size)
     Dim i As Integer
     Dim circularIndex As Integer
-    For i = 1 To CircularLogBuffer.size
-        circularIndex = ((CircularLogBuffer.currentIndex + i) Mod CircularLogBuffer.size)
+    For i = 1 To CircularLogBuffer.Size
+        circularIndex = ((CircularLogBuffer.currentIndex + i) Mod CircularLogBuffer.Size)
         errorList(i) = CircularLogBuffer.Messages(circularIndex)
     Next i
     GetLastMessages = errorList
@@ -100,13 +100,13 @@ End Function
 
 
 
-Public Sub LogThis(nErrNo As Long, sLogMsg As String, EventType As LogEventTypeConstants)
+Public Sub LogThis(nErrNo As Long, sLogMsg As String, eventType As LogEventTypeConstants)
     Dim hEvent As Long
     hEvent = RegisterEventSource("", "Argentum20")
     If eventType = vbLogEventTypeWarning Or eventType = vbLogEventTypeError Then
         Call AddLogToCircularBuffer(sLogMsg)
     End If
-    Call ReportEvent(hEvent, EventType, 0, nErrNo, 0, 1, Len(sLogMsg), sLogMsg, 0)
+    Call ReportEvent(hEvent, eventType, 0, 11, 0, 1, Len(sLogMsg), nErrNo & " - " & sLogMsg, 0)
 End Sub
 
 Public Sub LogearEventoDeSubasta(s As String)
@@ -116,7 +116,7 @@ On Error GoTo ErrHandler
 ErrHandler:
 End Sub
 
-Sub LogBan(ByVal BannedIndex As Integer, ByVal userindex As Integer, ByVal Motivo As String)
+Sub LogBan(ByVal BannedIndex As Integer, ByVal UserIndex As Integer, ByVal Motivo As String)
 On Error GoTo ErrHandler
         Dim s As String
         s = UserList(BannedIndex).name & " BannedBy " & UserList(UserIndex).name & " Reason " & Motivo
@@ -224,14 +224,14 @@ On Error GoTo ErrHandler
         Exit Sub
 ErrHandler:
 End Sub
-Public Sub LogGM(name As String, desc As String)
+Public Sub LogGM(name As String, Desc As String)
 On Error GoTo ErrHandler
         Call LogThis(type_log.e_LogGM, "[" & name & "] " & Desc, vbLogEventTypeInformation)
         Exit Sub
 ErrHandler:
 End Sub
 
-Public Sub LogPremios(GM As String, UserName As String, ByVal ObjIndex As Integer, ByVal Cantidad As Integer, Motivo As String)
+Public Sub LogPremios(GM As String, username As String, ByVal ObjIndex As Integer, ByVal Cantidad As Integer, Motivo As String)
 On Error GoTo ErrHandler
         Dim s As String
         s = "Item: " & ObjData(ObjIndex).name & " (" & ObjIndex & ") Cantidad: " & Cantidad & vbNewLine _
