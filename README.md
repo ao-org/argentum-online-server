@@ -22,7 +22,20 @@ Crear una nueva carpeta llamada `C:\AO20` y entrar a la misma, en ella seguir lo
 
 # 🛡️ Pull Requests
 
-Before make a `git commit` please run the file `git_ignore_case.sh` to avoid false changes in the PR.
+<a href="https://imgbb.com/"><img src="https://i.ibb.co/QfZznrw/Screenshot-2023-12-02-211157.png" alt="Precommit-hook" border="0"></a>
+
+We have a pre-commit hook for the project, Visual Basic 6 IDE it changes the names of the variables and it makes the Pull Requests very difficult to understand.
+
+Please run the following commands with `git bash` or the client you are using.
+
+```
+chmod +x .githooks/pre-commit
+git config core.hooksPath .githooks
+```
+
+Basically the pre-commit hook runs when you make a `git commit` and it will run the file `git_ignore_case.sh` to avoid false changes in the Pull Request. Is not perfect but it helps a lot. Please send the Pull Requests with only the neccesary code to be reviewed.
+
+In case you have problems setting locally your pre-commit hook you can run the file `git_ignore_case.sh` by just doing double click.
 
 # 🛡️ Requisitos
 
