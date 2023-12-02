@@ -24,7 +24,7 @@ Crear una nueva carpeta llamada `C:\AO20` y entrar a la misma, en ella seguir lo
 
 <a href="https://imgbb.com/"><img src="https://i.ibb.co/QfZznrw/Screenshot-2023-12-02-211157.png" alt="Precommit-hook" border="0"></a>
 
-We have a pre-commit hook for the project, Visual Basic 6 IDE it changes the names of the variables and it makes the Pull Requests very difficult to understand.
+We have a pre-commit hook for the project, Visual Basic 6 IDE changes the names of the variables and it makes the Pull Requests very difficult to understand.
 
 Please run the following commands with `git bash` or the client you are using.
 
