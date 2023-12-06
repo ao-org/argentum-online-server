@@ -1300,7 +1300,7 @@ Public Sub AlquimistaConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
                 And ObjData(UserList(UserIndex).Invent.HerramientaEqpObjIndex).OBJType = e_OBJType.otHerramientas _
                 And ObjData(UserList(UserIndex).Invent.HerramientaEqpObjIndex).Subtipo = 4 Then
         
-106         UserList(UserIndex).Stats.MinSta = UserList(UserIndex).Stats.MinSta - 25
+106         UserList(UserIndex).Stats.MinSta = UserList(UserIndex).Stats.MinSta - 1
 108         Call WriteUpdateSta(UserIndex)
             
             ' AGREGAR FX
