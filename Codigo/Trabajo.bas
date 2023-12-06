@@ -789,7 +789,8 @@ Sub AlquimistaQuitarMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As In
         
 
 100     If ObjData(ItemIndex).Raices > 0 Then Call QuitarObjetos(Raices, ObjData(ItemIndex).Raices, UserIndex)
-
+        If ObjData(ItemIndex).Botella > 0 Then Call QuitarObjetos(Botella, ObjData(ItemIndex).Botella, UserIndex)
+        If ObjData(ItemIndex).Cuchara > 0 Then Call QuitarObjetos(Cuchara, ObjData(ItemIndex).Cuchara, UserIndex)
         
         Exit Sub
 
@@ -873,6 +874,28 @@ Function AlquimistaTieneMateriales(ByVal UserIndex As Integer, ByVal ItemIndex A
                 Exit Function
 
             End If
+
+        End If
+        
+         If ObjData(ItemIndex).Botella > 0 Then
+             If Not TieneObjetos(Botella, ObjData(ItemIndex).Botella, UserIndex) Then
+                 Call WriteConsoleMsg(UserIndex, "No tenes suficientes Botella.", e_FontTypeNames.FONTTYPE_INFO)
+                 AlquimistaTieneMateriales = False
+                 Call WriteMacroTrabajoToggle(UserIndex, False)
+                    Exit Function
+    
+                End If
+
+         End If
+        
+        If ObjData(ItemIndex).Cuchara > 0 Then
+             If Not TieneObjetos(Cuchara, ObjData(ItemIndex).Cuchara, UserIndex) Then
+                 Call WriteConsoleMsg(UserIndex, "No tenes suficientes Cucharaa.", e_FontTypeNames.FONTTYPE_INFO)
+                 AlquimistaTieneMateriales = False
+                 Call WriteMacroTrabajoToggle(UserIndex, False)
+                    Exit Function
+    
+                End If
 
         End If
     
@@ -2399,7 +2422,7 @@ Public Sub DoRaices(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte
             Else
             
 108             Call WriteLocaleMsg(UserIndex, "93", e_FontTypeNames.FONTTYPE_INFO)
-                'Call WriteConsoleMsg(UserIndex, "Estás muy cansado para obtener raices.", e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteConsoleMsg(UserIndex, "Estás muy cansado para obtener raices.", e_FontTypeNames.FONTTYPE_INFO)
 110             Call WriteMacroTrabajoToggle(UserIndex, False)
                 Exit Sub
     
@@ -2418,7 +2441,9 @@ Public Sub DoRaices(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte
     
                 Dim nPos  As t_WorldPos
                 Dim MiObj As t_Obj
-        
+                
+                Call ActualizarRecurso(.pos.Map, x, y)
+                
                 'If .clase = e_Class.Druid Then
                 'MiObj.Amount = RandomNumber(6, 8)
                 ' Else
@@ -2442,9 +2467,9 @@ Public Sub DoRaices(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte
         
                 'Call WriteConsoleMsg(UserIndex, "¡Has conseguido algunas raices!", e_FontTypeNames.FONTTYPE_INFO)
 144             Call WriteTextCharDrop(UserIndex, "+" & MiObj.amount, .Char.CharIndex, vbWhite)
-146             Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessagePlayWave(60, .Pos.X, .Pos.y))
+146             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(SND_TALAR, .pos.x, .pos.y))
             Else
-148             Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessagePlayWave(61, .Pos.X, .Pos.y))
+148             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(SND_TALAR, .pos.x, .pos.y))
     
             End If
     

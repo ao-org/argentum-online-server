@@ -536,6 +536,8 @@ Public Const LingoteOro         As Integer = 388 'OK
 Public Const Wood               As Integer = 58 'OK
 Public Const ElvenWood          As Integer = 2781 'OK
 Public Const Raices             As Integer = 888 'OK
+Public Const Botella            As Integer = 2097 'OK
+Public Const Cuchara            As Integer = 163 'OK
 Public Const PieldeLobo         As Integer = 414 'OK
 Public Const PieldeOsoPardo     As Integer = 415 'OK
 Public Const PieldeOsoPolar     As Integer = 416 'OK
@@ -841,6 +843,7 @@ Public Enum e_OBJType
     OtQuest = 51
     otFishingPool = 52
     otUsableOntarget = 53
+    otPlantas = 54
     otCualquiera = 100
 End Enum
 
@@ -1642,6 +1645,8 @@ Public Type t_ObjData
     MaderaPino As Integer
     
     Raices As Integer
+    Cuchara As Integer
+    Botella As Integer
     SkPociones As Byte
     
     PielLobo As Integer

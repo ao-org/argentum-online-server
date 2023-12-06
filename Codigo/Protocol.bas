@@ -3196,7 +3196,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                                 End If
                                 
                                 '¡Hay un arbol donde clickeo?
-440                             If ObjData(DummyInt).OBJType = e_OBJType.otArboles Then
+440                             If ObjData(DummyInt).OBJType = e_OBJType.otPlantas Then
 442                                 Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(SND_TIJERAS, .Pos.X, .Pos.y))
 444                                 Call DoRaices(UserIndex, X, Y)
 

@@ -1367,6 +1367,8 @@ Sub LoadOBJData()
             
 258                     .DuracionEfecto = val(Leer.GetValue(ObjKey, "DuracionEfecto"))
 260                     .Raices = val(Leer.GetValue(ObjKey, "Raices"))
+                        .Cuchara = val(Leer.GetValue(ObjKey, "Cuchara"))
+                        .Botella = val(Leer.GetValue(ObjKey, "Botella"))
 262                     .SkPociones = val(Leer.GetValue(ObjKey, "SkPociones"))
 264                     .Porcentaje = val(Leer.GetValue(ObjKey, "Porcentaje"))
         
