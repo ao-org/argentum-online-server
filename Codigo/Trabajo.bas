@@ -2393,8 +2393,8 @@ Public Sub DoRaices(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte
                 Exit Sub
             End If
             
-104         If .Stats.MinSta > 5 Then
-106             Call QuitarSta(UserIndex, 5)
+104         If .Stats.MinSta > 2 Then
+106             Call QuitarSta(UserIndex, 2)
         
             Else
             
