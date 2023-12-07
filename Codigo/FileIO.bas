@@ -1151,14 +1151,17 @@ Sub LoadObjAlquimista()
     
 102     If n = 0 Then
 104         ReDim ObjAlquimista(0) As Integer
+            ReDim HechizoAlquimista(0) As Integer
             Exit Sub
 
         End If
     
 106     ReDim Preserve ObjAlquimista(1 To n) As Integer
+        ReDim Preserve HechizoAlquimista(1 To n) As Integer
     
 108     For lc = 1 To n
 110         ObjAlquimista(lc) = val(GetVar(DatPath & "ObjAlquimista.dat", "Obj" & lc, "Index"))
+            HechizoAlquimista(lc) = val(GetVar(DatPath & "ObjAlquimista.dat", "Obj" & lc, "Hechizo"))
 112     Next lc
 
         
