@@ -89,9 +89,9 @@ Public Sub Trabajar(ByVal UserIndex As Integer, ByVal Skill As e_Skill)
         Dim DummyInt As Integer
 
         With UserList(UserIndex)
-
-            Select Case Skill
-
+                                      
+               Select Case Skill
+                  
                 Case e_Skill.Pescar
 288                 If .Invent.HerramientaEqpObjIndex = 0 Then Exit Sub
 290                 If ObjData(.Invent.HerramientaEqpObjIndex).OBJType <> e_OBJType.otHerramientas Then Exit Sub
@@ -879,7 +879,7 @@ Function AlquimistaTieneMateriales(ByVal UserIndex As Integer, ByVal ItemIndex A
         
          If ObjData(ItemIndex).Botella > 0 Then
              If Not TieneObjetos(Botella, ObjData(ItemIndex).Botella, UserIndex) Then
-                 Call WriteConsoleMsg(UserIndex, "No tenes suficientes Botella.", e_FontTypeNames.FONTTYPE_INFO)
+                 Call WriteConsoleMsg(UserIndex, "No tenes suficientes Botellas.", e_FontTypeNames.FONTTYPE_INFO)
                  AlquimistaTieneMateriales = False
                  Call WriteMacroTrabajoToggle(UserIndex, False)
                     Exit Function
@@ -890,7 +890,7 @@ Function AlquimistaTieneMateriales(ByVal UserIndex As Integer, ByVal ItemIndex A
         
         If ObjData(ItemIndex).Cuchara > 0 Then
              If Not TieneObjetos(Cuchara, ObjData(ItemIndex).Cuchara, UserIndex) Then
-                 Call WriteConsoleMsg(UserIndex, "No tenes suficientes Cucharaa.", e_FontTypeNames.FONTTYPE_INFO)
+                 Call WriteConsoleMsg(UserIndex, "No tenes suficientes Cucharas.", e_FontTypeNames.FONTTYPE_INFO)
                  AlquimistaTieneMateriales = False
                  Call WriteMacroTrabajoToggle(UserIndex, False)
                     Exit Function
