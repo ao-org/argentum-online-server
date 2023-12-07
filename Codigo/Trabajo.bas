@@ -1322,33 +1322,40 @@ Public Sub AlquimistaConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
                 And PuedeConstruirAlquimista(ItemIndex) _
                 And ObjData(UserList(UserIndex).Invent.HerramientaEqpObjIndex).OBJType = e_OBJType.otHerramientas _
                 And ObjData(UserList(UserIndex).Invent.HerramientaEqpObjIndex).Subtipo = 4 Then
-        
-106         UserList(UserIndex).Stats.MinSta = UserList(UserIndex).Stats.MinSta - 1
-108         Call WriteUpdateSta(UserIndex)
             
-            ' AGREGAR FX
-            Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, 253, 25, False, ObjData(ItemIndex).GrhIndex))
-110         Call AlquimistaQuitarMateriales(UserIndex, ItemIndex)
-            'Call WriteConsoleMsg(UserIndex, "Has construido el objeto.", e_FontTypeNames.FONTTYPE_INFO)
-112         Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessagePlayWave(117, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.y))
+            'si tiene el hechizoAlquimista salgo
+            Dim hIndex As Integer
+
+            hIndex = 285 'cambiar por el valor de hechizo de AbjAlquimista.dat Hechizo =
+
+            If TieneHechizo(hIndex, UserIndex) Then
+
+106             UserList(UserIndex).Stats.MinSta = UserList(UserIndex).Stats.MinSta - 1
+108             Call WriteUpdateSta(UserIndex)
+                
+                ' AGREGAR FX
+                Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, 253, 25, False, ObjData(ItemIndex).GrhIndex))
+110             Call AlquimistaQuitarMateriales(UserIndex, ItemIndex)
+                'Call WriteConsoleMsg(UserIndex, "Has construido el objeto.", e_FontTypeNames.FONTTYPE_INFO)
+112             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(117, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
+        
+                Dim MiObj As t_Obj
     
-            Dim MiObj As t_Obj
-
-114         MiObj.amount = 1
-116         MiObj.ObjIndex = ItemIndex
-
-118         If Not MeterItemEnInventario(UserIndex, MiObj) Then
-120             Call TirarItemAlPiso(UserList(UserIndex).Pos, MiObj)
-
+114             MiObj.amount = 1
+116             MiObj.ObjIndex = ItemIndex
+    
+118             If Not MeterItemEnInventario(UserIndex, MiObj) Then
+120                 Call TirarItemAlPiso(UserList(UserIndex).pos, MiObj)
+    
+                End If
+        
+    
+122             Call SubirSkill(UserIndex, e_Skill.Alquimia)
+124             Call UpdateUserInv(True, UserIndex, 0)
+                'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(LABUROCARPINTERO, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+    
+126             UserList(UserIndex).Counters.Trabajando = UserList(UserIndex).Counters.Trabajando + 1
             End If
-    
-
-122         Call SubirSkill(UserIndex, e_Skill.Alquimia)
-124         Call UpdateUserInv(True, UserIndex, 0)
-            'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(LABUROCARPINTERO, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
-
-126         UserList(UserIndex).Counters.Trabajando = UserList(UserIndex).Counters.Trabajando + 1
-
         End If
 
         
