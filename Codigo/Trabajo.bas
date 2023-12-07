@@ -1161,6 +1161,7 @@ Public Function PuedeConstruirAlquimista(ByVal ItemIndex As Integer) As Boolean
         
 
         Dim i As Long
+              
 
 100     For i = 1 To UBound(ObjAlquimista)
 
@@ -1326,7 +1327,7 @@ Public Sub AlquimistaConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
             'si tiene el hechizoAlquimista salgo
             Dim hIndex As Integer
 
-            hIndex = 285 'cambiar por el valor de hechizo de AbjAlquimista.dat Hechizo =
+            hIndex = ObjData(ItemIndex).Hechizo  'cambiar por la variable del Obj en Hechizo
 
             If TieneHechizo(hIndex, UserIndex) Then
 
