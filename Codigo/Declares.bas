@@ -2884,6 +2884,7 @@ Public ForbidenNames()                    As String
 Public ArmasHerrero()                     As Integer
 Public ArmadurasHerrero()                 As Integer
 Public ObjCarpintero()                    As Integer
+Public HechizoAlquimista()                As Integer
 Public ObjAlquimista()                    As Integer
 Public ObjSastre()                        As Integer
 Public EspecialesTala()                   As t_Obj
