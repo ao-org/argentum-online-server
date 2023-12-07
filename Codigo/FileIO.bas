@@ -1151,17 +1151,14 @@ Sub LoadObjAlquimista()
     
 102     If n = 0 Then
 104         ReDim ObjAlquimista(0) As Integer
-            ReDim HechizoAlquimista(0) As Integer
             Exit Sub
 
         End If
     
 106     ReDim Preserve ObjAlquimista(1 To n) As Integer
-        ReDim Preserve HechizoAlquimista(1 To n) As Integer
     
 108     For lc = 1 To n
 110         ObjAlquimista(lc) = val(GetVar(DatPath & "ObjAlquimista.dat", "Obj" & lc, "Index"))
-            HechizoAlquimista(lc) = val(GetVar(DatPath & "ObjAlquimista.dat", "Obj" & lc, "Hechizo"))
 112     Next lc
 
         
@@ -1369,6 +1366,7 @@ Sub LoadOBJData()
 256                     .MinModificador = val(Leer.GetValue(ObjKey, "MinModificador"))
             
 258                     .DuracionEfecto = val(Leer.GetValue(ObjKey, "DuracionEfecto"))
+                        .Hechizo = val(Leer.GetValue(ObjKey, "Hechizo"))
 260                     .Raices = val(Leer.GetValue(ObjKey, "Raices"))
                         .Cuchara = val(Leer.GetValue(ObjKey, "Cuchara"))
                         .Botella = val(Leer.GetValue(ObjKey, "Botella"))
