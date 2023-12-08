@@ -1357,7 +1357,7 @@ Public Sub AlquimistaConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
     
 126             UserList(UserIndex).Counters.Trabajando = UserList(UserIndex).Counters.Trabajando + 1
             Else
-                Call WriteConsoleMsg(UserIndex, "Lamantablemente no aprendistes para crear estas pociones ", e_FontTypeNames.FONTTYPE_INFOBOLD)
+                Call WriteConsoleMsg(UserIndex, "Lamentablemente no aprendiste la receta para crear esta poción.", e_FontTypeNames.FONTTYPE_INFOBOLD)
             End If
         End If
 
