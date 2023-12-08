@@ -1356,6 +1356,8 @@ Public Sub AlquimistaConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
                 'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(LABUROCARPINTERO, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
     
 126             UserList(UserIndex).Counters.Trabajando = UserList(UserIndex).Counters.Trabajando + 1
+            Else
+                Call WriteConsoleMsg(UserIndex, "Lamantablemente no aprendistes para crear estas pociones ", e_FontTypeNames.FONTTYPE_INFOBOLD)
             End If
         End If
 
