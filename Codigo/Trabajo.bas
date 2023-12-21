@@ -1551,7 +1551,7 @@ Public Sub AlquimistaConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
                 Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, 253, 25, False, ObjData(ItemIndex).GrhIndex))
 110             Call AlquimistaQuitarMateriales(UserIndex, ItemIndex)
                 'Call WriteConsoleMsg(UserIndex, "Has construido el objeto.", e_FontTypeNames.FONTTYPE_INFO)
-112             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(117, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
+112             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(1152, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
         
                 Dim MiObj As t_Obj
     
