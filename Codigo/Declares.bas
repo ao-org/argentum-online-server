@@ -536,6 +536,28 @@ Public Const LingoteOro         As Integer = 388 'OK
 Public Const Wood               As Integer = 58 'OK
 Public Const ElvenWood          As Integer = 2781 'OK
 Public Const Raices             As Integer = 888 'OK
+Public Const Botella            As Integer = 2097 'OK
+Public Const Cuchara            As Integer = 163 'OK
+Public Const Mortero            As Integer = 4304
+Public Const FrascoAlq          As Integer = 4305
+Public Const FrascoElixir       As Integer = 4306
+Public Const Dosificador        As Integer = 4307
+Public Const Orquidea           As Integer = 4308
+Public Const Carmesi            As Integer = 4309
+Public Const HongoDeLuz         As Integer = 4310
+Public Const Esporas            As Integer = 4311
+Public Const Tuna               As Integer = 4312
+Public Const Cala               As Integer = 4313
+Public Const ColaDeZorro        As Integer = 4314
+Public Const FlorOceano         As Integer = 4315
+Public Const FlorRoja           As Integer = 4316
+Public Const Hierva             As Integer = 4317
+Public Const HojasDeRin         As Integer = 4318
+Public Const HojasRojas         As Integer = 4319
+Public Const SemillasPros       As Integer = 4320
+Public Const Pimiento           As Integer = 4321
+
+
 Public Const PieldeLobo         As Integer = 414 'OK
 Public Const PieldeOsoPardo     As Integer = 415 'OK
 Public Const PieldeOsoPolar     As Integer = 416 'OK
@@ -841,6 +863,7 @@ Public Enum e_OBJType
     OtQuest = 51
     otFishingPool = 52
     otUsableOntarget = 53
+    otPlantas = 54
     otCualquiera = 100
 End Enum
 
@@ -1641,7 +1664,29 @@ Public Type t_ObjData
     MaderaElfica As Integer
     MaderaPino As Integer
     
+    Hechizo As Integer
     Raices As Integer
+    Cuchara As Integer
+    Botella As Integer
+    Mortero As Integer
+    FrascoAlq As Integer
+    FrascoElixir As Integer
+    Dosificador As Integer
+    Orquidea As Integer
+    Carmesi As Integer
+    HongoDeLuz As Integer
+    Esporas As Integer
+    Tuna As Integer
+    Cala As Integer
+    ColaDeZorro As Integer
+    FlorOceano As Integer
+    FlorRoja As Integer
+    Hierva As Integer
+    HojasDeRin As Integer
+    HojasRojas As Integer
+    SemillasPros As Integer
+    Pimiento As Integer
+    
     SkPociones As Byte
     
     PielLobo As Integer

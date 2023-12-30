@@ -89,9 +89,9 @@ Public Sub Trabajar(ByVal UserIndex As Integer, ByVal Skill As e_Skill)
         Dim DummyInt As Integer
 
         With UserList(UserIndex)
-
-            Select Case Skill
-
+                                      
+               Select Case Skill
+                  
                 Case e_Skill.Pescar
 288                 If .Invent.HerramientaEqpObjIndex = 0 Then Exit Sub
 290                 If ObjData(.Invent.HerramientaEqpObjIndex).OBJType <> e_OBJType.otHerramientas Then Exit Sub
@@ -789,7 +789,26 @@ Sub AlquimistaQuitarMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As In
         
 
 100     If ObjData(ItemIndex).Raices > 0 Then Call QuitarObjetos(Raices, ObjData(ItemIndex).Raices, UserIndex)
-
+        If ObjData(ItemIndex).Botella > 0 Then Call QuitarObjetos(Botella, ObjData(ItemIndex).Botella, UserIndex)
+        If ObjData(ItemIndex).Cuchara > 0 Then Call QuitarObjetos(Cuchara, ObjData(ItemIndex).Cuchara, UserIndex)
+        If ObjData(ItemIndex).Mortero > 0 Then Call QuitarObjetos(Mortero, ObjData(ItemIndex).Mortero, UserIndex)
+        If ObjData(ItemIndex).FrascoAlq > 0 Then Call QuitarObjetos(FrascoAlq, ObjData(ItemIndex).FrascoAlq, UserIndex)
+        If ObjData(ItemIndex).FrascoElixir > 0 Then Call QuitarObjetos(FrascoElixir, ObjData(ItemIndex).FrascoElixir, UserIndex)
+        If ObjData(ItemIndex).Dosificador > 0 Then Call QuitarObjetos(Dosificador, ObjData(ItemIndex).Dosificador, UserIndex)
+        If ObjData(ItemIndex).Orquidea > 0 Then Call QuitarObjetos(Orquidea, ObjData(ItemIndex).Orquidea, UserIndex)
+        If ObjData(ItemIndex).Carmesi > 0 Then Call QuitarObjetos(Carmesi, ObjData(ItemIndex).Carmesi, UserIndex)
+        If ObjData(ItemIndex).HongoDeLuz > 0 Then Call QuitarObjetos(HongoDeLuz, ObjData(ItemIndex).HongoDeLuz, UserIndex)
+        If ObjData(ItemIndex).Esporas > 0 Then Call QuitarObjetos(Esporas, ObjData(ItemIndex).Esporas, UserIndex)
+        If ObjData(ItemIndex).Tuna > 0 Then Call QuitarObjetos(Tuna, ObjData(ItemIndex).Tuna, UserIndex)
+        If ObjData(ItemIndex).Cala > 0 Then Call QuitarObjetos(Cala, ObjData(ItemIndex).Cala, UserIndex)
+        If ObjData(ItemIndex).ColaDeZorro > 0 Then Call QuitarObjetos(ColaDeZorro, ObjData(ItemIndex).ColaDeZorro, UserIndex)
+        If ObjData(ItemIndex).FlorOceano > 0 Then Call QuitarObjetos(FlorOceano, ObjData(ItemIndex).FlorOceano, UserIndex)
+        If ObjData(ItemIndex).FlorRoja > 0 Then Call QuitarObjetos(FlorRoja, ObjData(ItemIndex).FlorRoja, UserIndex)
+        If ObjData(ItemIndex).Hierva > 0 Then Call QuitarObjetos(Hierva, ObjData(ItemIndex).Hierva, UserIndex)
+        If ObjData(ItemIndex).HojasDeRin > 0 Then Call QuitarObjetos(HojasDeRin, ObjData(ItemIndex).HojasDeRin, UserIndex)
+        If ObjData(ItemIndex).HojasRojas > 0 Then Call QuitarObjetos(HojasRojas, ObjData(ItemIndex).HojasRojas, UserIndex)
+        If ObjData(ItemIndex).SemillasPros > 0 Then Call QuitarObjetos(SemillasPros, ObjData(ItemIndex).SemillasPros, UserIndex)
+        If ObjData(ItemIndex).Pimiento > 0 Then Call QuitarObjetos(Pimiento, ObjData(ItemIndex).Pimiento, UserIndex)
         
         Exit Sub
 
@@ -873,6 +892,223 @@ Function AlquimistaTieneMateriales(ByVal UserIndex As Integer, ByVal ItemIndex A
                 Exit Function
 
             End If
+
+        End If
+        
+        If ObjData(ItemIndex).Botella > 0 Then
+             If Not TieneObjetos(Botella, ObjData(ItemIndex).Botella, UserIndex) Then
+                 Call WriteConsoleMsg(UserIndex, "No tenes suficientes Botellas.", e_FontTypeNames.FONTTYPE_INFO)
+                 AlquimistaTieneMateriales = False
+                 Call WriteMacroTrabajoToggle(UserIndex, False)
+                    Exit Function
+    
+                End If
+
+        End If
+        
+        If ObjData(ItemIndex).Cuchara > 0 Then
+             If Not TieneObjetos(Cuchara, ObjData(ItemIndex).Cuchara, UserIndex) Then
+                 Call WriteConsoleMsg(UserIndex, "No tenes suficientes Cucharas.", e_FontTypeNames.FONTTYPE_INFO)
+                 AlquimistaTieneMateriales = False
+                 Call WriteMacroTrabajoToggle(UserIndex, False)
+                    Exit Function
+    
+                End If
+
+        End If
+        
+        If ObjData(ItemIndex).Mortero > 0 Then
+             If Not TieneObjetos(Mortero, ObjData(ItemIndex).Mortero, UserIndex) Then
+                 Call WriteConsoleMsg(UserIndex, "No tenes suficientes Mortero.", e_FontTypeNames.FONTTYPE_INFO)
+                 AlquimistaTieneMateriales = False
+                 Call WriteMacroTrabajoToggle(UserIndex, False)
+                    Exit Function
+    
+                End If
+
+        End If
+                
+        If ObjData(ItemIndex).FrascoAlq > 0 Then
+             If Not TieneObjetos(FrascoAlq, ObjData(ItemIndex).FrascoAlq, UserIndex) Then
+                 Call WriteConsoleMsg(UserIndex, "No tenes suficientes Frascos de alquimistas.", e_FontTypeNames.FONTTYPE_INFO)
+                 AlquimistaTieneMateriales = False
+                 Call WriteMacroTrabajoToggle(UserIndex, False)
+                    Exit Function
+    
+                End If
+
+        End If
+        If ObjData(ItemIndex).FrascoElixir > 0 Then
+             If Not TieneObjetos(FrascoElixir, ObjData(ItemIndex).FrascoElixir, UserIndex) Then
+                 Call WriteConsoleMsg(UserIndex, "No tenes suficientes Frascos de elixir superior.", e_FontTypeNames.FONTTYPE_INFO)
+                 AlquimistaTieneMateriales = False
+                 Call WriteMacroTrabajoToggle(UserIndex, False)
+                    Exit Function
+    
+                End If
+
+        End If
+        If ObjData(ItemIndex).Dosificador > 0 Then
+             If Not TieneObjetos(Dosificador, ObjData(ItemIndex).Dosificador, UserIndex) Then
+                 Call WriteConsoleMsg(UserIndex, "No tenes suficientes Dosificadores.", e_FontTypeNames.FONTTYPE_INFO)
+                 AlquimistaTieneMateriales = False
+                 Call WriteMacroTrabajoToggle(UserIndex, False)
+                    Exit Function
+    
+                End If
+
+        End If
+        
+        If ObjData(ItemIndex).Orquidea > 0 Then
+             If Not TieneObjetos(Orquidea, ObjData(ItemIndex).Orquidea, UserIndex) Then
+                 Call WriteConsoleMsg(UserIndex, "No tenes suficientes Orquídeas Silvestres.", e_FontTypeNames.FONTTYPE_INFO)
+                 AlquimistaTieneMateriales = False
+                 Call WriteMacroTrabajoToggle(UserIndex, False)
+                    Exit Function
+    
+                End If
+
+        End If
+        If ObjData(ItemIndex).Carmesi > 0 Then
+             If Not TieneObjetos(Carmesi, ObjData(ItemIndex).Carmesi, UserIndex) Then
+                 Call WriteConsoleMsg(UserIndex, "No tenes suficientes Raíces Carmesí.", e_FontTypeNames.FONTTYPE_INFO)
+                 AlquimistaTieneMateriales = False
+                 Call WriteMacroTrabajoToggle(UserIndex, False)
+                    Exit Function
+    
+                End If
+
+        End If
+        
+        If ObjData(ItemIndex).HongoDeLuz > 0 Then
+             If Not TieneObjetos(HongoDeLuz, ObjData(ItemIndex).HongoDeLuz, UserIndex) Then
+                 Call WriteConsoleMsg(UserIndex, "No tenes suficientes Hongos de Luz.", e_FontTypeNames.FONTTYPE_INFO)
+                 AlquimistaTieneMateriales = False
+                 Call WriteMacroTrabajoToggle(UserIndex, False)
+                    Exit Function
+    
+                End If
+
+        End If
+        
+        If ObjData(ItemIndex).Esporas > 0 Then
+             If Not TieneObjetos(Esporas, ObjData(ItemIndex).Esporas, UserIndex) Then
+                 Call WriteConsoleMsg(UserIndex, "No tenes suficientes Esporas Silvestres.", e_FontTypeNames.FONTTYPE_INFO)
+                 AlquimistaTieneMateriales = False
+                 Call WriteMacroTrabajoToggle(UserIndex, False)
+                    Exit Function
+    
+                End If
+
+        End If
+        
+        If ObjData(ItemIndex).Tuna > 0 Then
+             If Not TieneObjetos(Tuna, ObjData(ItemIndex).Tuna, UserIndex) Then
+                 Call WriteConsoleMsg(UserIndex, "No tenes suficientes Tunas Silvestres.", e_FontTypeNames.FONTTYPE_INFO)
+                 AlquimistaTieneMateriales = False
+                 Call WriteMacroTrabajoToggle(UserIndex, False)
+                    Exit Function
+    
+                End If
+
+        End If
+        
+        If ObjData(ItemIndex).Cala > 0 Then
+             If Not TieneObjetos(Cala, ObjData(ItemIndex).Cala, UserIndex) Then
+                 Call WriteConsoleMsg(UserIndex, "No tenes suficientes Calas Venenosas.", e_FontTypeNames.FONTTYPE_INFO)
+                 AlquimistaTieneMateriales = False
+                 Call WriteMacroTrabajoToggle(UserIndex, False)
+                    Exit Function
+    
+                End If
+
+        End If
+        
+        If ObjData(ItemIndex).ColaDeZorro > 0 Then
+             If Not TieneObjetos(ColaDeZorro, ObjData(ItemIndex).ColaDeZorro, UserIndex) Then
+                 Call WriteConsoleMsg(UserIndex, "No tenes suficientes Colas de Zorro.", e_FontTypeNames.FONTTYPE_INFO)
+                 AlquimistaTieneMateriales = False
+                 Call WriteMacroTrabajoToggle(UserIndex, False)
+                    Exit Function
+    
+                End If
+
+        End If
+        
+        If ObjData(ItemIndex).FlorOceano > 0 Then
+             If Not TieneObjetos(FlorOceano, ObjData(ItemIndex).FlorOceano, UserIndex) Then
+                 Call WriteConsoleMsg(UserIndex, "No tenes suficientes Flores del óceano.", e_FontTypeNames.FONTTYPE_INFO)
+                 AlquimistaTieneMateriales = False
+                 Call WriteMacroTrabajoToggle(UserIndex, False)
+                    Exit Function
+    
+                End If
+
+        End If
+        
+        If ObjData(ItemIndex).FlorRoja > 0 Then
+             If Not TieneObjetos(FlorRoja, ObjData(ItemIndex).FlorRoja, UserIndex) Then
+                 Call WriteConsoleMsg(UserIndex, "No tenes suficientes Flores Roja.", e_FontTypeNames.FONTTYPE_INFO)
+                 AlquimistaTieneMateriales = False
+                 Call WriteMacroTrabajoToggle(UserIndex, False)
+                    Exit Function
+    
+                End If
+
+        End If
+        
+        If ObjData(ItemIndex).Hierva > 0 Then
+             If Not TieneObjetos(Hierva, ObjData(ItemIndex).Hierva, UserIndex) Then
+                 Call WriteConsoleMsg(UserIndex, "No tenes suficientes Hiervas de Sangre.", e_FontTypeNames.FONTTYPE_INFO)
+                 AlquimistaTieneMateriales = False
+                 Call WriteMacroTrabajoToggle(UserIndex, False)
+                    Exit Function
+    
+                End If
+
+        End If
+        
+        If ObjData(ItemIndex).HojasDeRin > 0 Then
+             If Not TieneObjetos(HojasDeRin, ObjData(ItemIndex).HojasDeRin, UserIndex) Then
+                 Call WriteConsoleMsg(UserIndex, "No tenes suficientes Hojas de Rin.", e_FontTypeNames.FONTTYPE_INFO)
+                 AlquimistaTieneMateriales = False
+                 Call WriteMacroTrabajoToggle(UserIndex, False)
+                    Exit Function
+    
+                End If
+
+        End If
+        
+        If ObjData(ItemIndex).HojasRojas > 0 Then
+             If Not TieneObjetos(HojasRojas, ObjData(ItemIndex).HojasRojas, UserIndex) Then
+                 Call WriteConsoleMsg(UserIndex, "No tenes suficientes Hojas Rojas.", e_FontTypeNames.FONTTYPE_INFO)
+                 AlquimistaTieneMateriales = False
+                 Call WriteMacroTrabajoToggle(UserIndex, False)
+                    Exit Function
+    
+                End If
+
+        End If
+        
+        If ObjData(ItemIndex).SemillasPros > 0 Then
+             If Not TieneObjetos(SemillasPros, ObjData(ItemIndex).SemillasPros, UserIndex) Then
+                 Call WriteConsoleMsg(UserIndex, "No tenes suficientes Semillas Prosperas.", e_FontTypeNames.FONTTYPE_INFO)
+                 AlquimistaTieneMateriales = False
+                 Call WriteMacroTrabajoToggle(UserIndex, False)
+                    Exit Function
+    
+                End If
+
+        End If
+        
+        If ObjData(ItemIndex).Pimiento > 0 Then
+             If Not TieneObjetos(Pimiento, ObjData(ItemIndex).Pimiento, UserIndex) Then
+                 Call WriteConsoleMsg(UserIndex, "No tenes suficientes Pimientos Muerte.", e_FontTypeNames.FONTTYPE_INFO)
+                 AlquimistaTieneMateriales = False
+                 Call WriteMacroTrabajoToggle(UserIndex, False)
+                    Exit Function
+    
+                End If
 
         End If
     
@@ -1138,6 +1374,7 @@ Public Function PuedeConstruirAlquimista(ByVal ItemIndex As Integer) As Boolean
         
 
         Dim i As Long
+              
 
 100     For i = 1 To UBound(ObjAlquimista)
 
@@ -1299,33 +1536,42 @@ Public Sub AlquimistaConstruirItem(ByVal UserIndex As Integer, ByVal ItemIndex A
                 And PuedeConstruirAlquimista(ItemIndex) _
                 And ObjData(UserList(UserIndex).Invent.HerramientaEqpObjIndex).OBJType = e_OBJType.otHerramientas _
                 And ObjData(UserList(UserIndex).Invent.HerramientaEqpObjIndex).Subtipo = 4 Then
-        
-106         UserList(UserIndex).Stats.MinSta = UserList(UserIndex).Stats.MinSta - 25
-108         Call WriteUpdateSta(UserIndex)
             
-            ' AGREGAR FX
-            Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.CharIndex, 253, 25, False, ObjData(ItemIndex).GrhIndex))
-110         Call AlquimistaQuitarMateriales(UserIndex, ItemIndex)
-            'Call WriteConsoleMsg(UserIndex, "Has construido el objeto.", e_FontTypeNames.FONTTYPE_INFO)
-112         Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessagePlayWave(117, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.y))
+            'si tiene el hechizoAlquimista salgo
+            Dim hIndex As Integer
+
+            hIndex = ObjData(ItemIndex).Hechizo  'cambiar por la variable del Obj en Hechizo
+
+            If TieneHechizo(hIndex, UserIndex) Then
+
+106             UserList(UserIndex).Stats.MinSta = UserList(UserIndex).Stats.MinSta - 1
+108             Call WriteUpdateSta(UserIndex)
+                
+                ' AGREGAR FX
+                Call SendData(SendTarget.ToIndex, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, 253, 25, False, ObjData(ItemIndex).GrhIndex))
+110             Call AlquimistaQuitarMateriales(UserIndex, ItemIndex)
+                'Call WriteConsoleMsg(UserIndex, "Has construido el objeto.", e_FontTypeNames.FONTTYPE_INFO)
+112             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(1152, UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
+        
+                Dim MiObj As t_Obj
     
-            Dim MiObj As t_Obj
-
-114         MiObj.amount = 1
-116         MiObj.ObjIndex = ItemIndex
-
-118         If Not MeterItemEnInventario(UserIndex, MiObj) Then
-120             Call TirarItemAlPiso(UserList(UserIndex).Pos, MiObj)
-
+114             MiObj.amount = 1
+116             MiObj.ObjIndex = ItemIndex
+    
+118             If Not MeterItemEnInventario(UserIndex, MiObj) Then
+120                 Call TirarItemAlPiso(UserList(UserIndex).pos, MiObj)
+    
+                End If
+        
+    
+122             Call SubirSkill(UserIndex, e_Skill.Alquimia)
+124             Call UpdateUserInv(True, UserIndex, 0)
+                'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(LABUROCARPINTERO, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
+    
+126             UserList(UserIndex).Counters.Trabajando = UserList(UserIndex).Counters.Trabajando + 1
+            Else
+                Call WriteConsoleMsg(UserIndex, "Lamentablemente no aprendiste la receta para crear esta poción.", e_FontTypeNames.FONTTYPE_INFOBOLD)
             End If
-    
-
-122         Call SubirSkill(UserIndex, e_Skill.Alquimia)
-124         Call UpdateUserInv(True, UserIndex, 0)
-            'Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(LABUROCARPINTERO, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
-
-126         UserList(UserIndex).Counters.Trabajando = UserList(UserIndex).Counters.Trabajando + 1
-
         End If
 
         
@@ -2393,13 +2639,13 @@ Public Sub DoRaices(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte
                 Exit Sub
             End If
             
-104         If .Stats.MinSta > 5 Then
-106             Call QuitarSta(UserIndex, 5)
+104         If .Stats.MinSta > 2 Then
+106             Call QuitarSta(UserIndex, 2)
         
             Else
             
 108             Call WriteLocaleMsg(UserIndex, "93", e_FontTypeNames.FONTTYPE_INFO)
-                'Call WriteConsoleMsg(UserIndex, "Estás muy cansado para obtener raices.", e_FontTypeNames.FONTTYPE_INFO)
+                Call WriteConsoleMsg(UserIndex, "Estás muy cansado para obtener raices.", e_FontTypeNames.FONTTYPE_INFO)
 110             Call WriteMacroTrabajoToggle(UserIndex, False)
                 Exit Sub
     
@@ -2418,7 +2664,9 @@ Public Sub DoRaices(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte
     
                 Dim nPos  As t_WorldPos
                 Dim MiObj As t_Obj
-        
+                
+                Call ActualizarRecurso(.pos.Map, x, y)
+                
                 'If .clase = e_Class.Druid Then
                 'MiObj.Amount = RandomNumber(6, 8)
                 ' Else
@@ -2442,9 +2690,9 @@ Public Sub DoRaices(ByVal UserIndex As Integer, ByVal X As Byte, ByVal Y As Byte
         
                 'Call WriteConsoleMsg(UserIndex, "¡Has conseguido algunas raices!", e_FontTypeNames.FONTTYPE_INFO)
 144             Call WriteTextCharDrop(UserIndex, "+" & MiObj.amount, .Char.CharIndex, vbWhite)
-146             Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessagePlayWave(60, .Pos.X, .Pos.y))
+146             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(SND_TALAR, .pos.x, .pos.y))
             Else
-148             Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessagePlayWave(61, .Pos.X, .Pos.y))
+148             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(SND_TALAR, .pos.x, .pos.y))
     
             End If
     

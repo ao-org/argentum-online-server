@@ -2816,17 +2816,17 @@ Private Sub HandleCraftAlquimia(ByVal UserIndex As Integer)
         
         On Error GoTo HandleCraftAlquimia_Err
         
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
-
-            Dim Item As Integer
-102             Item = Reader.ReadInt16()
         
-104         If Item < 1 Then Exit Sub
+            Dim Item As Integer
+        
+            Item = Reader.ReadInt16()
+        
+110         If Item < 1 Then Exit Sub
+            
 
+112         Call AlquimistaConstruirItem(UserIndex, Item)
+
+        
         Exit Sub
 
 HandleCraftAlquimia_Err:
@@ -3196,7 +3196,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                                 End If
                                 
                                 '¡Hay un arbol donde clickeo?
-440                             If ObjData(DummyInt).OBJType = e_OBJType.otArboles Then
+440                             If ObjData(DummyInt).OBJType = e_OBJType.otPlantas Then
 442                                 Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(SND_TIJERAS, .Pos.X, .Pos.y))
 444                                 Call DoRaices(UserIndex, X, Y)
 
