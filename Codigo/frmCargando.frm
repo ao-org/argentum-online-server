@@ -3,7 +3,7 @@ Object = "{6B7E6392-850A-101B-AFC0-4210102A8DA7}#1.3#0"; "comctl32.ocx"
 Begin VB.Form frmCargando 
    BackColor       =   &H00C0C0C0&
    BorderStyle     =   0  'None
-   Caption         =   "Argentum"
+   Caption         =   "Argentum Online Server"
    ClientHeight    =   2820
    ClientLeft      =   1410
    ClientTop       =   3000
@@ -53,7 +53,7 @@ Begin VB.Form frmCargando
    Begin VB.Label Label1 
       Alignment       =   2  'Center
       AutoSize        =   -1  'True
-      BackStyle       =   0  'Transparent
+      BackColor       =   &H80000015&
       Caption         =   " Cargando Mapas"
       BeginProperty Font 
          Name            =   "Tahoma"
@@ -64,7 +64,7 @@ Begin VB.Form frmCargando
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      ForeColor       =   &H00FFFFFF&
+      ForeColor       =   &H0000FF00&
       Height          =   195
       Index           =   2
       Left            =   1680
@@ -113,7 +113,7 @@ Attribute VB_Exposed = False
 '
 '
 '
-Private Declare Function SetWindowPos Lib "user32" (ByVal hwnd As Long, ByVal hWndInsertAfter As Long, ByVal X As Long, ByVal Y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long) As Long
+Private Declare Function SetWindowPos Lib "user32" (ByVal hwnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long) As Long
 Private Const HWND_TOPMOST = -1
 Private Const HWND_NOTOPMOST = -2
 Private Const SWP_NOSIZE = &H1
@@ -128,20 +128,20 @@ Private Sub Form_Load()
 102     Call Me.ZOrder(0)
 End Sub
 
-Private Sub lblDragForm_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub lblDragForm_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
 100     If Button = vbLeftButton Then
-102         mlngX = X
-104         mlngY = Y
+102         mlngX = x
+104         mlngY = y
         End If
 End Sub
 
-Private Sub lblDragForm_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub lblDragForm_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
         Dim lngLeft As Long
         Dim lngTop As Long
     
 100     If Button = vbLeftButton Then
-102         lngLeft = Me.Left + X - mlngX
-104         lngTop = Me.Top + Y - mlngY
+102         lngLeft = Me.Left + x - mlngX
+104         lngTop = Me.Top + y - mlngY
 106         Call Me.Move(lngLeft, lngTop)
         End If
 End Sub
