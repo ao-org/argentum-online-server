@@ -54,6 +54,7 @@ Begin VB.Form frmCargando
       Alignment       =   2  'Center
       AutoSize        =   -1  'True
       BackColor       =   &H80000015&
+      BackStyle       =   0  'Transparent
       Caption         =   " Cargando Mapas"
       BeginProperty Font 
          Name            =   "Tahoma"
