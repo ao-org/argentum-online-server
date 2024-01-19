@@ -1,6 +1,6 @@
 ### ⚔️ Por favor considera apoyarnos en [https://www.patreon.com/nolandstudios](https://www.patreon.com/nolandstudios) ⚔️ 
 
-![ao20 logo](https://www.ao20.com.ar/_nuxt/img/ao20_logo_sm.f6122ef.png)
+![ao20 logo](https://www.ao20.com.ar/_nuxt/img/argentum20_logo.562a0aa.png)
 
 # 🛡️ Server Argentum Online
 Código fuente de Argentum Online
