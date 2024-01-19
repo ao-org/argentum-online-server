@@ -1,24 +1,22 @@
 ### ⚔️ Por favor considera apoyarnos en [https://www.patreon.com/nolandstudios](https://www.patreon.com/nolandstudios) ⚔️ 
 
-![ao20 logo](https://www.ao20.com.ar/_nuxt/img/ao20_logo_sm.d4333ec.png)
+![ao20 logo](https://www.ao20.com.ar/_nuxt/img/ao20_logo_sm.f6122ef.png)
 
-# 🛡️ Server AO20
-Código fuente del servidor de Argentum20
+# 🛡️ Server Argentum Online
+Código fuente de Argentum Online
 
 # 🛡️ Cómo correr mi server:
 Crear una nueva carpeta llamada `C:\AO20` y entrar a la misma, en ella seguir lo siguientes pasos:
 
-1. Clonar repositorio `git clone https://github.com/ao-org/argentum20-server.git`
+1. Clonar repositorio `git clone https://github.com/ao-org/argentum-online-server.git`
 
-2. Renombrar carpeta `argentum20-server` a `re20-server`.
+2. Renombrar el archivo `Example.Server.ini` a `Server.ini`
 
-3. Renombrar el archivo `Example.Server.ini` a `Server.ini`
+3. Clonar `Recursos`
 
-4. Clonar `Recursos`
+4. Abrir Visual Basic 6 como administrador
 
-5. Abrir Visual Basic 6 como administrador
-
-6. Abrir el archivo `Server.VBP`
+5. Abrir el archivo `Server.VBP`
 
 # 🛡️ Pull Requests
 
@@ -53,7 +51,7 @@ Registrar manualmente libreria Aurora.Network.dll
 Abrir CMD como Administrador `regsvr32 Aurora.Network.dll`
 
 ## Cryptography
-CryptoSys is used in AO20 to cipher sensitive data.
+CryptoSys is used in Argentum Online to cipher sensitive data.
 
 - [https://www.cryptosys.net/api.html](https://www.cryptosys.net/api.html)
 
