@@ -121,120 +121,273 @@ Sub RellenarInventario(ByVal UserIndex As String)
 102         NumItems = 1
     
             ' Todos reciben pociones rojas
-104         .Invent.Object(NumItems).ObjIndex = 1616 'Pocion Roja
-106         .Invent.Object(NumItems).amount = 200
+104         .invent.Object(NumItems).ObjIndex = 4335 'Pocion Roja
+106         .invent.Object(NumItems).amount = 350
 108         NumItems = NumItems + 1
         
             ' Magicas puras reciben más azules
 110         Select Case .clase
 
-                Case e_Class.Mage, e_Class.Druid
-112                 .Invent.Object(NumItems).ObjIndex = 1617 ' Pocion Azul
-114                 .Invent.Object(NumItems).amount = 300
-116                 NumItems = NumItems + 1
+            Case e_Class.Mage, e_Class.Druid
+                 .invent.Object(NumItems).ObjIndex = 4336 ' Pocion Azul
+                 .invent.Object(NumItems).amount = 550
+                 NumItems = NumItems + 1
 
+                    Case e_Class.Bard, e_Class.Cleric
+                 .invent.Object(NumItems).ObjIndex = 4336 ' Pocion Azul
+                 .invent.Object(NumItems).amount = 450
+                 NumItems = NumItems + 1
+
+                    Case e_Class.Paladin, e_Class.Assasin, e_Class.Bandit
+                 .invent.Object(NumItems).ObjIndex = 4336 ' Pocion Azul
+                 .invent.Object(NumItems).amount = 350
+                 NumItems = NumItems + 1
+         
             End Select
-        
-            ' Semi mágicas reciben menos
-118         Select Case .clase
 
-                Case e_Class.Bard, e_Class.Cleric, e_Class.Paladin, e_Class.Assasin, e_Class.Bandit
-120                 .Invent.Object(NumItems).ObjIndex = 1617 ' Pocion Azul
-122                 .Invent.Object(NumItems).amount = 100
-124                 NumItems = NumItems + 1
 
-            End Select
+     
 
             ' Hechizos
 126         Select Case .clase
 
-                Case e_Class.Mage, e_Class.Cleric, e_Class.Druid, e_Class.Bard
-128                 .Stats.UserHechizos(1) = 1 ' Dardo mágico
-130                 .Stats.UserHechizos(2) = 11 ' Curar Veneno
-132                 .Stats.UserHechizos(3) = 12 ' Curar Heridas Leves
+                 Case e_Class.Mage, e_Class.Cleric, e_Class.Druid, e_Class.Bard, e_Class.Paladin, e_Class.Bandit, e_Class.Assasin
+128                 .Stats.UserHechizos(1) = 291 ' Onda mágica
+
 
             End Select
         
             ' Pociones amarillas y verdes
 134         Select Case .clase
 
-                Case e_Class.Assasin, e_Class.Bard, e_Class.Cleric, e_Class.Hunter, e_Class.Paladin, e_Class.Trabajador, e_Class.Warrior, e_Class.Bandit, e_Class.Pirat, e_Class.Thief
-136                 .Invent.Object(NumItems).ObjIndex = 1618 ' Pocion Amarilla
-138                 .Invent.Object(NumItems).amount = 50
-140                 NumItems = NumItems + 1
+            Case e_Class.Assasin, e_Class.Bard, e_Class.Cleric, e_Class.Hunter, e_Class.Paladin, e_Class.Trabajador, e_Class.Warrior, e_Class.Bandit, e_Class.Pirat, e_Class.Thief
 
-142                 .Invent.Object(NumItems).ObjIndex = 1619 ' Pocion Verde
-144                 .Invent.Object(NumItems).amount = 25
-146                 NumItems = NumItems + 1
+                 .invent.Object(NumItems).ObjIndex = 4337 ' Pocion Amarilla
+                 .invent.Object(NumItems).amount = 100
+                 NumItems = NumItems + 1
+                 .invent.Object(NumItems).ObjIndex = 4338 ' Pocion Verde
+                 .invent.Object(NumItems).amount = 100
+                 NumItems = NumItems + 1
+
+             Case e_Class.Mage, e_Class.Druid
+                 .invent.Object(NumItems).ObjIndex = 4337 ' Pocion Amarilla
+                 .invent.Object(NumItems).amount = 60
+                 NumItems = NumItems + 1
+
 
             End Select
             
             ' Poción violeta
-148         .Invent.Object(NumItems).ObjIndex = 2332 ' Pocion violeta
-150         .Invent.Object(NumItems).amount = 20
+148         .invent.Object(NumItems).ObjIndex = 4334 ' Pocion violeta
+150         .invent.Object(NumItems).amount = 50
 152         NumItems = NumItems + 1
         
             ' Armas
 154         Select Case .clase
+                Case e_Class.Cleric
+                 .invent.Object(NumItems).ObjIndex = 3686 ' Daga del Principiante
+                 .invent.Object(NumItems).amount = 1
+                 NumItems = NumItems + 1
 
-                Case e_Class.Cleric, e_Class.Paladin, e_Class.Trabajador, e_Class.Warrior, e_Class.Pirat
-156                 .Invent.Object(NumItems).ObjIndex = 460 ' Daga (Newbies)
-158                 .Invent.Object(NumItems).amount = 1
-160                 NumItems = NumItems + 1
-162                 .Invent.Object(NumItems).ObjIndex = 2085 ' Espada larga (newbies)
-164                 .Invent.Object(NumItems).amount = 1
-166                 NumItems = NumItems + 1
+                 .invent.Object(NumItems).ObjIndex = 3487 ' Espada del Principiante
+                 .invent.Object(NumItems).amount = 1
+                 NumItems = NumItems + 1
 
-168             Case e_Class.Hunter
-170                 .Invent.Object(NumItems).ObjIndex = 460 ' Daga (Newbies)
-172                 .Invent.Object(NumItems).amount = 1
-174                 NumItems = NumItems + 1
-                    
-176                 .Invent.Object(NumItems).ObjIndex = 1355 ' Arco simple (newbies)
-178                 .Invent.Object(NumItems).amount = 1
-180                 NumItems = NumItems + 1
+                 .invent.Object(NumItems).ObjIndex = 3488 ' Escudo de Principiante
+                .invent.Object(NumItems).amount = 1
+                NumItems = NumItems + 1
 
-182                 .Invent.Object(NumItems).ObjIndex = 1357 ' Flechas
-184                 .Invent.Object(NumItems).amount = 300
-186                 NumItems = NumItems + 1
+                 .invent.Object(NumItems).ObjIndex = 3489 ' Casco de Principiante
+                 .invent.Object(NumItems).amount = 1
+                NumItems = NumItems + 1
 
-188             Case e_Class.Thief, e_Class.Bandit
-190                 .Invent.Object(NumItems).ObjIndex = 460 ' Daga (Newbies)
-192                 .Invent.Object(NumItems).amount = 1
-194                 NumItems = NumItems + 1
-                    
-196                 .Invent.Object(NumItems).ObjIndex = 1354 ' Nudillos (newbies)
-198                 .Invent.Object(NumItems).amount = 1
-200                 NumItems = NumItems + 1
+                .invent.Object(NumItems).ObjIndex = 3490 ' Anillo del Principiante
+                 .invent.Object(NumItems).amount = 1
+                 NumItems = NumItems + 1
 
-202             Case e_Class.Mage
-204                 .Invent.Object(NumItems).ObjIndex = 1356 ' Baston (newbies)
-206                 .Invent.Object(NumItems).amount = 1
-208                 NumItems = NumItems + 1
-                
-210             Case e_Class.Assasin, e_Class.Druid, e_Class.Bard
-212                 .Invent.Object(NumItems).ObjIndex = 460 ' Daga (Newbies)
-214                 .Invent.Object(NumItems).amount = 1
-216                 NumItems = NumItems + 1
-                    
+               Case e_Class.Paladin
+                 .invent.Object(NumItems).ObjIndex = 3487 ' Espada del Principiante
+                 .invent.Object(NumItems).amount = 1
+                 NumItems = NumItems + 1
+                 .invent.Object(NumItems).ObjIndex = 3488 ' Escudo de Principiante
+                .invent.Object(NumItems).amount = 1
+                 NumItems = NumItems + 1
+                .invent.Object(NumItems).ObjIndex = 3489 ' Casco de Principiante
+                 .invent.Object(NumItems).amount = 1
+                 NumItems = NumItems + 1
+                 .invent.Object(NumItems).ObjIndex = 3490 ' Anillo del Principiante
+                .invent.Object(NumItems).amount = 1
+                 NumItems = NumItems + 1
 
-            End Select
+             Case e_Class.Hunter
+                 .invent.Object(NumItems).ObjIndex = 3491 ' Arco del Principiante
+                 .invent.Object(NumItems).amount = 1
+                NumItems = NumItems + 1
+
+                 .invent.Object(NumItems).ObjIndex = 3492 ' Flecha del Principiante
+                 .invent.Object(NumItems).amount = 650
+                 NumItems = NumItems + 1
+
+                 .invent.Object(NumItems).ObjIndex = 3489  ' Casco de Principiante
+                 .invent.Object(NumItems).amount = 1
+                 NumItems = NumItems + 1
+
+                 .invent.Object(NumItems).ObjIndex = 3490 ' Anillo del Principiante
+                 .invent.Object(NumItems).amount = 1
+                 NumItems = NumItems + 1
+
+                Case e_Class.Trabajador
+                 .invent.Object(NumItems).ObjIndex = 3487 ' Espada del Principiante
+                 .invent.Object(NumItems).amount = 1
+                 NumItems = NumItems + 1
+                 .invent.Object(NumItems).ObjIndex = 3488 ' Escudo de Principiante
+                 .invent.Object(NumItems).amount = 1
+                 NumItems = NumItems + 1
+                 .invent.Object(NumItems).ObjIndex = 3489 ' Casco de Principiante
+                .invent.Object(NumItems).amount = 1
+                 NumItems = NumItems + 1
+                 .invent.Object(NumItems).ObjIndex = 3491 ' Arco del Principiante
+                 .invent.Object(NumItems).amount = 1
+                 NumItems = NumItems + 1
+                 .invent.Object(NumItems).ObjIndex = 3492 ' Flecha del Principiante
+                 .invent.Object(NumItems).amount = 300
+                 NumItems = NumItems + 1
+
+                Case e_Class.Pirat
+                 .invent.Object(NumItems).ObjIndex = 3487 ' Espada del Principiante
+                .invent.Object(NumItems).amount = 1
+                 NumItems = NumItems + 1
+                 .invent.Object(NumItems).ObjIndex = 3488 ' Escudo de Principiante
+                 .invent.Object(NumItems).amount = 1
+                 NumItems = NumItems + 1
+                 .invent.Object(NumItems).ObjIndex = 3489 ' Casco de Principiante
+                 .invent.Object(NumItems).amount = 1
+                NumItems = NumItems + 1
+                 .invent.Object(NumItems).ObjIndex = 3490 ' Anillo del Principiante
+                 .invent.Object(NumItems).amount = 1
+                 NumItems = NumItems + 1
+                 .invent.Object(NumItems).ObjIndex = 3497 ' Pistola del Principiante
+                .invent.Object(NumItems).amount = 1
+                 NumItems = NumItems + 1
+                 .invent.Object(NumItems).ObjIndex = 3498 ' Balas del Principiante
+                 .invent.Object(NumItems).amount = 350
+                NumItems = NumItems + 1
+
+                Case e_Class.Warrior
+                 .invent.Object(NumItems).ObjIndex = 3487 ' Espada del Principiante
+                 .invent.Object(NumItems).amount = 1
+                 NumItems = NumItems + 1
+                 .invent.Object(NumItems).ObjIndex = 3488 ' Escudo de Principiante
+                 .invent.Object(NumItems).amount = 1
+                 NumItems = NumItems + 1
+                 .invent.Object(NumItems).ObjIndex = 3489 ' Casco de Principiante
+                .invent.Object(NumItems).amount = 1
+                NumItems = NumItems + 1
+                .invent.Object(NumItems).ObjIndex = 3491 ' Arco del Principiante
+                .invent.Object(NumItems).amount = 1
+                 NumItems = NumItems + 1
+                 .invent.Object(NumItems).ObjIndex = 3492 ' Flecha del Principiante
+                 .invent.Object(NumItems).amount = 300
+                 NumItems = NumItems + 1
+
+            Case e_Class.Thief
+                 .invent.Object(NumItems).ObjIndex = 3686 ' Daga del Principiante
+                 .invent.Object(NumItems).amount = 1
+                 NumItems = NumItems + 1
+                 .invent.Object(NumItems).ObjIndex = 1353 ' Nudillos del Principiante
+                 .invent.Object(NumItems).amount = 1
+                 NumItems = NumItems + 1
+                 .invent.Object(NumItems).ObjIndex = 3488 ' Escudo de Principiante
+                .invent.Object(NumItems).amount = 1
+                 NumItems = NumItems + 1
+
+             Case e_Class.Bandit
+                 .invent.Object(NumItems).ObjIndex = 1353 ' Nudillos del Principiante
+                 .invent.Object(NumItems).amount = 1
+                 NumItems = NumItems + 1
+                 .invent.Object(NumItems).ObjIndex = 3487 ' Espada del Principiante
+                 .invent.Object(NumItems).amount = 1
+                 NumItems = NumItems + 1
+                 .invent.Object(NumItems).ObjIndex = 3488 ' Escudo de Principiante
+                 .invent.Object(NumItems).amount = 1
+                 NumItems = NumItems + 1
+                 .invent.Object(NumItems).ObjIndex = 3489 ' Casco de Principiante
+                 .invent.Object(NumItems).amount = 1
+                 NumItems = NumItems + 1
+                 .invent.Object(NumItems).ObjIndex = 3490 ' Anillo del Principiante
+                 .invent.Object(NumItems).amount = 1
+                 NumItems = NumItems + 1
+
+             Case e_Class.Mage
+                 .invent.Object(NumItems).ObjIndex = 3495 ' Bastón del Principiante
+                 .invent.Object(NumItems).amount = 1
+                 NumItems = NumItems + 1
+                 .invent.Object(NumItems).ObjIndex = 3493 ' Sombrero del Principiante
+                 .invent.Object(NumItems).amount = 1
+                 NumItems = NumItems + 1
+
+             Case e_Class.Assasin
+                 .invent.Object(NumItems).ObjIndex = 3686 ' Daga del Principiante
+                 .invent.Object(NumItems).amount = 1
+                 NumItems = NumItems + 1
+                .invent.Object(NumItems).ObjIndex = 3488 ' Escudo de Principiante
+                 .invent.Object(NumItems).amount = 1
+                 NumItems = NumItems + 1
+                 .invent.Object(NumItems).ObjIndex = 3489 ' Casco de Principiante
+                 .invent.Object(NumItems).amount = 1
+                 NumItems = NumItems + 1
+                 .invent.Object(NumItems).ObjIndex = 3490 ' Anillo del Principiante
+                 .invent.Object(NumItems).amount = 1
+                 NumItems = NumItems + 1
+
+             Case e_Class.Druid
+                 .invent.Object(NumItems).ObjIndex = 3686 ' Daga del Principiante
+                 .invent.Object(NumItems).amount = 1
+                NumItems = NumItems + 1
+                 .invent.Object(NumItems).ObjIndex = 3494 ' Flauta del Principiante
+                 .invent.Object(NumItems).amount = 1
+                 NumItems = NumItems + 1
+
+             Case e_Class.Bard
+                 .invent.Object(NumItems).ObjIndex = 3686 ' Daga del Principiante
+                 .invent.Object(NumItems).amount = 1
+                 NumItems = NumItems + 1
+                 .invent.Object(NumItems).ObjIndex = 3488 ' Escudo de Principiante
+                 .invent.Object(NumItems).amount = 1
+                 NumItems = NumItems + 1
+                 .invent.Object(NumItems).ObjIndex = 3489 ' Casco de Principiante
+                 .invent.Object(NumItems).amount = 1
+                 NumItems = NumItems + 1
+                 .invent.Object(NumItems).ObjIndex = 3490 ' Anillo del Principiante
+                 .invent.Object(NumItems).amount = 1
+                 NumItems = NumItems + 1
+                 .invent.Object(NumItems).ObjIndex = 3496 ' Laúd del Principiante
+                .invent.Object(NumItems).amount = 1
+                 NumItems = NumItems + 1
+
+
+                  End Select
         
             
-218         If .genero = e_Genero.Hombre Then
 220             If .raza = Enano Or .raza = Gnomo Then
-222                 .Invent.Object(NumItems).ObjIndex = 466 'Vestimentas de Bajo (Newbies)
+222                Select Case .clase
+                          Case e_Class.Trabajador, e_Class.Thief, e_Class.Paladin, e_Class.Assasin, e_Class.Bandit, e_Class.Pirat, e_Class.Warrior, e_Class.Hunter
+                          .invent.Object(NumItems).ObjIndex = 3499 ' Armadura de Principiante (Bajos)
+                          Case e_Class.Mage, e_Class.Druid, e_Class.Bard
+                         .invent.Object(NumItems).ObjIndex = 3501 ' Túnica del Principiante (Bajos)
+                   End Select
+
+
+                 
                 Else
-                
-224                 .Invent.Object(NumItems).ObjIndex = RandomNumber(463, 465) ' Vestimentas comunes (Newbies)
-                End If
-            Else
-226             If .raza = Enano Or .raza = Gnomo Then
-228                 .Invent.Object(NumItems).ObjIndex = 563 'Vestimentas de Baja (Newbies)
-                Else
-230                 .Invent.Object(NumItems).ObjIndex = RandomNumber(1283, 1285) ' Vestimentas de Mujer (Newbies)
-                End If
-            End If
+                Select Case .clase
+                         Case e_Class.Trabajador, e_Class.Thief, e_Class.Paladin, e_Class.Assasin, e_Class.Bandit, e_Class.Pirat, e_Class.Warrior, e_Class.Hunter
+                          .invent.Object(NumItems).ObjIndex = 3500 ' Armadura de Principiante
+                         Case e_Class.Mage, e_Class.Druid, e_Class.Bard
+                          .invent.Object(NumItems).ObjIndex = 3502 ' Túnica del Principiante
+                   End Select
+                    End If
+
             
             .Invent.Object(NumItems).Equipped = 0
             Call EquiparInvItem(UserIndex, NumItems)
@@ -249,12 +402,12 @@ Sub RellenarInventario(ByVal UserIndex As String)
 242          .Char.Body = ObjData(.Invent.ArmourEqpObjIndex).Ropaje
         
             ' Comida y bebida
-244         .Invent.Object(NumItems).ObjIndex = 573 ' Manzana
-246         .Invent.Object(NumItems).amount = 100
+244         .invent.Object(NumItems).ObjIndex = 3684 ' Manzana
+246         .invent.Object(NumItems).amount = 50
 248         NumItems = NumItems + 1
 
-250         .Invent.Object(NumItems).ObjIndex = 572 ' Agua
-252         .Invent.Object(NumItems).amount = 100
+250         .invent.Object(NumItems).ObjIndex = 3685 ' Agua
+252         .invent.Object(NumItems).amount = 50
 254         NumItems = NumItems + 1
 
             ' Seteo la cantidad de items
