@@ -300,6 +300,10 @@ Sub RellenarInventario(ByVal UserIndex As String)
                  .invent.Object(NumItems).ObjIndex = 3488 ' Escudo de Principiante
                 .invent.Object(NumItems).amount = 1
                  NumItems = NumItems + 1
+                .invent.Object(NumItems).ObjIndex = 3489  ' Casco de Principiante
+                .invent.Object(NumItems).amount = 1
+                 NumItems = NumItems + 1
+                 
 
              Case e_Class.Bandit
                  .invent.Object(NumItems).ObjIndex = 1353 ' Nudillos del Principiante
@@ -339,12 +343,18 @@ Sub RellenarInventario(ByVal UserIndex As String)
                  .invent.Object(NumItems).ObjIndex = 3490 ' Anillo del Principiante
                  .invent.Object(NumItems).amount = 1
                  NumItems = NumItems + 1
+                 .invent.Object(NumItems).ObjIndex = 3487 ' Espada del Principiante
+                 .invent.Object(NumItems).amount = 1
+                 NumItems = NumItems + 1
 
              Case e_Class.Druid
                  .invent.Object(NumItems).ObjIndex = 3686 ' Daga del Principiante
                  .invent.Object(NumItems).amount = 1
                 NumItems = NumItems + 1
                  .invent.Object(NumItems).ObjIndex = 3494 ' Flauta del Principiante
+                 .invent.Object(NumItems).amount = 1
+                 NumItems = NumItems + 1
+                 .invent.Object(NumItems).ObjIndex = 3504  'Casco de Lobo (Resistencia Magica 1)
                  .invent.Object(NumItems).amount = 1
                  NumItems = NumItems + 1
 
@@ -371,7 +381,7 @@ Sub RellenarInventario(ByVal UserIndex As String)
             
 220             If .raza = Enano Or .raza = Gnomo Then
 222                Select Case .clase
-                          Case e_Class.Trabajador, e_Class.Thief, e_Class.Paladin, e_Class.Assasin, e_Class.Bandit, e_Class.Pirat, e_Class.Warrior, e_Class.Hunter
+                          Case e_Class.Trabajador, e_Class.Thief, e_Class.Paladin, e_Class.Cleric, e_Class.Assasin, e_Class.Bandit, e_Class.Pirat, e_Class.Warrior, e_Class.Hunter
                           .invent.Object(NumItems).ObjIndex = 3499 ' Armadura de Principiante (Bajos)
                           Case e_Class.Mage, e_Class.Druid, e_Class.Bard
                          .invent.Object(NumItems).ObjIndex = 3501 ' Túnica del Principiante (Bajos)
@@ -381,7 +391,7 @@ Sub RellenarInventario(ByVal UserIndex As String)
                  
                 Else
                 Select Case .clase
-                         Case e_Class.Trabajador, e_Class.Thief, e_Class.Paladin, e_Class.Assasin, e_Class.Bandit, e_Class.Pirat, e_Class.Warrior, e_Class.Hunter
+                         Case e_Class.Trabajador, e_Class.Thief, e_Class.Paladin, e_Class.Cleric, e_Class.Assasin, e_Class.Bandit, e_Class.Pirat, e_Class.Warrior, e_Class.Hunter
                           .invent.Object(NumItems).ObjIndex = 3500 ' Armadura de Principiante
                          Case e_Class.Mage, e_Class.Druid, e_Class.Bard
                           .invent.Object(NumItems).ObjIndex = 3502 ' Túnica del Principiante
