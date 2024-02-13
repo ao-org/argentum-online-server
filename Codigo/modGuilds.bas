@@ -464,18 +464,28 @@ Public Function PuedeFundarUnClan(ByVal UserIndex As Integer, ByVal Alineacion A
             Exit Function
         End If
     
-106     If UserList(userindex).Stats.ELV < 25 Or UserList(userindex).Stats.UserSkills(e_Skill.liderazgo) < 90 Then
-108         refError = "Para fundar un clan debes ser nivel 25, tener 90 puntos en liderazgo y tener en tu inventario las Gemas Polar y Roja (Fundación)."
+106     If UserList(UserIndex).Stats.ELV < 25 Or UserList(UserIndex).Stats.UserSkills(e_Skill.liderazgo) < 35 Then
+108         refError = "Para fundar un clan debes ser nivel 25, tener 35 puntos en liderazgo y tener en tu inventario las Gemas Azul, Polar, Roja y Verde (Fundación)."
             Exit Function
         End If
     
 110     If Not TieneObjetos(407, 1, UserIndex) Then
-112         refError = "Para fundar un clan debes ser nivel 25, tener 90 puntos en liderazgo y tener en tu inventario las Gemas Polar y Roja (Fundación)."
+112         refError = "Para fundar un clan debes ser nivel 25, tener 35 puntos en liderazgo y tener en tu inventario las Gemas Azul, Polar, Roja y Verde (Fundación)."
             Exit Function
         End If
     
 114     If Not TieneObjetos(408, 1, UserIndex) Then
-116         refError = "Para fundar un clan debes ser nivel 25, tener 90 puntos en liderazgo y tener en tu inventario las Gemas Polar y Roja (Fundación)."
+116         refError = "Para fundar un clan debes ser nivel 25, tener 35 puntos en liderazgo y tener en tu inventario las Gemas Azul, Polar, Roja y Verde (Fundación)."
+            Exit Function
+        End If
+        
+121             If Not TieneObjetos(409, 1, UserIndex) Then
+122         refError = "Para fundar un clan debes ser nivel 25, tener 35 puntos en liderazgo y tener en tu inventario las Gemas Azul, Polar, Roja y Verde (Fundación)."
+            Exit Function
+        End If
+    
+123     If Not TieneObjetos(412, 1, UserIndex) Then
+124         refError = "Para fundar un clan debes ser nivel 25, tener 35 puntos en liderazgo y tener en tu inventario las Gemas Azul, Polar, Roja y Verde (Fundación)."
             Exit Function
         End If
         
@@ -484,23 +494,23 @@ Public Function PuedeFundarUnClan(ByVal UserIndex As Integer, ByVal Alineacion A
             Exit Function
         End If
     
-118     Select Case Alineacion
+125     Select Case Alineacion
             Case e_ALINEACION_GUILD.ALINEACION_NEUTRAL
-120             If status(UserIndex) = e_Facciones.Caos Or status(UserIndex) = e_Facciones.Armada Or status(UserIndex) = e_Facciones.consejo Or status(UserIndex) = e_Facciones.concilio Then
-122                 refError = "Para fundar un clan neutral deberás ser ciudadano o criminal."
+126             If status(UserIndex) = e_Facciones.Caos Or status(UserIndex) = e_Facciones.Armada Or status(UserIndex) = e_Facciones.consejo Or status(UserIndex) = e_Facciones.concilio Then
+127                 refError = "Para fundar un clan neutral deberás ser ciudadano o criminal."
                     Exit Function
                 End If
 
-124         Case e_ALINEACION_GUILD.ALINEACION_ARMADA
+128         Case e_ALINEACION_GUILD.ALINEACION_ARMADA
 
-126             If status(UserIndex) <> e_Facciones.Armada And status(UserIndex) <> e_Facciones.consejo Then
-128                 refError = "Para fundar un clan de la Armada Real deberás pertenecer a la misma."
+129             If status(UserIndex) <> e_Facciones.Armada And status(UserIndex) <> e_Facciones.consejo Then
+130                 refError = "Para fundar un clan de la Armada Real deberás pertenecer a la misma."
                     Exit Function
                 End If
                 
-130         Case e_ALINEACION_GUILD.ALINEACION_CAOTICA
+131         Case e_ALINEACION_GUILD.ALINEACION_CAOTICA
 132             If status(UserIndex) <> e_Facciones.Caos And status(UserIndex) <> e_Facciones.concilio Then
-134                 refError = "Para fundar un clan de la Legión Oscura deberás pertenecer a la misma."
+133                 refError = "Para fundar un clan de la Legión Oscura deberás pertenecer a la misma."
                     Exit Function
                 End If
                 

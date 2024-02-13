@@ -3509,7 +3509,7 @@ Private Sub HandleCreateNewGuild(ByVal UserIndex As Integer)
 110         Call QuitarObjetos(407, 1, UserIndex)
 112         Call QuitarObjetos(408, 1, UserIndex)
 114         Call QuitarObjetos(409, 1, UserIndex)
-116         Call QuitarObjetos(411, 1, UserIndex)
+116         Call QuitarObjetos(412, 1, UserIndex)
             
             
                 
@@ -8511,13 +8511,13 @@ Private Sub HandleQuieroFundarClan(ByVal UserIndex As Integer)
                 Exit Sub
             End If
 
-108         If UserList(userindex).Stats.ELV < 25 Or UserList(userindex).Stats.UserSkills(e_Skill.liderazgo) < 90 Then
-110             Call WriteConsoleMsg(userindex, "Para fundar un clan debes ser nivel 25, tener 90 en liderazgo y tener en tu inventario las 2 gemas: Gema Polar(1), Gema Roja(1).", e_FontTypeNames.FONTTYPE_INFOIAO)
+108         If UserList(UserIndex).Stats.ELV < 25 Or UserList(UserIndex).Stats.UserSkills(e_Skill.liderazgo) < 35 Then
+110             Call WriteConsoleMsg(UserIndex, "Para fundar un clan debes ser nivel 25, tener 35 en liderazgo y tener en tu inventario las 4 gemas: Gema Polar(1), Gema Roja(1), Gema Azul (1), Gema Verde (1).", e_FontTypeNames.FONTTYPE_INFOIAO)
                 Exit Sub
             End If
 
-112         If Not TieneObjetos(407, 1, UserIndex) Or Not TieneObjetos(408, 1, UserIndex) Then
-114             Call WriteConsoleMsg(userindex, "Para fundar un clan debes tener en tu inventario las 2 gemas: Gema Polar(1), Gema Roja(1).", e_FontTypeNames.FONTTYPE_INFOIAO)
+112         If Not TieneObjetos(407, 1, UserIndex) Or Not TieneObjetos(408, 1, UserIndex) Or Not TieneObjetos(409, 1, UserIndex) Or Not TieneObjetos(412, 1, UserIndex) Then
+114             Call WriteConsoleMsg(UserIndex, "Para fundar un clan debes tener en tu inventario las 4 gemas: Gema Polar(1), Gema Roja(1), Gema Azul (1), Gema Verde (1).", e_FontTypeNames.FONTTYPE_INFOIAO)
                 Exit Sub
             End If
 
