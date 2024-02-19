@@ -827,6 +827,8 @@ Sub SastreQuitarMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As Intege
 102     If ObjData(ItemIndex).PielOsoPardo > 0 Then Call QuitarObjetos(PieldeOsoPardo, ObjData(ItemIndex).PielOsoPardo, UserIndex)
 104     If ObjData(ItemIndex).PielOsoPolaR > 0 Then Call QuitarObjetos(PieldeOsoPolar, ObjData(ItemIndex).PielOsoPolaR, UserIndex)
 106     If ObjData(ItemIndex).PielLoboNegro > 0 Then Call QuitarObjetos(PielLoboNegro, ObjData(ItemIndex).PielLoboNegro, UserIndex)
+107     If ObjData(ItemIndex).PielTigre > 0 Then Call QuitarObjetos(PielTigre, ObjData(ItemIndex).PielTigre, UserIndex)
+108     If ObjData(ItemIndex).PielTigreBengala > 0 Then Call QuitarObjetos(PielTigreBengala, ObjData(ItemIndex).PielTigreBengala, UserIndex)
 
         
         Exit Sub
@@ -1162,7 +1164,26 @@ Function SastreTieneMateriales(ByVal UserIndex As Integer, ByVal ItemIndex As In
                 Exit Function
             End If
         End If
-140     SastreTieneMateriales = True
+
+
+141     If ObjData(ItemIndex).PielTigre > 0 Then
+142         If Not TieneObjetos(PielTigre, ObjData(ItemIndex).PielTigre, UserIndex) Then
+143             Call WriteConsoleMsg(UserIndex, "No tenes suficientes pieles de tigre.", e_FontTypeNames.FONTTYPE_INFO)
+144             SastreTieneMateriales = False
+145             Call WriteMacroTrabajoToggle(UserIndex, False)
+                Exit Function
+            End If
+        End If
+        
+146             If ObjData(ItemIndex).PielTigreBengala > 0 Then
+147         If Not TieneObjetos(PielTigreBengala, ObjData(ItemIndex).PielTigreBengala, UserIndex) Then
+148             Call WriteConsoleMsg(UserIndex, "No tenes suficientes pieles de tigre de bengala.", e_FontTypeNames.FONTTYPE_INFO)
+149             SastreTieneMateriales = False
+150             Call WriteMacroTrabajoToggle(UserIndex, False)
+                Exit Function
+            End If
+        End If
+154     SastreTieneMateriales = True
 
         
         Exit Function

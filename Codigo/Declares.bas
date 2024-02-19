@@ -562,6 +562,8 @@ Public Const PieldeLobo         As Integer = 414 'OK
 Public Const PieldeOsoPardo     As Integer = 415 'OK
 Public Const PieldeOsoPolar     As Integer = 416 'OK
 Public Const PielLoboNegro      As Integer = 1146
+Public Const PielTigre          As Integer = 4339
+Public Const PielTigreBengala   As Integer = 1145
 Public Const MaxNPCs            As Integer = 10000
 Public Const MAXCHARS           As Integer = 10000
 Public Const DAGA               As Integer = 15 'OK
@@ -1693,6 +1695,8 @@ Public Type t_ObjData
     PielOsoPardo As Integer
     PielOsoPolaR As Integer
     PielLoboNegro As Integer
+    PielTigre As Integer
+    PielTigreBengala As Integer
     SkSastreria As Byte
     
     Radio As Byte
