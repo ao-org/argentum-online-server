@@ -1845,18 +1845,24 @@ Sub LoadMapData()
         End If
 
 #End If
+
+        Dim NormalMapsCount As Integer: NormalMapsCount = NumMaps
+        NumMaps = NormalMapsCount + InstanceMapCount
+
+104     Call InitAreas
+
 106     frmCargando.cargar.Min = 0
-108     frmCargando.cargar.max = NumMaps
+108     frmCargando.cargar.max = NormalMapsCount
 110     frmCargando.cargar.value = 0
 112     frmCargando.ToMapLbl.Visible = True
 
-114     ReDim MapData(1 To (NumMaps + InstanceMapCount), XMinMapSize To XMaxMapSize, YMinMapSize To YMaxMapSize) As t_MapBlock
+114     ReDim MapData(1 To NumMaps, XMinMapSize To XMaxMapSize, YMinMapSize To YMaxMapSize) As t_MapBlock
 
-116     ReDim MapInfo(1 To (NumMaps + InstanceMapCount)) As t_MapInfo
+116     ReDim MapInfo(1 To NumMaps) As t_MapInfo
 
-118     For map = 1 To NumMaps
+118     For map = 1 To NormalMapsCount
     
-120         frmCargando.ToMapLbl = map & "/" & NumMaps
+120         frmCargando.ToMapLbl = map & "/" & NormalMapsCount
 
 122         Call CargarMapaFormatoCSM(map, MapPath & "Mapa" & map & ".csm")
 
@@ -1865,10 +1871,11 @@ Sub LoadMapData()
 126         DoEvents
         
 128     Next map
+
 130     frmCargando.ToMapLbl.Visible = False
-        Call InstanceManager.InitializeInstanceHeap(InstanceMapCount, NumMaps + 1)
-        NumMaps = NumMaps + InstanceMapCount
-132     Call InitAreas
+
+        Call InstanceManager.InitializeInstanceHeap(InstanceMapCount, NormalMapsCount + 1)
+
         Exit Sub
 
 man:
