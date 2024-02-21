@@ -329,8 +329,16 @@ Private Function CheckMapRestrictions(ByVal UserIndex As Integer, ByVal Map As I
                 End If
                 Exit Function
             End If
+            
+153         If MapInfo(Map).OnlyGroups And .Grupo.EnGrupo Then
+154             If .flags.UltimoMensaje <> 107 Then
+155                 Call WriteConsoleMsg(UserIndex, "Necesitas pertenecer a un grupo para entrar a este mapa.", e_FontTypeNames.FONTTYPE_INFO)
+156                 .flags.UltimoMensaje = 107
+                End If
+                Exit Function
+            End If
 
-154         CheckMapRestrictions = True
+157         CheckMapRestrictions = True
 
         End With
 
@@ -433,7 +441,6 @@ Public Sub DoTileEvents(ByVal UserIndex As Integer, ByVal Map As Integer, ByVal 
                         Else
 156                         Call ClosestLegalPos(destPos, nPos)
                         End If
-                        
                         
 158                     If nPos.X <> 0 And nPos.y <> 0 Then
 160                         Call WarpUserChar(UserIndex, nPos.map, nPos.X, nPos.y, EsTeleport)
