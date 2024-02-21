@@ -547,7 +547,7 @@ Sub Main()
 
         Call load_stats
         ' Me fijo si ya hay un proceso llamado server.exe abierto
-100     If GetProcess(App.EXEName & ".exe") > 1 Then
+100     If GetProcessCount(App.EXEName & ".exe") > 1 Then
             ' Si lo hay, pregunto si lo queremos cerrar.
 102         If MsgBox("Se ha encontrado mas de 1 instancia abierta de esta aplicación, ¿Desea continuar?", vbYesNo) = vbNo Then
 104             End
@@ -2349,8 +2349,8 @@ Public Function InsideRectangle(R As t_Rectangle, ByVal X As Integer, ByVal Y As
 108     InsideRectangle = True
 End Function
 
-' Fuente: https://stackoverflow.com/questions/1378604/end-process-from-task-manager-using-vb-6-code (ultima respuesta)
-Public Function GetProcess(ByVal processName As String) As Byte
+' Based on: https://stackoverflow.com/questions/1378604/end-process-from-task-manager-using-vb-6-code (ultima respuesta)
+Public Function GetProcessCount(ByVal processName As String) As Byte
     
         Dim oService As Object
         Dim servicename As String
@@ -2361,12 +2361,12 @@ Public Function GetProcess(ByVal processName As String) As Byte
 
 104     For Each oService In oServices
 
-106         servicename = LCase$(Trim$(CStr(oService.Name)))
+106         servicename = CStr(oService.name)
 
-108         If InStrB(1, servicename, LCase$(processName), vbBinaryCompare) > 0 Then
+108         If StrComp(servicename, processName, vbTextCompare) = 0 Then
             
                 ' Para matar un proceso adentro de este loop usar.
-                'oService.Terminate
+                ' oService.Terminate
             
 110             processCount = processCount + 1
             
@@ -2374,7 +2374,7 @@ Public Function GetProcess(ByVal processName As String) As Byte
 
         Next
     
-112     GetProcess = processCount
+112     GetProcessCount = processCount
 
 End Function
 
