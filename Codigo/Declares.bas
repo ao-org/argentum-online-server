@@ -2827,6 +2827,7 @@ Type t_MapInfo
     MaxLevel As Integer
     Salida As t_WorldPos
     NoMascotas As Boolean
+    OnlyGroups As Boolean
     DropItems As Boolean
     SafeFightMap As Boolean
     FriendlyFire As Boolean
