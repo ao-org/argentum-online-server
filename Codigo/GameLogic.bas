@@ -330,7 +330,7 @@ Private Function CheckMapRestrictions(ByVal UserIndex As Integer, ByVal Map As I
                 Exit Function
             End If
             
-153         If MapInfo(Map).OnlyGroups And .Grupo.EnGrupo Then
+153         If MapInfo(Map).OnlyGroups And Not .Grupo.EnGrupo Then
 154             If .flags.UltimoMensaje <> 107 Then
 155                 Call WriteConsoleMsg(UserIndex, "Necesitas pertenecer a un grupo para entrar a este mapa.", e_FontTypeNames.FONTTYPE_INFO)
 156                 .flags.UltimoMensaje = 107
