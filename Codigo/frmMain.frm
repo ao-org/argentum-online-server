@@ -1527,25 +1527,25 @@ HayError:
     Call TraceError(Err.Number, Err.Description & vbNewLine & "UserIndex:" & iUserIndex, "frmMain.GameTimer", Erl)
 End Sub
 
-'Private Sub HoraFantasia_Timer()
-'        
-'    On Error GoTo HoraFantasia_Timer_Err
-'    If Lloviendo Then
-'        Label6.Caption = "Lloviendo"
-'    Else
-'        Label6.Caption = "No llueve"
-'    End If
-'
-'    If ServidorNublado Then
-'        Label7.Caption = "Nublado"
-'    Else
-'        Label7.Caption = "Sin nubes"
-'    End If
-'    frmMain.Label4.Caption = GetTimeFormated
-'    Exit Sub
-'HoraFantasia_Timer_Err:
-'    Call TraceError(Err.Number, Err.Description, "frmMain.HoraFantasia_Timer", Erl)
-'End Sub
+Private Sub HoraFantasia_Timer()
+        
+    On Error GoTo HoraFantasia_Timer_Err
+    If Lloviendo Then
+        Label6.Caption = "Lloviendo"
+    Else
+        Label6.Caption = "No llueve"
+    End If
+
+    If ServidorNublado Then
+        Label7.Caption = "Nublado"
+    Else
+        Label7.Caption = "Sin nubes"
+    End If
+    frmMain.Label4.Caption = GetTimeFormated
+    Exit Sub
+HoraFantasia_Timer_Err:
+    Call TraceError(Err.Number, Err.Description, "frmMain.HoraFantasia_Timer", Erl)
+End Sub
 
 
 Private Sub mnuCerrar_Click()
