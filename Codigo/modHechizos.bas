@@ -4605,14 +4605,25 @@ Public Sub UseSpellSlot(ByVal UserIndex As Integer, ByVal SpellSlot As Integer)
 116             If (.flags.Privilegios And e_PlayerType.Consejero) = 0 Then
                     If .Stats.UserHechizos(SpellSlot) <> 0 Then
 120                     If Hechizos(.Stats.UserHechizos(SpellSlot)).AutoLanzar = 1 Then
-122                         Call SetUserRef(UserList(UserIndex).flags.TargetUser, UserIndex)
-124                         Call LanzarHechizo(.flags.Hechizo, UserIndex)
+122                         If .flags.Descansar Then Exit Sub
+                            
+124                         If .flags.Meditando Then
+126                             .flags.Meditando = False
+128                             .Char.FX = 0
+130                             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageMeditateToggle(.Char.charindex, 0))
+                            End If
+                        
+                            'If exiting, cancel
+132                         Call CancelExit(UserIndex)
+
+134                         Call SetUserRef(UserList(UserIndex).flags.TargetUser, UserIndex)
+136                         Call LanzarHechizo(.flags.Hechizo, UserIndex)
                         Else
                             If IsValidUserRef(.flags.GMMeSigue) Then
                                 Call WriteNofiticarClienteCasteo(.flags.GMMeSigue.ArrayIndex, 1)
                             End If
                             If Hechizos(.Stats.UserHechizos(SpellSlot)).AreaAfecta > 0 Then
-126                             Call WriteWorkRequestTarget(UserIndex, e_Skill.Magia, True, Hechizos(.Stats.UserHechizos(SpellSlot)).AreaRadio)
+138                             Call WriteWorkRequestTarget(UserIndex, e_Skill.Magia, True, Hechizos(.Stats.UserHechizos(SpellSlot)).AreaRadio)
                             Else
                                 Call WriteWorkRequestTarget(UserIndex, e_Skill.Magia)
                             End If
@@ -4623,5 +4634,5 @@ Public Sub UseSpellSlot(ByVal UserIndex As Integer, ByVal SpellSlot As Integer)
         End With
     Exit Sub
 UseSpellSlot_Err:
-128     Call TraceError(Err.Number, Err.Description, "Protocol.UseSpellSlot", Erl)
+140     Call TraceError(Err.Number, Err.Description, "Protocol.UseSpellSlot", Erl)
 End Sub
