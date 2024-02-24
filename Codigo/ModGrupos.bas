@@ -192,6 +192,12 @@ Public Sub EcharMiembro(ByVal UserIndex As Integer, ByVal Indice As Byte)
 154         Call SetUserRef(.Grupo.Miembros(1), 0)
 156         Call RefreshCharStatus(UserIndexEchar)
             .Grupo.ID = -1
+            
+            If MapInfo(.pos.Map).Salida.Map <> 0 Then
+                Call WriteConsoleMsg(UserIndex, "Debes estar en un grupo para permanecer en este mapa.", e_FontTypeNames.FONTTYPE_INFO)
+                Call WarpUserChar(UserIndex, MapInfo(.pos.Map).Salida.Map, MapInfo(.pos.Map).Salida.x, MapInfo(.pos.Map).Salida.y, True)
+            End If
+            
         End With
     
                             
@@ -280,6 +286,12 @@ Public Sub SalirDeGrupo(ByVal UserIndex As Integer)
 156         Call SetUserRef(.Grupo.Lider, 0)
             
             Call modSendData.SendData(ToIndex, UserIndex, PrepareUpdateGroupInfo(UserIndex))
+            
+            If MapInfo(.pos.Map).Salida.Map <> 0 Then
+                Call WriteConsoleMsg(UserIndex, "Debes estar en un grupo para permanecer en este mapa.", e_FontTypeNames.FONTTYPE_INFO)
+                Call WarpUserChar(UserIndex, MapInfo(.pos.Map).Salida.Map, MapInfo(.pos.Map).Salida.x, MapInfo(.pos.Map).Salida.y, True)
+            End If
+            
         End With
     
 158     Call RefreshCharStatus(UserIndex)
@@ -336,6 +348,12 @@ Public Sub SalirDeGrupoForzado(ByVal UserIndex As Integer)
                 UserList(.Grupo.Lider.ArrayIndex).Grupo.ID = -1
 146             Call RefreshCharStatus(.Grupo.Lider.ArrayIndex)
             End If
+            
+            If MapInfo(.pos.Map).Salida.Map <> 0 Then
+                Call WriteConsoleMsg(UserIndex, "Debes estar en un grupo para permanecer en este mapa.", e_FontTypeNames.FONTTYPE_INFO)
+                Call WarpUserChar(UserIndex, MapInfo(.pos.Map).Salida.Map, MapInfo(.pos.Map).Salida.x, MapInfo(.pos.Map).Salida.y, True)
+            End If
+            
         End With
         Exit Sub
 SalirDeGrupoForzado_Err:
@@ -359,6 +377,10 @@ On Error GoTo FinalizarGrupo_Err
 118             .Grupo.EnGrupo = False
                 .Grupo.ID = -1
                 Call modSendData.SendData(ToIndex, .Grupo.Miembros(i).ArrayIndex, PrepareUpdateGroupInfo(.Grupo.Miembros(i).ArrayIndex))
+                If MapInfo(.pos.Map).Salida.Map <> 0 Then
+                    Call WriteConsoleMsg(UserIndex, "Debes estar en un grupo para permanecer en este mapa.", e_FontTypeNames.FONTTYPE_INFO)
+                    Call WarpUserChar(UserIndex, MapInfo(.pos.Map).Salida.Map, MapInfo(.pos.Map).Salida.x, MapInfo(.pos.Map).Salida.y, True)
+                End If
 120         Next i
         End With
         Exit Sub
