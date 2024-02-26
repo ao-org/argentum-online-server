@@ -1662,8 +1662,8 @@ Public Type t_ObjData
     LingH As Integer
     LingO As Integer
     LingP As Integer
-    Madera As Integer
-    MaderaElfica As Integer
+    Madera As Long
+    MaderaElfica As Long
     MaderaPino As Integer
     
     Hechizo As Integer
