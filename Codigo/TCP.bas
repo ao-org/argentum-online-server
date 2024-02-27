@@ -235,6 +235,10 @@ Sub RellenarInventario(ByVal UserIndex As String)
                  .invent.Object(NumItems).ObjIndex = 3490 ' Anillo del Principiante
                  .invent.Object(NumItems).amount = 1
                  NumItems = NumItems + 1
+                 
+                  .invent.Object(NumItems).objIndex = 3488 ' Escudo de Principiante
+                 .invent.Object(NumItems).amount = 1
+                 NumItems = NumItems + 1
 
                 Case e_Class.Trabajador
                  .invent.Object(NumItems).ObjIndex = 3487 ' Espada del Principiante
