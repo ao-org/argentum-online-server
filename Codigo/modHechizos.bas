@@ -4494,9 +4494,9 @@ Private Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, X As Byte, Y 
 420         UserList(NpcIndex).flags.Incinerado = 0
 
             If UserList(NpcIndex).Counters.velocidad <> 0 Then
-419             UserList(NpcIndex).flags.VelocidadHechizada = 0
-420             UserList(NpcIndex).Counters.velocidad = 0
-421             Call ActualizarVelocidadDeUsuario(NpcIndex)
+                UserList(NpcIndex).flags.VelocidadHechizada = 0
+                UserList(NpcIndex).Counters.velocidad = 0
+                Call ActualizarVelocidadDeUsuario(NpcIndex)
             End If
         End If
                 
