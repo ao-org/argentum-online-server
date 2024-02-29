@@ -1103,16 +1103,7 @@ ErrHandler:
 
 End Sub
 
-'
-' @param    UserIndex The index of the user sending the message.
-
 Private Sub HandleLoginNewChar(ByVal ConnectionId As Long)
-        '***************************************************
-        'Author: Juan Martín Sotuyo Dodero (Maraxus)
-        'Last Modification: 05/17/06
-        '
-        '***************************************************
-
         On Error GoTo ErrHandler
 
 
@@ -1230,8 +1221,17 @@ Private Sub HandleLoginNewChar(ByVal ConnectionId As Long)
             Exit Sub
         End If
         Debug.Assert UserList(userindex).AccountID > -1
-        'Check if we reached MAX_PERSONAJES for this account after updateing the UserList(userindex).AccountID in the if above
-        If GetPersonajesCountByIDDatabase(UserList(userindex).AccountID) >= MAX_PERSONAJES Then
+        
+        Dim num_pc As Byte
+        num_pc = GetPersonajesCountByIDDatabase(UserList(UserIndex).AccountID)
+        Debug.Assert num_pc > 0
+        Dim user_tier As e_TipoUsuario
+        user_tier = GetPatronTierFromAccountID(UserList(UserIndex).AccountID)
+        Dim max_pc_for_tier As Byte
+        max_pc_for_tier = MaxCharacterForTier(user_tier)
+        Debug.Assert max_pc_for_tier > 0
+        If num_pc >= Min(max_pc_for_tier, MAX_PERSONAJES) Then
+            Call WriteShowMessageBox(UserIndex, "You need to upgrade your account to create more characters, please visit https://www.patreon.com/nolandstudios")
             Call CloseSocket(userindex)
             Exit Sub
         End If
@@ -8224,8 +8224,8 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
 130                     .Invent.Object(SlotViejo).Equipped = 0
                     
                         'Cambiamos si alguno es un anillo
-132                     If .invent.DañoMagicoEqpSlot = SlotViejo Then
-134                         .invent.DañoMagicoEqpSlot = SlotNuevo
+132                     If .Invent.DañoMagicoEqpSlot = SlotViejo Then
+134                         .Invent.DañoMagicoEqpSlot = SlotNuevo
 
                         End If
 
@@ -8333,10 +8333,10 @@ Private Sub HandleMoveItem(ByVal UserIndex As Integer)
                     End If
     
                     'Cambiamos si alguno es un anillo
-214                 If .invent.DañoMagicoEqpSlot = SlotViejo Then
-216                     .invent.DañoMagicoEqpSlot = SlotNuevo
-218                 ElseIf .invent.DañoMagicoEqpSlot = SlotNuevo Then
-220                     .invent.DañoMagicoEqpSlot = SlotViejo
+214                 If .Invent.DañoMagicoEqpSlot = SlotViejo Then
+216                     .Invent.DañoMagicoEqpSlot = SlotNuevo
+218                 ElseIf .Invent.DañoMagicoEqpSlot = SlotNuevo Then
+220                     .Invent.DañoMagicoEqpSlot = SlotViejo
 
                     End If
 
