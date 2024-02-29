@@ -3816,8 +3816,15 @@ Sub HechizoCombinados(ByVal UserIndex As Integer, ByRef b As Boolean, ByRef IsAl
         End If
 
 450     If Hechizos(h).Sanacion = 1 Then
-452         UserList(tU).flags.Envenenado = 0
-454         UserList(tU).flags.Incinerado = 0
+451         UserList(tU).flags.Envenenado = 0
+452         UserList(tU).flags.Incinerado = 0
+
+            If UserList(tU).Counters.velocidad <> 0 Then
+453             UserList(tU).flags.VelocidadHechizada = 0
+454             UserList(tU).Counters.velocidad = 0
+455             Call ActualizarVelocidadDeUsuario(tU)
+            End If
+
 456         enviarInfoHechizo = True
 458         b = True
         End If
@@ -4485,6 +4492,12 @@ Private Sub AreaHechizo(UserIndex As Integer, NpcIndex As Integer, X As Byte, Y 
 416         Call WriteConsoleMsg(NpcIndex, "Has sido sanado.", e_FontTypeNames.FONTTYPE_INFO)
 418         UserList(NpcIndex).flags.Envenenado = 0
 420         UserList(NpcIndex).flags.Incinerado = 0
+
+            If UserList(NpcIndex).Counters.velocidad <> 0 Then
+                UserList(NpcIndex).flags.VelocidadHechizada = 0
+                UserList(NpcIndex).Counters.velocidad = 0
+                Call ActualizarVelocidadDeUsuario(NpcIndex)
+            End If
         End If
                 
 422     If IsSet(Hechizos(h2).Effects, e_SpellEffects.RemoveParalysis) Then
