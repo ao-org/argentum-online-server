@@ -294,7 +294,7 @@ Public Sub EnlistarCaos(ByVal UserIndex As Integer)
                 
                 'HarThaoS: Lo pongo al final para que lo expulse del clan solamente si cumple todos los requisitos.
 146             If .GuildIndex > 0 Then
-148                 If PersonajeEsLeader(.name) Then
+148                 If PersonajeEsLeader(.Id) Then
                         'Si el clan es neutral no lo dejo, le digo que tiene que salir del clan para poder enlistarse
                         If GuildAlignmentIndex(.GuildIndex) = e_ALINEACION_GUILD.ALINEACION_NEUTRAL Then
                             Call WriteChatOverHead(UserIndex, "No puedes integrar nuestras fuerzas si perteneces a un clan neutral, deberás abandonarlo si tu deseo es integrar la Legión Oscura.", charIndexStr, vbWhite)

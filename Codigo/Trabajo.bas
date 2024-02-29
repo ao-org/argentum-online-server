@@ -2291,7 +2291,7 @@ Public Sub DoRobar(ByVal LadronIndex As Integer, ByVal VictimaIndex As Integer)
             If .GuildIndex > 0 Then
                 'Si tiene clan me fijo si su clan es de alineación ciudadana
                 If esCiudadano(LadronIndex) And GuildAlignmentIndex(.GuildIndex) = e_ALINEACION_GUILD.ALINEACION_CIUDADANA Then
-                    If PersonajeEsLeader(.name) Then
+                    If PersonajeEsLeader(.Id) Then
                         Call WriteConsoleMsg(LadronIndex, "No puedes robar siendo lider de un clan ciudadano.", e_FontTypeNames.FONTTYPE_FIGHT)
                         Exit Sub
                     End If

@@ -6308,7 +6308,7 @@ Private Sub HandleLeaveFaction(ByVal UserIndex As Integer)
                         'Si tiene clan
 130                     If .GuildIndex > 0 Then
                             'Y no es leader
-132                         If Not PersonajeEsLeader(.Name) Then
+132                         If Not PersonajeEsLeader(.Id) Then
                                 'Me fijo de que alineación es el clan, si es ARMADA, lo hecho
                                 If GuildAlignmentIndex(.GuildIndex) = e_ALINEACION_GUILD.ALINEACION_ARMADA Then
                                     Call m_EcharMiembroDeClan(UserIndex, .name)
@@ -6336,7 +6336,7 @@ Private Sub HandleLeaveFaction(ByVal UserIndex As Integer)
                         'Si tiene clan
                          If .GuildIndex > 0 Then
                             'Y no es leader
-                            If Not PersonajeEsLeader(.name) Then
+                            If Not PersonajeEsLeader(.Id) Then
                                 'Me fijo de que alineación es el clan, si es CAOS, lo hecho
                                 If GuildAlignmentIndex(.GuildIndex) = e_ALINEACION_GUILD.ALINEACION_CAOTICA Then
                                     Call m_EcharMiembroDeClan(UserIndex, .name)
