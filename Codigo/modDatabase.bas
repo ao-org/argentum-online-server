@@ -1085,3 +1085,33 @@ End Sub
 Public Sub SaveEpicLogin(ByVal Id As String, ByVal UserIndex As Integer)
     Call Query("insert or replace into epic_id_mapping (epic_id, user_id, last_login) values ( ?, ?, strftime('%s','now'))", Id, UserList(UserIndex).Id)
 End Sub
+
+Public Function GetTierSubscriptionAccount(ByVal AccountID As Long) As Long
+
+    '***************************************************
+    'Author: Lucas Recoaro
+    'Last Modification: 29-02-2024
+    'Description: Returns the tier subscription for patreon
+    '***************************************************
+    On Error GoTo ErrorHandler
+    
+    Dim RS As ADODB.Recordset
+    Set RS = Query("Select is_active_patron from account where id = ?", AccountID)
+
+    If RS Is Nothing Then
+        isAccountPatron = False
+        Exit Function
+    End If
+    
+    ' Assuming is_active_patron is a boolean or can be evaluated as such.
+    ' Adjust based on actual data type and expected value if necessary.
+    isAccountPatron = RS!is_active_patron
+    
+    Exit Function
+
+ErrorHandler:
+    Call LogDatabaseError("Error in isAccountPatron for AccountID: " & CStr(AccountID) & ". " & Err.Number & " - " & Err.Description)
+    isAccountPatron = False
+
+End Function
+

@@ -64,7 +64,7 @@ Public Function LoadCharacterBank(ByVal UserIndex As Integer) As Boolean
 100     With UserList(UserIndex)
             Dim RS As ADODB.Recordset
             Dim counter As Long
-            Set RS = Query("SELECT number, item_id, amount FROM bank_item WHERE user_id = ?;", .id)
+            Set RS = Query("SELECT number, item_id, amount FROM bank_item WHERE user_id = ?;", .Id)
             counter = 0
 368         If Not RS Is Nothing Then
 372             While Not RS.EOF
@@ -88,7 +88,7 @@ Public Function LoadCharacterBank(ByVal UserIndex As Integer) As Boolean
         Exit Function
 
 LoadCharacterInventory_Err:
-    Call LogDatabaseError("Error en LoadCharacterFromDB LoadCharacterBank: " & UserList(UserIndex).Name & ". " & Err.Number & " - " & Err.Description & ". Línea: " & Erl)
+    Call LogDatabaseError("Error en LoadCharacterFromDB LoadCharacterBank: " & UserList(UserIndex).name & ". " & Err.Number & " - " & Err.Description & ". Línea: " & Erl)
 End Function
 
 Public Function LoadCharacterInventory(ByVal UserIndex As Integer) As Boolean
@@ -96,7 +96,7 @@ Public Function LoadCharacterInventory(ByVal UserIndex As Integer) As Boolean
 100     With UserList(UserIndex)
             Dim RS As ADODB.Recordset
             Dim counter As Long
-102         Set RS = Query("SELECT number, item_id, is_equipped, amount FROM inventory_item WHERE user_id = ?;", .id)
+102         Set RS = Query("SELECT number, item_id, is_equipped, amount FROM inventory_item WHERE user_id = ?;", .Id)
 104         counter = 0
 106         If Not RS Is Nothing Then
 108             While Not RS.EOF
@@ -124,22 +124,22 @@ Public Function LoadCharacterInventory(ByVal UserIndex As Integer) As Boolean
         Exit Function
 
 LoadCharacterInventory_Err:
-    Call LogDatabaseError("Error en LoadCharacterFromDB LoadCharacterInventory: " & UserList(UserIndex).Name & ". " & Err.Number & " - " & Err.Description & ". Línea: " & Erl)
+    Call LogDatabaseError("Error en LoadCharacterFromDB LoadCharacterInventory: " & UserList(UserIndex).name & ". " & Err.Number & " - " & Err.Description & ". Línea: " & Erl)
 End Function
 
-Public Function LoadCharacterFromDB(ByVal userIndex As Integer) As Boolean
+Public Function LoadCharacterFromDB(ByVal UserIndex As Integer) As Boolean
         Dim counter As Long
         On Error GoTo ErrorHandler
         LoadCharacterFromDB = False
-         With UserList(userIndex)
+         With UserList(UserIndex)
             
             Dim RS As ADODB.Recordset
-            Set RS = Query(QUERY_LOAD_MAINPJ, .Name)
+            Set RS = Query(QUERY_LOAD_MAINPJ, .name)
 
             If RS Is Nothing Then Exit Function
             Debug.Assert .AccountID > -1 ' You need PYMMO =1 if this fails
             If (CLng(RS!account_id) <> .AccountID) Then
-                Call CloseSocket(userIndex)
+                Call CloseSocket(UserIndex)
                 LoadCharacterFromDB = False
                 Exit Function
             End If
@@ -155,7 +155,7 @@ Public Function LoadCharacterFromDB(ByVal userIndex As Integer) As Boolean
             
                 Call WriteShowMessageBox(UserIndex, "Se te ha prohibido la entrada al juego debido a " & BaneoMotivo & ". Esta decisión fue tomada por " & BanNick & ".")
             
-                Call CloseSocket(userIndex)
+                Call CloseSocket(UserIndex)
                 LoadCharacterFromDB = False
                 Exit Function
             End If
@@ -163,15 +163,15 @@ Public Function LoadCharacterFromDB(ByVal userIndex As Integer) As Boolean
             If (RS!is_locked_in_mao) Then
                 Call WriteShowMessageBox(UserIndex, "El personaje que estás intentando loguear se encuentra en venta, para desbloquearlo deberás hacerlo desde la página web.")
                 LoadCharacterFromDB = False
-                Call CloseSocket(userIndex)
+                Call CloseSocket(UserIndex)
                 Exit Function
             End If
-            .Stats.Shield = 0
+            .Stats.shield = 0
         
             .InUse = True
             'Start setting data
-106         .ID = RS!ID
-108         .Name = RS!Name
+106         .Id = RS!Id
+108         .name = RS!name
 110         .Stats.ELV = RS!level
 112         .Stats.Exp = RS!Exp
 114         .genero = RS!genre_id
@@ -182,7 +182,7 @@ Public Function LoadCharacterFromDB(ByVal userIndex As Integer) As Boolean
 124         .Stats.GLD = RS!gold
 126         .Stats.Banco = RS!bank_gold
 128         .Stats.SkillPts = RS!free_skillpoints
-130         .pos.map = RS!pos_map
+130         .pos.Map = RS!pos_map
 132         .pos.x = RS!pos_X
 134         .pos.y = RS!pos_Y
 136         .MENSAJEINFORMACION = RS!message_info
@@ -221,7 +221,7 @@ Public Function LoadCharacterFromDB(ByVal userIndex As Integer) As Boolean
 238         .flags.SegundosPasados = RS!silence_elapsed_seconds
 240         .flags.MascotasGuardadas = RS!pets_saved
 
-246         .flags.ReturnPos.map = RS!return_map
+246         .flags.ReturnPos.Map = RS!return_map
 248         .flags.ReturnPos.x = RS!return_x
 250         .flags.ReturnPos.y = RS!return_y
         
@@ -252,7 +252,7 @@ Public Function LoadCharacterFromDB(ByVal userIndex As Integer) As Boolean
             Call UpdateUserTelemetryKey(UserIndex)
 
             'User spells
-            Set RS = Query("SELECT number, spell_id FROM spell WHERE user_id = ?;", .ID)
+            Set RS = Query("SELECT number, spell_id FROM spell WHERE user_id = ?;", .Id)
 
 316         If Not RS Is Nothing Then
 
@@ -266,7 +266,7 @@ Public Function LoadCharacterFromDB(ByVal userIndex As Integer) As Boolean
             End If
 
             'User pets
-            Set RS = Query("SELECT number, pet_id FROM pet WHERE user_id = ?;", .ID)
+            Set RS = Query("SELECT number, pet_id FROM pet WHERE user_id = ?;", .Id)
 328         If Not RS Is Nothing Then
 332             While Not RS.EOF
 334                 .MascotasType(RS!Number) = RS!pet_id
@@ -278,18 +278,18 @@ Public Function LoadCharacterFromDB(ByVal userIndex As Integer) As Boolean
             End If
 
             'User bank inventory
-            Set RS = Query("SELECT number, item_id, amount FROM bank_item WHERE user_id = ?;", .ID)
+            Set RS = Query("SELECT number, item_id, amount FROM bank_item WHERE user_id = ?;", .Id)
             counter = 0
 368         If Not RS Is Nothing Then
 372             While Not RS.EOF
 374                 With .BancoInvent.Object(RS!Number)
-376                     .objIndex = RS!item_id
-378                     If .objIndex <> 0 Then
-380                         If LenB(ObjData(.objIndex).Name) Then
+376                     .ObjIndex = RS!item_id
+378                     If .ObjIndex <> 0 Then
+380                         If LenB(ObjData(.ObjIndex).name) Then
                                 counter = counter + 1
 382                             .amount = RS!amount
                             Else
-384                             .objIndex = 0
+384                             .ObjIndex = 0
                             End If
                         End If
                     End With
@@ -299,13 +299,13 @@ Public Function LoadCharacterFromDB(ByVal userIndex As Integer) As Boolean
             End If
             
             'User skills
-            Set RS = Query("SELECT number, value FROM skillpoint WHERE user_id = ?;", .ID)
+            Set RS = Query("SELECT number, value FROM skillpoint WHERE user_id = ?;", .Id)
 
 390         If Not RS Is Nothing Then
 
 394             While Not RS.EOF
 
-396                 .Stats.UserSkills(RS!Number) = RS!value
+396                 .Stats.UserSkills(RS!Number) = RS!Value
 
 398                 RS.MoveNext
                 Wend
@@ -315,7 +315,7 @@ Public Function LoadCharacterFromDB(ByVal userIndex As Integer) As Boolean
             Dim LoopC As Byte
         
             'User quests
-            Set RS = Query("SELECT number, quest_id, npcs, npcstarget FROM quest WHERE user_id = ?;", .ID)
+            Set RS = Query("SELECT number, quest_id, npcs, npcstarget FROM quest WHERE user_id = ?;", .Id)
 
 402         If Not RS Is Nothing Then
 
@@ -358,7 +358,7 @@ Public Function LoadCharacterFromDB(ByVal userIndex As Integer) As Boolean
             End If
         
             'User quests done
-            Set RS = Query("SELECT quest_id FROM quest_done WHERE user_id = ?;", .ID)
+            Set RS = Query("SELECT quest_id FROM quest_done WHERE user_id = ?;", .Id)
 
 440         If Not RS Is Nothing Then
 442             .QuestStats.NumQuestsDone = RS.RecordCount
@@ -380,32 +380,29 @@ Public Function LoadCharacterFromDB(ByVal userIndex As Integer) As Boolean
             
             If Not LoadCharacterInventory(UserIndex) Then Exit Function
             If Not LoadCharacterBank(UserIndex) Then Exit Function
-            Call RegisterUserName(.id, .name)
+            Call RegisterUserName(.Id, .name)
             Call Execute("update account set last_ip = ? where id = ?", .ConnectionDetails.IP, .AccountID)
             .Stats.Creditos = 0
-            Set RS = Query("Select is_active_patron from account where id = ?", .AccountID)
-            If Not RS Is Nothing Then
-                Dim tipo_usuario_db As Long
-                tipo_usuario_db = RS!is_active_patron
-                Select Case tipo_usuario_db
-                    Case patron_tier_aventurero
-                        .Stats.tipoUsuario = e_TipoUsuario.tAventurero
-                    Case patron_tier_heroe
-                        .Stats.tipoUsuario = e_TipoUsuario.tHeroe
-                    Case patron_tier_leyenda
-                        .Stats.tipoUsuario = e_TipoUsuario.tLeyenda
-                    Case Else
-                         .Stats.tipoUsuario = e_TipoUsuario.tNormal
-                End Select
-                
-                If .Stats.tipoUsuario = tAventurero Or .Stats.tipoUsuario = tHeroe Or .Stats.tipoUsuario = tLeyenda Then
-                    'Only load the house key if we are dealing with a patron
-                    Call db_load_house_key(UserList(userIndex))
-                End If
-            Else
-                'If we can't access patron info we set the user to normal
-                .Stats.tipoUsuario = e_TipoUsuario.tNormal
+
+            Dim PatronTierAccountDb As Long
+            PatronTierAccountDb = GetTierSubscriptionAccount(.AccountID)
+            Select Case PatronTierAccountDb
+                Case e_PatronTier.Aventurero
+                    .Stats.tipoUsuario = e_TipoUsuario.tAventurero
+                Case e_PatronTier.Heroe
+                    .Stats.tipoUsuario = e_TipoUsuario.tHeroe
+                Case e_PatronTier.Leyenda
+                    .Stats.tipoUsuario = e_TipoUsuario.tLeyenda
+                Case Else
+                    .Stats.tipoUsuario = e_TipoUsuario.tNormal
+            End Select
+
+            
+            If .Stats.tipoUsuario = tAventurero Or .Stats.tipoUsuario = tHeroe Or .Stats.tipoUsuario = tLeyenda Then
+                'Only load the house key if we are dealing with a patron
+                Call db_load_house_key(UserList(UserIndex))
             End If
+            
         End With
         
         LoadCharacterFromDB = True
@@ -413,7 +410,7 @@ Public Function LoadCharacterFromDB(ByVal userIndex As Integer) As Boolean
         Exit Function
 
 ErrorHandler:
-478     Call LogDatabaseError("Error en LoadCharacterFromDB: " & UserList(UserIndex).Name & ". " & Err.Number & " - " & Err.Description & ". Línea: " & Erl)
+478     Call LogDatabaseError("Error en LoadCharacterFromDB: " & UserList(UserIndex).name & ". " & Err.Number & " - " & Err.Description & ". Línea: " & Erl)
 
 End Function
 
@@ -429,7 +426,7 @@ Public Sub LoadPatronCreditsFromDB(ByVal UserIndex As Integer)
     End With
 End Sub
 
-Public Sub SaveCharacterDB(ByVal userIndex As Integer)
+Public Sub SaveCharacterDB(ByVal UserIndex As Integer)
 
         On Error GoTo ErrorHandler
         Dim PerformanceTimer As Long
@@ -439,7 +436,7 @@ Public Sub SaveCharacterDB(ByVal userIndex As Integer)
         Dim ParamC As Long
 100     Call Builder.Clear
 
-102     With UserList(userIndex)
+102     With UserList(UserIndex)
             Debug.Assert .flags.UserLogged = True
             If Not .flags.UserLogged Then
                 Call LogDatabaseError("Error trying to save an user not logged in SaveCharacterDB")
@@ -451,7 +448,7 @@ Public Sub SaveCharacterDB(ByVal userIndex As Integer)
 
             Dim i As Integer
         
-106         Params(post_increment(i)) = .Name
+106         Params(post_increment(i)) = .name
 108         Params(post_increment(i)) = .Stats.ELV
 110         Params(post_increment(i)) = .Stats.Exp
 112         Params(post_increment(i)) = .genero
@@ -463,7 +460,7 @@ Public Sub SaveCharacterDB(ByVal userIndex As Integer)
 124         Params(post_increment(i)) = .Stats.Banco
 126         Params(post_increment(i)) = .Stats.SkillPts
 128         Params(post_increment(i)) = .flags.MascotasGuardadas
-130         Params(post_increment(i)) = .pos.map
+130         Params(post_increment(i)) = .pos.Map
 132         Params(post_increment(i)) = .pos.x
 134         Params(post_increment(i)) = .pos.y
 136         Params(post_increment(i)) = .MENSAJEINFORMACION
@@ -511,13 +508,13 @@ Public Sub SaveCharacterDB(ByVal userIndex As Integer)
 274         Params(post_increment(i)) = .ChatCombate
 276         Params(post_increment(i)) = .ChatGlobal
 280         Params(post_increment(i)) = .Stats.Advertencias
-282         Params(post_increment(i)) = .flags.ReturnPos.map
+282         Params(post_increment(i)) = .flags.ReturnPos.Map
 284         Params(post_increment(i)) = .flags.ReturnPos.x
 286         Params(post_increment(i)) = .flags.ReturnPos.y
 287         Params(post_increment(i)) = .TelemetryInfo
 
             ' WHERE block
-288         Params(post_increment(i)) = .ID
+288         Params(post_increment(i)) = .Id
             
             Call Execute(QUERY_UPDATE_MAINPJ, Params)
 
@@ -526,7 +523,7 @@ Public Sub SaveCharacterDB(ByVal userIndex As Integer)
 336             ParamC = 0
             
 338             For LoopC = 1 To MAXUSERHECHIZOS
-340                 Params(ParamC) = .ID
+340                 Params(ParamC) = .Id
 342                 Params(ParamC + 1) = LoopC
 344                 Params(ParamC + 2) = .Stats.UserHechizos(LoopC)
                 
@@ -540,11 +537,11 @@ Public Sub SaveCharacterDB(ByVal userIndex As Integer)
 368             ParamC = 0
             
 370             For LoopC = 1 To MAX_INVENTORY_SLOTS
-372                 Params(ParamC) = .ID
+372                 Params(ParamC) = .Id
 374                 Params(ParamC + 1) = LoopC
-376                 Params(ParamC + 2) = .Invent.Object(LoopC).objIndex
-378                 Params(ParamC + 3) = .Invent.Object(LoopC).amount
-380                 Params(ParamC + 4) = .Invent.Object(LoopC).Equipped
+376                 Params(ParamC + 2) = .invent.Object(LoopC).ObjIndex
+378                 Params(ParamC + 3) = .invent.Object(LoopC).amount
+380                 Params(ParamC + 4) = .invent.Object(LoopC).Equipped
                 
 382                 ParamC = ParamC + 5
 384             Next LoopC
@@ -556,9 +553,9 @@ Public Sub SaveCharacterDB(ByVal userIndex As Integer)
 404             ParamC = 0
             
 406             For LoopC = 1 To MAX_BANCOINVENTORY_SLOTS
-408                 Params(ParamC) = .ID
+408                 Params(ParamC) = .Id
 410                 Params(ParamC + 1) = LoopC
-412                 Params(ParamC + 2) = .BancoInvent.Object(LoopC).objIndex
+412                 Params(ParamC + 2) = .BancoInvent.Object(LoopC).ObjIndex
 414                 Params(ParamC + 3) = .BancoInvent.Object(LoopC).amount
                 
 416                 ParamC = ParamC + 4
@@ -572,7 +569,7 @@ Public Sub SaveCharacterDB(ByVal userIndex As Integer)
 438             ParamC = 0
             
 440             For LoopC = 1 To NUMSKILLS
-442                 Params(ParamC) = .ID
+442                 Params(ParamC) = .Id
 444                 Params(ParamC + 1) = LoopC
 446                 Params(ParamC + 2) = .Stats.UserSkills(LoopC)
                 
@@ -588,7 +585,7 @@ Public Sub SaveCharacterDB(ByVal userIndex As Integer)
                 Dim petType As Integer
     
 472             For LoopC = 1 To MAXMASCOTAS
-474                 Params(ParamC) = .ID
+474                 Params(ParamC) = .Id
 476                 Params(ParamC + 1) = LoopC
     
 
@@ -617,7 +614,7 @@ Public Sub SaveCharacterDB(ByVal userIndex As Integer)
     
 528             For LoopC = 1 To MAXUSERQUESTS
 530                 Builder.Append "("
-532                 Builder.Append .ID & ", "
+532                 Builder.Append .Id & ", "
 534                 Builder.Append LoopC & ", "
 536                 Builder.Append .QuestStats.Quests(LoopC).QuestIndex & ", '"
                 
@@ -691,7 +688,7 @@ Public Sub SaveCharacterDB(ByVal userIndex As Integer)
 606                 ParamC = 0
                 
 608                 For LoopC = 1 To .QuestStats.NumQuestsDone
-610                     Params(ParamC) = .ID
+610                     Params(ParamC) = .Id
 612                     Params(ParamC + 1) = .QuestStats.QuestsDone(LoopC)
                     
 614                     ParamC = ParamC + 2
@@ -701,30 +698,30 @@ Public Sub SaveCharacterDB(ByVal userIndex As Integer)
 
 626                 Call Builder.Clear
                 End If
-        Call PerformTimeLimitCheck(PerformanceTimer, "save character id:" & .id, 50)
+        Call PerformTimeLimitCheck(PerformanceTimer, "save character id:" & .Id, 50)
         End With
         
         Exit Sub
 
 ErrorHandler:
-636     Call LogDatabaseError("Error en SaveUserDatabase. UserName: " & UserList(userIndex).Name & ". " & Err.Number & " - " & Err.Description)
+636     Call LogDatabaseError("Error en SaveUserDatabase. UserName: " & UserList(UserIndex).name & ". " & Err.Number & " - " & Err.Description)
 
 End Sub
 
-Public Sub SaveNewCharacterDB(ByVal userIndex As Integer)
+Public Sub SaveNewCharacterDB(ByVal UserIndex As Integer)
         On Error GoTo ErrorHandler
         Dim LoopC As Long
         Dim ParamC As Integer
         Dim Params() As Variant
     
-102     With UserList(userIndex)
+102     With UserList(UserIndex)
         
             Dim i As Integer
             i = 0
 104         ReDim Params(0 To 26)
 
             '  ************ Basic user data *******************
-106         Params(post_increment(i)) = .Name
+106         Params(post_increment(i)) = .name
 108         Params(post_increment(i)) = .AccountID
 110         Params(post_increment(i)) = .Stats.ELV
 112         Params(post_increment(i)) = .Stats.Exp
@@ -735,7 +732,7 @@ Public Sub SaveNewCharacterDB(ByVal userIndex As Integer)
 122         Params(post_increment(i)) = .Desc
 124         Params(post_increment(i)) = .Stats.GLD
 126         Params(post_increment(i)) = .Stats.SkillPts
-128         Params(post_increment(i)) = .pos.map
+128         Params(post_increment(i)) = .pos.Map
 130         Params(post_increment(i)) = .pos.x
 132         Params(post_increment(i)) = .pos.y
 134         Params(post_increment(i)) = .Char.body
@@ -758,9 +755,9 @@ Public Sub SaveNewCharacterDB(ByVal userIndex As Integer)
             Set RS = Query("SELECT last_insert_rowid()")
 
 202         If RS Is Nothing Then
-204             .ID = 1
+204             .Id = 1
             Else
-206             .ID = val(RS.Fields(0).value)
+206             .Id = val(RS.Fields(0).Value)
             End If
                 
             ' ******************* SPELLS **********************
@@ -768,7 +765,7 @@ Public Sub SaveNewCharacterDB(ByVal userIndex As Integer)
 228         ParamC = 0
         
 230         For LoopC = 1 To MAXUSERHECHIZOS
-232             Params(ParamC) = .ID
+232             Params(ParamC) = .Id
 234             Params(ParamC + 1) = LoopC
 236             Params(ParamC + 2) = .Stats.UserHechizos(LoopC)
             
@@ -782,11 +779,11 @@ Public Sub SaveNewCharacterDB(ByVal userIndex As Integer)
 246         ParamC = 0
         
 248         For LoopC = 1 To MAX_INVENTORY_SLOTS
-250             Params(ParamC) = .ID
+250             Params(ParamC) = .Id
 252             Params(ParamC + 1) = LoopC
-254             Params(ParamC + 2) = .Invent.Object(LoopC).objIndex
-256             Params(ParamC + 3) = .Invent.Object(LoopC).amount
-258             Params(ParamC + 4) = .Invent.Object(LoopC).Equipped
+254             Params(ParamC + 2) = .invent.Object(LoopC).ObjIndex
+256             Params(ParamC + 3) = .invent.Object(LoopC).amount
+258             Params(ParamC + 4) = .invent.Object(LoopC).Equipped
             
 260             ParamC = ParamC + 5
 262         Next LoopC
@@ -798,7 +795,7 @@ Public Sub SaveNewCharacterDB(ByVal userIndex As Integer)
 268         ParamC = 0
         
 270         For LoopC = 1 To NUMSKILLS
-272             Params(ParamC) = .ID
+272             Params(ParamC) = .Id
 274             Params(ParamC + 1) = LoopC
 276             Params(ParamC + 2) = .Stats.UserSkills(LoopC)
             
@@ -812,7 +809,7 @@ Public Sub SaveNewCharacterDB(ByVal userIndex As Integer)
 286         ParamC = 0
         
 288         For LoopC = 1 To MAXUSERQUESTS
-290             Params(ParamC) = .ID
+290             Params(ParamC) = .Id
 292             Params(ParamC + 1) = LoopC
             
 294             ParamC = ParamC + 2
@@ -825,7 +822,7 @@ Public Sub SaveNewCharacterDB(ByVal userIndex As Integer)
 302         ParamC = 0
         
 304         For LoopC = 1 To MAXMASCOTAS
-306             Params(ParamC) = .ID
+306             Params(ParamC) = .Id
 308             Params(ParamC + 1) = LoopC
 310             Params(ParamC + 2) = 0
             
@@ -840,7 +837,7 @@ Public Sub SaveNewCharacterDB(ByVal userIndex As Integer)
 
 ErrorHandler:
     
-322     Call LogDatabaseError("Error en SaveNewUserDatabase. UserName: " & UserList(userIndex).Name & ". " & Err.Number & " - " & Err.Description)
+322     Call LogDatabaseError("Error en SaveNewUserDatabase. UserName: " & UserList(UserIndex).name & ". " & Err.Number & " - " & Err.Description)
 
 End Sub
 
