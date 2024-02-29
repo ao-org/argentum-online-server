@@ -1230,39 +1230,7 @@ Private Sub HandleLoginNewChar(ByVal ConnectionId As Long)
             Exit Sub
         End If
 
-        'Check if we reached MAX_PERSONAJES for this account after updateing the UserList(userindex).AccountID in the if above
-        Dim CantidadPersonajesDb as Byte 
-        CantidadPersonajesDb = GetPersonajesCountByIDDatabase(UserList(userindex).AccountID)
-    
-        Dim PatronTierAccountDb as Long
-        PatronTierAccountDb = GetTierSubscriptionAccount(UserList(userindex).AccountID)
-        Select Case PatronTierAccountDb
-            Case e_PatronTier.Aventurero
-                If CantidadPersonajesDb >= 3 Then
-                    Call WriteShowMessageBox(UserIndex, "Actualmente has alcanzado el límite de personajes disponibles para tu suscripción actual. Para desbloquear más slots de personajes y expandir tus logros, te invitamos a mejorar tu suscripción.")
-                    Call CloseSocket(userindex)
-                    Exit Sub
-                End If
-            Case e_PatronTier.Heroe
-                If CantidadPersonajesDb >= 5 Then
-                    Call WriteShowMessageBox(UserIndex, "Parece que has llenado todos los espacios de personajes permitidos con tu suscripción actual. Para que no te detengas aquí y sigas creando más historias épicas, te invitamos a elevar tu suscripción.")
-                    Call CloseSocket(userindex)
-                    Exit Sub
-                End If
-            Case Else
-                If CantidadPersonajesDb >= 1 Then
-                    Call WriteShowMessageBox(UserIndex, "Actualmente has alcanzado el límite de personajes disponibles para jugadores sin suscripción. Pero no te preocupes, una increíble oportunidad te espera: al suscribirte, no solo podrás crear más personajes, sino que también desbloquearás un mundo de beneficios exclusivos y contenido adicional.")
-                    Call CloseSocket(userindex)
-                Exit Sub
-            End If
-        End Select
-
-        'PatronTier Leyenda puede todos los personajes.
-        If CantidadPersonajesDb >= MAX_PERSONAJES Then
-            Call WriteShowMessageBox(UserIndex, "Has alcanzado el punto culminante, el número máximo de personajes posibles en nuestro juego.")
-            Call CloseSocket(userindex)
-            Exit Sub
-        End If
+        CheckIfSlotAvailable(UserList(userindex).AccountID)
 
         If Not ConnectNewUser(userindex, username, race, gender, Class, Head, Hogar) Then
             Call CloseSocket(userindex)
@@ -1319,11 +1287,7 @@ Private Sub HandleLoginNewChar(ByVal userindex As Integer)
 
         End If
 
-        'Check if we reached MAX_PERSONAJES for this account after updateing the UserList(userindex).AccountID in the if above
-        If GetPersonajesCountByIDDatabase(UserList(userindex).AccountID) >= MAX_PERSONAJES Then
-            Call CloseSocket(userindex)
-            Exit Sub
-        End If
+        CheckIfSlotAvailable(UserList(userindex).AccountID)
         
         If Not ConnectNewUser(userindex, name, race, gender, Class, Head, Hogar) Then
             Call CloseSocket(userindex)
@@ -1337,6 +1301,43 @@ ErrHandler:
      Call TraceError(Err.Number, Err.Description, "Protocol.HandleLoginNewChar", Erl)
 End Sub
 #End If
+
+
+Private Sub CheckIfSlotAvailable(AccountID)
+    'Check if we reached MAX_PERSONAJES for this account after updateing the UserList(userindex).AccountID in the if above
+    Dim CantidadPersonajesDb as Byte 
+    CantidadPersonajesDb = GetPersonajesCountByIDDatabase(UserList(userindex).AccountID)
+
+    Dim PatronTierAccountDb as Long
+    PatronTierAccountDb = GetTierSubscriptionAccount(UserList(userindex).AccountID)
+    Select Case PatronTierAccountDb
+        Case e_PatronTier.Aventurero
+            If CantidadPersonajesDb >= 3 Then
+                Call WriteShowMessageBox(UserIndex, "Actualmente has alcanzado el límite de personajes disponibles para tu suscripción actual. Para desbloquear más slots de personajes y expandir tus logros, te invitamos a mejorar tu suscripción.")
+                Call CloseSocket(userindex)
+                Exit Sub
+            End If
+        Case e_PatronTier.Heroe
+            If CantidadPersonajesDb >= 5 Then
+                Call WriteShowMessageBox(UserIndex, "Parece que has llenado todos los espacios de personajes permitidos con tu suscripción actual. Para que no te detengas aquí y sigas creando más historias épicas, te invitamos a elevar tu suscripción.")
+                Call CloseSocket(userindex)
+                Exit Sub
+            End If
+        Case Else
+            If CantidadPersonajesDb >= 1 Then
+                Call WriteShowMessageBox(UserIndex, "Actualmente has alcanzado el límite de personajes disponibles para jugadores sin suscripción. Pero no te preocupes, una increíble oportunidad te espera: al suscribirte, no solo podrás crear más personajes, sino que también desbloquearás un mundo de beneficios exclusivos y contenido adicional.")
+                Call CloseSocket(userindex)
+            Exit Sub
+        End If
+    End Select
+
+    'PatronTier Leyenda puede todos los personajes.
+    If CantidadPersonajesDb >= MAX_PERSONAJES Then
+        Call WriteShowMessageBox(UserIndex, "Has alcanzado el punto culminante, el número máximo de personajes posibles en nuestro juego.")
+        Call CloseSocket(userindex)
+        Exit Sub
+    End If
+End Sub
 
 ''
 ' Handles the "Talk" message.
