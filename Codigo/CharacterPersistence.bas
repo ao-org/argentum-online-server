@@ -88,7 +88,7 @@ Public Function LoadCharacterBank(ByVal UserIndex As Integer) As Boolean
         Exit Function
 
 LoadCharacterInventory_Err:
-    Call LogDatabaseError("Error en LoadCharacterFromDB LoadCharacterBank: " & UserList(UserIndex).Name & ". " & Err.Number & " - " & Err.Description & ". Línea: " & Erl)
+    Call LogDatabaseError("Error en LoadCharacterFromDB LoadCharacterBank: " & UserList(UserIndex).name & ". " & Err.Number & " - " & Err.Description & ". Línea: " & Erl)
 End Function
 
 Public Function LoadCharacterInventory(ByVal UserIndex As Integer) As Boolean
@@ -124,7 +124,7 @@ Public Function LoadCharacterInventory(ByVal UserIndex As Integer) As Boolean
         Exit Function
 
 LoadCharacterInventory_Err:
-    Call LogDatabaseError("Error en LoadCharacterFromDB LoadCharacterInventory: " & UserList(UserIndex).Name & ". " & Err.Number & " - " & Err.Description & ". Línea: " & Erl)
+    Call LogDatabaseError("Error en LoadCharacterFromDB LoadCharacterInventory: " & UserList(UserIndex).name & ". " & Err.Number & " - " & Err.Description & ". Línea: " & Erl)
 End Function
 
 Public Function LoadCharacterFromDB(ByVal userIndex As Integer) As Boolean
@@ -383,29 +383,13 @@ Public Function LoadCharacterFromDB(ByVal userIndex As Integer) As Boolean
             Call RegisterUserName(.id, .name)
             Call Execute("update account set last_ip = ? where id = ?", .ConnectionDetails.IP, .AccountID)
             .Stats.Creditos = 0
-            Set RS = Query("Select is_active_patron from account where id = ?", .AccountID)
-            If Not RS Is Nothing Then
-                Dim tipo_usuario_db As Long
-                tipo_usuario_db = RS!is_active_patron
-                Select Case tipo_usuario_db
-                    Case patron_tier_aventurero
-                        .Stats.tipoUsuario = e_TipoUsuario.tAventurero
-                    Case patron_tier_heroe
-                        .Stats.tipoUsuario = e_TipoUsuario.tHeroe
-                    Case patron_tier_leyenda
-                        .Stats.tipoUsuario = e_TipoUsuario.tLeyenda
-                    Case Else
-                         .Stats.tipoUsuario = e_TipoUsuario.tNormal
-                End Select
-                
-                If .Stats.tipoUsuario = tAventurero Or .Stats.tipoUsuario = tHeroe Or .Stats.tipoUsuario = tLeyenda Then
+            
+            .Stats.tipoUsuario = GetPatronTierFromAccountID(.AccountID)
+            If .Stats.tipoUsuario = tAventurero Or .Stats.tipoUsuario = tHeroe Or .Stats.tipoUsuario = tLeyenda Then
                     'Only load the house key if we are dealing with a patron
                     Call db_load_house_key(UserList(userIndex))
-                End If
-            Else
-                'If we can't access patron info we set the user to normal
-                .Stats.tipoUsuario = e_TipoUsuario.tNormal
             End If
+                
         End With
         
         LoadCharacterFromDB = True
@@ -413,8 +397,50 @@ Public Function LoadCharacterFromDB(ByVal userIndex As Integer) As Boolean
         Exit Function
 
 ErrorHandler:
-478     Call LogDatabaseError("Error en LoadCharacterFromDB: " & UserList(UserIndex).Name & ". " & Err.Number & " - " & Err.Description & ". Línea: " & Erl)
+478     Call LogDatabaseError("Error en LoadCharacterFromDB: " & UserList(UserIndex).name & ". " & Err.Number & " - " & Err.Description & ". Línea: " & Erl)
 
+End Function
+
+
+Public Function MaxCharacterForTier(ByVal tier As e_TipoUsuario)
+ Select Case tier
+        Case e_TipoUsuario.tAventurero
+                    MaxCharacterForTier = 3
+        Case e_TipoUsuario.tHeroe
+                    MaxCharacterForTier = 5
+        Case e_TipoUsuario.tLeyenda
+                    MaxCharacterForTier = 10
+        Case e_TipoUsuario.tNormal
+                    MaxCharacterForTier = 1
+        Case Else
+                   MaxCharacterForTier = 1
+ End Select
+End Function
+
+
+Public Function GetPatronTierFromAccountID(ByVal account_id) As e_TipoUsuario
+On Error GoTo ErrorHandler_GetPatronTierFromAccountID
+        GetPatronTierFromAccountID = e_TipoUsuario.tNormal
+
+        Dim RS As ADODB.Recordset
+        Set RS = Query("Select is_active_patron from account where id = ?", account_id)
+        If Not RS Is Nothing Then
+            Dim tipo_usuario_db As Long
+            tipo_usuario_db = RS!is_active_patron
+            Select Case tipo_usuario_db
+                Case patron_tier_aventurero
+                    GetPatronTierFromAccountID = e_TipoUsuario.tAventurero
+                Case patron_tier_heroe
+                    GetPatronTierFromAccountID = e_TipoUsuario.tHeroe
+                Case patron_tier_leyenda
+                    GetPatronTierFromAccountID = e_TipoUsuario.tLeyenda
+                Case Else
+                     GetPatronTierFromAccountID = e_TipoUsuario.tNormal
+            End Select
+        End If
+       Exit Function
+ErrorHandler_GetPatronTierFromAccountID:
+     Call LogDatabaseError("Error en GetPatronTierFromAccountID: " & account_id & ". " & Err.Number & " - " & Err.Description & ". Línea: " & Erl)
 End Function
 
 Public Sub LoadPatronCreditsFromDB(ByVal UserIndex As Integer)
