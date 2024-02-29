@@ -2,10 +2,6 @@
 
 Cambio archivo Configuracion.ini en repositorio de argentum20-server con exp y oro x1 ☑️ 
 
-Borrar Clanes y dejar guilds.inf default☑️ 
-
-Borrar Clanes FTP ☑️ 
-
 Borrar viejos backup FTP ☑️ 
 
 ToggleFeatures ☑️ 
@@ -18,6 +14,8 @@ Borrar contenido de GenteBanned.log y BanDetailed.dat  ☑️
 
 Borrar errores.log (los que hayan en carpeta logs) ☑️ 
 
+Configuracion de Pymmo para habilitar entrada de solo usuarios Patreon ☑️
+
 
 ### Hay que correr la siguiente query, esto no borra las cuentas de SQLITE.
 - Database.db
@@ -26,10 +24,14 @@ Utilizar Empty_Database.db y migrarla con comando `argentums20-assets\tools\Migr
 - ao20_gameserver_clone (MySql)
 ```
 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
-TRUNCATE TABLE `account`;
 TRUNCATE TABLE `attribute`;
 TRUNCATE TABLE `bank_item`;
 TRUNCATE TABLE `char_transfer_record`;
+TRUNCATE TABLE `guilds`;
+TRUNCATE TABLE `guilds_members`;
+TRUNCATE TABLE `guild_member_history`;
+TRUNCATE TABLE `guild_request`;
+TRUNCATE TABLE `guild_request_history`;
 TRUNCATE TABLE `inventory_item`;
 TRUNCATE TABLE `patreon_shop_audit`;
 TRUNCATE TABLE `pet`;
@@ -40,8 +42,30 @@ TRUNCATE TABLE `spell`;
 TRUNCATE TABLE `statistics_users_online`;
 TRUNCATE TABLE `tokens`;
 TRUNCATE TABLE `user`;
-TRUNCATE TABLE `mercadopago_account`;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+
+```
+
+- ao20 sqlite
+```
+DELETE FROM attribute;
+DELETE FROM bank_item;
+DELETE FROM char_transfer_record;
+DELETE FROM guilds;
+DELETE FROM guilds_members;
+DELETE FROM guild_member_history;
+DELETE FROM guild_request;
+DELETE FROM guild_request_history;
+DELETE FROM inventory_item;
+DELETE FROM patreon_shop_audit;
+DELETE FROM pet;
+DELETE FROM quest;
+DELETE FROM quest_done;
+DELETE FROM skillpoint;
+DELETE FROM spell;
+DELETE FROM statistics_users_online;
+DELETE FROM tokens;
+DELETE FROM user;
 ```
 
 - ao20_pymmo
