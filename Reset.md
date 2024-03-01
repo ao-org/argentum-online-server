@@ -48,11 +48,10 @@ SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 
 - ao20 sqlite
 ```
-DELETE FROM attribute;
 DELETE FROM bank_item;
 DELETE FROM char_transfer_record;
 DELETE FROM guilds;
-DELETE FROM guilds_members;
+DELETE FROM guild_members;
 DELETE FROM guild_member_history;
 DELETE FROM guild_request;
 DELETE FROM guild_request_history;
@@ -63,7 +62,6 @@ DELETE FROM quest;
 DELETE FROM quest_done;
 DELETE FROM skillpoint;
 DELETE FROM spell;
-DELETE FROM statistics_users_online;
 DELETE FROM tokens;
 DELETE FROM user;
 ```
