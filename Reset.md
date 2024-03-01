@@ -24,7 +24,6 @@ Utilizar Empty_Database.db y migrarla con comando `argentums20-assets\tools\Migr
 - ao20_gameserver_clone (MySql)
 ```
 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
-TRUNCATE TABLE `attribute`;
 TRUNCATE TABLE `bank_item`;
 TRUNCATE TABLE `char_transfer_record`;
 TRUNCATE TABLE `guilds`;
@@ -43,7 +42,6 @@ TRUNCATE TABLE `statistics_users_online`;
 TRUNCATE TABLE `tokens`;
 TRUNCATE TABLE `user`;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
-
 ```
 
 - ao20 sqlite
