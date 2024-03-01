@@ -62,6 +62,7 @@ DELETE FROM skillpoint;
 DELETE FROM spell;
 DELETE FROM tokens;
 DELETE FROM user;
+DELETE FROM punishment;
 ```
 
 - ao20_pymmo
