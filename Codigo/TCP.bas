@@ -1622,13 +1622,14 @@ Sub ResetUserSlot(ByVal UserIndex As Integer)
         With UserList(UserIndex)
 100         .ConnectionDetails.ConnIDValida = False
 102         .ConnectionDetails.ConnID = 0
-113         .Stats.Shield = 0
-104         If .Grupo.Lider.ArrayIndex = UserIndex Then
-106             Call FinalizarGrupo(UserIndex)
-            End If
+104         .Stats.Shield = 0
 
-108         If .Grupo.EnGrupo Then
-110             Call SalirDeGrupoForzado(UserIndex)
+106         If .Grupo.EnGrupo Then
+108             If .Grupo.Lider.ArrayIndex = UserIndex Then
+110                 Call FinalizarGrupo(UserIndex)
+                Else
+111                 Call SalirDeGrupoForzado(UserIndex)
+                End If
             End If
         
             If m_NameIndex.Exists(UCase(.name)) Then
