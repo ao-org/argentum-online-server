@@ -193,9 +193,9 @@ Public Sub EcharMiembro(ByVal UserIndex As Integer, ByVal Indice As Byte)
 156         Call RefreshCharStatus(UserIndexEchar)
             .Grupo.ID = -1
             
-            If MapInfo(.pos.Map).Salida.Map <> 0 Then
-                Call WriteConsoleMsg(UserIndex, "Debes estar en un grupo para permanecer en este mapa.", e_FontTypeNames.FONTTYPE_INFO)
-                Call WarpUserChar(UserIndex, MapInfo(.pos.Map).Salida.Map, MapInfo(.pos.Map).Salida.x, MapInfo(.pos.Map).Salida.y, True)
+157         If MapInfo(.pos.Map).OnlyGroups And MapInfo(.pos.Map).Salida.Map <> 0 Then
+                Call WriteConsoleMsg(UserIndexEchar, "Debes estar en un grupo para permanecer en este mapa.", e_FontTypeNames.FONTTYPE_INFO)
+                Call WarpUserChar(UserIndexEchar, MapInfo(.pos.Map).Salida.Map, MapInfo(.pos.Map).Salida.x, MapInfo(.pos.Map).Salida.y, True)
             End If
             
         End With
@@ -211,6 +211,12 @@ Public Sub EcharMiembro(ByVal UserIndex As Integer, ByVal Indice As Byte)
 172             Call SetUserRef(.Miembros(1), 0)
                 .ID = -1
                 Call modSendData.SendData(ToIndex, UserIndex, PrepareUpdateGroupInfo(UserIndex))
+                
+173             Dim LiderMap As Integer: LiderMap = UserList(UserIndex).pos.Map
+                If MapInfo(LiderMap).OnlyGroups And MapInfo(LiderMap).Salida.Map <> 0 Then
+                    Call WriteConsoleMsg(UserIndex, "Debes estar en un grupo para permanecer en este mapa.", e_FontTypeNames.FONTTYPE_INFO)
+                    Call WarpUserChar(UserIndex, MapInfo(LiderMap).Salida.Map, MapInfo(LiderMap).Salida.x, MapInfo(LiderMap).Salida.y, True)
+                End If
             End If
         End With
 174     Call RefreshCharStatus(UserIndex)
@@ -279,6 +285,12 @@ Public Sub SalirDeGrupo(ByVal UserIndex As Integer)
 150             Call SetUserRef(UserList(.Grupo.Lider.ArrayIndex).Grupo.Miembros(1), 0)
 152             Call RefreshCharStatus(.Grupo.Lider.ArrayIndex)
                 Call modSendData.SendData(ToIndex, .Grupo.Lider.ArrayIndex, PrepareUpdateGroupInfo(.Grupo.Lider.ArrayIndex))
+                
+153             Dim LiderMap As Integer: LiderMap = UserList(.Grupo.Lider.ArrayIndex).pos.Map
+                If MapInfo(LiderMap).OnlyGroups And MapInfo(LiderMap).Salida.Map <> 0 Then
+                    Call WriteConsoleMsg(.Grupo.Lider.ArrayIndex, "Debes estar en un grupo para permanecer en este mapa.", e_FontTypeNames.FONTTYPE_INFO)
+                    Call WarpUserChar(.Grupo.Lider.ArrayIndex, MapInfo(LiderMap).Salida.Map, MapInfo(LiderMap).Salida.x, MapInfo(LiderMap).Salida.y, True)
+                End If
             End If
 
 154         Call WriteUbicacion(UserIndex, 1, 0)
@@ -287,7 +299,7 @@ Public Sub SalirDeGrupo(ByVal UserIndex As Integer)
             
             Call modSendData.SendData(ToIndex, UserIndex, PrepareUpdateGroupInfo(UserIndex))
             
-            If MapInfo(.pos.Map).Salida.Map <> 0 Then
+157         If MapInfo(.pos.Map).OnlyGroups And MapInfo(.pos.Map).Salida.Map <> 0 Then
                 Call WriteConsoleMsg(UserIndex, "Debes estar en un grupo para permanecer en este mapa.", e_FontTypeNames.FONTTYPE_INFO)
                 Call WarpUserChar(UserIndex, MapInfo(.pos.Map).Salida.Map, MapInfo(.pos.Map).Salida.x, MapInfo(.pos.Map).Salida.y, True)
             End If
@@ -347,9 +359,15 @@ Public Sub SalirDeGrupoForzado(ByVal UserIndex As Integer)
 144             Call SetUserRef(UserList(.Grupo.Lider.ArrayIndex).Grupo.Miembros(1), 0)
                 UserList(.Grupo.Lider.ArrayIndex).Grupo.ID = -1
 146             Call RefreshCharStatus(.Grupo.Lider.ArrayIndex)
+
+147             Dim LiderMap As Integer: LiderMap = UserList(.Grupo.Lider.ArrayIndex).pos.Map
+                If MapInfo(LiderMap).OnlyGroups And MapInfo(LiderMap).Salida.Map <> 0 Then
+                    Call WriteConsoleMsg(.Grupo.Lider.ArrayIndex, "Debes estar en un grupo para permanecer en este mapa.", e_FontTypeNames.FONTTYPE_INFO)
+                    Call WarpUserChar(.Grupo.Lider.ArrayIndex, MapInfo(LiderMap).Salida.Map, MapInfo(LiderMap).Salida.x, MapInfo(LiderMap).Salida.y, True)
+                End If
             End If
             
-            If MapInfo(.pos.Map).Salida.Map <> 0 Then
+            If MapInfo(.pos.Map).OnlyGroups And MapInfo(.pos.Map).Salida.Map <> 0 Then
                 Call WriteConsoleMsg(UserIndex, "Debes estar en un grupo para permanecer en este mapa.", e_FontTypeNames.FONTTYPE_INFO)
                 Call WarpUserChar(UserIndex, MapInfo(.pos.Map).Salida.Map, MapInfo(.pos.Map).Salida.x, MapInfo(.pos.Map).Salida.y, True)
             End If
@@ -362,27 +380,47 @@ SalirDeGrupoForzado_Err:
         
 End Sub
 
-Public Sub FinalizarGrupo(ByVal UserIndex As Integer)
+Public Sub FinalizarGrupo(ByVal LiderIndex As Integer)
 On Error GoTo FinalizarGrupo_Err
-        Dim i As Long
-100     With UserList(UserIndex)
-102         For i = 2 To .Grupo.CantidadMiembros
-104             UserList(.Grupo.Miembros(i).ArrayIndex).Grupo.EnGrupo = False
-106             Call SetUserRef(UserList(.Grupo.Miembros(i).ArrayIndex).Grupo.Lider, 0)
-108             Call SetUserRef(UserList(.Grupo.Miembros(i).ArrayIndex).Grupo.PropuestaDe, 0)
-110             Call WriteUbicacion(UserList(.Grupo.Lider.ArrayIndex).Grupo.Miembros(i).ArrayIndex, i, 0)
-112             Call WriteConsoleMsg(.Grupo.Miembros(i).ArrayIndex, "El líder ha abandonado el grupo. El grupo se disuelve.", e_FontTypeNames.FONTTYPE_New_GRUPO)
-114             Call RefreshCharStatus(.Grupo.Miembros(i).ArrayIndex)
-116             Call WriteUbicacion(UserList(.Grupo.Lider.ArrayIndex).Grupo.Miembros(i).ArrayIndex, 1, 0)
-118             .Grupo.EnGrupo = False
+
+        Dim i As Integer
+        For i = 1 To UserList(LiderIndex).Grupo.CantidadMiembros
+            Dim MemberIndex As Integer: MemberIndex = UserList(LiderIndex).Grupo.Miembros(i).ArrayIndex
+
+            With UserList(MemberIndex)
+
+                Dim j As Integer
+                For j = 1 To UserList(LiderIndex).Grupo.CantidadMiembros
+                    Call WriteUbicacion(MemberIndex, j, 0)
+                Next j
+
+                Call modSendData.SendData(ToIndex, MemberIndex, PrepareUpdateGroupInfo(MemberIndex))
+                
+                .Grupo.EnGrupo = False
                 .Grupo.ID = -1
-                Call modSendData.SendData(ToIndex, .Grupo.Miembros(i).ArrayIndex, PrepareUpdateGroupInfo(.Grupo.Miembros(i).ArrayIndex))
-                If MapInfo(.pos.Map).Salida.Map <> 0 Then
-                    Call WriteConsoleMsg(UserIndex, "Debes estar en un grupo para permanecer en este mapa.", e_FontTypeNames.FONTTYPE_INFO)
-                    Call WarpUserChar(UserIndex, MapInfo(.pos.Map).Salida.Map, MapInfo(.pos.Map).Salida.x, MapInfo(.pos.Map).Salida.y, True)
+
+                Call SetUserRef(.Grupo.Lider, 0)
+                Call SetUserRef(.Grupo.PropuestaDe, 0)
+
+                If MemberIndex = LiderIndex Then
+                    Call WriteConsoleMsg(LiderIndex, "Has disuelto el grupo.", e_FontTypeNames.FONTTYPE_INFOIAO)
+                Else
+                    Call WriteConsoleMsg(MemberIndex, "El líder ha abandonado el grupo. El grupo se disuelve.", e_FontTypeNames.FONTTYPE_New_GRUPO)
                 End If
-120         Next i
-        End With
+
+                If MapInfo(.pos.Map).OnlyGroups And MapInfo(.pos.Map).Salida.Map <> 0 Then
+                    Call WriteConsoleMsg(MemberIndex, "Debes estar en un grupo para permanecer en este mapa.", e_FontTypeNames.FONTTYPE_INFO)
+                    Call WarpUserChar(MemberIndex, MapInfo(.pos.Map).Salida.Map, MapInfo(.pos.Map).Salida.x, MapInfo(.pos.Map).Salida.y, True)
+                Else
+                    Call RefreshCharStatus(MemberIndex)
+                End If
+
+            End With
+
+        Next i
+        
+        UserList(LiderIndex).Grupo.CantidadMiembros = 0
+
         Exit Sub
 
 FinalizarGrupo_Err:

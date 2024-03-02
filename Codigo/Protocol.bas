@@ -3368,6 +3368,9 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                     End If
 
 616             Case e_Skill.Grupo
+
+617                 Call LookatTile(UserIndex, .Pos.map, X, Y)
+
                     'Target whatever is in that tile
 618                 tU = .flags.targetUser.ArrayIndex
                     
@@ -9086,31 +9089,15 @@ Private Sub HandleAbandonarGrupo(ByVal UserIndex As Integer)
         On Error GoTo HandleAbandonarGrupo_Err
 
 100     With UserList(UserIndex)
-
         
 102         Call Reader.ReadInt16
         
 104         If UserList(userIndex).Grupo.Lider.ArrayIndex = userIndex Then
-            
 106             Call FinalizarGrupo(UserIndex)
-
-                Dim i As Byte
-            
-108             For i = 2 To UserList(UserIndex).Grupo.CantidadMiembros
-110                 Call WriteUbicacion(UserIndex, i, 0)
-112             Next i
-
-114             UserList(UserIndex).Grupo.CantidadMiembros = 0
-116             UserList(UserIndex).Grupo.EnGrupo = False
-                UserList(UserIndex).Grupo.Id = -1
-118             Call SetUserRef(UserList(userIndex).Grupo.Lider, 0)
-120             Call SetUserRef(UserList(userIndex).Grupo.PropuestaDe, 0)
-122             Call WriteConsoleMsg(UserIndex, "Has disuelto el grupo.", e_FontTypeNames.FONTTYPE_INFOIAO)
-124             Call RefreshCharStatus(UserIndex)
-                Call modSendData.SendData(ToIndex, UserIndex, PrepareUpdateGroupInfo(UserIndex))
             Else
 126             Call SalirDeGrupo(UserIndex)
             End If
+
         End With
         Exit Sub
 
