@@ -319,6 +319,7 @@ Sub ResetNpcFlags(ByVal NpcIndex As Integer)
 102         .AfectaParalisis = 0
 104         .AguaValida = 0
 106         .AttackedBy = vbNullString
+107         .AttackedTime = 0
 108         .AttackedFirstBy = vbNullString
 112         .backup = 0
 116         .Domable = 0
@@ -1674,6 +1675,7 @@ Sub DoFollow(ByVal NpcIndex As Integer, ByVal UserName As String)
                 player = NameIndex(username)
                 If IsValidUserRef(player) Then
 114                 .flags.AttackedBy = username
+115                 .flags.AttackedTime = GetTickCount
 116                 .targetUser = player
 118                 .flags.Follow = True
 120                 Call SetMovement(NpcIndex, e_TipoAI.NpcDefensa)
@@ -2134,36 +2136,26 @@ UserCanAttackNpc.TurnPK = False
          End If
          
          If NpcList(NpcIndex).flags.team = 0 Then
-            If NpcList(NpcIndex).flags.AttackedBy <> "" Then
-               Dim CurrentOwner As t_UserReference
-               Dim CurrentOwnerIndex As Integer
-               Dim AttackedNpcIndex As Integer
-               
-               CurrentOwner = NameIndex(NpcList(NpcIndex).flags.AttackedBy)
-               If IsValidUserRef(CurrentOwner) Then
-                   CurrentOwnerIndex = CurrentOwner.ArrayIndex
-                   
-                   If CurrentOwnerIndex <> UserIndex And IsValidNpcRef(UserList(CurrentOwnerIndex).flags.NPCAtacado) Then
-                       If UserList(CurrentOwnerIndex).flags.NPCAtacado.ArrayIndex = NpcIndex And _
-                          UserList(CurrentOwnerIndex).flags.Muerto = 0 And _
-                          (Status(CurrentOwnerIndex) = Ciudadano Or Status(CurrentOwnerIndex) = Armada Or Status(CurrentOwnerIndex) = Consejo) And _
-                          Distancia(UserList(CurrentOwnerIndex).pos, UserList(UserIndex).pos) <= 12 And _
-                          (UserList(UserIndex).GuildIndex = 0 Or UserList(UserIndex).GuildIndex <> UserList(CurrentOwnerIndex).GuildIndex) And _
-                          (UserList(UserIndex).Grupo.EnGrupo = False Or UserList(UserIndex).Grupo.id <> UserList(CurrentOwnerIndex).Grupo.id) Then
-                           
-                           
-                           If UserList(UserIndex).flags.Seguro Then
-                               UserCanAttackNpc.result = eRemoveSafeCitizenNpc
-                               Exit Function
-                           Else
-                               UserCanAttackNpc.TurnPK = True
-                               UserCanAttackNpc.CanAttack = True
-                               UserCanAttackNpc.result = eAttackCitizenNpc
-                               Exit Function
-                           End If
-                       End If
-                   End If
-               End If
+            Dim CurrentOwnerIndex As Integer: CurrentOwnerIndex = GetOwnedBy(NpcIndex)
+            If CurrentOwnerIndex <> 0 Then
+                If CurrentOwnerIndex <> UserIndex And IsValidNpcRef(UserList(CurrentOwnerIndex).flags.NPCAtacado) Then
+                    If UserList(CurrentOwnerIndex).flags.NPCAtacado.ArrayIndex = NpcIndex And _
+                        UserList(CurrentOwnerIndex).flags.Muerto = 0 And _
+                        (Status(CurrentOwnerIndex) = Ciudadano Or Status(CurrentOwnerIndex) = Armada Or Status(CurrentOwnerIndex) = consejo) And _
+                        (UserList(UserIndex).GuildIndex = 0 Or UserList(UserIndex).GuildIndex <> UserList(CurrentOwnerIndex).GuildIndex) And _
+                        (UserList(UserIndex).Grupo.EnGrupo = False Or UserList(UserIndex).Grupo.Id <> UserList(CurrentOwnerIndex).Grupo.Id) Then
+                        
+                        If UserList(UserIndex).flags.Seguro Then
+                            UserCanAttackNpc.Result = eRemoveSafeCitizenNpc
+                            Exit Function
+                        Else
+                            UserCanAttackNpc.TurnPK = True
+                            UserCanAttackNpc.CanAttack = True
+                            UserCanAttackNpc.Result = eAttackCitizenNpc
+                            Exit Function
+                        End If
+                    End If
+                End If
            End If
         End If
      End If
@@ -2386,3 +2378,30 @@ Public Function GetDefenseBonus(ByVal NpcIndex As Integer) As Integer
     GetDefenseBonus = NpcList(NpcIndex).Modifiers.DefenseBonus
 End Function
 
+' Retorna el usuario que esta atacando al NPC actualmente (medido con tiempo)
+Public Function GetOwnedBy(ByVal NpcIndex As Integer) As Integer
+    GetOwnedBy = 0
+    With NpcList(NpcIndex).flags
+        If .AttackedBy = vbNullString Then Exit Function
+        If GetTickCount - .AttackedTime > IntervaloNpcOwner Then Exit Function
+        Dim Attacker As t_UserReference: Attacker = NameIndex(.AttackedBy)
+        If Not IsValidUserRef(Attacker) Then Exit Function
+        GetOwnedBy = Attacker.ArrayIndex
+    End With
+End Function
+
+' Retorna si un NPC puede atacar un usuario diferente al que lo esta atacando
+Public Function CanAttackNotOwner(ByVal NpcIndex As Integer, ByVal UserIndex As Integer) As Boolean
+    Dim AttackResult As t_AttackInteractionResult
+    AttackResult = UserCanAttackNpc(UserIndex, NpcIndex)
+    
+    ' Si el usuario puede atacar al NPC
+    If AttackResult.CanAttack Then
+        ' Lo atacamos solo si puede atacar sin hacerse PK (no lo forzamos a hacerse PK)
+        CanAttackNotOwner = AttackResult.TurnPK
+    Else
+        ' En caso que el usuario no pueda atacar al NPC, este debe ignorarlo a el
+        ' Excepto que no pueda atacar por los siguientes motivos: esta montado, esta fuera de su campo de vision
+        CanAttackNotOwner = AttackResult.Result = eMounted Or AttackResult.Result = eOutOfRange
+    End If
+End Function

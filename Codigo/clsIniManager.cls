@@ -371,9 +371,10 @@ End Sub
 '
 ' @param    Main The name of the main section in which we will be searching.
 ' @param    key The key of the value we are looking for.
+' @param    DefaultValue Default value if key is not found.
 ' @returns  The value asociated with the given key under the requeted main section of the INI file or a null string if it's not found.
 
-Public Function GetValue(ByVal Main As String, ByVal Key As String)
+Public Function GetValue(ByVal Main As String, ByVal key As String, Optional ByVal DefaultValue As String = "") As String
     
     On Error GoTo GetValue_Err
     
@@ -385,7 +386,6 @@ Public Function GetValue(ByVal Main As String, ByVal Key As String)
     '**************************************************************
     Dim i As Long
     Dim j As Long
-    Dim retval As String
     
     'Search for the main node
     i = FindMain(UCase$(Main))
@@ -396,9 +396,11 @@ Public Function GetValue(ByVal Main As String, ByVal Key As String)
         j = FindKey(fileData(i), UCase$(Key))
         
         'If we found it we return it
-        If j >= 0 Then retval = fileData(i).values(j).Value
-
-        GetValue = retval
+        If j >= 0 Then
+            GetValue = fileData(i).values(j).Value
+        Else
+            GetValue = DefaultValue
+        End If
 
     End If
 

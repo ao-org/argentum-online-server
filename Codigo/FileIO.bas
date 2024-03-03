@@ -2701,6 +2701,7 @@ Sub LoadIntervalos()
         'TODO : Agregar estos intervalos al form!!!
 206     IntervaloMagiaGolpe = val(Lector.GetValue("INTERVALOS", "IntervaloMagiaGolpe"))
 208     IntervaloGolpeMagia = val(Lector.GetValue("INTERVALOS", "IntervaloGolpeMagia"))
+209     IntervaloNpcOwner = val(Lector.GetValue("INTERVALOS", "IntervaloNpcOwner", "10000"))
     
         'frmMain.tLluvia.Interval = val(Lector.GetValue("INTERVALOS", "IntervaloPerdidaStaminaLluvia"))
         'FrmInterv.txtIntervaloPerdidaStaminaLluvia.Text = frmMain.tLluvia.Interval
