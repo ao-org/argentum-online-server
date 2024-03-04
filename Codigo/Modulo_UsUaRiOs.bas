@@ -1934,7 +1934,10 @@ Sub NPCAtacado(ByVal NpcIndex As Integer, ByVal UserIndex As Integer, Optional B
 104     If Not IsSet(NpcList(npcIndex).flags.StatusMask, eTaunted) And NpcList(npcIndex).Movement <> Estatico And NpcList(npcIndex).flags.AttackedFirstBy = vbNullString Then
 106         Call SetUserRef(NpcList(npcIndex).TargetUser, UserIndex)
 108         NpcList(NpcIndex).Hostile = 1
-110         If AffectsOwner Then NpcList(NpcIndex).flags.AttackedBy = UserList(UserIndex).name
+110         If AffectsOwner Then
+                NpcList(NpcIndex).flags.AttackedBy = UserList(UserIndex).name
+                NpcList(NpcIndex).flags.AttackedTime = GetTickCount
+            End If
         End If
         
         'Guarda el NPC que estas atacando ahora.

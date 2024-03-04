@@ -68,6 +68,7 @@ Public Sub Setup(ByVal SourceIndex As Integer, ByVal SourceType As e_ReferenceTy
         If SourceType = eUser Then
             Call SetUserRef(NpcList(TargetIndex).TargetUser, SourceIndex)
             NpcList(TargetIndex).flags.AttackedBy = UserList(SourceIndex).name
+            NpcList(TargetIndex).flags.AttackedTime = GetTickCount
         Else
             Call SetNpcRef(NpcList(TargetIndex).TargetNPC, SourceIndex)
         End If

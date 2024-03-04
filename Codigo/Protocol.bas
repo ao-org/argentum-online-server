@@ -3294,7 +3294,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                                 Exit Sub
                             End If
                             
-564                         If LenB(NpcList(tN).flags.AttackedBy) <> 0 Then
+564                         If GetOwnedBy(tN) <> 0 Then
 566                             Call WriteConsoleMsg(UserIndex, "No puedes domar una criatura que esta luchando con un jugador.", e_FontTypeNames.FONTTYPE_INFO)
                                 Exit Sub
                             End If

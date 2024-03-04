@@ -896,6 +896,7 @@ Private Sub Command2_Click()
 140     Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloTrabajarExtraer", CStr(IntervaloTrabajarExtraer))
 142     Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloTrabajarConstruir", CStr(IntervaloTrabajarConstruir))
 144     Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloUserPuedeAtacar", CStr(IntervaloUserPuedeAtacar))
+145     Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloNpcOwner", CStr(IntervaloNpcOwner))
         'Call WriteVar(IniPath & "intervalo.ini", "INTERVALOS", "IntervaloPerdidaStaminaLluvia", frmMain.tLluvia.Interval)
 
 146     MsgBox "Los intervalos se han guardado sin problemas"

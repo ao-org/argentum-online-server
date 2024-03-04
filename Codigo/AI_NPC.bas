@@ -600,9 +600,7 @@ Private Sub AI_AtacarUsuarioObjetivo(ByVal AtackerNpcIndex As Integer)
                     Call AnimacionIdle(AtackerNpcIndex, True)
                     If UserIndexFront > 0 Then
                         If UserList(UserIndexFront).flags.Muerto = 0 Then
-                            If UserList(UserIndexFront).Faccion.Status = 1 And (.NPCtype = e_NPCType.GuardiaReal) Then
-                                
-                            Else
+                            If EsEnemigo(AtackerNpcIndex, UserIndexFront) Then
                                 Call NpcAtacaUser(AtackerNpcIndex, UserIndexFront, tHeading)
                             End If
                         End If
@@ -1281,22 +1279,26 @@ Private Function EsEnemigo(ByVal NpcIndex As Integer, ByVal UserIndex As Integer
 
 100     If NpcIndex = 0 Or UserIndex = 0 Then Exit Function
 
-102     With NpcList(NpcIndex)
+        EsEnemigo = True
 
+102     With NpcList(NpcIndex)
+            ' Si el NPC tiene un atacante
 104         If .flags.AttackedBy <> vbNullString Then
+                ' Si el usuario actual es el atacante
 106             EsEnemigo = (UserIndex = NameIndex(.flags.AttackedBy).ArrayIndex)
 108             If EsEnemigo Then Exit Function
+                ' Si no es el atacante, preguntamos si el NPC puede atacarlo
+109             EsEnemigo = CanAttackNotOwner(NpcIndex, UserIndex)
             End If
 
 110         Select Case .flags.AIAlineacion
                 Case e_Alineacion.Real
-112                 EsEnemigo = (Status(UserIndex) Mod 2) <> 1
+112                 EsEnemigo = EsEnemigo And (Status(UserIndex) Mod 2) <> 1
 
 114             Case e_Alineacion.Caos
-116                 EsEnemigo = (Status(UserIndex) Mod 2) <> 0
+116                 EsEnemigo = EsEnemigo And (Status(UserIndex) Mod 2) <> 0
 
 118             Case e_Alineacion.ninguna
-120                 EsEnemigo = True
                     ' Ok. No hay nada especial para hacer, cualquiera puede ser enemigo!
 
             End Select

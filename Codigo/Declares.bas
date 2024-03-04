@@ -2553,6 +2553,7 @@ Public Type t_NPCFlags
     ' UseAINow As Boolean No se usa, borrar de la DB!!!!
     Sound As Integer
     AttackedBy As String
+    AttackedTime As Long
     AttackedFirstBy As String
     backup As Byte
     RespawnOrigPos As Byte
