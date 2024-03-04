@@ -1936,7 +1936,7 @@ Sub NPCAtacado(ByVal NpcIndex As Integer, ByVal UserIndex As Integer, Optional B
 108         NpcList(NpcIndex).Hostile = 1
 110         If AffectsOwner Then
                 NpcList(NpcIndex).flags.AttackedBy = UserList(UserIndex).name
-                NpcList(NpcIndex).flags.AttackedTime = GetTickCount
+                NpcList(NpcIndex).flags.AttackedTime = GlobalFrameTime
             End If
         End If
         

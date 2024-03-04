@@ -2081,7 +2081,7 @@ Sub AllMascotasAtacanUser(ByVal victim As Integer, ByVal Maestro As Integer)
                     If IsValidNpcRef(.MascotasIndex(iCount)) Then
 108                     If IsSet(NpcList(mascotaIndex).flags.BehaviorFlags, e_BehaviorFlags.eAttackUsers) Then
 110                         NpcList(mascotaIndex).flags.AttackedBy = UserList(victim).Name
-111                         NpcList(mascotaIndex).flags.AttackedTime = GetTickCount
+111                         NpcList(mascotaIndex).flags.AttackedTime = GlobalFrameTime
 112                         Call SetUserRef(NpcList(mascotaIndex).TargetUser, victim)
 114                         Call SetMovement(mascotaIndex, e_TipoAI.NpcDefensa)
 116                         NpcList(mascotaIndex).Hostile = 0
@@ -2127,7 +2127,7 @@ Public Sub AllMascotasAtacanNPC(ByVal NpcIndex As Integer, ByVal UserIndex As In
 110                         Call SetNpcRef(.TargetNPC, NpcIndex)
 112                         Call SetMovement(mascotaIdx, e_TipoAI.NpcAtacaNpc)
                             NpcList(NpcIndex).flags.AttackedBy = UserList(UserIndex).name
-                            NpcList(NpcIndex).flags.AttackedTime = GetTickCount
+                            NpcList(NpcIndex).flags.AttackedTime = GlobalFrameTime
                             Call SetNpcRef(UserList(UserIndex).flags.NPCAtacado, NpcIndex)
                         End If
                     End With
