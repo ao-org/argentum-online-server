@@ -2398,7 +2398,7 @@ Public Function CanAttackNotOwner(ByVal NpcIndex As Integer, ByVal UserIndex As 
     ' Si el usuario puede atacar al NPC
     If AttackResult.CanAttack Then
         ' Lo atacamos solo si puede atacar sin hacerse PK (no lo forzamos a hacerse PK)
-        CanAttackNotOwner = AttackResult.TurnPK
+        CanAttackNotOwner = Not AttackResult.TurnPK
     Else
         ' En caso que el usuario no pueda atacar al NPC, este debe ignorarlo a el
         ' Excepto que no pueda atacar por los siguientes motivos: esta montado, esta fuera de su campo de vision
