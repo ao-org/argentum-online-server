@@ -1675,7 +1675,7 @@ Sub DoFollow(ByVal NpcIndex As Integer, ByVal UserName As String)
                 player = NameIndex(username)
                 If IsValidUserRef(player) Then
 114                 .flags.AttackedBy = username
-115                 .flags.AttackedTime = GetTickCount
+115                 .flags.AttackedTime = GlobalFrameTime
 116                 .targetUser = player
 118                 .flags.Follow = True
 120                 Call SetMovement(NpcIndex, e_TipoAI.NpcDefensa)
@@ -2383,7 +2383,7 @@ Public Function GetOwnedBy(ByVal NpcIndex As Integer) As Integer
     GetOwnedBy = 0
     With NpcList(NpcIndex).flags
         If .AttackedBy = vbNullString Then Exit Function
-        If GetTickCount - .AttackedTime > IntervaloNpcOwner Then Exit Function
+        If GlobalFrameTime - .AttackedTime > IntervaloNpcOwner Then Exit Function
         Dim Attacker As t_UserReference: Attacker = NameIndex(.AttackedBy)
         If Not IsValidUserRef(Attacker) Then Exit Function
         GetOwnedBy = Attacker.ArrayIndex
@@ -2398,7 +2398,7 @@ Public Function CanAttackNotOwner(ByVal NpcIndex As Integer, ByVal UserIndex As 
     ' Si el usuario puede atacar al NPC
     If AttackResult.CanAttack Then
         ' Lo atacamos solo si puede atacar sin hacerse PK (no lo forzamos a hacerse PK)
-        CanAttackNotOwner = AttackResult.TurnPK
+        CanAttackNotOwner = Not AttackResult.TurnPK
     Else
         ' En caso que el usuario no pueda atacar al NPC, este debe ignorarlo a el
         ' Excepto que no pueda atacar por los siguientes motivos: esta montado, esta fuera de su campo de vision
