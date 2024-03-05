@@ -1568,6 +1568,7 @@ WritePlayWave_Err:
         '</EhFooter>
 End Sub
 Public Sub WritePlayWaveStep(ByVal UserIndex As Integer, _
+                         ByVal CharIndex As Integer, _
                          ByVal grh As Long, _
                          ByVal grh2 As Long, _
                          ByVal distance As Byte, _
@@ -1577,8 +1578,9 @@ Public Sub WritePlayWaveStep(ByVal UserIndex As Integer, _
         On Error GoTo WritePlayWaveStep_Err
         '</EhHeader>
 100     Call Writer.WriteInt16(ServerPacketID.ePlayWaveStep)
-102     Call Writer.WriteInt32(grh)
-        Call Writer.WriteInt32(grh2)
+102     Call Writer.WriteInt16(CharIndex)
+104     Call Writer.WriteInt32(grh)
+106     Call Writer.WriteInt32(grh2)
 108     Call Writer.WriteInt8(distance)
 109     Call Writer.WriteInt16(balance)
 110     Call Writer.WriteBool(step)
