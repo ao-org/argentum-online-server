@@ -1547,23 +1547,21 @@ Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As e_Heading) A
                             If .flags.invisible + .flags.Oculto > 0 And .flags.Navegando = 0 Then
                                 For LoopC = 1 To ConnGroups(UserList(UserIndex).pos.Map).CountEntrys
                                     tempIndex = ConnGroups(UserList(UserIndex).pos.Map).UserEntrys(LoopC)
-                                    If tempIndex <> UserIndex Then
-                                        If UserList(tempIndex).AreasInfo.AreaReciveX And UserList(UserIndex).AreasInfo.AreaPerteneceX Then  'Esta en el area?
-                                            If UserList(tempIndex).AreasInfo.AreaReciveY And UserList(UserIndex).AreasInfo.AreaPerteneceY Then
-                                                If UserList(tempIndex).ConnectionDetails.ConnIDValida Then
-                                                    If UserList(tempIndex).flags.Muerto = 0 Or MapInfo(UserList(tempIndex).pos.Map).Seguro = 1 Then
-                                                        If Not CheckGuildSend(UserList(UserIndex), UserList(tempIndex)) Then
-                                                            If .Counters.timeFx + .Counters.timeChat = 0 Then
-                                                                If Distancia(nPos, UserList(tempIndex).Pos) > DISTANCIA_ENVIO_DATOS Then
-                                                                    'Mandamos los pasos para los pjs q estan lejos para que simule que caminen.
-                                                                    'Mando tambien el char para q lo borre
-                                                                    Call WritePlayWaveStep(tempIndex, .Char.CharIndex, _
-                                                                        MapData(nPos.map, nPos.X, nPos.Y).Graphic(1), MapData(nPos.map, nPos.X, nPos.Y).Graphic(2), _
-                                                                        Distance(nPos.X, nPos.Y, UserList(tempIndex).Pos.X, UserList(tempIndex).Pos.Y), _
-                                                                        Sgn(nPos.X - UserList(tempIndex).Pos.X), .flags.stepToggle)
-                                                                Else
-                                                                    Call WritePosUpdateChar(tempIndex, nPos.X, nPos.Y, .Char.CharIndex)
-                                                                End If
+                                    If tempIndex <> UserIndex And Not EsGM(tempIndex) Then
+                                        If Abs(nPos.X - UserList(tempIndex).pos.X) <= RANGO_VISION_X And Abs(nPos.Y - UserList(tempIndex).pos.Y) <= RANGO_VISION_Y Then
+                                            If UserList(tempIndex).ConnectionDetails.ConnIDValida Then
+                                                If UserList(tempIndex).flags.Muerto = 0 Or MapInfo(UserList(tempIndex).pos.map).Seguro = 1 Then
+                                                    If Not CheckGuildSend(UserList(UserIndex), UserList(tempIndex)) Then
+                                                        If .Counters.timeFx + .Counters.timeChat = 0 Then
+                                                            If Distancia(nPos, UserList(tempIndex).pos) > DISTANCIA_ENVIO_DATOS Then
+                                                                'Mandamos los pasos para los pjs q estan lejos para que simule que caminen.
+                                                                'Mando tambien el char para q lo borre
+                                                                Call WritePlayWaveStep(tempIndex, .Char.charindex, _
+                                                                    MapData(nPos.map, nPos.X, nPos.Y).Graphic(1), MapData(nPos.map, nPos.X, nPos.Y).Graphic(2), _
+                                                                    Distance(nPos.X, nPos.Y, UserList(tempIndex).pos.X, UserList(tempIndex).pos.Y), _
+                                                                    Sgn(nPos.X - UserList(tempIndex).pos.X), .flags.stepToggle)
+                                                            Else
+                                                                Call WritePosUpdateChar(tempIndex, nPos.X, nPos.Y, .Char.charindex)
                                                             End If
                                                         End If
                                                     End If
@@ -1579,7 +1577,7 @@ Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As e_Heading) A
                             For X = nPos.X - DISTANCIA_ENVIO_DATOS To nPos.X + DISTANCIA_ENVIO_DATOS
                                 For y = nPos.y - DISTANCIA_ENVIO_DATOS To nPos.y + DISTANCIA_ENVIO_DATOS
                                     tempIndex = MapData(.Pos.map, X, y).UserIndex
-                                    If tempIndex > 0 And tempIndex <> UserIndex Then
+                                    If tempIndex > 0 And tempIndex <> UserIndex And Not EsGM(tempIndex) Then
                                         If UserList(tempIndex).flags.invisible + UserList(tempIndex).flags.Oculto > 0 And UserList(tempIndex).flags.Navegando = 0 And (.GuildIndex = 0 Or .GuildIndex <> UserList(tempIndex).GuildIndex Or modGuilds.NivelDeClan(.GuildIndex) < 6) Then
                                             Call WritePosUpdateChar(UserIndex, X, y, UserList(tempIndex).Char.charindex)
                                         End If
