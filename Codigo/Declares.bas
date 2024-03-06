@@ -1630,7 +1630,19 @@ Public Type t_ObjData
     MaxDef As Integer ' Armaduras
     
     Ropaje As Integer 'Indice del grafico del ropaje
-    
+    RopajeHumano As Integer
+    RopajeElfo As Integer
+    RopajeElfoOscuro As Integer
+    RopajeEnano As Integer
+    RopajeOrco As Integer
+    RopajeGnomo As Integer
+    RopajeHumana As Integer
+    RopajeElfa As Integer
+    RopajeElfaOscura As Integer
+    RopajeEnana As Integer
+    RopajeOrca As Integer
+    RopajeGnoma As Integer
+
     WeaponAnim As Integer ' Apunta a una anim de armas
     ShieldAnim As Integer ' Apunta a una anim de escudo
     CascoAnim As Integer

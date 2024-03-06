@@ -413,7 +413,7 @@ Sub RellenarInventario(ByVal UserIndex As String)
 240          NumItems = NumItems + 1
 
             ' Animación según raza
-242          .Char.Body = ObjData(.Invent.ArmourEqpObjIndex).Ropaje
+242          .Char.Body = ObtenerRopaje(UserIndex, ObjData(.Invent.ArmourEqpObjIndex))
         
             ' Comida y bebida
 244         .invent.Object(NumItems).ObjIndex = 3684 ' Manzana

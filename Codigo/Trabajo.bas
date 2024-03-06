@@ -569,7 +569,7 @@ Public Sub DoNavega(ByVal UserIndex As Integer, _
 160                 .Char.Head = .OrigChar.Head
         
 162                 If .Invent.ArmourEqpObjIndex > 0 Then
-164                     .Char.Body = ObjData(.Invent.ArmourEqpObjIndex).Ropaje
+164                     .Char.Body = ObtenerRopaje(UserIndex, ObjData(.Invent.ArmourEqpObjIndex))
                     Else
                         Call SetNakedBody(UserList(userIndex))
                     End If
@@ -3105,7 +3105,7 @@ Public Sub DoMontar(ByVal UserIndex As Integer, ByRef Montura As t_ObjData, ByVa
 154             .Char.Head = .OrigChar.Head
                 Call TargetUpdateTerrain(.EffectOverTime)
 156             If .Invent.ArmourEqpObjIndex > 0 Then
-158                 .Char.Body = ObjData(.Invent.ArmourEqpObjIndex).Ropaje
+158                 .Char.Body = ObtenerRopaje(UserIndex, ObjData(.Invent.ArmourEqpObjIndex))
 
                 Else
                     Call SetNakedBody(UserList(userIndex))
