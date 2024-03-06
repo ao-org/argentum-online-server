@@ -2135,6 +2135,7 @@ Public Type t_UserCounters
     
     timeChat As Integer
     timeFx As Integer
+    timeGuildChat As Integer
     
     IdleCount As Integer
     AttackCounter As Integer

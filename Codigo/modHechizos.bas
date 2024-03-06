@@ -1331,7 +1331,7 @@ Function HandlePhysicalSkill(ByVal SourceIndex As Integer, ByVal SourceType As e
             If RefDoDamageToTarget(SourceRef, TargetRef, Damage, e_phisical, ObjectIndex) = eStillAlive Then
                 IsAlive = True
                 If TargetRef.RefType = eUser Then
-                    UserList(TargetRef.ArrayIndex).Counters.timeFx = 2
+                    UserList(TargetRef.ArrayIndex).Counters.timeFx = 3
                     Call SendData(SendTarget.ToPCAliveArea, TargetRef.ArrayIndex, PrepareMessageCreateFX(UserList(TargetRef.ArrayIndex).Char.charindex, FXSANGRE, 0, UserList(TargetRef.ArrayIndex).pos.x, UserList(TargetRef.ArrayIndex).pos.y))
                     Call SendData(SendTarget.ToPCAliveArea, TargetRef.ArrayIndex, PrepareMessagePlayWave(SND_IMPACTO, UserList(TargetRef.ArrayIndex).pos.x, UserList(TargetRef.ArrayIndex).pos.y))
                 Else
@@ -2811,20 +2811,20 @@ Private Sub InfoHechizoDeNpcSobreUser(ByVal NpcIndex As Integer, ByVal TargetUse
 100   With UserList(TargetUser)
 102     If Hechizos(Spell).FXgrh > 0 Then '¿Envio FX?
 104       If Hechizos(Spell).ParticleViaje > 0 Then
-            .Counters.timeFx = 2
+            .Counters.timeFx = 3
 106         Call SendData(SendTarget.ToPCArea, TargetUser, PrepareMessageParticleFXWithDestino(NpcList(NpcIndex).Char.charindex, .Char.charindex, Hechizos(Spell).ParticleViaje, Hechizos(Spell).FXgrh, Hechizos(Spell).TimeParticula, Hechizos(Spell).wav, 1, UserList(TargetUser).Pos.X, UserList(TargetUser).Pos.Y))
           Else
-            .Counters.timeFx = 2
+            .Counters.timeFx = 3
 108         Call SendData(SendTarget.ToPCArea, TargetUser, PrepareMessageCreateFX(.Char.charindex, Hechizos(Spell).FXgrh, Hechizos(Spell).loops, UserList(TargetUser).Pos.X, UserList(TargetUser).Pos.Y))
           End If
         End If
 
 110     If Hechizos(Spell).Particle > 0 Then '¿Envio Particula?
 112       If Hechizos(Spell).ParticleViaje > 0 Then
-            .Counters.timeFx = 2
+            .Counters.timeFx = 3
 114         Call SendData(SendTarget.ToPCArea, TargetUser, PrepareMessageParticleFXWithDestino(NpcList(NpcIndex).Char.charindex, .Char.charindex, Hechizos(Spell).ParticleViaje, Hechizos(Spell).Particle, Hechizos(Spell).TimeParticula, Hechizos(Spell).wav, 0, UserList(TargetUser).Pos.X, UserList(TargetUser).Pos.Y))
           Else
-            .Counters.timeFx = 2
+            .Counters.timeFx = 3
 116         Call SendData(SendTarget.ToPCArea, TargetUser, PrepareMessageParticleFX(.Char.charindex, Hechizos(Spell).Particle, Hechizos(Spell).TimeParticula, False, , UserList(TargetUser).Pos.X, UserList(TargetUser).Pos.Y))
           End If
         End If
@@ -2863,10 +2863,10 @@ Private Sub InfoHechizo(ByVal UserIndex As Integer)
 106     If IsValidUserRef(UserList(UserIndex).flags.TargetUser) Then '¿El Hechizo fue tirado sobre un usuario?
 108         If Hechizos(h).FXgrh > 0 Then '¿Envio FX?
 110             If Hechizos(h).ParticleViaje > 0 Then
-                    UserList(UserList(UserIndex).flags.targetUser.ArrayIndex).Counters.timeFx = 2
+                    UserList(UserList(UserIndex).flags.targetUser.ArrayIndex).Counters.timeFx = 3
 112                 Call SendData(SendTarget.ToPCAliveArea, UserList(UserIndex).flags.targetUser.ArrayIndex, PrepareMessageParticleFXWithDestino(UserList(UserIndex).Char.charindex, UserList(UserList(UserIndex).flags.targetUser.ArrayIndex).Char.charindex, Hechizos(h).ParticleViaje, Hechizos(h).FXgrh, Hechizos(h).TimeParticula, Hechizos(h).wav, 1, UserList(UserList(UserIndex).flags.targetUser.ArrayIndex).pos.x, UserList(UserList(UserIndex).flags.targetUser.ArrayIndex).pos.y))
                 Else
-                    UserList(UserList(UserIndex).flags.targetUser.ArrayIndex).Counters.timeFx = 2
+                    UserList(UserList(UserIndex).flags.targetUser.ArrayIndex).Counters.timeFx = 3
 114                 Call SendData(SendTarget.ToPCAliveArea, UserList(UserIndex).flags.targetUser.ArrayIndex, PrepareMessageCreateFX(UserList(UserList(UserIndex).flags.targetUser.ArrayIndex).Char.charindex, Hechizos(h).FXgrh, Hechizos(h).loops, UserList(UserList(UserIndex).flags.targetUser.ArrayIndex).pos.x, UserList(UserList(UserIndex).flags.targetUser.ArrayIndex).pos.y))
                 End If
 
@@ -2874,10 +2874,10 @@ Private Sub InfoHechizo(ByVal UserIndex As Integer)
 
 116         If Hechizos(h).Particle > 0 Then '¿Envio Particula?
 118             If Hechizos(h).ParticleViaje > 0 Then
-                    UserList(UserList(UserIndex).flags.targetUser.ArrayIndex).Counters.timeFx = 2
+                    UserList(UserList(UserIndex).flags.targetUser.ArrayIndex).Counters.timeFx = 3
 120                 Call SendData(SendTarget.ToPCAliveArea, UserList(UserIndex).flags.targetUser.ArrayIndex, PrepareMessageParticleFXWithDestino(UserList(UserIndex).Char.charindex, UserList(UserList(UserIndex).flags.targetUser.ArrayIndex).Char.charindex, Hechizos(h).ParticleViaje, Hechizos(h).Particle, Hechizos(h).TimeParticula, Hechizos(h).wav, 0, UserList(UserList(UserIndex).flags.targetUser.ArrayIndex).pos.x, UserList(UserList(UserIndex).flags.targetUser.ArrayIndex).pos.y))
                 Else
-                    UserList(UserList(UserIndex).flags.targetUser.ArrayIndex).Counters.timeFx = 2
+                    UserList(UserList(UserIndex).flags.targetUser.ArrayIndex).Counters.timeFx = 3
 122                 Call SendData(SendTarget.ToPCAliveArea, UserList(UserIndex).flags.targetUser.ArrayIndex, PrepareMessageParticleFX(UserList(UserList(UserIndex).flags.targetUser.ArrayIndex).Char.charindex, Hechizos(h).Particle, Hechizos(h).TimeParticula, False, , UserList(UserList(UserIndex).flags.targetUser.ArrayIndex).pos.x, UserList(UserList(UserIndex).flags.targetUser.ArrayIndex).pos.y))
                 End If
 

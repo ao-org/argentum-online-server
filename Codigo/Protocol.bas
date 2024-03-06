@@ -1368,7 +1368,7 @@ Private Sub HandleTalk(ByVal UserIndex As Integer)
                         If Trim(chat) = "" Then
                             .Counters.timeChat = 0
                         Else
-                            .Counters.timeChat = 1 + Round((3000 + 60 * Len(chat)) / 1000)
+                            .Counters.timeChat = 1 + Ceil((3000 + 60 * Len(chat)) / 1000)
                         End If
                         
 150                     Call SendData(SendTarget.ToPCAliveArea, userindex, PrepareMessageChatOverHead(chat, .Char.charindex, .flags.ChatColor, , .Pos.X, .Pos.y))
@@ -1468,7 +1468,7 @@ Private Sub HandleYell(ByVal UserIndex As Integer)
                         If Trim(chat) = "" Then
                             .Counters.timeChat = 0
                         Else
-                            .Counters.timeChat = 1 + Round((3000 + 60 * Len(chat)) / 1000)
+                            .Counters.timeChat = 1 + Ceil((3000 + 60 * Len(chat)) / 1000)
                         End If
 150
                         Call SendData(SendTarget.ToPCAliveArea, userindex, PrepareMessageChatOverHead(chat, .Char.charindex, vbRed, , .Pos.X, .Pos.y))
@@ -3022,7 +3022,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
                             FX = ObjData(.Invent.MunicionEqpObjIndex).CreaFX
                         End If
 210                     If FX <> 0 Then
-                            UserList(tU).Counters.timeFx = 2
+                            UserList(tU).Counters.timeFx = 3
 212                         Call SendData(SendTarget.ToPCAliveArea, tU, PrepareMessageCreateFX(UserList(tU).Char.charindex, FX, 0, UserList(tU).Pos.X, UserList(tU).Pos.y))
                         End If
                         If ProjectileType > 0 And (.flags.Oculto = 0 Or Not MapInfo(.pos.Map).KeepInviOnAttack) Then
@@ -3037,7 +3037,7 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 215                         If ObjData(.Invent.MunicionEqpObjIndex).CreaParticula <> "" Then
 216                             Particula = val(ReadField(1, ObjData(.Invent.MunicionEqpObjIndex).CreaParticula, Asc(":")))
 218                             Tiempo = val(ReadField(2, ObjData(.Invent.MunicionEqpObjIndex).CreaParticula, Asc(":")))
-                                UserList(tU).Counters.timeFx = 2
+                                UserList(tU).Counters.timeFx = 3
 220                             Call SendData(SendTarget.ToPCAliveArea, tU, PrepareMessageParticleFX(UserList(tU).Char.charindex, Particula, Tiempo, False, , UserList(tU).Pos.X, UserList(tU).Pos.y))
                             End If
                         End If
@@ -3439,10 +3439,10 @@ Private Sub HandleWorkLeftClick(ByVal UserIndex As Integer)
 686                     If UserList(tU).flags.Muerto = 0 Then
                             'call marcar
 688                         If UserList(tU).flags.invisible = 1 Or UserList(tU).flags.Oculto = 1 Then
-                                UserList(userindex).Counters.timeFx = 2
+                                UserList(userindex).Counters.timeFx = 3
 690                             Call SendData(SendTarget.ToClanArea, userindex, PrepareMessageParticleFX(UserList(tU).Char.charindex, 210, 50, False, , UserList(userindex).Pos.X, UserList(userindex).Pos.y))
                             Else
-                                UserList(userindex).Counters.timeFx = 2
+                                UserList(userindex).Counters.timeFx = 3
 692                             Call SendData(SendTarget.ToClanArea, userindex, PrepareMessageParticleFX(UserList(tU).Char.charindex, 210, 150, False, , UserList(userindex).Pos.X, UserList(userindex).Pos.y))
                             End If
 694                         Call SendData(SendTarget.ToClanArea, UserIndex, PrepareMessageConsoleMsg("Clan> [" & UserList(UserIndex).Name & "] marco a " & UserList(tU).Name & ".", e_FontTypeNames.FONTTYPE_GUILD))
@@ -5652,7 +5652,7 @@ Private Sub HandleResucitate(ByVal UserIndex As Integer)
             End If
         
 112         Call RevivirUsuario(UserIndex)
-            UserList(userindex).Counters.timeFx = 2
+            UserList(userindex).Counters.timeFx = 3
 114         Call SendData(SendTarget.ToPCAliveArea, userindex, PrepareMessageParticleFX(UserList(userindex).Char.charindex, e_ParticulasIndex.Curar, 100, False, , UserList(userindex).Pos.X, UserList(userindex).Pos.y))
 116         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave("104", UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.y))
 118         Call WriteConsoleMsg(UserIndex, "¡Has sido resucitado!", e_FontTypeNames.FONTTYPE_INFO)
@@ -6030,7 +6030,8 @@ Private Sub HandleGuildMessage(ByVal UserIndex As Integer)
 116                 If LCase(GuildLeader(.GuildIndex)) = .Name Then
 118                     Call SendData(SendTarget.ToDiosesYclan, .GuildIndex, PrepareMessageGuildChat(.Name & "> " & chat, 10))
                     Else
-                    
+                        .Counters.timeGuildChat = 1 + Ceil((3000 + 60 * Len(chat)) / 1000)
+                        
 120                     Call SendData(SendTarget.ToDiosesYclan, .GuildIndex, PrepareMessageGuildChat(.Name & "> " & chat, .Faccion.Status))
                         Call SendData(SendTarget.ToClanArea, userindex, PrepareMessageChatOverHead("NOCONSOLA*< " & chat & " >", .Char.charindex, RGB(255, 255, 0), , .Pos.X, .Pos.y))
                     End If

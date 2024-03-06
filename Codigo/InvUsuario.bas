@@ -2195,7 +2195,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
 444                         Call ChangeUserChar(UserIndex, .Char.body, CabezaFinal, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim)
                             'Quitamos del inv el item
                             
-                            UserList(UserIndex).Counters.timeFx = 2
+                            UserList(UserIndex).Counters.timeFx = 3
 446                         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageCreateFX(.Char.charindex, 102, 0, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
     
 448                         If CabezaActual <> CabezaFinal Then
@@ -2275,7 +2275,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
 520                         .OrigChar.Head = CabezaFinal
 522                         Call ChangeUserChar(UserIndex, .Char.body, CabezaFinal, .Char.Heading, .Char.WeaponAnim, .Char.ShieldAnim, .Char.CascoAnim, .Char.CartAnim)
                             'Quitamos del inv el item
-                            UserList(UserIndex).Counters.timeFx = 2
+                            UserList(UserIndex).Counters.timeFx = 3
 524                         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageCreateFX(.Char.charindex, 102, 0, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
 526                         Call QuitarUserInvItem(UserIndex, Slot, 1)
     
@@ -2525,7 +2525,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
     
                             'Quitamos del inv el item
 876                         If CabezaActual <> CabezaFinal Then
-                                UserList(UserIndex).Counters.timeFx = 2
+                                UserList(UserIndex).Counters.timeFx = 3
 878                             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageCreateFX(.Char.charindex, 102, 0, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
 880                             Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessagePlayWave(obj.Snd1, .Pos.X, .Pos.y))
 882                             Call QuitarUserInvItem(UserIndex, Slot, 1)
@@ -2559,7 +2559,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
 904                             If sobrechar = 1 Then
 906                                 Call SendData(SendTarget.toPCAliveArea, UserIndex, PrepareMessageParticleFXToFloor(.Pos.X, .Pos.y, Particula, Tiempo))
                                 Else
-                                    UserList(UserIndex).Counters.timeFx = 2
+                                    UserList(UserIndex).Counters.timeFx = 3
 908                                 Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageParticleFX(.Char.charindex, Particula, Tiempo, False, , UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
                                 End If
     
@@ -2703,7 +2703,7 @@ Sub UseInvItem(ByVal UserIndex As Integer, ByVal Slot As Byte, ByVal ByClick As 
                           End If
             
 1018                 If obj.CreaFX <> 0 Then
-                        UserList(UserIndex).Counters.timeFx = 2
+                        UserList(UserIndex).Counters.timeFx = 3
 1020                    Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageCreateFX(.Char.charindex, obj.CreaFX, 0, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
                      End If
             
@@ -3580,7 +3580,7 @@ Public Sub UseArpon(ByVal UserIndex As Integer)
         Dim Damage As Integer
         Damage = GetUserDamageWithItem(UserIndex, ObjIndex, 0)
         If TargetRef.RefType = eUser Then
-            UserList(TargetRef.ArrayIndex).Counters.timeFx = 2
+            UserList(TargetRef.ArrayIndex).Counters.timeFx = 3
             Call RemoveUserInvisibility(UserIndex)
             Call SendData(SendTarget.ToPCAliveArea, TargetRef.ArrayIndex, PrepareMessageCreateFX(UserList(TargetRef.ArrayIndex).Char.charindex, FXSANGRE, 0, UserList(TargetRef.ArrayIndex).pos.x, UserList(TargetRef.ArrayIndex).pos.y))
             Call SendData(SendTarget.ToPCAliveArea, TargetRef.ArrayIndex, PrepareMessagePlayWave(SND_IMPACTO, UserList(TargetRef.ArrayIndex).pos.x, UserList(TargetRef.ArrayIndex).pos.y))
@@ -3620,7 +3620,7 @@ Public Sub UseHandCannon(ByVal UserIndex As Integer, ByVal TileX As Integer, ByV
         Dim Tiempo    As Long
         Particula = val(ReadField(1, ObjData(ObjIndex).CreaParticula, Asc(":")))
         Tiempo = val(ReadField(2, ObjData(ObjIndex).CreaParticula, Asc(":")))
-        UserList(UserIndex).Counters.timeFx = 2
+        UserList(UserIndex).Counters.timeFx = 3
         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageParticleFX(UserList(UserIndex).Char.charindex, Particula, Tiempo, False, , UserList(UserIndex).pos.x, UserList(UserIndex).pos.y))
         Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareCreateProjectile(.pos.x, .pos.y, TileX, TileY, ObjData(ObjIndex).ProjectileType))
         Call CreateDelayedBlast(UserIndex, eUser, .pos.Map, TileX, TileY, ObjData(ObjIndex).ApplyEffectId, ObjIndex)

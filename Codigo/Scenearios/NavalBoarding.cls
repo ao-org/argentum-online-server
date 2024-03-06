@@ -588,7 +588,7 @@ Private Sub Respawn(ByVal player As Integer)
         Call WarpToLegalPos(player, SpawnPos.Map, SpawnPos.x, SpawnPos.y, True, True)
         Call RevivirUsuario(player)
         .Stats.MinMAN = .Stats.MaxMAN
-        .Counters.timeFx = 2
+        .Counters.timeFx = 3
         .Stats.MinSta = .Stats.MaxSta
         Call WriteUpdateMana(player)
         Call WriteUpdateSta(player)

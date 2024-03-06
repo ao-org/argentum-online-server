@@ -1278,7 +1278,7 @@ Sub CheckUserLevel(ByVal UserIndex As Integer)
             
                 'Store it!
                 'Call Statistics.UserLevelUp(UserIndex)
-                UserList(userindex).Counters.timeFx = 2
+                UserList(userindex).Counters.timeFx = 3
 110             Call SendData(SendTarget.ToPCAliveArea, userindex, PrepareMessageCreateFX(.Char.charindex, 106, 0, .Pos.X, .Pos.y))
 112             Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(SND_NIVEL, .Pos.X, .Pos.y))
 114             Call WriteLocaleMsg(UserIndex, "186", e_FontTypeNames.FONTTYPE_INFO)
@@ -1552,7 +1552,7 @@ Function MoveUserChar(ByVal UserIndex As Integer, ByVal nHeading As e_Heading) A
                                             If UserList(tempIndex).AreasInfo.AreaReciveY And UserList(UserIndex).AreasInfo.AreaPerteneceY Then
                                                 If UserList(tempIndex).ConnectionDetails.ConnIDValida Then
                                                     If UserList(tempIndex).flags.Muerto = 0 Or MapInfo(UserList(tempIndex).pos.Map).Seguro = 1 Then
-                                                        If .GuildIndex = 0 Or .GuildIndex <> UserList(tempIndex).GuildIndex Or modGuilds.NivelDeClan(.GuildIndex) < 6 Then
+                                                        If Not CheckGuildSend(UserList(UserIndex), UserList(tempIndex)) Then
                                                             If .Counters.timeFx + .Counters.timeChat = 0 Then
                                                                 If Distancia(nPos, UserList(tempIndex).Pos) > DISTANCIA_ENVIO_DATOS Then
                                                                     'Mandamos los pasos para los pjs q estan lejos para que simule que caminen.
@@ -2603,7 +2603,7 @@ Sub WarpUserChar(ByVal UserIndex As Integer, _
         
 206             If FX Then 'FX
 208                 Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessagePlayWave(SND_WARP, X, y))
-                    UserList(userindex).Counters.timeFx = 2
+                    UserList(userindex).Counters.timeFx = 3
 210                 Call SendData(SendTarget.ToPCAliveArea, userindex, PrepareMessageCreateFX(.Char.charindex, e_FXIDs.FXWARP, 0, .Pos.X, .Pos.y))
                 End If
 
