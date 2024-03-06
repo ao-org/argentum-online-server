@@ -1511,7 +1511,7 @@ Public Sub EfectoVeneno(ByVal UserIndex As Integer)
 106         With UserList(UserIndex)
               'Call WriteConsoleMsg(UserIndex, "Estás envenenado, si no te curas morirás.", e_FontTypeNames.FONTTYPE_VENENO)
 108           Call WriteLocaleMsg(UserIndex, "47", e_FontTypeNames.FONTTYPE_VENENO)
-              UserList(userindex).Counters.timeFx = 2
+              UserList(userindex).Counters.timeFx = 3
 110           Call SendData(SendTarget.ToPCAliveArea, userindex, PrepareMessageParticleFX(.Char.charindex, e_ParticulasIndex.Envenena, 30, False, , UserList(userindex).Pos.X, UserList(userindex).Pos.y))
 112           .Counters.Veneno = 0
               ' El veneno saca un porcentaje de vida random.
@@ -1542,7 +1542,7 @@ Public Sub EfectoIncineramiento(ByVal UserIndex As Integer)
 102             If .Counters.Incineracion Mod (IntervaloIncineracion \ 5) = 0 Then
                     ' "Te estás incinerando, si no te curas morirás.
 104                 Call WriteLocaleMsg(UserIndex, "392", e_FontTypeNames.FONTTYPE_FIGHT)
-                    UserList(userindex).Counters.timeFx = 2
+                    UserList(userindex).Counters.timeFx = 3
 106                 Damage = RandomNumber(35, 45)
 108                 Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageCreateFX(.Char.charindex, 73, 0, .pos.x, .pos.y))
 112                 If .ChatCombate = 1 Then
@@ -1775,6 +1775,9 @@ Sub PasarSegundo()
                         .Counters.timeFx = .Counters.timeFx - 1
                     End If
                     
+                    If .Counters.timeGuildChat > 0 Then
+                        .Counters.timeGuildChat = .Counters.timeGuildChat - 1
+                    End If
                                       
 116                 If .flags.Silenciado = 1 Then
 118                     .flags.SegundosPasados = .flags.SegundosPasados + 1

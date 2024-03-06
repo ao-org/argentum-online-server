@@ -2061,7 +2061,7 @@ Public Sub ResucitarOCurar(ByVal UserIndex As Integer)
         
         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(20, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
     
-        UserList(UserIndex).Counters.timeFx = 2
+        UserList(UserIndex).Counters.timeFx = 3
         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(UserList(UserIndex).Char.charindex, 35, 1, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
     
         
@@ -2072,7 +2072,7 @@ Public Sub ResucitarOCurar(ByVal UserIndex As Integer)
             
         Call WriteUpdateHP(UserIndex)
         
-        UserList(UserIndex).Counters.timeFx = 2
+        UserList(UserIndex).Counters.timeFx = 3
         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessageCreateFX(UserList(UserIndex).Char.charindex, 9, 1, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
         Call SendData(SendTarget.ToPCArea, UserIndex, PrepareMessagePlayWave(18, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
     

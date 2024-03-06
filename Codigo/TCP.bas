@@ -1169,6 +1169,7 @@ Sub ResetContadores(ByVal UserIndex As Integer)
             .controlHechizos.HechizosTotales = 0
             .timeChat = 0
             .timeFx = 0
+            .timeGuildChat = 0
         End With
 
         

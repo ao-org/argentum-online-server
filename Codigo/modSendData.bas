@@ -731,13 +731,24 @@ Private Function CanSendToUser(ByRef SourceUser As t_User, ByRef TargetUser As t
         Call modNetwork.Send(TargetUser.flags.GMMeSigue.ArrayIndex, Buffer)
     End If
     If Not EsGM(TargetIndex) Then
-        If SourceUser.flags.invisible + SourceUser.flags.Oculto > 0 And ValidateInvi And Not (TargetUser.GuildIndex > 0 And TargetUser.GuildIndex = SourceUser.GuildIndex And modGuilds.NivelDeClan(TargetUser.GuildIndex) >= 6) And SourceUser.flags.Navegando = 0 Then
+        If SourceUser.flags.invisible + SourceUser.flags.Oculto > 0 And ValidateInvi And Not CheckGuildSend(SourceUser, TargetUser) And SourceUser.flags.Navegando = 0 Then
             If Distancia(SourceUser.pos, TargetUser.pos) > DISTANCIA_ENVIO_DATOS And SourceUser.Counters.timeFx + SourceUser.Counters.timeChat = 0 Then
                 Exit Function
             End If
         End If
     End If
     CanSendToUser = True
+End Function
+
+Public Function CheckGuildSend(ByRef SourceUser As t_User, ByRef TargetUser As t_User) As Boolean
+    CheckGuildSend = False
+    If SourceUser.GuildIndex = 0 Then Exit Function
+    If SourceUser.GuildIndex <> TargetUser.GuildIndex Then Exit Function
+    If modGuilds.NivelDeClan(TargetUser.GuildIndex) < 6 Then
+        CheckGuildSend = SourceUser.Counters.timeGuildChat > 0
+        Exit Function
+    End If
+    CheckGuildSend = True
 End Function
 
 Private Sub SendToUserAliveAreaButindex(ByVal UserIndex As Integer, ByRef Buffer As Network.Writer, Optional ByVal ValidateInvi As Boolean = False)

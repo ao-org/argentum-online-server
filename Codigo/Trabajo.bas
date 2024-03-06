@@ -461,7 +461,7 @@ Public Sub DoOcultarse(ByVal UserIndex As Integer)
                         Call RefreshCharStatus(UserIndex)
                     End If
                 Else
-                    UserList(UserIndex).Counters.timeFx = 2
+                    UserList(UserIndex).Counters.timeFx = 3
 152                 Call SendData(SendTarget.ToPCAliveArea, UserIndex, PrepareMessageSetInvisible(.Char.charindex, True, UserList(UserIndex).Pos.X, UserList(UserIndex).Pos.Y))
                     'Call WriteConsoleMsg(UserIndex, "¡Te has escondido entre las sombras!", e_FontTypeNames.FONTTYPE_INFO)
 154                 Call WriteLocaleMsg(UserIndex, "55", e_FontTypeNames.FONTTYPE_INFO)
